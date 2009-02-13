@@ -1,0 +1,150 @@
+SET(PONA_HEADER
+	Core.hpp
+	StdStream.hpp
+	Stack.hpp
+	Queue.hpp
+	ByteSource.hpp
+	ByteSink.hpp
+	Utf8Source.hpp
+	Utf8Sink.hpp
+	BitSource.hpp
+	BitSink.hpp
+	Options.hpp
+	Atoms.hpp
+	LineSource.hpp
+	LineSink.hpp
+	LinePrinter.hpp
+	LineParser.hpp
+	Instance.hpp
+	HuffmanCodec.hpp
+	File.hpp
+	Stream.hpp
+	Mutex.hpp
+	Crc32.hpp
+	Ref.hpp
+	Owner.hpp
+	SetNull.hpp
+	ThreadLocalOwner.hpp
+	TimeStamp.hpp
+	Alien.hpp
+	Types.hpp
+	Exception.hpp
+	Clock.hpp
+	Heap.hpp
+	Monitor.hpp
+	Bouncer.hpp
+	MonitorMedia.hpp
+	Thread.hpp
+	Condition.hpp
+	Semaphore.hpp
+	SharedMemory.hpp
+	List.hpp
+	Vector.hpp
+	Random.hpp
+	Syntax.hpp
+	SyntaxDefinition.hpp
+	SyntaxFactory.hpp
+	FloatSyntax.hpp
+	RandomAccessMedia.hpp
+	CStringMedia.hpp
+	String.hpp
+	Tree.hpp
+	PrefixMap.hpp
+	Token.hpp
+	TokenFactory.hpp
+	BinaryTree.hpp
+	AvlTree.hpp
+	KeyValuePair.hpp
+	Map.hpp
+	Process.hpp
+	SystemStream.hpp
+	FileStatus.hpp
+	ProcessStatus.hpp
+	InetAddress.hpp
+	FormatSpecifier.hpp
+	BooleanLiteral.hpp
+	IntegerLiteral.hpp
+	FloatingPointLiteral.hpp
+	NumberFormatting.hpp
+	New.hpp
+	IoSyntaxSugar.hpp
+	TcpStream.hpp
+	TcpSocket.hpp
+)
+
+SET(PONA_SOURCE
+	StdStream.cpp
+	Stream.cpp
+	LineSource.cpp
+	LineSink.cpp
+	LinePrinter.cpp
+	LineParser.cpp
+	BitSink.cpp
+	BitSource.cpp
+	ByteSink.cpp
+	ByteSource.cpp
+	Utf8Sink.cpp
+	Utf8Source.cpp
+	HuffmanCodec.cpp
+	Bouncer.cpp
+	String.cpp
+	InetAddress.cpp
+	SyntaxFactory.cpp
+	FormatSpecifier.cpp
+	BooleanLiteral.cpp
+	IntegerLiteral.cpp
+	FloatingPointLiteral.cpp
+	NumberFormatting.cpp
+	New.cpp
+	TcpSocket.cpp
+)
+
+SET(PONA_POSIX_SOURCE
+	Posix/Exception.cpp
+	Posix/SystemStream.cpp
+	Posix/File.cpp
+	Posix/FileStatus.cpp
+	Posix/Thread.cpp
+	Posix/Process.cpp
+	Posix/ProcessStatus.cpp
+)
+
+SET(PONA_WINDOWS_SOURCE
+	Windows/Exception.cpp
+	Windows/SystemStream.cpp
+	Windows/File.cpp
+	Windows/FileStatus.cpp
+	Windows/Thread.cpp
+	Windows/ProcessToken.cpp
+	Windows/ProcessToken.hpp
+	Windows/Process.cpp
+	Windows/ProcessStatus.cpp
+	Windows/inet_ntop.c
+	Windows/inet_pton.c
+	Windows/WsaAwareness.cpp
+	Windows/TcpStream.cpp
+)
+
+IF(UNIX)
+	ADD_LIBRARY(pona
+		${PONA_HEADER}
+		${PONA_SOURCE}
+		${PONA_POSIX_SOURCE}
+	)
+	IF(APPLE)
+		TARGET_LINK_LIBRARIES(pona pthread)
+	ELSE(APPLE)
+		TARGET_LINK_LIBRARIES(pona rt pthread)
+	ENDIF(APPLE)
+ELSE(UNIX)
+	ADD_LIBRARY(pona
+		${PONA_HEADER}
+		${PONA_SOURCE}
+		${PONA_WINDOWS_SOURCE}
+	)
+	TARGET_LINK_LIBRARIES(pona winmm ws2_32)
+ENDIF(UNIX)
+
+SET_TARGET_PROPERTIES(pona PROPERTIES VERSION 0.8.0 SOVERSION 0)
+
+INSTALL(TARGETS pona ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
