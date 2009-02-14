@@ -4,9 +4,9 @@ PROJECT(libPONA)
 
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 
-INCLUDE(cmake/UsePONA.cmake)
+INCLUDE(cmake/BuildOptionsPONA.cmake)
 
-INSTALL(FILES cmake/FindPONA.cmake cmake/UsePONA.cmake DESTINATION ${CMAKE_ROOT}/Modules)
+INSTALL(FILES cmake/FindPONA.cmake cmake/UsePONA.cmake cmake/BuildOptionsPONA.cmake DESTINATION ${CMAKE_ROOT}/Modules)
 INSTALL(DIRECTORY pona DESTINATION include FILES_MATCHING PATTERN *.hpp)
 
 SUBDIRS(pona test examples)
