@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** This file is part of libPONA - The Portable Network Abstractions Library.
+** This file is part of libPONA - The Portable Network Abstraction Library.
 **
 ** Copyright (C) 2007-2009  Frank Mertens
 **
@@ -39,7 +39,7 @@ public:
 	inline Ref<Node> nextSibling() const { return nextSibling_; }
 	inline Ref<Node> previousSibling() const { return previousSibling_; }
 	
-	inline void appendChild(Ref<Node> node) { return insertChild(node, lastChild_); }
+	inline void appendChild(Ref<Node> node) { insertChild(node, lastChild_); }
 	
 	void insertChild(Ref<Node> node, Ref<Node> previousSibling = 0)
 	{

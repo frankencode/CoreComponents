@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** This file is part of libPONA - The Portable Network Abstractions Library.
+** This file is part of libPONA - The Portable Network Abstraction Library.
 **
 ** Copyright (C) 2007-2009  Frank Mertens
 **
@@ -30,59 +30,59 @@ IntegerLiteral::IntegerLiteral()
 	
 	binNumber_ =
 		DEFINE("binNumber",
-		  REPEAT(1, 256,
-		    RANGE('0', '1'),
-		    CHAR('b')
-		  )
+			REPEAT(1, 256,
+				RANGE('0', '1'),
+				CHAR('b')
+			)
 		);
 		
 	octNumber_ =
 		DEFINE("octNumber",
-		  CHAR('0',
-		    REPEAT(1, 24,
-		      RANGE('0', '9')
-		    )
-		  )
+			CHAR('0',
+				REPEAT(1, 24,
+					RANGE('0', '9')
+				)
+			)
 		);
 	
 	hexNumber_ = 
 		DEFINE("hexNumber",
-		  CHAR('0',
-		    CHAR('x',
-		      REPEAT(1, 20,
-		        OR(
-		          RANGE('0', '9'),
-		          OR(
-		            RANGE('a', 'f'),
-		            RANGE('A', 'F')
-		          )
-		        )
-		      )
-		    )
-		  )
+			CHAR('0',
+				CHAR('x',
+					REPEAT(1, 20,
+						OR(
+							RANGE('0', '9'),
+							OR(
+								RANGE('a', 'f'),
+								RANGE('A', 'F')
+							)
+						)
+					)
+				)
+			)
 		);
 	
 	decNumber_ =
 		DEFINE("decNumber",
-		  REPEAT(1, 20,
-		    RANGE('0', '9')
-		  )
+			REPEAT(1, 20,
+				RANGE('0', '9')
+			)
 		);
 	
 	DEFINE_SELF("integer",
-	  REPEAT(0, 1,
-	    REF(sign_),
-	    OR(
-	      OR(
-	        REF(binNumber_),
-	        REF(octNumber_)
-	      ),
-	      OR(
-	        REF(hexNumber_),
-	        REF(decNumber_)
-	      )
-	    )
-	  )
+		REPEAT(0, 1,
+			REF("sign"),
+			OR(
+				OR(
+					REF("binNumber"),
+					REF("octNumber")
+				),
+				OR(
+					REF("hexNumber"),
+					REF("decNumber")
+				)
+			)
+		)
 	);
 }
 

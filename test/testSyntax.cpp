@@ -9,12 +9,12 @@ public:
 	Expression()
 	{
 		number_ = DEFINE("number", REPEAT(0, 1, CHAR('-'), REPEAT(1, 20, RANGE('0', '9'))));
-		factor_ = DEFINE("factor", OR(REF(number_), CHAR('(', REF(sum_, CHAR(')')))));
+		factor_ = DEFINE("factor", OR(REF("number"), CHAR('(', REF("sum", CHAR(')')))));
 		mulOp_ = DEFINE("mulOp", OR(CHAR('*'), CHAR('/')));
 		addOp_ = DEFINE("addOp", OR(CHAR('+'), CHAR('-')));
-		product_ = DEFINE("product", REF(factor_, REPEAT(0, intMax, REF(mulOp_, REF(factor_)))));
-		sum_ = DEFINE("sum", REF(product_, REPEAT(0, intMax, REF(addOp_, REF(product_)))));
-		DEFINE_SELF("expression", REF(sum_, EOI()));
+		product_ = DEFINE("product", REF("factor", REPEAT(0, intMax, REF("mulOp", REF("factor")))));
+		sum_ = DEFINE("sum", REF("product", REPEAT(0, intMax, REF("addOp", REF("product")))));
+		DEFINE_SELF("expression", REF("sum", EOI()));
 	}
 	
 	double eval(String text)

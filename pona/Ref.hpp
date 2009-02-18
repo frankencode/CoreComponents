@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** This file is part of libPONA - The Portable Network Abstractions Library.
+** This file is part of libPONA - The Portable Network Abstraction Library.
 **
 ** Copyright (C) 2007-2009  Frank Mertens
 **
@@ -58,13 +58,6 @@ public:
 	Ref(const Ref& b) { set(b.get()); }
 	inline const Ref& operator=(T* b) { set(b); return *this; }
 	inline const Ref& operator=(const Ref& b) { set(b.get()); return *this; }
-	
-	// zero set and test syntax sugar
-	
-	explicit Ref(int) { set(reinterpret_cast<T*>(0)); }
-	inline const Ref& operator=(int) { set(reinterpret_cast<T*>(0)); return *this; }
-	inline bool operator==(int) const { return this->get() == reinterpret_cast<T*>(0); }
-	// inline operator bool() const { return this->get() == reinterpret_cast<T*>(0); }
 	
 	// auto-casting initialization and copy operations
 	

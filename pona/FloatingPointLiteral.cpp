@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** This file is part of libPONA - The Portable Network Abstractions Library.
+** This file is part of libPONA - The Portable Network Abstraction Library.
 **
 ** Copyright (C) 2007-2009  Frank Mertens
 **
@@ -38,39 +38,39 @@ FloatingPointLiteral::FloatingPointLiteral()
 	infinite_ = DEFINE("infinite", REPEAT(0, 1, CHAR('-'), OR(STRING("INFINITE"), STRING("inf"))));
 	
 	DEFINE_SELF("floatingPoint",
-	  OR(
-	    OR(
-	      REF(nan_),
-	      REF(infinite_)
-	    ),
-	    REPEAT(0, 1,
-	      REF(sign_),
-	      OR(
-	        REF(integerPart_,
-	          REPEAT(0, 1,
-	            CHAR('.',
-	              REPEAT(0, 1,
-	                REF(fractionPart_)
-	              )
-	            )
-	          )
-	        ),
-	        CHAR('.',
-	          REF(fractionPart_)
-	        ),
-	        REPEAT(0, 1,
-	          OR(
-	            CHAR('e'),
-	            CHAR('E'),
-	            REPEAT(0, 1,
-	              REF(exponentSign_),
-	              REF(exponent_)
-	            )
-	          )
-	        )
-	      )
-	    )
-	  )
+		OR(
+			OR(
+				REF("nan"),
+				REF("infinite")
+			),
+			REPEAT(0, 1,
+				REF("sign"),
+				OR(
+					REF("integerPart",
+						REPEAT(0, 1,
+							CHAR('.',
+								REPEAT(0, 1,
+									REF("fractionPart")
+								)
+							)
+						)
+					),
+					CHAR('.',
+						REF("fractionPart")
+					),
+					REPEAT(0, 1,
+						OR(
+							CHAR('e'),
+							CHAR('E'),
+							REPEAT(0, 1,
+								REF("exponentSign"),
+								REF("exponent")
+							)
+						)
+					)
+				)
+			)
+		)
 	);
 }
 

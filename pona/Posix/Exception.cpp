@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** This file is part of libPONA - The Portable Network Abstractions Library.
+** This file is part of libPONA - The Portable Network Abstraction Library.
 **
 ** Copyright (C) 2007-2009  Frank Mertens
 **
@@ -29,13 +29,13 @@ namespace pona
 char* posixError()
 {
 #ifdef __USE_GNU
-	char* unknown = "Unknown error";
+	const char* unknown = "Unknown error";
 	const int bufSize = 1024;
 	char buf[bufSize];
 	::memcpy(buf, unknown, strlen(unknown) + 1);
 	return ::strdup(::strerror_r(errno, buf, bufSize));
 #else
-	char* unknown = "Unknown error";
+	const char* unknown = "Unknown error";
 	const int bufSize = 1024;
 	char* buf = (char*)::malloc(bufSize);
 	::memcpy(buf, unknown, strlen(unknown) + 1);

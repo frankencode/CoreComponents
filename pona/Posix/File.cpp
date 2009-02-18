@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** This file is part of libPONA - The Portable Network Abstractions Library.
+** This file is part of libPONA - The Portable Network Abstraction Library.
 **
 ** Copyright (C) 2007-2009  Frank Mertens
 **
@@ -118,7 +118,7 @@ void File::open(int flags)
 		flags2 = O_RDONLY;
 	else if (flags == writable)
 		flags2 = O_WRONLY;
-	else if (flags == readable|writable)
+	else if (flags == (readable|writable))
 		flags2 = O_RDWR;
 	fd_ = ::open(pathUtf8_, flags2);
 	if (fd_ == -1)

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** This file is part of libPONA - The Portable Network Abstractions Library.
+** This file is part of libPONA - The Portable Network Abstraction Library.
 **
 ** Copyright (C) 2007-2009  Frank Mertens
 **
@@ -28,56 +28,56 @@ FormatSpecifier::FormatSpecifier()
 {
 	integerWidth_ =
 		DEFINE("integerWidth",
-		  REPEAT(1, 2, RANGE('0', '9'))
+			REPEAT(1, 2, RANGE('0', '9'))
 		);
 	
 	fractionWidth_ =
 		DEFINE("fractionWidth",
-		  REPEAT(1, 2, RANGE('0', '9'))
+			REPEAT(1, 2, RANGE('0', '9'))
 		);
 	
 	base_ =
 		DEFINE("base",
-		  OR(
-		    OR(
-		      STRING("dec"),
-		      STRING("hex")
-		    ),
-		    OR(
-		      STRING("oct"),
-		      STRING("bin")
-		    )
-		  )
+			OR(
+				OR(
+					STRING("dec"),
+					STRING("hex")
+				),
+				OR(
+					STRING("oct"),
+					STRING("bin")
+				)
+			)
 		);
 	
 	DEFINE_SELF("format",
-	  CHAR('%',
-	    OR(
-	      REF(base_,
-	        REPEAT(0, 1,
-	          CHAR(':',
-	            REF(integerWidth_,
-	              REPEAT(0, 1,
-	                CHAR('.',
-	                  REF(fractionWidth_)
-	                )
-	              )
-	            )
-	          )
-	        )
-	      ),
-	      REPEAT(0, 1,
-	        REF(integerWidth_,
-	          REPEAT(0, 1,
-	            CHAR('.',
-	              REF(fractionWidth_)
-	            )
-	          )
-	        )
-	      ),
-	      CHAR('%')
-	    )
-	  )
+		CHAR('%',
+			OR(
+				REF("base",
+					REPEAT(0, 1,
+						CHAR(':',
+							REF("integerWidth",
+								REPEAT(0, 1,
+									CHAR('.',
+										REF("fractionWidth")
+									)
+								)
+							)
+						)
+					)
+				),
+				REPEAT(0, 1,
+					REF("integerWidth",
+						REPEAT(0, 1,
+							CHAR('.',
+								REF("fractionWidth")
+							)
+						)
+					)
+				),
+				CHAR('%')
+			)
+		)
 	);
 }
 

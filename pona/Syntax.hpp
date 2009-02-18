@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** This file is part of libPONA - The Portable Network Abstractions Library.
+** This file is part of libPONA - The Portable Network Abstraction Library.
 **
 ** Copyright (C) 2007-2009  Frank Mertens
 **
@@ -430,7 +430,7 @@ protected:
 	
 public:
 	class Definition;
-
+	
 private:
 	class RuleNode: public Node
 	{
@@ -484,19 +484,28 @@ private:
 	class RefNode: public Node
 	{
 	public:
-		RefNode(Ref<RuleNode, Owner>* rule, Ref<Node> next)
+		RefNode(Definition* definition, const char* ruleName, Ref<Node> next)
 			: Node(next),
-			  rule_(rule)
+			  definition_(definition),
+			  ruleName_(ruleName)
 		{}
 		
-		inline const char* ruleName() const { return (*rule_ == 0) ? "NULL" : (*rule_)->name_; }
+		inline const char* ruleName() const { return ruleName_; }
+		inline Ref<RuleNode> rule() const { return rule_; }
+		
+		inline void link() {
+			rule_ = definition_->ruleByName(ruleName_);
+		}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			Token tempToken;
 			tempToken.liberate();
 			
-			int h = (*rule_)->matchNext(media, i, tokenFactory, &tempToken, state);
+			if (!rule_)
+				link();
+			
+			int h = rule_->matchNext(media, i, tokenFactory, &tempToken, state);
 			
 			if ((h != -1) && (next_))
 				h = next_->matchNext(media, h, tokenFactory, &tempToken, state);
@@ -510,9 +519,11 @@ private:
 			
 			return i;
 		}
-	
+		
 	private:
-		Ref<RuleNode, Owner>* rule_;
+		Definition* definition_;
+		const char* ruleName_;
+		Ref<RuleNode> rule_;
 	};
 	
 public:
@@ -548,6 +559,9 @@ public:
 		inline bool* flag(int id) const { return flags_ + id; }
 		inline Char* character(int id) const { return chars_ + id; }
 		
+		inline Ref<RuleNode> continuationRule() const { return continuationRule_; }
+		inline void setContinuationRule(Ref<RuleNode> rule) { continuationRule_ = rule; }
+		
 		inline Ref<State> child() const { return child_; }
 		inline void setChild(Ref<State> state) { child_ = state; }
 		
@@ -558,6 +572,7 @@ public:
 				equal = equal && (flags_[i] == b.flags_[i]);
 			for (int i = 0; (i < numChars_) && equal; ++i)
 				equal = equal && (chars_[i] == b.chars_[i]);
+			equal = equal && (continuationRule_ == b.continuationRule_);
 			if (equal) {
 				if (child_) {
 					if (b.child_) {
@@ -591,6 +606,7 @@ public:
 				flags_[i] = b.flags_[i];
 			for (int i = 0; i < numChars_; ++i)
 				chars_[i] = b.chars_[i];
+			continuationRule_ = b.continuationRule_;
 			if (b.child_) {
 				child_ = new State;
 				child_->copy(*b.child_);
@@ -605,6 +621,7 @@ public:
 		Char* chars_;
 		int numFlags_;
 		int numChars_;
+		Ref<RuleNode, SetNull> continuationRule_;
 		Ref<State, Owner> child_;
 	};
 	
@@ -776,6 +793,34 @@ protected:
 		Ref<Definition, SetNull> definition_;
 	};
 	
+	class ContinueAtNode: public Node
+	{
+	public:
+		ContinueAtNode(Definition* definition, const char* ruleName, Ref<Node> next)
+			: Node(next),
+			  definition_(definition),
+			  ruleName_(ruleName)
+		{}
+		
+		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		{
+			if (state)
+				if (!rule_)
+					rule_ = definition_->ruleByName(ruleName_);
+			state->setContinuationRule(rule_);
+			
+			if ((i != -1) && (next_))
+				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			
+			return i;
+		}
+		
+	private:
+		Definition* definition_;
+		const char* ruleName_;
+		Ref<RuleNode, SetNull> rule_;
+	};
+	
 	class EchoNode: public Node
 	{
 	public:
@@ -820,12 +865,11 @@ public:
 		inline static NODE ANY(NODE next = 0) { return new AnyNode(next); }
 		inline static NODE RANGE(Char a, Char b, NODE next = 0) { return new RangeNode(a, b, next); }
 		inline static NODE STRING(Char* s, int len, NODE next = 0) { return new StringNode(s, len, next); }
-		inline static NODE STRING(char* s, NODE next = 0) { return new StringNode(s, next); }
+		inline static NODE STRING(const char* s, NODE next = 0) { return new StringNode(s, next); }
 		inline static NODE KEYWORD(Ref<KeywordMap> map, NODE next = 0) { return new KeywordNode(map, next); }
 		
 		inline static NODE REPEAT(int minRepeat, int maxRepeat, NODE entry, NODE next = 0) { return new RepeatNode(minRepeat, maxRepeat, entry, next); }
 		inline static NODE EOI(NODE next = 0) { return new EoiNode(next); }
-		inline static NODE EOL(NODE next = 0) { return OR(LOOK_AHEAD(CHAR('\n')), EOI(), next); }
 		inline static NODE NOT(NODE entry, NODE next = 0) { return new NotNode(entry, next); }
 		inline static NODE NEVER() { return new NotNode(0, 0); }
 		inline static NODE FIND(NODE entry, NODE next = 0) { return new FindNode(entry, next); }
@@ -834,6 +878,9 @@ public:
 		inline static NODE LOOK_AHEAD(NODE entry, NODE next = 0) { return new LookAheadNode(entry, next); }
 		
 		inline static NODE LENGTH(int minLength, int maxLength, NODE entry, NODE next = 0) { return new LengthNode(minLength, maxLength, entry, next); }
+		
+		// syntax sugar
+		inline static NODE EOL(NODE next = 0) { return OR(CHAR('\n'), EOI()); }
 		inline static NODE NONEMPTY(NODE entry, NODE next = 0) { return LENGTH(1, intMax, entry, next); }
 		
 		inline RULE DEFINE(const char* name, NODE entry) {
@@ -853,7 +900,7 @@ public:
 			ruleByName_->define(name, this);
 		}
 		
-		inline static NODE REF(RULE& rule, NODE next = 0) { return new RefNode(&rule, next); }
+		inline NODE REF(const char* ruleName, NODE next = 0) { return new RefNode(this, ruleName, next); }
 		
 		//-- stateful definition interface
 		
@@ -871,6 +918,8 @@ public:
 		inline static NODE SETCHAR(int charId, Char value, NODE next = 0) { return new SetCharNode(charId, value, next); }
 		inline static NODE VARCHAR(int charId, NODE next = 0) { return new VarCharNode(charId, next); }
 		inline static NODE INVOKE(Definition* definition, NODE next = 0) { return new InvokeNode(definition, next); }
+		
+		inline static NODE CONTINUE_AT(Definition* definition, const char* ruleName, NODE next = 0) { return new ContinueAtNode(definition, ruleName, next); }
 		
 		//-- debugging interface
 		
@@ -924,10 +973,32 @@ public:
 			if (!state)
 				state = newState();
 			
+			int h = i0;
+			
+			Ref<Token, Owner> continuationRoot;
+			if (state) {
+				if (state->continuationRule()) {
+					TokenFactory tokenFactory(buf, bufSize);
+					h = state->continuationRule()->matchNext(media, h, &tokenFactory, 0, state);
+					if (tokenFactory.rootToken()) {
+						continuationRoot = tokenFactory.produce();
+						continuationRoot->appendChild(tokenFactory.rootToken());
+					}
+				}
+			}
+			
 			TokenFactory tokenFactory(buf, bufSize);
-			int h = matchNext(media, i0, &tokenFactory, 0, state);
+			h = matchNext(media, h, &tokenFactory, 0, state);
+			Ref<Token, Owner> root = tokenFactory.rootToken();
+			if (continuationRoot) {
+				if (root)
+					root->insertChild(continuationRoot->firstChild());
+				else
+					root = continuationRoot;
+			}
+			
 			if (rootToken)
-				*rootToken = tokenFactory.rootToken();
+				*rootToken = root;
 			
 			if ((i1 != 0) && (h != -1))
 				*i1 = h;

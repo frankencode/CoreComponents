@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** This file is part of libPONA - The Portable Network Abstractions Library.
+** This file is part of libPONA - The Portable Network Abstraction Library.
 **
 ** Copyright (C) 2007-2009  Frank Mertens
 **
@@ -30,7 +30,7 @@ namespace pona
 class Token: public Tree
 {
 public:
-	Token(): ruleName_("NULL"), language_(-1), rule_(-1), type_(-1) {}
+	Token(): ruleName_("unknown"), language_(-1), rule_(-1), type_(-1) {}
 	
 	inline void join(Ref<Token> parent, const char* ruleName, int language, int rule, int i0, int i1)
 	{

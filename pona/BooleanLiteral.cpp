@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** This file is part of libPONA - The Portable Network Abstractions Library.
+** This file is part of libPONA - The Portable Network Abstraction Library.
 **
 ** Copyright (C) 2007-2009  Frank Mertens
 **
@@ -28,21 +28,20 @@ BooleanLiteral::BooleanLiteral()
 {
 	true_ =
 		DEFINE("true",
-		  OR(
-		  	OR(STRING("true"), STRING("TRUE")),
-		  	OR(STRING("on"), STRING("ON"))
-		  )
+			OR(
+				OR(STRING("true"), STRING("TRUE")),
+				OR(STRING("on"), STRING("ON"))
+			)
 		);
 	
-	false_ =
-		DEFINE("false",
-		  OR(
-		    OR(STRING("false"), STRING("FALSE")),
-		    OR(STRING("off"), STRING("OFF"))
-		  )
-		);
+	DEFINE("false",
+		OR(
+			OR(STRING("false"), STRING("FALSE")),
+			OR(STRING("off"), STRING("OFF"))
+		)
+	);
 	
-	DEFINE_SELF("boolean", OR(REF(true_), REF(false_)));
+	DEFINE_SELF("boolean", OR(REF("true"), REF("false")));
 }
 
 bool BooleanLiteral::match(String text, int i0, int* i1, bool* value)
@@ -62,4 +61,3 @@ bool BooleanLiteral::match(String text, int i0, int* i1, bool* value)
 }
 
 } // namespace pona
-

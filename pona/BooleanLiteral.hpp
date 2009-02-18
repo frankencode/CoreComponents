@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** This file is part of libPONA - The Portable Network Abstractions Library.
+** This file is part of libPONA - The Portable Network Abstraction Library.
 **
 ** Copyright (C) 2007-2009  Frank Mertens
 **
@@ -35,7 +35,6 @@ public:
 	
 private:
 	RULE true_;
-	RULE false_;
 };
 
 } // namespace pona
