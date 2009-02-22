@@ -36,14 +36,13 @@ class Stream: public Instance
 {
 public:
 	virtual ~Stream() {}
-
+	
 	virtual bool isOpen() const = 0;
 	virtual void close() = 0;
-
+	
 	virtual int readAvail(void* buf, int bufCapa) = 0;
 	virtual void write(const void* buf, int bufFill) = 0;
-
-	// void write(const char* buf);
+	
 	void read(void* buf, int bufCapa);
 };
 

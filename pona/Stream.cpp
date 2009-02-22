@@ -24,13 +24,6 @@
 namespace pona
 {
 
-/*void Stream::write(const char* buf)
-{
-	int len = 0;
-	while (buf[len] != 0) ++len;
-	write(buf, len);
-}*/
-
 void Stream::read(void* buf, int bufCapa)
 {
 	uint8_t* buf2 = (uint8_t*)buf;

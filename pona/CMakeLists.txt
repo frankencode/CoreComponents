@@ -44,12 +44,11 @@ SET(PONA_HEADER
 	Syntax.hpp
 	SyntaxDefinition.hpp
 	SyntaxFactory.hpp
-	FloatSyntax.hpp
 	RandomAccessMedia.hpp
 	CStringMedia.hpp
 	String.hpp
 	Tree.hpp
-	PrefixMap.hpp
+	PrefixTree.hpp
 	Token.hpp
 	TokenFactory.hpp
 	BinaryTree.hpp

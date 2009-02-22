@@ -37,8 +37,7 @@ public:
 		  sw_(0),
 		  len_(n)
 	{
-		if (len_ == -1)
-		{
+		if (len_ == -1) {
 			len_ = 0;
 			if (s)
 				while (s[len_] != 0) { ++len_; }
@@ -50,15 +49,14 @@ public:
 		  sw_(s),
 		  len_(n)
 	{
-		if (len_ == -1)
-		{
+		if (len_ == -1) {
 			len_ = 0;
 			if (s)
 				while (s[len_] != 0) { ++len_; }
 		}
 	}
 	
-	inline char get(int i) { return sr_[i]; }
+	inline char get(int i) const { return sr_[i]; }
 	inline void set(int i, char e) { sw_[i] = e; }
 	inline int length() const { return len_; }
 	

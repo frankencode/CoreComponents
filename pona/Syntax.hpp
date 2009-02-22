@@ -25,10 +25,9 @@
 #include "Atoms.hpp"
 #include "LineSink.hpp"
 #include "LinePrinter.hpp"
-#include "PrefixMap.hpp"
+#include "PrefixTree.hpp"
 #include "Token.hpp"
 #include "TokenFactory.hpp"
-#include "CStringMedia.hpp"
 
 #ifdef ECHO
 #undef ECHO
@@ -43,7 +42,7 @@ class Syntax: public Instance
 protected:
 	typedef typename Media::Element Char;
 	typedef Syntax Node;
-	typedef PrefixMap<Char,int> KeywordMap;
+	typedef PrefixTree<Char,int> KeywordMap;
 	
 	Syntax(Ref<Node> next = 0)
 		: next_(next)
@@ -61,16 +60,18 @@ protected:
 	class CharNode: public Node
 	{
 	public:
-		CharNode(Char ch, Ref<Node> next)
+		CharNode(Char ch, int invert, Ref<Node> next)
 			: Node(next),
-			  ch_(ch)
+			  ch_(ch),
+			  invert_(invert)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (i < media->length()) {
+			if (i < media->length())
+			{
 				Char ch = media->get(i++);
-				if (ch != ch_)
+				if ((ch != ch_) ^ invert_)
 					i = -1;
 			}
 			else
@@ -81,9 +82,10 @@ protected:
 			
 			return i;
 		}
-	
+		
 	private:
 		Char ch_;
+		int invert_;
 	};
 	
 	class AnyNode: public Node
@@ -96,7 +98,9 @@ protected:
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (i < media->length())
+			{
 				++i;
+			}
 			else
 				i = -1;
 			
@@ -139,7 +143,8 @@ protected:
 	class StringNode: public Node
 	{
 	public:
-		StringNode(const Char* s, int len, Ref<Node> next)
+		template<class Char2>
+		StringNode(const Char2* s, int len, Ref<Node> next)
 			: Node(next),
 			  s_(new Char[len+1]),
 			  len_(len)
@@ -149,7 +154,8 @@ protected:
 			s_[len] = 0;
 		}
 		
-		StringNode(const char* s, Ref<Node> next)
+		template<class Char2>
+		StringNode(const Char2* s, Ref<Node> next)
 			: Node(next)
 		{
 			len_ = 0;
@@ -207,7 +213,7 @@ protected:
 			if (i < media->length()) {
 				int h = 0;
 				int tokenType = -1;
-				if (map_->match(media, i, &h, &tokenType)) {
+				if (map_->lookup(media, i, &h, &tokenType)) {
 					parentToken->setType(tokenType);
 					i = h;
 				}
@@ -330,7 +336,7 @@ protected:
 					i = h;
 					break;
 				}
-				h = ++i;
+				++i;
 			}
 			if (!found)
 				i = -1;
@@ -432,6 +438,8 @@ public:
 	class Definition;
 	
 private:
+	class InlineNode;
+	
 	class RuleNode: public Node
 	{
 	public:
@@ -474,6 +482,8 @@ private:
 		inline int tokenType() const { return tokenType_; }
 		
 	protected:
+		friend class InlineNode;
+		
 		Definition* definition_;
 		const char* name_;
 		int tokenType_;
@@ -526,6 +536,41 @@ private:
 		Ref<RuleNode> rule_;
 	};
 	
+	class InlineNode: public Node
+	{
+	public:
+		InlineNode(Definition* definition, const char* ruleName, Ref<Node> next)
+			: Node(next),
+			  definition_(definition),
+			  ruleName_(ruleName)
+		{}
+		
+		inline const char* ruleName() const { return ruleName_; }
+		inline Ref<RuleNode> rule() const { return rule_; }
+		
+		inline void link() {
+			rule_ = definition_->ruleByName(ruleName_);
+		}
+		
+		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		{
+			if (!rule_)
+				link();
+			
+			i = rule_->entry_->matchNext(media, i, tokenFactory, parentToken, state);
+			
+			if ((i != -1) && (next_))
+				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			
+			return i;
+		}
+		
+	private:
+		Definition* definition_;
+		const char* ruleName_;
+		Ref<RuleNode> rule_;
+	};
+	
 public:
 	class State: public Instance
 	{
@@ -559,9 +604,6 @@ public:
 		inline bool* flag(int id) const { return flags_ + id; }
 		inline Char* character(int id) const { return chars_ + id; }
 		
-		inline Ref<RuleNode> continuationRule() const { return continuationRule_; }
-		inline void setContinuationRule(Ref<RuleNode> rule) { continuationRule_ = rule; }
-		
 		inline Ref<State> child() const { return child_; }
 		inline void setChild(Ref<State> state) { child_ = state; }
 		
@@ -572,7 +614,6 @@ public:
 				equal = equal && (flags_[i] == b.flags_[i]);
 			for (int i = 0; (i < numChars_) && equal; ++i)
 				equal = equal && (chars_[i] == b.chars_[i]);
-			equal = equal && (continuationRule_ == b.continuationRule_);
 			if (equal) {
 				if (child_) {
 					if (b.child_) {
@@ -606,7 +647,6 @@ public:
 				flags_[i] = b.flags_[i];
 			for (int i = 0; i < numChars_; ++i)
 				chars_[i] = b.chars_[i];
-			continuationRule_ = b.continuationRule_;
 			if (b.child_) {
 				child_ = new State;
 				child_->copy(*b.child_);
@@ -621,7 +661,6 @@ public:
 		Char* chars_;
 		int numFlags_;
 		int numChars_;
-		Ref<RuleNode, SetNull> continuationRule_;
 		Ref<State, Owner> child_;
 	};
 	
@@ -735,16 +774,17 @@ protected:
 	class VarCharNode: public Node
 	{
 	public:
-		VarCharNode(int charId, Ref<Node> next)
+		VarCharNode(int charId, int invert, Ref<Node> next)
 			: Node(next),
-			  charId_(charId)
+			  charId_(charId),
+			  invert_(invert)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (i < media->length()) {
 				Char ch = media->get(i++);
-				if (ch != *state->character(charId_))
+				if ((ch != *state->character(charId_)) ^ invert_)
 					i = -1;
 			}
 			else
@@ -758,6 +798,7 @@ protected:
 	
 	private:
 		int charId_;
+		int invert_;
 	};
 	
 	class InvokeNode: public Node
@@ -793,34 +834,6 @@ protected:
 		Ref<Definition, SetNull> definition_;
 	};
 	
-	class ContinueAtNode: public Node
-	{
-	public:
-		ContinueAtNode(Definition* definition, const char* ruleName, Ref<Node> next)
-			: Node(next),
-			  definition_(definition),
-			  ruleName_(ruleName)
-		{}
-		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
-		{
-			if (state)
-				if (!rule_)
-					rule_ = definition_->ruleByName(ruleName_);
-			state->setContinuationRule(rule_);
-			
-			if ((i != -1) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
-			return i;
-		}
-		
-	private:
-		Definition* definition_;
-		const char* ruleName_;
-		Ref<RuleNode, SetNull> rule_;
-	};
-	
 	class EchoNode: public Node
 	{
 	public:
@@ -853,7 +866,11 @@ public:
 			: RuleNode(this),
 			  language_(language),
 			  numRules_(0),
-			  ruleByName_(new RuleByName)
+			  numKeywords_(0),
+			  ruleByName_(new RuleByName),
+			  stateFlagByName_(new StateIdByName),
+			  stateCharByName_(new StateIdByName),
+			  tokenTypeByName_(new TokenTypeByName)
 		{}
 		
 		typedef Ref<Node, Owner> NODE;
@@ -861,12 +878,39 @@ public:
 		
 		//-- stateless definition interface
 		
-		inline static NODE CHAR(Char ch, NODE next = 0) { return new CharNode(ch, next); }
+		inline static NODE CHAR(Char ch, NODE next = 0) { return new CharNode(ch, 0, next); }
+		inline static NODE OTHER(Char ch, NODE next = 0) { return new CharNode(ch, 1, next); }
 		inline static NODE ANY(NODE next = 0) { return new AnyNode(next); }
 		inline static NODE RANGE(Char a, Char b, NODE next = 0) { return new RangeNode(a, b, next); }
 		inline static NODE STRING(Char* s, int len, NODE next = 0) { return new StringNode(s, len, next); }
 		inline static NODE STRING(const char* s, NODE next = 0) { return new StringNode(s, next); }
-		inline static NODE KEYWORD(Ref<KeywordMap> map, NODE next = 0) { return new KeywordNode(map, next); }
+		
+		NODE KEYWORD(const char* keys, NODE next = 0)
+		{
+			Ref<KeywordMap, Owner> map = new KeywordMap;
+			while (*keys) {
+				if ((*keys == ' ') || (*keys == '\t')) {
+					++keys;
+					continue;
+				}
+				int n = 0;
+				while (true) {
+					char ch = *(keys + n);
+					if ((ch == ' ') || (ch == '\t') || (ch == '\0')) break;
+					++n;
+				}
+				map->insert(keys, n, numKeywords_);
+				tokenTypeByName_->insert(keys, n, numKeywords_);
+				++numKeywords_;
+				keys += n;
+			}
+			return new KeywordNode(map, next);
+		}
+		inline NODE TOKEN(const char* name, NODE next = 0) {
+			int tokenType = -1;
+			tokenTypeByName_->lookup(name, &tokenType);
+			return CHAR(tokenType);
+		}
 		
 		inline static NODE REPEAT(int minRepeat, int maxRepeat, NODE entry, NODE next = 0) { return new RepeatNode(minRepeat, maxRepeat, entry, next); }
 		inline static NODE EOI(NODE next = 0) { return new EoiNode(next); }
@@ -879,51 +923,77 @@ public:
 		
 		inline static NODE LENGTH(int minLength, int maxLength, NODE entry, NODE next = 0) { return new LengthNode(minLength, maxLength, entry, next); }
 		
-		// syntax sugar
-		inline static NODE EOL(NODE next = 0) { return OR(CHAR('\n'), EOI()); }
-		inline static NODE NONEMPTY(NODE entry, NODE next = 0) { return LENGTH(1, intMax, entry, next); }
+		#include "SyntaxSugar.hpp"
 		
 		inline RULE DEFINE(const char* name, NODE entry) {
 			Ref<RuleNode, Owner> rule = new RuleNode(this, name, numRules_++, entry);
-			ruleByName_->define(name, rule);
+			ruleByName_->insert(name, rule);
 			return rule;
 		}
 		inline RULE DEFINE_VOID(const char* name, NODE entry) {
 			Ref<RuleNode, Owner> rule = new RuleNode(this, name, numRules_++, entry, true);
-			ruleByName_->define(name, rule);
+			ruleByName_->insert(name, rule);
 			return rule;
 		}
 		inline void DEFINE_SELF(const char* name, Ref<Node> entry) {
 			RuleNode::name_ = name;
 			RuleNode::tokenType_ = numRules_++;
 			RuleNode::entry_ = entry;
-			ruleByName_->define(name, this);
+			ruleByName_->insert(name, this);
 		}
 		
 		inline NODE REF(const char* ruleName, NODE next = 0) { return new RefNode(this, ruleName, next); }
+		inline NODE INLINE(const char* ruleName, NODE next = 0) { return new InlineNode(this, ruleName, next); }
 		
 		//-- stateful definition interface
 		
-		inline int STATE_FLAG(const char* name, bool defaultValue = false) {
+		inline void STATE_FLAG(const char* name, bool defaultValue = false) {
 			stateFlagHead_ = new StateFlag(stateFlagHead_, name, defaultValue);
-			return stateFlagHead_->count_ - 1;
+			stateFlagByName_->insert(name, stateFlagHead_->count_ - 1);
 		}
-		inline int STATE_CHAR(const char* name, Char defaultValue = 0) {
+		inline void STATE_CHAR(const char* name, Char defaultValue = 0) {
 			stateCharHead_ = new StateChar(stateCharHead_, name, defaultValue);
-			return stateCharHead_->count_ - 1;
+			stateCharByName_->insert(name, stateCharHead_->count_ - 1);
 		}
-		inline static NODE SET(int flagId, bool value, NODE next = 0) { return new SetNode(flagId, value, next); }
-		inline static NODE IF(int flagId, NODE trueBranch, NODE falseBranch = 0, NODE next = 0) { return new IfNode(flagId, trueBranch, falseBranch, next); }
-		inline static NODE GETCHAR(int charId, NODE next = 0) { return new GetCharNode(charId, next); }
-		inline static NODE SETCHAR(int charId, Char value, NODE next = 0) { return new SetCharNode(charId, value, next); }
-		inline static NODE VARCHAR(int charId, NODE next = 0) { return new VarCharNode(charId, next); }
-		inline static NODE INVOKE(Definition* definition, NODE next = 0) { return new InvokeNode(definition, next); }
-		
-		inline static NODE CONTINUE_AT(Definition* definition, const char* ruleName, NODE next = 0) { return new ContinueAtNode(definition, ruleName, next); }
+		inline NODE SET(const char* name, bool value, NODE next = 0) {
+			int flagId = -1;
+			stateFlagByName_->lookup(name, &flagId);
+			return new SetNode(flagId, value, next);
+		}
+		inline NODE IF(const char* name, NODE trueBranch, NODE falseBranch = 0, NODE next = 0) {
+			int flagId = -1;
+			stateFlagByName_->lookup(name, &flagId);
+			return new IfNode(flagId, trueBranch, falseBranch, next);
+		}
+		inline NODE GETCHAR(const char* name, NODE next = 0) {
+			int charId = -1;
+			stateCharByName_->lookup(name, &charId);
+			return new GetCharNode(charId, next);
+		}
+		inline NODE SETCHAR(const char* name, Char value, NODE next = 0) {
+			int charId = -1;
+			stateCharByName_->lookup(name, &charId);
+			return new SetCharNode(charId, value, next);
+		}
+		inline NODE VARCHAR(const char* name, NODE next = 0) {
+			int charId = -1;
+			stateCharByName_->lookup(name, &charId);
+			return new VarCharNode(charId, 0, next);
+		}
+		inline NODE VAROTHER(const char* name, NODE next = 0) {
+			int charId = -1;
+			stateCharByName_->lookup(name, &charId);
+			return new VarCharNode(charId, 1, next);
+		}
+		inline static NODE INVOKE(Definition* definition, NODE next = 0) {
+			return new InvokeNode(definition, next);
+		}
 		
 		//-- debugging interface
 		
-		inline static NODE ECHO(Ref<LineSink> output, const char* message, NODE next = 0) { return new EchoNode(output, message, next); }
+		inline static NODE ECHO(Ref<LineSink> output, const char* message, NODE next = 0) {
+			return new EchoNode(output, message, next);
+		}
 		
 		//-- execution interface
 		
@@ -973,32 +1043,10 @@ public:
 			if (!state)
 				state = newState();
 			
-			int h = i0;
-			
-			Ref<Token, Owner> continuationRoot;
-			if (state) {
-				if (state->continuationRule()) {
-					TokenFactory tokenFactory(buf, bufSize);
-					h = state->continuationRule()->matchNext(media, h, &tokenFactory, 0, state);
-					if (tokenFactory.rootToken()) {
-						continuationRoot = tokenFactory.produce();
-						continuationRoot->appendChild(tokenFactory.rootToken());
-					}
-				}
-			}
-			
 			TokenFactory tokenFactory(buf, bufSize);
-			h = matchNext(media, h, &tokenFactory, 0, state);
-			Ref<Token, Owner> root = tokenFactory.rootToken();
-			if (continuationRoot) {
-				if (root)
-					root->insertChild(continuationRoot->firstChild());
-				else
-					root = continuationRoot;
-			}
-			
+			int h = matchNext(media, i0, &tokenFactory, 0, state);
 			if (rootToken)
-				*rootToken = root;
+				*rootToken = tokenFactory.rootToken();
 			
 			if ((i1 != 0) && (h != -1))
 				*i1 = h;
@@ -1013,12 +1061,25 @@ public:
 			return rootToken;
 		}
 		
-		Ref<RuleNode, Owner> ruleByName(const char* name)
+		Ref<RuleNode, Owner> ruleByName(const char* name) 
 		{
-			CStringMedia media(name);
 			Ref<RuleNode, Owner> node;
-			ruleByName_->match(&media, 0, 0, &node);
+			ruleByName_->lookup(name, &node);
 			return node;
+		}
+		
+		int stateIdByName(const char* name)
+		{
+			int flagId = -1;
+			stateFlagByName_->lookup(name, &flagId);
+			return flagId;
+		}
+		
+		int stateCharByName(const char* name)
+		{
+			int charId = -1;
+			stateCharByName_->lookup(name, &charId);
+			return charId;
 		}
 		
 	private:
@@ -1056,9 +1117,17 @@ public:
 		Ref<StateChar, Owner> stateCharHead_;
 		
 		int numRules_;
+		int numKeywords_;
 		
-		typedef PrefixMap<char, Ref<RuleNode, Owner> > RuleByName;
+		typedef PrefixTree<char, Ref<RuleNode, Owner> > RuleByName;
 		Ref<RuleByName, Owner> ruleByName_;
+		
+		typedef PrefixTree<char, int> StateIdByName;
+		Ref<StateIdByName, Owner> stateFlagByName_;
+		Ref<StateIdByName, Owner> stateCharByName_;
+		
+		typedef PrefixTree<char, int> TokenTypeByName;
+		Ref<TokenTypeByName, Owner> tokenTypeByName_;
 	};
 };
 

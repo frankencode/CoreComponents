@@ -52,14 +52,14 @@ String ProcessStatus::workingDirectory()
   */
 String ProcessStatus::userName()
 {
-	return ::getpwuid(geteuid())->pw_name;
+	return ::getpwuid(::geteuid())->pw_name;
 }
 
 /** return the effective group name of the calling process
   */
 String ProcessStatus::groupName()
 {
-	return ::getgrgid(getegid())->gr_name;
+	return ::getgrgid(::getegid())->gr_name;
 }
 
 /** returns true, if the calling process is running with super user permissions

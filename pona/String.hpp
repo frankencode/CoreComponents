@@ -31,74 +31,58 @@ namespace pona
 class String;
 
 typedef List<String> StringList;
-	
+
 class String
 {
 public:
 	typedef Char Element;
 	typedef List<Char> Media;
 	
-	String() {}
+	String();
 	String(int n);
 	String(int n, Char ch);
-	String(const char* s);
-	String(const char* s, int n);
-	String(const wchar_t* s);
-	String(Ref<Media> list): list_(list) {}
+	String(const char* utf8, int numBytes = -1, int numChars = -1);
+	String(Ref<Media> list);
 	
-	inline int length() const { return (list_) ? list_->fill() : 0; }
+	inline Ref<Media> media() const { return list_; }
+	inline int length() const { return list_->fill(); }
 	
+	inline Char get(int i) const { return list_->get(i); }
 	inline void set(int i, Char ch) { list_->set(i, ch); }
-	inline Char get(int i) { return list_->get(i); }
-	inline Char saveGet(int i) const { return (list_) ? ((i < list_->fill()) ? list_->get(i) : Char(0)) : Char(0); }
+	inline Char saveGet(int i) const { return (i < list_->fill()) ? list_->get(i) : Char(0); }
 	
-	bool operator<(const String& b) const;
-	bool operator<=(const String& b) const;
-	bool operator>(const String& b) const;
-	bool operator>=(const String& b) const;
-	bool operator==(const String& b) const;
-	bool operator!=(const String& b) const;
-	
-	/*bool operator==(const char* b) const;
-	bool operator!=(const char* b) const;*/
+	inline bool operator<(const String& b) const { return *list_ < *b.list_; }
+	inline bool operator==(const String& b) const { return *list_ == *b.list_; }
+	inline bool operator>(const String& b) const { return *list_ > *b.list_; }
+	inline bool operator!=(const String& b) const { return *list_ != *b.list_; }
+	inline bool operator<=(const String& b) const { return *list_ <= *b.list_; }
+	inline bool operator>=(const String& b) const { return *list_ >= *b.list_; }
 	
 	int find(String s, int i = 0);
 	
 	inline String range(int i, int n) { return String(list_->range(i, n)); }
 	inline String copy(int i, int n) { return String(list_->copy(i, n)); }
 	inline String copy() { return copy(0, length()); }
-	inline void del(int i, int n = 1) { list_->pop(i, n); }
-	void paste(int i, String s);
-	void paste(int i, Char ch);
+	inline void remove(int i, int n = 1) { list_->pop(i, n); }
+	void insert(int i, String s);
+	inline void insert(int i, Char ch) { list_->push(i, 1, &ch); }
 	
-	inline String append(String b) { paste(length(), b); return *this; }
-	inline String append(Char ch) { paste(length(), ch); return *this; }
+	inline String append(String b) { insert(length(), b); return *this; }
+	inline String append(Char ch) { insert(length(), ch); return *this; }
 	
 	inline String operator+(String b) const { return String().append(*this).append(b); }
 	inline String operator+=(String b) { return append(b); }
 	inline String operator+=(Char ch) { return append(ch); }
 	
-	inline Ref<Media> list() const { return list_; }
-
 	int toInt(bool* ok = 0);
 	
 	Ref<StringList, Owner> split(String sep);
 	
-	//----------------------------------------------------------------
-	// conversion to zero-terminated C strings
-	//----------------------------------------------------------------
-
 	char* strdup();
-	wchar_t* wcsdup();
 	
 private:
-	void init(const char* s);
-	int eqc(const String& b) const;
-
-	mutable Ref<Media, Owner> list_;
+	Ref<Media, Owner> list_;
 };
-
-inline char* exceptionMessageToUtf8(String s) { return s.strdup(); }
 
 } // namespace pona
 

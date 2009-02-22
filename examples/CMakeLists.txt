@@ -1,4 +1,4 @@
 INCLUDE_DIRECTORIES(..)
 LINK_LIBRARIES(pona)
 
-ADD_EXECUTABLE(primCount primCount.cpp)
+ADD_EXECUTABLE(primeNumbers primeNumbers.cpp)

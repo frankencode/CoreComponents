@@ -30,37 +30,27 @@ namespace pona
 {
 
 template<class Char, class Value>
-class PrefixMap: public Tree
+class PrefixTree: public Tree
 {
 public:
-	typedef PrefixMap Node;
+	typedef PrefixTree Node;
 
-	PrefixMap()
+	PrefixTree()
 		: ch_(Char()),
 		  defined_(false),
 		  value_(Value())
 	{}
 	
 	template<class Char2>
-	inline void define(const Char2* key, Value value = Value())
+	inline void insert(const Char2* key, Value value = Value())
 	{
-		int len = 0;
-		while (key[len] != 0) ++len;
-		Char* s_ = new Char[len];
-		for (int i = 0; i < len;  ++i)
-			s_[i] = key[i];
-		define(s_, len, value);
-		delete[] s_;
+		int keyLen = 0;
+		while (key[keyLen] != 0) ++keyLen;
+		insert(key, keyLen, value);
 	}
 	
-	inline void define(const Char* key, Value value = Value())
-	{
-		int len = 0;
-		while (key[len] != 0) ++len;
-		define(key, len, value);
-	}
-	
-	void define(const Char* key, int keyLen, Value value)
+	template<class Char2>
+	void insert(const Char2* key, int keyLen, Value value)
 	{
 		Ref<Node> node = this;
 		
@@ -85,6 +75,73 @@ public:
 		}
 	}
 	
+	template<class Char2>
+	inline bool lookup(const Char2* key, Value* value = 0)
+	{
+		int keyLen = 0;
+		while (key[keyLen] != 0) ++keyLen;
+		return lookup(key, keyLen, value);
+	}
+	
+	template<class Char2>
+	bool lookup(const Char2* key, int keyLen, Value* value = 0)
+	{
+		bool found = false;
+		Ref<Node> node = this;
+		while ((node) && keyLen > 0)
+		{
+			Ref<Node> parent = node;
+			node = node->step(*key);
+			if (node)
+				if (node->defined_) {
+					if (value) *value = node->value_;
+					found = true;
+				}
+			++key;
+			--keyLen;
+		}
+		return found;
+	}
+	
+	template<class Media>
+	bool lookup(Media* media, int i0, int* i1 = 0, Value* value = 0)
+	{
+		bool found = false;
+		int i = i0, n = media->length();
+		Ref<Node> node = this;
+		while ((node) && (i < n))
+		{
+			Ref<Node> parent = node;
+			node = node->step(media->get(i++));
+			if (node)
+				if (node->defined_)
+				{
+					if (i1) *i1 = i;
+					if (value) *value = node->value_;
+					found = true;
+				}
+		}
+		return found;
+	}
+	
+	void print(Ref<LineSink> output) const
+	{
+		Ref<Node> node = firstLeaf();
+		while (node)
+		{
+			Ref<Node> node2 = node;
+			
+			while (node2->parent()) {
+				if (node2->defined_)
+					node2->printNode(output);
+				node2 = node2->parent();
+			}
+			
+			node = node->nextLeaf();
+		}
+	}
+	
+protected:
 	inline Ref<Node> step(Char ch)
 	{
 		bool found = false;
@@ -97,48 +154,6 @@ public:
 		}
 		
 		return node;
-	}
-	
-	inline Char ch() const { return ch_; }
-	inline bool defined() const { return defined_; }
-	inline Value value() const { return value_; }
-	
-	template<class Media>
-	bool match(Media* media, int i0, int* i1 = 0, Value* value = 0)
-	{
-		bool matched = false;
-		int i = i0, n = media->length();
-		Ref<Node> node = this;
-		while ((node) && (i < n))
-		{
-			Ref<Node> parent = node;
-			node = node->step(media->get(i++));
-			if (node)
-				if (node->defined())
-				{
-					if (i1) *i1 = i;
-					if (value) *value = node->value();
-					matched = true;
-				}
-		}
-		return matched;
-	}
-	
-	void print(Ref<LineSink> output) const
-	{
-		Ref<Node> node = firstLeaf();
-		while (node)
-		{
-			Ref<Node> node2 = node;
-			
-			while (node2->parent()) {
-				if (node2->defined())
-					node2->printNode(output);
-				node2 = node2->parent();
-			}
-			
-			node = node->nextLeaf();
-		}
 	}
 	
 	void printNode(Ref<LineSink> output) const
@@ -155,7 +170,7 @@ public:
 	}
 	
 private:
-	PrefixMap(Char ch)
+	PrefixTree(Char ch)
 		: ch_(ch),
 		  defined_(false)
 	{}

@@ -123,7 +123,7 @@ void Process::start()
 		
 		if (workingDirectory_ != String()) {
 			if (execPath_.find("/") == -1)
-				execPath_ = ProcessStatus::workingDirectory() + "/" + execPath_;
+				execPath_ = String().append(ProcessStatus::workingDirectory()).append("/").append(execPath_);
 			if (::chdir(workingDirectory_.strdup()) == -1)
 				PONA_POSIX_EXCEPTION;
 		}
@@ -189,7 +189,7 @@ void Process::start()
 				envp = new char*[envc + 1];
 
 				for (int i = 0, n = envList->length(); i < n; ++i)
-					envp[i] = (envList->get(i).key() + "=" + envList->get(i).value()).strdup();
+					envp[i] = String().append(envList->get(i).key()).append("=").append(envList->get(i).value()).strdup();
 				
 				envp[envc] = 0;
 			}

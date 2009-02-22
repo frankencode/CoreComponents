@@ -8,24 +8,24 @@ int main()
 	{
 		String s("Hello!");
 		output()->write(format("(#s, s) = (%%, \"%%\")\n") % s.length() % s);
-		s.paste(5, ", world");
+		s.insert(5, ", world");
 		output()->write(format("%%\n") % s);
 		if (s.copy(0, 5) == "Hello")
 		{
 			int pos = s.find("world");
 			if (pos != -1)
 			{
-				s.del(pos, String("world").length());
-				s.paste(pos, "echo");
+				s.remove(pos, String("world").length());
+				s.insert(pos, "echo");
 				output()->write(format("%%\n") % s);
 			}
 		}
 	}
 	
 	{
-		String f = String("a") + String("b");
-		f += String("=");
-		f += Char('c');
+		String f = String("a").append(String("b"));
+		f.append(String("="));
+		f.append(Char('c'));
 		output()->write(format("s=\"%%\"\n") % f);
 	}
 	

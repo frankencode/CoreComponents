@@ -41,7 +41,7 @@ LinePrinter::LinePrinter(String format)
 inline void LinePrinter::putChar(char ch)
 {
 	if (linePos_ == line_.length())
-		line_.list()->push(linePos_, lineChunkSize);
+		line_.media()->push(linePos_, lineChunkSize);
 	line_.set(linePos_, ch);
 	++linePos_;
 }

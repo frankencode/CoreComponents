@@ -34,7 +34,7 @@ public:
 	typedef T Element;
 	
 	virtual ~RandomAccessMedia() {}
-	virtual T get(int i) = 0;
+	virtual T get(int i) const = 0;
 	virtual void set(int i, T e) = 0;
 	virtual int length() const = 0;
 };

@@ -3,6 +3,9 @@
 namespace pona
 {
 
+Utf8Sink::Utf8Sink()
+{}
+
 Utf8Sink::Utf8Sink(Ref<Stream> stream, int bufCapa)
 	: ByteSink(stream, bufCapa)
 {}
@@ -11,7 +14,7 @@ Utf8Sink::Utf8Sink(uint8_t* buf, int bufCapa)
 	: ByteSink(buf, bufCapa)
 {}
 
-inline void Utf8Sink::writeChar(uint32_t ch, bool* valid)
+void Utf8Sink::writeChar(uint32_t ch, bool* valid)
 {
 	// 0xC = (1100)2
 	// 0x8 = (1000)2

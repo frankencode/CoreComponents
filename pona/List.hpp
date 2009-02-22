@@ -83,7 +83,7 @@ public:
 	
 	void clear();
 	
-	T get(int i);
+	T get(int i) const;
 	void set(int i, T e);
 	
 	inline Ref<List, Owner> range(int i, int n) { return new List(this, i, n); }
@@ -95,6 +95,13 @@ public:
 	void unique(Ref< List<int> > frq = 0);
 	void statistic(Ref< List<T> > members, Ref< List<int> > frq);
 	*/
+	
+	bool operator<(const List& b) const;
+	bool operator==(const List& b) const;
+	inline bool operator>(const List& b) const { return b < *this; }
+	inline bool operator!=(const List& b) const { return !(*this == b); }
+	inline bool operator<=(const List& b) const { return (*this < b) || (*this == b); }
+	inline bool operator>=(const List& b) const { return (b < *this) || (*this == b); }
 	
 private:
 	List(Ref<List> parent, int index0, int length);
@@ -225,7 +232,7 @@ private:
 		inline void set(T e) { *(node_->v() + k_) = e; }
 	};
 	
-	inline Pos translate(int i)
+	inline Pos translate(int i) const
 	{
 		Pos posFront = Pos(front_, 0, 0);
 		Pos posBack = Pos(back_, length_-1, back_->n_-1);
@@ -255,7 +262,7 @@ private:
 	
 	Node* front_;
 	Node* back_;
-	Pos posCached_;
+	mutable Pos posCached_;
 	
 	Ref<Monitor, Owner> monitor_;
 };
@@ -557,7 +564,7 @@ void List<T>::clear()
 }
 
 template<class T>
-inline T List<T>::get(int i)
+inline T List<T>::get(int i) const
 {
 	if (i < 0) i += length_;
 	if (monitor_) monitor_->beforeReadonlyAccess(i, 1);
@@ -631,6 +638,35 @@ Ref<List<T>, Owner> List<T>::copy(int i, int n)
 	if (monitor_) monitor_->afterReadonlyAccess(i, n);
 	
 	return b;
+}
+
+template<class T>
+bool List<T>::operator<(const List& b) const
+{
+	int n = (length_ < b.length_) ? length_ : b.length_;
+	int i = 0;
+	while (i < n) {
+		T c1 = get(i);
+		T c2 = b.get(i);
+		if ((c1 < c2) || (c2 < c1))
+			return c1 < c2;
+		++i;
+	}
+	return length_ < b.length_;
+}
+
+template<class T>
+bool List<T>::operator==(const List& b) const
+{
+	bool equal = (length_ == b.length_);
+	int i = 0;
+	while (equal && (i < length_)) {
+		T c1 = get(i);
+		T c2 = b.get(i);
+		equal = !((c1 < c2) || (c2 < c1));
+		++i;
+	}
+	return equal;
 }
 
 } // namespace pona

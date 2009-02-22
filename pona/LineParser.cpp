@@ -40,7 +40,7 @@ LineParser::LineParser(String line, int options)
 		syntaxError_ = true; \
 		if (options_ & strict) \
 		{ \
-			reason_ = format(String(reason) + " at position %% in line \"%%\".") % pos_ % line_; \
+			reason_ = format(String(reason) + String(" at position %% in line \"%%\".")) % pos_ % line_; \
 			PONA_THROW(FormattingException, reason_.strdup() /* HACK, leaks memory */ ); \
 		} \
 	} \

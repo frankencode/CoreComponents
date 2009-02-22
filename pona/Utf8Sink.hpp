@@ -9,6 +9,7 @@ namespace pona
 class Utf8Sink: public ByteSink
 {
 public:
+	Utf8Sink();
 	Utf8Sink(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA);
 	Utf8Sink(uint8_t* buf, int bufCapa);
 	

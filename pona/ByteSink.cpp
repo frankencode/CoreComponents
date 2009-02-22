@@ -24,6 +24,14 @@
 namespace pona
 {
 
+ByteSink::ByteSink()
+	: bufCapa_(-1),
+	  endian_(PONA_DEFAULT_ENDIAN),
+	  buf_(0),
+	  i_(0),
+	  nw_(0)
+{}
+
 ByteSink::ByteSink(Ref<Stream> stream, int bufCapacity, int endian)
 	: stream_(stream),
 	  endian_(endian),
