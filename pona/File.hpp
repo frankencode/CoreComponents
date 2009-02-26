@@ -78,7 +78,7 @@ public:
 	bool access(int flags) const;
 	bool exists() const;
 	void create(int mask = 0644);
-	void remove();
+	void unlink();
 
 	void open(int flags = readable|writable);
 

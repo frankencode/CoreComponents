@@ -105,7 +105,7 @@ void File::create(int mask)
 	::close(fd);
 }
 
-void File::remove()
+void File::unlink()
 {
 	if (::unlink(pathUtf8_) == -1)
 		PONA_THROW(StreamSemanticException, posixError());

@@ -25,8 +25,8 @@ namespace pona
 {
 
 ByteSink::ByteSink()
-	: bufCapa_(-1),
-	  endian_(PONA_DEFAULT_ENDIAN),
+	: endian_(PONA_DEFAULT_ENDIAN),
+	  bufCapa_(-1),
 	  buf_(0),
 	  i_(0),
 	  nw_(0)

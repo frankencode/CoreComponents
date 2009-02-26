@@ -187,7 +187,7 @@ void File::create(int mask)
 		PONA_THROW(StreamSemanticException, windowsError());
 }
 
-void File::remove()
+void File::unlink()
 {
 	if (DeleteFile(pathWc_) == 0)
 		PONA_THROW(StreamSemanticException, windowsError());

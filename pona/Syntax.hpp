@@ -584,8 +584,8 @@ public:
 		
 		State(Ref<Definition> definition, int numFlags, int numChars = 0, Ref<State> parent = 0)
 			: definition_(definition),
-			  flags_(new bool[numFlags]),
-			  chars_(new Char[numChars]),
+			  flags_((numFlags > 0) ? new bool[numFlags] : 0),
+			  chars_((numChars > 0) ? new Char[numChars] : 0),
 			  numFlags_(numFlags),
 			  numChars_(numChars)
 		{
@@ -595,8 +595,8 @@ public:
 		
 		~State()
 		{
-			delete[] flags_;
-			delete[] chars_;
+			if (flags_) { delete[] flags_; flags_ = 0; }
+			if (chars_) { delete[] chars_; chars_ = 0; }
 		}
 		
 		inline Ref<Definition> definition() const { return definition_; }
@@ -635,13 +635,13 @@ public:
 			definition_ = b.definition_;
 			if (numFlags_ != b.numFlags_) {
 				numFlags_ = b.numFlags_;
-				if (flags_) delete[] flags_;
-				flags_ = new bool[numFlags_];
+				if (flags_) { delete[] flags_; flags_ = 0; }
+				if (numFlags_ > 0) flags_ = new bool[numFlags_];
 			}
 			if (numChars_ != b.numChars_) {
 				numChars_ = b.numChars_;
-				if (chars_) delete[] chars_;
-				chars_ = new Char[numChars_];
+				if (chars_) { delete[] chars_; chars_ = 0; }
+				if (numChars_ > 0) chars_ = new Char[numChars_];
 			}
 			for (int i = 0; i < numFlags_; ++i)
 				flags_[i] = b.flags_[i];
@@ -1002,21 +1002,16 @@ public:
 		
 		State* newState(State* parent = 0)
 		{
-			State* state = 0;
-			
-			if ((stateFlagHead_) || (stateCharHead_))
-			{
-				state = new State(this, stateFlagHead_ ? stateFlagHead_->count_ : 0, stateCharHead_ ? stateCharHead_->count_ : 0, parent);
-				Ref<StateFlag> stateFlag = stateFlagHead_;
-				while (stateFlag) {
-					*state->flag(stateFlag->count_ - 1) = stateFlag->defaultValue_;
-					stateFlag = stateFlag->next_;
-				}
-				Ref<StateChar> stateChar = stateCharHead_;
-				while (stateChar)  {
-					*state->character(stateChar->count_ - 1) = stateChar->defaultValue_;
-					stateChar = stateChar->next_;
-				}
+			State* state = new State(this, stateFlagHead_ ? stateFlagHead_->count_ : 0, stateCharHead_ ? stateCharHead_->count_ : 0, parent);
+			Ref<StateFlag> stateFlag = stateFlagHead_;
+			while (stateFlag) {
+				*state->flag(stateFlag->count_ - 1) = stateFlag->defaultValue_;
+				stateFlag = stateFlag->next_;
+			}
+			Ref<StateChar> stateChar = stateCharHead_;
+			while (stateChar)  {
+				*state->character(stateChar->count_ - 1) = stateChar->defaultValue_;
+				stateChar = stateChar->next_;
 			}
 			
 			return state;
@@ -1040,8 +1035,10 @@ public:
 		
 		bool match(Media* media, int i0 = 0, int* i1 = 0, Ref<Token, Owner>* rootToken = 0, State* state = 0, uint8_t* buf = 0, int bufSize = 0)
 		{
-			if (!state)
-				state = newState();
+			if (!state) {
+				if ((stateFlagHead_) || (stateCharHead_))
+					state = newState();
+			}
 			
 			TokenFactory tokenFactory(buf, bufSize);
 			int h = matchNext(media, i0, &tokenFactory, 0, state);
