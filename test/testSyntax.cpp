@@ -12,9 +12,10 @@ public:
 		factor_ = DEFINE("factor", OR(REF("number"), CHAR('(', REF("sum", CHAR(')')))));
 		mulOp_ = DEFINE("mulOp", OR(CHAR('*'), CHAR('/')));
 		addOp_ = DEFINE("addOp", OR(CHAR('+'), CHAR('-')));
-		product_ = DEFINE("product", REF("factor", REPEAT(0, intMax, REF("mulOp", REF("factor")))));
-		sum_ = DEFINE("sum", REF("product", REPEAT(0, intMax, REF("addOp", REF("product")))));
+		product_ = DEFINE("product", REF("factor", REPEAT(REF("mulOp", REF("factor")))));
+		sum_ = DEFINE("sum", REF("product", REPEAT(REF("addOp", REF("product")))));
 		DEFINE_SELF("expression", REF("sum", EOI()));
+		LINK();
 	}
 	
 	double eval(String text)
@@ -37,11 +38,11 @@ private:
 	{
 		double value = nan;
 		
-		if (token->type() == this->tokenType())
+		if (token->rule() == this->id())
 		{
 			value = eval(token->firstChild());
 		}
-		else if (token->type() == sum_->tokenType())
+		else if (token->rule() == sum_->id())
 		{
 			value = 0.;
 			char op = '+';
@@ -64,7 +65,7 @@ private:
 				++i;
 			}
 		}
-		else if (token->type() == product_->tokenType())
+		else if (token->rule() == product_->id())
 		{
 			value = 1.;
 			char op = '*';
@@ -87,11 +88,11 @@ private:
 				++i;
 			}
 		}
-		else if (token->type() == factor_->tokenType())
+		else if (token->rule() == factor_->id())
 		{
 			value = eval(token->firstChild());
 		}
-		else if (token->type() == number_->tokenType())
+		else if (token->rule() == number_->id())
 		{
 			int sign = (text_.get(token->index()) == '-') ? -1 : 1;
 			value = 0;
@@ -131,11 +132,6 @@ int main()
 	dt = getTime() - dt;
 	output()->write(format("took %% us\n") % dt.microSeconds());
 	output()->write(format("evaluates to %%\n") % result);
-	
-#ifdef PONA_WINDOWS
-	output()->write("\nPress <RETURN> to continue...\n");
-	input()->readLine();
-#endif
 	
 	return 0;
 }

@@ -32,7 +32,7 @@ namespace pona
 /** \brief Synchronising concurrent media access
   *
   * A bouncer synchronizes concurrent access of different threads to a media.
-  * It prevents media under- und overflows (0 <= media->fill() <= media->size())
+  * It prevents media under- and overflows (0 <= media->fill() <= media->size())
   * and overlapping access operations (fully exclusive).
   *
   * If the media is full (media->fill() == media->size()) threads which reduce

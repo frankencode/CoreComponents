@@ -36,9 +36,9 @@ void Thread::start(int exitType)
 {
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
-	if (exitType == joinable)
+	if (exitType == Joinable)
 		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-	else if (exitType == detached)
+	else if (exitType == Detached)
 		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 	int ret = pthread_create(&tid_, &attr, &runWrapper, (void*)this);
 	if (ret != 0)

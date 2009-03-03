@@ -36,10 +36,6 @@ int main(int argc, char** argv)
 		output()->writeLine(format("%3.3%") % (-sign * double(random.next()) / random.next()));
 	}
 	
-#ifdef PONA_WINDOWS
-	output()->write("\nPress <RETURN> to continue...\n");
-	input()->readLine();
-#endif
 	return 0;
 }
 

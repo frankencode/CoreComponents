@@ -86,7 +86,7 @@ inline void BitSink::writeUInt8(uint8_t x)
 
 inline void BitSink::writeUInt16(uint16_t x)
 {
-	if (endian_ == littleEndian)
+	if (endian_ == LittleEndian)
 	{
 		writeUInt8((uint8_t)x);
 		writeUInt8((uint8_t)(x >> 8));
@@ -100,7 +100,7 @@ inline void BitSink::writeUInt16(uint16_t x)
 
 inline void BitSink::writeUInt32(uint32_t x)
 {
-	if (endian_ == littleEndian)
+	if (endian_ == LittleEndian)
 	{
 		writeUInt8((uint8_t)x);
 		writeUInt8((uint8_t)(x >> 8));
@@ -118,7 +118,7 @@ inline void BitSink::writeUInt32(uint32_t x)
 
 inline void BitSink::writeUInt64(uint64_t x)
 {
-	if (endian_ == littleEndian)
+	if (endian_ == LittleEndian)
 	{
 		for (int i = 0; i <= 7*8; i += 8)
 			writeUInt8((uint8_t)(x >> i));

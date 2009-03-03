@@ -45,20 +45,20 @@ File::File(int stdStream)
 	DWORD stdHandle = STD_OUTPUT_HANDLE;
 	openFlags_ = 0;
 	
-	if (stdStream == stdInput)
+	if (stdStream == StandardInput)
 	{
 		stdHandle = STD_INPUT_HANDLE;
-		openFlags_ = readable;
+		openFlags_ = Read;
 	}
-	else if (stdStream == stdOutput)
+	else if (stdStream == StandardOutput)
 	{
 		stdHandle = STD_OUTPUT_HANDLE;
-		openFlags_ = writable;
+		openFlags_ = Write;
 	}
-	else if (stdStream == stdError)
+	else if (stdStream == StandardError)
 	{
 		stdHandle = STD_ERROR_HANDLE;
-		openFlags_ = writable;
+		openFlags_ = Write;
 	}
 	else
 		PONA_THROW(StreamSemanticException, "Invalid argument");
@@ -118,9 +118,9 @@ bool File::access(int flags) const
 		DWORD ret = GetEffectiveRightsFromAcl(dacl, &trustee, &mask);
 		if (ret == ERROR_SUCCESS)
 		{
-			rights |= readable * ((mask & FILE_READ_DATA) != 0);
-			rights |= writable * ((mask & FILE_WRITE_DATA) != 0);
-			rights |= executable * ((mask & FILE_EXECUTE) != 0);
+			rights |= Reade * ((mask & FILE_READ_DATA) != 0);
+			rights |= Write * ((mask & FILE_WRITE_DATA) != 0);
+			rights |= Execute * ((mask & FILE_EXECUTE) != 0);
 		}
 	}
 
@@ -197,10 +197,10 @@ void File::open(int flags)
 {
 	DWORD access = 0;
 	
-	if (flags & readable)
+	if (flags & Read)
 		access |= GENERIC_READ;
 
-	if (flags & writable)
+	if (flags & Write)
 		access |= GENERIC_WRITE;
 
 	handle_ = CreateFile(
@@ -222,11 +222,11 @@ void File::open(int flags)
 File::Offset File::seek(Offset distance, int method)
 {
 	DWORD method2 = FILE_BEGIN;
-	if (method == seekBegin)
+	if (method == SeekBegin)
 		method2 = FILE_BEGIN;
-	else if (method == seekCurrent)
+	else if (method == SeekCurrent)
 		method2 = FILE_CURRENT;
-	else if (method == seekEnd)
+	else if (method == SeekEnd)
 		method2 = FILE_END;
 
 	LARGE_INTEGER h, h2;
@@ -245,17 +245,17 @@ File::Offset File::seek(Offset distance, int method)
 
 void File::seekSet(Offset distance)
 {
-	seek(distance, seekBegin);
+	seek(distance, SeekBegin);
 }
 
 void File::seekMove(Offset distance)
 {
-	seek(distance, seekCurrent);
+	seek(distance, SeekCurrent);
 }
 
 File::Offset File::seekTell()
 {
-	return seek(0, seekCurrent);
+	return seek(0, SeekCurrent);
 }
 
 File::Offset File::size()

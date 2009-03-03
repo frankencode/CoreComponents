@@ -24,7 +24,7 @@
 
 #include "Atoms.hpp"
 #include "String.hpp"
-#include "StdStream.hpp"
+#include "StandardStreams.hpp"
 #include "LinePrinter.hpp"
 #include "LineParser.hpp"
 

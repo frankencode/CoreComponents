@@ -94,7 +94,7 @@ bool FormatSpecifier::find(String media, int* i0, int* i1, int* wi, int* wf, int
 		while (token)
 		{
 			String value = media.copy(token->index(), token->length());
-			if (token->type() == base_->tokenType())
+			if (token->rule() == base_->id())
 			{
 				if (value == "dec")
 					*base = 10;
@@ -105,11 +105,11 @@ bool FormatSpecifier::find(String media, int* i0, int* i1, int* wi, int* wf, int
 				else if (value == "bin")
 					*base = 2;
 			}
-			else if (token->type() == integerWidth_->tokenType())
+			else if (token->rule() == integerWidth_->id())
 			{
 				*wi = value.toInt();
 			}
-			else if (token->type() == fractionWidth_->tokenType())
+			else if (token->rule() == fractionWidth_->id())
 			{
 				*wf = value.toInt();
 			}

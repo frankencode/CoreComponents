@@ -6,7 +6,7 @@ namespace pona
 int main(int argc, char** argv)
 {
 	{
-		LineParser parser("-100, -123.456e-9, 'trara\nlalal'", LineParser::defaultOptions | LineParser::strict);
+		LineParser parser("-100, -123.456e-9, 'trara\nlalal'", LineParser::DefaultOptions | LineParser::Strict);
 		int i = parser.readInt();
 		double d = parser.readDouble();
 		String s = parser.readString();
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 	{
 		double a, b;
 		String op;
-		LineParser parser("1 - 2", LineParser::autoSkipSpace);
+		LineParser parser("1 - 2", LineParser::AutoSkipSpace);
 		
 		if (parser % a % op % b)
 		{
@@ -42,10 +42,6 @@ int main(int argc, char** argv)
 			output()->write(format("error: parser.reason() = \"%%\"\n") % parser.reason());
 	}
 	
-#ifdef PONA_WINDOWS
-	output()->write("\nPress <RETURN> to continue...\n");
-	input()->readLine();
-#endif
 	return 0;
 }
 

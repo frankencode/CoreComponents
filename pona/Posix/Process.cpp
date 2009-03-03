@@ -31,7 +31,7 @@
 #include <errno.h> // errno
 
 #include "../Exception.hpp"
-#include "../StdStream.hpp"
+#include "../StandardStreams.hpp"
 #include "../Process.hpp"
 
 extern "C" char** environ;
@@ -40,7 +40,7 @@ namespace pona
 {
 
 Process::Process()
-	: processType_(simpleChild),
+	: processType_(SimpleChild),
 	  ioPolicy_(0),
 	  pid_(-1)
 {}
@@ -53,7 +53,7 @@ void Process::start()
 	
 	int ptyMaster, ptySlave;
 	
-	if (ioPolicy_ & forwardByPseudoTerminal)
+	if (ioPolicy_ & ForwardByPseudoTerminal)
 	{
 		ptyMaster = posix_openpt(O_RDWR|O_NOCTTY);
 		if (ptyMaster == -1)
@@ -65,15 +65,15 @@ void Process::start()
 	}
 	else
 	{
-		if (ioPolicy_ & forwardInput)
+		if (ioPolicy_ & ForwardInput)
 			if (pipe(inputPipe) == -1)
 				PONA_POSIX_EXCEPTION;
 		
-		if (ioPolicy_ & forwardOutput)
+		if (ioPolicy_ & ForwardOutput)
 			if (pipe(outputPipe) == -1)
 				PONA_POSIX_EXCEPTION;
 		
-		if (ioPolicy_ & forwardError)
+		if (ioPolicy_ & ForwardError)
 			if (pipe(errorPipe) == -1)
 				PONA_POSIX_EXCEPTION;
 	}
@@ -84,12 +84,12 @@ void Process::start()
 	{
 		// child process
 		
-		if (processType_ == groupLeader)
+		if (processType_ == GroupLeader)
 			::setpgid(0, 0);
-		else if (processType_ == sessionLeader)
+		else if (processType_ == SessionLeader)
 			::setsid();
 		
-		if (ioPolicy_ & forwardByPseudoTerminal)
+		if (ioPolicy_ & ForwardByPseudoTerminal)
 		{
 			char* ptySlavePath = ::ptsname(ptyMaster);
 			if (!ptySlavePath)
@@ -112,14 +112,14 @@ void Process::start()
 				::tcsetattr(ptySlave, TCSANOW, &attr);
 			}
 			
-			if (processType_ == sessionLeader)
+			if (processType_ == SessionLeader)
 				if (::ioctl(ptySlave, TIOCSCTTY, 0) == -1)
 					PONA_POSIX_EXCEPTION;
 		}
 		
-		if (ioPolicy_ & closeInput) ::close(0);
-		if (ioPolicy_ & closeOutput) ::close(1);
-		if (ioPolicy_ & closeError) ::close(2);
+		if (ioPolicy_ & CloseInput) ::close(0);
+		if (ioPolicy_ & CloseOutput) ::close(1);
+		if (ioPolicy_ & CloseError) ::close(2);
 		
 		if (workingDirectory_ != String()) {
 			if (execPath_.find("/") == -1)
@@ -132,26 +132,26 @@ void Process::start()
 		if (rawOutput_) ::dup2(rawOutput_->fd(), 1);
 		if (rawError_) ::dup2(rawError_->fd(), 2);
 
-		if (ioPolicy_ & forwardByPseudoTerminal)
+		if (ioPolicy_ & ForwardByPseudoTerminal)
 		{
-			if (ioPolicy_ & forwardInput) ::dup2(ptySlave, 0);
-			if (ioPolicy_ & forwardOutput) ::dup2(ptySlave, 1);
-			if (ioPolicy_ & forwardError) ::dup2(ptySlave, 2);
+			if (ioPolicy_ & ForwardInput) ::dup2(ptySlave, 0);
+			if (ioPolicy_ & ForwardOutput) ::dup2(ptySlave, 1);
+			if (ioPolicy_ & ForwardError) ::dup2(ptySlave, 2);
 			::close(ptySlave);
 		}
 		else
 		{
-			if (ioPolicy_ & forwardInput) {
+			if (ioPolicy_ & ForwardInput) {
 				::close(inputPipe[1]);
 				::dup2(inputPipe[0], 0);
 				::close(inputPipe[0]);
 			}
-			if (ioPolicy_ & forwardOutput) {
+			if (ioPolicy_ & ForwardOutput) {
 				::close(outputPipe[0]);
 				::dup2(outputPipe[1], 1);
 				::close(outputPipe[1]);
 			}
-			if (ioPolicy_ & forwardError) {
+			if (ioPolicy_ & ForwardError) {
 				::close(errorPipe[0]);
 				::dup2(errorPipe[1], 2);
 				::close(errorPipe[1]);
@@ -221,24 +221,24 @@ void Process::start()
 		rawOutput_ = 0;
 		rawError_ = 0;
 		
-		if (ioPolicy_ & forwardByPseudoTerminal)
+		if (ioPolicy_ & ForwardByPseudoTerminal)
 		{
-			if (ioPolicy_ & forwardInput)
+			if (ioPolicy_ & ForwardInput)
 				rawInput_ = new SystemStream(ptyMaster);
-			if ((ioPolicy_ & forwardOutput) || (ioPolicy_ & forwardError))
+			if ((ioPolicy_ & ForwardOutput) || (ioPolicy_ & ForwardError))
 				rawOutput_ = new SystemStream(ptyMaster);
 		}
 		else
 		{
-			if (ioPolicy_ & forwardInput) {
+			if (ioPolicy_ & ForwardInput) {
 				::close(inputPipe[0]);
 				rawInput_ = new SystemStream(inputPipe[1]);
 			}
-			if (ioPolicy_ & forwardOutput) {
+			if (ioPolicy_ & ForwardOutput) {
 				::close(outputPipe[1]);
 				rawOutput_ = new SystemStream(outputPipe[0]);
 			}
-			if (ioPolicy_ & forwardError) {
+			if (ioPolicy_ & ForwardError) {
 				::close(errorPipe[1]);
 				rawError_ = new SystemStream(errorPipe[0]);
 			}
@@ -262,8 +262,8 @@ void Process::start()
 void Process::startDaemon()
 {
 	::umask(0);
-	setProcessType(sessionLeader);
-	setIoPolicy(closeInput|closeOutput|closeError);
+	setProcessType(SessionLeader);
+	setIoPolicy(CloseInput|CloseOutput|CloseError);
 	setWorkingDirectory("/");
 	start();
 }
@@ -272,13 +272,13 @@ void Process::startDaemon()
   */
 void Process::terminate()
 {
-	if (::kill((processType_ == simpleChild) ? pid_ : -pid_, SIGTERM) == -1)
+	if (::kill((processType_ == SimpleChild) ? pid_ : -pid_, SIGTERM) == -1)
 		PONA_POSIX_EXCEPTION;
 }
 
 void Process::hangup()
 {
-	if (::kill((processType_ == simpleChild) ? pid_ : -pid_, SIGHUP) == -1)
+	if (::kill((processType_ == SimpleChild) ? pid_ : -pid_, SIGHUP) == -1)
 		PONA_POSIX_EXCEPTION;
 }
 
@@ -286,7 +286,7 @@ void Process::hangup()
   */
 void Process::kill()
 {
-	if (::kill((processType_ == simpleChild) ? pid_ : -pid_, SIGKILL) == -1)
+	if (::kill((processType_ == SimpleChild) ? pid_ : -pid_, SIGKILL) == -1)
 		PONA_POSIX_EXCEPTION;
 }
 

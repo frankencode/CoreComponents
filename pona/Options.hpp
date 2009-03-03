@@ -35,7 +35,7 @@
 #endif
 
 #ifndef PONA_DEFAULT_ENDIAN
-#define PONA_DEFAULT_ENDIAN littleEndian
+#define PONA_DEFAULT_ENDIAN LittleEndian
 #endif
 
 #ifndef PONA_VLC_CHUNKSIZE

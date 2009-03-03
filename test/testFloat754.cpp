@@ -33,10 +33,6 @@ int main()
 	output()->write(format("bin(nan) = %hex%\n") % union_cast<uint64_t>(zero/zero));
 	output()->write(format("unsignedMax, intMax = %%, %%\n") % unsignedMax % intMax);
 	
-#ifdef PONA_WINDOWS
-	output()->write("\nPress <RETURM> to continue...\n");
-	input()->readLine();
-#endif
 	return 0;
 }
 

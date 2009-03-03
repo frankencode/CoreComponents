@@ -1,6 +1,6 @@
 SET(PONA_HEADER
 	Core.hpp
-	StdStream.hpp
+	StandardStreams.hpp
 	Stack.hpp
 	Queue.hpp
 	ByteSource.hpp
@@ -59,7 +59,7 @@ SET(PONA_HEADER
 	SystemStream.hpp
 	FileStatus.hpp
 	ProcessStatus.hpp
-	InetAddress.hpp
+	SocketAddress.hpp
 	FormatSpecifier.hpp
 	BooleanLiteral.hpp
 	IntegerLiteral.hpp
@@ -72,7 +72,7 @@ SET(PONA_HEADER
 )
 
 SET(PONA_SOURCE
-	StdStream.cpp
+	StandardStreams.cpp
 	Stream.cpp
 	LineSource.cpp
 	LineSink.cpp
@@ -87,7 +87,7 @@ SET(PONA_SOURCE
 	HuffmanCodec.cpp
 	Bouncer.cpp
 	String.cpp
-	InetAddress.cpp
+	SocketAddress.cpp
 	SyntaxFactory.cpp
 	FormatSpecifier.cpp
 	BooleanLiteral.cpp

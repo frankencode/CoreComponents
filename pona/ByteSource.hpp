@@ -76,12 +76,12 @@ inline uint8_t ByteSource::readUInt8()
 inline uint16_t ByteSource::readUInt16()
 {
 	uint16_t h;
-	if (endian_ == littleEndian)
+	if (endian_ == LittleEndian)
 	{
 		h  = uint16_t(readUInt8());
 		h |= uint16_t(readUInt8()) << 8;
 	}
-	else // if (endian_ == bigEndian)
+	else // if (endian_ == BigEndian)
 	{
 		h  = uint16_t(readUInt8()) << 8;
 		h |= uint16_t(readUInt8());
@@ -92,14 +92,14 @@ inline uint16_t ByteSource::readUInt16()
 inline uint32_t ByteSource::readUInt32()
 {
 	uint32_t h;
-	if (endian_ == littleEndian)
+	if (endian_ == LittleEndian)
 	{
 		h  = uint32_t(readUInt8());
 		h |= uint32_t(readUInt8()) << 8;
 		h |= uint32_t(readUInt8()) << 16;
 		h |= uint32_t(readUInt8()) << 24;
 	}
-	else // if (endian_ == bigEndian)
+	else // if (endian_ == BigEndian)
 	{
 		h  = uint32_t(readUInt8()) << 24;
 		h |= uint32_t(readUInt8()) << 16;
@@ -112,12 +112,12 @@ inline uint32_t ByteSource::readUInt32()
 inline uint64_t ByteSource::readUInt64()
 {
 	uint64_t h = 0;
-	if (endian_ == littleEndian)
+	if (endian_ == LittleEndian)
 	{
 		for (int i = 0; i <= 7*8; i += 8)
 			h |= uint64_t(readUInt8()) << i;
 	}
-	else // if (endian_ == bigEndian)
+	else // if (endian_ == BigEndian)
 	{
 		for (int i = 7*8; i >= 0; i -= 8)
 			h |= uint64_t(readUInt8()) << i;

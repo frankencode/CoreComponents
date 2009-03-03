@@ -32,13 +32,13 @@ class LineParser
 public:
 	enum Options
 	{
-		autoSkipSpace = 1,
-		autoSkipSeparator = 2,
-		strict = 4,
-		defaultOptions = autoSkipSpace | autoSkipSeparator
+		AutoSkipSpace = 1,
+		AutoSkipSeparator = 2,
+		Strict = 4,
+		DefaultOptions = AutoSkipSpace | AutoSkipSeparator
 	};
 	
-	LineParser(String line, int options = defaultOptions);
+	LineParser(String line, int options = DefaultOptions);
 	
 	bool eol() const;
 	bool syntaxError() const;

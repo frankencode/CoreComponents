@@ -38,7 +38,7 @@ LineParser::LineParser(String line, int options)
 	if (!syntaxError_) \
 	{ \
 		syntaxError_ = true; \
-		if (options_ & strict) \
+		if (options_ & Strict) \
 		{ \
 			reason_ = format(String(reason) + String(" at position %% in line \"%%\".")) % pos_ % line_; \
 			PONA_THROW(FormattingException, reason_.strdup() /* HACK, leaks memory */ ); \
@@ -48,13 +48,13 @@ LineParser::LineParser(String line, int options)
 
 void LineParser::autoSkip()
 {
-	if (options_ & autoSkipSpace)
+	if (options_ & AutoSkipSpace)
 		skipSpace();
 	
-	if (options_ & autoSkipSeparator)
+	if (options_ & AutoSkipSeparator)
 	{
 		skipSeparator();
-		if (options_ & autoSkipSpace)
+		if (options_ & AutoSkipSpace)
 			skipSpace();
 	}
 }

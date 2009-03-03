@@ -6,7 +6,7 @@ namespace pona
 class EchoWorker: public Thread
 {
 public:
-	EchoWorker(Ref<TcpSocket> server, Ref<InetAddress> address, Ref<TcpStream> stream)
+	EchoWorker(Ref<TcpSocket> server, Ref<SocketAddress> address, Ref<TcpStream> stream)
 		: server_(server),
 		  address_(address),
 		  stream_(stream),
@@ -56,7 +56,7 @@ private:
 	}
 	
 	Ref<TcpSocket, Owner> server_;
-	Ref<InetAddress, Owner> address_;
+	Ref<SocketAddress, Owner> address_;
 	Ref<TcpStream, Owner> stream_;
 	String name_;
 };
@@ -65,7 +65,7 @@ class EchoServer: public TcpSocket
 {
 public:
 	EchoServer()
-		: TcpSocket(new InetAddress(InetAddress::inet4, "*", 8001)),
+		: TcpSocket(new SocketAddress(AF_INET, "*", 8001)),
 		  pool_(new Pool),
 		  name_(format("EchoServer(%%:%%)") % localAddress()->addressString() % localAddress()->port())
 	{}
@@ -75,7 +75,7 @@ public:
 		print("%%: Listening ...\n", name_);
 	}
 	
-	void serve(Ref<InetAddress> address, Ref<TcpStream> stream)
+	void serve(Ref<SocketAddress> address, Ref<TcpStream> stream)
 	{
 		Ref<EchoWorker> worker = new EchoWorker(this, address, stream);
 		pool_->append(worker);
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
 		}
 		else if (String(argv[1]) == "--client")
 		{
-			Ref<TcpStream, Owner> socket = TcpSocket::connect(new InetAddress(InetAddress::inet4, "127.0.0.1", 8001));
+			Ref<TcpStream, Owner> socket = TcpSocket::connect(new SocketAddress(AF_INET, "127.0.0.1", 8001));
 			Ref<LineSource, Owner> socketSource = new LineSource(socket);
 			Ref<LineSink, Owner> socketSink = new LineSink(socket);
 			while (true)
@@ -157,11 +157,6 @@ int main(int argc, char** argv)
 	catch (std::exception& ex) {
 		pona::print("%%\n", ex.what());
 	}
-
-#ifdef PONA_WINDOWS
-	pona::output()->write("\nPress <RETURN> to continue...\n");
-	pona::input()->readLine();
-#endif
 
 	return ret;
 }

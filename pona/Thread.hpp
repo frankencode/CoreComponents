@@ -41,12 +41,12 @@ class Condition;
 class Thread: public Instance
 {
 public:
-	enum ExitType { joinable, detached };
+	enum ExitType { Joinable, Detached };
 
 	Thread();
 	~Thread();
 
-	void start(int exitType = joinable);
+	void start(int exitType = Joinable);
 	int wait();
 
 	static void sleep(TimeStamp dt);

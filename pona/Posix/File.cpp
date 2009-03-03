@@ -28,7 +28,7 @@
 #include "../File.hpp"
 #include "../Exception.hpp"
 
-#include "../StdStream.hpp"
+#include "../StandardStreams.hpp"
 #include "../LinePrinter.hpp"
 
 namespace pona
@@ -41,25 +41,22 @@ File::File(String path)
 	  pathUtf8_(path.strdup())
 {}
 
-File::File(int stdStream)
+File::File(int standardStream)
 	: SystemStream(-1),
 	  openFlags_(0),
 	  pathUtf8_(0)
 {
-	if (stdStream == stdInput)
-	{
+	if (standardStream == StandardInput) {
 		fd_ = 0;
-		openFlags_ = readable;
+		openFlags_ = Read;
 	}
-	else if (stdStream == stdOutput)
-	{
+	else if (standardStream == StandardOutput) {
 		fd_ = 1;
-		openFlags_ = writable;
+		openFlags_ = Write;
 	}
-	else if (stdStream == stdError)
-	{
+	else if (standardStream == StandardError) {
 		fd_ = 2;
-		openFlags_ = writable;
+		openFlags_ = Write;
 	}
 	else
 		PONA_THROW(StreamSemanticException, "Invalid argument");
@@ -86,9 +83,9 @@ int File::openFlags() const
 bool File::access(int flags) const
 {
 	int rights = 0;
-	if (flags & readable) rights |= R_OK;
-	if (flags & writable) rights |= W_OK;
-	if (flags & executable) rights |= X_OK;
+	if (flags & Read) rights |= R_OK;
+	if (flags & Write) rights |= W_OK;
+	if (flags & Execute) rights |= X_OK;
 	return ::access(pathUtf8_, rights) == 0;
 }
 
@@ -114,11 +111,11 @@ void File::unlink()
 void File::open(int flags)
 {
 	int flags2 = 0;
-	if (flags == readable)
+	if (flags == Read)
 		flags2 = O_RDONLY;
-	else if (flags == writable)
+	else if (flags == Write)
 		flags2 = O_WRONLY;
-	else if (flags == (readable|writable))
+	else if (flags == (Read|Write))
 		flags2 = O_RDWR;
 	fd_ = ::open(pathUtf8_, flags2);
 	if (fd_ == -1)
@@ -128,11 +125,11 @@ void File::open(int flags)
 File::Offset File::seek(Offset distance, int method)
 {
 	int method2 = SEEK_SET;
-	if (method == seekBegin)
+	if (method == SeekBegin)
 		method2 = SEEK_SET;
-	else if (method == seekCurrent)
+	else if (method == SeekCurrent)
 		method2 = SEEK_CUR;
-	else if (method == seekEnd)
+	else if (method == SeekEnd)
 		method2 = SEEK_END;
 	File::Offset ret = ::lseek(fd_, distance, method2);
 	if (ret == -1)
@@ -142,24 +139,24 @@ File::Offset File::seek(Offset distance, int method)
 
 void File::seekSet(Offset distance)
 {
-	seek(distance, seekBegin);
+	seek(distance, SeekBegin);
 }
 
 void File::seekMove(Offset distance)
 {
-	seek(distance, seekCurrent);
+	seek(distance, SeekCurrent);
 }
 
 File::Offset File::seekTell()
 {
-	return seek(0, seekCurrent);
+	return seek(0, SeekCurrent);
 }
 
 File::Offset File::size()
 {
-	File::Offset h2 = seek(0, seekCurrent);
-	File::Offset h = seek(0, seekEnd);
-	seek(h2, seekBegin);
+	File::Offset h2 = seek(0, SeekCurrent);
+	File::Offset h = seek(0, SeekEnd);
+	seek(h2, SeekBegin);
 	return h;
 }
 

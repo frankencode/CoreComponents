@@ -35,7 +35,7 @@ private:
 class MyThread: public Thread
 {
 public:
-	enum Role { producer, consumer };
+	enum Role { Producer, Consumer };
 
 	MyThread(int role, MyChannel* channel)
 		: role_(role),
@@ -44,7 +44,7 @@ public:
 	
 	int run()
 	{
-		if (role_ == producer)
+		if (role_ == Producer)
 		{
 			for (int i = 0; i < 10; ++i)
 			{
@@ -52,7 +52,7 @@ public:
 				channel_->put(i);
 			}
 		}
-		else // if (role == consumer)
+		else // if (role == Consumer)
 		{
 			int k = 0;
 			while (k != 9)
@@ -73,8 +73,8 @@ private:
 int main()
 {
 	MyChannel channel;
-	MyThread t1(MyThread::producer, &channel);
-	MyThread t2(MyThread::consumer, &channel);
+	MyThread t1(MyThread::Producer, &channel);
+	MyThread t2(MyThread::Consumer, &channel);
 	TimeStamp dt = getTime();
 	t1.start();
 	t2.start();
@@ -83,10 +83,6 @@ int main()
 	dt = getTime() - dt;
 	output()->write(format("\ndt = %% usec\n\n") % dt.microSeconds());
 
-#ifdef PONA_WINDOWS
-	output()->write("\nPress <RETURN> to continue...\n");
-	input()->readLine();
-#endif
 	return 0;
 }
 

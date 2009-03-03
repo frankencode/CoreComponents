@@ -5,31 +5,33 @@ namespace pona
 
 int main(int argc, char** argv)
 {
-	const char* hostname = "localhost";
+	String hostName = SocketAddress::hostName();
 
 	if (argc == 2)
-		hostname = argv[1];
-
-	Ref<InetAddressList, Owner> list = InetAddress::query(hostname, "http");
+		hostName = argv[1];
+	
+	String canonicalName;
+	Ref<InetAddressList, Owner> list = SocketAddress::query(hostName, "http", AF_UNSPEC, 0, &canonicalName);
+	
+	output()->write(format("hostName, canonicalName = \"%%\", \"%%\"\n") % hostName % canonicalName);
 	
 	for (int i = 0; i < list->length(); ++i)
 	{
-		Ref<InetAddress> address = list->get(i);
+		Ref<SocketAddress> address = list->get(i);
+		bool failed;
+		
 		output()->write(
-			format("%% : %% : %% : %% : %% : %%\n")
+			format("%% : %% : %% : %% : %% : %% : %%\n")
 			% address->familyString()
 			% address->addressString()
 			% address->port()
-			% address->canonicalName()
 			% address->socketTypeString()
 			% address->protocolString()
+			% address->lookupHostName(&failed)
+			% address->lookupServiceName()
 		);
 	}
 	
-#ifdef PONA_WINDOWS
-	output()->write("\nPress <RETURM> to continue...\n");
-	input()->readLine();
-#endif
 	return 0;
 }
 

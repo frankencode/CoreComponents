@@ -19,10 +19,10 @@
 **
 ****************************************************************************/
 
-#ifndef PONA_TCPDISPATCHER_HPP
-#define PONA_TCPDISPATCHER_HPP
+#ifndef PONA_TCPSOCKET_HPP
+#define PONA_TCPSOCKET_HPP
 
-#include "InetAddress.hpp"
+#include "SocketAddress.hpp"
 #include "TcpStream.hpp"
 
 namespace pona
@@ -31,22 +31,22 @@ namespace pona
 class TcpSocket: public Instance
 {
 public:
-	TcpSocket(Ref<InetAddress> address, TimeStamp idleTimeout = TimeStamp(1, 0), int backlog = 8);
+	TcpSocket(Ref<SocketAddress> address, TimeStamp idleTimeout = TimeStamp(1, 0), int backlog = 8);
 	int run();
 	void close();
 	
-	static Ref<TcpStream, Owner> connect(Ref<InetAddress> remoteAddress);
+	static Ref<TcpStream, Owner> connect(Ref<SocketAddress> remoteAddress);
 	
 protected:
 	virtual void init() {}
-	virtual void serve(Ref<InetAddress> address, Ref<TcpStream> stream) = 0;
+	virtual void serve(Ref<SocketAddress> address, Ref<TcpStream> stream) = 0;
 	virtual void idle() {}
 	virtual void cleanup() {}
 	
-	Ref<InetAddress> localAddress() const { return localAddress_; }
+	Ref<SocketAddress> localAddress() const { return localAddress_; }
 	
 private:
-	Ref<InetAddress, Owner> localAddress_;
+	Ref<SocketAddress, Owner> localAddress_;
 	TimeStamp idleTimeout_;
 	bool doClose_;
 	int lsd_; // listening socket descriptor
@@ -54,4 +54,4 @@ private:
 
 } // namespace pona
 
-#endif // PONA_TCPDISPATCHER_HPP
+#endif // PONA_TCPSOCKET_HPP

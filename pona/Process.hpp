@@ -58,26 +58,6 @@ namespace pona
   * - "rawOutput" ... standard output stream of the child process
   * - "rawError" ... standard error stream of the child process
   *
-  * LIMITATIONS FOR WINDOWS (NT, XP and newer versions):
-  *   1) An execPath has to be passed and Process::run() will never be entered.
-  *      In other words you can't create worker clones. This limitation originates
-  *      form the lack of a fork(2) system call under Windows.
-  *   2) The method isSuperUser() returns always true.
-  *      Just type in your favourite search engine "ntdll exploit" or "Windows rootkit"
-  *      to learn more about how to implement MyProcess::makeRoot().
-  *   3) Windows has no concept of friendly process termination and therefore
-  *      terminate() has the same effect than directly calling kill().
-  *   4) There is no support for session leadership implemented.
-  *      This means startDaemon() is not working and setting process type to
-  *      sessionLeader has no effect.
-  *   5) You cannot start a new process with an empty environment.
-  *      (Windows exposes here fancy undocumented behavior.)
-  *   6) TcpStreams are no SystemStreams under Windows, so you can't simply pass
-  *      TCP streams to a child process. This is a limitation of the OS,
-  *      which is known for years and will probably never be fixed.
-  *   7) On Windows there is no support for pseudo-terminals.
-  *      (Afaik Windows supports only screen visible "consoles".)
-  *
   * \todo
   *   - String lookupPath(String name)
   */
@@ -88,21 +68,21 @@ public:
 	typedef Map<String, String> EnvMap;
 	
 	enum ProcessType {
-		simpleChild,
-		groupLeader,
-		sessionLeader
+		SimpleChild,
+		GroupLeader,
+		SessionLeader
 	};
 	
 	enum IoPolicy {
-		forwardInput = 1,
-		forwardOutput = 2,
-		forwardError = 4,
-		forwardByPseudoTerminal = 8,
-		closeInput = 16,
-		closeOutput = 32,
-		closeError = 64,
-		forwardAll = forwardInput|forwardOutput|forwardError,
-		closeAll = closeInput|closeOutput|closeError
+		ForwardInput = 1,
+		ForwardOutput = 2,
+		ForwardError = 4,
+		ForwardByPseudoTerminal = 8,
+		CloseInput = 16,
+		CloseOutput = 32,
+		CloseError = 64,
+		ForwardAll = ForwardInput|ForwardOutput|ForwardError,
+		CloseAll = CloseInput|CloseOutput|CloseError
 	};
 	
 	Process();

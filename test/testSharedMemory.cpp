@@ -39,11 +39,6 @@ int main(int argc, char** argv)
 		commit.release();
 	}
 	
-#ifdef PONA_WINDOWS
-	output()->write("\nPress <RETURN> to continue...\n");
-	input()->readLine();
-#endif
-	
 	return 0;
 }
 

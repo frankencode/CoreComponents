@@ -32,11 +32,6 @@ int main()
 	// output()->write(format("sizeof(wchar_t) = %%\n") % sizeof(wchar_t));
 	// output()->write(format("sizeof(pona::Char) = %%\n") % sizeof(Char));
 	
-#ifdef PONA_WINDOWS
-	output()->write("\nPress <RETURN> to continue...\n");
-	input()->readLine();
-#endif
-	
 	return 0;
 }
 

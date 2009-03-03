@@ -40,20 +40,20 @@ template<class T>
 class Heap: public Instance
 {
 public:
-	enum SortOrder { asc = 0, dsc = 1 };
+	enum SortOrder { Ascending = 0, Descending = 1 };
 	
-	Heap(int size, int order = asc)
+	Heap(int size, int order = Ascending)
 		: fill_(0),
 		  size_(size),
-		  dscOrder_(order == dsc),
+		  dscOrder_(order == Descending),
 		  bufOwner_(true),
 		  buf_(new T[size])
 	{}
 	
-	Heap(T* buf, int size, int order = asc)
+	Heap(T* buf, int size, int order = Ascending)
 		: fill_(0),
 		  size_(size),
-		  dscOrder_(order == dsc),
+		  dscOrder_(order == Descending),
 		  bufOwner_(false),
 		  buf_(buf)
 	{}

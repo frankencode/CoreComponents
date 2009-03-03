@@ -21,7 +21,7 @@
 
 #include <math.h>
 #include "LinePrinter.hpp"
-#include "StdStream.hpp"
+#include "StandardStreams.hpp"
 #include "FloatingPointLiteral.hpp"
 
 namespace pona
@@ -90,11 +90,11 @@ bool FloatingPointLiteral::match(String text, int i0, int* i1, float64_t* value)
 	{
 		Ref<Token> token = rootToken->firstChild();
 		
-		if (token->type() == nan_->tokenType())
+		if (token->rule() == nan_->id())
 		{
 			*value = nan;
 		}
-		else if (token->type() == infinite_->tokenType())
+		else if (token->rule() == infinite_->id())
 		{
 			float64_t one, zero;
 			one = 1.; zero = 0.;
@@ -108,12 +108,12 @@ bool FloatingPointLiteral::match(String text, int i0, int* i1, float64_t* value)
 		{
 			while (token)
 			{
-				if (token->type() == sign_->tokenType())
+				if (token->rule() == sign_->id())
 				{
 					if (text.get(token->index()) == '-')
 						sign = -1;
 				}
-				else if (token->type() == integerPart_->tokenType())
+				else if (token->rule() == integerPart_->id())
 				{
 					for (int i = token->i0(); i < token->i1(); ++i)
 					{
@@ -121,18 +121,18 @@ bool FloatingPointLiteral::match(String text, int i0, int* i1, float64_t* value)
 						mantissa += text.get(i) - '0';
 					}
 				}
-				else if (token->type() == fractionPart_->tokenType())
+				else if (token->rule() == fractionPart_->id())
 				{
 					float64_t h = 0.1;
 					for (int i = token->i0(); i < token->i1(); ++i, h /= 10)
 						mantissa += h * (text.get(i) - '0');
 				}
-				else if (token->type() == exponentSign_->tokenType())
+				else if (token->rule() == exponentSign_->id())
 				{
 					if (text.get(token->index()) == '-')
 						epSign = -1;
 				}
-				else if (token->type() == exponent_->tokenType())
+				else if (token->rule() == exponent_->id())
 				{
 					for (int i = token->i0(); i < token->i1(); ++i)
 					{

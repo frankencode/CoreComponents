@@ -23,10 +23,6 @@ int main()
 		print("(age)16 = %hex%\n", age);
 	}
 	
-#ifdef PONA_WINDOWS
-	output()->write("\nPress <RETURM> to continue...\n");
-	input()->readLine();
-#endif
 	return 0;
 }
 

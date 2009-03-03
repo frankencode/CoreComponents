@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 		process.setExecPath("testProcess.exe");
 		process.setWorkingDirectory("C:\\");
 #endif
-		process.setIoPolicy(Process::forwardInput | Process::forwardOutput);
+		process.setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
 		process.arguments()->append("--echo 123");
 		process.environment()->set("Hello", "World!");
 		process.start();
@@ -79,11 +79,7 @@ int main(int argc, char** argv)
 		print("  ProcessStatus::isSuperUser() = %%\n", ProcessStatus::isSuperUser());
 		print("\n");
 	}
-
-#ifdef PONA_WINDOWS
-	output()->write("\nPress <RETURN> to continue...\n");
-	input()->readLine();
-#endif
+	
 	return 0;
 }
 

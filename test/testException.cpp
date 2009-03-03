@@ -12,10 +12,6 @@ int main()
 		print("%%\n", ex.what());
 	}
 
-#ifdef PONA_WINDOWS
-	output()->write("\nPress <RETURN> to continue...\n");
-	input()->readLine();
-#endif
 	return 0;
 }
 

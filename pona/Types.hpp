@@ -43,7 +43,7 @@ typedef double float64_t;
 namespace pona
 {
 
-enum Endian { bigEndian = 0, littleEndian = 1 };
+enum Endian { BigEndian = 0, LittleEndian = 1 };
 
 template<class B, class A>
 inline B union_cast(A a)

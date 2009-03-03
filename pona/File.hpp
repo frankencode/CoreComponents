@@ -34,42 +34,35 @@ class File: public SystemStream
 public:
 	typedef int64_t Offset;
 	
-	enum AccessFlags
-	{
-		readable = 4,
-		writable = 2,
-		executable = 1
-	};
+	enum AccessFlags { Read = 4, Write = 2, Execute = 1 };
 	
-	enum CreateFlags
-	{
-		userRead   = 0400,
-		userWrite  = 0200,
-		userExec   = 0100,
-		groupRead  = 0040,
-		groupWrite = 0020,
-		groupExec  = 0010,
-		otherRead  = 0004,
-		otherWrite = 0002,
-		otherExec  = 0001
+	enum CreateFlags {
+		UserRead   = 0400,
+		UserWrite  = 0200,
+		UserExec   = 0100,
+		GroupRead  = 0040,
+		GroupWrite = 0020,
+		GroupExec  = 0010,
+		OtherRead  = 0004,
+		OtherWrite = 0002,
+		OtherExec  = 0001
 	};
 
-	enum SeekMethod
-	{
-		seekBegin  = 1,
-		seekCurrent = 2,
-		seekEnd  = 3
+	enum SeekMethod {
+		SeekBegin  = 1,
+		SeekCurrent = 2,
+		SeekEnd  = 3
 	};
 
-	enum StdStream
+	enum StandardStreams
 	{
-		stdInput = 0,
-		stdOutput = 1,
-		stdError = 2
+		StandardInput = 0,
+		StandardOutput = 1,
+		StandardError = 2
 	};
 
 	File(String path);
-	File(int stdStream);
+	File(int standardStream);
 	~File();
 
 	String path() const;
@@ -80,9 +73,9 @@ public:
 	void create(int mask = 0644);
 	void unlink();
 
-	void open(int flags = readable|writable);
+	void open(int flags = Read|Write);
 
-	Offset seek(Offset distance, int method = seekBegin);
+	Offset seek(Offset distance, int method = SeekBegin);
 	void seekSet(Offset distance);
 	void seekMove(Offset distance);
 	Offset seekTell();

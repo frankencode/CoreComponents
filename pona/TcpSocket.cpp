@@ -27,7 +27,7 @@
 namespace pona
 {
 
-TcpSocket::TcpSocket(Ref<InetAddress> address, TimeStamp idleTimeout, int backlog)
+TcpSocket::TcpSocket(Ref<SocketAddress> address, TimeStamp idleTimeout, int backlog)
 	: localAddress_(address),
 	  idleTimeout_(idleTimeout),
 	  doClose_(false)
@@ -64,7 +64,7 @@ int TcpSocket::run()
 		
 		if (doClose_) break;
 		
-		Ref<InetAddress, Owner> remoteAddress = new InetAddress(localAddress_->family());
+		Ref<SocketAddress, Owner> remoteAddress = new SocketAddress(localAddress_->family());
 		socklen_t len = remoteAddress->socketAddressLength();
 		int asd = ::accept(lsd_, remoteAddress->socketAddress(), &len);
 		if (asd < 0)
@@ -89,7 +89,7 @@ void TcpSocket::close()
 	doClose_ = true;
 }
 
-Ref<TcpStream, Owner> TcpSocket::connect(Ref<InetAddress> remoteAddress)
+Ref<TcpStream, Owner> TcpSocket::connect(Ref<SocketAddress> remoteAddress)
 {
 	int sd = ::socket(remoteAddress->family(), SOCK_STREAM, 0);
 	if (sd == -1)

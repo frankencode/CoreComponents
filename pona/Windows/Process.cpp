@@ -28,6 +28,28 @@
 namespace pona
 {
 
+/**
+  * LIMITATIONS FOR WINDOWS (NT, XP and newer versions):
+  *   1) An execPath has to be passed and Process::run() will never be entered.
+  *      In other words you can't create worker clones. This limitation originates
+  *      form the lack of a fork(2) system call under Windows.
+  *   2) The method isSuperUser() returns always true.
+  *      Just type in your favourite search engine "ntdll exploit" or "Windows rootkit"
+  *      to learn more about how to implement MyProcess::makeRoot().
+  *   3) Windows has no concept of friendly process termination and therefore
+  *      terminate() has the same effect than directly calling kill().
+  *   4) There is no support for session leadership implemented.
+  *      This means startDaemon() is not working and setting process type to
+  *      sessionLeader has no effect.
+  *   5) You cannot start a new process with an empty environment.
+  *      (Windows exposes here fancy undocumented behavior.)
+  *   6) TcpStreams are no SystemStreams under Windows, so you can't simply pass
+  *      TCP streams to a child process. This is a limitation of the OS,
+  *      which is known for years and will probably never be fixed.
+  *   7) On Windows there is no support for pseudo-terminals.
+  *      (Afaik Windows supports only screen visible "consoles".)
+  */
+
 Process::Process()
 	: processType_(simpleChild),
 	  ioPolicy_(0),
@@ -48,19 +70,19 @@ void Process::start()
 	sa.bInheritHandle = TRUE;
 	sa.lpSecurityDescriptor = NULL;
 	
-	if (ioPolicy_ & forwardInput) {
+	if (ioPolicy_ & ForwardInput) {
 		if (!CreatePipe(&inputPipeRead, &inputPipeWrite, &sa, 0))
 			PONA_WINDOWS_EXCEPTION;
 		SetHandleInformation(inputPipeWrite, HANDLE_FLAG_INHERIT, 0);
 	}
 	
-	if (ioPolicy_ & forwardOutput) {
+	if (ioPolicy_ & ForwardOutput) {
 		if (!CreatePipe(&outputPipeRead, &outputPipeWrite, &sa, 0))
 			PONA_WINDOWS_EXCEPTION;
 		SetHandleInformation(outputPipeRead, HANDLE_FLAG_INHERIT, 0);
 	}
 	
-	if (ioPolicy_ & forwardError) {
+	if (ioPolicy_ & ForwardError) {
 		if (!CreatePipe(&errorPipeRead, &errorPipeWrite, &sa, 0))
 			PONA_WINDOWS_EXCEPTION;
 		SetHandleInformation(errorPipeRead, HANDLE_FLAG_INHERIT, 0);
@@ -78,11 +100,11 @@ void Process::start()
 	startupInfo.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 	startupInfo.hStdError = GetStdHandle(STD_ERROR_HANDLE);
 
-	if (ioPolicy_ & forwardInput)
+	if (ioPolicy_ & ForwardInput)
 		startupInfo.hStdInput = inputPipeRead;
-	if (ioPolicy_ & forwardOutput)
+	if (ioPolicy_ & ForwardOutput)
 		startupInfo.hStdOutput = outputPipeWrite;
-	if (ioPolicy_ & forwardError)
+	if (ioPolicy_ & ForwardError)
 		startupInfo.hStdError = errorPipeWrite;
 	
 	if (rawInput_)
@@ -184,7 +206,7 @@ void Process::start()
 	if (!CloseHandle(processInfo.hThread))
 		PONA_WINDOWS_EXCEPTION;
 
-	if (ioPolicy_ & forwardInput) {
+	if (ioPolicy_ & ForwardInput) {
 		rawInput_ = new SystemStream(inputPipeWrite);
 		input_ = new LineSink(rawInput_);
 		CloseHandle(inputPipeRead);
@@ -194,7 +216,7 @@ void Process::start()
 		input_ = 0;
 	}
 	
-	if (ioPolicy_ & forwardOutput) {
+	if (ioPolicy_ & ForwardOutput) {
 		rawOutput_ = new SystemStream(outputPipeRead);
 		output_ = new LineSource(rawOutput_);
 		CloseHandle(outputPipeWrite);
@@ -204,7 +226,7 @@ void Process::start()
 		output_ = 0;
 	}
 	
-	if (ioPolicy_ & forwardError) {
+	if (ioPolicy_ & ForwardError) {
 		rawError_ = new SystemStream(errorPipeRead);
 		error_ = new LineSource(rawError_);
 		CloseHandle(errorPipeWrite);

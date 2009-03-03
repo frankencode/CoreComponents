@@ -8,7 +8,7 @@ typedef Channel<int> MyChannel;
 class MyThread: public Thread
 {
 public:
-	enum Role { consumer, producer };
+	enum Role { Consumer, Producer };
 	
 	MyThread(int role, Ref<MyChannel> channel)
 		: role_(role),
@@ -19,7 +19,7 @@ public:
 	{
 		const int n = 256;
 		
-		if (role_ == producer)
+		if (role_ == Producer)
 		{
 			for (int i = 0; i < n; ++i)
 			{
@@ -27,7 +27,7 @@ public:
 				channel_->pushBack(i);
 			}
 		}
-		else // if (role_ == consumer)
+		else // if (role_ == Consumer)
 		{
 			int k = 0;
 			while (k != n-1)
@@ -49,8 +49,8 @@ int main()
 	Ref<MyChannel, Owner> channel = new MyChannel(16);
 	new Bouncer(channel);
 	
-	Ref<MyThread, Owner> t1 = new MyThread(MyThread::producer, channel);
-	Ref<MyThread, Owner> t2 = new MyThread(MyThread::consumer, channel);
+	Ref<MyThread, Owner> t1 = new MyThread(MyThread::Producer, channel);
+	Ref<MyThread, Owner> t2 = new MyThread(MyThread::Consumer, channel);
 	
 	TimeStamp dt = getTime();
 	t1->start();
@@ -60,10 +60,6 @@ int main()
 	dt = getTime() - dt;
 	output()->write(format("\ndt = %% usec\n\n") % dt.microSeconds());
 	
-#ifdef PONA_WINDOWS
-	output()->write("\nPress <RETURN> to continue...\n");
-	input()->readLine();
-#endif
 	return 0;
 }
 

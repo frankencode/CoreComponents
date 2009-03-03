@@ -90,7 +90,7 @@ inline uint16_t BitSource::readUInt16()
 {
 	uint16_t h;
 	
-	if (endian_ == littleEndian)
+	if (endian_ == LittleEndian)
 	{
 		h = uint16_t(readUInt8());
 		h |= uint16_t(readUInt8()) << 8;
@@ -108,7 +108,7 @@ inline uint32_t BitSource::readUInt32()
 {
 	uint32_t h;
 	
-	if (endian_ == littleEndian)
+	if (endian_ == LittleEndian)
 	{
 		h = uint32_t(readUInt8());
 		h |= uint32_t(readUInt8()) << 8;
@@ -130,7 +130,7 @@ inline uint64_t BitSource::readUInt64()
 {
 	uint64_t h = 0;
 	
-	if (endian_ == littleEndian)
+	if (endian_ == LittleEndian)
 	{
 		for (int i = 0; i <= 7*8; i += 8)
 			h |= uint64_t(readUInt8()) << i;

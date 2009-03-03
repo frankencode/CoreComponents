@@ -19,45 +19,30 @@
 **
 ****************************************************************************/
 
-#include "BooleanLiteral.hpp"
+#include "Options.hpp"
+#include "Mutex.hpp"
+#include "File.hpp"
+#include "StandardStreams.hpp"
 
 namespace pona
 {
 
-BooleanLiteral::BooleanLiteral()
+Ref<StandardStreams> StandardStreams::instance()
 {
-	true_ =
-		DEFINE("true",
-			OR(
-				OR(STRING("true"), STRING("TRUE")),
-				OR(STRING("on"), STRING("ON"))
-			)
-		);
+	static Ref<StandardStreams, ThreadLocalOwner> instance_ = 0;
 	
-	DEFINE("false",
-		OR(
-			OR(STRING("false"), STRING("FALSE")),
-			OR(STRING("off"), STRING("OFF"))
-		)
-	);
-	
-	DEFINE_SELF("boolean", OR(REF("true"), REF("false")));
+	if (instance_ == 0)
+		instance_ = new StandardStreams();
+	return instance_;
 }
 
-bool BooleanLiteral::match(String text, int i0, int* i1, bool* value)
-{
-	Ref<Token, Owner> rootToken;
-	uint8_t buf[sizeof(Token) * 3];
-	
-	bool conform = SyntaxDefinition<String>::match(&text, i0, i1, &rootToken, 0, buf, sizeof(buf));
-	
-	if (conform)
-	{
-		Ref<Token> token = rootToken->firstChild();
-		*value = (token->rule() == true_->id());
-	}
-	
-	return conform;
-}
+StandardStreams::StandardStreams()
+	: rawInput_(new File(File::StandardInput)),
+	  rawOutput_(new File(File::StandardOutput)),
+	  rawError_(new File(File::StandardError)),
+	  input_(new LineSource(rawInput_)),
+	  output_(new LineSink(rawOutput_)),
+	  error_(new LineSink(rawError_))
+{}
 
 } // namespace pona

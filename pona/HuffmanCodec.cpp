@@ -22,7 +22,7 @@
 #define PONA_HUFFMANCODEC_PROFILING
 // #define PONA_HUFFMANCODEC_DEBUG_STATISTICS
 
-#include "StdStream.hpp"
+#include "StandardStreams.hpp"
 #include "LinePrinter.hpp"
 #include "HuffmanCodec.hpp"
 
@@ -35,7 +35,7 @@ HuffmanCodec::HuffmanCodec( int rawDiversity,
 	  rawDynamicRange_(rawDynamicRange),
 	  codeTable_(new SymbolNode[2 * rawDiversity]),
 	  codeMap_(new SymbolRef[rawDynamicRange_]),
-	  heap_(2 * rawDiversity, Heap<SymbolRef>::dsc),
+	  heap_(2 * rawDiversity, Heap<SymbolRef>::Descending),
 	  bitStack_(rawDiversity)
 {
 	memoryConsumption();

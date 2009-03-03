@@ -100,14 +100,14 @@ bool IntegerLiteral::match(String text, int i0, int* i1, uint64_t* value, int* s
 	
 		Ref<Token> token = rootToken->firstChild();
 		
-		if (token->type() == sign_->tokenType())
+		if (token->rule() == sign_->id())
 		{
 			if (text.get(token->index()) == '-')
 				*sign = -1;
 			token = token->nextSibling();
 		}
 		
-		if (token->type() == binNumber_->tokenType())
+		if (token->rule() == binNumber_->id())
 		{
 			for (int i = token->i0(); i < token->i1() - 1; ++i)
 			{
@@ -116,7 +116,7 @@ bool IntegerLiteral::match(String text, int i0, int* i1, uint64_t* value, int* s
 				*value += x;
 			}
 		}
-		else if (token->type() == octNumber_->tokenType())
+		else if (token->rule() == octNumber_->id())
 		{
 			for (int i = token->i0() + 1; i < token->i1(); ++i)
 			{
@@ -125,7 +125,7 @@ bool IntegerLiteral::match(String text, int i0, int* i1, uint64_t* value, int* s
 				*value += x;
 			}
 		}
-		else if (token->type() == hexNumber_->tokenType())
+		else if (token->rule() == hexNumber_->id())
 		{
 			for (int i = token->i0() + 2; i < token->i1(); ++i)
 			{
@@ -137,7 +137,7 @@ bool IntegerLiteral::match(String text, int i0, int* i1, uint64_t* value, int* s
 				*value += x;
 			}
 		}
-		else if (token->type() == decNumber_->tokenType())
+		else if (token->rule() == decNumber_->id())
 		{
 			for (int i = token->i0(); i < token->i1(); ++i)
 			{

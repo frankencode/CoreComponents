@@ -33,7 +33,7 @@
 // input/output
 #include "File.hpp"
 #include "FileStatus.hpp"
-#include "StdStream.hpp"
+#include "StandardStreams.hpp"
 #include "IoSyntaxSugar.hpp"
 
 // binary coding
@@ -73,7 +73,7 @@
 #include "Rounding.hpp"
 
 // networking
-#include "InetAddress.hpp"
+#include "SocketAddress.hpp"
 #include "TcpStream.hpp"
 #include "TcpSocket.hpp"
 
