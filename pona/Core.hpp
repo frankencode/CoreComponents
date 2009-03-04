@@ -25,7 +25,6 @@
 // strings
 #include "String.hpp"
 #include "SyntaxDefinition.hpp"
-#include "CStringMedia.hpp"
 #include "NumberFormatting.hpp"
 #include "LinePrinter.hpp"
 #include "LineParser.hpp"

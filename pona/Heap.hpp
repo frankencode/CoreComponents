@@ -97,6 +97,8 @@ public:
 	}
 	
 protected:
+	PONA_DISABLE_COPY(Heap)
+	
 	int fill_;    // current number of elements
 	int size_;    // maximal number of elements
 	bool dscOrder_;    // used for ascending or descending sort?

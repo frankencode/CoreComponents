@@ -46,7 +46,7 @@ bool parseBool(String text, int index, int* length)
 
 String printInteger(uint64_t value, int sign, int base, int width)
 {
-	Stack<int, 256> digits;
+	Stack<int> digits(256);
 	
 	if (value == 0)
 	{

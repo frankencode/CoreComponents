@@ -123,6 +123,8 @@ public:
 	}
 	
 private:
+	PONA_DISABLE_COPY(Queue)
+	
 	int fill_;
 	int size_;
 	int head_;

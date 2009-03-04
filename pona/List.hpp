@@ -104,6 +104,8 @@ public:
 	inline bool operator>=(const List& b) const { return (b < *this) || (*this == b); }
 	
 private:
+	PONA_DISABLE_COPY(List)
+	
 	List(Ref<List> parent, int index0, int length);
 	
 	class Node

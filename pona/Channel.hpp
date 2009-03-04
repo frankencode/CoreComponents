@@ -31,11 +31,11 @@ namespace pona
 
 /** The Channel class provides a monitorable Queue.
   */
-template<class T, int defaultCapa = 128>
+template<class T>
 class Channel: public MonitorMedia
 {
 public:
-	Channel(int size = defaultCapa)
+	Channel(int size)
 		: queue_(size),
 		  monitor_(0)
 	{}
@@ -98,6 +98,8 @@ public:
 	}
 	
 private:
+	PONA_DISABLE_COPY(Channel)
+	
 	Queue<T> queue_;
 	Ref<Monitor, Owner> monitor_;
 };

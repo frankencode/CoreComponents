@@ -124,7 +124,7 @@ public:
 		return found;
 	}
 	
-	void print(Ref<LineSink> output) const
+	/*void print(Ref<LineSink> output) const
 	{
 		Ref<Node> node = firstLeaf();
 		while (node)
@@ -139,7 +139,7 @@ public:
 			
 			node = node->nextLeaf();
 		}
-	}
+	}*/
 	
 protected:
 	inline Ref<Node> step(Char ch)
@@ -156,7 +156,7 @@ protected:
 		return node;
 	}
 	
-	void printNode(Ref<LineSink> output) const
+	/*void printNode(Ref<LineSink> output) const
 	{
 		Ref<Node> node = this;
 		List<Char> cache;
@@ -167,9 +167,9 @@ protected:
 		while (cache.length() > 0)
 			output->write(format("%%|") % cache.popFront());
 		output->write("\n");
-	}
+	}*/
 	
-private:
+protected:
 	PrefixTree(Char ch)
 		: ch_(ch),
 		  defined_(false)

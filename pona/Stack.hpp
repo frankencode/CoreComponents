@@ -27,11 +27,11 @@
 namespace pona
 {
 
-template<class T, int defaultCapa = 128>
+template<class T>
 class Stack: public Instance
 {
 public:
-	Stack(int size = defaultCapa)
+	Stack(int size)
 		: fill_(0),
 		  size_(size),
 		  bufOwner_(true),
@@ -90,6 +90,8 @@ public:
 	}
 
 private:
+	PONA_DISABLE_COPY(Stack)
+	
 	int fill_;
 	int size_;
 	bool bufOwner_;

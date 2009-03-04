@@ -19,8 +19,6 @@
 **
 ****************************************************************************/
 
-#include "Vector.hpp"
-#include "Stack.hpp"
 #include "NumberFormatting.hpp"
 #include "SyntaxFactory.hpp"
 #include "FormatSpecifier.hpp"

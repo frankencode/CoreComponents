@@ -45,7 +45,6 @@ SET(PONA_HEADER
 	SyntaxDefinition.hpp
 	SyntaxFactory.hpp
 	RandomAccessMedia.hpp
-	CStringMedia.hpp
 	String.hpp
 	Tree.hpp
 	PrefixTree.hpp

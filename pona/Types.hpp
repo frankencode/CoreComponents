@@ -84,6 +84,10 @@ private:
 	uint32_t ch_;
 };
 
+#define PONA_DISABLE_COPY(ClassName) \
+ClassName(const ClassName& b); \
+const ClassName& operator=(const ClassName& b);
+
 } // namespace pona
 
 #endif // PONA_TYPES_HPP

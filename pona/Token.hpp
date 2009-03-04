@@ -56,7 +56,7 @@ public:
 	inline int index() const { return i0_; }
 	inline int length() const { return i1_ - i0_; }
 	
-	template<class Media>
+	/*template<class Media>
 	void print(LineSink* output, Media* media, int depth = 0)
 	{
 		for (int i = 0; i < depth; ++i)
@@ -75,7 +75,7 @@ public:
 			token->print(output, media, depth + 1);
 			token = token->nextSibling();
 		}
-	}
+	}*/
 	
 private:
 	const char* ruleName_;

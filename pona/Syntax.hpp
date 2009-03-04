@@ -23,15 +23,10 @@
 #define PONA_SYNTAX_HPP
 
 #include "Atoms.hpp"
-#include "LineSink.hpp"
-#include "LinePrinter.hpp"
+#include "Vector.hpp"
 #include "PrefixTree.hpp"
 #include "Token.hpp"
 #include "TokenFactory.hpp"
-
-#ifdef ECHO
-#undef ECHO
-#endif
 
 namespace pona
 {
@@ -126,35 +121,16 @@ protected:
 		template<class Char2>
 		RangeNode(const Char2* s, int len, int invert, Ref<Node> next)
 			: Node(next),
-			  s_(new Char[len+1]),
-			  len_(len),
+			  s_(s, len),
 			  invert_(invert)
-		{
-			for (int i = 0; i < len; ++i)
-				s_[i] = s[i];
-			s_[len] = 0;
-		}
+		{}
 		
 		template<class Char2>
 		RangeNode(const Char2* s, int invert, Ref<Node> next)
 			: Node(next),
+			  s_(s),
 			  invert_(invert)
-		{
-			len_ = 0;
-			while (*(s + len_)) ++len_;
-			s_ = new Char[len_+1];
-			for (int i = 0; i < len_; ++i)
-				s_[i] = s[i];
-			s_[len_] = 0;
-		}
-		
-		~RangeNode()
-		{
-			if (s_) {
-				delete[] s_;
-				s_ = 0;
-			}
-		}
+		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
@@ -162,12 +138,12 @@ protected:
 			{
 				Char ch = media->get(i++);
 				if (s_) {
-					int k = 0;
-					while (k < len_) {
-						if (s_[k] == ch) break;
+					int k = 0, len = s_.length();
+					while (k < len) {
+						if (s_.get(k) == ch) break;
 						++k;
 					}
-					if ((k == len_) ^ invert_)
+					if ((k == len) ^ invert_)
 						i = -1;
 				}
 				else {
@@ -186,7 +162,7 @@ protected:
 	
 	private:
 		Char a_, b_;
-		Char* s_; int len_;
+		Vector<Char> s_;
 		int invert_;
 	};
 	
@@ -196,44 +172,27 @@ protected:
 		template<class Char2>
 		StringNode(const Char2* s, int len, Ref<Node> next)
 			: Node(next),
-			  s_(new Char[len+1]),
-			  len_(len)
-		{
-			for (int i = 0; i < len; ++i)
-				s_[i] = s[i];
-			s_[len] = 0;
-		}
+			  s_(s, len)
+		{}
 		
 		template<class Char2>
 		StringNode(const Char2* s, Ref<Node> next)
-			: Node(next)
-		{
-			len_ = 0;
-			while (*(s + len_)) ++len_;
-			s_ = new Char[len_+1];
-			for (int i = 0; i < len_; ++i)
-				s_[i] = s[i];
-			s_[len_] = 0;
-		}
-		
-		~StringNode()
-		{
-			delete[] s_;
-			s_ = 0;
-		}
+			: Node(next),
+			  s_(s)
+		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			int n = media->length();
 			
 			if (i < n) {
-				int k = 0;
-				while ((k < len_) && (i < n)) {
+				int k = 0, len = s_.length();
+				while ((k < len) && (i < n)) {
 					Char ch = media->get(i++);
-					if (s_[k] != ch) break;
+					if (s_.get(k) != ch) break;
 					++k;
 				}
-				if (k != len_)
+				if (k != len)
 					i = -1;
 			}
 			else
@@ -246,8 +205,7 @@ protected:
 		}
 	
 	private:
-		Char* s_;
-		int len_;
+		Vector<Char> s_;
 	};
 	
 	class KeywordNode: public Node
@@ -632,100 +590,6 @@ private:
 		}
 	};
 	
-public:
-	class State: public Instance
-	{
-	public:
-		State()
-			: flags_(0),
-			  chars_(0),
-			  numFlags_(0),
-			  numChars_(0)
-		{}
-		
-		State(Ref<Definition> definition, int numFlags, int numChars = 0, Ref<State> parent = 0)
-			: definition_(definition),
-			  flags_((numFlags > 0) ? new bool[numFlags] : 0),
-			  chars_((numChars > 0) ? new Char[numChars] : 0),
-			  numFlags_(numFlags),
-			  numChars_(numChars)
-		{
-			if (parent)
-				parent->child_ = this;
-		}
-		
-		~State()
-		{
-			if (flags_) { delete[] flags_; flags_ = 0; }
-			if (chars_) { delete[] chars_; chars_ = 0; }
-		}
-		
-		inline Ref<Definition> definition() const { return definition_; }
-		
-		inline bool* flag(int id) const { return flags_ + id; }
-		inline Char* character(int id) const { return chars_ + id; }
-		
-		inline Ref<State> child() const { return child_; }
-		inline void setChild(Ref<State> state) { child_ = state; }
-		
-		bool equals(const State& b) const
-		{
-			bool equal = (definition_ == b.definition_) && (numFlags_ == b.numFlags_) && (numChars_ == b.numChars_);
-			for (int i = 0; (i < numFlags_) && equal; ++i)
-				equal = equal && (flags_[i] == b.flags_[i]);
-			for (int i = 0; (i < numChars_) && equal; ++i)
-				equal = equal && (chars_[i] == b.chars_[i]);
-			if (equal) {
-				if (child_) {
-					if (b.child_) {
-						if (child_ != b.child_)
-							equal = equal && child_->equals(*b.child_);
-					}
-					else
-						equal = false;
-				}
-				else {
-					equal = equal && (!b.child_);
-				}
-			}
-			return equal;
-		}
-		
-		void copy(const State& b)
-		{
-			definition_ = b.definition_;
-			if (numFlags_ != b.numFlags_) {
-				numFlags_ = b.numFlags_;
-				if (flags_) { delete[] flags_; flags_ = 0; }
-				if (numFlags_ > 0) flags_ = new bool[numFlags_];
-			}
-			if (numChars_ != b.numChars_) {
-				numChars_ = b.numChars_;
-				if (chars_) { delete[] chars_; chars_ = 0; }
-				if (numChars_ > 0) chars_ = new Char[numChars_];
-			}
-			for (int i = 0; i < numFlags_; ++i)
-				flags_[i] = b.flags_[i];
-			for (int i = 0; i < numChars_; ++i)
-				chars_[i] = b.chars_[i];
-			if (b.child_) {
-				child_ = new State;
-				child_->copy(*b.child_);
-			}
-			else
-				child_ = 0;
-		}
-		
-	private:
-		Ref<Definition, Owner> definition_;
-		bool* flags_;
-		Char* chars_;
-		int numFlags_;
-		int numChars_;
-		Ref<State, Owner> child_;
-	};
-	
-protected:
 	class SetNode: public Node
 	{
 	public:
@@ -895,30 +759,6 @@ protected:
 		Ref<Definition, SetNull> definition_;
 	};
 	
-	class EchoNode: public Node
-	{
-	public:
-		EchoNode(Ref<LineSink> output, const char* message, Ref<Node> next)
-			: Node(next),
-			  output_(output),
-			  message_(message)
-		{}
-		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
-		{
-			output_->write(message_);
-			
-			if ((i != -1) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
-			return i;
-		}
-		
-	private:
-		Ref<LineSink, Owner> output_;
-		const char* message_;
-	};
-	
 public:
 	class Definition: public RuleNode
 	{
@@ -1086,12 +926,6 @@ public:
 			return new InvokeNode(definition, next);
 		}
 		
-		//-- debugging interface
-		
-		inline static NODE ECHO(Ref<LineSink> output, const char* message, NODE next = 0) {
-			return new EchoNode(output, message, next);
-		}
-		
 		//-- execution interface
 		
 		inline int language() const { return language_; }
@@ -1243,6 +1077,70 @@ public:
 		Ref<TokenTypeByName, Owner> tokenTypeByName_;
 		
 		Ref<LinkNode> linkHead_;
+	};
+	
+	class State: public Instance
+	{
+	public:
+		State()
+		{}
+		
+		State(Ref<Definition> definition, int numFlags, int numChars = 0, Ref<State> parent = 0)
+			: definition_(definition),
+			  flags_(numFlags),
+			  chars_(numChars)
+		{
+			if (parent)
+				parent->child_ = this;
+		}
+		
+		inline Ref<Definition> definition() const { return definition_; }
+		
+		inline bool* flag(int id) { return flags_.at(id); }
+		inline Char* character(int id) { return chars_.at(id); }
+		
+		inline Ref<State> child() const { return child_; }
+		inline void setChild(Ref<State> state) { child_ = state; }
+		
+		bool equals(const State& b) const
+		{
+			bool equal = (definition_ == b.definition_);
+			equal = equal && (flags_ == b.flags_);
+			equal = equal && (chars_ == b.chars_);
+			if (equal) {
+				if (child_) {
+					if (b.child_) {
+						if (child_ != b.child_)
+							equal = equal && child_->equals(*b.child_);
+					}
+					else
+						equal = false;
+				}
+				else {
+					equal = equal && (!b.child_);
+				}
+			}
+			return equal;
+		}
+		
+		void copy(const State& b)
+		{
+			definition_ = b.definition_;
+			flags_ = b.flags_;
+			chars_ = b.chars_;
+			if (b.child_) {
+				child_ = new State;
+				child_->copy(*b.child_);
+			}
+			else
+				child_ = 0;
+		}
+		
+	private:
+		Ref<Definition, Owner> definition_;
+		Vector<bool> flags_;
+		Vector<Char> chars_;
+		Ref<State, Owner> child_;
 	};
 };
 
