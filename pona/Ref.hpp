@@ -22,7 +22,7 @@
 #ifndef PONA_REF_HPP
 #define PONA_REF_HPP
 
-#include "Options.hpp"
+#include "options.hpp"
 #include "Instance.hpp"
 #include "Pointer.hpp"
 #include "Owner.hpp"
@@ -43,7 +43,7 @@ namespace pona
   *     (as in highlevel languages like Java or Python)
   *   - full compatiblity to containers
   */
-template<class T, template<class> class GetAndSetPolicy = PONA_DEFAULT_REF_POLICY>
+template<class T = Instance, template<class> class GetAndSetPolicy = PONA_DEFAULT_REF_POLICY>
 class Ref: public GetAndSetPolicy<T>
 {
 public:

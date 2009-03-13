@@ -22,7 +22,7 @@
 #ifndef PONA_LINEPARSER_HPP
 #define PONA_LINEPARSER_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 
 namespace pona
 {
@@ -47,7 +47,7 @@ public:
 	
 	String readWord();
 	String readIdentifier();
-	String readString(char enclosing = -1);
+	String readString(Char enclosing = 0);
 	bool readBool();
 	int readInt();
 	double readDouble();

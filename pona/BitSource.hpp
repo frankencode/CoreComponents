@@ -22,8 +22,8 @@
 #ifndef PONA_BITSOURCE_HPP
 #define PONA_BITSOURCE_HPP
 
-#include "Atoms.hpp"
-#include "Options.hpp"
+#include "atoms"
+#include "options.hpp"
 #include "Stream.hpp"
 
 namespace pona

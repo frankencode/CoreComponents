@@ -22,8 +22,8 @@
 #ifndef PONA_BYTESINK_HPP
 #define PONA_BYTESINK_HPP
 
-#include "Atoms.hpp"
-#include "Options.hpp"
+#include "atoms"
+#include "options.hpp"
 #include "Stream.hpp"
 
 namespace pona

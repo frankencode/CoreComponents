@@ -22,6 +22,9 @@
 #include "Stack.hpp"
 #include "Rounding.hpp"
 #include "SyntaxFactory.hpp"
+#include "BooleanLiteral.hpp"
+#include "IntegerLiteral.hpp"
+#include "FloatLiteral.hpp"
 #include "NumberFormatting.hpp"
 
 namespace pona
@@ -71,7 +74,8 @@ String printInteger(uint64_t value, int sign, int base, int width)
 		if (digits.fill() > width)
 			PONA_THROW(FormattingException, "Printing integer exceeds width");
 	
-	String s(width > digits.fill() ? width : digits.fill());
+	String s;
+	s.allocate(width > digits.fill() ? width : digits.fill());
 	int k = 0;
 	
 	for (int i = digits.fill(); i < width; ++i)

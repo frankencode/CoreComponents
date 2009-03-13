@@ -24,10 +24,10 @@
 
 #ifdef PONA_POSIX
 #include <pthread.h>
-#include "Atoms.hpp"
+#include "atoms"
 #else // PONA_WINDOWS
 #include <Windows.h>
-#include "Atoms.hpp"
+#include "atoms"
 #include "Semaphore.hpp"
 #endif
 

@@ -22,11 +22,12 @@
 #ifndef PONA_SYNTAX_HPP
 #define PONA_SYNTAX_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 #include "Vector.hpp"
 #include "PrefixTree.hpp"
 #include "Token.hpp"
 #include "TokenFactory.hpp"
+#include "SyntaxState.hpp"
 
 namespace pona
 {
@@ -48,7 +49,7 @@ protected:
 	Ref<Node, Owner> next_;
 	
 public:
-	class State;
+	typedef SyntaxState<Char> State;
 	
 protected:
 	virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state) = 0;
@@ -56,9 +57,8 @@ protected:
 	class CharNode: public Node
 	{
 	public:
-		CharNode(Char ch, int invert, Ref<Node> next)
-			: Node(next),
-			  ch_(ch),
+		CharNode(Char ch, int invert)
+			: ch_(ch),
 			  invert_(invert)
 		{}
 		
@@ -87,10 +87,6 @@ protected:
 	class AnyNode: public Node
 	{
 	public:
-		AnyNode(Ref<Node> next)
-			: Node(next)
-		{}
-		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (i < media->length())
@@ -110,25 +106,22 @@ protected:
 	class RangeNode: public Node
 	{
 	public:
-		RangeNode(Char a, Char b, int invert, Ref<Node> next)
-			: Node(next),
-			  a_(a),
+		RangeNode(Char a, Char b, int invert)
+			: a_(a),
 			  b_(b),
 			  s_(0),
 			  invert_(invert)
 		{}
 		
 		template<class Char2>
-		RangeNode(const Char2* s, int len, int invert, Ref<Node> next)
-			: Node(next),
-			  s_(s, len),
+		RangeNode(const Char2* s, int len, int invert)
+			: s_(s, len),
 			  invert_(invert)
 		{}
 		
 		template<class Char2>
-		RangeNode(const Char2* s, int invert, Ref<Node> next)
-			: Node(next),
-			  s_(s),
+		RangeNode(const Char2* s, int invert)
+			: s_(s),
 			  invert_(invert)
 		{}
 		
@@ -170,15 +163,13 @@ protected:
 	{
 	public:
 		template<class Char2>
-		StringNode(const Char2* s, int len, Ref<Node> next)
-			: Node(next),
-			  s_(s, len)
+		StringNode(const Char2* s, int len)
+			: s_(s, len)
 		{}
 		
 		template<class Char2>
-		StringNode(const Char2* s, Ref<Node> next)
-			: Node(next),
-			  s_(s)
+		StringNode(const Char2* s)
+			: s_(s)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -211,9 +202,8 @@ protected:
 	class KeywordNode: public Node
 	{
 	public:
-		KeywordNode(Ref<KeywordMap> map, Ref<Node> next)
-			: Node(next),
-			  map_(map)
+		KeywordNode(Ref<KeywordMap> map)
+			: map_(map)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -242,35 +232,11 @@ protected:
 		Ref<KeywordMap, Owner> map_;
 	};
 	
-	class TypeNode: public Node
-	{
-	public:
-		TypeNode(int tokenType, Ref<Node> next)
-			: Node(next),
-			  tokenType_(tokenType)
-		{}
-		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
-		{
-			if (parentToken)
-				parentToken->setType(tokenType_);
-			
-			if ((i != -1) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
-			return i;
-		}
-	
-	private:
-		int tokenType_;
-	};
-	
 	class RepeatNode: public Node
 	{
 	public:
-		RepeatNode(int minRepeat, int maxRepeat, Ref<Node> entry, Ref<Node> next)
-			: Node(next),
-			  minRepeat_(minRepeat),
+		RepeatNode(int minRepeat, int maxRepeat, Ref<Node> entry)
+			: minRepeat_(minRepeat),
 			  maxRepeat_(maxRepeat),
 			  entry_(entry)
 		{}
@@ -305,10 +271,6 @@ protected:
 	class BoiNode: public Node
 	{
 	public:
-		BoiNode(Ref<Node> next)
-			: Node(next)
-		{}
-		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (i != 0)
@@ -324,10 +286,6 @@ protected:
 	class EoiNode: public Node
 	{
 	public:
-		EoiNode(Ref<Node> next)
-			: Node(next)
-		{}
-		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (i != media->length())
@@ -343,9 +301,8 @@ protected:
 	class FindNode: public Node
 	{
 	public:
-		FindNode(Ref<Node> entry, Ref<Node> next)
-			: Node(next),
-			  entry_(entry)
+		FindNode(Ref<Node> entry)
+			: entry_(entry)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -377,17 +334,16 @@ protected:
 	class OrNode: public Node
 	{
 	public:
-		OrNode(Ref<Node> firstChoice, Ref<Node> secondChoice, Ref<Node> next)
-			: Node(next),
-			  firstChoice_(firstChoice),
+		OrNode(Ref<Node> firstChoice, Ref<Node> secondChoice)
+			: firstChoice_(firstChoice),
 			  secondChoice_(secondChoice)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			int h = firstChoice_->matchNext(media, i, tokenFactory, parentToken, state);
+			int h = (firstChoice_) ? firstChoice_->matchNext(media, i, tokenFactory, parentToken, state) : i;
 			if (h == -1)
-				h = secondChoice_->matchNext(media, i, tokenFactory, parentToken, state);
+				h = (secondChoice_) ? secondChoice_->matchNext(media, i, tokenFactory, parentToken, state) : i;
 			i = h;
 			
 			if ((i != -1) && (next_))
@@ -404,9 +360,8 @@ protected:
 	class AheadNode: public Node
 	{
 	public:
-		AheadNode(Ref<Node> entry, int invert, Ref<Node> next)
-			: Node(next),
-			  entry_(entry),
+		AheadNode(Ref<Node> entry, int invert)
+			: entry_(entry),
 			  invert_(invert)
 		{}
 		
@@ -414,7 +369,7 @@ protected:
 		{
 			int h = i;
 			if (entry_)
-				h = entry_->matchNext(media, i, tokenFactory, 0, state);
+				h = entry_->matchNext(media, i, 0, parentToken, state);
 			
 			if ((h == -1) ^ invert_)
 				i = -1;
@@ -433,9 +388,8 @@ protected:
 	class LengthNode: public Node
 	{
 	public:
-		LengthNode(int minLength, int maxLength, Ref<Node> entry, Ref<Node> next)
-			: Node(next),
-			  minLength_(minLength),
+		LengthNode(int minLength, int maxLength, Ref<Node> entry)
+			: minLength_(minLength),
 			  maxLength_(maxLength),
 			  entry_(entry)
 		{}
@@ -488,29 +442,39 @@ private:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			Ref<Token, Owner> token = tokenFactory->produce();
-			
-			int h = (entry_) ? entry_->matchNext(media, i, tokenFactory, token, state) : i;
-		
-			if (h != -1) {
-				if (isVoid_) {
-					if (parentToken)
-						parentToken->appendAllChildrenOf(token);
-				}
-				else {
-					token->join(parentToken, name_, definition_->language(), id_, i, h);
-				}
+			Ref<Token, Owner> token;
+			if (tokenFactory) {
+				token = tokenFactory->produce();
+				token->init(name_, definition_->language(), id_);
+				if (parentToken)
+					parentToken->appendChild(token);
 			}
 			
-			i = h;
-			
-			if ((i != -1) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			int i0 = i;
+			i = (entry_) ? entry_->matchNext(media, i, tokenFactory, token, state) : i;
+		
+			if (token) {
+				if (i != -1) {
+					if (isVoid_) {
+						if (parentToken) {
+							token->unlink();
+							parentToken->appendAllChildrenOf(token);
+						}
+					}
+					else {
+						token->setRange(i0, i);
+					}
+				}
+				else {
+					token->unlink();
+				}
+			}
 			
 			return i;
 		}
 		
 		inline int id() const { return id_; }
+		inline const char* name() const { return name_; }
 		
 	protected:
 		friend class InlineNode;
@@ -525,9 +489,8 @@ private:
 	class LinkNode: public Node
 	{
 	public:
-		LinkNode(Definition* definition, const char* ruleName, Ref<Node> next)
-			: Node(next),
-			  defintion_(definition),
+		LinkNode(Definition* definition, const char* ruleName)
+			: defintion_(definition),
 			  ruleName_(ruleName)
 		{}
 		
@@ -546,28 +509,24 @@ private:
 	class RefNode: public LinkNode
 	{
 	public:
-		RefNode(Definition* definition, const char* ruleName, Ref<Node> next)
-			: LinkNode(definition, ruleName, next)
+		RefNode(Definition* definition, const char* ruleName)
+			: LinkNode(definition, ruleName)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			Token tempToken;
-			tempToken.liberate();
+			Ref<Token> lastChildSaved = parentToken->lastChild();
 			
-			int h = LinkNode::rule_->matchNext(media, i, tokenFactory, &tempToken, state);
+			i = LinkNode::rule_->matchNext(media, i, tokenFactory, parentToken, state);
 			
-			if ((h != -1) && (next_))
-				h = next_->matchNext(media, h, tokenFactory, &tempToken, state);
+			if ((i != -1) && (next_))
+				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
-			if (h != -1) {
-				if (parentToken)
-					parentToken->appendAllChildrenOf(&tempToken);
-				i = h;
+			if (i == -1) {
+				while (parentToken->lastChild() != lastChildSaved)
+					parentToken->lastChild()->unlink();
 			}
-			else
-				i = -1;
-			
+		
 			return i;
 		}
 	};
@@ -575,8 +534,8 @@ private:
 	class InlineNode: public LinkNode
 	{
 	public:
-		InlineNode(Definition* definition, const char* ruleName, Ref<Node> next)
-			: LinkNode(definition, ruleName, next)
+		InlineNode(Definition* definition, const char* ruleName)
+			: LinkNode(definition, ruleName)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -590,12 +549,63 @@ private:
 		}
 	};
 	
+	class BeforeNode: public LinkNode
+	{
+	public:
+		BeforeNode(Definition* definition, const char* ruleName)
+			: LinkNode(definition, ruleName)
+		{}
+		
+		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		{
+			int h = -1;
+			if (parentToken) {
+				Ref<Token> sibling = parentToken->previousSibling();
+				if (sibling)
+					if (sibling->rule() == LinkNode::rule_->id())
+						h = i;
+			}
+			i = h;
+			
+			if ((i != -1) && (next_))
+				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			
+			return i;
+		}
+	};
+	
+public:
+	typedef int (*CallBack) (Ref<Instance> self, Media* media, int i, State* state);
+	
+private:
+	class CallNode: public Node
+	{
+	public:
+		CallNode(CallBack callBack, Ref<Instance> self)
+			: callBack_(callBack),
+			  self_(self)
+		{}
+		
+		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		{
+			i = callBack_(self_, media, i, state);
+			
+			if ((i != -1) && (next_))
+				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			
+			return i;
+		}
+		
+	private:
+		CallBack callBack_;
+		Ref<Instance, SetNull> self_;
+	};
+	
 	class SetNode: public Node
 	{
 	public:
-		SetNode(int flagId, bool value, Ref<Node> next)
-			: Node(next),
-			  flagId_(flagId),
+		SetNode(int flagId, bool value)
+			: flagId_(flagId),
 			  value_(value)
 		{}
 		
@@ -617,9 +627,8 @@ private:
 	class IfNode: public Node
 	{
 	public:
-		IfNode(int flagId, Ref<Node> trueBranch, Ref<Node> falseBranch, Ref<Node> next)
-			: Node(next),
-			  flagId_(flagId),
+		IfNode(int flagId, Ref<Node> trueBranch, Ref<Node> falseBranch)
+			: flagId_(flagId),
 			  trueBranch_(trueBranch),
 			  falseBranch_(falseBranch)
 		{}
@@ -650,9 +659,8 @@ private:
 	class GetCharNode: public Node
 	{
 	public:
-		GetCharNode(int charId, Ref<Node> next)
-			: Node(next),
-			  charId_(charId)
+		GetCharNode(int charId)
+			: charId_(charId)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -675,9 +683,8 @@ private:
 	class SetCharNode: public Node
 	{
 	public:
-		SetCharNode(int charId, Char value, Ref<Node> next)
-			: Node(next),
-			  charId_(charId),
+		SetCharNode(int charId, Char value)
+			: charId_(charId),
 			  value_(value)
 		{}
 		
@@ -699,9 +706,8 @@ private:
 	class VarCharNode: public Node
 	{
 	public:
-		VarCharNode(int charId, int invert, Ref<Node> next)
-			: Node(next),
-			  charId_(charId),
+		VarCharNode(int charId, int invert)
+			: charId_(charId),
 			  invert_(invert)
 		{}
 		
@@ -726,12 +732,82 @@ private:
 		int invert_;
 	};
 	
+	class GetStringNode: public Node
+	{
+	public:
+		GetStringNode(int stringId, Ref<Node> termination)
+			: stringId_(stringId),
+			  termination_(termination)
+		{}
+		
+		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		{
+			int i0 = i;
+			int n = media->length();
+			
+			if (termination_)
+			{
+				while (true) {
+					int h = termination_->matchNext(media, i, 0, parentToken, state);
+					if ((h != -1) || (i == n)) break;
+					++i;
+				}
+				
+				Vector<Char>* string = state->string(stringId_);
+				string->reset(i - i0);
+				for (int k = i0; k < i; ++k)
+					string->set(k - i0, media->get(k));
+			}
+			
+			if ((i != -1) && (next_))
+				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			
+			return i;
+		}
+		
+	private:
+		int stringId_;
+		Ref<Node, Owner> termination_;
+	};
+	
+	class VarStringNode: public Node
+	{
+	public:
+		VarStringNode(int stringId)
+			: stringId_(stringId)
+		{}
+		
+		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		{
+			Vector<Char>* string = state->string(stringId_);
+			int k = 0, m = string->length();
+			int n = media->length();
+			while ((i < n) && (k < m)) {
+				if (media->get(i) != string->get(k))
+					break;
+				++i;
+				++k;
+			}
+			
+			if (k != m)
+				i = -1;
+			
+			if ((i != -1) && (next_))
+				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			
+			return i;
+		}
+		
+	private:
+		int stringId_;
+	};
+	
 	class InvokeNode: public Node
 	{
 	public:
-		InvokeNode(Ref<Definition, SetNull> definition, Ref<Node> next)
-			: Node(next),
-			  definition_(definition)
+		InvokeNode(Ref<Definition> definition, Ref<Node> termination)
+			: definition_(definition),
+			  termination_(termination)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -740,14 +816,27 @@ private:
 			if (state) {
 				childState = state->child();
 				if (childState) {
-					if (childState->definition() != definition_)
+					if (childState->language() != definition_->language())
 						childState = 0;
 				}
 				if (!childState)
 					childState = definition_->newState(state);
 			}
 			
-			i = definition_->matchNext(media, i, tokenFactory, parentToken, childState);
+			if (termination_) {
+				int i1 = i;
+				while (i1 < media->length()) {
+					if (termination_->matchNext(media, i1, 0, parentToken, state) != -1)
+						break;
+					++i1;
+				}
+				
+				Media range(media, i1);
+				i = definition_->matchNext(&range, i, tokenFactory, parentToken, childState);
+			}
+			else {
+				i = definition_->matchNext(media, i, tokenFactory, parentToken, childState);
+			}
 			
 			if ((i != -1) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
@@ -757,6 +846,7 @@ private:
 		
 	private:
 		Ref<Definition, SetNull> definition_;
+		Ref<Node, Owner> termination_;
 	};
 	
 public:
@@ -769,9 +859,13 @@ public:
 			  numRules_(0),
 			  numKeywords_(0),
 			  ruleByName_(new RuleByName),
-			  stateFlagByName_(new StateIdByName),
-			  stateCharByName_(new StateIdByName),
-			  tokenTypeByName_(new TokenTypeByName)
+			  tokenTypeByName_(new TokenTypeByName),
+			  numStateFlags_(0),
+			  numStateChars_(0),
+			  numStateStrings_(0),
+			  flagIdByName_(new StateIdByName),
+			  charIdByName_(new StateIdByName),
+			  stringIdByName_(new StateIdByName)
 		{}
 		
 		typedef Ref<Node, Owner> NODE;
@@ -779,19 +873,19 @@ public:
 		
 		//-- stateless definition interface
 		
-		inline static NODE CHAR(Char ch, NODE next = 0) { return new CharNode(ch, 0, next); }
-		inline static NODE OTHER(Char ch, NODE next = 0) { return new CharNode(ch, 1, next); }
-		inline static NODE ANY(NODE next = 0) { return new AnyNode(next); }
-		inline static NODE RANGE(Char a, Char b, NODE next = 0) { return new RangeNode(a, b, 0, next); }
-		inline static NODE RANGE(Char* s, NODE next = 0) { return new RangeNode(s, 0, next); }
-		inline static NODE RANGE(const char* s, NODE next = 0) { return new RangeNode(s, 0, next); }
-		inline static NODE EXCEPT(Char a, Char b, NODE next = 0) { return new RangeNode(a, b, 1, next); }
-		inline static NODE EXCEPT(Char* s, NODE next = 0) { return new RangeNode(s, 1, next); }
-		inline static NODE EXCEPT(const char* s, NODE next = 0) { return new RangeNode(s, 1, next); }
-		inline static NODE STRING(Char* s, int len, NODE next = 0) { return new StringNode(s, len, next); }
-		inline static NODE STRING(const char* s, NODE next = 0) { return new StringNode(s, next); }
+		inline static NODE CHAR(Char ch) { return new CharNode(ch, 0); }
+		inline static NODE OTHER(Char ch) { return new CharNode(ch, 1); }
+		inline static NODE ANY() { return new AnyNode(); }
+		inline static NODE RANGE(Char a, Char b) { return new RangeNode(a, b, 0); }
+		inline static NODE RANGE(Char* s) { return new RangeNode(s, 0); }
+		inline static NODE RANGE(const char* s) { return new RangeNode(s, 0); }
+		inline static NODE EXCEPT(Char a, Char b) { return new RangeNode(a, b, 1); }
+		inline static NODE EXCEPT(Char* s) { return new RangeNode(s, 1); }
+		inline static NODE EXCEPT(const char* s) { return new RangeNode(s, 1); }
+		inline static NODE STRING(Char* s, int len) { return new StringNode(s, len); }
+		inline static NODE STRING(const char* s) { return new StringNode(s); }
 		
-		NODE KEYWORD(const char* keys, NODE next = 0)
+		NODE KEYWORD(const char* keys)
 		{
 			Ref<KeywordMap, Owner> map = new KeywordMap;
 			while (*keys) {
@@ -810,39 +904,27 @@ public:
 				++numKeywords_;
 				keys += n;
 			}
-			return new KeywordNode(map, next);
+			return new KeywordNode(map);
 		}
-		inline NODE TOKEN(const char* name, NODE next = 0) {
+		inline NODE TOKEN(const char* name) {
 			int tokenType = -1;
 			tokenTypeByName_->lookup(name, &tokenType);
 			return CHAR(tokenType);
 		}
-		inline NODE TYPE(const char* name, NODE next = 0) {
-			int tokenType = -1;
-			tokenTypeByName_->lookup(name, &tokenType);
-			if (tokenType == -1) {
-				tokenType = numKeywords_;
-				tokenTypeByName_->insert(name, tokenType);
-				++numKeywords_;
-			}
-			return new TypeNode(tokenType, next);
-		}
 		
-		inline static NODE REPEAT(int minRepeat, int maxRepeat, NODE entry, NODE next = 0) { return new RepeatNode(minRepeat, maxRepeat, entry, next); }
-		inline static NODE REPEAT(int minRepeat, NODE entry, NODE next = 0) { return REPEAT(minRepeat, intMax, entry, next); }
-		inline static NODE REPEAT(NODE entry, NODE next = 0) { return REPEAT(0, intMax, entry, next); }
-		inline static NODE BOI(NODE next = 0) { return new BoiNode(next); }
-		inline static NODE EOI(NODE next = 0) { return new EoiNode(next); }
+		inline static NODE REPEAT(int minRepeat, int maxRepeat, NODE entry) { return new RepeatNode(minRepeat, maxRepeat, entry); }
+		inline static NODE REPEAT(int minRepeat, NODE entry) { return REPEAT(minRepeat, intMax, entry); }
+		inline static NODE REPEAT(NODE entry) { return REPEAT(0, intMax, entry); }
+		inline static NODE BOI() { return new BoiNode(); }
+		inline static NODE EOI() { return new EoiNode(); }
 		inline static NODE PASS() { return 0; }
 		inline static NODE FAIL() { return NOT(PASS()); }
-		inline static NODE FIND(NODE entry, NODE next = 0) { return new FindNode(entry, next); }
-		inline static NODE OR(NODE firstChoice, NODE secondChoice, NODE next = 0) { return new OrNode(firstChoice, secondChoice, next); }
+		inline static NODE FIND(NODE entry) { return new FindNode(entry); }
+		inline static NODE AHEAD(NODE entry) { return new AheadNode(entry, 0); }
+		inline static NODE NOT(NODE entry) { return new AheadNode(entry, 1); }
 		
-		inline static NODE AHEAD(NODE entry, NODE next = 0) { return new AheadNode(entry, 0, next); }
-		inline static NODE NOT(NODE entry, NODE next = 0) { return new AheadNode(entry, 1, next); }
-		
-		inline static NODE LENGTH(int minLength, int maxLength, NODE entry, NODE next = 0) { return new LengthNode(minLength, maxLength, entry, next); }
-		inline static NODE LENGTH(int minLength, NODE entry, NODE next = 0) { return LENGTH(minLength, intMax, entry, next); }
+		inline static NODE LENGTH(int minLength, int maxLength, NODE entry) { return new LengthNode(minLength, maxLength, entry); }
+		inline static NODE LENGTH(int minLength, NODE entry) { return LENGTH(minLength, intMax, entry); }
 		
 		#include "SyntaxSugar.hpp"
 		
@@ -863,18 +945,29 @@ public:
 			ruleByName_->insert(name, this);
 		}
 		
-		inline NODE REF(const char* ruleName, NODE next = 0) {
-			Ref<RefNode, Owner> link = new RefNode(this, ruleName, next);
+		inline NODE REF(const char* ruleName) {
+			Ref<RefNode, Owner> link = new RefNode(this, ruleName);
 			link->nextLink_ = linkHead_;
 			linkHead_ = link;
 			return link;
 		}
-		inline NODE INLINE(const char* ruleName, NODE next = 0) {
-			Ref<InlineNode, Owner> link = new InlineNode(this, ruleName, next);
+		inline NODE INLINE(const char* ruleName) {
+			Ref<InlineNode, Owner> link = new InlineNode(this, ruleName);
 			link->nextLink_ = linkHead_;
 			linkHead_ = link;
 			return link;
 		}
+		inline NODE BEFORE(const char* ruleName) {
+			Ref<BeforeNode, Owner> link =  new BeforeNode(this, ruleName);
+			link->nextLink_ = linkHead_;
+			linkHead_ = link;
+			return link;
+		}
+		
+		inline NODE CALL(CallBack callBack, Ref<Instance> self = 0) {
+			return new CallNode(callBack, self);
+		}
+		
 		inline void LINK() {
 			while (linkHead_) {
 				linkHead_->rule_ = ruleByName(linkHead_->ruleName_);
@@ -885,45 +978,48 @@ public:
 		//-- stateful definition interface
 		
 		inline void STATE_FLAG(const char* name, bool defaultValue = false) {
-			stateFlagHead_ = new StateFlag(stateFlagHead_, name, defaultValue);
-			stateFlagByName_->insert(name, stateFlagHead_->count_ - 1);
+			stateFlagHead_ = new StateFlag(stateFlagHead_, defaultValue);
+			flagIdByName()->insert(name, numStateFlags_);
+			++numStateFlags_;
 		}
 		inline void STATE_CHAR(const char* name, Char defaultValue = 0) {
-			stateCharHead_ = new StateChar(stateCharHead_, name, defaultValue);
-			stateCharByName_->insert(name, stateCharHead_->count_ - 1);
+			stateCharHead_ = new StateChar(stateCharHead_, defaultValue);
+			charIdByName()->insert(name, numStateChars_);
+			++numStateChars_;
 		}
-		inline NODE SET(const char* name, bool value, NODE next = 0) {
-			int flagId = -1;
-			stateFlagByName_->lookup(name, &flagId);
-			return new SetNode(flagId, value, next);
+		inline void STATE_STRING(const char* name, const char* defaultValue = 0) {
+			stateStringHead_ = new StateString(stateStringHead_, defaultValue);
+			stringIdByName()->insert(name, numStateStrings_);
+			++numStateStrings_;
 		}
-		inline NODE IF(const char* name, NODE trueBranch, NODE falseBranch = 0, NODE next = 0) {
-			int flagId = -1;
-			stateFlagByName_->lookup(name, &flagId);
-			return new IfNode(flagId, trueBranch, falseBranch, next);
+		inline NODE SET(const char* name, bool value) {
+			return new SetNode(flagIdByName(name), value);
 		}
-		inline NODE GETCHAR(const char* name, NODE next = 0) {
-			int charId = -1;
-			stateCharByName_->lookup(name, &charId);
-			return new GetCharNode(charId, next);
+		inline NODE IF(const char* name, NODE trueBranch, NODE falseBranch = 0) {
+			return new IfNode(flagIdByName(name), trueBranch, falseBranch);
 		}
-		inline NODE SETCHAR(const char* name, Char value, NODE next = 0) {
-			int charId = -1;
-			stateCharByName_->lookup(name, &charId);
-			return new SetCharNode(charId, value, next);
+		inline NODE GETCHAR(const char* name) {
+			return new GetCharNode(charIdByName(name));
 		}
-		inline NODE VARCHAR(const char* name, NODE next = 0) {
-			int charId = -1;
-			stateCharByName_->lookup(name, &charId);
-			return new VarCharNode(charId, 0, next);
+		inline NODE SETCHAR(const char* name, Char value) {
+			return new SetCharNode(charIdByName(name), value);
 		}
-		inline NODE VAROTHER(const char* name, NODE next = 0) {
-			int charId = -1;
-			stateCharByName_->lookup(name, &charId);
-			return new VarCharNode(charId, 1, next);
+		inline NODE VARCHAR(const char* name) {
+			return new VarCharNode(charIdByName(name), 0);
 		}
-		inline static NODE INVOKE(Definition* definition, NODE next = 0) {
-			return new InvokeNode(definition, next);
+		inline NODE VAROTHER(const char* name) {
+			return new VarCharNode(charIdByName(name), 1);
+		}
+		inline NODE GETSTRING(const char* name, NODE termination) {
+			return new GetStringNode(stringIdByName(name), termination);
+		}
+		inline NODE VARSTRING(const char* name) {
+			return new VarStringNode(stringIdByName(name));
+		}
+		inline NODE INVOKE(Definition* definition, NODE termination = 0) {
+			if (definition != this)
+				definition->LINK();
+			return new InvokeNode(definition, termination);
 		}
 		
 		//-- execution interface
@@ -933,16 +1029,24 @@ public:
 		
 		State* newState(State* parent = 0)
 		{
-			State* state = new State(this, stateFlagHead_ ? stateFlagHead_->count_ : 0, stateCharHead_ ? stateCharHead_->count_ : 0, parent);
+			State* state = new State(language_, numStateFlags_, numStateChars_, numStateStrings_, parent);
+			
 			Ref<StateFlag> stateFlag = stateFlagHead_;
-			while (stateFlag) {
-				*state->flag(stateFlag->count_ - 1) = stateFlag->defaultValue_;
+			for (int id = numStateFlags_ - 1; id >= 0; --id) {
+				*state->flag(id) = stateFlag->defaultValue_;
 				stateFlag = stateFlag->next_;
 			}
+			
 			Ref<StateChar> stateChar = stateCharHead_;
-			while (stateChar)  {
-				*state->character(stateChar->count_ - 1) = stateChar->defaultValue_;
+			for (int id = numStateChars_ - 1; id >= 0; --id) {
+				*state->character(id) = stateChar->defaultValue_;
 				stateChar = stateChar->next_;
+			}
+			
+			Ref<StateString> stateString = stateStringHead_;
+			for (int id = numStateStrings_ - 1; id >= 0; --id) {
+				*state->string(id) = stateString->defaultValue_;
+				stateString = stateString->next_;
 			}
 			
 			return state;
@@ -998,7 +1102,7 @@ public:
 			Ref<RuleNode, Owner> node;
 			ruleByName_->lookup(name, &node);
 			if (!node)
-				PONA_THROW(SyntaxException, "Undefined rule");
+				PONA_THROW(SyntaxException, "Undefined rule referenced");
 			return node;
 		}
 		
@@ -1007,26 +1111,35 @@ public:
 			int tokenType = -1;
 			tokenTypeByName_->lookup(name, &tokenType);
 			if (tokenType == -1)
-				PONA_THROW(SyntaxException, "Undefined token type");
+				PONA_THROW(SyntaxException, "Undefined token type referenced");
 			return tokenType;
 		}
 		
-		int stateIdByName(const char* name)
+		int flagIdByName(const char* name)
 		{
 			int flagId = -1;
-			stateFlagByName_->lookup(name, &flagId);
+			flagIdByName()->lookup(name, &flagId);
 			if (flagId == -1)
-				PONA_THROW(SyntaxException, "Undefined state flag");
+				PONA_THROW(SyntaxException, "Undefined state flag referenced");
 			return flagId;
 		}
 		
-		int stateCharByName(const char* name)
+		int charIdByName(const char* name)
 		{
 			int charId = -1;
-			stateCharByName_->lookup(name, &charId);
+			charIdByName()->lookup(name, &charId);
 			if (charId == -1)
-				PONA_THROW(SyntaxException, "Undefined state char");
+				PONA_THROW(SyntaxException, "Undefined state char referenced");
 			return charId;
+		}
+		
+		int stringIdByName(const char* name)
+		{
+			int stringId = -1;
+			stringIdByName()->lookup(name, &stringId);
+			if (stringId == -1)
+				PONA_THROW(SyntaxException, "Undefined state string referenced");
+			return stringId;
 		}
 		
 	private:
@@ -1034,113 +1147,67 @@ public:
 		
 		class StateFlag: public Instance {
 		public:
-			StateFlag(Ref<StateFlag> head, const char* name, bool defaultValue = false)
+			StateFlag(Ref<StateFlag> head, bool defaultValue)
 				: next_(head),
-				  count_((head) ? head->count_ + 1 : 1),
-				  name_(name),
 				  defaultValue_(defaultValue)
 			{}
 			Ref<StateFlag, Owner> next_;
-			int count_;
-			const char* name_;
 			bool defaultValue_;
 		};
 		
 		class StateChar: public Instance {
 		public:
-			StateChar(Ref<StateChar> head, const char* name, Char defaultValue = 0)
+			StateChar(Ref<StateChar> head, Char defaultValue)
 				: next_(head),
-				  count_((head) ? head->count_ + 1 : 1),
-				  name_(name),
 				  defaultValue_(defaultValue)
 			{}
 			Ref<StateChar, Owner> next_;
-			int count_;
-			const char* name_;
 			Char defaultValue_;
 		};
 		
-		Ref<StateFlag, Owner> stateFlagHead_;
-		Ref<StateChar, Owner> stateCharHead_;
+		class StateString: public Instance {
+		public:
+			StateString(Ref<StateString> head, const char* defaultValue)
+				: next_(head),
+				  defaultValue_(defaultValue)
+			{}
+			Ref<StateString, Owner> next_;
+			Vector<Char> defaultValue_;
+		};
 		
 		int numRules_;
 		int numKeywords_;
-		
 		typedef PrefixTree<char, Ref<RuleNode, Owner> > RuleByName;
-		Ref<RuleByName, Owner> ruleByName_;
-		
-		typedef PrefixTree<char, int> StateIdByName;
-		Ref<StateIdByName, Owner> stateFlagByName_;
-		Ref<StateIdByName, Owner> stateCharByName_;
-		
 		typedef PrefixTree<char, int> TokenTypeByName;
+		Ref<RuleByName, Owner> ruleByName_;
 		Ref<TokenTypeByName, Owner> tokenTypeByName_;
 		
 		Ref<LinkNode> linkHead_;
-	};
-	
-	class State: public Instance
-	{
-	public:
-		State()
-		{}
 		
-		State(Ref<Definition> definition, int numFlags, int numChars = 0, Ref<State> parent = 0)
-			: definition_(definition),
-			  flags_(numFlags),
-			  chars_(numChars)
-		{
-			if (parent)
-				parent->child_ = this;
+		int numStateFlags_;
+		int numStateChars_;
+		int numStateStrings_;
+		Ref<StateFlag, Owner> stateFlagHead_;
+		Ref<StateChar, Owner> stateCharHead_;
+		Ref<StateString, Owner> stateStringHead_;
+		
+		typedef PrefixTree<char, int> StateIdByName;
+		Ref<StateIdByName, Owner> flagIdByName_;
+		Ref<StateIdByName, Owner> charIdByName_;
+		Ref<StateIdByName, Owner> stringIdByName_;
+		
+		inline Ref<StateIdByName> flagIdByName() {
+			if (!flagIdByName_) flagIdByName_ = new StateIdByName;
+			return flagIdByName_;
 		}
-		
-		inline Ref<Definition> definition() const { return definition_; }
-		
-		inline bool* flag(int id) { return flags_.at(id); }
-		inline Char* character(int id) { return chars_.at(id); }
-		
-		inline Ref<State> child() const { return child_; }
-		inline void setChild(Ref<State> state) { child_ = state; }
-		
-		bool equals(const State& b) const
-		{
-			bool equal = (definition_ == b.definition_);
-			equal = equal && (flags_ == b.flags_);
-			equal = equal && (chars_ == b.chars_);
-			if (equal) {
-				if (child_) {
-					if (b.child_) {
-						if (child_ != b.child_)
-							equal = equal && child_->equals(*b.child_);
-					}
-					else
-						equal = false;
-				}
-				else {
-					equal = equal && (!b.child_);
-				}
-			}
-			return equal;
+		inline Ref<StateIdByName> charIdByName() {
+			if (!charIdByName_) charIdByName_ = new StateIdByName;
+			return charIdByName_;
 		}
-		
-		void copy(const State& b)
-		{
-			definition_ = b.definition_;
-			flags_ = b.flags_;
-			chars_ = b.chars_;
-			if (b.child_) {
-				child_ = new State;
-				child_->copy(*b.child_);
-			}
-			else
-				child_ = 0;
+		inline Ref<StateIdByName> stringIdByName() {
+			if (!stringIdByName_) stringIdByName_ = new StateIdByName;
+			return stringIdByName_;
 		}
-		
-	private:
-		Ref<Definition, Owner> definition_;
-		Vector<bool> flags_;
-		Vector<Char> chars_;
-		Ref<State, Owner> child_;
 	};
 };
 

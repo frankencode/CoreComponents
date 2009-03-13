@@ -19,6 +19,11 @@
 **
 ****************************************************************************/
 
+#include "FormatSpecifier.hpp"
+#include "BooleanLiteral.hpp"
+#include "IntegerLiteral.hpp"
+#include "FloatLiteral.hpp"
+
 #include "SyntaxFactory.hpp"
 
 namespace pona
@@ -38,7 +43,12 @@ SyntaxFactory::SyntaxFactory()
 	formatSpecifier_ = new FormatSpecifier;
 	booleanLiteral_ = new BooleanLiteral;
 	integerLiteral_ = new IntegerLiteral;
-	floatingPointLiteral_ = new FloatingPointLiteral;
+	floatingPointLiteral_ = new FloatLiteral;
 }
+
+Ref<FormatSpecifier> SyntaxFactory::formatSpecifier() const { return formatSpecifier_; }
+Ref<BooleanLiteral> SyntaxFactory::booleanLiteral() const { return booleanLiteral_; }
+Ref<IntegerLiteral> SyntaxFactory::integerLiteral() const { return integerLiteral_; }
+Ref<FloatLiteral> SyntaxFactory::floatingPointLiteral() const { return floatingPointLiteral_; }
 
 } // namespace pona

@@ -1,4 +1,4 @@
-#include <pona/IoSyntaxSugar.hpp>
+#include <pona/PrintAndScan.hpp>
 
 int main()
 {

@@ -22,8 +22,8 @@
 #ifndef PONA_LINESOURCE_HPP
 #define PONA_LINESOURCE_HPP
 
-#include "Atoms.hpp"
-#include "Options.hpp"
+#include "atoms"
+#include "options.hpp"
 #include "Stream.hpp"
 #include "Queue.hpp"
 #include "String.hpp"
@@ -31,9 +31,6 @@
 namespace pona
 {
 
-/** \todo extend to savely handle a whole set of different line ending styles (e.g. using a prefix tree)
-  *       (or default to 13,10 ? 13 carriage return, 10 new line are generated on 86DOS and UNIX terminals)
-  */
 class LineSource: public Instance
 {
 public:

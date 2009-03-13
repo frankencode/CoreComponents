@@ -1,7 +1,7 @@
 #ifndef PONA_WSAAWARENESS_HPP
 #define PONA_WSAAWARENESS_HPP
 
-#include "../Atoms.hpp"
+#include "../atoms"
 
 namespace pona
 {

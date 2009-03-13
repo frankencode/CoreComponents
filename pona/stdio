@@ -1,0 +1,12 @@
+#ifndef PONA_STDIO
+#define PONA_STDIO
+
+#include "NumberFormatting.hpp"
+#include "LinePrinter.hpp"
+#include "LineParser.hpp"
+#include "StandardStreams.hpp"
+#include "PrintAndScan.hpp"
+#include "File.hpp"
+#include "FileStatus.hpp"
+
+#endif //  PONA_STDIO

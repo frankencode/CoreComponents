@@ -28,7 +28,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#include "Atoms.hpp"
+#include "atoms"
 #include "String.hpp"
 
 #ifdef __MACH__
@@ -136,7 +136,7 @@ private:
 #else // PONA_WINDOWS
 
 #include <Windows.h>
-#include "Atoms.hpp"
+#include "atoms"
 #include "String.hpp"
 
 namespace pona

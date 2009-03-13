@@ -22,7 +22,7 @@
 #ifndef PONA_STRING_HPP
 #define PONA_STRING_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 #include "List.hpp"
 
 namespace pona
@@ -39,11 +39,11 @@ public:
 	typedef List<Char> Media;
 	
 	String();
-	String(int n);
-	String(int n, Char ch);
+	explicit String(int n, Char ch);
 	String(const char* utf8, int numBytes = -1, int numChars = -1);
 	String(Ref<Media> list);
 	
+	inline void allocate(int n) { if (list_->length() < n) list_->push(list_->length(), n - list_->length()); }
 	inline Ref<Media> media() const { return list_; }
 	inline int length() const { return list_->fill(); }
 	

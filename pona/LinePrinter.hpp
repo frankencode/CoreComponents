@@ -22,7 +22,7 @@
 #ifndef PONA_LINEPRINTER_HPP
 #define PONA_LINEPRINTER_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 #include "String.hpp"
 
 #ifdef arg

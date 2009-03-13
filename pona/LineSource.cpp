@@ -53,7 +53,7 @@ String LineSource::readLine()
 			if (cache_.fill() == cache_.size())
 				PONA_THROW(StreamIoException, "Input buffer exhausted");
 
-			char ch = buf_[i];
+			Char ch = buf_[i];
 			k = (ch == eol_.get(k)) ? k + 1 : 0;
 		
 			if (k == nk)
@@ -71,7 +71,7 @@ String LineSource::readLine()
 	int i = 0;
 	while (k < nk)
 	{
-		char ch = cache_.popFront();
+		Char ch = cache_.popFront();
 		k = (ch == eol_.get(k)) ? k + 1 : 0;
 		buf_[i] = ch;
 		++i;

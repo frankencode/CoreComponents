@@ -22,7 +22,7 @@
 #ifndef PONA_STREAM_HPP
 #define PONA_STREAM_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 
 namespace pona
 {

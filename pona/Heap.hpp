@@ -22,7 +22,7 @@
 #ifndef PONA_HEAP_HPP
 #define PONA_HEAP_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 
 #ifdef PONA_WINDOWS
 #ifdef min

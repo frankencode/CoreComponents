@@ -32,6 +32,7 @@ class BooleanLiteral: public SyntaxDefinition<String>
 public:
 	BooleanLiteral();
 	bool match(String text, int i0, int* i1, bool* value);
+	bool read(Ref<Token> rootToken) const;
 	
 private:
 	RULE true_;

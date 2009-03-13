@@ -32,15 +32,17 @@ class Token: public Tree
 public:
 	Token(): ruleName_("unknown"), language_(-1), rule_(-1), type_(-1) {}
 	
-	inline void join(Ref<Token> parent, const char* ruleName, int language, int rule, int i0, int i1)
+	inline void init(const char* ruleName, int language, int rule)
 	{
-		if (parent)
-			parent->appendChild(this);
 		ruleName_ = ruleName;
 		language_ = language;
 		rule_ = rule;
 		if (type_ == -1)
 			type_ = rule;
+	}
+	
+	inline void setRange(int i0, int i1)
+	{
 		i0_ = i0;
 		i1_ = i1;
 	}

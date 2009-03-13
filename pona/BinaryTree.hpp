@@ -22,7 +22,7 @@
 #ifndef PONA_BINARYTREE_HPP
 #define PONA_BINARYTREE_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 
 namespace pona
 {

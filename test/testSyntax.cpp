@@ -1,4 +1,6 @@
-#include <pona/Core.hpp>
+#include <pona/stdio>
+#include <pona/syntax>
+#include <pona/misc>
 
 namespace pona
 {
@@ -8,13 +10,63 @@ class Expression: public SyntaxDefinition<String>
 public:
 	Expression()
 	{
-		number_ = DEFINE("number", REPEAT(0, 1, CHAR('-'), REPEAT(1, 20, RANGE('0', '9'))));
-		factor_ = DEFINE("factor", OR(REF("number"), CHAR('(', REF("sum", CHAR(')')))));
-		mulOp_ = DEFINE("mulOp", OR(CHAR('*'), CHAR('/')));
-		addOp_ = DEFINE("addOp", OR(CHAR('+'), CHAR('-')));
-		product_ = DEFINE("product", REF("factor", REPEAT(REF("mulOp", REF("factor")))));
-		sum_ = DEFINE("sum", REF("product", REPEAT(REF("addOp", REF("product")))));
-		DEFINE_SELF("expression", REF("sum", EOI()));
+		number_ =
+			DEFINE("number",
+				GLUE(
+					REPEAT(0, 1, CHAR('-')),
+					REPEAT(1, 20, RANGE('0', '9'))
+				)
+			);
+		
+		factor_ =
+			DEFINE("factor",
+				CHOICE(
+					REF("number"),
+					GLUE(
+						CHAR('('),
+						REF("sum"),
+						CHAR(')')
+					)
+				)
+			);
+		
+		mulOp_ = DEFINE("mulOp", RANGE("*/"));
+		
+		addOp_ = DEFINE("addOp", RANGE("+-"));
+		
+		product_ =
+			DEFINE("product",
+				GLUE(
+					REF("factor"),
+					REPEAT(
+						GLUE(
+							REF("mulOp"),
+							REF("factor")
+						)
+					)
+				)
+			);
+		
+		sum_ =
+			DEFINE("sum",
+				GLUE(
+					REF("product"),
+					REPEAT(
+						GLUE(
+							REF("addOp"),
+							REF("product")
+						)
+					)
+				)
+			);
+		
+		DEFINE_SELF("expression",
+			GLUE(
+				REF("sum"),
+				EOI()
+			)
+		);
+		
 		LINK();
 	}
 	
@@ -125,9 +177,7 @@ int main()
 	
 	TimeStamp dt = getTime();
 	
-	double result;
-	// for (int i = 0; i < 1000; ++i)
-		result = expression->eval("(-12+34)*(56-78)");
+	double result = expression->eval("(-12+34)*(56-78)");
 	
 	dt = getTime() - dt;
 	output()->write(format("took %% us\n") % dt.microSeconds());

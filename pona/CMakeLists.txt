@@ -1,5 +1,14 @@
 SET(PONA_HEADER
-	Core.hpp
+	atoms
+	stdio
+	syntax
+	binary
+	container
+	concurrent
+	network
+	misc
+	options.hpp
+	types.hpp
 	StandardStreams.hpp
 	Stack.hpp
 	Queue.hpp
@@ -9,8 +18,6 @@ SET(PONA_HEADER
 	Utf8Sink.hpp
 	BitSource.hpp
 	BitSink.hpp
-	Options.hpp
-	Atoms.hpp
 	LineSource.hpp
 	LineSink.hpp
 	LinePrinter.hpp
@@ -21,13 +28,13 @@ SET(PONA_HEADER
 	Stream.hpp
 	Mutex.hpp
 	Crc32.hpp
+	Variant.hpp
 	Ref.hpp
 	Owner.hpp
 	SetNull.hpp
 	ThreadLocalOwner.hpp
 	TimeStamp.hpp
 	Alien.hpp
-	Types.hpp
 	Exception.hpp
 	Clock.hpp
 	Heap.hpp
@@ -62,10 +69,9 @@ SET(PONA_HEADER
 	FormatSpecifier.hpp
 	BooleanLiteral.hpp
 	IntegerLiteral.hpp
-	FloatingPointLiteral.hpp
+	FloatLiteral.hpp
 	NumberFormatting.hpp
-	New.hpp
-	IoSyntaxSugar.hpp
+	PrintAndScan.hpp
 	TcpStream.hpp
 	TcpSocket.hpp
 )
@@ -91,9 +97,8 @@ SET(PONA_SOURCE
 	FormatSpecifier.cpp
 	BooleanLiteral.cpp
 	IntegerLiteral.cpp
-	FloatingPointLiteral.cpp
+	FloatLiteral.cpp
 	NumberFormatting.cpp
-	New.cpp
 	TcpSocket.cpp
 )
 

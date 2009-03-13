@@ -22,7 +22,7 @@
 #ifndef PONA_FILE_HPP
 #define PONA_FILE_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 #include "String.hpp"
 #include "SystemStream.hpp"
 

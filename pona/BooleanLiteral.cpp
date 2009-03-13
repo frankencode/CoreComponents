@@ -28,20 +28,24 @@ BooleanLiteral::BooleanLiteral()
 {
 	true_ =
 		DEFINE("true",
-			OR(
-				OR(STRING("true"), STRING("TRUE")),
-				OR(STRING("on"), STRING("ON"))
+			CHOICE(
+				GLUE(RANGE("tT"), STRING("rue")),
+				GLUE(RANGE("oO"), CHAR('n')),
+				STRING("TRUE"),
+				STRING("ON")
 			)
 		);
 	
 	DEFINE("false",
-		OR(
-			OR(STRING("false"), STRING("FALSE")),
-			OR(STRING("off"), STRING("OFF"))
+		CHOICE(
+			GLUE(RANGE("fF"), STRING("alse")),
+			GLUE(RANGE("oO"), STRING("ff")),
+			STRING("FALSE"),
+			STRING("OFF")
 		)
 	);
 	
-	DEFINE_SELF("boolean", OR(REF("true"), REF("false")));
+	DEFINE_SELF("boolean", CHOICE(REF("true"), REF("false")));
 }
 
 bool BooleanLiteral::match(String text, int i0, int* i1, bool* value)
@@ -52,12 +56,15 @@ bool BooleanLiteral::match(String text, int i0, int* i1, bool* value)
 	bool conform = SyntaxDefinition<String>::match(&text, i0, i1, &rootToken, 0, buf, sizeof(buf));
 	
 	if (conform)
-	{
-		Ref<Token> token = rootToken->firstChild();
-		*value = (token->rule() == true_->id());
-	}
+		*value = read(rootToken);
 	
 	return conform;
+}
+
+bool BooleanLiteral::read(Ref<Token> rootToken) const
+{
+	Ref<Token> token = rootToken->firstChild();
+	return (token->rule() == true_->id());
 }
 
 } // namespace pona

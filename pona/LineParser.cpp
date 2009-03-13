@@ -128,7 +128,7 @@ String LineParser::readIdentifier()
 	return ret;
 }
 
-String LineParser::readString(char enclosing)
+String LineParser::readString(Char enclosing)
 {
 	if (syntaxError_)
 		return String();
@@ -137,7 +137,7 @@ String LineParser::readString(char enclosing)
 
 	String ret;
 	int endPos = pos_;
-	if (enclosing == -1)
+	if (!enclosing)
 	{
 		if ((line_.saveGet(endPos) == '\'') || (line_.saveGet(endPos) == '"'))
 			enclosing = line_.saveGet(endPos);
@@ -256,7 +256,7 @@ String LineParser::readPunctuator()
 	
 	String ret;
 	const int singleCapa = 8;
-	char single[singleCapa] = {',',';','(',')','[',']','{','}'};
+	Char single[singleCapa] = {',',';','(',')','[',']','{','}'};
 	
 	int endPos = pos_;
 	if (!isPunct(line_.saveGet(endPos))) {

@@ -22,7 +22,7 @@
 #ifndef PONA_QUEUE_HPP
 #define PONA_QUEUE_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 
 namespace pona
 {

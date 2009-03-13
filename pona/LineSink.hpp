@@ -22,8 +22,8 @@
 #ifndef PONA_LINESINK_HPP
 #define PONA_LINESINK_HPP
 
-#include "Atoms.hpp"
-#include "Options.hpp"
+#include "atoms"
+#include "options.hpp"
 #include "Stream.hpp"
 #include "String.hpp"
 

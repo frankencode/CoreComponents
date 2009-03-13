@@ -30,9 +30,9 @@ namespace pona
 LinePrinter::LinePrinter(String format)
 	: format_(format),
 	  formatPos_(0),
-	  line_(lineChunkSize),
 	  linePos_(0)
 {
+	line_.allocate(lineChunkSize);
 	nextFormat();
 }
 

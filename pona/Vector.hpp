@@ -22,7 +22,7 @@
 #ifndef PONA_VECTOR_HPP
 #define PONA_VECTOR_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 #include "RandomAccessMedia.hpp"
 
 namespace pona
@@ -44,7 +44,10 @@ public:
 		: size_(size),
 		  buf_((size > 0) ? new T[size] : 0),
 		  owner_(true)
-	{}
+	{
+		if (PONA_IS_ATOMIC(T))
+			clear();
+	}
 	
 	template<class T2>
 	Vector(T2* buf)
@@ -112,6 +115,19 @@ public:
 		owner_ = false;
 		buf_ = buf;
 		size_ = size;
+	}
+	
+	inline void take(T* buf, int size)
+	{
+		wrap(buf, size);
+		owner_ = true;
+	}
+	
+	inline void reset(int newSize)
+	{
+		take((newSize > 0) ? new T[newSize] : 0, newSize);
+		if (PONA_IS_ATOMIC(T))
+			clear();
 	}
 	
 	inline void clear(const T& value = T())

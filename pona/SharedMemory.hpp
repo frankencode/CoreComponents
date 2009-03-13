@@ -28,7 +28,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "Atoms.hpp"
+#include "atoms"
 #include "String.hpp"
 
 namespace pona
@@ -110,7 +110,7 @@ private:
 #else // if PONA_WINDOWS
 
 #include <Windows.h>
-#include "Atoms.hpp"
+#include "atoms"
 
 namespace pona
 {

@@ -26,57 +26,29 @@ namespace pona
 
 FormatSpecifier::FormatSpecifier()
 {
-	integerWidth_ =
-		DEFINE("integerWidth",
-			REPEAT(1, 2, RANGE('0', '9'))
-		);
-	
-	fractionWidth_ =
-		DEFINE("fractionWidth",
-			REPEAT(1, 2, RANGE('0', '9'))
-		);
+	integerWidth_ = DEFINE("integerWidth", REPEAT(1, 2, RANGE('0', '9')));
+	fractionWidth_ = DEFINE("fractionWidth", REPEAT(1, 2, RANGE('0', '9')));
 	
 	base_ =
 		DEFINE("base",
-			OR(
-				OR(
+			GLUE(
+				CHOICE(
 					STRING("dec"),
-					STRING("hex")
-				),
-				OR(
+					STRING("hex"),
 					STRING("oct"),
 					STRING("bin")
-				)
+				),
+				REPEAT(0, 1, CHAR(':'))
 			)
 		);
 	
 	DEFINE_SELF("format",
-		CHAR('%',
-			OR(
-				REF("base",
-					REPEAT(0, 1,
-						CHAR(':',
-							REF("integerWidth",
-								REPEAT(0, 1,
-									CHAR('.',
-										REF("fractionWidth")
-									)
-								)
-							)
-						)
-					)
-				),
-				REPEAT(0, 1,
-					REF("integerWidth",
-						REPEAT(0, 1,
-							CHAR('.',
-								REF("fractionWidth")
-							)
-						)
-					)
-				),
-				CHAR('%')
-			)
+		GLUE(
+			CHAR('%'),
+			REPEAT(0, 1, REF("base")),
+			REPEAT(0, 1, REF("integerWidth")),
+			REPEAT(0, 1, GLUE(CHAR('.'), REF("fractionWidth"))),
+			CHAR('%')
 		)
 	);
 }

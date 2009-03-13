@@ -22,7 +22,7 @@
 #ifndef PONA_MONITORMEDIA_HPP
 #define PONA_MONITORMEDIA_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 
 namespace pona
 {
