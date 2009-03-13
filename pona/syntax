@@ -1,0 +1,7 @@
+#ifndef PONA_SYNTAX
+#define PONA_SYNTAX
+
+#include "SyntaxDefinition.hpp"
+#include "SyntaxFactory.hpp"
+
+#endif // PONA_SYNTAX

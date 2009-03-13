@@ -1,5 +1,5 @@
-#include <pona/Core.hpp>
-#include <string.h> // strlen
+#include <pona/stdio>
+#include <pona/container>
 
 namespace pona
 {
@@ -40,7 +40,7 @@ int main()
 		output()->write("Test 3\n");
 		output()->write("------\n");
 		
-		const char* l1 = "#include <pona/Core.hpp>\n";
+		const char* l1 = "#include <pona/atoms>\n";
 		const char* l2 = "int main() { pona::ouput()->write(\"Hello, world!\\n\"); return 0; }\n";
 		List<char> text;
 		text.push(0, strlen(l1), l1);

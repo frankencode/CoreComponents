@@ -26,37 +26,33 @@ namespace pona
 
 IntegerLiteral::IntegerLiteral()
 {
-	sign_ = DEFINE("sign", OR(CHAR('+'), CHAR('-')));
+	sign_ = DEFINE("sign", RANGE("+-"));
 	
 	binNumber_ =
 		DEFINE("binNumber",
-			REPEAT(1, 256,
-				RANGE('0', '1'),
+			GLUE(
+				REPEAT(1, 256, RANGE('0', '1')),
 				CHAR('b')
 			)
 		);
 		
 	octNumber_ =
 		DEFINE("octNumber",
-			CHAR('0',
-				REPEAT(1, 24,
-					RANGE('0', '9')
-				)
+			GLUE(
+				CHAR('0'),
+				REPEAT(1, 24, RANGE('0', '9'))
 			)
 		);
 	
 	hexNumber_ = 
 		DEFINE("hexNumber",
-			CHAR('0',
-				CHAR('x',
-					REPEAT(1, 20,
-						OR(
-							RANGE('0', '9'),
-							OR(
-								RANGE('a', 'f'),
-								RANGE('A', 'F')
-							)
-						)
+			GLUE(
+				STRING("0x"),
+				REPEAT(1, 20,
+					CHOICE(
+						RANGE('0', '9'),
+						RANGE('a', 'f'),
+						RANGE('A', 'F')
 					)
 				)
 			)
@@ -70,17 +66,13 @@ IntegerLiteral::IntegerLiteral()
 		);
 	
 	DEFINE_SELF("integer",
-		REPEAT(0, 1,
-			REF("sign"),
-			OR(
-				OR(
-					REF("binNumber"),
-					REF("octNumber")
-				),
-				OR(
-					REF("hexNumber"),
-					REF("decNumber")
-				)
+		GLUE(
+			REPEAT(0, 1, REF("sign")),
+			CHOICE(
+				REF("binNumber"),
+				REF("octNumber"),
+				REF("hexNumber"),
+				REF("decNumber")
 			)
 		)
 	);
@@ -94,61 +86,64 @@ bool IntegerLiteral::match(String text, int i0, int* i1, uint64_t* value, int* s
 	bool conform = SyntaxDefinition<String>::match(&text, i0, i1, &rootToken, 0, buf, sizeof(buf));
 	
 	if (conform)
-	{
-		*sign = 1;
-		*value = 0;
-	
-		Ref<Token> token = rootToken->firstChild();
-		
-		if (token->rule() == sign_->id())
-		{
-			if (text.get(token->index()) == '-')
-				*sign = -1;
-			token = token->nextSibling();
-		}
-		
-		if (token->rule() == binNumber_->id())
-		{
-			for (int i = token->i0(); i < token->i1() - 1; ++i)
-			{
-				int x = text.get(i) - '0';
-				*value *= 2;
-				*value += x;
-			}
-		}
-		else if (token->rule() == octNumber_->id())
-		{
-			for (int i = token->i0() + 1; i < token->i1(); ++i)
-			{
-				int x = text.get(i) - '0';
-				*value *= 8;
-				*value += x;
-			}
-		}
-		else if (token->rule() == hexNumber_->id())
-		{
-			for (int i = token->i0() + 2; i < token->i1(); ++i)
-			{
-				int x = text.get(i);
-				if (('0' <= x) && (x <= '9')) x -= '0';
-				else if (('a' <= x) && (x <= 'z')) x -= 'a' - 10;
-				else if (('A' <= x) && (x <= 'Z')) x -= 'A' - 10;
-				*value *= 16;
-				*value += x;
-			}
-		}
-		else if (token->rule() == decNumber_->id())
-		{
-			for (int i = token->i0(); i < token->i1(); ++i)
-			{
-				int x = text.get(i) - '0';
-				*value *= 10;
-				*value += x;
-			}
-		}
-	}
+		read(text, rootToken, value, sign);
 	
 	return conform;
+}
+
+void IntegerLiteral::read(String text, Ref<Token> rootToken, uint64_t* value, int* sign) const
+{
+	*sign = 1;
+	*value = 0;
+
+	Ref<Token> token = rootToken->firstChild();
+	
+	if (token->rule() == sign_->id())
+	{
+		if (text.get(token->index()) == '-')
+			*sign = -1;
+		token = token->nextSibling();
+	}
+	
+	if (token->rule() == binNumber_->id())
+	{
+		for (int i = token->i0(); i < token->i1() - 1; ++i)
+		{
+			int x = text.get(i) - '0';
+			*value *= 2;
+			*value += x;
+		}
+	}
+	else if (token->rule() == octNumber_->id())
+	{
+		for (int i = token->i0() + 1; i < token->i1(); ++i)
+		{
+			int x = text.get(i) - '0';
+			*value *= 8;
+			*value += x;
+		}
+	}
+	else if (token->rule() == hexNumber_->id())
+	{
+		for (int i = token->i0() + 2; i < token->i1(); ++i)
+		{
+			int x = text.get(i);
+			if (('0' <= x) && (x <= '9')) x -= '0';
+			else if (('a' <= x) && (x <= 'z')) x -= 'a' - 10;
+			else if (('A' <= x) && (x <= 'Z')) x -= 'A' - 10;
+			*value *= 16;
+			*value += x;
+		}
+	}
+	else if (token->rule() == decNumber_->id())
+	{
+		for (int i = token->i0(); i < token->i1(); ++i)
+		{
+			int x = text.get(i) - '0';
+			*value *= 10;
+			*value += x;
+		}
+	}
 }
 
 } // namespace pona

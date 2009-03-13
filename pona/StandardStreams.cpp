@@ -19,7 +19,7 @@
 **
 ****************************************************************************/
 
-#include "Options.hpp"
+#include "options.hpp"
 #include "Mutex.hpp"
 #include "File.hpp"
 #include "StandardStreams.hpp"

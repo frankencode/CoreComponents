@@ -1,4 +1,5 @@
-#include <pona/Core.hpp>
+#include <pona/stdio>
+#include <pona/concurrent>
 
 namespace pona
 {

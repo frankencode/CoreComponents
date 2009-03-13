@@ -22,7 +22,7 @@
 #ifndef PONA_HUFFMANCODEC_HPP
 #define PONA_HUFFMANCODEC_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 #include "BitSink.hpp"
 #include "BitSource.hpp"
 #include "Heap.hpp"

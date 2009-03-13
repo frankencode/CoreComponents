@@ -1,5 +1,5 @@
-#include <pona/Core.hpp>
-#include <string.h>
+#include <pona/stdio>
+#include <pona/concurrent>
 
 namespace pona
 {

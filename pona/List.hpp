@@ -22,8 +22,8 @@
 #ifndef PONA_LIST_HPP
 #define PONA_LIST_HPP
 
-#include "Atoms.hpp"
-#include "New.hpp"
+#include <new>
+#include "atoms"
 #include "Monitor.hpp"
 #include "RandomAccessMedia.hpp"
 

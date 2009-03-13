@@ -23,7 +23,7 @@
 #define PONA_TREE_HPP
 
 #include <assert.h>
-#include "Atoms.hpp"
+#include "atoms"
 
 namespace pona
 {
@@ -99,10 +99,12 @@ public:
 			previousSibling_->nextSibling_ = nextSibling_;
 		if (nextSibling_)
 			nextSibling_->previousSibling_ = previousSibling_;
-		if (parent_->firstChild_ == this)
-			parent_->firstChild_ = parent_->firstChild_->nextSibling_;
-		if (parent_->lastChild_ == this)
-			parent_->lastChild_ = parent_->lastChild_->previousSibling_;
+		if (parent_) {
+			if (parent_->firstChild_ == this)
+				parent_->firstChild_ = parent_->firstChild_->nextSibling_;
+			if (parent_->lastChild_ == this)
+				parent_->lastChild_ = parent_->lastChild_->previousSibling_;
+		}
 		parent_ = 0;
 	}
 	

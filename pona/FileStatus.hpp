@@ -22,7 +22,7 @@
 #ifndef PONA_FILESTATUS_HPP
 #define PONA_FILESTATUS_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 #include "String.hpp"
 #include "File.hpp"
 

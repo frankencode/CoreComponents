@@ -32,6 +32,7 @@ class IntegerLiteral: public SyntaxDefinition<String>
 public:
 	IntegerLiteral();
 	bool match(String text, int i0, int* i1, uint64_t* value, int* sign);
+	void read(String text, Ref<Token> rootToken, uint64_t* value, int* sign) const;
 	
 private:
 	RULE sign_;

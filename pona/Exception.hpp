@@ -137,11 +137,11 @@ public: \
 	{} \
 }
 
-inline char* exceptionMessageToUtf8(const char* s) { return ::strdup(s); }
-inline char* exceptionMessageToUtf8(char* s) { return s; }
+inline char* captureExceptionMessage(const char* s) { return ::strdup(s); }
+inline char* captureExceptionMessage(char* s) { return s; }
 
 #define PONA_THROW(ExceptionClass, reason) \
-	throw ExceptionClass(__FILE__, __LINE__, #ExceptionClass, exceptionMessageToUtf8(reason))
+	throw ExceptionClass(__FILE__, __LINE__, #ExceptionClass, captureExceptionMessage(reason))
 
 #ifdef PONA_POSIX
 

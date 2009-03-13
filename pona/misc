@@ -1,0 +1,8 @@
+#ifndef PONA_MISC
+#define PONA_MISC
+
+#include "Clock.hpp"
+#include "Random.hpp"
+#include "Rounding.hpp"
+
+#endif // PONA_MISC

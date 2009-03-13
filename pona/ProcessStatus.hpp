@@ -22,7 +22,7 @@
 #ifndef PONA_PROCESSSTATUS_HPP
 #define PONA_PROCESSSTATUS_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 #include "String.hpp"
 #include "Map.hpp"
 

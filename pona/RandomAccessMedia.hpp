@@ -22,7 +22,7 @@
 #ifndef PONA_RANDOMACCESSMEDIA_HPP
 #define PONA_RANDOMACCESSMEDIA_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 
 namespace pona
 {

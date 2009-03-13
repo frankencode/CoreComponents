@@ -22,25 +22,25 @@
 #ifndef PONA_SYNTAXFACTORY_HPP
 #define PONA_SYNTAXFACTORY_HPP
 
-#include "Atoms.hpp"
-#include "FormatSpecifier.hpp"
-#include "BooleanLiteral.hpp"
-#include "IntegerLiteral.hpp"
-#include "FloatingPointLiteral.hpp"
+#include "atoms"
 
 namespace pona
 {
+
+class FormatSpecifier;
+class BooleanLiteral;
+class IntegerLiteral;
+class FloatLiteral;
 
 class SyntaxFactory: public Instance
 {
 public:
 	static Ref<SyntaxFactory> instance();
 	
-	inline Ref<FormatSpecifier> formatSpecifier() { return formatSpecifier_; }
-	
-	inline Ref<BooleanLiteral> booleanLiteral() { return booleanLiteral_; }
-	inline Ref<IntegerLiteral> integerLiteral() { return integerLiteral_; }
-	inline Ref<FloatingPointLiteral> floatingPointLiteral() { return floatingPointLiteral_; }
+	Ref<FormatSpecifier> formatSpecifier() const;
+	Ref<BooleanLiteral> booleanLiteral() const;
+	Ref<IntegerLiteral> integerLiteral() const;
+	Ref<FloatLiteral> floatingPointLiteral() const;
 	
 private:
 	SyntaxFactory();
@@ -48,7 +48,7 @@ private:
 	Ref<FormatSpecifier, Owner> formatSpecifier_;
 	Ref<BooleanLiteral, Owner> booleanLiteral_;
 	Ref<IntegerLiteral, Owner> integerLiteral_;
-	Ref<FloatingPointLiteral, Owner> floatingPointLiteral_;
+	Ref<FloatLiteral, Owner> floatingPointLiteral_;
 };
 
 inline Ref<SyntaxFactory> syntaxFactory() { return SyntaxFactory::instance(); }

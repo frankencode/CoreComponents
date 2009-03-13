@@ -22,7 +22,7 @@
 #ifndef PONA_CRC32_HPP
 #define PONA_CRC32_HPP
 
-#include "Types.hpp"
+#include "types.hpp"
 
 namespace pona
 {

@@ -28,7 +28,7 @@
 typedef DWORD pid_t;
 #endif
 
-#include "Atoms.hpp"
+#include "atoms"
 #include "String.hpp"
 #include "List.hpp"
 #include "Map.hpp"

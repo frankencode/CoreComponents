@@ -25,7 +25,7 @@
 #ifdef PONA_POSIX
 
 #include <pthread.h>
-#include "Atoms.hpp"
+#include "atoms"
 
 namespace pona
 {
@@ -68,7 +68,7 @@ private:
 #else // PONA_WINDOWS
 
 #include <Windows.h>
-#include "Atoms.hpp"
+#include "atoms"
 
 namespace pona
 {

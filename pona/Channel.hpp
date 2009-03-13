@@ -22,7 +22,7 @@
 #ifndef PONA_CHANNEL_HPP
 #define PONA_CHANNEL_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 #include "Queue.hpp"
 #include "Monitor.hpp"
 

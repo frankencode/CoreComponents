@@ -22,7 +22,7 @@
 #ifndef PONA_STACK_HPP
 #define PONA_STACK_HPP
 
-#include "Atoms.hpp"
+#include "atoms"
 
 namespace pona
 {

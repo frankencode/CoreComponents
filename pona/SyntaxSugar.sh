@@ -16,7 +16,7 @@ while [ $n -le $MAX_ARGS ]; do
 	printf "\treturn"
 	let i=0
 	while [ $i -le $p ]; do
-		printf " OR(choice$i,"
+		printf " new OrNode(choice$i,"
 		let i=i+1
 	done
 	printf " choice$m"

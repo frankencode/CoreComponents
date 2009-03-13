@@ -31,13 +31,6 @@ String::String()
 	: list_(new Media)
 {}
 
-String::String(int n)
-	: list_(new Media)
-{
-	if (n > 0)
-		list_->push(0, n);
-}
-
 String::String(int n, Char ch)
 	: list_(new Media)
 {
@@ -62,7 +55,7 @@ String::String(const char* utf8, int numBytes, int numChars)
 		if (numChars == -1) {
 			numChars = 0;
 			Utf8Source source((uint8_t*)utf8, numBytes);
-			while (source.numBytesRead() < numBytes) {
+			while (int(source.numBytesRead()) < numBytes) {
 				source.readChar();
 				++numChars;
 			}
@@ -80,7 +73,9 @@ String::String(const char* utf8, int numBytes, int numChars)
 
 String::String(Ref<Media> list)
 	: list_(list)
-{}
+{
+	if (!list_) list_ = new Media;
+}
 
 int String::find(String s, int i) // HACK, needs to be moved to List
 {
@@ -121,7 +116,7 @@ int String::toInt(bool* ok)
 	if (length == 0) {
 		if (ok) *ok = false;
 	}
-	else if (value > intMax) {
+	else if (value > uint64_t(intMax)) {
 		value = 0;
 		if (ok) *ok = false;
 	}

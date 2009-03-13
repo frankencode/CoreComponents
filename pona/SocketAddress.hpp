@@ -32,7 +32,7 @@
 #include <Ws2tcpip.h>
 #endif
 
-#include "Atoms.hpp"
+#include "atoms"
 #include "String.hpp"
 #include "List.hpp"
 
