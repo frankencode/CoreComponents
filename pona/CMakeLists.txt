@@ -74,6 +74,7 @@ SET(PONA_HEADER
 	PrintAndScan.hpp
 	TcpStream.hpp
 	TcpSocket.hpp
+	ToolOptions.hpp
 )
 
 SET(PONA_SOURCE
@@ -100,54 +101,21 @@ SET(PONA_SOURCE
 	FloatLiteral.cpp
 	NumberFormatting.cpp
 	TcpSocket.cpp
+	ToolOptions.cpp
+	Exception.cpp
+	SystemStream.cpp
+	File.cpp
+	FileStatus.cpp
+	Thread.cpp
+	Process.cpp
+	ProcessStatus.cpp
 )
 
-SET(PONA_POSIX_SOURCE
-	Posix/Exception.cpp
-	Posix/SystemStream.cpp
-	Posix/File.cpp
-	Posix/FileStatus.cpp
-	Posix/Thread.cpp
-	Posix/Process.cpp
-	Posix/ProcessStatus.cpp
+ADD_LIBRARY(pona
+	${PONA_HEADER}
+	${PONA_SOURCE}
 )
 
-SET(PONA_WINDOWS_SOURCE
-	Windows/Exception.cpp
-	Windows/SystemStream.cpp
-	Windows/File.cpp
-	Windows/FileStatus.cpp
-	Windows/Thread.cpp
-	Windows/ProcessToken.cpp
-	Windows/ProcessToken.hpp
-	Windows/Process.cpp
-	Windows/ProcessStatus.cpp
-	Windows/inet_ntop.c
-	Windows/inet_pton.c
-	Windows/WsaAwareness.cpp
-	Windows/TcpStream.cpp
-)
-
-IF(UNIX)
-	ADD_LIBRARY(pona
-		${PONA_HEADER}
-		${PONA_SOURCE}
-		${PONA_POSIX_SOURCE}
-	)
-	IF(APPLE)
-		TARGET_LINK_LIBRARIES(pona pthread)
-	ELSE(APPLE)
-		TARGET_LINK_LIBRARIES(pona rt pthread)
-	ENDIF(APPLE)
-ELSE(UNIX)
-	ADD_LIBRARY(pona
-		${PONA_HEADER}
-		${PONA_SOURCE}
-		${PONA_WINDOWS_SOURCE}
-	)
-	TARGET_LINK_LIBRARIES(pona winmm ws2_32)
-ENDIF(UNIX)
-
-SET_TARGET_PROPERTIES(pona PROPERTIES VERSION 0.8.0 SOVERSION 0)
+SET_TARGET_PROPERTIES(pona PROPERTIES VERSION 0.9.1 SOVERSION 0)
 
 INSTALL(TARGETS pona ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)

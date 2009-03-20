@@ -58,7 +58,7 @@ int main()
 		
 		char buf2[128];
 		memset(buf2, 0, 128);
-		text.read(60, buf2, 13);
+		text.read(60, 13, buf2);
 		output()->write(format("\"%%\"\n") % buf2);
 	}
 	

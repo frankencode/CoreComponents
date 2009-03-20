@@ -30,15 +30,9 @@ namespace pona
 class SystemStream: public Stream
 {
 public:
-#ifdef PONA_POSIX
 	SystemStream(int fd);
 	~SystemStream();
 	inline int fd() const { return fd_; }
-#else // if PONA_WINDOWS
-	SystemStream(void* handle, bool isStdHandle = false);
-	~SystemStream();
-	inline void* handle() const { return handle_; }
-#endif
 	
 	bool isOpen() const;
 	void close();
@@ -50,12 +44,7 @@ public:
 	
 protected:
 	bool isatty_;
-#ifdef PONA_POSIX
 	int fd_;
-#else // if PONA_WINDOWS
-	void* handle_;
-	bool isStdHandle_;
-#endif
 };
 
 } // namespace pona

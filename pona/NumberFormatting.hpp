@@ -33,8 +33,9 @@ bool parseBool(String text, int index = 0, int* length = 0);
 
 String printInteger(uint64_t value, int sign = 1, int base = 10, int width = 0);
 void parseInteger(uint64_t* value, int* sign, String text, int index = 0, int* length = 0);
+int toInt(String text, bool* ok = 0);
 
-String printFloatingPoint(float64_t x, int base = 10, int wi = 0, int wf = 0, int w = 0, char fill = ' ');
+String printFloatingPoint(float64_t x, int base = 10, int wi = 0, int wf = 0, int w = 0, Char fill = ' ');
 float64_t parseFloatingPoint(String text, int index = 0, int* length = 0);
 
 } // namespace pona

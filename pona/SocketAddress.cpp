@@ -19,9 +19,6 @@
 **
 ****************************************************************************/
 
-#ifdef _MSC_VER
-#include "Windows/WsaAwareness.hpp"
-#else
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h> // inet_pton, inet_ntop
@@ -31,15 +28,9 @@
 #include <netdb.h> // getaddrinfo, freeaddrinfo, getnameinfo
 #include <string.h> // memset, memcpy
 #include <errno.h>
-#endif
 
 #include "LinePrinter.hpp"
 #include "SocketAddress.hpp"
-
-#ifdef _MSC_VER
-#include "Windows/inet_ntop.hpp"
-#include "Windows/inet_pton.hpp"
-#endif
 
 namespace pona
 {
@@ -49,10 +40,6 @@ SocketAddress::SocketAddress(int family, String address, int port)
 	  socketType_(0),
 	  protocol_(0)
 {
-#ifdef _MSC_VER
-	wsaAwareness();
-#endif // _MSC_VER
-
 	void* addr = 0;
 
 	if (family == AF_INET) {
@@ -83,10 +70,6 @@ SocketAddress::SocketAddress(addrinfo* info)
 	  socketType_(info->ai_socktype),
 	  protocol_(info->ai_protocol)
 {
-#ifdef _MSC_VER
-	wsaAwareness();
-#endif // _MSC_VER
-	
 	if (info->ai_family == AF_INET)
 		inet4Address_ = *(sockaddr_in*)info->ai_addr;
 	else if (info->ai_family == AF_INET6)
@@ -180,22 +163,14 @@ void SocketAddress::setPort(int port)
 		PONA_THROW(NetworkingException, "Unsupported address family");
 }
 
-Ref<InetAddressList, Owner> SocketAddress::query( String hostName,
-                                                String serviceName,
-                                                int family,
-                                                int socketType,
-                                                String* canonicalName )
+Ref<InetAddressList, Owner> SocketAddress::query(String hostName, String serviceName, int family, int socketType, String* canonicalName)
 {
-#ifdef _MSC_VER
-	wsaAwareness();
-#endif // _MSC_VER
-
 	addrinfo hint;
 	addrinfo* head;
 	
 	memset(&hint, 0, sizeof(hint));
 	hint.ai_flags = (canonicalName) ? AI_CANONNAME : 0;
-	hint.ai_protocol = family;
+	hint.ai_family = family;
 	hint.ai_socktype = socketType;
 	
 	char* hostNameUtf8 = hostName.strdup();
@@ -204,11 +179,7 @@ Ref<InetAddressList, Owner> SocketAddress::query( String hostName,
 	int ret = getaddrinfo(hostNameUtf8, (serviceName != String()) ? serviceNameUtf8 : 0, &hint, &head);
 	if (ret != 0)
 		if (ret != EAI_NONAME)
-#ifdef _MSC_VER
-			PONA_THROW(NetworkingException, "Failed to read address info");
-#else
 			PONA_THROW(NetworkingException, gai_strerror(ret));
-#endif
 	
 	free(serviceNameUtf8);
 	free(hostNameUtf8);
@@ -278,10 +249,6 @@ String SocketAddress::lookupServiceName() const
 
 String SocketAddress::hostName()
 {
-#ifdef _MSC_VER
-	wsaAwareness();
-#endif // _MSC_VER
-
 	const int bufSize = 1024;
 	char buf[bufSize + 1];
 	String name;

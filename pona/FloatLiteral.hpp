@@ -27,7 +27,7 @@
 namespace pona
 {
 
-class FloatLiteral: public SyntaxDefinition<String>
+class FloatLiteral: public SyntaxDefinition<String::Media>
 {
 public:
 	FloatLiteral();

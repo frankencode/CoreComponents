@@ -87,12 +87,7 @@ public:
 private:
 	String path_;
 	int openFlags_;
-
-#ifdef PONA_POSIX
 	char* pathUtf8_;
-#else
-	wchar_t* pathWc_;
-#endif
 };
 
 } // namespace pona

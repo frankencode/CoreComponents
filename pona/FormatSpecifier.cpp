@@ -19,6 +19,7 @@
 **
 ****************************************************************************/
 
+#include "NumberFormatting.hpp"
 #include "FormatSpecifier.hpp"
 
 namespace pona
@@ -42,7 +43,7 @@ FormatSpecifier::FormatSpecifier()
 			)
 		);
 	
-	DEFINE_SELF("format",
+	DEFINE_SELF(
 		GLUE(
 			CHAR('%'),
 			REPEAT(0, 1, REF("base")),
@@ -53,19 +54,19 @@ FormatSpecifier::FormatSpecifier()
 	);
 }
 
-bool FormatSpecifier::find(String media, int* i0, int* i1, int* wi, int* wf, int* base)
+bool FormatSpecifier::find(String text, int* i0, int* i1, int* wi, int* wf, int* base)
 {
 	Ref<Token, Owner> rootToken = 0;
 	
 	uint8_t buf[sizeof(Token) * 6];
-	bool found = SyntaxDefinition<String>::find(&media, i0, i1, &rootToken, buf, sizeof(buf));
+	bool found = SyntaxDefinition<String::Media>::find(text, i0, i1, &rootToken, buf, sizeof(buf));
 	
 	if (found)
 	{
 		Ref<Token> token = rootToken->firstChild();
 		while (token)
 		{
-			String value = media.copy(token->index(), token->length());
+			String value = text->copy(token->index(), token->length());
 			if (token->rule() == base_->id())
 			{
 				if (value == "dec")
@@ -79,11 +80,11 @@ bool FormatSpecifier::find(String media, int* i0, int* i1, int* wi, int* wf, int
 			}
 			else if (token->rule() == integerWidth_->id())
 			{
-				*wi = value.toInt();
+				*wi = toInt(value);
 			}
 			else if (token->rule() == fractionWidth_->id())
 			{
-				*wf = value.toInt();
+				*wf = toInt(value);
 			}
 			token = token->nextSibling();
 		}

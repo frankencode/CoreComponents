@@ -24,6 +24,8 @@
 
 #include "atoms"
 #include "String.hpp"
+#include "Variant.hpp"
+#include "NumberFormatting.hpp"
 
 #ifdef arg
 #undef arg
@@ -32,8 +34,6 @@
 namespace pona
 {
 
-/** \todo Allow to pass the fill character for printing
-  */
 class LinePrinter
 {
 public:
@@ -41,6 +41,7 @@ public:
 	
 	LinePrinter& arg(const char* value);
 	LinePrinter& arg(String value);
+	LinePrinter& arg(Variant value);
 	LinePrinter& arg(Char value);
 	LinePrinter& arg(bool value);
 	LinePrinter& arg(uint64_t value);
@@ -56,21 +57,16 @@ public:
 	inline LinePrinter& arg(uint32_t value) { return arg(uint64_t(value)); }
 	inline LinePrinter& arg(void* value) { return arg(uint64_t(value)); }
 	
-#ifdef _MSC_VER
-	inline LinePrinter& arg(long unsigned value) { return arg(uint64_t(value)); }
-	inline LinePrinter& arg(long int value) { return arg(int64_t(value)); }
-#endif
-	
 	inline LinePrinter& operator%(void* value) { return arg(value); }
 	
 	template<class T>
 	inline LinePrinter& operator%(T value) { return arg(value); }
 	
-	inline operator String() const { return line_.copy(0, linePos_); }
+	inline operator String() const { return line_->copy(0, linePos_); }
 	
 private:
 	void putChar(char ch);
-
+	
 	void nextFormat();
 	static double trunc(double x);
 	static double round(double x);

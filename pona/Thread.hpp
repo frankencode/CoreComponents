@@ -22,21 +22,11 @@
 #ifndef PONA_THREAD_HPP
 #define PONA_THREAD_HPP
 
-#ifdef PONA_POSIX
 #include <pthread.h>
 #include "atoms"
-#else // PONA_WINDOWS
-#include <Windows.h>
-#include "atoms"
-#include "Semaphore.hpp"
-#endif
 
 namespace pona
 {
-
-#ifdef PONA_WINDOWS
-class Condition;
-#endif
 
 class Thread: public Instance
 {
@@ -55,27 +45,8 @@ protected:
 	virtual int run() = 0;
 
 private:
-#ifdef PONA_POSIX
 	pthread_t tid_;
 	static void* runWrapper(void* p);
-#else // PONA_WINDOWS
-	friend class Condition;
-	HANDLE handle_;
-	static DWORD WINAPI runWrapper(LPVOID p);
-
-	class Tls
-	{
-	public:
-		Tls(): wait(0), next(0) {}
-		Semaphore wait;
-		Tls* next;
-	};
-
-	__declspec(thread) static Tls* tls;
-
-	static Semaphore* tlsGlobalLock;
-
-#endif // platform switch
 };
 
 } // namespace pona

@@ -22,8 +22,6 @@
 #ifndef PONA_MUTEX_HPP
 #define PONA_MUTEX_HPP
 
-#ifdef PONA_POSIX
-
 #include <pthread.h>
 #include "atoms"
 
@@ -64,64 +62,5 @@ private:
 };
 
 } // namespace pona
-
-#else // PONA_WINDOWS
-
-#include <Windows.h>
-#include "atoms"
-
-namespace pona
-{
-
-class Condition;
-
-/** Non-recursive mutex.
- */
-class Mutex: public Instance
-{
-public:
-	Mutex()
-	: locked_(false)
-	{
-		mutex_ = CreateMutex(0, FALSE, 0);
-		if (!mutex_)
-			PONA_WINDOWS_EXCEPTION;
-	}
-
-	~Mutex()
-	{
-		if (mutex_)
-		{
-			CloseHandle(mutex_);
-			mutex_ = 0;
-		}
-	}
-
-	inline void acquire()
-	{
-		if (WaitForSingleObject(mutex_, INFINITE) == WAIT_FAILED)
-			PONA_WINDOWS_EXCEPTION;
-		if (locked_)
-			while (1) { Sleep(1000); } // simulate deadlock
-		locked_ = true;
-	}
-
-	inline void release()
-	{
-		locked_ = false;
-		if (!ReleaseMutex(mutex_))
-			PONA_WINDOWS_EXCEPTION;
-	}
-
-private:
-	friend class Condition;
-
-	HANDLE mutex_;
-	bool locked_;
-};
-
-} // namespace pona
-
-#endif // platform switch
 
 #endif // PONA_MUTEX_HPP

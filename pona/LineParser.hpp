@@ -77,6 +77,8 @@ private:
 	inline static bool isPunct(char ch) { return !(isSpace(ch) || isWord(ch) || (ch == 0)); }
 	inline static bool isSeparator(char ch) { return (ch == ',') || (ch == ';'); }
 	
+	inline Char saveGet(int i) const { return (i < line_->length()) ? line_->get(i) : Char(0); }
+	
 	String line_;
 	int pos_;
 	int options_;

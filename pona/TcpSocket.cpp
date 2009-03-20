@@ -19,9 +19,7 @@
 **
 ****************************************************************************/
 
-#ifndef _MSC_VER
 #include <unistd.h> // close, select
-#endif
 #include "TcpSocket.hpp"
 
 namespace pona
@@ -73,11 +71,7 @@ int TcpSocket::run()
 		serve(remoteAddress, new TcpStream(asd));
 	}
 	
-	#ifdef _MSC_VER
-		::closesocket(lsd_);
-	#else
-		::close(lsd_);
-	#endif
+	::close(lsd_);
 	
 	cleanup();
 	

@@ -22,38 +22,12 @@
 #ifndef PONA_TCPSTREAM_HPP
 #define PONA_TCPSTREAM_HPP
 
-#ifndef _MSC_VER
 #include "SystemStream.hpp"
-#else
-#include "Stream.hpp"
-#endif
 
 namespace pona
 {
 
-#ifndef _MSC_VER
-
 typedef SystemStream TcpStream;
-
-#else
-
-class TcpStream: public Stream
-{
-public:
-	TcpStream(int sd);
-	~TcpStream();
-	
-	bool isOpen() const;
-	void close();
-
-	int readAvail(void* buf, int bufCapa);
-	void write(const void* buf, int bufFill);
-	
-private:
-	int sd_;
-};
-
-#endif
 
 } // namespace pona
 

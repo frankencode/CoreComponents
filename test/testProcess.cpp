@@ -37,13 +37,8 @@ int main(int argc, char** argv)
 		print("(2) I/O Redirection, passing of arguments and environment variables\n\n");
 		
 		Process process;
-#ifdef PONA_POSIX
 		process.setExecPath("testProcess");
 		process.setWorkingDirectory("/");
-#else // if PONA_WINDOWS
-		process.setExecPath("testProcess.exe");
-		process.setWorkingDirectory("C:\\");
-#endif
 		process.setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
 		process.arguments()->append("--echo 123");
 		process.environment()->set("Hello", "World!");
@@ -88,9 +83,9 @@ int echo(int argc, char** argv)
 {
 	String commandLine;
 	for (int i = 0; i < argc; ++i) {
-		commandLine.append(argv[i]);
+		commandLine << argv[i];
 		if (i != argc - 1)
-			commandLine.append(" ");
+			commandLine << " ";
 	}
 	print("ProcessStatus::workingDirectory() = \"%%\"\n", ProcessStatus::workingDirectory());
 	print("ProcessStatus::env(\"Hello\") = \"%%\"\n", ProcessStatus::env("Hello"));

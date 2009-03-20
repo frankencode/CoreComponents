@@ -32,21 +32,21 @@ LinePrinter::LinePrinter(String format)
 	  formatPos_(0),
 	  linePos_(0)
 {
-	line_.allocate(lineChunkSize);
+	line_->push(0, lineChunkSize);
 	nextFormat();
 }
 
 inline void LinePrinter::putChar(char ch)
 {
-	if (linePos_ == line_.length())
-		line_.media()->push(linePos_, lineChunkSize);
-	line_.set(linePos_, ch);
+	if (linePos_ == line_->length())
+		line_->push(linePos_, lineChunkSize);
+	line_->set(linePos_, ch);
 	++linePos_;
 }
 
 void LinePrinter::nextFormat()
 {
-	if (formatPos_ == format_.length()) return;
+	if (formatPos_ == format_->length()) return;
 	
 	Ref<FormatSpecifier> specifier = syntaxFactory()->formatSpecifier();
 	
@@ -60,15 +60,15 @@ void LinePrinter::nextFormat()
 	
 	if (!hasNextFormat_)
 	{
-		for (int i = formatPos_, n = format_.length(); i < n; ++i)
-			putChar(format_.get(i));
+		for (int i = formatPos_, n = format_->length(); i < n; ++i)
+			putChar(format_->get(i));
 		
-		formatPos_ = format_.length();
+		formatPos_ = format_->length();
 	}
 	else
 	{
 		for (int i = formatPos_; i < i0; ++i)
-			putChar(format_.get(i));
+			putChar(format_->get(i));
 		
 		formatPos_ = i1;
 	}
@@ -91,6 +91,23 @@ LinePrinter& LinePrinter::arg(String value)
 	
 	printString(value);
 	nextFormat();
+	return *this;
+}
+
+LinePrinter& LinePrinter::arg(Variant value)
+{
+	if (value.type() == Variant::UndefType)
+		arg("undef");
+	else if (value.type() == Variant::BoolType)
+		arg(bool(value));
+	else if (value.type() == Variant::IntType)
+		arg(int(value));
+	else if (value.type() == Variant::FloatType)
+		arg(double(value));
+	else if (value.type() == Variant::StringType)
+		arg(String(value));
+	else if (value.type() == Variant::RefType)
+		arg(Ref<>(value).get());
 	return *this;
 }
 
@@ -155,15 +172,15 @@ LinePrinter& LinePrinter::arg(float64_t value)
 void LinePrinter::printFloatingPoint(float64_t value)
 {
 	String s = pona::printFloatingPoint(value, base_, wi_, wf_);
-	for (int i = 0, n = s.length(); i < n; ++i)
-		putChar(s.get(i));
+	for (int i = 0, n = s->length(); i < n; ++i)
+		putChar(s->get(i));
 }
 
 void LinePrinter::printInteger(uint64_t value, int sign)
 {
 	String s = pona::printInteger(value, sign, base_, wi_);
-	for (int i = 0, n = s.length(); i < n; ++i)
-		putChar(s.get(i));
+	for (int i = 0, n = s->length(); i < n; ++i)
+		putChar(s->get(i));
 }
 
 inline int len(const char* s)
@@ -185,11 +202,11 @@ void LinePrinter::printString(const char* value)
 
 void LinePrinter::printString(String value)
 {
-	int n = value.length();
+	int n = value->length();
 	for (int i = n; i < wi_; ++i)
 		putChar(' ');
 	for (int i = 0; i < n; ++i)
-		putChar(value.get(i));
+		putChar(value->get(i));
 }
 
 } // namespace pona

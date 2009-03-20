@@ -27,11 +27,11 @@
 namespace pona
 {
 
-class FormatSpecifier: public SyntaxDefinition<String>
+class FormatSpecifier: public SyntaxDefinition<String::Media>
 {
 public:
 	FormatSpecifier();
-	bool find(String media, int* i0, int* i1, int* wi, int* wf, int* base);
+	bool find(String text, int* i0, int* i1, int* wi, int* wf, int* base);
 	
 private:
 	RULE number_;
