@@ -67,8 +67,19 @@ public:
 	inline void append(T e) { push(length_, 1, &e); }
 	inline void insert(int i, T e) { push(i, 1, &e); }
 	inline void remove(int i, T* e = 0) { pop(i, 1, e); }
+	inline void remove(int i, int n) { pop(i, n); }
 	inline int length() const { return length_; }
 	inline int maxLength() const { return maxLength_; }
+	
+	inline void insert(int i, List* b) {
+		int n = b->length();
+		if (n > 0) {
+			push(i, n);
+			for (int k = 0; k < n; ++k)
+				set(i+k, b->get(k));  // quick HACK, low performance
+		}
+	}
+	inline void append(List* b) { insert(length_, b); }
 	
 	inline int size() const { return maxLength_; }
 	inline int fill() const { return length_; }
@@ -78,8 +89,8 @@ public:
 	void push(int i, int n = 1, const T* v = 0);
 	void pop(int i, int n = 1, T* v = 0);
 	
-	void read(int i, T* v, int n);
-	void write(int i, T* v, int n);
+	void read(int i, int n, T* v);
+	void write(int i, int n, T* v);
 	
 	void clear();
 	
@@ -103,10 +114,11 @@ public:
 	inline bool operator<=(const List& b) const { return (*this < b) || (*this == b); }
 	inline bool operator>=(const List& b) const { return (b < *this) || (*this == b); }
 	
+protected:
+	List(Ref<List> parent, int index0, int length);
+	
 private:
 	PONA_DISABLE_COPY(List)
-	
-	List(Ref<List> parent, int index0, int length);
 	
 	class Node
 	{
@@ -474,7 +486,7 @@ void List<T>::pop(int i, int n, T* v)
 }
 
 template<class T>
-void List<T>::write(int i, T* v, int n)
+void List<T>::write(int i, int n, T* v)
 {
 	if (n == 0) return;
 	
@@ -489,7 +501,7 @@ void List<T>::write(int i, T* v, int n)
 	
 	if (parent_)
 	{
-		parent_->write(i + index0_, v, n);
+		parent_->write(i + index0_, n, v);
 	}
 	else
 	{
@@ -505,7 +517,7 @@ void List<T>::write(int i, T* v, int n)
 }
 
 template<class T>
-void List<T>::read(int i, T* v, int n)
+void List<T>::read(int i, int n, T* v)
 {
 	if (n == 0) return;
 	
@@ -520,7 +532,7 @@ void List<T>::read(int i, T* v, int n)
 	
 	if (parent_)
 	{
-		parent_->read(i + index0_, v, n);
+		parent_->read(i + index0_, n, v);
 	}
 	else
 	{

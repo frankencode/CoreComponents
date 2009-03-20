@@ -24,7 +24,11 @@
 
 #include "atoms"
 #include "String.hpp"
+#include "Variant.hpp"
 #include "List.hpp"
+#include "BooleanLiteral.hpp"
+#include "IntegerLiteral.hpp"
+#include "FloatLiteral.hpp"
 #include "SyntaxDefinition.hpp"
 
 namespace pona
@@ -32,39 +36,46 @@ namespace pona
 
 PONA_EXCEPTION(ToolOptionsException, Exception);
 
-class ToolOptions: public SyntaxDefinition<String>
+class ToolOptions: public SyntaxDefinition<String::Media>
 {
 public:
-	enum ValueType { BooleanType, IntegerType, FloatType, StringType };
-	
 	ToolOptions();
 	
-	void define(Char shortName, String longName = "", int type = BooleanType, String defaultValue = "", String description = "");
-	void read(int argc, char** argv);
-	void read(String line);
+	void define(Char shortName, String longName, Ref<Variant> value, String description = "");
+	
+	Ref<StringList> read(int argc, char** argv);
+	Ref<StringList> read(String line);
+	
+	String help(String synopsis = "", String summary = "", String details = "");
 	
 private:
-	RULE boolean_;
-	RULE integer_;
-	RULE float_;
-	RULE string_;
+	Ref<BooleanLiteral, Owner> booleanRule_;
+	Ref<IntegerLiteral, Owner> integerRule_;
+	Ref<FloatLiteral, Owner> floatRule_;
+	RULE stringRule_;
+	RULE longNameRule_;
+	RULE shortNameRule_;
+	RULE optionRule_;
 	
 	class Option: public Instance
 	{
 	public:
-		int type_;
 		Char shortName_;
 		String longName_;
-		String defaultValue_;
 		String description_;
+		int typeMask_;
+		Ref<Variant, SetNull> value_;
 	};
 	
-	typedef List<Ref<Option, Owner>> OptionList;
+	typedef List< Ref<Option, Owner> > OptionList;
 	Ref<OptionList, Owner> optionList_;
+	String toolName_;
 	
 	Ref<Option> optionByShortName(Char name) const;
 	Ref<Option> optionByLongName(String name) const;
-}
+	void readOption(String line, Ref<Token> token);
+	void verifyTypes();
+};
 
 } // namespace pona
 

@@ -45,7 +45,7 @@ BooleanLiteral::BooleanLiteral()
 		)
 	);
 	
-	DEFINE_SELF("boolean", CHOICE(REF("true"), REF("false")));
+	DEFINE_SELF(CHOICE(REF("true"), REF("false")));
 }
 
 bool BooleanLiteral::match(String text, int i0, int* i1, bool* value)
@@ -53,7 +53,7 @@ bool BooleanLiteral::match(String text, int i0, int* i1, bool* value)
 	Ref<Token, Owner> rootToken;
 	uint8_t buf[sizeof(Token) * 3];
 	
-	bool conform = SyntaxDefinition<String>::match(&text, i0, i1, &rootToken, 0, buf, sizeof(buf));
+	bool conform = SyntaxDefinition<String::Media>::match(text, i0, i1, &rootToken, 0, buf, sizeof(buf));
 	
 	if (conform)
 		*value = read(rootToken);

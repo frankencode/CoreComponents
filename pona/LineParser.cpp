@@ -20,7 +20,6 @@
 ****************************************************************************/
 
 #include "LinePrinter.hpp"
-#include "NumberFormatting.hpp"
 #include "LineParser.hpp"
 
 namespace pona
@@ -41,7 +40,7 @@ LineParser::LineParser(String line, int options)
 		if (options_ & Strict) \
 		{ \
 			reason_ = format(String(reason) + String(" at position %% in line \"%%\".")) % pos_ % line_; \
-			PONA_THROW(FormattingException, reason_.strdup() /* HACK, leaks memory */ ); \
+			PONA_THROW(FormattingException, reason_.strdup() ); \
 		} \
 	} \
 }
@@ -61,7 +60,7 @@ void LineParser::autoSkip()
 
 bool LineParser::eol() const
 {
-	return (pos_ >= int(line_.length()));
+	return (pos_ >= int(line_->length()));
 }
 
 bool LineParser::syntaxError() const
@@ -83,18 +82,16 @@ String LineParser::readWord()
 	
 	String ret;
 	int endPos = pos_;
-	while (endPos < line_.length()) {
-		if (!isWord(line_.saveGet(endPos))) break;
+	while (endPos < line_->length()) {
+		if (!isWord(saveGet(endPos))) break;
 		++endPos;
 	}
 	
-	if (pos_ == endPos)
-	{
+	if (pos_ == endPos) {
 		LINEPARSER_SYNTAX_ERROR("Expected word");
 	}
-	else
-	{
-		ret = line_.copy(pos_, endPos-pos_);
+	else {
+		ret = line_->copy(pos_, endPos-pos_);
 		pos_ = endPos;
 		autoSkip();
 	}
@@ -111,16 +108,16 @@ String LineParser::readIdentifier()
 	
 	String ret;
 	int endPos = pos_;
-	if ((!isAlpha(line_.saveGet(endPos))) && (line_.saveGet(endPos) != '_'))
+	if ((!isAlpha(saveGet(endPos))) && (saveGet(endPos) != '_'))
 	{
 		LINEPARSER_SYNTAX_ERROR("Expected identifier");
 	}
 	else
 	{
 		++endPos;
-		while (isWord(line_.saveGet(endPos)))
+		while (isWord(saveGet(endPos)))
 			++endPos;
-		ret = line_.copy(pos_, endPos-pos_);
+		ret = line_->copy(pos_, endPos-pos_);
 		pos_ = endPos;
 		autoSkip();
 	}
@@ -139,8 +136,8 @@ String LineParser::readString(Char enclosing)
 	int endPos = pos_;
 	if (!enclosing)
 	{
-		if ((line_.saveGet(endPos) == '\'') || (line_.saveGet(endPos) == '"'))
-			enclosing = line_.saveGet(endPos);
+		if ((saveGet(endPos) == '\'') || (saveGet(endPos) == '"'))
+			enclosing = saveGet(endPos);
 		else {
 			LINEPARSER_SYNTAX_ERROR("Expected string");
 			return String();
@@ -150,26 +147,26 @@ String LineParser::readString(Char enclosing)
 	++endPos;
 	bool escaped = false;
 	int len = 0;
-	while (endPos < int(line_.length()))
+	while (endPos < int(line_->length()))
 	{
-		if ((!escaped) && (line_.saveGet(endPos) == enclosing))
+		if ((!escaped) && (saveGet(endPos) == enclosing))
 			break;
-		escaped = (line_.saveGet(endPos) == '\\');
+		escaped = (saveGet(endPos) == '\\');
 		len += (!escaped);
 		++endPos;
 	}
 	
-	if (endPos == int(line_.length()))
+	if (endPos == int(line_->length()))
 	{
 		LINEPARSER_SYNTAX_ERROR("Open string");
 	}
 	else
 	{
-		ret = String(len, ' ');
+		ret = len * Char(' ');
 		escaped = false;
 		for (int i = pos_ + 1, k = 0; i < endPos; ++i)
 		{
-			char ch = line_.saveGet(i);
+			char ch = saveGet(i);
 			if (escaped)
 			{
 				if (ch == 'n')
@@ -181,7 +178,7 @@ String LineParser::readString(Char enclosing)
 				else if (ch == 'f')
 					ch = '\f';
 			}
-			ret.set(k, ch);
+			ret->set(k, ch);
 			escaped = (ch == '\\');
 			k += (!escaped);
 		}
@@ -259,24 +256,24 @@ String LineParser::readPunctuator()
 	Char single[singleCapa] = {',',';','(',')','[',']','{','}'};
 	
 	int endPos = pos_;
-	if (!isPunct(line_.saveGet(endPos))) {
+	if (!isPunct(saveGet(endPos))) {
 		LINEPARSER_SYNTAX_ERROR("Expected punctuator");
 		return String();
 	}
 	
 	int i = 0;
-	while ((i < singleCapa) && (line_.saveGet(endPos) != single[i]))
+	while ((i < singleCapa) && (saveGet(endPos) != single[i]))
 		++i;
 	
 	++endPos;
 	
 	if (i == singleCapa)
 	{
-		while (isPunct(line_.saveGet(endPos)))
+		while (isPunct(saveGet(endPos)))
 			++endPos;
 	}
 	
-	ret = line_.copy(pos_, endPos - pos_);
+	ret = line_->copy(pos_, endPos - pos_);
 	pos_ = endPos;
 	
 	autoSkip();
@@ -298,9 +295,9 @@ void LineParser::skipSeparator()
 	if (syntaxError_)
 		return;
 	
-	while (pos_ < line_.length())
+	while (pos_ < line_->length())
 	{
-		if (!isSeparator(line_.saveGet(pos_)))
+		if (!isSeparator(saveGet(pos_)))
 			break;
 		++pos_;
 	}
@@ -311,9 +308,9 @@ void LineParser::skipSpace()
 	if (syntaxError_)
 		return;
 		
-	while (pos_ < line_.length())
+	while (pos_ < line_->length())
 	{
-		if (!isSpace(line_.saveGet(pos_)))
+		if (!isSpace(saveGet(pos_)))
 			break;
 		++pos_;
 	}
@@ -341,14 +338,14 @@ LineParser& LineParser::arg(String& value)
 {
 	autoSkip();
 	
-	if (pos_ == line_.length()) {
+	if (pos_ == line_->length()) {
 		LINEPARSER_SYNTAX_ERROR("Expected string");
 		return *this;
 	}
 	
-	if ((line_.saveGet(pos_) == '\'') || (line_.saveGet(pos_) == '"'))
+	if ((saveGet(pos_) == '\'') || (saveGet(pos_) == '"'))
 		value = readString();
-	else if (isPunct(line_.saveGet(pos_)))
+	else if (isPunct(saveGet(pos_)))
 		value = readPunctuator();
 	else
 		value = readWord();

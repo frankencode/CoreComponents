@@ -35,7 +35,7 @@ FloatLiteral::FloatLiteral()
 	nan_ = DEFINE("nan", CHOICE(STRING("NaN"), STRING("nan")));
 	infinite_ = DEFINE("infinite", GLUE(REPEAT(0, 1, CHAR('-')), CHOICE(STRING("INFINITE"), STRING("inf"))));
 	
-	DEFINE_SELF("float",
+	DEFINE_SELF(
 		CHOICE(
 			REF("nan"),
 			REF("infinite"),
@@ -73,7 +73,7 @@ bool FloatLiteral::match(String text, int i0, int* i1, float64_t* value)
 	Ref<Token, Owner> rootToken;
 	uint8_t buf[sizeof(Token) * 7];
 	
-	bool conform = SyntaxDefinition<String>::match(&text, i0, i1, &rootToken, 0, buf, sizeof(buf));
+	bool conform = SyntaxDefinition<String::Media>::match(text, i0, i1, &rootToken, 0, buf, sizeof(buf));
 	
 	if (conform)
 		*value = read(text, rootToken);
@@ -96,7 +96,7 @@ float64_t FloatLiteral::read(String text, Ref<Token> rootToken) const
 		float64_t one, zero;
 		one = 1.; zero = 0.;
 		
-		if (text.get(token->index()) == '-')
+		if (text->get(token->index()) == '-')
 			value = -one / zero;
 		else
 			value = one / zero;
@@ -112,7 +112,7 @@ float64_t FloatLiteral::read(String text, Ref<Token> rootToken) const
 		{
 			if (token->rule() == sign_->id())
 			{
-				if (text.get(token->index()) == '-')
+				if (text->get(token->index()) == '-')
 					sign = -1;
 			}
 			else if (token->rule() == integerPart_->id())
@@ -120,18 +120,18 @@ float64_t FloatLiteral::read(String text, Ref<Token> rootToken) const
 				for (int i = token->i0(); i < token->i1(); ++i)
 				{
 					mantissa *= 10;
-					mantissa += text.get(i) - '0';
+					mantissa += text->get(i) - '0';
 				}
 			}
 			else if (token->rule() == fractionPart_->id())
 			{
 				float64_t h = 0.1;
 				for (int i = token->i0(); i < token->i1(); ++i, h /= 10)
-					mantissa += h * (text.get(i) - '0');
+					mantissa += h * (text->get(i) - '0');
 			}
 			else if (token->rule() == exponentSign_->id())
 			{
-				if (text.get(token->index()) == '-')
+				if (text->get(token->index()) == '-')
 					epSign = -1;
 			}
 			else if (token->rule() == exponent_->id())
@@ -139,7 +139,7 @@ float64_t FloatLiteral::read(String text, Ref<Token> rootToken) const
 				for (int i = token->i0(); i < token->i1(); ++i)
 				{
 					ep *= 10;
-					ep += text.get(i) - '0';
+					ep += text->get(i) - '0';
 				}
 			}
 			

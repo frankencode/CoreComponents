@@ -19,58 +19,30 @@
 **
 ****************************************************************************/
 
-#ifndef PONA_CONDITION_HPP
-#define PONA_CONDITION_HPP
-
-#include <pthread.h>
-#include "atoms"
-#include "Mutex.hpp"
+#include <errno.h>
+#include <string.h>
+#include "Exception.hpp"
 
 namespace pona
 {
 
-class Condition: public Instance
+char* systemError()
 {
-public:
-	Condition()
-	{
-		int ret = pthread_cond_init(&cond_, 0);
-		if (ret != 0)
-			PONA_SYSTEM_EXCEPTION;
-	}
-	
-	~Condition()
-	{
-		int ret = pthread_cond_destroy(&cond_);
-		if (ret != 0)
-			PONA_SYSTEM_EXCEPTION;
-	}
-	
-	inline void wait(Mutex* mutex)
-	{
-		int ret = pthread_cond_wait(&cond_, &mutex->mutex_);
-		if (ret != 0)
-			PONA_SYSTEM_EXCEPTION;
-	}
-	
-	inline void wakeup()
-	{
-		int ret = pthread_cond_signal(&cond_);
-		if (ret != 0)
-			PONA_SYSTEM_EXCEPTION;
-	}
-	
-	inline void wakeupAll()
-	{
-		int ret = pthread_cond_broadcast(&cond_);
-		if (ret != 0)
-			PONA_SYSTEM_EXCEPTION;
-	}
-	
-private:
-	pthread_cond_t cond_;
-};
+#ifdef __USE_GNU
+	const char* unknown = "Unknown error";
+	const int bufSize = 1024;
+	char buf[bufSize];
+	::memcpy(buf, unknown, strlen(unknown) + 1);
+	return ::strdup(::strerror_r(errno, buf, bufSize));
+#else
+	const char* unknown = "Unknown error";
+	const int bufSize = 1024;
+	char* buf = (char*)::malloc(bufSize);
+	::memcpy(buf, unknown, strlen(unknown) + 1);
+	int ret = ::strerror_r(errno, buf, bufSize);
+	return buf;
+#endif
+}
 
 } // namespace pona
 
-#endif // PONA_CONDITION_HPP

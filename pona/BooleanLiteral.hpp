@@ -27,7 +27,7 @@
 namespace pona
 {
 
-class BooleanLiteral: public SyntaxDefinition<String>
+class BooleanLiteral: public SyntaxDefinition<String::Media>
 {
 public:
 	BooleanLiteral();

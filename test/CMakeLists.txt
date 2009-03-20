@@ -1,10 +1,10 @@
 INCLUDE_DIRECTORIES(..)
-LINK_LIBRARIES(pona)
 
+ADD_EXECUTABLE(testToolOptions testToolOptions.cpp)
 ADD_EXECUTABLE(testVariant testVariant.cpp)
 ADD_EXECUTABLE(testLineParser testLineParser.cpp)
 ADD_EXECUTABLE(testLinePrinter testLinePrinter.cpp)
-ADD_EXECUTABLE(testFloat754 testFloat754.cpp)
+ADD_EXECUTABLE(testTypes testTypes.cpp)
 ADD_EXECUTABLE(testList testList.cpp)
 ADD_EXECUTABLE(testSyntax testSyntax.cpp)
 ADD_EXECUTABLE(testString testString.cpp)

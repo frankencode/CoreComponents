@@ -22,12 +22,7 @@
 #ifndef PONA_PROCESS_HPP
 #define PONA_PROCESS_HPP
 
-#ifdef PONA_POSIX
-#include <sys/types.h>
-#else // if PONA_WINDOWS
-typedef DWORD pid_t;
-#endif
-
+#include <sys/types.h> // pid_t
 #include "atoms"
 #include "String.hpp"
 #include "List.hpp"

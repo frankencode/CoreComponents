@@ -22,10 +22,6 @@
 #ifndef PONA_EXCEPTION_HPP
 #define PONA_EXCEPTION_HPP
 
-#ifdef _MSC_VER
-#pragma warning ( disable : 4267 4996 )
-#endif
-
 #include <exception>
 #include <string.h>
 #include <assert.h>
@@ -36,11 +32,7 @@ namespace pona
 
 inline const char* fileName(const char* path)
 {
-#ifdef _WIN32
-	char sep = '\\';
-#else
 	char sep = '/';
-#endif
 	
 	const char* p = path;
 	const char* pSaved = path;
@@ -143,29 +135,10 @@ inline char* captureExceptionMessage(char* s) { return s; }
 #define PONA_THROW(ExceptionClass, reason) \
 	throw ExceptionClass(__FILE__, __LINE__, #ExceptionClass, captureExceptionMessage(reason))
 
-#ifdef PONA_POSIX
-
-char* posixError();
-PONA_EXCEPTION(PosixException, Exception);
-#define PONA_POSIX_EXCEPTION \
-	throw PosixException(__FILE__, __LINE__, "PosixException", posixError())
-
-inline char* systemError() { return posixError(); }
+char* systemError();
+PONA_EXCEPTION(SystemException, Exception);
 #define PONA_SYSTEM_EXCEPTION \
-	throw PosixException(__FILE__, __LINE__, "PosixException", posixError())
-
-#else // if PONA_WINDOWS
-
-char* windowsError();
-PONA_EXCEPTION(WindowsException, Exception);
-#define PONA_WINDOWS_EXCEPTION \
-	throw WindowsException(__FILE__, __LINE__, "WindowsException", windowsError())
-
-inline char* systemError() { return windowsError(); }
-#define PONA_SYSTEM_EXCEPTION \
-	throw WindowsException(__FILE__, __LINE__, "WindowsException", windowsError())
-
-#endif
+	throw SystemException(__FILE__, __LINE__, "SystemException", systemError())
 
 } // namespace pona
 

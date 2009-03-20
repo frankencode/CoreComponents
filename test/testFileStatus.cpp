@@ -24,7 +24,6 @@ int main()
 	printStatus("/usr/include");
 	printStatus("testFileStatus");
 	printStatus("hmpf.xyz");
-
 	return 0;
 }
 

@@ -11,25 +11,26 @@ int main(int argc, char** argv)
 	if (argc == 2)
 		hostName = argv[1];
 	
-	String canonicalName;
-	Ref<InetAddressList, Owner> list = SocketAddress::query(hostName, "http", AF_UNSPEC, 0, &canonicalName);
+	print("hostName = \"%%\"\n", hostName);
 	
-	output()->write(format("hostName, canonicalName = \"%%\", \"%%\"\n") % hostName % canonicalName);
+	String canonicalName;
+	Ref<InetAddressList, Owner> list = SocketAddress::query(hostName, "ssh", AF_UNSPEC, 0, &canonicalName);
+	
+	print("canonicalName = \"%%\"\n", canonicalName);
 	
 	for (int i = 0; i < list->length(); ++i)
 	{
 		Ref<SocketAddress> address = list->get(i);
 		bool failed;
 		
-		output()->write(
-			format("%% : %% : %% : %% : %% : %% : %%\n")
-			% address->familyString()
-			% address->addressString()
-			% address->port()
-			% address->socketTypeString()
-			% address->protocolString()
-			% address->lookupHostName(&failed)
-			% address->lookupServiceName()
+		print("%% : %% : %% : %% : %% : %% : %%\n"
+			, address->familyString()
+			, address->addressString()
+			, address->port()
+			, address->socketTypeString()
+			, address->protocolString()
+			, address->lookupHostName(&failed)
+			, address->lookupServiceName()
 		);
 	}
 	

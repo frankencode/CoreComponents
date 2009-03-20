@@ -442,6 +442,8 @@ private:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
+			assert(!next_);
+			
 			Ref<Token, Owner> token;
 			if (tokenFactory) {
 				token = tokenFactory->produce();
@@ -938,11 +940,9 @@ public:
 			ruleByName_->insert(name, rule);
 			return rule;
 		}
-		inline void DEFINE_SELF(const char* name, Ref<Node> entry) {
-			RuleNode::name_ = name;
+		inline void DEFINE_SELF(Ref<Node> entry = 0) {
 			RuleNode::id_ = numRules_++;
 			RuleNode::entry_ = entry;
-			ruleByName_->insert(name, this);
 		}
 		
 		inline NODE REF(const char* ruleName) {
@@ -1054,8 +1054,6 @@ public:
 		
 		bool find(Media* media, int* i0, int* i1 = 0, Ref<Token, Owner>* rootToken = 0, uint8_t* buf = 0, int bufSize = 0)
 		{
-			LINK();
-			
 			int i = *i0;
 			int n = media->length();
 			bool found = false;
@@ -1072,8 +1070,6 @@ public:
 		
 		bool match(Media* media, int i0 = 0, int* i1 = 0, Ref<Token, Owner>* rootToken = 0, State* state = 0, uint8_t* buf = 0, int bufSize = 0)
 		{
-			LINK();
-			
 			if (!state) {
 				if ((stateFlagHead_) || (stateCharHead_))
 					state = newState();
@@ -1143,6 +1139,14 @@ public:
 		}
 		
 	private:
+		friend class InvokeNode;
+		
+		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		{
+			LINK();
+			return RuleNode::matchNext(media, i, tokenFactory, parentToken, state);
+		}
+		
 		int language_;
 		
 		class StateFlag: public Instance {

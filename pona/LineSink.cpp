@@ -39,17 +39,17 @@ LineSink::~LineSink()
 
 void LineSink::writeLine(String line)
 {
-	int n = line.length();
-	int n2 = eol_.length();
+	int n = line->length();
+	int n2 = eol_->length();
 
 	if (n + n2 > bufCapa_)
 		PONA_THROW(StreamIoException, "Output buffer exhausted");
 
 	for (int i = 0; i < n; ++i)
-		buf_[i] = line.get(i);
+		buf_[i] = line->get(i);
 
 	for (int i = 0; i < n2; ++i)
-		buf_[n + i] = eol_.get(i);
+		buf_[n + i] = eol_->get(i);
 
 	stream_->write(buf_, n + n2);
 }
@@ -57,7 +57,7 @@ void LineSink::writeLine(String line)
 void LineSink::write(String buf)
 {
 	char* bufUtf8 = buf.strdup();
-	stream_->write(bufUtf8, buf.length());
+	stream_->write(bufUtf8, buf->length());
 	::free(bufUtf8);
 }
 

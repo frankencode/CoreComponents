@@ -28,21 +28,11 @@ namespace pona
 {
 
 String::String()
-	: list_(new Media)
+	: Ref<List<Char>, Owner>(new Media)
 {}
 
-String::String(int n, Char ch)
-	: list_(new Media)
-{
-	if (n > 0) {
-		list_->push(0, n);
-		for (int i = 0; i < n; ++i)
-			list_->set(i, ch);
-	}
-}
-
 String::String(const char* utf8, int numBytes, int numChars)
-	: list_(new Media)
+	: Ref<List<Char>, Owner>(new Media)
 {
 	if (numBytes == -1) {
 		numBytes = 0;
@@ -61,31 +51,31 @@ String::String(const char* utf8, int numBytes, int numChars)
 			}
 		}
 		
-		list_->push(0, numChars);
+		instance_->push(0, numChars);
 		
 		{
 			Utf8Source source((uint8_t*)utf8, numBytes);
 			for (int i = 0; i < numChars; ++i)
-				list_->set(i, source.readChar());
+				instance_->set(i, source.readChar());
 		}
 	}
 }
 
-String::String(Ref<Media> list)
-	: list_(list)
+String::String(Ref<Media, Owner> list)
+	: Ref<List<Char>, Owner>(list)
 {
-	if (!list_) list_ = new Media;
+	if (!instance_) set(new Media);
 }
 
 int String::find(String s, int i) // HACK, needs to be moved to List
 {
-	int n = length();
+	int n = instance_->length();
 	int j = 0;
-	int m = s.length();
+	int m = s->length();
 	
 	while ((i < n) && (j < m))
 	{
-		j = (s.get(j) == get(i)) ? j + 1 : 0;
+		j = (s->get(j) == instance_->get(i)) ? j + 1 : 0;
 		++i;
 	}
 	
@@ -97,33 +87,6 @@ int String::find(String s, int i) // HACK, needs to be moved to List
 	return i;
 }
 
-void String::insert(int i, String s) // HACK, needs to be moved to List
-{
-	int n = s.length();
-	if (n > 0) {
-		list_->push(i, n);
-		for (int k = 0; k < n; ++k)
-			list_->set(i+k, s.list_->get(k));
-	}
-}
-
-int String::toInt(bool* ok)
-{
-	uint64_t value; int sign;
-	int length = 0;
-	parseInteger(&value, &sign, *this, 0, &length);
-	
-	if (length == 0) {
-		if (ok) *ok = false;
-	}
-	else if (value > uint64_t(intMax)) {
-		value = 0;
-		if (ok) *ok = false;
-	}
-	
-	return sign * int(value);
-}
-
 Ref<StringList, Owner> String::split(String sep)
 {
 	Ref<StringList, Owner> list = new StringList;
@@ -132,12 +95,12 @@ Ref<StringList, Owner> String::split(String sep)
 	while (true) {
 		int k = find(sep, i);
 		if (k == -1) break;
-		list->append(copy(i, k - i));
-		i = k + sep.length();
+		list->append(String(instance_->copy(i, k - i)));
+		i = k + sep->length();
 	}
 	
-	if (i < length())
-		list->append(copy(i, length() - i));
+	if (i < instance_->length())
+		list->append(String(instance_->copy(i, instance_->length() - i)));
 	
 	return list;
 }
@@ -145,22 +108,33 @@ Ref<StringList, Owner> String::split(String sep)
 
 char* String::strdup()
 {
-	int numChars = length();
+	int numChars = instance_->length();
 	int numBytes = 0;
 	{
 		Utf8Sink nullSink;
 		for (int i = 0; i < numChars; ++i)
-			nullSink.writeChar(get(i));
+			nullSink.writeChar(instance_->get(i));
 		numBytes = nullSink.numBytesWritten();
 	}
 	
 	char* buf = (char*)malloc(numBytes + 1);
 	Utf8Sink sink((uint8_t*)buf, numBytes);
 	for (int i = 0; i < numChars; ++i)
-		sink.writeChar(get(i));
+		sink.writeChar(instance_->get(i));
 	buf[numBytes] = 0;
 	
 	return buf;
+}
+
+String operator*(Char ch, int n)
+{
+	String s;
+	if (n > 0) {
+		s->push(0, n);
+		for (int i = 0; i < n; ++i)
+			s->set(i, ch);
+	}
+	return s;
 }
 
 } // namespace pona

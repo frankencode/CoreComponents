@@ -48,13 +48,13 @@ String LineSource::readLine()
 		if (bufFill == 0)
 			return String();
 		
-		for (int i = 0, nk = eol_.length(), k = 0; i < bufFill; ++i)
+		for (int i = 0, nk = eol_->length(), k = 0; i < bufFill; ++i)
 		{
 			if (cache_.fill() == cache_.size())
 				PONA_THROW(StreamIoException, "Input buffer exhausted");
 
 			Char ch = buf_[i];
-			k = (ch == eol_.get(k)) ? k + 1 : 0;
+			k = (ch == eol_->get(k)) ? k + 1 : 0;
 		
 			if (k == nk)
 			{
@@ -66,13 +66,13 @@ String LineSource::readLine()
 		}
 	}
 
-	int nk = eol_.length();
+	int nk = eol_->length();
 	int k = 0;
 	int i = 0;
 	while (k < nk)
 	{
 		Char ch = cache_.popFront();
-		k = (ch == eol_.get(k)) ? k + 1 : 0;
+		k = (ch == eol_->get(k)) ? k + 1 : 0;
 		buf_[i] = ch;
 		++i;
 	}

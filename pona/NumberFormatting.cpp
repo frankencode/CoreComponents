@@ -75,23 +75,23 @@ String printInteger(uint64_t value, int sign, int base, int width)
 			PONA_THROW(FormattingException, "Printing integer exceeds width");
 	
 	String s;
-	s.allocate(width > digits.fill() ? width : digits.fill());
+	s->push(0, width > digits.fill() ? width : digits.fill());
 	int k = 0;
 	
 	for (int i = digits.fill(); i < width; ++i)
-		s.set(k++, ' ');
+		s->set(k++, ' ');
 	
 	while (digits.fill() > 0)
 	{
 		const char* letters = "0123456789ABCDEF-";
 		int digit = digits.pop();
-		s.set(k++, letters[digit]);
+		s->set(k++, letters[digit]);
 	}
 	
 	return s;
 }
 
-String printFloatingPoint(float64_t x, int base, int wi, int wf, int w, char fill)
+String printFloatingPoint(float64_t x, int base, int wi, int wf, int w, Char fill)
 {
 	String text;
 	
@@ -112,20 +112,20 @@ String printFloatingPoint(float64_t x, int base, int wi, int wf, int w, char fil
 	if ((e == 0x7FF) && (f != 0)) // NaN
 	{
 		if (w == 0) w = 3;
-		text = String(w, ' ');
+		text = w * Char(' ');
 		const char* nan = "NaN";
 		for (int k = 0; k < 3; ++k)
-			text.set(k, nan[k]);
+			text->set(k, nan[k]);
 	}
 	else if ((e == 0x7FF) && (f == 0)) // infinite
 	{
 		if (w == 0) w = 8 + s;
-		text = String(w, ' ');
+		text = w * Char(' ');
 		const char* inf = "INFINITE";
 		int i = 0;
-		if (s == 1) text.set(i++, '-');
+		if (s == 1) text->set(i++, '-');
 		for (int k = 0; k < 8; ++k)
-			text.set(i++, inf[k]);
+			text->set(i++, inf[k]);
 	}
 	else if (((0 < e) && (e < 0x7FF)) || ((e == 0) && (f != 0))) // normalized or denormalized number
 	{
@@ -187,7 +187,7 @@ String printFloatingPoint(float64_t x, int base, int wi, int wf, int w, char fil
 		int h = wi + int(wf != 0) + wf + int(ne != 0) * (1 + int(eba < 0) + ne);
 		if (w < h) w = h; // w too small
 		
-		text = String(w, fill);
+		text = w * fill;
 
 		int i = 0; // output index
 		int k = 0; // digit index
@@ -196,32 +196,32 @@ String printFloatingPoint(float64_t x, int base, int wi, int wf, int w, char fil
 		//printf("ned = %d, w = %d, wi = %d, wf = %d, ni = %d, ne = %d, eba = %d\n", ned, w, wi, wf, ni, ne, eba);
 		
 		for (int l = 0; l < wi-ni-s; ++l)
-			text.set(i++, fill);
+			text->set(i++, fill);
 		
 		if (s == 1)
-			text.set(i++, '-');
+			text->set(i++, '-');
 		
 		for (int l = 0; l < ni; ++l)
-			text.set(i++, digits[stack.bottom(k++)]);
+			text->set(i++, digits[stack.bottom(k++)]);
 		
 		if (wf != 0)
 		{
-			text.set(i++, '.');
+			text->set(i++, '.');
 			for (int l = 0; l < wf; ++l)
 			{
 				if (stack.isEmpty())
-					text.set(i++, '0');
+					text->set(i++, '0');
 				else
-					text.set(i++, digits[stack.bottom(k++)]);
+					text->set(i++, digits[stack.bottom(k++)]);
 			}
 		}
 		
 		if (ne != 0)
 		{
-			text.set(i++, 'e');
-			if (eba < 0) { text.set(i++, '-'); eba = -eba; }
+			text->set(i++, 'e');
+			if (eba < 0) { text->set(i++, '-'); eba = -eba; }
 			for (int l = ne-1, h = eba; l >= 0; --l, h /= 10)
-				text.set(i+l, digits[h % 10]);
+				text->set(i+l, digits[h % 10]);
 			i += ne;
 		}
 	}
@@ -229,8 +229,8 @@ String printFloatingPoint(float64_t x, int base, int wi, int wf, int w, char fil
 	{
 		if (wi == 0) wi = 1;
 		if (w < wi) w = wi;
-		text = String(w, ' ');
-		text.set(wi-1, '0');
+		text = w * Char(' ');
+		text->set(wi-1, '0');
 	}
 	
 	return text;
@@ -248,6 +248,23 @@ void parseInteger(uint64_t* value, int* sign, String text, int index, int* lengt
 	{
 		if (length) *length = 0;
 	}
+}
+
+int toInt(String text, bool* ok)
+{
+	uint64_t value; int sign;
+	int length = 0;
+	parseInteger(&value, &sign, text, 0, &length);
+	
+	if (length == 0) {
+		if (ok) *ok = false;
+	}
+	else if (value > uint64_t(intMax)) {
+		value = 0;
+		if (ok) *ok = false;
+	}
+	
+	return sign * int(value);
 }
 
 float64_t parseFloatingPoint(String text, int index, int* length)

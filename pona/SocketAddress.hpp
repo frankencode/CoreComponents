@@ -22,15 +22,9 @@
 #ifndef PONA_SOCKETADDRESS_HPP
 #define PONA_SOCKETADDRESS_HPP
 
-#ifndef _MSC_VER
 #include <arpa/inet.h> // sockaddr, AF_*
 #include <netdb.h> // addrinfo
 #include <sys/socket.h> // connect
-#else
-#include <sys/types.h>
-#include <Winsock2.h>
-#include <Ws2tcpip.h>
-#endif
 
 #include "atoms"
 #include "String.hpp"
@@ -83,11 +77,7 @@ public:
 	  *   The host name can be a short name relative to the local domain.
 	  * The fully qualified domain name (aka canonical name) can be optionally retrieved.
 	  */
-	static Ref<InetAddressList, Owner> query( String hostName,
-	                                          String serviceName = String(),
-	                                          int family = AF_UNSPEC,
-	                                          int socketType = 0,
-	                                          String* canonicalName = 0 );
+	static Ref<InetAddressList, Owner> query(String hostName, String serviceName = String(), int family = AF_UNSPEC, int socketType = 0, String* canonicalName = 0);
 	
 	/** Lookup the host name of given address. Usually a reverse DNS
 	  * lookup will be issued, which may take several seconds.

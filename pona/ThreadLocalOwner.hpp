@@ -22,8 +22,6 @@
 #ifndef PONA_THREADLOCALOWNER_HPP
 #define PONA_THREADLOCALOWNER_HPP
 
-#ifdef PONA_POSIX
-
 #include <pthread.h>
 #include "Exception.hpp"
 
@@ -38,14 +36,14 @@ public:
 	{
 		int ret = ::pthread_key_create(&key_, 0);
 		if (ret != 0)
-			PONA_THROW(PosixException, strerror(ret));
+			PONA_SYSTEM_EXCEPTION;
 	}
 	
 	~ThreadLocalOwner()
 	{
 		int ret = ::pthread_key_delete(key_);
 		if (ret != 0)
-			PONA_THROW(PosixException, strerror(ret));
+			PONA_SYSTEM_EXCEPTION;
 	}
 	
 	inline T* get() const { return reinterpret_cast<T*>(::pthread_getspecific(key_)); }
@@ -74,59 +72,5 @@ private:
 };
 
 } // namespace pona
-
-#else // PONA_WINDOWS
-
-#include <Windows.h>
-#include "Exception.hpp"
-
-namespace pona
-{
-
-template<class T>
-class ThreadLocalOwner
-{
-public:
-	ThreadLocalOwner()
-	{
-		key_ = TlsAlloc();
-		if (key_ == TLS_OUT_OF_INDEXES)
-			PONA_WINDOWS_EXCEPTION;
-	}
-	
-	~ThreadLocalOwner()
-	{
-		if (!TlsFree(key_))
-			PONA_WINDOWS_EXCEPTION;
-	}
-	
-	inline T* get() const { return reinterpret_cast<T*>(TlsGetValue(key_)); }
-	
-	inline void set(T* b)
-	{
-		T* a = get();
-		if (a != b)
-		{
-			if (a)
-			{
-				a->decRefCount();
-				if (a->refCount() == 0)
-					a->destroy();
-			}
-			
-			TlsSetValue(key_, b);
-			
-			if (b)
-				b->incRefCount();
-		}
-	}
-	
-private:
-	DWORD key_;
-};
-
-} // namespace pona
-
-#endif // platform switch
 
 #endif // PONA_THREADLOCALOWNER_HPP

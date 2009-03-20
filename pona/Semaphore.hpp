@@ -22,8 +22,6 @@
 #ifndef PONA_SEMAPHORE_HPP
 #define PONA_SEMAPHORE_HPP
 
-#ifdef PONA_POSIX
-
 #include <semaphore.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -59,14 +57,14 @@ public:
 			{
 				if (errno == EEXIST)
 					continue;
-				PONA_POSIX_EXCEPTION;
+				PONA_SYSTEM_EXCEPTION;
 			}
 			
 			break;
 		}
 #else
 		if (::sem_init(sem_, 0, unsigned(value)) == -1)
-			PONA_POSIX_EXCEPTION;
+			PONA_SYSTEM_EXCEPTION;
 #endif
 	}
 	
@@ -80,11 +78,11 @@ public:
 		if (sem_ == (sem_t*)SEM_FAILED)
 		{
 			if (errno != EEXIST)
-				PONA_POSIX_EXCEPTION;
+				PONA_SYSTEM_EXCEPTION;
 			
 			sem_ = ::sem_open(nameUtf8, 0);
 			if (sem_ == (sem_t*)SEM_FAILED)
-				PONA_POSIX_EXCEPTION;
+				PONA_SYSTEM_EXCEPTION;
 			
 			firstInstance_ = false;
 		}
@@ -97,12 +95,12 @@ public:
 		if (sem_ == &semObj_)
 		{
 			if (::sem_destroy(sem_) == -1)
-				PONA_POSIX_EXCEPTION;
+				PONA_SYSTEM_EXCEPTION;
 		}
 		else if (sem_ != (sem_t*)SEM_FAILED) 
 		{
 			if (::sem_close(sem_) == -1)
-				PONA_POSIX_EXCEPTION;
+				PONA_SYSTEM_EXCEPTION;
 		}
 	}
 	
@@ -111,13 +109,13 @@ public:
 	inline void release()
 	{
 		if (::sem_post(sem_) == -1)
-			PONA_POSIX_EXCEPTION;
+			PONA_SYSTEM_EXCEPTION;
 	}
 	
 	inline void acquire()
 	{
 		if (::sem_wait(sem_) == -1)
-			PONA_POSIX_EXCEPTION;
+			PONA_SYSTEM_EXCEPTION;
 	}
 	
 	inline bool tryAcquire()
@@ -132,63 +130,5 @@ private:
 };
 
 } // namespace pona
-
-#else // PONA_WINDOWS
-
-#include <Windows.h>
-#include "atoms"
-#include "String.hpp"
-
-namespace pona
-{
-
-class Semaphore: public Instance
-{
-public:
-	Semaphore(int value = 0)
-	{
-		sem_ = CreateSemaphore(0, (DWORD)value, intMax, 0);
-		if (!sem_)
-			PONA_WINDOWS_EXCEPTION;
-	}
-	
-	Semaphore(String name, int value = 0)
-	{
-		wchar_t* nameWc = name.wcsdup();
-		sem_ = CreateSemaphore(0, (DWORD)value, intMax, nameWc);
-		::free(nameWc);
-		if (!sem_)
-			PONA_WINDOWS_EXCEPTION;
-	}
-
-	~Semaphore()
-	{
-		CloseHandle(sem_);
-	}
-
-	inline void release()
-	{
-		if (!ReleaseSemaphore(sem_, 1, 0))
-			PONA_WINDOWS_EXCEPTION;
-	}
-
-	inline void acquire()
-	{
-		if (WaitForSingleObject(sem_, INFINITE) == WAIT_FAILED)
-			PONA_WINDOWS_EXCEPTION;
-	}
-	
-	inline bool tryAcquire()
-	{
-		return WaitForSingleObject(sem_, 0) == WAIT_OBJECT_0;
-	}
-
-private:
-	HANDLE sem_;
-};
-
-} // namespace pona
-
-#endif // platform switch
 
 #endif // PONA_SEMAPHORE_HPP
