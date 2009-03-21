@@ -7,16 +7,16 @@ void printStatus(String path)
 {
 	FileStatus stat(path);
 
-	output()->write(format("FileStatus(%%):\n") % path);
-	output()->write(format("File(%%).access(File::readable) = %%\n") % path % File(path).access(File::Read));
-	output()->write(format("File(%%).access(File::writable) = %%\n") % path % File(path).access(File::Write));
-	output()->write(format("File(%%).access(File::executable) = %%\n") % path % File(path).access(File::Execute));
-	output()->write(format("stat.exists() = %%\n") % stat.exists());
-	output()->write(format("stat.mode() = %oct%\n") % stat.mode());
-	output()->write(format("stat.size() = %%\n") % stat.size());
-	output()->write(format("stat.owner() = \"%%\"\n") % stat.owner());
-	output()->write(format("stat.group() = \"%%\"\n") % stat.group());
-	output()->write("\n");
+	print("FileStatus(%%):\n", path);
+	print("File(%%).access(File::readable) = %%\n", path, File(path).access(File::Read));
+	print("File(%%).access(File::writable) = %%\n", path, File(path).access(File::Write));
+	print("File(%%).access(File::executable) = %%\n", path, File(path).access(File::Execute));
+	print("stat.exists() = %%\n", stat.exists());
+	print("stat.mode() = %oct%\n", stat.mode());
+	print("stat.size() = %%\n", stat.size());
+	print("stat.owner() = \"%%\"\n", stat.owner());
+	print("stat.group() = \"%%\"\n", stat.group());
+	print("\n");
 }
 
 int main()

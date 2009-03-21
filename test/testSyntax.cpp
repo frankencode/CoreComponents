@@ -180,8 +180,8 @@ int main()
 	double result = expression->eval("(-12+34)*(56-78)");
 	
 	dt = getTime() - dt;
-	output()->write(format("took %% us\n") % dt.microSeconds());
-	output()->write(format("evaluates to %%\n") % result);
+	print("took %% us\n", dt.microSeconds());
+	print("evaluates to %%\n", result);
 	
 	return 0;
 }

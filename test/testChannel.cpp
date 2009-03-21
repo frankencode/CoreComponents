@@ -26,7 +26,7 @@ public:
 		{
 			for (int i = 0; i < n; ++i)
 			{
-				output()->writeLine(format("producer: i = %%") % i);
+				print("producer: i = %%\n", i);
 				channel_->pushBack(i);
 			}
 		}
@@ -36,7 +36,7 @@ public:
 			while (k != n-1)
 			{
 				k = channel_->popFront();
-				output()->writeLine(format("consumer: k = %%") % k);
+				print("consumer: k = %%\n", k);
 			}
 		}
 		return 0;
@@ -61,7 +61,7 @@ int main()
 	t1->wait();
 	t2->wait();
 	dt = getTime() - dt;
-	output()->write(format("\ndt = %% usec\n\n") % dt.microSeconds());
+	print("\ndt = %% usec\n\n", dt.microSeconds());
 	
 	return 0;
 }

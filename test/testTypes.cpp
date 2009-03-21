@@ -18,7 +18,7 @@ void testFloat754()
 	};
 	
 	for (unsigned i = 0; i < sizeof(values)/sizeof(double); ++i)
-		output()->write(format("%%|\n") % values[i]);
+		print("%%|\n", values[i]);
 	
 	double one, zero;
 	one = 1.;

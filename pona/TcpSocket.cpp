@@ -68,7 +68,7 @@ int TcpSocket::run()
 		if (asd < 0)
 			PONA_SYSTEM_EXCEPTION;
 			
-		serve(remoteAddress, new TcpStream(asd));
+		serve(remoteAddress, new SystemStream(asd));
 	}
 	
 	::close(lsd_);
@@ -83,14 +83,14 @@ void TcpSocket::close()
 	doClose_ = true;
 }
 
-Ref<TcpStream, Owner> TcpSocket::connect(Ref<SocketAddress> remoteAddress)
+Ref<SystemStream, Owner> TcpSocket::connect(Ref<SocketAddress> remoteAddress)
 {
 	int sd = ::socket(remoteAddress->family(), SOCK_STREAM, 0);
 	if (sd == -1)
 		PONA_SYSTEM_EXCEPTION;
 	if (::connect(sd, remoteAddress->socketAddress(), remoteAddress->socketAddressLength()) == -1)
 		PONA_SYSTEM_EXCEPTION;
-	return new TcpStream(sd);
+	return new SystemStream(sd);
 }
 
 } // namespace pona

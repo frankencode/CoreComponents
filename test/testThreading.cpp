@@ -50,7 +50,7 @@ public:
 		{
 			for (int i = 0; i < 10; ++i)
 			{
-				output()->writeLine(format("producer: i = %%") % i);
+				print("producer: i = %%\n", i);
 				channel_->put(i);
 			}
 		}
@@ -60,7 +60,7 @@ public:
 			while (k != 9)
 			{
 				k = channel_->get();
-				output()->writeLine(format("consumer: k = %%") % k);
+				print("consumer: k = %%\n", k);
 			}
 		}
 
@@ -83,7 +83,7 @@ int main()
 	t1.wait();
 	t2.wait();
 	dt = getTime() - dt;
-	output()->write(format("\ndt = %% usec\n\n") % dt.microSeconds());
+	print("\ndt = %% usec\n\n", dt.microSeconds());
 
 	return 0;
 }

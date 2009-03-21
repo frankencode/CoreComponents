@@ -1,4 +1,4 @@
-#include <pona/PrintAndScan.hpp>
+#include <pona/stdio>
 
 int main()
 {

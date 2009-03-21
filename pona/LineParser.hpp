@@ -57,13 +57,13 @@ public:
 	void skipSeparator();
 	void skipSpace();
 	
-	LineParser& arg(bool& value);
-	LineParser& arg(int& value);
-	LineParser& arg(double& value);
-	LineParser& arg(String& value);
+	LineParser& arg(bool* value);
+	LineParser& arg(int* value);
+	LineParser& arg(double* value);
+	LineParser& arg(String* value);
 	
 	template<class T>
-	inline LineParser& operator%(T& value) { return arg(value); }
+	inline LineParser& operator%(T& value) { return arg(&value); }
 	
 	inline operator bool() const { return matched(); }
 	

@@ -27,7 +27,7 @@
 namespace pona
 {
 
-typedef SystemStream TcpStream;
+typedef SystemStream SystemStream;
 
 } // namespace pona
 

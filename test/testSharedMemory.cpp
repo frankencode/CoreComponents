@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 		memcpy(mem.region(), message, size);
 		avail.release();
 		
-		output()->write(
+		print(
 			"First instance:\n"
 			"  Launch second instance of this program to complete the test.\n"
 		);
@@ -29,11 +29,10 @@ int main(int argc, char** argv)
 		avail.acquire();
 		
 		const char* message2 = (const char*)mem.region();
-		output()->write(
-			format(
-				"Second instance:\n"
-				"  message = \"%%\"\n"
-			) % message2
+		print(
+			"Second instance:\n"
+			"message = \"%%\"\n",
+			message2
 		);
 		
 		commit.release();

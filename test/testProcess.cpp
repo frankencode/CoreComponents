@@ -11,7 +11,6 @@ int main(int argc, char** argv)
 	if (argc > 1)
 		return echo(argc, argv);
 	
-	#ifndef PONA_WINDOWS
 	{
 		class TestProcess: public Process
 		{
@@ -31,7 +30,6 @@ int main(int argc, char** argv)
 		print("ret = %%\n", ret);
 		print("\n");
 	}
-	#endif
 	
 	{
 		print("(2) I/O Redirection, passing of arguments and environment variables\n\n");

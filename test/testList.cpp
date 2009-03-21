@@ -7,38 +7,38 @@ namespace pona
 int main()
 {
 	{
-		output()->write("Test 1\n");
-		output()->write("------\n");
+		print("Test 1\n");
+		print("------\n");
 		List<int> list;
 		for (int i = 0; i < 10; ++i)
 			list.pushBack(i);
 		for (int i = 0; i < list.fill(); ++i)
-			output()->write(format("list[%%]=%%\n") % i % list.get(i));
-		output()->write("--\n");
+			print("list[%%]=%%\n", i, list.get(i));
+		print("--\n");
 		for (int i = 0; i < list.fill(); ++i)
 			list.pop(i);
 		for (int i = 0; i < list.fill(); ++i)
-			output()->write(format("list[%%]=%%\n") % i % list.get(i));
-		output()->write("\n");
+			print("list[%%]=%%\n", i, list.get(i));
+		print("\n");
 	}
 	
 	{
-		output()->write("Test 2\n");
-		output()->write("------\n");
+		print("Test 2\n");
+		print("------\n");
 		
 		const char* digits = "0123456789";
 		List<char> list;
 		for (int i = 0; i < 10; ++i)
 			list.pushBack(digits[i]);
 		for (int i = 0; i < list.fill(); ++i)
-			output()->write(format("list[%%]=%%\n") % i % list.get(i));
+			print("list[%%]=%%\n", i, list.get(i));
 		
-		output()->write("\n");
+		print("\n");
 	}
 	
 	{
-		output()->write("Test 3\n");
-		output()->write("------\n");
+		print("Test 3\n");
+		print("------\n");
 		
 		const char* l1 = "#include <pona/atoms>\n";
 		const char* l2 = "int main() { pona::ouput()->write(\"Hello, world!\\n\"); return 0; }\n";
@@ -46,12 +46,12 @@ int main()
 		text.push(0, strlen(l1), l1);
 		text.push(text.fill(), strlen(l2), l2);
 		for (int i = 0; i < text.fill(); ++i)
-			output()->write(format("%%") % text.get(i));
+			print("%%", text.get(i));
 		char buf[128];
 		text.pop(60, 13, buf);
 		for (int i = 0; i < text.fill(); ++i)
-			output()->write(format("%%") % text.get(i));
-		output()->write("\n--\n");
+			print("%%", text.get(i));
+		print("\n--\n");
 		
 		const char* greeting = "U";
 		text.push(60, 1, greeting);
@@ -59,12 +59,12 @@ int main()
 		char buf2[128];
 		memset(buf2, 0, 128);
 		text.read(60, 13, buf2);
-		output()->write(format("\"%%\"\n") % buf2);
+		print("\"%%\"\n", buf2);
 	}
 	
 	{
-		output()->write("Text 4\n");
-		output()->write("------\n");
+		print("Text 4\n");
+		print("------\n");
 		List<Char> l;
 		l.push(0, 2);
 		l.set(0, '0');
@@ -77,7 +77,7 @@ int main()
 		l.set(5, '\n');
 		l.pop(0, 4);
 		for (int i = 0; i < l.length(); ++i) {
-			output()->write(format("l.get(%%) = %%\n") % i % l.get(i));
+			print("l.get(%%) = %%\n", i, l.get(i));
 		}
 	}
 	

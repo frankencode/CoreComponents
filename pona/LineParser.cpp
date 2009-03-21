@@ -316,25 +316,25 @@ void LineParser::skipSpace()
 	}
 }
 
-LineParser& LineParser::arg(bool& value)
+LineParser& LineParser::arg(bool* value)
 {
-	value = readBool();
+	*value = readBool();
 	return *this;
 }
 
-LineParser& LineParser::arg(int& value)
+LineParser& LineParser::arg(int* value)
 {
-	value = readInt();
+	*value = readInt();
 	return *this;
 }
 
-LineParser& LineParser::arg(double& value)
+LineParser& LineParser::arg(double* value)
 {
-	value = readDouble();
+	*value = readDouble();
 	return *this;
 }
 
-LineParser& LineParser::arg(String& value)
+LineParser& LineParser::arg(String* value)
 {
 	autoSkip();
 	
@@ -344,11 +344,11 @@ LineParser& LineParser::arg(String& value)
 	}
 	
 	if ((saveGet(pos_) == '\'') || (saveGet(pos_) == '"'))
-		value = readString();
+		*value = readString();
 	else if (isPunct(saveGet(pos_)))
-		value = readPunctuator();
+		*value = readPunctuator();
 	else
-		value = readWord();
+		*value = readWord();
 	
 	return *this;
 }
