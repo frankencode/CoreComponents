@@ -23,7 +23,7 @@
 #define PONA_TCPSOCKET_HPP
 
 #include "SocketAddress.hpp"
-#include "TcpStream.hpp"
+#include "SystemStream.hpp"
 
 namespace pona
 {
@@ -35,11 +35,11 @@ public:
 	int run();
 	void close();
 	
-	static Ref<TcpStream, Owner> connect(Ref<SocketAddress> remoteAddress);
+	static Ref<SystemStream, Owner> connect(Ref<SocketAddress> remoteAddress);
 	
 protected:
 	virtual void init() {}
-	virtual void serve(Ref<SocketAddress> address, Ref<TcpStream> stream) = 0;
+	virtual void serve(Ref<SocketAddress> address, Ref<SystemStream> stream) = 0;
 	virtual void idle() {}
 	virtual void cleanup() {}
 	

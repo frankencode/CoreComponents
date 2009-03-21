@@ -71,8 +71,7 @@ SET(PONA_HEADER
 	IntegerLiteral.hpp
 	FloatLiteral.hpp
 	NumberFormatting.hpp
-	PrintAndScan.hpp
-	TcpStream.hpp
+	PrintScanFormat.hpp
 	TcpSocket.hpp
 	ToolOptions.hpp
 )

@@ -5,7 +5,7 @@
 #include "LinePrinter.hpp"
 #include "LineParser.hpp"
 #include "StandardStreams.hpp"
-#include "PrintAndScan.hpp"
+#include "PrintScanFormat.hpp"
 #include "File.hpp"
 #include "FileStatus.hpp"
 

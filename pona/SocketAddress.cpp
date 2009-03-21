@@ -21,8 +21,6 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <arpa/inet.h> // inet_pton, inet_ntop
-#include <netinet/in.h> // htons, ntohs
 #include <stdlib.h> // malloc
 #include <unistd.h> // gethostname
 #include <netdb.h> // getaddrinfo, freeaddrinfo, getnameinfo
@@ -166,7 +164,7 @@ void SocketAddress::setPort(int port)
 Ref<InetAddressList, Owner> SocketAddress::query(String hostName, String serviceName, int family, int socketType, String* canonicalName)
 {
 	addrinfo hint;
-	addrinfo* head;
+	addrinfo* head = 0;
 	
 	memset(&hint, 0, sizeof(hint));
 	hint.ai_flags = (canonicalName) ? AI_CANONNAME : 0;
@@ -201,7 +199,8 @@ Ref<InetAddressList, Owner> SocketAddress::query(String hostName, String service
 		next = next->ai_next;
 	}
 
-	freeaddrinfo(head);
+	if (head)
+		freeaddrinfo(head);
 	
 	return list;
 }

@@ -22,7 +22,8 @@
 #ifndef PONA_SOCKETADDRESS_HPP
 #define PONA_SOCKETADDRESS_HPP
 
-#include <arpa/inet.h> // sockaddr, AF_*
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include <netdb.h> // addrinfo
 #include <sys/socket.h> // connect
 

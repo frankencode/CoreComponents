@@ -7,9 +7,9 @@ int main()
 {
 	{
 		String s("Hello!");
-		output()->write(format("(#s, s) = (%%, \"%%\")\n") % s->length() % s);
+		print("(#s, s) = (%%, \"%%\")\n", s->length(), s);
 		s->insert(5, String(", world"));
-		output()->write(format("%%\n") % s);
+		print("%%\n", s);
 		if (s->copy(0, 5) == "Hello")
 		{
 			int pos = s.find("world");
@@ -17,7 +17,7 @@ int main()
 			{
 				s->remove(pos, String("world")->length());
 				s->insert(pos, String("echo"));
-				output()->write(format("%%\n") % s);
+				print("%%\n", s);
 			}
 		}
 	}
@@ -25,7 +25,7 @@ int main()
 		String f = String("a") << "b";
 		f->append(String("="));
 		f->append(Char('c'));
-		output()->write(format("s=\"%%\"\n") % f);
+		print("s=\"%%\"\n", f);
 	}
 	
 	// output()->write(format("sizeof(wchar_t) = %%\n") % sizeof(wchar_t));

@@ -8,7 +8,7 @@ namespace pona
 class EchoWorker: public Thread
 {
 public:
-	EchoWorker(Ref<TcpSocket> server, Ref<SocketAddress> address, Ref<TcpStream> stream)
+	EchoWorker(Ref<TcpSocket> server, Ref<SocketAddress> address, Ref<SystemStream> stream)
 		: server_(server),
 		  address_(address),
 		  stream_(stream),
@@ -59,7 +59,7 @@ private:
 	
 	Ref<TcpSocket, Owner> server_;
 	Ref<SocketAddress, Owner> address_;
-	Ref<TcpStream, Owner> stream_;
+	Ref<SystemStream, Owner> stream_;
 	String name_;
 };
 
@@ -77,7 +77,7 @@ public:
 		print("%%: Listening ...\n", name_);
 	}
 	
-	void serve(Ref<SocketAddress> address, Ref<TcpStream> stream)
+	void serve(Ref<SocketAddress> address, Ref<SystemStream> stream)
 	{
 		Ref<EchoWorker> worker = new EchoWorker(this, address, stream);
 		pool_->append(worker);
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
 		}
 		else if (String(argv[1]) == "--client")
 		{
-			Ref<TcpStream, Owner> socket = TcpSocket::connect(new SocketAddress(AF_INET, "127.0.0.1", 8001));
+			Ref<SystemStream, Owner> socket = TcpSocket::connect(new SocketAddress(AF_INET, "127.0.0.1", 8001));
 			Ref<LineSource, Owner> socketSource = new LineSource(socket);
 			Ref<LineSink, Owner> socketSink = new LineSink(socket);
 			while (true)
