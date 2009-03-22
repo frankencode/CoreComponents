@@ -62,7 +62,7 @@ public:
 	inline void pushFront(T e) { push(0, 1, &e); }
 	inline T popFront() { T e; pop(0, 1, &e); return e; }
 	inline T front(int i) { return get(i); }
-	inline T back(int i) { return get(-(i + 1)); }
+	inline T back(int i) { return get(length_-(i + 1)); }
 	
 	inline void append(T e) { push(length_, 1, &e); }
 	inline void insert(int i, T e) { push(i, 1, &e); }
@@ -70,16 +70,6 @@ public:
 	inline void remove(int i, int n) { pop(i, n); }
 	inline int length() const { return length_; }
 	inline int maxLength() const { return maxLength_; }
-	
-	inline void insert(int i, List* b) {
-		int n = b->length();
-		if (n > 0) {
-			push(i, n);
-			for (int k = 0; k < n; ++k)
-				set(i+k, b->get(k));  // quick HACK, low performance
-		}
-	}
-	inline void append(List* b) { insert(length_, b); }
 	
 	inline int size() const { return maxLength_; }
 	inline int fill() const { return length_; }
@@ -101,11 +91,11 @@ public:
 	inline Ref<List, Owner> copy(int i, int n);
 	inline Ref<List, Owner> copy() { return copy(0, length_); }
 	
-	/*
-	void sort();
-	void unique(Ref< List<int> > frq = 0);
-	void statistic(Ref< List<T> > members, Ref< List<int> > frq);
-	*/
+	inline void insert(int i, List* b) { push(i, b->length_, b); }
+	inline void append(List* b) { insert(length_, b); }
+	inline int find(List* b) const { return find(0, length_, b); }
+	inline int find(int i, List* b) const { return find(i, length_ - i, b); }
+	inline bool contains(List* b) const { return find(b) != length_; }
 	
 	bool operator<(const List& b) const;
 	bool operator==(const List& b) const;
@@ -114,11 +104,20 @@ public:
 	inline bool operator<=(const List& b) const { return (*this < b) || (*this == b); }
 	inline bool operator>=(const List& b) const { return (b < *this) || (*this == b); }
 	
+	/*
+	void sort();
+	void unique(Ref< List<int> > frq = 0);
+	void statistic(Ref< List<T> > members, Ref< List<int> > frq);
+	*/
+	
 protected:
 	List(Ref<List> parent, int index0, int length);
 	
 private:
 	PONA_DISABLE_COPY(List)
+	
+	void push(int i, int n, List* b);
+	int find(int i, int n, List* b) const;
 	
 	class Node
 	{
@@ -147,7 +146,7 @@ private:
 		~Node() {}
 		
 		inline T* v() { return reinterpret_cast<T*>(this+1); }
-		inline T v(int k) const { return reinterpret_cast<const T*>(this+1)[k]; }
+		inline const T& v(int k) const { return reinterpret_cast<const T*>(this+1)[k]; }
 		
 		Node* pred_;
 		Node* succ_;
@@ -242,7 +241,7 @@ private:
 			}
 		}
 		
-		inline T get() const { return node_->v(k_); }
+		inline const T& get() const { return node_->v(k_); }
 		inline void set(T e) { *(node_->v() + k_) = e; }
 	};
 	
@@ -312,13 +311,10 @@ void List<T>::push(int i, int n, const T* v)
 	if (n == 0) return;
 	
 	if (i < 0) i += length_ + 1;
-	if (monitor_) monitor_->beforeGrowing(i, n);
-	
 	if (!((0 <= i) && (i <= length_)))
-	{
-		if (monitor_) monitor_->afterGrowing(i, n);
 		PONA_THROW(ListException, "Wrong index");
-	}
+	
+	if (monitor_) monitor_->beforeGrowing(i, n);
 	
 	if (parent_)
 	{
@@ -395,13 +391,10 @@ void List<T>::pop(int i, int n, T* v)
 	if (n == 0) return;
 	
 	if (i < 0) i += length_;
-	if (monitor_) monitor_->beforeShrinking(i, n);
-	
 	if (!((0 <= i) && (i + n <= length_)))
-	{
-		if (monitor_) monitor_->afterShrinking(i, n);
 		PONA_THROW(ListException, "Wrong index");
-	}
+	
+	if (monitor_) monitor_->beforeShrinking(i, n);
 	
 	if (parent_)
 	{
@@ -491,23 +484,17 @@ void List<T>::write(int i, int n, T* v)
 	if (n == 0) return;
 	
 	if (i < 0) i += length_;
+	if (!((0 <= i) && (i + n <= length_)))
+		PONA_THROW(ListException, "Wrong index");
+	
 	if (monitor_) monitor_->beforeAccess(i, n);
 	
-	if (!((0 <= i) && (i + n <= length_)))
-	{
-		if (monitor_) monitor_->afterAccess(i, n);
-		PONA_THROW(ListException, "Wrong index");
-	}
-	
-	if (parent_)
-	{
+	if (parent_) {
 		parent_->write(i + index0_, n, v);
 	}
-	else
-	{
+	else {
 		Pos pos = translate(i);
-		for (int i = 0; i < n; ++i)
-		{
+		for (int i = 0; i < n; ++i) {
 			pos.set(v[i]);
 			pos.step();
 		}
@@ -522,29 +509,19 @@ void List<T>::read(int i, int n, T* v)
 	if (n == 0) return;
 	
 	if (i < 0) i += length_;
-	if (monitor_) monitor_->beforeReadonlyAccess(i, n);
-	
 	if (!((0 <= i) && (i + n <= length_)))
-	{
-		if (monitor_) monitor_->afterReadonlyAccess(i, n);
 		PONA_THROW(ListException, "Wrong index");
-	}
 	
-	if (parent_)
-	{
+	if (parent_) {
 		parent_->read(i + index0_, n, v);
 	}
-	else
-	{
+	else {
 		Pos pos = translate(i);
-		for (int i = 0; i < n; ++i)
-		{
+		for (int i = 0; i < n; ++i) {
 			v[i] = pos.get();
 			pos.step();
 		}
 	}
-	
-	if (monitor_) monitor_->afterReadonlyAccess(i, n);
 }
 
 template<class T>
@@ -555,15 +532,12 @@ void List<T>::clear()
 	
 	if (monitor_) monitor_->beforeShrinking(0, n);
 	
-	if (parent_)
-	{
+	if (parent_) {
 		parent_->pop(index0_, length_);
 	}
-	else
-	{
+	else {
 		Node* node = front_;
-		while (node)
-		{
+		while (node) {
 			Node* succ = node->succ_;
 			destroyNode(node);
 			node = succ;
@@ -581,16 +555,10 @@ template<class T>
 inline T List<T>::get(int i) const
 {
 	if (i < 0) i += length_;
-	if (monitor_) monitor_->beforeReadonlyAccess(i, 1);
-	
 	if (!((0 <= i) && (i < length_)))
-	{
-		if (monitor_) monitor_->afterReadonlyAccess(i, 1);
 		PONA_THROW(ListException, "Wrong index");
-	}
 	
 	T e = (parent_) ? parent_->get(i + index0_) : translate(i).get();
-	if (monitor_) monitor_->afterReadonlyAccess(i, 1);
 	return e;
 }
 
@@ -598,14 +566,11 @@ template<class T>
 inline void List<T>::set(int i, T e)
 {
 	if (i < 0) i += length_;
+	if (!((0 <= i) && (i < length_)))
+		PONA_THROW(ListException, "Wrong index");
+	
 	if (monitor_) monitor_->beforeAccess(i, 1);
 	
-	if (!((0 <= i) && (i < length_)))
-	{
-		if (monitor_) monitor_->afterAccess(i, 1);
-		PONA_THROW(ListException, "Wrong index");
-	}
-		
 	if (parent_)
 		parent_->set(i + index0_, e);
 	else
@@ -618,26 +583,18 @@ template<class T>
 Ref<List<T>, Owner> List<T>::copy(int i, int n)
 {
 	if (i < 0) i += length_;
-	if (monitor_) monitor_->beforeReadonlyAccess(i, n);
-	
 	if (!((0 <= i) && (i + n <= length_)))
-	{
-		if (monitor_) monitor_->afterReadonlyAccess(i, n);
 		PONA_THROW(ListException, "Wrong index or length");
-	}
 	
 	Ref<List, Owner> b;
 	
-	if (parent_)
-	{
+	if (parent_) {
 		b = parent_->copy(i + index0_, n);
 	}
-	else
-	{
+	else {
 		b = new List();
 		
-		if (n > 0)
-		{
+		if (n > 0) {
 			b->push(0, n);
 			Pos src = translate(i);
 			Pos dst = b->translate(0);
@@ -649,37 +606,157 @@ Ref<List<T>, Owner> List<T>::copy(int i, int n)
 		}
 	}
 	
-	if (monitor_) monitor_->afterReadonlyAccess(i, n);
-	
 	return b;
 }
 
 template<class T>
-bool List<T>::operator<(const List& b) const
+void List<T>::push(int i, int n, List* b)
 {
-	int n = (length_ < b.length_) ? length_ : b.length_;
-	int i = 0;
-	while (i < n) {
-		T c1 = get(i);
-		T c2 = b.get(i);
-		if ((c1 < c2) || (c2 < c1))
-			return c1 < c2;
-		++i;
+	if (n == 0) return;
+	
+	if (i < 0) i += length_;
+	if (!((0 <= i) && (i <= length_) && (n <= b->length_)))
+		PONA_THROW(ListException, "Wrong index or length");
+	
+	if (monitor_) monitor_->beforeGrowing(i, n);
+	
+	if (parent_) {
+		parent_->push(index0_ + i, n, b);
 	}
-	return length_ < b.length_;
+	else {
+		push(i, n);
+		
+		int k = 0;
+		while (b->parent_) {
+			k += b->index0_;
+			b = b->parent_;
+		}
+		
+		if (k + n > b->length_)
+			PONA_THROW(ListException, "Wrong index or length");
+		
+		Pos pa = translate(i);
+		Pos pb = b->translate(k);
+		while (n > 0) {
+			pa.set(pb.get());
+			pa.step();
+			pb.step();
+			--n;
+		}
+	}
+	
+	if (monitor_) monitor_->afterGrowing(i, n);
 }
 
 template<class T>
-bool List<T>::operator==(const List& b) const
+int List<T>::find(int i, int n, List* b) const
 {
-	bool equal = (length_ == b.length_);
-	int i = 0;
-	while (equal && (i < length_)) {
-		T c1 = get(i);
-		T c2 = b.get(i);
-		equal = !((c1 < c2) || (c2 < c1));
-		++i;
+	if (i < 0) i += length_;
+	if (!((0 <= i) && (i < length_)))
+		PONA_THROW(ListException, "Wrong index");
+	
+	if (n == 0) return 0;
+	if (b->length_ == 0) return i;
+	
+	if (parent_) {
+		i = parent_->find(index0_ + i, n, b) - index0_;
 	}
+	else {
+		int k = 0, m = b->length_, m0 = m;
+		while (b->parent_) {
+			k += b->index0_;
+			b = b->parent_;
+		}
+		
+		Pos pa = translate(i);
+		Pos pb = b->translate(k), pb0 = pb;
+		while ((n > 0) && (m > 0)) {
+			if (pa.get() == pb.get()) {
+				pb.step();
+				--m;
+			}
+			else {
+				pb = pb0;
+				m = m0;
+			}
+			pa.step();
+			--n;
+		}
+		
+		i = pa.i_;
+		if (m == 0) i -= m0;
+	}
+	
+	return i;
+}
+
+template<class T>
+bool List<T>::operator<(const List& b_) const
+{
+	const List* a = this;
+	int i = 0, n = length_;
+	while (a->parent_) {
+		i += a->index0_;
+		a = a->parent_;
+	}
+	
+	const List* b = &b_;
+	int k = 0, m = b->length_;
+	while (b->parent_) {
+		k += b->index0_;
+		b = b->parent_;
+	}
+	
+	if ((n > 0) && (m > 0)) {
+		Pos pa = a->translate(i);
+		Pos pb = b->translate(k);
+		while ((n > 0) && (m > 0)) {
+			T ca = pa.get();
+			T cb = pb.get();
+			if (ca < cb)
+				return true;
+			else if (cb < ca)
+				return false;
+			pa.step();
+			pb.step();
+			--n;
+			--m;
+		}
+	}
+	
+	return n < m;
+}
+
+template<class T>
+bool List<T>::operator==(const List& b_) const
+{
+	const List* a = this;
+	int i = 0, n = length_;
+	while (a->parent_) {
+		i += a->index0_;
+		a = a->parent_;
+	}
+	
+	const List* b = &b_;
+	int k = 0, m = b->length_;
+	while (b->parent_) {
+		k += b->index0_;
+		b = b->parent_;
+	}
+	
+	bool equal = (n == m);
+	
+	if (equal && (n > 0)) {
+		Pos pa = a->translate(i);
+		Pos pb = b->translate(k);
+		while (equal && (n > 0)) {
+			equal = (pa.get() == pb.get());
+			pa.step();
+			pb.step();
+			--n;
+		}
+	}
+	
 	return equal;
 }
 

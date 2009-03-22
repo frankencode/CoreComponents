@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 		print("(2) I/O Redirection, passing of arguments and environment variables\n\n");
 		
 		Process process;
-		process.setExecPath("testProcess");
+		process.setExecPath(argv[0]);
 		process.setWorkingDirectory("/");
 		process.setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
 		process.arguments()->append("--echo 123");

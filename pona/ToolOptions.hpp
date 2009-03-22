@@ -44,11 +44,12 @@ public:
 	void define(Char shortName, String longName, Ref<Variant> value, String description = "");
 	
 	Ref<StringList> read(int argc, char** argv);
-	Ref<StringList> read(String line);
 	
 	String help(String synopsis = "", String summary = "", String details = "");
 	
 private:
+	Ref<StringList> read(String line);
+	
 	Ref<BooleanLiteral, Owner> booleanRule_;
 	Ref<IntegerLiteral, Owner> integerRule_;
 	Ref<FloatLiteral, Owner> floatRule_;

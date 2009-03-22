@@ -38,7 +38,7 @@ File::File(String path)
 	: SystemStream(-1),
 	  path_(path),
 	  openFlags_(0),
-	  pathUtf8_(path.strdup())
+	  pathUtf8_(0)
 {}
 
 File::File(int standardStream)
@@ -65,7 +65,7 @@ File::File(int standardStream)
 File::~File()
 {
 	if (pathUtf8_) {
-		free(pathUtf8_);
+		::free(pathUtf8_);
 		pathUtf8_ = 0;
 	}
 }
@@ -73,6 +73,27 @@ File::~File()
 String File::path() const
 {
 	return path_;
+}
+
+String File::name() const
+{
+	Char sep = '/';
+	
+	int n = path_->length();
+	int i = n - 1;
+	while (i >= 0) {
+		if (path_->get(i) == sep) {
+			++i;
+			break;
+		}
+		--i;
+	}
+	
+	String name;
+	if (i < n)
+		name = path_->range(i, n - i);
+	
+	return name;
 }
 
 int File::openFlags() const
@@ -86,17 +107,17 @@ bool File::access(int flags) const
 	if (flags & Read) rights |= R_OK;
 	if (flags & Write) rights |= W_OK;
 	if (flags & Execute) rights |= X_OK;
-	return ::access(pathUtf8_, rights) == 0;
+	return ::access(pathUtf8(), rights) == 0;
 }
 
 bool File::exists() const
 {
-	return ::access(pathUtf8_, F_OK);
+	return ::access(pathUtf8(), F_OK);
 }
 
 void File::create(int mask)
 {
-	int fd = ::open(pathUtf8_, O_RDONLY|O_CREAT|O_EXCL, mask);
+	int fd = ::open(pathUtf8(), O_RDONLY|O_CREAT|O_EXCL, mask);
 	if (fd == -1)
 		PONA_THROW(StreamSemanticException, systemError());
 	::close(fd);
@@ -104,7 +125,7 @@ void File::create(int mask)
 
 void File::unlink()
 {
-	if (::unlink(pathUtf8_) == -1)
+	if (::unlink(pathUtf8()) == -1)
 		PONA_THROW(StreamSemanticException, systemError());
 }
 
@@ -117,7 +138,7 @@ void File::open(int flags)
 		flags2 = O_WRONLY;
 	else if (flags == (Read|Write))
 		flags2 = O_RDWR;
-	fd_ = ::open(pathUtf8_, flags2);
+	fd_ = ::open(pathUtf8(), flags2);
 	if (fd_ == -1)
 		PONA_THROW(StreamSemanticException, systemError());
 }
@@ -174,6 +195,12 @@ void File::dataSync()
 #else
 	sync();
 #endif
+}
+
+char* File::pathUtf8() const
+{
+	if (!pathUtf8_) pathUtf8_ = path_.strdup();
+	return pathUtf8_;
 }
 
 } // namespace pona
