@@ -39,6 +39,7 @@ public:
 	typedef List<Char> Media;
 	
 	String();
+	String(Char ch);
 	String(const char* utf8, int numBytes = -1, int numChars = -1);
 	String(Ref<Media, Owner> list);
 	
@@ -55,10 +56,7 @@ public:
 	inline String& operator<<(String b) { get()->append(b.get()); return *this; }
 	inline String& operator<<(Char ch) { get()->append(ch); return *this; }
 	
-	int find(String s, int i = 0);
-	Ref<StringList, Owner> split(String sep);
-	
-	char* strdup();
+	char* strdup() const;
 };
 
 String operator*(Char ch, int n);

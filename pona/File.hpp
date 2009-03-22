@@ -66,6 +66,7 @@ public:
 	~File();
 
 	String path() const;
+	String name() const;
 	int openFlags() const;
 
 	bool access(int flags) const;
@@ -87,7 +88,9 @@ public:
 private:
 	String path_;
 	int openFlags_;
-	char* pathUtf8_;
+	mutable char* pathUtf8_;
+	
+	char* pathUtf8() const;
 };
 
 } // namespace pona

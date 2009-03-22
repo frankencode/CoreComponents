@@ -168,7 +168,7 @@ void HuffmanCodec::encode(BitSink* sink, int* raw, int rawFill, bool* userFallba
 	for (int i = 0; (i < rawFill) && (codeTableFill_ < rawDiversity_); ++i)
 	{
 		int x = raw[i] - rawMin;
-		if (codeMap_[x].symbol == 0)
+		if (!codeMap_[x].symbol)
 			addSymbol(x, 0);
 		++codeMap_[x].symbol->count;
 	}

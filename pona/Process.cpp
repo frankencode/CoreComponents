@@ -122,7 +122,7 @@ void Process::start()
 		if (ioPolicy_ & CloseError) ::close(2);
 		
 		if (workingDirectory_ != String()) {
-			if (execPath_.find("/") == -1)
+			if (execPath_->contains(String("/")))
 				execPath_ = String() << ProcessStatus::workingDirectory() << "/" << execPath_;
 			if (::chdir(workingDirectory_.strdup()) == -1)
 				PONA_SYSTEM_EXCEPTION;

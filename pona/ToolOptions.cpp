@@ -1,4 +1,5 @@
 #include "LinePrinter.hpp"
+#include "File.hpp"
 #include "ToolOptions.hpp"
 
 namespace pona
@@ -146,8 +147,7 @@ Ref<ToolOptions::Option> ToolOptions::optionByLongName(String name) const
 
 Ref<StringList> ToolOptions::read(int argc, char** argv)
 {
-	toolName_ = argv[0];
-	// if (toolName_->range(0, 2) == "./") toolName_->pop(0, 2); // requires range/copy to become save (clamped if needed)
+	toolName_ = File(argv[0]).name();
 	String line;
 	for (int i = 1; i < argc; ++i) {
 		line->append(String(argv[i]));
@@ -268,7 +268,7 @@ void ToolOptions::readOption(String line, Ref<Token> token)
 
 String ToolOptions::help(String synopsis, String summary, String details)
 {
-	if ((synopsis->length() == 0) && (toolName_->length() == 0))
+	if (synopsis->length() == 0)
 		synopsis = toolName_ + " [OPTION]... [FILE]...";
 	
 	String options;
@@ -294,29 +294,27 @@ String ToolOptions::help(String synopsis, String summary, String details)
 		for (int i = 0; i < optionList_->length(); ++i) {
 			Ref<Option> option = optionList_->get(i);
 			String line = lines->get(i);
-			if (line->length() < maxLength)
-				line << Char(' ') * (maxLength - line->length());
+			if (line->length() < indent->length())
+				line << Char(' ') * (indent->length() - line->length());
 			String text = option->description_;
-			// text->replace("\n", "\n" + indent); // could be easily added to CharList
+			// text->replace("\n", "\n" + indent); // would be nice
 			line << text << "\n";
 		}
 		
-		// options = lines.join(); // needs to be added to List
+		// options = lines.join(); // would be nice
 		for (int i = 0; i < lines->length(); ++i)
 			options << lines->get(i);
 	}
 	
-	return
-		format(
-			"Usage: %%\n"
-			"%%\n"
-			"Options:\n"
-			"%%\n"
-			"%%\n"
-		) % synopsis
-		  % summary
-		  % options
-		  % details;
+	String text = format("Usage: %%\n") % synopsis;
+	if (summary->length() > 0) text << summary << '\n';
+	text << '\n';
+	text << "Options:\n";
+	text << options;
+	if (details->length() > 0)
+		text << details;
+	text << '\n';
+	return text;
 }
 
 } // namespace pona

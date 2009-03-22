@@ -31,7 +31,7 @@ Ref<StandardStreams> StandardStreams::instance()
 {
 	static Ref<StandardStreams, ThreadLocalOwner> instance_ = 0;
 	
-	if (instance_ == 0)
+	if (!instance_)
 		instance_ = new StandardStreams();
 	return instance_;
 }

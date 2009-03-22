@@ -9,15 +9,18 @@ int main(int argc, char** argv)
 	ToolOptions options;
 	Variant echo = false;
 	Variant world = false;
+	Variant help = false;
 	Variant alpha = 1;
 	Variant beta = 2.;
 	options.define('e', "echo", &echo, "Print \"Hello, echo!\"");
 	options.define('w', "world", &world, "Print \"Hello, world!\"");
+	options.define('h', "help", &help, "Print help");
 	options.define(0, "alpha", &alpha, "Pass alpha value");
 	options.define(0, "beta", &beta, "Pass beta value");
 	Ref<StringList, Owner> files = options.read(argc, argv);
 	if (echo) print("Hello, echo!\n");
 	if (world) print("Hello, world!\n");
+	if (help) { print(options.help()); return 0; }
 	print("alpha, beta = %%, %%\n", alpha, beta);
 	print("alpha + beta = %%\n", int(alpha) + double(beta));
 	print("files = [");
@@ -35,11 +38,11 @@ int main(int argc, char** argv)
 int main(int argc, char** argv)
 {
 	int ret = 1;
-	try {
+	//try {
 		ret = pona::main(argc, argv);
-	}
+	/*}
 	catch (std::exception& ex) {
 		pona::print("%%\n", ex.what());
-	}
+	}*/
 	return ret;
 }

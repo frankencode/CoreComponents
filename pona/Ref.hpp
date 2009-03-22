@@ -84,6 +84,7 @@ public:
 	inline operator Ref<T2, GetAndSetPolicy2>() const { return Ref<T2, GetAndSetPolicy2>(dynamic_cast<T2*>(this->get()));  }
 	
 	// ordering
+	
 	inline bool operator<(const Ref& b) const {
 		T* ai = this->get();
 		T* bi = b.get();
@@ -93,6 +94,7 @@ public:
 	}
 	
 	// access
+	
 	inline T* operator->() const {
 		T* instance = this->get();
 		if (!instance) *(char*)0 = 0;

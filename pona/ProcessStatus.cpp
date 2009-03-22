@@ -79,9 +79,8 @@ Ref<ProcessStatus::Environment, Owner> ProcessStatus::environment()
 	while (env[i] != 0)
 	{
 		String s(env[i]);
-		int k = s.find("=");
-		if (k != -1)
-		{
+		int k = s->find(String("="));
+		if (k != s->length()) {
 			String key = s->copy(0, k);
 			String value = s->copy(k + 1, s->length() - (k + 1));
 			map->set(key, value);

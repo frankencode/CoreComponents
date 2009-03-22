@@ -31,6 +31,12 @@ String::String()
 	: Ref<List<Char>, Owner>(new Media)
 {}
 
+String::String(Char ch)
+	: Ref<List<Char>, Owner>(new Media)
+{
+	instance_->append(ch);
+}
+
 String::String(const char* utf8, int numBytes, int numChars)
 	: Ref<List<Char>, Owner>(new Media)
 {
@@ -67,46 +73,7 @@ String::String(Ref<Media, Owner> list)
 	if (!instance_) set(new Media);
 }
 
-int String::find(String s, int i) // HACK, needs to be moved to List
-{
-	int n = instance_->length();
-	int j = 0;
-	int m = s->length();
-	
-	while ((i < n) && (j < m))
-	{
-		j = (s->get(j) == instance_->get(i)) ? j + 1 : 0;
-		++i;
-	}
-	
-	if (j != m)
-		i = -1;
-	else 
-		i -= m;
-	
-	return i;
-}
-
-Ref<StringList, Owner> String::split(String sep)
-{
-	Ref<StringList, Owner> list = new StringList;
-	
-	int i = 0;
-	while (true) {
-		int k = find(sep, i);
-		if (k == -1) break;
-		list->append(String(instance_->copy(i, k - i)));
-		i = k + sep->length();
-	}
-	
-	if (i < instance_->length())
-		list->append(String(instance_->copy(i, instance_->length() - i)));
-	
-	return list;
-}
-
-
-char* String::strdup()
+char* String::strdup() const
 {
 	int numChars = instance_->length();
 	int numBytes = 0;
