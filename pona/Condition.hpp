@@ -53,14 +53,14 @@ public:
 			PONA_SYSTEM_EXCEPTION;
 	}
 	
-	inline void wakeup()
+	inline void signal()
 	{
 		int ret = pthread_cond_signal(&cond_);
 		if (ret != 0)
 			PONA_SYSTEM_EXCEPTION;
 	}
 	
-	inline void wakeupAll()
+	inline void broadcast()
 	{
 		int ret = pthread_cond_broadcast(&cond_);
 		if (ret != 0)

@@ -8,58 +8,77 @@ namespace pona
 
 typedef Channel<int> MyChannel;
 
-class MyThread: public Thread
+class Consumer: public Thread
 {
 public:
-	enum Role { Consumer, Producer };
-	
-	MyThread(int role, Ref<MyChannel> channel)
-		: role_(role),
-		  channel_(channel)
+	Consumer(int id, Ref<MyChannel> channel, int amount)
+		: id_(id),
+		  channel_(channel),
+		  amount_(amount)
 	{}
 	
 	int run()
 	{
-		const int n = 256;
-		
-		if (role_ == Producer)
-		{
-			for (int i = 0; i < n; ++i)
-			{
-				print("producer: i = %%\n", i);
-				channel_->pushBack(i);
-			}
-		}
-		else // if (role_ == Consumer)
-		{
-			int k = 0;
-			while (k != n-1)
-			{
-				k = channel_->popFront();
-				print("consumer: k = %%\n", k);
-			}
+		while (amount_ > 0) {
+			int x = channel_->pop();
+			print("consumer %%: consuming %%\n", id_, x);
+			--amount_;
 		}
 		return 0;
 	}
 	
 private:
-	int role_;
+	int id_;
 	Ref<MyChannel, Owner> channel_;
+	int amount_;
+};
+
+class Producer: public Thread
+{
+public:
+	Producer(int id, Ref<MyChannel> channel, int amount)
+		: id_(id),
+		  channel_(channel),
+		  amount_(amount),
+		  random_(id_)
+	{}
+	
+	int run()
+	{
+		while (amount_ > 0) {
+			int x = random_.next();
+			print("producer %%: producing %%\n", id_, x);
+			channel_->push(x);
+			--amount_;
+		}
+		return 0;
+	}
+	
+private:
+	int id_;
+	Ref<MyChannel, Owner> channel_;
+	int amount_;
+	Random random_;
 };
 
 int main()
 {
 	Ref<MyChannel, Owner> channel = new MyChannel(16);
-	new Bouncer(channel);
 	
-	Ref<MyThread, Owner> t1 = new MyThread(MyThread::Producer, channel);
-	Ref<MyThread, Owner> t2 = new MyThread(MyThread::Consumer, channel);
+	Ref<Producer, Owner> p1 = new Producer(1, channel, 8);
+	Ref<Producer, Owner> p2 = new Producer(2, channel, 12);
+	Ref<Consumer, Owner> c1 = new Consumer(1, channel, 4);
+	Ref<Consumer, Owner> c2 = new Consumer(2, channel, 16);
 	
 	TimeStamp dt = getTime();
-	t1->start();
-	t2->start();
-	t1->wait();
-	t2->wait();
+	c1->start();
+	p1->start();
+	c2->start();
+	p2->start();
+	c1->wait();
+	c2->wait();
+	p1->wait();
+	p2->wait();
 	dt = getTime() - dt;
 	print("\ndt = %% usec\n\n", dt.microSeconds());
 	
@@ -72,4 +91,3 @@ int main()
 {
 	return pona::main();
 }
-

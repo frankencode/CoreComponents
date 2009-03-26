@@ -29,7 +29,7 @@ namespace pona
 {
 
 template<class T>
-class Vector: public Instance, public RandomAccessMedia<T>
+class Vector: public RandomAccessMedia<T>
 {
 public:
 	typedef T Element;

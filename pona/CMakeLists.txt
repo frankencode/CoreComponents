@@ -36,9 +36,6 @@ SET(PONA_HEADER
 	Exception.hpp
 	Clock.hpp
 	Heap.hpp
-	Monitor.hpp
-	Bouncer.hpp
-	MonitorMedia.hpp
 	Thread.hpp
 	Condition.hpp
 	Semaphore.hpp
@@ -85,7 +82,6 @@ SET(PONA_SOURCE
 	Utf8Sink.cpp
 	Utf8Source.cpp
 	HuffmanCodec.cpp
-	Bouncer.cpp
 	String.cpp
 	Format.cpp
 	SocketAddress.cpp

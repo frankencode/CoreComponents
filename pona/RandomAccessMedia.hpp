@@ -28,7 +28,7 @@ namespace pona
 {
 
 template<class T>
-class RandomAccessMedia
+class RandomAccessMedia: public virtual Instance
 {
 public:
 	typedef T Element;
