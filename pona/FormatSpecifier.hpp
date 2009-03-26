@@ -31,13 +31,15 @@ class FormatSpecifier: public SyntaxDefinition<String::Media>
 {
 public:
 	FormatSpecifier();
-	bool find(String text, int* i0, int* i1, int* wi, int* wf, int* base);
+	bool find(String text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, Char* blank);
 	
 private:
-	RULE number_;
+	RULE width_;
 	RULE integerWidth_;
 	RULE fractionWidth_;
 	RULE base_;
+	RULE exp_;
+	RULE blank_;
 };
 
 } // namespace pona

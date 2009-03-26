@@ -32,29 +32,13 @@ namespace pona
 
 PONA_EXCEPTION(ListException, Exception);
 
-/** \brief Dynamic double-linked list
-  *
-  * provides:
-  *  - delivers length() in constant time
-  *  - medium overhead in memory consumption
-  *  - provides a highlevel index based interface and thereby omits the risk of
-  *    dangling pointers or invalid iteration objects
-  *  - most index based access schemes are supported in constant time utilizing
-  *    an index cache
-  *  - allows non-overlapping child lists of possibly more than one cascading level
-  *  - throws exception on invalid operations
-  *  - allows to limit the maximum number of nodes
-  *
-  * limitations:
-  *  - on non-sequential random access or concurrent sequential access
-  *    the index-based access may degrate to linear time
-  *  - is not thread-safe by itself
+/** \brief Chunked double-linked list with cached random access
   */
 template<class T>
 class List: public MonitorMedia, public RandomAccessMedia<T>
 {
 public:
-	List(int maxLength = intMax);
+	List();
 	~List();
 	
 	inline void pushBack(T e) { push(length_, 1, &e); }
@@ -69,11 +53,9 @@ public:
 	inline void remove(int i, T* e = 0) { pop(i, 1, e); }
 	inline void remove(int i, int n) { pop(i, n); }
 	inline int length() const { return length_; }
-	inline int maxLength() const { return maxLength_; }
 	
-	inline int size() const { return maxLength_; }
+	inline int size() const { return intMax; }  // quick HACK
 	inline int fill() const { return length_; }
-	inline void resize(int n) { maxLength_ = n; }
 	inline void setMonitor(Ref<Monitor> monitor) { monitor_ = monitor; }
 	
 	void push(int i, int n = 1, const T* v = 0);
@@ -81,6 +63,7 @@ public:
 	
 	void read(int i, int n, T* v);
 	void write(int i, int n, T* v);
+	void fill(int i, int n, T e);
 	
 	void clear();
 	
@@ -96,6 +79,9 @@ public:
 	inline int find(List* b) const { return find(0, length_, b); }
 	inline int find(int i, List* b) const { return find(i, length_ - i, b); }
 	inline bool contains(List* b) const { return find(b) != length_; }
+	
+	typedef List< Ref<List, Owner> > ListOfList;
+	Ref<ListOfList, Owner> split(List* sep);
 	
 	bool operator<(const List& b) const;
 	bool operator==(const List& b) const;
@@ -269,8 +255,6 @@ private:
 	
 	Ref< List<T>, Owner > parent_;
 	int index0_;
-	
-	int maxLength_;
 	int length_;
 	
 	Node* front_;
@@ -281,9 +265,8 @@ private:
 };
 
 template<class T>
-List<T>::List(int maxLength)
-	: maxLength_(maxLength),
-	  length_(0),
+List<T>::List()
+	: length_(0),
 	  front_(0),
 	  back_(0)
 {}
@@ -292,7 +275,6 @@ template<class T>
 List<T>::List(Ref<List> parent, int index0, int length)
 	: parent_(parent),
 	  index0_(index0),
-	  maxLength_(intMax),
 	  length_(length),
 	  front_(0),
 	  back_(0)
@@ -322,12 +304,6 @@ void List<T>::push(int i, int n, const T* v)
 	}
 	else
 	{
-		if (length_ + n > maxLength_)
-		{
-			if (monitor_) monitor_->afterGrowing(i, n);
-			PONA_THROW(ListException, "List overflow");
-		}
-		
 		if (length_ == 0)
 		{
 			front_ = back_ = createNode(0, 0, v, n);
@@ -479,6 +455,27 @@ void List<T>::pop(int i, int n, T* v)
 }
 
 template<class T>
+void List<T>::read(int i, int n, T* v)
+{
+	if (n == 0) return;
+	
+	if (i < 0) i += length_;
+	if (!((0 <= i) && (i + n <= length_)))
+		PONA_THROW(ListException, "Wrong index");
+	
+	if (parent_) {
+		parent_->read(i + index0_, n, v);
+	}
+	else {
+		Pos pos = translate(i);
+		for (int i = 0; i < n; ++i) {
+			v[i] = pos.get();
+			pos.step();
+		}
+	}
+}
+
+template<class T>
 void List<T>::write(int i, int n, T* v)
 {
 	if (n == 0) return;
@@ -504,7 +501,7 @@ void List<T>::write(int i, int n, T* v)
 }
 
 template<class T>
-void List<T>::read(int i, int n, T* v)
+void List<T>::fill(int i, int n, T e)
 {
 	if (n == 0) return;
 	
@@ -512,16 +509,20 @@ void List<T>::read(int i, int n, T* v)
 	if (!((0 <= i) && (i + n <= length_)))
 		PONA_THROW(ListException, "Wrong index");
 	
+	if (monitor_) monitor_->beforeAccess(i, n);
+	
 	if (parent_) {
-		parent_->read(i + index0_, n, v);
+		parent_->fill(i + index0_, n, e);
 	}
 	else {
 		Pos pos = translate(i);
 		for (int i = 0; i < n; ++i) {
-			v[i] = pos.get();
+			pos.set(e);
 			pos.step();
 		}
 	}
+	
+	if (monitor_) monitor_->afterAccess(i, n);
 }
 
 template<class T>
@@ -688,6 +689,21 @@ int List<T>::find(int i, int n, List* b) const
 	}
 	
 	return i;
+}
+
+template<class T>
+Ref<typename List<T>::ListOfList, Owner> List<T>::split(List* sep)
+{
+	Ref<ListOfList> lol = new List<ListOfList>();
+	int i = 0;
+	while (i < length_) {
+		int i1 = find(i, sep);
+		lol->append(range(i, i1 - i));
+		i = i1 + sep->length_;
+	}
+	if (i == length_)
+		lol->append(new List());
+	return lol;
 }
 
 template<class T>

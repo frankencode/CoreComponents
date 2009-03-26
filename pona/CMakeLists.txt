@@ -20,8 +20,6 @@ SET(PONA_HEADER
 	BitSink.hpp
 	LineSource.hpp
 	LineSink.hpp
-	LinePrinter.hpp
-	LineParser.hpp
 	Instance.hpp
 	HuffmanCodec.hpp
 	File.hpp
@@ -53,6 +51,7 @@ SET(PONA_HEADER
 	SyntaxFactory.hpp
 	RandomAccessMedia.hpp
 	String.hpp
+	Format.hpp
 	Tree.hpp
 	PrefixTree.hpp
 	Token.hpp
@@ -70,8 +69,6 @@ SET(PONA_HEADER
 	BooleanLiteral.hpp
 	IntegerLiteral.hpp
 	FloatLiteral.hpp
-	NumberFormatting.hpp
-	PrintScanFormat.hpp
 	TcpSocket.hpp
 	ToolOptions.hpp
 )
@@ -81,8 +78,6 @@ SET(PONA_SOURCE
 	Stream.cpp
 	LineSource.cpp
 	LineSink.cpp
-	LinePrinter.cpp
-	LineParser.cpp
 	BitSink.cpp
 	BitSource.cpp
 	ByteSink.cpp
@@ -92,13 +87,13 @@ SET(PONA_SOURCE
 	HuffmanCodec.cpp
 	Bouncer.cpp
 	String.cpp
+	Format.cpp
 	SocketAddress.cpp
 	SyntaxFactory.cpp
 	FormatSpecifier.cpp
 	BooleanLiteral.cpp
 	IntegerLiteral.cpp
 	FloatLiteral.cpp
-	NumberFormatting.cpp
 	TcpSocket.cpp
 	ToolOptions.cpp
 	Exception.cpp

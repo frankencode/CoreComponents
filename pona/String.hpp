@@ -28,10 +28,6 @@
 namespace pona
 {
 
-class String;
-
-typedef List<String> StringList;
-
 class String: public Ref<List<Char>, Owner>
 {
 public:
@@ -59,11 +55,29 @@ public:
 	char* strdup() const;
 };
 
+inline bool operator<(String a, const char* b) { return a < String(b); }
+inline bool operator<(const char* b, String a) { return a < b; }
+inline bool operator==(String a, const char* b) { return a == String(b); }
+inline bool operator==(const char* b, String a) { return a == b; }
+inline bool operator>(String a, const char* b) { return a > String(b); }
+inline bool operator>(const char* b, String a) { return a > b; }
+inline bool operator!=(String a, const char* b) { return a != String(b); }
+inline bool operator!=(const char* b, String a) { return a != b; }
+inline bool operator<=(String a, const char* b) { return a <= String(b); }
+inline bool operator<=(const char* b, String a) { return a <= b; }
+inline bool operator>=(String a, const char* b) { return a >= String(b); }
+inline bool operator>=(const char* b, String a) { return a >= b; }
+
 String operator*(Char ch, int n);
 inline String operator*(int n, Char ch) { return ch * n; }
 
-inline bool operator==(String a, const char* b) { return a == String(b); }
-inline bool operator==(const char* b, String a) { return a == b; }
+typedef List<String> StringList;
+Ref<StringList, Owner> operator/(String text, String sep);
+
+int toInt(String s, bool* ok = 0);
+int64_t toInt64(String s, bool* ok = 0);
+uint64_t toUInt64(String s, bool* ok = 0);
+float64_t toFloat64(String s, bool* ok = 0);
 
 } // namespace pona
 

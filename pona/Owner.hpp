@@ -51,7 +51,7 @@ public:
 	
 	inline T* get() const { return instance_; }
 	
-protected:
+private:
 	T* instance_;
 };
 

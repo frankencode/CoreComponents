@@ -19,9 +19,11 @@
 **
 ****************************************************************************/
 
-#include "NumberFormatting.hpp"
 #include "Utf8Source.hpp"
 #include "Utf8Sink.hpp"
+#include "SyntaxFactory.hpp"
+#include "IntegerLiteral.hpp"
+#include "FloatLiteral.hpp"
 #include "String.hpp"
 
 namespace pona
@@ -34,7 +36,7 @@ String::String()
 String::String(Char ch)
 	: Ref<List<Char>, Owner>(new Media)
 {
-	instance_->append(ch);
+	get()->append(ch);
 }
 
 String::String(const char* utf8, int numBytes, int numChars)
@@ -57,12 +59,12 @@ String::String(const char* utf8, int numBytes, int numChars)
 			}
 		}
 		
-		instance_->push(0, numChars);
+		get()->push(0, numChars);
 		
 		{
 			Utf8Source source((uint8_t*)utf8, numBytes);
 			for (int i = 0; i < numChars; ++i)
-				instance_->set(i, source.readChar());
+				get()->set(i, source.readChar());
 		}
 	}
 }
@@ -70,24 +72,24 @@ String::String(const char* utf8, int numBytes, int numChars)
 String::String(Ref<Media, Owner> list)
 	: Ref<List<Char>, Owner>(list)
 {
-	if (!instance_) set(new Media);
+	if (!get()) set(new Media);
 }
 
 char* String::strdup() const
 {
-	int numChars = instance_->length();
+	int numChars = get()->length();
 	int numBytes = 0;
 	{
 		Utf8Sink nullSink;
 		for (int i = 0; i < numChars; ++i)
-			nullSink.writeChar(instance_->get(i));
+			nullSink.writeChar(get()->get(i));
 		numBytes = nullSink.numBytesWritten();
 	}
 	
 	char* buf = (char*)malloc(numBytes + 1);
 	Utf8Sink sink((uint8_t*)buf, numBytes);
 	for (int i = 0; i < numChars; ++i)
-		sink.writeChar(instance_->get(i));
+		sink.writeChar(get()->get(i));
 	buf[numBytes] = 0;
 	
 	return buf;
@@ -102,6 +104,99 @@ String operator*(Char ch, int n)
 			s->set(i, ch);
 	}
 	return s;
+}
+
+Ref<StringList, Owner> operator/(String text, String sep)
+{
+	Ref<StringList, Owner> sl = new StringList();
+	
+	int i = 0, n = text->length(), m = sep->length();
+	while (i < n) {
+		int i1 = text->find(i, sep);
+		sl->append(text->range(i, i1 - i));
+		i = i1 + m;
+	}
+	if (i == n)
+		sl->append(String());
+	
+	return sl;
+}
+
+int toInt(String s, bool* ok)
+{
+	bool h;
+	if (!ok) ok = &h;
+	uint64_t value = 0;
+	int sign = 0;
+	int i1 = 0;
+	if (syntaxFactory()->integerLiteral()->match(s, 0, &i1, &value, &sign)) {
+		 if (ok)
+		 	*ok = (value <= uint64_t(intMax)) && (i1 == s->length());
+	}
+	else  {
+		if (ok)
+			*ok = false;
+	}
+	return sign * int(value);
+}
+
+/** \brief Converts given input string to a signed integer.
+  * If the given integer literal exceeds the range of a signed 64 bit integer or
+  * the input string can't be read as an integer *ok will be set to false.
+  * The input string is expected to contain exactly one correctly formatted
+  * integer literal (see pona::Format).
+  */
+int64_t toInt64(String s, bool* ok)
+{
+	uint64_t value = 0;
+	int sign = 0;
+	int i1 = 0;
+	if (syntaxFactory()->integerLiteral()->match(s, 0, &i1, &value, &sign)) {
+		if (ok)
+			*ok = ((value & (uint64_t(1) << 63)) != 0) && (i1 == s->length());
+	}
+	else {
+		if (ok)
+			*ok = false;
+	}
+	return sign * value;
+}
+
+/** \brief Converts given input string to a unsigned integer.
+  * If the given integer literal exceeds the range of a unsigned 64 bit integer or
+  * the input string can't be read as an integer *ok will be set to false.
+  */
+uint64_t toUInt64(String s, bool* ok)
+{
+	uint64_t value = 0;
+	int sign = 0;
+	int i1 = 0;
+	if (syntaxFactory()->integerLiteral()->match(s, 0, &i1, &value, &sign)) {
+		if (ok)
+			*ok = (sign == 1) && (i1 == s->length());
+	}
+	else {
+		if (ok)
+			*ok = false;
+	}
+	return value;
+}
+
+float64_t toFloat64(String s, bool* ok)
+{
+	float64_t value = 0.;
+	int i1 = 0;
+	
+	if (syntaxFactory()->floatingPointLiteral()->match(s, 0, &i1, &value)) {
+		if (ok)
+			*ok = (i1 == s->length());
+	}
+	else {
+		if (ok)
+			*ok = false;
+	}
+	
+	return value;
 }
 
 } // namespace pona

@@ -19,7 +19,7 @@
 **
 ****************************************************************************/
 
-#include "NumberFormatting.hpp"
+#include "String.hpp"
 #include "FormatSpecifier.hpp"
 
 namespace pona
@@ -27,47 +27,88 @@ namespace pona
 
 FormatSpecifier::FormatSpecifier()
 {
+	width_ = DEFINE("width", REPEAT(1, 2, RANGE('0', '9')));
 	integerWidth_ = DEFINE("integerWidth", REPEAT(1, 2, RANGE('0', '9')));
 	fractionWidth_ = DEFINE("fractionWidth", REPEAT(1, 2, RANGE('0', '9')));
 	
 	base_ =
 		DEFINE("base",
-			GLUE(
-				CHOICE(
-					STRING("dec"),
-					STRING("hex"),
-					STRING("oct"),
-					STRING("bin")
-				),
-				REPEAT(0, 1, CHAR(':'))
+			CHOICE(
+				STRING("dec"),
+				STRING("hex"),
+				STRING("oct"),
+				STRING("bin")
 			)
 		);
+	
+	exp_ = DEFINE("exp", RANGE("eE"));
+	
+	blank_ = DEFINE("blank",
+		GLUE(
+			CHAR('\''),
+			RANGE(32, 127),
+			CHAR('\'')
+		)
+	);
 	
 	DEFINE_SELF(
 		GLUE(
 			CHAR('%'),
-			REPEAT(0, 1, REF("base")),
-			REPEAT(0, 1, REF("integerWidth")),
-			REPEAT(0, 1, GLUE(CHAR('.'), REF("fractionWidth"))),
+			REPEAT(0, 5,
+				GLUE(
+					CHOICE(
+						GLUE(
+							REF("integerWidth"),
+							CHAR('.'),
+							REPEAT(0, 1,
+								REF("fractionWidth")
+							)
+						),
+						GLUE(
+							CHAR('.'),
+							REF("fractionWidth")
+						),
+						REF("width"),
+						REF("base"),
+						REF("exp"),
+						REF("blank")
+					),
+					REPEAT(0, 1, CHAR(':'))
+				)
+			),
 			CHAR('%')
 		)
 	);
 }
 
-bool FormatSpecifier::find(String text, int* i0, int* i1, int* wi, int* wf, int* base)
+bool FormatSpecifier::find(String text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, Char* blank)
 {
 	Ref<Token, Owner> rootToken = 0;
 	
-	uint8_t buf[sizeof(Token) * 6];
+	uint8_t buf[sizeof(Token) * 16];
 	bool found = SyntaxDefinition<String::Media>::find(text, i0, i1, &rootToken, buf, sizeof(buf));
 	
 	if (found)
 	{
 		Ref<Token> token = rootToken->firstChild();
+		
 		while (token)
 		{
 			String value = text->copy(token->index(), token->length());
-			if (token->rule() == base_->id())
+			
+			if (token->rule() == width_->id())
+			{
+				*w = toInt(value);
+			}
+			else if (token->rule() == integerWidth_->id())
+			{
+				*wi = toInt(value);
+			}
+			else if (token->rule() == fractionWidth_->id())
+			{
+				*wf = toInt(value);
+			}
+			else if (token->rule() == base_->id())
 			{
 				if (value == "dec")
 					*base = 10;
@@ -78,14 +119,15 @@ bool FormatSpecifier::find(String text, int* i0, int* i1, int* wi, int* wf, int*
 				else if (value == "bin")
 					*base = 2;
 			}
-			else if (token->rule() == integerWidth_->id())
+			else if (token->rule() == exp_->id())
 			{
-				*wi = toInt(value);
+				*exp = true;
 			}
-			else if (token->rule() == fractionWidth_->id())
+			else if (token->rule() == blank_->id())
 			{
-				*wf = toInt(value);
+				*blank = value->get(1);
 			}
+			
 			token = token->nextSibling();
 		}
 	}

@@ -22,8 +22,7 @@
 #define PONA_HUFFMANCODEC_PROFILING
 // #define PONA_HUFFMANCODEC_DEBUG_STATISTICS
 
-#include "StandardStreams.hpp"
-#include "LinePrinter.hpp"
+#include "stdio"
 #include "HuffmanCodec.hpp"
 
 namespace pona
@@ -54,16 +53,14 @@ int HuffmanCodec::memoryConsumption() const
 	int sh = sizeof(SymbolRef) * heap_.size();
 	int bs = rawDiversity_;
 #ifdef PONA_HUFFMANCODEC_PROFILING
-	output()->write(
-		format(
-			"    size of code table = %%\n"
-			"    size of code map = %%\n"
-			"    size of sort heap = %%\n"
-			"    size of bit stack = %%\n"
-			"    overall heap utilization = %%\n"
-			"\n"
-		)
-		 % ct % cm % sh % bs % (ct + cm + sh + bs)
+	print(
+		"    size of code table = %%\n"
+		"    size of code map = %%\n"
+		"    size of sort heap = %%\n"
+		"    size of bit stack = %%\n"
+		"    overall heap utilization = %%\n"
+		"\n",
+		 ct, cm, sh, bs, (ct + cm + sh + bs)
 	);
 #endif // PSH_HUFFMANCODEC_DEBUG
 	return ct + cm + sh + bs;
@@ -147,12 +144,10 @@ void HuffmanCodec::encode(BitSink* sink, int* raw, int rawFill, bool* userFallba
 	if (rawMax - rawMin + 1 > rawDynamicRange_)
 	{
 #ifdef PONA_HUFFMANCODEC_PROFILING
-		output()->write(
-			format(
-				"Fallback to unencoded transmission, because out of dynamic range.\n"
-				"    (rawMax - rawMin + 1, rawDynamicRange_) = (%%, %%)\n"
-			)
-			% (rawMax - rawMin + 1) % rawDynamicRange_
+		print(
+			"Fallback to unencoded transmission, because out of dynamic range.\n"
+			"    (rawMax - rawMin + 1, rawDynamicRange_) = (%%, %%)\n",
+			(rawMax - rawMin + 1), rawDynamicRange_
 		);
 #endif // PONA_HUFFMANCODEC_PROFILING
 		if (!userFallback)
@@ -217,9 +212,9 @@ void HuffmanCodec::encode(BitSink* sink, int* raw, int rawFill, bool* userFallba
 	int outSizeBytes = outSize / 8 + (outSize % 8 != 0);
 
 #ifdef PONA_HUFFMANCODEC_PROFILING
-	output()->write(
-		format("diversity, outSize, table weight = %%, %%, %%\n")
-		% diversity % (outSize/8) % (double(tableSize) / outSize)
+	print(
+		"diversity, outSize, table weight = %%, %%, %%\n",
+		diversity, outSize/8, double(tableSize) / outSize
 	);
 #endif // PONA_HUFFMANCODEC_PROFILING
 
@@ -228,7 +223,7 @@ void HuffmanCodec::encode(BitSink* sink, int* raw, int rawFill, bool* userFallba
 	if (outSizeBytes > encodedCapacity(rawFill, rawMax-rawMin+1))
 	{
 #ifdef PONA_HUFFMANCODEC_PROFILING
-		output()->writeLine("fallback to unencoded transmission");
+		print("fallback to unencoded transmission\n");
 #endif // PONA_HUFFMANCODEC_PROFILING
 		if (!userFallback)
 			writeRawFrame(sink, raw, rawFill, rawMin, rawMax);

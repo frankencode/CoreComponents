@@ -1,4 +1,4 @@
-#include "LinePrinter.hpp"
+#include "Format.hpp"
 #include "File.hpp"
 #include "ToolOptions.hpp"
 
@@ -209,7 +209,7 @@ void ToolOptions::readOption(String line, Ref<Token> token)
 			Char name = line->get(token->index());
 			Ref<Option> option = optionByShortName(name);
 			if (!option)
-				PONA_THROW(ToolOptionsException, String(format("Unsupported option: '-%%'") % name).strdup());
+				PONA_THROW(ToolOptionsException, String(Format("Unsupported option: '-%%'") << name).strdup());
 			
 			*option->value_ = true;
 			token = token->nextSibling();
@@ -220,7 +220,7 @@ void ToolOptions::readOption(String line, Ref<Token> token)
 		String name = line->range(token->index(), token->length());
 		Ref<Option> option = optionByLongName(name);
 		if (!option)
-			PONA_THROW(ToolOptionsException, String(format("Unsupported option: '--%%'") % name).strdup());
+			PONA_THROW(ToolOptionsException, String(Format("Unsupported option: '--%%'") << name).strdup());
 		
 		Ref<Variant> value = option->value_;
 		token = token->nextSibling();
@@ -280,11 +280,11 @@ String ToolOptions::help(String synopsis, String summary, String details)
 			Ref<Option> option = optionList_->get(i);
 			String line;
 			if ((option->shortName_ != 0) && (option->longName_->length() > 0))
-				line = format("  -%%, --%%") % option->shortName_ % option->longName_;
+				line = Format("  -%%, --%%") << option->shortName_ << option->longName_;
 			else if (option->shortName_ != 0)
-				line = format("  -%%") % option->shortName_;
+				line = Format("  -%%") << option->shortName_;
 			else if (option->longName_->length() > 0)
-				line = format("  --%%") % option->longName_;
+				line = Format("  --%%") << option->longName_;
 			if (line->length() > maxLength) maxLength = line->length();
 			lines->append(line);
 		}
@@ -306,7 +306,7 @@ String ToolOptions::help(String synopsis, String summary, String details)
 			options << lines->get(i);
 	}
 	
-	String text = format("Usage: %%\n") % synopsis;
+	String text = Format("Usage: %%\n") << synopsis;
 	if (summary->length() > 0) text << summary << '\n';
 	text << '\n';
 	text << "Options:\n";

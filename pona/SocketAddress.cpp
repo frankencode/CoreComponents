@@ -27,7 +27,7 @@
 #include <string.h> // memset, memcpy
 #include <errno.h>
 
-#include "LinePrinter.hpp"
+#include "Format.hpp"
 #include "SocketAddress.hpp"
 
 namespace pona
@@ -110,7 +110,7 @@ String SocketAddress::protocolString() const
 	String s("UNKNOWN");
 	if (protocol() == IPPROTO_TCP) s = "TCP";
 	else if (protocol() == IPPROTO_UDP) s = "UDP";
-	else s = format("<%%>") % protocol();
+	else s = Format("<%%>") << protocol();
 	return s;
 }
 
