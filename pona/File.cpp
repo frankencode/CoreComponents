@@ -28,9 +28,6 @@
 #include "File.hpp"
 #include "Exception.hpp"
 
-#include "StandardStreams.hpp"
-#include "LinePrinter.hpp"
-
 namespace pona
 {
 

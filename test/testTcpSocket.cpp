@@ -12,7 +12,7 @@ public:
 		: server_(server),
 		  address_(address),
 		  stream_(stream),
-		  name_(format("EchoWorker(%%:%%)") % address_->addressString() % address_->port())
+		  name_(Format("EchoWorker(%%:%%)") << address_->addressString() << address_->port())
 	{}
 	
 	String name() const { return name_; }
@@ -69,7 +69,7 @@ public:
 	EchoServer()
 		: TcpSocket(new SocketAddress(AF_INET, "*", 8001)),
 		  pool_(new Pool),
-		  name_(format("EchoServer(%%:%%)") % localAddress()->addressString() % localAddress()->port())
+		  name_(Format("EchoServer(%%:%%)") << localAddress()->addressString() << localAddress()->port())
 	{}
 	
 	void init()

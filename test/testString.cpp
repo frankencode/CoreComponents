@@ -38,6 +38,28 @@ int main()
 		print("\"\" == \"\" = %%\n", String() == String());
 	}
 	
+	{
+		print("\n");
+		Ref<StringList, Owner> sl0 = String("AB,0123,lol") / String(",");
+		Ref<StringList, Owner> sl1 = String("AB,0123,lol,") / String(",");
+		Ref<StringList, Owner> sl2 = String("") / String(",");
+		Ref<StringList, Owner> sl3 = String(",") / String(",");
+		Ref<StringList, Owner> sl4 = String(",,a,,") / String(",,");
+		for (int i = 0, n = sl0->length(); i < n; ++i)
+			print("sl0->get(%%) = \"%%\"\n", i, sl0->get(i));
+		print("\n");
+		for (int i = 0, n = sl1->length(); i < n; ++i)
+			print("sl1->get(%%) = \"%%\"\n", i, sl1->get(i));
+		print("\n");
+		for (int i = 0, n = sl2->length(); i < n; ++i)
+			print("sl2->get(%%) = \"%%\"\n", i, sl2->get(i));
+		print("\n");
+		for (int i = 0, n = sl3->length(); i < n; ++i)
+			print("sl3->get(%%) = \"%%\"\n", i, sl3->get(i));
+		print("\n");
+		for (int i = 0, n = sl4->length(); i < n; ++i)
+			print("sl4->get(%%) = \"%%\"\n", i, sl4->get(i));
+	}
 	// output()->write(format("sizeof(wchar_t) = %%\n") % sizeof(wchar_t));
 	// output()->write(format("sizeof(pona::Char) = %%\n") % sizeof(Char));
 	
