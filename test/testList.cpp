@@ -12,12 +12,12 @@ int main()
 		List<int> list;
 		for (int i = 0; i < 10; ++i)
 			list.pushBack(i);
-		for (int i = 0; i < list.fill(); ++i)
+		for (int i = 0; i < list.length(); ++i)
 			print("list[%%]=%%\n", i, list.get(i));
 		print("--\n");
-		for (int i = 0; i < list.fill(); ++i)
+		for (int i = 0; i < list.length(); ++i)
 			list.pop(i);
-		for (int i = 0; i < list.fill(); ++i)
+		for (int i = 0; i < list.length(); ++i)
 			print("list[%%]=%%\n", i, list.get(i));
 		print("\n");
 	}
@@ -30,7 +30,7 @@ int main()
 		List<char> list;
 		for (int i = 0; i < 10; ++i)
 			list.pushBack(digits[i]);
-		for (int i = 0; i < list.fill(); ++i)
+		for (int i = 0; i < list.length(); ++i)
 			print("list[%%]=%%\n", i, list.get(i));
 		
 		print("\n");
@@ -44,12 +44,12 @@ int main()
 		const char* l2 = "int main() { pona::ouput()->write(\"Hello, world!\\n\"); return 0; }\n";
 		List<char> text;
 		text.push(0, strlen(l1), l1);
-		text.push(text.fill(), strlen(l2), l2);
-		for (int i = 0; i < text.fill(); ++i)
+		text.push(text.length(), strlen(l2), l2);
+		for (int i = 0; i < text.length(); ++i)
 			print("%%", text.get(i));
 		char buf[128];
 		text.pop(60, 13, buf);
-		for (int i = 0; i < text.fill(); ++i)
+		for (int i = 0; i < text.length(); ++i)
 			print("%%", text.get(i));
 		print("\n--\n");
 		

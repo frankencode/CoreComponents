@@ -24,8 +24,8 @@
 
 #include <new>
 #include "atoms"
-#include "Monitor.hpp"
 #include "RandomAccessMedia.hpp"
+#include "ListObserver.hpp"
 
 namespace pona
 {
@@ -35,7 +35,7 @@ PONA_EXCEPTION(ListException, Exception);
 /** \brief Chunked double-linked list with cached random access
   */
 template<class T>
-class List: public MonitorMedia, public RandomAccessMedia<T>
+class List: public RandomAccessMedia<T>
 {
 public:
 	List();
@@ -54,9 +54,7 @@ public:
 	inline void remove(int i, int n) { pop(i, n); }
 	inline int length() const { return length_; }
 	
-	inline int size() const { return intMax; }  // quick HACK
-	inline int fill() const { return length_; }
-	inline void setMonitor(Ref<Monitor> monitor) { monitor_ = monitor; }
+	inline void setObserver(Ref<ListObserver> observer) { observer_ = observer; }
 	
 	void push(int i, int n = 1, const T* v = 0);
 	void pop(int i, int n = 1, T* v = 0);
@@ -261,7 +259,7 @@ private:
 	Node* back_;
 	mutable Pos posCached_;
 	
-	Ref<Monitor, Owner> monitor_;
+	Ref<ListObserver, Owner> observer_;
 };
 
 template<class T>
@@ -296,7 +294,7 @@ void List<T>::push(int i, int n, const T* v)
 	if (!((0 <= i) && (i <= length_)))
 		PONA_THROW(ListException, "Wrong index");
 	
-	if (monitor_) monitor_->beforeGrowing(i, n);
+	if (observer_) observer_->beforePush(i, n);
 	
 	if (parent_)
 	{
@@ -358,7 +356,7 @@ void List<T>::push(int i, int n, const T* v)
 	
 	length_ += n;
 	
-	if (monitor_) monitor_->afterGrowing(i, n);
+	if (observer_) observer_->afterPush(i, n);
 }
 
 template<class T>
@@ -370,7 +368,7 @@ void List<T>::pop(int i, int n, T* v)
 	if (!((0 <= i) && (i + n <= length_)))
 		PONA_THROW(ListException, "Wrong index");
 	
-	if (monitor_) monitor_->beforeShrinking(i, n);
+	if (observer_) observer_->beforePop(i, n);
 	
 	if (parent_)
 	{
@@ -451,7 +449,7 @@ void List<T>::pop(int i, int n, T* v)
 	
 	length_ -= n;
 	
-	if (monitor_) monitor_->afterShrinking(i, n);
+	if (observer_) observer_->afterPop(i, n);
 }
 
 template<class T>
@@ -484,7 +482,7 @@ void List<T>::write(int i, int n, T* v)
 	if (!((0 <= i) && (i + n <= length_)))
 		PONA_THROW(ListException, "Wrong index");
 	
-	if (monitor_) monitor_->beforeAccess(i, n);
+	if (observer_) observer_->beforeWrite(i, n);
 	
 	if (parent_) {
 		parent_->write(i + index0_, n, v);
@@ -497,7 +495,7 @@ void List<T>::write(int i, int n, T* v)
 		}
 	}
 	
-	if (monitor_) monitor_->afterAccess(i, n);
+	if (observer_) observer_->afterWrite(i, n);
 }
 
 template<class T>
@@ -509,7 +507,7 @@ void List<T>::fill(int i, int n, T e)
 	if (!((0 <= i) && (i + n <= length_)))
 		PONA_THROW(ListException, "Wrong index");
 	
-	if (monitor_) monitor_->beforeAccess(i, n);
+	if (observer_) observer_->beforeWrite(i, n);
 	
 	if (parent_) {
 		parent_->fill(i + index0_, n, e);
@@ -522,7 +520,7 @@ void List<T>::fill(int i, int n, T e)
 		}
 	}
 	
-	if (monitor_) monitor_->afterAccess(i, n);
+	if (observer_) observer_->afterWrite(i, n);
 }
 
 template<class T>
@@ -531,7 +529,7 @@ void List<T>::clear()
 	int n = length_;
 	if (n == 0) return;
 	
-	if (monitor_) monitor_->beforeShrinking(0, n);
+	if (observer_) observer_->beforePop(0, n);
 	
 	if (parent_) {
 		parent_->pop(index0_, length_);
@@ -549,7 +547,7 @@ void List<T>::clear()
 		
 	}
 	
-	if (monitor_) monitor_->afterShrinking(0, n);
+	if (observer_) observer_->afterPop(0, n);
 }
 
 template<class T>
@@ -570,14 +568,14 @@ inline void List<T>::set(int i, T e)
 	if (!((0 <= i) && (i < length_)))
 		PONA_THROW(ListException, "Wrong index");
 	
-	if (monitor_) monitor_->beforeAccess(i, 1);
+	if (observer_) observer_->beforeWrite(i, 1);
 	
 	if (parent_)
 		parent_->set(i + index0_, e);
 	else
 		translate(i).set(e);
 	
-	if (monitor_) monitor_->afterAccess(i, 1);
+	if (observer_) observer_->afterWrite(i, 1);
 }
 
 template<class T>
@@ -619,7 +617,7 @@ void List<T>::push(int i, int n, List* b)
 	if (!((0 <= i) && (i <= length_) && (n <= b->length_)))
 		PONA_THROW(ListException, "Wrong index or length");
 	
-	if (monitor_) monitor_->beforeGrowing(i, n);
+	if (observer_) observer_->beforePush(i, n);
 	
 	if (parent_) {
 		parent_->push(index0_ + i, n, b);
@@ -646,7 +644,7 @@ void List<T>::push(int i, int n, List* b)
 		}
 	}
 	
-	if (monitor_) monitor_->afterGrowing(i, n);
+	if (observer_) observer_->afterPush(i, n);
 }
 
 template<class T>
