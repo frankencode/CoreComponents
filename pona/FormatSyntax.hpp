@@ -19,63 +19,40 @@
 **
 ****************************************************************************/
 
-#ifndef PONA_CLOCK_HPP
-#define PONA_CLOCK_HPP
+#ifndef PONA_FORMATSYNTAX_HPP
+#define PONA_FORMATSYNTAX_HPP
 
-#ifdef _WIN32
-#include <windows.h>
-#include <mmsystem.h>
-#else
-#include <sys/time.h>
-#include <time.h>    // Linux workaround
-#endif
-
-#include "TimeStamp.hpp"
+#include "atoms"
+#include "ThreadLocalOwner.hpp"
 
 namespace pona
 {
 
-#ifdef _WIN32
+class FormatSpecifier;
+class BooleanLiteral;
+class IntegerLiteral;
+class FloatLiteral;
 
-inline TimeStamp getTime()
-{
-	int ms = timeGetTime();
-	return TimeStamp(ms/1000, (ms%1000)*1000000);
-}
-
-#else
-
-inline TimeStamp getTime()
-{
-#if _POSIX_TIMERS > 0
-	struct timespec ts;
-	::clock_gettime(CLOCK_REALTIME, &ts);
-	return TimeStamp(ts.tv_sec, ts.tv_nsec);
-#else
-	struct timeval tv;
-	::gettimeofday(&tv, 0);
-	return TimeStamp(tv.tv_sec, tv.tv_usec * 1000);
-#endif
-}
-
-#endif
-
-class Clock
+class FormatSyntax: public Instance
 {
 public:
-	inline void start() { t0 = getTime(); }
-	inline TimeStamp elapsed() const { return getTime() - t0; }
-	inline TimeStamp restart()
-	{
-		TimeStamp t = getTime();
-		TimeStamp dt = t - t0;
-		t0 = t;
-		return dt;
-	}
+	static Ref<FormatSyntax> instance();
+	
+	Ref<FormatSpecifier> formatSpecifier() const;
+	Ref<IntegerLiteral> integerLiteral() const;
+	Ref<FloatLiteral> floatingPointLiteral() const;
+	
 private:
-	TimeStamp t0;
+	FormatSyntax();
+	
+	Ref<FormatSpecifier, Owner> formatSpecifier_;
+	Ref<IntegerLiteral, Owner> integerLiteral_;
+	Ref<FloatLiteral, Owner> floatingPointLiteral_;
 };
+
+inline Ref<FormatSyntax> syntaxFactory() { return FormatSyntax::instance(); }
 
 } // namespace pona
 
-#endif // PONA_CLOCK_HPP
+#endif // PONA_FORMATSYNTAX_HPP
+

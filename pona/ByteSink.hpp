@@ -23,7 +23,7 @@
 #define PONA_BYTESINK_HPP
 
 #include "atoms"
-#include "options.hpp"
+#include "defaults.hpp"
 #include "Stream.hpp"
 
 namespace pona

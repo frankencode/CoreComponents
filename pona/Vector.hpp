@@ -90,6 +90,8 @@ public:
 		*this = b;
 	}
 	
+	void liberate() { owner_ = false; }
+	
 	inline const Vector& operator=(const Vector& b)
 	{
 		if (size_ != b.size_) {
@@ -185,7 +187,8 @@ public:
 	inline bool operator>=(const Vector& b) const { return (b < *this) || (*this == b); }
 	
 	inline operator bool() const { return buf_; }
-	
+	inline operator T*() const { return buf_; }
+
 private:
 	int size_;
 	T* buf_;

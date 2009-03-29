@@ -29,7 +29,7 @@ template<class T>
 class SetNull: private BackRef
 {
 public:
-	SetNull(): BackRef((void**)(&instance_)), instance_(0) {}
+	SetNull(): BackRef((void**)&instance_), instance_(0) {}
 	
 	inline void set(T* b)
 	{
@@ -43,10 +43,7 @@ public:
 		}
 	}
 	
-	inline T* get() const
-	{
-		return instance_;
-	}
+	inline T* get() const { return instance_; }
 	
 private:
 	T* instance_;

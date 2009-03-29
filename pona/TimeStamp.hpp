@@ -37,8 +37,8 @@ class TimeStamp
 public:
 	TimeStamp() {}
 	TimeStamp(int seconds, int nanoSeconds): sec_(seconds), nsec_(nanoSeconds) {}
+	TimeStamp(double fineSeconds) { *this = fineSeconds; }
 	TimeStamp(const TimeStamp& b) { *this = b; }
-	TimeStamp(float fineSeconds) { *this = fineSeconds; }
 	
 	inline const TimeStamp& operator=(const TimeStamp& b)
 	{
@@ -46,20 +46,20 @@ public:
 		return *this;
 	}
 
-	inline const TimeStamp& operator=(float fineSec)
+	inline const TimeStamp& operator=(double fineSec)
 	{
 		sec_ = int(fineSec); nsec_ = int(1000000000 * (fineSec - sec_));
 		return *this;
 	}
 	
-	inline operator float() const { return fineSeconds(); }
+	inline operator double() const { return fineSeconds(); }
 
 	inline int secondsPart() const { return sec_; }
 	inline int nanoSecondsPart() const { return nsec_; }
 	
 	inline int microSeconds() const { return sec_ * 1000000 + nsec_ / 1000; }
 	inline int miliSeconds() const { return sec_ * 1000 + nsec_ / 1000000; }
-	inline float fineSeconds() const { return float(sec_) + float(nsec_)/1000000000; }
+	inline double fineSeconds() const { return double(sec_) + double(nsec_)/1000000000; }
 
 	inline bool operator==(int sec)
 	{

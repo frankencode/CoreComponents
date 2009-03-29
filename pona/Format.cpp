@@ -1,5 +1,5 @@
 #include "Rounding.hpp"
-#include "SyntaxFactory.hpp"
+#include "FormatSyntax.hpp"
 #include "FormatSpecifier.hpp"
 #include "Format.hpp"
 

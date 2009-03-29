@@ -3,8 +3,8 @@
 MAX_ARGS=32
 
 cat <<EOD
-#ifndef PONA_FORMATSYNTAXSUGAR_HPP
-#define PONA_FORMATSYNTAXSUGAR_HPP
+#ifndef PONA_FORMATPRINT_HPP
+#define PONA_FORMATPRINT_HPP
 
 #include "atoms"
 #include "String.hpp"
@@ -58,6 +58,6 @@ done
 cat <<EOD
 } // namespace pona
 
-#endif // PONA_FORMATSYNTAXSUGAR_HPP
+#endif // PONA_FORMATPRINT_HPP
 
 EOD

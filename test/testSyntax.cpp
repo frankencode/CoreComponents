@@ -1,6 +1,6 @@
 #include <pona/stdio>
 #include <pona/syntax>
-#include <pona/misc>
+#include <pona/time>
 
 namespace pona
 {
@@ -175,11 +175,11 @@ int main()
 {
 	Ref<Expression, Owner> expression = new Expression;
 	
-	TimeStamp dt = getTime();
+	TimeStamp dt = now();
 	
 	double result = expression->eval("(-12+34)*(56-78)");
 	
-	dt = getTime() - dt;
+	dt = now() - dt;
 	print("took %% us\n", dt.microSeconds());
 	print("evaluates to %%\n", result);
 	

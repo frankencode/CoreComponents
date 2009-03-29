@@ -1,5 +1,5 @@
-#ifndef PONA_FORMATSYNTAXSUGAR_HPP
-#define PONA_FORMATSYNTAXSUGAR_HPP
+#ifndef PONA_FORMATPRINT_HPP
+#define PONA_FORMATPRINT_HPP
 
 #include "atoms"
 #include "String.hpp"
@@ -269,5 +269,5 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 
 } // namespace pona
 
-#endif // PONA_FORMATSYNTAXSUGAR_HPP
+#endif // PONA_FORMATPRINT_HPP
 

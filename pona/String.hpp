@@ -23,6 +23,7 @@
 #define PONA_STRING_HPP
 
 #include "atoms"
+#include "CString.hpp"
 #include "List.hpp"
 
 namespace pona
@@ -53,6 +54,7 @@ public:
 	inline String& operator<<(Char ch) { get()->append(ch); return *this; }
 	
 	char* strdup() const;
+	CString utf8() const;
 };
 
 inline bool operator<(String a, const char* b) { return a < String(b); }

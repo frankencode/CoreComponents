@@ -22,9 +22,13 @@
 #ifndef PONA_FILE_HPP
 #define PONA_FILE_HPP
 
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include "atoms"
 #include "String.hpp"
 #include "SystemStream.hpp"
+#include "FileStatus.hpp"
 
 namespace pona
 {
@@ -32,9 +36,21 @@ namespace pona
 class File: public SystemStream
 {
 public:
-	typedef int64_t Offset;
+	enum Type {
+		Regular      = S_IFREG,
+		Directory    = S_IFDIR,
+		CharDevice   = S_IFCHR,
+		BlockDevice  = S_IFBLK,
+		Fifo         = S_IFIFO,
+		SymbolicLink = S_IFLNK,
+		Socket       = S_IFSOCK
+	};
 	
-	enum AccessFlags { Read = 4, Write = 2, Execute = 1 };
+	enum AccessFlags {
+		Read    = R_OK,
+		Write   = W_OK,
+		Execute = X_OK
+	};
 	
 	enum CreateFlags {
 		UserRead   = 0400,
@@ -47,50 +63,52 @@ public:
 		OtherWrite = 0002,
 		OtherExec  = 0001
 	};
-
+	
 	enum SeekMethod {
-		SeekBegin  = 1,
+		SeekBegin   = 1,
 		SeekCurrent = 2,
-		SeekEnd  = 3
+		SeekEnd     = 3
 	};
-
-	enum StandardStreams
-	{
-		StandardInput = 0,
+	
+	enum StandardStreams {
+		StandardInput  = 0,
 		StandardOutput = 1,
-		StandardError = 2
+		StandardError  = 2
 	};
-
+	
 	File(String path);
-	File(int standardStream);
-	~File();
-
+	File(int fd);
+	
 	String path() const;
 	String name() const;
 	int openFlags() const;
-
+	
 	bool access(int flags) const;
 	bool exists() const;
 	void create(int mask = 0644);
 	void unlink();
-
+	
+	void createUnique(int mask = 0644, Char placeHolder = 'X');
+	void truncate(off_t length);
+	void unlinkOnExit();
+	void unlinkOnThreadExit();
+	
 	void open(int flags = Read|Write);
-
-	Offset seek(Offset distance, int method = SeekBegin);
-	void seekSet(Offset distance);
-	void seekMove(Offset distance);
-	Offset seekTell();
-	Offset size();
-
+	
+	off_t seek(off_t distance, int method = SeekBegin);
+	void seekSet(off_t distance);
+	void seekMove(off_t distance);
+	off_t seekTell();
+	off_t size();
+	
+	Ref<FileStatus, Owner> status() const;
+	
 	void sync();
 	void dataSync();
-
+	
 private:
 	String path_;
 	int openFlags_;
-	mutable char* pathUtf8_;
-	
-	char* pathUtf8() const;
 };
 
 } // namespace pona

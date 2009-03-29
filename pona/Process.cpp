@@ -123,8 +123,8 @@ void Process::start()
 		
 		if (workingDirectory_ != String()) {
 			if (execPath_->contains(String("/")))
-				execPath_ = String() << ProcessStatus::workingDirectory() << "/" << execPath_;
-			if (::chdir(workingDirectory_.strdup()) == -1)
+				execPath_ = String() << pona::cwd() << "/" << execPath_;
+			if (::chdir(workingDirectory_.utf8()) == -1)
 				PONA_SYSTEM_EXCEPTION;
 		}
 		
@@ -163,15 +163,15 @@ void Process::start()
 			// prepare the argument list
 			
 			int argc = 1;
-			if (argList_)
-				argc += argList_->length();
+			if (options_)
+				argc += options_->length();
 				
 			char** argv = new char*[argc + 1];
 			
 			argv[0] = execPath_.strdup();
-			if (argList_)
-				for (int i = 0, n = argList_->length(); i < n; ++i)
-					argv[i + 1] = argList_->get(i).strdup();
+			if (options_)
+				for (int i = 0, n = options_->length(); i < n; ++i)
+					argv[i + 1] = options_->get(i).strdup();
 			argv[argc] = 0;
 			
 			// prepare the environment map
@@ -196,7 +196,7 @@ void Process::start()
 			
 			// load new program
 			
-			::execve(execPath_.strdup(), argv, envp);
+			::execve(execPath_.utf8(), argv, envp);
 			
 			PONA_SYSTEM_EXCEPTION;
 		}
@@ -208,7 +208,6 @@ void Process::start()
 			input_ = pona::input();
 			output_ = pona::output();
 			error_ = pona::error();
-			
 			::exit(run());
 		}
 	}
@@ -265,7 +264,6 @@ void Process::startDaemon()
 	setProcessType(SessionLeader);
 	setIoPolicy(CloseInput|CloseOutput|CloseError);
 	setWorkingDirectory("/");
-	start();
 }
 
 /** terminate single process (leaf) or complete process group (job or daemon)

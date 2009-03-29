@@ -56,9 +56,8 @@ void LineSink::writeLine(String line)
 
 void LineSink::write(String buf)
 {
-	char* bufUtf8 = buf.strdup();
-	stream_->write(bufUtf8, buf->length());
-	::free(bufUtf8);
+	CString utf8 = buf.utf8();
+	stream_->write(utf8, utf8->length() - 1);
 }
 
 Ref<Stream> LineSink::stream() const

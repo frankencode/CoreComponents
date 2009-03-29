@@ -22,9 +22,11 @@
 #ifndef PONA_STANDARDSTREAMS_HPP
 #define PONA_STANDARDSTREAMS_HPP
 
+#include "atoms"
 #include "Stream.hpp"
 #include "LineSource.hpp"
 #include "LineSink.hpp"
+#include "ThreadLocalOwner.hpp"
 
 namespace pona
 {

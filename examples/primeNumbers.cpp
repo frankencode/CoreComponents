@@ -1,6 +1,6 @@
 #include <pona/stdio>
 #include <pona/container>
-#include <pona/misc>
+#include <pona/time>
 
 namespace pona
 {
@@ -46,16 +46,16 @@ int main()
 	print("\n");
 	{
 		int usecRef = 40653;
-		TimeStamp dt = getTime();
+		TimeStamp dt = now();
 		int m = primeCountSimple(n);
-		int usec = (getTime() - dt).microSeconds();
+		int usec = (now() - dt).microSeconds();
 		print("primeCountSimple(): %% prime numbers, dt = %% us (%% % of reference system)\n", m, usec, (100 * usecRef) / usec);
 	}
 	{
 		int usecRef = 5952;
-		TimeStamp dt = getTime();
+		TimeStamp dt = now();
 		int m = primeCountWithStack(n);
-		int usec = (getTime() - dt).microSeconds();
+		int usec = (now() - dt).microSeconds();
 		print("primeCountWithStack(): %% prime numbers, dt = %% us (%% % of reference system)\n", m, usec, (100 * usecRef) / usec);
 	}
 	print("\n");

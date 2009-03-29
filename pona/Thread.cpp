@@ -20,7 +20,9 @@
 ****************************************************************************/
 
 #include "Exception.hpp"
-#include "Clock.hpp"
+#include "time.hpp"
+#include "Mutex.hpp"
+#include "Condition.hpp"
 #include "Thread.hpp"
 
 namespace pona
@@ -42,7 +44,7 @@ void Thread::start(int exitType)
 		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 	int ret = pthread_create(&tid_, &attr, &runWrapper, (void*)this);
 	if (ret != 0)
-		PONA_SYSTEM_EXCEPTION;
+		PONA_THROW(SystemException, "pthread_create() failed");
 	pthread_attr_destroy(&attr);
 	incRefCount(); // prevent self destruction while running
 }
@@ -52,30 +54,24 @@ int Thread::wait()
 	void* status;
 	int ret = pthread_join(tid_, &status);
 	if (ret != 0)
-		PONA_SYSTEM_EXCEPTION;
+		PONA_THROW(SystemException, "pthread_join() failed");
 	return (status != 0);
 }
 
 void Thread::sleep(TimeStamp dt)
 {
-	TimeStamp ts = getTime() + dt;
-	struct timespec tspec;
-	tspec.tv_sec = ts.secondsPart();
-	tspec.tv_nsec = ts.nanoSecondsPart();
-	pthread_mutex_t mutex;
-	pthread_cond_t cond;
-	pthread_mutex_init(&mutex, 0);
-	pthread_cond_init(&cond, 0);
-	pthread_mutex_lock(&mutex);
-	pthread_cond_timedwait(&cond, &mutex, &tspec);
-	pthread_mutex_unlock(&mutex);
-	pthread_cond_destroy(&cond);
-	pthread_mutex_destroy(&mutex);
+	Mutex mutex;
+	Condition condition;
+	mutex.acquire();
+	condition.waitUntil(&mutex, now() + dt);
+	mutex.release();
 }
 
 void* Thread::runWrapper(void* p)
 {
+	#ifndef NDEBUG
 	pthread_setcancelstate(PTHREAD_CANCEL_ASYNCHRONOUS, 0);
+	#endif
 	Thread* thread = (Thread*)p;
 	int ret = thread->run();
 	thread->decRefCount(); // allow self destruction before termination

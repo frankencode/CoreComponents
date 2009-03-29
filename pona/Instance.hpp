@@ -22,7 +22,6 @@
 #ifndef PONA_INSTANCE_HPP
 #define PONA_INSTANCE_HPP
 
-#include <stdio.h> // DEBUG
 #include "Exception.hpp"
 
 namespace pona
@@ -59,9 +58,8 @@ public:
 		if ((refCount_ > 0) && (!liberated_))
 			PONA_THROW(ReferenceException, "Deleting object, which is still in use");
 		BackRef* ref = backRefList_;
-		while (ref)
-		{
-			*(ref->instance_) = 0;
+		while (ref) {
+			*ref->instance_ = 0;
 			ref = ref->succ_;
 		}
 	}

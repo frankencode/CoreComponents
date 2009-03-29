@@ -23,7 +23,7 @@
 #define PONA_BITSINK_HPP
 
 #include "atoms"
-#include "options.hpp"
+#include "defaults.hpp"
 #include "Stream.hpp"
 
 namespace pona

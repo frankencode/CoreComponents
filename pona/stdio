@@ -1,10 +1,9 @@
 #ifndef PONA_STDIO
 #define PONA_STDIO
 
-#include "Format.hpp"
-#include "FormatSyntaxSugar.hpp"
-#include "StandardStreams.hpp"
 #include "File.hpp"
-#include "FileStatus.hpp"
+#include "StandardStreams.hpp"
+#include "Format.hpp"
+#include "FormatPrint.hpp"
 
 #endif //  PONA_STDIO

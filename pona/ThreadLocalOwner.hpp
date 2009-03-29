@@ -34,7 +34,7 @@ class ThreadLocalOwner
 public:
 	ThreadLocalOwner()
 	{
-		int ret = ::pthread_key_create(&key_, 0);
+		int ret = ::pthread_key_create(&key_, &onThreadExit);
 		if (ret != 0)
 			PONA_SYSTEM_EXCEPTION;
 	}
@@ -46,15 +46,17 @@ public:
 			PONA_SYSTEM_EXCEPTION;
 	}
 	
-	inline T* get() const { return reinterpret_cast<T*>(::pthread_getspecific(key_)); }
+	inline T* get() const {
+		return reinterpret_cast<T*>(::pthread_getspecific(key_));
+	}
 	
 	inline void set(T* b)
 	{
 		T* a = get();
+		
 		if (a != b)
 		{
-			if (a)
-			{
+			if (a) {
 				a->decRefCount();
 				if (a->refCount() == 0)
 					a->destroy();
@@ -62,12 +64,19 @@ public:
 			
 			::pthread_setspecific(key_, b);
 			
-			if (b)
-				b->incRefCount();
+ 			if (b) b->incRefCount();
 		}
 	}
 	
 private:
+	static void onThreadExit(void* arg)
+	{
+		T* instance = reinterpret_cast<T*>(arg);
+		instance->decRefCount();
+		if (instance->refCount() == 0)
+			instance->destroy();
+	}
+	
 	pthread_key_t key_;
 };
 

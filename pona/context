@@ -1,0 +1,14 @@
+#ifndef PONA_CONTEXT
+#define PONA_CONTEXT
+
+#include "context.hpp"
+#include "User.hpp"
+#include "Group.hpp"
+#include "Variant.hpp"
+#include "ToolOptions.hpp"
+#include "Process.hpp"
+#include "FileLock.hpp"
+#include "MemoryMapping.hpp"
+#include "OnExitManager.hpp"
+
+#endif // PONA_CONTEXT

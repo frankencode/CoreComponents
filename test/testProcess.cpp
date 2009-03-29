@@ -1,5 +1,5 @@
 #include <pona/stdio>
-#include <pona/concurrent>
+#include <pona/context>
 
 namespace pona
 {
@@ -38,8 +38,8 @@ int main(int argc, char** argv)
 		process.setExecPath(argv[0]);
 		process.setWorkingDirectory("/");
 		process.setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
-		process.arguments()->append("--echo 123");
-		process.environment()->set("Hello", "World!");
+		process.options()->append("--echo 123");
+		process.envMap()->set("Hello", "World!");
 		process.start();
 		
 		print("Created child process with pid = %%\n", unsigned(process.pid()));
@@ -66,11 +66,9 @@ int main(int argc, char** argv)
 	}
 	
 	{
-		print("(3) Current process information\n\n");
-		print("  ProcessStatus::workingDirectory() = %%\n", ProcessStatus::workingDirectory());
-		print("  ProcessStatus::userName() = %%\n", ProcessStatus::userName());
-		print("  ProcessStatus::groupName() = %%\n", ProcessStatus::groupName());
-		print("  ProcessStatus::isSuperUser() = %%\n", ProcessStatus::isSuperUser());
+		print("(3) Current context\n\n");
+		print("cwd() = %%\n", cwd());
+		print("isSuperUser() = %%\n", isSuperUser());
 		print("\n");
 	}
 	
@@ -85,10 +83,10 @@ int echo(int argc, char** argv)
 		if (i != argc - 1)
 			commandLine << " ";
 	}
-	print("ProcessStatus::workingDirectory() = \"%%\"\n", ProcessStatus::workingDirectory());
-	print("ProcessStatus::env(\"Hello\") = \"%%\"\n", ProcessStatus::env("Hello"));
-	ProcessStatus::setEnv("Hello", "Echo");
-	print("ProcessStatus::env(\"Hello\") = \"%%\"\n", ProcessStatus::env("Hello"));
+	print("cwd() = \"%%\"\n", cwd());
+	print("env(\"Hello\") = \"%%\"\n", env("Hello"));
+	setEnv("Hello", "Echo");
+	print("env(\"Hello\") = \"%%\"\n", env("Hello"));
 	print("commandLine = \"%%\"\n", commandLine);
 	
 	while (true)
