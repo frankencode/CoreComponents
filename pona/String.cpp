@@ -21,7 +21,7 @@
 
 #include "Utf8Source.hpp"
 #include "Utf8Sink.hpp"
-#include "SyntaxFactory.hpp"
+#include "FormatSyntax.hpp"
 #include "IntegerLiteral.hpp"
 #include "FloatLiteral.hpp"
 #include "String.hpp"
@@ -77,21 +77,27 @@ String::String(Ref<Media, Owner> list)
 
 char* String::strdup() const
 {
-	int numChars = get()->length();
+	CString s = utf8();
+	s->liberate();
+	return s;
+}
+
+CString String::utf8() const
+{
+	Media* media = get();
+	int numChars = media->length();
 	int numBytes = 0;
 	{
 		Utf8Sink nullSink;
 		for (int i = 0; i < numChars; ++i)
-			nullSink.writeChar(get()->get(i));
+			nullSink.writeChar(media->get(i));
 		numBytes = nullSink.numBytesWritten();
 	}
 	
-	char* buf = (char*)malloc(numBytes + 1);
-	Utf8Sink sink((uint8_t*)buf, numBytes);
+	CString buf(numBytes);
+	Utf8Sink sink((uint8_t*)buf->at(0), numBytes);
 	for (int i = 0; i < numChars; ++i)
-		sink.writeChar(get()->get(i));
-	buf[numBytes] = 0;
-	
+		sink.writeChar(media->get(i));
 	return buf;
 }
 

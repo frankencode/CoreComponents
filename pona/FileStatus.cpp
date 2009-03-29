@@ -19,62 +19,36 @@
 **
 ****************************************************************************/
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h> // sysconf
-#include <pwd.h> // getpwuid_r
-#include <grp.h> // getgrgid_r
-#include "Exception.hpp"
+#include <errno.h>
 #include "FileStatus.hpp"
 
 namespace pona
 {
 
-void FileStatus::update()
+FileStatus::FileStatus(int fd)
+	: fd_(fd)
 {
-	char* pathUtf8 = path_.strdup();
-	struct stat status;
-	int ret = ::stat(pathUtf8, &status);
-	::free(pathUtf8);
-	
+	update();
+}
+
+FileStatus::FileStatus(String path)
+	: fd_(-1),
+	  path_(path)
+{
+	update();
+}
+
+void FileStatus::update(bool* exists)
+{
+	int ret = (fd_ != -1) ? ::fstat(fd_, this) : ::stat(path_.utf8(), this);
 	if (ret == -1) {
-		exists_ = false;
-		mode_ = 0;
-		size_ = 0;
-		owner_ = String();
-		group_ = String();
-	}
-	else {
-		exists_ = true;
-		mode_ = status.st_mode;
-		size_ = status.st_size;
-		int maxLenPw = sysconf(_SC_GETPW_R_SIZE_MAX);
-		int maxLenGr = sysconf(_SC_GETGR_R_SIZE_MAX);
-		int bufLen = maxLenPw > maxLenGr ? maxLenPw : maxLenGr;
-		char* buf = (char*)::malloc(bufLen);
-		{
-			struct passwd entry;
-			struct passwd* pentry = 0;
-			int ret = getpwuid_r(status.st_uid, &entry, buf, bufLen, &pentry);
-			if (ret != 0)
-				PONA_SYSTEM_EXCEPTION;
-			if (pentry)
-				owner_ = pentry->pw_name;
-			else
-				owner_ = "";
+		if (exists) {
+			if ((errno == ENOENT) || (errno == ENOTDIR)) {
+				*exists = false;
+				return;
+			}
 		}
-		{
-			struct group entry;
-			struct group* pentry = 0;
-			int ret = getgrgid_r(status.st_gid, &entry, buf, bufLen, &pentry);
-			if (ret != 0)
-				PONA_SYSTEM_EXCEPTION;
-			if (pentry)
-				group_ = pentry->gr_name;
-			else
-				group_ = "";
-		}
-		::free(buf);
+		PONA_SYSTEM_EXCEPTION;
 	}
 }
 

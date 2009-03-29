@@ -19,14 +19,12 @@
 **
 ****************************************************************************/
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include "OnExitManager.hpp"
+#include "OnThreadExitManager.hpp"
+#include "Random.hpp"
 #include "File.hpp"
-#include "Exception.hpp"
 
 namespace pona
 {
@@ -34,37 +32,21 @@ namespace pona
 File::File(String path)
 	: SystemStream(-1),
 	  path_(path),
-	  openFlags_(0),
-	  pathUtf8_(0)
+	  openFlags_(0)
 {}
 
-File::File(int standardStream)
-	: SystemStream(-1),
-	  openFlags_(0),
-	  pathUtf8_(0)
+File::File(int fd)
+	: SystemStream(fd),
+	  openFlags_(0)
 {
-	if (standardStream == StandardInput) {
-		fd_ = 0;
+	if (fd == StandardInput)
 		openFlags_ = Read;
-	}
-	else if (standardStream == StandardOutput) {
-		fd_ = 1;
+	else if (fd == StandardOutput)
 		openFlags_ = Write;
-	}
-	else if (standardStream == StandardError) {
-		fd_ = 2;
+	else if (fd == StandardError)
 		openFlags_ = Write;
-	}
 	else
 		PONA_THROW(StreamSemanticException, "Invalid argument");
-}
-
-File::~File()
-{
-	if (pathUtf8_) {
-		::free(pathUtf8_);
-		pathUtf8_ = 0;
-	}
 }
 
 String File::path() const
@@ -100,21 +82,17 @@ int File::openFlags() const
 
 bool File::access(int flags) const
 {
-	int rights = 0;
-	if (flags & Read) rights |= R_OK;
-	if (flags & Write) rights |= W_OK;
-	if (flags & Execute) rights |= X_OK;
-	return ::access(pathUtf8(), rights) == 0;
+	return isOpen() ? ((openFlags_ & flags) == flags) : ::access(path_.utf8(), flags) == 0;
 }
 
 bool File::exists() const
 {
-	return ::access(pathUtf8(), F_OK);
+	return ::access(path_.utf8(), F_OK) == 0;
 }
 
 void File::create(int mask)
 {
-	int fd = ::open(pathUtf8(), O_RDONLY|O_CREAT|O_EXCL, mask);
+	int fd = ::open(path_.utf8(), O_RDONLY|O_CREAT|O_EXCL, mask);
 	if (fd == -1)
 		PONA_THROW(StreamSemanticException, systemError());
 	::close(fd);
@@ -122,25 +100,82 @@ void File::create(int mask)
 
 void File::unlink()
 {
-	if (::unlink(pathUtf8()) == -1)
+	if (::unlink(path_.utf8()) == -1)
 		PONA_THROW(StreamSemanticException, systemError());
+}
+
+void File::createUnique(int mask, Char placeHolder)
+{
+	Random random;
+	while (true) {
+		String pathSaved = path_->copy();
+		for (int i = 0, n = path_->length(); i < n; ++i) {
+			if (path_->get(i) == placeHolder) {
+				int r = random.next(0, 61);
+				if ((0 <= r) && (r <= 9))
+					path_->set(i, '0' + r);
+				else if ((10 <= r) && (r <= 35))
+					path_->set(i, 'a' + r - 10);
+				else if ((36 <= r) && (r <= 61))
+					path_->set(i, 'A' + r - 36);
+			}
+		}
+		if (::open(path_.utf8(), O_RDONLY|O_CREAT|O_EXCL, mask) == -1) {
+			if (errno != EEXIST)
+				PONA_THROW(StreamSemanticException, systemError());
+			path_ = pathSaved;
+		}
+		else
+			break;
+	}
+}
+
+void File::truncate(off_t length)
+{
+	if (isOpen()) {
+		if (::ftruncate(fd_, length) == -1)
+			PONA_THROW(StreamSemanticException, systemError());
+	}
+	else {
+		if (::truncate(path_.utf8(), length) == -1)
+			PONA_THROW(StreamSemanticException, systemError());
+	}
+}
+
+class UnlinkFile: public EventHandler {
+public:
+	UnlinkFile(String path): path_(path) {}
+	void run() { File(path_).unlink(); }
+private:
+	String path_;
+};
+
+void File::unlinkOnExit()
+{
+	onExit()->push(new UnlinkFile(path_));
+}
+
+void File::unlinkOnThreadExit()
+{
+	onThreadExit()->push(new UnlinkFile(path_));
 }
 
 void File::open(int flags)
 {
-	int flags2 = 0;
+	int h = 0;
 	if (flags == Read)
-		flags2 = O_RDONLY;
+		h = O_RDONLY;
 	else if (flags == Write)
-		flags2 = O_WRONLY;
+		h = O_WRONLY;
 	else if (flags == (Read|Write))
-		flags2 = O_RDWR;
-	fd_ = ::open(pathUtf8(), flags2);
+		h = O_RDWR;
+	fd_ = ::open(path_.utf8(), h);
 	if (fd_ == -1)
 		PONA_THROW(StreamSemanticException, systemError());
+	openFlags_ = flags;
 }
 
-File::Offset File::seek(Offset distance, int method)
+off_t File::seek(off_t distance, int method)
 {
 	int method2 = SEEK_SET;
 	if (method == SeekBegin)
@@ -149,33 +184,43 @@ File::Offset File::seek(Offset distance, int method)
 		method2 = SEEK_CUR;
 	else if (method == SeekEnd)
 		method2 = SEEK_END;
-	File::Offset ret = ::lseek(fd_, distance, method2);
+	off_t ret = ::lseek(fd_, distance, method2);
 	if (ret == -1)
 		PONA_THROW(StreamSemanticException, systemError());
 	return ret;
 }
 
-void File::seekSet(Offset distance)
+void File::seekSet(off_t distance)
 {
 	seek(distance, SeekBegin);
 }
 
-void File::seekMove(Offset distance)
+void File::seekMove(off_t distance)
 {
 	seek(distance, SeekCurrent);
 }
 
-File::Offset File::seekTell()
+off_t File::seekTell()
 {
 	return seek(0, SeekCurrent);
 }
 
-File::Offset File::size()
+off_t File::size()
 {
-	File::Offset h2 = seek(0, SeekCurrent);
-	File::Offset h = seek(0, SeekEnd);
+	off_t h2 = seek(0, SeekCurrent);
+	off_t h = seek(0, SeekEnd);
 	seek(h2, SeekBegin);
 	return h;
+}
+
+Ref<FileStatus, Owner> File::status() const
+{
+	Ref<FileStatus, Owner> fs;
+	if (isOpen())
+		fs = new FileStatus(fd_);
+	else if (exists())
+		fs = new FileStatus(path_);
+	return fs;
 }
 
 void File::sync()
@@ -192,12 +237,6 @@ void File::dataSync()
 #else
 	sync();
 #endif
-}
-
-char* File::pathUtf8() const
-{
-	if (!pathUtf8_) pathUtf8_ = path_.strdup();
-	return pathUtf8_;
 }
 
 } // namespace pona

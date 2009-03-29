@@ -1,7 +1,8 @@
 #include <pona/stdio>
-#include <pona/concurrent>
+#include <pona/threads>
 #include <pona/container>
 #include <pona/misc>
+#include <pona/time>
 
 namespace pona
 {
@@ -17,6 +18,7 @@ public:
 		  amount_(amount)
 	{}
 	
+private:
 	int run()
 	{
 		while (amount_ > 0) {
@@ -27,7 +29,6 @@ public:
 		return 0;
 	}
 	
-private:
 	int id_;
 	Ref<MyChannel, Owner> channel_;
 	int amount_;
@@ -39,8 +40,7 @@ public:
 	Producer(int id, Ref<MyChannel> channel, int amount)
 		: id_(id),
 		  channel_(channel),
-		  amount_(amount),
-		  random_(id_)
+		  amount_(amount)
 	{}
 	
 	int run()
@@ -70,7 +70,7 @@ int main()
 	Ref<Consumer, Owner> c1 = new Consumer(1, channel, 4);
 	Ref<Consumer, Owner> c2 = new Consumer(2, channel, 16);
 	
-	TimeStamp dt = getTime();
+	TimeStamp dt = now();
 	c1->start();
 	p1->start();
 	c2->start();
@@ -79,7 +79,7 @@ int main()
 	c2->wait();
 	p1->wait();
 	p2->wait();
-	dt = getTime() - dt;
+	dt = now() - dt;
 	print("\ndt = %% usec\n\n", dt.microSeconds());
 	
 	return 0;

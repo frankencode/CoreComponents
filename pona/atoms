@@ -6,6 +6,5 @@
 #include "Ref.hpp"
 #include "Exception.hpp"
 #include "types.hpp"
-#include "TimeStamp.hpp"
 
 #endif // PONA_ATOMS

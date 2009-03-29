@@ -23,7 +23,7 @@
 #define PONA_LINESOURCE_HPP
 
 #include "atoms"
-#include "options.hpp"
+#include "defaults.hpp"
 #include "Stream.hpp"
 #include "Queue.hpp"
 #include "String.hpp"

@@ -1,11 +1,11 @@
 #include <pona/stdio>
-#include <pona/concurrent>
-#include <pona/misc>
+#include <pona/threads>
+#include <pona/time>
 
 namespace pona
 {
 
-class MyChannel
+class MyChannel: public Instance
 {
 public:
 	MyChannel()
@@ -34,57 +34,60 @@ private:
 	int value_;
 };
 
-class MyThread: public Thread
+class Producer: public Thread
 {
 public:
-	enum Role { Producer, Consumer };
-
-	MyThread(int role, MyChannel* channel)
-		: role_(role),
-		  channel_(channel)
+	Producer(Ref<MyChannel> channel)
+		: channel_(channel)
 	{}
 	
+private:
 	int run()
 	{
-		if (role_ == Producer)
-		{
-			for (int i = 0; i < 10; ++i)
-			{
-				print("producer: i = %%\n", i);
-				channel_->put(i);
-			}
+		for (int i = 0; i < 10; ++i) {
+			print("producer: i = %%\n", i);
+			channel_->put(i);
 		}
-		else // if (role == Consumer)
-		{
-			int k = 0;
-			while (k != 9)
-			{
-				k = channel_->get();
-				print("consumer: k = %%\n", k);
-			}
-		}
-
 		return 0;
 	}
+private:
+	Ref<MyChannel> channel_;
+};
+
+class Consumer: public Thread
+{
+public:
+	Consumer(Ref<MyChannel> channel)
+		: channel_(channel)
+	{}
 	
 private:
-	int role_;
-	MyChannel* channel_;
+	int run()
+	{
+		int k = 0;
+		while (k != 9) {
+			k = channel_->get();
+			print("consumer: k = %%\n", k);
+		}
+		return 0;
+	}
+private:
+	Ref<MyChannel> channel_;
 };
 
 int main()
 {
-	MyChannel channel;
-	MyThread t1(MyThread::Producer, &channel);
-	MyThread t2(MyThread::Consumer, &channel);
-	TimeStamp dt = getTime();
-	t1.start();
-	t2.start();
-	t1.wait();
-	t2.wait();
-	dt = getTime() - dt;
+	Ref<MyChannel, Owner> channel = new MyChannel;
+	Producer producer(channel);
+	Consumer consumer(channel);
+	TimeStamp dt = now();
+	producer.start();
+	consumer.start();
+	producer.wait();
+	consumer.wait();
+	dt = now() - dt;
 	print("\ndt = %% usec\n\n", dt.microSeconds());
-
+	
 	return 0;
 }
 

@@ -55,12 +55,9 @@ SocketAddress::SocketAddress(int family, String address, int port)
 	else
 		PONA_THROW(NetworkingException, "Unsupported address family");
 
-	if ((address != String()) && ((address != "*"))) {
-		char* addressUtf8 = address.strdup();
-		if (inet_pton(family, addressUtf8, addr) == -1)
+	if ((address != String()) && ((address != "*")))
+		if (inet_pton(family, address.utf8(), addr) == -1)
 			PONA_THROW(NetworkingException, "Broken address string");
-		free(addressUtf8);
-	}
 }
 
 SocketAddress::SocketAddress(addrinfo* info)
@@ -171,16 +168,17 @@ Ref<InetAddressList, Owner> SocketAddress::query(String hostName, String service
 	hint.ai_family = family;
 	hint.ai_socktype = socketType;
 	
-	char* hostNameUtf8 = hostName.strdup();
-	char* serviceNameUtf8 = serviceName.strdup();
-	
-	int ret = getaddrinfo(hostNameUtf8, (serviceName != String()) ? serviceNameUtf8 : 0, &hint, &head);
+	int ret;
+	{
+		CString serviceNameUtf8 = serviceName.utf8();
+		char* h = 0;
+		if (serviceName != String()) h = serviceNameUtf8;
+		ret = getaddrinfo(hostName.utf8(), h, &hint, &head);
+	}
+		
 	if (ret != 0)
 		if (ret != EAI_NONAME)
 			PONA_THROW(NetworkingException, gai_strerror(ret));
-	
-	free(serviceNameUtf8);
-	free(hostNameUtf8);
 	
 	Ref<InetAddressList, Owner> list = new InetAddressList;
 	

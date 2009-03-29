@@ -19,32 +19,33 @@
 **
 ****************************************************************************/
 
-#ifndef PONA_PROCESSSTATUS_HPP
-#define PONA_PROCESSSTATUS_HPP
+#include "FormatSpecifier.hpp"
+#include "IntegerLiteral.hpp"
+#include "FloatLiteral.hpp"
 
-#include "atoms"
-#include "String.hpp"
-#include "Map.hpp"
+#include "FormatSyntax.hpp"
 
 namespace pona
 {
 
-class ProcessStatus
+Ref<FormatSyntax> FormatSyntax::instance()
 {
-public:
-	typedef Map<String, String> Environment;
+	static Ref<FormatSyntax, ThreadLocalOwner> instance_ = 0;
 	
-	static String workingDirectory();
-	static String userName();
-	static String groupName();
-	static bool isSuperUser();
-	
-	static Ref<Environment, Owner> environment();
-	static void setEnv(String key, String value);
-	static String env(String key);
-};
+	if (!instance_)
+		instance_ = new FormatSyntax;
+	return instance_;
+}
+
+FormatSyntax::FormatSyntax()
+{
+	formatSpecifier_ = new FormatSpecifier;
+	integerLiteral_ = new IntegerLiteral;
+	floatingPointLiteral_ = new FloatLiteral;
+}
+
+Ref<FormatSpecifier> FormatSyntax::formatSpecifier() const { return formatSpecifier_; }
+Ref<IntegerLiteral> FormatSyntax::integerLiteral() const { return integerLiteral_; }
+Ref<FloatLiteral> FormatSyntax::floatingPointLiteral() const { return floatingPointLiteral_; }
 
 } // namespace pona
-
-#endif // PONA_PROCESSSTATUS_HPP
-

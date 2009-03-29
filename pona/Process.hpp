@@ -24,13 +24,10 @@
 
 #include <sys/types.h> // pid_t
 #include "atoms"
-#include "String.hpp"
-#include "List.hpp"
-#include "Map.hpp"
+#include "context.hpp"
 #include "SystemStream.hpp"
 #include "LineSink.hpp"
 #include "LineSource.hpp"
-#include "ProcessStatus.hpp"
 
 namespace pona
 {
@@ -59,9 +56,6 @@ namespace pona
 class Process: public Instance
 {
 public:
-	typedef List<String> ArgList;
-	typedef Map<String, String> EnvMap;
-	
 	enum ProcessType {
 		SimpleChild,
 		GroupLeader,
@@ -87,18 +81,22 @@ public:
 	// ---------------------------------------------------------------
 	
 	int processType() const { return processType_; }
-	int ioPolicy() const { return ioPolicy_; }
-	String workingDirectory() const { return workingDirectory_; }
 	void setProcessType(int type) { processType_ = type; }
+	
+	int ioPolicy() const { return ioPolicy_; }
 	void setIoPolicy(int flags) { ioPolicy_ = flags; }
+	
+	String workingDirectory() const { return workingDirectory_; }
 	void setWorkingDirectory(String path) { workingDirectory_ = path; }
 	
 	String execPath() const { return execPath_; }
-	Ref<ArgList> arguments() { return (argList_) ? argList_ : argList_ = new ArgList; }
-	Ref<EnvMap> environment() { return (envMap_) ? envMap_ : envMap_ = ProcessStatus::environment(); }
 	void setExecPath(String path) { execPath_ = path; }
-	void setArguments(Ref<ArgList> list) { argList_ = list; }
-	void setEnvironment(Ref<EnvMap> map) { envMap_ = map; }
+	
+	Ref<StringList> options() { return (options_) ? options_ : options_ = new StringList; }
+	void setOptions(Ref<StringList> list) { options_ = list; }
+	
+	Ref<EnvMap> envMap() { return (envMap_) ? envMap_ : envMap_ = pona::envMap(); }
+	void setEnvMap(Ref<EnvMap> map) { envMap_ = map; }
 	
 	void setRawInput(Ref<SystemStream> stream) { rawInput_ = stream; }
 	void setRawOutput(Ref<SystemStream> stream) { rawOutput_ = stream; }
@@ -135,7 +133,7 @@ private:
 	String workingDirectory_;
 	
 	String execPath_;
-	Ref<ArgList, Owner> argList_;
+	Ref<StringList, Owner> options_;
 	Ref<EnvMap, Owner> envMap_;
 	
 	Ref<SystemStream, Owner> rawInput_;
@@ -147,10 +145,6 @@ private:
 	Ref<LineSource, Owner> error_;
 	
 	pid_t pid_;
-	
-#ifdef PONA_WINDOWS
-	void* handle_;
-#endif
 };
 
 } // namespace pona

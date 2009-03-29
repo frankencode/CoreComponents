@@ -1,6 +1,7 @@
 #include <pona/stdio>
 #include <pona/network>
-#include <pona/concurrent>
+#include <pona/threads>
+#include <pona/time>
 
 namespace pona
 {
@@ -136,8 +137,7 @@ int main(int argc, char** argv)
 		}
 	}
 	
-	print("\n");
-	print("Usage: %% OPTIONS\n", fileName(argv[0]));
+	print("Usage: %% [OPTION]\n", fileName(argv[0]));
 	print("\n");
 	print("Options:\n");
 	print("  --server ... TCP echo server\n");

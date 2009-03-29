@@ -22,7 +22,7 @@
 #ifndef PONA_RANDOM_HPP
 #define PONA_RANDOM_HPP
 
-#include "Clock.hpp"
+#include "atoms"
 
 namespace pona
 {
@@ -30,17 +30,10 @@ namespace pona
 /** Random number generator as described by Lewis et al/1969
   * for the System/360. The generator is reentrant.
   */
-class Random
+class Random: public Instance
 {
 public:
-	Random(int seed = getTime().miliSeconds())
-		: m_((1u << 31) - 1),
-		  x_(seed)
-	{
-		if (x_ == 0)
-			x_ = 1;
-	}
-
+	Random(int seed = -1);
 	
 	inline int max() const { return m_ - 1; }
 	inline int period() const { return m_ - 1; }
@@ -50,8 +43,16 @@ public:
 		return x_;
 	}
 	
+	/** Return a random number in range [a, b].
+	  */
+	inline int next(int a, int b) {
+		assert(b <= m_ - 1);
+		assert(a <= b);
+		return (uint64_t(next()) * (b - a)) / (m_ - 1) + a;
+	}
+	
 private:
-	unsigned m_;
+	enum { m_ = (1u << 31) - 1 };
 	unsigned x_;
 };
 

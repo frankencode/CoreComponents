@@ -22,16 +22,9 @@
 #ifndef PONA_SEMAPHORE_HPP
 #define PONA_SEMAPHORE_HPP
 
-#include <semaphore.h>
-#include <fcntl.h>
-#include <errno.h>
-
 #include "atoms"
-#include "String.hpp"
-
-#ifdef __MACH__
-#include "Random.hpp"
-#endif
+#include "Mutex.hpp"
+#include "Condition.hpp"
 
 namespace pona
 {
@@ -39,94 +32,57 @@ namespace pona
 class Semaphore: public Instance
 {
 public:
-	Semaphore(int value = 0)
-		: sem_(&semObj_),
-		  firstInstance_(true)
+	Semaphore(int avail = 0)
+		: avail_(avail)
+	{}
+	
+	bool tryAcquire(int amount = 1)
 	{
-#ifdef __MACH__
-		static Random semRandom_;
-		
-		while (true)
-		{
-			char name[] = { 's', 'e', 'm', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 0 };
-			int key = semRandom_.next();
-			for (int i = 0; i < 10; ++i, key /= 10)
-				name[3+i] = '0' + (key % 10);
-			sem_ = ::sem_open(name, O_CREAT|O_EXCL, 0600, unsigned(value));
-			if (sem_ == (sem_t*)SEM_FAILED)
-			{
-				if (errno == EEXIST)
-					continue;
-				PONA_SYSTEM_EXCEPTION;
-			}
-			
-			break;
+		bool success = false;
+		mutex_.acquire();
+		if (avail_ >= amount) {
+			avail_ -= amount;
+			success = true;
 		}
-#else
-		if (::sem_init(sem_, 0, unsigned(value)) == -1)
-			PONA_SYSTEM_EXCEPTION;
-#endif
+		mutex_.release();
+		return success;
 	}
 	
-	Semaphore(String name, int value = 0)
-		: firstInstance_(true)
+	void acquire(int amount = 1)
 	{
-		char* nameUtf8 = name.strdup();
-		
-		sem_ = ::sem_open(nameUtf8, O_CREAT|O_EXCL, 0600, unsigned(value));
-		
-		if (sem_ == (sem_t*)SEM_FAILED)
-		{
-			if (errno != EEXIST)
-				PONA_SYSTEM_EXCEPTION;
-			
-			sem_ = ::sem_open(nameUtf8, 0);
-			if (sem_ == (sem_t*)SEM_FAILED)
-				PONA_SYSTEM_EXCEPTION;
-			
-			firstInstance_ = false;
+		mutex_.acquire();
+		while (avail_ < amount)
+			notEmpty_.wait(&mutex_);
+		avail_ -= amount;
+		mutex_.release();
+	}
+	
+	bool acquireBefore(TimeStamp timeout, int amount = 1)
+	{
+		bool success = true;
+		mutex_.acquire();
+		while (avail_ < amount) {
+			success = notEmpty_.waitUntil(&mutex_, timeout);
+			if (!success) break;
 		}
-		
-		::free(nameUtf8);
+		if (success)
+			avail_ -= amount;
+		mutex_.release();
+		return success;
 	}
 	
-	~Semaphore()
+	void release(int amount = 1)
 	{
-		if (sem_ == &semObj_)
-		{
-			if (::sem_destroy(sem_) == -1)
-				PONA_SYSTEM_EXCEPTION;
-		}
-		else if (sem_ != (sem_t*)SEM_FAILED) 
-		{
-			if (::sem_close(sem_) == -1)
-				PONA_SYSTEM_EXCEPTION;
-		}
-	}
-	
-	inline bool firstInstance() const { return firstInstance_; }
-	
-	inline void release()
-	{
-		if (::sem_post(sem_) == -1)
-			PONA_SYSTEM_EXCEPTION;
-	}
-	
-	inline void acquire()
-	{
-		if (::sem_wait(sem_) == -1)
-			PONA_SYSTEM_EXCEPTION;
-	}
-	
-	inline bool tryAcquire()
-	{
-		return ::sem_trywait(sem_) == 0;
+		mutex_.acquire();
+		avail_ += amount;
+		notEmpty_.signal();
+		mutex_.release();
 	}
 	
 private:
-	sem_t semObj_;
-	sem_t* sem_;
-	bool firstInstance_;
+	Mutex mutex_;
+	Condition notEmpty_;
+	int avail_;
 };
 
 } // namespace pona

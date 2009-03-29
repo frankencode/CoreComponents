@@ -22,6 +22,8 @@
 #ifndef PONA_TCPSOCKET_HPP
 #define PONA_TCPSOCKET_HPP
 
+#include "atoms"
+#include "TimeStamp.hpp"
 #include "SocketAddress.hpp"
 #include "SystemStream.hpp"
 

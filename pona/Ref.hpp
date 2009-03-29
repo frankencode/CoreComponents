@@ -22,12 +22,11 @@
 #ifndef PONA_REF_HPP
 #define PONA_REF_HPP
 
-#include "options.hpp"
+#include "defaults.hpp"
 #include "Instance.hpp"
 #include "Pointer.hpp"
-#include "Owner.hpp"
 #include "SetNull.hpp"
-#include "ThreadLocalOwner.hpp"
+#include "Owner.hpp"
 
 namespace pona
 {

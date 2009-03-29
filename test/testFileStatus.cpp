@@ -1,35 +1,41 @@
 #include <pona/stdio>
+#include <pona/context>
 
 namespace pona
 {
 
-void printStatus(String path)
+void printStatus(Ref<File, Owner> file)
 {
-	FileStatus stat(path);
-
-	print("FileStatus(%%):\n", path);
-	print("File(%%).access(File::readable) = %%\n", path, File(path).access(File::Read));
-	print("File(%%).access(File::writable) = %%\n", path, File(path).access(File::Write));
-	print("File(%%).access(File::executable) = %%\n", path, File(path).access(File::Execute));
-	print("stat.exists() = %%\n", stat.exists());
-	print("stat.mode() = %oct%\n", stat.mode());
-	print("stat.size() = %%\n", stat.size());
-	print("stat.owner() = \"%%\"\n", stat.owner());
-	print("stat.group() = \"%%\"\n", stat.group());
+	print("file->path() = \"%%\"\n", file->path());
+	print("file->exists() = %%\n", file->exists());
+	print("file->access(File::Read) = %%\n", file->access(File::Read));
+	print("file->access(File::Write) = %%\n", file->access(File::Write));
+	print("file->access(File::Execute) = %%\n", file->access(File::Execute));
+	Ref<FileStatus, Owner> status = file->status();
+	if (status) {
+		print("status->type() = %oct%\n", status->type());
+		print("status->mode() = %oct%\n", status->mode());
+		print("status->size() = %%\n", status->size());
+		print("status->ownerId() = %%\n", status->ownerId());
+		print("status->groupId() = %%\n", status->groupId());
+		print("User(status->ownerId()).name() = %%\n", User(status->ownerId()).name());
+		print("Group(status->groupId()).name() = %%\n", Group(status->groupId()).name());
+	}
 	print("\n");
 }
 
-int main()
+int main(int argc, char** argv)
 {
-	printStatus("/usr/include");
-	printStatus("testFileStatus");
-	printStatus("hmpf.xyz");
+	printStatus(new File("/usr/include"));
+	printStatus(new File(argv[0]));
+	printStatus(new File("hmpf.xyz"));
+	printStatus(rawInput());
 	return 0;
 }
 
 } // namespace pona
 
-int main()
+int main(int argc, char** argv)
 {
-	return pona::main();
+	return pona::main(argc, argv);
 }
