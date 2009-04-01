@@ -1,3 +1,11 @@
+/*
+ * Format.cpp -- formated strings
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #include "Rounding.hpp"
 #include "FormatSyntax.hpp"
 #include "FormatSpecifier.hpp"
@@ -8,15 +16,36 @@ namespace pona
 
 Format::Format()
 	: defaultPlaceHolder_(new PlaceHolder),
-	  digits_(128 /* safe guess, 65 + ExpAutoLimit should be sufficient ? */ ),
+	  digits_(MaxDigits),
 	  n0_(0)
 {}
 
-Format::Format(String templateText)
-	: String(templateText),
+Format::Format(Char ch)
+	: String(ch),
 	  defaultPlaceHolder_(new PlaceHolder),
-	  digits_(128),
+	  digits_(MaxDigits),
+	  n0_(1)
+{}
+
+Format::Format(const char* utf8)
+	: String(utf8),
+	  defaultPlaceHolder_(new PlaceHolder),
+	  digits_(MaxDigits),
 	  n0_(get()->length())
+{
+	init();
+}
+
+Format::Format(Ref<Media, Owner> media)
+	: String(media),
+	  defaultPlaceHolder_(new PlaceHolder),
+	  digits_(MaxDigits),
+	  n0_(get()->length())
+{
+	init();
+}
+
+void Format::init()
 {
 	Ref<FormatSpecifier> specifier = syntaxFactory()->formatSpecifier();
 	int i0Saved = 0, i0 = 0, i1 = 0;

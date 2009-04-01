@@ -1,31 +1,18 @@
-/****************************************************************************
-**
-** This file is part of libPONA - The Portable Network Abstraction Library.
-**
-** Copyright (C) 2007-2009  Frank Mertens
-**
-** This file is part of a free software: you can redistribute it and/or
-** modify it under the terms of the GNU General Public License as published
-** by the Free Software Foundation, either version 3 of the License,
-** or (at your option) any later version.
-**
-** The library is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this libary.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+/*
+ * StreamSocket.cpp -- stream-oriented sockets
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 
 #include <unistd.h> // close, select
-#include "TcpSocket.hpp"
+#include "StreamSocket.hpp"
 
 namespace pona
 {
 
-TcpSocket::TcpSocket(Ref<SocketAddress> address, TimeStamp idleTimeout, int backlog)
+StreamSocket::StreamSocket(Ref<SocketAddress> address, TimeStamp idleTimeout, int backlog)
 	: localAddress_(address),
 	  idleTimeout_(idleTimeout),
 	  doClose_(false)
@@ -41,7 +28,7 @@ TcpSocket::TcpSocket(Ref<SocketAddress> address, TimeStamp idleTimeout, int back
 		PONA_SYSTEM_EXCEPTION;
 }
 
-int TcpSocket::run()
+void StreamSocket::listen()
 {
 	init();
 	
@@ -74,16 +61,14 @@ int TcpSocket::run()
 	::close(lsd_);
 	
 	cleanup();
-	
-	return 0;
 }
 
-void TcpSocket::close()
+void StreamSocket::close()
 {
 	doClose_ = true;
 }
 
-Ref<SystemStream, Owner> TcpSocket::connect(Ref<SocketAddress> remoteAddress)
+Ref<SystemStream, Owner> StreamSocket::connect(Ref<SocketAddress> remoteAddress)
 {
 	int sd = ::socket(remoteAddress->family(), SOCK_STREAM, 0);
 	if (sd == -1)

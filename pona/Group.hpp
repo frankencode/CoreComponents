@@ -1,3 +1,10 @@
+/*
+ * Group.hpp -- reading group information
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_GROUP_HPP
 #define PONA_GROUP_HPP
 

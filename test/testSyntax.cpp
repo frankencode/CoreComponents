@@ -66,8 +66,6 @@ public:
 				EOI()
 			)
 		);
-		
-		LINK();
 	}
 	
 	double eval(String text)

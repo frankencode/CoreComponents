@@ -1,3 +1,11 @@
+/*
+ * defaults.hpp -- library configuration
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #ifndef PONA_OPTIONS_HPP
 #define PONA_OPTIONS_HPP
 

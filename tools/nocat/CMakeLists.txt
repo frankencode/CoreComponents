@@ -1,0 +1,15 @@
+ADD_EXECUTABLE(nocat
+	Options.hpp
+	Options.cpp
+	Forwarder.hpp
+	Forwarder.cpp
+	CanonicalForwarder.hpp
+	CanonicalForwarder.cpp
+	Shell.hpp
+	Shell.cpp
+	Client.hpp
+	Client.cpp
+	Server.hpp
+	Server.cpp
+	main.cpp
+)

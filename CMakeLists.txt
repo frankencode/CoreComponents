@@ -9,4 +9,4 @@ INCLUDE(cmake/BuildOptionsPONA.cmake)
 INSTALL(FILES cmake/FindPONA.cmake cmake/UsePONA.cmake cmake/BuildOptionsPONA.cmake DESTINATION ${CMAKE_ROOT}/Modules)
 INSTALL(DIRECTORY pona DESTINATION include PATTERN *.cpp EXCLUDE)
 
-SUBDIRS(pona test examples)
+SUBDIRS(pona test tools)

@@ -1,24 +1,10 @@
-/****************************************************************************
-**
-** This file is part of libPONA - The Portable Network Abstraction Library.
-**
-** Copyright (C) 2007-2009  Frank Mertens
-**
-** This file is part of a free software: you can redistribute it and/or
-** modify it under the terms of the GNU General Public License as published
-** by the Free Software Foundation, either version 3 of the License,
-** or (at your option) any later version.
-**
-** The library is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this libary.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
-
+/*
+ * ToolOptions.hpp -- options of a command line tool
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_TOOLOPTIONS_HPP
 #define PONA_TOOLOPTIONS_HPP
 
@@ -26,9 +12,6 @@
 #include "String.hpp"
 #include "Variant.hpp"
 #include "List.hpp"
-#include "BooleanLiteral.hpp"
-#include "IntegerLiteral.hpp"
-#include "FloatLiteral.hpp"
 #include "SyntaxDefinition.hpp"
 
 namespace pona
@@ -42,20 +25,17 @@ public:
 	ToolOptions();
 	
 	void define(Char shortName, String longName, Ref<Variant> value, String description = "");
-	
 	Ref<StringList> read(int argc, char** argv);
 	
 	String help(String synopsis = "", String summary = "", String details = "");
+	String toolName() const;
 	
 private:
 	Ref<StringList> read(String line);
 	
-	Ref<BooleanLiteral, Owner> booleanRule_;
-	Ref<IntegerLiteral, Owner> integerRule_;
-	Ref<FloatLiteral, Owner> floatRule_;
-	RULE stringRule_;
 	RULE longNameRule_;
 	RULE shortNameRule_;
+	RULE valueRule_;
 	RULE optionRule_;
 	
 	class Option: public Instance
@@ -65,6 +45,7 @@ private:
 		String longName_;
 		String description_;
 		int typeMask_;
+		// Variant defaultValue_;
 		Ref<Variant, SetNull> value_;
 	};
 	

@@ -1,3 +1,10 @@
+/*
+ * OnExitManager.hpp -- call event handlers on process termination
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_ONEXITMANAGER_HPP
 #define PONA_ONEXITMANAGER_HPP
 

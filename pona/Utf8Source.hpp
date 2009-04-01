@@ -1,3 +1,10 @@
+/*
+ * Utf8Source.hpp -- UTF8 decoding data source
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_UTF8SOURCE_HPP
 #define PONA_UTF8SOURCE_HPP
 

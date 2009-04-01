@@ -1,3 +1,10 @@
+/*
+ * ListObserver.hpp -- tracking changes on a 'List'
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_LISTOBSERVER_HPP
 #define PONA_LISTOBSERVER_HPP
 

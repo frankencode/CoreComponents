@@ -1,3 +1,11 @@
+/*
+ * ToolOptions.cpp -- options of a command line tool
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #include "Format.hpp"
 #include "File.hpp"
 #include "ToolOptions.hpp"
@@ -8,24 +16,7 @@ namespace pona
 ToolOptions::ToolOptions()
 	: optionList_(new OptionList)
 {
-	booleanRule_ = new BooleanLiteral;
-	integerRule_ = new IntegerLiteral;
-	floatRule_ = new FloatLiteral;
-	
 	DEFINE("whitespace", REPEAT(1, RANGE(" \t")));
-	
-	stringRule_ =
-		DEFINE("string",
-			GLUE(
-				NOT(STRING("--")),
-				REPEAT(1,
-					GLUE(
-						NOT(INLINE("whitespace")),
-						ANY()
-					)
-				)
-			)
-		);
 	
 	longNameRule_ =
 		DEFINE("longName",
@@ -50,7 +41,21 @@ ToolOptions::ToolOptions()
 		DEFINE("shortName",
 			CHOICE(
 				RANGE('a', 'z'),
-				RANGE('A', 'Z')
+				RANGE('A', 'Z'),
+				RANGE('0', '9')
+			)
+		);
+	
+	valueRule_ =
+		DEFINE("value",
+			GLUE(
+				NOT(STRING("--")),
+				REPEAT(1,
+					GLUE(
+						NOT(INLINE("whitespace")),
+						ANY()
+					)
+				)
 			)
 		);
 	
@@ -66,12 +71,7 @@ ToolOptions::ToolOptions()
 								REPEAT(0, 1, INLINE("whitespace")),
 								CHAR('='),
 								REPEAT(0, 1, INLINE("whitespace")),
-								CHOICE(
-									booleanRule_,
-									floatRule_,
-									integerRule_,
-									stringRule_
-								)
+								REF("value")
 							)
 						)
 					),
@@ -99,7 +99,7 @@ ToolOptions::ToolOptions()
 			REPEAT(
 				GLUE(
 					REPEAT(0, 1, INLINE("whitespace")),
-					REF("string")
+					REF("value")
 				)
 			),
 			REPEAT(0, 1, INLINE("whitespace")),
@@ -113,6 +113,7 @@ void ToolOptions::define(Char shortName, String longName, Ref<Variant> value, St
 	Ref<Option> option = new Option;
 	option->shortName_ = shortName;
 	option->longName_ = longName;
+	// *(option->value_) = *value;
 	option->value_ = value;
 	option->typeMask_ = value->type();
 	option->description_ = description;
@@ -228,39 +229,36 @@ void ToolOptions::readOption(String line, Ref<Token> token)
 			*option->value_ = true;
 		}
 		else {
-			if ( (token->rule() == stringRule_->id()) ||
-			     (option->value_->type() == Variant::StringType) )
-			{
-				*value = line->copy(token->index(), token->length());
+			String s = line->copy(token->index(), token->length());
+			
+			if (value->type() == Variant::StringType) {
+				*value = s;
 			}
-			else if (token->rule() == booleanRule_->id())
-			{
-				*value = booleanRule_->read(token);
-			}
-			else if (token->rule() == integerRule_->id())
-			{
-				uint64_t x; int s;
-				integerRule_->read(line, token, &x, &s);
+			else if (value->type() == Variant::BoolType) {
+				bool on = (s == "1") || (s == "H") || (s == "h") || (s == "on") || (s == "On") || (s == "true") || (s == "True");
+				bool off = (s == "0") || (s == "L") || (s == "l") || (s == "off") || (s == "Off") || (s == "false") || (s == "False");
+				if (!(on || off))
+					PONA_THROW(ToolOptionsException, "Unrecognized option syntax");
 				
-				if (value->type() == Variant::FloatType)
-				{
-					*value = 1. * s * x;
-				}
-				else if ( (value->type() == Variant::BoolType) &&
-				          ((s == 0) || (x == 0) || (x == 1)) )
-				{
-					*value = bool(x);
-				}
-				else
-					*value = s * int(x);
+				*value = on;
 			}
-			else if (token->rule() == floatRule_->id())
-			{
-				double x = floatRule_->read(line, token);
-				if (value->type() == Variant::IntType)
-					*value = int(x);
-				else
-					*value = x;
+			else if (value->type()== Variant::IntType) {
+				bool ok = false;
+				int x = toInt(s, &ok);
+				
+				if (!ok)
+					PONA_THROW(ToolOptionsException, "Unrecognized option syntax");
+				
+				*value = x;
+			}
+			else if (value->type() == Variant::FloatType) {
+				bool ok = false;
+				double x = toFloat(s, &ok);
+				
+				if (!ok)
+					PONA_THROW(ToolOptionsException, "Unrecognized option syntax");
+				
+				*value = x;
 			}
 		}
 	}
@@ -278,13 +276,22 @@ String ToolOptions::help(String synopsis, String summary, String details)
 		
 		for (int i = 0; i < optionList_->length(); ++i) {
 			Ref<Option> option = optionList_->get(i);
-			String line;
-			if ((option->shortName_ != 0) && (option->longName_->length() > 0))
-				line = Format("  -%%, --%%") << option->shortName_ << option->longName_;
-			else if (option->shortName_ != 0)
-				line = Format("  -%%") << option->shortName_;
-			else if (option->longName_->length() > 0)
-				line = Format("  --%%") << option->longName_;
+			Format line("  ");
+			if (option->longName_ != "") {
+				line << "--" << option->longName_;
+				if (option->typeMask_ != 0) {
+					if ((option->typeMask_ & (Variant::IntType|Variant::FloatType)) != 0) {
+						line << "=" << *(option->value_);
+					}
+					else if ((option->typeMask_ & Variant::StringType) != 0) {
+						line << "='" << *(option->value_) << "'";
+					}
+				}
+				if (option->shortName_)
+					line << ", ";
+			}
+			if (option->shortName_)
+				line << '-' << option->shortName_;
 			if (line->length() > maxLength) maxLength = line->length();
 			lines->append(line);
 		}
@@ -315,6 +322,11 @@ String ToolOptions::help(String synopsis, String summary, String details)
 		text << details;
 	text << '\n';
 	return text;
+}
+
+String ToolOptions::toolName() const
+{
+	return toolName_;
 }
 
 } // namespace pona

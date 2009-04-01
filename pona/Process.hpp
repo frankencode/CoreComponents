@@ -1,24 +1,10 @@
-/****************************************************************************
-**
-** This file is part of libPONA - The Portable Network Abstraction Library.
-**
-** Copyright (C) 2007-2009  Frank Mertens
-**
-** This file is part of a free software: you can redistribute it and/or
-** modify it under the terms of the GNU General Public License as published
-** by the Free Software Foundation, either version 3 of the License,
-** or (at your option) any later version.
-**
-** The library is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this libary.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
-
+/*
+ * Process.hpp -- process creation, I/O forwarding, signalling
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_PROCESS_HPP
 #define PONA_PROCESS_HPP
 
@@ -32,27 +18,6 @@
 namespace pona
 {
 
-/** \brief Process
-  *
-  * Overview:
-  * - "processType" ... type of process to start
-  *        A simple child process is assumed to have no further children.
-  *        If a group leader receives a termination signal (SIGTERM or SIGKILL), the signal will
-  *        be forwarded to all its simple children recursively.
-  *        A session leader is a group leader, which is not controlled by any terminal
-  *        and therefore does not receive control signals like SIGHUB.
-  * - "ioPolicy" ... defines which standard I/O streams should be forwarded to the parent
-  * - "workingDirectory" ... working directory of the child process
-  * - "execPath" ... path of executable file to load (script or binary)
-  * - "argList" ... argument list to be passed to the executable
-  * - "envMap" ... environment variables to be passed to the executable
-  * - "rawInput" ... standard input stream of the child process
-  * - "rawOutput" ... standard output stream of the child process
-  * - "rawError" ... standard error stream of the child process
-  *
-  * \todo
-  *   - String lookupPath(String name)
-  */
 class Process: public Instance
 {
 public:

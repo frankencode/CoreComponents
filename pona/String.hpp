@@ -1,24 +1,10 @@
-/****************************************************************************
-**
-** This file is part of libPONA - The Portable Network Abstraction Library.
-**
-** Copyright (C) 2007-2009  Frank Mertens
-**
-** This file is part of a free software: you can redistribute it and/or
-** modify it under the terms of the GNU General Public License as published
-** by the Free Software Foundation, either version 3 of the License,
-** or (at your option) any later version.
-**
-** The library is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this libary.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
-
+/*
+ * String.hpp -- string processing based on list processing
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_STRING_HPP
 #define PONA_STRING_HPP
 
@@ -38,7 +24,7 @@ public:
 	String();
 	String(Char ch);
 	String(const char* utf8, int numBytes = -1, int numChars = -1);
-	String(Ref<Media, Owner> list);
+	String(Ref<Media, Owner> media);
 	
 	inline Ref<Media> media() const { return get(); }
 	
@@ -77,9 +63,12 @@ typedef List<String> StringList;
 Ref<StringList, Owner> operator/(String text, String sep);
 
 int toInt(String s, bool* ok = 0);
+double toFloat(String s, bool* ok = 0);
 int64_t toInt64(String s, bool* ok = 0);
 uint64_t toUInt64(String s, bool* ok = 0);
 float64_t toFloat64(String s, bool* ok = 0);
+
+String toLower(String s);
 
 } // namespace pona
 

@@ -1,3 +1,11 @@
+/*
+ * Utf8Source.cpp -- UTF8 decoding data source
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #include "Utf8Source.hpp"
 
 namespace pona

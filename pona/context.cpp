@@ -1,3 +1,11 @@
+/*
+ * context.cpp -- querying the current execution context
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h> // chdir, getcwd

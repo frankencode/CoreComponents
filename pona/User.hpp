@@ -1,3 +1,10 @@
+/*
+ * User.hpp -- reading user information
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_USER_HPP
 #define PONA_USER_HPP
 

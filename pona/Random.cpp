@@ -1,3 +1,11 @@
+/*
+ * Random.cpp -- pseuo-random numbers
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #include "time.hpp"
 #include "Random.hpp"
 

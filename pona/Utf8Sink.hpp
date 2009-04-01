@@ -1,3 +1,10 @@
+/*
+ * Utf8Sink.hpp -- UTF8 encoding data sink
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_UTF8SINK_HPP
 #define PONA_UTF8SINK_HPP
 
