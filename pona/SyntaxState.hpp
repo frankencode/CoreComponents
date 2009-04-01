@@ -1,3 +1,10 @@
+/*
+ * SyntaxState.hpp -- state information of the syntax production engine
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_SYNTAXSTATE_HPP
 #define PONA_SYNTAXSTATE_HPP
 

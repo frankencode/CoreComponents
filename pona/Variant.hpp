@@ -1,3 +1,10 @@
+/*
+ * Variant.hpp -- metamorph data type
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_VARIANT_HPP
 #define PONA_VARIANT_HPP
 
@@ -55,6 +62,7 @@ public:
 	inline operator int() const { if (type_ != IntType) PONA_THROW(VariantException, ""); return int(float_); }
 	inline operator double() const { if (type_ != FloatType) PONA_THROW(VariantException, ""); return float_; }
 	inline operator Ref<String::Media, Owner>() const { if (type_ != StringType) PONA_THROW(VariantException, ""); return ref_; }
+	// inline operator String() const { if (type_ != StringType) PONA_THROW(VariantException, ""); return Ref<String::Media, Owner>(ref_); }
 	inline operator Ref<Instance>() const { if (type_ != RefType) PONA_THROW(VariantException, ""); return ref_; }
 	
 	bool operator==(const Variant& b) const

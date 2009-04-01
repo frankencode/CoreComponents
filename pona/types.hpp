@@ -1,23 +1,10 @@
-/****************************************************************************
-**
-** This file is part of libPONA - The Portable Network Abstraction Library.
-**
-** Copyright (C) 2007-2009  Frank Mertens
-**
-** This file is part of a free software: you can redistribute it and/or
-** modify it under the terms of the GNU General Public License as published
-** by the Free Software Foundation, either version 3 of the License,
-** or (at your option) any later version.
-**
-** The library is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this libary.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+/*
+ * types.hpp -- built-in types and conventions
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 
 #ifndef PONA_TYPES_HPP
 #define PONA_TYPES_HPP
@@ -44,7 +31,8 @@ inline B union_cast(A a)
 }
 
 const double nan = union_cast<double>(uint64_t(0xFFF8) << 48);
-const double inf = 1. / 0.;
+const double zero = 0.;
+const double inf = 1. / zero;
 const unsigned unsignedMax = unsigned(-1);
 const int intMax = unsignedMax >> 1;
 

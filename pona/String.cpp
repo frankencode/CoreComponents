@@ -1,23 +1,10 @@
-/****************************************************************************
-**
-** This file is part of libPONA - The Portable Network Abstraction Library.
-**
-** Copyright (C) 2007-2009  Frank Mertens
-**
-** This file is part of a free software: you can redistribute it and/or
-** modify it under the terms of the GNU General Public License as published
-** by the Free Software Foundation, either version 3 of the License,
-** or (at your option) any later version.
-**
-** The library is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this libary.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+/*
+ * String.cpp -- string processing based on list processing
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 
 #include "Utf8Source.hpp"
 #include "Utf8Sink.hpp"
@@ -69,8 +56,8 @@ String::String(const char* utf8, int numBytes, int numChars)
 	}
 }
 
-String::String(Ref<Media, Owner> list)
-	: Ref<List<Char>, Owner>(list)
+String::String(Ref<Media, Owner> media)
+	: Ref<List<Char>, Owner>(media)
 {
 	if (!get()) set(new Media);
 }
@@ -146,6 +133,11 @@ int toInt(String s, bool* ok)
 	return sign * int(value);
 }
 
+double toFloat(String s, bool* ok)
+{
+	return toFloat64(s, ok);
+}
+
 /** \brief Converts given input string to a signed integer.
   * If the given integer literal exceeds the range of a signed 64 bit integer or
   * the input string can't be read as an integer *ok will be set to false.
@@ -203,6 +195,18 @@ float64_t toFloat64(String s, bool* ok)
 	}
 	
 	return value;
+}
+
+String toLower(String s)
+{
+	String s2;
+	s2->push(0, s->length());
+	for (int i = 0, n = s->length(); i < n; ++i) {
+		Char ch = s->get(i);
+		if (('A' <= ch) && (ch <= 'Z'))
+			s2->set(i, ch + 'a' - 'A');
+	}
+	return s;
 }
 
 } // namespace pona

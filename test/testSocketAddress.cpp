@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 	print("hostName = \"%%\"\n", hostName);
 	
 	String canonicalName;
-	Ref<InetAddressList, Owner> list = SocketAddress::query(hostName, "ssh", AF_UNSPEC, 0, &canonicalName);
+	Ref<SocketAddressList, Owner> list = SocketAddress::resolve(hostName, "", AF_UNSPEC, SOCK_STREAM, &canonicalName);
 	
 	print("canonicalName = \"%%\"\n", canonicalName);
 	

@@ -1,35 +1,19 @@
-/****************************************************************************
-**
-** This file is part of libPONA - The Portable Network Abstraction Library.
-**
-** Copyright (C) 2007-2009  Frank Mertens
-**
-** This file is part of a free software: you can redistribute it and/or
-** modify it under the terms of the GNU General Public License as published
-** by the Free Software Foundation, either version 3 of the License,
-** or (at your option) any later version.
-**
-** The library is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this libary.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
-
+/*
+ * TimeStamp.hpp -- wide-range, high resolution time representation
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_TIMESTAMP_HPP
 #define PONA_TIMESTAMP_HPP
 
 namespace pona
 {
 
-/** \brief Wide-range, high resolution time representation
-  *
-  * A TimeStamp stores two integers: seconds and fractional number of nano-seconds.
+/** A TimeStamp stores two integers: number of seconds and fractional number of nano-seconds.
   * Objects of type TimeStamp are fully compatible to a floating point seconds.
-  * Thereby the time scale has nano-second resolution and ranges from
+  * Tthe time scale has nano-second resolution and ranges from
   * -68 to +68 years on 32 bit systems and -292e9 to +292e9 years on 64 bit systems.
   */
 class TimeStamp

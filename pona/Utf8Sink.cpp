@@ -1,3 +1,11 @@
+/*
+ * Utf8Sink.cpp -- UTF8 encoding data sink
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #include "Utf8Sink.hpp"
 
 namespace pona

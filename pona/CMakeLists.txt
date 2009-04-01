@@ -43,7 +43,6 @@ SET(PONA_HEADER
 	LineSource.hpp
 	LineSink.hpp
 	StandardStreams.hpp
-	BooleanLiteral.hpp
 	IntegerLiteral.hpp
 	FloatLiteral.hpp
 	FormatSpecifier.hpp
@@ -83,7 +82,7 @@ SET(PONA_HEADER
 	
 	network
 	SocketAddress.hpp
-	TcpSocket.hpp
+	StreamSocket.hpp
 	
 	time
 	time.hpp
@@ -97,40 +96,58 @@ SET(PONA_HEADER
 )
 
 SET(PONA_SOURCE
-	StandardStreams.cpp
+	# atoms
+	Exception.cpp
+	
+	# container
+	Tree.cpp
+	String.cpp
+	
+	# stdio
 	Stream.cpp
-	LineSource.cpp
+	SystemStream.cpp
+	File.cpp
+	FileStatus.cpp
 	LineSink.cpp
-	BitSink.cpp
-	BitSource.cpp
+	LineSource.cpp
+	StandardStreams.cpp
+	IntegerLiteral.cpp
+	FloatLiteral.cpp
+	FormatSpecifier.cpp
+	FormatSyntax.cpp
+	Format.cpp
+	
+	# binary
 	ByteSink.cpp
 	ByteSource.cpp
 	Utf8Sink.cpp
 	Utf8Source.cpp
+	BitSink.cpp
+	BitSource.cpp
 	HuffmanCodec.cpp
-	String.cpp
-	Format.cpp
-	SocketAddress.cpp
-	FormatSyntax.cpp
-	FormatSpecifier.cpp
-	BooleanLiteral.cpp
-	IntegerLiteral.cpp
-	FloatLiteral.cpp
-	TcpSocket.cpp
-	ToolOptions.cpp
-	Exception.cpp
-	SystemStream.cpp
-	File.cpp
-	FileStatus.cpp
+	Crc32.cpp
+	
+	# threads
+	Semaphore.cpp
 	Thread.cpp
-	Process.cpp
+	OnThreadExitManager.cpp
+	
+	# context
+	context.cpp
 	User.cpp
 	Group.cpp
-	context.cpp
-	OnExitManager.cpp
-	OnThreadExitManager.cpp
-	Random.cpp
+	ToolOptions.cpp
+	Process.cpp
+	FileLock.cpp
 	MemoryMapping.cpp
+	OnExitManager.cpp
+	
+	# network
+	SocketAddress.cpp
+	StreamSocket.cpp
+	
+	# misc
+	Random.cpp
 )
 
 ADD_LIBRARY(pona
@@ -138,6 +155,6 @@ ADD_LIBRARY(pona
 	${PONA_SOURCE}
 )
 
-SET_TARGET_PROPERTIES(pona PROPERTIES VERSION 0.9.1 SOVERSION 0)
+SET_TARGET_PROPERTIES(pona PROPERTIES VERSION 0.9.3 SOVERSION 0)
 
 INSTALL(TARGETS pona ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)

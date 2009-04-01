@@ -1,3 +1,11 @@
+/*
+ * Channel.hpp -- fixed length message queue
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #ifndef PONA_CHANNEL_HPP
 #define PONA_CHANNEL_HPP
 

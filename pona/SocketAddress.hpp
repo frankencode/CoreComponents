@@ -1,24 +1,10 @@
-/****************************************************************************
-**
-** This file is part of libPONA - The Portable Network Abstraction Library.
-**
-** Copyright (C) 2007-2009  Frank Mertens
-**
-** This file is part of a free software: you can redistribute it and/or
-** modify it under the terms of the GNU General Public License as published
-** by the Free Software Foundation, either version 3 of the License,
-** or (at your option) any later version.
-**
-** The library is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this libary.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
-
+/*
+ * SocketAddress.hpp -- address of a socket, name resolution
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_SOCKETADDRESS_HPP
 #define PONA_SOCKETADDRESS_HPP
 
@@ -38,7 +24,7 @@ PONA_EXCEPTION(NetworkingException, Exception);
 
 class SocketAddress;
 
-typedef List< Ref<SocketAddress, Owner> > InetAddressList;
+typedef List< Ref<SocketAddress, Owner> > SocketAddressList;
 
 class SocketAddress: public Instance
 {
@@ -73,12 +59,12 @@ public:
 	  *   Depending on supported protocol stacks and service availability in
 	  * different protocols (UDP/TCP) and number of network addresses of the
 	  * queried host multiple SocketAddress objects will be returned.
-	  *   The query returns an empty list, if the host name is unknown, service is
+	  *   An empty list is returned, if the host name is unknown, service is
 	  * not available or protocol family is not supported by the host.
 	  *   The host name can be a short name relative to the local domain.
 	  * The fully qualified domain name (aka canonical name) can be optionally retrieved.
 	  */
-	static Ref<InetAddressList, Owner> query(String hostName, String serviceName = String(), int family = AF_UNSPEC, int socketType = 0, String* canonicalName = 0);
+	static Ref<SocketAddressList, Owner> resolve(String hostName, String serviceName = String(), int family = AF_UNSPEC, int socketType = 0, String* canonicalName = 0);
 	
 	/** Lookup the host name of given address. Usually a reverse DNS
 	  * lookup will be issued, which may take several seconds.

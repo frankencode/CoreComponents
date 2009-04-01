@@ -1,3 +1,10 @@
+/*
+ * MemoryMapping.hpp -- file backed / virtual memory mappings
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_MEMORYMAPPING_HPP
 #define PONA_MEMORYMAPPING_HPP
 

@@ -1,3 +1,11 @@
+/*
+ * Group.cpp -- reading group information
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #include <unistd.h> // sysconf
 #include "Group.hpp"
 

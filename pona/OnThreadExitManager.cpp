@@ -1,3 +1,11 @@
+/*
+ * OnThreadExitManager.cpp -- call event handlers on thread termination
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #include "OnThreadExitManager.hpp"
 
 namespace pona

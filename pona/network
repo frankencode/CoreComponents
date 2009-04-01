@@ -1,7 +1,14 @@
+/*
+ * network -- wildcard include header
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_NETWORK
 #define PONA_NETWORK
 
 #include "SocketAddress.hpp"
-#include "TcpSocket.hpp"
+#include "StreamSocket.hpp"
 
 #endif // PONA_NETWORK

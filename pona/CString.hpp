@@ -1,3 +1,11 @@
+/*
+ * CString.hpp -- null-terminated strings
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #ifndef PONA_CSTRING_HPP
 #define PONA_CSTRING_HPP
 

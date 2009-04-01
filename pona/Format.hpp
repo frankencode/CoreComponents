@@ -1,3 +1,10 @@
+/*
+ * Format.hpp -- formated strings
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_FORMAT_HPP
 #define PONA_FORMAT_HPP
 
@@ -14,8 +21,13 @@ PONA_EXCEPTION(FormatException, Exception);
 class Format: public String
 {
 public:
+	typedef String::Element Element;
+	typedef String::Media Media;
+	
 	Format();
-	Format(String templateText);
+	Format(Char ch);
+	Format(const char* utf8);
+	Format(Ref<Media, Owner> media);
 	
 	inline Format& print(String s) { get()->insert(nextPlaceHolder()->i_ + get()->length() - n0_, s); return *this; }
 	inline Format& print(const char* s) { return print(String(s)); }
@@ -45,6 +57,9 @@ public:
 	
 private:
 	enum { ExpAutoLimit = 6 };
+	enum { MaxDigits = 128 }; // safe guess, 65 + ExpAutoLimit should be sufficient ?
+	
+	void init();
 	
 	class PlaceHolder: public Instance {
 	public:

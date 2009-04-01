@@ -1,3 +1,10 @@
+/*
+ * OnThreadExitManager.hpp -- call event handlers on thread termination
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_ONTHREADEXITMANAGER_HPP
 #define PONA_ONTHREADEXITMANAGER_HPP
 

@@ -1,23 +1,10 @@
-/****************************************************************************
-**
-** This file is part of libPONA - The Portable Network Abstraction Library.
-**
-** Copyright (C) 2007-2009  Frank Mertens
-**
-** This file is part of a free software: you can redistribute it and/or
-** modify it under the terms of the GNU General Public License as published
-** by the Free Software Foundation, either version 3 of the License,
-** or (at your option) any later version.
-**
-** The library is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this libary.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+/*
+ * SocketAddress.cpp -- address of a socket, name resolution
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -27,6 +14,7 @@
 #include <string.h> // memset, memcpy
 #include <errno.h>
 
+#include "stdio" // DEBUG
 #include "Format.hpp"
 #include "SocketAddress.hpp"
 
@@ -56,7 +44,7 @@ SocketAddress::SocketAddress(int family, String address, int port)
 		PONA_THROW(NetworkingException, "Unsupported address family");
 
 	if ((address != String()) && ((address != "*")))
-		if (inet_pton(family, address.utf8(), addr) == -1)
+		if (inet_pton(family, address.utf8(), addr) != 1)
 			PONA_THROW(NetworkingException, "Broken address string");
 }
 
@@ -158,7 +146,7 @@ void SocketAddress::setPort(int port)
 		PONA_THROW(NetworkingException, "Unsupported address family");
 }
 
-Ref<InetAddressList, Owner> SocketAddress::query(String hostName, String serviceName, int family, int socketType, String* canonicalName)
+Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String serviceName, int family, int socketType, String* canonicalName)
 {
 	addrinfo hint;
 	addrinfo* head = 0;
@@ -180,7 +168,7 @@ Ref<InetAddressList, Owner> SocketAddress::query(String hostName, String service
 		if (ret != EAI_NONAME)
 			PONA_THROW(NetworkingException, gai_strerror(ret));
 	
-	Ref<InetAddressList, Owner> list = new InetAddressList;
+	Ref<SocketAddressList, Owner> list = new SocketAddressList;
 	
 	if (canonicalName) {
 		if (head) {
@@ -199,6 +187,9 @@ Ref<InetAddressList, Owner> SocketAddress::query(String hostName, String service
 
 	if (head)
 		freeaddrinfo(head);
+	
+	if (list->length() == 0)
+		PONA_THROW(NetworkingException, "Failed to resolve host name");
 	
 	return list;
 }

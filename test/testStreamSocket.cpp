@@ -9,7 +9,7 @@ namespace pona
 class EchoWorker: public Thread
 {
 public:
-	EchoWorker(Ref<TcpSocket> server, Ref<SocketAddress> address, Ref<SystemStream> stream)
+	EchoWorker(Ref<StreamSocket> server, Ref<SocketAddress> address, Ref<SystemStream> stream)
 		: server_(server),
 		  address_(address),
 		  stream_(stream),
@@ -35,14 +35,12 @@ private:
 					print("%%: Connection closed by remote host\n", name_);
 					break;
 				}
-				else
-				if (line == String("halt")) {
+				else if (line == String("halt")) {
 					print("%%: Remote host requested to halt the server\n", name_);
 					server_->close();
 					break;
 				}
-				else
-				if (line == String("close")) {
+				else if (line == String("close")) {
 					print("%%: Remote host requested to close this session\n", name_);
 					break;
 				}
@@ -58,17 +56,17 @@ private:
 		return 0;
 	}
 	
-	Ref<TcpSocket, Owner> server_;
+	Ref<StreamSocket, Owner> server_;
 	Ref<SocketAddress, Owner> address_;
 	Ref<SystemStream, Owner> stream_;
 	String name_;
 };
 
-class EchoServer: public TcpSocket
+class EchoServer: public StreamSocket
 {
 public:
 	EchoServer()
-		: TcpSocket(new SocketAddress(AF_INET, "*", 8001)),
+		: StreamSocket(new SocketAddress(AF_INET, "*", 8001)),
 		  pool_(new Pool),
 		  name_(Format("EchoServer(%%:%%)") << localAddress()->addressString() << localAddress()->port())
 	{}
@@ -112,16 +110,18 @@ private:
 
 int main(int argc, char** argv)
 {
+	bool usage = false;
+	
 	if (argc == 2)
 	{
 		if (String(argv[1]) == "--server")
 		{
 			Ref<EchoServer, Owner> server = new EchoServer;
-			return server->run();
+			server->listen();
 		}
 		else if (String(argv[1]) == "--client")
 		{
-			Ref<SystemStream, Owner> socket = TcpSocket::connect(new SocketAddress(AF_INET, "127.0.0.1", 8001));
+			Ref<SystemStream, Owner> socket = StreamSocket::connect(new SocketAddress(AF_INET, "127.0.0.1", 8001));
 			Ref<LineSource, Owner> socketSource = new LineSource(socket);
 			Ref<LineSink, Owner> socketSink = new LineSink(socket);
 			while (true)
@@ -133,18 +133,23 @@ int main(int argc, char** argv)
 					break;
 				print("%%\n", socketSource->readLine());
 			}
-			return 0;
 		}
+		else
+			usage = true;
+	}
+	else
+		usage = true;
+	
+	if (usage) {
+		print("Usage: %% [OPTION]\n", fileName(argv[0]));
+		print("\n");
+		print("Options:\n");
+		print("  --server ... TCP echo server\n");
+		print("  --client ... TCP echo client\n");
+		print("\n");
 	}
 	
-	print("Usage: %% [OPTION]\n", fileName(argv[0]));
-	print("\n");
-	print("Options:\n");
-	print("  --server ... TCP echo server\n");
-	print("  --client ... TCP echo client\n");
-	print("\n");
-	
-	return 1;
+	return usage;
 }
 
 } // namespace pona
