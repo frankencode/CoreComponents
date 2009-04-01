@@ -1,0 +1,13 @@
+Installation Instructions
+=========================
+
+libPONA is meant to build under any POSIX compliant operating system.
+You need the lastest version of cmake (>2.6.3).
+
+$tar xzvf libPONA-x.y.z.tar.gz
+$mkdir libPONA-x.y.z-debug
+$cd libPONA-x.y.z-debug
+$ccmake ../libPONA-x.y.z
+... configure interactively, then generate makefiles ...
+$make
+$sudo make install
