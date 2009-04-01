@@ -14,9 +14,11 @@ namespace pona
 
 User::User(uid_t id)
 {
-	int bufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
-	if (bufSize == -1)
-		PONA_SYSTEM_EXCEPTION;
+	int bufSize = 1024;
+	#ifdef _SC_GETPW_R_SIZE_MAX
+	int h = sysconf(_SC_GETPW_R_SIZE_MAX);
+	if (h != -1) bufSize = h;
+	#endif
 	CString buf(bufSize);
 	struct passwd space;
 	struct passwd* entry = 0;

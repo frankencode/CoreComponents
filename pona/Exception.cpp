@@ -26,7 +26,7 @@ char* systemError()
 	const int bufSize = 1024;
 	char* buf = (char*)::malloc(bufSize);
 	::memcpy(buf, unknown, strlen(unknown) + 1);
-	int ret = ::strerror_r(errno, buf, bufSize);
+	/*int ret = */::strerror_r(errno, buf, bufSize);
 	return buf;
 #endif
 }
