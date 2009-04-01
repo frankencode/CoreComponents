@@ -1,0 +1,30 @@
+Welcome to libPONA!
+===================
+
+libPONA is a system programming library, which provides an object-oriented
+description of the POSIX API. It is written from scratch to support the
+development of highly concurrent applications thriving in a networked world.
+Implemented in C++, it breaks the ideological foundations of the C++ language
+by autocasts and variant types.
+
+libPONA targets to be fully self-contained, with no dependencies to other
+libraries, whatsoever. All object-oriented abstractions provided are meant
+to be as transparent as possible and to resemble the logic of the underlying API.
+
+libPONA is for lazy people! If you like to track all memory allocations by hand,
+you won't need this library. Provided by the Ref class all pointer to objects
+are managed automatically. This resembles the basic concept of automatic garbage
+collection of agile programming languages like Python or Ruby.
+
+In libPONA automatic reference counting has much less overhead than in other programming
+environments. Setting the default reference policy (in pona/defaults.hpp) to Pointer
+will replace standard references by raw pointers providing maximum performance.
+Yet, explicitly declared restrictions by specifying Owner or SetNull policies
+are still enforced.
+
+Homepage:
+http://trac.cyblogic.com/libPONA
+
+Contacts:
+frank@cyblogic.de, Frank Mertens (project maintainer)
+yanyu@cyblogic.com, Yanyu Wang (for inquiries in Mandarin;-)
