@@ -31,8 +31,8 @@ inline B union_cast(A a)
 }
 
 const double nan = union_cast<double>(uint64_t(0xFFF8) << 48);
-const double zero = 0.;
-const double inf = 1. / zero;
+const double inf = union_cast<double>(uint64_t(0x7FF) << 52);
+
 const unsigned unsignedMax = unsigned(-1);
 const int intMax = unsignedMax >> 1;
 

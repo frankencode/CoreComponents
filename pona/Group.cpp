@@ -14,9 +14,11 @@ namespace pona
 
 Group::Group(gid_t id)
 {
-	int bufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
-	if (bufSize == -1)
-		PONA_SYSTEM_EXCEPTION;
+	int bufSize = 1024;
+	#ifdef _SC_GETGR_R_SIZE_MAX
+	int h = sysconf(_SC_GETGR_R_SIZE_MAX);
+	if (h != -1) bufSize = h;
+	#endif
 	CString buf(bufSize);
 	struct group space;
 	struct group* entry = 0;
