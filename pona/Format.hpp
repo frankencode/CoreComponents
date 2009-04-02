@@ -40,9 +40,9 @@ public:
 	inline Format& print(uint32_t x) { printInt(x); return *this; }
 	inline Format& print(uint64_t x) { printInt(x); return *this; }
 	
-	inline Format& print(int16_t x) { printInt(uint64_t(x), sgn(x)); return *this; }
-	inline Format& print(int32_t x) { printInt(uint64_t(x), sgn(x)); return *this; }
-	inline Format& print(int64_t x) { printInt(uint64_t(x), sgn(x)); return *this; }
+	inline Format& print(int16_t x) { int s = sgn(x); printInt(uint64_t(s*x), s); return *this; }
+	inline Format& print(int32_t x) { int s = sgn(x); printInt(uint64_t(s*x), s); return *this; }
+	inline Format& print(int64_t x) { int s = sgn(x); printInt(uint64_t(s*x), s); return *this; }
 	
 	inline Format& print(float32_t x) { printFloat(x); return *this; }
 	inline Format& print(float64_t x) { printFloat(x); return *this; }
