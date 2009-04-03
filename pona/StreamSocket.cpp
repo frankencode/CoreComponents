@@ -54,7 +54,7 @@ void StreamSocket::listen()
 		int asd = ::accept(lsd_, remoteAddress->socketAddress(), &len);
 		if (asd < 0)
 			PONA_SYSTEM_EXCEPTION;
-			
+		
 		serve(remoteAddress, new SystemStream(asd));
 	}
 	

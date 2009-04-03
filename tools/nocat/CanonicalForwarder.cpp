@@ -1,3 +1,4 @@
+#include <pona/stdio>
 #include "CanonicalForwarder.hpp"
 
 namespace nocat
@@ -5,8 +6,11 @@ namespace nocat
 
 CanonicalForwarder::CanonicalForwarder(Ref<Options> options, Ref<Stream> source)
 	: options_(options),
-	  source_(new LineSource(source))
+	  source_(new LineSource(source)),
+	  finished_(false)
 {}
+
+bool CanonicalForwarder::finished() const { return finished_; }
 
 int CanonicalForwarder::run()
 {
@@ -23,6 +27,9 @@ int CanonicalForwarder::run()
 		print("(%%) %%\n", options_->toolName(), ex.what(), error());
 		ret = 1;
 	}
+	print("CanonicalForwarder::run(): finished.\n");
+	finished_ = true;
+	// if (rawInput()->interactive()) { rawInput()->close(); print("Closed raw input.\n"); }
 	return ret;
 }
 

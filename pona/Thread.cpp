@@ -15,12 +15,6 @@
 namespace pona
 {
 
-Thread::Thread()
-{}
-
-Thread::~Thread()
-{}
-
 void Thread::start(int exitType)
 {
 	pthread_attr_t attr;
@@ -38,11 +32,11 @@ void Thread::start(int exitType)
 
 int Thread::wait()
 {
-	void* status;
-	int ret = pthread_join(tid_, &status);
+	int* status;
+	int ret = pthread_join(tid_, (void**)&status);
 	if (ret != 0)
 		PONA_THROW(SystemException, "pthread_join() failed");
-	return (status != 0);
+	return (status) ? *status : 0;
 }
 
 void Thread::sleep(TimeStamp dt)
@@ -54,15 +48,17 @@ void Thread::sleep(TimeStamp dt)
 	mutex.release();
 }
 
+pthread_t Thread::tid() const { return tid_; }
+
 void* Thread::runWrapper(void* p)
 {
 	#ifndef NDEBUG
 	pthread_setcancelstate(PTHREAD_CANCEL_ASYNCHRONOUS, 0);
 	#endif
 	Thread* thread = (Thread*)p;
-	int ret = thread->run();
+	thread->exitCode_ = thread->run();
 	thread->decRefCount(); // allow self destruction before termination
-	return (void*)ret;
+	return (void*)&thread->exitCode_;
 }
 
 } // namespace pona

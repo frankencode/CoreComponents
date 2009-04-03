@@ -11,9 +11,10 @@
 namespace pona
 {
 
+Mutex OnExitManager::mutex_;
+
 Ref<OnExitManager> OnExitManager::instance()
 {
-	static Mutex mutex_;
 	static Ref<OnExitManager, Owner> instance_ = 0;
 	if (!instance_) {
 		mutex_.acquire();

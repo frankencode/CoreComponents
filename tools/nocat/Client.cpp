@@ -19,7 +19,7 @@ int Client::connect()
 		);
 		if (options_->files_->length() == 0)
 		{
-			Ref<Stream, Owner> stream = StreamSocket::connect(options_->address());
+			Ref<SystemStream, Owner> stream = StreamSocket::connect(options_->address());
 			
 			if (rawInput()->interactive())
 				Shell(options_).session(stream);

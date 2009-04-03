@@ -29,7 +29,7 @@ private:
 	
 	pid_t pid_;
 	Ref<EventHandler> head_;
-	Mutex mutex_;
+	static Mutex mutex_;
 };
 
 inline Ref<OnExitManager> onExit() { return OnExitManager::instance(); }

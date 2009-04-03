@@ -15,6 +15,7 @@ public:
 	Server(Ref<Options> options);
 	
 	virtual void init();
+	virtual void idle();
 	virtual void serve(Ref<SocketAddress> address, Ref<SystemStream> stream);
 	
 private:

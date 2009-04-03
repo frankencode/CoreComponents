@@ -1,5 +1,6 @@
 INCLUDE_DIRECTORIES(..)
 
+ADD_EXECUTABLE(testSignals testSignals.cpp)
 ADD_EXECUTABLE(testMemoryMapping testMemoryMapping.cpp)
 ADD_EXECUTABLE(testFormat testFormat.cpp)
 ADD_EXECUTABLE(testToolOptions testToolOptions.cpp)

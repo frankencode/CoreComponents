@@ -1,5 +1,5 @@
 #include <pona/stdio>
-#include <pona/threads>
+#include <pona/thread>
 #include <pona/time>
 
 namespace pona
