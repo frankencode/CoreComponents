@@ -21,6 +21,11 @@ void Server::init()
 	);
 }
 
+void Server::idle()
+{
+	print("(%%) Idling\n", options_->toolName());
+}
+
 void Server::serve(Ref<SocketAddress> address, Ref<SystemStream> stream)
 {
 	print(
@@ -36,11 +41,13 @@ void Server::serve(Ref<SocketAddress> address, Ref<SystemStream> stream)
 		else
 			Shell(options_).transfer(stream);
 	}
-		
+	
 	repeat_ -= (repeat_ > 0);
 	
-	if ((repeat_ == 0) && (!loop_))
+	if ((repeat_ == 0) && (!loop_)) {
+		print("(%%) Closing listening socket\n", options_->toolName(), error());
 		close();
+	}
 }
 
 } // namespace nocat

@@ -60,14 +60,13 @@ SET(PONA_HEADER
 	Crc32.hpp
 	HuffmanCodec.hpp
 	
-	threads
+	thread
 	ThreadLocalOwner.hpp
 	Thread.hpp
 	Mutex.hpp
 	Condition.hpp
 	Semaphore.hpp
 	Channel.hpp
-	OnThreadExitManager.hpp
 	
 	context
 	context.hpp
@@ -78,7 +77,11 @@ SET(PONA_HEADER
 	Process.hpp
 	FileLock.hpp
 	MemoryMapping.hpp
+	
+	event
 	OnExitManager.hpp
+	OnThreadExitManager.hpp
+	OnSignalManager.hpp
 	
 	network
 	SocketAddress.hpp
@@ -127,10 +130,9 @@ SET(PONA_SOURCE
 	HuffmanCodec.cpp
 	Crc32.cpp
 	
-	# threads
+	# thread
 	Semaphore.cpp
 	Thread.cpp
-	OnThreadExitManager.cpp
 	
 	# context
 	context.cpp
@@ -140,7 +142,11 @@ SET(PONA_SOURCE
 	Process.cpp
 	FileLock.cpp
 	MemoryMapping.cpp
+	
+	# event
 	OnExitManager.cpp
+	OnThreadExitManager.cpp
+	OnSignalManager.cpp
 	
 	# network
 	SocketAddress.cpp

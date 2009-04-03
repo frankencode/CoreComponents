@@ -18,7 +18,7 @@ void Shell::session(Ref<Stream> stream)
 	bool eoi = false;
 	while (true) {
 		String line = input()->readLine(&eoi);
-		if (eoi) break;
+		if (eoi || forwarder->finished()) break;
 		sink->writeLine(line);
 	}
 	

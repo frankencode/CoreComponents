@@ -11,6 +11,7 @@
 
 #include <pthread.h>
 #include "atoms"
+#include "TimeStamp.hpp"
 
 namespace pona
 {
@@ -19,20 +20,20 @@ class Thread: public Instance
 {
 public:
 	enum ExitType { Joinable, Detached };
-
-	Thread();
-	~Thread();
-
+	
 	void start(int exitType = Joinable);
 	int wait();
-
+	
 	static void sleep(TimeStamp dt);
-
+	
+	pthread_t tid() const;
+	
 protected:
 	virtual int run() = 0;
-
+	
 private:
 	pthread_t tid_;
+	int exitCode_;
 	static void* runWrapper(void* p);
 };
 

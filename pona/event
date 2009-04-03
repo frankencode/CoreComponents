@@ -1,0 +1,15 @@
+/*
+ * event -- wildcard include header
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+#ifndef PONA_EVENT
+#define PONA_EVENT
+
+#include "OnExitManager.hpp"
+#include "OnThreadExitManager.hpp"
+#include "OnSignalManager.hpp"
+
+#endif // PONA_EVENT

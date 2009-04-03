@@ -2,7 +2,7 @@
 #define NOCAT_CANONICALFORWARDER_HPP
 
 #include <pona/stdio>
-#include <pona/threads>
+#include <pona/thread>
 #include "Options.hpp"
 
 namespace nocat
@@ -14,9 +14,12 @@ public:
 	CanonicalForwarder(Ref<Options> options, Ref<Stream> source);
 	virtual int run();
 	
+	bool finished() const;
+	
 private:
 	Ref<Options, Owner> options_;
 	Ref<LineSource, Owner> source_;
+	bool finished_;
 };
 
 } // namespace nocat

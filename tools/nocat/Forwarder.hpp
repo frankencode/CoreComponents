@@ -2,7 +2,7 @@
 #define NOCAT_FORWARDER_HPP
 
 #include <pona/stdio>
-#include <pona/threads>
+#include <pona/thread>
 #include "Options.hpp"
 
 namespace nocat

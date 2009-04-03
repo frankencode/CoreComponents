@@ -1,3 +1,10 @@
+/*
+ * context -- wildcard include header
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_CONTEXT
 #define PONA_CONTEXT
 
@@ -9,6 +16,5 @@
 #include "Process.hpp"
 #include "FileLock.hpp"
 #include "MemoryMapping.hpp"
-#include "OnExitManager.hpp"
 
 #endif // PONA_CONTEXT
