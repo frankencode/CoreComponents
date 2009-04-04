@@ -23,7 +23,8 @@ private:
 	OnSignalManager();
 	~OnSignalManager();
 	
-	void relay(int signal);
+	void startListener();
+	bool relay(int signal);
 	
 	class SignalMaskInitializer {
 	public:
@@ -37,6 +38,7 @@ private:
 		bool stopListener_;
 	};
 	
+	friend class SignalMaskInitializer;
 	friend class SignalListener;
 	
 	static SignalMaskInitializer signalMaskInitializer_;

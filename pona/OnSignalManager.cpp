@@ -22,9 +22,7 @@ Ref<OnSignalManager> OnSignalManager::instance()
 OnSignalManager::OnSignalManager()
 	: signalListener_(new SignalListener),
 	  handlerBySignal_(new HandlerBySignal)
-{
-	signalListener_->start();
-}
+{}
 
 OnSignalManager::~OnSignalManager()
 {
@@ -40,17 +38,25 @@ void OnSignalManager::push(int signal, Ref<EventHandler> handler)
 	mutex_.release();
 }
 
-void OnSignalManager::relay(int signal)
+void OnSignalManager::startListener()
 {
+	signalListener_->start();
+}
+
+bool OnSignalManager::relay(int signal)
+{
+	bool relayed = false;
 	mutex_.acquire();
 	{
 		Ref<EventHandler> handler = handlerBySignal_->get(signal);
 		while (handler) {
 			handler->run();
 			handler = handler->sibling_;
+			relayed = true;
 		}
 	}
 	mutex_.release();
+	return relayed;
 }
 
 OnSignalManager::SignalMaskInitializer::SignalMaskInitializer()
@@ -59,6 +65,7 @@ OnSignalManager::SignalMaskInitializer::SignalMaskInitializer()
 	sigfillset(&mask);
 	if (pthread_sigmask(SIG_SETMASK, &mask, 0) != 0)
 		PONA_THROW(SystemException, "pthread_sigmask() failed");
+	onSignal()->startListener();
 }
 
 OnSignalManager::SignalListener::SignalListener()
@@ -76,14 +83,14 @@ int OnSignalManager::SignalListener::run()
 		
 		if (stopListener_) break;
 		
-		onSignal()->relay(signal);
+		bool relayed = onSignal()->relay(signal);
 		
-		if (signal == SIGTSTP) {
+		if ((!relayed) || (signal == SIGTSTP)) {
 			sigset_t set, old;
-			sigaddset(&set, SIGTSTP);
+			sigaddset(&set, signal);
 			if (pthread_sigmask(SIG_UNBLOCK, &set, &old) != 0)
 				PONA_THROW(SystemException, "pthread_sigmask() failed");
-			kill(getpid(), SIGTSTP);
+			kill(getpid(), signal);
 			if (pthread_sigmask(SIG_SETMASK, &old, 0) != 0)
 				PONA_THROW(SystemException, "pthread_sigmask() failed");
 		}

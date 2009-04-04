@@ -9,6 +9,7 @@
 #define PONA_SYSTEMSTREAM_HPP
 
 #include "Stream.hpp"
+#include "TimeStamp.hpp"
 
 namespace pona
 {
@@ -18,19 +19,21 @@ class SystemStream: public Stream
 public:
 	SystemStream(int fd);
 	~SystemStream();
-	inline int fd() const { return fd_; }
+	
+	int fd() const;
+	bool interactive() const;
 	
 	bool isOpen() const;
 	void close();
-
+	
+	bool readyRead(TimeStamp timeout);
+	
 	int readAvail(void* buf, int bufCapa);
 	void write(const void* buf, int bufFill);
-
-	bool interactive() const { return isatty_; }
 	
 protected:
-	bool isatty_;
 	int fd_;
+	mutable bool isattyCached_, isatty_;
 };
 
 } // namespace pona
