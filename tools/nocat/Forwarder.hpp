@@ -20,7 +20,7 @@ public:
 private:
 	Ref<Options, Owner> options_;
 	Ref<Stream, Owner> source_, sink_;
-	Vector<uint8_t> buf_;
+	Array<uint8_t> buf_;
 	uint64_t bytesTransferred_;
 };
 

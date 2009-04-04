@@ -4,7 +4,7 @@
 #include "Stack.hpp"
 #include "Queue.hpp"
 #include "Heap.hpp"
-#include "Vector.hpp"
+#include "Array.hpp"
 #include "List.hpp"
 #include "Map.hpp"
 #include "Tree.hpp"

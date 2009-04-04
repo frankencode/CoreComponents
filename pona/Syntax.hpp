@@ -9,7 +9,7 @@
 #define PONA_SYNTAX_HPP
 
 #include "atoms"
-#include "Vector.hpp"
+#include "Array.hpp"
 #include "PrefixTree.hpp"
 #include "Token.hpp"
 #include "TokenFactory.hpp"
@@ -141,7 +141,7 @@ protected:
 	
 	private:
 		Char a_, b_;
-		Vector<Char> s_;
+		Array<Char> s_;
 		int invert_;
 	};
 	
@@ -182,7 +182,7 @@ protected:
 		}
 	
 	private:
-		Vector<Char> s_;
+		Array<Char> s_;
 	};
 	
 	class KeywordNode: public Node
@@ -741,7 +741,7 @@ private:
 					++i;
 				}
 				
-				Vector<Char>* string = state->string(stringId_);
+				Array<Char>* string = state->string(stringId_);
 				string->reset(i - i0);
 				for (int k = i0; k < i; ++k)
 					string->set(k - i0, media->get(k));
@@ -767,7 +767,7 @@ private:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			Vector<Char>* string = state->string(stringId_);
+			Array<Char>* string = state->string(stringId_);
 			int k = 0, m = string->length();
 			int n = media->length();
 			while ((i < n) && (k < m)) {
@@ -1162,7 +1162,7 @@ public:
 				  defaultValue_(defaultValue)
 			{}
 			Ref<StateString, Owner> next_;
-			Vector<Char> defaultValue_;
+			Array<Char> defaultValue_;
 		};
 		
 		int numRules_;
