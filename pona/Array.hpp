@@ -1,5 +1,5 @@
 /*
- * Vector.hpp -- opaque memory vectors (aka arrays)
+ * Array.hpp -- opaque memory vector
  *
  * Copyright (c) 2007-2009, Frank Mertens
  *
@@ -15,18 +15,18 @@ namespace pona
 {
 
 template<class T>
-class Vector: public RandomAccessMedia<T>
+class Array: public RandomAccessMedia<T>
 {
 public:
 	typedef T Element;
 	
-	Vector()
+	Array()
 		: size_(0),
 		  buf_(0),
 		  owner_(false)
 	{}
 	
-	Vector(int size)
+	Array(int size)
 		: size_(size),
 		  buf_((size > 0) ? new T[size] : 0),
 		  owner_(true)
@@ -36,7 +36,7 @@ public:
 	}
 	
 	template<class T2>
-	Vector(T2* buf)
+	Array(T2* buf)
 		: size_(0),
 		  buf_(0),
 		  owner_(false)
@@ -52,7 +52,7 @@ public:
 	}
 	
 	template<class T2>
-	Vector(T2* buf, int size)
+	Array(T2* buf, int size)
 		: size_(size),
 		  buf_((size > 0) ? new T[size] : 0),
 		  owner_(size > 0)
@@ -61,7 +61,7 @@ public:
 			buf_[i] = buf[i];
 	}
 	
-	~Vector()
+	~Array()
 	{
 		if (owner_) {
 			if (buf_) {
@@ -71,14 +71,14 @@ public:
 		}
 	}
 	
-	Vector(const Vector& b)
+	Array(const Array& b)
 	{
 		*this = b;
 	}
 	
 	void liberate() { owner_ = false; }
 	
-	inline const Vector& operator=(const Vector& b)
+	inline const Array& operator=(const Array& b)
 	{
 		if (size_ != b.size_) {
 			if (owner_)
@@ -145,7 +145,7 @@ public:
 		return buf_ + i;
 	}
 	
-	inline bool operator<(const Vector& b) const
+	inline bool operator<(const Array& b) const
 	{
 		int n = (size_ < b.size_) ? size_ : b.size_;
 		int i = 0;
@@ -159,7 +159,7 @@ public:
 		return size_ < b.size_;
 	}
 	
-	inline bool operator==(const Vector& b) const
+	inline bool operator==(const Array& b) const
 	{
 		bool equal = (size_ == b.size_);
 		for (int i = 0; equal && (i < size_); ++i)
@@ -167,10 +167,10 @@ public:
 		return equal;
 	}
 	
-	inline bool operator>(const Vector& b) const { return b < *this; }
-	inline bool operator!=(const Vector& b) const { return !(*this == b); }
-	inline bool operator<=(const Vector& b) const { return (*this < b) || (*this == b); }
-	inline bool operator>=(const Vector& b) const { return (b < *this) || (*this == b); }
+	inline bool operator>(const Array& b) const { return b < *this; }
+	inline bool operator!=(const Array& b) const { return !(*this == b); }
+	inline bool operator<=(const Array& b) const { return (*this < b) || (*this == b); }
+	inline bool operator>=(const Array& b) const { return (b < *this) || (*this == b); }
 	
 	inline operator bool() const { return buf_; }
 	inline operator T*() const { return buf_; }
@@ -184,4 +184,3 @@ private:
 } // namespace pona
 
 #endif // PONA_VECTOR_HPP
-

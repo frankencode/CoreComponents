@@ -9,7 +9,7 @@
 #define PONA_SYNTAXSTATE_HPP
 
 #include "atoms"
-#include "Vector.hpp"
+#include "Array.hpp"
 
 namespace pona
 {
@@ -36,7 +36,7 @@ public:
 	
 	inline bool* flag(int id) { return flags_.at(id); }
 	inline Char* character(int id) { return chars_.at(id); }
-	inline Vector<Char>* string(int id) { return strings_.at(id); }
+	inline Array<Char>* string(int id) { return strings_.at(id); }
 	
 	inline Ref<SyntaxState> child() const { return child_; }
 	inline void setChild(Ref<SyntaxState> state) { child_ = state; }
@@ -79,9 +79,9 @@ public:
 	
 private:
 	int language_;
-	Vector<bool> flags_;
-	Vector<Char> chars_;
-	Vector< Vector<Char> > strings_;
+	Array<bool> flags_;
+	Array<Char> chars_;
+	Array< Array<Char> > strings_;
 	Ref<SyntaxState, Owner> child_;
 };
 

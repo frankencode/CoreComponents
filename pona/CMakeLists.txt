@@ -16,7 +16,7 @@ SET(PONA_HEADER
 	Stack.hpp
 	Queue.hpp
 	Heap.hpp
-	Vector.hpp
+	Array.hpp
 	ListObserver.hpp
 	List.hpp
 	Tree.hpp
