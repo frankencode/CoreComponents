@@ -16,6 +16,8 @@ namespace pona
 ToolOptions::ToolOptions()
 	: optionList_(new OptionList)
 {
+	STATE_CHAR("quote", '\"');
+	
 	DEFINE("whitespace", REPEAT(1, RANGE(" \t")));
 	
 	longNameRule_ =
@@ -50,10 +52,26 @@ ToolOptions::ToolOptions()
 		DEFINE("value",
 			GLUE(
 				NOT(STRING("--")),
-				REPEAT(1,
+				CHOICE(
 					GLUE(
-						NOT(INLINE("whitespace")),
-						ANY()
+						AHEAD(RANGE("'\"")),
+						GETCHAR("quote"),
+						REPEAT(
+							GLUE(
+								CHOICE(
+									CHAR('\\'),
+									NOT(VARCHAR("quote"))
+								),
+								ANY()
+							)
+						),
+						VARCHAR("quote")
+					),
+					REPEAT(1,
+						GLUE(
+							NOT(INLINE("whitespace")),
+							ANY()
+						)
 					)
 				)
 			)
@@ -230,6 +248,13 @@ void ToolOptions::readOption(String line, Ref<Token> token)
 		}
 		else {
 			String s = line->copy(token->index(), token->length());
+			if (s->length() > 0) {
+				if ( ((s->get(0) == '"') || (s->get(0) == '\'')) &&
+					 (s->get(s->length() - 1) == s->get(0)) )
+				{
+					s = s->copy(1, s->length() - 2);
+				}
+			}
 			
 			if (value->type() == Variant::StringType) {
 				*value = s;
@@ -308,9 +333,7 @@ String ToolOptions::help(String synopsis, String summary, String details)
 			line << text << "\n";
 		}
 		
-		// options = lines.join(); // would be nice
-		for (int i = 0; i < lines->length(); ++i)
-			options << lines->get(i);
+		options = lines * String("");
 	}
 	
 	String text = Format("Usage: %%\n") << synopsis;
@@ -324,9 +347,7 @@ String ToolOptions::help(String synopsis, String summary, String details)
 	return text;
 }
 
-String ToolOptions::toolName() const
-{
-	return toolName_;
-}
+String ToolOptions::toolName() const { return toolName_; }
+String ToolOptions::toolDir() const { return toolDir_; }
 
 } // namespace pona

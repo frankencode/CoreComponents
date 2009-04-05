@@ -33,6 +33,58 @@ String cwd()
 	return path;
 }
 
+bool isRelative(String path) { return !isAbsolute(path); }
+bool isAbsolute(String path) {
+	return (path->length() > 0) ? (path->get(0) == '/') : false;
+}
+
+String makeAbsolute(String path)
+{
+	Ref<StringList, Owner> absoluteParts = new StringList;
+	Ref<StringList, Owner> parts = path / '/';
+	
+	for (int i = 0, n = parts->length(); i < n; ++i)
+	{
+		String c = parts->get(i);
+		if (c == ".")
+		{}
+		else if (c == "..") {
+			if (absoluteParts->length() > 0)
+				absoluteParts->pop(-1);
+		}
+		else {
+			absoluteParts->append(c);
+		}
+	}
+	
+	String absolutePath;
+	if (!isAbsolute(path))
+		absolutePath = cwd();
+	absolutePath << "/" << absoluteParts * '/';
+	
+	return absolutePath;
+}
+
+String fileName(String path)
+{
+	String name;
+	Ref<StringList, Owner> parts = path / '/';
+	if (parts->length() > 0)
+		name = parts->get(-1);
+	return name;
+}
+
+String stripComponent(String path)
+{
+	Ref<StringList, Owner> parts = path / '/';
+	if (parts->length() > 0)
+		parts->pop(-1);
+	String resultPath = parts * '/';
+	if ((resultPath == "") && (isAbsolute(path)))
+		resultPath = "/";
+	return resultPath;
+}
+
 void setAccessMask(int mask) { ::umask(mask); }
 
 uid_t realUserId() { return ::getuid(); }

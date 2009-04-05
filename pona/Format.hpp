@@ -25,7 +25,7 @@ public:
 	typedef String::Media Media;
 	
 	Format();
-	Format(Char ch);
+	Format(const Char& ch);
 	Format(const char* utf8);
 	Format(Ref<Media, Owner> media);
 	

@@ -19,6 +19,12 @@ namespace pona
 void cd(String path);
 String cwd();
 
+bool isRelative(String path);
+bool isAbsolute(String path);
+String makeAbsolute(String path);
+String fileName(String path);
+String stripComponent(String path);
+
 void setAccessMask(int mask);
 
 uid_t realUserId();

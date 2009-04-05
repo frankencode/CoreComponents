@@ -22,7 +22,7 @@ public:
 	typedef List<Char> Media;
 	
 	String();
-	String(Char ch);
+	String(const Char& ch);
 	String(const char* utf8, int numBytes = -1, int numChars = -1);
 	String(Ref<Media, Owner> media);
 	
@@ -37,6 +37,7 @@ public:
 	
 	inline String operator+(String b) const { String s; s.get()->append(get()); s->append(b.get()); return s; }
 	inline String& operator<<(String b) { get()->append(b.get()); return *this; }
+	inline String& operator<<(const char* b) { get()->append(String(b)); return *this; }
 	inline String& operator<<(Char ch) { get()->append(ch); return *this; }
 	
 	char* strdup() const;
@@ -61,6 +62,11 @@ inline String operator*(int n, Char ch) { return ch * n; }
 
 typedef List<String> StringList;
 Ref<StringList, Owner> operator/(String text, String sep);
+String operator*(Ref<StringList> parts, String sep);
+inline Ref<StringList, Owner> operator/(String text, const char* sep) { return text / String(sep); }
+inline Ref<StringList, Owner> operator/(String text, Char sep) { return text / String(sep); }
+inline String operator*(Ref<StringList> parts, const char* sep) { return parts * String(sep); }
+inline String operator*(Ref<StringList> parts, Char sep) { return parts * String(sep); }
 
 int toInt(String s, bool* ok = 0);
 double toFloat(String s, bool* ok = 0);

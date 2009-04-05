@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 	//try {
 		ret = pona::main(argc, argv);
 	/*}
-	catch (std::exception& ex) {
+	catch (AnyException& ex) {
 		pona::print("%%\n", ex.what());
 	}*/
 	return ret;

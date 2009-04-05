@@ -45,10 +45,8 @@ public:
 	inline int miliSeconds() const { return sec_ * 1000 + nsec_ / 1000000; }
 	inline double fineSeconds() const { return double(sec_) + double(nsec_)/1000000000; }
 
-	inline bool operator==(int sec)
-	{
-		return (sec_ == sec) && (nsec_ == 0);
-	}
+	inline bool operator==(int sec) { return (sec_ == sec) && (nsec_ == 0); }
+	inline bool operator!=(int sec) { return !(*this == sec); }
 	
 	inline const TimeStamp& operator+=(const TimeStamp& b)
 	{

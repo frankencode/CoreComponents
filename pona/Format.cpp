@@ -20,7 +20,7 @@ Format::Format()
 	  n0_(0)
 {}
 
-Format::Format(Char ch)
+Format::Format(const Char& ch)
 	: String(ch),
 	  defaultPlaceHolder_(new PlaceHolder),
 	  digits_(MaxDigits),

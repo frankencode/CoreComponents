@@ -14,10 +14,10 @@
 #include <assert.h>
 #include <stdlib.h>
 
-namespace std { typedef exception Exception; }
-
 namespace pona
 {
+
+typedef std::exception AnyException;
 
 inline const char* fileName(const char* path)
 {
@@ -53,7 +53,7 @@ inline char* intToStr(int value)
 	return buf;
 }
 
-class Exception: public std::Exception
+class Exception: public AnyException
 {
 public:
 	Exception(const char* path, int line, const char* className, char* reason)
