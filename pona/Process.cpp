@@ -53,15 +53,15 @@ void Process::start()
 	else
 	{
 		if (ioPolicy_ & ForwardInput)
-			if (pipe(inputPipe) == -1)
+			if (::pipe(inputPipe) == -1)
 				PONA_SYSTEM_EXCEPTION;
 		
 		if (ioPolicy_ & ForwardOutput)
-			if (pipe(outputPipe) == -1)
+			if (::pipe(outputPipe) == -1)
 				PONA_SYSTEM_EXCEPTION;
 		
 		if (ioPolicy_ & ForwardError)
-			if (pipe(errorPipe) == -1)
+			if (::pipe(errorPipe) == -1)
 				PONA_SYSTEM_EXCEPTION;
 	}
 	

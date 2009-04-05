@@ -48,7 +48,7 @@ private:
 				sink.writeLine(line);
 			}
 		}
-		catch (std::exception& ex) {
+		catch (AnyException& ex) {
 			print("%%: %%\n", name_, ex.what());
 		}
 		
@@ -161,7 +161,7 @@ int main(int argc, char** argv)
 	try {
 		ret = pona::main(argc, argv);
 	}
-	catch (std::exception& ex) {
+	catch (pona::AnyException& ex) {
 		pona::print("%%\n", ex.what());
 	}
 

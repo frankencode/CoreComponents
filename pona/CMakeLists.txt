@@ -77,6 +77,7 @@ SET(PONA_HEADER
 	Process.hpp
 	FileLock.hpp
 	MemoryMapping.hpp
+	Pipe.hpp
 	
 	event
 	OnExitManager.hpp
@@ -142,6 +143,7 @@ SET(PONA_SOURCE
 	Process.cpp
 	FileLock.cpp
 	MemoryMapping.cpp
+	Pipe.cpp
 	
 	# event
 	OnExitManager.cpp

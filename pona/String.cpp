@@ -20,7 +20,7 @@ String::String()
 	: Ref<List<Char>, Owner>(new Media)
 {}
 
-String::String(Char ch)
+String::String(const Char& ch)
 	: Ref<List<Char>, Owner>(new Media)
 {
 	get()->append(ch);
@@ -101,18 +101,29 @@ String operator*(Char ch, int n)
 
 Ref<StringList, Owner> operator/(String text, String sep)
 {
-	Ref<StringList, Owner> sl = new StringList();
+	Ref<StringList, Owner> parts = new StringList();
 	
 	int i = 0, n = text->length(), m = sep->length();
 	while (i < n) {
 		int i1 = text->find(i, sep);
-		sl->append(text->range(i, i1 - i));
+		parts->append(text->range(i, i1 - i));
 		i = i1 + m;
 	}
 	if (i == n)
-		sl->append(String());
+		parts->append(String());
 	
-	return sl;
+	return parts;
+}
+
+String operator*(Ref<StringList> parts, String sep)
+{
+	String text;
+	for (int i = 0, n = parts->length(); i < n; ++i) {
+		text << parts->get(i);
+		if (i != n - 1)
+			text << sep;
+	}
+	return text;
 }
 
 int toInt(String s, bool* ok)
