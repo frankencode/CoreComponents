@@ -61,8 +61,8 @@ public:
 	inline operator bool() const { if (type_ != BoolType) PONA_THROW(VariantException, ""); return float_ != 0; }
 	inline operator int() const { if (type_ != IntType) PONA_THROW(VariantException, ""); return int(float_); }
 	inline operator double() const { if (type_ != FloatType) PONA_THROW(VariantException, ""); return float_; }
-	inline operator Ref<String::Media, Owner>() const { if (type_ != StringType) PONA_THROW(VariantException, ""); return ref_; }
-	// inline operator String() const { if (type_ != StringType) PONA_THROW(VariantException, ""); return Ref<String::Media, Owner>(ref_); }
+	// inline operator Ref<String::Media, Owner>() const { if (type_ != StringType) PONA_THROW(VariantException, ""); return ref_; }
+	inline operator String() const { if (type_ != StringType) PONA_THROW(VariantException, ""); return Ref<String::Media, Owner>(ref_); }
 	inline operator Ref<Instance>() const { if (type_ != RefType) PONA_THROW(VariantException, ""); return ref_; }
 	
 	bool operator==(const Variant& b) const

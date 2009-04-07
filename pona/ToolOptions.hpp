@@ -28,8 +28,9 @@ public:
 	Ref<StringList> read(int argc, char** argv);
 	
 	String help(String synopsis = "", String summary = "", String details = "");
-	String toolName() const;
-	String toolDir() const;
+	String execPath() const;
+	String execName() const;
+	String execDir() const;
 	
 private:
 	Ref<StringList> read(String line);
@@ -52,8 +53,9 @@ private:
 	
 	typedef List< Ref<Option, Owner> > OptionList;
 	Ref<OptionList, Owner> optionList_;
-	String toolName_;
-	String toolDir_;
+	String execPath_;
+	String execName_;
+	String execDir_;
 	
 	Ref<Option> optionByShortName(Char name) const;
 	Ref<Option> optionByLongName(String name) const;

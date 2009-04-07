@@ -85,6 +85,19 @@ String stripComponent(String path)
 	return resultPath;
 }
 
+String lookupPath(Ref<StringList> dirs, String fileName, int accessFlags)
+{
+	String path;
+	for (int i = 0; i < dirs->length(); ++i) {
+		String candidate = dirs->get(i) + "/" + fileName;
+		if (File(candidate).access(accessFlags)) {
+			path = candidate;
+			break;
+		}
+	}
+	return path;
+}
+
 void setAccessMask(int mask) { ::umask(mask); }
 
 uid_t realUserId() { return ::getuid(); }

@@ -1,19 +1,31 @@
 #include <unistd.h>
+#include <fcntl.h>
 #include "Pipe.hpp"
 
 namespace pona
 {
 
-Pipe::Pipe()
+Pipe::Pipe(int mode)
+	: SystemStream(-1),
+	  mode_(mode)
 {
-	int fd[2];
-	if (::pipe(fd) == -1)
+	if (::pipe(pipeFd_) == -1)
 		PONA_SYSTEM_EXCEPTION;
-	rawInput_ = new SystemStream(fd[0]);
-	rawOutput_ = new SystemStream(fd[1]);
+	::fcntl(pipeFd_[mode_], F_SETFD, FD_CLOEXEC);
 }
 
-Ref<SystemStream> Pipe::rawInput() { return rawInput_; }
-Ref<SystemStream> Pipe::rawOutput() { return rawOutput_; }
+int Pipe::childFd() const { return pipeFd_[mode_ ^ 1]; }
+void Pipe::open() { open(mode_); }
+void Pipe::childOpen() { open(mode_ ^ 1); }
+
+void Pipe::open(int thisEnd)
+{
+	int otherEnd = thisEnd ^ 1;
+	if (fd_ == -1) {
+		::close(pipeFd_[otherEnd]);
+		pipeFd_[otherEnd] = -1;
+		fd_ = pipeFd_[thisEnd];
+	}
+}
 
 } // namespace pona

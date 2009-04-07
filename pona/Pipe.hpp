@@ -7,16 +7,20 @@
 namespace pona
 {
 
-class Pipe: public Instance
+class Pipe: public SystemStream
 {
 public:
-	Pipe();
-	Ref<SystemStream> rawInput();
-	Ref<SystemStream> rawOutput();
+	enum Mode { Input = 0, Output = 1 };
+	
+	Pipe(int mode = Input);
+	int childFd() const;
+	void open();
+	void childOpen();
 	
 private:
-	Ref<SystemStream, Owner> rawInput_;
-	Ref<SystemStream, Owner> rawOutput_;
+	void open(int thisEnd);
+	int mode_;
+	int pipeFd_[2];
 };
 
 } // namespace pona

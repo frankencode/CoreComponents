@@ -58,11 +58,15 @@ public:
 	inline Ref<List, Owner> copy(int i, int n);
 	inline Ref<List, Owner> copy() { return copy(0, length_); }
 	
+	inline int find(T e) const { return find(0, length_, e); }
+	inline int find(int i, T e) const { return find(i, length_ - i, e); }
+	inline bool contains(T e) const { return find(e) != length_; }
+	
 	inline void insert(int i, List* b) { push(i, b->length_, b); }
 	inline void append(List* b) { insert(length_, b); }
 	inline int find(List* b) const { return find(0, length_, b); }
 	inline int find(int i, List* b) const { return find(i, length_ - i, b); }
-	inline bool contains(List* b) const { return find(b) != length_; }
+	inline bool contains(List* b) const { return find(0, length_, b) != length_; }
 	
 	typedef List< Ref<List, Owner> > ListOfList;
 	Ref<ListOfList, Owner> split(List* sep);
@@ -80,12 +84,15 @@ public:
 	void statistic(Ref< List<T> > members, Ref< List<int> > frq);
 	*/
 	
+	void enableIndexCaching() { if (!posCached_) posCached_ = new Pos; }
+	
 protected:
 	List(Ref<List> parent, int index0, int length);
 	
 private:
 	PONA_DISABLE_COPY(List)
 	
+	int find(int i, int n, T e) const;
 	void push(int i, int n, List* b);
 	int find(int i, int n, List* b) const;
 	
@@ -161,7 +168,6 @@ private:
 		int i_, k_;
 		
 		inline bool operator==(const Pos& b) const { return i_ == b.i_; }
-		inline bool operator<(const Pos& b) const { return node_->v(k_) < b.node_->v(b.k_); }
 		
 		inline operator bool() const { return node_ != 0; }
 		inline int distance(int i) const { return (node_ == 0) ? intMax : ((i > i_) ? i - i_ : i_ - i); }
@@ -215,25 +221,32 @@ private:
 		inline void set(T e) { *(node_->v() + k_) = e; }
 	};
 	
-	inline Pos translate(int i) const
+	Pos translate(int i) const
 	{
-		Pos posFront = Pos(front_, 0, 0);
-		Pos posBack = Pos(back_, length_-1, back_->n_-1);
+		Pos pos;
+		if (posCached_) {
+			pos = *posCached_;
+			int d0 = pos.distance(i);
+			
+			if (d0 > 5) {
+				Pos posFront = Pos(front_, 0, 0);
+				Pos posBack = Pos(back_, length_-1, back_->n_-1);
+				
+				int d1 = posFront.distance(i);
+				int d2 = posBack.distance(i);
+				if ((d1 < d0) && (d1 < d2))
+					pos = posFront;
+				else if (d2 < d0)
+					pos = posBack;
+			}
 		
-		int d0 = posCached_.distance(i);
-		int d1 = posFront.distance(i);
-		int d2 = posBack.distance(i);
-		
-		Pos pos = posCached_;
-		
-		if ((d1 < d0) && (d1 < d2))
-			pos = posFront;
-		else if (d2 < d0)
-			pos = posBack;
-		
-		pos.stepTo(i);
-		posCached_ = pos;
-		
+			pos.stepTo(i);
+			*posCached_ = pos;
+		}
+		else {
+			pos = (i < length_ / 2) ? Pos(front_, 0, 0) : Pos(back_, length_-1, back_->n_-1);
+			pos.stepTo(i);
+		}
 		return pos;
 	}
 	
@@ -243,7 +256,7 @@ private:
 	
 	Node* front_;
 	Node* back_;
-	mutable Pos posCached_;
+	mutable Pos* posCached_;
 	
 	Ref<ListObserver, Owner> observer_;
 };
@@ -252,7 +265,8 @@ template<class T>
 List<T>::List()
 	: length_(0),
 	  front_(0),
-	  back_(0)
+	  back_(0),
+	  posCached_(0)
 {}
 
 template<class T>
@@ -261,7 +275,8 @@ List<T>::List(Ref<List> parent, int index0, int length)
 	  index0_(index0),
 	  length_(length),
 	  front_(0),
-	  back_(0)
+	  back_(0),
+	  posCached_(0)
 {}
 
 template<class T>
@@ -269,6 +284,10 @@ List<T>::~List()
 {
 	if (!parent_)
 		clear();
+	if (posCached_) {
+		delete posCached_;
+		posCached_ = 0;
+	}
 }
 
 template<class T>
@@ -297,12 +316,12 @@ void List<T>::push(int i, int n, const T* v)
 			if (i == 0)
 			{
 				front_ = createNode(0, front_, v, n);
-				posCached_ = Pos();
+				if (posCached_) *posCached_ = Pos();
 			}
 			else if (i == length_)
 			{
 				back_ = createNode(back_, 0, v, n);
-				posCached_ = Pos();
+				if (posCached_) *posCached_ = Pos();
 			}
 			else
 			{
@@ -335,7 +354,7 @@ void List<T>::push(int i, int n, const T* v)
 				if (isFront) front_ = pred;
 				if (isBack) back_ = succ;
 				
-				posCached_ = Pos(node, i, 0);
+				if (posCached_) *posCached_ = Pos(node, i, 0);
 			}
 		}
 	}
@@ -392,12 +411,14 @@ void List<T>::pop(int i, int n, T* v)
 			if (node1 == back_)
 				back_ = node0->pred_;
 				
-			if (node0->pred_ != 0)
-				posCached_ = Pos(node0->pred_, i-1, node0->pred_->n_-1);
-			else if (node1->succ_ != 0)
-				posCached_ = Pos(node1->succ_, i, 0);
-			else
-				posCached_ = Pos();
+			if (posCached_) {
+				if (node0->pred_ != 0)
+					*posCached_ = Pos(node0->pred_, i-1, node0->pred_->n_-1);
+				else if (node1->succ_ != 0)
+					*posCached_ = Pos(node1->succ_, i, 0);
+				else
+					*posCached_ = Pos();
+			}
 		}
 		else
 		{
@@ -422,7 +443,8 @@ void List<T>::pop(int i, int n, T* v)
 			if (node1 == back_)
 				back_ = node;
 			
-			posCached_ = Pos(node, i, k0);
+			if (posCached_)
+				*posCached_ = Pos(node, i, k0);
 		}
 		
 		node1->succ_ = 0;
@@ -528,7 +550,8 @@ void List<T>::clear()
 			node = succ;
 		}
 		front_ = back_ = 0;
-		posCached_ = Pos();
+		if (posCached_)
+			*posCached_ = Pos();
 		length_ = 0;
 		
 	}
@@ -592,6 +615,29 @@ Ref<List<T>, Owner> List<T>::copy(int i, int n)
 	}
 	
 	return b;
+}
+
+template<class T>
+int List<T>::find(int i, int n, T e) const
+{
+	if (i < 0) i += length_;
+	if (!((0 <= i) && (i < length_)))
+		PONA_THROW(ListException, "Wrong index");
+	
+	if (parent_) {
+		i = parent_->find(index0_ + i, n, e) - index0_;
+	}
+	else {
+		Pos pos = translate(i);
+		while (pos.i_ < i + n) {
+			if (pos.get() == e) break;
+			pos.step();
+		}
+	
+			i = pos.i_;
+	}
+	
+	return i;
 }
 
 template<class T>

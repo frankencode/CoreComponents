@@ -12,6 +12,7 @@
 #include "atoms"
 #include "String.hpp"
 #include "Map.hpp"
+#include "File.hpp"
 
 namespace pona
 {
@@ -24,6 +25,7 @@ bool isAbsolute(String path);
 String makeAbsolute(String path);
 String fileName(String path);
 String stripComponent(String path);
+String lookupPath(Ref<StringList> dirs, String fileName, int accessFlags = File::Exists);
 
 void setAccessMask(int mask);
 
