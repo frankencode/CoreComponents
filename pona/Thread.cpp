@@ -52,9 +52,6 @@ pthread_t Thread::tid() const { return tid_; }
 
 void* Thread::runWrapper(void* p)
 {
-	#ifndef NDEBUG
-	pthread_setcancelstate(PTHREAD_CANCEL_ASYNCHRONOUS, 0);
-	#endif
 	Thread* thread = (Thread*)p;
 	thread->exitCode_ = thread->run();
 	thread->decRefCount(); // allow self destruction before termination

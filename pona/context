@@ -16,5 +16,6 @@
 #include "Process.hpp"
 #include "FileLock.hpp"
 #include "MemoryMapping.hpp"
+#include "Pipe.hpp"
 
 #endif // PONA_CONTEXT

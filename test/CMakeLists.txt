@@ -1,3 +1,4 @@
+LINK_LIBRARIES(pona)
 INCLUDE_DIRECTORIES(..)
 
 ADD_EXECUTABLE(testContext testContext.cpp)

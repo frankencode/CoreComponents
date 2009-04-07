@@ -35,7 +35,8 @@ public:
 	enum AccessFlags {
 		Read    = R_OK,
 		Write   = W_OK,
-		Execute = X_OK
+		Execute = X_OK,
+		Exists  = F_OK
 	};
 	
 	enum CreateFlags {

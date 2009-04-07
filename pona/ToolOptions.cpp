@@ -8,6 +8,7 @@
 
 #include "Format.hpp"
 #include "File.hpp"
+#include "context.hpp"
 #include "ToolOptions.hpp"
 
 namespace pona
@@ -166,7 +167,9 @@ Ref<ToolOptions::Option> ToolOptions::optionByLongName(String name) const
 
 Ref<StringList> ToolOptions::read(int argc, char** argv)
 {
-	toolName_ = File(argv[0]).name();
+	execPath_ = argv[0];
+	execName_ = fileName(execPath_);
+	execDir_ = stripComponent(makeAbsolute(execPath_));
 	String line;
 	for (int i = 1; i < argc; ++i) {
 		line->append(String(argv[i]));
@@ -292,7 +295,7 @@ void ToolOptions::readOption(String line, Ref<Token> token)
 String ToolOptions::help(String synopsis, String summary, String details)
 {
 	if (synopsis->length() == 0)
-		synopsis = toolName_ + " [OPTION]... [FILE]...";
+		synopsis = execName_ + " [OPTION]... [FILE]...";
 	
 	String options;
 	{
@@ -347,7 +350,8 @@ String ToolOptions::help(String synopsis, String summary, String details)
 	return text;
 }
 
-String ToolOptions::toolName() const { return toolName_; }
-String ToolOptions::toolDir() const { return toolDir_; }
+String ToolOptions::execPath() const { return execPath_; }
+String ToolOptions::execName() const { return execName_; }
+String ToolOptions::execDir() const { return execDir_; }
 
 } // namespace pona
