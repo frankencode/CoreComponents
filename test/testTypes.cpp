@@ -33,6 +33,8 @@ void testFloat754()
 	print("bin(one/zero) = %hex%\n", union_cast<uint64_t>(one/zero));
 	print("bin(nan) = %hex%\n", union_cast<uint64_t>(zero/zero));
 	print("unsignedMax, intMax = %%, %%\n", unsignedMax, intMax);
+	
+	print("sizeof(Instance) = %%\n", sizeof(Instance));
 }
 
 int main()

@@ -16,28 +16,26 @@
 namespace pona
 {
 
-class StreamSocket: public Instance
+class StreamSocket: public SystemStream
 {
 public:
-	StreamSocket(Ref<SocketAddress> address, TimeStamp idleTimeout = 1, int backlog = 8);
-	void listen();
-	void close();
-	
-	static Ref<SystemStream, Owner> connect(Ref<SocketAddress> remoteAddress);
+	StreamSocket(Ref<SocketAddress> address, TimeStamp idleTimeout = 1);
+	void listen(int backlog = 8);
+	void connect();
+	void giveUp();
 	
 protected:
 	virtual void init() {}
-	virtual void serve(Ref<SocketAddress> address, Ref<SystemStream> stream) = 0;
 	virtual void idle() {}
+	virtual void serve(Ref<SocketAddress> address, Ref<SystemStream> stream) {};
 	virtual void cleanup() {}
 	
-	Ref<SocketAddress> localAddress() const { return localAddress_; }
+	Ref<SocketAddress> address() const { return address_; }
 	
 private:
-	Ref<SocketAddress, Owner> localAddress_;
+	Ref<SocketAddress, Owner> address_;
 	TimeStamp idleTimeout_;
-	bool doClose_;
-	int lsd_; // listening socket descriptor
+	bool giveUp_;
 };
 
 } // namespace pona

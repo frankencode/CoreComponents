@@ -19,11 +19,11 @@ class Condition;
 class Mutex: public Instance
 {
 public:
-	Mutex() { pthread_mutex_init(&mutex_, 0); }
-	~Mutex() { pthread_mutex_destroy(&mutex_); }
+	Mutex();
+	~Mutex();
 
-	inline void acquire() { pthread_mutex_lock(&mutex_); }
-	inline void release() { pthread_mutex_unlock(&mutex_); }
+	void acquire();
+	void release();
 
 private:
 	friend class Condition;

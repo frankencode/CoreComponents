@@ -22,11 +22,7 @@ public:
 		if (instance_ != b)
 		{
 			if (instance_)
-			{
 				static_cast<Instance*>(instance_)->decRefCount();
-				if (static_cast<Instance*>(instance_)->refCount() == 0)
-					static_cast<Instance*>(instance_)->destroy();
-			}
 			
 			instance_ = b;
 			

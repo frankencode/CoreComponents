@@ -21,6 +21,7 @@ class Thread: public Instance
 public:
 	enum ExitType { Joinable, Detached };
 	
+	Thread();
 	void start(int exitType = Joinable);
 	int wait();
 	
@@ -34,6 +35,7 @@ protected:
 private:
 	pthread_t tid_;
 	int exitCode_;
+	bool keepAlive_;
 	static void* runWrapper(void* p);
 };
 

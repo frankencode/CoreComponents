@@ -22,8 +22,7 @@ namespace pona
 {
 
 SocketAddress::SocketAddress(int family, String address, int port)
-	: family_(family),
-	  socketType_(0),
+	: socketType_(0),
 	  protocol_(0)
 {
 	void* addr = 0;
@@ -49,8 +48,7 @@ SocketAddress::SocketAddress(int family, String address, int port)
 }
 
 SocketAddress::SocketAddress(addrinfo* info)
-	: family_(info->ai_family),
-	  socketType_(info->ai_socktype),
+	: socketType_(info->ai_socktype),
 	  protocol_(info->ai_protocol)
 {
 	if (info->ai_family == AF_INET)
@@ -114,11 +112,11 @@ String SocketAddress::addressString() const
 	else
 		PONA_THROW(NetworkingException, "Unsupported address family");
 	
-	ret = inet_ntop(family(), const_cast<void*>(addr), buf, bufSize);
+	ret = inet_ntop(socketAddress_.sa_family, const_cast<void*>(addr), buf, bufSize);
 	if (!ret)
 		PONA_THROW(NetworkingException, "Illegal binary address format");
 	
-	return String(buf);
+	return String(ret);
 }
 
 int SocketAddress::port() const

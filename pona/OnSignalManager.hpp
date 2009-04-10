@@ -12,7 +12,7 @@
 namespace pona
 {
 
-class OnSignalManager: public Instance
+class OnSignalManager: public Mutex
 {
 public:
 	static Ref<OnSignalManager> instance();

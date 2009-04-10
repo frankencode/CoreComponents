@@ -253,25 +253,11 @@ void Process::startDaemon()
 	setWorkingDirectory("/");
 }
 
-/** terminate single process (leaf) or complete process group (job or daemon)
+/** send signal to single process (leaf) or complete process group (job or daemon)
   */
-void Process::terminate()
+void Process::sendSignal(int signal)
 {
-	if (::kill((processType_ == SimpleChild) ? pid_ : -pid_, SIGTERM) == -1)
-		PONA_SYSTEM_EXCEPTION;
-}
-
-void Process::hangup()
-{
-	if (::kill((processType_ == SimpleChild) ? pid_ : -pid_, SIGHUP) == -1)
-		PONA_SYSTEM_EXCEPTION;
-}
-
-/** kill single process (leaf) or complete process group (job or daemon)
-  */
-void Process::kill()
-{
-	if (::kill((processType_ == SimpleChild) ? pid_ : -pid_, SIGKILL) == -1)
+	if (::kill((processType_ == SimpleChild) ? pid_ : -pid_, signal) == -1)
 		PONA_SYSTEM_EXCEPTION;
 }
 

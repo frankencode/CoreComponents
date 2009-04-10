@@ -9,6 +9,7 @@
 #define PONA_PROCESS_HPP
 
 #include <sys/types.h> // pid_t
+#include <signal.h> // SIGTERM, etc.
 #include "atoms"
 #include "context.hpp"
 #include "SystemStream.hpp"
@@ -84,9 +85,7 @@ public:
 	
 	pid_t pid() const { return pid_; }
 	
-	void terminate();
-	void hangup();
-	void kill();
+	void sendSignal(int signal);
 	int wait();
 	
 protected:

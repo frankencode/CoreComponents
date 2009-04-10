@@ -42,11 +42,7 @@ public:
 		
 		if (a != b)
 		{
-			if (a) {
-				a->decRefCount();
-				if (a->refCount() == 0)
-					a->destroy();
-			}
+			if (a) a->decRefCount();
 			
 			::pthread_setspecific(key_, b);
 			
@@ -59,8 +55,6 @@ private:
 	{
 		T* instance = reinterpret_cast<T*>(arg);
 		instance->decRefCount();
-		if (instance->refCount() == 0)
-			instance->destroy();
 	}
 	
 	pthread_key_t key_;

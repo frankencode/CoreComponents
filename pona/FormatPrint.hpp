@@ -16,10 +16,268 @@
 namespace pona
 {
 
-inline void print(String text, Ref<LineSink> sink = output()) { sink->write(text); }
+inline void print(String text) { output()->write(text); }
 
 template<class T1>
-inline void print(String templateText, T1 x1, Ref<LineSink> sink = output())
+inline void print(String templateText, T1 x1)
+{
+	Format format(templateText);
+	format << x1;
+	output()->write(format);
+}
+
+template<class T1, class T2>
+inline void print(String templateText, T1 x1, T2 x2)
+{
+	Format format(templateText);
+	format << x1 << x2;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26, class T27>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26 << x27;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26, class T27, class T28>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26 << x27 << x28;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26, class T27, class T28, class T29>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28, T29 x29)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26 << x27 << x28 << x29;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26, class T27, class T28, class T29, class T30>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28, T29 x29, T30 x30)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26 << x27 << x28 << x29 << x30;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26, class T27, class T28, class T29, class T30, class T31>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28, T29 x29, T30 x30, T31 x31)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26 << x27 << x28 << x29 << x30 << x31;
+	output()->write(format);
+}
+
+template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26, class T27, class T28, class T29, class T30, class T31, class T32>
+inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28, T29 x29, T30 x30, T31 x31, T32 x32)
+{
+	Format format(templateText);
+	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26 << x27 << x28 << x29 << x30 << x31 << x32;
+	output()->write(format);
+}
+
+inline void printTo(Ref<LineSink> sink, String text) { sink->write(text); }
+
+template<class T1>
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1)
 {
 	Format format(templateText);
 	format << x1;
@@ -27,7 +285,7 @@ inline void print(String templateText, T1 x1, Ref<LineSink> sink = output())
 }
 
 template<class T1, class T2>
-inline void print(String templateText, T1 x1, T2 x2, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2)
 {
 	Format format(templateText);
 	format << x1 << x2;
@@ -35,7 +293,7 @@ inline void print(String templateText, T1 x1, T2 x2, Ref<LineSink> sink = output
 }
 
 template<class T1, class T2, class T3>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3;
@@ -43,7 +301,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, Ref<LineSink> sink =
 }
 
 template<class T1, class T2, class T3, class T4>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4;
@@ -51,7 +309,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, Ref<LineSink>
 }
 
 template<class T1, class T2, class T3, class T4, class T5>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5;
@@ -59,7 +317,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, Ref<Li
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6;
@@ -67,7 +325,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7;
@@ -75,7 +333,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8;
@@ -83,7 +341,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9;
@@ -91,7 +349,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10;
@@ -99,7 +357,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11;
@@ -107,7 +365,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12;
@@ -115,7 +373,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13;
@@ -123,7 +381,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14;
@@ -131,7 +389,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15;
@@ -139,7 +397,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16;
@@ -147,7 +405,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17;
@@ -155,7 +413,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18;
@@ -163,7 +421,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19;
@@ -171,7 +429,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20;
@@ -179,7 +437,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21;
@@ -187,7 +445,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22;
@@ -195,7 +453,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23;
@@ -203,7 +461,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24;
@@ -211,7 +469,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25;
@@ -219,7 +477,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26;
@@ -227,7 +485,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26, class T27>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26 << x27;
@@ -235,7 +493,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26, class T27, class T28>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26 << x27 << x28;
@@ -243,7 +501,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26, class T27, class T28, class T29>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28, T29 x29, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28, T29 x29)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26 << x27 << x28 << x29;
@@ -251,7 +509,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26, class T27, class T28, class T29, class T30>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28, T29 x29, T30 x30, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28, T29 x29, T30 x30)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26 << x27 << x28 << x29 << x30;
@@ -259,7 +517,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26, class T27, class T28, class T29, class T30, class T31>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28, T29 x29, T30 x30, T31 x31, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28, T29 x29, T30 x30, T31 x31)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26 << x27 << x28 << x29 << x30 << x31;
@@ -267,7 +525,7 @@ inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6,
 }
 
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14, class T15, class T16, class T17, class T18, class T19, class T20, class T21, class T22, class T23, class T24, class T25, class T26, class T27, class T28, class T29, class T30, class T31, class T32>
-inline void print(String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28, T29 x29, T30 x30, T31 x31, T32 x32, Ref<LineSink> sink = output())
+inline void printTo(Ref<LineSink> sink, String templateText, T1 x1, T2 x2, T3 x3, T4 x4, T5 x5, T6 x6, T7 x7, T8 x8, T9 x9, T10 x10, T11 x11, T12 x12, T13 x13, T14 x14, T15 x15, T16 x16, T17 x17, T18 x18, T19 x19, T20 x20, T21 x21, T22 x22, T23 x23, T24 x24, T25 x25, T26 x26, T27 x27, T28 x28, T29 x29, T30 x30, T31 x31, T32 x32)
 {
 	Format format(templateText);
 	format << x1 << x2 << x3 << x4 << x5 << x6 << x7 << x8 << x9 << x10 << x11 << x12 << x13 << x14 << x15 << x16 << x17 << x18 << x19 << x20 << x21 << x22 << x23 << x24 << x25 << x26 << x27 << x28 << x29 << x30 << x31 << x32;
