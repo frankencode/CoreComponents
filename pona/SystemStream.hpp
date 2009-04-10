@@ -27,9 +27,12 @@ public:
 	void close();
 	
 	bool readyRead(TimeStamp timeout);
+	bool readyReadOrWrite(TimeStamp timeout);
 	
 	int readAvail(void* buf, int bufCapa);
 	void write(const void* buf, int bufFill);
+	
+	void makePrivate();
 	
 protected:
 	int fd_;

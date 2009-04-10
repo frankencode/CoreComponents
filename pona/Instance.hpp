@@ -37,11 +37,11 @@ public:
 class Instance
 {
 public:
-	Instance(): liberated_(false), refCount_(0), backRefList_(0) {}
+	Instance(): refCount_(0), backRefList_(0) {}
 	
 	virtual ~Instance()
 	{
-		if ((refCount_ > 0) && (!liberated_))
+		if (refCount_ > 0)
 			PONA_THROW(ReferenceException, "Deleting object, which is still in use");
 		BackRef* ref = backRefList_;
 		while (ref) {
@@ -51,33 +51,42 @@ public:
 	}
 	
 	inline int refCount() const { return refCount_; }
-	inline void incRefCount() { ++refCount_; }
-	inline void decRefCount() { --refCount_; }
-	inline void destroy() { if (!liberated_) delete this; }
+	inline void incRefCount() { refCount_ += (refCount_ >= 0); }
+	inline void decRefCount() {
+		refCount_ -= (refCount_ >= 0);
+		if (refCount_ == 0)
+				delete this;
+	}
 	
-	inline void liberate() { liberated_ = true; }
+	inline void liberate() { refCount_ = -1; }
 
+	virtual void acquire() {}
+	virtual void release() {}
+	
 	inline void addBackRef(BackRef* ref)
 	{
+		acquire();
 		ref->succ_ = backRefList_;
 		ref->pred_ = 0;
 		if (backRefList_)
 			backRefList_->pred_ = ref;
 		backRefList_ = ref;
+		release();
 	}
 	
 	inline void delBackRef(BackRef* ref)
 	{
+		acquire();
 		if (ref->pred_)
 			ref->pred_->succ_ = ref->succ_;
 		if (ref->succ_)
 			ref->succ_->pred_ = ref->pred_;
 		if (ref == backRefList_)
 			backRefList_ = backRefList_->succ_;
+		release();
 	}
 	
 private:
-	bool liberated_;
 	int refCount_;
 	BackRef* backRefList_;
 };

@@ -15,6 +15,10 @@
 namespace pona
 {
 
+Thread::Thread()
+	: keepAlive_(false)
+{}
+
 void Thread::start(int exitType)
 {
 	pthread_attr_t attr;
@@ -27,7 +31,10 @@ void Thread::start(int exitType)
 	if (ret != 0)
 		PONA_THROW(SystemException, "pthread_create() failed");
 	pthread_attr_destroy(&attr);
-	incRefCount(); // prevent self destruction while running
+	if (refCount() != 0) {
+		keepAlive_ = true;
+		incRefCount(); // prevent self destruction while running
+	}
 }
 
 int Thread::wait()
@@ -54,7 +61,8 @@ void* Thread::runWrapper(void* p)
 {
 	Thread* thread = (Thread*)p;
 	thread->exitCode_ = thread->run();
-	thread->decRefCount(); // allow self destruction before termination
+	if (thread->keepAlive_)
+		thread->decRefCount(); // allow self destruction before termination
 	return (void*)&thread->exitCode_;
 }
 

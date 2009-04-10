@@ -30,7 +30,7 @@ namespace pona
 
 EOD
 
-printf "inline void print(String text, Ref<LineSink> sink = output()) { sink->write(text); }\n"
+printf "inline void print(String text) { output()->write(text); }\n"
 printf "\n"
 let n=1
 while [ $n -le $MAX_ARGS ]; do
@@ -53,7 +53,46 @@ while [ $n -le $MAX_ARGS ]; do
 		fi
 		let i=i+1
 	done
-	printf ", Ref<LineSink> sink = output())\n"
+	printf ")\n"
+	printf "{\n"
+	printf "	Format format(templateText);\n"
+	printf "	format"
+	let i=1
+	while [ $i -le $n ]; do
+		printf " << x$i"
+		let i=i+1
+	done
+	printf ";\n"
+	printf "	output()->write(format);\n"
+	printf "}\n"
+	printf "\n"
+	let n=n+1
+done
+
+printf "inline void printTo(Ref<LineSink> sink, String text) { sink->write(text); }\n"
+printf "\n"
+let n=1
+while [ $n -le $MAX_ARGS ]; do
+	printf "template<"
+	let i=1
+	while [ $i -le $n ]; do
+		printf "class T$i"
+		if [ $i -ne $n ]; then
+			printf ", "
+		fi
+		let i=i+1
+	done
+	printf ">\n"
+	printf "inline void printTo(Ref<LineSink> sink, String templateText, "
+	let i=1
+	while [ $i -le $n ]; do
+		printf "T$i x$i"
+		if [ $i -ne $n ]; then
+			printf ", "
+		fi
+		let i=i+1
+	done
+	printf ")\n"
 	printf "{\n"
 	printf "	Format format(templateText);\n"
 	printf "	format"

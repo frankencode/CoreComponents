@@ -51,6 +51,7 @@ public:
 	inline const Variant& operator=(int value) { type_ = IntType; float_ = value; return *this; }
 	inline const Variant& operator=(double value) { type_ = FloatType; float_ = value; return *this; }
 	inline const Variant& operator=(Ref<String::Media, Owner> value) { type_ = StringType; ref_ = value; return *this; }
+	inline const Variant& operator=(const char* value) { type_ = StringType; ref_ = String(value).media(); return *this; }
 	inline const Variant& operator=(String value) { type_ = StringType; ref_ = value.media(); return *this; }
 	inline const Variant& operator=(Ref<Instance> value) { type_ = RefType; ref_ = value; return *this; }
 	

@@ -61,6 +61,7 @@ public:
 	inline int find(T e) const { return find(0, length_, e); }
 	inline int find(int i, T e) const { return find(i, length_ - i, e); }
 	inline bool contains(T e) const { return find(e) != length_; }
+	int replace(T a, T b);
 	
 	inline void insert(int i, List* b) { push(i, b->length_, b); }
 	inline void append(List* b) { insert(length_, b); }
@@ -633,11 +634,27 @@ int List<T>::find(int i, int n, T e) const
 			if (pos.get() == e) break;
 			pos.step();
 		}
-	
-			i = pos.i_;
+		
+		i = pos.i_;
 	}
 	
 	return i;
+}
+
+template<class T>
+int List<T>::replace(T a, T b)
+{
+	int i = 0;
+	int n = 0;
+	while (i < length_) {
+		i = find(i, a);
+		if (i == length_)
+			break;
+		set(i, b);
+		++n;
+		++i;
+	}
+	return n;
 }
 
 template<class T>

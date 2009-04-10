@@ -8,6 +8,8 @@
 #ifndef PONA_TIMESTAMP_HPP
 #define PONA_TIMESTAMP_HPP
 
+#include "types.hpp"
+
 namespace pona
 {
 
@@ -41,8 +43,9 @@ public:
 	inline int secondsPart() const { return sec_; }
 	inline int nanoSecondsPart() const { return nsec_; }
 	
-	inline int microSeconds() const { return sec_ * 1000000 + nsec_ / 1000; }
-	inline int miliSeconds() const { return sec_ * 1000 + nsec_ / 1000000; }
+	inline int seconds() const { return sec_ + (nsec_ >= 500000000); }
+	inline uint64_t miliSeconds() const { return uint64_t(sec_) * 1000 + nsec_ / 1000000; }
+	inline uint64_t microSeconds() const { return uint64_t(sec_) * 1000000 + nsec_ / 1000; }
 	inline double fineSeconds() const { return double(sec_) + double(nsec_)/1000000000; }
 
 	inline bool operator==(int sec) { return (sec_ == sec) && (nsec_ == 0); }

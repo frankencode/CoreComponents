@@ -43,7 +43,7 @@ public:
 	const sockaddr* socketAddress() const { return &socketAddress_; }
 	int socketAddressLength() const;
 	
-	int family() const { return family_; }
+	int family() const { return socketAddress_.sa_family; }
 	int socketType() const { return socketType_; }
 	int protocol() const { return protocol_; }
 	String familyString() const;
@@ -91,7 +91,6 @@ private:
 		sockaddr_in6 inet6Address_;
 	};
 	
-	int family_;
 	int socketType_;
 	int protocol_;
 };

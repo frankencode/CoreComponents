@@ -132,6 +132,7 @@ SET(PONA_SOURCE
 	Crc32.cpp
 	
 	# thread
+	Mutex.cpp
 	Semaphore.cpp
 	Thread.cpp
 	
