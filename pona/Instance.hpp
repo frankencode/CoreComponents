@@ -53,9 +53,14 @@ public:
 	inline int refCount() const { return refCount_; }
 	inline void incRefCount() { refCount_ += (refCount_ >= 0); }
 	inline void decRefCount() {
+		acquire();
 		refCount_ -= (refCount_ >= 0);
-		if (refCount_ == 0)
-				delete this;
+		if (refCount_ == 0) {
+			release();
+			delete this;
+		}
+		else
+			release();
 	}
 	
 	inline void liberate() { refCount_ = -1; }
