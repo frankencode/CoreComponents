@@ -139,12 +139,12 @@ private:
 
 void File::unlinkOnExit()
 {
-	onExit()->push(new UnlinkFile(path_));
+	onExit()->pushBack(new UnlinkFile(path_));
 }
 
 void File::unlinkOnThreadExit()
 {
-	onThreadExit()->push(new UnlinkFile(path_));
+	onThreadExit()->pushBack(new UnlinkFile(path_));
 }
 
 void File::open(int flags)

@@ -11,6 +11,7 @@
 #include "ThreadLocalOwner.hpp"
 #include "Thread.hpp"
 #include "Mutex.hpp"
+#include "Guard.hpp"
 #include "Condition.hpp"
 #include "Semaphore.hpp"
 #include "Channel.hpp"

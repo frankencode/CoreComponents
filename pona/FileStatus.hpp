@@ -12,7 +12,7 @@
 #include <sys/stat.h>
 #include "atoms"
 #include "String.hpp"
-#include "TimeStamp.hpp"
+#include "Time.hpp"
 
 namespace pona
 {
@@ -37,9 +37,9 @@ public:
 	inline uid_t ownerId() const { return st_uid; }
 	inline gid_t groupId() const { return st_gid; }
 	
-	inline TimeStamp lastAccess() const { return TimeStamp(st_atime, 0); }
-	inline TimeStamp lastModified() const { return TimeStamp(st_mtime, 0); }
-	inline TimeStamp lastChanged() const { return TimeStamp(st_ctime, 0); }
+	inline Time lastAccess() const { return Time(st_atime, 0); }
+	inline Time lastModified() const { return Time(st_mtime, 0); }
+	inline Time lastChanged() const { return Time(st_ctime, 0); }
 	
 	inline ino_t inodeNumber() const { return st_ino; }
 	inline nlink_t numberOfHardLinks() const { return st_nlink; }

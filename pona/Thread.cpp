@@ -7,7 +7,7 @@
  */
 
 #include "Exception.hpp"
-#include "time.hpp"
+#include "Time.hpp"
 #include "Mutex.hpp"
 #include "Condition.hpp"
 #include "Thread.hpp"
@@ -46,7 +46,7 @@ int Thread::wait()
 	return (status) ? *status : 0;
 }
 
-void Thread::sleep(TimeStamp dt)
+void Thread::sleep(Time dt)
 {
 	Mutex mutex;
 	Condition condition;

@@ -304,12 +304,12 @@ template<class T>
 void BinaryTree<T>::replaceNode(Node* k0, Node* k1)
 {
 	k1->misc = k0->misc;
-
+	
 	// -- establish links to the neighbors
 	k1->parent = k0->parent;
 	k1->left = k0->left;
 	k1->right = k0->right;
-
+	
 	// -- establish links from neighbors
 	Node* kp = k0->parent;
 	if (kp != 0)
@@ -321,10 +321,10 @@ void BinaryTree<T>::replaceNode(Node* k0, Node* k1)
 	}
 	else
 		root = k1;
-
+	
 	if (k0->left != 0)
 		k0->left->parent = k1;
-
+	
 	if (k0->right != 0)
 		k0->right->parent = k1;
 }

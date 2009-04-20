@@ -27,7 +27,7 @@ namespace pona
 {
 
 Process::Process()
-	: processType_(SimpleChild),
+	: type_(SimpleChild),
 	  ioPolicy_(0),
 	  pid_(-1)
 {}
@@ -71,9 +71,9 @@ void Process::start()
 	{
 		// child process
 		
-		if (processType_ == GroupLeader)
+		if (type_ == GroupLeader)
 			::setpgid(0, 0);
-		else if (processType_ == SessionLeader)
+		else if (type_ == SessionLeader)
 			::setsid();
 		
 		if (ioPolicy_ & ForwardByPseudoTerminal)
@@ -99,7 +99,7 @@ void Process::start()
 				::tcsetattr(ptySlave, TCSANOW, &attr);
 			}
 			
-			if (processType_ == SessionLeader)
+			if (type_ == SessionLeader)
 				if (::ioctl(ptySlave, TIOCSCTTY, 0) == -1)
 					PONA_SYSTEM_EXCEPTION;
 		}
@@ -144,6 +144,8 @@ void Process::start()
 				::close(errorPipe[1]);
 			}
 		}
+		
+		if (ioPolicy_ & ErrorToOutput) ::dup2(1, 2);
 		
 		if (execPath_ != String())
 		{
@@ -248,7 +250,7 @@ void Process::start()
 void Process::startDaemon()
 {
 	::umask(0);
-	setProcessType(SessionLeader);
+	setType(SessionLeader);
 	setIoPolicy(CloseInput|CloseOutput|CloseError);
 	setWorkingDirectory("/");
 }
@@ -257,7 +259,7 @@ void Process::startDaemon()
   */
 void Process::sendSignal(int signal)
 {
-	if (::kill((processType_ == SimpleChild) ? pid_ : -pid_, signal) == -1)
+	if (::kill((type_ == SimpleChild) ? pid_ : -pid_, signal) == -1)
 		PONA_SYSTEM_EXCEPTION;
 }
 
@@ -268,16 +270,18 @@ void Process::sendSignal(int signal)
 int Process::wait()
 {
 	int status = 0;
-	int ret = 0;
 	while (true) {
-		ret = ::waitpid(pid_, &status, 0);
-		if (ret == -1) {
+		if (::waitpid(pid_, &status, 0) == -1) {
 			if (errno == EINTR) continue;
 			PONA_SYSTEM_EXCEPTION;
 		}
 		break;
 	}
-	return WEXITSTATUS(status);
+	if (WIFEXITED(status))
+		status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		status = WTERMSIG(status) + 128;
+	return status;
 }
 
 } // namespace pona

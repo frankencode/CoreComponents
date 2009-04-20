@@ -8,6 +8,6 @@
 #ifndef PONA_TIME
 #define PONA_TIME
 
-#include "time.hpp"
+#include "Time.hpp"
 
 #endif // PONA_TIME

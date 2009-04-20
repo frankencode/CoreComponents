@@ -6,7 +6,7 @@
  * See ../LICENSE for the license.
  */
 
-#include "time.hpp"
+#include "Time.hpp"
 #include "Random.hpp"
 
 namespace pona

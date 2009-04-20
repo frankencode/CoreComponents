@@ -179,6 +179,18 @@ Ref<StringList> ToolOptions::read(int argc, char** argv)
 	return read(line);
 }
 
+String stripQuotes(String s)
+{
+	if (s->length() > 0) {
+		if ( ((s->get(0) == '"') || (s->get(0) == '\'')) &&
+			 (s->get(s->length() - 1) == s->get(0)) )
+		{
+			s = s->copy(1, s->length() - 2);
+		}
+	}
+	return s;
+}
+
 Ref<StringList> ToolOptions::read(String line)
 {
 	int i0 = 0, i1 = -1;
@@ -199,7 +211,7 @@ Ref<StringList> ToolOptions::read(String line)
 	
 	Ref<StringList> files = new StringList;
 	while (token) {
-		files->append(line->range(token->index(), token->length()));
+		files->append(stripQuotes(line->range(token->index(), token->length())));
 		token = token->nextSibling();
 	}
 	
@@ -250,14 +262,7 @@ void ToolOptions::readOption(String line, Ref<Token> token)
 			*option->value_ = true;
 		}
 		else {
-			String s = line->copy(token->index(), token->length());
-			if (s->length() > 0) {
-				if ( ((s->get(0) == '"') || (s->get(0) == '\'')) &&
-					 (s->get(s->length() - 1) == s->get(0)) )
-				{
-					s = s->copy(1, s->length() - 2);
-				}
-			}
+			String s = stripQuotes(line->copy(token->index(), token->length()));
 			
 			if (value->type() == Variant::StringType) {
 				*value = s;

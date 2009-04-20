@@ -10,25 +10,22 @@
 
 #include "atoms"
 #include "ThreadLocalOwner.hpp"
-#include "EventHandler.hpp"
+#include "EventManager.hpp"
 #include "context.hpp"
 
 namespace pona
 {
 
-class OnThreadExitManager: public Instance
+class OnThreadExitManager: public EventManager
 {
 public:
 	static Ref<OnThreadExitManager> instance();
-	
-	void push(Ref<EventHandler> handler);
 	
 private:
 	OnThreadExitManager();
 	~OnThreadExitManager();
 	
 	pid_t pid_;
-	Ref<EventHandler, Owner> head_;
 };
 
 inline Ref<OnThreadExitManager> onThreadExit() { return OnThreadExitManager::instance(); }

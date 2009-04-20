@@ -22,7 +22,7 @@ namespace pona
 class Process: public Instance
 {
 public:
-	enum ProcessType {
+	enum Type {
 		SimpleChild,
 		GroupLeader,
 		SessionLeader
@@ -36,6 +36,7 @@ public:
 		CloseInput = 16,
 		CloseOutput = 32,
 		CloseError = 64,
+		ErrorToOutput = 128,
 		ForwardAll = ForwardInput|ForwardOutput|ForwardError,
 		CloseAll = CloseInput|CloseOutput|CloseError
 	};
@@ -46,8 +47,8 @@ public:
 	// pre-start parameterization interface
 	// ---------------------------------------------------------------
 	
-	int processType() const { return processType_; }
-	void setProcessType(int type) { processType_ = type; }
+	int type() const { return type_; }
+	void setType(int type) { type_ = type; }
 	
 	int ioPolicy() const { return ioPolicy_; }
 	void setIoPolicy(int flags) { ioPolicy_ = flags; }
@@ -92,7 +93,7 @@ protected:
 	virtual int run() { return 0; }
 	
 private:
-	int processType_;
+	int type_;
 	int ioPolicy_;
 	String workingDirectory_;
 	
