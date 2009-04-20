@@ -70,7 +70,7 @@ int main()
 	Ref<Consumer, Owner> c1 = new Consumer(1, channel, 4);
 	Ref<Consumer, Owner> c2 = new Consumer(2, channel, 16);
 	
-	TimeStamp dt = now();
+	Time dt = now();
 	c1->start();
 	p1->start();
 	c2->start();

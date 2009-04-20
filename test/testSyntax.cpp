@@ -173,7 +173,7 @@ int main()
 {
 	Ref<Expression, Owner> expression = new Expression;
 	
-	TimeStamp dt = now();
+	Time dt = now();
 	
 	double result = expression->eval("(-12+34)*(56-78)");
 	

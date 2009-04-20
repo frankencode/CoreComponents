@@ -80,7 +80,7 @@ int main()
 	Ref<MyChannel, Owner> channel = new MyChannel;
 	Producer producer(channel);
 	Consumer consumer(channel);
-	TimeStamp dt = now();
+	Time dt = now();
 	producer.start();
 	consumer.start();
 	producer.wait();

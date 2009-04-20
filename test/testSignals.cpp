@@ -30,16 +30,16 @@ private:
 int main()
 {
 	bool done = false;
-	onSignal()->push(SIGINT, new FinishHandler(&done));
-	onSignal()->push(SIGTERM, new FinishHandler(&done));
+	onSignal(SIGINT)->pushBack(new FinishHandler(&done));
+	onSignal(SIGTERM)->pushBack(new FinishHandler(&done));
 	
-	onSignal()->push(SIGINT, new TestHandler("[SIGINT]"));
-	onSignal()->push(SIGTERM, new TestHandler("[SIGTERM]"));
-	onSignal()->push(SIGQUIT, new TestHandler("[SIGQUIT]"));
-	onSignal()->push(SIGHUP, new TestHandler("[SIGHUP]"));
-	onSignal()->push(SIGTSTP, new TestHandler("[SIGTSTP]"));
-	onSignal()->push(SIGCONT, new TestHandler("[SIGCONT]"));
-	onSignal()->push(SIGWINCH, new TestHandler("[SIGWINCH]"));
+	onSignal(SIGINT)->pushBack(new TestHandler("[SIGINT]"));
+	onSignal(SIGTERM)->pushBack(new TestHandler("[SIGTERM]"));
+	onSignal(SIGQUIT)->pushBack(new TestHandler("[SIGQUIT]"));
+	onSignal(SIGHUP)->pushBack(new TestHandler("[SIGHUP]"));
+	onSignal(SIGTSTP)->pushBack(new TestHandler("[SIGTSTP]"));
+	onSignal(SIGCONT)->pushBack(new TestHandler("[SIGCONT]"));
+	onSignal(SIGWINCH)->pushBack(new TestHandler("[SIGWINCH]"));
 	
 	int n = 0;
 	while (!done) {

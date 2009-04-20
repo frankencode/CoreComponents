@@ -1,6 +1,9 @@
 LINK_LIBRARIES(pona)
 INCLUDE_DIRECTORIES(..)
 
+ADD_EXECUTABLE(testPolicy testPolicy.cpp)
+ADD_EXECUTABLE(testMutex testMutex.cpp)
+ADD_EXECUTABLE(testCasts testCasts.cpp)
 ADD_EXECUTABLE(testContext testContext.cpp)
 ADD_EXECUTABLE(testSignals testSignals.cpp)
 ADD_EXECUTABLE(testMemoryMapping testMemoryMapping.cpp)
