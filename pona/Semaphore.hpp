@@ -24,7 +24,7 @@ public:
 	void release(int amount = 1);
 	
 	bool tryAcquire(int amount = 1);
-	bool acquireBefore(TimeStamp timeout, int amount = 1);
+	bool acquireBefore(Time timeout, int amount = 1);
 
 private:
 	Mutex mutex_;

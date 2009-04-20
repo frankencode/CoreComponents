@@ -64,6 +64,7 @@ SET(PONA_HEADER
 	ThreadLocalOwner.hpp
 	Thread.hpp
 	Mutex.hpp
+	Guard.hpp
 	Condition.hpp
 	Semaphore.hpp
 	Channel.hpp
@@ -80,6 +81,8 @@ SET(PONA_HEADER
 	Pipe.hpp
 	
 	event
+	EventHandler.hpp
+	EventManager.hpp
 	OnExitManager.hpp
 	OnThreadExitManager.hpp
 	OnSignalManager.hpp
@@ -89,14 +92,11 @@ SET(PONA_HEADER
 	StreamSocket.hpp
 	
 	time
-	time.hpp
-	TimeStamp.hpp
+	Time.hpp
 	
 	misc
 	Random.hpp
 	Rounding.hpp
-	
-	EventHandler.hpp
 )
 
 SET(PONA_SOURCE
@@ -147,6 +147,7 @@ SET(PONA_SOURCE
 	Pipe.cpp
 	
 	# event
+	EventManager.cpp
 	OnExitManager.cpp
 	OnThreadExitManager.cpp
 	OnSignalManager.cpp

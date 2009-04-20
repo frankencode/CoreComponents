@@ -21,7 +21,7 @@ SystemStream::SystemStream(int fd)
 
 SystemStream::~SystemStream()
 {
-	if ((fd_ > 2) && (isOpen()))
+	if (isOpen())
 		if (!interactive())
 			close();
 }
@@ -45,7 +45,7 @@ void SystemStream::close()
 	fd_ = -1;
 }
 
-bool SystemStream::readyRead(TimeStamp timeout)
+bool SystemStream::readyRead(Time timeout)
 {
 	fd_set set;
 	FD_ZERO(&set);
@@ -59,7 +59,7 @@ bool SystemStream::readyRead(TimeStamp timeout)
 	return (ret > 0);
 }
 
-bool SystemStream::readyReadOrWrite(TimeStamp timeout)
+bool SystemStream::readyReadOrWrite(Time timeout)
 {
 	fd_set rset, wset;
 	FD_ZERO(&rset);
@@ -104,7 +104,7 @@ void SystemStream::write(const void* buf, int bufFill)
 	}
 }
 
-void SystemStream::makePrivate()
+void SystemStream::closeOnExec()
 {
 	if (::fcntl(fd_, F_SETFD, FD_CLOEXEC) == -1)
 		PONA_THROW(StreamSemanticException, systemError());

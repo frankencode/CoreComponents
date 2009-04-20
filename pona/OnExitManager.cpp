@@ -11,26 +11,15 @@
 namespace pona
 {
 
-Mutex OnExitManager::mutex_;
-
 Ref<OnExitManager> OnExitManager::instance()
 {
-	static Ref<OnExitManager, Owner> instance_ = 0;
-	if (!instance_) {
-		mutex_.acquire();
-		if (!instance_)
-			instance_ = new OnExitManager;
-		mutex_.release();
-	}
-	return instance_;
-}
-
-void OnExitManager::push(Ref<EventHandler> handler)
-{
+	static Mutex mutex_;
 	mutex_.acquire();
-	handler->sibling_ = head_;
-	head_ = handler;
+	static Ref<OnExitManager, Owner> instance_ = 0;
+	if (!instance_)
+		instance_ = new OnExitManager;
 	mutex_.release();
+	return instance_;
 }
 
 OnExitManager::OnExitManager()
@@ -39,15 +28,7 @@ OnExitManager::OnExitManager()
 
 OnExitManager::~OnExitManager()
 {
-	if (pid() == pid_)
-	{
-		while (head_) {
-			head_->run();
-			head_ = head_->sibling_;
-		}
-	}
-	else
-		head_ = 0;
+	if (pid() == pid_) run();
 }
 
 } // namespace pona

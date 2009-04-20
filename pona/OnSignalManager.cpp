@@ -1,3 +1,11 @@
+/*
+ * OnSignalManager.cpp -- signal handling
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #include <unistd.h> // getpid
 #include "OnSignalManager.hpp"
 
@@ -5,23 +13,21 @@ namespace pona
 {
 
 OnSignalManager::SignalMaskInitializer OnSignalManager::signalMaskInitializer_;
-Mutex OnSignalManager::mutex_;
 
 Ref<OnSignalManager> OnSignalManager::instance()
 {
+	static Mutex mutex_;
+	mutex_.acquire();
 	static Ref<OnSignalManager, Owner> instance_ = 0;
-	if (!instance_) {
-		mutex_.acquire();
-		if (!instance_)
-			instance_ = new OnSignalManager;
-		mutex_.release();
-	}
+	if (!instance_)
+		instance_ = new OnSignalManager;
+	mutex_.release();
 	return instance_;
 }
 
 OnSignalManager::OnSignalManager()
 	: signalListener_(new SignalListener),
-	  handlerBySignal_(new HandlerBySignal)
+	  managerBySignal_(new ManagerBySignal)
 {}
 
 OnSignalManager::~OnSignalManager()
@@ -30,12 +36,20 @@ OnSignalManager::~OnSignalManager()
 	pthread_kill(signalListener_->tid(), SIGUSR1);
 }
 
-void OnSignalManager::push(int signal, Ref<EventHandler> handler)
+Ref<EventManager> OnSignalManager::managerBySignal(int signal)
 {
-	mutex_.acquire();
-	handler->sibling_ = handlerBySignal_->get(signal);
-	handlerBySignal_->set(signal, handler);
-	mutex_.release();
+	Ref<EventManager> manager = managerBySignal_->get(signal);
+	if (!manager) {
+		acquire();
+		manager = managerBySignal_->get(signal);
+		if (!manager) {
+			Ref<EventManager, Owner> newManager = new EventManager;
+			managerBySignal_->set(signal, newManager);
+			manager = newManager;
+		}
+		release();
+	}
+	return manager;
 }
 
 void OnSignalManager::startListener()
@@ -46,16 +60,13 @@ void OnSignalManager::startListener()
 bool OnSignalManager::relay(int signal)
 {
 	bool relayed = false;
-	mutex_.acquire();
-	{
-		Ref<EventHandler> handler = handlerBySignal_->get(signal);
-		while (handler) {
-			handler->run();
-			handler = handler->sibling_;
-			relayed = true;
-		}
+	acquire();
+	Ref<EventManager> manager = managerBySignal_->get(signal);
+	if (manager) {
+		manager->run();
+		relayed = true;
 	}
-	mutex_.release();
+	release();
 	return relayed;
 }
 
@@ -65,7 +76,7 @@ OnSignalManager::SignalMaskInitializer::SignalMaskInitializer()
 	sigfillset(&mask);
 	if (pthread_sigmask(SIG_SETMASK, &mask, 0) != 0)
 		PONA_THROW(SystemException, "pthread_sigmask() failed");
-	onSignal()->startListener();
+	OnSignalManager::instance()->startListener();
 }
 
 OnSignalManager::SignalListener::SignalListener()
@@ -74,7 +85,8 @@ OnSignalManager::SignalListener::SignalListener()
 
 int OnSignalManager::SignalListener::run()
 {
-	while (true) {
+	while (true)
+	{
 		int signal = -1;
 		sigset_t set;
 		sigfillset(&set);
@@ -83,7 +95,7 @@ int OnSignalManager::SignalListener::run()
 		
 		if (stopListener_) break;
 		
-		bool relayed = onSignal()->relay(signal);
+		bool relayed = OnSignalManager::instance()->relay(signal);
 		
 		if ((!relayed) || (signal == SIGTSTP)) {
 			sigset_t set, old;
@@ -99,6 +111,9 @@ int OnSignalManager::SignalListener::run()
 	return 0;
 }
 
-Ref<OnSignalManager> onSignal() { return OnSignalManager::instance(); }
+Ref<EventManager> onSignal(int signal)
+{
+	return OnSignalManager::instance()->managerBySignal(signal);
+}
 
 } // namespace pona

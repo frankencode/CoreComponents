@@ -16,6 +16,7 @@
 #include "atoms"
 #include "String.hpp"
 #include "List.hpp"
+#include "Mutex.hpp"
 
 namespace pona
 {
@@ -28,7 +29,11 @@ typedef List< Ref<SocketAddress, Owner> > SocketAddressList;
 
 class SocketAddress: public Instance
 {
+	PONA_SHARED
+	
 public:
+	SocketAddress();
+	
 	/** Initialize object with protocol family and numerical address.
 	  * Providing the wildcard address "*" allows to specify an address for
 	  * a TCP server, which will listen on all interfaces of the serving host.

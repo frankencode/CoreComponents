@@ -1,23 +1,31 @@
+/*
+ * OnSignalManager.hpp -- signal handling
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_ONSIGNALMANAGER_HPP
 #define PONA_ONSIGNALMANAGER_HPP
 
 #include <signal.h>
 #include "atoms"
-#include "EventHandler.hpp"
 #include "Mutex.hpp"
 #include "Thread.hpp"
 #include "Map.hpp"
-#include "EventHandler.hpp"
+#include "EventManager.hpp"
 
 namespace pona
 {
 
-class OnSignalManager: public Mutex
+class OnSignalManager: public Instance
 {
+	PONA_SHARED
+	
 public:
 	static Ref<OnSignalManager> instance();
 	
-	void push(int signal, Ref<EventHandler> handler);
+	Ref<EventManager> managerBySignal(int signal);
 	
 private:
 	OnSignalManager();
@@ -42,15 +50,14 @@ private:
 	friend class SignalListener;
 	
 	static SignalMaskInitializer signalMaskInitializer_;
-	static Mutex mutex_;
 	
 	Ref<SignalListener, Owner> signalListener_;
 	
-	typedef Map<int, Ref<EventHandler, Owner> > HandlerBySignal;
-	Ref<HandlerBySignal, Owner> handlerBySignal_;
+	typedef Map<int, Ref<EventManager, Owner> > ManagerBySignal;
+	Ref<ManagerBySignal, Owner> managerBySignal_;
 };
 
-Ref<OnSignalManager> onSignal();
+Ref<EventManager> onSignal(int signal);
 
 } // namespace pona
 

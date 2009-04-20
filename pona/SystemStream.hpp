@@ -9,7 +9,7 @@
 #define PONA_SYSTEMSTREAM_HPP
 
 #include "Stream.hpp"
-#include "TimeStamp.hpp"
+#include "Time.hpp"
 
 namespace pona
 {
@@ -26,13 +26,13 @@ public:
 	bool isOpen() const;
 	void close();
 	
-	bool readyRead(TimeStamp timeout);
-	bool readyReadOrWrite(TimeStamp timeout);
+	bool readyRead(Time timeout);
+	bool readyReadOrWrite(Time timeout);
 	
 	int readAvail(void* buf, int bufCapa);
 	void write(const void* buf, int bufFill);
 	
-	void makePrivate();
+	void closeOnExec();
 	
 protected:
 	int fd_;

@@ -11,7 +11,7 @@
 
 #include <pthread.h>
 #include "atoms"
-#include "TimeStamp.hpp"
+#include "Time.hpp"
 
 namespace pona
 {
@@ -25,7 +25,7 @@ public:
 	void start(int exitType = Joinable);
 	int wait();
 	
-	static void sleep(TimeStamp dt);
+	static void sleep(Time dt);
 	
 	pthread_t tid() const;
 	

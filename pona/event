@@ -8,6 +8,8 @@
 #ifndef PONA_EVENT
 #define PONA_EVENT
 
+#include "EventHandler.hpp"
+#include "EventManager.hpp"
 #include "OnExitManager.hpp"
 #include "OnThreadExitManager.hpp"
 #include "OnSignalManager.hpp"

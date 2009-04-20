@@ -22,15 +22,18 @@ class LineSource: public Instance
 public:
 	LineSource(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, String eol = "\n");
 	~LineSource();
-
+	
 	String readLine(bool* eoi = 0);
-
+	
+	int cachedLines() const;
+	void readAvail(bool* eoi);
+	
 	Ref<Stream> stream() const;
-
+	
 private:
 	Ref<Stream, Owner> stream_;
 	String eol_;
-	int cacheFillLines_;
+	int cachedLines_;
 	Queue<char> cache_;
 	int bufCapa_;
 	char* buf_;

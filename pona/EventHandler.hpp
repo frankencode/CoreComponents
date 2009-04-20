@@ -18,7 +18,6 @@ class EventHandler: public Instance
 {
 public:
 	virtual void run() = 0;
-	Ref<EventHandler, Owner> sibling_;
 };
 
 } // namespace pona

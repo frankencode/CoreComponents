@@ -30,6 +30,13 @@ private:
 	pthread_mutex_t mutex_;
 };
 
+#define PONA_SHARED \
+public: \
+	virtual void acquire() { mutex_.acquire(); } \
+	virtual void release() { mutex_.release(); } \
+private: \
+	Mutex mutex_;
+
 } // namespace pona
 
 #endif // PONA_MUTEX_HPP

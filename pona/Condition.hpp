@@ -14,7 +14,7 @@
 
 #include "atoms"
 #include "Mutex.hpp"
-#include "TimeStamp.hpp"
+#include "Time.hpp"
 
 namespace pona
 {
@@ -54,7 +54,7 @@ public:
 	  * (see also: now()). Returns true if the condition was signalled
 	  * before 'timeout', else returns false.
 	  */
-	inline bool waitUntil(Mutex* mutex, TimeStamp timeout)
+	inline bool waitUntil(Mutex* mutex, Time timeout)
 	{
 		bool success = true;
 		struct timespec ts;

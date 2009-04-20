@@ -50,9 +50,20 @@ public:
 		}
 	}
 	
+	virtual void acquire() {}
+	virtual void release() {}
+	
 	inline int refCount() const { return refCount_; }
-	inline void incRefCount() { refCount_ += (refCount_ >= 0); }
-	inline void decRefCount() {
+	
+	inline void incRefCount()
+	{
+		acquire();
+		refCount_ += (refCount_ >= 0);
+		release();
+	}
+	
+	inline void decRefCount()
+	{
 		acquire();
 		refCount_ -= (refCount_ >= 0);
 		if (refCount_ == 0) {
@@ -65,9 +76,6 @@ public:
 	
 	inline void liberate() { refCount_ = -1; }
 
-	virtual void acquire() {}
-	virtual void release() {}
-	
 	inline void addBackRef(BackRef* ref)
 	{
 		acquire();

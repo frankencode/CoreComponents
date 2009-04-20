@@ -29,6 +29,10 @@
 #define PONA_VLC_CHUNKSIZE 4
 #endif
 
+#ifndef PONA_DEFAULT_BACKLOG
+#define PONA_DEFAULT_BACKLOG 8
+#endif
+
 #define PONA_UNDEF -1
 
 #endif // PONA_OPTIONS_HPP

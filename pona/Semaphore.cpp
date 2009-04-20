@@ -44,7 +44,7 @@ bool Semaphore::tryAcquire(int amount)
 	return success;
 }
 
-bool Semaphore::acquireBefore(TimeStamp timeout, int amount)
+bool Semaphore::acquireBefore(Time timeout, int amount)
 {
 	bool success = true;
 	mutex_.acquire();

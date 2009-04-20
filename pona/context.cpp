@@ -25,7 +25,7 @@ void cd(String path)
 
 String cwd()
 {
-	char* cs = ::getcwd(0, 0);
+	char* cs = ::getcwd(0, 0x10000);
 	if (!cs)
 		PONA_SYSTEM_EXCEPTION;
 	String path(cs);

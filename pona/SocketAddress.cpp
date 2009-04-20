@@ -21,6 +21,11 @@
 namespace pona
 {
 
+SocketAddress::SocketAddress()
+	: socketType_(0),
+	  protocol_(0)
+{}
+
 SocketAddress::SocketAddress(int family, String address, int port)
 	: socketType_(0),
 	  protocol_(0)
