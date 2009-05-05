@@ -9,7 +9,6 @@
 #include <unistd.h> // close, select
 #include <fcntl.h> // fcntl
 #include <errno.h> // errno
-#include "stdio" // DEBUG
 #include "StreamSocket.hpp"
 
 namespace pona
@@ -19,7 +18,7 @@ StreamSocket::StreamSocket(Ref<SocketAddress> address, int fd)
 	: SystemStream(fd),
 	  address_(address),
 	  connected_(fd != -1),
-	  abort_(false)
+	  done_(false)
 {
 	if (fd_ == -1) {
 		fd_ = ::socket(address->family(), SOCK_STREAM, 0);
@@ -124,23 +123,24 @@ Ref<SocketAddress> StreamSocket::remoteAddress(int fd)
 	return address;
 }
 
-void StreamSocket::startServer(Time idleTimeout, int backlog)
+void StreamSocket::runServer(Time idleTimeout, int backlog)
 {
 	bind();
 	listen(backlog);
+	init();
 	
-	while (!abort_)
+	while (!done_)
 	{
-		while (!abort_) {
+		while (!done_) {
 			if (readyAccept(idleTimeout)) break;
-			if (abort_) break;
+			if (done_) break;
 			idle();
 		}
 		
-		if (abort_) break;
+		if (done_) break;
 		
 		Ref<StreamSocket, Owner> socket = accept();
-		if (!abort_)
+		if (!done_)
 			serve(socket);
 	}
 	
@@ -148,7 +148,7 @@ void StreamSocket::startServer(Time idleTimeout, int backlog)
 	cleanup();
 }
 
-void StreamSocket::startClient(Time idleTimeout)
+void StreamSocket::runClient(Time idleTimeout)
 {
 	connect();
 	while (!established(idleTimeout))
@@ -158,7 +158,7 @@ void StreamSocket::startClient(Time idleTimeout)
 	cleanup();
 }
 
-void StreamSocket::abort() { abort_ = true; }
-bool StreamSocket::stopServing() const { return abort_; }
+void StreamSocket::finish() { done_ = true; }
+bool StreamSocket::done() const { return done_; }
 
 } // namespace pona

@@ -21,7 +21,7 @@ public:
 	~SystemStream();
 	
 	int fd() const;
-	bool interactive() const;
+	bool isTeletype() const;
 	
 	bool isOpen() const;
 	void close();

@@ -20,7 +20,7 @@ cat <<EOD
 #ifndef PONA_FORMATPRINT_HPP
 #define PONA_FORMATPRINT_HPP
 
-#include "atoms"
+#include "atom"
 #include "String.hpp"
 #include "Format.hpp"
 #include "StandardStreams.hpp"
@@ -29,6 +29,8 @@ namespace pona
 {
 
 EOD
+
+######################### print() ####################################
 
 printf "inline void print(String text) { output()->write(text); }\n"
 printf "\n"
@@ -69,6 +71,8 @@ while [ $n -le $MAX_ARGS ]; do
 	let n=n+1
 done
 
+######################### printTo() ##################################
+
 printf "inline void printTo(Ref<LineSink> sink, String text) { sink->write(text); }\n"
 printf "\n"
 let n=1
@@ -103,6 +107,54 @@ while [ $n -le $MAX_ARGS ]; do
 	done
 	printf ";\n"
 	printf "	sink->write(format);\n"
+	printf "}\n"
+	printf "\n"
+	let n=n+1
+done
+
+######################### debug() ####################################
+
+printf "inline void debug(String text) {\n"
+printf "#ifndef NDEBUG\n"
+printf "	output()->write(text);\n"
+printf "#endif // NDEBUG\n"
+printf "}\n"
+printf "\n"
+
+let n=1
+while [ $n -le $MAX_ARGS ]; do
+	printf "template<"
+	let i=1
+	while [ $i -le $n ]; do
+		printf "class T$i"
+		if [ $i -ne $n ]; then
+			printf ", "
+		fi
+		let i=i+1
+	done
+	printf ">\n"
+	printf "inline void debug(String templateText, "
+	let i=1
+	while [ $i -le $n ]; do
+		printf "T$i x$i"
+		if [ $i -ne $n ]; then
+			printf ", "
+		fi
+		let i=i+1
+	done
+	printf ")\n"
+	printf "{\n"
+	printf "#ifndef NDEBUG\n"
+	printf "	Format format(templateText);\n"
+	printf "	format"
+	let i=1
+	while [ $i -le $n ]; do
+		printf " << x$i"
+		let i=i+1
+	done
+	printf ";\n"
+	printf "	output()->write(format);\n"
+	printf "#endif // NDEBUG\n"
 	printf "}\n"
 	printf "\n"
 	let n=n+1

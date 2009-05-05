@@ -1,5 +1,12 @@
-#ifndef RGET_LINEFORWARDER_HPP
-#define RGET_LINEFORWARDER_HPP
+/*
+ * LineForwarder.hpp -- canonical I/O transfer thread
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../../LICENSE for the license.
+ */
+#ifndef RIO_LINEFORWARDER_HPP
+#define RIO_LINEFORWARDER_HPP
 
 #include <pona/stdio>
 #include <pona/thread>
@@ -7,8 +14,10 @@
 #include "Options.hpp"
 #include "LogFile.hpp"
 
-namespace rget
+namespace rio
 {
+
+using namespace pona;
 
 class LineForwarder: public Thread
 {
@@ -19,21 +28,22 @@ public:
 		String sourceEol,
 		String sinkEol,
 		Ref<LogFile> recvLog,
-		Ref<EventManager> abortEvent
+		Ref<Event> cancelEvent
 	);
 	virtual int run();
-	void abort();
+	
+	void finish();
 	
 private:
 	Ref<SystemStream, Owner> source_, sink_;
 	Ref<LineSource, Owner> lineSource_;
 	Ref<LineSink, Owner> lineSink_;
 	Ref<LogFile, Owner> recvLog_;
-	Ref<EventManager, Owner> abortEvent_;
-	Ref<EventHandler, Owner> abortHandler_;
-	bool abort_;
+	Ref<Event, Owner> cancelEvent_;
+	Ref<Action, Owner> finishAction_;
+	bool done_;
 };
 
-} // namespace rget
+} // namespace rio
 
-#endif // RGET_LINEFORWARDER_HPP
+#endif // RIO_LINEFORWARDER_HPP

@@ -1,5 +1,12 @@
-#ifndef RGET_BINARYFORWARDER_HPP
-#define RGET_BINARYFORWARDER_HPP
+/*
+ * BinaryForwarder.hpp -- binary I/O transfer thread
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../../LICENSE for the license.
+ */
+#ifndef RIO_BINARYFORWARDER_HPP
+#define RIO_BINARYFORWARDER_HPP
 
 #include <pona/stdio>
 #include <pona/thread>
@@ -7,7 +14,7 @@
 #include "Options.hpp"
 #include "LogFile.hpp"
 
-namespace rget
+namespace rio
 {
 
 using namespace pona;
@@ -19,25 +26,24 @@ public:
 		Ref<SystemStream> source,
 		Ref<SystemStream> sink,
 		Ref<LogFile> recvLog,
-		Ref<EventManager> abortEvent
+		Ref<Event> cancelEvent
 	);
-	~BinaryForwarder();
 	
-	virtual int run();
-	void abort();
-	
+	void finish();
 	uint64_t bytesTransferred() const;
 	
 private:
+	virtual int run();
+	
 	Ref<SystemStream, Owner> source_, sink_;
 	Ref<LogFile, Owner> recvLog_;
-	bool abort_;
-	Ref<EventManager, Owner>  abortEvent_;
-	Ref<EventHandler, Owner> abortHandler_;
+	Ref<Event, Owner> cancelEvent_;
+	Ref<Action, Owner> finishAction_;
+	bool done_;
 	Array<uint8_t> buf_;
 	uint64_t bytesTransferred_;
 };
 
-} // namespace rget
+} // namespace rio
 
-#endif // RGET_BINARYFORWARDER_HPP
+#endif // RIO_BINARYFORWARDER_HPP

@@ -10,7 +10,7 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include "atoms"
+#include "atom"
 #include "File.hpp"
 
 namespace pona

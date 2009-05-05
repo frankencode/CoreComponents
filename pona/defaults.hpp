@@ -6,8 +6,8 @@
  * See ../LICENSE for the license.
  */
 
-#ifndef PONA_OPTIONS_HPP
-#define PONA_OPTIONS_HPP
+#ifndef PONA_DEFAULTS_HPP
+#define PONA_DEFAULTS_HPP
 
 #ifndef PONA_DEFAULT_REF_POLICY
 #ifdef NDEBUG
@@ -35,4 +35,4 @@
 
 #define PONA_UNDEF -1
 
-#endif // PONA_OPTIONS_HPP
+#endif // PONA_DEFAULTS_HPP

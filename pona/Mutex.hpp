@@ -9,7 +9,7 @@
 #define PONA_MUTEX_HPP
 
 #include <pthread.h>
-#include "atoms"
+#include "atom"
 
 namespace pona
 {

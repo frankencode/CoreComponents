@@ -8,7 +8,7 @@
 #ifndef PONA_LINESOURCE_HPP
 #define PONA_LINESOURCE_HPP
 
-#include "atoms"
+#include "atom"
 #include "defaults.hpp"
 #include "Stream.hpp"
 #include "Queue.hpp"

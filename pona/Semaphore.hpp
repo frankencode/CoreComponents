@@ -8,7 +8,7 @@
 #ifndef PONA_SEMAPHORE_HPP
 #define PONA_SEMAPHORE_HPP
 
-#include "atoms"
+#include "atom"
 #include "Mutex.hpp"
 #include "Condition.hpp"
 

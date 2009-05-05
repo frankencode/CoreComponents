@@ -22,13 +22,14 @@ SystemStream::SystemStream(int fd)
 SystemStream::~SystemStream()
 {
 	if (isOpen())
-		if (!interactive())
+		if (fd_ >= 3) // because of StandardStreams concurrency
 			close();
 }
 
 int SystemStream::fd() const { return fd_; }
 
-bool SystemStream::interactive() const {
+bool SystemStream::isTeletype() const
+{
 	if (!isattyCached_) {
 		isatty_ = ::isatty(fd_);
 		isattyCached_ = true;
@@ -41,7 +42,11 @@ bool SystemStream::isOpen() const { return fd_ != -1; }
 void SystemStream::close()
 {
 	if (::close(fd_) == -1)
+	#ifdef NDEBUG // WORSEST WORKAROUND, HACK
+		;
+	#else
 		PONA_THROW(StreamSemanticException, systemError());
+	#endif
 	fd_ = -1;
 }
 
@@ -81,7 +86,7 @@ int SystemStream::readAvail(void* buf, int bufCapa)
 		ret = ::read(fd_, buf, bufCapa);
 		if (ret == -1) {
 			if (errno == EINTR) continue;
-			if (interactive()) { ret = 0; break; }
+			if (isTeletype()) { ret = 0; break; }
 			PONA_THROW(StreamIoException, systemError());
 		}
 		break;

@@ -8,7 +8,7 @@
 #ifndef PONA_RANDOM_HPP
 #define PONA_RANDOM_HPP
 
-#include "atoms"
+#include "atom"
 
 namespace pona
 {

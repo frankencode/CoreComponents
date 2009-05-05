@@ -1,7 +1,14 @@
+/*
+ * Pipe.hpp -- the simplest IPC media
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_PIPE_HPP
 #define PONA_PIPE_HPP
 
-#include "atoms"
+#include "atom"
 #include "SystemStream.hpp"
 
 namespace pona

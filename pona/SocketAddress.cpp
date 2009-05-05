@@ -14,7 +14,6 @@
 #include <string.h> // memset, memcpy
 #include <errno.h>
 
-#include "stdio" // DEBUG
 #include "Format.hpp"
 #include "SocketAddress.hpp"
 
@@ -156,15 +155,20 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String ser
 	
 	memset(&hint, 0, sizeof(hint));
 	hint.ai_flags = (canonicalName) ? AI_CANONNAME : 0;
+	if ((hostName == "*") || (hostName == ""))
+		hint.ai_flags |= AI_PASSIVE;
 	hint.ai_family = family;
 	hint.ai_socktype = socketType;
 	
 	int ret;
 	{
+		CString hostNameUtf8 = hostName.utf8();
 		CString serviceNameUtf8 = serviceName.utf8();
 		char* h = 0;
-		if (serviceName != String()) h = serviceNameUtf8;
-		ret = getaddrinfo(hostName.utf8(), h, &hint, &head);
+		char* s = 0;
+		if ((hint.ai_flags & AI_PASSIVE) == 0) h = hostNameUtf8;
+		if (serviceName != String()) s = serviceNameUtf8;
+		ret = getaddrinfo(h, s, &hint, &head);
 	}
 		
 	if (ret != 0)
@@ -206,6 +210,8 @@ String SocketAddress::lookupHostName(bool* failed) const
 	int flags = NI_NAMEREQD;
 	if (socketType_ == SOCK_DGRAM) flags |= NI_DGRAM;
 	
+	hostName[0] = 0;
+	serviceName[0] = 0;
 	int ret = getnameinfo(socketAddress(), socketAddressLength(), hostName, hostNameSize, serviceName, serviceNameSize, flags);
 	
 	if (ret != 0) {
@@ -230,6 +236,8 @@ String SocketAddress::lookupServiceName() const
 	char serviceName[serviceNameSize];
 	int flags = (socketType_ == SOCK_DGRAM) ? NI_DGRAM : 0;
 	
+	hostName[0] = 0;
+	serviceName[0] = 0;
 	int ret = getnameinfo(socketAddress(), socketAddressLength(), hostName, hostNameSize, serviceName, serviceNameSize, flags);
 	
 	if (ret != 0)

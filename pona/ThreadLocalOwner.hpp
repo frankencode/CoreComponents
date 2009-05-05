@@ -20,7 +20,7 @@ class ThreadLocalOwner
 public:
 	ThreadLocalOwner()
 	{
-		int ret = ::pthread_key_create(&key_, &onThreadExit);
+		int ret = ::pthread_key_create(&key_, &threadExitEvent);
 		if (ret != 0)
 			PONA_SYSTEM_EXCEPTION;
 	}
@@ -51,7 +51,7 @@ public:
 	}
 	
 private:
-	static void onThreadExit(void* arg)
+	static void threadExitEvent(void* arg)
 	{
 		T* instance = reinterpret_cast<T*>(arg);
 		instance->decRefCount();

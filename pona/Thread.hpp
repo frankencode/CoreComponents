@@ -5,12 +5,11 @@
  *
  * See ../LICENSE for the license.
  */
-
 #ifndef PONA_THREAD_HPP
 #define PONA_THREAD_HPP
 
 #include <pthread.h>
-#include "atoms"
+#include "atom"
 #include "Time.hpp"
 
 namespace pona

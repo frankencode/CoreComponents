@@ -8,7 +8,7 @@
 #ifndef PONA_SYNTAX_HPP
 #define PONA_SYNTAX_HPP
 
-#include "atoms"
+#include "atom"
 #include "Array.hpp"
 #include "PrefixTree.hpp"
 #include "Token.hpp"

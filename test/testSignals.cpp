@@ -5,10 +5,10 @@
 namespace pona
 {
 
-class TestHandler: public EventHandler
+class Echo: public Action
 {
 public:
-	TestHandler(String message)
+	Echo(String message)
 		: message_(message)
 	{}
 private:
@@ -16,10 +16,10 @@ private:
 	String message_;
 };
 
-class FinishHandler: public EventHandler
+class Finish: public Action
 {
 public:
-	FinishHandler(bool* done)
+	Finish(bool* done)
 		: done_(done)
 	{}
 	virtual void run() { *done_ = true; }
@@ -30,16 +30,16 @@ private:
 int main()
 {
 	bool done = false;
-	onSignal(SIGINT)->pushBack(new FinishHandler(&done));
-	onSignal(SIGTERM)->pushBack(new FinishHandler(&done));
+	signalEvent(SIGINT)->pushBack(new Finish(&done));
+	signalEvent(SIGTERM)->pushBack(new Finish(&done));
 	
-	onSignal(SIGINT)->pushBack(new TestHandler("[SIGINT]"));
-	onSignal(SIGTERM)->pushBack(new TestHandler("[SIGTERM]"));
-	onSignal(SIGQUIT)->pushBack(new TestHandler("[SIGQUIT]"));
-	onSignal(SIGHUP)->pushBack(new TestHandler("[SIGHUP]"));
-	onSignal(SIGTSTP)->pushBack(new TestHandler("[SIGTSTP]"));
-	onSignal(SIGCONT)->pushBack(new TestHandler("[SIGCONT]"));
-	onSignal(SIGWINCH)->pushBack(new TestHandler("[SIGWINCH]"));
+	signalEvent(SIGINT)->pushBack(new Echo("[SIGINT]"));
+	signalEvent(SIGTERM)->pushBack(new Echo("[SIGTERM]"));
+	signalEvent(SIGQUIT)->pushBack(new Echo("[SIGQUIT]"));
+	signalEvent(SIGHUP)->pushBack(new Echo("[SIGHUP]"));
+	signalEvent(SIGTSTP)->pushBack(new Echo("[SIGTSTP]"));
+	signalEvent(SIGCONT)->pushBack(new Echo("[SIGCONT]"));
+	signalEvent(SIGWINCH)->pushBack(new Echo("[SIGWINCH]"));
 	
 	int n = 0;
 	while (!done) {

@@ -5,7 +5,6 @@
  *
  * See ../LICENSE for the license.
  */
-
 #ifndef PONA_EXCEPTION_HPP
 #define PONA_EXCEPTION_HPP
 

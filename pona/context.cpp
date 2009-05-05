@@ -40,6 +40,9 @@ bool isAbsolute(String path) {
 
 String makeAbsolute(String path)
 {
+	if (isAbsolute(path))
+		return path;
+	
 	Ref<StringList, Owner> absoluteParts = new StringList;
 	Ref<StringList, Owner> parts = path / '/';
 	

@@ -1,7 +1,7 @@
 SET(PONA_HEADER
 	defaults.hpp
 	
-	atoms
+	atom
 	types.hpp
 	Exception.hpp
 	Instance.hpp
@@ -74,18 +74,18 @@ SET(PONA_HEADER
 	User.hpp
 	Group.hpp
 	Variant.hpp
-	ToolOptions.hpp
+	Options.hpp
 	Process.hpp
 	FileLock.hpp
 	MemoryMapping.hpp
 	Pipe.hpp
 	
 	event
-	EventHandler.hpp
-	EventManager.hpp
-	OnExitManager.hpp
-	OnThreadExitManager.hpp
-	OnSignalManager.hpp
+	Action.hpp
+	Event.hpp
+	ExitEvent.hpp
+	ThreadExitEvent.hpp
+	SignalManager.hpp
 	
 	network
 	SocketAddress.hpp
@@ -100,7 +100,7 @@ SET(PONA_HEADER
 )
 
 SET(PONA_SOURCE
-	# atoms
+	# atom
 	Exception.cpp
 	
 	# container
@@ -140,17 +140,17 @@ SET(PONA_SOURCE
 	context.cpp
 	User.cpp
 	Group.cpp
-	ToolOptions.cpp
+	Options.cpp
 	Process.cpp
 	FileLock.cpp
 	MemoryMapping.cpp
 	Pipe.cpp
 	
 	# event
-	EventManager.cpp
-	OnExitManager.cpp
-	OnThreadExitManager.cpp
-	OnSignalManager.cpp
+	Event.cpp
+	ExitEvent.cpp
+	ThreadExitEvent.cpp
+	SignalManager.cpp
 	
 	# network
 	SocketAddress.cpp
@@ -165,6 +165,6 @@ ADD_LIBRARY(pona
 	${PONA_SOURCE}
 )
 
-SET_TARGET_PROPERTIES(pona PROPERTIES VERSION 0.9.3 SOVERSION 0)
+SET_TARGET_PROPERTIES(pona PROPERTIES VERSION 0.9.4 SOVERSION 0)
 
 INSTALL(TARGETS pona ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)

@@ -13,7 +13,7 @@
 #include <netdb.h> // addrinfo
 #include <sys/socket.h> // connect
 
-#include "atoms"
+#include "atom"
 #include "String.hpp"
 #include "List.hpp"
 #include "Mutex.hpp"

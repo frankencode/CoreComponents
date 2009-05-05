@@ -9,7 +9,7 @@
 #define PONA_MEMORYMAPPING_HPP
 
 #include <sys/mman.h>
-#include "atoms"
+#include "atom"
 #include "File.hpp"
 
 namespace pona

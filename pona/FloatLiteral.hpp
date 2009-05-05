@@ -5,7 +5,6 @@
  *
  * See ../LICENSE for the license.
  */
-
 #ifndef PONA_FLOATLITERAL_HPP
 #define PONA_FLOATLITERAL_HPP
 

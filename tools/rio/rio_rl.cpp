@@ -1,3 +1,11 @@
+/*
+ * rio_rl.cpp -- default line editor using the readline library
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../../LICENSE for the license.
+ */
+
 #include <pona/stdio>
 #include <pona/context>
 #include <pona/thread>
@@ -8,7 +16,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-namespace rget_rl
+namespace rio_rl
 {
 
 using namespace pona;
@@ -19,13 +27,13 @@ public:
 	LineForwarder(Ref<SystemStream> source)
 		: source_(source),
 		  lineSource_(new LineSource(source)),
-		  abort_(false),
+		  done_(false),
 		  finished_(false)
 	{}
 	virtual int run() {
 		int ret = 0;
 		try {
-			while (!abort_)
+			while (!done_)
 			{
 				if (source_->readyRead(1))
 				{
@@ -37,7 +45,7 @@ public:
 						String line = lineSource_->readLine();
 						output()->writeLine(line);
 					}
-					if (eoi || abort_) break;
+					if (eoi || done_) break;
 					#if RL_VERSION_MAJOR >= 5
 					rl_forced_update_display();
 					#else
@@ -47,18 +55,18 @@ public:
 			}
 		}
 		catch (AnyException& ex) {
-			printTo(error(), "(rget_rl) LineForwarder: %%\n", ex.what());
+			printTo(error(), "(rio_rl) LineForwarder: %%\n", ex.what());
 			ret = 1;
 		}
 		finished_ = true;
 		return ret;
 	}
-	void abort() { abort_ = true; }
+	void finish() { done_ = true; }
 	bool finished() const { return finished_; }
 private:
 	Ref<SystemStream, Owner> source_;
 	Ref<LineSource, Owner> lineSource_;
-	bool abort_;
+	bool done_;
 	bool finished_;
 };
 
@@ -67,7 +75,7 @@ int main(int argc, char** argv)
 	Variant fdr = -1;
 	Variant fds = 1;
 	
-	ToolOptions options;
+	Options options;
 	options.define(0, "fdr", &fdr, "Receiving file descriptor");
 	options.define(0, "fds", &fds, "Sending file descriptor");
 	options.read(argc, argv);
@@ -79,7 +87,7 @@ int main(int argc, char** argv)
 	
 	while (true) {
 		char* buf = readline("");
-		if ((!buf) || (forwarder->finished())) break;
+		if ((!buf) || forwarder->finished()) break;
 		
 		int len = strlen(buf);
 		buf[len] = '\n';
@@ -94,9 +102,9 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-} // namespace rget_rl
+} // namespace rio_rl
 
 int main(int argc, char** argv)
 {
-	return rget_rl::main(argc, argv);
+	return rio_rl::main(argc, argv);
 }

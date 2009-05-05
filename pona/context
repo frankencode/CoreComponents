@@ -12,7 +12,7 @@
 #include "User.hpp"
 #include "Group.hpp"
 #include "Variant.hpp"
-#include "ToolOptions.hpp"
+#include "Options.hpp"
 #include "Process.hpp"
 #include "FileLock.hpp"
 #include "MemoryMapping.hpp"

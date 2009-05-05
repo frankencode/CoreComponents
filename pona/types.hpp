@@ -5,7 +5,6 @@
  *
  * See ../LICENSE for the license.
  */
-
 #ifndef PONA_TYPES_HPP
 #define PONA_TYPES_HPP
 

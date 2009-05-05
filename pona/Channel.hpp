@@ -5,11 +5,10 @@
  *
  * See ../LICENSE for the license.
  */
-
 #ifndef PONA_CHANNEL_HPP
 #define PONA_CHANNEL_HPP
 
-#include "atoms"
+#include "atom"
 #include "Queue.hpp"
 #include "Mutex.hpp"
 #include "Condition.hpp"

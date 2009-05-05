@@ -5,11 +5,10 @@
  *
  * See ../LICENSE for the license.
  */
-
 #ifndef PONA_BYTESOURCE_HPP
 #define PONA_BYTESOURCE_HPP
 
-#include "atoms"
+#include "atom"
 #include "defaults.hpp"
 #include "Stream.hpp"
 
