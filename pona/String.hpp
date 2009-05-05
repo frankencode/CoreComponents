@@ -8,7 +8,7 @@
 #ifndef PONA_STRING_HPP
 #define PONA_STRING_HPP
 
-#include "atoms"
+#include "atom"
 #include "CString.hpp"
 #include "List.hpp"
 

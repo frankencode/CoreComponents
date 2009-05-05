@@ -1,0 +1,82 @@
+.TH RIO "1" "03 MAY 2009" "version 0.9.4" "Misc Commands"
+.SH NAME
+rio \- full-duplex network adapter
+.SH SYNOPSIS
+.B rio
+[\fIOPTION\fP]... [\fIFILE\fP|\fIPROGRAM\fP]...
+.SH DESCRIPTION
+." In case you forget again what roff is about: http://www.linuxjournal.com/article/1158.
+.PP
+\fBrio\fP copies simultanously its standard input and standard output to and from a stream socket.
+A stream socket can be established passively or actively. In passive mode \fBrio\fP functions as
+an interative server listening for connections.
+.PP
+Optionally one or more files passed as additional parameters are injected into the socket
+before copying standard input. In passive mode each connection gets served a single file iterating
+through the \fIFILE\fP list. Each file may also be executed (\fB-x\fP). In this case the standard input
+and output of the \fIPROGRAM\fP in execution will be copied to the connected socket.
+.PP
+By default \fBrio\fP operates in binary mode, but it can also transfer bytes line-vise (\fB-a\fP).
+In canonical mode \fBrio\fP will read and write data line-vise and will automatically
+convert line endings from the local line ending style (\\012) to a choosen network line
+ending style (\\015\\012 by default).
+.PP
+If operating in canonical mode without a pipe connected to its standard input, \fBrio\fP will
+start a line editor (\fBrio_rl\fP by default) to edit each line before transmission. This
+allows chatting with services like FTP or SMTP in a comfortable manner.
+.SH OPTIONS
+.TP
+\fB\-\-server\fP, \fB\-s\fP
+Server mode
+.TP
+\fB\-\-client\fP, \fB\-c\fP
+Client mode
+.TP
+\fB\-\-host\fP, \fB\-t\fP
+Host name or address
+.TP
+\fB\-\-port\fP, \fB\-p\fP
+Port number
+.TP
+\fB\-\-inet6\fP, \fB\-6\fP
+Prefer IPv6
+.TP
+\fB\-\-backlog\fP, \fB\-b\fP
+Backlog length of listening socket
+.TP
+\fB\-\-canon\fP, \fB\-b\fP
+Line-vise I/O mode
+.TP
+\fB\-\-editor\fP, \fB\-e\fP
+Line editor
+.TP
+\fB\-\-eol\fP, \fB\-n\fP
+Line ending style ('crlf' or 'nl')
+.TP
+\fB\-\-io_unit\fP, \fB\-u\fP
+I/O buffer size
+.TP
+\fB\-\-quiet\fP, \fB\-q\fP
+Do not output any status messages
+.TP
+\fB\-\-logging\fP, \fB\-g\fP
+Logging flags (connect,recv,send,merged)
+.TP
+\fB\-\-log_dir\fP, \fB\-d\fP
+Target directory for log files
+.TP
+\fB\-\-exec\fP, \fB\-x\fP
+Execute each [PROGRAM]
+.TP
+\fB\-\-loop\fP, \fB\-l\fP
+Endless repeat serving connections
+.TP
+\fB\-\-repeat\fP, \fB\-r\fP
+Repeat serving exactly n connections
+.TP
+\fB\-\-help\fP, \fB\-h\fP
+Print help
+.SH "SEE ALSO"
+hd(1), inetd(8), tcpdump(1), rget(1)
+.SH AUTHOR
+Frank Mertens, frank@cyblogic.de

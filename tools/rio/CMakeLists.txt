@@ -1,4 +1,4 @@
-ADD_EXECUTABLE(rget
+ADD_EXECUTABLE(rio
 	Options.hpp
 	Options.cpp
 	LogFile.hpp
@@ -10,7 +10,7 @@ ADD_EXECUTABLE(rget
 	ProcessObserver.hpp
 	Service.hpp
 	Service.cpp
-	rget.cpp
+	rio.cpp
 )
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I")
@@ -24,12 +24,15 @@ IF(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
 	ENDIF(PONA_BUILD64)
 ENDIF(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
 
-ADD_EXECUTABLE(rget_rl
-	rget_rl.cpp
+ADD_EXECUTABLE(rio_rl
+	rio_rl.cpp
 )
 
 IF(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
-TARGET_LINK_LIBRARIES(rget_rl readline curses)
+TARGET_LINK_LIBRARIES(rio_rl readline curses)
 ELSE(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
-TARGET_LINK_LIBRARIES(rget_rl readline)
+TARGET_LINK_LIBRARIES(rio_rl readline)
 ENDIF(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
+
+INSTALL(PROGRAMS ${EXECUTABLE_OUTPUT_PATH}/rio DESTINATION bin)
+INSTALL(FILES rio.1 DESTINATION man/man1)

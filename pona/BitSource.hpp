@@ -8,7 +8,7 @@
 #ifndef PONA_BITSOURCE_HPP
 #define PONA_BITSOURCE_HPP
 
-#include "atoms"
+#include "atom"
 #include "defaults.hpp"
 #include "Stream.hpp"
 

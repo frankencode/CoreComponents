@@ -1,8 +1,16 @@
+/*
+ * Options.cpp -- application-wide parameters
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../../LICENSE for the license.
+ */
+
 #include <pona/stdio>
 #include "LogFile.hpp"
 #include "Options.hpp"
 
-namespace rget
+namespace rio
 {
 
 Mutex Options::lock_;
@@ -20,37 +28,37 @@ Ref<Options> Options::instance()
 Options::Options()
 	: server_(false), client_(false), help_(false),
 	  host_("*"), port_(7373), inet6_(false), backlog_(8),
-	  canon_(false), editor_("rget_rl"), eol_("crlf"), ioUnit_(0x8000),
-	  logging_(""), logDir_(cwd()),
-	  exec_(false), tunnel_(false),
-	  loop_(false), repeat_(1),
+	  canon_(false), editor_("rio_rl"), eol_("crlf"), ioUnit_(0x8000),
+	  quiet_(false), logging_(""), logDir_(cwd()),
+	  exec_(false), loop_(false), repeat_(1),
 	  loggingFlags_(0)
 {
 	define('s', "server", &server_, "Server mode");
 	define('c', "client", &client_, "Client mode");
-	define(0, "host", &host_, "Host name or address");
-	define(0, "port", &port_, "Port number");
+	define('t', "host", &host_, "Host name or address");
+	define('p', "port", &port_, "Port number");
 	define('6', "inet6", &inet6_, "Prefer IPv6");
-	define(0, "backlog", &backlog_, "Backlog length of listening socket");
-	define('c', "canon", &canon_, "Line-vise I/O mode");
-	define(0, "editor", &editor_, "Line editor");
-	define(0, "eol", &eol_, "End of line style ('crlf' or 'nl')");
-	define(0, "io_unit", &ioUnit_, "I/O buffer size");
-	define(0, "logging", &logging_, "Logging flags (connect,recv,send,merged)");
-	define(0, "log_dir", &logDir_, "Target directory for log files");
-	define('x', "exec", &exec_, "Execute each [FILE]");
-	define('t', "tunnel", &tunnel_, "Tunnel to each [FILE]");
+	define('b', "backlog", &backlog_, "Backlog length of listening socket");
+	define('a', "canon", &canon_, "Line-vise I/O mode");
+	define('e', "editor", &editor_, "Line editor");
+	define('n', "eol", &eol_, "Line ending style ('crlf' or 'nl')");
+	define('u', "io_unit", &ioUnit_, "I/O buffer size");
+	define('q', "quiet", &quiet_, "Keep quiet");
+	define('g', "logging", &logging_, "Logging flags (connect,recv,send,merged)");
+	define('d', "log_dir", &logDir_, "Target directory for log files");
+	define('x', "exec", &exec_, "Execute each [PROGRAM]");
 	define('l', "loop", &loop_, "Endless repeat serving connections");
-	define(0, "repeat", &repeat_, "Repeat serving exactly n connections");
+	define('r', "repeat", &repeat_, "Repeat serving exactly n connections");
 	define('h', "help", &help_, "Print help");
+	entity("FILE|PROGRAM");
 }
 
 void Options::read(int argc, char** argv)
 {
-	files_ = ToolOptions::read(argc, argv);
+	files_ = pona::Options::read(argc, argv);
 	
 	if (help_) {
-		logDir_ = "<PWD>";
+		logDir_ = "<CWD>";
 	}
 	else {
 		int modeSum = int(bool(client_)) + int(bool(server_));
@@ -60,15 +68,20 @@ void Options::read(int argc, char** argv)
 			PONA_THROW(Exception, "Contradicting option (--server or --client).");
 		
 		String eol = eol_;
-		if (eol == "nl") { eol_ = "\012"; print("!0\n"); }
+		if (eol == "nl") { eol_ = "\012"; }
 		else if (eol == "crlf") eol_ = "\015\012";
 		
-		Ref<StringList, Owner> dirs = env("PATH") / ':';
-		if (!dirs->contains(execDir()))
-			dirs->append(execDir());
-		editorPath_ = lookupPath(dirs, editor_);
-		if (editorPath_ == "")
-			PONA_THROW(Exception, "Editor program could not be found.");
+		if (canon_) {
+			Ref<StringList, Owner> dirs = env("PATH") / ':';
+			if (!dirs->contains(execDir()))
+				dirs->append(execDir());
+			debug("execDir = %%\n", execDir());
+			debug("dirs = %%\n", dirs * ':');
+			editorPath_ = lookupPath(dirs, editor_);
+			if (editorPath_ == "")
+				PONA_THROW(Exception, "Editor program could not be found.");
+			debug("editorPath_ = %%\n", editorPath_);
+		}
 		
 		loggingFlags_ = 0;
 		Ref<StringList, Owner> logs = String(options()->logging_) / ',';
@@ -82,6 +95,9 @@ void Options::read(int argc, char** argv)
 			else
 				PONA_THROW(Exception, "Incorrect '--logging=' syntax.");
 		}
+		
+		if (exec_ && (files_->length() == 0))
+			PONA_THROW(Exception, "No file passed to execute.");
 	}
 }
 
@@ -91,4 +107,4 @@ Ref<SocketAddress, Owner> Options::address() const
 	return choice->first();
 }
 
-} // namespace rget
+} // namespace rio

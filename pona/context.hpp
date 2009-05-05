@@ -9,7 +9,7 @@
 #define PONA_CONTEXT_HPP
 
 #include <sys/types.h>
-#include "atoms"
+#include "atom"
 #include "String.hpp"
 #include "Map.hpp"
 #include "File.hpp"

@@ -8,7 +8,7 @@
 #ifndef PONA_SYNTAXSTATE_HPP
 #define PONA_SYNTAXSTATE_HPP
 
-#include "atoms"
+#include "atom"
 #include "Array.hpp"
 
 namespace pona

@@ -8,7 +8,7 @@
 #ifndef PONA_STACK_HPP
 #define PONA_STACK_HPP
 
-#include "atoms"
+#include "atom"
 
 namespace pona
 {

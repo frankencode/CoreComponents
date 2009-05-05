@@ -1,16 +1,23 @@
-#ifndef RGET_OPTIONS_HPP
-#define RGET_OPTIONS_HPP
+/*
+ * Options.hpp -- application-wide parameters
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../../LICENSE for the license.
+ */
+#ifndef RIO_OPTIONS_HPP
+#define RIO_OPTIONS_HPP
 
 #include <pona/context>
 #include <pona/thread>
 #include <pona/network>
 
-namespace rget
+namespace rio
 {
 
 using namespace pona;
 
-class Options: public ToolOptions
+class Options: public pona::Options
 {
 	PONA_SHARED
 	
@@ -24,9 +31,8 @@ public:
 	Variant server_, client_, help_;
 	Variant host_, port_, inet6_, backlog_;
 	Variant canon_, editor_, eol_, ioUnit_;
-	Variant logging_, logDir_;
-	Variant exec_, tunnel_;
-	Variant loop_, repeat_;
+	Variant quiet_, logging_, logDir_;
+	Variant exec_, loop_, repeat_;
 	Ref<StringList, Owner> files_;
 	
 	String editorPath_;
@@ -39,6 +45,6 @@ private:
 
 inline Ref<Options> options() { return Options::instance(); }
 
-} // namespace rget
+} // namespace rio
 
-#endif // RGET_OPTIONS_HPP
+#endif // RIO_OPTIONS_HPP

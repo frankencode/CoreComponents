@@ -1,3 +1,11 @@
+/*
+ * Service.cpp -- serving connections
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../../LICENSE for the license.
+ */
+
 #include <termios.h> // termios
 #include <unistd.h> // tcgetattr, tcsetattr
 #include "Options.hpp"
@@ -6,7 +14,7 @@
 #include "ProcessObserver.hpp"
 #include "Service.hpp"
 
-namespace rget
+namespace rio
 {
 
 Service::Service()
@@ -14,29 +22,29 @@ Service::Service()
 	  connectLog_(new LogFile(options()->address(), LogFile::Connect)),
 	  repeat_(options()->repeat_),
 	  loop_(options()->loop_),
-	  fileIndex_(0)
+	  fileIndex_(0),
+	  cancelEvent_(new Event),
+	  ioCancelEvent_(new Event)
 {
 	closeOnExec();
 	
-	abortEvent_ = new EventManager;
-	onSignal(SIGINT)->pushBack(abortEvent_);
-	onSignal(SIGTERM)->pushBack(abortEvent_);
-	onSignal(SIGCHLD)->pushBack(abortEvent_); // quick HACK
+	signalEvent(SIGINT)->pushBack(cancelEvent_);
+	signalEvent(SIGTERM)->pushBack(cancelEvent_);
 	
-	class AbortHandler: public EventHandler {
+	class Cancel: public Action {
 	public:
-		AbortHandler(Ref<Service> service)
+		Cancel(Ref<Service> service)
 			: service_(service)
 		{}
 		virtual void run() {
-			print("(%%) Service::AbortHandler::run()\n", options()->execName());
-			service_->abort();
+			service_->finish();
 		}
 	private:
 		Ref<Service, Owner> service_;
 	};
 	
-	abortEvent_->pushBack(new AbortHandler(this));
+	cancelEvent_->pushBack(ioCancelEvent_);
+	cancelEvent_->pushBack(new Cancel(this));
 }
 
 void Service::init()
@@ -47,7 +55,7 @@ void Service::init()
 
 void Service::idle()
 {
-	print("(%%) Service::idle()\n", options()->execName());
+	printTo(error(), "(%%) idle\n", options()->execName());
 }
 
 void Service::serve(Ref<StreamSocket> socket)
@@ -74,7 +82,7 @@ void Service::serve(Ref<StreamSocket> socket)
 	connectLog_->writeLine(socket->address(), "Connection closed");
 	
 	if ((repeat_ == 0) && (!loop_))
-		abort();
+		finish();
 }
 
 void Service::cleanup()
@@ -85,7 +93,8 @@ void Service::cleanup()
 
 Ref<Process, Owner> Service::exec(String entity)
 {
-	print("(%%) Executing %%\n", options()->execName(), entity);
+	if (!options()->quiet_)
+		printTo(error(), "(%%) Executing '%%'\n", options()->execName(), entity);
 	
 	Ref<Process, Owner> process = new Process;
 	process->setType(Process::GroupLeader);
@@ -118,13 +127,15 @@ Ref<StreamSocket, Owner> Service::openTunnel(String entity)
 		port = toInt(pair->get(1), &ok);
 		if (!ok) port = 7373;
 	}
-	print("(%%) Connection to tunnel target %%:%%\n", options()->execName(), host, port);
+	if (!options()->quiet_)
+		printTo(error(), "(%%) Connection to tunnel target %%:%%\n", options()->execName(), host, port);
 	Ref<SocketAddressList, Owner> choice = SocketAddress::resolve(host, Format("%%") << int(port), bool(options()->inet6_) ? AF_INET6 : AF_UNSPEC);
 	Ref<SocketAddress, Owner> address = choice->first();
 	Ref<StreamSocket, Owner>  socket = new StreamSocket(address);
 	socket->connect();
 	while (!socket->established(3))
-		print("(%%) No response from tunnel target %%\n", options()->execName(), host, port);
+		if (!options()->quiet_)
+			printTo(error(), "(%%) No response from tunnel target %%\n", options()->execName(), host, port);
 	return socket;
 }
 
@@ -146,17 +157,10 @@ void Service::canonSession(Ref<StreamSocket> socket, String entity)
 		if (entity != "") {
 			process = exec(entity);
 			processObserver = new ProcessObserver(process);
-			processObserver->finishedEvent()->pushBack(abortEvent_);
+			processObserver->finishedEvent()->pushBack(ioCancelEvent_);
 			processObserver->start();
 			recvSink = process->rawInput();
 			sendSource = process->rawOutput();
-		}
-	}
-	else if (options()->tunnel_) {
-	 	if (entity != "") {
-			Ref<StreamSocket, Owner> tunnelSocket = openTunnel(entity);
-			recvSink = tunnelSocket;
-			sendSource = tunnelSocket;
 		}
 	}
 	else {
@@ -191,26 +195,24 @@ void Service::canonSession(Ref<StreamSocket> socket, String entity)
 		sendSource = sendPipe;
 	}
 	
-	Ref<LineForwarder, Owner> recvForwarder = new LineForwarder(socket, recvSink, options()->eol_, "\012", recvLog, abortEvent_);
-	Ref<LineForwarder, Owner> sendForwarder = new LineForwarder(sendSource, socket, "\012", options()->eol_, sendLog, abortEvent_);
-	recvForwarder->start();
-	sendForwarder->start();
-	
-	print("(%%) recvForwarder->wait()\n", options()->execName());
-	recvForwarder->wait();
-	print("(%%) sendForwarder->wait()\n", options()->execName());
-	sendForwarder->wait();
+	{
+		Ref<LineForwarder, Owner> recvForwarder = new LineForwarder(socket, recvSink, options()->eol_, "\012", recvLog, ioCancelEvent_);
+		Ref<LineForwarder, Owner> sendForwarder = new LineForwarder(sendSource, socket, "\012", options()->eol_, sendLog, ioCancelEvent_);
+		recvForwarder->start();
+		sendForwarder->start();
+		recvForwarder->wait();
+		sendForwarder->wait();
+	}
 	
 	if (editor) {
-		print("(%%) editor->wait()\n", options()->execName());
+		recvSink = 0;
+		sendSource = 0;
 		try { editor->sendSignal(SIGINT); } catch(AnyException& ex) {}
 		editor->wait();
 	}
 	if (process) {
-		print("(%%) process->wait()\n", options()->execName());
 		try { process->sendSignal(SIGKILL); } catch(AnyException& ex) {}
-		int ret = processObserver->wait();
-		print("(%%) ret = %%\n", options()->execName(), ret);
+		processObserver->wait();
 	}
 }
 
@@ -221,7 +223,7 @@ void Service::binarySession(Ref<StreamSocket> socket, String entity)
 	Ref<SystemStream, Owner> recvSink = rawOutput();
 	Ref<SystemStream, Owner> sendSource = rawInput();
 	
-	if (sendSource->interactive()) {
+	if (sendSource->isTeletype()) {
 		if (::tcgetattr(sendSource->fd(), &tioSaved) == -1)
 			PONA_SYSTEM_EXCEPTION;
 		struct termios tio = tioSaved;
@@ -242,15 +244,10 @@ void Service::binarySession(Ref<StreamSocket> socket, String entity)
 		if (options()->exec_) {
 			process = exec(entity);
 			processObserver = new ProcessObserver(process);
-			processObserver->finishedEvent()->pushBack(abortEvent_);
+			processObserver->finishedEvent()->pushBack(ioCancelEvent_);
 			processObserver->start();
 			recvSink = process->rawInput();
 			sendSource = process->rawOutput();
-		}
-		else if (options()->tunnel_) {
-			Ref<StreamSocket, Owner> tunnelSocket = openTunnel(entity);
-			recvSink = tunnelSocket;
-			sendSource = tunnelSocket;
 		}
 		else {
 			Ref<File, Owner> file = new File(entity);
@@ -267,28 +264,23 @@ void Service::binarySession(Ref<StreamSocket> socket, String entity)
 	}
 	
 	{
-		Ref<BinaryForwarder, Owner> sendForwarder = new BinaryForwarder(sendSource, socket, sendLog, abortEvent_);
-		Ref<BinaryForwarder, Owner> recvForwarder = new BinaryForwarder(socket, recvSink, recvLog, abortEvent_);
+		Ref<BinaryForwarder, Owner> sendForwarder = new BinaryForwarder(sendSource, socket, sendLog, ioCancelEvent_);
+		Ref<BinaryForwarder, Owner> recvForwarder = new BinaryForwarder(socket, recvSink, recvLog, ioCancelEvent_);
 		sendForwarder->start();
 		recvForwarder->start();
-		print("(%%) recvForwarder->wait() ...\n", options()->execName());
 		recvForwarder->wait();
-		sendForwarder->abort();
-		print("(%%) sendForwarder->wait() ...\n", options()->execName());
 		sendForwarder->wait();
 	}
 	
 	if (process) {
-		print("(%%) process->wait() ...\n", options()->execName());
 		try { process->sendSignal(SIGKILL); } catch(AnyException& ex) {}
 		int ret = processObserver->wait();
-		print("(%%) ret = %%\n", options()->execName(), ret);
 	}
 	
-	if (sendSource->interactive()) {
+	if (sendSource->isTeletype()) {
 		if (::tcsetattr(sendSource->fd(), TCSAFLUSH, &tioSaved) == -1)
 			PONA_SYSTEM_EXCEPTION;
 	}
 }
 
-} // namespace rget
+} // namespace rio

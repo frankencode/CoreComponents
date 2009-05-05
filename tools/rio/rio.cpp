@@ -1,11 +1,17 @@
+/*
+ * rio.cpp -- main program
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../../LICENSE for the license.
+ */
+
 #include <pona/stdio>
 #include "Options.hpp"
 #include "Service.hpp"
 
-namespace rget
+namespace rio
 {
-
-using namespace pona;
 
 int main(int argc, char** argv)
 {
@@ -15,23 +21,19 @@ int main(int argc, char** argv)
 	Ref<Service, Owner> service = new Service;
 	
 	if (options()->client_) {
-		service->startClient(1);
+		service->runClient(1);
 	}
 	else if (options()->server_) {
-		service->startServer(1, options()->backlog_);
+		service->runServer(1, options()->backlog_);
 	}
 	else if (options()->help_) {
 		print(options()->help());
-	}
-	else {
-		print("Missing parameter, try '%% --help'.\n", options()->execName());
-		ret = 1;
 	}
 	
 	return ret;
 }
 
-} // namespace rget
+} // namespace rio
 
 int main(int argc, char** argv)
 {
@@ -39,7 +41,7 @@ int main(int argc, char** argv)
 	#ifdef NDEBUG
 	try {
 	#endif
-		ret = rget::main(argc, argv);
+		ret = rio::main(argc, argv);
 	#ifdef NDEBUG
 	}
 	catch (pona::AnyException& ex) {

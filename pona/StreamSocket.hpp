@@ -8,7 +8,7 @@
 #ifndef PONA_STREAMSOCKET_HPP
 #define PONA_STREAMSOCKET_HPP
 
-#include "atoms"
+#include "atom"
 #include "defaults.hpp"
 #include "Time.hpp"
 #include "Mutex.hpp"
@@ -38,21 +38,21 @@ public:
 	static Ref<SocketAddress> localAddress(int fd);
 	static Ref<SocketAddress> remoteAddress(int fd);
 	
-	void startServer(Time idleTimeout = 0.1, int backlog = PONA_DEFAULT_BACKLOG);
-	void startClient(Time idleTimeout = 0.1);
-	void abort();
+	void runServer(Time idleTimeout = 0.1, int backlog = PONA_DEFAULT_BACKLOG);
+	void runClient(Time idleTimeout = 0.1);
+	void finish();
+	bool done() const;
 	
 protected:
+	virtual void init() {}
 	virtual void idle() {}
 	virtual void serve(Ref<StreamSocket> socket) {}
 	virtual void cleanup() {}
 	
-	bool stopServing() const;
-	
 private:
 	Ref<SocketAddress, Owner> address_;
 	bool connected_;
-	bool abort_;
+	bool done_;
 };
 
 } // namespace pona

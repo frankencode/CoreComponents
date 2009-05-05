@@ -10,7 +10,7 @@
 
 #include <sys/types.h> // pid_t
 #include <signal.h> // SIGTERM, etc.
-#include "atoms"
+#include "atom"
 #include "context.hpp"
 #include "SystemStream.hpp"
 #include "LineSink.hpp"

@@ -8,8 +8,8 @@
 
 #include <errno.h>
 #include <string.h>
-#include "OnExitManager.hpp"
-#include "OnThreadExitManager.hpp"
+#include "ExitEvent.hpp"
+#include "ThreadExitEvent.hpp"
 #include "Random.hpp"
 #include "File.hpp"
 
@@ -129,7 +129,7 @@ void File::truncate(off_t length)
 	}
 }
 
-class UnlinkFile: public EventHandler {
+class UnlinkFile: public Action {
 public:
 	UnlinkFile(String path): path_(path) {}
 	void run() { File(path_).unlink(); }
@@ -139,12 +139,12 @@ private:
 
 void File::unlinkOnExit()
 {
-	onExit()->pushBack(new UnlinkFile(path_));
+	exitEvent()->pushBack(new UnlinkFile(path_));
 }
 
 void File::unlinkOnThreadExit()
 {
-	onThreadExit()->pushBack(new UnlinkFile(path_));
+	threadExitEvent()->pushBack(new UnlinkFile(path_));
 }
 
 void File::open(int flags)

@@ -8,7 +8,7 @@
 #ifndef PONA_QUEUE_HPP
 #define PONA_QUEUE_HPP
 
-#include "atoms"
+#include "atom"
 
 namespace pona
 {

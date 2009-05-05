@@ -1,12 +1,12 @@
 /*
- * atoms -- wildcard include header
+ * atom -- wildcard include header
  *
  * Copyright (c) 2007-2009, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
-#ifndef PONA_ATOMS
-#define PONA_ATOMS
+#ifndef PONA_ATOM
+#define PONA_ATOM
 
 #include "Instance.hpp"
 #include "Alien.hpp"
@@ -14,4 +14,4 @@
 #include "Exception.hpp"
 #include "types.hpp"
 
-#endif // PONA_ATOMS
+#endif // PONA_ATOM

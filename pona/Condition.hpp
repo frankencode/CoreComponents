@@ -5,14 +5,13 @@
  *
  * See ../LICENSE for the license.
  */
-
 #ifndef PONA_CONDITION_HPP
 #define PONA_CONDITION_HPP
 
 #include <stdio.h>
 #include <errno.h>
 
-#include "atoms"
+#include "atom"
 #include "Mutex.hpp"
 #include "Time.hpp"
 

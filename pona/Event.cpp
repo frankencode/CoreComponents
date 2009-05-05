@@ -1,35 +1,35 @@
 /*
- * EventManager.cpp -- event dispatcher
+ * Event.cpp -- event dispatcher
  *
  * Copyright (c) 2007-2009, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
 
-#include "EventManager.hpp"
+#include "Event.hpp"
 
 namespace pona
 {
 
-EventManager::EventManager()
+Event::Event()
 	: handlers_(new Handlers)
 {}
 
-void EventManager::pushBack(Ref<EventHandler> handler)
+void Event::pushBack(Ref<Action> handler)
 {
 	acquire();
 	handlers_->pushBack(handler);
 	release();
 }
 
-void EventManager::pushFront(Ref<EventHandler> handler)
+void Event::pushFront(Ref<Action> handler)
 {
 	acquire();
 	handlers_->pushFront(handler);
 	release();
 }
 
-void EventManager::remove(Ref<EventHandler> handler)
+void Event::remove(Ref<Action> handler)
 {
 	acquire();
 	int i = handlers_->find(handler);
@@ -38,7 +38,7 @@ void EventManager::remove(Ref<EventHandler> handler)
 	release();
 }
 
-void EventManager::run()
+void Event::run()
 {
 	acquire();
 	for (int i = 0, n = handlers_->length(); i < n; ++i)

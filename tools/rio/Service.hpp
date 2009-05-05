@@ -1,12 +1,19 @@
-#ifndef RGET_SERVICE_HPP
-#define RGET_SERVICE_HPP
+/*
+ * Service.hpp -- serving connections
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../../LICENSE for the license.
+ */
+#ifndef RIO_SERVICE_HPP
+#define RIO_SERVICE_HPP
 
 #include <pona/stdio>
 #include <pona/network>
 #include <pona/event>
 #include "LogFile.hpp"
 
-namespace rget
+namespace rio
 {
 
 using namespace pona;
@@ -33,9 +40,10 @@ private:
 	bool loop_;
 	int fileIndex_; // file index
 	
-	Ref<EventManager, Owner> abortEvent_;
+	Ref<Event, Owner> ioCancelEvent_;
+	Ref<Event, Owner> cancelEvent_;
 };
 
-} // namespace rget
+} // namespace rio
 
-#endif // RGET_SERVICE_HPP
+#endif // RIO_SERVICE_HPP

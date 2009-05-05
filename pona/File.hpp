@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "atoms"
+#include "atom"
 #include "String.hpp"
 #include "SystemStream.hpp"
 #include "FileStatus.hpp"

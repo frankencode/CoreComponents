@@ -8,7 +8,7 @@
 #ifndef PONA_LISTOBSERVER_HPP
 #define PONA_LISTOBSERVER_HPP
 
-#include "atoms"
+#include "atom"
 
 namespace pona
 {

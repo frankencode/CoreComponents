@@ -1,11 +1,18 @@
-#ifndef RGET_LOGFILE_HPP
-#define RGET_LOGFILE_HPP
+/*
+ * LogFile.hpp -- transfer and connection logging
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../../LICENSE for the license.
+ */
+#ifndef RIO_LOGFILE_HPP
+#define RIO_LOGFILE_HPP
 
 #include <pona/stdio>
 #include <pona/time>
 #include <pona/SocketAddress.hpp>
 
-namespace rget
+namespace rio
 {
 
 using namespace pona;
@@ -30,6 +37,6 @@ protected:
 	Ref<LogFile, Owner> merged_;
 };
 
-} // namespace rget
+} // namespace rio
 
-#endif // RGET_LOGFILE_HPP
+#endif // RIO_LOGFILE_HPP

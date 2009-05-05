@@ -8,7 +8,7 @@
 #ifndef PONA_RANDOMACCESSMEDIA_HPP
 #define PONA_RANDOMACCESSMEDIA_HPP
 
-#include "atoms"
+#include "atom"
 
 namespace pona
 {

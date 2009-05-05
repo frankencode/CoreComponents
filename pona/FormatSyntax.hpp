@@ -8,7 +8,7 @@
 #ifndef PONA_FORMATSYNTAX_HPP
 #define PONA_FORMATSYNTAX_HPP
 
-#include "atoms"
+#include "atom"
 #include "ThreadLocalOwner.hpp"
 
 namespace pona

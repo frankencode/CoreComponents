@@ -1,7 +1,15 @@
+/*
+ * LogFile.cpp -- transfer and connection logging
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../../LICENSE for the license.
+ */
+
 #include "Options.hpp"
 #include "LogFile.hpp"
 
-namespace rget
+namespace rio
 {
 
 LogFile::LogFile(Ref<SocketAddress> address, int type, Time t0, Ref<LogFile> merged)
@@ -42,13 +50,14 @@ void LogFile::writeLine(Ref<SocketAddress> address, String data)
 			<< address->addressString()
 			<< address->port();
 		
-		output()->writeLine(line);
+		if (!options()->quiet_)
+			error()->writeLine(line);
 	}
 	
 	if (lineSink_)
 		lineSink_->writeLine(line);
 	
-	if ((merged_) || (options()->tunnel_))
+	if (merged_)
 	{
 		if ((type_ == Recv) || (type_ == Send)) {
 			bool client = options()->client_;
@@ -57,9 +66,6 @@ void LogFile::writeLine(Ref<SocketAddress> address, String data)
 				line = String("C: ") << data;
 			else
 				line = String("S: ") << data;
-			
-			if (options()->tunnel_)
-				output()->writeLine(line);
 		}
 		
 		if (merged_)
@@ -80,4 +86,4 @@ void LogFile::write(uint8_t* buf, int bufFill)
 		merged_->write(buf, bufFill);
 }
 
-} // namespace rget
+} // namespace rio

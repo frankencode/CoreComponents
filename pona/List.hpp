@@ -9,7 +9,7 @@
 #define PONA_LIST_HPP
 
 #include <new>
-#include "atoms"
+#include "atom"
 #include "RandomAccessMedia.hpp"
 #include "ListObserver.hpp"
 
