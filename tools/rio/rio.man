@@ -7,11 +7,10 @@ rio \- full-duplex network adapter
 .SH DESCRIPTION
 ." In case you forget again what roff is about: http://www.linuxjournal.com/article/1158.
 ." Useful commands:
-." groff -Tascii -man rio.man|less
-." groff -Tps -man rio.man > rio.ps && evince ./rio.ps
-." ps2pdf rio.ps
+." groff -Tascii -man rio.man > man.1
+." groff -Tps -man rio.man > rio.ps && ps2pdf rio.ps
 .PP
-\fBrio\fP copies simultanously its standard input and standard output to and from a stream socket.
+\fBrio\fP copies simultaneously its standard input and standard output to and from a stream socket.
 A stream socket can be established passively or actively. In passive mode \fBrio\fP functions as
 an iterative server listening for connections.
 .PP
@@ -22,7 +21,7 @@ and output of the \fIPROGRAM\fP in execution will be copied to the connected soc
 .PP
 By default \fBrio\fP operates in binary mode, but it can also transfer bytes line-vise (\fB-a\fP).
 In canonical mode \fBrio\fP will read and write data line-vise and will automatically
-convert line endings from the local line ending style (\\012) to a choosen network line
+convert line endings from the local line ending style (\\012) to a chosen network line
 ending style (\\015\\012 by default).
 .PP
 If operating in canonical mode without a pipe connected to its standard input, \fBrio\fP will
