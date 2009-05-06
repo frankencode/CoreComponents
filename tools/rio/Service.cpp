@@ -93,7 +93,7 @@ void Service::cleanup()
 
 Ref<Process, Owner> Service::exec(String entity)
 {
-	if (!options()->quiet_)
+	if (!bool(options()->quiet_))
 		printTo(error(), "(%%) Executing '%%'\n", options()->execName(), entity);
 	
 	Ref<Process, Owner> process = new Process;
@@ -127,14 +127,14 @@ Ref<StreamSocket, Owner> Service::openTunnel(String entity)
 		port = toInt(pair->get(1), &ok);
 		if (!ok) port = 7373;
 	}
-	if (!options()->quiet_)
+	if (!bool(options()->quiet_))
 		printTo(error(), "(%%) Connection to tunnel target %%:%%\n", options()->execName(), host, port);
 	Ref<SocketAddressList, Owner> choice = SocketAddress::resolve(host, Format("%%") << int(port), bool(options()->inet6_) ? AF_INET6 : AF_UNSPEC);
 	Ref<SocketAddress, Owner> address = choice->first();
 	Ref<StreamSocket, Owner>  socket = new StreamSocket(address);
 	socket->connect();
 	while (!socket->established(3))
-		if (!options()->quiet_)
+		if (!bool(options()->quiet_))
 			printTo(error(), "(%%) No response from tunnel target %%\n", options()->execName(), host, port);
 	return socket;
 }

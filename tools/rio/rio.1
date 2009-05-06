@@ -1,5 +1,7 @@
 RIO(1)                           Misc Commands                          RIO(1)
 
+
+
 NNAAMMEE
        rio - full-duplex network adapter
 
@@ -9,7 +11,7 @@ SSYYNNOOPPSSIISS
 DDEESSCCRRIIPPTTIIOONN
        rriioo  copies simultanously its standard input and standard output to and
        from a stream socket.  A stream socket can be established passively  or
-       actively. In passive mode rriioo functions as an interative server listen-
+       actively.  In passive mode rriioo functions as an iterative server listen-
        ing for connections.
 
        Optionally one or  more  files  passed  as  additional  parameters  are
@@ -31,61 +33,76 @@ DDEESSCCRRIIPPTTIIOONN
        or SMTP in a comfortable manner.
 
 OOPPTTIIOONNSS
-       ----sseerrvveerr, --ss
+       --server, -s
               Server mode
 
-       ----cclliieenntt, --cc
+       --client, -c
               Client mode
 
-       ----hhoosstt, --tt
+       --host, -t
               Host name or address
 
-       ----ppoorrtt, --pp
+       --port, -p
               Port number
 
-       ----iinneett66, --66
+       --inet6, -6
               Prefer IPv6
 
-       ----bbaacckklloogg, --bb
+       --backlog, -b
               Backlog length of listening socket
 
-       ----ccaannoonn, --bb
+       --canon, -b
               Line-vise I/O mode
 
-       ----eeddiittoorr, --ee
+       --editor, -e
               Line editor
 
-       ----eeooll, --nn
+       --eol, -n
               Line ending style ('crlf' or 'nl')
 
-       ----iioo__uunniitt, --uu
+       --io_unit, -u
               I/O buffer size
 
-       ----qquuiieett, --qq
+       --quiet, -q
               Do not output any status messages
 
-       ----llooggggiinngg, --gg
+       --logging, -g
               Logging flags (connect,recv,send,merged)
 
-       ----lloogg__ddiirr, --dd
+       --log_dir, -d
               Target directory for log files
 
-       ----eexxeecc, --xx
+       --exec, -x
               Execute each [PROGRAM]
 
-       ----lloooopp, --ll
+       --loop, -l
               Endless repeat serving connections
 
-       ----rreeppeeaatt, --rr
-              Repeat serving exactly n connections
+       --repeat=_N, -r=_N
+              Repeat serving exactly _N connections
 
-       ----hheellpp, --hh
+       --help, -h
               Print help
+
+EEXXAAMMPPLLEESS
+       Piping a file from one host to another:
+              Host A: rio --server < some_file
+              Host B: rio --client --host=A > some_file
+
+       Running a HTTP logging proxy:
+              Service definition (/etc/inetd.conf) on host A:
+              www stream tcpnowait user /full/path/rio rio -c -t=B -p=80 -q -g=send,recv -d=/home/user/www
+
+       Remotely working on another hosts:
+              Host A: rio -sax bash
+              Host B: rio -c -t=A
 
 SSEEEE AALLSSOO
        hd(1), inetd(8), tcpdump(1), rget(1)
 
 AAUUTTHHOORR
        Frank Mertens, frank@cyblogic.de
+
+
 
 version 0.9.4                     03 MAY 2009                           RIO(1)

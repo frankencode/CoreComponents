@@ -405,7 +405,7 @@ protected:
 public:
 	class Definition;
 	
-private:
+protected:
 	class InlineNode;
 	
 	class RuleNode: public Node
@@ -565,7 +565,7 @@ private:
 public:
 	typedef int (*CallBack) (Ref<Instance> self, Media* media, int i, State* state);
 	
-private:
+protected:
 	class CallNode: public Node
 	{
 	public:

@@ -6,10 +6,14 @@ rio \- full-duplex network adapter
 [\fIOPTION\fP]... [\fIFILE\fP|\fIPROGRAM\fP]...
 .SH DESCRIPTION
 ." In case you forget again what roff is about: http://www.linuxjournal.com/article/1158.
+." Useful commands:
+." groff -Tascii -man rio.man|less
+." groff -Tps -man rio.man > rio.ps && evince ./rio.ps
+." ps2pdf rio.ps
 .PP
 \fBrio\fP copies simultanously its standard input and standard output to and from a stream socket.
 A stream socket can be established passively or actively. In passive mode \fBrio\fP functions as
-an interative server listening for connections.
+an iterative server listening for connections.
 .PP
 Optionally one or more files passed as additional parameters are injected into the socket
 before copying standard input. In passive mode each connection gets served a single file iterating
@@ -26,56 +30,75 @@ start a line editor (\fBrio_rl\fP by default) to edit each line before transmiss
 allows chatting with services like FTP or SMTP in a comfortable manner.
 .SH OPTIONS
 .TP
-\fB\-\-server\fP, \fB\-s\fP
+\-\-server, \-s
 Server mode
 .TP
-\fB\-\-client\fP, \fB\-c\fP
+\-\-client, \-c
 Client mode
 .TP
-\fB\-\-host\fP, \fB\-t\fP
+\-\-host, \-t
 Host name or address
 .TP
-\fB\-\-port\fP, \fB\-p\fP
+\-\-port, \-p
 Port number
 .TP
-\fB\-\-inet6\fP, \fB\-6\fP
+\-\-inet6, \-6
 Prefer IPv6
 .TP
-\fB\-\-backlog\fP, \fB\-b\fP
+\-\-backlog, \-b
 Backlog length of listening socket
 .TP
-\fB\-\-canon\fP, \fB\-b\fP
+\-\-canon, \-b
 Line-vise I/O mode
 .TP
-\fB\-\-editor\fP, \fB\-e\fP
+\-\-editor, \-e
 Line editor
 .TP
-\fB\-\-eol\fP, \fB\-n\fP
+\-\-eol, \-n
 Line ending style ('crlf' or 'nl')
 .TP
-\fB\-\-io_unit\fP, \fB\-u\fP
+\-\-io_unit, \-u
 I/O buffer size
 .TP
-\fB\-\-quiet\fP, \fB\-q\fP
+\-\-quiet, \-q
 Do not output any status messages
 .TP
-\fB\-\-logging\fP, \fB\-g\fP
+\-\-logging, \-g
 Logging flags (connect,recv,send,merged)
 .TP
-\fB\-\-log_dir\fP, \fB\-d\fP
+\-\-log_dir, \-d
 Target directory for log files
 .TP
-\fB\-\-exec\fP, \fB\-x\fP
+\-\-exec, \-x
 Execute each [PROGRAM]
 .TP
-\fB\-\-loop\fP, \fB\-l\fP
+\-\-loop, \-l
 Endless repeat serving connections
 .TP
-\fB\-\-repeat\fP, \fB\-r\fP
-Repeat serving exactly n connections
+\-\-repeat=\fIN\fP, \-r=\fIN\fP
+Repeat serving exactly \fIN\fP connections
 .TP
-\fB\-\-help\fP, \fB\-h\fP
+\-\-help, \-h
 Print help
+.SH EXAMPLES
+.TP
+Piping a file from one host to another:
+.nf
+Host A: rio --server < some_file
+Host B: rio --client --host=A > some_file
+.fi
+.TP
+Running a HTTP logging proxy:
+Service definition (/etc/inetd.conf) on host A:
+.nf
+www stream tcpnowait user /full/path/rio rio -c -t=B -p=80 -q -g=send,recv -d=/home/user/www
+.fi
+.TP
+Remotely working on another hosts:
+.nf
+Host A: rio -sax bash
+Host B: rio -c -t=A
+.fi
 .SH "SEE ALSO"
 hd(1), inetd(8), tcpdump(1), rget(1)
 .SH AUTHOR

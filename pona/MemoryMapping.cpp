@@ -39,7 +39,7 @@ MemoryMapping::MemoryMapping(size_t length, int prot, int type)
 
 MemoryMapping::~MemoryMapping()
 {
-	if (::munmap(start_, length_) == -1)
+	if (::munmap((char* /*suncc issue*/)start_, length_) == -1)
 		PONA_SYSTEM_EXCEPTION;
 }
 
