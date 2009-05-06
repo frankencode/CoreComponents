@@ -30,11 +30,10 @@ public:
 	public:
 		Node(const T& e): misc(0), e_(e) {}
 		
-		union {
-			Node* adj[3];
-			struct { Node *left, *right, *parent; };
-		};
-		
+		Node* left;
+		Node* right;
+		Node* parent;
+	
 		union {
 			int misc;
 			int balance;

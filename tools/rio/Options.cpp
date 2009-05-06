@@ -96,7 +96,7 @@ void Options::read(int argc, char** argv)
 				PONA_THROW(Exception, "Incorrect '--logging=' syntax.");
 		}
 		
-		if (exec_ && (files_->length() == 0))
+		if (bool(exec_) && (files_->length() == 0))
 			PONA_THROW(Exception, "No file passed to execute.");
 	}
 }

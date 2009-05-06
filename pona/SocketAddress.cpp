@@ -210,8 +210,6 @@ String SocketAddress::lookupHostName(bool* failed) const
 	int flags = NI_NAMEREQD;
 	if (socketType_ == SOCK_DGRAM) flags |= NI_DGRAM;
 	
-	hostName[0] = 0;
-	serviceName[0] = 0;
 	int ret = getnameinfo(socketAddress(), socketAddressLength(), hostName, hostNameSize, serviceName, serviceNameSize, flags);
 	
 	if (ret != 0) {

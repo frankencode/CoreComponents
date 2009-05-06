@@ -50,7 +50,7 @@ void LogFile::writeLine(Ref<SocketAddress> address, String data)
 			<< address->addressString()
 			<< address->port();
 		
-		if (!options()->quiet_)
+		if (!bool(options()->quiet_))
 			error()->writeLine(line);
 	}
 	
