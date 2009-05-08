@@ -228,6 +228,7 @@ String SocketAddress::lookupHostName(bool* failed) const
 
 String SocketAddress::lookupServiceName() const
 {
+	
 	const int hostNameSize = NI_MAXHOST;
 	const int serviceNameSize = NI_MAXSERV;
 	char hostName[hostNameSize];
@@ -238,8 +239,12 @@ String SocketAddress::lookupServiceName() const
 	serviceName[0] = 0;
 	int ret = getnameinfo(socketAddress(), socketAddressLength(), hostName, hostNameSize, serviceName, serviceNameSize, flags);
 	
-	if (ret != 0)
+	if (ret != 0) {
+	#ifdef __MACH__
+		if (port()) // OSX 10.4 HACK
+	#endif
 		PONA_THROW(NetworkingException, gai_strerror(ret));
+	}
 	
 	return String(serviceName);
 }

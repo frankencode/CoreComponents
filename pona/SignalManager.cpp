@@ -79,6 +79,7 @@ SignalManager::~SignalManager()
 {
 	signalListener_->stopListener_ = true;
 	pthread_kill(signalListener_->tid(), SIGUSR1);
+	signalListener_->wait();
 }
 
 Ref<Event> SignalManager::managerBySignal(int signal)

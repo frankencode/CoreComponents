@@ -30,7 +30,6 @@ protected:
 	virtual void cleanup();
 	
 	Ref<Process, Owner> exec(String entity);
-	Ref<StreamSocket, Owner> openTunnel(String entity);
 	void canonSession(Ref<StreamSocket> socket, String entity);
 	void binarySession(Ref<StreamSocket> socket, String entity);
 	

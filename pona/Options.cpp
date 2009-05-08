@@ -201,7 +201,7 @@ Ref<StringList> Options::read(String line)
 	int i0 = 0, i1 = -1;
 	Ref<Token, Owner> rootToken;
 	if (!match(line, i0, &i1, &rootToken))
-		PONA_THROW(ToolOptionsException, "Unrecognized option syntax");
+		PONA_THROW(OptionsException, "Unrecognized option syntax");
 	
 	Ref<Token> token = rootToken->firstChild();
 	
@@ -232,7 +232,7 @@ void Options::verifyTypes()
 		if ( ((option->value_->type() & option->typeMask_) == 0) &&
 		     (option->typeMask_ != 0) )
 		{
-			PONA_THROW(ToolOptionsException, "Unrecognized option syntax");
+			PONA_THROW(OptionsException, "Unrecognized option syntax");
 		}
 	}
 }
@@ -248,7 +248,7 @@ void Options::readOption(String line, Ref<Token> token)
 			Char name = line->get(token->index());
 			Ref<Option> option = optionByShortName(name);
 			if (!option)
-				PONA_THROW(ToolOptionsException, String(Format("Unsupported option: '-%%'") << name).strdup());
+				PONA_THROW(OptionsException, String(Format("Unsupported option: '-%%'") << name).strdup());
 			
 			token = token->nextSibling();
 			if (token) {
@@ -270,7 +270,7 @@ void Options::readOption(String line, Ref<Token> token)
 		String name = line->range(token->index(), token->length());
 		Ref<Option> option = optionByLongName(name);
 		if (!option)
-			PONA_THROW(ToolOptionsException, String(Format("Unsupported option: '--%%'") << name).strdup());
+			PONA_THROW(OptionsException, String(Format("Unsupported option: '--%%'") << name).strdup());
 		
 		token = token->nextSibling();
 		if (!token)
@@ -292,7 +292,7 @@ void Options::readValue(Ref<Option> option, String line, Ref<Token> token)
 		bool on = (s == "1") || (s == "H") || (s == "h") || (s == "on") || (s == "On") || (s == "true") || (s == "True");
 		bool off = (s == "0") || (s == "L") || (s == "l") || (s == "off") || (s == "Off") || (s == "false") || (s == "False");
 		if (!(on || off))
-			PONA_THROW(ToolOptionsException, "Unrecognized option syntax");
+			PONA_THROW(OptionsException, "Unrecognized option syntax");
 		
 		*value = on;
 	}
@@ -301,7 +301,7 @@ void Options::readValue(Ref<Option> option, String line, Ref<Token> token)
 		int x = toInt(s, &ok);
 		
 		if (!ok)
-			PONA_THROW(ToolOptionsException, "Unrecognized option syntax");
+			PONA_THROW(OptionsException, "Unrecognized option syntax");
 		
 		*value = x;
 	}
@@ -310,7 +310,7 @@ void Options::readValue(Ref<Option> option, String line, Ref<Token> token)
 		double x = toFloat(s, &ok);
 		
 		if (!ok)
-			PONA_THROW(ToolOptionsException, "Unrecognized option syntax");
+			PONA_THROW(OptionsException, "Unrecognized option syntax");
 		
 		*value = x;
 	}

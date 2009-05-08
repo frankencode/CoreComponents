@@ -75,12 +75,9 @@ void Options::read(int argc, char** argv)
 			Ref<StringList, Owner> dirs = env("PATH") / ':';
 			if (!dirs->contains(execDir()))
 				dirs->append(execDir());
-			debug("execDir = %%\n", execDir());
-			debug("dirs = %%\n", dirs * ':');
 			editorPath_ = lookupPath(dirs, editor_);
 			if (editorPath_ == "")
 				PONA_THROW(Exception, "Editor program could not be found.");
-			debug("editorPath_ = %%\n", editorPath_);
 		}
 		
 		loggingFlags_ = 0;

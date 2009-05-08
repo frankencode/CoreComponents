@@ -80,6 +80,7 @@ int main()
 	p1->wait();
 	p2->wait();
 	dt = now() - dt;
+	
 	print("\ndt = %% usec\n\n", dt.microSeconds());
 	
 	return 0;

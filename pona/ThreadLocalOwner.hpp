@@ -22,14 +22,13 @@ public:
 	{
 		int ret = ::pthread_key_create(&key_, &threadExitEvent);
 		if (ret != 0)
-			PONA_SYSTEM_EXCEPTION;
+			PONA_THROW(SystemException, "pthread_key_create() failed");
 	}
 	
 	~ThreadLocalOwner()
 	{
-		int ret = ::pthread_key_delete(key_);
-		if (ret != 0)
-			PONA_SYSTEM_EXCEPTION;
+		::pthread_key_delete(key_);
+		// no error handling, because key could have been deleted automatically
 	}
 	
 	inline T* get() const {

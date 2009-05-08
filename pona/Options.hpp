@@ -17,7 +17,7 @@
 namespace pona
 {
 
-PONA_EXCEPTION(ToolOptionsException, Exception);
+PONA_EXCEPTION(OptionsException, Exception);
 
 class Options: public SyntaxDefinition<String::Media>
 {
