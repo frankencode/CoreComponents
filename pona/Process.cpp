@@ -13,7 +13,7 @@
 #include <unistd.h> // fork, execve, dup2, chdir, close, environ
 #include <fcntl.h> // open
 #include <stdlib.h> // exit
-#include <signal.h> // kill, raise
+#include <signal.h> // kill, raise, sigprocmask, sigemptyset
 #include <termios.h> // tcgetattr, tcsetattr
 #include <errno.h> // errno
 
@@ -30,7 +30,9 @@ Process::Process()
 	: type_(SimpleChild),
 	  ioPolicy_(0),
 	  pid_(-1)
-{}
+{
+	sigemptyset(&signalMask_);
+}
 
 void Process::start()
 {
@@ -42,7 +44,7 @@ void Process::start()
 	
 	if (ioPolicy_ & ForwardByPseudoTerminal)
 	{
-		ptyMaster = posix_openpt(O_RDWR|O_NOCTTY);
+		ptyMaster = ::posix_openpt(O_RDWR/*|O_NOCTTY*/); // O_NOCTTY should have no effect
 		if (ptyMaster == -1)
 			PONA_SYSTEM_EXCEPTION;
 		if (grantpt(ptyMaster) == -1)
@@ -85,9 +87,15 @@ void Process::start()
 			if (::close(ptyMaster) == -1)
 				PONA_SYSTEM_EXCEPTION;
 			
-			ptySlave = ::open(ptySlavePath, O_RDWR|O_NOCTTY);
+			ptySlave = ::open(ptySlavePath, O_RDWR | ((type_ == SessionLeader) ? 0 : O_NOCTTY));
 			if (ptySlave == -1)
 				PONA_SYSTEM_EXCEPTION;
+			
+			#ifdef __MACH__
+			// OSX 10.4 compatibility, HACK
+			if (type_ == SessionLeader)
+				::ioctl(ptySlave, TIOCSCTTY, 0);
+			#endif
 			
 			{
 				struct termios attr;
@@ -98,11 +106,10 @@ void Process::start()
 			#endif // IUTF8
 				::tcsetattr(ptySlave, TCSANOW, &attr);
 			}
-			
-			if (type_ == SessionLeader)
-				if (::ioctl(ptySlave, TIOCSCTTY, 0) == -1)
-					PONA_SYSTEM_EXCEPTION;
 		}
+		
+		if (::sigprocmask(SIG_SETMASK, &signalMask_, 0) == -1)
+			PONA_SYSTEM_EXCEPTION;
 		
 		if (ioPolicy_ & CloseInput) ::close(0);
 		if (ioPolicy_ & CloseOutput) ::close(1);
@@ -213,8 +220,12 @@ void Process::start()
 		{
 			if (ioPolicy_ & ForwardInput)
 				rawInput_ = new SystemStream(ptyMaster);
-			if ((ioPolicy_ & ForwardOutput) || (ioPolicy_ & ForwardError))
-				rawOutput_ = new SystemStream(ptyMaster);
+			if ((ioPolicy_ & ForwardOutput) || (ioPolicy_ & ForwardError)) {
+				if (rawInput_)
+					rawOutput_ = rawInput_;
+				else
+					rawOutput_ = new SystemStream(ptyMaster);
+			}
 		}
 		else
 		{

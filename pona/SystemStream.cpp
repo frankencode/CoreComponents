@@ -42,11 +42,7 @@ bool SystemStream::isOpen() const { return fd_ != -1; }
 void SystemStream::close()
 {
 	if (::close(fd_) == -1)
-	#ifdef NDEBUG // WORSEST WORKAROUND, HACK
-		;
-	#else
 		PONA_THROW(StreamSemanticException, systemError());
-	#endif
 	fd_ = -1;
 }
 

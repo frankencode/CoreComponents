@@ -83,6 +83,8 @@ void Service::serve(Ref<StreamSocket> socket)
 	
 	if ((repeat_ == 0) && (!loop_))
 		finish();
+	
+	cancelEvent_ = 0;
 }
 
 void Service::cleanup()
@@ -115,28 +117,6 @@ Ref<Process, Owner> Service::exec(String entity)
 	process->start();
 	
 	return process;
-}
-
-Ref<StreamSocket, Owner> Service::openTunnel(String entity)
-{
-	Ref<StringList, Owner> pair = entity / ':';
-	String host = pair->get(0);
-	int port = 7373;
-	if (pair->length() == 2) {
-		bool ok = false;
-		port = toInt(pair->get(1), &ok);
-		if (!ok) port = 7373;
-	}
-	if (!bool(options()->quiet_))
-		printTo(error(), "(%%) Connection to tunnel target %%:%%\n", options()->execName(), host, port);
-	Ref<SocketAddressList, Owner> choice = SocketAddress::resolve(host, Format("%%") << int(port), bool(options()->inet6_) ? AF_INET6 : AF_UNSPEC);
-	Ref<SocketAddress, Owner> address = choice->first();
-	Ref<StreamSocket, Owner>  socket = new StreamSocket(address);
-	socket->connect();
-	while (!socket->established(3))
-		if (!bool(options()->quiet_))
-			printTo(error(), "(%%) No response from tunnel target %%\n", options()->execName(), host, port);
-	return socket;
 }
 
 void Service::canonSession(Ref<StreamSocket> socket, String entity)
@@ -207,12 +187,18 @@ void Service::canonSession(Ref<StreamSocket> socket, String entity)
 	if (editor) {
 		recvSink = 0;
 		sendSource = 0;
-		try { editor->sendSignal(SIGINT); } catch(AnyException& ex) {}
-		editor->wait();
+		try { editor->sendSignal(SIGTERM); } catch(AnyException& ex) {}
+		int ret = editor->wait();
+		#ifndef NDEBUG
+		print("ret = %%\n", ret);
+		#endif
 	}
 	if (process) {
-		try { process->sendSignal(SIGKILL); } catch(AnyException& ex) {}
-		processObserver->wait();
+		try { process->sendSignal(SIGTERM); } catch(AnyException& ex) {}
+		int ret = processObserver->wait();
+		#ifndef NDEBUG
+		print("ret = %%\n", ret);
+		#endif
 	}
 }
 
@@ -273,8 +259,11 @@ void Service::binarySession(Ref<StreamSocket> socket, String entity)
 	}
 	
 	if (process) {
-		try { process->sendSignal(SIGKILL); } catch(AnyException& ex) {}
+		try { process->sendSignal(SIGTERM); } catch(AnyException& ex) {}
 		int ret = processObserver->wait();
+		#ifndef NDEBUG
+		print("ret = %%\n", ret);
+		#endif
 	}
 	
 	if (sendSource->isTeletype()) {

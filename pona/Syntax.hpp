@@ -1056,9 +1056,12 @@ public:
 		
 		bool match(Media* media, int i0 = 0, int* i1 = 0, Ref<Token, Owner>* rootToken = 0, State* state = 0, uint8_t* buf = 0, int bufSize = 0)
 		{
+			Ref<State, Owner> localState;
 			if (!state) {
-				if ((stateFlagHead_) || (stateCharHead_))
-					state = newState();
+				if ((stateFlagHead_) || (stateCharHead_)) {
+					localState = newState();
+					state = localState;
+				}
 			}
 			
 			TokenFactory tokenFactory(buf, bufSize);

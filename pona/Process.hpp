@@ -56,6 +56,8 @@ public:
 	String workingDirectory() const { return workingDirectory_; }
 	void setWorkingDirectory(String path) { workingDirectory_ = path; }
 	
+	sigset_t* signalMask() { return &signalMask_; }
+	
 	String execPath() const { return execPath_; }
 	void setExecPath(String path) { execPath_ = path; }
 	
@@ -96,6 +98,8 @@ private:
 	int type_;
 	int ioPolicy_;
 	String workingDirectory_;
+	
+	sigset_t signalMask_;
 	
 	String execPath_;
 	Ref<StringList, Owner> options_;
