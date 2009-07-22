@@ -17,6 +17,8 @@
 #include <termios.h> // tcgetattr, tcsetattr
 #include "ProcessFactory.hpp"
 
+extern "C" char** environ;
+
 namespace pona
 {
 
