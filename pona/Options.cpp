@@ -8,7 +8,7 @@
 
 #include "Format.hpp"
 #include "File.hpp"
-#include "context.hpp"
+#include "Path.hpp"
 #include "Options.hpp"
 
 namespace pona
@@ -173,8 +173,8 @@ Ref<Options::Option> Options::optionByLongName(String name) const
 Ref<StringList> Options::read(int argc, char** argv)
 {
 	execPath_ = argv[0];
-	execName_ = fileName(execPath_);
-	execDir_ = stripComponent(makeAbsolute(execPath_));
+	execName_ = Path(execPath_).fileName();
+	execDir_ = Path(execPath_).stripComponent().makeAbsolute();
 	String line;
 	for (int i = 1; i < argc; ++i) {
 		line->append(String(argv[i]));

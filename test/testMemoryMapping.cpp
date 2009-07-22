@@ -1,5 +1,5 @@
 #include <pona/stdio>
-#include <pona/context>
+#include <pona/process>
 #include <pona/thread>
 
 namespace pona
@@ -7,10 +7,10 @@ namespace pona
 
 const int mapLength = 256;
 
-class WorkerClone: public Process
+class CloneFactory: public ProcessFactory
 {
 public:
-	WorkerClone(String path)
+	CloneFactory(String path)
 		: path_(path)
 	{}
 	
@@ -36,7 +36,7 @@ private:
 
 int main()
 {
-	cd("/tmp");
+	Process::cd("/tmp");
 	File file("testMemoryMapping.XXXXXX");
 	file.createUnique();
 	file.unlinkOnExit();
@@ -57,8 +57,8 @@ int main()
 	}
 	
 	print("(parent) cloning myself... \n");
-	WorkerClone clone(file.path());
-	clone.start();
+	Ref<CloneFactory, Owner> factory = new CloneFactory(file.path());
+	Ref<Process, Owner> fork = factory->produce();
 	
 	//print("(parent) sleeping 2 seconds... \n");
 	//Thread::sleep(2);
@@ -66,7 +66,7 @@ int main()
 	print("(parent) releasing write lock... \n");
 	lock.release();
 	
-	int ret = clone.wait();
+	int ret = fork->wait();
 	print("(parent) clone terminated, ret = %%\n", ret);
 	
 	return 0;

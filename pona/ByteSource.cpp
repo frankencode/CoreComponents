@@ -23,12 +23,12 @@ ByteSource::ByteSource(Ref<Stream> stream, int bufCapa, int endian)
 	fill();
 }
 
-ByteSource::ByteSource(uint8_t* buf, int bufCapa, int endian)
+ByteSource::ByteSource(void* buf, int bufCapa, int endian)
 	: stream_(0),
 	  endian_(endian),
 	  bufCapa_(bufCapa),
 	  bufFill_(bufCapa),
-	  buf_(buf),
+	  buf_((uint8_t*)buf),
 	  i_(0),
 	  nr_(0)
 {}

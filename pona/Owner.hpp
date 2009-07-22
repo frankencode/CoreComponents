@@ -22,12 +22,12 @@ public:
 		if (instance_ != b)
 		{
 			if (instance_)
-				static_cast<Instance*>(instance_)->decRefCount();
+				instance_->decRefCount();
 			
 			instance_ = b;
 			
 			if (instance_)
-				static_cast<Instance*>(instance_)->incRefCount();
+				instance_->incRefCount();
 		}
 	}
 	

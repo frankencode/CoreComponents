@@ -19,7 +19,7 @@ class BitSource: public Instance
 {
 public:
 	BitSource(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
-	BitSource(uint8_t* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
+	BitSource(void* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
 
 	~BitSource();
 	

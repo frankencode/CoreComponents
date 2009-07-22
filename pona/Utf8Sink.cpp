@@ -18,7 +18,7 @@ Utf8Sink::Utf8Sink(Ref<Stream> stream, int bufCapa)
 	: ByteSink(stream, bufCapa)
 {}
 
-Utf8Sink::Utf8Sink(uint8_t* buf, int bufCapa)
+Utf8Sink::Utf8Sink(void* buf, int bufCapa)
 	: ByteSink(buf, bufCapa)
 {}
 

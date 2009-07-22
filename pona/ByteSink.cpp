@@ -28,11 +28,11 @@ ByteSink::ByteSink(Ref<Stream> stream, int bufCapacity, int endian)
 	  nw_(0)
 {}
 
-ByteSink::ByteSink(uint8_t* buf, int bufCapacity, int endian)
+ByteSink::ByteSink(void* buf, int bufCapacity, int endian)
 	: stream_(0),
 	  endian_(endian),
 	  bufCapa_(bufCapacity),
-	  buf_(buf),
+	  buf_((uint8_t*)buf),
 	  i_(0),
 	  nw_(0)
 {}

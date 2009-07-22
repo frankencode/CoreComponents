@@ -23,12 +23,12 @@ Ref<ExitEvent> ExitEvent::instance()
 }
 
 ExitEvent::ExitEvent()
-	: pid_(pid())
+	: pid_(Process::currentProcessId())
 {}
 
 ExitEvent::~ExitEvent()
 {
-	if (pid() == pid_) run();
+	if (Process::currentProcessId() == pid_) run();
 }
 
 } // namespace pona

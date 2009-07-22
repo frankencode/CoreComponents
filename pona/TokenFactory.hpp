@@ -21,8 +21,8 @@ public:
 		  bufSize_(0)
 	{}
 	
-	TokenFactory(uint8_t* buf, int bufSize)
-		: buf_(buf),
+	TokenFactory(void* buf, int bufSize)
+		: buf_((uint8_t*)buf),
 		  bufSize_(bufSize)
 	{}
 	

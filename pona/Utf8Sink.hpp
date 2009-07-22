@@ -18,7 +18,7 @@ class Utf8Sink: public ByteSink
 public:
 	Utf8Sink();
 	Utf8Sink(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA);
-	Utf8Sink(uint8_t* buf, int bufCapa);
+	Utf8Sink(void* buf, int bufCapa);
 	
 	void writeChar(uint32_t ch, bool* valid = 0);
 };

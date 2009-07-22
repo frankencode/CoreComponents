@@ -7,7 +7,7 @@
  */
 
 #include <pona/stdio>
-#include <pona/context>
+#include <pona/process>
 #include <pona/thread>
 #include <pona/event>
 #include <termios.h> // termios

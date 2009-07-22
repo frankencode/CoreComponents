@@ -24,12 +24,12 @@ BitSource::BitSource(Ref<Stream> stream, int bufCapa, int endian)
 	fill();
 }
 
-BitSource::BitSource(uint8_t* buf, int bufCapa, int endian)
+BitSource::BitSource(void* buf, int bufCapa, int endian)
 	: stream_(0),
 	  endian_(endian),
 	  bufCapa_(bufCapa),
 	  bufFill_(bufCapa),
-	  buf_(buf),
+	  buf_((uint8_t*)buf),
 	  i_(0),
 	  iBit_(0),
 	  nr_(bufCapa)

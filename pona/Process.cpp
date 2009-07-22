@@ -1,288 +1,66 @@
 /*
- * Process.cpp -- process creation, I/O forwarding, signalling
+ * Process.cpp -- child process
  *
  * Copyright (c) 2007-2009, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
 
-#include <sys/types.h> // pid_t, mode_t, uid_t, gid_t
-#include <sys/ioctl.h> // ioctl
-#include <sys/stat.h> // umask
 #include <sys/wait.h> // waitpid
-#include <unistd.h> // fork, execve, dup2, chdir, close, environ
-#include <fcntl.h> // open
-#include <stdlib.h> // exit
-#include <signal.h> // kill, raise, sigprocmask, sigemptyset
-#include <termios.h> // tcgetattr, tcsetattr
+#include <sys/stat.h> // umask
 #include <errno.h> // errno
-
-#include "Exception.hpp"
-#include "StandardStreams.hpp"
+#include <unistd.h> // chdir
 #include "Process.hpp"
-
-extern "C" char** environ;
 
 namespace pona
 {
 
-Process::Process()
-	: type_(SimpleChild),
-	  ioPolicy_(0),
-	  pid_(-1)
+Process::Process(
+	int type,
+	int ioPolicy,
+	Ref<SystemStream> rawInput,
+	Ref<SystemStream> rawOutput,
+	Ref<SystemStream> rawError,
+	pid_t processId
+)
+	: type_(type),
+	  ioPolicy_(ioPolicy),
+	  rawInput_(rawInput),
+	  rawOutput_(rawOutput),
+	  rawError_(rawError),
+	  processId_(processId)
 {
-	sigemptyset(&signalMask_);
+	if (rawInput) input_ = new LineSink(rawInput);
+	if (rawOutput) output_ = new LineSource(rawOutput);
+	if (rawError) error_ = new LineSource(rawError);
 }
 
-void Process::start()
+int Process::type() const { return type_; }
+int Process::ioPolicy() const { return ioPolicy_; }
+
+Ref<SystemStream> Process::rawInput() const { return rawInput_; }
+Ref<SystemStream> Process::rawOutput() const { return rawOutput_; }
+Ref<SystemStream> Process::rawError() const { return rawError_; }
+
+Ref<LineSink> Process::input() const { return input_; }
+Ref<LineSource> Process::output() const { return output_; }
+Ref<LineSource> Process::error() const { return error_; }
+
+pid_t Process::processId() const { return processId_; }
+
+void Process::kill(int signal)
 {
-	int inputPipe[2];
-	int outputPipe[2];
-	int errorPipe[2];
-	
-	int ptyMaster, ptySlave;
-	
-	if (ioPolicy_ & ForwardByPseudoTerminal)
-	{
-		ptyMaster = ::posix_openpt(O_RDWR/*|O_NOCTTY*/); // O_NOCTTY should have no effect
-		if (ptyMaster == -1)
-			PONA_SYSTEM_EXCEPTION;
-		if (grantpt(ptyMaster) == -1)
-			PONA_SYSTEM_EXCEPTION;
-		if (unlockpt(ptyMaster) == -1)
-			PONA_SYSTEM_EXCEPTION;
-	}
+	if (type() == GroupMember)
+		Process::signal(processId_, signal);
 	else
-	{
-		if (ioPolicy_ & ForwardInput)
-			if (::pipe(inputPipe) == -1)
-				PONA_SYSTEM_EXCEPTION;
-		
-		if (ioPolicy_ & ForwardOutput)
-			if (::pipe(outputPipe) == -1)
-				PONA_SYSTEM_EXCEPTION;
-		
-		if (ioPolicy_ & ForwardError)
-			if (::pipe(errorPipe) == -1)
-				PONA_SYSTEM_EXCEPTION;
-	}
-	
-	int ret = ::fork();
-	
-	if (ret == 0)
-	{
-		// child process
-		
-		if (type_ == GroupLeader)
-			::setpgid(0, 0);
-		else if (type_ == SessionLeader)
-			::setsid();
-		
-		if (ioPolicy_ & ForwardByPseudoTerminal)
-		{
-			char* ptySlavePath = ::ptsname(ptyMaster);
-			if (!ptySlavePath)
-				PONA_SYSTEM_EXCEPTION;
-				
-			if (::close(ptyMaster) == -1)
-				PONA_SYSTEM_EXCEPTION;
-			
-			ptySlave = ::open(ptySlavePath, O_RDWR | ((type_ == SessionLeader) ? 0 : O_NOCTTY));
-			if (ptySlave == -1)
-				PONA_SYSTEM_EXCEPTION;
-			
-			#ifdef __MACH__
-			// OSX 10.4 compatibility, HACK
-			if (type_ == SessionLeader)
-				::ioctl(ptySlave, TIOCSCTTY, 0);
-			#endif
-			
-			{
-				struct termios attr;
-				::tcgetattr(ptySlave, &attr);
-				attr.c_iflag ^= IXON;
-			#ifdef IUTF8
-				attr.c_iflag |= IUTF8;
-			#endif // IUTF8
-				::tcsetattr(ptySlave, TCSANOW, &attr);
-			}
-		}
-		
-		if (::sigprocmask(SIG_SETMASK, &signalMask_, 0) == -1)
-			PONA_SYSTEM_EXCEPTION;
-		
-		if (ioPolicy_ & CloseInput) ::close(0);
-		if (ioPolicy_ & CloseOutput) ::close(1);
-		if (ioPolicy_ & CloseError) ::close(2);
-		
-		if (workingDirectory_ != String()) {
-			if (execPath_->contains(String("/")))
-				execPath_ = String() << pona::cwd() << "/" << execPath_;
-			if (::chdir(workingDirectory_.utf8()) == -1)
-				PONA_SYSTEM_EXCEPTION;
-		}
-		
-		if (rawInput_) ::dup2(rawInput_->fd(), 0);
-		if (rawOutput_) ::dup2(rawOutput_->fd(), 1);
-		if (rawError_) ::dup2(rawError_->fd(), 2);
-
-		if (ioPolicy_ & ForwardByPseudoTerminal)
-		{
-			if (ioPolicy_ & ForwardInput) ::dup2(ptySlave, 0);
-			if (ioPolicy_ & ForwardOutput) ::dup2(ptySlave, 1);
-			if (ioPolicy_ & ForwardError) ::dup2(ptySlave, 2);
-			::close(ptySlave);
-		}
-		else
-		{
-			if (ioPolicy_ & ForwardInput) {
-				::close(inputPipe[1]);
-				::dup2(inputPipe[0], 0);
-				::close(inputPipe[0]);
-			}
-			if (ioPolicy_ & ForwardOutput) {
-				::close(outputPipe[0]);
-				::dup2(outputPipe[1], 1);
-				::close(outputPipe[1]);
-			}
-			if (ioPolicy_ & ForwardError) {
-				::close(errorPipe[0]);
-				::dup2(errorPipe[1], 2);
-				::close(errorPipe[1]);
-			}
-		}
-		
-		if (ioPolicy_ & ErrorToOutput) ::dup2(1, 2);
-		
-		if (execPath_ != String())
-		{
-			// prepare the argument list
-			
-			int argc = 1;
-			if (options_)
-				argc += options_->length();
-				
-			char** argv = new char*[argc + 1];
-			
-			argv[0] = execPath_.strdup();
-			if (options_)
-				for (int i = 0, n = options_->length(); i < n; ++i)
-					argv[i + 1] = options_->get(i).strdup();
-			argv[argc] = 0;
-			
-			// prepare the environment map
-			
-			char** envp = 0;
-			
-			if (!envMap_)
-			{
-				envp = environ;
-			}
-			else
-			{
-				Ref<List<EnvMap::Element>, Owner> envList = envMap_->toList();
-				int envc = envList->length();
-				envp = new char*[envc + 1];
-
-				for (int i = 0, n = envList->length(); i < n; ++i)
-					envp[i] = (String() << envList->get(i).key() << "=" << envList->get(i).value()).strdup();
-				
-				envp[envc] = 0;
-			}
-			
-			// load new program
-			
-			::execve(execPath_.utf8(), argv, envp);
-			
-			PONA_SYSTEM_EXCEPTION;
-		}
-		else
-		{
-			rawInput_ = pona::rawInput();
-			rawOutput_ = pona::rawOutput();
-			rawError_ = pona::rawError();
-			input_ = pona::input();
-			output_ = pona::output();
-			error_ = pona::error();
-			::exit(run());
-		}
-	}
-	else if (ret > 0)
-	{
-		// parent process
-		
-		pid_ = ret;
-		rawInput_ = 0;
-		rawOutput_ = 0;
-		rawError_ = 0;
-		
-		if (ioPolicy_ & ForwardByPseudoTerminal)
-		{
-			if (ioPolicy_ & ForwardInput)
-				rawInput_ = new SystemStream(ptyMaster);
-			if ((ioPolicy_ & ForwardOutput) || (ioPolicy_ & ForwardError)) {
-				if (rawInput_)
-					rawOutput_ = rawInput_;
-				else
-					rawOutput_ = new SystemStream(ptyMaster);
-			}
-		}
-		else
-		{
-			if (ioPolicy_ & ForwardInput) {
-				::close(inputPipe[0]);
-				rawInput_ = new SystemStream(inputPipe[1]);
-			}
-			if (ioPolicy_ & ForwardOutput) {
-				::close(outputPipe[1]);
-				rawOutput_ = new SystemStream(outputPipe[0]);
-			}
-			if (ioPolicy_ & ForwardError) {
-				::close(errorPipe[1]);
-				rawError_ = new SystemStream(errorPipe[0]);
-			}
-		}
-		
-		input_ = 0;
-		output_ = 0;
-		error_ = 0;
-		if (rawInput_) input_ = new LineSink(rawInput_);
-		if (rawOutput_) output_ = new LineSource(rawOutput_);
-		if (rawError_) error_ = new LineSource(rawError_);
-	}
-	else if (ret < 0)
-	{
-		PONA_SYSTEM_EXCEPTION;
-	}
+		Process::broadcast(processId_, signal);
 }
 
-/** start a daemon child process
-  */
-void Process::startDaemon()
-{
-	::umask(0);
-	setType(SessionLeader);
-	setIoPolicy(CloseInput|CloseOutput|CloseError);
-	setWorkingDirectory("/");
-}
-
-/** send signal to single process (leaf) or complete process group (job or daemon)
-  */
-void Process::sendSignal(int signal)
-{
-	if (::kill((type_ == SimpleChild) ? pid_ : -pid_, signal) == -1)
-		PONA_SYSTEM_EXCEPTION;
-}
-
-/** wait for termination of child process
-  *
-  * \return termination status code
-  */
 int Process::wait()
 {
 	int status = 0;
 	while (true) {
-		if (::waitpid(pid_, &status, 0) == -1) {
+		if (::waitpid(processId_, &status, 0) == -1) {
 			if (errno == EINTR) continue;
 			PONA_SYSTEM_EXCEPTION;
 		}
@@ -293,6 +71,84 @@ int Process::wait()
 	else if (WIFSIGNALED(status))
 		status = WTERMSIG(status) + 128;
 	return status;
+}
+
+void Process::cd(String path)
+{
+	if (::chdir(path.utf8()) == -1)
+		PONA_SYSTEM_EXCEPTION;
+}
+
+String Process::cwd()
+{
+	char* cs = ::getcwd(0, 0x10000);
+	if (!cs)
+		PONA_SYSTEM_EXCEPTION;
+	String path(cs);
+	::free(cs);
+	return path;
+}
+
+mode_t Process::setFileCreationMask(mode_t mask) { return ::umask(mask); }
+
+uid_t Process::realUserId() { return ::getuid(); }
+gid_t Process::realGroupId() { return ::getgid(); }
+uid_t Process::effectiveUserId() { return ::geteuid(); }
+gid_t Process::effectiveGroupId() { return ::getegid(); }
+
+bool Process::isSuperUser() { return (::geteuid() == 0) || (::getegid() == 0); }
+
+String Process::env(String key)
+{
+	return getenv(key.utf8());
+}
+
+void Process::setEnv(String key, String value)
+{
+	if (setenv(key.utf8(), value.utf8(), 1) == -1)
+		PONA_SYSTEM_EXCEPTION;
+}
+
+void Process::unsetEnv(String key)
+{
+	errno = 0;
+	unsetenv(key.utf8());
+	if (errno != 0)
+		PONA_SYSTEM_EXCEPTION;
+}
+
+typedef Map<String, String> EnvMap;
+Ref<EnvMap, Owner> Process::envMap()
+{
+	char** env = ::environ;
+	Ref<EnvMap, Owner> map = new EnvMap;
+	int i = 0;
+	while (env[i] != 0) {
+		String s(env[i]);
+		int k = s->find(String("="));
+		if (k != s->length()) {
+			String key = s->copy(0, k);
+			String value = s->copy(k + 1, s->length() - (k + 1));
+			map->set(key, value);
+		}
+		++i;
+	}
+	return map;
+}
+
+pid_t Process::currentProcessId() { return getpid(); }
+pid_t Process::parentProcessId() { return getppid(); }
+
+void Process::signal(pid_t processId, int signal)
+{
+	if (::kill(processId, signal) == -1)
+		PONA_SYSTEM_EXCEPTION;
+}
+
+void Process::broadcast(pid_t processGroupId, int signal)
+{
+	if (::kill(-processGroupId, signal) == -1)
+		PONA_SYSTEM_EXCEPTION;
 }
 
 } // namespace pona

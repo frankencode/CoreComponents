@@ -17,7 +17,7 @@ class Utf8Source: public ByteSource
 {
 public:
 	Utf8Source(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA);
-	Utf8Source(uint8_t* buf, int bufCapa);
+	Utf8Source(void* buf, int bufCapa);
 	
 	uint32_t readChar(bool* valid = 0);
 };

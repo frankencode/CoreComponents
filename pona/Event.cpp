@@ -17,33 +17,33 @@ Event::Event()
 
 void Event::pushBack(Ref<Action> handler)
 {
-	acquire();
+	beginCritical();
 	handlers_->pushBack(handler);
-	release();
+	endCritical();
 }
 
 void Event::pushFront(Ref<Action> handler)
 {
-	acquire();
+	beginCritical();
 	handlers_->pushFront(handler);
-	release();
+	endCritical();
 }
 
 void Event::remove(Ref<Action> handler)
 {
-	acquire();
+	beginCritical();
 	int i = handlers_->find(handler);
 	if (i != handlers_->length())
 		handlers_->remove(i);
-	release();
+	endCritical();
 }
 
 void Event::run()
 {
-	acquire();
+	beginCritical();
 	for (int i = 0, n = handlers_->length(); i < n; ++i)
 		handlers_->get(i)->run();
-	release();
+	endCritical();
 }
 
 } // namespace pona

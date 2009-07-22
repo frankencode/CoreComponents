@@ -80,6 +80,8 @@ uint64_t toUInt64(String s, bool* ok = 0);
 float64_t toFloat64(String s, bool* ok = 0);
 
 String toLower(String s);
+String stripTrailingSpace(String s);
+uint32_t crc32(String s);
 
 } // namespace pona
 

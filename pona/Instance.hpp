@@ -50,53 +50,53 @@ public:
 		}
 	}
 	
-	virtual void acquire() {}
-	virtual void release() {}
+	virtual void beginCritical() {}
+	virtual void endCritical() {}
 	
 	inline int refCount() const { return refCount_; }
 	
 	inline void incRefCount()
 	{
-		acquire();
+		beginCritical();
 		refCount_ += (refCount_ >= 0);
-		release();
+		endCritical();
 	}
 	
 	inline void decRefCount()
 	{
-		acquire();
+		beginCritical();
 		refCount_ -= (refCount_ >= 0);
 		if (refCount_ == 0) {
-			release();
+			endCritical();
 			delete this;
 		}
 		else
-			release();
+			endCritical();
 	}
 	
 	inline void liberate() { refCount_ = -1; }
 
 	inline void addBackRef(BackRef* ref)
 	{
-		acquire();
+		beginCritical();
 		ref->succ_ = backRefList_;
 		ref->pred_ = 0;
 		if (backRefList_)
 			backRefList_->pred_ = ref;
 		backRefList_ = ref;
-		release();
+		endCritical();
 	}
 	
 	inline void delBackRef(BackRef* ref)
 	{
-		acquire();
+		beginCritical();
 		if (ref->pred_)
 			ref->pred_->succ_ = ref->succ_;
 		if (ref->succ_)
 			ref->succ_->pred_ = ref->pred_;
 		if (ref == backRefList_)
 			backRefList_ = backRefList_->succ_;
-		release();
+		endCritical();
 	}
 	
 private:

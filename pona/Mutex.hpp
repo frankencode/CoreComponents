@@ -32,8 +32,8 @@ private:
 
 #define PONA_SHARED \
 public: \
-	virtual void acquire() { mutex_.acquire(); } \
-	virtual void release() { mutex_.release(); } \
+	virtual void beginCritical() { mutex_.acquire(); } \
+	virtual void endCritical() { mutex_.release(); } \
 private: \
 	Mutex mutex_;
 

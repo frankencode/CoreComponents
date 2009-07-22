@@ -21,12 +21,12 @@ Ref<ThreadExitEvent> ThreadExitEvent::instance()
 }
 
 ThreadExitEvent::ThreadExitEvent()
-	: pid_(pid())
+	: pid_(Process::currentProcessId())
 {}
 
 ThreadExitEvent::~ThreadExitEvent()
 {
-	if (pid() == pid_) run();
+	if (Process::currentProcessId() == pid_) run();
 }
 
 } // namespace pona

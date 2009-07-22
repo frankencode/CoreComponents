@@ -66,6 +66,7 @@ void Tree::appendAllChildrenOf(Ref<Node> node)
 
 void Tree::unlink()
 {
+	Ref<Node, Owner> self = this;
 	if (previousSibling_)
 		previousSibling_->nextSibling_ = nextSibling_;
 	if (nextSibling_)
@@ -75,8 +76,9 @@ void Tree::unlink()
 			parent_->firstChild_ = parent_->firstChild_->nextSibling_;
 		if (parent_->lastChild_ == this)
 			parent_->lastChild_ = parent_->lastChild_->previousSibling_;
+		parent_ = 0;
 	}
-	parent_ = 0;
+	self = 0;
 }
 
 Ref<Tree::Node> Tree::firstLeaf()

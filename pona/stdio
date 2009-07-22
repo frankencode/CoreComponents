@@ -9,6 +9,7 @@
 #define PONA_STDIO
 
 #include "File.hpp"
+#include "Path.hpp"
 #include "StandardStreams.hpp"
 #include "Format.hpp"
 #include "FormatPrint.hpp"
