@@ -8,7 +8,7 @@ int echo(int argc, char** argv);
 
 int main(int argc, char** argv)
 {
-	if (argc > 1)
+	if (argc == 2)
 		return echo(argc, argv);
 	
 	{
@@ -68,6 +68,7 @@ int main(int argc, char** argv)
 	{
 		print("(3) Current process\n\n");
 		print("Process::cwd() = %%\n", Process::cwd());
+		print("Process::execPath() = %%\n", Process::execPath());
 		print("Process::isSuperUser() = %%\n", Process::isSuperUser());
 		print("\n");
 	}
