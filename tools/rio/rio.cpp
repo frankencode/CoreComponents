@@ -45,7 +45,7 @@ int main(int argc, char** argv)
 	#ifdef NDEBUG
 	}
 	catch (pona::AnyException& ex) {
-		pona::printTo(pona::error(), "(%%) %%\n", pona::fileName(argv[0]), ex.what());
+		pona::printTo(pona::error(), "(%%) %%\n", pona::Path(argv[0]).fileName(), ex.what());
 	}
 	#endif
 	return ret;

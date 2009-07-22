@@ -19,7 +19,7 @@ class BitSink: public Instance
 {
 public:
 	BitSink(Ref<Stream> stream, int bufCapacity = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
-	BitSink(uint8_t* buf, int bufCapacity, int endian = PONA_DEFAULT_ENDIAN);
+	BitSink(void* buf, int bufCapacity, int endian = PONA_DEFAULT_ENDIAN);
 	~BitSink();
 	
 	void flush();

@@ -20,7 +20,7 @@ class ByteSink: public Instance
 public:
 	ByteSink();
 	ByteSink(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
-	ByteSink(uint8_t* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
+	ByteSink(void* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
 	~ByteSink();
 	
 	void writeUInt8(uint8_t x);

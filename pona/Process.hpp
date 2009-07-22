@@ -1,5 +1,5 @@
 /*
- * Process.hpp -- process creation, I/O forwarding, signalling
+ * Process.hpp -- child process
  *
  * Copyright (c) 2007-2009, Frank Mertens
  *
@@ -11,7 +11,8 @@
 #include <sys/types.h> // pid_t
 #include <signal.h> // SIGTERM, etc.
 #include "atom"
-#include "context.hpp"
+#include "String.hpp"
+#include "Map.hpp"
 #include "SystemStream.hpp"
 #include "LineSink.hpp"
 #include "LineSource.hpp"
@@ -19,11 +20,17 @@
 namespace pona
 {
 
+class ProcessFactory;
+
+typedef Map<String, String> EnvMap;
+
 class Process: public Instance
 {
 public:
+	// child process control interface
+	
 	enum Type {
-		SimpleChild,
+		GroupMember,
 		GroupLeader,
 		SessionLeader
 	};
@@ -41,69 +48,62 @@ public:
 		CloseAll = CloseInput|CloseOutput|CloseError
 	};
 	
-	Process();
+	int type() const;
+	int ioPolicy() const;
 	
-	// ---------------------------------------------------------------
-	// pre-start parameterization interface
-	// ---------------------------------------------------------------
+	Ref<SystemStream> rawInput() const;
+	Ref<SystemStream> rawOutput() const;
+	Ref<SystemStream> rawError() const;
 	
-	int type() const { return type_; }
-	void setType(int type) { type_ = type; }
+	Ref<LineSink> input() const;
+	Ref<LineSource> output() const;
+	Ref<LineSource> error() const;
 	
-	int ioPolicy() const { return ioPolicy_; }
-	void setIoPolicy(int flags) { ioPolicy_ = flags; }
+	pid_t processId() const;
 	
-	String workingDirectory() const { return workingDirectory_; }
-	void setWorkingDirectory(String path) { workingDirectory_ = path; }
-	
-	sigset_t* signalMask() { return &signalMask_; }
-	
-	String execPath() const { return execPath_; }
-	void setExecPath(String path) { execPath_ = path; }
-	
-	Ref<StringList> options() { return (options_) ? options_ : options_ = new StringList; }
-	void setOptions(Ref<StringList> list) { options_ = list; }
-	
-	Ref<EnvMap> envMap() { return (envMap_) ? envMap_ : envMap_ = pona::envMap(); }
-	void setEnvMap(Ref<EnvMap> map) { envMap_ = map; }
-	
-	void setRawInput(Ref<SystemStream> stream) { rawInput_ = stream; }
-	void setRawOutput(Ref<SystemStream> stream) { rawOutput_ = stream; }
-	void setRawError(Ref<SystemStream> stream) { rawError_ = stream; }
-	
-	void start();
-	void startDaemon();
-	
-	// ---------------------------------------------------------------
-	// post-start control and I/O interface
-	// ---------------------------------------------------------------
-	
-	inline Ref<SystemStream> rawInput() const { return rawInput_; }
-	inline Ref<SystemStream> rawOutput() const { return rawOutput_; }
-	inline Ref<SystemStream> rawError() const { return rawError_; }
-	
-	inline Ref<LineSink> input() { return input_; }
-	inline Ref<LineSource> output() { return output_; }
-	inline Ref<LineSource> error() { return error_; }
-	
-	pid_t pid() const { return pid_; }
-	
-	void sendSignal(int signal);
+	void kill(int signal = SIGTERM);
 	int wait();
 	
+	// -- querying the current process status
+	
+	static void cd(String path);
+	static String cwd();
+	
+	static mode_t setFileCreationMask(mode_t mask);
+	
+	static uid_t realUserId();
+	static gid_t realGroupId();
+	static uid_t effectiveUserId();
+	static gid_t effectiveGroupId();
+	static bool isSuperUser();
+	
+	static String env(String key);
+	static void setEnv(String key, String value);
+	static void unsetEnv(String key);
+	
+	static Ref<EnvMap, Owner> envMap();
+	
+	static pid_t currentProcessId();
+	static pid_t parentProcessId();
+	
+	static void signal(pid_t processId, int signal);
+	static void broadcast(pid_t processGroupId, int signal);
+
 protected:
-	virtual int run() { return 0; }
+	friend class ProcessFactory;
+	
+	Process(
+		int type,
+		int ioPolicy,
+		Ref<SystemStream> rawInput,
+		Ref<SystemStream> rawOutput,
+		Ref<SystemStream> rawError,
+		pid_t processId
+	);
 	
 private:
 	int type_;
 	int ioPolicy_;
-	String workingDirectory_;
-	
-	sigset_t signalMask_;
-	
-	String execPath_;
-	Ref<StringList, Owner> options_;
-	Ref<EnvMap, Owner> envMap_;
 	
 	Ref<SystemStream, Owner> rawInput_;
 	Ref<SystemStream, Owner> rawOutput_;
@@ -113,10 +113,9 @@ private:
 	Ref<LineSource, Owner> output_;
 	Ref<LineSource, Owner> error_;
 	
-	pid_t pid_;
+	pid_t processId_;
 };
 
 } // namespace pona
 
 #endif // PONA_PROCESS_HPP
-

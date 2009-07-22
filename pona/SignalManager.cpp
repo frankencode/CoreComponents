@@ -86,14 +86,14 @@ Ref<Event> SignalManager::managerBySignal(int signal)
 {
 	Ref<Event> manager = managerBySignal_->get(signal);
 	if (!manager) {
-		acquire();
+		beginCritical();
 		manager = managerBySignal_->get(signal);
 		if (!manager) {
 			Ref<Event, Owner> newManager = new Event;
 			managerBySignal_->set(signal, newManager);
 			manager = newManager;
 		}
-		release();
+		endCritical();
 	}
 	return manager;
 }
@@ -106,13 +106,13 @@ void SignalManager::startListener()
 bool SignalManager::relay(int signal)
 {
 	bool relayed = false;
-	acquire();
+	beginCritical();
 	Ref<Event> manager = managerBySignal_->get(signal);
 	if (manager) {
 		manager->run();
 		relayed = true;
 	}
-	release();
+	endCritical();
 	return relayed;
 }
 

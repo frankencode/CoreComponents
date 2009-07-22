@@ -13,7 +13,7 @@ Features:
     * Efficient syntax processing automata with infinite lookahead and rich support for both context-free and context-sensitive languages
     * Consistent I/O framework including sockets and pipes
     * Endian-neutral bit-vise I/O streams
-    * Integrated support of parallel execution paradigms: signals, threading and process forking
+    * Fully integrated signal-safe multi-threading and multi-programming environment
     * Supported Platforms: OpenSolaris, Linux, Darwin, FreeBSD 
 
 Homepage:

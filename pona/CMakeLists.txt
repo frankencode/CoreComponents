@@ -40,6 +40,7 @@ SET(PONA_HEADER
 	SystemStream.hpp
 	FileStatus.hpp
 	File.hpp
+	Path.hpp
 	LineSource.hpp
 	LineSink.hpp
 	StandardStreams.hpp
@@ -69,13 +70,15 @@ SET(PONA_HEADER
 	Semaphore.hpp
 	Channel.hpp
 	
-	context
-	context.hpp
+	process
 	User.hpp
 	Group.hpp
 	Variant.hpp
 	Options.hpp
+	SignalSet.hpp
 	Process.hpp
+	ProcessFactory.hpp
+	ProcessStatus.hpp
 	FileLock.hpp
 	MemoryMapping.hpp
 	Pipe.hpp
@@ -111,6 +114,7 @@ SET(PONA_SOURCE
 	Stream.cpp
 	SystemStream.cpp
 	File.cpp
+	Path.cpp
 	FileStatus.cpp
 	LineSink.cpp
 	LineSource.cpp
@@ -136,12 +140,14 @@ SET(PONA_SOURCE
 	Semaphore.cpp
 	Thread.cpp
 	
-	# context
-	context.cpp
+	# process
 	User.cpp
 	Group.cpp
 	Options.cpp
+	SignalSet.cpp
 	Process.cpp
+	ProcessFactory.cpp
+	ProcessStatus.cpp
 	FileLock.cpp
 	MemoryMapping.cpp
 	Pipe.cpp

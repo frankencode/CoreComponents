@@ -8,7 +8,7 @@
 #ifndef RIO_OPTIONS_HPP
 #define RIO_OPTIONS_HPP
 
-#include <pona/context>
+#include <pona/process>
 #include <pona/thread>
 #include <pona/network>
 

@@ -19,7 +19,7 @@ public:
 	Crc32(uint32_t seed = ~0);
 	void reset(uint32_t seed = ~0);
 	
-	void update(uint8_t *buf, int bufSize);
+	void feed(void* buf, int bufSize);
 	uint32_t sum() const;
  
 private:

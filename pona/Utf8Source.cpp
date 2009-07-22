@@ -15,7 +15,7 @@ Utf8Source::Utf8Source(Ref<Stream> stream, int bufCapa)
 	: ByteSource(stream, bufCapa)
 {}
 
-Utf8Source::Utf8Source(uint8_t* buf, int bufCapa)
+Utf8Source::Utf8Source(void* buf, int bufCapa)
 	: ByteSource(buf, bufCapa)
 {}
 

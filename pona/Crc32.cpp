@@ -33,11 +33,11 @@ void Crc32::reset(uint32_t seed)
 	crc_ = seed;
 }
 
-void Crc32::update(uint8_t *buf, int bufSize)
+void Crc32::feed(void* buf, int bufSize)
 {
 	uint32_t crc = crc_;
 	for (int i = 0; i < bufSize; ++i)
-		crc = crcTable_[(crc ^ buf[i]) & 0xFF] ^ (crc >> 8);
+		crc = crcTable_[(crc ^ ((uint8_t*)buf)[i]) & 0xFF] ^ (crc >> 8);
 	crc_ = crc;
 }
 

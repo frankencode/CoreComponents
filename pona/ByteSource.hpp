@@ -19,7 +19,7 @@ class ByteSource: public Instance
 {
 public:
 	ByteSource(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
-	ByteSource(uint8_t* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
+	ByteSource(void* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
 	~ByteSource();
 	
 	uint8_t readUInt8();

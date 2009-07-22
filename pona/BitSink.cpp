@@ -24,11 +24,11 @@ BitSink::BitSink(Ref<Stream> stream, int bufCapacity, int endian)
 	::memset(buf_, 0, bufCapacity_);
 }
 
-BitSink::BitSink(uint8_t* buf, int bufCapacity, int endian)
+BitSink::BitSink(void* buf, int bufCapacity, int endian)
 	: stream_(0),
 	  endian_(endian),
 	  bufCapacity_(bufCapacity),
-	  buf_(buf),
+	  buf_((uint8_t*)buf),
 	  i_(0),
 	  iBit_(0),
 	  nw_(0)

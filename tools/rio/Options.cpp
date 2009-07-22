@@ -29,7 +29,7 @@ Options::Options()
 	: server_(false), client_(false), help_(false),
 	  host_("*"), port_(7373), inet6_(false), backlog_(8),
 	  canon_(false), editor_("rio_rl"), eol_("crlf"), ioUnit_(0x8000),
-	  quiet_(false), logging_(""), logDir_(cwd()),
+	  quiet_(false), logging_(""), logDir_(Process::cwd()),
 	  exec_(false), loop_(false), repeat_(1),
 	  loggingFlags_(0)
 {
@@ -72,10 +72,10 @@ void Options::read(int argc, char** argv)
 		else if (eol == "crlf") eol_ = "\015\012";
 		
 		if (canon_) {
-			Ref<StringList, Owner> dirs = env("PATH") / ':';
+			Ref<StringList, Owner> dirs = Process::env("PATH") / ':';
 			if (!dirs->contains(execDir()))
 				dirs->append(execDir());
-			editorPath_ = lookupPath(dirs, editor_);
+			editorPath_ = Path::lookup(dirs, editor_);
 			if (editorPath_ == "")
 				PONA_THROW(Exception, "Editor program could not be found.");
 		}

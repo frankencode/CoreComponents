@@ -1,5 +1,5 @@
 #include <pona/stdio>
-#include <pona/context>
+#include <pona/process>
 
 namespace pona
 {
@@ -12,11 +12,10 @@ int main(int argc, char** argv)
 		return echo(argc, argv);
 	
 	{
-		class TestProcess: public Process
+		class TestFactory: public ProcessFactory
 		{
 		public:
-			int run()
-			{
+			int run() {
 				print("Hello, world!\n");
 				return 7;
 			}
@@ -24,9 +23,9 @@ int main(int argc, char** argv)
 		
 		print("(1) Worker clone\n\n");
 		
-		TestProcess process;
-		process.start();
-		int ret = process.wait();
+		Ref<ProcessFactory, Owner> factory = new TestFactory;
+		Ref<Process, Owner> worker = factory->produce();
+		int ret = worker->wait();
 		print("ret = %%\n", ret);
 		print("\n");
 	}
@@ -34,41 +33,42 @@ int main(int argc, char** argv)
 	{
 		print("(2) I/O Redirection, passing of arguments and environment variables\n\n");
 		
-		Process process;
-		process.setExecPath(argv[0]);
-		process.setWorkingDirectory("/");
-		process.setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
-		process.options()->append("--echo 123");
-		process.envMap()->set("Hello", "World!");
-		process.start();
+		Ref<ProcessFactory, Owner> factory = new ProcessFactory;
+		factory->setExecPath(argv[0]);
+		factory->setWorkingDirectory("/");
+		factory->setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
+		factory->options()->append("--echo 123");
+		factory->envMap()->set("Hello", "World!");
 		
-		print("Created child process with pid = %%\n", unsigned(process.pid()));
+		Ref<Process, Owner> process = factory->produce();
+		
+		print("Created child process with pid = %%\n", unsigned(process->processId()));
 
 		const char* message =
 			"Hello, world!\n"
 			"exit\n";
-		process.rawInput()->write(message, strlen(message));
-		process.rawInput()->close();
+		process->rawInput()->write(message, strlen(message));
+		process->rawInput()->close();
 		
 		const int bufSize = 16;
 		uint8_t buf[bufSize];
 		while (true) {
-			int bufFill = process.rawOutput()->readAvail(buf, bufSize);
+			int bufFill = process->rawOutput()->readAvail(buf, bufSize);
 			if (bufFill == 0) break;
 			rawOutput()->write(buf, bufFill);
 		}
 		
 		print("Waiting for child process to finish...\n");
 		
-		int ret = process.wait();
+		int ret = process->wait();
 		print("ret = %%\n", ret);
 		print("\n");
 	}
 	
 	{
-		print("(3) Current context\n\n");
-		print("cwd() = %%\n", cwd());
-		print("isSuperUser() = %%\n", isSuperUser());
+		print("(3) Current process\n\n");
+		print("Process::cwd() = %%\n", Process::cwd());
+		print("Process::isSuperUser() = %%\n", Process::isSuperUser());
 		print("\n");
 	}
 	
@@ -83,10 +83,10 @@ int echo(int argc, char** argv)
 		if (i != argc - 1)
 			commandLine << " ";
 	}
-	print("cwd() = \"%%\"\n", cwd());
-	print("env(\"Hello\") = \"%%\"\n", env("Hello"));
-	setEnv("Hello", "Echo");
-	print("env(\"Hello\") = \"%%\"\n", env("Hello"));
+	print("Process::cwd() = \"%%\"\n", Process::cwd());
+	print("Process::env(\"Hello\") = \"%%\"\n", Process::env("Hello"));
+	Process::setEnv("Hello", "Echo");
+	print("Process::env(\"Hello\") = \"%%\"\n", Process::env("Hello"));
 	print("commandLine = \"%%\"\n", commandLine);
 	
 	while (true)
@@ -97,7 +97,7 @@ int echo(int argc, char** argv)
 		output()->writeLine(line);
 	}
 	
-	return 0;
+	return 13;
 }
 
 } // namespace pona

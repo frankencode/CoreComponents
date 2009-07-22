@@ -98,25 +98,23 @@ Ref<Process, Owner> Service::exec(String entity)
 	if (!bool(options()->quiet_))
 		printTo(error(), "(%%) Executing '%%'\n", options()->execName(), entity);
 	
-	Ref<Process, Owner> process = new Process;
-	process->setType(Process::GroupLeader);
+	Ref<ProcessFactory, Owner> factory = new ProcessFactory;
+	factory->setType(Process::GroupLeader);
 	{
 		Ref<StringList, Owner> l = entity / ' ';
 		if (l->length() > 1) {
 			entity = l->get(0);
 			for (int i = 1; i < l->length(); ++i)
-				process->options()->append(l->get(i));
+				factory->options()->append(l->get(i));
 		}
 	}
 	if ((entity / '/')->length() == 1) {
-		String s = lookupPath(env("PATH") / ':', entity);
+		String s = Path::lookup(Process::env("PATH") / ':', entity);
 		if (s != "") entity = s;
 	}
-	process->setExecPath(entity);
-	process->setIoPolicy(Process::ForwardInput|Process::ForwardOutput|Process::ErrorToOutput);
-	process->start();
-	
-	return process;
+	factory->setExecPath(entity);
+	factory->setIoPolicy(Process::ForwardInput|Process::ForwardOutput|Process::ErrorToOutput);
+	return factory->produce();
 }
 
 void Service::canonSession(Ref<StreamSocket> socket, String entity)
@@ -162,11 +160,11 @@ void Service::canonSession(Ref<StreamSocket> socket, String entity)
 		Ref<Pipe, Owner> recvPipe = new Pipe(Pipe::Output);
 		Ref<Pipe, Owner> sendPipe = new Pipe(Pipe::Input);
 		
-		editor = new Process;
-		editor->setExecPath(options()->editorPath_);
-		editor->options()->append(Format("--fdr=%%") << recvPipe->childFd());
-		editor->options()->append(Format("--fds=%%") << sendPipe->childFd());
-		editor->start();
+		Ref<ProcessFactory, Owner> factory = new ProcessFactory;
+		factory->setExecPath(options()->editorPath_);
+		factory->options()->append(Format("--fdr=%%") << recvPipe->childFd());
+		factory->options()->append(Format("--fds=%%") << sendPipe->childFd());
+		editor = factory->produce();
 		
 		recvPipe->open();
 		sendPipe->open();
@@ -187,14 +185,14 @@ void Service::canonSession(Ref<StreamSocket> socket, String entity)
 	if (editor) {
 		recvSink = 0;
 		sendSource = 0;
-		try { editor->sendSignal(SIGTERM); } catch(AnyException& ex) {}
+		try { editor->kill(); } catch(AnyException& ex) {}
 		int ret = editor->wait();
 		#ifndef NDEBUG
 		print("ret = %%\n", ret);
 		#endif
 	}
 	if (process) {
-		try { process->sendSignal(SIGTERM); } catch(AnyException& ex) {}
+		try { process->kill(); } catch(AnyException& ex) {}
 		int ret = processObserver->wait();
 		#ifndef NDEBUG
 		print("ret = %%\n", ret);
@@ -259,7 +257,7 @@ void Service::binarySession(Ref<StreamSocket> socket, String entity)
 	}
 	
 	if (process) {
-		try { process->sendSignal(SIGTERM); } catch(AnyException& ex) {}
+		try { process->kill(); } catch(AnyException& ex) {}
 		int ret = processObserver->wait();
 		#ifndef NDEBUG
 		print("ret = %%\n", ret);

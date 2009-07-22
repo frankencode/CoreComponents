@@ -8,6 +8,7 @@
 
 #include "Utf8Source.hpp"
 #include "Utf8Sink.hpp"
+#include "Crc32.hpp"
 #include "FormatSyntax.hpp"
 #include "IntegerLiteral.hpp"
 #include "FloatLiteral.hpp"
@@ -218,6 +219,28 @@ String toLower(String s)
 			s2->set(i, ch + 'a' - 'A');
 	}
 	return s;
+}
+
+String stripTrailingSpace(String s)
+{
+	int n = s->length();
+	while (n > 0) {
+		Char ch = s->get(n - 1);
+		bool isSpace = ((ch == ' ') || (ch == '\t'));
+		if (!isSpace) break;
+		--n;
+	}
+	if (n < s->length())
+		return s->copy(0, n);
+	return s;
+}
+
+uint32_t crc32(String s)
+{
+	CString cs = s.utf8();
+	Crc32 crc;
+	crc.feed(cs, cs->length());
+	return crc.sum();
 }
 
 } // namespace pona
