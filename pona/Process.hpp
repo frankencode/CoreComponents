@@ -68,6 +68,7 @@ public:
 	
 	static void cd(String path);
 	static String cwd();
+	static String execPath();
 	
 	static mode_t setFileCreationMask(mode_t mask);
 	

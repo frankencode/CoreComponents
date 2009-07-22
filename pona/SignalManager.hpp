@@ -12,6 +12,7 @@
 #include "atom"
 #include "Mutex.hpp"
 #include "Thread.hpp"
+#include "Process.hpp"
 #include "Map.hpp"
 #include "Event.hpp"
 
@@ -54,6 +55,7 @@ private:
 	bool relay(int signal);
 	
 	Ref<SignalListener, Owner> signalListener_;
+	int pid_;
 	
 	typedef Map<int, Ref<Event, Owner> > ManagerBySignal;
 	Ref<ManagerBySignal, Owner> managerBySignal_;

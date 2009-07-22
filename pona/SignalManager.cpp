@@ -72,14 +72,17 @@ Ref<SignalManager> SignalManager::instance()
 
 SignalManager::SignalManager()
 	: signalListener_(new SignalListener),
-	  managerBySignal_(new ManagerBySignal)
+	  managerBySignal_(new ManagerBySignal),
+	  pid_(Process::currentProcessId())
 {}
 
 SignalManager::~SignalManager()
 {
-	signalListener_->stopListener_ = true;
-	pthread_kill(signalListener_->tid(), SIGUSR1);
-	signalListener_->wait();
+	if (pid_ == Process::currentProcessId()) {
+		signalListener_->stopListener_ = true;
+		pthread_kill(signalListener_->tid(), SIGUSR1);
+		signalListener_->wait();
+	}
 }
 
 Ref<Event> SignalManager::managerBySignal(int signal)

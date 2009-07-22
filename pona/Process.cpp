@@ -9,7 +9,17 @@
 #include <sys/wait.h> // waitpid
 #include <sys/stat.h> // umask
 #include <errno.h> // errno
-#include <unistd.h> // chdir
+#include <stdlib.h> // malloc, free
+#include <unistd.h> // chdir, readlink
+#ifdef __linux
+#include "stdio" // DEBUG
+#include "File.hpp" // to read /proc
+#include "Format.hpp"
+#endif
+#ifdef __MACH__
+#include <mach-o/dyld.h> // _NSGetExecutablePath
+#include <string.h> // memset
+#endif
 #include "Process.hpp"
 
 extern "C" char** environ;
@@ -88,6 +98,40 @@ String Process::cwd()
 		PONA_SYSTEM_EXCEPTION;
 	String path(cs);
 	::free(cs);
+	return path;
+}
+
+String Process::execPath()
+{
+	String path;
+	#ifdef __linux
+	CString lnPath = String(Format("/proc/%%/exe") << currentProcessId()).utf8();
+	size_t bufSize = 1024;
+	while (true) {
+		char* buf = (char*)::malloc(bufSize + 1);
+		::memset(buf, 0, bufSize + 1);
+		ssize_t ret = ::readlink(lnPath, buf, bufSize);
+		if (ret == -1)
+			PONA_SYSTEM_EXCEPTION;
+		if (ret < bufSize) {
+			path = buf;
+			::free(buf);
+			break;
+		}
+		bufSize *= 2;
+		::free(buf);
+	}
+	#endif
+	#ifdef __MACH__
+	char* buf = 0;
+	uint32_t bufSize = 0;
+	_NSGetExecutablePath(buf, &bufSize);
+	buf = (char*)::malloc(bufSize + 1);
+	::memset(buf, 0, bufSize + 1);
+	_NSGetExecutablePath(buf, &bufSize);
+	path = buf;
+	::free(buf);
+	#endif
 	return path;
 }
 
