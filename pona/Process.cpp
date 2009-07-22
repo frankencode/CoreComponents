@@ -12,6 +12,8 @@
 #include <unistd.h> // chdir
 #include "Process.hpp"
 
+extern "C" char** environ;
+
 namespace pona
 {
 
