@@ -86,7 +86,7 @@ int main()
 	producer.wait();
 	consumer.wait();
 	dt = now() - dt;
-	print("\ndt = %% usec\n\n", dt.microSeconds());
+	print("\ndt = %% us\n\n", dt.us());
 	
 	return 0;
 }

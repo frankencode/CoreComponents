@@ -2,7 +2,7 @@
 #define PONA_SIGNALSET_HPP
 
 #include <signal.h>
-#include "atom"
+#include "atoms"
 
 namespace pona
 {

@@ -8,7 +8,7 @@
 #ifndef PONA_HEAP_HPP
 #define PONA_HEAP_HPP
 
-#include "atom"
+#include "atoms"
 
 #ifdef PONA_WINDOWS
 #ifdef min

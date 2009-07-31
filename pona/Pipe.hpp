@@ -8,7 +8,7 @@
 #ifndef PONA_PIPE_HPP
 #define PONA_PIPE_HPP
 
-#include "atom"
+#include "atoms"
 #include "SystemStream.hpp"
 
 namespace pona

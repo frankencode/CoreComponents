@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include "atom"
+#include "atoms"
 #include "Mutex.hpp"
 #include "Time.hpp"
 
@@ -57,8 +57,8 @@ public:
 	{
 		bool success = true;
 		struct timespec ts;
-		ts.tv_sec = timeout.secondsPart();
-		ts.tv_nsec = timeout.nanoSecondsPart();
+		ts.tv_sec = timeout.sec();
+		ts.tv_nsec = timeout.nsec();
 		int ret = pthread_cond_timedwait(&cond_, &mutex->mutex_, &ts);
 		if (ret != 0) {
 			if (ret == ETIMEDOUT)

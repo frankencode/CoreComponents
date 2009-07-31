@@ -8,7 +8,7 @@
 #ifndef PONA_STREAMSOCKET_HPP
 #define PONA_STREAMSOCKET_HPP
 
-#include "atom"
+#include "atoms"
 #include "defaults.hpp"
 #include "Time.hpp"
 #include "Mutex.hpp"

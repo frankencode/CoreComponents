@@ -10,7 +10,7 @@
 
 #include <sys/types.h>
 #include <pwd.h>
-#include "atom"
+#include "atoms"
 #include "String.hpp"
 
 namespace pona

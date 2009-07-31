@@ -13,7 +13,7 @@ namespace pona
 {
 
 Random::Random(int seed)
-	: x_((seed >= 0) ? seed : now().nanoSecondsPart())
+	: x_((seed >= 0) ? seed : now().nsec())
 {
 	if (x_ == 0)
 		x_ = 1;

@@ -9,7 +9,7 @@
 #define PONA_SIGNALMANAGER_HPP
 
 #include <signal.h>
-#include "atom"
+#include "atoms"
 #include "Mutex.hpp"
 #include "Thread.hpp"
 #include "Process.hpp"

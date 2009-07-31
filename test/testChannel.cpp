@@ -81,7 +81,7 @@ int main()
 	p2->wait();
 	dt = now() - dt;
 	
-	print("\ndt = %% usec\n\n", dt.microSeconds());
+	print("\ndt = %% us\n\n", dt.us());
 	
 	return 0;
 }

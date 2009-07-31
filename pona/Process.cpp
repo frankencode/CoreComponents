@@ -9,8 +9,10 @@
 #include <sys/wait.h> // waitpid
 #include <sys/stat.h> // umask
 #include <errno.h> // errno
-#include <stdlib.h> // malloc, free
+#include <stdlib.h> // malloc, free, exit
 #include <unistd.h> // chdir, readlink
+#include <time.h> // nanosleep
+#include <errno.h> // errno
 #ifdef __linux
 #include "stdio" // DEBUG
 #include "File.hpp" // to read /proc
@@ -106,7 +108,7 @@ String Process::execPath()
 	String path;
 	#ifdef __linux
 	CString lnPath = String(Format("/proc/%%/exe") << currentProcessId()).utf8();
-	size_t bufSize = 1024;
+	ssize_t bufSize = 1024;
 	while (true) {
 		char* buf = (char*)::malloc(bufSize + 1);
 		::memset(buf, 0, bufSize + 1);
@@ -195,6 +197,39 @@ void Process::broadcast(pid_t processGroupId, int signal)
 {
 	if (::kill(-processGroupId, signal) == -1)
 		PONA_SYSTEM_EXCEPTION;
+}
+
+void Process::raise(int signal)
+{
+	if (::raise(signal) == -1)
+		PONA_SYSTEM_EXCEPTION;
+}
+
+void Process::sleep(Time duration)
+{
+	struct timespec req, rem;
+	req.tv_sec = duration.sec();
+	req.tv_nsec = duration.nsec();
+	rem.tv_sec = 0;
+	rem.tv_nsec = 0;
+	while (true) {
+		if (::nanosleep(&req, &rem) == -1) {
+			if (errno == EINTR) {
+				if ((rem.tv_sec > 0) || (rem.tv_nsec > 0)) {
+					req = rem;
+					continue;
+				}
+			}
+			else
+				PONA_SYSTEM_EXCEPTION;
+		}
+		break;
+	}
+}
+
+void Process::exit(int exitCode)
+{
+	::exit(exitCode);
 }
 
 } // namespace pona

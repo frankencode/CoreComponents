@@ -1,34 +1,10 @@
-#ifdef __linux
-	#define PONA_PROCESSSTATUS_LINUX
-#else
-	#ifdef __MACH__
-		#define PONA_PROCESSSTATUS_BSD
-	#else
-		#ifdef __FreeBSD__
-			#define PONA_PROCESSSTATUS_BSD
-		#else
-			#ifdef __NetBSD__
-				#define PONA_PROCESSSTATUS_BSD
-			#else
-				#ifdef __OpenBSD__
-					#define PONA_PROCESSSTATUS_BSD
-				#else
-					#define PONA_PROCESSSTATUS_UNSUPPORTED
-				#endif
-			#endif
-		#endif
-	#endif
-#endif
-
-#ifdef PONA_PROCESSSTATUS_BSD
+#ifndef __linux
 #include <sys/sysctl.h> // sysctl
 #include <sys/stat.h> // devname_r
 #include <stdlib.h> // malloc, free
 #include <string.h> // memset
 #include "User.hpp"
-#endif
-
-#ifdef PONA_PROCESSSTATUS_LINUX
+#else
 #include "File.hpp"
 #include "FileStatus.hpp"
 #include "User.hpp"
@@ -43,7 +19,7 @@ namespace pona
 
 ProcessStatus::ProcessStatus(pid_t processId)
 {
-#ifdef PONA_PROCESSSTATUS_BSD
+#ifndef __linux
 	struct kinfo_proc* proc;
 	int mib[4];
 	mib[0] = CTL_KERN;
@@ -73,8 +49,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	else if (processStatus_ == SSTOP) processStatus_ = 'T';
 	else if (processStatus_ == SZOMB) processStatus_ = 'Z';
 	::free(proc);
-#endif
-#ifdef PONA_PROCESSSTATUS_LINUX
+#else
 	String path = Format("/proc/%%/stat") << processId;
 	Ref<File, Owner> file = new File(path);
 	file->open(File::Read);
@@ -106,9 +81,6 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	loginName_ = User(FileStatus(path).ownerId()).name();
 	processStatus_ = parts->get(2)->get(0);
 	file->close();
-#endif
-#ifdef PONA_PROCESSSTATUS_UNSUPPORTED
-#warning "ProcessStatus is not supported on this platform."
 #endif
 }
 

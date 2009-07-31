@@ -2,7 +2,7 @@
 #define PONA_PROCESSSTATUS_HPP
 
 #include <sys/types.h>
-#include "atom"
+#include "atoms"
 #include "String.hpp"
 
 namespace pona

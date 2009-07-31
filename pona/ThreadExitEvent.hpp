@@ -8,7 +8,7 @@
 #ifndef PONA_THREADEXITEVENT_HPP
 #define PONA_THREADEXITEVENT_HPP
 
-#include "atom"
+#include "atoms"
 #include "ThreadLocalOwner.hpp"
 #include "Event.hpp"
 #include "Process.hpp"

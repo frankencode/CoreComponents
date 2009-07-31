@@ -20,7 +20,7 @@ cat <<EOD
 #ifndef PONA_FORMATPRINT_HPP
 #define PONA_FORMATPRINT_HPP
 
-#include "atom"
+#include "atoms"
 #include "String.hpp"
 #include "Format.hpp"
 #include "StandardStreams.hpp"

@@ -48,14 +48,14 @@ int main()
 		int usecRef = 40653;
 		Time dt = now();
 		int m = primeCountSimple(n);
-		int usec = (now() - dt).microSeconds();
+		int usec = (now() - dt).us();
 		print("primeCountSimple(): %% prime numbers, dt = %% us (%% % of reference system)\n", m, usec, (100 * usecRef) / usec);
 	}
 	{
 		int usecRef = 5952;
 		Time dt = now();
 		int m = primeCountWithStack(n);
-		int usec = (now() - dt).microSeconds();
+		int usec = (now() - dt).us();
 		print("primeCountWithStack(): %% prime numbers, dt = %% us (%% % of reference system)\n", m, usec, (100 * usecRef) / usec);
 	}
 	print("\n");

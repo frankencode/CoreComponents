@@ -40,7 +40,7 @@ int main()
 		print("Test 3\n");
 		print("------\n");
 		
-		const char* l1 = "#include <pona/atom>\n";
+		const char* l1 = "#include <pona/atoms>\n";
 		const char* l2 = "int main() { pona::ouput()->write(\"Hello, world!\\n\"); return 0; }\n";
 		List<char> text;
 		text.push(0, strlen(l1), l1);

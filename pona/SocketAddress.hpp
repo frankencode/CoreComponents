@@ -13,7 +13,7 @@
 #include <netdb.h> // addrinfo
 #include <sys/socket.h> // connect
 
-#include "atom"
+#include "atoms"
 #include "String.hpp"
 #include "List.hpp"
 #include "Mutex.hpp"
@@ -29,7 +29,7 @@ typedef List< Ref<SocketAddress, Owner> > SocketAddressList;
 
 class SocketAddress: public Instance
 {
-	PONA_SHARED
+	PONA_SHAREABLE
 	
 public:
 	SocketAddress();
@@ -43,20 +43,19 @@ public:
 	  * \param port service port
 	  */
 	SocketAddress(int family, String address = String(), int port = 0);
+	SocketAddress(struct sockaddr_in* addr);
+	SocketAddress(struct sockaddr_in6* addr);
+	SocketAddress(addrinfo* info);
 	
-	sockaddr* socketAddress() { return &socketAddress_; }
-	const sockaddr* socketAddress() const { return &socketAddress_; }
-	int socketAddressLength() const;
-	
-	int family() const { return socketAddress_.sa_family; }
-	int socketType() const { return socketType_; }
-	int protocol() const { return protocol_; }
-	String familyString() const;
-	String socketTypeString() const;
-	String protocolString() const;
-	String addressString() const;
+	int family() const;
+	int socketType() const;
+	int protocol() const;
+	String toString() const;
 	int port() const;
 	void setPort(int port);
+	
+	int scope() const;
+	void setScope(int scope);	
 	
 	/** Query the complete connection information for given host name, service name and
 	  * protocol family. The call blocks until the local resolver has resolved the
@@ -87,13 +86,15 @@ public:
 	  */
 	static String hostName();
 	
-private:
-	SocketAddress(addrinfo* info);
+	struct sockaddr* addr();
+	const struct sockaddr* addr() const;
+	int addrLen() const;
 	
+private:
 	union {
-		sockaddr socketAddress_;
-		sockaddr_in inet4Address_;
-		sockaddr_in6 inet6Address_;
+		struct sockaddr addr_;
+		struct sockaddr_in inet4Address_;
+		struct sockaddr_in6 inet6Address_;
 	};
 	
 	int socketType_;

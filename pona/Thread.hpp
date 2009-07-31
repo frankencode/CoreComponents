@@ -9,7 +9,7 @@
 #define PONA_THREAD_HPP
 
 #include <pthread.h>
-#include "atom"
+#include "atoms"
 #include "Time.hpp"
 
 namespace pona
@@ -24,7 +24,7 @@ public:
 	void start(int exitType = Joinable);
 	int wait();
 	
-	static void sleep(Time dt);
+	static void sleep(Time duration);
 	
 	pthread_t tid() const;
 	
