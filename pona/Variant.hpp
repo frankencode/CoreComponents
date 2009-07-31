@@ -8,7 +8,7 @@
 #ifndef PONA_VARIANT_HPP
 #define PONA_VARIANT_HPP
 
-#include "atom"
+#include "atoms"
 #include "String.hpp"
 
 namespace pona

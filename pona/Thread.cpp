@@ -46,12 +46,12 @@ int Thread::wait()
 	return (status) ? *status : 0;
 }
 
-void Thread::sleep(Time dt)
+void Thread::sleep(Time duration)
 {
 	Mutex mutex;
 	Condition condition;
 	mutex.acquire();
-	condition.waitUntil(&mutex, now() + dt);
+	condition.waitUntil(&mutex, now() + duration);
 	mutex.release();
 }
 

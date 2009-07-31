@@ -8,7 +8,7 @@
 #ifndef PONA_FORMAT_HPP
 #define PONA_FORMAT_HPP
 
-#include "atom"
+#include "atoms"
 #include "String.hpp"
 #include "Variant.hpp"
 #include "Stack.hpp"

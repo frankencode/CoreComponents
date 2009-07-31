@@ -9,7 +9,7 @@
 #define PONA_LIST_HPP
 
 #include <new>
-#include "atom"
+#include "atoms"
 #include "RandomAccessMedia.hpp"
 #include "ListObserver.hpp"
 
@@ -621,6 +621,8 @@ Ref<List<T>, Owner> List<T>::copy(int i, int n)
 template<class T>
 int List<T>::find(int i, int n, T e) const
 {
+	if (length_ == 0) return 0;
+	
 	if (i < 0) i += length_;
 	if (!((0 <= i) && (i < length_)))
 		PONA_THROW(ListException, "Wrong index");
@@ -699,6 +701,8 @@ void List<T>::push(int i, int n, List* b)
 template<class T>
 int List<T>::find(int i, int n, List* b) const
 {
+	if (length_ == 0) return 0;
+	
 	if (i < 0) i += length_;
 	if (!((0 <= i) && (i < length_)))
 		PONA_THROW(ListException, "Wrong index");

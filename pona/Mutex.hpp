@@ -9,7 +9,7 @@
 #define PONA_MUTEX_HPP
 
 #include <pthread.h>
-#include "atom"
+#include "atoms"
 
 namespace pona
 {
@@ -36,6 +36,14 @@ public: \
 	virtual void endCritical() { mutex_.release(); } \
 private: \
 	Mutex mutex_;
+
+#define PONA_SHAREABLE \
+public: \
+	virtual void beginCritical() { if (mutex_) mutex_->acquire(); } \
+	virtual void endCritical() { if (mutex_) mutex_->release(); } \
+	void makeShared() { if (!mutex_) mutex_ = new Mutex; } \
+private: \
+	Ref<Mutex, Owner> mutex_;
 
 } // namespace pona
 

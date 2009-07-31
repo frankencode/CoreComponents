@@ -8,7 +8,7 @@
 #ifndef PONA_STANDARDSTREAMS_HPP
 #define PONA_STANDARDSTREAMS_HPP
 
-#include "atom"
+#include "atoms"
 #include "SystemStream.hpp"
 #include "LineSource.hpp"
 #include "LineSink.hpp"

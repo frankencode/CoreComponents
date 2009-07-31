@@ -8,7 +8,7 @@
 #ifndef PONA_OPTIONS_HPP
 #define PONA_OPTIONS_HPP
 
-#include "atom"
+#include "atoms"
 #include "String.hpp"
 #include "Variant.hpp"
 #include "List.hpp"

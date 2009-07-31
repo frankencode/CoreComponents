@@ -8,7 +8,7 @@
 #ifndef PONA_BITSINK_HPP
 #define PONA_BITSINK_HPP
 
-#include "atom"
+#include "atoms"
 #include "defaults.hpp"
 #include "Stream.hpp"
 

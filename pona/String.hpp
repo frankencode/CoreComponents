@@ -8,7 +8,7 @@
 #ifndef PONA_STRING_HPP
 #define PONA_STRING_HPP
 
-#include "atom"
+#include "atoms"
 #include "CString.hpp"
 #include "List.hpp"
 
@@ -80,6 +80,7 @@ uint64_t toUInt64(String s, bool* ok = 0);
 float64_t toFloat64(String s, bool* ok = 0);
 
 String toLower(String s);
+String stripLeadingSpace(String s);
 String stripTrailingSpace(String s);
 uint32_t crc32(String s);
 

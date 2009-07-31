@@ -221,6 +221,20 @@ String toLower(String s)
 	return s;
 }
 
+String stripLeadingSpace(String s)
+{
+	int n = s->length();
+	while (n > 0) {
+		Char ch = s->get(-n);
+		bool isSpace = ((ch == ' ') || (ch == '\t'));
+		if (!isSpace) break;
+		--n;
+	}
+	if (n < s->length())
+		return s->copy(s->length() - n, n);
+	return s;
+}
+
 String stripTrailingSpace(String s)
 {
 	int n = s->length();

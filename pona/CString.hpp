@@ -9,7 +9,7 @@
 #ifndef PONA_CSTRING_HPP
 #define PONA_CSTRING_HPP
 
-#include "atom"
+#include "atoms"
 #include "Array.hpp"
 
 namespace pona

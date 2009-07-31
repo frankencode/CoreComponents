@@ -1,0 +1,62 @@
+#include <pona/stdio>
+#include <pona/network>
+
+namespace pona
+{
+
+int main()
+{
+	Ref<NetworkInterfaceList, Owner> interfaces = NetworkInterface::queryAll(AF_UNSPEC);
+	for (int i = 0, n = interfaces->length(); i < n; ++i) {
+		Ref<NetworkInterface> interface = interfaces->get(i);
+		if (i > 0) print("\n");
+		print("%%:\n", interface->name());
+		print("  Flags: ");
+		int flags = interface->flags();
+		if (flags & NetworkInterface::Up) print(" up");
+		if (flags & NetworkInterface::Running) print(" running");
+		if (flags & NetworkInterface::LowerUp) print(" lower_up");
+		if (flags & NetworkInterface::Dormant) print(" dormant");
+		if (flags & NetworkInterface::Broadcast) print(" bcast");
+		if (flags & NetworkInterface::Multicast) print(" mcast");
+		if (flags & NetworkInterface::Loopback) print(" loop");
+		if (flags & NetworkInterface::PointToPoint) print(" p2p");
+		print("\n");
+		print("  HwAddr: %hex:%\n", interface->hardwareAddress());
+		print("  MTU:    %%\n", interface->mtu());
+		Ref<SocketAddressList> addressList = interface->addressList();
+		if (addressList) {
+			for (int k = 0, n = addressList->length(); k < n; ++k) {
+				Ref<SocketAddress> address = addressList->get(k);
+				print("  Addr:   %%", address->toString());
+				Ref<SocketAddressEntry> addressEntry = address;
+				if (addressEntry) {
+					print(" --");
+					bool comma = false;
+					if (addressEntry->localAddress()) {
+						print(" Local: %%", addressEntry->localAddress()->toString());
+						comma = true;
+					}
+					if (addressEntry->broadcastAddress()) {
+						if (comma) print(",");
+						print(" Bcast: %%", addressEntry->broadcastAddress()->toString());
+						comma = true;
+					}
+					if (addressEntry->anycastAddress()) {
+						if (comma) print(",");
+						print(" Acast: %%", addressEntry->anycastAddress()->toString());
+					}
+				}
+				print("\n");
+			}
+		}
+	}
+	return 0;
+}
+
+} // namespace pona
+
+int main()
+{
+	return pona::main();
+}

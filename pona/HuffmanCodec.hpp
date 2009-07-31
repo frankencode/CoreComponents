@@ -8,7 +8,7 @@
 #ifndef PONA_HUFFMANCODEC_HPP
 #define PONA_HUFFMANCODEC_HPP
 
-#include "atom"
+#include "atoms"
 #include "BitSink.hpp"
 #include "BitSource.hpp"
 #include "Heap.hpp"

@@ -10,5 +10,6 @@
 
 #include "SocketAddress.hpp"
 #include "StreamSocket.hpp"
+#include "NetworkInterface.hpp"
 
 #endif // PONA_NETWORK

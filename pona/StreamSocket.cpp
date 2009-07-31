@@ -31,7 +31,7 @@ Ref<SocketAddress> StreamSocket::address() const { return address_; }
 
 void StreamSocket::bind()
 {
-	if (::bind(fd_, address_->socketAddress(), address_->socketAddressLength()) == -1)
+	if (::bind(fd_, address_->addr(), address_->addrLen()) == -1)
 		PONA_SYSTEM_EXCEPTION;
 }
 
@@ -49,8 +49,8 @@ bool StreamSocket::readyAccept(Time idleTimeout)
 Ref<StreamSocket, Owner> StreamSocket::accept()
 {
 	Ref<SocketAddress, Owner> clientAddress = new SocketAddress(address_->family());
-	socklen_t len = clientAddress->socketAddressLength();
-	int fdc = ::accept(fd_, clientAddress->socketAddress(), &len);
+	socklen_t len = clientAddress->addrLen();
+	int fdc = ::accept(fd_, clientAddress->addr(), &len);
 	if (fdc < 0)
 		PONA_SYSTEM_EXCEPTION;
 	
@@ -66,7 +66,7 @@ void StreamSocket::connect()
 	if (::fcntl(fd_, F_SETFL, flags | O_NONBLOCK) == -1)
 		PONA_SYSTEM_EXCEPTION;
 	
-	int ret = ::connect(fd_, address_->socketAddress(), address_->socketAddressLength());
+	int ret = ::connect(fd_, address_->addr(), address_->addrLen());
 	
 	if (ret == -1) {
 		if (errno != EINPROGRESS)
@@ -108,8 +108,8 @@ Ref<SocketAddress> StreamSocket::remoteAddress() const { return remoteAddress(fd
 Ref<SocketAddress> StreamSocket::localAddress(int fd)
 {
 	Ref<SocketAddress> address = new SocketAddress;
-	socklen_t len = address->socketAddressLength();
-	if (::getsockname(fd, address->socketAddress(), &len) == -1)
+	socklen_t len = address->addrLen();
+	if (::getsockname(fd, address->addr(), &len) == -1)
 		PONA_SYSTEM_EXCEPTION;
 	return address;
 }
@@ -117,8 +117,8 @@ Ref<SocketAddress> StreamSocket::localAddress(int fd)
 Ref<SocketAddress> StreamSocket::remoteAddress(int fd)
 {
 	Ref<SocketAddress> address = new SocketAddress;
-	socklen_t len = address->socketAddressLength();
-	if (::getpeername(fd, address->socketAddress(), &len) == -1)
+	socklen_t len = address->addrLen();
+	if (::getpeername(fd, address->addr(), &len) == -1)
 		PONA_SYSTEM_EXCEPTION;
 	return address;
 }

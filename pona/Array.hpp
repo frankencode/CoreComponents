@@ -8,7 +8,7 @@
 #ifndef PONA_VECTOR_HPP
 #define PONA_VECTOR_HPP
 
-#include "atom"
+#include "atoms"
 #include "RandomAccessMedia.hpp"
 
 namespace pona

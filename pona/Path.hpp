@@ -9,7 +9,7 @@
 #define PONA_PATH_HPP
 
 #include <sys/types.h>
-#include "atom"
+#include "atoms"
 #include "String.hpp"
 #include "File.hpp"
 

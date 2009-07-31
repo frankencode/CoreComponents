@@ -8,7 +8,7 @@
 #ifndef PONA_LINESINK_HPP
 #define PONA_LINESINK_HPP
 
-#include "atom"
+#include "atoms"
 #include "defaults.hpp"
 #include "Stream.hpp"
 #include "String.hpp"

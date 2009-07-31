@@ -52,8 +52,8 @@ bool SystemStream::readyRead(Time timeout)
 	FD_ZERO(&set);
 	FD_SET(fd_, &set);
 	struct timeval tv;
-	tv.tv_sec = timeout.secondsPart();
-	tv.tv_usec = timeout.nanoSecondsPart() / 1000;
+	tv.tv_sec = timeout.sec();
+	tv.tv_usec = timeout.nsec() / 1000;
 	int ret = ::select(fd_ + 1, &set, 0, 0, &tv);
 	if (ret == -1)
 		PONA_THROW(StreamSemanticException, systemError());
@@ -67,8 +67,8 @@ bool SystemStream::readyReadOrWrite(Time timeout)
 	FD_SET(fd_, &rset);
 	wset = rset;
 	struct timeval tv;
-	tv.tv_sec = timeout.secondsPart();
-	tv.tv_usec = timeout.nanoSecondsPart() / 1000;
+	tv.tv_sec = timeout.sec();
+	tv.tv_usec = timeout.nsec() / 1000;
 	int ret = ::select(fd_ + 1, &rset, &wset, 0, &tv);
 	if (ret == -1)
 		PONA_THROW(StreamSemanticException, systemError());

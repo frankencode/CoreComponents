@@ -4,6 +4,32 @@
 namespace pona
 {
 
+String familyToString(int family)
+{
+	String s("UNKNOWN");
+	if (family == AF_INET) s = "INET";
+	else if (family == AF_INET6) s = "INET6";
+	else if (family == AF_UNSPEC) s = "UNSPEC";
+	return s;
+}
+
+String socketTypeToString(int type)
+{
+	String s("UNKNOWN");
+	if (type == SOCK_DGRAM) s = "DGRAM";
+	else if (type == SOCK_STREAM) s = "STREAM";
+	return s;
+}
+
+String protocolToString(int protocol)
+{
+	String s("UNKNOWN");
+	if (protocol == IPPROTO_TCP) s = "TCP";
+	else if (protocol == IPPROTO_UDP) s = "UDP";
+	else s = Format("<%%>") << protocol;
+	return s;
+}
+
 int main(int argc, char** argv)
 {
 	String hostName = SocketAddress::hostName();
@@ -24,11 +50,11 @@ int main(int argc, char** argv)
 		bool failed;
 		
 		print("%% : %% : %% : %% : %% : %% : %%\n"
-			, address->familyString()
-			, address->addressString()
+			, familyToString(address->family())
+			, address->toString()
 			, address->port()
-			, address->socketTypeString()
-			, address->protocolString()
+			, socketTypeToString(address->socketType())
+			, protocolToString(address->protocol())
 			, address->lookupHostName(&failed)
 			, address->lookupServiceName()
 		);

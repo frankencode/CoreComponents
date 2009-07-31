@@ -1,7 +1,7 @@
 SET(PONA_HEADER
 	defaults.hpp
 	
-	atom
+	atoms
 	types.hpp
 	Exception.hpp
 	Instance.hpp
@@ -92,7 +92,9 @@ SET(PONA_HEADER
 	
 	network
 	SocketAddress.hpp
+	SocketAddressEntry.hpp
 	StreamSocket.hpp
+	NetworkInterface.hpp
 	
 	time
 	Time.hpp
@@ -103,7 +105,7 @@ SET(PONA_HEADER
 )
 
 SET(PONA_SOURCE
-	# atom
+	# atoms
 	Exception.cpp
 	
 	# container
@@ -160,7 +162,9 @@ SET(PONA_SOURCE
 	
 	# network
 	SocketAddress.cpp
+	SocketAddressEntry.cpp
 	StreamSocket.cpp
+	NetworkInterface.cpp
 	
 	# misc
 	Random.cpp

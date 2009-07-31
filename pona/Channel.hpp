@@ -8,7 +8,7 @@
 #ifndef PONA_CHANNEL_HPP
 #define PONA_CHANNEL_HPP
 
-#include "atom"
+#include "atoms"
 #include "Queue.hpp"
 #include "Mutex.hpp"
 #include "Condition.hpp"

@@ -10,12 +10,13 @@
 
 #include <sys/types.h> // pid_t
 #include <signal.h> // SIGTERM, etc.
-#include "atom"
+#include "atoms"
 #include "String.hpp"
 #include "Map.hpp"
 #include "SystemStream.hpp"
 #include "LineSink.hpp"
 #include "LineSource.hpp"
+#include "Time.hpp"
 
 namespace pona
 {
@@ -89,7 +90,11 @@ public:
 	
 	static void signal(pid_t processId, int signal);
 	static void broadcast(pid_t processGroupId, int signal);
-
+	static void raise(int signal);
+	
+	static void sleep(Time duration);
+	static void exit(int exitCode);
+	
 protected:
 	friend class ProcessFactory;
 	

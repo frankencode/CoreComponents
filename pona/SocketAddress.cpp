@@ -32,12 +32,17 @@ SocketAddress::SocketAddress(int family, String address, int port)
 	void* addr = 0;
 
 	if (family == AF_INET) {
+		// inet4Address_.sin_len = sizeof(addr);
+		*(uint8_t*)&inet4Address_ = sizeof(inet4Address_); // uggly, but safe HACK, for BSD4.4
 		inet4Address_.sin_family = AF_INET;
 		inet4Address_.sin_port = htons(port);
 		inet4Address_.sin_addr.s_addr = htonl(INADDR_ANY);
 		addr = &inet4Address_.sin_addr;
 	}
 	else if (family == AF_INET6) {
+		#ifdef SIN6_LEN
+		inet6Address_.sin6_len = sizeof(inet6Address_);
+		#endif
 		inet6Address_.sin6_family = AF_INET6;
 		inet6Address_.sin6_port = htons(port);
 		inet6Address_.sin6_addr = in6addr_any;
@@ -45,11 +50,19 @@ SocketAddress::SocketAddress(int family, String address, int port)
 	}
 	else
 		PONA_THROW(NetworkingException, "Unsupported address family");
-
+	
 	if ((address != String()) && ((address != "*")))
 		if (inet_pton(family, address.utf8(), addr) != 1)
 			PONA_THROW(NetworkingException, "Broken address string");
 }
+
+SocketAddress::SocketAddress(struct sockaddr_in* addr)
+	: inet4Address_(*addr)
+{}
+
+SocketAddress::SocketAddress(struct sockaddr_in6* addr)
+	: inet6Address_(*addr)
+{}
 
 SocketAddress::SocketAddress(addrinfo* info)
 	: socketType_(info->ai_socktype),
@@ -63,73 +76,42 @@ SocketAddress::SocketAddress(addrinfo* info)
 		PONA_THROW(NetworkingException, "Unsupported address family.");
 }
 
-int SocketAddress::socketAddressLength() const
-{
-	int len = 0;
-	if (family() == AF_INET)
-		len = sizeof(sockaddr_in);
-	else if (family() == AF_INET6)
-		len = sizeof(sockaddr_in6);
-	else
-		PONA_THROW(NetworkingException, "Unsupported address family.");
-	return len;
-}
+int SocketAddress::family() const { return addr_.sa_family; }
+int SocketAddress::socketType() const { return socketType_; }
+int SocketAddress::protocol() const { return protocol_; }
 
-String SocketAddress::familyString() const
-{
-	String s("UNKNOWN");
-	if (family() == AF_INET) s = "INET";
-	else if (family() == AF_INET6) s = "INET6";
-	else if (family() == AF_UNSPEC) s = "UNSPEC";
-	return s;
-}
-
-String SocketAddress::socketTypeString() const
-{
-	String s("UNKNOWN");
-	if (socketType() == SOCK_DGRAM) s = "DGRAM";
-	else if (socketType() == SOCK_STREAM) s = "STREAM";
-	return s;
-}
-
-String SocketAddress::protocolString() const
-{
-	String s("UNKNOWN");
-	if (protocol() == IPPROTO_TCP) s = "TCP";
-	else if (protocol() == IPPROTO_UDP) s = "UDP";
-	else s = Format("<%%>") << protocol();
-	return s;
-}
-
-String SocketAddress::addressString() const
+String SocketAddress::toString() const
 {
 	const int bufSize = INET_ADDRSTRLEN + INET6_ADDRSTRLEN;
 	char buf[bufSize];
 	
-	const char* ret = 0;
+	const char* sz = 0;
 	const void* addr = 0;
 	
-	if (socketAddress_.sa_family == AF_INET)
+	if (addr_.sa_family == AF_INET)
 		addr = &inet4Address_.sin_addr;
-	else if (socketAddress_.sa_family == AF_INET6)
+	else if (addr_.sa_family == AF_INET6)
 		addr = &inet6Address_.sin6_addr;
 	else
 		PONA_THROW(NetworkingException, "Unsupported address family");
 	
-	ret = inet_ntop(socketAddress_.sa_family, const_cast<void*>(addr), buf, bufSize);
-	if (!ret)
+	sz = inet_ntop(addr_.sa_family, const_cast<void*>(addr), buf, bufSize);
+	if (!sz)
 		PONA_THROW(NetworkingException, "Illegal binary address format");
 	
-	return String(ret);
+	String s(sz);
+	if (port() != 0)
+		s << ":" << port();
+	return s;
 }
 
 int SocketAddress::port() const
 {
 	int port = 0;
 	
-	if (socketAddress_.sa_family == AF_INET)
+	if (addr_.sa_family == AF_INET)
 		port = inet4Address_.sin_port;
-	else if (socketAddress_.sa_family == AF_INET6)
+	else if (addr_.sa_family == AF_INET6)
 		port = inet6Address_.sin6_port;
 	else
 		PONA_THROW(NetworkingException, "Unsupported address family");
@@ -140,12 +122,19 @@ int SocketAddress::port() const
 void SocketAddress::setPort(int port)
 {
 	port = htons(port);
-	if (socketAddress_.sa_family == AF_INET)
+	if (addr_.sa_family == AF_INET)
 		inet4Address_.sin_port = port;
-	else if (socketAddress_.sa_family == AF_INET6)
+	else if (addr_.sa_family == AF_INET6)
 		inet6Address_.sin6_port = port;
 	else
 		PONA_THROW(NetworkingException, "Unsupported address family");
+}
+
+int SocketAddress::scope() const {
+	return (addr_.sa_family == AF_INET6) ? inet6Address_.sin6_scope_id : 0;
+}
+void SocketAddress::setScope(int scope) {
+	if (addr_.sa_family == AF_INET6) inet6Address_.sin6_scope_id = scope;
 }
 
 Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String serviceName, int family, int socketType, String* canonicalName)
@@ -210,7 +199,7 @@ String SocketAddress::lookupHostName(bool* failed) const
 	int flags = NI_NAMEREQD;
 	if (socketType_ == SOCK_DGRAM) flags |= NI_DGRAM;
 	
-	int ret = getnameinfo(socketAddress(), socketAddressLength(), hostName, hostNameSize, serviceName, serviceNameSize, flags);
+	int ret = getnameinfo(addr(), addrLen(), hostName, hostNameSize, serviceName, serviceNameSize, flags);
 	
 	if (ret != 0) {
 		if (!failed)
@@ -237,7 +226,7 @@ String SocketAddress::lookupServiceName() const
 	
 	hostName[0] = 0;
 	serviceName[0] = 0;
-	int ret = getnameinfo(socketAddress(), socketAddressLength(), hostName, hostNameSize, serviceName, serviceNameSize, flags);
+	int ret = getnameinfo(addr(), addrLen(), hostName, hostNameSize, serviceName, serviceNameSize, flags);
 	
 	if (ret != 0) {
 	#ifdef __MACH__
@@ -259,6 +248,21 @@ String SocketAddress::hostName()
 		name = buf;
 	}
 	return name;
+}
+
+struct sockaddr* SocketAddress::addr() { return &addr_; }
+const struct sockaddr* SocketAddress::addr() const { return &addr_; }
+
+int SocketAddress::addrLen() const
+{
+	int len = 0;
+	if (family() == AF_INET)
+		len = sizeof(sockaddr_in);
+	else if (family() == AF_INET6)
+		len = sizeof(sockaddr_in6);
+	else
+		PONA_THROW(NetworkingException, "Unsupported address family.");
+	return len;
 }
 
 } // namespace pona

@@ -9,7 +9,7 @@
 #ifndef PONA_ACTION_HPP
 #define PONA_ACTION_HPP
 
-#include "atom"
+#include "atoms"
 
 namespace pona
 {

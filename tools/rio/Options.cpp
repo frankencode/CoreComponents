@@ -101,7 +101,9 @@ void Options::read(int argc, char** argv)
 Ref<SocketAddress, Owner> Options::address() const
 {
 	Ref<SocketAddressList, Owner> choice = SocketAddress::resolve(String(host_), Format("%%") << int(port_), bool(inet6_) ? AF_INET6 : AF_UNSPEC, SOCK_STREAM);
-	return choice->first();
+	Ref<SocketAddress, Owner> address = choice->first();
+	address->makeShared();
+	return address;
 }
 
 } // namespace rio

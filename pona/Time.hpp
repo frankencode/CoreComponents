@@ -24,8 +24,8 @@ class Time
 {
 public:
 	Time() {}
-	Time(int seconds, int nanoSeconds): sec_(seconds), nsec_(nanoSeconds) {}
-	Time(double fineSeconds) { *this = fineSeconds; }
+	Time(int sec, int nsec): sec_(sec), nsec_(nsec) {}
+	Time(double fineSec) { *this = fineSec; }
 	Time(const Time& b) { *this = b; }
 	
 	inline const Time& operator=(const Time& b)
@@ -40,22 +40,16 @@ public:
 		return *this;
 	}
 	
-	inline operator double() const { return fineSeconds(); }
+	inline operator double() const { return fineSec(); }
 
-	inline int secondsPart() const { return sec_; }
-	inline int nanoSecondsPart() const { return nsec_; }
+	inline int sec() const { return sec_; }
+	inline int nsec() const { return nsec_; }
+	inline int usec() const { return nsec_ / 1000; }
 	
-	inline int seconds() const { return sec_ + (nsec_ >= 500000000); }
-	inline uint64_t miliSeconds() const { return uint64_t(sec_) * 1000 + nsec_ / 1000000; }
-	inline uint64_t microSeconds() const { return uint64_t(sec_) * 1000000 + nsec_ / 1000; }
-	inline double fineSeconds() const { return double(sec_) + double(nsec_)/1000000000; }
-	
-	inline int s() const { return seconds(); }
-	inline uint64_t ms() const { return miliSeconds(); }
-	inline uint64_t us() const { return microSeconds(); }
-	
-	inline bool operator==(int sec) { return (sec_ == sec) && (nsec_ == 0); }
-	inline bool operator!=(int sec) { return !(*this == sec); }
+	inline int s() const { return sec_ + (nsec_ >= 500000000); }
+	inline uint64_t ms() const { return uint64_t(sec_) * 1000 + nsec_ / 1000000; }
+	inline uint64_t us() const { return uint64_t(sec_) * 1000000 + nsec_ / 1000; }
+	inline double fineSec() const { return double(sec_) + double(nsec_)/1000000000; }
 	
 	inline const Time& operator+=(const Time& b)
 	{
@@ -97,10 +91,10 @@ inline Time operator-(const Time& a, const Time& b)
 	return c -= b;
 }
 
-inline bool operator==(const Time& a, const Time& b) { return ((a.secondsPart() == b.secondsPart()) && (a.nanoSecondsPart() == b.nanoSecondsPart())); }
+inline bool operator==(const Time& a, const Time& b) { return ((a.sec() == b.sec()) && (a.nsec() == b.nsec())); }
 inline bool operator!=(const Time& a, const Time& b) { return !(a == b); }
-inline bool operator<(const Time& a, const Time& b) { return (a.secondsPart() < b.secondsPart()) || ((a.secondsPart() == b.secondsPart()) && (a.nanoSecondsPart() < b.nanoSecondsPart())); }
-inline bool operator>(const Time& a, const Time& b) { return (a.secondsPart() > b.secondsPart()) || ((a.secondsPart() == b.secondsPart()) && (a.nanoSecondsPart() > b.nanoSecondsPart())); }
+inline bool operator<(const Time& a, const Time& b) { return (a.sec() < b.sec()) || ((a.sec() == b.sec()) && (a.nsec() < b.nsec())); }
+inline bool operator>(const Time& a, const Time& b) { return (a.sec() > b.sec()) || ((a.sec() == b.sec()) && (a.nsec() > b.nsec())); }
 inline bool operator<=(const Time& a, const Time& b) { return (a < b) || (a == b); }
 inline bool operator>=(const Time& a, const Time& b) { return (a > b) || (a == b); }
 

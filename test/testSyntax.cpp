@@ -178,7 +178,7 @@ int main()
 	double result = expression->eval("(-12+34)*(56-78)");
 	
 	dt = now() - dt;
-	print("took %% us\n", dt.microSeconds());
+	print("took %% us\n", dt.us());
 	print("evaluates to %%\n", result);
 	
 	return 0;

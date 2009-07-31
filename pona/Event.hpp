@@ -8,7 +8,7 @@
 #ifndef PONA_EVENT_HPP
 #define PONA_EVENT_HPP
 
-#include "atom"
+#include "atoms"
 #include "Mutex.hpp"
 #include "List.hpp"
 #include "Action.hpp"

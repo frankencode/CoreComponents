@@ -72,8 +72,8 @@ Ref<SignalManager> SignalManager::instance()
 
 SignalManager::SignalManager()
 	: signalListener_(new SignalListener),
-	  managerBySignal_(new ManagerBySignal),
-	  pid_(Process::currentProcessId())
+	  pid_(Process::currentProcessId()),
+	  managerBySignal_(new ManagerBySignal)
 {}
 
 SignalManager::~SignalManager()
