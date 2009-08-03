@@ -248,7 +248,7 @@ void Options::readOption(String line, Ref<Token> token)
 			Char name = line->get(token->index());
 			Ref<Option> option = optionByShortName(name);
 			if (!option)
-				PONA_THROW(OptionsException, String(Format("Unsupported option: '-%%'") << name).strdup());
+				PONA_THROW(OptionsException, String(Format("Unsupported option: '-%%'") << name).utf8());
 			
 			token = token->nextSibling();
 			if (token) {
@@ -270,7 +270,7 @@ void Options::readOption(String line, Ref<Token> token)
 		String name = line->range(token->index(), token->length());
 		Ref<Option> option = optionByLongName(name);
 		if (!option)
-			PONA_THROW(OptionsException, String(Format("Unsupported option: '--%%'") << name).strdup());
+			PONA_THROW(OptionsException, String(Format("Unsupported option: '--%%'") << name).utf8());
 		
 		token = token->nextSibling();
 		if (!token)

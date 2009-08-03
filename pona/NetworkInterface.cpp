@@ -18,7 +18,6 @@
 #include <string.h> // memset
 
 #include "Guard.hpp"
-#include "stdio" // DEBUG
 #include "NetworkInterface.hpp"
 
 namespace pona
@@ -120,7 +119,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 				{
 					struct ifinfomsg* data = (struct ifinfomsg*)NLMSG_DATA(msg);
 					struct rtattr* attr = (struct rtattr*)IFLA_RTA(data);
-					int attrFill = IFA_PAYLOAD(msg);
+					int attrFill = NLMSG_PAYLOAD(msg, sizeof(struct ifinfomsg));
 				
 					Ref<NetworkInterface, Owner> interface = new NetworkInterface;
 					list->append(interface);
@@ -129,8 +128,10 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 					interface->type_ = data->ifi_type;
 					interface->flags_ = data->ifi_flags;
 					
-					for (;RTA_OK(attr, attrFill); attr = RTA_NEXT(attr, attrFill))
+					while (true)
 					{
+			 			if (!RTA_OK(attr,attrFill)) break;
+			 
 						unsigned attrType = attr->rta_type;
 						unsigned attrLen = RTA_PAYLOAD(attr);
 						
@@ -155,6 +156,8 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 							if (attrLen == 4)
 								interface->mtu_ = *(uint32_t*)RTA_DATA(attr);
 						}
+						
+						attr = RTA_NEXT(attr, attrFill);
 					}
 				}
 				else if (msgType == NLMSG_DONE) { // paranoid HACK
@@ -250,7 +253,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 				{
 					struct ifaddrmsg* data = (struct ifaddrmsg*)NLMSG_DATA(msg);
 					struct rtattr* attr = (struct rtattr*)IFA_RTA(data);
-					int attrFill = IFA_PAYLOAD(msg);
+					int attrFill = NLMSG_PAYLOAD(msg, sizeof(struct ifaddrmsg));
 					
 					Ref<SocketAddress, Owner> label;
 					Ref<NetworkInterface> interface;

@@ -78,8 +78,7 @@ void LineSource::readAvail(bool* eoi)
 		Char ch = buf_[i];
 		k = (ch == eol_->get(k)) ? k + 1 : 0;
 	
-		if (k == nk)
-		{
+		if (k == nk) {
 			k = 0;
 			++cachedLines_;
 		}
