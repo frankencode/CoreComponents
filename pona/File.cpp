@@ -107,13 +107,16 @@ void File::createUnique(int mask, Char placeHolder)
 					path_->set(i, 'A' + r - 36);
 			}
 		}
-		if (::open(path_.utf8(), O_RDONLY|O_CREAT|O_EXCL, mask) == -1) {
+		int fd = ::open(path_.utf8(), O_RDONLY|O_CREAT|O_EXCL, mask);
+		if (fd == -1) {
 			if (errno != EEXIST)
 				PONA_THROW(StreamSemanticException, systemError());
 			path_ = pathSaved;
 		}
-		else
+		else {
+			::close(fd);
 			break;
+		}
 	}
 }
 

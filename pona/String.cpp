@@ -6,6 +6,7 @@
  * See ../LICENSE for the license.
  */
 
+#include <string.h> // strdup
 #include "Utf8Source.hpp"
 #include "Utf8Sink.hpp"
 #include "Crc32.hpp"
@@ -63,13 +64,6 @@ String::String(Ref<Media, Owner> media)
 	if (!get()) set(new Media);
 }
 
-char* String::strdup() const
-{
-	CString s = utf8();
-	s->liberate();
-	return s;
-}
-
 CString String::utf8() const
 {
 	Media* media = get();
@@ -88,6 +82,8 @@ CString String::utf8() const
 		sink.writeChar(media->get(i));
 	return buf;
 }
+
+char* String::strdup() const { return ::strdup(utf8()); }
 
 String operator*(Char ch, int n)
 {
@@ -135,12 +131,10 @@ int toInt(String s, bool* ok)
 	int sign = 0;
 	int i1 = 0;
 	if (syntaxFactory()->integerLiteral()->match(s, 0, &i1, &value, &sign)) {
-		 if (ok)
-		 	*ok = (value <= uint64_t(intMax)) && (i1 == s->length());
+		 *ok = (value <= uint64_t(intMax)) && (i1 == s->length());
 	}
 	else  {
-		if (ok)
-			*ok = false;
+		*ok = false;
 	}
 	return sign * int(value);
 }

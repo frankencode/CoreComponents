@@ -39,8 +39,8 @@ public:
 	inline String& operator<<(const char* b) { get()->append(String(b)); return *this; }
 	inline String& operator<<(Char ch) { get()->append(ch); return *this; }
 	
-	char* strdup() const;
 	CString utf8() const;
+	char* strdup() const;
 };
 
 inline bool operator<(String a, const char* b) { return a < String(b); }
