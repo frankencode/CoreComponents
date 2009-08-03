@@ -128,10 +128,8 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 					interface->type_ = data->ifi_type;
 					interface->flags_ = data->ifi_flags;
 					
-					while (true)
+					for (;RTA_OK(attr,attrFill); attr = RTA_NEXT(attr, attrFill))
 					{
-			 			if (!RTA_OK(attr,attrFill)) break;
-			 
 						unsigned attrType = attr->rta_type;
 						unsigned attrLen = RTA_PAYLOAD(attr);
 						
@@ -156,8 +154,6 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 							if (attrLen == 4)
 								interface->mtu_ = *(uint32_t*)RTA_DATA(attr);
 						}
-						
-						attr = RTA_NEXT(attr, attrFill);
 					}
 				}
 				else if (msgType == NLMSG_DONE) { // paranoid HACK
