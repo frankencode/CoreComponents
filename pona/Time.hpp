@@ -17,7 +17,7 @@ namespace pona
 
 /** A 'Time' stores two integers: number of seconds and fractional number of nano-seconds.
   * Objects of type 'Time' are fully compatible to floating point seconds.
-  * The time scale has nano-second resolution and ranges from
+  * The time scale has nanosecond resolution and ranges from
   * -68 to +68 years on 32 bit systems and -292e9 to +292e9 years on 64 bit systems.
   */
 class Time

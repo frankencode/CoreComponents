@@ -8,6 +8,7 @@
 #ifndef PONA_STDIO
 #define PONA_STDIO
 
+#include "FileStatus.hpp"
 #include "File.hpp"
 #include "Path.hpp"
 #include "StandardStreams.hpp"

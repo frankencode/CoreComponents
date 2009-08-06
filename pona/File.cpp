@@ -11,6 +11,7 @@
 #include "ExitEvent.hpp"
 #include "ThreadExitEvent.hpp"
 #include "Random.hpp"
+#include "Path.hpp"
 #include "File.hpp"
 
 namespace pona
@@ -134,7 +135,7 @@ void File::truncate(off_t length)
 
 class UnlinkFile: public Action {
 public:
-	UnlinkFile(String path): path_(path) {}
+	UnlinkFile(String path): path_(Path(path).makeAbsolute()) {}
 	void run() { File(path_).unlink(); }
 private:
 	String path_;
