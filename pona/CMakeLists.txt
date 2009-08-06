@@ -61,7 +61,7 @@ SET(PONA_HEADER
 	Crc32.hpp
 	HuffmanCodec.hpp
 	
-	thread
+	threads
 	ThreadLocalOwner.hpp
 	Thread.hpp
 	Mutex.hpp
@@ -83,7 +83,7 @@ SET(PONA_HEADER
 	MemoryMapping.hpp
 	Pipe.hpp
 	
-	event
+	events
 	Action.hpp
 	Event.hpp
 	ExitEvent.hpp
@@ -137,7 +137,7 @@ SET(PONA_SOURCE
 	HuffmanCodec.cpp
 	Crc32.cpp
 	
-	# thread
+	# threads
 	Mutex.cpp
 	Semaphore.cpp
 	Thread.cpp
@@ -154,7 +154,7 @@ SET(PONA_SOURCE
 	MemoryMapping.cpp
 	Pipe.cpp
 	
-	# event
+	# events
 	Event.cpp
 	ExitEvent.cpp
 	ThreadExitEvent.cpp
@@ -175,6 +175,6 @@ ADD_LIBRARY(pona
 	${PONA_SOURCE}
 )
 
-SET_TARGET_PROPERTIES(pona PROPERTIES VERSION 0.9.4 SOVERSION 0)
+SET_TARGET_PROPERTIES(pona PROPERTIES VERSION 0.9.5 SOVERSION 0)
 
 INSTALL(TARGETS pona ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)

@@ -4,7 +4,7 @@
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
 #else
-#include <sys/types.h>
+#include <sys/param.h>
 #include <sys/sysctl.h>
 #include <sys/socket.h>
 #include <net/if_dl.h>
@@ -16,7 +16,7 @@
 #include <unistd.h> // getpid
 #include <stdlib.h> // malloc, free
 #include <string.h> // memset
-
+#include "stdio" // DEBUG
 #include "Guard.hpp"
 #include "NetworkInterface.hpp"
 
@@ -382,11 +382,11 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 		int msgAddrs = msg->ifm_addrs;
 		if (msgType == RTM_IFINFO) {
 			Ref<NetworkInterface, Owner> interface = new NetworkInterface;
-			list->append(interface);
 			interface->index_ = msg->ifm_index;
 			interface->flags_ = msg->ifm_flags;
 			interface->mtu_ = msg->ifm_data.ifi_mtu;
 			if (msgAddrs & RTA_IFP) {
+				list->append(interface);
 				struct sockaddr_dl* addr = (struct sockaddr_dl *)(msg + 1);
 				if (addr->sdl_family == AF_LINK) { // paranoid check
 					interface->type_ = addr->sdl_type;
@@ -410,7 +410,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			char* attr = (char*)(msga + 1);
 			assert(list->length() > 0);
 			Ref<NetworkInterface> interface = list->get(-1);
-			assert(interface->index_ == msga->ifam_index);
+			// assert(interface->index_ == msga->ifam_index); // HACK, OpenBSD can fullfill
 			Ref<SocketAddress, Owner> label;
 			for (int i = 0; i < RTAX_MAX; ++i) {
 				if (msga->ifam_addrs & (1 << i)) {

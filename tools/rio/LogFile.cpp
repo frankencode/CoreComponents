@@ -19,7 +19,7 @@ LogFile::LogFile(Ref<SocketAddress> address, int type, Time t0, Ref<LogFile> mer
 {
 	if ((options()->loggingFlags_ & type) != 0)
 	{
-		String addressString = address->toString();
+		String addressString = address->addressString();
 		addressString->replace('.', '-');
 		
 		const char* names[] = {"connect", "recv", "send", "merged", "echo" };
@@ -47,7 +47,7 @@ void LogFile::writeLine(Ref<SocketAddress> address, String data)
 		line = Format("%%: %%: %%:%%")
 			<< now().ms()
 			<< data
-			<< address->toString()
+			<< address->addressString()
 			<< address->port();
 		
 		if (!bool(options()->quiet_))

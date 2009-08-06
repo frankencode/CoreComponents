@@ -7,14 +7,17 @@
  */
 
 #include <sys/types.h> // pid_t, mode_t, uid_t, gid_t
-#ifdef __MACH__
 #include <sys/ioctl.h> // ioctl
-#endif
 #include <sys/stat.h> // umask
 #include <unistd.h> // fork, execve, dup2, chdir, close, environ
 #include <fcntl.h> // open
 #include <stdlib.h> // exit
 #include <termios.h> // tcgetattr, tcsetattr
+#if __linux
+#include <pty.h>
+#else
+#include <util.h>
+#endif
 #include "ProcessFactory.hpp"
 
 extern "C" char** environ;
@@ -78,16 +81,11 @@ Ref<Process, Owner> ProcessFactory::produce()
 	int outputPipe[2];
 	int errorPipe[2];
 	
-	int ptyMaster, ptySlave;
+	int ptyMaster = -1, ptySlave = -1;
 	
-	if (ioPolicy_ & Process::ForwardByPseudoTerminal)
+	if (ioPolicy_ & Process::ForwardByPseudoTerminal) 
 	{
-		ptyMaster = ::posix_openpt(O_RDWR/*|O_NOCTTY*/); // O_NOCTTY should have no effect
-		if (ptyMaster == -1)
-			PONA_SYSTEM_EXCEPTION;
-		if (grantpt(ptyMaster) == -1)
-			PONA_SYSTEM_EXCEPTION;
-		if (unlockpt(ptyMaster) == -1)
+		if (::openpty(&ptyMaster, &ptySlave, 0/*ptyname*/, 0/*termp*/, 0/*winp*/) == -1)
 			PONA_SYSTEM_EXCEPTION;
 	}
 	else
@@ -118,22 +116,11 @@ Ref<Process, Owner> ProcessFactory::produce()
 		
 		if (ioPolicy_ & Process::ForwardByPseudoTerminal)
 		{
-			char* ptySlavePath = ::ptsname(ptyMaster);
-			if (!ptySlavePath)
-				PONA_SYSTEM_EXCEPTION;
-				
 			if (::close(ptyMaster) == -1)
 				PONA_SYSTEM_EXCEPTION;
 			
-			ptySlave = ::open(ptySlavePath, O_RDWR | ((type_ == Process::SessionLeader) ? 0 : O_NOCTTY));
-			if (ptySlave == -1)
-				PONA_SYSTEM_EXCEPTION;
-			
-			#ifdef __MACH__
-			// OSX 10.4 compatibility, HACK
 			if (type_ == Process::SessionLeader)
 				::ioctl(ptySlave, TIOCSCTTY, 0);
-			#endif
 			
 			{
 				struct termios attr;
@@ -254,6 +241,8 @@ Ref<Process, Owner> ProcessFactory::produce()
 		
 		if (ioPolicy_ & Process::ForwardByPseudoTerminal)
 		{
+			::close(ptySlave);
+			
 			if (ioPolicy_ & Process::ForwardInput)
 				rawInput = new SystemStream(ptyMaster);
 			if ((ioPolicy_ & Process::ForwardOutput) || (ioPolicy_ & Process::ForwardError)) {

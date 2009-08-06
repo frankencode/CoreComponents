@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 	print("status.parentProcessId() = %%\n", status.parentProcessId());
 	print("status.processGroupId() = %%\n", status.processGroupId());
 	print("status.foregroundProcessGroupId() = %%\n", status.foregroundProcessGroupId());
-	print("status.terminalName() = \"%%\"\n", status.terminalName());
+	// print("status.terminalName() = \"%%\"\n", status.terminalName());
 	print("status.loginName() = \"%%\"\n", status.loginName());
 	print("status.commandName() = \"%%\"\n", status.commandName());
 	print("status.processStatus() = %%\n", status.processStatus());

@@ -48,7 +48,13 @@ public:
 	inline Format& print(float64_t x) { printFloat(x); return *this; }
 	
 	inline Format& print(bool x) { return print(x ? "true" : "false"); }
-	inline Format& print(void* x) { printInt(uint64_t(x)); return *this; }
+	inline Format& print(void* x) {
+		if (sizeof(void*) == sizeof(uint32_t))
+			printInt(union_cast<uint32_t>(x));
+		else if (sizeof(void*) == sizeof(uint64_t))
+			printInt(union_cast<uint64_t>(x)); return *this;
+		return *this;
+	}
 	
 	Format& print(Variant x);
 	

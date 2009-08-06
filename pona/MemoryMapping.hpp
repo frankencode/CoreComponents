@@ -8,6 +8,7 @@
 #ifndef PONA_MEMORYMAPPING_HPP
 #define PONA_MEMORYMAPPING_HPP
 
+#include <sys/types.h>
 #include <sys/mman.h>
 #include "atoms"
 #include "File.hpp"

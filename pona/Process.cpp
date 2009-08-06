@@ -165,7 +165,6 @@ void Process::unsetEnv(String key)
 		PONA_SYSTEM_EXCEPTION;
 }
 
-typedef Map<String, String> EnvMap;
 Ref<EnvMap, Owner> Process::envMap()
 {
 	char** env = ::environ;

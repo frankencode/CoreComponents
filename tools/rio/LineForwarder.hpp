@@ -9,8 +9,8 @@
 #define RIO_LINEFORWARDER_HPP
 
 #include <pona/stdio>
-#include <pona/thread>
-#include <pona/event>
+#include <pona/threads>
+#include <pona/events>
 #include "Options.hpp"
 #include "LogFile.hpp"
 

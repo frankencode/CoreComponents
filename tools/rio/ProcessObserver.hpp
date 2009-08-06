@@ -8,9 +8,9 @@
 #ifndef RIO_PROCESSOBSERVER_HPP
 #define RIO_PROCESSOBSERVER_HPP
 
-#include <pona/thread>
+#include <pona/threads>
 #include <pona/process>
-#include <pona/event>
+#include <pona/events>
 
 namespace rio
 {
