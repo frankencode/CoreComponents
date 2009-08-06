@@ -1,6 +1,6 @@
 .TH RIO "1" "03 MAY 2009" "version 0.9.4" "Misc Commands"
 .SH NAME
-rio \- full-duplex network adapter
+rio \- the remote I/O adapter
 .SH SYNOPSIS
 .B rio
 [\fIOPTION\fP]... [\fIFILE\fP|\fIPROGRAM\fP]...
