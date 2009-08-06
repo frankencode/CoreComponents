@@ -35,7 +35,6 @@ int main(int argc, char** argv)
 		
 		Ref<ProcessFactory, Owner> factory = new ProcessFactory;
 		factory->setExecPath(argv[0]);
-		factory->setWorkingDirectory("/");
 		factory->setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
 		factory->options()->append("--echo 123");
 		factory->envMap()->set("Hello", "World!");

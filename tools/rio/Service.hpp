@@ -10,7 +10,7 @@
 
 #include <pona/stdio>
 #include <pona/network>
-#include <pona/event>
+#include <pona/events>
 #include "LogFile.hpp"
 
 namespace rio

@@ -80,7 +80,7 @@ int SocketAddress::family() const { return addr_.sa_family; }
 int SocketAddress::socketType() const { return socketType_; }
 int SocketAddress::protocol() const { return protocol_; }
 
-String SocketAddress::toString() const
+String SocketAddress::addressString() const
 {
 	const int bufSize = INET_ADDRSTRLEN + INET6_ADDRSTRLEN;
 	char buf[bufSize];
@@ -99,7 +99,12 @@ String SocketAddress::toString() const
 	if (!sz)
 		PONA_THROW(NetworkingException, "Illegal binary address format");
 	
-	String s(sz);
+	return sz;
+}
+
+String SocketAddress::toString() const
+{
+	Format s(addressString());
 	if (port() != 0)
 		s << ":" << port();
 	return s;

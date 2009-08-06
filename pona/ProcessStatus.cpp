@@ -1,4 +1,5 @@
 #ifndef __linux
+#include <sys/param.h>
 #include <sys/sysctl.h> // sysctl
 #include <sys/stat.h> // devname_r
 #include <stdlib.h> // malloc, free
@@ -27,25 +28,29 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	mib[2] = KERN_PROC_PID;
 	mib[3] = processId;
 	size_t sz = 0;
-	if (::sysctl(mib, 4, NULL, &sz, NULL, NULL) == -1)
+	if (::sysctl(mib, 4, NULL, &sz, NULL, 0) == -1)
 		PONA_SYSTEM_EXCEPTION;
 	proc = (kinfo_proc*)::malloc(sz);
 	::memset(proc, 0, sz);
-	if (::sysctl(mib, 4, proc, &sz, NULL, NULL) == -1)
+	if (::sysctl(mib, 4, proc, &sz, NULL, 0) == -1)
 		PONA_SYSTEM_EXCEPTION;
 	processId_ = proc->kp_proc.p_pid;
 	parentProcessId_ = proc->kp_eproc.e_ppid;
 	processGroupId_ = proc->kp_eproc.e_pgid;
 	foregroundProcessGroupId_ = proc->kp_eproc.e_tpgid;
-	const int ttyNameSize = 256;
+	/*const int ttyNameSize = 256;
 	char ttyName[ttyNameSize];
-	terminalName_ = devname_r(proc->kp_eproc.e_tdev, S_IFCHR, ttyName, ttyNameSize);
+	terminalName_ = devname_r(proc->kp_eproc.e_tdev, S_IFCHR, ttyName, ttyNameSize);*/
 	loginName_ = User(proc->kp_eproc.e_pcred.p_ruid).name();
 	commandName_ = proc->kp_proc.p_comm;
 	processStatus_ = proc->kp_proc.p_stat;
 	if (processStatus_ == SIDL) processStatus_ = 'W';
 	else if (processStatus_ == SRUN) processStatus_ = 'R';
+#ifdef __MACH__
 	else if (processStatus_ == SSLEEP) processStatus_ = (proc->kp_proc.sigwait) ? 'S' : 'D';
+#else
+	else if (processStatus_ == SSLEEP) processStatus_ = 'S';
+#endif
 	else if (processStatus_ == SSTOP) processStatus_ = 'T';
 	else if (processStatus_ == SZOMB) processStatus_ = 'Z';
 	::free(proc);
@@ -66,7 +71,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	parentProcessId_ = toInt(parts->get(3));
 	processGroupId_ = toInt(parts->get(4));
 	foregroundProcessGroupId_ = toInt(parts->get(7));
-	{
+	/*{
 		int code = toInt(parts->get(6));
 		int major = (code >> 8) & 0xFF;
 		int minor = (code & 0xFF) | ((code >> 20) << 8);
@@ -77,7 +82,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 			terminalName_ = Format("pts/%%") << minor;
 		else if (major == 3)
 			terminalName_ = Format("ttyp%%") << minor;
-	}
+	}*/
 	loginName_ = User(FileStatus(path).ownerId()).name();
 	processStatus_ = parts->get(2)->get(0);
 	file->close();
@@ -88,7 +93,7 @@ pid_t ProcessStatus::processId() const { return processId_; }
 pid_t ProcessStatus::parentProcessId() const { return parentProcessId_; }
 gid_t ProcessStatus::processGroupId() const { return processGroupId_; }
 gid_t ProcessStatus::foregroundProcessGroupId() const { return foregroundProcessGroupId_; }
-String ProcessStatus::terminalName() const { return terminalName_; }
+// String ProcessStatus::terminalName() const { return terminalName_; }
 String ProcessStatus::loginName() const { return loginName_; }
 String ProcessStatus::commandName() const { return commandName_; }
 char ProcessStatus::processStatus() const { return processStatus_; }

@@ -50,12 +50,13 @@ public:
 	int family() const;
 	int socketType() const;
 	int protocol() const;
+	String addressString() const;
 	String toString() const;
 	int port() const;
 	void setPort(int port);
 	
 	int scope() const;
-	void setScope(int scope);	
+	void setScope(int scope);
 	
 	/** Query the complete connection information for given host name, service name and
 	  * protocol family. The call blocks until the local resolver has resolved the

@@ -1,5 +1,5 @@
 #include <pona/stdio>
-#include <pona/thread>
+#include <pona/threads>
 #include <pona/container>
 #include <pona/misc>
 #include <pona/time>

@@ -8,8 +8,8 @@
 
 #include <pona/stdio>
 #include <pona/process>
-#include <pona/thread>
-#include <pona/event>
+#include <pona/threads>
+#include <pona/events>
 #include <termios.h> // termios
 #include <unistd.h> // tcgetattr, tcsetattr
 #include <stdio.h>
@@ -106,5 +106,16 @@ int main(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
-	return rio_rl::main(argc, argv);
+	int ret = -1;
+	#ifdef NDEBUG
+	try {
+	#endif
+		ret = rio_rl::main(argc, argv);
+	#ifdef NDEBUG
+	}
+	catch (pona::AnyException& ex) {
+		pona::printTo(pona::error(), "(%%) %%\n", pona::Path(argv[0]).fileName(), ex.what());
+	}
+	#endif
+	return ret;
 }

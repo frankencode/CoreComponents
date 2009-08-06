@@ -9,7 +9,7 @@
 #define RIO_OPTIONS_HPP
 
 #include <pona/process>
-#include <pona/thread>
+#include <pona/threads>
 #include <pona/network>
 
 namespace rio

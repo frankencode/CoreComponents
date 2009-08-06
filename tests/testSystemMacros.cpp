@@ -36,6 +36,11 @@ int main()
 	#else
 	print("\"__FreeBSD__\": undef\n");
 	#endif
+	#ifdef __OpenBSD__
+	print("\"__OpenBSD__\": def\n");
+	#else
+	print("\"__OpenBSD__\": undef\n");
+	#endif
 	return 0;
 }
 

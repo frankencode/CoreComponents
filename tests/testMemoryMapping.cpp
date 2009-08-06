@@ -1,6 +1,6 @@
 #include <pona/stdio>
 #include <pona/process>
-#include <pona/thread>
+#include <pona/threads>
 
 namespace pona
 {

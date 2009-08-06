@@ -1,6 +1,8 @@
 #ifndef PONA_NETWORKINTERFACE_HPP
 #define PONA_NETWORKINTERFACE_HPP
 
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <net/if.h> // IFF_UP, etc.
 #include "atoms"
 #include "SocketAddress.hpp"
