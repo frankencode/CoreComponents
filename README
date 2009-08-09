@@ -1,23 +1,24 @@
 Welcome to libPONA!
 ===================
 
-libPONA is a core C++ programming library on top of the POSIX standard. It tries
-to map proven logic of system interfaces as complete and fail-safe as possible into
-a clean object-oriented space. Short and sometimes cryptic reading system calls become
-translated into more readable method names. Under its hood libPONA hides the often
-daunting details of memory allocation, error handling and type casting.
+libPONA is an object-oriented and portable system programming library
+targeting BSD and Linux systems. libPONA is written in C++ with zero
+dependencies to exiting C++ libraries and only a few references to
+the underlying C library. Most classes are implemented directly on
+top of POSIX or BSD system calls.
 
-Features:
-    * Policy base reference class providing assisted memory management
-    * Powerful string and list processing
-    * Efficient syntax processing automata with infinite lookahead and rich support for both context-free and context-sensitive languages
-    * Consistent I/O framework including sockets and pipes
-    * Endian-neutral bit-vise I/O streams
-    * Fully integrated signal-safe multi-threading and multi-programming environment
-    * Supported Platforms: OpenSolaris, Linux, Darwin, FreeBSD 
+libPONA partly breaks the static typing system of C++ to support a
+more elegant programming style using assisted memory management and
+automatic type casting. The project's goal is to provide a maximum of
+functionality on a minimum code footprint, while favoring correctness
+over feature completeness.
+
+The entire library is licensed under a triple-clause BSD license,
+which is compatible to GPLv3. 
 
 Homepage:
 http://trac.cyblogic.com/libPONA
 
 Contact:
-frank@cyblogic.de, Frank Mertens (project maintainer)
+frank@cyblogic.de, Frank Mertens
+
