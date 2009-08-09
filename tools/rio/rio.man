@@ -1,4 +1,4 @@
-.TH RIO "1" "03 MAY 2009" "version 0.9.4" "Misc Commands"
+.TH RIO "1" "06 Aug 2009" "version 0.9.5" "Misc Commands"
 .SH NAME
 rio \- the remote I/O adapter
 .SH SYNOPSIS
@@ -7,7 +7,7 @@ rio \- the remote I/O adapter
 .SH DESCRIPTION
 ." In case you forget again what roff is about: http://www.linuxjournal.com/article/1158.
 ." Useful commands:
-." groff -Tascii -man rio.man > man.1
+." groff -Tascii -man rio.man > rio.1
 ." groff -Tps -man rio.man > rio.ps && ps2pdf rio.ps
 .PP
 \fBrio\fP copies simultaneously its standard input and standard output to and from a stream socket.
