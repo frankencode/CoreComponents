@@ -53,6 +53,9 @@ public:
 	
 private:
 	NetworkInterface();
+	#ifdef __linux
+	static Ref<NetworkInterfaceList, Owner> queryAllIoctl(int family);
+	#endif
 	
 	String name_;
 	int index_;
