@@ -3,6 +3,9 @@
 #include <sys/socket.h> // socket, sendmsg, recvmsg
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <errno.h>
 #else
 #include <sys/param.h>
 #include <sys/sysctl.h>
@@ -18,6 +21,10 @@
 #include <string.h> // memset
 #include "stdio" // DEBUG
 #include "Guard.hpp"
+#ifdef __linux
+#include "File.hpp"
+#include "LineSource.hpp"
+#endif
 #include "NetworkInterface.hpp"
 
 namespace pona
@@ -323,6 +330,121 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 		}
 		if (::close(fd) == -1)
 			PONA_SYSTEM_EXCEPTION;
+	}
+	
+	if (list->length() == 0)
+		list = queryAllIoctl(family);
+	
+	return list;
+}
+
+Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
+{
+	Ref<NetworkInterfaceList, Owner> list = new NetworkInterfaceList;	
+	
+	int fd = ::socket(AF_INET, SOCK_DGRAM, 0);
+	if (fd == -1) PONA_SYSTEM_EXCEPTION;
+	
+	Ref<File, Owner> file = new File("/proc/net/dev");
+	file->open(File::Read);
+	Ref<LineSource, Owner> source = new LineSource(file);
+	while (true) {
+		bool eoi = false;
+		String line = source->readLine(&eoi);
+		if (eoi) break;
+		if (line->contains(':')) {
+			Ref<NetworkInterface, Owner> interface = new NetworkInterface;
+			list->append(interface);
+			Ref<StringList, Owner> parts = line / ':';
+			String name = stripLeadingSpace(parts->get(0));
+			interface->name_ = name;
+			
+			{
+				struct ifreq ifr;
+				::memset(&ifr, 0, sizeof(ifr));
+				for (int i = 0, n = name->length(); i < n; ++i)
+					ifr.ifr_name[i] = name->get(i);
+				
+				if (::ioctl(fd, SIOCGIFHWADDR, &ifr) == -1)
+					PONA_SYSTEM_EXCEPTION;
+				interface->hardwareAddress_ = 0;
+				for (int i = 0, n = 6; i < n; ++i) // quick HACK, 6 is just a safe bet
+					interface->hardwareAddress_ = (interface->hardwareAddress_ << 8) | ((unsigned char*)ifr.ifr_hwaddr.sa_data)[i];
+				if (::ioctl(fd, SIOCGIFFLAGS, &ifr) == -1)
+					PONA_SYSTEM_EXCEPTION;
+				interface->flags_ = ifr.ifr_flags;
+				
+				if (::ioctl(fd, SIOCGIFMTU, &ifr) == -1)
+					PONA_SYSTEM_EXCEPTION;
+				interface->mtu_ = ifr.ifr_mtu;
+			}
+		}
+	}
+	
+	{
+		struct ifconf ifc;
+		int capa = 32 * sizeof(struct ifreq);
+		ifc.ifc_len = capa;
+		ifc.ifc_req = (struct ifreq*)::malloc(capa);
+		
+		while (true) {
+			if (::ioctl(fd, SIOCGIFCONF, &ifc) == -1)
+				PONA_SYSTEM_EXCEPTION;
+			if (ifc.ifc_len == capa) {
+				::free(ifc.ifc_req);
+				capa *= 2;
+				ifc.ifc_len = capa;
+				ifc.ifc_req = (struct ifreq*)::malloc(capa);
+				continue;
+			}
+			break;
+		}
+		
+		for (int i = 0; i < int(ifc.ifc_len / sizeof(struct ifreq)); ++i)
+		{
+			struct ifreq* ifr = ifc.ifc_req + i;
+			
+			if ((family != AF_UNSPEC) && (family != ifr->ifr_addr.sa_family))
+				continue;
+			
+			for (int k = 0; k < list->length(); ++k)
+			{
+				Ref<NetworkInterface> interface = list->get(k);
+				
+				if (interface->name_ == ifr->ifr_name) {
+					struct sockaddr* addr = &ifr->ifr_addr;
+					struct sockaddr_in* addr4 = (struct sockaddr_in*)addr;
+					struct sockaddr_in6* addr6 = (struct sockaddr_in6*)addr;
+					
+					Ref<SocketAddress, Owner> label;
+					
+					if (addr->sa_family == AF_INET)
+						label = new SocketAddressEntry(addr4);
+					else if (addr->sa_family == AF_INET6)
+						label = new SocketAddress(addr6);
+					if (!interface->addressList_) interface->addressList_ = new SocketAddressList;
+					interface->addressList_->append(label);
+					
+					if ((label) && (addr->sa_family == AF_INET)) {
+						Ref<SocketAddressEntry> entry = label;
+						if (interface->flags_ & IFF_BROADCAST) {
+							struct ifreq ifr2 = *ifr;
+							if (::ioctl(fd, SIOCGIFBRDADDR, &ifr2) == -1)
+								PONA_SYSTEM_EXCEPTION;
+							entry->broadcastAddress_ = new SocketAddress((struct sockaddr_in*)&ifr2.ifr_broadaddr);
+						}
+						if (interface->flags_ & IFF_POINTOPOINT) {
+							struct ifreq ifr2 = *ifr;
+							if (::ioctl(fd, SIOCGIFDSTADDR, &ifr2) == -1)
+								PONA_SYSTEM_EXCEPTION;
+							entry->broadcastAddress_ = new SocketAddress((struct sockaddr_in*)&ifr2.ifr_dstaddr);
+						}
+					}
+				}
+			}
+		}
+		
+		::free(ifc.ifc_req);
 	}
 	
 	return list;

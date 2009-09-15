@@ -31,18 +31,21 @@ int main()
 				print("  Addr:   %%", address->toString());
 				Ref<SocketAddressEntry> addressEntry = address;
 				if (addressEntry) {
-					print(" --");
 					bool comma = false;
+					bool delim = true;
 					if (addressEntry->localAddress()) {
+						if (delim) { print(" --"); delim = false; }
 						print(" Local: %%", addressEntry->localAddress()->toString());
 						comma = true;
 					}
 					if (addressEntry->broadcastAddress()) {
+						if (delim) { print(" --"); delim = false; }
 						if (comma) print(",");
 						print(" Bcast: %%", addressEntry->broadcastAddress()->toString());
 						comma = true;
 					}
 					if (addressEntry->anycastAddress()) {
+						if (delim) { print(" --"); delim = false; }
 						if (comma) print(",");
 						print(" Acast: %%", addressEntry->anycastAddress()->toString());
 					}
