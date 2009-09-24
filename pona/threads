@@ -8,6 +8,8 @@
 #ifndef PONA_THREAD
 #define PONA_THREAD
 
+#include "Context.hpp"
+#include "Fiber.hpp"
 #include "ThreadLocalOwner.hpp"
 #include "Thread.hpp"
 #include "Mutex.hpp"
