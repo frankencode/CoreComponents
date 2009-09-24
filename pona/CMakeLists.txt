@@ -62,6 +62,8 @@ SET(PONA_HEADER
 	HuffmanCodec.hpp
 	
 	threads
+	Context.hpp
+	Fiber.hpp
 	ThreadLocalOwner.hpp
 	Thread.hpp
 	Mutex.hpp
@@ -138,6 +140,8 @@ SET(PONA_SOURCE
 	Crc32.cpp
 	
 	# threads
+	Context.cpp
+	Fiber.cpp
 	Mutex.cpp
 	Semaphore.cpp
 	Thread.cpp
@@ -175,6 +179,6 @@ ADD_LIBRARY(pona
 	${PONA_SOURCE}
 )
 
-SET_TARGET_PROPERTIES(pona PROPERTIES VERSION 0.9.5 SOVERSION 0)
+SET_TARGET_PROPERTIES(pona PROPERTIES VERSION 0.9.6 SOVERSION 0)
 
 INSTALL(TARGETS pona ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
