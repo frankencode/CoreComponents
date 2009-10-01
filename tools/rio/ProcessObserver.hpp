@@ -22,19 +22,21 @@ class ProcessObserver: public Thread
 public:
 	ProcessObserver(Ref<Process> process)
 		: process_(process),
+		  exitCode_(0),
 		  finishedEvent_(new Event)
 	{}
 	
 	Ref<Event> finishedEvent() const { return finishedEvent_; }
+	int exitCode() const { return exitCode_; }
 	
 private:
-	int run() {
-		int exitCode = process_->wait();
+	void run() {
+		exitCode_ = process_->wait();
 		finishedEvent_->run();
-		return exitCode;
 	}
 	
 	Ref<Process, Owner> process_;
+	int exitCode_;
 	Ref<Event, Owner> finishedEvent_;
 };
 

@@ -25,7 +25,7 @@ LineForwarder::LineForwarder(
 	  lineSink_(new LineSink(sink, options()->ioUnit_, sinkEol)),
 	  recvLog_(recvLog),
 	  cancelEvent_(cancelEvent),
-	  done_(false)
+	  done_(false), failed_(false)
 {
 	class AbortAction: public Action {
 	public:
@@ -45,9 +45,9 @@ LineForwarder::LineForwarder(
 
 void LineForwarder::finish() { done_ = true; }
 
-int LineForwarder::run()
+void LineForwarder::run()
 {
-	int ret = 0;
+	failed_ = false;
 	try {
 		while (!done_)
 		{
@@ -66,12 +66,13 @@ int LineForwarder::run()
 	}
 	catch (AnyException& ex) {
 		printTo(error(), "(%%) LineForwarder: %%\n", options()->execName(), ex.what());
-		ret = 1;
+		failed_ = true;
 	}
 	cancelEvent_->remove(finishAction_);
 	cancelEvent_->run();
 	finishAction_ = 0;
-	return ret;
 }
+
+bool LineForwarder::failed() const { return failed_; }
 
 } // namespace rio

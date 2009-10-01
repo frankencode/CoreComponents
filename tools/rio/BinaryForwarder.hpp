@@ -31,15 +31,16 @@ public:
 	
 	void finish();
 	uint64_t bytesTransferred() const;
+	bool failed() const;
 	
 private:
-	virtual int run();
+	virtual void run();
 	
 	Ref<SystemStream, Owner> source_, sink_;
 	Ref<LogFile, Owner> recvLog_;
 	Ref<Event, Owner> cancelEvent_;
 	Ref<Action, Owner> finishAction_;
-	bool done_;
+	bool done_, failed_;
 	Array<uint8_t> buf_;
 	uint64_t bytesTransferred_;
 };

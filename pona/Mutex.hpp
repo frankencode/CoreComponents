@@ -23,6 +23,7 @@ public:
 	~Mutex();
 
 	void acquire();
+	bool tryAcquire();
 	void release();
 
 private:

@@ -1,5 +1,5 @@
 /*
- * Action.hpp -- event handlers
+ * Action.hpp -- some action to be taken
  *
  * Copyright (c) 2007-2009, Frank Mertens
  *
@@ -14,7 +14,7 @@
 namespace pona
 {
 
-class Action: public Instance
+class Action: public virtual Instance
 {
 public:
 	virtual void run() = 0;

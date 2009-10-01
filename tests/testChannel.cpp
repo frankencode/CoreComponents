@@ -19,14 +19,13 @@ public:
 	{}
 	
 private:
-	int run()
+	void run()
 	{
 		while (amount_ > 0) {
 			int x = channel_->pop();
 			print("consumer %%: consuming %%\n", id_, x);
 			--amount_;
 		}
-		return 0;
 	}
 	
 	int id_;
@@ -43,7 +42,7 @@ public:
 		  amount_(amount)
 	{}
 	
-	int run()
+	void run()
 	{
 		while (amount_ > 0) {
 			int x = random_.next();
@@ -51,7 +50,6 @@ public:
 			channel_->push(x);
 			--amount_;
 		}
-		return 0;
 	}
 	
 private:

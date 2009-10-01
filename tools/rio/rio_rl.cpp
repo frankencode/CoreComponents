@@ -28,10 +28,13 @@ public:
 		: source_(source),
 		  lineSource_(new LineSource(source)),
 		  done_(false),
-		  finished_(false)
+		  finished_(false),
+		  failed_(false)
 	{}
-	virtual int run() {
-		int ret = 0;
+	
+	virtual void run()
+	{
+		failed_ = false;
 		try {
 			while (!done_)
 			{
@@ -55,19 +58,20 @@ public:
 			}
 		}
 		catch (AnyException& ex) {
-			printTo(error(), "(rio_rl) LineForwarder: %%\n", ex.what());
-			ret = 1;
+			printTo(pona::error(), "(rio_rl) LineForwarder: %%\n", ex.what());
+			failed_ = true;
 		}
 		finished_ = true;
-		return ret;
 	}
 	void finish() { done_ = true; }
 	bool finished() const { return finished_; }
+	bool failed() const { return failed_; }
 private:
 	Ref<SystemStream, Owner> source_;
 	Ref<LineSource, Owner> lineSource_;
 	bool done_;
 	bool finished_;
+	bool failed_;
 };
 
 int main(int argc, char** argv)

@@ -193,9 +193,9 @@ void Service::canonSession(Ref<StreamSocket> socket, String entity)
 	}
 	if (process) {
 		try { process->kill(); } catch(AnyException& ex) {}
-		int ret = processObserver->wait();
+		processObserver->wait();
 		#ifndef NDEBUG
-		print("ret = %%\n", ret);
+		print("exitCode = %%\n", processObserver->exitCode());
 		#endif
 	}
 }
@@ -258,9 +258,9 @@ void Service::binarySession(Ref<StreamSocket> socket, String entity)
 	
 	if (process) {
 		try { process->kill(); } catch(AnyException& ex) {}
-		int ret = processObserver->wait();
+		processObserver->wait();
 		#ifndef NDEBUG
-		print("ret = %%\n", ret);
+		print("exitCode = %%\n", processObserver->exitCode());
 		#endif
 	}
 	

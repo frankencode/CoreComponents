@@ -5,6 +5,8 @@
  *
  * See ../LICENSE for the license.
  */
+
+#include <unistd.h> // sysconf
 #include "MemoryMapping.hpp"
 
 namespace pona
@@ -32,7 +34,14 @@ MemoryMapping::MemoryMapping(Ref<File> file, off_t offset, size_t length, int ty
 MemoryMapping::MemoryMapping(size_t length, int prot, int type)
 	: length_(length)
 {
-	start_ = ::mmap(NULL, length, prot, type, 0, 0);
+	start_ = ::mmap(NULL /*addr*/, length /*length*/, prot,
+		#ifdef MAP_ANONYMOUS
+			MAP_ANONYMOUS
+		#else
+			MAP_ANON
+		#endif
+		|type, -1 /*fd*/, 0 /*offset*/
+	);
 	if (start_ == MAP_FAILED)
 		PONA_SYSTEM_EXCEPTION;
 }
@@ -41,6 +50,14 @@ MemoryMapping::~MemoryMapping()
 {
 	if (::munmap((char* /*suncc issue*/)start_, length_) == -1)
 		PONA_SYSTEM_EXCEPTION;
+}
+
+void* MemoryMapping::start() const { return start_; }
+int MemoryMapping::length() const { return length_; }
+
+int MemoryMapping::pageSize()
+{
+	return sysconf(_SC_PAGESIZE);
 }
 
 } // namespace pona

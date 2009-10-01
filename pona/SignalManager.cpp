@@ -30,7 +30,7 @@ SignalListener::SignalListener()
 	: stopListener_(false)
 {}
 
-int SignalListener::run()
+void SignalListener::run()
 {
 	while (true)
 	{
@@ -50,13 +50,11 @@ int SignalListener::run()
 			sigaddset(&set, signal);
 			if (pthread_sigmask(SIG_UNBLOCK, &set, &old) != 0)
 				PONA_THROW(SystemException, "pthread_sigmask() failed");
-			kill(getpid(), signal);
+			::kill(getpid(), signal);
 			if (pthread_sigmask(SIG_SETMASK, &old, 0) != 0)
 				PONA_THROW(SystemException, "pthread_sigmask() failed");
 		}
 	}
-	
-	return 0;
 }
 
 Ref<SignalManager> SignalManager::instance()
@@ -80,7 +78,7 @@ SignalManager::~SignalManager()
 {
 	if (pid_ == Process::currentProcessId()) {
 		signalListener_->stopListener_ = true;
-		pthread_kill(signalListener_->tid(), SIGUSR1);
+		signalListener_->kill(SIGUSR1);
 		signalListener_->wait();
 	}
 }

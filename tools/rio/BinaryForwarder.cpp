@@ -16,7 +16,7 @@ BinaryForwarder::BinaryForwarder(Ref<SystemStream> source, Ref<SystemStream> sin
 	  sink_(sink),
 	  recvLog_(recvLog),
 	  cancelEvent_(cancelEvent),
-	  done_(false),
+	  done_(false), failed_(false),
 	  buf_(options()->ioUnit_),
 	  bytesTransferred_(0)
 {
@@ -38,10 +38,11 @@ BinaryForwarder::BinaryForwarder(Ref<SystemStream> source, Ref<SystemStream> sin
 
 void BinaryForwarder::finish() { done_ = true; }
 uint64_t BinaryForwarder::bytesTransferred() const { return bytesTransferred_; }
+bool BinaryForwarder::failed() const { return failed_; }
 
-int BinaryForwarder::run()
+void BinaryForwarder::run()
 {
-	int ret = 0;
+	failed_ = false;
 	try {
 		while (!done_)
 		{
@@ -56,12 +57,11 @@ int BinaryForwarder::run()
 	}
 	catch (AnyException& ex) {
 		printTo(error(), "(%%) %%\n", options()->execName(), ex.what());
-		ret = 1;
+		failed_ = true;
 	}
 	cancelEvent_->remove(finishAction_);
 	cancelEvent_->run();
 	finishAction_ = 0;
-	return ret;
 }
 
 } // namespace rio

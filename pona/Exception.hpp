@@ -45,6 +45,8 @@ inline char* captureExceptionMessage(char* s) { return s; }
 	throw ExceptionClass(__FILE__, __LINE__, #ExceptionClass, captureExceptionMessage(reason))
 
 char* systemError();
+char* systemError(int error);
+
 PONA_EXCEPTION(SystemException, Exception);
 #define PONA_SYSTEM_EXCEPTION \
 	throw SystemException(__FILE__, __LINE__, "SystemException", systemError())
