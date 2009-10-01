@@ -28,7 +28,7 @@ typedef Map<String, String> EnvMap;
 class Process: public Instance
 {
 public:
-	// child process control interface
+	// -- child process control interface
 	
 	enum Type {
 		GroupMember,

@@ -58,7 +58,7 @@ public:
 	Ref<Process, Owner> produce();
 	
 protected:
-	virtual int run();
+	virtual int incarnate();
 	
 private:
 	int type_;

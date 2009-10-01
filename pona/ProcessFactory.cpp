@@ -83,7 +83,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 	
 	int ptyMaster = -1, ptySlave = -1;
 	
-	if (ioPolicy_ & Process::ForwardByPseudoTerminal) 
+	if (ioPolicy_ & Process::ForwardByPseudoTerminal)
 	{
 		if (::openpty(&ptyMaster, &ptySlave, 0/*ptyname*/, 0/*termp*/, 0/*winp*/) == -1)
 			PONA_SYSTEM_EXCEPTION;
@@ -228,7 +228,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 		}
 		else
 		{
-			::exit(run());
+			::exit(incarnate());
 		}
 	}
 	else if (ret > 0)
@@ -286,6 +286,6 @@ Ref<Process, Owner> ProcessFactory::produce()
 	return 0;
 }
 
-int ProcessFactory::run() { return 0; }
+int ProcessFactory::incarnate() { return 0; }
 
 } // namespace pona

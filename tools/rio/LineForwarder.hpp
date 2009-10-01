@@ -30,7 +30,9 @@ public:
 		Ref<LogFile> recvLog,
 		Ref<Event> cancelEvent
 	);
-	virtual int run();
+	
+	virtual void run();
+	bool failed() const;
 	
 	void finish();
 	
@@ -41,7 +43,7 @@ private:
 	Ref<LogFile, Owner> recvLog_;
 	Ref<Event, Owner> cancelEvent_;
 	Ref<Action, Owner> finishAction_;
-	bool done_;
+	bool done_, failed_;
 };
 
 } // namespace rio

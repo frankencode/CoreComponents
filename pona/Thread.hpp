@@ -9,33 +9,44 @@
 #define PONA_THREAD_HPP
 
 #include <pthread.h>
+#include <signal.h> // pthread_kill, SIGTERM
 #include "atoms"
+#include "Cloneable.hpp"
+#include "Action.hpp"
 #include "Time.hpp"
 
 namespace pona
 {
 
-class Thread: public Instance
+class ThreadFactory;
+
+class Thread: public Cloneable, public Action
 {
 public:
-	enum ExitType { Joinable, Detached };
+	enum DetachState {
+		Joinable = PTHREAD_CREATE_JOINABLE,
+		Detached =  PTHREAD_CREATE_DETACHED
+	};
 	
-	Thread();
-	void start(int exitType = Joinable);
-	int wait();
+	void start(int detachState = Joinable);
+	void wait();
+	
+	void kill(int signal = SIGTERM);
 	
 	static void sleep(Time duration);
 	
-	pthread_t tid() const;
-	
 protected:
-	virtual int run() = 0;
+	friend class ThreadFactory;
+	Thread();
+	
+	virtual Ref<Instance, Owner> clone();
+	virtual void run() = 0;
+	virtual void init();
+	virtual void done();
 	
 private:
 	pthread_t tid_;
-	int exitCode_;
 	bool keepAlive_;
-	static void* runWrapper(void* p);
 };
 
 } // namespace pona

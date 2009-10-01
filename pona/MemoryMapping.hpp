@@ -34,8 +34,10 @@ public:
 	MemoryMapping(size_t length, int protection = Read|Write, int type = Shared);
 	~MemoryMapping();
 	
-	inline void* start() const { return start_; }
-	inline int length() const { return length_; }
+	void* start() const;
+	int length() const;
+	
+	static int pageSize();
 	
 private:
 	void* start_;

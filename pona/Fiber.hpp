@@ -1,3 +1,10 @@
+/*
+ * Fiber.hpp -- fibers, also know as coroutines
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_FIBER_HPP
 #define PONA_FIBER_HPP
 
@@ -21,14 +28,13 @@ namespace { FiberInitializer fiberInitializer_; }
 class Fiber: public Context
 {
 public:
-	Fiber(int stackSize = 8192, Fiber* next = 0);
-	virtual ~Fiber();
+	Fiber(int stackSize = -1, int guardSize = -1, Fiber* next = 0);
 	
 	void resume();
-	void transferTo(Fiber* target);
 	
 protected:
 	void yield();
+	void transferTo(Fiber* target);
 	
 	virtual void run() = 0;
 	

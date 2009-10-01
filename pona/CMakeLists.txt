@@ -66,6 +66,7 @@ SET(PONA_HEADER
 	Fiber.hpp
 	ThreadLocalOwner.hpp
 	Thread.hpp
+	ThreadFactory.hpp
 	Mutex.hpp
 	Guard.hpp
 	Condition.hpp
@@ -142,9 +143,11 @@ SET(PONA_SOURCE
 	# threads
 	Context.cpp
 	Fiber.cpp
-	Mutex.cpp
-	Semaphore.cpp
 	Thread.cpp
+	ThreadFactory.cpp
+	Mutex.cpp
+	Condition.cpp
+	Semaphore.cpp
 	
 	# process
 	User.cpp

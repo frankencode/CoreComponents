@@ -42,14 +42,14 @@ public:
 	{}
 	
 private:
-	int run()
+	void run()
 	{
 		for (int i = 0; i < 10; ++i) {
 			print("producer: i = %%\n", i);
 			channel_->put(i);
 		}
-		return 0;
 	}
+	
 private:
 	Ref<MyChannel> channel_;
 };
@@ -62,15 +62,15 @@ public:
 	{}
 	
 private:
-	int run()
+	void run()
 	{
 		int k = 0;
 		while (k != 9) {
 			k = channel_->get();
 			print("consumer: k = %%\n", k);
 		}
-		return 0;
 	}
+	
 private:
 	Ref<MyChannel> channel_;
 };
@@ -87,6 +87,12 @@ int main()
 	consumer.wait();
 	dt = now() - dt;
 	print("\ndt = %% us\n\n", dt.us());
+	
+	{
+		ThreadFactory factory;
+		print("default stack size = %%\n", int(factory.stackSize()));
+		print("default guard size = %%\n", int(factory.guardSize()));
+	}
 	
 	return 0;
 }
