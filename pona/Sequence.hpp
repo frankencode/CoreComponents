@@ -1,3 +1,11 @@
+/*
+ * Sequence.hpp -- interface of a sequence of items
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #ifndef PONA_SEQUENCE_HPP
 #define PONA_SEQUENCE_HPP
 
