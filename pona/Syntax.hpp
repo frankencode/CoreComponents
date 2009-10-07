@@ -50,7 +50,7 @@ protected:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (i < media->length())
+			if (media->def(i))
 			{
 				Char ch = media->get(i++);
 				if ((ch != ch_) ^ invert_)
@@ -75,7 +75,7 @@ protected:
 	public:
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (i < media->length())
+			if (media->def(i))
 			{
 				++i;
 			}
@@ -113,7 +113,7 @@ protected:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (i < media->length())
+			if (media->def(i))
 			{
 				Char ch = media->get(i++);
 				if (s_) {
@@ -160,11 +160,9 @@ protected:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			int n = media->length();
-			
-			if (i < n) {
+			if (media->def(i)) {
 				int k = 0, len = s_.length();
-				while ((k < len) && (i < n)) {
+				while ((k < len) && (media->def(i))) {
 					Char ch = media->get(i++);
 					if (s_.get(k) != ch) break;
 					++k;
@@ -194,7 +192,7 @@ protected:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (i < media->length()) {
+			if (media->def(i)) {
 				int h = 0;
 				int tokenType = -1;
 				if (map_->lookup(media, i, &h, &tokenType)) {
@@ -274,7 +272,8 @@ protected:
 	public:
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (i != media->length())
+			bool eoi = (!media->def(i)) && ((i == 0) || (media->def(i - 1)));
+			if (!eoi)
 				i = -1;
 			
 			if ((i != -1) && (next_))
@@ -294,8 +293,7 @@ protected:
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			bool found = false;
-			int n = media->length();
-			while (i <= n) {
+			while (media->def(i) || media->def(i - 1)) {
 				int h = entry_->matchNext(media, i, tokenFactory, parentToken, state);
 				if (h != -1) {
 					found = true;
@@ -653,7 +651,7 @@ protected:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (i < media->length())
+			if (media->def(i))
 				*state->character(charId_) = media->get(i++);
 			else
 				i = -1;
@@ -701,7 +699,7 @@ protected:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (i < media->length()) {
+			if (media->def(i)) {
 				Char ch = media->get(i++);
 				if ((ch != *state->character(charId_)) ^ invert_)
 					i = -1;
@@ -731,13 +729,12 @@ protected:
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			int i0 = i;
-			int n = media->length();
 			
 			if (termination_)
 			{
 				while (true) {
 					int h = termination_->matchNext(media, i, 0, parentToken, state);
-					if ((h != -1) || (i == n)) break;
+					if ((h != -1) || (!media->def(i))) break;
 					++i;
 				}
 				
@@ -769,8 +766,7 @@ protected:
 		{
 			Array<Char>* string = state->string(stringId_);
 			int k = 0, m = string->length();
-			int n = media->length();
-			while ((i < n) && (k < m)) {
+			while (media->def(i) && (k < m)) {
 				if (media->get(i) != string->get(k))
 					break;
 				++i;
@@ -813,7 +809,7 @@ protected:
 			
 			if (termination_) {
 				int i1 = i;
-				while (i1 < media->length()) {
+				while (media->def(i1)) {
 					if (termination_->matchNext(media, i1, 0, parentToken, state) != -1)
 						break;
 					++i1;
@@ -1041,9 +1037,8 @@ public:
 		bool find(Media* media, int* i0, int* i1 = 0, Ref<Token, Owner>* rootToken = 0, uint8_t* buf = 0, int bufSize = 0)
 		{
 			int i = *i0;
-			int n = media->length();
 			bool found = false;
-			while (i < n) {
+			while (media->def(i)) {
 				if (match(media, i, i1, rootToken, 0, buf, bufSize)) {
 					found = true;
 					break;

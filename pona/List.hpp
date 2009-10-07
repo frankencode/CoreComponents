@@ -10,7 +10,7 @@
 
 #include <new>
 #include "atoms"
-#include "RandomAccessMedia.hpp"
+#include "Sequence.hpp"
 #include "ListObserver.hpp"
 
 namespace pona
@@ -19,7 +19,7 @@ namespace pona
 PONA_EXCEPTION(ListException, Exception);
 
 template<class T>
-class List: public RandomAccessMedia<T>
+class List: public Sequence<T>
 {
 public:
 	List();
@@ -51,6 +51,7 @@ public:
 	
 	void clear();
 	
+	inline bool def(int i) const { return ((0 <= i) && (i < length_)) || ((-length_ <= i) && (i < 0)); }
 	T get(int i) const;
 	void set(int i, T e);
 	

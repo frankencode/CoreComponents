@@ -9,13 +9,13 @@
 #define PONA_VECTOR_HPP
 
 #include "atoms"
-#include "RandomAccessMedia.hpp"
+#include "Sequence.hpp"
 
 namespace pona
 {
 
 template<class T>
-class Array: public RandomAccessMedia<T>
+class Array: public Sequence<T>
 {
 public:
 	typedef T Element;
@@ -127,21 +127,23 @@ public:
 	inline int size() const { return size_; }
 	inline int length() const { return size_; }
 	
-	inline void set(int i, T e)
-	{
-		assert((0 <= i) && (i < size_));
-		buf_[i] = e;
-	}
+	inline bool def(int i) const { return (0 <= i) && (i < size_); }
 	
 	inline T get(int i) const
 	{
-		assert((0 <= i) && (i < size_));
+		assert(def(i));
 		return buf_[i];
+	}
+	
+	inline void set(int i, T e)
+	{
+		assert(def(i));
+		buf_[i] = e;
 	}
 	
 	inline T* at(int i)
 	{
-		assert((0 <= i) && (i < size_));
+		assert(def(i));
 		return buf_ + i;
 	}
 	

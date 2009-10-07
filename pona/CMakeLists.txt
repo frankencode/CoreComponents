@@ -12,7 +12,7 @@ SET(PONA_HEADER
 	Ref.hpp
 	
 	container
-	RandomAccessMedia.hpp
+	Sequence.hpp
 	Stack.hpp
 	Queue.hpp
 	Heap.hpp
