@@ -19,11 +19,11 @@ class SyntaxState: public Instance
 {
 public:
 	SyntaxState()
-		: language_(-1)
+		: languageId_(-1)
 	{}
 	
-	SyntaxState(int language, int numFlags, int numChars, int numStrings, Ref<SyntaxState> parent = 0)
-		: language_(language),
+	SyntaxState(int languageId, int numFlags, int numChars, int numStrings, Ref<SyntaxState> parent = 0)
+		: languageId_(languageId),
 		  flags_(numFlags),
 		  chars_(numChars),
 		  strings_(numStrings)
@@ -32,7 +32,7 @@ public:
 			parent->child_ = this;
 	}
 	
-	inline int language() const { return language_; }
+	inline int languageId() const { return languageId_; }
 	
 	inline bool* flag(int id) { return flags_.at(id); }
 	inline Char* character(int id) { return chars_.at(id); }
@@ -43,7 +43,7 @@ public:
 	
 	bool equals(const SyntaxState& b) const
 	{
-		bool equal = (language_ == b.language_);
+		bool equal = (languageId_ == b.languageId_);
 		if (equal) equal = (flags_ == b.flags_);
 		if (equal) equal = (chars_ == b.chars_);
 		if (equal) equal = (strings_ == b.strings_);
@@ -65,7 +65,7 @@ public:
 	
 	void copy(const SyntaxState& b)
 	{
-		language_ = b.language_;
+		languageId_ = b.languageId_;
 		flags_ = b.flags_;
 		chars_ = b.chars_;
 		strings_ = b.strings_;
@@ -78,7 +78,7 @@ public:
 	}
 	
 private:
-	int language_;
+	int languageId_;
 	Array<bool> flags_;
 	Array<Char> chars_;
 	Array< Array<Char> > strings_;

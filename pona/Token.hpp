@@ -16,12 +16,12 @@ namespace pona
 class Token: public Tree
 {
 public:
-	Token(): ruleName_("unknown"), language_(-1), rule_(-1), type_(-1) {}
+	Token(): ruleName_("unknown"), languageId_(-1), rule_(-1), type_(-1) {}
 	
-	inline void init(const char* ruleName, int language, int rule)
+	inline void init(const char* ruleName, int languageId, int rule)
 	{
 		ruleName_ = ruleName;
-		language_ = language;
+		languageId_ = languageId;
 		rule_ = rule;
 		if (type_ == -1)
 			type_ = rule;
@@ -34,7 +34,7 @@ public:
 	}
 	
 	inline const char* ruleName() { return ruleName_; }
-	inline int language() const { return language_; }
+	inline int languageId() const { return languageId_; }
 	inline int rule() const { return rule_; }
 	inline int type() const { return type_; }
 	inline void setType(int value) { type_ = value; }
@@ -67,7 +67,7 @@ public:
 	
 private:
 	const char* ruleName_;
-	int language_;
+	int languageId_;
 	int rule_;
 	int type_;
 	int i0_;

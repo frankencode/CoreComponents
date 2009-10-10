@@ -17,8 +17,8 @@ template<class Media>
 class SyntaxDefinition: public Syntax<Media>::Definition
 {
 public:
-	SyntaxDefinition(int language = -1)
-		: Syntax<Media>::Definition(language)
+	SyntaxDefinition(int languageId = -1)
+		: Syntax<Media>::Definition(languageId)
 	{}
 };
 
