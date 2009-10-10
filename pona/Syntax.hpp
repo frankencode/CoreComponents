@@ -431,7 +431,7 @@ protected:
 			Ref<Token, Owner> token;
 			if (tokenFactory) {
 				token = tokenFactory->produce();
-				token->init(name_, definition_->language(), id_);
+				token->init(name_, definition_->languageId(), id_);
 				if (parentToken)
 					parentToken->appendChild(token);
 			}
@@ -800,7 +800,7 @@ protected:
 			if (state) {
 				childState = state->child();
 				if (childState) {
-					if (childState->language() != definition_->language())
+					if (childState->languageId() != definition_->languageId())
 						childState = 0;
 				}
 				if (!childState)
@@ -837,9 +837,9 @@ public:
 	class Definition: public RuleNode
 	{
 	public:
-		Definition(int language = -1)
+		Definition(int languageId = -1)
 			: RuleNode(this),
-			  language_(language),
+			  languageId_(languageId),
 			  numRules_(0),
 			  numKeywords_(0),
 			  ruleByName_(new RuleByName),
@@ -1006,12 +1006,12 @@ public:
 		
 		//-- execution interface
 		
-		inline int language() const { return language_; }
+		inline int languageId() const { return languageId_; }
 		inline int numRules() const { return numRules_; }
 		
 		State* newState(State* parent = 0)
 		{
-			State* state = new State(language_, numStateFlags_, numStateChars_, numStateStrings_, parent);
+			State* state = new State(languageId_, numStateFlags_, numStateChars_, numStateStrings_, parent);
 			
 			Ref<StateFlag> stateFlag = stateFlagHead_;
 			for (int id = numStateFlags_ - 1; id >= 0; --id) {
@@ -1131,7 +1131,7 @@ public:
 			return RuleNode::matchNext(media, i, tokenFactory, parentToken, state);
 		}
 		
-		int language_;
+		int languageId_;
 		
 		class StateFlag: public Instance {
 		public:

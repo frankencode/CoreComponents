@@ -93,9 +93,9 @@ public:
 	bool lookup(Media* media, int i0, int* i1 = 0, Value* value = 0)
 	{
 		bool found = false;
-		int i = i0, n = media->length();
+		int i = i0;
 		Ref<Node> node = this;
-		while ((node) && (i < n))
+		while ((node) && media->def(i))
 		{
 			Ref<Node> parent = node;
 			node = node->step(media->get(i++));
