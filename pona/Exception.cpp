@@ -7,7 +7,10 @@
  */
 
 #include <errno.h>
-#include <string.h>
+#include <string.h> // memcpy
+#include <assert.h>
+#include <stdlib.h> // malloc, free
+
 #include "Exception.hpp"
 
 namespace pona
@@ -52,13 +55,13 @@ Exception::Exception(const char* path, int line, const char* className, char* re
 	path = fileName(path);
 	char* lineStr = intToStr(line);
 	
-	int lenPath = ::strlen(path);
-	int lenLineStr = ::strlen(lineStr);
-	int lenClassName = ::strlen(className);
-	int lenReason = ::strlen(reason);
-	int len = lenPath + ::strlen(":") +
-	          lenLineStr + ::strlen(": ") +
-	          lenClassName + ::strlen(": ") +
+	int lenPath = strlen(path);
+	int lenLineStr = strlen(lineStr);
+	int lenClassName = strlen(className);
+	int lenReason = strlen(reason);
+	int len = lenPath + strlen(":") +
+	          lenLineStr + strlen(": ") +
+	          lenClassName + strlen(": ") +
 	          lenReason + 1;
 	
 	message_ = (char*)::malloc(len);
@@ -96,22 +99,53 @@ Exception::~Exception() throw()
 
 const char* Exception::what() const throw() { return message_; }
 
-char* systemError()
+char* captureExceptionMessage(const char* s) { return ::strdup(s); }
+char* captureExceptionMessage(char* s) { return s; }
+
+char* systemError() { return systemError(errno); }
+
+char* systemError(int errorCode)
 {
 #ifdef __USE_GNU
 	const char* unknown = "Unknown error";
-	const int bufSize = 1024;
+	const int bufSize = 1024; // HACK, save bet
 	char buf[bufSize];
 	::memcpy(buf, unknown, strlen(unknown) + 1);
-	return ::strdup(::strerror_r(errno, buf, bufSize));
+	return ::strdup(::strerror_r(errorCode, buf, bufSize));
 #else
 	const char* unknown = "Unknown error";
 	const int bufSize = 1024;
 	char* buf = (char*)::malloc(bufSize);
 	::memcpy(buf, unknown, strlen(unknown) + 1);
-	/*int ret = */::strerror_r(errno, buf, bufSize);
+	/*int ret = */::strerror_r(errorCode, buf, bufSize);
 	return buf;
 #endif
+}
+
+char* pthreadError(const char* callName, int errorCode)
+{
+	int len = 0;
+	const char* part1 = callName;               len += strlen(part1);
+	const char* part2 = "() failed: ";          len += strlen(part2);
+	      char* part3 = systemError(errorCode); len += strlen(part3);
+	const char* part4 = " (";                   len += strlen(part4);
+	      char* part5 = intToStr(errorCode);    len += strlen(part5);
+	const char* part6 = ")";                    len += strlen(part6);
+	
+	char* msg = (char*)::malloc(len + 1);
+	int i = 0;
+	::memcpy(msg + i, part1, strlen(part1)); i += strlen(part1);
+	::memcpy(msg + i, part2, strlen(part2)); i += strlen(part2);
+	::memcpy(msg + i, part3, strlen(part3)); i += strlen(part3);
+	::memcpy(msg + i, part4, strlen(part4)); i += strlen(part4);
+	::memcpy(msg + i, part5, strlen(part5)); i += strlen(part5);
+	::memcpy(msg + i, part6, strlen(part6)); i += strlen(part6);
+	msg[i] = 0;
+	
+	::free(part3);
+	::free(part5);
+	
+	return msg;
 }
 
 } // namespace pona

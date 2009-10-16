@@ -45,7 +45,7 @@ public:
 	void run()
 	{
 		while (amount_ > 0) {
-			int x = random_.next();
+			int x = random_.get();
 			print("producer %%: producing %%\n", id_, x);
 			channel_->push(x);
 			--amount_;

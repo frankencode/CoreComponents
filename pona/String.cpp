@@ -203,6 +203,20 @@ float64_t toFloat64(String s, bool* ok)
 	return value;
 }
 
+Char lowerCase(Char ch)
+{
+	if (('A' <= ch) && (ch <= 'Z'))
+		ch = ch + 'a' - 'A';
+	return ch;
+}
+
+Char upperCase(Char ch)
+{
+	if (('a' <= ch) && (ch <= 'z'))
+		ch = ch + 'A' - 'a';
+	return ch;
+}
+
 String toLower(String s)
 {
 	String s2;
@@ -211,6 +225,18 @@ String toLower(String s)
 		Char ch = s->get(i);
 		if (('A' <= ch) && (ch <= 'Z'))
 			s2->set(i, ch + 'a' - 'A');
+	}
+	return s;
+}
+
+String toUpper(String s)
+{
+	String s2;
+	s2->push(0, s->length());
+	for (int i = 0, n = s->length(); i < n; ++i) {
+		Char ch = s->get(i);
+		if (('a' <= ch) && (ch <= 'z'))
+			s2->set(i, ch + 'A' - 'a');
 	}
 	return s;
 }

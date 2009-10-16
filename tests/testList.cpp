@@ -1,5 +1,6 @@
 #include <pona/stdio>
 #include <pona/container>
+#include <string.h> // memset
 
 namespace pona
 {

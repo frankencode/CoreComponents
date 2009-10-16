@@ -9,9 +9,6 @@
 #define PONA_EXCEPTION_HPP
 
 #include <exception>
-#include <string.h>
-#include <assert.h>
-#include <stdlib.h>
 
 namespace pona
 {
@@ -38,19 +35,25 @@ public: \
 	{} \
 }
 
-inline char* captureExceptionMessage(const char* s) { return ::strdup(s); }
-inline char* captureExceptionMessage(char* s) { return s; }
+char* captureExceptionMessage(const char* s);
+char* captureExceptionMessage(char* s);
 
 #define PONA_THROW(ExceptionClass, reason) \
 	throw ExceptionClass(__FILE__, __LINE__, #ExceptionClass, captureExceptionMessage(reason))
 
 char* systemError();
-char* systemError(int error);
+char* systemError(int errorCode);
+char* pthreadError(const char* callName, int errorCode);
 
 PONA_EXCEPTION(SystemException, Exception);
 #define PONA_SYSTEM_EXCEPTION \
 	throw SystemException(__FILE__, __LINE__, "SystemException", systemError())
 
+PONA_EXCEPTION(PthreadException, SystemException);
+#define PONA_PTHREAD_EXCEPTION(callName, errorCode) \
+	throw PthreadException(__FILE__, __LINE__, "PthreadException", pthreadError(callName, errorCode))
+
 } // namespace pona
 
 #endif // PONA_EXCEPTION_HPP
+

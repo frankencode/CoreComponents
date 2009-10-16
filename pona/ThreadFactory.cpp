@@ -14,56 +14,64 @@ namespace pona
 ThreadFactory::ThreadFactory(Ref<Thread> prototype)
 	: prototype_(prototype)
 {
-	if (pthread_attr_init(&attr_) != 0)
-		PONA_THROW(SystemException, "pthread_attr_init() failed");
+	int ret = pthread_attr_init(&attr_);
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_attr_init", ret);
 }
 
 ThreadFactory::~ThreadFactory()
 {
-	if (pthread_attr_destroy(&attr_) != 0)
-		PONA_THROW(SystemException, "pthread_attr_destroy() failed");
+	int ret = pthread_attr_destroy(&attr_);
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_attr_destroy", ret);
 }
 
 int ThreadFactory::detachState() const
 {
 	int value = 0;
-	if (pthread_attr_getdetachstate(&attr_, &value) != 0)
-		PONA_THROW(SystemException, "pthread_attr_getdetachstate() failed");
+	int ret = pthread_attr_getdetachstate(&attr_, &value);
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_attr_getdetachstate", ret);
 	return value;
 }
 
 void ThreadFactory::setDetachState(int value)
 {
-	if (pthread_attr_setdetachstate(&attr_, value) != 0)
-		PONA_THROW(SystemException, "pthread_attr_setdetachstate() failed");
+	int ret = pthread_attr_setdetachstate(&attr_, value);
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_attr_setdetachstate", ret);
 }
 
 size_t ThreadFactory::stackSize() const
 {
 	size_t value = 0;
-	if (pthread_attr_getstacksize(&attr_, &value) != 0)
-		PONA_THROW(SystemException, "pthread_attr_getstacksize() failed");
+	int ret = pthread_attr_getstacksize(&attr_, &value);
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_attr_getstacksize", ret);
 	return value;
 }
 
 void ThreadFactory::setStackSize(size_t value)
 {
-	if (pthread_attr_setstacksize(&attr_, value) != 0)
-		PONA_THROW(SystemException, "pthread_attr_setstacksize() failed");
+	int ret = pthread_attr_setstacksize(&attr_, value);
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_attr_setstacksize", ret);
 }
 
 size_t ThreadFactory::guardSize() const
 {
 	size_t value = 0;
-	if (pthread_attr_getguardsize(&attr_, &value) != 0)
-		PONA_THROW(SystemException, "pthread_attr_getguardsize() failed");
+	int ret = pthread_attr_getguardsize(&attr_, &value);
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_attr_getguardsize", ret);
 	return value;
 }
 
 void ThreadFactory::setGuardSize(size_t value)
 {
-	if (pthread_attr_setguardsize(&attr_, value) != 0)
-		PONA_THROW(SystemException, "pthread_attr_setguardsize() failed");
+	int ret = pthread_attr_setguardsize(&attr_, value);
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_attr_setguardsize", ret);
 }
 
 pthread_attr_t* ThreadFactory::attr() { return &attr_; }
@@ -77,8 +85,9 @@ Ref<Thread, Owner> ThreadFactory::produce()
 
 void ThreadFactory::start(Ref<Thread> thread)
 {
-	if (pthread_create(&thread->tid_, &attr_, &bootstrap, static_cast<void*>(thread)) != 0)
-		PONA_THROW(SystemException, "pthread_create() failed");
+	int ret = pthread_create(&thread->tid_, &attr_, &bootstrap, static_cast<void*>(thread));
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_create", ret);
 	thread->keepAlive_ = (thread->refCount() > 0);
 	if (thread->keepAlive_)
 		thread->incRefCount(); // prevent self destruction while running

@@ -46,6 +46,8 @@ public:
 	inline int nsec() const { return nsec_; }
 	inline int usec() const { return nsec_ / 1000; }
 	
+	inline int d() const { return s() / (3600 * 24) + (s() % (3600 * 24) >= (1800 * 24)); }
+	inline int min() const { return s() / 60 + (s() % 60 >= 30); }
 	inline int s() const { return sec_ + (nsec_ >= 500000000); }
 	inline uint64_t ms() const { return uint64_t(sec_) * 1000 + nsec_ / 1000000; }
 	inline uint64_t us() const { return uint64_t(sec_) * 1000000 + nsec_ / 1000; }

@@ -31,7 +31,7 @@ FiberInitializer::FiberInitializer()
 		++count_;
 		int ret = pthread_key_create(&fiberEntry_, 0);
 		if (ret != 0)
-			PONA_THROW(SystemException, "pthread_key_create() failed");
+			PONA_PTHREAD_EXCEPTION("pthread_key_create", ret);
 	}
 }
 
@@ -44,7 +44,7 @@ Fiber::Fiber(int stackSize, int guardSize, Fiber* next)
 {
 	int ret = pthread_setspecific(fiberEntry_, this);
 	if (ret != 0)
-		PONA_THROW(SystemException, "pthread_setspecific() failed");
+		PONA_PTHREAD_EXCEPTION("pthread_setspecific", ret);
 	Context::get(this);
 	Context::make(this, &bootstrap, stackSize, guardSize, next);
 }

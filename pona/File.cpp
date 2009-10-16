@@ -99,7 +99,7 @@ void File::createUnique(int mask, Char placeHolder)
 		String pathSaved = path_->copy();
 		for (int i = 0, n = path_->length(); i < n; ++i) {
 			if (path_->get(i) == placeHolder) {
-				int r = random.next(0, 61);
+				int r = random.get(0, 61);
 				if ((0 <= r) && (r <= 9))
 					path_->set(i, '0' + r);
 				else if ((10 <= r) && (r <= 35))

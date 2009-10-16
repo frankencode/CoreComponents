@@ -15,8 +15,8 @@ int main(int argc, char** argv)
 		class TestFactory: public ProcessFactory
 		{
 		public:
-			int run() {
-				print("Hello, world!\n");
+			int incarnate() {
+				print("Good morning %%.\n", User(Process::realUserId()).fullName());
 				return 7;
 			}
 		};

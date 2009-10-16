@@ -9,5 +9,6 @@
 #define PONA_SYNTAX
 
 #include "SyntaxDefinition.hpp"
+#include "TokenScreen.hpp"
 
 #endif // PONA_SYNTAX

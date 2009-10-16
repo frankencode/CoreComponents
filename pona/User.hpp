@@ -26,8 +26,8 @@ public:
 	
 	inline uid_t id() const { return id_; }
 	inline gid_t groupId() const { return groupId_; }
-	inline String name() const { return name_; }
-	inline String realName() const { return realName_; }
+	inline String loginName() const { return loginName_; }
+	inline String fullName() const { return fullName_; }
 	inline String home() const { return home_; }
 	inline String shell() const { return shell_; }
 	
@@ -36,8 +36,8 @@ private:
 	bool exists_;
 	uid_t id_;
 	gid_t groupId_;
-	String name_;
-	String realName_;
+	String loginName_;
+	String fullName_;
 	String home_;
 	String shell_;
 };

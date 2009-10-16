@@ -79,7 +79,10 @@ int64_t toInt64(String s, bool* ok = 0);
 uint64_t toUInt64(String s, bool* ok = 0);
 float64_t toFloat64(String s, bool* ok = 0);
 
+Char lowerCase(Char ch);
+Char upperCase(Char ch);
 String toLower(String s);
+String toUpper(String s);
 String stripLeadingSpace(String s);
 String stripTrailingSpace(String s);
 uint32_t crc32(String s);

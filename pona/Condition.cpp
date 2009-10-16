@@ -15,14 +15,14 @@ Condition::Condition()
 {
 	int ret = pthread_cond_init(&cond_, 0);
 	if (ret != 0)
-		PONA_THROW(SystemException, "pthread_cond_init() failed");
+		PONA_PTHREAD_EXCEPTION("pthread_cond_init", ret);
 }
 
 Condition::~Condition()
 {
 	int ret = pthread_cond_destroy(&cond_);
 	if (ret != 0)
-		PONA_THROW(SystemException, "pthread_cond_destroy() failed");
+		PONA_PTHREAD_EXCEPTION("pthread_cond_destroy", ret);
 }
 
 /** Enter wait state and atomically unlock provided mutex.
@@ -36,7 +36,7 @@ void Condition::wait(Mutex* mutex)
 {
 	int ret = pthread_cond_wait(&cond_, &mutex->mutex_);
 	if (ret != 0)
-		PONA_THROW(SystemException, "pthread_cond_wait() failed");
+		PONA_PTHREAD_EXCEPTION("pthread_cond_wait", ret);
 }
 
 /** Same as wait(), but also wakeup if system time reaches 'timeout'.
@@ -54,28 +54,28 @@ bool Condition::waitUntil(Mutex* mutex, Time timeout)
 		if (ret == ETIMEDOUT)
 			success = false;
 		else
-			PONA_THROW(SystemException, "pthread_cond_timedwait() failed");
+			PONA_PTHREAD_EXCEPTION("pthread_cond_timedwait", ret);
 	}
 	return success;
 }
 
-/** Wakeup at least one thread blocked in Condition::wait().
+/** Wakeup at least one waiting thread.
   * (A system might wakeup as many threads as CPU's are idle.)
   */
 void Condition::signal()
 {
 	int ret = pthread_cond_signal(&cond_);
 	if (ret != 0)
-		PONA_THROW(SystemException, "pthread_cond_signal() failed");
+		PONA_PTHREAD_EXCEPTION("pthread_cond_signal", ret);
 }
 
-/** Wakeup all threads blocked in Condition::wait().
+/** Wakeup all waiting threads.
   */
 void Condition::broadcast()
 {
 	int ret = pthread_cond_broadcast(&cond_);
 	if (ret != 0)
-		PONA_THROW(SystemException, "pthread_cond_broadcast() failed");
+		PONA_PTHREAD_EXCEPTION("pthread_cond_broadcast", ret);
 }
 
 } // namespace pona

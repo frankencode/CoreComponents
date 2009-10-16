@@ -41,7 +41,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	/*const int ttyNameSize = 256;
 	char ttyName[ttyNameSize];
 	terminalName_ = devname_r(proc->kp_eproc.e_tdev, S_IFCHR, ttyName, ttyNameSize);*/
-	loginName_ = User(proc->kp_eproc.e_pcred.p_ruid).name();
+	loginName_ = User(proc->kp_eproc.e_pcred.p_ruid).loginName();
 	commandName_ = proc->kp_proc.p_comm;
 	processStatus_ = proc->kp_proc.p_stat;
 	if (processStatus_ == SIDL) processStatus_ = 'W';
@@ -83,7 +83,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 		else if (major == 3)
 			terminalName_ = Format("ttyp%%") << minor;
 	}*/
-	loginName_ = User(FileStatus(path).ownerId()).name();
+	loginName_ = User(FileStatus(path).ownerId()).loginName();
 	processStatus_ = parts->get(2)->get(0);
 	file->close();
 #endif
