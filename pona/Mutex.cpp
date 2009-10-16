@@ -10,28 +10,28 @@ Mutex::Mutex()
 {
 	int ret = pthread_mutex_init(&mutex_, 0);
 	if (ret != 0)
-		PONA_THROW(SystemException, "pthread_mutex_init() failed");
+		PONA_PTHREAD_EXCEPTION("pthread_mutex_init", ret);
 }
 
 Mutex::~Mutex()
 {
 	int ret = pthread_mutex_destroy(&mutex_);
 	if (ret != 0)
-		PONA_THROW(SystemException, "pthread_mutex_destroy() failed");
+		PONA_PTHREAD_EXCEPTION("pthread_mutex_destroy", ret);
 }
 
 void Mutex::acquire()
 {
 	int ret = pthread_mutex_lock(&mutex_);
 	if (ret != 0)
-		PONA_THROW(SystemException, "pthread_mutex_lock() failed");
+		PONA_PTHREAD_EXCEPTION("pthread_mutex_lock", ret);
 }
 
 bool Mutex::tryAcquire()
 {
 	int ret = pthread_mutex_trylock(&mutex_);
 	if ((ret != 0) && (ret != EBUSY))
-		PONA_THROW(SystemException, "pthread_mutex_trylock() failed");
+		PONA_PTHREAD_EXCEPTION("pthread_mutex_trylock", ret);
 	return ret != EBUSY;
 }
 
@@ -39,7 +39,7 @@ void Mutex::release()
 {
 	int ret = pthread_mutex_unlock(&mutex_);
 	if (ret != 0)
-		PONA_THROW(SystemException, "pthread_mutex_unlock() failed");
+		PONA_PTHREAD_EXCEPTION("pthread_mutex_unlock", ret);
 }
 
 } // namespace pona

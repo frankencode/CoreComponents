@@ -24,17 +24,17 @@ public:
 	inline int max() const { return m_ - 1; }
 	inline int period() const { return m_ - 1; }
 	
-	inline int next() {
+	inline int get() {
 		x_ = (16807 * x_) % m_; /* 7^5 == 16807 */
 		return x_;
 	}
 	
 	/** Return a random number in range [a, b].
 	  */
-	inline int next(int a, int b) {
+	inline int get(int a, int b) {
 		assert(b <= m_ - 1);
 		assert(a <= b);
-		return (uint64_t(next()) * (b - a)) / (m_ - 1) + a;
+		return (uint64_t(get()) * (b - a)) / (m_ - 1) + a;
 	}
 	
 private:

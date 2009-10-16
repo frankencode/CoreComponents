@@ -46,8 +46,14 @@ void User::load(struct passwd* entry)
 		exists_ = true;
 		id_ = entry->pw_uid;
 		groupId_ = entry->pw_gid;
-		name_ = entry->pw_name;
-		realName_ = entry->pw_gecos;
+		loginName_ = entry->pw_name;
+		fullName_ = entry->pw_gecos;
+		if (fullName_->length() > 0)
+			if ((fullName_->get(0) == ',') || (fullName_->get(-1) == ',')) {
+				fullName_ = loginName_;
+				fullName_->set(0, upperCase(fullName_->get(0)));
+				// fullName_ << " Anonymous";
+			}
 		home_ = entry->pw_dir;
 		shell_ = entry->pw_shell;
 	}

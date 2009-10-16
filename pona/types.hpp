@@ -10,6 +10,7 @@
 
 #include <assert.h> // design HACK, pona should support its own assertions
 #include <stdint.h> // (u)int8_t .. (u)int64_t
+#include <stdlib.h> // ssize_t
 
 typedef float float32_t;
 typedef double float64_t;

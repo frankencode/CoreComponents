@@ -30,6 +30,7 @@ SET(PONA_HEADER
 	
 	syntax
 	Token.hpp
+	TokenScreen.hpp
 	TokenFactory.hpp
 	Syntax.hpp
 	SyntaxDefinition.hpp
@@ -114,6 +115,9 @@ SET(PONA_SOURCE
 	# container
 	Tree.cpp
 	String.cpp
+	
+	# syntax
+	Token.cpp
 	
 	# stdio
 	Stream.cpp

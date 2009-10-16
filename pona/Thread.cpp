@@ -31,13 +31,14 @@ void Thread::wait()
 {
 	int ret = pthread_join(tid_, 0);
 	if (ret != 0)
-		PONA_THROW(SystemException, "pthread_join() failed");
+		PONA_PTHREAD_EXCEPTION("pthread_join", ret);
 }
 
 void Thread::kill(int signal)
 {
-	if (pthread_kill(tid_, signal) != 0)
-		PONA_THROW(SystemException, "pthread_kill() failed");
+	int ret = pthread_kill(tid_, signal);
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_kill", ret);
 }
 
 void Thread::sleep(Time duration)

@@ -10,6 +10,7 @@
 #include <sys/stat.h> // umask
 #include <errno.h> // errno
 #include <stdlib.h> // malloc, free, exit
+#include <string.h> // memset
 #include <unistd.h> // chdir, readlink
 #include <time.h> // nanosleep
 #include <errno.h> // errno

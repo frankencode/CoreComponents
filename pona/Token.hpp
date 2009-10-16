@@ -13,6 +13,8 @@
 namespace pona
 {
 
+class TokenScreen;
+
 class Token: public Tree
 {
 public:
@@ -64,6 +66,8 @@ public:
 			token = token->nextSibling();
 		}
 	}*/
+	
+	void glow(TokenScreen* screen);
 	
 private:
 	const char* ruleName_;

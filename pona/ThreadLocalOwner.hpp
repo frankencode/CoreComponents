@@ -22,7 +22,7 @@ public:
 	{
 		int ret = ::pthread_key_create(&key_, &threadExitEvent);
 		if (ret != 0)
-			PONA_THROW(SystemException, "pthread_key_create() failed");
+			PONA_PTHREAD_EXCEPTION("pthread_key_create", ret);
 	}
 	
 	~ThreadLocalOwner()
