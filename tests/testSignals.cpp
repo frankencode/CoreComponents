@@ -8,43 +8,51 @@ namespace pona
 class Echo: public Action
 {
 public:
-	Echo(String message)
-		: message_(message)
+	Echo(String signalName, int signal)
+		: signalName_(signalName),
+		  signal_(signal)
 	{}
 private:
-	virtual void run() { output()->writeLine(message_); }
-	String message_;
+	virtual void run() {
+		print("[%%]\n", signalName_);
+		SignalManager::defaultAction(signal_);
+	}
+	String signalName_;
+	int signal_;
 };
 
-class Finish: public Action
+class Alarm: public Thread
 {
 public:
-	Finish(bool* done)
-		: done_(done)
+	Alarm()
+		: count_(0)
 	{}
-	virtual void run() { *done_ = true; }
 private:
-	bool* done_;
+	virtual void run() {
+		enableSignal(SIGALRM);
+		while (true) sleep(1000);
+	}
+	virtual void signalHandler(int signal) {
+		print("%%\n", ++count_);
+	}
+	int count_;
 };
 
 int main()
 {
-	bool done = false;
-	signalEvent(SIGINT)->pushBack(new Finish(&done));
-	signalEvent(SIGTERM)->pushBack(new Finish(&done));
+	signalEvent(SIGINT)->pushBack(new Echo("SIGINT", SIGINT));
+	signalEvent(SIGTERM)->pushBack(new Echo("SIGTERM", SIGTERM));
+	signalEvent(SIGQUIT)->pushBack(new Echo("SIGQUIT", SIGQUIT));
+	signalEvent(SIGHUP)->pushBack(new Echo("SIGHUP", SIGHUP));
+	signalEvent(SIGTSTP)->pushBack(new Echo("SIGTSTP", SIGTSTP));
+	signalEvent(SIGCONT)->pushBack(new Echo("SIGCONT", SIGCONT));
+	signalEvent(SIGWINCH)->pushBack(new Echo("SIGWINCH", SIGWINCH));
 	
-	signalEvent(SIGINT)->pushBack(new Echo("[SIGINT]"));
-	signalEvent(SIGTERM)->pushBack(new Echo("[SIGTERM]"));
-	signalEvent(SIGQUIT)->pushBack(new Echo("[SIGQUIT]"));
-	signalEvent(SIGHUP)->pushBack(new Echo("[SIGHUP]"));
-	signalEvent(SIGTSTP)->pushBack(new Echo("[SIGTSTP]"));
-	signalEvent(SIGCONT)->pushBack(new Echo("[SIGCONT]"));
-	signalEvent(SIGWINCH)->pushBack(new Echo("[SIGWINCH]"));
-	
-	int n = 0;
-	while (!done) {
+	Ref<Thread, Owner> alarm = new Alarm();
+	alarm->start(Thread::Detached);
+	while (true) {
 		Thread::sleep(1);
-		print("%%\n", ++n);
+		alarm->kill(SIGALRM);
 	}
 	
 	return 0;

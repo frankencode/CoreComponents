@@ -34,7 +34,11 @@ Condition::~Condition()
   */
 void Condition::wait(Mutex* mutex)
 {
-	int ret = pthread_cond_wait(&cond_, &mutex->mutex_);
+	int ret = -1;
+	while (true) {
+		ret = pthread_cond_wait(&cond_, &mutex->mutex_);
+		if (ret != EINTR) break;
+	}
 	if (ret != 0)
 		PONA_PTHREAD_EXCEPTION("pthread_cond_wait", ret);
 }
@@ -49,7 +53,11 @@ bool Condition::waitUntil(Mutex* mutex, Time timeout)
 	struct timespec ts;
 	ts.tv_sec = timeout.sec();
 	ts.tv_nsec = timeout.nsec();
-	int ret = pthread_cond_timedwait(&cond_, &mutex->mutex_, &ts);
+	int ret = -1;
+	while (true) {
+		ret = pthread_cond_timedwait(&cond_, &mutex->mutex_, &ts);
+		if (ret != EINTR) break;
+	}
 	if (ret != 0) {
 		if (ret == ETIMEDOUT)
 			success = false;

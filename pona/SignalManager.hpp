@@ -32,7 +32,7 @@ class SignalListener: public Thread {
 public:
 	SignalListener();
 	void run();
-	bool stopListener_;
+	Mutex done_;
 };
 
 class SignalManager: public Instance
@@ -42,7 +42,9 @@ class SignalManager: public Instance
 public:
 	static Ref<SignalManager> instance();
 	
-	Ref<Event> managerBySignal(int signal);
+	Ref<Event> signalEvent(int signal);
+	
+	static void defaultAction(int signal);
 	
 private:
 	friend class SignalInitializer;
@@ -52,13 +54,13 @@ private:
 	~SignalManager();
 	
 	void startListener();
-	bool relay(int signal);
+	void relay(int signal);
 	
 	Ref<SignalListener, Owner> signalListener_;
 	int pid_;
 	
-	typedef Map<int, Ref<Event, Owner> > ManagerBySignal;
-	Ref<ManagerBySignal, Owner> managerBySignal_;
+	typedef Map<int, Ref<Event, Owner> > SignalEvents;
+	Ref<SignalEvents, Owner> signalEvents_;
 };
 
 Ref<Event> signalEvent(int signal);

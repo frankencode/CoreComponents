@@ -22,14 +22,22 @@ Mutex::~Mutex()
 
 void Mutex::acquire()
 {
-	int ret = pthread_mutex_lock(&mutex_);
+	int ret = -1;
+	while (true) {
+		ret = pthread_mutex_lock(&mutex_);
+		if (ret != EINTR) break;
+	}
 	if (ret != 0)
 		PONA_PTHREAD_EXCEPTION("pthread_mutex_lock", ret);
 }
 
 bool Mutex::tryAcquire()
 {
-	int ret = pthread_mutex_trylock(&mutex_);
+	int ret = -1;
+	while (true) {
+		ret = pthread_mutex_trylock(&mutex_);
+		if (ret != EINTR) break;
+	}
 	if ((ret != 0) && (ret != EBUSY))
 		PONA_PTHREAD_EXCEPTION("pthread_mutex_trylock", ret);
 	return ret != EBUSY;

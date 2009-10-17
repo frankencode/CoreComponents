@@ -9,7 +9,7 @@
 #define PONA_THREAD_HPP
 
 #include <pthread.h>
-#include <signal.h> // pthread_kill, SIGTERM
+#include <signal.h> // SIGTERM, etc.
 #include "atoms"
 #include "Cloneable.hpp"
 #include "Action.hpp"
@@ -25,7 +25,7 @@ class Thread: public Cloneable, public Action
 public:
 	enum DetachState {
 		Joinable = PTHREAD_CREATE_JOINABLE,
-		Detached =  PTHREAD_CREATE_DETACHED
+		Detached = PTHREAD_CREATE_DETACHED
 	};
 	
 	void start(int detachState = Joinable);
@@ -37,6 +37,7 @@ public:
 	
 protected:
 	friend class ThreadFactory;
+	
 	Thread();
 	
 	virtual Ref<Instance, Owner> clone();
@@ -44,7 +45,14 @@ protected:
 	virtual void init();
 	virtual void done();
 	
+	virtual void signalHandler(int signal);
+	
+	void enableSignal(int signal);
+	void disableSignal(int signal);
+	
 private:
+	static void signalForwarder(int signal);
+	
 	pthread_t tid_;
 	bool keepAlive_;
 };
