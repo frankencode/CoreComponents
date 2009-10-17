@@ -7,6 +7,9 @@
  */
 
 #include <unistd.h> // getpid
+#include <string.h> // memset
+#include "stdio" // DEBUG
+#include "Condition.hpp"
 #include "SignalManager.hpp"
 
 namespace pona
@@ -20,15 +23,17 @@ SignalInitializer::SignalInitializer()
 		++count_;
 		sigset_t mask;
 		sigfillset(&mask);
-		if (pthread_sigmask(SIG_SETMASK, &mask, 0) != 0)
-			PONA_THROW(SystemException, "pthread_sigmask() failed");
+		int ret = pthread_sigmask(SIG_SETMASK, &mask, 0/*oset*/);
+		if (ret != 0)
+			PONA_PTHREAD_EXCEPTION("pthread_sigmask", ret);
 		SignalManager::instance()->startListener();
 	}
 }
 
 SignalListener::SignalListener()
-	: stopListener_(false)
-{}
+{
+	done_.acquire();
+}
 
 void SignalListener::run()
 {
@@ -37,23 +42,14 @@ void SignalListener::run()
 		int signal = -1;
 		sigset_t set;
 		sigfillset(&set);
-		if (sigwait(&set, &signal) != 0)
-			PONA_THROW(SystemException, "sigwait() failed");
+		sigwait(&set, &signal);
 		
-		if (stopListener_) break;
-		
-		bool relayed = SignalManager::instance()->relay(signal);
-		
-		if ((!relayed) || (signal == SIGTSTP)) {
-			sigset_t set, old;
-			sigemptyset(&set);
-			sigaddset(&set, signal);
-			if (pthread_sigmask(SIG_UNBLOCK, &set, &old) != 0)
-				PONA_THROW(SystemException, "pthread_sigmask() failed");
-			::kill(getpid(), signal);
-			if (pthread_sigmask(SIG_SETMASK, &old, 0) != 0)
-				PONA_THROW(SystemException, "pthread_sigmask() failed");
+		if (done_.tryAcquire()) {
+			done_.release();
+			break;
 		}
+		
+		SignalManager::instance()->relay(signal);
 	}
 }
 
@@ -71,32 +67,67 @@ Ref<SignalManager> SignalManager::instance()
 SignalManager::SignalManager()
 	: signalListener_(new SignalListener),
 	  pid_(Process::currentProcessId()),
-	  managerBySignal_(new ManagerBySignal)
+	  signalEvents_(new SignalEvents)
 {}
 
 SignalManager::~SignalManager()
 {
 	if (pid_ == Process::currentProcessId()) {
-		signalListener_->stopListener_ = true;
+		signalListener_->done_.release();
 		signalListener_->kill(SIGUSR1);
 		signalListener_->wait();
 	}
 }
 
-Ref<Event> SignalManager::managerBySignal(int signal)
+void SignalManager::defaultAction(int signal)
 {
-	Ref<Event> manager = managerBySignal_->get(signal);
-	if (!manager) {
+	struct sigaction action, actionSaved;
+	::memset(&action, 0, sizeof(action));
+	action.sa_handler = SIG_DFL;
+	if (::sigaction(signal, &action, &actionSaved) == -1)
+		PONA_SYSTEM_EXCEPTION;
+	switch(signal) {
+		case SIGURG:
+		case SIGCONT:
+		case SIGCHLD:
+		case SIGIO:
+		case SIGWINCH:
+		#ifdef SIGINFO
+		case SIGINFO:
+		#endif
+			break;
+		default:
+			if (signal == SIGTSTP) signal = SIGSTOP;
+			sigset_t mask, maskSaved;
+			sigfillset(&mask);
+			pthread_sigmask(SIG_SETMASK, &mask, &maskSaved);
+			pthread_kill(pthread_self(), signal);
+			sigdelset(&mask, signal);
+			if (signal != SIGSTOP)
+				::sigsuspend(&mask);
+			pthread_sigmask(SIG_SETMASK, &maskSaved, 0);
+			break;
+	};
+	if (actionSaved.sa_handler) {
+		if (::sigaction(signal, &actionSaved, 0) == -1)
+			PONA_SYSTEM_EXCEPTION;
+	}
+}
+
+Ref<Event> SignalManager::signalEvent(int signal)
+{
+	Ref<Event> event = signalEvents_->get(signal);
+	if (!event) {
 		beginCritical();
-		manager = managerBySignal_->get(signal);
-		if (!manager) {
-			Ref<Event, Owner> newManager = new Event;
-			managerBySignal_->set(signal, newManager);
-			manager = newManager;
+		event = signalEvents_->get(signal);
+		if (!event) {
+			Ref<Event, Owner> newEvent = new Event;
+			signalEvents_->set(signal, newEvent);
+			event = newEvent;
 		}
 		endCritical();
 	}
-	return manager;
+	return event;
 }
 
 void SignalManager::startListener()
@@ -104,22 +135,23 @@ void SignalManager::startListener()
 	signalListener_->start();
 }
 
-bool SignalManager::relay(int signal)
+void SignalManager::relay(int signal)
 {
 	bool relayed = false;
 	beginCritical();
-	Ref<Event> manager = managerBySignal_->get(signal);
-	if (manager) {
-		manager->run();
+	Ref<Event> event = signalEvents_->get(signal);
+	if (event) {
+		event->run();
 		relayed = true;
 	}
 	endCritical();
-	return relayed;
+	if (!relayed)
+		defaultAction(signal);
 }
 
 Ref<Event> signalEvent(int signal)
 {
-	return SignalManager::instance()->managerBySignal(signal);
+	return SignalManager::instance()->signalEvent(signal);
 }
 
 } // namespace pona

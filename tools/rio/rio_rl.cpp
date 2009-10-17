@@ -13,6 +13,7 @@
 #include <termios.h> // termios
 #include <unistd.h> // tcgetattr, tcsetattr
 #include <stdio.h>
+#include <stdlib.h> // free
 #include <readline/readline.h>
 #include <readline/history.h>
 
