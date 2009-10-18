@@ -16,7 +16,7 @@
 namespace pona
 {
 
-class User: public Instance
+class PONA_API User: public Instance
 {
 public:
 	User(uid_t id);
@@ -32,7 +32,7 @@ public:
 	inline String shell() const { return shell_; }
 	
 private:
-	void load(struct passwd* entry);
+	PONA_INTERN void load(struct passwd* entry);
 	bool exists_;
 	uid_t id_;
 	gid_t groupId_;

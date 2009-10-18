@@ -133,7 +133,7 @@ void File::truncate(off_t length)
 	}
 }
 
-class UnlinkFile: public Action {
+class PONA_API UnlinkFile: public Action {
 public:
 	UnlinkFile(String path): path_(Path(path).makeAbsolute()) {}
 	void run() { File(path_).unlink(); }

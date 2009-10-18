@@ -15,7 +15,7 @@
 namespace pona
 {
 
-class ByteSink: public Instance
+class PONA_API ByteSink: public Instance
 {
 public:
 	ByteSink();

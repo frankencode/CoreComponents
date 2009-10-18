@@ -14,7 +14,7 @@
 namespace pona
 {
 
-class Pipe: public SystemStream
+class PONA_API Pipe: public SystemStream
 {
 public:
 	enum Mode { Input = 0, Output = 1 };
@@ -25,7 +25,7 @@ public:
 	void childOpen();
 	
 private:
-	void open(int thisEnd);
+	PONA_INTERN void open(int thisEnd);
 	int mode_;
 	int pipeFd_[2];
 };

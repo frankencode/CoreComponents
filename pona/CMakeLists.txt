@@ -1,5 +1,6 @@
 SET(PONA_HEADER
 	defaults.hpp
+	visibility.hpp
 	
 	atoms
 	types.hpp

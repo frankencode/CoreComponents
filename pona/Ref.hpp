@@ -8,6 +8,7 @@
 #ifndef PONA_REF_HPP
 #define PONA_REF_HPP
 
+#include "visibility.hpp"
 #include "defaults.hpp"
 #include "Instance.hpp"
 #include "Pointer.hpp"
@@ -27,7 +28,7 @@ namespace pona
   *   - full compatiblity to containers
   */
 template<class T = Instance, template<class> class GetAndSetPolicy = PONA_DEFAULT_REF_POLICY>
-class Ref: public GetAndSetPolicy<T>
+class PONA_API Ref: public GetAndSetPolicy<T>
 {
 public:
 	// default initialization and cleanup

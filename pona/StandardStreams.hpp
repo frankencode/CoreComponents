@@ -17,7 +17,7 @@
 namespace pona
 {
 
-class StandardStreams: public Instance
+class PONA_API StandardStreams: public Instance
 {
 public:
 	static Ref<StandardStreams> instance();
@@ -31,7 +31,7 @@ public:
 	inline Ref<LineSink> error() { return error_; }
 
 private:
-	StandardStreams();
+	PONA_INTERN StandardStreams();
 
 	Ref<SystemStream, Owner> rawInput_;
 	Ref<SystemStream, Owner> rawOutput_;

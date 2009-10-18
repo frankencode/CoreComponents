@@ -15,7 +15,7 @@
 namespace pona
 {
 
-class Semaphore: public Instance
+class PONA_API Semaphore: public Instance
 {
 public:
 	Semaphore(int avail = 0);

@@ -16,7 +16,7 @@
 namespace pona
 {
 
-class Path
+class PONA_API Path
 {
 public:
 	Path(String path);

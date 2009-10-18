@@ -14,7 +14,7 @@
 namespace pona
 {
 
-class Context: public ucontext_t, public Instance
+class PONA_API Context: public ucontext_t, public Instance
 {
 public:
 	Context();

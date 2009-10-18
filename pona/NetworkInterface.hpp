@@ -15,7 +15,7 @@ class NetworkInterface;
 
 typedef List< Ref<NetworkInterface, Owner> > NetworkInterfaceList;
 
-class NetworkInterface: public Instance
+class PONA_API NetworkInterface: public Instance
 {
 public:
 	enum Flags {
@@ -52,7 +52,7 @@ public:
 	static Ref<NetworkInterfaceList, Owner> queryAll(int family = AF_INET6);
 	
 private:
-	NetworkInterface();
+	PONA_INTERN NetworkInterface();
 	#ifdef __linux
 	static Ref<NetworkInterfaceList, Owner> queryAllIoctl(int family);
 	#endif

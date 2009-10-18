@@ -19,7 +19,7 @@ namespace pona
 
 PONA_EXCEPTION(OptionsException, Exception);
 
-class Options: public SyntaxDefinition<String::Media>
+class PONA_API Options: public SyntaxDefinition<String::Media>
 {
 public:
 	Options();
@@ -37,7 +37,7 @@ public:
 	String execDir() const;
 	
 private:
-	Ref<StringList> read(String line);
+	PONA_INTERN Ref<StringList> read(String line);
 	
 	RULE longNameRule_;
 	RULE shortNameRule_;

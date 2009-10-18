@@ -7,7 +7,7 @@
 namespace pona
 {
 
-class SignalSet: public Instance
+class PONA_API SignalSet: public Instance
 {
 public:
 	SignalSet();

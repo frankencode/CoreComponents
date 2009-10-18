@@ -13,7 +13,7 @@
 namespace pona
 {
 
-class IntegerLiteral: public SyntaxDefinition<String::Media>
+class PONA_API IntegerLiteral: public SyntaxDefinition<String::Media>
 {
 public:
 	IntegerLiteral();

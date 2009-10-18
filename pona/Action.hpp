@@ -14,7 +14,7 @@
 namespace pona
 {
 
-class Action: public virtual Instance
+class PONA_API Action: public virtual Instance
 {
 public:
 	virtual void run() = 0;

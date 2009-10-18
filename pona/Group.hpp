@@ -16,7 +16,7 @@
 namespace pona
 {
 
-class Group: public Instance
+class PONA_API Group: public Instance
 {
 public:
 	Group(gid_t id);
@@ -29,7 +29,7 @@ public:
 	inline Ref<StringList> members() const { return members_; }
 	
 private:
-	void load(struct group* entry);
+	PONA_INTERN void load(struct group* entry);
 	bool exists_;
 	gid_t id_;
 	String name_;

@@ -13,7 +13,7 @@
 namespace pona
 {
 
-class FloatLiteral: public SyntaxDefinition<String::Media>
+class PONA_API FloatLiteral: public SyntaxDefinition<String::Media>
 {
 public:
 	FloatLiteral();

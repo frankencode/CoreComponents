@@ -18,7 +18,7 @@ PONA_EXCEPTION(StreamSemanticException, StreamException);
 PONA_EXCEPTION(StreamIoException, StreamException);
 PONA_EXCEPTION(StreamEncodingException, StreamIoException);
 
-class Stream: public Instance
+class PONA_API Stream: public Instance
 {
 public:
 	virtual ~Stream() {}
