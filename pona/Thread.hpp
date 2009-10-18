@@ -20,7 +20,7 @@ namespace pona
 
 class ThreadFactory;
 
-class Thread: public Cloneable, public Action
+class PONA_API Thread: public Cloneable, public Action
 {
 public:
 	enum DetachState {

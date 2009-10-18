@@ -12,7 +12,7 @@ namespace pona
 {
 
 template<class T>
-class Owner
+class PONA_API Owner
 {
 public:
 	Owner(): instance_(0) {}

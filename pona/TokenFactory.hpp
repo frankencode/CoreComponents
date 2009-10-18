@@ -13,7 +13,7 @@
 namespace pona
 {
 
-class TokenFactory: public Instance
+class PONA_API TokenFactory: public Instance
 {
 public:
 	TokenFactory()

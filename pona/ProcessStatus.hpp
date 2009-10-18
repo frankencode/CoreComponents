@@ -8,7 +8,7 @@
 namespace pona
 {
 
-class ProcessStatus: public Instance
+class PONA_API ProcessStatus: public Instance
 {
 public:
 	ProcessStatus(pid_t processId);

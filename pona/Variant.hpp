@@ -33,7 +33,7 @@ PONA_EXCEPTION(VariantException, Exception);
   *     ... do smth ...
   *   }
   */
-class Variant: public Instance
+class PONA_API Variant: public Instance
 {
 public:
 	enum Type { UndefType = 0, BoolType = 1, IntType = 2, FloatType = 4, StringType = 8, RefType = 16 };

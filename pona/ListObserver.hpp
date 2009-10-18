@@ -13,7 +13,7 @@
 namespace pona
 {
 
-class ListObserver: public virtual Instance
+class PONA_API ListObserver: public virtual Instance
 {
 public:
 	virtual void beforePush(int i, int n) {}

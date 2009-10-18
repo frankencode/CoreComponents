@@ -16,7 +16,7 @@ namespace pona
 
 class Condition;
 
-class Mutex: public Instance
+class PONA_API Mutex: public Instance
 {
 public:
 	Mutex();

@@ -13,7 +13,7 @@
 namespace pona
 {
 
-class ThreadFactory: public Instance
+class PONA_API ThreadFactory: public Instance
 {
 public:
 	ThreadFactory(Ref<Thread> prototype = 0);

@@ -14,7 +14,7 @@
 namespace pona
 {
 
-class FiberInitializer
+class PONA_API FiberInitializer
 {
 public:
 	FiberInitializer();
@@ -25,7 +25,7 @@ private:
 
 namespace { FiberInitializer fiberInitializer_; }
 
-class Fiber: public Context
+class PONA_API Fiber: public Context
 {
 public:
 	Fiber(int stackSize = -1, int guardSize = -1, Fiber* next = 0);
@@ -39,7 +39,7 @@ protected:
 	virtual void run() = 0;
 	
 private:
-	static void bootstrap();
+	PONA_INTERN static void bootstrap();
 	Context saved_;
 };
 

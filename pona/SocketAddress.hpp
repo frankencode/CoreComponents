@@ -27,7 +27,7 @@ class SocketAddress;
 
 typedef List< Ref<SocketAddress, Owner> > SocketAddressList;
 
-class SocketAddress: public Instance
+class PONA_API SocketAddress: public Instance
 {
 	PONA_SHAREABLE
 	

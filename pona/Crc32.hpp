@@ -13,7 +13,7 @@
 namespace pona
 {
 
-class Crc32
+class PONA_API Crc32
 {
 public:
 	Crc32(uint32_t seed = ~0);

@@ -16,7 +16,7 @@
 namespace pona
 {
 
-class ExitEvent: public Event
+class PONA_API ExitEvent: public Event
 {
 public:
 	static Ref<ExitEvent> instance();

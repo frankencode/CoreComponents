@@ -16,7 +16,7 @@
 namespace pona
 {
 
-class Event: public Action
+class PONA_API Event: public Action
 {
 	PONA_SHARED
 	

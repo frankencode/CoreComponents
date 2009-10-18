@@ -19,7 +19,7 @@
 namespace pona
 {
 
-class SignalInitializer {
+class PONA_API SignalInitializer {
 public:
 	SignalInitializer();
 private:
@@ -28,14 +28,14 @@ private:
 
 namespace { SignalInitializer signalInitializer_; }
 
-class SignalListener: public Thread {
+class PONA_API SignalListener: public Thread {
 public:
 	SignalListener();
 	void run();
 	Mutex done_;
 };
 
-class SignalManager: public Instance
+class PONA_API SignalManager: public Instance
 {
 	PONA_SHARED
 	
@@ -50,11 +50,11 @@ private:
 	friend class SignalInitializer;
 	friend class SignalListener;
 	
-	SignalManager();
-	~SignalManager();
+	PONA_INTERN SignalManager();
+	PONA_INTERN ~SignalManager();
 	
-	void startListener();
-	void relay(int signal);
+	PONA_INTERN void startListener();
+	PONA_INTERN void relay(int signal);
 	
 	Ref<SignalListener, Owner> signalListener_;
 	int pid_;
@@ -63,7 +63,7 @@ private:
 	Ref<SignalEvents, Owner> signalEvents_;
 };
 
-Ref<Event> signalEvent(int signal);
+PONA_API Ref<Event> signalEvent(int signal);
 
 } // namespace pona
 

@@ -18,7 +18,7 @@
 namespace pona
 {
 
-class StreamSocket: public SystemStream
+class PONA_API StreamSocket: public SystemStream
 {
 	PONA_SHARED
 	

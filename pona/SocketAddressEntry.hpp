@@ -10,7 +10,7 @@ namespace pona
 
 class NetworkInterface;
 
-class SocketAddressEntry: public SocketAddress
+class PONA_API SocketAddressEntry: public SocketAddress
 {
 public:
 	SocketAddressEntry(struct sockaddr_in* addr);
@@ -25,7 +25,7 @@ public:
 private:
 	friend class NetworkInterface;
 	
-	SocketAddressEntry();
+	PONA_INTERN SocketAddressEntry();
 	
 	Ref<SocketAddress, Owner> localAddress_;
 	Ref<SocketAddress, Owner> broadcastAddress_;

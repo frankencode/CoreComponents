@@ -13,7 +13,7 @@
 namespace pona
 {
 
-class Tree: public Instance
+class PONA_API Tree: public Instance
 {
 public:
 	typedef Tree Node;

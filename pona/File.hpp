@@ -19,7 +19,7 @@
 namespace pona
 {
 
-class File: public SystemStream
+class PONA_API File: public SystemStream
 {
 public:
 	enum Type {

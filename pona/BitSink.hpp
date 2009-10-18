@@ -15,7 +15,7 @@
 namespace pona
 {
 
-class BitSink: public Instance
+class PONA_API BitSink: public Instance
 {
 public:
 	BitSink(Ref<Stream> stream, int bufCapacity = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);

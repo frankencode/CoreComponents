@@ -13,7 +13,7 @@
 namespace pona
 {
 
-class Utf8Sink: public ByteSink
+class PONA_API Utf8Sink: public ByteSink
 {
 public:
 	Utf8Sink();

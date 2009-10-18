@@ -23,7 +23,7 @@ namespace pona
 {
 
 template<class T>
-class Heap: public Instance
+class PONA_API Heap: public Instance
 {
 public:
 	enum SortOrder { Ascending = 0, Descending = 1 };

@@ -6,7 +6,7 @@
 namespace pona
 {
 
-class Guard: public Mutex
+class PONA_API Guard: public Mutex
 {
 public:
 	Guard() { acquire(); }

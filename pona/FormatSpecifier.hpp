@@ -13,7 +13,7 @@
 namespace pona
 {
 
-class FormatSpecifier: public SyntaxDefinition<String::Media>
+class PONA_API FormatSpecifier: public SyntaxDefinition<String::Media>
 {
 public:
 	FormatSpecifier();
