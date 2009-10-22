@@ -88,6 +88,7 @@ void ThreadFactory::start(Ref<Thread> thread)
 	int ret = pthread_create(&thread->tid_, &attr_, &bootstrap, static_cast<void*>(thread));
 	if (ret != 0)
 		PONA_PTHREAD_EXCEPTION("pthread_create", ret);
+	thread->started_ = true;
 	thread->keepAlive_ = (thread->refCount() > 0);
 	if (thread->keepAlive_)
 		thread->incRefCount(); // prevent self destruction while running
@@ -96,6 +97,7 @@ void ThreadFactory::start(Ref<Thread> thread)
 void* ThreadFactory::bootstrap(void* self)
 {
 	Thread* thread = static_cast<Thread*>(self);
+	thread->started_ = true;
 	thread->init();
 	thread->run();
 	thread->done();

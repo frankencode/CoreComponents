@@ -6,55 +6,88 @@
  * See ../LICENSE for the license.
  */
 
+#include <assert.h>
 #include "Semaphore.hpp"
 
 namespace pona
 {
 
-Semaphore::Semaphore(int avail)
-	: avail_(avail)
-{}
+Semaphore::Semaphore(int value)
+	: supply_(value),
+	  demand_(0)
+{
+	assert(value >= 0);
+}
 
 void Semaphore::acquire(int amount)
 {
-	mutex_.acquire();
-	while (avail_ < amount)
-		notEmpty_.wait(&mutex_);
-	avail_ -= amount;
-	mutex_.release();
+	Mutex::acquire();
+	demand_ += amount;
+	while (supply_ < amount)
+		notEmpty_.wait(this);
+	demand_ -= amount;
+	supply_ -= amount;
+	Mutex::release();
 }
 
 void Semaphore::release(int amount)
 {
-	mutex_.acquire();
-	avail_ += amount;
-	notEmpty_.signal();
-	mutex_.release();
+	if (amount <= 0) return;
+	Mutex::acquire();
+	supply_ += amount;
+	notEmpty_.broadcast();
+	Mutex::release();
+}
+
+int Semaphore::acquireAll(int minAmount)
+{
+	Mutex::acquire();
+	while (supply_ < minAmount)
+		notEmpty_.wait(this);
+	int amount = supply_;
+	supply_ = 0;
+	Mutex::release();
+	return amount;
+}
+
+int Semaphore::releaseOnDemand(int maxAmount)
+{
+	Mutex::acquire();
+	int amount = demand_;
+	if (amount > maxAmount) amount = maxAmount;
+	if (amount > 0) {
+		supply_ += amount;
+		notEmpty_.broadcast();
+	}
+	Mutex::release();
+	return amount;
 }
 
 bool Semaphore::tryAcquire(int amount)
 {
 	bool success = false;
-	mutex_.acquire();
-	if (avail_ >= amount) {
-		avail_ -= amount;
+	Mutex::acquire();
+	if (supply_ >= amount) {
+		supply_ -= amount;
 		success = true;
 	}
-	mutex_.release();
+	Mutex::release();
 	return success;
 }
 
 bool Semaphore::acquireBefore(Time timeout, int amount)
 {
 	bool success = true;
-	mutex_.acquire();
-	while (avail_ < amount) {
-		success = notEmpty_.waitUntil(&mutex_, timeout);
+	Mutex::acquire();
+	demand_ += amount;
+	while (supply_ < amount) {
+		success = notEmpty_.waitUntil(this, timeout);
 		if (!success) break;
 	}
+	demand_ -= amount;
 	if (success)
-		avail_ -= amount;
-	mutex_.release();
+		supply_ -= amount;
+	Mutex::release();
 	return success;
 }
 

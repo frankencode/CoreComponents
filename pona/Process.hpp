@@ -62,7 +62,9 @@ public:
 	
 	pid_t processId() const;
 	
-	void kill(int signal = SIGTERM);
+	void kill(int signal = SIGTERM, bool* permissionDenied = 0);
+	bool isRunning() const;
+	
 	int wait();
 	
 	// -- querying the current process status
@@ -88,8 +90,8 @@ public:
 	static pid_t currentProcessId();
 	static pid_t parentProcessId();
 	
-	static void signal(pid_t processId, int signal);
-	static void broadcast(pid_t processGroupId, int signal);
+	static void kill(pid_t processId, int signal, bool* permissionDenied = 0);
+	static void killGroup(pid_t processGroupId, int signal, bool* permissionDenied = 0);
 	static void raise(int signal);
 	
 	static void sleep(Time duration);

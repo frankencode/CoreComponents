@@ -19,7 +19,6 @@
 #include <unistd.h> // getpid
 #include <stdlib.h> // malloc, free
 #include <string.h> // memset
-#include "stdio" // DEBUG
 #include "Guard.hpp"
 #ifdef __linux
 #include "File.hpp"

@@ -7,6 +7,7 @@
  */
 
 #include <string.h> // memset
+#include <sched.h> // sched_yield
 #include "Exception.hpp"
 #include "Time.hpp"
 #include "Mutex.hpp"
@@ -19,8 +20,11 @@ namespace pona
 {
 
 Thread::Thread()
-	: keepAlive_(false)
+	: keepAlive_(false),
+	  started_(false)
 {}
+
+bool Thread::started() const { return started_; }
 
 void Thread::start(int detachState)
 {
@@ -43,6 +47,15 @@ void Thread::kill(int signal)
 		PONA_PTHREAD_EXCEPTION("pthread_kill", ret);
 }
 
+bool Thread::isRunning() const
+{
+	if (!started_) return false;
+	int ret = pthread_kill(tid_, 0);
+	if ((ret != 0) && (ret != ESRCH))
+		PONA_PTHREAD_EXCEPTION("pthread_kill", ret);
+	return (ret == 0);
+}
+
 void Thread::sleep(Time duration)
 {
 	Mutex mutex;
@@ -50,6 +63,12 @@ void Thread::sleep(Time duration)
 	mutex.acquire();
 	condition.waitUntil(&mutex, now() + duration);
 	mutex.release();
+}
+
+void Thread::yield()
+{
+	if (sched_yield() == -1)
+		PONA_SYSTEM_EXCEPTION;
 }
 
 Ref<Instance, Owner> Thread::clone() { return 0; }
