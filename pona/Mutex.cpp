@@ -8,9 +8,26 @@ namespace pona
 
 Mutex::Mutex()
 {
-	int ret = pthread_mutex_init(&mutex_, 0);
+	pthread_mutexattr_t* pattr = 0;
+	int ret;
+	#ifndef NDEBUG
+	pthread_mutexattr_t attr;
+	pattr = &attr;
+	ret = pthread_mutexattr_init(&attr);
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_mutexattr_init", ret);
+	ret = pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_mutexattr_settype", ret);
+	#endif
+	ret = pthread_mutex_init(&mutex_, pattr);
 	if (ret != 0)
 		PONA_PTHREAD_EXCEPTION("pthread_mutex_init", ret);
+	#ifndef NDEBUG
+	ret = pthread_mutexattr_destroy(&attr);
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_mutexattr_destroy", ret);
+	#endif
 }
 
 Mutex::~Mutex()

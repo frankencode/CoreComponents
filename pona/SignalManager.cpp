@@ -8,7 +8,6 @@
 
 #include <unistd.h> // getpid
 #include <string.h> // memset
-#include "stdio" // DEBUG
 #include "Condition.hpp"
 #include "SignalManager.hpp"
 

@@ -51,8 +51,8 @@ int main()
 	Ref<Thread, Owner> alarm = new Alarm();
 	alarm->start(Thread::Detached);
 	while (true) {
-		Thread::sleep(1);
 		alarm->kill(SIGALRM);
+		Thread::sleep(1);
 	}
 	
 	return 0;

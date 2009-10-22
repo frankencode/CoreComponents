@@ -15,21 +15,23 @@
 namespace pona
 {
 
-class PONA_API Semaphore: public Instance
+class PONA_API Semaphore: public Mutex
 {
 public:
-	Semaphore(int avail = 0);
+	Semaphore(int value = 0);
 	
 	void acquire(int amount = 1);
 	void release(int amount = 1);
 	
+	int acquireAll(int minAmount = 1);
+	int releaseOnDemand(int maxAmount = intMax);
+	
 	bool tryAcquire(int amount = 1);
 	bool acquireBefore(Time timeout, int amount = 1);
-
+	
 private:
-	Mutex mutex_;
 	Condition notEmpty_;
-	int avail_;
+	int supply_, demand_;
 };
 
 } // namespace pona

@@ -15,7 +15,6 @@
 #include <time.h> // nanosleep
 #include <errno.h> // errno
 #ifdef __linux
-#include "stdio" // DEBUG
 #include "File.hpp" // to read /proc
 #include "Format.hpp"
 #endif
@@ -63,12 +62,20 @@ Ref<LineSource> Process::error() const { return error_; }
 
 pid_t Process::processId() const { return processId_; }
 
-void Process::kill(int signal)
+void Process::kill(int signal, bool* permissionDenied)
 {
 	if (type() == GroupMember)
-		Process::signal(processId_, signal);
+		Process::kill(processId_, signal, permissionDenied);
 	else
-		Process::broadcast(processId_, signal);
+		Process::killGroup(processId_, signal, permissionDenied);
+}
+
+bool Process::isRunning() const
+{
+	int ret = ::kill(processId_, 0);
+	if ((ret != 0) && (errno != ESRCH))
+		PONA_SYSTEM_EXCEPTION;
+	return (ret == 0);
 }
 
 int Process::wait()
@@ -187,16 +194,23 @@ Ref<EnvMap, Owner> Process::envMap()
 pid_t Process::currentProcessId() { return getpid(); }
 pid_t Process::parentProcessId() { return getppid(); }
 
-void Process::signal(pid_t processId, int signal)
+void Process::kill(pid_t processId, int signal, bool* permissionDenied)
 {
-	if (::kill(processId, signal) == -1)
-		PONA_SYSTEM_EXCEPTION;
+	if (::kill(processId, signal) == -1) {
+		if ((errno == EPERM) && (permissionDenied))
+			*permissionDenied = true;
+		else
+			PONA_SYSTEM_EXCEPTION;
+	}
+	else {
+		if (permissionDenied)
+			*permissionDenied = false;
+	}
 }
 
-void Process::broadcast(pid_t processGroupId, int signal)
+void Process::killGroup(pid_t processGroupId, int signal, bool* permissionDenied)
 {
-	if (::kill(-processGroupId, signal) == -1)
-		PONA_SYSTEM_EXCEPTION;
+	Process::kill(-processGroupId, signal, permissionDenied);
 }
 
 void Process::raise(int signal)

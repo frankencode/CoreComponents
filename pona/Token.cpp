@@ -4,14 +4,15 @@
 namespace pona
 {
 
-void Token::glow(TokenScreen* screen)
+bool Token::glow(TokenScreen* screen)
 {
 	int i = i0_;
 	
 	Ref<Token> child = firstChild();
 	while (child) {
 		if (i < child->i0_) {
-			screen->project(this, i, child->i0_);
+			if (!screen->project(this, i, child->i0_))
+				return false;
 			i = child->i0_;
 		}
 		child->glow(screen);
@@ -20,7 +21,10 @@ void Token::glow(TokenScreen* screen)
 	}
 	
 	if (i < i1_)
-		screen->project(this, i, i1_);
+		if (!screen->project(this, i, i1_))
+			return false;
+	
+	return true;
 }
 
 } // namespace pona
