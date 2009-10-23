@@ -10,7 +10,6 @@
 #include <sched.h> // sched_yield
 #include "Exception.hpp"
 #include "Time.hpp"
-#include "Mutex.hpp"
 #include "Condition.hpp"
 #include "ThreadFactory.hpp"
 #include "ThreadLocalOwner.hpp"
@@ -23,8 +22,6 @@ Thread::Thread()
 	: keepAlive_(false),
 	  started_(false)
 {}
-
-bool Thread::started() const { return started_; }
 
 void Thread::start(int detachState)
 {
@@ -47,6 +44,16 @@ void Thread::kill(int signal)
 		PONA_PTHREAD_EXCEPTION("pthread_kill", ret);
 }
 
+/** Return true if the thread has been started else false.
+  * This method is only save to be invoked from this thread
+  * itself or the thread that has started this thread.
+  */
+bool Thread::started() const { return started_; }
+
+/** Return true if the thread is running.
+  * This method is only save to be invoked from this thread
+  * itself or the thread that has started this thread.
+  */
 bool Thread::isRunning() const
 {
 	if (!started_) return false;
@@ -58,10 +65,15 @@ bool Thread::isRunning() const
 
 void Thread::sleep(Time duration)
 {
+	sleepUntil(now() + duration);
+}
+
+void Thread::sleepUntil(Time timeout)
+{
 	Mutex mutex;
 	Condition condition;
 	mutex.acquire();
-	condition.waitUntil(&mutex, now() + duration);
+	condition.waitUntil(&mutex, timeout);
 	mutex.release();
 }
 

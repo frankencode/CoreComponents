@@ -28,14 +28,15 @@ public:
 		Detached = PTHREAD_CREATE_DETACHED
 	};
 	
-	bool started() const;
 	void start(int detachState = Joinable);
 	void wait();
-	
 	void kill(int signal = SIGTERM);
+	
+	bool started() const;
 	bool isRunning() const;
 	
 	static void sleep(Time duration);
+	static void sleepUntil(Time timeout);
 	static void yield();
 	
 protected:
