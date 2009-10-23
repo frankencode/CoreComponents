@@ -10,7 +10,11 @@
 #define PONA_DEFAULTS_HPP
 
 #ifndef PONA_DEFAULT_REF_POLICY
-#define PONA_DEFAULT_REF_POLICY Pointer // SetNull
+#ifdef NDEBUG
+#define PONA_DEFAULT_REF_POLICY Pointer
+#else
+#define PONA_DEFAULT_REF_POLICY SetNull
+#endif
 #endif
 
 #ifndef PONA_DEFAULT_BUF_CAPA

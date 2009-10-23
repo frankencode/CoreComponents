@@ -9,7 +9,6 @@
 #define PONA_EVENT_HPP
 
 #include "atoms"
-#include "Mutex.hpp"
 #include "List.hpp"
 #include "Action.hpp"
 
@@ -18,8 +17,6 @@ namespace pona
 
 class PONA_API Event: public Action
 {
-	PONA_SHARED
-	
 public:
 	Event();
 	
@@ -30,6 +27,7 @@ public:
 	virtual void run();
 	
 private:
+	SpinMutex mutex_;
 	typedef List< Ref<Action, Owner> > Handlers;
 	Ref<Handlers, Owner> handlers_;
 };

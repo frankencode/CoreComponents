@@ -37,17 +37,6 @@ Mutex::~Mutex()
 		PONA_PTHREAD_EXCEPTION("pthread_mutex_destroy", ret);
 }
 
-void Mutex::acquire()
-{
-	int ret = -1;
-	while (true) {
-		ret = pthread_mutex_lock(&mutex_);
-		if (ret != EINTR) break;
-	}
-	if (ret != 0)
-		PONA_PTHREAD_EXCEPTION("pthread_mutex_lock", ret);
-}
-
 bool Mutex::tryAcquire()
 {
 	int ret = -1;
@@ -58,6 +47,17 @@ bool Mutex::tryAcquire()
 	if ((ret != 0) && (ret != EBUSY))
 		PONA_PTHREAD_EXCEPTION("pthread_mutex_trylock", ret);
 	return ret != EBUSY;
+}
+
+void Mutex::acquire()
+{
+	int ret = -1;
+	while (true) {
+		ret = pthread_mutex_lock(&mutex_);
+		if (ret != EINTR) break;
+	}
+	if (ret != 0)
+		PONA_PTHREAD_EXCEPTION("pthread_mutex_lock", ret);
 }
 
 void Mutex::release()

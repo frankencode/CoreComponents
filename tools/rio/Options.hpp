@@ -19,8 +19,6 @@ using namespace pona;
 
 class Options: public pona::Options
 {
-	PONA_SHARED
-	
 public:
 	static Ref<Options> instance();
 	
