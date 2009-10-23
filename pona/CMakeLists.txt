@@ -5,6 +5,7 @@ SET(PONA_HEADER
 	atoms
 	types.hpp
 	Exception.hpp
+	SpinMutex.hpp
 	Instance.hpp
 	Alien.hpp
 	Pointer.hpp
@@ -112,6 +113,7 @@ SET(PONA_HEADER
 SET(PONA_SOURCE
 	# atoms
 	Exception.cpp
+	SpinMutex.cpp
 	
 	# container
 	Tree.cpp

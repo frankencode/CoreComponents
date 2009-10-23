@@ -10,6 +10,7 @@
 
 #include "visibility.hpp"
 #include "Exception.hpp"
+#include "SpinMutex.hpp"
 
 namespace pona
 {
@@ -51,56 +52,54 @@ public:
 		}
 	}
 	
-	virtual void beginCritical() {}
-	virtual void endCritical() {}
-	
 	inline int refCount() const { return refCount_; }
 	
 	inline void incRefCount()
 	{
-		beginCritical();
+		spinMutex_.acquire();
 		refCount_ += (refCount_ >= 0);
-		endCritical();
+		spinMutex_.release();
 	}
 	
 	inline void decRefCount()
 	{
-		beginCritical();
+		spinMutex_.acquire();
 		refCount_ -= (refCount_ >= 0);
 		if (refCount_ == 0) {
-			endCritical();
+			spinMutex_.release();
 			delete this;
 		}
 		else
-			endCritical();
+			spinMutex_.release();
 	}
 	
 	inline void liberate() { refCount_ = -1; }
 
 	inline void addBackRef(BackRef* ref)
 	{
-		beginCritical();
+		spinMutex_.acquire();
 		ref->succ_ = backRefList_;
 		ref->pred_ = 0;
 		if (backRefList_)
 			backRefList_->pred_ = ref;
 		backRefList_ = ref;
-		endCritical();
+		spinMutex_.release();
 	}
 	
 	inline void delBackRef(BackRef* ref)
 	{
-		beginCritical();
+		spinMutex_.acquire();
 		if (ref->pred_)
 			ref->pred_->succ_ = ref->succ_;
 		if (ref->succ_)
 			ref->succ_->pred_ = ref->pred_;
 		if (ref == backRefList_)
 			backRefList_ = backRefList_->succ_;
-		endCritical();
+		spinMutex_.release();
 	}
 	
 private:
+	SpinMutex spinMutex_;
 	int refCount_;
 	BackRef* backRefList_;
 };

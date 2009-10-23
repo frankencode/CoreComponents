@@ -67,7 +67,7 @@ public:
 		}
 	}*/
 	
-	bool glow(TokenScreen* screen);
+	bool glow(Ref<TokenScreen> screen);
 	
 private:
 	const char* ruleName_;

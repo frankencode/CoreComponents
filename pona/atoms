@@ -8,10 +8,11 @@
 #ifndef PONA_ATOM
 #define PONA_ATOM
 
+#include "types.hpp"
+#include "Exception.hpp"
+#include "SpinMutex.hpp"
 #include "Instance.hpp"
 #include "Alien.hpp"
 #include "Ref.hpp"
-#include "Exception.hpp"
-#include "types.hpp"
 
 #endif // PONA_ATOM

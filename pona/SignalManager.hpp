@@ -10,7 +10,6 @@
 
 #include <signal.h>
 #include "atoms"
-#include "Mutex.hpp"
 #include "Thread.hpp"
 #include "Process.hpp"
 #include "Map.hpp"
@@ -37,8 +36,6 @@ public:
 
 class PONA_API SignalManager: public Instance
 {
-	PONA_SHARED
-	
 public:
 	static Ref<SignalManager> instance();
 	
@@ -61,6 +58,8 @@ private:
 	
 	typedef Map<int, Ref<Event, Owner> > SignalEvents;
 	Ref<SignalEvents, Owner> signalEvents_;
+	
+	SpinMutex mutex_;
 };
 
 PONA_API Ref<Event> signalEvent(int signal);

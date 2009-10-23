@@ -4,7 +4,7 @@
 namespace pona
 {
 
-bool Token::glow(TokenScreen* screen)
+bool Token::glow(Ref<TokenScreen> screen)
 {
 	int i = i0_;
 	

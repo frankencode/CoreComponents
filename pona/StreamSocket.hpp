@@ -11,7 +11,6 @@
 #include "atoms"
 #include "defaults.hpp"
 #include "Time.hpp"
-#include "Mutex.hpp"
 #include "SystemStream.hpp"
 #include "SocketAddress.hpp"
 
@@ -20,8 +19,6 @@ namespace pona
 
 class PONA_API StreamSocket: public SystemStream
 {
-	PONA_SHARED
-	
 public:
 	StreamSocket(Ref<SocketAddress> address, int fd = -1);
 	Ref<SocketAddress> address() const;

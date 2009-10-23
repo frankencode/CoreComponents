@@ -117,14 +117,14 @@ Ref<Event> SignalManager::signalEvent(int signal)
 {
 	Ref<Event> event = signalEvents_->get(signal);
 	if (!event) {
-		beginCritical();
+		mutex_.acquire();
 		event = signalEvents_->get(signal);
 		if (!event) {
 			Ref<Event, Owner> newEvent = new Event;
 			signalEvents_->set(signal, newEvent);
 			event = newEvent;
 		}
-		endCritical();
+		mutex_.release();
 	}
 	return event;
 }
@@ -137,13 +137,13 @@ void SignalManager::startListener()
 void SignalManager::relay(int signal)
 {
 	bool relayed = false;
-	beginCritical();
+	mutex_.acquire();
 	Ref<Event> event = signalEvents_->get(signal);
 	if (event) {
 		event->run();
 		relayed = true;
 	}
-	endCritical();
+	mutex_.release();
 	if (!relayed)
 		defaultAction(signal);
 }

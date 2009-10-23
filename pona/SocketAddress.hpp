@@ -16,7 +16,6 @@
 #include "atoms"
 #include "String.hpp"
 #include "List.hpp"
-#include "Mutex.hpp"
 
 namespace pona
 {
@@ -29,8 +28,6 @@ typedef List< Ref<SocketAddress, Owner> > SocketAddressList;
 
 class PONA_API SocketAddress: public Instance
 {
-	PONA_SHAREABLE
-	
 public:
 	SocketAddress();
 	
