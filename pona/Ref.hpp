@@ -18,6 +18,8 @@
 namespace pona
 {
 
+PONA_EXCEPTION(RefException, Exception);
+
 /** \brief auto-casted object reference
   *
   * provides:
@@ -69,19 +71,19 @@ public:
 	
 	// ordering
 	
-	inline bool operator<(const Ref& b) const {
-		T* ai = this->get();
-		T* bi = b.get();
-		if ((!ai) || (!bi))
-			*(char*)0 = 0; // access to undefined object requested
-		return *ai < *bi;
-	}
+	inline bool operator<(const Ref& b) const { return *(this->saveGet()) < *(b.saveGet()); }
 	
 	// access
 	
-	inline T* operator->() const {
+	inline T* operator->() const { return this->saveGet(); }
+	
+private:
+	inline T* saveGet() const {
 		T* instance = this->get();
-		if (!instance) *(char*)0 = 0;
+		#ifndef NDEBUG
+		if (!instance)
+			PONA_THROW(RefException, "Null reference");
+		#endif
 		return instance;
 	}
 };
