@@ -26,7 +26,7 @@ class LineForwarder: public Thread
 {
 public:
 	LineForwarder(Ref<SystemStream> source)
-		: source_(source),
+		: source_(source.get()),
 		  lineSource_(new LineSource(source)),
 		  done_(false),
 		  finished_(false),

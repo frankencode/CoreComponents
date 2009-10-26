@@ -28,6 +28,7 @@ private:
 	RULE exponent_;
 	RULE nan_;
 	RULE infinite_;
+	RULE float_;
 };
 
 } // namespace pona

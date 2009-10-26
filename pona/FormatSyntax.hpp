@@ -36,7 +36,7 @@ private:
 	Ref<FloatLiteral, Owner> floatingPointLiteral_;
 };
 
-inline Ref<FormatSyntax> syntaxFactory() { return FormatSyntax::instance(); }
+inline Ref<FormatSyntax> formatSyntax() { return FormatSyntax::instance(); }
 
 } // namespace pona
 

@@ -7,14 +7,27 @@ namespace pona
 
 int main()
 {
-	Mutex m;
-	Time t = now();
-	for (int i = 0; i < 1000000; ++i) {
-		m.acquire();
-		m.release();
+	const int n = 100000;
+	{
+		Mutex m;
+		Time t = now();
+		for (int i = 0; i < n; ++i) {
+			m.acquire();
+			m.release();
+		}
+		t = now() - t;
+		print("Took %% ms\n", t.ms());
 	}
-	t = now() - t;
-	print("Took %% ms\n", t.ms());
+	{
+		SpinMutex m;
+		Time t = now();
+		for (int i = 0; i < n; ++i) {
+			m.acquire();
+			m.release();
+		}
+		t = now() - t;
+		print("Took %% ms\n", t.ms());
+	}
 	return 0;
 }
 
@@ -24,4 +37,3 @@ int main()
 {
 	return pona::main();
 }
-

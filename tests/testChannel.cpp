@@ -14,7 +14,7 @@ class Consumer: public Thread
 public:
 	Consumer(int id, Ref<MyChannel> channel, int amount)
 		: id_(id),
-		  channel_(channel),
+		  channel_(channel.get()),
 		  amount_(amount)
 	{}
 	
@@ -38,7 +38,7 @@ class Producer: public Thread
 public:
 	Producer(int id, Ref<MyChannel> channel, int amount)
 		: id_(id),
-		  channel_(channel),
+		  channel_(channel.get()),
 		  amount_(amount)
 	{}
 	

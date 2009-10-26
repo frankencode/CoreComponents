@@ -8,6 +8,7 @@
 #ifndef PONA_REF_HPP
 #define PONA_REF_HPP
 
+#include <assert.h>
 #include "visibility.hpp"
 #include "defaults.hpp"
 #include "Instance.hpp"
@@ -42,6 +43,9 @@ public:
 	
 	Ref(T* b) { set(b); }
 	Ref(const Ref& b) { set(b.get()); }
+	template<template<class> class GetAndSetPolicy2>
+	explicit Ref(const Ref<T, GetAndSetPolicy2>& b) { set(b.get()); }
+	
 	inline const Ref& operator=(T* b) { set(b); return *this; }
 	inline const Ref& operator=(const Ref& b) { set(b.get()); return *this; }
 	
@@ -67,7 +71,7 @@ public:
 	inline operator Ref<T2, GetAndSetPolicy>() const { return Ref<T2, GetAndSetPolicy>(dynamic_cast<T2*>(this->get())); }
 	
 	template<class T2, template<class> class GetAndSetPolicy2>
-	inline operator Ref<T2, GetAndSetPolicy2>() const { return Ref<T2, GetAndSetPolicy2>(dynamic_cast<T2*>(this->get()));  }
+	inline operator Ref<T2, GetAndSetPolicy2>() const { return Ref<T2, GetAndSetPolicy2>(dynamic_cast<T2*>(this->get())); }
 	
 	// ordering
 	
@@ -84,6 +88,7 @@ private:
 		if (!instance)
 			PONA_THROW(RefException, "Null reference");
 		#endif
+		assert(instance);
 		return instance;
 	}
 };

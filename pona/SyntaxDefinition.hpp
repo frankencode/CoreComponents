@@ -14,7 +14,7 @@ namespace pona
 {
 
 template<class Media>
-class SyntaxDefinition: public Syntax<Media>::Definition
+class PONA_API SyntaxDefinition: public Syntax<Media>::Definition
 {
 public:
 	SyntaxDefinition(int languageId = -1)

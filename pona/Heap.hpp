@@ -10,15 +10,6 @@
 
 #include "atoms"
 
-#ifdef PONA_WINDOWS
-#ifdef min
-#undef min
-#endif
-#ifdef max
-#undef max
-#endif
-#endif
-
 namespace pona
 {
 

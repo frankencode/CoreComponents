@@ -38,34 +38,38 @@ FormatSpecifier::FormatSpecifier()
 		)
 	);
 	
-	DEFINE_SELF(
-		GLUE(
-			CHAR('%'),
-			REPEAT(0, 5,
-				GLUE(
-					CHOICE(
-						GLUE(
-							REF("integerWidth"),
-							CHAR('.'),
-							REPEAT(0, 1,
+	format_ =
+		DEFINE("format",
+			GLUE(
+				CHAR('%'),
+				REPEAT(0, 5,
+					GLUE(
+						CHOICE(
+							GLUE(
+								REF("integerWidth"),
+								CHAR('.'),
+								REPEAT(0, 1,
+									REF("fractionWidth")
+								)
+							),
+							GLUE(
+								CHAR('.'),
 								REF("fractionWidth")
-							)
+							),
+							REF("width"),
+							REF("base"),
+							REF("exp"),
+							REF("blank")
 						),
-						GLUE(
-							CHAR('.'),
-							REF("fractionWidth")
-						),
-						REF("width"),
-						REF("base"),
-						REF("exp"),
-						REF("blank")
-					),
-					REPEAT(0, 1, CHAR(':'))
-				)
-			),
-			CHAR('%')
-		)
-	);
+						REPEAT(0, 1, CHAR(':'))
+					)
+				),
+				CHAR('%')
+			)
+		);
+	
+	TOPLEVEL("format");
+	LINK();
 }
 
 bool FormatSpecifier::find(String text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, Char* blank)

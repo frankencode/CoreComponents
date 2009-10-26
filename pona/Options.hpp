@@ -43,6 +43,7 @@ private:
 	RULE shortNameRule_;
 	RULE valueRule_;
 	RULE optionRule_;
+	RULE options_;
 	
 	class Option: public Instance
 	{

@@ -52,17 +52,21 @@ IntegerLiteral::IntegerLiteral()
 			)
 		);
 	
-	DEFINE_SELF(
-		GLUE(
-			REPEAT(0, 1, REF("sign")),
-			CHOICE(
-				REF("binNumber"),
-				REF("octNumber"),
-				REF("hexNumber"),
-				REF("decNumber")
+	integer_ =
+		DEFINE("integer",
+			GLUE(
+				REPEAT(0, 1, REF("sign")),
+				CHOICE(
+					REF("binNumber"),
+					REF("octNumber"),
+					REF("hexNumber"),
+					REF("decNumber")
+				)
 			)
-		)
-	);
+		);
+	
+	TOPLEVEL("integer");
+	LINK();
 }
 
 bool IntegerLiteral::match(String text, int i0, int* i1, uint64_t* value, int* sign)

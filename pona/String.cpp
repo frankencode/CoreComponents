@@ -130,7 +130,7 @@ int toInt(String s, bool* ok)
 	uint64_t value = 0;
 	int sign = 0;
 	int i1 = 0;
-	if (syntaxFactory()->integerLiteral()->match(s, 0, &i1, &value, &sign)) {
+	if (formatSyntax()->integerLiteral()->match(s, 0, &i1, &value, &sign)) {
 		 *ok = (value <= uint64_t(intMax)) && (i1 == s->length());
 	}
 	else  {
@@ -155,7 +155,7 @@ int64_t toInt64(String s, bool* ok)
 	uint64_t value = 0;
 	int sign = 0;
 	int i1 = 0;
-	if (syntaxFactory()->integerLiteral()->match(s, 0, &i1, &value, &sign)) {
+	if (formatSyntax()->integerLiteral()->match(s, 0, &i1, &value, &sign)) {
 		if (ok)
 			*ok = ((value & (uint64_t(1) << 63)) != 0) && (i1 == s->length());
 	}
@@ -175,7 +175,7 @@ uint64_t toUInt64(String s, bool* ok)
 	uint64_t value = 0;
 	int sign = 0;
 	int i1 = 0;
-	if (syntaxFactory()->integerLiteral()->match(s, 0, &i1, &value, &sign)) {
+	if (formatSyntax()->integerLiteral()->match(s, 0, &i1, &value, &sign)) {
 		if (ok)
 			*ok = (sign == 1) && (i1 == s->length());
 	}
@@ -191,7 +191,7 @@ float64_t toFloat64(String s, bool* ok)
 	float64_t value = 0.;
 	int i1 = 0;
 	
-	if (syntaxFactory()->floatingPointLiteral()->match(s, 0, &i1, &value)) {
+	if (formatSyntax()->floatingPointLiteral()->match(s, 0, &i1, &value)) {
 		if (ok)
 			*ok = (i1 == s->length());
 	}

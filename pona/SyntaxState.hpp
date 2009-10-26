@@ -15,7 +15,7 @@ namespace pona
 {
 
 template<class Char>
-class SyntaxState: public Instance
+class PONA_API SyntaxState: public Instance
 {
 public:
 	SyntaxState()

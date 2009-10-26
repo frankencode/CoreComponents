@@ -19,12 +19,12 @@ LineForwarder::LineForwarder(
 	Ref<LogFile> recvLog,
 	Ref<Event> cancelEvent
 )
-	: source_(source),
-	  sink_(sink),
+	: source_(source.get()),
+	  sink_(sink.get()),
 	  lineSource_(new LineSource(source, options()->ioUnit_, sourceEol)),
 	  lineSink_(new LineSink(sink, options()->ioUnit_, sinkEol)),
-	  recvLog_(recvLog),
-	  cancelEvent_(cancelEvent),
+	  recvLog_(recvLog.get()),
+	  cancelEvent_(cancelEvent.get()),
 	  done_(false), failed_(false)
 {
 	class AbortAction: public Action {
