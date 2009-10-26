@@ -47,7 +47,7 @@ Format::Format(Ref<Media, Owner> media)
 
 void Format::init()
 {
-	Ref<FormatSpecifier> specifier = syntaxFactory()->formatSpecifier();
+	Ref<FormatSpecifier> specifier = formatSyntax()->formatSpecifier();
 	int i0Saved = 0, i0 = 0, i1 = 0;
 	int m = 0; // accumulated width of place holders
 	

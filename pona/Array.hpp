@@ -15,7 +15,7 @@ namespace pona
 {
 
 template<class T>
-class Array: public Sequence<T>
+class PONA_API Array: public Sequence<T>
 {
 public:
 	typedef T Element;

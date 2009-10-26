@@ -12,10 +12,10 @@ namespace rio
 {
 
 BinaryForwarder::BinaryForwarder(Ref<SystemStream> source, Ref<SystemStream> sink, Ref<LogFile> recvLog, Ref<Event> cancelEvent)
-	: source_(source),
-	  sink_(sink),
-	  recvLog_(recvLog),
-	  cancelEvent_(cancelEvent),
+	: source_(source.get()),
+	  sink_(sink.get()),
+	  recvLog_(recvLog.get()),
+	  cancelEvent_(cancelEvent.get()),
 	  done_(false), failed_(false),
 	  buf_(options()->ioUnit_),
 	  bytesTransferred_(0)

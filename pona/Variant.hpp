@@ -8,6 +8,7 @@
 #ifndef PONA_VARIANT_HPP
 #define PONA_VARIANT_HPP
 
+#include <stdio.h> // DEBUG
 #include "atoms"
 #include "String.hpp"
 
@@ -75,8 +76,8 @@ public:
 			equal = (float_ == b.float_);
 		}
 		else if ((type_ == StringType) && (b.type_ == StringType)) {
-			Ref<String::Media> ma = ref_;
-			Ref<String::Media> mb = b.ref_;
+			Ref<String::Media> ma(ref_);
+			Ref<String::Media> mb(b.ref_);
 			equal = (*ma == *mb);
 		}
 		else if ((type_ == RefType) && (b.type_ == RefType)) {

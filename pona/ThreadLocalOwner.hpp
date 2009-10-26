@@ -15,7 +15,7 @@ namespace pona
 {
 
 template<class T>
-class ThreadLocalOwner
+class PONA_API ThreadLocalOwner
 {
 public:
 	ThreadLocalOwner()

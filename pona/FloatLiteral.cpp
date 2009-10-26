@@ -22,37 +22,41 @@ FloatLiteral::FloatLiteral()
 	nan_ = DEFINE("nan", CHOICE(STRING("NaN"), STRING("nan")));
 	infinite_ = DEFINE("infinite", GLUE(REPEAT(0, 1, CHAR('-')), CHOICE(STRING("INFINITE"), STRING("inf"))));
 	
-	DEFINE_SELF(
-		CHOICE(
-			REF("nan"),
-			REF("infinite"),
-			GLUE(
-				REPEAT(0, 1, REF("sign")),
-				CHOICE(
-					GLUE(
-						REF("integerPart"),
-						REPEAT(0, 1,
-							GLUE(
-								CHAR('.'),
-								REPEAT(0, 1, REF("fractionPart"))
+	float_ =
+		DEFINE("float",
+			CHOICE(
+				REF("nan"),
+				REF("infinite"),
+				GLUE(
+					REPEAT(0, 1, REF("sign")),
+					CHOICE(
+						GLUE(
+							REF("integerPart"),
+							REPEAT(0, 1,
+								GLUE(
+									CHAR('.'),
+									REPEAT(0, 1, REF("fractionPart"))
+								)
 							)
+						),
+						GLUE(
+							CHAR('.'),
+							REF("fractionPart")
 						)
 					),
-					GLUE(
-						CHAR('.'),
-						REF("fractionPart")
-					)
-				),
-				REPEAT(0, 1,
-					GLUE(
-						RANGE("eE"),
-						REPEAT(0, 1, REF("exponentSign")),
-						REF("exponent")
+					REPEAT(0, 1,
+						GLUE(
+							RANGE("eE"),
+							REPEAT(0, 1, REF("exponentSign")),
+							REF("exponent")
+						)
 					)
 				)
 			)
-		)
-	);
+		);
+	
+	TOPLEVEL("float");
+	LINK();
 }
 
 bool FloatLiteral::match(String text, int i0, int* i1, float64_t* value)

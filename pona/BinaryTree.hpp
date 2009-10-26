@@ -22,7 +22,7 @@ namespace pona
 #endif
 
 template<class T>
-class BinaryTree: public Instance
+class PONA_API BinaryTree: public Instance
 {
 public:
 	class Node

@@ -1,7 +1,6 @@
 #ifndef PONA_SPINMUTEX_HPP
 #define PONA_SPINMUTEX_HPP
 
-#include <assert.h>
 #include "defaults.hpp"
 #include "visibility.hpp"
 
@@ -35,4 +34,3 @@ private:
 } // namespace pona
 
 #endif // PONA_SPINMUTEX_HPP
-

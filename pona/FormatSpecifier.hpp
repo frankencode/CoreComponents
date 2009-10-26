@@ -26,6 +26,7 @@ private:
 	RULE base_;
 	RULE exp_;
 	RULE blank_;
+	RULE format_;
 };
 
 } // namespace pona

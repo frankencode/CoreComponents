@@ -26,6 +26,7 @@ private:
 	RULE octNumber_;
 	RULE hexNumber_;
 	RULE decNumber_;
+	RULE integer_;
 };
 
 } // namespace pona

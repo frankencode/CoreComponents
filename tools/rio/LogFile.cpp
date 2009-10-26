@@ -13,9 +13,9 @@ namespace rio
 {
 
 LogFile::LogFile(Ref<SocketAddress> address, int type, Time t0, Ref<LogFile> merged)
-	: address_(address),
+	: address_(address.get()),
 	  type_(type),
-	  merged_(merged)
+	  merged_(merged.get())
 {
 	if ((options()->loggingFlags_ & type) != 0)
 	{

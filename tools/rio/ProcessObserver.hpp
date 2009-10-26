@@ -21,7 +21,7 @@ class ProcessObserver: public Thread
 {
 public:
 	ProcessObserver(Ref<Process> process)
-		: process_(process),
+		: process_(process.get()),
 		  exitCode_(0),
 		  finishedEvent_(new Event)
 	{}

@@ -19,7 +19,7 @@ namespace pona
 PONA_EXCEPTION(ListException, Exception);
 
 template<class T>
-class List: public Sequence<T>
+class PONA_API List: public Sequence<T>
 {
 public:
 	List();

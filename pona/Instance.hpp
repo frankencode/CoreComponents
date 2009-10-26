@@ -17,7 +17,7 @@ namespace pona
 
 PONA_EXCEPTION(ReferenceException, Exception);
 
-class Instance;
+class PONA_API Instance;
 
 class PONA_API BackRef
 {

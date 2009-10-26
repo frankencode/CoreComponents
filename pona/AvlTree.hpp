@@ -14,7 +14,7 @@ namespace pona
 {
 
 template<class T>
-class AvlTree: public BinaryTree<T>
+class PONA_API AvlTree: public BinaryTree<T>
 {
 public:
 	typedef typename BinaryTree<T>::Node Node;

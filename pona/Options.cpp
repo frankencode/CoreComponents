@@ -112,24 +112,28 @@ Options::Options()
 			)
 		);
 	
-	DEFINE_SELF(
-		GLUE(
-			REPEAT(
-				GLUE(
-					REPEAT(0, 1, INLINE("whitespace")),
-					REF("option")
-				)
-			),
-			REPEAT(
-				GLUE(
-					REPEAT(0, 1, INLINE("whitespace")),
-					REF("value")
-				)
-			),
-			REPEAT(0, 1, INLINE("whitespace")),
-			EOI()
-		)
-	);
+	options_ =
+		DEFINE_VOID("options",
+			GLUE(
+				REPEAT(
+					GLUE(
+						REPEAT(0, 1, INLINE("whitespace")),
+						REF("option")
+					)
+				),
+				REPEAT(
+					GLUE(
+						REPEAT(0, 1, INLINE("whitespace")),
+						REF("value")
+					)
+				),
+				REPEAT(0, 1, INLINE("whitespace")),
+				EOI()
+			)
+		);
+	
+	TOPLEVEL("options");
+	LINK();
 }
 
 void Options::define(Char shortName, String longName, Ref<Variant> value, String description)

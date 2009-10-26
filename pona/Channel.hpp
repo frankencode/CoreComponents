@@ -17,7 +17,7 @@ namespace pona
 {
 
 template<class T>
-class Channel: public Instance
+class PONA_API Channel: public Instance
 {
 public:
 	enum Where { Back, Front };

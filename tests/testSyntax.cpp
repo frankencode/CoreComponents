@@ -60,12 +60,8 @@ public:
 				)
 			);
 		
-		DEFINE_SELF(
-			GLUE(
-				REF("sum"),
-				EOI()
-			)
-		);
+		TOPLEVEL("sum");
+		LINK();
 	}
 	
 	double eval(String text)
@@ -88,11 +84,7 @@ private:
 	{
 		double value = nan;
 		
-		if (token->rule() == this->id())
-		{
-			value = eval(token->firstChild());
-		}
-		else if (token->rule() == sum_->id())
+		if (token->rule() == sum_->id())
 		{
 			value = 0.;
 			char op = '+';

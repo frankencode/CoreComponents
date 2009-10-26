@@ -34,7 +34,7 @@ Service::Service()
 	class Cancel: public Action {
 	public:
 		Cancel(Ref<Service> service)
-			: service_(service)
+			: service_(service.get())
 		{}
 		virtual void run() {
 			service_->finish();

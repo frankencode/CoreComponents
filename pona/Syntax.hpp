@@ -8,6 +8,7 @@
 #ifndef PONA_SYNTAX_HPP
 #define PONA_SYNTAX_HPP
 
+#include <stdio.h> // DEBUG
 #include "atoms"
 #include "Array.hpp"
 #include "PrefixTree.hpp"
@@ -21,7 +22,7 @@ namespace pona
 PONA_EXCEPTION(SyntaxException, Exception);
 
 template<class Media>
-class Syntax: public Instance
+class PONA_API Syntax: public Instance
 {
 protected:
 	typedef typename Media::Element Char;
@@ -409,14 +410,7 @@ protected:
 	class RuleNode: public Node
 	{
 	public:
-		RuleNode(Definition* definition)
-			: definition_(definition),
-			  name_("undefined"),
-			  id_(-1),
-			  isVoid_(false)
-		{}
-		
-		RuleNode(Definition* definition, const char* name, int ruleId, Ref<Node> entry, bool isVoid = false)
+		RuleNode(Ref<Definition> definition, const char* name, int ruleId, Ref<Node> entry, bool isVoid = false)
 			: definition_(definition),
 			  name_(name),
 			  id_(ruleId),
@@ -465,7 +459,7 @@ protected:
 	protected:
 		friend class InlineNode;
 		
-		Definition* definition_;
+		Ref<Definition> definition_;
 		const char* name_;
 		int id_;
 		Ref<Node, Owner> entry_;
@@ -475,7 +469,7 @@ protected:
 	class LinkNode: public Node
 	{
 	public:
-		LinkNode(Definition* definition, const char* ruleName)
+		LinkNode(Ref<Definition> definition, const char* ruleName)
 			: defintion_(definition),
 			  ruleName_(ruleName)
 		{}
@@ -486,16 +480,16 @@ protected:
 	protected:
 		friend class Definition;
 		
-		Definition* defintion_;
+		Ref<Definition> defintion_;
 		const char* ruleName_;
 		Ref<RuleNode> rule_;
-		Ref<LinkNode> nextLink_;
+		Ref<LinkNode, Owner> nextLink_;
 	};
 	
 	class RefNode: public LinkNode
 	{
 	public:
-		RefNode(Definition* definition, const char* ruleName)
+		RefNode(Ref<Definition> definition, const char* ruleName)
 			: LinkNode(definition, ruleName)
 		{}
 		
@@ -520,7 +514,7 @@ protected:
 	class InlineNode: public LinkNode
 	{
 	public:
-		InlineNode(Definition* definition, const char* ruleName)
+		InlineNode(Ref<Definition> definition, const char* ruleName)
 			: LinkNode(definition, ruleName)
 		{}
 		
@@ -538,7 +532,7 @@ protected:
 	class BeforeNode: public LinkNode
 	{
 	public:
-		BeforeNode(Definition* definition, const char* ruleName)
+		BeforeNode(Ref<Definition> definition, const char* ruleName)
 			: LinkNode(definition, ruleName)
 		{}
 		
@@ -834,12 +828,11 @@ protected:
 	};
 	
 public:
-	class Definition: public RuleNode
+	class Definition: public Instance
 	{
 	public:
 		Definition(int languageId = -1)
-			: RuleNode(this),
-			  languageId_(languageId),
+			: languageId_(languageId),
 			  numRules_(0),
 			  numKeywords_(0),
 			  ruleByName_(new RuleByName),
@@ -912,19 +905,21 @@ public:
 		
 		#include "SyntaxSugar.hpp"
 		
-		inline RULE DEFINE(const char* name, NODE entry) {
-			Ref<RuleNode, Owner> rule = new RuleNode(this, name, numRules_++, entry);
-			ruleByName_->insert(name, rule);
+		inline RULE DEFINE(const char* ruleName, NODE entry = 0) {
+			Ref<RuleNode, Owner> rule = new RuleNode(this, ruleName, numRules_++, entry);
+			ruleByName_->insert(ruleName, rule);
 			return rule;
 		}
-		inline RULE DEFINE_VOID(const char* name, NODE entry) {
-			Ref<RuleNode, Owner> rule = new RuleNode(this, name, numRules_++, entry, true);
-			ruleByName_->insert(name, rule);
+		inline RULE DEFINE_VOID(const char* ruleName, NODE entry = 0) {
+			Ref<RuleNode, Owner> rule = new RuleNode(this, ruleName, numRules_++, entry, true);
+			ruleByName_->insert(ruleName, rule);
 			return rule;
 		}
-		inline void DEFINE_SELF(Ref<Node> entry = 0) {
-			RuleNode::id_ = numRules_++;
-			RuleNode::entry_ = entry;
+		inline void TOPLEVEL(const char* ruleName) {
+			Ref<RefNode, Owner> link = new RefNode(this, ruleName);
+			link->nextLink_ = linkHead_;
+			linkHead_ = link;
+			topLevel_ = link;
 		}
 		
 		inline NODE REF(const char* ruleName) {
@@ -1051,6 +1046,8 @@ public:
 		
 		bool match(Media* media, int i0 = 0, int* i1 = 0, Ref<Token, Owner>* rootToken = 0, State* state = 0, uint8_t* buf = 0, int bufSize = 0)
 		{
+			LINK();
+			
 			Ref<State, Owner> localState;
 			if (!state) {
 				if ((stateFlagHead_) || (stateCharHead_)) {
@@ -1060,7 +1057,7 @@ public:
 			}
 			
 			TokenFactory tokenFactory(buf, bufSize);
-			int h = matchNext(media, i0, &tokenFactory, 0, state);
+			int h = topLevel_->rule()->matchNext(media, i0, &tokenFactory, 0, state);
 			if (rootToken)
 				*rootToken = tokenFactory.rootToken();
 			
@@ -1125,13 +1122,8 @@ public:
 	private:
 		friend class InvokeNode;
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
-		{
-			LINK();
-			return RuleNode::matchNext(media, i, tokenFactory, parentToken, state);
-		}
-		
 		int languageId_;
+		Ref<RefNode, Owner> topLevel_;
 		
 		class StateFlag: public Instance {
 		public:
@@ -1170,7 +1162,7 @@ public:
 		Ref<RuleByName, Owner> ruleByName_;
 		Ref<TokenTypeByName, Owner> tokenTypeByName_;
 		
-		Ref<LinkNode> linkHead_;
+		Ref<LinkNode, Owner> linkHead_;
 		
 		int numStateFlags_;
 		int numStateChars_;
