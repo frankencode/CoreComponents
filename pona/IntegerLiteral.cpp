@@ -65,7 +65,7 @@ IntegerLiteral::IntegerLiteral()
 			)
 		);
 	
-	TOPLEVEL("integer");
+	ENTRY("integer");
 	LINK();
 }
 

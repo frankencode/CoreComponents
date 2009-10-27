@@ -132,7 +132,7 @@ Options::Options()
 			)
 		);
 	
-	TOPLEVEL("options");
+	ENTRY("options");
 	LINK();
 }
 
