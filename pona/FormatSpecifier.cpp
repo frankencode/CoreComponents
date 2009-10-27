@@ -68,7 +68,7 @@ FormatSpecifier::FormatSpecifier()
 			)
 		);
 	
-	TOPLEVEL("format");
+	ENTRY("format");
 	LINK();
 }
 

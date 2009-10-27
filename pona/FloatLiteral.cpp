@@ -55,7 +55,7 @@ FloatLiteral::FloatLiteral()
 			)
 		);
 	
-	TOPLEVEL("float");
+	ENTRY("float");
 	LINK();
 }
 

@@ -65,8 +65,6 @@ SET(PONA_HEADER
 	HuffmanCodec.hpp
 	
 	threads
-	Context.hpp
-	Fiber.hpp
 	ThreadLocalOwner.hpp
 	Thread.hpp
 	ThreadFactory.hpp
@@ -148,8 +146,6 @@ SET(PONA_SOURCE
 	Crc32.cpp
 	
 	# threads
-	Context.cpp
-	Fiber.cpp
 	Thread.cpp
 	ThreadFactory.cpp
 	Mutex.cpp

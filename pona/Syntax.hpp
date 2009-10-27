@@ -24,7 +24,7 @@ PONA_EXCEPTION(SyntaxException, Exception);
 template<class Media>
 class PONA_API Syntax: public Instance
 {
-protected:
+public:
 	typedef typename Media::Element Char;
 	typedef Syntax Node;
 	typedef PrefixTree<Char,int> KeywordMap;
@@ -35,10 +35,8 @@ protected:
 	
 	Ref<Node, Owner> next_;
 	
-public:
 	typedef SyntaxState<Char> State;
 	
-protected:
 	virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state) = 0;
 	
 	class CharNode: public Node
@@ -401,10 +399,7 @@ protected:
 		Ref<Node, Owner> entry_;
 	};
 	
-public:
 	class Definition;
-	
-protected:
 	class InlineNode;
 	
 	class RuleNode: public Node
@@ -469,9 +464,8 @@ protected:
 	class LinkNode: public Node
 	{
 	public:
-		LinkNode(Ref<Definition> definition, const char* ruleName)
-			: defintion_(definition),
-			  ruleName_(ruleName)
+		LinkNode(const char* ruleName)
+			: ruleName_(ruleName)
 		{}
 		
 		inline const char* ruleName() const { return ruleName_; }
@@ -480,7 +474,6 @@ protected:
 	protected:
 		friend class Definition;
 		
-		Ref<Definition> defintion_;
 		const char* ruleName_;
 		Ref<RuleNode> rule_;
 		Ref<LinkNode, Owner> nextLink_;
@@ -489,20 +482,21 @@ protected:
 	class RefNode: public LinkNode
 	{
 	public:
-		RefNode(Ref<Definition> definition, const char* ruleName)
-			: LinkNode(definition, ruleName)
+		RefNode(const char* ruleName)
+			: LinkNode(ruleName)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			Ref<Token> lastChildSaved = parentToken->lastChild();
+			Ref<Token> lastChildSaved;
+			if (parentToken) lastChildSaved = parentToken->lastChild();
 			
 			i = LinkNode::rule_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			if ((i != -1) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
-			if (i == -1) {
+			if ((parentToken) && (i == -1)) {
 				while (parentToken->lastChild() != lastChildSaved)
 					parentToken->lastChild()->unlink();
 			}
@@ -514,8 +508,8 @@ protected:
 	class InlineNode: public LinkNode
 	{
 	public:
-		InlineNode(Ref<Definition> definition, const char* ruleName)
-			: LinkNode(definition, ruleName)
+		InlineNode(const char* ruleName)
+			: LinkNode(ruleName)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -532,8 +526,8 @@ protected:
 	class BeforeNode: public LinkNode
 	{
 	public:
-		BeforeNode(Ref<Definition> definition, const char* ruleName)
-			: LinkNode(definition, ruleName)
+		BeforeNode(const char* ruleName)
+			: LinkNode(ruleName)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -554,10 +548,8 @@ protected:
 		}
 	};
 	
-public:
 	typedef int (*CallBack) (Ref<Instance> self, Media* media, int i, State* state);
 	
-protected:
 	class CallNode: public Node
 	{
 	public:
@@ -827,12 +819,12 @@ protected:
 		Ref<Node, Owner> termination_;
 	};
 	
-public:
-	class Definition: public Instance
+	class Definition: public RefNode
 	{
 	public:
 		Definition(int languageId = -1)
-			: languageId_(languageId),
+			: RefNode("unspecified"),
+			  languageId_(languageId),
 			  numRules_(0),
 			  numKeywords_(0),
 			  ruleByName_(new RuleByName),
@@ -915,27 +907,24 @@ public:
 			ruleByName_->insert(ruleName, rule);
 			return rule;
 		}
-		inline void TOPLEVEL(const char* ruleName) {
-			Ref<RefNode, Owner> link = new RefNode(this, ruleName);
-			link->nextLink_ = linkHead_;
-			linkHead_ = link;
-			topLevel_ = link;
+		inline void ENTRY(const char* ruleName) {
+			LinkNode::ruleName_ = ruleName;
 		}
 		
 		inline NODE REF(const char* ruleName) {
-			Ref<RefNode, Owner> link = new RefNode(this, ruleName);
+			Ref<RefNode, Owner> link = new RefNode(ruleName);
 			link->nextLink_ = linkHead_;
 			linkHead_ = link;
 			return link;
 		}
 		inline NODE INLINE(const char* ruleName) {
-			Ref<InlineNode, Owner> link = new InlineNode(this, ruleName);
+			Ref<InlineNode, Owner> link = new InlineNode(ruleName);
 			link->nextLink_ = linkHead_;
 			linkHead_ = link;
 			return link;
 		}
 		inline NODE BEFORE(const char* ruleName) {
-			Ref<BeforeNode, Owner> link =  new BeforeNode(this, ruleName);
+			Ref<BeforeNode, Owner> link =  new BeforeNode(ruleName);
 			link->nextLink_ = linkHead_;
 			linkHead_ = link;
 			return link;
@@ -950,6 +939,8 @@ public:
 				linkHead_->rule_ = ruleByName(linkHead_->ruleName_);
 				linkHead_ = linkHead_->nextLink_;
 			}
+			if (!LinkNode::rule_)
+				LinkNode::rule_ = ruleByName(LinkNode::ruleName_);
 		}
 		
 		//-- stateful definition interface
@@ -1057,7 +1048,7 @@ public:
 			}
 			
 			TokenFactory tokenFactory(buf, bufSize);
-			int h = topLevel_->rule()->matchNext(media, i0, &tokenFactory, 0, state);
+			int h = matchNext(media, i0, &tokenFactory, 0, state);
 			if (rootToken)
 				*rootToken = tokenFactory.rootToken();
 			
@@ -1123,7 +1114,6 @@ public:
 		friend class InvokeNode;
 		
 		int languageId_;
-		Ref<RefNode, Owner> topLevel_;
 		
 		class StateFlag: public Instance {
 		public:

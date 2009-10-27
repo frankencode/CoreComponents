@@ -8,7 +8,6 @@
 #ifndef PONA_REF_HPP
 #define PONA_REF_HPP
 
-#include <assert.h>
 #include "visibility.hpp"
 #include "defaults.hpp"
 #include "Instance.hpp"
@@ -88,7 +87,6 @@ private:
 		if (!instance)
 			PONA_THROW(RefException, "Null reference");
 		#endif
-		assert(instance);
 		return instance;
 	}
 };

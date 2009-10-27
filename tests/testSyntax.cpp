@@ -60,7 +60,7 @@ public:
 				)
 			);
 		
-		TOPLEVEL("sum");
+		ENTRY("sum");
 		LINK();
 	}
 	
