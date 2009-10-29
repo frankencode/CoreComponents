@@ -41,7 +41,7 @@ public:
 	inline Ref<SyntaxState> child() const { return child_; }
 	inline void setChild(Ref<SyntaxState> state) { child_ = state; }
 	
-	bool equals(const SyntaxState& b) const
+	/*bool equals(const SyntaxState& b) const
 	{
 		bool equal = (languageId_ == b.languageId_);
 		if (equal) equal = (flags_ == b.flags_);
@@ -75,7 +75,7 @@ public:
 		}
 		else
 			child_ = 0;
-	}
+	}*/
 	
 private:
 	int languageId_;

@@ -16,7 +16,7 @@ int main()
 			m.release();
 		}
 		t = now() - t;
-		print("Took %% ms\n", t.ms());
+		print("Took %% us\n", t.us());
 	}
 	{
 		SpinMutex m;
@@ -26,7 +26,7 @@ int main()
 			m.release();
 		}
 		t = now() - t;
-		print("Took %% ms\n", t.ms());
+		print("Took %% us\n", t.us());
 	}
 	return 0;
 }
