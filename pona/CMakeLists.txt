@@ -111,7 +111,6 @@ SET(PONA_HEADER
 SET(PONA_SOURCE
 	# atoms
 	Exception.cpp
-	SpinMutex.cpp
 	
 	# container
 	Tree.cpp

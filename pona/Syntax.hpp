@@ -8,7 +8,6 @@
 #ifndef PONA_SYNTAX_HPP
 #define PONA_SYNTAX_HPP
 
-#include <stdio.h> // DEBUG
 #include "atoms"
 #include "Array.hpp"
 #include "PrefixTree.hpp"
@@ -997,6 +996,8 @@ public:
 		
 		State* newState(State* parent = 0)
 		{
+			if ((!stateFlagHead_) && (!stateCharHead_) && (!stateStringHead_)) return 0;
+			
 			State* state = new State(languageId_, numStateFlags_, numStateChars_, numStateStrings_, parent);
 			
 			Ref<StateFlag> stateFlag = stateFlagHead_;
@@ -1041,10 +1042,8 @@ public:
 			
 			Ref<State, Owner> localState;
 			if (!state) {
-				if ((stateFlagHead_) || (stateCharHead_)) {
-					localState = newState();
-					state = localState;
-				}
+				localState = newState();
+				state = localState;
 			}
 			
 			TokenFactory tokenFactory(buf, bufSize);
