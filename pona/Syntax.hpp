@@ -21,7 +21,7 @@ namespace pona
 PONA_EXCEPTION(SyntaxException, Exception);
 
 template<class Media>
-class PONA_API Syntax: public Instance
+class Syntax: public Instance
 {
 public:
 	typedef typename Media::Element Char;

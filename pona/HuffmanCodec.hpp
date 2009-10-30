@@ -54,7 +54,7 @@ public:
   *
   * The HuffmanCodec allows to encode any series of integers.
   */
-class PONA_API HuffmanCodec: public Instance
+class HuffmanCodec: public Instance
 {
 public:
 	/** Initialize the codec and allocate required memory.
@@ -144,12 +144,12 @@ public:
 	            int encodedFill );
 	
 private:
-	PONA_INTERN void reset();
-	PONA_INTERN void addSymbol(int x, int count0);
+	void reset();
+	void addSymbol(int x, int count0);
 
-	PONA_INTERN void generateCodeTable();
-	PONA_INTERN void debugCodeTable();
-	PONA_INTERN void writeRawFrame(BitSink* sink, int* frame, int frameFill, int rawMin, int rawMax);
+	void generateCodeTable();
+	void debugCodeTable();
+	void writeRawFrame(BitSink* sink, int* frame, int frameFill, int rawMin, int rawMax);
 
 	int options_;
 	int rawDiversity_;

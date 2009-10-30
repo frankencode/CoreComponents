@@ -15,7 +15,7 @@ namespace pona
 {
 
 template<class T>
-class PONA_API Sequence: public virtual Instance
+class Sequence: public virtual Instance
 {
 public:
 	typedef T Element;

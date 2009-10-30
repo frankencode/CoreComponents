@@ -15,7 +15,7 @@
 namespace pona
 {
 
-class PONA_API ProcessFactory: public Instance
+class ProcessFactory: public Instance
 {
 public:
 	ProcessFactory();

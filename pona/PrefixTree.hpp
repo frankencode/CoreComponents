@@ -16,7 +16,7 @@ namespace pona
 {
 
 template<class Char, class Value>
-class PONA_API PrefixTree: public Tree
+class PrefixTree: public Tree
 {
 public:
 	typedef PrefixTree Node;

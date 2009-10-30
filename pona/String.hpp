@@ -15,7 +15,7 @@
 namespace pona
 {
 
-class PONA_API String: public Ref<List<Char>, Owner>
+class String: public Ref<List<Char>, Owner>
 {
 public:
 	typedef Char Element;
@@ -60,12 +60,12 @@ inline String operator+(String a, String b) { String s; s << a << b; return s; }
 inline String operator+(String a, const char* b) { return a + String(b); }
 inline String operator+(const char* b, String a) { return a + b; }
 
-PONA_API String operator*(Char ch, int n);
+String operator*(Char ch, int n);
 inline String operator*(int n, Char ch) { return ch * n; }
 
 typedef List<String> StringList;
-PONA_API Ref<StringList, Owner> operator/(String text, String sep);
-PONA_API String operator*(Ref<StringList> parts, String sep);
+Ref<StringList, Owner> operator/(String text, String sep);
+String operator*(Ref<StringList> parts, String sep);
 inline Ref<StringList, Owner> operator/(String text, const char* sep) { return text / String(sep); }
 inline Ref<StringList, Owner> operator/(String text, Char sep) { return text / String(sep); }
 inline Ref<StringList, Owner> operator/(String text, char sep) { return text / String(sep); }
@@ -73,19 +73,19 @@ inline String operator*(Ref<StringList> parts, const char* sep) { return parts *
 inline String operator*(Ref<StringList> parts, Char sep) { return parts * String(sep); }
 inline String operator*(Ref<StringList> parts, char sep) { return parts * String(sep); }
 
-PONA_API int toInt(String s, bool* ok = 0);
-PONA_API double toFloat(String s, bool* ok = 0);
-PONA_API int64_t toInt64(String s, bool* ok = 0);
-PONA_API uint64_t toUInt64(String s, bool* ok = 0);
-PONA_API float64_t toFloat64(String s, bool* ok = 0);
+int toInt(String s, bool* ok = 0);
+double toFloat(String s, bool* ok = 0);
+int64_t toInt64(String s, bool* ok = 0);
+uint64_t toUInt64(String s, bool* ok = 0);
+float64_t toFloat64(String s, bool* ok = 0);
 
-PONA_API Char lowerCase(Char ch);
-PONA_API Char upperCase(Char ch);
-PONA_API String toLower(String s);
-PONA_API String toUpper(String s);
-PONA_API String stripLeadingSpace(String s);
-PONA_API String stripTrailingSpace(String s);
-PONA_API uint32_t crc32(String s);
+Char lowerCase(Char ch);
+Char upperCase(Char ch);
+String toLower(String s);
+String toUpper(String s);
+String stripLeadingSpace(String s);
+String stripTrailingSpace(String s);
+uint32_t crc32(String s);
 
 } // namespace pona
 

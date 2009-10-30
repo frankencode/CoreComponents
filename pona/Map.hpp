@@ -16,7 +16,7 @@ namespace pona
 {
 
 template<class Key, class Value>
-class PONA_API Map: public AvlTree< KeyValuePair<Key,Value> >
+class Map: public AvlTree< KeyValuePair<Key,Value> >
 {
 public:
 	typedef KeyValuePair<Key,Value> Element;

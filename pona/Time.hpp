@@ -20,7 +20,7 @@ namespace pona
   * The time scale has nanosecond resolution and ranges from
   * -68 to +68 years on 32 bit systems and -292e9 to +292e9 years on 64 bit systems.
   */
-class PONA_API Time
+class Time
 {
 public:
 	Time() {}

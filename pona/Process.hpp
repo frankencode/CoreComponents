@@ -25,7 +25,7 @@ class ProcessFactory;
 
 typedef Map<String, String> EnvMap;
 
-class PONA_API Process: public Instance
+class Process: public Instance
 {
 public:
 	// -- child process control interface

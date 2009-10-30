@@ -19,7 +19,7 @@ class BooleanLiteral;
 class IntegerLiteral;
 class FloatLiteral;
 
-class PONA_API FormatSyntax: public Instance
+class FormatSyntax: public Instance
 {
 public:
 	static Ref<FormatSyntax> instance();
@@ -29,7 +29,7 @@ public:
 	Ref<FloatLiteral> floatingPointLiteral() const;
 	
 private:
-	PONA_INTERN FormatSyntax();
+	FormatSyntax();
 	
 	Ref<FormatSpecifier, Owner> formatSpecifier_;
 	Ref<IntegerLiteral, Owner> integerLiteral_;

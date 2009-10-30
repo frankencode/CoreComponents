@@ -16,14 +16,14 @@
 namespace pona
 {
 
-class PONA_API ThreadExitEvent: public Event
+class ThreadExitEvent: public Event
 {
 public:
 	static Ref<ThreadExitEvent> instance();
 	
 private:
-	PONA_INTERN ThreadExitEvent();
-	PONA_INTERN ~ThreadExitEvent();
+	ThreadExitEvent();
+	~ThreadExitEvent();
 	
 	pid_t pid_;
 };

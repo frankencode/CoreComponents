@@ -8,7 +8,6 @@
 #ifndef PONA_ALIEN_HPP
 #define PONA_ALIEN_HPP
 
-#include "visibility.hpp"
 #include "Instance.hpp"
 
 namespace pona
@@ -19,7 +18,7 @@ namespace pona
   * the same alien object by two different alien wrappers.
   */
 template<class T>
-class PONA_API Alien: public Instance
+class Alien: public Instance
 {
 public:
 	typedef void (*DelFunc)(T*);

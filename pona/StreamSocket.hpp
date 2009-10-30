@@ -17,7 +17,7 @@
 namespace pona
 {
 
-class PONA_API StreamSocket: public SystemStream
+class StreamSocket: public SystemStream
 {
 public:
 	StreamSocket(Ref<SocketAddress> address, int fd = -1);

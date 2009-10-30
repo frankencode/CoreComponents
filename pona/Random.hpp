@@ -16,7 +16,7 @@ namespace pona
 /** Random number generator as described by Lewis et al/1969
   * for the System/360. The generator is reentrant.
   */
-class PONA_API Random: public Instance
+class Random: public Instance
 {
 public:
 	Random(int seed = -1);

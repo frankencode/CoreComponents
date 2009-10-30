@@ -48,7 +48,8 @@ Ref<SocketAddressList> NetworkInterface::addressList() const { return addressLis
 #ifdef __linux
 Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 {
-	Guard guard;
+	static Mutex mutex;
+	Guard guard(&mutex);
 	Ref<NetworkInterfaceList, Owner> list = new NetworkInterfaceList;
 	
 	{

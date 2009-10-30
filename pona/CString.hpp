@@ -15,7 +15,7 @@
 namespace pona
 {
 
-class PONA_API CString: public Ref<Array<char>, Owner>
+class CString: public Ref<Array<char>, Owner>
 {
 public:
 	CString() {}

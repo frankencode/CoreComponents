@@ -15,7 +15,7 @@
 namespace pona
 {
 
-class PONA_API Semaphore: public Mutex
+class Semaphore: public Mutex
 {
 public:
 	Semaphore(int value = 0);

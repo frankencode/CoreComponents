@@ -17,7 +17,7 @@
 namespace pona
 {
 
-class PONA_API LineSource: public Instance
+class LineSource: public Instance
 {
 public:
 	LineSource(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, String eol = "\n");

@@ -14,7 +14,7 @@ namespace pona
 {
 
 template<class T>
-class PONA_API Queue: public Instance
+class Queue: public Instance
 {
 public:
 	Queue(int size)

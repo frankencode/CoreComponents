@@ -12,7 +12,7 @@ namespace pona
 {
 
 template<class T>
-class PONA_API SetNull: private BackRef
+class SetNull: private BackRef
 {
 public:
 	SetNull(): BackRef((void**)&instance_), instance_(0) {}

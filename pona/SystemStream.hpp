@@ -14,7 +14,7 @@
 namespace pona
 {
 
-class PONA_API SystemStream: public Stream
+class SystemStream: public Stream
 {
 public:
 	SystemStream(int fd);
