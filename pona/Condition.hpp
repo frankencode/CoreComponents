@@ -18,7 +18,7 @@
 namespace pona
 {
 
-class PONA_API Condition: public Instance
+class Condition: public Instance
 {
 public:
 	Condition();

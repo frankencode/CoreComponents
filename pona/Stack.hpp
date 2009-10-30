@@ -14,7 +14,7 @@ namespace pona
 {
 
 template<class T>
-class PONA_API Stack: public Instance
+class Stack: public Instance
 {
 public:
 	Stack(int size)

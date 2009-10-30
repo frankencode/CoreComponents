@@ -16,7 +16,7 @@
 namespace pona
 {
 
-class PONA_API LineSink: public Instance
+class LineSink: public Instance
 {
 public:
 	LineSink(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, String eol = "\n");

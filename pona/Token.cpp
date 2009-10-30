@@ -15,7 +15,8 @@ bool Token::glow(Ref<TokenScreen> screen)
 				return false;
 			i = child->i0_;
 		}
-		child->glow(screen);
+		if (!child->glow(screen))
+			return false;
 		i = child->i1_;
 		child = child->nextSibling();
 	}

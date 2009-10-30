@@ -8,7 +8,6 @@
 #ifndef PONA_INSTANCE_HPP
 #define PONA_INSTANCE_HPP
 
-#include "visibility.hpp"
 #include "Exception.hpp"
 #include "SpinMutex.hpp"
 
@@ -17,9 +16,9 @@ namespace pona
 
 PONA_EXCEPTION(ReferenceException, Exception);
 
-class PONA_API Instance;
+class Instance;
 
-class PONA_API BackRef
+class BackRef
 {
 public:
 	BackRef(void** instance): instance_(instance) {}
@@ -36,7 +35,7 @@ public:
   *   - manual detruction by delete operator
   * In both cases an exception of type ReferenceException is thrown.
   */
-class PONA_API Instance
+class Instance
 {
 public:
 	Instance(): refCount_(0), backRefList_(0) {}

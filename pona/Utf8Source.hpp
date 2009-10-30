@@ -13,7 +13,7 @@
 namespace pona
 {
 
-class PONA_API Utf8Source: public ByteSource
+class Utf8Source: public ByteSource
 {
 public:
 	Utf8Source(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA);

@@ -19,7 +19,7 @@ namespace pona
 
 typedef struct stat StructStat;
 
-class PONA_API FileStatus: public StructStat, public Instance
+class FileStatus: public StructStat, public Instance
 {
 public:
 	FileStatus(int fd);

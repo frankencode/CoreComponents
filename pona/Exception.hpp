@@ -9,14 +9,13 @@
 #define PONA_EXCEPTION_HPP
 
 #include <exception>
-#include "visibility.hpp"
 
 namespace pona
 {
 
 typedef std::exception AnyException;
 
-class PONA_API Exception: public AnyException
+class Exception: public AnyException
 {
 public:
 	Exception(const char* path, int line, const char* className, char* reason);
@@ -28,7 +27,7 @@ private:
 };
 
 #define PONA_EXCEPTION(DerivedClass, BaseClass) \
-class PONA_API DerivedClass: public BaseClass \
+class DerivedClass: public BaseClass \
 { \
 public: \
 	DerivedClass(const char* fileName, int line, const char* className, char* reason) \
@@ -36,15 +35,15 @@ public: \
 	{} \
 }
 
-PONA_API char* captureExceptionMessage(const char* s);
-PONA_API char* captureExceptionMessage(char* s);
+char* captureExceptionMessage(const char* s);
+char* captureExceptionMessage(char* s);
 
 #define PONA_THROW(ExceptionClass, reason) \
 	throw ExceptionClass(__FILE__, __LINE__, #ExceptionClass, captureExceptionMessage(reason))
 
-PONA_API char* systemError();
-PONA_API char* systemError(int errorCode);
-PONA_API char* pthreadError(const char* callName, int errorCode);
+char* systemError();
+char* systemError(int errorCode);
+char* pthreadError(const char* callName, int errorCode);
 
 PONA_EXCEPTION(SystemException, Exception);
 #define PONA_SYSTEM_EXCEPTION \

@@ -18,7 +18,7 @@ namespace pona
 
 typedef struct flock FLockStruct;
 
-class PONA_API FileLock: public FLockStruct, public Instance
+class FileLock: public FLockStruct, public Instance
 {
 public:
 	enum Type { Read = F_RDLCK, Write = F_WRLCK };

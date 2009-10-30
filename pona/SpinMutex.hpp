@@ -2,12 +2,11 @@
 #define PONA_SPINMUTEX_HPP
 
 #include "defaults.hpp"
-#include "visibility.hpp"
 
 namespace pona
 {
 
-class PONA_API SpinMutex
+class SpinMutex
 {
 public:
 	SpinMutex(): flag_(0) {}

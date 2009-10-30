@@ -15,7 +15,7 @@
 namespace pona
 {
 
-class PONA_API Event: public Action
+class Event: public Action
 {
 public:
 	Event();

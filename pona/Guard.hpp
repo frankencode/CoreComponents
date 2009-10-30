@@ -6,11 +6,13 @@
 namespace pona
 {
 
-class PONA_API Guard: public Mutex
+class Guard: public Instance
 {
 public:
-	Guard() { acquire(); }
-	~Guard() { release(); }
+	Guard(Ref<Mutex> mutex): mutex_(mutex) { mutex_->acquire(); }
+	~Guard() { mutex_->release(); }
+private:
+	Ref<Mutex> mutex_;
 };
 
 } // namespace pona

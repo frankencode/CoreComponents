@@ -15,7 +15,7 @@ namespace pona
 
 class TokenScreen;
 
-class PONA_API Token: public Tree
+class Token: public Tree
 {
 public:
 	Token(): ruleName_("unknown"), languageId_(-1), rule_(-1), type_(-1) {}

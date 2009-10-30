@@ -16,7 +16,7 @@
 namespace pona
 {
 
-class PONA_API MemoryMapping: public Instance
+class MemoryMapping: public Instance
 {
 public:
 	enum Type {

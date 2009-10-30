@@ -15,7 +15,7 @@
 namespace pona
 {
 
-class PONA_API ByteSource: public Instance
+class ByteSource: public Instance
 {
 public:
 	ByteSource(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
@@ -43,7 +43,7 @@ private:
 	Ref<Stream, Owner> stream_;
 	int endian_;
 	
-	PONA_INTERN void fill();
+	void fill();
 	
 	int bufCapa_;
 	int bufFill_;

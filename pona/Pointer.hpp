@@ -12,7 +12,7 @@ namespace pona
 {
 
 template<class T>
-class PONA_API Pointer
+class Pointer
 {
 public:
 	Pointer(): instance_(0) {}

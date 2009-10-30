@@ -11,7 +11,6 @@
 #include <sys/types.h> // ssize_t, etc.
 #include <assert.h> // design HACK, pona should support its own assertions
 #include <stdint.h> // (u)int8_t .. (u)int64_t
-#include "visibility.hpp"
 
 typedef float float32_t;
 typedef double float64_t;
@@ -51,7 +50,7 @@ template<class T> class IsAtomic<T*> { public: enum { value = 1 }; };
 
 #define PONA_IS_ATOMIC(T) (IsAtomic<T>::value == 1)
 
-class PONA_API Char
+class Char
 {
 public:
 	Char() {}

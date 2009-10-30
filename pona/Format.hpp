@@ -18,7 +18,7 @@ namespace pona
 
 PONA_EXCEPTION(FormatException, Exception);
 
-class PONA_API Format: public String
+class Format: public String
 {
 public:
 	typedef String::Element Element;
@@ -65,9 +65,9 @@ private:
 	enum { ExpAutoLimit = 6 };
 	enum { MaxDigits = 128 }; // safe guess, 65 + ExpAutoLimit should be sufficient ?
 	
-	PONA_INTERN void init();
+	void init();
 	
-	class PONA_API PlaceHolder: public Instance {
+	class PlaceHolder: public Instance {
 	public:
 		PlaceHolder()
 			: i_(0), w_(0), wi_(0), wf_(0), base_(10), exp_(false), blank_(' ')
