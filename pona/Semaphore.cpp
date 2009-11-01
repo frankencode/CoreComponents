@@ -21,73 +21,73 @@ Semaphore::Semaphore(int value)
 
 void Semaphore::acquire(int amount)
 {
-	Mutex::acquire();
+	mutex_.acquire();
 	demand_ += amount;
 	while (supply_ < amount)
-		notEmpty_.wait(this);
+		notEmpty_.wait(&mutex_);
 	demand_ -= amount;
 	supply_ -= amount;
-	Mutex::release();
+	mutex_.release();
 }
 
 void Semaphore::release(int amount)
 {
 	if (amount <= 0) return;
-	Mutex::acquire();
+	mutex_.acquire();
 	supply_ += amount;
 	notEmpty_.broadcast();
-	Mutex::release();
+	mutex_.release();
 }
 
 int Semaphore::acquireAll(int minAmount)
 {
-	Mutex::acquire();
+	mutex_.acquire();
 	while (supply_ < minAmount)
-		notEmpty_.wait(this);
+		notEmpty_.wait(&mutex_);
 	int amount = supply_;
 	supply_ = 0;
-	Mutex::release();
+	mutex_.release();
 	return amount;
 }
 
 int Semaphore::releaseOnDemand(int maxAmount)
 {
-	Mutex::acquire();
+	mutex_.acquire();
 	int amount = demand_;
 	if (amount > maxAmount) amount = maxAmount;
 	if (amount > 0) {
 		supply_ += amount;
 		notEmpty_.broadcast();
 	}
-	Mutex::release();
+	mutex_.release();
 	return amount;
 }
 
 bool Semaphore::tryAcquire(int amount)
 {
 	bool success = false;
-	Mutex::acquire();
+	mutex_.acquire();
 	if (supply_ >= amount) {
 		supply_ -= amount;
 		success = true;
 	}
-	Mutex::release();
+	mutex_.release();
 	return success;
 }
 
 bool Semaphore::acquireBefore(Time timeout, int amount)
 {
 	bool success = true;
-	Mutex::acquire();
+	mutex_.acquire();
 	demand_ += amount;
 	while (supply_ < amount) {
-		success = notEmpty_.waitUntil(this, timeout);
+		success = notEmpty_.waitUntil(&mutex_, timeout);
 		if (!success) break;
 	}
 	demand_ -= amount;
 	if (success)
 		supply_ -= amount;
-	Mutex::release();
+	mutex_.release();
 	return success;
 }
 
