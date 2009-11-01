@@ -15,7 +15,7 @@
 namespace pona
 {
 
-class Semaphore: public Mutex
+class Semaphore: public Instance
 {
 public:
 	Semaphore(int value = 0);
@@ -30,6 +30,7 @@ public:
 	bool acquireBefore(Time timeout, int amount = 1);
 	
 private:
+	Mutex mutex_;
 	Condition notEmpty_;
 	int supply_, demand_;
 };
