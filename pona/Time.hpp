@@ -40,7 +40,7 @@ public:
 		return *this;
 	}
 	
-	inline operator double() const { return fineSec(); }
+	// inline operator double() const { return fineSec(); }
 
 	inline int sec() const { return sec_; }
 	inline int nsec() const { return nsec_; }
