@@ -13,7 +13,7 @@ public:
 	
 	inline bool tryAcquire() {
 		return __sync_bool_compare_and_swap(&flag_, 0, 1);
-	}
+	};
 	
 	inline void acquire() {
 		while (!tryAcquire()) {
@@ -33,11 +33,11 @@ public:
 			// Note: On legacy systems without support for preemptive scheduling
 			// we would have to use sched_yield(2).
 		}
-	}
+	};
 	
 	inline void release() {
 		flag_ = 0;
-	}
+	};
 	
 private:
 	int flag_;

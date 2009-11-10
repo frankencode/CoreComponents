@@ -42,12 +42,18 @@ public:
 	
 	virtual ~Instance()
 	{
-		if (refCount_ > 0)
+		if (refCount_ > 0) {
 			PONA_THROW(ReferenceException, "Deleting object, which is still in use");
-		BackRef* ref = backRefList_;
-		while (ref) {
-			*ref->instance_ = 0;
-			ref = ref->succ_;
+		}
+		if (backRefList_) {
+			spinMutex_.acquire();
+			BackRef* ref = backRefList_;
+			while (ref) {
+				*ref->instance_ = 0;
+				ref = ref->succ_;
+			}
+			backRefList_ = 0;
+			spinMutex_.release();
 		}
 	}
 	
@@ -96,6 +102,8 @@ public:
 			backRefList_ = backRefList_->succ_;
 		spinMutex_.release();
 	}
+	
+	inline SpinMutex* const spinMutex() { return &spinMutex_; }
 	
 private:
 	SpinMutex spinMutex_;
