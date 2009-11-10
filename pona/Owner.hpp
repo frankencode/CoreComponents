@@ -11,6 +11,11 @@
 namespace pona
 {
 
+/** The Owner policy is not reentrant!
+  * But the following race conditions are unhandled:
+  *   - concurrently calling set(T*) and ~T()
+  *   - concurrently calling set(T*)
+  */
 template<class T>
 class Owner
 {

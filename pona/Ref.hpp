@@ -21,12 +21,19 @@ PONA_EXCEPTION(RefException, Exception);
 
 /** \brief auto-casted object reference
   *
-  * provides:
+  * Provides:
   *   - guarding against access after destruction
   *   - syntactic compatibility to C pointers
   *   - automatic dynamic typecasting on assignment
   *     (as in highlevel languages like Java or Python)
   *   - full compatiblity to containers
+  *
+  * References are not meant to be reentrant!
+  * Basic rules to prevent race conditions:
+  *   - References shall never be shared. Each thread keeps its own
+  *     set of references to shared objects.
+  *   - Threads which share data need to serialize on destruction.
+  *   - Threads should communicate through a serial protocol.
   */
 template<class T = Instance, template<class> class GetAndSetPolicy = PONA_DEFAULT_REF_POLICY>
 class Ref: public GetAndSetPolicy<T>
