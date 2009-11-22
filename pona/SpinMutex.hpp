@@ -1,7 +1,7 @@
 #ifndef PONA_SPINMUTEX_HPP
 #define PONA_SPINMUTEX_HPP
 
-#include "defaults.hpp"
+#include "types.hpp"
 
 namespace pona
 {
@@ -40,7 +40,7 @@ public:
 	}
 	
 private:
-	int flag_;
+	uint8_t flag_;
 };
 
 } // namespace pona

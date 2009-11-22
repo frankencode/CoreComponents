@@ -46,28 +46,10 @@ public:
 	inline int index() const { return i0_; }
 	inline int length() const { return i1_ - i0_; }
 	
-	/*template<class Media>
-	void print(LineSink* output, Media* media, int depth = 0)
-	{
-		for (int i = 0; i < depth; ++i)
-			output->write("  ");
-		output->write(format("%%(%%, %%, %%) = [") % ruleName_ % type_ % i0_ % i1_);
-		for (int i = i0_; i < i1_; ++i) {
-			output->write(format("%%") % media->get(i));
-			if (i-i0_ > 10) {
-				output->write("...");
-				break;
-			}
-		}
-		output->write("]\n");
-		Ref<Token> token = firstChild();
-		while (token) {
-			token->print(output, media, depth + 1);
-			token = token->nextSibling();
-		}
-	}*/
-	
 	bool glow(Ref<TokenScreen> screen);
+	
+	static void meld(Ref<Token> root0, Ref<Token> root1);
+	bool burn(int b0, int b1);
 	
 private:
 	const char* ruleName_;
@@ -81,4 +63,3 @@ private:
 } // namespace pona
 
 #endif // PONA_TOKEN_HPP
-

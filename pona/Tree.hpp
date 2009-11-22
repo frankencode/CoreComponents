@@ -18,6 +18,8 @@ class Tree: public Instance
 public:
 	typedef Tree Node;
 	
+	~Tree();
+	
 	inline Ref<Node> parent() const { return parent_; }
 	inline Ref<Node> firstChild() const { return firstChild_; }
 	inline Ref<Node> lastChild() const { return lastChild_; }
@@ -50,4 +52,3 @@ private:
 } // namespace pona
 
 #endif // PONA_TREE_HPP
-

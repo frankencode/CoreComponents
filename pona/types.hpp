@@ -50,6 +50,47 @@ template<class T> class IsAtomic<T*> { public: enum { value = 1 }; };
 
 #define PONA_IS_ATOMIC(T) (IsAtomic<T>::value == 1)
 
+
+// taken from Andrei Alexandrescu's book "Modern C++ Design"
+template<class T, class U>
+class ConversionFromTo
+{
+private:
+	typedef char Small;
+	class Big { char dummy[2]; };
+	static Small test(U);
+	static Big test(...);
+	static T makeT();
+public:
+	enum {
+		Exists = (sizeof(test(makeT())) == sizeof(Small)),
+		SameType = 0
+	};
+};
+
+template<class T>
+class ConversionFromTo<T, T> {
+public:
+	enum { Exists = 1, SameType = 1 };
+};
+
+template<class T, class U, int ConversionExists = -1>
+class CastHelper {};
+
+template<class T, class U>
+class CastHelper<T, U, 0> {
+public:
+	inline static U* cast(T* p) { return dynamic_cast<U*>(p); }
+};
+
+template<class T, class U>
+class CastHelper<T, U, 1> {
+public:
+	inline static U* cast(T* p) { return static_cast<U*>(p); }
+};
+
+#define PONA_CAST_FROM_TO(T, U, p) CastHelper<T, U, ConversionFromTo<const T*, const U*>::Exists>::cast(p)
+
 class Char
 {
 public:

@@ -17,6 +17,8 @@
 #endif
 #endif
 
+// #define PONA_REF_THREADSAFE_SET
+
 #ifndef PONA_DEFAULT_BUF_CAPA
 #define PONA_DEFAULT_BUF_CAPA (1 << 14)
 #endif
