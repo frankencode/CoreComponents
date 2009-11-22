@@ -8,8 +8,11 @@
 #ifndef PONA_INSTANCE_HPP
 #define PONA_INSTANCE_HPP
 
+#include "defaults.hpp"
 #include "Exception.hpp"
+#ifdef PONA_REF_THREADSAFE_SET
 #include "SpinMutex.hpp"
+#endif
 
 namespace pona
 {
@@ -25,6 +28,9 @@ public:
 	BackRef* pred_;
 	BackRef* succ_;
 	void** instance_;
+	#ifdef PONA_REF_THREADSAFE_SET
+	SpinMutex spinMutex_;
+	#endif
 };
 
 /** \brief reference counting and secure destruction
@@ -49,7 +55,13 @@ public:
 			spinMutex_.acquire();
 			BackRef* ref = backRefList_;
 			while (ref) {
+				#ifdef PONA_REF_THREADSAFE_SET
+				ref->spinMutex_.acquire();
+				#endif
 				*ref->instance_ = 0;
+				#ifdef PONA_REF_THREADSAFE_SET
+				ref->spinMutex_.release();
+				#endif
 				ref = ref->succ_;
 			}
 			backRefList_ = 0;

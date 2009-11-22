@@ -198,9 +198,12 @@ off_t File::seekTell()
 
 off_t File::size()
 {
+	bool closeAgain = !isOpen();
+	if (closeAgain) open(File::Read);
 	off_t h2 = seek(0, SeekCurrent);
 	off_t h = seek(0, SeekEnd);
 	seek(h2, SeekBegin);
+	if (closeAgain) close();
 	return h;
 }
 

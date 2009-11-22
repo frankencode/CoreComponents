@@ -169,4 +169,3 @@ protected:
 } // namespace pona
 
 #endif // PONA_PREFIXMAP_HPP
-

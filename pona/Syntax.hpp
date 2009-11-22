@@ -522,10 +522,10 @@ public:
 		}
 	};
 	
-	class BeforeNode: public LinkNode
+	class PreviousNode: public LinkNode
 	{
 	public:
-		BeforeNode(const char* ruleName)
+		PreviousNode(const char* ruleName)
 			: LinkNode(ruleName)
 		{}
 		
@@ -774,9 +774,9 @@ public:
 	class InvokeNode: public Node
 	{
 	public:
-		InvokeNode(Ref<Definition> definition, Ref<Node> termination)
+		InvokeNode(Ref<Definition> definition, Ref<Node> coverage)
 			: definition_(definition),
-			  termination_(termination)
+			  coverage_(coverage)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -792,16 +792,19 @@ public:
 					childState = definition_->newState(state);
 			}
 			
-			if (termination_) {
-				int i1 = i;
-				while (media->def(i1)) {
-					if (termination_->matchNext(media, i1, 0, parentToken, state) != -1)
-						break;
-					++i1;
+			if (coverage_) {
+				Ref<Token> lastChildSaved;
+				if (parentToken) lastChildSaved = parentToken->lastChild();
+				int i0 = i;
+				i = coverage_->matchNext(media, i, 0, parentToken, state);
+				if (i != -1) {
+					if (parentToken) {
+						while (parentToken->lastChild() != lastChildSaved)
+							parentToken->lastChild()->unlink();
+					}
+					Media range(media, i);
+					definition_->matchNext(&range, i0, tokenFactory, parentToken, childState);
 				}
-				
-				Media range(media, i1);
-				i = definition_->matchNext(&range, i, tokenFactory, parentToken, childState);
 			}
 			else {
 				i = definition_->matchNext(media, i, tokenFactory, parentToken, childState);
@@ -815,7 +818,7 @@ public:
 		
 	private:
 		Ref<Definition, SetNull> definition_;
-		Ref<Node, Owner> termination_;
+		Ref<Node, Owner> coverage_;
 	};
 	
 	class Definition: public RefNode
@@ -922,8 +925,8 @@ public:
 			linkHead_ = link;
 			return link;
 		}
-		inline NODE BEFORE(const char* ruleName) {
-			Ref<BeforeNode, Owner> link =  new BeforeNode(ruleName);
+		inline NODE PREVIOUS(const char* ruleName) {
+			Ref<PreviousNode, Owner> link =  new PreviousNode(ruleName);
 			link->nextLink_ = linkHead_;
 			linkHead_ = link;
 			return link;
@@ -983,10 +986,10 @@ public:
 		inline NODE VARSTRING(const char* name) {
 			return new VarStringNode(stringIdByName(name));
 		}
-		inline NODE INVOKE(Definition* definition, NODE termination = 0) {
+		inline NODE INVOKE(Definition* definition, NODE coverage = 0) {
 			if (definition != this)
 				definition->LINK();
-			return new InvokeNode(definition, termination);
+			return new InvokeNode(definition, coverage);
 		}
 		
 		//-- execution interface

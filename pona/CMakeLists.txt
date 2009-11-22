@@ -5,6 +5,7 @@ SET(PONA_HEADER
 	types.hpp
 	Exception.hpp
 	SpinMutex.hpp
+	SpinGuard.hpp
 	Instance.hpp
 	Alien.hpp
 	Pointer.hpp
