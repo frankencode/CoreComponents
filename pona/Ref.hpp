@@ -101,6 +101,9 @@ public:
 			PONA_THROW(RefException, "Null reference");
 		return instance;
 	}
+	
+	template<class T2>
+	inline T2* cast() const { return dynamic_cast<T2>(this->get()); }
 };
 
 } // namespace pona

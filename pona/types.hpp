@@ -74,13 +74,22 @@ public:
 	enum { Exists = 1, SameType = 1 };
 };
 
+template<class T, class U, int ConversionPossible = 0>
+class DynamicCastHelper {};
+
+template<class T, class U>
+class DynamicCastHelper<T, U, 1> {
+public:
+	inline static U* cast(T* p) { return dynamic_cast<U*>(p); }
+};
+
 template<class T, class U, int ConversionExists = -1>
 class CastHelper {};
 
 template<class T, class U>
 class CastHelper<T, U, 0> {
 public:
-	inline static U* cast(T* p) { return dynamic_cast<U*>(p); }
+	inline static U* cast(T* p) { return DynamicCastHelper<T, U, ConversionFromTo<const U*, const T*>::Exists>::cast(p); }
 };
 
 template<class T, class U>
