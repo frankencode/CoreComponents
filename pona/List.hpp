@@ -19,7 +19,7 @@ namespace pona
 PONA_EXCEPTION(ListException, Exception);
 
 template<class T>
-class List: public Sequence<T>
+class List: public Sequence<T>, public NonCopyable
 {
 public:
 	List();
@@ -92,8 +92,6 @@ protected:
 	List(Ref<List> parent, int index0, int length);
 	
 private:
-	PONA_DISABLE_COPY(List)
-	
 	int find(int i, int n, T e) const;
 	void push(int i, int n, List* b);
 	int find(int i, int n, List* b) const;

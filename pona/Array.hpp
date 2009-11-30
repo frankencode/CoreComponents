@@ -43,7 +43,7 @@ public:
 	{
 		size_ = 0;
 		if (buf) {
-			while (buf[size_]) ++size_;
+			while (buf[size_] != 0) ++size_;
 			buf_ = new T[size_];
 			owner_ = true;
 			for (int i = 0; i < size_; ++i)

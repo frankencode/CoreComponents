@@ -706,21 +706,24 @@ public:
 	class GetStringNode: public Node
 	{
 	public:
-		GetStringNode(int stringId, Ref<Node> termination)
+		GetStringNode(int stringId, Ref<Node> coverage)
 			: stringId_(stringId),
-			  termination_(termination)
+			  coverage_(coverage)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			int i0 = i;
+			Ref<Token> lastChildSaved;
+			if (parentToken) lastChildSaved = parentToken->lastChild();
 			
-			if (termination_)
+			int i0 = i;
+			i = coverage_->matchNext(media, i, 0, parentToken, state);
+			
+			if (i != -1)
 			{
-				while (true) {
-					int h = termination_->matchNext(media, i, 0, parentToken, state);
-					if ((h != -1) || (!media->def(i))) break;
-					++i;
+				if (parentToken) {
+					while (parentToken->lastChild() != lastChildSaved)
+						parentToken->lastChild()->unlink();
 				}
 				
 				Array<Char>* string = state->string(stringId_);
@@ -737,7 +740,7 @@ public:
 		
 	private:
 		int stringId_;
-		Ref<Node, Owner> termination_;
+		Ref<Node, Owner> coverage_;
 	};
 	
 	class VarStringNode: public Node
@@ -848,13 +851,10 @@ public:
 		inline static NODE OTHER(Char ch) { return new CharNode(ch, 1); }
 		inline static NODE ANY() { return new AnyNode(); }
 		inline static NODE RANGE(Char a, Char b) { return new RangeNode(a, b, 0); }
-		inline static NODE RANGE(Char* s) { return new RangeNode(s, 0); }
-		inline static NODE RANGE(const char* s) { return new RangeNode(s, 0); }
+		template<class Char> inline static NODE RANGE(const Char* s) { return new RangeNode(s, 0); }
 		inline static NODE EXCEPT(Char a, Char b) { return new RangeNode(a, b, 1); }
-		inline static NODE EXCEPT(Char* s) { return new RangeNode(s, 1); }
-		inline static NODE EXCEPT(const char* s) { return new RangeNode(s, 1); }
-		inline static NODE STRING(Char* s, int len) { return new StringNode(s, len); }
-		inline static NODE STRING(const char* s) { return new StringNode(s); }
+		template<class Char> inline static NODE EXCEPT(Char* s) { return new RangeNode(s, 1); }
+		template<class Char> inline static NODE STRING(Char* s) { return new StringNode(s); }
 		
 		NODE KEYWORD(const char* keys)
 		{
@@ -980,12 +980,13 @@ public:
 		inline NODE VAROTHER(const char* name) {
 			return new VarCharNode(charIdByName(name), 1);
 		}
-		inline NODE GETSTRING(const char* name, NODE termination) {
-			return new GetStringNode(stringIdByName(name), termination);
+		inline NODE GETSTRING(const char* name, NODE coverage) {
+			return new GetStringNode(stringIdByName(name), coverage);
 		}
 		inline NODE VARSTRING(const char* name) {
 			return new VarStringNode(stringIdByName(name));
 		}
+		
 		inline NODE INVOKE(Definition* definition, NODE coverage = 0) {
 			if (definition != this)
 				definition->LINK();

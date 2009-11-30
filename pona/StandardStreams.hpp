@@ -12,16 +12,14 @@
 #include "SystemStream.hpp"
 #include "LineSource.hpp"
 #include "LineSink.hpp"
-#include "ThreadLocalOwner.hpp"
+#include "ThreadLocalSingleton.hpp"
 
 namespace pona
 {
 
-class StandardStreams: public Instance
+class StandardStreams: public Instance, public ThreadLocalSingleton<StandardStreams>
 {
 public:
-	static Ref<StandardStreams> instance();
-
 	inline Ref<SystemStream> rawInput() { return rawInput_; }
 	inline Ref<SystemStream> rawOutput() { return rawOutput_; }
 	inline Ref<SystemStream> rawError() { return rawError_; }
@@ -31,6 +29,7 @@ public:
 	inline Ref<LineSink> error() { return error_; }
 
 private:
+	friend class ThreadLocalSingleton<StandardStreams>;
 	StandardStreams();
 
 	Ref<SystemStream, Owner> rawInput_;

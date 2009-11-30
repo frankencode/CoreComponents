@@ -11,8 +11,10 @@
 #include "types.hpp"
 #include "Exception.hpp"
 #include "SpinMutex.hpp"
+#include "SpinGuard.hpp"
 #include "Instance.hpp"
 #include "Alien.hpp"
 #include "Ref.hpp"
+#include "NonCopyable.hpp"
 
 #endif // PONA_ATOM

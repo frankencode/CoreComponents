@@ -14,7 +14,7 @@ namespace pona
 {
 
 template<class T>
-class Stack: public Instance
+class Stack: public Instance, public NonCopyable
 {
 public:
 	Stack(int size)
@@ -76,8 +76,6 @@ public:
 	}
 
 private:
-	PONA_DISABLE_COPY(Stack)
-	
 	int fill_;
 	int size_;
 	bool bufOwner_;
