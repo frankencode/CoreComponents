@@ -14,15 +14,6 @@
 namespace pona
 {
 
-Ref<StandardStreams> StandardStreams::instance()
-{
-	static Ref<StandardStreams, ThreadLocalOwner> instance_ = 0;
-	
-	if (!instance_)
-		instance_ = new StandardStreams();
-	return instance_;
-}
-
 StandardStreams::StandardStreams()
 	: rawInput_(new File(File::StandardInput)),
 	  rawOutput_(new File(File::StandardOutput)),

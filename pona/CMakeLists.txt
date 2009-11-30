@@ -12,6 +12,7 @@ SET(PONA_HEADER
 	SetNull.hpp
 	Owner.hpp
 	Ref.hpp
+	NonCopyable.hpp
 	
 	container
 	Sequence.hpp
@@ -66,6 +67,8 @@ SET(PONA_HEADER
 	
 	threads
 	ThreadLocalOwner.hpp
+	Singleton.hpp
+	ThreadLocalSingleton.hpp
 	Thread.hpp
 	ThreadFactory.hpp
 	Mutex.hpp

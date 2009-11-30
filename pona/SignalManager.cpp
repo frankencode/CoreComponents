@@ -52,17 +52,6 @@ void SignalListener::run()
 	}
 }
 
-Ref<SignalManager> SignalManager::instance()
-{
-	static Mutex mutex_;
-	mutex_.acquire();
-	static Ref<SignalManager, Owner> instance_ = 0;
-	if (!instance_)
-		instance_ = new SignalManager;
-	mutex_.release();
-	return instance_;
-}
-
 SignalManager::SignalManager()
 	: signalListener_(new SignalListener),
 	  pid_(Process::currentProcessId()),

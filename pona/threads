@@ -9,6 +9,8 @@
 #define PONA_THREAD
 
 #include "ThreadLocalOwner.hpp"
+#include "Singleton.hpp"
+#include "ThreadLocalSingleton.hpp"
 #include "Thread.hpp"
 #include "ThreadFactory.hpp"
 #include "Mutex.hpp"

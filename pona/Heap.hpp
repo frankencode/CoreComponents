@@ -14,7 +14,7 @@ namespace pona
 {
 
 template<class T>
-class Heap: public Instance
+class Heap: public Instance, public NonCopyable
 {
 public:
 	enum SortOrder { Ascending = 0, Descending = 1 };
@@ -74,8 +74,6 @@ public:
 	}
 	
 protected:
-	PONA_DISABLE_COPY(Heap)
-	
 	int fill_;    // current number of elements
 	int size_;    // maximal number of elements
 	bool dscOrder_;    // used for ascending or descending sort?

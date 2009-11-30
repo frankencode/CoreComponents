@@ -14,7 +14,7 @@ namespace pona
 {
 
 template<class T>
-class Queue: public Instance
+class Queue: public Instance, public NonCopyable
 {
 public:
 	Queue(int size)
@@ -109,8 +109,6 @@ public:
 	}
 	
 private:
-	PONA_DISABLE_COPY(Queue)
-	
 	int fill_;
 	int size_;
 	int head_;

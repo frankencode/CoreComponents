@@ -111,10 +111,6 @@ private:
 	uint32_t ch_;
 };
 
-#define PONA_DISABLE_COPY(ClassName) \
-ClassName(const ClassName& b); \
-const ClassName& operator=(const ClassName& b);
-
 template<class T>
 inline int strlen(const T* s)
 {

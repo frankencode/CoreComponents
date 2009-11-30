@@ -10,6 +10,7 @@
 
 #include <signal.h>
 #include "atoms"
+#include "Singleton.hpp"
 #include "Thread.hpp"
 #include "Process.hpp"
 #include "Map.hpp"
@@ -34,16 +35,14 @@ public:
 	Mutex done_;
 };
 
-class SignalManager: public Instance
+class SignalManager: public Instance, public Singleton<SignalManager>
 {
 public:
-	static Ref<SignalManager> instance();
-	
 	Ref<Event> signalEvent(int signal);
-	
 	static void defaultAction(int signal);
 	
 private:
+	friend class Singleton<SignalManager>;
 	friend class SignalInitializer;
 	friend class SignalListener;
 	
