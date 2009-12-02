@@ -9,19 +9,18 @@
 #define PONA_THREADEXITEVENT_HPP
 
 #include "atoms"
-#include "ThreadLocalOwner.hpp"
+#include "ThreadLocalSingleton.hpp"
 #include "Event.hpp"
 #include "Process.hpp"
 
 namespace pona
 {
 
-class ThreadExitEvent: public Event
+class ThreadExitEvent: public Event, public ThreadLocalSingleton<ThreadExitEvent>
 {
-public:
-	static Ref<ThreadExitEvent> instance();
-	
 private:
+	friend class ThreadLocalSingleton<ThreadExitEvent>;
+	
 	ThreadExitEvent();
 	~ThreadExitEvent();
 	

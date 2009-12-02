@@ -9,19 +9,18 @@
 #define PONA_EXITEVENT_HPP
 
 #include "atoms"
-#include "Mutex.hpp"
+#include "Singleton.hpp"
 #include "Event.hpp"
 #include "Process.hpp"
 
 namespace pona
 {
 
-class ExitEvent: public Event
+class ExitEvent: public Event, public Singleton<ExitEvent>
 {
-public:
-	static Ref<ExitEvent> instance();
-	
 private:
+	friend class Singleton<ExitEvent>;
+	
 	ExitEvent();
 	~ExitEvent();
 	

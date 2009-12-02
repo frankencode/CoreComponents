@@ -15,15 +15,6 @@
 namespace pona
 {
 
-Ref<FormatSyntax> FormatSyntax::instance()
-{
-	static Ref<FormatSyntax, ThreadLocalOwner> instance_ = 0;
-	
-	if (!instance_)
-		instance_ = new FormatSyntax;
-	return instance_;
-}
-
 FormatSyntax::FormatSyntax()
 {
 	formatSpecifier_ = new FormatSpecifier;

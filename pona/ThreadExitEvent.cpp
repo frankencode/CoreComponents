@@ -11,15 +11,6 @@
 namespace pona
 {
 
-Ref<ThreadExitEvent> ThreadExitEvent::instance()
-{
-	static Ref<ThreadExitEvent, ThreadLocalOwner> instance_ = 0;
-	
-	if (!instance_)
-		instance_ = new ThreadExitEvent;
-	return instance_;
-}
-
 ThreadExitEvent::ThreadExitEvent()
 	: pid_(Process::currentProcessId())
 {}

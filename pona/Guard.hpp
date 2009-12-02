@@ -1,18 +1,19 @@
 #ifndef PONA_GUARD_HPP
 #define PONA_GUARD_HPP
 
-#include "Mutex.hpp"
-
 namespace pona
 {
 
-class Guard: public Instance
+template<class Mutex>
+class Guard
 {
 public:
-	Guard(Ref<Mutex> mutex): mutex_(mutex) { mutex_->acquire(); }
-	~Guard() { mutex_->release(); }
+	Guard(Mutex* mutex): mutex_(mutex) { post(); }
+	~Guard() { dismiss(); }
+	inline void post() { mutex_->acquire(); }
+	inline void dismiss() { mutex_->tryAcquire(); mutex_->release(); }
 private:
-	Ref<Mutex> mutex_;
+	Mutex* mutex_;
 };
 
 } // namespace pona

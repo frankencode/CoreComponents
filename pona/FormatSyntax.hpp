@@ -9,7 +9,7 @@
 #define PONA_FORMATSYNTAX_HPP
 
 #include "atoms"
-#include "ThreadLocalOwner.hpp"
+#include "ThreadLocalSingleton.hpp"
 
 namespace pona
 {
@@ -19,16 +19,16 @@ class BooleanLiteral;
 class IntegerLiteral;
 class FloatLiteral;
 
-class FormatSyntax: public Instance
+class FormatSyntax: public Instance, public ThreadLocalSingleton<FormatSyntax>
 {
 public:
-	static Ref<FormatSyntax> instance();
-	
 	Ref<FormatSpecifier> formatSpecifier() const;
 	Ref<IntegerLiteral> integerLiteral() const;
 	Ref<FloatLiteral> floatingPointLiteral() const;
 	
 private:
+	friend class ThreadLocalSingleton<FormatSyntax>;
+	
 	FormatSyntax();
 	
 	Ref<FormatSpecifier, Owner> formatSpecifier_;
@@ -41,4 +41,3 @@ inline Ref<FormatSyntax> formatSyntax() { return FormatSyntax::instance(); }
 } // namespace pona
 
 #endif // PONA_FORMATSYNTAX_HPP
-
