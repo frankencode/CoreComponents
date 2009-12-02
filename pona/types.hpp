@@ -50,6 +50,7 @@ template<class T> class IsAtomic<T*> { public: enum { value = 1 }; };
 
 #define PONA_IS_ATOMIC(T) (IsAtomic<T>::value == 1)
 
+struct None {};
 
 // taken from Andrei Alexandrescu's book "Modern C++ Design"
 template<class T, class U>

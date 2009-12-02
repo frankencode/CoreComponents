@@ -11,7 +11,7 @@
 #include "types.hpp"
 #include "Exception.hpp"
 #include "SpinMutex.hpp"
-#include "SpinGuard.hpp"
+#include "ScopeGuard.hpp"
 #include "Instance.hpp"
 #include "Alien.hpp"
 #include "Ref.hpp"

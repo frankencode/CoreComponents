@@ -10,7 +10,7 @@
 
 #include "defaults.hpp"
 #ifdef PONA_REF_THREADSAFE_SET
-#include "SpinGuard.hpp"
+#include "ScopeGuard.hpp"
 #endif
 
 namespace pona
@@ -31,7 +31,7 @@ public:
 	inline void set(T* b)
 	{
 		#ifdef PONA_REF_THREADSAFE_SET
-		SpinGuard guard(&spinMutex_);
+		ScopeGuard<SpinMutex> guard(spinMutex_);
 		#endif
 		
 		if (instance_ != b)

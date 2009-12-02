@@ -19,11 +19,12 @@
 #include <unistd.h> // getpid
 #include <stdlib.h> // malloc, free
 #include <string.h> // memset
-#include "Guard.hpp"
 #ifdef __linux
 #include "File.hpp"
 #include "LineSource.hpp"
 #endif
+#include "LocalStatic.hpp"
+#include "Mutex.hpp"
 #include "NetworkInterface.hpp"
 
 namespace pona
@@ -48,8 +49,9 @@ Ref<SocketAddressList> NetworkInterface::addressList() const { return addressLis
 #ifdef __linux
 Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 {
-	static Mutex mutex;
-	Guard guard(&mutex);
+	Mutex& mutex = localStatic<Mutex>();
+	Guard<Mutex> guard(&mutex);
+	
 	Ref<NetworkInterfaceList, Owner> list = new NetworkInterfaceList;
 	
 	{

@@ -10,9 +10,7 @@
 
 #include "defaults.hpp"
 #include "Exception.hpp"
-#ifdef PONA_REF_THREADSAFE_SET
 #include "SpinMutex.hpp"
-#endif
 
 namespace pona
 {

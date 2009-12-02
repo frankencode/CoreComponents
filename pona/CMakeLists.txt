@@ -5,7 +5,6 @@ SET(PONA_HEADER
 	types.hpp
 	Exception.hpp
 	SpinMutex.hpp
-	SpinGuard.hpp
 	Instance.hpp
 	Alien.hpp
 	Pointer.hpp
@@ -66,9 +65,11 @@ SET(PONA_HEADER
 	HuffmanCodec.hpp
 	
 	threads
+	GlobalSpinMutex.hpp
+	LocalStatic.hpp
 	ThreadLocalOwner.hpp
-	Singleton.hpp
 	ThreadLocalSingleton.hpp
+	Singleton.hpp
 	Thread.hpp
 	ThreadFactory.hpp
 	Mutex.hpp
@@ -114,6 +115,7 @@ SET(PONA_HEADER
 SET(PONA_SOURCE
 	# atoms
 	Exception.cpp
+	GlobalSpinMutex.cpp
 	
 	# container
 	Tree.cpp
