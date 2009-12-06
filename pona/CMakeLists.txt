@@ -28,7 +28,6 @@ SET(PONA_HEADER
 	AvlTree.hpp
 	Map.hpp
 	CString.hpp
-	StringObserverCow.hpp
 	String.hpp
 	
 	syntax
@@ -122,7 +121,6 @@ SET(PONA_SOURCE
 	# container
 	Tree.cpp
 	String.cpp
-	StringObserverCow.cpp
 	
 	# syntax
 	Token.cpp
