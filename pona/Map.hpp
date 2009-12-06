@@ -20,8 +20,8 @@ class Map: public AvlTree< KeyValuePair<Key,Value> >
 {
 public:
 	typedef KeyValuePair<Key,Value> Element;
-	typedef AvlTree<Element> Parent;
-	typedef typename Parent::Node Node;
+	typedef AvlTree<Element> Super;
+	typedef typename Super::Node Node;
 	
 	inline void set(Key key, Value value)
 	{

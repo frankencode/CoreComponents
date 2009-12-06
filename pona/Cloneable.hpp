@@ -1,12 +1,12 @@
 #ifndef PONA_CLONEABLE_HPP
 #define PONA_CLONEABLE_HPP
 
-#include "atoms"
+#include "Ref.hpp"
 
 namespace pona
 {
 
-class Cloneable: public virtual Instance
+class Cloneable
 {
 public:
 	virtual Ref<Instance, Owner> clone() = 0;

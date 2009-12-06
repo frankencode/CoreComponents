@@ -1,5 +1,5 @@
 /*
- * File.hpp -- file I/O, status and permissions
+ * File.hpp -- file I/O
  *
  * Copyright (c) 2007-2009, Frank Mertens
  *
@@ -72,10 +72,10 @@ public:
 	
 	bool access(int flags) const;
 	bool exists() const;
-	void create(int mask = 0644);
+	void create(int mode = 0644);
 	void unlink();
 	
-	void createUnique(int mask = 0644, Char placeHolder = 'X');
+	void createUnique(int mode = 0644, Char placeHolder = 'X');
 	void truncate(off_t length);
 	void unlinkOnExit();
 	void unlinkOnThreadExit();
@@ -87,8 +87,6 @@ public:
 	void seekMove(off_t distance);
 	off_t seekTell();
 	off_t size();
-	
-	Ref<FileStatus, Owner> status() const;
 	
 	void sync();
 	void dataSync();

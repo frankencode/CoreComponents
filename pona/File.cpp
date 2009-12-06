@@ -1,5 +1,5 @@
 /*
- * File.cpp -- file I/O, status and permissions
+ * File.cpp -- file I/O
  *
  * Copyright (c) 2007-2009, Frank Mertens
  *
@@ -70,17 +70,17 @@ int File::openFlags() const
 
 bool File::access(int flags) const
 {
-	return isOpen() ? ((openFlags_ & flags) == flags) : ::access(path_.utf8(), flags) == 0;
+	return isOpen() ? ((openFlags_ & flags) == flags) : (::access(path_.utf8(), flags) == 0);
 }
 
 bool File::exists() const
 {
-	return ::access(path_.utf8(), F_OK) == 0;
+	return access(Exists) && (path_->length() > 0);
 }
 
-void File::create(int mask)
+void File::create(int mode)
 {
-	int fd = ::open(path_.utf8(), O_RDONLY|O_CREAT|O_EXCL, mask);
+	int fd = ::open(path_.utf8(), O_RDONLY|O_CREAT|O_EXCL, mode);
 	if (fd == -1)
 		PONA_THROW(StreamSemanticException, systemError());
 	::close(fd);
@@ -92,7 +92,7 @@ void File::unlink()
 		PONA_THROW(StreamSemanticException, systemError());
 }
 
-void File::createUnique(int mask, Char placeHolder)
+void File::createUnique(int mode, Char placeHolder)
 {
 	Random random;
 	while (true) {
@@ -108,7 +108,7 @@ void File::createUnique(int mask, Char placeHolder)
 					path_->set(i, 'A' + r - 36);
 			}
 		}
-		int fd = ::open(path_.utf8(), O_RDONLY|O_CREAT|O_EXCL, mask);
+		int fd = ::open(path_.utf8(), O_RDONLY|O_CREAT|O_EXCL, mode);
 		if (fd == -1) {
 			if (errno != EEXIST)
 				PONA_THROW(StreamSemanticException, systemError());
@@ -205,16 +205,6 @@ off_t File::size()
 	seek(h2, SeekBegin);
 	if (closeAgain) close();
 	return h;
-}
-
-Ref<FileStatus, Owner> File::status() const
-{
-	Ref<FileStatus, Owner> fs;
-	if (isOpen())
-		fs = new FileStatus(fd_);
-	else if (exists())
-		fs = new FileStatus(path_);
-	return fs;
 }
 
 void File::sync()

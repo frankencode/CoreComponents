@@ -5,7 +5,7 @@
 namespace pona
 {
 
-class Expression: public SyntaxDefinition<String::Media>
+class Expression: public Syntax<String::Media>::Definition
 {
 public:
 	Expression()

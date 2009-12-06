@@ -20,6 +20,8 @@ namespace pona
 
 PONA_EXCEPTION(SyntaxException, Exception);
 
+template<class Media> class SyntaxLinker;
+
 template<class Media>
 class Syntax: public Instance
 {
@@ -475,13 +477,13 @@ public:
 		
 		const char* ruleName_;
 		Ref<RuleNode> rule_;
-		Ref<LinkNode, Owner> nextLink_;
+		Ref<LinkNode, Owner> unresolvedNext_;
 	};
 	
 	class RefNode: public LinkNode
 	{
 	public:
-		RefNode(const char* ruleName)
+		RefNode(const char* ruleName = 0)
 			: LinkNode(ruleName)
 		{}
 		
@@ -727,7 +729,7 @@ public:
 				}
 				
 				Array<Char>* string = state->string(stringId_);
-				string->reset(i - i0);
+				*string = Array<Char>(i - i0);
 				for (int k = i0; k < i; ++k)
 					string->set(k - i0, media->get(k));
 			}
@@ -782,6 +784,11 @@ public:
 			  coverage_(coverage)
 		{}
 		
+		InvokeNode(const char* name, Ref<Node> coverage)
+			: definitionName_(name),
+			  coverage_(coverage)
+		{}
+		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			State* childState = 0;
@@ -820,27 +827,41 @@ public:
 		}
 		
 	private:
+		friend class Definition;
+		
+		const char* definitionName_;
 		Ref<Definition, SetNull> definition_;
 		Ref<Node, Owner> coverage_;
+		Ref<InvokeNode, Owner> unresolvedNext_;
 	};
+	
+	class Scope;
 	
 	class Definition: public RefNode
 	{
 	public:
-		Definition(int languageId = -1)
-			: RefNode("unspecified"),
-			  languageId_(languageId),
+		Definition(Ref<Scope> scope = 0, const char* name = 0)
+			: scope_(scope),
+			  languageId_(scope ? scope->numDefinitions(1) : -1),
+			  name_(name),
 			  numRules_(0),
 			  numKeywords_(0),
 			  ruleByName_(new RuleByName),
 			  tokenTypeByName_(new TokenTypeByName),
+			  statefulScope_(false),
 			  numStateFlags_(0),
 			  numStateChars_(0),
 			  numStateStrings_(0),
 			  flagIdByName_(new StateIdByName),
 			  charIdByName_(new StateIdByName),
 			  stringIdByName_(new StateIdByName)
-		{}
+		{
+			if (scope_)
+				scope_->addDefinition(this);
+		}
+		
+		inline Ref<Scope> scope() const { return scope_; }
+		inline const char* name() const { return name_; }
 		
 		typedef Ref<Node, Owner> NODE;
 		typedef Ref<RuleNode, Owner> RULE;
@@ -915,20 +936,20 @@ public:
 		
 		inline NODE REF(const char* ruleName) {
 			Ref<RefNode, Owner> link = new RefNode(ruleName);
-			link->nextLink_ = linkHead_;
-			linkHead_ = link;
+			link->unresolvedNext_ = unresolvedLinkHead_;
+			unresolvedLinkHead_ = link;
 			return link;
 		}
 		inline NODE INLINE(const char* ruleName) {
 			Ref<InlineNode, Owner> link = new InlineNode(ruleName);
-			link->nextLink_ = linkHead_;
-			linkHead_ = link;
+			link->unresolvedNext_ = unresolvedLinkHead_;
+			unresolvedLinkHead_ = link;
 			return link;
 		}
 		inline NODE PREVIOUS(const char* ruleName) {
 			Ref<PreviousNode, Owner> link =  new PreviousNode(ruleName);
-			link->nextLink_ = linkHead_;
-			linkHead_ = link;
+			link->unresolvedNext_ = unresolvedLinkHead_;
+			unresolvedLinkHead_ = link;
 			return link;
 		}
 		
@@ -937,12 +958,19 @@ public:
 		}
 		
 		inline void LINK() {
-			while (linkHead_) {
-				linkHead_->rule_ = ruleByName(linkHead_->ruleName_);
-				linkHead_ = linkHead_->nextLink_;
+			while (unresolvedLinkHead_) {
+				unresolvedLinkHead_->rule_ = ruleByName(unresolvedLinkHead_->ruleName_);
+				unresolvedLinkHead_ = unresolvedLinkHead_->unresolvedNext_;
 			}
-			if (!LinkNode::rule_)
+			while (unresolvedInvokeHead_) {
+				unresolvedInvokeHead_->definition_ = definitionByName(unresolvedInvokeHead_->definitionName_);
+				unresolvedInvokeHead_ = unresolvedInvokeHead_->unresolvedNext_;
+			}
+			if (!LinkNode::rule_) {
+				if (!LinkNode::ruleName_)
+					PONA_THROW(SyntaxException, "Missing entry rule declaration");
 				LinkNode::rule_ = ruleByName(LinkNode::ruleName_);
+			}
 		}
 		
 		//-- stateful definition interface
@@ -993,14 +1021,24 @@ public:
 			return new InvokeNode(definition, coverage);
 		}
 		
+		inline NODE INVOKE(const char* definitionName, NODE coverage = 0) {
+			Ref<InvokeNode, Owner> node = new InvokeNode(definitionName, coverage);
+			node->unresolvedNext_ = unresolvedInvokeHead_;
+			unresolvedInvokeHead_ = node;
+			return node;
+		}
+		
 		//-- execution interface
 		
 		inline int languageId() const { return languageId_; }
 		inline int numRules() const { return numRules_; }
 		
+		inline bool stateful() const { return (stateFlagHead_) || (stateCharHead_) || (stateStringHead_) || (statefulScope_); }
+		
 		State* newState(State* parent = 0)
 		{
-			if ((!stateFlagHead_) && (!stateCharHead_) && (!stateStringHead_)) return 0;
+			if (!stateful())
+				return 0;
 			
 			State* state = new State(languageId_, numStateFlags_, numStateChars_, numStateStrings_, parent);
 			
@@ -1042,7 +1080,8 @@ public:
 		
 		bool match(Media* media, int i0 = 0, int* i1 = 0, Ref<Token, Owner>* rootToken = 0, State* state = 0, uint8_t* buf = 0, int bufSize = 0)
 		{
-			LINK();
+			if (scope_) scope_->link();
+			else LINK();
 			
 			Ref<State, Owner> localState;
 			if (!state) {
@@ -1068,13 +1107,25 @@ public:
 			return rootToken;
 		}
 		
-		Ref<RuleNode, Owner> ruleByName(const char* name)
+		Ref<RuleNode> ruleByName(const char* name)
 		{
 			Ref<RuleNode, Owner> node;
 			ruleByName_->lookup(name, &node);
 			if (!node)
-				PONA_THROW(SyntaxException, "Undefined rule referenced");
+				PONA_THROW(SyntaxException, pona::strcat("Undefined rule '", name, "' referenced"));
 			return node;
+		}
+		
+		virtual Ref<Definition> definitionByName(const char* name)
+		{
+			if (scope_) {
+				return scope_->definitionByName(name);
+			}
+			else {
+				if (Array<const char>(name) != Array<const char>(name_))
+					PONA_THROW(SyntaxException, pona::strcat("Undefined definition '", name, "' referenced"));
+				return this;
+			}
 		}
 		
 		int tokenType(const char* name)
@@ -1082,7 +1133,7 @@ public:
 			int tokenType = -1;
 			tokenTypeByName_->lookup(name, &tokenType);
 			if (tokenType == -1)
-				PONA_THROW(SyntaxException, "Undefined token type referenced");
+				PONA_THROW(SyntaxException, pona::strcat("Undefined token type '", name, "' referenced"));
 			return tokenType;
 		}
 		
@@ -1091,7 +1142,7 @@ public:
 			int flagId = -1;
 			flagIdByName()->lookup(name, &flagId);
 			if (flagId == -1)
-				PONA_THROW(SyntaxException, "Undefined state flag referenced");
+				PONA_THROW(SyntaxException, pona::strcat("Undefined state flag '", name, "' referenced"));
 			return flagId;
 		}
 		
@@ -1100,7 +1151,7 @@ public:
 			int charId = -1;
 			charIdByName()->lookup(name, &charId);
 			if (charId == -1)
-				PONA_THROW(SyntaxException, "Undefined state char referenced");
+				PONA_THROW(SyntaxException, pona::strcat("Undefined state char '", name, "' referenced"));
 			return charId;
 		}
 		
@@ -1109,14 +1160,17 @@ public:
 			int stringId = -1;
 			stringIdByName()->lookup(name, &stringId);
 			if (stringId == -1)
-				PONA_THROW(SyntaxException, "Undefined state string referenced");
+				PONA_THROW(SyntaxException, pona::strcat("Undefined state string '", name, "' referenced"));
 			return stringId;
 		}
 		
 	private:
+		friend class Scope;
 		friend class InvokeNode;
 		
+		Ref<Scope, SetNull> scope_;
 		int languageId_;
+		const char* name_;
 		
 		class StateFlag: public Instance {
 		public:
@@ -1155,7 +1209,10 @@ public:
 		Ref<RuleByName, Owner> ruleByName_;
 		Ref<TokenTypeByName, Owner> tokenTypeByName_;
 		
-		Ref<LinkNode, Owner> linkHead_;
+		Ref<LinkNode, Owner> unresolvedLinkHead_;
+		Ref<InvokeNode, Owner> unresolvedInvokeHead_;
+		Ref<Definition, Owner> unresolvedNext_;
+		bool statefulScope_;
 		
 		int numStateFlags_;
 		int numStateChars_;
@@ -1181,6 +1238,68 @@ public:
 			if (!stringIdByName_) stringIdByName_ = new StateIdByName;
 			return stringIdByName_;
 		}
+	};
+	
+	class Scope: public Instance
+	{
+	private:
+		typedef PrefixTree<char, Ref<Definition> > DefinitionByName;
+		
+	public:
+		Scope()
+			: definitionByName_(new DefinitionByName),
+			  numDefinitions_(0)
+		{}
+		
+		int numDefinitions() const { return numDefinitions_; }
+		
+		
+		void link()
+		{
+			bool stateful = false;
+			{
+				Ref<Definition> definition = unresolvedDefinitionHead_;
+				while ((definition) && (!stateful)) {
+					stateful = definition->stateful();
+					definition = definition->unresolvedNext_;
+				}
+			}
+			while (unresolvedDefinitionHead_) {
+				unresolvedDefinitionHead_->statefulScope_ = stateful;
+				unresolvedDefinitionHead_->LINK();
+				unresolvedDefinitionHead_ = unresolvedDefinitionHead_->unresolvedNext_;
+			}
+		}
+		
+	private:
+		friend class Definition;
+		
+		void addDefinition(Ref<Definition> definition)
+		{
+			definition->unresolvedNext_ = unresolvedDefinitionHead_;
+			unresolvedDefinitionHead_ = definition;
+			definitionByName_->insert(definition->name(), definition);
+		}
+		
+		int numDefinitions(int delta)
+		{
+			int h = numDefinitions_;
+			numDefinitions_ += delta;
+			return h;
+		}
+		
+		Ref<Definition> definitionByName(const char* name)
+		{
+			Ref<Definition> definition;
+			definitionByName_->lookup(name, &definition);
+			if (!definition)
+				PONA_THROW(SyntaxException, pona::strcat("Undefined definition '", name, "' referenced"));
+			return definition;
+		}
+		
+		Ref<DefinitionByName, Owner> definitionByName_;
+		int numDefinitions_;
+		Ref<Definition, Owner> unresolvedDefinitionHead_;
 	};
 };
 

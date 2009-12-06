@@ -37,18 +37,18 @@ const unsigned unsignedMax = unsigned(-1);
 const int intMax = unsignedMax >> 1;
 
 template<class T> class IsAtomic { public: enum { value = 0 }; };
-template<> class IsAtomic<int8_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<int16_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<int32_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<int64_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<uint8_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<uint16_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<uint32_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<uint64_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<bool> { public: enum { value = 1 }; };
-template<class T> class IsAtomic<T*> { public: enum { value = 1 }; };
+template<> class IsAtomic<const int8_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<const int16_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<const int32_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<const int64_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<const uint8_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<const uint16_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<const uint32_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<const uint64_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<const bool> { public: enum { value = 1 }; };
+template<class T> class IsAtomic<const T*> { public: enum { value = 1 }; };
 
-#define PONA_IS_ATOMIC(T) (IsAtomic<T>::value == 1)
+#define PONA_IS_ATOMIC(T) (IsAtomic<const T>::value == 1)
 
 struct None {};
 
@@ -117,9 +117,47 @@ inline int strlen(const T* s)
 {
 	int len = 0;
 	if (s)
-		while (*(s + len)) ++len;
+		while (*(s + len) != 0) ++len;
 	return len;
 }
+
+template<class T>
+inline char* strdup(const T* s)
+{
+	int len = pona::strlen(s);
+	char* buf = new char[len + 1];
+	buf[len] = 0;
+	for (int i = 0; i < len; ++i) buf[i] = s[i];
+	return buf;
+}
+
+template<class T>
+T* strcat(const T* s0, const T* s1 = 0, const T* s2 = 0, const T* s3 = 0, const T* s4 = 0, const T* s5 = 0, const T* s6 = 0, const T* s7 = 0)
+{
+	int len = 0;
+	const T* s[] = { s0, s1, s2, s3, s4, s5, s6, s7 };
+	const int n = sizeof(s) / sizeof(const T*);
+	for (int i = 0; i < n; ++i) {
+		if (s[i])
+			len += pona::strlen(s[i]);
+	}
+	T* c = new T[len + 1];
+	c[len] = 0;
+	int j = 0;
+	for (int i = 0; i < n; ++i) {
+		if (s[i]) {
+			const char* si = s[i];
+			int k = 0;
+			while (si[k] != 0)
+				c[j++] = si[k++];
+		}
+	}
+	assert(j == len);
+	return c;
+}
+
+inline void* malloc(int size) { return new char[size]; }
+inline void free(void* buf) { delete[] reinterpret_cast<char*>(buf); }
 
 } // namespace pona
 

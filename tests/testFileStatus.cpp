@@ -11,15 +11,17 @@ void printStatus(Ref<File, Owner> file)
 	print("file->access(File::Read) = %%\n", file->access(File::Read));
 	print("file->access(File::Write) = %%\n", file->access(File::Write));
 	print("file->access(File::Execute) = %%\n", file->access(File::Execute));
-	Ref<FileStatus, Owner> status = file->status();
-	if (status) {
-		print("status->type() = %oct%\n", status->type());
-		print("status->mode() = %oct%\n", status->mode());
-		print("status->size() = %%\n", status->size());
-		print("status->ownerId() = %%\n", status->ownerId());
-		print("status->groupId() = %%\n", status->groupId());
-		print("User(status->ownerId()).loginName() = %%\n", User(status->ownerId()).loginName());
-		print("Group(status->groupId()).loginName() = %%\n", Group(status->groupId()).name());
+	if (file->exists()) {
+		Ref<FileStatus, Owner> status = new FileStatus(file->path());
+		if (status) {
+			print("status->type() = %oct%\n", status->type());
+			print("status->mode() = %oct%\n", status->mode());
+			print("status->size() = %%\n", status->size());
+			print("status->ownerId() = %%\n", status->ownerId());
+			print("status->groupId() = %%\n", status->groupId());
+			print("User(status->ownerId()).loginName() = %%\n", User(status->ownerId()).loginName());
+			print("Group(status->groupId()).loginName() = %%\n", Group(status->groupId()).name());
+		}
 	}
 	print("\n");
 }

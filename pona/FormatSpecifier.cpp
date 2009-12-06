@@ -77,7 +77,7 @@ bool FormatSpecifier::find(String text, int* i0, int* i1, int* w, int* wi, int* 
 	Ref<Token, Owner> rootToken = 0;
 	
 	uint8_t buf[sizeof(Token) * 36 /* 5 times each path(7) + root(1) */];
-	bool found = SyntaxDefinition<String::Media>::find(text, i0, i1, &rootToken, buf, sizeof(buf));
+	bool found =  Syntax<String::Media>::Definition::find(text, i0, i1, &rootToken, buf, sizeof(buf));
 	
 	if (found)
 	{

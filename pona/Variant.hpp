@@ -17,6 +17,16 @@ namespace pona
 
 PONA_EXCEPTION(VariantException, Exception);
 
+template<class T>
+class VariantInitHelper
+{
+public:
+	VariantInitHelper(const T& value)
+		: value_(value)
+	{}
+	T value_;
+};
+
 /** A variable of type 'Variant' can take any value of any type.
   * A variant is passed by value like a 'String'. If converting
   * back to a specific type, the specific type must match the
@@ -55,6 +65,19 @@ public:
 	inline const Variant& operator=(const char* value) { type_ = StringType; ref_ = String(value).media(); return *this; }
 	inline const Variant& operator=(String value) { type_ = StringType; ref_ = value.media(); return *this; }
 	inline const Variant& operator=(Ref<Instance> value) { type_ = RefType; ref_ = value; return *this; }
+	
+	Variant(const Variant& b)
+		: type_(b.type_),
+		  float_(b.float_),
+		  ref_(b.ref_)
+	{}
+	
+	inline const Variant& operator=(const Variant& b) {
+		type_ = b.type_;
+		float_ = b.float_;
+		ref_ = b.ref_;
+		return *this;
+	}
 	
 	inline int type() const { return type_; }
 	inline void require(int typeMask) { if ((type_ & typeMask) == 0) PONA_THROW(VariantException, ""); }

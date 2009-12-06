@@ -21,8 +21,10 @@ class Path
 public:
 	Path(String path);
 	
+	bool isRoot() const;
 	bool isRelative() const;
 	bool isAbsolute() const;
+	Path makeAbsoluteRelativeTo(String currentDir) const;
 	Path makeAbsolute() const;
 	Path fileName() const;
 	Path stripComponent() const;

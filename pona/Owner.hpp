@@ -55,6 +55,10 @@ private:
 	#endif
 };
 
+template<class T>
+class OwnerInstance: public Owner<T>, public Instance
+{};
+
 } // namespace pona
 
 #endif // PONA_OWNER_HPP

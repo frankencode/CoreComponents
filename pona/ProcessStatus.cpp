@@ -2,7 +2,6 @@
 #include <sys/param.h>
 #include <sys/sysctl.h> // sysctl
 #include <sys/stat.h> // devname_r
-#include <stdlib.h> // malloc, free
 #include <string.h> // memset
 #include "User.hpp"
 #else
@@ -30,7 +29,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	size_t sz = 0;
 	if (::sysctl(mib, 4, NULL, &sz, NULL, 0) == -1)
 		PONA_SYSTEM_EXCEPTION;
-	proc = (kinfo_proc*)::malloc(sz);
+	proc = (kinfo_proc*)pona::malloc(sz);
 	::memset(proc, 0, sz);
 	if (::sysctl(mib, 4, proc, &sz, NULL, 0) == -1)
 		PONA_SYSTEM_EXCEPTION;
@@ -53,7 +52,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 #endif
 	else if (processStatus_ == SSTOP) processStatus_ = 'T';
 	else if (processStatus_ == SZOMB) processStatus_ = 'Z';
-	::free(proc);
+	pona::free(proc);
 #else
 	String path = Format("/proc/%%/stat") << processId;
 	Ref<File, Owner> file = new File(path);

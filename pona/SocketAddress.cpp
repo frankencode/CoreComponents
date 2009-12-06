@@ -8,7 +8,6 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <stdlib.h> // malloc
 #include <unistd.h> // gethostname
 #include <netdb.h> // getaddrinfo, freeaddrinfo, getnameinfo
 #include <string.h> // memset, memcpy

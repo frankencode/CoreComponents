@@ -6,7 +6,6 @@
  * See ../LICENSE for the license.
  */
 
-#include <string.h> // strdup
 #include "Utf8Source.hpp"
 #include "Utf8Sink.hpp"
 #include "Crc32.hpp"
@@ -19,17 +18,17 @@ namespace pona
 {
 
 String::String()
-	: Ref<List<Char>, Owner>(new Media)
+	: Ref<List<Char>, OwnerInstance>(new Media)
 {}
 
 String::String(const Char& ch)
-	: Ref<List<Char>, Owner>(new Media)
+	: Ref<List<Char>, OwnerInstance>(new Media)
 {
 	get()->append(ch);
 }
 
 String::String(const char* utf8, int numBytes, int numChars)
-	: Ref<List<Char>, Owner>(new Media)
+	: Ref<List<Char>, OwnerInstance>(new Media)
 {
 	if (numBytes == -1) {
 		numBytes = 0;
@@ -59,9 +58,14 @@ String::String(const char* utf8, int numBytes, int numChars)
 }
 
 String::String(Ref<Media, Owner> media)
-	: Ref<List<Char>, Owner>(media)
+	: Ref<List<Char>, OwnerInstance>(media)
+{}
+
+void String::String::set(Media* media)
 {
-	if (!get()) set(new Media);
+	if (!media)
+		media = new Media;
+	OwnerInstance< List<Char> >::set(media);
 }
 
 CString String::utf8() const
@@ -83,7 +87,7 @@ CString String::utf8() const
 	return buf;
 }
 
-char* String::strdup() const { return ::strdup(utf8()); }
+char* String::strdup() const { return pona::strdup(utf8().get()->at(0)); }
 
 String operator*(Char ch, int n)
 {

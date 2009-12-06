@@ -9,9 +9,9 @@
 #include <sys/wait.h> // waitpid
 #include <sys/stat.h> // umask
 #include <errno.h> // errno
-#include <stdlib.h> // malloc, free, exit
 #include <string.h> // memset
 #include <unistd.h> // chdir, readlink
+#include <stdlib.h> // getenv, setenv, free
 #include <time.h> // nanosleep
 #include <errno.h> // errno
 #ifdef __linux
@@ -103,11 +103,22 @@ void Process::cd(String path)
 
 String Process::cwd()
 {
-	char* cs = ::getcwd(0, 0x10000);
-	if (!cs)
-		PONA_SYSTEM_EXCEPTION;
-	String path(cs);
-	::free(cs);
+	int size = 0x1000;
+	char* buf = (char*)pona::malloc(size);
+	char* ret = 0;
+	while (true) {
+		ret = ::getcwd(buf, size);
+		if (ret) break;
+		if (errno == ERANGE) {
+			pona::free(buf);
+			size += 0x1000;
+			buf = (char*)pona::malloc(size);
+		}
+		else
+			PONA_SYSTEM_EXCEPTION;
+	}
+	String path(ret);
+	pona::free(buf);
 	return path;
 }
 
@@ -118,29 +129,29 @@ String Process::execPath()
 	CString lnPath = String(Format("/proc/%%/exe") << currentProcessId()).utf8();
 	ssize_t bufSize = 1024;
 	while (true) {
-		char* buf = (char*)::malloc(bufSize + 1);
+		char* buf = (char*)pona::malloc(bufSize + 1);
 		::memset(buf, 0, bufSize + 1);
 		ssize_t ret = ::readlink(lnPath, buf, bufSize);
 		if (ret == -1)
 			PONA_SYSTEM_EXCEPTION;
 		if (ret < bufSize) {
 			path = buf;
-			::free(buf);
+			pona::free(buf);
 			break;
 		}
 		bufSize *= 2;
-		::free(buf);
+		pona::free(buf);
 	}
 	#endif
 	#ifdef __MACH__
 	char* buf = 0;
 	uint32_t bufSize = 0;
 	_NSGetExecutablePath(buf, &bufSize);
-	buf = (char*)::malloc(bufSize + 1);
+	buf = (char*)pona::malloc(bufSize + 1);
 	::memset(buf, 0, bufSize + 1);
 	_NSGetExecutablePath(buf, &bufSize);
 	path = buf;
-	::free(buf);
+	pona::free(buf);
 	#endif
 	return path;
 }

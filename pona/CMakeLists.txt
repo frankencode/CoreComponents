@@ -3,6 +3,8 @@ SET(PONA_HEADER
 	
 	atoms
 	types.hpp
+	Sequence.hpp
+	Array.hpp
 	Exception.hpp
 	SpinMutex.hpp
 	Instance.hpp
@@ -14,11 +16,9 @@ SET(PONA_HEADER
 	NonCopyable.hpp
 	
 	container
-	Sequence.hpp
 	Stack.hpp
 	Queue.hpp
 	Heap.hpp
-	Array.hpp
 	ListObserver.hpp
 	List.hpp
 	Tree.hpp
@@ -28,6 +28,7 @@ SET(PONA_HEADER
 	AvlTree.hpp
 	Map.hpp
 	CString.hpp
+	StringObserverCow.hpp
 	String.hpp
 	
 	syntax
@@ -35,7 +36,6 @@ SET(PONA_HEADER
 	TokenScreen.hpp
 	TokenFactory.hpp
 	Syntax.hpp
-	SyntaxDefinition.hpp
 	SyntaxSugar.hpp
 	
 	stdio
@@ -43,6 +43,8 @@ SET(PONA_HEADER
 	SystemStream.hpp
 	FileStatus.hpp
 	File.hpp
+	DirEntry.hpp
+	Dir.hpp
 	Path.hpp
 	LineSource.hpp
 	LineSink.hpp
@@ -120,6 +122,7 @@ SET(PONA_SOURCE
 	# container
 	Tree.cpp
 	String.cpp
+	StringObserverCow.cpp
 	
 	# syntax
 	Token.cpp
@@ -127,9 +130,10 @@ SET(PONA_SOURCE
 	# stdio
 	Stream.cpp
 	SystemStream.cpp
-	File.cpp
-	Path.cpp
 	FileStatus.cpp
+	File.cpp
+	Dir.cpp
+	Path.cpp
 	LineSink.cpp
 	LineSource.cpp
 	StandardStreams.cpp
