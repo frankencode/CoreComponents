@@ -15,11 +15,11 @@
 namespace pona
 {
 
-class CString: public Ref<Array<char>, OwnerInstance>
+class CString: public Ref<Array<char>, Owner>
 {
 public:
 	CString() {}
-	CString(int length): Ref<Array<char>, OwnerInstance>(new Array<char>(length + 1)) { get()->set(length, 0); }
+	CString(int length): Ref<Array<char>, Owner>(new Array<char>(length + 1)) { get()->set(length, 0); }
 	inline operator char*() const { return get()->at(0); }
 	inline operator void*() const { return (void*)get()->at(0); }
 	inline operator uint8_t*() const { return (uint8_t*)get()->at(0); }

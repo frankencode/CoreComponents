@@ -35,6 +35,10 @@ void testFloat754()
 	print("unsignedMax, intMax = %%, %%\n", unsignedMax, intMax);
 	
 	print("sizeof(Instance) = %%\n", int(sizeof(Instance)));
+	print("sizeof(Ref<Instance>) = %%\n", int(sizeof(Ref<Instance>)));
+	print("sizeof(Ref<Instance, Owner>) = %%\n", int(sizeof(Ref<Instance, Owner>)));
+	print("sizeof(Ref<Instance, SetNull>) = %%\n", int(sizeof(Ref<Instance, SetNull>)));
+	print("sizeof(String) = %%\n", int(sizeof(String)));
 }
 
 int main()

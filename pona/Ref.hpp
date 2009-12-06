@@ -45,7 +45,7 @@ public:
 	
 	// non-casting initialization and copy operations
 	
-	Ref(T* b) { set(b); }
+	Ref(const T* b) { set(const_cast<T*>(b)); }
 	Ref(const Ref& b) { set(b.get()); }
 	
 	inline const Ref& operator=(T* b) { set(b); return *this; }
@@ -86,19 +86,14 @@ public:
 	
 	// access
 	
-	inline T* operator->() const {
-		return
-		#ifdef NDEBUG
-			this->get();
-		#else
-			this->saveGet();
-		#endif
-	}
+	inline T* operator->() const { return this->saveGet(); }
 	
 	inline T* saveGet() const {
-		T* instance = this->get();
+		T* instance = GetAndSetPolicy<T>::get();
+		#ifndef NDEBUG
 		if (!instance)
 			PONA_THROW(RefException, "Null reference");
+		#endif
 		return instance;
 	}
 	

@@ -53,17 +53,17 @@ public:
 	Variant(bool value): type_(BoolType), float_(value) {}
 	Variant(int value): type_(IntType), float_(value) {}
 	Variant(double value): type_(FloatType), float_(value) {}
-	Variant(const char* value): type_(StringType), ref_(String(value).media()) {}
+	Variant(const char* value): type_(StringType), ref_(String(value).get()) {}
 	Variant(Ref<String::Media, Owner> value): type_(StringType), ref_(value) {}
-	Variant(String value): type_(StringType), ref_(value.media()) {}
+	Variant(String value): type_(StringType), ref_(value.get()) {}
 	Variant(Ref<Instance> value): type_(RefType), ref_(value) {}
 	
 	inline const Variant& operator=(bool value) { type_ = BoolType; float_ = value;  return *this; }
 	inline const Variant& operator=(int value) { type_ = IntType; float_ = value; return *this; }
 	inline const Variant& operator=(double value) { type_ = FloatType; float_ = value; return *this; }
 	inline const Variant& operator=(Ref<String::Media, Owner> value) { type_ = StringType; ref_ = value; return *this; }
-	inline const Variant& operator=(const char* value) { type_ = StringType; ref_ = String(value).media(); return *this; }
-	inline const Variant& operator=(String value) { type_ = StringType; ref_ = value.media(); return *this; }
+	inline const Variant& operator=(const char* value) { type_ = StringType; ref_ = String(value).get(); return *this; }
+	inline const Variant& operator=(String value) { type_ = StringType; ref_ = value.get(); return *this; }
 	inline const Variant& operator=(Ref<Instance> value) { type_ = RefType; ref_ = value; return *this; }
 	
 	Variant(const Variant& b)

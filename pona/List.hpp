@@ -29,10 +29,10 @@ public:
 	inline T popBack() { T e; pop(length_-1, 1, &e); return e; }
 	inline void pushFront(T e) { push(0, 1, &e); }
 	inline T popFront() { T e; pop(0, 1, &e); return e; }
-	inline T front(int i) { return get(i); }
-	inline T back(int i) { return get(length_-(i + 1)); }
-	inline T first() { return get(0); }
-	inline T last() { return get(-1); }
+	inline T front(int i) const { return get(i); }
+	inline T back(int i) const { return get(length_-(i + 1)); }
+	inline T first() const { return get(0); }
+	inline T last() const { return get(-1); }
 	
 	inline void append(T e) { push(length_, 1, &e); }
 	inline void insert(int i, T e) { push(i, 1, &e); }
@@ -46,7 +46,7 @@ public:
 	void push(int i, int n = 1, const T* v = 0);
 	void pop(int i, int n = 1, T* v = 0);
 	
-	void read(int i, int n, T* v);
+	void read(int i, int n, T* v) const;
 	void write(int i, int n, const T* v);
 	void fill(int i, int n, T e);
 	
@@ -56,9 +56,9 @@ public:
 	T get(int i) const;
 	void set(int i, T e);
 	
-	inline Ref<List, Owner> range(int i, int n) { return new List(this, i, n); }
-	inline Ref<List, Owner> copy(int i, int n);
-	inline Ref<List, Owner> copy() { return copy(0, length_); }
+	inline Ref<List, Owner> range(int i, int n) const { return new List(this, i, n); }
+	inline Ref<List, Owner> copy(int i, int n) const;
+	inline Ref<List, Owner> copy() const { return copy(0, length_); }
 	
 	inline int find(T e) const { return find(0, length_, e); }
 	inline int find(int i, T e) const { return find(i, length_ - i, e); }
@@ -72,7 +72,7 @@ public:
 	inline bool contains(List* b) const { return find(0, length_, b) != length_; }
 	
 	typedef List< Ref<List, Owner> > ListOfList;
-	Ref<ListOfList, Owner> split(List* sep);
+	Ref<ListOfList, Owner> split(List* sep) const;
 	
 	bool operator<(const List& b) const;
 	bool operator==(const List& b) const;
@@ -466,7 +466,7 @@ void List<T>::pop(int i, int n, T* v)
 }
 
 template<class T>
-void List<T>::read(int i, int n, T* v)
+void List<T>::read(int i, int n, T* v) const
 {
 	if (n == 0) return;
 	
@@ -582,7 +582,7 @@ inline void List<T>::set(int i, T e)
 }
 
 template<class T>
-Ref<List<T>, Owner> List<T>::copy(int i, int n)
+Ref<List<T>, Owner> List<T>::copy(int i, int n) const
 {
 	if (i < 0) i += length_;
 	if (!((0 <= i) && (i + n <= length_)))
@@ -741,7 +741,7 @@ int List<T>::find(int i, int n, List* b) const
 }
 
 template<class T>
-Ref<typename List<T>::ListOfList, Owner> List<T>::split(List* sep)
+Ref<typename List<T>::ListOfList, Owner> List<T>::split(List* sep) const
 {
 	Ref<ListOfList> lol = new List<ListOfList>();
 	int i = 0;
