@@ -13,16 +13,17 @@
 namespace pona
 {
 
+template<class T>
 class ListObserver: public virtual Instance
 {
 public:
-	virtual void beforePush(int i, int n) {}
+	virtual bool beforePush(int i, int n, const T* v) { return true; }
 	virtual void afterPush(int i, int n) {}
 	
-	virtual void beforePop(int i, int n) {}
+	virtual bool beforePop(int i, int n) { return true; }
 	virtual void afterPop(int i, int n) {}
 	
-	virtual void beforeWrite(int i, int n) {}
+	virtual bool beforeWrite(int i, int n, const T* v) { return true; }
 	virtual void afterWrite(int i, int n) {}
 };
 

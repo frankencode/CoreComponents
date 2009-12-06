@@ -56,10 +56,10 @@ public:
 		return *this;
 	}
 	
-	Format& print(Variant x);
+	Format& print(const Variant& x);
 	
 	template<class T>
-	inline Format& operator<<(T x) { return print(x); }
+	inline Format& operator<<(const T& x) { return print(x); }
 	
 private:
 	enum { ExpAutoLimit = 6 };

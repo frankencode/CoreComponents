@@ -17,7 +17,6 @@
 #endif
 
 #include <unistd.h> // getpid
-#include <stdlib.h> // malloc, free
 #include <string.h> // memset
 #ifdef __linux
 #include "File.hpp"
@@ -68,7 +67,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 		// send request
 		{
 			int msgLen = NLMSG_LENGTH(sizeof(struct ifinfomsg));
-			struct nlmsghdr* msg = (struct nlmsghdr*)::malloc(msgLen);
+			struct nlmsghdr* msg = (struct nlmsghdr*)pona::malloc(msgLen);
 			if (!msg) PONA_SYSTEM_EXCEPTION;
 			int seq = 0;
 			
@@ -98,7 +97,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			if (::sendmsg(fd, &hdr, 0/*flags*/) == -1)
 				PONA_SYSTEM_EXCEPTION;
 			
-			::free(msg);
+			pona::free(msg);
 		}
 		
 		// process reply
@@ -109,7 +108,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			ssize_t bufSize = ::recvmsg(fd, &hdr, MSG_PEEK|MSG_TRUNC);
 			if (bufSize == -1) PONA_SYSTEM_EXCEPTION;
 			
-			void* buf = ::malloc(bufSize);
+			void* buf = pona::malloc(bufSize);
 			if (!buf) PONA_SYSTEM_EXCEPTION;
 			
 			struct iovec iov = { buf, bufSize };
@@ -170,7 +169,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 				}
 			}
 			
-			::free(buf);
+			pona::free(buf);
 		}
 		if (::close(fd) == -1)
 			PONA_SYSTEM_EXCEPTION;
@@ -198,7 +197,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 		// send request
 		{
 			int msgLen = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
-			struct nlmsghdr* msg = (struct nlmsghdr*)::malloc(msgLen);
+			struct nlmsghdr* msg = (struct nlmsghdr*)pona::malloc(msgLen);
 			if (!msg) PONA_SYSTEM_EXCEPTION;
 			int seq = 0;
 			
@@ -228,7 +227,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			if (::sendmsg(fd, &hdr, 0/*flags*/) == -1)
 				PONA_SYSTEM_EXCEPTION;
 			
-			::free(msg);
+			pona::free(msg);
 		}
 		
 		// process reply
@@ -239,7 +238,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			ssize_t bufSize = ::recvmsg(fd, &hdr, MSG_PEEK|MSG_TRUNC);
 			if (bufSize == -1) PONA_SYSTEM_EXCEPTION;
 			
-			void* buf = ::malloc(bufSize);
+			void* buf = pona::malloc(bufSize);
 			if (!buf) PONA_SYSTEM_EXCEPTION;
 			
 			struct iovec iov = { buf, bufSize };
@@ -328,7 +327,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 				}
 			}
 			
-			::free(buf);
+			pona::free(buf);
 		}
 		if (::close(fd) == -1)
 			PONA_SYSTEM_EXCEPTION;
@@ -387,16 +386,16 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 		struct ifconf ifc;
 		int capa = 32 * sizeof(struct ifreq);
 		ifc.ifc_len = capa;
-		ifc.ifc_req = (struct ifreq*)::malloc(capa);
+		ifc.ifc_req = (struct ifreq*)pona::malloc(capa);
 		
 		while (true) {
 			if (::ioctl(fd, SIOCGIFCONF, &ifc) == -1)
 				PONA_SYSTEM_EXCEPTION;
 			if (ifc.ifc_len == capa) {
-				::free(ifc.ifc_req);
+				pona::free(ifc.ifc_req);
 				capa *= 2;
 				ifc.ifc_len = capa;
-				ifc.ifc_req = (struct ifreq*)::malloc(capa);
+				ifc.ifc_req = (struct ifreq*)pona::malloc(capa);
 				continue;
 			}
 			break;
@@ -446,7 +445,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 			}
 		}
 		
-		::free(ifc.ifc_req);
+		pona::free(ifc.ifc_req);
 	}
 	
 	return list;
@@ -480,14 +479,14 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 	// race against changing address configuration
 	char* buf = 0;
 	while (true) {
-		buf = (char*)::malloc(bufSize);
+		buf = (char*)pona::malloc(bufSize);
 		if (!buf) PONA_SYSTEM_EXCEPTION;
 		
 		if (::sysctl(mib, 6, (void*)buf, &bufSize, NULL, 0) == -1) {
 			if (errno == ENOMEM) {
-				::free(buf);
+				pona::free(buf);
 				bufSize *= 2; // arbitrary, but safe choice
-				buf = (char*)::malloc(bufSize);
+				buf = (char*)pona::malloc(bufSize);
 				continue;
 			}
 			PONA_SYSTEM_EXCEPTION;
@@ -566,7 +565,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			}
 		}
 	}
-	::free(buf);
+	pona::free(buf);
 	return list;
 }
 #endif

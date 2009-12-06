@@ -64,7 +64,7 @@ bool FloatLiteral::match(String text, int i0, int* i1, float64_t* value)
 	Ref<Token, Owner> rootToken;
 	uint8_t buf[sizeof(Token) * 7];
 	
-	bool conform = SyntaxDefinition<String::Media>::match(text, i0, i1, &rootToken, 0, buf, sizeof(buf));
+	bool conform = Syntax<String::Media>::Definition::match(text, i0, i1, &rootToken, 0, buf, sizeof(buf));
 	
 	if (conform)
 		*value = read(text, rootToken);

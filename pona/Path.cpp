@@ -23,12 +23,14 @@ Path::Path(String path_)
 	: path_(path_)
 {}
 
+bool Path::isRoot() const { return path_ == "/"; }
+
 bool Path::isRelative() const { return !isAbsolute(); }
 bool Path::isAbsolute() const {
 	return (path_->length() > 0) ? (path_->get(0) == '/') : false;
 }
 
-Path Path::makeAbsolute() const
+Path Path::makeAbsoluteRelativeTo(String currentDir) const
 {
 	if (isAbsolute())
 		return path_;
@@ -51,11 +53,22 @@ Path Path::makeAbsolute() const
 	}
 	
 	String absolutePath;
-	if (!isAbsolute())
-		absolutePath = Process::cwd();
+	if (!isAbsolute()) {
+		if (currentDir->length() > 0)
+			absolutePath = currentDir->copy();
+		else
+			absolutePath = Process::cwd();
+	}
 	absolutePath << "/" << absoluteParts * '/';
 	
 	return absolutePath;
+}
+
+Path Path::makeAbsolute() const
+{
+	if (isAbsolute())
+		return path_;
+	return makeAbsoluteRelativeTo(String());
 }
 
 Path Path::fileName() const

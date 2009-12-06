@@ -34,7 +34,7 @@ public:
 /** \brief reference counting and secure destruction
   *
   * Base class for all classes T, which instances can be referred to by Ref<T>.
-  * Enforces a consistent allocation schema by suppressing two things:
+  * Enforces a consistent allocation schema by surpressing two things:
   *   - combination of static allocation and dynamic destruction
   *   - manual detruction by delete operator
   * In both cases an exception of type ReferenceException is thrown.
@@ -114,6 +114,9 @@ public:
 	}
 	
 	inline SpinMutex* const spinMutex() { return &spinMutex_; }
+	
+	Instance(const Instance& b) {}
+	inline const Instance& operator=(const Instance& b) { return *this; }
 	
 private:
 	SpinMutex spinMutex_;

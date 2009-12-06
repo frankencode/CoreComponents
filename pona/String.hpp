@@ -15,7 +15,7 @@
 namespace pona
 {
 
-class String: public Ref<List<Char>, Owner>
+class String: public Ref<List<Char>, OwnerInstance>
 {
 public:
 	typedef Char Element;
@@ -25,6 +25,7 @@ public:
 	String(const Char& ch);
 	String(const char* utf8, int numBytes = -1, int numChars = -1);
 	String(Ref<Media, Owner> media);
+	virtual void set(Media* media);
 	
 	inline Ref<Media> media() const { return get(); }
 	

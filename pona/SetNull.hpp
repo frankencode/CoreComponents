@@ -52,6 +52,10 @@ private:
 	T* instance_;
 };
 
+template<class T>
+class SetNullInstance: public SetNull<T>, public Instance
+{};
+
 } // namespace pona
 
 #endif // PONA_SETNULL_HPP

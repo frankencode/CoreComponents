@@ -8,12 +8,12 @@
 #ifndef PONA_FLOATLITERAL_HPP
 #define PONA_FLOATLITERAL_HPP
 
-#include "SyntaxDefinition.hpp"
+#include "Syntax.hpp"
 
 namespace pona
 {
 
-class FloatLiteral: public SyntaxDefinition<String::Media>
+class FloatLiteral: public Syntax<String::Media>::Definition
 {
 public:
 	FloatLiteral();

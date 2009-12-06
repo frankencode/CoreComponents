@@ -8,12 +8,12 @@
 #ifndef PONA_INTEGERLITERAL_HPP
 #define PONA_INTEGERLITERAL_HPP
 
-#include "SyntaxDefinition.hpp"
+#include "Syntax.hpp"
 
 namespace pona
 {
 
-class IntegerLiteral: public SyntaxDefinition<String::Media>
+class IntegerLiteral: public Syntax<String::Media>::Definition
 {
 public:
 	IntegerLiteral();
@@ -32,4 +32,3 @@ private:
 } // namespace pona
 
 #endif // PONA_INTEGERLITERAL_HPP
-

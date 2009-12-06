@@ -40,13 +40,14 @@ public:
 	inline void remove(int i, int n) { pop(i, n); }
 	inline int length() const { return length_; }
 	
-	inline void setObserver(Ref<ListObserver> observer) { observer_ = observer; }
+	typedef ListObserver<T> Observer;
+	inline void setObserver(Ref<Observer> observer) { observer_ = observer; }
 	
 	void push(int i, int n = 1, const T* v = 0);
 	void pop(int i, int n = 1, T* v = 0);
 	
 	void read(int i, int n, T* v);
-	void write(int i, int n, T* v);
+	void write(int i, int n, const T* v);
 	void fill(int i, int n, T e);
 	
 	void clear();
@@ -258,7 +259,7 @@ private:
 	Node* back_;
 	mutable Pos* posCached_;
 	
-	Ref<ListObserver, Owner> observer_;
+	Ref<Observer, Owner> observer_;
 };
 
 template<class T>
@@ -299,7 +300,9 @@ void List<T>::push(int i, int n, const T* v)
 	if (!((0 <= i) && (i <= length_)))
 		PONA_THROW(ListException, "Wrong index");
 	
-	if (observer_) observer_->beforePush(i, n);
+	if (observer_)
+		if (!observer_->beforePush(i, n, v))
+			return;
 	
 	if (parent_)
 	{
@@ -373,7 +376,9 @@ void List<T>::pop(int i, int n, T* v)
 	if (!((0 <= i) && (i + n <= length_)))
 		PONA_THROW(ListException, "Wrong index");
 	
-	if (observer_) observer_->beforePop(i, n);
+	if (observer_)
+		if (!observer_->beforePop(i, n))
+			return;
 	
 	if (parent_)
 	{
@@ -482,7 +487,7 @@ void List<T>::read(int i, int n, T* v)
 }
 
 template<class T>
-void List<T>::write(int i, int n, T* v)
+void List<T>::write(int i, int n, const T* v)
 {
 	if (n == 0) return;
 	
@@ -490,7 +495,9 @@ void List<T>::write(int i, int n, T* v)
 	if (!((0 <= i) && (i + n <= length_)))
 		PONA_THROW(ListException, "Wrong index");
 	
-	if (observer_) observer_->beforeWrite(i, n);
+	if (observer_)
+		if (!observer_->beforeWrite(i, n, v))
+			return;
 	
 	if (parent_) {
 		parent_->write(i + index0_, n, v);
@@ -509,26 +516,9 @@ void List<T>::write(int i, int n, T* v)
 template<class T>
 void List<T>::fill(int i, int n, T e)
 {
-	if (n == 0) return;
-	
-	if (i < 0) i += length_;
-	if (!((0 <= i) && (i + n <= length_)))
-		PONA_THROW(ListException, "Wrong index");
-	
-	if (observer_) observer_->beforeWrite(i, n);
-	
-	if (parent_) {
-		parent_->fill(i + index0_, n, e);
-	}
-	else {
-		Pos pos = translate(i);
-		for (int i = 0; i < n; ++i) {
-			pos.set(e);
-			pos.step();
-		}
-	}
-	
-	if (observer_) observer_->afterWrite(i, n);
+	Array<T> v(n);
+	v.clear(e);
+	write(i, n, v.at(0));
 }
 
 template<class T>
@@ -537,7 +527,9 @@ void List<T>::clear()
 	int n = length_;
 	if (n == 0) return;
 	
-	if (observer_) observer_->beforePop(0, n);
+	if (observer_) 
+		if (!observer_->beforePop(0, n))
+			return;
 	
 	if (parent_) {
 		parent_->pop(index0_, length_);
@@ -577,7 +569,9 @@ inline void List<T>::set(int i, T e)
 	if (!((0 <= i) && (i < length_)))
 		PONA_THROW(ListException, "Wrong index");
 	
-	if (observer_) observer_->beforeWrite(i, 1);
+	if (observer_)
+		if (!observer_->beforeWrite(i, 1, &e))
+			return;
 	
 	if (parent_)
 		parent_->set(i + index0_, e);
@@ -667,7 +661,12 @@ void List<T>::push(int i, int n, List* b)
 	if (!((0 <= i) && (i <= length_) && (n <= b->length_)))
 		PONA_THROW(ListException, "Wrong index or length");
 	
-	if (observer_) observer_->beforePush(i, n);
+	if (observer_) {
+		Array<T> v(b->length());
+		b->read(0, b->length(), v.at(0));
+		if (!observer_->beforePush(i, n, v))
+			return;
+	}
 	
 	if (parent_) {
 		parent_->push(index0_ + i, n, b);

@@ -12,14 +12,14 @@
 #include "String.hpp"
 #include "Variant.hpp"
 #include "List.hpp"
-#include "SyntaxDefinition.hpp"
+#include "Syntax.hpp"
 
 namespace pona
 {
 
 PONA_EXCEPTION(OptionsException, Exception);
 
-class Options: public SyntaxDefinition<String::Media>
+class Options: public Syntax<String::Media>::Definition
 {
 public:
 	Options();

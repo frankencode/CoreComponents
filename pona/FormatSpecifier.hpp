@@ -8,12 +8,12 @@
 #ifndef PONA_FORMATSPECIFIER_HPP
 #define PONA_FORMATSPECIFIER_HPP
 
-#include "SyntaxDefinition.hpp"
+#include "Syntax.hpp"
 
 namespace pona
 {
 
-class FormatSpecifier: public SyntaxDefinition<String::Media>
+class FormatSpecifier: public Syntax<String::Media>::Definition
 {
 public:
 	FormatSpecifier();
@@ -32,4 +32,3 @@ private:
 } // namespace pona
 
 #endif // PONA_FORMATSPECIFIER_HPP
-

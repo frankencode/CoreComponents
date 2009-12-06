@@ -96,7 +96,7 @@ Ref<Format::PlaceHolder, Owner> Format::nextPlaceHolder()
 	return ph;
 }
 
-Format& Format::print(Variant x)
+Format& Format::print(const Variant& x)
 {
 	if (x.type() == Variant::UndefType)
 		print("undef");
