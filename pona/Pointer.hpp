@@ -24,10 +24,6 @@ private:
 	T* instance_;
 };
 
-template<class T>
-class PointerInstance: public Pointer<T>, public Instance
-{};
-
 } // namespace pona
 
 #endif // PONA_POINTER_HPP

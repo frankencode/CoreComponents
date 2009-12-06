@@ -18,17 +18,17 @@ namespace pona
 {
 
 String::String()
-	: Ref<List<Char>, OwnerInstance>(new Media)
+	: Ref<List<Char>, Owner>(new Media)
 {}
 
 String::String(const Char& ch)
-	: Ref<List<Char>, OwnerInstance>(new Media)
+	: Ref<List<Char>, Owner>(new Media)
 {
 	get()->append(ch);
 }
 
 String::String(const char* utf8, int numBytes, int numChars)
-	: Ref<List<Char>, OwnerInstance>(new Media)
+	: Ref<List<Char>, Owner>(new Media)
 {
 	if (numBytes == -1) {
 		numBytes = 0;
@@ -58,15 +58,8 @@ String::String(const char* utf8, int numBytes, int numChars)
 }
 
 String::String(Ref<Media, Owner> media)
-	: Ref<List<Char>, OwnerInstance>(media)
+	: Ref<List<Char>, Owner>(media)
 {}
-
-void String::String::set(Media* media)
-{
-	if (!media)
-		media = new Media;
-	OwnerInstance< List<Char> >::set(media);
-}
 
 CString String::utf8() const
 {

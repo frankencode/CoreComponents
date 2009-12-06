@@ -15,7 +15,7 @@
 namespace pona
 {
 
-class String: public Ref<List<Char>, OwnerInstance>
+class String: public Ref<List<Char>, Owner>
 {
 public:
 	typedef Char Element;
@@ -25,9 +25,19 @@ public:
 	String(const Char& ch);
 	String(const char* utf8, int numBytes = -1, int numChars = -1);
 	String(Ref<Media, Owner> media);
-	virtual void set(Media* media);
 	
-	inline Ref<Media> media() const { return get(); }
+	// ensure string is never null
+	inline virtual void set(Media* media) {
+		if (!media)
+			media = new Media;
+		Owner< List<Char> >::set(media);
+	}
+	
+	// copy-on-write strategy
+	inline operator Media*() { return cowGet(); }
+	inline Media* operator->() { return cowGet(); }
+	inline operator const Media*() const { return saveGet(); }
+	inline const Media* operator->() const { return saveGet(); }
 	
 	inline bool operator<(const String& b) const { return *get() < *b.get(); }
 	inline bool operator==(const String& b) const { return *get() == *b.get(); }
@@ -42,6 +52,13 @@ public:
 	
 	CString utf8() const;
 	char* strdup() const;
+	
+private:
+	inline Media* cowGet() {
+		if (saveGet()->refCount() > 1)
+			Owner< List<Char> >::set(saveGet()->copy());
+		return saveGet();
+	}
 };
 
 inline bool operator<(String a, const char* b) { return a < String(b); }

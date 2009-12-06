@@ -116,7 +116,7 @@ Format& Format::print(const Variant& x)
 void Format::printInt(uint64_t x, int sign)
 {
 	Ref<PlaceHolder, Owner> ph = nextPlaceHolder();
-	String text = *this;
+	String& text = *this;
 	
 	digits_.clear();
 	if (x == 0) {
@@ -169,7 +169,7 @@ void Format::printInt(uint64_t x, int sign)
 void Format::printFloat(float64_t x)
 {
 	Ref<PlaceHolder, Owner> ph = nextPlaceHolder();
-	String text = *this;
+	String& text = *this;
 	
 	int wi = (ph->wi_ == 0) ? 1 : ph->wi_;
 	int wf = ph->wf_;
