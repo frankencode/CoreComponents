@@ -5,7 +5,6 @@
  *
  * See ../LICENSE for the license.
  */
-
 #ifndef PONA_NONCOPYABLE_HPP
 #define PONA_NONCOPYABLE_HPP
 

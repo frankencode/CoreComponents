@@ -1,3 +1,10 @@
+/*
+ * GlobalSpinMutex.hpp -- process-vide spin mutex
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_GLOBALSPINMUTEX_HPP
 #define PONA_GLOBALSPINMUTEX_HPP
 

@@ -8,7 +8,6 @@
 #ifndef PONA_VARIANT_HPP
 #define PONA_VARIANT_HPP
 
-#include <stdio.h> // DEBUG
 #include "atoms"
 #include "String.hpp"
 

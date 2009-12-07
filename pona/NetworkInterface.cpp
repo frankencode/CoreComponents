@@ -1,3 +1,11 @@
+/*
+ * NetworkInterface.cpp -- network interface
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #ifdef __linux
 #include <sys/types.h>
 #include <sys/socket.h> // socket, sendmsg, recvmsg
