@@ -86,7 +86,7 @@ float64_t CharList::toFloat64(bool* ok)
 	return value;
 }
 
-Ref<CharList> CharList::toLower() const
+Ref<CharList, Owner> CharList::toLower() const
 {
 	Ref<CharList, Owner> s2 = new CharList;
 	s2->push(0, length());
@@ -95,7 +95,7 @@ Ref<CharList> CharList::toLower() const
 	return s2;
 }
 
-Ref<CharList> CharList::toUpper() const
+Ref<CharList, Owner> CharList::toUpper() const
 {
 	Ref<CharList, Owner> s2 = new CharList;
 	s2->push(0, length());
@@ -104,7 +104,7 @@ Ref<CharList> CharList::toUpper() const
 	return s2;
 }
 
-Ref<CharList> CharList::stripLeadingSpace() const
+Ref<CharList, Owner> CharList::stripLeadingSpace() const
 {
 	int n = length();
 	while (n > 0) {
@@ -116,7 +116,7 @@ Ref<CharList> CharList::stripLeadingSpace() const
 	return copy(length() - n, n);
 }
 
-Ref<CharList> CharList::stripTrailingSpace() const
+Ref<CharList, Owner> CharList::stripTrailingSpace() const
 {
 	int n = length();
 	while (n > 0) {
@@ -160,12 +160,12 @@ CharList::CharList(Ref<Super> parent, int i, int n)
 	: Super(parent, i, n)
 {}
 
-Ref<CharList::Super> CharList::newList() const
+Ref<CharList::Super, Owner> CharList::newList() const
 {
 	return new CharList;
 }
 
-Ref<CharList::Super> CharList::newChildList(Ref<Super> parent, int i, int n) const
+Ref<CharList::Super, Owner> CharList::newChildList(Ref<Super> parent, int i, int n) const
 {
 	return new CharList(parent, i, n);
 }

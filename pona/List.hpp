@@ -88,8 +88,8 @@ public:
 	
 protected:
 	List(Ref<List> parent, int index0, int length);
-	virtual Ref<List> newList() const { return new List; }
-	virtual Ref<List> newChildList(Ref<List> parent, int i, int n) const { return new List(parent, i, n); }
+	virtual Ref<List, Owner> newList() const { return new List; }
+	virtual Ref<List, Owner> newChildList(Ref<List> parent, int i, int n) const { return new List(parent, i, n); }
 	
 private:
 	int find(int i, int n, const T& e) const;
