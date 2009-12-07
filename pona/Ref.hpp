@@ -1,5 +1,5 @@
 /*
- * Ref.hpp -- auto-casted object reference
+ * Ref.hpp -- type-safe auto-casted object references
  *
  * Copyright (c) 2007-2009, Frank Mertens
  *
@@ -19,13 +19,14 @@ namespace pona
 
 PONA_EXCEPTION(RefException, Exception);
 
-/** \brief auto-casted object reference
+/** \brief type-safe auto-casted object references
   *
   * Provides:
   *   - guarding against access after destruction
   *   - syntactic compatibility to C pointers
   *   - automatic dynamic typecasting on assignment
   *     (as in highlevel languages like Java or Python)
+  *   - detection of incompatible types
   *   - full compatiblity to containers
   *
   * For performance reasons Ref::set() is not thread-safe by default!
