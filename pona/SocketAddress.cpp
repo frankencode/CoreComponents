@@ -51,7 +51,7 @@ SocketAddress::SocketAddress(int family, String address, int port)
 		PONA_THROW(NetworkingException, "Unsupported address family");
 	
 	if ((address != String()) && ((address != "*")))
-		if (inet_pton(family, address.utf8(), addr) != 1)
+		if (inet_pton(family, address->utf8(), addr) != 1)
 			PONA_THROW(NetworkingException, "Broken address string");
 }
 
@@ -155,8 +155,8 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String ser
 	
 	int ret;
 	{
-		CString hostNameUtf8 = hostName.utf8();
-		CString serviceNameUtf8 = serviceName.utf8();
+		CString hostNameUtf8 = hostName->utf8();
+		CString serviceNameUtf8 = serviceName->utf8();
 		char* h = 0;
 		char* s = 0;
 		if ((hint.ai_flags & AI_PASSIVE) == 0) h = hostNameUtf8;

@@ -17,7 +17,7 @@ class FormatSpecifier: public Syntax<String::Media>::Definition
 {
 public:
 	FormatSpecifier();
-	bool find(String text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, Char* blank);
+	bool find(Ref<String::Media> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, Char* blank);
 	
 private:
 	RULE width_;

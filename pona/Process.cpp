@@ -97,7 +97,7 @@ int Process::wait()
 
 void Process::cd(String path)
 {
-	if (::chdir(path.utf8()) == -1)
+	if (::chdir(path->utf8()) == -1)
 		PONA_SYSTEM_EXCEPTION;
 }
 
@@ -126,7 +126,7 @@ String Process::execPath()
 {
 	String path;
 	#ifdef __linux
-	CString lnPath = String(Format("/proc/%%/exe") << currentProcessId()).utf8();
+	CString lnPath = String(Format("/proc/%%/exe") << currentProcessId())->utf8();
 	ssize_t bufSize = 1024;
 	while (true) {
 		char* buf = (char*)pona::malloc(bufSize + 1);
@@ -167,19 +167,19 @@ bool Process::isSuperUser() { return (::geteuid() == 0) || (::getegid() == 0); }
 
 String Process::env(String key)
 {
-	return getenv(key.utf8());
+	return getenv(key->utf8());
 }
 
 void Process::setEnv(String key, String value)
 {
-	if (setenv(key.utf8(), value.utf8(), 1) == -1)
+	if (setenv(key->utf8(), value->utf8(), 1) == -1)
 		PONA_SYSTEM_EXCEPTION;
 }
 
 void Process::unsetEnv(String key)
 {
 	errno = 0;
-	unsetenv(key.utf8());
+	unsetenv(key->utf8());
 	if (errno != 0)
 		PONA_SYSTEM_EXCEPTION;
 }

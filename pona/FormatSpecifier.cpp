@@ -72,7 +72,7 @@ FormatSpecifier::FormatSpecifier()
 	LINK();
 }
 
-bool FormatSpecifier::find(String text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, Char* blank)
+bool FormatSpecifier::find(Ref<String::Media> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, Char* blank)
 {
 	Ref<Token, Owner> rootToken = 0;
 	
@@ -89,15 +89,15 @@ bool FormatSpecifier::find(String text, int* i0, int* i1, int* w, int* wi, int* 
 			
 			if (token->rule() == width_->id())
 			{
-				*w = toInt(value);
+				*w = value->toInt();
 			}
 			else if (token->rule() == integerWidth_->id())
 			{
-				*wi = toInt(value);
+				*wi = value->toInt();
 			}
 			else if (token->rule() == fractionWidth_->id())
 			{
-				*wf = toInt(value);
+				*wf = value->toInt();
 			}
 			else if (token->rule() == base_->id())
 			{

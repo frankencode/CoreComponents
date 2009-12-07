@@ -98,7 +98,7 @@ public:
 	}
 	
 	template<class T2>
-	inline T2* cast() const { return dynamic_cast<T2>(this->get()); }
+	inline T2* cast() const { return PONA_CAST_FROM_TO(T, T2, this->get()); }
 };
 
 } // namespace pona

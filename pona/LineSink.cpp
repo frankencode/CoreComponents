@@ -43,7 +43,7 @@ void LineSink::writeLine(String line)
 
 void LineSink::write(String buf)
 {
-	CString utf8 = buf.utf8();
+	CString utf8 = buf->utf8();
 	stream_->write(utf8, utf8->length() - 1);
 }
 

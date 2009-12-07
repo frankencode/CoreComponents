@@ -252,7 +252,7 @@ void Options::readOption(String line, Ref<Token> token)
 			Char name = line->get(token->index());
 			Ref<Option> option = optionByShortName(name);
 			if (!option)
-				PONA_THROW(OptionsException, String(Format("Unsupported option: '-%%'") << name).utf8());
+				PONA_THROW(OptionsException, String(Format("Unsupported option: '-%%'") << name)->utf8());
 			
 			token = token->nextSibling();
 			if (token) {
@@ -274,7 +274,7 @@ void Options::readOption(String line, Ref<Token> token)
 		String name = line->range(token->index(), token->length());
 		Ref<Option> option = optionByLongName(name);
 		if (!option)
-			PONA_THROW(OptionsException, String(Format("Unsupported option: '--%%'") << name).utf8());
+			PONA_THROW(OptionsException, String(Format("Unsupported option: '--%%'") << name)->utf8());
 		
 		token = token->nextSibling();
 		if (!token)
@@ -302,7 +302,7 @@ void Options::readValue(Ref<Option> option, String line, Ref<Token> token)
 	}
 	else if (value->type()== Variant::IntType) {
 		bool ok = false;
-		int x = toInt(s, &ok);
+		int x = s->toInt(&ok);
 		
 		if (!ok)
 			PONA_THROW(OptionsException, "Unrecognized option syntax");
@@ -311,7 +311,7 @@ void Options::readValue(Ref<Option> option, String line, Ref<Token> token)
 	}
 	else if (value->type() == Variant::FloatType) {
 		bool ok = false;
-		double x = toFloat(s, &ok);
+		double x = s->toFloat(&ok);
 		
 		if (!ok)
 			PONA_THROW(OptionsException, "Unrecognized option syntax");

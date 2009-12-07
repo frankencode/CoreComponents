@@ -17,8 +17,8 @@ class FloatLiteral: public Syntax<String::Media>::Definition
 {
 public:
 	FloatLiteral();
-	bool match(String text, int i0, int* i1, float64_t* value);
-	float64_t read(String text, Ref<Token> token) const;
+	bool match(Ref<String::Media> text, int i0, int* i1, float64_t* value);
+	float64_t read(Ref<String::Media> text, Ref<Token> token) const;
 	
 private:
 	RULE sign_;

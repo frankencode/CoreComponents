@@ -70,7 +70,7 @@ int File::openFlags() const
 
 bool File::access(int flags) const
 {
-	return isOpen() ? ((openFlags_ & flags) == flags) : (::access(path_.utf8(), flags) == 0);
+	return isOpen() ? ((openFlags_ & flags) == flags) : (::access(path_->utf8(), flags) == 0);
 }
 
 bool File::exists() const
@@ -80,7 +80,7 @@ bool File::exists() const
 
 void File::create(int mode)
 {
-	int fd = ::open(path_.utf8(), O_RDONLY|O_CREAT|O_EXCL, mode);
+	int fd = ::open(path_->utf8(), O_RDONLY|O_CREAT|O_EXCL, mode);
 	if (fd == -1)
 		PONA_THROW(StreamSemanticException, systemError());
 	::close(fd);
@@ -88,7 +88,7 @@ void File::create(int mode)
 
 void File::unlink()
 {
-	if (::unlink(path_.utf8()) == -1)
+	if (::unlink(path_->utf8()) == -1)
 		PONA_THROW(StreamSemanticException, systemError());
 }
 
@@ -108,7 +108,7 @@ void File::createUnique(int mode, Char placeHolder)
 					path_->set(i, 'A' + r - 36);
 			}
 		}
-		int fd = ::open(path_.utf8(), O_RDONLY|O_CREAT|O_EXCL, mode);
+		int fd = ::open(path_->utf8(), O_RDONLY|O_CREAT|O_EXCL, mode);
 		if (fd == -1) {
 			if (errno != EEXIST)
 				PONA_THROW(StreamSemanticException, systemError());
@@ -128,7 +128,7 @@ void File::truncate(off_t length)
 			PONA_THROW(StreamSemanticException, systemError());
 	}
 	else {
-		if (::truncate(path_.utf8(), length) == -1)
+		if (::truncate(path_->utf8(), length) == -1)
 			PONA_THROW(StreamSemanticException, systemError());
 	}
 }
@@ -160,7 +160,7 @@ void File::open(int flags)
 		h = O_WRONLY;
 	else if (flags == (Read|Write))
 		h = O_RDWR;
-	fd_ = ::open(path_.utf8(), h);
+	fd_ = ::open(path_->utf8(), h);
 	if (fd_ == -1)
 		PONA_THROW(StreamSemanticException, systemError());
 	openFlags_ = flags;

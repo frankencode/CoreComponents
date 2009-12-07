@@ -66,12 +66,12 @@ ProcessStatus::ProcessStatus(pid_t processId)
 		line->fill(i0, i1 - i0, 'x');
 	}
 	Ref<StringList, Owner> parts = line / ' ';
-	processId_ = toInt(parts->get(0));
-	parentProcessId_ = toInt(parts->get(3));
-	processGroupId_ = toInt(parts->get(4));
-	foregroundProcessGroupId_ = toInt(parts->get(7));
+	processId_ = parts->get(0)->toInt();
+	parentProcessId_ = parts->get(3)->toInt();
+	processGroupId_ = parts->get(4)->toInt();
+	foregroundProcessGroupId_ = parts->get(7)->toInt();
 	/*{
-		int code = toInt(parts->get(6));
+		int code = parts->get(6)->toInt();
 		int major = (code >> 8) & 0xFF;
 		int minor = (code & 0xFF) | ((code >> 20) << 8);
 		 // interpretation according to lanana.org

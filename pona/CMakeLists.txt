@@ -29,6 +29,7 @@ SET(PONA_HEADER
 	Map.hpp
 	CString.hpp
 	String.hpp
+	CharList.hpp
 	
 	syntax
 	Token.hpp
@@ -121,6 +122,7 @@ SET(PONA_SOURCE
 	# container
 	Tree.cpp
 	String.cpp
+	CharList.cpp
 	
 	# syntax
 	Token.cpp

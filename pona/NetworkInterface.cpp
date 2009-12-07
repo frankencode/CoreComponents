@@ -357,7 +357,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 			Ref<NetworkInterface, Owner> interface = new NetworkInterface;
 			list->append(interface);
 			Ref<StringList, Owner> parts = line / ':';
-			String name = stripLeadingSpace(parts->get(0));
+			String name = parts->get(0)->stripLeadingSpace();
 			interface->name_ = name;
 			
 			{

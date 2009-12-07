@@ -55,7 +55,7 @@ Path Path::makeAbsoluteRelativeTo(String currentDir) const
 	String absolutePath;
 	if (!isAbsolute()) {
 		if (currentDir->length() > 0)
-			absolutePath = currentDir;
+			absolutePath = currentDir->copy();
 		else
 			absolutePath = Process::cwd();
 	}

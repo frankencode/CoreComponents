@@ -108,6 +108,21 @@ public:
 	Char(uint32_t ch): ch_(ch) {}
 	inline const Char& operator=(uint32_t ch) { ch_ = ch; return *this; }
 	inline operator uint32_t() const { return ch_; }
+
+	Char toLower() {
+		Char ch = ch_;
+		if (('A' <= ch) && (ch <= 'Z'))
+			ch = ch + 'a' - 'A';
+		return ch;
+	}
+	
+	Char toUpper() {
+		Char ch = ch_;
+		if (('a' <= ch) && (ch <= 'z'))
+			ch = ch + 'A' - 'a';
+		return ch;
+	}
+
 private:
 	uint32_t ch_;
 };
