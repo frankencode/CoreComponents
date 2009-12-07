@@ -5,7 +5,6 @@
  *
  * See ../LICENSE for the license.
  */
-
 #ifndef PONA_PROCESSFACTORY_HPP
 #define PONA_PROCESSFACTORY_HPP
 

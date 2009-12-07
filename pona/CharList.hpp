@@ -1,3 +1,10 @@
+/*
+ * CharList.hpp -- Unicode character list
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_CHARLIST_HPP
 #define PONA_CHARLIST_HPP
 

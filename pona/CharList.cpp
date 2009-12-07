@@ -1,3 +1,11 @@
+/*
+ * CharList.cpp -- Unicode character list
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #include "FormatSyntax.hpp"
 #include "IntegerLiteral.hpp"
 #include "FloatLiteral.hpp"
