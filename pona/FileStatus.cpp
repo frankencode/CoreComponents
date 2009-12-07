@@ -32,14 +32,14 @@ void FileStatus::setTimes(Time lastAccess, Time lastModified)
 	tv[0].tv_usec = lastAccess.usec();
 	tv[1].tv_sec = lastModified.sec();
 	tv[1].tv_usec = lastModified.usec();
-	int ret = (fd_ != -1) ? ::futimes(fd_, tv) : ::utimes(path_.utf8(), tv);
+	int ret = (fd_ != -1) ? ::futimes(fd_, tv) : ::utimes(path_->utf8(), tv);
 	if(ret == -1)
 		PONA_SYSTEM_EXCEPTION;
 }
 
 void FileStatus::update(bool* exists)
 {
-	int ret = (fd_ != -1) ? ::fstat(fd_, this) : ::stat(path_.utf8(), this);
+	int ret = (fd_ != -1) ? ::fstat(fd_, this) : ::stat(path_->utf8(), this);
 	if (ret == -1) {
 		if (exists) {
 			if ((errno == ENOENT) || (errno == ENOTDIR)) {

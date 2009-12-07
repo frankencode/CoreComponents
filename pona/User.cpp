@@ -35,7 +35,7 @@ User::User(String name)
 	CString buf(bufSize);
 	struct passwd space;
 	struct passwd* entry = 0;
-	if (::getpwnam_r(name.utf8(), &space, buf, bufSize, &entry) != 0)
+	if (::getpwnam_r(name->utf8(), &space, buf, bufSize, &entry) != 0)
 		PONA_SYSTEM_EXCEPTION;
 	load(entry);
 }
@@ -51,7 +51,7 @@ void User::load(struct passwd* entry)
 		if (fullName_->length() > 0)
 			if ((fullName_->get(0) == ',') || (fullName_->get(-1) == ',')) {
 				fullName_ = loginName_;
-				fullName_->set(0, upperCase(fullName_->get(0)));
+				fullName_->set(0, fullName_->get(0).toUpper());
 				// fullName_ << " Anonymous";
 			}
 		home_ = entry->pw_dir;

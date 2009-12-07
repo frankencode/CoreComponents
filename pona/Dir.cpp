@@ -33,20 +33,20 @@ bool Dir::exists() const { return File(path_).exists(); }
 
 void Dir::create(int mode)
 {
-	if (::mkdir(path_.utf8(), mode) == -1)
+	if (::mkdir(path_->utf8(), mode) == -1)
 		PONA_SYSTEM_EXCEPTION;
 }
 
 void Dir::unlink()
 {
-	if (::rmdir(path_.utf8()))
+	if (::rmdir(path_->utf8()))
 		PONA_SYSTEM_EXCEPTION;
 }
 
 void Dir::open()
 {
 	if (dir_) return;
-	dir_ = ::opendir(path_.utf8());
+	dir_ = ::opendir(path_->utf8());
 	if (!dir_)
 		PONA_SYSTEM_EXCEPTION;
 }

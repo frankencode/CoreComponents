@@ -72,4 +72,3 @@ int main()
 {
 	return pona::main();
 }
-

@@ -10,34 +10,33 @@
 
 #include "atoms"
 #include "CString.hpp"
-#include "List.hpp"
+#include "CharList.hpp"
 
 namespace pona
 {
 
-class String: public Ref<List<Char>, Owner>
+class String: public Ref<CharList, Owner>
 {
 public:
 	typedef Char Element;
-	typedef List<Char> Media;
+	typedef CharList Media;
 	
 	String();
 	String(const Char& ch);
 	String(const char* utf8, int numBytes = -1, int numChars = -1);
-	String(Ref<Media, Owner> media);
+	
+	template<template<class> class SetAndGetPolicy>
+	String(Ref<CharList::Super, SetAndGetPolicy> super) { set(super.cast<Media>()); }
+	
+	template<template<class> class SetAndGetPolicy>
+	String(Ref<CharList, SetAndGetPolicy> media) { set(media); }
 	
 	// ensure string is never null
 	inline virtual void set(Media* media) {
 		if (!media)
 			media = new Media;
-		Owner< List<Char> >::set(media);
+		Owner<Media>::set(media);
 	}
-	
-	// copy-on-write strategy
-	inline operator Media*() { return cowGet(); }
-	inline Media* operator->() { return cowGet(); }
-	inline operator const Media*() const { return saveGet(); }
-	inline const Media* operator->() const { return saveGet(); }
 	
 	inline bool operator<(const String& b) const { return *get() < *b.get(); }
 	inline bool operator==(const String& b) const { return *get() == *b.get(); }
@@ -49,16 +48,6 @@ public:
 	inline String& operator<<(String b) { get()->append(b.get()); return *this; }
 	inline String& operator<<(const char* b) { get()->append(String(b)); return *this; }
 	inline String& operator<<(Char ch) { get()->append(ch); return *this; }
-	
-	CString utf8() const;
-	char* strdup() const;
-	
-private:
-	inline Media* cowGet() {
-		if (saveGet()->refCount() > 1)
-			Owner< List<Char> >::set(saveGet()->copy());
-		return saveGet();
-	}
 };
 
 inline bool operator<(String a, const char* b) { return a < String(b); }
@@ -90,20 +79,6 @@ inline Ref<StringList, Owner> operator/(String text, char sep) { return text / S
 inline String operator*(Ref<StringList> parts, const char* sep) { return parts * String(sep); }
 inline String operator*(Ref<StringList> parts, Char sep) { return parts * String(sep); }
 inline String operator*(Ref<StringList> parts, char sep) { return parts * String(sep); }
-
-int toInt(String s, bool* ok = 0);
-double toFloat(String s, bool* ok = 0);
-int64_t toInt64(String s, bool* ok = 0);
-uint64_t toUInt64(String s, bool* ok = 0);
-float64_t toFloat64(String s, bool* ok = 0);
-
-Char lowerCase(Char ch);
-Char upperCase(Char ch);
-String toLower(String s);
-String toUpper(String s);
-String stripLeadingSpace(String s);
-String stripTrailingSpace(String s);
-uint32_t crc32(String s);
 
 } // namespace pona
 

@@ -25,17 +25,17 @@ public:
 	List();
 	~List();
 	
-	inline void pushBack(T e) { push(length_, 1, &e); }
+	inline void pushBack(const T& e) { push(length_, 1, &e); }
 	inline T popBack() { T e; pop(length_-1, 1, &e); return e; }
-	inline void pushFront(T e) { push(0, 1, &e); }
+	inline void pushFront(const T& e) { push(0, 1, &e); }
 	inline T popFront() { T e; pop(0, 1, &e); return e; }
 	inline T front(int i) const { return get(i); }
 	inline T back(int i) const { return get(length_-(i + 1)); }
 	inline T first() const { return get(0); }
 	inline T last() const { return get(-1); }
 	
-	inline void append(T e) { push(length_, 1, &e); }
-	inline void insert(int i, T e) { push(i, 1, &e); }
+	inline void append(const T& e) { push(length_, 1, &e); }
+	inline void insert(int i, const T& e) { push(i, 1, &e); }
 	inline void remove(int i, T* e = 0) { pop(i, 1, e); }
 	inline void remove(int i, int n) { pop(i, n); }
 	inline int length() const { return length_; }
@@ -48,7 +48,7 @@ public:
 	
 	void read(int i, int n, T* v) const;
 	void write(int i, int n, const T* v);
-	void fill(int i, int n, T e);
+	void fill(int i, int n,  const T& e);
 	
 	void clear();
 	
@@ -56,23 +56,20 @@ public:
 	T get(int i) const;
 	void set(int i, T e);
 	
-	inline Ref<List, Owner> range(int i, int n) const { return new List(this, i, n); }
+	inline Ref<List, Owner> range(int i, int n) const { return newChildList(this, i, n); }
 	inline Ref<List, Owner> copy(int i, int n) const;
 	inline Ref<List, Owner> copy() const { return copy(0, length_); }
 	
-	inline int find(T e) const { return find(0, length_, e); }
-	inline int find(int i, T e) const { return find(i, length_ - i, e); }
-	inline bool contains(T e) const { return find(e) != length_; }
-	int replace(T a, T b);
+	inline int find(const T& e) const { return find(0, length_, e); }
+	inline int find(int i, const T& e) const { return find(i, length_ - i, e); }
+	inline bool contains(const T& e) const { return find(e) != length_; }
+	int replace(const T& a, const T& b);
 	
 	inline void insert(int i, List* b) { push(i, b->length_, b); }
 	inline void append(List* b) { insert(length_, b); }
 	inline int find(List* b) const { return find(0, length_, b); }
 	inline int find(int i, List* b) const { return find(i, length_ - i, b); }
 	inline bool contains(List* b) const { return find(0, length_, b) != length_; }
-	
-	typedef List< Ref<List, Owner> > ListOfList;
-	Ref<ListOfList, Owner> split(List* sep) const;
 	
 	bool operator<(const List& b) const;
 	bool operator==(const List& b) const;
@@ -91,9 +88,11 @@ public:
 	
 protected:
 	List(Ref<List> parent, int index0, int length);
+	virtual Ref<List> newList() const { return new List; }
+	virtual Ref<List> newChildList(Ref<List> parent, int i, int n) const { return new List(parent, i, n); }
 	
 private:
-	int find(int i, int n, T e) const;
+	int find(int i, int n, const T& e) const;
 	void push(int i, int n, List* b);
 	int find(int i, int n, List* b) const;
 	
@@ -514,7 +513,7 @@ void List<T>::write(int i, int n, const T* v)
 }
 
 template<class T>
-void List<T>::fill(int i, int n, T e)
+void List<T>::fill(int i, int n, const T& e)
 {
 	Array<T> v(n);
 	v.clear(e);
@@ -594,7 +593,7 @@ Ref<List<T>, Owner> List<T>::copy(int i, int n) const
 		b = parent_->copy(i + index0_, n);
 	}
 	else {
-		b = new List();
+		b = newList();
 		
 		if (n > 0) {
 			b->push(0, n);
@@ -612,7 +611,7 @@ Ref<List<T>, Owner> List<T>::copy(int i, int n) const
 }
 
 template<class T>
-int List<T>::find(int i, int n, T e) const
+int List<T>::find(int i, int n, const T& e) const
 {
 	if (length_ == 0) return 0;
 	
@@ -637,7 +636,7 @@ int List<T>::find(int i, int n, T e) const
 }
 
 template<class T>
-int List<T>::replace(T a, T b)
+int List<T>::replace(const T& a, const T& b)
 {
 	int i = 0;
 	int n = 0;
@@ -738,21 +737,6 @@ int List<T>::find(int i, int n, List* b) const
 	}
 	
 	return i;
-}
-
-template<class T>
-Ref<typename List<T>::ListOfList, Owner> List<T>::split(List* sep) const
-{
-	Ref<ListOfList> lol = new List<ListOfList>();
-	int i = 0;
-	while (i < length_) {
-		int i1 = find(i, sep);
-		lol->append(range(i, i1 - i));
-		i = i1 + sep->length_;
-	}
-	if (i == length_)
-		lol->append(new List());
-	return lol;
 }
 
 template<class T>

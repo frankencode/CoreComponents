@@ -69,7 +69,7 @@ IntegerLiteral::IntegerLiteral()
 	LINK();
 }
 
-bool IntegerLiteral::match(String text, int i0, int* i1, uint64_t* value, int* sign)
+bool IntegerLiteral::match(Ref<String::Media> text, int i0, int* i1, uint64_t* value, int* sign)
 {
 	Ref<Token, Owner> rootToken;
 	uint8_t buf[sizeof(Token) * 6];
@@ -82,7 +82,7 @@ bool IntegerLiteral::match(String text, int i0, int* i1, uint64_t* value, int* s
 	return conform;
 }
 
-void IntegerLiteral::read(String text, Ref<Token> rootToken, uint64_t* value, int* sign) const
+void IntegerLiteral::read(Ref<String::Media> text, Ref<Token> rootToken, uint64_t* value, int* sign) const
 {
 	*sign = 1;
 	*value = 0;

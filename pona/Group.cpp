@@ -35,7 +35,7 @@ Group::Group(String name)
 	CString buf(bufSize);
 	struct group space;
 	struct group* entry = 0;
-	if (::getgrnam_r(name.utf8(), &space, buf, bufSize, &entry) != 0)
+	if (::getgrnam_r(name->utf8(), &space, buf, bufSize, &entry) != 0)
 		PONA_SYSTEM_EXCEPTION;
 	load(entry);
 }

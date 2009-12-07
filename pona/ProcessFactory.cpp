@@ -137,7 +137,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 		if (workingDirectory_ != String()) {
 			if (execPath_->contains(String("/")))
 				execPathAbsolute = String() << Process::cwd() << "/" << execPath_;
-			if (::chdir(workingDirectory_.utf8()) == -1)
+			if (::chdir(workingDirectory_->utf8()) == -1)
 				PONA_SYSTEM_EXCEPTION;
 		}
 		
@@ -194,10 +194,10 @@ Ref<Process, Owner> ProcessFactory::produce()
 				
 			char** argv = new char*[argc + 1];
 			
-			argv[0] = execPath_.strdup();
+			argv[0] = execPath_->strdup();
 			if (options_)
 				for (int i = 0, n = options_->length(); i < n; ++i)
-					argv[i + 1] = options_->get(i).strdup();
+					argv[i + 1] = options_->get(i)->strdup();
 			argv[argc] = 0;
 			
 			// prepare the environment map
@@ -215,14 +215,14 @@ Ref<Process, Owner> ProcessFactory::produce()
 				envp = new char*[envc + 1];
 
 				for (int i = 0, n = envList->length(); i < n; ++i)
-					envp[i] = (String() << envList->get(i).key() << "=" << envList->get(i).value()).strdup();
+					envp[i] = (String() << envList->get(i).key() << "=" << envList->get(i).value())->strdup();
 				
 				envp[envc] = 0;
 			}
 			
 			// load new program
 			
-			::execve(execPathAbsolute.utf8(), argv, envp);
+			::execve(execPathAbsolute->utf8(), argv, envp);
 			
 			PONA_SYSTEM_EXCEPTION;
 		}

@@ -17,16 +17,6 @@ namespace pona
 
 PONA_EXCEPTION(VariantException, Exception);
 
-template<class T>
-class VariantInitHelper
-{
-public:
-	VariantInitHelper(const T& value)
-		: value_(value)
-	{}
-	T value_;
-};
-
 /** A variable of type 'Variant' can take any value of any type.
   * A variant is passed by value like a 'String'. If converting
   * back to a specific type, the specific type must match the
