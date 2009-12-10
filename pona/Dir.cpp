@@ -11,6 +11,7 @@
 
 #include "Path.hpp"
 #include "File.hpp"
+#include "FileStatus.hpp"
 #include "Dir.hpp"
 
 namespace pona
@@ -29,7 +30,11 @@ Dir::~Dir()
 String Dir::path() const { return path_; }
 
 bool Dir::access(int flags) { return File(path_).access(flags); }
-bool Dir::exists() const { return File(path_).exists(); }
+
+bool Dir::exists() const
+{
+	return File(path_).exists() && (FileStatus(path_).type() == File::Directory);
+}
 
 void Dir::create(int mode)
 {

@@ -19,11 +19,11 @@ class SyntaxState: public Instance
 {
 public:
 	SyntaxState()
-		: languageId_(-1)
+		: definitionId_(-1)
 	{}
 	
-	SyntaxState(int languageId, int numFlags, int numChars, int numStrings, Ref<SyntaxState> parent = 0)
-		: languageId_(languageId),
+	SyntaxState(int definitionId, int numFlags, int numChars, int numStrings, Ref<SyntaxState> parent = 0)
+		: definitionId_(definitionId),
 		  flags_(numFlags),
 		  chars_(numChars),
 		  strings_(numStrings)
@@ -32,7 +32,7 @@ public:
 			parent->child_ = this;
 	}
 	
-	inline int languageId() const { return languageId_; }
+	inline int definitionId() const { return definitionId_; }
 	
 	inline bool* flag(int id) { return flags_.at(id); }
 	inline Char* character(int id) { return chars_.at(id); }
@@ -42,7 +42,7 @@ public:
 	inline void setChild(Ref<SyntaxState> state) { child_ = state; }
 	
 private:
-	int languageId_;
+	int definitionId_;
 	Array<bool> flags_;
 	Array<Char> chars_;
 	Array< Array<Char> > strings_;

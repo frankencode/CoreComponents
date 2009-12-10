@@ -178,7 +178,7 @@ Ref<StringList> Options::read(int argc, char** argv)
 {
 	execPath_ = argv[0];
 	execName_ = Path(execPath_).fileName();
-	execDir_ = Path(execPath_).stripComponent().makeAbsolute();
+	execDir_ = Path(execPath_).reduce().makeAbsolute();
 	String line;
 	for (int i = 1; i < argc; ++i) {
 		line->append(String(argv[i]));
@@ -210,7 +210,7 @@ Ref<StringList> Options::read(String line)
 	Ref<Token> token = rootToken->firstChild();
 	
 	while (token) {
-		if (token->rule() != optionRule_->id())
+		if (token->ruleId() != optionRule_->id())
 			break;
 		readOption(line, token);
 		token = token->nextSibling();
@@ -245,7 +245,7 @@ void Options::readOption(String line, Ref<Token> token)
 {
 	token = token->firstChild();
 	
-	if (token->rule() == shortNameRule_->id())
+	if (token->ruleId() == shortNameRule_->id())
 	{
 		while (token)
 		{
@@ -256,7 +256,7 @@ void Options::readOption(String line, Ref<Token> token)
 			
 			token = token->nextSibling();
 			if (token) {
-				if (token->rule() == valueRule_->id()) {
+				if (token->ruleId() == valueRule_->id()) {
 					readValue(option, line, token);
 					token = token->nextSibling();
 				}
@@ -269,7 +269,7 @@ void Options::readOption(String line, Ref<Token> token)
 			}
 		}
 	}
-	else if (token->rule() == longNameRule_->id())
+	else if (token->ruleId() == longNameRule_->id())
 	{
 		String name = line->range(token->index(), token->length());
 		Ref<Option> option = optionByLongName(name);

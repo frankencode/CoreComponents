@@ -17,6 +17,7 @@ namespace pona
 char* intToStr(int value);
 
 typedef std::exception AnyException;
+typedef std::exception StdException;
 
 class Exception: public AnyException
 {

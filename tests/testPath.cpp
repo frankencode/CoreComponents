@@ -12,15 +12,15 @@ int main(int argc, char** argv)
 	{
 		String path = Path(argv[0]).makeAbsolute();
 		while (path != "/") {
-			path = Path(path).stripComponent();
-			print("Path(path1).stripComponent() = \"%%\"\n", path);
+			path = Path(path).reduce();
+			print("Path(path1).reduce() = \"%%\"\n", path);
 		}
 	}
 	{
 		String path = argv[0];
 		while (path->contains(String("/"))) {
-			path = Path(path).stripComponent();
-			print("Path(path2).stripComponent() = \"%%\"\n", path);
+			path = Path(path).reduce();
+			print("Path(path2).reduce() = \"%%\"\n", path);
 		}
 	}
 	return 0;

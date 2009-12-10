@@ -84,7 +84,7 @@ private:
 	{
 		double value = nan;
 		
-		if (token->rule() == sum_->id())
+		if (token->ruleId() == sum_->id())
 		{
 			value = 0.;
 			char op = '+';
@@ -107,7 +107,7 @@ private:
 				++i;
 			}
 		}
-		else if (token->rule() == product_->id())
+		else if (token->ruleId() == product_->id())
 		{
 			value = 1.;
 			char op = '*';
@@ -130,11 +130,11 @@ private:
 				++i;
 			}
 		}
-		else if (token->rule() == factor_->id())
+		else if (token->ruleId() == factor_->id())
 		{
 			value = eval(token->firstChild());
 		}
-		else if (token->rule() == number_->id())
+		else if (token->ruleId() == number_->id())
 		{
 			int sign = (text_->get(token->index()) == '-') ? -1 : 1;
 			value = 0;

@@ -78,11 +78,11 @@ float64_t FloatLiteral::read(Ref<String::Media> text, Ref<Token> rootToken) cons
 	
 	Ref<Token> token = rootToken->firstChild();
 	
-	if (token->rule() == nan_->id())
+	if (token->ruleId() == nan_->id())
 	{
 		value = nan;
 	}
-	else if (token->rule() == infinite_->id())
+	else if (token->ruleId() == infinite_->id())
 	{
 		float64_t one, zero;
 		one = 1.; zero = 0.;
@@ -101,12 +101,12 @@ float64_t FloatLiteral::read(Ref<String::Media> text, Ref<Token> rootToken) cons
 		
 		while (token)
 		{
-			if (token->rule() == sign_->id())
+			if (token->ruleId() == sign_->id())
 			{
 				if (text->get(token->index()) == '-')
 					sign = -1;
 			}
-			else if (token->rule() == integerPart_->id())
+			else if (token->ruleId() == integerPart_->id())
 			{
 				for (int i = token->i0(); i < token->i1(); ++i)
 				{
@@ -114,18 +114,18 @@ float64_t FloatLiteral::read(Ref<String::Media> text, Ref<Token> rootToken) cons
 					mantissa += text->get(i) - '0';
 				}
 			}
-			else if (token->rule() == fractionPart_->id())
+			else if (token->ruleId() == fractionPart_->id())
 			{
 				float64_t h = 0.1;
 				for (int i = token->i0(); i < token->i1(); ++i, h /= 10)
 					mantissa += h * (text->get(i) - '0');
 			}
-			else if (token->rule() == exponentSign_->id())
+			else if (token->ruleId() == exponentSign_->id())
 			{
 				if (text->get(token->index()) == '-')
 					epSign = -1;
 			}
-			else if (token->rule() == exponent_->id())
+			else if (token->ruleId() == exponent_->id())
 			{
 				for (int i = token->i0(); i < token->i1(); ++i)
 				{

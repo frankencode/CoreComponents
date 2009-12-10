@@ -18,15 +18,14 @@ class TokenScreen;
 class Token: public Tree
 {
 public:
-	Token(): ruleName_("unknown"), languageId_(-1), rule_(-1), type_(-1) {}
+	Token(): definitionId_(-1), ruleId_(-1), type_(-1) {}
 	
-	inline void init(const char* ruleName, int languageId, int rule)
+	inline void init(int definitionId, int ruleId)
 	{
-		ruleName_ = ruleName;
-		languageId_ = languageId;
-		rule_ = rule;
+		definitionId_ = definitionId;
+		ruleId_ = ruleId;
 		if (type_ == -1)
-			type_ = rule;
+			type_ = ruleId;
 	}
 	
 	inline void setRange(int i0, int i1)
@@ -35,9 +34,8 @@ public:
 		i1_ = i1;
 	}
 	
-	inline const char* ruleName() { return ruleName_; }
-	inline int languageId() const { return languageId_; }
-	inline int rule() const { return rule_; }
+	inline int definitionId() const { return definitionId_; }
+	inline int ruleId() const { return ruleId_; }
 	inline int type() const { return type_; }
 	inline void setType(int value) { type_ = value; }
 	
@@ -52,9 +50,8 @@ public:
 	bool burn(int b0, int b1);
 	
 private:
-	const char* ruleName_;
-	int languageId_;
-	int rule_;
+	int definitionId_;
+	int ruleId_;
 	int type_;
 	int i0_;
 	int i1_;
