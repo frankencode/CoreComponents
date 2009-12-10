@@ -195,7 +195,7 @@ public:
 			if (media->def(i)) {
 				int h = 0;
 				int tokenType = -1;
-				if (map_->lookup(media, i, &h, &tokenType)) {
+				if (map_->match(media, i, &h, &tokenType)) {
 					if (parentToken)
 						parentToken->setType(tokenType);
 					i = h;
@@ -421,7 +421,7 @@ public:
 			Ref<Token, Owner> token;
 			if (tokenFactory) {
 				token = tokenFactory->produce();
-				token->init(name_, definition_->languageId(), id_);
+				token->init(/*name_, */definition_->id(), id_);
 				if (parentToken)
 					parentToken->appendChild(token);
 			}
@@ -537,7 +537,7 @@ public:
 			if (parentToken) {
 				Ref<Token> sibling = parentToken->previousSibling();
 				if (sibling)
-					if (sibling->rule() == LinkNode::rule_->id())
+					if (sibling->ruleId() == LinkNode::rule_->id())
 						h = i;
 			}
 			i = h;
@@ -795,7 +795,7 @@ public:
 			if (state) {
 				childState = state->child();
 				if (childState) {
-					if (childState->languageId() != definition_->languageId())
+					if (childState->definitionId() != definition_->id())
 						childState = 0;
 				}
 				if (!childState)
@@ -842,7 +842,7 @@ public:
 	public:
 		Definition(Ref<Scope> scope = 0, const char* name = 0)
 			: scope_(scope),
-			  languageId_(scope ? scope->numDefinitions(1) : -1),
+			  id_(scope ? scope->numDefinitions(1) : -1),
 			  name_(name),
 			  numRules_(0),
 			  numKeywords_(0),
@@ -899,9 +899,7 @@ public:
 			return new KeywordNode(map);
 		}
 		inline NODE TOKEN(const char* name) {
-			int tokenType = -1;
-			tokenTypeByName_->lookup(name, &tokenType);
-			return CHAR(tokenType);
+			return CHAR(tokenTypeByName(name));
 		}
 		
 		inline static NODE REPEAT(int minRepeat, int maxRepeat, NODE entry) { return new RepeatNode(minRepeat, maxRepeat, entry); }
@@ -922,12 +920,12 @@ public:
 		
 		inline RULE DEFINE(const char* ruleName, NODE entry = 0) {
 			Ref<RuleNode, Owner> rule = new RuleNode(this, ruleName, numRules_++, entry);
-			ruleByName_->insert(ruleName, rule);
+			addRule(rule);
 			return rule;
 		}
 		inline RULE DEFINE_VOID(const char* ruleName, NODE entry = 0) {
 			Ref<RuleNode, Owner> rule = new RuleNode(this, ruleName, numRules_++, entry, true);
-			ruleByName_->insert(ruleName, rule);
+			addRule(rule);
 			return rule;
 		}
 		inline void ENTRY(const char* ruleName) {
@@ -1030,7 +1028,7 @@ public:
 		
 		//-- execution interface
 		
-		inline int languageId() const { return languageId_; }
+		inline int id() const { return id_; }
 		inline int numRules() const { return numRules_; }
 		
 		inline bool stateful() const { return (stateFlagHead_) || (stateCharHead_) || (stateStringHead_) || (statefulScope_); }
@@ -1040,7 +1038,7 @@ public:
 			if (!stateful())
 				return 0;
 			
-			State* state = new State(languageId_, numStateFlags_, numStateChars_, numStateStrings_, parent);
+			State* state = new State(id_, numStateFlags_, numStateChars_, numStateStrings_, parent);
 			
 			Ref<StateFlag> stateFlag = stateFlagHead_;
 			for (int id = numStateFlags_ - 1; id >= 0; --id) {
@@ -1110,8 +1108,7 @@ public:
 		Ref<RuleNode> ruleByName(const char* name)
 		{
 			Ref<RuleNode, Owner> node;
-			ruleByName_->lookup(name, &node);
-			if (!node)
+			if (!ruleByName_->lookup(name, &node))
 				PONA_THROW(SyntaxException, pona::strcat("Undefined rule '", name, "' referenced"));
 			return node;
 		}
@@ -1128,11 +1125,10 @@ public:
 			}
 		}
 		
-		int tokenType(const char* name)
+		int tokenTypeByName(const char* name)
 		{
 			int tokenType = -1;
-			tokenTypeByName_->lookup(name, &tokenType);
-			if (tokenType == -1)
+			if (!tokenTypeByName_->lookup(name, &tokenType))
 				PONA_THROW(SyntaxException, pona::strcat("Undefined token type '", name, "' referenced"));
 			return tokenType;
 		}
@@ -1140,8 +1136,7 @@ public:
 		int flagIdByName(const char* name)
 		{
 			int flagId = -1;
-			flagIdByName()->lookup(name, &flagId);
-			if (flagId == -1)
+			if (!flagIdByName()->lookup(name, &flagId))
 				PONA_THROW(SyntaxException, pona::strcat("Undefined state flag '", name, "' referenced"));
 			return flagId;
 		}
@@ -1149,8 +1144,7 @@ public:
 		int charIdByName(const char* name)
 		{
 			int charId = -1;
-			charIdByName()->lookup(name, &charId);
-			if (charId == -1)
+			if (!charIdByName()->lookup(name, &charId))
 				PONA_THROW(SyntaxException, pona::strcat("Undefined state char '", name, "' referenced"));
 			return charId;
 		}
@@ -1158,8 +1152,7 @@ public:
 		int stringIdByName(const char* name)
 		{
 			int stringId = -1;
-			stringIdByName()->lookup(name, &stringId);
-			if (stringId == -1)
+			if (!stringIdByName()->lookup(name, &stringId))
 				PONA_THROW(SyntaxException, pona::strcat("Undefined state string '", name, "' referenced"));
 			return stringId;
 		}
@@ -1169,7 +1162,7 @@ public:
 		friend class InvokeNode;
 		
 		Ref<Scope, SetNull> scope_;
-		int languageId_;
+		int id_;
 		const char* name_;
 		
 		class StateFlag: public Instance {
@@ -1209,6 +1202,12 @@ public:
 		Ref<RuleByName, Owner> ruleByName_;
 		Ref<TokenTypeByName, Owner> tokenTypeByName_;
 		
+		void addRule(Ref<RuleNode> rule)
+		{
+			if (!ruleByName_->insert(rule->name(), rule))
+				PONA_THROW(SyntaxException, pona::strcat("Redefinition of rule '", rule->name(), "'"));
+		}
+		
 		Ref<LinkNode, Owner> unresolvedLinkHead_;
 		Ref<InvokeNode, Owner> unresolvedInvokeHead_;
 		Ref<Definition, Owner> unresolvedNext_;
@@ -1243,7 +1242,7 @@ public:
 	class Scope: public Instance
 	{
 	private:
-		typedef PrefixTree<char, Ref<Definition> > DefinitionByName;
+		typedef PrefixTree<char, Ref<Definition, Owner> > DefinitionByName;
 		
 	public:
 		Scope()
@@ -1251,8 +1250,15 @@ public:
 			  numDefinitions_(0)
 		{}
 		
-		int numDefinitions() const { return numDefinitions_; }
+		Ref<Definition> definitionByName(const char* name)
+		{
+			Ref<Definition, Owner> definition;
+			if (!definitionByName_->lookup(name, &definition))
+				PONA_THROW(SyntaxException, pona::strcat("Undefined definition '", name, "' referenced"));
+			return definition;
+		}
 		
+		int numDefinitions() const { return numDefinitions_; }
 		
 		void link()
 		{
@@ -1267,18 +1273,23 @@ public:
 			while (unresolvedDefinitionHead_) {
 				unresolvedDefinitionHead_->statefulScope_ = stateful;
 				unresolvedDefinitionHead_->LINK();
+				commit(unresolvedDefinitionHead_);
 				unresolvedDefinitionHead_ = unresolvedDefinitionHead_->unresolvedNext_;
 			}
 		}
+		
+	protected:
+		virtual void commit(Ref<Definition> definition) {}
 		
 	private:
 		friend class Definition;
 		
 		void addDefinition(Ref<Definition> definition)
 		{
+			if (!definitionByName_->insert(definition->name(), definition))
+				PONA_THROW(SyntaxException, pona::strcat("Redefinition of '", definition->name(), "'"));
 			definition->unresolvedNext_ = unresolvedDefinitionHead_;
 			unresolvedDefinitionHead_ = definition;
-			definitionByName_->insert(definition->name(), definition);
 		}
 		
 		int numDefinitions(int delta)
@@ -1286,15 +1297,6 @@ public:
 			int h = numDefinitions_;
 			numDefinitions_ += delta;
 			return h;
-		}
-		
-		Ref<Definition> definitionByName(const char* name)
-		{
-			Ref<Definition> definition;
-			definitionByName_->lookup(name, &definition);
-			if (!definition)
-				PONA_THROW(SyntaxException, pona::strcat("Undefined definition '", name, "' referenced"));
-			return definition;
 		}
 		
 		Ref<DefinitionByName, Owner> definitionByName_;

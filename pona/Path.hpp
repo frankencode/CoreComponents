@@ -26,8 +26,9 @@ public:
 	bool isAbsolute() const;
 	Path makeAbsoluteRelativeTo(String currentDir) const;
 	Path makeAbsolute() const;
-	Path fileName() const;
-	Path stripComponent() const;
+	String fileName() const;
+	Path reduce() const;
+	Path expand(String component) const;
 	
 	static Path lookup(Ref<StringList> dirs, String fileName, int accessFlags = File::Exists);
 	

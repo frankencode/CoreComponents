@@ -87,19 +87,19 @@ bool FormatSpecifier::find(Ref<String::Media> text, int* i0, int* i1, int* w, in
 		{
 			String value = text->copy(token->index(), token->length());
 			
-			if (token->rule() == width_->id())
+			if (token->ruleId() == width_->id())
 			{
 				*w = value->toInt();
 			}
-			else if (token->rule() == integerWidth_->id())
+			else if (token->ruleId() == integerWidth_->id())
 			{
 				*wi = value->toInt();
 			}
-			else if (token->rule() == fractionWidth_->id())
+			else if (token->ruleId() == fractionWidth_->id())
 			{
 				*wf = value->toInt();
 			}
-			else if (token->rule() == base_->id())
+			else if (token->ruleId() == base_->id())
 			{
 				if (value == "dec")
 					*base = 10;
@@ -110,11 +110,11 @@ bool FormatSpecifier::find(Ref<String::Media> text, int* i0, int* i1, int* w, in
 				else if (value == "bin")
 					*base = 2;
 			}
-			else if (token->rule() == exp_->id())
+			else if (token->ruleId() == exp_->id())
 			{
 				*exp = true;
 			}
-			else if (token->rule() == blank_->id())
+			else if (token->ruleId() == blank_->id())
 			{
 				*blank = value->get(1);
 			}

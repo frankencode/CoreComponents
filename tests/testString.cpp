@@ -1,10 +1,25 @@
 #include <pona/stdio>
+#include <pona/container>
 
 namespace pona
 {
 
 int main()
 {
+	{
+		PrefixTree<Char, int> map;
+		map.insert("Hans", 1);
+		map.insert("Franz", 2);
+		map.insert("Otto", 3);
+		const char* name1 = "Otto";
+		String name2 = "Franz";
+		int sn = 0;
+		if (map.lookup(name1, &sn))
+			print("%%: %%\n", name1, sn);
+		if (map.match(name2.get(), &sn))
+			print("%%: %%\n", name2, sn);
+	}
+	
 	{
 		String s("Hello!");
 		print("(#s, s) = (%%, \"%%\")\n", s->length(), s);

@@ -38,6 +38,8 @@ Path Path::makeAbsoluteRelativeTo(String currentDir) const
 	Ref<StringList, Owner> absoluteParts = new StringList;
 	Ref<StringList, Owner> parts = path_ / '/';
 	
+	int upCount = 0;
+	
 	for (int i = 0, n = parts->length(); i < n; ++i)
 	{
 		String c = parts->get(i);
@@ -46,6 +48,8 @@ Path Path::makeAbsoluteRelativeTo(String currentDir) const
 		else if (c == "..") {
 			if (absoluteParts->length() > 0)
 				absoluteParts->pop(-1);
+			else
+				++upCount;
 		}
 		else {
 			absoluteParts->append(c);
@@ -53,12 +57,16 @@ Path Path::makeAbsoluteRelativeTo(String currentDir) const
 	}
 	
 	String absolutePath;
-	if (!isAbsolute()) {
-		if (currentDir->length() > 0)
-			absolutePath = currentDir->copy();
-		else
-			absolutePath = Process::cwd();
+	if (currentDir->length() > 0)
+		absolutePath = currentDir->copy();
+	else
+		absolutePath = Process::cwd();
+	
+	while (upCount > 0) {
+		absolutePath = Path(absolutePath).reduce();
+		--upCount;
 	}
+	
 	absolutePath << "/" << absoluteParts * '/';
 	
 	return absolutePath;
@@ -71,7 +79,7 @@ Path Path::makeAbsolute() const
 	return makeAbsoluteRelativeTo(String());
 }
 
-Path Path::fileName() const
+String Path::fileName() const
 {
 	String name;
 	Ref<StringList, Owner> parts = path_ / '/';
@@ -80,7 +88,7 @@ Path Path::fileName() const
 	return name;
 }
 
-Path Path::stripComponent() const
+Path Path::reduce() const
 {
 	Ref<StringList, Owner> parts = path_ / '/';
 	if (parts->length() > 0)
@@ -89,6 +97,11 @@ Path Path::stripComponent() const
 	if ((resultPath == "") && (isAbsolute()))
 		resultPath = "/";
 	return resultPath;
+}
+
+Path Path::expand(String component) const
+{
+	return Path(path_ + "/" + component);
 }
 
 Path Path::lookup(Ref<StringList> dirs, String fileName, int accessFlags)

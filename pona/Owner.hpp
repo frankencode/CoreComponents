@@ -36,13 +36,13 @@ public:
 		
 		if (instance_ != b)
 		{
+			if (b)
+				b->incRefCount();
+			
 			if (instance_)
 				instance_->decRefCount();
 			
 			instance_ = b;
-			
-			if (instance_)
-				instance_->incRefCount();
 		}
 	}
 	
