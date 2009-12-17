@@ -1250,7 +1250,7 @@ public:
 			  numDefinitions_(0)
 		{}
 		
-		Ref<Definition> definitionByName(const char* name)
+		Ref<Definition> definitionByName(const char* name) const
 		{
 			Ref<Definition, Owner> definition;
 			if (!definitionByName_->lookup(name, &definition))
