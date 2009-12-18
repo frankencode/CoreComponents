@@ -8,28 +8,13 @@
 #ifndef PONA_MUTEX_HPP
 #define PONA_MUTEX_HPP
 
-#include <pthread.h>
 #include "atoms"
 
 namespace pona
 {
 
-class Condition;
-
-class Mutex: public Instance
-{
-public:
-	Mutex();
-	~Mutex();
-
-	bool tryAcquire();
-	void acquire();
-	void release();
-
-private:
-	friend class Condition;
-	pthread_mutex_t mutex_;
-};
+class Mutex: public Instance, public CoreMutex
+{};
 
 } // namespace pona
 

@@ -24,6 +24,7 @@ public:
 	String();
 	String(const Char& ch);
 	String(const char* utf8, int numBytes = -1, int numChars = -1);
+	virtual ~String() {}
 	
 	template<template<class> class SetAndGetPolicy>
 	String(Ref<CharList::Super, SetAndGetPolicy> super) { set(super.cast<Media>()); }

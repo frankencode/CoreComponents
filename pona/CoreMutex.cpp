@@ -1,12 +1,21 @@
+/*
+ * CoreMutex.cpp -- non-recursive mutex lock
+ *
+ * Copyright (c) 2007-2009, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #ifndef EBUSY
 #include <errno.h>
 #endif
-#include "Mutex.hpp"
+#include "Exception.hpp"
+#include "CoreMutex.hpp"
 
 namespace pona
 {
 
-Mutex::Mutex()
+CoreMutex::CoreMutex()
 {
 	pthread_mutexattr_t* pattr = 0;
 	int ret;
@@ -30,14 +39,14 @@ Mutex::Mutex()
 	#endif
 }
 
-Mutex::~Mutex()
+CoreMutex::~CoreMutex()
 {
 	int ret = pthread_mutex_destroy(&mutex_);
 	if (ret != 0)
 		PONA_PTHREAD_EXCEPTION("pthread_mutex_destroy", ret);
 }
 
-bool Mutex::tryAcquire()
+bool CoreMutex::tryAcquire()
 {
 	int ret = -1;
 	while (true) {
@@ -49,7 +58,7 @@ bool Mutex::tryAcquire()
 	return ret != EBUSY;
 }
 
-void Mutex::acquire()
+void CoreMutex::acquire()
 {
 	int ret = -1;
 	while (true) {
@@ -60,7 +69,7 @@ void Mutex::acquire()
 		PONA_PTHREAD_EXCEPTION("pthread_mutex_lock", ret);
 }
 
-void Mutex::release()
+void CoreMutex::release()
 {
 	int ret = pthread_mutex_unlock(&mutex_);
 	if (ret != 0)

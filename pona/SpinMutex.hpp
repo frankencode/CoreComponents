@@ -1,6 +1,8 @@
 #ifndef PONA_SPINMUTEX_HPP
 #define PONA_SPINMUTEX_HPP
 
+#if __GNUC__ > 3
+
 #include "types.hpp"
 
 namespace pona
@@ -44,5 +46,18 @@ private:
 };
 
 } // namespace pona
+
+#else // __GNUC__ > 3
+
+#include "CoreMutex.hpp"
+
+namespace pona
+{
+
+typedef CoreMutex SpinMutex;
+
+} // namespace pona
+
+#endif // __GNUC__ > 3
 
 #endif // PONA_SPINMUTEX_HPP
