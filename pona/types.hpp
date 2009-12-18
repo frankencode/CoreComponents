@@ -128,6 +128,14 @@ private:
 };
 
 template<class T>
+void bzero(T* s)
+{
+	char* cp = (char*)s;
+	for (unsigned i = 0; i < sizeof(T); ++i, ++cp)
+		*cp = 0;
+}
+
+template<class T>
 inline int strlen(const T* s)
 {
 	int len = 0;
