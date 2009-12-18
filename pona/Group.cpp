@@ -20,7 +20,9 @@ Group::Group(gid_t id)
 	if (h != -1) bufSize = h;
 	#endif
 	CString buf(bufSize);
+	buf->clear(0);
 	struct group space;
+	pona::bzero(&space);
 	struct group* entry = 0;
 	if (::getgrgid_r(id, &space, buf, bufSize, &entry) != 0)
 		PONA_SYSTEM_EXCEPTION;
@@ -33,7 +35,9 @@ Group::Group(String name)
 	if (bufSize == -1)
 		PONA_SYSTEM_EXCEPTION;
 	CString buf(bufSize);
+	buf->clear(0);
 	struct group space;
+	pona::bzero(&space);
 	struct group* entry = 0;
 	if (::getgrnam_r(name->utf8(), &space, buf, bufSize, &entry) != 0)
 		PONA_SYSTEM_EXCEPTION;

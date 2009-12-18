@@ -20,9 +20,9 @@ void printStatus(Ref<File, Owner> file)
 			print("status->ownerId() = %%\n", status->ownerId());
 			print("status->groupId() = %%\n", status->groupId());
 			print("User(status->ownerId()).loginName() = %%\n", User(status->ownerId()).loginName());
-			#ifndef __OpenBSD__ // workarond HACK
+			// #ifndef __OpenBSD__ // workarond HACK
 			print("Group(status->groupId()).name() = %%\n", Group(status->groupId()).name());
-			#endif // __OpenBSD__
+			// #endif // __OpenBSD__
 		}
 	}
 	print("\n");
@@ -30,10 +30,10 @@ void printStatus(Ref<File, Owner> file)
 
 int main(int argc, char** argv)
 {
-	printStatus(new File("/usr/include"));
 	printStatus(new File(argv[0]));
 	printStatus(new File("hmpf.xyz"));
 	printStatus(rawInput());
+	printStatus(new File("/usr/include"));
 	return 0;
 }
 
