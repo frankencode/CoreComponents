@@ -56,7 +56,7 @@ struct None {};
 template<class T, class U>
 class ConversionFromTo
 {
-private:
+protected:
 	typedef char Small;
 	class Big { char dummy[2]; };
 	static Small test(U);

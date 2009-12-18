@@ -7,6 +7,7 @@
  */
 
 #include <errno.h>
+#include <string.h>
 #include <unistd.h> // read, write, select
 #include <fcntl.h> // fcntl
 #include "SystemStream.hpp"
@@ -112,4 +113,3 @@ void SystemStream::closeOnExec()
 }
 
 } // namespace pona
-

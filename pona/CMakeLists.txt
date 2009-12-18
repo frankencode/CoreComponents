@@ -7,6 +7,7 @@ SET(PONA_HEADER
 	Array.hpp
 	Exception.hpp
 	SpinMutex.hpp
+	CoreMutex.hpp
 	Instance.hpp
 	Alien.hpp
 	Pointer.hpp
@@ -117,6 +118,7 @@ SET(PONA_HEADER
 SET(PONA_SOURCE
 	# atoms
 	Exception.cpp
+	CoreMutex.cpp
 	GlobalSpinMutex.cpp
 	
 	# container
@@ -156,7 +158,6 @@ SET(PONA_SOURCE
 	# threads
 	Thread.cpp
 	ThreadFactory.cpp
-	Mutex.cpp
 	Condition.cpp
 	Semaphore.cpp
 	

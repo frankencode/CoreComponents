@@ -9,6 +9,7 @@
 #define PONA_REF_HPP
 
 #include "defaults.hpp"
+#include "types.hpp"
 #include "Instance.hpp"
 #include "Pointer.hpp"
 #include "SetNull.hpp"
