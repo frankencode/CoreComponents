@@ -28,7 +28,7 @@ PONA_EXCEPTION(RefException, Exception);
   *   - automatic dynamic typecasting on assignment
   *     (as in highlevel languages like Java or Python)
   *   - detection of incompatible types
-  *   - full compatiblity to containers
+  *   - full compatibility to containers
   *
   * For performance reasons Ref::set() is not thread-safe by default!
   * The PONA_REF_THREADSAFE_SET compile flag allows to switch

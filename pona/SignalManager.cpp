@@ -104,16 +104,11 @@ void SignalManager::defaultAction(int signal)
 
 Ref<Event> SignalManager::signalEvent(int signal)
 {
-	Ref<Event> event = signalEvents_->get(signal);
-	if (!event) {
-		mutex_.acquire();
-		event = signalEvents_->get(signal);
-		if (!event) {
-			Ref<Event, Owner> newEvent = new Event;
-			signalEvents_->set(signal, newEvent);
-			event = newEvent;
-		}
-		mutex_.release();
+	ScopeGuard<Mutex> guard(&mutex_);
+	Ref<Event, Owner> event;
+	if (!signalEvents_->lookup(signal, &event)) {
+		event = new Event;
+		signalEvents_->insert(signal, event);
 	}
 	return event;
 }
@@ -125,15 +120,11 @@ void SignalManager::startListener()
 
 void SignalManager::relay(int signal)
 {
-	bool relayed = false;
-	mutex_.acquire();
-	Ref<Event> event = signalEvents_->get(signal);
-	if (event) {
+	ScopeGuard<Mutex> guard(&mutex_);
+	Ref<Event, Owner> event;
+	if (signalEvents_->lookup(signal, &event))
 		event->run();
-		relayed = true;
-	}
-	mutex_.release();
-	if (!relayed)
+	else
 		defaultAction(signal);
 }
 

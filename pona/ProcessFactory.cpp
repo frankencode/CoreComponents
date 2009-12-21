@@ -210,7 +210,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 			}
 			else
 			{
-				Ref<List<EnvMap::Element>, Owner> envList = envMap_->toList();
+				Ref<EnvMap::KeyValueList, Owner> envList = envMap_->keyValueList();
 				int envc = envList->length();
 				envp = new char*[envc + 1];
 

@@ -12,6 +12,7 @@
 #include "atoms"
 #include "Singleton.hpp"
 #include "Thread.hpp"
+#include "Mutex.hpp"
 #include "Process.hpp"
 #include "Map.hpp"
 #include "Event.hpp"
@@ -58,7 +59,7 @@ private:
 	typedef Map<int, Ref<Event, Owner> > SignalEvents;
 	Ref<SignalEvents, Owner> signalEvents_;
 	
-	SpinMutex mutex_;
+	Mutex mutex_;
 };
 
 Ref<Event> signalEvent(int signal);

@@ -1,5 +1,5 @@
 /*
- * CoreMutex.hpp -- non-recursive mutex lock
+ * CoreMutex.hpp -- non-recursive waiting mutex lock
  *
  * Copyright (c) 2007-2009, Frank Mertens
  *
