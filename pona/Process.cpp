@@ -195,7 +195,7 @@ Ref<EnvMap, Owner> Process::envMap()
 		if (k != s->length()) {
 			String key = s->copy(0, k);
 			String value = s->copy(k + 1, s->length() - (k + 1));
-			map->set(key, value);
+			map->insert(key, value);
 		}
 		++i;
 	}

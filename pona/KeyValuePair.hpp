@@ -8,6 +8,8 @@
 #ifndef PONA_KEYVALUEPAIR_HPP
 #define PONA_KEYVALUEPAIR_HPP
 
+#include "NonCopyable.hpp"
+
 namespace pona
 {
 
@@ -18,7 +20,11 @@ public:
 	KeyValuePair()
 	{}
 	
-	KeyValuePair(Key key, Value value = Value())
+	KeyValuePair(const Key& key)
+		: key_(key), value_(Value())
+	{}
+	
+	KeyValuePair(const Key& key, const Value& value)
 		: key_(key), value_(value)
 	{}
 	
@@ -29,8 +35,11 @@ public:
 	inline bool operator<=(const KeyValuePair& b) const { return key_ <=  b.key_; }
 	inline bool operator>=(const KeyValuePair& b) const { return key_ >=  b.key_; }
 	
-	inline Key key() const { return key_; }
-	inline Value value() const { return value_; }
+	inline const Key& key() const { return key_; }
+	inline void setKey(const Key& key) { key_ = key; }
+	
+	inline const Value& value() const { return value_; }
+	inline void setValue(const Value& value) { value_ = value; }
 	
 private:
 	Key key_;
@@ -40,4 +49,3 @@ private:
 } // namespace pona
 
 #endif // PONA_KEYVALUEPAIR_HPP
-
