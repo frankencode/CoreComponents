@@ -109,7 +109,7 @@ public:
 		return buf_[i];
 	}
 	
-	inline bool def(int i) const { return (0 <= i) && (i < size_); }
+	inline bool def(int i) const { return (0 <= i) && (i < fill_); }
 	inline T get(int i) const { return front(i); }
 	
 private:
