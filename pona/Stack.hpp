@@ -8,13 +8,14 @@
 #ifndef PONA_STACK_HPP
 #define PONA_STACK_HPP
 
-#include "atoms"
+#include "NonCopyable.hpp"
+#include "Sequence.hpp"
 
 namespace pona
 {
 
 template<class T>
-class Stack: public Instance, public NonCopyable
+class Stack: public Sequence<T>, public NonCopyable
 {
 public:
 	Stack(int size)
@@ -23,7 +24,7 @@ public:
 		  bufOwner_(true),
 		  buf_(new T[size])
 	{}
-
+	
 	Stack(T* buf, int size)
 		: fill_(0),
 		  size_(size),
@@ -39,42 +40,48 @@ public:
 			buf_ = 0;
 		}
 	}
-
+	
 	inline int size() const { return size_; }
 	inline int fill() const { return fill_; }
-
+	
 	inline bool isFull() const { return fill_ == size_; }
 	inline bool isEmpty() const { return fill_ == 0; }
-
+	
 	inline void push(T x)
 	{
 		assert(fill_ < size_);
 		buf_[fill_++] = x;
 	}
-
+	
 	inline T pop()
 	{
 		assert(fill_ > 0);
 		return buf_[--fill_];
 	}
-
+	
 	inline void clear()
 	{
 		fill_ = 0;
 	}
-
+	
 	inline T top(int i = 0) const
 	{
 		assert(i < fill_);
 		return buf_[fill_-i-1];
 	}
-
+	
 	inline T bottom(int i = 0) const
 	{
 		assert(i < fill_);
 		return buf_[i];
 	}
-
+	
+	inline bool def(int i) const { return (0 <= i) && (i < size_); }
+	inline T get(int i) const { return bottom(i); }
+	
+	inline T* data() const { return buf_; }
+	inline operator T*() const { return buf_; }
+	
 private:
 	int fill_;
 	int size_;

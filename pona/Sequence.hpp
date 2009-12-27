@@ -19,22 +19,9 @@ class Sequence: public Instance
 {
 public:
 	typedef T Element;
-	
 	virtual ~Sequence() {}
 	virtual bool def(int i) const = 0;
 	virtual Element get(int i) const = 0;
-	virtual void set(int i, Element e) = 0;
-};
-
-template<class T>
-class Sequence<const T>: public Instance
-{
-public:
-	typedef T Element;
-	
-	virtual ~Sequence() {}
-	virtual bool def(int i) const = 0;
-	virtual const Element get(int i) const = 0;
 };
 
 } // namespace pona

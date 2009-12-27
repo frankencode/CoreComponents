@@ -8,13 +8,14 @@
 #ifndef PONA_QUEUE_HPP
 #define PONA_QUEUE_HPP
 
-#include "atoms"
+#include "NonCopyable.hpp"
+#include "Sequence.hpp"
 
 namespace pona
 {
 
 template<class T>
-class Queue: public Instance, public NonCopyable
+class Queue: public Sequence<T>, public NonCopyable
 {
 public:
 	Queue(int size)
@@ -91,7 +92,7 @@ public:
 		tail_ = size_ - 1;
 	}
 	
-	inline T back(int i = 0)
+	inline T back(int i = 0) const
 	{
 		assert((0 <= i) && (i < fill_));
 		i = -i;
@@ -100,13 +101,16 @@ public:
 		return buf_[i];
 	}
 	
-	inline T front(int i = 0)
+	inline T front(int i = 0) const
 	{
 		assert((0 <= i) && (i < fill_));
 		i += tail_ + 1;
 		if (i >= size_) i -= size_;
 		return buf_[i];
 	}
+	
+	inline bool def(int i) const { return (0 <= i) && (i < size_); }
+	inline T get(int i) const { return front(i); }
 	
 private:
 	int fill_;
