@@ -35,12 +35,6 @@ public:
 		return buf_[i];
 	}
 	
-	inline T* at(int i)
-	{
-		assert(def(i));
-		return buf_ + i;
-	}
-	
 	inline int size() const { return size_; }
 	inline int length() const { return size_; }
 	
@@ -169,26 +163,32 @@ public:
 	inline bool operator<=(const Array& b) const { return (*this < b) || (*this == b); }
 	inline bool operator>=(const Array& b) const { return (b < *this) || (*this == b); }
 	
+	inline T* at(int i)
+	{
+		assert(Super::def(i));
+		return Super::buf_ + i;
+	}
+	
 	inline operator bool() const { return Super::buf_; }
 	inline operator T*() const { return Super::buf_; }
 };
 
 template<class T>
-class Array<const T>: public AbstractArray<const T>
+class Array<const T>: public AbstractArray<T>
 {
 public:
 	typedef T Element;
-	typedef AbstractArray<const T> Super;
+	typedef AbstractArray<T> Super;
 	
 	Array()
 	{}
 	
 	Array(const T* buf)
-		: AbstractArray<const T>(buf, (buf) ? pona::strlen(buf) : 0)
+		: AbstractArray<T>(const_cast<T*>(buf), (buf) ? pona::strlen(buf) : 0)
 	{}
 	
 	Array(const T* buf, int size)
-		: AbstractArray<const T>(buf, size)
+		: AbstractArray<T>(const_cast<T*>(buf), size)
 	{}
 	
 	inline bool operator<(const Array& b) const { return lower(b); }
@@ -197,6 +197,12 @@ public:
 	inline bool operator!=(const Array& b) const { return !(*this == b); }
 	inline bool operator<=(const Array& b) const { return (*this < b) || (*this == b); }
 	inline bool operator>=(const Array& b) const { return (b < *this) || (*this == b); }
+	
+	inline const T* at(int i)
+	{
+		assert(Super::def(i));
+		return Super::buf_ + i;
+	}
 	
 	inline operator bool() const { return Super::buf_; }
 	inline operator const T*() const { return Super::buf_; }
