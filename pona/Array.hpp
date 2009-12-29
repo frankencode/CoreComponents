@@ -163,14 +163,20 @@ public:
 	inline bool operator<=(const Array& b) const { return (*this < b) || (*this == b); }
 	inline bool operator>=(const Array& b) const { return (b < *this) || (*this == b); }
 	
-	inline T* at(int i)
+	inline T* pointerAt(int i) const
 	{
 		assert(Super::def(i));
 		return Super::buf_ + i;
 	}
 	
-	inline operator bool() const { return Super::buf_; }
+	inline T& at(int i) const
+	{
+		assert(Super::def(i));
+		return Super::buf_[i];
+	}
+	inline T* data() const { return Super::buf_; }
 	inline operator T*() const { return Super::buf_; }
+	inline operator bool() const { return Super::buf_; }
 };
 
 template<class T>
@@ -198,12 +204,19 @@ public:
 	inline bool operator<=(const Array& b) const { return (*this < b) || (*this == b); }
 	inline bool operator>=(const Array& b) const { return (b < *this) || (*this == b); }
 	
-	inline const T* at(int i)
+	inline const T* pointerAt(int i) const
 	{
 		assert(Super::def(i));
 		return Super::buf_ + i;
 	}
 	
+	inline const T& at(int i) const
+	{
+		assert(Super::def(i));
+		return Super::buf_[i];
+	}
+	
+	inline const T* data() const { return Super::buf_; }
 	inline operator bool() const { return Super::buf_; }
 	inline operator const T*() const { return Super::buf_; }
 };

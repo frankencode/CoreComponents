@@ -59,6 +59,12 @@ public:
 		return buf_[--fill_];
 	}
 	
+	inline void pop(int n)
+	{
+		assert(fill_ >= n);
+		fill_ -= n;
+	}
+	
 	inline void clear()
 	{
 		fill_ = 0;
