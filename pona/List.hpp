@@ -517,7 +517,7 @@ void List<T>::fill(int i, int n, const T& e)
 {
 	Array<T> v(n);
 	v.clear(e);
-	write(i, n, v.at(0));
+	write(i, n, v.data());
 }
 
 template<class T>
@@ -662,7 +662,7 @@ void List<T>::push(int i, int n, List* b)
 	
 	if (observer_) {
 		Array<T> v(b->length());
-		b->read(0, b->length(), v.at(0));
+		b->read(0, b->length(), v.data());
 		if (!observer_->beforePush(i, n, v))
 			return;
 	}

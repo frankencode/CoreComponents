@@ -34,9 +34,9 @@ public:
 	
 	inline int definitionId() const { return definitionId_; }
 	
-	inline bool* flag(int id) { return flags_.at(id); }
-	inline Char* character(int id) { return chars_.at(id); }
-	inline Array<Char>* string(int id) { return strings_.at(id); }
+	inline bool* flag(int id) { return flags_.pointerAt(id); }
+	inline Char* character(int id) { return chars_.pointerAt(id); }
+	inline Array<Char>* string(int id) { return strings_.pointerAt(id); }
 	
 	inline Ref<SyntaxState> child() const { return child_; }
 	inline void setChild(Ref<SyntaxState> state) { child_ = state; }

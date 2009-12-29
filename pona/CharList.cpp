@@ -140,7 +140,7 @@ CString CharList::utf8() const
 	}
 	
 	CString buf(numBytes);
-	Utf8Sink sink((uint8_t*)buf->at(0), numBytes);
+	Utf8Sink sink((uint8_t*)buf->data(), numBytes);
 	for (int i = 0; i < numChars; ++i)
 		sink.writeChar(get(i));
 	return buf;
@@ -154,7 +154,7 @@ uint32_t CharList::crc32() const
 	return crc.sum();
 }
 
-char* CharList::strdup() const { return pona::strdup(utf8()->at(0)); }
+char* CharList::strdup() const { return pona::strdup(utf8()->data()); }
 
 CharList::CharList(Ref<Super> parent, int i, int n)
 	: Super(parent, i, n)
