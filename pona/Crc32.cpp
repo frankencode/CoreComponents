@@ -1,7 +1,7 @@
 /*
  * Crc32.cpp -- CRC32 as described in ISO 3309 or ITU-T V.42
  *
- * Copyright (c) 2007-2009, Frank Mertens
+ * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */

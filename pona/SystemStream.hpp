@@ -1,7 +1,7 @@
 /*
  * SystemStream.hpp -- a stream associated with a file descriptor
  *
- * Copyright (c) 2007-2009, Frank Mertens
+ * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
@@ -42,4 +42,3 @@ protected:
 } // namespace pona
 
 #endif // PONA_SYSTEMSTREAM_HPP
-

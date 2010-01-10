@@ -1,7 +1,7 @@
 /*
  * BitSink.hpp -- bit-vise writing to a 'Stream'
  *
- * Copyright (c) 2007-2009, Frank Mertens
+ * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
