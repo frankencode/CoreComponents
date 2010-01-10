@@ -1,7 +1,7 @@
 /*
  * FormatSpecifier.hpp -- syntax of "%%"-placeholders inside 'Format' strings
  *
- * Copyright (c) 2007-2009, Frank Mertens
+ * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */

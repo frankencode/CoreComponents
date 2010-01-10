@@ -1,7 +1,7 @@
 /*
  * Utf8Sink.hpp -- UTF8 encoding data sink
  *
- * Copyright (c) 2007-2009, Frank Mertens
+ * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */

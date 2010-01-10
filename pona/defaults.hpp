@@ -1,7 +1,7 @@
 /*
  * defaults.hpp -- library configuration
  *
- * Copyright (c) 2007-2009, Frank Mertens
+ * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
