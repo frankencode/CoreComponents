@@ -23,29 +23,33 @@ uint32_t Utf8Source::readChar(bool* valid)
 {
 	uint32_t ch = readUInt8();
 	
-	if ((ch >> 7) == 1)
+	if ((ch >> 7) == 1) // distinguish 7 bit ASCII from multibyte sequence
 	{
-		int n = 0; // number of additional bytes
+		int n = -1; // number of additional bytes
 	
-		if ((ch >> 5) == 6) { // 6 = (110)2
+		// translate prefix to code length (n is the number of successive bytes)
+		
+		if ((ch >> 5) == 6) { // code prefix: 6 = (110)2
 			ch = ch & 0x1F;
-			n = (ch > 1) ? 3 : -1;
+			n = 1;
 		}
-		else if ((ch >> 4) == 14) { // 14 = (1110)2
+		else if ((ch >> 4) == 14) { // code prefix: 14 = (1110)2
 			ch = ch & 0x0F;
 			n = 2;
 		}
-		else if ((ch >> 3) == 30) { // 30 = (11110)2
+		else if ((ch >> 3) == 30) { // code prefix: 30 = (11110)2
 			ch = ch & 0x07;
 			n = 3;
 		}
-		else
-			n = -1;
 		
+		// it is meaningless to have highest bits equal zero
+		if (ch == 0) n = -1;
+		
+		// read n successive characters (chs), which carry the code prefix (10)2
 		while (n > 0) {
-			uint8_t byte = readUInt8();
-			if ((byte >> 6) == 2) // 2 = (10)2
-				ch = (ch << 6) | (byte & 0x3F);
+			uint8_t chs = readUInt8();
+			if ((chs >> 6) == 2) // 2 = (10)2
+				ch = (ch << 6) | (chs & 0x3F);
 			else
 				break;
 			--n;

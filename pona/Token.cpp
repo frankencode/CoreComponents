@@ -35,7 +35,8 @@ void Token::meld(Ref<Token> root0, Ref<Token> root1)
 	
 	if (!root1->firstChild()) return;
 	
-	Ref<Token, Owner> result = new Token;
+	Token result_;
+	Ref<Token, Pointer> result = &result_;
 	Ref<Token, Owner> token0 = root0->firstChild();
 	Ref<Token, Owner> token1 = root1->firstChild();
 	
