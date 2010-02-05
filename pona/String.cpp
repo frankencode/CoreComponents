@@ -6,7 +6,6 @@
  * See ../LICENSE for the license.
  */
 
-#include "Utf8Source.hpp"
 #include "String.hpp"
 
 namespace pona
@@ -23,34 +22,8 @@ String::String(const Char& ch)
 }
 
 String::String(const char* utf8, int numBytes, int numChars)
-	: Ref<Media, Owner>(new Media)
-{
-	if (numBytes == -1) {
-		numBytes = 0;
-		if (utf8)
-			while (*(utf8 + numBytes)) ++numBytes;
-	}
-	
-	if (numBytes > 0)
-	{
-		if (numChars == -1) {
-			numChars = 0;
-			Utf8Source source((uint8_t*)utf8, numBytes);
-			while (int(source.numBytesRead()) < numBytes) {
-				source.readChar();
-				++numChars;
-			}
-		}
-		
-		get()->push(0, numChars);
-		
-		{
-			Utf8Source source((uint8_t*)utf8, numBytes);
-			for (int i = 0; i < numChars; ++i)
-				get()->set(i, source.readChar());
-		}
-	}
-}
+	: Ref<Media, Owner>(new Media(utf8, numBytes, numChars))
+{}
 
 String operator*(Char ch, int n)
 {

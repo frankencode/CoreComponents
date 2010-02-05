@@ -18,7 +18,28 @@ typedef double float64_t;
 namespace pona
 {
 
-enum Endian { BigEndian = 0, LittleEndian = 1 };
+enum Endian { LittleEndian = 1, BigEndian = 0 };
+
+inline int localEndian() {
+	const unsigned y = 1;
+	return *((uint8_t*)&y);
+}
+
+// swap endianess, if local endian is not channel endian
+template<class UInt>
+inline UInt endianGate(UInt x, const int channelEndian = BigEndian)
+{
+	if (localEndian() != channelEndian) {
+		const int n = sizeof(x);
+		UInt z = 0;
+		for (int i = 0; i < n; ++i) {
+			z <<= 8;
+			z |= (x >> (i * 8)) & 0xFF;
+		}
+		x = z;
+	}
+	return x;
+}
 
 template<class B, class A>
 inline B union_cast(A a)
