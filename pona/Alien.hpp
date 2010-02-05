@@ -23,25 +23,25 @@ class Alien: public Instance
 public:
 	typedef void (*DelFunc)(T*);
 
-	Alien(T* external, DelFunc delFunc = 0)
-		: external_(external),
+	Alien(T* guest, DelFunc delFunc = 0)
+		: guest_(guest),
 		  delFunc_(delFunc)
 	{}
 	
 	~Alien()
 	{
-		if (external_ != 0)
+		if (guest_ != 0)
 		{
-			if (delFunc_) delFunc_(external_);
-			else delete external_;
-			external_ = 0;
+			if (delFunc_) delFunc_(guest_);
+			else delete guest_;
+			guest_ = 0;
 		}
 	}
 	
-	inline T* get() const { return external_; }
+	inline T* get() const { return guest_; }
 	
 private:
-	mutable T* external_;
+	mutable T* guest_;
 	DelFunc delFunc_;
 };
 

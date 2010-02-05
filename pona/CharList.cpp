@@ -6,15 +6,45 @@
  * See ../LICENSE for the license.
  */
 
+#include "Utf8Source.hpp"
+#include "Utf8Sink.hpp"
+#include "Crc32.hpp"
 #include "FormatSyntax.hpp"
 #include "IntegerLiteral.hpp"
 #include "FloatLiteral.hpp"
-#include "Utf8Sink.hpp"
-#include "Crc32.hpp"
 #include "CharList.hpp"
 
 namespace pona
 {
+
+CharList::CharList(const char* utf8, int numBytes, int numChars)
+{
+	if (numBytes == -1) {
+		numBytes = 0;
+		if (utf8)
+			while (*(utf8 + numBytes)) ++numBytes;
+	}
+	
+	if (numBytes > 0)
+	{
+		if (numChars == -1) {
+			numChars = 0;
+			Utf8Source source((uint8_t*)utf8, numBytes);
+			while (int(source.numBytesRead()) < numBytes) {
+				source.readChar();
+				++numChars;
+			}
+		}
+		
+		push(0, numChars);
+		
+		{
+			Utf8Source source((uint8_t*)utf8, numBytes);
+			for (int i = 0; i < numChars; ++i)
+				set(i, source.readChar());
+		}
+	}
+}
 
 int CharList::toInt(bool* ok)
 {
@@ -155,6 +185,12 @@ uint32_t CharList::crc32() const
 }
 
 char* CharList::strdup() const { return pona::strdup(utf8()->data()); }
+
+Ref<StringList, Owner> CharList::split(const char* sep) const
+{
+	Ref<CharList> charList = this;
+	return String(charList) / String(sep);
+}
 
 CharList::CharList(Ref<Super> parent, int i, int n)
 	: Super(parent, i, n)

@@ -75,6 +75,8 @@ public:
 #define PONA_PTHREAD_EXCEPTION(callName, errorCode) \
 	throw PthreadException(__FILE__, __LINE__, "PthreadException", pthreadError(callName, errorCode), errorCode)
 
+PONA_EXCEPTION(RefException, Exception);
+
 } // namespace pona
 
 #endif // PONA_EXCEPTION_HPP

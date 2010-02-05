@@ -17,7 +17,7 @@
 #endif
 #endif
 
-// #define PONA_REF_THREADSAFE_SET
+// #define PONA_REF_POLICY_RACE_DETECTION
 
 #ifndef PONA_DEFAULT_BUF_CAPA
 #define PONA_DEFAULT_BUF_CAPA (1 << 14)

@@ -1,5 +1,5 @@
 /*
- * Owner.hpp -- ownership 'Ref' policy
+ * Owner.hpp -- shared single-thread ownership 'Ref' policy
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -9,29 +9,29 @@
 #define PONA_OWNER_HPP
 
 #include "defaults.hpp"
-#ifdef PONA_REF_THREADSAFE_SET
-#include "ScopeGuard.hpp"
+#ifdef PONA_REF_POLICY_RACE_DETECTION
+#include <pthread.h>
 #endif
 
 namespace pona
 {
 
-/** The Owner policy is threadsafe if the PONA_REF_THREADSAFE_SET compile flag is set.
-  * In particular the following race conditions are handled:
-  *   - concurrently calling set(T*) and ~T()
-  *   - concurrently calling set((T*)0) and ~Ref<T,Owner>()
-  *   - concurrently calling set(T*)
-  */
 template<class T>
 class Owner
 {
 public:
-	Owner(): instance_(0) {}
+	Owner()
+		: instance_(0)
+	#ifdef PONA_REF_POLICY_RACE_DETECTION
+		  , creator_(pthread_self())
+	#endif
+	{}
 	
 	inline void set(T* b)
 	{
-		#ifdef PONA_REF_THREADSAFE_SET
-		ScopeGuard<SpinMutex> guard(spinMutex_);
+		#ifdef PONA_REF_POLICY_RACE_DETECTION
+		if (creator_ != pthread_self())
+			PONA_THROW(RefException, "Illegal concurrent assignment");
 		#endif
 		
 		if (instance_ != b)
@@ -50,8 +50,8 @@ public:
 	
 private:
 	T* instance_;
-	#ifdef PONA_REF_THREADSAFE_SET
-	SpinMutex spinMutex_;
+	#ifdef PONA_REF_POLICY_RACE_DETECTION
+	pthread_t creator_;
 	#endif
 };
 

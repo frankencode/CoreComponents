@@ -27,10 +27,14 @@ public:
 	inline void acquire() {
 		while (!tryAcquire()) {
 			// Step back for an active wait on the local cache.
-			// Hopefully reducing memory bandwidth utilization to a safe level.
+			// Give it a chance to not utilize 100% of read/write memory bandwidth
+			// by readonly iddling on a local register, cached value or memory value.
+			// (Depends on what the compiler loves to generate of this loop body.)
 			// If the cache is shared with the other thread holding the lock,
 			// the loop may return early.
-			for (int i = 0; (i < 16) && (flag_ == 1); ++i);
+			for (int i = 0; i < 16; ++i)
+				if (i & 3 == 0)
+					if (flag_ == 1) break;
 			
 			// We could also actively yield at this point using sched_yield(2).
 			// But with a standard time slice scheduler there is a likelihood

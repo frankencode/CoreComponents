@@ -27,16 +27,16 @@ public:
 	virtual ~String() {}
 	
 	template<template<class> class SetAndGetPolicy>
-	String(Ref<CharList::Super, SetAndGetPolicy> super) { set(super.cast<Media>()); }
+	String(Ref<CharList::Super, SetAndGetPolicy> super) { set(super.cast<CharList>()); }
 	
 	template<template<class> class SetAndGetPolicy>
 	String(Ref<CharList, SetAndGetPolicy> media) { set(media); }
 	
 	// ensure string is never null
-	inline virtual void set(Media* media) {
+	inline virtual void set(CharList* media) {
 		if (!media)
-			media = new Media;
-		Owner<Media>::set(media);
+			media = new CharList;
+		Owner<CharList>::set(media);
 	}
 	
 	inline bool operator<(const String& b) const { return *get() < *b.get(); }
@@ -71,7 +71,6 @@ inline String operator+(const char* b, String a) { return a + b; }
 String operator*(Char ch, int n);
 inline String operator*(int n, Char ch) { return ch * n; }
 
-typedef List<String> StringList;
 Ref<StringList, Owner> operator/(String text, String sep);
 String operator*(Ref<StringList> parts, String sep);
 inline Ref<StringList, Owner> operator/(String text, const char* sep) { return text / String(sep); }
