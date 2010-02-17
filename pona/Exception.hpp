@@ -45,6 +45,9 @@ char* captureExceptionMessage(char* s);
 #define PONA_THROW(ExceptionClass, reason) \
 	throw ExceptionClass(__FILE__, __LINE__, #ExceptionClass, captureExceptionMessage(reason))
 
+/* #define PONA_THROW(ExceptionClass, reason) \
+ 	*((char*)0) = 'x';*/
+
 char* systemError();
 char* systemError(int errorCode);
 char* pthreadError(const char* callName, int errorCode);
