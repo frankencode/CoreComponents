@@ -150,6 +150,15 @@ public:
 			Super::buf_[i] = value;
 	}
 	
+	inline void reset(int newSize = -1)
+	{
+		if (newSize > 0) Super::size_ = newSize;
+		if (Super::buf_) delete[] Super::buf_;
+		Super::buf_ = new T[Super::size_];
+		if (PONA_IS_ATOMIC(T))
+			clear();
+	}
+	
 	inline void set(int i, T e)
 	{
 		assert(Super::def(i));
