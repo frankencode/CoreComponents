@@ -33,7 +33,7 @@ public:
 			// If the cache is shared with the other thread holding the lock,
 			// the loop may return early.
 			for (int i = 0; i < 16; ++i)
-				if (i & 3 == 0)
+				if ((i & 3) == 0)
 					if (flag_ == 1) break;
 			
 			// We could also actively yield at this point using sched_yield(2).
