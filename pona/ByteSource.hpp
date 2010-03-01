@@ -19,7 +19,7 @@ class ByteSource: public Instance
 {
 public:
 	ByteSource(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
-	ByteSource(void* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
+	ByteSource(const void* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
 	~ByteSource();
 	
 	uint8_t readUInt8();
@@ -35,7 +35,7 @@ public:
 	float32_t readFloat32();
 	float64_t readFloat64();
 	
-	uint64_t numBytesRead() const;
+	off_t numBytesRead() const;
 	
 	Ref<Stream> stream() const;
 	
@@ -49,7 +49,7 @@ private:
 	int bufFill_;
 	uint8_t* buf_;
 	int i_;    // byte offset within buf_
-	uint64_t nr_;    // accumulated number of bytes read
+	off_t nr_;    // accumulated number of bytes read
 };
 
 inline uint8_t ByteSource::readUInt8()
@@ -118,7 +118,7 @@ inline int64_t ByteSource::readInt64() { return union_cast<int64_t>(readUInt64()
 inline float32_t ByteSource::readFloat32() { return union_cast<float32_t>(readUInt32()); }
 inline float64_t ByteSource::readFloat64() { return union_cast<float64_t>(readUInt64()); }
 
-inline uint64_t ByteSource::numBytesRead() const { return nr_; }
+inline off_t ByteSource::numBytesRead() const { return nr_; }
 
 inline Ref<Stream> ByteSource::stream() const { return stream_; }
 

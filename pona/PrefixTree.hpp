@@ -27,13 +27,6 @@ public:
 		  value_(Value())
 	{}
 	
-	/** Convenience wrapper.
-	  */
-	template<class Char2>
-	inline bool insert(const Char2* key, Value value = Value(), Value* oldValue = 0) {
-		return insert(key, pona::strlen(key), value, oldValue);
-	}
-	
 	/** Insert a key-value mapping. If oldValue is null an existing mapping is preserved.
 	  * If oldValue is non-null an existing mapping is overwritten and the old value returned.
 	  * The function returns true if the new key-value mapping was inserted successfully.
@@ -71,14 +64,6 @@ public:
 		return success;
 	}
 	
-	/** Convenience wrapper.
-	  */
-	template<class Char2>
-	inline bool lookup(const Char2* key, Value* value = 0)
-	{
-		return lookup(key, pona::strlen(key), value);
-	}
-	
 	/** Lookup the key-value mapping with the longest matching key.
 	  * The function returns true if an exact match was found.
 	  */
@@ -100,17 +85,6 @@ public:
 			--keyLen;
 		}
 		return found && (keyLen == 0);
-	}
-	
-	/** Convenience wrapper, matches entire media.
-	  */
-	template<class Media>
-	bool match(Media* media, Value* value = 0)
-	{
-		int i1 = 0;
-		if (match(media, 0, &i1, value))
-			return !media->def(i1);
-		return false;
 	}
 	
 	/** Match given media to the longest key-value mapping of this tree.
@@ -138,6 +112,27 @@ public:
 				}
 		}
 		return found;
+	}
+	
+	// convenience wrapper
+	inline bool lookup(const char* key, Value* value = 0)
+	{
+		return lookup(key, pona::strlen(key), value);
+	}
+	
+	// convenience wrapper
+	inline bool insert(const char* key, Value value = Value(), Value* oldValue = 0) {
+		return insert(key, pona::strlen(key), value, oldValue);
+	}
+	
+	// convenience wrapper, matches entire media
+	template<class Media>
+	bool match(Media* media, Value* value = 0)
+	{
+		int i1 = 0;
+		if (match(media, 0, &i1, value))
+			return !media->def(i1);
+		return false;
 	}
 	
 protected:

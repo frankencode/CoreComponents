@@ -1,6 +1,7 @@
 LINK_LIBRARIES(pona)
 INCLUDE_DIRECTORIES(..)
 
+ADD_EXECUTABLE(testUString testUString.cpp)
 ADD_EXECUTABLE(testDir testDir.cpp)
 ADD_EXECUTABLE(testNetworkInterface testNetworkInterface.cpp)
 ADD_EXECUTABLE(testProcessStatus testProcessStatus.cpp)

@@ -28,7 +28,7 @@ public:
 	inline String path() const { return path_; }
 	
 	inline int type() const  { return st_mode & S_IFMT; }
-	inline int mode() const { return st_mode & S_IRWXU; }
+	inline int mode() const { return st_mode & (~S_IFMT); }
 	
 	inline off_t size() const { return st_size; }
 	inline off_t sizeOfBlock() const { return st_blksize; }

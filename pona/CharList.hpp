@@ -59,6 +59,8 @@ public:
 	char* strdup() const;
 	
 private:
+	// void set(int i, Char e) { Super::set(i, e); }
+	
 	CharList(Ref<Super> parent, int i, int n);
 	virtual Ref<Super, Owner> newList() const;
 	virtual Ref<Super, Owner> newChildList(Ref<Super> parent, int i, int n) const;

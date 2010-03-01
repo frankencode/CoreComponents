@@ -1,5 +1,5 @@
 /*
- * Utf8Source.hpp -- UTF8 decoding data source
+ * Utf8Source.hpp -- UTF8 decoder and validator
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -17,7 +17,7 @@ class Utf8Source: public ByteSource
 {
 public:
 	Utf8Source(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA);
-	Utf8Source(void* buf, int bufCapa);
+	Utf8Source(const void* buf, int bufCapa);
 	
 	uint32_t readChar(bool* valid = 0);
 };

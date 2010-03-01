@@ -1,5 +1,5 @@
 /*
- * Utf8Source.cpp -- UTF8 decoding data source
+ * Utf8Source.cpp -- UTF8 decoder and validator
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -15,7 +15,7 @@ Utf8Source::Utf8Source(Ref<Stream> stream, int bufCapa)
 	: ByteSource(stream, bufCapa)
 {}
 
-Utf8Source::Utf8Source(void* buf, int bufCapa)
+Utf8Source::Utf8Source(const void* buf, int bufCapa)
 	: ByteSource(buf, bufCapa)
 {}
 
@@ -23,12 +23,11 @@ uint32_t Utf8Source::readChar(bool* valid)
 {
 	uint32_t ch = readUInt8();
 	
-	if ((ch >> 7) == 1) // distinguish 7 bit ASCII from multibyte sequence
+	if ((ch & 0x80) != 0) // distinguish 7 bit ASCII from multibyte sequence
 	{
 		int n = -1; // number of additional bytes
 	
 		// translate prefix to code length (n is the number of successive bytes)
-		
 		if ((ch >> 5) == 6) { // code prefix: 6 = (110)2
 			ch = ch & 0x1F;
 			n = 1;
@@ -42,8 +41,7 @@ uint32_t Utf8Source::readChar(bool* valid)
 			n = 3;
 		}
 		
-		// it is meaningless to have highest bits equal zero
-		if (ch == 0) n = -1;
+		int n2 = n;
 		
 		// read n successive characters (chs), which carry the code prefix (10)2
 		while (n > 0) {
@@ -53,6 +51,19 @@ uint32_t Utf8Source::readChar(bool* valid)
 			else
 				break;
 			--n;
+		}
+		
+		// enforce minimum code length
+		if (n == 0) {
+			if (n2 == 1) {
+				if (ch < 0x80) n = -1;
+			}
+			else if (n2 == 2) {
+				if (ch < 0x800) n = -1;
+			}
+			else if (n2 == 3) {
+				if (ch < 0x10000) n = -1;
+			}
 		}
 		
 		if (valid) {

@@ -36,7 +36,7 @@ public:
 	void writeFloat32(float32_t x);
 	void writeFloat64(float64_t x);
 	
-	int64_t numBytesWritten() const;
+	off_t numBytesWritten() const;
 	void flush();
 	
 	Ref<Stream> stream() const;
@@ -48,7 +48,7 @@ private:
 	int bufCapa_;
 	uint8_t* buf_;
 	int i_;    // byte offset within buf_
-	int64_t nw_;    // accumulated number of written bytes
+	off_t nw_;    // accumulated number of written bytes
 };
 
 inline void ByteSink::writeUInt8(uint8_t x)
@@ -112,7 +112,7 @@ inline void ByteSink::writeInt64(int64_t x) { writeUInt64(union_cast<uint64_t>(x
 inline void ByteSink::writeFloat32(float32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
 inline void ByteSink::writeFloat64(float64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
 
-inline int64_t ByteSink::numBytesWritten() const
+inline off_t ByteSink::numBytesWritten() const
 {
 	return nw_ + /* consumed buffer bytes */ i_;
 }

@@ -1,5 +1,5 @@
 /*
- * Array.hpp -- opaque memory vector
+ * Array.hpp -- handling opaque memory vectors
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -9,225 +9,93 @@
 #define PONA_ARRAY_HPP
 
 #include "Sequence.hpp"
+#include "ArrayPolicy.hpp"
 
 namespace pona
 {
 
-template<class T>
-class AbstractArray: public Sequence<T>
+template<class T, template<class> class P = ArrayPolicy>
+class Array: public Sequence<T>
 {
 public:
-	AbstractArray()
-		: size_(0),
-		  buf_(0)
-	{}
+	typedef T Element;
+	typedef P<T> Policy;
 	
-	AbstractArray(T* buf, int size)
-		: size_(size),
-		  buf_(buf)
-	{}
+	Array() { Policy::initEmpty(data_, size_); }
+	Array(int size) { Policy::alloc(data_, size_, size); }
+	Array(int size, T zero) {
+		Policy::alloc(data_, size_, size);
+		Policy::clear(data_, size_, zero);
+	}
+	Array(const T* data, int size) {
+		Policy::initEmpty(data_, size_);
+		Policy::assign(data_, size_, data, size);
+	}
+	Array(const Array& b) {
+		Policy::initEmpty(data_, size_);
+		Policy::assign(data_, size_, b.data_, b.size_);
+	}
 	
-	inline bool def(int i) const { return (0 <= i) && (i < size_); }
+	~Array() { Policy::free(data_, size_); }
 	
-	inline T get(int i) const
-	{
-		assert(def(i));
-		return buf_[i];
+	inline Array& operator=(const Array& b) {
+		Policy::assign(data_, size_, b.data_, b.size_);
+		return *this;
+	}
+	
+	inline void clear(const T& zero = T()) {
+		Policy::clear(data_, size_, zero);
+	}
+	
+	inline void reset() {
+		Policy::free(data_, size_);
+	}
+	
+	inline void reset(int newSize) {
+		Policy::free(data_, size_);
+		Policy::alloc(data_, size_, newSize);
 	}
 	
 	inline int size() const { return size_; }
 	inline int length() const { return size_; }
+	inline bool empty() const { return size_ == 0; }
 	
-	bool lower(const AbstractArray& b) const
-	{
-		int n = (size_ < b.size_) ? size_ : b.size_;
-		int i = 0;
-		while (i < n) {
-			T c1 = get(i);
-			T c2 = b.get(i);
-			if ((c1 < c2) || (c2 < c1))
-				return c1 < c2;
-			++i;
-		}
-		return size_ < b.size_;
+	inline bool def(int i) const { return (0 <= i) && (i < size_); }
+	
+	inline T get(int i) const {
+		assert(def(i));
+		return data_[i];
 	}
 	
-	bool equal(const AbstractArray& b) const
-	{
-		bool value = (size_ == b.size_);
-		for (int i = 0; value && (i < size_); ++i)
-			value = (buf_[i] == b.buf_[i]);
-		return value;
+	inline void set(int i, T e) {
+		assert(def(i));
+		data_[i] = e;
 	}
-
-protected:
+	
+	inline bool operator< (const Array& b) const { return pona::strcmp(data_, b.data_) <  0; }
+	inline bool operator==(const Array& b) const { return pona::strcmp(data_, b.data_) == 0; }
+	inline bool operator> (const Array& b) const { return pona::strcmp(data_, b.data_) >  0; }
+	inline bool operator!=(const Array& b) const { return pona::strcmp(data_, b.data_) != 0; }
+	inline bool operator<=(const Array& b) const { return pona::strcmp(data_, b.data_) <= 0; }
+	inline bool operator>=(const Array& b) const { return pona::strcmp(data_, b.data_) >= 0; }
+	
+	inline T* pointerAt(int i) const {
+		assert(def(i));
+		return data_ + i;
+	}
+	
+	inline T& at(int i) const {
+		assert(def(i));
+		return data_[i];
+	}
+	
+	inline T* data() const { return data_; }
+	inline operator T*() const { return data_; }
+	inline operator bool() const { return data_; }
+	
+private:
 	int size_;
-	T* buf_;
-};
-
-template<class T>
-class Array: public AbstractArray<T>
-{
-public:
-	typedef T Element;
-	typedef AbstractArray<T> Super;
-	
-	Array()
-	{}
-	
-	Array(int size)
-		: AbstractArray<T>((size > 0) ? new T[size] : 0, size)
-	{
-		if (PONA_IS_ATOMIC(T))
-			clear();
-	}
-	
-	template<class T2>
-	Array(T2* buf)
-	{
-		if (buf) {
-			Super::size_ = pona::strlen(buf);
-			Super::buf_ = new T[Super::size_];
-			for (int i = 0; i < Super::size_; ++i)
-				Super::buf_[i] = buf[i];
-		}
-	}
-	
-	template<class T2>
-	Array(T2* buf, int size)
-		: AbstractArray<T>((size > 0) ? new T[size] : 0, size)
-	{
-		for (int i = 0; i < size; ++i)
-			Super::buf_[i] = buf[i];
-	}
-	
-	~Array()
-	{
-		if (Super::buf_) {
-			delete[] Super::buf_;
-			Super::buf_ = 0;
-		}
-	}
-	
-	inline Array& operator=(const Array& b)
-	{
-		if (Super::size_ != b.size_) {
-			if (Super::buf_)
-				delete[] Super::buf_;
-			Super::size_ = b.size_;
-			Super::buf_ = (b.size_ > 0) ? new T[b.size_] : 0;
-		}
-		
-		for (int i = 0; i < Super::size_; ++i)
-			Super::buf_[i] = b.buf_[i];
-			
-		return *this;
-	}
-	
-	Array(const Array& b) { *this = b; }
-	
-	template<class T1, class T2>
-	Array(const Array<T1>& a, const Array<T2>& b)
-	{
-		Super::size_ = a.size() + b.size();
-		Super::buf_ = (Super::size_ > 0) ? new T[Super::size_] : 0;
-		int i = 0, an = a.size();
-		while (i < an) {
-			Super::buf_[i] = a.buf_[i];
-			++i;
-		}
-		int j = 0, bn = b.size();
-		while (j < bn) {
-			Super::buf_[i] = b.buf_[j];
-			++i;
-			++j;
-		}
-	}
-	
-	inline void clear(const T& value = T())
-	{
-		for (int i = 0; i < Super::size_; ++i)
-			Super::buf_[i] = value;
-	}
-	
-	inline void reset(int newSize = -1)
-	{
-		if (newSize > 0) Super::size_ = newSize;
-		if (Super::buf_) delete[] Super::buf_;
-		Super::buf_ = new T[Super::size_];
-		if (PONA_IS_ATOMIC(T))
-			clear();
-	}
-	
-	inline void set(int i, T e)
-	{
-		assert(Super::def(i));
-		Super::buf_[i] = e;
-	}
-	
-	inline bool operator<(const Array& b) const { return lower(b); }
-	inline bool operator==(const Array& b) const { return equal(b); }
-	inline bool operator>(const Array& b) const { return b < *this; }
-	inline bool operator!=(const Array& b) const { return !(*this == b); }
-	inline bool operator<=(const Array& b) const { return (*this < b) || (*this == b); }
-	inline bool operator>=(const Array& b) const { return (b < *this) || (*this == b); }
-	
-	inline T* pointerAt(int i) const
-	{
-		assert(Super::def(i));
-		return Super::buf_ + i;
-	}
-	
-	inline T& at(int i) const
-	{
-		assert(Super::def(i));
-		return Super::buf_[i];
-	}
-	inline T* data() const { return Super::buf_; }
-	inline operator T*() const { return Super::buf_; }
-	inline operator bool() const { return Super::buf_; }
-};
-
-template<class T>
-class Array<const T>: public AbstractArray<T>
-{
-public:
-	typedef T Element;
-	typedef AbstractArray<T> Super;
-	
-	Array()
-	{}
-	
-	Array(const T* buf)
-		: AbstractArray<T>(const_cast<T*>(buf), (buf) ? pona::strlen(buf) : 0)
-	{}
-	
-	Array(const T* buf, int size)
-		: AbstractArray<T>(const_cast<T*>(buf), size)
-	{}
-	
-	inline bool operator<(const Array& b) const { return lower(b); }
-	inline bool operator==(const Array& b) const { return equal(b); }
-	inline bool operator>(const Array& b) const { return b < *this; }
-	inline bool operator!=(const Array& b) const { return !(*this == b); }
-	inline bool operator<=(const Array& b) const { return (*this < b) || (*this == b); }
-	inline bool operator>=(const Array& b) const { return (b < *this) || (*this == b); }
-	
-	inline const T* pointerAt(int i) const
-	{
-		assert(Super::def(i));
-		return Super::buf_ + i;
-	}
-	
-	inline const T& at(int i) const
-	{
-		assert(Super::def(i));
-		return Super::buf_[i];
-	}
-	
-	inline const T* data() const { return Super::buf_; }
-	inline operator bool() const { return Super::buf_; }
-	inline operator const T*() const { return Super::buf_; }
+	T* data_;
 };
 
 } // namespace pona
