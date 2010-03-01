@@ -32,7 +32,7 @@ ByteSink::ByteSink(void* buf, int bufCapacity, int endian)
 	: stream_(0),
 	  endian_(endian),
 	  bufCapa_(bufCapacity),
-	  buf_((uint8_t*)buf),
+	  buf_(reinterpret_cast<uint8_t*>(buf)),
 	  i_(0),
 	  nw_(0)
 {}

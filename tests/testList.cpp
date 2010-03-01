@@ -1,6 +1,5 @@
 #include <pona/stdio>
 #include <pona/container>
-#include <string.h> // memset
 
 namespace pona
 {
@@ -58,7 +57,7 @@ int main()
 		text.push(60, 1, greeting);
 		
 		char buf2[128];
-		memset(buf2, 0, 128);
+		pona::memset(buf2, '\0', 128);
 		text.read(60, 13, buf2);
 		print("\"%%\"\n", buf2);
 	}

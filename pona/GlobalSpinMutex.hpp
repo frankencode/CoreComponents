@@ -27,8 +27,6 @@ private:
 
 namespace { GlobalSpinMutexInitializer globalSpinMutexInitializer; }
 
-/** Process global spin mutex initialized at application startup time.
-  */
 class GlobalSpinMutex: public Instance, public SpinMutex
 {
 public:

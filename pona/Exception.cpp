@@ -10,6 +10,7 @@
 #include <string.h> // memcpy
 #include <assert.h>
 #include "types.hpp"
+#include "strings.hpp"
 #include "Exception.hpp"
 
 namespace pona

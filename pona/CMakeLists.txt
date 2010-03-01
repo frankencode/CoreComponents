@@ -3,7 +3,9 @@ SET(PONA_HEADER
 	
 	atoms
 	types.hpp
+	strings.hpp
 	Sequence.hpp
+	ArrayPolicy.hpp
 	Array.hpp
 	Exception.hpp
 	SpinMutex.hpp
@@ -15,6 +17,10 @@ SET(PONA_HEADER
 	Owner.hpp
 	Ref.hpp
 	NonCopyable.hpp
+	
+	string
+	UStringIndex.hpp
+	UString.hpp
 	
 	container
 	Stack.hpp
@@ -121,6 +127,9 @@ SET(PONA_SOURCE
 	CoreMutex.cpp
 	GlobalSpinMutex.cpp
 	
+	# string
+	UString.cpp
+	
 	# container
 	Tree.cpp
 	String.cpp
@@ -194,6 +203,6 @@ ADD_LIBRARY(pona
 	${PONA_SOURCE}
 )
 
-SET_TARGET_PROPERTIES(pona PROPERTIES VERSION 0.9.6 SOVERSION 0)
+SET_TARGET_PROPERTIES(pona PROPERTIES VERSION 0.9.7 SOVERSION 0)
 
 INSTALL(TARGETS pona ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)

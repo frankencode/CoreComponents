@@ -31,6 +31,8 @@ public:
 	inline String home() const { return home_; }
 	inline String shell() const { return shell_; }
 	
+	// inline static isSuperUser
+	
 private:
 	void load(struct passwd* entry);
 	bool exists_;

@@ -9,6 +9,7 @@
 #define PONA_ATOM
 
 #include "types.hpp"
+#include "strings.hpp"
 #include "Array.hpp"
 #include "Exception.hpp"
 #include "SpinMutex.hpp"

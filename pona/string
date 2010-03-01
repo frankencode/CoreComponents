@@ -1,0 +1,6 @@
+#ifndef PONA_STRING
+#define PONA_STRING
+
+#include "UString.hpp"
+
+#endif // PONA_STRING

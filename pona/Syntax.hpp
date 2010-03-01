@@ -9,7 +9,6 @@
 #define PONA_SYNTAX_HPP
 
 #include "atoms"
-#include "Array.hpp"
 #include "PrefixTree.hpp"
 #include "Token.hpp"
 #include "TokenFactory.hpp"
@@ -95,21 +94,24 @@ public:
 		RangeNode(Char a, Char b, int invert)
 			: a_(a),
 			  b_(b),
-			  s_(0),
 			  invert_(invert)
 		{}
 		
 		template<class Char2>
 		RangeNode(const Char2* s, int len, int invert)
-			: s_(s, len),
+			: s_(len),
 			  invert_(invert)
-		{}
+		{
+			pona::memcpy(s_.data(), s, len);
+		}
 		
 		template<class Char2>
 		RangeNode(const Char2* s, int invert)
-			: s_(s),
+			: s_(pona::strlen(s)),
 			  invert_(invert)
-		{}
+		{
+			pona::memcpy(s_.data(), s, s_.size());
+		}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
@@ -150,13 +152,17 @@ public:
 	public:
 		template<class Char2>
 		StringNode(const Char2* s, int len)
-			: s_(s, len)
-		{}
+			: s_(len)
+		{
+			pona::memcpy(s_.data(), s, s_.size());
+		}
 		
 		template<class Char2>
 		StringNode(const Char2* s)
-			: s_(s)
-		{}
+			: s_(pona::strlen(s))
+		{
+			pona::memcpy(s_.data(), s, s_.size());
+		}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
@@ -1119,7 +1125,7 @@ public:
 				return scope_->definitionByName(name);
 			}
 			else {
-				if (Array<const char>(name) != Array<const char>(name_))
+				if (pona::strcmp(name, name_) != 0)
 					PONA_THROW(SyntaxException, pona::strcat("Undefined definition '", name, "' referenced"));
 				return this;
 			}
@@ -1182,17 +1188,19 @@ public:
 				  defaultValue_(defaultValue)
 			{}
 			Ref<StateChar, Owner> next_;
-			Char defaultValue_;
+			Char defaultValue_; // design HACK, Char?, or uchar_t, or char?
 		};
 		
 		class StateString: public Instance {
 		public:
 			StateString(Ref<StateString> head, const char* defaultValue)
 				: next_(head),
-				  defaultValue_(defaultValue)
-			{}
+				  defaultValue_(pona::strlen(defaultValue))
+			{
+				pona::memcpy(defaultValue_.data(), defaultValue, defaultValue_.size());
+			}
 			Ref<StateString, Owner> next_;
-			Array<Char> defaultValue_;
+			Array<Char> defaultValue_; // design HACK, Char?, or uchar_t, or char?
 		};
 		
 		int numRules_;

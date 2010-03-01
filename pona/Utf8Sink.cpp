@@ -1,5 +1,5 @@
 /*
- * Utf8Sink.cpp -- UTF8 encoding data sink
+ * Utf8Sink.cpp -- UTF8 encoder
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *

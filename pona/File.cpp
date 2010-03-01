@@ -17,11 +17,14 @@
 namespace pona
 {
 
-File::File(String path)
+File::File(String path, int openFlags)
 	: SystemStream(-1),
 	  path_(path),
 	  openFlags_(0)
-{}
+{
+	if (openFlags)
+		open(openFlags);
+}
 
 File::File(int fd)
 	: SystemStream(fd),

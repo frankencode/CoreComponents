@@ -29,7 +29,13 @@ public:
 		BlockDevice  = S_IFBLK,
 		Fifo         = S_IFIFO,
 		SymbolicLink = S_IFLNK,
-		Socket       = S_IFSOCK
+		Socket       = S_IFSOCK,
+	};
+	
+	enum Flags {
+		SetUserId  = S_ISUID,
+		SetGroupId = S_ISGID,
+		StickyBit  = S_ISVTX
 	};
 	
 	enum AccessFlags {
@@ -63,7 +69,7 @@ public:
 		StandardError  = 2
 	};
 	
-	File(String path);
+	File(String path, int openFlags = 0);
 	File(int fd);
 	
 	String path() const;
