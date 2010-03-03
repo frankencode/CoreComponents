@@ -12,7 +12,6 @@
 #include "strings.hpp"
 #include "Array.hpp"
 #include "Exception.hpp"
-#include "SpinMutex.hpp"
 #include "CoreMutex.hpp"
 #include "ScopeGuard.hpp"
 #include "Instance.hpp"

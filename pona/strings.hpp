@@ -8,6 +8,8 @@
 #ifndef PONA_STRINGS_HPP
 #define PONA_STRINGS_HPP
 
+#include <assert.h>
+
 namespace pona
 {
 

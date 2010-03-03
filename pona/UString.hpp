@@ -22,44 +22,59 @@ public:
 	typedef Ref<Media, Owner> Super;
 	typedef UStringIndex Index;
 	
+	// initialize empty string
 	UString(): Super(new Media) {}
+	
+	// initialize string with defined size but undefined content
 	UString(int size): Super(new Media(size)) {}
+	
+	// initialize string with defined size and defined content
 	UString(int size, char zero): Super(new Media(size, zero)) {
 		assert((0 <= zero) && (zero <= 127));
 	}
+	
+	// initialize string by deep-copying an UTF8 encoded string
 	UString(const char* data, int size = -1) {
 		if (size < 0) size = pona::strlen(data);
 		validate(data, size);
 		assign(data, size);
 	}
-	UString(const UString& b) { assign(b.data(), b.size()); }
+	
+	// initialize string by deep-copying an index range
 	UString(const Index& index0, const Index& index1) {
 		assign(index0.pos(), index1.pos() - index0.pos());
 	}
-	UString(Ref<UStringList> parts, const char* glue = "") { assign(parts, glue); }
-	~UString() { reset(); }
 	
-	inline void reset() { Super::get()->reset(); }
+	// initialize string by concatenating a string list
+	UString(Ref<UStringList> parts, const char* glue = "") {
+		assign(parts, glue);
+	}
 	
+	// initialize string from a shallow copy of another string
+	UString(const UString& b): Super(b.Super::get()) {}
+	
+	// assign a copy of an UTF8 encoded string
 	inline UString& operator=(const char* data) {
 		int size = pona::strlen(data);
 		validate(data, size);
-		reset();
 		assign(data, size);
 		return *this;
 	}
 	
-	inline UString& operator=(const UString& b) {
-		reset();
-		assign(b.data(), b.size());
-		return *this;
-	}
-	
+	// assign a concatenation of a string list
 	inline UString& operator=(Ref<UStringList> parts) {
-		reset();
 		assign(parts);
 		return *this;
 	}
+	
+	// assign a shallow copy of another string
+	inline UString& operator=(const UString& b) {
+		Super::set(b.Super::get());
+		return *this;
+	}
+	
+	// return a deep copy of this string
+	UString deepCopy() const;
 	
 	inline Index first() const { return empty() ? Index() : Index(data()); }
 	inline Index last() const { return empty() ? Index() : eoi() - 1; }
