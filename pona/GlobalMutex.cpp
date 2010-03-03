@@ -1,12 +1,12 @@
 /*
- * GlobalSpinMutex.cpp -- process-vide spin mutex
+ * GlobalMutex.cpp -- process-vide spin mutex
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
 
-#include "GlobalSpinMutex.hpp"
+#include "GlobalMutex.hpp"
 
 namespace pona
 {
@@ -17,15 +17,15 @@ GlobalSpinMutexInitializer::GlobalSpinMutexInitializer()
 {
 	if (count_ == 0) {
 		++count_;
-		GlobalSpinMutex::instance();
+		GlobalMutex::instance();
 	}
 }
 
-Ref<GlobalSpinMutex> GlobalSpinMutex::instance()
+Ref<GlobalMutex> GlobalMutex::instance()
 {
-	static Ref<GlobalSpinMutex, Owner> instance_ = 0;
+	static Ref<GlobalMutex, Owner> instance_ = 0;
 	if (!instance_)
-		instance_ = new GlobalSpinMutex;
+		instance_ = new GlobalMutex;
 	return instance_;
 }
 

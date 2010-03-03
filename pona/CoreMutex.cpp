@@ -6,6 +6,11 @@
  * See ../LICENSE for the license.
  */
 
+#if 0 // __GNUC__ > 3
+
+#else // __GNUC__ > 3
+
+#include <pthread.h>
 #ifndef EBUSY
 #include <errno.h>
 #endif
@@ -77,3 +82,5 @@ void CoreMutex::release()
 }
 
 } // namespace pona
+
+#endif // __GNUC__ > 3

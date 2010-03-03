@@ -45,6 +45,13 @@ void UString::assign(Ref<UStringList> parts, const char* glue)
 	}
 }
 
+UString UString::deepCopy() const
+{
+	UString b;
+	b.Super::set(new Media(Super::get()->data(), Super::get()->size()));
+	return b;
+}
+
 UString::Index UString::find(const Index& index, const char* pattern) const
 {
 	if (!index.valid() || empty()) return Index();

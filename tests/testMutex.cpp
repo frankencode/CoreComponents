@@ -18,7 +18,7 @@ int main()
 		t = now() - t;
 		print("Took %% us\n", t.us());
 	}
-	{
+	/*{
 		SpinMutex m;
 		Time t = now();
 		for (int i = 0; i < n; ++i) {
@@ -27,7 +27,7 @@ int main()
 		}
 		t = now() - t;
 		print("Took %% us\n", t.us());
-	}
+	}*/
 	return 0;
 }
 

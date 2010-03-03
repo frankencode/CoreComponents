@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 	Ref<UStringList, Owner> lines = text.split("\n");
 	print("Number of lines: %%\n", lines->length());
 	for (int i = 0; i < lines->length(); ++i)
-		print("%%: '%%'\n", i, lines->get(i).data());
+		print("%%: '%%' (%%)\n", i, lines->get(i).data(), lines->get(i).size());
 	
 	return 0;
 }

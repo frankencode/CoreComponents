@@ -10,7 +10,7 @@
 
 #include "defaults.hpp"
 #include "Exception.hpp"
-#include "SpinMutex.hpp"
+#include "CoreMutex.hpp"
 
 namespace pona
 {
@@ -27,7 +27,7 @@ public:
 	BackRef* succ_;
 	void** instance_;
 	#ifdef PONA_REF_THREADSAFE_SET
-	SpinMutex spinMutex_;
+	CoreMutex spinMutex_;
 	#endif
 };
 
@@ -113,13 +113,13 @@ public:
 		spinMutex_.release();
 	}
 	
-	inline SpinMutex* const spinMutex() { return &spinMutex_; }
+	inline CoreMutex* const spinMutex() { return &spinMutex_; }
 	
 	Instance(const Instance& b) {}
 	inline const Instance& operator=(const Instance& b) { return *this; }
 	
 private:
-	SpinMutex spinMutex_;
+	CoreMutex spinMutex_;
 	int refCount_;
 	BackRef* backRefList_;
 };

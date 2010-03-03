@@ -8,6 +8,7 @@
 #ifndef PONA_STACK_HPP
 #define PONA_STACK_HPP
 
+#include <assert.h>
 #include "NonCopyable.hpp"
 #include "Sequence.hpp"
 

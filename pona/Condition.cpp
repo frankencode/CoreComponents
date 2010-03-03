@@ -6,6 +6,7 @@
  * See ../LICENSE for the license.
  */
 
+#include <pthread.h>
 #include "Condition.hpp"
 
 namespace pona

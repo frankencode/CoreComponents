@@ -8,7 +8,6 @@ SET(PONA_HEADER
 	ArrayPolicy.hpp
 	Array.hpp
 	Exception.hpp
-	SpinMutex.hpp
 	CoreMutex.hpp
 	Instance.hpp
 	Alien.hpp
@@ -74,7 +73,7 @@ SET(PONA_HEADER
 	HuffmanCodec.hpp
 	
 	threads
-	GlobalSpinMutex.hpp
+	GlobalMutex.hpp
 	LocalStatic.hpp
 	ThreadLocalOwner.hpp
 	ThreadLocalSingleton.hpp
@@ -125,7 +124,7 @@ SET(PONA_SOURCE
 	# atoms
 	Exception.cpp
 	CoreMutex.cpp
-	GlobalSpinMutex.cpp
+	GlobalMutex.cpp
 	
 	# string
 	UString.cpp

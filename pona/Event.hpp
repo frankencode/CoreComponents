@@ -27,7 +27,7 @@ public:
 	virtual void run();
 	
 private:
-	SpinMutex mutex_;
+	CoreMutex mutex_;
 	typedef List< Ref<Action, Owner> > Handlers;
 	Ref<Handlers, Owner> handlers_;
 };
