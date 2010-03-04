@@ -6,7 +6,7 @@
  * See ../LICENSE for the license.
  */
 
-#include "String.hpp"
+#include "UString.hpp"
 #include "FormatSpecifier.hpp"
 
 namespace pona
@@ -72,12 +72,12 @@ FormatSpecifier::FormatSpecifier()
 	LINK();
 }
 
-bool FormatSpecifier::find(Ref<String::Media> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, Char* blank)
+bool FormatSpecifier::find(Ref<UString::Media> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, char* blank)
 {
 	Ref<Token, Owner> rootToken = 0;
 	
 	uint8_t buf[sizeof(Token) * 36 /* 5 times each path(7) + root(1) */];
-	bool found =  Syntax<String::Media>::Definition::find(text, i0, i1, &rootToken, buf, sizeof(buf));
+	bool found =  Syntax<UString::Media>::Definition::find(text, i0, i1, &rootToken, buf, sizeof(buf));
 	
 	if (found)
 	{
@@ -85,19 +85,19 @@ bool FormatSpecifier::find(Ref<String::Media> text, int* i0, int* i1, int* w, in
 		
 		while (token)
 		{
-			String value = text->copy(token->index(), token->length());
+			UString value(text, token->index(), token->length());
 			
 			if (token->ruleId() == width_->id())
 			{
-				*w = value->toInt();
+				*w = value.toInt();
 			}
 			else if (token->ruleId() == integerWidth_->id())
 			{
-				*wi = value->toInt();
+				*wi = value.toInt();
 			}
 			else if (token->ruleId() == fractionWidth_->id())
 			{
-				*wf = value->toInt();
+				*wf = value.toInt();
 			}
 			else if (token->ruleId() == base_->id())
 			{

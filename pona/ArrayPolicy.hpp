@@ -133,9 +133,6 @@ public:
 template<class T>
 class ArrayPolicy: public DeepCopyArray<T> {};
 
-template<>
-class ArrayPolicy<char>: public DeepCopyZeroTerminatedArray<char> {};
-
 template<class T>
 class ArrayPolicy<const T>: public ShallowCopyArray<const T> {};
 

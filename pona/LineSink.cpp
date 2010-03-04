@@ -11,7 +11,7 @@
 namespace pona
 {
 
-LineSink::LineSink(Ref<Stream> stream, int bufCapa, String eol)
+LineSink::LineSink(Ref<Stream> stream, int bufCapa, const char* eol)
 	: stream_(stream),
 	  eol_(eol),
 	  bufCapa_(bufCapa),
@@ -24,27 +24,26 @@ LineSink::~LineSink()
 	buf_ = 0;
 }
 
-void LineSink::writeLine(String line)
+void LineSink::writeLine(UString line)
 {
-	int n = line->length();
-	int n2 = eol_->length();
-
+	int n = line->size();
+	int n2 = eol_->size();
+	
 	if (n + n2 > bufCapa_)
 		PONA_THROW(StreamIoException, "Output buffer exhausted");
-
+	
 	for (int i = 0; i < n; ++i)
-		buf_[i] = line->get(i);
-
+		buf_[i] = line->at(i);
+	
 	for (int i = 0; i < n2; ++i)
-		buf_[n + i] = eol_->get(i);
+		buf_[n + i] = eol_->at(i);
 
 	stream_->write(buf_, n + n2);
 }
 
-void LineSink::write(String buf)
+void LineSink::write(UString s)
 {
-	CString utf8 = buf->utf8();
-	stream_->write(utf8, utf8->length() - 1);
+	stream_->write(s->data(), s->size());
 }
 
 Ref<Stream> LineSink::stream() const

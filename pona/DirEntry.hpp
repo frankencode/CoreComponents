@@ -10,7 +10,7 @@
 
 #include <dirent.h>
 #include "List.hpp"
-#include "String.hpp"
+#include "UString.hpp"
 #include "FileStatus.hpp"
 
 namespace pona
@@ -23,15 +23,15 @@ typedef struct dirent StructDirent;
 class DirEntry: public StructDirent, public Instance
 {
 public:
-	inline String path() const { return path_; }
-	inline String name() const { return d_name; }
+	inline UString path() const { return path_; }
+	inline UString name() const { return d_name; }
 	#if (defined(BSD) || (defined(_BSD_SOURCE)))
 	inline int type() const { return d_type; }
 	#endif
 	
 private:
 	friend class Dir;
-	String path_;
+	UString path_;
 };
 
 typedef List<DirEntry> DirEntryList;

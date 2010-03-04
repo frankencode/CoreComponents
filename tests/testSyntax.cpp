@@ -5,7 +5,7 @@
 namespace pona
 {
 
-class Expression: public Syntax<String::Media>::Definition
+class Expression: public Syntax<UString::Media>::Definition
 {
 public:
 	Expression()
@@ -64,7 +64,7 @@ public:
 		LINK();
 	}
 	
-	double eval(String text)
+	double eval(UString text)
 	{
 		Ref<Token, Owner> rootToken = 0;
 		double value = nan;
@@ -158,7 +158,7 @@ private:
 	RULE product_;
 	RULE sum_;
 	
-	String text_;
+	UString text_;
 };
 
 int main()

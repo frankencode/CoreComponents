@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include "atoms"
+#include "Stream.hpp" // StreamIoException
 #include "UStringIndex.hpp"
 #include "Array.hpp"
 #include "List.hpp"
@@ -11,14 +12,16 @@ namespace pona
 {
 
 class UString;
+class Variant;
 
 typedef List<UString> UStringList;
-typedef Array<uint8_t, DeepCopyZeroTerminatedArray> UStringMedia;
+typedef Array<char, DeepCopyZeroTerminatedArray> UStringMedia;
 
 class UString: public Ref<UStringMedia, Owner>
 {
 public:
 	typedef UStringMedia Media;
+	typedef Media::Element Element;
 	typedef Ref<Media, Owner> Super;
 	typedef UStringIndex Index;
 	
@@ -26,10 +29,10 @@ public:
 	UString(): Super(new Media) {}
 	
 	// initialize string with defined size but undefined content
-	UString(int size): Super(new Media(size)) {}
+	explicit UString(int size): Super(new Media(size)) {}
 	
 	// initialize string with defined size and defined content
-	UString(int size, char zero): Super(new Media(size, zero)) {
+	explicit UString(int size, char zero): Super(new Media(size, zero)) {
 		assert((0 <= zero) && (zero <= 127));
 	}
 	
@@ -40,18 +43,32 @@ public:
 		assign(data, size);
 	}
 	
+	// initialize string by deep-copying an UTF8 encoded sub-string
+	template<template<class> class GetAndSetPolicy>
+	explicit UString(Ref<Media, GetAndSetPolicy> media, int i = 0, int n = -1) {
+		if (n < 0) n = media->size();
+		const char* data = media->pointerAt(i);
+		int size = media->pointerAt(i + n - 1) - media->pointerAt(i) + 1;
+		validate(data, size);
+		assign(data, size);
+	}
+	
 	// initialize string by deep-copying an index range
 	UString(const Index& index0, const Index& index1) {
 		assign(index0.pos(), index1.pos() - index0.pos());
 	}
 	
 	// initialize string by concatenating a string list
-	UString(Ref<UStringList> parts, const char* glue = "") {
+	template<template<class> class GetAndSetPolicy>
+	UString(Ref<UStringList, GetAndSetPolicy> parts, const char* glue = "") {
 		assign(parts, glue);
 	}
 	
 	// initialize string from a shallow copy of another string
 	UString(const UString& b): Super(b.Super::get()) {}
+	
+	// initialize string from a variant
+	UString(const Variant& b);
 	
 	// assign a copy of an UTF8 encoded string
 	inline UString& operator=(const char* data) {
@@ -62,7 +79,8 @@ public:
 	}
 	
 	// assign a concatenation of a string list
-	inline UString& operator=(Ref<UStringList> parts) {
+	template<template<class> class GetAndSetPolicy>
+	inline UString& operator=(Ref<UStringList, GetAndSetPolicy> parts) {
 		assign(parts);
 		return *this;
 	}
@@ -76,12 +94,12 @@ public:
 	// return a deep copy of this string
 	UString deepCopy() const;
 	
+	// return a reference to the shared media
+	inline Ref<Media> media() const { return Super::get(); }
+	
 	inline Index first() const { return empty() ? Index() : Index(data()); }
 	inline Index last() const { return empty() ? Index() : eoi() - 1; }
 	inline Index eoi() const { return empty() ? Index() : Index(data(), data() + size()); }
-	
-	inline int size() const { return Super::get()->size(); }
-	inline int empty() const { return Super::get()->empty(); }
 	
 	inline bool def(const Index& index) const {
 		assert(!empty());
@@ -95,8 +113,11 @@ public:
 	}
 	inline uchar_t operator[](const Index& index) { return get(index); }
 	
-	inline char* data() const { return reinterpret_cast<char*>(Super::get()->data()); }
-	inline operator char*() const { return reinterpret_cast<char*>(Super::get()->data()); }
+	inline char* data() const { return Super::get()->data(); }
+	inline operator char*() const { return Super::get()->data(); }
+	inline int size() const { return Super::get()->size(); }
+	inline int empty() const { return Super::get()->empty(); }
+	
 	inline void validate() const { validate(data(), size()); }
 	inline bool valid() const {
 		try { validate(); }
@@ -117,25 +138,63 @@ public:
 	inline bool operator<=(const UString& b) const { return pona::strcmp(data(), b.data()) <= 0; }
 	inline bool operator>=(const UString& b) const { return pona::strcmp(data(), b.data()) >= 0; }
 	
-	/*int toInt(bool* ok = 0);
+	int toInt(bool* ok = 0);
 	double toFloat(bool* ok = 0);
 	int64_t toInt64(bool* ok = 0);
 	uint64_t toUInt64(bool* ok = 0);
-	float64_t toFloat64(bool* ok = 0);*/
+	float64_t toFloat64(bool* ok = 0);
+	
+	UString toLower() const;
+	UString toUpper() const;
+	UString stripLeadingSpace() const;
+	UString stripTrailingSpace() const;
+	
+	uint32_t crc32() const;
 	
 private:
+	// validate input string and throw StreamIoException if not a valid UTF8 string
 	static void validate(const char* data, int size = -1);
+	
 	inline void assign(const char* data, int size = -1) {
 		if (size < 0) size = pona::strlen(data);
-		set(new Media(reinterpret_cast<const uint8_t*>(data), size));
+		set(new Media(data, size));
 	}
 	void assign(Ref<UStringList> parts, const char* glue = "");
 };
+
+inline bool operator< (const char* a, const UString& b) { return pona::strcmp(a, b.data()) <  0; }
+inline bool operator==(const char* a, const UString& b) { return pona::strcmp(a, b.data()) == 0; }
+inline bool operator> (const char* a, const UString& b) { return pona::strcmp(a, b.data()) >  0; }
+inline bool operator!=(const char* a, const UString& b) { return pona::strcmp(a, b.data()) != 0; }
+inline bool operator<=(const char* a, const UString& b) { return pona::strcmp(a, b.data()) <= 0; }
+inline bool operator>=(const char* a, const UString& b) { return pona::strcmp(a, b.data()) >= 0; }
+
+inline bool operator< (char* a, const UString& b) { return pona::strcmp(a, b.data()) <  0; }
+inline bool operator==(char* a, const UString& b) { return pona::strcmp(a, b.data()) == 0; }
+inline bool operator> (char* a, const UString& b) { return pona::strcmp(a, b.data()) >  0; }
+inline bool operator!=(char* a, const UString& b) { return pona::strcmp(a, b.data()) != 0; }
+inline bool operator<=(char* a, const UString& b) { return pona::strcmp(a, b.data()) <= 0; }
+inline bool operator>=(char* a, const UString& b) { return pona::strcmp(a, b.data()) >= 0; }
+
+inline bool operator< (const UString& a, const char* b) { return pona::strcmp(a.data(), b) <  0; }
+inline bool operator==(const UString& a, const char* b) { return pona::strcmp(a.data(), b) == 0; }
+inline bool operator> (const UString& a, const char* b) { return pona::strcmp(a.data(), b) >  0; }
+inline bool operator!=(const UString& a, const char* b) { return pona::strcmp(a.data(), b) != 0; }
+inline bool operator<=(const UString& a, const char* b) { return pona::strcmp(a.data(), b) <= 0; }
+inline bool operator>=(const UString& a, const char* b) { return pona::strcmp(a.data(), b) >= 0; }
+
+inline bool operator< (const UString& a, char* b) { return pona::strcmp(a.data(), b) <  0; }
+inline bool operator==(const UString& a, char* b) { return pona::strcmp(a.data(), b) == 0; }
+inline bool operator> (const UString& a, char* b) { return pona::strcmp(a.data(), b) >  0; }
+inline bool operator!=(const UString& a, char* b) { return pona::strcmp(a.data(), b) != 0; }
+inline bool operator<=(const UString& a, char* b) { return pona::strcmp(a.data(), b) <= 0; }
+inline bool operator>=(const UString& a, char* b) { return pona::strcmp(a.data(), b) >= 0; }
 
 Ref<UStringList, Owner> operator+(const UString& a, const UString& b);
 Ref<UStringList, Owner> operator+(const UString& a, const char* b);
 Ref<UStringList, Owner> operator+(const char* a, const UString& b);
 Ref<UStringList, Owner> operator+(Ref<UStringList, Owner> list, const UString& b);
+Ref<UStringList, Owner> operator+(Ref<UStringList, Owner> list, const char* b);
 
 } // namespace pona
 

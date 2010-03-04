@@ -19,7 +19,7 @@ User::User(uid_t id)
 	int h = sysconf(_SC_GETPW_R_SIZE_MAX);
 	if (h != -1) bufSize = h;
 	#endif
-	CString buf(bufSize);
+	Array<char> buf(bufSize);
 	struct passwd space;
 	struct passwd* entry = 0;
 	if (::getpwuid_r(id, &space, buf, bufSize, &entry) != 0)
@@ -27,15 +27,15 @@ User::User(uid_t id)
 	load(entry);
 }
 
-User::User(String name)
+User::User(const char* name)
 {
 	int bufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
 	if (bufSize == -1)
 		PONA_SYSTEM_EXCEPTION;
-	CString buf(bufSize);
+	Array<char> buf(bufSize);
 	struct passwd space;
 	struct passwd* entry = 0;
-	if (::getpwnam_r(name->utf8(), &space, buf, bufSize, &entry) != 0)
+	if (::getpwnam_r(name, &space, buf, bufSize, &entry) != 0)
 		PONA_SYSTEM_EXCEPTION;
 	load(entry);
 }
@@ -51,7 +51,8 @@ void User::load(struct passwd* entry)
 		if (fullName_->length() > 0)
 			if ((fullName_->get(0) == ',') || (fullName_->get(-1) == ',')) {
 				fullName_ = loginName_;
-				fullName_->set(0, fullName_->get(0).toUpper());
+				if (isLower(fullName_->at(0)))
+					fullName_->set(0, toUpper(fullName_->at(0)));
 				// fullName_ << " Anonymous";
 			}
 		home_ = entry->pw_dir;

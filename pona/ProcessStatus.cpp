@@ -54,24 +54,25 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	else if (processStatus_ == SZOMB) processStatus_ = 'Z';
 	pona::free(proc);
 #else
-	String path = Format("/proc/%%/stat") << processId;
+	UString path = Format("/proc/%%/stat") << processId;
 	Ref<File, Owner> file = new File(path);
 	file->open(File::Read);
 	Ref<LineSource, Owner> source = new LineSource(file);
-	String line = source->readLine();
+	UString line = source->readLine();
 	{
 		// extract command name first, because it may contain whitespace
 		int i0 = line->find('(') + 1, i1 = line->find(')');
-		commandName_ = line->copy(i0, i1 - i0);
-		line->fill(i0, i1 - i0, 'x');
+		commandName_ = UString(line, i0, i1 - i0);
+		for (int i = i0; i < i1; ++i)
+			line->set(i, 'x');
 	}
-	Ref<StringList, Owner> parts = line / ' ';
-	processId_ = parts->get(0)->toInt();
-	parentProcessId_ = parts->get(3)->toInt();
-	processGroupId_ = parts->get(4)->toInt();
-	foregroundProcessGroupId_ = parts->get(7)->toInt();
+	Ref<UStringList, Owner> parts = line.split(" ");
+	processId_ = parts->get(0).toInt();
+	parentProcessId_ = parts->get(3).toInt();
+	processGroupId_ = parts->get(4).toInt();
+	foregroundProcessGroupId_ = parts->get(7).toInt();
 	/*{
-		int code = parts->get(6)->toInt();
+		int code = parts->get(6).toInt();
 		int major = (code >> 8) & 0xFF;
 		int minor = (code & 0xFF) | ((code >> 20) << 8);
 		 // interpretation according to lanana.org
@@ -92,9 +93,9 @@ pid_t ProcessStatus::processId() const { return processId_; }
 pid_t ProcessStatus::parentProcessId() const { return parentProcessId_; }
 gid_t ProcessStatus::processGroupId() const { return processGroupId_; }
 gid_t ProcessStatus::foregroundProcessGroupId() const { return foregroundProcessGroupId_; }
-// String ProcessStatus::terminalName() const { return terminalName_; }
-String ProcessStatus::loginName() const { return loginName_; }
-String ProcessStatus::commandName() const { return commandName_; }
+// UString ProcessStatus::terminalName() const { return terminalName_; }
+UString ProcessStatus::loginName() const { return loginName_; }
+UString ProcessStatus::commandName() const { return commandName_; }
 char ProcessStatus::processStatus() const { return processStatus_; }
 
 } // namespace pona

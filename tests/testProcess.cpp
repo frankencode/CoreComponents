@@ -77,22 +77,22 @@ int main(int argc, char** argv)
 
 int echo(int argc, char** argv)
 {
-	String commandLine;
+	Ref<UStringList, Owner> commandLine = new UStringList;
 	for (int i = 0; i < argc; ++i) {
-		commandLine << argv[i];
+		commandLine->append(argv[i]);
 		if (i != argc - 1)
-			commandLine << " ";
+			commandLine->append(" ");
 	}
 	print("Process::cwd() = \"%%\"\n", Process::cwd());
 	print("Process::env(\"Hello\") = \"%%\"\n", Process::env("Hello"));
 	Process::setEnv("Hello", "Echo");
 	print("Process::env(\"Hello\") = \"%%\"\n", Process::env("Hello"));
-	print("commandLine = \"%%\"\n", commandLine);
+	print("commandLine = \"%%\"\n", UString(commandLine));
 	
 	while (true)
 	{
-		String line = input()->readLine();
-		if ((line == String()) || (line == "exit"))
+		UString line = input()->readLine();
+		if ((line == "") || (line == "exit"))
 			break;
 		output()->writeLine(line);
 	}

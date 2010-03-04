@@ -37,14 +37,14 @@ void ProcessFactory::setType(int type) { type_ = type; }
 int ProcessFactory::ioPolicy() const { return ioPolicy_; }
 void ProcessFactory::setIoPolicy(int flags) { ioPolicy_ = flags; }
 
-String ProcessFactory::workingDirectory() { return (workingDirectory_ != "") ? workingDirectory_ : workingDirectory_ = Process::cwd(); }
-void ProcessFactory::setWorkingDirectory(String path) { workingDirectory_ = path; }
+UString ProcessFactory::workingDirectory() { return (workingDirectory_ != "") ? workingDirectory_ : workingDirectory_ = Process::cwd(); }
+void ProcessFactory::setWorkingDirectory(UString path) { workingDirectory_ = path; }
 
-String ProcessFactory::execPath() const { return execPath_; }
-void ProcessFactory::setExecPath(String path) { execPath_ = path; }
+UString ProcessFactory::execPath() const { return execPath_; }
+void ProcessFactory::setExecPath(UString path) { execPath_ = path; }
 
-Ref<StringList> ProcessFactory::options() { return (options_) ? options_ : options_ = new StringList; }
-void ProcessFactory::setOptions(Ref<StringList> list) { options_ = list; }
+Ref<UStringList> ProcessFactory::options() { return (options_) ? options_ : options_ = new UStringList; }
+void ProcessFactory::setOptions(Ref<UStringList> list) { options_ = list; }
 
 Ref<EnvMap> ProcessFactory::envMap() { return (envMap_) ? envMap_ : envMap_ = Process::envMap(); }
 void ProcessFactory::setEnvMap(Ref<EnvMap> map) { envMap_ = map; }
@@ -133,11 +133,11 @@ Ref<Process, Owner> ProcessFactory::produce()
 			}
 		}
 		
-		String execPathAbsolute = execPath_;
-		if (workingDirectory_ != String()) {
-			if (execPath_->contains(String("/")))
-				execPathAbsolute = String() << Process::cwd() << "/" << execPath_;
-			if (::chdir(workingDirectory_->utf8()) == -1)
+		UString execPathAbsolute = execPath_;
+		if (workingDirectory_ != "") {
+			if (execPath_.contains("/"))
+				execPathAbsolute = Process::cwd() + "/" + execPath_;
+			if (::chdir(workingDirectory_) == -1)
 				PONA_SYSTEM_EXCEPTION;
 		}
 		
@@ -184,7 +184,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 		
 		if (ioPolicy_ & Process::ErrorToOutput) ::dup2(1, 2);
 		
-		if (execPath_ != String())
+		if (execPath_ != "")
 		{
 			// prepare the argument list
 			
@@ -194,10 +194,10 @@ Ref<Process, Owner> ProcessFactory::produce()
 				
 			char** argv = new char*[argc + 1];
 			
-			argv[0] = execPath_->strdup();
+			argv[0] = pona::strdup(execPath_->data());
 			if (options_)
 				for (int i = 0, n = options_->length(); i < n; ++i)
-					argv[i + 1] = options_->get(i)->strdup();
+					argv[i + 1] = pona::strdup(options_->get(i)->data());
 			argv[argc] = 0;
 			
 			// prepare the environment map
@@ -215,14 +215,14 @@ Ref<Process, Owner> ProcessFactory::produce()
 				envp = new char*[envc + 1];
 
 				for (int i = 0, n = envList->length(); i < n; ++i)
-					envp[i] = (String() << envList->get(i).key() << "=" << envList->get(i).value())->strdup();
+					envp[i] = pona::strdup(UString(envList->get(i).key() + "=" + envList->get(i).value())->data());
 				
 				envp[envc] = 0;
 			}
 			
 			// load new program
 			
-			::execve(execPathAbsolute->utf8(), argv, envp);
+			::execve(execPathAbsolute, argv, envp);
 			
 			PONA_SYSTEM_EXCEPTION;
 		}

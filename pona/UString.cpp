@@ -1,12 +1,18 @@
-#include "stdio" // DEBUG
 #include "Utf8Source.hpp"
+#include "Crc32.hpp"
 #include "FormatSyntax.hpp"
+#include "IntegerLiteral.hpp"
+#include "FloatLiteral.hpp"
+#include "Variant.hpp"
 #include "UString.hpp"
 
 namespace pona
 {
 
-// validate input string and throw StreamIoException if not a valid UTF8 string
+UString::UString(const Variant& b)
+	: Super(b.toInstance<Media>())
+{}
+
 void UString::validate(const char* data, int size)
 {
 	if (size < 0) size = pona::strlen(data);
@@ -48,7 +54,7 @@ void UString::assign(Ref<UStringList> parts, const char* glue)
 UString UString::deepCopy() const
 {
 	UString b;
-	b.Super::set(new Media(Super::get()->data(), Super::get()->size()));
+	b.Super::set(new Media(data(), size()));
 	return b;
 }
 
@@ -56,13 +62,13 @@ UString::Index UString::find(const Index& index, const char* pattern) const
 {
 	if (!index.valid() || empty()) return Index();
 	assert(index.data() == data());
-	char* t = reinterpret_cast<char*>(index.pos()); // text pos
-	char* m = const_cast<char*>(pattern); // match pos
+	const char* t = index.pos(); // text pos
+	const char* m = pattern; // match pos
 	while ((*t) && (*m)) {
 		if (*t == *m)
 			++m;
 		else
-			m = const_cast<char*>(pattern);
+			m = pattern;
 		++t;
 	}
 	return (*m) ? Index() : Index(data(), t - (m - pattern));
@@ -86,15 +92,15 @@ Ref<UStringList, Owner> UString::split(const char* pattern) const
 	return parts;
 }
 
-/*int UString::toInt(bool* ok)
+int UString::toInt(bool* ok)
 {
 	bool h;
 	if (!ok) ok = &h;
 	uint64_t value = 0;
 	int sign = 0;
 	int i1 = 0;
-	if (formatSyntax()->integerLiteral()->match(this, 0, &i1, &value, &sign)) {
-		 *ok = (value <= uint64_t(intMax)) && (i1 == length());
+	if (formatSyntax()->integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
+		 *ok = (value <= uint64_t(intMax)) && (i1 == size());
 	}
 	else  {
 		*ok = false;
@@ -112,9 +118,9 @@ int64_t UString::toInt64(bool* ok)
 	uint64_t value = 0;
 	int sign = 0;
 	int i1 = 0;
-	if (formatSyntax()->integerLiteral()->match(this, 0, &i1, &value, &sign)) {
+	if (formatSyntax()->integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
 		if (ok)
-			*ok = ((value & (uint64_t(1) << 63)) != 0) && (i1 == length());
+			*ok = ((value & (uint64_t(1) << 63)) != 0) && (i1 == size());
 	}
 	else {
 		if (ok)
@@ -128,9 +134,9 @@ uint64_t UString::toUInt64(bool* ok)
 	uint64_t value = 0;
 	int sign = 0;
 	int i1 = 0;
-	if (formatSyntax()->integerLiteral()->match(this, 0, &i1, &value, &sign)) {
+	if (formatSyntax()->integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
 		if (ok)
-			*ok = (sign == 1) && (i1 == length());
+			*ok = (sign == 1) && (i1 == size());
 	}
 	else {
 		if (ok)
@@ -143,18 +149,59 @@ float64_t UString::toFloat64(bool* ok)
 {
 	float64_t value = 0.;
 	int i1 = 0;
-	
-	if (formatSyntax()->floatingPointLiteral()->match(this, 0, &i1, &value)) {
+	if (formatSyntax()->floatingPointLiteral()->match(*this, 0, &i1, &value)) {
 		if (ok)
-			*ok = (i1 == length());
+			*ok = (i1 == size());
 	}
 	else {
 		if (ok)
 			*ok = false;
 	}
-	
 	return value;
-}*/
+}
+
+UString UString::toLower() const
+{
+	UString s2(size());
+	for (int i = 0, n = size(); i < n; ++i)
+		s2->set(i, pona::toLower((*this)->at(i)));
+	return s2;
+}
+
+UString UString::toUpper() const
+{
+	UString s2(size());
+	for (int i = 0, n = size(); i < n; ++i)
+		s2->set(i, pona::toUpper((*this)->at(i)));
+	return s2;
+}
+
+UString UString::stripLeadingSpace() const
+{
+	int n = size();
+	while (n > 0) {
+		if (!pona::isSpace((*this)->at(-n))) break;
+		--n;
+	}
+	return UString(*this, size() - n, n);
+}
+
+UString UString::stripTrailingSpace() const
+{
+	int n = size();
+	while (n > 0) {
+		if (!pona::isSpace((*this)->at(n - 1))) break;
+		--n;
+	}
+	return UString(*this, 0, n);
+}
+
+uint32_t UString::crc32() const
+{
+	Crc32 crc;
+	crc.feed(data(), size());
+	return crc.sum();
+}
 
 Ref<UStringList, Owner> operator+(const UString& a, const UString& b)
 {
@@ -183,6 +230,12 @@ Ref<UStringList, Owner> operator+(const char* a, const UString& b)
 Ref<UStringList, Owner> operator+(Ref<UStringList, Owner> list, const UString& b)
 {
 	list->append(b);
+	return list;
+}
+
+Ref<UStringList, Owner> operator+(Ref<UStringList, Owner> list, const char* b)
+{
+	list->append(UString(b));
 	return list;
 }
 

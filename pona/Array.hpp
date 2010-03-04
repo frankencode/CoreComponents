@@ -60,14 +60,19 @@ public:
 	inline int length() const { return size_; }
 	inline bool empty() const { return size_ == 0; }
 	
-	inline bool def(int i) const { return (0 <= i) && (i < size_); }
+	inline bool def(int i) const {
+		if (i < 0) i += size_;
+		return (0 <= i) && (i < size_);
+	}
 	
 	inline T get(int i) const {
+		if (i < 0) i += size_;
 		assert(def(i));
 		return data_[i];
 	}
 	
-	inline void set(int i, T e) {
+	inline void set(int i, const T& e) {
+		if (i < 0) i += size_;
 		assert(def(i));
 		data_[i] = e;
 	}
@@ -80,18 +85,28 @@ public:
 	inline bool operator>=(const Array& b) const { return pona::strcmp(data_, b.data_) >= 0; }
 	
 	inline T* pointerAt(int i) const {
+		if (i < 0) i += size_;
 		assert(def(i));
 		return data_ + i;
 	}
 	
 	inline T& at(int i) const {
+		if (i < 0) i += size_;
 		assert(def(i));
 		return data_[i];
 	}
 	
+	inline int find(const T& x) {
+		for (int i = 0; i < size_; ++i)
+			if (data_[i] == x) return i;
+		return size_;
+	}
+	
+	inline bool contains(const T& x) { return find(x) < size_; }
+	
 	inline T* data() const { return data_; }
 	inline operator T*() const { return data_; }
-	inline operator bool() const { return data_; }
+	inline operator bool() const { return !empty(); }
 	
 private:
 	int size_;

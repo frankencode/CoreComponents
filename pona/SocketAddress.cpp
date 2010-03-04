@@ -24,7 +24,7 @@ SocketAddress::SocketAddress()
 	  protocol_(0)
 {}
 
-SocketAddress::SocketAddress(int family, String address, int port)
+SocketAddress::SocketAddress(int family, UString address, int port)
 	: socketType_(0),
 	  protocol_(0)
 {
@@ -50,8 +50,8 @@ SocketAddress::SocketAddress(int family, String address, int port)
 	else
 		PONA_THROW(NetworkingException, "Unsupported address family");
 	
-	if ((address != String()) && ((address != "*")))
-		if (inet_pton(family, address->utf8(), addr) != 1)
+	if ((address != "") && ((address != "*")))
+		if (inet_pton(family, address, addr) != 1)
 			PONA_THROW(NetworkingException, "Broken address string");
 }
 
@@ -79,7 +79,7 @@ int SocketAddress::family() const { return addr_.sa_family; }
 int SocketAddress::socketType() const { return socketType_; }
 int SocketAddress::protocol() const { return protocol_; }
 
-String SocketAddress::addressString() const
+UString SocketAddress::addressString() const
 {
 	const int bufSize = INET_ADDRSTRLEN + INET6_ADDRSTRLEN;
 	char buf[bufSize];
@@ -101,7 +101,7 @@ String SocketAddress::addressString() const
 	return sz;
 }
 
-String SocketAddress::toString() const
+UString SocketAddress::toString() const
 {
 	Format s(addressString());
 	if (port() != 0)
@@ -141,7 +141,7 @@ void SocketAddress::setScope(int scope) {
 	if (addr_.sa_family == AF_INET6) inet6Address_.sin6_scope_id = scope;
 }
 
-Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String serviceName, int family, int socketType, String* canonicalName)
+Ref<SocketAddressList, Owner> SocketAddress::resolve(UString hostName, UString serviceName, int family, int socketType, UString* canonicalName)
 {
 	addrinfo hint;
 	addrinfo* head = 0;
@@ -155,12 +155,10 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String ser
 	
 	int ret;
 	{
-		CString hostNameUtf8 = hostName->utf8();
-		CString serviceNameUtf8 = serviceName->utf8();
 		char* h = 0;
 		char* s = 0;
-		if ((hint.ai_flags & AI_PASSIVE) == 0) h = hostNameUtf8;
-		if (serviceName != String()) s = serviceNameUtf8;
+		if ((hint.ai_flags & AI_PASSIVE) == 0) h = hostName;
+		if (serviceName != "") s = serviceName;
 		ret = getaddrinfo(h, s, &hint, &head);
 	}
 		
@@ -194,7 +192,7 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String ser
 	return list;
 }
 
-String SocketAddress::lookupHostName(bool* failed) const
+UString SocketAddress::lookupHostName(bool* failed) const
 {
 	const int hostNameSize = NI_MAXHOST;
 	const int serviceNameSize = NI_MAXSERV;
@@ -216,10 +214,10 @@ String SocketAddress::lookupHostName(bool* failed) const
 			*failed = false;
 	}
 	
-	return String(hostName);
+	return UString(hostName);
 }
 
-String SocketAddress::lookupServiceName() const
+UString SocketAddress::lookupServiceName() const
 {
 	
 	const int hostNameSize = NI_MAXHOST;
@@ -239,14 +237,14 @@ String SocketAddress::lookupServiceName() const
 		PONA_THROW(NetworkingException, gai_strerror(ret));
 	}
 	
-	return String(serviceName);
+	return UString(serviceName);
 }
 
-String SocketAddress::hostName()
+UString SocketAddress::hostName()
 {
 	const int bufSize = 1024;
 	char buf[bufSize + 1];
-	String name;
+	UString name;
 	if (gethostname(buf, bufSize) != -1) {
 		buf[bufSize] = 0;
 		name = buf;

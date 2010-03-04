@@ -48,7 +48,7 @@ public:
 		PointToPoint = IFF_POINTOPOINT
 	};
 	
-	String name() const;
+	UString name() const;
 	int index() const;
 	unsigned type() const;
 	unsigned flags() const;
@@ -64,7 +64,7 @@ private:
 	static Ref<NetworkInterfaceList, Owner> queryAllIoctl(int family);
 	#endif
 	
-	String name_;
+	UString name_;
 	int index_;
 	unsigned type_;
 	unsigned flags_;

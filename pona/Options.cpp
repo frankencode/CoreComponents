@@ -6,6 +6,7 @@
  * See ../LICENSE for the license.
  */
 
+#include "strings.hpp"
 #include "Format.hpp"
 #include "File.hpp"
 #include "Path.hpp"
@@ -136,7 +137,7 @@ Options::Options()
 	LINK();
 }
 
-void Options::define(Char shortName, String longName, Ref<Variant> value, String description)
+void Options::define(char shortName, UString longName, Ref<Variant> value, UString description)
 {
 	Ref<Option> option = new Option;
 	option->shortName_ = shortName;
@@ -148,7 +149,7 @@ void Options::define(Char shortName, String longName, Ref<Variant> value, String
 	optionList_->append(option);
 }
 
-Ref<Options::Option> Options::optionByShortName(Char name) const
+Ref<Options::Option> Options::optionByShortName(char name) const
 {
 	Ref<Option> option;
 	for (int i = 0, n = optionList_->length(); i < n; ++i) {
@@ -161,7 +162,7 @@ Ref<Options::Option> Options::optionByShortName(Char name) const
 	return option;
 }
 
-Ref<Options::Option> Options::optionByLongName(String name) const
+Ref<Options::Option> Options::optionByLongName(UString name) const
 {
 	Ref<Option> option;
 	for (int i = 0, n = optionList_->length(); i < n; ++i) {
@@ -174,33 +175,33 @@ Ref<Options::Option> Options::optionByLongName(String name) const
 	return option;
 }
 
-Ref<StringList> Options::read(int argc, char** argv)
+Ref<UStringList, Owner> Options::read(int argc, char** argv)
 {
 	execPath_ = argv[0];
 	execName_ = Path(execPath_).fileName();
 	execDir_ = Path(execPath_).reduce().makeAbsolute();
-	String line;
+	Ref<UStringList, Owner> line;
 	for (int i = 1; i < argc; ++i) {
-		line->append(String(argv[i]));
+		line->append(UString(argv[i]));
 		if (i != argc - 1)
-			line->append(' ');
+			line->append(UString(" "));
 	}
 	return read(line);
 }
 
-String stripQuotes(String s)
+UString stripQuotes(UString s)
 {
-	if (s->length() > 0) {
-		if ( ((s->get(0) == '"') || (s->get(0) == '\'')) &&
-			 (s->get(s->length() - 1) == s->get(0)) )
+	if (s->size() > 0) {
+		if ( ((s->at(0) == '"') || (s->at(0) == '\'')) &&
+			 (s->at(s->size() - 1) == s->at(0)) )
 		{
-			s = s->copy(1, s->length() - 2);
+			s = UString(s, 1, s->size() - 2);
 		}
 	}
 	return s;
 }
 
-Ref<StringList> Options::read(String line)
+Ref<UStringList, Owner> Options::read(UString line)
 {
 	int i0 = 0, i1 = -1;
 	Ref<Token, Owner> rootToken;
@@ -218,9 +219,9 @@ Ref<StringList> Options::read(String line)
 	
 	verifyTypes();
 	
-	Ref<StringList> files = new StringList;
+	Ref<UStringList, Owner> files = new UStringList;
 	while (token) {
-		files->append(stripQuotes(line->range(token->index(), token->length())));
+		files->append(stripQuotes(UString(line, token->index(), token->length())));
 		token = token->nextSibling();
 	}
 	
@@ -241,7 +242,7 @@ void Options::verifyTypes()
 	}
 }
 
-void Options::readOption(String line, Ref<Token> token)
+void Options::readOption(UString line, Ref<Token> token)
 {
 	token = token->firstChild();
 	
@@ -249,10 +250,10 @@ void Options::readOption(String line, Ref<Token> token)
 	{
 		while (token)
 		{
-			Char name = line->get(token->index());
+			char name = line->at(token->index());
 			Ref<Option> option = optionByShortName(name);
 			if (!option)
-				PONA_THROW(OptionsException, String(Format("Unsupported option: '-%%'") << name)->utf8());
+				PONA_THROW(OptionsException, pona::strdup(UString(Format("Unsupported option: '-%%'") << name)->data()));
 			
 			token = token->nextSibling();
 			if (token) {
@@ -271,10 +272,10 @@ void Options::readOption(String line, Ref<Token> token)
 	}
 	else if (token->ruleId() == longNameRule_->id())
 	{
-		String name = line->range(token->index(), token->length());
+		UString name(line, token->index(), token->length());
 		Ref<Option> option = optionByLongName(name);
 		if (!option)
-			PONA_THROW(OptionsException, String(Format("Unsupported option: '--%%'") << name)->utf8());
+			PONA_THROW(OptionsException, pona::strdup(UString(Format("Unsupported option: '--%%'") << name)->data()));
 		
 		token = token->nextSibling();
 		if (!token)
@@ -284,9 +285,9 @@ void Options::readOption(String line, Ref<Token> token)
 	}
 }
 
-void Options::readValue(Ref<Option> option, String line, Ref<Token> token)
+void Options::readValue(Ref<Option> option, UString line, Ref<Token> token)
 {
-	String s = stripQuotes(line->copy(token->index(), token->length()));
+	UString s = stripQuotes(UString(line, token->index(), token->length()));
 	Ref<Variant> value = option->value_;
 	
 	if (value->type() == Variant::StringType) {
@@ -302,7 +303,7 @@ void Options::readValue(Ref<Option> option, String line, Ref<Token> token)
 	}
 	else if (value->type()== Variant::IntType) {
 		bool ok = false;
-		int x = s->toInt(&ok);
+		int x = s.toInt(&ok);
 		
 		if (!ok)
 			PONA_THROW(OptionsException, "Unrecognized option syntax");
@@ -311,7 +312,7 @@ void Options::readValue(Ref<Option> option, String line, Ref<Token> token)
 	}
 	else if (value->type() == Variant::FloatType) {
 		bool ok = false;
-		double x = s->toFloat(&ok);
+		double x = s.toFloat(&ok);
 		
 		if (!ok)
 			PONA_THROW(OptionsException, "Unrecognized option syntax");
@@ -320,90 +321,96 @@ void Options::readValue(Ref<Option> option, String line, Ref<Token> token)
 	}
 }
 
-String Options::entity(String newValue)
+UString Options::entity(UString newValue)
 {
 	if (newValue != "") entity_ = newValue;
 	return newValue;
 }
 
-String Options::synopsis(String newValue)
+UString Options::synopsis(UString newValue)
 {
 	if (newValue != "") synopsis_ = newValue;
 	return newValue;
 }
 
-String Options::summary(String newValue)
+UString Options::summary(UString newValue)
 {
 	if (newValue != "") summary_ = newValue;
 	return newValue;
 }
 
-String Options::details(String newValue)
+UString Options::details(UString newValue)
 {
 	if (newValue != "") details_ = newValue;
 	return newValue;
 }
 
-String Options::help()
+UString Options::help()
 {
-	if (synopsis_->length() == 0)
-		synopsis_ = execName_ + " [OPTION]... [" << entity_ << "]...";
+	if (synopsis_ == "")
+		synopsis_ = execName_ + " [OPTION]... [" + entity_ + "]...";
 	
-	String options;
+	UString options;
 	{
-		Ref<StringList> lines = new StringList;
+		Ref<UStringList, Owner> lines = new UStringList;
 		int maxLength = 0;
 		
 		for (int i = 0; i < optionList_->length(); ++i) {
 			Ref<Option> option = optionList_->get(i);
-			Format line("  ");
+			Format format("  ");
 			if (option->longName_ != "") {
-				line << "--" << option->longName_;
+				format << "--" << option->longName_;
 				if (option->typeMask_ != 0) {
 					if ((option->typeMask_ & (Variant::IntType|Variant::FloatType)) != 0) {
-						line << "=" << *(option->value_);
+						format << "=" << *(option->value_);
 					}
 					else if ((option->typeMask_ & Variant::StringType) != 0) {
-						line << "='" << *(option->value_) << "'";
+						format << "='" << *(option->value_) << "'";
 					}
 				}
 				if (option->shortName_)
-					line << ", ";
+					format << ", ";
 			}
 			if (option->shortName_)
-				line << '-' << option->shortName_;
-			if (line->length() > maxLength) maxLength = line->length();
+				format << '-' << option->shortName_;
+			UString line(format);
+			if (line->size() > maxLength) maxLength = line->size();
 			lines->append(line);
 		}
 		
-		String indent = (maxLength + 2) * Char(' ');
+		UString indent(maxLength + 2, ' ');
 		
 		for (int i = 0; i < optionList_->length(); ++i) {
 			Ref<Option> option = optionList_->get(i);
-			String line = lines->get(i);
-			if (line->length() < indent->length())
-				line << Char(' ') * (indent->length() - line->length());
-			String text = option->description_;
-			// text->replace("\n", "\n" + indent); // would be nice
-			line << text << "\n";
+			Ref<UStringList, Owner> line = new UStringList;
+			line->append(lines->get(i));
+			if (lines->get(i)->size() < indent->size())
+				line->append(UString(indent->size() - lines->get(i)->size(), ' '));
+			line->append(option->description_);
+			line->append("\n");
+			lines->set(i, line);
 		}
 		
-		options = lines * String("");
+		options = lines;
 	}
 	
-	String text = Format("Usage: %%\n") << synopsis_;
-	if (summary_->length() > 0) text << summary_ << '\n';
-	text << '\n';
-	text << "Options:\n";
-	text << options;
-	if (details_->length() > 0)
-		text << details_;
-	text << '\n';
+	Ref<UStringList, Owner> text = new UStringList;
+	text->append(UString(Format("Usage: %%\n") << synopsis_));
+	if (summary_->size() > 0) {
+		text->append(summary_);
+		text->append("\n");
+	}
+	text->append("\n");
+	text->append("Options:\n");
+	text->append(options);
+	if (details_->size() > 0)
+		text->append(details_);
+	text->append("\n");
 	return text;
 }
 
-String Options::execPath() const { return execPath_; }
-String Options::execName() const { return execName_; }
-String Options::execDir() const { return execDir_; }
+UString Options::execPath() const { return execPath_; }
+UString Options::execName() const { return execName_; }
+UString Options::execDir() const { return execDir_; }
 
 } // namespace pona

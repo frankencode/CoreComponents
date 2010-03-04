@@ -17,6 +17,16 @@ SET(PONA_HEADER
 	Ref.hpp
 	NonCopyable.hpp
 	
+	binary
+	ByteSink.hpp
+	ByteSource.hpp
+	Utf8Sink.hpp
+	Utf8Source.hpp
+	BitSink.hpp
+	BitSource.hpp
+	Crc32.hpp
+	HuffmanCodec.hpp
+	
 	string
 	UStringIndex.hpp
 	UString.hpp
@@ -33,9 +43,9 @@ SET(PONA_HEADER
 	BinaryTree.hpp
 	AvlTree.hpp
 	Map.hpp
-	CString.hpp
-	String.hpp
-	CharList.hpp
+	# CString.hpp
+	# String.hpp
+	# CharList.hpp
 	
 	syntax
 	Token.hpp
@@ -61,16 +71,6 @@ SET(PONA_HEADER
 	FormatSyntax.hpp
 	Format.hpp
 	FormatPrint.hpp
-	
-	binary
-	ByteSink.hpp
-	ByteSource.hpp
-	Utf8Sink.hpp
-	Utf8Source.hpp
-	BitSink.hpp
-	BitSource.hpp
-	Crc32.hpp
-	HuffmanCodec.hpp
 	
 	threads
 	GlobalMutex.hpp
@@ -126,13 +126,23 @@ SET(PONA_SOURCE
 	CoreMutex.cpp
 	GlobalMutex.cpp
 	
+	# binary
+	ByteSink.cpp
+	ByteSource.cpp
+	Utf8Sink.cpp
+	Utf8Source.cpp
+	BitSink.cpp
+	BitSource.cpp
+	HuffmanCodec.cpp
+	Crc32.cpp
+	
 	# string
 	UString.cpp
 	
 	# container
 	Tree.cpp
-	String.cpp
-	CharList.cpp
+	# String.cpp
+	# CharList.cpp
 	
 	# syntax
 	Token.cpp
@@ -152,16 +162,6 @@ SET(PONA_SOURCE
 	FormatSpecifier.cpp
 	FormatSyntax.cpp
 	Format.cpp
-	
-	# binary
-	ByteSink.cpp
-	ByteSource.cpp
-	Utf8Sink.cpp
-	Utf8Source.cpp
-	BitSink.cpp
-	BitSource.cpp
-	HuffmanCodec.cpp
-	Crc32.cpp
 	
 	# threads
 	Thread.cpp

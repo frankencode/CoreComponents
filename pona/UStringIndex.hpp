@@ -20,9 +20,9 @@ public:
 	// Initialize new iterator
 	// \arg data utf8 encoded string
 	// \arg pos position in string
-	UStringIndex(char* data = 0, char* pos = 0)
-		: s_(reinterpret_cast<uint8_t*>(data)),
-		  p_(reinterpret_cast<uint8_t*>((pos == 0) ? data : pos)),
+	UStringIndex(const char* data = 0, const char* pos = 0)
+		: s_(reinterpret_cast<const uint8_t*>(data)),
+		  p_(reinterpret_cast<const uint8_t*>((pos == 0) ? data : pos)),
 		  valid_(p_ != 0)
 	{
 		if (valid_) valid_ = (*p_ != 0);
@@ -129,12 +129,12 @@ public:
 		return c;
 	}
 	
-	inline char* data() const { return reinterpret_cast<char*>(s_); }
-	inline char* pos() const { return reinterpret_cast<char*>(p_); }
+	inline const char* data() const { return reinterpret_cast<const char*>(s_); }
+	inline const char* pos() const { return reinterpret_cast<const char*>(p_); }
 	
 private:
-	uint8_t* s_; // string
-	uint8_t* p_; // position in string
+	const uint8_t* s_; // string
+	const uint8_t* p_; // position in string
 	bool valid_;
 };
 

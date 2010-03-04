@@ -21,7 +21,7 @@ cat <<EOD
 #define PONA_FORMATPRINT_HPP
 
 #include "atoms"
-#include "String.hpp"
+#include "UString.hpp"
 #include "Format.hpp"
 #include "StandardStreams.hpp"
 
@@ -32,7 +32,7 @@ EOD
 
 ######################### print() ####################################
 
-printf "inline void print(String text) { output()->write(text); }\n"
+printf "inline void print(UString text) { output()->write(text); }\n"
 printf "\n"
 let n=1
 while [ $n -le $MAX_ARGS ]; do
@@ -46,7 +46,7 @@ while [ $n -le $MAX_ARGS ]; do
 		let i=i+1
 	done
 	printf ">\n"
-	printf "inline void print(String templateText, "
+	printf "inline void print(UString templateText, "
 	let i=1
 	while [ $i -le $n ]; do
 		printf "const T$i& x$i"
@@ -73,7 +73,7 @@ done
 
 ######################### printTo() ##################################
 
-printf "inline void printTo(Ref<LineSink> sink, String text) { sink->write(text); }\n"
+printf "inline void printTo(Ref<LineSink> sink, UString text) { sink->write(text); }\n"
 printf "\n"
 let n=1
 while [ $n -le $MAX_ARGS ]; do
@@ -87,7 +87,7 @@ while [ $n -le $MAX_ARGS ]; do
 		let i=i+1
 	done
 	printf ">\n"
-	printf "inline void printTo(Ref<LineSink> sink, String templateText, "
+	printf "inline void printTo(Ref<LineSink> sink, UString templateText, "
 	let i=1
 	while [ $i -le $n ]; do
 		printf "const T$i& x$i"
@@ -114,7 +114,7 @@ done
 
 ######################### debug() ####################################
 
-printf "inline void debug(String text) {\n"
+printf "inline void debug(UString text) {\n"
 printf "#ifndef NDEBUG\n"
 printf "	output()->write(text);\n"
 printf "#endif // NDEBUG\n"
@@ -133,7 +133,7 @@ while [ $n -le $MAX_ARGS ]; do
 		let i=i+1
 	done
 	printf ">\n"
-	printf "inline void debug(String templateText, "
+	printf "inline void debug(UString templateText, "
 	let i=1
 	while [ $i -le $n ]; do
 		printf "const T$i& x$i"

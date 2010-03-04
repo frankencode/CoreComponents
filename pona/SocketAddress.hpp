@@ -14,7 +14,7 @@
 #include <sys/socket.h> // connect
 
 #include "atoms"
-#include "String.hpp"
+#include "UString.hpp"
 #include "List.hpp"
 
 namespace pona
@@ -39,7 +39,7 @@ public:
 	  * \param address numerical host address or wildcard ("*")
 	  * \param port service port
 	  */
-	SocketAddress(int family, String address = String(), int port = 0);
+	SocketAddress(int family, UString address = UString(), int port = 0);
 	SocketAddress(struct sockaddr_in* addr);
 	SocketAddress(struct sockaddr_in6* addr);
 	SocketAddress(addrinfo* info);
@@ -47,8 +47,8 @@ public:
 	int family() const;
 	int socketType() const;
 	int protocol() const;
-	String addressString() const;
-	String toString() const;
+	UString addressString() const;
+	UString toString() const;
 	int port() const;
 	void setPort(int port);
 	
@@ -66,23 +66,23 @@ public:
 	  *   The host name can be a short name relative to the local domain.
 	  * The fully qualified domain name (aka canonical name) can be optionally retrieved.
 	  */
-	static Ref<SocketAddressList, Owner> resolve(String hostName, String serviceName = String(), int family = AF_UNSPEC, int socketType = 0, String* canonicalName = 0);
+	static Ref<SocketAddressList, Owner> resolve(UString hostName, UString serviceName = UString(), int family = AF_UNSPEC, int socketType = 0, UString* canonicalName = 0);
 	
 	/** Lookup the host name of given address. Usually a reverse DNS
 	  * lookup will be issued, which may take several seconds.
 	  */
-	String lookupHostName(bool* failed = 0) const;
+	UString lookupHostName(bool* failed = 0) const;
 	
 	/** Lookup the service name. In most setups the service name will be looked up
 	  * in a local file (/etc/services) and therefore the call returns immediately.
 	  */
-	String lookupServiceName() const;
+	UString lookupServiceName() const;
 	
 	/** Returns the name of this host.
 	  *   On a properly configured server the host name returned should be a fully
 	  * qualified domain name.
 	  */
-	static String hostName();
+	static UString hostName();
 	
 	struct sockaddr* addr();
 	const struct sockaddr* addr() const;

@@ -10,7 +10,7 @@
 
 #include <sys/types.h>
 #include "atoms"
-#include "String.hpp"
+#include "UString.hpp"
 #include "File.hpp"
 
 namespace pona
@@ -19,23 +19,23 @@ namespace pona
 class Path
 {
 public:
-	Path(String path);
+	Path(UString path);
 	
 	bool isRoot() const;
 	bool isRelative() const;
 	bool isAbsolute() const;
-	Path makeAbsoluteRelativeTo(String currentDir) const;
+	Path makeAbsoluteRelativeTo(UString currentDir) const;
 	Path makeAbsolute() const;
-	String fileName() const;
+	UString fileName() const;
 	Path reduce() const;
-	Path expand(String component) const;
+	Path expand(UString component) const;
 	
-	static Path lookup(Ref<StringList> dirs, String fileName, int accessFlags = File::Exists);
+	static Path lookup(Ref<UStringList> dirs, UString fileName, int accessFlags = File::Exists);
 	
-	operator String() const;
+	operator UString() const;
 	
 private:
-	String path_;
+	UString path_;
 };
 
 } // namespace pona
