@@ -65,7 +65,7 @@ int main()
 	{
 		print("Text 4\n");
 		print("------\n");
-		List<Char> l;
+		List<char> l;
 		l.push(0, 2);
 		l.set(0, '0');
 		l.set(1, '\n');

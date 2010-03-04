@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "atoms"
-#include "String.hpp"
+#include "UString.hpp"
 #include "SystemStream.hpp"
 #include "FileStatus.hpp"
 
@@ -69,11 +69,11 @@ public:
 		StandardError  = 2
 	};
 	
-	File(String path, int openFlags = 0);
+	File(UString path, int openFlags = 0);
 	File(int fd);
 	
-	String path() const;
-	String name() const;
+	UString path() const;
+	UString name() const;
 	int openFlags() const;
 	
 	bool access(int flags) const;
@@ -81,7 +81,7 @@ public:
 	void create(int mode = 0644);
 	void unlink();
 	
-	void createUnique(int mode = 0644, Char placeHolder = 'X');
+	void createUnique(int mode = 0644, char placeHolder = 'X');
 	void truncate(off_t length);
 	void unlinkOnExit();
 	void unlinkOnThreadExit();
@@ -98,7 +98,7 @@ public:
 	void dataSync();
 	
 private:
-	String path_;
+	UString path_;
 	int openFlags_;
 };
 

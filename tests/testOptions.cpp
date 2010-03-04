@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 	options.define('h', "help", &help, "Print help");
 	options.define('a', "alpha", &alpha, "Pass alpha value");
 	options.define('b', "beta", &beta, "Pass beta value");
-	Ref<StringList, Owner> files = options.read(argc, argv);
+	Ref<UStringList, Owner> files = options.read(argc, argv);
 	
 	if (echo) print("Hello, echo!\n");
 	if (world) print("Hello, world!\n");

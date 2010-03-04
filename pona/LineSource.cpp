@@ -11,7 +11,7 @@
 namespace pona
 {
 
-LineSource::LineSource(Ref<Stream> stream, int bufCapa, String eol)
+LineSource::LineSource(Ref<Stream> stream, int bufCapa, const char* eol)
 	: stream_(stream),
 	  eol_(eol),
 	  cachedLines_(0),
@@ -26,7 +26,7 @@ LineSource::~LineSource()
 	buf_ = 0;
 }
 
-String LineSource::readLine(bool* eoi)
+UString LineSource::readLine(bool* eoi)
 {
 	bool h;
 	if (!eoi) eoi = &h;
@@ -36,22 +36,22 @@ String LineSource::readLine(bool* eoi)
 		readAvail(eoi);
 	
 	if (*eoi)
-		return String();
+		return UString();
 	
-	int nk = eol_->length();
+	int nk = eol_->size();
 	int k = 0;
 	int i = 0;
 	while (k < nk)
 	{
-		Char ch = cache_.popFront();
-		k = (ch == eol_->get(k)) ? k + 1 : 0;
+		char ch = cache_.popFront();
+		k = (ch == eol_->at(k)) ? k + 1 : 0;
 		buf_[i] = ch;
 		++i;
 	}
 
 	--cachedLines_;
 	
-	return String(buf_, i - nk);
+	return UString(buf_, i - nk);
 }
 
 int LineSource::cachedLines() const
@@ -70,13 +70,13 @@ void LineSource::readAvail(bool* eoi)
 		return;
 	}
 	
-	for (int i = 0, nk = eol_->length(), k = 0; i < bufFill; ++i)
+	for (int i = 0, nk = eol_->size(), k = 0; i < bufFill; ++i)
 	{
 		if (cache_.fill() == cache_.size())
 			PONA_THROW(StreamIoException, pona::strcat("Maximum line length of ", pona::intToStr(cache_.size()), " bytes exceeded"));
 
-		Char ch = buf_[i];
-		k = (ch == eol_->get(k)) ? k + 1 : 0;
+		char ch = buf_[i];
+		k = (ch == eol_->at(k)) ? k + 1 : 0;
 	
 		if (k == nk) {
 			k = 0;

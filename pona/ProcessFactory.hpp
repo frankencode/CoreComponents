@@ -25,14 +25,14 @@ public:
 	int ioPolicy() const;
 	void setIoPolicy(int flags);
 	
-	String workingDirectory();
-	void setWorkingDirectory(String path);
+	UString workingDirectory();
+	void setWorkingDirectory(UString path);
 	
-	String execPath() const;
-	void setExecPath(String path);
+	UString execPath() const;
+	void setExecPath(UString path);
 	
-	Ref<StringList> options();
-	void setOptions(Ref<StringList> list);
+	Ref<UStringList> options();
+	void setOptions(Ref<UStringList> list);
 	
 	Ref<EnvMap> envMap();
 	void setEnvMap(Ref<EnvMap> map);
@@ -62,10 +62,10 @@ protected:
 private:
 	int type_;
 	int ioPolicy_;
-	String workingDirectory_;
+	UString workingDirectory_;
 	
-	String execPath_;
-	Ref<StringList, Owner> options_;
+	UString execPath_;
+	Ref<UStringList, Owner> options_;
 	Ref<EnvMap, Owner> envMap_;
 	
 	Ref<SignalSet, Owner> signalMask_;

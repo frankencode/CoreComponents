@@ -9,7 +9,7 @@
 #define PONA_FORMAT_HPP
 
 #include "atoms"
-#include "String.hpp"
+#include "UString.hpp"
 #include "Variant.hpp"
 #include "Stack.hpp"
 
@@ -18,22 +18,19 @@ namespace pona
 
 PONA_EXCEPTION(FormatException, Exception);
 
-class Format: public String
+class Format: public Ref<UStringList, Owner>
 {
 public:
-	typedef String::Element Element;
-	typedef String::Media Media;
+	typedef Ref<UStringList, Owner> Super;
+	typedef UString::Element Element;
+	typedef UString::Media Media;
 	
-	Format();
-	Format(const Char& ch);
-	Format(const char* utf8);
-	Format(Ref<Media, Owner> media);
+	Format(UString format = "");
 	
-	inline Format& print(String s) { get()->insert(nextPlaceHolder()->i_ + get()->length() - n0_, s); return *this; }
-	inline Format& print(const char* s) { return print(String(s)); }
+	inline Format& print(UString s) { get()->insert(nextPlaceHolder()->j_, s); return *this; }
+	inline Format& print(const char* s) { return print(UString(s)); }
 	
-	inline Format& print(Char ch) { get()->insert(nextPlaceHolder()->i_ + get()->length() - n0_, ch); return *this; }
-	inline Format& print(char ch) { return print(Char(ch)); }
+	inline Format& print(char ch) { get()->insert(nextPlaceHolder()->j_, UString(&ch, 1)); return *this; }
 	
 	inline Format& print(uint8_t x) { printInt(x); return *this; }
 	inline Format& print(uint16_t x) { printInt(x); return *this; }
@@ -70,7 +67,7 @@ private:
 	class PlaceHolder: public Instance {
 	public:
 		PlaceHolder()
-			: i_(0), w_(0), wi_(0), wf_(0), base_(10), exp_(false), blank_(' ')
+			: j_(0), w_(0), wi_(0), wf_(0), base_(10), exp_(false), blank_(' ')
 		{}
 		
 		void check() {
@@ -81,10 +78,10 @@ private:
 				PONA_THROW(FormatException, "Invalid format specifier");
 		}
 		
-		int i_;
+		int j_; // insertion point
 		int w_, wi_, wf_, base_;
 		bool exp_;
-		Char blank_;
+		char blank_;
 		Ref<PlaceHolder, Owner> next_;
 	};
 	

@@ -9,7 +9,7 @@
 #define PONA_OPTIONS_HPP
 
 #include "atoms"
-#include "String.hpp"
+#include "UString.hpp"
 #include "Variant.hpp"
 #include "List.hpp"
 #include "Syntax.hpp"
@@ -19,25 +19,25 @@ namespace pona
 
 PONA_EXCEPTION(OptionsException, Exception);
 
-class Options: public Syntax<String::Media>::Definition
+class Options: public Syntax<UString::Media>::Definition
 {
 public:
 	Options();
 	
-	void define(Char shortName, String longName, Ref<Variant> value, String description = "");
-	Ref<StringList> read(int argc, char** argv);
+	void define(char shortName, UString longName, Ref<Variant> value, UString description = "");
+	Ref<UStringList, Owner> read(int argc, char** argv);
 	
-	String entity(String newValue = String());
-	String synopsis(String newValue = String());
-	String summary(String newValue = String());
-	String details(String newValue = String());
-	String help();
-	String execPath() const;
-	String execName() const;
-	String execDir() const;
+	UString entity(UString newValue = "");
+	UString synopsis(UString newValue = "");
+	UString summary(UString newValue = "");
+	UString details(UString newValue = "");
+	UString help();
+	UString execPath() const;
+	UString execName() const;
+	UString execDir() const;
 	
 private:
-	Ref<StringList> read(String line);
+	Ref<UStringList, Owner> read(UString line);
 	
 	RULE longNameRule_;
 	RULE shortNameRule_;
@@ -48,9 +48,9 @@ private:
 	class Option: public Instance
 	{
 	public:
-		Char shortName_;
-		String longName_;
-		String description_;
+		char shortName_;
+		UString longName_;
+		UString description_;
 		int typeMask_;
 		// Variant defaultValue_;
 		Ref<Variant, SetNull> value_;
@@ -58,19 +58,19 @@ private:
 	
 	typedef List< Ref<Option, Owner> > OptionList;
 	Ref<OptionList, Owner> optionList_;
-	String entity_;
-	String synopsis_;
-	String summary_;
-	String details_;
+	UString entity_;
+	UString synopsis_;
+	UString summary_;
+	UString details_;
 	
-	String execPath_;
-	String execName_;
-	String execDir_;
+	UString execPath_;
+	UString execName_;
+	UString execDir_;
 	
-	Ref<Option> optionByShortName(Char name) const;
-	Ref<Option> optionByLongName(String name) const;
-	void readOption(String line, Ref<Token> token);
-	void readValue(Ref<Option> option, String line, Ref<Token> token);
+	Ref<Option> optionByShortName(char name) const;
+	Ref<Option> optionByLongName(UString name) const;
+	void readOption(UString line, Ref<Token> token);
+	void readValue(Ref<Option> option, UString line, Ref<Token> token);
 	void verifyTypes();
 };
 

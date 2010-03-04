@@ -8,7 +8,7 @@ namespace pona
 class Echo: public Action
 {
 public:
-	Echo(String signalName, int signal)
+	Echo(UString signalName, int signal)
 		: signalName_(signalName),
 		  signal_(signal)
 	{}
@@ -17,7 +17,7 @@ private:
 		print("[%%]\n", signalName_);
 		SignalManager::defaultAction(signal_);
 	}
-	String signalName_;
+	UString signalName_;
 	int signal_;
 };
 

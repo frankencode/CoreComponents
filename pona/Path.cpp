@@ -19,7 +19,7 @@ extern "C" char** environ;
 namespace pona
 {
 
-Path::Path(String path_)
+Path::Path(UString path_)
 	: path_(path_)
 {}
 
@@ -30,19 +30,19 @@ bool Path::isAbsolute() const {
 	return (path_->length() > 0) ? (path_->get(0) == '/') : false;
 }
 
-Path Path::makeAbsoluteRelativeTo(String currentDir) const
+Path Path::makeAbsoluteRelativeTo(UString currentDir) const
 {
 	if (isAbsolute())
 		return path_;
 	
-	Ref<StringList, Owner> absoluteParts = new StringList;
-	Ref<StringList, Owner> parts = path_ / '/';
+	Ref<UStringList, Owner> absoluteParts = new UStringList;
+	Ref<UStringList, Owner> parts = path_.split("/");
 	
 	int upCount = 0;
 	
 	for (int i = 0, n = parts->length(); i < n; ++i)
 	{
-		String c = parts->get(i);
+		UString c = parts->get(i);
 		if (c == ".")
 		{}
 		else if (c == "..") {
@@ -56,9 +56,9 @@ Path Path::makeAbsoluteRelativeTo(String currentDir) const
 		}
 	}
 	
-	String absolutePath;
+	UString absolutePath;
 	if (currentDir->length() > 0)
-		absolutePath = currentDir->copy();
+		absolutePath = currentDir.deepCopy();
 	else
 		absolutePath = Process::cwd();
 	
@@ -67,22 +67,22 @@ Path Path::makeAbsoluteRelativeTo(String currentDir) const
 		--upCount;
 	}
 	
-	absolutePath << "/" << absoluteParts * '/';
+	absoluteParts->insert(0, absolutePath);
 	
-	return absolutePath;
+	return UString(absoluteParts, "/");
 }
 
 Path Path::makeAbsolute() const
 {
 	if (isAbsolute())
 		return path_;
-	return makeAbsoluteRelativeTo(String());
+	return makeAbsoluteRelativeTo(UString());
 }
 
-String Path::fileName() const
+UString Path::fileName() const
 {
-	String name;
-	Ref<StringList, Owner> parts = path_ / '/';
+	UString name;
+	Ref<UStringList, Owner> parts = path_.split("/");
 	if (parts->length() > 0)
 		name = parts->get(-1);
 	return name;
@@ -90,25 +90,25 @@ String Path::fileName() const
 
 Path Path::reduce() const
 {
-	Ref<StringList, Owner> parts = path_ / '/';
+	Ref<UStringList, Owner> parts = path_.split("/");
 	if (parts->length() > 0)
 		parts->pop(-1);
-	String resultPath = parts * '/';
+	UString resultPath = UString(parts, "/");
 	if ((resultPath == "") && (isAbsolute()))
 		resultPath = "/";
 	return resultPath;
 }
 
-Path Path::expand(String component) const
+Path Path::expand(UString component) const
 {
-	return Path(path_ + "/" + component);
+	return Path(UString(path_ + "/" + component));
 }
 
-Path Path::lookup(Ref<StringList> dirs, String fileName, int accessFlags)
+Path Path::lookup(Ref<UStringList> dirs, UString fileName, int accessFlags)
 {
-	String path;
+	UString path;
 	for (int i = 0; i < dirs->length(); ++i) {
-		String candidate = dirs->get(i) + "/" + fileName;
+		UString candidate(dirs->get(i) + "/" + fileName);
 		if (File(candidate).access(accessFlags)) {
 			path = candidate;
 			break;
@@ -117,6 +117,6 @@ Path Path::lookup(Ref<StringList> dirs, String fileName, int accessFlags)
 	return path;
 }
 
-Path::operator String() const { return path_; }
+Path::operator UString() const { return path_; }
 
 } // namespace pona

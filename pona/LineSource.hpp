@@ -12,7 +12,7 @@
 #include "defaults.hpp"
 #include "Stream.hpp"
 #include "Queue.hpp"
-#include "String.hpp"
+#include "UString.hpp"
 
 namespace pona
 {
@@ -20,10 +20,10 @@ namespace pona
 class LineSource: public Instance
 {
 public:
-	LineSource(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, String eol = "\n");
+	LineSource(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, const char* eol = "\n");
 	~LineSource();
 	
-	String readLine(bool* eoi = 0);
+	UString readLine(bool* eoi = 0);
 	
 	int cachedLines() const;
 	void readAvail(bool* eoi);
@@ -32,7 +32,7 @@ public:
 	
 private:
 	Ref<Stream, Owner> stream_;
-	String eol_;
+	UString eol_;
 	int cachedLines_;
 	Queue<char> cache_;
 	int bufCapa_;

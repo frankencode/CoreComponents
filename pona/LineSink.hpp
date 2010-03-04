@@ -11,7 +11,7 @@
 #include "atoms"
 #include "defaults.hpp"
 #include "Stream.hpp"
-#include "String.hpp"
+#include "UString.hpp"
 
 namespace pona
 {
@@ -19,17 +19,17 @@ namespace pona
 class LineSink: public Instance
 {
 public:
-	LineSink(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, String eol = "\n");
+	LineSink(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, const char* eol = "\n");
 	~LineSink();
 
-	void writeLine(String line);
-	void write(String buf);
+	void writeLine(UString line);
+	void write(UString s);
 
 	Ref<Stream> stream() const;
 
 private:
 	Ref<Stream, Owner> stream_;
-	String eol_;
+	UString eol_;
 	int bufCapa_;
 	uint8_t* buf_;
 };

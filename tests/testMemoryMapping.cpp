@@ -10,11 +10,11 @@ const int mapLength = 256;
 class CloneFactory: public ProcessFactory
 {
 public:
-	CloneFactory(String path)
+	CloneFactory(UString path)
 		: path_(path)
 	{}
 	
-	int run()
+	int incarnate()
 	{
 		File file(path_);
 		file.open(File::Read);
@@ -24,14 +24,14 @@ public:
 		print("(clone) granted read access\n");
 		{
 			MemoryMapping mapping(&file, 0, mapLength);
-			print("(clone) reads: \"%%\"\n", (const char*)mapping.start());
+			print("(clone) reads: \"%%\"\n", reinterpret_cast<const char*>(mapping.start()));
 		}
 		lock.release();
 		return 7;
 	}
 	
 private:
-	String path_;
+	UString path_;
 };
 
 int main()
@@ -48,12 +48,11 @@ int main()
 	FileLock lock(&file, FileLock::Write);
 	lock.acquire();
 	
-	print("(print) mapping file and writing message... \n");
+	print("(parent) mapping file and writing message... \n");
 	{
 		MemoryMapping mapping(&file, 0, mapLength);
-		String message = "Hello, clone!";
-		for (int i = 0; i < message->length(); ++i)
-			((char*)mapping.start())[i] = message->get(i);
+		UString message = "Hello, clone!";
+		pona::memcpy(reinterpret_cast<char*>(mapping.start()), message.data(), message.size());
 	}
 	
 	print("(parent) cloning myself... \n");

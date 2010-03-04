@@ -14,73 +14,45 @@
 namespace pona
 {
 
-Format::Format()
-	: defaultPlaceHolder_(new PlaceHolder),
-	  digits_(MaxDigits),
-	  n0_(0)
-{}
-
-Format::Format(const Char& ch)
-	: String(ch),
+Format::Format(UString format)
+	: Super(new UStringList),
 	  defaultPlaceHolder_(new PlaceHolder),
-	  digits_(MaxDigits),
-	  n0_(1)
-{}
-
-Format::Format(const char* utf8)
-	: String(utf8),
-	  defaultPlaceHolder_(new PlaceHolder),
-	  digits_(MaxDigits),
-	  n0_(get()->length())
-{
-	init();
-}
-
-Format::Format(Ref<Media, Owner> media)
-	: String(media),
-	  defaultPlaceHolder_(new PlaceHolder),
-	  digits_(MaxDigits),
-	  n0_(get()->length())
-{
-	init();
-}
-
-void Format::init()
+	  digits_(MaxDigits)
 {
 	Ref<FormatSpecifier> specifier = formatSyntax()->formatSpecifier();
 	int i0Saved = 0, i0 = 0, i1 = 0;
-	int m = 0; // accumulated width of place holders
 	
 	Ref<PlaceHolder> tail;
-	String text;
+	
+	int nph = 0; // number of placeholders
 	
 	while (true)
 	{
 		Ref<PlaceHolder, Owner> ph = new PlaceHolder;
 		
-		if (!specifier->find(*this, &i0, &i1, &ph->w_, &ph->wi_, &ph->wf_, &ph->base_, &ph->exp_, &ph->blank_)) break;
-		
-		ph->i_ = i0 - m;
-		ph->check();
+		if (!specifier->find(format, &i0, &i1, &ph->w_, &ph->wi_, &ph->wf_, &ph->base_, &ph->exp_, &ph->blank_)) break;
 		
 		if (i0 != i0Saved)
-			text->append(get()->range(i0Saved, i0 - i0Saved));
+			get()->append(UString(format, i0Saved, i0 - i0Saved));
+		else
+			get()->append(UString());
+		
+		ph->j_ = get()->length() + nph;
+		ph->check();
+		
 		if (tail)
 			tail->next_ = ph;
 		else
 			placeHolders_ = ph;
 		tail = ph;
-		m += i1 - i0;
+		++nph;
+		
 		i0 = i1;
 		i0Saved = i0;
 	}
 	
-	if (i0Saved != n0_)
-		text->append(get()->range(i0Saved, n0_ - i0Saved));
-	
-	set(text);
-	n0_ -= m;
-	defaultPlaceHolder_->i_ = n0_;
+	if (i0Saved < format->size())
+		get()->append(UString(format, i0Saved, format->size() - i0Saved));
 }
 
 Ref<Format::PlaceHolder, Owner> Format::nextPlaceHolder()
@@ -92,6 +64,7 @@ Ref<Format::PlaceHolder, Owner> Format::nextPlaceHolder()
 	}
 	else {
 		ph = defaultPlaceHolder_;
+		ph->j_ = get()->length();
 	}
 	return ph;
 }
@@ -107,7 +80,7 @@ Format& Format::print(const Variant& x)
 	else if (x.type() == Variant::FloatType)
 		print(double(x));
 	else if (x.type() == Variant::StringType)
-		print(String(x));
+		print(UString(x));
 	else if (x.type() == Variant::RefType)
 		print(Ref<>(x).get());
 	return *this;
@@ -116,7 +89,6 @@ Format& Format::print(const Variant& x)
 void Format::printInt(uint64_t x, int sign)
 {
 	Ref<PlaceHolder, Owner> ph = nextPlaceHolder();
-	String& text = *this;
 	
 	digits_.clear();
 	if (x == 0) {
@@ -139,59 +111,52 @@ void Format::printInt(uint64_t x, int sign)
 	if (wi < digits_.fill()) wi = digits_.fill();
 	if (w < wi) w = wi;
 	
-	int i = ph->i_ + text->length() - n0_;
-	text->push(i, w);
-	text->fill(i, w, ph->blank_);
+	UString text(w, ph->blank_);
+	int i = 0;
 	
-	if (wi != 0) {
-		int wb = wi - digits_.fill();
-		if (wb > 0)
-			i += wb;
-	}
-	else if (wf != 0) {
-		int wb = w - digits_.fill() - wf - 1;
-		if (wb > 0)
-			i += wb;
-	}
-	else {
-		int wb = w - digits_.fill();
-		if (wb > 0)
-			i += wb;
-	}
+	int wb = 0; // width of blank
+	if (wi != 0)
+		wb = wi - digits_.fill();
+	else if (wf != 0)
+		wb = w - digits_.fill() - wf - 1;
+	else
+		wb = w - digits_.fill();
+	
+	if (wb > 0) i += wb;
 	
 	while (digits_.fill() > 0) {
 		const char* letters = "0123456789ABCDEF-";
 		int d = digits_.pop();
 		text->set(i++, letters[d]);
 	}
+	
+	get()->insert(ph->j_, text);
 }
 
 void Format::printFloat(float64_t x)
 {
 	Ref<PlaceHolder, Owner> ph = nextPlaceHolder();
-	String& text = *this;
 	
 	int wi = (ph->wi_ == 0) ? 1 : ph->wi_;
 	int wf = ph->wf_;
 	int w = wi + (wf != 0) + wf;
 	if (w < ph->w_) w = ph->w_;
 	
-	int i = ph->i_ + text->length() - n0_; // output index
-
 	uint64_t xi = union_cast<uint64_t>(x);
 	uint64_t f = (xi << 12) >> 12; // fraction
 	int e = int((xi << 1) >> 53); // exponent
 	int s = int(xi >> 63); // sign
 	
+	UString text;
+	int i = 0;
+	
 	if ((e == 0x7FF) && (f != 0)) // NaN
 	{
 		if (w < 3) w = 3;
-		text->push(i, w);
+		text = UString(w, ph->blank_);
 		int wb = w - 3;
-		if (wb > 0) {
-			text->fill(i, wb, ph->blank_);
+		if (wb > 0)
 			i += wb;
-		}
 		const char* nan = "nan";
 		while (*nan) {
 			text->set(i++, *nan);
@@ -201,12 +166,10 @@ void Format::printFloat(float64_t x)
 	else if ((e == 0x7FF) && (f == 0)) // infinite
 	{
 		if (w < 3 + s) w = 3 + s;
-		text->push(i, w);
+		text = UString(w, ph->blank_);
 		int wb = w - 3 - s;
-		if (wb > 0) {
-			text->fill(i, wb, ph->blank_);
+		if (wb > 0)
 			i += wb;
-		}
 		if (s == 1) text->set(i++, '-');
 		const char* inf = "inf";
 		while (*inf) {
@@ -277,8 +240,7 @@ void Format::printFloat(float64_t x)
 		int h = wi + int(wf != 0) + wf + int(ne != 0) * (1 + int(eba < 0) + ne);
 		if (w < h) w = h; // w too small
 		
-		text->push(i, w);
-		text->fill(i, w, ph->blank_);
+		text = UString(w, ph->blank_);
 		
 		int wb = wi - ni - s;
 		if (wb > 0) i += wb;
@@ -315,10 +277,11 @@ void Format::printFloat(float64_t x)
 	}
 	else // if ((e == 0) && (f == 0)) // zero
 	{
-		text->push(i, w);
-		text->fill(i, w, ph->blank_);
+		text = UString(w, ph->blank_);
 		text->set(i + wi - 1, '0');
 	}
+	
+	get()->insert(ph->j_, text);
 }
 
 } // namespace pona

@@ -124,7 +124,31 @@ public:
 
 typedef uint32_t uchar_t; // could also be a signed integer (int32_t)
 
-class Char
+inline char toLower(char ch) {
+	if (('A' <= ch) && (ch <= 'Z'))
+		ch = ch + 'a' - 'A';
+	return ch;
+}
+
+inline char toUpper(char ch) {
+	if (('a' <= ch) && (ch <= 'z'))
+		ch = ch + 'A' - 'a';
+	return ch;
+}
+
+inline char isLower(char ch) {
+	return ('a' <= ch) && (ch <= 'z');
+}
+
+inline char isUpper(char ch) {
+	return ('A' <= ch) && (ch <= 'Z');
+}
+
+inline bool isSpace(char ch) {
+	return (ch == ' ') || (ch == '\t');
+}
+
+/*class Char
 {
 public:
 	Char() {}
@@ -148,7 +172,7 @@ public:
 
 private:
 	uint32_t ch_;
-};
+};*/
 
 inline void* malloc(int size) { return new char[size]; }
 inline void free(void* buf) { delete[] reinterpret_cast<char*>(buf); }

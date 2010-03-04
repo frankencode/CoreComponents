@@ -16,10 +16,10 @@ namespace pona
 class Dir: public Instance
 {
 public:
-	Dir(String path);
+	Dir(UString path);
 	~Dir();
 	
-	String path() const;
+	UString path() const;
 	
 	bool access(int flags);
 	bool exists() const;
@@ -33,7 +33,7 @@ public:
 	bool isOpen() const;
 	
 private:
-	String path_;
+	UString path_;
 	DIR* dir_;
 };
 

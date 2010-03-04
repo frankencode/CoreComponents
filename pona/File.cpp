@@ -17,7 +17,7 @@
 namespace pona
 {
 
-File::File(String path, int openFlags)
+File::File(UString path, int openFlags)
 	: SystemStream(-1),
 	  path_(path),
 	  openFlags_(0)
@@ -40,28 +40,28 @@ File::File(int fd)
 		PONA_THROW(StreamSemanticException, "Invalid argument");
 }
 
-String File::path() const
+UString File::path() const
 {
 	return path_;
 }
 
-String File::name() const
+UString File::name() const
 {
-	Char sep = '/';
+	const char sep = '/';
 	
 	int n = path_->length();
 	int i = n - 1;
 	while (i >= 0) {
-		if (path_->get(i) == sep) {
+		if (path_->at(i) == sep) {
 			++i;
 			break;
 		}
 		--i;
 	}
 	
-	String name;
+	UString name;
 	if (i < n)
-		name = path_->range(i, n - i);
+		name = UString(path_, i, n - i);
 	
 	return name;
 }
@@ -73,7 +73,7 @@ int File::openFlags() const
 
 bool File::access(int flags) const
 {
-	return isOpen() ? ((openFlags_ & flags) == flags) : (::access(path_->utf8(), flags) == 0);
+	return isOpen() ? ((openFlags_ & flags) == flags) : (::access(path_, flags) == 0);
 }
 
 bool File::exists() const
@@ -83,7 +83,7 @@ bool File::exists() const
 
 void File::create(int mode)
 {
-	int fd = ::open(path_->utf8(), O_RDONLY|O_CREAT|O_EXCL, mode);
+	int fd = ::open(path_, O_RDONLY|O_CREAT|O_EXCL, mode);
 	if (fd == -1)
 		PONA_THROW(StreamSemanticException, systemError());
 	::close(fd);
@@ -91,27 +91,28 @@ void File::create(int mode)
 
 void File::unlink()
 {
-	if (::unlink(path_->utf8()) == -1)
+	if (::unlink(path_) == -1)
 		PONA_THROW(StreamSemanticException, systemError());
 }
 
-void File::createUnique(int mode, Char placeHolder)
+void File::createUnique(int mode, char placeHolder)
 {
 	Random random;
 	while (true) {
-		String pathSaved = path_->copy();
-		for (int i = 0, n = path_->length(); i < n; ++i) {
-			if (path_->get(i) == placeHolder) {
-				int r = random.get(0, 61);
+		UString pathSaved = path_.deepCopy();
+		for (int i = 0, n = path_->size(); i < n; ++i) {
+			if (path_->at(i) == placeHolder) {
+				char r = random.get(0, 61);
 				if ((0 <= r) && (r <= 9))
-					path_->set(i, '0' + r);
+					r += '0';
 				else if ((10 <= r) && (r <= 35))
-					path_->set(i, 'a' + r - 10);
+					r += 'a' - 10;
 				else if ((36 <= r) && (r <= 61))
-					path_->set(i, 'A' + r - 36);
+					r += 'A' - 36;
+				path_->set(i, r);
 			}
 		}
-		int fd = ::open(path_->utf8(), O_RDONLY|O_CREAT|O_EXCL, mode);
+		int fd = ::open(path_, O_RDONLY|O_CREAT|O_EXCL, mode);
 		if (fd == -1) {
 			if (errno != EEXIST)
 				PONA_THROW(StreamSemanticException, systemError());
@@ -131,17 +132,17 @@ void File::truncate(off_t length)
 			PONA_THROW(StreamSemanticException, systemError());
 	}
 	else {
-		if (::truncate(path_->utf8(), length) == -1)
+		if (::truncate(path_, length) == -1)
 			PONA_THROW(StreamSemanticException, systemError());
 	}
 }
 
 class UnlinkFile: public Action {
 public:
-	UnlinkFile(String path): path_(Path(path).makeAbsolute()) {}
+	UnlinkFile(UString path): path_(Path(path).makeAbsolute()) {}
 	void run() { File(path_).unlink(); }
 private:
-	String path_;
+	UString path_;
 };
 
 void File::unlinkOnExit()
@@ -163,7 +164,7 @@ void File::open(int flags)
 		h = O_WRONLY;
 	else if (flags == (Read|Write))
 		h = O_RDWR;
-	fd_ = ::open(path_->utf8(), h);
+	fd_ = ::open(path_, h);
 	if (fd_ == -1)
 		PONA_THROW(StreamSemanticException, systemError());
 	openFlags_ = flags;

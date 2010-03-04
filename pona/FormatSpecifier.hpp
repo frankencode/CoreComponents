@@ -13,11 +13,11 @@
 namespace pona
 {
 
-class FormatSpecifier: public Syntax<String::Media>::Definition
+class FormatSpecifier: public Syntax<UString::Media>::Definition
 {
 public:
 	FormatSpecifier();
-	bool find(Ref<String::Media> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, Char* blank);
+	bool find(Ref<UString::Media> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, char* blank);
 	
 private:
 	RULE width_;

@@ -17,7 +17,7 @@
 namespace pona
 {
 
-Dir::Dir(String path)
+Dir::Dir(UString path)
 	: path_(Path(path).makeAbsolute()),
 	  dir_(0)
 {}
@@ -27,7 +27,7 @@ Dir::~Dir()
 	if (isOpen()) close();
 }
 
-String Dir::path() const { return path_; }
+UString Dir::path() const { return path_; }
 
 bool Dir::access(int flags) { return File(path_).access(flags); }
 
@@ -38,20 +38,20 @@ bool Dir::exists() const
 
 void Dir::create(int mode)
 {
-	if (::mkdir(path_->utf8(), mode) == -1)
+	if (::mkdir(path_, mode) == -1)
 		PONA_SYSTEM_EXCEPTION;
 }
 
 void Dir::unlink()
 {
-	if (::rmdir(path_->utf8()))
+	if (::rmdir(path_))
 		PONA_SYSTEM_EXCEPTION;
 }
 
 void Dir::open()
 {
 	if (dir_) return;
-	dir_ = ::opendir(path_->utf8());
+	dir_ = ::opendir(path_);
 	if (!dir_)
 		PONA_SYSTEM_EXCEPTION;
 }
