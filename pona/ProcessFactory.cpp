@@ -18,6 +18,7 @@
 #else
 #include <util.h>
 #endif
+#include "Format.hpp"
 #include "ProcessFactory.hpp"
 
 extern "C" char** environ;
@@ -136,7 +137,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 		UString execPathAbsolute = execPath_;
 		if (workingDirectory_ != "") {
 			if (execPath_.contains("/"))
-				execPathAbsolute = Process::cwd() + "/" + execPath_;
+				execPathAbsolute = Format() << Process::cwd() << "/" << execPath_;
 			if (::chdir(workingDirectory_) == -1)
 				PONA_SYSTEM_EXCEPTION;
 		}
@@ -215,7 +216,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 				envp = new char*[envc + 1];
 
 				for (int i = 0, n = envList->length(); i < n; ++i)
-					envp[i] = pona::strdup(UString(envList->get(i).key() + "=" + envList->get(i).value())->data());
+					envp[i] = pona::strdup(UString(Format() << envList->get(i).key() <<  "=" << envList->get(i).value())->data());
 				
 				envp[envc] = 0;
 			}

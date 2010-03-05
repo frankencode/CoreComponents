@@ -13,7 +13,6 @@
 #include "Dir.hpp"
 #include "Path.hpp"
 #include "StandardStreams.hpp"
-#include "Format.hpp"
 #include "FormatPrint.hpp"
 
 #endif //  PONA_STDIO

@@ -27,9 +27,15 @@ SET(PONA_HEADER
 	Crc32.hpp
 	HuffmanCodec.hpp
 	
-	string
+	strings
 	UStringIndex.hpp
 	UString.hpp
+	IntegerLiteral.hpp
+	FloatLiteral.hpp
+	FormatSpecifier.hpp
+	FormatSyntax.hpp
+	Format.hpp
+	Variant.hpp
 	
 	container
 	Stack.hpp
@@ -43,9 +49,6 @@ SET(PONA_HEADER
 	BinaryTree.hpp
 	AvlTree.hpp
 	Map.hpp
-	# CString.hpp
-	# String.hpp
-	# CharList.hpp
 	
 	syntax
 	Token.hpp
@@ -65,11 +68,6 @@ SET(PONA_HEADER
 	LineSource.hpp
 	LineSink.hpp
 	StandardStreams.hpp
-	IntegerLiteral.hpp
-	FloatLiteral.hpp
-	FormatSpecifier.hpp
-	FormatSyntax.hpp
-	Format.hpp
 	FormatPrint.hpp
 	
 	threads
@@ -89,7 +87,6 @@ SET(PONA_HEADER
 	process
 	User.hpp
 	Group.hpp
-	Variant.hpp
 	Options.hpp
 	SignalSet.hpp
 	Process.hpp
@@ -136,13 +133,17 @@ SET(PONA_SOURCE
 	HuffmanCodec.cpp
 	Crc32.cpp
 	
-	# string
+	# strings
 	UString.cpp
+	StandardStreams.cpp
+	IntegerLiteral.cpp
+	FloatLiteral.cpp
+	FormatSpecifier.cpp
+	FormatSyntax.cpp
+	Format.cpp
 	
 	# container
 	Tree.cpp
-	# String.cpp
-	# CharList.cpp
 	
 	# syntax
 	Token.cpp
@@ -156,12 +157,6 @@ SET(PONA_SOURCE
 	Path.cpp
 	LineSink.cpp
 	LineSource.cpp
-	StandardStreams.cpp
-	IntegerLiteral.cpp
-	FloatLiteral.cpp
-	FormatSpecifier.cpp
-	FormatSyntax.cpp
-	Format.cpp
 	
 	# threads
 	Thread.cpp

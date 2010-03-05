@@ -24,8 +24,8 @@ public:
 	
 	LogFile(Ref<SocketAddress> address, int type, Time t0 = now(), Ref<LogFile> merged = 0);
 	
-	void writeLine(Ref<SocketAddress> address, String data);
-	void writeLine(String data);
+	void writeLine(Ref<SocketAddress> address, UString data);
+	void writeLine(UString data);
 	
 	void write(uint8_t* buf, int bufFill);
 	

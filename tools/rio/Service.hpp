@@ -29,9 +29,9 @@ protected:
 	virtual void serve(Ref<StreamSocket> socket);
 	virtual void cleanup();
 	
-	Ref<Process, Owner> exec(String entity);
-	void canonSession(Ref<StreamSocket> socket, String entity);
-	void binarySession(Ref<StreamSocket> socket, String entity);
+	Ref<Process, Owner> exec(UString entity);
+	void canonSession(Ref<StreamSocket> socket, UString entity);
+	void binarySession(Ref<StreamSocket> socket, UString entity);
 	
 private:
 	Ref<LogFile, Owner> connectLog_;

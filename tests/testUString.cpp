@@ -1,5 +1,5 @@
 #include <pona/stdio>
-#include <pona/string>
+#include <pona/strings>
 
 namespace pona
 {
@@ -13,17 +13,17 @@ int main(int argc, char** argv)
 	
 	File file(argv[1], File::Read);
 	UString text(file.size());
-	file.read(text.data(), text.size());
+	file.read(text->data(), text->size());
 	if (!text.valid()) {
 		print("Input data is not conforming to UTF8 encoding.\n");
 		return 1;
 	}
-	if (text.empty()) {
+	if (text == "") {
 		print("Input file empty.\n");
 		return 2;
 	}
 	
-	print("text = \"%%\"\n", text.data());
+	print("text = \"%%\"\n", text->data());
 	
 	int nf = 0, nb = 0; // forward, backward character count
 	for (UString::Index i = text.first(); i.valid(); ++i) ++nf;
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 		UString s("123x");
 		const char* pattern = "x";
 		UString::Index i = s.find(pattern);
-		print("Find \"%%\" in \"%%\": %% (valid = %%)\n", pattern, s.data(), i.pos() - i.data(), i.valid());
+		print("Find \"%%\" in \"%%\": %% (valid = %%)\n", pattern, s->data(), i.pos() - i.data(), i.valid());
 		/*print("s == UString(s.split(pattern), pattern): %%\n", s == UString(s.split(pattern), pattern));
 		print("s.split(pattern)->length() = %%\n", s.split(pattern)->length());
 		print("UString(s.split(pattern), pattern) = '%%'\n", UString(s.split(pattern), pattern).data());*/
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 	Ref<UStringList, Owner> lines = text.split("\n");
 	print("Number of lines: %%\n", lines->length());
 	for (int i = 0; i < lines->length(); ++i)
-		print("%%: '%%' (%%)\n", i, lines->get(i).data(), lines->get(i).size());
+		print("%%: '%%' (%%)\n", i, lines->get(i)->data(), lines->get(i)->size());
 	
 	return 0;
 }

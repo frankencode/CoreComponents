@@ -31,20 +31,20 @@ void UString::assign(Ref<UStringList> parts, const char* glue)
 	if (ni > 0) {
 		int size = 0;
 		for (int i = 0; i < ni; ++i)
-			size += parts->get(i).size();
+			size += parts->get(i)->size();
 		size += (ni - 1) * glueSize;
 		set(new Media(size));
-		char* p = data();
+		char* p = media()->data();
 		for (int i = 0; i < ni; ++i) {
 			UString part = parts->get(i);
-			pona::memcpy(p, part.data(), part.size());
-			p += part.size();
+			pona::memcpy(p, part->data(), part->size());
+			p += part->size();
 			if (i < ni - 1) {
 				pona::memcpy(p, glue, glueSize);
 				p += glueSize;
 			}
 		}
-		assert(p == data() + size);
+		assert(p == media()->data() + size);
 	}
 	else {
 		set(new Media);
@@ -54,14 +54,14 @@ void UString::assign(Ref<UStringList> parts, const char* glue)
 UString UString::deepCopy() const
 {
 	UString b;
-	b.Super::set(new Media(data(), size()));
+	b.Super::set(new Media(media()->data(), media()->size()));
 	return b;
 }
 
 UString::Index UString::find(const Index& index, const char* pattern) const
 {
-	if (!index.valid() || empty()) return Index();
-	assert(index.data() == data());
+	if (!index.valid() || media()->empty()) return Index();
+	assert(index.data() == media()->data());
 	const char* t = index.pos(); // text pos
 	const char* m = pattern; // match pos
 	while ((*t) && (*m)) {
@@ -71,7 +71,7 @@ UString::Index UString::find(const Index& index, const char* pattern) const
 			m = pattern;
 		++t;
 	}
-	return (*m) ? Index() : Index(data(), t - (m - pattern));
+	return (*m) ? Index() : Index(media()->data(), t - (m - pattern));
 }
 
 Ref<UStringList, Owner> UString::split(const char* pattern) const
@@ -83,7 +83,7 @@ Ref<UStringList, Owner> UString::split(const char* pattern) const
 		Index index1 = find(index0, pattern);
 		if (!index1.valid()) break;
 		parts->append(UString(index0, index1));
-		index0 = Index(data(), index1.pos() + patternSize);
+		index0 = Index(media()->data(), index1.pos() + patternSize);
 	}
 	if (index0.valid())
 		parts->append(UString(index0, eoi()));
@@ -100,7 +100,7 @@ int UString::toInt(bool* ok)
 	int sign = 0;
 	int i1 = 0;
 	if (formatSyntax()->integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
-		 *ok = (value <= uint64_t(intMax)) && (i1 == size());
+		 *ok = (value <= uint64_t(intMax)) && (i1 == media()->size());
 	}
 	else  {
 		*ok = false;
@@ -120,7 +120,7 @@ int64_t UString::toInt64(bool* ok)
 	int i1 = 0;
 	if (formatSyntax()->integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
 		if (ok)
-			*ok = ((value & (uint64_t(1) << 63)) != 0) && (i1 == size());
+			*ok = ((value & (uint64_t(1) << 63)) != 0) && (i1 == media()->size());
 	}
 	else {
 		if (ok)
@@ -136,7 +136,7 @@ uint64_t UString::toUInt64(bool* ok)
 	int i1 = 0;
 	if (formatSyntax()->integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
 		if (ok)
-			*ok = (sign == 1) && (i1 == size());
+			*ok = (sign == 1) && (i1 == media()->size());
 	}
 	else {
 		if (ok)
@@ -151,7 +151,7 @@ float64_t UString::toFloat64(bool* ok)
 	int i1 = 0;
 	if (formatSyntax()->floatingPointLiteral()->match(*this, 0, &i1, &value)) {
 		if (ok)
-			*ok = (i1 == size());
+			*ok = (i1 == media()->size());
 	}
 	else {
 		if (ok)
@@ -162,33 +162,33 @@ float64_t UString::toFloat64(bool* ok)
 
 UString UString::toLower() const
 {
-	UString s2(size());
-	for (int i = 0, n = size(); i < n; ++i)
+	UString s2(media()->size());
+	for (int i = 0, n = media()->size(); i < n; ++i)
 		s2->set(i, pona::toLower((*this)->at(i)));
 	return s2;
 }
 
 UString UString::toUpper() const
 {
-	UString s2(size());
-	for (int i = 0, n = size(); i < n; ++i)
+	UString s2(media()->size());
+	for (int i = 0, n = media()->size(); i < n; ++i)
 		s2->set(i, pona::toUpper((*this)->at(i)));
 	return s2;
 }
 
 UString UString::stripLeadingSpace() const
 {
-	int n = size();
+	int n = media()->size();
 	while (n > 0) {
 		if (!pona::isSpace((*this)->at(-n))) break;
 		--n;
 	}
-	return UString(*this, size() - n, n);
+	return UString(*this, media()->size() - n, n);
 }
 
 UString UString::stripTrailingSpace() const
 {
-	int n = size();
+	int n = media()->size();
 	while (n > 0) {
 		if (!pona::isSpace((*this)->at(n - 1))) break;
 		--n;
@@ -199,44 +199,8 @@ UString UString::stripTrailingSpace() const
 uint32_t UString::crc32() const
 {
 	Crc32 crc;
-	crc.feed(data(), size());
+	crc.feed(media()->data(), media()->size());
 	return crc.sum();
-}
-
-Ref<UStringList, Owner> operator+(const UString& a, const UString& b)
-{
-	Ref<UStringList, Owner> list = new UStringList;
-	list->append(a);
-	list->append(b);
-	return list;
-}
-
-Ref<UStringList, Owner> operator+(const UString& a, const char* b)
-{
-	Ref<UStringList, Owner> list = new UStringList;
-	list->append(a);
-	list->append(UString(b));
-	return list;
-}
-
-Ref<UStringList, Owner> operator+(const char* a, const UString& b)
-{
-	Ref<UStringList, Owner> list = new UStringList;
-	list->append(UString(a));
-	list->append(b);
-	return list;
-}
-
-Ref<UStringList, Owner> operator+(Ref<UStringList, Owner> list, const UString& b)
-{
-	list->append(b);
-	return list;
-}
-
-Ref<UStringList, Owner> operator+(Ref<UStringList, Owner> list, const char* b)
-{
-	list->append(UString(b));
-	return list;
 }
 
 } // namespace pona

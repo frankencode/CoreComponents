@@ -180,7 +180,7 @@ Ref<UStringList, Owner> Options::read(int argc, char** argv)
 	execPath_ = argv[0];
 	execName_ = Path(execPath_).fileName();
 	execDir_ = Path(execPath_).reduce().makeAbsolute();
-	Ref<UStringList, Owner> line;
+	Ref<UStringList, Owner> line = new UStringList;
 	for (int i = 1; i < argc; ++i) {
 		line->append(UString(argv[i]));
 		if (i != argc - 1)
@@ -348,7 +348,7 @@ UString Options::details(UString newValue)
 UString Options::help()
 {
 	if (synopsis_ == "")
-		synopsis_ = execName_ + " [OPTION]... [" + entity_ + "]...";
+		synopsis_ = Format() << execName_ << " [OPTION]... [" << entity_ << "]...";
 	
 	UString options;
 	{
@@ -395,7 +395,7 @@ UString Options::help()
 	}
 	
 	Ref<UStringList, Owner> text = new UStringList;
-	text->append(UString(Format("Usage: %%\n") << synopsis_));
+	text->append(Format("Usage: %%\n") << synopsis_);
 	if (summary_->size() > 0) {
 		text->append(summary_);
 		text->append("\n");
