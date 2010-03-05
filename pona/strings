@@ -2,5 +2,7 @@
 #define PONA_STRING
 
 #include "UString.hpp"
+#include "Format.hpp"
+#include "Variant.hpp"
 
 #endif // PONA_STRING

@@ -11,6 +11,7 @@
 #include <signal.h> // kill
 #include <unistd.h> // chdir, getcwd
 #include <errno.h>
+#include "Format.hpp"
 #include "Process.hpp"
 #include "Path.hpp"
 
@@ -101,14 +102,14 @@ Path Path::reduce() const
 
 Path Path::expand(UString component) const
 {
-	return Path(UString(path_ + "/" + component));
+	return Path(Format() << path_ << "/" << component);
 }
 
 Path Path::lookup(Ref<UStringList> dirs, UString fileName, int accessFlags)
 {
 	UString path;
 	for (int i = 0; i < dirs->length(); ++i) {
-		UString candidate(dirs->get(i) + "/" + fileName);
+		UString candidate = Format() << dirs->get(i) << "/" << fileName;
 		if (File(candidate).access(accessFlags)) {
 			path = candidate;
 			break;

@@ -11,6 +11,7 @@
 #include "atoms"
 #include "UString.hpp"
 #include "Variant.hpp"
+#include "Rounding.hpp"
 #include "Stack.hpp"
 
 namespace pona
@@ -22,8 +23,6 @@ class Format: public Ref<UStringList, Owner>
 {
 public:
 	typedef Ref<UStringList, Owner> Super;
-	typedef UString::Element Element;
-	typedef UString::Media Media;
 	
 	Format(UString format = "");
 	
@@ -37,9 +36,9 @@ public:
 	inline Format& print(uint32_t x) { printInt(x); return *this; }
 	inline Format& print(uint64_t x) { printInt(x); return *this; }
 	
-	inline Format& print(int16_t x) { int s = sgn(x); printInt(uint64_t(s*x), s); return *this; }
-	inline Format& print(int32_t x) { int s = sgn(x); printInt(uint64_t(s*x), s); return *this; }
-	inline Format& print(int64_t x) { int s = sgn(x); printInt(uint64_t(s*x), s); return *this; }
+	inline Format& print(int16_t x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
+	inline Format& print(int32_t x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
+	inline Format& print(int64_t x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
 	
 	inline Format& print(float32_t x) { printFloat(x); return *this; }
 	inline Format& print(float64_t x) { printFloat(x); return *this; }
@@ -60,7 +59,7 @@ public:
 	
 private:
 	enum { ExpAutoLimit = 6 };
-	enum { MaxDigits = 128 }; // safe guess, 65 + ExpAutoLimit should be sufficient ?
+	enum { MaxDigits = 128 }; // safe guess, 65 + ExpAutoLimit should be sufficient
 	
 	void init();
 	
@@ -87,18 +86,10 @@ private:
 	
 	Ref<PlaceHolder, Owner> nextPlaceHolder();
 	
-	template<class T>
-	inline static int sgn(T x) { return (x >= 0) - (x < 0); }
-	
 	void printInt(uint64_t x, int sign = 1);
 	void printFloat(float64_t x);
 	
-	Ref<PlaceHolder, Owner> defaultPlaceHolder_;
 	Ref<PlaceHolder, Owner> placeHolders_;
-	
-	Stack<int> digits_;
-	
-	int n0_; // length of template text minus all place holders
 };
 
 } // namespace pona

@@ -104,6 +104,17 @@ public:
 	
 	inline bool contains(const T& x) { return find(x) < size_; }
 	
+	inline int replace(const T& x, const T& y) {
+		int n = 0;
+		for (int i = 0; i < size_; ++i) {
+			if (data_[i] == x) {
+				data_[i] = y;
+				++n;
+			}
+		}
+		return n;
+	}
+	
 	inline T* data() const { return data_; }
 	inline operator T*() const { return data_; }
 	inline operator bool() const { return !empty(); }

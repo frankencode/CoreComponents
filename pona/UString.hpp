@@ -21,8 +21,8 @@ class UString: public Ref<UStringMedia, Owner>
 {
 public:
 	typedef UStringMedia Media;
-	typedef Media::Element Element;
 	typedef Ref<Media, Owner> Super;
+	// typedef uchar_t Element;
 	typedef UStringIndex Index;
 	
 	// initialize empty string
@@ -87,38 +87,34 @@ public:
 	
 	// assign a shallow copy of another string
 	inline UString& operator=(const UString& b) {
-		Super::set(b.Super::get());
+		Super::set(b.media());
 		return *this;
 	}
 	
 	// return a deep copy of this string
 	UString deepCopy() const;
 	
-	// return a reference to the shared media
+	// provide access to the shared media
 	inline Ref<Media> media() const { return Super::get(); }
+	inline operator char*() const { return media()->data(); }
 	
-	inline Index first() const { return empty() ? Index() : Index(data()); }
-	inline Index last() const { return empty() ? Index() : eoi() - 1; }
-	inline Index eoi() const { return empty() ? Index() : Index(data(), data() + size()); }
+	inline Index first() const { return media()->empty() ? Index() : Index(media()->data()); }
+	inline Index last() const { return media()->empty() ? Index() : eoi() - 1; }
+	inline Index eoi() const { return media()->empty() ? Index() : Index(media()->data(), media()->data() + media()->size()); }
 	
 	inline bool def(const Index& index) const {
-		assert(!empty());
-		assert(index.data() == data());
+		assert(!media()->empty());
+		assert(index.data() == media()->data());
 		return index.valid();
 	}
 	inline uchar_t get(const Index& index) const {
-		assert(!empty());
-		assert(index.data() == data());
+		assert(!media()->empty());
+		assert(index.data() == media()->data());
 		return index.getChar();
 	}
 	inline uchar_t operator[](const Index& index) { return get(index); }
 	
-	inline char* data() const { return Super::get()->data(); }
-	inline operator char*() const { return Super::get()->data(); }
-	inline int size() const { return Super::get()->size(); }
-	inline int empty() const { return Super::get()->empty(); }
-	
-	inline void validate() const { validate(data(), size()); }
+	inline void validate() const { validate(media()->data(), media()->size()); }
 	inline bool valid() const {
 		try { validate(); }
 		catch (StreamIoException&) { return false; }
@@ -131,12 +127,12 @@ public:
 	inline Index find(const char* pattern) const { return find(first(), pattern); }
 	inline bool contains(const char* pattern) const { return find(first(), pattern).valid(); }
 	
-	inline bool operator< (const UString& b) const { return pona::strcmp(data(), b.data()) <  0; }
-	inline bool operator==(const UString& b) const { return pona::strcmp(data(), b.data()) == 0; }
-	inline bool operator> (const UString& b) const { return pona::strcmp(data(), b.data()) >  0; }
-	inline bool operator!=(const UString& b) const { return pona::strcmp(data(), b.data()) != 0; }
-	inline bool operator<=(const UString& b) const { return pona::strcmp(data(), b.data()) <= 0; }
-	inline bool operator>=(const UString& b) const { return pona::strcmp(data(), b.data()) >= 0; }
+	inline bool operator< (const UString& b) const { return pona::strcmp((*this)->data(), b->data()) <  0; }
+	inline bool operator==(const UString& b) const { return pona::strcmp((*this)->data(), b->data()) == 0; }
+	inline bool operator> (const UString& b) const { return pona::strcmp((*this)->data(), b->data()) >  0; }
+	inline bool operator!=(const UString& b) const { return pona::strcmp((*this)->data(), b->data()) != 0; }
+	inline bool operator<=(const UString& b) const { return pona::strcmp((*this)->data(), b->data()) <= 0; }
+	inline bool operator>=(const UString& b) const { return pona::strcmp((*this)->data(), b->data()) >= 0; }
 	
 	int toInt(bool* ok = 0);
 	double toFloat(bool* ok = 0);
@@ -162,39 +158,33 @@ private:
 	void assign(Ref<UStringList> parts, const char* glue = "");
 };
 
-inline bool operator< (const char* a, const UString& b) { return pona::strcmp(a, b.data()) <  0; }
-inline bool operator==(const char* a, const UString& b) { return pona::strcmp(a, b.data()) == 0; }
-inline bool operator> (const char* a, const UString& b) { return pona::strcmp(a, b.data()) >  0; }
-inline bool operator!=(const char* a, const UString& b) { return pona::strcmp(a, b.data()) != 0; }
-inline bool operator<=(const char* a, const UString& b) { return pona::strcmp(a, b.data()) <= 0; }
-inline bool operator>=(const char* a, const UString& b) { return pona::strcmp(a, b.data()) >= 0; }
+inline bool operator< (const char* a, const UString& b) { return pona::strcmp(a, b->data()) <  0; }
+inline bool operator==(const char* a, const UString& b) { return pona::strcmp(a, b->data()) == 0; }
+inline bool operator> (const char* a, const UString& b) { return pona::strcmp(a, b->data()) >  0; }
+inline bool operator!=(const char* a, const UString& b) { return pona::strcmp(a, b->data()) != 0; }
+inline bool operator<=(const char* a, const UString& b) { return pona::strcmp(a, b->data()) <= 0; }
+inline bool operator>=(const char* a, const UString& b) { return pona::strcmp(a, b->data()) >= 0; }
 
-inline bool operator< (char* a, const UString& b) { return pona::strcmp(a, b.data()) <  0; }
-inline bool operator==(char* a, const UString& b) { return pona::strcmp(a, b.data()) == 0; }
-inline bool operator> (char* a, const UString& b) { return pona::strcmp(a, b.data()) >  0; }
-inline bool operator!=(char* a, const UString& b) { return pona::strcmp(a, b.data()) != 0; }
-inline bool operator<=(char* a, const UString& b) { return pona::strcmp(a, b.data()) <= 0; }
-inline bool operator>=(char* a, const UString& b) { return pona::strcmp(a, b.data()) >= 0; }
+inline bool operator< (char* a, const UString& b) { return pona::strcmp(a, b->data()) <  0; }
+inline bool operator==(char* a, const UString& b) { return pona::strcmp(a, b->data()) == 0; }
+inline bool operator> (char* a, const UString& b) { return pona::strcmp(a, b->data()) >  0; }
+inline bool operator!=(char* a, const UString& b) { return pona::strcmp(a, b->data()) != 0; }
+inline bool operator<=(char* a, const UString& b) { return pona::strcmp(a, b->data()) <= 0; }
+inline bool operator>=(char* a, const UString& b) { return pona::strcmp(a, b->data()) >= 0; }
 
-inline bool operator< (const UString& a, const char* b) { return pona::strcmp(a.data(), b) <  0; }
-inline bool operator==(const UString& a, const char* b) { return pona::strcmp(a.data(), b) == 0; }
-inline bool operator> (const UString& a, const char* b) { return pona::strcmp(a.data(), b) >  0; }
-inline bool operator!=(const UString& a, const char* b) { return pona::strcmp(a.data(), b) != 0; }
-inline bool operator<=(const UString& a, const char* b) { return pona::strcmp(a.data(), b) <= 0; }
-inline bool operator>=(const UString& a, const char* b) { return pona::strcmp(a.data(), b) >= 0; }
+inline bool operator< (const UString& a, const char* b) { return pona::strcmp(a->data(), b) <  0; }
+inline bool operator==(const UString& a, const char* b) { return pona::strcmp(a->data(), b) == 0; }
+inline bool operator> (const UString& a, const char* b) { return pona::strcmp(a->data(), b) >  0; }
+inline bool operator!=(const UString& a, const char* b) { return pona::strcmp(a->data(), b) != 0; }
+inline bool operator<=(const UString& a, const char* b) { return pona::strcmp(a->data(), b) <= 0; }
+inline bool operator>=(const UString& a, const char* b) { return pona::strcmp(a->data(), b) >= 0; }
 
-inline bool operator< (const UString& a, char* b) { return pona::strcmp(a.data(), b) <  0; }
-inline bool operator==(const UString& a, char* b) { return pona::strcmp(a.data(), b) == 0; }
-inline bool operator> (const UString& a, char* b) { return pona::strcmp(a.data(), b) >  0; }
-inline bool operator!=(const UString& a, char* b) { return pona::strcmp(a.data(), b) != 0; }
-inline bool operator<=(const UString& a, char* b) { return pona::strcmp(a.data(), b) <= 0; }
-inline bool operator>=(const UString& a, char* b) { return pona::strcmp(a.data(), b) >= 0; }
-
-Ref<UStringList, Owner> operator+(const UString& a, const UString& b);
-Ref<UStringList, Owner> operator+(const UString& a, const char* b);
-Ref<UStringList, Owner> operator+(const char* a, const UString& b);
-Ref<UStringList, Owner> operator+(Ref<UStringList, Owner> list, const UString& b);
-Ref<UStringList, Owner> operator+(Ref<UStringList, Owner> list, const char* b);
+inline bool operator< (const UString& a, char* b) { return pona::strcmp(a->data(), b) <  0; }
+inline bool operator==(const UString& a, char* b) { return pona::strcmp(a->data(), b) == 0; }
+inline bool operator> (const UString& a, char* b) { return pona::strcmp(a->data(), b) >  0; }
+inline bool operator!=(const UString& a, char* b) { return pona::strcmp(a->data(), b) != 0; }
+inline bool operator<=(const UString& a, char* b) { return pona::strcmp(a->data(), b) <= 0; }
+inline bool operator>=(const UString& a, char* b) { return pona::strcmp(a->data(), b) >= 0; }
 
 } // namespace pona
 

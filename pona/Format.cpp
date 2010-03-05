@@ -15,57 +15,60 @@ namespace pona
 {
 
 Format::Format(UString format)
-	: Super(new UStringList),
-	  defaultPlaceHolder_(new PlaceHolder),
-	  digits_(MaxDigits)
+	: Super(new UStringList)
 {
-	Ref<FormatSpecifier> specifier = formatSyntax()->formatSpecifier();
-	int i0Saved = 0, i0 = 0, i1 = 0;
+	Ref<PlaceHolder> lastPlaceHolder;
 	
-	Ref<PlaceHolder> tail;
-	
-	int nph = 0; // number of placeholders
-	
-	while (true)
+	if (format->contains('%'))
 	{
-		Ref<PlaceHolder, Owner> ph = new PlaceHolder;
+		Ref<FormatSpecifier> specifier = formatSyntax()->formatSpecifier();
+		int i0Saved = 0, i0 = 0, i1 = 0;
 		
-		if (!specifier->find(format, &i0, &i1, &ph->w_, &ph->wi_, &ph->wf_, &ph->base_, &ph->exp_, &ph->blank_)) break;
+		int nph = 0; // number of placeholders
 		
-		if (i0 != i0Saved)
-			get()->append(UString(format, i0Saved, i0 - i0Saved));
-		else
-			get()->append(UString());
-		
-		ph->j_ = get()->length() + nph;
-		ph->check();
-		
-		if (tail)
-			tail->next_ = ph;
-		else
-			placeHolders_ = ph;
-		tail = ph;
-		++nph;
-		
-		i0 = i1;
-		i0Saved = i0;
+		while (true) {
+			Ref<PlaceHolder, Owner> ph = new PlaceHolder;
+			
+			if (!specifier->find(format, &i0, &i1, &ph->w_, &ph->wi_, &ph->wf_, &ph->base_, &ph->exp_, &ph->blank_)) break;
+			
+			if (i0 != i0Saved)
+				get()->append(UString(format, i0Saved, i0 - i0Saved));
+			else
+				get()->append(UString());
+			
+			ph->j_ = get()->length() + nph;
+			ph->check();
+			if (lastPlaceHolder)
+				lastPlaceHolder->next_ = ph;
+			else
+				placeHolders_ = ph;
+			lastPlaceHolder = ph;
+			++nph;
+			
+			i0 = i1;
+			i0Saved = i0;
+		}
+		if (i0Saved < format->size())
+			get()->append(UString(format, i0Saved, format->size() - i0Saved));
+	}
+	else if (!format->empty()) {
+		get()->append(format);
 	}
 	
-	if (i0Saved < format->size())
-		get()->append(UString(format, i0Saved, format->size() - i0Saved));
+	// add default placeholder
+	if (lastPlaceHolder)
+		lastPlaceHolder->next_ = new PlaceHolder;
+	else
+		placeHolders_ = new PlaceHolder;
 }
 
 Ref<Format::PlaceHolder, Owner> Format::nextPlaceHolder()
 {
-	Ref<PlaceHolder, Owner> ph;
-	if (placeHolders_) {
-		ph = placeHolders_;
+	Ref<PlaceHolder, Owner> ph = placeHolders_;
+	if (placeHolders_->next_)
 		placeHolders_ = placeHolders_->next_;
-	}
-	else {
-		ph = defaultPlaceHolder_;
+	else
 		ph->j_ = get()->length();
-	}
 	return ph;
 }
 
@@ -90,25 +93,28 @@ void Format::printInt(uint64_t x, int sign)
 {
 	Ref<PlaceHolder, Owner> ph = nextPlaceHolder();
 	
-	digits_.clear();
+	int buf[MaxDigits];
+	Stack<int> digits(buf, MaxDigits);
+	
+	digits.clear();
 	if (x == 0) {
-		digits_.push(0);
+		digits.push(0);
 	}
 	else {
 		uint64_t v = x;
 		for (int i = 0; v > 0; ++i) {
-			digits_.push(int(v % ph->base_));
+			digits.push(int(v % ph->base_));
 			v /= ph->base_;
 		}
 	}
 	if (sign == -1)
-		digits_.push(16);
+		digits.push(16);
 	
 	int wi = (ph->wi_ > 0) ? ph->wi_ : 1;
 	int wf = ph->wf_;
 	int w = (sign == -1) + wi + (wf != 0) + wf;
 	if (w < ph->w_) w = ph->w_;
-	if (wi < digits_.fill()) wi = digits_.fill();
+	if (wi < digits.fill()) wi = digits.fill();
 	if (w < wi) w = wi;
 	
 	UString text(w, ph->blank_);
@@ -116,17 +122,17 @@ void Format::printInt(uint64_t x, int sign)
 	
 	int wb = 0; // width of blank
 	if (wi != 0)
-		wb = wi - digits_.fill();
+		wb = wi - digits.fill();
 	else if (wf != 0)
-		wb = w - digits_.fill() - wf - 1;
+		wb = w - digits.fill() - wf - 1;
 	else
-		wb = w - digits_.fill();
+		wb = w - digits.fill();
 	
 	if (wb > 0) i += wb;
 	
-	while (digits_.fill() > 0) {
+	while (digits.fill() > 0) {
 		const char* letters = "0123456789ABCDEF-";
-		int d = digits_.pop();
+		int d = digits.pop();
 		text->set(i++, letters[d]);
 	}
 	
@@ -136,6 +142,9 @@ void Format::printInt(uint64_t x, int sign)
 void Format::printFloat(float64_t x)
 {
 	Ref<PlaceHolder, Owner> ph = nextPlaceHolder();
+	
+	int buf[MaxDigits];
+	Stack<int> digits(buf, MaxDigits);
 	
 	int wi = (ph->wi_ == 0) ? 1 : ph->wi_;
 	int wf = ph->wf_;
@@ -196,7 +205,7 @@ void Format::printFloat(float64_t x)
 		
 		int ned = int(ceilToInf(log(float64_t((uint64_t(1)<<52)))/log(float64_t(ph->base_))) - 1); // number of exact digits
 		
-		digits_.clear();
+		digits.clear();
 		
 		int ni = 1; // number of digits of integral part
 		if (!ph->exp_) {
@@ -208,24 +217,24 @@ void Format::printFloat(float64_t x)
 				}
 				else {
 					while (eba < 0) {
-						digits_.push(0);
+						digits.push(0);
 						++eba;
 					}
 				}
 			}
 		}
 		
-		while (digits_.fill() < ned) {
+		while (digits.fill() < ned) {
 			int d = int(m / q);
-			digits_.push(d);
+			digits.push(d);
 			m -= d * q;
 			m *= ph->base_;
 		}
 		
 		int ns = 0; // number of significiant digits
 		{
-			for (int i = 0; i < digits_.fill(); ++i)
-				if (digits_.bottom(i) != 0)
+			for (int i = 0; i < digits.fill(); ++i)
+				if (digits.bottom(i) != 0)
 					ns = i + 1;
 		}
 		
@@ -252,17 +261,17 @@ void Format::printFloat(float64_t x)
 		int k = 0; // digit index
 		
 		for (int l = 0; l < ni; ++l)
-			text->set(i++, letters[digits_.bottom(k++)]);
+			text->set(i++, letters[digits.bottom(k++)]);
 		
 		if (wf != 0)
 		{
 			text->set(i++, '.');
 			for (int l = 0; l < wf; ++l)
 			{
-				if (digits_.fill() <= k)
+				if (digits.fill() <= k)
 					text->set(i++, '0');
 				else
-					text->set(i++, letters[digits_.bottom(k++)]);
+					text->set(i++, letters[digits.bottom(k++)]);
 			}
 		}
 		
