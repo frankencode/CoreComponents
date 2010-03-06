@@ -8,7 +8,6 @@
 #ifndef PONA_STACK_HPP
 #define PONA_STACK_HPP
 
-#include <assert.h>
 #include "NonCopyable.hpp"
 #include "Sequence.hpp"
 
@@ -50,19 +49,19 @@ public:
 	
 	inline void push(T x)
 	{
-		assert(fill_ < size_);
+		check(fill_ < size_);
 		buf_[fill_++] = x;
 	}
 	
 	inline T pop()
 	{
-		assert(fill_ > 0);
+		check(fill_ > 0);
 		return buf_[--fill_];
 	}
 	
 	inline void pop(int n)
 	{
-		assert(fill_ >= n);
+		check(fill_ >= n);
 		fill_ -= n;
 	}
 	
@@ -73,13 +72,13 @@ public:
 	
 	inline T top(int i = 0) const
 	{
-		assert(i < fill_);
+		check(i < fill_);
 		return buf_[fill_-i-1];
 	}
 	
 	inline T bottom(int i = 0) const
 	{
-		assert(i < fill_);
+		check(i < fill_);
 		return buf_[i];
 	}
 	

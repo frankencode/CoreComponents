@@ -4,11 +4,8 @@ SET(PONA_HEADER
 	atoms
 	types.hpp
 	strings.hpp
-	Sequence.hpp
-	ArrayPolicy.hpp
-	Array.hpp
 	Exception.hpp
-	CoreMutex.hpp
+	SpinMutex.hpp
 	Instance.hpp
 	Alien.hpp
 	Pointer.hpp
@@ -16,6 +13,8 @@ SET(PONA_HEADER
 	Owner.hpp
 	Ref.hpp
 	NonCopyable.hpp
+	Sequence.hpp
+	Stream.hpp
 	
 	binary
 	ByteSink.hpp
@@ -27,17 +26,9 @@ SET(PONA_HEADER
 	Crc32.hpp
 	HuffmanCodec.hpp
 	
-	strings
-	UStringIndex.hpp
-	UString.hpp
-	IntegerLiteral.hpp
-	FloatLiteral.hpp
-	FormatSpecifier.hpp
-	FormatSyntax.hpp
-	Format.hpp
-	Variant.hpp
-	
 	container
+	ArrayPolicy.hpp
+	Array.hpp
 	Stack.hpp
 	Queue.hpp
 	Heap.hpp
@@ -57,8 +48,17 @@ SET(PONA_HEADER
 	Syntax.hpp
 	SyntaxSugar.hpp
 	
+	strings
+	UStringIndex.hpp
+	UString.hpp
+	IntegerLiteral.hpp
+	FloatLiteral.hpp
+	FormatSpecifier.hpp
+	FormatSyntax.hpp
+	Format.hpp
+	Variant.hpp
+	
 	stdio
-	Stream.hpp
 	SystemStream.hpp
 	FileStatus.hpp
 	File.hpp
@@ -71,7 +71,7 @@ SET(PONA_HEADER
 	FormatPrint.hpp
 	
 	threads
-	GlobalMutex.hpp
+	GlobalSpinMutex.hpp
 	LocalStatic.hpp
 	ThreadLocalOwner.hpp
 	ThreadLocalSingleton.hpp
@@ -120,8 +120,7 @@ SET(PONA_HEADER
 SET(PONA_SOURCE
 	# atoms
 	Exception.cpp
-	CoreMutex.cpp
-	GlobalMutex.cpp
+	Stream.cpp
 	
 	# binary
 	ByteSink.cpp
@@ -133,23 +132,21 @@ SET(PONA_SOURCE
 	HuffmanCodec.cpp
 	Crc32.cpp
 	
-	# strings
-	UString.cpp
-	StandardStreams.cpp
-	IntegerLiteral.cpp
-	FloatLiteral.cpp
-	FormatSpecifier.cpp
-	FormatSyntax.cpp
-	Format.cpp
-	
 	# container
 	Tree.cpp
 	
 	# syntax
 	Token.cpp
 	
+	# strings
+	UString.cpp
+	IntegerLiteral.cpp
+	FloatLiteral.cpp
+	FormatSpecifier.cpp
+	FormatSyntax.cpp
+	Format.cpp
+	
 	# stdio
-	Stream.cpp
 	SystemStream.cpp
 	FileStatus.cpp
 	File.cpp
@@ -157,12 +154,15 @@ SET(PONA_SOURCE
 	Path.cpp
 	LineSink.cpp
 	LineSource.cpp
+	StandardStreams.cpp
 	
 	# threads
-	Thread.cpp
-	ThreadFactory.cpp
+	GlobalSpinMutex.cpp
+	Mutex.cpp
 	Condition.cpp
 	Semaphore.cpp
+	Thread.cpp
+	ThreadFactory.cpp
 	
 	# process
 	User.cpp

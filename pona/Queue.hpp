@@ -50,7 +50,7 @@ public:
 	
 	inline void pushBack(T e)
 	{
-		assert(fill_ != size_);
+		check(fill_ != size_);
 		++head_;
 		if (head_ >= size_) head_ = 0;
 		++fill_;
@@ -59,7 +59,7 @@ public:
 	
 	inline void pushFront(T e)
 	{
-		assert(fill_ < size_);
+		check(fill_ < size_);
 		buf_[tail_] = e;
 		--tail_;
 		if (tail_ < 0) tail_ = size_ - 1;
@@ -68,7 +68,7 @@ public:
 	
 	inline T popBack()
 	{
-		assert(fill_ > 0);
+		check(fill_ > 0);
 		T h = buf_[head_];
 		--head_;
 		if (head_ < 0) head_ = size_ - 1;
@@ -78,7 +78,7 @@ public:
 
 	inline T popFront()
 	{
-		assert(fill_ > 0);
+		check(fill_ > 0);
 		++tail_;
 		if (tail_ >= size_) tail_ = 0;
 		--fill_;
@@ -94,7 +94,7 @@ public:
 	
 	inline T back(int i = 0) const
 	{
-		assert((0 <= i) && (i < fill_));
+		check((0 <= i) && (i < fill_));
 		i = -i;
 		i += head_;
 		if (i < 0) i += size_;
@@ -103,7 +103,7 @@ public:
 	
 	inline T front(int i = 0) const
 	{
-		assert((0 <= i) && (i < fill_));
+		check((0 <= i) && (i < fill_));
 		i += tail_ + 1;
 		if (i >= size_) i -= size_;
 		return buf_[i];

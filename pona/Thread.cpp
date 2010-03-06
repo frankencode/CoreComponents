@@ -94,7 +94,7 @@ Ref<Thread, ThreadLocalOwner> threadSelf_;
 
 void Thread::enableSignal(int signal)
 {
-	assert(pthread_self() == tid_);
+	check(pthread_self() == tid_);
 	threadSelf_ = this;
 	
 	sigset_t mask;

@@ -6,7 +6,6 @@
  * See ../LICENSE for the license.
  */
 
-#include <assert.h>
 #include "Semaphore.hpp"
 
 namespace pona
@@ -16,7 +15,7 @@ Semaphore::Semaphore(int value)
 	: supply_(value),
 	  demand_(0)
 {
-	assert(value >= 0);
+	check(value >= 0);
 }
 
 void Semaphore::acquire(int amount)

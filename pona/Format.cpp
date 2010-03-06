@@ -62,6 +62,18 @@ Format::Format(UString format)
 		placeHolders_ = new PlaceHolder;
 }
 
+Format::Format(const Format& b)
+	: Super(b.get()),
+	  placeHolders_(b.placeHolders_)
+{}
+
+Format& Format::operator=(const Format& b)
+{
+	set(b.get());
+	placeHolders_ = b.placeHolders_;
+	return *this;
+}
+
 Ref<Format::PlaceHolder, Owner> Format::nextPlaceHolder()
 {
 	Ref<PlaceHolder, Owner> ph = placeHolders_;

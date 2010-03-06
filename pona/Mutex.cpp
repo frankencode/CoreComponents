@@ -1,26 +1,9 @@
-/*
- * CoreMutex.cpp -- non-recursive mutex lock
- *
- * Copyright (c) 2007-2010, Frank Mertens
- *
- * See ../LICENSE for the license.
- */
-
-#if 0 // __GNUC__ > 3
-
-#else // __GNUC__ > 3
-
-#include <pthread.h>
-#ifndef EBUSY
-#include <errno.h>
-#endif
-#include "Exception.hpp"
-#include "CoreMutex.hpp"
+#include "Mutex.hpp"
 
 namespace pona
 {
 
-CoreMutex::CoreMutex()
+Mutex::Mutex()
 {
 	pthread_mutexattr_t* pattr = 0;
 	int ret;
@@ -44,14 +27,14 @@ CoreMutex::CoreMutex()
 	#endif
 }
 
-CoreMutex::~CoreMutex()
+Mutex::~Mutex()
 {
 	int ret = pthread_mutex_destroy(&mutex_);
 	if (ret != 0)
 		PONA_PTHREAD_EXCEPTION("pthread_mutex_destroy", ret);
 }
 
-bool CoreMutex::tryAcquire()
+bool Mutex::tryAcquire()
 {
 	int ret = -1;
 	while (true) {
@@ -63,7 +46,7 @@ bool CoreMutex::tryAcquire()
 	return ret != EBUSY;
 }
 
-void CoreMutex::acquire()
+void Mutex::acquire()
 {
 	int ret = -1;
 	while (true) {
@@ -74,7 +57,7 @@ void CoreMutex::acquire()
 		PONA_PTHREAD_EXCEPTION("pthread_mutex_lock", ret);
 }
 
-void CoreMutex::release()
+void Mutex::release()
 {
 	int ret = pthread_mutex_unlock(&mutex_);
 	if (ret != 0)
@@ -82,5 +65,3 @@ void CoreMutex::release()
 }
 
 } // namespace pona
-
-#endif // __GNUC__ > 3

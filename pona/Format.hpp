@@ -26,6 +26,9 @@ public:
 	
 	Format(UString format = "");
 	
+	Format(const Format& b);
+	Format& operator=(const Format& b);
+	
 	inline Format& print(UString s) { get()->insert(nextPlaceHolder()->j_, s); return *this; }
 	inline Format& print(const char* s) { return print(UString(s)); }
 	

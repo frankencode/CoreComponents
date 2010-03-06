@@ -44,7 +44,7 @@ void UString::assign(Ref<UStringList> parts, const char* glue)
 				p += glueSize;
 			}
 		}
-		assert(p == media()->data() + size);
+		check(p == media()->data() + size);
 	}
 	else {
 		set(new Media);
@@ -61,7 +61,7 @@ UString UString::deepCopy() const
 UString::Index UString::find(const Index& index, const char* pattern) const
 {
 	if (!index.valid() || media()->empty()) return Index();
-	assert(index.data() == media()->data());
+	check(index.data() == media()->data());
 	const char* t = index.pos(); // text pos
 	const char* m = pattern; // match pos
 	while ((*t) && (*m)) {
@@ -194,13 +194,6 @@ UString UString::stripTrailingSpace() const
 		--n;
 	}
 	return UString(*this, 0, n);
-}
-
-uint32_t UString::crc32() const
-{
-	Crc32 crc;
-	crc.feed(media()->data(), media()->size());
-	return crc.sum();
 }
 
 } // namespace pona

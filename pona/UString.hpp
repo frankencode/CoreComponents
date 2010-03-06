@@ -1,9 +1,7 @@
 #ifndef PONA_USTRING_HPP
 #define PONA_USTRING_HPP
 
-#include <assert.h>
 #include "atoms"
-#include "Stream.hpp" // StreamIoException
 #include "UStringIndex.hpp"
 #include "Array.hpp"
 #include "List.hpp"
@@ -33,7 +31,7 @@ public:
 	
 	// initialize string with defined size and defined content
 	explicit UString(int size, char zero): Super(new Media(size, zero)) {
-		assert((0 <= zero) && (zero <= 127));
+		check((0 <= zero) && (zero <= 127));
 	}
 	
 	// initialize string by deep-copying an UTF8 encoded string
@@ -103,13 +101,13 @@ public:
 	inline Index eoi() const { return media()->empty() ? Index() : Index(media()->data(), media()->data() + media()->size()); }
 	
 	inline bool def(const Index& index) const {
-		assert(!media()->empty());
-		assert(index.data() == media()->data());
+		check(!media()->empty());
+		check(index.data() == media()->data());
 		return index.valid();
 	}
 	inline uchar_t get(const Index& index) const {
-		assert(!media()->empty());
-		assert(index.data() == media()->data());
+		check(!media()->empty());
+		check(index.data() == media()->data());
 		return index.getChar();
 	}
 	inline uchar_t operator[](const Index& index) { return get(index); }
@@ -144,8 +142,6 @@ public:
 	UString toUpper() const;
 	UString stripLeadingSpace() const;
 	UString stripTrailingSpace() const;
-	
-	uint32_t crc32() const;
 	
 private:
 	// validate input string and throw StreamIoException if not a valid UTF8 string

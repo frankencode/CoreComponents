@@ -6,6 +6,7 @@
  * See ../LICENSE for the license.
  */
 
+#include "strings.hpp"
 #include "Crc32.hpp"
 
 namespace pona
@@ -33,14 +34,12 @@ void Crc32::reset(uint32_t seed)
 	crc_ = seed;
 }
 
-void Crc32::feed(void* buf, int bufSize)
+void Crc32::feed(const void* buf, int bufSize)
 {
 	uint32_t crc = crc_;
 	for (int i = 0; i < bufSize; ++i)
-		crc = crcTable_[(crc ^ ((uint8_t*)buf)[i]) & 0xFF] ^ (crc >> 8);
+		crc = crcTable_[(crc ^ reinterpret_cast<const uint8_t*>(buf)[i]) & 0xFF] ^ (crc >> 8);
 	crc_ = crc;
 }
-
-uint32_t Crc32::sum() const { return crc_; }
 
 } // namespace pona

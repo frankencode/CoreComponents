@@ -1,5 +1,5 @@
 /*
- * GlobalMutex.hpp -- process-vide spin mutex
+ * GlobalSpinMutex.hpp -- process-vide spin mutex
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -9,13 +9,13 @@
 #define PONA_GLOBALMUTEX_HPP
 
 #include "Instance.hpp"
-#include "CoreMutex.hpp"
+#include "SpinMutex.hpp"
 #include "Ref.hpp"
 
 namespace pona
 {
 
-class GlobalMutex;
+class GlobalSpinMutex;
 
 class GlobalSpinMutexInitializer
 {
@@ -27,16 +27,16 @@ private:
 
 namespace { GlobalSpinMutexInitializer globalSpinMutexInitializer; }
 
-class GlobalMutex: public Instance, public CoreMutex
+class GlobalSpinMutex: public Instance, public SpinMutex
 {
 public:
-	static Ref<GlobalMutex> instance();
+	static Ref<GlobalSpinMutex> instance();
 	
 private:
-	GlobalMutex() {}
+	GlobalSpinMutex() {}
 };
 
-inline Ref<GlobalMutex> globalSpinMutex() { return GlobalMutex::instance(); }
+inline Ref<GlobalSpinMutex> globalSpinMutex() { return GlobalSpinMutex::instance(); }
 
 } // namespace pona
 

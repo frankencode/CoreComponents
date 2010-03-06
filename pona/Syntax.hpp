@@ -422,7 +422,7 @@ public:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			assert(!next_);
+			check(!next_);
 			
 			Ref<Token, Owner> token;
 			if (tokenFactory) {

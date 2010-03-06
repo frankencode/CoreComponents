@@ -6,6 +6,7 @@
  * See ../LICENSE for the license.
  */
 
+#include "types.hpp"
 #include "Stream.hpp"
 
 namespace pona
