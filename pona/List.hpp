@@ -10,6 +10,7 @@
 
 #include <new>
 #include "atoms"
+#include "Array.hpp"
 #include "Sequence.hpp"
 #include "ListObserver.hpp"
 

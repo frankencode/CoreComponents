@@ -37,7 +37,7 @@ void Condition::wait(Mutex* mutex)
 {
 	int ret = -1;
 	while (true) {
-		ret = pthread_cond_wait(&cond_, &mutex->mutex_);
+		ret = pthread_cond_wait(&cond_, &mutex->Mutex::mutex_);
 		if (ret != EINTR) break;
 	}
 	if (ret != 0)
@@ -56,7 +56,7 @@ bool Condition::waitUntil(Mutex* mutex, Time timeout)
 	ts.tv_nsec = timeout.nsec();
 	int ret = -1;
 	while (true) {
-		ret = pthread_cond_timedwait(&cond_, &mutex->mutex_, &ts);
+		ret = pthread_cond_timedwait(&cond_, &mutex->Mutex::mutex_, &ts);
 		if (ret != EINTR) break;
 	}
 	if (ret != 0) {

@@ -10,7 +10,6 @@
 #include <sys/socket.h>
 #include <unistd.h> // gethostname
 #include <netdb.h> // getaddrinfo, freeaddrinfo, getnameinfo
-#include <string.h> // memset, memcpy
 #include <errno.h>
 
 #include "Format.hpp"
@@ -146,7 +145,7 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(UString hostName, UString s
 	addrinfo hint;
 	addrinfo* head = 0;
 	
-	memset(&hint, 0, sizeof(hint));
+	pona::bzero(&hint, sizeof(hint));
 	hint.ai_flags = (canonicalName) ? AI_CANONNAME : 0;
 	if ((hostName == "*") || (hostName == ""))
 		hint.ai_flags |= AI_PASSIVE;

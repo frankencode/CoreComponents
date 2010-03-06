@@ -10,7 +10,6 @@
 
 #include "atoms"
 #include "defaults.hpp"
-#include "Stream.hpp"
 
 namespace pona
 {

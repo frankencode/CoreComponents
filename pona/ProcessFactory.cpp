@@ -283,7 +283,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 		PONA_SYSTEM_EXCEPTION;
 	}
 	
-	assert(0 == 1);
+	check(0 == 1);
 	return 0;
 }
 

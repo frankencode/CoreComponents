@@ -6,7 +6,6 @@
  * See ../LICENSE for the license.
  */
 
-#include <assert.h>
 #include "Tree.hpp"
 
 namespace pona
@@ -27,7 +26,7 @@ void Tree::insertChild(Ref<Node> node, Ref<Node> previousSibling)
 	if (node->parent_)
 		unlink();
 	if (previousSibling) {
-		assert(previousSibling->parent_ == this);
+		check(previousSibling->parent_ == this);
 		node->nextSibling_ = previousSibling->nextSibling_;
 		node->previousSibling_ = previousSibling;
 		previousSibling->nextSibling_ = node;

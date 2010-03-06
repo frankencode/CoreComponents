@@ -1,7 +1,7 @@
 #ifndef PONA_LOCALSTATIC_HPP
 #define PONA_LOCALSTATIC_HPP
 
-#include "GlobalMutex.hpp"
+#include "GlobalSpinMutex.hpp"
 #include "Mutex.hpp"
 #include "ScopeGuard.hpp"
 #include "Guard.hpp"
@@ -21,7 +21,7 @@ class LocalStatic
 public:
 	static T& instance()
 	{
-		Guard<CoreMutex> guard1(globalSpinMutex());
+		Guard<SpinMutex> guard1(globalSpinMutex());
 		static Mutex mutex_;
 		guard1.dismiss();
 		ScopeGuard<Mutex> guard2(&mutex_);

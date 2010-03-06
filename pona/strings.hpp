@@ -8,7 +8,7 @@
 #ifndef PONA_STRINGS_HPP
 #define PONA_STRINGS_HPP
 
-#include <assert.h>
+#include "Exception.hpp"
 
 namespace pona
 {
@@ -16,9 +16,14 @@ namespace pona
 template<class T>
 inline void bzero(T* s)
 {
-	char* cp = (char*)s;
-	for (unsigned i = 0; i < sizeof(T); ++i, ++cp)
-		*cp = 0;
+	char* sc = reinterpret_cast<char*>(s);
+	for (unsigned i = 0; i < sizeof(T); ++i) sc[i] = 0;
+}
+
+inline void bzero(void* p, int len)
+{
+	char* sc = reinterpret_cast<char*>(p);
+	for (int i = 0; i < len; ++i) sc[i] = 0;
 }
 
 template<class T>
@@ -92,7 +97,7 @@ T* strcat(const T* s0, const T* s1 = 0, const T* s2 = 0, const T* s3 = 0, const 
 				c[j++] = si[k++];
 		}
 	}
-	assert(j == len);
+	check(j == len);
 	return c;
 }
 

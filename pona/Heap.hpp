@@ -52,7 +52,7 @@ public:
 
 	inline void push(T e)
 	{
-		assert(fill_ < size_);
+		check(fill_ < size_);
 		buf_[fill_] = e;
 		++fill_;
 		passUpLast();
@@ -60,7 +60,7 @@ public:
 
 	inline T pop()
 	{
-		assert(fill_ > 0);
+		check(fill_ > 0);
 		T e = buf_[0];
 		--fill_;
 		buf_[0] = buf_[fill_];

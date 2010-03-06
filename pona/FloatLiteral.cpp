@@ -6,7 +6,7 @@
  * See ../LICENSE for the license.
  */
 
-#include <math.h>
+#include <math.h> // pow
 #include "FloatLiteral.hpp"
 
 namespace pona

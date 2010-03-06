@@ -9,7 +9,6 @@
 #include <sys/wait.h> // waitpid
 #include <sys/stat.h> // umask
 #include <errno.h> // errno
-#include <string.h> // memset
 #include <unistd.h> // chdir, readlink
 #include <stdlib.h> // getenv, setenv, free
 #include <time.h> // nanosleep
@@ -20,7 +19,6 @@
 #endif
 #ifdef __MACH__
 #include <mach-o/dyld.h> // _NSGetExecutablePath
-#include <string.h> // memset
 #endif
 #include "Process.hpp"
 
@@ -130,7 +128,7 @@ UString Process::execPath()
 	ssize_t bufSize = 1024;
 	while (true) {
 		char* buf = (char*)pona::malloc(bufSize + 1);
-		::memset(buf, 0, bufSize + 1);
+		pona::bzero(buf, bufSize + 1);
 		ssize_t ret = ::readlink(lnPath, buf, bufSize);
 		if (ret == -1)
 			PONA_SYSTEM_EXCEPTION;
@@ -148,7 +146,7 @@ UString Process::execPath()
 	uint32_t bufSize = 0;
 	_NSGetExecutablePath(buf, &bufSize);
 	buf = (char*)pona::malloc(bufSize + 1);
-	::memset(buf, 0, bufSize + 1);
+	pona::bzero(buf, bufSize + 1);
 	_NSGetExecutablePath(buf, &bufSize);
 	path = buf;
 	pona::free(buf);

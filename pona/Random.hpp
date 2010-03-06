@@ -32,8 +32,8 @@ public:
 	/** Return a random number in range [a, b].
 	  */
 	inline int get(int a, int b) {
-		assert(b <= m_ - 1);
-		assert(a <= b);
+		check(b <= m_ - 1);
+		check(a <= b);
 		return (uint64_t(get()) * (b - a)) / (m_ - 1) + a;
 	}
 	

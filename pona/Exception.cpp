@@ -7,8 +7,7 @@
  */
 
 #include <errno.h>
-#include <string.h> // memcpy
-#include <assert.h>
+#include <string.h> // strerror_r
 #include "types.hpp"
 #include "strings.hpp"
 #include "Exception.hpp"
@@ -78,13 +77,13 @@ char* systemError(int errorCode)
 	const char* unknown = "Unknown error";
 	const int bufSize = 1024; // HACK, save bet
 	char buf[bufSize];
-	::memcpy(buf, unknown, pona::strlen(unknown) + 1);
+	pona::memcpy(buf, unknown, pona::strlen(unknown) + 1);
 	return pona::strdup(::strerror_r(errorCode, buf, bufSize));
 #else
 	const char* unknown = "Unknown error";
 	const int bufSize = 1024;
 	char* buf = new char[bufSize];
-	::memcpy(buf, unknown, pona::strlen(unknown) + 1);
+	pona::memcpy(buf, unknown, pona::strlen(unknown) + 1);
 	/*int ret = */::strerror_r(errorCode, buf, bufSize);
 	return buf;
 #endif

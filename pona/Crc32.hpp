@@ -19,13 +19,19 @@ public:
 	Crc32(uint32_t seed = ~0);
 	void reset(uint32_t seed = ~0);
 	
-	void feed(void* buf, int bufSize);
-	uint32_t sum() const;
- 
+	void feed(const void* buf, int bufSize);
+	inline uint32_t sum() const { return crc_; }
+	
 private:
    uint32_t crcTable_[256];
    uint32_t crc_;
 };
+
+inline uint32_t crc32(const void* buf, int bufSize) {
+	Crc32 crc;
+	crc.feed(buf, bufSize);
+	return crc.sum();
+}
 
 } // namespace pona
 

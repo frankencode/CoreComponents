@@ -7,7 +7,6 @@
  */
 
 #include <errno.h>
-#include <string.h> // memset
 #include "FileLock.hpp"
 
 namespace pona
@@ -16,7 +15,7 @@ namespace pona
 FileLock::FileLock(Ref<File> file, int type, off_t start, off_t length)
 	: fd_(file->fd())
 {
-	::memset(static_cast<FLockStruct*>(this), 0, sizeof(FLockStruct));
+	pona::bzero(static_cast<FLockStruct*>(this));
 	FLockStruct::l_type = type;
 	FLockStruct::l_start = start;
 	FLockStruct::l_len = length;

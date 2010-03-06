@@ -9,7 +9,7 @@
 #define PONA_EXCEPTION_HPP
 
 #include <exception>
-#include <errno.h>
+#include <errno.h> // EBUSY, errno
 
 namespace pona
 {
@@ -79,6 +79,14 @@ public:
 	throw PthreadException(__FILE__, __LINE__, "PthreadException", pthreadError(callName, errorCode), errorCode)
 
 PONA_EXCEPTION(RefException, Exception);
+PONA_EXCEPTION(DebugException, Exception);
+
+inline void check(bool condition, const char* reason = "") {
+	#ifndef NDEBUG
+	if (!condition)
+		PONA_THROW(DebugException, reason);
+	#endif
+}
 
 } // namespace pona
 

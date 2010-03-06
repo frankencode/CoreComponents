@@ -8,7 +8,7 @@
 #ifndef PONA_THREAD
 #define PONA_THREAD
 
-#include "GlobalMutex.hpp"
+#include "GlobalSpinMutex.hpp"
 #include "LocalStatic.hpp"
 #include "ThreadLocalOwner.hpp"
 #include "ThreadLocalSingleton.hpp"

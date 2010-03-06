@@ -2,7 +2,6 @@
 #define PONA_USTRINGINDEX_HPP
 
 #include <stdint.h>
-#include <assert.h>
 
 namespace pona
 {
@@ -30,7 +29,7 @@ public:
 	
 	// decode unicode point
 	inline uint32_t getChar() const {
-		assert(valid());
+		check(valid());
 		// merging extra bytes by incrementally reducing the code prefix of the first byte
 		// prefix bits => extra bytes: (110)2 => 1 eb, (1110)2 => 2 eb, (11110)2 => 3 eb
 		uint32_t ch = *p_;

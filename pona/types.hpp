@@ -9,8 +9,8 @@
 #define PONA_TYPES_HPP
 
 #include <sys/types.h> // ssize_t, etc.
-#include <assert.h> // design HACK, pona should support its own assertions
 #include <stdint.h> // (u)int8_t .. (u)int64_t
+#include "Exception.hpp"
 
 typedef float float32_t;
 typedef double float64_t;
@@ -45,7 +45,7 @@ template<class B, class A>
 inline B union_cast(A a)
 {
 	union Bimorph { A a; B b; };
-	assert(sizeof(A) == sizeof(B));
+	check(sizeof(A) == sizeof(B));
 	Bimorph morph;
 	morph.a = a;
 	return morph.b;

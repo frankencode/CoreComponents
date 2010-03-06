@@ -10,7 +10,7 @@
 
 #include "defaults.hpp"
 #include "Exception.hpp"
-#include "CoreMutex.hpp"
+#include "SpinMutex.hpp"
 
 namespace pona
 {
@@ -27,7 +27,7 @@ public:
 	BackRef* succ_;
 	void** instance_;
 	#ifdef PONA_REF_THREADSAFE_SET
-	CoreMutex spinMutex_;
+	SpinMutex mutex_;
 	#endif
 };
 
@@ -50,20 +50,20 @@ public:
 			PONA_THROW(ReferenceException, "Deleting object, which is still in use");
 		}
 		if (backRefList_) {
-			spinMutex_.acquire();
+			mutex_.acquire();
 			BackRef* ref = backRefList_;
 			while (ref) {
 				#ifdef PONA_REF_THREADSAFE_SET
-				ref->spinMutex_.acquire();
+				ref->mutex_.acquire();
 				#endif
 				*ref->instance_ = 0;
 				#ifdef PONA_REF_THREADSAFE_SET
-				ref->spinMutex_.release();
+				ref->mutex_.release();
 				#endif
 				ref = ref->succ_;
 			}
 			backRefList_ = 0;
-			spinMutex_.release();
+			mutex_.release();
 		}
 	}
 	
@@ -71,55 +71,55 @@ public:
 	
 	inline void incRefCount()
 	{
-		spinMutex_.acquire();
+		mutex_.acquire();
 		refCount_ += (refCount_ >= 0);
-		spinMutex_.release();
+		mutex_.release();
 	}
 	
 	inline void decRefCount()
 	{
-		spinMutex_.acquire();
+		mutex_.acquire();
 		refCount_ -= (refCount_ >= 0);
 		if (refCount_ == 0) {
-			spinMutex_.release();
+			mutex_.release();
 			delete this;
 		}
 		else
-			spinMutex_.release();
+			mutex_.release();
 	}
 	
 	inline void liberate() { refCount_ = -1; }
 
 	inline void addBackRef(BackRef* ref)
 	{
-		spinMutex_.acquire();
+		mutex_.acquire();
 		ref->succ_ = backRefList_;
 		ref->pred_ = 0;
 		if (backRefList_)
 			backRefList_->pred_ = ref;
 		backRefList_ = ref;
-		spinMutex_.release();
+		mutex_.release();
 	}
 	
 	inline void delBackRef(BackRef* ref)
 	{
-		spinMutex_.acquire();
+		mutex_.acquire();
 		if (ref->pred_)
 			ref->pred_->succ_ = ref->succ_;
 		if (ref->succ_)
 			ref->succ_->pred_ = ref->pred_;
 		if (ref == backRefList_)
 			backRefList_ = backRefList_->succ_;
-		spinMutex_.release();
+		mutex_.release();
 	}
 	
-	inline CoreMutex* const spinMutex() { return &spinMutex_; }
+	inline SpinMutex* const mutex() { return &mutex_; }
 	
 	Instance(const Instance& b) {}
 	inline const Instance& operator=(const Instance& b) { return *this; }
 	
 private:
-	CoreMutex spinMutex_;
+	SpinMutex mutex_;
 	int refCount_;
 	BackRef* backRefList_;
 };

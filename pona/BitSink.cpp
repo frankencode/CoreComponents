@@ -6,7 +6,7 @@
  * See ../LICENSE for the license.
  */
 
-#include <string.h>
+#include "strings.hpp"
 #include "BitSink.hpp"
 
 namespace pona
@@ -21,7 +21,7 @@ BitSink::BitSink(Ref<Stream> stream, int bufCapacity, int endian)
 	  iBit_(0),
 	  nw_(0)
 {
-	::memset(buf_, 0, bufCapacity_);
+	pona::bzero(buf_, bufCapacity_);
 }
 
 BitSink::BitSink(void* buf, int bufCapacity, int endian)
@@ -33,7 +33,7 @@ BitSink::BitSink(void* buf, int bufCapacity, int endian)
 	  iBit_(0),
 	  nw_(0)
 {
-	::memset(buf_, 0, bufCapacity_);
+	pona::bzero(buf_, bufCapacity_);
 }
 
 BitSink::~BitSink()
@@ -55,7 +55,7 @@ void BitSink::flush()
 	if (h > 0)
 	{
 		stream_->write((void*)buf_, h);
-		::memset((void*)buf_, 0, h);
+		pona::bzero((void*)buf_, h);
 		nw_ += h;
 		i_ = 0;
 		iBit_ = 0;

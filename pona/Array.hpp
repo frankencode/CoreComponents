@@ -67,13 +67,13 @@ public:
 	
 	inline T get(int i) const {
 		if (i < 0) i += size_;
-		assert(def(i));
+		check(def(i));
 		return data_[i];
 	}
 	
 	inline void set(int i, const T& e) {
 		if (i < 0) i += size_;
-		assert(def(i));
+		check(def(i));
 		data_[i] = e;
 	}
 	
@@ -86,13 +86,13 @@ public:
 	
 	inline T* pointerAt(int i) const {
 		if (i < 0) i += size_;
-		assert(def(i));
+		check(def(i));
 		return data_ + i;
 	}
 	
 	inline T& at(int i) const {
 		if (i < 0) i += size_;
-		assert(def(i));
+		check(def(i));
 		return data_[i];
 	}
 	
