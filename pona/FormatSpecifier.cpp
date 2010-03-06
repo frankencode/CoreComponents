@@ -6,7 +6,7 @@
  * See ../LICENSE for the license.
  */
 
-#include "UString.hpp"
+#include "String.hpp"
 #include "FormatSpecifier.hpp"
 
 namespace pona
@@ -72,12 +72,12 @@ FormatSpecifier::FormatSpecifier()
 	LINK();
 }
 
-bool FormatSpecifier::find(Ref<UString::Media> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, char* blank)
+bool FormatSpecifier::find(Ref<String::Media> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, char* blank)
 {
 	Ref<Token, Owner> rootToken = 0;
 	
 	uint8_t buf[sizeof(Token) * 36 /* 5 times each path(7) + root(1) */];
-	bool found =  Syntax<UString::Media>::Definition::find(text, i0, i1, &rootToken, buf, sizeof(buf));
+	bool found =  Syntax<String::Media>::Definition::find(text, i0, i1, &rootToken, buf, sizeof(buf));
 	
 	if (found)
 	{
@@ -85,7 +85,7 @@ bool FormatSpecifier::find(Ref<UString::Media> text, int* i0, int* i1, int* w, i
 		
 		while (token)
 		{
-			UString value(text, token->index(), token->length());
+			String value(text, token->index(), token->length());
 			
 			if (token->ruleId() == width_->id())
 			{

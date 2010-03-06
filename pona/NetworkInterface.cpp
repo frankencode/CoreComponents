@@ -43,7 +43,7 @@ NetworkInterface::NetworkInterface()
 	  mtu_(0)
 {}
 
-UString NetworkInterface::name() const { return name_; }
+String NetworkInterface::name() const { return name_; }
 int NetworkInterface::index() const { return index_; }
 unsigned NetworkInterface::type() const { return type_; }
 unsigned NetworkInterface::flags() const { return flags_; }
@@ -357,13 +357,13 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 	Ref<LineSource, Owner> source = new LineSource(file);
 	while (true) {
 		bool eoi = false;
-		UString line = source->readLine(&eoi);
+		String line = source->readLine(&eoi);
 		if (eoi) break;
 		if (line.contains(":")) {
 			Ref<NetworkInterface, Owner> interface = new NetworkInterface;
 			list->append(interface);
 			Ref<UStringList, Owner> parts = line.split(":");
-			UString name = parts->get(0).stripLeadingSpace();
+			String name = parts->get(0).stripLeadingSpace();
 			interface->name_ = name;
 			
 			{
@@ -520,7 +520,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 				if (addr->sdl_family == AF_LINK) { // paranoid check
 					interface->type_ = addr->sdl_type;
 					if (addr->sdl_nlen > 0)
-						interface->name_ = UString(addr->sdl_data, addr->sdl_nlen);
+						interface->name_ = String(addr->sdl_data, addr->sdl_nlen);
 					if (addr->sdl_alen > 0) {
 						// strange fact: hardware address always stored in little endian
 						unsigned char* value = (unsigned char*)addr->sdl_data + addr->sdl_nlen;

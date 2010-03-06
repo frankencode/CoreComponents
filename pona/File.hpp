@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "atoms"
-#include "UString.hpp"
+#include "String.hpp"
 #include "SystemStream.hpp"
 #include "FileStatus.hpp"
 
@@ -69,11 +69,11 @@ public:
 		StandardError  = 2
 	};
 	
-	File(UString path, int openFlags = 0);
+	File(String path, int openFlags = 0);
 	File(int fd);
 	
-	UString path() const;
-	UString name() const;
+	String path() const;
+	String name() const;
 	int openFlags() const;
 	
 	bool access(int flags) const;
@@ -98,7 +98,7 @@ public:
 	void dataSync();
 	
 private:
-	UString path_;
+	String path_;
 	int openFlags_;
 };
 

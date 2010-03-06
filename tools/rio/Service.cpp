@@ -64,7 +64,7 @@ void Service::serve(Ref<StreamSocket> socket)
 	
 	socket->closeOnExec();
 	
-	UString entity;
+	String entity;
 	
 	if (options()->files_->length() > 0)
 	{
@@ -93,7 +93,7 @@ void Service::cleanup()
 		connectLog_->writeLine(address(), "Stop listening");
 }
 
-Ref<Process, Owner> Service::exec(UString entity)
+Ref<Process, Owner> Service::exec(String entity)
 {
 	if (!bool(options()->quiet_))
 		printTo(error(), "(%%) Executing '%%'\n", options()->execName(), entity);
@@ -109,7 +109,7 @@ Ref<Process, Owner> Service::exec(UString entity)
 		}
 	}
 	if ((entity.split("/"))->length() == 1) {
-		UString s = Path::lookup(Process::env("PATH").split(":"), entity);
+		String s = Path::lookup(Process::env("PATH").split(":"), entity);
 		if (s != "") entity = s;
 	}
 	factory->setExecPath(entity);
@@ -117,7 +117,7 @@ Ref<Process, Owner> Service::exec(UString entity)
 	return factory->produce();
 }
 
-void Service::canonSession(Ref<StreamSocket> socket, UString entity)
+void Service::canonSession(Ref<StreamSocket> socket, String entity)
 {
 	Ref<SystemStream, Owner> recvSink;
 	Ref<SystemStream, Owner> sendSource;
@@ -149,7 +149,7 @@ void Service::canonSession(Ref<StreamSocket> socket, UString entity)
 			Ref<LineSink, Owner> lineSink = new LineSink(socket, options()->ioUnit_, options()->eol_.toString());
 			bool eoi = false;
 			while (true) {
-				UString line = lineSource->readLine(&eoi);
+				String line = lineSource->readLine(&eoi);
 				if (eoi) break;
 				if (sendLog)
 					sendLog->writeLine(line);
@@ -200,7 +200,7 @@ void Service::canonSession(Ref<StreamSocket> socket, UString entity)
 	}
 }
 
-void Service::binarySession(Ref<StreamSocket> socket, UString entity)
+void Service::binarySession(Ref<StreamSocket> socket, String entity)
 {
 	struct termios tioSaved;
 	

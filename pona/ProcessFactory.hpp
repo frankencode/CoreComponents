@@ -25,11 +25,11 @@ public:
 	int ioPolicy() const;
 	void setIoPolicy(int flags);
 	
-	UString workingDirectory();
-	void setWorkingDirectory(UString path);
+	String workingDirectory();
+	void setWorkingDirectory(String path);
 	
-	UString execPath() const;
-	void setExecPath(UString path);
+	String execPath() const;
+	void setExecPath(String path);
 	
 	Ref<UStringList> options();
 	void setOptions(Ref<UStringList> list);
@@ -62,9 +62,9 @@ protected:
 private:
 	int type_;
 	int ioPolicy_;
-	UString workingDirectory_;
+	String workingDirectory_;
 	
-	UString execPath_;
+	String execPath_;
 	Ref<UStringList, Owner> options_;
 	Ref<EnvMap, Owner> envMap_;
 	

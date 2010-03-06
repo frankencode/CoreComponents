@@ -4,16 +4,16 @@
 #include "IntegerLiteral.hpp"
 #include "FloatLiteral.hpp"
 #include "Variant.hpp"
-#include "UString.hpp"
+#include "String.hpp"
 
 namespace pona
 {
 
-UString::UString(const Variant& b)
+String::String(const Variant& b)
 	: Super(b.toInstance<Media>())
 {}
 
-void UString::validate(const char* data, int size)
+void String::validate(const char* data, int size)
 {
 	if (size < 0) size = pona::strlen(data);
 	if (size > 0) {
@@ -23,7 +23,7 @@ void UString::validate(const char* data, int size)
 	}
 }
 
-void UString::assign(Ref<UStringList> parts, const char* glue)
+void String::assign(Ref<UStringList> parts, const char* glue)
 {
 	int glueSize = pona::strlen(glue);
 	validate(glue, glueSize);
@@ -36,7 +36,7 @@ void UString::assign(Ref<UStringList> parts, const char* glue)
 		set(new Media(size));
 		char* p = media()->data();
 		for (int i = 0; i < ni; ++i) {
-			UString part = parts->get(i);
+			String part = parts->get(i);
 			pona::memcpy(p, part->data(), part->size());
 			p += part->size();
 			if (i < ni - 1) {
@@ -51,14 +51,14 @@ void UString::assign(Ref<UStringList> parts, const char* glue)
 	}
 }
 
-UString UString::deepCopy() const
+String String::deepCopy() const
 {
-	UString b;
+	String b;
 	b.Super::set(new Media(media()->data(), media()->size()));
 	return b;
 }
 
-UString::Index UString::find(const Index& index, const char* pattern) const
+String::Index String::find(const Index& index, const char* pattern) const
 {
 	if (!index.valid() || media()->empty()) return Index();
 	check(index.data() == media()->data());
@@ -74,7 +74,7 @@ UString::Index UString::find(const Index& index, const char* pattern) const
 	return (*m) ? Index() : Index(media()->data(), t - (m - pattern));
 }
 
-Ref<UStringList, Owner> UString::split(const char* pattern) const
+Ref<UStringList, Owner> String::split(const char* pattern) const
 {
 	Ref<UStringList, Owner> parts = new UStringList;
 	Index index0 = first();
@@ -82,17 +82,17 @@ Ref<UStringList, Owner> UString::split(const char* pattern) const
 	while (index0.valid()) {
 		Index index1 = find(index0, pattern);
 		if (!index1.valid()) break;
-		parts->append(UString(index0, index1));
+		parts->append(String(index0, index1));
 		index0 = Index(media()->data(), index1.pos() + patternSize);
 	}
 	if (index0.valid())
-		parts->append(UString(index0, eoi()));
+		parts->append(String(index0, eoi()));
 	else
-		parts->append(UString());
+		parts->append(String());
 	return parts;
 }
 
-int UString::toInt(bool* ok)
+int String::toInt(bool* ok)
 {
 	bool h;
 	if (!ok) ok = &h;
@@ -108,12 +108,12 @@ int UString::toInt(bool* ok)
 	return sign * int(value);
 }
 
-double UString::toFloat(bool* ok)
+double String::toFloat(bool* ok)
 {
 	return toFloat64(ok);
 }
 
-int64_t UString::toInt64(bool* ok)
+int64_t String::toInt64(bool* ok)
 {
 	uint64_t value = 0;
 	int sign = 0;
@@ -129,7 +129,7 @@ int64_t UString::toInt64(bool* ok)
 	return sign * value;
 }
 
-uint64_t UString::toUInt64(bool* ok)
+uint64_t String::toUInt64(bool* ok)
 {
 	uint64_t value = 0;
 	int sign = 0;
@@ -145,7 +145,7 @@ uint64_t UString::toUInt64(bool* ok)
 	return value;
 }
 
-float64_t UString::toFloat64(bool* ok)
+float64_t String::toFloat64(bool* ok)
 {
 	float64_t value = 0.;
 	int i1 = 0;
@@ -160,40 +160,40 @@ float64_t UString::toFloat64(bool* ok)
 	return value;
 }
 
-UString UString::toLower() const
+String String::toLower() const
 {
-	UString s2(media()->size());
+	String s2(media()->size());
 	for (int i = 0, n = media()->size(); i < n; ++i)
 		s2->set(i, pona::toLower((*this)->at(i)));
 	return s2;
 }
 
-UString UString::toUpper() const
+String String::toUpper() const
 {
-	UString s2(media()->size());
+	String s2(media()->size());
 	for (int i = 0, n = media()->size(); i < n; ++i)
 		s2->set(i, pona::toUpper((*this)->at(i)));
 	return s2;
 }
 
-UString UString::stripLeadingSpace() const
+String String::stripLeadingSpace() const
 {
 	int n = media()->size();
 	while (n > 0) {
 		if (!pona::isSpace((*this)->at(-n))) break;
 		--n;
 	}
-	return UString(*this, media()->size() - n, n);
+	return String(*this, media()->size() - n, n);
 }
 
-UString UString::stripTrailingSpace() const
+String String::stripTrailingSpace() const
 {
 	int n = media()->size();
 	while (n > 0) {
 		if (!pona::isSpace((*this)->at(n - 1))) break;
 		--n;
 	}
-	return UString(*this, 0, n);
+	return String(*this, 0, n);
 }
 
 } // namespace pona

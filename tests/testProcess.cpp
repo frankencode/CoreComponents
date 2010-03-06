@@ -87,11 +87,11 @@ int echo(int argc, char** argv)
 	print("Process::env(\"Hello\") = \"%%\"\n", Process::env("Hello"));
 	Process::setEnv("Hello", "Echo");
 	print("Process::env(\"Hello\") = \"%%\"\n", Process::env("Hello"));
-	print("commandLine = \"%%\"\n", UString(commandLine));
+	print("commandLine = \"%%\"\n", String(commandLine));
 	
 	while (true)
 	{
-		UString line = input()->readLine();
+		String line = input()->readLine();
 		if ((line == "") || (line == "exit"))
 			break;
 		output()->writeLine(line);

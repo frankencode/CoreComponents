@@ -9,7 +9,7 @@
 #define PONA_OPTIONS_HPP
 
 #include "atoms"
-#include "UString.hpp"
+#include "String.hpp"
 #include "Variant.hpp"
 #include "List.hpp"
 #include "Syntax.hpp"
@@ -19,25 +19,25 @@ namespace pona
 
 PONA_EXCEPTION(OptionsException, Exception);
 
-class Options: public Syntax<UString::Media>::Definition
+class Options: public Syntax<String::Media>::Definition
 {
 public:
 	Options();
 	
-	void define(char shortName, UString longName, Ref<Variant> value, UString description = "");
+	void define(char shortName, String longName, Ref<Variant> value, String description = "");
 	Ref<UStringList, Owner> read(int argc, char** argv);
 	
-	UString entity(UString newValue = "");
-	UString synopsis(UString newValue = "");
-	UString summary(UString newValue = "");
-	UString details(UString newValue = "");
-	UString help();
-	UString execPath() const;
-	UString execName() const;
-	UString execDir() const;
+	String entity(String newValue = "");
+	String synopsis(String newValue = "");
+	String summary(String newValue = "");
+	String details(String newValue = "");
+	String help();
+	String execPath() const;
+	String execName() const;
+	String execDir() const;
 	
 private:
-	Ref<UStringList, Owner> read(UString line);
+	Ref<UStringList, Owner> read(String line);
 	
 	RULE longNameRule_;
 	RULE shortNameRule_;
@@ -49,8 +49,8 @@ private:
 	{
 	public:
 		char shortName_;
-		UString longName_;
-		UString description_;
+		String longName_;
+		String description_;
 		int typeMask_;
 		// Variant defaultValue_;
 		Ref<Variant, SetNull> value_;
@@ -58,19 +58,19 @@ private:
 	
 	typedef List< Ref<Option, Owner> > OptionList;
 	Ref<OptionList, Owner> optionList_;
-	UString entity_;
-	UString synopsis_;
-	UString summary_;
-	UString details_;
+	String entity_;
+	String synopsis_;
+	String summary_;
+	String details_;
 	
-	UString execPath_;
-	UString execName_;
-	UString execDir_;
+	String execPath_;
+	String execName_;
+	String execDir_;
 	
 	Ref<Option> optionByShortName(char name) const;
-	Ref<Option> optionByLongName(UString name) const;
-	void readOption(UString line, Ref<Token> token);
-	void readValue(Ref<Option> option, UString line, Ref<Token> token);
+	Ref<Option> optionByLongName(String name) const;
+	void readOption(String line, Ref<Token> token);
+	void readValue(Ref<Option> option, String line, Ref<Token> token);
 	void verifyTypes();
 };
 

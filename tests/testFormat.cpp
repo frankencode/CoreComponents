@@ -8,7 +8,7 @@ namespace pona
 int main()
 {
 	{
-		UString s = Format() << 1 << ',' << " 2, " << 3.3 << ", " << &s;
+		String s = Format() << 1 << ',' << " 2, " << 3.3 << ", " << &s;
 		print("s = \"%%\"\n", s);
 	}
 	{
@@ -27,7 +27,7 @@ int main()
 		};
 		
 		{
-			UString tmpl = "%dec:15:5.:'_'%\n"; // also to be tested: 5.5, 5.e, 10:5. ...etc
+			String tmpl = "%dec:15:5.:'_'%\n"; // also to be tested: 5.5, 5.e, 10:5. ...etc
 			
 			for (int i = 0, n = sizeof(x) / sizeof(x[0]); i < n; ++i)
 				print(Format(tmpl) << x[i]);

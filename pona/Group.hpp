@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <grp.h>
 #include "atoms"
-#include "UString.hpp"
+#include "String.hpp"
 
 namespace pona
 {
@@ -25,14 +25,14 @@ public:
 	inline bool exists() const { return exists_; }
 	
 	inline gid_t id() const { return id_; }
-	inline UString name() const { return name_; }
+	inline String name() const { return name_; }
 	inline Ref<UStringList> members() const { return members_; }
 	
 private:
 	void load(struct group* entry);
 	bool exists_;
 	gid_t id_;
-	UString name_;
+	String name_;
 	Ref<UStringList, Owner> members_;
 };
 

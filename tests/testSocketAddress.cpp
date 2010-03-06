@@ -4,26 +4,26 @@
 namespace pona
 {
 
-UString familyToString(int family)
+String familyToString(int family)
 {
-	UString s("UNKNOWN");
+	String s("UNKNOWN");
 	if (family == AF_INET) s = "INET";
 	else if (family == AF_INET6) s = "INET6";
 	else if (family == AF_UNSPEC) s = "UNSPEC";
 	return s;
 }
 
-UString socketTypeToString(int type)
+String socketTypeToString(int type)
 {
-	UString s("UNKNOWN");
+	String s("UNKNOWN");
 	if (type == SOCK_DGRAM) s = "DGRAM";
 	else if (type == SOCK_STREAM) s = "STREAM";
 	return s;
 }
 
-UString protocolToString(int protocol)
+String protocolToString(int protocol)
 {
-	UString s("UNKNOWN");
+	String s("UNKNOWN");
 	if (protocol == IPPROTO_TCP) s = "TCP";
 	else if (protocol == IPPROTO_UDP) s = "UDP";
 	else s = Format("<%%>") << protocol;
@@ -32,14 +32,14 @@ UString protocolToString(int protocol)
 
 int main(int argc, char** argv)
 {
-	UString hostName = SocketAddress::hostName();
+	String hostName = SocketAddress::hostName();
 
 	if (argc == 2)
 		hostName = argv[1];
 	
 	print("hostName = \"%%\"\n", hostName);
 	
-	UString canonicalName;
+	String canonicalName;
 	Ref<SocketAddressList, Owner> list = SocketAddress::resolve(hostName, "", AF_UNSPEC, SOCK_STREAM, &canonicalName);
 	
 	print("canonicalName = \"%%\"\n", canonicalName);

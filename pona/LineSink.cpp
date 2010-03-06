@@ -24,7 +24,7 @@ LineSink::~LineSink()
 	buf_ = 0;
 }
 
-void LineSink::writeLine(UString line)
+void LineSink::writeLine(String line)
 {
 	int n = line->size();
 	int n2 = eol_->size();
@@ -41,7 +41,7 @@ void LineSink::writeLine(UString line)
 	stream_->write(buf_, n + n2);
 }
 
-void LineSink::write(UString s)
+void LineSink::write(String s)
 {
 	stream_->write(s->data(), s->size());
 }

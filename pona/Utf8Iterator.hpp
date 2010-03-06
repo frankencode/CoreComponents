@@ -1,5 +1,5 @@
-#ifndef PONA_USTRINGINDEX_HPP
-#define PONA_USTRINGINDEX_HPP
+#ifndef PONA_UTF8ITERATOR_HPP
+#define PONA_UTF8ITERATOR_HPP
 
 #include <stdint.h>
 
@@ -8,18 +8,18 @@ namespace pona
 
 /** \brief Iterating UTF8 encoded strings
   *
-  * The UStringIndex allows iterating UTF8 strings efficiently.
+  * The Utf8Iterator allows iterating UTF8 strings efficiently.
   * Use with care! Strings must be zero terminated and therefore can't contain
   * zeros itself. Behavior is undefined for strings encoded with a different
   * encoding than UTF8.
   */
-class UStringIndex
+class Utf8Iterator
 {
 public:
 	// Initialize new iterator
 	// \arg data utf8 encoded string
 	// \arg pos position in string
-	UStringIndex(const char* data = 0, const char* pos = 0)
+	Utf8Iterator(const char* data = 0, const char* pos = 0)
 		: s_(reinterpret_cast<const uint8_t*>(data)),
 		  p_(reinterpret_cast<const uint8_t*>((pos == 0) ? data : pos)),
 		  valid_(p_ != 0)
@@ -49,7 +49,7 @@ public:
 	}
 	
 	// prefix increment
-	inline UStringIndex& operator++() {
+	inline Utf8Iterator& operator++() {
 		// step forwards consuming all prefix bits of first byte
 		uint8_t ch = *p_;
 		++p_;
@@ -66,7 +66,7 @@ public:
 	}
 	
 	// prefix decrement
-	inline UStringIndex& operator--() {
+	inline Utf8Iterator& operator--() {
 		// step backwards while code prefix equals (10)2
 		if (p_ <= s_) valid_ = false;
 		else {
@@ -80,26 +80,26 @@ public:
 	}
 	
 	// postfix increment
-	inline UStringIndex operator++(int) {
-		UStringIndex it = *this;
+	inline Utf8Iterator operator++(int) {
+		Utf8Iterator it = *this;
 		++(*this);
 		return it;
 	}
 	
 	// postfix decrement
-	inline UStringIndex operator--(int) {
-		UStringIndex it = *this;
+	inline Utf8Iterator operator--(int) {
+		Utf8Iterator it = *this;
 		--(*this);
 		return it;
 	}
 	
-	inline UStringIndex& operator+=(int n) {
+	inline Utf8Iterator& operator+=(int n) {
 		while (n > 0) { ++(*this); --n; }
 		while (n < 0) { --(*this); ++n; }
 		return *this;
 	}
 	
-	inline UStringIndex& operator-=(int n) {
+	inline Utf8Iterator& operator-=(int n) {
 		while (n > 0) { --(*this); --n; }
 		while (n < 0) { ++(*this); ++n; }
 		return *this;
@@ -117,13 +117,13 @@ public:
 	inline bool hasPrevious() const { return s_ < p_; }
 	inline uint32_t previous() { return (--(*this)).getChar(); }
 	
-	inline UStringIndex operator+(int b) {
-		UStringIndex c = *this;
+	inline Utf8Iterator operator+(int b) {
+		Utf8Iterator c = *this;
 		c += b;
 		return c;
 	}
-	inline UStringIndex operator-(int b) {
-		UStringIndex c = *this;
+	inline Utf8Iterator operator-(int b) {
+		Utf8Iterator c = *this;
 		c -= b;
 		return c;
 	}
@@ -139,4 +139,4 @@ private:
 
 } // namespace pona
 
-#endif // PONA_USTRINGINDEX_HPP
+#endif // PONA_UTF8ITERATOR_HPP

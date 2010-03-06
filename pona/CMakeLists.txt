@@ -21,6 +21,7 @@ SET(PONA_HEADER
 	ByteSource.hpp
 	Utf8Sink.hpp
 	Utf8Source.hpp
+	Utf8Iterator.hpp
 	BitSink.hpp
 	BitSource.hpp
 	Crc32.hpp
@@ -49,8 +50,7 @@ SET(PONA_HEADER
 	SyntaxSugar.hpp
 	
 	strings
-	UStringIndex.hpp
-	UString.hpp
+	String.hpp
 	IntegerLiteral.hpp
 	FloatLiteral.hpp
 	FormatSpecifier.hpp
@@ -139,7 +139,7 @@ SET(PONA_SOURCE
 	Token.cpp
 	
 	# strings
-	UString.cpp
+	String.cpp
 	IntegerLiteral.cpp
 	FloatLiteral.cpp
 	FormatSpecifier.cpp

@@ -14,8 +14,8 @@ namespace rio
 LineForwarder::LineForwarder(
 	Ref<SystemStream> source,
 	Ref<SystemStream> sink,
-	UString sourceEol,
-	UString sinkEol,
+	String sourceEol,
+	String sinkEol,
 	Ref<LogFile> recvLog,
 	Ref<Event> cancelEvent
 )
@@ -56,7 +56,7 @@ void LineForwarder::run()
 				bool eoi = false;
 				lineSource_->readAvail(&eoi);
 				while (lineSource_->cachedLines() > 0) {
-					UString line = lineSource_->readLine();
+					String line = lineSource_->readLine();
 					if (recvLog_) recvLog_->writeLine(line);
 					lineSink_->writeLine(line);
 				}

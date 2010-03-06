@@ -9,7 +9,7 @@
 #define PONA_FORMAT_HPP
 
 #include "atoms"
-#include "UString.hpp"
+#include "String.hpp"
 #include "Variant.hpp"
 #include "Rounding.hpp"
 #include "Stack.hpp"
@@ -24,15 +24,15 @@ class Format: public Ref<UStringList, Owner>
 public:
 	typedef Ref<UStringList, Owner> Super;
 	
-	Format(UString format = "");
+	Format(String format = "");
 	
 	Format(const Format& b);
 	Format& operator=(const Format& b);
 	
-	inline Format& print(UString s) { get()->insert(nextPlaceHolder()->j_, s); return *this; }
-	inline Format& print(const char* s) { return print(UString(s)); }
+	inline Format& print(String s) { get()->insert(nextPlaceHolder()->j_, s); return *this; }
+	inline Format& print(const char* s) { return print(String(s)); }
 	
-	inline Format& print(char ch) { get()->insert(nextPlaceHolder()->j_, UString(&ch, 1)); return *this; }
+	inline Format& print(char ch) { get()->insert(nextPlaceHolder()->j_, String(&ch, 1)); return *this; }
 	
 	inline Format& print(uint8_t x) { printInt(x); return *this; }
 	inline Format& print(uint16_t x) { printInt(x); return *this; }

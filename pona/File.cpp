@@ -17,7 +17,7 @@
 namespace pona
 {
 
-File::File(UString path, int openFlags)
+File::File(String path, int openFlags)
 	: SystemStream(-1),
 	  path_(path),
 	  openFlags_(0)
@@ -40,12 +40,12 @@ File::File(int fd)
 		PONA_THROW(StreamSemanticException, "Invalid argument");
 }
 
-UString File::path() const
+String File::path() const
 {
 	return path_;
 }
 
-UString File::name() const
+String File::name() const
 {
 	const char sep = '/';
 	
@@ -59,9 +59,9 @@ UString File::name() const
 		--i;
 	}
 	
-	UString name;
+	String name;
 	if (i < n)
-		name = UString(path_, i, n - i);
+		name = String(path_, i, n - i);
 	
 	return name;
 }
@@ -99,7 +99,7 @@ void File::createUnique(int mode, char placeHolder)
 {
 	Random random;
 	while (true) {
-		UString pathSaved = path_.deepCopy();
+		String pathSaved = path_.deepCopy();
 		for (int i = 0, n = path_->size(); i < n; ++i) {
 			if (path_->at(i) == placeHolder) {
 				char r = random.get(0, 61);
@@ -139,10 +139,10 @@ void File::truncate(off_t length)
 
 class UnlinkFile: public Action {
 public:
-	UnlinkFile(UString path): path_(Path(path).makeAbsolute()) {}
+	UnlinkFile(String path): path_(Path(path).makeAbsolute()) {}
 	void run() { File(path_).unlink(); }
 private:
-	UString path_;
+	String path_;
 };
 
 void File::unlinkOnExit()

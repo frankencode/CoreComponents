@@ -54,15 +54,15 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	else if (processStatus_ == SZOMB) processStatus_ = 'Z';
 	pona::free(proc);
 #else
-	UString path = Format("/proc/%%/stat") << processId;
+	String path = Format("/proc/%%/stat") << processId;
 	Ref<File, Owner> file = new File(path);
 	file->open(File::Read);
 	Ref<LineSource, Owner> source = new LineSource(file);
-	UString line = source->readLine();
+	String line = source->readLine();
 	{
 		// extract command name first, because it may contain whitespace
 		int i0 = line->find('(') + 1, i1 = line->find(')');
-		commandName_ = UString(line, i0, i1 - i0);
+		commandName_ = String(line, i0, i1 - i0);
 		for (int i = i0; i < i1; ++i)
 			line->set(i, 'x');
 	}
@@ -93,9 +93,9 @@ pid_t ProcessStatus::processId() const { return processId_; }
 pid_t ProcessStatus::parentProcessId() const { return parentProcessId_; }
 gid_t ProcessStatus::processGroupId() const { return processGroupId_; }
 gid_t ProcessStatus::foregroundProcessGroupId() const { return foregroundProcessGroupId_; }
-// UString ProcessStatus::terminalName() const { return terminalName_; }
-UString ProcessStatus::loginName() const { return loginName_; }
-UString ProcessStatus::commandName() const { return commandName_; }
+// String ProcessStatus::terminalName() const { return terminalName_; }
+String ProcessStatus::loginName() const { return loginName_; }
+String ProcessStatus::commandName() const { return commandName_; }
 char ProcessStatus::processStatus() const { return processStatus_; }
 
 } // namespace pona

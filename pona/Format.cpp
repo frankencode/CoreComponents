@@ -14,7 +14,7 @@
 namespace pona
 {
 
-Format::Format(UString format)
+Format::Format(String format)
 	: Super(new UStringList)
 {
 	Ref<PlaceHolder> lastPlaceHolder;
@@ -32,9 +32,9 @@ Format::Format(UString format)
 			if (!specifier->find(format, &i0, &i1, &ph->w_, &ph->wi_, &ph->wf_, &ph->base_, &ph->exp_, &ph->blank_)) break;
 			
 			if (i0 != i0Saved)
-				get()->append(UString(format, i0Saved, i0 - i0Saved));
+				get()->append(String(format, i0Saved, i0 - i0Saved));
 			else
-				get()->append(UString());
+				get()->append(String());
 			
 			ph->j_ = get()->length() + nph;
 			ph->check();
@@ -49,7 +49,7 @@ Format::Format(UString format)
 			i0Saved = i0;
 		}
 		if (i0Saved < format->size())
-			get()->append(UString(format, i0Saved, format->size() - i0Saved));
+			get()->append(String(format, i0Saved, format->size() - i0Saved));
 	}
 	else if (!format->empty()) {
 		get()->append(format);
@@ -95,7 +95,7 @@ Format& Format::print(const Variant& x)
 	else if (x.type() == Variant::FloatType)
 		print(double(x));
 	else if (x.type() == Variant::StringType)
-		print(UString(x));
+		print(String(x));
 	else if (x.type() == Variant::RefType)
 		print(Ref<>(x).get());
 	return *this;
@@ -129,7 +129,7 @@ void Format::printInt(uint64_t x, int sign)
 	if (wi < digits.fill()) wi = digits.fill();
 	if (w < wi) w = wi;
 	
-	UString text(w, ph->blank_);
+	String text(w, ph->blank_);
 	int i = 0;
 	
 	int wb = 0; // width of blank
@@ -168,13 +168,13 @@ void Format::printFloat(float64_t x)
 	int e = int((xi << 1) >> 53); // exponent
 	int s = int(xi >> 63); // sign
 	
-	UString text;
+	String text;
 	int i = 0;
 	
 	if ((e == 0x7FF) && (f != 0)) // NaN
 	{
 		if (w < 3) w = 3;
-		text = UString(w, ph->blank_);
+		text = String(w, ph->blank_);
 		int wb = w - 3;
 		if (wb > 0)
 			i += wb;
@@ -187,7 +187,7 @@ void Format::printFloat(float64_t x)
 	else if ((e == 0x7FF) && (f == 0)) // infinite
 	{
 		if (w < 3 + s) w = 3 + s;
-		text = UString(w, ph->blank_);
+		text = String(w, ph->blank_);
 		int wb = w - 3 - s;
 		if (wb > 0)
 			i += wb;
@@ -261,7 +261,7 @@ void Format::printFloat(float64_t x)
 		int h = wi + int(wf != 0) + wf + int(ne != 0) * (1 + int(eba < 0) + ne);
 		if (w < h) w = h; // w too small
 		
-		text = UString(w, ph->blank_);
+		text = String(w, ph->blank_);
 		
 		int wb = wi - ni - s;
 		if (wb > 0) i += wb;
@@ -298,7 +298,7 @@ void Format::printFloat(float64_t x)
 	}
 	else // if ((e == 0) && (f == 0)) // zero
 	{
-		text = UString(w, ph->blank_);
+		text = String(w, ph->blank_);
 		text->set(i + wi - 1, '0');
 	}
 	

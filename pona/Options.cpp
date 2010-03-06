@@ -137,7 +137,7 @@ Options::Options()
 	LINK();
 }
 
-void Options::define(char shortName, UString longName, Ref<Variant> value, UString description)
+void Options::define(char shortName, String longName, Ref<Variant> value, String description)
 {
 	Ref<Option> option = new Option;
 	option->shortName_ = shortName;
@@ -162,7 +162,7 @@ Ref<Options::Option> Options::optionByShortName(char name) const
 	return option;
 }
 
-Ref<Options::Option> Options::optionByLongName(UString name) const
+Ref<Options::Option> Options::optionByLongName(String name) const
 {
 	Ref<Option> option;
 	for (int i = 0, n = optionList_->length(); i < n; ++i) {
@@ -182,26 +182,26 @@ Ref<UStringList, Owner> Options::read(int argc, char** argv)
 	execDir_ = Path(execPath_).reduce().makeAbsolute();
 	Ref<UStringList, Owner> line = new UStringList;
 	for (int i = 1; i < argc; ++i) {
-		line->append(UString(argv[i]));
+		line->append(String(argv[i]));
 		if (i != argc - 1)
-			line->append(UString(" "));
+			line->append(String(" "));
 	}
 	return read(line);
 }
 
-UString stripQuotes(UString s)
+String stripQuotes(String s)
 {
 	if (s->size() > 0) {
 		if ( ((s->at(0) == '"') || (s->at(0) == '\'')) &&
 			 (s->at(s->size() - 1) == s->at(0)) )
 		{
-			s = UString(s, 1, s->size() - 2);
+			s = String(s, 1, s->size() - 2);
 		}
 	}
 	return s;
 }
 
-Ref<UStringList, Owner> Options::read(UString line)
+Ref<UStringList, Owner> Options::read(String line)
 {
 	int i0 = 0, i1 = -1;
 	Ref<Token, Owner> rootToken;
@@ -221,7 +221,7 @@ Ref<UStringList, Owner> Options::read(UString line)
 	
 	Ref<UStringList, Owner> files = new UStringList;
 	while (token) {
-		files->append(stripQuotes(UString(line, token->index(), token->length())));
+		files->append(stripQuotes(String(line, token->index(), token->length())));
 		token = token->nextSibling();
 	}
 	
@@ -242,7 +242,7 @@ void Options::verifyTypes()
 	}
 }
 
-void Options::readOption(UString line, Ref<Token> token)
+void Options::readOption(String line, Ref<Token> token)
 {
 	token = token->firstChild();
 	
@@ -253,7 +253,7 @@ void Options::readOption(UString line, Ref<Token> token)
 			char name = line->at(token->index());
 			Ref<Option> option = optionByShortName(name);
 			if (!option)
-				PONA_THROW(OptionsException, pona::strdup(UString(Format("Unsupported option: '-%%'") << name)->data()));
+				PONA_THROW(OptionsException, pona::strdup(String(Format("Unsupported option: '-%%'") << name)->data()));
 			
 			token = token->nextSibling();
 			if (token) {
@@ -272,10 +272,10 @@ void Options::readOption(UString line, Ref<Token> token)
 	}
 	else if (token->ruleId() == longNameRule_->id())
 	{
-		UString name(line, token->index(), token->length());
+		String name(line, token->index(), token->length());
 		Ref<Option> option = optionByLongName(name);
 		if (!option)
-			PONA_THROW(OptionsException, pona::strdup(UString(Format("Unsupported option: '--%%'") << name)->data()));
+			PONA_THROW(OptionsException, pona::strdup(String(Format("Unsupported option: '--%%'") << name)->data()));
 		
 		token = token->nextSibling();
 		if (!token)
@@ -285,9 +285,9 @@ void Options::readOption(UString line, Ref<Token> token)
 	}
 }
 
-void Options::readValue(Ref<Option> option, UString line, Ref<Token> token)
+void Options::readValue(Ref<Option> option, String line, Ref<Token> token)
 {
-	UString s = stripQuotes(UString(line, token->index(), token->length()));
+	String s = stripQuotes(String(line, token->index(), token->length()));
 	Ref<Variant> value = option->value_;
 	
 	if (value->type() == Variant::StringType) {
@@ -321,36 +321,36 @@ void Options::readValue(Ref<Option> option, UString line, Ref<Token> token)
 	}
 }
 
-UString Options::entity(UString newValue)
+String Options::entity(String newValue)
 {
 	if (newValue != "") entity_ = newValue;
 	return newValue;
 }
 
-UString Options::synopsis(UString newValue)
+String Options::synopsis(String newValue)
 {
 	if (newValue != "") synopsis_ = newValue;
 	return newValue;
 }
 
-UString Options::summary(UString newValue)
+String Options::summary(String newValue)
 {
 	if (newValue != "") summary_ = newValue;
 	return newValue;
 }
 
-UString Options::details(UString newValue)
+String Options::details(String newValue)
 {
 	if (newValue != "") details_ = newValue;
 	return newValue;
 }
 
-UString Options::help()
+String Options::help()
 {
 	if (synopsis_ == "")
 		synopsis_ = Format() << execName_ << " [OPTION]... [" << entity_ << "]...";
 	
-	UString options;
+	String options;
 	{
 		Ref<UStringList, Owner> lines = new UStringList;
 		int maxLength = 0;
@@ -373,19 +373,19 @@ UString Options::help()
 			}
 			if (option->shortName_)
 				format << '-' << option->shortName_;
-			UString line(format);
+			String line(format);
 			if (line->size() > maxLength) maxLength = line->size();
 			lines->append(line);
 		}
 		
-		UString indent(maxLength + 2, ' ');
+		String indent(maxLength + 2, ' ');
 		
 		for (int i = 0; i < optionList_->length(); ++i) {
 			Ref<Option> option = optionList_->get(i);
 			Ref<UStringList, Owner> line = new UStringList;
 			line->append(lines->get(i));
 			if (lines->get(i)->size() < indent->size())
-				line->append(UString(indent->size() - lines->get(i)->size(), ' '));
+				line->append(String(indent->size() - lines->get(i)->size(), ' '));
 			line->append(option->description_);
 			line->append("\n");
 			lines->set(i, line);
@@ -409,8 +409,8 @@ UString Options::help()
 	return text;
 }
 
-UString Options::execPath() const { return execPath_; }
-UString Options::execName() const { return execName_; }
-UString Options::execDir() const { return execDir_; }
+String Options::execPath() const { return execPath_; }
+String Options::execName() const { return execName_; }
+String Options::execDir() const { return execDir_; }
 
 } // namespace pona

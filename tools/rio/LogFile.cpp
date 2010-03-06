@@ -19,13 +19,13 @@ LogFile::LogFile(Ref<SocketAddress> address, int type, Time t0, Ref<LogFile> mer
 {
 	if ((options()->loggingFlags_ & type) != 0)
 	{
-		UString addressString = address->addressString();
+		String addressString = address->addressString();
 		addressString->replace('.', '-');
 		
 		const char* names[] = {"connect", "recv", "send", "merged", "echo" };
 		int typeIndex = 0; while (type > 1) { type /= 2; ++typeIndex; }
 		
-		UString path = Format("%%/%%_%%_%%_%%.log")
+		String path = Format("%%/%%_%%_%%_%%.log")
 			<< options()->logDir_
 			<< t0.ms()
 			<< addressString
@@ -39,9 +39,9 @@ LogFile::LogFile(Ref<SocketAddress> address, int type, Time t0, Ref<LogFile> mer
 	}
 }
 
-void LogFile::writeLine(Ref<SocketAddress> address, UString data)
+void LogFile::writeLine(Ref<SocketAddress> address, String data)
 {
-	UString line = data;
+	String line = data;
 	
 	if (type_ == Connect) {
 		line = Format("%%: %%: %%:%%")
@@ -73,7 +73,7 @@ void LogFile::writeLine(Ref<SocketAddress> address, UString data)
 	}
 }
 
-void LogFile::writeLine(UString data)
+void LogFile::writeLine(String data)
 {
 	writeLine(address_, data);
 }
