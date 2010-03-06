@@ -46,7 +46,7 @@ public:
 					if (lineSource_->cachedLines() > 0)
 						print("\r\033[K");
 					while (lineSource_->cachedLines() > 0) {
-						UString line = lineSource_->readLine();
+						String line = lineSource_->readLine();
 						output()->writeLine(line);
 					}
 					if (eoi || done_) break;

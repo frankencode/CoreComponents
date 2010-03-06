@@ -11,7 +11,7 @@
 #include <sys/types.h> // pid_t
 #include <signal.h> // SIGTERM, etc.
 #include "atoms"
-#include "UString.hpp"
+#include "String.hpp"
 #include "Map.hpp"
 #include "SystemStream.hpp"
 #include "LineSink.hpp"
@@ -23,7 +23,7 @@ namespace pona
 
 class ProcessFactory;
 
-typedef Map<UString, UString> EnvMap;
+typedef Map<String, String> EnvMap;
 
 class Process: public Instance
 {
@@ -69,9 +69,9 @@ public:
 	
 	// -- querying the current process status
 	
-	static void cd(UString path);
-	static UString cwd();
-	static UString execPath();
+	static void cd(String path);
+	static String cwd();
+	static String execPath();
 	
 	static mode_t setFileCreationMask(mode_t mask);
 	
@@ -81,9 +81,9 @@ public:
 	static gid_t effectiveGroupId();
 	static bool isSuperUser();
 	
-	static UString env(UString key);
-	static void setEnv(UString key, UString value);
-	static void unsetEnv(UString key);
+	static String env(String key);
+	static void setEnv(String key, String value);
+	static void unsetEnv(String key);
 	
 	static Ref<EnvMap, Owner> envMap();
 	

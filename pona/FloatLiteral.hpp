@@ -13,12 +13,12 @@
 namespace pona
 {
 
-class FloatLiteral: public Syntax<UString::Media>::Definition
+class FloatLiteral: public Syntax<String::Media>::Definition
 {
 public:
 	FloatLiteral();
-	bool match(Ref<UString::Media> text, int i0, int* i1, float64_t* value);
-	float64_t read(Ref<UString::Media> text, Ref<Token> token) const;
+	bool match(Ref<String::Media> text, int i0, int* i1, float64_t* value);
+	float64_t read(Ref<String::Media> text, Ref<Token> token) const;
 	
 private:
 	RULE sign_;

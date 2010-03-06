@@ -13,12 +13,12 @@
 namespace pona
 {
 
-class IntegerLiteral: public Syntax<UString::Media>::Definition
+class IntegerLiteral: public Syntax<String::Media>::Definition
 {
 public:
 	IntegerLiteral();
-	bool match(Ref<UString::Media> text, int i0, int* i1, uint64_t* value, int* sign);
-	void read(Ref<UString::Media> text, Ref<Token> rootToken, uint64_t* value, int* sign) const;
+	bool match(Ref<String::Media> text, int i0, int* i1, uint64_t* value, int* sign);
+	void read(Ref<String::Media> text, Ref<Token> rootToken, uint64_t* value, int* sign) const;
 	
 private:
 	RULE sign_;

@@ -10,7 +10,7 @@ const int mapLength = 256;
 class CloneFactory: public ProcessFactory
 {
 public:
-	CloneFactory(UString path)
+	CloneFactory(String path)
 		: path_(path)
 	{}
 	
@@ -31,7 +31,7 @@ public:
 	}
 	
 private:
-	UString path_;
+	String path_;
 };
 
 int main()
@@ -51,7 +51,7 @@ int main()
 	print("(parent) mapping file and writing message... \n");
 	{
 		MemoryMapping mapping(&file, 0, mapLength);
-		UString message = "Hello, clone!";
+		String message = "Hello, clone!";
 		pona::memcpy(reinterpret_cast<char*>(mapping.start()), message->data(), message->size());
 	}
 	

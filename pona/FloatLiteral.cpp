@@ -59,12 +59,12 @@ FloatLiteral::FloatLiteral()
 	LINK();
 }
 
-bool FloatLiteral::match(Ref<UString::Media> text, int i0, int* i1, float64_t* value)
+bool FloatLiteral::match(Ref<String::Media> text, int i0, int* i1, float64_t* value)
 {
 	Ref<Token, Owner> rootToken;
 	uint8_t buf[sizeof(Token) * 7];
 	
-	bool conform = Syntax<UString::Media>::Definition::match(text, i0, i1, &rootToken, 0, buf, sizeof(buf));
+	bool conform = Syntax<String::Media>::Definition::match(text, i0, i1, &rootToken, 0, buf, sizeof(buf));
 	
 	if (conform)
 		*value = read(text, rootToken);
@@ -72,7 +72,7 @@ bool FloatLiteral::match(Ref<UString::Media> text, int i0, int* i1, float64_t* v
 	return conform;
 }
 
-float64_t FloatLiteral::read(Ref<UString::Media> text, Ref<Token> rootToken) const
+float64_t FloatLiteral::read(Ref<String::Media> text, Ref<Token> rootToken) const
 {
 	float64_t value;
 	

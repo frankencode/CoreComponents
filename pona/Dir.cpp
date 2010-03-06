@@ -17,7 +17,7 @@
 namespace pona
 {
 
-Dir::Dir(UString path)
+Dir::Dir(String path)
 	: path_(Path(path).makeAbsolute()),
 	  dir_(0)
 {}
@@ -27,7 +27,7 @@ Dir::~Dir()
 	if (isOpen()) close();
 }
 
-UString Dir::path() const { return path_; }
+String Dir::path() const { return path_; }
 
 bool Dir::access(int flags) { return File(path_).access(flags); }
 

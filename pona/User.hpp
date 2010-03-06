@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include "atoms"
-#include "UString.hpp"
+#include "String.hpp"
 
 namespace pona
 {
@@ -26,10 +26,10 @@ public:
 	
 	inline uid_t id() const { return id_; }
 	inline gid_t groupId() const { return groupId_; }
-	inline UString loginName() const { return loginName_; }
-	inline UString fullName() const { return fullName_; }
-	inline UString home() const { return home_; }
-	inline UString shell() const { return shell_; }
+	inline String loginName() const { return loginName_; }
+	inline String fullName() const { return fullName_; }
+	inline String home() const { return home_; }
+	inline String shell() const { return shell_; }
 	
 	// inline static isSuperUser
 	
@@ -38,10 +38,10 @@ private:
 	bool exists_;
 	uid_t id_;
 	gid_t groupId_;
-	UString loginName_;
-	UString fullName_;
-	UString home_;
-	UString shell_;
+	String loginName_;
+	String fullName_;
+	String home_;
+	String shell_;
 };
 
 } // namespace pona

@@ -11,7 +11,7 @@
 #include "atoms"
 #include "defaults.hpp"
 #include "Queue.hpp"
-#include "UString.hpp"
+#include "String.hpp"
 
 namespace pona
 {
@@ -22,7 +22,7 @@ public:
 	LineSource(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, const char* eol = "\n");
 	~LineSource();
 	
-	UString readLine(bool* eoi = 0);
+	String readLine(bool* eoi = 0);
 	
 	int cachedLines() const;
 	void readAvail(bool* eoi);
@@ -31,7 +31,7 @@ public:
 	
 private:
 	Ref<Stream, Owner> stream_;
-	UString eol_;
+	String eol_;
 	int cachedLines_;
 	Queue<char> cache_;
 	int bufCapa_;

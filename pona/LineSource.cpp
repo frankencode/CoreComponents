@@ -26,7 +26,7 @@ LineSource::~LineSource()
 	buf_ = 0;
 }
 
-UString LineSource::readLine(bool* eoi)
+String LineSource::readLine(bool* eoi)
 {
 	bool h;
 	if (!eoi) eoi = &h;
@@ -36,7 +36,7 @@ UString LineSource::readLine(bool* eoi)
 		readAvail(eoi);
 	
 	if (*eoi)
-		return UString();
+		return String();
 	
 	int nk = eol_->size();
 	int k = 0;
@@ -51,7 +51,7 @@ UString LineSource::readLine(bool* eoi)
 
 	--cachedLines_;
 	
-	return UString(buf_, i - nk);
+	return String(buf_, i - nk);
 }
 
 int LineSource::cachedLines() const

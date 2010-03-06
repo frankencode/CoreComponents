@@ -67,7 +67,7 @@ void Options::read(int argc, char** argv)
 		else if (modeSum > 1)
 			PONA_THROW(Exception, "Contradicting option (--server or --client).");
 		
-		UString eol = eol_;
+		String eol = eol_;
 		if (eol == "nl") { eol_ = "\012"; }
 		else if (eol == "crlf") eol_ = "\015\012";
 		
@@ -81,9 +81,9 @@ void Options::read(int argc, char** argv)
 		}
 		
 		loggingFlags_ = 0;
-		Ref<UStringList, Owner> logs = UString(options()->logging_).split(",");
+		Ref<UStringList, Owner> logs = String(options()->logging_).split(",");
 		for (int i = 0; i < logs->length(); ++i) {
-			UString log = logs->get(i);
+			String log = logs->get(i);
 			if (log == "");
 			else if (log == "connect") loggingFlags_ |= LogFile::Connect;
 			else if (log == "recv") loggingFlags_ |= LogFile::Recv;
@@ -100,7 +100,7 @@ void Options::read(int argc, char** argv)
 
 Ref<SocketAddress, Owner> Options::address() const
 {
-	Ref<SocketAddressList, Owner> choice = SocketAddress::resolve(UString(host_), Format("%%") << int(port_), bool(inet6_) ? AF_INET6 : AF_UNSPEC, SOCK_STREAM);
+	Ref<SocketAddressList, Owner> choice = SocketAddress::resolve(String(host_), Format("%%") << int(port_), bool(inet6_) ? AF_INET6 : AF_UNSPEC, SOCK_STREAM);
 	return choice->first();
 }
 

@@ -3,7 +3,7 @@
 
 #include <sys/types.h>
 #include "atoms"
-#include "UString.hpp"
+#include "String.hpp"
 
 namespace pona
 {
@@ -17,9 +17,9 @@ public:
 	pid_t parentProcessId() const;
 	gid_t processGroupId() const;
 	gid_t foregroundProcessGroupId() const;
-	// UString terminalName() const;
-	UString loginName() const;
-	UString commandName() const;
+	// String terminalName() const;
+	String loginName() const;
+	String commandName() const;
 	char processStatus() const;
 	
 private:
@@ -27,9 +27,9 @@ private:
 	pid_t parentProcessId_;
 	gid_t processGroupId_;
 	gid_t foregroundProcessGroupId_;
-	// UString terminalName_;
-	UString loginName_;
-	UString commandName_;
+	// String terminalName_;
+	String loginName_;
+	String commandName_;
 	char processStatus_;
 };
 

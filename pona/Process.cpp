@@ -93,13 +93,13 @@ int Process::wait()
 	return status;
 }
 
-void Process::cd(UString path)
+void Process::cd(String path)
 {
 	if (::chdir(path) == -1)
 		PONA_SYSTEM_EXCEPTION;
 }
 
-UString Process::cwd()
+String Process::cwd()
 {
 	int size = 0x1000;
 	char* buf = (char*)pona::malloc(size);
@@ -115,16 +115,16 @@ UString Process::cwd()
 		else
 			PONA_SYSTEM_EXCEPTION;
 	}
-	UString path(ret);
+	String path(ret);
 	pona::free(buf);
 	return path;
 }
 
-UString Process::execPath()
+String Process::execPath()
 {
-	UString path;
+	String path;
 	#ifdef __linux
-	UString lnPath = UString(Format("/proc/%%/exe") << currentProcessId());
+	String lnPath = String(Format("/proc/%%/exe") << currentProcessId());
 	ssize_t bufSize = 1024;
 	while (true) {
 		char* buf = (char*)pona::malloc(bufSize + 1);
@@ -163,18 +163,18 @@ gid_t Process::effectiveGroupId() { return ::getegid(); }
 
 bool Process::isSuperUser() { return (::geteuid() == 0) || (::getegid() == 0); }
 
-UString Process::env(UString key)
+String Process::env(String key)
 {
 	return getenv(key);
 }
 
-void Process::setEnv(UString key, UString value)
+void Process::setEnv(String key, String value)
 {
 	if (setenv(key, value, 1) == -1)
 		PONA_SYSTEM_EXCEPTION;
 }
 
-void Process::unsetEnv(UString key)
+void Process::unsetEnv(String key)
 {
 	errno = 0;
 	unsetenv(key);
@@ -188,7 +188,7 @@ Ref<EnvMap, Owner> Process::envMap()
 	Ref<EnvMap, Owner> map = new EnvMap;
 	int i = 0;
 	while (env[i] != 0) {
-		Ref<UStringList, Owner> parts = UString(env[i]).split("=");
+		Ref<UStringList, Owner> parts = String(env[i]).split("=");
 		if (parts->length() == 2)
 			map->insert(parts->get(0), parts->get(1));
 		++i;

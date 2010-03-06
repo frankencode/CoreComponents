@@ -38,11 +38,11 @@ void ProcessFactory::setType(int type) { type_ = type; }
 int ProcessFactory::ioPolicy() const { return ioPolicy_; }
 void ProcessFactory::setIoPolicy(int flags) { ioPolicy_ = flags; }
 
-UString ProcessFactory::workingDirectory() { return (workingDirectory_ != "") ? workingDirectory_ : workingDirectory_ = Process::cwd(); }
-void ProcessFactory::setWorkingDirectory(UString path) { workingDirectory_ = path; }
+String ProcessFactory::workingDirectory() { return (workingDirectory_ != "") ? workingDirectory_ : workingDirectory_ = Process::cwd(); }
+void ProcessFactory::setWorkingDirectory(String path) { workingDirectory_ = path; }
 
-UString ProcessFactory::execPath() const { return execPath_; }
-void ProcessFactory::setExecPath(UString path) { execPath_ = path; }
+String ProcessFactory::execPath() const { return execPath_; }
+void ProcessFactory::setExecPath(String path) { execPath_ = path; }
 
 Ref<UStringList> ProcessFactory::options() { return (options_) ? options_ : options_ = new UStringList; }
 void ProcessFactory::setOptions(Ref<UStringList> list) { options_ = list; }
@@ -134,7 +134,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 			}
 		}
 		
-		UString execPathAbsolute = execPath_;
+		String execPathAbsolute = execPath_;
 		if (workingDirectory_ != "") {
 			if (execPath_.contains("/"))
 				execPathAbsolute = Format() << Process::cwd() << "/" << execPath_;
@@ -216,7 +216,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 				envp = new char*[envc + 1];
 
 				for (int i = 0, n = envList->length(); i < n; ++i)
-					envp[i] = pona::strdup(UString(Format() << envList->get(i).key() <<  "=" << envList->get(i).value())->data());
+					envp[i] = pona::strdup(String(Format() << envList->get(i).key() <<  "=" << envList->get(i).value())->data());
 				
 				envp[envc] = 0;
 			}

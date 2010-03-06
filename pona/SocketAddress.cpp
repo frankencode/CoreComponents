@@ -23,7 +23,7 @@ SocketAddress::SocketAddress()
 	  protocol_(0)
 {}
 
-SocketAddress::SocketAddress(int family, UString address, int port)
+SocketAddress::SocketAddress(int family, String address, int port)
 	: socketType_(0),
 	  protocol_(0)
 {
@@ -78,7 +78,7 @@ int SocketAddress::family() const { return addr_.sa_family; }
 int SocketAddress::socketType() const { return socketType_; }
 int SocketAddress::protocol() const { return protocol_; }
 
-UString SocketAddress::addressString() const
+String SocketAddress::addressString() const
 {
 	const int bufSize = INET_ADDRSTRLEN + INET6_ADDRSTRLEN;
 	char buf[bufSize];
@@ -100,7 +100,7 @@ UString SocketAddress::addressString() const
 	return sz;
 }
 
-UString SocketAddress::toString() const
+String SocketAddress::toString() const
 {
 	Format s(addressString());
 	if (port() != 0)
@@ -140,7 +140,7 @@ void SocketAddress::setScope(int scope) {
 	if (addr_.sa_family == AF_INET6) inet6Address_.sin6_scope_id = scope;
 }
 
-Ref<SocketAddressList, Owner> SocketAddress::resolve(UString hostName, UString serviceName, int family, int socketType, UString* canonicalName)
+Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String serviceName, int family, int socketType, String* canonicalName)
 {
 	addrinfo hint;
 	addrinfo* head = 0;
@@ -191,7 +191,7 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(UString hostName, UString s
 	return list;
 }
 
-UString SocketAddress::lookupHostName(bool* failed) const
+String SocketAddress::lookupHostName(bool* failed) const
 {
 	const int hostNameSize = NI_MAXHOST;
 	const int serviceNameSize = NI_MAXSERV;
@@ -213,10 +213,10 @@ UString SocketAddress::lookupHostName(bool* failed) const
 			*failed = false;
 	}
 	
-	return UString(hostName);
+	return String(hostName);
 }
 
-UString SocketAddress::lookupServiceName() const
+String SocketAddress::lookupServiceName() const
 {
 	
 	const int hostNameSize = NI_MAXHOST;
@@ -236,14 +236,14 @@ UString SocketAddress::lookupServiceName() const
 		PONA_THROW(NetworkingException, gai_strerror(ret));
 	}
 	
-	return UString(serviceName);
+	return String(serviceName);
 }
 
-UString SocketAddress::hostName()
+String SocketAddress::hostName()
 {
 	const int bufSize = 1024;
 	char buf[bufSize + 1];
-	UString name;
+	String name;
 	if (gethostname(buf, bufSize) != -1) {
 		buf[bufSize] = 0;
 		name = buf;

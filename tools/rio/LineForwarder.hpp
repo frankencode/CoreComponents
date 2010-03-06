@@ -25,8 +25,8 @@ public:
 	LineForwarder(
 		Ref<SystemStream> source,
 		Ref<SystemStream> sink,
-		UString sourceEol,
-		UString sinkEol,
+		String sourceEol,
+		String sinkEol,
 		Ref<LogFile> recvLog,
 		Ref<Event> cancelEvent
 	);

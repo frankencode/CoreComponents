@@ -12,6 +12,7 @@
 #include "ByteSource.hpp"
 #include "Utf8Sink.hpp"
 #include "Utf8Source.hpp"
+#include "Utf8Iterator.hpp"
 #include "BitSink.hpp"
 #include "BitSource.hpp"
 #include "Crc32.hpp"

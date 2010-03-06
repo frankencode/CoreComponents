@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "atoms"
-#include "UString.hpp"
+#include "String.hpp"
 #include "Time.hpp"
 
 namespace pona
@@ -23,9 +23,9 @@ class FileStatus: public StructStat, public Instance
 {
 public:
 	FileStatus(int fd);
-	FileStatus(UString path);
+	FileStatus(String path);
 	
-	inline UString path() const { return path_; }
+	inline String path() const { return path_; }
 	
 	inline int type() const  { return st_mode & S_IFMT; }
 	inline int mode() const { return st_mode & (~S_IFMT); }
@@ -52,7 +52,7 @@ public:
 	
 private:
 	int fd_;
-	UString path_;
+	String path_;
 	char* pathUtf8_;
 };
 

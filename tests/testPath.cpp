@@ -10,14 +10,14 @@ int main(int argc, char** argv)
 	print("Path(argv[0]).isAbsolute() = %%\n", Path(argv[0]).isAbsolute());
 	print("Path(argv[0]).makeAbsolute() = \"%%\"\n", Path(argv[0]).makeAbsolute());
 	{
-		UString path = Path(argv[0]).makeAbsolute();
+		String path = Path(argv[0]).makeAbsolute();
 		while (path != "/") {
 			path = Path(path).reduce();
 			print("Path(path1).reduce() = \"%%\"\n", path);
 		}
 	}
 	{
-		UString path = argv[0];
+		String path = argv[0];
 		while (path->contains('/')) {
 			path = Path(path).reduce();
 			print("Path(path2).reduce() = \"%%\"\n", path);

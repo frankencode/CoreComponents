@@ -66,13 +66,6 @@ public:
 	inline bool contains(const T& e) const { return find(e) != length_; }
 	int replace(const T& a, const T& b);
 	
-	// inline void insert(int i, List* b) { push(i, b->length_, b); }
-	// inline void append(List* b) { insert(length_, b); }
-	// inline int find(List* b) const { return find(0, length_, b); }
-	// inline int find(int i, List* b) const { return find(i, length_ - i, b); }
-	// inline bool contains(List* b) const { return find(0, length_, b) != length_; }
-	// int replace(List* a, List* b);
-	
 	bool operator<(const List& b) const;
 	bool operator==(const List& b) const;
 	inline bool operator>(const List& b) const { return b < *this; }
@@ -740,19 +733,6 @@ int List<T>::find(int i, int n, List* b) const
 	
 	return i;
 }
-
-/*template<class T>
-int List<T>::replace(List* a, List* b)
-{
-	int i = 0, n = 0;
-	while ((i = find(i, a)) < length_) {
-		pop(i, a->length_);
-		push(i, b->length_, b);
-		i += b->length_;
-		++n;
-	}
-	return n;
-}*/
 
 template<class T>
 bool List<T>::operator<(const List& b_) const

@@ -18,7 +18,7 @@ FileStatus::FileStatus(int fd)
 	update();
 }
 
-FileStatus::FileStatus(UString path)
+FileStatus::FileStatus(String path)
 	: fd_(-1),
 	  path_(path)
 {

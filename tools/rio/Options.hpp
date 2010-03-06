@@ -33,7 +33,7 @@ public:
 	Variant exec_, loop_, repeat_;
 	Ref<UStringList, Owner> files_;
 	
-	UString editorPath_;
+	String editorPath_;
 	int loggingFlags_;
 	
 private:

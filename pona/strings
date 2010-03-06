@@ -1,7 +1,7 @@
 #ifndef PONA_STRING
 #define PONA_STRING
 
-#include "UString.hpp"
+#include "String.hpp"
 #include "Format.hpp"
 #include "Variant.hpp"
 
