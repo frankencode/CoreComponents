@@ -115,9 +115,11 @@ public:
 	
 	inline SpinMutex* const mutex() { return &mutex_; }
 	
+	// ensure back reference lists are kept consistent on copying
+	// (in theory an automomatically synthesized assignment operator in inherited class will invoke this)
 	Instance(const Instance& b) {}
 	inline const Instance& operator=(const Instance& b) { return *this; }
-	
+
 private:
 	SpinMutex mutex_;
 	int refCount_;
