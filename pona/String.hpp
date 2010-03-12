@@ -1,5 +1,5 @@
-#ifndef PONA_USTRING_HPP
-#define PONA_USTRING_HPP
+#ifndef PONA_STRING_HPP
+#define PONA_STRING_HPP
 
 #include "atoms"
 #include "Utf8Iterator.hpp"
@@ -184,4 +184,4 @@ inline bool operator>=(const String& a, char* b) { return pona::strcmp(a->data()
 
 } // namespace pona
 
-#endif // PONA_USTRING_HPP
+#endif // PONA_STRING_HPP
