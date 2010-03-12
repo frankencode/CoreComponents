@@ -21,8 +21,8 @@ class Singleton
 public:
 	static Ref<SubClass> instance()
 	{
-		SpinMutex& mutex = localStatic<SpinMutex, SubClass>();
-		ScopeGuard<SpinMutex> guard(&mutex);
+		CoreMutex& mutex = localStatic<CoreMutex, SubClass>();
+		ScopeGuard<CoreMutex> guard(&mutex);
 		Ref<SubClass, Owner>& instance_ = localStatic<Ref<SubClass, Owner>, SubClass>();
 		if (!instance_)
 			instance_ = new SubClass;

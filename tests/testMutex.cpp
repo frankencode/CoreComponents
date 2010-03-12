@@ -19,7 +19,7 @@ int main()
 		print("Took %% us\n", t.us());
 	}
 	/*{
-		SpinMutex m;
+		CoreMutex m;
 		Time t = now();
 		for (int i = 0; i < n; ++i) {
 			m.acquire();

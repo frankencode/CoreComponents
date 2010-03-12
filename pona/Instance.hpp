@@ -10,7 +10,7 @@
 
 #include "defaults.hpp"
 #include "Exception.hpp"
-#include "SpinMutex.hpp"
+#include "CoreMutex.hpp"
 
 namespace pona
 {
@@ -27,7 +27,7 @@ public:
 	BackRef* succ_;
 	void** instance_;
 	#ifdef PONA_REF_THREADSAFE_SET
-	SpinMutex mutex_;
+	CoreMutex mutex_;
 	#endif
 };
 
@@ -113,7 +113,7 @@ public:
 		mutex_.release();
 	}
 	
-	inline SpinMutex* const mutex() { return &mutex_; }
+	inline CoreMutex* const mutex() { return &mutex_; }
 	
 	// ensure back reference lists are kept consistent on copying
 	// (in theory an automomatically synthesized assignment operator in inherited class will invoke this)
@@ -121,7 +121,7 @@ public:
 	inline const Instance& operator=(const Instance& b) { return *this; }
 
 private:
-	SpinMutex mutex_;
+	CoreMutex mutex_;
 	int refCount_;
 	BackRef* backRefList_;
 };
