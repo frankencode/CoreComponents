@@ -31,7 +31,7 @@ public:
 	
 	// initialize string with defined size and defined content
 	explicit String(int size, char zero): Super(new Media(size, zero)) {
-		check((0 <= zero) && (zero <= 127));
+		check(0 <= zero);
 	}
 	
 	// initialize string by deep-copying an UTF8 encoded string

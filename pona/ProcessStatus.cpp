@@ -45,13 +45,20 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	processStatus_ = proc->kp_proc.p_stat;
 	if (processStatus_ == SIDL) processStatus_ = 'W';
 	else if (processStatus_ == SRUN) processStatus_ = 'R';
-#ifdef __MACH__
+	#ifdef SONPROC
+	else if (processStatus_ == SONPROC) processStatus_ = 'R';
+	#endif
+	#ifdef __MACH__
 	else if (processStatus_ == SSLEEP) processStatus_ = (proc->kp_proc.sigwait) ? 'S' : 'D';
-#else
+	#else
 	else if (processStatus_ == SSLEEP) processStatus_ = 'S';
-#endif
+	#endif
 	else if (processStatus_ == SSTOP) processStatus_ = 'T';
 	else if (processStatus_ == SZOMB) processStatus_ = 'Z';
+	#ifdef SDEAD
+	else if (processStatus_ == SDEAD) processStatus_ = 'Z';
+	#endif
+	else processStatus_ = '?';
 	pona::free(proc);
 #else
 	String path = Format("/proc/%%/stat") << processId;

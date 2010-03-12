@@ -5,7 +5,7 @@ SET(PONA_HEADER
 	types.hpp
 	strings.hpp
 	Exception.hpp
-	SpinMutex.hpp
+	CoreMutex.hpp
 	Instance.hpp
 	Alien.hpp
 	Pointer.hpp
@@ -71,7 +71,7 @@ SET(PONA_HEADER
 	FormatPrint.hpp
 	
 	threads
-	GlobalSpinMutex.hpp
+	GlobalCoreMutex.hpp
 	LocalStatic.hpp
 	ThreadLocalOwner.hpp
 	ThreadLocalSingleton.hpp
@@ -157,7 +157,7 @@ SET(PONA_SOURCE
 	StandardStreams.cpp
 	
 	# threads
-	GlobalSpinMutex.cpp
+	GlobalCoreMutex.cpp
 	Mutex.cpp
 	Condition.cpp
 	Semaphore.cpp

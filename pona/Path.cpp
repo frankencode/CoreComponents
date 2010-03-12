@@ -20,8 +20,8 @@ extern "C" char** environ;
 namespace pona
 {
 
-Path::Path(String path_)
-	: path_(path_)
+Path::Path(String path)
+	: path_(path)
 {}
 
 bool Path::isRoot() const { return path_ == "/"; }
