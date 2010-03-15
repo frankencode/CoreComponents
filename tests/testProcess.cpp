@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 
 int echo(int argc, char** argv)
 {
-	Ref<UStringList, Owner> commandLine = new UStringList;
+	Ref<StringList, Owner> commandLine = new StringList;
 	for (int i = 0; i < argc; ++i) {
 		commandLine->append(argv[i]);
 		if (i != argc - 1)

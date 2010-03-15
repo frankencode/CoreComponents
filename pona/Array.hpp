@@ -15,10 +15,11 @@ namespace pona
 {
 
 template<class T, template<class> class P = ArrayPolicy>
-class Array: public Sequence<T>
+class Array: public Sequence<T, int>
 {
 public:
-	typedef T Element;
+	typedef int Index;
+	typedef T Item;
 	typedef P<T> Policy;
 	
 	Array() { Policy::initEmpty(data_, size_); }
@@ -71,18 +72,11 @@ public:
 		return data_[i];
 	}
 	
-	inline void set(int i, const T& e) {
+	inline void set(int i, const T& item) {
 		if (i < 0) i += size_;
 		check(def(i));
-		data_[i] = e;
+		data_[i] = item;
 	}
-	
-	inline bool operator< (const Array& b) const { return pona::strcmp(data_, b.data_) <  0; }
-	inline bool operator==(const Array& b) const { return pona::strcmp(data_, b.data_) == 0; }
-	inline bool operator> (const Array& b) const { return pona::strcmp(data_, b.data_) >  0; }
-	inline bool operator!=(const Array& b) const { return pona::strcmp(data_, b.data_) != 0; }
-	inline bool operator<=(const Array& b) const { return pona::strcmp(data_, b.data_) <= 0; }
-	inline bool operator>=(const Array& b) const { return pona::strcmp(data_, b.data_) >= 0; }
 	
 	inline T* pointerAt(int i) const {
 		if (i < 0) i += size_;
@@ -96,19 +90,19 @@ public:
 		return data_[i];
 	}
 	
-	inline int find(const T& x) {
+	inline int find(const T& item) {
 		for (int i = 0; i < size_; ++i)
-			if (data_[i] == x) return i;
+			if (data_[i] == item) return i;
 		return size_;
 	}
 	
-	inline bool contains(const T& x) { return find(x) < size_; }
+	inline bool contains(const T& item) { return find(item) < size_; }
 	
-	inline int replace(const T& x, const T& y) {
+	inline int replace(const T& oldItem, const T& newItem) {
 		int n = 0;
 		for (int i = 0; i < size_; ++i) {
-			if (data_[i] == x) {
-				data_[i] = y;
+			if (data_[i] == oldItem) {
+				data_[i] = newItem;
 				++n;
 			}
 		}

@@ -15,7 +15,7 @@ namespace pona
 {
 
 Format::Format(String format)
-	: Super(new UStringList)
+	: Super(new StringList)
 {
 	Ref<PlaceHolder> lastPlaceHolder;
 	
@@ -148,7 +148,7 @@ void Format::printInt(uint64_t x, int sign)
 		text->set(i++, letters[d]);
 	}
 	
-	get()->insert(ph->j_, text);
+	get()->insert(get()->index(ph->j_), text);
 }
 
 void Format::printFloat(float64_t x)
@@ -302,7 +302,7 @@ void Format::printFloat(float64_t x)
 		text->set(i + wi - 1, '0');
 	}
 	
-	get()->insert(ph->j_, text);
+	get()->insert(get()->index(ph->j_), text);
 }
 
 } // namespace pona

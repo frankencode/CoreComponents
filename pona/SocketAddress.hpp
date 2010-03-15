@@ -15,7 +15,7 @@
 
 #include "atoms"
 #include "String.hpp"
-#include "List.hpp"
+#include "NewList.hpp"
 
 namespace pona
 {
@@ -24,7 +24,7 @@ PONA_EXCEPTION(NetworkingException, Exception);
 
 class SocketAddress;
 
-typedef List< Ref<SocketAddress, Owner> > SocketAddressList;
+typedef NewList< Ref<SocketAddress, Owner> > SocketAddressList;
 
 class SocketAddress: public Instance
 {

@@ -36,19 +36,19 @@ Path Path::makeAbsoluteRelativeTo(String currentDir) const
 	if (isAbsolute())
 		return path_;
 	
-	Ref<UStringList, Owner> absoluteParts = new UStringList;
-	Ref<UStringList, Owner> parts = path_.split("/");
+	Ref<StringList, Owner> absoluteParts = new StringList;
+	Ref<StringList, Owner> parts = path_.split("/");
 	
 	int upCount = 0;
 	
-	for (int i = 0, n = parts->length(); i < n; ++i)
+	for (StringList::Index i = parts->first(); parts->def(i); ++i)
 	{
-		String c = parts->get(i);
+		String c = parts->at(i);
 		if (c == ".")
 		{}
 		else if (c == "..") {
 			if (absoluteParts->length() > 0)
-				absoluteParts->pop(-1);
+				absoluteParts->popBack();
 			else
 				++upCount;
 		}
@@ -68,7 +68,7 @@ Path Path::makeAbsoluteRelativeTo(String currentDir) const
 		--upCount;
 	}
 	
-	absoluteParts->insert(0, absolutePath);
+	absoluteParts->pushFront(absolutePath);
 	
 	return String(absoluteParts, "/");
 }
@@ -83,17 +83,17 @@ Path Path::makeAbsolute() const
 String Path::fileName() const
 {
 	String name;
-	Ref<UStringList, Owner> parts = path_.split("/");
+	Ref<StringList, Owner> parts = path_.split("/");
 	if (parts->length() > 0)
-		name = parts->get(-1);
+		name = parts->at(-1);
 	return name;
 }
 
 Path Path::reduce() const
 {
-	Ref<UStringList, Owner> parts = path_.split("/");
+	Ref<StringList, Owner> parts = path_.split("/");
 	if (parts->length() > 0)
-		parts->pop(-1);
+		parts->popBack();
 	String resultPath = String(parts, "/");
 	if ((resultPath == "") && (isAbsolute()))
 		resultPath = "/";
@@ -105,11 +105,11 @@ Path Path::expand(String component) const
 	return Path(Format() << path_ << "/" << component);
 }
 
-Path Path::lookup(Ref<UStringList> dirs, String fileName, int accessFlags)
+Path Path::lookup(Ref<StringList> dirs, String fileName, int accessFlags)
 {
 	String path;
-	for (int i = 0; i < dirs->length(); ++i) {
-		String candidate = Format() << dirs->get(i) << "/" << fileName;
+	for (StringList::Index i = dirs->first(); dirs->def(i); ++i) {
+		String candidate = Format() << dirs->at(i) << "/" << fileName;
 		if (File(candidate).access(accessFlags)) {
 			path = candidate;
 			break;

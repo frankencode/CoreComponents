@@ -25,7 +25,7 @@ template<class Media>
 class Syntax: public Instance
 {
 public:
-	typedef typename Media::Element Char;
+	typedef typename Media::Item Char;
 	typedef Syntax Node;
 	typedef PrefixTree<Char,int> KeywordMap;
 	

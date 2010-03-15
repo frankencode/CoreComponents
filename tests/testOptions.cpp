@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 	options.define('h', "help", &help, "Print help");
 	options.define('a', "alpha", &alpha, "Pass alpha value");
 	options.define('b', "beta", &beta, "Pass beta value");
-	Ref<UStringList, Owner> files = options.read(argc, argv);
+	Ref<StringList, Owner> files = options.read(argc, argv);
 	
 	if (echo) print("Hello, echo!\n");
 	if (world) print("Hello, world!\n");
@@ -26,11 +26,11 @@ int main(int argc, char** argv)
 	print("alpha, beta = %%, %%\n", alpha, beta);
 	print("alpha + beta = %%\n", int(alpha) + double(beta));
 	print("files = [");
-	for (int i = 0; i < files->length(); ++i)
-		if (i != files->length() - 1)
-			print(" %%,", files->get(i));
-		else
-			print(" %% ", files->get(i));
+	for (StringList::Index i = files->first(); files->def(i); ++i) {
+		print(" %%", files->at(i));
+		if (files->def(i + 1))
+			print(",");
+	}
 	print("]\n");
 	return 0;
 }

@@ -7,7 +7,7 @@
 namespace pona
 {
 
-typedef Channel<int> MyChannel;
+typedef Channel<int, NewList> MyChannel;
 
 class Consumer: public Thread
 {
@@ -61,22 +61,22 @@ private:
 
 int main()
 {
-	Ref<MyChannel, Owner> channel = new MyChannel(16);
+	Ref<MyChannel, Owner> channel = new MyChannel();
 	
 	Ref<Producer, Owner> p1 = new Producer(1, channel, 8);
-	Ref<Producer, Owner> p2 = new Producer(2, channel, 12);
-	Ref<Consumer, Owner> c1 = new Consumer(1, channel, 4);
-	Ref<Consumer, Owner> c2 = new Consumer(2, channel, 16);
+	// Ref<Producer, Owner> p2 = new Producer(2, channel, 12);
+	Ref<Consumer, Owner> c1 = new Consumer(1, channel, 8);
+	// Ref<Consumer, Owner> c2 = new Consumer(2, channel, 16);
 	
 	Time dt = now();
 	c1->start();
 	p1->start();
-	c2->start();
-	p2->start();
+	//c2->start();
+	//p2->start();
 	c1->wait();
-	c2->wait();
+	//c2->wait();
 	p1->wait();
-	p2->wait();
+	//p2->wait();
 	dt = now() - dt;
 	
 	print("\ndt = %% us\n\n", dt.us());

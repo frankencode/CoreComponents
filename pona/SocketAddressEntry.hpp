@@ -2,7 +2,6 @@
 #define PONA_SOCKETADDRESSENTRY_HPP
 
 #include "atoms"
-#include "List.hpp"
 #include "SocketAddress.hpp"
 
 namespace pona

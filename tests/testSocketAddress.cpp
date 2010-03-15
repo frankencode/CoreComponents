@@ -44,9 +44,9 @@ int main(int argc, char** argv)
 	
 	print("canonicalName = \"%%\"\n", canonicalName);
 	
-	for (int i = 0; i < list->length(); ++i)
+	for (SocketAddressList::Index i = list->first(); list->def(i); ++i)
 	{
-		Ref<SocketAddress> address = list->get(i);
+		Ref<SocketAddress> address = list->at(i);
 		bool failed;
 		
 		print("%% : %% : %% : %% : %% : %% : %%\n"

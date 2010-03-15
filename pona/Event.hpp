@@ -9,7 +9,7 @@
 #define PONA_EVENT_HPP
 
 #include "atoms"
-#include "List.hpp"
+#include "NewList.hpp"
 #include "Action.hpp"
 
 namespace pona
@@ -28,7 +28,7 @@ public:
 	
 private:
 	CoreMutex mutex_;
-	typedef List< Ref<Action, Owner> > Handlers;
+	typedef NewList< Ref<Action, Owner> > Handlers;
 	Ref<Handlers, Owner> handlers_;
 };
 

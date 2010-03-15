@@ -44,8 +44,8 @@ void ProcessFactory::setWorkingDirectory(String path) { workingDirectory_ = path
 String ProcessFactory::execPath() const { return execPath_; }
 void ProcessFactory::setExecPath(String path) { execPath_ = path; }
 
-Ref<UStringList> ProcessFactory::options() { return (options_) ? options_ : options_ = new UStringList; }
-void ProcessFactory::setOptions(Ref<UStringList> list) { options_ = list; }
+Ref<StringList> ProcessFactory::options() { return (options_) ? options_ : options_ = new StringList; }
+void ProcessFactory::setOptions(Ref<StringList> list) { options_ = list; }
 
 Ref<EnvMap> ProcessFactory::envMap() { return (envMap_) ? envMap_ : envMap_ = Process::envMap(); }
 void ProcessFactory::setEnvMap(Ref<EnvMap> map) { envMap_ = map; }
@@ -196,9 +196,12 @@ Ref<Process, Owner> ProcessFactory::produce()
 			char** argv = new char*[argc + 1];
 			
 			argv[0] = pona::strdup(execPath_->data());
-			if (options_)
-				for (int i = 0, n = options_->length(); i < n; ++i)
-					argv[i + 1] = pona::strdup(options_->get(i)->data());
+			if (options_) {
+				int j = 1;
+				for (StringList::Index i = options_->first(); options_->def(i); ++i, ++j) {
+					argv[j] = pona::strdup(options_->at(i)->data());
+				}
+			}
 			argv[argc] = 0;
 			
 			// prepare the environment map
@@ -211,12 +214,14 @@ Ref<Process, Owner> ProcessFactory::produce()
 			}
 			else
 			{
-				Ref<EnvMap::KeyValueList, Owner> envList = envMap_->keyValueList();
+				typedef EnvMap::ItemList EnvList;
+				Ref<EnvList, Owner> envList = envMap_->itemList();
 				int envc = envList->length();
 				envp = new char*[envc + 1];
-
-				for (int i = 0, n = envList->length(); i < n; ++i)
-					envp[i] = pona::strdup(String(Format() << envList->get(i).key() <<  "=" << envList->get(i).value())->data());
+				
+				int j = 0;
+				for (EnvList::Index i = envList->first(); envList->def(i); ++i, ++j)
+					envp[j] = pona::strdup(String(Format() << envList->at(i).key() <<  "=" << envList->at(i).value())->data());
 				
 				envp[envc] = 0;
 			}

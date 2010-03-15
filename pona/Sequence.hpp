@@ -14,14 +14,13 @@
 namespace pona
 {
 
-template<class T>
+template<class Item, class Index = int>
 class Sequence: public Instance
 {
 public:
-	typedef T Element;
 	virtual ~Sequence() {}
-	virtual bool def(int i) const = 0;
-	virtual Element get(int i) const = 0;
+	virtual bool def(Index i) const = 0;
+	virtual Item get(Index i) const = 0;
 };
 
 } // namespace pona

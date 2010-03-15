@@ -61,10 +61,11 @@ int main(int argc, char** argv)
 		print("String(s.split(pattern), pattern) = '%%'\n", String(s.split(pattern), pattern).data());*/
 	}
 	
-	Ref<UStringList, Owner> lines = text.split("\n");
+	Ref<StringList, Owner> lines = text.split("\n");
 	print("Number of lines: %%\n", lines->length());
-	for (int i = 0; i < lines->length(); ++i)
-		print("%%: '%%' (%%)\n", i, lines->get(i)->data(), lines->get(i)->size());
+	int j = 0;
+	for (StringList::Index i = lines->first(); lines->def(i); ++i, ++j)
+		print("%%: '%%' (%%)\n", j, lines->at(i)->data(), lines->at(i)->size());
 	
 	return 0;
 }

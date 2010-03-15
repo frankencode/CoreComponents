@@ -8,6 +8,7 @@
 #ifndef PONA_FORMAT_HPP
 #define PONA_FORMAT_HPP
 
+#include <stdio.h> // DEBUG
 #include "atoms"
 #include "String.hpp"
 #include "Variant.hpp"
@@ -19,20 +20,20 @@ namespace pona
 
 PONA_EXCEPTION(FormatException, Exception);
 
-class Format: public Ref<UStringList, Owner>
+class Format: public Ref<StringList, Owner>
 {
 public:
-	typedef Ref<UStringList, Owner> Super;
+	typedef Ref<StringList, Owner> Super;
 	
 	Format(String format = "");
 	
 	Format(const Format& b);
 	Format& operator=(const Format& b);
 	
-	inline Format& print(String s) { get()->insert(nextPlaceHolder()->j_, s); return *this; }
+	inline Format& print(String s) { get()->insert(get()->index(nextPlaceHolder()->j_), s); return *this; }
 	inline Format& print(const char* s) { return print(String(s)); }
 	
-	inline Format& print(char ch) { get()->insert(nextPlaceHolder()->j_, String(&ch, 1)); return *this; }
+	inline Format& print(char ch) { get()->insert(get()->index(nextPlaceHolder()->j_), String(&ch, 1)); return *this; }
 	
 	inline Format& print(uint8_t x) { printInt(x); return *this; }
 	inline Format& print(uint16_t x) { printInt(x); return *this; }

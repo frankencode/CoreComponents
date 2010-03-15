@@ -26,14 +26,14 @@ public:
 	
 	inline gid_t id() const { return id_; }
 	inline String name() const { return name_; }
-	inline Ref<UStringList> members() const { return members_; }
+	inline Ref<StringList> members() const { return members_; }
 	
 private:
 	void load(struct group* entry);
 	bool exists_;
 	gid_t id_;
 	String name_;
-	Ref<UStringList, Owner> members_;
+	Ref<StringList, Owner> members_;
 };
 
 } // namespace pona

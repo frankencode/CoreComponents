@@ -31,8 +31,8 @@ public:
 	String execPath() const;
 	void setExecPath(String path);
 	
-	Ref<UStringList> options();
-	void setOptions(Ref<UStringList> list);
+	Ref<StringList> options();
+	void setOptions(Ref<StringList> list);
 	
 	Ref<EnvMap> envMap();
 	void setEnvMap(Ref<EnvMap> map);
@@ -65,7 +65,7 @@ private:
 	String workingDirectory_;
 	
 	String execPath_;
-	Ref<UStringList, Owner> options_;
+	Ref<StringList, Owner> options_;
 	Ref<EnvMap, Owner> envMap_;
 	
 	Ref<SignalSet, Owner> signalMask_;

@@ -10,7 +10,6 @@
 
 #include "Tree.hpp"
 #include "LineSink.hpp"
-#include "List.hpp"
 
 namespace pona
 {

@@ -1,5 +1,5 @@
 /*
- * Channel.hpp -- fixed length message queue
+ * Channel.hpp -- generic M to N thread communication and synchronisation media
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -16,47 +16,78 @@
 namespace pona
 {
 
-template<class T>
-class Channel: public Instance
+template<class T, template<class T> class Queue = pona::Queue>
+class Channel: public Instance, public NonCopyable
 {
 public:
-	enum Where { Back, Front };
+	Channel(int size = 0)
+		: queue_(size + (size == 0)),
+		  ackMode_(size == 0)
+	{}
 	
-	Channel(int size): queue_(size) {}
-	
-	inline void pushBack(T e) { push(e, Back); }
-	inline void pushFront(T e) { push(e, Front); }
-	inline T popBack() { return pop(Back); }
-	inline T popFront() { return pop(Front); }
-	
-	void push(T e, int where = Back)
+	Channel& push(const T& item)
 	{
-		mutex_.acquire();
+		queueMutex_.acquire();
 		while (queue_.fill() == queue_.size())
-			notFull_.wait(&mutex_);
-		if (where == Front)
-			queue_.pushFront(e);
-		else
-			queue_.pushBack(e);
-		notEmpty_.signal();
-		mutex_.release();
+			notFull_.wait(&queueMutex_);
+		queue_ << item;
+		if (ackMode_) {
+			ackMutex_.acquire();
+			ack_.signal();
+			notEmpty_.signal();
+			queueMutex_.release();
+			ack_.wait(&ackMutex_);
+			ackMutex_.release();
+		}
+		else {
+			notEmpty_.signal();
+			queueMutex_.release();
+		}
+		return *this;
 	}
 	
-	T pop(int where = Front)
+	Channel& pop(T& item)
 	{
-		mutex_.acquire();
+		queueMutex_.acquire();
 		while (queue_.fill() == 0)
-			notEmpty_.wait(&mutex_);
-		T e = (where == Front) ? queue_.popFront() : queue_.popBack();
+			notEmpty_.wait(&queueMutex_);
+		if (ackMode_) {
+			ackMutex_.acquire();
+			ack_.signal();
+			ackMutex_.release();
+		}
+		queue_ >> item;
 		notFull_.signal();
-		mutex_.release();
-		return e;
+		queueMutex_.release();
+		return *this;
+	}
+	
+	inline T pop() {
+		T item;
+		pop(item);
+		return item;
+	}
+	
+	inline Channel& operator<<(const T& item) { return push(item); }
+	inline Channel& operator>>(T& item) { return pop(item); }
+	
+	template<template<class> class CB>
+	inline Channel& operator<<(CB<T>& cb) {
+		while (!cb.empty()) {
+			T item;
+			cb >> item;
+			*this << item;
+		}
+		return *this;
 	}
 	
 private:
 	Queue<T> queue_;
-	Mutex mutex_;
+	Mutex queueMutex_;
 	Condition notEmpty_, notFull_;
+	bool ackMode_;
+	Mutex ackMutex_;
+	Condition ack_;
 };
 
 } // namespace pona

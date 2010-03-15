@@ -95,7 +95,7 @@ public:
 		else if ((type_ == StringType) && (b.type_ == StringType)) {
 			Ref<String::Media> ma(ref_);
 			Ref<String::Media> mb(b.ref_);
-			equal = (*ma == *mb);
+			equal = (String(ma) == String(mb));
 		}
 		else if ((type_ == RefType) && (b.type_ == RefType)) {
 			equal = (ref_.get() == b.ref_.get());
@@ -118,7 +118,7 @@ public:
 		else if ((type_ == StringType) && (b.type_ == StringType)) {
 			Ref<String::Media> ma = ref_;
 			Ref<String::Media> mb = b.ref_;
-			below = (*ma < *mb);
+			below = (String(ma) < String(mb));
 		}
 		else if ((type_ == RefType) && (b.type_ == RefType)) {
 			below = (ref_.get() < b.ref_.get());
