@@ -1,5 +1,5 @@
 /*
- * BinaryTree.hpp -- binary tree structure and algorithms
+ * BinaryTree.hpp -- binary tree
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -9,6 +9,7 @@
 #define PONA_BINARYTREE_HPP
 
 #include "atoms"
+#include "BinaryNode.hpp"
 
 namespace pona
 {
@@ -22,87 +23,56 @@ namespace pona
 #endif
 
 template<class T>
-class BinaryTree: public Instance
+class BinaryTree: public NonCopyable
 {
 public:
-	class Node
-	{
-	public:
-		Node(const T& e): misc(0), e_(e) {}
-		
-		Node* left;
-		Node* right;
-		Node* parent;
+	typedef BinaryNode<T> Node;
 	
-		union {
-			int misc;
-			int balance;
-			int color;
-		};
-		
-		inline const T& data() const { return e_; }
-		inline const T& operator*() const { return e_; }
-		inline const T* dataPtr() const { return &e_; }
-		
-		inline Node* previous() { return pred(this); }
-		inline Node* next() { return succ(this); }
-		inline Node* previous(int step) { return pred(this, step); }
-		inline Node* next(int step) { return succ(this, step); }
-		
-		T e_;
-	};
-
 	BinaryTree(): root(0), _n(0) {}
 	virtual ~BinaryTree() { clear(); }
-
+	
 	inline void clear() { clear(root); root = 0; _n = 0; }
 	inline Node* rootNode() { return root; }
 	
 	inline int n() const { return _n; }
 	inline int count() const { return _n; }
 	
-	inline Node* first() const { return (root != 0) ? min(root) : 0; }
-	inline Node* last() const { return (root != 0) ? max(root) : 0; }
+	inline Node* first() const { return (root != 0) ? root->min() : 0; }
+	inline Node* last() const { return (root != 0) ? root->max() : 0; }
 	template<class ST> inline Node* first(const ST& a) const;
 	template<class ST> inline Node* last(const ST& b) const;
 	
 	inline T min() const { Node* k = first(); return (k != 0) ? k->data() : T(); }
 	inline T max() const { Node* k = last(); return (k != 0) ? k->data() : T(); }
-
+	
 	template<class ST> Node* find(const ST& e, bool* found = 0) const;
 	
 	Node* unlink(Node* k);
 	void clear(Node* k);
-	static Node* pred(Node* k);
-	static Node* succ(Node* k);
-	inline static Node* pred(Node* k, int step);
-	inline static Node* succ(Node* k, int step);
-	inline static Node* min(Node* k);
-	inline static Node* max(Node* k);
 	
 	void spliceIn(Node* kp, Node* kn);
 	Node* spliceOut(Node* k);
 	void replaceNode(Node* k0, Node* k1);
-
+	
 	void rotateLeft(Node* k);
 	void rotateRight(Node* k);
 	int height(Node* k);
 	inline int height() { return height(root); }
-
+	
 	virtual void rebalanceAfterSpliceIn(Node* k, int delta) = 0;
 	virtual void rebalanceAfterSpliceOut(Node* k, int delta) = 0;
-
+	
 	bool ok1(Node* k);  // condition: k->left->data() < k->right->data()
 	bool ok2(Node* k);  // condition: (k == k->parent()->left) || (k == k->parent()->right)
 	bool ok3(Node* k);  // condition: (k == k->parent()->left) || (k == k->parent()->right)
 	inline bool ok() { return ok1(root) && ok2(root) && ok3(root); }
-
-	inline Node* minNode() { return min(root); }
-	inline Node* maxNode() { return max(root); }
+	
+	inline Node* minNode() { return root->min(); }
+	inline Node* maxNode() { return root->max(); }
 	
 	/*void levelPrint();
 	void levelPrint(Node* k, int level);*/
-
+	
 protected:
 	inline static int max(int a, int b) { return (a < b) ? b : a; }
 
@@ -118,7 +88,7 @@ typename BinaryTree<T>::Node* BinaryTree<T>::first(const ST& a) const
 	Node* k = find(a, &found);
 	if ((k == 0) || found) return k;
 	if (a < k->data()) return k;
-	return succ(k);
+	return k->succ();
 }
 
 template<class T>
@@ -129,7 +99,7 @@ typename BinaryTree<T>::Node* BinaryTree<T>::last(const ST& b) const
 	Node* k = find(b, &found);
 	if ((k == 0) || found) return k;
 	if (k->data() < b) return k;
-	return pred(k);
+	return k->pred();
 }
  
 template<class T>
@@ -154,9 +124,9 @@ template<class T>
 typename BinaryTree<T>::Node* BinaryTree<T>::unlink(Node* k)
 {
 	if (k->left != 0)
-		replaceNode(k, spliceOut(max(k->left)));
+		replaceNode(k, spliceOut(k->left->max()));
 	else if (k->right != 0)
-		replaceNode(k, spliceOut(min(k->right)));
+		replaceNode(k, spliceOut(k->right->min()));
 	else
 		spliceOut(k);
 	return k;
@@ -169,78 +139,6 @@ void BinaryTree<T>::clear(Node* k)
 	clear(k->left);
 	clear(k->right);
 	delete k;
-}
-
-template<class T>
-typename BinaryTree<T>::Node* BinaryTree<T>::min(Node* k)
-{
-	Node* k2 = k;
-	while (k) {
-		k2 = k;
-		k = k->left;
-	}
-	return k2;
-}
-
-template<class T>
-typename BinaryTree<T>::Node* BinaryTree<T>::max(Node* k)
-{
-	Node* k2 = k;
-	while (k) {
-		k2 = k;
-		k = k->right;
-	}
-	return k2;
-}
-
-template<class T>
-typename BinaryTree<T>::Node* BinaryTree<T>::pred(Node* k)
-{
-	if (k->left != 0)
-		return max(k->left);
-
-	Node* kp = k->parent;
-
-	while (kp != 0)
-	{
-		if (k == kp->right) break;
-		k = kp;
-		kp = kp->parent;
-	}
-
-	return kp;
-}
-
-template<class T>
-typename BinaryTree<T>::Node* BinaryTree<T>::succ(Node* k)
-{
-	if (k->right != 0)
-		return min(k->right);
-
-	Node* kp = k->parent;
-
-	while (kp != 0)
-	{
-		if (k == kp->left) break;
-		k = kp;
-		kp = kp->parent;
-	}
-
-	return kp;
-}
-
-template<class T>
-typename BinaryTree<T>::Node* BinaryTree<T>::pred(Node* k, int step)
-{
-	for (int i = 0; (i < step) && (k != 0); ++i) k = pred(k);
-	return k;
-}
-
-template<class T>
-typename BinaryTree<T>::Node* BinaryTree<T>::succ(Node* k, int step)
-{
-	for (int i = 0; (i < step) && (k != 0); ++i) k = succ(k);
-	return k;
 }
 
 template<class T>
@@ -424,13 +322,13 @@ bool BinaryTree<T>::ok3(Node* k)
 
 	Node* k2;
 
-	k2 = succ(k);
+	k2 = k->succ();
 	if (k2 != 0)
-		if (k != pred(k2)) return false;
+		if (k != k2->pred()) return false;
 
-	k2 = pred(k);
+	k2 = k->pred();
 	if (k2 != 0)
-		if (k != succ(k2)) return false;
+		if (k != k2->succ()) return false;
 
 	return ok3(k->left) && ok3(k->right);
 }

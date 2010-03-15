@@ -8,6 +8,7 @@
 #ifndef PONA_TOKENFACTORY_HPP
 #define PONA_TOKENFACTORY_HPP
 
+#include <new>
 #include "Token.hpp"
 
 namespace pona

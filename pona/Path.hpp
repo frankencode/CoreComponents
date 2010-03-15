@@ -30,7 +30,7 @@ public:
 	Path reduce() const;
 	Path expand(String component) const;
 	
-	static Path lookup(Ref<UStringList> dirs, String fileName, int accessFlags = File::Exists);
+	static Path lookup(Ref<StringList> dirs, String fileName, int accessFlags = File::Exists);
 	
 	operator String() const;
 	

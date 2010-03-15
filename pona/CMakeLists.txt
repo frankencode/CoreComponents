@@ -33,11 +33,13 @@ SET(PONA_HEADER
 	Stack.hpp
 	Queue.hpp
 	Heap.hpp
-	ListObserver.hpp
-	List.hpp
+	ListNode.hpp
+	ListIterator.hpp
+	NewList.hpp
 	Tree.hpp
 	PrefixTree.hpp
-	KeyValuePair.hpp
+	Pair.hpp
+	BinaryNode.hpp
 	BinaryTree.hpp
 	AvlTree.hpp
 	Map.hpp

@@ -7,9 +7,9 @@ namespace pona
 int main()
 {
 	Ref<NetworkInterfaceList, Owner> interfaces = NetworkInterface::queryAll(AF_UNSPEC);
-	for (int i = 0, n = interfaces->length(); i < n; ++i) {
+	for (NetworkInterfaceList::Index i = interfaces->first(); interfaces->def(i); ++i) {
 		Ref<NetworkInterface> interface = interfaces->get(i);
-		if (i > 0) print("\n");
+		if (i != interfaces->first()) print("\n");
 		print("%%:\n", interface->name());
 		print("  Flags: ");
 		int flags = interface->flags();
@@ -26,8 +26,8 @@ int main()
 		print("  MTU:    %%\n", interface->mtu());
 		Ref<SocketAddressList> addressList = interface->addressList();
 		if (addressList) {
-			for (int k = 0, n = addressList->length(); k < n; ++k) {
-				Ref<SocketAddress> address = addressList->get(k);
+			for (SocketAddressList::Index k = addressList->first(); addressList->def(k); ++k) {
+				Ref<SocketAddress> address = addressList->at(k);
 				print("  Addr:   %%", address->toString());
 				Ref<SocketAddressEntry> addressEntry = address;
 				if (addressEntry) {

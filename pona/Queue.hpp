@@ -1,5 +1,5 @@
 /*
- * Queue.hpp -- fixed length queue
+ * Queue.hpp -- static queue
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -15,9 +15,12 @@ namespace pona
 {
 
 template<class T>
-class Queue: public Sequence<T>, public NonCopyable
+class Queue: public Sequence<T, int>, public NonCopyable
 {
 public:
+	typedef int Index;
+	typedef T Item;
+	
 	Queue(int size)
 		: fill_(0),
 		  size_(size),
@@ -45,44 +48,34 @@ public:
 		}
 	}
 	
+	inline int first() const { return (fill_ > 0) - 1; }
+	inline int last() const { return fill_ - 1; }
+	inline int end() const { return fill_; }
+	
 	inline int size() const { return size_; }
 	inline int fill() const { return fill_; }
+	inline bool full() const { return fill_ == size_; }
+	inline bool empty() const { return fill_ == 0; }
 	
-	inline void pushBack(T e)
-	{
-		check(fill_ != size_);
-		++head_;
-		if (head_ >= size_) head_ = 0;
-		++fill_;
-		buf_[head_] = e;
-	}
+	inline bool def(int i) const { return (0 <= i) && (i < fill_); }
+	inline T& at(int i) const { return front(i); }
+	inline T get(int i) const { return front(i); }
 	
-	inline void pushFront(T e)
-	{
-		check(fill_ < size_);
-		buf_[tail_] = e;
-		--tail_;
-		if (tail_ < 0) tail_ = size_ - 1;
-		++fill_;
-	}
+	inline Queue& push(const T& item) { return pushBack(item); }
+	inline Queue& pop(T& item) { return popFront(item); }
+	inline T pop() { T item; popFront(item); return item; }
 	
-	inline T popBack()
-	{
-		check(fill_ > 0);
-		T h = buf_[head_];
-		--head_;
-		if (head_ < 0) head_ = size_ - 1;
-		--fill_;
-		return h;
-	}
-
-	inline T popFront()
-	{
-		check(fill_ > 0);
-		++tail_;
-		if (tail_ >= size_) tail_ = 0;
-		--fill_;
-		return buf_[tail_];
+	inline Queue& operator<<(const T& item) { return push(item); }
+	inline Queue& operator>>(T& item) { return pop(item); }
+	
+	template<template<class> class CB>
+	inline Queue& operator<<(CB<T>& cb) {
+		while (!cb.empty()) {
+			T item;
+			cb >> item;
+			*this << item;
+		}
+		return *this;
 	}
 	
 	inline void clear()
@@ -92,7 +85,47 @@ public:
 		tail_ = size_ - 1;
 	}
 	
-	inline T back(int i = 0) const
+	inline Queue& pushBack(const T& item)
+	{
+		check(fill_ != size_);
+		++head_;
+		if (head_ >= size_) head_ = 0;
+		++fill_;
+		buf_[head_] = item;
+		return *this;
+	}
+	
+	inline Queue& popFront(T& item)
+	{
+		check(fill_ > 0);
+		++tail_;
+		if (tail_ >= size_) tail_ = 0;
+		--fill_;
+		item = buf_[tail_];
+		return *this;
+	}
+	
+	inline Queue& pushFront(const T& item)
+	{
+		check(fill_ < size_);
+		buf_[tail_] = item;
+		--tail_;
+		if (tail_ < 0) tail_ = size_ - 1;
+		++fill_;
+		return *this;
+	}
+	
+	inline Queue& popBack(T& item)
+	{
+		check(fill_ > 0);
+		item = buf_[head_];
+		--head_;
+		if (head_ < 0) head_ = size_ - 1;
+		--fill_;
+		return *this;
+	}
+
+	inline T& back(int i = 0) const
 	{
 		check((0 <= i) && (i < fill_));
 		i = -i;
@@ -101,16 +134,13 @@ public:
 		return buf_[i];
 	}
 	
-	inline T front(int i = 0) const
+	inline T& front(int i = 0) const
 	{
 		check((0 <= i) && (i < fill_));
 		i += tail_ + 1;
 		if (i >= size_) i -= size_;
 		return buf_[i];
 	}
-	
-	inline bool def(int i) const { return (0 <= i) && (i < fill_); }
-	inline T get(int i) const { return front(i); }
 	
 private:
 	int fill_;

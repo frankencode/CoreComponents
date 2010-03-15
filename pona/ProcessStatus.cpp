@@ -73,11 +73,11 @@ ProcessStatus::ProcessStatus(pid_t processId)
 		for (int i = i0; i < i1; ++i)
 			line->set(i, 'x');
 	}
-	Ref<UStringList, Owner> parts = line.split(" ");
-	processId_ = parts->get(0).toInt();
-	parentProcessId_ = parts->get(3).toInt();
-	processGroupId_ = parts->get(4).toInt();
-	foregroundProcessGroupId_ = parts->get(7).toInt();
+	Ref<StringList, Owner> parts = line.split(" ");
+	processId_ = parts->at(0).toInt();
+	parentProcessId_ = parts->at(3).toInt();
+	processGroupId_ = parts->at(4).toInt();
+	foregroundProcessGroupId_ = parts->at(7).toInt();
 	/*{
 		int code = parts->get(6).toInt();
 		int major = (code >> 8) & 0xFF;
@@ -91,7 +91,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 			terminalName_ = Format("ttyp%%") << minor;
 	}*/
 	loginName_ = User(FileStatus(path).ownerId()).loginName();
-	processStatus_ = parts->get(2)->get(0);
+	processStatus_ = parts->at(2)->get(0);
 	file->close();
 #endif
 }

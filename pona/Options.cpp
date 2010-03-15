@@ -152,8 +152,8 @@ void Options::define(char shortName, String longName, Ref<Variant> value, String
 Ref<Options::Option> Options::optionByShortName(char name) const
 {
 	Ref<Option> option;
-	for (int i = 0, n = optionList_->length(); i < n; ++i) {
-		Ref<Option> candidate = optionList_->get(i);
+	for (OptionList::Index i = optionList_->first(); optionList_->def(i); ++i) {
+		Ref<Option> candidate = optionList_->at(i);
 		if (candidate->shortName_ == name) {
 			option = candidate;
 			break;
@@ -165,8 +165,8 @@ Ref<Options::Option> Options::optionByShortName(char name) const
 Ref<Options::Option> Options::optionByLongName(String name) const
 {
 	Ref<Option> option;
-	for (int i = 0, n = optionList_->length(); i < n; ++i) {
-		Ref<Option> candidate = optionList_->get(i);
+	for (OptionList::Index i = optionList_->first(); optionList_->def(i); ++i) {
+		Ref<Option> candidate = optionList_->at(i);
 		if (candidate->longName_ == name) {
 			option = candidate;
 			break;
@@ -175,12 +175,12 @@ Ref<Options::Option> Options::optionByLongName(String name) const
 	return option;
 }
 
-Ref<UStringList, Owner> Options::read(int argc, char** argv)
+Ref<StringList, Owner> Options::read(int argc, char** argv)
 {
 	execPath_ = argv[0];
 	execName_ = Path(execPath_).fileName();
 	execDir_ = Path(execPath_).reduce().makeAbsolute();
-	Ref<UStringList, Owner> line = new UStringList;
+	Ref<StringList, Owner> line = new StringList;
 	for (int i = 1; i < argc; ++i) {
 		line->append(String(argv[i]));
 		if (i != argc - 1)
@@ -201,7 +201,7 @@ String stripQuotes(String s)
 	return s;
 }
 
-Ref<UStringList, Owner> Options::read(String line)
+Ref<StringList, Owner> Options::read(String line)
 {
 	int i0 = 0, i1 = -1;
 	Ref<Token, Owner> rootToken;
@@ -219,7 +219,7 @@ Ref<UStringList, Owner> Options::read(String line)
 	
 	verifyTypes();
 	
-	Ref<UStringList, Owner> files = new UStringList;
+	Ref<StringList, Owner> files = new StringList;
 	while (token) {
 		files->append(stripQuotes(String(line, token->index(), token->length())));
 		token = token->nextSibling();
@@ -230,9 +230,9 @@ Ref<UStringList, Owner> Options::read(String line)
 
 void Options::verifyTypes()
 {
-	for (int i = 0; i < optionList_->length(); ++i)
+	for (OptionList::Index i = optionList_->first(); optionList_->def(i); ++i)
 	{
-		Ref<Option> option = optionList_->get(i);
+		Ref<Option> option = optionList_->at(i);
 		
 		if ( ((option->value_->type() & option->typeMask_) == 0) &&
 		     (option->typeMask_ != 0) )
@@ -352,10 +352,10 @@ String Options::help()
 	
 	String options;
 	{
-		Ref<UStringList, Owner> lines = new UStringList;
+		Ref<StringList, Owner> lines = new StringList;
 		int maxLength = 0;
 		
-		for (int i = 0; i < optionList_->length(); ++i) {
+		for (OptionList::Index i = optionList_->first(); optionList_->def(i); ++i) {
 			Ref<Option> option = optionList_->get(i);
 			Format format("  ");
 			if (option->longName_ != "") {
@@ -380,21 +380,24 @@ String Options::help()
 		
 		String indent(maxLength + 2, ' ');
 		
-		for (int i = 0; i < optionList_->length(); ++i) {
-			Ref<Option> option = optionList_->get(i);
-			Ref<UStringList, Owner> line = new UStringList;
-			line->append(lines->get(i));
-			if (lines->get(i)->size() < indent->size())
-				line->append(String(indent->size() - lines->get(i)->size(), ' '));
+		OptionList::Index i = optionList_->first();
+		StringList::Index j = lines->first();
+		for (;optionList_->def(i) && lines->def(j); ++i, ++j)
+		{
+			Ref<Option> option = optionList_->at(i);
+			Ref<StringList, Owner> line = new StringList;
+			line->append(lines->at(j));
+			if (lines->at(j)->size() < indent->size())
+				line->append(String(indent->size() - lines->at(j)->size(), ' '));
 			line->append(option->description_);
 			line->append("\n");
-			lines->set(i, line);
+			lines->set(j, line);
 		}
 		
 		options = lines;
 	}
 	
-	Ref<UStringList, Owner> text = new UStringList;
+	Ref<StringList, Owner> text = new StringList;
 	text->append(Format("Usage: %%\n") << synopsis_);
 	if (summary_->size() > 0) {
 		text->append(summary_);

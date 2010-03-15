@@ -1,10 +1,17 @@
+/*
+ * String.hpp -- UTF8 strings
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_STRING_HPP
 #define PONA_STRING_HPP
 
 #include "atoms"
 #include "Utf8Iterator.hpp"
 #include "Array.hpp"
-#include "List.hpp"
+#include "NewList.hpp"
 
 namespace pona
 {
@@ -12,16 +19,16 @@ namespace pona
 class String;
 class Variant;
 
-typedef List<String> UStringList;
-typedef Array<char, DeepCopyZeroTerminatedArray> UStringMedia;
+typedef NewList<String> StringList;
+typedef Array<char, DeepCopyZeroTerminatedArray> StringMedia;
 
-class String: public Ref<UStringMedia, Owner>
+class String: public Ref<StringMedia, Owner>
 {
 public:
-	typedef UStringMedia Media;
+	typedef StringMedia Media;
 	typedef Ref<Media, Owner> Super;
-	// typedef uchar_t Element;
 	typedef Utf8Iterator Index;
+	typedef uchar_t Item;
 	
 	// initialize empty string
 	String(): Super(new Media) {}
@@ -58,7 +65,7 @@ public:
 	
 	// initialize string by concatenating a string list
 	template<template<class> class GetAndSetPolicy>
-	String(Ref<UStringList, GetAndSetPolicy> parts, const char* glue = "") {
+	String(Ref<StringList, GetAndSetPolicy> parts, const char* glue = "") {
 		assign(parts, glue);
 	}
 	
@@ -78,7 +85,7 @@ public:
 	
 	// assign a concatenation of a string list
 	template<template<class> class GetAndSetPolicy>
-	inline String& operator=(Ref<UStringList, GetAndSetPolicy> parts) {
+	inline String& operator=(Ref<StringList, GetAndSetPolicy> parts) {
 		assign(parts);
 		return *this;
 	}
@@ -97,8 +104,10 @@ public:
 	inline operator char*() const { return media()->data(); }
 	
 	inline Index first() const { return media()->empty() ? Index() : Index(media()->data()); }
-	inline Index last() const { return media()->empty() ? Index() : eoi() - 1; }
-	inline Index eoi() const { return media()->empty() ? Index() : Index(media()->data(), media()->data() + media()->size()); }
+	inline Index last() const { return media()->empty() ? Index() : end() - 1; }
+	inline Index end() const { return media()->empty() ? Index() : Index(media()->data(), media()->data() + media()->size()); }
+	
+	inline bool empty() const { return media()->empty(); }
 	
 	inline bool def(const Index& index) const {
 		check(!media()->empty());
@@ -120,7 +129,7 @@ public:
 	}
 	
 	Index find(const Index& index, const char* pattern) const;
-	Ref<UStringList, Owner> split(const char* pattern) const;
+	Ref<StringList, Owner> split(const char* pattern) const;
 	
 	inline Index find(const char* pattern) const { return find(first(), pattern); }
 	inline bool contains(const char* pattern) const { return find(first(), pattern).valid(); }
@@ -132,11 +141,11 @@ public:
 	inline bool operator<=(const String& b) const { return pona::strcmp((*this)->data(), b->data()) <= 0; }
 	inline bool operator>=(const String& b) const { return pona::strcmp((*this)->data(), b->data()) >= 0; }
 	
-	int toInt(bool* ok = 0);
-	double toFloat(bool* ok = 0);
-	int64_t toInt64(bool* ok = 0);
-	uint64_t toUInt64(bool* ok = 0);
-	float64_t toFloat64(bool* ok = 0);
+	int toInt(bool* ok = 0) const;
+	double toFloat(bool* ok = 0) const;
+	int64_t toInt64(bool* ok = 0) const;
+	uint64_t toUInt64(bool* ok = 0) const;
+	float64_t toFloat64(bool* ok = 0) const;
 	
 	String toLower() const;
 	String toUpper() const;
@@ -151,7 +160,7 @@ private:
 		if (size < 0) size = pona::strlen(data);
 		set(new Media(data, size));
 	}
-	void assign(Ref<UStringList> parts, const char* glue = "");
+	void assign(Ref<StringList> parts, const char* glue = "");
 };
 
 inline bool operator< (const char* a, const String& b) { return pona::strcmp(a, b->data()) <  0; }

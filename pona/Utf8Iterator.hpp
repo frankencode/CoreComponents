@@ -50,6 +50,7 @@ public:
 	
 	// prefix increment
 	inline Utf8Iterator& operator++() {
+		check(valid());
 		// step forwards consuming all prefix bits of first byte
 		uint8_t ch = *p_;
 		++p_;
@@ -67,6 +68,7 @@ public:
 	
 	// prefix decrement
 	inline Utf8Iterator& operator--() {
+		check(s_ <= p_);
 		// step backwards while code prefix equals (10)2
 		if (p_ <= s_) valid_ = false;
 		else {
@@ -107,25 +109,13 @@ public:
 	
 	inline bool valid() const { return valid_; }
 	
-	inline bool hasNext() const { return valid_; }
-	inline uint32_t next() {
-		uint32_t ch = getChar();
-		++(*this);
-		return ch;
+	inline Utf8Iterator operator+(int delta) const {
+		Utf8Iterator it = *this;
+		return it += delta;
 	}
-	
-	inline bool hasPrevious() const { return s_ < p_; }
-	inline uint32_t previous() { return (--(*this)).getChar(); }
-	
-	inline Utf8Iterator operator+(int b) {
-		Utf8Iterator c = *this;
-		c += b;
-		return c;
-	}
-	inline Utf8Iterator operator-(int b) {
-		Utf8Iterator c = *this;
-		c -= b;
-		return c;
+	inline Utf8Iterator operator-(int delta) const {
+		Utf8Iterator it = *this;
+		return it -= delta;
 	}
 	
 	inline const char* data() const { return reinterpret_cast<const char*>(s_); }

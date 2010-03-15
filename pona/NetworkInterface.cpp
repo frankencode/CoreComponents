@@ -268,8 +268,8 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 					Ref<SocketAddress, Owner> label;
 					Ref<NetworkInterface> interface;
 					
-					for (int i = 0, n = list->length(); i < n; ++i) {
-						interface = list->get(i);
+					for (NetworkInterfaceList::Index i = list->first(); list->def(i); ++i) {
+						interface = list->at(i);
 						if (unsigned(interface->index_) == data->ifa_index)
 							break;
 					}
@@ -362,8 +362,8 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 		if (line.contains(":")) {
 			Ref<NetworkInterface, Owner> interface = new NetworkInterface;
 			list->append(interface);
-			Ref<UStringList, Owner> parts = line.split(":");
-			String name = parts->get(0).stripLeadingSpace();
+			Ref<StringList, Owner> parts = line.split(":");
+			String name = parts->at(0).stripLeadingSpace();
 			interface->name_ = name;
 			
 			{
@@ -414,9 +414,9 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 			if ((family != AF_UNSPEC) && (family != ifr->ifr_addr.sa_family))
 				continue;
 			
-			for (int k = 0; k < list->length(); ++k)
+			for (NetworkInterfaceList::Index k = list->first(); list->def(k); ++k)
 			{
-				Ref<NetworkInterface> interface = list->get(k);
+				Ref<NetworkInterface> interface = list->at(k);
 				
 				if (interface->name_ == ifr->ifr_name) {
 					struct sockaddr* addr = &ifr->ifr_addr;

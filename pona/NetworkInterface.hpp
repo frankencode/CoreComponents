@@ -20,7 +20,7 @@ namespace pona
 
 class NetworkInterface;
 
-typedef List< Ref<NetworkInterface, Owner> > NetworkInterfaceList;
+typedef NewList< Ref<NetworkInterface, Owner> > NetworkInterfaceList;
 
 class NetworkInterface: public Instance
 {

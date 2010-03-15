@@ -1,86 +1,91 @@
 #include <pona/stdio>
 #include <pona/container>
+#include <pona/misc>
 
 namespace pona
 {
 
+template<class T>
+void print(NewList<T>& list) {
+	NewList<int>::Index i = list.first();
+	print("[");
+	while (list.def(i)) {
+		print("%%", list.at(i));
+		++i;
+		if (list.def(i)) print(", ");
+	}
+	print("]\n");
+}
+
 int main()
 {
 	{
-		print("Test 1\n");
-		print("------\n");
-		List<int> list;
-		for (int i = 0; i < 10; ++i)
-			list.pushBack(i);
-		for (int i = 0; i < list.length(); ++i)
-			print("list[%%]=%%\n", i, list.get(i));
-		print("--\n");
-		for (int i = 0; i < list.length(); ++i)
-			list.pop(i);
-		for (int i = 0; i < list.length(); ++i)
-			print("list[%%]=%%\n", i, list.get(i));
-		print("\n");
+		print("Test 1:\n");
+		NewList<int> list;
+		list << 1 << 2 << 3;
+		print(list);
+		NewList<int> list2;
+		list >> list2;
+		print(list2);
 	}
-	
 	{
-		print("Test 2\n");
-		print("------\n");
-		
-		const char* digits = "0123456789";
-		List<char> list;
-		for (int i = 0; i < 10; ++i)
-			list.pushBack(digits[i]);
-		for (int i = 0; i < list.length(); ++i)
-			print("list[%%]=%%\n", i, list.get(i));
-		
-		print("\n");
-	}
-	
-	{
-		print("Test 3\n");
-		print("------\n");
-		
-		const char* l1 = "#include <pona/atoms>\n";
-		const char* l2 = "int main() { pona::ouput()->write(\"Hello, world!\\n\"); return 0; }\n";
-		List<char> text;
-		text.push(0, strlen(l1), l1);
-		text.push(text.length(), strlen(l2), l2);
-		for (int i = 0; i < text.length(); ++i)
-			print("%%", text.get(i));
-		char buf[128];
-		text.pop(60, 13, buf);
-		for (int i = 0; i < text.length(); ++i)
-			print("%%", text.get(i));
-		print("\n--\n");
-		
-		const char* greeting = "U";
-		text.push(60, 1, greeting);
-		
-		char buf2[128];
-		pona::memset(buf2, '\0', 128);
-		text.read(60, 13, buf2);
-		print("\"%%\"\n", buf2);
-	}
-	
-	{
-		print("Text 4\n");
-		print("------\n");
-		List<char> l;
-		l.push(0, 2);
-		l.set(0, '0');
-		l.set(1, '\n');
-		l.push(2, 2);
-		l.set(2, '1');
-		l.set(3, '\n');
-		l.push(4, 2);
-		l.set(4, '2');
-		l.set(5, '\n');
-		l.pop(0, 4);
-		for (int i = 0; i < l.length(); ++i) {
-			print("l.get(%%) = %%\n", i, l.get(i));
+		print("Test 2:\n");
+		NewList<int> list;
+		list << 1 << 2 << 3 << 4 << 5 << 6;
+		print(list);
+		NewList<int>::Index i = list.first();
+		while (list.def(i)) {
+			if (list.at(i) % 2 != 0)
+				list.pop(i);
+			++i;
 		}
+		print(list);
+		list.clear();
+		print(list);
+		list.append(1);
+		list.append(2);
+		print(list);
 	}
-	
+	{
+		print("Test 3:\n");
+		NewList<int> list;
+		list << 1 << 2 << 3;
+		print(list);
+		int x, y, z;
+		list >> x >> y >> z;
+		print(list);
+		print("x, y, z = %%, %%, %%\n", x, y, z);
+	}
+	{
+		print("Test 4:\n");
+		NewList<int> list;
+		Random random;
+		for (int i = 0; i < 10; ++i)
+			list << random.get(0, 99);
+		print(list);
+		Heap<int>(list.length()) << list >> list;
+		print(list);
+		Stack<int>(list.length()) << list >> list;
+		print(list);
+		Queue<int>(list.length()) << list >> list;
+		print(list);
+	}
+	{
+		print("Test 5:\n");
+		NewList< Pair<int, int> > list;
+		Random random;
+		for (int i = 0; i < 10; ++i)
+			list << Pair<int, int>(random.get(0, 99), i);
+		print("#list = %%\n", list.length());
+		Map<int, int>() << list >> list;
+		print("#list = %%\n", list.length());
+		print("[");
+		for (NewList< Pair<int, int> >::Index i = list.first(); list.def(i); ++i) {
+			print("(%%, %%)", list.at(i).key(), list.at(i).value());
+			if (list.def(i+1)) print(", ");
+		}
+		print("]\n");
+	}
 	return 0;
 }
 

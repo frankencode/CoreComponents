@@ -68,7 +68,7 @@ void Service::serve(Ref<StreamSocket> socket)
 	
 	if (options()->files_->length() > 0)
 	{
-		entity = options()->files_->get(fileIndex_);
+		entity = options()->files_->at(fileIndex_);
 		fileIndex_ = (fileIndex_ + 1) % options()->files_->length();
 	}
 	
@@ -101,11 +101,11 @@ Ref<Process, Owner> Service::exec(String entity)
 	Ref<ProcessFactory, Owner> factory = new ProcessFactory;
 	factory->setType(Process::GroupLeader);
 	{
-		Ref<UStringList, Owner> l = entity.split(" ");
+		Ref<StringList, Owner> l = entity.split(" ");
 		if (l->length() > 1) {
-			entity = l->get(0);
-			for (int i = 1; i < l->length(); ++i)
-				factory->options()->append(l->get(i));
+			entity = l->at(0);
+			for (StringList::Index i = l->first() + 1; l->def(i); ++i)
+				factory->options()->append(l->at(i));
 		}
 	}
 	if ((entity.split("/"))->length() == 1) {

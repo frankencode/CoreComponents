@@ -43,7 +43,7 @@ String LineSource::readLine(bool* eoi)
 	int i = 0;
 	while (k < nk)
 	{
-		char ch = cache_.popFront();
+		char ch = cache_.pop();
 		k = (ch == eol_->at(k)) ? k + 1 : 0;
 		buf_[i] = ch;
 		++i;
@@ -83,7 +83,7 @@ void LineSource::readAvail(bool* eoi)
 			++cachedLines_;
 		}
 		
-		cache_.pushBack(ch);
+		cache_.push(ch);
 	}
 }
 

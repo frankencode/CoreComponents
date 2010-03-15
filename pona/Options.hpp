@@ -11,7 +11,7 @@
 #include "atoms"
 #include "String.hpp"
 #include "Variant.hpp"
-#include "List.hpp"
+#include "NewList.hpp"
 #include "Syntax.hpp"
 
 namespace pona
@@ -25,7 +25,7 @@ public:
 	Options();
 	
 	void define(char shortName, String longName, Ref<Variant> value, String description = "");
-	Ref<UStringList, Owner> read(int argc, char** argv);
+	Ref<StringList, Owner> read(int argc, char** argv);
 	
 	String entity(String newValue = "");
 	String synopsis(String newValue = "");
@@ -37,7 +37,7 @@ public:
 	String execDir() const;
 	
 private:
-	Ref<UStringList, Owner> read(String line);
+	Ref<StringList, Owner> read(String line);
 	
 	RULE longNameRule_;
 	RULE shortNameRule_;
@@ -56,7 +56,7 @@ private:
 		Ref<Variant, SetNull> value_;
 	};
 	
-	typedef List< Ref<Option, Owner> > OptionList;
+	typedef NewList< Ref<Option, Owner> > OptionList;
 	Ref<OptionList, Owner> optionList_;
 	String entity_;
 	String synopsis_;

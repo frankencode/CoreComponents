@@ -32,8 +32,8 @@ void Event::pushFront(Ref<Action> handler)
 void Event::remove(Ref<Action> handler)
 {
 	mutex_.acquire();
-	int i = handlers_->find(handler);
-	if (i != handlers_->length())
+	Handlers::Index i = handlers_->find(handler);
+	if (handlers_->def(i))
 		handlers_->remove(i);
 	mutex_.release();
 }
@@ -41,8 +41,8 @@ void Event::remove(Ref<Action> handler)
 void Event::run()
 {
 	mutex_.acquire();
-	for (int i = 0, n = handlers_->length(); i < n; ++i)
-		handlers_->get(i)->run();
+	for (Handlers::Index i = handlers_->first(); handlers_->def(i); ++i)
+		handlers_->at(i)->run();
 	mutex_.release();
 }
 

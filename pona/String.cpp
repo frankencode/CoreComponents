@@ -23,23 +23,22 @@ void String::validate(const char* data, int size)
 	}
 }
 
-void String::assign(Ref<UStringList> parts, const char* glue)
+void String::assign(Ref<StringList> parts, const char* glue)
 {
 	int glueSize = pona::strlen(glue);
 	validate(glue, glueSize);
-	int ni = parts->length();
-	if (ni > 0) {
+	if (parts->length() > 0) {
 		int size = 0;
-		for (int i = 0; i < ni; ++i)
-			size += parts->get(i)->size();
-		size += (ni - 1) * glueSize;
+		for (StringList::Index i = parts->first(); parts->def(i); ++i)
+			size += parts->at(i)->size();
+		size += (parts->length() - 1) * glueSize;
 		set(new Media(size));
 		char* p = media()->data();
-		for (int i = 0; i < ni; ++i) {
-			String part = parts->get(i);
+		for (StringList::Index i = parts->first(); parts->def(i); ++i) {
+			String part = parts->at(i);
 			pona::memcpy(p, part->data(), part->size());
 			p += part->size();
-			if (i < ni - 1) {
+			if (parts->def(i + 1)) {
 				pona::memcpy(p, glue, glueSize);
 				p += glueSize;
 			}
@@ -74,9 +73,9 @@ String::Index String::find(const Index& index, const char* pattern) const
 	return (*m) ? Index() : Index(media()->data(), t - (m - pattern));
 }
 
-Ref<UStringList, Owner> String::split(const char* pattern) const
+Ref<StringList, Owner> String::split(const char* pattern) const
 {
-	Ref<UStringList, Owner> parts = new UStringList;
+	Ref<StringList, Owner> parts = new StringList;
 	Index index0 = first();
 	int patternSize = pona::strlen(pattern);
 	while (index0.valid()) {
@@ -86,13 +85,13 @@ Ref<UStringList, Owner> String::split(const char* pattern) const
 		index0 = Index(media()->data(), index1.pos() + patternSize);
 	}
 	if (index0.valid())
-		parts->append(String(index0, eoi()));
+		parts->append(String(index0, end()));
 	else
 		parts->append(String());
 	return parts;
 }
 
-int String::toInt(bool* ok)
+int String::toInt(bool* ok) const
 {
 	bool h;
 	if (!ok) ok = &h;
@@ -108,12 +107,12 @@ int String::toInt(bool* ok)
 	return sign * int(value);
 }
 
-double String::toFloat(bool* ok)
+double String::toFloat(bool* ok) const
 {
 	return toFloat64(ok);
 }
 
-int64_t String::toInt64(bool* ok)
+int64_t String::toInt64(bool* ok) const
 {
 	uint64_t value = 0;
 	int sign = 0;
@@ -129,7 +128,7 @@ int64_t String::toInt64(bool* ok)
 	return sign * value;
 }
 
-uint64_t String::toUInt64(bool* ok)
+uint64_t String::toUInt64(bool* ok) const
 {
 	uint64_t value = 0;
 	int sign = 0;
@@ -145,7 +144,7 @@ uint64_t String::toUInt64(bool* ok)
 	return value;
 }
 
-float64_t String::toFloat64(bool* ok)
+float64_t String::toFloat64(bool* ok) const
 {
 	float64_t value = 0.;
 	int i1 = 0;

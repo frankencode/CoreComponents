@@ -1,5 +1,5 @@
 /*
- * Heap.hpp -- fixed size min/max heap
+ * Heap.hpp -- static min/max heap
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -9,6 +9,7 @@
 #define PONA_HEAP_HPP
 
 #include "atoms"
+#include "Exception.hpp"
 
 namespace pona
 {
@@ -17,12 +18,17 @@ template<class T>
 class Heap: public Instance, public NonCopyable
 {
 public:
-	enum SortOrder { Ascending = 0, Descending = 1 };
+	typedef T Item;
+	
+	enum SortOrder {
+		Ascending = pona::Ascending,
+		Descending = pona::Descending
+	};
 	
 	Heap(int size, int order = Ascending)
 		: fill_(0),
 		  size_(size),
-		  dscOrder_(order == Descending),
+		  ascOrder_(order == Ascending),
 		  bufOwner_(true),
 		  buf_(new T[size])
 	{}
@@ -30,7 +36,7 @@ public:
 	Heap(T* buf, int size, int order = Ascending)
 		: fill_(0),
 		  size_(size),
-		  dscOrder_(order == Descending),
+		  ascOrder_(order == Ascending),
 		  bufOwner_(false),
 		  buf_(buf)
 	{}
@@ -46,43 +52,61 @@ public:
 	
 	inline int size() const { return size_; }
 	inline int fill() const { return fill_; }
+	inline bool full() const { return fill_ == size_; }
+	inline bool empty() const { return fill_ == 0; }
 
-	inline bool isFull() const { return fill_ == size_; }
-	inline bool isEmpty() const { return fill_ == 0; }
-
-	inline void push(T e)
+	inline Heap& push(const T& item)
 	{
 		check(fill_ < size_);
-		buf_[fill_] = e;
+		buf_[fill_] = item;
 		++fill_;
 		passUpLast();
+		return *this;
 	}
 
-	inline T pop()
+	inline Heap& pop(T& item)
 	{
 		check(fill_ > 0);
-		T e = buf_[0];
+		item = buf_[0];
 		--fill_;
 		buf_[0] = buf_[fill_];
 		passDownFromTop();
-		return e;
+		return *this;
 	}
-
-	inline void clear()
-	{
-		fill_ = 0;
+	
+	inline T pop() {
+		T item;
+		pop(item);
+		return item;
 	}
+	
+	inline T top() { check(!empty()); return buf_[0]; }
+	
+	inline Heap& operator<<(const T& item) { return push(item); }
+	inline Heap& operator>>(T& item) { return pop(item); }
+	
+	template<template<class> class CB>
+	inline Heap& operator<<(CB<T>& cb) {
+		while (!cb.empty()) {
+			T item;
+			cb >> item;
+			*this << item;
+		}
+		return *this;
+	}
+	
+	inline void clear() { fill_ = 0; }
 	
 protected:
 	int fill_;    // current number of elements
 	int size_;    // maximal number of elements
-	bool dscOrder_;    // used for ascending or descending sort?
+	bool ascOrder_;    // used for ascending or descending sort?
 	bool bufOwner_;
 	T* buf_;    // memory buffer used for storing elements
 	
 	inline static int parent(int i) { return (i - 1) / 2; }
-	inline static int leftChild(int i) { return 2*i + 1; }
-	inline static int rightChild(int i) { return 2*i + 2; }
+	inline static int leftChild(int i) { return 2 * i + 1; }
+	inline static int rightChild(int i) { return 2 * i + 2; }
 
 	void xchg(int i, int j);
 	int min(int i, int j, int k);
@@ -126,7 +150,7 @@ void Heap<T>::passUpLast()
 	{
 		int j;
 		j = parent(i);
-		if ((buf_[j] < buf_[i]) == dscOrder_) break;
+		if ((buf_[j] < buf_[i]) == ascOrder_) break;
 		xchg(i, j);
 		i = j;
 	}
@@ -147,7 +171,7 @@ void Heap<T>::passDownFromTop()
 	
 		if ((lc < fill_) && ((rc < fill_)))
 		{
-			j = (dscOrder_) ? min(i, lc, rc) : max(i, lc, rc);
+			j = (ascOrder_) ? min(i, lc, rc) : max(i, lc, rc);
 			if (j == i) break;
 			
 			xchg(i, j);
@@ -158,12 +182,12 @@ void Heap<T>::passDownFromTop()
 		
 		if (lc < fill_)
 		{
-			if ((buf_[i] < buf_[lc]) != dscOrder_) xchg(i, lc);
+			if ((buf_[i] < buf_[lc]) != ascOrder_) xchg(i, lc);
 		}
 		else
 		if (rc < fill_)
 		{
-			if ((buf_[i] < buf_[rc]) != dscOrder_) xchg(i, rc);
+			if ((buf_[i] < buf_[rc]) != ascOrder_) xchg(i, rc);
 		}
 		
 		break;

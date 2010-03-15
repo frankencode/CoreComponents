@@ -5,7 +5,7 @@
 #include "Stack.hpp"
 #include "Queue.hpp"
 #include "Heap.hpp"
-#include "List.hpp"
+#include "NewList.hpp"
 #include "Map.hpp"
 #include "Tree.hpp"
 #include "PrefixTree.hpp"

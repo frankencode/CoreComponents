@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <pona/stdio>
 #include <pona/misc>
 

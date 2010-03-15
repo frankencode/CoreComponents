@@ -72,7 +72,7 @@ void Options::read(int argc, char** argv)
 		else if (eol == "crlf") eol_ = "\015\012";
 		
 		if (canon_) {
-			Ref<UStringList, Owner> dirs = Process::env("PATH").split(":");
+			Ref<StringList, Owner> dirs = Process::env("PATH").split(":");
 			if (!dirs->contains(execDir()))
 				dirs->append(execDir());
 			editorPath_ = Path::lookup(dirs, editor_);
@@ -81,9 +81,9 @@ void Options::read(int argc, char** argv)
 		}
 		
 		loggingFlags_ = 0;
-		Ref<UStringList, Owner> logs = String(options()->logging_).split(",");
-		for (int i = 0; i < logs->length(); ++i) {
-			String log = logs->get(i);
+		Ref<StringList, Owner> logs = String(options()->logging_).split(",");
+		for (StringList::Index i = logs->first(); logs->def(i); ++i) {
+			String log = logs->at(i);
 			if (log == "");
 			else if (log == "connect") loggingFlags_ |= LogFile::Connect;
 			else if (log == "recv") loggingFlags_ |= LogFile::Recv;
@@ -101,7 +101,7 @@ void Options::read(int argc, char** argv)
 Ref<SocketAddress, Owner> Options::address() const
 {
 	Ref<SocketAddressList, Owner> choice = SocketAddress::resolve(String(host_), Format("%%") << int(port_), bool(inet6_) ? AF_INET6 : AF_UNSPEC, SOCK_STREAM);
-	return choice->first();
+	return choice->at(0);
 }
 
 } // namespace rio

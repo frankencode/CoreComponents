@@ -148,34 +148,50 @@ inline bool isSpace(char ch) {
 	return (ch == ' ') || (ch == '\t');
 }
 
-/*class Char
-{
-public:
-	Char() {}
-	Char(uint32_t ch): ch_(ch) {}
-	inline const Char& operator=(uint32_t ch) { ch_ = ch; return *this; }
-	inline operator uint32_t() const { return ch_; }
-
-	Char toLower() {
-		Char ch = ch_;
-		if (('A' <= ch) && (ch <= 'Z'))
-			ch = ch + 'a' - 'A';
-		return ch;
-	}
-	
-	Char toUpper() {
-		Char ch = ch_;
-		if (('a' <= ch) && (ch <= 'z'))
-			ch = ch + 'A' - 'a';
-		return ch;
-	}
-
-private:
-	uint32_t ch_;
-};*/
-
 inline void* malloc(int size) { return new char[size]; }
 inline void free(void* buf) { delete[] reinterpret_cast<char*>(buf); }
+
+template<class T>
+class Return: public T
+{
+public:
+	Return(const T& b): T(b) {}
+	inline operator T() { return *this; }
+};
+
+/*
+template<
+	template<class> class CA,
+	template<class> class CB,
+	class T
+>
+inline CA<T>& operator<<(CA<T>& ca, CB<T>& cb)
+{
+	while (!cb.empty()) {
+		T item;
+		cb >> item;
+		ca << item;
+	}
+	return ca;
+}*/
+
+template<
+	template<class> class CA,
+	template<class> class CB,
+	class T
+>
+inline CA<T>& operator>>(CA<T>& ca, CB<T>& cb)
+{
+	cb << ca;
+	return ca;
+}
+
+enum SortOrder {
+	Ascending = 0,
+	Descending = 1,
+	Asc = Ascending,
+	Desc = Descending
+};
 
 } // namespace pona
 

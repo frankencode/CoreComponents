@@ -31,7 +31,7 @@ public:
 	Variant canon_, editor_, eol_, ioUnit_;
 	Variant quiet_, logging_, logDir_;
 	Variant exec_, loop_, repeat_;
-	Ref<UStringList, Owner> files_;
+	Ref<StringList, Owner> files_;
 	
 	String editorPath_;
 	int loggingFlags_;
