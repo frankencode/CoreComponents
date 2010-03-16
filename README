@@ -1,24 +1,34 @@
 Welcome to libPONA!
 ===================
 
-libPONA is an object-oriented and portable system programming library
-targeting BSD and Linux systems. libPONA is written in C++ with zero
-dependencies to exiting C++ libraries and only a few references to
-the underlying C library. Most classes are implemented directly on
-top of POSIX or BSD system calls.
+libPONA is an alternative C++ runtime and utility library.
+It is based solely on BSD system calls and core C++ language features.
+The goal is to create a highly consistent library, which enables writing realtime
+applications with a high chance of survivability in an open networked world.
+Therefore the main design objectives are rather different from the standard
+STL+boost libraries. The goal is to create a passively safe API encapsulating
+non-obfuscated implementations, which are easy to prove for correctness.
+Passively safe means, there shouldn't be a possibility to misuse any
+function in a way that stays undiscovered or is otherwise unobvious.
+Ultimately libPONA will bring back fun into coding C++.
 
-libPONA partly breaks the static typing system of C++ to support a
-more elegant programming style using assisted memory management and
-automatic type casting. The project's goal is to provide a maximum of
-functionality on a minimum code footprint, while favoring correctness
-over feature completeness.
-
-The entire library is licensed under a triple-clause BSD license,
-which is compatible to GPLv3. 
-
-Homepage:
-http://trac.cyblogic.com/libPONA
+Current Features:
+	- incremental automatic garbage collection
+	- UTF8 based string processing
+	- generic pattern matching and parser construction
+	- rich set of static and dynamic containers
+	- formatting binary and textual I/O
+	- file and directory I/O
+	- file streams and streaming sockets
+	- IPv4/IPv6 routing information
+	- advanced thread synchronisation (e.g. golang style channels)
+	- thread-safe local statics, singletons and standard I/O
+	- process forking, file locks and shared memory
+	- overloading of signals
+	- thread and process termination events
+	- access to user and group information
+	- precise timers
+	- pseudo random numbers
 
 Contact:
 frank@cyblogic.de, Frank Mertens
-
