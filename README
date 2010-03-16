@@ -10,7 +10,6 @@ STL+boost libraries. The goal is to create a passively safe API encapsulating
 non-obfuscated implementations, which are easy to prove for correctness.
 Passively safe means, there shouldn't be a possibility to misuse any
 function in a way that stays undiscovered or is otherwise unobvious.
-Ultimately libPONA will bring back fun into coding C++.
 
 Current Features:
 	- incremental automatic garbage collection
