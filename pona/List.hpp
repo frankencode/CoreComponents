@@ -5,8 +5,8 @@
  *
  * See ../LICENSE for the license.
  */
-#ifndef PONA_NEWLIST_HPP
-#define PONA_NEWLIST_HPP
+#ifndef PONA_LIST_HPP
+#define PONA_LIST_HPP
 
 #include "atoms"
 #include "Sequence.hpp"
@@ -17,14 +17,14 @@ namespace pona
 {
 
 template<class T>
-class NewList: public Sequence< T, ListIterator<T> >, public NonCopyable
+class List: public Sequence< T, ListIterator<T> >, public NonCopyable
 {
 public:
 	typedef ListIterator<T> Index;
 	typedef T Item;
 	
-	NewList(int maxLength = intMax);
-	~NewList();
+	List(int maxLength = intMax);
+	~List();
 	
 	inline Return<Index> first() const { return Index(firstNode_, this); }
 	inline Return<Index> last() const { return Index(lastNode_, this); }
@@ -53,8 +53,8 @@ public:
 	}
 	
 	// list structure manipulation
-	NewList& push(Index& index, const T& item);
-	NewList& pop(Index& index, T& item);
+	List& push(Index& index, const T& item);
+	List& pop(Index& index, T& item);
 	inline T pop(Index& index) {
 		Item item;
 		pop(index, item);
@@ -66,14 +66,14 @@ public:
 	inline int size() const { return maxLength_; }
 	inline int fill() const { return length_; }
 	inline int full() const { return length_ >= maxLength_; }
-	inline NewList& push(const T& item) { return push(end(), item); }
-	inline NewList& pop(T& item) { return pop(first(), item); }
+	inline List& push(const T& item) { return push(end(), item); }
+	inline List& pop(T& item) { return pop(first(), item); }
 	inline T pop() { T item; pop(item); return item; }
-	inline NewList& operator<<(const T& item) { return push(item); }
-	inline NewList& operator>>(T& item) { return pop(item); }
+	inline List& operator<<(const T& item) { return push(item); }
+	inline List& operator>>(T& item) { return pop(item); }
 	
 	template<template<class> class CB>
-	inline NewList& operator<<(CB<T>& cb) {
+	inline List& operator<<(CB<T>& cb) {
 		while (!cb.empty()) {
 			T item;
 			cb >> item;
@@ -93,9 +93,9 @@ public:
 		else
 			return (j == length_) ? end() : Index(0, this);
 	}
-	// inline T get(int j) const { return get(index(j)); }
+	inline T get(int j) const { return get(index(j)); }
 	inline const T& at(int j) const { return at(index(j)); }
-	// inline void set(int j, const T& item) { set(j, item); }
+	inline void set(int j, const T& item) { set(index(j), item); }
 	
 	// convenience methods
 	inline void append(const T& item) { push(end(), item); }
@@ -112,11 +112,11 @@ public:
 	inline bool contains(const T& item) const { return def(find(item)); }
 	
 	// return value to reference conversion wrappers
-	inline NewList& push(Return<Index> ret, const T& item) {
+	inline List& push(Return<Index> ret, const T& item) {
 		Index index = ret;
 		return push(index, item);
 	}
-	inline NewList& pop(Return<Index> ret, T& item) {
+	inline List& pop(Return<Index> ret, T& item) {
 		Index index = ret;
 		return pop(index, item);
 	}
@@ -126,11 +126,11 @@ public:
 		pop(ret, item);
 		return item;
 	}
-	inline NewList& insert(Return<Index> ret, const T& item) {
+	inline List& insert(Return<Index> ret, const T& item) {
 		Index index = ret;
 		return push(index, item);
 	}
-	inline NewList& remove(Return<Index> ret, T& item) {
+	inline List& remove(Return<Index> ret, T& item) {
 		Index index = ret;
 		return pop(index, item);
 	}
@@ -147,7 +147,7 @@ private:
 };
 
 template<class T>
-NewList<T>::NewList(int maxLength)
+List<T>::List(int maxLength)
 	: firstNode_(0),
 	  lastNode_(0),
 	  length_(0),
@@ -155,13 +155,13 @@ NewList<T>::NewList(int maxLength)
 {}
 
 template<class T>
-NewList<T>::~NewList()
+List<T>::~List()
 {
 	clear();
 }
 
 template<class T>
-NewList<T>& NewList<T>::push(Index& index, const T& item)
+List<T>& List<T>::push(Index& index, const T& item)
 {
 	check(index.list_ == this);
 	check(index.valid() || index.atEnd() || empty());
@@ -190,7 +190,7 @@ NewList<T>& NewList<T>::push(Index& index, const T& item)
 }
 
 template<class T>
-NewList<T>& NewList<T>::pop(Index& index, T& oldItem)
+List<T>& List<T>::pop(Index& index, T& oldItem)
 {
 	check(index.list_ == this);
 	check(index.valid());
@@ -217,14 +217,14 @@ NewList<T>& NewList<T>::pop(Index& index, T& oldItem)
 }
 
 template<class T>
-void NewList<T>::clear()
+void List<T>::clear()
 {
 	while (last().valid())
 		pop(last());
 }
 
 template<class T>
-typename NewList<T>::Index NewList<T>::find(const T& item, Index index) const
+typename List<T>::Index List<T>::find(const T& item, Index index) const
 {
 	while (index.valid()) {
 		if (at(index) == item) break;
@@ -234,7 +234,7 @@ typename NewList<T>::Index NewList<T>::find(const T& item, Index index) const
 }
 
 template<class T>
-int NewList<T>::replace(const T& oldItem, const T& newItem)
+int List<T>::replace(const T& oldItem, const T& newItem)
 {
 	Index index = first();
 	int numReplaced = 0;
@@ -249,4 +249,4 @@ int NewList<T>::replace(const T& oldItem, const T& newItem)
 
 } // namespace pona
 
-#endif // PONA_NEWLIST_HPP
+#endif // PONA_LIST_HPP

@@ -35,17 +35,19 @@ public:
 	
 	inline Format& print(char ch) { get()->insert(get()->index(nextPlaceHolder()->j_), String(&ch, 1)); return *this; }
 	
-	inline Format& print(uint8_t x) { printInt(x); return *this; }
-	inline Format& print(uint16_t x) { printInt(x); return *this; }
-	inline Format& print(uint32_t x) { printInt(x); return *this; }
-	inline Format& print(uint64_t x) { printInt(x); return *this; }
+	inline Format& print(unsigned char x) { printInt(x); return *this; }
+	inline Format& print(unsigned short x) { printInt(x); return *this; }
+	inline Format& print(unsigned int x) { printInt(x); return *this; }
+	inline Format& print(unsigned long x) { printInt(x); return *this; }
+	inline Format& print(unsigned long long x) { printInt(x); return *this; }
 	
-	inline Format& print(int16_t x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
-	inline Format& print(int32_t x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
-	inline Format& print(int64_t x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
+	inline Format& print(short x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
+	inline Format& print(int x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
+	inline Format& print(long x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
+	inline Format& print(long long x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
 	
-	inline Format& print(float32_t x) { printFloat(x); return *this; }
-	inline Format& print(float64_t x) { printFloat(x); return *this; }
+	inline Format& print(float x) { printFloat(x); return *this; }
+	inline Format& print(double x) { printFloat(x); return *this; }
 	
 	inline Format& print(bool x) { return print(x ? "true" : "false"); }
 	inline Format& print(void* x) {

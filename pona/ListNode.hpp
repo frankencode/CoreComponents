@@ -15,13 +15,13 @@ template<class T>
 class ListIterator;
 
 template<class T>
-class NewList;
+class List;
 
 template<class T>
 class ListNode {
 private:
 	friend class ListIterator<T>;
-	friend class NewList<T>;
+	friend class List<T>;
 	
 	ListNode()
 		: previous_(0),

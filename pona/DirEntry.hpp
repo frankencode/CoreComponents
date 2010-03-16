@@ -9,7 +9,7 @@
 #define PONA_DIRENTRY_HPP
 
 #include <dirent.h>
-#include "NewList.hpp"
+#include "List.hpp"
 #include "String.hpp"
 #include "FileStatus.hpp"
 
@@ -34,7 +34,7 @@ private:
 	String path_;
 };
 
-typedef NewList<DirEntry> DirEntryList;
+typedef List<DirEntry> DirEntryList;
 
 } // namespace pona
 
