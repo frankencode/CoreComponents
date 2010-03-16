@@ -6,8 +6,8 @@ namespace pona
 {
 
 template<class T>
-void print(NewList<T>& list) {
-	NewList<int>::Index i = list.first();
+void print(List<T>& list) {
+	List<int>::Index i = list.first();
 	print("[");
 	while (list.def(i)) {
 		print("%%", list.at(i));
@@ -21,19 +21,19 @@ int main()
 {
 	{
 		print("Test 1:\n");
-		NewList<int> list;
+		List<int> list;
 		list << 1 << 2 << 3;
 		print(list);
-		NewList<int> list2;
+		List<int> list2;
 		list >> list2;
 		print(list2);
 	}
 	{
 		print("Test 2:\n");
-		NewList<int> list;
+		List<int> list;
 		list << 1 << 2 << 3 << 4 << 5 << 6;
 		print(list);
-		NewList<int>::Index i = list.first();
+		List<int>::Index i = list.first();
 		while (list.def(i)) {
 			if (list.at(i) % 2 != 0)
 				list.pop(i);
@@ -48,7 +48,7 @@ int main()
 	}
 	{
 		print("Test 3:\n");
-		NewList<int> list;
+		List<int> list;
 		list << 1 << 2 << 3;
 		print(list);
 		int x, y, z;
@@ -58,7 +58,7 @@ int main()
 	}
 	{
 		print("Test 4:\n");
-		NewList<int> list;
+		List<int> list;
 		Random random;
 		for (int i = 0; i < 10; ++i)
 			list << random.get(0, 99);
@@ -72,7 +72,7 @@ int main()
 	}
 	{
 		print("Test 5:\n");
-		NewList< Pair<int, int> > list;
+		List< Pair<int, int> > list;
 		Random random;
 		for (int i = 0; i < 10; ++i)
 			list << Pair<int, int>(random.get(0, 99), i);
@@ -80,7 +80,7 @@ int main()
 		Map<int, int>() << list >> list;
 		print("#list = %%\n", list.length());
 		print("[");
-		for (NewList< Pair<int, int> >::Index i = list.first(); list.def(i); ++i) {
+		for (List< Pair<int, int> >::Index i = list.first(); list.def(i); ++i) {
 			print("(%%, %%)", list.at(i).key(), list.at(i).value());
 			if (list.def(i+1)) print(", ");
 		}

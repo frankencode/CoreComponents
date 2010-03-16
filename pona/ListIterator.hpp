@@ -15,7 +15,7 @@ namespace pona
 {
 
 template<class T>
-class NewList;
+class List;
 
 template<class T>
 class ListIterator {
@@ -77,18 +77,18 @@ public:
 	}
 	
 private:
-	friend class NewList<T>;
+	friend class List<T>;
 	
-	ListIterator(const ListNode<T>* node, const NewList<T>* list)
+	ListIterator(const ListNode<T>* node, const List<T>* list)
 		: node_(const_cast<ListNode<T>*>(node)),
-		  list_(const_cast<NewList<T>*>(list))
+		  list_(const_cast<List<T>*>(list))
 	{}
 	
 	inline bool valid() const { return node_; }
 	inline bool atEnd() const { return &list_->endNode_ == node_; }
 	
 	ListNode<T>* node_;
-	NewList<T>* list_;
+	List<T>* list_;
 };
 
 } // namespace pona

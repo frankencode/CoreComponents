@@ -10,7 +10,7 @@
 
 #include "AvlTree.hpp"
 #include "Pair.hpp"
-#include "NewList.hpp"
+#include "List.hpp"
 
 namespace pona
 {
@@ -24,9 +24,9 @@ private:
 
 public:
 	typedef Pair<Key,Value> Item;
-	typedef NewList<Item> ItemList;
-	typedef NewList<Key> KeyList;
-	typedef NewList<Value> ValueList;
+	typedef List<Item> ItemList;
+	typedef List<Key> KeyList;
+	typedef List<Value> ValueList;
 	
 	Map() {}
 	

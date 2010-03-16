@@ -11,7 +11,7 @@
 #include "atoms"
 #include "Utf8Iterator.hpp"
 #include "Array.hpp"
-#include "NewList.hpp"
+#include "List.hpp"
 
 namespace pona
 {
@@ -19,7 +19,7 @@ namespace pona
 class String;
 class Variant;
 
-typedef NewList<String> StringList;
+typedef List<String> StringList;
 typedef Array<char, DeepCopyZeroTerminatedArray> StringMedia;
 
 class String: public Ref<StringMedia, Owner>

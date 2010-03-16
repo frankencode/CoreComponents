@@ -7,7 +7,7 @@
 namespace pona
 {
 
-typedef Channel<int, NewList> MyChannel;
+typedef Channel<int, List> MyChannel;
 
 class Consumer: public Thread
 {

@@ -20,12 +20,12 @@ class LineSink: public Instance
 public:
 	LineSink(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, const char* eol = "\n");
 	~LineSink();
-
+	
 	void writeLine(String line);
 	void write(String s);
-
+	
 	Ref<Stream> stream() const;
-
+	
 private:
 	Ref<Stream, Owner> stream_;
 	String eol_;

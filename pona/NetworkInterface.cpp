@@ -538,7 +538,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			struct ifa_msghdr* msga = (struct ifa_msghdr*)msg;
 			char* attr = (char*)(msga + 1);
 			check(list->length() > 0);
-			Ref<NetworkInterface> interface = list->get(-1);
+			Ref<NetworkInterface> interface = list->at(-1);
 			// check(interface->index_ == msga->ifam_index); // HACK, OpenBSD can fullfill
 			Ref<SocketAddress, Owner> label;
 			for (int i = 0; i < RTAX_MAX; ++i) {

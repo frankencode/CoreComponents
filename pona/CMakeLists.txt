@@ -35,7 +35,7 @@ SET(PONA_HEADER
 	Heap.hpp
 	ListNode.hpp
 	ListIterator.hpp
-	NewList.hpp
+	List.hpp
 	Tree.hpp
 	PrefixTree.hpp
 	Pair.hpp

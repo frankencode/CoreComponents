@@ -11,7 +11,7 @@
 #include "atoms"
 #include "String.hpp"
 #include "Variant.hpp"
-#include "NewList.hpp"
+#include "List.hpp"
 #include "Syntax.hpp"
 
 namespace pona
@@ -56,7 +56,7 @@ private:
 		Ref<Variant, SetNull> value_;
 	};
 	
-	typedef NewList< Ref<Option, Owner> > OptionList;
+	typedef List< Ref<Option, Owner> > OptionList;
 	Ref<OptionList, Owner> optionList_;
 	String entity_;
 	String synopsis_;
