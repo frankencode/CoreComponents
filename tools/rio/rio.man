@@ -95,8 +95,8 @@ www stream tcpnowait user /full/path/rio rio -c -t=B -p=80 -q -g=send,recv -d=/h
 .TP
 Remotely working on another hosts:
 .nf
-Host A: rio -sax bash
-Host B: rio -c -t=A
+Host A: rio -sax /bin/bash
+Host B: rio -c -n=nl -t=A
 .fi
 .SH "SEE ALSO"
 hd(1), inetd(8), tcpdump(1), rget(1)

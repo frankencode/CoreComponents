@@ -6,25 +6,24 @@ namespace pona
 
 int main(int argc, char** argv)
 {
-	Variant echo = false;
-	Variant world = false;
-	Variant help = false;
-	Variant alpha = 1;
-	Variant beta = 2.;
+	CommandLine options;
+	Ref<CommandOption> echo  = options.define('e', "echo",  false, "Print \"Hello, echo!\"");
+	Ref<CommandOption> world = options.define('w', "world", false, "Print \"Hello, world!\"");
+	Ref<CommandOption> help  = options.define('h', "help",  false, "Print help");
+	Ref<CommandOption> alpha = options.define('a', "alpha", 1,     "Pass alpha value");
+	Ref<CommandOption> beta  = options.define('b', "beta",  2.,    "Pass beta value");
 	
-	Options options;
-	options.define('e', "echo", &echo, "Print \"Hello, echo!\"");
-	options.define('w', "world", &world, "Print \"Hello, world!\"");
-	options.define('h', "help", &help, "Print help");
-	options.define('a', "alpha", &alpha, "Pass alpha value");
-	options.define('b', "beta", &beta, "Pass beta value");
 	Ref<StringList, Owner> files = options.read(argc, argv);
 	
-	if (echo) print("Hello, echo!\n");
-	if (world) print("Hello, world!\n");
-	if (help) { print(options.help()); return 0; }
-	print("alpha, beta = %%, %%\n", alpha, beta);
-	print("alpha + beta = %%\n", int(alpha) + double(beta));
+	if (echo->value()) print("Hello, echo!\n");
+	if (world->value()) print("Hello, world!\n");
+	if (help->value()) {
+		print(options.helpText());
+		return 0;
+	}
+	
+	print("alpha, beta = %%, %%\n", alpha->value(), beta->value());
+	print("alpha + beta = %%\n", int(alpha->value()) + double(beta->value()));
 	print("files = [");
 	for (StringList::Index i = files->first(); files->def(i); ++i) {
 		print(" %%", files->at(i));
@@ -32,6 +31,7 @@ int main(int argc, char** argv)
 			print(",");
 	}
 	print("]\n");
+	
 	return 0;
 }
 

@@ -1,3 +1,10 @@
+/*
+ * LocalStatic -- allocation helper for local static variables
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_LOCALSTATIC_HPP
 #define PONA_LOCALSTATIC_HPP
 
@@ -11,9 +18,8 @@ namespace pona
 
 /** Initialize a local static variable in a thread-safe manner
   * (without requiring static local initialization to be supported by the compiler).
-  * Limitation: Does no good job in initializing a sequence of local statics.
   * Related thought: Maybe the compiler should warn about local statics instead of
-  * throwing in fancy locking logic.
+  * automatically throwing in fancy locking logic.
   */
 template<class T, class Scope = None>
 class LocalStatic

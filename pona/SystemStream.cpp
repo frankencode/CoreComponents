@@ -83,7 +83,7 @@ int SystemStream::readAvail(void* buf, int bufCapa)
 		ret = ::read(fd_, buf, bufCapa);
 		if (ret == -1) {
 			if (errno == EINTR) continue;
-			if (isTeletype()) { ret = 0; break; }
+			if (isTeletype()) { ret = 0; break; } // fancy HACK, needs review
 			PONA_THROW(StreamIoException, systemError());
 		}
 		break;

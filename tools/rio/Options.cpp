@@ -6,101 +6,87 @@
  * See ../../LICENSE for the license.
  */
 
-#include <pona/stdio>
+#include <pona/process>
 #include "LogFile.hpp"
 #include "Options.hpp"
 
 namespace rio
 {
 
-Mutex Options::lock_;
-
-Ref<Options> Options::instance()
-{
-	lock_.acquire();
-	static Ref<Options, Owner> instance = 0;
-	if (!instance)
-		instance = new Options;
-	lock_.release();
-	return instance;
-}
-
 Options::Options()
-	: server_(false), client_(false), help_(false),
-	  host_("*"), port_(7373), inet6_(false), backlog_(8),
-	  canon_(false), editor_("rio_rl"), eol_("crlf"), ioUnit_(0x8000),
-	  quiet_(false), logging_(""), logDir_(Process::cwd()),
-	  exec_(false), loop_(false), repeat_(1),
-	  loggingFlags_(0)
+	: loggingFlags_(0)
 {
-	define('s', "server", &server_, "Server mode");
-	define('c', "client", &client_, "Client mode");
-	define('t', "host", &host_, "Host name or address");
-	define('p', "port", &port_, "Port number");
-	define('6', "inet6", &inet6_, "Prefer IPv6");
-	define('b', "backlog", &backlog_, "Backlog length of listening socket");
-	define('a', "canon", &canon_, "Line-vise I/O mode");
-	define('e', "editor", &editor_, "Line editor");
-	define('n', "eol", &eol_, "Line ending style ('crlf' or 'nl')");
-	define('u', "io_unit", &ioUnit_, "I/O buffer size");
-	define('q', "quiet", &quiet_, "Keep quiet");
-	define('g', "logging", &logging_, "Logging flags (connect,recv,send,merged)");
-	define('d', "log_dir", &logDir_, "Target directory for log files");
-	define('x', "exec", &exec_, "Execute each [PROGRAM]");
-	define('l', "loop", &loop_, "Endless repeat serving connections");
-	define('r', "repeat", &repeat_, "Repeat serving exactly n connections");
-	define('h', "help", &help_, "Print help");
+	String cwd = Process::cwd();
+	
+	server_  = define('s', "server",  false,    "Server mode");
+	client_  = define('c', "client",  false,    "Client mode");
+	host_    = define('t', "host",    "*",      "Host name or address");
+	port_    = define('p', "port",    7373,     "Port number");
+	inet6_   = define('6', "inet6",   false,    "Prefer IPv6");
+	backlog_ = define('b', "backlog", 8,        "Backlog length of listening socket");
+	canon_   = define('a', "canon",   false,    "Line-vise I/O mode");
+	editor_  = define('e', "editor",  "rio_rl", "Line editor");
+	eol_     = define('n', "eol",     "crlf",   "Line ending style ('crlf' or 'nl')");
+	ioUnit_  = define('u', "io_unit", 0x8000,   "I/O buffer size");
+	quiet_   = define('q', "quiet",   false,    "Keep quiet");
+	logging_ = define('g', "logging", "",       "Logging flags (connect,recv,send,merged)");
+	logDir_  = define('d', "log_dir", cwd,      "Target directory for log files");
+	exec_    = define('x', "exec",    false,    "Execute each [PROGRAM]");
+	loop_    = define('l', "loop",    false,    "Endless repeat serving connections");
+	repeat_  = define('r', "repeat",  1,        "Repeat serving exactly n connections");
+	help_    = define('h', "help",    false,    "Print help");
+	
 	entity("FILE|PROGRAM");
 }
 
 void Options::read(int argc, char** argv)
 {
-	files_ = pona::Options::read(argc, argv);
+	files_ = CommandLine::read(argc, argv);
 	
-	if (help_) {
-		logDir_ = "<CWD>";
+	if (help_->value()) {
+		logDir_->setDefaultValue("<CWD>");
 	}
 	else {
-		int modeSum = int(bool(client_)) + int(bool(server_));
+		int modeSum = int(bool(client_->value())) + int(bool(server_->value()));
 		if (modeSum == 0)
 			PONA_THROW(Exception, "Missing option (--server or --client).");
 		else if (modeSum > 1)
 			PONA_THROW(Exception, "Contradicting option (--server or --client).");
 		
-		String eol = eol_;
-		if (eol == "nl") { eol_ = "\012"; }
-		else if (eol == "crlf") eol_ = "\015\012";
+		String eol = eol_->value();
+		if (eol == "nl") eol_->setValue("\012");
+		else if (eol == "crlf") eol_->setValue("\015\012");
 		
-		if (canon_) {
+		if (canon_->value()) {
 			Ref<StringList, Owner> dirs = Process::env("PATH").split(":");
 			if (!dirs->contains(execDir()))
 				dirs->append(execDir());
-			editorPath_ = Path::lookup(dirs, editor_);
+			editorPath_ = Path::lookup(dirs, editor_->value());
 			if (editorPath_ == "")
 				PONA_THROW(Exception, "Editor program could not be found.");
 		}
 		
 		loggingFlags_ = 0;
-		Ref<StringList, Owner> logs = String(options()->logging_).split(",");
+		Ref<StringList, Owner> logs = String(logging_->value()).split(",");
 		for (StringList::Index i = logs->first(); logs->def(i); ++i) {
 			String log = logs->at(i);
 			if (log == "");
 			else if (log == "connect") loggingFlags_ |= LogFile::Connect;
-			else if (log == "recv") loggingFlags_ |= LogFile::Recv;
-			else if (log == "send") loggingFlags_ |= LogFile::Send;
-			else if (log == "merged") loggingFlags_ |= LogFile::Merged;
+			else if (log == "recv")    loggingFlags_ |= LogFile::Recv;
+			else if (log == "send")    loggingFlags_ |= LogFile::Send;
+			else if (log == "merged")  loggingFlags_ |= LogFile::Merged;
 			else
 				PONA_THROW(Exception, "Incorrect '--logging=' syntax.");
 		}
 		
-		if (bool(exec_) && (files_->length() == 0))
+		if (exec() && (files_->length() == 0))
 			PONA_THROW(Exception, "No file passed to execute.");
 	}
 }
 
 Ref<SocketAddress, Owner> Options::address() const
 {
-	Ref<SocketAddressList, Owner> choice = SocketAddress::resolve(String(host_), Format("%%") << int(port_), bool(inet6_) ? AF_INET6 : AF_UNSPEC, SOCK_STREAM);
+	Ref<SocketAddressList, Owner> choice = SocketAddress::resolve(host(), Format("%%") << port(), inet6() ? AF_INET6 : AF_UNSPEC, SOCK_STREAM);
 	return choice->at(0);
 }
 

@@ -1,37 +1,38 @@
 /*
- * Options.hpp -- command line options
+ * CommandLine.hpp -- command line interface
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
-#ifndef PONA_OPTIONS_HPP
-#define PONA_OPTIONS_HPP
+#ifndef PONA_COMMANDLINE_HPP
+#define PONA_COMMANDLINE_HPP
 
 #include "atoms"
 #include "String.hpp"
 #include "Variant.hpp"
 #include "List.hpp"
 #include "Syntax.hpp"
+#include "CommandOption.hpp"
 
 namespace pona
 {
 
-PONA_EXCEPTION(OptionsException, Exception);
+PONA_EXCEPTION(CommandLineException, Exception);
 
-class Options: public Syntax<String::Media>::Definition
+class CommandLine: public Syntax<String::Media>::Definition
 {
 public:
-	Options();
+	CommandLine();
 	
-	void define(char shortName, String longName, Ref<Variant> value, String description = "");
+	Ref<CommandOption> define(char shortName, String longName, Variant defaultValue = false, String description = "");
 	Ref<StringList, Owner> read(int argc, char** argv);
 	
 	String entity(String newValue = "");
 	String synopsis(String newValue = "");
 	String summary(String newValue = "");
 	String details(String newValue = "");
-	String help();
+	String helpText() const;
 	String execPath() const;
 	String execName() const;
 	String execDir() const;
@@ -45,18 +46,7 @@ private:
 	RULE optionRule_;
 	RULE options_;
 	
-	class Option: public Instance
-	{
-	public:
-		char shortName_;
-		String longName_;
-		String description_;
-		int typeMask_;
-		// Variant defaultValue_;
-		Ref<Variant, SetNull> value_;
-	};
-	
-	typedef List< Ref<Option, Owner> > OptionList;
+	typedef List< Ref<CommandOption, Owner> > OptionList;
 	Ref<OptionList, Owner> optionList_;
 	String entity_;
 	String synopsis_;
@@ -67,13 +57,13 @@ private:
 	String execName_;
 	String execDir_;
 	
-	Ref<Option> optionByShortName(char name) const;
-	Ref<Option> optionByLongName(String name) const;
+	Ref<CommandOption> optionByShortName(char name) const;
+	Ref<CommandOption> optionByLongName(String name) const;
 	void readOption(String line, Ref<Token> token);
-	void readValue(Ref<Option> option, String line, Ref<Token> token);
+	void readValue(Ref<CommandOption> option, String line, Ref<Token> token);
 	void verifyTypes();
 };
 
 } // namespace pona
 
-#endif // PONA_OPTIONS_HPP
+#endif // PONA_COMMANDLINE_HPP

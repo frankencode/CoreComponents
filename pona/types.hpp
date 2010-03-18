@@ -186,11 +186,16 @@ inline CA<T>& operator>>(CA<T>& ca, CB<T>& cb)
 	return ca;
 }
 
-enum SortOrder {
-	Ascending = 0,
-	Descending = 1,
-	Asc = Ascending,
-	Desc = Descending
+template<class T>
+class Ascending {
+public:
+	static inline bool below(const T& a, const T& b) { return a < b; }
+};
+
+template<class T>
+class Descending {
+public:
+	static inline bool below(const T& a, const T& b) { return b < a; }
 };
 
 } // namespace pona

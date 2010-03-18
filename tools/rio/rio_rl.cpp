@@ -75,20 +75,44 @@ private:
 	bool failed_;
 };
 
+#if RL_VERSION_MAJOR >= 5
+class ReadlineCleanup: public Action {
+public:
+	ReadlineCleanup(int signal)
+		: signal_(signal)
+	{}
+private:
+	virtual void run() {
+		rl_free_line_state();
+		rl_cleanup_after_signal();
+		rl_catch_sigwinch = 1;
+		rl_set_signals();
+		Process::raise(SIGALRM);
+	}
+	int signal_;
+};
+#endif
+
 int main(int argc, char** argv)
 {
-	Variant fdr = -1;
-	Variant fds = 1;
+#if RL_VERSION_MAJOR >= 5
+	signalEvent(SIGINT)->pushBack(new ReadlineCleanup(SIGINT));
+	signalEvent(SIGQUIT)->pushBack(new ReadlineCleanup(SIGQUIT));
+	signalEvent(SIGTERM)->pushBack(new ReadlineCleanup(SIGTERM));
+	signalEvent(SIGTSTP)->pushBack(new ReadlineCleanup(SIGTSTP));
+	signalEvent(SIGTTIN)->pushBack(new ReadlineCleanup(SIGTTIN));
+	signalEvent(SIGTTOU)->pushBack(new ReadlineCleanup(SIGTTOU));
+#endif
 	
-	Options options;
-	options.define(0, "fdr", &fdr, "Receiving file descriptor");
-	options.define(0, "fds", &fds, "Sending file descriptor");
+	CommandLine options;
+	Ref<CommandOption> fdr = options.define('r', "fdr", -1, "Receiving file descriptor");
+	Ref<CommandOption> fds = options.define('s', "fds", 1, "Sending file descriptor");
 	options.read(argc, argv);
 	
-	Ref<LineForwarder, Owner> forwarder = new LineForwarder(new SystemStream(fdr));
+	Ref<LineForwarder, Owner> forwarder = new LineForwarder(new SystemStream(fdr->value()));
 	forwarder->start();
 	
-	Ref<SystemStream, Owner> rawOutput = new SystemStream(fds);
+	Ref<SystemStream, Owner> rawOutput = new SystemStream(fds->value());
 	
 	while (true) {
 		char* buf = readline("");

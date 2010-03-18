@@ -50,7 +50,7 @@ void User::load(struct passwd* entry)
 		fullName_ = entry->pw_gecos;
 		if (fullName_->length() > 0)
 			if ((fullName_->get(0) == ',') || (fullName_->get(-1) == ',')) {
-				fullName_ = loginName_;
+				fullName_ = loginName_.deepCopy();
 				if (isLower(fullName_->at(0)))
 					fullName_->set(0, toUpper(fullName_->at(0)));
 				// fullName_ << " Anonymous";

@@ -71,6 +71,8 @@ SET(PONA_HEADER
 	LineSink.hpp
 	StandardStreams.hpp
 	FormatPrint.hpp
+	CommandOption.hpp
+	CommandLine.hpp
 	
 	threads
 	GlobalCoreMutex.hpp
@@ -89,7 +91,6 @@ SET(PONA_HEADER
 	process
 	User.hpp
 	Group.hpp
-	Options.hpp
 	SignalSet.hpp
 	Process.hpp
 	ProcessFactory.hpp
@@ -157,6 +158,7 @@ SET(PONA_SOURCE
 	LineSink.cpp
 	LineSource.cpp
 	StandardStreams.cpp
+	CommandLine.cpp
 	
 	# threads
 	GlobalCoreMutex.cpp
@@ -169,7 +171,6 @@ SET(PONA_SOURCE
 	# process
 	User.cpp
 	Group.cpp
-	Options.cpp
 	SignalSet.cpp
 	Process.cpp
 	ProcessFactory.cpp

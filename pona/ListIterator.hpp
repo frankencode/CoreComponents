@@ -24,6 +24,7 @@ public:
 	inline ListIterator& operator++() {
 		check(valid());
 		node_ = node_->next_;
+		if (!node_) node_ = &list_->endNode_;
 		return *this;
 	}
 	inline ListIterator& operator--() {
@@ -84,7 +85,7 @@ private:
 		  list_(const_cast<List<T>*>(list))
 	{}
 	
-	inline bool valid() const { return node_; }
+	inline bool valid() const { return node_ && (node_ != &list_->endNode_); }
 	inline bool atEnd() const { return &list_->endNode_ == node_; }
 	
 	ListNode<T>* node_;

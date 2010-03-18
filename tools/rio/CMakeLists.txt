@@ -10,6 +10,7 @@ ADD_EXECUTABLE(rio
 	ProcessObserver.hpp
 	Service.hpp
 	Service.cpp
+	KillAfterTimeout.hpp
 	rio.cpp
 )
 
