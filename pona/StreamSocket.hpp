@@ -13,7 +13,6 @@
 #include "Time.hpp"
 #include "SystemStream.hpp"
 #include "SocketAddress.hpp"
-#include "Mutex.hpp"
 
 namespace pona
 {
@@ -36,22 +35,9 @@ public:
 	static Ref<SocketAddress> localAddress(int fd);
 	static Ref<SocketAddress> remoteAddress(int fd);
 	
-	void runServer(Time idleTimeout = 0.1, int backlog = PONA_DEFAULT_BACKLOG);
-	void runClient(Time idleTimeout = 0.1);
-	void finish();
-	bool done() const;
-	
-protected:
-	virtual void init() {}
-	virtual void idle() {}
-	virtual void serve(Ref<StreamSocket> socket) {}
-	virtual void cleanup() {}
-	
 private:
 	Ref<SocketAddress, Owner> address_;
-	Mutex mutex_;
 	bool connected_;
-	bool done_;
 };
 
 } // namespace pona

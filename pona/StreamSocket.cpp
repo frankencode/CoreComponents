@@ -9,7 +9,6 @@
 #include <unistd.h> // close, select
 #include <fcntl.h> // fcntl
 #include <errno.h> // errno
-#include "Guard.hpp"
 #include "StreamSocket.hpp"
 
 namespace pona
@@ -18,8 +17,7 @@ namespace pona
 StreamSocket::StreamSocket(Ref<SocketAddress> address, int fd)
 	: SystemStream(fd),
 	  address_(address),
-	  connected_(fd != -1),
-	  done_(false)
+	  connected_(fd != -1)
 {
 	if (fd_ == -1) {
 		fd_ = ::socket(address->family(), SOCK_STREAM, 0);
@@ -123,43 +121,5 @@ Ref<SocketAddress> StreamSocket::remoteAddress(int fd)
 		PONA_SYSTEM_EXCEPTION;
 	return address;
 }
-
-void StreamSocket::runServer(Time idleTimeout, int backlog)
-{
-	bind();
-	listen(backlog);
-	init();
-	
-	while (!done_)
-	{
-		while (!done_) {
-			if (readyAccept(idleTimeout)) break;
-			if (done_) break;
-			idle();
-		}
-		
-		if (done_) break;
-		
-		Ref<StreamSocket, Owner> socket = accept();
-		if (!done_)
-			serve(socket);
-	}
-	
-	close();
-	cleanup();
-}
-
-void StreamSocket::runClient(Time idleTimeout)
-{
-	connect();
-	while (!established(idleTimeout))
-		idle();
-	serve(this);
-	close();
-	cleanup();
-}
-
-void StreamSocket::finish() { Guard<Mutex> guard(); done_ = true; }
-bool StreamSocket::done() const { Guard<Mutex> guard(); return done_; }
 
 } // namespace pona
