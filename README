@@ -7,16 +7,16 @@ The goal is to create a highly consistent library, which enables writing realtim
 applications with a high chance of survivability in an open networked world.
 Therefore the main design objectives are rather different from the standard
 STL+boost libraries. The goal is to create a passively safe API encapsulating
-non-obfuscated implementations, which are easy to prove for correctness.
-Passively safe means, there shouldn't be a possibility to misuse any
-function in a way that stays undiscovered or is otherwise unobvious.
+non-obfuscated implementations. Any piece of code should be easy to prove for
+correctness. Passively safe means, there shouldn't be a possibility of misuse
+that stays undiscovered or is otherwise unobvious.
 
 Current Features:
 	- incremental automatic garbage collection
 	- UTF8 based string processing
 	- generic pattern matching and parser construction
 	- rich set of static and dynamic containers
-	- formatting binary and textual I/O
+	- formatted binary and textual I/O
 	- file and directory I/O
 	- file streams and streaming sockets
 	- IPv4/IPv6 routing information
@@ -26,6 +26,7 @@ Current Features:
 	- overloading of signals
 	- thread and process termination events
 	- access to user and group information
+	- command line option parsing
 	- precise timers
 	- pseudo random numbers
 

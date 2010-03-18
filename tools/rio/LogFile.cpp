@@ -17,7 +17,7 @@ LogFile::LogFile(Ref<SocketAddress> address, int type, Time t0, Ref<LogFile> mer
 	  type_(type),
 	  merged_(merged.get())
 {
-	if ((options()->loggingFlags_ & type) != 0)
+	if ((options()->logging() & type) != 0)
 	{
 		String addressString = address->addressString();
 		addressString->replace('.', '-');
@@ -26,7 +26,7 @@ LogFile::LogFile(Ref<SocketAddress> address, int type, Time t0, Ref<LogFile> mer
 		int typeIndex = 0; while (type > 1) { type /= 2; ++typeIndex; }
 		
 		String path = Format("%%/%%_%%_%%_%%.log")
-			<< options()->logDir_
+			<< options()->logDir()
 			<< t0.ms()
 			<< addressString
 			<< address->port()
@@ -50,7 +50,7 @@ void LogFile::writeLine(Ref<SocketAddress> address, String data)
 			<< address->addressString()
 			<< address->port();
 		
-		if (!bool(options()->quiet_))
+		if (!options()->quiet())
 			error()->writeLine(line);
 	}
 	
@@ -60,7 +60,7 @@ void LogFile::writeLine(Ref<SocketAddress> address, String data)
 	if (merged_)
 	{
 		if ((type_ == Recv) || (type_ == Send)) {
-			bool client = options()->client_;
+			bool client = options()->client();
 			client = (client && (type_ == Send)) || ((!client) && (type_ == Recv));
 			if (client)
 				line = Format("C: ") << data;

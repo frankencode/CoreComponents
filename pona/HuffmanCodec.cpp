@@ -21,7 +21,7 @@ HuffmanCodec::HuffmanCodec( int rawDiversity,
 	  rawDynamicRange_(rawDynamicRange),
 	  codeTable_(new SymbolNode[2 * rawDiversity]),
 	  codeMap_(new SymbolRef[rawDynamicRange_]),
-	  heap_(2 * rawDiversity, Heap<SymbolRef>::Descending),
+	  heap_(2 * rawDiversity),
 	  bitStack_(rawDiversity)
 {
 	memoryConsumption();

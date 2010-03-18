@@ -17,7 +17,7 @@ BinaryForwarder::BinaryForwarder(Ref<SystemStream> source, Ref<SystemStream> sin
 	  recvLog_(recvLog.get()),
 	  cancelEvent_(cancelEvent.get()),
 	  done_(false), failed_(false),
-	  buf_(options()->ioUnit_),
+	  buf_(options()->ioUnit()),
 	  bytesTransferred_(0)
 {
 	class Finish: public Action {

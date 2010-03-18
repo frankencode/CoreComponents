@@ -14,29 +14,22 @@
 namespace pona
 {
 
-template<class T>
-class Heap: public Instance, public NonCopyable
+template<class T, template<class T> class Order = Ascending>
+class Heap: public Instance, private Order<T>, public NonCopyable
 {
 public:
 	typedef T Item;
 	
-	enum SortOrder {
-		Ascending = pona::Ascending,
-		Descending = pona::Descending
-	};
-	
-	Heap(int size, int order = Ascending)
+	Heap(int size)
 		: fill_(0),
 		  size_(size),
-		  ascOrder_(order == Ascending),
 		  bufOwner_(true),
 		  buf_(new T[size])
 	{}
 	
-	Heap(T* buf, int size, int order = Ascending)
+	Heap(T* buf, int size)
 		: fill_(0),
 		  size_(size),
-		  ascOrder_(order == Ascending),
 		  bufOwner_(false),
 		  buf_(buf)
 	{}
@@ -95,6 +88,16 @@ public:
 		return *this;
 	}
 	
+	template<template<class> class CB>
+	inline Heap& operator>>(CB<T>& cb) {
+		while (!empty()) {
+			T item;
+			*this >> item;
+			cb << item;
+		}
+		return *this;
+	}
+	
 	inline void clear() { fill_ = 0; }
 	
 protected:
@@ -108,91 +111,80 @@ protected:
 	inline static int leftChild(int i) { return 2 * i + 1; }
 	inline static int rightChild(int i) { return 2 * i + 2; }
 
-	void xchg(int i, int j);
-	int min(int i, int j, int k);
-	int max(int i, int j, int k);
-	void passUpLast();
-	void passDownFromTop();
-};
-
-template<class T>
-inline void Heap<T>::xchg(int i, int j)
-{
-	T h = buf_[i];
-	buf_[i] = buf_[j];
-	buf_[j] = h;
-}
-
-template<class T>
-inline int Heap<T>::min(int i, int j, int k)
-{
-	if ((buf_[i] < buf_[j]) && (buf_[i] < buf_[k])) return i;
-	if ((buf_[j] < buf_[i]) && (buf_[j] < buf_[k])) return j;
-	return k;
-}
-
-template<class T>
-inline int Heap<T>::max(int i, int j, int k)
-{
-	if ((buf_[j] < buf_[i]) && (buf_[k] < buf_[i])) return i;
-	if ((buf_[k] < buf_[j]) && (buf_[i] < buf_[j])) return j;
-	return k;
-}
-
-template<class T>
-void Heap<T>::passUpLast()
-{
-	if (fill_ == 1) return;
-	
-	int i = fill_ - 1;
-	
-	while (i != 0)
+	void xchg(int i, int j)
 	{
-		int j;
-		j = parent(i);
-		if ((buf_[j] < buf_[i]) == ascOrder_) break;
-		xchg(i, j);
-		i = j;
+		T h = buf_[i];
+		buf_[i] = buf_[j];
+		buf_[j] = h;
 	}
-}
 
-template<class T>
-void Heap<T>::passDownFromTop()
-{
-	if (fill_ == 0) return;
-	
-	int i = 0;
-	
-	while (true)
+	int min(int i, int j, int k)
 	{
-		int j, lc, rc;
-		lc = leftChild(i);
-		rc = rightChild(i);
+		if (below(buf_[i], buf_[j]) && below(buf_[i], buf_[k])) return i;
+		if (below(buf_[j], buf_[i]) && below(buf_[j], buf_[k])) return j;
+		return k;
+	}
 	
-		if ((lc < fill_) && ((rc < fill_)))
+	/*int max(int i, int j, int k)
+	{
+		if (below(buf_[j], buf_[i]) && below(buf_[k], buf_[i])) return i;
+		if (below(buf_[k], buf_[j]) && below(buf_[i], buf_[j])) return j;
+		return k;
+	}*/
+	
+	void passUpLast()
+	{
+		if (fill_ == 1) return;
+		
+		int i = fill_ - 1;
+		
+		while (i != 0)
 		{
-			j = (ascOrder_) ? min(i, lc, rc) : max(i, lc, rc);
-			if (j == i) break;
-			
+			int j;
+			j = parent(i);
+			if (below(buf_[j], buf_[i])) break;
 			xchg(i, j);
 			i = j;
-			
-			continue;
 		}
-		
-		if (lc < fill_)
-		{
-			if ((buf_[i] < buf_[lc]) != ascOrder_) xchg(i, lc);
-		}
-		else
-		if (rc < fill_)
-		{
-			if ((buf_[i] < buf_[rc]) != ascOrder_) xchg(i, rc);
-		}
-		
-		break;
 	}
-}
+	
+	void passDownFromTop()
+	{
+		if (fill_ == 0) return;
+		
+		int i = 0;
+		
+		while (true)
+		{
+			int j, lc, rc;
+			lc = leftChild(i);
+			rc = rightChild(i);
+		
+			if ((lc < fill_) && ((rc < fill_)))
+			{
+				j = /*(ascOrder_) ?*/ min(i, lc, rc) /*: max(i, lc, rc)*/;
+				if (j == i) break;
+				
+				xchg(i, j);
+				i = j;
+				
+				continue;
+			}
+			
+			if (lc < fill_)
+			{
+				if (below(buf_[i], buf_[lc])) xchg(i, lc);
+			}
+			else
+			if (rc < fill_)
+			{
+				if (below(buf_[i], buf_[rc])) xchg(i, rc);
+			}
+			
+			break;
+		}
+	}
+};
 
 } // namespace pona
 

@@ -8,6 +8,7 @@
 #ifndef PONA_STRINGS_HPP
 #define PONA_STRINGS_HPP
 
+#include "types.hpp"
 #include "Exception.hpp"
 
 namespace pona
@@ -65,9 +66,28 @@ template<class T>
 inline int strcmp(const T* a, const T* b)
 {
 	int ret = 0;
-	while ((*a) && (*b) && (!ret)) {
-		if (*a < *b) ret = -1;
-		else if (*b < *a) ret = 1;
+	char ca, cb;
+	while ((ca = *a) && (cb = *b) && (!ret)) {
+		if (ca < cb) ret = -1;
+		else if (cb < ca) ret = 1;
+		++a;
+		++b;
+	}
+	if (!ret)
+		ret = (*b == 0) - (*a == 0);
+	return ret;
+}
+
+template<class T>
+inline int strcasecmp(const T* a, const T* b)
+{
+	int ret = 0;
+	char ca, cb;
+	while ((ca = *a) && (cb = *b) && (!ret)) {
+		ca = toLower(ca);
+		cb = toLower(cb);
+		if (ca < cb) ret = -1;
+		else if (cb < ca) ret = 1;
 		++a;
 		++b;
 	}

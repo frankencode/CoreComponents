@@ -37,12 +37,15 @@ public:
 	void finish();
 	
 private:
+	bool finishUp();
+
 	Ref<SystemStream, Owner> source_, sink_;
 	Ref<LineSource, Owner> lineSource_;
 	Ref<LineSink, Owner> lineSink_;
 	Ref<LogFile, Owner> recvLog_;
 	Ref<Event, Owner> cancelEvent_;
 	Ref<Action, Owner> finishAction_;
+	Mutex mutex_;
 	bool done_, failed_;
 };
 

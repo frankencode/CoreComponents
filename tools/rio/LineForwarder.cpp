@@ -21,8 +21,8 @@ LineForwarder::LineForwarder(
 )
 	: source_(source.get()),
 	  sink_(sink.get()),
-	  lineSource_(new LineSource(source, options()->ioUnit_, sourceEol)),
-	  lineSink_(new LineSink(sink, options()->ioUnit_, sinkEol)),
+	  lineSource_(new LineSource(source, options()->ioUnit(), sourceEol)),
+	  lineSink_(new LineSink(sink, options()->ioUnit(), sinkEol)),
 	  recvLog_(recvLog.get()),
 	  cancelEvent_(cancelEvent.get()),
 	  done_(false), failed_(false)
@@ -43,13 +43,14 @@ LineForwarder::LineForwarder(
 	cancelEvent_->pushFront(finishAction_);
 }
 
-void LineForwarder::finish() { done_ = true; }
+void LineForwarder::finish() { Guard<Mutex> guard(&mutex_); done_ = true; }
+bool LineForwarder::finishUp() { Guard<Mutex> guard(&mutex_); return done_; }
 
 void LineForwarder::run()
 {
 	failed_ = false;
 	try {
-		while (!done_)
+		while (!finishUp())
 		{
 			if (source_->readyRead(1))
 			{
@@ -60,13 +61,15 @@ void LineForwarder::run()
 					if (recvLog_) recvLog_->writeLine(line);
 					lineSink_->writeLine(line);
 				}
-				if (eoi || done_) break;
+				if (eoi || finishUp()) break;
 			}
 		}
 	}
 	catch (AnyException& ex) {
-		printTo(error(), "(%%) LineForwarder: %%\n", options()->execName(), ex.what());
-		failed_ = true;
+		if (!finishUp()) {
+			printTo(error(), "(%%) LineForwarder: %%\n", options()->execName(), ex.what());
+			failed_ = true;
+		}
 	}
 	cancelEvent_->remove(finishAction_);
 	cancelEvent_->run();

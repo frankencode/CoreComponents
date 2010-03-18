@@ -12,6 +12,7 @@
 #include "LineForwarder.hpp"
 #include "BinaryForwarder.hpp"
 #include "ProcessObserver.hpp"
+#include "KillAfterTimeout.hpp"
 #include "Service.hpp"
 
 namespace rio
@@ -20,8 +21,8 @@ namespace rio
 Service::Service()
 	: StreamSocket(options()->address()),
 	  connectLog_(new LogFile(options()->address(), LogFile::Connect)),
-	  repeat_(options()->repeat_),
-	  loop_(options()->loop_),
+	  repeat_(options()->repeat()),
+	  loop_(options()->loop()),
 	  fileIndex_(0),
 	  cancelEvent_(new Event),
 	  ioCancelEvent_(new Event)
@@ -49,7 +50,7 @@ Service::Service()
 
 void Service::init()
 {
-	if (options()->server_)
+	if (options()->server())
 		connectLog_->writeLine(address(), "Start listening");
 }
 
@@ -66,13 +67,13 @@ void Service::serve(Ref<StreamSocket> socket)
 	
 	String entity;
 	
-	if (options()->files_->length() > 0)
+	if (options()->files()->length() > 0)
 	{
-		entity = options()->files_->at(fileIndex_);
-		fileIndex_ = (fileIndex_ + 1) % options()->files_->length();
+		entity = options()->files()->at(fileIndex_);
+		fileIndex_ = (fileIndex_ + 1) % options()->files()->length();
 	}
 	
-	if (options()->canon_)
+	if (options()->canon())
 		canonSession(socket, entity);
 	else
 		binarySession(socket, entity);
@@ -89,13 +90,13 @@ void Service::serve(Ref<StreamSocket> socket)
 
 void Service::cleanup()
 {
-	if (options()->server_)
+	if (options()->server())
 		connectLog_->writeLine(address(), "Stop listening");
 }
 
 Ref<Process, Owner> Service::exec(String entity)
 {
-	if (!bool(options()->quiet_))
+	if (!bool(options()->quiet()))
 		printTo(error(), "(%%) Executing '%%'\n", options()->execName(), entity);
 	
 	Ref<ProcessFactory, Owner> factory = new ProcessFactory;
@@ -131,7 +132,7 @@ void Service::canonSession(Ref<StreamSocket> socket, String entity)
 	Ref<LogFile, Owner> recvLog = new LogFile(socket->address(), LogFile::Recv, t0, mergedLog);
 	Ref<LogFile, Owner> sendLog = new LogFile(socket->address(), LogFile::Send, t0, mergedLog);
 	
-	if (options()->exec_) {
+	if (options()->exec()) {
 		if (entity != "") {
 			process = exec(entity);
 			processObserver = new ProcessObserver(process);
@@ -146,7 +147,7 @@ void Service::canonSession(Ref<StreamSocket> socket, String entity)
 			Ref<File, Owner> file = new File(entity);
 			file->open(File::Read);
 			Ref<LineSource, Owner> lineSource = new LineSource(file);
-			Ref<LineSink, Owner> lineSink = new LineSink(socket, options()->ioUnit_, options()->eol_.toString());
+			Ref<LineSink, Owner> lineSink = new LineSink(socket, options()->ioUnit(), options()->eol());
 			bool eoi = false;
 			while (true) {
 				String line = lineSource->readLine(&eoi);
@@ -161,7 +162,7 @@ void Service::canonSession(Ref<StreamSocket> socket, String entity)
 		Ref<Pipe, Owner> sendPipe = new Pipe(Pipe::Input);
 		
 		Ref<ProcessFactory, Owner> factory = new ProcessFactory;
-		factory->setExecPath(options()->editorPath_);
+		factory->setExecPath(options()->editor());
 		factory->options()->append(Format("--fdr=%%") << recvPipe->childFd());
 		factory->options()->append(Format("--fds=%%") << sendPipe->childFd());
 		editor = factory->produce();
@@ -174,26 +175,32 @@ void Service::canonSession(Ref<StreamSocket> socket, String entity)
 	}
 	
 	{
-		Ref<LineForwarder, Owner> recvForwarder = new LineForwarder(socket, recvSink, options()->eol_, "\012", recvLog, ioCancelEvent_);
-		Ref<LineForwarder, Owner> sendForwarder = new LineForwarder(sendSource, socket, "\012", options()->eol_, sendLog, ioCancelEvent_);
+		Ref<LineForwarder, Owner> recvForwarder = new LineForwarder(socket, recvSink, options()->eol(), "\012", recvLog, ioCancelEvent_);
+		Ref<LineForwarder, Owner> sendForwarder = new LineForwarder(sendSource, socket, "\012", options()->eol(), sendLog, ioCancelEvent_);
 		recvForwarder->start();
 		sendForwarder->start();
-		recvForwarder->wait();
 		sendForwarder->wait();
+		recvForwarder->wait();
 	}
 	
 	if (editor) {
 		recvSink = 0;
 		sendSource = 0;
-		try { editor->kill(); } catch(AnyException& ex) {}
+		KillAfterTimeout kill(editor, now() + 3, SIGTERM);
+		kill.start();
 		int ret = editor->wait();
+		kill.abort();
+		kill.wait();
 		#ifndef NDEBUG
 		print("ret = %%\n", ret);
 		#endif
 	}
 	if (process) {
-		try { process->kill(); } catch(AnyException& ex) {}
+		KillAfterTimeout kill(editor, now() + 3, SIGKILL);
+		kill.start();
 		processObserver->wait();
+		kill.abort();
+		kill.wait();
 		#ifndef NDEBUG
 		print("exitCode = %%\n", processObserver->exitCode());
 		#endif
@@ -225,7 +232,7 @@ void Service::binarySession(Ref<StreamSocket> socket, String entity)
 	Ref<LogFile, Owner> sendLog = new LogFile(socket->address(), LogFile::Send, t0, mergedLog);
 	
 	if (entity != "") {
-		if (options()->exec_) {
+		if (options()->exec()) {
 			process = exec(entity);
 			processObserver = new ProcessObserver(process);
 			processObserver->finishedEvent()->pushBack(ioCancelEvent_);
@@ -236,7 +243,7 @@ void Service::binarySession(Ref<StreamSocket> socket, String entity)
 		else {
 			Ref<File, Owner> file = new File(entity);
 			file->open(File::Read);
-			Array<uint8_t> buf(options()->ioUnit_);
+			Array<uint8_t> buf(options()->ioUnit());
 			while (true) {
 				int fill = file->readAvail(buf, buf.size());
 				if (fill == 0) break;

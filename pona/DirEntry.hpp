@@ -29,6 +29,8 @@ public:
 	inline int type() const { return d_type; }
 	#endif
 	
+	inline bool operator<(const DirEntry& b) const { return pona::strcasecmp(d_name, b.d_name) < 0; }
+	
 private:
 	friend class Dir;
 	String path_;

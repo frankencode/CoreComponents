@@ -14,5 +14,6 @@
 #include "Path.hpp"
 #include "StandardStreams.hpp"
 #include "FormatPrint.hpp"
+#include "CommandLine.hpp"
 
 #endif //  PONA_STDIO

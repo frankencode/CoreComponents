@@ -9,6 +9,7 @@
 #include <unistd.h> // close, select
 #include <fcntl.h> // fcntl
 #include <errno.h> // errno
+#include "Guard.hpp"
 #include "StreamSocket.hpp"
 
 namespace pona
@@ -158,7 +159,7 @@ void StreamSocket::runClient(Time idleTimeout)
 	cleanup();
 }
 
-void StreamSocket::finish() { done_ = true; }
-bool StreamSocket::done() const { return done_; }
+void StreamSocket::finish() { Guard<Mutex> guard(); done_ = true; }
+bool StreamSocket::done() const { Guard<Mutex> guard(); return done_; }
 
 } // namespace pona

@@ -13,6 +13,7 @@
 #include "Time.hpp"
 #include "SystemStream.hpp"
 #include "SocketAddress.hpp"
+#include "Mutex.hpp"
 
 namespace pona
 {
@@ -48,6 +49,7 @@ protected:
 	
 private:
 	Ref<SocketAddress, Owner> address_;
+	Mutex mutex_;
 	bool connected_;
 	bool done_;
 };

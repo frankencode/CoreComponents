@@ -15,22 +15,20 @@ namespace rio
 
 int main(int argc, char** argv)
 {
-	int ret = 0;
-	
 	options()->read(argc, argv);
 	Ref<Service, Owner> service = new Service;
 	
-	if (options()->client_) {
+	if (options()->client()) {
 		service->runClient(1);
 	}
-	else if (options()->server_) {
-		service->runServer(1, options()->backlog_);
+	else if (options()->server()) {
+		service->runServer(1, options()->backlog());
 	}
-	else if (options()->help_) {
-		print(options()->help());
+	else if (options()->help()) {
+		print(options()->helpText());
 	}
 	
-	return ret;
+	return 0;
 }
 
 } // namespace rio

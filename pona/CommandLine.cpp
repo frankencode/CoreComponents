@@ -1,5 +1,5 @@
 /*
- * Options.cpp -- options of a command line tool
+ * CommandLine.cpp -- options of a command line tool
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -10,12 +10,12 @@
 #include "Format.hpp"
 #include "File.hpp"
 #include "Path.hpp"
-#include "Options.hpp"
+#include "CommandLine.hpp"
 
 namespace pona
 {
 
-Options::Options()
+CommandLine::CommandLine()
 	: optionList_(new OptionList),
 	  entity_("FILE")
 {
@@ -137,23 +137,24 @@ Options::Options()
 	LINK();
 }
 
-void Options::define(char shortName, String longName, Ref<Variant> value, String description)
+Ref<CommandOption> CommandLine::define(char shortName, String longName, Variant defaultValue, String description)
 {
-	Ref<Option> option = new Option;
+	Ref<CommandOption, Owner> option = new CommandOption;
 	option->shortName_ = shortName;
 	option->longName_ = longName;
-	// *(option->value_) = *value;
-	option->value_ = value;
-	option->typeMask_ = value->type();
 	option->description_ = description;
+	option->typeMask_ = defaultValue.type();
+	option->defaultValue_ = defaultValue;
+	option->value_ = defaultValue;
 	optionList_->append(option);
+	return option;
 }
 
-Ref<Options::Option> Options::optionByShortName(char name) const
+Ref<CommandOption> CommandLine::optionByShortName(char name) const
 {
-	Ref<Option> option;
+	Ref<CommandOption> option;
 	for (OptionList::Index i = optionList_->first(); optionList_->def(i); ++i) {
-		Ref<Option> candidate = optionList_->at(i);
+		Ref<CommandOption> candidate = optionList_->at(i);
 		if (candidate->shortName_ == name) {
 			option = candidate;
 			break;
@@ -162,11 +163,11 @@ Ref<Options::Option> Options::optionByShortName(char name) const
 	return option;
 }
 
-Ref<Options::Option> Options::optionByLongName(String name) const
+Ref<CommandOption> CommandLine::optionByLongName(String name) const
 {
-	Ref<Option> option;
+	Ref<CommandOption> option;
 	for (OptionList::Index i = optionList_->first(); optionList_->def(i); ++i) {
-		Ref<Option> candidate = optionList_->at(i);
+		Ref<CommandOption> candidate = optionList_->at(i);
 		if (candidate->longName_ == name) {
 			option = candidate;
 			break;
@@ -175,7 +176,7 @@ Ref<Options::Option> Options::optionByLongName(String name) const
 	return option;
 }
 
-Ref<StringList, Owner> Options::read(int argc, char** argv)
+Ref<StringList, Owner> CommandLine::read(int argc, char** argv)
 {
 	execPath_ = argv[0];
 	execName_ = Path(execPath_).fileName();
@@ -201,12 +202,12 @@ String stripQuotes(String s)
 	return s;
 }
 
-Ref<StringList, Owner> Options::read(String line)
+Ref<StringList, Owner> CommandLine::read(String line)
 {
 	int i0 = 0, i1 = -1;
 	Ref<Token, Owner> rootToken;
 	if (!match(line, i0, &i1, &rootToken))
-		PONA_THROW(OptionsException, "Unrecognized option syntax");
+		PONA_THROW(CommandLineException, "Unrecognized option syntax");
 	
 	Ref<Token> token = rootToken->firstChild();
 	
@@ -228,21 +229,21 @@ Ref<StringList, Owner> Options::read(String line)
 	return files;
 }
 
-void Options::verifyTypes()
+void CommandLine::verifyTypes()
 {
 	for (OptionList::Index i = optionList_->first(); optionList_->def(i); ++i)
 	{
-		Ref<Option> option = optionList_->at(i);
+		Ref<CommandOption> option = optionList_->at(i);
 		
-		if ( ((option->value_->type() & option->typeMask_) == 0) &&
+		if ( ((option->value_.type() & option->typeMask_) == 0) &&
 		     (option->typeMask_ != 0) )
 		{
-			PONA_THROW(OptionsException, "Unrecognized option syntax");
+			PONA_THROW(CommandLineException, "Unrecognized option syntax");
 		}
 	}
 }
 
-void Options::readOption(String line, Ref<Token> token)
+void CommandLine::readOption(String line, Ref<Token> token)
 {
 	token = token->firstChild();
 	
@@ -251,9 +252,9 @@ void Options::readOption(String line, Ref<Token> token)
 		while (token)
 		{
 			char name = line->at(token->index());
-			Ref<Option> option = optionByShortName(name);
+			Ref<CommandOption> option = optionByShortName(name);
 			if (!option)
-				PONA_THROW(OptionsException, pona::strdup(String(Format("Unsupported option: '-%%'") << name)->data()));
+				PONA_THROW(CommandLineException, pona::strdup(String(Format("Unsupported option: '-%%'") << name)->data()));
 			
 			token = token->nextSibling();
 			if (token) {
@@ -262,93 +263,94 @@ void Options::readOption(String line, Ref<Token> token)
 					token = token->nextSibling();
 				}
 				else {
-					*option->value_ = true;
+					option->value_ = true;
 				}
 			}
 			else {
-				*option->value_ = true;
+				option->value_ = true;
 			}
 		}
 	}
 	else if (token->ruleId() == longNameRule_->id())
 	{
 		String name(line, token->index(), token->length());
-		Ref<Option> option = optionByLongName(name);
+		Ref<CommandOption> option = optionByLongName(name);
 		if (!option)
-			PONA_THROW(OptionsException, pona::strdup(String(Format("Unsupported option: '--%%'") << name)->data()));
+			PONA_THROW(CommandLineException, pona::strdup(String(Format("Unsupported option: '--%%'") << name)->data()));
 		
 		token = token->nextSibling();
 		if (!token)
-			*option->value_ = true;
+			option->value_ = true;
 		else
 			readValue(option, line, token);
 	}
 }
 
-void Options::readValue(Ref<Option> option, String line, Ref<Token> token)
+void CommandLine::readValue(Ref<CommandOption> option, String line, Ref<Token> token)
 {
 	String s = stripQuotes(String(line, token->index(), token->length()));
-	Ref<Variant> value = option->value_;
+	Variant& value = option->value_;
 	
-	if (value->type() == Variant::StringType) {
-		*value = s;
+	if (value.type() == Variant::StringType) {
+		value = s;
 	}
-	else if (value->type() == Variant::BoolType) {
+	else if (value.type() == Variant::BoolType) {
 		bool on = (s == "1") || (s == "H") || (s == "h") || (s == "on") || (s == "On") || (s == "true") || (s == "True");
 		bool off = (s == "0") || (s == "L") || (s == "l") || (s == "off") || (s == "Off") || (s == "false") || (s == "False");
-		if (!(on || off))
-			PONA_THROW(OptionsException, "Unrecognized option syntax");
+		if (!(on && off))
+			PONA_THROW(CommandLineException, "Unrecognized option syntax");
 		
-		*value = on;
+		value = on;
 	}
-	else if (value->type()== Variant::IntType) {
+	else if (value.type()== Variant::IntType) {
 		bool ok = false;
 		int x = s.toInt(&ok);
 		
 		if (!ok)
-			PONA_THROW(OptionsException, "Unrecognized option syntax");
+			PONA_THROW(CommandLineException, "Unrecognized option syntax");
 		
-		*value = x;
+		value = x;
 	}
-	else if (value->type() == Variant::FloatType) {
+	else if (value.type() == Variant::FloatType) {
 		bool ok = false;
 		double x = s.toFloat(&ok);
 		
 		if (!ok)
-			PONA_THROW(OptionsException, "Unrecognized option syntax");
+			PONA_THROW(CommandLineException, "Unrecognized option syntax");
 		
-		*value = x;
+		value = x;
 	}
 }
 
-String Options::entity(String newValue)
+String CommandLine::entity(String newValue)
 {
 	if (newValue != "") entity_ = newValue;
 	return newValue;
 }
 
-String Options::synopsis(String newValue)
+String CommandLine::synopsis(String newValue)
 {
 	if (newValue != "") synopsis_ = newValue;
 	return newValue;
 }
 
-String Options::summary(String newValue)
+String CommandLine::summary(String newValue)
 {
 	if (newValue != "") summary_ = newValue;
 	return newValue;
 }
 
-String Options::details(String newValue)
+String CommandLine::details(String newValue)
 {
 	if (newValue != "") details_ = newValue;
 	return newValue;
 }
 
-String Options::help()
+String CommandLine::helpText() const
 {
-	if (synopsis_ == "")
-		synopsis_ = Format() << execName_ << " [OPTION]... [" << entity_ << "]...";
+	String synopsis = synopsis_;
+	if (synopsis == "")
+		synopsis = Format() << execName_ << " [OPTION]... [" << entity_ << "]...";
 	
 	String options;
 	{
@@ -356,23 +358,23 @@ String Options::help()
 		int maxLength = 0;
 		
 		for (OptionList::Index i = optionList_->first(); optionList_->def(i); ++i) {
-			Ref<Option> option = optionList_->get(i);
+			Ref<CommandOption> option = optionList_->get(i);
 			Format format("  ");
+			if (option->shortName_)
+				format << '-' << option->shortName_;
 			if (option->longName_ != "") {
+				if (option->shortName_)
+					format << ", ";
 				format << "--" << option->longName_;
 				if (option->typeMask_ != 0) {
 					if ((option->typeMask_ & (Variant::IntType|Variant::FloatType)) != 0) {
-						format << "=" << *(option->value_);
+						format << "=" << option->defaultValue_;
 					}
 					else if ((option->typeMask_ & Variant::StringType) != 0) {
-						format << "='" << *(option->value_) << "'";
+						format << "='" << option->defaultValue_ << "'";
 					}
 				}
-				if (option->shortName_)
-					format << ", ";
 			}
-			if (option->shortName_)
-				format << '-' << option->shortName_;
 			String line(format);
 			if (line->size() > maxLength) maxLength = line->size();
 			lines->append(line);
@@ -384,36 +386,35 @@ String Options::help()
 		StringList::Index j = lines->first();
 		for (;optionList_->def(i) && lines->def(j); ++i, ++j)
 		{
-			Ref<Option> option = optionList_->at(i);
-			Ref<StringList, Owner> line = new StringList;
-			line->append(lines->at(j));
+			Ref<CommandOption> option = optionList_->at(i);
+			Format line;
+			line << lines->at(j);
 			if (lines->at(j)->size() < indent->size())
-				line->append(String(indent->size() - lines->at(j)->size(), ' '));
-			line->append(option->description_);
-			line->append("\n");
+				line << String(indent->size() - lines->at(j)->size(), ' ');
+			line << option->description_;
+			line << "\n";
 			lines->set(j, line);
 		}
 		
 		options = lines;
 	}
 	
-	Ref<StringList, Owner> text = new StringList;
-	text->append(Format("Usage: %%\n") << synopsis_);
-	if (summary_->size() > 0) {
-		text->append(summary_);
-		text->append("\n");
-	}
-	text->append("\n");
-	text->append("Options:\n");
-	text->append(options);
+	Format text;
+	text << "Usage: " << synopsis << "\n";
+	if (summary_->size() > 0)
+		text << summary_ << "\n";
+	text << "\n";
+	text << "Options:\n";
+	text << options;
 	if (details_->size() > 0)
-		text->append(details_);
-	text->append("\n");
+		text << details_;
+	text << "\n";
+	
 	return text;
 }
 
-String Options::execPath() const { return execPath_; }
-String Options::execName() const { return execName_; }
-String Options::execDir() const { return execDir_; }
+String CommandLine::execPath() const { return execPath_; }
+String CommandLine::execName() const { return execName_; }
+String CommandLine::execDir() const { return execDir_; }
 
 } // namespace pona
