@@ -25,7 +25,8 @@ Service::Service()
 	  loop_(options()->loop()),
 	  fileIndex_(0),
 	  cancelEvent_(new Event),
-	  ioCancelEvent_(new Event)
+	  ioCancelEvent_(new Event),
+	  done_(false)
 {
 	closeOnExec();
 	
@@ -276,5 +277,43 @@ void Service::binarySession(Ref<StreamSocket> socket, String entity)
 			PONA_SYSTEM_EXCEPTION;
 	}
 }
+
+void Service::runServer(Time idleTimeout, int backlog)
+{
+	bind();
+	listen(backlog);
+	init();
+	
+	while (!done())
+	{
+		while (!done()) {
+			if (readyAccept(idleTimeout)) break;
+			if (done()) break;
+			idle();
+		}
+		
+		if (done_) break;
+		
+		Ref<StreamSocket, Owner> socket = accept();
+		if (!done())
+			serve(socket);
+	}
+	
+	close();
+	cleanup();
+}
+
+void Service::runClient(Time idleTimeout)
+{
+	connect();
+	while (!established(idleTimeout))
+		idle();
+	serve(this);
+	close();
+	cleanup();
+}
+
+void Service::finish() { Guard<Mutex> guard(); done_ = true; }
+bool Service::done() const { Guard<Mutex> guard(); return done_; }
 
 } // namespace rio

@@ -23,17 +23,21 @@ class Service: public StreamSocket
 public:
 	Service();
 	
-protected:
-	virtual void init();
-	virtual void idle();
-	virtual void serve(Ref<StreamSocket> socket);
-	virtual void cleanup();
+	void runServer(Time idleTimeout = 0.1, int backlog = PONA_DEFAULT_BACKLOG);
+	void runClient(Time idleTimeout = 0.1);
+	void finish();
+	bool done() const;
+
+private:
+	void init();
+	void idle();
+	void serve(Ref<StreamSocket> socket);
+	void cleanup();
 	
 	Ref<Process, Owner> exec(String entity);
 	void canonSession(Ref<StreamSocket> socket, String entity);
 	void binarySession(Ref<StreamSocket> socket, String entity);
 	
-private:
 	Ref<LogFile, Owner> connectLog_;
 	int repeat_;
 	bool loop_;
@@ -41,6 +45,8 @@ private:
 	
 	Ref<Event, Owner> ioCancelEvent_;
 	Ref<Event, Owner> cancelEvent_;
+	Mutex mutex_;
+	bool done_;
 };
 
 } // namespace rio
