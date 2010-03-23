@@ -1,3 +1,11 @@
+/*
+ * ProcessStatus.cpp -- status information about process
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #ifndef __linux
 #include <sys/param.h>
 #include <sys/sysctl.h> // sysctl

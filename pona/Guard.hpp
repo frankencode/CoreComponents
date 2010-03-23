@@ -1,3 +1,10 @@
+/*
+ * Guard.hpp -- guarding using mutex
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_GUARD_HPP
 #define PONA_GUARD_HPP
 

@@ -108,8 +108,14 @@ int main(int argc, char** argv)
 				print("%%", status.sizeInBlocks() * status.sizeOfBlock());
 			if (option == owner)
 				print("%%", User(status.ownerId()).name());
-			if (option == group)
-				print("%%", Group(status.groupId()).name());
+			if (option == group) {
+				try {
+					print("%%", Group(status.groupId()).name());
+				}
+				catch(...) {
+					// we may not have enough rights on some systems
+				}
+			}
 			if (option == ta)
 				print("%%", timeToString(status.lastAccess(), human->value()));
 			if (option == tm)

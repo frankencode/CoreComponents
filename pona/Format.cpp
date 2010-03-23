@@ -6,7 +6,6 @@
  * See ../LICENSE for the license.
  */
 
-#include "Rounding.hpp"
 #include "FormatSyntax.hpp"
 #include "FormatSpecifier.hpp"
 #include "Format.hpp"

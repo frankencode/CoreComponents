@@ -1,3 +1,11 @@
+/*
+ * SignalSet.cpp -- set of signals
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #include "SignalSet.hpp"
 
 namespace pona

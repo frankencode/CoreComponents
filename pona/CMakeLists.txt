@@ -115,7 +115,7 @@ SET(PONA_HEADER
 	
 	math
 	Random.hpp
-	Rounding.hpp
+	rounding.hpp
 )
 
 SET(PONA_SOURCE

@@ -5,7 +5,6 @@
  *
  * See ../LICENSE for the license.
  */
-
 #ifndef PONA_COREMUTEX_HPP
 #define PONA_COREMUTEX_HPP
 
@@ -15,11 +14,11 @@
 #ifndef PONA_COREMUTEX_USE_POSIX_SEMAPHORES
 	#ifndef PONA_COREMUTEX_USE_MACOS_SPIN_LOCKS
 		#ifndef PONA_COREMUTEX_USE_POSIX_SEMAPHORES
-			#ifdef _POSIX_SPIN_LOCKS
-				#define PONA_COREMUTEX_USE_POSIX_SPIN_LOCKS
+			#ifdef __APPLE__
+				#define PONA_COREMUTEX_USE_MACOS_SPIN_LOCKS
 			#else
-				#ifdef __APPLE__
-					#define PONA_COREMUTEX_USE_MACOS_SPIN_LOCKS
+				#ifdef _POSIX_SPIN_LOCKS
+					#define PONA_COREMUTEX_USE_POSIX_SPIN_LOCKS
 				#else
 					#define PONA_COREMUTEX_USE_POSIX_SEMAPHORES
 				#endif
@@ -82,7 +81,7 @@ namespace pona
 class CoreMutex: public NonCopyable
 {
 public:
-	CoreMutex(): lock_(1) {}
+	CoreMutex(): lock_(0) {}
 	inline bool tryAcquire() { return OSSpinLockTry(&lock_); }
 	void acquire() { OSSpinLockLock(&lock_); }
 	void release() { OSSpinLockUnlock(&lock_); }
