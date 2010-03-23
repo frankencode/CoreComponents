@@ -1,12 +1,12 @@
 /*
- * ByteSource.hpp -- byte-vise reading from a 'Stream'
+ * ByteDecoder.hpp -- byte-vise reading from a 'Stream'
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
-#ifndef PONA_BYTESOURCE_HPP
-#define PONA_BYTESOURCE_HPP
+#ifndef PONA_BYTEDECODER_HPP
+#define PONA_BYTEDECODER_HPP
 
 #include "atoms"
 #include "defaults.hpp"
@@ -14,12 +14,15 @@
 namespace pona
 {
 
-class ByteSource: public Instance
+class ByteDecoder: public Source<uint8_t>
 {
 public:
-	ByteSource(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
-	ByteSource(const void* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
-	~ByteSource();
+	ByteDecoder(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
+	ByteDecoder(const void* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
+	~ByteDecoder();
+	
+	bool hasNext();
+	uint8_t next();
 	
 	uint8_t readUInt8();
 	uint16_t readUInt16();
@@ -51,14 +54,28 @@ private:
 	off_t nr_;    // accumulated number of bytes read
 };
 
-inline uint8_t ByteSource::readUInt8()
+inline bool ByteDecoder::hasNext()
+{
+	if ((i_ >= bufFill_) && (stream_)) {
+		bufFill_ = stream_->readAvail(buf_, bufCapa_);
+		i_ = 0;
+	}
+	return i_ < bufFill_;
+}
+
+inline uint8_t ByteDecoder::next()
+{
+	return readUInt8();
+}
+
+inline uint8_t ByteDecoder::readUInt8()
 {
 	if (i_ == bufFill_) fill();
 	++nr_;
 	return buf_[i_++];
 }
 
-inline uint16_t ByteSource::readUInt16()
+inline uint16_t ByteDecoder::readUInt16()
 {
 	uint16_t h;
 	if (endian_ == LittleEndian)
@@ -74,7 +91,7 @@ inline uint16_t ByteSource::readUInt16()
 	return h;
 }
 
-inline uint32_t ByteSource::readUInt32()
+inline uint32_t ByteDecoder::readUInt32()
 {
 	uint32_t h;
 	if (endian_ == LittleEndian)
@@ -94,7 +111,7 @@ inline uint32_t ByteSource::readUInt32()
 	return h;
 }
 
-inline uint64_t ByteSource::readUInt64()
+inline uint64_t ByteDecoder::readUInt64()
 {
 	uint64_t h = 0;
 	if (endian_ == LittleEndian)
@@ -110,17 +127,17 @@ inline uint64_t ByteSource::readUInt64()
 	return h;
 }
 
-inline int8_t ByteSource::readInt8() { return union_cast<int8_t>(readUInt8()); }
-inline int16_t ByteSource::readInt16() { return union_cast<int16_t>(readUInt16()); }
-inline int32_t ByteSource::readInt32() { return union_cast<int32_t>(readUInt32()); }
-inline int64_t ByteSource::readInt64() { return union_cast<int64_t>(readUInt64()); }
-inline float32_t ByteSource::readFloat32() { return union_cast<float32_t>(readUInt32()); }
-inline float64_t ByteSource::readFloat64() { return union_cast<float64_t>(readUInt64()); }
+inline int8_t ByteDecoder::readInt8() { return union_cast<int8_t>(readUInt8()); }
+inline int16_t ByteDecoder::readInt16() { return union_cast<int16_t>(readUInt16()); }
+inline int32_t ByteDecoder::readInt32() { return union_cast<int32_t>(readUInt32()); }
+inline int64_t ByteDecoder::readInt64() { return union_cast<int64_t>(readUInt64()); }
+inline float32_t ByteDecoder::readFloat32() { return union_cast<float32_t>(readUInt32()); }
+inline float64_t ByteDecoder::readFloat64() { return union_cast<float64_t>(readUInt64()); }
 
-inline off_t ByteSource::numBytesRead() const { return nr_; }
+inline off_t ByteDecoder::numBytesRead() const { return nr_; }
 
-inline Ref<Stream> ByteSource::stream() const { return stream_; }
+inline Ref<Stream> ByteDecoder::stream() const { return stream_; }
 
 } // namespace pona
 
-#endif // PONA_BYTESOURCE_HPP
+#endif // PONA_BYTEDECODER_HPP

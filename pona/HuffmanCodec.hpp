@@ -9,8 +9,8 @@
 #define PONA_HUFFMANCODEC_HPP
 
 #include "atoms"
-#include "BitSink.hpp"
-#include "BitSource.hpp"
+#include "BitEncoder.hpp"
+#include "BitDecoder.hpp"
 #include "Heap.hpp"
 #include "Stack.hpp"
 
@@ -97,7 +97,7 @@ public:
 	  * \param rawFill number of symbols to be read from input buffer
 	  * \param userFallback if not null returns raw transmission fallback indicator
 	  */
-	void encode( BitSink* sink,
+	void encode( BitEncoder* sink,
 	             int* raw,
 	             int rawFill,
 	             bool* userFallback = 0 );
@@ -112,7 +112,7 @@ public:
 	  */
 	int decode( int* raw,
 	            int rawCapacity,
-	            BitSource* source );
+	            BitDecoder* source );
 
 	/** Read symbols from an input buffer and write the encoded result
 	  * to an output buffer.
@@ -149,7 +149,7 @@ private:
 
 	void generateCodeTable();
 	void debugCodeTable();
-	void writeRawFrame(BitSink* sink, int* frame, int frameFill, int rawMin, int rawMax);
+	void writeRawFrame(BitEncoder* sink, int* frame, int frameFill, int rawMin, int rawMax);
 
 	int options_;
 	int rawDiversity_;
@@ -161,7 +161,7 @@ private:
 
 	int codeMapSize_;
 	SymbolRef* codeMap_;
-	Heap<SymbolRef, Descending> heap_;
+	MaxHeap<SymbolRef> heap_;
 	Stack<uint8_t> bitStack_;
 
 	inline static int ilog2(int n)

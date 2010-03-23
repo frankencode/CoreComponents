@@ -1,5 +1,5 @@
 /*
- * Stream.cpp -- fundamental representation of a data stream
+ * generics.hpp -- generic interfaces
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -7,7 +7,7 @@
  */
 
 #include "types.hpp"
-#include "Stream.hpp"
+#include "generics.hpp"
 
 namespace pona
 {

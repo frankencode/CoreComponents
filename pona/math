@@ -1,14 +1,14 @@
 /*
- * misc -- wildcard include header
+ * math -- wildcard include header
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
-#ifndef PONA_MISC
-#define PONA_MISC
+#ifndef PONA_MATH
+#define PONA_MATH
 
 #include "Random.hpp"
 #include "Rounding.hpp"
 
-#endif // PONA_MISC
+#endif // PONA_MATH

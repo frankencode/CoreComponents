@@ -1,27 +1,27 @@
 /*
- * Utf8Source.cpp -- UTF8 decoder and validator
+ * Utf8Decoder.cpp -- UTF8 decoder and validator
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
 
-#include "Utf8Source.hpp"
+#include "Utf8Decoder.hpp"
 
 namespace pona
 {
 
-Utf8Source::Utf8Source(Ref<Stream> stream, int bufCapa)
-	: ByteSource(stream, bufCapa)
+Utf8Decoder::Utf8Decoder(Ref<Stream> stream, int bufCapa)
+	: byteDecoder_(stream, bufCapa)
 {}
 
-Utf8Source::Utf8Source(const void* buf, int bufCapa)
-	: ByteSource(buf, bufCapa)
+Utf8Decoder::Utf8Decoder(const void* buf, int bufCapa)
+	: byteDecoder_(buf, bufCapa)
 {}
 
-uint32_t Utf8Source::readChar(bool* valid)
+uchar_t Utf8Decoder::readChar(bool* valid)
 {
-	uint32_t ch = readUInt8();
+	uchar_t ch = byteDecoder_.readUInt8();
 	
 	if ((ch & 0x80) != 0) // distinguish 7 bit ASCII from multibyte sequence
 	{
@@ -45,7 +45,7 @@ uint32_t Utf8Source::readChar(bool* valid)
 		
 		// read n successive characters (chs), which carry the code prefix (10)2
 		while (n > 0) {
-			uint8_t chs = readUInt8();
+			uint8_t chs = byteDecoder_.readUInt8();
 			if ((chs >> 6) == 2) // 2 = (10)2
 				ch = (ch << 6) | (chs & 0x3F);
 			else
@@ -78,4 +78,4 @@ uint32_t Utf8Source::readChar(bool* valid)
 	return ch;
 }
 
-} // namespace pona
+} // namespace pon

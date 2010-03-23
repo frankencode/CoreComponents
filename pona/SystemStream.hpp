@@ -8,7 +8,7 @@
 #ifndef PONA_SYSTEMSTREAM_HPP
 #define PONA_SYSTEMSTREAM_HPP
 
-#include "Stream.hpp"
+#include "atoms"
 #include "Time.hpp"
 
 namespace pona

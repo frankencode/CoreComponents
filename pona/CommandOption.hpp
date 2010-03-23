@@ -32,6 +32,7 @@ public:
 	
 private:
 	friend class CommandLine;
+	
 	char shortName_;
 	String longName_;
 	String description_;

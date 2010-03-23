@@ -54,8 +54,7 @@ void LineForwarder::run()
 		{
 			if (source_->readyRead(1))
 			{
-				bool eoi = false;
-				lineSource_->readAvail(&eoi);
+				bool eoi = !lineSource_->readAvail();
 				while (lineSource_->cachedLines() > 0) {
 					String line = lineSource_->readLine();
 					if (recvLog_) recvLog_->writeLine(line);

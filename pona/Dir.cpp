@@ -64,11 +64,29 @@ void Dir::close()
 	dir_ = 0;
 }
 
+bool Dir::hasNext()
+{
+	if (!next_) {
+		next_ = new DirEntry;
+		if (!read(next_)) next_ = 0;
+	}
+	return next_;
+}
+
+Ref<DirEntry, Owner> Dir::next()
+{
+	hasNext();
+	Ref<DirEntry, Owner> entry = next_;
+	next_ = 0;
+	return entry;
+}
+
 bool Dir::read(Ref<DirEntry> entry)
 {
 	if (!isOpen()) open();
 	struct dirent* buf = entry;
 	struct dirent* result;
+	pona::bzero(buf); // for paranoid reason
 	int errorCode = ::readdir_r(dir_, buf, &result);
 	if (errorCode)
 		throw SystemException(__FILE__, __LINE__, "SystemException", pona::strcat("readdir_r() failed: error code = ", pona::intToStr(errorCode)), errorCode);

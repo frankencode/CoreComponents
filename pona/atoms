@@ -10,14 +10,11 @@
 
 #include "types.hpp"
 #include "strings.hpp"
+#include "generics.hpp"
 #include "Exception.hpp"
 #include "CoreMutex.hpp"
 #include "ScopeGuard.hpp"
 #include "Instance.hpp"
-#include "Alien.hpp"
 #include "Ref.hpp"
-#include "NonCopyable.hpp"
-#include "Sequence.hpp"
-#include "Stream.hpp"
 
 #endif // PONA_ATOM

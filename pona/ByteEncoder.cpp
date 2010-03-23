@@ -1,17 +1,17 @@
 /*
- * ByteSink.cpp -- byte-vise writing to a 'Stream'
+ * ByteEncoder.cpp -- byte-vise writing to a 'Stream'
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
 
-#include "ByteSink.hpp"
+#include "ByteEncoder.hpp"
 
 namespace pona
 {
 
-ByteSink::ByteSink()
+ByteEncoder::ByteEncoder()
 	: endian_(PONA_DEFAULT_ENDIAN),
 	  bufCapa_(-1),
 	  buf_(0),
@@ -19,7 +19,7 @@ ByteSink::ByteSink()
 	  nw_(0)
 {}
 
-ByteSink::ByteSink(Ref<Stream> stream, int bufCapacity, int endian)
+ByteEncoder::ByteEncoder(Ref<Stream> stream, int bufCapacity, int endian)
 	: stream_(stream),
 	  endian_(endian),
 	  bufCapa_(bufCapacity),
@@ -28,7 +28,7 @@ ByteSink::ByteSink(Ref<Stream> stream, int bufCapacity, int endian)
 	  nw_(0)
 {}
 
-ByteSink::ByteSink(void* buf, int bufCapacity, int endian)
+ByteEncoder::ByteEncoder(void* buf, int bufCapacity, int endian)
 	: stream_(0),
 	  endian_(endian),
 	  bufCapa_(bufCapacity),
@@ -37,7 +37,7 @@ ByteSink::ByteSink(void* buf, int bufCapacity, int endian)
 	  nw_(0)
 {}
 
-ByteSink::~ByteSink()
+ByteEncoder::~ByteEncoder()
 {
 	if ((stream_) && (buf_))
 	{
@@ -48,7 +48,7 @@ ByteSink::~ByteSink()
 	}
 }
 
-void ByteSink::flush()
+void ByteEncoder::flush()
 {
 	if (!stream_)
 		PONA_THROW(StreamIoException, "Output buffer exhausted");

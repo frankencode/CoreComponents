@@ -8,14 +8,13 @@
 #ifndef PONA_STACK_HPP
 #define PONA_STACK_HPP
 
-#include "NonCopyable.hpp"
-#include "Sequence.hpp"
+#include "containers.hpp"
 
 namespace pona
 {
 
 template<class T>
-class Stack: public Sequence<T, int>, public NonCopyable
+class Stack: public Container< T, Stack<T> >, public Sequence<T, int>
 {
 public:
 	typedef int Index;
@@ -72,19 +71,6 @@ public:
 		T item;
 		pop(item);
 		return item;
-	}
-	
-	inline Stack& operator<<(const T& item) { return push(item); }
-	inline Stack& operator>>(T& item) { return pop(item); }
-	
-	template<template<class> class CB>
-	inline Stack& operator<<(CB<T>& cb) {
-		while (!cb.empty()) {
-			T item;
-			cb >> item;
-			*this << item;
-		}
-		return *this;
 	}
 	
 	inline Stack& popMore(int n) {

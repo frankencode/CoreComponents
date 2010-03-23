@@ -151,51 +151,14 @@ inline bool isSpace(char ch) {
 inline void* malloc(int size) { return new char[size]; }
 inline void free(void* buf) { delete[] reinterpret_cast<char*>(buf); }
 
-template<class T>
-class Return: public T
+class NonCopyable
 {
 public:
-	Return(const T& b): T(b) {}
-	inline operator T() { return *this; }
-};
-
-/*
-template<
-	template<class> class CA,
-	template<class> class CB,
-	class T
->
-inline CA<T>& operator<<(CA<T>& ca, CB<T>& cb)
-{
-	while (!cb.empty()) {
-		T item;
-		cb >> item;
-		ca << item;
-	}
-	return ca;
-}*/
-
-template<
-	template<class> class CA,
-	template<class> class CB,
-	class T
->
-inline CA<T>& operator>>(CA<T>& ca, CB<T>& cb)
-{
-	cb << ca;
-	return ca;
-}
-
-template<class T>
-class Ascending {
-public:
-	static inline bool below(const T& a, const T& b) { return a < b; }
-};
-
-template<class T>
-class Descending {
-public:
-	static inline bool below(const T& a, const T& b) { return b < a; }
+	NonCopyable() {}
+	
+private:
+	NonCopyable(const NonCopyable& b);
+	const NonCopyable& operator=(const NonCopyable& b);
 };
 
 } // namespace pona

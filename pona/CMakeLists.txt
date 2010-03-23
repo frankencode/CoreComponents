@@ -4,37 +4,35 @@ SET(PONA_HEADER
 	atoms
 	types.hpp
 	strings.hpp
+	generics.hpp
 	Exception.hpp
 	CoreMutex.hpp
 	Instance.hpp
-	Alien.hpp
 	Pointer.hpp
 	SetNull.hpp
 	Owner.hpp
 	Ref.hpp
-	NonCopyable.hpp
-	Sequence.hpp
-	Stream.hpp
 	
 	binary
-	ByteSink.hpp
-	ByteSource.hpp
-	Utf8Sink.hpp
-	Utf8Source.hpp
-	Utf8Iterator.hpp
-	BitSink.hpp
-	BitSource.hpp
+	ByteEncoder.hpp
+	ByteDecoder.hpp
+	Utf8Encoder.hpp
+	Utf8Decoder.hpp
+	Utf8Walker.hpp
+	BitEncoder.hpp
+	BitDecoder.hpp
 	Crc32.hpp
 	HuffmanCodec.hpp
 	
 	container
+	containers.hpp
 	ArrayPolicy.hpp
 	Array.hpp
 	Stack.hpp
 	Queue.hpp
 	Heap.hpp
 	ListNode.hpp
-	ListIterator.hpp
+	ListWalker.hpp
 	List.hpp
 	Tree.hpp
 	PrefixTree.hpp
@@ -100,7 +98,6 @@ SET(PONA_HEADER
 	Pipe.hpp
 	
 	events
-	Action.hpp
 	Event.hpp
 	ExitEvent.hpp
 	ThreadExitEvent.hpp
@@ -114,24 +111,25 @@ SET(PONA_HEADER
 	
 	time
 	Time.hpp
+	DateTime.hpp
 	
-	misc
+	math
 	Random.hpp
 	Rounding.hpp
 )
 
 SET(PONA_SOURCE
 	# atoms
+	generics.cpp
 	Exception.cpp
-	Stream.cpp
 	
 	# binary
-	ByteSink.cpp
-	ByteSource.cpp
-	Utf8Sink.cpp
-	Utf8Source.cpp
-	BitSink.cpp
-	BitSource.cpp
+	ByteEncoder.cpp
+	ByteDecoder.cpp
+	Utf8Encoder.cpp
+	Utf8Decoder.cpp
+	BitEncoder.cpp
+	BitDecoder.cpp
 	HuffmanCodec.cpp
 	Crc32.cpp
 	
@@ -191,7 +189,10 @@ SET(PONA_SOURCE
 	StreamSocket.cpp
 	NetworkInterface.cpp
 	
-	# misc
+	# time
+	DateTime.cpp
+
+	# math
 	Random.cpp
 )
 

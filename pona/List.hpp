@@ -1,5 +1,5 @@
 /*
- * CustomList.hpp -- double-linked list
+ * List.hpp -- double-linked list
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -8,23 +8,27 @@
 #ifndef PONA_LIST_HPP
 #define PONA_LIST_HPP
 
-#include "atoms"
-#include "Sequence.hpp"
+#include "containers.hpp"
 #include "ListNode.hpp"
-#include "ListIterator.hpp"
+#include "ListWalker.hpp"
 
 namespace pona
 {
 
 template<class T>
-class List: public Sequence< T, ListIterator<T> >, public NonCopyable
+class List:
+	public Container< T, List<T> >,
+	public Sequence< T, ListWalker<T> >
 {
 public:
-	typedef ListIterator<T> Index;
+	typedef ListWalker<T> Index;
+	typedef GenericIterator< List<T> > Iterator;
 	typedef T Item;
 	
 	List(int maxLength = intMax);
 	~List();
+	
+	inline Iterator iterator() const { return Iterator(this); }
 	
 	inline Return<Index> first() const { return Index(firstNode_, this); }
 	inline Return<Index> last() const { return Index(lastNode_, this); }
@@ -55,12 +59,13 @@ public:
 	// list structure manipulation
 	List& push(Index& index, const T& item);
 	List& pop(Index& index, T& item);
+	void clear();
+	
 	inline T pop(Index& index) {
 		Item item;
 		pop(index, item);
 		return item;
 	}
-	void clear();
 	
 	// generic container methods
 	inline int size() const { return maxLength_; }
@@ -69,18 +74,6 @@ public:
 	inline List& push(const T& item) { return push(end(), item); }
 	inline List& pop(T& item) { return pop(first(), item); }
 	inline T pop() { T item; pop(item); return item; }
-	inline List& operator<<(const T& item) { return push(item); }
-	inline List& operator>>(T& item) { return pop(item); }
-	
-	template<template<class> class CB>
-	inline List& operator<<(CB<T>& cb) {
-		while (!cb.empty()) {
-			T item;
-			cb >> item;
-			*this << item;
-		}
-		return *this;
-	}
 	
 	// random access helper
 	inline bool def(int j) const {
@@ -136,7 +129,7 @@ public:
 	}
 	
 private:
-	friend class ListIterator<T>;
+	friend class ListWalker<T>;
 	typedef ListNode<T> Node;
 	
 	Node endNode_;
@@ -219,8 +212,15 @@ List<T>& List<T>::pop(Index& index, T& oldItem)
 template<class T>
 void List<T>::clear()
 {
-	while (last().valid())
-		pop(last());
+	Node* node = lastNode_;
+	while (node) {
+		Node* oldNode = node;
+		node = node->previous_;
+		delete oldNode;
+	}
+	firstNode_ = 0;
+	lastNode_ = 0;
+	length_ = 0;
 }
 
 template<class T>

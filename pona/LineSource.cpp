@@ -26,29 +26,32 @@ LineSource::~LineSource()
 	buf_ = 0;
 }
 
-String LineSource::readLine(bool* eoi)
+bool LineSource::hasNext()
 {
-	bool h;
-	if (!eoi) eoi = &h;
-	*eoi = false;
-	
-	while ((cachedLines_ == 0) && (!*eoi))
-		readAvail(eoi);
-	
-	if (*eoi)
-		return String();
+	while ((cachedLines_ == 0) && (readAvail()));
+	return cachedLines_ > 0;
+}
+
+String LineSource::next()
+{
+	return readLine();
+}
+
+String LineSource::readLine()
+{
+	if (!hasNext())
+		return "";
 	
 	int nk = eol_->size();
 	int k = 0;
 	int i = 0;
-	while (k < nk)
-	{
+	while (k < nk) {
 		char ch = cache_.pop();
 		k = (ch == eol_->at(k)) ? k + 1 : 0;
 		buf_[i] = ch;
 		++i;
 	}
-
+	
 	--cachedLines_;
 	
 	return String(buf_, i - nk);
@@ -59,16 +62,9 @@ int LineSource::cachedLines() const
 	return cachedLines_;
 }
 
-void LineSource::readAvail(bool* eoi)
+bool LineSource::readAvail()
 {
-	if (eoi) *eoi = false;
-	
 	int bufFill = stream_->readAvail(buf_, bufCapa_);
-	
-	if (bufFill == 0) {
-		if (eoi) *eoi = true;
-		return;
-	}
 	
 	for (int i = 0, nk = eol_->size(), k = 0; i < bufFill; ++i)
 	{
@@ -85,6 +81,8 @@ void LineSource::readAvail(bool* eoi)
 		
 		cache_.push(ch);
 	}
+	
+	return bufFill > 0;
 }
 
 Ref<Stream> LineSource::stream() const

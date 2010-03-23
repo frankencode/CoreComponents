@@ -10,7 +10,6 @@
 
 #include "atoms"
 #include "List.hpp"
-#include "Action.hpp"
 
 namespace pona
 {

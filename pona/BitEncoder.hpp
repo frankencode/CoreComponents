@@ -1,12 +1,12 @@
 /*
- * BitSink.hpp -- bit-vise writing to a 'Stream'
+ * BitEncoder.hpp -- bit-vise writing to a 'Stream'
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
-#ifndef PONA_BITSINK_HPP
-#define PONA_BITSINK_HPP
+#ifndef PONA_BITENCODER_HPP
+#define PONA_BITENCODER_HPP
 
 #include "atoms"
 #include "defaults.hpp"
@@ -14,12 +14,12 @@
 namespace pona
 {
 
-class BitSink: public Instance
+class BitEncoder: public Instance
 {
 public:
-	BitSink(Ref<Stream> stream, int bufCapacity = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
-	BitSink(void* buf, int bufCapacity, int endian = PONA_DEFAULT_ENDIAN);
-	~BitSink();
+	BitEncoder(Ref<Stream> stream, int bufCapacity = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
+	BitEncoder(void* buf, int bufCapacity, int endian = PONA_DEFAULT_ENDIAN);
+	~BitEncoder();
 	
 	void flush();
 	
@@ -51,7 +51,7 @@ private:
 	uint64_t nw_;    // accumulated number of written bytes
 };
 
-inline void BitSink::writeBit(uint8_t x)
+inline void BitEncoder::writeBit(uint8_t x)
 {
 	if (iBit_ == 8)
 	{
@@ -63,13 +63,13 @@ inline void BitSink::writeBit(uint8_t x)
 	++iBit_;
 }
 
-inline void BitSink::writeUInt8(uint8_t x)
+inline void BitEncoder::writeUInt8(uint8_t x)
 {
 	for (int i = 0; i < 8; ++i, x >>= 1)
 		writeBit(x & 1);
 }
 
-inline void BitSink::writeUInt16(uint16_t x)
+inline void BitEncoder::writeUInt16(uint16_t x)
 {
 	if (endian_ == LittleEndian)
 	{
@@ -83,7 +83,7 @@ inline void BitSink::writeUInt16(uint16_t x)
 	}
 }
 
-inline void BitSink::writeUInt32(uint32_t x)
+inline void BitEncoder::writeUInt32(uint32_t x)
 {
 	if (endian_ == LittleEndian)
 	{
@@ -101,7 +101,7 @@ inline void BitSink::writeUInt32(uint32_t x)
 	}
 }
 
-inline void BitSink::writeUInt64(uint64_t x)
+inline void BitEncoder::writeUInt64(uint64_t x)
 {
 	if (endian_ == LittleEndian)
 	{
@@ -115,7 +115,7 @@ inline void BitSink::writeUInt64(uint64_t x)
 	}
 }
 
-inline void BitSink::writeUIntVlc(unsigned x, int chunkSize)
+inline void BitEncoder::writeUIntVlc(unsigned x, int chunkSize)
 {
 	bool hasNext = true;
 	while (hasNext)
@@ -130,7 +130,7 @@ inline void BitSink::writeUIntVlc(unsigned x, int chunkSize)
 	}
 }
 
-inline int BitSink::bitsPerUIntVlc(unsigned x, int chunkSize)
+inline int BitEncoder::bitsPerUIntVlc(unsigned x, int chunkSize)
 {
 	bool hasNext = true;
 	int n = 0;
@@ -143,30 +143,30 @@ inline int BitSink::bitsPerUIntVlc(unsigned x, int chunkSize)
 	return n;
 }
 
-inline void BitSink::writeIntVlc(int x, int chunkSize)
+inline void BitEncoder::writeIntVlc(int x, int chunkSize)
 {
 	writeBit(x < 0);
 	if (x < 0) x = -x;
 	writeUIntVlc(x, chunkSize);
 }
 
-inline int BitSink::bitsPerIntVlc(int x, int chunkSize)
+inline int BitEncoder::bitsPerIntVlc(int x, int chunkSize)
 {
 	if (x < 0) x = -x;
 	return bitsPerUIntVlc(x) + 1;
 }
 
-inline void BitSink::writeUInt(int bits, unsigned x)
+inline void BitEncoder::writeUInt(int bits, unsigned x)
 {
 	for (int i = 0; i < bits; ++i, x >>= 1)
 		writeBit(x & 1);
 }
 
-inline uint64_t BitSink::numBytesWritten() const
+inline uint64_t BitEncoder::numBytesWritten() const
 {
 	return nw_ + i_ + (i_ + iBit_ > 0);
 }
 
 } // namespace pona
 
-#endif // PONA_BITSINK_HPP
+#endif // PONA_BITENCODER_HPP

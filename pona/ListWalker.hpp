@@ -1,12 +1,12 @@
 /*
- * ListIterator.hpp -- double-linked list iterator
+ * ListWalker.hpp -- double-linked list walker
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
-#ifndef PONA_LISTITERATOR_HPP
-#define PONA_LISTITERATOR_HPP
+#ifndef PONA_LISTWALKER_HPP
+#define PONA_LISTWALKER_HPP
 
 #include "Exception.hpp"
 #include "ListNode.hpp"
@@ -18,21 +18,21 @@ template<class T>
 class List;
 
 template<class T>
-class ListIterator {
+class ListWalker {
 public:
 	// prefix increment / decrement
-	inline ListIterator& operator++() {
+	inline ListWalker& operator++() {
 		check(valid());
 		node_ = node_->next_;
 		if (!node_) node_ = &list_->endNode_;
 		return *this;
 	}
-	inline ListIterator& operator--() {
+	inline ListWalker& operator--() {
 		check(valid() || (atEnd() && (!list_->empty())));
 		node_ = atEnd() ? list_->lastNode_ : node_->previous_;
 		return *this;
 	}
-	inline ListIterator& operator+=(int delta) {
+	inline ListWalker& operator+=(int delta) {
 		while (delta > 0) {
 			++*this;
 			--delta;
@@ -43,36 +43,36 @@ public:
 		}
 		return *this;
 	}
-	inline ListIterator& operator-=(int delta) {
+	inline ListWalker& operator-=(int delta) {
 		return (*this) += -delta;
 	}
 	
 	// postfix increment / decrement
-	inline ListIterator operator++(int) {
-		ListIterator it = *this;
+	inline ListWalker operator++(int) {
+		ListWalker it = *this;
 		++(*this);
 		return it;
 	}
-	inline ListIterator operator--(int) {
-		ListIterator it = *this;
+	inline ListWalker operator--(int) {
+		ListWalker it = *this;
 		--(*this);
 		return it;
 	}
 	
-	inline ListIterator operator+(int delta) const {
-		ListIterator it = *this;
+	inline ListWalker operator+(int delta) const {
+		ListWalker it = *this;
 		return it += delta;
 	}
-	inline ListIterator operator-(int delta) const {
-		ListIterator it = *this;
+	inline ListWalker operator-(int delta) const {
+		ListWalker it = *this;
 		return it -= delta;
 	}
 	
-	inline bool operator==(const ListIterator& b) const {
+	inline bool operator==(const ListWalker& b) const {
 		check(list_ == b.list_);
 		return node_ == b.node_;
 	}
-	inline bool operator!=(const ListIterator& b) const {
+	inline bool operator!=(const ListWalker& b) const {
 		check(list_ == b.list_);
 		return node_ != b.node_;
 	}
@@ -80,7 +80,7 @@ public:
 private:
 	friend class List<T>;
 	
-	ListIterator(const ListNode<T>* node, const List<T>* list)
+	ListWalker(const ListNode<T>* node, const List<T>* list)
 		: node_(const_cast<ListNode<T>*>(node)),
 		  list_(const_cast<List<T>*>(list))
 	{}
@@ -89,9 +89,9 @@ private:
 	inline bool atEnd() const { return &list_->endNode_ == node_; }
 	
 	ListNode<T>* node_;
-	List<T>* list_;
+	Ref< List<T> > list_;
 };
 
 } // namespace pona
 
-#endif // PONA_LISTITERATOR_HPP
+#endif // PONA_LISTWALKER_HPP

@@ -13,7 +13,7 @@
 namespace pona
 {
 
-class Dir: public Instance
+class Dir: public Source< Ref<DirEntry, Owner> >
 {
 public:
 	Dir(String path);
@@ -29,12 +29,15 @@ public:
 	void open();
 	void close();
 	bool read(Ref<DirEntry> entry);
-	
 	bool isOpen() const;
+	
+	bool hasNext();
+	Ref<DirEntry, Owner> next();
 	
 private:
 	String path_;
 	DIR* dir_;
+	Ref<DirEntry, Owner> next_;
 };
 
 } // namespace pona

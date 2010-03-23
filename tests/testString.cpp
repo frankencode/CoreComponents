@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 		String s("123x");
 		const char* pattern = "x";
 		String::Index i = s.find(pattern);
-		print("Find \"%%\" in \"%%\": %% (valid = %%)\n", pattern, s->data(), i.pos() - i.data(), i.valid());
+		print("Find \"%%\" in \"%%\": valid = %%\n", pattern, s->data(), s.def(i));
 		/*print("s == String(s.split(pattern), pattern): %%\n", s == String(s.split(pattern), pattern));
 		print("s.split(pattern)->length() = %%\n", s.split(pattern)->length());
 		print("String(s.split(pattern), pattern) = '%%'\n", String(s.split(pattern), pattern).data());*/

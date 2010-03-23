@@ -9,7 +9,7 @@
 #define PONA_STRING_HPP
 
 #include "atoms"
-#include "Utf8Iterator.hpp"
+#include "Utf8Walker.hpp"
 #include "Array.hpp"
 #include "List.hpp"
 
@@ -27,7 +27,7 @@ class String: public Ref<StringMedia, Owner>
 public:
 	typedef StringMedia Media;
 	typedef Ref<Media, Owner> Super;
-	typedef Utf8Iterator Index;
+	typedef Utf8Walker Index;
 	typedef uchar_t Item;
 	
 	// initialize empty string

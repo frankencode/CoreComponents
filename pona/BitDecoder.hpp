@@ -1,12 +1,12 @@
 /*
- * BitSoruce.hpp -- bit-vise reading from a 'Stream'
+ * BitDecoder.hpp -- bit-vise reading from a 'Stream'
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
-#ifndef PONA_BITSOURCE_HPP
-#define PONA_BITSOURCE_HPP
+#ifndef PONA_BITDECODER_HPP
+#define PONA_BITDECODER_HPP
 
 #include "atoms"
 #include "defaults.hpp"
@@ -14,12 +14,12 @@
 namespace pona
 {
 
-class BitSource: public Instance
+class BitDecoder: public Instance
 {
 public:
-	BitSource(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
-	BitSource(void* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
-	~BitSource();
+	BitDecoder(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
+	BitDecoder(void* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
+	~BitDecoder();
 	
 	uint8_t readBit();
 	uint8_t readUInt8();
@@ -51,7 +51,7 @@ private:
 	uint64_t nr_;    // accumulated number of bytes read
 };
 
-inline uint8_t BitSource::readBit()
+inline uint8_t BitDecoder::readBit()
 {
 	if (iBit_ == 8)
 	{
@@ -62,7 +62,7 @@ inline uint8_t BitSource::readBit()
 	return (buf_[i_] >> (iBit_++)) & 1;
 }
 
-inline uint8_t BitSource::readUInt8()
+inline uint8_t BitDecoder::readUInt8()
 {
 	uint8_t h = 0;
 	for (int i = 0; i < 8; ++i)
@@ -70,7 +70,7 @@ inline uint8_t BitSource::readUInt8()
 	return h;
 }
 
-inline uint16_t BitSource::readUInt16()
+inline uint16_t BitDecoder::readUInt16()
 {
 	uint16_t h;
 	
@@ -88,7 +88,7 @@ inline uint16_t BitSource::readUInt16()
 	return h;
 }
 
-inline uint32_t BitSource::readUInt32()
+inline uint32_t BitDecoder::readUInt32()
 {
 	uint32_t h;
 	
@@ -110,7 +110,7 @@ inline uint32_t BitSource::readUInt32()
 	return h;
 }
 
-inline uint64_t BitSource::readUInt64()
+inline uint64_t BitDecoder::readUInt64()
 {
 	uint64_t h = 0;
 	
@@ -128,7 +128,7 @@ inline uint64_t BitSource::readUInt64()
 	return h;
 }
 
-inline unsigned BitSource::readUIntVlc(int chunkSize)
+inline unsigned BitDecoder::readUIntVlc(int chunkSize)
 {
 	unsigned x = 0;
 	int i = 0;
@@ -145,7 +145,7 @@ inline unsigned BitSource::readUIntVlc(int chunkSize)
 	return x;
 }
 
-inline int BitSource::readIntVlc(int chunkSize)
+inline int BitDecoder::readIntVlc(int chunkSize)
 {
 	int x;
 	if (readBit())
@@ -155,7 +155,7 @@ inline int BitSource::readIntVlc(int chunkSize)
 	return x;
 }
 
-inline unsigned BitSource::readUInt(int bits)
+inline unsigned BitDecoder::readUInt(int bits)
 {
 	unsigned x = 0;
 	for (int i = 0; i < bits; ++i)
@@ -163,16 +163,16 @@ inline unsigned BitSource::readUInt(int bits)
 	return x;
 }
 
-inline uint64_t BitSource::numBytesRead() const
+inline uint64_t BitDecoder::numBytesRead() const
 {
 	return nr_ - (/* unconsumed buffer bytes */ bufFill_ - i_ - (i_ + iBit_ > 0));
 }
 
-inline Ref<Stream> BitSource::stream() const
+inline Ref<Stream> BitDecoder::stream() const
 {
 	return stream_;
 }
 
 } // namespace pona
 
-#endif // PONA_BITSOURCE_HPP
+#endif // PONA_BITDECODER_HPP

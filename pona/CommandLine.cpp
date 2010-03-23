@@ -16,8 +16,10 @@ namespace pona
 {
 
 CommandLine::CommandLine()
-	: optionList_(new OptionList),
-	  entity_("FILE")
+	: definedOptions_(new OptionList),
+	  usedOptions_(new OptionList),
+	  entity_("FILE"),
+	  position_(0)
 {
 	STATE_CHAR("quote", '\"');
 	
@@ -146,15 +148,17 @@ Ref<CommandOption> CommandLine::define(char shortName, String longName, Variant 
 	option->typeMask_ = defaultValue.type();
 	option->defaultValue_ = defaultValue;
 	option->value_ = defaultValue;
-	optionList_->append(option);
+	definedOptions_->append(option);
 	return option;
 }
+
+Ref<CommandLine::OptionList> CommandLine::usedOptions() const { return usedOptions_; }
 
 Ref<CommandOption> CommandLine::optionByShortName(char name) const
 {
 	Ref<CommandOption> option;
-	for (OptionList::Index i = optionList_->first(); optionList_->def(i); ++i) {
-		Ref<CommandOption> candidate = optionList_->at(i);
+	for (OptionList::Index i = definedOptions_->first(); definedOptions_->def(i); ++i) {
+		Ref<CommandOption> candidate = definedOptions_->at(i);
 		if (candidate->shortName_ == name) {
 			option = candidate;
 			break;
@@ -166,8 +170,8 @@ Ref<CommandOption> CommandLine::optionByShortName(char name) const
 Ref<CommandOption> CommandLine::optionByLongName(String name) const
 {
 	Ref<CommandOption> option;
-	for (OptionList::Index i = optionList_->first(); optionList_->def(i); ++i) {
-		Ref<CommandOption> candidate = optionList_->at(i);
+	for (OptionList::Index i = definedOptions_->first(); definedOptions_->def(i); ++i) {
+		Ref<CommandOption> candidate = definedOptions_->at(i);
 		if (candidate->longName_ == name) {
 			option = candidate;
 			break;
@@ -204,6 +208,8 @@ String stripQuotes(String s)
 
 Ref<StringList, Owner> CommandLine::read(String line)
 {
+	position_ = 0;
+	
 	int i0 = 0, i1 = -1;
 	Ref<Token, Owner> rootToken;
 	if (!match(line, i0, &i1, &rootToken))
@@ -231,9 +237,9 @@ Ref<StringList, Owner> CommandLine::read(String line)
 
 void CommandLine::verifyTypes()
 {
-	for (OptionList::Index i = optionList_->first(); optionList_->def(i); ++i)
+	for (OptionList::Index i = definedOptions_->first(); definedOptions_->def(i); ++i)
 	{
-		Ref<CommandOption> option = optionList_->at(i);
+		Ref<CommandOption> option = definedOptions_->at(i);
 		
 		if ( ((option->value_.type() & option->typeMask_) == 0) &&
 		     (option->typeMask_ != 0) )
@@ -256,6 +262,8 @@ void CommandLine::readOption(String line, Ref<Token> token)
 			if (!option)
 				PONA_THROW(CommandLineException, pona::strdup(String(Format("Unsupported option: '-%%'") << name)->data()));
 			
+			usedOptions_->append(option);
+			
 			token = token->nextSibling();
 			if (token) {
 				if (token->ruleId() == valueRule_->id()) {
@@ -277,6 +285,8 @@ void CommandLine::readOption(String line, Ref<Token> token)
 		Ref<CommandOption> option = optionByLongName(name);
 		if (!option)
 			PONA_THROW(CommandLineException, pona::strdup(String(Format("Unsupported option: '--%%'") << name)->data()));
+		
+		usedOptions_->append(option);
 		
 		token = token->nextSibling();
 		if (!token)
@@ -357,8 +367,8 @@ String CommandLine::helpText() const
 		Ref<StringList, Owner> lines = new StringList;
 		int maxLength = 0;
 		
-		for (OptionList::Index i = optionList_->first(); optionList_->def(i); ++i) {
-			Ref<CommandOption> option = optionList_->get(i);
+		for (OptionList::Index i = definedOptions_->first(); definedOptions_->def(i); ++i) {
+			Ref<CommandOption> option = definedOptions_->get(i);
 			Format format("  ");
 			if (option->shortName_)
 				format << '-' << option->shortName_;
@@ -382,11 +392,11 @@ String CommandLine::helpText() const
 		
 		String indent(maxLength + 2, ' ');
 		
-		OptionList::Index i = optionList_->first();
+		OptionList::Index i = definedOptions_->first();
 		StringList::Index j = lines->first();
-		for (;optionList_->def(i) && lines->def(j); ++i, ++j)
+		for (;definedOptions_->def(i) && lines->def(j); ++i, ++j)
 		{
-			Ref<CommandOption> option = optionList_->at(i);
+			Ref<CommandOption> option = definedOptions_->at(i);
 			Format line;
 			line << lines->at(j);
 			if (lines->at(j)->size() < indent->size())
@@ -407,8 +417,7 @@ String CommandLine::helpText() const
 	text << "Options:\n";
 	text << options;
 	if (details_->size() > 0)
-		text << details_;
-	text << "\n";
+		text << "\n" << details_ << "\n";
 	
 	return text;
 }

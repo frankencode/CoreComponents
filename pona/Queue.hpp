@@ -8,14 +8,13 @@
 #ifndef PONA_QUEUE_HPP
 #define PONA_QUEUE_HPP
 
-#include "NonCopyable.hpp"
-#include "Sequence.hpp"
+#include "containers.hpp"
 
 namespace pona
 {
 
 template<class T>
-class Queue: public Sequence<T, int>, public NonCopyable
+class Queue: public Container< T, Queue<T> >, public Sequence<T, int>
 {
 public:
 	typedef int Index;
@@ -64,19 +63,6 @@ public:
 	inline Queue& push(const T& item) { return pushBack(item); }
 	inline Queue& pop(T& item) { return popFront(item); }
 	inline T pop() { T item; popFront(item); return item; }
-	
-	inline Queue& operator<<(const T& item) { return push(item); }
-	inline Queue& operator>>(T& item) { return pop(item); }
-	
-	template<template<class> class CB>
-	inline Queue& operator<<(CB<T>& cb) {
-		while (!cb.empty()) {
-			T item;
-			cb >> item;
-			*this << item;
-		}
-		return *this;
-	}
 	
 	inline void clear()
 	{

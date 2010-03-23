@@ -1,6 +1,7 @@
 LINK_LIBRARIES(pona)
 INCLUDE_DIRECTORIES(..)
 
+ADD_EXECUTABLE(testDateTime testDateTime.cpp)
 ADD_EXECUTABLE(testString testString.cpp)
 ADD_EXECUTABLE(testDir testDir.cpp)
 ADD_EXECUTABLE(testNetworkInterface testNetworkInterface.cpp)

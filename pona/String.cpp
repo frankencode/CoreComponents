@@ -1,4 +1,12 @@
-#include "Utf8Source.hpp"
+/*
+ * String.cpp -- UTF8 strings
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
+#include "Utf8Decoder.hpp"
 #include "Crc32.hpp"
 #include "FormatSyntax.hpp"
 #include "IntegerLiteral.hpp"
@@ -17,9 +25,9 @@ void String::validate(const char* data, int size)
 {
 	if (size < 0) size = pona::strlen(data);
 	if (size > 0) {
-		Utf8Source source(data, size);
-		while (source.numBytesRead() < size)
-			source.readChar();
+		Utf8Decoder source(data, size);
+		while (source.hasNext())
+			source.next();
 	}
 }
 
