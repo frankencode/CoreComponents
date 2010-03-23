@@ -10,6 +10,7 @@
 #define PONA_COREMUTEX_HPP
 
 #include <unistd.h> // _POSIX_SPIN_LOCKS, __APPLE__
+#include "types.hpp" // NonCopyable
 
 #ifndef PONA_COREMUTEX_USE_POSIX_SEMAPHORES
 	#ifndef PONA_COREMUTEX_USE_MACOS_SPIN_LOCKS
@@ -30,8 +31,6 @@
 #ifdef PONA_COREMUTEX_USE_POSIX_SPIN_LOCKS
 
 #include <pthread.h>
-#include "Exception.hpp"
-#include "NonCopyable.hpp"
 
 namespace pona
 {
@@ -98,8 +97,6 @@ private:
 #ifdef PONA_COREMUTEX_USE_POSIX_SEMAPHORES
 
 #include <semaphore.h>
-#include "Exception.hpp"
-#include "NonCopyable.hpp"
 
 namespace pona
 {

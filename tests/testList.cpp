@@ -1,6 +1,6 @@
 #include <pona/stdio>
 #include <pona/container>
-#include <pona/misc>
+#include <pona/math>
 
 namespace pona
 {
@@ -63,21 +63,27 @@ int main()
 		for (int i = 0; i < 10; ++i)
 			list << random.get(0, 99);
 		print(list);
-		Heap<int>(list.length()) << list >> list;
+		
+		MinHeap<int> heap(list.length());
+		Stack<int> stack(list.length());
+		Queue<int> queue(list.length());
+		
+		list >> heap >> list;
 		print(list);
-		Stack<int>(list.length()) << list >> list;
+		list >> stack >> list;
 		print(list);
-		Queue<int>(list.length()) << list >> list;
+		list >> queue >> list;
 		print(list);
 	}
-	{
+	/*{
 		print("Test 5:\n");
 		List< Pair<int, int> > list;
 		Random random;
 		for (int i = 0; i < 10; ++i)
 			list << Pair<int, int>(random.get(0, 99), i);
 		print("#list = %%\n", list.length());
-		Map<int, int>() << list >> list;
+		Map<int, int> map;
+		list >> map >> list;
 		print("#list = %%\n", list.length());
 		print("[");
 		for (List< Pair<int, int> >::Index i = list.first(); list.def(i); ++i) {
@@ -85,7 +91,7 @@ int main()
 			if (list.def(i+1)) print(", ");
 		}
 		print("]\n");
-	}
+	}*/
 	return 0;
 }
 

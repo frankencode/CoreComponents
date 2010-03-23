@@ -12,7 +12,7 @@ namespace pona
 {
 
 template<class T>
-class ListIterator;
+class ListWalker;
 
 template<class T>
 class List;
@@ -20,7 +20,7 @@ class List;
 template<class T>
 class ListNode {
 private:
-	friend class ListIterator<T>;
+	friend class ListWalker<T>;
 	friend class List<T>;
 	
 	ListNode()

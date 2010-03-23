@@ -1,6 +1,6 @@
 LINK_LIBRARIES(pona)
 INCLUDE_DIRECTORIES(..)
 
-SUBDIRS(rio)
 ADD_EXECUTABLE(whoami whoami.cpp)
 ADD_EXECUTABLE(ls ls.cpp)
+ADD_EXECUTABLE(stat stat.cpp)

@@ -1,13 +1,13 @@
 #include <pona/stdio>
 #include <pona/threads>
 #include <pona/container>
-#include <pona/misc>
+#include <pona/math>
 #include <pona/time>
 
 namespace pona
 {
 
-typedef Channel<int, List> MyChannel;
+typedef Channel<int> MyChannel;
 
 class Consumer: public Thread
 {

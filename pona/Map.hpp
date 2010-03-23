@@ -8,6 +8,7 @@
 #ifndef PONA_MAP_HPP
 #define PONA_MAP_HPP
 
+#include "containers.hpp"
 #include "AvlTree.hpp"
 #include "Pair.hpp"
 #include "List.hpp"
@@ -16,7 +17,9 @@ namespace pona
 {
 
 template<class Key, class Value>
-class Map: public Instance, public AvlTree< Pair<Key,Value> >
+class Map:
+	public Container< Pair<Key, Value>, Map<Key, Value> >,
+	public AvlTree< Pair<Key, Value> >
 {
 private:	
 	typedef AvlTree< Pair<Key,Value> > Super;
@@ -162,30 +165,7 @@ public:
 		return item;
 	}
 	
-	inline Map& operator<<(const Item& item) { return push(item); }
-	inline Map& operator>>(Item& item) { return pop(item); }
-	
-	inline int empty() const { return Super::count() == 0; }
-	
-	template<template<class> class CB>
-	inline Map& operator<<(CB<Item>& cb) {
-		while (!cb.empty()) {
-			Item item;
-			cb >> item;
-			*this << item;
-		}
-		return *this;
-	}
-	
-	template<template<class> class CB>
-	inline Map& operator>>(CB<Item>& cb) {
-		while (!empty()) {
-			Item item;
-			*this >> item;
-			cb << item;
-		}
-		return *this;
-	}
+	inline bool empty() const { return Super::count() == 0; }
 };
 
 } // namespace pona

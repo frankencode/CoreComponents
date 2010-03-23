@@ -97,7 +97,7 @@ void HuffmanCodec::generateCodeTable()
 		codeTableRoot_ = 0;
 }
 
-void HuffmanCodec::writeRawFrame(BitSink* sink, int* raw, int rawFill, int rawMin, int rawMax)
+void HuffmanCodec::writeRawFrame(BitEncoder* sink, int* raw, int rawFill, int rawMin, int rawMax)
 {
 	/** write header
 	  */
@@ -111,7 +111,7 @@ void HuffmanCodec::writeRawFrame(BitSink* sink, int* raw, int rawFill, int rawMi
 		sink->writeUIntVlc(bits, raw[i] - rawMin);
 }
 
-void HuffmanCodec::encode(BitSink* sink, int* raw, int rawFill, bool* userFallback)
+void HuffmanCodec::encode(BitEncoder* sink, int* raw, int rawFill, bool* userFallback)
 {
 	/** determine dynamic range (min, max)
 	  */
@@ -182,13 +182,13 @@ void HuffmanCodec::encode(BitSink* sink, int* raw, int rawFill, bool* userFallba
 	  */
 	int tableSize = 0;
 	int outSize = 1;    // encoding flag
-	outSize += BitSink::bitsPerUIntVlc(rawFill);
-	outSize += BitSink::bitsPerUIntVlc(rawMin);
-	tableSize += BitSink::bitsPerUIntVlc(diversity);
+	outSize += BitEncoder::bitsPerUIntVlc(rawFill);
+	outSize += BitEncoder::bitsPerUIntVlc(rawMin);
+	tableSize += BitEncoder::bitsPerUIntVlc(diversity);
 	for (int i = 0; i < diversity; ++i)
 	{
-		tableSize += BitSink::bitsPerUIntVlc(codeTable_[i].value);
-		tableSize += BitSink::bitsPerUIntVlc(codeTable_[i].count);
+		tableSize += BitEncoder::bitsPerUIntVlc(codeTable_[i].value);
+		tableSize += BitEncoder::bitsPerUIntVlc(codeTable_[i].count);
 		SymbolNode* sym = codeTable_ + i;
 		int len = 0;
 		while ((sym = sym->parent) != 0) ++len;
@@ -260,7 +260,7 @@ void HuffmanCodec::encode(BitSink* sink, int* raw, int rawFill, bool* userFallba
 
 int HuffmanCodec::decode( int* raw,
                           int rawCapacity,
-                          BitSource* source )
+                          BitDecoder* source )
 {
 	/** read header
 	  */
@@ -329,7 +329,7 @@ int HuffmanCodec::encode( uint8_t* encoded,
                           int rawFill,
                           bool* userFallback )
 {
-	BitSink sink(encoded, encodedCapacity);
+	BitEncoder sink(encoded, encodedCapacity);
 	encode(&sink, raw, rawFill, userFallback);
 	return int(sink.numBytesWritten());
 }
@@ -339,7 +339,7 @@ int HuffmanCodec::decode( int* raw,
                           uint8_t* encoded,
                           int encodedFill )
 {
-	BitSource source(encoded, encodedFill);
+	BitDecoder source(encoded, encodedFill);
 	return decode(raw, rawCapacity, &source);
 }
 

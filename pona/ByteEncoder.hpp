@@ -1,12 +1,12 @@
 /*
- * ByteSink.hpp -- byte-vise writing to a 'Stream'
+ * ByteEncoder.hpp -- byte-vise writing to a 'Stream'
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
-#ifndef PONA_BYTESINK_HPP
-#define PONA_BYTESINK_HPP
+#ifndef PONA_BYTEENCODER_HPP
+#define PONA_BYTEENCODER_HPP
 
 #include "atoms"
 #include "defaults.hpp"
@@ -14,13 +14,13 @@
 namespace pona
 {
 
-class ByteSink: public Instance
+class ByteEncoder: public Instance
 {
 public:
-	ByteSink();
-	ByteSink(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
-	ByteSink(void* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
-	~ByteSink();
+	ByteEncoder();
+	ByteEncoder(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, int endian = PONA_DEFAULT_ENDIAN);
+	ByteEncoder(void* buf, int bufCapa, int endian = PONA_DEFAULT_ENDIAN);
+	~ByteEncoder();
 	
 	void writeUInt8(uint8_t x);
 	void writeUInt16(uint16_t x);
@@ -50,14 +50,14 @@ private:
 	off_t nw_;    // accumulated number of written bytes
 };
 
-inline void ByteSink::writeUInt8(uint8_t x)
+inline void ByteEncoder::writeUInt8(uint8_t x)
 {
 	if (i_ == bufCapa_) flush();
 	if (buf_) buf_[i_] = x;
 	++i_;
 }
 
-inline void ByteSink::writeUInt16(uint16_t x)
+inline void ByteEncoder::writeUInt16(uint16_t x)
 {
 	if (endian_ == LittleEndian)
 	{
@@ -71,7 +71,7 @@ inline void ByteSink::writeUInt16(uint16_t x)
 	}
 }
 
-inline void ByteSink::writeUInt32(uint32_t x)
+inline void ByteEncoder::writeUInt32(uint32_t x)
 {
 	if (endian_ == LittleEndian)
 	{
@@ -89,7 +89,7 @@ inline void ByteSink::writeUInt32(uint32_t x)
 	}
 }
 
-inline void ByteSink::writeUInt64(uint64_t x)
+inline void ByteEncoder::writeUInt64(uint64_t x)
 {
 	if (endian_ == LittleEndian)
 	{
@@ -103,21 +103,21 @@ inline void ByteSink::writeUInt64(uint64_t x)
 	}
 }
 
-inline void ByteSink::writeInt8(int8_t x) { writeUInt8(union_cast<uint8_t>(x)); }
-inline void ByteSink::writeInt16(int16_t x) { writeUInt16(union_cast<uint16_t>(x)); }
-inline void ByteSink::writeInt32(int32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
-inline void ByteSink::writeInt64(int64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
+inline void ByteEncoder::writeInt8(int8_t x) { writeUInt8(union_cast<uint8_t>(x)); }
+inline void ByteEncoder::writeInt16(int16_t x) { writeUInt16(union_cast<uint16_t>(x)); }
+inline void ByteEncoder::writeInt32(int32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
+inline void ByteEncoder::writeInt64(int64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
 
-inline void ByteSink::writeFloat32(float32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
-inline void ByteSink::writeFloat64(float64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
+inline void ByteEncoder::writeFloat32(float32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
+inline void ByteEncoder::writeFloat64(float64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
 
-inline off_t ByteSink::numBytesWritten() const
+inline off_t ByteEncoder::numBytesWritten() const
 {
 	return nw_ + /* consumed buffer bytes */ i_;
 }
 
-inline Ref<Stream> ByteSink::stream() const { return stream_; }
+inline Ref<Stream> ByteEncoder::stream() const { return stream_; }
 
 } // namespace pona
 
-#endif // PONA_BYTESINK_HPP
+#endif // PONA_BYTEENCODER_HPP

@@ -8,8 +8,6 @@
 #ifndef PONA_PAIR_HPP
 #define PONA_PAIR_HPP
 
-#include "NonCopyable.hpp"
-
 namespace pona
 {
 

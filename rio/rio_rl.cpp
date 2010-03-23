@@ -41,14 +41,11 @@ public:
 			{
 				if (source_->readyRead(1))
 				{
-					bool eoi = false;
-					lineSource_->readAvail(&eoi);
+					bool eoi = !lineSource_->readAvail();
 					if (lineSource_->cachedLines() > 0)
 						print("\r\033[K");
-					while (lineSource_->cachedLines() > 0) {
-						String line = lineSource_->readLine();
-						output()->writeLine(line);
-					}
+					while (lineSource_->cachedLines() > 0)
+						output()->writeLine(lineSource_->readLine());
 					if (eoi || done_) break;
 					#if RL_VERSION_MAJOR >= 5
 					rl_forced_update_display();

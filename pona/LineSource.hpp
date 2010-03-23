@@ -1,5 +1,5 @@
 /*
- * LineSource.hpp -- canonically buffered data source
+ * LineSource.hpp -- canonical buffered data source
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -16,16 +16,18 @@
 namespace pona
 {
 
-class LineSource: public Instance
+class LineSource: public Source<String>
 {
 public:
 	LineSource(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA, const char* eol = "\n");
 	~LineSource();
 	
-	String readLine(bool* eoi = 0);
+	bool hasNext();
+	String next();
 	
+	String readLine();
 	int cachedLines() const;
-	void readAvail(bool* eoi);
+	bool readAvail();
 	
 	Ref<Stream> stream() const;
 	

@@ -65,7 +65,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	Ref<File, Owner> file = new File(path);
 	file->open(File::Read);
 	Ref<LineSource, Owner> source = new LineSource(file);
-	String line = source->readLine();
+	String line = source->next();
 	{
 		// extract command name first, because it may contain whitespace
 		int i0 = line->find('(') + 1, i1 = line->find(')');

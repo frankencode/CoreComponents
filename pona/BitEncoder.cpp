@@ -1,5 +1,5 @@
 /*
- * BitSink.hpp -- bit-vise writing to a 'Stream'
+ * BitEncoder.hpp -- bit-vise writing to a 'Stream'
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -7,12 +7,12 @@
  */
 
 #include "strings.hpp"
-#include "BitSink.hpp"
+#include "BitEncoder.hpp"
 
 namespace pona
 {
 
-BitSink::BitSink(Ref<Stream> stream, int bufCapacity, int endian)
+BitEncoder::BitEncoder(Ref<Stream> stream, int bufCapacity, int endian)
 	: stream_(stream),
 	  endian_(endian),
 	  bufCapacity_(bufCapacity),
@@ -24,7 +24,7 @@ BitSink::BitSink(Ref<Stream> stream, int bufCapacity, int endian)
 	pona::bzero(buf_, bufCapacity_);
 }
 
-BitSink::BitSink(void* buf, int bufCapacity, int endian)
+BitEncoder::BitEncoder(void* buf, int bufCapacity, int endian)
 	: stream_(0),
 	  endian_(endian),
 	  bufCapacity_(bufCapacity),
@@ -36,7 +36,7 @@ BitSink::BitSink(void* buf, int bufCapacity, int endian)
 	pona::bzero(buf_, bufCapacity_);
 }
 
-BitSink::~BitSink()
+BitEncoder::~BitEncoder()
 {
 	if (stream_)
 	{
@@ -46,7 +46,7 @@ BitSink::~BitSink()
 	}
 }
 
-void BitSink::flush()
+void BitEncoder::flush()
 {
 	if (!stream_)
 		PONA_THROW(StreamIoException, "Output buffer exhausted");

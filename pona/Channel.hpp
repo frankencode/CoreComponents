@@ -8,7 +8,6 @@
 #ifndef PONA_CHANNEL_HPP
 #define PONA_CHANNEL_HPP
 
-#include "atoms"
 #include "Queue.hpp"
 #include "Mutex.hpp"
 #include "Condition.hpp"
@@ -16,8 +15,8 @@
 namespace pona
 {
 
-template<class T, template<class T> class Queue = pona::Queue>
-class Channel: public Instance, public NonCopyable
+template<class T>
+class Channel: public Container< T, Channel<T> >
 {
 public:
 	Channel(int size = 0)
@@ -68,20 +67,9 @@ public:
 		return item;
 	}
 	
-	inline Channel& operator<<(const T& item) { return push(item); }
-	inline Channel& operator>>(T& item) { return pop(item); }
-	
-	template<template<class> class CB>
-	inline Channel& operator<<(CB<T>& cb) {
-		while (!cb.empty()) {
-			T item;
-			cb >> item;
-			*this << item;
-		}
-		return *this;
-	}
-	
 private:
+	inline bool empty() const { return false; }
+	
 	Queue<T> queue_;
 	Mutex queueMutex_;
 	Condition notEmpty_, notFull_;

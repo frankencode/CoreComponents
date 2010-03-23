@@ -1,47 +1,50 @@
 /*
- * ByteSource.cpp -- byte-vise reading from a 'Stream'
+ * BitDecoder.hpp -- bit-vise reading from a 'Stream'
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
 
-#include "ByteSource.hpp"
+#include "BitDecoder.hpp"
 
 namespace pona
 {
 
-ByteSource::ByteSource(Ref<Stream> stream, int bufCapa, int endian)
+BitDecoder::BitDecoder(Ref<Stream> stream, int bufCapa, int endian)
 	: stream_(stream),
 	  endian_(endian),
 	  bufCapa_(bufCapa),
 	  bufFill_(0),
-	  buf_(new uint8_t[bufCapa_]),
+	  buf_(new uint8_t[bufCapa]),
 	  i_(0),
+	  iBit_(8),
 	  nr_(0)
 {
 	fill();
 }
 
-ByteSource::ByteSource(const void* buf, int bufCapa, int endian)
+BitDecoder::BitDecoder(void* buf, int bufCapa, int endian)
 	: stream_(0),
 	  endian_(endian),
 	  bufCapa_(bufCapa),
 	  bufFill_(bufCapa),
-	  buf_(reinterpret_cast<uint8_t*>(const_cast<void*>(buf))),
+	  buf_((uint8_t*)buf),
 	  i_(0),
-	  nr_(0)
+	  iBit_(0),
+	  nr_(bufCapa)
 {}
 
-ByteSource::~ByteSource()
+BitDecoder::~BitDecoder()
 {
-	if (stream_) {
+	if (stream_)
+	{
 		delete[] buf_;
 		buf_ = 0;
 	}
 }
 
-void ByteSource::fill()
+void BitDecoder::fill()
 {
 	if (!stream_)
 		PONA_THROW(StreamIoException, "Input buffer exhausted");
@@ -50,7 +53,9 @@ void ByteSource::fill()
 	if (bufFill_ == 0)
 		PONA_THROW(StreamIoException, "Reading beyond end of input");
 	
+	nr_ += bufFill_;
 	i_ = 0;
+	iBit_ = 0;
 }
 
-} // namespace pona
+} // namespace pon

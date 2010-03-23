@@ -149,10 +149,8 @@ void Service::canonSession(Ref<StreamSocket> socket, String entity)
 			file->open(File::Read);
 			Ref<LineSource, Owner> lineSource = new LineSource(file);
 			Ref<LineSink, Owner> lineSink = new LineSink(socket, options()->ioUnit(), options()->eol());
-			bool eoi = false;
-			while (true) {
-				String line = lineSource->readLine(&eoi);
-				if (eoi) break;
+			while (lineSource->hasNext()) {
+				String line = lineSource->next();
 				if (sendLog)
 					sendLog->writeLine(line);
 				lineSink->writeLine(line);

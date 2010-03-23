@@ -11,8 +11,6 @@
 #include <pthread.h>
 #include <signal.h> // SIGTERM, etc.
 #include "atoms"
-#include "Cloneable.hpp"
-#include "Action.hpp"
 #include "Time.hpp"
 
 namespace pona

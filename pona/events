@@ -8,7 +8,6 @@
 #ifndef PONA_EVENT
 #define PONA_EVENT
 
-#include "Action.hpp"
 #include "Event.hpp"
 #include "ExitEvent.hpp"
 #include "ThreadExitEvent.hpp"

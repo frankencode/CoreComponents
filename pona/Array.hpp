@@ -8,14 +8,14 @@
 #ifndef PONA_ARRAY_HPP
 #define PONA_ARRAY_HPP
 
-#include "Sequence.hpp"
+#include "containers.hpp"
 #include "ArrayPolicy.hpp"
 
 namespace pona
 {
 
 template<class T, template<class> class P = ArrayPolicy>
-class Array: public Sequence<T, int>
+class Array: public Sequence<T, int>, public NonCopyable
 {
 public:
 	typedef int Index;
