@@ -1,3 +1,11 @@
+/*
+ * SocketAddressEntry.cpp -- socket address entry
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+
 #include "SocketAddressEntry.hpp"
 
 namespace pona

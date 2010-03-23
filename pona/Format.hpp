@@ -8,11 +8,10 @@
 #ifndef PONA_FORMAT_HPP
 #define PONA_FORMAT_HPP
 
-#include <stdio.h> // DEBUG
 #include "atoms"
 #include "String.hpp"
 #include "Variant.hpp"
-#include "Rounding.hpp"
+#include "rounding.hpp"
 #include "Stack.hpp"
 
 namespace pona

@@ -1,5 +1,5 @@
 /*
- * Rounding.hpp -- rounding floating points numbers to zero or infinite
+ * rounding.hpp -- rounding floating points numbers to zero or infinite
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *

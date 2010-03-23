@@ -20,9 +20,12 @@ void printStatus(Ref<File, Owner> file)
 			print("status->ownerId() = %%\n", status->ownerId());
 			print("status->groupId() = %%\n", status->groupId());
 			print("User(status->ownerId()).loginName() = %%\n", User(status->ownerId()).loginName());
-			// #ifndef __OpenBSD__ // workarond HACK
-			print("Group(status->groupId()).name() = %%\n", Group(status->groupId()).name());
-			// #endif // __OpenBSD__
+			try {
+				print("Group(status->groupId()).name() = %%\n", Group(status->groupId()).name());
+			}
+			catch(...) {
+				// we may not have enough rights on some systems
+			}
 		}
 	}
 	print("\n");

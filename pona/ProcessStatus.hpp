@@ -1,3 +1,10 @@
+/*
+ * ProcessStatus.hpp -- status information about process
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
 #ifndef PONA_PROCESSSTATUS_HPP
 #define PONA_PROCESSSTATUS_HPP
 
