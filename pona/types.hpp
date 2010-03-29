@@ -124,29 +124,52 @@ public:
 
 typedef uint32_t uchar_t; // could also be a signed integer (int32_t)
 
-inline char toLower(char ch) {
+template<class Char>
+inline Char toLower(Char ch) {
 	if (('A' <= ch) && (ch <= 'Z'))
 		ch = ch + 'a' - 'A';
 	return ch;
 }
 
-inline char toUpper(char ch) {
+template<class Char>
+inline Char toUpper(Char ch) {
 	if (('a' <= ch) && (ch <= 'z'))
 		ch = ch + 'A' - 'a';
 	return ch;
 }
 
-inline char isLower(char ch) {
+template<class Char>
+inline bool isLower(Char ch) {
 	return ('a' <= ch) && (ch <= 'z');
 }
 
-inline char isUpper(char ch) {
+template<class Char>
+inline bool isUpper(Char ch) {
 	return ('A' <= ch) && (ch <= 'Z');
 }
 
-inline bool isSpace(char ch) {
+template<class Char>
+inline bool isSpace(Char ch) {
 	return (ch == ' ') || (ch == '\t');
 }
+
+template<class T>
+class Identity {
+public:
+	inline static T map(const T& x) { return x; }
+};
+
+template<class T>
+class ToLower {
+public:
+	inline static T map(const T& x) { return pona::toLower(x); }
+};
+
+template<class T>
+class ToUpper {
+public:
+	inline static T map(const T& x) { return pona::toUpper(x); }
+};
 
 inline void* malloc(int size) { return new char[size]; }
 inline void free(void* buf) { delete[] reinterpret_cast<char*>(buf); }

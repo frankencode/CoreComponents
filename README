@@ -9,7 +9,7 @@ Therefore the main design objectives are rather different from the standard
 STL+boost libraries. The goal is to create a passively safe API encapsulating
 non-obfuscated implementations. Any piece of code should be easy to prove for
 correctness. Passively safe means, there shouldn't be a possibility of misuse
-that stays undiscovered or is otherwise unobvious.
+that stays undiscovered or is otherwise not obvious.
 
 Current Features:
 	- incremental automatic garbage collection
