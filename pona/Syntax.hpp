@@ -88,49 +88,22 @@ public:
 		}
 	};
 	
-	class RangeNode: public Node
+	class RangeMinMaxNode: public Node
 	{
 	public:
-		RangeNode(Char a, Char b, int invert)
+		RangeMinMaxNode(Char a, Char b, int invert)
 			: a_(a),
 			  b_(b),
 			  invert_(invert)
 		{}
 		
-		template<class Char2>
-		RangeNode(const Char2* s, int len, int invert)
-			: s_(len),
-			  invert_(invert)
-		{
-			pona::memcpy(s_.data(), s, len);
-		}
-		
-		template<class Char2>
-		RangeNode(const Char2* s, int invert)
-			: s_(pona::strlen(s)),
-			  invert_(invert)
-		{
-			pona::memcpy(s_.data(), s, s_.size());
-		}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (media->def(i))
-			{
+			if (media->def(i)) {
 				Char ch = media->get(i++);
-				if (s_) {
-					int k = 0, len = s_.length();
-					while (k < len) {
-						if (s_.get(k) == ch) break;
-						++k;
-					}
-					if ((k == len) ^ invert_)
-						i = -1;
-				}
-				else {
-					if (((ch < a_) || (b_ < ch)) ^ invert_)
-						i = -1;
-				}
+				if (((ch < a_) || (b_ < ch)) ^ invert_)
+					i = -1;
 			}
 			else
 				i = -1;
@@ -140,9 +113,45 @@ public:
 			
 			return i;
 		}
-	
+		
 	private:
 		Char a_, b_;
+		int invert_;
+	};
+	
+	class RangeExplicitNode: public Node
+	{
+	public:
+		template<class Char2>
+		RangeExplicitNode(const Char2* s, int invert)
+			: s_(pona::strlen(s)),
+			  invert_(invert)
+		{
+			pona::memcpy(s_.data(), s, s_.size());
+		}
+		
+		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		{
+			if (media->def(i)) {
+				Char ch = media->get(i++);
+				int k = 0, len = s_.length();
+				while (k < len) {
+					if (s_.get(k) == ch) break;
+					++k;
+				}
+				if ((k == len) ^ invert_)
+					i = -1;
+			}
+			else
+				i = -1;
+				
+			if ((i != -1) && (next_))
+				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			
+			return i;
+		}
+		
+	private:
 		Array<Char> s_;
 		int invert_;
 	};
@@ -151,17 +160,15 @@ public:
 	{
 	public:
 		template<class Char2>
-		StringNode(const Char2* s, int len)
-			: s_(len)
+		StringNode(const Char2* s, bool caseSensitive)
+			: s_(pona::strlen(s)),
+			  caseSensitive_(caseSensitive)
 		{
 			pona::memcpy(s_.data(), s, s_.size());
-		}
-		
-		template<class Char2>
-		StringNode(const Char2* s)
-			: s_(pona::strlen(s))
-		{
-			pona::memcpy(s_.data(), s, s_.size());
+			if (!caseSensitive) {
+				for (int i = 0, n = s_.size(); i < n; ++i)
+					s_.set(i, ToLower<Char>::map(s_.at(i)));
+			}
 		}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -170,7 +177,9 @@ public:
 				int k = 0, len = s_.length();
 				while ((k < len) && (media->def(i))) {
 					Char ch = media->get(i++);
-					if (s_.get(k) != ch) break;
+					if (!caseSensitive_)
+						ch = ToLower<Char>::map(ch);
+					if (s_.at(k) != ch) break;
 					++k;
 				}
 				if (k != len)
@@ -187,13 +196,15 @@ public:
 	
 	private:
 		Array<Char> s_;
+		bool caseSensitive_;
 	};
 	
 	class KeywordNode: public Node
 	{
 	public:
-		KeywordNode(Ref<KeywordMap> map)
-			: map_(map)
+		KeywordNode(Ref<KeywordMap> map, bool caseSensitive)
+			: map_(map),
+			  caseSensitive_(caseSensitive)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -201,7 +212,7 @@ public:
 			if (media->def(i)) {
 				int h = 0;
 				int tokenType = -1;
-				if (map_->match(media, i, &h, &tokenType)) {
+				if (map_->match(media, i, &h, &tokenType, caseSensitive_)) {
 					if (parentToken)
 						parentToken->setType(tokenType);
 					i = h;
@@ -220,6 +231,7 @@ public:
 	
 	private:
 		Ref<KeywordMap, Owner> map_;
+		bool caseSensitive_;
 	};
 	
 	class RepeatNode: public Node
@@ -850,6 +862,7 @@ public:
 			: scope_(scope),
 			  id_(scope ? scope->numDefinitions(1) : -1),
 			  name_(name),
+			  caseSensitive_(true),
 			  numRules_(0),
 			  numKeywords_(0),
 			  ruleByName_(new RuleByName),
@@ -874,14 +887,21 @@ public:
 		
 		//-- stateless definition interface
 		
+		inline void OPTION(const char* name, bool value) {
+			if (pona::strcasecmp(name, "CaseSensitive") == 0)
+				caseSensitive_ = value;
+			else
+				PONA_THROW(SyntaxException, pona::strcat("Unknown option '", name, "'"));
+		}
+		
 		inline static NODE CHAR(Char ch) { return new CharNode(ch, 0); }
 		inline static NODE OTHER(Char ch) { return new CharNode(ch, 1); }
 		inline static NODE ANY() { return new AnyNode(); }
-		inline static NODE RANGE(Char a, Char b) { return new RangeNode(a, b, 0); }
-		template<class Char> inline static NODE RANGE(const Char* s) { return new RangeNode(s, 0); }
-		inline static NODE EXCEPT(Char a, Char b) { return new RangeNode(a, b, 1); }
-		template<class Char> inline static NODE EXCEPT(Char* s) { return new RangeNode(s, 1); }
-		template<class Char> inline static NODE STRING(Char* s) { return new StringNode(s); }
+		inline static NODE RANGE(Char a, Char b) { return new RangeMinMaxNode(a, b, 0); }
+		template<class Char> inline static NODE RANGE(const Char* s) { return new RangeExplicitNode(s, 0); }
+		inline static NODE EXCEPT(Char a, Char b) { return new RangeMinMaxNode(a, b, 1); }
+		template<class Char> inline static NODE EXCEPT(Char* s) { return new RangeExplicitNode(s, 1); }
+		template<class Char> inline NODE STRING(Char* s) { return new StringNode(s, caseSensitive_); }
 		
 		NODE KEYWORD(const char* keys)
 		{
@@ -902,7 +922,7 @@ public:
 				++numKeywords_;
 				keys += n;
 			}
-			return new KeywordNode(map);
+			return new KeywordNode(map, caseSensitive_);
 		}
 		inline NODE TOKEN(const char* name) {
 			return CHAR(tokenTypeByName(name));
@@ -1170,6 +1190,7 @@ public:
 		Ref<Scope, SetNull> scope_;
 		int id_;
 		const char* name_;
+		bool caseSensitive_;
 		
 		class StateFlag: public Instance {
 		public:

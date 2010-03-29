@@ -8,6 +8,7 @@
 #ifndef PONA_PREFIXMAP_HPP
 #define PONA_PREFIXMAP_HPP
 
+#include "types.hpp"
 #include "Tree.hpp"
 #include "LineSink.hpp"
 
@@ -38,7 +39,7 @@ public:
 		while (keyLen > 0)
 		{
 			Ref<Node> parent = node;
-			node = node->step(*key);
+			node = node->step<Identity>(*key);
 			
 			if (!node) {
 				node = new Node(*key);
@@ -67,23 +68,10 @@ public:
 	  * The function returns true if an exact match was found.
 	  */
 	template<class Char2>
-	bool lookup(const Char2* key, int keyLen, Value* value = 0)
-	{
-		bool found = false;
-		Ref<Node> node = this;
-		while ((node) && keyLen > 0)
-		{
-			Ref<Node> parent = node;
-			node = node->step(*key);
-			if (node)
-				if (node->defined_) {
-					if (value) *value = node->value_;
-					found = true;
-				}
-			++key;
-			--keyLen;
-		}
-		return found && (keyLen == 0);
+	inline bool lookup(const Char2* key, int keyLen, Value* value = 0, bool caseSensitive = true) {
+		return caseSensitive ?
+			lookupFiltered<Char2, Identity>(key, keyLen, value) :
+			lookupFiltered<Char2, ToLower>(key, keyLen, value);
 	}
 	
 	/** Match given media to the longest key-value mapping of this tree.
@@ -93,29 +81,14 @@ public:
 	  * The terminal match position is given in '*i1'.
 	  */
 	template<class Media>
-	bool match(Media* media, int i0 = 0, int* i1 = 0, Value* value = 0)
-	{
-		bool found = false;
-		int i = i0;
-		Ref<Node> node = this;
-		while ((node) && media->def(i))
-		{
-			Ref<Node> parent = node;
-			node = node->step(media->get(i++));
-			if (node)
-				if (node->defined_)
-				{
-					if (i1) *i1 = i;
-					if (value) *value = node->value_;
-					found = true;
-				}
-		}
-		return found;
+	inline bool match(Media* media, int i0 = 0, int* i1 = 0, Value* value = 0, bool caseSensitive = true) {
+		return caseSensitive ?
+			matchFiltered<Media, Identity>(media, i0, i1, value) :
+			matchFiltered<Media, ToLower>(media, i0, i1, value);
 	}
 	
 	// convenience wrapper
-	inline bool lookup(const char* key, Value* value = 0)
-	{
+	inline bool lookup(const char* key, Value* value = 0) {
 		return lookup(key, pona::strlen(key), value);
 	}
 	
@@ -140,13 +113,55 @@ protected:
 		  defined_(false)
 	{}
 	
-	inline Ref<Node> step(Char ch)
+	template<class Char2, template<class> class Filter>
+	bool lookupFiltered(const Char2* key, int keyLen, Value* value = 0)
 	{
 		bool found = false;
-		Ref<Node> node = firstChild();
-		while (node)
+		Ref<Node> node = this;
+		while ((node) && keyLen > 0)
 		{
-			found = (node->ch_ == ch);
+			Ref<Node> parent = node;
+			node = node->step<Filter>(*key);
+			if (node)
+				if (node->defined_) {
+					if (value) *value = node->value_;
+					found = true;
+				}
+			++key;
+			--keyLen;
+		}
+		return found && (keyLen == 0);
+	}
+	
+	template<class Media, template<class> class Filter>
+	bool matchFiltered(Media* media, int i0 = 0, int* i1 = 0, Value* value = 0)
+	{
+		bool found = false;
+		int i = i0;
+		Ref<Node> node = this;
+		while ((node) && media->def(i))
+		{
+			Ref<Node> parent = node;
+			node = node->step<Filter>(media->get(i++));
+			if (node)
+				if (node->defined_)
+				{
+					if (i1) *i1 = i;
+					if (value) *value = node->value_;
+					found = true;
+				}
+		}
+		return found;
+	}
+	
+	template<template<class> class Filter>
+	inline Ref<Node> step(Char ch)
+	{
+		ch = Filter<Char>::map(ch);
+		bool found = false;
+		Ref<Node> node = firstChild();
+		while (node) {
+			found = (Filter<Char>::map(node->ch_) == ch);
 			if (found) break;
 			node = node->nextSibling();
 		}
