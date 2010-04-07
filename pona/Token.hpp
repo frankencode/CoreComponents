@@ -18,14 +18,14 @@ class TokenScreen;
 class Token: public Tree
 {
 public:
-	Token(): definitionId_(-1), ruleId_(-1), type_(-1) {}
+	Token(): definition_(-1), rule_(-1), type_(-1) {}
 	
-	inline void init(int definitionId, int ruleId)
+	inline void init(int definition, int rule)
 	{
-		definitionId_ = definitionId;
-		ruleId_ = ruleId;
+		definition_ = definition;
+		rule_ = rule;
 		if (type_ == -1)
-			type_ = ruleId;
+			type_ = rule;
 	}
 	
 	inline void setRange(int i0, int i1)
@@ -34,8 +34,8 @@ public:
 		i1_ = i1;
 	}
 	
-	inline int definitionId() const { return definitionId_; }
-	inline int ruleId() const { return ruleId_; }
+	inline int definition() const { return definition_; }
+	inline int rule() const { return rule_; }
 	inline int type() const { return type_; }
 	inline void setType(int value) { type_ = value; }
 	
@@ -50,8 +50,8 @@ public:
 	bool burn(int b0, int b1);
 	
 private:
-	int definitionId_;
-	int ruleId_;
+	int definition_;
+	int rule_;
 	int type_;
 	int i0_;
 	int i1_;

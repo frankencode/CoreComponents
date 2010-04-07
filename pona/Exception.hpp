@@ -22,11 +22,12 @@ typedef std::exception StdException;
 class Exception: public AnyException
 {
 public:
+	Exception();
 	Exception(const char* path, int line, const char* className, char* reason);
 	~Exception() throw();
 	const char* what() const throw();
 	
-private:
+protected:
 	char* message_;
 };
 

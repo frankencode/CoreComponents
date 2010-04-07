@@ -118,6 +118,8 @@ private:
 	T* data_;
 };
 
+typedef Array<char, DeepCopyZeroTerminatedArray> StringMedia;
+
 } // namespace pona
 
 #endif // PONA_ARRAY_HPP

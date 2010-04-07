@@ -1,0 +1,13 @@
+#ifndef BNCC_USEPONA
+#define BNCC_USEPONA
+
+#include <pona/atoms>
+
+namespace bncc
+{
+
+using namespace pona;
+
+} // namespace bncc
+
+#endif // BNCC_USEPONA

@@ -59,7 +59,7 @@ public:
 					)
 				)
 			);
-		
+	
 		ENTRY("sum");
 		LINK();
 	}
@@ -84,7 +84,7 @@ private:
 	{
 		double value = nan;
 		
-		if (token->ruleId() == sum_->id())
+		if (token->rule() == sum_)
 		{
 			value = 0.;
 			char op = '+';
@@ -107,7 +107,7 @@ private:
 				++i;
 			}
 		}
-		else if (token->ruleId() == product_->id())
+		else if (token->rule() == product_)
 		{
 			value = 1.;
 			char op = '*';
@@ -130,11 +130,11 @@ private:
 				++i;
 			}
 		}
-		else if (token->ruleId() == factor_->id())
+		else if (token->rule() == factor_)
 		{
 			value = eval(token->firstChild());
 		}
-		else if (token->ruleId() == number_->id())
+		else if (token->rule() == number_)
 		{
 			int sign = (text_->get(token->index()) == '-') ? -1 : 1;
 			value = 0;
@@ -151,12 +151,12 @@ private:
 	enum { bufSize_ = sizeof(Token) * 256 };
 	uint8_t buf_[bufSize_];
 	
-	RULE number_;
-	RULE factor_;
-	RULE mulOp_;
-	RULE addOp_;
-	RULE product_;
-	RULE sum_;
+	int number_;
+	int factor_;
+	int mulOp_;
+	int addOp_;
+	int product_;
+	int sum_;
 	
 	String text_;
 };

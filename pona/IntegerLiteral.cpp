@@ -89,14 +89,14 @@ void IntegerLiteral::read(Ref<String::Media> text, Ref<Token> rootToken, uint64_
 
 	Ref<Token> token = rootToken->firstChild();
 	
-	if (token->ruleId() == sign_->id())
+	if (token->rule() == sign_)
 	{
 		if (text->get(token->index()) == '-')
 			*sign = -1;
 		token = token->nextSibling();
 	}
 	
-	if (token->ruleId() == binNumber_->id())
+	if (token->rule() == binNumber_)
 	{
 		for (int i = token->i0(); i < token->i1() - 1; ++i)
 		{
@@ -105,7 +105,7 @@ void IntegerLiteral::read(Ref<String::Media> text, Ref<Token> rootToken, uint64_
 			*value += x;
 		}
 	}
-	else if (token->ruleId() == octNumber_->id())
+	else if (token->rule() == octNumber_)
 	{
 		for (int i = token->i0() + 1; i < token->i1(); ++i)
 		{
@@ -114,7 +114,7 @@ void IntegerLiteral::read(Ref<String::Media> text, Ref<Token> rootToken, uint64_
 			*value += x;
 		}
 	}
-	else if (token->ruleId() == hexNumber_->id())
+	else if (token->rule() == hexNumber_)
 	{
 		for (int i = token->i0() + 2; i < token->i1(); ++i)
 		{
@@ -126,7 +126,7 @@ void IntegerLiteral::read(Ref<String::Media> text, Ref<Token> rootToken, uint64_
 			*value += x;
 		}
 	}
-	else if (token->ruleId() == decNumber_->id())
+	else if (token->rule() == decNumber_)
 	{
 		for (int i = token->i0(); i < token->i1(); ++i)
 		{

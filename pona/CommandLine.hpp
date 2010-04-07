@@ -50,11 +50,10 @@ private:
 	void readValue(Ref<CommandOption> option, String line, Ref<Token> token);
 	void verifyTypes();
 	
-	RULE longNameRule_;
-	RULE shortNameRule_;
-	RULE valueRule_;
-	RULE optionRule_;
-	RULE options_;
+	int longNameRule_;
+	int shortNameRule_;
+	int valueRule_;
+	int optionRule_;
 	
 	Ref<OptionList, Owner> definedOptions_;
 	Ref<OptionList, Owner> usedOptions_;

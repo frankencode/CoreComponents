@@ -9,6 +9,7 @@
 #define PONA_FORMATSPECIFIER_HPP
 
 #include "Syntax.hpp"
+#include "String.hpp"
 
 namespace pona
 {
@@ -20,13 +21,13 @@ public:
 	bool find(Ref<String::Media> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, char* blank);
 	
 private:
-	RULE width_;
-	RULE integerWidth_;
-	RULE fractionWidth_;
-	RULE base_;
-	RULE exp_;
-	RULE blank_;
-	RULE format_;
+	int width_;
+	int integerWidth_;
+	int fractionWidth_;
+	int base_;
+	int exp_;
+	int blank_;
+	int format_;
 };
 
 } // namespace pona

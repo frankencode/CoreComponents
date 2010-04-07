@@ -115,25 +115,24 @@ CommandLine::CommandLine()
 			)
 		);
 	
-	options_ =
-		DEFINE_VOID("options",
-			GLUE(
-				REPEAT(
-					GLUE(
-						REPEAT(0, 1, INLINE("whitespace")),
-						REF("option")
-					)
-				),
-				REPEAT(
-					GLUE(
-						REPEAT(0, 1, INLINE("whitespace")),
-						REF("value")
-					)
-				),
-				REPEAT(0, 1, INLINE("whitespace")),
-				EOI()
-			)
-		);
+	DEFINE_VOID("options",
+		GLUE(
+			REPEAT(
+				GLUE(
+					REPEAT(0, 1, INLINE("whitespace")),
+					REF("option")
+				)
+			),
+			REPEAT(
+				GLUE(
+					REPEAT(0, 1, INLINE("whitespace")),
+					REF("value")
+				)
+			),
+			REPEAT(0, 1, INLINE("whitespace")),
+			EOI()
+		)
+	);
 	
 	ENTRY("options");
 	LINK();
@@ -218,7 +217,7 @@ Ref<StringList, Owner> CommandLine::read(String line)
 	Ref<Token> token = rootToken->firstChild();
 	
 	while (token) {
-		if (token->ruleId() != optionRule_->id())
+		if (token->rule() != optionRule_)
 			break;
 		readOption(line, token);
 		token = token->nextSibling();
@@ -253,7 +252,7 @@ void CommandLine::readOption(String line, Ref<Token> token)
 {
 	token = token->firstChild();
 	
-	if (token->ruleId() == shortNameRule_->id())
+	if (token->rule() == shortNameRule_)
 	{
 		while (token)
 		{
@@ -266,7 +265,7 @@ void CommandLine::readOption(String line, Ref<Token> token)
 			
 			token = token->nextSibling();
 			if (token) {
-				if (token->ruleId() == valueRule_->id()) {
+				if (token->rule() == valueRule_) {
 					readValue(option, line, token);
 					token = token->nextSibling();
 				}
@@ -279,7 +278,7 @@ void CommandLine::readOption(String line, Ref<Token> token)
 			}
 		}
 	}
-	else if (token->ruleId() == longNameRule_->id())
+	else if (token->rule() == longNameRule_)
 	{
 		String name(line, token->index(), token->length());
 		Ref<CommandOption> option = optionByLongName(name);
