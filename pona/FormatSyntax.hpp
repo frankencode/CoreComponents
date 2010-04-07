@@ -15,7 +15,6 @@ namespace pona
 {
 
 class FormatSpecifier;
-class BooleanLiteral;
 class IntegerLiteral;
 class FloatLiteral;
 

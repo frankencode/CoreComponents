@@ -127,14 +127,14 @@ typedef uint32_t uchar_t; // could also be a signed integer (int32_t)
 template<class Char>
 inline Char toLower(Char ch) {
 	if (('A' <= ch) && (ch <= 'Z'))
-		ch = ch + 'a' - 'A';
+		ch = ch + ('a' - 'A');
 	return ch;
 }
 
 template<class Char>
 inline Char toUpper(Char ch) {
 	if (('a' <= ch) && (ch <= 'z'))
-		ch = ch + 'A' - 'a';
+		ch = ch - ('a' - 'A');
 	return ch;
 }
 

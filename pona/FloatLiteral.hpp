@@ -13,7 +13,7 @@
 namespace pona
 {
 
-class FloatLiteral: public Syntax<String::Media>::Definition
+class FloatLiteral: public Syntax<StringMedia>::Definition
 {
 public:
 	FloatLiteral();
@@ -21,14 +21,14 @@ public:
 	float64_t read(Ref<String::Media> text, Ref<Token> token) const;
 	
 private:
-	RULE sign_;
-	RULE integerPart_;
-	RULE fractionPart_;
-	RULE exponentSign_;
-	RULE exponent_;
-	RULE nan_;
-	RULE infinite_;
-	RULE float_;
+	int sign_;
+	int integerPart_;
+	int fractionPart_;
+	int exponentSign_;
+	int exponent_;
+	int nan_;
+	int infinite_;
+	int float_;
 };
 
 } // namespace pona

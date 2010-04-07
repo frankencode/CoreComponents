@@ -33,7 +33,7 @@ const char* fileName(const char* path)
 
 char* intToStr(int value)
 {
-	int n = (value < 0) + 1;
+	int n = (value <= 0) + 1;
 	for (int v = value; v != 0; v /= 10) ++n;
 	
 	char* buf = new char[n];
@@ -43,11 +43,15 @@ char* intToStr(int value)
 	
 	i = n - 1;
 	buf[i--] = 0;
-	for (int v = value; v != 0; v /= 10)
+	for (int v = value; i >= 0; v /= 10)
 		buf[i--] = '0' + (v % 10);
 	
 	return buf;
 }
+
+Exception::Exception()
+	: message_(0)
+{}
 
 Exception::Exception(const char* path, int line, const char* className, char* reason)
 {
@@ -60,7 +64,7 @@ Exception::Exception(const char* path, int line, const char* className, char* re
 
 Exception::~Exception() throw()
 {
-	delete[] message_;
+	if (message_) delete[] message_;
 	message_ = 0;
 }
 
@@ -92,7 +96,7 @@ char* systemError(int errorCode)
 char* pthreadError(const char* callName, int errorCode)
 {
 	char* errorStr = systemError(errorCode);
-	char* errorCodeStr = intToStr(errorCode);
+	char* errorCodeStr = pona::intToStr(errorCode);
 	char* msg = pona::strcat(callName, "() failed: ", errorStr, " (", errorCodeStr, ")");
 	delete[] errorStr;
 	delete[] errorCodeStr;

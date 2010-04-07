@@ -13,7 +13,7 @@
 namespace pona
 {
 
-class IntegerLiteral: public Syntax<String::Media>::Definition
+class IntegerLiteral: public Syntax<StringMedia>::Definition
 {
 public:
 	IntegerLiteral();
@@ -21,12 +21,12 @@ public:
 	void read(Ref<String::Media> text, Ref<Token> rootToken, uint64_t* value, int* sign) const;
 	
 private:
-	RULE sign_;
-	RULE binNumber_;
-	RULE octNumber_;
-	RULE hexNumber_;
-	RULE decNumber_;
-	RULE integer_;
+	int sign_;
+	int binNumber_;
+	int octNumber_;
+	int hexNumber_;
+	int decNumber_;
+	int integer_;
 };
 
 } // namespace pona

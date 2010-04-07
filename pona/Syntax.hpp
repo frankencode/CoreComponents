@@ -17,8 +17,6 @@
 namespace pona
 {
 
-PONA_EXCEPTION(SyntaxException, Exception);
-
 template<class Media> class SyntaxLinker;
 
 template<class Media>
@@ -555,7 +553,7 @@ public:
 			if (parentToken) {
 				Ref<Token> sibling = parentToken->previousSibling();
 				if (sibling)
-					if (sibling->ruleId() == LinkNode::rule_->id())
+					if (sibling->rule() == LinkNode::rule_->id())
 						h = i;
 			}
 			i = h;
@@ -888,10 +886,10 @@ public:
 		//-- stateless definition interface
 		
 		inline void OPTION(const char* name, bool value) {
-			if (pona::strcasecmp(name, "CaseSensitive") == 0)
+			if (pona::strcasecmp(name, "caseSensitive") == 0)
 				caseSensitive_ = value;
 			else
-				PONA_THROW(SyntaxException, pona::strcat("Unknown option '", name, "'"));
+				PONA_THROW(DebugException, pona::strcat("Unknown option '", name, "'"));
 		}
 		
 		inline static NODE CHAR(Char ch) { return new CharNode(ch, 0); }
@@ -944,15 +942,14 @@ public:
 		
 		#include "SyntaxSugar.hpp"
 		
-		inline RULE DEFINE(const char* ruleName, NODE entry = 0) {
+		inline int DEFINE(const char* ruleName, NODE entry = 0) {
 			Ref<RuleNode, Owner> rule = new RuleNode(this, ruleName, numRules_++, entry);
 			addRule(rule);
-			return rule;
+			return rule->id();
 		}
-		inline RULE DEFINE_VOID(const char* ruleName, NODE entry = 0) {
+		inline void DEFINE_VOID(const char* ruleName, NODE entry = 0) {
 			Ref<RuleNode, Owner> rule = new RuleNode(this, ruleName, numRules_++, entry, true);
 			addRule(rule);
-			return rule;
 		}
 		inline void ENTRY(const char* ruleName) {
 			LinkNode::ruleName_ = ruleName;
@@ -978,7 +975,11 @@ public:
 		}
 		
 		inline NODE CALL(CallBack callBack, Ref<Instance> self = 0) {
+			if (!self) self = this;
 			return new CallNode(callBack, self);
+		}
+		inline NODE ERROR() {
+			return new CallNode(errorCallBack, this);
 		}
 		
 		inline void LINK() {
@@ -992,7 +993,7 @@ public:
 			}
 			if (!LinkNode::rule_) {
 				if (!LinkNode::ruleName_)
-					PONA_THROW(SyntaxException, "Missing entry rule declaration");
+					PONA_THROW(DebugException, "Missing entry rule declaration");
 				LinkNode::rule_ = ruleByName(LinkNode::ruleName_);
 			}
 		}
@@ -1135,7 +1136,7 @@ public:
 		{
 			Ref<RuleNode, Owner> node;
 			if (!ruleByName_->lookup(name, &node))
-				PONA_THROW(SyntaxException, pona::strcat("Undefined rule '", name, "' referenced"));
+				PONA_THROW(DebugException, pona::strcat("Undefined rule '", name, "' referenced"));
 			return node;
 		}
 		
@@ -1146,7 +1147,7 @@ public:
 			}
 			else {
 				if (pona::strcmp(name, name_) != 0)
-					PONA_THROW(SyntaxException, pona::strcat("Undefined definition '", name, "' referenced"));
+					PONA_THROW(DebugException, pona::strcat("Undefined definition '", name, "' referenced"));
 				return this;
 			}
 		}
@@ -1155,7 +1156,7 @@ public:
 		{
 			int tokenType = -1;
 			if (!tokenTypeByName_->lookup(name, &tokenType))
-				PONA_THROW(SyntaxException, pona::strcat("Undefined token type '", name, "' referenced"));
+				PONA_THROW(DebugException, pona::strcat("Undefined token type '", name, "' referenced"));
 			return tokenType;
 		}
 		
@@ -1163,7 +1164,7 @@ public:
 		{
 			int flagId = -1;
 			if (!flagIdByName()->lookup(name, &flagId))
-				PONA_THROW(SyntaxException, pona::strcat("Undefined state flag '", name, "' referenced"));
+				PONA_THROW(DebugException, pona::strcat("Undefined state flag '", name, "' referenced"));
 			return flagId;
 		}
 		
@@ -1171,7 +1172,7 @@ public:
 		{
 			int charId = -1;
 			if (!charIdByName()->lookup(name, &charId))
-				PONA_THROW(SyntaxException, pona::strcat("Undefined state char '", name, "' referenced"));
+				PONA_THROW(DebugException, pona::strcat("Undefined state char '", name, "' referenced"));
 			return charId;
 		}
 		
@@ -1179,8 +1180,27 @@ public:
 		{
 			int stringId = -1;
 			if (!stringIdByName()->lookup(name, &stringId))
-				PONA_THROW(SyntaxException, pona::strcat("Undefined state string '", name, "' referenced"));
+				PONA_THROW(DebugException, pona::strcat("Undefined state string '", name, "' referenced"));
 			return stringId;
+		}
+		
+		static void getLineAndPosFromIndex(Media* media, int index, int* line, int* pos)
+		{
+			*line = 1;
+			*pos = 1;
+			int j = 0;
+			while (media->def(j) && (j < index)) {
+				Char ch = media->get(j);
+				if (ch == '\n') { ++*line; *pos = 1; }
+				else ++*pos;
+				++j;
+			}
+		}
+		
+		virtual int syntaxError(Media* media, int index, State* state)
+		{
+			PONA_THROW(DebugException, "Unhandled syntax error");
+			return -1;
 		}
 		
 	private:
@@ -1234,7 +1254,7 @@ public:
 		void addRule(Ref<RuleNode> rule)
 		{
 			if (!ruleByName_->insert(rule->name(), rule))
-				PONA_THROW(SyntaxException, pona::strcat("Redefinition of rule '", rule->name(), "'"));
+				PONA_THROW(DebugException, pona::strcat("Redefinition of rule '", rule->name(), "'"));
 		}
 		
 		Ref<LinkNode, Owner> unresolvedLinkHead_;
@@ -1266,6 +1286,10 @@ public:
 			if (!stringIdByName_) stringIdByName_ = new StateIdByName;
 			return stringIdByName_;
 		}
+		
+		static int errorCallBack(Ref<Instance> self, Media* media, int index, State* state) {
+			return self.cast<Definition>()->syntaxError(media, index, state);
+		}
 	};
 	
 	class Scope: public Instance
@@ -1283,7 +1307,7 @@ public:
 		{
 			Ref<Definition, Owner> definition;
 			if (!definitionByName_->lookup(name, &definition))
-				PONA_THROW(SyntaxException, pona::strcat("Undefined definition '", name, "' referenced"));
+				PONA_THROW(DebugException, pona::strcat("Undefined definition '", name, "' referenced"));
 			return definition;
 		}
 		
@@ -1316,7 +1340,7 @@ public:
 		void addDefinition(Ref<Definition> definition)
 		{
 			if (!definitionByName_->insert(definition->name(), definition))
-				PONA_THROW(SyntaxException, pona::strcat("Redefinition of '", definition->name(), "'"));
+				PONA_THROW(DebugException, pona::strcat("Redefinition of '", definition->name(), "'"));
 			definition->unresolvedNext_ = unresolvedDefinitionHead_;
 			unresolvedDefinitionHead_ = definition;
 		}

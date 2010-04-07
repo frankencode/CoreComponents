@@ -20,7 +20,6 @@ class String;
 class Variant;
 
 typedef List<String> StringList;
-typedef Array<char, DeepCopyZeroTerminatedArray> StringMedia;
 
 class String: public Ref<StringMedia, Owner>
 {
@@ -133,6 +132,10 @@ public:
 	
 	inline Index find(const char* pattern) const { return find(first(), pattern); }
 	inline bool contains(const char* pattern) const { return find(first(), pattern).valid(); }
+	inline String replace(String pattern, String replacement) {
+		Ref<StringList, Owner> parts = split(pattern);
+		return String(parts, replacement);
+	}
 	
 	inline bool operator< (const String& b) const { return pona::strcmp((*this)->data(), b->data()) <  0; }
 	inline bool operator==(const String& b) const { return pona::strcmp((*this)->data(), b->data()) == 0; }

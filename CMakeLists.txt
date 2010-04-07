@@ -19,4 +19,4 @@ INSTALL(
 	PATTERN *.txt EXCLUDE
 )
 
-SUBDIRS(pona tests examples rio)
+SUBDIRS(pona tests tools)

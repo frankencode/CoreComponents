@@ -32,36 +32,11 @@ public:
 	  * The function returns true if the new key-value mapping was inserted successfully.
 	  */
 	template<class Char2>
-	bool insert(const Char2* key, int keyLen, Value value, Value* oldValue = 0)
+	bool insert(const Char2* key, int keyLen, Value value, Value* oldValue = 0, bool caseSensitive = true)
 	{
-		Ref<Node> node = this;
-		
-		while (keyLen > 0)
-		{
-			Ref<Node> parent = node;
-			node = node->step<Identity>(*key);
-			
-			if (!node) {
-				node = new Node(*key);
-				parent->appendChild(node);
-			}
-			
-			++key;
-			--keyLen;
-		}
-		
-		bool success = false;
-		
-		if ((!node->defined_) || (oldValue))
-		{
-			if (oldValue)
-				*oldValue = node->value_;
-			node->defined_ = true;
-			node->value_ = value;
-			success = true;
-		}
-		
-		return success;
+		return caseSensitive ?
+			insertFiltered<Char2, Identity>(key, keyLen, value, oldValue) :
+			insertFiltered<Char2, ToLower>(key, keyLen, value, oldValue);
 	}
 	
 	/** Lookup the key-value mapping with the longest matching key.
@@ -88,13 +63,13 @@ public:
 	}
 	
 	// convenience wrapper
-	inline bool lookup(const char* key, Value* value = 0) {
-		return lookup(key, pona::strlen(key), value);
+	inline bool lookup(const char* key, Value* value = 0, bool caseSensitive = true) {
+		return lookup(key, pona::strlen(key), value, caseSensitive);
 	}
 	
 	// convenience wrapper
-	inline bool insert(const char* key, Value value = Value(), Value* oldValue = 0) {
-		return insert(key, pona::strlen(key), value, oldValue);
+	inline bool insert(const char* key, Value value = Value(), Value* oldValue = 0, bool caseSensitive = true) {
+		return insert(key, pona::strlen(key), value, oldValue, caseSensitive);
 	}
 	
 	// convenience wrapper, matches entire media
@@ -112,6 +87,39 @@ protected:
 		: ch_(ch),
 		  defined_(false)
 	{}
+	
+	template<class Char2, template<class> class Filter>
+	bool insertFiltered(const Char2* key, int keyLen, Value value, Value* oldValue = 0)
+	{
+		Ref<Node> node = this;
+		
+		while (keyLen > 0)
+		{
+			Ref<Node> parent = node;
+			node = node->step<Filter>(*key);
+			
+			if (!node) {
+				node = new Node(*key);
+				parent->appendChild(node);
+			}
+			
+			++key;
+			--keyLen;
+		}
+		
+		bool success = false;
+		
+		if ((!node->defined_) || (oldValue))
+		{
+			if (oldValue)
+				*oldValue = node->value_;
+			node->defined_ = true;
+			node->value_ = value;
+			success = true;
+		}
+		
+		return success;
+	}
 	
 	template<class Char2, template<class> class Filter>
 	bool lookupFiltered(const Char2* key, int keyLen, Value* value = 0)
