@@ -31,24 +31,6 @@ const char* fileName(const char* path)
 	return pSaved;
 }
 
-char* intToStr(int value)
-{
-	int n = (value <= 0) + 1;
-	for (int v = value; v != 0; v /= 10) ++n;
-	
-	char* buf = new char[n];
-	int i = 0;
-	if (value < 0)
-		buf[0] = '-';
-	
-	i = n - 1;
-	buf[i--] = 0;
-	for (int v = value; i >= 0; v /= 10)
-		buf[i--] = '0' + (v % 10);
-	
-	return buf;
-}
-
 Exception::Exception()
 	: message_(0)
 {}

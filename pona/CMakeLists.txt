@@ -120,6 +120,7 @@ SET(PONA_HEADER
 
 SET(PONA_SOURCE
 	# atoms
+	strings.cpp
 	generics.cpp
 	Exception.cpp
 	
