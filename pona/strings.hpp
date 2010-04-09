@@ -49,21 +49,7 @@ inline int strlen(const T* s)
 	return len;
 }
 
-template<class T>
-char* strdup(const T* s)
-{
-	char* s2 = 0;
-	if (s) {
-		int len = pona::strlen(s);
-		s2 = new char[len + 1];
-		s2[len] = 0;
-		pona::memcpy(s2, s, len);
-	}
-	return s2;
-}
-
-template<class T>
-inline int strcmp(const T* a, const T* b)
+inline int strcmp(const char* a, const char* b)
 {
 	int ret = 0;
 	char ca, cb;
@@ -78,8 +64,7 @@ inline int strcmp(const T* a, const T* b)
 	return ret;
 }
 
-template<class T>
-inline int strcasecmp(const T* a, const T* b)
+inline int strcasecmp(const char* a, const char* b)
 {
 	int ret = 0;
 	char ca, cb;
@@ -96,30 +81,11 @@ inline int strcasecmp(const T* a, const T* b)
 	return ret;
 }
 
-template<class T>
-T* strcat(const T* s0, const T* s1 = 0, const T* s2 = 0, const T* s3 = 0, const T* s4 = 0, const T* s5 = 0, const T* s6 = 0, const T* s7 = 0)
-{
-	int len = 0;
-	const T* s[] = { s0, s1, s2, s3, s4, s5, s6, s7 };
-	const int n = sizeof(s) / sizeof(const T*);
-	for (int i = 0; i < n; ++i) {
-		if (s[i])
-			len += pona::strlen(s[i]);
-	}
-	T* c = new T[len + 1];
-	c[len] = 0;
-	int j = 0;
-	for (int i = 0; i < n; ++i) {
-		if (s[i]) {
-			const char* si = s[i];
-			int k = 0;
-			while (si[k] != 0)
-				c[j++] = si[k++];
-		}
-	}
-	check(j == len);
-	return c;
-}
+char* strdup(const char* s);
+char* strcat(const char* s0, const char* s1 = 0, const char* s2 = 0, const char* s3 = 0, const char* s4 = 0, const char* s5 = 0, const char* s6 = 0, const char* s7 = 0);
+
+char* intToStr(int value);
+int strToInt(const char* s, int i0 = 0, int i1 = intMax, int base = 10);
 
 } // namespace pona
 

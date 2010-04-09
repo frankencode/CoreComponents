@@ -132,7 +132,7 @@ public:
 	
 	inline Index find(const char* pattern) const { return find(first(), pattern); }
 	inline bool contains(const char* pattern) const { return find(first(), pattern).valid(); }
-	inline String replace(String pattern, String replacement) {
+	inline String replace(const char* pattern, const char* replacement) {
 		Ref<StringList, Owner> parts = split(pattern);
 		return String(parts, replacement);
 	}
