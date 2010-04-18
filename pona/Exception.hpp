@@ -77,7 +77,6 @@ public:
 #define PONA_PTHREAD_EXCEPTION(callName, errorCode) \
 	throw PthreadException(__FILE__, __LINE__, "PthreadException", pthreadError(callName, errorCode), errorCode)
 
-PONA_EXCEPTION(RefException, Exception);
 PONA_EXCEPTION(DebugException, Exception);
 
 inline void check(bool condition, const char* reason = "") {

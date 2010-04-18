@@ -88,10 +88,7 @@ public:
 	
 	inline T* saveGet() const {
 		T* instance = GetAndSetPolicy<T>::get();
-		#ifndef NDEBUG
-		if (!instance)
-			PONA_THROW(RefException, "Null reference");
-		#endif
+		check(instance, "Null reference");
 		return instance;
 	}
 	
