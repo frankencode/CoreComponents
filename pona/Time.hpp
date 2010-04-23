@@ -93,6 +93,11 @@ inline Time operator-(const Time& a, const Time& b)
 	return c -= b;
 }
 
+inline double operator/(const Time& a, const Time& b)
+{
+	return a.fineSec() / b.fineSec();
+}
+
 inline bool operator==(const Time& a, const Time& b) { return ((a.sec() == b.sec()) && (a.nsec() == b.nsec())); }
 inline bool operator!=(const Time& a, const Time& b) { return !(a == b); }
 inline bool operator<(const Time& a, const Time& b) { return (a.sec() < b.sec()) || ((a.sec() == b.sec()) && (a.nsec() < b.nsec())); }
