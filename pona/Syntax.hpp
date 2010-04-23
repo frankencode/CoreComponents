@@ -1288,7 +1288,8 @@ public:
 		}
 		
 		static int errorCallBack(Ref<Instance> self, Media* media, int index, State* state) {
-			return self.cast<Definition>()->syntaxError(media, index, state);
+			Ref<Definition> definition = self;
+			return definition->syntaxError(media, index, state);
 		}
 	};
 	
