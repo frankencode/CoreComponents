@@ -64,12 +64,12 @@ public:
 	
 	// convenience wrapper
 	inline bool lookup(const char* key, Value* value = 0, bool caseSensitive = true) {
-		return lookup(key, pona::strlen(key), value, caseSensitive);
+		return lookup(key, str::len(key), value, caseSensitive);
 	}
 	
 	// convenience wrapper
 	inline bool insert(const char* key, Value value = Value(), Value* oldValue = 0, bool caseSensitive = true) {
-		return insert(key, pona::strlen(key), value, oldValue, caseSensitive);
+		return insert(key, str::len(key), value, oldValue, caseSensitive);
 	}
 	
 	// convenience wrapper, matches entire media

@@ -14,34 +14,30 @@
 namespace pona
 {
 
-template<class T>
-inline void bzero(T* s)
+namespace mem
 {
-	char* sc = reinterpret_cast<char*>(s);
-	for (unsigned i = 0; i < sizeof(T); ++i) sc[i] = 0;
+
+inline void clr(void* s, int n, uint8_t zero = 0)
+{
+	uint8_t* bs = (uint8_t*)s;
+	for (int i = 0; i < n; ++i) bs[i] = zero;
 }
 
-inline void bzero(void* p, int len)
+inline void cpy(void* t, const void* s, int n)
 {
-	char* sc = reinterpret_cast<char*>(p);
-	for (int i = 0; i < len; ++i) sc[i] = 0;
-}
-
-template<class T>
-inline void memset(T* s, T ch, int len)
-{
-	for (int i = 0; i < len; ++i) s[i] = ch;
-}
-
-template<class T, class S>
-inline void memcpy(T* t, const S* s, int n)
-{
+	uint8_t* bt = (uint8_t*)t;
+	uint8_t* bs = (uint8_t*)s;
 	for (int i = 0; i < n; ++i)
-		t[i] = s[i];
+		bt[i] = bs[i];
 }
 
+} // namespace mem
+
+namespace str
+{
+
 template<class T>
-inline int strlen(const T* s)
+inline int len(const T* s)
 {
 	int len = 0;
 	if (s)
@@ -49,7 +45,7 @@ inline int strlen(const T* s)
 	return len;
 }
 
-inline int strcmp(const char* a, const char* b)
+inline int cmp(const char* a, const char* b)
 {
 	int ret = 0;
 	char ca, cb;
@@ -64,7 +60,7 @@ inline int strcmp(const char* a, const char* b)
 	return ret;
 }
 
-inline int strcasecmp(const char* a, const char* b)
+inline int casecmp(const char* a, const char* b)
 {
 	int ret = 0;
 	char ca, cb;
@@ -81,8 +77,10 @@ inline int strcasecmp(const char* a, const char* b)
 	return ret;
 }
 
-char* strdup(const char* s);
-char* strcat(const char* s0, const char* s1 = 0, const char* s2 = 0, const char* s3 = 0, const char* s4 = 0, const char* s5 = 0, const char* s6 = 0, const char* s7 = 0);
+char* dup(const char* s);
+char* cat(const char* s0, const char* s1 = 0, const char* s2 = 0, const char* s3 = 0, const char* s4 = 0, const char* s5 = 0, const char* s6 = 0, const char* s7 = 0);
+
+} // namespace str
 
 char* intToStr(int value);
 int strToInt(const char* s, int i0 = 0, int i1 = intMax, int base = 10);

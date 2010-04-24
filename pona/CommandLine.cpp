@@ -259,7 +259,7 @@ void CommandLine::readOption(String line, Ref<Token> token)
 			char name = line->at(token->index());
 			Ref<CommandOption> option = optionByShortName(name);
 			if (!option)
-				PONA_THROW(CommandLineException, pona::strdup(String(Format("Unsupported option: '-%%'") << name)->data()));
+				PONA_THROW(CommandLineException, str::dup(String(Format("Unsupported option: '-%%'") << name)->data()));
 			
 			usedOptions_->append(option);
 			
@@ -283,7 +283,7 @@ void CommandLine::readOption(String line, Ref<Token> token)
 		String name(line, token->index(), token->length());
 		Ref<CommandOption> option = optionByLongName(name);
 		if (!option)
-			PONA_THROW(CommandLineException, pona::strdup(String(Format("Unsupported option: '--%%'") << name)->data()));
+			PONA_THROW(CommandLineException, str::dup(String(Format("Unsupported option: '--%%'") << name)->data()));
 		
 		usedOptions_->append(option);
 		

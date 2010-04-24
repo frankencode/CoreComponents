@@ -10,7 +10,7 @@
 #include <sys/param.h>
 #include <sys/sysctl.h> // sysctl
 #include <sys/stat.h> // devname_r
-#include <string.h> // memset
+#include "strings.hpp" // memclr
 #include "User.hpp"
 #else
 #include "File.hpp"
@@ -38,7 +38,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	if (::sysctl(mib, 4, NULL, &sz, NULL, 0) == -1)
 		PONA_SYSTEM_EXCEPTION;
 	proc = (kinfo_proc*)pona::malloc(sz);
-	::memset(proc, 0, sz);
+	mem::clr(proc, sz);
 	if (::sysctl(mib, 4, proc, &sz, NULL, 0) == -1)
 		PONA_SYSTEM_EXCEPTION;
 	processId_ = proc->kp_proc.p_pid;

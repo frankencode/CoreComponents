@@ -11,26 +11,26 @@
 namespace pona
 {
 
-char* strdup(const char* s)
+char* str::dup(const char* s)
 {
 	char* s2 = 0;
 	if (s) {
-		int len = pona::strlen(s);
+		int len = str::len(s);
 		s2 = new char[len + 1];
 		s2[len] = 0;
-		pona::memcpy(s2, s, len);
+		mem::cpy(s2, s, len);
 	}
 	return s2;
 }
 
-char* strcat(const char* s0, const char* s1, const char* s2, const char* s3, const char* s4, const char* s5, const char* s6, const char* s7)
+char* str::cat(const char* s0, const char* s1, const char* s2, const char* s3, const char* s4, const char* s5, const char* s6, const char* s7)
 {
 	int len = 0;
 	const char* s[] = { s0, s1, s2, s3, s4, s5, s6, s7 };
 	const int n = sizeof(s) / sizeof(const char*);
 	for (int i = 0; i < n; ++i) {
 		if (s[i])
-			len += pona::strlen(s[i]);
+			len += str::len(s[i]);
 	}
 	char* c = new char[len + 1];
 	c[len] = 0;

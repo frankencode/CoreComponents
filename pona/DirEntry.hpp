@@ -29,7 +29,7 @@ public:
 	inline int type() const { return d_type; }
 	#endif
 	
-	inline bool operator<(const DirEntry& b) const { return pona::strcasecmp(d_name, b.d_name) < 0; }
+	inline bool operator<(const DirEntry& b) const { return str::casecmp(d_name, b.d_name) < 0; }
 	
 private:
 	friend class Dir;

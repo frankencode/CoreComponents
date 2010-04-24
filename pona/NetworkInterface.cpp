@@ -64,7 +64,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 		if (fd == -1) PONA_SYSTEM_EXCEPTION;
 		
 		struct sockaddr_nl src;
-		pona::bzero(&src, sizeof(src));
+		mem::clr(&src, sizeof(src));
 		src.nl_family = AF_NETLINK;
 		src.nl_pid = ::getpid();
 		if (::bind(fd, (struct sockaddr*)&src, (socklen_t)sizeof(src)) == -1)
@@ -77,7 +77,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			if (!msg) PONA_SYSTEM_EXCEPTION;
 			int seq = 0;
 			
-			pona::bzero(msg, msgLen);
+			mem::clr(msg, msgLen);
 			msg->nlmsg_type = RTM_GETLINK;
 			msg->nlmsg_len = msgLen;
 			msg->nlmsg_flags = NLM_F_REQUEST|NLM_F_ROOT;
@@ -88,11 +88,11 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			data->ifi_family = AF_UNSPEC;
 			
 			struct sockaddr_nl dst;
-			pona::bzero(&dst, sizeof(dst));
+			mem::clr(&dst, sizeof(dst));
 			dst.nl_family = AF_NETLINK;
 			
 			struct msghdr hdr;
-			pona::bzero(&hdr, sizeof(hdr));
+			mem::clr(&hdr, sizeof(hdr));
 			
 			struct iovec iov = { msg, msgLen };
 			hdr.msg_iov = &iov;
@@ -109,7 +109,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 		// process reply
 		{
 			struct msghdr hdr;
-			pona::bzero(&hdr, sizeof(hdr));
+			mem::clr(&hdr, sizeof(hdr));
 			
 			ssize_t bufSize = ::recvmsg(fd, &hdr, MSG_PEEK|MSG_TRUNC);
 			if (bufSize == -1) PONA_SYSTEM_EXCEPTION;
@@ -194,7 +194,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 		if (fd == -1) PONA_SYSTEM_EXCEPTION;
 		
 		struct sockaddr_nl src;
-		pona::bzero(&src, sizeof(src));
+		mem::clr(&src, sizeof(src));
 		src.nl_family = AF_NETLINK;
 		src.nl_pid = ::getpid();
 		if (::bind(fd, (struct sockaddr*)&src, (socklen_t)sizeof(src)) == -1)
@@ -207,7 +207,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			if (!msg) PONA_SYSTEM_EXCEPTION;
 			int seq = 0;
 			
-			pona::bzero(msg, msgLen);
+			mem::clr(msg, msgLen);
 			msg->nlmsg_type = RTM_GETADDR;
 			msg->nlmsg_len = msgLen;
 			msg->nlmsg_flags = NLM_F_REQUEST|NLM_F_ROOT;
@@ -218,11 +218,11 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			data->ifa_family = family;
 			
 			struct sockaddr_nl dst;
-			pona::bzero(&dst, sizeof(dst));
+			mem::clr(&dst, sizeof(dst));
 			dst.nl_family = AF_NETLINK;
 			
 			struct msghdr hdr;
-			pona::bzero(&hdr, sizeof(hdr));
+			mem::clr(&hdr, sizeof(hdr));
 			
 			struct iovec iov = { msg, msgLen };
 			hdr.msg_iov = &iov;
@@ -239,7 +239,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 		// process reply
 		{
 			struct msghdr hdr;
-			pona::bzero(&hdr, sizeof(hdr));
+			mem::clr(&hdr, sizeof(hdr));
 			
 			ssize_t bufSize = ::recvmsg(fd, &hdr, MSG_PEEK|MSG_TRUNC);
 			if (bufSize == -1) PONA_SYSTEM_EXCEPTION;
@@ -289,7 +289,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 							struct sockaddr_in addr4;
 							struct sockaddr_in6 addr6;
 							if (data->ifa_family == AF_INET) {
-								pona::bzero(&addr4, sizeof(addr4));
+								mem::clr(&addr4, sizeof(addr4));
 								// addr.sin_len = sizeof(addr);
 								*(uint8_t*)&addr4 = sizeof(addr4); // uggly, but safe HACK, for BSD4.4
 								addr4.sin_family = AF_INET;
@@ -298,7 +298,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 									address = new SocketAddress(&addr4);
 							}
 							else if (data->ifa_family == AF_INET6) {
-								pona::bzero(&addr6, sizeof(addr6));
+								mem::clr(&addr6, sizeof(addr6));
 								#ifdef SIN6_LEN
 								addr.sin6_len = sizeof(addr6);
 								#endif
@@ -366,7 +366,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 			
 			{
 				struct ifreq ifr;
-				pona::bzero(&ifr, sizeof(ifr));
+				mem::clr(&ifr, sizeof(ifr));
 				for (int i = 0, n = name->length(); i < n; ++i)
 					ifr.ifr_name[i] = name->get(i);
 				

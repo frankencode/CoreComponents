@@ -21,7 +21,7 @@ BitEncoder::BitEncoder(Ref<Stream> stream, int bufCapacity, int endian)
 	  iBit_(0),
 	  nw_(0)
 {
-	pona::bzero(buf_, bufCapacity_);
+	mem::clr(buf_, bufCapacity_);
 }
 
 BitEncoder::BitEncoder(void* buf, int bufCapacity, int endian)
@@ -33,7 +33,7 @@ BitEncoder::BitEncoder(void* buf, int bufCapacity, int endian)
 	  iBit_(0),
 	  nw_(0)
 {
-	pona::bzero(buf_, bufCapacity_);
+	mem::clr(buf_, bufCapacity_);
 }
 
 BitEncoder::~BitEncoder()
@@ -55,7 +55,7 @@ void BitEncoder::flush()
 	if (h > 0)
 	{
 		stream_->write((void*)buf_, h);
-		pona::bzero((void*)buf_, h);
+		mem::clr((void*)buf_, h);
 		nw_ += h;
 		i_ = 0;
 		iBit_ = 0;

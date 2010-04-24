@@ -8,8 +8,6 @@
 #ifndef PONA_ARRAYPOLICY_HPP
 #define PONA_ARRAYPOLICY_HPP
 
-#include "strings.hpp"
-
 namespace pona
 {
 
@@ -63,10 +61,10 @@ public:
 			free(data_, size_);
 			alloc(data_, size_, size);
 		}
-		pona::memcpy(data_, data, size);
+		for (int i = 0; i < size; ++i) data_[i] = data[i];
 	}
 	inline static void clear(T*& data_, int& size_, T zero) {
-		pona::memset(data_, zero, size_);
+		for (int i = 0; i < size_; ++i) data_[i] = zero;
 	}
 };
 
@@ -103,10 +101,10 @@ public:
 			free(data_, size_);
 			alloc(data_, size_, size);
 		}
-		pona::memcpy(data_, data, size);
+		for (int i = 0; i < size; ++i) data_[i] = data[i];
 	}
 	inline static void clear(T*& data_, int& size_, T zero) {
-		pona::memset(data_, zero, size_);
+		for (int i = 0; i < size_; ++i) data_[i] = zero;
 	}
 };
 

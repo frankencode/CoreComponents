@@ -6,8 +6,8 @@
  * See ../LICENSE for the license.
  */
 
-#include <string.h> // memset
 #include <sched.h> // sched_yield
+#include "strings.hpp"
 #include "Exception.hpp"
 #include "Time.hpp"
 #include "Condition.hpp"
@@ -101,7 +101,7 @@ void Thread::enableSignal(int signal)
 	sigfillset(&mask);
 	
 	struct sigaction action;
-	::memset(&action, 0, sizeof(action));
+	mem::clr(&action, sizeof(action));
 	action.sa_handler = Thread::signalForwarder;
 	action.sa_mask = mask;
 	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
@@ -125,7 +125,7 @@ void Thread::disableSignal(int signal)
 		PONA_PTHREAD_EXCEPTION("pthread_sigmask", ret);
 	
 	struct sigaction action;
-	::memset(&action, 0, sizeof(action));
+	mem::clr(&action, sizeof(action));
 	action.sa_handler = SIG_DFL;
 	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
 		PONA_SYSTEM_EXCEPTION;
