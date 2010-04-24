@@ -39,7 +39,7 @@ Exception::Exception(const char* path, int line, const char* className, char* re
 {
 	path = fileName(path);
 	char* lineStr = intToStr(line);
-	message_ = pona::strcat(path, ":", lineStr, ": ", className, ": ", reason);
+	message_ = str::cat(path, ":", lineStr, ": ", className, ": ", reason);
 	delete[] lineStr;
 	delete[] reason;
 }
@@ -52,7 +52,7 @@ Exception::~Exception() throw()
 
 const char* Exception::what() const throw() { return message_; }
 
-char* captureExceptionMessage(const char* s) { return pona::strdup(s); }
+char* captureExceptionMessage(const char* s) { return str::dup(s); }
 char* captureExceptionMessage(char* s) { return s; }
 
 char* systemError() { return systemError(errno); }
@@ -63,13 +63,13 @@ char* systemError(int errorCode)
 	const char* unknown = "Unknown error";
 	const int bufSize = 1024; // HACK, save bet
 	char buf[bufSize];
-	pona::memcpy(buf, unknown, pona::strlen(unknown) + 1);
-	return pona::strdup(::strerror_r(errorCode, buf, bufSize));
+	mem::cpy(buf, unknown, str::len(unknown) + 1);
+	return str::dup(::strerror_r(errorCode, buf, bufSize));
 #else
 	const char* unknown = "Unknown error";
 	const int bufSize = 1024;
 	char* buf = new char[bufSize];
-	pona::memcpy(buf, unknown, pona::strlen(unknown) + 1);
+	mem::cpy(buf, unknown, str::len(unknown) + 1);
 	/*int ret = */::strerror_r(errorCode, buf, bufSize);
 	return buf;
 #endif
@@ -79,7 +79,7 @@ char* pthreadError(const char* callName, int errorCode)
 {
 	char* errorStr = systemError(errorCode);
 	char* errorCodeStr = pona::intToStr(errorCode);
-	char* msg = pona::strcat(callName, "() failed: ", errorStr, " (", errorCodeStr, ")");
+	char* msg = str::cat(callName, "() failed: ", errorStr, " (", errorCodeStr, ")");
 	delete[] errorStr;
 	delete[] errorCodeStr;
 	return msg;

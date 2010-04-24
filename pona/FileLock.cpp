@@ -15,7 +15,7 @@ namespace pona
 FileLock::FileLock(Ref<File> file, int type, off_t start, off_t length)
 	: fd_(file->fd())
 {
-	pona::bzero(static_cast<FLockStruct*>(this));
+	mem::clr(this, sizeof(FLockStruct));
 	FLockStruct::l_type = type;
 	FLockStruct::l_start = start;
 	FLockStruct::l_len = length;

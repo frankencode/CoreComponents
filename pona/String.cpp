@@ -23,7 +23,7 @@ String::String(const Variant& b)
 
 void String::validate(const char* data, int size)
 {
-	if (size < 0) size = pona::strlen(data);
+	if (size < 0) size = str::len(data);
 	if (size > 0) {
 		Utf8Decoder source(data, size);
 		while (source.hasNext())
@@ -33,7 +33,7 @@ void String::validate(const char* data, int size)
 
 void String::assign(Ref<StringList> parts, const char* glue)
 {
-	int glueSize = pona::strlen(glue);
+	int glueSize = str::len(glue);
 	validate(glue, glueSize);
 	if (parts->length() > 0) {
 		int size = 0;
@@ -44,10 +44,10 @@ void String::assign(Ref<StringList> parts, const char* glue)
 		char* p = media()->data();
 		for (StringList::Index i = parts->first(); parts->def(i); ++i) {
 			String part = parts->at(i);
-			pona::memcpy(p, part->data(), part->size());
+			mem::cpy(p, part->data(), part->size());
 			p += part->size();
 			if (parts->def(i + 1)) {
-				pona::memcpy(p, glue, glueSize);
+				mem::cpy(p, glue, glueSize);
 				p += glueSize;
 			}
 		}
@@ -85,7 +85,7 @@ Ref<StringList, Owner> String::split(const char* pattern) const
 {
 	Ref<StringList, Owner> parts = new StringList;
 	Index index0 = first();
-	int patternSize = pona::strlen(pattern);
+	int patternSize = str::len(pattern);
 	while (index0.valid()) {
 		Index index1 = find(index0, pattern);
 		if (!index1.valid()) break;

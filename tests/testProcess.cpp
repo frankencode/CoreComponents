@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 		const char* message =
 			"Hello, world!\n"
 			"exit\n";
-		process->rawInput()->write(message, strlen(message));
+		process->rawInput()->write(message, str::len(message));
 		process->rawInput()->close();
 		
 		const int bufSize = 16;

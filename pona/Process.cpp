@@ -128,7 +128,7 @@ String Process::execPath()
 	ssize_t bufSize = 1024;
 	while (true) {
 		char* buf = (char*)pona::malloc(bufSize + 1);
-		pona::bzero(buf, bufSize + 1);
+		mem::clr(buf, bufSize + 1);
 		ssize_t ret = ::readlink(lnPath, buf, bufSize);
 		if (ret == -1)
 			PONA_SYSTEM_EXCEPTION;
@@ -146,7 +146,7 @@ String Process::execPath()
 	uint32_t bufSize = 0;
 	_NSGetExecutablePath(buf, &bufSize);
 	buf = (char*)pona::malloc(bufSize + 1);
-	pona::bzero(buf, bufSize + 1);
+	mem::clr(buf, bufSize + 1);
 	_NSGetExecutablePath(buf, &bufSize);
 	path = buf;
 	pona::free(buf);

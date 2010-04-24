@@ -195,11 +195,11 @@ Ref<Process, Owner> ProcessFactory::produce()
 				
 			char** argv = new char*[argc + 1];
 			
-			argv[0] = pona::strdup(execPath_->data());
+			argv[0] = str::dup(execPath_->data());
 			if (options_) {
 				int j = 1;
 				for (StringList::Index i = options_->first(); options_->def(i); ++i, ++j) {
-					argv[j] = pona::strdup(options_->at(i)->data());
+					argv[j] = str::dup(options_->at(i)->data());
 				}
 			}
 			argv[argc] = 0;
@@ -221,7 +221,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 				
 				int j = 0;
 				for (EnvList::Index i = envList->first(); envList->def(i); ++i, ++j)
-					envp[j] = pona::strdup(String(Format() << envList->at(i).key() <<  "=" << envList->at(i).value())->data());
+					envp[j] = str::dup(String(Format() << envList->at(i).key() <<  "=" << envList->at(i).value())->data());
 				
 				envp[envc] = 0;
 			}

@@ -69,7 +69,7 @@ bool LineSource::readAvail()
 	for (int i = 0, nk = eol_->size(), k = 0; i < bufFill; ++i)
 	{
 		if (cache_.fill() == cache_.size())
-			PONA_THROW(StreamIoException, pona::strcat("Maximum line length of ", pona::intToStr(cache_.size()), " bytes exceeded"));
+			PONA_THROW(StreamIoException, str::cat("Maximum line length of ", pona::intToStr(cache_.size()), " bytes exceeded"));
 
 		char ch = buf_[i];
 		k = (ch == eol_->at(k)) ? k + 1 : 0;

@@ -21,7 +21,7 @@ Group::Group(gid_t id)
 	#endif
 	Array<char> buf(bufSize, '\0');
 	struct group space;
-	pona::bzero(&space);
+	mem::clr(&space, sizeof(struct group));
 	struct group* entry = 0;
 	if (::getgrgid_r(id, &space, buf, bufSize, &entry) != 0)
 		PONA_SYSTEM_EXCEPTION;
@@ -35,7 +35,7 @@ Group::Group(const char* name)
 		PONA_SYSTEM_EXCEPTION;
 	Array<char> buf(bufSize, '\0');
 	struct group space;
-	pona::bzero(&space);
+	mem::clr(&space, sizeof(struct group));
 	struct group* entry = 0;
 	if (::getgrnam_r(name, &space, buf, bufSize, &entry) != 0)
 		PONA_SYSTEM_EXCEPTION;

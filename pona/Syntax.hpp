@@ -122,10 +122,10 @@ public:
 	public:
 		template<class Char2>
 		RangeExplicitNode(const Char2* s, int invert)
-			: s_(pona::strlen(s)),
+			: s_(str::len(s)),
 			  invert_(invert)
 		{
-			pona::memcpy(s_.data(), s, s_.size());
+			mem::cpy(s_.data(), s, s_.size() * sizeof(Char2));
 		}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -159,10 +159,10 @@ public:
 	public:
 		template<class Char2>
 		StringNode(const Char2* s, bool caseSensitive)
-			: s_(pona::strlen(s)),
+			: s_(str::len(s)),
 			  caseSensitive_(caseSensitive)
 		{
-			pona::memcpy(s_.data(), s, s_.size());
+			mem::cpy(s_.data(), s, s_.size() * sizeof(Char2));
 			if (!caseSensitive) {
 				for (int i = 0, n = s_.size(); i < n; ++i)
 					s_.set(i, ToLower<Char>::map(s_.at(i)));
@@ -886,10 +886,10 @@ public:
 		//-- stateless definition interface
 		
 		inline void OPTION(const char* name, bool value) {
-			if (pona::strcasecmp(name, "caseSensitive") == 0)
+			if (str::casecmp(name, "caseSensitive") == 0)
 				caseSensitive_ = value;
 			else
-				PONA_THROW(DebugException, pona::strcat("Unknown option '", name, "'"));
+				PONA_THROW(DebugException, str::cat("Unknown option '", name, "'"));
 		}
 		
 		inline static NODE CHAR(Char ch) { return new CharNode(ch, 0); }
@@ -1136,7 +1136,7 @@ public:
 		{
 			Ref<RuleNode, Owner> node;
 			if (!ruleByName_->lookup(name, &node))
-				PONA_THROW(DebugException, pona::strcat("Undefined rule '", name, "' referenced"));
+				PONA_THROW(DebugException, str::cat("Undefined rule '", name, "' referenced"));
 			return node;
 		}
 		
@@ -1146,8 +1146,8 @@ public:
 				return scope_->definitionByName(name);
 			}
 			else {
-				if (pona::strcmp(name, name_) != 0)
-					PONA_THROW(DebugException, pona::strcat("Undefined definition '", name, "' referenced"));
+				if (str::cmp(name, name_) != 0)
+					PONA_THROW(DebugException, str::cat("Undefined definition '", name, "' referenced"));
 				return this;
 			}
 		}
@@ -1156,7 +1156,7 @@ public:
 		{
 			int tokenType = -1;
 			if (!tokenTypeByName_->lookup(name, &tokenType))
-				PONA_THROW(DebugException, pona::strcat("Undefined token type '", name, "' referenced"));
+				PONA_THROW(DebugException, str::cat("Undefined token type '", name, "' referenced"));
 			return tokenType;
 		}
 		
@@ -1164,7 +1164,7 @@ public:
 		{
 			int flagId = -1;
 			if (!flagIdByName()->lookup(name, &flagId))
-				PONA_THROW(DebugException, pona::strcat("Undefined state flag '", name, "' referenced"));
+				PONA_THROW(DebugException, str::cat("Undefined state flag '", name, "' referenced"));
 			return flagId;
 		}
 		
@@ -1172,7 +1172,7 @@ public:
 		{
 			int charId = -1;
 			if (!charIdByName()->lookup(name, &charId))
-				PONA_THROW(DebugException, pona::strcat("Undefined state char '", name, "' referenced"));
+				PONA_THROW(DebugException, str::cat("Undefined state char '", name, "' referenced"));
 			return charId;
 		}
 		
@@ -1180,7 +1180,7 @@ public:
 		{
 			int stringId = -1;
 			if (!stringIdByName()->lookup(name, &stringId))
-				PONA_THROW(DebugException, pona::strcat("Undefined state string '", name, "' referenced"));
+				PONA_THROW(DebugException, str::cat("Undefined state string '", name, "' referenced"));
 			return stringId;
 		}
 		
@@ -1236,9 +1236,9 @@ public:
 		public:
 			StateString(Ref<StateString> head, const char* defaultValue)
 				: next_(head),
-				  defaultValue_(pona::strlen(defaultValue))
+				  defaultValue_(str::len(defaultValue))
 			{
-				pona::memcpy(defaultValue_.data(), defaultValue, defaultValue_.size());
+				mem::cpy(defaultValue_.data(), defaultValue, defaultValue_.size());
 			}
 			Ref<StateString, Owner> next_;
 			Array<Char> defaultValue_; // design HACK, Char?, or uchar_t, or char?
@@ -1254,7 +1254,7 @@ public:
 		void addRule(Ref<RuleNode> rule)
 		{
 			if (!ruleByName_->insert(rule->name(), rule))
-				PONA_THROW(DebugException, pona::strcat("Redefinition of rule '", rule->name(), "'"));
+				PONA_THROW(DebugException, str::cat("Redefinition of rule '", rule->name(), "'"));
 		}
 		
 		Ref<LinkNode, Owner> unresolvedLinkHead_;
@@ -1308,7 +1308,7 @@ public:
 		{
 			Ref<Definition, Owner> definition;
 			if (!definitionByName_->lookup(name, &definition))
-				PONA_THROW(DebugException, pona::strcat("Undefined definition '", name, "' referenced"));
+				PONA_THROW(DebugException, str::cat("Undefined definition '", name, "' referenced"));
 			return definition;
 		}
 		
@@ -1341,7 +1341,7 @@ public:
 		void addDefinition(Ref<Definition> definition)
 		{
 			if (!definitionByName_->insert(definition->name(), definition))
-				PONA_THROW(DebugException, pona::strcat("Redefinition of '", definition->name(), "'"));
+				PONA_THROW(DebugException, str::cat("Redefinition of '", definition->name(), "'"));
 			definition->unresolvedNext_ = unresolvedDefinitionHead_;
 			unresolvedDefinitionHead_ = definition;
 		}

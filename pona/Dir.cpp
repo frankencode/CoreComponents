@@ -86,10 +86,10 @@ bool Dir::read(Ref<DirEntry> entry)
 	if (!isOpen()) open();
 	struct dirent* buf = entry;
 	struct dirent* result;
-	pona::bzero(buf); // for paranoid reason
+	mem::clr(buf, sizeof(struct dirent)); // for paranoid reason
 	int errorCode = ::readdir_r(dir_, buf, &result);
 	if (errorCode)
-		throw SystemException(__FILE__, __LINE__, "SystemException", pona::strcat("readdir_r() failed: error code = ", pona::intToStr(errorCode)), errorCode);
+		throw SystemException(__FILE__, __LINE__, "SystemException", str::cat("readdir_r() failed: error code = ", pona::intToStr(errorCode)), errorCode);
 	
 	entry->path_ = Path(entry->d_name).makeAbsoluteRelativeTo(path_);
 	return result;

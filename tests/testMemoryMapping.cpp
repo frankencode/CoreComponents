@@ -52,7 +52,7 @@ int main()
 	{
 		MemoryMapping mapping(&file, 0, mapLength);
 		String message = "Hello, clone!";
-		pona::memcpy(reinterpret_cast<char*>(mapping.start()), message->data(), message->size());
+		mem::cpy(reinterpret_cast<char*>(mapping.start()), message->data(), message->size());
 	}
 	
 	print("(parent) cloning myself... \n");

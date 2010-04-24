@@ -145,7 +145,7 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String ser
 	addrinfo hint;
 	addrinfo* head = 0;
 	
-	pona::bzero(&hint, sizeof(hint));
+	mem::clr(&hint, sizeof(hint));
 	hint.ai_flags = (canonicalName) ? AI_CANONNAME : 0;
 	if ((hostName == "*") || (hostName == ""))
 		hint.ai_flags |= AI_PASSIVE;

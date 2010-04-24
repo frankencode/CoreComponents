@@ -9,6 +9,7 @@
 #define PONA_STRING_HPP
 
 #include "atoms"
+#include "strings.hpp"
 #include "Utf8Walker.hpp"
 #include "Array.hpp"
 #include "List.hpp"
@@ -42,7 +43,7 @@ public:
 	
 	// initialize string by deep-copying an UTF8 encoded string
 	String(const char* data, int size = -1) {
-		if (size < 0) size = pona::strlen(data);
+		if (size < 0) size = str::len(data);
 		validate(data, size);
 		assign(data, size);
 	}
@@ -76,7 +77,7 @@ public:
 	
 	// assign a copy of an UTF8 encoded string
 	inline String& operator=(const char* data) {
-		int size = pona::strlen(data);
+		int size = str::len(data);
 		validate(data, size);
 		assign(data, size);
 		return *this;
@@ -137,12 +138,12 @@ public:
 		return String(parts, replacement);
 	}
 	
-	inline bool operator< (const String& b) const { return pona::strcmp((*this)->data(), b->data()) <  0; }
-	inline bool operator==(const String& b) const { return pona::strcmp((*this)->data(), b->data()) == 0; }
-	inline bool operator> (const String& b) const { return pona::strcmp((*this)->data(), b->data()) >  0; }
-	inline bool operator!=(const String& b) const { return pona::strcmp((*this)->data(), b->data()) != 0; }
-	inline bool operator<=(const String& b) const { return pona::strcmp((*this)->data(), b->data()) <= 0; }
-	inline bool operator>=(const String& b) const { return pona::strcmp((*this)->data(), b->data()) >= 0; }
+	inline bool operator< (const String& b) const { return str::cmp((*this)->data(), b->data()) <  0; }
+	inline bool operator==(const String& b) const { return str::cmp((*this)->data(), b->data()) == 0; }
+	inline bool operator> (const String& b) const { return str::cmp((*this)->data(), b->data()) >  0; }
+	inline bool operator!=(const String& b) const { return str::cmp((*this)->data(), b->data()) != 0; }
+	inline bool operator<=(const String& b) const { return str::cmp((*this)->data(), b->data()) <= 0; }
+	inline bool operator>=(const String& b) const { return str::cmp((*this)->data(), b->data()) >= 0; }
 	
 	int toInt(bool* ok = 0) const;
 	double toFloat(bool* ok = 0) const;
@@ -160,39 +161,39 @@ private:
 	static void validate(const char* data, int size = -1);
 	
 	inline void assign(const char* data, int size = -1) {
-		if (size < 0) size = pona::strlen(data);
+		if (size < 0) size = str::len(data);
 		set(new Media(data, size));
 	}
 	void assign(Ref<StringList> parts, const char* glue = "");
 };
 
-inline bool operator< (const char* a, const String& b) { return pona::strcmp(a, b->data()) <  0; }
-inline bool operator==(const char* a, const String& b) { return pona::strcmp(a, b->data()) == 0; }
-inline bool operator> (const char* a, const String& b) { return pona::strcmp(a, b->data()) >  0; }
-inline bool operator!=(const char* a, const String& b) { return pona::strcmp(a, b->data()) != 0; }
-inline bool operator<=(const char* a, const String& b) { return pona::strcmp(a, b->data()) <= 0; }
-inline bool operator>=(const char* a, const String& b) { return pona::strcmp(a, b->data()) >= 0; }
+inline bool operator< (const char* a, const String& b) { return str::cmp(a, b->data()) <  0; }
+inline bool operator==(const char* a, const String& b) { return str::cmp(a, b->data()) == 0; }
+inline bool operator> (const char* a, const String& b) { return str::cmp(a, b->data()) >  0; }
+inline bool operator!=(const char* a, const String& b) { return str::cmp(a, b->data()) != 0; }
+inline bool operator<=(const char* a, const String& b) { return str::cmp(a, b->data()) <= 0; }
+inline bool operator>=(const char* a, const String& b) { return str::cmp(a, b->data()) >= 0; }
 
-inline bool operator< (char* a, const String& b) { return pona::strcmp(a, b->data()) <  0; }
-inline bool operator==(char* a, const String& b) { return pona::strcmp(a, b->data()) == 0; }
-inline bool operator> (char* a, const String& b) { return pona::strcmp(a, b->data()) >  0; }
-inline bool operator!=(char* a, const String& b) { return pona::strcmp(a, b->data()) != 0; }
-inline bool operator<=(char* a, const String& b) { return pona::strcmp(a, b->data()) <= 0; }
-inline bool operator>=(char* a, const String& b) { return pona::strcmp(a, b->data()) >= 0; }
+inline bool operator< (char* a, const String& b) { return str::cmp(a, b->data()) <  0; }
+inline bool operator==(char* a, const String& b) { return str::cmp(a, b->data()) == 0; }
+inline bool operator> (char* a, const String& b) { return str::cmp(a, b->data()) >  0; }
+inline bool operator!=(char* a, const String& b) { return str::cmp(a, b->data()) != 0; }
+inline bool operator<=(char* a, const String& b) { return str::cmp(a, b->data()) <= 0; }
+inline bool operator>=(char* a, const String& b) { return str::cmp(a, b->data()) >= 0; }
 
-inline bool operator< (const String& a, const char* b) { return pona::strcmp(a->data(), b) <  0; }
-inline bool operator==(const String& a, const char* b) { return pona::strcmp(a->data(), b) == 0; }
-inline bool operator> (const String& a, const char* b) { return pona::strcmp(a->data(), b) >  0; }
-inline bool operator!=(const String& a, const char* b) { return pona::strcmp(a->data(), b) != 0; }
-inline bool operator<=(const String& a, const char* b) { return pona::strcmp(a->data(), b) <= 0; }
-inline bool operator>=(const String& a, const char* b) { return pona::strcmp(a->data(), b) >= 0; }
+inline bool operator< (const String& a, const char* b) { return str::cmp(a->data(), b) <  0; }
+inline bool operator==(const String& a, const char* b) { return str::cmp(a->data(), b) == 0; }
+inline bool operator> (const String& a, const char* b) { return str::cmp(a->data(), b) >  0; }
+inline bool operator!=(const String& a, const char* b) { return str::cmp(a->data(), b) != 0; }
+inline bool operator<=(const String& a, const char* b) { return str::cmp(a->data(), b) <= 0; }
+inline bool operator>=(const String& a, const char* b) { return str::cmp(a->data(), b) >= 0; }
 
-inline bool operator< (const String& a, char* b) { return pona::strcmp(a->data(), b) <  0; }
-inline bool operator==(const String& a, char* b) { return pona::strcmp(a->data(), b) == 0; }
-inline bool operator> (const String& a, char* b) { return pona::strcmp(a->data(), b) >  0; }
-inline bool operator!=(const String& a, char* b) { return pona::strcmp(a->data(), b) != 0; }
-inline bool operator<=(const String& a, char* b) { return pona::strcmp(a->data(), b) <= 0; }
-inline bool operator>=(const String& a, char* b) { return pona::strcmp(a->data(), b) >= 0; }
+inline bool operator< (const String& a, char* b) { return str::cmp(a->data(), b) <  0; }
+inline bool operator==(const String& a, char* b) { return str::cmp(a->data(), b) == 0; }
+inline bool operator> (const String& a, char* b) { return str::cmp(a->data(), b) >  0; }
+inline bool operator!=(const String& a, char* b) { return str::cmp(a->data(), b) != 0; }
+inline bool operator<=(const String& a, char* b) { return str::cmp(a->data(), b) <= 0; }
+inline bool operator>=(const String& a, char* b) { return str::cmp(a->data(), b) >= 0; }
 
 } // namespace pona
 

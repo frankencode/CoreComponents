@@ -545,7 +545,7 @@ int AbnfCompiler::syntaxError(StringMedia* text, int index, State* state)
 	char* lineStr = pona::intToStr(line);
 	char* posStr = pona::intToStr(pos);
 	char* indexStr = pona::intToStr(index);
-	char* msg = pona::strcat("Syntax error in ABNF definition at ", lineStr, ":", posStr, "(", indexStr, ")");
+	char* msg = str::cat("Syntax error in ABNF definition at ", lineStr, ":", posStr, "(", indexStr, ")");
 	delete[] indexStr;
 	delete[] posStr;
 	delete[] lineStr;
