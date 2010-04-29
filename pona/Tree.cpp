@@ -90,7 +90,7 @@ void Tree::unlink()
 	self = 0;
 }
 
-Ref<Tree::Node> Tree::firstLeaf()
+Ref<Tree::Node> Tree::firstLeaf() const
 {
 	Ref<Node> node = this;
 	while (node->firstChild())
@@ -98,21 +98,25 @@ Ref<Tree::Node> Tree::firstLeaf()
 	return node;
 }
 
-Ref<Tree::Node> Tree::nextLeaf()
+Ref<Tree::Node> Tree::lastLeaf() const
+{
+	Ref<Node> node = this;
+	while (node->lastChild())
+		node = node->lastChild();
+	return node;
+}
+
+Ref<Tree::Node> Tree::nextLeaf() const
 {
 	Ref<Node> node = this;
 	
-	if (node->nextSibling())
-	{
+	if (node->nextSibling()) {
 		node = node->nextSibling()->firstLeaf();
 	}
-	else
-	{
-		while (node->parent())
-		{
+	else {
+		while (node->parent()) {
 			node = node->parent();
-			if (node->nextSibling())
-			{
+			if (node->nextSibling()) {
 				node = node->nextSibling()->firstLeaf();
 				break;
 			}
@@ -120,7 +124,29 @@ Ref<Tree::Node> Tree::nextLeaf()
 		if (!node->parent())
 			node = 0;
 	}
-		
+	
+	return node;
+}
+
+Ref<Tree::Node> Tree::previousLeaf() const
+{
+	Ref<Node> node = this;
+	
+	if (node->previousSibling()) {
+		node = node->previousSibling()->lastLeaf();
+	}
+	else {
+		while (node->parent()) {
+			node = node->parent();
+			if (node->previousSibling()) {
+				node = node->previousSibling()->lastLeaf();
+				break;
+			}
+		}
+		if (!node->parent())
+			node = 0;
+	}
+	
 	return node;
 }
 

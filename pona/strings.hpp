@@ -45,6 +45,13 @@ inline int len(const T* s)
 	return len;
 }
 
+template<class T, class S>
+inline void cpy(T* t, const S* s, int n = -1)
+{
+	if (n == -1) n = len(s);
+	for (int i = 0; i < n; ++i) t[i] = s[i];
+}
+
 inline int cmp(const char* a, const char* b)
 {
 	int ret = 0;
