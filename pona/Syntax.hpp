@@ -125,7 +125,7 @@ public:
 			: s_(str::len(s)),
 			  invert_(invert)
 		{
-			mem::cpy(s_.data(), s, s_.size() * sizeof(Char2));
+			str::cpy(s_.data(), s, s_.size());
 		}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -162,7 +162,7 @@ public:
 			: s_(str::len(s)),
 			  caseSensitive_(caseSensitive)
 		{
-			mem::cpy(s_.data(), s, s_.size() * sizeof(Char2));
+			str::cpy(s_.data(), s, s_.size());
 			if (!caseSensitive) {
 				for (int i = 0, n = s_.size(); i < n; ++i)
 					s_.set(i, ToLower<Char>::map(s_.at(i)));
@@ -864,7 +864,7 @@ public:
 			  numRules_(0),
 			  numKeywords_(0),
 			  ruleByName_(new RuleByName),
-			  tokenTypeByName_(new TokenTypeByName),
+			  tokenTypeByKeyword_(new TokenTypeByKeyword),
 			  statefulScope_(false),
 			  numStateFlags_(0),
 			  numStateChars_(0),
@@ -901,29 +901,26 @@ public:
 		template<class Char> inline static NODE EXCEPT(Char* s) { return new RangeExplicitNode(s, 1); }
 		template<class Char> inline NODE STRING(Char* s) { return new StringNode(s, caseSensitive_); }
 		
-		NODE KEYWORD(const char* keys)
+		NODE KEYWORD(const char* keywords)
 		{
 			Ref<KeywordMap, Owner> map = new KeywordMap;
-			while (*keys) {
-				if ((*keys == ' ') || (*keys == '\t')) {
-					++keys;
+			while (*keywords) {
+				if ((*keywords == ' ') || (*keywords == '\t')) {
+					++keywords;
 					continue;
 				}
 				int n = 0;
 				while (true) {
-					char ch = *(keys + n);
+					char ch = *(keywords + n);
 					if ((ch == ' ') || (ch == '\t') || (ch == '\0')) break;
 					++n;
 				}
-				map->insert(keys, n, numKeywords_);
-				tokenTypeByName_->insert(keys, n, numKeywords_);
+				map->insert(keywords, n, numKeywords_);
+				tokenTypeByKeyword_->insert(keywords, n, numKeywords_);
 				++numKeywords_;
-				keys += n;
+				keywords += n;
 			}
 			return new KeywordNode(map, caseSensitive_);
-		}
-		inline NODE TOKEN(const char* name) {
-			return CHAR(tokenTypeByName(name));
 		}
 		
 		inline static NODE REPEAT(int minRepeat, int maxRepeat, NODE entry) { return new RepeatNode(minRepeat, maxRepeat, entry); }
@@ -1152,10 +1149,10 @@ public:
 			}
 		}
 		
-		int tokenTypeByName(const char* name)
+		int tokenTypeByKeyword(const char* keyword)
 		{
 			int tokenType = -1;
-			if (!tokenTypeByName_->lookup(name, &tokenType))
+			if (!tokenTypeByKeyword_->lookup(keyword, &tokenType))
 				PONA_THROW(DebugException, str::cat("Undefined token type '", name, "' referenced"));
 			return tokenType;
 		}
@@ -1229,7 +1226,7 @@ public:
 				  defaultValue_(defaultValue)
 			{}
 			Ref<StateChar, Owner> next_;
-			Char defaultValue_; // design HACK, Char?, or uchar_t, or char?
+			Char defaultValue_;
 		};
 		
 		class StateString: public Instance {
@@ -1238,18 +1235,18 @@ public:
 				: next_(head),
 				  defaultValue_(str::len(defaultValue))
 			{
-				mem::cpy(defaultValue_.data(), defaultValue, defaultValue_.size());
+				str::cpy(defaultValue_.data(), defaultValue, defaultValue_.size());
 			}
 			Ref<StateString, Owner> next_;
-			Array<Char> defaultValue_; // design HACK, Char?, or uchar_t, or char?
+			Array<Char> defaultValue_;
 		};
 		
 		int numRules_;
 		int numKeywords_;
 		typedef PrefixTree<char, Ref<RuleNode, Owner> > RuleByName;
-		typedef PrefixTree<char, int> TokenTypeByName;
+		typedef PrefixTree<char, int> TokenTypeByKeyword;
 		Ref<RuleByName, Owner> ruleByName_;
-		Ref<TokenTypeByName, Owner> tokenTypeByName_;
+		Ref<TokenTypeByKeyword, Owner> tokenTypeByKeyword_;
 		
 		void addRule(Ref<RuleNode> rule)
 		{

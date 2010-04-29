@@ -32,8 +32,10 @@ public:
 	void appendAllChildrenOf(Ref<Node> node);
 	void unlink();
 	
-	Ref<Node> firstLeaf();
-	Ref<Node> nextLeaf();
+	Ref<Node> firstLeaf() const;
+	Ref<Node> lastLeaf() const;
+	Ref<Node> nextLeaf() const;
+	Ref<Node> previousLeaf() const;
 	
 	inline int countChildren() const {
 		return (firstChild_) ? firstChild_->countSiblings() : 0;
