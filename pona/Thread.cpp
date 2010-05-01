@@ -83,8 +83,6 @@ void Thread::yield()
 		PONA_SYSTEM_EXCEPTION;
 }
 
-Ref<Instance, Owner> Thread::clone() { return 0; }
-
 void Thread::init() {}
 void Thread::done() {}
 

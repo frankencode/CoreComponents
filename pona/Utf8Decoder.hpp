@@ -22,11 +22,18 @@ public:
 	inline bool hasNext() { return byteDecoder_.hasNext(); }
 	inline uchar_t next() { return readChar(); }
 	
-	uchar_t readChar(bool* valid = 0);
+	inline uchar_t readChar(bool* valid = 0) {
+		uchar_t ch = byteDecoder_.readUInt8();
+		if ((ch & 0x80) != 0) // distinguish 7 bit ASCII from multibyte sequence
+			ch = readMultiByte(ch, valid);
+		return ch;
+	}
 	
 	inline Ref<ByteDecoder> byteDecoder() const { return &byteDecoder_; }
 	
 private:
+	uchar_t readMultiByte(uchar_t ch, bool* valid);
+	
 	ByteDecoder byteDecoder_;
 };
 

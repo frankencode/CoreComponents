@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 	{
 		File file(listOfFiles->next());
 		file.open(File::Read);
-		String sourceText(file.size());
+		String sourceText = String::uninitialized(file.size());
 		file.read(sourceText->data(), sourceText->size());
 		file.close();
 		

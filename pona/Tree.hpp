@@ -32,16 +32,44 @@ public:
 	void appendAllChildrenOf(Ref<Node> node);
 	void unlink();
 	
+	// iterating leafs
 	Ref<Node> firstLeaf() const;
 	Ref<Node> lastLeaf() const;
 	Ref<Node> nextLeaf() const;
 	Ref<Node> previousLeaf() const;
+	
+	// iterating all nodes
+	inline Ref<Node> first() const { return firstLeaf(); }
+	inline Ref<Node> last() const { return lastLeaf(); }
+	inline Ref<Node> next() const { return (nextSibling_) ? nextSibling_->firstLeaf() : parent_; }
+	inline Ref<Node> previous() const { return (previousSibling_) ? previousSibling_->lastLeaf() : parent_; }
 	
 	inline int countChildren() const {
 		return (firstChild_) ? firstChild_->countSiblings() : 0;
 	}
 	
 	int countSiblings() const;
+	
+	/** Duplicate a tree structure with optionally omitting nodes which do not
+	  * meat a filter criteria.
+	  */
+	template<template<class> class Filter, class TreeType>
+	static Ref<TreeType, Owner> duplicate(Ref<TreeType> original);
+	
+	/** Pass-through filter.
+	  */
+	template<class TreeType>
+	class IncludeAll {
+	public:
+		inline static bool pass(Ref<TreeType>) { return true; }
+	};
+	
+	/** Convenience method.
+	  */
+	template<class TreeType>
+	inline static Ref<TreeType, Owner> duplicate(Ref<TreeType> original) {
+		return duplicate<TreeType, IncludeAll>(original);
+	}
 	
 private:
 	Ref<Node, SetNull> parent_;
@@ -50,6 +78,22 @@ private:
 	Ref<Node, Owner> nextSibling_;
 	Ref<Node, SetNull> previousSibling_;
 };
+
+template<template<class> class Filter, class TreeType>
+Ref<TreeType, Owner> Tree::duplicate(Ref<TreeType> original)
+{
+	Ref<TreeType, Owner> newTree = new TreeType(*original);
+	check(!newTree->firstChild_);
+	Ref<TreeType> child = original->firstChild();
+	while (child) {
+		if (Filter<TreeType>::pass(child)) {
+			Ref<TreeType, Owner> newChild = duplicate(child);
+			newTree->appendChild(newChild);
+		}
+		child = child->nextSibling_;
+	}
+	return newTree;
+}
 
 } // namespace pona
 

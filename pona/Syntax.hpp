@@ -543,8 +543,10 @@ public:
 	class PreviousNode: public LinkNode
 	{
 	public:
-		PreviousNode(const char* ruleName)
-			: LinkNode(ruleName)
+		PreviousNode(const char* ruleName, const char* keyword = 0)
+			: LinkNode(ruleName),
+			  keyword_(keyword),
+			  tokenType_(-1)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -553,7 +555,8 @@ public:
 			if (parentToken) {
 				Ref<Token> sibling = parentToken->previousSibling();
 				if (sibling)
-					if (sibling->rule() == LinkNode::rule_->id())
+					if ( (sibling->rule() == LinkNode::rule_->id()) &&
+						 ((tokenType_ == -1) || (sibling->type() == tokenType_)) )
 						h = i;
 			}
 			i = h;
@@ -563,6 +566,12 @@ public:
 			
 			return i;
 		}
+		
+	protected:
+		friend class Definition;
+		const char* keyword_;
+		int tokenType_;
+		Ref<PreviousNode, Owner> unresolvedKeywordNext_;
 	};
 	
 	typedef int (*CallBack) (Ref<Instance> self, Media* media, int i, State* state);
@@ -916,8 +925,7 @@ public:
 					++n;
 				}
 				map->insert(keywords, n, numKeywords_);
-				tokenTypeByKeyword_->insert(keywords, n, numKeywords_);
-				++numKeywords_;
+				numKeywords_ += tokenTypeByKeyword_->insert(keywords, n, numKeywords_);
 				keywords += n;
 			}
 			return new KeywordNode(map, caseSensitive_);
@@ -964,10 +972,14 @@ public:
 			unresolvedLinkHead_ = link;
 			return link;
 		}
-		inline NODE PREVIOUS(const char* ruleName) {
-			Ref<PreviousNode, Owner> link =  new PreviousNode(ruleName);
+		inline NODE PREVIOUS(const char* ruleName, const char* keyword = 0) {
+			Ref<PreviousNode, Owner> link =  new PreviousNode(ruleName, keyword);
 			link->unresolvedNext_ = unresolvedLinkHead_;
 			unresolvedLinkHead_ = link;
+			if (keyword) {
+				link->unresolvedKeywordNext_ = unresolvedKeywordHead_;
+				unresolvedKeywordHead_ = link;
+			}
 			return link;
 		}
 		
@@ -983,6 +995,10 @@ public:
 			while (unresolvedLinkHead_) {
 				unresolvedLinkHead_->rule_ = ruleByName(unresolvedLinkHead_->ruleName_);
 				unresolvedLinkHead_ = unresolvedLinkHead_->unresolvedNext_;
+			}
+			while (unresolvedKeywordHead_) {
+				unresolvedKeywordHead_->tokenType_ = tokenTypeByKeyword(unresolvedKeywordHead_->keyword_);
+				unresolvedKeywordHead_ = unresolvedKeywordHead_->unresolvedKeywordNext_;
 			}
 			while (unresolvedInvokeHead_) {
 				unresolvedInvokeHead_->definition_ = definitionByName(unresolvedInvokeHead_->definitionName_);
@@ -1153,7 +1169,7 @@ public:
 		{
 			int tokenType = -1;
 			if (!tokenTypeByKeyword_->lookup(keyword, &tokenType))
-				PONA_THROW(DebugException, str::cat("Undefined token type '", name, "' referenced"));
+				PONA_THROW(DebugException, str::cat("Undefined keyword '", keyword, "' referenced"));
 			return tokenType;
 		}
 		
@@ -1255,6 +1271,7 @@ public:
 		}
 		
 		Ref<LinkNode, Owner> unresolvedLinkHead_;
+		Ref<PreviousNode, Owner> unresolvedKeywordHead_;
 		Ref<InvokeNode, Owner> unresolvedInvokeHead_;
 		Ref<Definition, Owner> unresolvedNext_;
 		bool statefulScope_;

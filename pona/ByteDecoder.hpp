@@ -56,11 +56,15 @@ private:
 
 inline bool ByteDecoder::hasNext()
 {
-	if ((i_ >= bufFill_) && (stream_)) {
-		bufFill_ = stream_->readAvail(buf_, bufCapa_);
-		i_ = 0;
+	bool more = i_ < bufFill_;
+	if (!more) {
+		if (stream_) {
+			bufFill_ = stream_->readAvail(buf_, bufCapa_);
+			i_ = 0;
+			more = bufFill_ > 0;
+		}
 	}
-	return i_ < bufFill_;
+	return more;
 }
 
 inline uint8_t ByteDecoder::next()

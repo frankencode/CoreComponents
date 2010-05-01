@@ -18,6 +18,7 @@ namespace pona
 {
 
 class String;
+class Format;
 class Variant;
 
 typedef List<String> StringList;
@@ -33,13 +34,14 @@ public:
 	// initialize empty string
 	String(): Super(new Media) {}
 	
-	// initialize string with defined size but undefined content
-	explicit String(int size): Super(new Media(size)) {}
+	// initialize string from a shallow copy of another string
+	String(const String& b): Super(b.Super::get()) {}
 	
-	// initialize string with defined size and defined content
-	explicit String(int size, char zero): Super(new Media(size, zero)) {
-		check(0 <= zero);
-	}
+	// initialize string from a format
+	String(const Format& b);
+	
+	// initialize string from a variant
+	String(const Variant& b);
 	
 	// initialize string by deep-copying an UTF8 encoded string
 	String(const char* data, int size = -1) {
@@ -48,45 +50,17 @@ public:
 		assign(data, size);
 	}
 	
-	// initialize string by deep-copying an UTF8 encoded sub-string
-	template<template<class> class GetAndSetPolicy>
-	explicit String(Ref<Media, GetAndSetPolicy> media, int i = 0, int n = -1) {
-		if (n < 0) n = media->size();
-		const char* data = media->pointerAt(i);
-		int size = media->pointerAt(i + n - 1) - media->pointerAt(i) + 1;
-		validate(data, size);
-		assign(data, size);
-	}
-	
-	// initialize string by deep-copying an index range
-	String(const Index& index0, const Index& index1) {
-		assign(index0.pos(), index1.pos() - index0.pos());
-	}
-	
-	// initialize string by concatenating a string list
-	template<template<class> class GetAndSetPolicy>
-	String(Ref<StringList, GetAndSetPolicy> parts, const char* glue = "") {
-		assign(parts, glue);
-	}
-	
-	// initialize string from a shallow copy of another string
-	String(const String& b): Super(b.Super::get()) {}
-	
-	// initialize string from a variant
-	String(const Variant& b);
+	// alternative construction methods
+	static inline String uninitialized(int size) { return String(size); }
+	static inline String initialized(int size, char zero) { return String(size, zero); }
+	static inline String fromUtf8(const char* data, int size = -1) { return String(data, size); }
+	static inline String fromUtf8(Ref<Media> media, int i = 0, int n = -1) { return String(media, i, n); }
+	static inline String glue(Ref<StringList> parts, const char* sep = "") { String s; s.assign(parts, sep); return s; }
 	
 	// assign a copy of an UTF8 encoded string
 	inline String& operator=(const char* data) {
-		int size = str::len(data);
-		validate(data, size);
-		assign(data, size);
-		return *this;
-	}
-	
-	// assign a concatenation of a string list
-	template<template<class> class GetAndSetPolicy>
-	inline String& operator=(Ref<StringList, GetAndSetPolicy> parts) {
-		assign(parts);
+		String b(data);
+		Super::set(b.media());
 		return *this;
 	}
 	
@@ -97,7 +71,8 @@ public:
 	}
 	
 	// return a deep copy of this string
-	String deepCopy() const;
+	String duplicate() const;
+	String duplicate(const Index& index0, const Index& index1) const;
 	
 	// provide access to the shared media
 	inline Ref<Media> media() const { return Super::get(); }
@@ -135,7 +110,7 @@ public:
 	inline bool contains(const char* pattern) const { return find(first(), pattern).valid(); }
 	inline String replace(const char* pattern, const char* replacement) {
 		Ref<StringList, Owner> parts = split(pattern);
-		return String(parts, replacement);
+		return String::glue(parts, replacement);
 	}
 	
 	inline bool operator< (const String& b) const { return str::cmp((*this)->data(), b->data()) <  0; }
@@ -156,7 +131,24 @@ public:
 	String stripLeadingSpace() const;
 	String stripTrailingSpace() const;
 	
-private:
+protected:
+	// initialize string with defined size but undefined content
+	explicit String(int size): Super(new Media(size)) {}
+	
+	// initialize string with defined size and defined content
+	explicit String(int size, char zero): Super(new Media(size, zero)) {
+		check(0 <= zero);
+	}
+	
+	// initialize string by deep-copying an UTF8 encoded sub-string
+	explicit String(Ref<Media> media, int i = 0, int n = -1) {
+		if (n < 0) n = media->size();
+		const char* data = media->pointerAt(i);
+		int size = media->pointerAt(i + n - 1) - media->pointerAt(i) + 1;
+		validate(data, size);
+		assign(data, size);
+	}
+	
 	// validate input string and throw StreamIoException if not a valid UTF8 string
 	static void validate(const char* data, int size = -1);
 	
@@ -164,7 +156,7 @@ private:
 		if (size < 0) size = str::len(data);
 		set(new Media(data, size));
 	}
-	void assign(Ref<StringList> parts, const char* glue = "");
+	void assign(Ref<StringList> parts, const char* sep = "");
 };
 
 inline bool operator< (const char* a, const String& b) { return str::cmp(a, b->data()) <  0; }

@@ -62,6 +62,8 @@ public:
 	template<class T>
 	inline Format& operator<<(const T& x) { return print(x); }
 	
+	// inline operator String() const { return String::glue(*this); }
+	
 private:
 	enum { ExpAutoLimit = 6 };
 	enum { MaxDigits = 128 }; // safe guess, 65 + ExpAutoLimit should be sufficient

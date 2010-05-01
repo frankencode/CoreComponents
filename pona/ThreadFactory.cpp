@@ -11,7 +11,7 @@
 namespace pona
 {
 
-ThreadFactory::ThreadFactory(Ref<Thread> prototype)
+ThreadFactory::ThreadFactory(Ref< Duplicable<Thread> > prototype)
 	: prototype_(prototype)
 {
 	int ret = pthread_attr_init(&attr_);
@@ -78,7 +78,7 @@ pthread_attr_t* ThreadFactory::attr() { return &attr_; }
 
 Ref<Thread, Owner> ThreadFactory::produce()
 {
-	Ref<Thread, Owner> thread = prototype_->clone();
+	Ref<Thread, Owner> thread = prototype_->duplicate();
 	start(thread);
 	return thread;
 }

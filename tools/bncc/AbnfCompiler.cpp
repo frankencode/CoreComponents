@@ -319,7 +319,7 @@ void AbnfCompiler::compileRuleList(Ref<StringMedia> text, Ref<Token> ruleList)
 		check(alternation->type() == alternation_);
 		check(definedAs->length() == 1); // HACK, disallow "=/" for starters (would require REDEFINE)
 		
-		printOpening("DEFINE", 0/*depth*/, Format("\"%%\"") << String(text, ruleName->index(), ruleName->length()));
+		printOpening("DEFINE", 0/*depth*/, Format("\"%%\"") << String::fromUtf8(text, ruleName->index(), ruleName->length()));
 		compileAlternation(text, alternation, 1);
 		printClosing(rule, 0/*depth*/);
 		print(";\n");
@@ -336,7 +336,7 @@ void AbnfCompiler::compileRuleList(Ref<StringMedia> text, Ref<Token> ruleList)
 		Ref<Token> ruleName = rule->firstChild();
 		check(ruleName->type() == ruleName_);
 		
-		print("\nENTRY(\"%%\");\n", String(text, ruleName->index(), ruleName->length()));
+		print("\nENTRY(\"%%\");\n", String::fromUtf8(text, ruleName->index(), ruleName->length()));
 	}
 }
 
@@ -383,7 +383,7 @@ void AbnfCompiler::compileRepetition(Ref<StringMedia> text, Ref<Token> repetitio
 	Ref<Token> token = repetition->firstChild();
 	
 	if (token->type() == repeat_) {
-		String s(text, token->index(), token->length());
+		String s = String::fromUtf8(text, token->index(), token->length());
 		Ref<StringList, Owner> parts = s.split("*");
 		Format arguments;
 		if (parts->length() == 2) {
@@ -431,7 +431,7 @@ void AbnfCompiler::compileElement(Ref<StringMedia> text, Ref<Token> element, int
 	check(element->type() == element_);
 	Ref<Token> token = element->firstChild();
 	if (token->type() == ruleName_) {
-		printLeaf("REF", depth, Format("\"%%\"") << String(text, token->index(), token->length()));
+		printLeaf("REF", depth, Format("\"%%\"") << String::fromUtf8(text, token->index(), token->length()));
 	}
 	else if (token->type() == group_) {
 		compileAlternation(text, token->firstChild(), depth);
@@ -460,7 +460,7 @@ void AbnfCompiler::compileNumVal(Ref<StringMedia> text, Ref<Token> numVal, int d
 		prefix = "0x";
 	else if (base == 'b')
 		prefix = "b";
-	String s(text, numVal->index()+2, numVal->length()-2);
+	String s = String::fromUtf8(text, numVal->index()+2, numVal->length()-2);
 	if (s->contains('-')) {
 		Ref<StringList, Owner> parts = s.split("-");
 		// print("parts->at(0) = \"%%\"\n", parts->at(0));
@@ -471,7 +471,7 @@ void AbnfCompiler::compileNumVal(Ref<StringMedia> text, Ref<Token> numVal, int d
 	}
 	else if (s->contains('.')) {
 		Ref<StringList, Owner> parts = s.split(".");
-		String s2(parts->length());
+		String s2 = String::uninitialized(parts->length());
 		int j = 0;
 		for (StringList::Iterator i = parts->iterator(); i.hasNext();) {
 			char ch = String(Format() << prefix << i.next()).toInt(); // HACK, breaking down to ASCII
@@ -488,7 +488,7 @@ void AbnfCompiler::compileNumVal(Ref<StringMedia> text, Ref<Token> numVal, int d
 void AbnfCompiler::compileCharVal(Ref<StringMedia> text, Ref<Token> charVal, int depth)
 {
 	check(charVal->type() == charVal_);
-	String s(text, charVal->index() + 1, charVal->length() - 2);
+	String s = String::fromUtf8(text, charVal->index() + 1, charVal->length() - 2);
 	if (s->size() == 1) {
 		char ch = s->at(0);
 		bool isAlpha = ( (('a' <= ch) && (ch <= 'z')) ||
@@ -504,7 +504,7 @@ void AbnfCompiler::compileCharVal(Ref<StringMedia> text, Ref<Token> charVal, int
 void AbnfCompiler::compileProseVal(Ref<StringMedia> text, Ref<Token> proseVal, int depth)
 {
 	check(proseVal->type() == proseVal_);
-	String s(text, proseVal->index() + 1, proseVal->length() - 2);
+	String s = String::fromUtf8(text, proseVal->index() + 1, proseVal->length() - 2);
 	s = s.replace("\"", "\\\"");
 	printLeaf("STRING", depth, String(Format("\"%%\"") << s));
 }
@@ -535,7 +535,7 @@ void AbnfCompiler::printClosing(Ref<Token> token, int depth)
 
 String AbnfCompiler::indent(int depth)
 {
-	return String(4 * depth, ' ');
+	return String::initialized(4 * depth, ' ');
 }
 
 int AbnfCompiler::syntaxError(StringMedia* text, int index, State* state)
