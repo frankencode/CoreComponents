@@ -41,8 +41,8 @@ public:
 	// iterating all nodes
 	inline Ref<Node> first() const { return firstLeaf(); }
 	inline Ref<Node> last() const { return lastLeaf(); }
-	inline Ref<Node> next() const { return (nextSibling_) ? nextSibling_->firstLeaf() : parent_; }
-	inline Ref<Node> previous() const { return (previousSibling_) ? previousSibling_->lastLeaf() : parent_; }
+	inline Ref<Node> next() const { return (nextSibling_) ? nextSibling_->firstLeaf() : parent(); }
+	inline Ref<Node> previous() const { return (previousSibling_) ? previousSibling_->lastLeaf() : parent(); }
 	
 	inline int countChildren() const {
 		return (firstChild_) ? firstChild_->countSiblings() : 0;
