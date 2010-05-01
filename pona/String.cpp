@@ -11,6 +11,7 @@
 #include "FormatSyntax.hpp"
 #include "IntegerLiteral.hpp"
 #include "FloatLiteral.hpp"
+#include "Format.hpp"
 #include "Variant.hpp"
 #include "String.hpp"
 
@@ -20,6 +21,11 @@ namespace pona
 String::String(const Variant& b)
 	: Super(b.toInstance<Media>())
 {}
+
+String::String(const Format& b)
+{
+	*this = String::glue(b);
+}
 
 void String::validate(const char* data, int size)
 {
@@ -31,15 +37,15 @@ void String::validate(const char* data, int size)
 	}
 }
 
-void String::assign(Ref<StringList> parts, const char* glue)
+void String::assign(Ref<StringList> parts, const char* sep)
 {
-	int glueSize = str::len(glue);
-	validate(glue, glueSize);
+	int sepSize = str::len(sep);
+	validate(sep, sepSize);
 	if (parts->length() > 0) {
 		int size = 0;
 		for (StringList::Index i = parts->first(); parts->def(i); ++i)
 			size += parts->at(i)->size();
-		size += (parts->length() - 1) * glueSize;
+		size += (parts->length() - 1) * sepSize;
 		set(new Media(size));
 		char* p = media()->data();
 		for (StringList::Index i = parts->first(); parts->def(i); ++i) {
@@ -47,8 +53,8 @@ void String::assign(Ref<StringList> parts, const char* glue)
 			mem::cpy(p, part->data(), part->size());
 			p += part->size();
 			if (parts->def(i + 1)) {
-				mem::cpy(p, glue, glueSize);
-				p += glueSize;
+				mem::cpy(p, sep, sepSize);
+				p += sepSize;
 			}
 		}
 		check(p == media()->data() + size);
@@ -58,11 +64,20 @@ void String::assign(Ref<StringList> parts, const char* glue)
 	}
 }
 
-String String::deepCopy() const
+String String::duplicate() const
 {
 	String b;
 	b.Super::set(new Media(media()->data(), media()->size()));
 	return b;
+}
+
+String String::duplicate(const Index& index0, const Index& index1) const
+{
+	check(index0.data() == media()->data());
+	check(index1.data() == media()->data());
+	String s;
+	s.assign(index0.pos(), index1.pos() - index0.pos());
+	return s;
 }
 
 String::Index String::find(const Index& index, const char* pattern) const
@@ -89,11 +104,11 @@ Ref<StringList, Owner> String::split(const char* pattern) const
 	while (index0.valid()) {
 		Index index1 = find(index0, pattern);
 		if (!index1.valid()) break;
-		parts->append(String(index0, index1));
+		parts->append(duplicate(index0, index1));
 		index0 = Index(media()->data(), index1.pos() + patternSize);
 	}
 	if (index0.valid())
-		parts->append(String(index0, end()));
+		parts->append(duplicate(index0, end()));
 	else
 		parts->append(String());
 	return parts;
@@ -171,7 +186,7 @@ String String::toLower() const
 {
 	String s2(media()->size());
 	for (int i = 0, n = media()->size(); i < n; ++i)
-		s2->set(i, pona::toLower((*this)->at(i)));
+		s2->set(i, pona::toLower(media()->at(i)));
 	return s2;
 }
 
@@ -179,7 +194,7 @@ String String::toUpper() const
 {
 	String s2(media()->size());
 	for (int i = 0, n = media()->size(); i < n; ++i)
-		s2->set(i, pona::toUpper((*this)->at(i)));
+		s2->set(i, pona::toUpper(media()->at(i)));
 	return s2;
 }
 
@@ -187,20 +202,20 @@ String String::stripLeadingSpace() const
 {
 	int n = media()->size();
 	while (n > 0) {
-		if (!pona::isSpace((*this)->at(-n))) break;
+		if (!pona::isSpace(media()->at(-n))) break;
 		--n;
 	}
-	return String(*this, media()->size() - n, n);
+	return String(media()->data() + n, media()->size() - n);
 }
 
 String String::stripTrailingSpace() const
 {
 	int n = media()->size();
 	while (n > 0) {
-		if (!pona::isSpace((*this)->at(n - 1))) break;
+		if (!pona::isSpace(media()->at(n - 1))) break;
 		--n;
 	}
-	return String(*this, 0, n);
+	return String(media()->data(), n);
 }
 
 } // namespace pona

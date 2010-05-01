@@ -18,7 +18,7 @@ namespace pona
 
 class ThreadFactory;
 
-class Thread: public Cloneable, public Action
+class Thread: public Action
 {
 public:
 	enum DetachState {
@@ -42,7 +42,6 @@ protected:
 	
 	Thread();
 	
-	virtual Ref<Instance, Owner> clone();
 	virtual void run() = 0;
 	virtual void init();
 	virtual void done();

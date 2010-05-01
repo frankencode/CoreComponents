@@ -61,7 +61,7 @@ String File::name() const
 	
 	String name;
 	if (i < n)
-		name = String(path_, i, n - i);
+		name = String::fromUtf8(path_, i, n - i);
 	
 	return name;
 }
@@ -99,7 +99,7 @@ void File::createUnique(int mode, char placeHolder)
 {
 	Random random;
 	while (true) {
-		String pathSaved = path_.deepCopy();
+		String pathSaved = path_.duplicate();
 		for (int i = 0, n = path_->size(); i < n; ++i) {
 			if (path_->at(i) == placeHolder) {
 				char r = random.get(0, 61);

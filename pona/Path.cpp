@@ -59,7 +59,7 @@ Path Path::makeAbsoluteRelativeTo(String currentDir) const
 	
 	String absolutePath;
 	if (currentDir->length() > 0)
-		absolutePath = currentDir.deepCopy();
+		absolutePath = currentDir.duplicate();
 	else
 		absolutePath = Process::cwd();
 	
@@ -70,7 +70,7 @@ Path Path::makeAbsoluteRelativeTo(String currentDir) const
 	
 	absoluteParts->pushFront(absolutePath);
 	
-	return String(absoluteParts, "/");
+	return String::glue(absoluteParts, "/");
 }
 
 Path Path::makeAbsolute() const
@@ -94,7 +94,7 @@ Path Path::reduce() const
 	Ref<StringList, Owner> parts = path_.split("/");
 	if (parts->length() > 0)
 		parts->popBack();
-	String resultPath = String(parts, "/");
+	String resultPath = String::glue(parts, "/");
 	if ((resultPath == "") && (isAbsolute()))
 		resultPath = "/";
 	return resultPath;

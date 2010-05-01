@@ -53,10 +53,11 @@ public:
 	virtual void run() = 0;
 };
 
-class Cloneable
+template<class T>
+class Duplicable: public T
 {
 public:
-	virtual Ref<Instance, Owner> clone() = 0;
+	virtual Ref<T, Owner> duplicate() const = 0;
 };
 
 template<class T>

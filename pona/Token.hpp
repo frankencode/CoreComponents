@@ -18,7 +18,19 @@ class TokenScreen;
 class Token: public Tree
 {
 public:
-	Token(): definition_(-1), rule_(-1), type_(-1) {}
+	Token()
+		: definition_(-1),
+		  rule_(-1),
+		  type_(-1)
+	{}
+	
+	Token(const Token& b)
+		: definition_(b.definition_),
+		  rule_(b.rule_),
+		  type_(b.type_),
+		  i0_(b.i0_),
+		  i1_(b.i1_)
+	{}
 	
 	inline void init(int definition, int rule)
 	{

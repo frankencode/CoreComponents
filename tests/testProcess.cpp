@@ -87,7 +87,7 @@ int echo(int argc, char** argv)
 	print("Process::env(\"Hello\") = \"%%\"\n", Process::env("Hello"));
 	Process::setEnv("Hello", "Echo");
 	print("Process::env(\"Hello\") = \"%%\"\n", Process::env("Hello"));
-	print("commandLine = \"%%\"\n", String(commandLine));
+	print("commandLine = \"%%\"\n", String::glue(commandLine));
 	
 	while (true) {
 		String line = input()->readLine();

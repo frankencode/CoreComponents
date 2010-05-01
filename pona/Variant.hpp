@@ -75,7 +75,7 @@ public:
 	inline bool toBool() const { if (type_ != BoolType) PONA_THROW(VariantException, ""); return float_ != 0; }
 	inline int toInt() const { if (type_ != IntType) PONA_THROW(VariantException, ""); return int(float_); }
 	inline double toFloat() const { if (type_ != FloatType) PONA_THROW(VariantException, ""); return float_; }
-	inline String toString() const { if (type_ != StringType) PONA_THROW(VariantException, ""); return String(toInstance<String::Media>()); }
+	inline String toString() const { if (type_ != StringType) PONA_THROW(VariantException, ""); return String(*this); }
 	template<class T>
 	inline Ref<T> toInstance() const { if ((type_ != StringType) && (type_ != RefType)) PONA_THROW(VariantException, ""); return Ref<T>(ref_); }
 	
@@ -89,20 +89,14 @@ public:
 		const int number = BoolType|IntType|FloatType;
 		bool equal = false;
 		
-		if (((type_ & number) != 0) && ((b.type_ & number) != 0)) {
+		if (((type_ & number) != 0) && ((b.type_ & number) != 0))
 			equal = (float_ == b.float_);
-		}
-		else if ((type_ == StringType) && (b.type_ == StringType)) {
-			Ref<String::Media> ma(ref_);
-			Ref<String::Media> mb(b.ref_);
-			equal = (String(ma) == String(mb));
-		}
-		else if ((type_ == RefType) && (b.type_ == RefType)) {
+		else if ((type_ == StringType) && (b.type_ == StringType))
+			equal = (String(*this) == String(b));
+		else if ((type_ == RefType) && (b.type_ == RefType))
 			equal = (ref_.get() == b.ref_.get());
-		}
-		else {
+		else
 			equal = ((type_ == UndefType) && (b.type_ == UndefType));
-		}
 		
 		return equal;
 	}
@@ -112,17 +106,12 @@ public:
 		const int number = BoolType|IntType|FloatType;
 		bool below = false;
 		
-		if (((type_ & number) != 0) && ((b.type_ & number) != 0)) {
+		if (((type_ & number) != 0) && ((b.type_ & number) != 0))
 			below = (float_ < b.float_);
-		}
-		else if ((type_ == StringType) && (b.type_ == StringType)) {
-			Ref<String::Media> ma = ref_;
-			Ref<String::Media> mb = b.ref_;
-			below = (String(ma) < String(mb));
-		}
-		else if ((type_ == RefType) && (b.type_ == RefType)) {
+		else if ((type_ == StringType) && (b.type_ == StringType))
+			below = (String(*this) < String(b));
+		else if ((type_ == RefType) && (b.type_ == RefType))
 			below = (ref_.get() < b.ref_.get());
-		}
 		
 		return below;
 	}

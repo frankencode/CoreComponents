@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 	}
 	
 	File file(argv[1], File::Read);
-	String text(file.size());
+	String text = String::uninitialized(file.size());
 	file.read(text->data(), text->size());
 	if (!text.valid()) {
 		print("Input data is not conforming to UTF8 encoding.\n");
