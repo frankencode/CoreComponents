@@ -57,15 +57,15 @@ public:
 	static inline String fromUtf8(Ref<Media> media, int i = 0, int n = -1) { return String(media, i, n); }
 	static inline String glue(Ref<StringList> parts, const char* sep = "") { String s; s.assign(parts, sep); return s; }
 	
-	// assign a copy of an UTF8 encoded string
-	inline String& operator=(const char* data) {
-		String b(data);
+	// assign a shallow copy of another string
+	inline String& operator=(const String& b) {
 		Super::set(b.media());
 		return *this;
 	}
 	
-	// assign a shallow copy of another string
-	inline String& operator=(const String& b) {
+	// assign a copy of an UTF8 encoded string
+	inline String& operator=(const char* data) {
+		String b(data);
 		Super::set(b.media());
 		return *this;
 	}
@@ -77,6 +77,7 @@ public:
 	// provide access to the shared media
 	inline Ref<Media> media() const { return Super::get(); }
 	inline operator char*() const { return media()->data(); }
+	inline char* utf8() const { return media()->data(); }
 	
 	inline Index first() const { return media()->empty() ? Index() : Index(media()->data()); }
 	inline Index last() const { return media()->empty() ? Index() : end() - 1; }

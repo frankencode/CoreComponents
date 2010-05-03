@@ -50,26 +50,17 @@ public:
 	
 	int countSiblings() const;
 	
-	/** Duplicate a tree structure with optionally omitting nodes which do not
-	  * meat a filter criteria.
-	  */
-	template<template<class> class Filter, class TreeType>
-	static Ref<TreeType, Owner> duplicate(Ref<TreeType> original);
-	
-	/** Pass-through filter.
-	  */
 	template<class TreeType>
 	class IncludeAll {
 	public:
-		inline static bool pass(Ref<TreeType>) { return true; }
+		static inline bool pass(Ref<TreeType>) { return true; }
 	};
 	
-	/** Convenience method.
+	/** Duplicate a tree structure with optionally omitting nodes which do not
+	  * meat a filter criteria.
 	  */
-	template<class TreeType>
-	inline static Ref<TreeType, Owner> duplicate(Ref<TreeType> original) {
-		return duplicate<TreeType, IncludeAll>(original);
-	}
+	template<class TreeType, class Filter>
+	static Ref<TreeType, Owner> duplicate(Ref<TreeType> original, Ref<Filter> filter = Ref< IncludeAll<TreeType> >());
 	
 private:
 	Ref<Node, SetNull> parent_;
@@ -79,14 +70,17 @@ private:
 	Ref<Node, SetNull> previousSibling_;
 };
 
-template<template<class> class Filter, class TreeType>
-Ref<TreeType, Owner> Tree::duplicate(Ref<TreeType> original)
+template<class TreeType, class Filter>
+Ref<TreeType, Owner> Tree::duplicate(Ref<TreeType> original, Ref<Filter> filter)
 {
 	Ref<TreeType, Owner> newTree = new TreeType(*original);
 	check(!newTree->firstChild_);
 	Ref<TreeType> child = original->firstChild();
 	while (child) {
-		if (Filter<TreeType>::pass(child)) {
+		bool included = true;
+		if (filter)
+			included = filter->pass(child);
+		if (included) {
 			Ref<TreeType, Owner> newChild = duplicate(child);
 			newTree->appendChild(newChild);
 		}
