@@ -18,7 +18,7 @@ class Tree: public Instance
 public:
 	typedef Tree Node;
 	
-	~Tree();
+	~Tree() { disbandChildren(); }
 	
 	inline Ref<Node> parent() const { return parent_; }
 	inline Ref<Node> firstChild() const { return firstChild_; }
@@ -30,6 +30,7 @@ public:
 	
 	void insertChild(Ref<Node> node, Ref<Node> previousSibling = 0);
 	void appendAllChildrenOf(Ref<Node> node);
+	void disbandChildren();
 	void unlink();
 	
 	// iterating leafs
@@ -50,18 +51,6 @@ public:
 	
 	int countSiblings() const;
 	
-	template<class TreeType>
-	class IncludeAll {
-	public:
-		static inline bool pass(Ref<TreeType>) { return true; }
-	};
-	
-	/** Duplicate a tree structure with optionally omitting nodes which do not
-	  * meat a filter criteria.
-	  */
-	template<class TreeType, class Filter>
-	static Ref<TreeType, Owner> duplicate(Ref<TreeType> original, Ref<Filter> filter = Ref< IncludeAll<TreeType> >());
-	
 private:
 	Ref<Node, SetNull> parent_;
 	Ref<Node, Owner> firstChild_;
@@ -69,25 +58,6 @@ private:
 	Ref<Node, Owner> nextSibling_;
 	Ref<Node, SetNull> previousSibling_;
 };
-
-template<class TreeType, class Filter>
-Ref<TreeType, Owner> Tree::duplicate(Ref<TreeType> original, Ref<Filter> filter)
-{
-	Ref<TreeType, Owner> newTree = new TreeType(*original);
-	check(!newTree->firstChild_);
-	Ref<TreeType> child = original->firstChild();
-	while (child) {
-		bool included = true;
-		if (filter)
-			included = filter->pass(child);
-		if (included) {
-			Ref<TreeType, Owner> newChild = duplicate(child);
-			newTree->appendChild(newChild);
-		}
-		child = child->nextSibling_;
-	}
-	return newTree;
-}
 
 } // namespace pona
 

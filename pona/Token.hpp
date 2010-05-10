@@ -21,13 +21,13 @@ public:
 	Token()
 		: definition_(-1),
 		  rule_(-1),
-		  type_(-1)
+		  keyword_(-1)
 	{}
 	
 	Token(const Token& b)
 		: definition_(b.definition_),
 		  rule_(b.rule_),
-		  type_(b.type_),
+		  keyword_(b.keyword_),
 		  i0_(b.i0_),
 		  i1_(b.i1_)
 	{}
@@ -36,8 +36,6 @@ public:
 	{
 		definition_ = definition;
 		rule_ = rule;
-		if (type_ == -1)
-			type_ = rule;
 	}
 	
 	inline void setRange(int i0, int i1)
@@ -48,8 +46,8 @@ public:
 	
 	inline int definition() const { return definition_; }
 	inline int rule() const { return rule_; }
-	inline int type() const { return type_; }
-	inline void setType(int value) { type_ = value; }
+	inline int keyword() const { return keyword_; }
+	inline void setKeyword(int value) { keyword_ = value; }
 	
 	inline int i0() const { return i0_; }
 	inline int i1() const { return i1_; }
@@ -57,14 +55,14 @@ public:
 	inline int length() const { return i1_ - i0_; }
 	
 	bool glow(Ref<TokenScreen> screen);
-	
 	static void meld(Ref<Token> root0, Ref<Token> root1);
-	bool burn(int b0, int b1);
 	
 private:
+	bool burn(int b0, int b1);
+	
 	int definition_;
 	int rule_;
-	int type_;
+	int keyword_;
 	int i0_;
 	int i1_;
 };

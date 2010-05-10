@@ -11,16 +11,6 @@
 namespace pona
 {
 
-Tree::~Tree()
-{
-	// roll up the list of children in a ressource friendly manner
-	Ref<Node> node = lastChild_;
-	while (node) {
-		node->nextSibling_ = 0;
-		node = node->previousSibling_;
-	}
-}
-
 void Tree::insertChild(Ref<Node> node, Ref<Node> previousSibling)
 {
 	if (node->parent_)
@@ -71,6 +61,17 @@ void Tree::appendAllChildrenOf(Ref<Node> node)
 	}
 	node->firstChild_ = 0;
 	node->lastChild_ = 0;
+}
+
+void Tree::disbandChildren()
+{
+	Ref<Node> node = lastChild_;
+	while (node) {
+		node->nextSibling_ = 0;
+		node = node->previousSibling_;
+	}
+	firstChild_ = 0;
+	lastChild_ = 0;
 }
 
 void Tree::unlink()

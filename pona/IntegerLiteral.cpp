@@ -72,9 +72,8 @@ IntegerLiteral::IntegerLiteral()
 bool IntegerLiteral::match(Ref<String::Media> text, int i0, int* i1, uint64_t* value, int* sign)
 {
 	Ref<Token, Owner> rootToken;
-	uint8_t buf[sizeof(Token) * 6];
 	
-	bool conform = Syntax<String::Media>::Definition::match(text, i0, i1, &rootToken, 0, buf, sizeof(buf));
+	bool conform = Syntax<String::Media>::Definition::match(text, i0, i1, &rootToken, 0);
 	
 	if (conform)
 		read(text, rootToken, value, sign);

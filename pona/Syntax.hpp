@@ -209,10 +209,10 @@ public:
 		{
 			if (media->def(i)) {
 				int h = 0;
-				int tokenType = -1;
-				if (map_->match(media, i, &h, &tokenType, caseSensitive_)) {
+				int keyword = -1;
+				if (map_->match(media, i, &h, &keyword, caseSensitive_)) {
 					if (parentToken)
-						parentToken->setType(tokenType);
+						parentToken->setKeyword(keyword);
 					i = h;
 				}
 				else
@@ -437,7 +437,7 @@ public:
 			Ref<Token, Owner> token;
 			if (tokenFactory) {
 				token = tokenFactory->produce();
-				token->init(/*name_, */definition_->id(), id_);
+				token->init(definition_->id(), id_);
 				if (parentToken)
 					parentToken->appendChild(token);
 			}
@@ -445,13 +445,11 @@ public:
 			int i0 = i;
 			i = (entry_) ? entry_->matchNext(media, i, tokenFactory, token, state) : i;
 		
-			if (token) {
+			if (tokenFactory) {
 				if (i != -1) {
-					if (isVoid_) {
-						if (parentToken) {
-							token->unlink();
-							parentToken->appendAllChildrenOf(token);
-						}
+					if ((isVoid_) && (parentToken)) {
+						parentToken->appendAllChildrenOf(token);
+						token->unlink();
 					}
 					else {
 						token->setRange(i0, i);
@@ -545,8 +543,8 @@ public:
 	public:
 		PreviousNode(const char* ruleName, const char* keyword = 0)
 			: LinkNode(ruleName),
-			  keyword_(keyword),
-			  tokenType_(-1)
+			  keywordName_(keyword),
+			  keyword_(-1)
 		{}
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -556,7 +554,7 @@ public:
 				Ref<Token> sibling = parentToken->previousSibling();
 				if (sibling)
 					if ( (sibling->rule() == LinkNode::rule_->id()) &&
-						 ((tokenType_ == -1) || (sibling->type() == tokenType_)) )
+						 ((keyword_ == -1) || (sibling->keyword() == keyword_)) )
 						h = i;
 			}
 			i = h;
@@ -569,8 +567,8 @@ public:
 		
 	protected:
 		friend class Definition;
-		const char* keyword_;
-		int tokenType_;
+		const char* keywordName_;
+		int keyword_;
 		Ref<PreviousNode, Owner> unresolvedKeywordNext_;
 	};
 	
@@ -873,7 +871,7 @@ public:
 			  numRules_(0),
 			  numKeywords_(0),
 			  ruleByName_(new RuleByName),
-			  tokenTypeByKeyword_(new TokenTypeByKeyword),
+			  keywordByName_(new KeywordByName),
 			  statefulScope_(false),
 			  numStateFlags_(0),
 			  numStateChars_(0),
@@ -925,7 +923,7 @@ public:
 					++n;
 				}
 				map->insert(keywords, n, numKeywords_);
-				numKeywords_ += tokenTypeByKeyword_->insert(keywords, n, numKeywords_);
+				numKeywords_ += keywordByName_->insert(keywords, n, numKeywords_);
 				keywords += n;
 			}
 			return new KeywordNode(map, caseSensitive_);
@@ -997,7 +995,7 @@ public:
 				unresolvedLinkHead_ = unresolvedLinkHead_->unresolvedNext_;
 			}
 			while (unresolvedKeywordHead_) {
-				unresolvedKeywordHead_->tokenType_ = tokenTypeByKeyword(unresolvedKeywordHead_->keyword_);
+				unresolvedKeywordHead_->keyword_ = keywordByName(unresolvedKeywordHead_->keywordName_);
 				unresolvedKeywordHead_ = unresolvedKeywordHead_->unresolvedKeywordNext_;
 			}
 			while (unresolvedInvokeHead_) {
@@ -1101,12 +1099,12 @@ public:
 			return state;
 		}
 		
-		bool find(Media* media, int* i0, int* i1 = 0, Ref<Token, Owner>* rootToken = 0, uint8_t* buf = 0, int bufSize = 0)
+		bool find(Media* media, int* i0, int* i1 = 0, Ref<Token, Owner>* rootToken = 0, Ref<TokenFactory> tokenFactory = 0)
 		{
 			int i = *i0;
 			bool found = false;
 			while (media->def(i)) {
-				if (match(media, i, i1, rootToken, 0, buf, bufSize)) {
+				if (match(media, i, i1, rootToken, 0, tokenFactory)) {
 					found = true;
 					break;
 				}
@@ -1116,7 +1114,7 @@ public:
 			return found;
 		}
 		
-		bool match(Media* media, int i0 = 0, int* i1 = 0, Ref<Token, Owner>* rootToken = 0, State* state = 0, uint8_t* buf = 0, int bufSize = 0)
+		bool match(Media* media, int i0 = 0, int* i1 = 0, Ref<Token, Owner>* rootToken = 0, State* state = 0, Ref<TokenFactory> tokenFactory = 0)
 		{
 			if (scope_) scope_->link();
 			else LINK();
@@ -1127,10 +1125,13 @@ public:
 				state = localState;
 			}
 			
-			TokenFactory tokenFactory(buf, bufSize);
-			int h = matchNext(media, i0, &tokenFactory, 0, state);
+			TokenFactory localTokenFactory;
+			if (!tokenFactory)
+				tokenFactory = &localTokenFactory;
+			
+			int h = matchNext(media, i0, tokenFactory, 0, state);
 			if (rootToken)
-				*rootToken = tokenFactory.rootToken();
+				*rootToken = tokenFactory->rootToken();
 			
 			if ((i1 != 0) && (h != -1))
 				*i1 = h;
@@ -1165,10 +1166,10 @@ public:
 			}
 		}
 		
-		int tokenTypeByKeyword(const char* keyword)
+		int keywordByName(const char* keyword)
 		{
 			int tokenType = -1;
-			if (!tokenTypeByKeyword_->lookup(keyword, &tokenType))
+			if (!keywordByName_->lookup(keyword, &tokenType))
 				PONA_THROW(DebugException, str::cat("Undefined keyword '", keyword, "' referenced"));
 			return tokenType;
 		}
@@ -1260,9 +1261,9 @@ public:
 		int numRules_;
 		int numKeywords_;
 		typedef PrefixTree<char, Ref<RuleNode, Owner> > RuleByName;
-		typedef PrefixTree<char, int> TokenTypeByKeyword;
+		typedef PrefixTree<char, int> KeywordByName;
 		Ref<RuleByName, Owner> ruleByName_;
-		Ref<TokenTypeByKeyword, Owner> tokenTypeByKeyword_;
+		Ref<KeywordByName, Owner> keywordByName_;
 		
 		void addRule(Ref<RuleNode> rule)
 		{
