@@ -70,7 +70,7 @@ public:
 		double value = nan;
 		
 		int i0 = 0, i1 = 0;
-		if (match(text, i0, &i1, &rootToken, 0, buf_, bufSize_))
+		if (match(text, i0, &i1, &rootToken, 0))
 		{
 			text_ = text;
 			value = eval(rootToken);
@@ -147,9 +147,6 @@ private:
 		
 		return value;
 	}
-	
-	enum { bufSize_ = sizeof(Token) * 256 };
-	uint8_t buf_[bufSize_];
 	
 	int number_;
 	int factor_;

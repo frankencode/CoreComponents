@@ -305,18 +305,18 @@ void AbnfCompiler::compile(Ref<StringMedia> text)
 
 void AbnfCompiler::compileRuleList(Ref<StringMedia> text, Ref<Token> ruleList)
 {
-	check(ruleList->type() == rulelist_);
+	check(ruleList->rule() == rulelist_);
 	Ref<Token> rule = ruleList->firstChild();
 	while (rule) {
-		check(rule->type() == rule_);
+		check(rule->rule() == rule_);
 		
 		Ref<Token> ruleName = rule->firstChild();
 		Ref<Token> definedAs = ruleName->nextSibling();
 		Ref<Token> alternation = definedAs->nextSibling();
 		
-		check(ruleName->type() == ruleName_);
+		check(ruleName->rule() == ruleName_);
 		check(definedAs->rule() == definedAs_);
-		check(alternation->type() == alternation_);
+		check(alternation->rule() == alternation_);
 		check(definedAs->length() == 1); // HACK, disallow "=/" for starters (would require REDEFINE)
 		
 		printOpening("DEFINE", 0/*depth*/, Format("\"%%\"") << String::fromUtf8(text, ruleName->index(), ruleName->length()));
@@ -332,9 +332,9 @@ void AbnfCompiler::compileRuleList(Ref<StringMedia> text, Ref<Token> ruleList)
 	{
 		Ref<Token> rule = ruleList->firstChild();
 		check(rule);
-		check(rule->type() == rule_);
+		check(rule->rule() == rule_);
 		Ref<Token> ruleName = rule->firstChild();
-		check(ruleName->type() == ruleName_);
+		check(ruleName->rule() == ruleName_);
 		
 		print("\nENTRY(\"%%\");\n", String::fromUtf8(text, ruleName->index(), ruleName->length()));
 	}
@@ -382,7 +382,7 @@ void AbnfCompiler::compileRepetition(Ref<StringMedia> text, Ref<Token> repetitio
 {
 	Ref<Token> token = repetition->firstChild();
 	
-	if (token->type() == repeat_) {
+	if (token->rule() == repeat_) {
 		String s = String::fromUtf8(text, token->index(), token->length());
 		Ref<StringList, Owner> parts = s.split("*");
 		Format arguments;
@@ -405,10 +405,10 @@ void AbnfCompiler::compileRepetition(Ref<StringMedia> text, Ref<Token> repetitio
 		
 		printClosing(repetition, depth);
 	}
-	else if (token->type() == element_) {
+	else if (token->rule() == element_) {
 		compileElement(text, token, depth);
 	}
-	else if (token->type() == option_) {
+	else if (token->rule() == option_) {
 		compileOption(text, token, depth);
 	}
 	else {
@@ -418,7 +418,7 @@ void AbnfCompiler::compileRepetition(Ref<StringMedia> text, Ref<Token> repetitio
 
 void AbnfCompiler::compileOption(Ref<StringMedia> text, Ref<Token> option, int depth)
 {
-	check(option->type() == option_);
+	check(option->rule() == option_);
 	Ref<Token> alternation = option->firstChild();
 	check(alternation);
 	printOpening("REPEAT", depth, "0, 1");
@@ -428,21 +428,21 @@ void AbnfCompiler::compileOption(Ref<StringMedia> text, Ref<Token> option, int d
 
 void AbnfCompiler::compileElement(Ref<StringMedia> text, Ref<Token> element, int depth)
 {
-	check(element->type() == element_);
+	check(element->rule() == element_);
 	Ref<Token> token = element->firstChild();
-	if (token->type() == ruleName_) {
+	if (token->rule() == ruleName_) {
 		printLeaf("REF", depth, Format("\"%%\"") << String::fromUtf8(text, token->index(), token->length()));
 	}
-	else if (token->type() == group_) {
+	else if (token->rule() == group_) {
 		compileAlternation(text, token->firstChild(), depth);
 	}
-	else if (token->type() == numVal_) {
+	else if (token->rule() == numVal_) {
 		compileNumVal(text, token, depth);
 	}
-	else if (token->type() == charVal_) {
+	else if (token->rule() == charVal_) {
 		compileCharVal(text, token, depth);
 	}
-	else if (token->type() == proseVal_) {
+	else if (token->rule() == proseVal_) {
 		compileProseVal(text, token, depth);
 	}
 	else {
@@ -452,7 +452,7 @@ void AbnfCompiler::compileElement(Ref<StringMedia> text, Ref<Token> element, int
 
 void AbnfCompiler::compileNumVal(Ref<StringMedia> text, Ref<Token> numVal, int depth)
 {
-	check(numVal->type() == numVal_);
+	check(numVal->rule() == numVal_);
 	String prefix;
 	char base = toLower(text->at(numVal->index() + 1));
 	if (base == 'd');
@@ -487,7 +487,7 @@ void AbnfCompiler::compileNumVal(Ref<StringMedia> text, Ref<Token> numVal, int d
 
 void AbnfCompiler::compileCharVal(Ref<StringMedia> text, Ref<Token> charVal, int depth)
 {
-	check(charVal->type() == charVal_);
+	check(charVal->rule() == charVal_);
 	String s = String::fromUtf8(text, charVal->index() + 1, charVal->length() - 2);
 	if (s->size() == 1) {
 		char ch = s->at(0);
@@ -503,7 +503,7 @@ void AbnfCompiler::compileCharVal(Ref<StringMedia> text, Ref<Token> charVal, int
 
 void AbnfCompiler::compileProseVal(Ref<StringMedia> text, Ref<Token> proseVal, int depth)
 {
-	check(proseVal->type() == proseVal_);
+	check(proseVal->rule() == proseVal_);
 	String s = String::fromUtf8(text, proseVal->index() + 1, proseVal->length() - 2);
 	s = s.replace("\"", "\\\"");
 	printLeaf("STRING", depth, String(Format("\"%%\"") << s));
