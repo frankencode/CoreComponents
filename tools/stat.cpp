@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 	}
 	
 	Ref<CommandLine::OptionList> options = commandLine.usedOptions();
-	if (options->empty() || (options->contains(human) && (options->length() == 1))) {
+	if (options->isEmpty() || (options->contains(human) && (options->length() == 1))) {
 		options->clear();
 		*options << mode << links << owner << group << size << tm << name << human;
 	}

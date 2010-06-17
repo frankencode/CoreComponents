@@ -14,30 +14,30 @@ namespace pona
 template<class T>
 class EmptyArray {
 public:
-	inline static T* empty() { return 0; }
+	inline static T* isEmpty() { return 0; }
 };
 
 template<>
 class EmptyArray<char> {
 public:
-	inline static char* empty() { return const_cast<char*>(""); }
+	inline static char* isEmpty() { return const_cast<char*>(""); }
 };
 
 template<>
 class EmptyArray<const char> {
 public:
-	inline static const char* empty() { return ""; }
+	inline static const char* isEmpty() { return ""; }
 };
 
 template<class T>
 class DeepCopyArray {
 public:
-	inline static T* empty() {
-		return EmptyArray<T>::empty();
+	inline static T* isEmpty() {
+		return EmptyArray<T>::isEmpty();
 	}
 	inline static void initEmpty(T*& data_, int& size_) {
 		size_ = 0;
-		data_ = empty();
+		data_ = isEmpty();
 	}
 	inline static void alloc(T*& data_, int& size_, int size) {
 		if (size > 0) {
@@ -46,14 +46,14 @@ public:
 		}
 		else {
 			size_ = 0;
-			data_ = empty();
+			data_ = isEmpty();
 		}
 	}
 	inline static void free(T*& data_, int& size_) {
 		if (size_ > 0) {
 			delete[] data_;
 			size_ = 0;
-			data_ = empty();
+			data_ = isEmpty();
 		}
 	}
 	inline static void assign(T*& data_, int& size_, const T* data, int size) {
@@ -71,12 +71,12 @@ public:
 template<class T>
 class DeepCopyZeroTerminatedArray {
 public:
-	inline static T* empty() {
-		return EmptyArray<T>::empty();
+	inline static T* isEmpty() {
+		return EmptyArray<T>::isEmpty();
 	}
 	inline static void initEmpty(T*& data_, int& size_) {
 		size_ = 0;
-		data_ = empty();
+		data_ = isEmpty();
 	}
 	inline static void alloc(T*& data_, int& size_, int size) {
 		if (size > 0) {
@@ -86,14 +86,14 @@ public:
 		}
 		else {
 			size_ = 0;
-			data_ = empty();
+			data_ = isEmpty();
 		}
 	}
 	inline static void free(T*& data_, int& size_) {
 		if (size_ > 0) {
 			delete[] data_;
 			size_ = 0;
-			data_ = empty();
+			data_ = isEmpty();
 		}
 	}
 	inline static void assign(T*& data_, int& size_, const T* data, int size) {
@@ -111,16 +111,16 @@ public:
 template<class T>
 class ShallowCopyArray {
 public:
-	inline static T* empty() {
-		return EmptyArray<T>::empty();
+	inline static T* isEmpty() {
+		return EmptyArray<T>::isEmpty();
 	}
 	inline static void initEmpty(T*& data_, int& size_) {
 		size_ = 0;
-		data_ = empty();
+		data_ = isEmpty();
 	}
 	inline static void free(T*& data_, int& size_) {
 		size_ = 0;
-		data_ = empty();
+		data_ = isEmpty();
 	}
 	inline static void assign(T*& data_, int& size_, const T* data, int size) {
 		size_ = size;

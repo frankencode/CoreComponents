@@ -59,7 +59,7 @@ public:
 	
 	inline int size() const { return size_; }
 	inline int length() const { return size_; }
-	inline bool empty() const { return size_ == 0; }
+	inline bool isEmpty() const { return size_ == 0; }
 	
 	inline bool def(int i) const {
 		if (i < 0) i += size_;
@@ -111,7 +111,7 @@ public:
 	
 	inline T* data() const { return data_; }
 	inline operator T*() const { return data_; }
-	inline operator bool() const { return !empty(); }
+	inline operator bool() const { return !isEmpty(); }
 	
 private:
 	int size_;

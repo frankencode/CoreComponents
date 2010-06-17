@@ -82,7 +82,7 @@ String String::duplicate(const Index& index0, const Index& index1) const
 
 String::Index String::find(const Index& index, const char* pattern) const
 {
-	if (!index.valid() || media()->empty()) return Index();
+	if (!index.valid() || media()->isEmpty()) return Index();
 	check(index.data() == media()->data());
 	const char* t = index.pos(); // text pos
 	const char* m = pattern; // match pos

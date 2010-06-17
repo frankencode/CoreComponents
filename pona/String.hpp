@@ -79,19 +79,19 @@ public:
 	inline operator char*() const { return media()->data(); }
 	inline char* utf8() const { return media()->data(); }
 	
-	inline Index first() const { return media()->empty() ? Index() : Index(media()->data()); }
-	inline Index last() const { return media()->empty() ? Index() : end() - 1; }
-	inline Index end() const { return media()->empty() ? Index() : Index(media()->data(), media()->data() + media()->size()); }
+	inline Index first() const { return media()->isEmpty() ? Index() : Index(media()->data()); }
+	inline Index last() const { return media()->isEmpty() ? Index() : end() - 1; }
+	inline Index end() const { return media()->isEmpty() ? Index() : Index(media()->data(), media()->data() + media()->size()); }
 	
-	inline bool empty() const { return media()->empty(); }
+	inline bool isEmpty() const { return media()->isEmpty(); }
 	
 	inline bool def(const Index& index) const {
-		check(!media()->empty());
+		check(!media()->isEmpty());
 		check(index.data() == media()->data());
 		return index.valid();
 	}
 	inline uchar_t get(const Index& index) const {
-		check(!media()->empty());
+		check(!media()->isEmpty());
 		check(index.data() == media()->data());
 		return index.getChar();
 	}
@@ -190,4 +190,4 @@ inline bool operator>=(const String& a, char* b) { return str::cmp(a->data(), b)
 
 } // namespace pona
 
-#endif // PONA_STRING_HPP
+#endif // PON

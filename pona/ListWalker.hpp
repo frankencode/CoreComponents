@@ -28,7 +28,7 @@ public:
 		return *this;
 	}
 	inline ListWalker& operator--() {
-		check(valid() || (atEnd() && (!list_->empty())));
+		check(valid() || (atEnd() && (!list_->isEmpty())));
 		node_ = atEnd() ? list_->lastNode_ : node_->previous_;
 		return *this;
 	}

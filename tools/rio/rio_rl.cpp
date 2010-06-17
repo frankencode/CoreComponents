@@ -115,7 +115,7 @@ int main(int argc, char** argv)
 		char* buf = readline("");
 		if ((!buf) || forwarder->finished()) break;
 		
-		int len = strlen(buf);
+		int len = str::len(buf);
 		buf[len] = '\n';
 		
 		rawOutput->write(buf, len + 1);

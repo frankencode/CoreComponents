@@ -45,8 +45,8 @@ public:
 	
 	inline int size() const { return size_; }
 	inline int fill() const { return fill_; }
-	inline bool full() const { return fill_ == size_; }
-	inline bool empty() const { return fill_ == 0; }
+	inline bool isFull() const { return fill_ == size_; }
+	inline bool isEmpty() const { return fill_ == 0; }
 	
 	inline int first() const { return 0; }
 	inline int last() const { return fill_ - 1; }

@@ -53,8 +53,8 @@ public:
 	
 	inline int size() const { return size_; }
 	inline int fill() const { return fill_; }
-	inline bool full() const { return fill_ == size_; }
-	inline bool empty() const { return fill_ == 0; }
+	inline bool isFull() const { return fill_ == size_; }
+	inline bool isEmpty() const { return fill_ == 0; }
 	
 	inline bool def(int i) const { return (0 <= i) && (i < fill_); }
 	inline T& at(int i) const { return front(i); }
@@ -110,6 +110,9 @@ public:
 		--fill_;
 		return *this;
 	}
+
+	inline T popFront() { T item; popFront(item); return item; }
+	inline T popBack() { T item; popBack(item); return item; }
 
 	inline T& back(int i = 0) const
 	{

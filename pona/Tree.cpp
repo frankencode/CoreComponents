@@ -70,8 +70,8 @@ void Tree::disbandChildren()
 		node->nextSibling_ = 0;
 		node = node->previousSibling_;
 	}
-	firstChild_ = 0;
 	lastChild_ = 0;
+	firstChild_ = 0;
 }
 
 void Tree::unlink()

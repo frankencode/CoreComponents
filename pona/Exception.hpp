@@ -44,8 +44,8 @@ char* captureExceptionMessage(char* s);
 #define PONA_THROW(ExceptionClass, reason) \
 	throw ExceptionClass(__FILE__, __LINE__, #ExceptionClass, captureExceptionMessage(reason))
 
-/* #define PONA_THROW(ExceptionClass, reason) \
- 	*((char*)0) = 'x';*/
+/*#define PONA_THROW(ExceptionClass, reason) \
+	*((char*)0) = 0; // HACK, to come around trace eaters*/
 
 char* systemError();
 char* systemError(int errorCode);
@@ -81,8 +81,10 @@ PONA_EXCEPTION(DebugException, Exception);
 
 inline void check(bool condition, const char* reason = "") {
 	#ifndef NDEBUG
-	if (!condition)
+	if (!condition) {
+		// char* p = 0; *p = 0; // HACK, to come around trace eaters
 		PONA_THROW(DebugException, reason);
+	}
 	#endif
 }
 

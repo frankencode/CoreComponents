@@ -44,8 +44,8 @@ public:
 	
 	inline int size() const { return size_; }
 	inline int fill() const { return fill_; }
-	inline bool full() const { return fill_ == size_; }
-	inline bool empty() const { return fill_ == 0; }
+	inline bool isFull() const { return fill_ == size_; }
+	inline bool isEmpty() const { return fill_ == 0; }
 
 	inline GenericHeap& push(const T& item)
 	{
@@ -72,7 +72,7 @@ public:
 		return item;
 	}
 	
-	inline T top() { check(!empty()); return buf_[0]; }
+	inline T top() { check(!isEmpty()); return buf_[0]; }
 	
 	inline void clear() { fill_ = 0; }
 	
@@ -191,4 +191,4 @@ public:
 
 } // namespace pona
 
-#endif // PONA_HEAP_HPP
+#endif // PONA_HEAP_H
