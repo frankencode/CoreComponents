@@ -17,9 +17,9 @@ template<class T, class CT>
 class Container: public Source<T>, public NonCopyable
 {
 public:
-	virtual bool empty() const = 0;
+	virtual bool isEmpty() const = 0;
 	virtual T pop() = 0;
-	inline bool hasNext() { return !empty(); }
+	inline bool hasNext() { return !isEmpty(); }
 	inline T next() { return pop(); }
 	
 	virtual CT& push(const T& item) = 0;
@@ -68,7 +68,7 @@ template<
 >
 inline Target<T>& operator>>(Source<T>& source, Target<T>& target)
 {
-	while (!source.empty())
+	while (!source.isEmpty())
 		target.push(source.pop());
 	return target;
 }

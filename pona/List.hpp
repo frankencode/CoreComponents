@@ -34,7 +34,7 @@ public:
 	inline Return<Index> last() const { return Index(lastNode_, this); }
 	inline Return<Index> end() const { return Index(&endNode_, this); }
 	
-	inline bool empty() const { return length_ == 0; }
+	inline bool isEmpty() const { return length_ == 0; }
 	inline int length() const { return length_; }
 	
 	// item-vise list access
@@ -70,7 +70,7 @@ public:
 	// generic container methods
 	inline int size() const { return maxLength_; }
 	inline int fill() const { return length_; }
-	inline int full() const { return length_ >= maxLength_; }
+	inline int isFull() const { return length_ >= maxLength_; }
 	inline List& push(const T& item) { return push(end(), item); }
 	inline List& pop(T& item) { return pop(first(), item); }
 	inline T pop() { T item; pop(item); return item; }
@@ -157,7 +157,7 @@ template<class T>
 List<T>& List<T>::push(Index& index, const T& item)
 {
 	check(index.list_ == this);
-	check(index.valid() || index.atEnd() || empty());
+	check(index.valid() || index.atEnd() || isEmpty());
 	
 	Node* previousNode;
 	Node* nextNode;
@@ -249,4 +249,4 @@ int List<T>::replace(const T& oldItem, const T& newItem)
 
 } // namespace pona
 
-#endif // PONA_LIST_HPP
+#endif // PONA_LIST_H

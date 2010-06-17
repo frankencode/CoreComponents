@@ -151,7 +151,7 @@ public:
 	
 	inline Map& pop(Item& item)
 	{
-		check(!empty());
+		check(!isEmpty());
 		Node* k = Super::minNode();
 		item = k->e_;
 		Super::unlink(k);
@@ -165,7 +165,7 @@ public:
 		return item;
 	}
 	
-	inline bool empty() const { return Super::count() == 0; }
+	inline bool isEmpty() const { return Super::count() == 0; }
 };
 
 } // namespace pona

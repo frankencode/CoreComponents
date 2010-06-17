@@ -31,6 +31,13 @@ public:
 		: next_(next)
 	{}
 	
+	inline void rollBackOnFailure(int i, Token* parentToken, Token* lastChildSaved) {
+		if ((parentToken) && (i == -1)) {
+			while (parentToken->lastChild() != lastChildSaved)
+				parentToken->lastChild()->unlink();
+		}
+	}
+	
 	Ref<Node, Owner> next_;
 	
 	typedef SyntaxState<Char> State;
@@ -243,6 +250,9 @@ public:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
+			Ref<Token> lastChildSaved;
+			if (parentToken) lastChildSaved = parentToken->lastChild();
+			
 			int repeatCount = 0;
 			int h = i;
 			while ((repeatCount < maxRepeat_) && (h != -1))
@@ -258,6 +268,8 @@ public:
 			
 			if ((i != -1) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			
+			rollBackOnFailure(i, parentToken, lastChildSaved);
 			
 			return i;
 		}
@@ -308,6 +320,9 @@ public:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
+			Ref<Token> lastChildSaved;
+			if (parentToken) lastChildSaved = parentToken->lastChild();
+			
 			bool found = false;
 			while (media->def(i) || media->def(i - 1)) {
 				int h = entry_->matchNext(media, i, tokenFactory, parentToken, state);
@@ -323,6 +338,8 @@ public:
 			
 			if ((i != -1) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			
+			rollBackOnFailure(i, parentToken, lastChildSaved);
 			
 			return i;
 		}
@@ -341,13 +358,21 @@ public:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
+			Ref<Token> lastChildSaved;
+			if (parentToken) lastChildSaved = parentToken->lastChild();
+			
 			int h = (firstChoice_) ? firstChoice_->matchNext(media, i, tokenFactory, parentToken, state) : i;
-			if (h == -1)
+			if (h == -1) {
+				rollBackOnFailure(h, parentToken, lastChildSaved);
 				h = (secondChoice_) ? secondChoice_->matchNext(media, i, tokenFactory, parentToken, state) : i;
+				rollBackOnFailure(h, parentToken, lastChildSaved);
+			}
 			i = h;
 			
 			if ((i != -1) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			
+			rollBackOnFailure(i, parentToken, lastChildSaved);
 			
 			return i;
 		}
@@ -367,6 +392,9 @@ public:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
+			Ref<Token> lastChildSaved;
+			if (parentToken) lastChildSaved = parentToken->lastChild();
+			
 			int h = i;
 			if (entry_)
 				h = entry_->matchNext(media, i, 0, parentToken, state);
@@ -376,6 +404,8 @@ public:
 			
 			if ((i != -1) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			
+			rollBackOnFailure(i, parentToken, lastChildSaved);
 			
 			return i;
 		}
@@ -396,6 +426,9 @@ public:
 		
 		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
+			Ref<Token> lastChildSaved;
+			if (parentToken) lastChildSaved = parentToken->lastChild();
+			
 			int h = entry_->matchNext(media, i, tokenFactory, parentToken, state);
 			if (h != -1) {
 				int d = h - i;
@@ -406,6 +439,8 @@ public:
 			
 			if ((i != -1) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			
+			rollBackOnFailure(i, parentToken, lastChildSaved);
 			
 			return i;
 		}
@@ -511,11 +546,8 @@ public:
 			if ((i != -1) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
-			if ((parentToken) && (i == -1)) {
-				while (parentToken->lastChild() != lastChildSaved)
-					parentToken->lastChild()->unlink();
-			}
-		
+			rollBackOnFailure(i, parentToken, lastChildSaved);
+			
 			return i;
 		}
 	};

@@ -50,7 +50,7 @@ Format::Format(String format)
 		if (i0Saved < format->size())
 			get()->append(String::fromUtf8(format, i0Saved, format->size() - i0Saved));
 	}
-	else if (!format->empty()) {
+	else if (!format->isEmpty()) {
 		get()->append(format);
 	}
 	

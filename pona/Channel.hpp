@@ -68,7 +68,7 @@ public:
 	}
 	
 private:
-	inline bool empty() const { return false; }
+	inline bool isEmpty() const { return false; }
 	
 	Queue<T> queue_;
 	Mutex queueMutex_;
