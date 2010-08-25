@@ -218,4 +218,49 @@ String String::stripTrailingSpace() const
 	return String(media()->data(), n);
 }
 
+String String::trimmed() const
+{
+	int t = 0, l = 0, n = media()->size();
+	while (t < n) {
+		if (!pona::isSpace(media()->at(-t-1))) break;
+		++t;
+	}
+	n -= t;
+	while (l < n) {
+		if (!pona::isSpace(media()->at(l))) break;
+		++l;
+	}
+	return String(media()->data() + l, n);
+}
+
+String String::simplified() const
+{
+	return normalized(false);
+}
+
+String String::normalized(bool nameCase) const
+{
+	for (int i = 0, n = media()->size(); i < n; ++i) {
+		char ch = media()->at(i);
+		if ((0 <= ch) && (ch < 32)) ch = 32;
+		media()->set(i, ch);
+	}
+	Ref<StringList, Owner> parts = split(" ");
+	for (StringList::Index i = parts->first(); parts->def(i);) {
+		String s = parts->at(i);
+		if (s.isEmpty()) {
+			parts->remove(i);
+		}
+		else {
+			if (nameCase) {
+				s = s.toLower();
+				s->set(0, pona::toUpper(s->at(0)));
+				parts->set(i, s);
+			}
+			++i;
+		}
+	}
+	return String::glue(parts, " ");
+}
+
 } // namespace pona

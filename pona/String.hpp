@@ -131,6 +131,9 @@ public:
 	String toUpper() const;
 	String stripLeadingSpace() const;
 	String stripTrailingSpace() const;
+	String trimmed() const;
+	String simplified() const;
+	String normalized(bool nameCase = true) const;
 	
 protected:
 	// initialize string with defined size but undefined content
