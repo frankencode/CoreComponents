@@ -6,6 +6,11 @@ namespace pona
 
 int main(int argc, char** argv)
 {
+	{
+		String userName = " tHomas\tMUELLER ";
+		print("String(\"%%\").normalized() = \"%%\"\n", userName, userName.normalized());
+	}
+	
 	if (argc != 2) {
 		print("Usage: %% [FILE]\n", File(argv[0]).name());
 		return 0;
