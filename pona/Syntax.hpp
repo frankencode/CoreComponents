@@ -943,20 +943,22 @@ public:
 		NODE KEYWORD(const char* keywords)
 		{
 			Ref<KeywordMap, Owner> map = new KeywordMap;
-			while (*keywords) {
-				if ((*keywords == ' ') || (*keywords == '\t')) {
-					++keywords;
+			const char* pos = keywords;
+			while (*pos) {
+				if ((*pos == ' ') || (*pos == '\t')) {
+					++pos;
 					continue;
 				}
-				int n = 0;
+				int len = 0;
 				while (true) {
-					char ch = *(keywords + n);
+					char ch = *(pos + len);
 					if ((ch == ' ') || (ch == '\t') || (ch == '\0')) break;
-					++n;
+					++len;
 				}
-				map->insert(keywords, n, numKeywords_);
-				numKeywords_ += keywordByName_->insert(keywords, n, numKeywords_);
-				keywords += n;
+				int keyword = numKeywords_;
+				numKeywords_ += keywordByName_->insert(pos, len, keyword, &keyword);
+				map->insert(pos, len, keyword);
+				pos += len;
 			}
 			return new KeywordNode(map, caseSensitive_);
 		}
