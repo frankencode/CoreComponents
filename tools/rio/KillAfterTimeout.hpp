@@ -1,5 +1,5 @@
 /*
- * Options.hpp -- terminate process after timeout
+ * KillAfterTimeout.hpp -- terminate process after timeout
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *

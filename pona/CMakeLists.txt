@@ -197,6 +197,8 @@ SET(PONA_SOURCE
 	Random.cpp
 )
 
+ADD_DEFINITIONS(-std=c++98)
+
 ADD_LIBRARY(pona
 	${PONA_HEADER}
 	${PONA_SOURCE}

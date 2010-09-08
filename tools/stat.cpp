@@ -3,8 +3,7 @@
 #include <pona/container>
 #include <pona/time>
 
-namespace pona
-{
+using namespace pona;
 
 String fileTypeToString(int type)
 {
@@ -68,7 +67,7 @@ int main(int argc, char** argv)
 	Ref<CommandOption> tc    = commandLine.define('c', "tc",    false, "Latest time when times changed");
 	Ref<CommandOption> ino   = commandLine.define('i', "ino",   false, "Inode number");
 	Ref<CommandOption> links = commandLine.define('l', "links", false, "Number of hard links");
-	Ref<CommandOption> human = commandLine.define('u', "human", false,  "Optimize readability for humans");
+	Ref<CommandOption> human = commandLine.define('u', "human", false, "Optimize readability for humans");
 	Ref<CommandOption> help  = commandLine.define('h', "help",  false, "Print help");
 	
 	Ref<StringList, Owner> listOfFiles = commandLine.read(argc, argv);
@@ -132,11 +131,4 @@ int main(int argc, char** argv)
 	}
 	
 	return 0;
-}
-
-} // namespace pona
-
-int main(int argc, char** argv)
-{
-	return pona::main(argc, argv);
 }

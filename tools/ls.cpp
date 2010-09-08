@@ -2,9 +2,6 @@
 #include <pona/process>
 #include <pona/container>
 
-namespace ls
-{
-
 using namespace pona;
 
 int main()
@@ -22,11 +19,4 @@ int main()
 		print("%%\n", heap.next()->name());
 		
 	return 0;
-}
-
-} // namespace ls
-
-int main()
-{
-	return ls::main();
 }

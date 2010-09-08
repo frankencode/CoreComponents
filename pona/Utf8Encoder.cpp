@@ -22,7 +22,7 @@ Utf8Encoder::Utf8Encoder(void* buf, int bufCapa)
 	: byteEncoder_(buf, bufCapa)
 {}
 
-void Utf8Encoder::writeChar(uint32_t ch, bool* valid)
+void Utf8Encoder::writeChar(uchar_t ch, bool* valid)
 {
 	if (ch < 0x80) { // ASCII range: 0xxxxxxx
 		byteEncoder_.writeUInt8(ch);
