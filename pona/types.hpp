@@ -122,7 +122,7 @@ public:
 
 #define PONA_CAST_FROM_TO(T, U, p) CastHelper<T, U, ConversionFromTo<const T*, const U*>::Exists>::cast(p)
 
-typedef uint32_t uchar_t; // could also be a signed integer (int32_t)
+typedef uint32_t uchar_t;
 
 template<class Char>
 inline Char toLower(Char ch) {

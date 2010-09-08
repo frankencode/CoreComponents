@@ -20,7 +20,7 @@ public:
 	Utf8Encoder(Ref<Stream> stream, int bufCapa = PONA_DEFAULT_BUF_CAPA);
 	Utf8Encoder(void* buf, int bufCapa);
 	
-	void writeChar(uint32_t ch, bool* valid = 0);
+	void writeChar(uchar_t ch, bool* valid = 0);
 	
 	inline Ref<ByteEncoder> byteEncoder() const { return &byteEncoder_; }
 	
