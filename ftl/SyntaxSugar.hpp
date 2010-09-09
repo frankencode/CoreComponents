@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
- * See ../LICENSE for the license.
+ * See ../COPYING for the license.
  */
 inline static NODE CHOICE(NODE choice0, NODE choice1) {
 	return new OrNode(choice0, choice1);

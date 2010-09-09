@@ -1,9 +1,9 @@
 /*
- * Array.hpp -- handling opaque memory vectors
+ * Array.hpp -- opaque memory vectors
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
- * See ../LICENSE for the license.
+ * See ../COPYING for the license.
  */
 #ifndef FTL_ARRAY_HPP
 #define FTL_ARRAY_HPP
@@ -15,7 +15,7 @@ namespace ftl
 {
 
 template<class T, template<class> class P = ArrayPolicy>
-class Array: public Sequence<T, int>, public NonCopyable
+class Array: public Sequence<T, int>
 {
 public:
 	typedef int Index;

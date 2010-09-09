@@ -1,12 +1,60 @@
-Installation Instructions
-=========================
+Installation Manual: FTL 0.1.0
+------------------------------
 
-You need the lastest version of cmake (>2.8.0).
+Prequisites:
 
-$tar xzvf libftl-x.y.z.tar.gz
-$mkdir libftl-x.y.z-debug
-$cd libftl-x.y.z-debug
-$ccmake ../libftl-x.y.z
-... configure interactively, then generate makefiles ...
-$make
-$sudo make install
+  source archive: libftl-0.1.0.tar.gz
+  configurator:   cmake (>2.8.0)
+  builder:        gnumake (depends on cmake)
+  compiler:       g++ (>3.3.6)
+
+Extract source archive:
+
+  mkdir -p ~/tmp
+  cd ~/tmp
+  tar xzvf libftl-0.1.0.tar.gz
+  mv libftl-0.1.0 libftl-src
+
+Build shared versions of the library:
+
+  mkdir -p ~/tmp/libftl/debug ~/tmp/libftl/release
+  cd ~/tmp/libftl/debug
+  cmake -D CMAKE_BUILD_TYPE=Release ~/tmp/libftl-src
+  make
+  cd ~/tmp/libftl/release
+  cmake -D CMAKE_BUILD_TYPE=Debug ~/tmp/libftl-src
+  make
+
+Build static version of the library (optional):
+
+  cd ~/tmp/libftl/debug-static
+  cmake -D CMAKE_BUILD_TYPE=Release -D BUILD_SHARED_LIBS=OFF ~/tmp/libftl-src
+  make
+  cd ~/tmp/libftl/release-static
+  cmake -D CMAKE_BUILD_TYPE=Debug -D BUILD_SHARED_LIBS=OFF ~/tmp/libftl-src
+  make
+
+Configure special options on Mac OS X (optional):
+
+  cd ~/tmp/libftl/release
+  cmake -D CMAKE_OSX_SYSROOT=/Developer/SDKs/MacOSX10.5.sdk \
+        -D CMAKE_OSX_DEPLOYMENT_TARGET=10.5 \
+        -D CMAKE_OSX_ARCHITECTURES=x86_64\;i386\;ppc $PWD
+  make
+
+Switch to verbose build mode (optional):
+
+  cd ~/tmp/libftl/release
+  cmake -D CMAKE_VERBOSE_MAKEFILE=ON $PWD
+  make clean && make
+
+Change installation prefix (optional):
+
+  cd ~/tmp/libftl/release
+  cmake -D CMAKE_INSTALL_PREFIX=/usr $PWD
+  make
+
+Install in default locations (optional):
+
+  cd ~/tmp/libftl/release
+  sudo make install

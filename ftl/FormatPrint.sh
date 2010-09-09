@@ -4,7 +4,7 @@
  #
  # Copyright (c) 2007-2010, Frank Mertens
  #
- # See ../LICENSE for the license.
+ # See ../COPYING for the license.
  ##
 
 MAX_ARGS=32
@@ -15,7 +15,7 @@ cat <<EOD
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
- * See ../LICENSE for the license.
+ * See ../COPYING for the license.
  */
 #ifndef FTL_FORMATPRINT_HPP
 #define FTL_FORMATPRINT_HPP
