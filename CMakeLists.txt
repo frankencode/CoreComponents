@@ -1,8 +1,6 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 PROJECT(libftl)
-
-SET(BUILD_SHARED_LIBS ON CACHE BOOL "Build dynamic or static library.")
 
 INCLUDE(cmake/BuildOptionsFTL.cmake)
 

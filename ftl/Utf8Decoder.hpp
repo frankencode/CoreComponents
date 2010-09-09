@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
- * See ../LICENSE for the license.
+ * See ../COPYING for the license.
  */
 #ifndef FTL_UTF8DECODER_HPP
 #define FTL_UTF8DECODER_HPP
