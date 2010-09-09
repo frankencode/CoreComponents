@@ -6,10 +6,10 @@
  * See ../../LICENSE for the license.
  */
 
-#include <pona/stdio>
-#include <pona/process>
-#include <pona/threads>
-#include <pona/events>
+#include <ftl/stdio>
+#include <ftl/process>
+#include <ftl/threads>
+#include <ftl/events>
 #include <termios.h> // termios
 #include <unistd.h> // tcgetattr, tcsetattr
 #include <stdio.h>
@@ -20,7 +20,7 @@
 namespace rio_rl
 {
 
-using namespace pona;
+using namespace ftl;
 
 class LineForwarder: public Thread
 {
@@ -56,7 +56,7 @@ public:
 			}
 		}
 		catch (AnyException& ex) {
-			printTo(pona::error(), "(rio_rl) LineForwarder: %%\n", ex.what());
+			printTo(ftl::error(), "(rio_rl) LineForwarder: %%\n", ex.what());
 			failed_ = true;
 		}
 		finished_ = true;
@@ -139,8 +139,8 @@ int main(int argc, char** argv)
 		ret = rio_rl::main(argc, argv);
 	#ifdef NDEBUG
 	}
-	catch (pona::AnyException& ex) {
-		pona::printTo(pona::error(), "(%%) %%\n", pona::Path(argv[0]).fileName(), ex.what());
+	catch (ftl::AnyException& ex) {
+		ftl::printTo(ftl::error(), "(%%) %%\n", ftl::Path(argv[0]).fileName(), ex.what());
 	}
 	#endif
 	return ret;

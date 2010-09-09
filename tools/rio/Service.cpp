@@ -215,11 +215,11 @@ void Service::binarySession(Ref<StreamSocket> socket, String entity)
 	
 	if (sendSource->isTeletype()) {
 		if (::tcgetattr(sendSource->fd(), &tioSaved) == -1)
-			PONA_SYSTEM_EXCEPTION;
+			FTL_SYSTEM_EXCEPTION;
 		struct termios tio = tioSaved;
 		tio.c_lflag = tio.c_lflag & (~ICANON);
 		if (::tcsetattr(sendSource->fd(), TCSANOW, &tio) == -1)
-			PONA_SYSTEM_EXCEPTION;
+			FTL_SYSTEM_EXCEPTION;
 	}
 	
 	Ref<Process, Owner> process;
@@ -272,7 +272,7 @@ void Service::binarySession(Ref<StreamSocket> socket, String entity)
 	
 	if (sendSource->isTeletype()) {
 		if (::tcsetattr(sendSource->fd(), TCSAFLUSH, &tioSaved) == -1)
-			PONA_SYSTEM_EXCEPTION;
+			FTL_SYSTEM_EXCEPTION;
 	}
 }
 

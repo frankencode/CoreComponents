@@ -1,0 +1,14 @@
+/*
+ * time -- wildcard include header
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+#ifndef FTL_TIME
+#define FTL_TIME
+
+#include "Time.hpp"
+#include "DateTime.hpp"
+
+#endif // FTL_TIME

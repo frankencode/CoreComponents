@@ -1,8 +1,8 @@
-#include <pona/stdio>
-#include <pona/container>
-#include <pona/math>
+#include <ftl/stdio>
+#include <ftl/container>
+#include <ftl/math>
 
-namespace pona
+namespace ftl
 {
 
 template<class T>
@@ -95,9 +95,9 @@ int main()
 	return 0;
 }
 
-} // namespace pona
+} // namespace ftl
 
 int main()
 {
-	return pona::main();
+	return ftl::main();
 }

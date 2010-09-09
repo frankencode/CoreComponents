@@ -1,8 +1,8 @@
-#include <pona/stdio>
-#include <pona/syntax>
-#include <pona/time>
+#include <ftl/stdio>
+#include <ftl/syntax>
+#include <ftl/time>
 
-namespace pona
+namespace ftl
 {
 
 class Expression: public Syntax<String::Media>::Definition
@@ -173,9 +173,9 @@ int main()
 	return 0;
 }
 
-} // namespace pona
+} // namespace ftl
 
 int main()
 {
-	return pona::main();
+	return ftl::main();
 }

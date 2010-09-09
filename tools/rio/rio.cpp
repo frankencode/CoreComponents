@@ -6,7 +6,7 @@
  * See ../../LICENSE for the license.
  */
 
-#include <pona/stdio>
+#include <ftl/stdio>
 #include "Options.hpp"
 #include "Service.hpp"
 
@@ -42,8 +42,8 @@ int main(int argc, char** argv)
 		ret = rio::main(argc, argv);
 	#ifdef NDEBUG
 	}
-	catch (pona::AnyException& ex) {
-		pona::printTo(pona::error(), "(%%) %%\n", pona::Path(argv[0]).fileName(), ex.what());
+	catch (ftl::AnyException& ex) {
+		ftl::printTo(ftl::error(), "(%%) %%\n", ftl::Path(argv[0]).fileName(), ex.what());
 	}
 	#endif
 	return ret;

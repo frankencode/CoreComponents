@@ -1,8 +1,8 @@
-LINK_LIBRARIES(pona)
+LINK_LIBRARIES(ftl)
 INCLUDE_DIRECTORIES(..)
 
 ADD_EXECUTABLE(bncc
-	use_pona
+	use_ftl
 	bncc.cpp
 	AbnfCompiler.hpp
 	AbnfCompiler.cpp

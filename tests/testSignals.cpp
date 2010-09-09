@@ -1,8 +1,8 @@
-#include <pona/stdio>
-#include <pona/threads>
-#include <pona/events>
+#include <ftl/stdio>
+#include <ftl/threads>
+#include <ftl/events>
 
-namespace pona
+namespace ftl
 {
 
 class Echo: public Action
@@ -58,9 +58,9 @@ int main()
 	return 0;
 }
 
-} // namespace pona
+} // namespace ftl
 
 int main()
 {
-	return pona::main();
+	return ftl::main();
 }

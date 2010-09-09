@@ -1,0 +1,22 @@
+/*
+ * process -- wildcard include header
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+#ifndef FTL_PROCESS
+#define FTL_PROCESS
+
+#include "User.hpp"
+#include "Group.hpp"
+#include "Variant.hpp"
+#include "SignalSet.hpp"
+#include "Process.hpp"
+#include "ProcessFactory.hpp"
+#include "ProcessStatus.hpp"
+#include "FileLock.hpp"
+#include "MemoryMapping.hpp"
+#include "Pipe.hpp"
+
+#endif // FTL_PROCESS

@@ -8,22 +8,22 @@
 #ifndef RIO_SERVICE_HPP
 #define RIO_SERVICE_HPP
 
-#include <pona/stdio>
-#include <pona/network>
-#include <pona/events>
+#include <ftl/stdio>
+#include <ftl/network>
+#include <ftl/events>
 #include "LogFile.hpp"
 
 namespace rio
 {
 
-using namespace pona;
+using namespace ftl;
 
 class Service: public StreamSocket
 {
 public:
 	Service();
 	
-	void runServer(Time idleTimeout = 0.1, int backlog = PONA_DEFAULT_BACKLOG);
+	void runServer(Time idleTimeout = 0.1, int backlog = FTL_DEFAULT_BACKLOG);
 	void runClient(Time idleTimeout = 0.1);
 	void finish();
 	bool done() const;

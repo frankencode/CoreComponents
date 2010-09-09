@@ -8,14 +8,14 @@
 #ifndef RIO_PROCESSOBSERVER_HPP
 #define RIO_PROCESSOBSERVER_HPP
 
-#include <pona/threads>
-#include <pona/process>
-#include <pona/events>
+#include <ftl/threads>
+#include <ftl/process>
+#include <ftl/events>
 
 namespace rio
 {
 
-using namespace pona;
+using namespace ftl;
 
 class ProcessObserver: public Thread
 {
