@@ -1,11 +1,9 @@
-FTL - The Flexible Template Library
-===================================
+h1. FTL - The Flexible Template Library
 
 FTL is a lightweight C++ core foundation and system programming library.
 It provides a very broad abstraction of system interfaces and has a very small compile-time overhead.
 
-Feature summary:
-----------------
+h2. Feature summary:
 
 * fully compliant to C++98 and upcoming C++0x
 * CamelCase naming convention
@@ -19,8 +17,7 @@ Feature summary:
 * powerful parser building framework
 * command line option parsing
 
-About:
-------
+h2. About:
 
 FTL is free software and the full source code ist available under "BSD license":http://github.com/unclewerner/libftl/blob/master/COPYING.
 If you are new to FTL and want to dive into FTL programming, check out the Getting Started Guide.
