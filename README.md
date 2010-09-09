@@ -1,3 +1,8 @@
+---
+title: Home
+layout: wikistyle
+---
+
 FTL - The Flexible Template Library
 ===================================
 
