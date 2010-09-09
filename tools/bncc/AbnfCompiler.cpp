@@ -542,14 +542,14 @@ int AbnfCompiler::syntaxError(StringMedia* text, int index, State* state)
 {
 	int line = 1, pos = 1;
 	getLineAndPosFromIndex(text, index, &line, &pos);
-	char* lineStr = pona::intToStr(line);
-	char* posStr = pona::intToStr(pos);
-	char* indexStr = pona::intToStr(index);
+	char* lineStr = ftl::intToStr(line);
+	char* posStr = ftl::intToStr(pos);
+	char* indexStr = ftl::intToStr(index);
 	char* msg = str::cat("Syntax error in ABNF definition at ", lineStr, ":", posStr, "(", indexStr, ")");
 	delete[] indexStr;
 	delete[] posStr;
 	delete[] lineStr;
-	PONA_THROW(DebugException, msg);
+	FTL_THROW(DebugException, msg);
 	return -1;
 }
 

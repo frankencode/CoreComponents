@@ -1,7 +1,7 @@
-#include <pona/stdio>
-#include <pona/process>
+#include <ftl/stdio>
+#include <ftl/process>
 
-namespace pona
+namespace ftl
 {
 
 int echo(int argc, char** argv);
@@ -99,9 +99,9 @@ int echo(int argc, char** argv)
 	return 13;
 }
 
-} // namespace pona
+} // namespace ftl
 
 int main(int argc, char** argv)
 {
-	return pona::main(argc, argv);
+	return ftl::main(argc, argv);
 }

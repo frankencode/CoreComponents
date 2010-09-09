@@ -1,0 +1,15 @@
+/*
+ * network -- wildcard include header
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+#ifndef FTL_NETWORK
+#define FTL_NETWORK
+
+#include "SocketAddress.hpp"
+#include "StreamSocket.hpp"
+#include "NetworkInterface.hpp"
+
+#endif // FTL_NETWORK

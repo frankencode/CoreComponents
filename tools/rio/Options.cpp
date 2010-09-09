@@ -6,7 +6,7 @@
  * See ../../LICENSE for the license.
  */
 
-#include <pona/process>
+#include <ftl/process>
 #include "LogFile.hpp"
 #include "Options.hpp"
 
@@ -49,9 +49,9 @@ void Options::read(int argc, char** argv)
 	else {
 		int modeSum = int(bool(client_->value())) + int(bool(server_->value()));
 		if (modeSum == 0)
-			PONA_THROW(Exception, "Missing option (--server or --client).");
+			FTL_THROW(Exception, "Missing option (--server or --client).");
 		else if (modeSum > 1)
-			PONA_THROW(Exception, "Contradicting option (--server or --client).");
+			FTL_THROW(Exception, "Contradicting option (--server or --client).");
 		
 		String eol = eol_->value();
 		if (eol == "nl") eol_->setValue("\012");
@@ -63,7 +63,7 @@ void Options::read(int argc, char** argv)
 				dirs->append(execDir());
 			editorPath_ = Path::lookup(dirs, editor_->value());
 			if (editorPath_ == "")
-				PONA_THROW(Exception, "Editor program could not be found.");
+				FTL_THROW(Exception, "Editor program could not be found.");
 		}
 		
 		loggingFlags_ = 0;
@@ -76,11 +76,11 @@ void Options::read(int argc, char** argv)
 			else if (log == "send")    loggingFlags_ |= LogFile::Send;
 			else if (log == "merged")  loggingFlags_ |= LogFile::Merged;
 			else
-				PONA_THROW(Exception, "Incorrect '--logging=' syntax.");
+				FTL_THROW(Exception, "Incorrect '--logging=' syntax.");
 		}
 		
 		if (exec() && (files_->length() == 0))
-			PONA_THROW(Exception, "No file passed to execute.");
+			FTL_THROW(Exception, "No file passed to execute.");
 	}
 }
 

@@ -1,8 +1,8 @@
-#include <pona/stdio>
+#include <ftl/stdio>
 
 int main()
 {
-	pona::print("Hello, world!\n");
+	ftl::print("Hello, world!\n");
 	
 	return 0;
 }

@@ -8,9 +8,9 @@
 #ifndef BNCC_ABNFCOMPILER_HPP
 #define BNCC_ABNFCOMPILER_HPP
 
-#include <pona/stdio>
-#include <pona/syntax>
-#include "use_pona"
+#include <ftl/stdio>
+#include <ftl/syntax>
+#include "use_ftl"
 
 namespace bncc
 {

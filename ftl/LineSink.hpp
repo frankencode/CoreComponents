@@ -1,0 +1,38 @@
+/*
+ * LineSink.hpp -- canonically buffered data sink
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+#ifndef FTL_LINESINK_HPP
+#define FTL_LINESINK_HPP
+
+#include "atoms"
+#include "defaults.hpp"
+#include "String.hpp"
+
+namespace ftl
+{
+
+class LineSink: public Instance
+{
+public:
+	LineSink(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, const char* eol = "\n");
+	~LineSink();
+	
+	void writeLine(String line);
+	void write(String s);
+	
+	Ref<Stream> stream() const;
+	
+private:
+	Ref<Stream, Owner> stream_;
+	String eol_;
+	int bufCapa_;
+	uint8_t* buf_;
+};
+
+} // namespace ftl
+
+#endif // FTL_LINESINK_HPP

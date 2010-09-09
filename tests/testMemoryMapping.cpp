@@ -1,8 +1,8 @@
-#include <pona/stdio>
-#include <pona/process>
-#include <pona/threads>
+#include <ftl/stdio>
+#include <ftl/process>
+#include <ftl/threads>
 
-namespace pona
+namespace ftl
 {
 
 const int mapLength = 256;
@@ -71,9 +71,9 @@ int main()
 	return 0;
 }
 
-} // namespace pona
+} // namespace ftl
 
 int main()
 {
-	return pona::main();
+	return ftl::main();
 }

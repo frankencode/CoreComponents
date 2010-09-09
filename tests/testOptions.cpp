@@ -1,7 +1,7 @@
-#include <pona/stdio>
-#include <pona/process>
+#include <ftl/stdio>
+#include <ftl/process>
 
-namespace pona
+namespace ftl
 {
 
 int main(int argc, char** argv)
@@ -35,16 +35,16 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-} // namespace pona
+} // namespace ftl
 
 int main(int argc, char** argv)
 {
 	int ret = 1;
 	//try {
-		ret = pona::main(argc, argv);
+		ret = ftl::main(argc, argv);
 	/*}
 	catch (AnyException& ex) {
-		pona::print("%%\n", ex.what());
+		ftl::print("%%\n", ex.what());
 	}*/
 	return ret;
 }

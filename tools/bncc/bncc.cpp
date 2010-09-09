@@ -1,5 +1,5 @@
-#include <pona/stdio>
-#include "use_pona"
+#include <ftl/stdio>
+#include "use_ftl"
 #include "AbnfCompiler.hpp"
 
 namespace bncc
@@ -9,7 +9,7 @@ int main(int argc, char** argv)
 {
 	CommandLine commandLine;
 	commandLine.summary(
-		"Compiles an ABNF (RFC2234) grammar into an executable pona::Syntax grammar."
+		"Compiles an ABNF (RFC2234) grammar into an executable ftl::Syntax grammar."
 	);
 	commandLine.entity("FILE");
 	Ref<CommandOption> verify  = commandLine.define('y', "verify",  false, "Verify source grammar only");

@@ -1,10 +1,10 @@
-#include <pona/stdio>
-#include <pona/threads>
-#include <pona/container>
-#include <pona/math>
-#include <pona/time>
+#include <ftl/stdio>
+#include <ftl/threads>
+#include <ftl/container>
+#include <ftl/math>
+#include <ftl/time>
 
-namespace pona
+namespace ftl
 {
 
 typedef Channel<int> MyChannel;
@@ -84,9 +84,9 @@ int main()
 	return 0;
 }
 
-} // namespace pona
+} // namespace ftl
 
 int main()
 {
-	return pona::main();
+	return ftl::main();
 }

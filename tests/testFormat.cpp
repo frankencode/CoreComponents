@@ -1,7 +1,7 @@
-#include <pona/stdio>
-#include <pona/math>
+#include <ftl/stdio>
+#include <ftl/math>
 
-namespace pona
+namespace ftl
 {
 
 int main()
@@ -46,9 +46,9 @@ int main()
 	return 0;
 }
 
-} // namespace pona
+} // namespace ftl
 
 int main()
 {
-	return pona::main();
+	return ftl::main();
 }

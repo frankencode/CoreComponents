@@ -1,7 +1,7 @@
-#include <pona/stdio>
-#include <pona/threads>
+#include <ftl/stdio>
+#include <ftl/threads>
 
-namespace pona
+namespace ftl
 {
 
 void testFloat754()
@@ -61,9 +61,9 @@ int main()
 	return 0;
 }
 
-} // namespace pona
+} // namespace ftl
 
 int main()
 {
-	return pona::main();
+	return ftl::main();
 }

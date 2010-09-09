@@ -1,0 +1,13 @@
+#ifndef BNCC_USEFTL
+#define BNCC_USEFTL
+
+#include <ftl/atoms>
+
+namespace bncc
+{
+
+using namespace ftl;
+
+} // namespace bncc
+
+#endif // BNCC_USEFTL

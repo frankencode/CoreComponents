@@ -3,10 +3,10 @@ Installation Instructions
 
 You need the lastest version of cmake (>2.8.0).
 
-$tar xzvf libPONA-x.y.z.tar.gz
-$mkdir libPONA-x.y.z-debug
-$cd libPONA-x.y.z-debug
-$ccmake ../libPONA-x.y.z
+$tar xzvf libftl-x.y.z.tar.gz
+$mkdir libftl-x.y.z-debug
+$cd libftl-x.y.z-debug
+$ccmake ../libftl-x.y.z
 ... configure interactively, then generate makefiles ...
 $make
 $sudo make install

@@ -1,7 +1,7 @@
-#include <pona/stdio>
-#include <pona/network>
+#include <ftl/stdio>
+#include <ftl/network>
 
-namespace pona
+namespace ftl
 {
 
 String familyToString(int family)
@@ -63,9 +63,9 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-} // namespace pona
+} // namespace ftl
 
 int main(int argc, char** argv)
 {
-	return pona::main(argc, argv);
+	return ftl::main(argc, argv);
 }

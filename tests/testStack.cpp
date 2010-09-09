@@ -1,8 +1,8 @@
-#include <pona/stdio>
-#include <pona/container>
-#include <pona/time>
+#include <ftl/stdio>
+#include <ftl/container>
+#include <ftl/time>
 
-namespace pona
+namespace ftl
 {
 
 int primeCountSimple(int n) {
@@ -62,9 +62,9 @@ int main()
 	return 0;
 }
 
-} // namespace pona
+} // namespace ftl
 
 int main()
 {
-	return pona::main();
+	return ftl::main();
 }

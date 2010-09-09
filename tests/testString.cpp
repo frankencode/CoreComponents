@@ -1,7 +1,7 @@
-#include <pona/stdio>
-#include <pona/strings>
+#include <ftl/stdio>
+#include <ftl/strings>
 
-namespace pona
+namespace ftl
 {
 
 int main(int argc, char** argv)
@@ -75,9 +75,9 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-} // namespace pona
+} // namespace ftl
 
 int main(int argc, char** argv)
 {
-	return pona::main(argc, argv);
+	return ftl::main(argc, argv);
 }

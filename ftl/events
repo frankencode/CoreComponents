@@ -1,0 +1,16 @@
+/*
+ * event -- wildcard include header
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../LICENSE for the license.
+ */
+#ifndef FTL_EVENT
+#define FTL_EVENT
+
+#include "Event.hpp"
+#include "ExitEvent.hpp"
+#include "ThreadExitEvent.hpp"
+#include "SignalManager.hpp"
+
+#endif // FTL_EVENT

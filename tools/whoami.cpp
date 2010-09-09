@@ -1,7 +1,7 @@
-#include <pona/stdio>
-#include <pona/process>
+#include <ftl/stdio>
+#include <ftl/process>
 
-using namespace pona;
+using namespace ftl;
 
 int main()
 {
