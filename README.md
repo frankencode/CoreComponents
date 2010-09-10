@@ -14,4 +14,7 @@ Directory Contents
 - tools ... tools written in FTL
 - wizards ... helper scripts
 - cmake ... configuration scripts
+- CMakeLists.txt ... global cmake script
 - COPYING ... license agreement
+- INSTALL.md ... installation instructions
+- README.md ... this file
