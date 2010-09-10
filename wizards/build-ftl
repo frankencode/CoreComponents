@@ -5,15 +5,23 @@ GIT_VERSION=testing # "stable" or "testing"
 SOURCE_FOLDER=$PWD/libftl-src
 TARGET_FOLDER=$PWD
 CHECKOUT=1
-CONFIGURE=1
-CONFIGURE_CLEAN=1
+CONFIGURE=0
+CONFIGURE_CLEAN=0
 BUILD=1
 BUILD_STATIC=1
 BUILD_SHARED=1
+BUILD_DEBUG=1
+BUILD_CLEAN=0
 MAKEFLAGS= # e.g. -j2
 
-if [ -e ./update-options.sh ]; then
-	. ./update-options.sh
+CWD_SAVED=$PWD
+
+if [ "$(dirname $0)" != "." ]; then
+	cd $(dirname $0)
+fi
+
+if [ -e ./build-options ]; then
+	. ./build-options
 fi
 
 function msg() { echo "$(basename $0): $1"; }
@@ -22,6 +30,7 @@ function debug() { echo "$(basename $0): $1" 1>&2; }
 function err() {
 	ret=$?
 	if [ "$1" != "" ]; then echo "$(basename $0): $1" 1>&2; fi
+	cd $CWD_SAVED
 	if [ $ret -ne 0 ]; then exit $ret; else exit 1; fi
 }
 
@@ -67,13 +76,17 @@ function configure-lib() {
 	CWD_SAVED=$PWD
 	mkdir -p $TARGET_FOLDER/libftl/$1
 	cd $TARGET_FOLDER/libftl/$1
+	if [ $CONFIGURE -eq 0 ]; then
+		if [ -e CMakeCache.txt ]; then
+			return 0
+		fi
+	fi
 	echo
 	msg "Configuring $PWD..."
 	EXTRA=""
 	if echo $1|grep static > /dev/null; then
 		EXTRA="-D BUILD_SHARED_LIBS=OFF"
 	fi
-	[ $CONFIGURE_CLEAN -ne 0 ] && rm -rf CMakeCache.txt
 	cmake -D CMAKE_BUILD_TYPE=Debug $EXTRA $SOURCE_FOLDER || err
 	ret=$?
 	cd $CWD_SAVED
@@ -81,10 +94,12 @@ function configure-lib() {
 }
 
 function configure() {
-	[ $BUILD_SHARED -ne 0 ] && configure-lib debug || err
-	[ $BUILD_SHARED -ne 0 ] && configure-lib release || err
-	[ $BUILD_STATIC -ne 0 ] && configure-lib debug-static || err
-	[ $BUILD_STATIC -ne 0 ] && configure-lib release-static || err
+	if [ $BUILD_DEBUG -ne 0 ]; then
+		if [ $BUILD_SHARED -ne 0 ]; then configure-lib debug || err; fi
+		if [ $BUILD_STATIC -ne 0 ]; then configure-lib debug-static || err; fi
+	fi
+	if [ $BUILD_SHARED -ne 0 ]; then configure-lib release || err; fi
+	if [ $BUILD_STATIC -ne 0 ]; then configure-lib release-static || err; fi
 }
 
 function build-lib() {
@@ -92,22 +107,55 @@ function build-lib() {
 	cd $TARGET_FOLDER/libftl/$1
 	echo
 	msg "Building $PWD..."
-	make $MAKEFLAGS ftl
+	make $MAKEFLAGS
 	ret=$?
 	cd $CWD_SAVED
 	return $ret
 }
 
 function build() {
-	[ $BUILD_SHARED -ne 0 ] && build-lib debug || err
-	[ $BUILD_SHARED -ne 0 ] && build-lib release || err
-	[ $BUILD_STATIC -ne 0 ] && build-lib debug-static || err
-	[ $BUILD_STATIC -ne 0 ] && build-lib release-static || err
+	if [ $BUILD_DEBUG -ne 0 ]; then
+		if [ $BUILD_SHARED -ne 0 ]; then build-lib debug || err; fi
+		if [ $BUILD_STATIC -ne 0 ]; then build-lib debug-static || err; fi
+	fi
+	if [ $BUILD_SHARED -ne 0 ]; then build-lib release || err; fi
+	if [ $BUILD_STATIC -ne 0 ]; then build-lib release-static || err; fi
 }
 
-CWD_SAVED=$PWD
-cd $TARGET_FOLDER
-[ $CHECKOUT -ne 0 ] && checkout
-[ $CONFIGURE -ne 0 ] || [ $BUILD -ne 0 ] && configure
-[ $BUILD -ne 0 ] && build
+function configure-clean() {
+	for c in $(find $TARGET_FOLDER/libftl -name CMakeCache.txt); do
+		CMD="rm -rf $c"
+		echo "$CMD"
+		$CMD || err
+	done
+}
+
+function build-clean() {
+	CMD="rm -rf $TARGET_FOLDER/libftl"
+	echo $CMD
+	$CMD || err
+}
+
+if [ $# -gt 0 ]; then
+	if [ "$1" == "conf-clean" ]; then configure-clean; fi
+	if [ "$1" == "clean" ]; then build-clean; fi
+	exit 0
+fi
+
+if [ $CHECKOUT -ne 0 ]; then
+	checkout || err
+	CONFIGURE_CLEAN=
+fi
+if [ $BUILD_CLEAN -ne 0 ]; then
+	build-clean
+	CONFIGURE_CLEAN=0
+fi
+if [ $CONFIGURE_CLEAN -ne 0 ]; then
+	configure-clean
+fi
+configure || err
+if [ $BUILD -ne 0 ]; then
+	build || err
+fi
+
 cd $CWD_SAVED
