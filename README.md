@@ -9,9 +9,9 @@ It provides a very broad abstraction of system interfaces and has a very small c
 Directory Contents
 ------------------
 
-ftl ... library source
-tests ... units tests
-tools ... tools written in FTL
-wizards ... helper scripts
-cmake ... configuration scripts
-COPYING ... license agreement
+- ftl ... library source
+- tests ... units tests
+- tools ... tools written in FTL
+- wizards ... helper scripts
+- cmake ... configuration scripts
+- COPYING ... license agreement
