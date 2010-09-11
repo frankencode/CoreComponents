@@ -1,26 +1,25 @@
 #! /bin/bash
 
-GIT_REPOSITORY=http://github.com/unclewerner/libftl.git
-GIT_VERSION=testing # "stable" or "testing"
-SOURCE_FOLDER=$PWD/libftl-src
-TARGET_FOLDER=$PWD
-CHECKOUT=1
-CONFIGURE=0
-CONFIGURE_CLEAN=0
-BUILD=1
-BUILD_STATIC=1
-BUILD_SHARED=1
-BUILD_DEBUG=1
-BUILD_CLEAN=0
-MAKEFLAGS= # e.g. -j2
-
 CWD_SAVED=$PWD
 
 if [ "$(dirname $0)" != "." ]; then
 	cd $(dirname $0)
 fi
 
-if [ -e ./build-options ]; then
+CONFIGURE=0
+CONFIGURE_CLEAN=0
+
+. ./build-options-git
+
+if [ $# -gt 0 ]; then
+	if [ "$1" != "git" ]; then
+		CHECKOUT=0
+	fi
+else
+	CHECKOUT=0
+fi
+
+if [ $CHECKOUT -eq 0 ]; then
 	. ./build-options
 fi
 
@@ -36,6 +35,7 @@ function err() {
 
 function version_max() {
 	let XM=0 YM=0 ZM=0
+	FALLBACK="master"
 	for t in $(git tag); do
 		IFS_SAVED=$IFS
 		IFS='.-'
@@ -52,8 +52,14 @@ function version_max() {
 			[ $X -eq $XM ] && [ $Y -gt $YM ] && let YM=$Y ZM=$Z
 			[ $X -eq $XM ] && [ $Y -eq $YM ] && [ $Z -gt $ZM ] && let ZM=$Z
 		fi
+		FALLBACK=$t
 	done
-	echo "$XM.$YM.$ZM"
+	if [ $XM -eq 0 ] && [ $YM -eq 0 ] && [ $ZM -eq 0 ]; then
+		debug "Warning: No stable version tag found (format: \"x.y.z\")."
+		echo "$FALLBACK"
+	else
+		echo "$XM.$YM.$ZM"
+	fi
 }
 
 function checkout() {
@@ -137,14 +143,32 @@ function build-clean() {
 }
 
 if [ $# -gt 0 ]; then
-	if [ "$1" == "conf-clean" ]; then configure-clean; fi
-	if [ "$1" == "clean" ]; then build-clean; fi
-	exit 0
+	OK=0
+	if [ "$1" == "local" ]; then OK=1; fi
+	if [ "$1" == "git" ]; then OK=1; fi
+	if [ "$1" == "conf-clean" ]; then configure-clean; OK=1; fi
+	if [ "$1" == "clean" ]; then build-clean; OK=1; fi
+	if [ "$1" == "help" ]; then
+		echo "$(basename $0) [OPTION]"
+		echo
+		echo "Options:"
+		echo "  local      ... build from local source tree (default)"
+		echo "  git        ... build latest stable version from git"
+		echo "  conf-clean ... clean configuration"
+		echo "  clean      ... clean all build files"
+		echo "  help       ... print this help"
+		echo ""
+		exit 0
+	fi
+	if [ $OK -ne 1 ]; then
+		echo "Illegal option \"$1\", try: \"$(basename $0) help\"."
+		exit 0
+	fi
 fi
 
 if [ $CHECKOUT -ne 0 ]; then
 	checkout || err
-	CONFIGURE_CLEAN=
+	CONFIGURE_CLEAN=1
 fi
 if [ $BUILD_CLEAN -ne 0 ]; then
 	build-clean
