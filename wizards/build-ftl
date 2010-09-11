@@ -144,26 +144,32 @@ function build-clean() {
 
 if [ $# -gt 0 ]; then
 	OK=0
-	if [ "$1" == "local" ]; then OK=1; fi
-	if [ "$1" == "git" ]; then OK=1; fi
-	if [ "$1" == "conf-clean" ]; then configure-clean; OK=1; fi
-	if [ "$1" == "clean" ]; then build-clean; OK=1; fi
-	if [ "$1" == "help" ]; then
-		echo "$(basename $0) [OPTION]"
-		echo
-		echo "Options:"
-		echo "  local      ... build from local source tree (default)"
-		echo "  git        ... build latest stable version from git"
-		echo "  conf-clean ... clean configuration"
-		echo "  clean      ... clean all build files"
-		echo "  help       ... print this help"
-		echo ""
-		exit 0
+	if [ $# -eq 1 ]; then
+		if [ "$1" == "local" ]; then OK=1; fi
+		if [ "$1" == "git" ]; then OK=1; fi
+		if [ "$1" == "conf-clean" ]; then configure-clean; OK=1; fi
+		if [ "$1" == "clean" ]; then build-clean; OK=1; fi
+		if [ "$1" == "help" ]; then
+			echo "$(basename $0) [OPTION]"
+			echo
+			echo "Options:"
+			echo "  local      ... build from local source tree (default)"
+			echo "  git        ... build latest stable version from git"
+			echo "  conf-clean ... clean configuration"
+			echo "  clean      ... clean all build files"
+			echo "  help       ... print this help"
+			echo ""
+			exit 0
+		fi
 	fi
 	if [ $OK -ne 1 ]; then
-		echo "Illegal option \"$1\", try: \"$(basename $0) help\"."
+		echo "Illegal option syntax, try \"$(basename $0) help\"."
 		exit 0
 	fi
+fi
+
+if [ $SOURCE_FOLDER == $TARGET_FOLDER ]; then
+	err "Source and target folder should differ."
 fi
 
 if [ $CHECKOUT -ne 0 ]; then
