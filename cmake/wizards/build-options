@@ -1,6 +1,6 @@
 #! /bin/bash
 
-SOURCE_FOLDER=$(./path-canonical ../..)
+SOURCE_FOLDER=$(./path-canonical ../../..)
 TARGET_FOLDER=~/ftl
 
 CHECKOUT=0
