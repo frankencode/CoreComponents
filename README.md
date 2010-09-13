@@ -1,7 +1,8 @@
 FTL - The Flexible Template Library
 ===================================
 
-FTL is a lightweight C++ core foundation and system programming library.
-It provides a very broad abstraction of system interfaces and has a very small compile-time overhead.
+FTL is a generic system-level application programming library for C++.
+It features a very broad abstraction of system interfaces, provides lots of useful
+generics and has a very small compile-time overhead.
 
 [Project hompage](http://unclewerner.github.com/libftl)
