@@ -154,7 +154,7 @@ if [ $# -gt 0 ]; then
 			echo
 			echo "Options:"
 			echo "  local      ... build from local source tree (default)"
-			echo "  git        ... build latest stable version from git"
+			echo "  git        ... build latest version from git"
 			echo "  conf-clean ... clean configuration"
 			echo "  clean      ... clean all build files"
 			echo "  help       ... print this help"
