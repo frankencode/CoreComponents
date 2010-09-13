@@ -1,28 +1,5 @@
 #! /bin/bash
 
-CWD_SAVED=$PWD
-
-if [ "$(dirname $0)" != "." ]; then
-	cd $(dirname $0)
-fi
-
-CONFIGURE=0
-CONFIGURE_CLEAN=0
-
-. ./build-options-git
-
-if [ $# -gt 0 ]; then
-	if [ "$1" != "git" ]; then
-		CHECKOUT=0
-	fi
-else
-	CHECKOUT=0
-fi
-
-if [ $CHECKOUT -eq 0 ]; then
-	. ./build-options
-fi
-
 function msg() { echo "$(basename $0): $1"; }
 function debug() { echo "$(basename $0): $1" 1>&2; }
 
@@ -31,6 +8,11 @@ function err() {
 	if [ "$1" != "" ]; then echo "$(basename $0): $1" 1>&2; fi
 	cd $CWD_SAVED
 	if [ $ret -ne 0 ]; then exit $ret; else exit 1; fi
+}
+
+function succeed() {
+	cd $CWD_SAVED
+	exit 0
 }
 
 function version_max() {
@@ -129,11 +111,15 @@ function build() {
 }
 
 function configure-clean() {
-	for c in $(find $TARGET_FOLDER/libftl -name CMakeCache.txt); do
-		CMD="rm -rf $c"
-		echo "$CMD"
-		$CMD || err
-	done
+	if [ -d $TARGET_FOLDER/libftl ]; then
+		echo
+		msg "Cleaning configuration in $TARGET_FOLDER/libftl..."
+		for c in $(find $TARGET_FOLDER/libftl -name CMakeCache.txt); do
+			CMD="rm -rf $c"
+			echo "$CMD"
+			$CMD || err
+		done
+	fi
 }
 
 function build-clean() {
@@ -142,13 +128,26 @@ function build-clean() {
 	$CMD || err
 }
 
+CWD_SAVED=$PWD
+
+if [ "$(dirname $0)" != "." ]; then
+	cd $(dirname $0)
+fi
+
+CONFIGURE=0
+CONFIGURE_CLEAN=0
+
+. ./build-options-git
+
+CLEAN_ONLY=0
+
 if [ $# -gt 0 ]; then
 	OK=0
 	if [ $# -eq 1 ]; then
-		if [ "$1" == "local" ]; then OK=1; fi
-		if [ "$1" == "git" ]; then OK=1; fi
-		if [ "$1" == "conf-clean" ]; then configure-clean; OK=1; fi
-		if [ "$1" == "clean" ]; then build-clean; OK=1; fi
+		if [ "$1" == "local" ]; then CHECKOUT=0; OK=1; fi
+		if [ "$1" == "git" ]; then CHECKOUT=1; OK=1; fi
+		if [ "$1" == "conf-clean" ]; then CONFIGURE_CLEAN=1; CLEAN_ONLY=1; OK=1; fi
+		if [ "$1" == "clean" ]; then BUILD_CLEAN=1; CLEAN_ONLY=1; OK=1; fi
 		if [ "$1" == "help" ]; then
 			echo "$(basename $0) [OPTION]"
 			echo
@@ -164,28 +163,38 @@ if [ $# -gt 0 ]; then
 	fi
 	if [ $OK -ne 1 ]; then
 		echo "Illegal option syntax, try \"$(basename $0) help\"."
-		exit 0
+		exit 1
 	fi
+else
+	CHECKOUT=0
+fi
+
+if [ $CHECKOUT -eq 0 ]; then
+	. ./build-options
 fi
 
 if [ $SOURCE_FOLDER == $TARGET_FOLDER ]; then
 	err "Source and target folder should differ."
 fi
 
-if [ $CHECKOUT -ne 0 ]; then
-	checkout || err
-	CONFIGURE_CLEAN=1
+if [ $CLEAN_ONLY -eq 0 ]; then
+	if [ $CHECKOUT -ne 0 ]; then
+		checkout || err
+		CONFIGURE_CLEAN=1
+	fi
 fi
+
 if [ $BUILD_CLEAN -ne 0 ]; then
 	build-clean
-	CONFIGURE_CLEAN=0
-fi
-if [ $CONFIGURE_CLEAN -ne 0 ]; then
+elif [ $CONFIGURE_CLEAN -ne 0 ]; then
 	configure-clean
 fi
+
+if [ $CLEAN_ONLY -ne 0 ]; then succeed; fi
+
 configure || err
 if [ $BUILD -ne 0 ]; then
 	build || err
 fi
 
-cd $CWD_SAVED
+succeed

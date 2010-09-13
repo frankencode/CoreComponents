@@ -1,17 +1,19 @@
+CMAKEWIZARDS=cmake/wizards
+
 local:
-	wizards/build-ftl
+	${CMAKEWIZARDS}/build-ftl
 
 all: local
 
 git:
-	wizards/build-ftl git
+	${CMAKEWIZARDS}/build-ftl git
 
 conf-clean:
-	wizards/build-ftl conf-clean
+	${CMAKEWIZARDS}/build-ftl conf-clean
 
 clean:
-	wizards/build-ftl clean
+	${CMAKEWIZARDS}/build-ftl clean
 
 help:
-	wizards/build-ftl help
+	${CMAKEWIZARDS}/build-ftl help
 	
