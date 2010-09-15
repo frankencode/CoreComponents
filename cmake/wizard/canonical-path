@@ -1,4 +1,6 @@
 #! /bin/bash
 
+CWD_SAVED=$CWD
 cd -P $(dirname $1)
 echo $(pwd -P)
+cd $CWD_SAVED

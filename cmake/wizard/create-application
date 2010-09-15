@@ -1,0 +1,121 @@
+#! /bin/bash
+
+. $(dirname $0)/utility
+
+PROJECT_NAME=$($(dirname $0)/project-name)
+
+
+PACKAGE_NAME="hellw"
+PACKAGE_PATH=""
+
+while [ 0 -eq 0 ]; do
+	IFS_SAVED=$IFS
+	IFS="\n"
+	printf "Project name [$PACKAGE_NAME]: "; read PACKAGE_NAME2
+	IFS=$IFS_SAVED
+	if [ "$PACKAGE_NAME2" != "" ]; then PACKAGE_NAME=$PACKAGE_NAME2; fi
+	if echo $PACKAGE_NAME | egrep --regexp='^[a-z][a-z0-9]*$' > /dev/null; then
+		break
+	else
+		echo
+		echo "  Invalid project name, try again!"
+		echo
+	fi
+done
+
+while [ 0 -eq 0 ]; do
+	PACKAGE_PATH=$(./canonical-path ../../../..)/$PACKAGE_NAME
+	printf "Project directory ["$PACKAGE_PATH"]: "; read PACKAGE_PATH2
+	if [ "$PACKAGE_PATH2" != "" ]; then
+		PACKAGE_PATH=$PACKAGE_PATH
+	fi
+	
+	if [ -e $PACKAGE_PATH ]; then
+		echo
+		echo "  Directory exists already, choose another path!"
+		echo
+	else
+		break
+	fi
+done
+
+ORIGINAL_PATH=$(./canonical-path ../../..)
+
+if [ $(uname) == "Darwin" ]; then
+	for garbage in $(find $ORIGINAL_PATH -name '.DS_Store'); do
+		rm -rf $garbage
+	done
+fi
+
+echo
+echo "Populating application directory $PACKAGE_PATH..."
+
+mkdir -p $PACKAGE_PATH || err
+cd $PACKAGE_PATH
+
+touch README INSTALL COPYING || err
+cp $ORIGINAL_PATH/.gitignore .
+
+mkdir -p cmake || err
+rsync -qaHv $ORIGINAL_PATH/cmake/wizard/ cmake/wizard/ || err
+
+cp $ORIGINAL_PATH/Makefile . || err
+cat > make.conf <<-EOF
+	#! /bin/bash
+	
+	# comment out to enable out-of-source build
+	# BUILD_PREFIX=~/build
+	
+	# set to 0 to configure only
+	BUILD=1
+	
+	# select debug and/or release build
+	BUILD_DEBUG=1
+	BUILD_RELEASE=0
+	
+	# link dpendencies statically or dynamically
+	BUILD_SHARED=1
+	BUILD_STATIC=0
+	
+	# clean the build directory (before building)
+	BUILD_CLEAN=0
+	
+	# additional arguments to make, e.g. -j2
+	MAKEARGS=
+	
+	# cmake dependencies
+	DEPENDS_ON="$ORIGINAL_PATH"
+EOF
+
+cat > CMakeLists.txt <<-EOF
+	CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+	
+	PROJECT($PACKAGE_NAME)
+	
+	FIND_PACKAGE($PROJECT_NAME REQUIRED)
+	INCLUDE(Use$PROJECT_NAME)
+	
+	SUBDIRS(src)
+EOF
+
+mkdir -p src || err
+cat > src/CMakeLists.txt <<EOF
+ADD_EXECUTABLE($PACKAGE_NAME
+	main.cpp
+)
+INSTALL(PROGRAMS \${EXECUTABLE_OUTPUT_PATH}/$PACKAGE_NAME DESTINATION bin)
+EOF
+
+cat > src/main.cpp <<EOF
+#include <ftl/stdio>
+
+using namespace ftl;
+
+int main() {
+	print("Hello, world!\n");
+	return 0;
+}
+EOF
+
+echo "Done."
+succeed

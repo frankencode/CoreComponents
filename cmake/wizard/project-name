@@ -1,0 +1,12 @@
+#! /bin/bash
+
+cd $(dirname $0)/../..
+LN=$(grep --ignore-case --regexp='PROJECT' $(find . -name 'CMakeLists.txt'))
+IFS_SAVED=$IFS
+IFS="()"
+for x in $LN; do
+	if echo "$x" | egrep --regexp='^[a-zA-Z0-9_]+$'; then
+		break
+	fi
+done
+IFS=$IFS_SAVED
