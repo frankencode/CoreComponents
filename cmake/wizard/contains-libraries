@@ -1,0 +1,5 @@
+#! /bin/bash
+
+grep --recursive --ignore-case --regexp="ADD_LIBRARY" $(find ../.. -name 'CMakeLists.txt') > /dev/null
+[ $? -eq 0 ] && echo 1
+[ $? -ne 0 ] && echo 0

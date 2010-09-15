@@ -1,3 +1,6 @@
 .DS_Store
-wizards/build-options
-wizards/build-options-git
+debug
+debug-static
+release
+release-static
+make.conf

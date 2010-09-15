@@ -1,19 +1,21 @@
-CMAKEWIZARDS=cmake/wizards
+CMAKEWIZARD=cmake/wizard
 
-local:
-	${CMAKEWIZARDS}/build-ftl
-
-all: local
-
-git:
-	${CMAKEWIZARDS}/build-ftl git
+all:
+	@${CMAKEWIZARD}/build
 
 conf-clean:
-	${CMAKEWIZARDS}/build-ftl conf-clean
+	@${CMAKEWIZARD}/build conf-clean
 
 clean:
-	${CMAKEWIZARDS}/build-ftl clean
+	@${CMAKEWIZARD}/build clean
+
+app: application
+
+application:
+	@cd ${CMAKEWIZARD} && ./create-application
+
+cache:
+	@${CMAKEWIZARD}/build cache
 
 help:
-	${CMAKEWIZARDS}/build-ftl help
-	
+	@cd ${CMAKEWIZARD} && ./print-help make
