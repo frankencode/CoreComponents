@@ -61,8 +61,6 @@ rsync -qaHv $ORIGINAL_PATH/cmake/wizard/ cmake/wizard/ || err
 
 cp $ORIGINAL_PATH/Makefile . || err
 cat > make.conf <<-EOF
-	#! /bin/bash
-	
 	# comment out to enable out-of-source build
 	# BUILD_PREFIX=~/build
 	
@@ -103,6 +101,7 @@ cat > src/CMakeLists.txt <<EOF
 ADD_EXECUTABLE($PACKAGE_NAME
 	main.cpp
 )
+
 INSTALL(PROGRAMS \${EXECUTABLE_OUTPUT_PATH}/$PACKAGE_NAME DESTINATION bin)
 EOF
 

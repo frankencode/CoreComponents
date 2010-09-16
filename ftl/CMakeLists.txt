@@ -197,8 +197,6 @@ SET(FTL_SOURCE
 	Random.cpp
 )
 
-ADD_DEFINITIONS(-std=c++98)
-
 ADD_LIBRARY(ftl
 	${FTL_HEADER}
 	${FTL_SOURCE}
