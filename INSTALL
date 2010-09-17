@@ -1,4 +1,28 @@
-Just run "make" from the command line.
-The build wizard will be invoked (wizards/build-ftl).
-It can be configured by editing wizards/build-options.
-See "make help" for more options.
+Installation Intructions
+========================
+
+FTL comes with a cmake build system. To simplify common configuration task
+a wrapper script is included (cmake/wizard), which takes care of most configure
+choices. Run "make help" to see the details. Of course you can configure and
+build the project like any cmake project by hand.
+
+Prequisites:
+	cmake 2.8 (includes ccmake)
+	g++ >4.2 (on Mac OS X), g++ >3.6 (for all other)
+	gnumake
+	bash
+
+Building and installating using the cmake/wizard:
+	cd <libftl-source-dir>
+	# edit make.conf
+	make
+	cd release
+	make install # as root
+
+Building by hand using ccmake:
+	mkdir <my-build-dir>
+	cd my-build-dir
+	ccmake ../<libftl-source-dir>
+		# press c, enter "Release" in CMAKE_BUILD_TYPE, press c again, then g
+	make
+	make install # as root
