@@ -12,7 +12,7 @@ Supported Platforms:
 
 Prequisites:
 	cmake 2.8 (includes ccmake)
-	g++ >4.2 (on Mac OS X), g++ >3.6 (for all other)
+	g++ >4.2 (on Mac OS X, Linux), g++ >3.6 (on OpenBSD)
 	gnumake
 	bash
 
