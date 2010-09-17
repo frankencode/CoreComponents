@@ -14,7 +14,7 @@ Prequisites:
 	cmake 2.8 (includes ccmake)
 	g++ >4.2 (on Mac OS X, Linux), g++ >3.6 (on OpenBSD)
 	gnumake
-	bash
+	bash (optional for wizard scripts)
 
 Building and installating using the cmake/wizard:
 	cd <libftl-source-dir>
