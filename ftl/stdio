@@ -13,7 +13,7 @@
 #include "Dir.hpp"
 #include "Path.hpp"
 #include "StandardStreams.hpp"
-#include "FormatPrint.hpp"
+#include "PrintDebug.hpp"
 #include "CommandLine.hpp"
 
 #endif //  FTL_STDIO

@@ -5,8 +5,8 @@
  *
  * See ../COPYING for the license.
  */
-#ifndef FTL_FORMATPRINT_HPP
-#define FTL_FORMATPRINT_HPP
+#ifndef FTL_PRINTDEBUG_HPP
+#define FTL_PRINTDEBUG_HPP
 
 #include "atoms"
 #include "String.hpp"
@@ -860,4 +860,4 @@ inline void debug(String templateText, const T1& x1, const T2& x2, const T3& x3,
 
 } // namespace ftl
 
-#endif // FTL_FORMATPRINT_HPP
+#endif // FTL_PRINTDEBUG_HPP
