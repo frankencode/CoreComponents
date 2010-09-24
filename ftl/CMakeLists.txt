@@ -68,7 +68,7 @@ SET(FTL_HEADER
 	LineSource.hpp
 	LineSink.hpp
 	StandardStreams.hpp
-	FormatPrint.hpp
+	PrintDebug.hpp
 	CommandOption.hpp
 	CommandLine.hpp
 	

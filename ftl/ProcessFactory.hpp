@@ -25,9 +25,13 @@ public:
 	int ioPolicy() const;
 	void setIoPolicy(int flags);
 	
+	/** working directory of new process
+	  */
 	String workingDirectory();
 	void setWorkingDirectory(String path);
 	
+	/** relative or absolute path to executable image or script
+	  */
 	String execPath() const;
 	void setExecPath(String path);
 	

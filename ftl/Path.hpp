@@ -27,6 +27,9 @@ public:
 	Path makeAbsoluteRelativeTo(String currentDir) const;
 	Path makeAbsolute() const;
 	String fileName() const;
+	String fileNameSansFirstExtension() const;
+	String fileNameSansExtension() const;
+	
 	Path reduce() const;
 	Path expand(String component) const;
 	

@@ -89,6 +89,19 @@ String Path::fileName() const
 	return name;
 }
 
+String Path::fileNameSansFirstExtension() const
+{
+	Ref<StringList, Owner> parts = fileName().split(".");
+	parts->popBack();
+	return String::glue(parts, ".");
+}
+
+String Path::fileNameSansExtension() const
+{
+	Ref<StringList, Owner> parts = fileName().split(".");
+	return parts->at(0);
+}
+
 Path Path::reduce() const
 {
 	Ref<StringList, Owner> parts = path_.split("/");
