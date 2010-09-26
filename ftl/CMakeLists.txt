@@ -12,6 +12,10 @@ SET(FTL_HEADER
 	SetNull.hpp
 	Owner.hpp
 	Ref.hpp
+	ArrayPolicy.hpp
+	Array.hpp
+	Buffer.hpp
+	Stream.hpp
 	
 	binary
 	ByteEncoder.hpp
@@ -26,8 +30,6 @@ SET(FTL_HEADER
 	
 	container
 	containers.hpp
-	ArrayPolicy.hpp
-	Array.hpp
 	Stack.hpp
 	Queue.hpp
 	Heap.hpp
@@ -121,8 +123,9 @@ SET(FTL_HEADER
 SET(FTL_SOURCE
 	# atoms
 	strings.cpp
-	generics.cpp
 	Exception.cpp
+	Buffer.cpp
+	Stream.cpp
 	
 	# binary
 	ByteEncoder.cpp

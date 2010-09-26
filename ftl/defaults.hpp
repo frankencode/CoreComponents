@@ -5,7 +5,6 @@
  *
  * See ../COPYING for the license.
  */
-
 #ifndef FTL_DEFAULTS_HPP
 #define FTL_DEFAULTS_HPP
 

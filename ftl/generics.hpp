@@ -10,7 +10,6 @@
 
 #include "Instance.hpp"
 #include "Ref.hpp"
-#include "Exception.hpp"
 
 namespace ftl
 {
@@ -82,25 +81,6 @@ class Sequence: public virtual Instance
 public:
 	virtual bool def(Index i) const = 0;
 	virtual Item get(Index i) const = 0;
-};
-
-FTL_EXCEPTION(StreamException, Exception);
-FTL_EXCEPTION(StreamSemanticException, StreamException);
-FTL_EXCEPTION(StreamIoException, StreamException);
-FTL_EXCEPTION(StreamEncodingException, StreamIoException);
-
-class Stream: public Instance
-{
-public:
-	virtual ~Stream() {}
-	
-	virtual bool isOpen() const = 0;
-	virtual void close() = 0;
-	
-	virtual int readAvail(void* buf, int bufCapa) = 0;
-	virtual void write(const void* buf, int bufFill) = 0;
-	
-	void read(void* buf, int bufCapa);
 };
 
 } // namespace ftl

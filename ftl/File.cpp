@@ -99,7 +99,7 @@ void File::createUnique(int mode, char placeHolder)
 {
 	Random random;
 	while (true) {
-		String pathSaved = path_.duplicate();
+		String pathSaved = path_.copy();
 		for (int i = 0, n = path_->size(); i < n; ++i) {
 			if (path_->at(i) == placeHolder) {
 				char r = random.get(0, 61);

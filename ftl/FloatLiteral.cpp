@@ -61,14 +61,9 @@ FloatLiteral::FloatLiteral()
 
 bool FloatLiteral::match(Ref<String::Media> text, int i0, int* i1, float64_t* value)
 {
-	Ref<Token, Owner> rootToken;
-	
-	bool conform = Syntax<String::Media>::Definition::match(text, i0, i1, &rootToken, 0);
-	
-	if (conform)
-		*value = read(text, rootToken);
-	
-	return conform;
+	Ref<Token, Owner> rootToken = Syntax<String::Media>::Definition::match(text, i0, i1);
+	if (rootToken) *value = read(text, rootToken);
+	return rootToken;
 }
 
 float64_t FloatLiteral::read(Ref<String::Media> text, Ref<Token> rootToken) const

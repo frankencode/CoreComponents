@@ -50,9 +50,21 @@ public:
 		assign(data, size);
 	}
 	
+	// initialize string by a given string media
+	String(const Ref<Media, Owner>& media) {
+		validate(media->data(), media->size());
+		set(media);
+	}
+	
 	// alternative construction methods
 	static inline String uninitialized(int size) { return String(size); }
 	static inline String initialized(int size, char zero) { return String(size, zero); }
+	static inline String unvalidated(const char* data, int size = -1) {
+		if (size < 0) size = str::len(data);
+		String s;
+		s.assign(data, size);
+		return s;
+	}
 	static inline String fromUtf8(const char* data, int size = -1) { return String(data, size); }
 	static inline String fromUtf8(Ref<Media> media, int i = 0, int n = -1) { return String(media, i, n); }
 	static inline String glue(Ref<StringList> parts, const char* sep = "") { String s; s.assign(parts, sep); return s; }
@@ -71,8 +83,8 @@ public:
 	}
 	
 	// return a deep copy of this string
-	String duplicate() const;
-	String duplicate(const Index& index0, const Index& index1) const;
+	String copy() const;
+	String copy(const Index& index0, const Index& index1) const;
 	
 	// provide access to the shared media
 	inline Ref<Media> media() const { return Super::get(); }

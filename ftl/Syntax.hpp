@@ -1133,22 +1133,20 @@ public:
 			return state;
 		}
 		
-		bool find(Media* media, int* i0, int* i1 = 0, Ref<Token, Owner>* rootToken = 0, Ref<TokenFactory> tokenFactory = 0)
+		Ref<Token, Owner> find(Media* media, int* i0, int* i1 = 0, Ref<TokenFactory> tokenFactory = 0)
 		{
 			int i = *i0;
-			bool found = false;
+			Ref<Token, Owner> rootToken;
 			while (media->def(i)) {
-				if (match(media, i, i1, rootToken, 0, tokenFactory)) {
-					found = true;
+				if (rootToken = match(media, i, i1, 0, tokenFactory))
 					break;
-				}
 				++i;
 			}
 			*i0 = i;
-			return found;
+			return rootToken;
 		}
 		
-		bool match(Media* media, int i0 = 0, int* i1 = 0, Ref<Token, Owner>* rootToken = 0, State* state = 0, Ref<TokenFactory> tokenFactory = 0)
+		Ref<Token, Owner> match(Media* media, int i0 = 0, int* i1 = 0, /*Ref<Token, Owner>* rootToken = 0,*/ State* state = 0, Ref<TokenFactory> tokenFactory = 0)
 		{
 			if (scope_) scope_->link();
 			else LINK();
@@ -1164,20 +1162,12 @@ public:
 				tokenFactory = &localTokenFactory;
 			
 			int h = matchNext(media, i0, tokenFactory, 0, state);
-			if (rootToken)
-				*rootToken = tokenFactory->rootToken();
 			
 			if ((i1 != 0) && (h != -1))
 				*i1 = h;
-			return (h != -1);
-		}
-		
-		Ref<Token, Owner> match(Media* media, State* state)
-		{
-			Ref<Token, Owner> rootToken = 0;
-			int i0 = 0, i1 = 0;
-			match(media, i0, &i1, &rootToken, state);
-			return rootToken;
+			
+			if (h == -1) return 0;
+			return tokenFactory->rootToken();
 		}
 		
 		Ref<RuleNode> ruleByName(const char* name)
