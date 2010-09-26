@@ -1,7 +1,13 @@
+/*
+ * container -- wildcard include header
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../COPYING for the license.
+ */
 #ifndef FTL_CONTAINER
 #define FTL_CONTAINER
 
-#include "Array.hpp"
 #include "Stack.hpp"
 #include "Queue.hpp"
 #include "Heap.hpp"

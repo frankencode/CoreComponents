@@ -8,6 +8,7 @@
 #ifndef FTL_STRINGS_HPP
 #define FTL_STRINGS_HPP
 
+#include <string.h> // memset, memcpy, strcmp
 #include "types.hpp"
 #include "Exception.hpp"
 
@@ -17,18 +18,20 @@ namespace ftl
 namespace mem
 {
 
-inline void clr(void* s, int n, uint8_t zero = 0)
+inline void clr(void* s, int n, uint8_t z = 0)
 {
-	uint8_t* bs = (uint8_t*)s;
-	for (int i = 0; i < n; ++i) bs[i] = zero;
+	/*uint8_t* bs = (uint8_t*)s;
+	for (int i = 0; i < n; ++i) bs[i] = z;*/
+	memset(s, z, n);
 }
 
-inline void cpy(void* t, const void* s, int n)
+inline void cpy(void* d, const void* s, int n)
 {
-	uint8_t* bt = (uint8_t*)t;
+	/*uint8_t* bd = (uint8_t*)d;
 	uint8_t* bs = (uint8_t*)s;
 	for (int i = 0; i < n; ++i)
-		bt[i] = bs[i];
+		bd[i] = bs[i];*/
+	memcpy(d, s, n);
 }
 
 } // namespace mem
@@ -54,7 +57,7 @@ inline void cpy(T* t, const S* s, int n = -1)
 
 inline int cmp(const char* a, const char* b)
 {
-	int ret = 0;
+	/*int ret = 0;
 	char ca, cb;
 	while ((ca = *a) && (cb = *b) && (!ret)) {
 		if (ca < cb) ret = -1;
@@ -64,7 +67,8 @@ inline int cmp(const char* a, const char* b)
 	}
 	if (!ret)
 		ret = (*b == 0) - (*a == 0);
-	return ret;
+	return ret;*/
+	return strcmp(a, b);
 }
 
 inline int casecmp(const char* a, const char* b)

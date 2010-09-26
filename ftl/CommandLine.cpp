@@ -210,8 +210,8 @@ Ref<StringList, Owner> CommandLine::read(String line)
 	position_ = 0;
 	
 	int i0 = 0, i1 = -1;
-	Ref<Token, Owner> rootToken;
-	if (!match(line, i0, &i1, &rootToken))
+	Ref<Token, Owner> rootToken = match(line, i0, &i1);
+	if (!rootToken)
 		FTL_THROW(CommandLineException, "Unrecognized option syntax");
 	
 	Ref<Token> token = rootToken->firstChild();

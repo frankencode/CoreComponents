@@ -8,7 +8,7 @@
 #ifndef FTL_ARRAY_HPP
 #define FTL_ARRAY_HPP
 
-#include "containers.hpp"
+#include "generics.hpp"
 #include "ArrayPolicy.hpp"
 
 namespace ftl
@@ -107,6 +107,15 @@ public:
 			}
 		}
 		return n;
+	}
+	
+	inline Ref<Array, Owner> copy() const { return copy(0, size_); }
+	
+	inline Ref<Array, Owner> copy(int i0, int i1) const {
+		check(i0 <= i1);
+		check(def(i0));
+		check(def(i1 - (i0 < i1)));
+		return (i0 < i1) ? new Array(data_ + i0, i1 - i0) : new Array();
 	}
 	
 	inline T* data() const { return data_; }

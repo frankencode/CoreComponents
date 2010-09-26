@@ -64,14 +64,14 @@ void String::assign(Ref<StringList> parts, const char* sep)
 	}
 }
 
-String String::duplicate() const
+String String::copy() const
 {
 	String b;
 	b.Super::set(new Media(media()->data(), media()->size()));
 	return b;
 }
 
-String String::duplicate(const Index& index0, const Index& index1) const
+String String::copy(const Index& index0, const Index& index1) const
 {
 	check(index0.data() == media()->data());
 	check(index1.data() == media()->data());
@@ -104,11 +104,11 @@ Ref<StringList, Owner> String::split(const char* pattern) const
 	while (index0.valid()) {
 		Index index1 = find(index0, pattern);
 		if (!index1.valid()) break;
-		parts->append(duplicate(index0, index1));
+		parts->append(copy(index0, index1));
 		index0 = Index(media()->data(), index1.pos() + patternSize);
 	}
 	if (index0.valid())
-		parts->append(duplicate(index0, end()));
+		parts->append(copy(index0, end()));
 	else
 		parts->append(String());
 	return parts;

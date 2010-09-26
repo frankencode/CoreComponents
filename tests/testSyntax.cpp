@@ -66,12 +66,10 @@ public:
 	
 	double eval(String text)
 	{
-		Ref<Token, Owner> rootToken = 0;
+		Ref<Token, Owner> rootToken = match(text);
 		double value = nan;
 		
-		int i0 = 0, i1 = 0;
-		if (match(text, i0, &i1, &rootToken, 0))
-		{
+		if (rootToken) {
 			text_ = text;
 			value = eval(rootToken);
 		}

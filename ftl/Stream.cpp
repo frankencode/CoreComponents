@@ -1,13 +1,6 @@
-/*
- * generics.hpp -- generic interfaces
- *
- * Copyright (c) 2007-2010, Frank Mertens
- *
- * See ../COPYING for the license.
- */
-
 #include "types.hpp"
-#include "generics.hpp"
+#include "Buffer.hpp"
+#include "Stream.hpp"
 
 namespace ftl
 {
@@ -24,6 +17,17 @@ void Stream::read(void* buf, int bufCapa)
 		buf2 += dn;
 		n -= dn;
 	}
+}
+
+Ref<StringMedia, Owner> Stream::readAll()
+{
+	Buffer buffer;
+	while (true) {
+		Ref<Block> block = buffer.allocate();
+		block->setFill(readAvail(block->data(), buffer.blockSize()));
+		if (block->fill() == 0) break;
+	}
+	return buffer.join();
 }
 
 } // namespace ftl

@@ -74,11 +74,9 @@ FormatSpecifier::FormatSpecifier()
 
 bool FormatSpecifier::find(Ref<String::Media> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, char* blank)
 {
-	Ref<Token, Owner> rootToken = 0;
+	Ref<Token, Owner> rootToken = Syntax<String::Media>::Definition::find(text, i0, i1);
 	
-	bool found =  Syntax<String::Media>::Definition::find(text, i0, i1, &rootToken);
-	
-	if (found)
+	if (rootToken)
 	{
 		Ref<Token> token = rootToken->firstChild();
 		
@@ -122,7 +120,7 @@ bool FormatSpecifier::find(Ref<String::Media> text, int* i0, int* i1, int* w, in
 		}
 	}
 	
-	return found;
+	return rootToken;
 }
 
 } // namespace ftl
