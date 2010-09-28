@@ -19,7 +19,7 @@ void Stream::read(void* buf, int bufCapa)
 	}
 }
 
-Ref<StringMedia, Owner> Stream::readAll()
+Ref<ByteArray, Owner> Stream::readAll()
 {
 	Buffer buffer;
 	while (true) {

@@ -27,7 +27,7 @@ public:
 	virtual void write(const void* buf, int bufFill) = 0;
 	
 	void read(void* buf, int bufCapa);
-	Ref<StringMedia, Owner> readAll();
+	Ref<ByteArray, Owner> readAll();
 };
 
 } // namespace ftl

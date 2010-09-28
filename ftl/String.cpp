@@ -24,7 +24,7 @@ String::String(const Variant& b)
 
 String::String(const Format& b)
 {
-	*this = String::glue(b);
+	*this = String::join(b);
 }
 
 void String::validate(const char* data, int size)
@@ -40,7 +40,6 @@ void String::validate(const char* data, int size)
 void String::assign(Ref<StringList> parts, const char* sep)
 {
 	int sepSize = str::len(sep);
-	validate(sep, sepSize);
 	if (parts->length() > 0) {
 		int size = 0;
 		for (StringList::Index i = parts->first(); parts->def(i); ++i)
@@ -260,7 +259,7 @@ String String::normalized(bool nameCase) const
 			++i;
 		}
 	}
-	return String::glue(parts, " ");
+	return String::join(parts, " ");
 }
 
 } // namespace ftl

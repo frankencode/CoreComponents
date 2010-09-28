@@ -128,6 +128,8 @@ public:
 		return pop(index, item);
 	}
 	
+	inline T join(const T& sep = T()) const { return T::join(this, sep); }
+	
 private:
 	friend class ListWalker<T>;
 	typedef ListNode<T> Node;

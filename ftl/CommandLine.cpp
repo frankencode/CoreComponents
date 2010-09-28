@@ -190,7 +190,7 @@ Ref<StringList, Owner> CommandLine::read(int argc, char** argv)
 		if (i != argc - 1)
 			line->append(String(" "));
 	}
-	return read(String::glue(line));
+	return read(String::join(line));
 }
 
 String stripQuotes(String s)
@@ -199,7 +199,7 @@ String stripQuotes(String s)
 		if ( ((s->at(0) == '"') || (s->at(0) == '\'')) &&
 			 (s->at(s->size() - 1) == s->at(0)) )
 		{
-			s = String::fromUtf8(s, 1, s->size() - 2);
+			s = s->copy(1, s->size() - 1);
 		}
 	}
 	return s;
@@ -227,7 +227,7 @@ Ref<StringList, Owner> CommandLine::read(String line)
 	
 	Ref<StringList, Owner> files = new StringList;
 	while (token) {
-		files->append(stripQuotes(String::fromUtf8(line, token->index(), token->length())));
+		files->append(stripQuotes(line->copy(token->i0(), token->i1())));
 		token = token->nextSibling();
 	}
 	
@@ -259,7 +259,7 @@ void CommandLine::readOption(String line, Ref<Token> token)
 			char name = line->at(token->index());
 			Ref<CommandOption> option = optionByShortName(name);
 			if (!option)
-				FTL_THROW(CommandLineException, str::cat(String::glue(Format("Unsupported option: '-%%'") << name)->data()));
+				FTL_THROW(CommandLineException, str::cat(String::join(Format("Unsupported option: '-%%'") << name)->data()));
 			
 			usedOptions_->append(option);
 			
@@ -280,10 +280,10 @@ void CommandLine::readOption(String line, Ref<Token> token)
 	}
 	else if (token->rule() == longNameRule_)
 	{
-		String name = String::fromUtf8(line, token->index(), token->length());
+		String name = line->copy(token->i0(), token->i1());
 		Ref<CommandOption> option = optionByLongName(name);
 		if (!option)
-			FTL_THROW(CommandLineException, str::dup(String::glue(Format("Unsupported option: '--%%'") << name)->data()));
+			FTL_THROW(CommandLineException, str::dup(String::join(Format("Unsupported option: '--%%'") << name)->data()));
 		
 		usedOptions_->append(option);
 		
@@ -297,7 +297,7 @@ void CommandLine::readOption(String line, Ref<Token> token)
 
 void CommandLine::readValue(Ref<CommandOption> option, String line, Ref<Token> token)
 {
-	String s = stripQuotes(String::fromUtf8(line, token->index(), token->length()));
+	String s = stripQuotes(line->copy(token->i0(), token->i1()));
 	Variant& value = option->value_;
 	
 	if (value.type() == Variant::StringType) {
@@ -405,7 +405,7 @@ String CommandLine::helpText() const
 			lines->set(j, line);
 		}
 		
-		options = String::glue(lines);
+		options = String::join(lines);
 	}
 	
 	Format text;

@@ -36,6 +36,7 @@ int main()
 			b->toB()->doSmth();
 		t = now() - t;
 		print("%% vtable casting, casting upwards, cost %% us\n", n, t.us());
+		delete b;
 	}
 	{
 		A* b = new B;
@@ -44,6 +45,7 @@ int main()
 			dynamic_cast<B*>(b)->doSmth();
 		t = now() - t;
 		print("%% dynamic_cast, casting upwards, cost %% us\n", n, t.us());
+		delete b;
 	}
 	{
 		B* b = new B;
@@ -52,6 +54,7 @@ int main()
 			dynamic_cast<A*>(b)->doSmth();
 		t = now() - t;
 		print("%% dynamic_cast, casting downwards, cost %% us\n", n, t.us());
+		delete b;
 	}
 	{
 		B* b = new B;
@@ -60,6 +63,7 @@ int main()
 			dynamic_cast<B*>(b)->doSmth();
 		t = now() - t;
 		print("%% dynamic_cast, identity cast, cost %% us\n", n, t.us());
+		delete b;
 	}
 	{
 		B* b = new B;
@@ -68,6 +72,7 @@ int main()
 			b->doSmth();
 		t = now() - t;
 		print("%% no cast, cost %% us\n", n, t.us());
+		delete b;
 	}
 	{
 		B* b = new B;
@@ -76,6 +81,7 @@ int main()
 			static_cast<A*>(b)->doSmth();
 		t = now() - t;
 		print("%% static_cast, casting downwards, cost %% us\n", n, t.us());
+		delete b;
 	}
 	return 0;
 }

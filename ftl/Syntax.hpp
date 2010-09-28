@@ -24,6 +24,7 @@ class Syntax: public Instance
 {
 public:
 	typedef typename Media::Item Char;
+	typedef typename Media::Index Index;
 	typedef Syntax Node;
 	typedef PrefixTree<Char,int> KeywordMap;
 	
@@ -31,8 +32,8 @@ public:
 		: next_(next)
 	{}
 	
-	inline void rollBackOnFailure(int i, Token* parentToken, Token* lastChildSaved) {
-		if ((parentToken) && (i == -1)) {
+	inline void rollBackOnFailure(Index i, Token* parentToken, Token* lastChildSaved) {
+		if ((parentToken) && (i == Media::ill())) {
 			while (parentToken->lastChild() != lastChildSaved)
 				parentToken->lastChild()->unlink();
 		}
@@ -42,7 +43,7 @@ public:
 	
 	typedef SyntaxState<Char> State;
 	
-	virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state) = 0;
+	virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) = 0;
 	
 	class CharNode: public Node
 	{
@@ -52,18 +53,18 @@ public:
 			  invert_(invert)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (media->def(i))
 			{
 				Char ch = media->get(i++);
 				if ((ch != ch_) ^ invert_)
-					i = -1;
+					i = Media::ill();
 			}
 			else
-				i = -1;
+				i = Media::ill();
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -77,16 +78,16 @@ public:
 	class AnyNode: public Node
 	{
 	public:
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (media->def(i))
 			{
 				++i;
 			}
 			else
-				i = -1;
+				i = Media::ill();
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -103,17 +104,17 @@ public:
 		{}
 		
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (media->def(i)) {
 				Char ch = media->get(i++);
 				if (((ch < a_) || (b_ < ch)) ^ invert_)
-					i = -1;
+					i = Media::ill();
 			}
 			else
-				i = -1;
+				i = Media::ill();
 				
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -135,7 +136,7 @@ public:
 			str::cpy(s_.data(), s, s_.size());
 		}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (media->def(i)) {
 				Char ch = media->get(i++);
@@ -145,12 +146,12 @@ public:
 					++k;
 				}
 				if ((k == len) ^ invert_)
-					i = -1;
+					i = Media::ill();
 			}
 			else
-				i = -1;
+				i = Media::ill();
 				
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -176,7 +177,7 @@ public:
 			}
 		}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (media->def(i)) {
 				int k = 0, len = s_.length();
@@ -188,12 +189,12 @@ public:
 					++k;
 				}
 				if (k != len)
-					i = -1;
+					i = Media::ill();
 			}
 			else
-				i = -1;
+				i = Media::ill();
 				
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -212,10 +213,10 @@ public:
 			  caseSensitive_(caseSensitive)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (media->def(i)) {
-				int h = 0;
+				Index h = 0;
 				int keyword = -1;
 				if (map_->match(media, i, &h, &keyword, caseSensitive_)) {
 					if (parentToken)
@@ -226,9 +227,9 @@ public:
 					i = -1;
 			}
 			else
-				i = -1;
+				i = Media::ill();
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -248,25 +249,25 @@ public:
 			  entry_(entry)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 			
 			int repeatCount = 0;
-			int h = i;
-			while ((repeatCount < maxRepeat_) && (h != -1))
+			Index h = i;
+			while ((repeatCount < maxRepeat_) && (h != Media::ill()))
 			{
 				h = entry_->matchNext(media, h, tokenFactory, parentToken, state);
-				if (h != -1) {
+				if (h != Media::ill()) {
 					i = h;
 					++repeatCount;
 				}
 			}
 			if ((repeatCount < minRepeat_) || (maxRepeat_ < repeatCount))
-				i = -1;
+				i = Media::ill();
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			rollBackOnFailure(i, parentToken, lastChildSaved);
@@ -283,12 +284,12 @@ public:
 	class BoiNode: public Node
 	{
 	public:
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (i != 0)
-				i = -1;
+				i = Media::ill();
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -298,13 +299,13 @@ public:
 	class EoiNode: public Node
 	{
 	public:
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			bool eoi = (!media->def(i)) && ((i == 0) || (media->def(i - 1)));
 			if (!eoi)
-				i = -1;
+				i = Media::ill();
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -318,15 +319,15 @@ public:
 			: entry_(entry)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 			
 			bool found = false;
 			while (media->def(i) || media->def(i - 1)) {
-				int h = entry_->matchNext(media, i, tokenFactory, parentToken, state);
-				if (h != -1) {
+				Index h = entry_->matchNext(media, i, tokenFactory, parentToken, state);
+				if (h != Media::ill()) {
 					found = true;
 					i = h;
 					break;
@@ -334,9 +335,9 @@ public:
 				++i;
 			}
 			if (!found)
-				i = -1;
+				i = Media::ill();
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			rollBackOnFailure(i, parentToken, lastChildSaved);
@@ -356,20 +357,20 @@ public:
 			  secondChoice_(secondChoice)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 			
-			int h = (firstChoice_) ? firstChoice_->matchNext(media, i, tokenFactory, parentToken, state) : i;
-			if (h == -1) {
+			Index h = (firstChoice_) ? firstChoice_->matchNext(media, i, tokenFactory, parentToken, state) : i;
+			if (h == Media::ill()) {
 				rollBackOnFailure(h, parentToken, lastChildSaved);
 				h = (secondChoice_) ? secondChoice_->matchNext(media, i, tokenFactory, parentToken, state) : i;
 				rollBackOnFailure(h, parentToken, lastChildSaved);
 			}
 			i = h;
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			rollBackOnFailure(i, parentToken, lastChildSaved);
@@ -390,19 +391,19 @@ public:
 			  invert_(invert)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 			
-			int h = i;
+			Index h = i;
 			if (entry_)
 				h = entry_->matchNext(media, i, 0, parentToken, state);
 			
-			if ((h == -1) ^ invert_)
-				i = -1;
+			if ((h == Media::ill()) ^ invert_)
+				i = Media::ill();
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			rollBackOnFailure(i, parentToken, lastChildSaved);
@@ -424,20 +425,20 @@ public:
 			  entry_(entry)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 			
-			int h = entry_->matchNext(media, i, tokenFactory, parentToken, state);
-			if (h != -1) {
+			Index h = entry_->matchNext(media, i, tokenFactory, parentToken, state);
+			if (h != Media::ill()) {
 				int d = h - i;
 				if ((d < minLength_) || (maxLength_ < d))
-					h = -1;
+					h = Media::ill();
 			}
 			i = h;
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			rollBackOnFailure(i, parentToken, lastChildSaved);
@@ -465,7 +466,7 @@ public:
 			  isVoid_(isVoid)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			check(!next_);
 			
@@ -477,11 +478,11 @@ public:
 					parentToken->appendChild(token);
 			}
 			
-			int i0 = i;
+			Index i0 = i;
 			i = (entry_) ? entry_->matchNext(media, i, tokenFactory, token, state) : i;
 		
 			if (tokenFactory) {
-				if (i != -1) {
+				if (i != Media::ill()) {
 					if ((isVoid_) && (parentToken)) {
 						parentToken->appendAllChildrenOf(token);
 						token->unlink();
@@ -536,14 +537,14 @@ public:
 			: LinkNode(ruleName)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 			
 			i = LinkNode::rule_->matchNext(media, i, tokenFactory, parentToken, state);
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			rollBackOnFailure(i, parentToken, lastChildSaved);
@@ -559,11 +560,11 @@ public:
 			: LinkNode(ruleName)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			i = LinkNode::rule_->entry_->matchNext(media, i, tokenFactory, parentToken, state);
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -579,9 +580,9 @@ public:
 			  keyword_(-1)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			int h = -1;
+			Index h = Media::ill();
 			if (parentToken) {
 				Ref<Token> sibling = parentToken->previousSibling();
 				if (sibling)
@@ -591,7 +592,7 @@ public:
 			}
 			i = h;
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -614,11 +615,11 @@ public:
 			  self_(self)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			i = callBack_(self_, media, i, state);
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -637,11 +638,11 @@ public:
 			  value_(value)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			*state->flag(flagId_) = value_;
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -661,7 +662,7 @@ public:
 			  falseBranch_(falseBranch)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (*state->flag(flagId_)) {
 				if (trueBranch_)
@@ -672,7 +673,7 @@ public:
 					i = falseBranch_->matchNext(media, i, tokenFactory, parentToken, state);
 			}
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -691,14 +692,14 @@ public:
 			: charId_(charId)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (media->def(i))
 				*state->character(charId_) = media->get(i++);
 			else
-				i = -1;
+				i = Media::ill();
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -716,11 +717,11 @@ public:
 			  value_(value)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			*state->character(charId_) = value_;
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -739,17 +740,17 @@ public:
 			  invert_(invert)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			if (media->def(i)) {
 				Char ch = media->get(i++);
 				if ((ch != *state->character(charId_)) ^ invert_)
-					i = -1;
+					i = Media::ill();
 			}
 			else
-				i = -1;
+				i = Media::ill();
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -768,7 +769,7 @@ public:
 			  coverage_(coverage)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -776,7 +777,7 @@ public:
 			int i0 = i;
 			i = coverage_->matchNext(media, i, 0, parentToken, state);
 			
-			if (i != -1)
+			if (i != Media::ill())
 			{
 				if (parentToken) {
 					while (parentToken->lastChild() != lastChildSaved)
@@ -789,7 +790,7 @@ public:
 					string->set(k - i0, media->get(k));
 			}
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -807,7 +808,7 @@ public:
 			: stringId_(stringId)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			Array<Char>* string = state->string(stringId_);
 			int k = 0, m = string->length();
@@ -819,9 +820,9 @@ public:
 			}
 			
 			if (k != m)
-				i = -1;
+				i = Media::ill();
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -844,7 +845,7 @@ public:
 			  coverage_(coverage)
 		{}
 		
-		virtual int matchNext(Media* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			State* childState = 0;
 			if (state) {
@@ -860,9 +861,9 @@ public:
 			if (coverage_) {
 				Ref<Token> lastChildSaved;
 				if (parentToken) lastChildSaved = parentToken->lastChild();
-				int i0 = i;
+				Index i0 = i;
 				i = coverage_->matchNext(media, i, 0, parentToken, state);
-				if (i != -1) {
+				if (i != Media::ill()) {
 					if (parentToken) {
 						while (parentToken->lastChild() != lastChildSaved)
 							parentToken->lastChild()->unlink();
@@ -875,7 +876,7 @@ public:
 				i = definition_->matchNext(media, i, tokenFactory, parentToken, childState);
 			}
 			
-			if ((i != -1) && (next_))
+			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
@@ -1133,9 +1134,9 @@ public:
 			return state;
 		}
 		
-		Ref<Token, Owner> find(Media* media, int* i0, int* i1 = 0, Ref<TokenFactory> tokenFactory = 0)
+		Ref<Token, Owner> find(Media* media, Index* i0, Index* i1 = 0, Ref<TokenFactory> tokenFactory = 0)
 		{
-			int i = *i0;
+			Index i = *i0;
 			Ref<Token, Owner> rootToken;
 			while (media->def(i)) {
 				if (rootToken = match(media, i, i1, 0, tokenFactory))
@@ -1146,7 +1147,7 @@ public:
 			return rootToken;
 		}
 		
-		Ref<Token, Owner> match(Media* media, int i0 = 0, int* i1 = 0, /*Ref<Token, Owner>* rootToken = 0,*/ State* state = 0, Ref<TokenFactory> tokenFactory = 0)
+		Ref<Token, Owner> match(Media* media, Index i0 = 0, Index* i1 = 0, State* state = 0, Ref<TokenFactory> tokenFactory = 0)
 		{
 			if (scope_) scope_->link();
 			else LINK();
@@ -1161,13 +1162,12 @@ public:
 			if (!tokenFactory)
 				tokenFactory = &localTokenFactory;
 			
-			int h = matchNext(media, i0, tokenFactory, 0, state);
+			Index h = matchNext(media, i0, tokenFactory, 0, state);
 			
-			if ((i1 != 0) && (h != -1))
+			if ((i1 != 0) && (h != Media::ill()))
 				*i1 = h;
 			
-			if (h == -1) return 0;
-			return tokenFactory->rootToken();
+			return (h != Media::ill()) ? tokenFactory->rootToken() : Ref<Token>();
 		}
 		
 		Ref<RuleNode> ruleByName(const char* name)

@@ -13,7 +13,7 @@
 namespace ftl
 {
 
-class IntegerLiteral: public Syntax<StringMedia>::Definition
+class IntegerLiteral: public Syntax<ByteArray>::Definition
 {
 public:
 	IntegerLiteral();

@@ -44,7 +44,7 @@ public:
 	inline int blockSize() const { return blockSize_; }
 	
 	Ref<Block> allocate();
-	Ref<StringMedia, Owner> join() const;
+	Ref<ByteArray, Owner> join() const;
 	
 private:
 	int blockSize_;

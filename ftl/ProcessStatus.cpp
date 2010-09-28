@@ -77,7 +77,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	{
 		// extract command name first, because it may contain whitespace
 		int i0 = line->find('(') + 1, i1 = line->find(')');
-		commandName_ = String::fromUtf8(line, i0, i1 - i0);
+		commandName_ = line->copy(i0, i1);
 		for (int i = i0; i < i1; ++i)
 			line->set(i, 'x');
 	}

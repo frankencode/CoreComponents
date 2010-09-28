@@ -82,7 +82,7 @@ bool FormatSpecifier::find(Ref<String::Media> text, int* i0, int* i1, int* w, in
 		
 		while (token)
 		{
-			String value = String::fromUtf8(text, token->index(), token->length());
+			String value = text->copy(token->i0(), token->i1());
 			
 			if (token->rule() == width_)
 			{
