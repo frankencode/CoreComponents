@@ -61,6 +61,9 @@ public:
 	inline int length() const { return size_; }
 	inline bool isEmpty() const { return size_ == 0; }
 	
+	static inline int ill() { return -1; }
+	static inline bool ill(int i) { return i < 0; }
+	
 	inline bool def(int i) const {
 		if (i < 0) i += size_;
 		return (0 <= i) && (i < size_);
@@ -127,7 +130,7 @@ private:
 	T* data_;
 };
 
-typedef Array<char, DeepCopyZeroTerminatedArray> StringMedia;
+typedef Array<char, DeepCopyZeroTerminatedArray> ByteArray;
 
 } // namespace ftl
 

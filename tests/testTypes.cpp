@@ -42,6 +42,7 @@ void testFloat754()
 	print("sizeof(Ref<Instance, Owner>) = %%\n", int(sizeof(Ref<Instance, Owner>)));
 	print("sizeof(Ref<Instance, SetNull>) = %%\n", int(sizeof(Ref<Instance, SetNull>)));
 	print("sizeof(String) = %%\n", int(sizeof(String)));
+	print("sizeof(String::Index) = %%\n", int(sizeof(String::Index)));
 	print("sizeof(Format) = %%\n", int(sizeof(Format)));
 }
 

@@ -61,7 +61,7 @@ String File::name() const
 	
 	String name;
 	if (i < n)
-		name = String::fromUtf8(path_, i, n - i);
+		name = path_->copy(i, n);
 	
 	return name;
 }

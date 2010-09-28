@@ -70,7 +70,7 @@ Path Path::makeAbsoluteRelativeTo(String currentDir) const
 	
 	absoluteParts->pushFront(absolutePath);
 	
-	return String::glue(absoluteParts, "/");
+	return String::join(absoluteParts, "/");
 }
 
 Path Path::makeAbsolute() const
@@ -93,7 +93,7 @@ String Path::fileNameSansFirstExtension() const
 {
 	Ref<StringList, Owner> parts = fileName().split(".");
 	parts->popBack();
-	return String::glue(parts, ".");
+	return String::join(parts, ".");
 }
 
 String Path::fileNameSansExtension() const
@@ -107,7 +107,7 @@ Path Path::reduce() const
 	Ref<StringList, Owner> parts = path_.split("/");
 	if (parts->length() > 0)
 		parts->popBack();
-	String resultPath = String::glue(parts, "/");
+	String resultPath = String::join(parts, "/");
 	if ((resultPath == "") && (isAbsolute()))
 		resultPath = "/";
 	return resultPath;

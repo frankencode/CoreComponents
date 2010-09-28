@@ -31,7 +31,7 @@ Format::Format(String format)
 			if (!specifier->find(format, &i0, &i1, &ph->w_, &ph->wi_, &ph->wf_, &ph->base_, &ph->exp_, &ph->blank_)) break;
 			
 			if (i0 != i0Saved)
-				get()->append(String::fromUtf8(format, i0Saved, i0 - i0Saved));
+				get()->append(format->copy(i0Saved, i0));
 			else
 				get()->append(String());
 			
@@ -48,7 +48,7 @@ Format::Format(String format)
 			i0Saved = i0;
 		}
 		if (i0Saved < format->size())
-			get()->append(String::fromUtf8(format, i0Saved, format->size() - i0Saved));
+			get()->append(format->copy(i0Saved, format->size()));
 	}
 	else if (!format->isEmpty()) {
 		get()->append(format);

@@ -46,7 +46,7 @@ Ref<Block> Buffer::allocate()
 	return newBlock;
 }
 
-Ref<StringMedia, Owner> Buffer::join() const
+Ref<ByteArray, Owner> Buffer::join() const
 {
 	int fill = 0;
 	{
@@ -56,7 +56,7 @@ Ref<StringMedia, Owner> Buffer::join() const
 			block = block->next_;
 		}
 	}
-	Ref<StringMedia, Owner> array = new StringMedia(fill);
+	Ref<ByteArray, Owner> array = new ByteArray(fill);
 	{
 		char* d = array->data();
 		Ref<Block> block = head_;

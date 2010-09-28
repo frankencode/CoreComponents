@@ -62,7 +62,7 @@ public:
 	template<class T>
 	inline Format& operator<<(const T& x) { return print(x); }
 	
-	// inline operator String() const { return String::glue(*this); }
+	// inline operator String() const { return String::join(*this); }
 	
 private:
 	enum { ExpAutoLimit = 6 };

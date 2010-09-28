@@ -13,7 +13,7 @@
 namespace ftl
 {
 
-class FloatLiteral: public Syntax<StringMedia>::Definition
+class FloatLiteral: public Syntax<ByteArray>::Definition
 {
 public:
 	FloatLiteral();

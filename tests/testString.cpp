@@ -6,11 +6,6 @@ namespace ftl
 
 int main(int argc, char** argv)
 {
-	{
-		String userName = " tHomas\tMUELLER ";
-		print("String(\"%%\").normalized() = \"%%\"\n", userName, userName.normalized());
-	}
-	
 	if (argc != 2) {
 		print("Usage: %% [FILE]\n", File(argv[0]).name());
 		return 0;
@@ -34,18 +29,18 @@ int main(int argc, char** argv)
 	for (String::Index i = text.first(); i.valid(); ++i) ++nf;
 	for (String::Index i = text.last(); i.valid(); --i) ++nb;
 	
-	/*print("======================\n");
+	print("======================\n");
 	
 	for (String::Index i = text.last(); i.valid(); --i) {
 		uchar_t ch = text.get(i);
-		print("text[0x%%] = %% / '%%'\n", i.pos() - i.data(), ch, Char(ch));
+		print("text[0x%%] = %% / '%%'\n", i.pos() - i.data(), ch, text.copy(i, i+1));
 	}
 	
 	print("----------------------\n");
 	
 	for (String::Index i = text.first(); i.valid(); ++i) {
 		uchar_t ch = text.get(i);
-		print("text[0x%%] = %% / '%%'\n", i.pos() - i.data(), ch, Char(ch));
+		print("text[0x%%] = %% / '%%'\n", i.pos() - i.data(), ch, text.copy(i, i+1));
 	}
 	
 	print("nf, nb = %%, %%\n", nf, nb);
@@ -54,7 +49,7 @@ int main(int argc, char** argv)
 		return 3;
 	}
 	
-	print("----------------------\n");*/
+	print("----------------------\n");
 	
 	{
 		String s("123x");

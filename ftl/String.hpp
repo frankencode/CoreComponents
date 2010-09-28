@@ -23,16 +23,19 @@ class Variant;
 
 typedef List<String> StringList;
 
-class String: public Ref<StringMedia, Owner>
+class String: public Ref<ByteArray, Owner>, public Sequence<uchar_t, Utf8Walker>
 {
 public:
-	typedef StringMedia Media;
+	typedef ByteArray Media;
 	typedef Ref<Media, Owner> Super;
 	typedef Utf8Walker Index;
 	typedef uchar_t Item;
 	
 	// initialize empty string
 	String(): Super(new Media) {}
+	
+	// initialize string by a given string media
+	String(const Ref<Media, Owner>& media): Super(media) {}
 	
 	// initialize string from a shallow copy of another string
 	String(const String& b): Super(b.Super::get()) {}
@@ -43,31 +46,22 @@ public:
 	// initialize string from a variant
 	String(const Variant& b);
 	
-	// initialize string by deep-copying an UTF8 encoded string
+	// initialize string by deep-copying a byte array
 	String(const char* data, int size = -1) {
 		if (size < 0) size = str::len(data);
-		validate(data, size);
 		assign(data, size);
-	}
-	
-	// initialize string by a given string media
-	String(const Ref<Media, Owner>& media) {
-		validate(media->data(), media->size());
-		set(media);
 	}
 	
 	// alternative construction methods
 	static inline String uninitialized(int size) { return String(size); }
 	static inline String initialized(int size, char zero) { return String(size, zero); }
-	static inline String unvalidated(const char* data, int size = -1) {
-		if (size < 0) size = str::len(data);
+	
+	// counterpart to StringList::join()
+	static inline String join(Ref<StringList> parts, const char* sep = "") {
 		String s;
-		s.assign(data, size);
+		s.assign(parts, sep);
 		return s;
 	}
-	static inline String fromUtf8(const char* data, int size = -1) { return String(data, size); }
-	static inline String fromUtf8(Ref<Media> media, int i = 0, int n = -1) { return String(media, i, n); }
-	static inline String glue(Ref<StringList> parts, const char* sep = "") { String s; s.assign(parts, sep); return s; }
 	
 	// assign a shallow copy of another string
 	inline String& operator=(const String& b) {
@@ -75,7 +69,7 @@ public:
 		return *this;
 	}
 	
-	// assign a copy of an UTF8 encoded string
+	// assign a deep copy of a byte array
 	inline String& operator=(const char* data) {
 		String b(data);
 		Super::set(b.media());
@@ -97,12 +91,13 @@ public:
 	
 	inline bool isEmpty() const { return media()->isEmpty(); }
 	
-	inline bool def(const Index& index) const {
-		check(!media()->isEmpty());
+	static inline int ill() { return Index(); }
+	
+	inline bool def(Index index) const {
 		check(index.data() == media()->data());
 		return index.valid();
 	}
-	inline uchar_t get(const Index& index) const {
+	inline uchar_t get(Index index) const {
 		check(!media()->isEmpty());
 		check(index.data() == media()->data());
 		return index.getChar();
@@ -121,10 +116,7 @@ public:
 	
 	inline Index find(const char* pattern) const { return find(first(), pattern); }
 	inline bool contains(const char* pattern) const { return find(first(), pattern).valid(); }
-	inline String replace(const char* pattern, const char* replacement) {
-		Ref<StringList, Owner> parts = split(pattern);
-		return String::glue(parts, replacement);
-	}
+	inline String replace(const char* pattern, const char* replacement) { return split(pattern)->join(replacement); }
 	
 	inline bool operator< (const String& b) const { return str::cmp((*this)->data(), b->data()) <  0; }
 	inline bool operator==(const String& b) const { return str::cmp((*this)->data(), b->data()) == 0; }
@@ -154,15 +146,6 @@ protected:
 	// initialize string with defined size and defined content
 	explicit String(int size, char zero): Super(new Media(size, zero)) {
 		check(0 <= zero);
-	}
-	
-	// initialize string by deep-copying an UTF8 encoded sub-string
-	explicit String(Ref<Media> media, int i = 0, int n = -1) {
-		if (n < 0) n = media->size();
-		const char* data = media->pointerAt(i);
-		int size = media->pointerAt(i + n - 1) - media->pointerAt(i) + 1;
-		validate(data, size);
-		assign(data, size);
 	}
 	
 	// validate input string and throw StreamIoException if not a valid UTF8 string
@@ -205,4 +188,4 @@ inline bool operator>=(const String& a, char* b) { return str::cmp(a->data(), b)
 
 } // namespace ftl
 
-#endif // PON
+#endif // FTL_STRING_HPP
