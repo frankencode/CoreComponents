@@ -166,6 +166,9 @@ public:
 		return n;
 	}
 	
+	// byte position in string (Token always work in byte position)
+	inline operator int() const { return p_ - s_; }
+	
 private:
 	static inline const uint8_t* beforeBegin() {
 		return reinterpret_cast<const uint8_t*>("\0") + 1; // extra zero to signal before begin position

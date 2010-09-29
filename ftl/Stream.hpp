@@ -16,7 +16,7 @@ namespace ftl
 FTL_EXCEPTION(StreamException, Exception);
 FTL_EXCEPTION(StreamSemanticException, StreamException);
 FTL_EXCEPTION(StreamIoException, StreamException);
-FTL_EXCEPTION(StreamEncodingException, StreamIoException);
+FTL_EXCEPTION(EncodingException, StreamIoException);
 
 class Stream: public Instance
 {

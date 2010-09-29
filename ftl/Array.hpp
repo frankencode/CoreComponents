@@ -61,6 +61,9 @@ public:
 	inline int length() const { return size_; }
 	inline bool isEmpty() const { return size_ == 0; }
 	
+	inline int first() const { return 0; }
+	inline int last() const { return size_ - 1; }
+	
 	static inline int ill() { return -1; }
 	static inline bool ill(int i) { return i < 0; }
 	

@@ -67,7 +67,7 @@ uchar_t Utf8Decoder::readMultiByte(uchar_t ch, bool* valid)
 	}
 	else {
 		if (n < 0)
-			FTL_THROW(StreamEncodingException, "Input data is not conforming to UTF8 multibyte encoding");
+			FTL_THROW(EncodingException, "Input data is not conforming to UTF-8 multibyte encoding");
 	}
 	
 	return ch;
