@@ -38,7 +38,7 @@ void Utf8Encoder::writeChar(uchar_t ch, bool* valid)
 				return;
 			}
 			else
-				FTL_THROW(StreamEncodingException, "UTF8 disallows encoding of UTF16 surrogate pairs 0xD800..0xDFFF");
+				FTL_THROW(EncodingException, "UTF-8 disallows encoding of UTF-16 surrogate pairs 0xD800..0xDFFF");
 		}
 		else if ((0xFDD0 <= ch) && (ch <= 0xFDEF)) {
 			if (valid) {
@@ -46,7 +46,7 @@ void Utf8Encoder::writeChar(uchar_t ch, bool* valid)
 				return;
 			}
 			else
-				FTL_THROW(StreamEncodingException, "UTF8 disallows encoding of non-characters 0xFDD0..0xFDEF");
+				FTL_THROW(EncodingException, "UTF-8 disallows encoding of non-characters 0xFDD0..0xFDEF");
 		}
 		byteEncoder_.writeUInt8((ch >> 12) | 0xE0);         // 0xE = (1110)2, code prefix: (1110)2
 		byteEncoder_.writeUInt8(((ch >> 6) & 0x3F) | 0x80); // 0x8 = (1000)2, code prefix: (10)2
@@ -59,7 +59,7 @@ void Utf8Encoder::writeChar(uchar_t ch, bool* valid)
 				return;
 			}
 			else
-				FTL_THROW(StreamEncodingException, "UTF8 disallows encoding of non-characters 0x??FFFE,0x??FFFF");
+				FTL_THROW(EncodingException, "UTF8 disallows encoding of non-characters 0x??FFFE,0x??FFFF");
 		}
 		byteEncoder_.writeUInt8((ch >> 18) | 0xF);           // 0xF = (1111)2, code prefix: (11110)2
 		byteEncoder_.writeUInt8(((ch >> 12) & 0x3F) | 0x80); // 0x8 = (1000)2, code prefix: (10)2
@@ -72,7 +72,7 @@ void Utf8Encoder::writeChar(uchar_t ch, bool* valid)
 			return;
 		}
 		else
-			FTL_THROW(StreamEncodingException, "UTF8 disallows encoding of code points above 0x10FFFF");
+			FTL_THROW(EncodingException, "UTF8 disallows encoding of code points above 0x10FFFF");
 	}
 }
 

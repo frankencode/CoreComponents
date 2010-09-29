@@ -5,8 +5,8 @@
  *
  * See ../COPYING for the license.
  */
-#ifndef FTL_CONTAINER_HPP
-#define FTL_CONTAINER_HPP
+#ifndef FTL_CONTAINERS_HPP
+#define FTL_CONTAINERS_HPP
 
 #include "atoms"
 
@@ -103,4 +103,4 @@ private:
 
 } // namespace ftl
 
-#endif // FTL_CONTAINER_HPP
+#endif // FTL_CONTAINERS_HPP
