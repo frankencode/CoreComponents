@@ -95,17 +95,14 @@ protected:
 
 	int min(int i, int j, int k)
 	{
-		if (below(buf_[i], buf_[j]) && below(buf_[i], buf_[k])) return i;
-		if (below(buf_[j], buf_[i]) && below(buf_[j], buf_[k])) return j;
-		return k;
+		int h = below(buf_[i], buf_[j]) ? i : j;
+		return below(buf_[h], buf_[k]) ? h : k;
 	}
 	
 	void passUpLast()
 	{
 		if (fill_ == 1) return;
-		
 		int i = fill_ - 1;
-		
 		while (i != 0) {
 			int j;
 			j = parent(i);
@@ -118,35 +115,25 @@ protected:
 	void passDownFromTop()
 	{
 		if (fill_ == 0) return;
-		
 		int i = 0;
-		
-		while (true)
-		{
+		while (true) {
 			int j, lc, rc;
 			lc = leftChild(i);
 			rc = rightChild(i);
-		
-			if ((lc < fill_) && ((rc < fill_)))
-			{
+			
+			if (rc < fill_) {
 				j = min(i, lc, rc);
 				if (j == i) break;
 				
 				xchg(i, j);
 				i = j;
-				
-				continue;
 			}
-			
-			if (lc < fill_) {
-				if (below(buf_[i], buf_[lc])) xchg(i, lc);
+			else if (lc < fill_) {
+				if (below(buf_[lc], buf_[i])) xchg(i, lc);
+				break;
 			}
 			else
-			if (rc < fill_) {
-				if (below(buf_[i], buf_[rc])) xchg(i, rc);
-			}
-			
-			break;
+				break;
 		}
 	}
 };

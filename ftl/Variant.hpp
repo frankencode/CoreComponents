@@ -44,11 +44,11 @@ public:
 		PathType     = 32 | RefType | StringType
 	};
 	
-	Variant()                    :                   type_(UndefType) {}
-	Variant(bool value)          : int_(value),      type_(BoolType)  {}
-	Variant(int value)           : int_(value),      type_(IntType)   {}
-	Variant(float value)         : float_(value),    type_(FloatType) {}
-	Variant(double value)        : float_(value),    type_(FloatType) {}
+	Variant()                    : type_(UndefType)                {}
+	Variant(bool value)          : type_(BoolType),  int_(value)   {}
+	Variant(int value)           : type_(IntType),   int_(value)   {}
+	Variant(float value)         : type_(FloatType), float_(value) {}
+	Variant(double value)        : type_(FloatType), float_(value) {}
 	Variant(const char* value)   : type_(StringType) { initRef(String(value).media()); }
 	Variant(Ref<Instance> value) : type_(RefType)    { initRef(value); }
 	Variant(String value)        : type_(StringType) { initRef(value.media()); }

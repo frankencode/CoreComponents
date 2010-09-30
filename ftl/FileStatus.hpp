@@ -25,6 +25,7 @@ class FileStatus: public StructStat, public Instance
 public:
 	FileStatus(int fd);
 	FileStatus(String path);
+	FileStatus(Ref<SystemStream> stream);
 	
 	inline String path() const { return path_; }
 	

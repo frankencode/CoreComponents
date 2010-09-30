@@ -25,6 +25,12 @@ FileStatus::FileStatus(String path)
 	update();
 }
 
+FileStatus::FileStatus(Ref<SystemStream> stream)
+	: fd_(stream->fd())
+{
+	update();
+}
+
 void FileStatus::setTimes(Time lastAccess, Time lastModified)
 {
 	struct timeval tv[2];

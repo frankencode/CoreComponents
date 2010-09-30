@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 	commandLine.details(
 		"If no options are selected the default assumption is -mlogstnu.\n"
 		"\n"
-		"Report bugs to <support@xyz.org>"
+		"Report bugs to <frank@cyblogic.de>"
 	);
 	commandLine.entity("FILE");
 	

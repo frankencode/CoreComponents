@@ -66,6 +66,7 @@ public:
 	// non-casting conversions
 	
 	inline operator T*() const { return this->get(); }
+	// inline operator T&() const { return *(this->get()); }
 	
 	template<template<class> class GetAndSetPolicy2>
 	inline operator Ref<T, GetAndSetPolicy2>() const { return Ref<T, GetAndSetPolicy2>(this->get()); }

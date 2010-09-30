@@ -6,7 +6,7 @@ namespace ftl
 
 int main(int argc, char** argv)
 {
-	int pid = Process::currentProcessId();
+	int pid = Process::currentId();
 	ProcessStatus status(pid);
 	print("status.processId() = %%\n", status.processId());
 	print("status.parentProcessId() = %%\n", status.parentProcessId());

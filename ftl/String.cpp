@@ -13,6 +13,7 @@
 #include "FloatLiteral.hpp"
 #include "Format.hpp"
 #include "Variant.hpp"
+#include "Path.hpp"
 #include "String.hpp"
 
 namespace ftl
@@ -26,6 +27,10 @@ String::String(const Format& b)
 {
 	*this = String::join(b);
 }
+
+String::String(const Path& b)
+	: Super(b.toString().media())
+{}
 
 void String::validate(const char* data, int size)
 {

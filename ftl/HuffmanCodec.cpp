@@ -6,10 +6,16 @@
  * See ../COPYING for the license.
  */
 
-#define FTL_HUFFMANCODEC_PROFILING
+// #define FTL_HUFFMANCODEC_PROFILING
 // #define FTL_HUFFMANCODEC_DEBUG_STATISTICS
 
+#ifdef FTL_HUFFMANCODEC_PROFILING
 #include "stdio"
+#else
+#ifdef FTL_HUFFMANCODEC_DEBUG_STATISTICS
+#include "stdio"
+#endif
+#endif
 #include "HuffmanCodec.hpp"
 
 namespace ftl

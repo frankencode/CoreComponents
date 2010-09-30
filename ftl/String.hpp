@@ -20,6 +20,7 @@ namespace ftl
 class String;
 class Format;
 class Variant;
+class Path;
 
 typedef List<String> StringList;
 
@@ -40,11 +41,10 @@ public:
 	// initialize string from a shallow copy of another string
 	String(const String& b): Super(b.Super::get()) {}
 	
-	// initialize string from a format
+	// helper constructors
 	String(const Format& b);
-	
-	// initialize string from a variant
 	String(const Variant& b);
+	String(const Path& b);
 	
 	// initialize string by deep-copying a byte array
 	String(const char* data, int size = -1) {
