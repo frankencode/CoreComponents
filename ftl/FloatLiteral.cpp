@@ -59,14 +59,14 @@ FloatLiteral::FloatLiteral()
 	LINK();
 }
 
-bool FloatLiteral::match(Ref<String::Media> text, int i0, int* i1, float64_t* value)
+bool FloatLiteral::match(Ref<ByteArray> text, int i0, int* i1, float64_t* value)
 {
-	Ref<Token, Owner> rootToken = Syntax<String::Media>::Definition::match(text, i0, i1);
+	Ref<Token, Owner> rootToken = Syntax<ByteArray>::Definition::match(text, i0, i1);
 	if (rootToken) *value = read(text, rootToken);
 	return rootToken;
 }
 
-float64_t FloatLiteral::read(Ref<String::Media> text, Ref<Token> rootToken) const
+float64_t FloatLiteral::read(Ref<ByteArray> text, Ref<Token> rootToken) const
 {
 	float64_t value;
 	

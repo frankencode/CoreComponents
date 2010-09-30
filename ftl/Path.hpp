@@ -35,7 +35,8 @@ public:
 	
 	static Path lookup(Ref<StringList> dirs, String fileName, int accessFlags = File::Exists);
 	
-	operator String() const;
+	inline operator String() const { return path_; }
+	inline String toString() const { return path_; }
 	
 private:
 	String path_;

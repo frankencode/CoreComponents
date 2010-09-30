@@ -111,7 +111,7 @@ class CastHelper {};
 template<class T, class U>
 class CastHelper<T, U, 0> {
 public:
-	inline static U* cast(T* p) { return DynamicCastHelper<T, U, ConversionFromTo<const U*, const T*>::Exists>::cast(p); }
+	inline static U* cast(T* p) { return DynamicCastHelper<T, U, ConversionFromTo<U*, T*>::Exists>::cast(p); }
 };
 
 template<class T, class U>
@@ -120,7 +120,7 @@ public:
 	inline static U* cast(T* p) { return static_cast<U*>(p); }
 };
 
-#define FTL_CAST_FROM_TO(T, U, p) CastHelper<T, U, ConversionFromTo<const T*, const U*>::Exists>::cast(p)
+#define FTL_CAST_FROM_TO(T, U, p) CastHelper<T, U, ConversionFromTo<T*, U*>::Exists>::cast(p)
 
 typedef uint32_t uchar_t;
 

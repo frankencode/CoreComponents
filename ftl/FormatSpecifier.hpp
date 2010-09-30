@@ -9,16 +9,15 @@
 #define FTL_FORMATSPECIFIER_HPP
 
 #include "Syntax.hpp"
-#include "String.hpp"
 
 namespace ftl
 {
 
-class FormatSpecifier: public Syntax<String::Media>::Definition
+class FormatSpecifier: public Syntax<ByteArray>::Definition
 {
 public:
 	FormatSpecifier();
-	bool find(Ref<String::Media> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, char* blank);
+	bool find(Ref<ByteArray> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, char* blank);
 	
 private:
 	int width_;

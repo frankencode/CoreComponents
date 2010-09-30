@@ -14,8 +14,9 @@ namespace ftl
 {
 
 class TokenScreen;
+class Token;
 
-class Token: public Tree
+class Token: public Tree<Token>
 {
 public:
 	Token()

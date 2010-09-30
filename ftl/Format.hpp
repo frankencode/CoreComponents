@@ -30,6 +30,7 @@ public:
 	Format& operator=(const Format& b);
 	
 	inline Format& print(String s) { get()->insert(get()->index(nextPlaceHolder()->j_), s); return *this; }
+	inline Format& print(Path p) { return print(p.toString()); }
 	inline Format& print(const char* s) { return print(String(s)); }
 	
 	inline Format& print(char ch) { get()->insert(get()->index(nextPlaceHolder()->j_), String(&ch, 1)); return *this; }

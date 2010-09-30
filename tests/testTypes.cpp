@@ -44,6 +44,7 @@ void testFloat754()
 	print("sizeof(String) = %%\n", int(sizeof(String)));
 	print("sizeof(String::Index) = %%\n", int(sizeof(String::Index)));
 	print("sizeof(Format) = %%\n", int(sizeof(Format)));
+	print("sizeof(Variant) = %%\n", int(sizeof(Variant)));
 }
 
 int main()

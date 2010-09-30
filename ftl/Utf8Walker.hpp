@@ -1,5 +1,5 @@
 /*
- * Utf8Walker.hpp -- UTF8 character walker
+ * Utf8Walker.hpp -- UTF-8 character walker
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *

@@ -8,93 +8,102 @@
 #ifndef FTL_VARIANT_HPP
 #define FTL_VARIANT_HPP
 
+#include <new>
 #include "atoms"
 #include "String.hpp"
+#include "Path.hpp"
 
 namespace ftl
 {
 
-FTL_EXCEPTION(VariantException, Exception);
+// #ifdef __GNUC__
+// #pragma pack(push,1)
+// #endif
 
-/** A variable of type 'Variant' can take any value of any type.
-  * A variant is passed by value like a 'String'. If converting
-  * back to a specific type, the specific type must match the
-  * variant's type or an exception of type 'VariantException' will
-  * be thrown.
-  *
-  * Example:
-  *   Variant s = "abc", x = 3.4, y = 2;
-  *   print("s = %%\n", String(s)); // OK
-  *   print("x = %%\n", int(x)); // throws exception
-  *   print("y = %%\n", int(y)); // OK
-  *   int z = int(x) + int(y); // OK
-  *   if (x.type() == Variant::IntType) { // discriminate on type
-  *     int i = x;
-  *     ... do smth ...
-  *   }
+/** A variant can represent many different types.
+  * The type of a variant is defined implicitly at construction time or on assignment.
+  * Variants automatically cast to bool, int, float, String and Ref<Instance> if the
+  * variant type is compatible with the target type requested by an expression.
+  * In debug mode a DebugException will be thrown on illegal type casts.
+  * You can check for type compatibility using compatibleTo() and for exact type match
+  * by comparing type().
+  * Variants can be copied by value. The size of a variant is ranges from 5 to 12 bytes
+  * depending on compiler and platform.
+  * Variants provide 32 bit precision for both integer and floating point values.
   */
-class Variant: public Instance
+class Variant
 {
 public:
-	enum Type { UndefType = 0, BoolType = 1, IntType = 2, FloatType = 4, StringType = 8, RefType = 16 };
+	enum Type {
+		UndefType    = 0,
+		IntType      = 1,
+		BoolType     = 2 | IntType,
+		FloatType    = 4,
+		RefType      = 8,
+		StringType   = 16 | RefType,
+		PathType     = 32 | RefType | StringType
+	};
 	
-	Variant(): type_(UndefType) {}
-	Variant(bool value): type_(BoolType), float_(value) {}
-	Variant(int value): type_(IntType), float_(value) {}
-	Variant(double value): type_(FloatType), float_(value) {}
-	Variant(const char* value): type_(StringType), ref_(String(value).media()) {}
-	Variant(Ref<String::Media, Owner> value): type_(StringType), ref_(value) {}
-	Variant(String value): type_(StringType), ref_(value.media()) {}
-	Variant(Ref<Instance> value): type_(RefType), ref_(value) {}
+	Variant()                    :                   type_(UndefType) {}
+	Variant(bool value)          : int_(value),      type_(BoolType)  {}
+	Variant(int value)           : int_(value),      type_(IntType)   {}
+	Variant(float value)         : float_(value),    type_(FloatType) {}
+	Variant(double value)        : float_(value),    type_(FloatType) {}
+	Variant(const char* value)   : type_(StringType) { initRef(String(value).media()); }
+	Variant(Ref<Instance> value) : type_(RefType)    { initRef(value); }
+	Variant(String value)        : type_(StringType) { initRef(value.media()); }
+	Variant(Path value)          : type_(PathType)   { initRef(value.toString().media()); }
+	~Variant()                                       { if (type_ & RefType) killRef(); }
 	
-	inline const Variant& operator=(bool value) { type_ = BoolType; float_ = value;  return *this; }
-	inline const Variant& operator=(int value) { type_ = IntType; float_ = value; return *this; }
-	inline const Variant& operator=(double value) { type_ = FloatType; float_ = value; return *this; }
-	inline const Variant& operator=(Ref<String::Media, Owner> value) { type_ = StringType; ref_ = value; return *this; }
-	inline const Variant& operator=(const char* value) { type_ = StringType; ref_ = String(value).media(); return *this; }
-	inline const Variant& operator=(String value) { type_ = StringType; ref_ = value.media(); return *this; }
-	inline const Variant& operator=(Ref<Instance> value) { type_ = RefType; ref_ = value; return *this; }
+	inline const Variant& operator=(bool value)          { type_ = BoolType;   int_ = value; return *this; }
+	inline const Variant& operator=(int value)           { type_ = IntType;    int_ = value; return *this; }
+	inline const Variant& operator=(float value)         { type_ = FloatType;  float_ = value; return *this; }
+	inline const Variant& operator=(double value)        { type_ = FloatType;  float_ = value; return *this; }
+	inline const Variant& operator=(const char* value)   { type_ = StringType; setRef(String(value).media()); return *this; }
+	inline const Variant& operator=(String value)        { type_ = StringType; setRef(value.media()); return *this; }
+	inline const Variant& operator=(Path value)          { type_ = PathType;   setRef(value.toString().media()); return *this; }
+	inline const Variant& operator=(Ref<Instance> value) { type_ = RefType;    setRef(value); return *this; }
 	
-	Variant(const Variant& b)
-		: type_(b.type_),
-		  float_(b.float_),
-		  ref_(b.ref_)
-	{}
+	Variant(const Variant& b) { *this = b; }
 	
 	inline const Variant& operator=(const Variant& b) {
 		type_ = b.type_;
-		float_ = b.float_;
-		ref_ = b.ref_;
+		if (b.type_ & RefType)
+			ref() = b.ref();
+		else
+			int_ = b.int_;
 		return *this;
 	}
 	
 	inline int type() const { return type_; }
-	inline void require(int typeMask) { if ((type_ & typeMask) == 0) FTL_THROW(VariantException, ""); }
 	inline bool defined() const { return type_ != UndefType; }
+	inline bool compatibleTo(int type) { return type_ & type; }
 	
-	inline bool toBool() const { if (type_ != BoolType) FTL_THROW(VariantException, ""); return float_ != 0; }
-	inline int toInt() const { if (type_ != IntType) FTL_THROW(VariantException, ""); return int(float_); }
-	inline double toFloat() const { if (type_ != FloatType) FTL_THROW(VariantException, ""); return float_; }
-	inline String toString() const { if (type_ != StringType) FTL_THROW(VariantException, ""); return String(*this); }
+	inline bool toBool() const       { check(type_ & IntType,    illegalConversion()); return int_; }
+	inline int toInt() const         { check(type_ & IntType,    illegalConversion()); return int_; }
+	inline float toFloat() const     { check(type_ & FloatType,  illegalConversion()); return float_; }
+	inline String toString() const   { check(type_ & StringType, illegalConversion()); return String(*this); }
+	inline Path toPath() const       { check(type_ & StringType, illegalConversion()); return Path(String(*this)); }
 	template<class T>
-	inline Ref<T> toInstance() const { if ((type_ != StringType) && (type_ != RefType)) FTL_THROW(VariantException, ""); return Ref<T>(ref_); }
+	inline Ref<T> toInstance() const { check(type_ & RefType,    illegalConversion()); return ref(); }
 	
 	inline operator bool() const { return toBool(); }
 	inline operator int() const { return toInt(); }
-	inline operator double() const { return toFloat(); }
-	inline operator Ref<Instance>() const { if (type_ != RefType) FTL_THROW(VariantException, ""); return ref_; }
+	inline operator float() const { return toFloat(); }
+	inline operator Ref<Instance>() const { return toInstance<Instance>(); }
 	
 	bool operator==(const Variant& b) const
 	{
-		const int number = BoolType|IntType|FloatType;
 		bool equal = false;
 		
-		if (((type_ & number) != 0) && ((b.type_ & number) != 0))
+		if ((type_ & IntType) && (b.type_ & IntType))
+			equal = (int_ == b.int_);
+		else if ((type_ & FloatType) && (b.type_ & FloatType))
 			equal = (float_ == b.float_);
 		else if ((type_ == StringType) && (b.type_ == StringType))
 			equal = (String(*this) == String(b));
 		else if ((type_ == RefType) && (b.type_ == RefType))
-			equal = (ref_.get() == b.ref_.get());
+			equal = (ref().get() == b.ref().get());
 		else
 			equal = ((type_ == UndefType) && (b.type_ == UndefType));
 		
@@ -103,15 +112,16 @@ public:
 	
 	bool operator<(const Variant& b) const
 	{
-		const int number = BoolType|IntType|FloatType;
 		bool below = false;
 		
-		if (((type_ & number) != 0) && ((b.type_ & number) != 0))
+		if ((type_ & IntType) && (b.type_ & IntType))
+			below = (int_ < b.int_);
+		else if ((type_ & FloatType) && (b.type_ & FloatType))
 			below = (float_ < b.float_);
 		else if ((type_ == StringType) && (b.type_ == StringType))
 			below = (String(*this) < String(b));
 		else if ((type_ == RefType) && (b.type_ == RefType))
-			below = (ref_.get() < b.ref_.get());
+			below = (ref().get() < b.ref().get());
 		
 		return below;
 	}
@@ -122,10 +132,31 @@ public:
 	inline bool operator>=(const Variant& b) const { return (b < *this) || (*this == b); }
 	
 private:
-	int type_;
-	double float_;
-	Ref<Instance, Owner> ref_;
+	inline static const char* illegalConversion() { return "Illegal variant conversion."; }
+	
+	inline void initRef(Instance* instance) {
+		new(dummy_)Ref<Instance, Owner>(instance);
+	}
+	inline void killRef() {
+		ref().~Ref<Instance,Owner>();
+	}
+	inline void setRef(Instance* instance) const {
+		ref() = instance;
+	}
+	inline Ref<Instance, Owner>& ref() const {
+		return *reinterpret_cast<Ref<Instance, Owner>*>(dummy_);
+	}
+	char type_;
+	union {
+		int32_t int_;
+		float32_t float_;
+		mutable char dummy_[sizeof(Ref<Instance, Owner>)];
+	};
 };
+
+// #ifdef __GNUC__
+// #pragma pack(pop)
+// #endif
 
 } // namespace ftl
 
