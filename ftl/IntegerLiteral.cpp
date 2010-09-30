@@ -69,14 +69,14 @@ IntegerLiteral::IntegerLiteral()
 	LINK();
 }
 
-bool IntegerLiteral::match(Ref<String::Media> text, int i0, int* i1, uint64_t* value, int* sign)
+bool IntegerLiteral::match(Ref<ByteArray> text, int i0, int* i1, uint64_t* value, int* sign)
 {
-	Ref<Token, Owner> rootToken = Syntax<String::Media>::Definition::match(text, i0, i1);
+	Ref<Token, Owner> rootToken = Syntax<ByteArray>::Definition::match(text, i0, i1);
 	if (rootToken) read(text, rootToken, value, sign);
 	return rootToken;
 }
 
-void IntegerLiteral::read(Ref<String::Media> text, Ref<Token> rootToken, uint64_t* value, int* sign) const
+void IntegerLiteral::read(Ref<ByteArray> text, Ref<Token> rootToken, uint64_t* value, int* sign) const
 {
 	*sign = 1;
 	*value = 0;

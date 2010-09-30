@@ -5,22 +5,23 @@
  *
  * See ../COPYING for the license.
  */
-#ifndef FTL_PREFIXMAP_HPP
-#define FTL_PREFIXMAP_HPP
+#ifndef FTL_PREFIXTREE_HPP
+#define FTL_PREFIXTREE_HPP
 
 #include "types.hpp"
+#include "strings.hpp"
 #include "Tree.hpp"
-#include "LineSink.hpp"
 
 namespace ftl
 {
 
 template<class Char, class Value>
-class PrefixTree: public Tree
+class PrefixTree;
+
+template<class Char, class Value>
+class PrefixTree: public Tree< PrefixTree<Char, Value> >
 {
 public:
-	typedef PrefixTree Node;
-	
 	PrefixTree()
 		: ch_(Char()),
 		  defined_(false),
@@ -83,6 +84,8 @@ public:
 	}
 	
 protected:
+	typedef PrefixTree Node;
+	
 	PrefixTree(Char ch)
 		: ch_(ch),
 		  defined_(false)
@@ -157,7 +160,7 @@ protected:
 	{
 		ch = Filter<Char>::map(ch);
 		bool found = false;
-		Ref<Node> node = firstChild();
+		Ref<Node> node = this->firstChild();
 		while (node) {
 			found = (Filter<Char>::map(node->ch_) == ch);
 			if (found) break;
@@ -174,4 +177,4 @@ protected:
 
 } // namespace ftl
 
-#endif // FTL_PREFIXMAP_HPP
+#endif // FTL_PREFIXTREE_HPP

@@ -20,7 +20,8 @@ namespace ftl
 File::File(String path, int openFlags)
 	: SystemStream(-1),
 	  path_(path),
-	  openFlags_(0)
+	  openFlags_(0),
+	  unlinkWhenDone_(false)
 {
 	if (openFlags)
 		open(openFlags);
@@ -28,7 +29,8 @@ File::File(String path, int openFlags)
 
 File::File(int fd)
 	: SystemStream(fd),
-	  openFlags_(0)
+	  openFlags_(0),
+	  unlinkWhenDone_(false)
 {
 	if (fd == StandardInput)
 		openFlags_ = Read;
@@ -38,6 +40,12 @@ File::File(int fd)
 		openFlags_ = Write;
 	else
 		FTL_THROW(StreamSemanticException, "Invalid argument");
+}
+
+File::~File()
+{
+	if (unlinkWhenDone_)
+		unlink();
 }
 
 String File::path() const
@@ -155,6 +163,10 @@ void File::unlinkOnThreadExit()
 	threadExitEvent()->pushBack(new UnlinkFile(path_));
 }
 
+void File::unlinkWhenDone() {
+	unlinkWhenDone_ = true;
+}
+
 void File::open(int flags)
 {
 	int h = 0;
@@ -225,6 +237,16 @@ void File::dataSync()
 #else
 	sync();
 #endif
+}
+
+Ref<File, Owner> File::temp()
+{
+	Ref<File, Owner> file = new File("/tmp/XXXXXXXX");
+	file->createUnique();
+	file->unlinkWhenDone();
+	file->unlinkOnExit();
+	file->open(Read|Write);
+	return file;
 }
 
 } // namespace ftl

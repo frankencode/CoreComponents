@@ -138,7 +138,6 @@ SET(FTL_SOURCE
 	Crc32.cpp
 	
 	# container
-	Tree.cpp
 	
 	# syntax
 	Token.cpp

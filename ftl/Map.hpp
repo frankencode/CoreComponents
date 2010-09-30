@@ -33,27 +33,23 @@ public:
 	
 	Map() {}
 	
-	/** Insert a key-value pair. If 'oldValue' is null an existing mapping is preserved.
-	  * If oldValue is non-null an existing mapping is overwritten and the old value returned.
-	  * The function returns true if the new key-value pair was inserted successfully.
+	/** Insert a key-value mapping if no key-value mapping with the same key exists already.
+	  * If currentValue is non-null the current value the giving key maps to is returned.
+	  * The function returns true if the new key-value mapping was inserted successfully.
 	  */
-	inline bool insert(const Key& key, const Value& value, Value* oldValue = 0)
+	inline bool insert(const Key& key, const Value& value, Value* currentValue = 0)
 	{
-		bool found = false, success = false;
+		bool found = false;
 		Item e(key, value);
 		Node* k = find(e, &found);
 		if (found) {
-			if (oldValue) {
-				*oldValue = k->e_.value();
-				k->e_ = e;
-				success = true;
-			}
+			if (currentValue)
+				*currentValue = k->e_.value();
 		}
 		else {
 			spliceIn(k, new Node(e));
-			success = true;
 		}
-		return success;
+		return !found;
 	}
 	
 	inline bool remove(const Key& key)

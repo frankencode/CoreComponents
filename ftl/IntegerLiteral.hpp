@@ -17,8 +17,8 @@ class IntegerLiteral: public Syntax<ByteArray>::Definition
 {
 public:
 	IntegerLiteral();
-	bool match(Ref<String::Media> text, int i0, int* i1, uint64_t* value, int* sign);
-	void read(Ref<String::Media> text, Ref<Token> rootToken, uint64_t* value, int* sign) const;
+	bool match(Ref<ByteArray> text, int i0, int* i1, uint64_t* value, int* sign);
+	void read(Ref<ByteArray> text, Ref<Token> rootToken, uint64_t* value, int* sign) const;
 	
 private:
 	int sign_;

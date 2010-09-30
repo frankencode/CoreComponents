@@ -72,9 +72,9 @@ FormatSpecifier::FormatSpecifier()
 	LINK();
 }
 
-bool FormatSpecifier::find(Ref<String::Media> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, char* blank)
+bool FormatSpecifier::find(Ref<ByteArray> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, char* blank)
 {
-	Ref<Token, Owner> rootToken = Syntax<String::Media>::Definition::find(text, i0, i1);
+	Ref<Token, Owner> rootToken = Syntax<ByteArray>::Definition::find(text, i0, i1);
 	
 	if (rootToken)
 	{

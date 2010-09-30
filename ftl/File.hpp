@@ -71,6 +71,7 @@ public:
 	
 	File(String path, int openFlags = 0);
 	File(int fd);
+	~File();
 	
 	String path() const;
 	String name() const;
@@ -85,6 +86,7 @@ public:
 	void truncate(off_t length);
 	void unlinkOnExit();
 	void unlinkOnThreadExit();
+	void unlinkWhenDone();
 	
 	void open(int flags = Read|Write);
 	
@@ -97,9 +99,12 @@ public:
 	void sync();
 	void dataSync();
 	
+	static Ref<File, Owner> temp();
+	
 private:
 	String path_;
 	int openFlags_;
+	bool unlinkWhenDone_;
 };
 
 } // namespace ftl

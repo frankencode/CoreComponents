@@ -131,6 +131,4 @@ Path Path::lookup(Ref<StringList> dirs, String fileName, int accessFlags)
 	return path;
 }
 
-Path::operator String() const { return path_; }
-
 } // namespace ftl
