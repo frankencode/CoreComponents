@@ -41,7 +41,7 @@ int main(int argc, char** argv)
 		
 		Ref<Process, Owner> process = factory->produce();
 		
-		print("Created child process with pid = %%\n", unsigned(process->processId()));
+		print("Created child process with pid = %%\n", unsigned(process->id()));
 
 		const char* message =
 			"Hello, world!\n"

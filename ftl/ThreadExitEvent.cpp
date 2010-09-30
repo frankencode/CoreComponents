@@ -12,12 +12,12 @@ namespace ftl
 {
 
 ThreadExitEvent::ThreadExitEvent()
-	: pid_(Process::currentProcessId())
+	: pid_(Process::currentId())
 {}
 
 ThreadExitEvent::~ThreadExitEvent()
 {
-	if (Process::currentProcessId() == pid_) run();
+	if (Process::currentId() == pid_) run();
 }
 
 } // namespace ftl

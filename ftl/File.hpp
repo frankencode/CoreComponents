@@ -14,10 +14,11 @@
 #include "atoms"
 #include "String.hpp"
 #include "SystemStream.hpp"
-#include "FileStatus.hpp"
 
 namespace ftl
 {
+
+class FileStatus;
 
 class File: public SystemStream
 {
@@ -99,12 +100,15 @@ public:
 	void sync();
 	void dataSync();
 	
+	Ref<FileStatus> status() const;
+	
 	static Ref<File, Owner> temp();
 	
 private:
 	String path_;
 	int openFlags_;
 	bool unlinkWhenDone_;
+	mutable Ref<FileStatus, Owner> status_;
 };
 
 } // namespace ftl

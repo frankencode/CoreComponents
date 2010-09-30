@@ -60,7 +60,7 @@ public:
 	Ref<LineSource> output() const;
 	Ref<LineSource> error() const;
 	
-	pid_t processId() const;
+	pid_t id() const;
 	
 	void kill(int signal = SIGTERM, bool* permissionDenied = 0);
 	bool isRunning() const;
@@ -87,8 +87,8 @@ public:
 	
 	static Ref<EnvMap, Owner> envMap();
 	
-	static pid_t currentProcessId();
-	static pid_t parentProcessId();
+	static pid_t currentId();
+	static pid_t parentId();
 	
 	static void kill(pid_t processId, int signal, bool* permissionDenied = 0);
 	static void killGroup(pid_t processGroupId, int signal, bool* permissionDenied = 0);

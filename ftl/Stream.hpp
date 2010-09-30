@@ -26,8 +26,11 @@ public:
 	virtual int readAvail(void* buf, int bufCapa) = 0;
 	virtual void write(const void* buf, int bufFill) = 0;
 	
-	void read(void* buf, int bufCapa);
+	void read(void* buf, int bufFill);
+	int readAvail(Ref<ByteArray> buf);
+	void read(Ref<ByteArray> buf);
 	Ref<ByteArray, Owner> readAll();
+	void write(Ref<ByteArray> buf);
 };
 
 } // namespace ftl

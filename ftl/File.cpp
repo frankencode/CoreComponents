@@ -10,8 +10,12 @@
 #include <string.h>
 #include "ExitEvent.hpp"
 #include "ThreadExitEvent.hpp"
+#include "Guard.hpp"
+#include "LocalStatic.hpp"
 #include "Random.hpp"
 #include "Path.hpp"
+#include "Format.hpp"
+#include "FileStatus.hpp"
 #include "File.hpp"
 
 namespace ftl
@@ -239,9 +243,26 @@ void File::dataSync()
 #endif
 }
 
+Ref<FileStatus> File::status() const
+{
+	if (!status_) {
+		Mutex& mutex = localStatic<Mutex, FileStatus>();
+		Guard<Mutex> guard(&mutex);
+		if (!status_)
+			status_ = new FileStatus(fd_);
+	}
+	return status_;
+}
+
 Ref<File, Owner> File::temp()
 {
-	Ref<File, Owner> file = new File("/tmp/XXXXXXXX");
+	Ref<File, Owner> file =
+		new File(
+			Format("/tmp/%%_%%_%%_XXXXXXXX")
+				<< Path(Process::execPath()).fileName()
+				<< Process::currentId()
+				<< Process::realUserId
+		);
 	file->createUnique();
 	file->unlinkWhenDone();
 	file->unlinkOnExit();

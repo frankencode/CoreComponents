@@ -53,13 +53,13 @@ void SignalListener::run()
 
 SignalManager::SignalManager()
 	: signalListener_(new SignalListener),
-	  pid_(Process::currentProcessId()),
+	  pid_(Process::currentId()),
 	  signalEvents_(new SignalEvents)
 {}
 
 SignalManager::~SignalManager()
 {
-	if (pid_ == Process::currentProcessId()) {
+	if (pid_ == Process::currentId()) {
 		signalListener_->done_.release();
 		signalListener_->kill(SIGUSR1);
 		signalListener_->wait();

@@ -58,7 +58,7 @@ Ref<LineSink> Process::input() const { return input_; }
 Ref<LineSource> Process::output() const { return output_; }
 Ref<LineSource> Process::error() const { return error_; }
 
-pid_t Process::processId() const { return processId_; }
+pid_t Process::id() const { return processId_; }
 
 void Process::kill(int signal, bool* permissionDenied)
 {
@@ -124,7 +124,7 @@ String Process::execPath()
 {
 	String path;
 	#ifdef __linux
-	String lnPath = String(Format("/proc/%%/exe") << currentProcessId());
+	String lnPath = String(Format("/proc/%%/exe") << currentId());
 	ssize_t bufSize = 1024;
 	while (true) {
 		char* buf = (char*)ftl::malloc(bufSize + 1);
@@ -196,8 +196,8 @@ Ref<EnvMap, Owner> Process::envMap()
 	return map;
 }
 
-pid_t Process::currentProcessId() { return getpid(); }
-pid_t Process::parentProcessId() { return getppid(); }
+pid_t Process::currentId() { return getpid(); }
+pid_t Process::parentId() { return getppid(); }
 
 void Process::kill(pid_t processId, int signal, bool* permissionDenied)
 {

@@ -29,7 +29,7 @@ public:
 		queueMutex_.acquire();
 		while (queue_.fill() == queue_.size())
 			notFull_.wait(&queueMutex_);
-		queue_ << item;
+		queue_.push(item);
 		if (ackMode_) {
 			ackMutex_.acquire();
 			ack_.signal();
@@ -55,7 +55,7 @@ public:
 			ack_.signal();
 			ackMutex_.release();
 		}
-		queue_ >> item;
+		item = queue_.pop();
 		notFull_.signal();
 		queueMutex_.release();
 		return *this;
