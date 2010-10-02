@@ -20,7 +20,7 @@ extern "C" char** environ;
 namespace ftl
 {
 
-Path::Path(String path)
+Path::Path(const String& path)
 	: path_(path)
 {}
 
