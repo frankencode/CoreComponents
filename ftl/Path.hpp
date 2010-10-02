@@ -19,7 +19,7 @@ namespace ftl
 class Path
 {
 public:
-	Path(String path);
+	Path(const String& path);
 	
 	bool isRoot() const;
 	bool isRelative() const;

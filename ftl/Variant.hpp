@@ -64,14 +64,21 @@ public:
 	inline const Variant& operator=(Path value)          { type_ = PathType;   setRef(value.toString().media()); return *this; }
 	inline const Variant& operator=(Ref<Instance> value) { type_ = RefType;    setRef(value); return *this; }
 	
-	Variant(const Variant& b) { *this = b; }
+	Variant(const Variant& b): type_(UndefType) { *this = b; }
 	
 	inline const Variant& operator=(const Variant& b) {
 		type_ = b.type_;
-		if (b.type_ & RefType)
-			ref() = b.ref();
-		else
+		if (b.type_ & RefType) {
+			if (type_ != RefType)
+				initRef(b.ref().get());
+			else
+				ref() = b.ref();
+		}
+		else {
+			if (type_ == RefType)
+				killRef();
 			int_ = b.int_;
+		}
 		return *this;
 	}
 	
