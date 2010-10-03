@@ -34,7 +34,6 @@ inline double roundToInf(double x)
 	return ip - int(fp <= -0.5) + int(0.5 <= fp);
 }
 
-
 inline double floorToZero(double x)
 {
 	double ip; // integral part

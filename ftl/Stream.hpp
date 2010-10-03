@@ -27,6 +27,8 @@ public:
 	virtual void write(const void* buf, int bufFill) = 0;
 	
 	void read(void* buf, int bufFill);
+	void write(const char* s);
+	
 	int readAvail(Ref<ByteArray> buf);
 	void read(Ref<ByteArray> buf);
 	Ref<ByteArray, Owner> readAll();

@@ -34,6 +34,7 @@ public:
 	
 	inline int readAvail(Ref<ByteArray> buf) { return Stream::readAvail(buf); }
 	inline void write(Ref<ByteArray> buf) { Stream::write(buf); }
+	inline void write(const char* s) { Stream::write(s); }
 	
 	void closeOnExec();
 	

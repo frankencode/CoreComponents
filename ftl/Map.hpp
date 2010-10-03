@@ -100,6 +100,7 @@ public:
 	/** Number of key-value pairs stored in this map
 	  */
 	inline int size() const { return Super::count(); }
+	inline int length() const { return Super::count(); }
 	
 	Ref<ItemList, Owner> itemList()
 	{
