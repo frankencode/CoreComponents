@@ -136,8 +136,8 @@ Ref<Process, Owner> ProcessFactory::produce()
 		
 		String execPathAbsolute = execPath_;
 		if (workingDirectory_ != "") {
-			if (execPath_.contains("/"))
-				execPathAbsolute = Format() << Process::cwd() << "/" << execPath_;
+			// if (!execPath_.contains("/"))
+			//	execPathAbsolute = Format() << Process::cwd() << "/" << execPath_;
 			if (::chdir(workingDirectory_) == -1)
 				FTL_SYSTEM_EXCEPTION;
 		}

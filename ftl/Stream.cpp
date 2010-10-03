@@ -23,6 +23,10 @@ void Stream::read(void* buf, int bufFill)
 	}
 }
 
+void Stream::write(const char* s) {
+	write(s, str::len(s));
+}
+
 void Stream::read(Ref<ByteArray> buf)
 {
 	read(buf->data(), buf->size());

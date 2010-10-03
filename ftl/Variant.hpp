@@ -26,7 +26,7 @@ namespace ftl
   * variant type is compatible with the target type requested by an expression.
   * In debug mode a DebugException will be thrown on illegal type casts.
   * You can check for type compatibility using compatibleTo() and for exact type match
-  * by comparing type().
+  * by comparing type() with Variant::Type.
   * Variants can be copied by value. The size of a variant is ranges from 5 to 12 bytes
   * depending on compiler and platform.
   * Variants provide 32 bit precision for both integer and floating point values.
