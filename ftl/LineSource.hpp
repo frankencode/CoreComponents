@@ -12,6 +12,7 @@
 #include "defaults.hpp"
 #include "Queue.hpp"
 #include "String.hpp"
+#include "Stream.hpp"
 
 namespace ftl
 {

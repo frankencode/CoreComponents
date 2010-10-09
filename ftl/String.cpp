@@ -14,6 +14,7 @@
 #include "Format.hpp"
 #include "Variant.hpp"
 #include "Path.hpp"
+#include "Stream.hpp"
 #include "String.hpp"
 
 namespace ftl
@@ -82,6 +83,13 @@ String String::copy(const Index& index0, const Index& index1) const
 	String s;
 	s.assign(index0.pos(), index1.pos() - index0.pos());
 	return s;
+}
+
+bool String::valid() const
+{
+	try { validate(); }
+	catch (StreamIoException&) { return false; }
+	return true;
 }
 
 String::Index String::find(const Index& index, const char* pattern) const

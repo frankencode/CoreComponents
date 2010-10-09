@@ -9,6 +9,7 @@
 #define FTL_SYSTEMSTREAM_HPP
 
 #include "atoms"
+#include "Stream.hpp"
 #include "Time.hpp"
 
 namespace ftl
@@ -32,9 +33,10 @@ public:
 	int readAvail(void* buf, int bufCapa);
 	void write(const void* buf, int bufFill);
 	
-	inline int readAvail(Ref<ByteArray> buf) { return Stream::readAvail(buf); }
-	inline void write(Ref<ByteArray> buf) { Stream::write(buf); }
+	inline int readAvail(String s) { return Stream::readAvail(s); }
+	// inline void read(String s) { Stream::read(s); }
 	inline void write(const char* s) { Stream::write(s); }
+	inline void write(String s) { write(s->data(), s->size()); }
 	
 	void closeOnExec();
 	

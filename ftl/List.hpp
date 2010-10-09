@@ -9,6 +9,7 @@
 #define FTL_LIST_HPP
 
 #include "containers.hpp"
+#include "Heap.hpp"
 #include "ListNode.hpp"
 #include "ListWalker.hpp"
 
@@ -99,10 +100,15 @@ public:
 	inline void pushBack(const T& item) { push(end(), item); }
 	inline T popFront() { return pop(first()); }
 	inline T popBack() { return pop(last()); }
+	
+	// n-ary methods
 	Index find(const T& item, Index index) const;
 	inline Index find(const T& item) const { return find(item, first()); }
 	int replace(const T& oldItem, const T& newItem);
 	inline bool contains(const T& item) const { return def(find(item)); }
+	inline T join(const T& sep = T()) const { return T::join(this, sep); }
+	Ref<List, Owner> sort(int order = SortOrder::Ascending, bool unique = false) const;
+	Ref<List, Owner> unique(int order = SortOrder::Ascending) const { return sort(order, true); }
 	
 	// return value to reference conversion wrappers
 	inline List& push(Return<Index> ret, const T& item) {
@@ -127,8 +133,6 @@ public:
 		Index index = ret;
 		return pop(index, item);
 	}
-	
-	inline T join(const T& sep = T()) const { return T::join(this, sep); }
 	
 private:
 	friend class ListWalker<T>;
@@ -247,6 +251,32 @@ int List<T>::replace(const T& oldItem, const T& newItem)
 		++numReplaced;
 	}
 	return numReplaced;
+}
+
+template<class T>
+Ref<List<T>, Owner> List<T>::sort(int order, bool unique) const
+{
+	Ref<List, Owner> result = new List;
+	if (length() == 0) return result;
+	Heap<T> heap(length(), order);
+	for (Index i = first(); def(i); ++i)
+		heap.push(get(i));
+	if (unique) {
+		T prev = heap.next();
+		result->append(prev);
+		while (heap.hasNext()) {
+			T item = heap.next();
+			if (item != prev) {
+				result->append(item);
+				prev = item;
+			}
+		}
+	}
+	else {
+		while (heap.hasNext())
+			result->append(heap.next());
+	}
+	return result;
 }
 
 } // namespace ftl

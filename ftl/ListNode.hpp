@@ -18,7 +18,7 @@ template<class T>
 class List;
 
 template<class T>
-class ListNode {
+class ListNode: public Instance {
 private:
 	friend class ListWalker<T>;
 	friend class List<T>;

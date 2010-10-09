@@ -97,6 +97,8 @@ public:
 	inline operator bool() const { return toBool(); }
 	inline operator int() const { return toInt(); }
 	inline operator float() const { return toFloat(); }
+	inline operator String() const { return toString(); }
+	inline operator Path() const { return toPath(); }
 	inline operator Ref<Instance>() const { return toInstance<Instance>(); }
 	
 	bool operator==(const Variant& b) const

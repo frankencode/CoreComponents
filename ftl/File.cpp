@@ -49,7 +49,7 @@ File::File(int fd)
 File::~File()
 {
 	if (unlinkWhenDone_)
-		unlink();
+		try { unlink(); } catch(...) {}
 }
 
 String File::path() const
@@ -152,7 +152,7 @@ void File::truncate(off_t length)
 class UnlinkFile: public Action {
 public:
 	UnlinkFile(String path): path_(Path(path).makeAbsolute()) {}
-	void run() { File(path_).unlink(); }
+	void run() { try { File(path_).unlink(); } catch(...) {} }
 private:
 	String path_;
 };
@@ -258,16 +258,20 @@ Ref<File, Owner> File::temp()
 {
 	Ref<File, Owner> file =
 		new File(
-			Format("/tmp/%%_%%_%%_XXXXXXXX")
+			Format("/tmp/%%_%%_XXXXXXXX")
 				<< Path(Process::execPath()).fileName()
 				<< Process::currentId()
-				<< Process::realUserId
 		);
 	file->createUnique();
 	file->unlinkWhenDone();
 	file->unlinkOnExit();
 	file->open(Read|Write);
 	return file;
+}
+
+void File::syncAll()
+{
+	::sync();
 }
 
 } // namespace ftl

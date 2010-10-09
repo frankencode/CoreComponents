@@ -1,4 +1,4 @@
-#include <ftl/stdio>
+#include <ftl/streams>
 
 namespace ftl
 {

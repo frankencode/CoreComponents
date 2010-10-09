@@ -103,6 +103,7 @@ public:
 	Ref<FileStatus> status() const;
 	
 	static Ref<File, Owner> temp();
+	static void syncAll();
 	
 private:
 	String path_;

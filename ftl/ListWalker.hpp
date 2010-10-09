@@ -80,15 +80,15 @@ public:
 private:
 	friend class List<T>;
 	
-	ListWalker(const ListNode<T>* node, const List<T>* list)
-		: node_(const_cast<ListNode<T>*>(node)),
-		  list_(const_cast<List<T>*>(list))
+	ListWalker(Ref< ListNode<T> > node, Ref< List<T> > list)
+		: node_(node),
+		  list_(list)
 	{}
 	
 	inline bool valid() const { return node_ && (node_ != &list_->endNode_); }
 	inline bool atEnd() const { return &list_->endNode_ == node_; }
 	
-	ListNode<T>* node_;
+	Ref<ListNode<T>, SetNull> node_;
 	Ref< List<T> > list_;
 };
 

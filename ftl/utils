@@ -1,0 +1,19 @@
+/*
+ * utils -- wildcard include header
+ *
+ * Copyright (c) 2007-2010, Frank Mertens
+ *
+ * See ../COPYING for the license.
+ */
+#ifndef FTL_UTILS
+#define FTL_UTILS
+
+#include "Random.hpp"
+#include "rounding.hpp"
+#include "Time.hpp"
+#include "DateTime.hpp"
+#include "Random.hpp"
+#include "rounding.hpp"
+#include "CommandLine.hpp"
+
+#endif // FTL_UTILS

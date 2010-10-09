@@ -1,6 +1,6 @@
-#include <ftl/stdio>
+#include <ftl/streams>
 #include <ftl/container>
-#include <ftl/math>
+#include <ftl/utils>
 
 namespace ftl
 {
@@ -74,6 +74,8 @@ int main()
 		print(list);
 		list >> queue >> list;
 		print(list);
+		print(*list.sort());
+		print(*list.unique());
 	}
 	/*{
 		print("Test 5:\n");
