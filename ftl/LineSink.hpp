@@ -11,6 +11,7 @@
 #include "atoms"
 #include "defaults.hpp"
 #include "String.hpp"
+#include "Stream.hpp"
 
 namespace ftl
 {

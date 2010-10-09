@@ -5,11 +5,6 @@
 namespace ftl
 {
 
-int Stream::readAvail(Ref<ByteArray> buf)
-{
-	return readAvail(buf->data(), buf->size());
-}
-
 void Stream::read(void* buf, int bufFill)
 {
 	uint8_t* p = (uint8_t*)buf;
@@ -23,16 +18,7 @@ void Stream::read(void* buf, int bufFill)
 	}
 }
 
-void Stream::write(const char* s) {
-	write(s, str::len(s));
-}
-
-void Stream::read(Ref<ByteArray> buf)
-{
-	read(buf->data(), buf->size());
-}
-
-Ref<ByteArray, Owner> Stream::readAll()
+String Stream::readAll()
 {
 	Buffer buffer;
 	while (true) {
@@ -41,10 +27,6 @@ Ref<ByteArray, Owner> Stream::readAll()
 		if (block->fill() == 0) break;
 	}
 	return buffer.join();
-}
-
-void Stream::write(Ref<ByteArray> buf) {
-	write(buf->data(), buf->size());
 }
 
 } // namespace ftl

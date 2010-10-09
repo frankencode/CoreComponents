@@ -88,6 +88,8 @@ public:
 	inline Index first() const { return media()->isEmpty() ? Index() : Index(media()->data()); }
 	inline Index last() const { return media()->isEmpty() ? Index() : end() - 1; }
 	inline Index end() const { return media()->isEmpty() ? Index() : Index(media()->data(), media()->data() + media()->size()); }
+	inline int length() const { return end() - first(); }
+	
 	
 	inline bool isEmpty() const { return media()->isEmpty(); }
 	
@@ -105,11 +107,7 @@ public:
 	inline uchar_t operator[](const Index& index) { return get(index); }
 	
 	inline void validate() const { validate(media()->data(), media()->size()); }
-	inline bool valid() const {
-		try { validate(); }
-		catch (StreamIoException&) { return false; }
-		return true;
-	}
+	bool valid() const;
 	
 	Index find(const Index& index, const char* pattern) const;
 	Ref<StringList, Owner> split(const char* pattern) const;

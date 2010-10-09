@@ -108,7 +108,7 @@ INSTALL(PROGRAMS \${EXECUTABLE_OUTPUT_PATH}/$PACKAGE_NAME DESTINATION bin)
 EOF
 
 cat > src/main.cpp <<EOF
-#include <ftl/stdio>
+#include <ftl/streams>
 
 using namespace ftl;
 

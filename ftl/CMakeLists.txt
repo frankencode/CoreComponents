@@ -15,7 +15,6 @@ SET(FTL_HEADER
 	ArrayPolicy.hpp
 	Array.hpp
 	Buffer.hpp
-	Stream.hpp
 	
 	binary
 	ByteEncoder.hpp
@@ -59,20 +58,19 @@ SET(FTL_HEADER
 	FormatSyntax.hpp
 	Format.hpp
 	Variant.hpp
+	Path.hpp
 	
-	stdio
+	streams
+	Stream.hpp
 	SystemStream.hpp
 	FileStatus.hpp
 	File.hpp
 	DirEntry.hpp
 	Dir.hpp
-	Path.hpp
 	LineSource.hpp
 	LineSink.hpp
 	StandardStreams.hpp
 	PrintDebug.hpp
-	CommandOption.hpp
-	CommandLine.hpp
 	
 	threads
 	GlobalCoreMutex.hpp
@@ -105,19 +103,19 @@ SET(FTL_HEADER
 	ThreadExitEvent.hpp
 	SignalManager.hpp
 	
-	network
+	sockets
 	SocketAddress.hpp
 	SocketAddressEntry.hpp
 	StreamSocket.hpp
 	NetworkInterface.hpp
 	
-	time
+	utils
 	Time.hpp
 	DateTime.hpp
-	
-	math
 	Random.hpp
 	rounding.hpp
+	CommandOption.hpp
+	CommandLine.hpp
 )
 
 SET(FTL_SOURCE
@@ -125,7 +123,6 @@ SET(FTL_SOURCE
 	strings.cpp
 	Exception.cpp
 	Buffer.cpp
-	Stream.cpp
 	
 	# binary
 	ByteEncoder.cpp
@@ -149,17 +146,17 @@ SET(FTL_SOURCE
 	FormatSpecifier.cpp
 	FormatSyntax.cpp
 	Format.cpp
+	Path.cpp
 	
-	# stdio
+	# streams
+	Stream.cpp
 	SystemStream.cpp
 	FileStatus.cpp
 	File.cpp
 	Dir.cpp
-	Path.cpp
 	LineSink.cpp
 	LineSource.cpp
 	StandardStreams.cpp
-	CommandLine.cpp
 	
 	# threads
 	GlobalCoreMutex.cpp
@@ -186,17 +183,16 @@ SET(FTL_SOURCE
 	ThreadExitEvent.cpp
 	SignalManager.cpp
 	
-	# network
+	# sockets
 	SocketAddress.cpp
 	SocketAddressEntry.cpp
 	StreamSocket.cpp
 	NetworkInterface.cpp
 	
-	# time
+	# utils
 	DateTime.cpp
-
-	# math
 	Random.cpp
+	CommandLine.cpp
 )
 
 ADD_LIBRARY(ftl

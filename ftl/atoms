@@ -17,6 +17,5 @@
 #include "Instance.hpp"
 #include "Ref.hpp"
 #include "Array.hpp"
-#include "Stream.hpp"
 
 #endif // FTL_ATOM

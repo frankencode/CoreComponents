@@ -10,10 +10,10 @@
 // #define FTL_HUFFMANCODEC_DEBUG_STATISTICS
 
 #ifdef FTL_HUFFMANCODEC_PROFILING
-#include "stdio"
+#include "streams"
 #else
 #ifdef FTL_HUFFMANCODEC_DEBUG_STATISTICS
-#include "stdio"
+#include "streams"
 #endif
 #endif
 #include "HuffmanCodec.hpp"
@@ -349,4 +349,4 @@ int HuffmanCodec::decode( int* raw,
 	return decode(raw, rawCapacity, &source);
 }
 
-} // namespace ftl
+} // namespace f

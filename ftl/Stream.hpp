@@ -8,7 +8,7 @@
 #ifndef FTL_STREAM_HPP
 #define FTL_STREAM_HPP
 
-#include "Array.hpp"
+#include "String.hpp"
 
 namespace ftl
 {
@@ -27,12 +27,12 @@ public:
 	virtual void write(const void* buf, int bufFill) = 0;
 	
 	void read(void* buf, int bufFill);
-	void write(const char* s);
+	String readAll();
 	
-	int readAvail(Ref<ByteArray> buf);
-	void read(Ref<ByteArray> buf);
-	Ref<ByteArray, Owner> readAll();
-	void write(Ref<ByteArray> buf);
+	inline int readAvail(String s) { return readAvail(s->data(), s->size()); }
+	inline void read(String s) { read(s->data(), s->size()); }
+	inline void write(const char* s) { write(s, str::len(s)); }
+	inline void write(String s) { write(s->data(), s->size()); }
 };
 
 } // namespace ftl
