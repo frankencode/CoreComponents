@@ -124,6 +124,15 @@ public:
 		return (i0 < i1) ? new Array(data_ + i0, i1 - i0) : new Array();
 	}
 	
+	inline Ref<Array, Owner> head(int n) const {
+		if (n > size_) n = size_;
+		return copy(0, n);
+	}
+	inline Ref<Array, Owner> tail(int n) const {
+		if (n > size_) n = size_;
+		return copy(size_ - n, size_);
+	}
+	
 	inline T* data() const { return data_; }
 	inline operator T*() const { return data_; }
 	inline operator bool() const { return !isEmpty(); }
