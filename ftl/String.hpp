@@ -79,7 +79,9 @@ public:
 	// return a deep copy of this string
 	String copy() const;
 	String copy(const Index& index0, const Index& index1) const;
-	
+	inline String head(int n) const { return copy(first(), first() + n); }
+	inline String tail(int n) const { return copy(end() - n, end()); }
+
 	// provide access to the shared media
 	inline Ref<Media> media() const { return Super::get(); }
 	inline operator char*() const { return media()->data(); }
@@ -88,8 +90,7 @@ public:
 	inline Index first() const { return media()->isEmpty() ? Index() : Index(media()->data()); }
 	inline Index last() const { return media()->isEmpty() ? Index() : end() - 1; }
 	inline Index end() const { return media()->isEmpty() ? Index() : Index(media()->data(), media()->data() + media()->size()); }
-	inline int length() const { return end() - first(); }
-	
+	inline int length() const { return end() - first(); }	
 	
 	inline bool isEmpty() const { return media()->isEmpty(); }
 	
