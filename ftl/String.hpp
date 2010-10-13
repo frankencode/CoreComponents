@@ -133,6 +133,7 @@ public:
 	String stripLeadingSpace() const;
 	String stripTrailingSpace() const;
 	String trimmed() const;
+	String stripTags() const;
 	String simplified() const;
 	String normalized(bool nameCase = true) const;
 	
