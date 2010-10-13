@@ -19,6 +19,7 @@ namespace ftl
 class Path
 {
 public:
+	Path(const char* path);
 	Path(const String& path);
 	
 	bool isRoot() const;
