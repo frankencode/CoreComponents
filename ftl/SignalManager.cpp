@@ -73,7 +73,11 @@ void SignalManager::defaultAction(int signal)
 	mem::clr(&actionSaved, sizeof(actionSaved));
 	action.sa_handler = SIG_DFL;
 	if (::sigaction(signal, &action, &actionSaved) == -1)
+	#ifndef NDEBUG
 		FTL_SYSTEM_EXCEPTION;
+	#else
+		;
+	#endif
 	switch(signal) {
 		case SIGURG:
 		case SIGCONT:

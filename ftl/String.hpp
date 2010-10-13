@@ -47,10 +47,8 @@ public:
 	String(const Path& b);
 	
 	// initialize string by deep-copying a byte array
-	String(const char* data, int size = -1) {
-		if (size < 0) size = str::len(data);
-		assign(data, size);
-	}
+	String(const char* data) { assign(data, str::len(data)); }
+	String(const char* data, int size) { assign(data, size); }
 	
 	// alternative construction methods
 	static inline String uninitialized(int size) { return String(size); }
