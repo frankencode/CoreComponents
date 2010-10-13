@@ -245,6 +245,26 @@ String String::trimmed() const
 	return String(media()->data() + l, n);
 }
 
+String String::stripTags() const
+{
+	StringList parts;
+	char* o = media()->data();
+	char* p = o;
+	while (*p) {
+		if (*p == '<') {
+			if (o < p) parts << String(o, p-o);
+			while ((*p) && (*p != '>')) ++p;
+			p += (*p == '>');
+			o = p;
+		}
+		else {
+			++p;
+		}
+	}
+	if (o < p) parts << String(o, p-o);
+	return parts.join();
+}
+
 String String::simplified() const
 {
 	return normalized(false);
