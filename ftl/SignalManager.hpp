@@ -33,7 +33,6 @@ class SignalListener: public Thread {
 public:
 	SignalListener();
 	void run();
-	Mutex done_;
 };
 
 class SignalManager: public Instance, public Singleton<SignalManager>
