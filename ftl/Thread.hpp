@@ -28,7 +28,7 @@ public:
 	
 	void start(int detachState = Joinable);
 	void wait();
-	void kill(int signal = SIGTERM);
+	void kill(int signal = SIGUSR2);
 	
 	bool started() const;
 	bool isRunning() const;

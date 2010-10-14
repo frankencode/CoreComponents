@@ -29,6 +29,7 @@ public:
 	Ref<StreamSocket, Owner> accept();
 	void connect();
 	bool established(Time idleTimeout);
+	void shutdown(int how = SHUT_RDWR);
 	
 	Ref<SocketAddress> localAddress() const;
 	Ref<SocketAddress> remoteAddress() const;

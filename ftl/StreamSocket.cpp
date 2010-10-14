@@ -50,8 +50,11 @@ Ref<StreamSocket, Owner> StreamSocket::accept()
 	Ref<SocketAddress, Owner> clientAddress = new SocketAddress(address_->family());
 	socklen_t len = clientAddress->addrLen();
 	int fdc = ::accept(fd_, clientAddress->addr(), &len);
-	if (fdc < 0)
+	if (fdc < 0) {
+		if (fdc == EINTR)
+			return 0;
 		FTL_SYSTEM_EXCEPTION;
+	}
 	
 	return new StreamSocket(clientAddress, fdc);
 }
@@ -99,6 +102,11 @@ bool StreamSocket::established(Time idleTimeout)
 	}
 	
 	return connected_;
+}
+
+void StreamSocket::shutdown(int how)
+{
+	::shutdown(fd_, how);
 }
 
 Ref<SocketAddress> StreamSocket::localAddress() const { return localAddress(fd_); }

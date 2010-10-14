@@ -19,9 +19,11 @@ SignalInitializer::SignalInitializer()
 {
 	if (count_ == 0) {
 		++count_;
-		sigset_t mask;
-		sigfillset(&mask);
-		int ret = pthread_sigmask(SIG_SETMASK, &mask, 0/*oset*/);
+		sigset_t set;
+		sigfillset(&set);
+		sigdelset(&set, SIGUSR2);
+			// reserve SIGUSR2 for thread termination
+		int ret = pthread_sigmask(SIG_SETMASK, &set, 0/*oset*/);
 		if (ret != 0)
 			FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
 		SignalManager::instance()->startListener();
@@ -40,6 +42,7 @@ void SignalListener::run()
 		int signal = -1;
 		sigset_t set;
 		sigfillset(&set);
+		sigdelset(&set, SIGUSR2);
 		sigwait(&set, &signal);
 		
 		if (done_.tryAcquire()) {
