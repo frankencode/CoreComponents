@@ -45,10 +45,7 @@ void SignalListener::run()
 		sigdelset(&set, SIGUSR2);
 		sigwait(&set, &signal);
 		
-		if (done_.tryAcquire()) {
-			done_.release();
-			break;
-		}
+		if (signal == SIGUSR1) break;
 		
 		SignalManager::instance()->relay(signal);
 	}
@@ -63,7 +60,6 @@ SignalManager::SignalManager()
 SignalManager::~SignalManager()
 {
 	if (pid_ == Process::currentId()) {
-		signalListener_->done_.release();
 		signalListener_->kill(SIGUSR1);
 		signalListener_->wait();
 	}
