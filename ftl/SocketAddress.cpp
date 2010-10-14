@@ -11,7 +11,7 @@
 #include <unistd.h> // gethostname
 #include <netdb.h> // getaddrinfo, freeaddrinfo, getnameinfo
 #include <errno.h>
-
+#include "strings.hpp"
 #include "Format.hpp"
 #include "SocketAddress.hpp"
 
@@ -46,12 +46,22 @@ SocketAddress::SocketAddress(int family, String address, int port)
 		inet6Address_.sin6_addr = in6addr_any;
 		addr = &inet6Address_.sin6_addr;
 	}
+	else if (family == AF_LOCAL) {
+		localAddress_.sun_family = AF_LOCAL;
+		if (unsigned(address->size()) + 1 > sizeof(localAddress_.sun_path))
+			FTL_THROW(NetworkingException, "Socket path exceeds maximum length");
+		if ((address == "") || (address == "*"))
+			localAddress_.sun_path[0] = 0;
+		else
+			mem::cpy(localAddress_.sun_path, address->data(), address->size() + 1);
+	}
 	else
 		FTL_THROW(NetworkingException, "Unsupported address family");
 	
-	if ((address != "") && ((address != "*")))
-		if (inet_pton(family, address, addr) != 1)
-			FTL_THROW(NetworkingException, "Broken address string");
+	if (family != AF_LOCAL)
+		if ((address != "") && ((address != "*")))
+			if (inet_pton(family, address, addr) != 1)
+				FTL_THROW(NetworkingException, "Broken address string");
 }
 
 SocketAddress::SocketAddress(struct sockaddr_in* addr)
@@ -80,31 +90,40 @@ int SocketAddress::protocol() const { return protocol_; }
 
 String SocketAddress::addressString() const
 {
-	const int bufSize = INET_ADDRSTRLEN + INET6_ADDRSTRLEN;
-	char buf[bufSize];
-	
-	const char* sz = 0;
-	const void* addr = 0;
-	
-	if (addr_.sa_family == AF_INET)
-		addr = &inet4Address_.sin_addr;
-	else if (addr_.sa_family == AF_INET6)
-		addr = &inet6Address_.sin6_addr;
-	else
-		FTL_THROW(NetworkingException, "Unsupported address family");
-	
-	sz = inet_ntop(addr_.sa_family, const_cast<void*>(addr), buf, bufSize);
-	if (!sz)
-		FTL_THROW(NetworkingException, "Illegal binary address format");
-	
-	return sz;
+	String s;
+	if (addr_.sa_family == AF_LOCAL) {
+		s = localAddress_.sun_path;
+	}
+	else {
+		const int bufSize = INET_ADDRSTRLEN + INET6_ADDRSTRLEN;
+		char buf[bufSize];
+		
+		const void* addr = 0;
+		const char* sz = 0;
+		
+		if (addr_.sa_family == AF_INET)
+			addr = &inet4Address_.sin_addr;
+		else if (addr_.sa_family == AF_INET6)
+			addr = &inet6Address_.sin6_addr;
+		else
+			FTL_THROW(NetworkingException, "Unsupported address family");
+		
+		sz = inet_ntop(addr_.sa_family, const_cast<void*>(addr), buf, bufSize);
+		if (!sz)
+			FTL_THROW(NetworkingException, "Illegal binary address format");
+		
+		s = sz;
+	}
+	return s;
 }
 
 String SocketAddress::toString() const
 {
 	Format s(addressString());
-	if (port() != 0)
-		s << ":" << port();
+	if (addr_.sa_family != AF_LOCAL) {
+		if (port() != 0)
+			s << ":" << port();
+	}
 	return s;
 }
 
@@ -261,6 +280,8 @@ int SocketAddress::addrLen() const
 		len = sizeof(sockaddr_in);
 	else if (family() == AF_INET6)
 		len = sizeof(sockaddr_in6);
+	else if (family() == AF_LOCAL)
+		len = sizeof(sockaddr_un);
 	else
 		FTL_THROW(NetworkingException, "Unsupported address family.");
 	return len;

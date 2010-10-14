@@ -257,6 +257,12 @@ String String::stripTags() const
 			p += (*p == '>');
 			o = p;
 		}
+		else if (*p == '&') {
+			if (o < p) parts << String(o, p-o);
+			while ((*p) && (*p != ';')) ++p;
+			p += (*p == ';');
+			o = p;
+		}
 		else {
 			++p;
 		}

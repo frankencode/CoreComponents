@@ -9,9 +9,10 @@
 #define FTL_SOCKETADDRESS_HPP
 
 #include <arpa/inet.h>
-#include <netinet/in.h>
+#include <netinet/in.h> // sockaddr_in, etc.
 #include <netdb.h> // addrinfo
 #include <sys/socket.h> // connect
+#include <sys/un.h> // sockaddr_un
 
 #include "atoms"
 #include "String.hpp"
@@ -35,8 +36,8 @@ public:
 	  * Providing the wildcard address "*" allows to specify an address for
 	  * a TCP server, which will listen on all interfaces of the serving host.
 	  *
-	  * \param family protocol family (AF_UNSPEC, AF_INET or AF_INET6)
-	  * \param address numerical host address or wildcard ("*")
+	  * \param family protocol family (AF_UNSPEC, AF_INET, AF_INET6 or AF_LOCAL)
+	  * \param address numerical host address, wildcard ("*") or file path
 	  * \param port service port
 	  */
 	SocketAddress(int family, String address = String(), int port = 0);
@@ -93,6 +94,7 @@ private:
 		struct sockaddr addr_;
 		struct sockaddr_in inet4Address_;
 		struct sockaddr_in6 inet6Address_;
+		struct sockaddr_un localAddress_;
 	};
 	
 	int socketType_;
