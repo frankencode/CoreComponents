@@ -116,6 +116,8 @@ SET(FTL_HEADER
 	rounding.hpp
 	CommandOption.hpp
 	CommandLine.hpp
+	LinkInfo.hpp
+	SymbolicLink.hpp
 )
 
 SET(FTL_SOURCE
@@ -193,6 +195,8 @@ SET(FTL_SOURCE
 	DateTime.cpp
 	Random.cpp
 	CommandLine.cpp
+	LinkInfo.cpp
+	SymbolicLink.cpp
 )
 
 ADD_LIBRARY(ftl

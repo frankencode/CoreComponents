@@ -24,7 +24,7 @@ class FileStatus: public StructStat, public Instance
 {
 public:
 	FileStatus(int fd);
-	FileStatus(String path);
+	FileStatus(String path, bool followSymbolicLink = true);
 	FileStatus(Ref<SystemStream> stream);
 	
 	inline String path() const { return path_; }
@@ -50,7 +50,7 @@ public:
 	inline dev_t storageId() const { return st_dev; }
 	inline dev_t deviceId() const { return st_rdev; }
 	
-	void update(bool* exists = 0);
+	void update(bool* exists = 0, bool followSymbolicLink = true);
 	
 private:
 	int fd_;
