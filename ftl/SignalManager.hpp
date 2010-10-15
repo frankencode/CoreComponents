@@ -31,7 +31,6 @@ namespace { SignalInitializer signalInitializer_; }
 
 class SignalListener: public Thread {
 public:
-	SignalListener();
 	void run();
 };
 

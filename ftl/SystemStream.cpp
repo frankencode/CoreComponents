@@ -17,7 +17,8 @@ namespace ftl
 
 SystemStream::SystemStream(int fd)
 	: fd_(fd),
-	  isattyCached_(false)
+	  isattyCached_(false),
+	  continueOnInterrupt_(false)
 {}
 
 SystemStream::~SystemStream()
@@ -82,7 +83,8 @@ int SystemStream::readAvail(void* buf, int bufCapa)
 	while (true) {
 		ret = ::read(fd_, buf, bufCapa);
 		if (ret == -1) {
-			if (errno == EINTR) continue;
+			if ((errno == EINTR) && (continueOnInterrupt_))
+				continue;
 			if (isTeletype()) { ret = 0; break; } // fancy HACK, needs review
 			FTL_THROW(StreamIoException, systemError());
 		}
@@ -98,7 +100,8 @@ void SystemStream::write(const void* buf, int bufFill)
 	{
 		int ret = ::write(fd_, buf2, bufFill);
 		if (ret == -1) {
-			if (errno == EINTR) continue;
+			if ((errno == EINTR) && (continueOnInterrupt_))
+				continue;
 			FTL_THROW(StreamIoException, systemError());
 		}
 		buf2 += ret;
@@ -111,5 +114,8 @@ void SystemStream::closeOnExec()
 	if (::fcntl(fd_, F_SETFD, FD_CLOEXEC) == -1)
 		FTL_THROW(StreamSemanticException, systemError());
 }
+
+bool SystemStream::continueOnInterrupt() const { return continueOnInterrupt_; }
+void SystemStream::setContinueOnInterrupt(bool on) { continueOnInterrupt_ = on; }
 
 } // namespace ftl
