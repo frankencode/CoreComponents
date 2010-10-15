@@ -31,6 +31,9 @@ public:
 	bool established(Time idleTimeout);
 	void shutdown(int how = SHUT_RDWR);
 	
+	void setRecvTimeout(Time idleTimeout);
+	void setSendTimeout(Time idleTimeout);
+	
 	Ref<SocketAddress> localAddress() const;
 	Ref<SocketAddress> remoteAddress() const;
 	static Ref<SocketAddress> localAddress(int fd);

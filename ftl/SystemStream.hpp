@@ -40,9 +40,13 @@ public:
 	
 	void closeOnExec();
 	
+	bool continueOnInterrupt() const;
+	void setContinueOnInterrupt(bool on);
+	
 protected:
 	int fd_;
 	mutable bool isattyCached_, isatty_;
+	bool continueOnInterrupt_;
 };
 
 } // namespace ftl

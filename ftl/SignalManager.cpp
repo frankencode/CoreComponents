@@ -30,11 +30,6 @@ SignalInitializer::SignalInitializer()
 	}
 }
 
-SignalListener::SignalListener()
-{
-	done_.acquire();
-}
-
 void SignalListener::run()
 {
 	while (true)
