@@ -15,5 +15,7 @@
 #include "Random.hpp"
 #include "rounding.hpp"
 #include "CommandLine.hpp"
+#include "LinkInfo.hpp"
+#include "SymbolicLink.hpp"
 
 #endif // FTL_UTILS

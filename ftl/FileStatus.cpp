@@ -18,11 +18,11 @@ FileStatus::FileStatus(int fd)
 	update();
 }
 
-FileStatus::FileStatus(String path)
+FileStatus::FileStatus(String path, bool followSymbolicLink)
 	: fd_(-1),
 	  path_(path)
 {
-	update();
+	update(0, followSymbolicLink);
 }
 
 FileStatus::FileStatus(Ref<SystemStream> stream)
@@ -43,9 +43,9 @@ void FileStatus::setTimes(Time lastAccess, Time lastModified)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-void FileStatus::update(bool* exists)
+void FileStatus::update(bool* exists, bool followSymbolicLink)
 {
-	int ret = (fd_ != -1) ? ::fstat(fd_, this) : ::stat(path_, this);
+	int ret = (fd_ != -1) ? ::fstat(fd_, this) : (followSymbolicLink ? ::stat(path_, this) : ::lstat(path_, this));
 	if (ret == -1) {
 		if (exists) {
 			if ((errno == ENOENT) || (errno == ENOTDIR)) {

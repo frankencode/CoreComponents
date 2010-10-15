@@ -26,7 +26,7 @@ Building and installating using the cmake/wizard:
 Building by hand using ccmake:
 	mkdir <my-build-dir>
 	cd my-build-dir
-	ccmake ../<libftl-source-dir>
+	ccmake -D BUILD_SHARED_LIBS=ON ../<libftl-source-dir>
 		# press c, enter "Release" in CMAKE_BUILD_TYPE, press c again, then g
 	make
 	make install # as root
