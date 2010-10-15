@@ -13,8 +13,6 @@
 namespace ftl
 {
 
-class Library;
-
 class LinkInfo: public Instance
 {
 public:

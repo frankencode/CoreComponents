@@ -31,7 +31,6 @@ LinkInfo::LinkInfo(void* addr)
 		baseAddress_ = info.dli_fbase;
 		symbolAddress_ = info.dli_saddr;
 		Ref<StringList, Owner> parts = libraryPath_.split(".");
-		
 		if (parts->length() > 3) {
 			StringList::Index i = parts->last();
 			if (parts->at(i) == "dylib") --i;
