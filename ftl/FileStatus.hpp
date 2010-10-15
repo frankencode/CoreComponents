@@ -24,8 +24,8 @@ class FileStatus: public StructStat, public Instance
 {
 public:
 	FileStatus(int fd);
-	FileStatus(String path, bool followSymbolicLink = true);
 	FileStatus(Ref<SystemStream> stream);
+	FileStatus(String path, bool followSymbolicLink = true);
 	
 	inline String path() const { return path_; }
 	

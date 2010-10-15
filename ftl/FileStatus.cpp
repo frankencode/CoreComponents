@@ -18,17 +18,17 @@ FileStatus::FileStatus(int fd)
 	update();
 }
 
+FileStatus::FileStatus(Ref<SystemStream> stream)
+	: fd_(stream->fd())
+{
+	update();
+}
+
 FileStatus::FileStatus(String path, bool followSymbolicLink)
 	: fd_(-1),
 	  path_(path)
 {
 	update(0, followSymbolicLink);
-}
-
-FileStatus::FileStatus(Ref<SystemStream> stream)
-	: fd_(stream->fd())
-{
-	update();
 }
 
 void FileStatus::setTimes(Time lastAccess, Time lastModified)
