@@ -34,7 +34,7 @@ LinkInfo::LinkInfo(void* addr)
 		
 		if (parts->length() > 3) {
 			StringList::Index i = parts->last();
-			if (parts->at(i) == "dylib") ++i;
+			if (parts->at(i) == "dylib") --i;
 			majorVersion_ = parts->at(i-2).toInt();
 			minorVersion_ = parts->at(i-1).toInt();
 			patchLevel_   = parts->at(i).toInt();
