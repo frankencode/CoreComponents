@@ -16,7 +16,7 @@ namespace ftl
 class SymbolicLink
 {
 public:
-	SymbolicLink(const char* path);
+	SymbolicLink(String path);
 	String path() const;
 	String read() const;
 	String resolve() const;
