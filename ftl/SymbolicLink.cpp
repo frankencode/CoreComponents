@@ -15,7 +15,7 @@
 namespace ftl
 {
 
-SymbolicLink::SymbolicLink(const char* path)
+SymbolicLink::SymbolicLink(String path)
 	: path_(path)
 {}
 
