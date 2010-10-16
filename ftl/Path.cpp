@@ -15,8 +15,6 @@
 #include "Process.hpp"
 #include "Path.hpp"
 
-extern "C" char** environ;
-
 namespace ftl
 {
 
