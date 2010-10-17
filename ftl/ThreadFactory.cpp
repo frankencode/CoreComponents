@@ -92,15 +92,16 @@ void ThreadFactory::start(Ref<Thread> thread)
 	thread->keepAlive_ = (thread->refCount() > 0);
 	if (thread->keepAlive_)
 		thread->incRefCount(); // prevent self destruction while running
+	#ifndef NDEBUG
+	thread->producer_ = pthread_self();
+	#endif
 }
 
 void* ThreadFactory::bootstrap(void* self)
 {
 	Thread* thread = static_cast<Thread*>(self);
-	thread->started_ = true;
-	thread->init();
+	thread->started_ = true; // unreasonable HACK
 	thread->run();
-	thread->done();
 	if (thread->keepAlive_)
 		thread->decRefCount(); // allow self destruction before termination
 	return (void*)thread;
