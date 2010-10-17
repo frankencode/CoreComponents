@@ -36,7 +36,6 @@ void SignalListener::run()
 		int signal = -1;
 		sigset_t set;
 		sigfillset(&set);
-		// sigdelset(&set, SIGUSR2);
 		sigwait(&set, &signal);
 		
 		if (signal == SIGUSR1) break;

@@ -17,11 +17,6 @@
 namespace ftl
 {
 
-Thread::Thread()
-	: keepAlive_(false),
-	  started_(false)
-{}
-
 void Thread::start(int detachState)
 {
 	ThreadFactory factory;
@@ -43,12 +38,8 @@ void Thread::kill(int signal)
 		FTL_PTHREAD_EXCEPTION("pthread_kill", ret);
 }
 
-/** Return true if the thread is running.
-  */
-bool Thread::isRunning() const
+bool Thread::stillAlive() const
 {
-	// check(pthread_self() == producer_, "Thread::isRunning() can only be called by the producer thread.");
-	if (!started_) return false;
 	int ret = pthread_kill(tid_, 0);
 	if ((ret != 0) && (ret != ESRCH))
 		FTL_PTHREAD_EXCEPTION("pthread_kill", ret);
@@ -71,16 +62,6 @@ void Thread::sleepUntil(Time timeout)
 
 void Thread::enableSignal(int signal)
 {
-	sigset_t mask;
-	sigfillset(&mask);
-	
-	struct sigaction action;
-	mem::clr(&action, sizeof(action));
-	action.sa_handler = Thread::signalForwarder;
-	action.sa_mask = mask;
-	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
-		FTL_SYSTEM_EXCEPTION;
-	
 	sigset_t set;
 	sigemptyset(&set);
 	sigaddset(&set, signal);
@@ -97,17 +78,6 @@ void Thread::disableSignal(int signal)
 	int ret = pthread_sigmask(SIG_BLOCK, &set, 0/*oset*/);
 	if (ret != 0)
 		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
-	
-	struct sigaction action;
-	mem::clr(&action, sizeof(action));
-	action.sa_handler = SIG_DFL;
-	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
-		FTL_SYSTEM_EXCEPTION;
-}
-
-void Thread::signalForwarder(int signal)
-{
-	// SignalManager::instance()->relay(signal);
 }
 
 } // namespace ftl
