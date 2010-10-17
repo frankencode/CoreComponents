@@ -31,8 +31,7 @@ public:
 	void start(int detachState = Joinable);
 	void wait();
 	void kill(int signal = SIGUSR2);
-	
-	bool isRunning() const;
+	bool stillAlive() const;
 	
 	static void sleep(Time duration);
 	static void sleepUntil(Time timeout);
@@ -43,18 +42,10 @@ public:
 protected:
 	friend class ThreadFactory;
 	
-	Thread();
 	virtual void run() = 0;
 	
 private:
-	static void signalForwarder(int signal);
-	
 	pthread_t tid_;
-	#ifndef NDEBUG
-	pthread_t producer_;
-	#endif
-	bool keepAlive_;
-	bool started_;
 };
 
 } // namespace ftl
