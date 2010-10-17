@@ -6,13 +6,12 @@
  * See ../COPYING for the license.
  */
 
-#include <sched.h> // sched_yield
 #include "strings.hpp"
 #include "Exception.hpp"
 #include "Time.hpp"
 #include "Condition.hpp"
 #include "ThreadFactory.hpp"
-#include "ThreadLocalOwner.hpp"
+#include "SignalManager.hpp"
 #include "Thread.hpp"
 
 namespace ftl
@@ -44,18 +43,11 @@ void Thread::kill(int signal)
 		FTL_PTHREAD_EXCEPTION("pthread_kill", ret);
 }
 
-/** Return true if the thread has been started else false.
-  * This method is only save to be invoked from this thread
-  * itself or the thread that has started this thread.
-  */
-bool Thread::started() const { return started_; }
-
 /** Return true if the thread is running.
-  * This method is only save to be invoked from this thread
-  * itself or the thread that has started this thread.
   */
 bool Thread::isRunning() const
 {
+	// check(pthread_self() == producer_, "Thread::isRunning() can only be called by the producer thread.");
 	if (!started_) return false;
 	int ret = pthread_kill(tid_, 0);
 	if ((ret != 0) && (ret != ESRCH))
@@ -77,24 +69,8 @@ void Thread::sleepUntil(Time timeout)
 	mutex.release();
 }
 
-void Thread::yield()
-{
-	if (sched_yield() == -1)
-		FTL_SYSTEM_EXCEPTION;
-}
-
-void Thread::init() {}
-void Thread::done() {}
-
-void Thread::signalHandler(int signal) {}
-
-Ref<Thread, ThreadLocalOwner> threadSelf_;
-
 void Thread::enableSignal(int signal)
 {
-	check(pthread_self() == tid_);
-	threadSelf_ = this;
-	
 	sigset_t mask;
 	sigfillset(&mask);
 	
@@ -131,8 +107,7 @@ void Thread::disableSignal(int signal)
 
 void Thread::signalForwarder(int signal)
 {
-	if (threadSelf_)
-		threadSelf_->signalHandler(signal);
+	// SignalManager::instance()->relay(signal);
 }
 
 } // namespace ftl

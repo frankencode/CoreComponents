@@ -21,12 +21,11 @@ SignalInitializer::SignalInitializer()
 		++count_;
 		sigset_t set;
 		sigfillset(&set);
-		sigdelset(&set, SIGUSR2);
-			// reserve SIGUSR2 for thread termination
 		int ret = pthread_sigmask(SIG_SETMASK, &set, 0/*oset*/);
 		if (ret != 0)
 			FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
 		SignalManager::instance()->startListener();
+		Thread::enableSignal(SIGUSR2);
 	}
 }
 
@@ -37,7 +36,7 @@ void SignalListener::run()
 		int signal = -1;
 		sigset_t set;
 		sigfillset(&set);
-		sigdelset(&set, SIGUSR2);
+		// sigdelset(&set, SIGUSR2);
 		sigwait(&set, &signal);
 		
 		if (signal == SIGUSR1) break;
@@ -122,7 +121,7 @@ void SignalManager::relay(int signal)
 	Ref<Event, Owner> event;
 	if (signalEvents_->lookup(signal, &event))
 		event->run();
-	else
+	else if (signal != SIGUSR2) // default Thread::kill() signal
 		defaultAction(signal);
 }
 

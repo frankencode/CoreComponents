@@ -44,6 +44,7 @@ private:
 	friend class Singleton<SignalManager>;
 	friend class SignalInitializer;
 	friend class SignalListener;
+	friend class Thread;
 	
 	SignalManager();
 	~SignalManager();

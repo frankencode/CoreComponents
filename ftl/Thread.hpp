@@ -26,35 +26,33 @@ public:
 		Detached = PTHREAD_CREATE_DETACHED
 	};
 	
+	virtual ~Thread() {}
+	
 	void start(int detachState = Joinable);
 	void wait();
 	void kill(int signal = SIGUSR2);
 	
-	bool started() const;
 	bool isRunning() const;
 	
 	static void sleep(Time duration);
 	static void sleepUntil(Time timeout);
-	static void yield();
+	
+	static void enableSignal(int signal);
+	static void disableSignal(int signal);
 	
 protected:
 	friend class ThreadFactory;
 	
 	Thread();
-	
 	virtual void run() = 0;
-	virtual void init();
-	virtual void done();
-	
-	virtual void signalHandler(int signal);
-	
-	void enableSignal(int signal);
-	void disableSignal(int signal);
 	
 private:
 	static void signalForwarder(int signal);
 	
 	pthread_t tid_;
+	#ifndef NDEBUG
+	pthread_t producer_;
+	#endif
 	bool keepAlive_;
 	bool started_;
 };

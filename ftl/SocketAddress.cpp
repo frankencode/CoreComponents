@@ -282,8 +282,11 @@ int SocketAddress::addrLen() const
 		len = sizeof(sockaddr_in6);
 	else if (family() == AF_LOCAL)
 		len = sizeof(sockaddr_un);
-	else
-		FTL_THROW(NetworkingException, "Unsupported address family.");
+	else {
+		len = sizeof(sockaddr_in);
+		if (len < int(sizeof(sockaddr_in6))) len = sizeof(sockaddr_in6);
+		if (len < int(sizeof(sockaddr_un))) len = sizeof(sockaddr_un);
+	}
 	return len;
 }
 
