@@ -45,6 +45,8 @@ protected:
 	virtual void run() = 0;
 	
 private:
+	static void forwardSignal(int signal);
+	
 	pthread_t tid_;
 };
 
