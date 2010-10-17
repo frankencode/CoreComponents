@@ -62,6 +62,15 @@ void Thread::sleepUntil(Time timeout)
 
 void Thread::enableSignal(int signal)
 {
+	struct sigaction action;
+	mem::clr(&action, sizeof(action));
+	sigset_t mask;
+	sigfillset(&mask);
+	action.sa_handler = Thread::forwardSignal;
+	action.sa_mask = mask;
+	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
+		FTL_SYSTEM_EXCEPTION;
+	
 	sigset_t set;
 	sigemptyset(&set);
 	sigaddset(&set, signal);
@@ -78,6 +87,17 @@ void Thread::disableSignal(int signal)
 	int ret = pthread_sigmask(SIG_BLOCK, &set, 0/*oset*/);
 	if (ret != 0)
 		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
+	
+	struct sigaction action;
+	mem::clr(&action, sizeof(action));
+	action.sa_handler = SIG_DFL;
+	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
+		FTL_SYSTEM_EXCEPTION;
+}
+
+void Thread::forwardSignal(int signal)
+{
+	SignalManager::instance()->relay(signal);
 }
 
 } // namespace ftl

@@ -39,7 +39,6 @@ void SignalListener::run()
 		sigwait(&set, &signal);
 		
 		if (signal == SIGUSR1) break;
-		
 		SignalManager::instance()->relay(signal);
 	}
 }
@@ -79,6 +78,7 @@ void SignalManager::defaultAction(int signal)
 		#ifdef SIGINFO
 		case SIGINFO:
 		#endif
+		case SIGUSR2: // Thread::kill() default signal
 			break;
 		default:
 			if (signal == SIGTSTP) signal = SIGSTOP;
@@ -120,7 +120,7 @@ void SignalManager::relay(int signal)
 	Ref<Event, Owner> event;
 	if (signalEvents_->lookup(signal, &event))
 		event->run();
-	else if (signal != SIGUSR2) // default Thread::kill() signal
+	else
 		defaultAction(signal);
 }
 
