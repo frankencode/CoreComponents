@@ -33,7 +33,7 @@ bool Path::isAbsolute() const {
 	return (path_->length() > 0) ? (path_->get(0) == '/') : false;
 }
 
-Path Path::makeAbsoluteRelativeTo(String currentDir) const
+Path Path::absoluteRelativeTo(String currentDir) const
 {
 	if (isAbsolute())
 		return path_;
@@ -75,11 +75,11 @@ Path Path::makeAbsoluteRelativeTo(String currentDir) const
 	return String::join(absoluteParts, "/");
 }
 
-Path Path::makeAbsolute() const
+Path Path::absolute() const
 {
 	if (isAbsolute())
 		return path_;
-	return makeAbsoluteRelativeTo(String());
+	return absoluteRelativeTo(String());
 }
 
 String Path::fileName() const

@@ -182,7 +182,7 @@ Ref<StringList, Owner> CommandLine::read(int argc, char** argv)
 {
 	execPath_ = argv[0];
 	execName_ = Path(execPath_).fileName();
-	execDir_ = Path(execPath_).reduce().makeAbsolute();
+	execDir_ = Path(execPath_).reduce().absolute();
 	Ref<StringList, Owner> line = new StringList;
 	for (int i = 1; i < argc; ++i) {
 		line->append(String(argv[i]));

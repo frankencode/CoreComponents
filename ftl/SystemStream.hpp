@@ -34,7 +34,6 @@ public:
 	void write(const void* buf, int bufFill);
 	
 	inline int readAvail(String s) { return Stream::readAvail(s); }
-	// inline void read(String s) { Stream::read(s); }
 	inline void write(const char* s) { Stream::write(s); }
 	inline void write(String s) { write(s->data(), s->size()); }
 	
