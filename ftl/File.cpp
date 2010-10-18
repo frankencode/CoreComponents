@@ -151,7 +151,7 @@ void File::truncate(off_t length)
 
 class UnlinkFile: public Action {
 public:
-	UnlinkFile(String path): path_(Path(path).makeAbsolute()) {}
+	UnlinkFile(String path): path_(Path(path).absolute()) {}
 	void run() { try { File(path_).unlink(); } catch(...) {} }
 private:
 	String path_;
@@ -263,8 +263,6 @@ Ref<File, Owner> File::temp()
 				<< Process::currentId()
 		);
 	file->createUnique();
-	file->unlinkWhenDone();
-	file->unlinkOnExit();
 	file->open(Read|Write);
 	return file;
 }

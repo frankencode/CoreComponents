@@ -18,7 +18,7 @@ namespace ftl
 {
 
 Dir::Dir(String path)
-	: path_(Path(path).makeAbsolute()),
+	: path_(Path(path).absolute()),
 	  dir_(0)
 {}
 
@@ -91,7 +91,7 @@ bool Dir::read(Ref<DirEntry> entry)
 	if (errorCode)
 		throw SystemException(__FILE__, __LINE__, "SystemException", str::cat("readdir_r() failed: error code = ", ftl::intToStr(errorCode)), errorCode);
 	
-	entry->path_ = Path(entry->d_name).makeAbsoluteRelativeTo(path_);
+	entry->path_ = Path(entry->d_name).absoluteRelativeTo(path_);
 	return result;
 }
 

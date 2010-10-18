@@ -25,8 +25,8 @@ public:
 	bool isRoot() const;
 	bool isRelative() const;
 	bool isAbsolute() const;
-	Path makeAbsoluteRelativeTo(String currentDir) const;
-	Path makeAbsolute() const;
+	Path absoluteRelativeTo(String currentDir) const;
+	Path absolute() const;
 	String fileName() const;
 	String fileNameSansFirstExtension() const;
 	String fileNameSansExtension() const;
