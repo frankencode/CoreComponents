@@ -9,7 +9,7 @@
 #include <sys/wait.h> // waitpid
 #include <sys/stat.h> // umask
 #include <errno.h> // errno
-#include <unistd.h> // chdir, readlink
+#include <unistd.h> // chdir, readlink, __MACH__?
 #include <stdlib.h> // getenv, setenv, free
 #include <time.h> // nanosleep
 #include <errno.h> // errno
@@ -19,10 +19,13 @@
 #endif
 #ifdef __MACH__
 #include <mach-o/dyld.h> // _NSGetExecutablePath
+#include <crt_externs.h> // _NSGetEnviron
 #endif
 #include "Process.hpp"
 
+#ifndef __MACH__
 extern "C" char** environ;
+#endif
 
 namespace ftl
 {
@@ -184,7 +187,7 @@ void Process::unsetEnv(String key)
 
 Ref<EnvMap, Owner> Process::envMap()
 {
-	char** env = ::environ;
+	char** env = environ();
 	Ref<EnvMap, Owner> map = new EnvMap;
 	int i = 0;
 	while (env[i] != 0) {
@@ -194,6 +197,16 @@ Ref<EnvMap, Owner> Process::envMap()
 		++i;
 	}
 	return map;
+}
+
+char**& Process::environ()
+{
+	return
+	#ifdef __MACH__
+		*_NSGetEnviron();
+	#else
+		::environ;
+	#endif
 }
 
 pid_t Process::currentId() { return getpid(); }

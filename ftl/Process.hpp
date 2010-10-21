@@ -84,6 +84,7 @@ public:
 	static String env(String key);
 	static void setEnv(String key, String value);
 	static void unsetEnv(String key);
+	static char**& environ();
 	
 	static Ref<EnvMap, Owner> envMap();
 	

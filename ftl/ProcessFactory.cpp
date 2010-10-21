@@ -21,8 +21,6 @@
 #include "Format.hpp"
 #include "ProcessFactory.hpp"
 
-extern "C" char** environ;
-
 namespace ftl
 {
 
@@ -210,7 +208,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 			
 			if (!envMap_)
 			{
-				envp = environ;
+				envp = Process::environ();
 			}
 			else
 			{
