@@ -8,9 +8,9 @@ int main(int argc, char** argv)
 	print("argv[0] = \"%%\"\n", argv[0]);
 	print("Path(argv[0]).fileName() = \"%%\"\n", Path(argv[0]).fileName());
 	print("Path(argv[0]).isAbsolute() = %%\n", Path(argv[0]).isAbsolute());
-	print("Path(argv[0]).makeAbsolute() = \"%%\"\n", Path(argv[0]).makeAbsolute());
+	print("Path(argv[0]).makeAbsolute() = \"%%\"\n", Path(argv[0]).absolute());
 	{
-		String path = Path(argv[0]).makeAbsolute();
+		String path = Path(argv[0]).absolute();
 		while (path != "/") {
 			path = Path(path).reduce();
 			print("Path(path1).reduce() = \"%%\"\n", path);

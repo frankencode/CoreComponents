@@ -28,10 +28,6 @@ public:
 	typedef Syntax Node;
 	typedef PrefixTree<Char,int> KeywordMap;
 	
-	Syntax(Ref<Node> next = 0)
-		: next_(next)
-	{}
-	
 	inline void rollBackOnFailure(Index i, Token* parentToken, Token* lastChildSaved) {
 		if ((parentToken) && (i == Media::ill())) {
 			while (parentToken->lastChild() != lastChildSaved)
@@ -48,9 +44,9 @@ public:
 	class CharNode: public Node
 	{
 	public:
-		CharNode(Char ch, int invert)
-			: ch_(ch),
-			  invert_(invert)
+		CharNode(Char ch, int invert):
+			ch_(ch),
+			invert_(invert)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -69,6 +65,8 @@ public:
 			
 			return i;
 		}
+		
+		Char ch() const { return ch_; }
 		
 	private:
 		Char ch_;
@@ -97,12 +95,11 @@ public:
 	class RangeMinMaxNode: public Node
 	{
 	public:
-		RangeMinMaxNode(Char a, Char b, int invert)
-			: a_(a),
-			  b_(b),
-			  invert_(invert)
+		RangeMinMaxNode(Char a, Char b, int invert):
+			a_(a),
+			b_(b),
+			invert_(invert)
 		{}
-		
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
@@ -129,9 +126,9 @@ public:
 	{
 	public:
 		template<class Char2>
-		RangeExplicitNode(const Char2* s, int invert)
-			: s_(str::len(s)),
-			  invert_(invert)
+		RangeExplicitNode(const Char2* s, int invert):
+			s_(str::len(s)),
+			invert_(invert)
 		{
 			str::cpy(s_.data(), s, s_.size());
 		}
@@ -166,9 +163,9 @@ public:
 	{
 	public:
 		template<class Char2>
-		StringNode(const Char2* s, bool caseSensitive)
-			: s_(str::len(s)),
-			  caseSensitive_(caseSensitive)
+		StringNode(const Char2* s, bool caseSensitive):
+			s_(str::len(s)),
+			caseSensitive_(caseSensitive)
 		{
 			str::cpy(s_.data(), s, s_.size());
 			if (!caseSensitive) {
@@ -208,9 +205,9 @@ public:
 	class KeywordNode: public Node
 	{
 	public:
-		KeywordNode(Ref<KeywordMap> map, bool caseSensitive)
-			: map_(map),
-			  caseSensitive_(caseSensitive)
+		KeywordNode(Ref<KeywordMap> map, bool caseSensitive):
+			map_(map),
+			caseSensitive_(caseSensitive)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -243,10 +240,10 @@ public:
 	class RepeatNode: public Node
 	{
 	public:
-		RepeatNode(int minRepeat, int maxRepeat, Ref<Node> entry)
-			: minRepeat_(minRepeat),
-			  maxRepeat_(maxRepeat),
-			  entry_(entry)
+		RepeatNode(int minRepeat, int maxRepeat, Ref<Node> entry):
+			minRepeat_(minRepeat),
+			maxRepeat_(maxRepeat),
+			entry_(entry)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -315,8 +312,8 @@ public:
 	class FindNode: public Node
 	{
 	public:
-		FindNode(Ref<Node> entry)
-			: entry_(entry)
+		FindNode(Ref<Node> entry):
+			entry_(entry)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -352,9 +349,9 @@ public:
 	class OrNode: public Node
 	{
 	public:
-		OrNode(Ref<Node> firstChoice, Ref<Node> secondChoice)
-			: firstChoice_(firstChoice),
-			  secondChoice_(secondChoice)
+		OrNode(Ref<Node> firstChoice, Ref<Node> secondChoice):
+			firstChoice_(firstChoice),
+			secondChoice_(secondChoice)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -386,9 +383,9 @@ public:
 	class AheadNode: public Node
 	{
 	public:
-		AheadNode(Ref<Node> entry, int invert)
-			: entry_(entry),
-			  invert_(invert)
+		AheadNode(Ref<Node> entry, int invert):
+			entry_(entry),
+			invert_(invert)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -419,10 +416,10 @@ public:
 	class LengthNode: public Node
 	{
 	public:
-		LengthNode(int minLength, int maxLength, Ref<Node> entry)
-			: minLength_(minLength),
-			  maxLength_(maxLength),
-			  entry_(entry)
+		LengthNode(int minLength, int maxLength, Ref<Node> entry):
+			minLength_(minLength),
+			maxLength_(maxLength),
+			entry_(entry)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -458,12 +455,12 @@ public:
 	class RuleNode: public Node
 	{
 	public:
-		RuleNode(Ref<Definition> definition, const char* name, int ruleId, Ref<Node> entry, bool isVoid = false)
-			: definition_(definition),
-			  name_(name),
-			  id_(ruleId),
-			  entry_(entry),
-			  isVoid_(isVoid)
+		RuleNode(Ref<Definition> definition, const char* name, int ruleId, Ref<Node> entry, bool isVoid = false):
+			definition_(definition),
+			name_(name),
+			id_(ruleId),
+			entry_(entry),
+			isVoid_(isVoid)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -515,8 +512,8 @@ public:
 	class LinkNode: public Node
 	{
 	public:
-		LinkNode(const char* ruleName)
-			: ruleName_(ruleName)
+		LinkNode(const char* ruleName):
+			ruleName_(ruleName)
 		{}
 		
 		inline const char* ruleName() const { return ruleName_; }
@@ -533,8 +530,8 @@ public:
 	class RefNode: public LinkNode
 	{
 	public:
-		RefNode(const char* ruleName = 0)
-			: LinkNode(ruleName)
+		RefNode(const char* ruleName = 0):
+			LinkNode(ruleName)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -556,8 +553,8 @@ public:
 	class InlineNode: public LinkNode
 	{
 	public:
-		InlineNode(const char* ruleName)
-			: LinkNode(ruleName)
+		InlineNode(const char* ruleName):
+			LinkNode(ruleName)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -574,10 +571,10 @@ public:
 	class PreviousNode: public LinkNode
 	{
 	public:
-		PreviousNode(const char* ruleName, const char* keyword = 0)
-			: LinkNode(ruleName),
-			  keywordName_(keyword),
-			  keyword_(-1)
+		PreviousNode(const char* ruleName, const char* keyword = 0):
+			LinkNode(ruleName),
+			keywordName_(keyword),
+			keyword_(-1)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -610,9 +607,9 @@ public:
 	class CallNode: public Node
 	{
 	public:
-		CallNode(CallBack callBack, Ref<Instance> self)
-			: callBack_(callBack),
-			  self_(self)
+		CallNode(CallBack callBack, Ref<Instance> self):
+			callBack_(callBack),
+			self_(self)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -633,9 +630,9 @@ public:
 	class SetNode: public Node
 	{
 	public:
-		SetNode(int flagId, bool value)
-			: flagId_(flagId),
-			  value_(value)
+		SetNode(int flagId, bool value):
+			flagId_(flagId),
+			value_(value)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -656,10 +653,10 @@ public:
 	class IfNode: public Node
 	{
 	public:
-		IfNode(int flagId, Ref<Node> trueBranch, Ref<Node> falseBranch)
-			: flagId_(flagId),
-			  trueBranch_(trueBranch),
-			  falseBranch_(falseBranch)
+		IfNode(int flagId, Ref<Node> trueBranch, Ref<Node> falseBranch):
+			flagId_(flagId),
+			trueBranch_(trueBranch),
+			falseBranch_(falseBranch)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -688,8 +685,8 @@ public:
 	class GetCharNode: public Node
 	{
 	public:
-		GetCharNode(int charId)
-			: charId_(charId)
+		GetCharNode(int charId):
+			charId_(charId)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -712,9 +709,9 @@ public:
 	class SetCharNode: public Node
 	{
 	public:
-		SetCharNode(int charId, Char value)
-			: charId_(charId),
-			  value_(value)
+		SetCharNode(int charId, Char value):
+			charId_(charId),
+			value_(value)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -735,9 +732,9 @@ public:
 	class VarCharNode: public Node
 	{
 	public:
-		VarCharNode(int charId, int invert)
-			: charId_(charId),
-			  invert_(invert)
+		VarCharNode(int charId, int invert):
+			charId_(charId),
+			invert_(invert)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -764,9 +761,9 @@ public:
 	class GetStringNode: public Node
 	{
 	public:
-		GetStringNode(int stringId, Ref<Node> coverage)
-			: stringId_(stringId),
-			  coverage_(coverage)
+		GetStringNode(int stringId, Ref<Node> coverage):
+			stringId_(stringId),
+			coverage_(coverage)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -804,8 +801,8 @@ public:
 	class VarStringNode: public Node
 	{
 	public:
-		VarStringNode(int stringId)
-			: stringId_(stringId)
+		VarStringNode(int stringId):
+			stringId_(stringId)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -835,9 +832,9 @@ public:
 	class InvokeNode: public Node
 	{
 	public:
-		InvokeNode(Ref<Definition> definition, Ref<Node> coverage)
-			: definition_(definition),
-			  coverage_(coverage)
+		InvokeNode(Ref<Definition> definition, Ref<Node> coverage):
+			definition_(definition),
+			coverage_(coverage)
 		{}
 		
 		InvokeNode(const char* name, Ref<Node> coverage)
@@ -891,6 +888,12 @@ public:
 		Ref<InvokeNode, Owner> unresolvedNext_;
 	};
 	
+	class DebugFactory: public Instance
+	{
+	public:
+		virtual Node* produce(Node* newNode, const char* nodeType) = 0;
+	};
+	
 	class Scope;
 	
 	class Definition: public RefNode
@@ -917,6 +920,9 @@ public:
 				scope_->addDefinition(this);
 		}
 		
+		inline Ref<DebugFactory> debugFactory() const { return debugFactory_; }
+		inline void setDebugFactory(Ref<DebugFactory> factory) { debugFactory_ = factory; }
+		
 		inline Ref<Scope> scope() const { return scope_; }
 		inline const char* name() const { return name_; }
 		
@@ -932,14 +938,14 @@ public:
 				FTL_THROW(DebugException, str::cat("Unknown option '", name, "'"));
 		}
 		
-		inline static NODE CHAR(Char ch) { return new CharNode(ch, 0); }
-		inline static NODE OTHER(Char ch) { return new CharNode(ch, 1); }
-		inline static NODE ANY() { return new AnyNode(); }
-		inline static NODE RANGE(Char a, Char b) { return new RangeMinMaxNode(a, b, 0); }
-		template<class Char> inline static NODE RANGE(const Char* s) { return new RangeExplicitNode(s, 0); }
-		inline static NODE EXCEPT(Char a, Char b) { return new RangeMinMaxNode(a, b, 1); }
-		template<class Char> inline static NODE EXCEPT(Char* s) { return new RangeExplicitNode(s, 1); }
-		template<class Char> inline NODE STRING(Char* s) { return new StringNode(s, caseSensitive_); }
+		inline NODE CHAR(Char ch) { return debug(new CharNode(ch, 0), "Char"); }
+		inline NODE OTHER(Char ch) { return debug(new CharNode(ch, 1), "Char"); }
+		inline NODE ANY() { return debug(new AnyNode(), "Any"); }
+		inline NODE RANGE(Char a, Char b) { return debug(new RangeMinMaxNode(a, b, 0), "RangeMinMax"); }
+		template<class Char> inline NODE RANGE(const Char* s) { return debug(new RangeExplicitNode(s, 0), "RangeExplicit"); }
+		inline NODE EXCEPT(Char a, Char b) { return debug(new RangeMinMaxNode(a, b, 1), "RangeMinMax"); }
+		template<class Char> inline NODE EXCEPT(Char* s) { return debug(new RangeExplicitNode(s, 1), "RangeExplicit"); }
+		template<class Char> inline NODE STRING(Char* s) { return debug(new StringNode(s, caseSensitive_), "String"); }
 		
 		NODE KEYWORD(const char* keywords)
 		{
@@ -961,22 +967,22 @@ public:
 				map->insert(pos, len, keyword);
 				pos += len;
 			}
-			return new KeywordNode(map, caseSensitive_);
+			return debug(new KeywordNode(map, caseSensitive_), "Keyword");
 		}
 		
-		inline static NODE REPEAT(int minRepeat, int maxRepeat, NODE entry) { return new RepeatNode(minRepeat, maxRepeat, entry); }
-		inline static NODE REPEAT(int minRepeat, NODE entry) { return REPEAT(minRepeat, intMax, entry); }
-		inline static NODE REPEAT(NODE entry) { return REPEAT(0, intMax, entry); }
-		inline static NODE BOI() { return new BoiNode(); }
-		inline static NODE EOI() { return new EoiNode(); }
-		inline static NODE PASS() { return 0; }
-		inline static NODE FAIL() { return NOT(PASS()); }
-		inline static NODE FIND(NODE entry) { return new FindNode(entry); }
-		inline static NODE AHEAD(NODE entry) { return new AheadNode(entry, 0); }
-		inline static NODE NOT(NODE entry) { return new AheadNode(entry, 1); }
+		inline NODE REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new RepeatNode(minRepeat, maxRepeat, entry), "Repeat"); }
+		inline NODE REPEAT(int minRepeat, NODE entry) { return REPEAT(minRepeat, intMax, entry); }
+		inline NODE REPEAT(NODE entry) { return REPEAT(0, intMax, entry); }
+		inline NODE BOI() { return debug(new BoiNode(), "Boi"); }
+		inline NODE EOI() { return debug(new EoiNode(), "Eoi"); }
+		inline NODE PASS() { return 0; }
+		inline NODE FAIL() { return NOT(PASS()); }
+		inline NODE FIND(NODE entry) { return debug(new FindNode(entry), "Find"); }
+		inline NODE AHEAD(NODE entry) { return debug(new AheadNode(entry, 0), "Ahead"); }
+		inline NODE NOT(NODE entry) { return debug(new AheadNode(entry, 1), "Ahead"); }
 		
-		inline static NODE LENGTH(int minLength, int maxLength, NODE entry) { return new LengthNode(minLength, maxLength, entry); }
-		inline static NODE LENGTH(int minLength, NODE entry) { return LENGTH(minLength, intMax, entry); }
+		inline NODE LENGTH(int minLength, int maxLength, NODE entry) { return debug(new LengthNode(minLength, maxLength, entry), "Length"); }
+		inline NODE LENGTH(int minLength, NODE entry) { return LENGTH(minLength, intMax, entry); }
 		
 		#include "SyntaxSugar.hpp"
 		
@@ -997,31 +1003,31 @@ public:
 			Ref<RefNode, Owner> link = new RefNode(ruleName);
 			link->unresolvedNext_ = unresolvedLinkHead_;
 			unresolvedLinkHead_ = link;
-			return link;
+			return debug(link, "Ref");
 		}
 		inline NODE INLINE(const char* ruleName) {
 			Ref<InlineNode, Owner> link = new InlineNode(ruleName);
 			link->unresolvedNext_ = unresolvedLinkHead_;
 			unresolvedLinkHead_ = link;
-			return link;
+			return debug(link, "Inline");
 		}
 		inline NODE PREVIOUS(const char* ruleName, const char* keyword = 0) {
-			Ref<PreviousNode, Owner> link =  new PreviousNode(ruleName, keyword);
+			Ref<PreviousNode, Owner> link = new PreviousNode(ruleName, keyword);
 			link->unresolvedNext_ = unresolvedLinkHead_;
 			unresolvedLinkHead_ = link;
 			if (keyword) {
 				link->unresolvedKeywordNext_ = unresolvedKeywordHead_;
 				unresolvedKeywordHead_ = link;
 			}
-			return link;
+			return debug(link, "Previous");
 		}
 		
 		inline NODE CALL(CallBack callBack, Ref<Instance> self = 0) {
 			if (!self) self = this;
-			return new CallNode(callBack, self);
+			return debug(new CallNode(callBack, self), "Call");
 		}
 		inline NODE ERROR() {
-			return new CallNode(errorCallBack, this);
+			return debug(new CallNode(errorCallBack, this), "Call");
 		}
 		
 		inline void LINK() {
@@ -1062,41 +1068,41 @@ public:
 			++numStateStrings_;
 		}
 		inline NODE SET(const char* name, bool value) {
-			return new SetNode(flagIdByName(name), value);
+			return debug(new SetNode(flagIdByName(name), value), "Set");
 		}
 		inline NODE IF(const char* name, NODE trueBranch, NODE falseBranch = 0) {
-			return new IfNode(flagIdByName(name), trueBranch, falseBranch);
+			return debug(new IfNode(flagIdByName(name), trueBranch, falseBranch), "If");
 		}
 		inline NODE GETCHAR(const char* name) {
-			return new GetCharNode(charIdByName(name));
+			return debug(new GetCharNode(charIdByName(name)), "GetChar");
 		}
 		inline NODE SETCHAR(const char* name, Char value) {
-			return new SetCharNode(charIdByName(name), value);
+			return debug(new SetCharNode(charIdByName(name), value), "SetChar");
 		}
 		inline NODE VARCHAR(const char* name) {
-			return new VarCharNode(charIdByName(name), 0);
+			return debug(new VarCharNode(charIdByName(name), 0), "VarChar");
 		}
 		inline NODE VAROTHER(const char* name) {
-			return new VarCharNode(charIdByName(name), 1);
+			return debug(new VarCharNode(charIdByName(name), 1), "VarChar");
 		}
 		inline NODE GETSTRING(const char* name, NODE coverage) {
-			return new GetStringNode(stringIdByName(name), coverage);
+			return debug(new GetStringNode(stringIdByName(name), coverage), "GetString");
 		}
 		inline NODE VARSTRING(const char* name) {
-			return new VarStringNode(stringIdByName(name));
+			return debug(new VarStringNode(stringIdByName(name)), "VarString");
 		}
 		
 		inline NODE INVOKE(Definition* definition, NODE coverage = 0) {
 			if (definition != this)
 				definition->LINK();
-			return new InvokeNode(definition, coverage);
+			return debug(new InvokeNode(definition, coverage), "Invoke");
 		}
 		
 		inline NODE INVOKE(const char* definitionName, NODE coverage = 0) {
 			Ref<InvokeNode, Owner> node = new InvokeNode(definitionName, coverage);
 			node->unresolvedNext_ = unresolvedInvokeHead_;
 			unresolvedInvokeHead_ = node;
-			return node;
+			return debug(node, "Invoke");
 		}
 		
 		//-- execution interface
@@ -1242,6 +1248,12 @@ public:
 		}
 		
 	private:
+		Ref<DebugFactory, Owner> debugFactory_;
+		
+		inline Node* debug(Node* newNode, const char* nodeType) {
+			return debugFactory_ ? debugFactory_->produce(newNode, nodeType) : newNode;
+		}
+		
 		friend class Scope;
 		friend class InvokeNode;
 		
