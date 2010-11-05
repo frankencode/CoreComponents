@@ -171,6 +171,18 @@ public:
 	inline static T map(const T& x) { return ftl::toUpper(x); }
 };
 
+template<class T>
+class ToAscii {
+public:
+	inline static char map(const T& x) { return char(x); }
+};
+
+template<class T>
+class ToUnicode {
+public:
+	inline static uchar_t map(const T& x) { return uchar_t(x); }
+};
+
 inline void* malloc(int size) { return new char[size]; }
 inline void free(void* buf) { delete[] reinterpret_cast<char*>(buf); }
 

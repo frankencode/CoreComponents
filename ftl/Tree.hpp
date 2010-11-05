@@ -47,6 +47,7 @@ public:
 	inline int countChildren() const {
 		return (firstChild_) ? firstChild_->countSiblings() : 0;
 	}
+	inline bool hasChildren() const { return firstChild_; }
 	
 	int countSiblings() const;
 	

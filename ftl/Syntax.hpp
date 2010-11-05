@@ -18,6 +18,7 @@ namespace ftl
 {
 
 template<class Media> class SyntaxLinker;
+template<class Media> class SyntaxDebugger;
 
 template<class Media>
 class Syntax: public Instance
@@ -66,7 +67,8 @@ public:
 			return i;
 		}
 		
-		Char ch() const { return ch_; }
+		inline Char ch() const { return ch_; }
+		inline bool invert() const { return invert_; }
 		
 	private:
 		Char ch_;
@@ -117,6 +119,10 @@ public:
 			return i;
 		}
 		
+		inline Char a() const { return a_; }
+		inline Char b() const { return b_; }
+		inline int invert() const { return invert_; }
+		
 	private:
 		Char a_, b_;
 		int invert_;
@@ -153,6 +159,9 @@ public:
 			
 			return i;
 		}
+		
+		inline const Array<Char>& s() const { return s_; }
+		inline int invert() const { return invert_; }
 		
 	private:
 		Array<Char> s_;
@@ -196,7 +205,9 @@ public:
 			
 			return i;
 		}
-	
+		
+		inline const Array<Char>& s() const { return s_; }
+		
 	private:
 		Array<Char> s_;
 		bool caseSensitive_;
@@ -231,7 +242,9 @@ public:
 			
 			return i;
 		}
-	
+		
+		inline Ref<KeywordMap> map() const { return map_; }
+		
 	private:
 		Ref<KeywordMap, Owner> map_;
 		bool caseSensitive_;
@@ -271,6 +284,10 @@ public:
 			
 			return i;
 		}
+		
+		inline int minRepeat() const { return minRepeat_; }
+		inline int maxRepeat() const { return maxRepeat_; }
+		inline Ref<Node> entry() const { return entry_; }
 	
 	private:
 		int minRepeat_;
@@ -341,7 +358,9 @@ public:
 			
 			return i;
 		}
-	
+		
+		inline Ref<Node> entry() const { return entry_; }
+		
 	private:
 		Ref<Node, Owner> entry_;
 	};
@@ -374,7 +393,10 @@ public:
 			
 			return i;
 		}
-	
+		
+		inline Ref<Node> firstChoice() const { return firstChoice_; }
+		inline Ref<Node> secondChoice() const { return secondChoice_; }
+		
 	private:
 		Ref<Node, Owner> firstChoice_;
 		Ref<Node, Owner> secondChoice_;
@@ -407,7 +429,10 @@ public:
 			
 			return i;
 		}
-	
+		
+		inline Ref<Node> entry() const { return entry_; }
+		inline int invert() const { return invert_; }
+		
 	private:
 		Ref<Node, Owner> entry_;
 		int invert_;
@@ -442,7 +467,11 @@ public:
 			
 			return i;
 		}
-	
+		
+		inline int minLength() const { return minLength_; }
+		inline int maxLength() const { return maxLength_; }
+		inline Ref<Node> entry() const { return entry_; }
+		
 	private:
 		int minLength_;
 		int maxLength_;
@@ -498,6 +527,9 @@ public:
 		
 		inline int id() const { return id_; }
 		inline const char* name() const { return name_; }
+		
+		inline Ref<Node> entry() const { return entry_; }
+		inline bool isVoid() const { return isVoid_; }
 		
 	protected:
 		friend class InlineNode;
@@ -595,6 +627,8 @@ public:
 			return i;
 		}
 		
+		inline const char* keywordName() const { return keywordName_; }
+		
 	protected:
 		friend class Definition;
 		const char* keywordName_;
@@ -622,6 +656,8 @@ public:
 			return i;
 		}
 		
+		inline CallBack callBack() const { return callBack_; }
+		
 	private:
 		CallBack callBack_;
 		Ref<Instance, SetNull> self_;
@@ -644,7 +680,10 @@ public:
 			
 			return i;
 		}
-	
+		
+		inline int flagId() const { return flagId_; }
+		inline bool value() const { return value_; }
+		
 	private:
 		int flagId_;
 		bool value_;
@@ -675,7 +714,11 @@ public:
 			
 			return i;
 		}
-	
+		
+		inline int flagId() const { return flagId_; }
+		inline Ref<Node> trueBranch() const { return trueBranch_; }
+		inline Ref<Node> falseBranch() const { return falseBranch_; }
+		
 	private:
 		int flagId_;
 		Ref<Node, Owner> trueBranch_;
@@ -701,7 +744,9 @@ public:
 			
 			return i;
 		}
-	
+		
+		inline int charId() const { return charId_; }
+		
 	private:
 		int charId_;
 	};
@@ -723,7 +768,10 @@ public:
 			
 			return i;
 		}
-	
+		
+		inline int charId() const { return charId_; }
+		inline Char value() const { return value_; }
+		
 	private:
 		int charId_;
 		Char value_;
@@ -752,6 +800,9 @@ public:
 			
 			return i;
 		}
+		
+		inline int charId() const { return charId_; }
+		inline bool invert() const { return invert_; }
 	
 	private:
 		int charId_;
@@ -793,6 +844,9 @@ public:
 			return i;
 		}
 		
+		inline int stringId() const { return stringId_; }
+		inline Ref<Node> coverage() const { return coverage_; }
+		
 	private:
 		int stringId_;
 		Ref<Node, Owner> coverage_;
@@ -824,6 +878,8 @@ public:
 			
 			return i;
 		}
+		
+		inline int stringId() const { return stringId_; }
 		
 	private:
 		int stringId_;
@@ -878,6 +934,9 @@ public:
 			
 			return i;
 		}
+		
+		inline const char* definitionName() const { return definitionName_; }
+		inline Ref<Node> coverage() const { return coverage_; }
 		
 	private:
 		friend class Definition;
@@ -1176,24 +1235,12 @@ public:
 			return (h != Media::ill()) ? tokenFactory->rootToken() : Ref<Token>();
 		}
 		
-		Ref<RuleNode> ruleByName(const char* name)
+		Ref<RuleNode> ruleByName(const char* name) const
 		{
 			Ref<RuleNode, Owner> node;
 			if (!ruleByName_->lookup(name, &node))
 				FTL_THROW(DebugException, str::cat("Undefined rule '", name, "' referenced"));
 			return node;
-		}
-		
-		virtual Ref<Definition> definitionByName(const char* name)
-		{
-			if (scope_) {
-				return scope_->definitionByName(name);
-			}
-			else {
-				if (str::cmp(name, name_) != 0)
-					FTL_THROW(DebugException, str::cat("Undefined definition '", name, "' referenced"));
-				return this;
-			}
 		}
 		
 		int keywordByName(const char* keyword)
@@ -1204,28 +1251,16 @@ public:
 			return tokenType;
 		}
 		
-		int flagIdByName(const char* name)
+		Ref<Definition> definitionByName(const char* name) const
 		{
-			int flagId = -1;
-			if (!flagIdByName()->lookup(name, &flagId))
-				FTL_THROW(DebugException, str::cat("Undefined state flag '", name, "' referenced"));
-			return flagId;
-		}
-		
-		int charIdByName(const char* name)
-		{
-			int charId = -1;
-			if (!charIdByName()->lookup(name, &charId))
-				FTL_THROW(DebugException, str::cat("Undefined state char '", name, "' referenced"));
-			return charId;
-		}
-		
-		int stringIdByName(const char* name)
-		{
-			int stringId = -1;
-			if (!stringIdByName()->lookup(name, &stringId))
-				FTL_THROW(DebugException, str::cat("Undefined state string '", name, "' referenced"));
-			return stringId;
+			if (scope_) {
+				return scope_->definitionByName(name);
+			}
+			else {
+				if (str::cmp(name, name_) != 0)
+					FTL_THROW(DebugException, str::cat("Undefined definition '", name, "' referenced"));
+				return this;
+			}
 		}
 		
 		static void getLineAndPosFromIndex(Media* media, int index, int* line, int* pos)
@@ -1248,6 +1283,7 @@ public:
 		}
 		
 	private:
+		friend class SyntaxDebugger<Media>;
 		Ref<DebugFactory, Owner> debugFactory_;
 		
 		inline Node* debug(Node* newNode, const char* nodeType) {
@@ -1261,6 +1297,26 @@ public:
 		int id_;
 		const char* name_;
 		bool caseSensitive_;
+		
+		typedef PrefixTree<char, Ref<RuleNode, Owner> > RuleByName;
+		typedef PrefixTree<char, int> KeywordByName;
+	
+		int numRules_;
+		int numKeywords_;
+		Ref<RuleByName, Owner> ruleByName_;
+		Ref<KeywordByName, Owner> keywordByName_;
+		
+		void addRule(Ref<RuleNode> rule)
+		{
+			if (!ruleByName_->insert(rule->name(), rule))
+				FTL_THROW(DebugException, str::cat("Redefinition of rule '", rule->name(), "'"));
+		}
+		
+		Ref<LinkNode, Owner> unresolvedLinkHead_;
+		Ref<PreviousNode, Owner> unresolvedKeywordHead_;
+		Ref<InvokeNode, Owner> unresolvedInvokeHead_;
+		Ref<Definition, Owner> unresolvedNext_;
+		bool statefulScope_;
 		
 		class StateFlag: public Instance {
 		public:
@@ -1294,25 +1350,6 @@ public:
 			Array<Char> defaultValue_;
 		};
 		
-		int numRules_;
-		int numKeywords_;
-		typedef PrefixTree<char, Ref<RuleNode, Owner> > RuleByName;
-		typedef PrefixTree<char, int> KeywordByName;
-		Ref<RuleByName, Owner> ruleByName_;
-		Ref<KeywordByName, Owner> keywordByName_;
-		
-		void addRule(Ref<RuleNode> rule)
-		{
-			if (!ruleByName_->insert(rule->name(), rule))
-				FTL_THROW(DebugException, str::cat("Redefinition of rule '", rule->name(), "'"));
-		}
-		
-		Ref<LinkNode, Owner> unresolvedLinkHead_;
-		Ref<PreviousNode, Owner> unresolvedKeywordHead_;
-		Ref<InvokeNode, Owner> unresolvedInvokeHead_;
-		Ref<Definition, Owner> unresolvedNext_;
-		bool statefulScope_;
-		
 		int numStateFlags_;
 		int numStateChars_;
 		int numStateStrings_;
@@ -1321,9 +1358,34 @@ public:
 		Ref<StateString, Owner> stateStringHead_;
 		
 		typedef PrefixTree<char, int> StateIdByName;
+		
 		Ref<StateIdByName, Owner> flagIdByName_;
 		Ref<StateIdByName, Owner> charIdByName_;
 		Ref<StateIdByName, Owner> stringIdByName_;
+		
+		int flagIdByName(const char* name)
+		{
+			int flagId = -1;
+			if (!flagIdByName()->lookup(name, &flagId))
+				FTL_THROW(DebugException, str::cat("Undefined state flag '", name, "' referenced"));
+			return flagId;
+		}
+		
+		int charIdByName(const char* name)
+		{
+			int charId = -1;
+			if (!charIdByName()->lookup(name, &charId))
+				FTL_THROW(DebugException, str::cat("Undefined state char '", name, "' referenced"));
+			return charId;
+		}
+		
+		int stringIdByName(const char* name)
+		{
+			int stringId = -1;
+			if (!stringIdByName()->lookup(name, &stringId))
+				FTL_THROW(DebugException, str::cat("Undefined state string '", name, "' referenced"));
+			return stringId;
+		}
 		
 		inline Ref<StateIdByName> flagIdByName() {
 			if (!flagIdByName_) flagIdByName_ = new StateIdByName;

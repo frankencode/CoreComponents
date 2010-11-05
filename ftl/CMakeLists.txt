@@ -37,6 +37,7 @@ SET(FTL_HEADER
 	List.hpp
 	Tree.hpp
 	PrefixTree.hpp
+	PrefixTreeWalker.hpp
 	Pair.hpp
 	BinaryNode.hpp
 	BinaryTree.hpp
@@ -49,6 +50,7 @@ SET(FTL_HEADER
 	TokenFactory.hpp
 	Syntax.hpp
 	SyntaxSugar.hpp
+	SyntaxDebugger.hpp
 	
 	strings
 	String.hpp

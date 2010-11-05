@@ -11,6 +11,7 @@
 #include "types.hpp"
 #include "strings.hpp"
 #include "Tree.hpp"
+#include "PrefixTreeWalker.hpp"
 
 namespace ftl
 {
@@ -44,7 +45,7 @@ public:
 	  * The function returns true if an exact match was found.
 	  */
 	template<class Char2>
-	inline bool lookup(const Char2* key, int keyLen, Value* value = 0, bool caseSensitive = true) {
+	inline bool lookup(const Char2* key, int keyLen, Value* value = 0, bool caseSensitive = true) const {
 		return caseSensitive ?
 			lookupFiltered<Char2, Identity>(key, keyLen, value) :
 			lookupFiltered<Char2, ToLower>(key, keyLen, value);
@@ -57,14 +58,14 @@ public:
 	  * The terminal match position is given in '*i1'.
 	  */
 	template<class Media>
-	inline bool match(Media* media, int i0 = 0, int* i1 = 0, Value* value = 0, bool caseSensitive = true) {
+	inline bool match(Media* media, int i0 = 0, int* i1 = 0, Value* value = 0, bool caseSensitive = true) const {
 		return caseSensitive ?
 			matchFiltered<Media, Identity>(media, i0, i1, value) :
 			matchFiltered<Media, ToLower>(media, i0, i1, value);
 	}
 	
 	// convenience wrapper
-	inline bool lookup(const char* key, Value* value = 0, bool caseSensitive = true) {
+	inline bool lookup(const char* key, Value* value = 0, bool caseSensitive = true) const {
 		return lookup(key, str::len(key), value, caseSensitive);
 	}
 	
@@ -75,7 +76,7 @@ public:
 	
 	// convenience wrapper, matches entire media
 	template<class Media>
-	bool match(Media* media, Value* value = 0)
+	bool match(Media* media, Value* value = 0) const
 	{
 		int i1 = 0;
 		if (match(media, 0, &i1, value))
@@ -83,8 +84,51 @@ public:
 		return false;
 	}
 	
+	typedef PrefixTreeWalker<Char, Value> Index;
+	typedef Array<Char, DeepCopyZeroTerminatedArray> Key;
+	
+	inline Index first() const { return Index(Parent::firstLeaf()); }
+	inline Index last() const { return Index(Parent::lastLeaf()); }
+	
+	inline bool def(Index index) const { return index.valid(); }
+	
+	Ref<Key, Owner> key(Index index) const
+	{
+		check(def(index));
+		int size = 0;
+		{
+			Ref<Node> node = index.node_;
+			if (node) {
+				while (node != this) {
+					node = node->parent();
+					++size;
+				}
+			}
+		}
+		Ref<Key, Owner> s = new Key(size);
+		{
+			int i = size;
+			Ref<Node> node = index.node_;
+			if (node) {
+				while (node != this) {
+					--i;
+					s->set(i, node->ch_);
+					node = node->parent();
+				}
+			}
+		}
+		return s;
+	}
+	
+	inline Value value(Index index) const {
+		check(def(index));
+		return index.node_->value_;
+	}
+	
 protected:
+	typedef Tree< PrefixTree<Char, Value> > Parent;
 	typedef PrefixTree Node;
+	friend class PrefixTreeWalker<Char, Value>;
 	
 	PrefixTree(Char ch)
 		: ch_(ch),
@@ -117,7 +161,7 @@ protected:
 	}
 	
 	template<class Char2, template<class> class Filter>
-	bool lookupFiltered(const Char2* key, int keyLen, Value* value = 0)
+	bool lookupFiltered(const Char2* key, int keyLen, Value* value = 0) const
 	{
 		Ref<Node> node = this;
 		while ((node) && keyLen > 0)
@@ -135,7 +179,7 @@ protected:
 	}
 	
 	template<class Media, template<class> class Filter>
-	bool matchFiltered(Media* media, int i0 = 0, int* i1 = 0, Value* value = 0)
+	bool matchFiltered(Media* media, int i0 = 0, int* i1 = 0, Value* value = 0) const
 	{
 		bool found = false;
 		int i = i0;
@@ -156,7 +200,7 @@ protected:
 	}
 	
 	template<template<class> class Filter>
-	inline Ref<Node> step(Char ch)
+	inline Ref<Node> step(Char ch) const
 	{
 		ch = Filter<Char>::map(ch);
 		bool found = false;
