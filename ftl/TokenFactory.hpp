@@ -29,8 +29,7 @@ public:
 		return token;
 	}
 	
-	inline Token* produce()
-	{
+	inline Token* produce() {
 		Token* token = newToken();
 		if (!rootToken_) rootToken_ = token;
 		return token;

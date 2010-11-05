@@ -23,7 +23,7 @@ let n=2
 while [ $n -le $MAX_ARGS ]; do
 	let m=$n-1
 	let p=$n-2
-	printf "inline static NODE CHOICE("
+	printf "inline NODE CHOICE("
 	let i=0
 	while [ $i -le $p ]; do
 		printf "NODE choice$i, "
@@ -33,13 +33,13 @@ while [ $n -le $MAX_ARGS ]; do
 	printf "\treturn"
 	let i=0
 	while [ $i -le $p ]; do
-		printf " new OrNode(choice$i,"
+		printf " debug(new OrNode(choice$i,"
 		let i=i+1
 	done
 	printf " choice$m"
 	let i=0
 	while [ $i -le $p ]; do
-		printf ")"
+		printf "), \"Or\")"
 		let i=i+1
 	done
 	printf ";\n"

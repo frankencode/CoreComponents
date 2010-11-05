@@ -1,5 +1,6 @@
 #include <ftl/streams>
 #include <ftl/syntax>
+#include <ftl/SyntaxDebugger.hpp>
 #include <ftl/utils>
 
 namespace ftl
@@ -8,8 +9,12 @@ namespace ftl
 class Expression: public Syntax<String::Media>::Definition
 {
 public:
+	typedef SyntaxDebugger<String::Media> Debugger;
+	
 	Expression()
 	{
+		debugger_ = new Debugger(this);
+		
 		number_ =
 			DEFINE("number",
 				GLUE(
@@ -76,6 +81,8 @@ public:
 		
 		return value;
 	}
+	
+	Ref<Debugger> debugger() const { return debugger_; }
 	
 private:
 	double eval(Ref<Token> token)
@@ -146,6 +153,8 @@ private:
 		return value;
 	}
 	
+	Ref<Debugger, Owner> debugger_;
+	
 	int number_;
 	int factor_;
 	int mulOp_;
@@ -167,6 +176,8 @@ int main()
 	dt = now() - dt;
 	print("took %% us\n", dt.us());
 	print("evaluates to %%\n", result);
+	
+	expression->debugger()->printDefinition();
 	
 	return 0;
 }
