@@ -28,6 +28,7 @@ public:
 	typedef typename Media::Index Index;
 	typedef Syntax Node;
 	typedef PrefixTree<Char,int> KeywordMap;
+	typedef SyntaxDebugger<Media> Debugger;
 	
 	inline void rollBackOnFailure(Index i, Token* parentToken, Token* lastChildSaved) {
 		if ((parentToken) && (i == Media::ill())) {

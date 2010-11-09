@@ -91,13 +91,31 @@ public:
 		typedef typename Definition::RuleByName RuleByName;
 		typedef typename Syntax<Media>::RuleNode RuleNode;
 		Ref<RuleByName> ruleByName = definition_->ruleByName_;
+		
+		typedef Map<int, Ref<RuleNode> > RuleById;
+		Ref<RuleById, Owner> ruleById = new RuleById;
+		
 		for (typename RuleByName::Index i = ruleByName->first(); ruleByName->def(i); ++i) {
 			Ref<RuleNode> rule = ruleByName->value(i);
+			ruleById->insert(rule->id(), rule);
+		}
+		
+		typedef List< Ref<RuleNode> > RuleList;
+		Ref<RuleList, Owner> ruleList = ruleById->valueList();
+		
+		for (typename RuleList::Index i = ruleList->first(); ruleList->def(i); ++i) {
+			Ref<RuleNode> rule = ruleList->get(i);
 			print("DEFINE%%(\"%%\",\n", rule->isVoid() ? "_VOID" : "", rule->name());
-			Ref<DebugNode> debugNode = rule->entry();
-			if (debugNode) debugNode->printNext(indent_);
+			if (rule->entry()) {
+				Ref<DebugNode> debugNode = rule->entry();
+				if (debugNode) debugNode->printNext(indent_);
+			}
+			else {
+				print("%%PASS()", indent_);
+			}
 			print("\n);\n\n");
 		}
+		
 		print("ENTRY(\"%%\");\n", definition_->ruleName_);
 	}
 	
@@ -193,6 +211,7 @@ private:
 		}
 	}
 	
+public:	
 	class DebugNode: public Node {
 	public:
 		DebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
@@ -218,6 +237,8 @@ private:
 				print(")");
 			}
 		}
+		
+		inline Ref<Node> entry() const { return entry_; }
 		
 	protected:
 		void printGlue(String indent) {
@@ -284,6 +305,7 @@ private:
 		virtual const char* declType() const { return "ANY"; }
 	};
 	
+private:
 	class RangeMinMaxDebugNode: public DebugNode {
 	public:
 		RangeMinMaxDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)

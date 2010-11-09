@@ -1,6 +1,7 @@
 LINK_LIBRARIES(ftl)
 INCLUDE_DIRECTORIES(..)
 
+ADD_EXECUTABLE(testAbnfCompiler testAbnfCompiler.cpp)
 ADD_EXECUTABLE(testDateTime testDateTime.cpp)
 ADD_EXECUTABLE(testString testString.cpp)
 ADD_EXECUTABLE(testDir testDir.cpp)

@@ -51,6 +51,7 @@ SET(FTL_HEADER
 	Syntax.hpp
 	SyntaxSugar.hpp
 	SyntaxDebugger.hpp
+	AbnfCompiler.hpp
 	
 	strings
 	String.hpp
@@ -142,6 +143,7 @@ SET(FTL_SOURCE
 	
 	# syntax
 	Token.cpp
+	AbnfCompiler.cpp
 	
 	# strings
 	String.cpp
