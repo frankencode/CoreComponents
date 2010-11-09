@@ -81,7 +81,7 @@ int strToInt(const char* s, int i0, int i1, int base)
 	int value = 0;
 	for (int i = i0; i < i1; ++i) {
 		int digit = s[i];
-		if (('0' <= digit) && (digit <= '9')) digit = digit - '0' + 10;
+		if (('0' <= digit) && (digit <= '9')) digit = digit - '0';
 		else if (('a' <= digit) && (digit <= 'f')) digit = digit - 'a' + 10;
 		else if (('A' <= digit) && (digit <= 'F')) digit = digit - 'A' + 10;
 		else continue;

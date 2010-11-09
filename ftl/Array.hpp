@@ -134,6 +134,7 @@ public:
 	}
 	
 	inline T* data() const { return data_; }
+	inline const T* constData() const { return data_; }
 	inline operator T*() const { return data_; }
 	inline operator bool() const { return !isEmpty(); }
 	
