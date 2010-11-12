@@ -15,14 +15,23 @@
 namespace ftl
 {
 
-class AbnfCompiler: public Syntax<ByteArray>::Definition
+class AbnfDefinition: public Syntax<ByteArray>::Definition
 {
 public:
+	AbnfDefinition(Ref<DebugFactory> debugFactory = 0);
+};
+
+class AbnfCompiler: public AbnfDefinition
+{
+public:
+	typedef AbnfDefinition Definition;
+	
 	AbnfCompiler();
 	
 	Ref<Definition, Owner> compile(Ref<ByteArray> text, bool printDefinition = false);
 	
 private:
+	static void defineCoreRules(Ref<Definition> definition);
 	NODE defineValue(const char* digitRule);
 	
 	inline const char* str(Ref<ByteArray> text, Ref<Token> token) { return trap_.capture(text, token->i0(), token->i1()); }

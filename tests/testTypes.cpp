@@ -1,5 +1,6 @@
 #include <ftl/streams>
 #include <ftl/threads>
+#include <ftl/syntax>
 
 namespace ftl
 {
@@ -45,6 +46,8 @@ void testFloat754()
 	print("sizeof(String::Index) = %%\n", int(sizeof(String::Index)));
 	print("sizeof(Format) = %%\n", int(sizeof(Format)));
 	print("sizeof(Variant) = %%\n", int(sizeof(Variant)));
+	print("sizeof(Syntax<ByteArray>) = %%\n", sizeof(Syntax<ByteArray>));
+	print("sizeof(Token) = %%\n", sizeof(Token));
 }
 
 int main()

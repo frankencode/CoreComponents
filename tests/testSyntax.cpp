@@ -9,12 +9,9 @@ namespace ftl
 class Expression: public Syntax<String::Media>::Definition
 {
 public:
-	typedef SyntaxDebugger<String::Media> Debugger;
-	
-	Expression()
+	Expression(Ref<Debugger> debugger)
+		: Definition(debugger)
 	{
-		debugger_ = new Debugger(this);
-		
 		number_ =
 			DEFINE("number",
 				GLUE(
@@ -81,8 +78,6 @@ public:
 		
 		return value;
 	}
-	
-	Ref<Debugger> debugger() const { return debugger_; }
 	
 private:
 	double eval(Ref<Token> token)
@@ -153,8 +148,6 @@ private:
 		return value;
 	}
 	
-	Ref<Debugger, Owner> debugger_;
-	
 	int number_;
 	int factor_;
 	int mulOp_;
@@ -167,7 +160,8 @@ private:
 
 int main()
 {
-	Ref<Expression, Owner> expression = new Expression;
+	Ref<Expression::Debugger, Owner> debugger = new Expression::Debugger;
+	Ref<Expression, Owner> expression = new Expression(debugger);
 	
 	Time dt = now();
 	
@@ -177,7 +171,7 @@ int main()
 	print("took %% us\n", dt.us());
 	print("evaluates to %%\n", result);
 	
-	expression->debugger()->printDefinition();
+	debugger->printDefinition();
 	
 	return 0;
 }

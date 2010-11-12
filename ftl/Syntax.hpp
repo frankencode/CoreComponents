@@ -39,6 +39,9 @@ public:
 	
 	Ref<Node, Owner> next_;
 	
+	inline Ref<Node> next() const { return next_; }
+	virtual Ref<Node> branch(int i) const { return 0; }
+	
 	typedef SyntaxState<Char> State;
 	
 	virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) = 0;
@@ -952,6 +955,13 @@ public:
 	{
 	public:
 		virtual Node* produce(Node* newNode, const char* nodeType) = 0;
+		
+	protected:
+		Ref<Definition> definition() const { return definition_; }
+		
+	private:
+		friend class Definition;
+		Ref<Definition, SetNull> definition_;
 	};
 	
 	class Scope;
@@ -959,8 +969,9 @@ public:
 	class Definition: public RefNode
 	{
 	public:
-		Definition(Ref<Scope> scope = 0, const char* name = 0)
-			: scope_(scope),
+		Definition(Ref<DebugFactory> debugFactory = 0, Ref<Scope> scope = 0, const char* name = 0)
+			: debugFactory_(debugFactory),
+			  scope_(scope),
 			  id_(scope ? scope->numDefinitions(1) : -1),
 			  name_(name),
 			  caseSensitive_(true),
@@ -976,12 +987,13 @@ public:
 			  charIdByName_(new StateIdByName),
 			  stringIdByName_(new StateIdByName)
 		{
+			if (debugFactory_)
+				debugFactory_->definition_ = this;
 			if (scope_)
 				scope_->addDefinition(this);
 		}
 		
 		inline Ref<DebugFactory> debugFactory() const { return debugFactory_; }
-		inline void setDebugFactory(Ref<DebugFactory> factory) { debugFactory_ = factory; }
 		
 		inline Ref<Scope> scope() const { return scope_; }
 		inline const char* name() const { return name_; }
