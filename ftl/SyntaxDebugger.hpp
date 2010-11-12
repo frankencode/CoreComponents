@@ -23,9 +23,8 @@ public:
 	typedef typename Syntax<Media>::Definition Definition;
 	typedef typename Syntax<Media>::Node Node;
 
-	SyntaxDebugger(Ref<Definition> definition)
-		: definition_(definition),
-		  factoryByNodeType_(new FactoryByNodeType),
+	SyntaxDebugger()
+		: factoryByNodeType_(new FactoryByNodeType),
 		  indent_("  ")
 	{
 		factoryByNodeType_->insert("Char",          new DebugNodeFactory<CharDebugNode>         (this));
@@ -53,32 +52,31 @@ public:
 		factoryByNodeType_->insert("GetString",     new DebugNodeFactory<GetStringDebugNode>    (this));
 		factoryByNodeType_->insert("VarString",     new DebugNodeFactory<VarStringDebugNode>    (this));
 		factoryByNodeType_->insert("Invoke",        new DebugNodeFactory<InvokeDebugNode>       (this));
-		definition->setDebugFactory(this);
 	}
 	
 	void printDefinition()
 	{
-		if (definition_->stateful()) {
+		if (this->definition()->stateful()) {
 			typedef typename Definition::StateFlag StateFlag;
 			typedef typename Definition::StateChar StateChar;
 			typedef typename Definition::StateString StateString;
 			
-			Ref<StateFlag> stateFlag = definition_->stateFlagHead_;
-			for (int id = definition_->numStateFlags_ - 1; id >= 0; --id) {
+			Ref<StateFlag> stateFlag = this->definition()->stateFlagHead_;
+			for (int id = this->definition()->numStateFlags_ - 1; id >= 0; --id) {
 				print("STATE_FLAG(\"%%\", %%);\n", flagNameById()->get(id), stateFlag->defaultValue_);
 				stateFlag = stateFlag->next_;
 			}
 			
-			Ref<StateChar> stateChar = definition_->stateCharHead_;
-			for (int id = definition_->numStateChars_ - 1; id >= 0; --id) {
+			Ref<StateChar> stateChar = this->definition()->stateCharHead_;
+			for (int id = this->definition()->numStateChars_ - 1; id >= 0; --id) {
 				print("STATE_CHAR(\"%%\", ", charNameById()->get(id));
 				printCharAttr(stateChar->defaultValue_);
 				print(")\n");
 				stateChar = stateChar->next_;
 			}
 			
-			Ref<StateString> stateString = definition_->stateStringHead_;
-			for (int id = definition_->numStateStrings_ - 1; id >= 0; --id) {
+			Ref<StateString> stateString = this->definition()->stateStringHead_;
+			for (int id = this->definition()->numStateStrings_ - 1; id >= 0; --id) {
 				print("STATE_STRING(\"%%\", ", stringNameById()->get(id));
 				printStringAttr(stateString->defaultValue_);
 				print(")\n");
@@ -90,7 +88,7 @@ public:
 		
 		typedef typename Definition::RuleByName RuleByName;
 		typedef typename Syntax<Media>::RuleNode RuleNode;
-		Ref<RuleByName> ruleByName = definition_->ruleByName_;
+		Ref<RuleByName> ruleByName = this->definition()->ruleByName_;
 		
 		typedef Map<int, Ref<RuleNode> > RuleById;
 		Ref<RuleById, Owner> ruleById = new RuleById;
@@ -116,7 +114,7 @@ public:
 			print("\n);\n\n");
 		}
 		
-		print("ENTRY(\"%%\");\n", definition_->ruleName_);
+		print("ENTRY(\"%%\");\n", this->definition()->ruleName_);
 	}
 	
 private:
@@ -737,9 +735,8 @@ private:
 		inline Ref<InvokeNode> invokeNode() const { return DebugNode::entry_; }
 	};
 	
+	friend class Syntax<Media>::Definition;
 	friend class DebugNode;
-	
-	Ref<Definition> definition_;
 	
 	typedef PrefixTree< char, Ref<NodeFactory, Owner> > FactoryByNodeType;
 	Ref<FactoryByNodeType, Owner> factoryByNodeType_;
@@ -766,19 +763,19 @@ private:
 	
 	Ref<StateNameById> flagNameById() {
 		if (!flagNameById_)
-			flagNameById_ = newReverseMap(definition_->flagIdByName());
+			flagNameById_ = newReverseMap(this->definition()->flagIdByName());
 		return flagNameById_;
 	}
 	
 	Ref<StateNameById> charNameById() {
 		if (!charNameById_)
-			charNameById_ = newReverseMap(definition_->charIdByName());
+			charNameById_ = newReverseMap(this->definition()->charIdByName());
 		return charNameById_;
 	}
 	
 	Ref<StateNameById> stringNameById() {
 		if (!stringNameById_)
-			stringNameById_ = newReverseMap(definition_->stringIdByName());
+			stringNameById_ = newReverseMap(this->definition()->stringIdByName());
 		return stringNameById_;
 	}
 };

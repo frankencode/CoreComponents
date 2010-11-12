@@ -12,10 +12,9 @@
 namespace ftl
 {
 
-AbnfCompiler::AbnfCompiler()
+AbnfDefinition::AbnfDefinition(Ref<DebugFactory> debugFactory)
+	: Syntax<ByteArray>::Definition(debugFactory)
 {
-	OPTION("caseSensitive", false);
-	
 	DEFINE_VOID("ALPHA",
 		CHOICE(
 			RANGE('a', 'z'), // 0x61 - 0x7A
@@ -74,7 +73,10 @@ AbnfCompiler::AbnfCompiler()
 			)
 		)
 	);
-	
+}
+
+AbnfCompiler::AbnfCompiler()
+{
 	DEFINE_VOID("comment",
 		GLUE(
 			CHAR(';'),
@@ -297,14 +299,14 @@ AbnfCompiler::NODE AbnfCompiler::defineValue(const char* digitRule)
 
 Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, bool printDefinition)
 {
-	Ref<Definition, Owner> definition = new Definition;
 	Ref<Token, Owner> ruleList = match(text);
 	check(ruleList);
 	
 	Ref<Debugger, Owner> debugger;
 	if (printDefinition)
-		debugger = new Debugger(definition);
+		debugger = new Debugger;
 	
+	Ref<Definition, Owner> definition = new Definition(debugger);
 	definition->OPTION("caseSensitive", false);
 	
 	compileRuleList(text, ruleList, definition);
@@ -312,6 +314,8 @@ Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, 
 	
 	if (debugger)
 		debugger->printDefinition();
+	
+	definition->LINK();
 	
 	return definition;
 }
@@ -331,7 +335,6 @@ void AbnfCompiler::compileRuleList(Ref<ByteArray> text, Ref<Token> ruleList, Ref
 		check(ruleName->rule() == ruleName_);
 		check(definedAs->rule() == definedAs_);
 		check(alternation->rule() == alternation_);
-		check(definedAs->length() == 1); // HACK, disallow "=/" for starters (would require REDEFINE)
 		
 		if (text->at(definedAs->i0()) == '=')
 			definition->DEFINE(str(text, ruleName), compileAlternation(text, alternation, definition));
