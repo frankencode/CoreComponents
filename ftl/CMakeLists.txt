@@ -111,6 +111,7 @@ SET(FTL_HEADER
 	SocketAddressEntry.hpp
 	StreamSocket.hpp
 	NetworkInterface.hpp
+	UriSyntax.hpp
 	
 	utils
 	Time.hpp
@@ -194,6 +195,7 @@ SET(FTL_SOURCE
 	SocketAddressEntry.cpp
 	StreamSocket.cpp
 	NetworkInterface.cpp
+	UriSyntax.cpp
 	
 	# utils
 	DateTime.cpp

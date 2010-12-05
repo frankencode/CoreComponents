@@ -6,7 +6,7 @@ using namespace ftl;
 int main(int argc, char** argv)
 {
 	if (argc != 2) return 1;
-	Ref<File, Owner> file = new File(argv[1], File::Read);
+	Ref<File, Owner> file = File::open(argv[1]);
 	off_t nw = 0;
 	Ref<ByteArray, Owner> buf = new ByteArray(FTL_DEFAULT_BUF_CAPA);
 	while (true) {

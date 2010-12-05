@@ -40,7 +40,6 @@ public:
 	Ref<Node, Owner> next_;
 	
 	inline Ref<Node> next() const { return next_; }
-	virtual Ref<Node> branch(int i) const { return 0; }
 	
 	typedef SyntaxState<Char> State;
 	

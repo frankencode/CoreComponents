@@ -27,7 +27,7 @@ File::File(String path, int openFlags)
 	  openFlags_(0),
 	  unlinkWhenDone_(false)
 {
-	if (openFlags)
+	if (openFlags != 0)
 		open(openFlags);
 }
 
@@ -186,6 +186,36 @@ void File::open(int flags)
 	openFlags_ = flags;
 }
 
+Ref<File, Owner> File::open(String path, int flags)
+{
+	Ref<File, Owner> file = new File(path);
+	file->open(flags);
+	return file;
+}
+
+Ref<File, Owner> File::temp()
+{
+	Ref<File, Owner> file =
+		new File(
+			Format("/tmp/%%_%%_XXXXXXXX")
+				<< Path(Process::execPath()).fileName()
+				<< Process::currentId()
+		);
+	file->createUnique();
+	file->open(Read|Write);
+	return file;
+}
+
+String File::load(String path)
+{
+	return File::open(path, File::Read)->readAll();
+}
+
+void File::save(String path, String text)
+{
+	File::open(path, File::Write)->write(text);
+}
+
 off_t File::seek(off_t distance, int method)
 {
 	int method2 = SEEK_SET;
@@ -243,6 +273,11 @@ void File::dataSync()
 #endif
 }
 
+void File::syncAll()
+{
+	::sync();
+}
+
 Ref<FileStatus> File::status() const
 {
 	if (!status_) {
@@ -252,24 +287,6 @@ Ref<FileStatus> File::status() const
 			status_ = new FileStatus(fd_);
 	}
 	return status_;
-}
-
-Ref<File, Owner> File::temp()
-{
-	Ref<File, Owner> file =
-		new File(
-			Format("/tmp/%%_%%_XXXXXXXX")
-				<< Path(Process::execPath()).fileName()
-				<< Process::currentId()
-		);
-	file->createUnique();
-	file->open(Read|Write);
-	return file;
-}
-
-void File::syncAll()
-{
-	::sync();
 }
 
 } // namespace ftl

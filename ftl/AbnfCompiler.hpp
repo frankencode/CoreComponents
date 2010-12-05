@@ -28,7 +28,7 @@ public:
 	
 	AbnfCompiler();
 	
-	Ref<Definition, Owner> compile(Ref<ByteArray> text, bool printDefinition = false);
+	Ref<Definition, Owner> compile(Ref<ByteArray> text, Ref<Debugger> debugger = 0);
 	
 private:
 	static void defineCoreRules(Ref<Definition> definition);

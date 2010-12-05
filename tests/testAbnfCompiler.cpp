@@ -12,7 +12,9 @@ int main(int argc, char** argv)
 		file->open(File::Read);
 		String text = file->readAll();
 		Ref<AbnfCompiler, Owner> compiler = new AbnfCompiler;
-		Ref<AbnfCompiler::Definition, Owner> definition = compiler->compile(text, /*printDefinition =*/true);
+		Ref<AbnfCompiler::Debugger, Owner> debugger = new AbnfCompiler::Debugger;
+		Ref<AbnfCompiler::Definition, Owner> definition = compiler->compile(text, debugger);
+		debugger->printDefinition();
 	}
 	return 0;
 }
