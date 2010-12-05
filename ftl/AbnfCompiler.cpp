@@ -297,23 +297,16 @@ AbnfCompiler::NODE AbnfCompiler::defineValue(const char* digitRule)
 		);
 }
 
-Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, bool printDefinition)
+Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, Ref<Debugger> debugger)
 {
 	Ref<Token, Owner> ruleList = match(text);
 	check(ruleList);
-	
-	Ref<Debugger, Owner> debugger;
-	if (printDefinition)
-		debugger = new Debugger;
 	
 	Ref<Definition, Owner> definition = new Definition(debugger);
 	definition->OPTION("caseSensitive", false);
 	
 	compileRuleList(text, ruleList, definition);
 	compileEntry(text, ruleList, definition);
-	
-	if (debugger)
-		debugger->printDefinition();
 	
 	definition->LINK();
 	

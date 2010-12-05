@@ -194,7 +194,7 @@ private:
 			else if (ch == 0)
 				print("\\0");
 			else
-				print("\\%oct:3:'0'%", int(ToAscii<Char>::map(ch)));
+				print("\\%oct%", int(ToAscii<Char>::map(ch)));
 		}
 		else if (ch < 127) {
 			if (ch == '\\')
@@ -202,10 +202,10 @@ private:
 			print("%%", ToAscii<Char>::map(ch));
 		}
 		else if (ch < 256) {
-			print("\\%oct:3:'0'%", ToUnicode<Char>::map(ch));
+			print("\\%oct%", ToUnicode<Char>::map(ch));
 		}
 		else {
-			print("\\x%hex:4:'0'%", ToUnicode<Char>::map(ch));
+			print("\\x%hex%", ToUnicode<Char>::map(ch));
 		}
 	}
 	
@@ -451,7 +451,7 @@ private:
 			: DebugNode(debugger, newNode)
 		{}
 		
-		virtual const char* declType() const { return "OR"; }
+		virtual const char* declType() const { return "CHOICE"; }
 		
 		virtual void printAttributes(String indent) {
 			print("\n");
@@ -572,7 +572,7 @@ private:
 		virtual const char* declType() const { return "CALL"; }
 		
 		virtual void printAttributes(String indent) {
-			print("0x%hex:8:'0'", (void*)callNode()->callBack());
+			print("0x%hex:8.:'0'", (void*)callNode()->callBack());
 		}
 		
 	private:

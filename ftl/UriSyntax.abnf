@@ -1,3 +1,5 @@
+; URI syntax according to RFC3986
+
 URI           = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
 
 hier-part     = "//" authority path-abempty

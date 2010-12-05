@@ -55,11 +55,11 @@ private:
 	inline Node* me() { return FTL_CAST_FROM_TO(Tree<Node>, Node, this); }
 	inline const Node* me() const { return FTL_CAST_FROM_TO(const Tree<Node>, const Node, this); }
 	
-	Ref<Node, SetNull> parent_;
+	Ref<Node> parent_;
 	Ref<Node, Owner> firstChild_;
 	Ref<Node, Owner> lastChild_;
 	Ref<Node, Owner> nextSibling_;
-	Ref<Node, SetNull> previousSibling_;
+	Ref<Node> previousSibling_;
 };
 
 template<class Node>

@@ -89,7 +89,12 @@ public:
 	void unlinkOnThreadExit();
 	void unlinkWhenDone();
 	
-	void open(int flags = Read|Write);
+	void open(int flags = Read);
+	
+	static Ref<File, Owner> open(String path, int flags = Read);
+	static Ref<File, Owner> temp();
+	static String load(String path);
+	static void save(String path, String text);
 	
 	off_t seek(off_t distance, int method = SeekBegin);
 	void seekSet(off_t distance);
@@ -99,11 +104,9 @@ public:
 	
 	void sync();
 	void dataSync();
+	static void syncAll();
 	
 	Ref<FileStatus> status() const;
-	
-	static Ref<File, Owner> temp();
-	static void syncAll();
 	
 private:
 	String path_;

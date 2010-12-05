@@ -11,8 +11,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 	
-	File file(argv[1], File::Read);
-	String text = file.readAll();
+	String text = File::load(argv[1]);
 	if (!text.valid()) {
 		print("Input data is not conforming to UTF8 encoding.\n");
 		return 1;
