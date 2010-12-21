@@ -9,7 +9,7 @@ namespace ftl
 class Expression: public Syntax<String::Media>::Definition
 {
 public:
-	Expression(Ref<Debugger> debugger)
+	Expression(Ref<Debugger> debugger = 0)
 		: Definition(debugger)
 	{
 		number_ =
@@ -160,7 +160,12 @@ private:
 
 int main()
 {
-	Ref<Expression::Debugger, Owner> debugger = new Expression::Debugger;
+	Ref<Expression::Debugger, Owner> debugger =
+	#ifdef NDEBUG
+		0;
+	#else
+		new Expression::Debugger;
+	#endif
 	Ref<Expression, Owner> expression = new Expression(debugger);
 	
 	Time dt = now();
@@ -171,7 +176,8 @@ int main()
 	print("took %% us\n", dt.us());
 	print("evaluates to %%\n", result);
 	
-	debugger->printDefinition();
+	if (debugger)
+		debugger->printDefinition();
 	
 	return 0;
 }
