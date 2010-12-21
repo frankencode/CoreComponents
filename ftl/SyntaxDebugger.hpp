@@ -39,6 +39,7 @@ public:
 		factoryByNodeType_->insert("Find",          new DebugNodeFactory<FindDebugNode>         (this));
 		factoryByNodeType_->insert("Or",            new DebugNodeFactory<OrDebugNode>           (this));
 		factoryByNodeType_->insert("Ahead",         new DebugNodeFactory<AheadDebugNode>        (this));
+		factoryByNodeType_->insert("Pass",          new DebugNodeFactory<PassDebugNode>         (this));
 		factoryByNodeType_->insert("Length",        new DebugNodeFactory<LengthDebugNode>       (this));
 		factoryByNodeType_->insert("Ref",           new DebugNodeFactory<RefDebugNode>          (this));
 		factoryByNodeType_->insert("Inline",        new DebugNodeFactory<InlineDebugNode>       (this));
@@ -484,6 +485,19 @@ private:
 	private:
 		typedef typename Syntax<Media>::AheadNode AheadNode;
 		inline Ref<AheadNode> aheadNode() const { return DebugNode::entry_; }
+	};
+	
+	class PassDebugNode: public DebugNode {
+	public:
+		PassDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+		
+		virtual const char* declType() const { return passNode()->invert() ? "FAIL" : "PASS"; }
+	
+	private:
+		typedef typename Syntax<Media>::PassNode PassNode;
+		inline Ref<PassNode> passNode() const { return DebugNode::entry_; }
 	};
 	
 	class LengthDebugNode: public DebugNode {

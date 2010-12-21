@@ -21,7 +21,7 @@ template<class Media> class SyntaxLinker;
 template<class Media> class SyntaxDebugger;
 
 template<class Media>
-class Syntax: public Instance
+class Syntax: public Tree< Syntax<Media> >
 {
 public:
 	typedef typename Media::Item Char;
@@ -258,9 +258,10 @@ public:
 	public:
 		RepeatNode(int minRepeat, int maxRepeat, Ref<Node> entry):
 			minRepeat_(minRepeat),
-			maxRepeat_(maxRepeat),
-			entry_(entry)
-		{}
+			maxRepeat_(maxRepeat)
+		{
+			appendChild(entry);
+		}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
@@ -271,7 +272,7 @@ public:
 			Index h = i;
 			while ((repeatCount < maxRepeat_) && (h != Media::ill()))
 			{
-				h = entry_->matchNext(media, h, tokenFactory, parentToken, state);
+				h = entry()->matchNext(media, h, tokenFactory, parentToken, state);
 				if (h != Media::ill()) {
 					i = h;
 					++repeatCount;
@@ -290,12 +291,11 @@ public:
 		
 		inline int minRepeat() const { return minRepeat_; }
 		inline int maxRepeat() const { return maxRepeat_; }
-		inline Ref<Node> entry() const { return entry_; }
+		inline Ref<Node> entry() const { return Node::firstChild(); }
 	
 	private:
 		int minRepeat_;
 		int maxRepeat_;
-		Ref<Node, Owner> entry_;
 	};
 	
 	class BoiNode: public Node
@@ -332,9 +332,10 @@ public:
 	class FindNode: public Node
 	{
 	public:
-		FindNode(Ref<Node> entry):
-			entry_(entry)
-		{}
+		FindNode(Ref<Node> entry)
+		{
+			appendChild(entry);
+		}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
@@ -343,7 +344,7 @@ public:
 			
 			bool found = false;
 			while (media->def(i) || media->def(i - 1)) {
-				Index h = entry_->matchNext(media, i, tokenFactory, parentToken, state);
+				Index h = entry()->matchNext(media, i, tokenFactory, parentToken, state);
 				if (h != Media::ill()) {
 					found = true;
 					i = h;
@@ -362,29 +363,27 @@ public:
 			return i;
 		}
 		
-		inline Ref<Node> entry() const { return entry_; }
-		
-	private:
-		Ref<Node, Owner> entry_;
+		inline Ref<Node> entry() const { return Node::firstChild(); }
 	};
 	
 	class OrNode: public Node
 	{
 	public:
-		OrNode(Ref<Node> firstChoice, Ref<Node> secondChoice):
-			firstChoice_(firstChoice),
-			secondChoice_(secondChoice)
-		{}
+		OrNode(Ref<Node> firstChoice, Ref<Node> secondChoice)
+		{
+			appendChild(firstChoice);
+			appendChild(secondChoice);
+		}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 			
-			Index h = (firstChoice_) ? firstChoice_->matchNext(media, i, tokenFactory, parentToken, state) : i;
+			Index h = (firstChoice()) ? firstChoice()->matchNext(media, i, tokenFactory, parentToken, state) : i;
 			if (h == Media::ill()) {
 				rollBackOnFailure(h, parentToken, lastChildSaved);
-				h = (secondChoice_) ? secondChoice_->matchNext(media, i, tokenFactory, parentToken, state) : i;
+				h = (secondChoice()) ? secondChoice()->matchNext(media, i, tokenFactory, parentToken, state) : i;
 				rollBackOnFailure(h, parentToken, lastChildSaved);
 			}
 			i = h;
@@ -397,21 +396,18 @@ public:
 			return i;
 		}
 		
-		inline Ref<Node> firstChoice() const { return firstChoice_; }
-		inline Ref<Node> secondChoice() const { return secondChoice_; }
-		
-	private:
-		Ref<Node, Owner> firstChoice_;
-		Ref<Node, Owner> secondChoice_;
+		inline Ref<Node> firstChoice() const { return Node::firstChild(); }
+		inline Ref<Node> secondChoice() const { return Node::lastChild(); }
 	};
 	
 	class AheadNode: public Node
 	{
 	public:
 		AheadNode(Ref<Node> entry, int invert):
-			entry_(entry),
 			invert_(invert)
-		{}
+		{
+			appendChild(entry);
+		}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
@@ -419,8 +415,8 @@ public:
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 			
 			Index h = i;
-			if (entry_)
-				h = entry_->matchNext(media, i, 0, parentToken, state);
+			if (entry())
+				h = entry()->matchNext(media, i, 0, parentToken, state);
 			
 			if ((h == Media::ill()) ^ invert_)
 				i = Media::ill();
@@ -433,11 +429,28 @@ public:
 			return i;
 		}
 		
-		inline Ref<Node> entry() const { return entry_; }
+		inline Ref<Node> entry() const { return Node::firstChild(); }
 		inline int invert() const { return invert_; }
 		
 	private:
-		Ref<Node, Owner> entry_;
+		int invert_;
+	};
+	
+	class PassNode: public Node
+	{
+	public:
+		PassNode(int invert):
+			invert_(invert)
+		{}
+		
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		{
+			return invert_ ? Media::ill() : i;
+		}
+		
+		inline int invert() const { return invert_; }
+		
+	private:
 		int invert_;
 	};
 	
@@ -446,16 +459,17 @@ public:
 	public:
 		LengthNode(int minLength, int maxLength, Ref<Node> entry):
 			minLength_(minLength),
-			maxLength_(maxLength),
-			entry_(entry)
-		{}
+			maxLength_(maxLength)
+		{
+			appendChild(entry);
+		}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 			
-			Index h = entry_->matchNext(media, i, tokenFactory, parentToken, state);
+			Index h = entry()->matchNext(media, i, tokenFactory, parentToken, state);
 			if (h != Media::ill()) {
 				int d = h - i;
 				if ((d < minLength_) || (maxLength_ < d))
@@ -473,12 +487,11 @@ public:
 		
 		inline int minLength() const { return minLength_; }
 		inline int maxLength() const { return maxLength_; }
-		inline Ref<Node> entry() const { return entry_; }
+		inline Ref<Node> entry() const { return Node::firstChild(); }
 		
 	private:
 		int minLength_;
 		int maxLength_;
-		Ref<Node, Owner> entry_;
 	};
 	
 	class Definition;
@@ -491,9 +504,10 @@ public:
 			definition_(definition),
 			name_(name),
 			id_(ruleId),
-			entry_(entry),
 			isVoid_(isVoid)
-		{}
+		{
+			appendChild(entry);
+		}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
@@ -508,8 +522,8 @@ public:
 			}
 			
 			Index i0 = i;
-			i = (entry_) ? entry_->matchNext(media, i, tokenFactory, token, state) : i;
-		
+			i = (entry()) ? entry()->matchNext(media, i, tokenFactory, token, state) : i;
+			
 			if (tokenFactory) {
 				if (i != Media::ill()) {
 					if ((isVoid_) && (parentToken)) {
@@ -531,7 +545,7 @@ public:
 		inline int id() const { return id_; }
 		inline const char* name() const { return name_; }
 		
-		inline Ref<Node> entry() const { return entry_; }
+		inline Ref<Node> entry() const { return Node::firstChild(); }
 		inline bool isVoid() const { return isVoid_; }
 		
 	protected:
@@ -540,7 +554,6 @@ public:
 		Ref<Definition> definition_;
 		const char* name_;
 		int id_;
-		Ref<Node, Owner> entry_;
 		bool isVoid_;
 	};
 	
@@ -594,7 +607,7 @@ public:
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			i = LinkNode::rule_->entry_->matchNext(media, i, tokenFactory, parentToken, state);
+			i = LinkNode::rule_->entry()->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
@@ -696,21 +709,18 @@ public:
 	{
 	public:
 		IfNode(int flagId, Ref<Node> trueBranch, Ref<Node> falseBranch):
-			flagId_(flagId),
-			trueBranch_(trueBranch),
-			falseBranch_(falseBranch)
-		{}
+			flagId_(flagId)
+		{
+			appendChild(trueBranch);
+			appendChild(falseBranch);
+		}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (*state->flag(flagId_)) {
-				if (trueBranch_)
-					i = trueBranch_->matchNext(media, i, tokenFactory, parentToken, state);
-			}
-			else {
-				if (falseBranch_)
-					i = falseBranch_->matchNext(media, i, tokenFactory, parentToken, state);
-			}
+			if (*state->flag(flagId_))
+				i = trueBranch()->matchNext(media, i, tokenFactory, parentToken, state);
+			else
+				i = falseBranch()->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			if ((i != Media::ill()) && (next_))
 				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
@@ -719,13 +729,11 @@ public:
 		}
 		
 		inline int flagId() const { return flagId_; }
-		inline Ref<Node> trueBranch() const { return trueBranch_; }
-		inline Ref<Node> falseBranch() const { return falseBranch_; }
+		inline Ref<Node> trueBranch() const { return Node::firstChild(); }
+		inline Ref<Node> falseBranch() const { return Node::lastChild(); }
 		
 	private:
 		int flagId_;
-		Ref<Node, Owner> trueBranch_;
-		Ref<Node, Owner> falseBranch_;
 	};
 	
 	class GetCharNode: public Node
@@ -892,14 +900,16 @@ public:
 	{
 	public:
 		InvokeNode(Ref<Definition> definition, Ref<Node> coverage):
-			definition_(definition),
-			coverage_(coverage)
-		{}
+			definition_(definition)
+		{
+			if (coverage) appendChild(coverage);
+		}
 		
-		InvokeNode(const char* name, Ref<Node> coverage)
-			: definitionName_(name),
-			  coverage_(coverage)
-		{}
+		InvokeNode(const char* name, Ref<Node> coverage):
+			definitionName_(name)
+		{
+			if (coverage) appendChild(coverage);
+		}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
@@ -914,11 +924,11 @@ public:
 					childState = definition_->newState(state);
 			}
 			
-			if (coverage_) {
+			if (coverage()) {
 				Ref<Token> lastChildSaved;
 				if (parentToken) lastChildSaved = parentToken->lastChild();
 				Index i0 = i;
-				i = coverage_->matchNext(media, i, 0, parentToken, state);
+				i = coverage()->matchNext(media, i, 0, parentToken, state);
 				if (i != Media::ill()) {
 					if (parentToken) {
 						while (parentToken->lastChild() != lastChildSaved)
@@ -939,14 +949,13 @@ public:
 		}
 		
 		inline const char* definitionName() const { return definitionName_; }
-		inline Ref<Node> coverage() const { return coverage_; }
+		inline Ref<Node> coverage() const { return Node::firstChild(); }
 		
 	private:
 		friend class Definition;
 		
 		const char* definitionName_;
 		Ref<Definition, SetNull> definition_;
-		Ref<Node, Owner> coverage_;
 		Ref<InvokeNode, Owner> unresolvedNext_;
 	};
 	
@@ -1046,8 +1055,8 @@ public:
 		inline NODE REPEAT(NODE entry) { return REPEAT(0, intMax, entry); }
 		inline NODE BOI() { return debug(new BoiNode(), "Boi"); }
 		inline NODE EOI() { return debug(new EoiNode(), "Eoi"); }
-		inline NODE PASS() { return 0; }
-		inline NODE FAIL() { return NOT(PASS()); }
+		inline NODE PASS() { return debug(new PassNode(0), "Pass"); }
+		inline NODE FAIL() { return debug(new PassNode(1), "Pass"); }
 		inline NODE FIND(NODE entry) { return debug(new FindNode(entry), "Find"); }
 		inline NODE AHEAD(NODE entry) { return debug(new AheadNode(entry, 0), "Ahead"); }
 		inline NODE NOT(NODE entry) { return debug(new AheadNode(entry, 1), "Ahead"); }
@@ -1142,6 +1151,8 @@ public:
 			return debug(new SetNode(flagIdByName(name), value), "Set");
 		}
 		inline NODE IF(const char* name, NODE trueBranch, NODE falseBranch = 0) {
+			if (!trueBranch) trueBranch = PASS();
+			if (!falseBranch) falseBranch = PASS();
 			return debug(new IfNode(flagIdByName(name), trueBranch, falseBranch), "If");
 		}
 		inline NODE GETCHAR(const char* name) {
