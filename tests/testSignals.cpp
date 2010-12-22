@@ -21,23 +21,6 @@ private:
 	int signal_;
 };
 
-class Alarm: public Thread
-{
-public:
-	Alarm()
-		: count_(0)
-	{}
-private:
-	virtual void run() {
-		enableSignal(SIGALRM);
-		while (true) sleep(1000);
-	}
-	virtual void signalHandler(int signal) {
-		print("%%\n", ++count_);
-	}
-	int count_;
-};
-
 int main()
 {
 	signalEvent(SIGINT)->pushBack(new Echo("SIGINT", SIGINT));
@@ -48,10 +31,9 @@ int main()
 	signalEvent(SIGCONT)->pushBack(new Echo("SIGCONT", SIGCONT));
 	signalEvent(SIGWINCH)->pushBack(new Echo("SIGWINCH", SIGWINCH));
 	
-	Ref<Thread, Owner> alarm = new Alarm();
-	alarm->start(Thread::Detached);
+	int n = 0;
 	while (true) {
-		alarm->kill(SIGALRM);
+		print("%%\n", ++n);
 		Thread::sleep(1);
 	}
 	
