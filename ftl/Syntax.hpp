@@ -1067,11 +1067,13 @@ public:
 		#include "SyntaxSugar.hpp"
 		
 		inline int DEFINE(const char* ruleName, NODE entry = 0) {
+			if (!entry) entry = PASS();
 			Ref<RuleNode, Owner> rule = new RuleNode(this, ruleName, numRules_++, entry);
 			addRule(rule);
 			return rule->id();
 		}
 		inline void DEFINE_VOID(const char* ruleName, NODE entry = 0) {
+			if (!entry) entry = PASS();
 			Ref<RuleNode, Owner> rule = new RuleNode(this, ruleName, numRules_++, entry, true);
 			addRule(rule);
 		}
