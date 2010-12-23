@@ -48,9 +48,9 @@ public:
 	class CharNode: public Node
 	{
 	public:
-		CharNode(Char ch, int invert):
-			ch_(ch),
-			invert_(invert)
+		CharNode(Char ch, int invert)
+			: ch_(ch),
+			  invert_(invert)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -100,10 +100,10 @@ public:
 	class RangeMinMaxNode: public Node
 	{
 	public:
-		RangeMinMaxNode(Char a, Char b, int invert):
-			a_(a),
-			b_(b),
-			invert_(invert)
+		RangeMinMaxNode(Char a, Char b, int invert)
+			: a_(a),
+			  b_(b),
+			  invert_(invert)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -135,9 +135,9 @@ public:
 	{
 	public:
 		template<class Char2>
-		RangeExplicitNode(const Char2* s, int invert):
-			s_(str::len(s)),
-			invert_(invert)
+		RangeExplicitNode(const Char2* s, int invert)
+			: s_(str::len(s)),
+			  invert_(invert)
 		{
 			str::cpy(s_.data(), s, s_.size());
 		}
@@ -175,9 +175,9 @@ public:
 	{
 	public:
 		template<class Char2>
-		StringNode(const Char2* s, bool caseSensitive):
-			s_(str::len(s)),
-			caseSensitive_(caseSensitive)
+		StringNode(const Char2* s, bool caseSensitive)
+			: s_(str::len(s)),
+			  caseSensitive_(caseSensitive)
 		{
 			str::cpy(s_.data(), s, s_.size());
 			if (!caseSensitive) {
@@ -219,9 +219,9 @@ public:
 	class KeywordNode: public Node
 	{
 	public:
-		KeywordNode(Ref<KeywordMap> map, bool caseSensitive):
-			map_(map),
-			caseSensitive_(caseSensitive)
+		KeywordNode(Ref<KeywordMap> map, bool caseSensitive)
+			: map_(map),
+			  caseSensitive_(caseSensitive)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -256,9 +256,9 @@ public:
 	class RepeatNode: public Node
 	{
 	public:
-		RepeatNode(int minRepeat, int maxRepeat, Ref<Node> entry):
-			minRepeat_(minRepeat),
-			maxRepeat_(maxRepeat)
+		RepeatNode(int minRepeat, int maxRepeat, Ref<Node> entry)
+			: minRepeat_(minRepeat),
+			  maxRepeat_(maxRepeat)
 		{
 			appendChild(entry);
 		}
@@ -403,8 +403,8 @@ public:
 	class AheadNode: public Node
 	{
 	public:
-		AheadNode(Ref<Node> entry, int invert):
-			invert_(invert)
+		AheadNode(Ref<Node> entry, int invert)
+			: invert_(invert)
 		{
 			appendChild(entry);
 		}
@@ -439,8 +439,8 @@ public:
 	class PassNode: public Node
 	{
 	public:
-		PassNode(int invert):
-			invert_(invert)
+		PassNode(int invert)
+			: invert_(invert)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -457,9 +457,9 @@ public:
 	class LengthNode: public Node
 	{
 	public:
-		LengthNode(int minLength, int maxLength, Ref<Node> entry):
-			minLength_(minLength),
-			maxLength_(maxLength)
+		LengthNode(int minLength, int maxLength, Ref<Node> entry)
+			: minLength_(minLength),
+			  maxLength_(maxLength)
 		{
 			appendChild(entry);
 		}
@@ -500,11 +500,11 @@ public:
 	class RuleNode: public Node
 	{
 	public:
-		RuleNode(Ref<Definition> definition, const char* name, int ruleId, Ref<Node> entry, bool isVoid = false):
-			definition_(definition),
-			name_(name),
-			id_(ruleId),
-			isVoid_(isVoid)
+		RuleNode(Ref<Definition> definition, const char* name, int ruleId, Ref<Node> entry, bool isVoid = false)
+			: definition_(definition),
+			  name_(name),
+			  id_(ruleId),
+			  isVoid_(isVoid)
 		{
 			appendChild(entry);
 		}
@@ -560,8 +560,8 @@ public:
 	class LinkNode: public Node
 	{
 	public:
-		LinkNode(const char* ruleName):
-			ruleName_(ruleName)
+		LinkNode(const char* ruleName)
+			: ruleName_(ruleName)
 		{}
 		
 		inline const char* ruleName() const { return ruleName_; }
@@ -578,8 +578,8 @@ public:
 	class RefNode: public LinkNode
 	{
 	public:
-		RefNode(const char* ruleName = 0):
-			LinkNode(ruleName)
+		RefNode(const char* ruleName = 0)
+			: LinkNode(ruleName)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -601,8 +601,8 @@ public:
 	class InlineNode: public LinkNode
 	{
 	public:
-		InlineNode(const char* ruleName):
-			LinkNode(ruleName)
+		InlineNode(const char* ruleName)
+			: LinkNode(ruleName)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -619,10 +619,10 @@ public:
 	class PreviousNode: public LinkNode
 	{
 	public:
-		PreviousNode(const char* ruleName, const char* keyword = 0):
-			LinkNode(ruleName),
-			keywordName_(keyword),
-			keyword_(-1)
+		PreviousNode(const char* ruleName, const char* keyword = 0)
+			: LinkNode(ruleName),
+			  keywordName_(keyword),
+			  keyword_(-1)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -657,9 +657,9 @@ public:
 	class CallNode: public Node
 	{
 	public:
-		CallNode(CallBack callBack, Ref<Instance> self):
-			callBack_(callBack),
-			self_(self)
+		CallNode(CallBack callBack, Ref<Instance> self)
+			: callBack_(callBack),
+			  self_(self)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -682,9 +682,9 @@ public:
 	class SetNode: public Node
 	{
 	public:
-		SetNode(int flagId, bool value):
-			flagId_(flagId),
-			value_(value)
+		SetNode(int flagId, bool value)
+			: flagId_(flagId),
+			  value_(value)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -708,8 +708,8 @@ public:
 	class IfNode: public Node
 	{
 	public:
-		IfNode(int flagId, Ref<Node> trueBranch, Ref<Node> falseBranch):
-			flagId_(flagId)
+		IfNode(int flagId, Ref<Node> trueBranch, Ref<Node> falseBranch)
+			: flagId_(flagId)
 		{
 			appendChild(trueBranch);
 			appendChild(falseBranch);
@@ -739,8 +739,8 @@ public:
 	class GetCharNode: public Node
 	{
 	public:
-		GetCharNode(int charId):
-			charId_(charId)
+		GetCharNode(int charId)
+			: charId_(charId)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -765,9 +765,9 @@ public:
 	class SetCharNode: public Node
 	{
 	public:
-		SetCharNode(int charId, Char value):
-			charId_(charId),
-			value_(value)
+		SetCharNode(int charId, Char value)
+			: charId_(charId),
+			  value_(value)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -791,9 +791,9 @@ public:
 	class VarCharNode: public Node
 	{
 	public:
-		VarCharNode(int charId, int invert):
-			charId_(charId),
-			invert_(invert)
+		VarCharNode(int charId, int invert)
+			: charId_(charId),
+			  invert_(invert)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -823,9 +823,9 @@ public:
 	class GetStringNode: public Node
 	{
 	public:
-		GetStringNode(int stringId, Ref<Node> coverage):
-			stringId_(stringId),
-			coverage_(coverage)
+		GetStringNode(int stringId, Ref<Node> coverage)
+			: stringId_(stringId),
+			  coverage_(coverage)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -866,8 +866,8 @@ public:
 	class VarStringNode: public Node
 	{
 	public:
-		VarStringNode(int stringId):
-			stringId_(stringId)
+		VarStringNode(int stringId)
+			: stringId_(stringId)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -899,14 +899,14 @@ public:
 	class InvokeNode: public Node
 	{
 	public:
-		InvokeNode(Ref<Definition> definition, Ref<Node> coverage):
-			definition_(definition)
+		InvokeNode(Ref<Definition> definition, Ref<Node> coverage)
+			: definition_(definition)
 		{
 			if (coverage) appendChild(coverage);
 		}
 		
-		InvokeNode(const char* name, Ref<Node> coverage):
-			definitionName_(name)
+		InvokeNode(const char* name, Ref<Node> coverage)
+			: definitionName_(name)
 		{
 			if (coverage) appendChild(coverage);
 		}
