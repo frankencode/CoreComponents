@@ -1,5 +1,5 @@
 /*
- * AbnfCompiler.cpp -- ABNF compiler according to RFC5434 (former RFC4234, RFC2234)
+ * AbnfCompiler.cpp -- ABNF compiler according to RFC5234 (former RFC4234, RFC2234)
  *
  * Copyright (c) 2007-2010, Frank Mertens
  *
@@ -313,6 +313,11 @@ Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, 
 	return definition;
 }
 
+Ref<AbnfCompiler::Node> AbnfCompiler::ignoreDebug(Ref<Node> node) {
+	Ref<Debugger::DebugNode> debugNode = node;
+	return (debugNode) ? debugNode->entry() : node;
+}
+
 void AbnfCompiler::compileRuleList(Ref<ByteArray> text, Ref<Token> ruleList, Ref<Definition> definition)
 {
 	check(ruleList->rule() == rulelist_);
@@ -354,35 +359,27 @@ void AbnfCompiler::compileEntry(Ref<ByteArray> text, Ref<Token> ruleList, Ref<De
 AbnfCompiler::NODE AbnfCompiler::compileAlternation(Ref<ByteArray> text, Ref<Token> alternation, Ref<Definition> definition)
 {
 	check(alternation->rule() == alternation_);
-	return compileAlternationCascade(text, alternation->firstChild(), definition);
-}
-
-AbnfCompiler::NODE AbnfCompiler::compileAlternationCascade(Ref<ByteArray> text, Ref<Token> concatenation, Ref<Definition> definition)
-{
-	check(concatenation->rule() == concatenation_);
-	if (!concatenation->nextSibling())
-		return compileConcatenation(text, concatenation, definition);
-	return optimizedCHOICE(definition,
-		compileConcatenation(text, concatenation, definition),
-		compileAlternationCascade(text, concatenation->nextSibling(), definition)
-	);
+	NODE node = definition->CHOICE();
+	Ref<Token> token = alternation->firstChild();
+	while (token) {
+		ignoreDebug(node)->appendChild(compileConcatenation(text, token, definition));
+		token = token->nextSibling();
+	}
+	return optimizeChoice(node, definition);
 }
 
 AbnfCompiler::NODE AbnfCompiler::compileConcatenation(Ref<ByteArray> text, Ref<Token> concatenation, Ref<Definition> definition)
 {
 	check(concatenation->rule() == concatenation_);
-	return compileConcatenationCascade(text, concatenation->firstChild(), definition);
-}
-
-AbnfCompiler::NODE AbnfCompiler::compileConcatenationCascade(Ref<ByteArray> text, Ref<Token> repetition, Ref<Definition> definition)
-{
-	check(repetition->rule() == repetition_);
-	if (!repetition->nextSibling())
-		return compileRepetition(text, repetition, definition);
-	return definition->GLUE(
-		compileRepetition(text, repetition, definition),
-		compileConcatenationCascade(text, repetition->nextSibling(), definition)
-	);
+	if (concatenation->firstChild() == concatenation->lastChild())
+		return compileRepetition(text, concatenation->firstChild(), definition);
+	NODE node = definition->GLUE();
+	Ref<Token> token = concatenation->firstChild();
+	while (token) {
+		ignoreDebug(node)->appendChild(compileRepetition(text, token, definition));
+		token = token->nextSibling();
+	}
+	return node;
 }
 
 AbnfCompiler::NODE AbnfCompiler::compileRepetition(Ref<ByteArray> text, Ref<Token> repetition, Ref<Definition> definition)
@@ -526,36 +523,76 @@ AbnfCompiler::NODE AbnfCompiler::compileProseVal(Ref<ByteArray> text, Ref<Token>
 	return compileCharVal(text, proseVal, definition);
 }
 
-AbnfCompiler::NODE AbnfCompiler::optimizedCHOICE(Ref<Definition> definition, NODE choice0, NODE choice1)
+AbnfCompiler::NODE AbnfCompiler::optimizeChoice(Ref<Node> node, Ref<Definition> definition)
 {
-	NODE node = 0;
+	NODE optimizedChoice = node;
 	
-	typedef Debugger::DebugNode DebugNode;
-	
-	Ref<DebugNode> debugNode0 = choice0;
-	Ref<DebugNode> debugNode1 = choice1;
-	Ref<CharNode> charNode0 = (debugNode0) ? debugNode0->entry() : Ref<Node>(choice0);
-	Ref<CharNode> charNode1 = (debugNode1) ? debugNode1->entry() : Ref<Node>(choice1);
-	Ref<RangeExplicitNode> rangeExplicitNode1 = (debugNode1) ? debugNode1->entry() : Ref<Node>(choice1);
-	
-	if ((charNode0) && (charNode1)) {
-		ByteArray s(2);
-		s.set(0, charNode0->ch());
-		s.set(1, charNode1->ch());
-		node = definition->RANGE(s.constData());
+	int numChars = 0;
+	bool isRangeExplicit = true;
+	{
+		Ref<Node> child = ignoreDebug(node)->firstChild();
+		while ((child) && isRangeExplicit) {
+			isRangeExplicit = Ref<CharNode>(ignoreDebug(child));
+			child = child->nextSibling();
+			++numChars;
+		}
 	}
-	else if ((charNode0) && (rangeExplicitNode1)) {
-		int n = rangeExplicitNode1->s().size() + 1;
-		ByteArray s(n);
-		s.set(0, charNode0->ch());
-		for (int i = 1; i < n; ++i)
-			s.set(i, rangeExplicitNode1->s().at(i - 1));
-		node = definition->RANGE(s.constData());
+	
+	if (isRangeExplicit) {
+		ByteArray s(numChars);
+		int i = 0;
+		Ref<Node> child = ignoreDebug(node)->firstChild();
+		while (child) {
+			Ref<CharNode> charNode = ignoreDebug(child);
+			s.set(i, charNode->ch());
+			++i;
+			child = child->nextSibling();
+		}
+		
+		optimizedChoice = definition->RANGE(s.constData());
 	}
 	else {
-		node = definition->CHOICE(choice0, choice1);
+		deepOptimizeChoice(node, definition);
 	}
-	return node;
+	
+	if (ignoreDebug(node)->firstChild() == ignoreDebug(node)->lastChild())
+		optimizedChoice = ignoreDebug(node)->firstChild();
+	
+	return optimizedChoice;
+}
+
+void AbnfCompiler::deepOptimizeChoice(Ref<Node> node, Ref<Definition> definition)
+{
+	int numChars = 0;
+	Ref<Node> child = ignoreDebug(node)->firstChild();
+	while (child) {
+		if (Ref<CharNode>(ignoreDebug(child)))
+			++numChars;
+		else
+			deepOptimizeChoice(node, child, numChars, definition);
+		child = child->nextSibling();
+	}
+	deepOptimizeChoice(node, 0, numChars, definition);
+}
+
+void AbnfCompiler::deepOptimizeChoice(Ref<Node> node, Ref<Node> fin, int numChars, Ref<Definition> definition)
+{
+	if (numChars > 1) {
+		ByteArray s(numChars);
+		int i = numChars - 1;
+		while (i >= 0) {
+			Ref<Node> charNode = (fin) ? fin->previousSibling() : ignoreDebug(node)->lastChild();
+			s.set(i, Ref<CharNode>(ignoreDebug(charNode))->ch());
+			charNode->unlink();
+			--i;
+		}
+		NODE range = definition->RANGE(s.constData());
+		if (fin)
+			ignoreDebug(node)->insertChild(range, fin->previousSibling());
+		else
+			ignoreDebug(node)->appendChild(range);
+	}
+	numChars = 0;
 }
 
 } // namespace ftl

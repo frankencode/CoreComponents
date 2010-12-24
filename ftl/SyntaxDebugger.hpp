@@ -34,13 +34,14 @@ public:
 		factoryByNodeType_->insert("String",        new DebugNodeFactory<StringDebugNode>       (this));
 		factoryByNodeType_->insert("Keyword",       new DebugNodeFactory<KeywordDebugNode>      (this));
 		factoryByNodeType_->insert("Repeat",        new DebugNodeFactory<RepeatDebugNode>       (this));
+		factoryByNodeType_->insert("Length",        new DebugNodeFactory<LengthDebugNode>       (this));
 		factoryByNodeType_->insert("Eoi",           new DebugNodeFactory<EoiDebugNode>          (this));
 		factoryByNodeType_->insert("Boi",           new DebugNodeFactory<BoiDebugNode>          (this));
-		factoryByNodeType_->insert("Find",          new DebugNodeFactory<FindDebugNode>         (this));
-		factoryByNodeType_->insert("Or",            new DebugNodeFactory<OrDebugNode>           (this));
-		factoryByNodeType_->insert("Ahead",         new DebugNodeFactory<AheadDebugNode>        (this));
 		factoryByNodeType_->insert("Pass",          new DebugNodeFactory<PassDebugNode>         (this));
-		factoryByNodeType_->insert("Length",        new DebugNodeFactory<LengthDebugNode>       (this));
+		factoryByNodeType_->insert("Find",          new DebugNodeFactory<FindDebugNode>         (this));
+		factoryByNodeType_->insert("Ahead",         new DebugNodeFactory<AheadDebugNode>        (this));
+		factoryByNodeType_->insert("Choice",        new DebugNodeFactory<ChoiceDebugNode>       (this));
+		factoryByNodeType_->insert("Glue",          new DebugNodeFactory<GlueDebugNode>         (this));
 		factoryByNodeType_->insert("Ref",           new DebugNodeFactory<RefDebugNode>          (this));
 		factoryByNodeType_->insert("Inline",        new DebugNodeFactory<InlineDebugNode>       (this));
 		factoryByNodeType_->insert("Previous",      new DebugNodeFactory<PreviousDebugNode>     (this));
@@ -219,46 +220,25 @@ public:
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) {
-			if (entry_->next_ != Node::next_) entry_->next_ = Node::next_;
 			return entry_->matchNext(media, i, tokenFactory, parentToken, state);
 		}
 		
 		virtual const char* declType() const = 0;
 		virtual void printAttributes(String indent) {}
 		
-		virtual void printNext(String indent = "", bool gluing = false) {
-			if ((Node::next_) && (!gluing)) {
-				printGlue(indent);
-			}
-			else {
-				print("%%%%(", indent, declType());
-				printAttributes((StringList() << indent << debugger_->indent_).join());
-				print(")");
-			}
+		virtual void printNext(String indent = "") {
+			print("%%%%(", indent, declType());
+			printAttributes((StringList() << indent << debugger_->indent_).join());
+			print(")");
 		}
 		
 		inline Ref<Node> entry() const { return entry_; }
 		
 	protected:
-		void printGlue(String indent) {
-			String subIndent = (StringList() << indent << debugger_->indent_).join();
-			print("%%GLUE(\n", indent);
-			Ref<Node> node = this;
-			while (node) {
-				Ref<DebugNode> debugNode = node;
-				printBranch(node, subIndent, /*gluing=*/true);
-				node = node->next_;
-				if (node)
-					print(",");
-				print("\n");
-			}
-			print("%%)", indent);
-		}
-		
-		void printBranch(Ref<Node> node, String indent, bool gluing = false) {
+		void printBranch(Ref<Node> node, String indent) {
 			if (node) {
 				Ref<DebugNode> debugNode = node;
-				if (debugNode) debugNode->printNext(indent, gluing);
+				if (debugNode) debugNode->printNext(indent);
 				else print(indent);
 			}
 			else {
@@ -409,97 +389,6 @@ private:
 		inline Ref<RepeatNode> repeatNode() const { return DebugNode::entry_; }
 	};
 	
-	class BoiDebugNode: public DebugNode {
-	public:
-		BoiDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
-			: DebugNode(debugger, newNode)
-		{}
-		
-		virtual const char* declType() const { return "BOI"; }
-	};
-	
-	class EoiDebugNode: public DebugNode {
-	public:
-		EoiDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
-			: DebugNode(debugger, newNode)
-		{}
-		
-		virtual const char* declType() const { return "EOI"; }
-	};
-	
-	class FindDebugNode: public DebugNode {
-	public:
-		FindDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
-			: DebugNode(debugger, newNode)
-		{}
-		
-		virtual const char* declType() const { return "FIND"; }
-		
-		virtual void printAttributes(String indent) {
-			print("\n");
-			printBranch(findNode()->entry(), indent);
-			print("\n%%", DebugNode::superIndent(indent));
-		}
-		
-	private:
-		typedef typename Syntax<Media>::FindNode FindNode;
-		inline Ref<FindNode> findNode() const { return DebugNode::entry_; }
-	};
-	
-	class OrDebugNode: public DebugNode {
-	public:
-		OrDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
-			: DebugNode(debugger, newNode)
-		{}
-		
-		virtual const char* declType() const { return "CHOICE"; }
-		
-		virtual void printAttributes(String indent) {
-			print("\n");
-			Ref<OrNode> node = orNode();
-			printBranch(node->firstChoice(), indent);
-			print(",\n");
-			printBranch(node->secondChoice(), indent);
-			print("\n%%", DebugNode::superIndent(indent));
-		}
-		
-	private:
-		typedef typename Syntax<Media>::OrNode OrNode;
-		inline Ref<OrNode> orNode() const { return DebugNode::entry_; }
-	};
-	
-	class AheadDebugNode: public DebugNode {
-	public:
-		AheadDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
-			: DebugNode(debugger, newNode)
-		{}
-		
-		virtual const char* declType() const { return aheadNode()->invert() ? "NOT" : "AHEAD"; }
-		
-		virtual void printAttributes(String indent) {
-			print("\n");
-			printBranch(aheadNode()->entry(), indent);
-			print("\n%%", DebugNode::superIndent(indent));
-		}
-		
-	private:
-		typedef typename Syntax<Media>::AheadNode AheadNode;
-		inline Ref<AheadNode> aheadNode() const { return DebugNode::entry_; }
-	};
-	
-	class PassDebugNode: public DebugNode {
-	public:
-		PassDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
-			: DebugNode(debugger, newNode)
-		{}
-		
-		virtual const char* declType() const { return passNode()->invert() ? "FAIL" : "PASS"; }
-	
-	private:
-		typedef typename Syntax<Media>::PassNode PassNode;
-		inline Ref<PassNode> passNode() const { return DebugNode::entry_; }
-	};
-	
 	class LengthDebugNode: public DebugNode {
 	public:
 		LengthDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
@@ -521,6 +410,123 @@ private:
 	private:
 		typedef typename Syntax<Media>::LengthNode LengthNode;
 		inline Ref<LengthNode> lengthNode() const { return DebugNode::entry_; }
+	};
+	
+	class BoiDebugNode: public DebugNode {
+	public:
+		BoiDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+		
+		virtual const char* declType() const { return "BOI"; }
+	};
+	
+	class EoiDebugNode: public DebugNode {
+	public:
+		EoiDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+		
+		virtual const char* declType() const { return "EOI"; }
+	};
+	
+	class PassDebugNode: public DebugNode {
+	public:
+		PassDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+		
+		virtual const char* declType() const { return passNode()->invert() ? "FAIL" : "PASS"; }
+	
+	private:
+		typedef typename Syntax<Media>::PassNode PassNode;
+		inline Ref<PassNode> passNode() const { return DebugNode::entry_; }
+	};
+	
+	class FindDebugNode: public DebugNode {
+	public:
+		FindDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+		
+		virtual const char* declType() const { return "FIND"; }
+		
+		virtual void printAttributes(String indent) {
+			print("\n");
+			printBranch(findNode()->entry(), indent);
+			print("\n%%", DebugNode::superIndent(indent));
+		}
+		
+	private:
+		typedef typename Syntax<Media>::FindNode FindNode;
+		inline Ref<FindNode> findNode() const { return DebugNode::entry_; }
+	};
+	
+	class AheadDebugNode: public DebugNode {
+	public:
+		AheadDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+		
+		virtual const char* declType() const { return aheadNode()->invert() ? "NOT" : "AHEAD"; }
+		
+		virtual void printAttributes(String indent) {
+			print("\n");
+			printBranch(aheadNode()->entry(), indent);
+			print("\n%%", DebugNode::superIndent(indent));
+		}
+		
+	private:
+		typedef typename Syntax<Media>::AheadNode AheadNode;
+		inline Ref<AheadNode> aheadNode() const { return DebugNode::entry_; }
+	};
+	
+	class ChoiceDebugNode: public DebugNode {
+	public:
+		ChoiceDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+		
+		virtual const char* declType() const { return "CHOICE"; }
+		
+		virtual void printAttributes(String indent) {
+			print("\n");
+			Ref<Node> node = choiceNode()->firstChoice();
+			while (node) {
+				printBranch(node, indent);
+				node = node->nextSibling();
+				if (node) print(",\n");
+			}
+			print("\n%%", DebugNode::superIndent(indent));
+		}
+		
+	private:
+		typedef typename Syntax<Media>::ChoiceNode ChoiceNode;
+		inline Ref<ChoiceNode> choiceNode() const { return DebugNode::entry_; }
+	};
+	
+	class GlueDebugNode: public DebugNode {
+	public:
+		GlueDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+		
+		virtual const char* declType() const { return "GLUE"; }
+		
+		virtual void printAttributes(String indent) {
+			print("\n");
+			Ref<Node> node = glueNode()->firstChild();
+			while (node) {
+				printBranch(node, indent);
+				node = node->nextSibling();
+				if (node) print(",\n");
+			}
+			print("\n%%", DebugNode::superIndent(indent));
+		}
+	
+	private:
+		typedef typename Syntax<Media>::GlueNode GlueNode;
+		inline Ref<GlueNode> glueNode() const { return DebugNode::entry_; }
 	};
 	
 	class RefDebugNode: public DebugNode {

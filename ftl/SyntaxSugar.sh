@@ -30,19 +30,13 @@ while [ $n -le $MAX_ARGS ]; do
 		let i=i+1
 	done
 	printf "NODE choice$m) {\n"
-	printf "\treturn"
+	printf "\tNODE node = new ChoiceNode;\n"
 	let i=0
-	while [ $i -le $p ]; do
-		printf " debug(new OrNode(choice$i,"
+	while [ $i -le $m ]; do
+		printf "\tnode->appendChild(choice$i);\n"
 		let i=i+1
 	done
-	printf " choice$m"
-	let i=0
-	while [ $i -le $p ]; do
-		printf "), \"Or\")"
-		let i=i+1
-	done
-	printf ";\n"
+	printf "\treturn debug(node, \"Choice\");\n"
 	printf "}\n"
 	let n=n+1
 done
@@ -51,20 +45,20 @@ let n=2
 while [ $n -le $MAX_ARGS ]; do
 	let m=$n-1
 	let p=$n-2
-	printf "inline static NODE GLUE("
+	printf "inline NODE GLUE("
 	let i=0
 	while [ $i -le $p ]; do
-		printf "NODE node$i, "
+		printf "NODE child$i, "
 		let i=i+1
 	done
-	printf "NODE node$m) {\n"
+	printf "NODE child$m) {\n"
+	printf "\tNODE node = new GlueNode;\n"
 	let i=0
-	while [ $i -le $p ]; do
-		let j=i+1
-		printf "	node$i->next_ = node$j;\n"
-		let i=j
+	while [ $i -le $m ]; do
+		printf "\tnode->appendChild(child$i);\n"
+		let i=i+1
 	done
-	printf "	return node0;\n"
+	printf "\treturn debug(node, \"Glue\");\n"
 	printf "}\n"
 	let n=n+1
 done
