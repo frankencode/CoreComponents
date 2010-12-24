@@ -30,16 +30,12 @@ public:
 	typedef PrefixTree<Char,int> KeywordMap;
 	typedef SyntaxDebugger<Media> Debugger;
 	
-	inline void rollBackOnFailure(Index i, Token* parentToken, Token* lastChildSaved) {
+	inline static void rollBackOnFailure(Index i, Token* parentToken, Token* lastChildSaved) {
 		if ((parentToken) && (i == Media::ill())) {
 			while (parentToken->lastChild() != lastChildSaved)
 				parentToken->lastChild()->unlink();
 		}
 	}
-	
-	Ref<Node, Owner> next_;
-	
-	inline Ref<Node> next() const { return next_; }
 	
 	typedef SyntaxState<Char> State;
 	
@@ -55,17 +51,13 @@ public:
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (media->def(i))
-			{
+			if (media->def(i)) {
 				Char ch = media->get(i++);
 				if ((ch != ch_) ^ invert_)
 					i = Media::ill();
 			}
 			else
 				i = Media::ill();
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
 		}
@@ -83,17 +75,7 @@ public:
 	public:
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (media->def(i))
-			{
-				++i;
-			}
-			else
-				i = Media::ill();
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
-			return i;
+			return media->def(i) ? i + 1 : Media::ill();
 		}
 	};
 	
@@ -115,9 +97,6 @@ public:
 			}
 			else
 				i = Media::ill();
-				
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
 		}
@@ -156,9 +135,6 @@ public:
 			}
 			else
 				i = Media::ill();
-				
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
 		}
@@ -202,9 +178,6 @@ public:
 			}
 			else
 				i = Media::ill();
-				
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
 		}
@@ -239,9 +212,6 @@ public:
 			}
 			else
 				i = Media::ill();
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
 		}
@@ -281,9 +251,6 @@ public:
 			if ((repeatCount < minRepeat_) || (maxRepeat_ < repeatCount))
 				i = Media::ill();
 			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
 			rollBackOnFailure(i, parentToken, lastChildSaved);
 			
 			return i;
@@ -298,18 +265,48 @@ public:
 		int maxRepeat_;
 	};
 	
+	class LengthNode: public Node
+	{
+	public:
+		LengthNode(int minLength, int maxLength, Ref<Node> entry)
+			: minLength_(minLength),
+			  maxLength_(maxLength)
+		{
+			appendChild(entry);
+		}
+		
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		{
+			Ref<Token> lastChildSaved;
+			if (parentToken) lastChildSaved = parentToken->lastChild();
+			
+			Index h = entry()->matchNext(media, i, tokenFactory, parentToken, state);
+			if (h != Media::ill()) {
+				int d = h - i;
+				if ((d < minLength_) || (maxLength_ < d))
+					h = Media::ill();
+			}
+			
+			rollBackOnFailure(h, parentToken, lastChildSaved);
+			
+			return h;
+		}
+		
+		inline int minLength() const { return minLength_; }
+		inline int maxLength() const { return maxLength_; }
+		inline Ref<Node> entry() const { return Node::firstChild(); }
+		
+	private:
+		int minLength_;
+		int maxLength_;
+	};
+	
 	class BoiNode: public Node
 	{
 	public:
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (i != 0)
-				i = Media::ill();
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
-			return i;
+			return (i == 0) ? i : Media::ill();
 		}
 	};
 	
@@ -319,14 +316,26 @@ public:
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			bool eoi = (!media->def(i)) && ((i == 0) || (media->def(i - 1)));
-			if (!eoi)
-				i = Media::ill();
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
-			return i;
+			return eoi ? i : Media::ill();
 		}
+	};
+	
+	class PassNode: public Node
+	{
+	public:
+		PassNode(int invert)
+			: invert_(invert)
+		{}
+		
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		{
+			return invert_ ? Media::ill() : i;
+		}
+		
+		inline int invert() const { return invert_; }
+		
+	private:
+		int invert_;
 	};
 	
 	class FindNode: public Node
@@ -355,49 +364,12 @@ public:
 			if (!found)
 				i = Media::ill();
 			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
 			rollBackOnFailure(i, parentToken, lastChildSaved);
 			
 			return i;
 		}
 		
 		inline Ref<Node> entry() const { return Node::firstChild(); }
-	};
-	
-	class OrNode: public Node
-	{
-	public:
-		OrNode(Ref<Node> firstChoice, Ref<Node> secondChoice)
-		{
-			appendChild(firstChoice);
-			appendChild(secondChoice);
-		}
-		
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
-		{
-			Ref<Token> lastChildSaved;
-			if (parentToken) lastChildSaved = parentToken->lastChild();
-			
-			Index h = (firstChoice()) ? firstChoice()->matchNext(media, i, tokenFactory, parentToken, state) : i;
-			if (h == Media::ill()) {
-				rollBackOnFailure(h, parentToken, lastChildSaved);
-				h = (secondChoice()) ? secondChoice()->matchNext(media, i, tokenFactory, parentToken, state) : i;
-				rollBackOnFailure(h, parentToken, lastChildSaved);
-			}
-			i = h;
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
-			rollBackOnFailure(i, parentToken, lastChildSaved);
-			
-			return i;
-		}
-		
-		inline Ref<Node> firstChoice() const { return Node::firstChild(); }
-		inline Ref<Node> secondChoice() const { return Node::lastChild(); }
 	};
 	
 	class AheadNode: public Node
@@ -421,9 +393,6 @@ public:
 			if ((h == Media::ill()) ^ invert_)
 				i = Media::ill();
 			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
 			rollBackOnFailure(i, parentToken, lastChildSaved);
 			
 			return i;
@@ -436,62 +405,49 @@ public:
 		int invert_;
 	};
 	
-	class PassNode: public Node
+	class ChoiceNode: public Node
 	{
 	public:
-		PassNode(int invert)
-			: invert_(invert)
-		{}
-		
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
-		{
-			return invert_ ? Media::ill() : i;
-		}
-		
-		inline int invert() const { return invert_; }
-		
-	private:
-		int invert_;
-	};
-	
-	class LengthNode: public Node
-	{
-	public:
-		LengthNode(int minLength, int maxLength, Ref<Node> entry)
-			: minLength_(minLength),
-			  maxLength_(maxLength)
-		{
-			appendChild(entry);
-		}
-		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 			
-			Index h = entry()->matchNext(media, i, tokenFactory, parentToken, state);
-			if (h != Media::ill()) {
-				int d = h - i;
-				if ((d < minLength_) || (maxLength_ < d))
-					h = Media::ill();
+			Index h = Media::ill();
+			Ref<Node> node = Node::firstChild();
+			while ((node) && (h == Media::ill())) {
+				h = node->matchNext(media, i, tokenFactory, parentToken, state);
+				rollBackOnFailure(h, parentToken, lastChildSaved);
+				node = node->nextSibling();
 			}
-			i = h;
 			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
+			rollBackOnFailure(h, parentToken, lastChildSaved);
+			
+			return h;
+		}
+		
+		inline Ref<Node> firstChoice() const { return Node::firstChild(); }
+		inline Ref<Node> lastChoice() const { return Node::lastChild(); }
+	};
+	
+	class GlueNode: public Node
+	{
+	public:
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		{
+			Ref<Token> lastChildSaved;
+			if (parentToken) lastChildSaved = parentToken->lastChild();
+			
+			Ref<Node> node = Node::firstChild();
+			while ((node) && (i != Media::ill())) {
+				i = node->matchNext(media, i, tokenFactory, parentToken, state);
+				node = node->nextSibling();
+			}
 			
 			rollBackOnFailure(i, parentToken, lastChildSaved);
 			
 			return i;
 		}
-		
-		inline int minLength() const { return minLength_; }
-		inline int maxLength() const { return maxLength_; }
-		inline Ref<Node> entry() const { return Node::firstChild(); }
-		
-	private:
-		int minLength_;
-		int maxLength_;
 	};
 	
 	class Definition;
@@ -511,8 +467,6 @@ public:
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			check(!next_);
-			
 			Ref<Token, Owner> token;
 			if (tokenFactory) {
 				token = tokenFactory->produce();
@@ -589,9 +543,6 @@ public:
 			
 			i = LinkNode::rule_->matchNext(media, i, tokenFactory, parentToken, state);
 			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
 			rollBackOnFailure(i, parentToken, lastChildSaved);
 			
 			return i;
@@ -607,12 +558,7 @@ public:
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			i = LinkNode::rule_->entry()->matchNext(media, i, tokenFactory, parentToken, state);
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
-			return i;
+			return LinkNode::rule_->entry()->matchNext(media, i, tokenFactory, parentToken, state);
 		}
 	};
 	
@@ -635,12 +581,8 @@ public:
 						 ((keyword_ == -1) || (sibling->keyword() == keyword_)) )
 						h = i;
 			}
-			i = h;
 			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
-			return i;
+			return h;
 		}
 		
 		inline const char* keywordName() const { return keywordName_; }
@@ -664,12 +606,7 @@ public:
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			i = callBack_(self_, media, i, state);
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
-			return i;
+			return callBack_(self_, media, i, state);
 		}
 		
 		inline CallBack callBack() const { return callBack_; }
@@ -690,10 +627,6 @@ public:
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			*state->flag(flagId_) = value_;
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
 			return i;
 		}
 		
@@ -717,15 +650,9 @@ public:
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (*state->flag(flagId_))
-				i = trueBranch()->matchNext(media, i, tokenFactory, parentToken, state);
-			else
-				i = falseBranch()->matchNext(media, i, tokenFactory, parentToken, state);
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
-			return i;
+			return (*state->flag(flagId_)) ?
+				trueBranch()->matchNext(media, i, tokenFactory, parentToken, state) :
+				falseBranch()->matchNext(media, i, tokenFactory, parentToken, state);
 		}
 		
 		inline int flagId() const { return flagId_; }
@@ -750,9 +677,6 @@ public:
 			else
 				i = Media::ill();
 			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
 			return i;
 		}
 		
@@ -773,10 +697,6 @@ public:
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
 			*state->character(charId_) = value_;
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
 			return i;
 		}
 		
@@ -805,9 +725,6 @@ public:
 			}
 			else
 				i = Media::ill();
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
 		}
@@ -849,9 +766,6 @@ public:
 					string->set(k - i0, media->get(k));
 			}
 			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
-			
 			return i;
 		}
 		
@@ -883,9 +797,6 @@ public:
 			
 			if (k != m)
 				i = Media::ill();
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
 		}
@@ -941,9 +852,6 @@ public:
 			else {
 				i = definition_->matchNext(media, i, tokenFactory, parentToken, childState);
 			}
-			
-			if ((i != Media::ill()) && (next_))
-				i = next_->matchNext(media, i, tokenFactory, parentToken, state);
 			
 			return i;
 		}
@@ -1053,6 +961,8 @@ public:
 		inline NODE REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new RepeatNode(minRepeat, maxRepeat, entry), "Repeat"); }
 		inline NODE REPEAT(int minRepeat, NODE entry) { return REPEAT(minRepeat, intMax, entry); }
 		inline NODE REPEAT(NODE entry) { return REPEAT(0, intMax, entry); }
+		inline NODE LENGTH(int minLength, int maxLength, NODE entry) { return debug(new LengthNode(minLength, maxLength, entry), "Length"); }
+		inline NODE LENGTH(int minLength, NODE entry) { return LENGTH(minLength, intMax, entry); }
 		inline NODE BOI() { return debug(new BoiNode(), "Boi"); }
 		inline NODE EOI() { return debug(new EoiNode(), "Eoi"); }
 		inline NODE PASS() { return debug(new PassNode(0), "Pass"); }
@@ -1061,8 +971,8 @@ public:
 		inline NODE AHEAD(NODE entry) { return debug(new AheadNode(entry, 0), "Ahead"); }
 		inline NODE NOT(NODE entry) { return debug(new AheadNode(entry, 1), "Ahead"); }
 		
-		inline NODE LENGTH(int minLength, int maxLength, NODE entry) { return debug(new LengthNode(minLength, maxLength, entry), "Length"); }
-		inline NODE LENGTH(int minLength, NODE entry) { return LENGTH(minLength, intMax, entry); }
+		inline NODE CHOICE() { return debug(new ChoiceNode, "Choice"); }
+		inline NODE GLUE() { return debug(new GlueNode, "Glue"); }
 		
 		#include "SyntaxSugar.hpp"
 		

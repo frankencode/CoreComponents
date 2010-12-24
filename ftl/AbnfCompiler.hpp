@@ -37,12 +37,12 @@ private:
 	inline const char* str(Ref<ByteArray> text, Ref<Token> token) { return trap_.capture(text, token->i0(), token->i1()); }
 	StringTrap trap_;
 	
+	Ref<Node> ignoreDebug(Ref<Node> node);
+	
 	void compileRuleList(Ref<ByteArray> text, Ref<Token> ruleList, Ref<Definition> definition);
 	void compileEntry(Ref<ByteArray> text, Ref<Token> ruleList, Ref<Definition> definition);
 	NODE compileAlternation(Ref<ByteArray> text, Ref<Token> alternation, Ref<Definition> definition);
-	NODE compileAlternationCascade(Ref<ByteArray> text, Ref<Token> concatenation, Ref<Definition> definition);
 	NODE compileConcatenation(Ref<ByteArray> text, Ref<Token> concatenation, Ref<Definition> definition);
-	NODE compileConcatenationCascade(Ref<ByteArray> text, Ref<Token> repetition, Ref<Definition> definition);
 	NODE compileRepetition(Ref<ByteArray> text, Ref<Token> repetition, Ref<Definition> definition);
 	NODE compileOption(Ref<ByteArray> text, Ref<Token> option, Ref<Definition> definition);
 	NODE compileElement(Ref<ByteArray> text, Ref<Token> element, Ref<Definition> definition);
@@ -50,7 +50,9 @@ private:
 	NODE compileCharVal(Ref<ByteArray> text, Ref<Token> charVal, Ref<Definition> definition);
 	NODE compileProseVal(Ref<ByteArray> text, Ref<Token> proseVal, Ref<Definition> definition);
 	
-	NODE optimizedCHOICE(Ref<Definition> definition, NODE choice0, NODE choice1);
+	NODE optimizeChoice(Ref<Node> choice, Ref<Definition> definition);
+	void deepOptimizeChoice(Ref<Node> node, Ref<Definition> definition);
+	void deepOptimizeChoice(Ref<Node> node, Ref<Node> fin, int numChars, Ref<Definition> definition);
 	
 	int numVal_;
 	int charVal_;
