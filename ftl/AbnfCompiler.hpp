@@ -8,18 +8,11 @@
 #ifndef FTL_ABNFCOMPILER_HPP
 #define FTL_ABNFCOMPILER_HPP
 
-#include "Syntax.hpp"
-#include "Array.hpp"
+#include "AbnfDefinition.hpp"
 #include "StringTrap.hpp"
 
 namespace ftl
 {
-
-class AbnfDefinition: public Syntax<ByteArray>::Definition
-{
-public:
-	AbnfDefinition(Ref<DebugFactory> debugFactory = 0);
-};
 
 class AbnfCompiler: public AbnfDefinition
 {
