@@ -31,7 +31,7 @@ public:
 	typedef SyntaxDebugger<Media> Debugger;
 	
 	inline static void rollBackOnFailure(Index i, Token* parentToken, Token* lastChildSaved) {
-		if ((parentToken) && (i == Media::ill())) {
+		if ((i == Media::ill()) && (parentToken)) {
 			while (parentToken->lastChild() != lastChildSaved)
 				parentToken->lastChild()->unlink();
 		}
@@ -393,7 +393,7 @@ public:
 			if ((h == Media::ill()) ^ invert_)
 				i = Media::ill();
 			
-			rollBackOnFailure(i, parentToken, lastChildSaved);
+			rollBackOnFailure(Media::ill(), parentToken, lastChildSaved);
 			
 			return i;
 		}
@@ -460,7 +460,9 @@ public:
 			: definition_(definition),
 			  name_(name),
 			  id_(ruleId),
-			  isVoid_(isVoid)
+			  isVoid_(isVoid),
+			  used_(false),
+			  numberOfRefs_(-1)
 		{
 			appendChild(entry);
 		}
@@ -496,11 +498,26 @@ public:
 			return i;
 		}
 		
+		int numberOfRefs() {
+			if (numberOfRefs_ == -1) {
+				numberOfRefs_ = 0;
+				Ref<Node> node = Node::first();
+				while (node) {
+					if (Ref<RefNode>(node)) ++numberOfRefs_;
+					node = node->next();
+				}
+			}
+			return numberOfRefs_;
+		}
+		
 		inline int id() const { return id_; }
 		inline const char* name() const { return name_; }
 		
 		inline Ref<Node> entry() const { return Node::firstChild(); }
 		inline bool isVoid() const { return isVoid_; }
+		
+		inline bool used() const { return used_; }
+		inline void markUsed() { used_ = true; }
 		
 	protected:
 		friend class InlineNode;
@@ -509,6 +526,8 @@ public:
 		const char* name_;
 		int id_;
 		bool isVoid_;
+		bool used_;
+		int numberOfRefs_;
 	};
 	
 	class LinkNode: public Node
@@ -1022,7 +1041,29 @@ public:
 			return debug(new CallNode(errorCallBack, this), "Call");
 		}
 		
-		inline void LINK() {
+		void OPTIMIZE()
+		{
+			while (unresolvedLinkHead_) {
+				Ref<LinkNode> link = unresolvedLinkHead_;
+				link->rule_ = ruleByName(link->ruleName_);
+				if (link->rule_->isVoid()) {
+					if (Ref<RefNode>(link)) {
+						if (link->rule_->numberOfRefs() == 0) {
+							Ref<LinkNode, Owner> iLink = new InlineNode(link->ruleName_);
+							link->parent()->insertChild(iLink, link);
+							iLink->rule_ = link->rule_;
+							link->unlink();
+						}
+					}
+				}
+				unresolvedLinkHead_ = link->unresolvedNext_;
+			}
+		}
+		
+		void LINK(bool optimize = true)
+		{
+			if (optimize) OPTIMIZE();
+			
 			while (unresolvedLinkHead_) {
 				unresolvedLinkHead_->rule_ = ruleByName(unresolvedLinkHead_->ruleName_);
 				unresolvedLinkHead_ = unresolvedLinkHead_->unresolvedNext_;

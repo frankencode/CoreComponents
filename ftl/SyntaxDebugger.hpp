@@ -20,6 +20,7 @@ template<class Media>
 class SyntaxDebugger: public Syntax<Media>::DebugFactory
 {
 public:
+	typedef typename Syntax<Media>::DebugFactory DebugFactory;
 	typedef typename Syntax<Media>::Definition Definition;
 	typedef typename Syntax<Media>::Node Node;
 
@@ -56,29 +57,48 @@ public:
 		factoryByNodeType_->insert("Invoke",        new DebugNodeFactory<InvokeDebugNode>       (this));
 	}
 	
-	void printDefinition()
+private:
+	static void determineRulesInUse(Ref<typename Definition::RuleNode> rule)
 	{
-		if (this->definition()->stateful()) {
+		if (!rule->used()) {
+			rule->markUsed();
+			Ref<Node> node = rule->entry()->first();
+			while (node) {
+				Ref<typename Definition::LinkNode> link = node;
+				if (link)
+					determineRulesInUse(link->rule());
+				node = node->next();
+			}
+		}
+	}
+	
+public:
+	void printDefinition(bool omitUnusedRules = false)
+	{
+		if (omitUnusedRules)
+			determineRulesInUse(DebugFactory::definition()->rule());
+		
+		if (DebugFactory::definition()->stateful()) {
 			typedef typename Definition::StateFlag StateFlag;
 			typedef typename Definition::StateChar StateChar;
 			typedef typename Definition::StateString StateString;
 			
-			Ref<StateFlag> stateFlag = this->definition()->stateFlagHead_;
-			for (int id = this->definition()->numStateFlags_ - 1; id >= 0; --id) {
+			Ref<StateFlag> stateFlag = DebugFactory::definition()->stateFlagHead_;
+			for (int id = DebugFactory::definition()->numStateFlags_ - 1; id >= 0; --id) {
 				print("STATE_FLAG(\"%%\", %%);\n", flagNameById()->get(id), stateFlag->defaultValue_);
 				stateFlag = stateFlag->next_;
 			}
 			
-			Ref<StateChar> stateChar = this->definition()->stateCharHead_;
-			for (int id = this->definition()->numStateChars_ - 1; id >= 0; --id) {
+			Ref<StateChar> stateChar = DebugFactory::definition()->stateCharHead_;
+			for (int id = DebugFactory::definition()->numStateChars_ - 1; id >= 0; --id) {
 				print("STATE_CHAR(\"%%\", ", charNameById()->get(id));
 				printCharAttr(stateChar->defaultValue_);
 				print(")\n");
 				stateChar = stateChar->next_;
 			}
 			
-			Ref<StateString> stateString = this->definition()->stateStringHead_;
-			for (int id = this->definition()->numStateStrings_ - 1; id >= 0; --id) {
+			Ref<StateString> stateString = DebugFactory::definition()->stateStringHead_;
+			for (int id = DebugFactory::definition()->numStateStrings_ - 1; id >= 0; --id) {
 				print("STATE_STRING(\"%%\", ", stringNameById()->get(id));
 				printStringAttr(stateString->defaultValue_);
 				print(")\n");
@@ -90,7 +110,7 @@ public:
 		
 		typedef typename Definition::RuleByName RuleByName;
 		typedef typename Syntax<Media>::RuleNode RuleNode;
-		Ref<RuleByName> ruleByName = this->definition()->ruleByName_;
+		Ref<RuleByName> ruleByName = DebugFactory::definition()->ruleByName_;
 		
 		typedef Map<int, Ref<RuleNode> > RuleById;
 		Ref<RuleById, Owner> ruleById = new RuleById;
@@ -105,6 +125,7 @@ public:
 		
 		for (typename RuleList::Index i = ruleList->first(); ruleList->def(i); ++i) {
 			Ref<RuleNode> rule = ruleList->get(i);
+			if (omitUnusedRules && !rule->used()) continue;
 			print("DEFINE%%(\"%%\",\n", rule->isVoid() ? "_VOID" : "", rule->name());
 			if (rule->entry()) {
 				Ref<DebugNode> debugNode = rule->entry();
@@ -116,7 +137,7 @@ public:
 			print("\n);\n\n");
 		}
 		
-		print("ENTRY(\"%%\");\n", this->definition()->ruleName_);
+		print("ENTRY(\"%%\");\n", DebugFactory::definition()->ruleName_);
 	}
 	
 private:
@@ -215,12 +236,13 @@ public:
 	class DebugNode: public Node {
 	public:
 		DebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
-			: debugger_(debugger),
-			  entry_(newNode)
-		{}
+			: debugger_(debugger)
+		{
+			appendChild(newNode);
+		}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) {
-			return entry_->matchNext(media, i, tokenFactory, parentToken, state);
+			return entry()->matchNext(media, i, tokenFactory, parentToken, state);
 		}
 		
 		virtual const char* declType() const = 0;
@@ -232,7 +254,7 @@ public:
 			print(")");
 		}
 		
-		inline Ref<Node> entry() const { return entry_; }
+		inline Ref<Node> entry() const { return Node::firstChild(); }
 		
 	protected:
 		void printBranch(Ref<Node> node, String indent) {
@@ -255,7 +277,6 @@ public:
 		}
 		
 		Ref<SyntaxDebugger> debugger_;
-		Ref<Node, Owner> entry_;
 	};
 	
 	class CharDebugNode: public DebugNode {
@@ -272,7 +293,7 @@ public:
 		
 	private:
 		typedef typename Syntax<Media>::CharNode CharNode;
-		inline Ref<CharNode> charNode() const { return DebugNode::entry_; }
+		inline Ref<CharNode> charNode() const { return DebugNode::entry(); }
 	};
 	
 	class AnyDebugNode: public DebugNode {
@@ -302,7 +323,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::RangeMinMaxNode RangeMinMaxNode;
-		inline Ref<RangeMinMaxNode> rangeMinMaxNode() const { return DebugNode::entry_; }
+		inline Ref<RangeMinMaxNode> rangeMinMaxNode() const { return DebugNode::entry(); }
 	};
 	
 	class RangeExplicitDebugNode: public DebugNode {
@@ -319,7 +340,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::RangeExplicitNode RangeExplicitNode;
-		inline Ref<RangeExplicitNode> rangeExplicitNode() const { return DebugNode::entry_; }
+		inline Ref<RangeExplicitNode> rangeExplicitNode() const { return DebugNode::entry(); }
 	};
 	
 	class StringDebugNode: public DebugNode {
@@ -336,7 +357,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::StringNode StringNode;
-		inline Ref<StringNode> stringNode() const { return DebugNode::entry_; }
+		inline Ref<StringNode> stringNode() const { return DebugNode::entry(); }
 	};
 	
 	class KeywordDebugNode: public DebugNode {
@@ -362,7 +383,7 @@ private:
 	private:
 		typedef typename Syntax<Media>::KeywordNode KeywordNode;
 		typedef typename Syntax<Media>::KeywordMap KeywordMap;
-		inline Ref<KeywordNode> keywordNode() const { return DebugNode::entry_; }
+		inline Ref<KeywordNode> keywordNode() const { return DebugNode::entry(); }
 	};
 	
 	class RepeatDebugNode: public DebugNode {
@@ -386,7 +407,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::RepeatNode RepeatNode;
-		inline Ref<RepeatNode> repeatNode() const { return DebugNode::entry_; }
+		inline Ref<RepeatNode> repeatNode() const { return DebugNode::entry(); }
 	};
 	
 	class LengthDebugNode: public DebugNode {
@@ -409,7 +430,7 @@ private:
 	
 	private:
 		typedef typename Syntax<Media>::LengthNode LengthNode;
-		inline Ref<LengthNode> lengthNode() const { return DebugNode::entry_; }
+		inline Ref<LengthNode> lengthNode() const { return DebugNode::entry(); }
 	};
 	
 	class BoiDebugNode: public DebugNode {
@@ -440,7 +461,7 @@ private:
 	
 	private:
 		typedef typename Syntax<Media>::PassNode PassNode;
-		inline Ref<PassNode> passNode() const { return DebugNode::entry_; }
+		inline Ref<PassNode> passNode() const { return DebugNode::entry(); }
 	};
 	
 	class FindDebugNode: public DebugNode {
@@ -459,7 +480,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::FindNode FindNode;
-		inline Ref<FindNode> findNode() const { return DebugNode::entry_; }
+		inline Ref<FindNode> findNode() const { return DebugNode::entry(); }
 	};
 	
 	class AheadDebugNode: public DebugNode {
@@ -478,7 +499,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::AheadNode AheadNode;
-		inline Ref<AheadNode> aheadNode() const { return DebugNode::entry_; }
+		inline Ref<AheadNode> aheadNode() const { return DebugNode::entry(); }
 	};
 	
 	class ChoiceDebugNode: public DebugNode {
@@ -502,7 +523,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::ChoiceNode ChoiceNode;
-		inline Ref<ChoiceNode> choiceNode() const { return DebugNode::entry_; }
+		inline Ref<ChoiceNode> choiceNode() const { return DebugNode::entry(); }
 	};
 	
 	class GlueDebugNode: public DebugNode {
@@ -526,7 +547,7 @@ private:
 	
 	private:
 		typedef typename Syntax<Media>::GlueNode GlueNode;
-		inline Ref<GlueNode> glueNode() const { return DebugNode::entry_; }
+		inline Ref<GlueNode> glueNode() const { return DebugNode::entry(); }
 	};
 	
 	class RefDebugNode: public DebugNode {
@@ -535,15 +556,18 @@ private:
 			: DebugNode(debugger, newNode)
 		{}
 		
-		virtual const char* declType() const { return "REF"; }
+		virtual const char* declType() const { return (inlineNode()) ? "INLINE" : "REF"; }
 		
 		virtual void printAttributes(String indent) {
-			print("\"%%\"", refNode()->ruleName());
+			print("\"%%\"", linkNode()->ruleName());
 		}
 		
 	private:
-		typedef typename Syntax<Media>::RefNode RefNode;
-		inline Ref<RefNode> refNode() const { return DebugNode::entry_; }
+		typedef typename Syntax<Media>::LinkNode LinkNode;
+		inline Ref<LinkNode> linkNode() const { return DebugNode::entry(); }
+		
+		typedef typename Syntax<Media>::InlineNode InlineNode;
+		inline Ref<InlineNode> inlineNode() const { return DebugNode::entry(); }
 	};
 	
 	class InlineDebugNode: public DebugNode {
@@ -560,7 +584,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::InlineNode InlineNode;
-		inline Ref<InlineNode> inlineNode() const { return DebugNode::entry_; }
+		inline Ref<InlineNode> inlineNode() const { return DebugNode::entry(); }
 	};
 	
 	class PreviousDebugNode: public DebugNode {
@@ -580,7 +604,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::PreviousNode PreviousNode;
-		inline Ref<PreviousNode> previousNode() const { return DebugNode::entry_; }
+		inline Ref<PreviousNode> previousNode() const { return DebugNode::entry(); }
 	};
 	
 	class CallDebugNode: public DebugNode {
@@ -597,7 +621,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::CallNode CallNode;
-		inline Ref<CallNode> callNode() const { return DebugNode::entry_; }
+		inline Ref<CallNode> callNode() const { return DebugNode::entry(); }
 	};
 	
 	class SetDebugNode: public DebugNode {
@@ -615,7 +639,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::SetNode SetNode;
-		inline Ref<SetNode> setNode() const { return DebugNode::entry_; }
+		inline Ref<SetNode> setNode() const { return DebugNode::entry(); }
 	};
 	
 	class IfDebugNode: public DebugNode {
@@ -637,7 +661,7 @@ private:
 	
 	private:
 		typedef typename Syntax<Media>::IfNode IfNode;
-		inline Ref<IfNode> ifNode() const { return DebugNode::entry_; }
+		inline Ref<IfNode> ifNode() const { return DebugNode::entry(); }
 	};
 	
 	class GetCharDebugNode: public DebugNode {
@@ -654,7 +678,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::GetCharNode GetCharNode;
-		inline Ref<GetCharNode> getCharNode() const { return DebugNode::entry_; }
+		inline Ref<GetCharNode> getCharNode() const { return DebugNode::entry(); }
 	};
 	
 	class SetCharDebugNode: public DebugNode {
@@ -673,7 +697,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::SetCharNode SetCharNode;
-		inline Ref<SetCharNode> setCharNode() const { return DebugNode::entry_; }
+		inline Ref<SetCharNode> setCharNode() const { return DebugNode::entry(); }
 	};
 	
 	class VarCharDebugNode: public DebugNode {
@@ -690,7 +714,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::VarCharNode VarCharNode;
-		inline Ref<VarCharNode> varCharNode() const { return DebugNode::entry_; }
+		inline Ref<VarCharNode> varCharNode() const { return DebugNode::entry(); }
 	};
 	
 	class GetStringDebugNode: public DebugNode {
@@ -710,7 +734,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::GetStringNode GetStringNode;
-		inline Ref<GetStringNode> getStringNode() const { return DebugNode::entry_; }
+		inline Ref<GetStringNode> getStringNode() const { return DebugNode::entry(); }
 	};
 	
 	class VarStringDebugNode: public DebugNode {
@@ -727,7 +751,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::VarStringNode VarStringNode;
-		inline Ref<VarStringNode> varStringNode() const { return DebugNode::entry_; }
+		inline Ref<VarStringNode> varStringNode() const { return DebugNode::entry(); }
 	};
 	
 	class InvokeDebugNode: public DebugNode {
@@ -752,7 +776,7 @@ private:
 		
 	private:
 		typedef typename Syntax<Media>::InvokeNode InvokeNode;
-		inline Ref<InvokeNode> invokeNode() const { return DebugNode::entry_; }
+		inline Ref<InvokeNode> invokeNode() const { return DebugNode::entry(); }
 	};
 	
 	friend class Syntax<Media>::Definition;
