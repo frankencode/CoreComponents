@@ -632,7 +632,7 @@ public:
 		
 	private:
 		CallBack callBack_;
-		Ref<Instance, SetNull> self_;
+		Ref<Instance> self_;
 	};
 	
 	class SetNode: public Node
@@ -882,7 +882,7 @@ public:
 		friend class Definition;
 		
 		const char* definitionName_;
-		Ref<Definition, SetNull> definition_;
+		Ref<Definition> definition_;
 		Ref<InvokeNode, Owner> unresolvedNext_;
 	};
 	
@@ -896,7 +896,7 @@ public:
 		
 	private:
 		friend class Definition;
-		Ref<Definition, SetNull> definition_;
+		Ref<Definition> definition_;
 	};
 	
 	class Scope;
@@ -1269,7 +1269,7 @@ public:
 		friend class Scope;
 		friend class InvokeNode;
 		
-		Ref<Scope, SetNull> scope_;
+		Ref<Scope> scope_;
 		int id_;
 		const char* name_;
 		bool caseSensitive_;
