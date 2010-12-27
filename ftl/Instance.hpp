@@ -17,8 +17,6 @@ namespace ftl
 
 FTL_EXCEPTION(ReferenceException, Exception);
 
-class Instance;
-
 class BackRef
 {
 public:
@@ -39,32 +37,15 @@ public:
   *   - manual detruction by delete operator
   * In both cases an exception of type ReferenceException is thrown.
   */
-class Instance
+class CoreInstance
 {
 public:
-	Instance(): refCount_(0), backRefList_(0) {}
+	CoreInstance(): refCount_(0) {}
 	
-	virtual ~Instance()
+	virtual ~CoreInstance()
 	{
-		if (refCount_ > 0) {
+		if (refCount_ > 0)
 			FTL_THROW(ReferenceException, "Deleting object, which is still in use");
-		}
-		if (backRefList_) {
-			mutex_.acquire();
-			BackRef* ref = backRefList_;
-			while (ref) {
-				#ifdef FTL_REF_THREADSAFE_SET
-				ref->mutex_.acquire();
-				#endif
-				*ref->instance_ = 0;
-				#ifdef FTL_REF_THREADSAFE_SET
-				ref->mutex_.release();
-				#endif
-				ref = ref->succ_;
-			}
-			backRefList_ = 0;
-			mutex_.release();
-		}
 	}
 	
 	inline int refCount() const { return refCount_; }
@@ -90,39 +71,67 @@ public:
 	
 	inline void liberate() { refCount_ = -1; }
 
+	inline CoreMutex* const mutex() { return &mutex_; }
+	
+	// ensure back reference lists are kept consistent on copying
+	// (in theory an automomatically synthesized assignment operator in inherited class will invoke this)
+	CoreInstance(const CoreInstance& b) {}
+	inline const CoreInstance& operator=(const CoreInstance& b) { return *this; }
+
+private:
+	CoreMutex mutex_;
+	int refCount_;
+};
+
+class Instance: public CoreInstance
+{
+public:
+	Instance(): backRefList_(0) {}
+	
+	virtual ~Instance()
+	{
+		if (backRefList_) {
+			mutex()->acquire();
+			BackRef* ref = backRefList_;
+			while (ref) {
+				#ifdef FTL_REF_THREADSAFE_SET
+				ref->mutex_.acquire();
+				#endif
+				*ref->instance_ = 0;
+				#ifdef FTL_REF_THREADSAFE_SET
+				ref->mutex_.release();
+				#endif
+				ref = ref->succ_;
+			}
+			backRefList_ = 0;
+			mutex()->release();
+		}
+	}
+	
 	inline void addBackRef(BackRef* ref)
 	{
-		mutex_.acquire();
+		mutex()->acquire();
 		ref->succ_ = backRefList_;
 		ref->pred_ = 0;
 		if (backRefList_)
 			backRefList_->pred_ = ref;
 		backRefList_ = ref;
-		mutex_.release();
+		mutex()->release();
 	}
 	
 	inline void delBackRef(BackRef* ref)
 	{
-		mutex_.acquire();
+		mutex()->acquire();
 		if (ref->pred_)
 			ref->pred_->succ_ = ref->succ_;
 		if (ref->succ_)
 			ref->succ_->pred_ = ref->pred_;
 		if (ref == backRefList_)
 			backRefList_ = backRefList_->succ_;
-		mutex_.release();
+		mutex()->release();
 	}
 	
-	inline CoreMutex* const mutex() { return &mutex_; }
-	
-	// ensure back reference lists are kept consistent on copying
-	// (in theory an automomatically synthesized assignment operator in inherited class will invoke this)
-	Instance(const Instance& b) {}
-	inline const Instance& operator=(const Instance& b) { return *this; }
-
 private:
-	CoreMutex mutex_;
-	int refCount_;
 	BackRef* backRefList_;
 };
 

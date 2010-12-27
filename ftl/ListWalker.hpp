@@ -88,7 +88,7 @@ private:
 	inline bool valid() const { return node_ && (node_ != &list_->endNode_); }
 	inline bool atEnd() const { return &list_->endNode_ == node_; }
 	
-	Ref<ListNode<T>, SetNull> node_;
+	Ref< ListNode<T> > node_;
 	Ref< List<T> > list_;
 };
 

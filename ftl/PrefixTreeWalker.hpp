@@ -92,7 +92,7 @@ private:
 	
 	inline bool valid() const { return node_; }
 	
-	Ref<Node, SetNull> node_;
+	Ref<Node> node_;
 };
 
 } // namespace ftl
