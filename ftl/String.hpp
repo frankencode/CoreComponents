@@ -79,7 +79,7 @@ public:
 	String copy(const Index& index0, const Index& index1) const;
 	inline String head(int n) const { return copy(first(), first() + n); }
 	inline String tail(int n) const { return copy(end() - n, end()); }
-
+	
 	// provide access to the shared media
 	inline Ref<Media> media() const { return Super::get(); }
 	inline operator char*() const { return media()->data(); }

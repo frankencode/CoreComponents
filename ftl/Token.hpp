@@ -58,6 +58,8 @@ public:
 	bool glow(Ref<TokenScreen> screen);
 	static void meld(Ref<Token> root0, Ref<Token> root1);
 	
+	Ref<Token> at(int i) const;
+	
 private:
 	bool burn(int b0, int b1);
 	

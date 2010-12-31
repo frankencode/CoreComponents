@@ -212,12 +212,12 @@ String String::toUpper() const
 
 String String::stripLeadingSpace() const
 {
-	int n = media()->size();
-	while (n > 0) {
-		if (!ftl::isSpace(media()->at(-n))) break;
-		--n;
+	int i = 0, n = media()->size();
+	while (i < n) {
+		if (!ftl::isSpace(media()->at(i))) break;
+		++i;
 	}
-	return String(media()->data() + n, media()->size() - n);
+	return String(media()->data() + i, media()->size() - i);
 }
 
 String String::stripTrailingSpace() const
