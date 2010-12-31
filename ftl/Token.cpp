@@ -122,4 +122,18 @@ bool Token::burn(int b0, int b1)
 	return true;
 }
 
+Ref<Token> Token::at(int i) const
+{
+	Ref<Token> token = this;
+	Ref<Token> child = firstChild();
+	while (child) {
+		if ((child->i0() <= i) && (i < child->i1())) {
+			token = child->at(i);
+			break;
+		}
+		child = child->nextSibling();
+	}
+	return token;
+}
+
 } // namespace ftl
