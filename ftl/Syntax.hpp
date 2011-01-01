@@ -208,7 +208,7 @@ public:
 					i = h;
 				}
 				else
-					i = -1;
+					i = Media::ill();
 			}
 			else
 				i = Media::ill();
