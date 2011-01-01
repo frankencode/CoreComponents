@@ -122,6 +122,8 @@ void Tree<Node>::disbandChildren()
 	Ref<Node> node = lastChild_;
 	while (node) {
 		node->nextSibling_ = 0;
+		node->previousSibling_ = 0;
+		node->parent_ = 0;
 		node = node->previousSibling_;
 	}
 	lastChild_ = 0;
@@ -138,9 +140,9 @@ void Tree<Node>::unlink()
 		nextSibling_->previousSibling_ = previousSibling_;
 	if (parent_) {
 		if (parent_->firstChild_ == this)
-			parent_->firstChild_ = parent_->firstChild_->nextSibling_;
+			parent_->firstChild_ = nextSibling_;
 		if (parent_->lastChild_ == this)
-			parent_->lastChild_ = parent_->lastChild_->previousSibling_;
+			parent_->lastChild_ = previousSibling_;
 		parent_ = 0;
 	}
 	self = 0;
