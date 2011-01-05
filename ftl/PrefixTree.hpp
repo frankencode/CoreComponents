@@ -34,8 +34,7 @@ public:
 	  * The function returns true if the new key-value mapping was inserted successfully.
 	  */
 	template<class Char2>
-	bool insert(const Char2* key, int keyLen, Value value, Value* currentValue = 0, bool caseSensitive = true)
-	{
+	inline bool insert(const Char2* key, int keyLen, Value value, Value* currentValue = 0, bool caseSensitive = true) {
 		return caseSensitive ?
 			insertFiltered<Char2, Identity>(key, keyLen, value, currentValue) :
 			insertFiltered<Char2, ToLower>(key, keyLen, value, currentValue);
@@ -51,10 +50,21 @@ public:
 			lookupFiltered<Char2, ToLower>(key, keyLen, value);
 	}
 	
+	/** Remove the key-value mapping with the exactly matching key.
+	  * If an exactly matching key-value pair is found, it is removed and
+	  * the value is returned. In this case the function returns true.
+	  */
+	template<class Char2>
+	inline bool remove(const Char2* key, int keyLen, Value* value = 0, bool caseSensitive = true) {
+		return caseSensitive ?
+			removeFiltered<Char2, Identity>(key, keyLen) :
+			removeFiltered<Char2, ToLower>(key, keyLen);
+	}
+	
 	/** Match given media to the longest key-value mapping of this tree.
 	  * The media is read starting from position i0.
-	  * The function returns true if any matching key was found.
-	  * The value of the longest matching key is returned in '*value'.
+	  * The function returns true if a matching key was found.
+	  * The value of the matching key is returned in '*value'.
 	  * The terminal match position is given in '*i1'.
 	  */
 	template<class Media>
@@ -72,6 +82,11 @@ public:
 	// convenience wrapper
 	inline bool insert(const char* key, Value value = Value(), Value* currentValue = 0, bool caseSensitive = true) {
 		return insert(key, str::len(key), value, currentValue, caseSensitive);
+	}
+	
+	// convenience wrapper
+	inline bool remove(const char* key, Value* value = 0, bool caseSensitive = true) {
+		return remove(key, str::len(key), value, caseSensitive);
 	}
 	
 	// convenience wrapper, matches entire media
@@ -139,8 +154,7 @@ protected:
 	bool insertFiltered(const Char2* key, int keyLen, Value value, Value* currentValue = 0)
 	{
 		Ref<Node> node = this;
-		while (keyLen > 0)
-		{
+		while (keyLen > 0) {
 			Ref<Node> parent = node;
 			node = node->step<Filter>(*key);
 			if (!node) {
@@ -164,9 +178,7 @@ protected:
 	bool lookupFiltered(const Char2* key, int keyLen, Value* value = 0) const
 	{
 		Ref<Node> node = this;
-		while ((node) && keyLen > 0)
-		{
-			Ref<Node> parent = node;
+		while ((node) && (keyLen > 0)) {
 			node = node->step<Filter>(*key);
 			if (node)
 				if (node->defined_)
@@ -178,14 +190,36 @@ protected:
 		return node ? ((keyLen == 0) && (node->defined_)) : false;
 	}
 	
+	template<class Char2, template<class> class Filter>
+	bool removeFiltered(const Char* key, int keyLen, Value* value = 0) const
+	{
+		Ref<Node> node = this;
+		while ((node) && (keyLen > 0)) {
+			node = node->step<Filter>(*key);
+			++key;
+			--keyLen;
+		}
+		bool matchExact = (node) ? node->defined_ : false;
+		if (matchExact) {
+			if (value) *value = node->value_;
+			node->defined_ = false;
+			while (node) {
+				if (node->defined_ || node->hasChildren()) break;
+				Ref<Node> parent = node->parent();
+				node->unlink();
+				node = parent;
+			}
+		}
+		return matchExact;
+	}
+	
 	template<class Media, template<class> class Filter>
 	bool matchFiltered(Media* media, int i0 = 0, int* i1 = 0, Value* value = 0) const
 	{
 		bool found = false;
 		int i = i0;
 		Ref<Node> node = this;
-		while ((node) && media->def(i))
-		{
+		while ((node) && media->def(i)) {
 			Ref<Node> parent = node;
 			node = node->step<Filter>(media->get(i++));
 			if (node)
