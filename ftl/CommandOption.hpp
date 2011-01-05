@@ -1,7 +1,7 @@
 /*
  * CommandOption.hpp -- command line argument
  *
- * Copyright (c) 2007-2010, Frank Mertens
+ * Copyright (c) 2007-2011, Frank Mertens
  *
  * See ../../LICENSE for the license.
  */

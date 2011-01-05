@@ -1,7 +1,7 @@
 /*
  * UriSyntax.hpp -- URI syntax according to RFC3986
  *
- * Copyright (c) 2007-2010, Frank Mertens
+ * Copyright (c) 2007-2011, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
