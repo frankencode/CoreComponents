@@ -1,7 +1,7 @@
 /*
  * AbnfCompiler.cpp -- ABNF compiler according to RFC5234 (former RFC4234, RFC2234)
  *
- * Copyright (c) 2007-2010, Frank Mertens
+ * Copyright (c) 2007-2011, Frank Mertens
  *
  * See ../LICENSE for the license.
  */

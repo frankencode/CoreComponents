@@ -1,7 +1,7 @@
 /*
  * PrefixTree.hpp -- string lookup tree
  *
- * Copyright (c) 2007-2010, Frank Mertens
+ * Copyright (c) 2007-2011, Frank Mertens
  *
  * See ../COPYING for the license.
  */
