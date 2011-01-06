@@ -12,6 +12,7 @@
 #include "strings.hpp"
 #include "Tree.hpp"
 #include "PrefixTreeWalker.hpp"
+#include "streams" // DEBUG
 
 namespace ftl
 {
@@ -138,6 +139,40 @@ public:
 	inline Value value(Index index) const {
 		check(def(index));
 		return index.node_->value_;
+	}
+	
+	template<class Char2>
+	bool predict(const Char2* key, int keyLen, Index* first, Index* last, Index* common = 0) const
+	{
+		Ref<Node> node = this;
+		while ((node) && (keyLen > 0)) {
+			node = node->step<Identity>(*key);
+			++key;
+			--keyLen;
+		}
+		bool found = (node) ? node->hasChildren() : false;
+		if (found) {
+			*first = Index(node->firstLeaf());
+			{
+				Ref<Node> lastNode = node;
+				while (!lastNode->defined_) lastNode = lastNode->lastChild();
+				*last = Index(lastNode);
+			}
+			if (common) {
+				Ref<Node> commonNode = node;
+				while (commonNode->hasSingleChild()) {
+					commonNode = commonNode->firstChild();
+					if (commonNode->defined_) break;
+				}
+				*common = Index(commonNode);
+			}
+		}
+		return found;
+	}
+	
+	// convenience wrapper
+	inline bool predict(const char* key, Index* first, Index* last, Index* common = 0) const {
+		return predict(key, str::len(key), first, last, common);
 	}
 	
 protected:

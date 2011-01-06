@@ -42,12 +42,12 @@ public:
 	inline Ref<Node> first() const { return firstLeaf(); }
 	inline Ref<Node> last() const { return lastLeaf(); }
 	inline Ref<Node> next() const { return (nextSibling_) ? nextSibling_->firstLeaf() : parent(); }
-	inline Ref<Node> previous() const { return (previousSibling_) ? previousSibling_->lastLeaf() : parent(); }
 	
 	inline int countChildren() const {
 		return (firstChild_) ? firstChild_->countSiblings() : 0;
 	}
 	inline bool hasChildren() const { return firstChild_; }
+	inline bool hasSingleChild() const { return (firstChild_) && (firstChild_ == lastChild_); }
 	
 	int countSiblings() const;
 	

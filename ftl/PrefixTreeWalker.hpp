@@ -18,21 +18,13 @@ template<class Char, class Value>
 class PrefixTreeWalker
 {
 public:
+	PrefixTreeWalker() {}
+	
 	// prefix increment / decrement
 	inline PrefixTreeWalker& operator++() {
 		check(valid());
 		while (node_) {
 			node_ = node_->next();
-			if (node_)
-				if (node_->defined_)
-					break;
-		}
-		return *this;
-	}
-	inline PrefixTreeWalker& operator--() {
-		check(valid());
-		while (node_) {
-			node_ = node_->previous();
 			if (node_)
 				if (node_->defined_)
 					break;
@@ -50,9 +42,6 @@ public:
 		}
 		return *this;
 	}
-	inline PrefixTreeWalker& operator-=(int delta) {
-		return (*this) += -delta;
-	}
 	
 	// postfix increment / decrement
 	inline PrefixTreeWalker operator++(int) {
@@ -60,19 +49,10 @@ public:
 		++(*this);
 		return it;
 	}
-	inline PrefixTreeWalker operator--(int) {
-		PrefixTreeWalker it = *this;
-		--(*this);
-		return it;
-	}
 	
 	inline PrefixTreeWalker operator+(int delta) const {
 		PrefixTreeWalker it = *this;
 		return it += delta;
-	}
-	inline PrefixTreeWalker operator-(int delta) const {
-		PrefixTreeWalker it = *this;
-		return it -= delta;
 	}
 	
 	inline bool operator==(const PrefixTreeWalker& b) const {
