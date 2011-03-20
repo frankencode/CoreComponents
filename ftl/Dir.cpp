@@ -64,24 +64,7 @@ void Dir::close()
 	dir_ = 0;
 }
 
-bool Dir::hasNext()
-{
-	if (!next_) {
-		next_ = new DirEntry;
-		if (!read(next_)) next_ = 0;
-	}
-	return next_;
-}
-
-Ref<DirEntry, Owner> Dir::next()
-{
-	hasNext();
-	Ref<DirEntry, Owner> entry = next_;
-	next_ = 0;
-	return entry;
-}
-
-bool Dir::read(Ref<DirEntry> entry)
+bool Dir::read(DirEntry* entry)
 {
 	if (!isOpen()) open();
 	struct dirent* buf = entry;

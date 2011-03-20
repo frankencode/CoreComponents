@@ -7,10 +7,8 @@ namespace ftl
 int main(int argc, char** argv)
 {
 	Dir dir(Process::cwd());
-	DirEntry entry;
-	while (dir.read(&entry)) {
+	for (DirEntry entry; dir.read(&entry);)
 		print("%% (%%)\n", entry.path(), entry.name());
-	}
 	return 0;
 }
 

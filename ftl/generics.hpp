@@ -71,8 +71,14 @@ template<class T>
 class Source: public virtual Instance
 {
 public:
-	virtual bool hasNext() = 0;
-	virtual T next() = 0;
+	virtual bool read(T* item) = 0;
+};
+
+template<class T>
+class Sink: public virtual Instance
+{
+public:
+	virtual void write(T item) = 0;
 };
 
 template<class Item, class Index = int>

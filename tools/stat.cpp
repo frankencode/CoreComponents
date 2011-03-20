@@ -89,8 +89,8 @@ int main(int argc, char** argv)
 	else
 		files = input();
 	
-	while (files->hasNext()) {
-		FileStatus status(files->next());
+	for (String file; files->read(&file);) {
+		FileStatus status(file);
 		for (CommandLine::OptionList::Index i = options->first(); options->def(i); ++i) {
 			Ref<CommandOption> option = options->at(i);
 			if (option == name)

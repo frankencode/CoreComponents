@@ -54,6 +54,10 @@ public:
 	static inline String uninitialized(int size) { return String(size); }
 	static inline String initialized(int size, char zero) { return String(size, zero); }
 	
+	// conversion from and to UTF-16
+	static String fromUtf16(const void* data, int size = -1);
+	Ref<ByteArray, Owner> toUtf16();
+	
 	// counterpart to StringList::join()
 	static inline String join(Ref<StringList> parts, const char* sep = "") {
 		String s;
@@ -84,11 +88,12 @@ public:
 	inline Ref<Media> media() const { return Super::get(); }
 	inline operator char*() const { return media()->data(); }
 	inline char* utf8() const { return media()->data(); }
+	inline int encodedSize() const { return media()->size(); }
 	
 	inline Index first() const { return media()->isEmpty() ? Index() : Index(media()->data()); }
 	inline Index last() const { return media()->isEmpty() ? Index() : end() - 1; }
 	inline Index end() const { return media()->isEmpty() ? Index() : Index(media()->data(), media()->data() + media()->size()); }
-	inline int length() const { return end() - first(); }	
+	inline int length() const { return end() - first(); }
 	
 	inline bool isEmpty() const { return media()->isEmpty(); }
 	

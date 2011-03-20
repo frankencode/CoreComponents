@@ -22,6 +22,14 @@ public:
 	inline bool hasNext() { return !isEmpty(); }
 	inline T next() { return pop(); }
 	
+	inline bool read(T* item) {
+		if (!isEmpty()) {
+			*item = pop();
+			return true;
+		}
+		return false;
+	}
+	
 	virtual CT& push(const T& item) = 0;
 	virtual CT& pop(T& item) = 0;
 	inline CT& operator<<(const T& item) { return push(item); }

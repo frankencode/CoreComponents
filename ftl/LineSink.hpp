@@ -16,7 +16,7 @@
 namespace ftl
 {
 
-class LineSink: public Instance
+class LineSink: public Sink<String>
 {
 public:
 	LineSink(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, const char* eol = "\n");

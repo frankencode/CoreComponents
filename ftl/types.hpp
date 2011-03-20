@@ -25,7 +25,7 @@ inline int localEndian() {
 	return *((uint8_t*)&y);
 }
 
-// swap endianess, if local endian is not channel endian
+// swap endianess, if local endian is unequal channel endian
 template<class UInt>
 inline UInt endianGate(UInt x, const int channelEndian = BigEndian)
 {

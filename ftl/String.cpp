@@ -7,6 +7,9 @@
  */
 
 #include "Utf8Decoder.hpp"
+#include "Utf8Encoder.hpp"
+#include "Utf16Decoder.hpp"
+#include "Utf16Encoder.hpp"
 #include "Crc32.hpp"
 #include "FormatSyntax.hpp"
 #include "IntegerLiteral.hpp"
@@ -33,13 +36,53 @@ String::String(const Path& b)
 	: Super(b.toString().media())
 {}
 
+String String::fromUtf16(const void* data, int size)
+{
+	String s2;
+	if (size < 0) {
+		size = 0;
+		for (const uint16_t* p = reinterpret_cast<const uint16_t*>(data); *p; ++p) ++size;
+		size *= 2;
+	}
+	if (size > 0) {
+		int size2 = 0;
+		{
+			Utf16Decoder source(data, size);
+			for (uchar_t ch; source.read(&ch);)
+				size2 += Utf8Encoder::encodedSize(ch);
+		}
+		s2 = String::uninitialized(size2);
+		Utf16Decoder source(data, size);
+		Utf8Encoder sink(s2.media()->data(), size2);
+		for (uchar_t ch; source.read(&ch);)
+			sink.write(ch);
+	}
+	return s2;
+}
+
+Ref<ByteArray, Owner> String::toUtf16()
+{
+	Ref<ByteArray, Owner> s2;
+	int size2 = 0;
+	for (Index i = first(); def(i); ++i)
+		size2 += Utf16Encoder::encodedSize(get(i));
+	s2 = new ByteArray(size2 + 2);
+	s2[size2] = 0;
+	s2[size2 + 1] = 0;
+	if (size2 > 0) {
+		Utf16Encoder sink(s2->data(), size2);
+		for (Index i = first(); def(i); ++i)
+			sink.write(get(i));
+	}
+	return s2;
+}
+
 void String::validate(const char* data, int size)
 {
 	if (size < 0) size = str::len(data);
 	if (size > 0) {
 		Utf8Decoder source(data, size);
-		while (source.hasNext())
-			source.next();
+		for (uchar_t ch = 0; source.read(&ch););
 	}
 }
 

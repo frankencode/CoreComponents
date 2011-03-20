@@ -796,6 +796,31 @@ public:
 		Ref<Node, Owner> coverage_;
 	};
 	
+	class SetStringNode: public Node
+	{
+	public:
+		template<class Char2>
+		SetStringNode(int stringId, const Char2* s)
+			: stringId_(stringId),
+			  s_(str::len(s))
+		{
+			str::cpy(s_.data(), s, s_.size());
+		}
+	
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		{
+			*state->string(stringId_) = s_;
+			return i;
+		}
+	
+		inline int stringId() const { return stringId_; }
+		inline const Array<Char>& value() const { return s_; }
+		
+	private:
+		int stringId_;
+		Array<Char> s_;
+	};
+	
 	class VarStringNode: public Node
 	{
 	public:
@@ -1122,6 +1147,9 @@ public:
 		}
 		inline NODE GETSTRING(const char* name, NODE coverage) {
 			return debug(new GetStringNode(stringIdByName(name), coverage), "GetString");
+		}
+		inline NODE SETSTRING(const char* name, const char* value) {
+			return debug(new SetStringNode(stringIdByName(name), value), "SetString");
 		}
 		inline NODE VARSTRING(const char* name) {
 			return debug(new VarStringNode(stringIdByName(name)), "VarString");

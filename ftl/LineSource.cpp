@@ -26,20 +26,23 @@ LineSource::~LineSource()
 	buf_ = 0;
 }
 
-bool LineSource::hasNext()
+bool LineSource::hasMore()
 {
 	while ((cachedLines_ == 0) && (readAvail()));
-	return cachedLines_ > 0;
+	return (cachedLines_ > 0);
 }
 
-String LineSource::next()
+
+bool LineSource::read(String* line)
 {
-	return readLine();
+	bool more = hasMore();
+	if (more) *line = readLine();
+	return more;
 }
 
 String LineSource::readLine()
 {
-	if (!hasNext())
+	if (!hasMore())
 		return "";
 	
 	int nk = eol_->size();
