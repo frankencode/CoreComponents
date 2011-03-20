@@ -22,8 +22,8 @@ public:
 	ByteDecoder(const void* buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN);
 	~ByteDecoder();
 	
-	bool hasNext();
-	uint8_t next();
+	bool hasMore();
+	bool read(uint8_t* x);
 	
 	uint8_t readUInt8();
 	uint16_t readUInt16();
@@ -42,6 +42,9 @@ public:
 	
 	Ref<Stream> stream() const;
 	
+	bool endian() const;
+	void setEndian(int endian);
+	
 private:
 	Ref<Stream, Owner> stream_;
 	int endian_;
@@ -55,7 +58,7 @@ private:
 	off_t nr_;    // accumulated number of bytes read
 };
 
-inline bool ByteDecoder::hasNext()
+inline bool ByteDecoder::hasMore()
 {
 	bool more = i_ < bufFill_;
 	if (!more) {
@@ -68,9 +71,12 @@ inline bool ByteDecoder::hasNext()
 	return more;
 }
 
-inline uint8_t ByteDecoder::next()
+inline bool ByteDecoder::read(uint8_t* x)
 {
-	return readUInt8();
+	bool more = hasMore();
+	if (more)
+		*x = readUInt8();
+	return more;
 }
 
 inline uint8_t ByteDecoder::readUInt8()
@@ -142,6 +148,9 @@ inline float64_t ByteDecoder::readFloat64() { return union_cast<float64_t>(readU
 inline off_t ByteDecoder::numBytesRead() const { return nr_; }
 
 inline Ref<Stream> ByteDecoder::stream() const { return stream_; }
+
+inline bool ByteDecoder::endian() const { return endian_; }
+inline void ByteDecoder::setEndian(int endian) { endian_ = endian; }
 
 } // namespace ftl
 

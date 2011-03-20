@@ -51,7 +51,7 @@ ByteEncoder::~ByteEncoder()
 void ByteEncoder::flush()
 {
 	if (!stream_)
-		FTL_THROW(StreamIoException, "Output buffer exhausted");
+		FTL_THROW(EncodingException, "Output buffer exhausted");
 	stream_->write((void*)buf_, i_);
 	nw_ += i_;
 	i_ = 0;

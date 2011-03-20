@@ -7,15 +7,14 @@ using namespace ftl;
 int main()
 {
 	Ref<List<String>, Owner> list = new List<String>;
-	while (input()->hasNext())
-		list->append(input()->next());
+	for (String line; input()->read(&line);)
+		list->append(line);
 	
 	Ref<Heap<String>, Owner> heap = new Heap<String>(list->length());
-	while (list->hasNext())
-		heap->push(list->next());
-	
-	while (heap->hasNext())
-		output()->writeLine(heap->next());
+	for (String item; list->read(&item);)
+		heap->push(item);
+	for (String item; heap->read(&item);)
+		output()->writeLine(item);
 	
 	return 0;
 }

@@ -8,20 +8,20 @@
 #ifndef FTL_UTF8WALKER_HPP
 #define FTL_UTF8WALKER_HPP
 
-#include <stdint.h>
+#include "types.hpp"
 
 namespace ftl
 {
 
 /** \brief Iterating UTF-8 encoded strings
   *
-  * The Utf8Walker allows iterating UTF-8 characters over any zero terminated byte sequence.
+  * The Utf8Walker allows iterating Unicode characters over any zero terminated byte sequence.
   * The walker will always halt at the string boundaries. If stepping over the string boundary
   * the walker will switch to valid() == false and start delivering zero characters.
   *
   * If placed at a string's terminating zero character it is possible to step backwards
   * into the string. In other words '(Utf8Walter(data, data + len) - 1).getChar()' is a valid
-  * contruct and will deliver the last Unicode character of the string.
+  * construct and will deliver the last Unicode character of the string.
   *
   * Illegal code sequences are overrun without error. In forward iteration corrupted code prefixes
   * may lead to at maximum one correct character overrun and up to 3 additional corrupt characters
@@ -107,12 +107,12 @@ public:
 	inline bool valid() const { return *p_; }
 	inline operator bool() const { return *p_; }
 	
-	inline bool hasNext() { return *p_; }
+	/*inline bool hasNext() { return *p_; }
 	inline uchar_t next() {
 		uchar_t ch = getChar();
 		++(*this);
 		return ch;
-	}
+	}*/
 	
 	inline Utf8Walker operator+(int delta) const {
 		Utf8Walker it = *this;
@@ -166,7 +166,7 @@ public:
 		return n;
 	}
 	
-	// byte position in string (Token always work in byte position)
+	// byte position in string
 	inline operator int() const { return p_ - s_; }
 	
 private:
@@ -174,8 +174,8 @@ private:
 		return reinterpret_cast<const uint8_t*>("\0") + 1; // extra zero to signal before begin position
 	}
 	
-	const uint8_t* s_; // byte string
-	const uint8_t* p_; // position in string
+	const uint8_t* s_; // zero-terminated byte array
+	const uint8_t* p_; // position in byte array
 };
 
 } // namespace ftl

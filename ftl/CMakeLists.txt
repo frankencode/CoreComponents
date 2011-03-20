@@ -22,6 +22,9 @@ SET(FTL_HEADER
 	Utf8Encoder.hpp
 	Utf8Decoder.hpp
 	Utf8Walker.hpp
+	Utf16Encoder.hpp
+	Utf16Decoder.hpp
+	Utf16Walker.hpp
 	BitEncoder.hpp
 	BitDecoder.hpp
 	Crc32.hpp
@@ -134,8 +137,6 @@ SET(FTL_SOURCE
 	# binary
 	ByteEncoder.cpp
 	ByteDecoder.cpp
-	Utf8Encoder.cpp
-	Utf8Decoder.cpp
 	BitEncoder.cpp
 	BitDecoder.cpp
 	HuffmanCodec.cpp

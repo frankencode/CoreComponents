@@ -15,13 +15,15 @@
 namespace ftl
 {
 
-class ByteEncoder: public Instance
+class ByteEncoder: public Sink<uint8_t>
 {
 public:
 	ByteEncoder();
 	ByteEncoder(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN);
 	ByteEncoder(void* buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN);
 	~ByteEncoder();
+	
+	void write(uint8_t x);
 	
 	void writeUInt8(uint8_t x);
 	void writeUInt16(uint16_t x);
@@ -50,6 +52,11 @@ private:
 	int i_;    // byte offset within buf_
 	off_t nw_;    // accumulated number of written bytes
 };
+
+inline void ByteEncoder::write(uint8_t x)
+{
+	writeUInt8(x);
+}
 
 inline void ByteEncoder::writeUInt8(uint8_t x)
 {

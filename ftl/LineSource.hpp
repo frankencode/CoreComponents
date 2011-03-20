@@ -23,8 +23,7 @@ public:
 	LineSource(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, const char* eol = "\n");
 	~LineSource();
 	
-	bool hasNext();
-	String next();
+	bool read(String* line);
 	
 	String readLine();
 	int cachedLines() const;
@@ -33,6 +32,8 @@ public:
 	Ref<Stream> stream() const;
 	
 private:
+	bool hasMore();
+	
 	Ref<Stream, Owner> stream_;
 	String eol_;
 	int cachedLines_;

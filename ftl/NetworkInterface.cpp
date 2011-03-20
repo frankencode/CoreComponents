@@ -355,8 +355,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 	Ref<File, Owner> file = new File("/proc/net/dev");
 	file->open(File::Read);
 	Ref<LineSource, Owner> source = new LineSource(file);
-	while (source->hasNext()) {
-		String line = source->next();
+	for (String line; source->read(&line);) {
 		if (line.contains(":")) {
 			Ref<NetworkInterface, Owner> interface = new NetworkInterface;
 			list->append(interface);

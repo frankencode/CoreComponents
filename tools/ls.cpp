@@ -6,7 +6,7 @@ using namespace ftl;
 int main()
 {
 	Dir dir(Process::cwd());
-	while (dir.hasNext())
-		output()->writeLine(dir.next()->name());
+	for (DirEntry entry; dir.read(&entry);)
+		output()->writeLine(entry.name());
 	return 0;
 }

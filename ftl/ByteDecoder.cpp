@@ -44,11 +44,11 @@ ByteDecoder::~ByteDecoder()
 void ByteDecoder::fill()
 {
 	if (!stream_)
-		FTL_THROW(StreamIoException, "Input buffer exhausted");
+		FTL_THROW(EncodingException, "Unexpected end of input");
 
 	bufFill_ = stream_->readAvail(buf_, bufCapa_);
 	if (bufFill_ == 0)
-		FTL_THROW(StreamIoException, "Reading beyond end of input");
+		FTL_THROW(EncodingException, "Unexpected end of input");
 	
 	i_ = 0;
 }

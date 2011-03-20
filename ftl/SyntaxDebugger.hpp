@@ -53,6 +53,7 @@ public:
 		factoryByNodeType_->insert("SetChar",       new DebugNodeFactory<SetCharDebugNode>      (this));
 		factoryByNodeType_->insert("VarChar",       new DebugNodeFactory<VarCharDebugNode>      (this));
 		factoryByNodeType_->insert("GetString",     new DebugNodeFactory<GetStringDebugNode>    (this));
+		factoryByNodeType_->insert("SetString",     new DebugNodeFactory<SetStringDebugNode>    (this));
 		factoryByNodeType_->insert("VarString",     new DebugNodeFactory<VarStringDebugNode>    (this));
 		factoryByNodeType_->insert("Invoke",        new DebugNodeFactory<InvokeDebugNode>       (this));
 	}
@@ -735,6 +736,25 @@ private:
 	private:
 		typedef typename Syntax<Media>::GetStringNode GetStringNode;
 		inline Ref<GetStringNode> getStringNode() const { return DebugNode::entry(); }
+	};
+	
+	class SetStringDebugNode: public DebugNode {
+	public:
+		SetStringDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+		
+		virtual const char* declType() const { return "SETSTRING"; }
+		
+		virtual void printAttributes(String indent) {
+			Ref<SetStringNode> node = setStringNode();
+			print("\"%%\", ", DebugNode::debugger_->stringNameById()->get(node->stringId()));
+			printString(node->value());
+		}
+		
+	private:
+		typedef typename Syntax<Media>::SetStringNode SetStringNode;
+		inline Ref<SetStringNode> setStringNode() const { return DebugNode::entry(); }
 	};
 	
 	class VarStringDebugNode: public DebugNode {
