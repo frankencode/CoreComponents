@@ -36,7 +36,7 @@ String::String(const Path& b)
 	: Super(b.toString().media())
 {}
 
-String String::fromUtf16(const void* data, int size)
+String String::fromUtf16(const void* data, int size, int endian)
 {
 	String s2;
 	if (size < 0) {
@@ -47,12 +47,12 @@ String String::fromUtf16(const void* data, int size)
 	if (size > 0) {
 		int size2 = 0;
 		{
-			Utf16Decoder source(data, size);
+			Utf16Decoder source(data, size, endian);
 			for (uchar_t ch; source.read(&ch);)
 				size2 += Utf8Encoder::encodedSize(ch);
 		}
 		s2 = String::uninitialized(size2);
-		Utf16Decoder source(data, size);
+		Utf16Decoder source(data, size, endian);
 		Utf8Encoder sink(s2.media()->data(), size2);
 		for (uchar_t ch; source.read(&ch);)
 			sink.write(ch);
@@ -60,7 +60,7 @@ String String::fromUtf16(const void* data, int size)
 	return s2;
 }
 
-Ref<ByteArray, Owner> String::toUtf16()
+Ref<ByteArray, Owner> String::toUtf16(int endian)
 {
 	Ref<ByteArray, Owner> s2;
 	int size2 = 0;
@@ -70,7 +70,7 @@ Ref<ByteArray, Owner> String::toUtf16()
 	s2[size2] = 0;
 	s2[size2 + 1] = 0;
 	if (size2 > 0) {
-		Utf16Encoder sink(s2->data(), size2);
+		Utf16Encoder sink(s2->data(), size2, endian);
 		for (Index i = first(); def(i); ++i)
 			sink.write(get(i));
 	}
