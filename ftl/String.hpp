@@ -55,8 +55,8 @@ public:
 	static inline String initialized(int size, char zero) { return String(size, zero); }
 	
 	// conversion from and to UTF-16
-	static String fromUtf16(const void* data, int size = -1);
-	Ref<ByteArray, Owner> toUtf16();
+	static String fromUtf16(const void* data, int size = -1, int endian = localEndian());
+	Ref<ByteArray, Owner> toUtf16(int endian = localEndian());
 	
 	// counterpart to StringList::join()
 	static inline String join(Ref<StringList> parts, const char* sep = "") {
