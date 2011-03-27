@@ -17,7 +17,7 @@ Random::Random(int seed)
 {
 	if (seed < 0) {
 		while (x_ <= 1)
-			x_ = now().nsec();
+			x_ = Time::now().nsec();
 	}
 	else {
 		x_ = seed + 2;

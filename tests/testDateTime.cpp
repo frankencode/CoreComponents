@@ -47,7 +47,9 @@ int main()
 		print("Year %% started with weekday (Mon..Sun = 0..6): %%\n", ye, ny % 7);
 	}*/
 	
-	print("%%\n", DateTime(now()).iso8601());
+	print("%%\n", Date(Date(Time::now()).time()).iso8601());
+	print("%%\n", Date(Time::now()).iso8601());
+	print("%%\n", Date(Time::now()).localTime()->iso8601());
 	
 	return 0;
 }

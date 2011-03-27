@@ -53,6 +53,13 @@ public:
 		  i_(container->first())
 	{}
 	
+	inline bool read(Item* item) {
+		bool more = container_->def(i_);
+		if (more)
+			*item = container_->at(i_++);
+		return more;
+	}
+	
 	inline bool hasNext() { return container_->def(i_); }
 	inline bool hasPrevious() { return container_->def(i_ - 1); }
 	inline Item next() { return container_->at(i_++); }

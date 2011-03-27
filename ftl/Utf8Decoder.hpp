@@ -27,9 +27,11 @@ public:
 	inline bool read(uchar_t* ch)
 	{
 		bool more = byteDecoder_.hasMore();
-		*ch = byteDecoder_.readUInt8();
-		if ((*ch & 0x80) != 0) // distinguish 7 bit ASCII from multibyte sequence
-			*ch = readMultiByte(*ch);
+		if (more) {
+			*ch = byteDecoder_.readUInt8();
+			if ((*ch & 0x80) != 0) // distinguish 7 bit ASCII from multibyte sequence
+				*ch = readMultiByte(*ch);
+		}
 		return more;
 	}
 	

@@ -119,7 +119,7 @@ SET(FTL_HEADER
 	
 	utils
 	Time.hpp
-	DateTime.hpp
+	Date.hpp
 	Random.hpp
 	rounding.hpp
 	CommandOption.hpp
@@ -201,7 +201,7 @@ SET(FTL_SOURCE
 	UriSyntax.cpp
 	
 	# utils
-	DateTime.cpp
+	Date.cpp
 	Random.cpp
 	CommandLine.cpp
 	LinkInfo.cpp

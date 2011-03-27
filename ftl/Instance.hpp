@@ -73,9 +73,9 @@ public:
 
 	inline CoreMutex* const mutex() { return &mutex_; }
 	
-	RefCounter(const RefCounter& b) {}
-	inline const RefCounter& operator=(const RefCounter& b) { return *this; }
-
+	RefCounter(const RefCounter& b): refCount_(0) {}
+	inline const RefCounter& operator=(const RefCounter& b) {}
+	
 private:
 	CoreMutex mutex_;
 	int refCount_;
@@ -131,7 +131,7 @@ public:
 	
 	// ensure back reference lists are kept consistent on copying
 	// (in theory an automomatically synthesized assignment operator in inherited class will invoke this)
-	BackRefList(const BackRefList& b) {}
+	BackRefList(const BackRefList& b): backRefHead_(0) {}
 	inline const BackRefList& operator=(const BackRefList& b) { return *this; }
 	
 private:

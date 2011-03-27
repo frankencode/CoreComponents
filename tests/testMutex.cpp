@@ -11,34 +11,34 @@ int main()
 	Time t1, t2, t3;
 	{
 		Mutex m;
-		Time t = now();
+		Time t = Time::now();
 		for (int i = 0; i < n; ++i) {
 			m.acquire();
 			m.release();
 		}
-		t = now() - t;
+		t = Time::now() - t;
 		print("Took %% us\n", t.us());
 		t1 = t;
 	}
 	{
 		CoreMutex m;
-		Time t = now();
+		Time t = Time::now();
 		for (int i = 0; i < n; ++i) {
 			m.acquire();
 			m.release();
 		}
-		t = now() - t;
+		t = Time::now() - t;
 		print("Took %% us\n", t.us());
 		t2 = t;
 	}
 	{
 		volatile int flag = 0;
-		Time t = now();
+		Time t = Time::now();
 		for (int i = 0; i < n; ++i) {
 			++flag;
 			--flag;
 		}
-		t = now() - t;
+		t = Time::now() - t;
 		print("Took %% us\n", t.us());
 		t3 = t;
 	}
