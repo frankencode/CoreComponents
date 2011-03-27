@@ -80,12 +80,12 @@ int main()
 	Ref<MyChannel, Owner> channel = new MyChannel;
 	Producer producer(channel);
 	Consumer consumer(channel);
-	Time dt = now();
+	Time dt = Time::now();
 	producer.start();
 	consumer.start();
 	producer.wait();
 	consumer.wait();
-	dt = now() - dt;
+	dt = Time::now() - dt;
 	print("\ndt = %% us\n\n", dt.us());
 	
 	{

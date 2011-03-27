@@ -15,17 +15,27 @@
 namespace ftl
 {
 
-/** A 'Time' stores two integers: number of seconds and fractional number of nano-seconds.
-  * Objects of type 'Time' are fully compatible to floating point seconds.
-  * The time scale has nanosecond resolution and ranges from
-  * -68 to +68 years on 32 bit systems and -292e9 to +292e9 years on 64 bit systems.
+enum {
+	SecondsPerMinute = 60,
+	SecondsPerHour = 60 *  SecondsPerMinute,
+	SecondsPerDay = 24 *  SecondsPerHour
+};
+
+/** \brief Wide-range, high resolution time representation
+  *
+  * Time objects represent nano-second precise time values ranging from -292e9 to +292e9 years.
+  * Time::now() delivers the number of nano-seconds since the begin of Epoch (00:00:00 January 1, 1970, UTC).
+  * Initializing a time object without argument will create an invalid time object.
+  * The internal representation can be accessed using the sec() and nsec() methods.
   */
 class Time
 {
 public:
-	Time() {}
+	Time(): sec_(-1), nsec_(+1) {}
 	Time(const Time& b) { *this = b; }
-	Time(int sec, int nsec = 0): sec_(sec), nsec_(nsec) {}
+	Time(int64_t sec, int32_t nsec): sec_(sec), nsec_(nsec) {}
+	
+	Time(int seconds): sec_(seconds), nsec_(0) {}
 	Time(float fineSec) { *this = fineSec; }
 	Time(double fineSec) { *this = fineSec; }
 	
@@ -48,18 +58,25 @@ public:
 		return *this;
 	}
 	
+	inline bool valid() const {
+		return (sec_ == 0) || ((sec_ > 0) && (nsec_ >= 0)) || ((sec_ < 0) && (nsec_ <= 0));
+	}
+	
+	inline int64_t sec() const { return sec_; }
+	inline int32_t nsec() const { return nsec_; }
+	inline int32_t usec() const { return nsec_ / 1000; }
+	
+	inline operator bool() const { return valid(); }
+	inline operator int() const { return s(); }
 	inline operator float() const { return fineSec(); }
 	inline operator double() const { return fineSec(); }
-
-	inline int sec() const { return sec_; }
-	inline int nsec() const { return nsec_; }
-	inline int usec() const { return nsec_ / 1000; }
 	
-	inline int d() const { return s() / (3600 * 24) + (s() % (3600 * 24) >= (1800 * 24)); }
-	inline int min() const { return s() / 60 + (s() % 60 >= 30); }
+	inline int d() const { return s() / SecondsPerDay + (s() % SecondsPerDay >= SecondsPerDay / 2); }
+	inline int h() const { return s() / SecondsPerHour + (s() % SecondsPerHour >= SecondsPerHour / 2); }
+	inline int min() const { return s() / SecondsPerMinute + (s() % SecondsPerMinute >= SecondsPerMinute / 2); }
 	inline int s() const { return sec_ + (nsec_ >= 500000000); }
-	inline uint64_t ms() const { return uint64_t(sec_) * 1000 + nsec_ / 1000000; }
-	inline uint64_t us() const { return uint64_t(sec_) * 1000000 + nsec_ / 1000; }
+	inline int64_t ms() const { return sec_ * 1000 + nsec_ / 1000000; }
+	inline int64_t us() const { return sec_ * 1000000 + nsec_ / 1000; }
 	inline double fineSec() const { return double(sec_) + double(nsec_)/1000000000; }
 	
 	inline const Time& operator+=(const Time& b)
@@ -86,11 +103,26 @@ public:
 		return *this;
 	}
 	
-	template<class B>
-	inline const Time& operator+=(B b) { return *this += Time(b); }
+	inline static Time microSeconds(int usec) { return Time(usec/1000000, (usec%1000000)*1000); }
+	inline static Time miliSeconds(int msec) { return Time(msec/1000, (msec%1000)*1000000); }
+	inline static Time seconds(int sec) { return Time(sec, 0); }
+	
+	inline static Time now()
+	{
+	#if _POSIX_TIMERS > 0
+		struct timespec ts;
+		::clock_gettime(CLOCK_REALTIME, &ts);
+		return Time(ts.tv_sec, ts.tv_nsec);
+	#else
+		struct timeval tv;
+		::gettimeofday(&tv, 0);
+		return Time(tv.tv_sec, tv.tv_usec * 1000);
+	#endif
+	}
 	
 private:
-	int sec_, nsec_;
+	int64_t sec_;
+	int32_t nsec_;
 };
 
 inline Time operator+(const Time& a, const Time& b) {
@@ -146,23 +178,6 @@ inline bool operator<(const Time& a, double b) { return a < Time(b); }
 inline bool operator>(const Time& a, double b) { return a > Time(b); }
 inline bool operator<=(const Time& a, double b) { return a <= Time(b); }
 inline bool operator>=(const Time& a, double b) { return a >= Time(b); }
-
-inline Time microSeconds(int usec) { return Time(usec/1000000, (usec%1000000)*1000); }
-inline Time miliSeconds(int msec) { return Time(msec/1000, (msec%1000)*1000000); }
-inline Time seconds(int sec) { return Time(sec, 0); }
-
-inline Time now()
-{
-#if _POSIX_TIMERS > 0
-	struct timespec ts;
-	::clock_gettime(CLOCK_REALTIME, &ts);
-	return Time(ts.tv_sec, ts.tv_nsec);
-#else
-	struct timeval tv;
-	::gettimeofday(&tv, 0);
-	return Time(tv.tv_sec, tv.tv_usec * 1000);
-#endif
-}
 
 } // namespace ftl
 

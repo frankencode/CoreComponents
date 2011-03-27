@@ -67,7 +67,7 @@ int main()
 	Ref<Consumer, Owner> c1 = new Consumer(1, channel, 8);
 	// Ref<Consumer, Owner> c2 = new Consumer(2, channel, 16);
 	
-	Time dt = now();
+	Time dt = Time::now();
 	c1->start();
 	p1->start();
 	//c2->start();
@@ -76,7 +76,7 @@ int main()
 	//c2->wait();
 	p1->wait();
 	//p2->wait();
-	dt = now() - dt;
+	dt = Time::now() - dt;
 	
 	print("\ndt = %% us\n\n", dt.us());
 	

@@ -27,13 +27,13 @@ String fileTypeToString(int type)
 
 String timeToString(Time time, bool human)
 {
-	DateTime d(time);
+	Date d(time);
 	if (human) {
 		return Format(
 			"%4.:'0'%-%2.:'0'%-%2.:'0'% "
 			"%2.:'0'%:%2.:'0'%"
 		) << d.year() << d.month() << d.day()
-		  << d.hour() << d.min();
+		  << d.hour() << d.minute();
 	}
 	else {
 		return d.iso8601();

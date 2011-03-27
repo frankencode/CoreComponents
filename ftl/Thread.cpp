@@ -48,7 +48,7 @@ bool Thread::stillAlive() const
 
 void Thread::sleep(Time duration)
 {
-	sleepUntil(now() + duration);
+	sleepUntil(Time::now() + duration);
 }
 
 void Thread::sleepUntil(Time timeout)

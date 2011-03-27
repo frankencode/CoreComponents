@@ -48,6 +48,12 @@ void testFloat754()
 	print("sizeof(Variant) = %%\n", int(sizeof(Variant)));
 	print("sizeof(Syntax<ByteArray>) = %%\n", sizeof(Syntax<ByteArray>));
 	print("sizeof(Token) = %%\n", sizeof(Token));
+	
+	print("sizeof(time_t) = %%\n", sizeof(time_t));
+	timeval tv;
+	timespec ts;
+	print("sizeof(timeval.tv_sec) = %%\n", sizeof(tv.tv_sec));
+	print("sizeof(timespec.ts_sec) = %%\n", sizeof(ts.tv_sec));
 }
 
 int main()

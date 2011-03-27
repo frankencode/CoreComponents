@@ -168,11 +168,11 @@ int main()
 	#endif
 	Ref<Expression, Owner> expression = new Expression(debugger);
 	
-	Time dt = now();
+	Time dt = Time::now();
 	
 	double result = expression->eval("(-12+34)*(56-78)");
 	
-	dt = now() - dt;
+	dt = Time::now() - dt;
 	print("took %% us\n", dt.us());
 	print("evaluates to %%\n", result);
 	

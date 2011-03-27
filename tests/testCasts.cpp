@@ -31,55 +31,55 @@ int main()
 	const int n = 1000000;
 	{
 		A* b = new B;
-		Time t = now();
+		Time t = Time::now();
 		for (int i = 0; i < n; ++i)
 			b->toB()->doSmth();
-		t = now() - t;
+		t = Time::now() - t;
 		print("%% vtable casting, casting upwards, cost %% us\n", n, t.us());
 		delete b;
 	}
 	{
 		A* b = new B;
-		Time t = now();
+		Time t = Time::now();
 		for (int i = 0; i < n; ++i)
 			dynamic_cast<B*>(b)->doSmth();
-		t = now() - t;
+		t = Time::now() - t;
 		print("%% dynamic_cast, casting upwards, cost %% us\n", n, t.us());
 		delete b;
 	}
 	{
 		B* b = new B;
-		Time t = now();
+		Time t = Time::now();
 		for (int i = 0; i < n; ++i)
 			dynamic_cast<A*>(b)->doSmth();
-		t = now() - t;
+		t = Time::now() - t;
 		print("%% dynamic_cast, casting downwards, cost %% us\n", n, t.us());
 		delete b;
 	}
 	{
 		B* b = new B;
-		Time t = now();
+		Time t = Time::now();
 		for (int i = 0; i < n; ++i)
 			dynamic_cast<B*>(b)->doSmth();
-		t = now() - t;
+		t = Time::now() - t;
 		print("%% dynamic_cast, identity cast, cost %% us\n", n, t.us());
 		delete b;
 	}
 	{
 		B* b = new B;
-		Time t = now();
+		Time t = Time::now();
 		for (int i = 0; i < n; ++i)
 			b->doSmth();
-		t = now() - t;
+		t = Time::now() - t;
 		print("%% no cast, cost %% us\n", n, t.us());
 		delete b;
 	}
 	{
 		B* b = new B;
-		Time t = now();
+		Time t = Time::now();
 		for (int i = 0; i < n; ++i)
 			static_cast<A*>(b)->doSmth();
-		t = now() - t;
+		t = Time::now() - t;
 		print("%% static_cast, casting downwards, cost %% us\n", n, t.us());
 		delete b;
 	}
