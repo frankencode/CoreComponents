@@ -11,24 +11,18 @@
 namespace ftl
 {
 
-template<class T>
-class BinaryNode
+template<class T, class M>
+class BinaryNode: public M
 {
 public:
 	typedef BinaryNode Node;
 	
-	BinaryNode(const T& e): misc(0), e_(e) {}
+	BinaryNode(const T& e): e_(e) {}
 	
 	Node* left;
 	Node* right;
 	Node* parent;
 
-	union {
-		int misc;
-		int balance;
-		int color;
-	};
-	
 	inline const T& data() const { return e_; }
 	inline const T& operator*() const { return e_; }
 	inline const T* dataPtr() const { return &e_; }

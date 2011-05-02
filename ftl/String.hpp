@@ -56,6 +56,7 @@ public:
 	
 	// conversion from and to UTF-16
 	static String fromUtf16(const void* data, int size = -1, int endian = localEndian());
+	bool toUtf16(void* buf, int* size);
 	Ref<ByteArray, Owner> toUtf16(int endian = localEndian());
 	
 	// counterpart to StringList::join()
@@ -151,7 +152,7 @@ protected:
 		check(0 <= zero);
 	}
 	
-	// validate input string and throw StreamIoException if not a valid UTF8 string
+	// validate input string and throw StreamIoException if not a valid UTF-8 string
 	static void validate(const char* data, int size = -1);
 	
 	inline void assign(const char* data, int size = -1) {

@@ -60,15 +60,6 @@ public:
 		return more;
 	}
 	
-	inline bool hasNext() { return container_->def(i_); }
-	inline bool hasPrevious() { return container_->def(i_ - 1); }
-	inline Item next() { return container_->at(i_++); }
-	inline Item previous() { return container_->at(--i_); }
-	
-	inline void add(const Item& item) { container_->insert(i_, item); }
-	inline void remove() { container_->remove(i_ - 1); }
-	inline void set(const Item& item) { container_->set(i_ - 1, item); }
-	
 	inline operator Index() const { return i_; }
 	
 private:

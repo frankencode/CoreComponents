@@ -74,7 +74,7 @@ public:
 	inline CoreMutex* const mutex() { return &mutex_; }
 	
 	RefCounter(const RefCounter& b): refCount_(0) {}
-	inline const RefCounter& operator=(const RefCounter& b) {}
+	inline const RefCounter& operator=(const RefCounter& b) { return *this; }
 	
 private:
 	CoreMutex mutex_;

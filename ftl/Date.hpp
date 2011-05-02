@@ -17,7 +17,7 @@ namespace ftl
 
 typedef struct tm StructTm;
 
-/** brief broken-down time
+/** \brief broken-down time
   */
 class Date: public StructTm, public Instance
 {
@@ -35,6 +35,12 @@ public:
 	Date();
 	Date(Time time);
 	
+	// \todo
+	// Date(String s);
+	// Date(int year, int month, int day, int hour = 0, int min = 0, int sec = 0);
+	
+	// \todo
+	// improve logic (add date validation, bool validated_, etc...)
 	inline bool valid() const { return tm_off != -2;}
 	
 	static Ref<Date, Owner> localTime();
@@ -52,12 +58,22 @@ public:
 	
 	Time time() const;
 	
-	String iso8601() const;
+	// \todo
+	String toString() const;
+	// static Ref<Date, Owner> fromString(String s);
+	
+	// \todo
+	// local time formatting
 	
 private:
 	void clear();
 	void init(Time time);
+	
+	// \todo: replace by a unixDay(;)
+	static int julianDay(int year, int month, int day);
 	int tm_off;
+	// \todo: fully enable ms resolution (ss.fraction in string output)
+	// int tm_ms;
 };
 
 } // namespace ftl

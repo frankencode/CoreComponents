@@ -86,13 +86,13 @@ public:
 			
 			Ref<StateFlag> stateFlag = DebugFactory::definition()->stateFlagHead_;
 			for (int id = DebugFactory::definition()->numStateFlags_ - 1; id >= 0; --id) {
-				print("STATE_FLAG(\"%%\", %%);\n", flagNameById()->get(id), stateFlag->defaultValue_);
+				print("STATE_FLAG(\"%%\", %%);\n", flagNameById()->value(id), stateFlag->defaultValue_);
 				stateFlag = stateFlag->next_;
 			}
 			
 			Ref<StateChar> stateChar = DebugFactory::definition()->stateCharHead_;
 			for (int id = DebugFactory::definition()->numStateChars_ - 1; id >= 0; --id) {
-				print("STATE_CHAR(\"%%\", ", charNameById()->get(id));
+				print("STATE_CHAR(\"%%\", ", charNameById()->value(id));
 				printCharAttr(stateChar->defaultValue_);
 				print(")\n");
 				stateChar = stateChar->next_;
@@ -100,7 +100,7 @@ public:
 			
 			Ref<StateString> stateString = DebugFactory::definition()->stateStringHead_;
 			for (int id = DebugFactory::definition()->numStateStrings_ - 1; id >= 0; --id) {
-				print("STATE_STRING(\"%%\", ", stringNameById()->get(id));
+				print("STATE_STRING(\"%%\", ", stringNameById()->value(id));
 				printStringAttr(stateString->defaultValue_);
 				print(")\n");
 				stateString = stateString->next_;
@@ -635,7 +635,7 @@ private:
 		
 		virtual void printAttributes(String indent) {
 			Ref<SetNode> node = setNode();
-			print("\"%%\", %%", DebugNode::debugger_->flagNameById()->get(node->flagId()), node->value());
+			print("\"%%\", %%", DebugNode::debugger_->flagNameById()->value(node->flagId()), node->value());
 		}
 		
 	private:
@@ -653,7 +653,7 @@ private:
 		
 		virtual void printAttributes(String indent) {
 			Ref<IfNode> node = ifNode();
-			print("\"%%\",\n", DebugNode::debugger_->flagNameById()->get(node->flagId()));
+			print("\"%%\",\n", DebugNode::debugger_->flagNameById()->value(node->flagId()));
 			printBranch(node->trueBranch(), indent);
 			print(",\n");
 			printBranch(node->falseBranch(), indent);
@@ -674,7 +674,7 @@ private:
 		virtual const char* declType() const { return "GETCHAR"; }
 		
 		virtual void printAttributes(String indent) {
-			print("\"%%\"", DebugNode::debugger_->charNameById()->get(getCharNode()->charId()));
+			print("\"%%\"", DebugNode::debugger_->charNameById()->value(getCharNode()->charId()));
 		}
 		
 	private:
@@ -692,7 +692,7 @@ private:
 		
 		virtual void printAttributes(String indent) {
 			Ref<SetCharNode> node = setCharNode();
-			print("\"%%\", ", DebugNode::debugger_->charNameById()->get(node->charId()));
+			print("\"%%\", ", DebugNode::debugger_->charNameById()->value(node->charId()));
 			printCharAttr(node->value());
 		}
 		
@@ -710,7 +710,7 @@ private:
 		virtual const char* declType() const { return varCharNode()->invert() ? "VAROTHER" : "VARCHAR"; }
 		
 		virtual void printAttributes(String indent) {
-			print("\"%%\"", DebugNode::debugger_->charNameById()->get(varCharNode()->charId()));
+			print("\"%%\"", DebugNode::debugger_->charNameById()->value(varCharNode()->charId()));
 		}
 		
 	private:
@@ -728,7 +728,7 @@ private:
 		
 		virtual void printAttributes(String indent) {
 			Ref<GetStringNode> node = getStringNode();
-			print("\"%%\",\n", DebugNode::debugger_->stringNameById()->get(node->stringId()));
+			print("\"%%\",\n", DebugNode::debugger_->stringNameById()->value(node->stringId()));
 			printBranch(node->coverage(), indent);
 			print("\n%%", DebugNode::superIndent(indent));
 		}
@@ -748,7 +748,7 @@ private:
 		
 		virtual void printAttributes(String indent) {
 			Ref<SetStringNode> node = setStringNode();
-			print("\"%%\", ", DebugNode::debugger_->stringNameById()->get(node->stringId()));
+			print("\"%%\", ", DebugNode::debugger_->stringNameById()->value(node->stringId()));
 			printString(node->value());
 		}
 		
@@ -766,7 +766,7 @@ private:
 		virtual const char* declType() const { return "VARSTRING"; }
 		
 		virtual void printAttributes(String indent) {
-			print("\"%%\"", DebugNode::debugger_->stringNameById()->get(varStringNode()->stringId()));
+			print("\"%%\"", DebugNode::debugger_->stringNameById()->value(varStringNode()->stringId()));
 		}
 		
 	private:

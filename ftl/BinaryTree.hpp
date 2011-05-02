@@ -22,11 +22,11 @@ namespace ftl
 #undef max
 #endif
 
-template<class T>
+template<class T, class M = None>
 class BinaryTree: public NonCopyable
 {
 public:
-	typedef BinaryNode<T> Node;
+	typedef BinaryNode<T, M> Node;
 	
 	BinaryTree(): root(0), _n(0) {}
 	virtual ~BinaryTree() { clear(); }
@@ -54,8 +54,8 @@ public:
 	Node* spliceOut(Node* k);
 	void replaceNode(Node* k0, Node* k1);
 	
-	void rotateLeft(Node* k);
-	void rotateRight(Node* k);
+	virtual void rotateLeft(Node* k);
+	virtual void rotateRight(Node* k);
 	int height(Node* k);
 	inline int height() { return height(root); }
 	
@@ -80,9 +80,9 @@ protected:
 	int _n;
 };
 
-template<class T>
+template<class T, class M>
 template<class ST>
-typename BinaryTree<T>::Node* BinaryTree<T>::first(const ST& a) const
+typename BinaryTree<T, M>::Node* BinaryTree<T, M>::first(const ST& a) const
 {
 	bool found;
 	Node* k = find(a, &found);
@@ -91,9 +91,9 @@ typename BinaryTree<T>::Node* BinaryTree<T>::first(const ST& a) const
 	return k->succ();
 }
 
-template<class T>
+template<class T, class M>
 template<class ST>
-typename BinaryTree<T>::Node* BinaryTree<T>::last(const ST& b) const
+typename BinaryTree<T, M>::Node* BinaryTree<T, M>::last(const ST& b) const
 {
 	bool found;
 	Node* k = find(b, &found);
@@ -102,9 +102,9 @@ typename BinaryTree<T>::Node* BinaryTree<T>::last(const ST& b) const
 	return k->pred();
 }
  
-template<class T>
+template<class T, class M>
 template<class ST>
-typename BinaryTree<T>::Node* BinaryTree<T>::find(const ST& e, bool* found) const
+typename BinaryTree<T, M>::Node* BinaryTree<T, M>::find(const ST& e, bool* found) const
 {
 	bool _found = false;
 	Node* k = root;
@@ -120,8 +120,8 @@ typename BinaryTree<T>::Node* BinaryTree<T>::find(const ST& e, bool* found) cons
 	return k2;
 }
 
-template<class T>
-typename BinaryTree<T>::Node* BinaryTree<T>::unlink(Node* k)
+template<class T, class M>
+typename BinaryTree<T, M>::Node* BinaryTree<T, M>::unlink(Node* k)
 {
 	if (k->left != 0)
 		replaceNode(k, spliceOut(k->left->max()));
@@ -132,8 +132,8 @@ typename BinaryTree<T>::Node* BinaryTree<T>::unlink(Node* k)
 	return k;
 }
 
-template<class T>
-void BinaryTree<T>::clear(Node* k)
+template<class T, class M>
+void BinaryTree<T, M>::clear(Node* k)
 {
 	if (k == 0) return;
 	clear(k->left);
@@ -141,8 +141,8 @@ void BinaryTree<T>::clear(Node* k)
 	delete k;
 }
 
-template<class T>
-void BinaryTree<T>::spliceIn(Node* kp, Node* kn)
+template<class T, class M>
+void BinaryTree<T, M>::spliceIn(Node* kp, Node* kn)
 {
 	++_n;
 	if (kp == 0)
@@ -167,8 +167,8 @@ void BinaryTree<T>::spliceIn(Node* kp, Node* kn)
 	}
 }
 
-template<class T>
-typename BinaryTree<T>::Node* BinaryTree<T>::spliceOut(Node* k)
+template<class T, class M>
+typename BinaryTree<T, M>::Node* BinaryTree<T, M>::spliceOut(Node* k)
 {
 	--_n;
 	Node* kp = k->parent;
@@ -197,10 +197,10 @@ typename BinaryTree<T>::Node* BinaryTree<T>::spliceOut(Node* k)
 	return k;
 }
 
-template<class T>
-void BinaryTree<T>::replaceNode(Node* k0, Node* k1)
+template<class T, class M>
+void BinaryTree<T, M>::replaceNode(Node* k0, Node* k1)
 {
-	k1->misc = k0->misc;
+	*static_cast<M*>(k1) = *static_cast<M*>(k0);
 	
 	// -- establish links to the neighbors
 	k1->parent = k0->parent;
@@ -226,8 +226,8 @@ void BinaryTree<T>::replaceNode(Node* k0, Node* k1)
 		k0->right->parent = k1;
 }
 
-template<class T>
-void BinaryTree<T>::rotateLeft(Node* k1)
+template<class T, class M>
+void BinaryTree<T, M>::rotateLeft(Node* k1)
 {
 	Node* k2 = k1->right;
 
@@ -252,8 +252,8 @@ void BinaryTree<T>::rotateLeft(Node* k1)
 	k2->left = k1;
 }
 
-template<class T>
-void BinaryTree<T>::rotateRight(Node* k1)
+template<class T, class M>
+void BinaryTree<T, M>::rotateRight(Node* k1)
 {
 	Node* k2 = k1->left;
 
@@ -278,17 +278,15 @@ void BinaryTree<T>::rotateRight(Node* k1)
 	k2->right = k1;
 }
 
-template<class T>
-int BinaryTree<T>::height(Node* k)
+template<class T, class M>
+int BinaryTree<T, M>::height(Node* k)
 {
 	if (k == 0) return 0;
 	return max(height(k->left), height(k->right)) + 1;
 }
 
-// == self test methods
-
-template<class T>
-bool BinaryTree<T>::ok1(Node* k)
+template<class T, class M>
+bool BinaryTree<T, M>::ok1(Node* k)
 {
 	if (k == 0) return true;
 
@@ -301,8 +299,8 @@ bool BinaryTree<T>::ok1(Node* k)
 	return ok1(k->left) && ok1(k->right);
 }
 
-template<class T>
-bool BinaryTree<T>::ok2(Node* k)
+template<class T, class M>
+bool BinaryTree<T, M>::ok2(Node* k)
 {
 	if (k == 0) return true;
 
@@ -315,8 +313,8 @@ bool BinaryTree<T>::ok2(Node* k)
 	return ok2(k->left) && ok2(k->right);
 }
 
-template<class T>
-bool BinaryTree<T>::ok3(Node* k)
+template<class T, class M>
+bool BinaryTree<T, M>::ok3(Node* k)
 {
 	if (k == 0) return true;
 
@@ -334,8 +332,8 @@ bool BinaryTree<T>::ok3(Node* k)
 }
 
 /*
-template<class T>
-void BinaryTree<T>::levelPrint()
+template<class T, class M>
+void BinaryTree<T, M>::levelPrint()
 {
 	printf("level order print:\n");
 	//fprintf(stderr, "n = %d\n", _n);
@@ -347,8 +345,8 @@ void BinaryTree<T>::levelPrint()
 	}
 }
 
-template<class T>
-void BinaryTree<T>::levelPrint(Node* k, int level)
+template<class T, class M>
+void BinaryTree<T, M>::levelPrint(Node* k, int level)
 {
 	if (k == 0) return;
 	if (level == 0)

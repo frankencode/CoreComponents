@@ -9,7 +9,7 @@
 #define FTL_MAP_HPP
 
 #include "containers.hpp"
-#include "AvlTree.hpp"
+#include "OrdinalTree.hpp"
 #include "Pair.hpp"
 #include "List.hpp"
 
@@ -19,10 +19,10 @@ namespace ftl
 template<class Key, class Value>
 class Map:
 	public Container< Pair<Key, Value>, Map<Key, Value> >,
-	public AvlTree< Pair<Key, Value> >
+	public OrdinalTree< Pair<Key, Value> >
 {
 private:	
-	typedef AvlTree< Pair<Key,Value> > Super;
+	typedef OrdinalTree< Pair<Key,Value> > Super;
 	typedef typename Super::Node Node;
 
 public:
@@ -80,17 +80,32 @@ public:
 	
 	/** Convenience wrapper to insert(), always overwrites an existing key value pair.
 	  */
-	inline void set(const Key& key, const Value& value) {
+	inline void define(const Key& key, const Value& value) {
 		Value oldValue;
 		insert(key, value, &oldValue);
 	}
 	
 	/** Convenience wrapper to lookup()
 	  */
-	inline Value get(const Key& key) const {
+	inline Value value(const Key& key) const {
 		Value value = Value();
 		lookup(key, &value);
 		return value;
+	}
+	
+	/** Associative operator
+	  */
+	inline Value operator[](const Key& key) const { return value(key); }
+	inline Value& operator[](const Key& key) {
+		bool found = false;
+		Item e(key, Value());
+		Node* k = find(e, &found);
+		if (!found) {
+			Node* kn = new Node(e);
+			spliceIn(k, kn);
+			k = kn;
+		}
+		return k->e_.value();
 	}
 	
 	/** Convenience wrapper to lookup()
