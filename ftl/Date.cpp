@@ -6,7 +6,6 @@
  * See ../COPYING for the license.
  */
 
-#include "streams" // DEBUG
 #include "Format.hpp"
 #include "Date.hpp"
 
@@ -58,11 +57,11 @@ void Date::clear()
 
 void Date::init(Time time)
 {
-	const int t0 = 719162;                    // linear day number (starting from 0) of 1st Jan 1970
-	int tx = t0 + time.sec() / SecondsPerDay; // linear day number of this date
-	int d400 = 146097;                        // length of the 400 year cycle
-	int d100 = 36524;                         // length of the 100 year cycle
-	int d4 = 1461;                            // length of the 4 year cycle
+	const int t0 = 719162;                          // linear day number (starting from 0) of 1st Jan 1970
+	int tx = t0 + time.sec() / Time::SecondsPerDay; // linear day number of this date
+	int d400 = 146097;                              // length of the 400 year cycle
+	int d100 = 36524;                               // length of the 100 year cycle
+	int d4 = 1461;                                  // length of the 4 year cycle
 	
 	int tx400 = tx    % d400; // day within the 400 year cycle (starting from 0)
 	int tx100 = tx400 % d100; // day within the 100 year cycle (starting from 0)
@@ -121,24 +120,24 @@ Ref<Date, Owner> Date::localTime(Time time)
 	return local;
 }
 
+/*double Date::julianDate() const
+{
+	return
+		julianDay(tm_year + 1900, tm_mon + 1, tm_mday) +
+		(tm_hour - 12) / 24. + tm_min / 1440. + tm_sec / 86400.;
+}*/
+
 Time Date::time() const
 {
 	int64_t t = 0;
-	int year = tm_year + 1900;
-	for (int y = 1970; year < y; --y)
-		t -= daysInYear(y - 1) * SecondsPerDay;
-	for (int y = 1970; y < year; ++y)
-		t += daysInYear(y) * SecondsPerDay;
-	for (int i = 0; i < tm_mon; ++i)
-		t += daysInMonth(i, year) * SecondsPerDay;
-	t += (tm_mday - 1) * SecondsPerDay;
-	t += tm_hour * SecondsPerHour;
-	t += tm_min * SecondsPerMinute;
+	t += (julianDay(tm_year + 1900, tm_mon + 1, tm_mday) - julianDay(1970, 1, 1)) * Time::SecondsPerDay;
+	t += tm_hour * Time::SecondsPerHour;
+	t += tm_min * Time::SecondsPerMinute;
 	t += tm_sec;
 	return Time(t, 0);
 }
 
-String Date::iso8601() const
+String Date::toString() const
 {
 	String tz = "Z";
 	if (tm_off > 0)
@@ -151,6 +150,16 @@ String Date::iso8601() const
 		"%2.:'0'%%2.:'0'%%2.:'0'%%%"
 	) << (tm_year + 1900) << (tm_mon + 1) << tm_mday
 	  << tm_hour << tm_min << tm_sec << tz;
+}
+
+int Date::julianDay(int year, int month, int day)
+{
+	if (year < -4800) year = -4800;
+	else if (year > 4800) year = 4800;
+	int a = (14 - month) / 12;
+	int y = year + 4800 - a;
+	int m = month + 12 * a - 3;
+	return day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045;
 }
 
 } // namespace ftl

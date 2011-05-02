@@ -60,13 +60,45 @@ String String::fromUtf16(const void* data, int size, int endian)
 	return s2;
 }
 
+/** Convert this string to UTF-16 efficiently (local endian).
+  * Returns true if the given buffer was suitable to hold the encoded string.
+  * The number of bytes required to fully represent the string in UTF-16 is
+  * returned with the 'size' argument. Passing a zero for 'size' allows to
+  * determine the required buffer size. No zero termination is written or
+  * or accounted for.
+  */
+bool String::toUtf16(void* buf, int* size)
+{
+	uint16_t* buf2 = reinterpret_cast<uint16_t*>(buf);
+	int j = 0, n = *size / 2;
+	for (Index i = first(); def(i); ++i) {
+		uchar_t ch = get(i);
+		if (ch < 0x10000) {
+			if (j < n) buf2[j] = ch;
+			++j;
+		}
+		else if (ch <= 0x10FFFF) {
+			if (j + 1 < n) {
+				buf2[j] = (ch >> 10) + 0xB800;
+				buf2[j + 1] = (ch & 0x3FF) + 0xBC00;
+			}
+			j += 2;
+		}
+		else {
+			if (j < n) buf2[j] = 0xFFFD/*replacement character*/;
+			++j;
+		}
+	}
+	*size = 2 * j;
+	return (j <= n);
+}
+
 Ref<ByteArray, Owner> String::toUtf16(int endian)
 {
-	Ref<ByteArray, Owner> s2;
 	int size2 = 0;
 	for (Index i = first(); def(i); ++i)
 		size2 += Utf16Encoder::encodedSize(get(i));
-	s2 = new ByteArray(size2 + 2);
+	Ref<ByteArray, Owner>  s2 = new ByteArray(size2 + 2);
 	s2[size2] = 0;
 	s2[size2 + 1] = 0;
 	if (size2 > 0) {

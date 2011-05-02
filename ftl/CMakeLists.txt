@@ -45,6 +45,7 @@ SET(FTL_HEADER
 	BinaryNode.hpp
 	BinaryTree.hpp
 	AvlTree.hpp
+	OrdinalTree.hpp
 	Map.hpp
 	
 	syntax

@@ -36,7 +36,7 @@ String timeToString(Time time, bool human)
 		  << d.hour() << d.minute();
 	}
 	else {
-		return d.iso8601();
+		return d.toString();
 	}
 }
 

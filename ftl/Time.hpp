@@ -9,28 +9,34 @@
 #define FTL_TIME_HPP
 
 #include <sys/time.h>
-#include <time.h>    // Linux workaround
+#ifdef __linux
+#include <time.h>
+#endif
 #include "types.hpp"
 
 namespace ftl
 {
 
-enum {
-	SecondsPerMinute = 60,
-	SecondsPerHour = 60 *  SecondsPerMinute,
-	SecondsPerDay = 24 *  SecondsPerHour
-};
-
 /** \brief Wide-range, high resolution time representation
   *
-  * Time objects represent nano-second precise time values ranging from -292e9 to +292e9 years.
-  * Time::now() delivers the number of nano-seconds since the begin of Epoch (00:00:00 January 1, 1970, UTC).
-  * Initializing a time object without argument will create an invalid time object.
-  * The internal representation can be accessed using the sec() and nsec() methods.
+  * Values of type 'Time' values range from -292e9 to +292e9 years.
+  * The time scale has nano-second precision and starts at Epoch (00:00:00 January 1, 1970, UTC).
+  *
+  * Calling the constructor without argument will create an invalid time (Time::valid() == false).
+  * Time::now() returns the current system time. The internal representation can be accessed
+  * using the sec() and nsec() methods.
+  *
+  * \see Date
   */
 class Time
 {
 public:
+	enum {
+		SecondsPerMinute = 60,
+		SecondsPerHour = 60 *  SecondsPerMinute,
+		SecondsPerDay = 24 *  SecondsPerHour
+	};
+	
 	Time(): sec_(-1), nsec_(+1) {}
 	Time(const Time& b) { *this = b; }
 	Time(int64_t sec, int32_t nsec): sec_(sec), nsec_(nsec) {}
@@ -38,6 +44,13 @@ public:
 	Time(int seconds): sec_(seconds), nsec_(0) {}
 	Time(float fineSec) { *this = fineSec; }
 	Time(double fineSec) { *this = fineSec; }
+	
+	inline static Time microseconds(int us) { return Time(us/1000000, (us%1000000)*1000); }
+	inline static Time miliseconds(int ms) { return Time(ms/1000, (ms%1000)*1000000); }
+	inline static Time seconds(int s) { return Time(s, 0); }
+	inline static Time minutes(int min) { return Time(int64_t(min) * SecondsPerMinute, 0); }
+	inline static Time hours(int h) { return Time(int64_t(h) * SecondsPerHour, 0); }
+	inline static Time days(int d) { return Time(int64_t(d) * SecondsPerDay, 0); }
 	
 	inline const Time& operator=(const Time& b) {
 		sec_ = b.sec_; nsec_ = b.nsec_;
@@ -102,10 +115,6 @@ public:
 		}
 		return *this;
 	}
-	
-	inline static Time microSeconds(int usec) { return Time(usec/1000000, (usec%1000000)*1000); }
-	inline static Time miliSeconds(int msec) { return Time(msec/1000, (msec%1000)*1000000); }
-	inline static Time seconds(int sec) { return Time(sec, 0); }
 	
 	inline static Time now()
 	{

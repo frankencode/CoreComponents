@@ -37,9 +37,10 @@ public:
 	inline void setKey(const Key& key) { key_ = key; }
 	
 	inline const Value& value() const { return value_; }
+	inline Value& value() { return value_; }
 	inline void setValue(const Value& value) { value_ = value; }
 	
-private:
+public:
 	Key key_;
 	Value value_;
 };

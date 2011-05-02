@@ -13,24 +13,34 @@
 namespace ftl
 {
 
-template<class T>
-class AvlTree: public BinaryTree<T>
+template<class M>
+class AvlMisc: public M {
+public:
+	AvlMisc(): balance(0) {}
+	int balance;
+};
+
+template<class T, class M = None>
+class AvlTree: public BinaryTree<T, AvlMisc<M> >
 {
 public:
-	typedef typename BinaryTree<T>::Node Node;
-
+	typedef BinaryTree<T, AvlMisc<M> > Super;
+	typedef typename Super::Node Node;
+	
 	bool ok1(Node* k);
 	bool ok2(Node* k);
 	bool ok();
-
+	
 protected:
 	virtual void rebalanceAfterSpliceIn(Node* k, int delta);
 	virtual void rebalanceAfterSpliceOut(Node* k, int delta);
+	
+private:
 	Node* restoreBalance(Node* k1);
 };
 
-template<class T>
-void AvlTree<T>::rebalanceAfterSpliceIn(Node* k, int delta)
+template<class T, class M>
+void AvlTree<T, M>::rebalanceAfterSpliceIn(Node* k, int delta)
 {
 	while (true)
 	{
@@ -47,8 +57,8 @@ void AvlTree<T>::rebalanceAfterSpliceIn(Node* k, int delta)
 	}
 }
 
-template<class T>
-void AvlTree<T>::rebalanceAfterSpliceOut(Node* k, int delta)
+template<class T, class M>
+void AvlTree<T, M>::rebalanceAfterSpliceOut(Node* k, int delta)
 {
 	while (true)
 	{
@@ -65,8 +75,8 @@ void AvlTree<T>::rebalanceAfterSpliceOut(Node* k, int delta)
 	}
 }
 
-template<class T>
-typename AvlTree<T>::Node* AvlTree<T>::restoreBalance(Node* k1)
+template<class T, class M>
+typename AvlTree<T, M>::Node* AvlTree<T, M>::restoreBalance(Node* k1)
 {
 	if (k1->balance == 2)
 	{
@@ -122,26 +132,26 @@ typename AvlTree<T>::Node* AvlTree<T>::restoreBalance(Node* k1)
 	return k1->parent;
 }
 
-template<class T>
-bool AvlTree<T>::ok1(Node* k)
+template<class T, class M>
+bool AvlTree<T, M>::ok1(Node* k)
 {
 	if (k == 0) return true;
 	if (!((k->balance == -1) || (k->balance == 0) || (k->balance == 1))) return false;
 	return ok1(k->left) && ok1(k->right);
 }
 
-template<class T>
-bool AvlTree<T>::ok2(Node* k)
+template<class T, class M>
+bool AvlTree<T, M>::ok2(Node* k)
 {
 	if (k == 0) return true;
 	if ((height(k->left) - height(k->right)) != k->balance) return false;
 	return ok2(k->left) && ok2(k->right);
 }
 
-template<class T>
-bool AvlTree<T>::ok()
+template<class T, class M>
+bool AvlTree<T, M>::ok()
 {
-	return BinaryTree<T>::ok() && ok1(BinaryTree<T>::root) && ok2(BinaryTree<T>::root);
+	return Super::ok() && ok1(Super::root) && ok2(Super::root);
 }
 
 } // namespace ftl
