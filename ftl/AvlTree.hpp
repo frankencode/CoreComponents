@@ -32,16 +32,19 @@ public:
 	bool ok();
 	
 protected:
-	virtual void rebalanceAfterSpliceIn(Node* k, int delta);
-	virtual void rebalanceAfterSpliceOut(Node* k, int delta);
+	virtual void rebalanceAfterSpliceIn(Node* kp, Node* kn);
+	virtual void rebalanceAfterSpliceOut(Node* kp, Node* ko);
 	
 private:
 	Node* restoreBalance(Node* k1);
 };
 
 template<class T, class M>
-void AvlTree<T, M>::rebalanceAfterSpliceIn(Node* k, int delta)
+void AvlTree<T, M>::rebalanceAfterSpliceIn(Node* kp, Node* kn)
 {
+	int delta = 2 * (kp->left == kn) - 1;
+	Node* k = kp;
+	
 	while (true)
 	{
 		k->balance += delta;
@@ -58,8 +61,11 @@ void AvlTree<T, M>::rebalanceAfterSpliceIn(Node* k, int delta)
 }
 
 template<class T, class M>
-void AvlTree<T, M>::rebalanceAfterSpliceOut(Node* k, int delta)
+void AvlTree<T, M>::rebalanceAfterSpliceOut(Node* kp, Node* ko)
 {
+	int delta = 2 * (kp->left == ko) - 1;
+	Node* k = kp;
+	
 	while (true)
 	{
 		k->balance -= delta;

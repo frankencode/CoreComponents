@@ -29,7 +29,7 @@ namespace ftl
   *
   * Notes on thread-safety:
   *   - reference counting on Instance::incRefCount(), Instance::decRefCount() is thread-safe
-  *   - Owner and SetNull policies arn't thread-safe regarding concurrent assignment
+  *   - Owner and SetNull policies aren't thread-safe regarding concurrent assignment
   *     (race condition is detected if compiled with -DFTL_REF_POLICY_RACE_DETECTION)
   */
 template<class T = Instance, template<class> class GetAndSetPolicy = FTL_DEFAULT_REF_POLICY>

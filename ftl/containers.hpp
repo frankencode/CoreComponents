@@ -56,7 +56,7 @@ public:
 	inline bool read(Item* item) {
 		bool more = container_->def(i_);
 		if (more)
-			*item = container_->at(i_++);
+			*item = container_->get(i_++);
 		return more;
 	}
 	
