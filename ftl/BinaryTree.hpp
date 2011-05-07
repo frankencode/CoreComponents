@@ -59,8 +59,8 @@ public:
 	int height(Node* k);
 	inline int height() { return height(root); }
 	
-	virtual void rebalanceAfterSpliceIn(Node* k, int delta) = 0;
-	virtual void rebalanceAfterSpliceOut(Node* k, int delta) = 0;
+	virtual void rebalanceAfterSpliceIn(Node* kp, Node* kn) = 0;
+	virtual void rebalanceAfterSpliceOut(Node* kp, Node* ko) = 0;
 	
 	bool ok1(Node* k);  // condition: k->left->data() < k->right->data()
 	bool ok2(Node* k);  // condition: (k == k->parent()->left) || (k == k->parent()->right)
@@ -75,7 +75,7 @@ public:
 	
 protected:
 	inline static int max(int a, int b) { return (a < b) ? b : a; }
-
+	
 	Node* root;
 	int _n;
 };
@@ -101,22 +101,20 @@ typename BinaryTree<T, M>::Node* BinaryTree<T, M>::last(const ST& b) const
 	if (k->data() < b) return k;
 	return k->pred();
 }
- 
+
 template<class T, class M>
 template<class ST>
 typename BinaryTree<T, M>::Node* BinaryTree<T, M>::find(const ST& e, bool* found) const
 {
-	bool _found = false;
 	Node* k = root;
 	Node* k2 = 0;
-	while ((k != 0) && (!_found))
-	{
+	if (found) *found = false;
+	while (k) {
 		k2 = k;
 		if (e < k->data()) k = k->left;
 		else if (k->data() < e) k = k->right;
-		else { _found = true; break; }
+		else { if (found) *found = true; break; }
 	}
-	if (found != 0) *found = _found;
 	return k2;
 }
 
@@ -163,7 +161,8 @@ void BinaryTree<T, M>::spliceIn(Node* kp, Node* kn)
 		kn->parent = kp;
 		kn->left = 0;
 		kn->right = 0;
-		rebalanceAfterSpliceIn(kp, 2 * (kp->left == kn) - 1);
+		
+		rebalanceAfterSpliceIn(kp, kn);
 	}
 }
 
@@ -172,28 +171,25 @@ typename BinaryTree<T, M>::Node* BinaryTree<T, M>::spliceOut(Node* k)
 {
 	--_n;
 	Node* kp = k->parent;
-	int delta = 0;
 
-	if (kp != 0)
-		delta = 2 * (kp->left == k) - 1;
-
-	// -- remove the parent's downlink
-	//    or establish links between left or right child and parent
-	if (kp != 0)
+	if (kp == 0)
 	{
+		// -- splice out the root
+		root = 0;
+	}
+	else
+	{
+		// -- splice out node
 		Node* kc = (k->left != 0) ? k->left : k->right;
 		if (kp->left == k)
 			kp->left = kc;
 		else
 			kp->right = kc;
 		if (kc != 0) kc->parent = kp;
+		
+		rebalanceAfterSpliceOut(kp, k);
 	}
-	else
-		root = 0;
-
-	if (kp != 0)
-		rebalanceAfterSpliceOut(kp, delta);
-
+	
 	return k;
 }
 

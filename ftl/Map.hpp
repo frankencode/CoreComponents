@@ -21,27 +21,40 @@ class Map:
 	public Container< Pair<Key, Value>, Map<Key, Value> >,
 	public OrdinalTree< Pair<Key, Value> >
 {
-private:	
+private:
 	typedef OrdinalTree< Pair<Key,Value> > Super;
 	typedef typename Super::Node Node;
-
+	
 public:
 	typedef Pair<Key,Value> Item;
+	typedef int Index;
+	typedef GenericIterator< Map<Key, Value> > Iterator;
+	
 	typedef List<Item> ItemList;
 	typedef List<Key> KeyList;
 	typedef List<Value> ValueList;
 	
 	Map() {}
 	
+	inline Index first() const { return Super::firstIndex(); }
+	inline Index last() const { return Super::lastIndex(); }
+	inline Index end() const { return Super::lastIndex() + 1; }
+	
+	inline bool def(Index i) { return (0 <= i) && (i < Super::numberOfNodes()); }
+	inline Item get(int i) const {
+		Node* k = 0;
+		return Super::lookupByIndex(i, &k) ? k->data() : Item();
+	}
+	
 	/** Insert a key-value mapping if no key-value mapping with the same key exists already.
 	  * If currentValue is non-null the current value the giving key maps to is returned.
 	  * The function returns true if the new key-value mapping was inserted successfully.
 	  */
-	inline bool insert(const Key& key, const Value& value, Value* currentValue = 0)
+	inline bool insert(const Key& key, const Value& value, Value* currentValue = 0, int* index = 0)
 	{
 		bool found = false;
 		Item e(key, value);
-		Node* k = find(e, &found);
+		Node* k = find(e, &found, index);
 		if (found) {
 			if (currentValue)
 				*currentValue = k->e_.value();
@@ -52,10 +65,10 @@ public:
 		return !found;
 	}
 	
-	inline bool remove(const Key& key)
+	inline bool remove(const Key& key, int* index = 0)
 	{
 		bool found;
-		Node* k = find(Item(key), &found);
+		Node* k = find(Item(key), &found, index);
 		if (found) {
 			Super::unlink(k);
 			delete k;
@@ -69,10 +82,10 @@ public:
 	  * 'value' is not set and the function returns false.
 	  */
 	template<class Value2>
-	inline bool lookup(const Key& key, Value2* value = 0) const
+	inline bool lookup(const Key& key, Value2* value = 0, int* index = 0) const
 	{
 		bool found = false;
-		Node* k = find(Item(key), &found);
+		Node* k = find(Item(key), &found, index);
 		if (found && (value))
 			*value = k->e_.value();
 		return found;
@@ -80,9 +93,11 @@ public:
 	
 	/** Convenience wrapper to insert(), always overwrites an existing key value pair.
 	  */
-	inline void define(const Key& key, const Value& value) {
+	inline int define(const Key& key, const Value& value) {
 		Value oldValue;
-		insert(key, value, &oldValue);
+		int index;
+		insert(key, value, &oldValue, &index);
+		return index;
 	}
 	
 	/** Convenience wrapper to lookup()
