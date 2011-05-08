@@ -42,10 +42,7 @@ SET(FTL_HEADER
 	PrefixTree.hpp
 	PrefixTreeWalker.hpp
 	Pair.hpp
-	BinaryNode.hpp
 	BinaryTree.hpp
-	AvlTree.hpp
-	OrdinalTree.hpp
 	Map.hpp
 	
 	syntax
