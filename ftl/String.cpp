@@ -1,5 +1,5 @@
 /*
- * String.cpp -- UTF8 strings
+ * String.cpp -- UTF-8 strings
  *
  * Copyright (c) 2007-2011, Frank Mertens
  *

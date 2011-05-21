@@ -121,11 +121,8 @@ public:
 			ruleById->insert(rule->id(), rule);
 		}
 		
-		typedef List< Ref<RuleNode> > RuleList;
-		Ref<RuleList, Owner> ruleList = ruleById->valueList();
-		
-		for (typename RuleList::Index i = ruleList->first(); ruleList->def(i); ++i) {
-			Ref<RuleNode> rule = ruleList->get(i);
+		for (int i = 0; i < ruleById->length(); ++i) {
+			Ref<RuleNode> rule = ruleById->get(i).value();
 			if (omitUnusedRules && !rule->used()) continue;
 			print("DEFINE%%(\"%%\",\n", rule->isVoid() ? "_VOID" : "", rule->name());
 			if (rule->entry()) {

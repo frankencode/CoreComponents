@@ -206,22 +206,17 @@ Ref<Process, Owner> ProcessFactory::produce()
 			
 			char** envp = 0;
 			
-			if (!envMap_)
-			{
-				envp = Process::environ();
+			
+			
+			if (envMap_) {
+				int n = envMap_->length();
+				envp = new char*[n + 1];
+				for (int i = 0; i < n; ++i)
+					envp[i] = str::dup(String(Format() << envMap_->get(i).key() <<  "=" << envMap_->get(i).value())->data());
+				envp[n] = 0;
 			}
-			else
-			{
-				typedef EnvMap::ItemList EnvList;
-				Ref<EnvList, Owner> envList = envMap_->itemList();
-				int envc = envList->length();
-				envp = new char*[envc + 1];
-				
-				int j = 0;
-				for (EnvList::Index i = envList->first(); envList->def(i); ++i, ++j)
-					envp[j] = str::dup(String(Format() << envList->at(i).key() <<  "=" << envList->at(i).value())->data());
-				
-				envp[envc] = 0;
+			else {
+				envp = Process::environ();
 			}
 			
 			// load new program

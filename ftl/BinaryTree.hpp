@@ -123,7 +123,7 @@ class BinaryTree: public NonCopyable
 public:
 	typedef BinaryNode<T> Node;
 	
-	BinaryTree(): root(0) {}
+	BinaryTree(): root(0), cachedNode(0), cachedIndex(-1) {}
 	virtual ~BinaryTree() { clear(); }
 	
 	template<class ST> inline Node* first(const ST& a) const;
@@ -132,18 +132,21 @@ public:
 	inline Node* maxNode() { return (root) ? root->max() : 0; }
 	
 	inline int weight() const { return weight(root); }
-	inline int firstIndex() const { return (weight() > 0) ? 0 : -1; }
-	inline int lastIndex() const { return weight() - 1; }
 	
 	bool lookupByIndex(int index, Node** node = 0) const;
-	template<class ST> Node* find(const ST& e, bool* found = 0, int* index = 0) const;
+	template<class ST> Node* find(const ST& e, bool* found = 0, bool* below = 0, int* index = 0) const;
 	
 	Node* unlink(Node* k);
 	void clear() { clear(root); root = 0; }
 	static void clear(Node* k);
 	
-	void spliceIn(Node* kp, Node* kn);
+	void spliceInBefore(Node* kb, Node* kn);
+	void spliceInAfter(Node* ka, Node* kn);
+	
+	void spliceIn(Node* kp, Node* kn, bool left);
 	Node* spliceOut(Node* k);
+	
+	inline bool health() const { return ok1(root) && ok2(root) && ok3(root) && testBalance1(root) && testBalance2(root) && testWeight(root); }
 	
 protected:
 	void replaceNode(Node* k0, Node* k1);
@@ -166,6 +169,7 @@ protected:
 	inline int height() { return height(root); }
 	static bool testBalance1(Node* k);
 	static bool testBalance2(Node* k);
+	static bool testWeight(Node* k);
 	
 	/*void levelPrint();
 	void levelPrint(Node* k, int level);*/
@@ -173,33 +177,53 @@ protected:
 	inline static int max(int a, int b) { return (a < b) ? b : a; }
 	
 	Node* root;
+	mutable Node* cachedNode;
+	mutable int cachedIndex;
 };
 
 template<class T>
 template<class ST>
 typename BinaryTree<T>::Node* BinaryTree<T>::first(const ST& a) const
 {
-	bool found;
-	Node* k = find(a, &found);
+	bool found = false, below = true;
+	Node* k = find(a, &found, &below);
 	if ((k == 0) || found) return k;
-	if (a < k->data()) return k;
-	return k->succ();
+	return below ? k->succ() : k;
 }
 
 template<class T>
 template<class ST>
 typename BinaryTree<T>::Node* BinaryTree<T>::last(const ST& b) const
 {
-	bool found;
-	Node* k = find(b, &found);
+	bool found = false, below = true;
+	Node* k = find(b, &found, &below);
 	if ((k == 0) || found) return k;
-	if (k->data() < b) return k;
-	return k->pred();
+	return below ? k : k->pred();
 }
 
 template<class T>
 bool BinaryTree<T>::lookupByIndex(int i, Node** node) const
 {
+	if (cachedNode) {
+		int d = i - cachedIndex;
+		if (d == 0) {
+			if (node) *node = cachedNode;
+			return cachedNode;
+		}
+		else if (d == 1) {
+			++cachedIndex;
+			cachedNode = cachedNode->succ();
+			if ((cachedNode) && (node)) *node = cachedNode;
+			return cachedNode;
+		}
+		else if (d == -1) {
+			--cachedIndex;
+			cachedNode = cachedNode->pred();
+			if ((cachedNode) && (node)) *node = cachedNode;
+			return cachedNode;
+		}
+	}
+	
 	Node* k = root;
 	int j0 = 0;
 	while (k) {
@@ -215,43 +239,45 @@ bool BinaryTree<T>::lookupByIndex(int i, Node** node) const
 			break;
 	}
 	if ((k) && (node)) *node = k;
+	
+	cachedNode = k;
+	cachedIndex = i;
+	
 	return k;
 }
 
 template<class T>
 template<class ST>
-typename BinaryTree<T>::Node* BinaryTree<T>::find(const ST& e, bool* found, int* index) const
+typename BinaryTree<T>::Node* BinaryTree<T>::find(const ST& e, bool* found, bool* below, int* index) const
 {
 	Node* k = root;
 	Node* k2 = 0;
 	if (found) *found = false;
-	if (index) {
-		int j0 = 0, j = -1;
-		while (k) {
-			k2 = k;
-			j = j0 + weight(k->left);
-			if (e < k->data()) {
-				k = k->left;
-			}
-			else if (k->data() < e) {
-				j0 = j + 1;
-				k = k->right;
-			}
-			else { // e == k->data()
-				if (found) *found = true;
+	int j0 = 0, j = -1;
+	if (k) while (true) {
+		k2 = k;
+		j = j0 + weight(k->left);
+		if (e < k->data()) {
+			if (!k->left) {
+				if (below) *below = true;
 				break;
 			}
+			k = k->left;
 		}
-		*index = j;
-	}
-	else {
-		while (k) {
-			k2 = k;
-			if (e < k->data()) k = k->left;
-			else if (k->data() < e) k = k->right;
-			else { if (found) *found = true; break; }
+		else if (k->data() < e) {
+			if (!k->right) {
+				if (below) *below = false;
+				break;
+			}
+			j0 = j + 1;
+			k = k->right;
+		}
+		else { // e == k->data()
+			if (found) *found = true;
+			break;
 		}
 	}
+	if (index) *index = j;
 	return k2;
 }
 
@@ -277,7 +303,29 @@ void BinaryTree<T>::clear(Node* k)
 }
 
 template<class T>
-void BinaryTree<T>::spliceIn(Node* kp, Node* kn)
+void BinaryTree<T>::spliceInBefore(Node* kb, Node* kn)
+{
+	if (!kb)
+		spliceIn(kb, kn, true/*left*/);
+	else if (kb->left)
+		spliceIn(kb->left->max(), kn, false/*left*/);
+	else
+		spliceIn(kb, kn, true/*left*/);
+}
+
+template<class T>
+void BinaryTree<T>::spliceInAfter(Node* ka, Node* kn)
+{
+	if (!ka)
+		spliceIn(ka, kn, true/*left*/);
+	else if (ka->right)
+		spliceIn(ka->right->min(), kn, true/*left*/);
+	else
+		spliceIn(ka, kn, false/*left*/);
+}
+
+template<class T>
+void BinaryTree<T>::spliceIn(Node* kp, Node* kn, bool left)
 {
 	if (!kp) {
 		// -- splice in initial node
@@ -288,7 +336,7 @@ void BinaryTree<T>::spliceIn(Node* kp, Node* kn)
 	}
 	else {
 		// -- splice in new leaf node
-		if (kn->data() < kp->data())
+		if (left)
 			kp->left = kn;
 		else
 			kp->right =  kn;
@@ -299,6 +347,8 @@ void BinaryTree<T>::spliceIn(Node* kp, Node* kn)
 		restoreWeights(kp, 1);
 		rebalanceAfterSpliceIn(kp, kn);
 	}
+	
+	cachedNode = 0;
 }
 
 template<class T>
@@ -322,6 +372,8 @@ typename BinaryTree<T>::Node* BinaryTree<T>::spliceOut(Node* k)
 		restoreWeights(kp, -1);
 		rebalanceAfterSpliceOut(kp, k);
 	}
+	
+	cachedNode = 0;
 	
 	return k;
 }
@@ -583,6 +635,15 @@ bool BinaryTree<T>::testBalance2(Node* k)
 	if (!k) return true;
 	if ((height(k->left) - height(k->right)) != k->balance) return false;
 	return testBalance2(k->left) && testBalance2(k->right);
+}
+
+template<class T>
+bool BinaryTree<T>::testWeight(Node* k)
+{
+	if (!k) return true;
+	return
+		(weight(k->left) + weight(k->right) + 1 == k->weight) &&
+		testWeight(k->left) && testWeight(k->right);
 }
 
 /*
