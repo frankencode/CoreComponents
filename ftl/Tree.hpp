@@ -28,7 +28,7 @@ public:
 	inline void appendChild(Ref<Node> node) { insertChild(node, lastChild_); }
 	
 	void insertChild(Ref<Node> node, Ref<Node> previousSibling = 0);
-	void appendAllChildrenOf(Ref<Node> node);
+	void appendAllChildrenOf(Ref<Node> node); // HACK?, better: adoptChildrenOf(...)
 	void disbandChildren();
 	void unlink();
 	

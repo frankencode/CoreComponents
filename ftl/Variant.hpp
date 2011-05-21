@@ -20,7 +20,7 @@ namespace ftl
 // #pragma pack(push,1)
 // #endif
 
-/** A variant can represent many different types.
+/** A variant can represent different types.
   * The type of a variant is defined implicitly at construction time or on assignment.
   * Variants automatically cast to bool, int, float, String and Ref<Instance> if the
   * variant type is compatible with the target type requested by an expression.
@@ -35,13 +35,13 @@ class Variant
 {
 public:
 	enum Type {
-		UndefType    = 0,
-		IntType      = 1,
-		BoolType     = 2 | IntType,
-		FloatType    = 4,
-		RefType      = 8,
-		StringType   = 16 | RefType,
-		PathType     = 32 | RefType | StringType
+		UndefType  = 0,
+		IntType    = 1,
+		BoolType   = 2 | IntType,
+		FloatType  = 4,
+		RefType    = 8,
+		StringType = 16 | RefType,
+		PathType   = 32 | RefType | StringType
 	};
 	
 	Variant()                    : type_(UndefType)                {}
