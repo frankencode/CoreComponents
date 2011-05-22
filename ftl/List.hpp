@@ -50,18 +50,11 @@ public:
 	}
 	
 	inline List& push(Index index, const T& item) {
-		Node* node = 0;
-		if (index == tree_.weight())
-			tree_.spliceIn(tree_.maxNode(), new Node(item), false/*left*/);
-		else if (tree_.lookupByIndex(index, &node))
-			tree_.spliceInBefore(node, new Node(item));
+		tree_.push(index, item);
 		return *this;
 	}
 	inline List& pop(Index index, T* item) {
-		Node* node = 0;
-		tree_.lookupByIndex(index, &node);
-		*item = node->e_;
-		delete tree_.unlink(node);
+		tree_.pop(index, item);
 		return *this;
 	}
 	inline void clear() { tree_.clear(); }
