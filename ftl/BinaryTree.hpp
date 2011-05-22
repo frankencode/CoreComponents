@@ -140,6 +140,9 @@ public:
 	void clear() { clear(root); root = 0; }
 	static void clear(Node* k);
 	
+	void push(int index, const T& item);
+	void pop(int index, T* item);
+	
 	void spliceInBefore(Node* kb, Node* kn);
 	void spliceInAfter(Node* ka, Node* kn);
 	
@@ -312,6 +315,43 @@ void BinaryTree<T>::clear(Node* k)
 	clear(k->left);
 	clear(k->right);
 	delete k;
+}
+
+template<class T>
+void BinaryTree<T>::push(int index, const T& item)
+{
+	Node* kn = new Node(item);
+	if (index == weight(root)) {
+		Node* kp = 0;
+		if (cachedNode)
+			if (cachedIndex == index)
+				kp = cachedNode;
+		if (!kp) kp = maxNode();
+		spliceIn(kp, kn, false/*left*/);
+	}
+	else {
+		Node* ka = 0;
+		bool found = lookupByIndex(index, &ka);
+		check(found);
+		spliceInBefore(ka, kn);
+	}
+	cachedNode = kn;
+	cachedIndex = index;
+}
+
+template<class T>
+void BinaryTree<T>::pop(int index, T* item)
+{
+	Node* ko = 0;
+	bool found = lookupByIndex(index, &ko);
+	check(found);
+	*item = ko->e_;
+	Node* ka = ko->pred();
+	delete unlink(ko);
+	if (ka) {
+		cachedNode = ka;
+		cachedIndex = index - 1;
+	}
 }
 
 template<class T>
