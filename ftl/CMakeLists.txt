@@ -35,9 +35,6 @@ SET(FTL_HEADER
 	Stack.hpp
 	Queue.hpp
 	Heap.hpp
-	LegacyListNode.hpp
-	LegacyListWalker.hpp
-	LegacyList.hpp
 	Tree.hpp
 	PrefixTree.hpp
 	PrefixTreeWalker.hpp
