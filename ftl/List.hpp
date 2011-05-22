@@ -11,7 +11,6 @@
 #include "containers.hpp"
 #include "BinaryTree.hpp"
 #include "Heap.hpp"
-#include <stdio.h> // DEBUG
 
 namespace ftl
 {
