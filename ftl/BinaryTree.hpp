@@ -213,6 +213,9 @@ typename BinaryTree<T>::Node* BinaryTree<T>::last(const ST& b) const
 template<class T>
 bool BinaryTree<T>::lookupByIndex(int i, Node** node) const
 {
+	if (i < 0) i += weight(root);
+	check((0 <= i) && (i < weight(root)));
+	
 	if (cachedNode) {
 		int d = i - cachedIndex;
 		if (d == 0) {
@@ -249,7 +252,6 @@ bool BinaryTree<T>::lookupByIndex(int i, Node** node) const
 	}
 	if ((k) && (node)) *node = k;
 	
-	check((0 <= i) && (i < weight(root)));
 	cachedNode = k;
 	cachedIndex = i;
 	
