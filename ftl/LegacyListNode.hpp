@@ -1,34 +1,34 @@
 /*
- * ListNode.hpp -- double-linked list node
+ * LegacyListNode.hpp -- double-linked list node
  *
  * Copyright (c) 2007-2011, Frank Mertens
  *
  * See ../COPYING for the license.
  */
-#ifndef FTL_LISTNODE_HPP
-#define FTL_LISTNODE_HPP
+#ifndef FTL_LEGACYLISTNODE_HPP
+#define FTL_LEGACYLISTNODE_HPP
 
 namespace ftl
 {
 
 template<class T>
-class ListWalker;
+class LegacyListWalker;
 
 template<class T>
-class List;
+class LegacyList;
 
 template<class T>
-class ListNode: public Instance {
+class LegacyListNode: public Instance {
 private:
-	friend class ListWalker<T>;
-	friend class List<T>;
+	friend class LegacyListWalker<T>;
+	friend class LegacyList<T>;
 	
-	ListNode()
+	LegacyListNode()
 		: previous_(0),
 		  next_(0)
 	{}
 	
-	ListNode(ListNode* previous, ListNode* next, const T& item)
+	LegacyListNode(LegacyListNode* previous, LegacyListNode* next, const T& item)
 		: previous_(previous),
 		  next_(next),
 		  item_(item)
@@ -37,17 +37,17 @@ private:
 		if (next) next->previous_ = this;
 	}
 	
-	~ListNode()
+	~LegacyListNode()
 	{
 		if (previous_) previous_->next_ = next_;
 		if (next_) next_->previous_ = previous_;
 	}
 	
-	ListNode* previous_;
-	ListNode* next_;
+	LegacyListNode* previous_;
+	LegacyListNode* next_;
 	T item_;
 };
 
 } // namespace ftl
 
-#endif // FTL_LISTNODE_HPP
+#endif // FTL_LEGACYLISTNODE_HPP

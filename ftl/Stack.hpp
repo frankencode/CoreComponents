@@ -61,15 +61,15 @@ public:
 		buf_[fill_++] = item;
 		return *this;
 	}
-	inline Stack& pop(T& item)
+	inline Stack& pop(T* item)
 	{
 		check(fill_ > 0);
-		item = buf_[--fill_];
+		*item = buf_[--fill_];
 		return *this;
 	}
 	inline T pop() {
 		T item;
-		pop(item);
+		pop(&item);
 		return item;
 	}
 	

@@ -1,6 +1,7 @@
 #include <ftl/streams>
 #include <ftl/container>
 #include <ftl/utils>
+#include <stdio.h> // DEBUG
 
 namespace ftl
 {
@@ -19,13 +20,32 @@ void print(List<T>& list) {
 
 int main()
 {
+	/*{
+		print("Test 0:\n");
+		List<int> list;
+		Random random;
+		for (int i = 0; i < 10; ++i) {
+			list.push(random.get(0, list.length()), i); //list.length()
+			printf("%d\n", list.health());
+			printf("----------\n");
+		}
+		// print("%%\n", list.health());
+		// print(list);
+	}*/
 	{
 		print("Test 1:\n");
 		List<int> list;
 		list << 1 << 2 << 3;
 		print(list);
 		List<int> list2;
+		/*while (!list.isEmpty()) {
+			int x = list.pop();
+			printf("x = %d\n", x);
+			list2.push(x);
+		}*/
+		//printf("list.health() = %d\n", list.health());
 		list >> list2;
+		//printf("list2.health() = %d\n", list2.health());
 		print(list2);
 	}
 	{

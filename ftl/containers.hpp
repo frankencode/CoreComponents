@@ -31,9 +31,9 @@ public:
 	}
 	
 	virtual CT& push(const T& item) = 0;
-	virtual CT& pop(T& item) = 0;
+	virtual CT& pop(T* item) = 0;
 	inline CT& operator<<(const T& item) { return push(item); }
-	inline CT& operator>>(T& item) { return pop(item); }
+	inline CT& operator>>(T& item) { return pop(&item); }
 	inline CT& operator<<(Source<T>& source) {
 		while (source.hasNext())
 			push(source.next());

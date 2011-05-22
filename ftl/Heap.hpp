@@ -56,10 +56,10 @@ public:
 		return *this;
 	}
 
-	inline GenericHeap& pop(T& item)
+	inline GenericHeap& pop(T* item)
 	{
 		check(fill_ > 0);
-		item = buf_[0];
+		*item = buf_[0];
 		--fill_;
 		buf_[0] = buf_[fill_];
 		passDownFromTop();
@@ -68,7 +68,7 @@ public:
 	
 	inline T pop() {
 		T item;
-		pop(item);
+		pop(&item);
 		return item;
 	}
 	
