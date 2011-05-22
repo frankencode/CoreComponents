@@ -346,11 +346,13 @@ void BinaryTree<T>::pop(int index, T* item)
 	bool found = lookupByIndex(index, &ko);
 	check(found);
 	*item = ko->e_;
-	Node* ka = ko->pred();
+	Node* k = ko->pred();
+	if (k) --index;
+	else k = ko->succ();
 	delete unlink(ko);
-	if (ka) {
-		cachedNode = ka;
-		cachedIndex = index - 1;
+	if (k) {
+		cachedNode = k;
+		cachedIndex = index;
 	}
 }
 
