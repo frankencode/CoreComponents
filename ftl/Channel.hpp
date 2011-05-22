@@ -45,7 +45,7 @@ public:
 		return *this;
 	}
 	
-	Channel& pop(T& item)
+	Channel& pop(T* item)
 	{
 		queueMutex_.acquire();
 		while (queue_.fill() == 0)
@@ -55,7 +55,7 @@ public:
 			ack_.signal();
 			ackMutex_.release();
 		}
-		item = queue_.pop();
+		*item = queue_.pop();
 		notFull_.signal();
 		queueMutex_.release();
 		return *this;
@@ -63,7 +63,7 @@ public:
 	
 	inline T pop() {
 		T item;
-		pop(item);
+		pop(&item);
 		return item;
 	}
 	

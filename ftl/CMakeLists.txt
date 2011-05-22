@@ -35,14 +35,15 @@ SET(FTL_HEADER
 	Stack.hpp
 	Queue.hpp
 	Heap.hpp
-	ListNode.hpp
-	ListWalker.hpp
-	List.hpp
+	LegacyListNode.hpp
+	LegacyListWalker.hpp
+	LegacyList.hpp
 	Tree.hpp
 	PrefixTree.hpp
 	PrefixTreeWalker.hpp
 	Pair.hpp
 	BinaryTree.hpp
+	List.hpp
 	Map.hpp
 	
 	syntax

@@ -144,24 +144,24 @@ public:
 		return *this;
 	}
 	
-	inline Map& pop(Item& item)
+	inline Map& pop(Item* item)
 	{
 		check(!isEmpty());
 		Node* k = tree_.minNode();
-		item = k->e_;
+		*item = k->e_;
 		delete tree_.unlink(k);
 		return *this;
 	}
 	
 	inline Item pop() {
 		Item item;
-		pop(item);
+		pop(&item);
 		return item;
 	}
 	
 	inline bool isEmpty() const { return tree_.weight() == 0; }
 	
-	inline bool health() const { return tree_.health(); }
+	inline bool health() { return tree_.health(); }
 	
 protected:
 	Tree tree_;

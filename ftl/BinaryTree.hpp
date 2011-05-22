@@ -146,7 +146,16 @@ public:
 	void spliceIn(Node* kp, Node* kn, bool left);
 	Node* spliceOut(Node* k);
 	
-	inline bool health() const { return ok1(root) && ok2(root) && ok3(root) && testBalance1(root) && testBalance2(root) && testWeight(root); }
+	inline bool health() {
+		// levelPrint();
+		/*check(ok1(root));*/
+		check(ok2(root));
+		check(ok3(root));
+		check(testBalance1(root));
+		check(testBalance2(root));
+		check(testWeight(root));
+		return /*ok1(root) &&*/ ok2(root) && ok3(root) && testBalance1(root) && testBalance2(root) && testWeight(root);
+	}
 	
 protected:
 	void replaceNode(Node* k0, Node* k1);
@@ -154,7 +163,7 @@ protected:
 	void rotateLeft(Node* k);
 	void rotateRight(Node* k);
 	void rebalanceAfterSpliceIn(Node* kp, Node* kn);
-	void rebalanceAfterSpliceOut(Node* kp, Node* ko);
+	void rebalanceBeforeSpliceOut(Node* kp, Node* ko);
 	Node* restoreBalance(Node* k1);
 	
 	static void restoreWeights(Node* k, int delta);
@@ -171,8 +180,8 @@ protected:
 	static bool testBalance2(Node* k);
 	static bool testWeight(Node* k);
 	
-	/*void levelPrint();
-	void levelPrint(Node* k, int level);*/
+	void levelPrint();
+	void levelPrint(Node* k, int level);
 	
 	inline static int max(int a, int b) { return (a < b) ? b : a; }
 	
@@ -240,6 +249,7 @@ bool BinaryTree<T>::lookupByIndex(int i, Node** node) const
 	}
 	if ((k) && (node)) *node = k;
 	
+	check((0 <= i) && (i < weight(root)));
 	cachedNode = k;
 	cachedIndex = i;
 	
@@ -284,9 +294,9 @@ typename BinaryTree<T>::Node* BinaryTree<T>::find(const ST& e, bool* found, bool
 template<class T>
 typename BinaryTree<T>::Node* BinaryTree<T>::unlink(Node* k)
 {
-	if (k->left != 0)
+	if (k->left)
 		replaceNode(k, spliceOut(k->left->max()));
-	else if (k->right != 0)
+	else if (k->right)
 		replaceNode(k, spliceOut(k->right->min()));
 	else
 		spliceOut(k);
@@ -339,7 +349,7 @@ void BinaryTree<T>::spliceIn(Node* kp, Node* kn, bool left)
 		if (left)
 			kp->left = kn;
 		else
-			kp->right =  kn;
+			kp->right = kn;
 		kn->parent = kp;
 		kn->left = 0;
 		kn->right = 0;
@@ -361,6 +371,8 @@ typename BinaryTree<T>::Node* BinaryTree<T>::spliceOut(Node* k)
 		root = 0;
 	}
 	else {
+		rebalanceBeforeSpliceOut(kp, k);
+		
 		// -- splice out node
 		Node* kc = (k->left != 0) ? k->left : k->right;
 		if (kp->left == k)
@@ -370,7 +382,6 @@ typename BinaryTree<T>::Node* BinaryTree<T>::spliceOut(Node* k)
 		if (kc != 0) kc->parent = kp;
 		
 		restoreWeights(kp, -1);
-		rebalanceAfterSpliceOut(kp, k);
 	}
 	
 	cachedNode = 0;
@@ -378,31 +389,33 @@ typename BinaryTree<T>::Node* BinaryTree<T>::spliceOut(Node* k)
 	return k;
 }
 
-/** Replace an inner node by one of its leafs
-  * \arg k0 inner node
-  * \arg k1 leaf node
+/** Putting the leaf node kl into the place of inner node ki
   */
 template<class T>
-void BinaryTree<T>::replaceNode(Node* k0, Node* k1)
+void BinaryTree<T>::replaceNode(Node* ki, Node* kl)
 {
-	*k1 = *k0;
+	kl->balance = ki->balance;
+	kl->weight = ki->weight;
 	
-	// -- establish links from neighbors
-	Node* kp = k0->parent;
+	// establish links to neighbors
+	kl->parent = ki->parent;
+	kl->left = ki->left;
+	kl->right = ki->right;
+	
+	// establish links from neighbors
+	Node* kp = ki->parent;
 	if (kp) {
-		if (kp->left == k0)
-			kp->left = k1;
+		if (kp->left == ki)
+			kp->left = kl;
 		else
-			kp->right = k1;
+			kp->right = kl;
 	}
 	else
-		root = k1;
-	
-	// -- establish links from children
-	if (k0->left)
-		k0->left->parent = k1;
-	if (k0->right)
-		k0->right->parent = k1;
+		root = kl;
+	if (ki->left)
+		ki->left->parent = kl;
+	if (ki->right)
+		ki->right->parent = kl;
 }
 
 template<class T>
@@ -485,7 +498,7 @@ void BinaryTree<T>::rebalanceAfterSpliceIn(Node* kp, Node* kn)
 }
 
 template<class T>
-void BinaryTree<T>::rebalanceAfterSpliceOut(Node* kp, Node* ko)
+void BinaryTree<T>::rebalanceBeforeSpliceOut(Node* kp, Node* ko)
 {
 	int delta = 2 * (kp->left == ko) - 1;
 	Node* k = kp;
@@ -633,6 +646,7 @@ template<class T>
 bool BinaryTree<T>::testBalance2(Node* k)
 {
 	if (!k) return true;
+	check(((height(k->left) - height(k->right)) == k->balance));
 	if ((height(k->left) - height(k->right)) != k->balance) return false;
 	return testBalance2(k->left) && testBalance2(k->right);
 }
@@ -646,8 +660,7 @@ bool BinaryTree<T>::testWeight(Node* k)
 		testWeight(k->left) && testWeight(k->right);
 }
 
-/*
-template<class T>
+/*template<class T>
 void BinaryTree<T>::levelPrint()
 {
 	printf("level order print:\n");
@@ -663,14 +676,13 @@ void BinaryTree<T>::levelPrint(Node* k, int level)
 {
 	if (k == 0) return;
 	if (level == 0) {
-		printf("'%c' ", (char)k->data().value());
+		printf("(%p: %p,%p,%p,%d) ", k, k->parent, k->left, k->right, k->balance);
 	}
 	else {
 		levelPrint(k->left, level-1);
 		levelPrint(k->right, level-1);
 	}
-}
-*/
+}*/
 
 } // namespace ftl
 

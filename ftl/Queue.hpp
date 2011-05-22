@@ -61,8 +61,8 @@ public:
 	inline T get(int i) const { return front(i); }
 	
 	inline Queue& push(const T& item) { return pushBack(item); }
-	inline Queue& pop(T& item) { return popFront(item); }
-	inline T pop() { T item; popFront(item); return item; }
+	inline Queue& pop(T* item) { return popFront(item); }
+	inline T pop() { T item; popFront(&item); return item; }
 	
 	inline void clear()
 	{
@@ -81,13 +81,13 @@ public:
 		return *this;
 	}
 	
-	inline Queue& popFront(T& item)
+	inline Queue& popFront(T* item)
 	{
 		check(fill_ > 0);
 		++tail_;
 		if (tail_ >= size_) tail_ = 0;
 		--fill_;
-		item = buf_[tail_];
+		*item = buf_[tail_];
 		return *this;
 	}
 	
@@ -101,10 +101,10 @@ public:
 		return *this;
 	}
 	
-	inline Queue& popBack(T& item)
+	inline Queue& popBack(T* item)
 	{
 		check(fill_ > 0);
-		item = buf_[head_];
+		*item = buf_[head_];
 		--head_;
 		if (head_ < 0) head_ = size_ - 1;
 		--fill_;
