@@ -16,7 +16,7 @@ namespace ftl
 {
 
 template<class Key, class Value>
-class Map: public Container< Pair<Key, Value>, Map<Key, Value> >
+class Map: public Container< Pair<Key, Value>, Map<Key, Value> >, public Sequence<Pair<Key,Value>, int>
 {
 private:
 	typedef BinaryTree< Pair<Key,Value> > Tree;
@@ -24,19 +24,19 @@ private:
 	
 public:
 	typedef Pair<Key,Value> Item;
-	typedef int Index;
 	typedef GenericIterator< Map<Key, Value> > Iterator;
 	
 	inline void clear() { tree_.clear(); }
 	
-	inline Index first() const { return 0; }
-	inline Index last() const { return length() - 1; }
-	inline Index end() const { return length(); }
-	
-	inline bool def(Index i) { return (0 <= i) && (i < tree_.numberOfNodes()); }
-	inline Item get(Index i) const {
-		Node* k = 0;
-		return (tree_.lookupByIndex(i, &k)) ? k->e_ : Item();
+	inline bool has(int index) const { return index < length(); }
+		
+	inline Item get(int index) const {
+		return at(index);
+	}
+	inline const Item& at(int index) const {
+		Node* node = 0;
+		if (tree_.lookupByIndex(index, &node)) return node->e_;
+		else return nullItem_;
 	}
 	
 	/** Insert a key-value mapping if no key-value mapping with the same key exists already.
@@ -165,6 +165,7 @@ public:
 	
 protected:
 	Tree tree_;
+	Item nullItem_;
 };
 
 } // namespace ftl

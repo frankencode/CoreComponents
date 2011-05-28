@@ -195,10 +195,8 @@ Ref<Process, Owner> ProcessFactory::produce()
 			
 			argv[0] = str::dup(execPath_->data());
 			if (options_) {
-				int j = 1;
-				for (StringList::Index i = options_->first(); options_->def(i); ++i, ++j) {
-					argv[j] = str::dup(options_->at(i)->data());
-				}
+				for (int i = 0; i < options_->length(); ++i)
+					argv[i + 1] = str::dup(options_->at(i)->data());
 			}
 			argv[argc] = 0;
 			

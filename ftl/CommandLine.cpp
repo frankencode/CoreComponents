@@ -155,7 +155,7 @@ Ref<CommandLine::OptionList> CommandLine::usedOptions() const { return usedOptio
 Ref<CommandOption> CommandLine::optionByShortName(char name) const
 {
 	Ref<CommandOption> option;
-	for (OptionList::Index i = definedOptions_->first(); definedOptions_->def(i); ++i) {
+	for (int i = 0; i < definedOptions_->length(); ++i) {
 		Ref<CommandOption> candidate = definedOptions_->at(i);
 		if (candidate->shortName_ == name) {
 			option = candidate;
@@ -168,7 +168,7 @@ Ref<CommandOption> CommandLine::optionByShortName(char name) const
 Ref<CommandOption> CommandLine::optionByLongName(String name) const
 {
 	Ref<CommandOption> option;
-	for (OptionList::Index i = definedOptions_->first(); definedOptions_->def(i); ++i) {
+	for (int i = 0; i < definedOptions_->length(); ++i) {
 		Ref<CommandOption> candidate = definedOptions_->at(i);
 		if (candidate->longName_ == name) {
 			option = candidate;
@@ -235,7 +235,7 @@ Ref<StringList, Owner> CommandLine::read(String line)
 
 void CommandLine::verifyTypes()
 {
-	for (OptionList::Index i = definedOptions_->first(); definedOptions_->def(i); ++i)
+	for (int i = 0; i < definedOptions_->length(); ++i)
 	{
 		Ref<CommandOption> option = definedOptions_->at(i);
 		
@@ -365,7 +365,7 @@ String CommandLine::helpText() const
 		Ref<StringList, Owner> lines = new StringList;
 		int maxLength = 0;
 		
-		for (OptionList::Index i = definedOptions_->first(); definedOptions_->def(i); ++i) {
+		for (int i = 0; i < definedOptions_->length(); ++i) {
 			Ref<CommandOption> option = definedOptions_->get(i);
 			Format format("  ");
 			if (option->shortName_)
@@ -390,18 +390,16 @@ String CommandLine::helpText() const
 		
 		String indent = String::initialized(maxLength + 2, ' ');
 		
-		OptionList::Index i = definedOptions_->first();
-		StringList::Index j = lines->first();
-		for (;definedOptions_->def(i) && lines->def(j); ++i, ++j)
+		for (int i = 0; (i < definedOptions_->length()) && (i < lines->length()); ++i)
 		{
 			Ref<CommandOption> option = definedOptions_->at(i);
 			Format line;
-			line << lines->at(j);
-			if (lines->at(j)->size() < indent->size())
-				line << String::initialized(indent->size() - lines->at(j)->size(), ' ');
+			line << lines->at(i);
+			if (lines->at(i)->size() < indent->size())
+				line << String::initialized(indent->size() - lines->at(i)->size(), ' ');
 			line << option->description_;
 			line << "\n";
-			lines->set(j, line);
+			lines->set(i, line);
 		}
 		
 		options = String::join(lines);

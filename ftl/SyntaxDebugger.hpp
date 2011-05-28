@@ -116,7 +116,7 @@ public:
 		typedef Map<int, Ref<RuleNode> > RuleById;
 		Ref<RuleById, Owner> ruleById = new RuleById;
 		
-		for (typename RuleByName::Index i = ruleByName->first(); ruleByName->def(i); ++i) {
+		for (typename RuleByName::Index i = ruleByName->first(); ruleByName->has(i); ++i) {
 			Ref<RuleNode> rule = ruleByName->value(i);
 			ruleById->insert(rule->id(), rule);
 		}
@@ -369,7 +369,7 @@ private:
 		virtual void printAttributes(String indent) {
 			print("\n%%\"", indent);
 			Ref<KeywordMap> map = keywordNode()->map();
-			for (typename KeywordMap::Index index = map->first(); map->def(index); ++index) {
+			for (typename KeywordMap::Index index = map->first(); map->has(index); ++index) {
 				Ref<typename KeywordMap::Key, Owner> s = map->key(index);
 				printString(*s);
 				if (index != map->last())
@@ -814,7 +814,7 @@ private:
 	Ref<StateNameById, Owner> newReverseMap(Ref<StateIdByName> stateIdByName)
 	{
 		Ref<StateNameById, Owner> stateNameById = new StateNameById;
-		for (typename StateIdByName::Index i = stateIdByName->first(); stateIdByName->def(i); ++i) {
+		for (typename StateIdByName::Index i = stateIdByName->first(); stateIdByName->has(i); ++i) {
 			String name = stateIdByName->key(i);
 			int id = stateIdByName->value(i);
 			stateNameById->insert(id, name);

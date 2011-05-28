@@ -14,7 +14,7 @@ namespace ftl
 {
 
 template<class T>
-class Stack: public Container< T, Stack<T> >, public Sequence<T, int>
+class Stack: public Container< T, Stack<T> > // , public Sequence<T, int>
 {
 public:
 	typedef int Index;
@@ -48,11 +48,7 @@ public:
 	inline bool isFull() const { return fill_ == size_; }
 	inline bool isEmpty() const { return fill_ == 0; }
 	
-	inline int first() const { return 0; }
-	inline int last() const { return fill_ - 1; }
-	inline int end() const { return fill_; }
-	
-	inline bool def(int i) const { return (0 <= i) && (i < fill_); }
+	inline bool has(int i) const { return (0 <= i) && (i < fill_); }
 	inline T& at(int i) const { return bottom(i); }
 	inline T get(int i) const { return bottom(i); }
 	

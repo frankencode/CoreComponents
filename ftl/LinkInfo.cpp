@@ -32,7 +32,7 @@ LinkInfo::LinkInfo(void* addr)
 		symbolAddress_ = info.dli_saddr;
 		Ref<StringList, Owner> parts = libraryPath_.split(".");
 		if (parts->length() > 3) {
-			StringList::Index i = parts->last();
+			int i = parts->length() - 1;
 			if (parts->at(i) == "dylib") --i;
 			majorVersion_ = parts->at(i-2).toInt();
 			minorVersion_ = parts->at(i-1).toInt();

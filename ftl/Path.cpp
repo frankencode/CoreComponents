@@ -43,7 +43,7 @@ Path Path::absoluteRelativeTo(String currentDir) const
 	
 	int upCount = 0;
 	
-	for (StringList::Index i = parts->first(); parts->def(i); ++i)
+	for (int i = 0; i < parts->length(); ++i)
 	{
 		String c = parts->at(i);
 		if (c == ".")
@@ -123,7 +123,7 @@ Path Path::expand(String component) const
 Path Path::lookup(Ref<StringList> dirs, String fileName, int accessFlags)
 {
 	String path;
-	for (StringList::Index i = dirs->first(); dirs->def(i); ++i) {
+	for (int i = 0; i < dirs->length(); ++i) {
 		String candidate = Format() << dirs->at(i) << "/" << fileName;
 		if (File(candidate).access(accessFlags)) {
 			path = candidate;

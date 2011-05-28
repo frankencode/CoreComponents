@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 	
 	for (String file; files->read(&file);) {
 		FileStatus status(file);
-		for (CommandLine::OptionList::Index i = options->first(); options->def(i); ++i) {
+		for (int i = 0; i < options->length(); ++i) {
 			Ref<CommandOption> option = options->at(i);
 			if (option == name)
 				print(Path(status.path()).fileName());
@@ -125,7 +125,8 @@ int main(int argc, char** argv)
 				print("%%", status.inodeNumber());
 			if (option == links)
 				print("%%", status.numberOfHardLinks());
-			if (options->def(i + 1)) print("\t");
+			if (i + 1 < options->length())
+				print("\t");
 		}
 		print("\n");
 	}

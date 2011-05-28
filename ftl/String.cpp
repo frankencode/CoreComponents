@@ -71,7 +71,7 @@ bool String::toUtf16(void* buf, int* size)
 {
 	uint16_t* buf2 = reinterpret_cast<uint16_t*>(buf);
 	int j = 0, n = *size / 2;
-	for (Index i = first(); def(i); ++i) {
+	for (Index i = first(); has(i); ++i) {
 		uchar_t ch = get(i);
 		if (ch < 0x10000) {
 			if (j < n) buf2[j] = ch;
@@ -96,14 +96,14 @@ bool String::toUtf16(void* buf, int* size)
 Ref<ByteArray, Owner> String::toUtf16(int endian)
 {
 	int size2 = 0;
-	for (Index i = first(); def(i); ++i)
+	for (Index i = first(); has(i); ++i)
 		size2 += Utf16Encoder::encodedSize(get(i));
 	Ref<ByteArray, Owner>  s2 = new ByteArray(size2 + 2);
 	s2[size2] = 0;
 	s2[size2 + 1] = 0;
 	if (size2 > 0) {
 		Utf16Encoder sink(s2->data(), size2, endian);
-		for (Index i = first(); def(i); ++i)
+		for (Index i = first(); has(i); ++i)
 			sink.write(get(i));
 	}
 	return s2;
@@ -123,16 +123,16 @@ void String::assign(Ref<StringList> parts, const char* sep)
 	int sepSize = str::len(sep);
 	if (parts->length() > 0) {
 		int size = 0;
-		for (StringList::Index i = parts->first(); parts->def(i); ++i)
+		for (int i = 0; i < parts->length(); ++i)
 			size += parts->at(i)->size();
 		size += (parts->length() - 1) * sepSize;
 		set(new Media(size));
 		char* p = media()->data();
-		for (StringList::Index i = parts->first(); parts->def(i); ++i) {
+		for (int i = 0; i < parts->length(); ++i) {
 			String part = parts->at(i);
 			mem::cpy(p, part->data(), part->size());
 			p += part->size();
-			if (parts->def(i + 1)) {
+			if (i + 1 < parts->length()) {
 				mem::cpy(p, sep, sepSize);
 				p += sepSize;
 			}
@@ -359,7 +359,7 @@ String String::normalized(bool nameCase) const
 		media()->set(i, ch);
 	}
 	Ref<StringList, Owner> parts = split(" ");
-	for (StringList::Index i = parts->first(); parts->def(i);) {
+	for (int i = 0; i < parts->length(); ++i) {
 		String s = parts->at(i);
 		if (s.isEmpty()) {
 			parts->remove(i);

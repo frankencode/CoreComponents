@@ -51,7 +51,7 @@ public:
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (media->def(i)) {
+			if (media->has(i)) {
 				Char ch = media->get(i++);
 				if ((ch != ch_) ^ invert_)
 					i = Media::ill();
@@ -75,7 +75,7 @@ public:
 	public:
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			return media->def(i) ? i + 1 : Media::ill();
+			return media->has(i) ? i + 1 : Media::ill();
 		}
 	};
 	
@@ -90,7 +90,7 @@ public:
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (media->def(i)) {
+			if (media->has(i)) {
 				Char ch = media->get(i++);
 				if (((ch < a_) || (b_ < ch)) ^ invert_)
 					i = Media::ill();
@@ -123,7 +123,7 @@ public:
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (media->def(i)) {
+			if (media->has(i)) {
 				Char ch = media->get(i++);
 				int k = 0, len = s_.length();
 				while (k < len) {
@@ -164,9 +164,9 @@ public:
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (media->def(i)) {
+			if (media->has(i)) {
 				int k = 0, len = s_.length();
-				while ((k < len) && (media->def(i))) {
+				while ((k < len) && (media->has(i))) {
 					Char ch = media->get(i++);
 					if (!caseSensitive_)
 						ch = ToLower<Char>::map(ch);
@@ -199,7 +199,7 @@ public:
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (media->def(i)) {
+			if (media->has(i)) {
 				Index h = 0;
 				int keyword = -1;
 				if (map_->match(media, i, &h, &keyword, caseSensitive_)) {
@@ -315,7 +315,7 @@ public:
 	public:
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			bool eoi = (!media->def(i)) && ((i == 0) || (media->def(i - 1)));
+			bool eoi = (!media->has(i)) && ((i == 0) || (media->has(i - 1)));
 			return eoi ? i : Media::ill();
 		}
 	};
@@ -352,7 +352,7 @@ public:
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 			
 			bool found = false;
-			while (media->def(i) || media->def(i - 1)) {
+			while (media->has(i) || media->has(i - 1)) {
 				Index h = entry()->matchNext(media, i, tokenFactory, parentToken, state);
 				if (h != Media::ill()) {
 					found = true;
@@ -691,7 +691,7 @@ public:
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (media->def(i))
+			if (media->has(i))
 				*state->character(charId_) = media->get(i++);
 			else
 				i = Media::ill();
@@ -737,7 +737,7 @@ public:
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
 		{
-			if (media->def(i)) {
+			if (media->has(i)) {
 				Char ch = media->get(i++);
 				if ((ch != *state->character(charId_)) ^ invert_)
 					i = Media::ill();
@@ -832,7 +832,7 @@ public:
 		{
 			Array<Char>* string = state->string(stringId_);
 			int k = 0, m = string->length();
-			while (media->def(i) && (k < m)) {
+			while (media->has(i) && (k < m)) {
 				if (media->get(i) != string->get(k))
 					break;
 				++i;
@@ -1207,7 +1207,7 @@ public:
 		{
 			Index i = *i0;
 			Ref<Token, Owner> rootToken;
-			while (media->def(i)) {
+			while (media->has(i)) {
 				if (rootToken = match(media, i, i1, 0, tokenFactory))
 					break;
 				++i;
@@ -1272,7 +1272,7 @@ public:
 			*line = 1;
 			*pos = 1;
 			int j = 0;
-			while (media->def(j) && (j < index)) {
+			while (media->has(j) && (j < index)) {
 				Char ch = media->get(j);
 				if (ch == '\n') { ++*line; *pos = 1; }
 				else ++*pos;
