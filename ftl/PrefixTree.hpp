@@ -96,7 +96,7 @@ public:
 	{
 		int i1 = 0;
 		if (match(media, 0, &i1, value))
-			return !media->def(i1);
+			return !media->has(i1);
 		return false;
 	}
 	
@@ -106,11 +106,11 @@ public:
 	inline Index first() const { return Index(Parent::firstLeaf()); }
 	inline Index last() const { return Index(Parent::lastLeaf()); }
 	
-	inline bool def(Index index) const { return index.valid(); }
+	inline bool has(Index index) const { return index.valid(); }
 	
 	Ref<Key, Owner> key(Index index) const
 	{
-		check(def(index));
+		check(has(index));
 		int size = 0;
 		{
 			Ref<Node> node = index.node_;
@@ -137,7 +137,7 @@ public:
 	}
 	
 	inline Value value(Index index) const {
-		check(def(index));
+		check(has(index));
 		return index.node_->value_;
 	}
 	
@@ -254,7 +254,7 @@ protected:
 		bool found = false;
 		int i = i0;
 		Ref<Node> node = this;
-		while ((node) && media->def(i)) {
+		while ((node) && media->has(i)) {
 			Ref<Node> parent = node;
 			node = node->step<Filter>(media->get(i++));
 			if (node)

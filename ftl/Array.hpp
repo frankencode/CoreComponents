@@ -67,32 +67,32 @@ public:
 	static inline int ill() { return -1; }
 	static inline bool ill(int i) { return i < 0; }
 	
-	inline bool def(int i) const {
+	inline bool has(int i) const {
 		if (i < 0) i += size_;
 		return (0 <= i) && (i < size_);
 	}
 	
 	inline T get(int i) const {
+		check(has(i));
 		if (i < 0) i += size_;
-		check(def(i));
 		return data_[i];
 	}
 	
 	inline void set(int i, const T& item) {
+		check(has(i));
 		if (i < 0) i += size_;
-		check(def(i));
 		data_[i] = item;
 	}
 	
 	inline T* pointerAt(int i) const {
+		check(has(i));
 		if (i < 0) i += size_;
-		check(def(i));
 		return data_ + i;
 	}
 	
 	inline T& at(int i) const {
+		check(has(i));
 		if (i < 0) i += size_;
-		check(def(i));
 		return data_[i];
 	}
 	
@@ -119,8 +119,8 @@ public:
 	
 	inline Ref<Array, Owner> copy(int i0, int i1) const {
 		check(i0 <= i1);
-		check(def(i0));
-		check(def(i1 - (i0 < i1)));
+		check(has(i0));
+		check(has(i1 - (i0 < i1)));
 		return (i0 < i1) ? new Array(data_ + i0, i1 - i0) : new Array();
 	}
 	

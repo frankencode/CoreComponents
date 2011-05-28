@@ -7,9 +7,9 @@ namespace ftl
 int main()
 {
 	Ref<NetworkInterfaceList, Owner> interfaces = NetworkInterface::queryAll(AF_UNSPEC);
-	for (NetworkInterfaceList::Index i = interfaces->first(); interfaces->def(i); ++i) {
+	for (int i = 0; i < interfaces->length(); ++i) {
 		Ref<NetworkInterface> interface = interfaces->get(i);
-		if (i != interfaces->first()) print("\n");
+		if (i != 0) print("\n");
 		print("%%:\n", interface->name());
 		print("  Flags: ");
 		int flags = interface->flags();
@@ -26,7 +26,7 @@ int main()
 		print("  MTU:    %%\n", interface->mtu());
 		Ref<SocketAddressList> addressList = interface->addressList();
 		if (addressList) {
-			for (SocketAddressList::Index k = addressList->first(); addressList->def(k); ++k) {
+			for (int k = 0; k < addressList->length(); ++k) {
 				Ref<SocketAddress> address = addressList->at(k);
 				print("  Addr:   %%", address->toString());
 				Ref<SocketAddressEntry> addressEntry = address;

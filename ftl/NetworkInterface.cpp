@@ -268,7 +268,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 					Ref<SocketAddress, Owner> label;
 					Ref<NetworkInterface> interface;
 					
-					for (NetworkInterfaceList::Index i = list->first(); list->def(i); ++i) {
+					for (int i = 0; i < list->length(); ++i) {
 						interface = list->at(i);
 						if (unsigned(interface->index_) == data->ifa_index)
 							break;
@@ -411,7 +411,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 			if ((family != AF_UNSPEC) && (family != ifr->ifr_addr.sa_family))
 				continue;
 			
-			for (NetworkInterfaceList::Index k = list->first(); list->def(k); ++k)
+			for (int k = 0; k < list->length(); ++k)
 			{
 				Ref<NetworkInterface> interface = list->at(k);
 				

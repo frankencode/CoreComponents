@@ -26,9 +26,9 @@ int main(int argc, char** argv)
 	print("alpha, beta = %%, %%\n", alpha->value(), beta->value());
 	print("alpha + beta = %%\n", int(alpha->value()) + double(beta->value()));
 	print("files = [");
-	for (StringList::Index i = files->first(); files->def(i); ++i) {
+	for (int i = 0; i < files->length(); ++i) {
 		print(" %%", files->at(i));
-		if (files->def(i + 1))
+		if (i + 1 < files->length())
 			print(",");
 	}
 	print("]\n");

@@ -53,7 +53,7 @@ int main(int argc, char** argv)
 		String s("123x");
 		const char* pattern = "x";
 		String::Index i = s.find(pattern);
-		print("Find \"%%\" in \"%%\": valid = %%\n", pattern, s->data(), s.def(i));
+		print("Find \"%%\" in \"%%\": valid = %%\n", pattern, s->data(), s.has(i));
 		/*print("s == String(s.split(pattern), pattern): %%\n", s == String(s.split(pattern), pattern));
 		print("s.split(pattern)->length() = %%\n", s.split(pattern)->length());
 		print("String(s.split(pattern), pattern) = '%%'\n", String(s.split(pattern), pattern).data());*/
@@ -61,9 +61,8 @@ int main(int argc, char** argv)
 	
 	Ref<StringList, Owner> lines = text.split("\n");
 	print("Number of lines: %%\n", lines->length());
-	int j = 0;
-	for (StringList::Index i = lines->first(); lines->def(i); ++i, ++j)
-		print("%%: '%%' (%%)\n", j, lines->at(i)->data(), lines->at(i)->size());
+	for (int i = 0; i < lines->length(); ++i)
+		print("%%: '%%' (%%)\n", i, lines->at(i)->data(), lines->at(i)->size());
 	
 	return 0;
 }

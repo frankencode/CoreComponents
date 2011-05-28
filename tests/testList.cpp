@@ -8,12 +8,10 @@ namespace ftl
 
 template<class T>
 void print(List<T>& list) {
-	List<int>::Index i = list.first();
 	print("[");
-	while (list.def(i)) {
+	for (int i = 0; i < list.length(); ++i) {
 		print("%%", list.at(i));
-		++i;
-		if (list.def(i)) print(", ");
+		if (i + 1 < list.length()) print(", ");
 	}
 	print("]\n");
 }
@@ -53,11 +51,11 @@ int main()
 		List<int> list;
 		list << 1 << 2 << 3 << 4 << 5 << 6;
 		print(list);
-		List<int>::Index i = list.first();
-		while (list.def(i)) {
+		for (int i = 0; i < list.length();) {
 			if (list.at(i) % 2 != 0)
 				list.pop(i);
-			++i;
+			else
+				++i;
 		}
 		print(list);
 		list.clear();

@@ -6,6 +6,7 @@
  * See ../COPYING for the license.
  */
 
+#include "Guard.hpp"
 #include "Event.hpp"
 
 namespace ftl
@@ -17,33 +18,29 @@ Event::Event()
 
 void Event::pushBack(Ref<Action> handler)
 {
-	mutex_.acquire();
+	Guard<CoreMutex> guard(&mutex_);
 	handlers_->pushBack(handler);
-	mutex_.release();
 }
 
 void Event::pushFront(Ref<Action> handler)
 {
-	mutex_.acquire();
+	Guard<CoreMutex> guard(&mutex_);
 	handlers_->pushFront(handler);
-	mutex_.release();
 }
 
 void Event::remove(Ref<Action> handler)
 {
-	mutex_.acquire();
-	Handlers::Index i = handlers_->find(handler);
-	if (handlers_->def(i))
+	Guard<CoreMutex> guard(&mutex_);
+	int i = handlers_->find(handler);
+	if (i < handlers_->length())
 		handlers_->remove(i);
-	mutex_.release();
 }
 
 void Event::run()
 {
-	mutex_.acquire();
-	for (Handlers::Index i = handlers_->first(); handlers_->def(i); ++i)
+	Guard<CoreMutex> guard(&mutex_);
+	for (int i = 0; i < handlers_->length(); ++i)
 		handlers_->at(i)->run();
-	mutex_.release();
 }
 
 } // namespace ftl

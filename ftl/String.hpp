@@ -100,7 +100,7 @@ public:
 	
 	static inline int ill() { return Index(); }
 	
-	inline bool def(Index index) const {
+	inline bool has(Index index) const {
 		check(index.data() == media()->data());
 		return index.valid();
 	}

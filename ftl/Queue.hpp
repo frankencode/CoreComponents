@@ -47,16 +47,12 @@ public:
 		}
 	}
 	
-	inline int first() const { return (fill_ > 0) - 1; }
-	inline int last() const { return fill_ - 1; }
-	inline int end() const { return fill_; }
-	
 	inline int size() const { return size_; }
 	inline int fill() const { return fill_; }
 	inline bool isFull() const { return fill_ == size_; }
 	inline bool isEmpty() const { return fill_ == 0; }
 	
-	inline bool def(int i) const { return (0 <= i) && (i < fill_); }
+	inline bool has(int i) const { return (0 <= i) && (i < fill_); }
 	inline T& at(int i) const { return front(i); }
 	inline T get(int i) const { return front(i); }
 	

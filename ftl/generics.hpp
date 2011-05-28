@@ -85,7 +85,7 @@ template<class Item, class Index = int>
 class Sequence: public virtual Instance
 {
 public:
-	virtual bool def(Index i) const = 0;
+	virtual bool has(Index i) const = 0;
 	virtual Item get(Index i) const = 0;
 };
 

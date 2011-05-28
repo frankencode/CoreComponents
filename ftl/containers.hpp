@@ -19,8 +19,6 @@ class Container: public Source<T>, public NonCopyable
 public:
 	virtual bool isEmpty() const = 0;
 	virtual T pop() = 0;
-	inline bool hasNext() { return !isEmpty(); }
-	inline T next() { return pop(); }
 	
 	inline bool read(T* item) {
 		if (!isEmpty()) {
@@ -46,25 +44,24 @@ class GenericIterator: public Source<typename Container::Item>
 {
 public:
 	typedef typename Container::Item Item;
-	typedef typename Container::Index Index;
 	
 	GenericIterator(Ref<Container> container)
 		: container_(container),
-		  i_(container->first())
+		  i_(0)
 	{}
 	
 	inline bool read(Item* item) {
-		bool more = container_->def(i_);
+		bool more = container_->has(i_);
 		if (more)
 			*item = container_->get(i_++);
 		return more;
 	}
 	
-	inline operator Index() const { return i_; }
+	inline operator int() const { return i_; }
 	
 private:
 	Ref<Container> container_;
-	typename Container::Index i_;
+	int i_;
 };
 
 template<
