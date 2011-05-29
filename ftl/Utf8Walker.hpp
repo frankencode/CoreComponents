@@ -107,13 +107,6 @@ public:
 	inline bool valid() const { return *p_; }
 	inline operator bool() const { return *p_; }
 	
-	/*inline bool hasNext() { return *p_; }
-	inline uchar_t next() {
-		uchar_t ch = getChar();
-		++(*this);
-		return ch;
-	}*/
-	
 	inline Utf8Walker operator+(int delta) const {
 		Utf8Walker it = *this;
 		return it += delta;

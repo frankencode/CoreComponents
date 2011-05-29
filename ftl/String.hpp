@@ -24,7 +24,7 @@ class Path;
 
 typedef List<String> StringList;
 
-class String: public Ref<ByteArray, Owner>, public Sequence<uchar_t, Utf8Walker>
+class String: public Ref<ByteArray, Owner>
 {
 public:
 	typedef ByteArray Media;
