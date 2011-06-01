@@ -55,6 +55,7 @@ SET(FTL_HEADER
 	
 	strings
 	String.hpp
+	Character.hpp
 	IntegerLiteral.hpp
 	FloatLiteral.hpp
 	FormatSpecifier.hpp

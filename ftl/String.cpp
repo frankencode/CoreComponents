@@ -24,7 +24,7 @@ namespace ftl
 {
 
 String::String(const Variant& b)
-	: Super(b.toInstance<Media>())
+	: Super(b.toInstance<ByteArray>())
 {}
 
 String::String(const Format& b)
@@ -33,7 +33,7 @@ String::String(const Format& b)
 }
 
 String::String(const Path& b)
-	: Super(b.toString().media())
+	: Super(b.toString().bytes())
 {}
 
 String String::fromUtf16(const void* data, int size, int endian)
@@ -53,7 +53,7 @@ String String::fromUtf16(const void* data, int size, int endian)
 		}
 		s2 = String::uninitialized(size2);
 		Utf16Decoder source(data, size, endian);
-		Utf8Encoder sink(s2.media()->data(), size2);
+		Utf8Encoder sink(s2.bytes()->data(), size2);
 		for (uchar_t ch; source.read(&ch);)
 			sink.write(ch);
 	}
@@ -71,7 +71,7 @@ bool String::toUtf16(void* buf, int* size)
 {
 	uint16_t* buf2 = reinterpret_cast<uint16_t*>(buf);
 	int j = 0, n = *size / 2;
-	for (Index i = first(); has(i); ++i) {
+	for (int i = 0; i < length(); ++i) {
 		uchar_t ch = get(i);
 		if (ch < 0x10000) {
 			if (j < n) buf2[j] = ch;
@@ -96,14 +96,14 @@ bool String::toUtf16(void* buf, int* size)
 Ref<ByteArray, Owner> String::toUtf16(int endian)
 {
 	int size2 = 0;
-	for (Index i = first(); has(i); ++i)
+	for (int i = 0; i < length(); ++i)
 		size2 += Utf16Encoder::encodedSize(get(i));
-	Ref<ByteArray, Owner>  s2 = new ByteArray(size2 + 2);
+	Ref<ByteArray, Owner> s2 = new ByteArray(size2 + 2);
 	s2[size2] = 0;
 	s2[size2 + 1] = 0;
 	if (size2 > 0) {
 		Utf16Encoder sink(s2->data(), size2, endian);
-		for (Index i = first(); has(i); ++i)
+		for (int i = 0; i < length(); ++i)
 			sink.write(get(i));
 	}
 	return s2;
@@ -126,8 +126,8 @@ void String::assign(Ref<StringList> parts, const char* sep)
 		for (int i = 0; i < parts->length(); ++i)
 			size += parts->at(i)->size();
 		size += (parts->length() - 1) * sepSize;
-		set(new Media(size));
-		char* p = media()->data();
+		set(new ByteArray(size));
+		char* p = bytes()->data();
 		for (int i = 0; i < parts->length(); ++i) {
 			String part = parts->at(i);
 			mem::cpy(p, part->data(), part->size());
@@ -137,27 +137,18 @@ void String::assign(Ref<StringList> parts, const char* sep)
 				p += sepSize;
 			}
 		}
-		check(p == media()->data() + size);
+		check(p == bytes()->data() + size);
 	}
 	else {
-		set(new Media);
+		set(new ByteArray);
 	}
 }
 
 String String::copy() const
 {
 	String b;
-	b.Super::set(new Media(media()->data(), media()->size()));
+	b.Super::set(new ByteArray(bytes()->data(), bytes()->size()));
 	return b;
-}
-
-String String::copy(const Index& index0, const Index& index1) const
-{
-	check(index0.data() == media()->data());
-	check(index1.data() == media()->data());
-	String s;
-	s.assign(index0.pos(), index1.pos() - index0.pos());
-	return s;
 }
 
 bool String::valid() const
@@ -167,11 +158,10 @@ bool String::valid() const
 	return true;
 }
 
-String::Index String::find(const Index& index, const char* pattern) const
+int String::find(int i, const char* pattern) const
 {
-	if (!index.valid() || media()->isEmpty()) return Index();
-	check(index.data() == media()->data());
-	const char* t = index.pos(); // text pos
+	if (!character()->has(i)) return i;
+	const char* t = character()->byte(i); // text pos
 	const char* m = pattern; // match pos
 	while ((*t) && (*m)) {
 		if (*t == *m)
@@ -180,22 +170,22 @@ String::Index String::find(const Index& index, const char* pattern) const
 			m = pattern;
 		++t;
 	}
-	return (*m) ? Index() : Index(media()->data(), t - (m - pattern));
+	return (*m) ? length() : character()->index(t - (m - pattern));
 }
 
 Ref<StringList, Owner> String::split(const char* pattern) const
 {
 	Ref<StringList, Owner> parts = new StringList;
-	Index index0 = first();
-	int patternSize = str::len(pattern);
-	while (index0.valid()) {
-		Index index1 = find(index0, pattern);
-		if (!index1.valid()) break;
-		parts->append(copy(index0, index1));
-		index0 = Index(media()->data(), index1.pos() + patternSize);
+	int i0 = 0;
+	int patternLength = Utf8Walker::length(pattern);
+	while (i0 < length()) {
+		int i1 = find(i0, pattern);
+		if (i1 == length()) break;
+		parts->append(copy(i0, i1));
+		i0 = i1 + patternLength;
 	}
-	if (index0.valid())
-		parts->append(copy(index0, end()));
+	if (i0 < length())
+		parts->append(copy(i0, length()));
 	else
 		parts->append(String());
 	return parts;
@@ -209,7 +199,7 @@ int String::toInt(bool* ok) const
 	int sign = 0;
 	int i1 = 0;
 	if (formatSyntax()->integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
-		 *ok = (value <= uint64_t(intMax)) && (i1 == media()->size());
+		 *ok = (value <= uint64_t(intMax)) && (i1 == bytes()->size());
 	}
 	else  {
 		*ok = false;
@@ -229,7 +219,7 @@ int64_t String::toInt64(bool* ok) const
 	int i1 = 0;
 	if (formatSyntax()->integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
 		if (ok)
-			*ok = ((value & (uint64_t(1) << 63)) != 0) && (i1 == media()->size());
+			*ok = ((value & (uint64_t(1) << 63)) != 0) && (i1 == bytes()->size());
 	}
 	else {
 		if (ok)
@@ -245,7 +235,7 @@ uint64_t String::toUInt64(bool* ok) const
 	int i1 = 0;
 	if (formatSyntax()->integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
 		if (ok)
-			*ok = (sign == 1) && (i1 == media()->size());
+			*ok = (sign == 1) && (i1 == bytes()->size());
 	}
 	else {
 		if (ok)
@@ -260,7 +250,7 @@ float64_t String::toFloat64(bool* ok) const
 	int i1 = 0;
 	if (formatSyntax()->floatingPointLiteral()->match(*this, 0, &i1, &value)) {
 		if (ok)
-			*ok = (i1 == media()->size());
+			*ok = (i1 == bytes()->size());
 	}
 	else {
 		if (ok)
@@ -271,59 +261,59 @@ float64_t String::toFloat64(bool* ok) const
 
 String String::toLower() const
 {
-	String s2(media()->size());
-	for (int i = 0, n = media()->size(); i < n; ++i)
-		s2->set(i, ftl::toLower(media()->at(i)));
+	String s2(bytes()->size());
+	for (int i = 0, n = bytes()->size(); i < n; ++i)
+		s2->set(i, ftl::toLower(bytes()->at(i)));
 	return s2;
 }
 
 String String::toUpper() const
 {
-	String s2(media()->size());
-	for (int i = 0, n = media()->size(); i < n; ++i)
-		s2->set(i, ftl::toUpper(media()->at(i)));
+	String s2(bytes()->size());
+	for (int i = 0, n = bytes()->size(); i < n; ++i)
+		s2->set(i, ftl::toUpper(bytes()->at(i)));
 	return s2;
 }
 
 String String::stripLeadingSpace() const
 {
-	int i = 0, n = media()->size();
+	int i = 0, n = bytes()->size();
 	while (i < n) {
-		if (!ftl::isSpace(media()->at(i))) break;
+		if (!ftl::isSpace(bytes()->at(i))) break;
 		++i;
 	}
-	return String(media()->data() + i, media()->size() - i);
+	return String(bytes()->data() + i, bytes()->size() - i);
 }
 
 String String::stripTrailingSpace() const
 {
-	int n = media()->size();
+	int n = bytes()->size();
 	while (n > 0) {
-		if (!ftl::isSpace(media()->at(n - 1))) break;
+		if (!ftl::isSpace(bytes()->at(n - 1))) break;
 		--n;
 	}
-	return String(media()->data(), n);
+	return String(bytes()->data(), n);
 }
 
 String String::trimmed() const
 {
-	int t = 0, l = 0, n = media()->size();
+	int t = 0, l = 0, n = bytes()->size();
 	while (t < n) {
-		if (!ftl::isSpace(media()->at(-t-1))) break;
+		if (!ftl::isSpace(bytes()->at(-t-1))) break;
 		++t;
 	}
 	n -= t;
 	while (l < n) {
-		if (!ftl::isSpace(media()->at(l))) break;
+		if (!ftl::isSpace(bytes()->at(l))) break;
 		++l;
 	}
-	return String(media()->data() + l, n);
+	return String(bytes()->data() + l, n);
 }
 
 String String::stripTags() const
 {
 	StringList parts;
-	char* o = media()->data();
+	char* o = bytes()->data();
 	char* p = o;
 	while (*p) {
 		if (*p == '<') {
@@ -353,10 +343,10 @@ String String::simplified() const
 
 String String::normalized(bool nameCase) const
 {
-	for (int i = 0, n = media()->size(); i < n; ++i) {
-		char ch = media()->at(i);
+	for (int i = 0, n = bytes()->size(); i < n; ++i) {
+		char ch = bytes()->at(i);
 		if ((0 <= ch) && (ch < 32)) ch = 32;
-		media()->set(i, ch);
+		bytes()->set(i, ch);
 	}
 	Ref<StringList, Owner> parts = split(" ");
 	for (int i = 0; i < parts->length(); ++i) {

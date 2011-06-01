@@ -6,7 +6,7 @@
 namespace ftl
 {
 
-class Expression: public Syntax<String::Media>::Definition
+class Expression: public Syntax<ByteArray>::Definition
 {
 public:
 	Expression(Ref<Debugger> debugger = 0)

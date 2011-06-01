@@ -20,7 +20,7 @@ namespace ftl
 
 FTL_EXCEPTION(CommandLineException, Exception);
 
-class CommandLine: public Syntax<String::Media>::Definition
+class CommandLine: public Syntax<ByteArray>::Definition
 {
 public:
 	CommandLine();
