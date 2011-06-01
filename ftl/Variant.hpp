@@ -49,19 +49,19 @@ public:
 	Variant(int value)           : type_(IntType),   int_(value)   {}
 	Variant(float value)         : type_(FloatType), float_(value) {}
 	Variant(double value)        : type_(FloatType), float_(value) {}
-	Variant(const char* value)   : type_(StringType) { initRef(String(value).media()); }
+	Variant(const char* value)   : type_(StringType) { initRef(String(value).bytes()); }
 	Variant(Ref<Instance> value) : type_(RefType)    { initRef(value); }
-	Variant(String value)        : type_(StringType) { initRef(value.media()); }
-	Variant(Path value)          : type_(PathType)   { initRef(value.toString().media()); }
+	Variant(String value)        : type_(StringType) { initRef(value.bytes()); }
+	Variant(Path value)          : type_(PathType)   { initRef(value.toString().bytes()); }
 	~Variant()                                       { if (type_ & RefType) killRef(); }
 	
 	inline const Variant& operator=(bool value)          { type_ = BoolType;   int_ = value; return *this; }
 	inline const Variant& operator=(int value)           { type_ = IntType;    int_ = value; return *this; }
 	inline const Variant& operator=(float value)         { type_ = FloatType;  float_ = value; return *this; }
 	inline const Variant& operator=(double value)        { type_ = FloatType;  float_ = value; return *this; }
-	inline const Variant& operator=(const char* value)   { type_ = StringType; setRef(String(value).media()); return *this; }
-	inline const Variant& operator=(String value)        { type_ = StringType; setRef(value.media()); return *this; }
-	inline const Variant& operator=(Path value)          { type_ = PathType;   setRef(value.toString().media()); return *this; }
+	inline const Variant& operator=(const char* value)   { type_ = StringType; setRef(String(value).bytes()); return *this; }
+	inline const Variant& operator=(String value)        { type_ = StringType; setRef(value.bytes()); return *this; }
+	inline const Variant& operator=(Path value)          { type_ = PathType;   setRef(value.toString().bytes()); return *this; }
 	inline const Variant& operator=(Ref<Instance> value) { type_ = RefType;    setRef(value); return *this; }
 	
 	Variant(const Variant& b): type_(UndefType) { *this = b; }

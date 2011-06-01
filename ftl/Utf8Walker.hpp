@@ -162,6 +162,13 @@ public:
 	// byte position in string
 	inline operator int() const { return p_ - s_; }
 	
+	static int length(const char* s) {
+		Utf8Walker walker(s);
+		int n_ = 0;
+		while (walker.valid()) { ++walker; ++n_; }
+		return n_;
+	}
+	
 private:
 	static inline const uint8_t* beforeBegin() {
 		return reinterpret_cast<const uint8_t*>("\0") + 1; // extra zero to signal before begin position

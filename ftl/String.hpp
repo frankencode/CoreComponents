@@ -11,7 +11,7 @@
 #include "atoms"
 #include "strings.hpp"
 #include "Utf8Walker.hpp"
-#include "Array.hpp"
+#include "Character.hpp"
 #include "List.hpp"
 
 namespace ftl
@@ -27,16 +27,14 @@ typedef List<String> StringList;
 class String: public Ref<ByteArray, Owner>
 {
 public:
-	typedef ByteArray Media;
-	typedef Ref<Media, Owner> Super;
-	typedef Utf8Walker Index;
+	typedef Ref<ByteArray, Owner> Super;
 	typedef uchar_t Item;
 	
 	// initialize empty string
-	String(): Super(new Media) {}
+	String(): Super(new ByteArray) {}
 	
-	// initialize string by a given string media
-	String(const Ref<Media, Owner>& media): Super(media) {}
+	// initialize string by a given string bytes
+	String(const Ref<ByteArray, Owner>& bytes): Super(bytes) {}
 	
 	// initialize string from a shallow copy of another string
 	String(const String& b): Super(b.Super::get()) {}
@@ -68,57 +66,51 @@ public:
 	
 	// assign a shallow copy of another string
 	inline String& operator=(const String& b) {
-		Super::set(b.media());
+		Super::set(b.bytes());
 		return *this;
 	}
 	
 	// assign a deep copy of a byte array
 	inline String& operator=(const char* data) {
 		String b(data);
-		Super::set(b.media());
+		Super::set(b.bytes());
 		return *this;
 	}
 	
 	// return a deep copy of this string
 	String copy() const;
-	String copy(const Index& index0, const Index& index1) const;
-	inline String head(int n) const { return copy(first(), first() + n); }
-	inline String tail(int n) const { return copy(end() - n, end()); }
+	inline String copy(int i0, int i1) const { return character()->copy(i0, i1); }
+	inline String head(int n) const { return character()->copy(0, n); }
+	inline String tail(int n) const { return character()->copy(length() - n, n); }
 	
-	// provide access to the shared media
-	inline Ref<Media> media() const { return Super::get(); }
-	inline operator char*() const { return media()->data(); }
-	inline char* utf8() const { return media()->data(); }
-	inline int encodedSize() const { return media()->size(); }
+	// provide access to the shared bytes
+	inline Ref<ByteArray> bytes() const { return Super::get(); }
+	inline operator char*() const { return bytes()->data(); }
+	inline char* utf8() const { return bytes()->data(); }
+	inline int encodedSize() const { return bytes()->size(); }
 	
-	inline Index first() const { return media()->isEmpty() ? Index() : Index(media()->data()); }
-	inline Index last() const { return media()->isEmpty() ? Index() : end() - 1; }
-	inline Index end() const { return media()->isEmpty() ? Index() : Index(media()->data(), media()->data() + media()->size()); }
-	inline int length() const { return end() - first(); }
+	inline bool isEmpty() const { return bytes()->isEmpty(); }
 	
-	inline bool isEmpty() const { return media()->isEmpty(); }
-	
-	static inline int ill() { return Index(); }
-	
-	inline bool has(Index index) const {
-		check(index.data() == media()->data());
-		return index.valid();
+	inline Ref<Character> character() const {
+		if (!character_)
+			character_ = new Character(Super::get());
+		return character_;
 	}
-	inline uchar_t get(Index index) const {
-		check(!media()->isEmpty());
-		check(index.data() == media()->data());
-		return index.getChar();
-	}
-	inline uchar_t operator[](const Index& index) { return get(index); }
 	
-	inline void validate() const { validate(media()->data(), media()->size()); }
+	inline int length() const { return character()->length(); }
+	
+	inline bool has(int i) const { return character()->has(i); }
+	inline uchar_t get(int i) const { return character()->get(i); }
+	inline uchar_t operator[](int i) const { return get(i); }
+	
+	inline void validate() const { validate(bytes()->data(), bytes()->size()); }
 	bool valid() const;
 	
-	Index find(const Index& index, const char* pattern) const;
+	int find(int i, const char* pattern) const;
 	Ref<StringList, Owner> split(const char* pattern) const;
 	
-	inline Index find(const char* pattern) const { return find(first(), pattern); }
-	inline bool contains(const char* pattern) const { return find(first(), pattern).valid(); }
+	inline int find(const char* pattern) const { return find(0, pattern); }
+	inline bool contains(const char* pattern) const { return find(pattern) < length(); }
 	inline String replace(const char* pattern, const char* replacement) { return split(pattern)->join(replacement); }
 	
 	inline bool operator< (const String& b) const { return str::cmp((*this)->data(), b->data()) <  0; }
@@ -145,10 +137,10 @@ public:
 	
 protected:
 	// initialize string with defined size but undefined content
-	explicit String(int size): Super(new Media(size)) {}
+	explicit String(int size): Super(new ByteArray(size)) {}
 	
 	// initialize string with defined size and defined content
-	explicit String(int size, char zero): Super(new Media(size, zero)) {
+	explicit String(int size, char zero): Super(new ByteArray(size, zero)) {
 		check(0 <= zero);
 	}
 	
@@ -157,9 +149,11 @@ protected:
 	
 	inline void assign(const char* data, int size = -1) {
 		if (size < 0) size = str::len(data);
-		set(new Media(data, size));
+		set(new ByteArray(data, size));
 	}
 	void assign(Ref<StringList> parts, const char* sep = "");
+	
+	mutable Ref<Character, Owner> character_;
 };
 
 inline bool operator< (const char* a, const String& b) { return str::cmp(a, b->data()) <  0; }
