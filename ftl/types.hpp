@@ -57,6 +57,15 @@ const double inf = union_cast<double>(uint64_t(0x7FF) << 52);
 const unsigned unsignedMax = unsigned(-1);
 const int intMax = unsignedMax >> 1;
 
+inline void* addressMax()
+{
+	void* p = 0;
+	unsigned char* u = (unsigned char*)&p;
+	for (unsigned i = 0; i < sizeof(void*) / sizeof(unsigned char); ++i)
+		u[i] = 0xFF;
+	return p;
+}
+
 template<class T> class IsAtomic { public: enum { value = 0 }; };
 template<> class IsAtomic<const int8_t> { public: enum { value = 1 }; };
 template<> class IsAtomic<const int16_t> { public: enum { value = 1 }; };

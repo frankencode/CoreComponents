@@ -24,12 +24,17 @@ private:
 	
 public:
 	typedef Pair<Key,Value> Item;
-	typedef GenericIterator< Map<Key, Value> > Iterator;
+	typedef GenericIterator<Map> Iterator;
 	
-	inline void clear() { tree_.clear(); }
+	inline Iterator iterator() const { return Iterator(this); }
 	
-	inline bool has(int index) const { return index < length(); }
-		
+	inline bool isEmpty() const { return tree_.weight() == 0; }
+	inline int length() const { return tree_.weight(); }
+	inline int size() const { return tree_.weight(); }
+	
+	inline bool has(int index) const {
+		return index < length();
+	}
 	inline Item get(int index) const {
 		return at(index);
 	}
@@ -38,6 +43,14 @@ public:
 		if (tree_.lookupByIndex(index, &node)) return node->e_;
 		else return nullItem_;
 	}
+	
+	/** Return the index of the first item greater or equal _a_
+	  */
+	inline int first(const Key& a) const { return tree_.first(a); }
+	
+	/** Return the index of the first item lower or equal _b_
+	  */
+	inline int last(const Key& b) const { return tree_.last(b); }
 	
 	/** Insert a key-value mapping if no key-value mapping with the same key exists already.
 	  * If currentValue is non-null the current value the giving key maps to is returned.
@@ -126,12 +139,6 @@ public:
 	  */
 	inline bool contains(Key key) { return tree_.lookup(key); }
 	
-	/** Number of key-value pairs stored in this map
-	  */
-	inline int size() const { return tree_.weight(); }
-	inline int length() const { return tree_.weight(); }
-	inline int count() const { return tree_.weight(); }
-	
 	inline Map& push(const Item& item)
 	{
 		bool found = false;
@@ -159,7 +166,7 @@ public:
 		return item;
 	}
 	
-	inline bool isEmpty() const { return tree_.weight() == 0; }
+	inline void clear() { tree_.clear(); }
 	
 	inline bool health() { return tree_.health(); }
 	

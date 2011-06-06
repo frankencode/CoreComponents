@@ -40,7 +40,7 @@ public:
 	inline Value& value() { return value_; }
 	inline void setValue(const Value& value) { value_ = value; }
 	
-public:
+private:
 	Key key_;
 	Value value_;
 };
