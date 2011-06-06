@@ -32,7 +32,7 @@ void simpleInsertTest()
 void performanceTest()
 {
 	const int n = 10000;
-	/*{
+	{
 		std::map<int, int> map;
 		Time t0 = Time::now();
 		for (int i = 0; i < n; ++i)
@@ -43,7 +43,7 @@ void performanceTest()
 		for (std::map<int, int>::const_iterator i = map.begin(); i != map.end(); ++i)
 			s += i->second;
 		print("std::map, %% iteration steps: dt = %% us\n", n, (Time::now() - t0).us());
-	}*/
+	}
 	{
 		ftl::Map<int, int> map;
 		Time t0 = Time::now();
@@ -59,11 +59,26 @@ void performanceTest()
 	}
 }
 
+void simpleRangeTest()
+{
+	Map<int, int> map;
+	Random r;
+	for (int i = 0; i < 20; ++i)
+		map.insert(r.get(0, 100), i);
+	for (int i = 0; i < map.length(); ++i)
+		print("map.at(%%) = %% (%%)\n", i, map.at(i).key(), map.at(i).value());
+	const int a = 30, b = 80;
+	print("In range [%%..%%]:\n", a, b);
+	for (int i = map.first(a), j = map.last(b); i <= j; ++i)
+		print("map.at(%%) = %% (%%)\n", i, map.at(i).key(), map.at(i).value());
+}
+
 } // namespace ftl
 
 int main()
 {
-	ftl::simpleInsertTest();
-	ftl::performanceTest();
+	/*ftl::simpleInsertTest();
+	ftl::performanceTest();*/
+	ftl::simpleRangeTest();
 	return 0;
 }

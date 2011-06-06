@@ -126,10 +126,13 @@ public:
 	BinaryTree(): root(0), cachedNode(0), cachedIndex(-1) {}
 	virtual ~BinaryTree() { clear(); }
 	
-	template<class ST> inline Node* first(const ST& a) const;
-	template<class ST> inline Node* last(const ST& b) const;
+	template<class ST> inline Node* firstNode(const ST& a) const;
+	template<class ST> inline Node* lastNode(const ST& b) const;
 	inline Node* minNode() { return (root) ? root->min() : 0; }
 	inline Node* maxNode() { return (root) ? root->max() : 0; }
+	
+	int first(const T& a) const;
+	int last(const T& b) const;
 	
 	inline int weight() const { return weight(root); }
 	
@@ -195,22 +198,44 @@ protected:
 
 template<class T>
 template<class ST>
-typename BinaryTree<T>::Node* BinaryTree<T>::first(const ST& a) const
+typename BinaryTree<T>::Node* BinaryTree<T>::firstNode(const ST& a) const
 {
 	bool found = false, below = true;
 	Node* k = find(a, &found, &below);
 	if ((k == 0) || found) return k;
-	return below ? k->succ() : k;
+	return below ? k : k->succ();
 }
 
 template<class T>
 template<class ST>
-typename BinaryTree<T>::Node* BinaryTree<T>::last(const ST& b) const
+typename BinaryTree<T>::Node* BinaryTree<T>::lastNode(const ST& b) const
 {
 	bool found = false, below = true;
 	Node* k = find(b, &found, &below);
 	if ((k == 0) || found) return k;
-	return below ? k : k->pred();
+	return below ? k->pred() : k;
+}
+
+template<class T>
+inline int BinaryTree<T>::first(const T& a) const
+{
+	bool found = false, below = true;
+	int index = 0;
+	if (!root) return 0;
+	find(a, &found, &below, &index);
+	if (found) return index;
+	return below ? index : index + 1;
+}
+
+template<class T>
+inline int BinaryTree<T>::last(const T& b) const
+{
+	bool found = false, below = true;
+	int index = 0;
+	if (!root) return 0;
+	find(b, &found, &below, &index);
+	if (found) return index;
+	return below ? index - 1 : index;
 }
 
 template<class T>

@@ -26,9 +26,11 @@ public:
 	
 	inline bool isEmpty() const { return tree_.weight() == 0; }
 	inline int length() const { return tree_.weight(); }
+	inline int size() const { return tree_.weight(); }
 	
-	inline bool has(int index) const { return index < length(); }
-	
+	inline bool has(int index) const {
+		return index < length();
+	}
 	inline T get(int index) const {
 		return at(index);
 	}
