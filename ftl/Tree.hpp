@@ -121,10 +121,12 @@ void Tree<Node>::disbandChildren()
 {
 	Ref<Node> node = lastChild_;
 	while (node) {
+		Ref<Node> next = node->previousSibling_;
+		node->disbandChildren();
 		node->nextSibling_ = 0;
 		node->previousSibling_ = 0;
 		node->parent_ = 0;
-		node = node->previousSibling_;
+		node = next;
 	}
 	lastChild_ = 0;
 	firstChild_ = 0;
