@@ -44,8 +44,10 @@ public:
 	
 	virtual ~RefCounter()
 	{
+#ifndef NDEBUG
 		if (refCount_ > 0)
 			FTL_THROW(ReferenceException, "Deleting object, which is still in use");
+#endif
 	}
 	
 	inline int refCount() const { return refCount_; }
