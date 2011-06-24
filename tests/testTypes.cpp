@@ -41,7 +41,9 @@ void testFloat754()
 	print("sizeof(Mutex) = %%\n", int(sizeof(Mutex)));
 	print("sizeof(Ref<Instance>) = %%\n", int(sizeof(Ref<Instance>)));
 	print("sizeof(Ref<Instance, Owner>) = %%\n", int(sizeof(Ref<Instance, Owner>)));
+#ifndef NDEBUG
 	print("sizeof(Ref<Instance, SetNull>) = %%\n", int(sizeof(Ref<Instance, SetNull>)));
+#endif
 	print("sizeof(String) = %%\n", int(sizeof(String)));
 	print("sizeof(Format) = %%\n", int(sizeof(Format)));
 	print("sizeof(Variant) = %%\n", int(sizeof(Variant)));

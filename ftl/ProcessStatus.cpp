@@ -28,39 +28,35 @@ namespace ftl
 ProcessStatus::ProcessStatus(pid_t processId)
 {
 #ifndef __linux
-	struct kinfo_proc* proc;
-	int mib[4];
-	mib[0] = CTL_KERN;
-	mib[1] = KERN_PROC;
-	mib[2] = KERN_PROC_PID;
-	mib[3] = processId;
-	size_t sz = 0;
-	if (::sysctl(mib, 4, NULL, &sz, NULL, 0) == -1)
-		FTL_SYSTEM_EXCEPTION;
-	proc = (kinfo_proc*)ftl::malloc(sz);
+	size_t sz = sizeof(kinfo_proc2);
+	struct kinfo_proc2* proc = (kinfo_proc2*)ftl::malloc(sz);
 	mem::clr(proc, sz);
-	if (::sysctl(mib, 4, proc, &sz, NULL, 0) == -1)
+	int mib[] = {
+		CTL_KERN,
+		KERN_PROC2,
+		KERN_PROC_PID,
+		processId,
+		sz,
+		1
+	};
+	if (::sysctl(mib, sizeof(mib)/sizeof(mib[0]), proc, &sz, NULL, 0) == -1)
 		FTL_SYSTEM_EXCEPTION;
-	processId_ = proc->kp_proc.p_pid;
-	parentProcessId_ = proc->kp_eproc.e_ppid;
-	processGroupId_ = proc->kp_eproc.e_pgid;
-	foregroundProcessGroupId_ = proc->kp_eproc.e_tpgid;
+	processId_ = proc->p_pid;
+	parentProcessId_ = proc->p_ppid;
+	processGroupId_ = proc->p__pgid;
+	foregroundProcessGroupId_ = proc->p_tpgid;
 	/*const int ttyNameSize = 256;
 	char ttyName[ttyNameSize];
 	terminalName_ = devname_r(proc->kp_eproc.e_tdev, S_IFCHR, ttyName, ttyNameSize);*/
-	loginName_ = User(proc->kp_eproc.e_pcred.p_ruid).loginName();
-	commandName_ = proc->kp_proc.p_comm;
-	processStatus_ = proc->kp_proc.p_stat;
+	loginName_ = User(proc->p_ruid).loginName();
+	commandName_ = proc->p_comm;
+	processStatus_ = proc->p_stat;
 	if (processStatus_ == SIDL) processStatus_ = 'W';
 	else if (processStatus_ == SRUN) processStatus_ = 'R';
 	#ifdef SONPROC
 	else if (processStatus_ == SONPROC) processStatus_ = 'R';
 	#endif
-	#ifdef __MACH__
-	else if (processStatus_ == SSLEEP) processStatus_ = (proc->kp_proc.sigwait) ? 'S' : 'D';
-	#else
 	else if (processStatus_ == SSLEEP) processStatus_ = 'S';
-	#endif
 	else if (processStatus_ == SSTOP) processStatus_ = 'T';
 	else if (processStatus_ == SZOMB) processStatus_ = 'Z';
 	#ifdef SDEAD
@@ -90,7 +86,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 		int code = parts->get(6).toInt();
 		int major = (code >> 8) & 0xFF;
 		int minor = (code & 0xFF) | ((code >> 20) << 8);
-		 // interpretation according to lanana.org
+		// interpretation according to lanana.org
 		if (major == 4)
 			terminalName_ = Format("tty%%") << minor;
 		else if ((136 <= major) && (major <= 143))

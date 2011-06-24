@@ -9,6 +9,7 @@
 #define FTL_FILE_HPP
 
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include "atoms"

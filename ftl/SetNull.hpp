@@ -17,6 +17,8 @@
 namespace ftl
 {
 
+#ifndef NDEBUG
+
 template<class T>
 class SetNull: private BackRef
 {
@@ -33,7 +35,7 @@ public:
 	{
 		#ifdef FTL_REF_POLICY_RACE_DETECTION
 		if (creator_ != pthread_self())
-			FTL_THROW(RefException, "Illegal concurrent assignment");
+			FTL_THROW(DebugException, "Illegal concurrent assignment");
 		#endif
 		
 		if (instance_ != b)
@@ -56,6 +58,8 @@ private:
 	pthread_t creator_;
 	#endif
 };
+
+#endif // ndef NDEBUG
 
 } // namespace ftl
 
