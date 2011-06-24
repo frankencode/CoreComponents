@@ -10,14 +10,13 @@
 
 #include "defaults.hpp"
 #include "Exception.hpp"
-#ifndef NDEBUG
 #include "CoreMutex.hpp"
-#endif
 
 namespace ftl
 {
 
-#ifndef NDEBUG
+FTL_EXCEPTION(ReferenceException, Exception);
+
 class BackRef
 {
 public:
@@ -29,7 +28,6 @@ public:
 	CoreMutex mutex_;
 	#endif
 };
-#endif // ndef NDEBUG
 
 /** \brief reference counting and secure destruction
   *
@@ -39,21 +37,60 @@ public:
   *   - manual detruction by delete operator
   * In both cases an exception of type ReferenceException is thrown.
   */
-class Instance
+class RefCounter
 {
 public:
-	Instance()
-		: refCount_(0)
-#ifndef NDEBUG
-		  , backRefHead_(0)
-#endif
-	{}
+	RefCounter(): refCount_(0) {}
 	
-	virtual ~Instance()
+	virtual ~RefCounter()
 	{
-#ifndef NDEBUG
 		if (refCount_ > 0)
-			FTL_THROW(DebugException, "Deleting object, which is still in use");
+			FTL_THROW(ReferenceException, "Deleting object, which is still in use");
+	}
+	
+	inline int refCount() const { return refCount_; }
+	
+	inline void incRefCount()
+	{
+		__sync_add_and_fetch(&refCount_, 1);
+		/*mutex_.acquire();
+		refCount_ += (refCount_ >= 0);
+		mutex_.release();*/
+	}
+	
+	inline void decRefCount()
+	{
+		if (__sync_sub_and_fetch(&refCount_, 1) == 0)
+			delete this;
+		/*mutex_.acquire();
+		refCount_ -= (refCount_ >= 0);
+		if (refCount_ == 0) {
+			mutex_.release();
+			delete this;
+		}
+		else
+			mutex_.release();*/
+	}
+	
+	inline void liberate() { refCount_ = -1; }
+
+	// inline CoreMutex* const mutex() { return &mutex_; }
+	
+	RefCounter(const RefCounter& b): refCount_(0) {}
+	inline const RefCounter& operator=(const RefCounter& b) { return *this; }
+	
+private:
+	// CoreMutex mutex_;
+	int refCount_;
+};
+
+class BackRefList
+{
+public:
+	BackRefList(): backRefHead_(0) {}
+	
+	virtual ~BackRefList()
+	{
 		if (backRefHead_) {
 			mutex_.acquire();
 			BackRef* ref = backRefHead_;
@@ -70,10 +107,8 @@ public:
 			backRefHead_ = 0;
 			mutex_.release();
 		}
-#endif
 	}
 	
-#ifndef NDEBUG
 	inline void addBackRef(BackRef* ref)
 	{
 		mutex_.acquire();
@@ -96,37 +131,23 @@ public:
 			backRefHead_ = backRefHead_->succ_;
 		mutex_.release();
 	}
-#endif // ndef NDEBUG
 	
-	inline int refCount() const { return refCount_; }
-	
-	inline void incRefCount()
-	{
-		__sync_add_and_fetch(&refCount_, 1);
-	}
-	
-	inline void decRefCount()
-	{
-		if (__sync_sub_and_fetch(&refCount_, 1) == 0)
-			delete this;
-	}
-	
-	Instance(const Instance& b)
-		: refCount_(0)
-#ifndef NDEBUG
-		  , backRefHead_(0)
-#endif
-	{}
-	inline const Instance& operator=(const Instance& b) { return *this; }
+	// ensure back reference lists are kept consistent on copying
+	// (in theory an automomatically synthesized assignment operator in inherited class will invoke this)
+	BackRefList(const BackRefList& b): backRefHead_(0) {}
+	inline const BackRefList& operator=(const BackRefList& b) { return *this; }
 	
 private:
-	int refCount_;
-	
-#ifndef NDEBUG
 	CoreMutex mutex_;
 	BackRef* backRefHead_;
-#endif
 };
+
+#ifdef NDEBUG
+typedef RefCounter Instance;
+#else
+class Instance: public RefCounter, public virtual BackRefList
+{};
+#endif
 
 } // namespace ftl
 
