@@ -243,7 +243,7 @@ public:
 			return entry()->matchNext(media, i, tokenFactory, parentToken, state);
 		}
 		
-		virtual const char* declType() const = 0;
+		virtual const char* declType() const { return "NODE"; }
 		virtual void printAttributes(String indent) {}
 		
 		virtual void printNext(String indent = "") {
