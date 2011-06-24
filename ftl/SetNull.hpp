@@ -17,8 +17,6 @@
 namespace ftl
 {
 
-#ifndef NDEBUG
-
 template<class T>
 class SetNull: private BackRef
 {
@@ -58,8 +56,6 @@ private:
 	pthread_t creator_;
 	#endif
 };
-
-#endif // ndef NDEBUG
 
 } // namespace ftl
 
