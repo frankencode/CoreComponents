@@ -158,14 +158,14 @@ private:
 		virtual Node* produce(Node* newNode) = 0;
 	};
 	
-	template<class DebugNode>
+	template<class DebugNodeType>
 	class DebugNodeFactory: public NodeFactory {
 	public:
 		DebugNodeFactory(Ref<SyntaxDebugger> debugger)
 			: debugger_(debugger)
 		{}
 		virtual Node* produce(Node* newNode) {
-			return new DebugNode(debugger_, newNode);
+			return new DebugNodeType(debugger_, newNode);
 		}
 	private:
 		Ref<SyntaxDebugger> debugger_;
@@ -243,7 +243,7 @@ public:
 			return entry()->matchNext(media, i, tokenFactory, parentToken, state);
 		}
 		
-		virtual const char* declType() const { return "NODE"; }
+		virtual const char* declType() const = 0; // { return "NODE"; }
 		virtual void printAttributes(String indent) {}
 		
 		virtual void printNext(String indent = "") {
