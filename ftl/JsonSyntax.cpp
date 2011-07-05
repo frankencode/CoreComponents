@@ -63,6 +63,71 @@ JsonSyntax::JsonSyntax()
 		)
 	);
 	
+	int_ =
+		DEFINE("int",
+			CHOICE(
+				CHAR('0'),
+				GLUE(
+					RANGE('1', '9'),
+					REPEAT(INLINE("DIGIT"))
+				)
+			)
+		);
+	
+	frac_ =
+		DEFINE("frac",
+			GLUE(
+				CHAR('.'),
+				REPEAT(1, INLINE("DIGIT"))
+			)
+		);
+	
+	exp_ =
+		DEFINE("exp",
+			GLUE(
+				RANGE("eE"),
+				REPEAT(0, 1, RANGE("+-")),
+				REPEAT(1, INLINE("DIGIT"))
+			)
+		);
+	
+	number_ =
+		DEFINE("number",
+			GLUE(
+				REPEAT(0, 1, CHAR('-')),
+				REF("int"),
+				REPEAT(0, 1, REF("frac")),
+				REPEAT(0, 1, REF("exp"))
+			)
+		);
+	
+	string_ =
+		DEFINE("string",
+			GLUE(
+				CHAR('"'),
+				REPEAT(
+					CHOICE(
+						GLUE(
+							CHAR('\\'),
+							CHOICE(
+								RANGE("\"\\/bfnrt"),
+								GLUE(
+									CHAR('u'),
+									REPEAT(4, 4, INLINE("HEXDIG"))
+								)
+							)
+						),
+						GLUE(
+							NOT(RANGE("\\\"")),
+							RANGE(0x20, 0xFF)
+								// minor deviation from standard to make it work on raw bytes
+						)
+					)
+				),
+				CHAR('"')
+			)
+		);
+	
 	value_ =
 		DEFINE("value",
 			CHOICE(
@@ -71,6 +136,15 @@ JsonSyntax::JsonSyntax()
 				REF("array"),
 				REF("number"),
 				REF("string")
+			)
+		);
+	
+	member_ =
+		DEFINE("member",
+			GLUE(
+				REF("string"),
+				INLINE("name-separator"),
+				REF("value")
 			)
 		);
 	
@@ -93,15 +167,6 @@ JsonSyntax::JsonSyntax()
 			)
 		);
 	
-	member_ =
-		DEFINE("member",
-			GLUE(
-				REF("string"),
-				INLINE("name-separator"),
-				REF("value")
-			)
-		);
-	
 	array_ =
 		DEFINE("array",
 			GLUE(
@@ -121,53 +186,18 @@ JsonSyntax::JsonSyntax()
 			)
 		);
 	
-	int_ =
-		DEFINE("int",
+	text_ =	
+		DEFINE("JSON-text",
 			CHOICE(
-				CHAR('0'),
-				GLUE(
-					RANGE('1', '9'),
-					REPEAT(RANGE('0', '9'))
-				)
+				REF("object"),
+				REF("array")
 			)
 		);
-	
-	frac_ =
-		DEFINE("frac",
-			GLUE(
-				CHAR('.'),
-				REPEAT(1, RANGE('0', '9'))
-			)
-		);
-	
-	exp_ =
-		DEFINE("exp",
-			GLUE(
-				RANGE("eE"),
-				REPEAT(0, 1, RANGE("+-")),
-				REPEAT(1, RANGE('0', '9'))
-			)
-		);
-	
-	number_ =
-		DEFINE("number",
-			GLUE(
-				REPEAT(0, 1, CHAR('-')),
-				REF("int"),
-				REPEAT(0, 1, REF("frac")),
-				REPEAT(0, 1, REF("exp"))
-			)
-		);
-	
-	DEFINE("JSON-text",
-		CHOICE(
-			REF("object"),
-			REF("array")
-		)
-	);
 	
 	ENTRY("JSON-text");
+#ifndef NDEBUG
 	LINK();
+#endif
 }
 
 } // namespace ftl

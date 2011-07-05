@@ -135,6 +135,9 @@ public:
 	String simplified() const;
 	String normalized(bool nameCase = true) const;
 	
+	void expandInsitu();
+	String expanded() const;
+	
 protected:
 	// initialize string with defined size but undefined content
 	explicit String(int size): Super(new ByteArray(size)) {}

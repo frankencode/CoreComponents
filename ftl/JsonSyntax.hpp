@@ -8,26 +8,32 @@
 #ifndef FTL_JSONSYNTAX_HPP
 #define FTL_JSONSYNTAX_HPP
 
-#include "Syntax.hpp"
+#include "AbnfDefinition.hpp"
 
 namespace ftl
 {
 
-class JsonSyntax: public Syntax<ByteArray>::Definition
+class Json;
+
+class JsonSyntax: public AbnfDefinition
 {
 public:
 	JsonSyntax();
 	
-protected:
-	int value_;
-	int object_;
-	int member_;
-	int array_;
+private:
+	friend class Json;
+	
 	int sign_;
 	int int_;
 	int frac_;
 	int exp_;
 	int number_;
+	int string_;
+	int value_;
+	int member_;
+	int object_;
+	int array_;
+	int text_;
 };
 
 } // namespace ftl

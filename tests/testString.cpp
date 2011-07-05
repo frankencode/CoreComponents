@@ -32,6 +32,16 @@ int main(int argc, char** argv)
 			print("  \"%%\"\n", parts->get(i));
 		print("]\n");
 	}
+	{
+		/*String s = "Привет!";
+		for (int i = 0; i < s.length(); ++i)
+			print("%% (\\u%hex:4:4.:'0'%)\n", s.copy(i, i + 1), s.get(i));*/
+		String s = "Hallo!, \\u041F\\u0440\\u0438\\u0432\\u0435\\u0442!, \\ud834\\udd22, Hello!";
+		print("s = \"%%\", s.length() = %%\n", s, s.length());
+		String se = s.expanded();
+		print("se.get(16) = %hex%\n", se.get(17));
+		print("se = \"%%\", s.length() = %%\n", se, se.length());
+	}
 	return 0;
 }
 

@@ -66,6 +66,9 @@ public:
 	inline static void clear(T*& data_, int& size_, T zero) {
 		for (int i = 0; i < size_; ++i) data_[i] = zero;
 	}
+	inline static void truncate(T*& data_, int& size_, int newSize) {
+		size_ = newSize;
+	}
 };
 
 template<class T>
@@ -106,6 +109,10 @@ public:
 	inline static void clear(T*& data_, int& size_, T zero) {
 		for (int i = 0; i < size_; ++i) data_[i] = zero;
 	}
+	inline static void truncate(T*& data_, int& size_, int newSize) {
+		size_ = newSize;
+		data_[newSize] = 0;
+	}
 };
 
 template<class T>
@@ -125,6 +132,9 @@ public:
 	inline static void assign(T*& data_, int& size_, const T* data, int size) {
 		size_ = size;
 		data_ = const_cast<T*>(data);
+	}
+	inline static void truncate(T*& data_, int& size_, int newSize) {
+		size_ = newSize;
 	}
 };
 

@@ -114,7 +114,10 @@ SET(FTL_HEADER
 	NetworkInterface.hpp
 	# TODO: new module needed
 	UriSyntax.hpp
+	
+	json
 	JsonSyntax.hpp
+	Json.hpp
 	
 	utils
 	Time.hpp
@@ -198,7 +201,10 @@ SET(FTL_SOURCE
 	StreamSocket.cpp
 	NetworkInterface.cpp
 	UriSyntax.cpp
+	
+	# json
 	JsonSyntax.cpp
+	Json.cpp
 	
 	# utils
 	Date.cpp
