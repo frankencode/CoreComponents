@@ -19,6 +19,7 @@
 #include "Path.hpp"
 #include "Stream.hpp"
 #include "String.hpp"
+#include <stdio.h> // DEBUG
 
 namespace ftl
 {
@@ -364,6 +365,70 @@ String String::normalized(bool nameCase) const
 		}
 	}
 	return String::join(parts, " ");
+}
+
+void String::expandInsitu()
+{
+	int j = 0;
+	uint32_t hs = 0; // high surrogate, saved
+	for (int i = 0, n = bytes()->size(); i < n;) {
+		char ch = bytes()->at(i++);
+		if ((ch == '\\') && (i < n)) {
+			ch = bytes()->at(i++);
+			if ((ch == 'u') && (i < n - 4)) {
+				uint32_t x = 0;
+				for (int k = 0; k < 4; ++k) {
+					int digit = bytes()->at(i++);
+					if (('0' <= digit) && (digit <= '9')) digit -= '0';
+					else if (('a' <= digit) && (digit <= 'f')) digit = digit - 'a' + 10;
+					else if (('A' <= digit) && (digit <= 'F')) digit = digit - 'A' + 10;
+					x = (x * 16) + digit;
+				}
+				if ((0xB800 <= x) && (x < 0xDC00)) {
+					// save the high surrogate, do not output anything
+					hs = x;
+				}
+				else {
+					if ((0xDC00 <= x) && (x < 0xE000) && (hs != 0)) {
+						// combine the high and low surrogate
+						x = ((hs - 0xD800) << 10) | (x - 0xDC00);
+						x += 0x10000;
+						hs = 0;
+					}
+					char ec[4];
+					Utf8Encoder encoder(ec, 4);
+					encoder.write(x);
+					int el = encoder.byteEncoder()->numBytesWritten();
+					for (int k = 0; k < el; ++k)
+						bytes()->set(j++, ec[k]);
+				}
+			}
+			else {
+				hs = 0;
+				if (ch == 'b') bytes()->set(j++, 0x08);
+				else if (ch == 't') bytes()->set(j++, 0x09);
+				else if (ch == 'n') bytes()->set(j++, 0x0A);
+				else if (ch == 'r') bytes()->set(j++, 0x0D);
+				else if (ch == 'f') bytes()->set(j++, 0x0C);
+			}
+		}
+		else if (j < i) {
+			hs = 0;
+			bytes()->set(j++, ch);
+		}
+		else {
+			hs = 0;
+			++j;
+		}
+	}
+	bytes()->truncate(j);
+}
+
+String String::expanded() const
+{
+	String s2 = copy();
+	s2.expandInsitu();
+	return s2;
 }
 
 } // namespace ftl

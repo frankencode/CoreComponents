@@ -31,7 +31,7 @@ public:
 	inline void write(uchar_t ch)
 	{
 		if (ch < 0x10000) {
-			if ((0xB800 <= ch) && (ch <= 0xDFFF))
+			if ((0xD800 <= ch) && (ch <= 0xDFFF))
 				FTL_THROW(EncodingException, "UTF-16 disallows encoding of surrogate pairs (0xD800..0xDFFF)");
 			else if ((ch == 0xFEFF) || (ch == 0xFFFE))
 				FTL_THROW(EncodingException, "UTF-16 disallows non-characters reserved for BOM (0xFEFF and 0xFFFE)");
@@ -40,8 +40,9 @@ public:
 		else {
 			if (0x10FFFF < ch)
 				FTL_THROW(EncodingException, "UTF-16 disallows encoding of code points above 0x10FFFF");
-			byteEncoder_.writeUInt16((ch >> 10) + 0xB800);
-			byteEncoder_.writeUInt16((ch & 0x3FF) + 0xBC00);
+			ch -= 0x10000;
+			byteEncoder_.writeUInt16((ch >> 10) + 0xD800);
+			byteEncoder_.writeUInt16((ch & 0x3FF) + 0xDC00);
 		}
 	}
 	

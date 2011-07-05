@@ -46,13 +46,10 @@ public:
 			}
 			*ch = w;
 			if ((0xD800 <= *ch) && (*ch < 0xDC00)) {
-				*ch -= 0xD800;
-				*ch <<= 10;
 				uint16_t w = byteDecoder_.readUInt16();
-				if ((0xDC00 <= w) && (w < 0xE000))
-					*ch |= w - 0xDC00;
-				else
+				if (!((0xDC00 <= w) && (w < 0xE000)))
 					FTL_THROW(EncodingException, "Input data is not conforming to UTF-16 encoding");
+				*ch = 0x10000 + (((*ch - 0xD800) << 10) | (w - 0xDC00));
 			}
 			else if (0x10FFFF < *ch) {
 				FTL_THROW(EncodingException, "Input data is not conforming to UTF-16 encoding");

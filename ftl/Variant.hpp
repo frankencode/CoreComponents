@@ -50,7 +50,8 @@ public:
 	Variant(float value)         : type_(FloatType), float_(value) {}
 	Variant(double value)        : type_(FloatType), float_(value) {}
 	Variant(const char* value)   : type_(StringType) { initRef(String(value).bytes()); }
-	Variant(Ref<Instance> value) : type_(RefType)    { initRef(value); }
+	template<class T, template<class> class P>
+	Variant(Ref<T, P> value) : type_(RefType)    { initRef(value); }
 	Variant(String value)        : type_(StringType) { initRef(value.bytes()); }
 	Variant(Path value)          : type_(PathType)   { initRef(value.toString().bytes()); }
 	~Variant()                                       { if (type_ & RefType) killRef(); }

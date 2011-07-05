@@ -66,7 +66,9 @@ IntegerLiteral::IntegerLiteral()
 		);
 	
 	ENTRY("integer");
+#ifndef NDEBUG
 	LINK();
+#endif
 }
 
 bool IntegerLiteral::match(Ref<ByteArray> text, int i0, int* i1, uint64_t* value, int* sign)

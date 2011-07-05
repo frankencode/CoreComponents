@@ -69,7 +69,9 @@ FormatSpecifier::FormatSpecifier()
 		);
 	
 	ENTRY("format");
+#ifndef NDEBUG
 	LINK();
+#endif
 }
 
 bool FormatSpecifier::find(Ref<ByteArray> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, char* blank)

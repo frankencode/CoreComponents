@@ -118,10 +118,17 @@ public:
 	inline Ref<Array, Owner> copy() const { return copy(0, size_); }
 	
 	inline Ref<Array, Owner> copy(int i0, int i1) const {
-		check(i0 <= i1);
-		check(has(i0));
-		check(has(i1 - (i0 < i1)));
+		if (i0 < 0) i0 = 0;
+		if (i0 > size_) i0 = size_;
+		if (i1 < 0) i1 = 0;
+		if (i1 > size_) i1 = size_;
 		return (i0 < i1) ? new Array(data_ + i0, i1 - i0) : new Array();
+	}
+	
+	inline void truncate(int newSize) {
+		if (newSize < 0) newSize = 0;
+		if (newSize < size_)
+			Policy::truncate(data_, size_, newSize);
 	}
 	
 	inline Ref<Array, Owner> head(int n) const {

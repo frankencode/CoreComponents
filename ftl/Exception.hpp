@@ -79,13 +79,18 @@ public:
 
 FTL_EXCEPTION(DebugException, Exception);
 
+template<class Exception>
 inline void check(bool condition, const char* reason = "") {
 	#ifndef NDEBUG
 	if (!condition) {
 		// char* p = 0; *p = 0; // HACK, to come around trace eaters
-		FTL_THROW(DebugException, reason);
+		FTL_THROW(Exception, reason);
 	}
 	#endif
+}
+
+inline void check(bool condition, const char* reason = "") {
+	return check<DebugException>(condition, reason);
 }
 
 } // namespace ftl

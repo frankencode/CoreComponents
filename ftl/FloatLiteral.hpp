@@ -18,9 +18,10 @@ class FloatLiteral: public Syntax<ByteArray>::Definition
 public:
 	FloatLiteral();
 	bool match(Ref<ByteArray> text, int i0, int* i1, float64_t* value);
-	float64_t read(Ref<ByteArray> text, Ref<Token> token) const;
 	
 private:
+	float64_t read(Ref<ByteArray> text, Ref<Token> token) const;
+	
 	int sign_;
 	int integerPart_;
 	int fractionPart_;

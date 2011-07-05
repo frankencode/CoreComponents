@@ -61,7 +61,7 @@ public:
 					)
 				)
 			);
-	
+		
 		ENTRY("sum");
 		LINK();
 	}

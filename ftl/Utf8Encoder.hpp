@@ -51,10 +51,10 @@ inline void Utf8Encoder::write(uchar_t ch)
 		byteEncoder_.writeUInt8(((ch >> 6) & 0x3F) | 0x80); // 0x8 = (1000)2, code prefix: (10)2
 		byteEncoder_.writeUInt8((ch & 0x3F) | 0x80);        // 0x8 = (1000)2, code prefix: (10)2
 	}
-	else if (ch < 0x11000) { // four-byte codes: 11110zzz | 10zzyyyy | 10yyyyxx | 10xxxxxx
+	else if (ch < 0x110000) { // four-byte codes: 11110zzz | 10zzyyyy | 10yyyyxx | 10xxxxxx
 		if ((ch & 0xFFFE) == 0xFFFE)
 			FTL_THROW(EncodingException, "UTF-8 disallows encoding of non-characters 0x??FFFE,0x??FFFF");
-		byteEncoder_.writeUInt8((ch >> 18) | 0xF);           // 0xF = (1111)2, code prefix: (11110)2
+		byteEncoder_.writeUInt8((ch >> 18) | 0xF0);           // 0xF = (1111)2, code prefix: (11110)2
 		byteEncoder_.writeUInt8(((ch >> 12) & 0x3F) | 0x80); // 0x8 = (1000)2, code prefix: (10)2
 		byteEncoder_.writeUInt8(((ch >> 6) & 0x3F) | 0x80);  // 0x8 = (1000)2, code prefix: (10)2
 		byteEncoder_.writeUInt8((ch & 0x3F) | 0x80);         // 0x8 = (1000)2, code prefix: (10)2

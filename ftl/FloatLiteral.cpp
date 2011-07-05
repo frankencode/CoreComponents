@@ -56,7 +56,9 @@ FloatLiteral::FloatLiteral()
 		);
 	
 	ENTRY("float");
+#ifndef NDEBUG
 	LINK();
+#endif
 }
 
 bool FloatLiteral::match(Ref<ByteArray> text, int i0, int* i1, float64_t* value)
