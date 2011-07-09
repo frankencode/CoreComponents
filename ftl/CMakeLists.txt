@@ -28,6 +28,7 @@ SET(FTL_HEADER
 	BitEncoder.hpp
 	BitDecoder.hpp
 	Crc32.hpp
+	Md5.hpp
 	HuffmanCodec.hpp
 	
 	container
@@ -143,6 +144,7 @@ SET(FTL_SOURCE
 	BitDecoder.cpp
 	HuffmanCodec.cpp
 	Crc32.cpp
+	Md5.cpp
 	
 	# container
 	

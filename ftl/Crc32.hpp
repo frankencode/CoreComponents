@@ -17,14 +17,13 @@ class Crc32
 {
 public:
 	Crc32(uint32_t seed = ~0);
-	void reset(uint32_t seed = ~0);
 	
-	void feed(const void* buf, int bufSize);
+	void feed(const void* buf, int bufFill);
+	inline void finish();
 	inline uint32_t sum() const { return crc_; }
 	
 private:
-   uint32_t crcTable_[256];
-   uint32_t crc_;
+	uint32_t crc_;
 };
 
 inline uint32_t crc32(const void* buf, int bufSize) {
