@@ -16,6 +16,7 @@
 #include "BitEncoder.hpp"
 #include "BitDecoder.hpp"
 #include "Crc32.hpp"
+#include "Md5.hpp"
 #include "HuffmanCodec.hpp"
 
 #endif // FTL_BINARY
