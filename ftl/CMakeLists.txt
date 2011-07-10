@@ -113,12 +113,6 @@ SET(FTL_HEADER
 	SocketAddressEntry.hpp
 	StreamSocket.hpp
 	NetworkInterface.hpp
-	# TODO: new module needed
-	UriSyntax.hpp
-	
-	json
-	JsonSyntax.hpp
-	Json.hpp
 	
 	utils
 	Time.hpp
@@ -129,6 +123,10 @@ SET(FTL_HEADER
 	CommandLine.hpp
 	LinkInfo.hpp
 	SymbolicLink.hpp
+	
+	remoting
+	UriSyntax.hpp
+	Json.hpp
 )
 
 SET(FTL_SOURCE
@@ -202,11 +200,6 @@ SET(FTL_SOURCE
 	SocketAddressEntry.cpp
 	StreamSocket.cpp
 	NetworkInterface.cpp
-	UriSyntax.cpp
-	
-	# json
-	JsonSyntax.cpp
-	Json.cpp
 	
 	# utils
 	Date.cpp
@@ -214,6 +207,10 @@ SET(FTL_SOURCE
 	CommandLine.cpp
 	LinkInfo.cpp
 	SymbolicLink.cpp
+	
+	# remoting
+	UriSyntax.cpp
+	Json.cpp
 )
 
 ADD_LIBRARY(ftl

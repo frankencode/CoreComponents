@@ -19,7 +19,7 @@ class Md5
 public:
 	Md5();
 	~Md5();
-	void feed(const void* buf, int bufSize);
+	void feed(const void* buf, int bufFill);
 	void finish(uint8_t sum[16]);
 	
 private:

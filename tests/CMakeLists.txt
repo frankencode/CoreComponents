@@ -1,6 +1,7 @@
 LINK_LIBRARIES(ftl)
 INCLUDE_DIRECTORIES(..)
 
+ADD_EXECUTABLE(testJson testJson.cpp)
 ADD_EXECUTABLE(testMap testMap.cpp)
 ADD_EXECUTABLE(testAbnfCompiler testAbnfCompiler.cpp)
 ADD_EXECUTABLE(testDateTime testDateTime.cpp)

@@ -1,5 +1,5 @@
 /*
- * Json.hpp -- JSON parsing and stringification
+ * Json.hpp -- a JSON parser according to RFC 4627
  *
  * Copyright (c) 2007-2011, Frank Mertens
  *
@@ -8,7 +8,7 @@
 #ifndef FTL_JSON_HPP
 #define FTL_JSON_HPP
 
-#include "atoms"
+#include "AbnfDefinition.hpp"
 #include "ThreadLocalSingleton.hpp"
 #include "Variant.hpp"
 #include "Array.hpp"
@@ -17,18 +17,15 @@
 namespace ftl
 {
 
-class JsonSyntax;
-
 FTL_EXCEPTION(JsonException, Exception);
 
 typedef Array<Variant> JsonArray;
 typedef Map<String, Variant> JsonObject;
 
-class Json: public Instance, public ThreadLocalSingleton<Json>
+class Json: public AbnfDefinition, public ThreadLocalSingleton<Json>
 {
 public:
 	Variant parse(String text);
-	String stringify(Variant value);
 	
 private:
 	friend class ThreadLocalSingleton<Json>;
@@ -39,7 +36,20 @@ private:
 	Pair<String, Variant> parseMember(Ref<ByteArray> text, Ref<Token> token);
 	Variant parseValue(Ref<ByteArray> text, Ref<Token> token);
 	String parseString(Ref<ByteArray> text, Ref<Token> token);
-	JsonSyntax syntax_;
+	double parseNumber(Ref<ByteArray> text, Ref<Token> token);
+	
+	int int_;
+	int frac_;
+	int exp_;
+	int number_;
+	int string_;
+	int value_;
+	int member_;
+	int object_;
+	int array_;
+	int text_;
+	
+	int false_, true_, null_;
 };
 
 inline Ref<Json> json() { return Json::instance(); }
