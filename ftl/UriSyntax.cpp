@@ -13,93 +13,6 @@ namespace ftl
 
 UriSyntax::UriSyntax()
 {
-	// automatically generated from UriSyntax.abnf!
-	
-	DEFINE_VOID("ALPHA",
-	  CHOICE(
-	    RANGE('a', 'z'),
-	    RANGE('A', 'Z')
-	  )
-	);
-	
-	DEFINE_VOID("DIGIT",
-	  RANGE('0', '9')
-	);
-	
-	DEFINE_VOID("HEXDIG",
-	  CHOICE(
-	    INLINE("DIGIT"),
-	    CHOICE(
-	      RANGE('a', 'f'),
-	      RANGE('A', 'F')
-	    )
-	  )
-	);
-	
-	DEFINE_VOID("BIT",
-	  RANGE("01")
-	);
-	
-	DEFINE_VOID("WSP",
-	  RANGE(" \t")
-	);
-	
-	DEFINE_VOID("CHAR",
-	  RANGE('\1', '\177')
-	);
-	
-	DEFINE_VOID("VCHAR",
-	  RANGE('!', '~')
-	);
-	
-	DEFINE_VOID("CR",
-	  CHAR('\r')
-	);
-	
-	DEFINE_VOID("LF",
-	  CHAR('\n')
-	);
-	
-	DEFINE_VOID("HTAB",
-	  CHAR('\t')
-	);
-	
-	DEFINE_VOID("SP",
-	  CHAR(' ')
-	);
-	
-	DEFINE_VOID("DQUOTE",
-	  CHAR('"')
-	);
-	
-	DEFINE_VOID("CRLF",
-	  GLUE(
-	    REPEAT(0, 1,
-	      INLINE("CR")
-	    ),
-	    INLINE("LF")
-	  )
-	);
-	
-	DEFINE_VOID("CTL",
-	  CHOICE(
-	    RANGE('\0', '\37'),
-	    CHAR('\177')
-	  )
-	);
-	
-	DEFINE_VOID("LWSP",
-	  REPEAT(
-	    CHOICE(
-	      INLINE("WSP"),
-	      GLUE(
-	        INLINE("CRLF"),
-	        INLINE("WSP")
-	      )
-	    )
-	  )
-	);
-	
 	DEFINE("URI",
 	  GLUE(
 	    REF("scheme"),
@@ -675,6 +588,9 @@ UriSyntax::UriSyntax()
 	);
 	
 	ENTRY("URI");
+#ifndef NDEBUG
+	LINK();
+#endif
 }
 
 } // namespace ftl

@@ -8,12 +8,12 @@
 #ifndef FTL_URISYNTAX_HPP
 #define FTL_URISYNTAX_HPP
 
-#include "Syntax.hpp"
+#include "AbnfDefinition.hpp"
 
 namespace ftl
 {
 
-class UriSyntax: public Syntax<ByteArray>::Definition
+class UriSyntax: public AbnfDefinition
 {
 public:
 	UriSyntax();

@@ -44,39 +44,39 @@ public:
 		PathType   = 32 | RefType | StringType
 	};
 	
-	Variant()                    : type_(UndefType)                {}
-	Variant(bool value)          : type_(BoolType),  int_(value)   {}
-	Variant(int value)           : type_(IntType),   int_(value)   {}
-	Variant(float value)         : type_(FloatType), float_(value) {}
-	Variant(double value)        : type_(FloatType), float_(value) {}
-	Variant(const char* value)   : type_(StringType) { initRef(String(value).bytes()); }
+	Variant()                  : type_(UndefType)                {}
+	Variant(bool value)        : type_(BoolType),  int_(value)   {}
+	Variant(int value)         : type_(IntType),   int_(value)   {}
+	Variant(float value)       : type_(FloatType), float_(value) {}
+	Variant(double value)      : type_(FloatType), float_(value) {}
+	Variant(const char* value) : type_(StringType) { initRef(String(value).bytes()); }
 	template<class T, template<class> class P>
-	Variant(Ref<T, P> value) : type_(RefType)    { initRef(value); }
-	Variant(String value)        : type_(StringType) { initRef(value.bytes()); }
-	Variant(Path value)          : type_(PathType)   { initRef(value.toString().bytes()); }
-	~Variant()                                       { if (type_ & RefType) killRef(); }
+	Variant(Ref<T, P> value)   : type_(RefType)    { initRef(value); }
+	Variant(String value)      : type_(StringType) { initRef(value.bytes()); }
+	Variant(Path value)        : type_(PathType)   { initRef(value.toString().bytes()); }
+	~Variant()                                     { if (type_ & RefType) killRef(); }
 	
-	inline const Variant& operator=(bool value)          { type_ = BoolType;   int_ = value; return *this; }
-	inline const Variant& operator=(int value)           { type_ = IntType;    int_ = value; return *this; }
-	inline const Variant& operator=(float value)         { type_ = FloatType;  float_ = value; return *this; }
-	inline const Variant& operator=(double value)        { type_ = FloatType;  float_ = value; return *this; }
-	inline const Variant& operator=(const char* value)   { type_ = StringType; setRef(String(value).bytes()); return *this; }
-	inline const Variant& operator=(String value)        { type_ = StringType; setRef(value.bytes()); return *this; }
-	inline const Variant& operator=(Path value)          { type_ = PathType;   setRef(value.toString().bytes()); return *this; }
-	inline const Variant& operator=(Ref<Instance> value) { type_ = RefType;    setRef(value); return *this; }
+	inline const Variant& operator=(bool value)          { type_ = BoolType;  int_ = value; return *this; }
+	inline const Variant& operator=(int value)           { type_ = IntType;   int_ = value; return *this; }
+	inline const Variant& operator=(float value)         { type_ = FloatType; float_ = value; return *this; }
+	inline const Variant& operator=(double value)        { type_ = FloatType; float_ = value; return *this; }
+	inline const Variant& operator=(const char* value)   { return *this = Variant(value); }
+	inline const Variant& operator=(String value)        { return *this = Variant(value); }
+	inline const Variant& operator=(Path value)          { return *this = Variant(value); }
+	inline const Variant& operator=(Ref<Instance> value) { return *this = Variant(value); }
 	
 	Variant(const Variant& b): type_(UndefType) { *this = b; }
 	
 	inline const Variant& operator=(const Variant& b) {
 		type_ = b.type_;
 		if (b.type_ & RefType) {
-			if (type_ != RefType)
+			if (type_ & RefType)
 				initRef(b.ref().get());
 			else
 				ref() = b.ref();
 		}
 		else {
-			if (type_ == RefType)
+			if (type_ & RefType)
 				killRef();
 			int_ = b.int_;
 		}
@@ -100,7 +100,8 @@ public:
 	inline operator float() const { return toFloat(); }
 	inline operator String() const { return toString(); }
 	inline operator Path() const { return toPath(); }
-	inline operator Ref<Instance>() const { return toInstance<Instance>(); }
+	template<class T, template<class> class P>
+	inline operator Ref<T, P>() const { return toInstance<T>(); }
 	
 	bool operator==(const Variant& b) const
 	{
@@ -144,7 +145,7 @@ public:
 private:
 	inline static const char* illegalConversion() { return "Illegal variant conversion."; }
 	
-	inline void initRef(Instance* instance) {
+	inline void initRef(Instance* instance = 0) {
 		new(dummy_)Ref<Instance, Owner>(instance);
 	}
 	inline void killRef() {
