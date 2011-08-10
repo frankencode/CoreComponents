@@ -19,7 +19,6 @@
 #include "Path.hpp"
 #include "Stream.hpp"
 #include "String.hpp"
-#include <stdio.h> // DEBUG
 
 namespace ftl
 {
@@ -190,6 +189,35 @@ Ref<StringList, Owner> String::split(const char* pattern) const
 	else
 		parts->append(String());
 	return parts;
+}
+
+void String::replaceInsitu(const char* pattern, const char* replacement)
+{
+	int patternLength = str::len(pattern);
+	int replacementLength = str::len(replacement);
+	if (patternLength < replacementLength) {
+		*this = replace(pattern, replacement);
+	}
+	else if (patternLength > 0) {
+		int i = 0, j = 0, k = 0, n = bytes()->size();
+		while (i < n) {
+			char ch = bytes()->at(i++);
+			if (j < i) bytes()->set(j++, ch);
+			if (ch == pattern[k]) {
+				++k;
+				if (k == patternLength) {
+					j -= patternLength;
+					for (k = 0; k < replacementLength; ++k)
+						bytes()->set(j++, replacement[k]);
+					k = 0;
+				}
+			}
+			else {
+				k = 0;
+			}
+		}
+		if (j < i) bytes()->truncate(j);
+	}
 }
 
 int String::toInt(bool* ok) const
@@ -424,7 +452,7 @@ void String::expandInsitu()
 	bytes()->truncate(j);
 }
 
-String String::expanded() const
+String String::expand() const
 {
 	String s2 = copy();
 	s2.expandInsitu();
