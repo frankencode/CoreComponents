@@ -111,7 +111,8 @@ public:
 	
 	inline int find(const char* pattern) const { return find(0, pattern); }
 	inline bool contains(const char* pattern) const { return find(pattern) < length(); }
-	inline String replace(const char* pattern, const char* replacement) { return split(pattern)->join(replacement); }
+	inline String replace(const char* pattern, const char* replacement) const { return split(pattern)->join(replacement); }
+	void replaceInsitu(const char* pattern, const char* replacement);
 	
 	inline bool operator< (const String& b) const { return str::cmp((*this)->data(), b->data()) <  0; }
 	inline bool operator==(const String& b) const { return str::cmp((*this)->data(), b->data()) == 0; }
@@ -136,7 +137,7 @@ public:
 	String normalized(bool nameCase = true) const;
 	
 	void expandInsitu();
-	String expanded() const;
+	String expand() const;
 	
 protected:
 	// initialize string with defined size but undefined content
