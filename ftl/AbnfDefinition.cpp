@@ -14,6 +14,8 @@ namespace ftl
 AbnfDefinition::AbnfDefinition(Ref<DebugFactory> debugFactory)
 	: Syntax<ByteArray>::Definition(debugFactory)
 {
+	SYNTAX("abnf");
+	
 	DEFINE_VOID("ALPHA",
 		CHOICE(
 			RANGE('a', 'z'), // 0x61 - 0x7A
@@ -49,8 +51,8 @@ AbnfDefinition::AbnfDefinition(Ref<DebugFactory> debugFactory)
 	
 	DEFINE_VOID("CRLF",
 		GLUE(
-			REPEAT(0, 1, INLINE("CR")), // minor deviation from RFC5234
-			INLINE("LF")
+			REPEAT(0, 1, CHAR('\r')), // minor deviation from RFC5234
+			CHAR('\n')
 		)
 	);
 	

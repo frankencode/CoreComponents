@@ -20,7 +20,7 @@ namespace ftl
 class LineSource: public Source<String>
 {
 public:
-	LineSource(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, const char* eol = "\n");
+	LineSource(Ref<Stream> stream, const char* eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA);
 	~LineSource();
 	
 	bool read(String* line);

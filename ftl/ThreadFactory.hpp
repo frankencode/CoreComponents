@@ -16,7 +16,7 @@ namespace ftl
 class ThreadFactory: public Instance
 {
 public:
-	ThreadFactory(Ref< Duplicable<Thread> > prototype = 0);
+	ThreadFactory(Ref< Clonable<Thread> > prototype = 0);
 	~ThreadFactory();
 	
 	int detachState() const;
@@ -36,7 +36,7 @@ public:
 private:
 	static void* bootstrap(void* self);
 	
-	Ref<Duplicable<Thread>, Owner> prototype_;
+	Ref<Clonable<Thread>, Owner> prototype_;
 	pthread_attr_t attr_;
 };
 

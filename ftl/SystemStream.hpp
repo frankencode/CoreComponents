@@ -33,19 +33,17 @@ public:
 	int readAvail(void* buf, int bufCapa);
 	void write(const void* buf, int bufFill);
 	
+	void write(Ref<StringList> parts, const char* sep = "");
+	
 	inline int readAvail(String s) { return Stream::readAvail(s); }
 	inline void write(const char* s) { Stream::write(s); }
 	inline void write(String s) { write(s->data(), s->size()); }
 	
 	void closeOnExec();
 	
-	bool continueOnInterrupt() const;
-	void setContinueOnInterrupt(bool on);
-	
 protected:
 	int fd_;
 	mutable bool isattyCached_, isatty_;
-	bool continueOnInterrupt_;
 };
 
 } // namespace ftl

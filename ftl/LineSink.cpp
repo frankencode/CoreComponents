@@ -11,44 +11,61 @@
 namespace ftl
 {
 
-LineSink::LineSink(Ref<Stream> stream, int bufCapa, const char* eol)
+LineSink::LineSink(Ref<Stream> stream, const char* eol, int maxLineLength)
 	: stream_(stream),
 	  eol_(eol),
-	  bufCapa_(bufCapa),
-	  buf_(new uint8_t[bufCapa])
+	  bufFill_(0),
+	  buf_(new ByteArray(maxLineLength))
 {}
 
-LineSink::~LineSink()
+Ref<Stream> LineSink::stream() const { return stream_; }
+
+String LineSink::prefix() const { return prefix_; }
+
+void LineSink::setPrefix(String prefix)
 {
-	delete[] buf_;
-	buf_ = 0;
+	Ref<ByteArray, Owner> bufSaved;
+	if (bufFill_ > prefix_->size())
+		bufSaved = buf_->copy(prefix_->size(), bufFill_);
+	bufFill_ = 0;
+	prefix_ = prefix;
+	if (prefix_->size() > 0)
+		feed(prefix_->data(), prefix_->size());
+	if (bufSaved)
+		feed(bufSaved->data(), bufSaved->size());
 }
 
 void LineSink::writeLine(String line)
 {
-	int n = line->size();
-	int n2 = eol_->size();
-	
-	if (n + n2 > bufCapa_)
-		FTL_THROW(StreamIoException, "Output buffer exhausted");
-	
-	for (int i = 0; i < n; ++i)
-		buf_[i] = line->at(i);
-	
-	for (int i = 0; i < n2; ++i)
-		buf_[n + i] = eol_->at(i);
-
-	stream_->write(buf_, n + n2);
+	write(line);
+	flush();
 }
 
-void LineSink::write(String s)
+void LineSink::write(String text)
 {
-	stream_->write(s->data(), s->size());
+	int i = 0, j = 0;
+	while ((j = text->find(i, '\n')) != text->size()) {
+		feed(text->data() + i, j - i);
+		flush();
+		i = j + 1;
+	}
+	if (i < j)
+		feed(text->data() + i, j - i);
 }
 
-Ref<Stream> LineSink::stream() const
+void LineSink::feed(const char* data, int size)
 {
-	return stream_;
+	if (size > buf_->size() - bufFill_)
+		FTL_THROW(StreamIoException, str::cat("Maximum line length of ", ftl::intToStr(buf_->size()), " bytes exceeded"));
+	buf_->write(bufFill_, data, size);
+	bufFill_ += size;
+}
+
+void LineSink::flush()
+{
+	feed(eol_->data(), eol_->size());
+	stream_->write(buf_->data(), bufFill_);
+	bufFill_ = prefix_->size();
 }
 
 } // namespace ftl

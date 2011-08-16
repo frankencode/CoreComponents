@@ -11,13 +11,13 @@
 namespace ftl
 {
 
-LineSource::LineSource(Ref<Stream> stream, int bufCapa, const char* eol)
+LineSource::LineSource(Ref<Stream> stream, const char* eol, int maxLineLength)
 	: stream_(stream),
 	  eol_(eol),
 	  cachedLines_(0),
-	  cache_(bufCapa),
-	  bufCapa_(bufCapa),
-	  buf_(new char[bufCapa])
+	  cache_(maxLineLength),
+	  bufCapa_(maxLineLength),
+	  buf_(new char[maxLineLength])
 {}
 
 LineSource::~LineSource()

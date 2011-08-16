@@ -36,8 +36,8 @@ public:
 	static void sleep(Time duration);
 	static void sleepUntil(Time timeout);
 	
-	static void enableSignal(int signal);
-	static void disableSignal(int signal);
+	static void enableSignal(int signal = SIGUSR2);
+	static void disableSignal(int signal = SIGUSR2);
 	
 protected:
 	friend class ThreadFactory;

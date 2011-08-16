@@ -19,7 +19,6 @@ class SyntaxState: public Instance
 {
 public:
 	SyntaxState()
-		: definitionId_(-1)
 	{}
 	
 	SyntaxState(int definitionId, int numFlags, int numChars, int numStrings, Ref<SyntaxState> parent = 0)

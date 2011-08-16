@@ -59,8 +59,4 @@ void Crc32::feed(const void* buf, int bufFill)
 	crc_ = crc;
 }
 
-inline void Crc32::finish()
-{
-}
-
 } // namespace ftl

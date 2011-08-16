@@ -37,9 +37,10 @@ void Buffer::reset(int blockSize)
 	blockSize_ = blockSize;
 }
 
-Ref<Block> Buffer::allocate()
+Ref<Block> Buffer::allocate(int blockSize)
 {
-	Ref<Block, Owner> newBlock = new Block(blockSize_);
+	if (blockSize == -1) blockSize = blockSize_;
+	Ref<Block, Owner> newBlock = new Block(blockSize);
 	newBlock->prev_ = tail_;
 	if (!tail_) head_ = tail_ = newBlock;
 	else tail_ = tail_->next_ = newBlock;

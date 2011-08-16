@@ -110,7 +110,7 @@ public:
 	Ref<StringList, Owner> split(const char* pattern) const;
 	
 	inline int find(const char* pattern) const { return find(0, pattern); }
-	inline bool contains(const char* pattern) const { return find(pattern) < length(); }
+	inline bool contains(const char* pattern) const { return bytes()->find(0, pattern, str::len(pattern)) < bytes()->size(); }
 	inline String replace(const char* pattern, const char* replacement) const { return split(pattern)->join(replacement); }
 	void replaceInsitu(const char* pattern, const char* replacement);
 	

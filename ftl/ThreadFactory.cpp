@@ -11,7 +11,7 @@
 namespace ftl
 {
 
-ThreadFactory::ThreadFactory(Ref< Duplicable<Thread> > prototype)
+ThreadFactory::ThreadFactory(Ref< Clonable<Thread> > prototype)
 	: prototype_(prototype)
 {
 	int ret = pthread_attr_init(&attr_);
@@ -78,7 +78,7 @@ pthread_attr_t* ThreadFactory::attr() { return &attr_; }
 
 Ref<Thread, Owner> ThreadFactory::produce()
 {
-	Ref<Thread, Owner> thread = prototype_->duplicate();
+	Ref<Thread, Owner> thread = prototype_->clone();
 	start(thread);
 	return thread;
 }

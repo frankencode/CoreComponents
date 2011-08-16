@@ -50,8 +50,11 @@ Ref<StreamSocket, Owner> StreamSocket::accept()
 	Ref<SocketAddress, Owner> clientAddress = new SocketAddress(address_->family());
 	socklen_t len = clientAddress->addrLen();
 	int fdc = ::accept(fd_, clientAddress->addr(), &len);
-	if (fdc < 0)
+	if (fdc < 0) {
+		if (errno == EINTR)
+			return 0;
 		FTL_THROW(StreamSemanticException, systemError());
+	}
 	return new StreamSocket(clientAddress, fdc);
 }
 

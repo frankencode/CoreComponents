@@ -9,6 +9,7 @@
 #define FTL_SYNTAX_HPP
 
 #include "atoms"
+#include "Crc32.hpp"
 #include "PrefixTree.hpp"
 #include "Token.hpp"
 #include "TokenFactory.hpp"
@@ -259,7 +260,7 @@ public:
 		inline int minRepeat() const { return minRepeat_; }
 		inline int maxRepeat() const { return maxRepeat_; }
 		inline Ref<Node> entry() const { return Node::firstChild(); }
-	
+		
 	private:
 		int minRepeat_;
 		int maxRepeat_;
@@ -537,6 +538,11 @@ public:
 			: ruleName_(ruleName)
 		{}
 		
+		LinkNode(Ref<RuleNode> rule)
+			: ruleName_(rule->name()),
+			  rule_(rule)
+		{}
+		
 		inline const char* ruleName() const { return ruleName_; }
 		inline Ref<RuleNode> rule() const { return rule_; }
 		
@@ -553,6 +559,10 @@ public:
 	public:
 		RefNode(const char* ruleName = 0)
 			: LinkNode(ruleName)
+		{}
+		
+		RefNode(Ref<RuleNode> rule)
+			: LinkNode(rule)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -573,6 +583,10 @@ public:
 	public:
 		InlineNode(const char* ruleName)
 			: LinkNode(ruleName)
+		{}
+		
+		InlineNode(Ref<RuleNode> rule)
+			: LinkNode(rule)
 		{}
 		
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
@@ -929,12 +943,12 @@ public:
 	class Definition: public RefNode
 	{
 	public:
-		Definition(Ref<DebugFactory> debugFactory = 0, Ref<Scope> scope = 0, const char* name = 0)
+		Definition(Ref<DebugFactory> debugFactory = 0)
 			: debugFactory_(debugFactory),
-			  scope_(scope),
-			  id_(scope ? scope->numDefinitions(1) : -1),
-			  name_(name),
+			  id_(Crc32().sum()),
+			  name_(0),
 			  caseSensitive_(true),
+			  definitionByName_(new DefinitionByName),
 			  numRules_(0),
 			  numKeywords_(0),
 			  ruleByName_(new RuleByName),
@@ -949,19 +963,29 @@ public:
 		{
 			if (debugFactory_)
 				debugFactory_->definition_ = this;
-			if (scope_)
-				scope_->addDefinition(this);
 		}
 		
 		inline Ref<DebugFactory> debugFactory() const { return debugFactory_; }
 		
-		inline Ref<Scope> scope() const { return scope_; }
+		inline int id() const { return id_; }
 		inline const char* name() const { return name_; }
+		
+		//-- stateless definition interface
+		
+		inline void SYNTAX(const char* name) {
+			id_ = crc32(name);
+			name_ = name;
+		}
+		
+		inline void IMPORT(Ref<Definition> definition, const char* name = 0) {
+			if (!name) name = definition->name();
+			if (!name)
+				FTL_THROW(DebugException, "Cannot import anonymous syntax definition");
+			definitionByName_->insert(name, definition);
+		}
 		
 		typedef Ref<Node, Owner> NODE;
 		typedef Ref<RuleNode, Owner> RULE;
-		
-		//-- stateless definition interface
 		
 		inline void OPTION(const char* name, bool value) {
 			if (str::casecmp(name, "caseSensitive") == 0)
@@ -1170,7 +1194,6 @@ public:
 		
 		//-- execution interface
 		
-		inline int id() const { return id_; }
 		inline int numRules() const { return numRules_; }
 		
 		inline bool stateful() const { return (stateFlagHead_) || (stateCharHead_) || (stateStringHead_) || (statefulScope_); }
@@ -1218,8 +1241,7 @@ public:
 		
 		Ref<Token, Owner> match(Media* media, Index i0 = 0, Index* i1 = 0, State* state = 0, Ref<TokenFactory> tokenFactory = 0)
 		{
-			if (scope_) scope_->link();
-			else LINK();
+			LINK();
 			
 			Ref<State, Owner> localState;
 			if (!state) {
@@ -1239,10 +1261,38 @@ public:
 			return (h != Media::ill()) ? tokenFactory->rootToken() : Ref<Token>();
 		}
 		
+		Ref<Definition> resolveScope(const char*& name) const
+		{
+			Ref<Definition> scope = this;
+			int k = 0;
+			const char* s0 = name;
+			for (const char* s = s0; *s;) {
+				if (*(s++) == ':') ++k;
+				else k = 0;
+				if (k == 2) {
+					scope = scope->definitionByName(s0, s - s0 - 2);
+					s0 = s;
+				}
+			}
+			name = s0;
+			return scope;
+		}
+		
+		Ref<Definition> definitionByName(const char* name, int nameLength = -1) const
+		{
+			Ref<Definition, Owner> definition;
+			Ref<Definition> scope = resolveScope(name);
+			if (nameLength == -1) nameLength = str::len(name);
+			if (!scope->definitionByName_->lookup(name, nameLength, &definition))
+				FTL_THROW(DebugException, str::cat("Undefined definition '", name, "' referenced"));
+			return definition;
+		}
+		
 		Ref<RuleNode> ruleByName(const char* name) const
 		{
+			Ref<Definition> scope = resolveScope(name);
 			Ref<RuleNode, Owner> node;
-			if (!ruleByName_->lookup(name, &node))
+			if (!scope->ruleByName_->lookup(name, &node))
 				FTL_THROW(DebugException, str::cat("Undefined rule '", name, "' referenced"));
 			return node;
 		}
@@ -1253,18 +1303,6 @@ public:
 			if (!keywordByName_->lookup(keyword, &tokenType))
 				FTL_THROW(DebugException, str::cat("Undefined keyword '", keyword, "' referenced"));
 			return tokenType;
-		}
-		
-		Ref<Definition> definitionByName(const char* name) const
-		{
-			if (scope_) {
-				return scope_->definitionByName(name);
-			}
-			else {
-				if (str::cmp(name, name_) != 0)
-					FTL_THROW(DebugException, str::cat("Undefined definition '", name, "' referenced"));
-				return this;
-			}
 		}
 		
 		static void getLineAndPosFromIndex(Media* media, int index, int* line, int* pos)
@@ -1297,14 +1335,16 @@ public:
 		friend class Scope;
 		friend class InvokeNode;
 		
-		Ref<Scope> scope_;
 		int id_;
 		const char* name_;
 		bool caseSensitive_;
 		
+		typedef PrefixTree<char, Ref<Definition, Owner> > DefinitionByName;
+		Ref<DefinitionByName, Owner> definitionByName_;
+		
 		typedef PrefixTree<char, Ref<RuleNode, Owner> > RuleByName;
 		typedef PrefixTree<char, int> KeywordByName;
-	
+		
 		int numRules_;
 		int numKeywords_;
 		Ref<RuleByName, Owner> ruleByName_;
@@ -1408,71 +1448,6 @@ public:
 			Ref<Definition> definition = self;
 			return definition->syntaxError(media, index, state);
 		}
-	};
-	
-	class Scope: public Instance
-	{
-	private:
-		typedef PrefixTree<char, Ref<Definition, Owner> > DefinitionByName;
-		
-	public:
-		Scope()
-			: definitionByName_(new DefinitionByName),
-			  numDefinitions_(0)
-		{}
-		
-		Ref<Definition> definitionByName(const char* name) const
-		{
-			Ref<Definition, Owner> definition;
-			if (!definitionByName_->lookup(name, &definition))
-				FTL_THROW(DebugException, str::cat("Undefined definition '", name, "' referenced"));
-			return definition;
-		}
-		
-		int numDefinitions() const { return numDefinitions_; }
-		
-		void link()
-		{
-			bool stateful = false;
-			{
-				Ref<Definition> definition = unresolvedDefinitionHead_;
-				while ((definition) && (!stateful)) {
-					stateful = definition->stateful();
-					definition = definition->unresolvedNext_;
-				}
-			}
-			while (unresolvedDefinitionHead_) {
-				unresolvedDefinitionHead_->statefulScope_ = stateful;
-				unresolvedDefinitionHead_->LINK();
-				commit(unresolvedDefinitionHead_);
-				unresolvedDefinitionHead_ = unresolvedDefinitionHead_->unresolvedNext_;
-			}
-		}
-		
-	protected:
-		virtual void commit(Ref<Definition> definition) {}
-		
-	private:
-		friend class Definition;
-		
-		void addDefinition(Ref<Definition> definition)
-		{
-			if (!definitionByName_->insert(definition->name(), definition))
-				FTL_THROW(DebugException, str::cat("Redefinition of '", definition->name(), "'"));
-			definition->unresolvedNext_ = unresolvedDefinitionHead_;
-			unresolvedDefinitionHead_ = definition;
-		}
-		
-		int numDefinitions(int delta)
-		{
-			int h = numDefinitions_;
-			numDefinitions_ += delta;
-			return h;
-		}
-		
-		Ref<DefinitionByName, Owner> definitionByName_;
-		int numDefinitions_;
-		Ref<Definition, Owner> unresolvedDefinitionHead_;
 	};
 };
 

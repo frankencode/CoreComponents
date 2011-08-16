@@ -11,8 +11,11 @@
 namespace ftl
 {
 
-UriSyntax::UriSyntax()
+UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
+	: AbnfDefinition(debugFactory)
 {
+	SYNTAX("uri");
+	
 	DEFINE("URI",
 	  GLUE(
 	    REF("scheme"),

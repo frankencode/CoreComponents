@@ -93,6 +93,9 @@ inline void check(bool condition, const char* reason = "") {
 	return check<DebugException>(condition, reason);
 }
 
+class Interrupt {};
+class Timeout {};
+
 } // namespace ftl
 
 #endif // FTL_EXCEPTION_HPP

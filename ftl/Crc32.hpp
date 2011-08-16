@@ -9,6 +9,7 @@
 #define FTL_CRC32_HPP
 
 #include "types.hpp"
+#include "strings.hpp"
 
 namespace ftl
 {
@@ -16,10 +17,9 @@ namespace ftl
 class Crc32
 {
 public:
-	Crc32(uint32_t seed = ~0);
+	Crc32(uint32_t seed = ~uint32_t(0));
 	
 	void feed(const void* buf, int bufFill);
-	inline void finish();
 	inline uint32_t sum() const { return crc_; }
 	
 private:
@@ -29,6 +29,12 @@ private:
 inline uint32_t crc32(const void* buf, int bufSize) {
 	Crc32 crc;
 	crc.feed(buf, bufSize);
+	return crc.sum();
+}
+
+inline uint32_t crc32(const char* s) {
+	Crc32 crc;
+	crc.feed(s, str::len(s));
 	return crc.sum();
 }
 
