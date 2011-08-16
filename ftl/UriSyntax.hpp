@@ -16,7 +16,7 @@ namespace ftl
 class UriSyntax: public AbnfDefinition
 {
 public:
-	UriSyntax();
+	UriSyntax(Ref<DebugFactory> debugFactory = 0);
 };
 
 } // namespace ftl

@@ -6,6 +6,7 @@
  * See ../COPYING for the license.
  */
 
+#include <sys/uio.h>
 #include <errno.h>
 #include <string.h>
 #include <unistd.h> // read, write, select
@@ -17,8 +18,7 @@ namespace ftl
 
 SystemStream::SystemStream(int fd)
 	: fd_(fd),
-	  isattyCached_(false),
-	  continueOnInterrupt_(false)
+	  isattyCached_(false)
 {}
 
 SystemStream::~SystemStream()
@@ -79,12 +79,14 @@ bool SystemStream::readyReadOrWrite(Time timeout)
 
 int SystemStream::readAvail(void* buf, int bufCapa)
 {
-	int ret = 0;
+	ssize_t ret = 0;
 	while (true) {
 		ret = ::read(fd_, buf, bufCapa);
 		if (ret == -1) {
-			if ((errno == EINTR) && (continueOnInterrupt_))
-				continue;
+			if (errno == EINTR)
+				throw Interrupt();
+			if (errno == EWOULDBLOCK)
+				throw Timeout();
 			if (isTeletype()) { ret = 0; break; } // fancy HACK, needs review
 			FTL_THROW(StreamIoException, systemError());
 		}
@@ -98,14 +100,44 @@ void SystemStream::write(const void* buf, int bufFill)
 	const uint8_t* buf2 = static_cast<const uint8_t*>(buf);
 	while (bufFill > 0)
 	{
-		int ret = ::write(fd_, buf2, bufFill);
+		ssize_t ret = ::write(fd_, buf2, bufFill);
 		if (ret == -1) {
-			if ((errno == EINTR) && (continueOnInterrupt_))
-				continue;
+			if (errno == EINTR)
+				throw Interrupt();
+			if (errno == EWOULDBLOCK)
+				throw Timeout();
 			FTL_THROW(StreamIoException, systemError());
 		}
 		buf2 += ret;
 		bufFill -= ret;
+	}
+}
+
+void SystemStream::write(Ref<StringList> parts, const char* sep)
+{
+	int n = parts->length();
+	int sepLen = str::len(sep);
+	if (n <= 0) return;
+	if (sepLen > 0) n += n - 1;
+	struct iovec iov[n];
+	for (int i = 0, j = 0; i < n; ++i) {
+		if ((sepLen > 0) && ((i % 2) == 1)) {
+			iov[i].iov_base = const_cast<char*>(sep);
+			iov[i].iov_len = sepLen;
+		}
+		else {
+			Ref<ByteArray> part = parts->at(j++);
+			iov[i].iov_base = part->data();
+			iov[i].iov_len = part->size();
+		}
+	}
+	ssize_t ret = ::writev(fd_, &iov[0], n);
+	if (ret == -1) {
+		if (errno == EINTR)
+			throw Interrupt();
+		if (errno == EWOULDBLOCK)
+			throw Timeout();
+		FTL_THROW(StreamIoException, systemError());
 	}
 }
 
@@ -114,8 +146,5 @@ void SystemStream::closeOnExec()
 	if (::fcntl(fd_, F_SETFD, FD_CLOEXEC) == -1)
 		FTL_THROW(StreamSemanticException, systemError());
 }
-
-bool SystemStream::continueOnInterrupt() const { return continueOnInterrupt_; }
-void SystemStream::setContinueOnInterrupt(bool on) { continueOnInterrupt_ = on; }
 
 } // namespace ftl

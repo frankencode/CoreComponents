@@ -53,10 +53,10 @@ public:
 };
 
 template<class T>
-class Duplicable: public T
+class Clonable: public T
 {
 public:
-	virtual Ref<T, Owner> duplicate() const = 0;
+	virtual Ref<T, Owner> clone() const = 0;
 };
 
 template<class T>

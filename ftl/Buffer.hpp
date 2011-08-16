@@ -43,7 +43,7 @@ public:
 	
 	inline int blockSize() const { return blockSize_; }
 	
-	Ref<Block> allocate();
+	Ref<Block> allocate(int blockSize = -1);
 	Ref<ByteArray, Owner> join() const;
 	
 private:

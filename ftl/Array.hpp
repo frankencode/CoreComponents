@@ -9,6 +9,7 @@
 #define FTL_ARRAY_HPP
 
 #include "generics.hpp"
+#include "strings.hpp"
 #include "ArrayPolicy.hpp"
 
 namespace ftl
@@ -96,13 +97,14 @@ public:
 		return data_[i];
 	}
 	
-	inline int find(const T& item) {
-		for (int i = 0; i < size_; ++i)
-			if (data_[i] == item) return i;
+	inline int find(const T& item) const { return find(0, item); }
+	inline int find(int i, const T& item) const {
+		while (i < size_)
+			if (data_[i++] == item) return i - 1;
 		return size_;
 	}
 	
-	inline bool contains(const T& item) { return find(item) < size_; }
+	inline bool contains(const T& item) const { return find(item) < size_; }
 	
 	inline int replace(const T& oldItem, const T& newItem) {
 		int n = 0;
@@ -115,6 +117,23 @@ public:
 		return n;
 	}
 	
+	inline int find(int i, Ref<Array> pattern) const { return find(i, pattern->data(), pattern->size()); }
+	inline int find(int i, const T* pattern, int patternSize) const {
+		if (patternSize == 0) return size_;
+		for (int j = i, k = 0; j < size_;) {
+			if (data_[j++] == pattern[k]) {
+				++k;
+				if (k == patternSize)
+					return j - k;
+				k = 0;
+			}
+		}
+		return size_;
+	}
+	
+	inline int contains(Ref<Array> pattern) { return contains(pattern->data(), pattern->size()); }
+	inline int contains(const T* pattern, int patternSize) { return find(0, pattern, patternSize) != size_; }
+	
 	inline Ref<Array, Owner> copy() const { return copy(0, size_); }
 	
 	inline Ref<Array, Owner> copy(int i0, int i1) const {
@@ -123,6 +142,20 @@ public:
 		if (i1 < 0) i1 = 0;
 		if (i1 > size_) i1 = size_;
 		return (i0 < i1) ? new Array(data_ + i0, i1 - i0) : new Array();
+	}
+	
+	inline void read(int i, T* data, int size) {
+		if (size == 0) return;
+		check(has(i));
+		check(has(i + size - 1));
+		mem::cpy(data, data_ + i, size * sizeof(T));
+	}
+	
+	inline void write(int i, const T* data, int size) {
+		if (size == 0) return;
+		check(has(i));
+		check(has(i + size - 1));
+		mem::cpy(data_ + i, data, size * sizeof(T));
 	}
 	
 	inline void truncate(int newSize) {
