@@ -52,6 +52,18 @@ public:
 	virtual void run() = 0;
 };
 
+class Range
+{
+public:
+	Range(int i0, int i1)
+		: i0_(i0), i1_(i1)
+	{}
+	inline int i0() const { return i0_; }
+	inline int i1() const { return i1_; }
+private:
+	int i0_, i1_;
+};
+
 template<class T>
 class Clonable: public T
 {

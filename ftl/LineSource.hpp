@@ -21,25 +21,21 @@ class LineSource: public Source<String>
 {
 public:
 	LineSource(Ref<Stream> stream, const char* eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA);
-	~LineSource();
-	
-	bool read(String* line);
-	
-	String readLine();
-	int cachedLines() const;
-	bool readAvail();
 	
 	Ref<Stream> stream() const;
 	
+	bool read(String* line);
+	String readLine();
+	
 private:
+	bool readAvail();
 	bool hasMore();
 	
 	Ref<Stream, Owner> stream_;
 	String eol_;
 	int cachedLines_;
 	Queue<char> cache_;
-	int bufCapa_;
-	char* buf_;
+	ByteArray buf_;
 };
 
 } // namespace ftl

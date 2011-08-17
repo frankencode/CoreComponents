@@ -16,22 +16,16 @@ LineSource::LineSource(Ref<Stream> stream, const char* eol, int maxLineLength)
 	  eol_(eol),
 	  cachedLines_(0),
 	  cache_(maxLineLength),
-	  bufCapa_(maxLineLength),
-	  buf_(new char[maxLineLength])
+	  buf_(maxLineLength)
 {}
 
-LineSource::~LineSource()
-{
-	delete[] buf_;
-	buf_ = 0;
-}
+Ref<Stream> LineSource::stream() const { return stream_; }
 
 bool LineSource::hasMore()
 {
 	while ((cachedLines_ == 0) && (readAvail()));
 	return (cachedLines_ > 0);
 }
-
 
 bool LineSource::read(String* line)
 {
@@ -51,30 +45,25 @@ String LineSource::readLine()
 	while (k < nk) {
 		char ch = cache_.pop();
 		k = (ch == eol_->at(k)) ? k + 1 : 0;
-		buf_[i] = ch;
+		buf_.set(i, ch);
 		++i;
 	}
 	
 	--cachedLines_;
 	
-	return String(buf_, i - nk);
-}
-
-int LineSource::cachedLines() const
-{
-	return cachedLines_;
+	return String(buf_.data(), i - nk);
 }
 
 bool LineSource::readAvail()
 {
-	int bufFill = stream_->readAvail(buf_, bufCapa_);
+	int bufFill = stream_->readAvail(buf_.data(), buf_.size());
 	
 	for (int i = 0, nk = eol_->size(), k = 0; i < bufFill; ++i)
 	{
 		if (cache_.fill() == cache_.size())
 			FTL_THROW(StreamIoException, str::cat("Maximum line length of ", ftl::intToStr(cache_.size()), " bytes exceeded"));
-
-		char ch = buf_[i];
+		
+		char ch = buf_.at(i);
 		k = (ch == eol_->at(k)) ? k + 1 : 0;
 	
 		if (k == nk) {
@@ -86,11 +75,6 @@ bool LineSource::readAvail()
 	}
 	
 	return bufFill > 0;
-}
-
-Ref<Stream> LineSource::stream() const
-{
-	return stream_;
 }
 
 } // namespace ftl
