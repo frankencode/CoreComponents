@@ -15,7 +15,7 @@ LineSink::LineSink(Ref<Stream> stream, const char* eol, int maxLineLength)
 	: stream_(stream),
 	  eol_(eol),
 	  bufFill_(0),
-	  buf_(new ByteArray(maxLineLength))
+	  buf_(maxLineLength)
 {}
 
 Ref<Stream> LineSink::stream() const { return stream_; }
@@ -26,7 +26,7 @@ void LineSink::setPrefix(String prefix)
 {
 	Ref<ByteArray, Owner> bufSaved;
 	if (bufFill_ > prefix_->size())
-		bufSaved = buf_->copy(prefix_->size(), bufFill_);
+		bufSaved = buf_.copy(prefix_->size(), bufFill_);
 	bufFill_ = 0;
 	prefix_ = prefix;
 	if (prefix_->size() > 0)
@@ -55,16 +55,16 @@ void LineSink::write(String text)
 
 void LineSink::feed(const char* data, int size)
 {
-	if (size > buf_->size() - bufFill_)
-		FTL_THROW(StreamIoException, str::cat("Maximum line length of ", ftl::intToStr(buf_->size()), " bytes exceeded"));
-	buf_->write(bufFill_, data, size);
+	if (size > buf_.size() - bufFill_)
+		FTL_THROW(StreamIoException, str::cat("Maximum line length of ", ftl::intToStr(buf_.size()), " bytes exceeded"));
+	buf_.write(bufFill_, data, size);
 	bufFill_ += size;
 }
 
 void LineSink::flush()
 {
 	feed(eol_->data(), eol_->size());
-	stream_->write(buf_->data(), bufFill_);
+	stream_->write(buf_.data(), bufFill_);
 	bufFill_ = prefix_->size();
 }
 

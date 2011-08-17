@@ -39,7 +39,7 @@ private:
 	String prefix_;
 	
 	int bufFill_;
-	Ref<ByteArray, Owner> buf_;
+	ByteArray buf_;
 };
 
 } // namespace ftl

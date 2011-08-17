@@ -9,7 +9,6 @@
 #define FTL_ATOM
 
 #include "types.hpp"
-// #include "strings.hpp"
 #include "generics.hpp"
 #include "Exception.hpp"
 #include "CoreMutex.hpp"
