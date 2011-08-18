@@ -49,6 +49,58 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 		)
 	);
 	
+	DEFINE("uri-reference",
+		CHOICE(
+			REF("uri"),
+			REF("relative-ref")
+		)
+	);
+	
+	DEFINE("absolute-uri",
+		GLUE(
+			REF("scheme"),
+			CHAR(':'),
+			REF("hier-part"),
+			REPEAT(0, 1,
+				GLUE(
+					CHAR('?'),
+					REF("query")
+				)
+			)
+		)
+	);
+	
+	DEFINE("relative-ref",
+		GLUE(
+			REF("relative-part"),
+			REPEAT(0, 1,
+				GLUE(
+					CHAR('?'),
+					REF("query")
+				)
+			),
+			REPEAT(0, 1,
+				GLUE(
+					CHAR('#'),
+					REF("fragment")
+				)
+			)
+		)
+	);
+	
+	DEFINE("relative-part",
+		CHOICE(
+			GLUE(
+				STRING("//"),
+				REF("authority"),
+				REF("path-abempty")
+			),
+			REF("path-absolute"),
+			REF("path-noscheme"),
+			REF("path-empty")
+		)
+	);
+	
 	DEFINE("scheme",
 		GLUE(
 			INLINE("ALPHA"),
@@ -309,6 +361,16 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 		)
 	);
 	
+	DEFINE("path",
+		CHOICE(
+			REF("path-abempty"),
+			REF("path-absolute"),
+			REF("path-noscheme"),
+			REF("path-rootless"),
+			REF("path-empty")
+		)
+	);
+	
 	DEFINE("path-abempty",
 		REPEAT(
 			GLUE(
@@ -330,6 +392,18 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 							REF("segment")
 						)
 					)
+				)
+			)
+		)
+	);
+	
+	DEFINE("path-noscheme",
+		GLUE(
+			REF("segment-nz-nc"),
+			REPEAT(
+				GLUE(
+					CHAR('/'),
+					REF("segment")
 				)
 			)
 		)
@@ -360,6 +434,17 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 	DEFINE("segment-nz",
 		REPEAT(1,
 			REF("pchar")
+		)
+	);
+	
+	DEFINE("segment-nz-nc",
+		REPEAT(1,
+			CHOICE(
+				INLINE("unreserved"),
+				REF("pct-encoded"),
+				INLINE("sub-delims"),
+				CHAR('@')
+			)
 		)
 	);
 	
@@ -404,6 +489,17 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 			INLINE("DIGIT"),
 			RANGE("-._~")
 		)
+	);
+	
+	DEFINE_VOID("reserved",
+		CHOICE(
+			INLINE("gen-delims"),
+			INLINE("sub-delims")
+		)
+	);
+	
+	DEFINE_VOID("gen-delims",
+		RANGE(":/?#[]@")
 	);
 	
 	DEFINE_VOID("sub-delims",
