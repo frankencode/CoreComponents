@@ -126,8 +126,9 @@ SET(FTL_HEADER
 	Json.hpp
 	UriSyntax.hpp
 	# Uri.hpp
+	AbnfCoreSyntax.hpp
+	AbnfSyntax.hpp
 	AbnfCompiler.hpp
-	AbnfDefinition.hpp
 )
 
 SET(FTL_SOURCE
@@ -211,7 +212,8 @@ SET(FTL_SOURCE
 	Json.cpp
 	UriSyntax.cpp
 	# Uri.cpp
-	AbnfDefinition.cpp
+	AbnfCoreSyntax.cpp
+	AbnfSyntax.cpp
 	AbnfCompiler.cpp
 )
 
