@@ -24,9 +24,9 @@ public:
 	typedef typename Syntax<Media>::Definition Definition;
 	typedef typename Syntax<Media>::Node Node;
 
-	SyntaxDebugger()
+	SyntaxDebugger(String indent = "\t")
 		: factoryByNodeType_(new FactoryByNodeType),
-		  indent_("  ")
+		  indent_(indent)
 	{
 		factoryByNodeType_->insert("Char",          new DebugNodeFactory<CharDebugNode>         (this));
 		factoryByNodeType_->insert("Any",           new DebugNodeFactory<AnyDebugNode>          (this));

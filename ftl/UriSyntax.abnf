@@ -1,15 +1,15 @@
-; URI syntax according to RFC3986
+; uri syntax according to RFC3986
 
-URI           = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+uri           = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
 
 hier-part     = "//" authority path-abempty
               / path-absolute
               / path-rootless
               / path-empty
 
-URI-reference = URI / relative-ref
+uri-reference = uri / relative-ref
 
-absolute-URI  = scheme ":" hier-part [ "?" query ]
+absolute-uri  = scheme ":" hier-part [ "?" query ]
 
 relative-ref  = relative-part [ "?" query ] [ "#" fragment ]
 
@@ -22,14 +22,10 @@ scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
 
 authority     = [ userinfo "@" ] host [ ":" port ]
 userinfo      = *( unreserved / pct-encoded / sub-delims / ":" )
-host          = IP-literal / IPv4address / reg-name
+host          = inet6-address / inet-address / reg-name
 port          = *DIGIT
 
-IP-literal    = "[" ( IPv6address / IPvFuture  ) "]"
-
-IPvFuture     = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
-
-IPv6address   =                            6( h16 ":" ) ls32
+inet6-address   =                            6( h16 ":" ) ls32
               /                       "::" 5( h16 ":" ) ls32
               / [               h16 ] "::" 4( h16 ":" ) ls32
               / [ *1( h16 ":" ) h16 ] "::" 3( h16 ":" ) ls32
@@ -40,8 +36,8 @@ IPv6address   =                            6( h16 ":" ) ls32
               / [ *6( h16 ":" ) h16 ] "::"
 
 h16           = 1*4HEXDIG
-ls32          = ( h16 ":" h16 ) / IPv4address
-IPv4address   = dec-octet "." dec-octet "." dec-octet "." dec-octet
+ls32          = ( h16 ":" h16 ) / inet-address
+inet-address   = dec-octet "." dec-octet "." dec-octet "." dec-octet
 
 dec-octet     = DIGIT                 ; 0-9
               / %x31-39 DIGIT         ; 10-99

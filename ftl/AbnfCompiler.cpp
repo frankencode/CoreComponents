@@ -6,6 +6,7 @@
  * See ../LICENSE for the license.
  */
 
+#include <stdio.h> // DEBUG
 #include "SyntaxDebugger.hpp"
 #include "AbnfCompiler.hpp"
 
@@ -296,6 +297,8 @@ void AbnfCompiler::compileEntry(Ref<ByteArray> text, Ref<Token> ruleList, Ref<De
 AbnfCompiler::NODE AbnfCompiler::compileAlternation(Ref<ByteArray> text, Ref<Token> alternation, Ref<Definition> definition)
 {
 	check(alternation->rule() == alternation_);
+	if (alternation->firstChild() == alternation->lastChild())
+		return compileConcatenation(text, alternation->firstChild(), definition);
 	NODE node = definition->CHOICE();
 	Ref<Token> token = alternation->firstChild();
 	while (token) {
@@ -491,9 +494,6 @@ AbnfCompiler::NODE AbnfCompiler::optimizeChoice(Ref<Node> node, Ref<Definition> 
 	else {
 		deepOptimizeChoice(node, definition);
 	}
-	
-	if (ignoreDebug(node)->firstChild() == ignoreDebug(node)->lastChild())
-		optimizedChoice = ignoreDebug(node)->firstChild();
 	
 	return optimizedChoice;
 }
