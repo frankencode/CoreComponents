@@ -244,6 +244,8 @@ public:
 			while ((repeatCount < maxRepeat_) && (h != Media::ill()))
 			{
 				h = entry()->matchNext(media, h, tokenFactory, parentToken, state);
+				if (h == i)
+					FTL_THROW(DebugException, str::cat("Repeated empty match, bailing out"));
 				if (h != Media::ill()) {
 					i = h;
 					++repeatCount;
@@ -1265,25 +1267,30 @@ public:
 		{
 			Ref<Definition> scope = this;
 			int k = 0;
-			const char* s0 = name;
-			for (const char* s = s0; *s;) {
-				if (*(s++) == ':') ++k;
-				else k = 0;
+			const char* p0 = name;
+			const char* p = p0;
+			while (true) {
+				char ch = *(p++);
+				if (!ch) break;
+				k = (ch == ':') ? k + 1 : 0;
 				if (k == 2) {
-					scope = scope->definitionByName(s0, s - s0 - 2);
-					s0 = s;
+					Ref<Definition, Owner> childScope;
+					if (!scope->definitionByName_->lookup(p0, p - p0 - k, &childScope))
+						FTL_THROW(DebugException, str::cat("Undefined scope '", name, "' referenced"));
+					scope = childScope;
+					p0 = p;
+					k = 0;
 				}
 			}
-			name = s0;
+			name = p0;
 			return scope;
 		}
 		
-		Ref<Definition> definitionByName(const char* name, int nameLength = -1) const
+		Ref<Definition> definitionByName(const char* name) const
 		{
 			Ref<Definition, Owner> definition;
 			Ref<Definition> scope = resolveScope(name);
-			if (nameLength == -1) nameLength = str::len(name);
-			if (!scope->definitionByName_->lookup(name, nameLength, &definition))
+			if (!scope->definitionByName_->lookup(name, &definition))
 				FTL_THROW(DebugException, str::cat("Undefined definition '", name, "' referenced"));
 			return definition;
 		}
@@ -1292,6 +1299,7 @@ public:
 		{
 			Ref<Definition> scope = resolveScope(name);
 			Ref<RuleNode, Owner> node;
+			check(scope);
 			if (!scope->ruleByName_->lookup(name, &node))
 				FTL_THROW(DebugException, str::cat("Undefined rule '", name, "' referenced"));
 			return node;

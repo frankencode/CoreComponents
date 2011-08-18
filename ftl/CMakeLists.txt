@@ -51,8 +51,6 @@ SET(FTL_HEADER
 	Syntax.hpp
 	SyntaxSugar.hpp
 	SyntaxDebugger.hpp
-	AbnfCompiler.hpp
-	AbnfDefinition.hpp
 	
 	strings
 	String.hpp
@@ -115,18 +113,21 @@ SET(FTL_HEADER
 	NetworkInterface.hpp
 	
 	utils
+	rounding.hpp
 	Time.hpp
 	Date.hpp
 	Random.hpp
-	rounding.hpp
+	SymbolicLink.hpp
 	CommandOption.hpp
 	CommandLine.hpp
-	LinkInfo.hpp
-	SymbolicLink.hpp
 	
-	remoting
-	UriSyntax.hpp
+	misc
+	LinkInfo.hpp
 	Json.hpp
+	UriSyntax.hpp
+	# Uri.hpp
+	AbnfCompiler.hpp
+	AbnfDefinition.hpp
 )
 
 SET(FTL_SOURCE
@@ -148,8 +149,6 @@ SET(FTL_SOURCE
 	
 	# syntax
 	Token.cpp
-	AbnfDefinition.cpp
-	AbnfCompiler.cpp
 	
 	# strings
 	String.cpp
@@ -204,13 +203,16 @@ SET(FTL_SOURCE
 	# utils
 	Date.cpp
 	Random.cpp
-	CommandLine.cpp
-	LinkInfo.cpp
 	SymbolicLink.cpp
+	CommandLine.cpp
 	
-	# remoting
-	UriSyntax.cpp
+	# misc
+	LinkInfo.cpp
 	Json.cpp
+	UriSyntax.cpp
+	# Uri.cpp
+	AbnfDefinition.cpp
+	AbnfCompiler.cpp
 )
 
 ADD_LIBRARY(ftl

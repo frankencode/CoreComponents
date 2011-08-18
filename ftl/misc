@@ -1,0 +1,16 @@
+/*
+ * misc -- wildcard include header
+ *
+ * Copyright (c) 2007-2011, Frank Mertens
+ *
+ * See ../COPYING for the license.
+ */
+#ifndef FTL_MISC
+#define FTL_MISC
+
+#include "LinkInfo.hpp"
+#include "Json.hpp"
+#include "UriSyntax.hpp"
+#include "AbnfCompiler.hpp"
+
+#endif // FTL_MISC
