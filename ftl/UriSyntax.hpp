@@ -8,12 +8,12 @@
 #ifndef FTL_URISYNTAX_HPP
 #define FTL_URISYNTAX_HPP
 
-#include "AbnfDefinition.hpp"
+#include "AbnfCoreSyntax.hpp"
 
 namespace ftl
 {
 
-class UriSyntax: public AbnfDefinition
+class UriSyntax: public AbnfCoreSyntax
 {
 public:
 	UriSyntax(Ref<DebugFactory> debugFactory = 0);

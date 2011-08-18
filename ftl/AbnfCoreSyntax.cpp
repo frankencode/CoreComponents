@@ -1,20 +1,20 @@
 /*
- * AbnfDefinition.cpp -- ABNF definitions
+ * AbnfCoreSyntax.cpp -- ABNF core syntax rules
  *
  * Copyright (c) 2007-2011, Frank Mertens
  *
  * See ../LICENSE for the license.
  */
 
-#include "AbnfDefinition.hpp"
+#include "AbnfCoreSyntax.hpp"
 
 namespace ftl
 {
 
-AbnfDefinition::AbnfDefinition(Ref<DebugFactory> debugFactory)
+AbnfCoreSyntax::AbnfCoreSyntax(Ref<DebugFactory> debugFactory)
 	: Syntax<ByteArray>::Definition(debugFactory)
 {
-	SYNTAX("abnf");
+	SYNTAX("abnf-core");
 	
 	DEFINE_VOID("ALPHA",
 		CHOICE(

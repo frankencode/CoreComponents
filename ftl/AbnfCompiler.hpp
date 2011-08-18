@@ -8,25 +8,20 @@
 #ifndef FTL_ABNFCOMPILER_HPP
 #define FTL_ABNFCOMPILER_HPP
 
-#include "AbnfDefinition.hpp"
+#include "AbnfSyntax.hpp"
 #include "StringTrap.hpp"
 
 namespace ftl
 {
 
-class AbnfCompiler: public AbnfDefinition
+class AbnfCompiler: public AbnfSyntax
 {
 public:
-	typedef AbnfDefinition Definition;
-	
-	AbnfCompiler();
+	typedef Syntax<ByteArray>::Definition Definition;
 	
 	Ref<Definition, Owner> compile(Ref<ByteArray> text, Ref<Debugger> debugger = 0);
 	
 private:
-	static void defineCoreRules(Ref<Definition> definition);
-	NODE defineValue(const char* digitRule);
-	
 	inline const char* str(Ref<ByteArray> text, Ref<Token> token) { return trap_.capture(text, token->i0(), token->i1()); }
 	StringTrap trap_;
 	
@@ -46,21 +41,6 @@ private:
 	NODE optimizeChoice(Ref<Node> choice, Ref<Definition> definition);
 	void deepOptimizeChoice(Ref<Node> node, Ref<Definition> definition);
 	void deepOptimizeChoice(Ref<Node> node, Ref<Node> fin, int numChars, Ref<Definition> definition);
-	
-	int numVal_;
-	int charVal_;
-	int proseVal_;
-	int group_;
-	int option_;
-	int element_;
-	int repeat_;
-	int repetition_;
-	int concatenation_;
-	int alternation_;
-	int ruleName_;
-	int definedAs_;
-	int rule_;
-	int rulelist_;
 };
 
 } // namespace ftl

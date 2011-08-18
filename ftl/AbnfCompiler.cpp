@@ -6,241 +6,19 @@
  * See ../LICENSE for the license.
  */
 
-#include <stdio.h> // DEBUG
 #include "SyntaxDebugger.hpp"
+#include "AbnfSyntax.hpp"
 #include "AbnfCompiler.hpp"
 
 namespace ftl
 {
 
-AbnfCompiler::AbnfCompiler()
-{
-	DEFINE_VOID("comment",
-		GLUE(
-			CHAR(';'),
-			REPEAT(
-				CHOICE(
-					INLINE("WSP"),
-					INLINE("VCHAR")
-				)
-			),
-			INLINE("CRLF")
-		)
-	);
-	
-	DEFINE_VOID("c-nl",
-		CHOICE(
-			INLINE("comment"),
-			INLINE("CRLF")
-		)
-	);
-	
-	DEFINE_VOID("c-wsp",
-		GLUE(
-			REPEAT(0, 1, INLINE("c-nl")),
-			INLINE("WSP")
-		)
-	);
-	
-	numVal_ =
-		DEFINE("num-val",
-			GLUE(
-				CHAR('%'),
-				CHOICE(
-					GLUE(RANGE("bB"), defineValue("BIT")),
-					GLUE(RANGE("dD"), defineValue("DIGIT")),
-					GLUE(RANGE("xX"), defineValue("HEXDIG"))
-				)
-			)
-		);
-	
-	charVal_ =
-		DEFINE("char-val",
-			GLUE(
-				CHAR('"'),
-				REPEAT(OTHER('"')), // deviation from RFC5234
-				CHAR('"')
-			)
-		);
-	
-	proseVal_ =
-		DEFINE("prose-val",
-			GLUE(
-				CHAR('<'),
-				REPEAT(OTHER('>')), // deviation from RFC5234
-				CHAR('>')
-			)
-		);
-	
-	group_ =
-		DEFINE("group",
-			GLUE(
-				CHAR('('),
-				REPEAT(INLINE("c-wsp")),
-				REF("alternation"),
-				REPEAT(INLINE("c-wsp")),
-				CHAR(')')
-			)
-		);
-	
-	option_ =
-		DEFINE("option",
-			GLUE(
-				CHAR('['),
-				REPEAT(INLINE("c-wsp")),
-				REF("alternation"),
-				REPEAT(INLINE("c-wsp")),
-				CHAR(']')
-			)
-		);
-	
-	element_ =
-		DEFINE("element",
-			CHOICE(
-				REF("rulename"),
-				REF("group"),
-				// REF("option"), // correction over RFC5234
-				REF("num-val"),
-				REF("char-val"),
-				REF("prose-val")
-			)
-		);
-	
-	repeat_ =
-		DEFINE("repeat",
-			CHOICE(
-				GLUE(
-					REPEAT(INLINE("DIGIT")),
-					CHAR('*'),
-					REPEAT(INLINE("DIGIT"))
-				),
-				REPEAT(1, INLINE("DIGIT"))
-			)
-		);
-	
-	repetition_ =
-		DEFINE("repetition",
-			CHOICE(
-				GLUE(
-					REPEAT(0, 1, REF("repeat")),
-					REF("element")
-				),
-				REF("option")
-			)
-		);
-	
-	concatenation_ =
-		DEFINE("concatenation",
-			GLUE(
-				REF("repetition"),
-				REPEAT(
-					GLUE(
-						REPEAT(1, INLINE("c-wsp")),
-						REF("repetition")
-					)
-				)
-			)
-		);
-	
-	alternation_ =
-		DEFINE("alternation",
-			GLUE(
-				REF("concatenation"),
-				REPEAT(
-					GLUE(
-						REPEAT(INLINE("c-wsp")),
-						CHAR('/'),
-						REPEAT(INLINE("c-wsp")),
-						REF("concatenation")
-					)
-				)
-			)
-		);
-	
-	ruleName_ =
-		DEFINE("rulename",
-			GLUE(
-				INLINE("ALPHA"),
-				REPEAT(
-					CHOICE(
-						INLINE("ALPHA"),
-						INLINE("DIGIT"),
-						CHAR('-')
-					)
-				)
-			)
-		);
-	
-	definedAs_ =
-		DEFINE("defined-as",
-			KEYWORD("= ~")
-				// deviation from RFC5234, no support for redefinition ("=/")
-				// and added differentiation between matching ('~') and production rules ('=')
-		);
-	
-	rule_ =
-		DEFINE("rule",
-			GLUE(
-				REF("rulename"),
-				REPEAT(INLINE("c-wsp")),
-				REF("defined-as"),
-				REPEAT(INLINE("c-wsp")),
-				REF("alternation"),
-					// correction of RFC5234, redundant rule "elements" substituted
-				REPEAT(INLINE("c-wsp")),
-				INLINE("c-nl")
-			)
-		);
-	
-	rulelist_ =
-		DEFINE("rulelist",
-			REPEAT(1,
-				GLUE(
-					NOT(EOI()),
-					CHOICE(
-						REF("rule"),
-						GLUE(
-							REPEAT(INLINE("c-wsp")),
-							INLINE("c-nl")
-						),
-						ERROR()
-					)
-				)
-			)
-		);
-	
-	ENTRY("rulelist");
-	LINK();
-}
-
-AbnfCompiler::NODE AbnfCompiler::defineValue(const char* digitRule)
-{
-	return
-		GLUE(
-			REPEAT(1, INLINE(digitRule)),
-			REPEAT(0, 1,
-				CHOICE(
-					REPEAT(1,
-						GLUE(
-							CHAR('.'),
-							REPEAT(1, INLINE(digitRule))
-						)
-					),
-					GLUE(
-						CHAR('-'),
-						REPEAT(1, INLINE(digitRule))
-					)
-				)
-			)
-		);
-}
-
 Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, Ref<Debugger> debugger)
 {
-	Ref<Token, Owner> ruleList = match(text);
+	Ref<Token, Owner> ruleList = AbnfSyntax::match(text);
 	check(ruleList);
 	
-	Ref<Definition, Owner> definition = new Definition(debugger);
+	Ref<Definition, Owner> definition = new AbnfCoreSyntax(debugger);
 	definition->OPTION("caseSensitive", false);
 	
 	compileRuleList(text, ruleList, definition);
@@ -251,26 +29,27 @@ Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, 
 	return definition;
 }
 
-Ref<AbnfCompiler::Node> AbnfCompiler::ignoreDebug(Ref<Node> node) {
+Ref<AbnfCompiler::Node> AbnfCompiler::ignoreDebug(Ref<Node> node)
+{
 	Ref<Debugger::DebugNode> debugNode = node;
 	return (debugNode) ? debugNode->entry() : node;
 }
 
 void AbnfCompiler::compileRuleList(Ref<ByteArray> text, Ref<Token> ruleList, Ref<Definition> definition)
 {
-	check(ruleList->rule() == rulelist_);
+	check(ruleList->rule() == AbnfSyntax::rulelist_);
 	
 	Ref<Token> rule = ruleList->firstChild();
 	while (rule) {
-		check(rule->rule() == rule_);
+		check(rule->rule() == AbnfSyntax::rule_);
 		
 		Ref<Token> ruleName = rule->firstChild();
 		Ref<Token> definedAs = ruleName->nextSibling();
 		Ref<Token> alternation = definedAs->nextSibling();
 		
-		check(ruleName->rule() == ruleName_);
-		check(definedAs->rule() == definedAs_);
-		check(alternation->rule() == alternation_);
+		check(ruleName->rule() == AbnfSyntax::ruleName_);
+		check(definedAs->rule() == AbnfSyntax::definedAs_);
+		check(alternation->rule() == AbnfSyntax::alternation_);
 		
 		if (text->at(definedAs->i0()) == '=')
 			definition->DEFINE(str(text, ruleName), compileAlternation(text, alternation, definition));
@@ -287,16 +66,16 @@ void AbnfCompiler::compileEntry(Ref<ByteArray> text, Ref<Token> ruleList, Ref<De
 {
 	Ref<Token> rule = ruleList->firstChild();
 	check(rule);
-	check(rule->rule() == rule_);
+	check(rule->rule() == AbnfSyntax::rule_);
 	Ref<Token> ruleName = rule->firstChild();
-	check(ruleName->rule() == ruleName_);
+	check(ruleName->rule() == AbnfSyntax::ruleName_);
 	
 	definition->ENTRY(str(text, ruleName));
 }
 
 AbnfCompiler::NODE AbnfCompiler::compileAlternation(Ref<ByteArray> text, Ref<Token> alternation, Ref<Definition> definition)
 {
-	check(alternation->rule() == alternation_);
+	check(alternation->rule() == AbnfSyntax::alternation_);
 	if (alternation->firstChild() == alternation->lastChild())
 		return compileConcatenation(text, alternation->firstChild(), definition);
 	NODE node = definition->CHOICE();
@@ -310,7 +89,7 @@ AbnfCompiler::NODE AbnfCompiler::compileAlternation(Ref<ByteArray> text, Ref<Tok
 
 AbnfCompiler::NODE AbnfCompiler::compileConcatenation(Ref<ByteArray> text, Ref<Token> concatenation, Ref<Definition> definition)
 {
-	check(concatenation->rule() == concatenation_);
+	check(concatenation->rule() == AbnfSyntax::concatenation_);
 	if (concatenation->firstChild() == concatenation->lastChild())
 		return compileRepetition(text, concatenation->firstChild(), definition);
 	NODE node = definition->GLUE();
@@ -326,7 +105,7 @@ AbnfCompiler::NODE AbnfCompiler::compileRepetition(Ref<ByteArray> text, Ref<Toke
 {
 	NODE node = 0;
 	Ref<Token> token = repetition->firstChild();
-	if (token->rule() == repeat_) {
+	if (token->rule() == AbnfSyntax::repeat_) {
 		int i = token->i0();
 		while (i < token->i1()) {
 			if (text->at(i) == '*') break;
@@ -346,10 +125,10 @@ AbnfCompiler::NODE AbnfCompiler::compileRepetition(Ref<ByteArray> text, Ref<Toke
 		else
 			node = definition->REPEAT(repeatMin, repeatMax, compileElement(text, token->nextSibling(), definition));
 	}
-	else if (token->rule() == element_) {
+	else if (token->rule() == AbnfSyntax::element_) {
 		node = compileElement(text, token, definition);
 	}
-	else if (token->rule() == option_) {
+	else if (token->rule() == AbnfSyntax::option_) {
 		node = compileOption(text, token, definition);
 	}
 	else {
@@ -360,7 +139,7 @@ AbnfCompiler::NODE AbnfCompiler::compileRepetition(Ref<ByteArray> text, Ref<Toke
 
 AbnfCompiler::NODE AbnfCompiler::compileOption(Ref<ByteArray> text, Ref<Token> option, Ref<Definition> definition)
 {
-	check(option->rule() == option_);
+	check(option->rule() == AbnfSyntax::option_);
 	Ref<Token> alternation = option->firstChild();
 	check(alternation);
 	return definition->REPEAT(0, 1, compileAlternation(text, alternation, definition));
@@ -369,21 +148,21 @@ AbnfCompiler::NODE AbnfCompiler::compileOption(Ref<ByteArray> text, Ref<Token> o
 AbnfCompiler::NODE AbnfCompiler::compileElement(Ref<ByteArray> text, Ref<Token> element, Ref<Definition> definition)
 {
 	NODE node = 0;
-	check(element->rule() == element_);
+	check(element->rule() == AbnfSyntax::element_);
 	Ref<Token> token = element->firstChild();
-	if (token->rule() == ruleName_) {
+	if (token->rule() == AbnfSyntax::ruleName_) {
 		node = definition->REF(str(text, token));
 	}
-	else if (token->rule() == group_) {
+	else if (token->rule() == AbnfSyntax::group_) {
 		node = compileAlternation(text, token->firstChild(), definition);
 	}
-	else if (token->rule() == numVal_) {
+	else if (token->rule() == AbnfSyntax::numVal_) {
 		node = compileNumVal(text, token, definition);
 	}
-	else if (token->rule() == charVal_) {
+	else if (token->rule() == AbnfSyntax::charVal_) {
 		node = compileCharVal(text, token, definition);
 	}
-	else if (token->rule() == proseVal_) {
+	else if (token->rule() == AbnfSyntax::proseVal_) {
 		node = compileProseVal(text, token, definition);
 	}
 	else {
@@ -396,7 +175,7 @@ AbnfCompiler::NODE AbnfCompiler::compileNumVal(Ref<ByteArray> text, Ref<Token> n
 {
 	NODE node = 0;
 	
-	check(numVal->rule() == numVal_);
+	check(numVal->rule() == AbnfSyntax::numVal_);
 	check(text->at(numVal->i0()) == '%');
 	char prefix = toLower(text->at(numVal->i0() + 1));
 	int base;
