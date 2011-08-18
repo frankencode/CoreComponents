@@ -16,27 +16,6 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 {
 	SYNTAX("uri");
 	
-	DEFINE_VOID("ALPHA",
-		CHOICE(
-			RANGE('a', 'z'),
-			RANGE('A', 'Z')
-		)
-	);
-	
-	DEFINE_VOID("DIGIT",
-		RANGE('0', '9')
-	);
-	
-	DEFINE_VOID("HEXDIG",
-		CHOICE(
-			INLINE("DIGIT"),
-			CHOICE(
-				RANGE('a', 'f'),
-				RANGE('A', 'F')
-			)
-		)
-	);
-	
 	DEFINE("uri",
 		GLUE(
 			REF("scheme"),
