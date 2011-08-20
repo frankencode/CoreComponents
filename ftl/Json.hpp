@@ -9,7 +9,7 @@
 #define FTL_JSON_HPP
 
 #include "AbnfCoreSyntax.hpp"
-#include "ThreadLocalSingleton.hpp"
+#include "Singleton.hpp"
 #include "Variant.hpp"
 #include "Array.hpp"
 #include "Map.hpp"
@@ -22,13 +22,13 @@ FTL_EXCEPTION(JsonException, Exception);
 typedef Array<Variant> JsonArray;
 typedef Map<String, Variant> JsonObject;
 
-class Json: public AbnfCoreSyntax, public ThreadLocalSingleton<Json>
+class Json: public AbnfCoreSyntax, public Singleton<Json>
 {
 public:
 	Variant parse(String text);
 	
 private:
-	friend class ThreadLocalSingleton<Json>;
+	friend class Singleton<Json>;
 	Json();
 	Variant parseText(Ref<ByteArray> text, Ref<Token> token);
 	Variant parseObject(Ref<ByteArray> text, Ref<Token> token);

@@ -9,7 +9,7 @@
 #define FTL_FORMATSYNTAX_HPP
 
 #include "atoms"
-#include "ThreadLocalSingleton.hpp"
+#include "Singleton.hpp"
 
 namespace ftl
 {
@@ -18,7 +18,7 @@ class FormatSpecifier;
 class IntegerLiteral;
 class FloatLiteral;
 
-class FormatSyntax: public Instance, public ThreadLocalSingleton<FormatSyntax>
+class FormatSyntax: public Instance, public Singleton<FormatSyntax>
 {
 public:
 	Ref<FormatSpecifier> formatSpecifier() const;
@@ -26,7 +26,7 @@ public:
 	Ref<FloatLiteral> floatingPointLiteral() const;
 	
 private:
-	friend class ThreadLocalSingleton<FormatSyntax>;
+	friend class Singleton<FormatSyntax>;
 	
 	FormatSyntax();
 	
