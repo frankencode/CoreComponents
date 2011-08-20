@@ -22,7 +22,7 @@ class ThreadLocalSingleton
 public:
 	static Ref<SubClass> instance()
 	{
-		Ref<SubClass, ThreadLocalOwner>& instance_ = localStatic<Ref<SubClass, ThreadLocalOwner>, SubClass>();
+		Ref<SubClass, ThreadLocalOwner>& instance_ = localStatic< Ref<SubClass, ThreadLocalOwner>, ThreadLocalSingleton<SubClass> >();
 		if (!instance_)
 			instance_ = new SubClass;
 		return instance_;
