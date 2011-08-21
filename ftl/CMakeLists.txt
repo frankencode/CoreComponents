@@ -39,7 +39,6 @@ SET(FTL_HEADER
 	Tree.hpp
 	PrefixTree.hpp
 	PrefixTreeWalker.hpp
-	Pair.hpp
 	BinaryTree.hpp
 	List.hpp
 	Map.hpp

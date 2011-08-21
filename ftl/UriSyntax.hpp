@@ -9,15 +9,18 @@
 #define FTL_URISYNTAX_HPP
 
 #include "AbnfCoreSyntax.hpp"
+#include "Singleton.hpp"
 
 namespace ftl
 {
 
-class UriSyntax: public AbnfCoreSyntax
+class UriSyntax: public AbnfCoreSyntax, public Singleton<UriSyntax>
 {
 public:
 	UriSyntax(Ref<DebugFactory> debugFactory = 0);
 };
+
+inline Ref<UriSyntax> uriSyntax() { return UriSyntax::instance(); }
 
 } // namespace ftl
 
