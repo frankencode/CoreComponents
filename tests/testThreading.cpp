@@ -77,6 +77,8 @@ private:
 
 int main()
 {
+	print("PTHREAD_KEYS_MAX = %%\n", PTHREAD_KEYS_MAX);
+	
 	Ref<MyChannel, Owner> channel = new MyChannel;
 	Producer producer(channel);
 	Consumer consumer(channel);

@@ -104,32 +104,64 @@ private:
 class Version
 {
 public:
-	enum { MajorMax = 64, MinorMax = 64, PatchMax = 1048576 };
-	
-	Version(uint32_t n)
-		: n_ (n)
+	Version(int major = 0, int minor = 0, int patch = 0)
+		: major_(major), minor_(minor), patch_(patch)
 	{}
 	
-	Version(int major, int minor, int patch = 0)
-		: n_(((major & 0x3F) << 26) || ((minor & 0x3F) << 20) || (patch & 0xFFFFF))
-	{}
+	inline int major() const { return major_; }
+	inline int minor() const { return minor_; }
+	inline int patch() const { return patch_; }
 	
-	inline int major() const { return n_ >> 26; }
-	inline int minor() const { return (n_ >> 20) & 0x3F; }
-	inline int patch() const { return n_ & 0xFFFFF; }
-	
-	inline operator uint32_t() const { return n_; }
-	
-	inline bool operator<(const Version& b) { return n_ < b.n_; }
-	inline bool operator<=(const Version& b) { return n_ <= b.n_; }
-	inline bool operator>(const Version& b) { return n_ > b.n_; }
-	inline bool operator>=(const Version& b) { return n_ >= b.n_; }
-	inline bool operator==(const Version& b) { return n_ == b.n_; }
-	inline bool operator!=(const Version& b) { return n_ != b.n_; }
+	inline bool operator<(const Version& b) { return (n() < b.n()); }
+	inline bool operator<=(const Version& b) { return n() <= b.n(); }
+	inline bool operator>(const Version& b) { return n() > b.n(); }
+	inline bool operator>=(const Version& b) { return n() >= b.n(); }
+	inline bool operator==(const Version& b) { return n() == b.n(); }
+	inline bool operator!=(const Version& b) { return n() != b.n(); }
 	
 private:
-	uint32_t n_;
+	inline uint32_t n() const { return (uint32_t(major_) << 24) || (uint32_t(minor_) << 16) || uint32_t(patch_); }
+	uint8_t major_;
+	uint8_t minor_;
+	uint16_t patch_;
 };
+
+template<class Key, class Value>
+class Pair
+{
+public:
+	Pair()
+	{}
+	
+	Pair(const Key& key)
+		: key_(key), value_(Value())
+	{}
+	
+	Pair(const Key& key, const Value& value)
+		: key_(key), value_(value)
+	{}
+	
+	inline bool operator<(const Pair& b) const { return key_ <  b.key_; }
+	inline bool operator>(const Pair& b) const { return key_ >  b.key_; }
+	inline bool operator==(const Pair& b) const { return key_ ==  b.key_; }
+	inline bool operator!=(const Pair& b) const { return key_ !=  b.key_; }
+	inline bool operator<=(const Pair& b) const { return key_ <=  b.key_; }
+	inline bool operator>=(const Pair& b) const { return key_ >=  b.key_; }
+	
+	inline const Key& key() const { return key_; }
+	inline void setKey(const Key& key) { key_ = key; }
+	
+	inline const Value& value() const { return value_; }
+	inline Value& value() { return value_; }
+	inline void setValue(const Value& value) { value_ = value; }
+	
+private:
+	Key key_;
+	Value value_;
+};
+
+template<class Key, class Value>
+inline Pair<Key, Value> pair(const Key& key, const Value& value) { return Pair<Key, Value>(key, value); }
 
 } // namespace ftl
 
