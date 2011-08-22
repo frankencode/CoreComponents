@@ -13,6 +13,7 @@
 #include "Utf8Walker.hpp"
 #include "Character.hpp"
 #include "List.hpp"
+#include "Singleton.hpp"
 
 namespace ftl
 {
@@ -31,7 +32,7 @@ public:
 	typedef uchar_t Item;
 	
 	// initialize empty string
-	String(): Super(new ByteArray) {}
+	String(): Super(ByteArray::empty()) {}
 	
 	// initialize string by a given string bytes
 	String(const Ref<ByteArray, Owner>& bytes): Super(bytes) {}

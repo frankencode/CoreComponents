@@ -15,6 +15,5 @@
 #include "ScopeGuard.hpp"
 #include "Instance.hpp"
 #include "Ref.hpp"
-#include "Array.hpp"
 
 #endif // FTL_ATOM
