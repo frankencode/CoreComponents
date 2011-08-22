@@ -12,19 +12,19 @@ namespace ftl
 {
 
 template<class T>
-class EmptyArray {
+class NullArray {
 public:
 	inline static T* isEmpty() { return 0; }
 };
 
 template<>
-class EmptyArray<char> {
+class NullArray<char> {
 public:
 	inline static char* isEmpty() { return const_cast<char*>(""); }
 };
 
 template<>
-class EmptyArray<const char> {
+class NullArray<const char> {
 public:
 	inline static const char* isEmpty() { return ""; }
 };
@@ -33,7 +33,7 @@ template<class T>
 class DeepCopyArray {
 public:
 	inline static T* isEmpty() {
-		return EmptyArray<T>::isEmpty();
+		return NullArray<T>::isEmpty();
 	}
 	inline static void initEmpty(T*& data_, int& size_) {
 		size_ = 0;
@@ -75,7 +75,7 @@ template<class T>
 class DeepCopyZeroTerminatedArray {
 public:
 	inline static T* isEmpty() {
-		return EmptyArray<T>::isEmpty();
+		return NullArray<T>::isEmpty();
 	}
 	inline static void initEmpty(T*& data_, int& size_) {
 		size_ = 0;
@@ -119,7 +119,7 @@ template<class T>
 class ShallowCopyArray {
 public:
 	inline static T* isEmpty() {
-		return EmptyArray<T>::isEmpty();
+		return NullArray<T>::isEmpty();
 	}
 	inline static void initEmpty(T*& data_, int& size_) {
 		size_ = 0;

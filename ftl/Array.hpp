@@ -11,9 +11,13 @@
 #include "generics.hpp"
 #include "strings.hpp"
 #include "ArrayPolicy.hpp"
+#include "Singleton.hpp"
 
 namespace ftl
 {
+
+template<class T, template<class> class P = ArrayPolicy>
+class EmptyArray;
 
 template<class T, template<class> class P = ArrayPolicy>
 class Array: public Sequence<T, int>
@@ -39,6 +43,8 @@ public:
 	}
 	
 	~Array() { Policy::free(data_, size_); }
+	
+	inline static Ref<Array> empty() { return EmptyArray<T, P>::instance(); }
 	
 	inline Array& operator=(const Array& b) {
 		Policy::assign(data_, size_, b.data_, b.size_);
@@ -181,6 +187,14 @@ public:
 private:
 	int size_;
 	T* data_;
+};
+
+template<class T, template<class> class P>
+class EmptyArray: public Array<T, P>, public Singleton< Array<T, P> >
+{
+private:
+	friend class Singleton< Array<T, P> >;
+	EmptyArray() {}
 };
 
 typedef Array<char, DeepCopyZeroTerminatedArray> ByteArray;

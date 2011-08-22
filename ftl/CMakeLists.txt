@@ -12,8 +12,6 @@ SET(FTL_HEADER
 	SetNull.hpp
 	Owner.hpp
 	Ref.hpp
-	ArrayPolicy.hpp
-	Array.hpp
 	Buffer.hpp
 	
 	binary
@@ -33,6 +31,8 @@ SET(FTL_HEADER
 	
 	container
 	containers.hpp
+	ArrayPolicy.hpp
+	Array.hpp
 	Stack.hpp
 	Queue.hpp
 	Heap.hpp
