@@ -124,7 +124,7 @@ SET(FTL_HEADER
 	LinkInfo.hpp
 	Json.hpp
 	UriSyntax.hpp
-	# Uri.hpp
+	Uri.hpp
 	AbnfCoreSyntax.hpp
 	AbnfSyntax.hpp
 	AbnfCompiler.hpp
@@ -210,7 +210,7 @@ SET(FTL_SOURCE
 	LinkInfo.cpp
 	Json.cpp
 	UriSyntax.cpp
-	# Uri.cpp
+	Uri.cpp
 	AbnfCoreSyntax.cpp
 	AbnfSyntax.cpp
 	AbnfCompiler.cpp

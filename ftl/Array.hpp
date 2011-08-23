@@ -17,7 +17,7 @@ namespace ftl
 {
 
 template<class T, template<class> class P = ArrayPolicy>
-class EmptyArray;
+class DefaultArray;
 
 template<class T, template<class> class P = ArrayPolicy>
 class Array: public Sequence<T, int>
@@ -44,7 +44,7 @@ public:
 	
 	~Array() { Policy::free(data_, size_); }
 	
-	inline static Ref<Array> empty() { return EmptyArray<T, P>::instance(); }
+	inline static Ref<Array> empty() { return DefaultArray<T, P>::instance(); }
 	
 	inline Array& operator=(const Array& b) {
 		Policy::assign(data_, size_, b.data_, b.size_);
@@ -190,11 +190,11 @@ private:
 };
 
 template<class T, template<class> class P>
-class EmptyArray: public Array<T, P>, public Singleton< Array<T, P> >
+class DefaultArray: public Array<T, P>, public Singleton< Array<T, P> >
 {
 private:
 	friend class Singleton< Array<T, P> >;
-	EmptyArray() {}
+	DefaultArray() {}
 };
 
 typedef Array<char, DeepCopyZeroTerminatedArray> ByteArray;
