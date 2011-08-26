@@ -87,13 +87,13 @@ public:
 	inline bool defined() const { return type_ != UndefType; }
 	inline bool compatibleTo(int type) { return type_ & type; }
 	
-	inline bool toBool() const       { check(type_ & IntType,    illegalConversion()); return int_; }
-	inline int toInt() const         { check(type_ & IntType,    illegalConversion()); return int_; }
-	inline float toFloat() const     { check(type_ & FloatType,  illegalConversion()); return float_; }
-	inline String toString() const   { check(type_ & StringType, illegalConversion()); return String(*this); }
-	inline Path toPath() const       { check(type_ & StringType, illegalConversion()); return Path(String(*this)); }
+	inline bool toBool() const       { FTL_CHECK2(type_ & IntType,    illegalConversion()); return int_; }
+	inline int toInt() const         { FTL_CHECK2(type_ & IntType,    illegalConversion()); return int_; }
+	inline float toFloat() const     { FTL_CHECK2(type_ & FloatType,  illegalConversion()); return float_; }
+	inline String toString() const   { FTL_CHECK2(type_ & StringType, illegalConversion()); return String(*this); }
+	inline Path toPath() const       { FTL_CHECK2(type_ & StringType, illegalConversion()); return Path(String(*this)); }
 	template<class T>
-	inline Ref<T> toInstance() const { check(type_ & RefType,    illegalConversion()); return ref(); }
+	inline Ref<T> toInstance() const { FTL_CHECK2(type_ & RefType,    illegalConversion()); return ref(); }
 	
 	inline operator bool() const { return toBool(); }
 	inline operator int() const { return toInt(); }

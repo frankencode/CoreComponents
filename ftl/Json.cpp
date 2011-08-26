@@ -209,20 +209,20 @@ Variant Json::parse(String text)
 {
 	int i0 = 0, i1 = 0;
 	Ref<Token, Owner> token = match(text, i0, &i1);
-	check<JsonException>(token, "Invalid syntax");
+	FTL_ASSERT(token, JsonException, "Invalid syntax");
 	return parseText(text, token);
 }
 
 Variant Json::parseText(Ref<ByteArray> text, Ref<Token> token)
 {
-	check<JsonException>(token->rule() == text_);
+	FTL_ASSERT(token->rule() == text_, JsonException, "");
 	Ref<Token> child = token->firstChild();
 	return (child->rule() == object_) ? parseObject(text, child) : parseArray(text, child);
 }
 
 Variant Json::parseObject(Ref<ByteArray> text, Ref<Token> token)
 {
-	check<JsonException>(token->rule() == object_);
+	FTL_ASSERT(token->rule() == object_, JsonException, "");
 	Ref<JsonObject, Owner> object = new JsonObject;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
 		Pair<String, Variant> member = parseMember(text, child);
@@ -233,7 +233,7 @@ Variant Json::parseObject(Ref<ByteArray> text, Ref<Token> token)
 
 Variant Json::parseArray(Ref<ByteArray> text, Ref<Token> token)
 {
-	check<JsonException>(token->rule() == array_);
+	FTL_ASSERT(token->rule() == array_, JsonException, "");
 	Ref<JsonArray, Owner> array = new JsonArray(token->countChildren());
 	int i = 0;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
@@ -245,8 +245,8 @@ Variant Json::parseArray(Ref<ByteArray> text, Ref<Token> token)
 
 Pair<String, Variant> Json::parseMember(Ref<ByteArray> text, Ref<Token> token)
 {
-	check<JsonException>(token->rule() == member_);
-	check<JsonException>(token->countChildren() == 2);
+	FTL_ASSERT(token->rule() == member_, JsonException, "");
+	FTL_ASSERT(token->countChildren() == 2, JsonException, "");
 	return Pair<String, Variant>(
 		parseString(text, token->firstChild()),
 		parseValue(text, token->lastChild())
@@ -255,10 +255,10 @@ Pair<String, Variant> Json::parseMember(Ref<ByteArray> text, Ref<Token> token)
 
 Variant Json::parseValue(Ref<ByteArray> text, Ref<Token> token)
 {
-	check<JsonException>(token->rule() == value_);
+	FTL_ASSERT(token->rule() == value_, JsonException, "");
 	Variant value;
 	if (token->hasChildren()) {
-		check<JsonException>(token->countChildren() == 1);
+		FTL_ASSERT(token->countChildren() == 1, JsonException, "");
 		Ref<Token> child = token->firstChild();
 		if (child->rule() == object_)
 			value = parseObject(text, child);
@@ -269,7 +269,7 @@ Variant Json::parseValue(Ref<ByteArray> text, Ref<Token> token)
 		else if (child->rule() == number_)
 			value = parseNumber(text, child);
 		else
-			check<JsonException>(false, "Impossible branch");
+			FTL_ASSERT(false, JsonException, "Impossible branch");
 	}
 	else {
 		if (token->keyword() == true_)
@@ -279,23 +279,23 @@ Variant Json::parseValue(Ref<ByteArray> text, Ref<Token> token)
 		else if (token->keyword() == null_)
 			;
 		else
-			check<JsonException>(false, "Impossible branch");
+			FTL_ASSERT(false, JsonException, "Impossible branch");
 	}
 	return value;
 }
 
 String Json::parseString(Ref<ByteArray> text, Ref<Token> token)
 {
-	check<JsonException>(token->rule() == string_);
+	FTL_ASSERT(token->rule() == string_, JsonException, "");
 	return text->copy(token->i0() + 1, token->i1() - 1);
 }
 
 double Json::parseNumber(Ref<ByteArray> text, Ref<Token> token)
 {
-	check<JsonException>(token->rule() == number_);
+	FTL_ASSERT(token->rule() == number_, JsonException, "");
 	bool ok = true;
 	double value = String(text->copy(token->i0(), token->i1())).toFloat(&ok);
-	check<JsonException>(ok, "Failed to parse number");
+	FTL_ASSERT(ok, JsonException, "Malformed number");
 	return value;
 }
 

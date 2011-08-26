@@ -80,25 +80,25 @@ public:
 	}
 	
 	inline T get(int i) const {
-		check(has(i));
+		FTL_CHECK(has(i));
 		if (i < 0) i += size_;
 		return data_[i];
 	}
 	
 	inline void set(int i, const T& item) {
-		check(has(i));
+		FTL_CHECK(has(i));
 		if (i < 0) i += size_;
 		data_[i] = item;
 	}
 	
 	inline T* pointerAt(int i) const {
-		check(has(i));
+		FTL_CHECK(has(i));
 		if (i < 0) i += size_;
 		return data_ + i;
 	}
 	
 	inline T& at(int i) const {
-		check(has(i));
+		FTL_CHECK(has(i));
 		if (i < 0) i += size_;
 		return data_[i];
 	}
@@ -152,15 +152,15 @@ public:
 	
 	inline void read(int i, T* data, int size) {
 		if (size == 0) return;
-		check(has(i));
-		check(has(i + size - 1));
+		FTL_CHECK(has(i));
+		FTL_CHECK(has(i + size - 1));
 		mem::cpy(data, data_ + i, size * sizeof(T));
 	}
 	
 	inline void write(int i, const T* data, int size) {
 		if (size == 0) return;
-		check(has(i));
-		check(has(i + size - 1));
+		FTL_CHECK(has(i));
+		FTL_CHECK(has(i + size - 1));
 		mem::cpy(data_ + i, data, size * sizeof(T));
 	}
 	
@@ -201,4 +201,4 @@ typedef Array<char, DeepCopyZeroTerminatedArray> ByteArray;
 
 } // namespace ftl
 
-#endif // FTL_ARRAY_HPP
+#endif // FTL_ARRAY_H

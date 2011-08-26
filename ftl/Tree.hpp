@@ -68,7 +68,7 @@ void Tree<Node>::insertChild(Ref<Node> node, Ref<Node> previousSibling)
 	if (node->parent_)
 		unlink();
 	if (previousSibling) {
-		check(previousSibling->parent_ == this);
+		FTL_CHECK(previousSibling->parent_ == this);
 		node->nextSibling_ = previousSibling->nextSibling_;
 		node->previousSibling_ = previousSibling;
 		previousSibling->nextSibling_ = node;

@@ -50,7 +50,7 @@ public:
 
 	inline GenericHeap& push(const T& item)
 	{
-		check(fill_ < size_);
+		FTL_CHECK(fill_ < size_);
 		buf_[fill_] = item;
 		++fill_;
 		passUpLast();
@@ -59,7 +59,7 @@ public:
 
 	inline GenericHeap& pop(T* item)
 	{
-		check(fill_ > 0);
+		FTL_CHECK(fill_ > 0);
 		*item = buf_[0];
 		--fill_;
 		buf_[0] = buf_[fill_];
@@ -73,7 +73,7 @@ public:
 		return item;
 	}
 	
-	inline T top() { check(!isEmpty()); return buf_[0]; }
+	inline T top() { FTL_CHECK(!isEmpty()); return buf_[0]; }
 	
 	inline void clear() { fill_ = 0; }
 	

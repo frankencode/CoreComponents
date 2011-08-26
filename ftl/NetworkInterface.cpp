@@ -534,9 +534,9 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 		else if ((msgType == RTM_NEWADDR) && (family != -1)) {
 			struct ifa_msghdr* msga = (struct ifa_msghdr*)msg;
 			char* attr = (char*)(msga + 1);
-			check(list->length() > 0);
+			FTL_CHECK(list->length() > 0);
 			Ref<NetworkInterface> interface = list->at(-1);
-			// check(interface->index_ == msga->ifam_index); // HACK, OpenBSD can fullfill
+			// FTL_CHECK(interface->index_ == msga->ifam_index); // HACK, OpenBSD can fullfill
 			Ref<SocketAddress, Owner> label;
 			for (int i = 0; i < RTAX_MAX; ++i) {
 				if (msga->ifam_addrs & (1 << i)) {

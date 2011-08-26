@@ -16,7 +16,7 @@ namespace ftl
 Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, Ref<Debugger> debugger)
 {
 	Ref<Token, Owner> ruleList = AbnfSyntax::match(text);
-	check(ruleList);
+	FTL_CHECK(ruleList);
 	
 	Ref<Definition, Owner> definition = new AbnfCoreSyntax(debugger);
 	definition->OPTION("caseSensitive", false);
@@ -37,26 +37,26 @@ Ref<AbnfCompiler::Node> AbnfCompiler::ignoreDebug(Ref<Node> node)
 
 void AbnfCompiler::compileRuleList(Ref<ByteArray> text, Ref<Token> ruleList, Ref<Definition> definition)
 {
-	check(ruleList->rule() == AbnfSyntax::rulelist_);
+	FTL_CHECK(ruleList->rule() == AbnfSyntax::rulelist_);
 	
 	Ref<Token> rule = ruleList->firstChild();
 	while (rule) {
-		check(rule->rule() == AbnfSyntax::rule_);
+		FTL_CHECK(rule->rule() == AbnfSyntax::rule_);
 		
 		Ref<Token> ruleName = rule->firstChild();
 		Ref<Token> definedAs = ruleName->nextSibling();
 		Ref<Token> alternation = definedAs->nextSibling();
 		
-		check(ruleName->rule() == AbnfSyntax::ruleName_);
-		check(definedAs->rule() == AbnfSyntax::definedAs_);
-		check(alternation->rule() == AbnfSyntax::alternation_);
+		FTL_CHECK(ruleName->rule() == AbnfSyntax::ruleName_);
+		FTL_CHECK(definedAs->rule() == AbnfSyntax::definedAs_);
+		FTL_CHECK(alternation->rule() == AbnfSyntax::alternation_);
 		
 		if (text->at(definedAs->i0()) == '=')
 			definition->DEFINE(str(text, ruleName), compileAlternation(text, alternation, definition));
 		else if (text->at(definedAs->i0()) == '~')
 			definition->DEFINE_VOID(str(text, ruleName), compileAlternation(text, alternation, definition));
 		else
-			check(false);
+			FTL_CHECK(false);
 		
 		rule = rule->nextSibling();
 	}
@@ -65,17 +65,17 @@ void AbnfCompiler::compileRuleList(Ref<ByteArray> text, Ref<Token> ruleList, Ref
 void AbnfCompiler::compileEntry(Ref<ByteArray> text, Ref<Token> ruleList, Ref<Definition> definition)
 {
 	Ref<Token> rule = ruleList->firstChild();
-	check(rule);
-	check(rule->rule() == AbnfSyntax::rule_);
+	FTL_CHECK(rule);
+	FTL_CHECK(rule->rule() == AbnfSyntax::rule_);
 	Ref<Token> ruleName = rule->firstChild();
-	check(ruleName->rule() == AbnfSyntax::ruleName_);
+	FTL_CHECK(ruleName->rule() == AbnfSyntax::ruleName_);
 	
 	definition->ENTRY(str(text, ruleName));
 }
 
 AbnfCompiler::NODE AbnfCompiler::compileAlternation(Ref<ByteArray> text, Ref<Token> alternation, Ref<Definition> definition)
 {
-	check(alternation->rule() == AbnfSyntax::alternation_);
+	FTL_CHECK(alternation->rule() == AbnfSyntax::alternation_);
 	if (alternation->firstChild() == alternation->lastChild())
 		return compileConcatenation(text, alternation->firstChild(), definition);
 	NODE node = definition->CHOICE();
@@ -89,7 +89,7 @@ AbnfCompiler::NODE AbnfCompiler::compileAlternation(Ref<ByteArray> text, Ref<Tok
 
 AbnfCompiler::NODE AbnfCompiler::compileConcatenation(Ref<ByteArray> text, Ref<Token> concatenation, Ref<Definition> definition)
 {
-	check(concatenation->rule() == AbnfSyntax::concatenation_);
+	FTL_CHECK(concatenation->rule() == AbnfSyntax::concatenation_);
 	if (concatenation->firstChild() == concatenation->lastChild())
 		return compileRepetition(text, concatenation->firstChild(), definition);
 	NODE node = definition->GLUE();
@@ -132,23 +132,23 @@ AbnfCompiler::NODE AbnfCompiler::compileRepetition(Ref<ByteArray> text, Ref<Toke
 		node = compileOption(text, token, definition);
 	}
 	else {
-		check(false);
+		FTL_CHECK(false);
 	}
 	return node;
 }
 
 AbnfCompiler::NODE AbnfCompiler::compileOption(Ref<ByteArray> text, Ref<Token> option, Ref<Definition> definition)
 {
-	check(option->rule() == AbnfSyntax::option_);
+	FTL_CHECK(option->rule() == AbnfSyntax::option_);
 	Ref<Token> alternation = option->firstChild();
-	check(alternation);
+	FTL_CHECK(alternation);
 	return definition->REPEAT(0, 1, compileAlternation(text, alternation, definition));
 }
 
 AbnfCompiler::NODE AbnfCompiler::compileElement(Ref<ByteArray> text, Ref<Token> element, Ref<Definition> definition)
 {
 	NODE node = 0;
-	check(element->rule() == AbnfSyntax::element_);
+	FTL_CHECK(element->rule() == AbnfSyntax::element_);
 	Ref<Token> token = element->firstChild();
 	if (token->rule() == AbnfSyntax::ruleName_) {
 		node = definition->REF(str(text, token));
@@ -166,7 +166,7 @@ AbnfCompiler::NODE AbnfCompiler::compileElement(Ref<ByteArray> text, Ref<Token> 
 		node = compileProseVal(text, token, definition);
 	}
 	else {
-		check(false);
+		FTL_CHECK(false);
 	}
 	return node;
 }
@@ -175,8 +175,8 @@ AbnfCompiler::NODE AbnfCompiler::compileNumVal(Ref<ByteArray> text, Ref<Token> n
 {
 	NODE node = 0;
 	
-	check(numVal->rule() == AbnfSyntax::numVal_);
-	check(text->at(numVal->i0()) == '%');
+	FTL_CHECK(numVal->rule() == AbnfSyntax::numVal_);
+	FTL_CHECK(text->at(numVal->i0()) == '%');
 	char prefix = toLower(text->at(numVal->i0() + 1));
 	int base;
 	if (prefix == 'x')
@@ -213,12 +213,12 @@ AbnfCompiler::NODE AbnfCompiler::compileNumVal(Ref<ByteArray> text, Ref<Token> n
 				}
 				++i;
 			}
-			check(j == s.size() - 1);
+			FTL_CHECK(j == s.size() - 1);
 			s.set(j, strToInt(*text, i0, i, base));
 			node = (s.size() > 1) ? definition->STRING(s.constData()) : definition->CHAR(s.at(0));
 		}
 		else {
-			check(false);
+			FTL_CHECK(false);
 		}
 	}
 	else {

@@ -152,7 +152,7 @@ public:
 	
 	inline Map& pop(Item* item)
 	{
-		check(!isEmpty());
+		FTL_CHECK(!isEmpty());
 		Node* k = tree_.minNode();
 		*item = k->e_;
 		delete tree_.unlink(k);
