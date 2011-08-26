@@ -89,7 +89,7 @@ public:
 	
 	inline T* saveGet() const {
 		T* instance = GetAndSetPolicy<T>::get();
-		check(instance, "Null reference");
+		FTL_CHECK2(instance, "Null reference");
 		return instance;
 	}
 	

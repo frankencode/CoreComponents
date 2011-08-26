@@ -35,22 +35,36 @@ Exception::Exception()
 	: message_(0)
 {}
 
-Exception::Exception(const char* path, int line, const char* className, char* reason)
-{
-	path = fileName(path);
-	char* lineStr = intToStr(line);
-	message_ = str::cat(path, ":", lineStr, ": ", className, ": ", reason);
-	delete[] lineStr;
-	delete[] reason;
-}
+Exception::Exception(const char* path, int line, const char* className, const char* reason, bool reasonOnHeap)
+	: path_(path),
+	  line_(line),
+	  className_(className),
+	  reason_(reason),
+	  reasonOnHeap_(reasonOnHeap),
+	  message_(0)
+{}
 
 Exception::~Exception() throw()
 {
-	if (message_) delete[] message_;
-	message_ = 0;
+	if ((reason_) && reasonOnHeap_)
+		delete[] reason_;
+	if (message_)
+		delete[] message_;
 }
 
-const char* Exception::what() const throw() { return message_; }
+const char* Exception::what() const throw() {
+	if (!message_) {
+		const char* path = fileName(path_);
+		char* lineStr = intToStr(line_);
+		message_ = str::cat(path, ":", lineStr, ": ", className_, ": ", reason_);
+		delete[] lineStr;
+		if ((reason_) && reasonOnHeap_) {
+			delete[] reason_;
+			reason_ = 0;
+		}
+	}
+	return message_;
+}
 
 char* captureExceptionMessage(const char* s) { return str::dup(s); }
 char* captureExceptionMessage(char* s) { return s; }

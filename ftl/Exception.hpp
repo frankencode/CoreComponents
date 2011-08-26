@@ -21,28 +21,33 @@ class Exception: public AnyException
 {
 public:
 	Exception();
-	Exception(const char* path, int line, const char* className, char* reason);
+	Exception(const char* path, int line, const char* className, const char* reason, bool reasonOnHeap = false);
 	~Exception() throw();
 	const char* what() const throw();
 	
 protected:
-	char* message_;
+	const char* path_;
+	int line_;
+	const char* className_;
+	mutable const char* reason_;
+	bool reasonOnHeap_;
+	mutable char* message_;
 };
 
 #define FTL_EXCEPTION(DerivedClass, BaseClass) \
 class DerivedClass: public BaseClass \
 { \
 public: \
-	DerivedClass(const char* fileName, int line, const char* className, char* reason) \
-		: BaseClass(fileName, line, className, reason) \
+	DerivedClass(const char* fileName, int line, const char* className, const char* reason, bool reasonOnHeap) \
+		: BaseClass(fileName, line, className, reason, reasonOnHeap) \
 	{} \
 }
 
-char* captureExceptionMessage(const char* s);
-char* captureExceptionMessage(char* s);
+inline bool reasonOnHeap(const char* reason) { return false; }
+inline bool reasonOnHeap(char* reason) { return true; }
 
 #define FTL_THROW(ExceptionClass, reason) \
-	throw ExceptionClass(__FILE__, __LINE__, #ExceptionClass, captureExceptionMessage(reason))
+	throw ExceptionClass(__FILE__, __LINE__, #ExceptionClass, reason, reasonOnHeap(reason))
 
 /*#define FTL_THROW(ExceptionClass, reason) \
 	*((char*)0) = 0; // HACK, to come around trace eaters*/
@@ -55,7 +60,7 @@ class SystemException: public Exception
 {
 public:
 	SystemException(const char* fileName, int line, const char* className, char* reason, int errorCode)
-		: Exception(fileName, line, className, reason),
+		: Exception(fileName, line, className, reason, true),
 		  errorCode_(errorCode)
 	{}
 	int errorCode() const { return errorCode_; }
@@ -79,19 +84,22 @@ public:
 
 FTL_EXCEPTION(DebugException, Exception);
 
-template<class Exception>
-inline void check(bool condition, const char* reason = "") {
-	#ifndef NDEBUG
-	if (!condition) {
-		// char* p = 0; *p = 0; // HACK, to come around trace eaters
-		FTL_THROW(Exception, reason);
-	}
-	#endif
-}
+#define FTL_ASSERT(condition, Exception, reason) \
+	if (!(condition)) FTL_THROW(Exception, reason)
 
-inline void check(bool condition, const char* reason = "") {
-	return check<DebugException>(condition, reason);
-}
+#ifndef NDEBUG
+#define FTL_CHECK(condition) \
+	FTL_ASSERT(condition, DebugException, "")
+#else
+#define FTL_CHECK(condition);
+#endif
+
+#ifndef NDEBUG
+#define FTL_CHECK2(condition, reason) \
+	FTL_ASSERT(condition, DebugException, reason)
+#else
+#define FTL_CHECK2(condition, reason);
+#endif
 
 class Interrupt {};
 class Timeout {};

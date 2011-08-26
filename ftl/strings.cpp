@@ -43,7 +43,7 @@ char* str::cat(const char* s0, const char* s1, const char* s2, const char* s3, c
 				c[j++] = si[k++];
 		}
 	}
-	check(j == len);
+	FTL_CHECK(j == len);
 	return c;
 }
 

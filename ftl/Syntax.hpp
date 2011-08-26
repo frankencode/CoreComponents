@@ -1299,7 +1299,7 @@ public:
 		{
 			Ref<Definition> scope = resolveScope(name);
 			Ref<RuleNode, Owner> node;
-			check(scope);
+			FTL_CHECK(scope);
 			if (!scope->ruleByName_->lookup(name, &node))
 				FTL_THROW(DebugException, str::cat("Undefined rule '", name, "' referenced"));
 			return node;

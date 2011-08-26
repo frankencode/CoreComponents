@@ -21,9 +21,9 @@ public:
 	}
 	
 	inline const char* capture(Ref<ByteArray> s, int i0, int i1) const {
-		check((0 <= i0) && (i0 < s->size()));
-		check((0 <= i1) && (i1 <= s->size()));
-		check(i0 <= i1);
+		FTL_CHECK((0 <= i0) && (i0 < s->size()));
+		FTL_CHECK((0 <= i1) && (i1 <= s->size()));
+		FTL_CHECK(i0 <= i1);
 		return capture(s->constData() + i0, i1 - i0);
 	}
 	

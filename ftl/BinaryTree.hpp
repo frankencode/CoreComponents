@@ -154,12 +154,12 @@ public:
 	
 	inline bool health() {
 		// levelPrint();
-		/*check(ok1(root));*/
-		check(ok2(root));
-		check(ok3(root));
-		check(testBalance1(root));
-		check(testBalance2(root));
-		check(testWeight(root));
+		/*FTL_CHECK(ok1(root));*/
+		FTL_CHECK(ok2(root));
+		FTL_CHECK(ok3(root));
+		FTL_CHECK(testBalance1(root));
+		FTL_CHECK(testBalance2(root));
+		FTL_CHECK(testWeight(root));
 		return /*ok1(root) &&*/ ok2(root) && ok3(root) && testBalance1(root) && testBalance2(root) && testWeight(root);
 	}
 	
@@ -242,7 +242,7 @@ template<class T>
 bool BinaryTree<T>::lookupByIndex(int i, Node** node) const
 {
 	if (i < 0) i += weight(root);
-	check((0 <= i) && (i < weight(root)));
+	FTL_CHECK((0 <= i) && (i < weight(root)));
 	
 	if (cachedNode) {
 		int d = i - cachedIndex;
@@ -357,7 +357,7 @@ void BinaryTree<T>::push(int index, const T& item)
 	else {
 		Node* ka = 0;
 		bool found = lookupByIndex(index, &ka);
-		check(found);
+		FTL_CHECK(found);
 		spliceInBefore(ka, kn);
 	}
 	cachedNode = kn;
@@ -369,7 +369,7 @@ void BinaryTree<T>::pop(int index, T* item)
 {
 	Node* ko = 0;
 	bool found = lookupByIndex(index, &ko);
-	check(found);
+	FTL_CHECK(found);
 	*item = ko->e_;
 	Node* k = ko->pred();
 	if (k) --index;
@@ -715,7 +715,7 @@ template<class T>
 bool BinaryTree<T>::testBalance2(Node* k)
 {
 	if (!k) return true;
-	check(((height(k->left) - height(k->right)) == k->balance));
+	FTL_CHECK(((height(k->left) - height(k->right)) == k->balance));
 	if ((height(k->left) - height(k->right)) != k->balance) return false;
 	return testBalance2(k->left) && testBalance2(k->right);
 }
@@ -755,4 +755,4 @@ void BinaryTree<T>::levelPrint(Node* k, int level)
 
 } // namespace ftl
 
-#endif // FTL_BINARYTREE_HPP
+#endif

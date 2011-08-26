@@ -4,6 +4,11 @@
 namespace ftl
 {
 
+int y() {
+	print("y() called.\n");
+	return 1;
+}
+
 int main()
 {
 	try {
@@ -20,7 +25,9 @@ int main()
 	catch (Exception& ex) {
 		print("%%\n", ex.what());
 	}
-
+	
+	FTL_CHECK(y() == 1);
+	
 	return 0;
 }
 

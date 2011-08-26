@@ -61,7 +61,7 @@ Ref<ByteArray, Owner> Buffer::join() const
 		char* d = array->data();
 		Ref<Block> block = head_;
 		while (block) {
-			check((0 <= block->fill_) && (block->fill_ <= blockSize_), "Block not filled properly.");
+			FTL_CHECK2((0 <= block->fill_) && (block->fill_ <= blockSize_), "Block not filled properly.");
 			mem::cpy(d, block->data_, block->fill_);
 			d += block->fill_;
 			block = block->next_;

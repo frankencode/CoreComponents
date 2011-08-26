@@ -137,7 +137,7 @@ void String::assign(Ref<StringList> parts, const char* sep)
 				p += sepSize;
 			}
 		}
-		check(p == bytes()->data() + size);
+		FTL_CHECK(p == bytes()->data() + size);
 	}
 	else {
 		set(new ByteArray);

@@ -279,7 +279,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 		FTL_SYSTEM_EXCEPTION;
 	}
 	
-	check(0 == 1);
+	FTL_CHECK(0 == 1);
 	return 0;
 }
 

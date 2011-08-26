@@ -22,7 +22,7 @@ public:
 	
 	// prefix increment / decrement
 	inline PrefixTreeWalker& operator++() {
-		check(valid());
+		FTL_CHECK(valid());
 		while (node_) {
 			node_ = node_->next();
 			if (node_)

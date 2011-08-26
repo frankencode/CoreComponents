@@ -45,7 +45,7 @@ template<class B, class A>
 inline B union_cast(A a)
 {
 	union Bimorph { A a; B b; };
-	check(sizeof(A) == sizeof(B));
+	FTL_CHECK(sizeof(A) == sizeof(B));
 	Bimorph morph;
 	morph.a = a;
 	return morph.b;
