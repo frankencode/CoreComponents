@@ -15,7 +15,7 @@
 namespace ftl
 {
 
-class ByteEncoder: public Sink<uint8_t>
+class ByteEncoder: public Sink<uint8_t>, public Sink<char>
 {
 public:
 	ByteEncoder();
@@ -24,6 +24,7 @@ public:
 	~ByteEncoder();
 	
 	void write(uint8_t x);
+	void write(char ch);
 	
 	void writeUInt8(uint8_t x);
 	void writeUInt16(uint16_t x);
@@ -56,6 +57,11 @@ private:
 inline void ByteEncoder::write(uint8_t x)
 {
 	writeUInt8(x);
+}
+
+inline void ByteEncoder::write(char ch)
+{
+	writeUInt8((uint8_t)ch);
 }
 
 inline void ByteEncoder::writeUInt8(uint8_t x)

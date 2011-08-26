@@ -15,16 +15,17 @@
 namespace ftl
 {
 
-class ByteDecoder: public Source<uint8_t>
+class ByteDecoder: public Source<uint8_t>, Source<char>
 {
 public:
 	ByteDecoder(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN);
 	ByteDecoder(const void* buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN);
 	~ByteDecoder();
 	
-	bool hasMore();
 	bool read(uint8_t* x);
+	bool read(char* ch);
 	
+	bool hasMore();
 	uint8_t readUInt8();
 	uint16_t readUInt16();
 	uint32_t readUInt32();
@@ -58,6 +59,19 @@ private:
 	off_t nr_;    // accumulated number of bytes read
 };
 
+inline bool ByteDecoder::read(uint8_t* x)
+{
+	bool more = hasMore();
+	if (more)
+		*x = readUInt8();
+	return more;
+}
+
+inline bool ByteDecoder::read(char* ch)
+{
+	return read(reinterpret_cast<uint8_t*>(ch));
+}
+
 inline bool ByteDecoder::hasMore()
 {
 	bool more = i_ < bufFill_;
@@ -68,14 +82,6 @@ inline bool ByteDecoder::hasMore()
 			more = bufFill_ > 0;
 		}
 	}
-	return more;
-}
-
-inline bool ByteDecoder::read(uint8_t* x)
-{
-	bool more = hasMore();
-	if (more)
-		*x = readUInt8();
 	return more;
 }
 
