@@ -88,6 +88,31 @@ int SocketAddress::family() const { return addr_.sa_family; }
 int SocketAddress::socketType() const { return socketType_; }
 int SocketAddress::protocol() const { return protocol_; }
 
+int SocketAddress::port() const
+{
+	int port = 0;
+	
+	if (addr_.sa_family == AF_INET)
+		port = inet4Address_.sin_port;
+	else if (addr_.sa_family == AF_INET6)
+		port = inet6Address_.sin6_port;
+	else
+		FTL_THROW(NetworkingException, "Unsupported address family");
+	
+	return ntohs(port);
+}
+
+void SocketAddress::setPort(int port)
+{
+	port = htons(port);
+	if (addr_.sa_family == AF_INET)
+		inet4Address_.sin_port = port;
+	else if (addr_.sa_family == AF_INET6)
+		inet6Address_.sin6_port = port;
+	else
+		FTL_THROW(NetworkingException, "Unsupported address family");
+}
+
 String SocketAddress::addressString() const
 {
 	String s;
@@ -125,31 +150,6 @@ String SocketAddress::toString() const
 			s << ":" << port();
 	}
 	return s;
-}
-
-int SocketAddress::port() const
-{
-	int port = 0;
-	
-	if (addr_.sa_family == AF_INET)
-		port = inet4Address_.sin_port;
-	else if (addr_.sa_family == AF_INET6)
-		port = inet6Address_.sin6_port;
-	else
-		FTL_THROW(NetworkingException, "Unsupported address family");
-	
-	return ntohs(port);
-}
-
-void SocketAddress::setPort(int port)
-{
-	port = htons(port);
-	if (addr_.sa_family == AF_INET)
-		inet4Address_.sin_port = port;
-	else if (addr_.sa_family == AF_INET6)
-		inet6Address_.sin6_port = port;
-	else
-		FTL_THROW(NetworkingException, "Unsupported address family");
 }
 
 int SocketAddress::scope() const {

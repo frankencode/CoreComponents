@@ -1,6 +1,6 @@
 ; uri syntax according to RFC3986
 
-uri           = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+uri           = [ scheme ":" ] hier-part [ "?" query ] [ "#" fragment ]    ; deviation from the standard: optional scheme
 
 hier-part     = "//" authority path-abempty
               / path-absolute
