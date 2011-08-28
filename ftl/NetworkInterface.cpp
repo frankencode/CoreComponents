@@ -58,128 +58,8 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 	Guard<Mutex> guard(&mutex);
 	
 	Ref<NetworkInterfaceList, Owner> list = new NetworkInterfaceList;
-	
-	{
-		int fd = ::socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
-		if (fd == -1) FTL_SYSTEM_EXCEPTION;
-		
-		struct sockaddr_nl src;
-		mem::clr(&src, sizeof(src));
-		src.nl_family = AF_NETLINK;
-		src.nl_pid = ::getpid();
-		if (::bind(fd, (struct sockaddr*)&src, (socklen_t)sizeof(src)) == -1)
-			FTL_SYSTEM_EXCEPTION;
-			
-		// send request
-		{
-			int msgLen = NLMSG_LENGTH(sizeof(struct ifinfomsg));
-			struct nlmsghdr* msg = (struct nlmsghdr*)ftl::malloc(msgLen);
-			if (!msg) FTL_SYSTEM_EXCEPTION;
-			int seq = 0;
-			
-			mem::clr(msg, msgLen);
-			msg->nlmsg_type = RTM_GETLINK;
-			msg->nlmsg_len = msgLen;
-			msg->nlmsg_flags = NLM_F_REQUEST|NLM_F_ROOT;
-			msg->nlmsg_pid = src.nl_pid;
-			msg->nlmsg_seq = seq++;
-			
-			struct ifinfomsg* data = (struct ifinfomsg*)NLMSG_DATA(msg);
-			data->ifi_family = AF_UNSPEC;
-			
-			struct sockaddr_nl dst;
-			mem::clr(&dst, sizeof(dst));
-			dst.nl_family = AF_NETLINK;
-			
-			struct msghdr hdr;
-			mem::clr(&hdr, sizeof(hdr));
-			
-			struct iovec iov = { msg, msgLen };
-			hdr.msg_iov = &iov;
-			hdr.msg_iovlen = 1;
-			hdr.msg_name = (void*)&dst;
-			hdr.msg_namelen = sizeof(dst);
-			
-			if (::sendmsg(fd, &hdr, 0/*flags*/) == -1)
-				FTL_SYSTEM_EXCEPTION;
-			
-			ftl::free(msg);
-		}
-		
-		// process reply
-		{
-			struct msghdr hdr;
-			mem::clr(&hdr, sizeof(hdr));
-			
-			ssize_t bufSize = ::recvmsg(fd, &hdr, MSG_PEEK|MSG_TRUNC);
-			if (bufSize == -1) FTL_SYSTEM_EXCEPTION;
-			
-			void* buf = ftl::malloc(bufSize);
-			if (!buf) FTL_SYSTEM_EXCEPTION;
-			
-			struct iovec iov = { buf, bufSize };
-			hdr.msg_iov = &iov;
-			hdr.msg_iovlen = 1;
-			ssize_t bufFill = ::recvmsg(fd, &hdr, 0/*flags*/);
-			
-			struct nlmsghdr* msg = (struct nlmsghdr*)buf;
-			
-			for (;NLMSG_OK(msg, unsigned(bufFill)); msg = NLMSG_NEXT(msg, bufFill))
-			{
-				unsigned msgType = msg->nlmsg_type;
-				// unsigned msgFlags = msg->nlmsg_flags;
-				
-				if (msgType == RTM_NEWLINK)
-				{
-					struct ifinfomsg* data = (struct ifinfomsg*)NLMSG_DATA(msg);
-					struct rtattr* attr = (struct rtattr*)IFLA_RTA(data);
-					int attrFill = NLMSG_PAYLOAD(msg, sizeof(struct ifinfomsg));
-				
-					Ref<NetworkInterface, Owner> interface = new NetworkInterface;
-					list->append(interface);
-					
-					interface->index_ = data->ifi_index;
-					interface->type_ = data->ifi_type;
-					interface->flags_ = data->ifi_flags;
-					
-					for (;RTA_OK(attr,attrFill); attr = RTA_NEXT(attr, attrFill))
-					{
-						unsigned attrType = attr->rta_type;
-						unsigned attrLen = RTA_PAYLOAD(attr);
-						
-						if ((attrType == IFLA_ADDRESS) || (attrType == IFLA_BROADCAST)) {
-							// strange fact: hardware address always stored in little endian
-							unsigned char* value = (unsigned char*)RTA_DATA(attr);
-							uint64_t h = 0;
-							for (unsigned i = 0; i < attrLen; ++i) {
-								h <<= 8;
-								h |= value[i];
-							}
-							
-							if (attrType == IFLA_ADDRESS)
-								interface->hardwareAddress_= h;
-							//else if (attrType == IFLA_BROADCAST)
-							//	interface->broadcastAddress_ = h;
-						}
-						else if (attrType == IFLA_IFNAME) {
-							interface->name_ = (char*)RTA_DATA(attr);
-						}
-						else if (attrType == IFLA_MTU) {
-							if (attrLen == 4)
-								interface->mtu_ = *(uint32_t*)RTA_DATA(attr);
-						}
-					}
-				}
-				else if (msgType == NLMSG_DONE) { // paranoid HACK
-					break;
-				}
-			}
-			
-			ftl::free(buf);
-		}
-		if (::close(fd) == -1)
-			FTL_SYSTEM_EXCEPTION;
-	}
+	// getLink(list);
+	for (int i = 1; getLink(list, i); ++i);
 	
 	int families[2];
 	families[0] = ((family == AF_UNSPEC) || (family == AF_INET6)) ? AF_INET6 : -1;
@@ -192,6 +72,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 		
 		int fd = ::socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
 		if (fd == -1) FTL_SYSTEM_EXCEPTION;
+		int seq = 0;
 		
 		struct sockaddr_nl src;
 		mem::clr(&src, sizeof(src));
@@ -205,7 +86,6 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			int msgLen = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
 			struct nlmsghdr* msg = (struct nlmsghdr*)ftl::malloc(msgLen);
 			if (!msg) FTL_SYSTEM_EXCEPTION;
-			int seq = 0;
 			
 			mem::clr(msg, msgLen);
 			msg->nlmsg_type = RTM_GETADDR;
@@ -252,6 +132,9 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			hdr.msg_iovlen = 1;
 			ssize_t bufFill = ::recvmsg(fd, &hdr, 0/*flags*/);
 			
+			if (::close(fd) == -1)
+				FTL_SYSTEM_EXCEPTION;
+			
 			struct nlmsghdr* msg = (struct nlmsghdr*)buf;
 			
 			for (;NLMSG_OK(msg, unsigned(bufFill)); msg = NLMSG_NEXT(msg, bufFill))
@@ -269,10 +152,17 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 					Ref<NetworkInterface> interface;
 					
 					for (int i = 0; i < list->length(); ++i) {
-						interface = list->at(i);
-						if (unsigned(interface->index_) == data->ifa_index)
+						if (unsigned(list->at(i)->index_) == data->ifa_index) {
+							interface = list->at(i);
 							break;
+						}
 					}
+					
+					if (!interface) {
+						if (!getLink(list, data->ifa_index)) continue;
+						interface = list->at(list->length() - 1);
+					}
+					
 					
 					for (;RTA_OK(attr, attrFill); attr = RTA_NEXT(attr, attrFill))
 					{
@@ -335,14 +225,139 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			
 			ftl::free(buf);
 		}
-		if (::close(fd) == -1)
-			FTL_SYSTEM_EXCEPTION;
 	}
 	
 	if (list->length() == 0)
 		list = queryAllIoctl(family);
 	
 	return list;
+}
+
+bool NetworkInterface::getLink(Ref<NetworkInterfaceList> list, int index)
+{
+	bool foundSomething = false;
+	
+	{
+		int fd = ::socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
+		if (fd == -1) FTL_SYSTEM_EXCEPTION;
+		int seq = 0;
+		
+		struct sockaddr_nl src;
+		mem::clr(&src, sizeof(src));
+		src.nl_family = AF_NETLINK;
+		src.nl_pid = ::getpid();
+		if (::bind(fd, (struct sockaddr*)&src, (socklen_t)sizeof(src)) == -1)
+			FTL_SYSTEM_EXCEPTION;
+			
+		// send request
+		{
+			int msgLen = NLMSG_LENGTH(sizeof(struct ifinfomsg));
+			struct nlmsghdr* msg = (struct nlmsghdr*)ftl::malloc(msgLen);
+			if (!msg) FTL_SYSTEM_EXCEPTION;
+			
+			mem::clr(msg, msgLen);
+			msg->nlmsg_type = RTM_GETLINK;
+			msg->nlmsg_len = msgLen;
+			msg->nlmsg_flags = NLM_F_REQUEST|(NLM_F_ROOT * (index == -1));
+			msg->nlmsg_pid = src.nl_pid;
+			msg->nlmsg_seq = seq++;
+			
+			struct ifinfomsg* data = (struct ifinfomsg*)NLMSG_DATA(msg);
+			data->ifi_family = AF_UNSPEC;
+			data->ifi_change = 0xFFFFFFFF;
+			data->ifi_index = index;
+			
+			struct sockaddr_nl dst;
+			mem::clr(&dst, sizeof(dst));
+			dst.nl_family = AF_NETLINK;
+			
+			struct msghdr hdr;
+			mem::clr(&hdr, sizeof(hdr));
+			
+			struct iovec iov = { msg, msgLen };
+			hdr.msg_iov = &iov;
+			hdr.msg_iovlen = 1;
+			hdr.msg_name = (void*)&dst;
+			hdr.msg_namelen = sizeof(dst);
+			
+			if (::sendmsg(fd, &hdr, 0/*flags*/) == -1)
+				FTL_SYSTEM_EXCEPTION;
+			
+			ftl::free(msg);
+		}
+		
+		// process reply
+		{
+			struct msghdr hdr;
+			mem::clr(&hdr, sizeof(hdr));
+			
+			ssize_t bufSize = ::recvmsg(fd, &hdr, MSG_PEEK|MSG_TRUNC);
+			if (bufSize == -1) FTL_SYSTEM_EXCEPTION;
+			
+			void* buf = ftl::malloc(bufSize);
+			if (!buf) FTL_SYSTEM_EXCEPTION;
+			
+			struct iovec iov = { buf, bufSize };
+			hdr.msg_iov = &iov;
+			hdr.msg_iovlen = 1;
+			ssize_t bufFill = ::recvmsg(fd, &hdr, 0/*flags*/);
+			
+			struct nlmsghdr* msg = (struct nlmsghdr*)buf;
+			
+			for (;NLMSG_OK(msg, unsigned(bufFill)); msg = NLMSG_NEXT(msg, bufFill))
+			{
+				unsigned msgType = msg->nlmsg_type;
+				// unsigned msgFlags = msg->nlmsg_flags;
+				
+				if (msgType == RTM_NEWLINK)
+				{
+					struct ifinfomsg* data = (struct ifinfomsg*)NLMSG_DATA(msg);
+					struct rtattr* attr = (struct rtattr*)IFLA_RTA(data);
+					int attrFill = NLMSG_PAYLOAD(msg, sizeof(struct ifinfomsg));
+				
+					Ref<NetworkInterface, Owner> interface = new NetworkInterface;
+					foundSomething = true;
+					list->append(interface);
+					interface->index_ = data->ifi_index;
+					interface->type_ = data->ifi_type;
+					interface->flags_ = data->ifi_flags;
+					
+					for (;RTA_OK(attr,attrFill); attr = RTA_NEXT(attr, attrFill))
+					{
+						unsigned attrType = attr->rta_type;
+						unsigned attrLen = RTA_PAYLOAD(attr);
+						
+						if ((attrType == IFLA_ADDRESS) || (attrType == IFLA_BROADCAST)) {
+							// strange fact: hardware address always stored in little endian
+							unsigned char* value = (unsigned char*)RTA_DATA(attr);
+							uint64_t h = 0;
+							for (unsigned i = 0; i < attrLen; ++i) {
+								h <<= 8;
+								h |= value[i];
+							}
+							
+							if (attrType == IFLA_ADDRESS)
+								interface->hardwareAddress_= h;
+							//else if (attrType == IFLA_BROADCAST)
+							//	interface->broadcastAddress_ = h;
+						}
+						else if (attrType == IFLA_IFNAME) {
+							interface->name_ = (char*)RTA_DATA(attr);
+						}
+						else if (attrType == IFLA_MTU) {
+							if (attrLen == 4)
+								interface->mtu_ = *(uint32_t*)RTA_DATA(attr);
+						}
+					}
+				}
+			}
+			
+			ftl::free(buf);
+		}
+		if (::close(fd) == -1)
+			FTL_SYSTEM_EXCEPTION;
+	}
+	return foundSomething;
 }
 
 Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)

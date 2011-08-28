@@ -61,6 +61,7 @@ public:
 private:
 	NetworkInterface();
 	#ifdef __linux
+	static bool getLink(Ref<NetworkInterfaceList> list, int index = -1);
 	static Ref<NetworkInterfaceList, Owner> queryAllIoctl(int family);
 	#endif
 	

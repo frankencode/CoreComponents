@@ -48,10 +48,11 @@ public:
 	int family() const;
 	int socketType() const;
 	int protocol() const;
-	String addressString() const;
-	String toString() const;
 	int port() const;
 	void setPort(int port);
+	
+	String addressString() const;
+	String toString() const;
 	
 	int scope() const;
 	void setScope(int scope);

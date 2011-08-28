@@ -110,6 +110,7 @@ SET(FTL_HEADER
 	SocketAddressEntry.hpp
 	StreamSocket.hpp
 	NetworkInterface.hpp
+	InetAddressSyntax.hpp
 	
 	utils
 	rounding.hpp
@@ -199,6 +200,7 @@ SET(FTL_SOURCE
 	SocketAddressEntry.cpp
 	StreamSocket.cpp
 	NetworkInterface.cpp
+	InetAddressSyntax.cpp
 	
 	# utils
 	Date.cpp
