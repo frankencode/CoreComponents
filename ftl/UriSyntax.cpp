@@ -35,9 +35,8 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 	
 	DEFINE_VOID("Unreserved",
 		CHOICE(
-			RANGE('a', 'z'),
-			RANGE('0', '9'),
-			RANGE('A', 'Z'),
+			INLINE("ALPHA"),
+			INLINE("DIGIT"),
 			RANGE("-._~")
 		)
 	);

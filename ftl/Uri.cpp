@@ -6,8 +6,6 @@
  * See ../LICENSE for the license.
  */
 
-#include "streams" // DEBUG
-
 #include "UriSyntax.hpp"
 #include "Uri.hpp"
 
