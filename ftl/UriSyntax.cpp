@@ -6,6 +6,7 @@
  * See ../LICENSE for the license.
  */
 
+#include "InetAddressSyntax.hpp"
 #include "UriSyntax.hpp"
 
 namespace ftl
@@ -15,94 +16,85 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 	: AbnfCoreSyntax(debugFactory)
 {
 	SYNTAX("uri");
+	IMPORT(inetAddressSyntax(), "inet");
 	
-	DEFINE_VOID("gen-delims",
+	DEFINE_VOID("Delimiter",
 		RANGE(":/?#[]@")
 	);
 	
-	DEFINE_VOID("sub-delims",
+	DEFINE_VOID("Punctuator",
 		RANGE("!$&'()*+,;=")
 	);
 	
-	DEFINE_VOID("reserved",
+	/*DEFINE_VOID("Reserved",
 		CHOICE(
-			INLINE("gen-delims"),
-			INLINE("sub-delims")
+			INLINE("Delimiter"),
+			INLINE("Punctuator")
+		)
+	);*/
+	
+	DEFINE_VOID("Unreserved",
+		CHOICE(
+			RANGE('a', 'z'),
+			RANGE('0', '9'),
+			RANGE('A', 'Z'),
+			RANGE("-._~")
 		)
 	);
 	
-	hierPart_ =
-		DEFINE("hier-part",
-			CHOICE(
-				GLUE(
-					STRING("//"),
-					REF("authority"),
-					REF("path-abempty")
-				),
-				REF("path-absolute"),
-				REF("path-rootless"),
-				REF("path-empty")
+	DEFINE_VOID("PathChar",
+		CHOICE(
+			INLINE("Unreserved"),
+			INLINE("PercentEncoded"),
+			INLINE("Punctuator"),
+			RANGE(":@")
+		)
+	);
+	
+	DEFINE_VOID("PercentEncoded",
+		GLUE(
+			CHAR('%'),
+			INLINE("HEXDIG"),
+			INLINE("HEXDIG")
+		)
+	);
+	
+	userInfo_ =
+		DEFINE("UserInfo",
+			REPEAT(
+				CHOICE(
+					INLINE("Unreserved"),
+					INLINE("PercentEncoded"),
+					INLINE("Punctuator"),
+					CHAR(':')
+				)
 			)
 		);
 	
-	uriReference_ =
-		DEFINE("uri-reference",
+	host_ =
+		DEFINE("Host",
 			CHOICE(
-				REF("uri"),
-				REF("relative-ref")
-			)
-		);
-	
-	absoluteUri_ =
-		DEFINE("absolute-uri",
-			GLUE(
-				REF("scheme"),
-				CHAR(':'),
-				REF("hier-part"),
-				REPEAT(0, 1,
-					GLUE(
-						CHAR('?'),
-						REF("query")
+				REF("inet::Inet6Address"),
+				REF("inet::Inet4Address"),
+				REPEAT(1,
+					CHOICE(
+						INLINE("Unreserved"),
+						INLINE("PercentEncoded"),
+						INLINE("Punctuator")
 					)
 				)
 			)
 		);
 	
-	relativeRef_ =
-		DEFINE("relative-ref",
-			GLUE(
-				REF("relative-part"),
-				REPEAT(0, 1,
-					GLUE(
-						CHAR('?'),
-						REF("query")
-					)
-				),
-				REPEAT(0, 1,
-					GLUE(
-						CHAR('#'),
-						REF("fragment")
-					)
-				)
-			)
-		);
-	
-	relativePart_ =
-		DEFINE("relative-part",
-			CHOICE(
-				GLUE(
-					STRING("//"),
-					REF("authority"),
-					REF("path-abempty")
-				),
-				REF("path-absolute"),
-				REF("path-noscheme"),
-				REF("path-empty")
+	port_ =
+		DEFINE("Port",
+			REPEAT(1,
+				INLINE("DIGIT")
 			)
 		);
 	
 	scheme_ =
-		DEFINE("scheme",
+		DEFINE("Scheme",
 			GLUE(
 				INLINE("ALPHA"),
 				REPEAT(
@@ -115,431 +107,94 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 			)
 		);
 	
-	userInfo_ =
-		DEFINE("userinfo",
-			REPEAT(
-				CHOICE(
-					INLINE("unreserved"),
-					REF("pct-encoded"),
-					INLINE("sub-delims"),
-					CHAR(':')
-				)
-			)
-		);
-	
-	host_ =
-		DEFINE("host",
-			CHOICE(
-				REF("inet6-address"),
-				REF("inet-address"),
-				REF("reg-name")
-			)
-		);
-	
-	port_ =
-		DEFINE("port",
-			REPEAT(
-				INLINE("DIGIT")
-			)
-		);
-	
 	authority_ =
-		DEFINE("authority",
+		DEFINE("Authority",
 			GLUE(
 				REPEAT(0, 1,
 					GLUE(
-						REF("userinfo"),
+						REF("UserInfo"),
 						CHAR('@')
 					)
 				),
-				REF("host"),
+				REF("Host"),
 				REPEAT(0, 1,
 					GLUE(
 						CHAR(':'),
-						REF("port")
+						REF("Port")
 					)
-				)
-			)
-		);
-	
-	decOctet_ =
-		DEFINE("dec-octet",
-			CHOICE(
-				INLINE("DIGIT"),
-				GLUE(
-					RANGE('1', '9'),
-					INLINE("DIGIT")
-				),
-				GLUE(
-					CHAR('1'),
-					REPEAT(2, 2,
-						INLINE("DIGIT")
-					)
-				),
-				GLUE(
-					CHAR('2'),
-					RANGE('0', '4'),
-					INLINE("DIGIT")
-				),
-				GLUE(
-					STRING("25"),
-					RANGE('0', '5')
-				)
-			)
-		);
-	
-	inetAddress_ =
-		DEFINE("inet-address",
-			GLUE(
-				REF("dec-octet"),
-				CHAR('.'),
-				REF("dec-octet"),
-				CHAR('.'),
-				REF("dec-octet"),
-				CHAR('.'),
-				REF("dec-octet")
-			)
-		);
-	
-	h16_ =
-		DEFINE("h16",
-			REPEAT(1, 4,
-				INLINE("HEXDIG")
-			)
-		);
-	
-	ls32_ =
-		DEFINE("ls32",
-			CHOICE(
-				GLUE(
-					REF("h16"),
-					CHAR(':'),
-					REF("h16")
-				),
-				REF("inet-address")
-			)
-		);
-	
-	inet6Address_ =
-		DEFINE("inet6-address",
-			CHOICE(
-				GLUE(
-					REPEAT(6, 6,
-						GLUE(
-							REF("h16"),
-							CHAR(':')
-						)
-					),
-					REF("ls32")
-				),
-				GLUE(
-					STRING("::"),
-					REPEAT(5, 5,
-						GLUE(
-							REF("h16"),
-							CHAR(':')
-						)
-					),
-					REF("ls32")
-				),
-				GLUE(
-					REPEAT(0, 1,
-						REF("h16")
-					),
-					STRING("::"),
-					REPEAT(4, 4,
-						GLUE(
-							REF("h16"),
-							CHAR(':')
-						)
-					),
-					REF("ls32")
-				),
-				GLUE(
-					REPEAT(0, 1,
-						GLUE(
-							REPEAT(0, 1,
-								GLUE(
-									REF("h16"),
-									CHAR(':')
-								)
-							),
-							REF("h16")
-						)
-					),
-					STRING("::"),
-					REPEAT(3, 3,
-						GLUE(
-							REF("h16"),
-							CHAR(':')
-						)
-					),
-					REF("ls32")
-				),
-				GLUE(
-					REPEAT(0, 1,
-						GLUE(
-							REPEAT(0, 2,
-								GLUE(
-									REF("h16"),
-									CHAR(':')
-								)
-							),
-							REF("h16")
-						)
-					),
-					STRING("::"),
-					REPEAT(2, 2,
-						GLUE(
-							REF("h16"),
-							CHAR(':')
-						)
-					),
-					REF("ls32")
-				),
-				GLUE(
-					REPEAT(0, 1,
-						GLUE(
-							REPEAT(0, 3,
-								GLUE(
-									REF("h16"),
-									CHAR(':')
-								)
-							),
-							REF("h16")
-						)
-					),
-					STRING("::"),
-					REF("h16"),
-					CHAR(':'),
-					REF("ls32")
-				),
-				GLUE(
-					REPEAT(0, 1,
-						GLUE(
-							REPEAT(0, 4,
-								GLUE(
-									REF("h16"),
-									CHAR(':')
-								)
-							),
-							REF("h16")
-						)
-					),
-					STRING("::"),
-					REF("ls32")
-				),
-				GLUE(
-					REPEAT(0, 1,
-						GLUE(
-							REPEAT(0, 5,
-								GLUE(
-									REF("h16"),
-									CHAR(':')
-								)
-							),
-							REF("h16")
-						)
-					),
-					STRING("::"),
-					REF("h16")
-				),
-				GLUE(
-					REPEAT(0, 1,
-						GLUE(
-							REPEAT(0, 6,
-								GLUE(
-									REF("h16"),
-									CHAR(':')
-								)
-							),
-							REF("h16")
-						)
-					),
-					STRING("::")
-				)
-			)
-		);
-	
-	regName_ =
-		DEFINE("reg-name",
-			REPEAT(
-				CHOICE(
-					INLINE("unreserved"),
-					REF("pct-encoded"),
-					INLINE("sub-delims")
 				)
 			)
 		);
 	
 	path_ =
-		DEFINE("path",
-			CHOICE(
-				REF("path-abempty"),
-				REF("path-absolute"),
-				REF("path-noscheme"),
-				REF("path-rootless"),
-				REF("path-empty")
-			)
-		);
-	
-	pathAbEmpty_ =
-		DEFINE("path-abempty",
-			REPEAT(
-				GLUE(
-					CHAR('/'),
-					REF("segment")
-				)
-			)
-		);
-	
-	pathAbsolute_ =
-		DEFINE("path-absolute",
+		DEFINE("Path",
 			GLUE(
-				CHAR('/'),
-				REPEAT(0, 1,
+				REPEAT(
+					INLINE("PathChar")
+				),
+				REPEAT(
 					GLUE(
-						REF("segment-nz"),
+						CHAR('/'),
 						REPEAT(
-							GLUE(
-								CHAR('/'),
-								REF("segment")
-							)
+							INLINE("PathChar")
 						)
 					)
 				)
 			)
 		);
 	
-	pathNoScheme_ =
-		DEFINE("path-noscheme",
-			GLUE(
-				REF("segment-nz-nc"),
-				REPEAT(
-					GLUE(
-						CHAR('/'),
-						REF("segment")
-					)
-				)
-			)
-		);
-	
-	pathRootless_ =
-		DEFINE("path-rootless",
-			GLUE(
-				REF("segment-nz"),
-				REPEAT(
-					GLUE(
-						CHAR('/'),
-						REF("segment")
-					)
-				)
-			)
-		);
-	
-	pathEmpty_ =
-		DEFINE("path-empty",
-			PASS()
-		);
-	
-	segment_ =
-		DEFINE("segment",
-			REPEAT(
-				REF("pchar")
-			)
-		);
-	
-	segmentNz_ =
-		DEFINE("segment-nz",
-			REPEAT(1,
-				REF("pchar")
-			)
-		);
-	
-	segmentNzNc_ =
-		DEFINE("segment-nz-nc",
-			REPEAT(1,
-				CHOICE(
-					INLINE("unreserved"),
-					REF("pct-encoded"),
-					INLINE("sub-delims"),
-					CHAR('@')
-				)
-			)
-		);
-	
-	DEFINE_VOID("pchar",
-		CHOICE(
-			INLINE("unreserved"),
-			REF("pct-encoded"),
-			INLINE("sub-delims"),
-			RANGE(":@")
-		)
-	);
-	
 	query_ =
-		DEFINE("query",
+		DEFINE("Query",
 			REPEAT(
 				CHOICE(
-					REF("pchar"),
+					INLINE("PathChar"),
 					RANGE("/?")
 				)
 			)
 		);
 	
 	fragment_ =
-		DEFINE("fragment",
+		DEFINE("Fragment",
 			REPEAT(
 				CHOICE(
-					REF("pchar"),
+					INLINE("PathChar"),
 					RANGE("/?")
 				)
 			)
 		);
 	
-	pctEncoded_ =
-		DEFINE("pct-encoded",
-			GLUE(
-				CHAR('%'),
-				INLINE("HEXDIG"),
-				INLINE("HEXDIG")
-			)
-		);
-	
-	DEFINE_VOID("unreserved",
-		CHOICE(
-			INLINE("ALPHA"),
-			INLINE("DIGIT"),
-			RANGE("-._~")
-		)
-	);
-	
 	uri_ =
-		DEFINE("uri",
+		DEFINE("Uri",
 			GLUE(
 				REPEAT(0, 1,
 					GLUE(
-						REF("scheme"),
+						REF("Scheme"),
 						CHAR(':')
 					)
 				),
-				REF("hier-part"),
+				REPEAT(0, 1,
+					GLUE(
+						STRING("//"),
+						REF("Authority")
+					)
+				),
+				REF("Path"),
 				REPEAT(0, 1,
 					GLUE(
 						CHAR('?'),
-						REF("query")
+						REF("Query")
 					)
 				),
 				REPEAT(0, 1,
 					GLUE(
 						CHAR('#'),
-						REF("fragment")
+						REF("Fragment")
 					)
 				)
 			)
 		);
 	
-	ENTRY("uri");
+	ENTRY("Uri");
 #ifndef NDEBUG
 	LINK();
 #endif

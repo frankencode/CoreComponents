@@ -6,60 +6,109 @@
  * See ../LICENSE for the license.
  */
 
+#include "streams" // DEBUG
+
 #include "UriSyntax.hpp"
 #include "Uri.hpp"
 
 namespace ftl
 {
 
-Uri::Uri(Ref<ByteArray> bytes, Ref<Uri> baseUri, Ref<Token> rootToken)
+Uri::Uri()
+	: port_(-1)
+{}
+
+Uri::Uri(const char* text)
+	: port_(-1)
 {
-	Ref<Token, Owner> token = rootToken;
-	if (!token) {
-		token = uriSyntax()->match(bytes);
-		if (!token) FTL_THROW(UriException, "URI decomposition failed, invalid syntax");
+	readUri(String(text).bytes());
+}
+
+Uri::Uri(Ref<ByteArray> bytes, Ref<Token> rootToken)
+	: port_(-1)
+{
+	readUri(bytes, rootToken);
+}
+
+void Uri::readUri(Ref<ByteArray> bytes, Ref<Token> rootToken)
+{
+	Ref<Token, Owner> rootToken2;
+	if (!rootToken) {
+		rootToken2 = uriSyntax()->match(bytes);
+		if (!rootToken2) FTL_THROW(UriException, "URI decomposition failed, invalid syntax");
+		rootToken = rootToken2;
 	}
 	
+	Ref<Token> token = rootToken;
 	token = token->firstChild();
-	if (token->rule() == uriSyntax()->scheme()) {
-		scheme_ = bytes->copy(token->i0(), token->i1());
+	
+	while (token) {
+		if (token->rule() == uriSyntax()->scheme()) {
+			scheme_ = decode(bytes->copy(token->i0(), token->i1()));
+		}
+		else if (token->rule() == uriSyntax()->authority()) {
+			Ref<Token> child = token->firstChild();
+			while (child) {
+				if (child->rule() == uriSyntax()->userInfo())
+					userInfo_ = decode(bytes->copy(child->i0(), child->i1()));
+				else if (child->rule() == uriSyntax()->host())
+					host_ = decode(bytes->copy(child->i0(), child->i1()));
+				else if (child->rule() == uriSyntax()->port())
+					port_ = decode(bytes->copy(child->i0(), child->i1())).toInt();
+				child = child->nextSibling();
+			}
+		}
+		else if (token->rule() == uriSyntax()->path()) {
+			path_ = decode(bytes->copy(token->i0(), token->i1()));
+		}
+		else if (token->rule() == uriSyntax()->query()) {
+			query_ = decode(bytes->copy(token->i0(), token->i1()));
+		}
+		else if (token->rule() == uriSyntax()->fragment()) {
+			fragment_ = decode(bytes->copy(token->i0(), token->i1()));
+		}
 		token = token->nextSibling();
 	}
-	
-	FTL_CHECK(token->rule() == uriSyntax()->ruleByName("hier-part")->id());
-	
 }
 
 String Uri::toString() const
 {
 	StringList l;
 	if (scheme_ != "") {
-		l.append(scheme_);
+		l.append(encode(scheme_));
 		l.append(":");
 	}
-	if ((userInfo_ != "") || (host_ != "")) {
+	if (host_ != "") {
 		l.append("//");
 		if (userInfo_ != "")
-			l.append(userInfo_);
+			l.append(encode(userInfo_));
 		if (host_ != "") {
 			l.append("@");
-			l.append(host_);
+			l.append(encode(host_));
+		}
+		if (port_ != -1) {
+			l.append(":");
+			char* s = intToStr(port_);
+			l.append(s);
+			delete[] s;
 		}
 	}
 	l.append(path_);
 	if (query_ != "") {
 		l.append("?");
-		l.append(query_);
+		l.append(encode(query_));
 	}
 	if (fragment_ != "") {
 		l.append("#");
-		l.append(fragment_);
+		l.append(encode(fragment_));
 	}
 	return l.join();
 }
 
-String Uri::percentEncode(String s)
+String Uri::encode(String s)
 {
+	s.toLowerInsitu();
+	
 	const char* reserved = ":/?#[]@!$&'()*+,;=";
 	StringList l;
 	int j = 0;
@@ -82,6 +131,41 @@ String Uri::percentEncode(String s)
 	if (j < s->length())
 		l.append(s->copy(j, s->length()));
 	return l.join();
+}
+
+String Uri::decode(String s)
+{
+	s.toLowerInsitu();
+	
+	int j = 0;
+	for (int i = 0, n = s->length(); i < n; ++i, ++j) {
+		char ch = s->at(i);
+		if ((ch == '%') && (i + 2 < n)) {
+			unsigned char x = 0;
+			char d = s->at(i + 1);
+			bool match = true;
+			if (('0' <= d) && (d <= '9')) x = d - '0';
+			else if (('a' <= d) && (d <= 'f')) x = d - 'a' + 10;
+			// else if (('A' <= d) && (d <= 'F')) x = d - 'F' + 10;
+			else match = false;
+			if (match) {
+				x *= 16;
+				d = s->at(i + 2);
+				if (('0' <= d) && (d <= '9')) x += d - '0';
+				else if (('a' <= d) && (d <= 'f')) x += d - 'a' + 10;
+				// else if (('A' <= d) && (d <= 'F')) x = d - 'F' + 10;
+				else match = false;
+				if (match) {
+					i += 2;
+					ch = (char)x;
+				}
+			}
+		}
+		if (j < i) s->set(j, ch);
+	}
+	if (j < s->length())
+		s->truncate(j);
+	return s;
 }
 
 } // namespace ftl

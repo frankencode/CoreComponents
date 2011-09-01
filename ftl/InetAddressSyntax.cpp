@@ -43,7 +43,7 @@ InetAddressSyntax::InetAddressSyntax(Ref<DebugFactory> debugFactory)
 	inet6Address_ =
 		DEFINE("Inet6Address",
 			GLUE(
-				REPEAT(0, 7,
+				REPEAT(1, 7,
 					GLUE(
 						CHOICE(
 							INLINE("HexWord"),

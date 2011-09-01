@@ -19,35 +19,42 @@ FTL_EXCEPTION(UriException, Exception);
 class Uri: public Instance
 {
 public:
-	Uri() {}
-	Uri(Ref<ByteArray> bytes, Ref<Uri> baseUri = 0, Ref<Token> rootToken = 0);
+	Uri();
+	Uri(const char* text);
+	Uri(Ref<ByteArray> bytes, Ref<Token> rootToken = 0);
 	
 	inline String scheme() const { return scheme_; }
-	inline void setScheme(String value) { scheme_ = percentEncode(value); }
+	inline void setScheme(String value) { scheme_ = value; }
 	
 	inline String userInfo() const { return userInfo_; }
-	inline void setUserInfo(String value) { userInfo_ = percentEncode(value); }
+	inline void setUserInfo(String value) { userInfo_ = value; }
 	
 	inline String host() const { return host_; }
-	inline void setHost(String value) { host_ = percentEncode(value); }
+	inline void setHost(String value) { host_ = value; }
+	
+	inline int port() const { return port_; }
+	inline void setPort(int value) { port_ = value; }
 	
 	inline String path() const { return path_; }
-	inline void setPath(String value) { path_ = percentEncode(value); }
+	inline void setPath(String value) { path_ = value; }
 	
 	inline String query() const { return query_; }
-	inline void setQuery(String value) { query_ = percentEncode(value); }
+	inline void setQuery(String value) { query_ = value; }
 	
 	inline String fragment() const { return fragment_; }
-	inline void setFragment(String value) { fragment_ = percentEncode(value); }
+	inline void setFragment(String value) { fragment_ = value; }
 	
 	String toString() const;
 	
 private:
-	static String percentEncode(String s);
+	void readUri(Ref<ByteArray> bytes, Ref<Token> rootToken = 0);
+	static String encode(String s);
+	static String decode(String s);
 	
 	String scheme_;
 	String userInfo_;
 	String host_;
+	int port_;
 	String path_;
 	String query_;
 	String fragment_;

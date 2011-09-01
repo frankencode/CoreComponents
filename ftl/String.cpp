@@ -288,20 +288,16 @@ float64_t String::toFloat64(bool* ok) const
 	return value;
 }
 
-String String::toLower() const
+void String::toLowerInsitu()
 {
-	String s2(bytes()->size());
 	for (int i = 0, n = bytes()->size(); i < n; ++i)
-		s2->set(i, ftl::toLower(bytes()->at(i)));
-	return s2;
+		bytes()->set(i, ftl::toLower(bytes()->at(i)));
 }
 
-String String::toUpper() const
+void String::toUpperInsitu()
 {
-	String s2(bytes()->size());
 	for (int i = 0, n = bytes()->size(); i < n; ++i)
-		s2->set(i, ftl::toUpper(bytes()->at(i)));
-	return s2;
+		bytes()->set(i, ftl::toUpper(bytes()->at(i)));
 }
 
 String String::stripLeadingSpace() const
