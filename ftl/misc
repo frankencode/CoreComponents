@@ -11,6 +11,7 @@
 #include "LinkInfo.hpp"
 #include "Json.hpp"
 #include "UriSyntax.hpp"
+#include "Uri.hpp"
 #include "AbnfCompiler.hpp"
 
 #endif // FTL_MISC

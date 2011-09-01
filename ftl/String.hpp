@@ -128,8 +128,10 @@ public:
 	uint64_t toUInt64(bool* ok = 0) const;
 	float64_t toFloat64(bool* ok = 0) const;
 	
-	String toLower() const;
-	String toUpper() const;
+	void toLowerInsitu();
+	void toUpperInsitu();
+	String toLower() const { String s2 = copy(); s2.toLowerInsitu(); return s2; }
+	String toUpper() const { String s2 = copy(); s2.toUpperInsitu(); return s2; }
 	String stripLeadingSpace() const;
 	String stripTrailingSpace() const;
 	String trimmed() const;
