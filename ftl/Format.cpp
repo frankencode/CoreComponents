@@ -6,7 +6,6 @@
  * See ../COPYING for the license.
  */
 
-#include "FormatSyntax.hpp"
 #include "FormatSpecifier.hpp"
 #include "Format.hpp"
 
@@ -20,7 +19,7 @@ Format::Format(String format)
 	
 	if (format->contains('%'))
 	{
-		Ref<FormatSpecifier> specifier = formatSyntax()->formatSpecifier();
+		Ref<FormatSpecifier> specifier = formatSpecifier();
 		int i0Saved = 0, i0 = 0, i1 = 0;
 		
 		int nph = 0; // number of placeholders
@@ -92,7 +91,7 @@ Format& Format::print(const Variant& x)
 	else if (x.type() == Variant::IntType)
 		print(int(x));
 	else if (x.type() == Variant::FloatType)
-		print(double(x));
+		print(float(x));
 	else if (x.type() == Variant::StringType)
 		print(String(x));
 	else if (x.type() == Variant::RefType)
@@ -150,7 +149,7 @@ void Format::printInt(uint64_t x, int sign)
 	get()->insert(get()->index(ph->j_), text);
 }
 
-void Format::printFloat(float64_t x)
+void Format::printFloat(float64_t x, bool half)
 {
 	Ref<PlaceHolder, Owner> ph = nextPlaceHolder();
 	
@@ -214,7 +213,8 @@ void Format::printFloat(float64_t x)
 			--eba;
 		}
 		
-		int ned = int(ceilToInf(log(float64_t((uint64_t(1)<<52)))/log(float64_t(ph->base_))) - 1); // number of exact digits
+		int eszm = (half) ? 23 : 52; // effective size of mantissa
+		int ned = int(ceilToInf(log(float64_t((uint64_t(1)<<eszm)))/log(float64_t(ph->base_))) - 1); // number of exact digits
 		
 		digits.clear();
 		

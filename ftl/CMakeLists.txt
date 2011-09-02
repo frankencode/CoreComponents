@@ -57,7 +57,6 @@ SET(FTL_HEADER
 	IntegerLiteral.hpp
 	FloatLiteral.hpp
 	FormatSpecifier.hpp
-	FormatSyntax.hpp
 	Format.hpp
 	Variant.hpp
 	Path.hpp
@@ -118,8 +117,8 @@ SET(FTL_HEADER
 	Date.hpp
 	Random.hpp
 	SymbolicLink.hpp
-	CommandOption.hpp
 	CommandLine.hpp
+	CommandOption.hpp
 	
 	misc
 	LinkInfo.hpp
@@ -156,7 +155,6 @@ SET(FTL_SOURCE
 	IntegerLiteral.cpp
 	FloatLiteral.cpp
 	FormatSpecifier.cpp
-	FormatSyntax.cpp
 	Format.cpp
 	Path.cpp
 	

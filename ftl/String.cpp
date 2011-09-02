@@ -11,7 +11,6 @@
 #include "Utf16Decoder.hpp"
 #include "Utf16Encoder.hpp"
 #include "Crc32.hpp"
-#include "FormatSyntax.hpp"
 #include "IntegerLiteral.hpp"
 #include "FloatLiteral.hpp"
 #include "Format.hpp"
@@ -227,7 +226,7 @@ int String::toInt(bool* ok) const
 	uint64_t value = 0;
 	int sign = 0;
 	int i1 = 0;
-	if (formatSyntax()->integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
+	if (integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
 		 *ok = (value <= uint64_t(intMax)) && (i1 == bytes()->size());
 	}
 	else  {
@@ -246,7 +245,7 @@ int64_t String::toInt64(bool* ok) const
 	uint64_t value = 0;
 	int sign = 0;
 	int i1 = 0;
-	if (formatSyntax()->integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
+	if (integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
 		if (ok)
 			*ok = ((value & (uint64_t(1) << 63)) != 0) && (i1 == bytes()->size());
 	}
@@ -262,7 +261,7 @@ uint64_t String::toUInt64(bool* ok) const
 	uint64_t value = 0;
 	int sign = 0;
 	int i1 = 0;
-	if (formatSyntax()->integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
+	if (integerLiteral()->match(*this, 0, &i1, &value, &sign)) {
 		if (ok)
 			*ok = (sign == 1) && (i1 == bytes()->size());
 	}
@@ -277,7 +276,7 @@ float64_t String::toFloat64(bool* ok) const
 {
 	float64_t value = 0.;
 	int i1 = 0;
-	if (formatSyntax()->floatingPointLiteral()->match(*this, 0, &i1, &value)) {
+	if (floatLiteral()->match(*this, 0, &i1, &value)) {
 		if (ok)
 			*ok = (i1 == bytes()->size());
 	}
