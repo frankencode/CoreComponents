@@ -14,12 +14,12 @@ namespace ftl
 
 FormatSpecifier::FormatSpecifier()
 {
-	width_ = DEFINE("width", REPEAT(1, 2, RANGE('0', '9')));
-	integerWidth_ = DEFINE("integerWidth", REPEAT(1, 2, RANGE('0', '9')));
-	fractionWidth_ = DEFINE("fractionWidth", REPEAT(1, 2, RANGE('0', '9')));
+	width_ = DEFINE("Width", REPEAT(1, 2, RANGE('0', '9')));
+	integerWidth_ = DEFINE("IntegerWidth", REPEAT(1, 2, RANGE('0', '9')));
+	fractionWidth_ = DEFINE("FractionWidth", REPEAT(1, 2, RANGE('0', '9')));
 	
 	base_ =
-		DEFINE("base",
+		DEFINE("Base",
 			CHOICE(
 				STRING("dec"),
 				STRING("hex"),
@@ -28,9 +28,9 @@ FormatSpecifier::FormatSpecifier()
 			)
 		);
 	
-	exp_ = DEFINE("exp", RANGE("eE"));
+	exp_ = DEFINE("Exp", RANGE("eE"));
 	
-	blank_ = DEFINE("blank",
+	blank_ = DEFINE("Blank",
 		GLUE(
 			CHAR('\''),
 			RANGE(32, 127),
@@ -39,27 +39,27 @@ FormatSpecifier::FormatSpecifier()
 	);
 	
 	format_ =
-		DEFINE("format",
+		DEFINE("Format",
 			GLUE(
 				CHAR('%'),
 				REPEAT(0, 5,
 					GLUE(
 						CHOICE(
 							GLUE(
-								REF("integerWidth"),
+								REF("IntegerWidth"),
 								CHAR('.'),
 								REPEAT(0, 1,
-									REF("fractionWidth")
+									REF("FractionWidth")
 								)
 							),
 							GLUE(
 								CHAR('.'),
-								REF("fractionWidth")
+								REF("FractionWidth")
 							),
-							REF("width"),
-							REF("base"),
-							REF("exp"),
-							REF("blank")
+							REF("Width"),
+							REF("Base"),
+							REF("Exp"),
+							REF("Blank")
 						),
 						REPEAT(0, 1, CHAR(':'))
 					)
@@ -68,7 +68,7 @@ FormatSpecifier::FormatSpecifier()
 			)
 		);
 	
-	ENTRY("format");
+	ENTRY("Format");
 #ifndef NDEBUG
 	LINK();
 #endif

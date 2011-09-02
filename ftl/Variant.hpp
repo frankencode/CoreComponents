@@ -41,7 +41,8 @@ public:
 		FloatType  = 4,
 		RefType    = 8,
 		StringType = 16 | RefType,
-		PathType   = 32 | RefType | StringType
+		PathType   = 32 | RefType | StringType,
+		AnyType    = 63
 	};
 	
 	Variant()                  : type_(UndefType)                {}
@@ -168,6 +169,8 @@ private:
 // #ifdef __GNUC__
 // #pragma pack(pop)
 // #endif
+
+typedef List<Variant> VariantList;
 
 } // namespace ftl
 

@@ -14,48 +14,48 @@ namespace ftl
 
 FloatLiteral::FloatLiteral()
 {
-	sign_ = DEFINE("sign", RANGE("+-"));
-	integerPart_ = DEFINE("integerPart", REPEAT(1, 20, RANGE('0', '9')));
-	fractionPart_ = DEFINE("fractionPart", REPEAT(1, 20, RANGE('0', '9')));
-	exponentSign_ = DEFINE("exponentSign", RANGE("+-"));
-	exponent_ = DEFINE("exponent",  REPEAT(1, 3, RANGE('0', '9')));
-	nan_ = DEFINE("nan", CHOICE(STRING("NaN"), STRING("nan")));
-	infinite_ = DEFINE("infinite", GLUE(REPEAT(0, 1, CHAR('-')), CHOICE(STRING("INFINITE"), STRING("inf"))));
+	sign_ = DEFINE("Sign", RANGE("+-"));
+	integerPart_ = DEFINE("IntegerPart", REPEAT(1, 20, RANGE('0', '9')));
+	fractionPart_ = DEFINE("FractionPart", REPEAT(1, 20, RANGE('0', '9')));
+	exponentSign_ = DEFINE("ExponentSign", RANGE("+-"));
+	exponent_ = DEFINE("Exponent",  REPEAT(1, 3, RANGE('0', '9')));
+	nan_ = DEFINE("NaN", CHOICE(STRING("NaN"), STRING("nan")));
+	infinite_ = DEFINE("Infinite", GLUE(REPEAT(0, 1, CHAR('-')), CHOICE(STRING("INFINITE"), STRING("inf"))));
 	
-	float_ =
-		DEFINE("float",
+	literal_ =
+		DEFINE("Literal",
 			CHOICE(
-				REF("nan"),
-				REF("infinite"),
+				REF("NaN"),
+				REF("Infinite"),
 				GLUE(
-					REPEAT(0, 1, REF("sign")),
+					REPEAT(0, 1, REF("Sign")),
 					CHOICE(
 						GLUE(
-							REF("integerPart"),
+							REF("IntegerPart"),
 							REPEAT(0, 1,
 								GLUE(
 									CHAR('.'),
-									REPEAT(0, 1, REF("fractionPart"))
+									REPEAT(0, 1, REF("FractionPart"))
 								)
 							)
 						),
 						GLUE(
 							CHAR('.'),
-							REF("fractionPart")
+							REF("FractionPart")
 						)
 					),
 					REPEAT(0, 1,
 						GLUE(
 							RANGE("eE"),
-							REPEAT(0, 1, REF("exponentSign")),
-							REF("exponent")
+							REPEAT(0, 1, REF("ExponentSign")),
+							REF("Exponent")
 						)
 					)
 				)
 			)
 		);
 	
-	ENTRY("float");
+	ENTRY("Literal");
 #ifndef NDEBUG
 	LINK();
 #endif

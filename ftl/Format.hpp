@@ -46,7 +46,7 @@ public:
 	inline Format& print(long x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
 	inline Format& print(long long x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
 	
-	inline Format& print(float x) { printFloat(x); return *this; }
+	inline Format& print(float x) { printFloat(x, true); return *this; }
 	inline Format& print(double x) { printFloat(x); return *this; }
 	
 	inline Format& print(bool x) { return print(x ? "true" : "false"); }
@@ -95,7 +95,7 @@ private:
 	Ref<PlaceHolder, Owner> nextPlaceHolder();
 	
 	void printInt(uint64_t x, int sign = 1);
-	void printFloat(float64_t x);
+	void printFloat(float64_t x, bool half = false);
 	
 	Ref<PlaceHolder, Owner> placeHolders_;
 };

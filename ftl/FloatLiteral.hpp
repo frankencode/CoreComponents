@@ -9,17 +9,21 @@
 #define FTL_FLOATLITERAL_HPP
 
 #include "Syntax.hpp"
+#include "Singleton.hpp"
 
 namespace ftl
 {
 
-class FloatLiteral: public Syntax<ByteArray>::Definition
+class FloatLiteral: public Syntax<ByteArray>::Definition, public Singleton<FloatLiteral>
 {
 public:
-	FloatLiteral();
 	bool match(Ref<ByteArray> text, int i0, int* i1, float64_t* value);
 	
+	inline int literal() const { return literal_; }
+	
 private:
+	friend class Singleton<FloatLiteral>;
+	FloatLiteral();
 	float64_t read(Ref<ByteArray> text, Ref<Token> token) const;
 	
 	int sign_;
@@ -29,8 +33,10 @@ private:
 	int exponent_;
 	int nan_;
 	int infinite_;
-	int float_;
+	int literal_;
 };
+
+inline Ref<FloatLiteral> floatLiteral() { return FloatLiteral::instance(); }
 
 } // namespace ftl
 

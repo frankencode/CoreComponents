@@ -13,10 +13,10 @@ namespace ftl
 
 IntegerLiteral::IntegerLiteral()
 {
-	sign_ = DEFINE("sign", RANGE("+-"));
+	sign_ = DEFINE("Sign", RANGE("+-"));
 	
 	binNumber_ =
-		DEFINE("binNumber",
+		DEFINE("BinNumber",
 			GLUE(
 				REPEAT(1, 256, RANGE('0', '1')),
 				CHAR('b')
@@ -24,15 +24,15 @@ IntegerLiteral::IntegerLiteral()
 		);
 		
 	octNumber_ =
-		DEFINE("octNumber",
+		DEFINE("OctNumber",
 			GLUE(
 				CHAR('0'),
 				REPEAT(1, 24, RANGE('0', '9'))
 			)
 		);
 	
-	hexNumber_ = 
-		DEFINE("hexNumber",
+	hexNumber_ =
+		DEFINE("HexNumber",
 			GLUE(
 				STRING("0x"),
 				REPEAT(1, 20,
@@ -46,26 +46,26 @@ IntegerLiteral::IntegerLiteral()
 		);
 	
 	decNumber_ =
-		DEFINE("decNumber",
+		DEFINE("DecNumber",
 			REPEAT(1, 20,
 				RANGE('0', '9')
 			)
 		);
 	
-	integer_ =
-		DEFINE("integer",
+	literal_ =
+		DEFINE("Literal",
 			GLUE(
-				REPEAT(0, 1, REF("sign")),
+				REPEAT(0, 1, REF("Sign")),
 				CHOICE(
-					REF("binNumber"),
-					REF("octNumber"),
-					REF("hexNumber"),
-					REF("decNumber")
+					REF("BinNumber"),
+					REF("OctNumber"),
+					REF("HexNumber"),
+					REF("DecNumber")
 				)
 			)
 		);
 	
-	ENTRY("integer");
+	ENTRY("Literal");
 #ifndef NDEBUG
 	LINK();
 #endif
