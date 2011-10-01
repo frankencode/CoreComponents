@@ -11,7 +11,7 @@
 #include "types.hpp"
 #include "generics.hpp"
 #include "Exception.hpp"
-#include "CoreMutex.hpp"
+#include "SpinLock.hpp"
 #include "ScopeGuard.hpp"
 #include "Instance.hpp"
 #include "Ref.hpp"

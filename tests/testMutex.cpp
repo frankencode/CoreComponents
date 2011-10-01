@@ -21,7 +21,7 @@ int main()
 		t1 = t;
 	}
 	{
-		CoreMutex m;
+		SpinLock m;
 		Time t = Time::now();
 		for (int i = 0; i < n; ++i) {
 			m.acquire();

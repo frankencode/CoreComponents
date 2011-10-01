@@ -27,7 +27,7 @@ class LocalStatic
 public:
 	static T& instance()
 	{
-		Guard<CoreMutex> guard1(globalCoreMutex());
+		Guard<SpinLock> guard1(globalCoreMutex());
 		static Mutex mutex_;
 		guard1.dismiss();
 		ScopeGuard<Mutex> guard2(&mutex_);
