@@ -6,7 +6,7 @@ SET(FTL_HEADER
 	strings.hpp
 	generics.hpp
 	Exception.hpp
-	CoreMutex.hpp
+	SpinLock.hpp
 	Instance.hpp
 	Pointer.hpp
 	SetNull.hpp

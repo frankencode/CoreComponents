@@ -31,7 +31,7 @@ public:
 	{}
 	
 	/** Insert a key-value mapping if no key-value mapping with the same key exists already.
-	  * If currentValue is non-null the current value the giving key maps to is returned.
+	  * If currentValue is non-null the current value the given key maps to is returned.
 	  * The function returns true if the new key-value mapping was inserted successfully.
 	  */
 	template<class Char2>

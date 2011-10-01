@@ -18,19 +18,19 @@ Event::Event()
 
 void Event::pushBack(Ref<Action> handler)
 {
-	Guard<CoreMutex> guard(&mutex_);
+	Guard<SpinLock> guard(&mutex_);
 	handlers_->pushBack(handler);
 }
 
 void Event::pushFront(Ref<Action> handler)
 {
-	Guard<CoreMutex> guard(&mutex_);
+	Guard<SpinLock> guard(&mutex_);
 	handlers_->pushFront(handler);
 }
 
 void Event::remove(Ref<Action> handler)
 {
-	Guard<CoreMutex> guard(&mutex_);
+	Guard<SpinLock> guard(&mutex_);
 	int i = handlers_->find(handler);
 	if (i < handlers_->length())
 		handlers_->remove(i);
@@ -38,7 +38,7 @@ void Event::remove(Ref<Action> handler)
 
 void Event::run()
 {
-	Guard<CoreMutex> guard(&mutex_);
+	Guard<SpinLock> guard(&mutex_);
 	for (int i = 0; i < handlers_->length(); ++i)
 		handlers_->at(i)->run();
 }

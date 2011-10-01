@@ -10,7 +10,7 @@
 
 #include "defaults.hpp"
 #include "Exception.hpp"
-#include "CoreMutex.hpp"
+#include "SpinLock.hpp"
 
 namespace ftl
 {
@@ -25,7 +25,7 @@ public:
 	BackRef* succ_;
 	void** instance_;
 	#ifdef FTL_REF_THREADSAFE_SET
-	CoreMutex mutex_;
+	SpinLock mutex_;
 	#endif
 };
 
@@ -52,38 +52,20 @@ public:
 	
 	inline int refCount() const { return refCount_; }
 	
-	inline void incRefCount()
-	{
+	inline void incRefCount() {
 		__sync_add_and_fetch(&refCount_, 1);
-		/*mutex_.acquire();
-		refCount_ += (refCount_ >= 0);
-		mutex_.release();*/
 	}
 	
-	inline void decRefCount()
-	{
+	inline void decRefCount() {
 		if (__sync_sub_and_fetch(&refCount_, 1) == 0)
 			delete this;
-		/*mutex_.acquire();
-		refCount_ -= (refCount_ >= 0);
-		if (refCount_ == 0) {
-			mutex_.release();
-			delete this;
-		}
-		else
-			mutex_.release();*/
 	}
-	
-	inline void liberate() { refCount_ = -1; }
-
-	// inline CoreMutex* const mutex() { return &mutex_; }
 	
 	RefCounter(const RefCounter& b): refCount_(0) {}
 	inline const RefCounter& operator=(const RefCounter& b) { return *this; }
 	
 private:
-	// CoreMutex mutex_;
-	int refCount_;
+	volatile int refCount_;
 };
 
 class BackRefList
@@ -140,7 +122,7 @@ public:
 	inline const BackRefList& operator=(const BackRefList& b) { return *this; }
 	
 private:
-	CoreMutex mutex_;
+	SpinLock mutex_;
 	BackRef* backRefHead_;
 };
 

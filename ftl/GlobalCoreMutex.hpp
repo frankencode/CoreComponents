@@ -9,7 +9,7 @@
 #define FTL_GLOBALCOREMUTEX_HPP
 
 #include "Instance.hpp"
-#include "CoreMutex.hpp"
+#include "SpinLock.hpp"
 #include "Ref.hpp"
 
 namespace ftl
@@ -27,7 +27,7 @@ private:
 
 namespace { GlobalCoreMutexInitializer globalCoreMutexInitializer; }
 
-class GlobalCoreMutex: public Instance, public CoreMutex
+class GlobalCoreMutex: public Instance, public SpinLock
 {
 public:
 	static Ref<GlobalCoreMutex> instance();

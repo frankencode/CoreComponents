@@ -37,7 +37,7 @@ void testFloat754()
 	print("unsignedMax, intMax = %%, %%\n", unsignedMax, intMax);
 	
 	print("sizeof(Instance) = %%\n", int(sizeof(Instance)));
-	print("sizeof(CoreMutex) = %%\n", int(sizeof(CoreMutex)));
+	print("sizeof(SpinLock) = %%\n", int(sizeof(SpinLock)));
 	print("sizeof(Mutex) = %%\n", int(sizeof(Mutex)));
 	print("sizeof(Ref<Instance>) = %%\n", int(sizeof(Ref<Instance>)));
 	print("sizeof(Ref<Instance, Owner>) = %%\n", int(sizeof(Ref<Instance, Owner>)));
