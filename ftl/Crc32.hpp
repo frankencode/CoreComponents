@@ -17,7 +17,9 @@ namespace ftl
 class Crc32
 {
 public:
-	Crc32(uint32_t seed = ~uint32_t(0));
+	Crc32(uint32_t seed = ~uint32_t(0))
+		: crc_(seed)
+	{}
 	
 	void feed(const void* buf, int bufFill);
 	inline uint32_t sum() const { return crc_; }

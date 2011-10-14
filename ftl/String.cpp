@@ -120,7 +120,10 @@ void String::validate(const char* data, int size)
 void String::assign(Ref<StringList> parts, const char* sep)
 {
 	int sepSize = str::len(sep);
-	if (parts->length() > 0) {
+	if (parts->length() == 0) {
+		set(ByteArray::empty());
+	}
+	else {
 		int size = 0;
 		for (int i = 0; i < parts->length(); ++i)
 			size += parts->at(i)->size();
@@ -137,9 +140,6 @@ void String::assign(Ref<StringList> parts, const char* sep)
 			}
 		}
 		FTL_CHECK(p == bytes()->data() + size);
-	}
-	else {
-		set(new ByteArray);
 	}
 }
 
