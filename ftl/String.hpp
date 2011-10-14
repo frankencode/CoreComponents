@@ -156,7 +156,10 @@ protected:
 	
 	inline void assign(const char* data, int size = -1) {
 		if (size < 0) size = str::len(data);
-		set(new ByteArray(data, size));
+		if (size == 0)
+			set(ByteArray::empty());
+		else
+			set(new ByteArray(data, size));
 	}
 	void assign(Ref<StringList> parts, const char* sep = "");
 	

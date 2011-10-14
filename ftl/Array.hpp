@@ -11,7 +11,7 @@
 #include "generics.hpp"
 #include "strings.hpp"
 #include "ArrayPolicy.hpp"
-#include "Singleton.hpp"
+#include "Default.hpp"
 
 namespace ftl
 {
@@ -44,7 +44,7 @@ public:
 	
 	~Array() { Policy::free(data_, size_); }
 	
-	inline static Ref<Array> empty() { return DefaultArray<T, P>::instance(); }
+	inline static Ref<Array> empty() { return Default< Array<T, P> >::instance(); }
 	
 	inline Array& operator=(const Array& b) {
 		Policy::assign(data_, size_, b.data_, b.size_);
@@ -187,14 +187,6 @@ public:
 private:
 	int size_;
 	T* data_;
-};
-
-template<class T, template<class> class P>
-class DefaultArray: public Array<T, P>, public Singleton< Array<T, P> >
-{
-private:
-	friend class Singleton< Array<T, P> >;
-	DefaultArray() {}
 };
 
 typedef Array<char, DeepCopyZeroTerminatedArray> ByteArray;
