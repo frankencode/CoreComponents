@@ -19,7 +19,10 @@ BlueSyntax::BlueprintSyntaxs()
 		CHOICE(
 			GLUE(
 				STRING("//"),
-				FIND(AHEAD(CHAR('\n')))
+				CHOICE(
+					FIND(AHEAD(CHAR('\n'))),
+					FIND(EOI())
+				)
 			),
 			GLUE(
 				STRING("/*"),
@@ -31,7 +34,7 @@ BlueSyntax::BlueprintSyntaxs()
 							ANY()
 						)
 					)
-				)
+				),
 				STRING("*/")
 			)
 		)
@@ -115,11 +118,11 @@ BlueSyntax::BlueprintSyntaxs()
 					CHAR(':')
 					INLINE("Whitespace"),
 					REF("Value"),
-					INLINE("Whitespace"),
+					INLINE("Whitespace")
 				)
 			),
 			CHAR('}'),
-			INLINE("Whitespace"),
+			INLINE("Whitespace")
 		)
 	);
 	
