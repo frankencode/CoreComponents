@@ -111,6 +111,14 @@ int main()
 		}
 		print("]\n");
 	}*/
+	{
+		print("Test 6:\n");
+		List<int> a;
+		a << 1 << 2 << 3 << 4 << 5;
+		List<int> b(a);
+		print(a);
+		print(b);
+	}
 	return 0;
 }
 

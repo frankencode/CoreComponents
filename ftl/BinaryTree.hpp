@@ -27,20 +27,20 @@ class BinaryNode
 public:
 	typedef BinaryNode Node;
 	
-	BinaryNode(const T& e)
-		: balance(0),
-		  weight(1),
-		  e_(e)
+	BinaryNode(const T& item, const int balance = 0, const int weight = 1)
+		: item_(item),
+		  balance_(balance),
+		  weight_(weight)
 	{}
 	
-	Node* left;
-	Node* right;
-	Node* parent;
-	int balance;
-	int weight;
-	T e_;
+	Node* left_;
+	Node* right_;
+	Node* parent_;
+	T item_;
+	int balance_;
+	int weight_;
 	
-	inline const T& data() const { return e_; }
+	// inline const T& data() const { return item_; }
 	
 	inline Node* min()
 	{
@@ -48,7 +48,7 @@ public:
 		Node* k2 = k;
 		while (k) {
 			k2 = k;
-			k = k->left;
+			k = k->left_;
 		}
 		return k2;
 	}
@@ -59,22 +59,22 @@ public:
 		Node* k2 = k;
 		while (k) {
 			k2 = k;
-			k = k->right;
+			k = k->right_;
 		}
 		return k2;
 	}
 	
 	Node* pred()
 	{
-		if (left)
-			return left->max();
+		if (left_)
+			return left_->max();
 	
-		Node* kp = parent;
+		Node* kp = parent_;
 		Node* k = this;
 		while (kp) {
-			if (k == kp->right) break;
+			if (k == kp->right_) break;
 			k = kp;
-			kp = kp->parent;
+			kp = kp->parent_;
 		}
 	
 		return kp;
@@ -82,15 +82,15 @@ public:
 	
 	Node* succ()
 	{
-		if (right)
-			return right->min();
+		if (right_)
+			return right_->min();
 	
-		Node* kp = parent;
+		Node* kp = parent_;
 		Node* k = this;
 		while (kp) {
-			if (k == kp->left) break;
+			if (k == kp->left_) break;
 			k = kp;
-			kp = kp->parent;
+			kp = kp->parent_;
 		}
 	
 		return kp;
@@ -126,6 +126,20 @@ public:
 	BinaryTree(): root(0), cachedNode(0), cachedIndex(-1) {}
 	virtual ~BinaryTree() { clear(); }
 	
+	BinaryTree(const BinaryTree& b): root(clone(b.root)), cachedNode(0), cachedIndex(-1) {}
+	const BinaryTree& operator=(const BinaryTree& b) {
+		clear();
+		root = clone(b.root);
+		return *this;
+	}
+	
+	void clear() {
+		clear(root);
+		root = 0;
+		cachedNode = 0;
+		cachedIndex = -1;
+	}
+	
 	template<class ST> inline Node* firstNode(const ST& a) const;
 	template<class ST> inline Node* lastNode(const ST& b) const;
 	inline Node* minNode() { return (root) ? root->min() : 0; }
@@ -137,11 +151,11 @@ public:
 	inline int weight() const { return weight(root); }
 	
 	bool lookupByIndex(int index, Node** node = 0) const;
-	template<class ST> Node* find(const ST& e, bool* found = 0, bool* below = 0, int* index = 0) const;
+	template<class ST> Node* find(const ST& item, bool* found = 0, bool* below = 0, int* index = 0) const;
 	
 	Node* unlink(Node* k);
-	void clear() { clear(root); root = 0; }
 	static void clear(Node* k);
+	static Node* clone(Node* k);
 	
 	void push(int index, const T& item);
 	void pop(int index, T* item);
@@ -173,12 +187,12 @@ protected:
 	Node* restoreBalance(Node* k1);
 	
 	static void restoreWeights(Node* k, int delta);
-	inline static void updateWeight(Node* k) { k->weight = weight(k->left) + weight(k->right) + 1; }
-	inline static int weight(Node* k) { return (k) ? k->weight : 0; }
+	inline static void updateWeight(Node* k) { k->weight_ = weight(k->left_) + weight(k->right_) + 1; }
+	inline static int weight(Node* k) { return (k) ? k->weight_ : 0; }
 	
-	static bool ok1(Node* k);  // condition: k->left->data() < k->right->data()
-	static bool ok2(Node* k);  // condition: (k == k->parent()->left) || (k == k->parent()->right)
-	static bool ok3(Node* k);  // condition: (k == k->parent()->left) || (k == k->parent()->right)
+	static bool ok1(Node* k);  // condition: k->left_->data() < k->right_->data()
+	static bool ok2(Node* k);  // condition: (k == k->parent_()->left) || (k == k->parent_()->right)
+	static bool ok3(Node* k);  // condition: (k == k->parent_()->left) || (k == k->parent_()->right)
 	
 	static int height(Node* k);
 	inline int height() { return height(root); }
@@ -267,13 +281,13 @@ bool BinaryTree<T>::lookupByIndex(int i, Node** node) const
 	Node* k = root;
 	int j0 = 0;
 	while (k) {
-		int j = j0 + weight(k->left);
+		int j = j0 + weight(k->left_);
 		if (i < j) {
-			k = k->left;
+			k = k->left_;
 		}
 		else if (j < i) {
 			j0 = j + 1;
-			k = k->right;
+			k = k->right_;
 		}
 		else // i == j
 			break;
@@ -288,7 +302,7 @@ bool BinaryTree<T>::lookupByIndex(int i, Node** node) const
 
 template<class T>
 template<class ST>
-typename BinaryTree<T>::Node* BinaryTree<T>::find(const ST& e, bool* found, bool* below, int* index) const
+typename BinaryTree<T>::Node* BinaryTree<T>::find(const ST& item, bool* found, bool* below, int* index) const
 {
 	Node* k = root;
 	Node* k2 = 0;
@@ -296,23 +310,23 @@ typename BinaryTree<T>::Node* BinaryTree<T>::find(const ST& e, bool* found, bool
 	int j0 = 0, j = -1;
 	if (k) while (true) {
 		k2 = k;
-		j = j0 + weight(k->left);
-		if (e < k->data()) {
-			if (!k->left) {
+		j = j0 + weight(k->left_);
+		if (item < k->item_) {
+			if (!k->left_) {
 				if (below) *below = true;
 				break;
 			}
-			k = k->left;
+			k = k->left_;
 		}
-		else if (k->data() < e) {
-			if (!k->right) {
+		else if (k->item_ < item) {
+			if (!k->right_) {
 				if (below) *below = false;
 				break;
 			}
 			j0 = j + 1;
-			k = k->right;
+			k = k->right_;
 		}
-		else { // e == k->data()
+		else { // item == k->data()
 			if (found) *found = true;
 			break;
 		}
@@ -324,10 +338,10 @@ typename BinaryTree<T>::Node* BinaryTree<T>::find(const ST& e, bool* found, bool
 template<class T>
 typename BinaryTree<T>::Node* BinaryTree<T>::unlink(Node* k)
 {
-	if (k->left)
-		replaceNode(k, spliceOut(k->left->max()));
-	else if (k->right)
-		replaceNode(k, spliceOut(k->right->min()));
+	if (k->left_)
+		replaceNode(k, spliceOut(k->left_->max()));
+	else if (k->right_)
+		replaceNode(k, spliceOut(k->right_->min()));
 	else
 		spliceOut(k);
 	return k;
@@ -337,9 +351,32 @@ template<class T>
 void BinaryTree<T>::clear(Node* k)
 {
 	if (!k) return;
-	clear(k->left);
-	clear(k->right);
+	clear(k->left_);
+	clear(k->right_);
 	delete k;
+}
+
+template<class T>
+typename BinaryTree<T>::Node* BinaryTree<T>::clone(Node* k)
+{
+	if (!k) return 0;
+	Node* kn = new Node(k->item_, k->balance_, k->weight_);
+	if (!k->parent_) kn->parent_ = 0;
+	if (k->left_) {
+		kn->left_ = clone(k->left_);
+		kn->left_->parent_ = kn;
+	}
+	else {
+		kn->left_ = 0;
+	}
+	if (k->right_) {
+		kn->right_ = clone(k->right_);
+		kn->right_->parent_ = kn;
+	}
+	else {
+		kn->right_ = 0;
+	}
+	return kn;
 }
 
 template<class T>
@@ -370,7 +407,7 @@ void BinaryTree<T>::pop(int index, T* item)
 	Node* ko = 0;
 	bool found = lookupByIndex(index, &ko);
 	FTL_CHECK(found);
-	*item = ko->e_;
+	*item = ko->item_;
 	Node* k = ko->pred();
 	if (k) --index;
 	else k = ko->succ();
@@ -386,8 +423,8 @@ void BinaryTree<T>::spliceInBefore(Node* kb, Node* kn)
 {
 	if (!kb)
 		spliceIn(kb, kn, true/*left*/);
-	else if (kb->left)
-		spliceIn(kb->left->max(), kn, false/*left*/);
+	else if (kb->left_)
+		spliceIn(kb->left_->max(), kn, false/*left*/);
 	else
 		spliceIn(kb, kn, true/*left*/);
 }
@@ -397,8 +434,8 @@ void BinaryTree<T>::spliceInAfter(Node* ka, Node* kn)
 {
 	if (!ka)
 		spliceIn(ka, kn, true/*left*/);
-	else if (ka->right)
-		spliceIn(ka->right->min(), kn, true/*left*/);
+	else if (ka->right_)
+		spliceIn(ka->right_->min(), kn, true/*left*/);
 	else
 		spliceIn(ka, kn, false/*left*/);
 }
@@ -409,19 +446,19 @@ void BinaryTree<T>::spliceIn(Node* kp, Node* kn, bool left)
 	if (!kp) {
 		// -- splice in initial node
 		root = kn;
-		kn->parent = 0;
-		kn->left = 0;
-		kn->right = 0;
+		kn->parent_ = 0;
+		kn->left_ = 0;
+		kn->right_ = 0;
 	}
 	else {
 		// -- splice in new leaf node
 		if (left)
-			kp->left = kn;
+			kp->left_ = kn;
 		else
-			kp->right = kn;
-		kn->parent = kp;
-		kn->left = 0;
-		kn->right = 0;
+			kp->right_ = kn;
+		kn->parent_ = kp;
+		kn->left_ = 0;
+		kn->right_ = 0;
 		
 		restoreWeights(kp, 1);
 		rebalanceAfterSpliceIn(kp, kn);
@@ -433,7 +470,7 @@ void BinaryTree<T>::spliceIn(Node* kp, Node* kn, bool left)
 template<class T>
 typename BinaryTree<T>::Node* BinaryTree<T>::spliceOut(Node* k)
 {
-	Node* kp = k->parent;
+	Node* kp = k->parent_;
 
 	if (!kp) {
 		// -- splice out the root
@@ -443,12 +480,12 @@ typename BinaryTree<T>::Node* BinaryTree<T>::spliceOut(Node* k)
 		rebalanceBeforeSpliceOut(kp, k);
 		
 		// -- splice out node
-		Node* kc = (k->left != 0) ? k->left : k->right;
-		if (kp->left == k)
-			kp->left = kc;
+		Node* kc = (k->left_ != 0) ? k->left_ : k->right_;
+		if (kp->left_ == k)
+			kp->left_ = kc;
 		else
-			kp->right = kc;
-		if (kc != 0) kc->parent = kp;
+			kp->right_ = kc;
+		if (kc != 0) kc->parent_ = kp;
 		
 		restoreWeights(kp, -1);
 	}
@@ -463,145 +500,145 @@ typename BinaryTree<T>::Node* BinaryTree<T>::spliceOut(Node* k)
 template<class T>
 void BinaryTree<T>::replaceNode(Node* ki, Node* kl)
 {
-	kl->balance = ki->balance;
-	kl->weight = ki->weight;
+	kl->balance_ = ki->balance_;
+	kl->weight_ = ki->weight_;
 	
 	// establish links to neighbors
-	kl->parent = ki->parent;
-	kl->left = ki->left;
-	kl->right = ki->right;
+	kl->parent_ = ki->parent_;
+	kl->left_ = ki->left_;
+	kl->right_ = ki->right_;
 	
 	// establish links from neighbors
-	Node* kp = ki->parent;
+	Node* kp = ki->parent_;
 	if (kp) {
-		if (kp->left == ki)
-			kp->left = kl;
+		if (kp->left_ == ki)
+			kp->left_ = kl;
 		else
-			kp->right = kl;
+			kp->right_ = kl;
 	}
 	else
 		root = kl;
-	if (ki->left)
-		ki->left->parent = kl;
-	if (ki->right)
-		ki->right->parent = kl;
+	if (ki->left_)
+		ki->left_->parent_ = kl;
+	if (ki->right_)
+		ki->right_->parent_ = kl;
 }
 
 template<class T>
 void BinaryTree<T>::rotateLeft(Node* k1)
 {
-	Node* k2 = k1->right;
+	Node* k2 = k1->right_;
 	
-	if (k1->parent != 0)
+	if (k1->parent_ != 0)
 	{
-		if (k1->parent->left == k1)
-			k1->parent->left = k2;
+		if (k1->parent_->left_ == k1)
+			k1->parent_->left_ = k2;
 		else
-			k1->parent->right = k2;
+			k1->parent_->right_ = k2;
 	}
 	else
 		root = k2;
 	
-	k2->parent = k1->parent;
+	k2->parent_ = k1->parent_;
 	
-	k1->parent = k2;
-	k1->right = k2->left;
+	k1->parent_ = k2;
+	k1->right_ = k2->left_;
 	
-	if (k2->left != 0)
-		k2->left->parent = k1;
+	if (k2->left_ != 0)
+		k2->left_->parent_ = k1;
 	
-	k2->left = k1;
+	k2->left_ = k1;
 	
 	updateWeight(k1);
-	updateWeight(k1->parent);
+	updateWeight(k1->parent_);
 }
 
 template<class T>
 void BinaryTree<T>::rotateRight(Node* k1)
 {
-	Node* k2 = k1->left;
+	Node* k2 = k1->left_;
 	
-	if (k1->parent != 0)
+	if (k1->parent_ != 0)
 	{
-		if (k1->parent->left == k1)
-			k1->parent->left = k2;
+		if (k1->parent_->left_ == k1)
+			k1->parent_->left_ = k2;
 		else
-			k1->parent->right = k2;
+			k1->parent_->right_ = k2;
 	}
 	else
 		root = k2;
 	
-	k2->parent = k1->parent;
+	k2->parent_ = k1->parent_;
 	
-	k1->parent = k2;
-	k1->left = k2->right;
+	k1->parent_ = k2;
+	k1->left_ = k2->right_;
 	
-	if (k2->right != 0)
-		k2->right->parent = k1;
+	if (k2->right_ != 0)
+		k2->right_->parent_ = k1;
 	
-	k2->right = k1;
+	k2->right_ = k1;
 	
 	updateWeight(k1);
-	updateWeight(k1->parent);
+	updateWeight(k1->parent_);
 }
 
 template<class T>
 void BinaryTree<T>::rebalanceAfterSpliceIn(Node* kp, Node* kn)
 {
-	int delta = 2 * (kp->left == kn) - 1;
+	int delta = 2 * (kp->left_ == kn) - 1;
 	Node* k = kp;
 	
 	while (true)
 	{
-		k->balance += delta;
+		k->balance_ += delta;
 		
-		if ((k->balance == 2) || (k->balance == -2))
+		if ((k->balance_ == 2) || (k->balance_ == -2))
 			k = restoreBalance(k);
 		
-		if ((k->balance == 0) || (!k->parent))
+		if ((k->balance_ == 0) || (!k->parent_))
 			break;
 		
-		delta = 2 * (k->parent->left == k) - 1;
-		k = k->parent;
+		delta = 2 * (k->parent_->left_ == k) - 1;
+		k = k->parent_;
 	}
 }
 
 template<class T>
 void BinaryTree<T>::rebalanceBeforeSpliceOut(Node* kp, Node* ko)
 {
-	int delta = 2 * (kp->left == ko) - 1;
+	int delta = 2 * (kp->left_ == ko) - 1;
 	Node* k = kp;
 	
 	while (true)
 	{
-		k->balance -= delta;
+		k->balance_ -= delta;
 		
-		if ((k->balance == 2) || (k->balance == -2))
+		if ((k->balance_ == 2) || (k->balance_ == -2))
 			k = restoreBalance(k);
 		
-		if ((k->balance != 0) || (!k->parent))
+		if ((k->balance_ != 0) || (!k->parent_))
 			break;
 		
-		delta = 2 * (k->parent->left == k) - 1;
-		k = k->parent;
+		delta = 2 * (k->parent_->left_ == k) - 1;
+		k = k->parent_;
 	}
 }
 
 template<class T>
 typename BinaryTree<T>::Node* BinaryTree<T>::restoreBalance(Node* k1)
 {
-	if (k1->balance == 2)
+	if (k1->balance_ == 2)
 	{
-		Node* k2 = k1->left;
+		Node* k2 = k1->left_;
 		
-		if (k2->balance == -1)
+		if (k2->balance_ == -1)
 		{
 			// -- case Ia->III
-			Node* k3 = k2->right;
+			Node* k3 = k2->right_;
 			
-			k1->balance = -(k3->balance == 1);
-			k2->balance = (k3->balance == -1);
-			k3->balance = 0;
+			k1->balance_ = -(k3->balance_ == 1);
+			k2->balance_ = (k3->balance_ == -1);
+			k3->balance_ = 0;
 			
 			rotateLeft(k2);
 			rotateRight(k1);
@@ -609,24 +646,24 @@ typename BinaryTree<T>::Node* BinaryTree<T>::restoreBalance(Node* k1)
 		else
 		{
 			// -- case Ib, Ic
-			k1->balance = (k2->balance <= 0);
-			k2->balance = k2->balance - 1;
+			k1->balance_ = (k2->balance_ <= 0);
+			k2->balance_ = k2->balance_ - 1;
 			
 			rotateRight(k1);
 		}
 	}
 	else
 	{
-		Node* k2 = k1->right;
+		Node* k2 = k1->right_;
 		
-		if (k2->balance == 1)
+		if (k2->balance_ == 1)
 		{
 			// -- case IIc->IV
-			Node* k3 = k2->left;
+			Node* k3 = k2->left_;
 			
-			k1->balance = (k3->balance == -1);
-			k2->balance = -(k3->balance == 1);
-			k3->balance = 0;
+			k1->balance_ = (k3->balance_ == -1);
+			k2->balance_ = -(k3->balance_ == 1);
+			k3->balance_ = 0;
 			
 			rotateRight(k2);
 			rotateLeft(k1);
@@ -634,22 +671,22 @@ typename BinaryTree<T>::Node* BinaryTree<T>::restoreBalance(Node* k1)
 		else
 		{
 			// -- case IIa, IIb
-			k1->balance = -(k2->balance >= 0);
-			k2->balance = k2->balance + 1;
+			k1->balance_ = -(k2->balance_ >= 0);
+			k2->balance_ = k2->balance_ + 1;
 			
 			rotateLeft(k1);
 		}
 	}
 	
-	return k1->parent;
+	return k1->parent_;
 }
 
 template<class T>
 void BinaryTree<T>::restoreWeights(Node* k, int delta)
 {
 	while (k) {
-		k->weight += delta;
-		k = k->parent;
+		k->weight_ += delta;
+		k = k->parent_;
 	}
 }
 
@@ -657,7 +694,7 @@ template<class T>
 int BinaryTree<T>::height(Node* k)
 {
 	if (k == 0) return 0;
-	return max(height(k->left), height(k->right)) + 1;
+	return max(height(k->left_), height(k->right_)) + 1;
 }
 
 template<class T>
@@ -665,13 +702,13 @@ bool BinaryTree<T>::ok1(Node* k)
 {
 	if (k == 0) return true;
 
-	if (k->left)
-		if (!(k->left->data() < k->data())) return false;
+	if (k->left_)
+		if (!(k->left_->data() < k->data())) return false;
 
-	if (k->right)
-		if (!(k->data() < k->right->data())) return false;
+	if (k->right_)
+		if (!(k->data() < k->right_->data())) return false;
 
-	return ok1(k->left) && ok1(k->right);
+	return ok1(k->left_) && ok1(k->right_);
 }
 
 template<class T>
@@ -679,10 +716,10 @@ bool BinaryTree<T>::ok2(Node* k)
 {
 	if (k == 0) return true;
 
-	if (k->parent)
-		if (!((k == k->parent->left)||(k == k->parent->right))) return false;
+	if (k->parent_)
+		if (!((k == k->parent_->left_)||(k == k->parent_->right_))) return false;
 
-	return ok2(k->left) && ok2(k->right);
+	return ok2(k->left_) && ok2(k->right_);
 }
 
 template<class T>
@@ -700,24 +737,24 @@ bool BinaryTree<T>::ok3(Node* k)
 	if (k2)
 		if (k != k2->succ()) return false;
 
-	return ok3(k->left) && ok3(k->right);
+	return ok3(k->left_) && ok3(k->right_);
 }
 
 template<class T>
 bool BinaryTree<T>::testBalance1(Node* k)
 {
 	if (!k) return true;
-	if (!((k->balance == -1) || (k->balance == 0) || (k->balance == 1))) return false;
-	return testBalance1(k->left) && testBalance1(k->right);
+	if (!((k->balance_ == -1) || (k->balance_ == 0) || (k->balance_ == 1))) return false;
+	return testBalance1(k->left_) && testBalance1(k->right_);
 }
 
 template<class T>
 bool BinaryTree<T>::testBalance2(Node* k)
 {
 	if (!k) return true;
-	FTL_CHECK(((height(k->left) - height(k->right)) == k->balance));
-	if ((height(k->left) - height(k->right)) != k->balance) return false;
-	return testBalance2(k->left) && testBalance2(k->right);
+	FTL_CHECK(((height(k->left_) - height(k->right_)) == k->balance_));
+	if ((height(k->left_) - height(k->right_)) != k->balance_) return false;
+	return testBalance2(k->left_) && testBalance2(k->right_);
 }
 
 template<class T>
@@ -725,8 +762,8 @@ bool BinaryTree<T>::testWeight(Node* k)
 {
 	if (!k) return true;
 	return
-		(weight(k->left) + weight(k->right) + 1 == k->weight) &&
-		testWeight(k->left) && testWeight(k->right);
+		(weight(k->left_) + weight(k->right_) + 1 == k->weight_) &&
+		testWeight(k->left_) && testWeight(k->right_);
 }
 
 /*template<class T>
@@ -745,11 +782,11 @@ void BinaryTree<T>::levelPrint(Node* k, int level)
 {
 	if (k == 0) return;
 	if (level == 0) {
-		printf("(%p: %p,%p,%p,%d) ", k, k->parent, k->left, k->right, k->balance);
+		printf("(%p: %p,%p,%p,%d) ", k, k->parent_, k->left_, k->right_, k->balance_);
 	}
 	else {
-		levelPrint(k->left, level-1);
-		levelPrint(k->right, level-1);
+		levelPrint(k->left_, level-1);
+		levelPrint(k->right_, level-1);
 	}
 }*/
 

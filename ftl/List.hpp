@@ -22,6 +22,11 @@ public:
 	typedef T Item;
 	typedef GenericIterator<List> Iterator;
 	
+	List() {}
+	
+	List(const List& b): tree_(b.tree_) {}
+	inline const List& operator=(const List& b) { tree_ = b.tree_; return *this; }
+	
 	inline Iterator iterator() const { return Iterator(this); }
 	
 	inline bool isEmpty() const { return tree_.weight() == 0; }
@@ -36,13 +41,13 @@ public:
 	}
 	inline const T& at(int index) const {
 		Node* node = 0;
-		if (tree_.lookupByIndex(index, &node)) return node->e_;
+		if (tree_.lookupByIndex(index, &node)) return node->item_;
 		else return nullItem_;
 	}
 	inline void set(int index, const T& item) {
 		Node* node = 0;
 		if (tree_.lookupByIndex(index, &node))
-			node->e_ = item;
+			node->item_ = item;
 	}
 	
 	inline List& push(int index, const T& item) {
