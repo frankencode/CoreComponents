@@ -197,10 +197,8 @@ inline void free(void* buf) { delete[] reinterpret_cast<char*>(buf); }
 
 class NonCopyable
 {
-public:
+protected:
 	NonCopyable() {}
-	
-private:
 	NonCopyable(const NonCopyable& b);
 	const NonCopyable& operator=(const NonCopyable& b);
 };

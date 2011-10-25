@@ -25,6 +25,11 @@ public:
 	typedef Pair<Key,Value> Item;
 	typedef GenericIterator<Map> Iterator;
 	
+	Map() {}
+	
+	Map(const Map& b): tree_(b.tree_) {}
+	inline const Map& operator=(const Map& b) { tree_ = b.tree_; return *this; }
+	
 	inline Iterator iterator() const { return Iterator(this); }
 	
 	inline bool isEmpty() const { return tree_.weight() == 0; }
@@ -39,7 +44,7 @@ public:
 	}
 	inline const Item& at(int index) const {
 		Node* node = 0;
-		if (tree_.lookupByIndex(index, &node)) return node->e_;
+		if (tree_.lookupByIndex(index, &node)) return node->item_;
 		else return nullItem_;
 	}
 	
@@ -63,7 +68,7 @@ public:
 		Node* k = tree_.find(e, &found, &below, index);
 		if (found) {
 			if (currentValue)
-				*currentValue = k->e_.value();
+				*currentValue = k->item_.value();
 		}
 		else {
 			tree_.spliceIn(k, new Node(e), below);
@@ -91,7 +96,7 @@ public:
 		bool found = false;
 		Node* k = tree_.find(Item(key), &found, 0, index);
 		if (found && (value))
-			*value = k->e_.value();
+			*value = k->item_.value();
 		return found;
 	}
 	
@@ -131,7 +136,7 @@ public:
 			tree_.spliceIn(k, kn, below);
 			k = kn;
 		}
-		return k->e_.value();
+		return k->item_.value();
 	}
 	
 	/** Convenience wrapper to lookup()
@@ -144,7 +149,7 @@ public:
 		bool below = true;
 		Node* k = tree_.find(item, &found, &below);
 		if (found)
-			k->e_ = item;
+			k->item_ = item;
 		else
 			tree_.spliceIn(k, new Node(item), below);
 		return *this;
@@ -154,7 +159,7 @@ public:
 	{
 		FTL_CHECK(!isEmpty());
 		Node* k = tree_.minNode();
-		*item = k->e_;
+		*item = k->item_;
 		delete tree_.unlink(k);
 		return *this;
 	}

@@ -80,6 +80,7 @@ SET(FTL_HEADER
 	ThreadLocalSingleton.hpp
 	Singleton.hpp
 	Default.hpp
+	OnDemand.hpp
 	Thread.hpp
 	ThreadFactory.hpp
 	Mutex.hpp
