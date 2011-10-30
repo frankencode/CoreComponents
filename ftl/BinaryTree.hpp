@@ -123,32 +123,32 @@ class BinaryTree: public NonCopyable
 public:
 	typedef BinaryNode<T> Node;
 	
-	BinaryTree(): root(0), cachedNode(0), cachedIndex(-1) {}
+	BinaryTree(): root_(0), cachedNode_(0), cachedIndex_(-1) {}
 	virtual ~BinaryTree() { clear(); }
 	
-	BinaryTree(const BinaryTree& b): root(clone(b.root)), cachedNode(0), cachedIndex(-1) {}
+	BinaryTree(const BinaryTree& b): root_(clone(b.root_)), cachedNode_(0), cachedIndex_(-1) {}
 	const BinaryTree& operator=(const BinaryTree& b) {
 		clear();
-		root = clone(b.root);
+		root_ = clone(b.root_);
 		return *this;
 	}
 	
 	void clear() {
-		clear(root);
-		root = 0;
-		cachedNode = 0;
-		cachedIndex = -1;
+		clear(root_);
+		root_ = 0;
+		cachedNode_ = 0;
+		cachedIndex_ = -1;
 	}
 	
 	template<class ST> inline Node* firstNode(const ST& a) const;
 	template<class ST> inline Node* lastNode(const ST& b) const;
-	inline Node* minNode() { return (root) ? root->min() : 0; }
-	inline Node* maxNode() { return (root) ? root->max() : 0; }
+	inline Node* minNode() { return (root_) ? root_->min() : 0; }
+	inline Node* maxNode() { return (root_) ? root_->max() : 0; }
 	
 	int first(const T& a) const;
 	int last(const T& b) const;
 	
-	inline int weight() const { return weight(root); }
+	inline int weight() const { return weight(root_); }
 	
 	bool lookupByIndex(int index, Node** node = 0) const;
 	template<class ST> Node* find(const ST& item, bool* found = 0, bool* below = 0, int* index = 0) const;
@@ -168,13 +168,13 @@ public:
 	
 	inline bool health() {
 		// levelPrint();
-		/*FTL_CHECK(ok1(root));*/
-		FTL_CHECK(ok2(root));
-		FTL_CHECK(ok3(root));
-		FTL_CHECK(testBalance1(root));
-		FTL_CHECK(testBalance2(root));
-		FTL_CHECK(testWeight(root));
-		return /*ok1(root) &&*/ ok2(root) && ok3(root) && testBalance1(root) && testBalance2(root) && testWeight(root);
+		/*FTL_CHECK(ok1(root_));*/
+		FTL_CHECK(ok2(root_));
+		FTL_CHECK(ok3(root_));
+		FTL_CHECK(testBalance1(root_));
+		FTL_CHECK(testBalance2(root_));
+		FTL_CHECK(testWeight(root_));
+		return /*ok1(root_) &&*/ ok2(root_) && ok3(root_) && testBalance1(root_) && testBalance2(root_) && testWeight(root_);
 	}
 	
 protected:
@@ -190,12 +190,12 @@ protected:
 	inline static void updateWeight(Node* k) { k->weight_ = weight(k->left_) + weight(k->right_) + 1; }
 	inline static int weight(Node* k) { return (k) ? k->weight_ : 0; }
 	
-	static bool ok1(Node* k);  // condition: k->left_->data() < k->right_->data()
-	static bool ok2(Node* k);  // condition: (k == k->parent_()->left) || (k == k->parent_()->right)
-	static bool ok3(Node* k);  // condition: (k == k->parent_()->left) || (k == k->parent_()->right)
+	static bool ok1(Node* k);  // condition: k->left_->item_ < k->right_->item_
+	static bool ok2(Node* k);  // condition: (k == k->parent_->left_) || (k == k->parent_->right_)
+	static bool ok3(Node* k);  // condition: (k == k->parent_->left_) || (k == k->parent_->right_)
 	
 	static int height(Node* k);
-	inline int height() { return height(root); }
+	inline int height() { return height(root_); }
 	static bool testBalance1(Node* k);
 	static bool testBalance2(Node* k);
 	static bool testWeight(Node* k);
@@ -205,9 +205,9 @@ protected:
 	
 	inline static int max(int a, int b) { return (a < b) ? b : a; }
 	
-	Node* root;
-	mutable Node* cachedNode;
-	mutable int cachedIndex;
+	Node* root_;
+	mutable Node* cachedNode_;
+	mutable int cachedIndex_;
 };
 
 template<class T>
@@ -235,7 +235,7 @@ inline int BinaryTree<T>::first(const T& a) const
 {
 	bool found = false, below = true;
 	int index = 0;
-	if (!root) return 0;
+	if (!root_) return 0;
 	find(a, &found, &below, &index);
 	if (found) return index;
 	return below ? index : index + 1;
@@ -246,7 +246,7 @@ inline int BinaryTree<T>::last(const T& b) const
 {
 	bool found = false, below = true;
 	int index = 0;
-	if (!root) return 0;
+	if (!root_) return 0;
 	find(b, &found, &below, &index);
 	if (found) return index;
 	return below ? index - 1 : index;
@@ -255,30 +255,30 @@ inline int BinaryTree<T>::last(const T& b) const
 template<class T>
 bool BinaryTree<T>::lookupByIndex(int i, Node** node) const
 {
-	if (i < 0) i += weight(root);
-	FTL_CHECK((0 <= i) && (i < weight(root)));
+	if (i < 0) i += weight(root_);
+	FTL_CHECK((0 <= i) && (i < weight(root_)));
 	
-	if (cachedNode) {
-		int d = i - cachedIndex;
+	if (cachedNode_) {
+		int d = i - cachedIndex_;
 		if (d == 0) {
-			if (node) *node = cachedNode;
-			return cachedNode;
+			if (node) *node = cachedNode_;
+			return cachedNode_;
 		}
 		else if (d == 1) {
-			++cachedIndex;
-			cachedNode = cachedNode->succ();
-			if ((cachedNode) && (node)) *node = cachedNode;
-			return cachedNode;
+			++cachedIndex_;
+			cachedNode_ = cachedNode_->succ();
+			if ((cachedNode_) && (node)) *node = cachedNode_;
+			return cachedNode_;
 		}
 		else if (d == -1) {
-			--cachedIndex;
-			cachedNode = cachedNode->pred();
-			if ((cachedNode) && (node)) *node = cachedNode;
-			return cachedNode;
+			--cachedIndex_;
+			cachedNode_ = cachedNode_->pred();
+			if ((cachedNode_) && (node)) *node = cachedNode_;
+			return cachedNode_;
 		}
 	}
 	
-	Node* k = root;
+	Node* k = root_;
 	int j0 = 0;
 	while (k) {
 		int j = j0 + weight(k->left_);
@@ -294,8 +294,8 @@ bool BinaryTree<T>::lookupByIndex(int i, Node** node) const
 	}
 	if ((k) && (node)) *node = k;
 	
-	cachedNode = k;
-	cachedIndex = i;
+	cachedNode_ = k;
+	cachedIndex_ = i;
 	
 	return k;
 }
@@ -304,7 +304,7 @@ template<class T>
 template<class ST>
 typename BinaryTree<T>::Node* BinaryTree<T>::find(const ST& item, bool* found, bool* below, int* index) const
 {
-	Node* k = root;
+	Node* k = root_;
 	Node* k2 = 0;
 	if (found) *found = false;
 	int j0 = 0, j = -1;
@@ -383,11 +383,11 @@ template<class T>
 void BinaryTree<T>::push(int index, const T& item)
 {
 	Node* kn = new Node(item);
-	if (index == weight(root)) {
+	if (index == weight(root_)) {
 		Node* kp = 0;
-		if (cachedNode)
-			if (cachedIndex == index)
-				kp = cachedNode;
+		if (cachedNode_)
+			if (cachedIndex_ == index)
+				kp = cachedNode_;
 		if (!kp) kp = maxNode();
 		spliceIn(kp, kn, false/*left*/);
 	}
@@ -397,8 +397,8 @@ void BinaryTree<T>::push(int index, const T& item)
 		FTL_CHECK(found);
 		spliceInBefore(ka, kn);
 	}
-	cachedNode = kn;
-	cachedIndex = index;
+	cachedNode_ = kn;
+	cachedIndex_ = index;
 }
 
 template<class T>
@@ -413,8 +413,8 @@ void BinaryTree<T>::pop(int index, T* item)
 	else k = ko->succ();
 	delete unlink(ko);
 	if (k) {
-		cachedNode = k;
-		cachedIndex = index;
+		cachedNode_ = k;
+		cachedIndex_ = index;
 	}
 }
 
@@ -445,7 +445,7 @@ void BinaryTree<T>::spliceIn(Node* kp, Node* kn, bool left)
 {
 	if (!kp) {
 		// -- splice in initial node
-		root = kn;
+		root_ = kn;
 		kn->parent_ = 0;
 		kn->left_ = 0;
 		kn->right_ = 0;
@@ -464,7 +464,7 @@ void BinaryTree<T>::spliceIn(Node* kp, Node* kn, bool left)
 		rebalanceAfterSpliceIn(kp, kn);
 	}
 	
-	cachedNode = 0;
+	cachedNode_ = 0;
 }
 
 template<class T>
@@ -473,8 +473,8 @@ typename BinaryTree<T>::Node* BinaryTree<T>::spliceOut(Node* k)
 	Node* kp = k->parent_;
 
 	if (!kp) {
-		// -- splice out the root
-		root = 0;
+		// -- splice out the root_
+		root_ = 0;
 	}
 	else {
 		rebalanceBeforeSpliceOut(kp, k);
@@ -490,7 +490,7 @@ typename BinaryTree<T>::Node* BinaryTree<T>::spliceOut(Node* k)
 		restoreWeights(kp, -1);
 	}
 	
-	cachedNode = 0;
+	cachedNode_ = 0;
 	
 	return k;
 }
@@ -517,7 +517,7 @@ void BinaryTree<T>::replaceNode(Node* ki, Node* kl)
 			kp->right_ = kl;
 	}
 	else
-		root = kl;
+		root_ = kl;
 	if (ki->left_)
 		ki->left_->parent_ = kl;
 	if (ki->right_)
@@ -537,7 +537,7 @@ void BinaryTree<T>::rotateLeft(Node* k1)
 			k1->parent_->right_ = k2;
 	}
 	else
-		root = k2;
+		root_ = k2;
 	
 	k2->parent_ = k1->parent_;
 	
@@ -566,7 +566,7 @@ void BinaryTree<T>::rotateRight(Node* k1)
 			k1->parent_->right_ = k2;
 	}
 	else
-		root = k2;
+		root_ = k2;
 	
 	k2->parent_ = k1->parent_;
 	
@@ -770,9 +770,9 @@ bool BinaryTree<T>::testWeight(Node* k)
 void BinaryTree<T>::levelPrint()
 {
 	printf("level order print:\n");
-	for (int i = 0; i < height(root); ++i) {
+	for (int i = 0; i < height(root_); ++i) {
 		printf("%d: ", i);
-		levelPrint(root, i);
+		levelPrint(root_, i);
 		printf("\n");
 	}
 }
