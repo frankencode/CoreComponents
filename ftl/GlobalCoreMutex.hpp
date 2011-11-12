@@ -27,16 +27,16 @@ private:
 
 namespace { GlobalCoreMutexInitializer globalCoreMutexInitializer; }
 
-class GlobalCoreMutex: public Instance, public SpinLock
+class GlobalCoreMutex: public SpinLock
 {
 public:
-	static Ref<GlobalCoreMutex> instance();
+	static GlobalCoreMutex* instance();
 	
 private:
 	GlobalCoreMutex() {}
 };
 
-inline Ref<GlobalCoreMutex> globalCoreMutex() { return GlobalCoreMutex::instance(); }
+inline GlobalCoreMutex* globalCoreMutex() { return GlobalCoreMutex::instance(); }
 
 } // namespace ftl
 

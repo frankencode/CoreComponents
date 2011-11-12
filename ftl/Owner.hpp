@@ -48,6 +48,8 @@ public:
 	
 	inline T* get() const { return instance_; }
 	
+	enum { AllowConversion = 1 };
+	
 private:
 	T* instance_;
 	#ifdef FTL_REF_POLICY_RACE_DETECTION

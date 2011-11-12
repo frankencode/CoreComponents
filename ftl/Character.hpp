@@ -46,7 +46,7 @@ public:
 	}
 	
 	Ref<ByteArray, Owner> copy(int i0, int i1) const {
-		FTL_CHECK(i0 <= i1);
+		FTL_ASSERT(i0 <= i1);
 		walkTo(i0);
 		const char* p0 = walker_.pos();
 		while (i_ < i1) { ++walker_; ++i_; }

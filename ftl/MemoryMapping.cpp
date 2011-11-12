@@ -6,7 +6,7 @@
  * See ../COPYING for the license.
  */
 
-#include <unistd.h> // sysconf
+#include <unistd.h> // sysconf, _exit
 #include "MemoryMapping.hpp"
 
 namespace ftl

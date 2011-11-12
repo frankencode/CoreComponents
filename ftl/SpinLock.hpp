@@ -26,7 +26,7 @@ public:
 	}
 	inline void release() {
 		bool ok = __sync_bool_compare_and_swap(&flag_, 1, 0);
-		FTL_CHECK2(ok, "Double unlocking of a SpinLock");
+		FTL_ASSERT2(ok, "Double unlocking of a SpinLock");
 	}
 private:
 	volatile char flag_;

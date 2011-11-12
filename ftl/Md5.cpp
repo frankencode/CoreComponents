@@ -21,7 +21,7 @@ Md5::Md5()
 	  a_(0x67452301), b_(0xEFCDAB89),
 	  c_(0x98BADCFE), d_(0x10325476)
 {
-	FTL_CHECK((auxSize_ % 64) == 0);
+	FTL_ASSERT((auxSize_ % 64) == 0);
 }
 
 Md5::~Md5()

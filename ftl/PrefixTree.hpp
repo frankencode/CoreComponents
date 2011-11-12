@@ -110,7 +110,7 @@ public:
 	
 	Ref<Key, Owner> key(Index index) const
 	{
-		FTL_CHECK(has(index));
+		FTL_ASSERT(has(index));
 		int size = 0;
 		{
 			Ref<Node> node = index.node_;
@@ -137,7 +137,7 @@ public:
 	}
 	
 	inline Value value(Index index) const {
-		FTL_CHECK(has(index));
+		FTL_ASSERT(has(index));
 		return index.node_->value_;
 	}
 	

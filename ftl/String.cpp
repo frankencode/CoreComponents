@@ -139,7 +139,7 @@ void String::assign(Ref<StringList> parts, const char* sep)
 				p += sepSize;
 			}
 		}
-		FTL_CHECK(p == bytes()->data() + size);
+		FTL_ASSERT(p == bytes()->data() + size);
 	}
 }
 

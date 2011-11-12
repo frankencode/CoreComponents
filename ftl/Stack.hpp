@@ -54,13 +54,13 @@ public:
 	inline T get(int i) const { return bottom(i); }
 	
 	inline Stack& push(const T& item) {
-		FTL_CHECK(fill_ < size_);
+		FTL_ASSERT(fill_ < size_);
 		buf_[fill_++] = item;
 		return *this;
 	}
 	inline Stack& pop(T* item)
 	{
-		FTL_CHECK(fill_ > 0);
+		FTL_ASSERT(fill_ > 0);
 		*item = buf_[--fill_];
 		return *this;
 	}
@@ -71,7 +71,7 @@ public:
 	}
 	
 	inline Stack& popMore(int n) {
-		FTL_CHECK(fill_ >= n);
+		FTL_ASSERT(fill_ >= n);
 		fill_ -= n;
 		return *this;
 	}
@@ -79,12 +79,12 @@ public:
 	inline void clear() { fill_ = 0; }
 	
 	inline T& top(int i = 0) const {
-		FTL_CHECK(i < fill_);
+		FTL_ASSERT(i < fill_);
 		return buf_[fill_-i-1];
 	}
 	
 	inline T& bottom(int i = 0) const {
-		FTL_CHECK(i < fill_);
+		FTL_ASSERT(i < fill_);
 		return buf_[i];
 	}
 	

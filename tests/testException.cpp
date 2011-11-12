@@ -26,7 +26,7 @@ int main()
 		print("%%\n", ex.what());
 	}
 	
-	FTL_CHECK(y() == 1);
+	FTL_ASSERT(y() == 1);
 	
 	return 0;
 }

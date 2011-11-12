@@ -80,25 +80,25 @@ public:
 	}
 	
 	inline T get(int i) const {
-		FTL_CHECK(has(i));
+		FTL_ASSERT(has(i));
 		if (i < 0) i += size_;
 		return data_[i];
 	}
 	
 	inline void set(int i, const T& item) {
-		FTL_CHECK(has(i));
+		FTL_ASSERT(has(i));
 		if (i < 0) i += size_;
 		data_[i] = item;
 	}
 	
 	inline T* pointerAt(int i) const {
-		FTL_CHECK(has(i));
+		FTL_ASSERT(has(i));
 		if (i < 0) i += size_;
 		return data_ + i;
 	}
 	
 	inline T& at(int i) const {
-		FTL_CHECK(has(i));
+		FTL_ASSERT(has(i));
 		if (i < 0) i += size_;
 		return data_[i];
 	}
@@ -152,15 +152,15 @@ public:
 	
 	inline void read(int i, T* data, int size) {
 		if (size == 0) return;
-		FTL_CHECK(has(i));
-		FTL_CHECK(has(i + size - 1));
+		FTL_ASSERT(has(i));
+		FTL_ASSERT(has(i + size - 1));
 		mem::cpy(data, data_ + i, size * sizeof(T));
 	}
 	
 	inline void write(int i, const T* data, int size) {
 		if (size == 0) return;
-		FTL_CHECK(has(i));
-		FTL_CHECK(has(i + size - 1));
+		FTL_ASSERT(has(i));
+		FTL_ASSERT(has(i + size - 1));
 		mem::cpy(data_ + i, data, size * sizeof(T));
 	}
 	
