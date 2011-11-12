@@ -66,7 +66,6 @@ public:
 	// non-casting conversions
 	
 	inline operator T*() const { return this->get(); }
-	// inline operator T&() const { return *(this->get()); }
 	
 	template<template<class> class GetAndSetPolicy2>
 	inline operator Ref<T, GetAndSetPolicy2>() const { return Ref<T, GetAndSetPolicy2>(this->get()); }
@@ -87,14 +86,12 @@ public:
 	
 	inline T* operator->() const { return this->saveGet(); }
 	
+private:
 	inline T* saveGet() const {
 		T* instance = GetAndSetPolicy<T>::get();
-		FTL_CHECK2(instance, "Null reference");
+		FTL_ASSERT2(instance, "Null reference");
 		return instance;
 	}
-	
-	template<class T2>
-	inline T2* cast() const { return FTL_CAST_FROM_TO(T, T2, this->get()); }
 };
 
 } // namespace ftl

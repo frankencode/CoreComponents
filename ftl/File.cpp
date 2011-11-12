@@ -11,6 +11,7 @@
 #include "ExitEvent.hpp"
 #include "ThreadExitEvent.hpp"
 #include "Guard.hpp"
+#include "Mutex.hpp"
 #include "LocalStatic.hpp"
 #include "Random.hpp"
 #include "Path.hpp"

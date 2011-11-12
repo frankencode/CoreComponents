@@ -84,21 +84,21 @@ public:
 
 FTL_EXCEPTION(DebugException, Exception);
 
-#define FTL_ASSERT(condition, Exception, reason) \
+#define FTL_CHECK(condition, Exception, reason) \
 	if (!(condition)) FTL_THROW(Exception, reason)
 
 #ifndef NDEBUG
-#define FTL_CHECK(condition) \
-	FTL_ASSERT(condition, DebugException, "")
+#define FTL_ASSERT(condition) \
+	FTL_CHECK(condition, DebugException, "")
 #else
-#define FTL_CHECK(condition);
+#define FTL_ASSERT(condition);
 #endif
 
 #ifndef NDEBUG
-#define FTL_CHECK2(condition, reason) \
-	FTL_ASSERT(condition, DebugException, reason)
+#define FTL_ASSERT2(condition, reason) \
+	FTL_CHECK(condition, DebugException, reason)
 #else
-#define FTL_CHECK2(condition, reason);
+#define FTL_ASSERT2(condition, reason);
 #endif
 
 class Interrupt {};

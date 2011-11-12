@@ -70,7 +70,7 @@ public:
 	
 	inline Queue& pushBack(const T& item)
 	{
-		FTL_CHECK(fill_ != size_);
+		FTL_ASSERT(fill_ != size_);
 		++head_;
 		if (head_ >= size_) head_ = 0;
 		++fill_;
@@ -80,7 +80,7 @@ public:
 	
 	inline Queue& popFront(T* item)
 	{
-		FTL_CHECK(fill_ > 0);
+		FTL_ASSERT(fill_ > 0);
 		++tail_;
 		if (tail_ >= size_) tail_ = 0;
 		--fill_;
@@ -90,7 +90,7 @@ public:
 	
 	inline Queue& pushFront(const T& item)
 	{
-		FTL_CHECK(fill_ < size_);
+		FTL_ASSERT(fill_ < size_);
 		buf_[tail_] = item;
 		--tail_;
 		if (tail_ < 0) tail_ = size_ - 1;
@@ -100,7 +100,7 @@ public:
 	
 	inline Queue& popBack(T* item)
 	{
-		FTL_CHECK(fill_ > 0);
+		FTL_ASSERT(fill_ > 0);
 		*item = buf_[head_];
 		--head_;
 		if (head_ < 0) head_ = size_ - 1;
@@ -113,7 +113,7 @@ public:
 
 	inline T& back(int i = 0) const
 	{
-		FTL_CHECK((0 <= i) && (i < fill_));
+		FTL_ASSERT((0 <= i) && (i < fill_));
 		i = -i;
 		i += head_;
 		if (i < 0) i += size_;
@@ -122,7 +122,7 @@ public:
 	
 	inline T& front(int i = 0) const
 	{
-		FTL_CHECK((0 <= i) && (i < fill_));
+		FTL_ASSERT((0 <= i) && (i < fill_));
 		i += tail_ + 1;
 		if (i >= size_) i -= size_;
 		return buf_[i];
@@ -139,4 +139,4 @@ private:
 
 } // namespace ftl
 
-#endif // FTL_QUEUE_HPP
+#endif // FTL_QUEUE

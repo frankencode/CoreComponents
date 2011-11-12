@@ -15,7 +15,7 @@ Semaphore::Semaphore(int value)
 	: supply_(value),
 	  demand_(0)
 {
-	FTL_CHECK(value >= 0);
+	FTL_ASSERT(value >= 0);
 }
 
 void Semaphore::acquire(int amount)

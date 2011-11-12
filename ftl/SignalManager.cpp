@@ -100,7 +100,7 @@ void SignalManager::defaultAction(int signal)
 
 Ref<Event> SignalManager::signalEvent(int signal)
 {
-	ScopeGuard<Mutex> guard(&mutex_);
+	Guard<Mutex> guard(&mutex_);
 	Ref<Event, Owner> event;
 	if (!signalEvents_->lookup(signal, &event)) {
 		event = new Event;
@@ -116,7 +116,7 @@ void SignalManager::startListener()
 
 void SignalManager::relay(int signal)
 {
-	ScopeGuard<Mutex> guard(&mutex_);
+	Guard<Mutex> guard(&mutex_);
 	Ref<Event, Owner> event;
 	if (signalEvents_->lookup(signal, &event))
 		event->run();

@@ -148,7 +148,7 @@ protected:
 	
 	// initialize string with defined size and defined content
 	explicit String(int size, char zero): Super(new ByteArray(size, zero)) {
-		FTL_CHECK(0 <= zero);
+		FTL_ASSERT(0 <= zero);
 	}
 	
 	// validate input string and throw StreamIoException if not a valid UTF-8 string

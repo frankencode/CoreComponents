@@ -21,12 +21,10 @@ GlobalCoreMutexInitializer::GlobalCoreMutexInitializer()
 	}
 }
 
-Ref<GlobalCoreMutex> GlobalCoreMutex::instance()
+GlobalCoreMutex* GlobalCoreMutex::instance()
 {
-	static Ref<GlobalCoreMutex, Owner> instance_ = 0;
-	if (!instance_)
-		instance_ = new GlobalCoreMutex;
-	return instance_;
+	static GlobalCoreMutex instance_;
+	return &instance_;
 }
 
 } // namespace ftl

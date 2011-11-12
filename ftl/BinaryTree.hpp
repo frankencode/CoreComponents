@@ -40,8 +40,6 @@ public:
 	int balance_;
 	int weight_;
 	
-	// inline const T& data() const { return item_; }
-	
 	inline Node* min()
 	{
 		Node* k = this;
@@ -168,12 +166,12 @@ public:
 	
 	inline bool health() {
 		// levelPrint();
-		/*FTL_CHECK(ok1(root_));*/
-		FTL_CHECK(ok2(root_));
-		FTL_CHECK(ok3(root_));
-		FTL_CHECK(testBalance1(root_));
-		FTL_CHECK(testBalance2(root_));
-		FTL_CHECK(testWeight(root_));
+		/*FTL_ASSERT(ok1(root_));*/
+		FTL_ASSERT(ok2(root_));
+		FTL_ASSERT(ok3(root_));
+		FTL_ASSERT(testBalance1(root_));
+		FTL_ASSERT(testBalance2(root_));
+		FTL_ASSERT(testWeight(root_));
 		return /*ok1(root_) &&*/ ok2(root_) && ok3(root_) && testBalance1(root_) && testBalance2(root_) && testWeight(root_);
 	}
 	
@@ -256,7 +254,7 @@ template<class T>
 bool BinaryTree<T>::lookupByIndex(int i, Node** node) const
 {
 	if (i < 0) i += weight(root_);
-	FTL_CHECK((0 <= i) && (i < weight(root_)));
+	FTL_ASSERT((0 <= i) && (i < weight(root_)));
 	
 	if (cachedNode_) {
 		int d = i - cachedIndex_;
@@ -394,7 +392,7 @@ void BinaryTree<T>::push(int index, const T& item)
 	else {
 		Node* ka = 0;
 		bool found = lookupByIndex(index, &ka);
-		FTL_CHECK(found);
+		FTL_ASSERT(found);
 		spliceInBefore(ka, kn);
 	}
 	cachedNode_ = kn;
@@ -406,7 +404,7 @@ void BinaryTree<T>::pop(int index, T* item)
 {
 	Node* ko = 0;
 	bool found = lookupByIndex(index, &ko);
-	FTL_CHECK(found);
+	FTL_ASSERT(found);
 	*item = ko->item_;
 	Node* k = ko->pred();
 	if (k) --index;
@@ -752,7 +750,7 @@ template<class T>
 bool BinaryTree<T>::testBalance2(Node* k)
 {
 	if (!k) return true;
-	FTL_CHECK(((height(k->left_) - height(k->right_)) == k->balance_));
+	FTL_ASSERT(((height(k->left_) - height(k->right_)) == k->balance_));
 	if ((height(k->left_) - height(k->right_)) != k->balance_) return false;
 	return testBalance2(k->left_) && testBalance2(k->right_);
 }

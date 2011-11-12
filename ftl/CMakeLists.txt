@@ -2,6 +2,7 @@ SET(FTL_HEADER
 	defaults.hpp
 	
 	atoms
+	debug.hpp
 	types.hpp
 	strings.hpp
 	generics.hpp
@@ -80,7 +81,6 @@ SET(FTL_HEADER
 	ThreadLocalSingleton.hpp
 	Singleton.hpp
 	Default.hpp
-	OnDemand.hpp
 	Thread.hpp
 	ThreadFactory.hpp
 	Mutex.hpp
@@ -88,6 +88,7 @@ SET(FTL_HEADER
 	Condition.hpp
 	Semaphore.hpp
 	Channel.hpp
+	Allocator.hpp
 	
 	process
 	User.hpp
@@ -130,10 +131,15 @@ SET(FTL_HEADER
 	AbnfCoreSyntax.hpp
 	AbnfSyntax.hpp
 	AbnfCompiler.hpp
+	
+	WireObject.hpp
+	WireSyntax.hpp
 )
 
 SET(FTL_SOURCE
 	# atoms
+	new.cpp
+	debug.cpp
 	strings.cpp
 	Exception.cpp
 	Buffer.cpp
@@ -177,6 +183,7 @@ SET(FTL_SOURCE
 	Semaphore.cpp
 	Thread.cpp
 	ThreadFactory.cpp
+	Allocator.cpp
 	
 	# process
 	User.cpp
@@ -216,6 +223,8 @@ SET(FTL_SOURCE
 	AbnfCoreSyntax.cpp
 	AbnfSyntax.cpp
 	AbnfCompiler.cpp
+	
+	WireSyntax.cpp
 )
 
 ADD_LIBRARY(ftl

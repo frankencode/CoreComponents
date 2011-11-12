@@ -32,8 +32,8 @@ public:
 	/** Return a random number in range [a, b].
 	  */
 	inline int get(int a, int b) {
-		FTL_CHECK(b <= m_ - 1);
-		FTL_CHECK(a <= b);
+		FTL_ASSERT(b <= m_ - 1);
+		FTL_ASSERT(a <= b);
 		return (uint64_t(get()) * (b - a)) / (m_ - 1) + a;
 	}
 	
