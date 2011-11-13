@@ -84,7 +84,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 		// send request
 		{
 			int msgLen = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
-			struct nlmsghdr* msg = (struct nlmsghdr*)ftl::malloc(msgLen);
+			struct nlmsghdr* msg = (struct nlmsghdr*)mem::alloc(msgLen);
 			if (!msg) FTL_SYSTEM_EXCEPTION;
 			
 			mem::clr(msg, msgLen);
@@ -113,7 +113,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			if (::sendmsg(fd, &hdr, 0/*flags*/) == -1)
 				FTL_SYSTEM_EXCEPTION;
 			
-			ftl::free(msg);
+			mem::free(msg);
 		}
 		
 		// process reply
@@ -124,7 +124,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			ssize_t bufSize = ::recvmsg(fd, &hdr, MSG_PEEK|MSG_TRUNC);
 			if (bufSize == -1) FTL_SYSTEM_EXCEPTION;
 			
-			void* buf = ftl::malloc(bufSize);
+			void* buf = mem::alloc(bufSize);
 			if (!buf) FTL_SYSTEM_EXCEPTION;
 			
 			struct iovec iov = { buf, bufSize };
@@ -223,7 +223,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 				}
 			}
 			
-			ftl::free(buf);
+			mem::free(buf);
 		}
 	}
 	
@@ -252,7 +252,7 @@ bool NetworkInterface::getLink(Ref<NetworkInterfaceList> list, int index)
 		// send request
 		{
 			int msgLen = NLMSG_LENGTH(sizeof(struct ifinfomsg));
-			struct nlmsghdr* msg = (struct nlmsghdr*)ftl::malloc(msgLen);
+			struct nlmsghdr* msg = (struct nlmsghdr*)mem::alloc(msgLen);
 			if (!msg) FTL_SYSTEM_EXCEPTION;
 			
 			mem::clr(msg, msgLen);
@@ -283,7 +283,7 @@ bool NetworkInterface::getLink(Ref<NetworkInterfaceList> list, int index)
 			if (::sendmsg(fd, &hdr, 0/*flags*/) == -1)
 				FTL_SYSTEM_EXCEPTION;
 			
-			ftl::free(msg);
+			mem::free(msg);
 		}
 		
 		// process reply
@@ -294,7 +294,7 @@ bool NetworkInterface::getLink(Ref<NetworkInterfaceList> list, int index)
 			ssize_t bufSize = ::recvmsg(fd, &hdr, MSG_PEEK|MSG_TRUNC);
 			if (bufSize == -1) FTL_SYSTEM_EXCEPTION;
 			
-			void* buf = ftl::malloc(bufSize);
+			void* buf = mem::alloc(bufSize);
 			if (!buf) FTL_SYSTEM_EXCEPTION;
 			
 			struct iovec iov = { buf, bufSize };
@@ -352,7 +352,7 @@ bool NetworkInterface::getLink(Ref<NetworkInterfaceList> list, int index)
 				}
 			}
 			
-			ftl::free(buf);
+			mem::free(buf);
 		}
 		if (::close(fd) == -1)
 			FTL_SYSTEM_EXCEPTION;
@@ -404,16 +404,16 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 		struct ifconf ifc;
 		int capa = 32 * sizeof(struct ifreq);
 		ifc.ifc_len = capa;
-		ifc.ifc_req = (struct ifreq*)ftl::malloc(capa);
+		ifc.ifc_req = (struct ifreq*)mem::alloc(capa);
 		
 		while (true) {
 			if (::ioctl(fd, SIOCGIFCONF, &ifc) == -1)
 				FTL_SYSTEM_EXCEPTION;
 			if (ifc.ifc_len == capa) {
-				ftl::free(ifc.ifc_req);
+				mem::free(ifc.ifc_req);
 				capa *= 2;
 				ifc.ifc_len = capa;
-				ifc.ifc_req = (struct ifreq*)ftl::malloc(capa);
+				ifc.ifc_req = (struct ifreq*)mem::alloc(capa);
 				continue;
 			}
 			break;
@@ -463,7 +463,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 			}
 		}
 		
-		ftl::free(ifc.ifc_req);
+		mem::free(ifc.ifc_req);
 	}
 	
 	return list;
@@ -497,14 +497,14 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 	// race against changing address configuration
 	char* buf = 0;
 	while (true) {
-		buf = (char*)ftl::malloc(bufSize);
+		buf = (char*)mem::alloc(bufSize);
 		if (!buf) FTL_SYSTEM_EXCEPTION;
 		
 		if (::sysctl(mib, 6, (void*)buf, &bufSize, NULL, 0) == -1) {
 			if (errno == ENOMEM) {
-				ftl::free(buf);
+				mem::free(buf);
 				bufSize *= 2; // arbitrary, but safe choice
-				buf = (char*)ftl::malloc(bufSize);
+				buf = (char*)mem::alloc(bufSize);
 				continue;
 			}
 			FTL_SYSTEM_EXCEPTION;
@@ -583,7 +583,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			}
 		}
 	}
-	ftl::free(buf);
+	mem::free(buf);
 	return list;
 }
 #endif

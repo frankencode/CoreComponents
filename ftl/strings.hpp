@@ -18,6 +18,9 @@ namespace ftl
 namespace mem
 {
 
+inline void* alloc(size_t size) { return (void*)new char[size]; }
+inline void free(void* buf) { delete[] (char*)buf; }
+
 inline void clr(void* s, int n, uint8_t z = 0)
 {
 	/*uint8_t* bs = (uint8_t*)s;

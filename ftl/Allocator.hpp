@@ -16,7 +16,7 @@ namespace ftl
 class Allocator: public Instance, public ThreadLocalSingleton<Allocator>
 {
 public:
-	void* allocate(size_t size);
+	static void* allocate(size_t size);
 	static void free(void* data);
 	
 	void* operator new(size_t size);

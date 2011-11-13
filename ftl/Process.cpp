@@ -105,21 +105,21 @@ void Process::cd(String path)
 String Process::cwd()
 {
 	int size = 0x1000;
-	char* buf = (char*)ftl::malloc(size);
+	char* buf = (char*)mem::alloc(size);
 	char* ret = 0;
 	while (true) {
 		ret = ::getcwd(buf, size);
 		if (ret) break;
 		if (errno == ERANGE) {
-			ftl::free(buf);
+			mem::free(buf);
 			size += 0x1000;
-			buf = (char*)ftl::malloc(size);
+			buf = (char*)mem::alloc(size);
 		}
 		else
 			FTL_SYSTEM_EXCEPTION;
 	}
 	String path(ret);
-	ftl::free(buf);
+	mem::free(buf);
 	return path;
 }
 
@@ -130,29 +130,29 @@ String Process::execPath()
 	String lnPath = String(Format("/proc/%%/exe") << currentId());
 	ssize_t bufSize = 1024;
 	while (true) {
-		char* buf = (char*)ftl::malloc(bufSize + 1);
+		char* buf = (char*)mem::alloc(bufSize + 1);
 		mem::clr(buf, bufSize + 1);
 		ssize_t ret = ::readlink(lnPath, buf, bufSize);
 		if (ret == -1)
 			FTL_SYSTEM_EXCEPTION;
 		if (ret < bufSize) {
 			path = buf;
-			ftl::free(buf);
+			mem::free(buf);
 			break;
 		}
 		bufSize *= 2;
-		ftl::free(buf);
+		mem::free(buf);
 	}
 	#endif
 	#ifdef __MACH__
 	char* buf = 0;
 	uint32_t bufSize = 0;
 	_NSGetExecutablePath(buf, &bufSize);
-	buf = (char*)ftl::malloc(bufSize + 1);
+	buf = (char*)mem::alloc(bufSize + 1);
 	mem::clr(buf, bufSize + 1);
 	_NSGetExecutablePath(buf, &bufSize);
 	path = buf;
-	ftl::free(buf);
+	mem::free(buf);
 	#endif
 	return path;
 }
