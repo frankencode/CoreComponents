@@ -63,7 +63,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 #else // def __linux
 #ifdef KERN_PROC2 // e.g. on OpenBSD
 	size_t sz = sizeof(kinfo_proc2);
-	struct kinfo_proc2* proc = (kinfo_proc2*)ftl::malloc(sz);
+	struct kinfo_proc2* proc = (kinfo_proc2*)mem::alloc(sz);
 	mem::clr(proc, sz);
 	int mib[] = {
 		CTL_KERN,
@@ -97,7 +97,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	else if (processStatus_ == SDEAD) processStatus_ = 'Z';
 	#endif
 	else processStatus_ = '?';
-	ftl::free(proc);
+	mem::free(proc);
 #else // def KERN_PROC2
 	struct kinfo_proc* proc;
 	int mib[4];
@@ -108,7 +108,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	size_t sz = 0;
 	if (::sysctl(mib, 4, NULL, &sz, NULL, 0) == -1)
 		FTL_SYSTEM_EXCEPTION;
-	proc = (kinfo_proc*)ftl::malloc(sz);
+	proc = (kinfo_proc*)mem::alloc(sz);
 	mem::clr(proc, sz);
 	if (::sysctl(mib, 4, proc, &sz, NULL, 0) == -1)
 		FTL_SYSTEM_EXCEPTION;
@@ -138,7 +138,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	else if (processStatus_ == SDEAD) processStatus_ = 'Z';
 	#endif
 	else processStatus_ = '?';
-	ftl::free(proc);
+	mem::free(proc);
 #endif // def KERN_PROC2
 #endif // def __linux
 }

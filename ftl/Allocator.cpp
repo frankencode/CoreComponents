@@ -53,39 +53,44 @@ Allocator::Allocator()
 
 void* Allocator::allocate(size_t size)
 {
+	Ref<Allocator> allocator = instance();
+	BucketHeader* bucket = allocator->bucket_;
+	size_t pageSize = allocator->pageSize_;
+	
 	size = WORD_ALIGN(size);
-	if (!bucket_) {
-		if (size > pageSize_ - WORD_ALIGN(sizeof(BucketHeader))) {
+	if (!bucket) {
+		if (size > pageSize - WORD_ALIGN(sizeof(BucketHeader))) {
 			size += sizeof(uint32_t);
-			uint32_t pageCount = size / pageSize_ + ((size % pageSize_) > 0);
-			void* pageStart = ::mmap(0, pageCount * pageSize_, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+			uint32_t pageCount = size / pageSize + ((size % pageSize) > 0);
+			void* pageStart = ::mmap(0, pageCount * pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 			check(pageStart != MAP_FAILED);
 			*(uint32_t*)pageStart = pageCount;
 			return (void*)((uint32_t*)pageStart + 1);
 		}
 		else {
-			void* pageStart = ::mmap(0, pageSize_, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+			void* pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 			check(pageStart != MAP_FAILED);
-			bucket_ = new(pageStart)BucketHeader;
-			bucket_->bytesDirty_ = WORD_ALIGN(sizeof(BucketHeader)) + size;
-			bucket_->objectCount_ = 1;
-			bucket_->open_ = true;
+			bucket = new(pageStart)BucketHeader;
+			bucket->bytesDirty_ = WORD_ALIGN(sizeof(BucketHeader)) + size;
+			bucket->objectCount_ = 1;
+			bucket->open_ = true;
+			allocator->bucket_ = bucket;
 			return (void*)((char*)pageStart + WORD_ALIGN(sizeof(BucketHeader)));
 		}
 	}
 	else {
-		bucket_->mutex_.acquire();
-		if (size <= pageSize_ - bucket_->bytesDirty_) {
-			void* data = (void*)(((char*)bucket_) + bucket_->bytesDirty_);
-			bucket_->bytesDirty_ += size;
-			++bucket_->objectCount_;
-			bucket_->mutex_.release();
+		bucket->mutex_.acquire();
+		if (size <= pageSize - bucket->bytesDirty_) {
+			void* data = (void*)(((char*)bucket) + bucket->bytesDirty_);
+			bucket->bytesDirty_ += size;
+			++bucket->objectCount_;
+			bucket->mutex_.release();
 			return data;
 		}
 		else {
-			bucket_->open_ = false;
-			bucket_->mutex_.release();
-			bucket_ = 0;
+			bucket->open_ = false;
+			bucket->mutex_.release();
+			allocator->bucket_ = 0;
 			return allocate(size);
 		}
 	}

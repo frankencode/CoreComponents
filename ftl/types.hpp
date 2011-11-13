@@ -192,9 +192,6 @@ public:
 	inline static uchar_t map(const T& x) { return uchar_t(x); }
 };
 
-inline void* malloc(int size) { return new char[size]; }
-inline void free(void* buf) { delete[] reinterpret_cast<char*>(buf); }
-
 class NonCopyable
 {
 protected:
