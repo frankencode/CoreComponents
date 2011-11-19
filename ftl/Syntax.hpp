@@ -984,6 +984,7 @@ public:
 			if (!name)
 				FTL_THROW(DebugException, "Cannot import anonymous syntax definition");
 			definitionByName_->insert(name, definition);
+			definition->LINK();
 		}
 		
 		typedef Ref<Node, Owner> NODE;

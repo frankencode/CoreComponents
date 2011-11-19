@@ -88,7 +88,7 @@ SET(FTL_HEADER
 	Condition.hpp
 	Semaphore.hpp
 	Channel.hpp
-	Allocator.hpp
+	Memory.hpp
 	
 	process
 	User.hpp
@@ -183,7 +183,7 @@ SET(FTL_SOURCE
 	Semaphore.cpp
 	Thread.cpp
 	ThreadFactory.cpp
-	Allocator.cpp
+	Memory.cpp
 	
 	# process
 	User.cpp
