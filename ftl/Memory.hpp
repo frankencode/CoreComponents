@@ -1,31 +1,33 @@
 /*
- * Allocator.hpp -- dynamic memory allocation
+ * Memory.hpp -- dynamic memory allocation
  *
  * Copyright (c) 2007-2011, Frank Mertens
  *
  * See ../COPYING for the license.
  */
-#ifndef FTL_ALLOCATOR_HPP
-#define FTL_ALLOCATOR_HPP
+#ifndef FTL_MEMORY_HPP
+#define FTL_MEMORY_HPP
 
 #include "ThreadLocalSingleton.hpp"
 
 namespace ftl
 {
 
-class Allocator: public Instance, public ThreadLocalSingleton<Allocator>
+class Memory: public Instance, public ThreadLocalSingleton<Memory>
 {
 public:
 	static void* allocate(size_t size);
 	static void free(void* data);
 	
+	static size_t pageSize();
+	
 	void* operator new(size_t size);
 	void operator delete(void* data, size_t size);
 	
 private:
-	friend class ThreadLocalSingleton<Allocator>;
+	friend class ThreadLocalSingleton<Memory>;
 	
-	Allocator();
+	Memory();
 	
 	class BucketHeader;
 	
@@ -33,8 +35,8 @@ private:
 	BucketHeader* bucket_;
 };
 
-inline Ref<Allocator> allocator() { return Allocator::instance(); }
+inline Ref<Memory> allocator() { return Memory::instance(); }
 
 } // namespace ftl
 
-#endif // FTL_ALLOCATOR_HPP
+#endif // FTL_MEMORY_HPP

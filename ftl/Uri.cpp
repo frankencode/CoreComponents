@@ -6,6 +6,8 @@
  * See ../LICENSE for the license.
  */
 
+#include <stdio.h> // DEBUG
+#include "debug.hpp" // DEBUG
 #include "UriSyntax.hpp"
 #include "Uri.hpp"
 
@@ -32,6 +34,7 @@ void Uri::readUri(Ref<ByteArray> bytes, Ref<Token> rootToken)
 {
 	Ref<Token, Owner> rootToken2;
 	if (!rootToken) {
+		check(uriSyntax());
 		rootToken2 = uriSyntax()->match(bytes);
 		if (!rootToken2) FTL_THROW(UriException, "URI decomposition failed, invalid syntax");
 		rootToken = rootToken2;

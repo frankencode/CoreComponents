@@ -1,5 +1,5 @@
 /*
- * Allocator.cpp -- dynamic memory allocation
+ * Memory.cpp -- dynamic memory allocation
  *
  * Copyright (c) 2007-2011, Frank Mertens
  *
@@ -12,7 +12,7 @@
 #include "debug.hpp"
 #include "types.hpp"
 #include "Mutex.hpp"
-#include "Allocator.hpp"
+#include "Memory.hpp"
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
@@ -23,7 +23,7 @@ namespace ftl
 
 #define WORD_ALIGN(x) (((x) / sizeof(int) + ((x) % sizeof(int) != 0)) * sizeof(int))
 
-void* Allocator::operator new(size_t size)
+void* Memory::operator new(size_t size)
 {
 	long pageSize = ::sysconf(_SC_PAGE_SIZE);
 	check(pageSize > 0);
@@ -33,12 +33,12 @@ void* Allocator::operator new(size_t size)
 	return data;
 }
 
-void Allocator::operator delete(void* data, size_t size)
+void Memory::operator delete(void* data, size_t size)
 {
 	check(::munmap(data, ::sysconf(_SC_PAGE_SIZE)) == 0);
 }
 
-struct Allocator::BucketHeader
+struct Memory::BucketHeader
 {
 	Mutex mutex_;
 	uint32_t bytesDirty_;
@@ -46,18 +46,25 @@ struct Allocator::BucketHeader
 	bool open_;
 };
 
-Allocator::Allocator()
+Memory::Memory()
 	: pageSize_(::sysconf(_SC_PAGE_SIZE)),
 	  bucket_(0)
 {}
 
-void* Allocator::allocate(size_t size)
+void* Memory::allocate(size_t size)
 {
-	Ref<Allocator> allocator = instance();
+	Ref<Memory> allocator = instance();
 	BucketHeader* bucket = allocator->bucket_;
 	size_t pageSize = allocator->pageSize_;
 	
 	size = WORD_ALIGN(size);
+	
+	if (size == pageSize) {
+		void* pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+		check(pageStart != MAP_FAILED);
+		return pageStart;
+	}
+	
 	if (!bucket) {
 		if (size > pageSize - WORD_ALIGN(sizeof(BucketHeader))) {
 			size += sizeof(uint32_t);
@@ -96,13 +103,17 @@ void* Allocator::allocate(size_t size)
 	}
 }
 
-void Allocator::free(void* data)
+void Memory::free(void* data)
 {
-	Ref<Allocator> allocator = instance();
+	Ref<Memory> allocator = instance();
 	size_t pageSize = allocator ? allocator->pageSize_ : size_t(::sysconf(_SC_PAGE_SIZE));
 	
 	uint32_t offset = ((char*)data - (char*)0) % pageSize;
-	if (offset == sizeof(uint32_t)) {
+	
+	if (offset == 0) {
+		check(::munmap(data, pageSize) == 0);
+	}
+	else if (offset == sizeof(uint32_t)) {
 		void* pageStart = (void*)((char*)data - sizeof(uint32_t));
 		uint32_t pageCount = *(uint32_t*)pageStart;
 		check(::munmap(pageStart, pageCount * pageSize) == 0);
@@ -117,6 +128,11 @@ void Allocator::free(void* data)
 			check(::munmap((void*)((char*)data - offset), pageSize) == 0);
 		}
 	}
+}
+
+size_t Memory::pageSize()
+{
+	return instance()->pageSize_;
 }
 
 } // namespace ftl
