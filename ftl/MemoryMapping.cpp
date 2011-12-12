@@ -6,7 +6,7 @@
  * See ../COPYING for the license.
  */
 
-#include <unistd.h> // sysconf, _exit
+#include <unistd.h> // sysconf
 #include "MemoryMapping.hpp"
 
 namespace ftl
@@ -53,11 +53,11 @@ MemoryMapping::~MemoryMapping()
 }
 
 void* MemoryMapping::start() const { return start_; }
-int MemoryMapping::length() const { return length_; }
+size_t MemoryMapping::length() const { return length_; }
 
-int MemoryMapping::pageSize()
+size_t MemoryMapping::pageSize()
 {
-	return sysconf(_SC_PAGESIZE);
+	return ::sysconf(_SC_PAGESIZE);
 }
 
 } // namespace ftl

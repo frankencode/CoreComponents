@@ -35,7 +35,7 @@ private:
 	BucketHeader* bucket_;
 };
 
-inline Ref<Memory> allocator() { return Memory::instance(); }
+inline Ref<Memory> memory() { return Memory::instance(); }
 
 } // namespace ftl
 
