@@ -47,7 +47,7 @@ template<class Value>
 class Signal: public Instance
 {
 public:
-	void emit(int value) {
+	void emit(Value value) {
 		for (int i = 0, n = callbacks_.length(); i < n; ++i) {
 			Ref<CallbackList> list = callbacks_.at(i).value();
 			for (int j = 0, m = list->length(); j < m; ++j)

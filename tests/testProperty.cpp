@@ -7,10 +7,20 @@ namespace ftl
 class Shape: public Instance
 {
 public:
-	Shape(): x(0), y(0) {}
+	Shape()
+		: x(0), y(0)
+	{
+		name.valueChanged()->connect(this, &Shape::onNameChanged);
+	}
 	
+	Property<String> name;
 	Property<int> x;
 	Property<int> y;
+	
+private:
+	void onNameChanged(String newName) {
+		print("name = \"%%\"\n", name);
+	}
 };
 
 class Observer: public Instance
@@ -44,6 +54,7 @@ int main()
 	Ref<Shape, Owner> shape = new Shape;
 	{
 		Observer observer(shape);
+		shape->name = "circle1";
 		shape->x = 7;
 		shape->y = 93;
 		shape->y = 93;
