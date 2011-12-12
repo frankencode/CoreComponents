@@ -12,6 +12,7 @@ SET(FTL_HEADER
 	Pointer.hpp
 	SetNull.hpp
 	Owner.hpp
+	OnDemand.hpp
 	Ref.hpp
 	Buffer.hpp
 	
@@ -134,6 +135,8 @@ SET(FTL_HEADER
 	
 	WireObject.hpp
 	WireSyntax.hpp
+	
+	Property.hpp
 )
 
 SET(FTL_SOURCE

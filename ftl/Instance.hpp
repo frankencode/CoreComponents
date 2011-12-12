@@ -126,12 +126,14 @@ private:
 	BackRef* backRefHead_;
 };
 
-#ifdef NDEBUG
-typedef RefCounter Instance;
-#else
-class Instance: public RefCounter, public virtual BackRefList
-{};
+template<class T> class FTL_DEFAULT_REF_POLICY;
+template<class T, template<class> class P> class Ref;
+
+class Instance: public RefCounter
+#ifndef NDEBUG
+, public virtual BackRefList
 #endif
+{};
 
 } // namespace ftl
 

@@ -13,5 +13,6 @@
 #include "UriSyntax.hpp"
 #include "Uri.hpp"
 #include "AbnfCompiler.hpp"
+#include "Property.hpp"
 
 #endif // FTL_MISC

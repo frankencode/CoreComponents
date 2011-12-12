@@ -35,13 +35,13 @@ public:
 	~MemoryMapping();
 	
 	void* start() const;
-	int length() const;
+	size_t length() const;
 	
-	static int pageSize();
+	static size_t pageSize();
 	
 private:
 	void* start_;
-	int length_;
+	size_t length_;
 };
 
 } // namespace ftl
