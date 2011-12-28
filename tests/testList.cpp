@@ -35,14 +35,7 @@ int main()
 		list << 1 << 2 << 3;
 		print(list);
 		List<int> list2;
-		/*while (!list.isEmpty()) {
-			int x = list.pop();
-			printf("x = %d\n", x);
-			list2.push(x);
-		}*/
-		//printf("list.health() = %d\n", list.health());
 		list >> list2;
-		//printf("list2.health() = %d\n", list2.health());
 		print(list2);
 	}
 	{
