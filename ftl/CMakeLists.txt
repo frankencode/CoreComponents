@@ -42,6 +42,8 @@ SET(FTL_HEADER
 	PrefixTree.hpp
 	PrefixTreeWalker.hpp
 	BinaryTree.hpp
+	AvlTree.hpp
+	OrdinalTree.hpp
 	List.hpp
 	Map.hpp
 	

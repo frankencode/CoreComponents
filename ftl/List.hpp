@@ -9,7 +9,7 @@
 #define FTL_LIST_HPP
 
 #include "containers.hpp"
-#include "BinaryTree.hpp"
+#include "OrdinalTree.hpp"
 #include "Heap.hpp"
 
 namespace ftl
@@ -133,10 +133,8 @@ public:
 	
 	Ref<List, Owner> unique(int order = SortOrder::Ascending) const { return sort(order, true); }
 	
-	inline bool health() { return tree_.health(); }
-	
-protected:
-	typedef BinaryTree<T> Tree;
+private:
+	typedef OrdinalTree< OrdinalNode<Item> > Tree;
 	typedef typename Tree::Node Node;
 	Tree tree_;
 	Item nullItem_;

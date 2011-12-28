@@ -9,7 +9,7 @@
 #define FTL_MAP_HPP
 
 #include "containers.hpp"
-#include "BinaryTree.hpp"
+#include "OrdinalTree.hpp"
 
 namespace ftl
 {
@@ -17,10 +17,6 @@ namespace ftl
 template<class Key, class Value>
 class Map: public Container< Pair<Key, Value>, Map<Key, Value> >, public Sequence<Pair<Key,Value>, int>
 {
-private:
-	typedef BinaryTree< Pair<Key,Value> > Tree;
-	typedef typename Tree::Node Node;
-	
 public:
 	typedef Pair<Key,Value> Item;
 	typedef GenericIterator<Map> Iterator;
@@ -71,7 +67,7 @@ public:
 				*currentValue = k->item_.value();
 		}
 		else {
-			tree_.spliceIn(k, new Node(e), below);
+			tree_.attach(k, new Node(e), below);
 		}
 		return !found;
 	}
@@ -81,7 +77,7 @@ public:
 		bool found;
 		Node* k = tree_.find(Item(key), &found, 0, index);
 		if (found)
-			delete tree_.unlink(k);
+			tree_.remove(k);
 		return found;
 	}
 
@@ -133,7 +129,7 @@ public:
 		Node* k = tree_.find(e, &found, &below);
 		if (!found) {
 			Node* kn = new Node(e);
-			tree_.spliceIn(k, kn, below);
+			tree_.attach(k, kn, below);
 			k = kn;
 		}
 		return k->item_.value();
@@ -151,16 +147,16 @@ public:
 		if (found)
 			k->item_ = item;
 		else
-			tree_.spliceIn(k, new Node(item), below);
+			tree_.attach(k, new Node(item), below);
 		return *this;
 	}
 	
 	inline Map& pop(Item* item)
 	{
 		FTL_ASSERT(!isEmpty());
-		Node* k = tree_.minNode();
+		Node* k = tree_.min();
 		*item = k->item_;
-		delete tree_.unlink(k);
+		tree_.remove(k);
 		return *this;
 	}
 	
@@ -172,9 +168,9 @@ public:
 	
 	inline void clear() { tree_.clear(); }
 	
-	inline bool health() { return tree_.health(); }
-	
-protected:
+private:
+	typedef OrdinalTree< OrdinalNode< Pair<Key,Value> > > Tree;
+	typedef typename Tree::Node Node;
 	Tree tree_;
 	Item nullItem_;
 };
