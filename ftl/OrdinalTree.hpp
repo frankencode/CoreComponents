@@ -75,6 +75,10 @@ protected:
 		// return (k) ? k->weight_ : 0;
 	}
 	
+#ifndef NDEBUG
+	static bool testWeight(Node* k);
+#endif
+	
 	mutable Node* cachedNode_;
 	mutable int cachedIndex_;
 };
@@ -255,6 +259,11 @@ inline void OrdinalTree<Node>::touched(Node* kp, bool left, bool attached)
 	
 	AvlTree<Node>::touched(kp, left, attached);
 	
+	/*FTL_ASSERT(BinaryTree<Node>::testStructure(BinaryTree<Node>::root_));
+	FTL_ASSERT(BinaryTree<Node>::testIteration(BinaryTree<Node>::root_));
+	FTL_ASSERT(AvlTree<Node>::testBalance(BinaryTree<Node>::root_));
+	FTL_ASSERT(OrdinalTree<Node>::testWeight(BinaryTree<Node>::root_));*/
+	
 	cachedNode_ = 0;
 }
 
@@ -276,6 +285,17 @@ inline void OrdinalTree<Node>::establishWeight(Node* k)
 {
 	k->weight_ = weight(k->left_) + weight(k->right_) + 1;
 }
+
+#ifndef NDEBUG
+template<class Node>
+bool OrdinalTree<Node>::testWeight(Node* k)
+{
+	if (!k) return true;
+	return
+		(weight(k->left_) + weight(k->right_) + 1 == k->weight_) &&
+		testWeight(k->left_) && testWeight(k->right_);
+}
+#endif // ndef NDEBUG
 
 } // namespace ftl
 

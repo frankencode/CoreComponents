@@ -22,6 +22,10 @@ public:
 protected:
 	void touched(Node* kp, bool left, bool attached);
 	Node* restoreBalance(Node* k1);
+#ifndef NDEBUG
+	static int height(Node* k);
+	static bool testBalance(Node* k);
+#endif
 };
 
 template<class Node>
@@ -84,6 +88,28 @@ Node* AvlTree<Node>::restoreBalance(Node* k1)
 	}
 	return k1->parent_;
 }
+
+#ifndef NDEBUG
+
+template<class Node>
+int AvlTree<Node>::height(Node* k)
+{
+	if (k == 0) return 0;
+	int h1 = height(k->left_);
+	int h2 = height(k->right_);
+	return (h1 < h2 ? h2 : h1) + 1;
+}
+
+template<class Node>
+bool AvlTree<Node>::testBalance(Node* k)
+{
+	if (!k) return true;	
+	if (!((k->balance_ == -1) || (k->balance_ == 0) || (k->balance_ == 1))) return false;
+	if ((height(k->left_) - height(k->right_)) != k->balance_) return false;
+	return testBalance(k->left_) && testBalance(k->right_);
+}
+
+#endif // ndef NDEBUG
 
 } // namespace ftl
 

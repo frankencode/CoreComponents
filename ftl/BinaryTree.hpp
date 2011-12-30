@@ -8,7 +8,6 @@
 #ifndef FTL_BINARYTREE_HPP
 #define FTL_BINARYTREE_HPP
 
-#include <stdio.h> // DEBUG
 #include "atoms"
 
 namespace ftl
@@ -49,9 +48,15 @@ public:
 	void remove(Node* k);
 	
 protected:
-	virtual void touched(Node* kp, bool left, bool attached) {}
-	virtual void rotated(Node* k1, bool left) {}
-	virtual void cleared() {}
+	inline virtual void touched(Node* kp, bool left, bool attached) {}
+	inline virtual void rotated(Node* k1, bool left) {}
+	inline virtual void cleared() {}
+	
+#ifndef NDEBUG
+	static bool testStructure(Node* k);
+	static bool testOrder(Node* k);
+	static bool testIteration(Node* k);
+#endif
 	
 	Node* root_;
 };
@@ -324,6 +329,54 @@ void BinaryTree<Node>::remove(Node* k)
 		detach(k);
 	delete k;
 }
+
+#ifndef NDEBUG
+
+template<class Node>
+bool BinaryTree<Node>::testStructure(Node* k)
+{
+	if (!k) return true;
+	if (k->parent_) {
+		if (!((k == k->parent_->left_) || (k == k->parent_->right_)))
+			return false;
+	}
+	return testStructure(k->left_) && testStructure(k->right_);
+}
+
+template<class Node>
+bool BinaryTree<Node>::testOrder(Node* k)
+{
+	if (!k) return true;
+	if (k->left_) {
+		if (!(k->left_->item_ < k->item_))
+			return false;
+	}
+	if (k->right_) {
+		if (!(k->item_ < k->right_->item_))
+			return false;
+	}
+	return testOrder(k->left_) && testOrder(k->right_);
+}
+
+template<class Node>
+bool BinaryTree<Node>::testIteration(Node* k)
+{
+	if (k == 0) return true;
+	Node* k2;
+	k2 = succ(k);
+	if (k2) {
+		if (k != pred(k2))
+			return false;
+	}
+	k2 = pred(k);
+	if (k2) {
+		if (k != succ(k2))
+			return false;
+	}
+	return testIteration(k->left_) && testIteration(k->right_);
+}
+
+#endif // ndef NDEBUG
 
 } // namespace ftl
 
