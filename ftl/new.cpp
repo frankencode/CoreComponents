@@ -11,7 +11,7 @@
 #include "debug.hpp"
 #include "Memory.hpp"
 
-#ifndef NDEBUG
+#ifdef NDEBUG
 #define FTL_MEMORY_REDZONE_SIZE 0
 #else
 #define FTL_MEMORY_REDZONE_SIZE 16
