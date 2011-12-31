@@ -50,5 +50,5 @@ void operator delete(void* data, const std::nothrow_t&) throw() {
 	try { operator delete(data); } catch(...) {}
 }
 void operator delete[](void* data, const std::nothrow_t&) throw() {
-	try { operator delete(data); } catch(...) {}
+	try { operator delete[](data); } catch(...) {}
 }
