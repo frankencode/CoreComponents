@@ -68,12 +68,7 @@ protected:
 	void rotated(Node* k1, bool left);
 	void cleared();
 	static void establishWeight(Node* k);
-	static int weight(Node* k) {
-		int w = 0;
-		if (k) w = k->weight_;
-		return w;
-		// return (k) ? k->weight_ : 0;
-	}
+	inline static int weight(Node* k) { return (k) ? k->weight_ : 0; }
 	
 #ifndef NDEBUG
 	static bool testWeight(Node* k);

@@ -18,6 +18,10 @@
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
+#ifndef MAP_UNINITIALIZED
+#define MAP_UNINITIALIZED 0
+#endif
+
 namespace ftl
 {
 
@@ -28,7 +32,7 @@ void* Memory::operator new(size_t size)
 	long pageSize = ::sysconf(_SC_PAGE_SIZE);
 	check(pageSize > 0);
 	check(size <= (unsigned long)pageSize);
-	void* data = ::mmap(0, ::sysconf(_SC_PAGE_SIZE), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+	void* data = ::mmap(0, ::sysconf(_SC_PAGE_SIZE), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_UNINITIALIZED, -1, 0);
 	check(data != MAP_FAILED);
 	return data;
 }
@@ -60,7 +64,7 @@ void* Memory::allocate(size_t size)
 	size = WORD_ALIGN(size);
 	
 	if (size == pageSize) {
-		void* pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+		void* pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_UNINITIALIZED, -1, 0);
 		check(pageStart != MAP_FAILED);
 		return pageStart;
 	}
@@ -69,13 +73,13 @@ void* Memory::allocate(size_t size)
 		if (size > pageSize - WORD_ALIGN(sizeof(BucketHeader))) {
 			size += sizeof(uint32_t);
 			uint32_t pageCount = size / pageSize + ((size % pageSize) > 0);
-			void* pageStart = ::mmap(0, pageCount * pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+			void* pageStart = ::mmap(0, pageCount * pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_UNINITIALIZED, -1, 0);
 			check(pageStart != MAP_FAILED);
 			*(uint32_t*)pageStart = pageCount;
 			return (void*)((uint32_t*)pageStart + 1);
 		}
 		else {
-			void* pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+			void* pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_UNINITIALIZED, -1, 0);
 			check(pageStart != MAP_FAILED);
 			bucket = new(pageStart)BucketHeader;
 			bucket->bytesDirty_ = WORD_ALIGN(sizeof(BucketHeader)) + size;
