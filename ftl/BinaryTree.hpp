@@ -48,7 +48,7 @@ public:
 	void remove(Node* k);
 	
 protected:
-	inline virtual void touched(Node* kp, bool left, bool attached) {}
+	inline virtual void touched(Node* kp, Node* kc, bool left, bool attached) {}
 	inline virtual void rotated(Node* k1, bool left) {}
 	inline virtual void cleared() {}
 	
@@ -61,27 +61,27 @@ protected:
 	Node* root_;
 };
 
-/** Attaches the new leaf node kn under kp as the left or right child.
+/** Attaches the new leaf node k under kp as the left or right child.
   */
 template<class Node>
-inline void BinaryTree<Node>::attach(Node* kp, Node* kn, bool left)
+inline void BinaryTree<Node>::attach(Node* kp, Node* k, bool left)
 {
 	if (kp) {
 		if (left)
-			kp->left_ = kn;
+			kp->left_ = k;
 		else
-			kp->right_ = kn;
-		kn->parent_ = kp;
-		kn->left_ = 0;
-		kn->right_ = 0;
+			kp->right_ = k;
+		k->parent_ = kp;
+		k->left_ = 0;
+		k->right_ = 0;
 	}
 	else {
-		root_ = kn;
-		kn->parent_ = 0;
-		kn->left_ = 0;
-		kn->right_ = 0;
+		root_ = k;
+		k->parent_ = 0;
+		k->left_ = 0;
+		k->right_ = 0;
 	}
-	touched(kp, left, true);
+	touched(kp, k, left, true);
 }
 
 /** Detaches the leaf or list node k from the tree.
@@ -103,7 +103,7 @@ inline Node* BinaryTree<Node>::detach(Node* k)
 	else {
 		root_ = 0;
 	}
-	touched(kp, left, false);
+	touched(kp, k, left, false);
 	return k;
 }
 

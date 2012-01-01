@@ -64,7 +64,7 @@ public:
 	void pop(int index, Item* item);
 	
 protected:
-	void touched(Node* kp, bool left, bool attached);
+	void touched(Node* kp, Node* kc, bool left, bool attached);
 	void rotated(Node* k1, bool left);
 	void cleared();
 	static void establishWeight(Node* k);
@@ -243,7 +243,7 @@ void OrdinalTree<Node>::pop(int index, Item* item)
 }
 
 template<class Node>
-inline void OrdinalTree<Node>::touched(Node* kp, bool left, bool attached)
+inline void OrdinalTree<Node>::touched(Node* kp, Node* kc, bool left, bool attached)
 {
 	int delta = attached ? 1 : -1;
 	Node* k = kp;
@@ -252,7 +252,7 @@ inline void OrdinalTree<Node>::touched(Node* kp, bool left, bool attached)
 		k = k->parent_;
 	}
 	
-	AvlTree<Node>::touched(kp, left, attached);
+	AvlTree<Node>::touched(kp, kc, left, attached);
 	
 	/*FTL_ASSERT(BinaryTree<Node>::testStructure(BinaryTree<Node>::root_));
 	FTL_ASSERT(BinaryTree<Node>::testIteration(BinaryTree<Node>::root_));

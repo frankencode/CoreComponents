@@ -1,6 +1,7 @@
 LINK_LIBRARIES(ftl)
 INCLUDE_DIRECTORIES(..)
 
+ADD_EXECUTABLE(testLayout testLayout.cpp)
 ADD_EXECUTABLE(testProperty testProperty.cpp)
 ADD_EXECUTABLE(testUri testUri.cpp)
 ADD_EXECUTABLE(testJson testJson.cpp)
