@@ -20,7 +20,7 @@ public:
 	typedef NodeType Node;
 	
 protected:
-	void touched(Node* kp, bool left, bool attached);
+	void touched(Node* kp, Node*, bool left, bool attached);
 	Node* restoreBalance(Node* k1);
 #ifndef NDEBUG
 	static int height(Node* k);
@@ -29,7 +29,7 @@ protected:
 };
 
 template<class Node>
-inline void AvlTree<Node>::touched(Node* kp, bool left, bool attached)
+inline void AvlTree<Node>::touched(Node* kp, Node*, bool left, bool attached)
 {
 	if (!kp) return;
 	

@@ -75,6 +75,8 @@ template<> class IsAtomic<const uint8_t> { public: enum { value = 1 }; };
 template<> class IsAtomic<const uint16_t> { public: enum { value = 1 }; };
 template<> class IsAtomic<const uint32_t> { public: enum { value = 1 }; };
 template<> class IsAtomic<const uint64_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<const float32_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<const float64_t> { public: enum { value = 1 }; };
 template<> class IsAtomic<const bool> { public: enum { value = 1 }; };
 template<class T> class IsAtomic<const T*> { public: enum { value = 1 }; };
 
