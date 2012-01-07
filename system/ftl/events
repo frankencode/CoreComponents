@@ -1,0 +1,9 @@
+#ifndef FTL_EVENT
+#define FTL_EVENT
+
+#include "Event.hpp"
+#include "ExitEvent.hpp"
+#include "ThreadExitEvent.hpp"
+#include "SignalManager.hpp"
+
+#endif // FTL_EVENT

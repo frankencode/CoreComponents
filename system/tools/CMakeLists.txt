@@ -1,0 +1,12 @@
+LINK_LIBRARIES(ftlsystem)
+INCLUDE_DIRECTORIES(..)
+
+ADD_EXECUTABLE(whoami whoami.cpp)
+ADD_EXECUTABLE(follow follow.cpp)
+ADD_EXECUTABLE(cat cat.cpp)
+ADD_EXECUTABLE(sort sort.cpp)
+ADD_EXECUTABLE(ls ls.cpp)
+ADD_EXECUTABLE(stat stat.cpp)
+ADD_EXECUTABLE(cstr cstr.cpp)
+ADD_EXECUTABLE(md5 md5.cpp)
+ADD_EXECUTABLE(replace replace.cpp)
