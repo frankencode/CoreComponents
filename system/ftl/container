@@ -1,0 +1,13 @@
+#ifndef FTL_CONTAINER
+#define FTL_CONTAINER
+
+#include "Array.hpp"
+#include "Stack.hpp"
+#include "Queue.hpp"
+#include "Heap.hpp"
+#include "List.hpp"
+#include "Map.hpp"
+#include "Tree.hpp"
+#include "PrefixTree.hpp"
+
+#endif // FTL_CONTAINER

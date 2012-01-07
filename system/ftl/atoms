@@ -1,0 +1,13 @@
+#ifndef FTL_ATOM
+#define FTL_ATOM
+
+#include "types.hpp"
+#include "strings.hpp"
+#include "generics.hpp"
+#include "Exception.hpp"
+#include "SpinLock.hpp"
+#include "Guard.hpp"
+#include "Instance.hpp"
+#include "Ref.hpp"
+
+#endif // FTL_ATOM

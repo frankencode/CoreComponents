@@ -1,0 +1,10 @@
+#ifndef FTL_STREAMS
+#define FTL_STREAMS
+
+#include "FileStatus.hpp"
+#include "File.hpp"
+#include "Dir.hpp"
+#include "StandardStreams.hpp"
+#include "PrintDebug.hpp"
+
+#endif //  FTL_STREAMS

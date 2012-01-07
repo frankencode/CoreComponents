@@ -1,0 +1,8 @@
+#ifndef FTL_NETWORK
+#define FTL_NETWORK
+
+#include "SocketAddress.hpp"
+#include "StreamSocket.hpp"
+#include "NetworkInterface.hpp"
+
+#endif // FTL_NETWORK

@@ -1,0 +1,11 @@
+#ifndef FTL_UTILS
+#define FTL_UTILS
+
+#include "rounding.hpp"
+#include "Time.hpp"
+#include "Date.hpp"
+#include "Random.hpp"
+#include "SymbolicLink.hpp"
+#include "CommandLine.hpp"
+
+#endif // FTL_UTILS

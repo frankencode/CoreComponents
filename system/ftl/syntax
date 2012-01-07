@@ -1,0 +1,7 @@
+#ifndef FTL_SYNTAX
+#define FTL_SYNTAX
+
+#include "Syntax.hpp"
+#include "TokenScreen.hpp"
+
+#endif // FTL_SYNTAX
