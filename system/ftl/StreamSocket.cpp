@@ -63,12 +63,15 @@ Ref<StreamSocket, Owner> StreamSocket::accept()
 
 void StreamSocket::connect()
 {
-	int flags = ::fcntl(fd_, F_GETFL, 0);
-	if (flags == -1)
-		FTL_THROW(StreamSemanticException, systemError());
+	int flags = 0;
 	
-	if (::fcntl(fd_, F_SETFL, flags | O_NONBLOCK) == -1)
-		FTL_THROW(StreamSemanticException, systemError());
+	if (address_->family() != AF_LOCAL) {
+		flags = ::fcntl(fd_, F_GETFL, 0);
+		if (flags == -1)
+			FTL_THROW(StreamSemanticException, systemError());
+		if (::fcntl(fd_, F_SETFL, flags | O_NONBLOCK) == -1)
+			FTL_THROW(StreamSemanticException, systemError());
+	}
 	
 	int ret = ::connect(fd_, address_->addr(), address_->addrLen());
 	
@@ -79,8 +82,10 @@ void StreamSocket::connect()
 	
 	connected_ = (ret != -1);
 	
-	if (::fcntl(fd_, F_SETFL, flags) == -1)
-		FTL_THROW(StreamSemanticException, systemError());
+	if (address_->family() != AF_LOCAL) {
+		if (::fcntl(fd_, F_SETFL, flags) == -1)
+			FTL_THROW(StreamSemanticException, systemError());
+	}
 }
 
 bool StreamSocket::established(Time idleTimeout)
