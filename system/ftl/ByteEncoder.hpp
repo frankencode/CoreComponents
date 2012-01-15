@@ -47,6 +47,9 @@ public:
 	
 	Ref<Stream> stream() const;
 	
+	int endian() const;
+	void setEndian(int endian);
+	
 private:
 	Ref<Stream, Owner> stream_;
 	int endian_;
@@ -134,6 +137,9 @@ inline off_t ByteEncoder::numBytesWritten() const
 }
 
 inline Ref<Stream> ByteEncoder::stream() const { return stream_; }
+
+inline int ByteEncoder::endian() const { return endian_; }
+inline void ByteEncoder::setEndian(int endian) { endian_ = endian; }
 
 } // namespace ftl
 
