@@ -47,6 +47,9 @@ public:
 	
 	~Array() { Policy::free(data_, size_); }
 	
+	inline static Ref<Array> uninitialized(int size) { return new Array(size); }
+	inline static Ref<Array> ininitialized(int size, T zero) { return new Array(size, zero); }
+	
 	inline static Ref<Array> empty() { return Default< Array<T, P> >::instance(); }
 	
 	inline Array& operator=(const Array& b) {
