@@ -14,6 +14,7 @@
 #include "atoms"
 #include "defaults.hpp"
 #include "Stream.hpp"
+#include "Array.hpp"
 
 namespace ftl
 {
@@ -28,6 +29,8 @@ public:
 	
 	void write(uint8_t x);
 	void write(char ch);
+	
+	void write(Ref<ByteArray> bytes);
 	
 	void writeUInt8(uint8_t x);
 	void writeUInt16(uint16_t x);
@@ -68,6 +71,12 @@ inline void ByteEncoder::write(uint8_t x)
 inline void ByteEncoder::write(char ch)
 {
 	writeUInt8((uint8_t)ch);
+}
+
+inline void ByteEncoder::write(Ref<ByteArray> bytes)
+{
+	for (int i = 0, n = bytes->length(); i < n; ++i)
+		write(bytes->get(i));
 }
 
 inline void ByteEncoder::writeUInt8(uint8_t x)

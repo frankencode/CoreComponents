@@ -14,6 +14,7 @@
 #include "atoms"
 #include "defaults.hpp"
 #include "Stream.hpp"
+#include "Array.hpp"
 
 namespace ftl
 {
@@ -27,6 +28,9 @@ public:
 	
 	bool read(uint8_t* x);
 	bool read(char* ch);
+	
+	void read(Ref<ByteArray> bytes);
+	Ref<ByteArray, Owner> read(int n);
 	
 	bool hasMore();
 	uint8_t readUInt8();
@@ -73,6 +77,19 @@ inline bool ByteDecoder::read(uint8_t* x)
 inline bool ByteDecoder::read(char* ch)
 {
 	return read(reinterpret_cast<uint8_t*>(ch));
+}
+
+inline void ByteDecoder::read(Ref<ByteArray> bytes)
+{
+	for (int i = 0, n = bytes->length(); i < n; ++i)
+		bytes->set(i, readUInt8());
+}
+
+inline Ref<ByteArray, Owner> ByteDecoder::read(int n)
+{
+	Ref<ByteArray, Owner> bytes = ByteArray::uninitialized(n);
+	read(bytes);
+	return bytes;
 }
 
 inline bool ByteDecoder::hasMore()

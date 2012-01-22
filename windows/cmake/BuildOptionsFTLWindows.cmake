@@ -1,1 +1,1 @@
-LINK_LIBRARIES(xcb)
+LINK_LIBRARIES(ftlsystem)
