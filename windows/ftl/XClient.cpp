@@ -21,6 +21,8 @@ void writePadding(Ref<ByteEncoder> sink) {
 }
 
 XClient::XClient(String host, int display, int screen)
+	: nextResourceId_(0),
+	  freeResourceIds_(new List<uint32_t>)
 {
 	Ref<SocketAddress, Owner> address;
 	String authProtocol, authData;
@@ -95,25 +97,43 @@ XClient::XClient(String host, int display, int screen)
 		}
 		FTL_THROW(XException, "Protocol error");
 	}
-	else if (response == 1) {
-		releaseNumber_ = source->readUInt32();
-		uint32_t resourceIdentifierBase = source->readUInt32();
-		uint32_t resourceIdentifierMask = source->readUInt32();
-		uint32_t motionBufferSize = source->readUInt32();
-		uint16_t vendorLength = source->readUInt16();
-		uint16_t maximumRequestLength = source->readUInt16();
-		uint8_t numberOfRoots = source->readUInt8();
-		uint8_t numberOfPixmapFormats = source->readUInt8();
-		uint8_t imageByteOrder = source->readUInt8();
-		uint8_t bitmapBitOrder = source->readUInt8();
-		uint8_t bitmapScanlineUnit = source->readUInt8();
-		uint8_t bitmapScanlinePad = source->readUInt8();
-		uint8_t minKeyCode = source->readUInt8();
-		uint8_t maxKeyCode = source->readUInt8();
-		source->readUInt32(); // unused
-		vendor_ = source->read(vendorLength);
-		readPadding(source);
+	
+	releaseNumber_ = source->readUInt32();
+	resourceIdBase_ = source->readUInt32();
+	resourceIdMask_ = source->readUInt32();
+	source->readUInt32(); // motion buffer size
+	uint16_t vendorLength = source->readUInt16();
+	source->readUInt16(); // maximum request length
+	uint8_t numberOfRoots = source->readUInt8();
+	uint8_t numberOfPixmapFormats = source->readUInt8();
+	{
+		uint8_t endian = source->readUInt8();
+		imageEndian_ = (endian == 0) ? LittleEndian : BigEndian;
 	}
+	source->readUInt8(); // bitmap bit order
+	source->readUInt8(); // bitmap scanline unit
+	source->readUInt8(); // bitmap scanline pad
+	source->readUInt8(); // min key code
+	source->readUInt8(); // max key code
+	source->readUInt32(); // unused
+	vendor_ = source->read(vendorLength);
+	readPadding(source);
+}
+
+uint32_t XClient::allocateResourceId()
+{
+	Guard<Mutex> guard(&resourceIdMutex_);
+	if (freeResourceIds_->length() > 0)
+		return freeResourceIds_->pop();
+	if (nextResourceId_ == resourceIdMask_)
+		FTL_THROW(XException, "Pool of resource IDs exhausted");
+	return resourceIdBase_ | ((++nextResourceId_) & resourceIdMask_);
+}
+
+void XClient::freeResourceId(uint32_t id)
+{
+	Guard<Mutex> guard(&resourceIdMutex_);
+	freeResourceIds_->push(id);
 }
 
 } // namespace ftl

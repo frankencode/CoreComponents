@@ -3,6 +3,7 @@
 
 #include <ftl/Exception.hpp>
 #include <ftl/String.hpp>
+#include <ftl/Mutex.hpp>
 
 namespace ftl
 {
@@ -23,10 +24,21 @@ public:
 	
 private:
 	Ref<StreamSocket, Owner> socket_;
+	
 	int majorVersion_;
 	int minorVersion_;
 	uint32_t releaseNumber_;
 	String vendor_;
+	
+	uint32_t allocateResourceId();
+	void freeResourceId(uint32_t id);
+	Mutex resourceIdMutex_;
+	uint32_t resourceIdBase_;
+	uint32_t resourceIdMask_;
+	uint32_t nextResourceId_;
+	Ref<List<uint32_t>, Owner> freeResourceIds_;
+	
+	int imageEndian_;
 };
 
 } // namespace ftl
