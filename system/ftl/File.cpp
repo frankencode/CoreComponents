@@ -105,6 +105,12 @@ void File::create(int mode)
 	::close(fd);
 }
 
+void File::link(const char* newPath)
+{
+	if (::link(path_, newPath) == -1)
+		FTL_THROW(StreamSemanticException, systemError());
+}
+
 void File::unlink()
 {
 	if (::unlink(path_) == -1)

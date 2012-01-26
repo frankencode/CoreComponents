@@ -12,6 +12,12 @@ class StreamSocket;
 
 FTL_EXCEPTION(XException, Exception);
 
+struct XPixmapFormat {
+	uint8_t depth;
+	uint8_t bpp;
+	uint8_t padding;
+};
+
 class XClient: public Instance
 {
 public:
@@ -21,6 +27,8 @@ public:
 	inline int minorVersion() const { return minorVersion_; }
 	inline uint32_t releaseNumber() const { return releaseNumber_; }
 	inline String vendor() const { return vendor_; }
+	
+	inline Ref< Array<XPixmapFormat> > pixmapFormats() const { return pixmapFormats_; }
 	
 private:
 	Ref<StreamSocket, Owner> socket_;
@@ -39,6 +47,7 @@ private:
 	Ref<List<uint32_t>, Owner> freeResourceIds_;
 	
 	int imageEndian_;
+	Ref<Array<XPixmapFormat>, Owner> pixmapFormats_;
 };
 
 } // namespace ftl
