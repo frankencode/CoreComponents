@@ -31,7 +31,7 @@ public:
 	typedef P<T> Policy;
 	
 	Array() { Policy::initEmpty(data_, size_); }
-	Array(int size) { Policy::alloc(data_, size_, size); }
+	explicit Array(int size) { Policy::alloc(data_, size_, size); }
 	Array(int size, T zero) {
 		Policy::alloc(data_, size_, size);
 		Policy::clear(data_, size_, zero);
@@ -48,7 +48,7 @@ public:
 	~Array() { Policy::free(data_, size_); }
 	
 	inline static Ref<Array> uninitialized(int size) { return new Array(size); }
-	inline static Ref<Array> ininitialized(int size, T zero) { return new Array(size, zero); }
+	inline static Ref<Array> initialized(int size, T zero) { return new Array(size, zero); }
 	
 	inline static Ref<Array> empty() { return Default< Array<T, P> >::instance(); }
 	
@@ -187,6 +187,8 @@ public:
 	
 	inline T* data() const { return data_; }
 	inline const T* constData() const { return data_; }
+	inline T& operator[](int i) { return at(i); }
+	inline T operator[](int i) const { return get(i); }
 	inline operator T*() const { return data_; }
 	inline operator bool() const { return !isEmpty(); }
 	

@@ -106,10 +106,7 @@ XClient::XClient(String host, int display, int screen)
 	source->readUInt16(); // maximum request length
 	uint8_t numberOfRoots = source->readUInt8();
 	uint8_t numberOfPixmapFormats = source->readUInt8();
-	{
-		uint8_t endian = source->readUInt8();
-		imageEndian_ = (endian == 0) ? LittleEndian : BigEndian;
-	}
+	imageEndian_ = (source->readUInt8() == 0) ? LittleEndian : BigEndian;
 	source->readUInt8(); // bitmap bit order
 	source->readUInt8(); // bitmap scanline unit
 	source->readUInt8(); // bitmap scanline pad
@@ -118,6 +115,15 @@ XClient::XClient(String host, int display, int screen)
 	source->readUInt32(); // unused
 	vendor_ = source->read(vendorLength);
 	readPadding(source);
+	
+	pixmapFormats_ = new Array<XPixmapFormat>(numberOfPixmapFormats);
+	for (unsigned i = 0, n = numberOfPixmapFormats; i < n; ++i) {
+		XPixmapFormat *format = pixmapFormats_->pointerAt(i);
+		format->depth = source->readUInt8();
+		format->bpp = source->readUInt8();
+		format->padding = source->readUInt8();
+		for (int j = 0; j < 5; ++j) source->readUInt8(); // unused
+	}
 }
 
 uint32_t XClient::allocateResourceId()
