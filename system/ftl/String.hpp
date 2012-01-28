@@ -147,10 +147,10 @@ public:
 	
 protected:
 	// initialize string with defined size but undefined content
-	explicit String(int size): Super(ByteArray::uninitialized(size)) {}
+	explicit String(int size): Super(new ByteArray(size)) {}
 	
 	// initialize string with defined size and defined content
-	explicit String(int size, char zero): Super(ByteArray::initialized(size, zero)) {
+	explicit String(int size, char zero): Super(new ByteArray(size, zero)) {
 		FTL_ASSERT(0 <= zero);
 	}
 	

@@ -100,7 +100,7 @@ Ref<ByteArray, Owner> String::toUtf16(int endian)
 	int size2 = 0;
 	for (int i = 0; i < length(); ++i)
 		size2 += Utf16Encoder::encodedSize(get(i));
-	Ref<ByteArray, Owner> s2 = ByteArray::uninitialized(size2 + 2);
+	Ref<ByteArray, Owner> s2 = new ByteArray(size2 + 2);
 	(*s2)[size2] = 0;
 	(*s2)[size2 + 1] = 0;
 	if (size2 > 0) {
@@ -131,7 +131,7 @@ void String::assign(Ref<StringList> parts, const char* sep)
 		for (int i = 0; i < parts->length(); ++i)
 			size += parts->at(i)->size();
 		size += (parts->length() - 1) * sepSize;
-		set(ByteArray::uninitialized(size));
+		set(new ByteArray(size));
 		char* p = bytes()->data();
 		for (int i = 0; i < parts->length(); ++i) {
 			String part = parts->at(i);

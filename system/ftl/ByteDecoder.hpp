@@ -87,7 +87,7 @@ inline void ByteDecoder::read(Ref<ByteArray> bytes)
 
 inline Ref<ByteArray, Owner> ByteDecoder::read(int n)
 {
-	Ref<ByteArray, Owner> bytes = ByteArray::uninitialized(n);
+	Ref<ByteArray, Owner> bytes = new ByteArray(n);
 	read(bytes);
 	return bytes;
 }

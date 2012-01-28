@@ -21,7 +21,6 @@
 namespace ftl
 {
 
-template<class Media> class SyntaxLinker;
 template<class Media> class SyntaxDebugger;
 
 template<class Media>

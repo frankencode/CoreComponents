@@ -9,8 +9,7 @@
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
 
-#include <stdio.h> // DEBUG
-#include "debug.hpp" // DEBUG
+#include "debug.hpp"
 #include "UriSyntax.hpp"
 #include "Uri.hpp"
 

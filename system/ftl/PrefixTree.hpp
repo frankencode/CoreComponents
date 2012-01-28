@@ -14,14 +14,21 @@
 #include "types.hpp"
 #include "strings.hpp"
 #include "Tree.hpp"
+#include "Array.hpp"
+#include "ByteArray.hpp"
 #include "PrefixTreeWalker.hpp"
-#include "streams" // DEBUG
 
 namespace ftl
 {
 
 template<class Char, class Value>
 class PrefixTree;
+
+template<class Char>
+class PrefixTreeKeyByCharType { public: typedef Array<Char> Key; };
+
+template<>
+class PrefixTreeKeyByCharType<char> { public: typedef ByteArray Key; };
 
 template<class Char, class Value>
 class PrefixTree: public Tree< PrefixTree<Char, Value> >
@@ -104,7 +111,7 @@ public:
 	}
 	
 	typedef PrefixTreeWalker<Char, Value> Index;
-	typedef Array<Char, DeepCopyZeroTerminatedArray> Key;
+	typedef typename PrefixTreeKeyByCharType<Char>::Key Key;
 	
 	inline Index first() const { return Index(Parent::firstLeaf()); }
 	inline Index last() const { return Index(Parent::lastLeaf()); }
