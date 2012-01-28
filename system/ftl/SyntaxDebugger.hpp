@@ -192,7 +192,7 @@ private:
 		printString(s.data(), s.size());
 	}
 	
-	static void printString(const Array<Char, DeepCopyZeroTerminatedArray>& s) {
+	static void printString(const ByteArray& s) {
 		printString(s.data(), s.size());
 	}
 	

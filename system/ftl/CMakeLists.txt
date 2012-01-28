@@ -15,6 +15,7 @@ SET(FTLSYSTEM_HEADER
 	OnDemand.hpp
 	Ref.hpp
 	Buffer.hpp
+	ByteArray.hpp
 	
 	binary
 	ByteEncoder.hpp

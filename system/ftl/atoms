@@ -9,5 +9,6 @@
 #include "Guard.hpp"
 #include "Instance.hpp"
 #include "Ref.hpp"
+#include "ByteArray.hpp"
 
 #endif // FTL_ATOM

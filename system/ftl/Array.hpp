@@ -15,12 +15,11 @@
 #include "strings.hpp"
 #include "ArrayPolicy.hpp"
 #include "Default.hpp"
+#include "ByteArray.hpp"
+#include "String.hpp"
 
 namespace ftl
 {
-
-template<class T, template<class> class P = ArrayPolicy>
-class DefaultArray;
 
 template<class T, template<class> class P = ArrayPolicy>
 class Array: public Sequence<T, int>
@@ -46,9 +45,6 @@ public:
 	}
 	
 	~Array() { Policy::free(data_, size_); }
-	
-	inline static Ref<Array> uninitialized(int size) { return new Array(size); }
-	inline static Ref<Array> initialized(int size, T zero) { return new Array(size, zero); }
 	
 	inline static Ref<Array> empty() { return Default< Array<T, P> >::instance(); }
 	
@@ -192,12 +188,10 @@ public:
 	inline operator T*() const { return data_; }
 	inline operator bool() const { return !isEmpty(); }
 	
-private:
+protected:
 	int size_;
 	T* data_;
 };
-
-typedef Array<char, DeepCopyZeroTerminatedArray> ByteArray;
 
 } // namespace ftl
 

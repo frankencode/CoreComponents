@@ -17,6 +17,7 @@ class OnDemand
 {
 public:
 	OnDemand(): firstTime_(true) {}
+	~OnDemand() { delete instance_; }
 	
 	inline void set(T* b) {}
 	
