@@ -33,6 +33,7 @@ public:
 	Format& operator=(const Format& b);
 	
 	inline Format& print(String s) { get()->insert(nextPlaceHolder()->j_, s); return *this; }
+	inline Format& print(const Ref<ByteArray, Owner>& s) { return print(String(s)); }
 	inline Format& print(Path p) { return print(p.toString()); }
 	inline Format& print(const char* s) { return print(String(s)); }
 	

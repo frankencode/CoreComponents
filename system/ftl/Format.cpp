@@ -130,7 +130,7 @@ void Format::printInt(uint64_t x, int sign)
 	if (wi < digits.fill()) wi = digits.fill();
 	if (w < wi) w = wi;
 	
-	String text = String::initialized(w, ph->blank_);
+	String text = String(w, ph->blank_);
 	int i = 0;
 	
 	int wb = 0; // width of blank
@@ -175,7 +175,7 @@ void Format::printFloat(float64_t x, bool half)
 	if ((e == 0x7FF) && (f != 0)) // NaN
 	{
 		if (w < 3) w = 3;
-		text = String::initialized(w, ph->blank_);
+		text = String(w, ph->blank_);
 		int wb = w - 3;
 		if (wb > 0)
 			i += wb;
@@ -188,7 +188,7 @@ void Format::printFloat(float64_t x, bool half)
 	else if ((e == 0x7FF) && (f == 0)) // infinite
 	{
 		if (w < 3 + s) w = 3 + s;
-		text = String::initialized(w, ph->blank_);
+		text = String(w, ph->blank_);
 		int wb = w - 3 - s;
 		if (wb > 0)
 			i += wb;
@@ -263,7 +263,7 @@ void Format::printFloat(float64_t x, bool half)
 		int h = wi + int(wf != 0) + wf + int(ne != 0) * (1 + int(eba < 0) + ne);
 		if (w < h) w = h; // w too small
 		
-		text = String::initialized(w, ph->blank_);
+		text = String(w, ph->blank_);
 		
 		int wb = wi - ni - s;
 		if (wb > 0) i += wb;
@@ -300,7 +300,7 @@ void Format::printFloat(float64_t x, bool half)
 	}
 	else // if ((e == 0) && (f == 0)) // zero
 	{
-		text = String::initialized(w, ph->blank_);
+		text = String(w, ph->blank_);
 		text->set(i + wi - 1, '0');
 	}
 	

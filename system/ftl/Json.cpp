@@ -297,7 +297,7 @@ double Json::parseNumber(Ref<ByteArray> text, Ref<Token> token)
 {
 	FTL_CHECK(token->rule() == number_, JsonException, "");
 	bool ok = true;
-	double value = String(text->copy(token->i0(), token->i1())).toFloat(&ok);
+	double value = String(text->copy(token->i0(), token->i1()))->toFloat(&ok);
 	FTL_CHECK(ok, JsonException, "Malformed number");
 	return value;
 }

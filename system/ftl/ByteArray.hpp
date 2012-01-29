@@ -14,9 +14,14 @@
 #include "generics.hpp"
 #include "strings.hpp"
 #include "Default.hpp"
+#include "List.hpp"
 
 namespace ftl
 {
+
+class Character;
+class String;
+typedef List<String> StringList;
 
 class ByteArray: public Sequence<char, int>
 {
@@ -24,98 +29,21 @@ public:
 	typedef int Index;
 	typedef char Item;
 	
-	ByteArray()
-		: size_(0),
-		  data_(const_cast<char*>(""))
-	{}
-	
-	explicit ByteArray(int size)
-		: size_(0),
-		  data_(const_cast<char*>(""))
-	{
-		if (size > 0) {
-			size_ = size;
-			data_ = new char[size + 1];
-			data_[size] = 0;
-		}
-	}
-	
-	ByteArray(int size, char zero)
-		: size_(0),
-		  data_(const_cast<char*>(""))
-	{
-		if (size > 0) {
-			size_ = size;
-			data_ = new char[size + 1];
-			mem::clr(data_, size_, zero);
-			data_[size] = 0;
-		}
-	}
-	
-	ByteArray(const char* data, int size = -1)
-		: size_(0),
-		  data_(const_cast<char*>(""))
-	{
-		if (size < 0) size = str::len(data);
-		if (size > 0) {
-			size_ = size;
-			data_ = new char[size + 1];
-			mem::cpy(data_, data, size);
-			data_[size] = 0;
-		}
-	}
-	
-	ByteArray(const ByteArray& b)
-		: size_(0),
-		  data_(const_cast<char*>(""))
-	{
-		if (b.size_ > 0) {
-			size_ = b.size_;
-			data_ = new char[b.size_ + 1];
-			mem::cpy(data_, b.data_, b.size_ + 1);
-		}
-	}
-	
-	~ByteArray() {
-		if (size_ > 0) delete[] data_;
-	}
+	explicit ByteArray(int size = 0);
+	ByteArray(int size, char zero);
+	ByteArray(const char* data, int size = -1);
+	ByteArray(const ByteArray& b);
+	~ByteArray();
 	
 	inline static Ref<ByteArray> empty() { return Default<ByteArray>::instance(); }
 	
-	inline ByteArray& operator=(const ByteArray& b)
-	{
-		if (size_ != b.size_) {
-			if (size_ > 0) delete[] data_;
-			size_ = 0;
-			data_ = const_cast<char*>("");
-			if (b.size_ > 0) {
-				size_ = b.size_;
-				data_ = new char[b.size_ + 1];
-			}
-		}
-		if (b.size_ > 0)
-			mem::cpy(data_, b.data_, b.size_ + 1);
-		return *this;
-	}
+	ByteArray& operator=(const ByteArray& b);
 	
-	inline void clear(char zero = '\0')
-	{
-		mem::clr(data_, size_, zero);
-	}
+	void clear(char zero = '\0');
+	void reset(int newSize = 0);
+	void truncate(int newSize);
 	
-	inline void reset(int newSize = 0)
-	{
-		if (size_ > 0) delete[] data_;
-		if (newSize > 0) {
-			size_ = newSize;
-			data_ = new char[newSize + 1];
-			data_[newSize] = 0;
-		}
-		else {
-			size_ = 0;
-			data_ = const_cast<char*>("");
-		}
-	}
+	Ref<Character> chars() const;
 	
 	inline int size() const { return size_; }
 	inline int length() const { return size_; }
@@ -156,6 +84,40 @@ public:
 		return data_[i];
 	}
 	
+	inline char* data() const { return data_; }
+	inline const char* constData() const { return data_; }
+	inline char& operator[](int i) { return at(i); }
+	inline char operator[](int i) const { return get(i); }
+	inline operator char*() const { return data_; }
+	inline operator bool() const { return !isEmpty(); }
+	
+	inline void read(int i, char* data, int size) {
+		if (size == 0) return;
+		FTL_ASSERT(has(i));
+		FTL_ASSERT(has(i + size - 1));
+		mem::cpy(data, data_ + i, size);
+	}
+	
+	inline void write(int i, const char* data, int size) {
+		if (size == 0) return;
+		FTL_ASSERT(has(i));
+		FTL_ASSERT(has(i + size - 1));
+		mem::cpy(data_ + i, data, size);
+	}
+	
+	inline Ref<ByteArray, Owner> copy() const { return new ByteArray(*this); }
+	
+	inline Ref<ByteArray, Owner> copy(int i0, int i1) const {
+		if (i0 < 0) i0 = 0;
+		if (i0 > size_) i0 = size_;
+		if (i1 < 0) i1 = 0;
+		if (i1 > size_) i1 = size_;
+		return (i0 < i1) ? new ByteArray(data_ + i0, i1 - i0) : new ByteArray();
+	}
+	
+	inline Ref<ByteArray, Owner> head(int n) const { return copy(0, n); }
+	inline Ref<ByteArray, Owner> tail(int n) const { return copy(size_ - n, size_); }
+	
 	inline int find(const char& item) const { return find(0, item); }
 	inline int find(int i, const char& item) const {
 		while (i < size_)
@@ -176,70 +138,50 @@ public:
 		return n;
 	}
 	
-	inline int find(int i, Ref<ByteArray> pattern) const { return find(i, pattern->data(), pattern->size()); }
-	inline int find(int i, const char* pattern, int patternSize) const {
-		if (patternSize == 0) return size_;
-		for (int j = i, k = 0; j < size_;) {
-			if (data_[j++] == pattern[k]) {
-				++k;
-				if (k == patternSize)
-					return j - k;
-				k = 0;
-			}
-		}
-		return size_;
-	}
+	int find(int i, const char* pattern) const;
+	inline int find(int i, Ref<ByteArray> pattern) const { return find(i, pattern->data_); }
+	inline int find(const char* pattern) const { return find(0, pattern); }
 	
-	inline int contains(Ref<ByteArray> pattern) { return contains(pattern->data(), pattern->size()); }
-	inline int contains(const char* pattern, int patternSize) { return find(0, pattern, patternSize) != size_; }
+	inline int contains(Ref<ByteArray> pattern) { return contains(pattern->data()); }
+	inline int contains(const char* pattern) { return find(0, pattern) != size_; }
 	
-	inline Ref<ByteArray, Owner> copy() const { return new ByteArray(*this); }
+	static Ref<ByteArray, Owner> join(Ref<StringList> parts, const char* sep = "");
+	Ref<StringList, Owner> split(const char* pattern) const;
 	
-	inline Ref<ByteArray, Owner> copy(int i0, int i1) const {
-		if (i0 < 0) i0 = 0;
-		if (i0 > size_) i0 = size_;
-		if (i1 < 0) i1 = 0;
-		if (i1 > size_) i1 = size_;
-		return (i0 < i1) ? new ByteArray(data_ + i0, i1 - i0) : new ByteArray();
-	}
+	void replaceInsitu(const char* pattern, const char* replacement);
+	Ref<ByteArray, Owner> replace(const char* pattern, const char* replacement) const;
 	
-	inline void read(int i, char* data, int size) {
-		if (size == 0) return;
-		FTL_ASSERT(has(i));
-		FTL_ASSERT(has(i + size - 1));
-		mem::cpy(data, data_ + i, size);
-	}
+	int toInt(bool* ok = 0) const;
+	double toFloat(bool* ok = 0) const;
+	int64_t toInt64(bool* ok = 0) const;
+	uint64_t toUInt64(bool* ok = 0) const;
+	float64_t toFloat64(bool* ok = 0) const;
 	
-	inline void write(int i, const char* data, int size) {
-		if (size == 0) return;
-		FTL_ASSERT(has(i));
-		FTL_ASSERT(has(i + size - 1));
-		mem::cpy(data_ + i, data, size);
-	}
+	Ref<ByteArray> toLowerInsitu();
+	Ref<ByteArray> toUpperInsitu();
+	inline Ref<ByteArray, Owner> toLower() const { return copy()->toLowerInsitu(); }
+	inline Ref<ByteArray, Owner> toUpper() const { return copy()->toUpperInsitu(); }
 	
-	inline void truncate(int newSize) {
-		if (newSize <= 0) {
-			reset();
-		}
-		else if (newSize < size_) {
-			size_ = newSize;
-			data_[newSize] = 0;
-		}
-	}
+	Ref<ByteArray> expandInsitu();
+	inline Ref<ByteArray, Owner> expand() const { return copy()->expandInsitu(); }
 	
-	inline Ref<ByteArray, Owner> head(int n) const { return copy(0, n); }
-	inline Ref<ByteArray, Owner> tail(int n) const { return copy(size_ - n, size_); }
+	Ref<ByteArray, Owner> stripLeadingSpace() const;
+	Ref<ByteArray, Owner> stripTrailingSpace() const;
+	Ref<ByteArray, Owner> trimmed() const;
+	Ref<ByteArray, Owner> stripTags() const;
+	Ref<ByteArray, Owner> simplified() const;
+	Ref<ByteArray, Owner> normalized(bool nameCase = true) const;
 	
-	inline char* data() const { return data_; }
-	inline const char* constData() const { return data_; }
-	inline char& operator[](int i) { return at(i); }
-	inline char operator[](int i) const { return get(i); }
-	inline operator char*() const { return data_; }
-	inline operator bool() const { return !isEmpty(); }
+	void checkUtf8() const;
+	
+	static Ref<ByteArray, Owner> fromUtf16(const void* data, int size = -1, int endian = localEndian());
+	bool toUtf16(void* buf, int* size);
+	Ref<ByteArray, Owner> toUtf16(int endian = localEndian());
 	
 protected:
 	int size_;
 	char* data_;
+	mutable Ref<Character, Owner> chars_;
 };
 
 } // namespace ftl

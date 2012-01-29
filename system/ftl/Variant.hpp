@@ -53,11 +53,11 @@ public:
 	Variant(int value)         : type_(IntType),   int_(value)   {}
 	Variant(float value)       : type_(FloatType), float_(value) {}
 	Variant(double value)      : type_(FloatType), float_(value) {}
-	Variant(const char* value) : type_(StringType) { initRef(String(value).bytes()); }
+	Variant(const char* value) : type_(StringType) { initRef(String(value)); }
 	template<class T, template<class> class P>
 	Variant(Ref<T, P> value)   : type_(RefType)    { initRef(value); }
-	Variant(String value)      : type_(StringType) { initRef(value.bytes()); }
-	Variant(Path value)        : type_(PathType)   { initRef(value.toString().bytes()); }
+	Variant(String value)      : type_(StringType) { initRef(value); }
+	Variant(Path value)        : type_(PathType)   { initRef(value.toString()); }
 	~Variant()                                     { if (type_ & RefType) killRef(); }
 	
 	inline const Variant& operator=(bool value)          { type_ = BoolType;  int_ = value; return *this; }

@@ -34,7 +34,7 @@ public:
 	
 	inline int readAvail(String s) { return readAvail(s->data(), s->size()); }
 	inline void read(String s) { read(s->data(), s->size()); }
-	inline String read(int size) { String s = String::uninitialized(size); read(s); return s; }
+	inline String read(int size) { String s(size); read(s); return s; }
 	inline void write(const char* s) { write(s, str::len(s)); }
 	inline void write(String s) { write(s->data(), s->size()); }
 };

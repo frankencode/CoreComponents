@@ -194,7 +194,7 @@ Ref<EnvMap, Owner> Process::envMap()
 	Ref<EnvMap, Owner> map = new EnvMap;
 	int i = 0;
 	while (env[i] != 0) {
-		Ref<StringList, Owner> parts = String(env[i]).split("=");
+		Ref<StringList, Owner> parts = String(env[i])->split("=");
 		if (parts->length() == 2)
 			map->insert(parts->at(0), parts->at(1));
 		++i;

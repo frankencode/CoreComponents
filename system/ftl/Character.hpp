@@ -11,17 +11,24 @@
 #ifndef FTL_CHARACTER_HPP
 #define FTL_CHARACTER_HPP
 
-#include "atoms"
-#include "Array.hpp"
+#include "Instance.hpp"
+#include "Ref.hpp"
+#include "Utf8Walker.hpp"
 
 namespace ftl
 {
 
+class ByteArray;
+
 class Character: public Instance
 {
 public:
-	Character(Ref<ByteArray> bytes)
-		: walker_(bytes->constData()),
+	Character()
+		: walker_(0),
+		  i_(-1), n_(-1)
+	{}
+	Character(const char* data)
+		: walker_(data),
 		  i_(0), n_(-1)
 	{}
 	
@@ -34,6 +41,8 @@ public:
 		walkTo(i);
 		return walker_.getChar();
 	}
+	
+	inline uchar_t at(int i) const { return get(i); }
 	
 	inline int length() const {
 		if (n_ == -1) {
@@ -48,13 +57,9 @@ public:
 		return n_;
 	}
 	
-	Ref<ByteArray, Owner> copy(int i0, int i1) const {
-		FTL_ASSERT(i0 <= i1);
-		walkTo(i0);
-		const char* p0 = walker_.pos();
-		while (i_ < i1) { ++walker_; ++i_; }
-		return new ByteArray(p0, walker_.pos() - p0);
-	}
+	Ref<ByteArray, Owner> copy(int i0, int i1) const;
+	inline Ref<ByteArray, Owner> head(int n) const { return copy(0, n); }
+	inline Ref<ByteArray, Owner> tail(int n) const { return copy(length() - n, n); }
 	
 	inline uchar_t operator[](int i) const { return get(i); }
 	
@@ -73,6 +78,9 @@ public:
 		return i_;
 	}
 	
+	// int find(int i, const char* pattern) const;
+	// Ref<StringList, Owner> split(const char* pattern) const;
+
 private:
 	inline void walkTo(int i) const {
 		if (!walker_.valid()) {

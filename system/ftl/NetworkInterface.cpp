@@ -374,11 +374,11 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 	file->open(File::Read);
 	Ref<LineSource, Owner> source = new LineSource(file);
 	for (String line; source->read(&line);) {
-		if (line.contains(":")) {
+		if (line->contains(':')) {
 			Ref<NetworkInterface, Owner> interface = new NetworkInterface;
 			list->append(interface);
-			Ref<StringList, Owner> parts = line.split(":");
-			String name = parts->at(0).stripLeadingSpace();
+			Ref<StringList, Owner> parts = line->split(":");
+			String name = parts->at(0)->stripLeadingSpace();
 			interface->name_ = name;
 			
 			{

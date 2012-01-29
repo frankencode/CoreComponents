@@ -13,6 +13,7 @@
 
 #include "Syntax.hpp"
 #include "Singleton.hpp"
+#include "ByteArray.hpp"
 
 namespace ftl
 {

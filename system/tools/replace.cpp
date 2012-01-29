@@ -11,8 +11,8 @@ int main(int argc, char** argv)
 	}
 	String pattern = argv[1];
 	String replacement = argv[2];
-	pattern.expandInsitu();
-	replacement.expandInsitu();
+	pattern->expandInsitu();
+	replacement->expandInsitu();
 	
 	Ref<ByteDecoder, Owner> source = new ByteDecoder(rawInput());
 	Ref<ByteEncoder, Owner> sink = new ByteEncoder(rawOutput());

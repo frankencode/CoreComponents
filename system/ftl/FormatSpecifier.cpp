@@ -91,15 +91,15 @@ bool FormatSpecifier::find(Ref<ByteArray> text, int* i0, int* i1, int* w, int* w
 			
 			if (token->rule() == width_)
 			{
-				*w = value.toInt();
+				*w = value->toInt();
 			}
 			else if (token->rule() == integerWidth_)
 			{
-				*wi = value.toInt();
+				*wi = value->toInt();
 			}
 			else if (token->rule() == fractionWidth_)
 			{
-				*wf = value.toInt();
+				*wf = value->toInt();
 			}
 			else if (token->rule() == base_)
 			{

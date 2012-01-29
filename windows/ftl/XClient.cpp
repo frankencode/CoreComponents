@@ -27,13 +27,13 @@ XClient::XClient(String host, int display, int screen)
 	Ref<SocketAddress, Owner> address;
 	String authProtocol, authData;
 	{
-		Ref<StringList, Owner> parts = Process::env("DISPLAY").split(":");
+		Ref<StringList, Owner> parts = Process::env("DISPLAY")->split(":");
 		if (parts->length() == 2) {
 			host = parts->get(0);
-			parts = parts->get(1).split(".");
-			display = parts->get(0).toInt();
+			parts = parts->get(1)->split(".");
+			display = parts->get(0)->toInt();
 			if (parts->length() == 2)
-				screen = parts->get(1).toInt();
+				screen = parts->get(1)->toInt();
 		}
 		if (host == "") {
 			String path = Format("/tmp/.X11-unix/X%%") << display;
