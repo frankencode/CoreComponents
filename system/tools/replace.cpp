@@ -1,10 +1,10 @@
-#include <ftl/streams>
+#include <ftl/stdio>
 #include <ftl/binary>
-
-using namespace ftl;
 
 int main(int argc, char** argv)
 {
+	using namespace ftl;
+	
 	if (argc != 3) {
 		print("Usage: cat in_file | replace [PATTERN] [REPLACEMENT] > out_file\n\n");
 		return 1;
@@ -36,5 +36,6 @@ int main(int argc, char** argv)
 			sink->write(ch);
 		}
 	}
+	
 	return 0;
 }

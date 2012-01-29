@@ -1,10 +1,20 @@
+/*
+ * XClient.hpp -- X11 protocol client
+ *
+ * Copyright (c) 2007-2012, Frank Mertens
+ *
+ * This file is part of the a free software library. You can redistribute
+ * it and/or modify it under the terms of FTL's 2-clause BSD license.
+ *
+ * See the LICENSE.txt file for details at the top-level of FTL's sources.
+ */
 #ifndef FTL_XCLIENT_HPP
 #define FTL_XCLIENT_HPP
 
 #include <ftl/Exception.hpp>
 #include <ftl/String.hpp>
 #include <ftl/Mutex.hpp>
-#include <ftl/Array.hpp>
+#include "XDisplayInfo.hpp"
 
 namespace ftl
 {
@@ -13,42 +23,23 @@ class StreamSocket;
 
 FTL_EXCEPTION(XException, Exception);
 
-struct XPixmapFormat {
-	uint8_t depth;
-	uint8_t bpp;
-	uint8_t padding;
-};
-
 class XClient: public Instance
 {
 public:
 	XClient(String host = "", int display = 0, int screen = 0);
 	
-	inline int majorVersion() const { return majorVersion_; }
-	inline int minorVersion() const { return minorVersion_; }
-	inline uint32_t releaseNumber() const { return releaseNumber_; }
-	inline String vendor() const { return vendor_; }
-	
-	inline Ref< Array<XPixmapFormat> > pixmapFormats() const { return pixmapFormats_; }
+	Ref<XDisplayInfo> displayInfo() const { return displayInfo_; }
 	
 private:
 	Ref<StreamSocket, Owner> socket_;
 	
-	int majorVersion_;
-	int minorVersion_;
-	uint32_t releaseNumber_;
-	String vendor_;
-	
 	uint32_t allocateResourceId();
 	void freeResourceId(uint32_t id);
 	Mutex resourceIdMutex_;
-	uint32_t resourceIdBase_;
-	uint32_t resourceIdMask_;
 	uint32_t nextResourceId_;
 	Ref<List<uint32_t>, Owner> freeResourceIds_;
 	
-	int imageEndian_;
-	Ref<Array<XPixmapFormat>, Owner> pixmapFormats_;
+	Ref<XDisplayInfo, Owner> displayInfo_;
 };
 
 } // namespace ftl

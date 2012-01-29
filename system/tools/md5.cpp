@@ -1,10 +1,10 @@
-#include <ftl/streams>
+#include <ftl/stdio>
 #include <ftl/binary>
-
-using namespace ftl;
 
 int main()
 {
+	using namespace ftl;
+	
 	ByteArray buf(FTL_DEFAULT_BUF_CAPA);
 	Md5 md5;
 	int nr = 0;
@@ -17,5 +17,6 @@ int main()
 		print("%hex:2.:'0'%", sum[i]);
 	print("\n");
 	buf.clear();
+	
 	return 0;
 }

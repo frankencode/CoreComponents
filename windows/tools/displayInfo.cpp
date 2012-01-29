@@ -1,5 +1,5 @@
 #include <ftl/binary>
-#include <ftl/streams>
+#include <ftl/stdio>
 #include <ftl/sockets>
 
 namespace displayInfo

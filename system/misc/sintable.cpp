@@ -1,4 +1,4 @@
-#include <ftl/streams>
+#include <ftl/stdio>
 #include <math.h>
 
 int main() {

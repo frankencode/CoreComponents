@@ -45,6 +45,8 @@ public:
 	void writeFloat32(float32_t x);
 	void writeFloat64(float64_t x);
 	
+	void writePad(int padSize);
+	
 	off_t numBytesWritten() const;
 	void flush();
 	
@@ -139,6 +141,11 @@ inline void ByteEncoder::writeInt64(int64_t x) { writeUInt64(union_cast<uint64_t
 
 inline void ByteEncoder::writeFloat32(float32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
 inline void ByteEncoder::writeFloat64(float64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
+
+inline void ByteEncoder::writePad(int padSize) {
+	while ((numBytesWritten() & (padSize - 1)) != 0)
+		writeUInt8(0);
+}
 
 inline off_t ByteEncoder::numBytesWritten() const
 {

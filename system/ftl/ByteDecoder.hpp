@@ -46,6 +46,8 @@ public:
 	float32_t readFloat32();
 	float64_t readFloat64();
 	
+	void skipPad(int padSize);
+	
 	off_t numBytesRead() const;
 	
 	Ref<Stream> stream() const;
@@ -170,6 +172,11 @@ inline int32_t ByteDecoder::readInt32() { return union_cast<int32_t>(readUInt32(
 inline int64_t ByteDecoder::readInt64() { return union_cast<int64_t>(readUInt64()); }
 inline float32_t ByteDecoder::readFloat32() { return union_cast<float32_t>(readUInt32()); }
 inline float64_t ByteDecoder::readFloat64() { return union_cast<float64_t>(readUInt64()); }
+
+inline void ByteDecoder::skipPad(int padSize) {
+	while ((numBytesRead() & (padSize - 1)) != 0)
+		readUInt8();
+}
 
 inline off_t ByteDecoder::numBytesRead() const { return nr_; }
 

@@ -65,7 +65,7 @@ SET(FTLSYSTEM_HEADER
 	Variant.hpp
 	Path.hpp
 	
-	streams
+	stdio
 	Stream.hpp
 	SystemStream.hpp
 	FileStatus.hpp
@@ -173,7 +173,7 @@ SET(FTLSYSTEM_SOURCE
 	Format.cpp
 	Path.cpp
 	
-	# streams
+	# stdio
 	Stream.cpp
 	SystemStream.cpp
 	FileStatus.cpp

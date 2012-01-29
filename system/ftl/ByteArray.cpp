@@ -171,16 +171,22 @@ Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, const char* sep)
 	}
 }
 
-Ref<StringList, Owner> ByteArray::split(const char* pattern) const
+Ref<StringList, Owner> ByteArray::split(char sep) const
+{
+	char sep2[2] = { sep, '\0' };
+	return split(sep2);
+}
+
+Ref<StringList, Owner> ByteArray::split(const char* sep) const
 {
 	Ref<StringList, Owner> parts = new StringList;
 	int i0 = 0;
-	int patternLength = str::len(pattern);
+	int sepLength = str::len(sep);
 	while (i0 < size_) {
-		int i1 = find(i0, pattern);
+		int i1 = find(i0, sep);
 		if (i1 == size_) break;
 		parts->append(copy(i0, i1));
-		i0 = i1 + patternLength;
+		i0 = i1 + sepLength;
 	}
 	if (i0 < size_)
 		parts->append(copy(i0, size_));
