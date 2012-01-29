@@ -43,11 +43,11 @@ ProcessStatus::ProcessStatus(pid_t processId)
 		for (int i = i0; i < i1; ++i)
 			line->set(i, 'x');
 	}
-	Ref<StringList, Owner> parts = line.split(" ");
-	processId_ = parts->at(0).toInt();
-	parentProcessId_ = parts->at(3).toInt();
-	processGroupId_ = parts->at(4).toInt();
-	foregroundProcessGroupId_ = parts->at(7).toInt();
+	Ref<StringList, Owner> parts = line->split(" ");
+	processId_ = parts->at(0)->toInt();
+	parentProcessId_ = parts->at(3)->toInt();
+	processGroupId_ = parts->at(4)->toInt();
+	foregroundProcessGroupId_ = parts->at(7)->toInt();
 	/*{
 		int code = parts->get(6).toInt();
 		int major = (code >> 8) & 0xFF;

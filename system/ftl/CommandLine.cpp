@@ -315,7 +315,7 @@ void CommandLine::readValue(Ref<CommandOption> option, String line, Ref<Token> t
 	}
 	else if (value.type()== Variant::IntType) {
 		bool ok = false;
-		int x = s.toInt(&ok);
+		int x = s->toInt(&ok);
 		
 		if (!ok)
 			FTL_THROW(CommandLineException, "Unrecognized option syntax");
@@ -324,7 +324,7 @@ void CommandLine::readValue(Ref<CommandOption> option, String line, Ref<Token> t
 	}
 	else if (value.type() == Variant::FloatType) {
 		bool ok = false;
-		double x = s.toFloat(&ok);
+		double x = s->toFloat(&ok);
 		
 		if (!ok)
 			FTL_THROW(CommandLineException, "Unrecognized option syntax");
@@ -391,7 +391,7 @@ String CommandLine::helpText() const
 			lines->append(line);
 		}
 		
-		String indent = String::initialized(maxLength + 2, ' ');
+		String indent = String(maxLength + 2, ' ');
 		
 		for (int i = 0; (i < definedOptions_->length()) && (i < lines->length()); ++i)
 		{
@@ -399,7 +399,7 @@ String CommandLine::helpText() const
 			Format line;
 			line << lines->at(i);
 			if (lines->at(i)->size() < indent->size())
-				line << String::initialized(indent->size() - lines->at(i)->size(), ' ');
+				line << String(indent->size() - lines->at(i)->size(), ' ');
 			line << option->description_;
 			line << "\n";
 			lines->set(i, line);

@@ -23,7 +23,7 @@ Uri::Uri()
 Uri::Uri(const char* text)
 	: port_(-1)
 {
-	readUri(String(text).bytes());
+	readUri(String(text));
 }
 
 Uri::Uri(Ref<ByteArray> bytes, Ref<Token> rootToken)
@@ -57,7 +57,7 @@ void Uri::readUri(Ref<ByteArray> bytes, Ref<Token> rootToken)
 				else if (child->rule() == uriSyntax()->host())
 					host_ = decode(bytes->copy(child->i0(), child->i1()));
 				else if (child->rule() == uriSyntax()->port())
-					port_ = decode(bytes->copy(child->i0(), child->i1())).toInt();
+					port_ = decode(bytes->copy(child->i0(), child->i1()))->toInt();
 				child = child->nextSibling();
 			}
 		}
@@ -110,7 +110,7 @@ String Uri::toString() const
 
 String Uri::encode(String s)
 {
-	s.toLowerInsitu();
+	s->toLowerInsitu();
 	
 	const char* reserved = ":/?#[]@!$&'()*+,;=";
 	StringList l;
@@ -138,7 +138,7 @@ String Uri::encode(String s)
 
 String Uri::decode(String s)
 {
-	s.toLowerInsitu();
+	s->toLowerInsitu();
 	
 	int j = 0;
 	for (int i = 0, n = s->length(); i < n; ++i, ++j) {

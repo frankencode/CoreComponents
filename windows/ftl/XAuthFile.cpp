@@ -29,7 +29,7 @@ XAuthFile::XAuthFile(String path)
 		
 		record->family = family;
 		record->host = source->read(source->readUInt16());
-		record->display = String(source->read(source->readUInt16())).toInt();
+		record->display = source->read(source->readUInt16())->toInt();
 		record->protocol = source->read(source->readUInt16());
 		record->data = source->read(source->readUInt16());
 		

@@ -16,6 +16,7 @@ SET(FTLSYSTEM_HEADER
 	Ref.hpp
 	Buffer.hpp
 	ByteArray.hpp
+	Character.hpp
 	
 	binary
 	ByteEncoder.hpp
@@ -34,7 +35,6 @@ SET(FTLSYSTEM_HEADER
 	
 	container
 	containers.hpp
-	ArrayPolicy.hpp
 	Array.hpp
 	Stack.hpp
 	Queue.hpp
@@ -58,7 +58,6 @@ SET(FTLSYSTEM_HEADER
 	
 	strings
 	String.hpp
-	Character.hpp
 	IntegerLiteral.hpp
 	FloatLiteral.hpp
 	FormatSpecifier.hpp
@@ -149,6 +148,8 @@ SET(FTLSYSTEM_SOURCE
 	strings.cpp
 	Exception.cpp
 	Buffer.cpp
+	ByteArray.cpp
+	Character.cpp
 	
 	# binary
 	ByteEncoder.cpp

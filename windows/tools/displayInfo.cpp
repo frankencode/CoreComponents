@@ -104,9 +104,7 @@ int main() {
 	uint8_t minKeyCode = source->readUInt8();
 	uint8_t maxKeyCode = source->readUInt8();
 	source->readUInt32(); // unused
-	String vendor = String::uninitialized(vendorLength);
-	for (unsigned i = 0, n = vendorLength; i < n; ++i)
-		vendor->set(i, source->readUInt8());
+	String vendor = source->read(vendorLength);
 	readPadding(source);
 	Array<PixmapFormat> pixmapFormats(numberOfPixmapFormats);
 	for (unsigned i = 0, n = numberOfPixmapFormats; i < n; ++i) {

@@ -13,57 +13,112 @@
 
 #include "generics.hpp"
 #include "strings.hpp"
-#include "ArrayPolicy.hpp"
 #include "Default.hpp"
-#include "ByteArray.hpp"
-#include "String.hpp"
 
 namespace ftl
 {
 
-template<class T, template<class> class P = ArrayPolicy>
+template<class T>
 class Array: public Sequence<T, int>
 {
 public:
 	typedef int Index;
 	typedef T Item;
-	typedef P<T> Policy;
 	
-	Array() { Policy::initEmpty(data_, size_); }
-	explicit Array(int size) { Policy::alloc(data_, size_, size); }
-	Array(int size, T zero) {
-		Policy::alloc(data_, size_, size);
-		Policy::clear(data_, size_, zero);
-	}
-	Array(const T* data, int size) {
-		Policy::initEmpty(data_, size_);
-		Policy::assign(data_, size_, data, size);
-	}
-	Array(const Array& b) {
-		Policy::initEmpty(data_, size_);
-		Policy::assign(data_, size_, b.data_, b.size_);
+	explicit Array(int size = 0)
+		: size_(0),
+		  data_(0)
+	{
+		if (size > 0) {
+			size_ = size;
+			data_ = new T[size];
+		}
 	}
 	
-	~Array() { Policy::free(data_, size_); }
+	Array(int size, T zero)
+		: size_(0),
+		  data_(0)
+	{
+		if (size > 0) {
+			size_ = size;
+			data_ = new T[size];
+			mem::clr(data_, size * sizeof(T), zero);
+		}
+	}
 	
-	inline static Ref<Array> empty() { return Default< Array<T, P> >::instance(); }
+	Array(const T* data, int size)
+		: size_(0),
+		  data_(0)
+	{
+		if (size > 0) {
+			size_ = size;
+			data_ = new T[size];
+			mem::cpy(data_, data, size * sizeof(T));
+		}
+	}
 	
-	inline Array& operator=(const Array& b) {
-		Policy::assign(data_, size_, b.data_, b.size_);
+	Array(const Array& b)
+		: size_(0),
+		  data_(0)
+	{
+		if (b.size_ > 0) {
+			size_ = b.size_;
+			data_ = new T[b.size_];
+			mem::cpy(data_, b.data_, b.size_ * sizeof(T));
+		}
+	}
+	
+	~Array()
+	{
+		if (size_ > 0) delete[] data_;
+	}
+	
+	inline static Ref<Array> empty() { return Default< Array<T> >::instance(); }
+	
+	inline Array& operator=(const Array& b)
+	{
+		if (size_ != b.size_) {
+			if (size_ > 0) delete[] data_;
+			if (b.size_ > 0) {
+				size_ = b.size_;
+				data_ = new T[b.size_];
+			}
+			else {
+				size_ = 0;
+				data_ = 0;
+			}
+		}
+		mem::cpy(data_, b.data_, b.size_ * sizeof(T));
 		return *this;
 	}
 	
-	inline void clear(const T& zero = T()) {
-		Policy::clear(data_, size_, zero);
+	inline void clear(const T& zero = T())
+	{
+		for (int i = 0, n = size_; i < n; ++i)
+			data_[i] = zero;
 	}
 	
-	inline void reset() {
-		Policy::free(data_, size_);
+	inline void reset(int newSize = 0)
+	{
+		if (size_ != newSize) {
+			if (size_ > 0) delete[] data_;
+			if (newSize > 0) {
+				size_ = newSize;
+				data_ = new T[newSize];
+			}
+			else {
+				size_ = 0;
+				data_ = 0;
+			}
+		}
 	}
 	
-	inline void reset(int newSize) {
-		Policy::free(data_, size_);
-		Policy::alloc(data_, size_, newSize);
+	inline void truncate(int newSize)
+	{
+		if (newSize <= 0)
+			reset();
+		else if (newSize < size_)
+			size_ = newSize;
 	}
 	
 	inline int size() const { return size_; }
@@ -105,6 +160,40 @@ public:
 		return data_[i];
 	}
 	
+	inline T* data() const { return data_; }
+	inline const T* constData() const { return data_; }
+	inline T& operator[](int i) { return at(i); }
+	inline T operator[](int i) const { return get(i); }
+	inline operator T*() const { return data_; }
+	inline operator bool() const { return !isEmpty(); }
+	
+	inline void read(int i, T* data, int size) {
+		if (size == 0) return;
+		FTL_ASSERT(has(i));
+		FTL_ASSERT(has(i + size - 1));
+		mem::cpy(data, data_ + i, size * sizeof(T));
+	}
+	
+	inline void write(int i, const T* data, int size) {
+		if (size == 0) return;
+		FTL_ASSERT(has(i));
+		FTL_ASSERT(has(i + size - 1));
+		mem::cpy(data_ + i, data, size * sizeof(T));
+	}
+	
+	inline Ref<Array, Owner> copy() const { return copy(0, size_); }
+	
+	inline Ref<Array, Owner> copy(int i0, int i1) const {
+		if (i0 < 0) i0 = 0;
+		if (i0 > size_) i0 = size_;
+		if (i1 < 0) i1 = 0;
+		if (i1 > size_) i1 = size_;
+		return (i0 < i1) ? new Array(data_ + i0, i1 - i0) : new Array();
+	}
+	
+	inline Ref<Array, Owner> head(int n) const { return copy(0, n); }
+	inline Ref<Array, Owner> tail(int n) const { return copy(size_ - n, size_); }
+	
 	inline int find(const T& item) const { return find(0, item); }
 	inline int find(int i, const T& item) const {
 		while (i < size_)
@@ -142,52 +231,6 @@ public:
 	inline int contains(Ref<Array> pattern) { return contains(pattern->data(), pattern->size()); }
 	inline int contains(const T* pattern, int patternSize) { return find(0, pattern, patternSize) != size_; }
 	
-	inline Ref<Array, Owner> copy() const { return copy(0, size_); }
-	
-	inline Ref<Array, Owner> copy(int i0, int i1) const {
-		if (i0 < 0) i0 = 0;
-		if (i0 > size_) i0 = size_;
-		if (i1 < 0) i1 = 0;
-		if (i1 > size_) i1 = size_;
-		return (i0 < i1) ? new Array(data_ + i0, i1 - i0) : new Array();
-	}
-	
-	inline void read(int i, T* data, int size) {
-		if (size == 0) return;
-		FTL_ASSERT(has(i));
-		FTL_ASSERT(has(i + size - 1));
-		mem::cpy(data, data_ + i, size * sizeof(T));
-	}
-	
-	inline void write(int i, const T* data, int size) {
-		if (size == 0) return;
-		FTL_ASSERT(has(i));
-		FTL_ASSERT(has(i + size - 1));
-		mem::cpy(data_ + i, data, size * sizeof(T));
-	}
-	
-	inline void truncate(int newSize) {
-		if (newSize < 0) newSize = 0;
-		if (newSize < size_)
-			Policy::truncate(data_, size_, newSize);
-	}
-	
-	inline Ref<Array, Owner> head(int n) const {
-		if (n > size_) n = size_;
-		return copy(0, n);
-	}
-	inline Ref<Array, Owner> tail(int n) const {
-		if (n > size_) n = size_;
-		return copy(size_ - n, size_);
-	}
-	
-	inline T* data() const { return data_; }
-	inline const T* constData() const { return data_; }
-	inline T& operator[](int i) { return at(i); }
-	inline T operator[](int i) const { return get(i); }
-	inline operator T*() const { return data_; }
-	inline operator bool() const { return !isEmpty(); }
-	
 protected:
 	int size_;
 	T* data_;
@@ -195,4 +238,4 @@ protected:
 
 } // namespace ftl
 
-#endif // FTL_ARRAY_
+#endif // FTL_ARRAY_HPP

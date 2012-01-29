@@ -4,6 +4,7 @@
 #include <ftl/Exception.hpp>
 #include <ftl/String.hpp>
 #include <ftl/Mutex.hpp>
+#include <ftl/Array.hpp>
 
 namespace ftl
 {

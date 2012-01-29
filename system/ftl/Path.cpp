@@ -42,7 +42,7 @@ Path Path::absoluteRelativeTo(String currentDir) const
 		return path_;
 	
 	Ref<StringList, Owner> absoluteParts = new StringList;
-	Ref<StringList, Owner> parts = path_.split("/");
+	Ref<StringList, Owner> parts = path_->split("/");
 	
 	int upCount = 0;
 	
@@ -64,7 +64,7 @@ Path Path::absoluteRelativeTo(String currentDir) const
 	
 	String absolutePath;
 	if (currentDir->length() > 0)
-		absolutePath = currentDir.copy();
+		absolutePath = currentDir->copy();
 	else
 		absolutePath = Process::cwd();
 	
@@ -75,7 +75,7 @@ Path Path::absoluteRelativeTo(String currentDir) const
 	
 	absoluteParts->pushFront(absolutePath);
 	
-	return String::join(absoluteParts, "/");
+	return absoluteParts->join("/");
 }
 
 Path Path::absolute() const
@@ -88,7 +88,7 @@ Path Path::absolute() const
 String Path::fileName() const
 {
 	String name;
-	Ref<StringList, Owner> parts = path_.split("/");
+	Ref<StringList, Owner> parts = path_->split("/");
 	if (parts->length() > 0)
 		name = parts->at(-1);
 	return name;
@@ -96,23 +96,23 @@ String Path::fileName() const
 
 String Path::fileNameSansFirstExtension() const
 {
-	Ref<StringList, Owner> parts = fileName().split(".");
+	Ref<StringList, Owner> parts = fileName()->split(".");
 	parts->popBack();
-	return String::join(parts, ".");
+	return parts->join(".");
 }
 
 String Path::fileNameSansExtension() const
 {
-	Ref<StringList, Owner> parts = fileName().split(".");
+	Ref<StringList, Owner> parts = fileName()->split(".");
 	return parts->at(0);
 }
 
 Path Path::reduce() const
 {
-	Ref<StringList, Owner> parts = path_.split("/");
+	Ref<StringList, Owner> parts = path_->split("/");
 	if (parts->length() > 0)
 		parts->popBack();
-	String resultPath = String::join(parts, "/");
+	String resultPath = parts->join("/");
 	if ((resultPath == "") && (isAbsolute()))
 		resultPath = "/";
 	return resultPath;
