@@ -118,11 +118,14 @@ public:
 	inline Ref<ByteArray, Owner> head(int n) const { return copy(0, n); }
 	inline Ref<ByteArray, Owner> tail(int n) const { return copy(size_ - n, size_); }
 	
-	inline int find(const char& item) const { return find(0, item); }
-	inline int find(int i, const char& item) const {
-		while (i < size_)
-			if (data_[i++] == item) return i - 1;
-		return size_;
+	inline int find(char ch) const { return find(0, ch); }
+	inline int find(int i, char ch) const {
+		if (i < 0) i = 0;
+		while (i < size_) {
+			if (data_[i] == ch) break;
+			++i;
+		}
+		return i;
 	}
 	
 	inline bool contains(const char& item) const { return find(item) < size_; }
@@ -146,7 +149,8 @@ public:
 	inline int contains(const char* pattern) { return find(0, pattern) != size_; }
 	
 	static Ref<ByteArray, Owner> join(Ref<StringList> parts, const char* sep = "");
-	Ref<StringList, Owner> split(const char* pattern) const;
+	Ref<StringList, Owner> split(char sep) const;
+	Ref<StringList, Owner> split(const char* sep) const;
 	
 	void replaceInsitu(const char* pattern, const char* replacement);
 	Ref<ByteArray, Owner> replace(const char* pattern, const char* replacement) const;

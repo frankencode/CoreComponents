@@ -2,11 +2,13 @@ INCLUDE_DIRECTORIES(../../system)
 
 SET(FTLWINDOWS_HEADER
 	XAuthFile.hpp
+	XDisplayInfo.hpp
 	XClient.hpp
 )
 
 SET(FTLWINDOWS_SOURCE
 	XAuthFile.cpp
+	XDisplayInfo.cpp
 	XClient.cpp
 )
 

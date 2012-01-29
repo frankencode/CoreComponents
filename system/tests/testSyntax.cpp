@@ -1,4 +1,4 @@
-#include <ftl/streams>
+#include <ftl/stdio>
 #include <ftl/syntax>
 #include <ftl/SyntaxDebugger.hpp>
 #include <ftl/utils>

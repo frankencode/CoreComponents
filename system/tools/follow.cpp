@@ -1,10 +1,10 @@
-#include <ftl/streams>
+#include <ftl/stdio>
 #include <ftl/process>
-
-using namespace ftl;
 
 int main(int argc, char** argv)
 {
+	using namespace ftl;
+	
 	if (argc != 2) return 1;
 	Ref<File, Owner> file = File::open(argv[1]);
 	off_t nw = 0;
@@ -21,5 +21,6 @@ int main(int argc, char** argv)
 		Process::sleep(1);
 		file->status()->update();
 	}
+	
 	return 0;
 }

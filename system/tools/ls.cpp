@@ -1,10 +1,10 @@
-#include <ftl/streams>
+#include <ftl/stdio>
 #include <ftl/process>
-
-using namespace ftl;
 
 int main()
 {
+	using namespace ftl;
+
 	Dir dir(Process::cwd());
 	for (DirEntry entry; dir.read(&entry);)
 		output()->writeLine(entry.name());

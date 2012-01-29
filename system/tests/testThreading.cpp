@@ -1,4 +1,4 @@
-#include <ftl/streams>
+#include <ftl/stdio>
 #include <ftl/threads>
 #include <ftl/utils>
 

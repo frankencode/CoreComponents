@@ -1,5 +1,5 @@
-#ifndef FTL_STREAMS
-#define FTL_STREAMS
+#ifndef FTL_STDIO
+#define FTL_STDIO
 
 #include "FileStatus.hpp"
 #include "File.hpp"
@@ -7,4 +7,4 @@
 #include "StandardStreams.hpp"
 #include "PrintDebug.hpp"
 
-#endif //  FTL_STREAMS
+#endif //  FTL_STDIO
