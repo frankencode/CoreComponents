@@ -21,10 +21,14 @@
 namespace ftl
 {
 
-XClient::XClient(String host, int display, int screen)
+XClient::XClient()
 	: nextResourceId_(0),
-	  freeResourceIds_(new List<uint32_t>)
+	  freeResourceIds_(new List<uint32_t>),
+	  defaultScreen_(0)
 {
+	String host = 0;
+	int display = 0;
+	
 	Ref<SocketAddress, Owner> address;
 	String authProtocol, authData;
 	{
@@ -34,7 +38,7 @@ XClient::XClient(String host, int display, int screen)
 			parts = parts->get(1)->split('.');
 			display = parts->get(0)->toInt();
 			if (parts->length() == 2)
-				screen = parts->get(1)->toInt();
+				defaultScreen_ = parts->get(1)->toInt();
 		}
 		if (host == "") {
 			String path = Format("/tmp/.X11-unix/X%%") << display;
@@ -84,6 +88,47 @@ XClient::XClient(String host, int display, int screen)
 	
 	displayInfo_ = new XDisplayInfo;
 	displayInfo_->read(source);
+	
+	if (defaultScreen_ >= displayInfo_->screenInfo->length())
+		defaultScreen_ = displayInfo_->screenInfo->length() - 1;
+}
+
+Ref<XWindow, Owner> XClient::createWindow(int x, int y, int width, int height)
+{
+	Ref<XScreenInfo> screenInfo = displayInfo_->screenInfo->at(defaultScreen_);
+	Ref<XWindow, Owner> window = new XWindow;
+	window->id_ = allocateResourceId();
+	window->visualId_ = screenInfo->rootVisualId;
+	window->depth_ = screenInfo->rootDepth;
+	
+	Ref<ByteEncoder, Owner> sink = new ByteEncoder(socket_);
+	sink->writeUInt8(1);
+	sink->writeUInt8(window->depth_);
+	sink->writeUInt16(8); // request length
+	sink->writeUInt32(window->id_);
+	sink->writeUInt32(screenInfo->rootWindowId);
+	sink->writeUInt16(x);
+	sink->writeUInt16(y);
+	sink->writeUInt16(width);
+	sink->writeUInt16(height);
+	sink->writeUInt16(0); // border width
+	sink->writeUInt16(1); // class (0=inherit, 1=input/output, 2=input only)
+	sink->writeUInt32(window->visualId_);
+	sink->writeUInt32(0); // value mask
+	
+	sink->flush();
+	
+	return window;
+}
+
+void XClient::mapWindow(Ref<XWindow> window)
+{
+	Ref<ByteEncoder, Owner> sink = new ByteEncoder(socket_);
+	sink->writeUInt8(8);
+	sink->writeUInt8(0); // unused
+	sink->writeUInt16(2); // request length
+	sink->writeUInt32(window->id_);
+	sink->flush();
 }
 
 uint32_t XClient::allocateResourceId()
