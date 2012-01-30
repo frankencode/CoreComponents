@@ -158,6 +158,8 @@ public:
 	inline Value& value() { return value_; }
 	inline void setValue(const Value& value) { value_ = value; }
 	
+	inline const Pair* operator->() const { return this; }
+	
 private:
 	Key key_;
 	Value value_;

@@ -15,12 +15,56 @@
 namespace ftl
 {
 
-void XPixmapFormatInfo::read(Ref<ByteDecoder> source)
+void XPixmapInfo::read(Ref<ByteDecoder> source)
 {
 	depth = source->readUInt8();
 	bpp = source->readUInt8();
-	padding = source->readUInt8();
+	pad = source->readUInt8();
 	for (int j = 0; j < 5; ++j) source->readUInt8(); // unused
+}
+
+void XVisualInfo::read(Ref<ByteDecoder> source)
+{
+	visualId = source->readUInt32();
+	type = source->readUInt8();
+	bitsPerComponent = source->readUInt8();
+	colormapSize = source->readUInt16();
+	redMask = source->readUInt32();
+	greenMask = source->readUInt32();
+	blueMask = source->readUInt32();
+	source->readInt32(); // unused
+}
+
+void XScreenInfo::read(Ref<ByteDecoder> source)
+{
+	rootWindowId = source->readUInt32();
+	defaultColormapId = source->readUInt32();
+	whitePixel = source->readUInt32();
+	blackPixel = source->readUInt32();
+	inputMask = source->readUInt32();
+	widthInPixels = source->readUInt16();
+	heightInPixels = source->readUInt16();
+	widthInMillimeters = source->readUInt16();
+	heightInMillimeters = source->readUInt16();
+	minInstalledMaps = source->readUInt16();
+	maxInstalledMaps = source->readUInt16();
+	rootVisualId = source->readUInt32();
+	backingStores = source->readUInt8();
+	saveUnders = source->readUInt8();
+	rootDepth = source->readUInt8();
+	visualInfoByDepth = new XVisualInfoByDepth;
+	for (int i = 0, n = source->readUInt8(); i < n; ++i) {
+		int depth = source->readUInt8();
+		source->readUInt8(); // unused
+		Ref<XVisualInfoArray, Owner> visualInfoArray = new XVisualInfoArray(source->readUInt16());
+		source->readUInt32(); // unused
+		for (int j = 0; j < visualInfoArray->length(); ++j) {
+			Ref<XVisualInfo, Owner> visualInfo = new XVisualInfo;
+			visualInfo->read(source);
+			visualInfoArray->set(j, visualInfo);
+		}
+		visualInfoByDepth->insert(depth, visualInfoArray);
+	}
 }
 
 void XDisplayInfo::read(Ref<ByteDecoder> source)
@@ -33,7 +77,7 @@ void XDisplayInfo::read(Ref<ByteDecoder> source)
 	if (majorVersion != 11)
 		FTL_THROW(XException, "Unsupported protocol version");
 	
-	uint16_t additionalDataLength = source->readUInt16();
+	source->readUInt16(); // additional data length
 	
 	if (response != 1) {
 		if ((response == 0) || (response == 2)) {
@@ -49,9 +93,9 @@ void XDisplayInfo::read(Ref<ByteDecoder> source)
 	motionBufferSize = source->readUInt32();
 	uint16_t vendorLength = source->readUInt16();
 	maximumRequestLength = source->readUInt16();
-	uint8_t numberOfRoots = source->readUInt8();
-	pixmapFormats = new PixmapFormats(source->readUInt8());
-	imageEndian = source->readUInt8();
+	screenInfo = new XScreenInfoArray(source->readUInt8());
+	pixmapInfo = new XPixmapInfoArray(source->readUInt8());
+	imageByteOrder = source->readUInt8();
 	bitmapBitOrder = source->readUInt8();
 	bitmapScanlineUnit = source->readUInt8();
 	bitmapScanlinePad = source->readUInt8();
@@ -61,10 +105,16 @@ void XDisplayInfo::read(Ref<ByteDecoder> source)
 	vendor = source->read(vendorLength);
 	source->skipPad(4);
 	
-	for (int i = 0; i < pixmapFormats->length(); ++i) {
-		Ref<XPixmapFormatInfo, Owner> format = new XPixmapFormatInfo;
+	for (int i = 0; i < pixmapInfo->length(); ++i) {
+		Ref<XPixmapInfo, Owner> format = new XPixmapInfo;
 		format->read(source);
-		pixmapFormats->set(i, format);
+		pixmapInfo->set(i, format);
+	}
+	
+	for (int i = 0; i < screenInfo->length(); ++i) {
+		Ref<XScreenInfo, Owner> screen = new XScreenInfo;
+		screen->read(source);
+		screenInfo->set(i, screen);
 	}
 }
 

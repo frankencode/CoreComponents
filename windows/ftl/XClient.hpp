@@ -15,6 +15,7 @@
 #include <ftl/String.hpp>
 #include <ftl/Mutex.hpp>
 #include "XDisplayInfo.hpp"
+#include "XWindow.hpp"
 
 namespace ftl
 {
@@ -23,14 +24,18 @@ class StreamSocket;
 
 FTL_EXCEPTION(XException, Exception);
 
-class XClient: public Instance
+class XClient: public Instance, public Singleton<XClient>
 {
 public:
-	XClient(String host = "", int display = 0, int screen = 0);
-	
 	Ref<XDisplayInfo> displayInfo() const { return displayInfo_; }
 	
+	Ref<XWindow, Owner> createWindow(int x, int y, int width, int height);
+	void mapWindow(Ref<XWindow> window);
+	
 private:
+	friend class Singleton<XClient>;
+	XClient();
+	
 	Ref<StreamSocket, Owner> socket_;
 	
 	uint32_t allocateResourceId();
@@ -40,7 +45,10 @@ private:
 	Ref<List<uint32_t>, Owner> freeResourceIds_;
 	
 	Ref<XDisplayInfo, Owner> displayInfo_;
+	int defaultScreen_;
 };
+
+inline Ref<XClient> xClient() { return XClient::instance(); }
 
 } // namespace ftl
 

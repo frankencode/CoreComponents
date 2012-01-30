@@ -128,9 +128,9 @@ public:
 		return i;
 	}
 	
-	inline bool contains(const char& item) const { return find(item) < size_; }
+	inline bool contains(char item) const { return find(item) < size_; }
 	
-	inline int replace(const char& oldItem, const char& newItem) {
+	inline int replace(char oldItem, char newItem) {
 		int n = 0;
 		for (int i = 0; i < size_; ++i) {
 			if (data_[i] == oldItem) {

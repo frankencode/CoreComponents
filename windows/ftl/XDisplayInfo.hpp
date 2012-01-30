@@ -20,11 +20,11 @@
 namespace ftl
 {
 
-class XPixmapFormatInfo: public Instance {
+class XPixmapInfo: public Instance {
 public:
 	uint8_t depth;
 	uint8_t bpp;
-	uint8_t padding;
+	uint8_t pad;
 	
 	void read(Ref<ByteDecoder> source);
 };
@@ -34,7 +34,7 @@ public:
 	uint32_t visualId;
 	uint8_t type;
 	uint8_t bitsPerComponent;
-	uint16_t colorMapSize;
+	uint16_t colormapSize;
 	uint32_t redMask;
 	uint32_t greenMask;
 	uint32_t blueMask;
@@ -42,10 +42,13 @@ public:
 	void read(Ref<ByteDecoder> source);
 };
 
+typedef Array< Ref< XVisualInfo, Owner > > XVisualInfoArray;
+typedef Map< int, Ref<XVisualInfoArray, Owner> > XVisualInfoByDepth;
+
 class XScreenInfo: public Instance {
 public:
 	uint32_t rootWindowId;
-	uint32_t colorMap;
+	uint32_t defaultColormapId;
 	uint32_t whitePixel;
 	uint32_t blackPixel;
 	uint32_t inputMask;
@@ -60,16 +63,18 @@ public:
 	uint8_t saveUnders;
 	uint8_t rootDepth;
 	
-	typedef Array< Ref< XVisualInfo, Owner > > Visuals;
-	typedef Map< int, Ref<Visuals, Owner> > VisualsByDepth;
-	
-	Ref<VisualsByDepth, Owner> visualsByDepth;
+	Ref<XVisualInfoByDepth, Owner> visualInfoByDepth;
 	
 	void read(Ref<ByteDecoder> source);
 };
 
+typedef Array< Ref<XPixmapInfo, Owner> > XPixmapInfoArray;
+typedef Array< Ref<XScreenInfo, Owner> > XScreenInfoArray;
+
 class XDisplayInfo: public Instance {
 public:
+	enum Endianess { LittleEndian = 0, BigEndian = 1 };
+	
 	uint16_t majorVersion;
 	uint16_t minorVersion;
 	uint32_t releaseNumber;
@@ -77,7 +82,7 @@ public:
 	uint32_t resourceIdMask;
 	uint32_t motionBufferSize;
 	uint16_t maximumRequestLength;
-	uint8_t imageEndian;
+	uint8_t imageByteOrder;
 	uint8_t bitmapBitOrder;
 	uint8_t bitmapScanlineUnit;
 	uint8_t bitmapScanlinePad;
@@ -85,11 +90,8 @@ public:
 	uint8_t maxKeyCode;
 	String vendor;
 	
-	typedef Array< Ref<XPixmapFormatInfo, Owner> > PixmapFormats;
-	typedef Array< Ref<XScreenInfo, Owner> > Screens;
-	
-	Ref<PixmapFormats, Owner> pixmapFormats;
-	Ref<Screens, Owner> screens;
+	Ref<XPixmapInfoArray, Owner> pixmapInfo;
+	Ref<XScreenInfoArray, Owner> screenInfo;
 	
 	void read(Ref<ByteDecoder> source);
 };

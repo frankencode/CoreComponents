@@ -138,6 +138,8 @@ int ByteArray::find(int i, const char* pattern) const
 			++k;
 			if (!pattern[k])
 				return j - k;
+		}
+		else {
 			k = 0;
 		}
 	}
