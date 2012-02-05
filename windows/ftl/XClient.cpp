@@ -14,7 +14,7 @@
 #include <ftl/ByteEncoder.hpp>
 #include <ftl/ByteDecoder.hpp>
 #include <ftl/Format.hpp>
-#include <ftl/stdio> // DEBUG
+#include <ftl/stdio>
 #include "XAuthFile.hpp"
 #include "XClient.hpp"
 
@@ -22,9 +22,10 @@ namespace ftl
 {
 
 XClient::XClient()
-	: nextResourceId_(0),
+	: defaultScreen_(0),
+	  nextResourceId_(0),
 	  freeResourceIds_(new List<uint32_t>),
-	  defaultScreen_(0)
+	  sequenceNumber_(0)
 {
 	String host = 0;
 	int display = 0;
@@ -95,6 +96,8 @@ XClient::XClient()
 
 Ref<XWindow, Owner> XClient::createWindow(int x, int y, int width, int height)
 {
+	++sequenceNumber_;
+	
 	Ref<XScreenInfo> screenInfo = displayInfo_->screenInfo->at(defaultScreen_);
 	Ref<XWindow, Owner> window = new XWindow;
 	window->id_ = allocateResourceId();
@@ -115,7 +118,6 @@ Ref<XWindow, Owner> XClient::createWindow(int x, int y, int width, int height)
 	sink->writeUInt16(1); // class (0=inherit, 1=input/output, 2=input only)
 	sink->writeUInt32(window->visualId_);
 	sink->writeUInt32(0); // value mask
-	
 	sink->flush();
 	
 	return window;
@@ -123,6 +125,8 @@ Ref<XWindow, Owner> XClient::createWindow(int x, int y, int width, int height)
 
 void XClient::mapWindow(Ref<XWindow> window)
 {
+	++sequenceNumber_;
+	
 	Ref<ByteEncoder, Owner> sink = new ByteEncoder(socket_);
 	sink->writeUInt8(8);
 	sink->writeUInt8(0); // unused
@@ -145,6 +149,56 @@ void XClient::freeResourceId(uint32_t id)
 {
 	Guard<Mutex> guard(&resourceIdMutex_);
 	freeResourceIds_->push(id);
+}
+
+void XClient::run()
+{
+	Ref<ByteDecoder, Owner> source = new ByteDecoder(socket_);
+	
+	while (true) {
+		uint8_t messageType = source->readUInt8();
+		
+		if (messageType == 0) // error
+		{
+			uint8_t code = source->readUInt8();
+			uint16_t sequenceNumber = source->readUInt16();
+			uint32_t badSomething = source->readUInt32();
+			uint16_t minorOpcode = source->readUInt16();
+			uint8_t majorOpcode = source->readUInt8();
+			source->skipPad(32);
+			
+			bool badValue = (code == 2);
+			bool badResource =
+				((3 <= code) && (code <= 7)) ||
+				(code == 9) ||
+				(code == 12) ||
+				(code == 13) ||
+				(code == 14);
+			
+			const char* errorNames[] = {
+				"unknown", "request", "value", "window", "pixmap", "atom", "cursor", "font",
+				"match", "drawable", "access", "alloc", "colormap", "graphics context",
+				"id choice", "name", "length", "implementation"
+			};
+			const char* errorName = errorNames[((1 <= code) && (code <= 17)) ? int(code) : 0];
+			
+			if (badValue) {
+				printTo(error(), "X11 %% error (opcode: %%.%%, bad value: %%) [%%]\n",
+					errorName, majorOpcode, minorOpcode, badSomething, sequenceNumber
+				);
+			}
+			else if (badResource) {
+				printTo(error(), "X11 %% error (opcode: %%.%%, bad resource id: %%) [%%]\n",
+					errorName, majorOpcode, minorOpcode, badSomething, sequenceNumber
+				);
+			}
+			else {
+				printTo(error(), "X11 %% error (opcode: %%.%%) [%%]\n",
+					errorName, majorOpcode, minorOpcode, sequenceNumber
+				);
+			}
+		}
+	}
 }
 
 } // namespace ftl

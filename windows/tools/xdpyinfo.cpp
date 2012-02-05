@@ -5,9 +5,7 @@ int main()
 {
 	using namespace ftl;
 	
-	Ref<XClient, Owner> client = new XClient;
-	
-	Ref<XDisplayInfo> displayInfo = client->displayInfo();
+	Ref<XDisplayInfo> displayInfo = xClient()->displayInfo();
 	
 	print("protocol version: %%.%%\n", displayInfo->majorVersion, displayInfo->minorVersion);
 	print("vendor: %%\n", displayInfo->vendor);
