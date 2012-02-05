@@ -14,6 +14,7 @@
 #include <ftl/Exception.hpp>
 #include <ftl/String.hpp>
 #include <ftl/Mutex.hpp>
+#include <ftl/Thread.hpp>
 #include "XDisplayInfo.hpp"
 #include "XWindow.hpp"
 
@@ -24,7 +25,7 @@ class StreamSocket;
 
 FTL_EXCEPTION(XException, Exception);
 
-class XClient: public Instance, public Singleton<XClient>
+class XClient: public Thread, public Singleton<XClient>
 {
 public:
 	Ref<XDisplayInfo> displayInfo() const { return displayInfo_; }
@@ -37,6 +38,8 @@ private:
 	XClient();
 	
 	Ref<StreamSocket, Owner> socket_;
+	Ref<XDisplayInfo, Owner> displayInfo_;
+	int defaultScreen_;
 	
 	uint32_t allocateResourceId();
 	void freeResourceId(uint32_t id);
@@ -44,8 +47,8 @@ private:
 	uint32_t nextResourceId_;
 	Ref<List<uint32_t>, Owner> freeResourceIds_;
 	
-	Ref<XDisplayInfo, Owner> displayInfo_;
-	int defaultScreen_;
+	uint16_t sequenceNumber_;
+	virtual void run();
 };
 
 inline Ref<XClient> xClient() { return XClient::instance(); }
