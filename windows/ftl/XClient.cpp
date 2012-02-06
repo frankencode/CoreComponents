@@ -107,7 +107,7 @@ Ref<XWindow, Owner> XClient::createWindow(int x, int y, int width, int height)
 	Ref<ByteEncoder, Owner> sink = new ByteEncoder(socket_);
 	sink->writeUInt8(1);
 	sink->writeUInt8(window->depth_);
-	sink->writeUInt16(8); // request length
+	sink->writeUInt16(8 + 1); // request length
 	sink->writeUInt32(window->id_);
 	sink->writeUInt32(screenInfo->rootWindowId);
 	sink->writeUInt16(x);
@@ -117,7 +117,8 @@ Ref<XWindow, Owner> XClient::createWindow(int x, int y, int width, int height)
 	sink->writeUInt16(0); // border width
 	sink->writeUInt16(1); // class (0=inherit, 1=input/output, 2=input only)
 	sink->writeUInt32(window->visualId_);
-	sink->writeUInt32(0); // value mask
+	sink->writeUInt32(0x800); // value mask (0x800 = event mask)
+	sink->writeUInt32(0x1FFFFFF); // event mask
 	sink->flush();
 	
 	return window;
@@ -151,8 +152,53 @@ void XClient::freeResourceId(uint32_t id)
 	freeResourceIds_->push(id);
 }
 
+static const char *x11MessageName(int messageType)
+{
+	const char *names[] = {
+		"error",             // 0
+		"display info",      // 1
+		"key press",         // 2
+		"key release",       // 3
+		"button press",      // 4
+		"button release",    // 5
+		"motion notify",     // 6
+		"enter notify",      // 7
+		"leave notify",      // 8
+		"focus in",          // 9
+		"focus out",         // 10
+		"keymap notify",     // 11
+		"expose",            // 12
+		"graphics exposure", // 13
+		"no exposure",       // 14
+		"visibility notify", // 15
+		"create notify",     // 16
+		"destroy notify",    // 17
+		"unmap notify",      // 18
+		"map notify",        // 19
+		"map request",       // 20
+		"reparent notify",   // 21
+		"configure notify",  // 22
+		"configure request", // 23
+		"gravity notify",    // 24
+		"resize request",    // 25
+		"circulate notify",  // 26
+		"circulate request", // 27
+		"property notify",   // 28
+		"selection clear",   // 29
+		"selection request", // 30
+		"selection notify",  // 31
+		"colormap notify",   // 32
+		"client message",    // 33
+		"mapping notify"     // 34
+	};
+	
+	return ((0 <= messageType) && (messageType <= 34)) ? names[messageType] : "unknown";
+}
+
+
 void XClient::run()
 {
+	printTo(error(), "XClient::run()\n");
 	Ref<ByteDecoder, Owner> source = new ByteDecoder(socket_);
 	
 	while (true) {
@@ -165,7 +211,6 @@ void XClient::run()
 			uint32_t badSomething = source->readUInt32();
 			uint16_t minorOpcode = source->readUInt16();
 			uint8_t majorOpcode = source->readUInt8();
-			source->skipPad(32);
 			
 			bool badValue = (code == 2);
 			bool badResource =
@@ -198,6 +243,107 @@ void XClient::run()
 				);
 			}
 		}
+		else if ((2 <= messageType ) && (messageType <= 6))
+		{
+			uint8_t detail = source->readUInt8();
+			uint16_t sequenceNumber = source->readUInt16();
+			uint32_t time = source->readUInt32();
+			uint32_t rootWindowId = source->readUInt32();
+			uint32_t eventWindowId = source->readUInt32();
+			uint32_t childWindowId = source->readUInt32();
+			uint16_t rootX = source->readUInt16();
+			uint16_t rootY = source->readUInt16();
+			uint16_t eventX = source->readUInt16();
+			uint16_t eventY = source->readUInt16();
+			uint16_t state = source->readUInt16();
+			uint8_t sameScreen = source->readUInt8();
+			source->skipPad(32);
+			
+			String detailString;
+			if ((messageType == 2) || (messageType == 3))
+				detailString = Format("keycode: %%") << detail;
+			else if ((messageType == 4) || (messageType == 5))
+				detailString = Format("button: %%") << detail;
+			else if (messageType == 6)
+				detailString = (detail == 0) ? "normal" : "hint";
+			
+			String stateString;
+			{
+				enum KeyButtonMask {
+					Shift   = 1,
+					Lock    = 2,
+					Control = 4,
+					Mod1    = 8,
+					Mod2    = 16,
+					Mod3    = 32,
+					Mod4    = 64,
+					Mod5    = 128,
+					Button1 = 256,
+					Button2 = 512,
+					Button3 = 1024,
+					Button4 = 2048,
+					Button5 = 4096
+				};
+				Ref<StringList, Owner> bitNames = new StringList;
+				if (state & Shift) bitNames->append("Shift");
+				else if (state & Lock) bitNames->append("Lock");
+				else if (state & Control) bitNames->append("Control");
+				else if (state & Mod1) bitNames->append("Mod1");
+				else if (state & Mod2) bitNames->append("Mod2");
+				else if (state & Mod3) bitNames->append("Mod3");
+				else if (state & Mod4) bitNames->append("Mod4");
+				else if (state & Mod5) bitNames->append("Mod5");
+				else if (state & Button1) bitNames->append("Button1");
+				else if (state & Button2) bitNames->append("Button2");
+				else if (state & Button3) bitNames->append("Button3");
+				else if (state & Button4) bitNames->append("Button4");
+				else if (state & Button5) bitNames->append("Button5");
+				stateString = bitNames->join("|");
+			}
+			
+			printTo(error(), "X11 %% event (\n"
+				"  %%, time: %%,\n"
+				"  root window id: %%,\n"
+				"  event window id: %%,\n"
+				"  child window id: %%,\n"
+				"  rootX, rootY: %%, %%\n"
+				"  eventX, eventY: %%, %%\n"
+				"  same screen: %%\n"
+				") [%%]\n",
+				x11MessageName(messageType),
+				detailString, time,
+				rootWindowId,
+				eventWindowId,
+				childWindowId,
+				rootX, rootY,
+				eventX, eventY,
+				bool(sameScreen),
+				sequenceNumber
+			);
+		}
+		/*else if ((messageType == 6) || (messageType == 7))
+		{
+			uint8_t detail = source->readUInt8();
+			uint16_t sequenceNumber = source->readUInt16();
+			uint32_t time = source->readUInt32();
+			uint32_t rootWindowId = source->readUInt32();
+			uint32_t eventWindowId = source->readUInt32();
+			uint32_t childWindowId = source->readUInt32();
+			uint16_t rootX = source->readUInt16();
+			uint16_t rootY = source->readUInt16();
+			uint16_t eventX = source->readUInt16();
+			uint16_t eventY = source->readUInt16();
+			uint16_t state = source->readUInt16();
+			uint8_t mode = source->readUInt8();
+			uint8_t flags = source->readUInt8();
+			
+			String evenName = 
+			String detailString 
+		}*/
+		else {
+			printTo(error(), "X11 %% (%%)\n", x11MessageName(messageType), messageType);
+		}
+		source->skipPad(32);
 	}
 }
 
