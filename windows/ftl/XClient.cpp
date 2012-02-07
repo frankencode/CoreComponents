@@ -152,7 +152,7 @@ void XClient::freeResourceId(uint32_t id)
 	freeResourceIds_->push(id);
 }
 
-static const char *x11MessageName(int messageType)
+static const char *x11MessageName(int messageCode)
 {
 	const char *names[] = {
 		"error",             // 0
@@ -192,7 +192,7 @@ static const char *x11MessageName(int messageType)
 		"mapping notify"     // 34
 	};
 	
-	return ((0 <= messageType) && (messageType <= 34)) ? names[messageType] : "unknown";
+	return ((0 <= messageCode) && (messageCode <= 34)) ? names[messageCode] : "unknown";
 }
 
 
@@ -202,15 +202,18 @@ void XClient::run()
 	Ref<ByteDecoder, Owner> source = new ByteDecoder(socket_);
 	
 	while (true) {
-		uint8_t messageType = source->readUInt8();
+		uint8_t messageCode = source->readUInt8();
+		bool synthetic = messageCode & 0x80;
+		messageCode &= 0x7F;
 		
-		if (messageType == 0) // error
+		if (messageCode == 0) // error
 		{
 			uint8_t code = source->readUInt8();
 			uint16_t sequenceNumber = source->readUInt16();
 			uint32_t badSomething = source->readUInt32();
 			uint16_t minorOpcode = source->readUInt16();
 			uint8_t majorOpcode = source->readUInt8();
+			source->skipPad(32);
 			
 			bool badValue = (code == 2);
 			bool badResource =
@@ -243,7 +246,7 @@ void XClient::run()
 				);
 			}
 		}
-		else if ((2 <= messageType ) && (messageType <= 6))
+		else if ((2 <= messageCode) && (messageCode <= 6))
 		{
 			uint8_t detail = source->readUInt8();
 			uint16_t sequenceNumber = source->readUInt16();
@@ -260,11 +263,11 @@ void XClient::run()
 			source->skipPad(32);
 			
 			String detailString;
-			if ((messageType == 2) || (messageType == 3))
+			if ((messageCode == 2) || (messageCode == 3))
 				detailString = Format("keycode: %%") << detail;
-			else if ((messageType == 4) || (messageType == 5))
+			else if ((messageCode == 4) || (messageCode == 5))
 				detailString = Format("button: %%") << detail;
-			else if (messageType == 6)
+			else if (messageCode == 6)
 				detailString = (detail == 0) ? "normal" : "hint";
 			
 			String stateString;
@@ -310,7 +313,7 @@ void XClient::run()
 				"  eventX, eventY: %%, %%\n"
 				"  same screen: %%\n"
 				") [%%]\n",
-				x11MessageName(messageType),
+				x11MessageName(messageCode),
 				detailString, time,
 				rootWindowId,
 				eventWindowId,
@@ -321,7 +324,7 @@ void XClient::run()
 				sequenceNumber
 			);
 		}
-		/*else if ((messageType == 6) || (messageType == 7))
+		/*else if ((messageCode == 6) || (messageCode == 7))
 		{
 			uint8_t detail = source->readUInt8();
 			uint16_t sequenceNumber = source->readUInt16();
@@ -341,7 +344,7 @@ void XClient::run()
 			String detailString 
 		}*/
 		else {
-			printTo(error(), "X11 %% (%%)\n", x11MessageName(messageType), messageType);
+			printTo(error(), "X11 %% (%%)\n", x11MessageName(messageCode), messageCode);
 		}
 		source->skipPad(32);
 	}
