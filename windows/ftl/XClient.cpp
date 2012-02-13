@@ -11,6 +11,7 @@
 
 #include <ftl/Process.hpp>
 #include <ftl/StreamSocket.hpp>
+#include <ftl/Mutex.hpp>
 #include <ftl/ByteEncoder.hpp>
 #include <ftl/ByteDecoder.hpp>
 #include <ftl/Format.hpp>
@@ -23,9 +24,13 @@ namespace ftl
 
 XClient::XClient()
 	: defaultScreen_(0),
+	  resourceIdMutex_(new Mutex),
 	  nextResourceId_(0),
 	  freeResourceIds_(new List<uint32_t>),
-	  sequenceNumber_(0)
+	  sequenceNumberMutex_(new Mutex),
+	  sequenceNumber_(0),
+	  messageFiltersMutex_(new Mutex),
+	  messageFilters_(new MessageFilters)
 {
 	String host = 0;
 	int display = 0;
@@ -94,51 +99,9 @@ XClient::XClient()
 		defaultScreen_ = displayInfo_->screenInfo->length() - 1;
 }
 
-Ref<XWindow, Owner> XClient::createWindow(int x, int y, int width, int height)
-{
-	++sequenceNumber_;
-	
-	Ref<XScreenInfo> screenInfo = displayInfo_->screenInfo->at(defaultScreen_);
-	Ref<XWindow, Owner> window = new XWindow;
-	window->id_ = allocateResourceId();
-	window->visualId_ = screenInfo->rootVisualId;
-	window->depth_ = screenInfo->rootDepth;
-	
-	Ref<ByteEncoder, Owner> sink = new ByteEncoder(socket_);
-	sink->writeUInt8(1);
-	sink->writeUInt8(window->depth_);
-	sink->writeUInt16(8 + 1); // request length
-	sink->writeUInt32(window->id_);
-	sink->writeUInt32(screenInfo->rootWindowId);
-	sink->writeUInt16(x);
-	sink->writeUInt16(y);
-	sink->writeUInt16(width);
-	sink->writeUInt16(height);
-	sink->writeUInt16(0); // border width
-	sink->writeUInt16(1); // class (0=inherit, 1=input/output, 2=input only)
-	sink->writeUInt32(window->visualId_);
-	sink->writeUInt32(0x800); // value mask (0x800 = event mask)
-	sink->writeUInt32(0x1FFFFFF); // event mask
-	sink->flush();
-	
-	return window;
-}
-
-void XClient::mapWindow(Ref<XWindow> window)
-{
-	++sequenceNumber_;
-	
-	Ref<ByteEncoder, Owner> sink = new ByteEncoder(socket_);
-	sink->writeUInt8(8);
-	sink->writeUInt8(0); // unused
-	sink->writeUInt16(2); // request length
-	sink->writeUInt32(window->id_);
-	sink->flush();
-}
-
 uint32_t XClient::allocateResourceId()
 {
-	Guard<Mutex> guard(&resourceIdMutex_);
+	Guard<Mutex> guard(resourceIdMutex_);
 	if (freeResourceIds_->length() > 0)
 		return freeResourceIds_->pop();
 	if (nextResourceId_ == displayInfo_->resourceIdMask)
@@ -148,15 +111,84 @@ uint32_t XClient::allocateResourceId()
 
 void XClient::freeResourceId(uint32_t id)
 {
-	Guard<Mutex> guard(&resourceIdMutex_);
+	Guard<Mutex> guard(resourceIdMutex_);
 	freeResourceIds_->push(id);
+}
+
+void XClient::activate(Ref<XMessageFilter> filter)
+{
+	Guard<Mutex> guard(messageFiltersMutex_);
+	messageFilters_->insert(filter);
+}
+
+void XClient::deactivate(Ref<XMessageFilter> filter)
+{
+	Guard<Mutex> guard(messageFiltersMutex_);
+	messageFilters_->remove(filter);
+}
+
+int XClient::createWindow(Ref<XWindow> window)
+{
+	Ref<XScreenInfo> screenInfo = displayInfo_->screenInfo->at(defaultScreen_);
+	window->visualId_ = screenInfo->rootVisualId;
+	window->depth_ = screenInfo->rootDepth;
+	
+	Ref<ByteEncoder, Owner> sink = messageEncoder();
+	sink->writeUInt8(1);
+	sink->writeUInt8(window->depth_);
+	sink->writeUInt16(8 + 1); // request length
+	sink->writeUInt32(window->id_);
+	sink->writeUInt32(screenInfo->rootWindowId);
+	sink->writeUInt16(window->x_);
+	sink->writeUInt16(window->y_);
+	sink->writeUInt16(window->width_);
+	sink->writeUInt16(window->height_);
+	sink->writeUInt16(0); // border width
+	sink->writeUInt16(1); // class (0=inherit, 1=input/output, 2=input only)
+	sink->writeUInt32(window->visualId_);
+	sink->writeUInt32(0x800); // value mask (0x800 = event mask)
+	sink->writeUInt32(0x1FFFFFF); // event mask
+	return flush(sink);
+}
+
+int XClient::mapWindow(Ref<XWindow> window)
+{
+	Ref<ByteEncoder, Owner> sink = messageEncoder();
+	sink->writeUInt8(8);
+	sink->writeUInt8(0); // unused
+	sink->writeUInt16(2); // request length
+	sink->writeUInt32(window->id_);
+	return flush(sink);
+}
+
+int XClient::getFontPath()
+{
+	Ref<ByteEncoder, Owner> sink = messageEncoder();
+	sink->writeUInt8(52);
+	sink->writeUInt8(0); // unused
+	sink->writeUInt16(1); // request list
+	return flush(sink);
+}
+
+Ref<ByteEncoder> XClient::messageEncoder()
+{
+	if (!messageEncoder_)
+		messageEncoder_ = new ByteEncoder(Ref<Stream>(socket_), int(displayInfo_->maximumRequestLength) * 4, localEndian());
+	return messageEncoder_;
+}
+
+int XClient::flush(Ref<ByteEncoder> sink)
+{
+	Guard<Mutex> guard(sequenceNumberMutex_);
+	sink->flush();
+	return ++sequenceNumber_;
 }
 
 static const char *x11MessageName(int messageCode)
 {
 	const char *names[] = {
 		"error",             // 0
-		"display info",      // 1
+		"reply",             // 1
 		"key press",         // 2
 		"key release",       // 3
 		"button press",      // 4
@@ -194,7 +226,6 @@ static const char *x11MessageName(int messageCode)
 	
 	return ((0 <= messageCode) && (messageCode <= 34)) ? names[messageCode] : "unknown";
 }
-
 
 void XClient::run()
 {

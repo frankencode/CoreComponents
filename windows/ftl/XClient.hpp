@@ -13,42 +13,62 @@
 
 #include <ftl/Exception.hpp>
 #include <ftl/String.hpp>
-#include <ftl/Mutex.hpp>
 #include <ftl/Thread.hpp>
+#include <ftl/Set.hpp>
 #include "XDisplayInfo.hpp"
+#include "XMessageFilter.hpp"
 #include "XWindow.hpp"
 
 namespace ftl
 {
 
-class StreamSocket;
-
 FTL_EXCEPTION(XException, Exception);
+
+class StreamSocket;
+class Mutex;
+class ByteEncoder;
 
 class XClient: public Thread, public Singleton<XClient>
 {
 public:
 	Ref<XDisplayInfo> displayInfo() const { return displayInfo_; }
 	
-	Ref<XWindow, Owner> createWindow(int x, int y, int width, int height);
-	void mapWindow(Ref<XWindow> window);
+	uint32_t allocateResourceId();
+	void freeResourceId(uint32_t id);
+	
+	void activate(Ref<XMessageFilter> filter);
+	void deactivate(Ref<XMessageFilter> filter);
+	
+	int createWindow(Ref<XWindow> window);
+	int mapWindow(Ref<XWindow> window);
+	
+	int getFontPath();
 	
 private:
 	friend class Singleton<XClient>;
 	XClient();
 	
+	Ref<ByteEncoder> messageEncoder();
+	int flush(Ref<ByteEncoder> sink);
+	
+	virtual void run();
+	
 	Ref<StreamSocket, Owner> socket_;
 	Ref<XDisplayInfo, Owner> displayInfo_;
 	int defaultScreen_;
 	
-	uint32_t allocateResourceId();
-	void freeResourceId(uint32_t id);
-	Mutex resourceIdMutex_;
+	Ref<Mutex, Owner> resourceIdMutex_;
 	uint32_t nextResourceId_;
 	Ref<List<uint32_t>, Owner> freeResourceIds_;
 	
+	Ref<Mutex, Owner> sequenceNumberMutex_;
 	uint16_t sequenceNumber_;
-	virtual void run();
+	
+	Ref<ByteEncoder, ThreadLocalOwner> messageEncoder_;
+	
+	Ref<Mutex, Owner> messageFiltersMutex_;
+	typedef Set< Ref<XMessageFilter, Owner> > MessageFilters;
+	Ref<MessageFilters, Owner> messageFilters_;
 };
 
 inline Ref<XClient> xClient() { return XClient::instance(); }

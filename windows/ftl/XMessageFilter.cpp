@@ -1,5 +1,5 @@
 /*
- * XWindow.cpp -- X11 window
+ * XMessageFilter.cpp -- X11 message filter
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *
@@ -10,19 +10,19 @@
  */
 
 #include "XClient.hpp"
-#include "XWindow.hpp"
+#include "XMessageFilter.hpp"
 
 namespace ftl
 {
 
-XWindow::XWindow(int x, int y, int width, int height)
-	: id_(xClient()->allocateResourceId()),
-	  visualId_(0),
-	  depth_(0),
-	  x_(x),
-	  y_(y),
-	  width_(width),
-	  height_(height)
-{}
+XMessageFilter::XMessageFilter()
+{
+	xClient()->activate(this);
+}
+
+XMessageFilter::~XMessageFilter()
+{
+	xClient()->deactivate(this);
+}
 
 } // namespace ftl

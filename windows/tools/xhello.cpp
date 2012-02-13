@@ -5,7 +5,8 @@
 int main()
 {
 	using namespace ftl;
-	Ref<XWindow, Owner> window = xClient()->createWindow(100, 100, 200, 200);
+	Ref<XWindow, Owner> window = new XWindow(100, 100, 200, 200);
+	xClient()->createWindow(window);
 	xClient()->mapWindow(window);
 	xClient()->start();
 	xClient()->wait();
