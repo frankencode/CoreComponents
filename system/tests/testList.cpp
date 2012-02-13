@@ -76,7 +76,7 @@ int main()
 		
 		MinHeap<int> heap(list.length());
 		Stack<int> stack(list.length());
-		Queue<int> queue(list.length());
+		CircularBuffer<int> queue(list.length());
 		
 		list >> heap >> list;
 		print(list);

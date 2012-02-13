@@ -1,11 +1,12 @@
 #include <ftl/stdio>
 #include <ftl/threads>
-#include <ftl/container>
 #include <ftl/utils>
 
 namespace ftl
 {
 
+// typedef Rondezvous<int> MyChannel;
+// typedef Conveyor<int> MyChannel;
 typedef Channel<int> MyChannel;
 
 class Consumer: public Thread
@@ -13,7 +14,7 @@ class Consumer: public Thread
 public:
 	Consumer(int id, Ref<MyChannel> channel, int amount)
 		: id_(id),
-		  channel_(channel.get()),
+		  channel_(channel),
 		  amount_(amount)
 	{}
 	
@@ -37,7 +38,7 @@ class Producer: public Thread
 public:
 	Producer(int id, Ref<MyChannel> channel, int amount)
 		: id_(id),
-		  channel_(channel.get()),
+		  channel_(channel),
 		  amount_(amount)
 	{}
 	
@@ -60,7 +61,7 @@ private:
 
 int main()
 {
-	Ref<MyChannel, Owner> channel = new MyChannel();
+	Ref<MyChannel, Owner> channel = new MyChannel;
 	
 	Ref<Producer, Owner> p1 = new Producer(1, channel, 8);
 	// Ref<Producer, Owner> p2 = new Producer(2, channel, 12);

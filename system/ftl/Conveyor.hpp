@@ -1,5 +1,5 @@
 /*
- * Channel.hpp -- message queue of unlimited length
+ * Conveyor.hpp -- message queue of limited length
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *
@@ -8,10 +8,10 @@
  *
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
-#ifndef FTL_CHANNEL_HPP
-#define FTL_CHANNEL_HPP
+#ifndef FTL_CONVEYOR_HPP
+#define FTL_CONVEYOR_HPP
 
-#include "Queue.hpp"
+#include "CircularBuffer.hpp"
 #include "Mutex.hpp"
 #include "Condition.hpp"
 
@@ -19,24 +19,31 @@ namespace ftl
 {
 
 template<class T>
-class Channel: public Container< T, Channel<T> >
+class Conveyor: public Container< T, Conveyor<T> >
 {
 public:
-	Channel& push(const T& item)
+	Conveyor(int size)
+		: buffer_(size)
+	{}
+
+	Conveyor& push(const T& item)
 	{
 		mutex_.acquire();
-		queue_.push(item);
+		while (buffer_.fill() == buffer_.size())
+			notFull_.wait(&mutex_);
+		buffer_.push(item);
 		notEmpty_.signal();
 		mutex_.release();
 		return *this;
 	}
 
-	Channel& pop(T* item)
+	Conveyor& pop(T* item)
 	{
 		mutex_.acquire();
-		while (queue_.length() == 0)
+		while (buffer_.fill() == 0)
 			notEmpty_.wait(&mutex_);
-		queue_.pop(item);
+		buffer_.pop(item);
+		notFull_.signal();
 		mutex_.release();
 		return *this;
 	}
@@ -50,11 +57,11 @@ public:
 	inline bool isEmpty() const { return false; }
 
 private:
-	Queue<T> queue_;
+	CircularBuffer<T> buffer_;
 	Mutex mutex_;
-	Condition notEmpty_;
+	Condition notEmpty_, notFull_;
 };
 
 } // namespace ftl
 
-#endif // FTL_CHANNEL_HPP
+#endif // FTL_CONVEYOR_HPP

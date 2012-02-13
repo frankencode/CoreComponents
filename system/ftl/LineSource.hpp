@@ -13,7 +13,7 @@
 
 #include "atoms"
 #include "defaults.hpp"
-#include "Queue.hpp"
+#include "CircularBuffer.hpp"
 #include "String.hpp"
 #include "Stream.hpp"
 
@@ -37,7 +37,7 @@ private:
 	Ref<Stream, Owner> stream_;
 	String eol_;
 	int cachedLines_;
-	Queue<char> cache_;
+	CircularBuffer<char> cache_;
 	ByteArray buf_;
 };
 

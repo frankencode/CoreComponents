@@ -1,5 +1,5 @@
 /*
- * Queue.hpp -- static queue
+ * Queue.hpp -- a single-linked queue
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *
@@ -17,129 +17,78 @@ namespace ftl
 {
 
 template<class T>
-class Queue: public Container< T, Queue<T> >, public Sequence<T, int>
+class QueueNode
 {
 public:
-	typedef int Index;
-	typedef T Item;
-	
-	Queue(int size)
-		: fill_(0),
-		  size_(size),
-		  head_(size_-1),
-		  tail_(size_-1),
-		  bufOwner_(true),
-		  buf_(new T[size_])
+	QueueNode(const T& item)
+		: item_(item),
+		  next_(0)
 	{}
-	
-	Queue(T* buf, int size)
-		: fill_(0),
-		  size_(size),
-		  head_(size_-1),
-		  tail_(size_-1),
-		  bufOwner_(false),
-		  buf_(buf)
+	T item_;
+	QueueNode* next_;
+};
+
+template<class T>
+class Queue: public Container< T, Queue<T> >
+{
+public:
+	Queue()
+		: head_(0), tail_(0), length_(0)
 	{}
 	
 	~Queue()
 	{
-		if (bufOwner_)
-		{
-			delete[] buf_;
-			buf_ = 0;
+		Node* node = head_;
+		while (node) {
+			Node* next = node->next_;
+			delete node;
+			node = next;
 		}
 	}
 	
-	inline int size() const { return size_; }
-	inline int fill() const { return fill_; }
-	inline int length() const { return fill_; }
-	inline bool isFull() const { return fill_ == size_; }
-	inline bool isEmpty() const { return fill_ == 0; }
+	inline int length() const { return length_; }
+	inline bool isEmpty() const { return length_ == 0; }
 	
-	inline bool has(int i) const { return (0 <= i) && (i < fill_); }
-	inline T& at(int i) const { return front(i); }
-	inline T get(int i) const { return front(i); }
-	
-	inline Queue& push(const T& item) { return pushBack(item); }
-	inline Queue& pop(T* item) { return popFront(item); }
-	inline T pop() { T item; popFront(&item); return item; }
-	
-	inline void clear()
+	Queue& push(const T& item)
 	{
-		fill_ = 0;
-		head_ = size_ - 1;
-		tail_ = size_ - 1;
-	}
-	
-	inline Queue& pushBack(const T& item)
-	{
-		FTL_ASSERT(fill_ != size_);
-		++head_;
-		if (head_ >= size_) head_ = 0;
-		++fill_;
-		buf_[head_] = item;
+		Node* node = new Node(item);
+		if (tail_) {
+			tail_->next_ = node;
+			tail_ = node;
+		}
+		else {
+			head_ = node;
+			tail_ = node;
+		}
+		++length_;
 		return *this;
 	}
 	
-	inline Queue& popFront(T* item)
+	Queue& pop(T* item)
 	{
-		FTL_ASSERT(fill_ > 0);
-		++tail_;
-		if (tail_ >= size_) tail_ = 0;
-		--fill_;
-		*item = buf_[tail_];
+		FTL_ASSERT(length_ > 0);
+		Node* node = head_;
+		if (item) *item = node->item_;
+		head_ = node->next_;
+		if (!head_) tail_ = 0;
+		delete node;
+		--length_;
 		return *this;
 	}
 	
-	inline Queue& pushFront(const T& item)
-	{
-		FTL_ASSERT(fill_ < size_);
-		buf_[tail_] = item;
-		--tail_;
-		if (tail_ < 0) tail_ = size_ - 1;
-		++fill_;
-		return *this;
-	}
-	
-	inline Queue& popBack(T* item)
-	{
-		FTL_ASSERT(fill_ > 0);
-		*item = buf_[head_];
-		--head_;
-		if (head_ < 0) head_ = size_ - 1;
-		--fill_;
-		return *this;
-	}
-
-	inline T popFront() { T item; popFront(item); return item; }
-	inline T popBack() { T item; popBack(item); return item; }
-
-	inline T& back(int i = 0) const
-	{
-		FTL_ASSERT((0 <= i) && (i < fill_));
-		i = -i;
-		i += head_;
-		if (i < 0) i += size_;
-		return buf_[i];
-	}
-	
-	inline T& front(int i = 0) const
-	{
-		FTL_ASSERT((0 <= i) && (i < fill_));
-		i += tail_ + 1;
-		if (i >= size_) i -= size_;
-		return buf_[i];
+	inline T pop() {
+		T item;
+		pop(&item);
+		return item;
 	}
 	
 private:
-	int fill_;
-	int size_;
-	int head_;
-	int tail_;
-	bool bufOwner_;
-	T* buf_;
+	typedef QueueNode<T> Node;
+	Node* head_;
+	Node* tail_;
+	int length_;
 };
 
 } // namespace ftl
 
-#endif // FTL_QUEUE
+#endif // FTL_QUEUE_HPP

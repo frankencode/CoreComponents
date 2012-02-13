@@ -12,6 +12,8 @@
 #include "Guard.hpp"
 #include "Condition.hpp"
 #include "Semaphore.hpp"
+#include "Rondezvous.hpp"
+#include "Conveyor.hpp"
 #include "Channel.hpp"
 
 #endif // FTL_THREADS

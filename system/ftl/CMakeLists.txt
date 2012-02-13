@@ -37,7 +37,7 @@ SET(FTLSYSTEM_HEADER
 	containers.hpp
 	Array.hpp
 	Stack.hpp
-	Queue.hpp
+	CircularBuffer.hpp
 	Heap.hpp
 	Tree.hpp
 	PrefixTree.hpp
@@ -90,6 +90,8 @@ SET(FTLSYSTEM_HEADER
 	Guard.hpp
 	Condition.hpp
 	Semaphore.hpp
+	Rondezvous.hpp
+	Conveyor.hpp
 	Channel.hpp
 	Memory.hpp
 	
