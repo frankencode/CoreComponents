@@ -3,13 +3,20 @@ INCLUDE_DIRECTORIES(../../system)
 SET(FTLWINDOWS_HEADER
 	XAuthFile.hpp
 	XDisplayInfo.hpp
+	XMessage.hpp
+	XError.hpp
+	XMessageFilter.hpp
+	XErrorFilter.hpp
 	XClient.hpp
+	XWindow.hpp
 )
 
 SET(FTLWINDOWS_SOURCE
 	XAuthFile.cpp
 	XDisplayInfo.cpp
+	XMessageFilter.cpp
 	XClient.cpp
+	XWindow.cpp
 )
 
 ADD_LIBRARY(ftlwindows

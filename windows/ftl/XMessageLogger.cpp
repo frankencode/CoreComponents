@@ -1,5 +1,5 @@
 /*
- * XWindow.cpp -- X11 window
+ * XMessageLogger.cpp -- X11 message logger
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *
@@ -9,20 +9,13 @@
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
 
-#include "XClient.hpp"
-#include "XWindow.hpp"
+#include "XMessageLogger.hpp"
 
 namespace ftl
 {
 
-XWindow::XWindow(int x, int y, int width, int height)
-	: id_(xClient()->allocateResourceId()),
-	  visualId_(0),
-	  depth_(0),
-	  x_(x),
-	  y_(y),
-	  width_(width),
-	  height_(height)
+XMessageLogger::XMessageLogger(int messageCode, int detail, int sequenceNumber)
+	: filter_(new XMessageFilter(messageCode, detail, sequenceNumber))
 {}
 
 } // namespace ftl
