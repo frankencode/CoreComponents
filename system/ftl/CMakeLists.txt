@@ -47,6 +47,7 @@ SET(FTLSYSTEM_HEADER
 	OrdinalTree.hpp
 	List.hpp
 	Map.hpp
+	Set.hpp
 	
 	syntax
 	Token.hpp

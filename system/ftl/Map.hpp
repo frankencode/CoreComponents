@@ -46,6 +46,12 @@ public:
 		if (tree_.lookupByIndex(index, &node)) return node->item_;
 		else return nullItem_;
 	}
+	inline const Key& keyAt(int index) const { return at(index).key(); }
+	inline Value& valueAt(int index) const {
+		Node* node = 0;
+		if (tree_.lookupByIndex(index, &node)) return node->item_.value();
+		else return nullItem_.value();
+	}
 	
 	/** Return the index of the first item greater or equal _a_
 	  */
@@ -83,6 +89,14 @@ public:
 			tree_.remove(k);
 		return found;
 	}
+	
+	/** Insert or overwrite a key-value mapping.
+	  */
+	inline void assign(const Key& key, const Value& value) {
+		int index = 0;
+		if (!insert(key, value, 0, &index))
+			valueAt(index) = value;
+	}
 
 	/** Lookup key-value pair by given key.
 	  * If a matching key-value pair is found the value is returned in 'value' and the
@@ -97,16 +111,6 @@ public:
 		if (found && (value))
 			*value = k->item_.value();
 		return found;
-	}
-	
-	/** Convenience wrapper to insert(), always overwrites an existing key value pair.
-	  */
-	inline int define(const Key& key, const Value& value)
-	{
-		Value oldValue;
-		int index;
-		insert(key, value, &oldValue, &index);
-		return index;
 	}
 	
 	/** Convenience wrapper to lookup()
@@ -140,7 +144,7 @@ public:
 	
 	/** Convenience wrapper to lookup()
 	  */
-	inline bool contains(Key key) { return tree_.lookup(key); }
+	inline bool contains(const Key& key) { return tree_.lookup(key); }
 	
 	inline Map& push(const Item& item)
 	{
@@ -172,10 +176,10 @@ public:
 	inline void clear() { tree_.clear(); }
 	
 private:
-	typedef OrdinalTree< OrdinalNode< Pair<Key,Value> > > Tree;
+	typedef OrdinalTree< OrdinalNode<Item> > Tree;
 	typedef typename Tree::Node Node;
 	Tree tree_;
-	Item nullItem_;
+	mutable Item nullItem_;
 };
 
 } // namespace ftl

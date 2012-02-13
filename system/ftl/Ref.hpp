@@ -84,7 +84,7 @@ public:
 	
 	// ordering
 	
-	inline bool operator<(const Ref& b) const { return *(this->saveGet()) < *(b.saveGet()); }
+	inline bool operator<(const Ref& b) const { return this->get() < b.get(); }
 	
 	// access
 	

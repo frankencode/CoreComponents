@@ -18,11 +18,11 @@
 namespace ftl
 {
 
-template<class ItemType>
-class List: public Container<ItemType, List<ItemType> >, public Sequence<ItemType, int>
+template<class T>
+class List: public Container< T, List<T> >, public Sequence<T, int>
 {
 public:
-	typedef ItemType Item;
+	typedef T Item;
 	typedef GenericIterator<List> Iterator;
 	
 	List() {}
