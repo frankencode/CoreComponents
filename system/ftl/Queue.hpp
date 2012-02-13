@@ -32,6 +32,8 @@ template<class T>
 class Queue: public Container< T, Queue<T> >
 {
 public:
+	typedef T Item;
+
 	Queue()
 		: head_(0), tail_(0), length_(0)
 	{}
@@ -81,6 +83,9 @@ public:
 		pop(&item);
 		return item;
 	}
+	
+	inline T front() const { return head_->item_; }
+	inline T back() const { return tail_->item_; }
 	
 private:
 	typedef QueueNode<T> Node;

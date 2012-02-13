@@ -7,6 +7,7 @@
 #include "Heap.hpp"
 #include "List.hpp"
 #include "Map.hpp"
+#include "Set.hpp"
 #include "Tree.hpp"
 #include "PrefixTree.hpp"
 

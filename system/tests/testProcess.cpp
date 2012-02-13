@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 		factory->setExecPath(argv[0]);
 		factory->setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
 		factory->options()->append("--echo 123");
-		factory->envMap()->define("Hello", "World!");
+		factory->envMap()->assign("Hello", "World!");
 		
 		Ref<Process, Owner> process = factory->produce();
 		
