@@ -3,7 +3,7 @@
 
 #include "Array.hpp"
 #include "Stack.hpp"
-#include "Queue.hpp"
+#include "CircularBuffer.hpp"
 #include "Heap.hpp"
 #include "List.hpp"
 #include "Map.hpp"

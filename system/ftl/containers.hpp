@@ -25,7 +25,7 @@ public:
 	
 	inline bool read(T* item) {
 		if (!isEmpty()) {
-			*item = pop();
+			pop(item);
 			return true;
 		}
 		return false;
