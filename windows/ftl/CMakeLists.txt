@@ -4,9 +4,8 @@ SET(FTLWINDOWS_HEADER
 	XAuthFile.hpp
 	XDisplayInfo.hpp
 	XMessage.hpp
-	XError.hpp
 	XMessageFilter.hpp
-	XErrorFilter.hpp
+	XMessageLogger.hpp
 	XClient.hpp
 	XWindow.hpp
 )
@@ -15,6 +14,7 @@ SET(FTLWINDOWS_SOURCE
 	XAuthFile.cpp
 	XDisplayInfo.cpp
 	XMessageFilter.cpp
+	XMessageLogger.cpp
 	XClient.cpp
 	XWindow.cpp
 )

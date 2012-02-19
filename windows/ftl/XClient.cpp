@@ -99,6 +99,12 @@ XClient::XClient()
 		defaultScreen_ = displayInfo_->screenInfo->length() - 1;
 }
 
+XClient::~XClient()
+{
+	messageFiltersMutex_ = 0;
+	messageFilters_ = 0;
+}
+
 uint32_t XClient::allocateResourceId()
 {
 	Guard<Mutex> guard(resourceIdMutex_);
@@ -123,6 +129,7 @@ void XClient::activate(Ref<XMessageFilter> filter)
 
 void XClient::deactivate(Ref<XMessageFilter> filter)
 {
+	if (!messageFiltersMutex_) return;
 	Guard<Mutex> guard(messageFiltersMutex_);
 	messageFilters_->remove(filter);
 }
@@ -184,200 +191,109 @@ int XClient::flush(Ref<ByteEncoder> sink)
 	return ++sequenceNumber_;
 }
 
-static const char *x11MessageName(int messageCode)
-{
-	const char *names[] = {
-		"error",             // 0
-		"reply",             // 1
-		"key press",         // 2
-		"key release",       // 3
-		"button press",      // 4
-		"button release",    // 5
-		"motion notify",     // 6
-		"enter notify",      // 7
-		"leave notify",      // 8
-		"focus in",          // 9
-		"focus out",         // 10
-		"keymap notify",     // 11
-		"expose",            // 12
-		"graphics exposure", // 13
-		"no exposure",       // 14
-		"visibility notify", // 15
-		"create notify",     // 16
-		"destroy notify",    // 17
-		"unmap notify",      // 18
-		"map notify",        // 19
-		"map request",       // 20
-		"reparent notify",   // 21
-		"configure notify",  // 22
-		"configure request", // 23
-		"gravity notify",    // 24
-		"resize request",    // 25
-		"circulate notify",  // 26
-		"circulate request", // 27
-		"property notify",   // 28
-		"selection clear",   // 29
-		"selection request", // 30
-		"selection notify",  // 31
-		"colormap notify",   // 32
-		"client message",    // 33
-		"mapping notify"     // 34
-	};
-	
-	return ((0 <= messageCode) && (messageCode <= 34)) ? names[messageCode] : "unknown";
-}
-
 void XClient::run()
 {
 	printTo(error(), "XClient::run()\n");
-	Ref<ByteDecoder, Owner> source = new ByteDecoder(socket_);
-	
-	while (true) {
-		uint8_t messageCode = source->readUInt8();
-		bool synthetic = messageCode & 0x80;
-		messageCode &= 0x7F;
+	try {
+		Ref<ByteDecoder, Owner> source = new ByteDecoder(socket_);
 		
-		if (messageCode == 0) // error
-		{
-			uint8_t code = source->readUInt8();
-			uint16_t sequenceNumber = source->readUInt16();
-			uint32_t badSomething = source->readUInt32();
-			uint16_t minorOpcode = source->readUInt16();
-			uint8_t majorOpcode = source->readUInt8();
-			source->skipPad(32);
+		while (true) {
+			uint8_t messageCode = source->readUInt8();
+			bool synthetic = messageCode & 0x80;
+			messageCode &= 0x7F;
 			
-			bool badValue = (code == 2);
-			bool badResource =
-				((3 <= code) && (code <= 7)) ||
-				(code == 9) ||
-				(code == 12) ||
-				(code == 13) ||
-				(code == 14);
+			Ref<XMessage, Owner> message;
 			
-			const char* errorNames[] = {
-				"unknown", "request", "value", "window", "pixmap", "atom", "cursor", "font",
-				"match", "drawable", "access", "alloc", "colormap", "graphics context",
-				"id choice", "name", "length", "implementation"
-			};
-			const char* errorName = errorNames[((1 <= code) && (code <= 17)) ? int(code) : 0];
-			
-			if (badValue) {
-				printTo(error(), "X11 %% error (opcode: %%.%%, bad value: %%) [%%]\n",
-					errorName, majorOpcode, minorOpcode, badSomething, sequenceNumber
-				);
+			if (messageCode == XMessage::Error)
+			{
+				Ref<XError, Owner> error = new XError;
+				error->errorCode = source->readUInt8();
+				error->sequenceNumber = source->readUInt16();
+				error->badSomething = source->readUInt32();
+				error->minorOpcode = source->readUInt16();
+				error->majorOpcode = source->readUInt8();
+				message = error;
+				/*
+				const char* errorNames[] = {
+					"unknown", "request", "value", "window", "pixmap", "atom", "cursor", "font",
+					"match", "drawable", "access", "alloc", "colormap", "graphics context",
+					"id choice", "name", "length", "implementation"
+				};
+				const char* errorName = errorNames[((1 <= code) && (code <= 17)) ? int(code) : 0];
+				
+				if (badValue) {
+					printTo(error(), "X11 %% error (opcode: %%.%%, bad value: %%) [%%]\n",
+						errorName, majorOpcode, minorOpcode, badSomething, sequenceNumber
+					);
+				}
+				else if (badResource) {
+					printTo(error(), "X11 %% error (opcode: %%.%%, bad resource id: %%) [%%]\n",
+						errorName, majorOpcode, minorOpcode, badSomething, sequenceNumber
+					);
+				}
+				else {
+					printTo(error(), "X11 %% error (opcode: %%.%%) [%%]\n",
+						errorName, majorOpcode, minorOpcode, sequenceNumber
+					);
+				}*/
 			}
-			else if (badResource) {
-				printTo(error(), "X11 %% error (opcode: %%.%%, bad resource id: %%) [%%]\n",
-					errorName, majorOpcode, minorOpcode, badSomething, sequenceNumber
-				);
+			else if (XMessage::inputEvent(messageCode))
+			{
+				Ref<XInputEvent, Owner> event = new XInputEvent;
+				event->detail = source->readUInt8();
+				event->sequenceNumber = source->readUInt16();
+				event->time = source->readUInt32();
+				event->rootWindowId = source->readUInt32();
+				event->eventWindowId = source->readUInt32();
+				event->childWindowId = source->readUInt32();
+				event->rootX = source->readUInt16();
+				event->rootY = source->readUInt16();
+				event->eventX = source->readUInt16();
+				event->eventY = source->readUInt16();
+				event->state = source->readUInt16();
+				if ((XMessage::KeyPress <= messageCode) && (messageCode <= XMessage::MotionNotify)) {
+					event->mode = 0;
+					event->focus = false;
+					event->sameScreen = source->readUInt8();
+				}
+				else {
+					event->mode = source->readUInt8();
+					uint8_t flag = source->readUInt8();
+					event->focus = flag & 1;
+					event->sameScreen = flag & 2;
+				}
+				message = event;
+			}
+			else if (XMessage::focusEvent(messageCode)) {
+				Ref<XFocusEvent, Owner> event = new XFocusEvent;
+				event->detail = source->readUInt8();
+				event->sequenceNumber = source->readUInt16();
+				event->eventWindowId = source->readUInt32();
+				event->mode = source->readUInt8();
+				message = event;
 			}
 			else {
-				printTo(error(), "X11 %% error (opcode: %%.%%) [%%]\n",
-					errorName, majorOpcode, minorOpcode, sequenceNumber
-				);
+				message = new XMessage;
 			}
-		}
-		else if ((2 <= messageCode) && (messageCode <= 6))
-		{
-			uint8_t detail = source->readUInt8();
-			uint16_t sequenceNumber = source->readUInt16();
-			uint32_t time = source->readUInt32();
-			uint32_t rootWindowId = source->readUInt32();
-			uint32_t eventWindowId = source->readUInt32();
-			uint32_t childWindowId = source->readUInt32();
-			uint16_t rootX = source->readUInt16();
-			uint16_t rootY = source->readUInt16();
-			uint16_t eventX = source->readUInt16();
-			uint16_t eventY = source->readUInt16();
-			uint16_t state = source->readUInt16();
-			uint8_t sameScreen = source->readUInt8();
 			source->skipPad(32);
-			
-			String detailString;
-			if ((messageCode == 2) || (messageCode == 3))
-				detailString = Format("keycode: %%") << detail;
-			else if ((messageCode == 4) || (messageCode == 5))
-				detailString = Format("button: %%") << detail;
-			else if (messageCode == 6)
-				detailString = (detail == 0) ? "normal" : "hint";
-			
-			String stateString;
+			message->messageCode = messageCode;
+			message->synthetic = synthetic;
 			{
-				enum KeyButtonMask {
-					Shift   = 1,
-					Lock    = 2,
-					Control = 4,
-					Mod1    = 8,
-					Mod2    = 16,
-					Mod3    = 32,
-					Mod4    = 64,
-					Mod5    = 128,
-					Button1 = 256,
-					Button2 = 512,
-					Button3 = 1024,
-					Button4 = 2048,
-					Button5 = 4096
-				};
-				Ref<StringList, Owner> bitNames = new StringList;
-				if (state & Shift) bitNames->append("Shift");
-				else if (state & Lock) bitNames->append("Lock");
-				else if (state & Control) bitNames->append("Control");
-				else if (state & Mod1) bitNames->append("Mod1");
-				else if (state & Mod2) bitNames->append("Mod2");
-				else if (state & Mod3) bitNames->append("Mod3");
-				else if (state & Mod4) bitNames->append("Mod4");
-				else if (state & Mod5) bitNames->append("Mod5");
-				else if (state & Button1) bitNames->append("Button1");
-				else if (state & Button2) bitNames->append("Button2");
-				else if (state & Button3) bitNames->append("Button3");
-				else if (state & Button4) bitNames->append("Button4");
-				else if (state & Button5) bitNames->append("Button5");
-				stateString = bitNames->join("|");
+				Guard<Mutex> guard(messageFiltersMutex_);
+				for (int i = 0, n = messageFilters_->length(); i < n; ++i) {
+					Ref<XMessageFilter> filter = messageFilters_->at(i);
+					if (filter->match(message)) filter->push(message);
+				}
 			}
-			
-			printTo(error(), "X11 %% event (\n"
-				"  %%, time: %%,\n"
-				"  root window id: %%,\n"
-				"  event window id: %%,\n"
-				"  child window id: %%,\n"
-				"  rootX, rootY: %%, %%\n"
-				"  eventX, eventY: %%, %%\n"
-				"  same screen: %%\n"
-				") [%%]\n",
-				x11MessageName(messageCode),
-				detailString, time,
-				rootWindowId,
-				eventWindowId,
-				childWindowId,
-				rootX, rootY,
-				eventX, eventY,
-				bool(sameScreen),
-				sequenceNumber
-			);
 		}
-		/*else if ((messageCode == 6) || (messageCode == 7))
-		{
-			uint8_t detail = source->readUInt8();
-			uint16_t sequenceNumber = source->readUInt16();
-			uint32_t time = source->readUInt32();
-			uint32_t rootWindowId = source->readUInt32();
-			uint32_t eventWindowId = source->readUInt32();
-			uint32_t childWindowId = source->readUInt32();
-			uint16_t rootX = source->readUInt16();
-			uint16_t rootY = source->readUInt16();
-			uint16_t eventX = source->readUInt16();
-			uint16_t eventY = source->readUInt16();
-			uint16_t state = source->readUInt16();
-			uint8_t mode = source->readUInt8();
-			uint8_t flags = source->readUInt8();
-			
-			String evenName = 
-			String detailString 
-		}*/
-		else {
-			printTo(error(), "X11 %% (%%)\n", x11MessageName(messageCode), messageCode);
-		}
-		source->skipPad(32);
+	}
+	catch (Exception& exception) {
+		// printTo(error(), "%%\n", exception.what());
+	}
+	{
+		Guard<Mutex> guard(messageFiltersMutex_);
+		for (int i = 0, n = messageFilters_->length(); i < n; ++i)
+			messageFilters_->at(i)->push(Ref<XMessage, Owner>());
 	}
 }
 

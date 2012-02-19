@@ -11,20 +11,21 @@
 #ifndef FTL_XMESSAGELOGGER_HPP
 #define FTL_XMESSAGELOGGER_HPP
 
-#include "XClient.hpp"
+#include <ftl/Thread.hpp>
 
 namespace ftl
 {
 
+class XMessageFilter;
+
 class XMessageLogger: public Thread
 {
 public:
-	XMessageLogger(int messageCode = -1, int detail = -1, int sequenceNumber = -1);
-	
+	XMessageLogger();
+
 private:
-	virtual void run();
-	
-	Ref<XMessageFilter, Owner> filter_;
+	void run();
+	Ref<XMessageFilter> messageFilter_;
 };
 
 } // namespace ftl
