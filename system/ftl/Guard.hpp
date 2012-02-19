@@ -18,10 +18,8 @@ template<class Mutex>
 class Guard
 {
 public:
-	Guard(Mutex* mutex): mutex_(mutex) { post(); }
-	~Guard() { dismiss(); }
-	inline void post() { mutex_->acquire(); }
-	inline void dismiss() { mutex_->tryAcquire(); mutex_->release(); }
+	Guard(Mutex* mutex): mutex_(mutex) { mutex_->acquire(); }
+	~Guard() { mutex_->release(); }
 private:
 	Mutex* mutex_;
 };

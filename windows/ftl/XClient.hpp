@@ -47,6 +47,7 @@ public:
 private:
 	friend class Singleton<XClient>;
 	XClient();
+	~XClient();
 	
 	Ref<ByteEncoder> messageEncoder();
 	int flush(Ref<ByteEncoder> sink);

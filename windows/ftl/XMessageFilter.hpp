@@ -23,7 +23,7 @@ public:
 	XMessageFilter();
 	~XMessageFilter();
 
-	virtual bool match(Ref<XMessage> message) const = 0;
+	virtual bool match(Ref<XMessage> message) { return true; }
 };
 
 } // namespace ftl
