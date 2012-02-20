@@ -15,14 +15,15 @@
 namespace ftl
 {
 
-XWindow::XWindow(int x, int y, int width, int height)
+XWindow::XWindow(int x, int y, int width, int height, uint32_t eventMask)
 	: id_(xClient()->allocateResourceId()),
 	  visualId_(0),
 	  depth_(0),
 	  x_(x),
 	  y_(y),
 	  width_(width),
-	  height_(height)
+	  height_(height),
+	  eventMask_(eventMask)
 {}
 
 } // namespace ftl

@@ -1,5 +1,5 @@
 /*
- * XMessage.hpp -- X11 message
+ * XMessage.hpp -- X11 messages
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *
@@ -11,8 +11,13 @@
 #ifndef FTL_XMESSAGE_HPP
 #define FTL_XMESSAGE_HPP
 
+#include <ftl/Instance.hpp>
+#include <ftl/types.hpp>
+
 namespace ftl
 {
+
+class ByteDecoder;
 
 class XMessage: public Instance
 {
@@ -55,6 +60,10 @@ public:
 		MappingNotify    = 34
 	};
 
+	XMessage(uint8_t messageCode_, bool synthetic_)
+		: messageCode(messageCode_), synthetic(synthetic_)
+	{}
+
 	static bool inputEvent(uint8_t messageCode) { return (KeyPress <= messageCode) && (messageCode <= LeaveNotify); }
 	static bool focusEvent(uint8_t messageCode) { return (FocusIn <= messageCode) && (messageCode <= FocusOut); }
 	inline bool inputEvent() { return inputEvent(messageCode); }
@@ -62,7 +71,6 @@ public:
 	
 	uint8_t messageCode;
 	bool synthetic;
-	uint16_t sequenceNumber;
 };
 
 class XError: public XMessage
@@ -88,6 +96,8 @@ public:
 		Implementation = 17
 	};
 	
+	XError(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
+	
 	inline int valueError() const { return errorCode == Value; }
 	inline int resourceError() {
 		return
@@ -99,13 +109,14 @@ public:
 	}
 	
 	uint8_t errorCode;
-	uint16_t minorOpcode;
-	uint8_t majorOpcode;
+	uint16_t sequenceNumber;
 	union {
 		uint32_t badValue;
 		uint32_t badResourceId;
 		uint32_t badSomething;
 	};
+	uint16_t minorOpcode;
+	uint8_t majorOpcode;
 };
 
 class XInputEvent: public XMessage
@@ -130,7 +141,7 @@ public:
 	enum MotionDetail {
 		Hint = 1
 	};
-	
+
 	enum EnterOrLeaveDetail {
 		Ancestor         = 0,
 		Virtual          = 1,
@@ -138,17 +149,20 @@ public:
 		Nonlinear        = 3,
 		NonlinearVirtual = 4
 	};
-	
+
 	enum EnterOrLeaveMode {
 		Grab   = 1,
 		Ungrab = 2
 	};
-	
+
+	XInputEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
+
 	union {
 		uint8_t keyCode;
 		uint8_t button;
 		uint8_t detail;
 	};
+	uint16_t sequenceNumber;
 	uint32_t time;
 	uint32_t rootWindowId;
 	uint32_t eventWindowId;
@@ -179,9 +193,48 @@ public:
 		Ungrab       = 2,
 		WhileGrabbed = 3
 	};
+
+	XFocusEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
+
 	uint8_t detail;
+	uint16_t sequenceNumber;
 	uint32_t eventWindowId;
 	uint8_t mode;
+};
+
+class XExposeEvent: public XMessage
+{
+public:
+	XExposeEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
+
+	uint16_t sequenceNumber;
+	uint32_t windowId;
+	uint16_t x, y, width, height;
+	uint16_t count;
+};
+
+class XGraphicsExposureEvent: public XMessage
+{
+public:
+	XGraphicsExposureEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
+
+	uint16_t sequenceNumber;
+	uint32_t drawableId;
+	uint16_t x, y, width, height;
+	uint16_t minorOpcode;
+	uint16_t count;
+	uint8_t majorOpcode;
+};
+
+class XNoExposureEvent: public XMessage
+{
+public:
+	XNoExposureEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
+
+	uint16_t sequenceNumber;
+	uint32_t drawableId;
+	uint16_t minorOpcode;
+	uint8_t majorOpcode;
 };
 
 } // namespace ftl

@@ -154,7 +154,7 @@ int XClient::createWindow(Ref<XWindow> window)
 	sink->writeUInt16(1); // class (0=inherit, 1=input/output, 2=input only)
 	sink->writeUInt32(window->visualId_);
 	sink->writeUInt32(0x800); // value mask (0x800 = event mask)
-	sink->writeUInt32(0x1FFFFFF); // event mask
+	sink->writeUInt32(window->eventMask_); // event mask
 	return flush(sink);
 }
 
@@ -204,80 +204,31 @@ void XClient::run()
 			
 			Ref<XMessage, Owner> message;
 			
-			if (messageCode == XMessage::Error)
-			{
-				Ref<XError, Owner> error = new XError;
-				error->errorCode = source->readUInt8();
-				error->sequenceNumber = source->readUInt16();
-				error->badSomething = source->readUInt32();
-				error->minorOpcode = source->readUInt16();
-				error->majorOpcode = source->readUInt8();
-				message = error;
-				/*
-				const char* errorNames[] = {
-					"unknown", "request", "value", "window", "pixmap", "atom", "cursor", "font",
-					"match", "drawable", "access", "alloc", "colormap", "graphics context",
-					"id choice", "name", "length", "implementation"
-				};
-				const char* errorName = errorNames[((1 <= code) && (code <= 17)) ? int(code) : 0];
-				
-				if (badValue) {
-					printTo(error(), "X11 %% error (opcode: %%.%%, bad value: %%) [%%]\n",
-						errorName, majorOpcode, minorOpcode, badSomething, sequenceNumber
-					);
-				}
-				else if (badResource) {
-					printTo(error(), "X11 %% error (opcode: %%.%%, bad resource id: %%) [%%]\n",
-						errorName, majorOpcode, minorOpcode, badSomething, sequenceNumber
-					);
-				}
-				else {
-					printTo(error(), "X11 %% error (opcode: %%.%%) [%%]\n",
-						errorName, majorOpcode, minorOpcode, sequenceNumber
-					);
-				}*/
+			if (messageCode == XMessage::Error) {
+				message = new XError(messageCode, synthetic, source);
 			}
-			else if (XMessage::inputEvent(messageCode))
-			{
-				Ref<XInputEvent, Owner> event = new XInputEvent;
-				event->detail = source->readUInt8();
-				event->sequenceNumber = source->readUInt16();
-				event->time = source->readUInt32();
-				event->rootWindowId = source->readUInt32();
-				event->eventWindowId = source->readUInt32();
-				event->childWindowId = source->readUInt32();
-				event->rootX = source->readUInt16();
-				event->rootY = source->readUInt16();
-				event->eventX = source->readUInt16();
-				event->eventY = source->readUInt16();
-				event->state = source->readUInt16();
-				if ((XMessage::KeyPress <= messageCode) && (messageCode <= XMessage::MotionNotify)) {
-					event->mode = 0;
-					event->focus = false;
-					event->sameScreen = source->readUInt8();
-				}
-				else {
-					event->mode = source->readUInt8();
-					uint8_t flag = source->readUInt8();
-					event->focus = flag & 1;
-					event->sameScreen = flag & 2;
-				}
-				message = event;
+			else if (XMessage::inputEvent(messageCode)) {
+				message = new XInputEvent(messageCode, synthetic, source);
 			}
 			else if (XMessage::focusEvent(messageCode)) {
-				Ref<XFocusEvent, Owner> event = new XFocusEvent;
-				event->detail = source->readUInt8();
-				event->sequenceNumber = source->readUInt16();
-				event->eventWindowId = source->readUInt32();
-				event->mode = source->readUInt8();
-				message = event;
+				message = new XFocusEvent(messageCode, synthetic, source);
+			}
+			else if (messageCode == XMessage::Expose) {
+				source->readUInt8(); // unused
+				message = new XExposeEvent(messageCode, synthetic, source);
+			}
+			else if (messageCode == XMessage::GraphicsExposure) {
+				source->readUInt8(); // unused
+				message = new XGraphicsExposureEvent(messageCode, synthetic, source);
+			}
+			else if (messageCode == XMessage::NoExposure) {
+				source->readUInt8(); // unused
+				message = new XNoExposureEvent(messageCode, synthetic, source);
 			}
 			else {
-				message = new XMessage;
+				message = new XMessage(messageCode, synthetic);
 			}
 			source->skipPad(32);
-			message->messageCode = messageCode;
-			message->synthetic = synthetic;
 			{
 				Guard<Mutex> guard(messageFiltersMutex_);
 				for (int i = 0, n = messageFilters_->length(); i < n; ++i) {
