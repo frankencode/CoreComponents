@@ -138,7 +138,7 @@ void XMessageLogger::run()
 			else if (event->detail == XFocusEvent::NonlinearVirtual) detailString = "nonlinear virtual";
 			else if (event->detail == XFocusEvent::Pointer)          detailString = "pointer";
 			else if (event->detail == XFocusEvent::PointerRoot)      detailString = "pointer root";
-			String modeString = "Normal";
+			String modeString = "normal";
 			if      (event->mode == XFocusEvent::Grab)         modeString = "grab";
 			else if (event->mode == XFocusEvent::Ungrab)       modeString = "ungrab";
 			else if (event->mode == XFocusEvent::WhileGrabbed) modeString = "while grabbed";
@@ -149,6 +149,49 @@ void XMessageLogger::run()
 				x11MessageName(event->messageCode),
 				detailString, modeString,
 				event->eventWindowId,
+				event->sequenceNumber
+			);
+		}
+		else if (message->messageCode == XMessage::Expose) {
+			Ref<XExposeEvent> event = message;
+			printTo(error(), "X11 expose event (\n"
+				"  window id: %%\n"
+				"  x, y: %%, %%\n"
+				"  width, height: %%, %%\n"
+				"  count: %%\n"
+				") [%%]\n",
+				event->windowId,
+				event->x, event->y,
+				event->width, event->height,
+				event->count,
+				event->sequenceNumber
+			);
+		}
+		else if (message->messageCode == XMessage::GraphicsExposure) {
+			Ref<XGraphicsExposureEvent> event = message;
+			printTo(error(), "X11 graphics exposure event (\n"
+				"  drawable id: %%\n"
+				"  x, y: %%, %%\n"
+				"  width, height: %%, %%\n"
+				"  opcode: %%.%%\n"
+				"  count: %%\n"
+				") [%%]\n",
+				event->drawableId,
+				event->x, event->y,
+				event->width, event->height,
+				event->majorOpcode, event->minorOpcode,
+				event->count,
+				event->sequenceNumber
+			);
+		}
+		else if (message->messageCode == XMessage::NoExposure) {
+			Ref<XNoExposureEvent> event = message;
+			printTo(error(), "X11 no exposure event (\n"
+				"  drawable id: %%\n"
+				"  opcode: %%.%%\n"
+				") [%%]\n",
+				event->drawableId,
+				event->majorOpcode, event->minorOpcode,
 				event->sequenceNumber
 			);
 		}

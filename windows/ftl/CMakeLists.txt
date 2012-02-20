@@ -13,6 +13,7 @@ SET(FTLWINDOWS_HEADER
 SET(FTLWINDOWS_SOURCE
 	XAuthFile.cpp
 	XDisplayInfo.cpp
+	XMessage.cpp
 	XMessageFilter.cpp
 	XMessageLogger.cpp
 	XClient.cpp

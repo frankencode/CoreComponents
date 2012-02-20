@@ -12,7 +12,7 @@ int main()
 	Ref<XMessageLogger, Owner> logger = new XMessageLogger;
 	logger->start();
 	xClient()->start();
-	logger->wait();
 	xClient()->wait();
+	logger->wait();
 	return 0;
 }
