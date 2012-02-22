@@ -22,12 +22,12 @@
 
 void* operator new(std::size_t size) throw (std::bad_alloc) {
 	void* data = (void*)((char*)ftl::Memory::allocate(size + 2 * FTL_MEMORY_REDZONE_SIZE) + FTL_MEMORY_REDZONE_SIZE);
-	VALGRIND_MALLOCLIKE_BLOCK(data, size, FTL_MEMORY_REDZONE_SIZE, false);
+	VALGRIND_MALLOCLIKE_BLOCK(data, size, FTL_MEMORY_REDZONE_SIZE, /*is_zeroed=*/true);
 	return data;
 }
 void* operator new[](std::size_t size) throw (std::bad_alloc) {
 	void* data = (void*)((char*)ftl::Memory::allocate(size + 2 * FTL_MEMORY_REDZONE_SIZE) + FTL_MEMORY_REDZONE_SIZE);
-	VALGRIND_MALLOCLIKE_BLOCK(data, size, FTL_MEMORY_REDZONE_SIZE, false);
+	VALGRIND_MALLOCLIKE_BLOCK(data, size, FTL_MEMORY_REDZONE_SIZE, /*is_zeroed=*/true);
 	return data;
 }
 void operator delete(void* data) throw() {
