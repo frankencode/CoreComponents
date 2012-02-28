@@ -7,8 +7,7 @@ int main()
 {
 	using namespace ftl;
 	Ref<XWindow, Owner> window = new XWindow(100, 100, 200, 200);
-	xClient()->createWindow(window);
-	xClient()->mapWindow(window);
+	window->show();
 	Ref<XMessageLogger, Owner> logger = new XMessageLogger;
 	logger->start();
 	xClient()->start();

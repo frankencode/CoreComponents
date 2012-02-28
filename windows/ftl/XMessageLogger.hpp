@@ -1,5 +1,5 @@
 /*
- * XMessageLogger.hpp -- X11 message logger
+ * XMessageLogger.hpp -- X11 event logger
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *

@@ -1,5 +1,5 @@
 /*
- * XMessageFilter.cpp -- X11 message filter
+ * XMessageFilter.cpp -- X11 event filter
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *

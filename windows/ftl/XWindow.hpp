@@ -12,15 +12,31 @@
 #define FTL_XWINDOW_HPP
 
 #include <ftl/types.hpp>
+#include <ftl/Thread.hpp>
 
 namespace ftl
 {
 
 class XClient;
+class XMessageFilter;
 
-class XWindow: public Instance
+class XWindow: public Thread
 {
 public:
+	XWindow(int x, int y, int width, int height);
+	~XWindow();
+
+	inline int x() const { return x_; }
+	inline int y() const { return y_; }
+	inline int width() const { return width_; }
+	inline int height() const { return height_; }
+
+	void show();
+	void hide();
+
+private:
+	friend class XClient;
+	
 	enum EventMask {
 		KeyPress             = 0x00000001,
 		KeyRelease           = 0x00000002,
@@ -47,28 +63,23 @@ public:
 		PropertyChange       = 0x00400000,
 		ColormapChange       = 0x00800000,
 		OwnerGrabButton      = 0x01000000,
-		DefaultEventMask     = 0x01FFFFFF & ~KeymapState
+		DefaultEventMask     =
+			0x01FFFFFF & ~(
+				KeymapState|
+				ResizeRedirect|
+				SubstructureNotify|
+				SubstructureRedirect
+			)
 	};
 
-	XWindow(int x, int y, int width, int height, uint32_t eventMask = DefaultEventMask);
-
-	inline uint32_t id() const { return id_; }
-	inline uint32_t visualId() const { return visualId_; }
-	inline uint32_t depth() const { return depth_; }
-
-	inline int x() const { return x_; }
-	inline int y() const { return y_; }
-	inline int width() const { return width_; }
-	inline int height() const { return height_; }
-
-private:
-	friend class XClient;
+	void run();
 	
 	uint32_t id_;
 	uint32_t visualId_;
 	int depth_;
 	int x_, y_, width_, height_;
-	uint32_t eventMask_;
+	
+	Ref<XMessageFilter, Owner> messageFilter_;
 };
 
 } // namespace ftl
