@@ -41,6 +41,7 @@ public:
 	
 	int createWindow(Ref<XWindow> window);
 	int mapWindow(Ref<XWindow> window);
+	int unmapWindow(Ref<XWindow> window);
 	
 	int getFontPath();
 	

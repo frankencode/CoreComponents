@@ -1,5 +1,5 @@
 /*
- * XMessageFilter.hpp -- X11 message filter
+ * XMessageFilter.hpp -- X11 event filter
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *
@@ -23,7 +23,7 @@ public:
 	XMessageFilter();
 	~XMessageFilter();
 
-	virtual bool match(Ref<XMessage> message) { return true; }
+	virtual bool match(Ref<XMessage> event) { return true; }
 };
 
 } // namespace ftl

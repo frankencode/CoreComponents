@@ -146,15 +146,15 @@ int XClient::createWindow(Ref<XWindow> window)
 	sink->writeUInt16(8 + 1); // request length
 	sink->writeUInt32(window->id_);
 	sink->writeUInt32(screenInfo->rootWindowId);
-	sink->writeUInt16(window->x_);
-	sink->writeUInt16(window->y_);
+	sink->writeInt16(window->x_);
+	sink->writeInt16(window->y_);
 	sink->writeUInt16(window->width_);
 	sink->writeUInt16(window->height_);
 	sink->writeUInt16(0); // border width
 	sink->writeUInt16(1); // class (0=inherit, 1=input/output, 2=input only)
 	sink->writeUInt32(window->visualId_);
 	sink->writeUInt32(0x800); // value mask (0x800 = event mask)
-	sink->writeUInt32(window->eventMask_); // event mask
+	sink->writeUInt32(XWindow::DefaultEventMask);
 	return flush(sink);
 }
 
@@ -162,6 +162,16 @@ int XClient::mapWindow(Ref<XWindow> window)
 {
 	Ref<ByteEncoder, Owner> sink = messageEncoder();
 	sink->writeUInt8(8);
+	sink->writeUInt8(0); // unused
+	sink->writeUInt16(2); // request length
+	sink->writeUInt32(window->id_);
+	return flush(sink);
+}
+
+int XClient::unmapWindow(Ref<XWindow> window)
+{
+	Ref<ByteEncoder, Owner> sink = messageEncoder();
+	sink->writeUInt8(10);
 	sink->writeUInt8(0); // unused
 	sink->writeUInt16(2); // request length
 	sink->writeUInt32(window->id_);
@@ -224,6 +234,22 @@ void XClient::run()
 			else if (messageCode == XMessage::NoExposure) {
 				source->readUInt8(); // unused
 				message = new XNoExposureEvent(messageCode, synthetic, source);
+			}
+			else if (messageCode == XMessage::VisibilityNotify) {
+				source->readUInt8(); // unused
+				message = new XVisibilityNotifyEvent(messageCode, synthetic, source);
+			}
+			else if (messageCode == XMessage::ConfigureNotify) {
+				source->readUInt8(); // unused
+				message = new XConfigureNotifyEvent(messageCode, synthetic, source);
+			}
+			else if (messageCode == XMessage::MapNotify) {
+				source->readUInt8(); // unused
+				message = new XMapNotifyEvent(messageCode, synthetic, source);
+			}
+			else if (messageCode == XMessage::UnmapNotify) {
+				source->readUInt8(); // unused
+				message = new XUnmapNotifyEvent(messageCode, synthetic, source);
 			}
 			else {
 				message = new XMessage(messageCode, synthetic);

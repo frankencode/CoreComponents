@@ -1,5 +1,5 @@
 /*
- * XErrorFilter.hpp -- X11 error message filter
+ * XErrorFilter.hpp -- X11 error event filter
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *
@@ -19,7 +19,7 @@ namespace ftl
 class XErrorFilter: public XMessageFilter
 {
 public:
-	inline bool match(Ref<XMessage> message) const { message->code == XMessage::Error; }
+	inline bool match(Ref<XMessage> message) const { return message->code == XMessage::Error; }
 };
 
 } // namespace ftl
