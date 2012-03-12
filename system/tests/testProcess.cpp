@@ -36,7 +36,8 @@ int main(int argc, char** argv)
 		Ref<ProcessFactory, Owner> factory = new ProcessFactory;
 		factory->setExecPath(argv[0]);
 		factory->setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
-		factory->options()->append("--echo 123");
+		factory->arguments()->append(argv[0]);
+		factory->arguments()->append("--echo 123");
 		factory->envMap()->assign("Hello", "World!");
 		
 		Ref<Process, Owner> process = factory->produce();
@@ -78,16 +79,13 @@ int main(int argc, char** argv)
 int echo(int argc, char** argv)
 {
 	Ref<StringList, Owner> commandLine = new StringList;
-	for (int i = 0; i < argc; ++i) {
+	for (int i = 0; i < argc; ++i)
 		commandLine->append(argv[i]);
-		if (i != argc - 1)
-			commandLine->append(" ");
-	}
 	print("Process::cwd() = \"%%\"\n", Process::cwd());
 	print("Process::env(\"Hello\") = \"%%\"\n", Process::env("Hello"));
 	Process::setEnv("Hello", "Echo");
 	print("Process::env(\"Hello\") = \"%%\"\n", Process::env("Hello"));
-	print("commandLine = \"%%\"\n", commandLine->join());
+	print("commandLine = \"%%\"\n", commandLine->join(" "));
 	
 	while (true) {
 		String line = input()->readLine();

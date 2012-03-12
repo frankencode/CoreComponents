@@ -24,6 +24,8 @@
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #include <crt_externs.h> // _NSGetEnviron
 #endif
+#include "Path.hpp"
+#include "ProcessFactory.hpp"
 #include "Process.hpp"
 
 #ifndef __MACH__
@@ -32,6 +34,30 @@ extern "C" char** environ;
 
 namespace ftl
 {
+
+Ref<Process, Owner> Process::start(String command, Ref<ProcessFactory> factory)
+{
+	Ref<ProcessFactory, Owner> factory_;
+	if (!factory) {
+		factory_ = new ProcessFactory;
+		factory = factory_;
+	}
+	
+	Ref<StringList, Owner> args = command->split(' ');
+	factory->setArguments(args);
+	String name = args->at(0);
+	
+	String path = Path::lookup(Process::env("PATH")->split(":"), name, File::Execute);
+	if (path == "") path = name;
+	factory->setExecPath(path);
+	
+	return factory->produce();
+}
+
+int Process::exec(String command, Ref<ProcessFactory> factory)
+{
+	return start(command, factory)->wait();
+}
 
 Process::Process(
 	int type,

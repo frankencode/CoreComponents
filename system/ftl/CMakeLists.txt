@@ -1,6 +1,6 @@
 SET(FTLSYSTEM_HEADER
 	defaults.hpp
-	
+
 	atoms
 	debug.hpp
 	types.hpp
@@ -17,7 +17,7 @@ SET(FTLSYSTEM_HEADER
 	Buffer.hpp
 	ByteArray.hpp
 	Character.hpp
-	
+
 	binary
 	ByteEncoder.hpp
 	ByteDecoder.hpp
@@ -32,7 +32,7 @@ SET(FTLSYSTEM_HEADER
 	Crc32.hpp
 	Md5.hpp
 	HuffmanCodec.hpp
-	
+
 	container
 	containers.hpp
 	Array.hpp
@@ -48,7 +48,7 @@ SET(FTLSYSTEM_HEADER
 	List.hpp
 	Map.hpp
 	Set.hpp
-	
+
 	syntax
 	Token.hpp
 	TokenScreen.hpp
@@ -56,7 +56,7 @@ SET(FTLSYSTEM_HEADER
 	Syntax.hpp
 	SyntaxSugar.hpp
 	SyntaxDebugger.hpp
-	
+
 	strings
 	String.hpp
 	IntegerLiteral.hpp
@@ -65,7 +65,7 @@ SET(FTLSYSTEM_HEADER
 	Format.hpp
 	Variant.hpp
 	Path.hpp
-	
+
 	stdio
 	Stream.hpp
 	SystemStream.hpp
@@ -77,7 +77,7 @@ SET(FTLSYSTEM_HEADER
 	LineSink.hpp
 	StandardStreams.hpp
 	PrintDebug.hpp
-	
+
 	threads
 	GlobalCoreMutex.hpp
 	LocalStatic.hpp
@@ -95,7 +95,7 @@ SET(FTLSYSTEM_HEADER
 	Conveyor.hpp
 	Channel.hpp
 	Memory.hpp
-	
+
 	process
 	User.hpp
 	Group.hpp
@@ -106,20 +106,20 @@ SET(FTLSYSTEM_HEADER
 	FileLock.hpp
 	MemoryMapping.hpp
 	Pipe.hpp
-	
+
 	events
 	Event.hpp
 	ExitEvent.hpp
 	ThreadExitEvent.hpp
 	SignalManager.hpp
-	
+
 	sockets
 	SocketAddress.hpp
 	SocketAddressEntry.hpp
 	StreamSocket.hpp
 	NetworkInterface.hpp
 	InetAddressSyntax.hpp
-	
+
 	utils
 	rounding.hpp
 	Time.hpp
@@ -128,7 +128,7 @@ SET(FTLSYSTEM_HEADER
 	SymbolicLink.hpp
 	CommandLine.hpp
 	CommandOption.hpp
-	
+
 	misc
 	LinkInfo.hpp
 	Json.hpp
@@ -137,10 +137,9 @@ SET(FTLSYSTEM_HEADER
 	AbnfCoreSyntax.hpp
 	AbnfSyntax.hpp
 	AbnfCompiler.hpp
-	
-	WireObject.hpp
+
 	WireSyntax.hpp
-	
+
 	Property.hpp
 )
 
@@ -153,7 +152,7 @@ SET(FTLSYSTEM_SOURCE
 	Buffer.cpp
 	ByteArray.cpp
 	Character.cpp
-	
+
 	# binary
 	ByteEncoder.cpp
 	ByteDecoder.cpp
@@ -162,12 +161,12 @@ SET(FTLSYSTEM_SOURCE
 	HuffmanCodec.cpp
 	Crc32.cpp
 	Md5.cpp
-	
+
 	# container
-	
+
 	# syntax
 	Token.cpp
-	
+
 	# strings
 	String.cpp
 	IntegerLiteral.cpp
@@ -175,7 +174,7 @@ SET(FTLSYSTEM_SOURCE
 	FormatSpecifier.cpp
 	Format.cpp
 	Path.cpp
-	
+
 	# stdio
 	Stream.cpp
 	SystemStream.cpp
@@ -185,7 +184,7 @@ SET(FTLSYSTEM_SOURCE
 	LineSink.cpp
 	LineSource.cpp
 	StandardStreams.cpp
-	
+
 	# threads
 	GlobalCoreMutex.cpp
 	Mutex.cpp
@@ -194,7 +193,7 @@ SET(FTLSYSTEM_SOURCE
 	Thread.cpp
 	ThreadFactory.cpp
 	Memory.cpp
-	
+
 	# process
 	User.cpp
 	Group.cpp
@@ -205,26 +204,26 @@ SET(FTLSYSTEM_SOURCE
 	FileLock.cpp
 	MemoryMapping.cpp
 	Pipe.cpp
-	
+
 	# events
 	Event.cpp
 	ExitEvent.cpp
 	ThreadExitEvent.cpp
 	SignalManager.cpp
-	
+
 	# sockets
 	SocketAddress.cpp
 	SocketAddressEntry.cpp
 	StreamSocket.cpp
 	NetworkInterface.cpp
 	InetAddressSyntax.cpp
-	
+
 	# utils
 	Date.cpp
 	Random.cpp
 	SymbolicLink.cpp
 	CommandLine.cpp
-	
+
 	# misc
 	LinkInfo.cpp
 	Json.cpp
@@ -233,7 +232,7 @@ SET(FTLSYSTEM_SOURCE
 	AbnfCoreSyntax.cpp
 	AbnfSyntax.cpp
 	AbnfCompiler.cpp
-	
+
 	WireSyntax.cpp
 )
 

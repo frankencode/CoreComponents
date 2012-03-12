@@ -12,10 +12,12 @@
 #define FTL_PROCESSFACTORY_HPP
 
 #include "SignalSet.hpp"
-#include "Process.hpp"
+#include "Map.hpp"
 
 namespace ftl
 {
+
+class Process;
 
 class ProcessFactory: public Instance
 {
@@ -38,9 +40,10 @@ public:
 	String execPath() const;
 	void setExecPath(String path);
 	
-	Ref<StringList> options();
-	void setOptions(Ref<StringList> list);
+	Ref<StringList> arguments();
+	void setArguments(Ref<StringList> list);
 	
+	typedef Map<String, String> EnvMap;
 	Ref<EnvMap> envMap();
 	void setEnvMap(Ref<EnvMap> map);
 	
@@ -72,7 +75,7 @@ private:
 	String workingDirectory_;
 	
 	String execPath_;
-	Ref<StringList, Owner> options_;
+	Ref<StringList, Owner> arguments_;
 	Ref<EnvMap, Owner> envMap_;
 	
 	Ref<SignalSet, Owner> signalMask_;

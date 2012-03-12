@@ -20,6 +20,7 @@
 #include "Path.hpp"
 #include "Format.hpp"
 #include "FileStatus.hpp"
+#include "Dir.hpp"
 #include "File.hpp"
 
 namespace ftl
@@ -218,12 +219,30 @@ Ref<File, Owner> File::temp()
 
 String File::load(String path)
 {
-	return File::open(path, File::Read)->readAll();
+	String text;
+	try { text = File::open(path, File::Read)->readAll(); }
+	catch (StreamException&) {}
+	return text;
 }
 
 void File::save(String path, String text)
 {
-	File::open(path, File::Write)->write(text);
+	Ref<File, Owner> file = new File(path);
+	try {
+		file->open(File::Write);
+	}
+	catch (StreamSemanticException &) {
+		establish(path);
+		file->open(File::Write);
+	}
+	file->write(text);
+}
+
+void File::establish(String path, int fileMode, int dirMode)
+{
+	if (path->contains('/'))
+		Dir::establish(Path(path).reduce(), dirMode);
+	if (!File(path).exists()) File(path).create(fileMode);
 }
 
 off_t File::seek(off_t distance, int method)

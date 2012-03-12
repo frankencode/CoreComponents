@@ -100,6 +100,7 @@ public:
 	static Ref<File, Owner> temp();
 	static String load(String path);
 	static void save(String path, String text);
+	static void establish(String path, int fileMode = 0644, int dirMode = 0755);
 	
 	off_t seek(off_t distance, int method = SeekBegin);
 	void seekSet(off_t distance);

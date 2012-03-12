@@ -17,7 +17,7 @@ namespace ftl
 WireSyntax::WireSyntax()
 {
 	SYNTAX("Wire");
-	
+
 	DEFINE_VOID("Comment",
 		CHOICE(
 			GLUE(
@@ -42,7 +42,7 @@ WireSyntax::WireSyntax()
 			)
 		)
 	);
-	
+
 	DEFINE_VOID("Whitespace",
 		REPEAT(
 			CHOICE(
@@ -51,21 +51,22 @@ WireSyntax::WireSyntax()
 			)
 		)
 	);
-	
-	DEFINE("Name",
-		REPEAT(1, EXCEPT(" \t\n:;"))
-	);
-	
+
+	DEFINE_VOID("Identifier", REPEAT(1, EXCEPT(" \t\n:;")));
+	DEFINE("Name", INLINE("Identifier"));
+	DEFINE("Type", INLINE("Identifier"));
+
 	DEFINE("Value",
 		CHOICE(
-			REF("Atom"),
-			REF("Properties"),
-			REF("Items")
+			REF("AtomicValue"),
+			REF("ObjectMap"),
+			REF("ValueList")
 		)
 	);
-	
+
 	DEFINE("Object",
 		GLUE(
+			INLINE("Whitespace"),
 			REPEAT(0, 1,
 				GLUE(
 					REF("Name"),
@@ -77,62 +78,79 @@ WireSyntax::WireSyntax()
 			INLINE("Value")
 		)
 	);
-	
-	DEFINE("Atom",
+
+	DEFINE("AtomicValue",
 		REPEAT(
 			GLUE(
 				NOT(
 					CHOICE(
 						GLUE(
-							REPEAT(RANGE(" \t")),
+							INLINE("Whitespace"),
 							INLINE("Name"),
-							REPEAT(RANGE(" \t")),
+							INLINE("Whitespace"),
 							CHAR(':')
 						),
 						GLUE(
-							REPEAT(RANGE(" \t")),
-							RANGE("};,")
-						),
-						STRING("\n\n")
+							INLINE("Whitespace"),
+							RANGE(";}]")
+						)
 					)
 				),
 				ANY()
 			)
 		)
 	);
-	
-	DEFINE("Properties",
+
+	DEFINE("ObjectMap",
 		GLUE(
+			REPEAT(0, 1,
+				GLUE(
+					REF("Type"),
+					INLINE("Whitespace")
+				)
+			),
 			CHAR('{'),
 			INLINE("Whitespace"),
-			REPEAT(
+			REPEAT(0, 1,
 				GLUE(
 					REF("Object"),
 					INLINE("Whitespace"),
-					RANGE(";,"),
-					INLINE("Whitespace")
+					REPEAT(
+						GLUE(
+							RANGE(";"),
+							INLINE("Whitespace"),
+							REF("Object"),
+							INLINE("Whitespace")
+						)
+					)
 				)
 			),
 			CHAR('}')
 		)
 	);
-	
-	DEFINE("Items",
+
+	DEFINE("ValueList",
 		GLUE(
 			CHAR('['),
 			INLINE("Whitespace"),
-			REPEAT(
+			REPEAT(0, 1,
 				GLUE(
 					REF("Value"),
 					INLINE("Whitespace"),
-					RANGE(";,"),
-					INLINE("Whitespace")
+					REPEAT(
+						GLUE(
+							RANGE(";"),
+							INLINE("Whitespace"),
+							REF("Value"),
+							INLINE("Whitespace")
+						)
+					)
 				)
 			),
 			CHAR(']')
 		)
 	);
-	
+
 	ENTRY("Object");
 }
 
