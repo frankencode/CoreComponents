@@ -182,6 +182,8 @@ public:
 	bool toUtf16(void* buf, int* size);
 	Ref<ByteArray, Owner> toUtf16(int endian = localEndian());
 	
+	Ref<ByteArray, Owner> md5() const;
+	
 protected:
 	int size_;
 	char* data_;

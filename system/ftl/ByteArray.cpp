@@ -16,6 +16,7 @@
 #include "Utf16Decoder.hpp"
 #include "Utf16Encoder.hpp"
 #include "Character.hpp"
+#include "Md5.hpp"
 #include "ByteArray.hpp"
 
 namespace ftl
@@ -538,6 +539,13 @@ void ByteArray::checkUtf8() const
 {
 	Utf8Decoder source(data_, size_);
 	for (uchar_t ch = 0; source.read(&ch););
+}
+
+Ref<ByteArray, Owner> ByteArray::md5() const
+{
+	Md5 md5;
+	md5.feed(data_, size_);
+	return md5.finish();
 }
 
 } // namespace ftl

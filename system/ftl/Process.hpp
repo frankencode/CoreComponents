@@ -31,6 +31,9 @@ typedef Map<String, String> EnvMap;
 class Process: public Instance
 {
 public:
+	static Ref<Process, Owner> start(String command, Ref<ProcessFactory> factory = 0);
+	static int exec(String command, Ref<ProcessFactory> factory = 0);
+	
 	// -- child process control interface
 	
 	enum Type {

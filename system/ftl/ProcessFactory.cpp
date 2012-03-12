@@ -22,6 +22,7 @@
 #include <util.h>
 #endif
 #include "Format.hpp"
+#include "Process.hpp"
 #include "ProcessFactory.hpp"
 
 namespace ftl
@@ -45,8 +46,8 @@ void ProcessFactory::setWorkingDirectory(String path) { workingDirectory_ = path
 String ProcessFactory::execPath() const { return execPath_; }
 void ProcessFactory::setExecPath(String path) { execPath_ = path; }
 
-Ref<StringList> ProcessFactory::options() { return (options_) ? options_ : options_ = new StringList; }
-void ProcessFactory::setOptions(Ref<StringList> list) { options_ = list; }
+Ref<StringList> ProcessFactory::arguments() { return (arguments_) ? arguments_ : arguments_ = new StringList; }
+void ProcessFactory::setArguments(Ref<StringList> list) { arguments_ = list; }
 
 Ref<EnvMap> ProcessFactory::envMap() { return (envMap_) ? envMap_ : envMap_ = Process::envMap(); }
 void ProcessFactory::setEnvMap(Ref<EnvMap> map) { envMap_ = map; }
@@ -190,24 +191,24 @@ Ref<Process, Owner> ProcessFactory::produce()
 		{
 			// prepare the argument list
 			
-			int argc = 1;
-			if (options_)
-				argc += options_->length();
-				
+			Ref<StringList> arguments = arguments_;
+			if (arguments) if (arguments->length() == 0) arguments = 0;
+			
+			int argc = arguments ? arguments->length() : 1;
 			char** argv = new char*[argc + 1];
 			
-			argv[0] = str::dup(execPath_->data());
-			if (options_) {
-				for (int i = 0; i < options_->length(); ++i)
-					argv[i + 1] = str::dup(options_->at(i)->data());
+			if (arguments) {
+				for (int i = 0; i < arguments->length(); ++i)
+					argv[i] = str::dup(arguments->at(i)->data());
+			}
+			else {
+				argv[0] = str::dup(execPath_->data());
 			}
 			argv[argc] = 0;
 			
 			// prepare the environment map
 			
 			char** envp = 0;
-			
-			
 			
 			if (envMap_) {
 				int n = envMap_->length();

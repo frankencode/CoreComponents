@@ -17,13 +17,18 @@
 namespace ftl
 {
 
+class ByteArray;
+
 class Md5
 {
 public:
+	enum { length = 16 };
+	
 	Md5();
 	~Md5();
 	void feed(const void* buf, int bufFill);
 	void finish(uint8_t sum[16]);
+	Ref<ByteArray, Owner> finish();
 	
 private:
 	void consume();

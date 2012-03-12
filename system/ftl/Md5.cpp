@@ -11,6 +11,7 @@
 
 #include "strings.hpp"
 #include "Exception.hpp"
+#include "ByteArray.hpp"
 #include "Md5.hpp"
 
 namespace ftl
@@ -73,6 +74,13 @@ void Md5::finish(uint8_t sum[16])
 	for (int i = 0; i < 4; ++i) sum[k++] = b_ >> (8 * i);
 	for (int i = 0; i < 4; ++i) sum[k++] = c_ >> (8 * i);
 	for (int i = 0; i < 4; ++i) sum[k++] = d_ >> (8 * i);
+}
+
+Ref<ByteArray, Owner> Md5::finish()
+{
+	Ref<ByteArray, Owner> sum = new ByteArray(16);
+	finish(reinterpret_cast<uint8_t*>(sum->data()));
+	return sum;
 }
 
 /** Ti = uint32_t(4294967296. * fabs(sin(i))) for i = 1..64
