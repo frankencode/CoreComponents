@@ -17,7 +17,7 @@ namespace ftl
 Json::Json()
 {
 	DEFINE_VOID("ws", REPEAT(RANGE(" \t\n\r")));
-	
+
 	DEFINE_VOID("begin-object",
 		GLUE(
 			INLINE("ws"),
@@ -25,7 +25,7 @@ Json::Json()
 			INLINE("ws")
 		)
 	);
-	
+
 	DEFINE_VOID("end-object",
 		GLUE(
 			INLINE("ws"),
@@ -33,7 +33,7 @@ Json::Json()
 			INLINE("ws")
 		)
 	);
-	
+
 	DEFINE_VOID("begin-array",
 		GLUE(
 			INLINE("ws"),
@@ -41,7 +41,7 @@ Json::Json()
 			INLINE("ws")
 		)
 	);
-	
+
 	DEFINE_VOID("end-array",
 		GLUE(
 			INLINE("ws"),
@@ -49,7 +49,7 @@ Json::Json()
 			INLINE("ws")
 		)
 	);
-	
+
 	DEFINE_VOID("name-separator",
 		GLUE(
 			INLINE("ws"),
@@ -57,7 +57,7 @@ Json::Json()
 			INLINE("ws")
 		)
 	);
-	
+
 	DEFINE_VOID("value-separator",
 		GLUE(
 			INLINE("ws"),
@@ -65,7 +65,7 @@ Json::Json()
 			INLINE("ws")
 		)
 	);
-	
+
 	int_ =
 		DEFINE("int",
 			CHOICE(
@@ -76,7 +76,7 @@ Json::Json()
 				)
 			)
 		);
-	
+
 	frac_ =
 		DEFINE("frac",
 			GLUE(
@@ -84,7 +84,7 @@ Json::Json()
 				REPEAT(1, RANGE('0', '9'))
 			)
 		);
-	
+
 	exp_ =
 		DEFINE("exp",
 			GLUE(
@@ -93,7 +93,7 @@ Json::Json()
 				REPEAT(1, RANGE('0', '9'))
 			)
 		);
-	
+
 	number_ =
 		DEFINE("number",
 			CHOICE(
@@ -107,7 +107,7 @@ Json::Json()
 					// minor deviation from the standard: also allow Nan and inf
 			)
 		);
-	
+
 	string_ =
 		DEFINE("string",
 			GLUE(
@@ -132,7 +132,7 @@ Json::Json()
 				CHAR('"')
 			)
 		);
-	
+
 	value_ =
 		DEFINE("value",
 			CHOICE(
@@ -146,7 +146,7 @@ Json::Json()
 	true_ = keywordByName("true");
 	false_ = keywordByName("false");
 	null_ = keywordByName("null");
-	
+
 	member_ =
 		DEFINE("member",
 			GLUE(
@@ -155,7 +155,7 @@ Json::Json()
 				REF("value")
 			)
 		);
-	
+
 	object_ =
 		DEFINE("object",
 			GLUE(
@@ -174,7 +174,7 @@ Json::Json()
 				INLINE("end-object")
 			)
 		);
-	
+
 	array_ =
 		DEFINE("array",
 			GLUE(
@@ -193,15 +193,15 @@ Json::Json()
 				INLINE("end-array")
 			)
 		);
-	
-	text_ =	
+
+	text_ =
 		DEFINE("JSON-text",
 			CHOICE(
 				REF("object"),
 				REF("array")
 			)
 		);
-	
+
 	ENTRY("JSON-text");
 #ifndef NDEBUG
 	LINK();
