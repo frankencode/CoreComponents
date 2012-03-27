@@ -138,7 +138,7 @@ SET(FTLSYSTEM_HEADER
 	AbnfSyntax.hpp
 	AbnfCompiler.hpp
 
-	WireSyntax.hpp
+	Wire.hpp
 
 	Property.hpp
 )
@@ -233,7 +233,7 @@ SET(FTLSYSTEM_SOURCE
 	AbnfSyntax.cpp
 	AbnfCompiler.cpp
 
-	WireSyntax.cpp
+	Wire.cpp
 )
 
 ADD_LIBRARY(ftlsystem

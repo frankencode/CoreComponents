@@ -462,6 +462,29 @@ Ref<ByteArray, Owner> ByteArray::normalized(bool nameCase) const
 	return join(parts, " ");
 }
 
+/** \brief Map a byte offset to editor coordinates.
+  * \arg line n-th line starting with 1
+  * \arg pos position on line starting with 1 (in bytes)
+  * \return true if successful
+  */
+bool ByteArray::indexToLinePos(int offset, int* line, int* pos) const
+{
+	if ((offset < 0) || (size() <= offset)) return false;
+	int y = 1, x = 1;
+	for (int i = 0; i < offset; ++i) {
+		if (data_[i] == '\n') {
+			++y;
+			x = 1;
+		}
+		else {
+			++x;
+		}
+	}
+	*line = y;
+	*pos = x;
+	return true;
+}
+
 Ref<ByteArray, Owner> ByteArray::fromUtf16(const void* data, int size, int endian)
 {
 	Ref<ByteArray, Owner> s2;
