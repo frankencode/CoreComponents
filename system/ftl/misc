@@ -2,10 +2,11 @@
 #define FTL_MISC
 
 #include "LinkInfo.hpp"
-#include "Json.hpp"
 #include "UriSyntax.hpp"
 #include "Uri.hpp"
 #include "AbnfCompiler.hpp"
 #include "Property.hpp"
+#include "Wire.hpp"
+#include "Json.hpp"
 
 #endif // FTL_MISC

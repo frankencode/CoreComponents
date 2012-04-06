@@ -467,7 +467,7 @@ Ref<ByteArray, Owner> ByteArray::normalized(bool nameCase) const
   * \arg pos position on line starting with 1 (in bytes)
   * \return true if successful
   */
-bool ByteArray::indexToLinePos(int offset, int* line, int* pos) const
+bool ByteArray::offsetToLinePos(int offset, int* line, int* pos) const
 {
 	if ((offset < 0) || (size() <= offset)) return false;
 	int y = 1, x = 1;

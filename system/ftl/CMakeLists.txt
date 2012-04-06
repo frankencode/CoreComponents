@@ -131,14 +131,15 @@ SET(FTLSYSTEM_HEADER
 
 	misc
 	LinkInfo.hpp
-	Json.hpp
 	UriSyntax.hpp
 	Uri.hpp
 	AbnfCoreSyntax.hpp
 	AbnfSyntax.hpp
 	AbnfCompiler.hpp
 
+	Node.hpp
 	Wire.hpp
+	Json.hpp
 
 	Property.hpp
 )
@@ -226,7 +227,6 @@ SET(FTLSYSTEM_SOURCE
 
 	# misc
 	LinkInfo.cpp
-	Json.cpp
 	UriSyntax.cpp
 	Uri.cpp
 	AbnfCoreSyntax.cpp
@@ -234,6 +234,7 @@ SET(FTLSYSTEM_SOURCE
 	AbnfCompiler.cpp
 
 	Wire.cpp
+	Json.cpp
 )
 
 ADD_LIBRARY(ftlsystem

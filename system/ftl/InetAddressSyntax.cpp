@@ -19,7 +19,7 @@ InetAddressSyntax::InetAddressSyntax(Ref<DebugFactory> debugFactory)
 	DEFINE_VOID("DecimalOctet",
 		REPEAT(0, 3, RANGE('0', '9'))
 	);
-	
+
 	DEFINE_VOID("HexWord",
 		REPEAT(1, 4,
 			CHOICE(
@@ -29,7 +29,7 @@ InetAddressSyntax::InetAddressSyntax(Ref<DebugFactory> debugFactory)
 			)
 		)
 	);
-	
+
 	inet4Address_ =
 		DEFINE("Inet4Address",
 			GLUE(
@@ -42,7 +42,7 @@ InetAddressSyntax::InetAddressSyntax(Ref<DebugFactory> debugFactory)
 				REF("DecimalOctet")
 			)
 		);
-	
+
 	inet6Address_ =
 		DEFINE("Inet6Address",
 			GLUE(
@@ -61,7 +61,7 @@ InetAddressSyntax::InetAddressSyntax(Ref<DebugFactory> debugFactory)
 				)
 			)
 		);
-	
+
 	inetAddress_ =
 		DEFINE("InetAddress",
 			CHOICE(
@@ -69,11 +69,9 @@ InetAddressSyntax::InetAddressSyntax(Ref<DebugFactory> debugFactory)
 				REF("Inet6Address")
 			)
 		);
-	
+
 	ENTRY("InetAddress");
-#ifndef NDEBUG
 	LINK();
-#endif
 }
 
 } // namespace ftl

@@ -24,7 +24,7 @@ FloatLiteral::FloatLiteral()
 	exponent_ = DEFINE("Exponent",  REPEAT(1, 3, RANGE('0', '9')));
 	nan_ = DEFINE("NaN", CHOICE(STRING("NaN"), STRING("nan")));
 	infinite_ = DEFINE("Infinite", GLUE(REPEAT(0, 1, CHAR('-')), CHOICE(STRING("INFINITE"), STRING("inf"))));
-	
+
 	literal_ =
 		DEFINE("Literal",
 			CHOICE(
@@ -57,11 +57,9 @@ FloatLiteral::FloatLiteral()
 				)
 			)
 		);
-	
+
 	ENTRY("Literal");
-#ifndef NDEBUG
 	LINK();
-#endif
 }
 
 bool FloatLiteral::match(Ref<ByteArray> text, int i0, int* i1, float64_t* value)
@@ -74,9 +72,9 @@ bool FloatLiteral::match(Ref<ByteArray> text, int i0, int* i1, float64_t* value)
 float64_t FloatLiteral::read(Ref<ByteArray> text, Ref<Token> rootToken) const
 {
 	float64_t value;
-	
+
 	Ref<Token> token = rootToken->firstChild();
-	
+
 	if (token->rule() == nan_)
 	{
 		value = nan;
@@ -85,7 +83,7 @@ float64_t FloatLiteral::read(Ref<ByteArray> text, Ref<Token> rootToken) const
 	{
 		float64_t one, zero;
 		one = 1.; zero = 0.;
-		
+
 		if (text->get(token->index()) == '-')
 			value = -one / zero;
 		else
@@ -97,7 +95,7 @@ float64_t FloatLiteral::read(Ref<ByteArray> text, Ref<Token> rootToken) const
 		float64_t mantissa = 0.;
 		int epSign = 0;
 		int ep = 0;
-		
+
 		while (token)
 		{
 			if (token->rule() == sign_)
@@ -132,13 +130,13 @@ float64_t FloatLiteral::read(Ref<ByteArray> text, Ref<Token> rootToken) const
 					ep += text->get(i) - '0';
 				}
 			}
-			
+
 			token = token->nextSibling();
 		}
-		
+
 		value = sign * mantissa * ::pow(10., float64_t(epSign * ep));
 	}
-	
+
 	return value;
 }
 
