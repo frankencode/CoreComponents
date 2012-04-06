@@ -1,6 +1,7 @@
 LINK_LIBRARIES(ftlsystem)
 INCLUDE_DIRECTORIES(..)
 
+ADD_EXECUTABLE(testWire testWire.cpp)
 ADD_EXECUTABLE(testLayout testLayout.cpp)
 ADD_EXECUTABLE(testProperty testProperty.cpp)
 ADD_EXECUTABLE(testUri testUri.cpp)

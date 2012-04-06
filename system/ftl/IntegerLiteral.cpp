@@ -17,7 +17,7 @@ namespace ftl
 IntegerLiteral::IntegerLiteral()
 {
 	sign_ = DEFINE("Sign", RANGE("+-"));
-	
+
 	binNumber_ =
 		DEFINE("BinNumber",
 			GLUE(
@@ -25,7 +25,7 @@ IntegerLiteral::IntegerLiteral()
 				CHAR('b')
 			)
 		);
-		
+
 	octNumber_ =
 		DEFINE("OctNumber",
 			GLUE(
@@ -33,7 +33,7 @@ IntegerLiteral::IntegerLiteral()
 				REPEAT(1, 24, RANGE('0', '9'))
 			)
 		);
-	
+
 	hexNumber_ =
 		DEFINE("HexNumber",
 			GLUE(
@@ -47,14 +47,14 @@ IntegerLiteral::IntegerLiteral()
 				)
 			)
 		);
-	
+
 	decNumber_ =
 		DEFINE("DecNumber",
 			REPEAT(1, 20,
 				RANGE('0', '9')
 			)
 		);
-	
+
 	literal_ =
 		DEFINE("Literal",
 			GLUE(
@@ -67,11 +67,9 @@ IntegerLiteral::IntegerLiteral()
 				)
 			)
 		);
-	
+
 	ENTRY("Literal");
-#ifndef NDEBUG
 	LINK();
-#endif
 }
 
 bool IntegerLiteral::match(Ref<ByteArray> text, int i0, int* i1, uint64_t* value, int* sign)
@@ -87,14 +85,14 @@ void IntegerLiteral::read(Ref<ByteArray> text, Ref<Token> rootToken, uint64_t* v
 	*value = 0;
 
 	Ref<Token> token = rootToken->firstChild();
-	
+
 	if (token->rule() == sign_)
 	{
 		if (text->get(token->index()) == '-')
 			*sign = -1;
 		token = token->nextSibling();
 	}
-	
+
 	if (token->rule() == binNumber_)
 	{
 		for (int i = token->i0(); i < token->i1() - 1; ++i)

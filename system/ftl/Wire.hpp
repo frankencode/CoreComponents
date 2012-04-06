@@ -13,31 +13,34 @@
 
 #include "Singleton.hpp"
 #include "Syntax.hpp"
-#include "Variant.hpp"
-#include "Array.hpp"
-#include "Map.hpp"
+#include "Node.hpp"
 
 namespace ftl
 {
 
 FTL_EXCEPTION(WireException, Exception);
 
-typedef Array<Variant> WireArray;
-typedef Map<String, Variant> WireObject;
-
 class Wire: public Syntax<ByteArray>::Definition, public Singleton<Wire>
 {
 public:
-	Wire();
-	Variant parse(String text);
+	typedef ftl::Node Node;
 
-protected:
+	Ref<Node, Owner> parse(Ref<ByteArray> source);
+
+private:
 	friend class Singleton<Wire>;
+	Wire();
+
+	Ref<Node, Owner> parseObject(Ref<ByteArray> source, Ref<Token> token);
+	Ref<Node, Owner> parseValue(Ref<ByteArray> source, Ref<Token> token);
+	Ref<Node, Owner> parseArray(Ref<ByteArray> source, Ref<Token> token);
+
 	int name_;
 	int type_;
 	int atom_;
 	int array_;
 	int member_;
+	int object_;
 	int source_;
 };
 

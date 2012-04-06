@@ -20,7 +20,7 @@ FormatSpecifier::FormatSpecifier()
 	width_ = DEFINE("Width", REPEAT(1, 2, RANGE('0', '9')));
 	integerWidth_ = DEFINE("IntegerWidth", REPEAT(1, 2, RANGE('0', '9')));
 	fractionWidth_ = DEFINE("FractionWidth", REPEAT(1, 2, RANGE('0', '9')));
-	
+
 	base_ =
 		DEFINE("Base",
 			CHOICE(
@@ -30,9 +30,9 @@ FormatSpecifier::FormatSpecifier()
 				STRING("bin")
 			)
 		);
-	
+
 	exp_ = DEFINE("Exp", RANGE("eE"));
-	
+
 	blank_ = DEFINE("Blank",
 		GLUE(
 			CHAR('\''),
@@ -40,7 +40,7 @@ FormatSpecifier::FormatSpecifier()
 			CHAR('\'')
 		)
 	);
-	
+
 	format_ =
 		DEFINE("Format",
 			GLUE(
@@ -70,25 +70,23 @@ FormatSpecifier::FormatSpecifier()
 				CHAR('%')
 			)
 		);
-	
+
 	ENTRY("Format");
-#ifndef NDEBUG
 	LINK();
-#endif
 }
 
 bool FormatSpecifier::find(Ref<ByteArray> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, char* blank)
 {
 	Ref<Token, Owner> rootToken = Syntax<ByteArray>::Definition::find(text, i0, i1);
-	
+
 	if (rootToken)
 	{
 		Ref<Token> token = rootToken->firstChild();
-		
+
 		while (token)
 		{
 			String value = text->copy(token->i0(), token->i1());
-			
+
 			if (token->rule() == width_)
 			{
 				*w = value->toInt();
@@ -120,11 +118,11 @@ bool FormatSpecifier::find(Ref<ByteArray> text, int* i0, int* i1, int* w, int* w
 			{
 				*blank = value->get(1);
 			}
-			
+
 			token = token->nextSibling();
 		}
 	}
-	
+
 	return rootToken;
 }
 

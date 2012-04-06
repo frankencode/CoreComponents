@@ -20,22 +20,22 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 {
 	SYNTAX("uri");
 	IMPORT(inetAddressSyntax(), "inet");
-	
+
 	DEFINE_VOID("Delimiter",
 		RANGE(":/?#[]@")
 	);
-	
+
 	DEFINE_VOID("Punctuator",
 		RANGE("!$&'()*+,;=")
 	);
-	
+
 	/*DEFINE_VOID("Reserved",
 		CHOICE(
 			INLINE("Delimiter"),
 			INLINE("Punctuator")
 		)
 	);*/
-	
+
 	DEFINE_VOID("Unreserved",
 		CHOICE(
 			INLINE("ALPHA"),
@@ -43,7 +43,7 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 			RANGE("-._~")
 		)
 	);
-	
+
 	DEFINE_VOID("PathChar",
 		CHOICE(
 			INLINE("Unreserved"),
@@ -52,7 +52,7 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 			RANGE(":@")
 		)
 	);
-	
+
 	DEFINE_VOID("PercentEncoded",
 		GLUE(
 			CHAR('%'),
@@ -60,7 +60,7 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 			INLINE("HEXDIG")
 		)
 	);
-	
+
 	userInfo_ =
 		DEFINE("UserInfo",
 			REPEAT(
@@ -72,7 +72,7 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 				)
 			)
 		);
-	
+
 	host_ =
 		DEFINE("Host",
 			CHOICE(
@@ -87,14 +87,14 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 				)
 			)
 		);
-	
+
 	port_ =
 		DEFINE("Port",
 			REPEAT(1,
 				INLINE("DIGIT")
 			)
 		);
-	
+
 	scheme_ =
 		DEFINE("Scheme",
 			GLUE(
@@ -108,7 +108,7 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 				)
 			)
 		);
-	
+
 	authority_ =
 		DEFINE("Authority",
 			GLUE(
@@ -127,7 +127,7 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 				)
 			)
 		);
-	
+
 	path_ =
 		DEFINE("Path",
 			GLUE(
@@ -144,7 +144,7 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 				)
 			)
 		);
-	
+
 	query_ =
 		DEFINE("Query",
 			REPEAT(
@@ -154,7 +154,7 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 				)
 			)
 		);
-	
+
 	fragment_ =
 		DEFINE("Fragment",
 			REPEAT(
@@ -164,7 +164,7 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 				)
 			)
 		);
-	
+
 	uri_ =
 		DEFINE("Uri",
 			GLUE(
@@ -195,11 +195,9 @@ UriSyntax::UriSyntax(Ref<DebugFactory> debugFactory)
 				)
 			)
 		);
-	
+
 	ENTRY("Uri");
-#ifndef NDEBUG
 	LINK();
-#endif
 }
 
 } // namespace ftl

@@ -33,8 +33,8 @@ public:
 	typedef PrefixTree<Char,int> KeywordMap;
 	typedef SyntaxDebugger<Media> Debugger;
 
-	inline static void rollBackOnFailure(Index i, Token* parentToken, Token* lastChildSaved) {
-		if ((i == Media::ill()) && (parentToken)) {
+	inline static void rollBack(Token* parentToken, Token* lastChildSaved) {
+		if (parentToken) {
 			while (parentToken->lastChild() != lastChildSaved)
 				parentToken->lastChild()->unlink();
 		}
@@ -42,7 +42,7 @@ public:
 
 	typedef SyntaxState<Char> State;
 
-	virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) = 0;
+	virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const = 0;
 
 	class CharNode: public Node
 	{
@@ -52,7 +52,7 @@ public:
 			  invert_(invert)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			if (media->has(i)) {
 				Char ch = media->get(i++);
@@ -81,7 +81,7 @@ public:
 			  invert_(invert)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			if (media->has(i)) {
 				Char ch = media->get(i++);
@@ -105,7 +105,7 @@ public:
 	class AnyNode: public Node
 	{
 	public:
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			return media->has(i) ? i + 1 : Media::ill();
 		}
@@ -120,7 +120,7 @@ public:
 			  invert_(invert)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			if (media->has(i)) {
 				Char ch = media->get(i++);
@@ -153,7 +153,7 @@ public:
 			str::cpy(s_.data(), s, s_.size());
 		}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			if (media->has(i)) {
 				Char ch = media->get(i++);
@@ -194,7 +194,7 @@ public:
 			}
 		}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			if (media->has(i)) {
 				int k = 0, len = s_.length();
@@ -229,7 +229,7 @@ public:
 			  caseSensitive_(caseSensitive)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			if (media->has(i)) {
 				Index h = 0;
@@ -265,7 +265,7 @@ public:
 			appendChild(entry);
 		}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -285,7 +285,8 @@ public:
 			if ((repeatCount < minRepeat_) || (maxRepeat_ < repeatCount))
 				i = Media::ill();
 
-			rollBackOnFailure(i, parentToken, lastChildSaved);
+			if (i == Media::ill())
+				rollBack(parentToken, lastChildSaved);
 
 			return i;
 		}
@@ -309,7 +310,7 @@ public:
 			appendChild(entry);
 		}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -321,7 +322,8 @@ public:
 					h = Media::ill();
 			}
 
-			rollBackOnFailure(h, parentToken, lastChildSaved);
+			if (h == Media::ill())
+				rollBack(parentToken, lastChildSaved);
 
 			return h;
 		}
@@ -338,7 +340,7 @@ public:
 	class BoiNode: public Node
 	{
 	public:
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			return (i == 0) ? i : Media::ill();
 		}
@@ -347,7 +349,7 @@ public:
 	class EoiNode: public Node
 	{
 	public:
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			bool eoi = (!media->has(i)) && ((i == 0) || (media->has(i - 1)));
 			return eoi ? i : Media::ill();
@@ -361,7 +363,7 @@ public:
 			: invert_(invert)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			return invert_ ? Media::ill() : i;
 		}
@@ -380,7 +382,7 @@ public:
 			appendChild(entry);
 		}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -398,7 +400,8 @@ public:
 			if (!found)
 				i = Media::ill();
 
-			rollBackOnFailure(i, parentToken, lastChildSaved);
+			if (i == Media::ill())
+				rollBack(parentToken, lastChildSaved);
 
 			return i;
 		}
@@ -415,7 +418,7 @@ public:
 			appendChild(entry);
 		}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -427,7 +430,7 @@ public:
 			if ((h == Media::ill()) ^ invert_)
 				i = Media::ill();
 
-			rollBackOnFailure(Media::ill(), parentToken, lastChildSaved);
+			rollBack(parentToken, lastChildSaved);
 
 			return i;
 		}
@@ -439,10 +442,43 @@ public:
 		int invert_;
 	};
 
+	class SpanNode: public Node
+	{
+	public:
+		SpanNode(Ref<Node> coverage, Ref<Node> entry)
+		{
+			appendChild(coverage);
+			appendChild(entry);
+		}
+
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
+		{
+			Ref<Token> lastChildSaved;
+			if (parentToken) lastChildSaved = parentToken->lastChild();
+
+			int i0 = i;
+			i = coverage()->matchNext(media, i, 0, parentToken, state);
+
+			if (i != Media::ill())
+			{
+				rollBack(parentToken, lastChildSaved);
+
+				Media range(media, i);
+				if (entry()->matchNext(&range, i0, tokenFactory, parentToken, state) == Media::ill())
+					i = Media::ill();
+			}
+
+			return i;
+		}
+
+		inline Ref<Node> coverage() const { return Node::firstChild(); }
+		inline Ref<Node> entry() const { return Node::lastChild(); }
+	};
+
 	class ChoiceNode: public Node
 	{
 	public:
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -451,11 +487,13 @@ public:
 			Ref<Node> node = Node::firstChild();
 			while ((node) && (h == Media::ill())) {
 				h = node->matchNext(media, i, tokenFactory, parentToken, state);
-				rollBackOnFailure(h, parentToken, lastChildSaved);
+				if (h == Media::ill())
+					rollBack(parentToken, lastChildSaved);
 				node = node->nextSibling();
 			}
 
-			rollBackOnFailure(h, parentToken, lastChildSaved);
+			if (h == Media::ill())
+				rollBack(parentToken, lastChildSaved);
 
 			return h;
 		}
@@ -467,7 +505,7 @@ public:
 	class GlueNode: public Node
 	{
 	public:
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -478,7 +516,8 @@ public:
 				node = node->nextSibling();
 			}
 
-			rollBackOnFailure(i, parentToken, lastChildSaved);
+			if (i == Media::ill())
+				rollBack(parentToken, lastChildSaved);
 
 			return i;
 		}
@@ -501,7 +540,7 @@ public:
 			appendChild(entry);
 		}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			Ref<Token, Owner> token;
 			if (tokenFactory) {
@@ -598,14 +637,15 @@ public:
 			: LinkNode(rule)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 
 			i = LinkNode::rule_->matchNext(media, i, tokenFactory, parentToken, state);
 
-			rollBackOnFailure(i, parentToken, lastChildSaved);
+			if (i == Media::ill())
+				rollBack(parentToken, lastChildSaved);
 
 			return i;
 		}
@@ -622,7 +662,7 @@ public:
 			: LinkNode(rule)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			return LinkNode::rule_->entry()->matchNext(media, i, tokenFactory, parentToken, state);
 		}
@@ -637,7 +677,7 @@ public:
 			  keyword_(-1)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			Index h = Media::ill();
 			if (parentToken) {
@@ -669,20 +709,24 @@ public:
 			if (entry) appendChild(entry);
 		}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			Index h = Media::ill();
 
 			if (parentToken) {
-				if (parentToken->rule() == LinkNode::rule_->id()) {
-					h = i;
-					if (Node::firstChild()) {
-						Ref<Token> lastChildSaved;
-						if (parentToken) lastChildSaved = parentToken->lastChild();
+				parentToken = parentToken->parent();
+				if (parentToken) {
+					if (parentToken->rule() == LinkNode::rule_->id()) {
+						h = i;
+						if (Node::firstChild()) {
+							Ref<Token> lastChildSaved;
+							if (parentToken) lastChildSaved = parentToken->lastChild();
 
-						h = Node::firstChild()->matchNext(media, h, tokenFactory, parentToken, state);
+							h = Node::firstChild()->matchNext(media, h, tokenFactory, parentToken, state);
 
-						rollBackOnFailure(h, parentToken, lastChildSaved);
+							if (h == Media::ill())
+								rollBack(parentToken, lastChildSaved);
+						}
 					}
 				}
 			}
@@ -701,7 +745,7 @@ public:
 			  self_(self)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			return callBack_(self_, media, i, state);
 		}
@@ -721,7 +765,7 @@ public:
 			  value_(value)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			*state->flag(flagId_) = value_;
 			return i;
@@ -745,7 +789,7 @@ public:
 			appendChild(falseBranch);
 		}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			return (*state->flag(flagId_)) ?
 				trueBranch()->matchNext(media, i, tokenFactory, parentToken, state) :
@@ -767,7 +811,7 @@ public:
 			: charId_(charId)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			if (media->has(i))
 				*state->character(charId_) = media->get(i++);
@@ -791,7 +835,7 @@ public:
 			  value_(value)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			*state->character(charId_) = value_;
 			return i;
@@ -813,7 +857,7 @@ public:
 			  invert_(invert)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			if (media->has(i)) {
 				Char ch = media->get(i++);
@@ -838,24 +882,22 @@ public:
 	{
 	public:
 		GetStringNode(int stringId, Ref<Node> coverage)
-			: stringId_(stringId),
-			  coverage_(coverage)
-		{}
+			: stringId_(stringId)
+		{
+			appendChild(coverage);
+		}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 
 			int i0 = i;
-			i = coverage_->matchNext(media, i, 0, parentToken, state);
+			i = coverage()->matchNext(media, i, 0, parentToken, state);
 
 			if (i != Media::ill())
 			{
-				if (parentToken) {
-					while (parentToken->lastChild() != lastChildSaved)
-						parentToken->lastChild()->unlink();
-				}
+				rollBack(parentToken, lastChildSaved);
 
 				Array<Char>* string = state->string(stringId_);
 				*string = Array<Char>(i - i0);
@@ -867,11 +909,10 @@ public:
 		}
 
 		inline int stringId() const { return stringId_; }
-		inline Ref<Node> coverage() const { return coverage_; }
+		inline Ref<Node> coverage() const { return Node::firstChild(); }
 
 	private:
 		int stringId_;
-		Ref<Node, Owner> coverage_;
 	};
 
 	class SetStringNode: public Node
@@ -885,7 +926,7 @@ public:
 			str::cpy(s_.data(), s, s_.size());
 		}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			*state->string(stringId_) = s_;
 			return i;
@@ -906,7 +947,7 @@ public:
 			: stringId_(stringId)
 		{}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			Array<Char>* string = state->string(stringId_);
 			int k = 0, m = string->length();
@@ -944,7 +985,7 @@ public:
 			if (coverage) appendChild(coverage);
 		}
 
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state)
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			State* childState = 0;
 			if (state) {
@@ -957,16 +998,18 @@ public:
 					childState = definition_->newState(state);
 			}
 
-			if (coverage()) {
+			if (coverage())
+			{
 				Ref<Token> lastChildSaved;
 				if (parentToken) lastChildSaved = parentToken->lastChild();
+
 				Index i0 = i;
 				i = coverage()->matchNext(media, i, 0, parentToken, state);
-				if (i != Media::ill()) {
-					if (parentToken) {
-						while (parentToken->lastChild() != lastChildSaved)
-							parentToken->lastChild()->unlink();
-					}
+
+				if (i != Media::ill())
+				{
+					rollBack(parentToken, lastChildSaved);
+
 					Media range(media, i);
 					definition_->matchNext(&range, i0, tokenFactory, parentToken, childState);
 				}
@@ -1105,6 +1148,7 @@ public:
 		inline NODE FIND(NODE entry) { return debug(new FindNode(entry), "Find"); }
 		inline NODE AHEAD(NODE entry) { return debug(new AheadNode(entry, 0), "Ahead"); }
 		inline NODE NOT(NODE entry) { return debug(new AheadNode(entry, 1), "Ahead"); }
+		inline NODE SPAN(NODE coverage, NODE entry) { return debug(new SpanNode(coverage, entry), "Span"); }
 
 		inline NODE CHOICE() { return debug(new ChoiceNode, "Choice"); }
 		inline NODE GLUE() { return debug(new GlueNode, "Glue"); }
@@ -1271,7 +1315,7 @@ public:
 
 		inline bool stateful() const { return (stateFlagHead_) || (stateCharHead_) || (stateStringHead_) || (statefulScope_); }
 
-		State* newState(State* parent = 0)
+		State* newState(State* parent = 0) const
 		{
 			if (!stateful())
 				return 0;
@@ -1299,7 +1343,7 @@ public:
 			return state;
 		}
 
-		Ref<Token, Owner> find(Media* media, Index* i0, Index* i1 = 0, Ref<TokenFactory> tokenFactory = 0)
+		Ref<Token, Owner> find(Media* media, Index* i0, Index* i1 = 0, Ref<TokenFactory> tokenFactory = 0) const
 		{
 			Index i = *i0;
 			Ref<Token, Owner> rootToken;
@@ -1312,10 +1356,8 @@ public:
 			return rootToken;
 		}
 
-		Ref<Token, Owner> match(Media* media, Index i0 = 0, Index* i1 = 0, State* state = 0, Ref<TokenFactory> tokenFactory = 0)
+		Ref<Token, Owner> match(Media* media, Index i0 = 0, Index* i1 = 0, State* state = 0, Ref<TokenFactory> tokenFactory = 0) const
 		{
-			LINK();
-
 			Ref<State, Owner> localState;
 			if (!state) {
 				localState = newState();
@@ -1397,7 +1439,7 @@ public:
 			}
 		}
 
-		virtual int syntaxError(Media* media, int index, State* state)
+		virtual int syntaxError(Media* media, int index, State* state) const
 		{
 			FTL_THROW(DebugException, "Unhandled syntax error");
 			return -1;

@@ -203,9 +203,7 @@ Json::Json()
 		);
 
 	ENTRY("JSON-text");
-#ifndef NDEBUG
 	LINK();
-#endif
 }
 
 Variant Json::parse(String text)

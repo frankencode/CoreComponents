@@ -18,37 +18,56 @@ Wire::Wire()
 {
 	SYNTAX("Wire");
 
-	DEFINE_VOID("Comment",
-		CHOICE(
-			GLUE(
-				STRING("//"),
+	DEFINE_VOID("CommentLine",
+		GLUE(
+			STRING("//"),
+			CHOICE(
+				FIND(AHEAD(CHAR('\n'))),
+				FIND(EOI())
+			)
+		)
+	);
+
+	DEFINE_VOID("CommentText",
+		GLUE(
+			STRING("/*"),
+			REPEAT(
 				CHOICE(
-					FIND(AHEAD(CHAR('\n'))),
-					FIND(EOI())
+					INLINE("CommentText"),
+					GLUE(
+						NOT(STRING("*/")),
+						ANY()
+					)
 				)
 			),
-			GLUE(
-				STRING("/*"),
-				REPEAT(
-					CHOICE(
-						INLINE("Comment"),
-						GLUE(
-							NOT(STRING("*/")),
-							ANY()
-						)
-					)
-				),
-				STRING("*/")
-			)
+			STRING("*/")
 		)
 	);
 
 	DEFINE_VOID("Gap",
 		REPEAT(1,
 			CHOICE(
-				RANGE(" \t\n\r"),
-				INLINE("Comment")
+				GLUE(
+					REPEAT(1, RANGE(" \t\n\r")),
+					REPEAT(INLINE("CommentLine"))
+				),
+				INLINE("CommentText")
 			)
+		)
+	);
+
+	DEFINE_VOID("Break",
+		GLUE(
+			REPEAT(
+				CHOICE(
+					GLUE(
+						REPEAT(1, RANGE(" \t")),
+						REPEAT(INLINE("CommentLine"))
+					),
+					INLINE("CommentText")
+				)
+			),
+			RANGE("\n;\r")
 		)
 	);
 
@@ -56,42 +75,32 @@ Wire::Wire()
 		REPEAT(0, 1, INLINE("Gap"))
 	);
 
-	DEFINE_VOID("Break",
-		GLUE(
-			REPEAT(
-				CHOICE(
-					RANGE(" \t"),
-					INLINE("Comment")
-				)
-			),
-			RANGE("\n;\r")
-		)
-	);
-
 	name_ =
 		DEFINE("Name",
-			GLUE(
-				NOT(RANGE('0', '9')),
-				CHOICE(
-					RANGE('a', 'z'),
-					RANGE('A', 'Z'),
-					CHAR('_'),
-					RANGE('0', '9'),
-					GREATER(0x79)
+			REPEAT(1,
+				GLUE(
+					NOT(RANGE('0', '9')),
+					CHOICE(
+						RANGE('a', 'z'),
+						RANGE('A', 'Z'),
+						CHAR('_'),
+						RANGE('0', '9'),
+						GREATER(0x7F)
+					)
 				)
 			)
 		);
 
 	type_ =
-		DEFINE("Type", INLINE("Identifier"));
+		DEFINE("Type", INLINE("Name"));
 
 	atom_ =
 		DEFINE("Atom",
 			LENGTH(1,
 				CHOICE(
 					CONTEXT("Member",
-						CHOICE(
-							FIND(
+						FIND(
+							CHOICE(
 								AHEAD(
 									GLUE(
 										INLINE("Break"),
@@ -100,9 +109,7 @@ Wire::Wire()
 										INLINE("Noise"),
 										CHAR(':')
 									)
-								)
-							),
-							FIND(
+								),
 								AHEAD(
 									GLUE(
 										INLINE("Noise"),
@@ -115,12 +122,9 @@ Wire::Wire()
 					CONTEXT("Array",
 						FIND(
 							AHEAD(
-								CHOICE(
-									GLUE(
-										INLINE("Noise"),
-										RANGE(",]")
-									),
-									INLINE("Gap")
+								GLUE(
+									INLINE("Noise"),
+									RANGE(",]")
 								)
 							)
 						)
@@ -158,9 +162,9 @@ Wire::Wire()
 
 	DEFINE_VOID("Value",
 		CHOICE(
-			REF("Atom"),
 			REF("Object"),
-			REF("Array")
+			REF("Array"),
+			REF("Atom")
 		)
 	);
 
@@ -214,6 +218,63 @@ Wire::Wire()
 		);
 
 	ENTRY("Source");
+	LINK();
+}
+
+
+Ref<Node, Owner> Wire::parse(Ref<ByteArray> source)
+{
+	int i0 = 0, i1 = 0;
+	Ref<Token, Owner> token = match(source, i0, &i1);
+	FTL_CHECK(token, WireException, "Invalid syntax");
+	FTL_CHECK(i1 == source->size(), WireException, "Invalid syntax");
+	return parseObject(source, token->firstChild());
+}
+
+Ref<Node, Owner> Wire::parseObject(Ref<ByteArray> source, Ref<Token> token)
+{
+	FTL_CHECK(token->rule() == object_, WireException, "");
+	String type;
+	Ref<Token> child = token->firstChild();
+	if (child) {
+		if (child->rule() == type_) {
+			type = source->copy(child->i0(), child->i1());
+			child = child->nextSibling();
+		}
+	}
+	Ref<ObjectNode, Owner> objectNode = new ObjectNode(type, source, token);
+	Ref<Token> member = child;
+	while (member) {
+		FTL_CHECK(member->rule() == member_, WireException, "");
+		Ref<Token> name = member->firstChild();
+		Ref<Token> value = member->lastChild();
+		objectNode->insertMember(
+			source->copy(name->i0(), name->i1()),
+			parseValue(source, value)
+		);
+		member = member->nextSibling();
+	}
+	return objectNode;
+}
+
+Ref<Node, Owner> Wire::parseValue(Ref<ByteArray> source, Ref<Token> token)
+{
+	if (token->rule() == atom_) return new Node(source, token);
+	else if (token->rule() == object_) return parseObject(source, token);
+	else if (token->rule() == array_) return parseArray(source, token);
+	FTL_CHECK(false, WireException, "");
+}
+
+Ref<Node, Owner> Wire::parseArray(Ref<ByteArray> source, Ref<Token> token)
+{
+	FTL_CHECK(token->rule() == array_, WireException, "");
+	Ref<ArrayNode, Owner> arrayNode = new ArrayNode(token->countChildren(), source, token);
+	Ref<Token> value = token->firstChild();
+	for (int i = 0, n = arrayNode->itemCount(); i < n; ++i) {
+		arrayNode->setItem(i, parseValue(source, value));
+		value = value->nextSibling();
+	}
+	return arrayNode;
 }
 
 } // namespace ftl
