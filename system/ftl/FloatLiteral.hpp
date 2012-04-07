@@ -21,14 +21,14 @@ class FloatLiteral: public Syntax<ByteArray>::Definition, public Singleton<Float
 {
 public:
 	bool match(Ref<ByteArray> text, int i0, int* i1, float64_t* value);
-	
+	float64_t read(Ref<ByteArray> text, Ref<Token> token) const;
+
 	inline int literal() const { return literal_; }
-	
+
 private:
 	friend class Singleton<FloatLiteral>;
 	FloatLiteral();
-	float64_t read(Ref<ByteArray> text, Ref<Token> token) const;
-	
+
 	int sign_;
 	int integerPart_;
 	int fractionPart_;

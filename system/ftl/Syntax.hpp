@@ -442,7 +442,7 @@ public:
 		int invert_;
 	};
 
-	class SpanNode: public Node
+	/*class SpanNode: public Node
 	{
 	public:
 		SpanNode(Ref<Node> coverage, Ref<Node> entry)
@@ -473,7 +473,7 @@ public:
 
 		inline Ref<Node> coverage() const { return Node::firstChild(); }
 		inline Ref<Node> entry() const { return Node::lastChild(); }
-	};
+	};*/
 
 	class ChoiceNode: public Node
 	{
@@ -521,6 +521,21 @@ public:
 
 			return i;
 		}
+	};
+
+	class HintNode: public Node
+	{
+	public:
+		HintNode(const char* text)
+			: text_(text)
+		{}
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
+		{
+			state->setHint(text_);
+			return i;
+		}
+	private:
+		const char* text_;
 	};
 
 	class Definition;
@@ -1089,7 +1104,6 @@ public:
 			if (!name)
 				FTL_THROW(DebugException, "Cannot import anonymous syntax definition");
 			definitionByName_->insert(name, definition);
-			definition->LINK();
 		}
 
 		typedef Ref<Node, Owner> NODE;
@@ -1148,7 +1162,7 @@ public:
 		inline NODE FIND(NODE entry) { return debug(new FindNode(entry), "Find"); }
 		inline NODE AHEAD(NODE entry) { return debug(new AheadNode(entry, 0), "Ahead"); }
 		inline NODE NOT(NODE entry) { return debug(new AheadNode(entry, 1), "Ahead"); }
-		inline NODE SPAN(NODE coverage, NODE entry) { return debug(new SpanNode(coverage, entry), "Span"); }
+		// inline NODE SPAN(NODE coverage, NODE entry) { return debug(new SpanNode(coverage, entry), "Span"); }
 
 		inline NODE CHOICE() { return debug(new ChoiceNode, "Choice"); }
 		inline NODE GLUE() { return debug(new GlueNode, "Glue"); }
@@ -1297,8 +1311,6 @@ public:
 		}
 
 		inline NODE INVOKE(Definition* definition, NODE coverage = 0) {
-			if (definition != this)
-				definition->LINK();
 			return debug(new InvokeNode(definition, coverage), "Invoke");
 		}
 

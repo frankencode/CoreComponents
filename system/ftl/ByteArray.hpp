@@ -23,6 +23,9 @@ class Character;
 class String;
 typedef List<String> StringList;
 
+template<class Media>
+class Syntax;
+
 class ByteArray: public Sequence<char, int>
 {
 public:
@@ -187,8 +190,12 @@ public:
 	Ref<ByteArray, Owner> md5() const;
 
 protected:
+	friend class Syntax<ByteArray>;
+	ByteArray(ByteArray* b, int size);
+
 	int size_;
 	char* data_;
+	bool range_;
 	mutable Ref<Character, Owner> chars_;
 };
 
