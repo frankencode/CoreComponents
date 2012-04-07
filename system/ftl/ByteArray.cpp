@@ -24,7 +24,8 @@ namespace ftl
 
 ByteArray::ByteArray(int size)
 	: size_(0),
-	  data_(const_cast<char*>(""))
+	  data_(const_cast<char*>("")),
+	  range_(false)
 {
 	if (size > 0) {
 		size_ = size;
@@ -35,7 +36,8 @@ ByteArray::ByteArray(int size)
 
 ByteArray::ByteArray(int size, char zero)
 	: size_(0),
-	  data_(const_cast<char*>(""))
+	  data_(const_cast<char*>("")),
+	  range_(false)
 {
 	if (size > 0) {
 		size_ = size;
@@ -47,7 +49,8 @@ ByteArray::ByteArray(int size, char zero)
 
 ByteArray::ByteArray(const char* data, int size)
 	: size_(0),
-	  data_(const_cast<char*>(""))
+	  data_(const_cast<char*>("")),
+	  range_(false)
 {
 	if (size < 0) size = str::len(data);
 	if (size > 0) {
@@ -60,7 +63,8 @@ ByteArray::ByteArray(const char* data, int size)
 
 ByteArray::ByteArray(const ByteArray& b)
 	: size_(0),
-	  data_(const_cast<char*>(""))
+	  data_(const_cast<char*>("")),
+	  range_(false)
 {
 	if (b.size_ > 0) {
 		size_ = b.size_;
@@ -69,8 +73,15 @@ ByteArray::ByteArray(const ByteArray& b)
 	}
 }
 
+ByteArray::ByteArray(ByteArray* b, int size)
+	: size_(size),
+	  data_(b->data_),
+	  range_(true)
+{}
+
+
 ByteArray::~ByteArray() {
-	if (size_ > 0) delete[] data_;
+	if ((size_ > 0) && (!range_)) delete[] data_;
 }
 
 ByteArray& ByteArray::operator=(const ByteArray& b)
