@@ -39,8 +39,8 @@ Ref<ByteArray, Owner> Base64::encode(Ref<ByteArray> source)
 		bits >>= 8;
 
 		for (int k = 0; k < 4; ++k) {
-			int index = (bits >> ((3-k)*6)) & 63;
-			sink->set(l++, alphabet[index]);
+			sink->set(l++, alphabet[(bits & 0xfc0000) >> 18]);
+			bits <<= 6;
 		}
 	}
 	if (i > 0) {
