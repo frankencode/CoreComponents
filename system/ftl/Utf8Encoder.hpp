@@ -22,16 +22,16 @@ public:
 	Utf8Encoder(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA)
 		: byteEncoder_(stream, bufCapa)
 	{}
-	
+
 	Utf8Encoder(void* buf, int bufCapa)
 		: byteEncoder_(buf, bufCapa)
 	{}
-	
+
 	void write(uchar_t ch);
 	static int encodedSize(uchar_t ch);
-	
+
 	inline Ref<ByteEncoder> byteEncoder() const { return &byteEncoder_; }
-	
+
 private:
 	ByteEncoder byteEncoder_;
 };

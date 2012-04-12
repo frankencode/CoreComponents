@@ -31,6 +31,7 @@ SET(FTLSYSTEM_HEADER
 	BitDecoder.hpp
 	Crc32.hpp
 	Md5.hpp
+	Base64.hpp
 	HuffmanCodec.hpp
 
 	container
@@ -162,6 +163,7 @@ SET(FTLSYSTEM_SOURCE
 	HuffmanCodec.cpp
 	Crc32.cpp
 	Md5.cpp
+	Base64.cpp
 
 	# container
 
