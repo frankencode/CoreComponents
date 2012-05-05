@@ -86,6 +86,7 @@ public:
 		if (i < 0) i += size_;
 		return data_[i];
 	}
+	inline uint8_t& byteAt(int i) const { return reinterpret_cast<uint8_t&>(at(i)); }
 
 	inline char* data() const { return data_; }
 	inline const char* constData() const { return data_; }
@@ -188,6 +189,7 @@ public:
 	Ref<ByteArray, Owner> toUtf16(int endian = localEndian());
 
 	Ref<ByteArray, Owner> md5() const;
+	Ref<ByteArray, Owner> base64() const;
 
 protected:
 	friend class Syntax<ByteArray>;
