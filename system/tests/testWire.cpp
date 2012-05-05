@@ -1,60 +1,56 @@
 #include <ftl/stdio>
-#include <ftl/Wire.hpp>
+#include <ftl/misc>
 
 using namespace ftl;
-
-void print(Ref<Node> node, int depth = 0)
-{
-	if (node->type() == Node::AtomType) {
-		print("\"%%\"", node->text());
-	}
-	else if (node->type() == Node::ObjectType) {
-		Ref<ObjectNode> object = node;
-		if (object->type() != "") print("%% ", object->type());
-		print("{\n");
-		for (int i = 0, n = object->memberCount(); i < n; ++i) {
-			String memberName = object->memberName(i);
-			print("%%%%: ", String(2 * (depth + 1), ' '), memberName);
-			print(object->member(memberName), depth + 1);
-			print("\n");
-		}
-		print("%%}", String(2 * depth, ' '));
-		if (depth == 0) print("\n");
-	}
-	else if (node->type() == Node::ArrayType) {
-		Ref<ArrayNode> array = node;
-		print("[ ");
-		for (int i = 0, n = array->itemCount(); i < n; ++i) {
-			print(array->item(i));
-			if (i != n - 1) print(", ");
-		}
-		print(" ]");
-	}
-}
 
 int main() {
 	String text =
 		"Person {\n"
-		"  age: 1\n"
-		"  name: Hans Mustermann\n"
-		"  hobbies: [ sky diving, mountain biking, poetry ]\n"
-		"  picture: Image {\n"
-		"    uri: http://www.hans-mustermann.de/photo.jpg\n"
-		"    width: 400 /* hmmm*/\n"
-		"    height: 300 // well\n"
+		"  name: \"Hans Mustermann\"\n"
+		"  age: 17\n"
+		"  hobbies: [ \"Sky Diving\", \"Mountain Biking\", \"Poetry\" ]\n"
+		"  picture: {\n"
+		"    uri: \"http://www.hans-mustermann.de/photo.jpg\"\n"
+		"    width: 400; height: 300\n"
 		"  }\n"
 		"  home: {\n"
 		"    latitude: 12.34\n"
 		"    longitude: 123.4\n"
 		"  }\n"
-		"  favouriteNumbers: [ 2/*!*/+3, /*!*/5, 7 ]\n"
-		"  /*depends on x*/ z:\n"
-		"    var h = x + 1 // helper variable\n"
-		"    return h\n"
-		"  x: 1; y: x\n"
-		"}\n";
-	print(text);
-	Ref<Node, Owner> node = wire()->parse(text);
-	print(node);
+		"  favouriteNumbers: [ 2 5 7 ]\n"
+		"  \"Is a super hero?\": true\n"
+		"}";
+	print("%%\n", text);
+	Ref<WireObject, Owner> object = wire()->parse(text);
+	print("\n");
+	print("className: %%\n", object->className());
+	print("name: %%\n", object->value("name"));
+	print("age: %%\n", object->value("age"));
+	print("hobbies: ");
+	Ref<WireArray> hobbies = object->value("hobbies");
+	for (int i = 0; i < hobbies->length(); ++i) {
+		print("%%", hobbies->get(i));
+		if (i != hobbies->length() - 1)
+			print(", ");
+	}
+	print("\n");
+	print("picture:\n");
+	Ref<WireObject> picture = object->value("picture");
+	print("  uri: %%\n", picture->value("uri"));
+	print("  width: %%\n", picture->value("width"));
+	print("  height: %%\n", picture->value("height"));
+	Ref<WireObject> home = object->value("home");
+	print("home:\n");
+	print("  latitude: %%\n", home->value("latitude"));
+	print("  longitude: %%\n", home->value("longitude"));
+	print("favouriteNumbers: ");
+	Ref<WireArray> numbers = object->value("favouriteNumbers");
+	for (int i = 0; i < numbers->length(); ++i) {
+		print("%%", numbers->get(i));
+		if (i != numbers->length() - 1)
+			print(", ");
+	}
+	print("\n");
+	print("Is a super hero?: %%\n", object->value("Is a super hero?"));
 	return 0;
 }

@@ -1,5 +1,5 @@
 /*
- * Wire.cpp -- a Wire language parser
+ * Wire.cpp -- the Wire parser
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *
@@ -9,6 +9,8 @@
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
 
+#include "FloatLiteral.hpp"
+#include "IntegerLiteral.hpp"
 #include "Wire.hpp"
 
 namespace ftl
@@ -17,6 +19,9 @@ namespace ftl
 Wire::Wire()
 {
 	SYNTAX("Wire");
+
+	IMPORT(floatLiteral(), "float");
+	IMPORT(integerLiteral(), "int");
 
 	DEFINE_VOID("CommentLine",
 		GLUE(
@@ -44,94 +49,110 @@ Wire::Wire()
 		)
 	);
 
-	DEFINE_VOID("Gap",
-		REPEAT(1,
+	DEFINE_VOID("EscapedChar",
+		GLUE(
+			CHAR('\\'),
 			CHOICE(
+				RANGE("\"\\/bfnrt"),
 				GLUE(
-					REPEAT(1, RANGE(" \t\n\r")),
-					REPEAT(INLINE("CommentLine"))
-				),
+					CHAR('u'),
+					REPEAT(4, 4,
+						CHOICE(
+							RANGE('0', '9'),
+							CHOICE(
+								RANGE('a', 'f'),
+								RANGE('A', 'F')
+							)
+						)
+					)
+				)
+			)
+		)
+	);
+
+	DEFINE_VOID("Noise",
+		REPEAT(
+			CHOICE(
+				RANGE(" \t\n\r"),
+				INLINE("CommentLine"),
 				INLINE("CommentText")
 			)
 		)
 	);
 
-	DEFINE_VOID("Break",
-		GLUE(
-			REPEAT(
-				CHOICE(
-					GLUE(
-						REPEAT(1, RANGE(" \t")),
-						REPEAT(INLINE("CommentLine"))
-					),
-					INLINE("CommentText")
-				)
-			),
-			RANGE("\n;\r")
-		)
-	);
+	string_ =
+		DEFINE("String",
+			GLUE(
+				CHAR('"'),
+				REPEAT(
+					CHOICE(
+						INLINE("EscapedChar"),
+						EXCEPT("\"\n")
+					)
+				),
+				CHAR('"')
+			)
+		);
 
-	DEFINE_VOID("Noise",
-		REPEAT(0, 1, INLINE("Gap"))
+	concatenation_ =
+		DEFINE("Concatenation",
+			REPEAT(1,
+				GLUE(
+					REF("String"),
+					INLINE("Noise")
+				)
+			)
+		);
+
+	specialValue_ =
+		DEFINE("SpecialValue",
+			KEYWORD("true false null")
+		);
+
+	true_ = keywordByName("true");
+	false_ = keywordByName("false");
+	null_ = keywordByName("null");
+
+	DEFINE_VOID("Identifier",
+		REPEAT(1,
+			CHOICE(
+				RANGE('a', 'z'),
+				RANGE('A', 'Z'),
+				CHAR('_'),
+				RANGE('0', '9')
+			)
+		)
 	);
 
 	name_ =
 		DEFINE("Name",
-			REPEAT(1,
+			CHOICE(
 				GLUE(
 					NOT(RANGE('0', '9')),
-					CHOICE(
-						RANGE('a', 'z'),
-						RANGE('A', 'Z'),
-						CHAR('_'),
-						RANGE('0', '9'),
-						GREATER(0x7F)
-					)
-				)
+					INLINE("Identifier")
+				),
+				INLINE("String")
 			)
 		);
 
-	type_ =
-		DEFINE("Type", INLINE("Name"));
-
-	atom_ =
-		DEFINE("Atom",
-			LENGTH(1,
-				CHOICE(
-					CONTEXT("Member",
-						FIND(
-							CHOICE(
-								AHEAD(
-									GLUE(
-										INLINE("Break"),
-										INLINE("Noise"),
-										INLINE("Name"),
-										INLINE("Noise"),
-										CHAR(':')
-									)
-								),
-								AHEAD(
-									GLUE(
-										INLINE("Noise"),
-										CHAR('}')
-									)
-								)
-							)
-						)
-					),
-					CONTEXT("Array",
-						FIND(
-							AHEAD(
-								GLUE(
-									INLINE("Noise"),
-									RANGE(",]")
-								)
-							)
-						)
-					)
-				)
+	className_ =
+		DEFINE("Class",
+			GLUE(
+				AHEAD(RANGE('A', 'Z')),
+				INLINE("Identifier")
 			)
 		);
+
+	DEFINE_VOID("Value",
+		CHOICE(
+			REF("float::Literal"),
+			REF("int::Literal"),
+			REF("Concatenation"),
+			REF("Object"),
+			REF("Array"),
+			REF("SpecialValue")
+		)
+	);
 
 	array_ =
 		DEFINE("Array",
@@ -160,31 +181,22 @@ Wire::Wire()
 			)
 		);
 
-	DEFINE_VOID("Value",
-		CHOICE(
-			REF("Object"),
-			REF("Array"),
-			REF("Atom")
+	DEFINE_VOID("Member",
+		GLUE(
+			REF("Name"),
+			INLINE("Noise"),
+			CHAR(':'),
+			INLINE("Noise"),
+			INLINE("Value")
 		)
 	);
-
-	member_ =
-		DEFINE("Member",
-			GLUE(
-				REF("Name"),
-				INLINE("Noise"),
-				CHAR(':'),
-				INLINE("Noise"),
-				INLINE("Value")
-			)
-		);
 
 	object_ =
 		DEFINE("Object",
 			GLUE(
 				REPEAT(0, 1,
 					GLUE(
-						REF("Type"),
+						REF("Class"),
 						INLINE("Noise")
 					)
 				),
@@ -192,13 +204,17 @@ Wire::Wire()
 				INLINE("Noise"),
 				REPEAT(0, 1,
 					GLUE(
-						REF("Member"),
+						INLINE("Member"),
 						INLINE("Noise"),
 						REPEAT(
 							GLUE(
-								REPEAT(0, 1, CHAR(';')),
-								INLINE("Noise"),
-								REF("Member"),
+								REPEAT(0, 1,
+									GLUE(
+										CHAR(';'),
+										INLINE("Noise")
+									)
+								),
+								INLINE("Member"),
 								INLINE("Noise")
 							)
 						)
@@ -208,8 +224,8 @@ Wire::Wire()
 			)
 		);
 
-	source_ =
-		DEFINE("Source",
+	message_ =
+		DEFINE("Message",
 			GLUE(
 				INLINE("Noise"),
 				REF("Object"),
@@ -217,64 +233,89 @@ Wire::Wire()
 			)
 		);
 
-	ENTRY("Source");
+	ENTRY("Message");
 	LINK();
 }
 
-
-Ref<Node, Owner> Wire::parse(Ref<ByteArray> source)
+Ref<WireObject, Owner> Wire::parse(Ref<ByteArray> text)
 {
 	int i0 = 0, i1 = 0;
-	Ref<Token, Owner> token = match(source, i0, &i1);
+	Ref<Token, Owner> token = match(text, i0, &i1);
 	FTL_CHECK(token, WireException, "Invalid syntax");
-	FTL_CHECK(i1 == source->size(), WireException, "Invalid syntax");
-	return parseObject(source, token->firstChild());
+	return parseObject(text, token->firstChild());
 }
 
-Ref<Node, Owner> Wire::parseObject(Ref<ByteArray> source, Ref<Token> token)
+String Wire::parseConcatenation(Ref<ByteArray> text, Ref<Token> token)
 {
-	FTL_CHECK(token->rule() == object_, WireException, "");
-	String type;
-	Ref<Token> child = token->firstChild();
-	if (child) {
-		if (child->rule() == type_) {
-			type = source->copy(child->i0(), child->i1());
-			child = child->nextSibling();
+	StringList l;
+	token = token->firstChild();
+	while (token) {
+		l.append(text->copy(token->i0() + 1, token->i1() - 1));
+		token = token->nextSibling();
+	}
+	return (l.length() == 1) ? l.at(0) : l.join();
+}
+
+Ref<WireObject, Owner> Wire::parseObject(Ref<ByteArray> text, Ref<Token> token)
+{
+	Ref<WireObject, Owner> object = new WireObject;
+	token = token->firstChild();
+	if (token) {
+		if (token->rule() == className_) {
+			object->className_ = text->copy(token->i0(), token->i1());
+			token = token->nextSibling();
 		}
 	}
-	Ref<ObjectNode, Owner> objectNode = new ObjectNode(type, source, token);
-	Ref<Token> member = child;
-	while (member) {
-		FTL_CHECK(member->rule() == member_, WireException, "");
-		Ref<Token> name = member->firstChild();
-		Ref<Token> value = member->lastChild();
-		objectNode->insertMember(
-			source->copy(name->i0(), name->i1()),
-			parseValue(source, value)
-		);
-		member = member->nextSibling();
+	while (token) {
+		bool stripQuotation = (text->at(token->i0()) == '"');
+		String name = text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
+		token = token->nextSibling();
+		Variant value = parseValue(text, token);
+		object->insert(name, value);
+		token = token->nextSibling();
 	}
-	return objectNode;
+	return object;
 }
 
-Ref<Node, Owner> Wire::parseValue(Ref<ByteArray> source, Ref<Token> token)
+Ref<WireArray, Owner> Wire::parseArray(Ref<ByteArray> text, Ref<Token> token)
 {
-	if (token->rule() == atom_) return new Node(source, token);
-	else if (token->rule() == object_) return parseObject(source, token);
-	else if (token->rule() == array_) return parseArray(source, token);
-	FTL_CHECK(false, WireException, "");
+	Ref<WireArray, Owner> array = new WireArray(token->countChildren());
+	int i = 0;
+	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
+		array->set(i, parseValue(text, child));
+		++i;
+	}
+	return array;
 }
 
-Ref<Node, Owner> Wire::parseArray(Ref<ByteArray> source, Ref<Token> token)
+Variant Wire::parseValue(Ref<ByteArray> text, Ref<Token> token)
 {
-	FTL_CHECK(token->rule() == array_, WireException, "");
-	Ref<ArrayNode, Owner> arrayNode = new ArrayNode(token->countChildren(), source, token);
-	Ref<Token> value = token->firstChild();
-	for (int i = 0, n = arrayNode->itemCount(); i < n; ++i) {
-		arrayNode->setItem(i, parseValue(source, value));
-		value = value->nextSibling();
+	Variant value;
+
+	if (token->definition() == floatLiteral()->id()) {
+		value = floatLiteral()->read(text, token);
 	}
-	return arrayNode;
+	else if (token->definition() == integerLiteral()->id()) {
+		uint64_t x; int s;
+		integerLiteral()->read(text, token, &x, &s);
+		value = int(x) * s;
+	}
+	else if (token->rule() == concatenation_) {
+		value = parseConcatenation(text, token);
+	}
+	else if (token->rule() == object_) {
+		value = parseObject(text, token);
+	}
+	else if (token->rule() == array_) {
+		value = parseArray(text, token);
+	}
+	else if (token->rule() == specialValue_) {
+		if (token->keyword() == true_)
+			value = true;
+		else if (token->keyword() == false_)
+			value = false;
+	}
+	return value;
 }
 
 } // namespace ftl

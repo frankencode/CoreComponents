@@ -1,5 +1,5 @@
 /*
- * Wire.hpp -- a Wire language parser
+ * Wire.hpp -- the Wire parser
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *
@@ -8,40 +8,60 @@
  *
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
+
 #ifndef FTL_WIRE_HPP
 #define FTL_WIRE_HPP
 
 #include "Singleton.hpp"
+#include "Variant.hpp"
 #include "Syntax.hpp"
-#include "Node.hpp"
+#include "Array.hpp"
+#include "Map.hpp"
 
 namespace ftl
 {
 
 FTL_EXCEPTION(WireException, Exception);
 
+class Wire;
+
+class WireObjectMixin
+{
+public:
+	String className() const { return className_; }
+private:
+	friend class Wire;
+	String className_;
+};
+
+typedef Array<Variant> WireArray;
+typedef Map<String, Variant, WireObjectMixin> WireObject;
+
 class Wire: public Syntax<ByteArray>::Definition, public Singleton<Wire>
 {
 public:
-	typedef ftl::Node Node;
-
-	Ref<Node, Owner> parse(Ref<ByteArray> source);
+	Ref<WireObject, Owner> parse(Ref<ByteArray> text);
 
 private:
 	friend class Singleton<Wire>;
+
 	Wire();
+	String parseConcatenation(Ref<ByteArray> text, Ref<Token> token);
+	Ref<WireObject, Owner> parseObject(Ref<ByteArray> text, Ref<Token> token);
+	Ref<WireArray, Owner> parseArray(Ref<ByteArray> text, Ref<Token> token);
+	Variant parseValue(Ref<ByteArray> text, Ref<Token> token);
 
-	Ref<Node, Owner> parseObject(Ref<ByteArray> source, Ref<Token> token);
-	Ref<Node, Owner> parseValue(Ref<ByteArray> source, Ref<Token> token);
-	Ref<Node, Owner> parseArray(Ref<ByteArray> source, Ref<Token> token);
-
+	int string_;
+	int concatenation_;
+	int specialValue_;
 	int name_;
-	int type_;
-	int atom_;
+	int className_;
 	int array_;
-	int member_;
 	int object_;
-	int source_;
+	int message_;
+	int true_;
+	int false_;
+	int null_;
 };
 
 inline Ref<Wire> wire() { return Wire::instance(); }

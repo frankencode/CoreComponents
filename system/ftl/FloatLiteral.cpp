@@ -17,6 +17,8 @@ namespace ftl
 
 FloatLiteral::FloatLiteral()
 {
+	SYNTAX("float");
+
 	sign_ = DEFINE("Sign", RANGE("+-"));
 	integerPart_ = DEFINE("IntegerPart", REPEAT(1, 20, RANGE('0', '9')));
 	fractionPart_ = DEFINE("FractionPart", REPEAT(1, 20, RANGE('0', '9')));

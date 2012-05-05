@@ -22,9 +22,7 @@ class IntegerLiteral: public Syntax<ByteArray>::Definition, public Singleton<Int
 public:
 	bool match(Ref<ByteArray> text, int i0, int* i1, uint64_t* value, int* sign);
 	void read(Ref<ByteArray> text, Ref<Token> rootToken, uint64_t* value, int* sign) const;
-	
-	inline int literal() const { return literal_; }
-	
+
 private:
 	friend class Singleton<IntegerLiteral>;
 	IntegerLiteral();

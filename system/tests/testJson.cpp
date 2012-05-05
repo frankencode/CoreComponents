@@ -18,7 +18,8 @@ int main() {
 		"    \"Latitude\": 12.34,\n"
 		"    \"Longitude\": 123.4\n"
 		"  },\n"
-		"  \"FavouriteNumbers\": [ 2, 5, 7 ]\n"
+		"  \"FavouriteNumbers\": [ 2, 5, 7 ],\n"
+		"  \"Superman\": true\n"
 		"}";
 	print("text = %%\n", text);
 	Ref<JsonObject, Owner> object = json()->parse(text);
@@ -50,5 +51,6 @@ int main() {
 			print(", ");
 	}
 	print("\n");
+	print("Superman: %%\n", object->value("Superman"));
 	return 0;
 }
