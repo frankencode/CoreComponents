@@ -17,24 +17,27 @@
 namespace ftl
 {
 
-template<class Key, class Value>
-class Map: public Container< Pair<Key, Value>, Map<Key, Value> >, public Sequence<Pair<Key,Value>, int>
+template<class Key, class Value, class Mixin = None>
+class Map:
+	public Container< Pair<Key, Value>, Map<Key, Value, Mixin> >,
+	public Sequence< Pair<Key, Value>, int >,
+	public Mixin
 {
 public:
 	typedef Pair<Key,Value> Item;
 	typedef GenericIterator<Map> Iterator;
-	
+
 	Map() {}
-	
+
 	Map(const Map& b): tree_(b.tree_) {}
 	inline const Map& operator=(const Map& b) { tree_ = b.tree_; return *this; }
-	
+
 	inline Iterator iterator() const { return Iterator(this); }
-	
+
 	inline bool isEmpty() const { return tree_.weight() == 0; }
 	inline int length() const { return tree_.weight(); }
 	inline int size() const { return tree_.weight(); }
-	
+
 	inline bool has(int index) const {
 		return index < length();
 	}
@@ -52,15 +55,15 @@ public:
 		if (tree_.lookupByIndex(index, &node)) return node->item_.value();
 		else return nullItem_.value();
 	}
-	
+
 	/** Return the index of the first item greater or equal _a_
 	  */
 	inline int first(const Key& a) const { return tree_.first(a); }
-	
+
 	/** Return the index of the first item lower or equal _b_
 	  */
 	inline int last(const Key& b) const { return tree_.last(b); }
-	
+
 	/** Insert a key-value mapping if no key-value mapping with the same key exists already.
 	  * If currentValue is non-null the current value the giving key maps to is returned.
 	  * The function returns true if the new key-value mapping was inserted successfully.
@@ -80,7 +83,7 @@ public:
 		}
 		return !found;
 	}
-	
+
 	inline bool remove(const Key& key, int* index = 0)
 	{
 		bool found;
@@ -89,7 +92,7 @@ public:
 			tree_.remove(k);
 		return found;
 	}
-	
+
 	/** Insert or overwrite a key-value mapping.
 	  */
 	inline void assign(const Key& key, const Value& value) {
@@ -112,7 +115,7 @@ public:
 			*value = k->item_.value();
 		return found;
 	}
-	
+
 	/** Convenience wrapper to lookup()
 	  */
 	inline Value value(const Key& key) const
@@ -121,11 +124,11 @@ public:
 		lookup(key, &value);
 		return value;
 	}
-	
+
 	/** Readonly associative operator
 	  */
 	inline Value operator[](const Key& key) const { return value(key); }
-	
+
 	/** Writable associative operator
 	  */
 	inline Value& operator[](const Key& key)
@@ -141,11 +144,11 @@ public:
 		}
 		return k->item_.value();
 	}
-	
+
 	/** Convenience wrapper to lookup()
 	  */
 	inline bool contains(const Key& key) { return tree_.lookup(key); }
-	
+
 	inline Map& push(const Item& item)
 	{
 		bool found = false;
@@ -157,7 +160,7 @@ public:
 			tree_.attach(k, new Node(item), below);
 		return *this;
 	}
-	
+
 	inline Map& pop(Item* item)
 	{
 		FTL_ASSERT(!isEmpty());
@@ -166,15 +169,15 @@ public:
 		tree_.remove(k);
 		return *this;
 	}
-	
+
 	inline Item pop() {
 		Item item;
 		pop(&item);
 		return item;
 	}
-	
+
 	inline void clear() { tree_.clear(); }
-	
+
 private:
 	typedef OrdinalTree< OrdinalNode<Item> > Tree;
 	typedef typename Tree::Node Node;

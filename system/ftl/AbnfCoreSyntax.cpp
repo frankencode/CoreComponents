@@ -77,8 +77,6 @@ AbnfCoreSyntax::AbnfCoreSyntax(Ref<DebugFactory> debugFactory)
 			)
 		)
 	);
-
-	LINK();
 }
 
 } // namespace ftl

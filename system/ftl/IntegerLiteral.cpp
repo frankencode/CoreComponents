@@ -16,6 +16,8 @@ namespace ftl
 
 IntegerLiteral::IntegerLiteral()
 {
+	SYNTAX("int");
+
 	sign_ = DEFINE("Sign", RANGE("+-"));
 
 	binNumber_ =
