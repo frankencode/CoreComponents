@@ -17,6 +17,7 @@
 #include "Utf16Encoder.hpp"
 #include "Character.hpp"
 #include "Md5.hpp"
+#include "Base64.hpp"
 #include "ByteArray.hpp"
 
 namespace ftl
@@ -580,6 +581,11 @@ Ref<ByteArray, Owner> ByteArray::md5() const
 	Md5 md5;
 	md5.feed(data_, size_);
 	return md5.finish();
+}
+
+Ref<ByteArray, Owner> ByteArray::base64() const
+{
+	return Base64::encode(this);
 }
 
 } // namespace ftl
