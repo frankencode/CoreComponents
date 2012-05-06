@@ -46,6 +46,7 @@ public:
 		factoryByNodeType_->insert("Ahead",         new DebugNodeFactory<AheadDebugNode>        (this));
 		factoryByNodeType_->insert("Choice",        new DebugNodeFactory<ChoiceDebugNode>       (this));
 		factoryByNodeType_->insert("Glue",          new DebugNodeFactory<GlueDebugNode>         (this));
+		factoryByNodeType_->insert("Hint",          new DebugNodeFactory<HintDebugNode>         (this));
 		factoryByNodeType_->insert("Ref",           new DebugNodeFactory<RefDebugNode>          (this));
 		factoryByNodeType_->insert("Inline",        new DebugNodeFactory<InlineDebugNode>       (this));
 		factoryByNodeType_->insert("Previous",      new DebugNodeFactory<PreviousDebugNode>     (this));
@@ -549,6 +550,24 @@ private:
 	private:
 		typedef typename Syntax<Media>::GlueNode GlueNode;
 		inline Ref<GlueNode> glueNode() const { return DebugNode::entry(); }
+	};
+
+	class HintDebugNode: public DebugNode {
+	public:
+		HintDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+
+		virtual const char* declType() const { return hintNode()->text() ? "HINT" : "DONE"; }
+
+		virtual void printAttributes(String indent) {
+			if (hintNode()->text())
+				print("\"%%\"", hintNode()->text());
+		}
+
+	private:
+		typedef typename Syntax<Media>::HintNode HintNode;
+		inline Ref<HintNode> hintNode() const { return DebugNode::entry(); }
 	};
 
 	class RefDebugNode: public DebugNode {

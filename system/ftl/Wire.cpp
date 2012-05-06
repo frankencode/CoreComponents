@@ -9,12 +9,25 @@
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
 
+#include "Format.hpp"
 #include "FloatLiteral.hpp"
 #include "IntegerLiteral.hpp"
 #include "Wire.hpp"
 
 namespace ftl
 {
+
+WireException::WireException(const String& error, int line, int pos)
+	: error_(error),
+	  line_(line),
+	  pos_(pos)
+{
+	message_ = Format("%%:%%: %%") << line << pos << error;
+}
+
+WireException::~WireException() throw() {}
+
+const char* WireException::what() const throw() { return message_; }
 
 Wire::Wire()
 {
@@ -36,6 +49,7 @@ Wire::Wire()
 	DEFINE_VOID("CommentText",
 		GLUE(
 			STRING("/*"),
+			HINT("Unterminated comment text"),
 			REPEAT(
 				CHOICE(
 					INLINE("CommentText"),
@@ -45,13 +59,15 @@ Wire::Wire()
 					)
 				)
 			),
-			STRING("*/")
+			STRING("*/"),
+			DONE()
 		)
 	);
 
 	DEFINE_VOID("EscapedChar",
 		GLUE(
 			CHAR('\\'),
+			HINT("Illegal escape sequence"),
 			CHOICE(
 				RANGE("\"\\/bfnrt"),
 				GLUE(
@@ -66,7 +82,8 @@ Wire::Wire()
 						)
 					)
 				)
-			)
+			),
+			DONE()
 		)
 	);
 
@@ -90,16 +107,21 @@ Wire::Wire()
 						EXCEPT("\"\n")
 					)
 				),
-				CHAR('"')
+				HINT("Unterminated string, expected '\"'"),
+				CHAR('"'),
+				DONE()
 			)
 		);
 
 	concatenation_ =
 		DEFINE("Concatenation",
-			REPEAT(1,
-				GLUE(
-					REF("String"),
-					INLINE("Noise")
+			GLUE(
+				REF("String"),
+				REPEAT(
+					GLUE(
+						INLINE("Noise"),
+						REF("String")
+					)
 				)
 			)
 		);
@@ -126,20 +148,26 @@ Wire::Wire()
 
 	name_ =
 		DEFINE("Name",
-			CHOICE(
-				GLUE(
-					NOT(RANGE('0', '9')),
-					INLINE("Identifier")
+			GLUE(
+				HINT("Invalid name"),
+				CHOICE(
+					GLUE(
+						NOT(RANGE('0', '9')),
+						INLINE("Identifier")
+					),
+					INLINE("String")
 				),
-				INLINE("String")
+				DONE()
 			)
 		);
 
 	className_ =
 		DEFINE("Class",
 			GLUE(
+				HINT("Invalid class name"),
 				AHEAD(RANGE('A', 'Z')),
-				INLINE("Identifier")
+				INLINE("Identifier"),
+				DONE()
 			)
 		);
 
@@ -150,7 +178,11 @@ Wire::Wire()
 			REF("Concatenation"),
 			REF("Object"),
 			REF("Array"),
-			REF("SpecialValue")
+			REF("SpecialValue"),
+			GLUE(
+				HINT("Invalid value"),
+				FAIL()
+			)
 		)
 	);
 
@@ -162,22 +194,30 @@ Wire::Wire()
 				REPEAT(0, 1,
 					GLUE(
 						INLINE("Value"),
-						INLINE("Noise"),
 						REPEAT(
 							GLUE(
-								REPEAT(0, 1,
+								HINT("Invalid value separator, expected ',' or whitespace"),
+								LENGTH(1,
 									GLUE(
-										CHAR(','),
-										INLINE("Noise")
+										INLINE("Noise"),
+										REPEAT(0, 1,
+											GLUE(
+												CHAR(','),
+												INLINE("Noise")
+											)
+										)
 									)
 								),
-								INLINE("Value"),
-								INLINE("Noise")
+								DONE(),
+								INLINE("Value")
 							)
-						)
+						),
+						INLINE("Noise")
 					)
 				),
-				CHAR(']')
+				HINT("Unterminated array, expected ']'"),
+				CHAR(']'),
+				DONE()
 			)
 		);
 
@@ -185,7 +225,9 @@ Wire::Wire()
 		GLUE(
 			REF("Name"),
 			INLINE("Noise"),
+			HINT("Expected ':'"),
 			CHAR(':'),
+			DONE(),
 			INLINE("Noise"),
 			INLINE("Value")
 		)
@@ -201,26 +243,34 @@ Wire::Wire()
 					)
 				),
 				CHAR('{'),
+				HINT("Unterminated object"),
 				INLINE("Noise"),
 				REPEAT(0, 1,
 					GLUE(
 						INLINE("Member"),
-						INLINE("Noise"),
 						REPEAT(
 							GLUE(
-								REPEAT(0, 1,
+								HINT("Invalid member separator, expected ';' or whitespace"),
+								LENGTH(1,
 									GLUE(
-										CHAR(';'),
-										INLINE("Noise")
+										INLINE("Noise"),
+										REPEAT(0, 1,
+											GLUE(
+												CHAR(';'),
+												INLINE("Noise")
+											)
+										)
 									)
 								),
-								INLINE("Member"),
-								INLINE("Noise")
+								DONE(),
+								INLINE("Member")
 							)
-						)
+						),
+						INLINE("Noise")
 					)
 				),
-				CHAR('}')
+				CHAR('}'),
+				DONE()
 			)
 		);
 
@@ -239,9 +289,18 @@ Wire::Wire()
 
 Ref<WireObject, Owner> Wire::parse(Ref<ByteArray> text)
 {
+	Ref<State, Owner> state = newState();
 	int i0 = 0, i1 = 0;
-	Ref<Token, Owner> token = match(text, i0, &i1);
-	FTL_CHECK(token, WireException, "Invalid syntax");
+	Ref<Token, Owner> token = match(text, i0, &i1, state);
+	if (!token) {
+		String reason = "Syntax error";
+		int line = 1, pos = 1;
+		if (state->hint()) {
+			reason = state->hint();
+			text->offsetToLinePos(state->hintOffset(), &line, &pos);
+		}
+		throw WireException(state->hint(), line, pos);
+	}
 	return parseObject(text, token->firstChild());
 }
 
@@ -269,6 +328,11 @@ Ref<WireObject, Owner> Wire::parseObject(Ref<ByteArray> text, Ref<Token> token)
 	while (token) {
 		bool stripQuotation = (text->at(token->i0()) == '"');
 		String name = text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
+		if (object->contains(name)) {
+			int line = 1, pos = 1;
+			text->offsetToLinePos(token->i1(), &line, &pos);
+			throw WireException(Format("Ambiguous member name \"%%\"") << name, line, pos);
+		}
 		token = token->nextSibling();
 		Variant value = parseValue(text, token);
 		object->insert(name, value);
