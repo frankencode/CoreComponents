@@ -531,9 +531,13 @@ public:
 		{}
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
-			state->setHint(text_);
+			if ((!text_) || (!state->hint())) {
+				state->setHint(text_);
+				state->setHintOffset(i);
+			}
 			return i;
 		}
+		inline const char* text() const { return text_; }
 	private:
 		const char* text_;
 	};
@@ -1076,6 +1080,7 @@ public:
 			  ruleByName_(new RuleByName),
 			  keywordByName_(new KeywordByName),
 			  statefulScope_(false),
+			  hasHints_(false),
 			  numStateFlags_(0),
 			  numStateChars_(0),
 			  numStateStrings_(0),
@@ -1166,6 +1171,12 @@ public:
 
 		inline NODE CHOICE() { return debug(new ChoiceNode, "Choice"); }
 		inline NODE GLUE() { return debug(new GlueNode, "Glue"); }
+
+		inline NODE HINT(const char* text = "") {
+			hasHints_ = true;
+			return debug(new HintNode(text), "Hint");
+		}
+		inline NODE DONE() { return debug(new HintNode(0), "Hint"); }
 
 		#include "SyntaxSugar.hpp"
 
@@ -1325,7 +1336,7 @@ public:
 
 		inline int numRules() const { return numRules_; }
 
-		inline bool stateful() const { return (stateFlagHead_) || (stateCharHead_) || (stateStringHead_) || (statefulScope_); }
+		inline bool stateful() const { return (stateFlagHead_) || (stateCharHead_) || (stateStringHead_) || statefulScope_ || hasHints_; }
 
 		State* newState(State* parent = 0) const
 		{
@@ -1494,6 +1505,7 @@ public:
 		Ref<InvokeNode, Owner> unresolvedInvokeHead_;
 		Ref<Definition, Owner> unresolvedNext_;
 		bool statefulScope_;
+		bool hasHints_;
 
 		class StateFlag: public Instance {
 		public:

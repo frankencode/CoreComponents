@@ -147,7 +147,7 @@ public:
 
 	/** Convenience wrapper to lookup()
 	  */
-	inline bool contains(const Key& key) { return tree_.lookup(key); }
+	inline bool contains(const Key& key) const { return lookup<Value>(key); }
 
 	inline Map& push(const Item& item)
 	{

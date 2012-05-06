@@ -22,6 +22,8 @@ class SyntaxState: public Instance
 {
 public:
 	SyntaxState()
+		: hint_(0),
+		  hintOffset_(-1)
 	{}
 
 	SyntaxState(int definitionId, int numFlags, int numChars, int numStrings, Ref<SyntaxState> parent = 0)
@@ -29,7 +31,8 @@ public:
 		  flags_(numFlags),
 		  chars_(numChars),
 		  strings_(numStrings),
-		  hint_("")
+		  hint_(0),
+		  hintOffset_(-1)
 	{
 		if (parent)
 			parent->child_ = this;
@@ -47,6 +50,9 @@ public:
 	inline const char* hint() const { return hint_; }
 	inline void setHint(const char* text) { hint_ = text; }
 
+	inline int hintOffset() const { return hintOffset_; }
+	inline void setHintOffset(int index) { hintOffset_ = index; }
+
 private:
 	int definitionId_;
 	Array<bool> flags_;
@@ -54,6 +60,7 @@ private:
 	Array< Array<Char> > strings_;
 	Ref<SyntaxState, Owner> child_;
 	const char* hint_;
+	int hintOffset_;
 };
 
 } // namespace ftl

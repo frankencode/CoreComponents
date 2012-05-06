@@ -6,7 +6,7 @@ using namespace ftl;
 int main() {
 	String text =
 		"Person {\n"
-		"  name: \"Hans Mustermann\"\n"
+		"  name:  \"Hans Mustermann\"\n"
 		"  age: 17\n"
 		"  hobbies: [ \"Sky Diving\", \"Mountain Biking\", \"Poetry\" ]\n"
 		"  picture: {\n"

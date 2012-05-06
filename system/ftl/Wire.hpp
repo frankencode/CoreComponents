@@ -21,7 +21,18 @@
 namespace ftl
 {
 
-FTL_EXCEPTION(WireException, Exception);
+class WireException: public StdException
+{
+public:
+	WireException(const String& error, int line, int pos);
+	~WireException() throw();
+	const char* what() const throw();
+private:
+	String message_;
+	String error_;
+	int line_;
+	int pos_;
+};
 
 class Wire;
 
