@@ -1,5 +1,5 @@
 /*
- * Syntax.hpp -- syntax description and production engine
+ * Syntax.hpp -- syntax description and production formalism
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *
@@ -300,6 +300,53 @@ public:
 		int maxRepeat_;
 	};
 
+	class LazyRepeatNode: public Node
+	{
+	public:
+		LazyRepeatNode(int minRepeat, Ref<Node> entry)
+			: minRepeat_(minRepeat)
+		{
+			appendChild(entry);
+		}
+
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
+		{
+			Ref<Token> lastChildSaved;
+			if (parentToken) lastChildSaved = parentToken->lastChild();
+
+			int repeatCount = 0;
+			Index h = i;
+			while (h != Media::ill())
+			{
+				h = entry()->matchNext(media, h, tokenFactory, parentToken, state);
+				if (h == i)
+					FTL_THROW(DebugException, str::cat("Repeated empty match, bailing out"));
+				if (h != Media::ill()) {
+					i = h;
+					++repeatCount;
+					if (minRepeat_ <= repeatCount) {
+						if (entry()->nextSibling()) {
+							Ref<Token> lastChildSaved2;
+							if (parentToken) lastChildSaved2 = parentToken->lastChild();
+							h = entry()->nextSibling()->matchNext(media, h, tokenFactory, parentToken, state);
+							rollBack(parentToken, lastChildSaved2);
+						}
+						if (h != Media::ill()) return i;
+					}
+				}
+			}
+
+			rollBack(parentToken, lastChildSaved);
+			return Media::ill();
+		}
+
+		inline int minRepeat() const { return minRepeat_; }
+		inline Ref<Node> entry() const { return Node::firstChild(); }
+
+	private:
+		int minRepeat_;
+	};
+
 	class LengthNode: public Node
 	{
 	public:
@@ -441,39 +488,6 @@ public:
 	private:
 		int invert_;
 	};
-
-	/*class SpanNode: public Node
-	{
-	public:
-		SpanNode(Ref<Node> coverage, Ref<Node> entry)
-		{
-			appendChild(coverage);
-			appendChild(entry);
-		}
-
-		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
-		{
-			Ref<Token> lastChildSaved;
-			if (parentToken) lastChildSaved = parentToken->lastChild();
-
-			int i0 = i;
-			i = coverage()->matchNext(media, i, 0, parentToken, state);
-
-			if (i != Media::ill())
-			{
-				rollBack(parentToken, lastChildSaved);
-
-				Media range(media, i);
-				if (entry()->matchNext(&range, i0, tokenFactory, parentToken, state) == Media::ill())
-					i = Media::ill();
-			}
-
-			return i;
-		}
-
-		inline Ref<Node> coverage() const { return Node::firstChild(); }
-		inline Ref<Node> entry() const { return Node::lastChild(); }
-	};*/
 
 	class ChoiceNode: public Node
 	{
