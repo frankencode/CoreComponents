@@ -24,18 +24,18 @@ class List: public Container< T, List<T> >, public Sequence<T, int>
 public:
 	typedef T Item;
 	typedef GenericIterator<List> Iterator;
-	
+
 	List() {}
-	
-	List(const List& b): tree_(b.tree_) {}
-	inline const List& operator=(const List& b) { tree_ = b.tree_; return *this; }
-	
+
+	explicit List(const List& b): tree_(b.tree_) {}
+	virtual Ref<List, Owner> clone() const { return new List(*this); }
+
 	inline Iterator iterator() const { return Iterator(this); }
-	
+
 	inline bool isEmpty() const { return tree_.weight() == 0; }
 	inline int length() const { return tree_.weight(); }
 	inline int size() const { return tree_.weight(); }
-	
+
 	inline bool has(int index) const {
 		return index < length();
 	}
@@ -52,7 +52,7 @@ public:
 		if (tree_.lookupByIndex(index, &node))
 			node->item_ = item;
 	}
-	
+
 	inline List& push(int index, const Item& item) {
 		tree_.push(index, item);
 		return *this;
@@ -62,17 +62,17 @@ public:
 		return *this;
 	}
 	inline void clear() { tree_.clear(); }
-	
+
 	inline Item pop(int index) {
 		Item item;
 		pop(index, &item);
 		return item;
 	}
-	
+
 	inline List& push(const Item& item) { return push(length(), item); }
 	inline List& pop(Item* item) { return pop(0, item); }
 	inline Item pop() { Item item; pop(&item); return item; }
-	
+
 	inline void append(const Item& item) { push(length(), item); }
 	inline void insert(int index, const Item& item) { push(index, item); }
 	inline void remove(int index, Item& item) { pop(index, &item); }
@@ -81,7 +81,7 @@ public:
 	inline void pushBack(const Item& item) { push(length(), item); }
 	inline Item popFront() { return pop(0); }
 	inline Item popBack() { return pop(length() - 1); }
-	
+
 	int find(const Item& item, int index) const
 	{
 		while (index < length()) {
@@ -105,7 +105,7 @@ public:
 	inline int find(const Item& item) const { return find(item, 0); }
 	inline bool contains(const Item& item) const { return find(item) < length(); }
 	inline Item join(const Item& sep = Item()) const { return Item::join(this, sep); }
-	
+
 	Ref<List, Owner> sort(int order = SortOrder::Ascending, bool unique = false) const
 	{
 		Ref<List, Owner> result = new List;
@@ -131,12 +131,15 @@ public:
 		}
 		return result;
 	}
-	
+
 	Ref<List, Owner> unique(int order = SortOrder::Ascending) const { return sort(order, true); }
-	
+
 private:
 	typedef OrdinalTree< OrdinalNode<Item> > Tree;
 	typedef typename Tree::Node Node;
+
+	const List& operator=(const List& b);
+
 	Tree tree_;
 	Item nullItem_;
 };

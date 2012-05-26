@@ -73,11 +73,11 @@ int main()
 		for (int i = 0; i < 10; ++i)
 			list << random.get(0, 99);
 		print(list);
-		
+
 		MinHeap<int> heap(list.length());
 		Stack<int> stack(list.length());
 		CircularBuffer<int> queue(list.length());
-		
+
 		list >> heap >> list;
 		print(list);
 		list >> stack >> list;

@@ -44,6 +44,17 @@ public:
 
 	virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const = 0;
 
+	class GlueNode;
+	class ChoiceNode;
+
+	inline Ref<Node> succ() const {
+		if (Ref<GlueNode>(Node::parent())) return Node::nextSibling();
+		if (Ref<ChoiceNode>(Node::parent())) return Node::parent()->succ();
+		return 0;
+	}
+
+	virtual int matchLength() const { return -1; }
+
 	class CharNode: public Node
 	{
 	public:
@@ -64,6 +75,8 @@ public:
 
 			return i;
 		}
+
+		inline int matchLength() const { return 1; }
 
 		inline Char ch() const { return ch_; }
 		inline bool invert() const { return invert_; }
@@ -93,6 +106,8 @@ public:
 
 			return i;
 		}
+
+		inline int matchLength() const { return 1; }
 
 		inline Char ch() const { return ch_; }
 		inline bool invert() const { return invert_; }
@@ -133,6 +148,8 @@ public:
 			return i;
 		}
 
+		inline int matchLength() const { return 1; }
+
 		inline Char a() const { return a_; }
 		inline Char b() const { return b_; }
 		inline int invert() const { return invert_; }
@@ -170,6 +187,8 @@ public:
 
 			return i;
 		}
+
+		inline int matchLength() const { return 1; }
 
 		inline const Array<Char>& s() const { return s_; }
 		inline int invert() const { return invert_; }
@@ -213,6 +232,8 @@ public:
 
 			return i;
 		}
+
+		inline int matchLength() const { return s_.length(); }
 
 		inline const Array<Char>& s() const { return s_; }
 
@@ -276,7 +297,7 @@ public:
 			{
 				h = entry()->matchNext(media, h, tokenFactory, parentToken, state);
 				if (h == i)
-					FTL_THROW(DebugException, str::cat("Repeated empty match, bailing out"));
+					FTL_THROW(DebugException, "Repeated empty match, bailing out");
 				if (h != Media::ill()) {
 					i = h;
 					++repeatCount;
@@ -289,6 +310,10 @@ public:
 				rollBack(parentToken, lastChildSaved);
 
 			return i;
+		}
+
+		inline int matchLength() const {
+			return (minRepeat_ == maxRepeat_) ? minRepeat_ * entry()->matchLength() : -1;
 		}
 
 		inline int minRepeat() const { return minRepeat_; }
@@ -320,15 +345,16 @@ public:
 			{
 				h = entry()->matchNext(media, h, tokenFactory, parentToken, state);
 				if (h == i)
-					FTL_THROW(DebugException, str::cat("Repeated empty match, bailing out"));
+					FTL_THROW(DebugException, "Repeated empty match, bailing out");
 				if (h != Media::ill()) {
 					i = h;
 					++repeatCount;
 					if (minRepeat_ <= repeatCount) {
-						if (entry()->nextSibling()) {
+						Ref<Node> succ = Node::succ();
+						if (succ) {
 							Ref<Token> lastChildSaved2;
 							if (parentToken) lastChildSaved2 = parentToken->lastChild();
-							h = entry()->nextSibling()->matchNext(media, h, tokenFactory, parentToken, state);
+							h = succ->matchNext(media, h, tokenFactory, parentToken, state);
 							rollBack(parentToken, lastChildSaved2);
 						}
 						if (h != Media::ill()) return i;
@@ -340,11 +366,71 @@ public:
 			return Media::ill();
 		}
 
+		inline int matchLength() const { return -1; }
+
 		inline int minRepeat() const { return minRepeat_; }
 		inline Ref<Node> entry() const { return Node::firstChild(); }
 
 	private:
 		int minRepeat_;
+	};
+
+	class GreedyRepeatNode: public Node
+	{
+	public:
+		GreedyRepeatNode(int minRepeat, int maxRepeat, Ref<Node> entry)
+			: minRepeat_(minRepeat),
+			  maxRepeat_(maxRepeat)
+		{
+			appendChild(entry);
+		}
+
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
+		{
+			Ref<Token> lastChildSaved;
+			if (parentToken) lastChildSaved = parentToken->lastChild();
+
+			int repeatCount = 0;
+			Index h = i;
+			while ((repeatCount < maxRepeat_) && (h != Media::ill()))
+			{
+				h = entry()->matchNext(media, h, tokenFactory, parentToken, state);
+				if (h == i)
+					FTL_THROW(DebugException, "Repeated empty match, bailing out");
+				if (h != Media::ill()) {
+					if (minRepeat_ <= repeatCount) {
+						Ref<Node> succ = Node::succ();
+						if (succ) {
+							Ref<Token> lastChildSaved2;
+							if (parentToken) lastChildSaved2 = parentToken->lastChild();
+							h = succ->matchNext(media, h, tokenFactory, parentToken, state);
+							rollBack(parentToken, lastChildSaved2);
+						}
+						if (h != Media::ill()) i = h;
+					}
+					++repeatCount;
+				}
+			}
+			if ((repeatCount < minRepeat_) || (maxRepeat_ < repeatCount))
+				i = Media::ill();
+
+			if (i == Media::ill())
+				rollBack(parentToken, lastChildSaved);
+
+			return i;
+		}
+
+		inline int matchLength() const {
+			return (minRepeat_ == maxRepeat_) ? minRepeat_ * entry()->matchLength() : -1;
+		}
+
+		inline int minRepeat() const { return minRepeat_; }
+		inline int maxRepeat() const { return maxRepeat_; }
+		inline Ref<Node> entry() const { return Node::firstChild(); }
+
+	private:
+		int minRepeat_;
+		int maxRepeat_;
 	};
 
 	class LengthNode: public Node
@@ -375,6 +461,8 @@ public:
 			return h;
 		}
 
+		inline int matchLength() const { return 0; }
+
 		inline int minLength() const { return minLength_; }
 		inline int maxLength() const { return maxLength_; }
 		inline Ref<Node> entry() const { return Node::firstChild(); }
@@ -391,6 +479,7 @@ public:
 		{
 			return (i == 0) ? i : Media::ill();
 		}
+		inline int matchLength() const { return 0; }
 	};
 
 	class EoiNode: public Node
@@ -401,6 +490,7 @@ public:
 			bool eoi = (!media->has(i)) && ((i == 0) || (media->has(i - 1)));
 			return eoi ? i : Media::ill();
 		}
+		inline int matchLength() const { return 0; }
 	};
 
 	class PassNode: public Node
@@ -414,6 +504,8 @@ public:
 		{
 			return invert_ ? Media::ill() : i;
 		}
+
+		inline int matchLength() const { return 0; }
 
 		inline int invert() const { return invert_; }
 
@@ -453,6 +545,8 @@ public:
 			return i;
 		}
 
+		inline int matchLength() const { return 0; }
+
 		inline Ref<Node> entry() const { return Node::firstChild(); }
 	};
 
@@ -482,11 +576,47 @@ public:
 			return i;
 		}
 
+		inline int matchLength() const { return 0; }
+
 		inline Ref<Node> entry() const { return Node::firstChild(); }
 		inline int invert() const { return invert_; }
 
 	private:
 		int invert_;
+	};
+
+	class BehindNode: public Node
+	{
+	public:
+		BehindNode(Ref<Node> entry, int invert)
+			: invert_(invert),
+			  length_(entry->matchLength())
+		{
+			appendChild(entry);
+		}
+
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
+		{
+			Ref<Token> lastChildSaved;
+			if (parentToken) lastChildSaved = parentToken->lastChild();
+
+			if ((entry()->matchNext(media, i - length_, tokenFactory, parentToken, state) == Media::ill()) ^ invert_)
+				i = Media::ill();
+
+			rollBack(parentToken, lastChildSaved);
+
+			return i;
+		}
+
+		inline int matchLength() const { return 0; }
+
+		inline Ref<Node> entry() const { return Node::firstChild(); }
+		inline int invert() const { return invert_; }
+		inline int length() const { return length_; }
+
+	private:
+		int invert_;
+		int length_;
 	};
 
 	class ChoiceNode: public Node
@@ -512,6 +642,18 @@ public:
 			return h;
 		}
 
+		virtual int matchLength() const
+		{
+			int len = -1;
+			for (Ref<Node> node = Node::firstChild(); node; node = Node::nextSibling()) {
+				int len2 = node->matchLength();
+				if ((len != -1) && (len2 != len))
+					return -1;
+				len = len2;
+			}
+			return len;
+		}
+
 		inline Ref<Node> firstChoice() const { return Node::firstChild(); }
 		inline Ref<Node> lastChoice() const { return Node::lastChild(); }
 	};
@@ -535,6 +677,17 @@ public:
 
 			return i;
 		}
+
+		virtual int matchLength() const
+		{
+			int len = 0;
+			for (Ref<Node> node = Node::firstChild(); node; node = node->nextSibling()) {
+				int len2 = node->matchLength();
+				if (len2 == -1) return -1;
+				len += len2;
+			}
+			return len;
+		}
 	};
 
 	class HintNode: public Node
@@ -543,6 +696,7 @@ public:
 		HintNode(const char* text)
 			: text_(text)
 		{}
+
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
 			if ((!text_) || (!state->hint())) {
@@ -551,7 +705,11 @@ public:
 			}
 			return i;
 		}
+
+		inline int matchLength() const { return 0; }
+
 		inline const char* text() const { return text_; }
+
 	private:
 		const char* text_;
 	};
@@ -1172,6 +1330,14 @@ public:
 		inline NODE REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new RepeatNode(minRepeat, maxRepeat, entry), "Repeat"); }
 		inline NODE REPEAT(int minRepeat, NODE entry) { return REPEAT(minRepeat, intMax, entry); }
 		inline NODE REPEAT(NODE entry) { return REPEAT(0, intMax, entry); }
+
+		inline NODE LAZY_REPEAT(int minRepeat, NODE entry) { return debug(new LazyRepeatNode(minRepeat, entry), "LazyRepeat"); }
+		inline NODE LAZY_REPEAT(NODE entry) { return LAZY_REPEAT(0, entry); }
+
+		inline NODE GREEDY_REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new GreedyRepeatNode(minRepeat, maxRepeat, entry), "GreedyRepeat"); }
+		inline NODE GREEDY_REPEAT(int minRepeat, NODE entry) { return GREEDY_REPEAT(minRepeat, intMax, entry); }
+		inline NODE GREEDY_REPEAT(NODE entry) { return GREEDY_REPEAT(0, intMax, entry); }
+
 		inline NODE LENGTH(int minLength, int maxLength, NODE entry) { return debug(new LengthNode(minLength, maxLength, entry), "Length"); }
 		inline NODE LENGTH(int minLength, NODE entry) { return LENGTH(minLength, intMax, entry); }
 		inline NODE BOI() { return debug(new BoiNode(), "Boi"); }
@@ -1181,7 +1347,8 @@ public:
 		inline NODE FIND(NODE entry) { return debug(new FindNode(entry), "Find"); }
 		inline NODE AHEAD(NODE entry) { return debug(new AheadNode(entry, 0), "Ahead"); }
 		inline NODE NOT(NODE entry) { return debug(new AheadNode(entry, 1), "Ahead"); }
-		// inline NODE SPAN(NODE coverage, NODE entry) { return debug(new SpanNode(coverage, entry), "Span"); }
+		inline NODE BEHIND(NODE entry) { return debug(new BehindNode(entry, 0), "Behind"); }
+		inline NODE NOT_BEHIND(NODE entry) { return debug(new BehindNode(entry, 1), "Behind"); }
 
 		inline NODE CHOICE() { return debug(new ChoiceNode, "Choice"); }
 		inline NODE GLUE() { return debug(new GlueNode, "Glue"); }
