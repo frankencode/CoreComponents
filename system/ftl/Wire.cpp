@@ -75,10 +75,8 @@ Wire::Wire()
 					REPEAT(4, 4,
 						CHOICE(
 							RANGE('0', '9'),
-							CHOICE(
-								RANGE('a', 'f'),
-								RANGE('A', 'F')
-							)
+							RANGE('a', 'f'),
+							RANGE('A', 'F')
 						)
 					)
 				)

@@ -8,7 +8,6 @@
  *
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
-
 #ifndef FTL_WIRE_HPP
 #define FTL_WIRE_HPP
 
@@ -16,7 +15,7 @@
 #include "Variant.hpp"
 #include "Syntax.hpp"
 #include "Array.hpp"
-#include "Map.hpp"
+#include "WireObject.hpp"
 
 namespace ftl
 {
@@ -34,19 +33,9 @@ private:
 	int pos_;
 };
 
-class Wire;
-
-class WireObjectMixin
-{
-public:
-	String className() const { return className_; }
-private:
-	friend class Wire;
-	String className_;
-};
-
 typedef Array<Variant> WireArray;
-typedef Map<String, Variant, WireObjectMixin> WireObject;
+
+class Wire;
 
 class Wire: public Syntax<ByteArray>::Definition, public Singleton<Wire>
 {

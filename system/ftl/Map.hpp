@@ -29,8 +29,8 @@ public:
 
 	Map() {}
 
-	Map(const Map& b): tree_(b.tree_) {}
-	inline const Map& operator=(const Map& b) { tree_ = b.tree_; return *this; }
+	explicit Map(const Map& b): tree_(b.tree_) {}
+	virtual Ref<Map, Owner> clone() const { return new Map(*this); }
 
 	inline Iterator iterator() const { return Iterator(this); }
 
@@ -116,13 +116,24 @@ public:
 		return found;
 	}
 
-	/** Convenience wrapper to lookup()
+	/** Retrieve value of an existing key-value mapping.
 	  */
 	inline Value value(const Key& key) const
 	{
 		Value value = Value();
 		lookup(key, &value);
 		return value;
+	}
+
+	/** Set value of an existing key-value mapping.
+	  */
+	inline bool setValue(const Key& key, const Value& value)
+	{
+		int index = 0;
+		bool found = lookup(key, (Value*)0, &index);
+		if (found)
+			valueAt(index) = value;
+		return found;
 	}
 
 	/** Readonly associative operator
@@ -181,6 +192,9 @@ public:
 private:
 	typedef OrdinalTree< OrdinalNode<Item> > Tree;
 	typedef typename Tree::Node Node;
+
+	const Map& operator=(const Map& b);
+
 	Tree tree_;
 	mutable Item nullItem_;
 };

@@ -38,12 +38,15 @@ public:
 		factoryByNodeType_->insert("String",        new DebugNodeFactory<StringDebugNode>       (this));
 		factoryByNodeType_->insert("Keyword",       new DebugNodeFactory<KeywordDebugNode>      (this));
 		factoryByNodeType_->insert("Repeat",        new DebugNodeFactory<RepeatDebugNode>       (this));
+		factoryByNodeType_->insert("LazyRepeat",    new DebugNodeFactory<LazyRepeatDebugNode>   (this));
+		factoryByNodeType_->insert("GreedyRepeat",  new DebugNodeFactory<GreedyRepeatDebugNode> (this));
 		factoryByNodeType_->insert("Length",        new DebugNodeFactory<LengthDebugNode>       (this));
 		factoryByNodeType_->insert("Eoi",           new DebugNodeFactory<EoiDebugNode>          (this));
 		factoryByNodeType_->insert("Boi",           new DebugNodeFactory<BoiDebugNode>          (this));
 		factoryByNodeType_->insert("Pass",          new DebugNodeFactory<PassDebugNode>         (this));
 		factoryByNodeType_->insert("Find",          new DebugNodeFactory<FindDebugNode>         (this));
 		factoryByNodeType_->insert("Ahead",         new DebugNodeFactory<AheadDebugNode>        (this));
+		factoryByNodeType_->insert("Behind",        new DebugNodeFactory<BehindDebugNode>       (this));
 		factoryByNodeType_->insert("Choice",        new DebugNodeFactory<ChoiceDebugNode>       (this));
 		factoryByNodeType_->insert("Glue",          new DebugNodeFactory<GlueDebugNode>         (this));
 		factoryByNodeType_->insert("Hint",          new DebugNodeFactory<HintDebugNode>         (this));
@@ -412,6 +415,52 @@ private:
 		inline Ref<RepeatNode> repeatNode() const { return DebugNode::entry(); }
 	};
 
+	class LazyRepeatDebugNode: public DebugNode {
+	public:
+		LazyRepeatDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+
+		virtual const char* declType() const { return "LAZY_REPEAT"; }
+
+		virtual void printAttributes(String indent) {
+			Ref<LazyRepeatNode> node = repeatNode();
+			if (node->minRepeat() != 0)
+				print("%%,", node->minRepeat());
+			print("\n");
+			printBranch(node->entry(), indent);
+			print("\n%%", DebugNode::superIndent(indent));
+		}
+
+	private:
+		typedef typename Syntax<Media>::LazyRepeatNode LazyRepeatNode;
+		inline Ref<LazyRepeatNode> repeatNode() const { return DebugNode::entry(); }
+	};
+
+	class GreedyRepeatDebugNode: public DebugNode {
+	public:
+		GreedyRepeatDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+
+		virtual const char* declType() const { return "GREEDY_REPEAT"; }
+
+		virtual void printAttributes(String indent) {
+			Ref<GreedyRepeatNode> node = repeatNode();
+			if (node->maxRepeat() != intMax)
+				print("%%, %%,", node->minRepeat(), node->maxRepeat());
+			else if (node->minRepeat() != 0)
+				print("%%,", node->minRepeat());
+			print("\n");
+			printBranch(node->entry(), indent);
+			print("\n%%", DebugNode::superIndent(indent));
+		}
+
+	private:
+		typedef typename Syntax<Media>::GreedyRepeatNode GreedyRepeatNode;
+		inline Ref<GreedyRepeatNode> repeatNode() const { return DebugNode::entry(); }
+	};
+
 	class LengthDebugNode: public DebugNode {
 	public:
 		LengthDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
@@ -502,6 +551,25 @@ private:
 	private:
 		typedef typename Syntax<Media>::AheadNode AheadNode;
 		inline Ref<AheadNode> aheadNode() const { return DebugNode::entry(); }
+	};
+
+	class BehindDebugNode: public DebugNode {
+	public:
+		BehindDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+
+		virtual const char* declType() const { return behindNode()->invert() ? "NOT_BEHIND" : "BEHIND"; }
+
+		virtual void printAttributes(String indent) {
+			print("\n");
+			printBranch(behindNode()->entry(), indent);
+			print("\n%%", DebugNode::superIndent(indent));
+		}
+
+	private:
+		typedef typename Syntax<Media>::BehindNode BehindNode;
+		inline Ref<BehindNode> behindNode() const { return DebugNode::entry(); }
 	};
 
 	class ChoiceDebugNode: public DebugNode {
