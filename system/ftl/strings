@@ -3,6 +3,7 @@
 
 #include "String.hpp"
 #include "Format.hpp"
+#include "Pattern.hpp"
 #include "Variant.hpp"
 #include "Path.hpp"
 

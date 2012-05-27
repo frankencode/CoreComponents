@@ -26,51 +26,50 @@ class String: public Ref<ByteArray, Owner>
 {
 public:
 	typedef Ref<ByteArray, Owner> Super;
-	typedef uchar_t Item;
-	
+
 	// initialize empty string
 	String(): Super(ByteArray::empty()) {}
-	
+
 	// initialize string with defined size but undefined content
 	explicit String(int size): Super(new ByteArray(size)) {}
-	
+
 	// initialize string with defined size and defined content
 	String(int size, char zero): Super(new ByteArray(size, zero)) {
 		FTL_ASSERT(0 <= zero);
 	}
-	
+
 	// initialize string by given bytes
 	String(const Ref<ByteArray, Owner>& bytes): Super(bytes) {}
-	
+
 	// initialize string from a shallow copy of another string
 	String(const String& b): Super(b.Super::get()) {}
-	
+
 	// helper constructors
 	String(const Format& b);
 	String(const Variant& b);
 	String(const Path& b);
-	
+
 	// initialize string by deep-copying a byte array
 	String(const char* data, int size = -1): Super(new ByteArray(data, size)) {}
-	
+
 	inline static String join(Ref<StringList> parts, String sep = "") { return ByteArray::join(parts, sep); }
-	
+
 	// assign a shallow copy of another string
 	inline String& operator=(const String& b) {
 		Super::set(b.Super::get());
 		return *this;
 	}
-	
+
 	// assign a deep copy of a byte array
 	inline String& operator=(const char* data) {
 		String b(data);
 		Super::set(b.Super::get());
 		return *this;
 	}
-	
+
 	// provide access to the shared bytes
 	inline operator char*() const { return Super::get()->data(); }
-	
+
 	inline bool operator< (const String& b) const { return str::cmp((*this)->data(), b->data()) <  0; }
 	inline bool operator==(const String& b) const { return str::cmp((*this)->data(), b->data()) == 0; }
 	inline bool operator> (const String& b) const { return str::cmp((*this)->data(), b->data()) >  0; }

@@ -250,6 +250,10 @@ public:
 			return entry()->matchNext(media, i, tokenFactory, parentToken, state);
 		}
 
+		virtual Ref<Node> succ(Ref<Node> node) const {
+			return Node::parent() ? Node::parent()->succ(this) : Ref<Node>();
+		}
+
 		virtual const char* declType() const = 0; // { return "NODE"; }
 		virtual void printAttributes(String indent) {}
 

@@ -362,6 +362,17 @@ Ref<ByteArray> ByteArray::expandInsitu()
 						data_[j++] = ec[k];
 				}
 			}
+			else if ((ch == 'x') && (i < n - 2)) {
+				uint8_t x = 0;
+				for (int k = 0; k < 2; ++k) {
+					int digit = data_[i++];
+					if (('0' <= digit) && (digit <= '9')) digit -= '0';
+					else if (('a' <= digit) && (digit <= 'f')) digit = digit - 'a' + 10;
+					else if (('A' <= digit) && (digit <= 'F')) digit = digit - 'A' + 10;
+					x = (x * 16) + digit;
+				}
+				data_[j++] = (char)x;
+			}
 			else {
 				hs = 0;
 				if (ch == 'b') data_[j++] = 0x08;
@@ -369,6 +380,7 @@ Ref<ByteArray> ByteArray::expandInsitu()
 				else if (ch == 'n') data_[j++] = 0x0A;
 				else if (ch == 'r') data_[j++] = 0x0D;
 				else if (ch == 'f') data_[j++] = 0x0C;
+				else data_[j++] = ch;
 			}
 		}
 		else if (j < i) {
