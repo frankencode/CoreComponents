@@ -64,6 +64,7 @@ SET(FTLSYSTEM_HEADER
 	FloatLiteral.hpp
 	FormatSpecifier.hpp
 	Format.hpp
+	Pattern.hpp
 	Variant.hpp
 	Path.hpp
 
@@ -178,6 +179,7 @@ SET(FTLSYSTEM_SOURCE
 	FloatLiteral.cpp
 	FormatSpecifier.cpp
 	Format.cpp
+	Pattern.cpp
 	Path.cpp
 
 	# stdio

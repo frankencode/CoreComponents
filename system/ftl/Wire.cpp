@@ -69,7 +69,7 @@ Wire::Wire()
 			CHAR('\\'),
 			HINT("Illegal escape sequence"),
 			CHOICE(
-				RANGE("\"\\/bfnrt"),
+				RANGE("\"\\/fnrt"),
 				GLUE(
 					CHAR('u'),
 					REPEAT(4, 4,
@@ -297,7 +297,7 @@ Ref<WireObject, Owner> Wire::parse(Ref<ByteArray> text)
 			reason = state->hint();
 			text->offsetToLinePos(state->hintOffset(), &line, &pos);
 		}
-		throw WireException(state->hint(), line, pos);
+		throw WireException(reason, line, pos);
 	}
 	return parseObject(text, token->firstChild());
 }

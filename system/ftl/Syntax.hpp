@@ -44,16 +44,12 @@ public:
 
 	virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const = 0;
 
-	class GlueNode;
-	class ChoiceNode;
+	virtual Ref<Node> succ(Ref<Node> node) const { return Ref<Node>(); }
+	virtual int matchLength() const { return -1; }
 
 	inline Ref<Node> succ() const {
-		if (Ref<GlueNode>(Node::parent())) return Node::nextSibling();
-		if (Ref<ChoiceNode>(Node::parent())) return Node::parent()->succ();
-		return 0;
+		return Node::parent() ? Node::parent()->succ(this) : Ref<Node>();
 	}
-
-	virtual int matchLength() const { return -1; }
 
 	class CharNode: public Node
 	{
@@ -347,17 +343,17 @@ public:
 				if (h == i)
 					FTL_THROW(DebugException, "Repeated empty match, bailing out");
 				if (h != Media::ill()) {
-					i = h;
 					++repeatCount;
 					if (minRepeat_ <= repeatCount) {
+						int j = h;
 						Ref<Node> succ = Node::succ();
 						if (succ) {
 							Ref<Token> lastChildSaved2;
 							if (parentToken) lastChildSaved2 = parentToken->lastChild();
-							h = succ->matchNext(media, h, tokenFactory, parentToken, state);
+							j = succ->matchNext(media, j, tokenFactory, parentToken, state);
 							rollBack(parentToken, lastChildSaved2);
 						}
-						if (h != Media::ill()) return i;
+						if (j != Media::ill()) return i;
 					}
 				}
 			}
@@ -398,17 +394,20 @@ public:
 				if (h == i)
 					FTL_THROW(DebugException, "Repeated empty match, bailing out");
 				if (h != Media::ill()) {
+					++repeatCount;
 					if (minRepeat_ <= repeatCount) {
 						Ref<Node> succ = Node::succ();
 						if (succ) {
 							Ref<Token> lastChildSaved2;
 							if (parentToken) lastChildSaved2 = parentToken->lastChild();
-							h = succ->matchNext(media, h, tokenFactory, parentToken, state);
+							if (succ->matchNext(media, h, tokenFactory, parentToken, state) != Media::ill())
+								i = h;
 							rollBack(parentToken, lastChildSaved2);
 						}
-						if (h != Media::ill()) i = h;
+						else {
+							i = h;
+						}
 					}
-					++repeatCount;
 				}
 			}
 			if ((repeatCount < minRepeat_) || (maxRepeat_ < repeatCount))
@@ -642,6 +641,11 @@ public:
 			return h;
 		}
 
+		virtual Ref<Node> succ(Ref<Node> node) const
+		{
+			return Node::parent() ? Node::parent()->succ(this) : Ref<Node>();
+		}
+
 		virtual int matchLength() const
 		{
 			int len = -1;
@@ -676,6 +680,11 @@ public:
 				rollBack(parentToken, lastChildSaved);
 
 			return i;
+		}
+
+		virtual Ref<Node> succ(Ref<Node> node) const
+		{
+			return node->nextSibling();
 		}
 
 		virtual int matchLength() const
@@ -1649,13 +1658,13 @@ public:
 			return -1;
 		}
 
-	private:
-		friend class SyntaxDebugger<Media>;
-		Ref<DebugFactory, Owner> debugFactory_;
-
 		inline Node* debug(Node* newNode, const char* nodeType) {
 			return debugFactory_ ? debugFactory_->produce(newNode, nodeType) : newNode;
 		}
+
+	private:
+		friend class SyntaxDebugger<Media>;
+		Ref<DebugFactory, Owner> debugFactory_;
 
 		friend class Scope;
 		friend class InvokeNode;
