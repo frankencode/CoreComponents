@@ -9,6 +9,7 @@
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
 
+#include "stdio" // DEBUG
 #include "Singleton.hpp"
 #ifndef NDEBUG
 #include "SyntaxDebugger.hpp"
@@ -42,6 +43,7 @@ private:
 
 	PatternCompiler();
 	void compile(Ref<ByteArray> text, Ref<Pattern> pattern);
+	NODE compileChoice(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
 	NODE compileSequence(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
 
 	int gap_;
@@ -49,7 +51,9 @@ private:
 	int boi_;
 	int eoi_;
 	int char_;
-	int seq_;
+	int sequence_;
+	int group_;
+	int choice_;
 };
 
 PatternCompiler::PatternCompiler()
@@ -62,13 +66,13 @@ PatternCompiler::PatternCompiler()
 	char_ =
 		DEFINE("Char",
 			CHOICE(
-				EXCEPT("#*\\^$"), // {}[]|()
+				EXCEPT("#*\\()|^$"), // {}[]
 				GLUE(
 					CHAR('\\'),
 					HINT("Illegal escape sequence"),
 					CHOICE(
 						RANGE(
-							"#*\\^$" // {}[]|()
+							"#*\\()|^$" // {}[]
 							"fnrt"
 							"\"/"
 						),
@@ -88,7 +92,7 @@ PatternCompiler::PatternCompiler()
 			)
 		);
 
-	seq_ =
+	sequence_ =
 		DEFINE("Sequence",
 			REPEAT(
 				CHOICE(
@@ -96,12 +100,35 @@ PatternCompiler::PatternCompiler()
 					REF("Gap"),
 					REF("Any"),
 					REF("Boi"),
-					REF("Eoi")
+					REF("Eoi"),
+					REF("Group")
 				)
 			)
 		);
 
-	ENTRY("Sequence");
+	group_ =
+		DEFINE("Group",
+			GLUE(
+				CHAR('('),
+				REF("Choice"),
+				CHAR(')')
+			)
+		);
+
+	choice_ =
+		DEFINE("Choice",
+			GLUE(
+				REF("Sequence"),
+				REPEAT(
+					GLUE(
+						CHAR('|'),
+						REF("Sequence")
+					)
+				)
+			)
+		);
+
+	ENTRY("Choice");
 	LINK();
 }
 
@@ -119,10 +146,20 @@ void PatternCompiler::compile(Ref<ByteArray> text, Ref<Pattern> pattern)
 		}
 		throw PatternException(reason, pos);
 	}
-	NODE entry = compileSequence(text, token, pattern);
+	NODE entry = compileChoice(text, token, pattern);
 	pattern->DEFINE("Expression", entry);
 	pattern->ENTRY("Expression");
 	pattern->LINK();
+}
+
+PatternCompiler::NODE PatternCompiler::compileChoice(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+{
+	if (token->countChildren() == 1)
+		return compileSequence(text, token->firstChild(), pattern);
+	NODE node = new ChoiceNode;
+	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling())
+		node->appendChild(compileSequence(text, child, pattern));
+	return pattern->debug(node, "Choice");
 }
 
 PatternCompiler::NODE PatternCompiler::compileSequence(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
@@ -134,6 +171,7 @@ PatternCompiler::NODE PatternCompiler::compileSequence(Ref<ByteArray> text, Ref<
 		else if (child->rule() == any_) node->appendChild(pattern->ANY());
 		else if (child->rule() == boi_) node->appendChild(pattern->BOI());
 		else if (child->rule() == eoi_) node->appendChild(pattern->EOI());
+		else if (child->rule() == group_) node->appendChild(compileChoice(text, child->firstChild(), pattern));
 	}
 	return pattern->debug(node, "Glue");
 }
