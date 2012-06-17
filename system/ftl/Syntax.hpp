@@ -113,6 +113,37 @@ public:
 		int invert_;
 	};
 
+	class GreaterOrEqualNode: public Node
+	{
+	public:
+		GreaterOrEqualNode(Char ch, int invert)
+			: ch_(ch),
+			  invert_(invert)
+		{}
+
+		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
+		{
+			if (media->has(i)) {
+				Char ch = media->get(i++);
+				if ((ch < ch_) ^ invert_)
+					i = Media::ill();
+			}
+			else
+				i = Media::ill();
+
+			return i;
+		}
+
+		inline int matchLength() const { return 1; }
+
+		inline Char ch() const { return ch_; }
+		inline bool invert() const { return invert_; }
+
+	private:
+		Char ch_;
+		int invert_;
+	};
+
 	class AnyNode: public Node
 	{
 	public:
@@ -383,11 +414,14 @@ public:
 
 		virtual Index matchNext(Media* media, Index i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 		{
-			Ref<Token> lastChildSaved;
-			if (parentToken) lastChildSaved = parentToken->lastChild();
+			Ref<Token> lastChildSaved, lastChildSaved2;
+			if (parentToken) {
+				lastChildSaved = parentToken->lastChild();
+				lastChildSaved2 = parentToken->lastChild();
+			}
 
 			int repeatCount = 0;
-			Index h = i;
+			Index h = i, j = Media::ill();
 			while ((repeatCount < maxRepeat_) && (h != Media::ill()))
 			{
 				h = entry()->matchNext(media, h, tokenFactory, parentToken, state);
@@ -398,11 +432,13 @@ public:
 					if (minRepeat_ <= repeatCount) {
 						Ref<Node> succ = Node::succ();
 						if (succ) {
-							Ref<Token> lastChildSaved2;
-							if (parentToken) lastChildSaved2 = parentToken->lastChild();
-							if (succ->matchNext(media, h, tokenFactory, parentToken, state) != Media::ill())
+							Ref<Token> lastChildSaved3;
+							if (parentToken) lastChildSaved3 = parentToken->lastChild();
+							if ((j = succ->matchNext(media, h, tokenFactory, parentToken, state)) != Media::ill()) {
 								i = h;
-							rollBack(parentToken, lastChildSaved2);
+								lastChildSaved2 = lastChildSaved3;
+								rollBack(parentToken, lastChildSaved3);
+							}
 						}
 						else {
 							i = h;
@@ -410,11 +446,14 @@ public:
 					}
 				}
 			}
+
 			if ((repeatCount < minRepeat_) || (maxRepeat_ < repeatCount))
 				i = Media::ill();
 
 			if (i == Media::ill())
 				rollBack(parentToken, lastChildSaved);
+			else if (j == Media::ill())
+				rollBack(parentToken, lastChildSaved2);
 
 			return i;
 		}
@@ -1306,6 +1345,8 @@ public:
 		inline NODE OTHER(Char ch) { return debug(new CharNode(ch, 1), "Char"); }
 		inline NODE GREATER(Char ch) { return debug(new GreaterNode(ch, 0), "Greater"); }
 		inline NODE BELOW(Char ch) { return debug(new GreaterNode(ch, 1), "Greater"); }
+		inline NODE GREATER_OR_EQUAL(Char ch) { return debug(new GreaterOrEqualNode(ch, 0), "GreaterOrEqual"); }
+		inline NODE BELOW_OR_EQUAL(Char ch) { return debug(new GreaterOrEqualNode(ch, 1), "GreaterOrEqual"); }
 		inline NODE ANY() { return debug(new AnyNode(), "Any"); }
 		inline NODE RANGE(Char a, Char b) { return debug(new RangeMinMaxNode(a, b, 0), "RangeMinMax"); }
 		template<class Char> inline NODE RANGE(const Char* s) { return debug(new RangeExplicitNode(s, 0), "RangeExplicit"); }

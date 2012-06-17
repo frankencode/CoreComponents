@@ -4,7 +4,7 @@
 using namespace ftl;
 
 int main() {
-	Pattern p = "*.(t#t|a#c)";
+	Pattern p = "*.(t[..]t|a[a..z]#)";
 	String s = "abc.txt";
 	Ref<Token, Owner> token = p.match(s);
 	print("p.match(\"%%\") = 0x%hex%\n", s, (void*)token);
