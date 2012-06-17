@@ -31,38 +31,40 @@ public:
 		: factoryByNodeType_(new FactoryByNodeType),
 		  indent_(indent)
 	{
-		factoryByNodeType_->insert("Char",          new DebugNodeFactory<CharDebugNode>         (this));
-		factoryByNodeType_->insert("Any",           new DebugNodeFactory<AnyDebugNode>          (this));
-		factoryByNodeType_->insert("RangeMinMax",   new DebugNodeFactory<RangeMinMaxDebugNode>  (this));
-		factoryByNodeType_->insert("RangeExplicit", new DebugNodeFactory<RangeExplicitDebugNode>(this));
-		factoryByNodeType_->insert("String",        new DebugNodeFactory<StringDebugNode>       (this));
-		factoryByNodeType_->insert("Keyword",       new DebugNodeFactory<KeywordDebugNode>      (this));
-		factoryByNodeType_->insert("Repeat",        new DebugNodeFactory<RepeatDebugNode>       (this));
-		factoryByNodeType_->insert("LazyRepeat",    new DebugNodeFactory<LazyRepeatDebugNode>   (this));
-		factoryByNodeType_->insert("GreedyRepeat",  new DebugNodeFactory<GreedyRepeatDebugNode> (this));
-		factoryByNodeType_->insert("Length",        new DebugNodeFactory<LengthDebugNode>       (this));
-		factoryByNodeType_->insert("Eoi",           new DebugNodeFactory<EoiDebugNode>          (this));
-		factoryByNodeType_->insert("Boi",           new DebugNodeFactory<BoiDebugNode>          (this));
-		factoryByNodeType_->insert("Pass",          new DebugNodeFactory<PassDebugNode>         (this));
-		factoryByNodeType_->insert("Find",          new DebugNodeFactory<FindDebugNode>         (this));
-		factoryByNodeType_->insert("Ahead",         new DebugNodeFactory<AheadDebugNode>        (this));
-		factoryByNodeType_->insert("Behind",        new DebugNodeFactory<BehindDebugNode>       (this));
-		factoryByNodeType_->insert("Choice",        new DebugNodeFactory<ChoiceDebugNode>       (this));
-		factoryByNodeType_->insert("Glue",          new DebugNodeFactory<GlueDebugNode>         (this));
-		factoryByNodeType_->insert("Hint",          new DebugNodeFactory<HintDebugNode>         (this));
-		factoryByNodeType_->insert("Ref",           new DebugNodeFactory<RefDebugNode>          (this));
-		factoryByNodeType_->insert("Inline",        new DebugNodeFactory<InlineDebugNode>       (this));
-		factoryByNodeType_->insert("Previous",      new DebugNodeFactory<PreviousDebugNode>     (this));
-		factoryByNodeType_->insert("Call",          new DebugNodeFactory<CallDebugNode>         (this));
-		factoryByNodeType_->insert("Set",           new DebugNodeFactory<SetDebugNode>          (this));
-		factoryByNodeType_->insert("If",            new DebugNodeFactory<IfDebugNode>           (this));
-		factoryByNodeType_->insert("GetChar",       new DebugNodeFactory<GetCharDebugNode>      (this));
-		factoryByNodeType_->insert("SetChar",       new DebugNodeFactory<SetCharDebugNode>      (this));
-		factoryByNodeType_->insert("VarChar",       new DebugNodeFactory<VarCharDebugNode>      (this));
-		factoryByNodeType_->insert("GetString",     new DebugNodeFactory<GetStringDebugNode>    (this));
-		factoryByNodeType_->insert("SetString",     new DebugNodeFactory<SetStringDebugNode>    (this));
-		factoryByNodeType_->insert("VarString",     new DebugNodeFactory<VarStringDebugNode>    (this));
-		factoryByNodeType_->insert("Invoke",        new DebugNodeFactory<InvokeDebugNode>       (this));
+		factoryByNodeType_->insert("Char",           new DebugNodeFactory<CharDebugNode>           (this));
+		factoryByNodeType_->insert("Greater",        new DebugNodeFactory<GreaterDebugNode>        (this));
+		factoryByNodeType_->insert("GreaterOrEqual", new DebugNodeFactory<GreaterOrEqualDebugNode> (this));
+		factoryByNodeType_->insert("Any",            new DebugNodeFactory<AnyDebugNode>            (this));
+		factoryByNodeType_->insert("RangeMinMax",    new DebugNodeFactory<RangeMinMaxDebugNode>    (this));
+		factoryByNodeType_->insert("RangeExplicit",  new DebugNodeFactory<RangeExplicitDebugNode>  (this));
+		factoryByNodeType_->insert("String",         new DebugNodeFactory<StringDebugNode>         (this));
+		factoryByNodeType_->insert("Keyword",        new DebugNodeFactory<KeywordDebugNode>        (this));
+		factoryByNodeType_->insert("Repeat",         new DebugNodeFactory<RepeatDebugNode>         (this));
+		factoryByNodeType_->insert("LazyRepeat",     new DebugNodeFactory<LazyRepeatDebugNode>     (this));
+		factoryByNodeType_->insert("GreedyRepeat",   new DebugNodeFactory<GreedyRepeatDebugNode>   (this));
+		factoryByNodeType_->insert("Length",         new DebugNodeFactory<LengthDebugNode>         (this));
+		factoryByNodeType_->insert("Eoi",            new DebugNodeFactory<EoiDebugNode>            (this));
+		factoryByNodeType_->insert("Boi",            new DebugNodeFactory<BoiDebugNode>            (this));
+		factoryByNodeType_->insert("Pass",           new DebugNodeFactory<PassDebugNode>           (this));
+		factoryByNodeType_->insert("Find",           new DebugNodeFactory<FindDebugNode>           (this));
+		factoryByNodeType_->insert("Ahead",          new DebugNodeFactory<AheadDebugNode>          (this));
+		factoryByNodeType_->insert("Behind",         new DebugNodeFactory<BehindDebugNode>         (this));
+		factoryByNodeType_->insert("Choice",         new DebugNodeFactory<ChoiceDebugNode>         (this));
+		factoryByNodeType_->insert("Glue",           new DebugNodeFactory<GlueDebugNode>           (this));
+		factoryByNodeType_->insert("Hint",           new DebugNodeFactory<HintDebugNode>           (this));
+		factoryByNodeType_->insert("Ref",            new DebugNodeFactory<RefDebugNode>            (this));
+		factoryByNodeType_->insert("Inline",         new DebugNodeFactory<InlineDebugNode>         (this));
+		factoryByNodeType_->insert("Previous",       new DebugNodeFactory<PreviousDebugNode>       (this));
+		factoryByNodeType_->insert("Call",           new DebugNodeFactory<CallDebugNode>           (this));
+		factoryByNodeType_->insert("Set",            new DebugNodeFactory<SetDebugNode>            (this));
+		factoryByNodeType_->insert("If",             new DebugNodeFactory<IfDebugNode>             (this));
+		factoryByNodeType_->insert("GetChar",        new DebugNodeFactory<GetCharDebugNode>        (this));
+		factoryByNodeType_->insert("SetChar",        new DebugNodeFactory<SetCharDebugNode>        (this));
+		factoryByNodeType_->insert("VarChar",        new DebugNodeFactory<VarCharDebugNode>        (this));
+		factoryByNodeType_->insert("GetString",      new DebugNodeFactory<GetStringDebugNode>      (this));
+		factoryByNodeType_->insert("SetString",      new DebugNodeFactory<SetStringDebugNode>      (this));
+		factoryByNodeType_->insert("VarString",      new DebugNodeFactory<VarStringDebugNode>      (this));
+		factoryByNodeType_->insert("Invoke",         new DebugNodeFactory<InvokeDebugNode>         (this));
 	}
 
 private:
@@ -303,6 +305,40 @@ public:
 	private:
 		typedef typename Syntax<Media>::CharNode CharNode;
 		inline Ref<CharNode> charNode() const { return DebugNode::entry(); }
+	};
+
+	class GreaterDebugNode: public DebugNode {
+	public:
+		GreaterDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+
+		virtual const char* declType() const { return greaterNode()->invert() ? "BELOW" : "GREATER"; }
+
+		virtual void printAttributes(String index) {
+			printCharAttr(greaterNode()->ch());
+		}
+
+	private:
+		typedef typename Syntax<Media>::GreaterNode GreaterNode;
+		inline Ref<GreaterNode> greaterNode() const { return DebugNode::entry(); }
+	};
+
+	class GreaterOrEqualDebugNode: public DebugNode {
+	public:
+		GreaterOrEqualDebugNode(Ref<SyntaxDebugger> debugger, Ref<Node> newNode)
+			: DebugNode(debugger, newNode)
+		{}
+
+		virtual const char* declType() const { return greaterOrEqualNode()->invert() ? "BELOW_OR_EQUAL" : "GREATER_OR_EQUAL"; }
+
+		virtual void printAttributes(String index) {
+			printCharAttr(greaterOrEqualNode()->ch());
+		}
+
+	private:
+		typedef typename Syntax<Media>::GreaterOrEqualNode GreaterOrEqualNode;
+		inline Ref<GreaterOrEqualNode> greaterOrEqualNode() const { return DebugNode::entry(); }
 	};
 
 	class AnyDebugNode: public DebugNode {

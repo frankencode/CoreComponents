@@ -9,7 +9,6 @@
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
 
-#include "stdio" // DEBUG
 #include "Singleton.hpp"
 #ifndef NDEBUG
 #include "SyntaxDebugger.hpp"
@@ -45,12 +44,17 @@ private:
 	void compile(Ref<ByteArray> text, Ref<Pattern> pattern);
 	NODE compileChoice(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
 	NODE compileSequence(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
+	char readChar(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
+	NODE compileRangeMinMax(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
+	NODE compileRangeExplicit(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
 
 	int gap_;
 	int any_;
 	int boi_;
 	int eoi_;
 	int char_;
+	int rangeMinMax_;
+	int rangeExplicit_;
 	int sequence_;
 	int group_;
 	int choice_;
@@ -66,13 +70,13 @@ PatternCompiler::PatternCompiler()
 	char_ =
 		DEFINE("Char",
 			CHOICE(
-				EXCEPT("#*\\()|^$"), // {}[]
+				EXCEPT("#*\\[]()|^$"), // {}
 				GLUE(
 					CHAR('\\'),
 					HINT("Illegal escape sequence"),
 					CHOICE(
 						RANGE(
-							"#*\\()|^$" // {}[]
+							"#*\\[]()|^$" // {}
 							"fnrt"
 							"\"/"
 						),
@@ -92,11 +96,41 @@ PatternCompiler::PatternCompiler()
 			)
 		);
 
+	rangeMinMax_ =
+		DEFINE("RangeMinMax",
+			GLUE(
+				CHAR('['),
+				GREEDY_REPEAT(0, 1, REF("Char")),
+				STRING(".."),
+				REPEAT(0, 1, REF("Char")),
+				/*CHOICE(
+					GLUE(
+						REPEAT(0, 1, REF("Char")),
+						STRING(".."),
+						REPEAT(0, 1, REF("Char"))
+					),
+					STRING("..")
+				),*/
+				CHAR(']')
+			)
+		);
+
+	rangeExplicit_ =
+		DEFINE("RangeExplicit",
+			GLUE(
+				CHAR('['),
+				REPEAT(1, REF("Char")),
+				CHAR(']')
+			)
+		);
+
 	sequence_ =
 		DEFINE("Sequence",
 			REPEAT(
 				CHOICE(
 					REF("Char"),
+					REF("RangeMinMax"),
+					REF("RangeExplicit"),
 					REF("Gap"),
 					REF("Any"),
 					REF("Boi"),
@@ -166,7 +200,9 @@ PatternCompiler::NODE PatternCompiler::compileSequence(Ref<ByteArray> text, Ref<
 {
 	NODE node = new GlueNode;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
-		if (child->rule() == char_) node->appendChild(pattern->CHAR(text->at(child->i0())));
+		if (child->rule() == char_) node->appendChild(pattern->CHAR(readChar(text, child, pattern)));
+		else if (child->rule() == rangeMinMax_) node->appendChild(compileRangeMinMax(text, child, pattern));
+		else if (child->rule() == rangeExplicit_) node->appendChild(compileRangeExplicit(text, child, pattern));
 		else if (child->rule() == gap_) node->appendChild(pattern->GREEDY_REPEAT(pattern->ANY()));
 		else if (child->rule() == any_) node->appendChild(pattern->ANY());
 		else if (child->rule() == boi_) node->appendChild(pattern->BOI());
@@ -174,6 +210,41 @@ PatternCompiler::NODE PatternCompiler::compileSequence(Ref<ByteArray> text, Ref<
 		else if (child->rule() == group_) node->appendChild(compileChoice(text, child->firstChild(), pattern));
 	}
 	return pattern->debug(node, "Glue");
+}
+
+char PatternCompiler::readChar(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+{
+	return (token->i1() - token->i0() > 1) ?
+		text->copy(token->i0(), token->i1())->expandInsitu()->at(0) :
+		text->at(token->i0());
+}
+
+PatternCompiler::NODE PatternCompiler::compileRangeMinMax(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+{
+	int n = token->countChildren();
+	if (n == 2) {
+		Ref<Token> min = token->firstChild();
+		Ref<Token> max = min->nextSibling();
+		return pattern->RANGE(readChar(text, min, pattern), readChar(text, max, pattern));
+	}
+	else if (n == 1) {
+		Ref<Token> child = token->firstChild();
+		char ch = readChar(text, child, pattern);
+		return (child->i0() - token->i0() == 1) ? pattern->GREATER_OR_EQUAL(ch) : pattern->BELOW_OR_EQUAL(ch);
+	}
+	return pattern->ANY();
+}
+
+PatternCompiler::NODE PatternCompiler::compileRangeExplicit(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+{
+	Ref<Token> child = token->firstChild();
+	int n = token->countChildren();
+	String s(n);
+	for (int i = 0; i < n; ++i) {
+		s->set(i, readChar(text, child, pattern));
+		child = child->nextSibling();
+	}
+	return pattern->RANGE(s->data());
 }
 
 Pattern::Pattern(const char* text)
