@@ -15,6 +15,7 @@
 #include "strings.hpp"
 #include "Default.hpp"
 #include "List.hpp"
+#include "Token.hpp"
 
 namespace ftl
 {
@@ -117,6 +118,9 @@ public:
 		if (i1 < 0) i1 = 0;
 		if (i1 > size_) i1 = size_;
 		return (i0 < i1) ? new ByteArray(data_ + i0, i1 - i0) : new ByteArray();
+	}
+	inline Ref<ByteArray, Owner> copy(Ref<Token> token) const {
+		return copy(token->i0(), token->i1());
 	}
 
 	inline Ref<ByteArray, Owner> head(int n) const { return copy(0, n); }

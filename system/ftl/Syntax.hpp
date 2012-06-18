@@ -384,7 +384,7 @@ public:
 							j = succ->matchNext(media, j, tokenFactory, parentToken, state);
 							rollBack(parentToken, lastChildSaved2);
 						}
-						if (j != Media::ill()) return i;
+						if (j != Media::ill()) return h;
 					}
 				}
 			}
@@ -434,7 +434,8 @@ public:
 						if (succ) {
 							Ref<Token> lastChildSaved3;
 							if (parentToken) lastChildSaved3 = parentToken->lastChild();
-							if ((j = succ->matchNext(media, h, tokenFactory, parentToken, state)) != Media::ill()) {
+							j = succ->matchNext(media, h, tokenFactory, parentToken, state);
+							if (j != Media::ill()) {
 								i = h;
 								lastChildSaved2 = lastChildSaved3;
 								rollBack(parentToken, lastChildSaved3);
