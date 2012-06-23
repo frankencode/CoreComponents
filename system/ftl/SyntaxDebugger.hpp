@@ -256,6 +256,10 @@ public:
 			return Node::parent() ? Node::parent()->succ(this) : Ref<Node>();
 		}
 
+		virtual int matchLength() const {
+			return entry() ? entry()->matchLength() : -1;
+		}
+
 		virtual const char* declType() const = 0; // { return "NODE"; }
 		virtual void printAttributes(String indent) {}
 
