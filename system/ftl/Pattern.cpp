@@ -44,6 +44,8 @@ private:
 	void compile(Ref<ByteArray> text, Ref<Pattern> pattern);
 	NODE compileChoice(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
 	NODE compileSequence(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
+	NODE compileAhead(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
+	NODE compileBehind(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
 	char readChar(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
 	NODE compileRangeMinMax(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
 	NODE compileRangeExplicit(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
@@ -60,6 +62,8 @@ private:
 	int maxRepeat_;
 	int repeat_;
 	int sequence_;
+	int ahead_;
+	int behind_;
 	int group_;
 	int choice_;
 };
@@ -183,8 +187,30 @@ PatternCompiler::PatternCompiler()
 					REF("RangeExplicit"),
 					REF("Boi"),
 					REF("Eoi"),
+					REF("Ahead"),
+					REF("Behind"),
 					REF("Group")
 				)
+			)
+		);
+
+	ahead_ =
+		DEFINE("Ahead",
+			GLUE(
+				STRING("(?"),
+				RANGE("=!"),
+				REF("Choice"),
+				CHAR(')')
+			)
+		);
+
+	behind_ =
+		DEFINE("Behind",
+			GLUE(
+				STRING("(?<"),
+				RANGE("=!"),
+				REF("Choice"),
+				CHAR(')')
 			)
 		);
 
@@ -257,8 +283,31 @@ PatternCompiler::NODE PatternCompiler::compileSequence(Ref<ByteArray> text, Ref<
 		else if (child->rule() == boi_) node->appendChild(pattern->BOI());
 		else if (child->rule() == eoi_) node->appendChild(pattern->EOI());
 		else if (child->rule() == group_) node->appendChild(compileChoice(text, child->firstChild(), pattern));
+		else if (child->rule() == ahead_) node->appendChild(compileAhead(text, child, pattern));
+		else if (child->rule() == behind_) node->appendChild(compileBehind(text, child, pattern));
+	}
+	if (node->firstChild() == node->lastChild()) {
+		NODE child = node->firstChild();
+		child->unlink();
+		return child;
 	}
 	return pattern->debug(node, "Glue");
+}
+
+PatternCompiler::NODE PatternCompiler::compileAhead(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+{
+	return
+		(text->at(token->i0() + 2) == '=') ?
+			pattern->AHEAD(compileChoice(text, token->firstChild(), pattern)) :
+			pattern->NOT(compileChoice(text, token->firstChild(), pattern));
+}
+
+PatternCompiler::NODE PatternCompiler::compileBehind(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+{
+	return
+		(text->at(token->i0() + 3) == '=') ?
+			pattern->BEHIND(compileChoice(text, token->firstChild(), pattern)) :
+			pattern->NOT_BEHIND(compileChoice(text, token->firstChild(), pattern));
 }
 
 char PatternCompiler::readChar(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)

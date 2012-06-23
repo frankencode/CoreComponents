@@ -376,12 +376,16 @@ public:
 				if (h != Media::ill()) {
 					++repeatCount;
 					if (minRepeat_ <= repeatCount) {
-						int j = h;
+						Index j = h;
 						Ref<Node> succ = Node::succ();
 						if (succ) {
 							Ref<Token> lastChildSaved2;
 							if (parentToken) lastChildSaved2 = parentToken->lastChild();
-							j = succ->matchNext(media, j, tokenFactory, parentToken, state);
+							while (succ) {
+								j = succ->matchNext(media, j, tokenFactory, parentToken, state);
+								if (j == Media::ill()) break;
+								succ = succ->succ();
+							}
 							rollBack(parentToken, lastChildSaved2);
 						}
 						if (j != Media::ill()) return h;
@@ -434,12 +438,17 @@ public:
 						if (succ) {
 							Ref<Token> lastChildSaved3;
 							if (parentToken) lastChildSaved3 = parentToken->lastChild();
-							j = succ->matchNext(media, h, tokenFactory, parentToken, state);
+							j = h;
+							while (succ) {
+								j = succ->matchNext(media, j, tokenFactory, parentToken, state);
+								if (j == Media::ill()) break;
+								succ = succ->succ();
+							}
 							if (j != Media::ill()) {
 								i = h;
 								lastChildSaved2 = lastChildSaved3;
-								rollBack(parentToken, lastChildSaved3);
 							}
+							rollBack(parentToken, lastChildSaved3);
 						}
 						else {
 							i = h;
@@ -639,7 +648,9 @@ public:
 			Ref<Token> lastChildSaved;
 			if (parentToken) lastChildSaved = parentToken->lastChild();
 
-			if ((entry()->matchNext(media, i - length_, tokenFactory, parentToken, state) == Media::ill()) ^ invert_)
+			if (!media->has(i - length_))
+				i = Media::ill();
+			else if ((entry()->matchNext(media, i - length_, tokenFactory, parentToken, state) == Media::ill()) ^ invert_)
 				i = Media::ill();
 
 			rollBack(parentToken, lastChildSaved);
@@ -724,7 +735,9 @@ public:
 
 		virtual Ref<Node> succ(Ref<Node> node) const
 		{
-			return node->nextSibling();
+			Ref<Node> succ = node->nextSibling();
+			if ((!succ) && (Node::parent())) succ = Node::parent()->succ(this);
+			return succ;
 		}
 
 		virtual int matchLength() const
@@ -732,7 +745,10 @@ public:
 			int len = 0;
 			for (Ref<Node> node = Node::firstChild(); node; node = node->nextSibling()) {
 				int len2 = node->matchLength();
-				if (len2 == -1) return -1;
+				if (len2 == -1) {
+					len = -1;
+					break;
+				}
 				len += len2;
 			}
 			return len;
