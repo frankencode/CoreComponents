@@ -16,51 +16,51 @@
 namespace ftl
 {
 
-Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, Ref<Debugger> debugger)
+Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, Ref<SyntaxDebugger> debugger)
 {
 	Ref<Token, Owner> ruleList = AbnfSyntax::match(text);
 	FTL_ASSERT(ruleList);
-	
+
 	Ref<Definition, Owner> definition = new AbnfCoreSyntax(debugger);
 	definition->OPTION("caseSensitive", false);
-	
+
 	compileRuleList(text, ruleList, definition);
 	compileEntry(text, ruleList, definition);
-	
+
 	definition->LINK();
-	
+
 	return definition;
 }
 
 Ref<AbnfCompiler::Node> AbnfCompiler::ignoreDebug(Ref<Node> node)
 {
-	Ref<Debugger::DebugNode> debugNode = node;
+	Ref<SyntaxDebugger::DebugNode> debugNode = node;
 	return (debugNode) ? debugNode->entry() : node;
 }
 
 void AbnfCompiler::compileRuleList(Ref<ByteArray> text, Ref<Token> ruleList, Ref<Definition> definition)
 {
 	FTL_ASSERT(ruleList->rule() == AbnfSyntax::rulelist_);
-	
+
 	Ref<Token> rule = ruleList->firstChild();
 	while (rule) {
 		FTL_ASSERT(rule->rule() == AbnfSyntax::rule_);
-		
+
 		Ref<Token> ruleName = rule->firstChild();
 		Ref<Token> definedAs = ruleName->nextSibling();
 		Ref<Token> alternation = definedAs->nextSibling();
-		
+
 		FTL_ASSERT(ruleName->rule() == AbnfSyntax::ruleName_);
 		FTL_ASSERT(definedAs->rule() == AbnfSyntax::definedAs_);
 		FTL_ASSERT(alternation->rule() == AbnfSyntax::alternation_);
-		
+
 		if (text->at(definedAs->i0()) == '=')
 			definition->DEFINE(str(text, ruleName), compileAlternation(text, alternation, definition));
 		else if (text->at(definedAs->i0()) == '~')
 			definition->DEFINE_VOID(str(text, ruleName), compileAlternation(text, alternation, definition));
 		else
 			FTL_ASSERT(false);
-		
+
 		rule = rule->nextSibling();
 	}
 }
@@ -72,7 +72,7 @@ void AbnfCompiler::compileEntry(Ref<ByteArray> text, Ref<Token> ruleList, Ref<De
 	FTL_ASSERT(rule->rule() == AbnfSyntax::rule_);
 	Ref<Token> ruleName = rule->firstChild();
 	FTL_ASSERT(ruleName->rule() == AbnfSyntax::ruleName_);
-	
+
 	definition->ENTRY(str(text, ruleName));
 }
 
@@ -177,7 +177,7 @@ AbnfCompiler::NODE AbnfCompiler::compileElement(Ref<ByteArray> text, Ref<Token> 
 AbnfCompiler::NODE AbnfCompiler::compileNumVal(Ref<ByteArray> text, Ref<Token> numVal, Ref<Definition> definition)
 {
 	NODE node = 0;
-	
+
 	FTL_ASSERT(numVal->rule() == AbnfSyntax::numVal_);
 	FTL_ASSERT(text->at(numVal->i0()) == '%');
 	char prefix = toLower(text->at(numVal->i0() + 1));
@@ -188,10 +188,10 @@ AbnfCompiler::NODE AbnfCompiler::compileNumVal(Ref<ByteArray> text, Ref<Token> n
 		base = 2;
 	else // if (prefix == 'd');
 		base = 10;
-	
+
 	int i = numVal->i0() + 2;
 	while ((i < numVal->i1()) && (text->at(i) != '-') && (text->at(i) != '.')) ++i;
-	
+
 	if (i < numVal->i1()) {
 		if (text->at(i) == '-') {
 			int a = strToInt(*text, numVal->i0() + 2, i, base);
@@ -225,10 +225,10 @@ AbnfCompiler::NODE AbnfCompiler::compileNumVal(Ref<ByteArray> text, Ref<Token> n
 		}
 	}
 	else {
-		Char ch = strToInt(*text, numVal->i0() + 2, numVal->i1(), base);
+		char ch = strToInt(*text, numVal->i0() + 2, numVal->i1(), base);
 		node = definition->CHAR(ch);
 	}
-	
+
 	return node;
 }
 
@@ -248,35 +248,35 @@ AbnfCompiler::NODE AbnfCompiler::compileProseVal(Ref<ByteArray> text, Ref<Token>
 AbnfCompiler::NODE AbnfCompiler::optimizeChoice(Ref<Node> node, Ref<Definition> definition)
 {
 	NODE optimizedChoice = node;
-	
+
 	int numChars = 0;
 	bool isRangeExplicit = true;
 	{
 		Ref<Node> child = ignoreDebug(node)->firstChild();
 		while ((child) && isRangeExplicit) {
-			isRangeExplicit = Ref<CharNode>(ignoreDebug(child));
+			isRangeExplicit = Ref<syntax::CharNode>(ignoreDebug(child));
 			child = child->nextSibling();
 			++numChars;
 		}
 	}
-	
+
 	if (isRangeExplicit) {
 		ByteArray s(numChars);
 		int i = 0;
 		Ref<Node> child = ignoreDebug(node)->firstChild();
 		while (child) {
-			Ref<CharNode> charNode = ignoreDebug(child);
+			Ref<syntax::CharNode> charNode = ignoreDebug(child);
 			s.set(i, charNode->ch());
 			++i;
 			child = child->nextSibling();
 		}
-		
+
 		optimizedChoice = definition->RANGE(s.constData());
 	}
 	else {
 		deepOptimizeChoice(node, definition);
 	}
-	
+
 	return optimizedChoice;
 }
 
@@ -285,7 +285,7 @@ void AbnfCompiler::deepOptimizeChoice(Ref<Node> node, Ref<Definition> definition
 	int numChars = 0;
 	Ref<Node> child = ignoreDebug(node)->firstChild();
 	while (child) {
-		if (Ref<CharNode>(ignoreDebug(child)))
+		if (Ref<syntax::CharNode>(ignoreDebug(child)))
 			++numChars;
 		else
 			deepOptimizeChoice(node, child, numChars, definition);
@@ -301,7 +301,7 @@ void AbnfCompiler::deepOptimizeChoice(Ref<Node> node, Ref<Node> fin, int numChar
 		int i = numChars - 1;
 		while (i >= 0) {
 			Ref<Node> charNode = (fin) ? fin->previousSibling() : ignoreDebug(node)->lastChild();
-			s.set(i, Ref<CharNode>(ignoreDebug(charNode))->ch());
+			s.set(i, Ref<syntax::CharNode>(ignoreDebug(charNode))->ch());
 			charNode->unlink();
 			--i;
 		}

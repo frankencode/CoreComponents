@@ -13,11 +13,11 @@
 
 #include "atoms"
 #include "Array.hpp"
+#include "ByteArray.hpp"
 
 namespace ftl
 {
 
-template<class Char>
 class SyntaxState: public Instance
 {
 public:
@@ -41,8 +41,8 @@ public:
 	inline int definitionId() const { return definitionId_; }
 
 	inline bool* flag(int id) { return flags_.pointerAt(id); }
-	inline Char* character(int id) { return chars_.pointerAt(id); }
-	inline Array<Char>* string(int id) { return strings_.pointerAt(id); }
+	inline char* character(int id) { return chars_.pointerAt(id); }
+	inline ByteArray* string(int id) { return strings_.pointerAt(id); }
 
 	inline Ref<SyntaxState> child() const { return child_; }
 	inline void setChild(Ref<SyntaxState> state) { child_ = state; }
@@ -56,8 +56,8 @@ public:
 private:
 	int definitionId_;
 	Array<bool> flags_;
-	Array<Char> chars_;
-	Array< Array<Char> > strings_;
+	ByteArray chars_;
+	Array<ByteArray> strings_;
 	Ref<SyntaxState, Owner> child_;
 	const char* hint_;
 	int hintOffset_;

@@ -13,6 +13,7 @@
 #ifndef NDEBUG
 #include "SyntaxDebugger.hpp"
 #endif
+#include "syntax.hpp"
 #include "Format.hpp"
 #include "Pattern.hpp"
 
@@ -34,7 +35,7 @@ const char* PatternException::what() const throw()
 	return message_;
 }
 
-class PatternCompiler: public Syntax<ByteArray>::Definition, public Singleton<PatternCompiler>
+class PatternCompiler: public SyntaxDefinition, public Singleton<PatternCompiler>
 {
 private:
 	friend class Singleton<PatternCompiler>;
@@ -242,7 +243,7 @@ PatternCompiler::PatternCompiler()
 
 void PatternCompiler::compile(Ref<ByteArray> text, Ref<Pattern> pattern)
 {
-	Ref<State, Owner> state = newState();
+	Ref<SyntaxState, Owner> state = newState();
 	int i0 = 0, i1 = 0;
 	Ref<Token, Owner> token = match(text, i0, &i1, state);
 	if ((!token) || (i1 < text->length())) {
@@ -264,7 +265,7 @@ PatternCompiler::NODE PatternCompiler::compileChoice(Ref<ByteArray> text, Ref<To
 {
 	if (token->countChildren() == 1)
 		return compileSequence(text, token->firstChild(), pattern);
-	NODE node = new ChoiceNode;
+	NODE node = new syntax::ChoiceNode;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling())
 		node->appendChild(compileSequence(text, child, pattern));
 	return pattern->debug(node, "Choice");
@@ -272,7 +273,7 @@ PatternCompiler::NODE PatternCompiler::compileChoice(Ref<ByteArray> text, Ref<To
 
 PatternCompiler::NODE PatternCompiler::compileSequence(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
 {
-	NODE node = new GlueNode;
+	NODE node = new syntax::GlueNode;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
 		if (child->rule() == char_) node->appendChild(pattern->CHAR(readChar(text, child, pattern)));
 		else if (child->rule() == any_) node->appendChild(pattern->ANY());
@@ -372,7 +373,7 @@ PatternCompiler::NODE PatternCompiler::compileRepeat(Ref<ByteArray> text, Ref<To
 
 Pattern::Pattern(const char* text)
 #ifndef NDEBUG
-	: Syntax<ByteArray>::Definition(new Debugger)
+	: SyntaxDefinition(new SyntaxDebugger)
 #endif
 {
 	PatternCompiler::instance()->compile(String(text), this);
@@ -380,7 +381,7 @@ Pattern::Pattern(const char* text)
 
 Pattern::Pattern(const String& text)
 #ifndef NDEBUG
-	: Syntax<ByteArray>::Definition(new Debugger)
+	: SyntaxDefinition(new SyntaxDebugger)
 #endif
 {
 	PatternCompiler::instance()->compile(text, this);

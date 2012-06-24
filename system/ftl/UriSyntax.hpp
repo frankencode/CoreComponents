@@ -23,19 +23,19 @@ public:
 	inline int userInfo() const { return userInfo_; }
 	inline int host() const { return host_; }
 	inline int port() const { return port_; }
-	
+
 	inline int scheme() const { return scheme_; }
 	inline int authority() const { return authority_; }
 	inline int path() const { return path_; }
 	inline int query() const { return query_; }
 	inline int fragment() const { return fragment_; }
-	
+
 	inline int uri() const { return uri_; }
-	
+
 private:
-	UriSyntax(Ref<DebugFactory> debugFactory = 0);
+	UriSyntax(Ref<SyntaxDebugFactory> debugFactory = 0);
 	friend class Singleton<UriSyntax>;
-	
+
 	int userInfo_;
 	int host_;
 	int port_;

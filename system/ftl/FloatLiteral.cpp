@@ -66,7 +66,7 @@ FloatLiteral::FloatLiteral()
 
 bool FloatLiteral::match(Ref<ByteArray> text, int i0, int* i1, float64_t* value)
 {
-	Ref<Token, Owner> rootToken = Syntax<ByteArray>::Definition::match(text, i0, i1);
+	Ref<Token, Owner> rootToken = SyntaxDefinition::match(text, i0, i1);
 	if (rootToken) *value = read(text, rootToken);
 	return rootToken;
 }

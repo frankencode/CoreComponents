@@ -12,23 +12,23 @@
 #define FTL_INETADDRESSSYNTAX_HPP
 
 #include "Singleton.hpp"
-#include "Syntax.hpp"
+#include "SyntaxDefinition.hpp"
 
 namespace ftl
 {
 
-class InetAddressSyntax: public Syntax<ByteArray>::Definition, public Singleton<InetAddressSyntax>
+class InetAddressSyntax: public SyntaxDefinition, public Singleton<InetAddressSyntax>
 {
 public:
 	inline int inet4Address() const { return inet4Address_; }
 	inline int inet6Address() const { return inet6Address_; }
 	inline int inetAddress() const { return inetAddress_; }
-	
+
 private:
-	InetAddressSyntax(Ref<DebugFactory> debugFactory = 0);
-	
+	InetAddressSyntax(Ref<SyntaxDebugFactory> debugFactory = 0);
+
 	friend class Singleton<InetAddressSyntax>;
-	
+
 	int inet4Address_;
 	int inet6Address_;
 	int inetAddress_;
