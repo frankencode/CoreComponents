@@ -11,7 +11,7 @@
 #ifndef FTL_PATTERN_HPP
 #define FTL_PATTERN_HPP
 
-#include "Syntax.hpp"
+#include "SyntaxDefinition.hpp"
 #ifndef NDEBUG
 #include "SyntaxDebugger.hpp"
 #endif
@@ -32,13 +32,13 @@ private:
 	int pos_;
 };
 
-class Pattern: public Syntax<ByteArray>::Definition
+class Pattern: public SyntaxDefinition
 {
 public:
 	Pattern(const char* text);
 	Pattern(const String& text);
 #ifndef NDEBUG
-	Ref<Debugger> debugger() const { return debugFactory(); }
+	Ref<SyntaxDebugger> debugger() const { return debugFactory(); }
 #endif
 };
 

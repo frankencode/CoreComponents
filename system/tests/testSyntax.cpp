@@ -6,10 +6,10 @@
 namespace ftl
 {
 
-class Expression: public Syntax<ByteArray>::Definition
+class Expression: public SyntaxDefinition
 {
 public:
-	Expression(Ref<Debugger> debugger = 0)
+	Expression(Ref<SyntaxDebugger> debugger = 0)
 		: Definition(debugger)
 	{
 		number_ =
@@ -19,7 +19,7 @@ public:
 					REPEAT(1, 20, RANGE('0', '9'))
 				)
 			);
-		
+
 		factor_ =
 			DEFINE("factor",
 				CHOICE(
@@ -31,11 +31,11 @@ public:
 					)
 				)
 			);
-		
+
 		mulOp_ = DEFINE("mulOp", RANGE("*/"));
-		
+
 		addOp_ = DEFINE("addOp", RANGE("+-"));
-		
+
 		product_ =
 			DEFINE("product",
 				GLUE(
@@ -48,7 +48,7 @@ public:
 					)
 				)
 			);
-		
+
 		sum_ =
 			DEFINE("sum",
 				GLUE(
@@ -61,36 +61,36 @@ public:
 					)
 				)
 			);
-		
+
 		ENTRY("sum");
 		LINK();
 	}
-	
+
 	double eval(String text)
 	{
 		Ref<Token, Owner> rootToken = match(text);
 		double value = nan;
-		
+
 		if (rootToken) {
 			text_ = text;
 			value = eval(rootToken);
 		}
-		
+
 		return value;
 	}
-	
+
 private:
 	double eval(Ref<Token> token)
 	{
 		double value = nan;
-		
+
 		if (token->rule() == sum_)
 		{
 			value = 0.;
 			char op = '+';
 			int i = 0;
 			token = token->firstChild();
-			
+
 			while (token)
 			{
 				if (i % 2 == 0)
@@ -102,7 +102,7 @@ private:
 				}
 				else
 					op = text_->get(token->index());
-				
+
 				token = token->nextSibling();
 				++i;
 			}
@@ -113,7 +113,7 @@ private:
 			char op = '*';
 			int i = 0;
 			token = token->firstChild();
-			
+
 			while (token)
 			{
 				if (i % 2 == 0)
@@ -125,7 +125,7 @@ private:
 				}
 				else
 					op = text_->get(token->index());
-				
+
 				token = token->nextSibling();
 				++i;
 			}
@@ -144,41 +144,41 @@ private:
 			}
 			value *= sign;
 		}
-		
+
 		return value;
 	}
-	
+
 	int number_;
 	int factor_;
 	int mulOp_;
 	int addOp_;
 	int product_;
 	int sum_;
-	
+
 	String text_;
 };
 
 int main()
 {
-	Ref<Expression::Debugger, Owner> debugger =
+	Ref<SyntaxDebugger, Owner> debugger =
 	#ifdef NDEBUG
 		0;
 	#else
-		new Expression::Debugger;
+		new SyntaxDebugger;
 	#endif
 	Ref<Expression, Owner> expression = new Expression(debugger);
-	
+
 	Time dt = Time::now();
-	
+
 	double result = expression->eval("(-12+34)*(56-78)");
-	
+
 	dt = Time::now() - dt;
 	print("took %% us\n", dt.us());
 	print("evaluates to %%\n", result);
-	
+
 	if (debugger)
 		debugger->printDefinition();
-	
+
 	return 0;
 }
 

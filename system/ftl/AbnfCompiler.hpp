@@ -20,16 +20,16 @@ namespace ftl
 class AbnfCompiler: public AbnfSyntax
 {
 public:
-	typedef Syntax<ByteArray>::Definition Definition;
-	
-	Ref<Definition, Owner> compile(Ref<ByteArray> text, Ref<Debugger> debugger = 0);
-	
+	typedef SyntaxDefinition Definition;
+
+	Ref<Definition, Owner> compile(Ref<ByteArray> text, Ref<SyntaxDebugger> debugger = 0);
+
 private:
 	inline const char* str(Ref<ByteArray> text, Ref<Token> token) { return trap_.capture(text, token->i0(), token->i1()); }
 	StringTrap trap_;
-	
+
 	Ref<Node> ignoreDebug(Ref<Node> node);
-	
+
 	void compileRuleList(Ref<ByteArray> text, Ref<Token> ruleList, Ref<Definition> definition);
 	void compileEntry(Ref<ByteArray> text, Ref<Token> ruleList, Ref<Definition> definition);
 	NODE compileAlternation(Ref<ByteArray> text, Ref<Token> alternation, Ref<Definition> definition);
@@ -40,7 +40,7 @@ private:
 	NODE compileNumVal(Ref<ByteArray> text, Ref<Token> numVal, Ref<Definition> definition);
 	NODE compileCharVal(Ref<ByteArray> text, Ref<Token> charVal, Ref<Definition> definition);
 	NODE compileProseVal(Ref<ByteArray> text, Ref<Token> proseVal, Ref<Definition> definition);
-	
+
 	NODE optimizeChoice(Ref<Node> choice, Ref<Definition> definition);
 	void deepOptimizeChoice(Ref<Node> node, Ref<Definition> definition);
 	void deepOptimizeChoice(Ref<Node> node, Ref<Node> fin, int numChars, Ref<Definition> definition);

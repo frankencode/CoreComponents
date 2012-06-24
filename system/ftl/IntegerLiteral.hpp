@@ -11,13 +11,13 @@
 #ifndef FTL_INTEGERLITERAL_HPP
 #define FTL_INTEGERLITERAL_HPP
 
-#include "Syntax.hpp"
+#include "SyntaxDefinition.hpp"
 #include "Singleton.hpp"
 
 namespace ftl
 {
 
-class IntegerLiteral: public Syntax<ByteArray>::Definition, public Singleton<IntegerLiteral>
+class IntegerLiteral: public SyntaxDefinition, public Singleton<IntegerLiteral>
 {
 public:
 	bool match(Ref<ByteArray> text, int i0, int* i1, uint64_t* value, int* sign);

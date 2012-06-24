@@ -11,16 +11,16 @@
 #ifndef FTL_ABNFCORESYNTAX_HPP
 #define FTL_ABNFCORESYNTAX_HPP
 
-#include "Syntax.hpp"
+#include "SyntaxDefinition.hpp"
 #include "Array.hpp"
 
 namespace ftl
 {
 
-class AbnfCoreSyntax: public Syntax<ByteArray>::Definition
+class AbnfCoreSyntax: public SyntaxDefinition
 {
 public:
-	AbnfCoreSyntax(Ref<DebugFactory> debugFactory = 0);
+	AbnfCoreSyntax(Ref<SyntaxDebugFactory> debugFactory = 0);
 };
 
 } // namespace ftl

@@ -287,7 +287,7 @@ Wire::Wire()
 
 Ref<WireObject, Owner> Wire::parse(Ref<ByteArray> text)
 {
-	Ref<State, Owner> state = newState();
+	Ref<SyntaxState, Owner> state = newState();
 	int i0 = 0, i1 = 0;
 	Ref<Token, Owner> token = match(text, i0, &i1, state);
 	if (!token) {

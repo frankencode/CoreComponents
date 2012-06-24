@@ -24,9 +24,6 @@ class Character;
 class String;
 typedef List<String> StringList;
 
-template<class Media>
-class Syntax;
-
 class ByteArray: public Sequence<char, int>
 {
 public:
@@ -37,6 +34,7 @@ public:
 	ByteArray(int size, char zero);
 	ByteArray(const char* data, int size = -1);
 	ByteArray(const ByteArray& b);
+	ByteArray(ByteArray* b, int size); // FIXME, should be protected
 	~ByteArray();
 
 	inline static Ref<ByteArray> empty() { return Default<ByteArray>::instance(); }
@@ -196,9 +194,6 @@ public:
 	Ref<ByteArray, Owner> base64() const;
 
 protected:
-	friend class Syntax<ByteArray>;
-	ByteArray(ByteArray* b, int size);
-
 	int size_;
 	char* data_;
 	bool range_;

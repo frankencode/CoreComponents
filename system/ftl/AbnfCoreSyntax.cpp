@@ -14,8 +14,8 @@
 namespace ftl
 {
 
-AbnfCoreSyntax::AbnfCoreSyntax(Ref<DebugFactory> debugFactory)
-	: Syntax<ByteArray>::Definition(debugFactory)
+AbnfCoreSyntax::AbnfCoreSyntax(Ref<SyntaxDebugFactory> debugFactory)
+	: SyntaxDefinition(debugFactory)
 {
 	SYNTAX("abnf-core");
 

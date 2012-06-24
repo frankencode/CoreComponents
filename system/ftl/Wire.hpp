@@ -13,7 +13,7 @@
 
 #include "Singleton.hpp"
 #include "Variant.hpp"
-#include "Syntax.hpp"
+#include "SyntaxDefinition.hpp"
 #include "Array.hpp"
 #include "WireObject.hpp"
 
@@ -37,7 +37,7 @@ typedef Array<Variant> WireArray;
 
 class Wire;
 
-class Wire: public Syntax<ByteArray>::Definition, public Singleton<Wire>
+class Wire: public SyntaxDefinition, public Singleton<Wire>
 {
 public:
 	Ref<WireObject, Owner> parse(Ref<ByteArray> text);

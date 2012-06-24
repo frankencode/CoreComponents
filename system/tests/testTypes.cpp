@@ -18,24 +18,24 @@ void testFloat754()
 		1e-16,
 		1e-308
 	};
-	
+
 	for (unsigned i = 0; i < sizeof(values)/sizeof(double); ++i)
 		print("%%|\n", values[i]);
-	
+
 	double one, zero;
 	one = 1.;
 	zero = 0.;
-	
+
 	print("%%|\n", one/zero);
 	print("%%|\n", -one/zero);
 	print("%%|\n", zero/zero);
 	print("%%|\n", 0.);
-	
+
 	print("bin(zero/zero) = %hex%\n", union_cast<uint64_t>(zero/zero));
 	print("bin(one/zero) = %hex%\n", union_cast<uint64_t>(one/zero));
 	print("bin(nan) = %hex%\n", union_cast<uint64_t>(zero/zero));
 	print("unsignedMax, intMax = %%, %%\n", unsignedMax, intMax);
-	
+
 	print("sizeof(Instance) = %%\n", int(sizeof(Instance)));
 	print("sizeof(SpinLock) = %%\n", int(sizeof(SpinLock)));
 	print("sizeof(Mutex) = %%\n", int(sizeof(Mutex)));
@@ -47,9 +47,8 @@ void testFloat754()
 	print("sizeof(String) = %%\n", int(sizeof(String)));
 	print("sizeof(Format) = %%\n", int(sizeof(Format)));
 	print("sizeof(Variant) = %%\n", int(sizeof(Variant)));
-	print("sizeof(Syntax<ByteArray>) = %%\n", sizeof(Syntax<ByteArray>));
 	print("sizeof(Token) = %%\n", sizeof(Token));
-	
+
 	print("sizeof(time_t) = %%\n", sizeof(time_t));
 	timeval tv;
 	timespec ts;
