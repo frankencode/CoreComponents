@@ -12,7 +12,6 @@
 #define FTL_SYNTAXDEBUGGER_HPP
 
 #include "syntax.hpp"
-#include "SyntaxDefinition.hpp"
 #include "String.hpp"
 #include "Map.hpp"
 #include "PrintDebug.hpp"
@@ -24,7 +23,7 @@ class SyntaxDebugger: public SyntaxDebugFactory
 {
 public:
 	typedef SyntaxDebugFactory DebugFactory;
-	typedef SyntaxDefinition Definition;
+	typedef SyntaxDefinitionNode DefinitionNode;
 	typedef SyntaxNode Node;
 
 	SyntaxDebugger(String indent = "\t")
@@ -89,9 +88,9 @@ public:
 			determineRulesInUse(DebugFactory::definition()->rule());
 
 		if (DebugFactory::definition()->stateful()) {
-			typedef Definition::StateFlag StateFlag;
-			typedef Definition::StateChar StateChar;
-			typedef Definition::StateString StateString;
+			typedef DefinitionNode::StateFlag StateFlag;
+			typedef DefinitionNode::StateChar StateChar;
+			typedef DefinitionNode::StateString StateString;
 
 			Ref<StateFlag> stateFlag = DebugFactory::definition()->stateFlagHead_;
 			for (int id = DebugFactory::definition()->numStateFlags_ - 1; id >= 0; --id) {
@@ -118,7 +117,7 @@ public:
 			print("\n");
 		}
 
-		typedef Definition::RuleByName RuleByName;
+		typedef DefinitionNode::RuleByName RuleByName;
 		typedef syntax::RuleNode RuleNode;
 		Ref<RuleByName> ruleByName = DebugFactory::definition()->ruleByName_;
 
@@ -872,7 +871,7 @@ private:
 		virtual void printAttributes(String indent) {
 			Ref<SetStringNode> node = setStringNode();
 			print("\"%%\", ", DebugNode::debugger_->stringNameById()->value(node->stringId()));
-			printString(node->value());
+			printString(*node->value());
 		}
 
 	private:
@@ -922,7 +921,7 @@ private:
 		inline Ref<InvokeNode> invokeNode() const { return DebugNode::entry(); }
 	};
 
-	friend class syntax::Definition;
+	friend class syntax::DefinitionNode;
 	friend class DebugNode;
 
 	typedef PrefixTree< char, Ref<NodeFactory, Owner> > FactoryByNodeType;
@@ -930,7 +929,7 @@ private:
 
 	String indent_;
 
-	typedef SyntaxDefinition::StateIdByName StateIdByName;
+	typedef syntax::DefinitionNode::StateIdByName StateIdByName;
 	typedef Map<int, String> StateNameById;
 
 	Ref<StateNameById, Owner> flagNameById_;
