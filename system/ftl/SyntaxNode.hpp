@@ -41,6 +41,14 @@ public:
 	}
 };
 
+namespace syntax
+{
+
+typedef SyntaxNode Node;
+typedef Ref<Node, Owner> NODE;
+
+} // namespace syntax
+
 } // namespace ftl
 
 #endif // FTL_SYNTAXNODE_HPP

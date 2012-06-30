@@ -55,8 +55,9 @@ SET(FTLSYSTEM_HEADER
 	TokenScreen.hpp
 	TokenFactory.hpp
 	syntax.hpp
+	SyntaxNode.hpp
+	SyntaxDebugFactory.hpp
 	SyntaxDefinition.hpp
-	SyntaxSugar.hpp
 	SyntaxDebugger.hpp
 
 	strings
@@ -174,6 +175,7 @@ SET(FTLSYSTEM_SOURCE
 	# syntax
 	Token.cpp
 	syntax.cpp
+	SyntaxDebugFactory.cpp
 	SyntaxDefinition.cpp
 
 	# strings

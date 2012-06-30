@@ -11,11 +11,15 @@
 #ifndef FTL_SYNTAX_HPP
 #define FTL_SYNTAX_HPP
 
+#include "Crc32.hpp"
 #include "PrefixTree.hpp"
 #include "SyntaxNode.hpp"
+#include "SyntaxDebugFactory.hpp"
 
 namespace ftl
 {
+
+class SyntaxDebugger;
 
 namespace syntax
 {
@@ -908,14 +912,9 @@ public:
 		int i0 = i;
 		i = coverage()->matchNext(media, i, 0, parentToken, state);
 
-		if (i != -1)
-		{
+		if (i != -1) {
 			rollBack(parentToken, lastChildSaved);
-
-			ByteArray* string = state->string(stringId_);
-			*string = ByteArray(i - i0);
-			for (int k = i0; k < i; ++k)
-				string->set(k - i0, media->get(k));
+			state->setString(stringId_, media->copy(i0, i));
 		}
 
 		return i;
@@ -933,23 +932,21 @@ class SetStringNode: public Node
 public:
 	SetStringNode(int stringId, const char* s)
 		: stringId_(stringId),
-		  s_(str::len(s))
-	{
-		str::cpy(s_.data(), s, s_.size());
-	}
+		  s_(new ByteArray(s))
+	{}
 
 	virtual int matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, SyntaxState* state) const
 	{
-		*state->string(stringId_) = s_;
+		state->setString(stringId_, s_);
 		return i;
 	}
 
 	inline int stringId() const { return stringId_; }
-	inline const ByteArray& value() const { return s_; }
+	inline const Ref<ByteArray> value() const { return s_; }
 
 private:
 	int stringId_;
-	ByteArray s_;
+	Ref<ByteArray, Owner> s_;
 };
 
 class VarStringNode: public Node
@@ -961,10 +958,10 @@ public:
 
 	virtual int matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, SyntaxState* state) const
 	{
-		ByteArray* string = state->string(stringId_);
-		int k = 0, m = string->length();
+		Ref<ByteArray> s = state->string(stringId_);
+		int k = 0, m = s->length();
 		while (media->has(i) && (k < m)) {
-			if (media->get(i) != string->get(k))
+			if (media->get(i) != s->get(k))
 				break;
 			++i;
 			++k;
@@ -982,7 +979,639 @@ private:
 	int stringId_;
 };
 
+class RefNode;
+class DefinitionNode;
+
+class RuleNode: public Node
+{
+public:
+	RuleNode(int definitionId, const char* name, int ruleId, Ref<Node> entry, bool isVoid = false)
+		: definitionId_(definitionId),
+		  name_(name),
+		  id_(ruleId),
+		  isVoid_(isVoid),
+		  used_(false),
+		  numberOfRefs_(-1)
+	{
+		appendChild(entry);
+	}
+
+	virtual int matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, SyntaxState* state) const
+	{
+		Ref<Token, Owner> token;
+		if (tokenFactory) {
+			token = tokenFactory->produce();
+			token->init(definitionId_, id_);
+			if (parentToken)
+				parentToken->appendChild(token);
+		}
+
+		int i0 = i;
+		i = (entry()) ? entry()->matchNext(media, i, tokenFactory, token, state) : i;
+
+		if (tokenFactory) {
+			if (i != -1) {
+				if ((isVoid_) && (parentToken)) {
+					parentToken->appendAllChildrenOf(token);
+					token->unlink();
+				}
+				else {
+					token->setRange(i0, i);
+				}
+			}
+			else {
+				token->unlink();
+			}
+		}
+
+		return i;
+	}
+
+	int numberOfRefs() {
+		if (numberOfRefs_ == -1) {
+			numberOfRefs_ = 0;
+			Ref<Node> node = Node::first();
+			while (node) {
+				if (Ref<RefNode>(node)) ++numberOfRefs_;
+				node = node->next();
+			}
+		}
+		return numberOfRefs_;
+	}
+
+	inline int id() const { return id_; }
+	inline const char* name() const { return name_; }
+
+	inline Ref<Node> entry() const { return Node::firstChild(); }
+	inline bool isVoid() const { return isVoid_; }
+
+	inline bool used() const { return used_; }
+	inline void markUsed() { used_ = true; }
+
+protected:
+	friend class InlineNode;
+
+	int definitionId_;
+	const char* name_;
+	int id_;
+	bool isVoid_;
+	bool used_;
+	int numberOfRefs_;
+};
+
+class LinkNode: public Node
+{
+public:
+	LinkNode(const char* ruleName)
+		: ruleName_(ruleName)
+	{}
+
+	LinkNode(Ref<RuleNode> rule)
+		: ruleName_(rule->name()),
+		  rule_(rule)
+	{}
+
+	inline const char* ruleName() const { return ruleName_; }
+	inline Ref<RuleNode> rule() const { return rule_; }
+
+protected:
+	friend class ftl::syntax::DefinitionNode;
+	friend class ftl::SyntaxDebugger;
+
+	const char* ruleName_;
+	Ref<RuleNode> rule_;
+	Ref<LinkNode, Owner> unresolvedNext_;
+};
+
+class RefNode: public LinkNode
+{
+public:
+	RefNode(const char* ruleName = 0)
+		: LinkNode(ruleName)
+	{}
+
+	RefNode(Ref<RuleNode> rule)
+		: LinkNode(rule)
+	{}
+
+	virtual int matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, SyntaxState* state) const
+	{
+		Ref<Token> lastChildSaved;
+		if (parentToken) lastChildSaved = parentToken->lastChild();
+
+		i = LinkNode::rule_->matchNext(media, i, tokenFactory, parentToken, state);
+
+		if (i == -1)
+			rollBack(parentToken, lastChildSaved);
+
+		return i;
+	}
+};
+
+class InlineNode: public LinkNode
+{
+public:
+	InlineNode(const char* ruleName)
+		: LinkNode(ruleName)
+	{}
+
+	InlineNode(Ref<RuleNode> rule)
+		: LinkNode(rule)
+	{}
+
+	virtual int matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, SyntaxState* state) const
+	{
+		return LinkNode::rule_->entry()->matchNext(media, i, tokenFactory, parentToken, state);
+	}
+};
+
+class PreviousNode: public LinkNode
+{
+public:
+	PreviousNode(const char* ruleName, const char* keyword = 0)
+		: LinkNode(ruleName),
+		  keywordName_(keyword),
+		  keyword_(-1)
+	{}
+
+	virtual int matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, SyntaxState* state) const
+	{
+		int h = -1;
+		if (parentToken) {
+			Ref<Token> sibling = parentToken->previousSibling();
+			if (sibling)
+				if ( (sibling->rule() == LinkNode::rule_->id()) &&
+					 ((keyword_ == -1) || (sibling->keyword() == keyword_)) )
+					h = i;
+		}
+
+		return h;
+	}
+
+	inline const char* keywordName() const { return keywordName_; }
+
+protected:
+	friend class DefinitionNode;
+	const char* keywordName_;
+	int keyword_;
+	Ref<PreviousNode, Owner> unresolvedKeywordNext_;
+};
+
+class ContextNode: public LinkNode
+{
+public:
+	ContextNode(const char* ruleName, Ref<Node> entry = 0)
+		: LinkNode(ruleName)
+	{
+		if (entry) appendChild(entry);
+	}
+
+	virtual int matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, SyntaxState* state) const
+	{
+		int h = -1;
+
+		if (parentToken) {
+			parentToken = parentToken->parent();
+			if (parentToken) {
+				if (parentToken->rule() == LinkNode::rule_->id()) {
+					h = i;
+					if (Node::firstChild()) {
+						Ref<Token> lastChildSaved;
+						if (parentToken) lastChildSaved = parentToken->lastChild();
+
+						h = Node::firstChild()->matchNext(media, h, tokenFactory, parentToken, state);
+
+						if (h == -1)
+							rollBack(parentToken, lastChildSaved);
+					}
+				}
+			}
+		}
+
+		return h;
+	}
+};
+
+class DefinitionNode;
+class InvokeNode;
+class DebugFactory;
+
+class InvokeNode: public Node
+{
+public:
+	InvokeNode(Ref<DefinitionNode> definition, Ref<Node> coverage)
+		: definition_(definition)
+	{
+		if (coverage) appendChild(coverage);
+	}
+
+	InvokeNode(const char* name, Ref<Node> coverage)
+		: definitionName_(name)
+	{
+		if (coverage) appendChild(coverage);
+	}
+
+	virtual int matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, SyntaxState* state) const;
+
+	inline const char* definitionName() const { return definitionName_; }
+	inline Ref<Node> coverage() const { return Node::firstChild(); }
+
+private:
+	friend class DefinitionNode;
+
+	const char* definitionName_;
+	Ref<DefinitionNode> definition_;
+	Ref<InvokeNode, Owner> unresolvedNext_;
+};
+
+class DefinitionNode: public RefNode
+{
+public:
+	DefinitionNode(Ref<DebugFactory> debugFactory = 0)
+		: debugFactory_(debugFactory),
+		  id_(Crc32().sum()),
+		  name_(0),
+		  caseSensitive_(true),
+		  definitionByName_(new DefinitionByName),
+		  numRules_(0),
+		  numKeywords_(0),
+		  ruleByName_(new RuleByName),
+		  keywordByName_(new KeywordByName),
+		  statefulScope_(false),
+		  hasHints_(false),
+		  numStateFlags_(0),
+		  numStateChars_(0),
+		  numStateStrings_(0),
+		  flagIdByName_(new StateIdByName),
+		  charIdByName_(new StateIdByName),
+		  stringIdByName_(new StateIdByName)
+	{
+		if (debugFactory_)
+			debugFactory_->definition_ = this;
+	}
+
+	inline Ref<DebugFactory> debugFactory() const { return debugFactory_; }
+
+	inline int id() const { return id_; }
+	inline const char* name() const { return name_; }
+
+	//-- stateless definition interface
+
+	inline void SYNTAX(const char* name) {
+		id_ = crc32(name);
+		name_ = name;
+	}
+
+	inline void IMPORT(Ref<DefinitionNode> definition, const char* name = 0) {
+		if (!name) name = definition->name();
+		if (!name)
+			FTL_THROW(DebugException, "Cannot import anonymous syntax definition");
+		definitionByName_->insert(name, definition);
+	}
+
+	typedef Ref<Node, Owner> NODE;
+	typedef Ref<RuleNode, Owner> RULE;
+
+	inline void OPTION(const char* name, bool value) {
+		if (str::casecmp(name, "caseSensitive") == 0)
+			caseSensitive_ = value;
+		else
+			FTL_THROW(DebugException, str::cat("Unknown option '", name, "'"));
+	}
+
+	inline NODE CHAR(char ch) { return debug(new CharNode(ch, 0), "Char"); }
+	inline NODE OTHER(char ch) { return debug(new CharNode(ch, 1), "Char"); }
+	inline NODE GREATER(char ch) { return debug(new GreaterNode(ch, 0), "Greater"); }
+	inline NODE BELOW(char ch) { return debug(new GreaterNode(ch, 1), "Greater"); }
+	inline NODE GREATER_OR_EQUAL(char ch) { return debug(new GreaterOrEqualNode(ch, 0), "GreaterOrEqual"); }
+	inline NODE BELOW_OR_EQUAL(char ch) { return debug(new GreaterOrEqualNode(ch, 1), "GreaterOrEqual"); }
+	inline NODE ANY() { return debug(new AnyNode(), "Any"); }
+
+	inline NODE RANGE(char a, char b) { return debug(new RangeMinMaxNode(a, b, 0), "RangeMinMax"); }
+	inline NODE RANGE(const char* s) { return debug(new RangeExplicitNode(s, 0), "RangeExplicit"); }
+	inline NODE EXCEPT(char a, char b) { return debug(new RangeMinMaxNode(a, b, 1), "RangeMinMax"); }
+	inline NODE EXCEPT(const char* s) { return debug(new RangeExplicitNode(s, 1), "RangeExplicit"); }
+
+	inline NODE STRING(const char* s) { return debug(new StringNode(s, caseSensitive_), "String"); }
+	NODE KEYWORD(const char* keywords);
+
+	inline NODE REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new RepeatNode(minRepeat, maxRepeat, entry), "Repeat"); }
+	inline NODE REPEAT(int minRepeat, NODE entry) { return REPEAT(minRepeat, intMax, entry); }
+	inline NODE REPEAT(NODE entry) { return REPEAT(0, intMax, entry); }
+
+	inline NODE LAZY_REPEAT(int minRepeat, NODE entry) { return debug(new LazyRepeatNode(minRepeat, entry), "LazyRepeat"); }
+	inline NODE LAZY_REPEAT(NODE entry) { return LAZY_REPEAT(0, entry); }
+
+	inline NODE GREEDY_REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new GreedyRepeatNode(minRepeat, maxRepeat, entry), "GreedyRepeat"); }
+	inline NODE GREEDY_REPEAT(int minRepeat, NODE entry) { return GREEDY_REPEAT(minRepeat, intMax, entry); }
+	inline NODE GREEDY_REPEAT(NODE entry) { return GREEDY_REPEAT(0, intMax, entry); }
+
+	inline NODE LENGTH(int minLength, int maxLength, NODE entry) { return debug(new LengthNode(minLength, maxLength, entry), "Length"); }
+	inline NODE LENGTH(int minLength, NODE entry) { return LENGTH(minLength, intMax, entry); }
+	inline NODE BOI() { return debug(new BoiNode(), "Boi"); }
+	inline NODE EOI() { return debug(new EoiNode(), "Eoi"); }
+	inline NODE PASS() { return debug(new PassNode(0), "Pass"); }
+	inline NODE FAIL() { return debug(new PassNode(1), "Pass"); }
+	inline NODE FIND(NODE entry) { return debug(new FindNode(entry), "Find"); }
+	inline NODE AHEAD(NODE entry) { return debug(new AheadNode(entry, 0), "Ahead"); }
+	inline NODE NOT(NODE entry) { return debug(new AheadNode(entry, 1), "Ahead"); }
+	inline NODE BEHIND(NODE entry) { return debug(new BehindNode(entry, 0), "Behind"); }
+	inline NODE NOT_BEHIND(NODE entry) { return debug(new BehindNode(entry, 1), "Behind"); }
+
+	inline NODE CHOICE() { return debug(new ChoiceNode, "Choice"); }
+	inline NODE GLUE() { return debug(new GlueNode, "Glue"); }
+
+	#include "SyntaxSugar.hpp"
+
+	inline NODE HINT(const char* text = "") {
+		hasHints_ = true;
+		return debug(new HintNode(text), "Hint");
+	}
+	inline NODE DONE() { return debug(new HintNode(0), "Hint"); }
+
+	inline int DEFINE(const char* ruleName, NODE entry = 0) {
+		if (!entry) entry = PASS();
+		Ref<RuleNode, Owner> rule = new RuleNode(id_, ruleName, numRules_++, entry);
+		addRule(rule);
+		return rule->id();
+	}
+	inline void DEFINE_VOID(const char* ruleName, NODE entry = 0) {
+		if (!entry) entry = PASS();
+		Ref<RuleNode, Owner> rule = new RuleNode(id_, ruleName, numRules_++, entry, true);
+		addRule(rule);
+	}
+	inline void ENTRY(const char* ruleName) {
+		LinkNode::ruleName_ = ruleName;
+	}
+
+	inline NODE REF(const char* ruleName) {
+		Ref<RefNode, Owner> link = new RefNode(ruleName);
+		link->unresolvedNext_ = unresolvedLinkHead_;
+		unresolvedLinkHead_ = link;
+		return debug(link, "Ref");
+	}
+	inline NODE INLINE(const char* ruleName) {
+		Ref<InlineNode, Owner> link = new InlineNode(ruleName);
+		link->unresolvedNext_ = unresolvedLinkHead_;
+		unresolvedLinkHead_ = link;
+		return debug(link, "Inline");
+	}
+	inline NODE PREVIOUS(const char* ruleName, const char* keyword = 0) {
+		Ref<PreviousNode, Owner> link = new PreviousNode(ruleName, keyword);
+		link->unresolvedNext_ = unresolvedLinkHead_;
+		unresolvedLinkHead_ = link;
+		if (keyword) {
+			link->unresolvedKeywordNext_ = unresolvedKeywordHead_;
+			unresolvedKeywordHead_ = link;
+		}
+		return debug(link, "Previous");
+	}
+	inline NODE CONTEXT(const char* ruleName, NODE entry = 0) {
+		Ref<ContextNode, Owner> link = new ContextNode(ruleName, entry);
+		link->unresolvedNext_ = unresolvedLinkHead_;
+		unresolvedLinkHead_ = link;
+		return debug(link, "Context");
+	}
+
+	typedef int (*CallBack) (Ref<Instance> self, ByteArray* media, int i, SyntaxState* state);
+
+	inline NODE CALL(CallBack callBack, Ref<Instance> self = 0) {
+		if (!self) self = this;
+		return debug(new CallNode(callBack, self), "Call");
+	}
+	inline NODE ERROR() {
+		return debug(new CallNode(errorCallBack, this), "Call");
+	}
+
+	void OPTIMIZE();
+	void LINK(bool optimize = true);
+
+	//-- stateful definition interface
+
+	inline void STATE_FLAG(const char* name, bool defaultValue = false) {
+		stateFlagHead_ = new StateFlag(stateFlagHead_, defaultValue);
+		flagIdByName()->insert(name, numStateFlags_);
+		++numStateFlags_;
+	}
+	inline void STATE_CHAR(const char* name, char defaultValue = 0) {
+		stateCharHead_ = new StateChar(stateCharHead_, defaultValue);
+		charIdByName()->insert(name, numStateChars_);
+		++numStateChars_;
+	}
+	inline void STATE_STRING(const char* name, const char* defaultValue = 0) {
+		stateStringHead_ = new StateString(stateStringHead_, defaultValue);
+		stringIdByName()->insert(name, numStateStrings_);
+		++numStateStrings_;
+	}
+
+	inline NODE SET(const char* name, bool value) {
+		return debug(new SetNode(flagIdByName(name), value), "Set");
+	}
+	inline NODE IF(const char* name, NODE trueBranch, NODE falseBranch = 0) {
+		if (!trueBranch) trueBranch = PASS();
+		if (!falseBranch) falseBranch = PASS();
+		return debug(new IfNode(flagIdByName(name), trueBranch, falseBranch), "If");
+	}
+	inline NODE GETCHAR(const char* name) {
+		return debug(new GetCharNode(charIdByName(name)), "GetChar");
+	}
+	inline NODE SETCHAR(const char* name, char value) {
+		return debug(new SetCharNode(charIdByName(name), value), "SetChar");
+	}
+	inline NODE VARCHAR(const char* name) {
+		return debug(new VarCharNode(charIdByName(name), 0), "VarChar");
+	}
+	inline NODE VAROTHER(const char* name) {
+		return debug(new VarCharNode(charIdByName(name), 1), "VarChar");
+	}
+	inline NODE GETSTRING(const char* name, NODE coverage) {
+		return debug(new GetStringNode(stringIdByName(name), coverage), "GetString");
+	}
+	inline NODE SETSTRING(const char* name, const char* value) {
+		return debug(new SetStringNode(stringIdByName(name), value), "SetString");
+	}
+	inline NODE VARSTRING(const char* name) {
+		return debug(new VarStringNode(stringIdByName(name)), "VarString");
+	}
+
+	inline NODE INVOKE(DefinitionNode* definition, NODE coverage = 0) {
+		return debug(new InvokeNode(definition, coverage), "Invoke");
+	}
+	inline NODE INVOKE(const char* definitionName, NODE coverage = 0) {
+		Ref<InvokeNode, Owner> node = new InvokeNode(definitionName, coverage);
+		node->unresolvedNext_ = unresolvedInvokeHead_;
+		unresolvedInvokeHead_ = node;
+		return debug(node, "Invoke");
+	}
+
+	//-- execution interface
+
+	inline int numRules() const { return numRules_; }
+
+	inline bool stateful() const { return (stateFlagHead_) || (stateCharHead_) || (stateStringHead_) || statefulScope_ || hasHints_; }
+
+	SyntaxState* newState(SyntaxState* parent = 0) const;
+
+	Ref<Token, Owner> find(ByteArray* media, int* i0, int* i1 = 0, Ref<TokenFactory> tokenFactory = 0) const;
+	Ref<Token, Owner> match(ByteArray* media, int i0 = 0, int* i1 = 0, SyntaxState* state = 0, Ref<TokenFactory> tokenFactory = 0) const;
+
+	Ref<DefinitionNode> resolveScope(const char*& name) const;
+
+	inline Ref<DefinitionNode> definitionByName(const char* name) const
+	{
+		Ref<DefinitionNode, Owner> definition;
+		Ref<DefinitionNode> scope = resolveScope(name);
+		if (!scope->definitionByName_->lookup(name, &definition))
+			FTL_THROW(DebugException, str::cat("Undefined definition '", name, "' referenced"));
+		return definition;
+	}
+
+	inline Ref<RuleNode> ruleByName(const char* name) const
+	{
+		Ref<DefinitionNode> scope = resolveScope(name);
+		Ref<RuleNode, Owner> node;
+		FTL_ASSERT(scope);
+		if (!scope->ruleByName_->lookup(name, &node))
+			FTL_THROW(DebugException, str::cat("Undefined rule '", name, "' referenced"));
+		return node;
+	}
+
+	inline int keywordByName(const char* keyword)
+	{
+		int tokenType = -1;
+		if (!keywordByName_->lookup(keyword, &tokenType))
+			FTL_THROW(DebugException, str::cat("Undefined keyword '", keyword, "' referenced"));
+		return tokenType;
+	}
+
+	virtual int syntaxError(ByteArray* media, int index, SyntaxState* state) const;
+
+	inline Node* debug(Node* newNode, const char* nodeType) {
+		return debugFactory_ ? debugFactory_->produce(newNode, nodeType) : newNode;
+	}
+
+private:
+	friend class ftl::SyntaxDebugger;
+	Ref<DebugFactory, Owner> debugFactory_;
+
+	friend class InvokeNode;
+
+	int id_;
+	const char* name_;
+	bool caseSensitive_;
+
+	typedef PrefixTree<char, Ref<DefinitionNode, Owner> > DefinitionByName;
+	Ref<DefinitionByName, Owner> definitionByName_;
+
+	typedef PrefixTree<char, Ref<RuleNode, Owner> > RuleByName;
+	typedef PrefixTree<char, int> KeywordByName;
+
+	int numRules_;
+	int numKeywords_;
+	Ref<RuleByName, Owner> ruleByName_;
+	Ref<KeywordByName, Owner> keywordByName_;
+
+	void addRule(Ref<RuleNode> rule)
+	{
+		if (!ruleByName_->insert(rule->name(), rule))
+			FTL_THROW(DebugException, str::cat("Redefinition of rule '", rule->name(), "'"));
+	}
+
+	Ref<LinkNode, Owner> unresolvedLinkHead_;
+	Ref<PreviousNode, Owner> unresolvedKeywordHead_;
+	Ref<InvokeNode, Owner> unresolvedInvokeHead_;
+	Ref<DefinitionNode, Owner> unresolvedNext_;
+	bool statefulScope_;
+	bool hasHints_;
+
+	class StateFlag: public Instance {
+	public:
+		StateFlag(Ref<StateFlag> head, bool defaultValue)
+			: next_(head),
+			  defaultValue_(defaultValue)
+		{}
+		Ref<StateFlag, Owner> next_;
+		bool defaultValue_;
+	};
+
+	class StateChar: public Instance {
+	public:
+		StateChar(Ref<StateChar> head, char defaultValue)
+			: next_(head),
+			  defaultValue_(defaultValue)
+		{}
+		Ref<StateChar, Owner> next_;
+		char defaultValue_;
+	};
+
+	class StateString: public Instance {
+	public:
+		StateString(Ref<StateString> head, const char* defaultValue)
+			: next_(head),
+			  defaultValue_(str::len(defaultValue))
+		{
+			str::cpy(defaultValue_.data(), defaultValue, defaultValue_.size());
+		}
+		Ref<StateString, Owner> next_;
+		ByteArray defaultValue_;
+	};
+
+	int numStateFlags_;
+	int numStateChars_;
+	int numStateStrings_;
+	Ref<StateFlag, Owner> stateFlagHead_;
+	Ref<StateChar, Owner> stateCharHead_;
+	Ref<StateString, Owner> stateStringHead_;
+
+	typedef PrefixTree<char, int> StateIdByName;
+
+	Ref<StateIdByName, Owner> flagIdByName_;
+	Ref<StateIdByName, Owner> charIdByName_;
+	Ref<StateIdByName, Owner> stringIdByName_;
+
+	inline int flagIdByName(const char* name)
+	{
+		int flagId = -1;
+		if (!flagIdByName()->lookup(name, &flagId))
+			FTL_THROW(DebugException, str::cat("Undefined state flag '", name, "' referenced"));
+		return flagId;
+	}
+
+	inline int charIdByName(const char* name)
+	{
+		int charId = -1;
+		if (!charIdByName()->lookup(name, &charId))
+			FTL_THROW(DebugException, str::cat("Undefined state char '", name, "' referenced"));
+		return charId;
+	}
+
+	inline int stringIdByName(const char* name)
+	{
+		int stringId = -1;
+		if (!stringIdByName()->lookup(name, &stringId))
+			FTL_THROW(DebugException, str::cat("Undefined state string '", name, "' referenced"));
+		return stringId;
+	}
+
+	inline Ref<StateIdByName> flagIdByName() {
+		if (!flagIdByName_) flagIdByName_ = new StateIdByName;
+		return flagIdByName_;
+	}
+	inline Ref<StateIdByName> charIdByName() {
+		if (!charIdByName_) charIdByName_ = new StateIdByName;
+		return charIdByName_;
+	}
+	inline Ref<StateIdByName> stringIdByName() {
+		if (!stringIdByName_) stringIdByName_ = new StateIdByName;
+		return stringIdByName_;
+	}
+
+	static int errorCallBack(Ref<Instance> self, ByteArray* media, int index, SyntaxState* state);
+};
+
 } // namespace syntax
+
+typedef syntax::DefinitionNode SyntaxDefinitionNode;
 
 } // namespace ftl
 

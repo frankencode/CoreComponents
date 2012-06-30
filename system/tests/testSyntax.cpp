@@ -1,6 +1,7 @@
 #include <ftl/stdio>
 #include <ftl/syntax>
 #include <ftl/SyntaxDebugger.hpp>
+#include <ftl/SyntaxDefinition.hpp>
 #include <ftl/utils>
 
 namespace ftl
@@ -10,7 +11,7 @@ class Expression: public SyntaxDefinition
 {
 public:
 	Expression(Ref<SyntaxDebugger> debugger = 0)
-		: Definition(debugger)
+		: SyntaxDefinition(debugger)
 	{
 		number_ =
 			DEFINE("number",

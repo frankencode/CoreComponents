@@ -42,7 +42,9 @@ public:
 
 	inline bool* flag(int id) { return flags_.pointerAt(id); }
 	inline char* character(int id) { return chars_.pointerAt(id); }
-	inline ByteArray* string(int id) { return strings_.pointerAt(id); }
+
+	inline Ref<ByteArray> string(int id) { return strings_.at(id); }
+	inline void setString(int id, Ref<ByteArray> s) { strings_.set(id, s); }
 
 	inline Ref<SyntaxState> child() const { return child_; }
 	inline void setChild(Ref<SyntaxState> state) { child_ = state; }
@@ -57,7 +59,7 @@ private:
 	int definitionId_;
 	Array<bool> flags_;
 	ByteArray chars_;
-	Array<ByteArray> strings_;
+	Array< Ref<ByteArray, Owner> > strings_;
 	Ref<SyntaxState, Owner> child_;
 	const char* hint_;
 	int hintOffset_;

@@ -29,28 +29,28 @@ public:
 		  , creator_(pthread_self())
 	#endif
 	{}
-	
+
 	inline void set(T* b)
 	{
 		#ifdef FTL_REF_POLICY_RACE_DETECTION
 		if (creator_ != pthread_self())
 			FTL_THROW(RefException, "Illegal concurrent assignment");
 		#endif
-		
+
 		if (instance_ != b)
 		{
 			if (b)
 				b->incRefCount();
-			
+
 			if (instance_)
 				instance_->decRefCount();
-			
+
 			instance_ = b;
 		}
 	}
-	
+
 	inline T* get() const { return instance_; }
-	
+
 private:
 	T* instance_;
 	#ifdef FTL_REF_POLICY_RACE_DETECTION

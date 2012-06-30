@@ -1,749 +1,158 @@
-#include <stdarg.h>
+/*
+ * SyntaxDefinition.cpp -- syntax description and production formalism
+ *
+ * Copyright (c) 2007-2012, Frank Mertens
+ *
+ * This file is part of the a free software library. You can redistribute
+ * it and/or modify it under the terms of FTL's 2-clause BSD license.
+ *
+ * See the LICENSE.txt file for details at the top-level of FTL's sources.
+ */
+
 #include "syntax.hpp"
 #include "SyntaxDefinition.hpp"
 
 namespace ftl
 {
 
-using namespace syntax;
+namespace syntax
+{
 
 Definition::Definition(Ref<DebugFactory> debugFactory)
-	: debugFactory_(debugFactory),
-	  id_(Crc32().sum()),
-	  name_(0),
-	  caseSensitive_(true),
-	  definitionByName_(new DefinitionByName),
-	  numRules_(0),
-	  numKeywords_(0),
-	  ruleByName_(new RuleByName),
-	  keywordByName_(new KeywordByName),
-	  statefulScope_(false),
-	  hasHints_(false),
-	  numStateFlags_(0),
-	  numStateChars_(0),
-	  numStateStrings_(0),
-	  flagIdByName_(new StateIdByName),
-	  charIdByName_(new StateIdByName),
-	  stringIdByName_(new StateIdByName)
+	: def_(new DefinitionNode(debugFactory))
 {
-	if (debugFactory_)
-		debugFactory_->definition_ = this;
+	def_->incRefCount();
 }
 
-typedef SyntaxDefinition::NODE NODE;
-
-NODE SyntaxDefinition::CHAR(char ch) { return debug(new CharNode(ch, 0), "Char"); }
-NODE SyntaxDefinition::OTHER(char ch) { return debug(new CharNode(ch, 1), "Char"); }
-NODE SyntaxDefinition::GREATER(char ch) { return debug(new GreaterNode(ch, 0), "Greater"); }
-NODE SyntaxDefinition::BELOW(char ch) { return debug(new GreaterNode(ch, 1), "Greater"); }
-NODE SyntaxDefinition::GREATER_OR_EQUAL(char ch) { return debug(new GreaterOrEqualNode(ch, 0), "GreaterOrEqual"); }
-NODE SyntaxDefinition::BELOW_OR_EQUAL(char ch) { return debug(new GreaterOrEqualNode(ch, 1), "GreaterOrEqual"); }
-NODE SyntaxDefinition::ANY() { return debug(new AnyNode(), "Any"); }
-
-NODE SyntaxDefinition::RANGE(char a, char b) { return debug(new RangeMinMaxNode(a, b, 0), "RangeMinMax"); }
-NODE SyntaxDefinition::RANGE(const char* s) { return debug(new RangeExplicitNode(s, 0), "RangeExplicit"); }
-NODE SyntaxDefinition::EXCEPT(char a, char b) { return debug(new RangeMinMaxNode(a, b, 1), "RangeMinMax"); }
-NODE SyntaxDefinition::EXCEPT(const char* s) { return debug(new RangeExplicitNode(s, 1), "RangeExplicit"); }
-
-NODE SyntaxDefinition::STRING(const char* s) { return debug(new StringNode(s, caseSensitive_), "String"); }
-
-NODE SyntaxDefinition::KEYWORD(const char* keywords)
+Definition::~Definition()
 {
-	Ref<KeywordMap, Owner> map = new KeywordMap;
-	const char* pos = keywords;
-	while (*pos) {
-		if ((*pos == ' ') || (*pos == '\t')) {
-			++pos;
-			continue;
-		}
-		int len = 0;
-		while (true) {
-			char ch = *(pos + len);
-			if ((ch == ' ') || (ch == '\t') || (ch == '\0')) break;
-			++len;
-		}
-		int keyword = numKeywords_;
-		numKeywords_ += keywordByName_->insert(pos, len, keyword, &keyword);
-		map->insert(pos, len, keyword);
-		pos += len;
-	}
-	return debug(new KeywordNode(map, caseSensitive_), "Keyword");
+	def_->decRefCount();
 }
 
-NODE SyntaxDefinition::REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new RepeatNode(minRepeat, maxRepeat, entry), "Repeat"); }
-NODE SyntaxDefinition::REPEAT(int minRepeat, NODE entry) { return REPEAT(minRepeat, intMax, entry); }
-NODE SyntaxDefinition::REPEAT(NODE entry) { return REPEAT(0, intMax, entry); }
+int Definition::id() const { return def_->id(); }
+const char* Definition::name() const { return def_->name(); }
 
-NODE SyntaxDefinition::LAZY_REPEAT(int minRepeat, NODE entry) { return debug(new LazyRepeatNode(minRepeat, entry), "LazyRepeat"); }
-NODE SyntaxDefinition::LAZY_REPEAT(NODE entry) { return LAZY_REPEAT(0, entry); }
+Ref<DebugFactory> Definition::debugFactory() const { return def_->debugFactory(); }
+Node* Definition::debug(Node* newNode, const char* nodeType) { return def_->debug(newNode, nodeType); }
 
-NODE SyntaxDefinition::GREEDY_REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new GreedyRepeatNode(minRepeat, maxRepeat, entry), "GreedyRepeat"); }
-NODE SyntaxDefinition::GREEDY_REPEAT(int minRepeat, NODE entry) { return GREEDY_REPEAT(minRepeat, intMax, entry); }
-NODE SyntaxDefinition::GREEDY_REPEAT(NODE entry) { return GREEDY_REPEAT(0, intMax, entry); }
+int Definition::keywordByName(const char* keyword) { return def_->keywordByName(keyword); }
+SyntaxState* Definition::newState(SyntaxState* parent) const { return def_->newState(parent); }
 
-NODE SyntaxDefinition::LENGTH(int minLength, int maxLength, NODE entry) { return debug(new LengthNode(minLength, maxLength, entry), "Length"); }
-NODE SyntaxDefinition::LENGTH(int minLength, NODE entry) { return LENGTH(minLength, intMax, entry); }
-NODE SyntaxDefinition::BOI() { return debug(new BoiNode(), "Boi"); }
-NODE SyntaxDefinition::EOI() { return debug(new EoiNode(), "Eoi"); }
-NODE SyntaxDefinition::PASS() { return debug(new PassNode(0), "Pass"); }
-NODE SyntaxDefinition::FAIL() { return debug(new PassNode(1), "Pass"); }
-NODE SyntaxDefinition::FIND(NODE entry) { return debug(new FindNode(entry), "Find"); }
-NODE SyntaxDefinition::AHEAD(NODE entry) { return debug(new AheadNode(entry, 0), "Ahead"); }
-NODE SyntaxDefinition::NOT(NODE entry) { return debug(new AheadNode(entry, 1), "Ahead"); }
-NODE SyntaxDefinition::BEHIND(NODE entry) { return debug(new BehindNode(entry, 0), "Behind"); }
-NODE SyntaxDefinition::NOT_BEHIND(NODE entry) { return debug(new BehindNode(entry, 1), "Behind"); }
+Ref<Token, Owner> Definition::find(ByteArray* media, int* i0, int* i1, Ref<TokenFactory> tokenFactory) const { return def_->find(media, i0, i1, tokenFactory); }
+Ref<Token, Owner> Definition::match(ByteArray* media, int i0, int* i1, SyntaxState* state, Ref<TokenFactory> tokenFactory) const { return def_->match(media, i0, i1, state, tokenFactory); }
 
-NODE SyntaxDefinition::CHOICE() { return debug(new ChoiceNode, "Choice"); }
-NODE SyntaxDefinition::GLUE() { return debug(new GlueNode, "Glue"); }
+void Definition::SYNTAX(const char* name) { def_->SYNTAX(name); }
+void Definition::IMPORT(Ref<Definition> definition, const char* name) { def_->IMPORT(definition->def_, name); }
+void Definition::OPTION(const char* name, bool value) { def_->OPTION(name, value); }
 
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	node->appendChild(choice3);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	node->appendChild(choice3);
-	node->appendChild(choice4);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	node->appendChild(choice3);
-	node->appendChild(choice4);
-	node->appendChild(choice5);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	node->appendChild(choice3);
-	node->appendChild(choice4);
-	node->appendChild(choice5);
-	node->appendChild(choice6);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	node->appendChild(choice3);
-	node->appendChild(choice4);
-	node->appendChild(choice5);
-	node->appendChild(choice6);
-	node->appendChild(choice7);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	node->appendChild(choice3);
-	node->appendChild(choice4);
-	node->appendChild(choice5);
-	node->appendChild(choice6);
-	node->appendChild(choice7);
-	node->appendChild(choice8);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	node->appendChild(choice3);
-	node->appendChild(choice4);
-	node->appendChild(choice5);
-	node->appendChild(choice6);
-	node->appendChild(choice7);
-	node->appendChild(choice8);
-	node->appendChild(choice9);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	node->appendChild(choice3);
-	node->appendChild(choice4);
-	node->appendChild(choice5);
-	node->appendChild(choice6);
-	node->appendChild(choice7);
-	node->appendChild(choice8);
-	node->appendChild(choice9);
-	node->appendChild(choice10);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	node->appendChild(choice3);
-	node->appendChild(choice4);
-	node->appendChild(choice5);
-	node->appendChild(choice6);
-	node->appendChild(choice7);
-	node->appendChild(choice8);
-	node->appendChild(choice9);
-	node->appendChild(choice10);
-	node->appendChild(choice11);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	node->appendChild(choice3);
-	node->appendChild(choice4);
-	node->appendChild(choice5);
-	node->appendChild(choice6);
-	node->appendChild(choice7);
-	node->appendChild(choice8);
-	node->appendChild(choice9);
-	node->appendChild(choice10);
-	node->appendChild(choice11);
-	node->appendChild(choice12);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12, NODE choice13) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	node->appendChild(choice3);
-	node->appendChild(choice4);
-	node->appendChild(choice5);
-	node->appendChild(choice6);
-	node->appendChild(choice7);
-	node->appendChild(choice8);
-	node->appendChild(choice9);
-	node->appendChild(choice10);
-	node->appendChild(choice11);
-	node->appendChild(choice12);
-	node->appendChild(choice13);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12, NODE choice13, NODE choice14) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	node->appendChild(choice3);
-	node->appendChild(choice4);
-	node->appendChild(choice5);
-	node->appendChild(choice6);
-	node->appendChild(choice7);
-	node->appendChild(choice8);
-	node->appendChild(choice9);
-	node->appendChild(choice10);
-	node->appendChild(choice11);
-	node->appendChild(choice12);
-	node->appendChild(choice13);
-	node->appendChild(choice14);
-	return debug(node, "Choice");
-}
-NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12, NODE choice13, NODE choice14, NODE choice15) {
-	NODE node = new ChoiceNode;
-	node->appendChild(choice0);
-	node->appendChild(choice1);
-	node->appendChild(choice2);
-	node->appendChild(choice3);
-	node->appendChild(choice4);
-	node->appendChild(choice5);
-	node->appendChild(choice6);
-	node->appendChild(choice7);
-	node->appendChild(choice8);
-	node->appendChild(choice9);
-	node->appendChild(choice10);
-	node->appendChild(choice11);
-	node->appendChild(choice12);
-	node->appendChild(choice13);
-	node->appendChild(choice14);
-	node->appendChild(choice15);
-	return debug(node, "Choice");
-}
+NODE Definition::CHAR(char ch) { return def_->CHAR(ch); }
+NODE Definition::OTHER(char ch) { return def_->OTHER(ch); }
+NODE Definition::GREATER(char ch) { return def_->GREATER(ch); }
+NODE Definition::BELOW(char ch) { return def_->BELOW(ch); }
+NODE Definition::GREATER_OR_EQUAL(char ch) { return def_->GREATER_OR_EQUAL(ch); }
+NODE Definition::BELOW_OR_EQUAL(char ch) { return def_->BELOW_OR_EQUAL(ch); }
+NODE Definition::ANY() { return def_->ANY(); }
 
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	node->appendChild(child3);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	node->appendChild(child3);
-	node->appendChild(child4);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	node->appendChild(child3);
-	node->appendChild(child4);
-	node->appendChild(child5);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	node->appendChild(child3);
-	node->appendChild(child4);
-	node->appendChild(child5);
-	node->appendChild(child6);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	node->appendChild(child3);
-	node->appendChild(child4);
-	node->appendChild(child5);
-	node->appendChild(child6);
-	node->appendChild(child7);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	node->appendChild(child3);
-	node->appendChild(child4);
-	node->appendChild(child5);
-	node->appendChild(child6);
-	node->appendChild(child7);
-	node->appendChild(child8);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	node->appendChild(child3);
-	node->appendChild(child4);
-	node->appendChild(child5);
-	node->appendChild(child6);
-	node->appendChild(child7);
-	node->appendChild(child8);
-	node->appendChild(child9);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	node->appendChild(child3);
-	node->appendChild(child4);
-	node->appendChild(child5);
-	node->appendChild(child6);
-	node->appendChild(child7);
-	node->appendChild(child8);
-	node->appendChild(child9);
-	node->appendChild(child10);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	node->appendChild(child3);
-	node->appendChild(child4);
-	node->appendChild(child5);
-	node->appendChild(child6);
-	node->appendChild(child7);
-	node->appendChild(child8);
-	node->appendChild(child9);
-	node->appendChild(child10);
-	node->appendChild(child11);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	node->appendChild(child3);
-	node->appendChild(child4);
-	node->appendChild(child5);
-	node->appendChild(child6);
-	node->appendChild(child7);
-	node->appendChild(child8);
-	node->appendChild(child9);
-	node->appendChild(child10);
-	node->appendChild(child11);
-	node->appendChild(child12);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	node->appendChild(child3);
-	node->appendChild(child4);
-	node->appendChild(child5);
-	node->appendChild(child6);
-	node->appendChild(child7);
-	node->appendChild(child8);
-	node->appendChild(child9);
-	node->appendChild(child10);
-	node->appendChild(child11);
-	node->appendChild(child12);
-	node->appendChild(child13);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	node->appendChild(child3);
-	node->appendChild(child4);
-	node->appendChild(child5);
-	node->appendChild(child6);
-	node->appendChild(child7);
-	node->appendChild(child8);
-	node->appendChild(child9);
-	node->appendChild(child10);
-	node->appendChild(child11);
-	node->appendChild(child12);
-	node->appendChild(child13);
-	node->appendChild(child14);
-	return debug(node, "Glue");
-}
-NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14, NODE child15) {
-	NODE node = new GlueNode;
-	node->appendChild(child0);
-	node->appendChild(child1);
-	node->appendChild(child2);
-	node->appendChild(child3);
-	node->appendChild(child4);
-	node->appendChild(child5);
-	node->appendChild(child6);
-	node->appendChild(child7);
-	node->appendChild(child8);
-	node->appendChild(child9);
-	node->appendChild(child10);
-	node->appendChild(child11);
-	node->appendChild(child12);
-	node->appendChild(child13);
-	node->appendChild(child14);
-	node->appendChild(child15);
-	return debug(node, "Glue");
-}
+NODE Definition::RANGE(char a, char b) { return def_->RANGE(a, b); }
+NODE Definition::RANGE(const char* s) { return def_->RANGE(s); }
+NODE Definition::EXCEPT(char a, char b) { return def_->EXCEPT(a, b); }
+NODE Definition::EXCEPT(const char* s) { return def_->EXCEPT(s); }
 
-NODE SyntaxDefinition::HINT(const char* text) {
-	hasHints_ = true;
-	return debug(new HintNode(text), "Hint");
-}
-NODE SyntaxDefinition::DONE() { return debug(new HintNode(0), "Hint"); }
+NODE Definition::STRING(const char* s) { return def_->STRING(s); }
+NODE Definition::KEYWORD(const char* keywords) { return def_->KEYWORD(keywords); }
 
-void SyntaxDefinition::OPTIMIZE()
-{
-	while (unresolvedLinkHead_) {
-		Ref<LinkNode> link = unresolvedLinkHead_;
-		link->rule_ = ruleByName(link->ruleName_);
-		if (link->rule_->isVoid()) {
-			if (Ref<RefNode>(link)) {
-				if (link->rule_->numberOfRefs() == 0) {
-					Ref<LinkNode, Owner> iLink = new InlineNode(link->ruleName_);
-					link->parent()->insertChild(iLink, link);
-					iLink->rule_ = link->rule_;
-					link->unlink();
-				}
-			}
-		}
-		unresolvedLinkHead_ = link->unresolvedNext_;
-	}
-}
+NODE Definition::REPEAT(int minRepeat, int maxRepeat, NODE entry) { return def_->REPEAT(minRepeat, maxRepeat, entry); }
+NODE Definition::REPEAT(int minRepeat, NODE entry) { return def_->REPEAT(minRepeat, entry); }
+NODE Definition::REPEAT(NODE entry) { return def_->REPEAT(entry); }
 
-void SyntaxDefinition::LINK(bool optimize)
-{
-	if (optimize) OPTIMIZE();
+NODE Definition::LAZY_REPEAT(int minRepeat, NODE entry) { return def_->LAZY_REPEAT(minRepeat, entry); }
+NODE Definition::LAZY_REPEAT(NODE entry) { return def_->LAZY_REPEAT(entry); }
 
-	while (unresolvedLinkHead_) {
-		unresolvedLinkHead_->rule_ = ruleByName(unresolvedLinkHead_->ruleName_);
-		unresolvedLinkHead_ = unresolvedLinkHead_->unresolvedNext_;
-	}
-	while (unresolvedKeywordHead_) {
-		unresolvedKeywordHead_->keyword_ = keywordByName(unresolvedKeywordHead_->keywordName_);
-		unresolvedKeywordHead_ = unresolvedKeywordHead_->unresolvedKeywordNext_;
-	}
-	while (unresolvedInvokeHead_) {
-		unresolvedInvokeHead_->definition_ = definitionByName(unresolvedInvokeHead_->definitionName_);
-		unresolvedInvokeHead_ = unresolvedInvokeHead_->unresolvedNext_;
-	}
-	if (!LinkNode::rule_) {
-		if (!LinkNode::ruleName_)
-			FTL_THROW(DebugException, "Missing entry rule declaration");
-		LinkNode::rule_ = ruleByName(LinkNode::ruleName_);
-	}
-}
+NODE Definition::GREEDY_REPEAT(int minRepeat, int maxRepeat, NODE entry) { return def_->GREEDY_REPEAT(minRepeat, maxRepeat, entry); }
+NODE Definition::GREEDY_REPEAT(int minRepeat, NODE entry) { return def_->GREEDY_REPEAT(minRepeat, entry); }
+NODE Definition::GREEDY_REPEAT(NODE entry) { return def_->GREEDY_REPEAT(entry); }
 
-NODE SyntaxDefinition::CALL(CallBack callBack, Ref<Instance> self) {
-	if (!self) self = this;
-	return debug(new CallNode(callBack, self), "Call");
-}
+NODE Definition::LENGTH(int minLength, int maxLength, NODE entry) { return def_->LENGTH(minLength, maxLength, entry); }
+NODE Definition::LENGTH(int minLength, NODE entry) { return def_->LENGTH(minLength, entry); }
+NODE Definition::BOI() { return def_->BOI(); }
+NODE Definition::EOI() { return def_->EOI(); }
+NODE Definition::PASS() { return def_->PASS(); }
+NODE Definition::FAIL() { return def_->FAIL(); }
+NODE Definition::FIND(NODE entry) { return def_->FIND(entry); }
+NODE Definition::AHEAD(NODE entry) { return def_->AHEAD(entry); }
+NODE Definition::NOT(NODE entry) { return def_->NOT(entry); }
+NODE Definition::BEHIND(NODE entry) { return def_->BEHIND(entry); }
+NODE Definition::NOT_BEHIND(NODE entry) { return def_->NOT_BEHIND(entry); }
 
-NODE SyntaxDefinition::ERROR() {
-	return debug(new CallNode(errorCallBack, this), "Call");
-}
+NODE Definition::CHOICE() { return def_->CHOICE(); } // FIXME
+NODE Definition::GLUE() { return def_->GLUE(); }
 
-NODE SyntaxDefinition::SET(const char* name, bool value) {
-	return debug(new SetNode(flagIdByName(name), value), "Set");
-}
-NODE SyntaxDefinition::IF(const char* name, NODE trueBranch, NODE falseBranch) {
-	if (!trueBranch) trueBranch = PASS();
-	if (!falseBranch) falseBranch = PASS();
-	return debug(new IfNode(flagIdByName(name), trueBranch, falseBranch), "If");
-}
-NODE SyntaxDefinition::GETCHAR(const char* name) {
-	return debug(new GetCharNode(charIdByName(name)), "GetChar");
-}
-NODE SyntaxDefinition::SETCHAR(const char* name, char value) {
-	return debug(new SetCharNode(charIdByName(name), value), "SetChar");
-}
-NODE SyntaxDefinition::VARCHAR(const char* name) {
-	return debug(new VarCharNode(charIdByName(name), 0), "VarChar");
-}
-NODE SyntaxDefinition::VAROTHER(const char* name) {
-	return debug(new VarCharNode(charIdByName(name), 1), "VarChar");
-}
-NODE SyntaxDefinition::GETSTRING(const char* name, NODE coverage) {
-	return debug(new GetStringNode(stringIdByName(name), coverage), "GetString");
-}
-NODE SyntaxDefinition::SETSTRING(const char* name, const char* value) {
-	return debug(new SetStringNode(stringIdByName(name), value), "SetString");
-}
-NODE SyntaxDefinition::VARSTRING(const char* name) {
-	return debug(new VarStringNode(stringIdByName(name)), "VarString");
-}
+NODE Definition::CHOICE(NODE choice0, NODE choice1) { return def_->CHOICE(choice0, choice1); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2) { return def_->CHOICE(choice0, choice1, choice2); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3) { return def_->CHOICE(choice0, choice1, choice2, choice3); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11, choice12); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12, NODE choice13) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11, choice12, choice13); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12, NODE choice13, NODE choice14) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11, choice12, choice13, choice14); }
+NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12, NODE choice13, NODE choice14, NODE choice15) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11, choice12, choice13, choice14, choice15); }
 
-NODE SyntaxDefinition::INVOKE(Definition* definition, NODE coverage) {
-	return debug(new InvokeNode(definition, coverage), "Invoke");
-}
+NODE Definition::GLUE(NODE child0, NODE child1) { return def_->GLUE(child0, child1); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2) { return def_->GLUE(child0, child1, child2); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3) { return def_->GLUE(child0, child1, child2, child3); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4) { return def_->GLUE(child0, child1, child2, child3, child4); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5) { return def_->GLUE(child0, child1, child2, child3, child4, child5); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12, child13); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12, child13, child14); }
+NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14, NODE child15) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12, child13, child14, child15); }
 
-NODE SyntaxDefinition::INVOKE(const char* definitionName, NODE coverage) {
-	Ref<InvokeNode, Owner> node = new InvokeNode(definitionName, coverage);
-	node->unresolvedNext_ = unresolvedInvokeHead_;
-	unresolvedInvokeHead_ = node;
-	return debug(node, "Invoke");
-}
+NODE Definition::HINT(const char* text)  { return def_->HINT(text); }
+NODE Definition::DONE() { return def_->DONE(); }
 
-SyntaxState* SyntaxDefinition::newState(SyntaxState* parent) const
-{
-	if (!stateful())
-		return 0;
+int Definition::DEFINE(const char* ruleName, NODE entry) { return def_->DEFINE(ruleName, entry); }
+void Definition::DEFINE_VOID(const char* ruleName, NODE entry) { def_->DEFINE_VOID(ruleName, entry); }
+void Definition::ENTRY(const char* ruleName) { def_->ENTRY(ruleName); }
+NODE Definition::REF(const char* ruleName) { return def_->REF(ruleName); }
+NODE Definition::INLINE(const char* ruleName) { return def_->INLINE(ruleName); }
+NODE Definition::PREVIOUS(const char* ruleName, const char* keyword) { return def_->PREVIOUS(ruleName, keyword); }
+NODE Definition::CONTEXT(const char* ruleName, NODE entry) { return def_->CONTEXT(ruleName, entry); }
 
-	SyntaxState* state = new SyntaxState(id_, numStateFlags_, numStateChars_, numStateStrings_, parent);
+NODE Definition::CALL(CallBack callBack, Ref<Instance> self) { return def_->CALL(callBack, self); }
+NODE Definition::ERROR() { return def_->ERROR(); }
 
-	Ref<StateFlag> stateFlag = stateFlagHead_;
-	for (int id = numStateFlags_ - 1; id >= 0; --id) {
-		*state->flag(id) = stateFlag->defaultValue_;
-		stateFlag = stateFlag->next_;
-	}
+void Definition::OPTIMIZE() { return def_->OPTIMIZE(); }
+void Definition::LINK(bool optimize) { return def_->LINK(optimize); }
 
-	Ref<StateChar> stateChar = stateCharHead_;
-	for (int id = numStateChars_ - 1; id >= 0; --id) {
-		*state->character(id) = stateChar->defaultValue_;
-		stateChar = stateChar->next_;
-	}
+void Definition::STATE_FLAG(const char* name, bool defaultValue) { return def_->STATE_FLAG(name, defaultValue); }
+void Definition::STATE_CHAR(const char* name, char defaultValue) { return def_->STATE_CHAR(name, defaultValue); }
+void Definition::STATE_STRING(const char* name, const char* defaultValue) { return def_->STATE_STRING(name, defaultValue); }
 
-	Ref<StateString> stateString = stateStringHead_;
-	for (int id = numStateStrings_ - 1; id >= 0; --id) {
-		*state->string(id) = stateString->defaultValue_;
-		stateString = stateString->next_;
-	}
+NODE Definition::SET(const char* name, bool value) { return def_->SET(name, value); }
+NODE Definition::IF(const char* name, NODE trueBranch, NODE falseBranch) { return def_->IF(name, trueBranch, falseBranch); }
+NODE Definition::GETCHAR(const char* name) { return def_->GETCHAR(name); }
+NODE Definition::SETCHAR(const char* name, char value) { return def_->SETCHAR(name, value); }
+NODE Definition::VARCHAR(const char* name) { return def_->VARCHAR(name); }
+NODE Definition::VAROTHER(const char* name) { return def_->VAROTHER(name); }
+NODE Definition::GETSTRING(const char* name, NODE coverage) { return def_->GETSTRING(name, coverage); }
+NODE Definition::SETSTRING(const char* name, const char* value) { return def_->SETSTRING(name, value); }
+NODE Definition::VARSTRING(const char* name) { return def_->VARSTRING(name); }
 
-	return state;
-}
+NODE Definition::INVOKE(DefinitionNode* definition, NODE coverage) { return def_->INVOKE(definition, coverage); }
+NODE Definition::INVOKE(const char* definitionName, NODE coverage) { return def_->INVOKE(definitionName, coverage); }
 
-Ref<Token, Owner> SyntaxDefinition::find(ByteArray* media, int* i0, int* i1, Ref<TokenFactory> tokenFactory) const
-{
-	int i = *i0;
-	Ref<Token, Owner> rootToken;
-	while (media->has(i)) {
-		if (rootToken = match(media, i, i1, 0, tokenFactory))
-			break;
-		++i;
-	}
-	*i0 = i;
-	return rootToken;
-}
-
-Ref<Token, Owner> SyntaxDefinition::match(ByteArray* media, int i0, int* i1, SyntaxState* state, Ref<TokenFactory> tokenFactory) const
-{
-	Ref<SyntaxState, Owner> localState;
-	if (!state) {
-		localState = newState();
-		state = localState;
-	}
-
-	TokenFactory localTokenFactory;
-	if (!tokenFactory)
-		tokenFactory = &localTokenFactory;
-
-	int h = matchNext(media, i0, tokenFactory, 0, state);
-
-	if ((i1 != 0) && (h != -1))
-		*i1 = h;
-
-	return (h != -1) ? tokenFactory->rootToken() : Ref<Token>();
-}
-
-Ref<Definition> SyntaxDefinition::resolveScope(const char*& name) const
-{
-	Ref<Definition> scope = this;
-	int k = 0;
-	const char* p0 = name;
-	const char* p = p0;
-	while (true) {
-		char ch = *(p++);
-		if (!ch) break;
-		k = (ch == ':') ? k + 1 : 0;
-		if (k == 2) {
-			Ref<Definition, Owner> childScope;
-			if (!scope->definitionByName_->lookup(p0, p - p0 - k, &childScope))
-				FTL_THROW(DebugException, str::cat("Undefined scope '", name, "' referenced"));
-			scope = childScope;
-			p0 = p;
-			k = 0;
-		}
-	}
-	name = p0;
-	return scope;
-}
-
-Ref<Definition> SyntaxDefinition::definitionByName(const char* name) const
-{
-	Ref<Definition, Owner> definition;
-	Ref<Definition> scope = resolveScope(name);
-	if (!scope->definitionByName_->lookup(name, &definition))
-		FTL_THROW(DebugException, str::cat("Undefined definition '", name, "' referenced"));
-	return definition;
-}
-
-Ref<RuleNode> SyntaxDefinition::ruleByName(const char* name) const
-{
-	Ref<Definition> scope = resolveScope(name);
-	Ref<RuleNode, Owner> node;
-	FTL_ASSERT(scope);
-	if (!scope->ruleByName_->lookup(name, &node))
-		FTL_THROW(DebugException, str::cat("Undefined rule '", name, "' referenced"));
-	return node;
-}
-
-int SyntaxDefinition::keywordByName(const char* keyword)
-{
-	int tokenType = -1;
-	if (!keywordByName_->lookup(keyword, &tokenType))
-		FTL_THROW(DebugException, str::cat("Undefined keyword '", keyword, "' referenced"));
-	return tokenType;
-}
-
-void SyntaxDefinition::getLineAndPosFromIndex(ByteArray* media, int index, int* line, int* pos)
-{
-	*line = 1;
-	*pos = 1;
-	int j = 0;
-	while (media->has(j) && (j < index)) {
-		char ch = media->get(j);
-		if (ch == '\n') { ++*line; *pos = 1; }
-		else ++*pos;
-		++j;
-	}
-}
-
-int SyntaxDefinition::syntaxError(ByteArray* media, int index, SyntaxState* state) const
-{
-	FTL_THROW(DebugException, "Unhandled syntax error");
-	return -1;
-}
-
-int SyntaxDefinition::flagIdByName(const char* name)
-{
-	int flagId = -1;
-	if (!flagIdByName()->lookup(name, &flagId))
-		FTL_THROW(DebugException, str::cat("Undefined state flag '", name, "' referenced"));
-	return flagId;
-}
-
-int SyntaxDefinition::charIdByName(const char* name)
-{
-	int charId = -1;
-	if (!charIdByName()->lookup(name, &charId))
-		FTL_THROW(DebugException, str::cat("Undefined state char '", name, "' referenced"));
-	return charId;
-}
-
-int SyntaxDefinition::stringIdByName(const char* name)
-{
-	int stringId = -1;
-	if (!stringIdByName()->lookup(name, &stringId))
-		FTL_THROW(DebugException, str::cat("Undefined state string '", name, "' referenced"));
-	return stringId;
-}
-
-int SyntaxDefinition::errorCallBack(Ref<Instance> self, ByteArray* media, int index, SyntaxState* state)
-{
-	Ref<Definition> definition = self;
-	return definition->syntaxError(media, index, state);
-}
+} // namespace syntax
 
 } // namespace ftl

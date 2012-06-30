@@ -17,6 +17,8 @@
 namespace ftl
 {
 
+class SyntaxDebugger;
+
 class AbnfCompiler: public AbnfSyntax
 {
 public:
