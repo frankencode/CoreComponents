@@ -1,3 +1,14 @@
+/*
+ * syntax.cpp -- syntax description and production formalism
+ *
+ * Copyright (c) 2007-2012, Frank Mertens
+ *
+ * This file is part of the a free software library. You can redistribute
+ * it and/or modify it under the terms of FTL's 2-clause BSD license.
+ *
+ * See the LICENSE.txt file for details at the top-level of FTL's sources.
+ */
+
 #include "SyntaxDebugFactory.hpp"
 #include "syntax.hpp"
 
@@ -7,9 +18,9 @@ namespace ftl
 namespace syntax
 {
 
-int InvokeNode::matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, SyntaxState* state) const
+int InvokeNode::matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 {
-	SyntaxState* childState = 0;
+	State* childState = 0;
 	if (state) {
 		childState = state->child();
 		if (childState) {
@@ -108,12 +119,12 @@ void DefinitionNode::LINK(bool optimize)
 	}
 }
 
-SyntaxState* DefinitionNode::newState(SyntaxState* parent) const
+State* DefinitionNode::newState(State* parent) const
 {
 	if (!stateful())
 		return 0;
 
-	SyntaxState* state = new SyntaxState(id_, numStateFlags_, numStateChars_, numStateStrings_, parent);
+	State* state = new State(this, numStateFlags_, numStateChars_, numStateStrings_, parent);
 
 	Ref<StateFlag> stateFlag = stateFlagHead_;
 	for (int id = numStateFlags_ - 1; id >= 0; --id) {
@@ -129,7 +140,7 @@ SyntaxState* DefinitionNode::newState(SyntaxState* parent) const
 
 	Ref<StateString> stateString = stateStringHead_;
 	for (int id = numStateStrings_ - 1; id >= 0; --id) {
-		*state->string(id) = stateString->defaultValue_;
+		state->setString(id, stateString->defaultValue_);
 		stateString = stateString->next_;
 	}
 
@@ -149,9 +160,9 @@ Ref<Token, Owner> DefinitionNode::find(ByteArray* media, int* i0, int* i1, Ref<T
 	return rootToken;
 }
 
-Ref<Token, Owner> DefinitionNode::match(ByteArray* media, int i0, int* i1, SyntaxState* state, Ref<TokenFactory> tokenFactory) const
+Ref<Token, Owner> DefinitionNode::match(ByteArray* media, int i0, int* i1, State* state, Ref<TokenFactory> tokenFactory) const
 {
-	Ref<SyntaxState, Owner> localState;
+	Ref<State, Owner> localState;
 	if (!state) {
 		localState = newState();
 		state = localState;
@@ -192,13 +203,13 @@ Ref<DefinitionNode> DefinitionNode::resolveScope(const char*& name) const
 	return scope;
 }
 
-int DefinitionNode::syntaxError(ByteArray* media, int index, SyntaxState* state) const
+int DefinitionNode::syntaxError(ByteArray* media, int index, State* state) const
 {
 	FTL_THROW(DebugException, "Unhandled syntax error");
 	return -1;
 }
 
-int DefinitionNode::errorCallBack(Ref<Instance> self, ByteArray* media, int index, SyntaxState* state)
+int DefinitionNode::errorCallBack(Ref<Instance> self, ByteArray* media, int index, State* state)
 {
 	Ref<DefinitionNode> definition = self;
 	return definition->syntaxError(media, index, state);

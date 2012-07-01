@@ -109,7 +109,7 @@ public:
 			Ref<StateString> stateString = DebugFactory::definition()->stateStringHead_;
 			for (int id = DebugFactory::definition()->numStateStrings_ - 1; id >= 0; --id) {
 				print("STATE_STRING(\"%%\", ", stringNameById()->value(id));
-				printStringAttr(stateString->defaultValue_);
+				printStringAttr(*stateString->defaultValue_);
 				print(")\n");
 				stateString = stateString->next_;
 			}
