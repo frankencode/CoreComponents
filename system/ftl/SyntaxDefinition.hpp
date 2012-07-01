@@ -41,10 +41,10 @@ public:
 	Node* debug(Node* newNode, const char* nodeType);
 
 	int keywordByName(const char* keyword);
-	SyntaxState* newState(SyntaxState* parent = 0) const;
+	State* newState(State* parent = 0) const;
 
 	Ref<Token, Owner> find(ByteArray* media, int* i0, int* i1 = 0, Ref<TokenFactory> tokenFactory = 0) const;
-	Ref<Token, Owner> match(ByteArray* media, int i0 = 0, int* i1 = 0, SyntaxState* state = 0, Ref<TokenFactory> tokenFactory = 0) const;
+	Ref<Token, Owner> match(ByteArray* media, int i0 = 0, int* i1 = 0, State* state = 0, Ref<TokenFactory> tokenFactory = 0) const;
 
 	void SYNTAX(const char* name);
 	void IMPORT(Ref<Definition> definition, const char* name = 0);
@@ -135,7 +135,7 @@ public:
 	NODE PREVIOUS(const char* ruleName, const char* keyword = 0);
 	NODE CONTEXT(const char* ruleName, NODE entry = 0);
 
-	typedef int (*CallBack) (Ref<Instance> self, ByteArray* media, int i, SyntaxState* state);
+	typedef int (*CallBack) (Ref<Instance> self, ByteArray* media, int i, State* state);
 
 	NODE CALL(CallBack callBack, Ref<Instance> self = 0);
 	NODE ERROR();
@@ -145,7 +145,8 @@ public:
 
 	void STATE_FLAG(const char* name, bool defaultValue = false);
 	void STATE_CHAR(const char* name, char defaultValue = 0);
-	void STATE_STRING(const char* name, const char* defaultValue = 0);
+	void STATE_STRING(const char* name, const char* defaultValue = "");
+	void TOUCH_STRING(const char* name);
 
 	NODE SET(const char* name, bool value);
 	NODE IF(const char* name, NODE trueBranch, NODE falseBranch = 0);
@@ -161,7 +162,7 @@ public:
 	NODE INVOKE(const char* definitionName, NODE coverage = 0);
 
 private:
-	DefinitionNode* def_; // FIXME
+	DefinitionNode* def_;
 };
 
 } // namespace syntax

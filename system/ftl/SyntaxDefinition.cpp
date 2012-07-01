@@ -36,10 +36,10 @@ Ref<DebugFactory> Definition::debugFactory() const { return def_->debugFactory()
 Node* Definition::debug(Node* newNode, const char* nodeType) { return def_->debug(newNode, nodeType); }
 
 int Definition::keywordByName(const char* keyword) { return def_->keywordByName(keyword); }
-SyntaxState* Definition::newState(SyntaxState* parent) const { return def_->newState(parent); }
+State* Definition::newState(State* parent) const { return def_->newState(parent); }
 
 Ref<Token, Owner> Definition::find(ByteArray* media, int* i0, int* i1, Ref<TokenFactory> tokenFactory) const { return def_->find(media, i0, i1, tokenFactory); }
-Ref<Token, Owner> Definition::match(ByteArray* media, int i0, int* i1, SyntaxState* state, Ref<TokenFactory> tokenFactory) const { return def_->match(media, i0, i1, state, tokenFactory); }
+Ref<Token, Owner> Definition::match(ByteArray* media, int i0, int* i1, State* state, Ref<TokenFactory> tokenFactory) const { return def_->match(media, i0, i1, state, tokenFactory); }
 
 void Definition::SYNTAX(const char* name) { def_->SYNTAX(name); }
 void Definition::IMPORT(Ref<Definition> definition, const char* name) { def_->IMPORT(definition->def_, name); }
@@ -139,6 +139,7 @@ void Definition::LINK(bool optimize) { return def_->LINK(optimize); }
 void Definition::STATE_FLAG(const char* name, bool defaultValue) { return def_->STATE_FLAG(name, defaultValue); }
 void Definition::STATE_CHAR(const char* name, char defaultValue) { return def_->STATE_CHAR(name, defaultValue); }
 void Definition::STATE_STRING(const char* name, const char* defaultValue) { return def_->STATE_STRING(name, defaultValue); }
+void Definition::TOUCH_STRING(const char* name) { return def_->TOUCH_STRING(name); }
 
 NODE Definition::SET(const char* name, bool value) { return def_->SET(name, value); }
 NODE Definition::IF(const char* name, NODE trueBranch, NODE falseBranch) { return def_->IF(name, trueBranch, falseBranch); }

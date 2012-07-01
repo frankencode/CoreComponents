@@ -18,25 +18,15 @@
 namespace ftl
 {
 
-class SyntaxState: public Instance
+namespace syntax {
+
+class DefinitionNode;
+
+class State: public Instance
 {
 public:
-	SyntaxState()
-		: hint_(0),
-		  hintOffset_(-1)
-	{}
-
-	SyntaxState(int definitionId, int numFlags, int numChars, int numStrings, Ref<SyntaxState> parent = 0)
-		: definitionId_(definitionId),
-		  flags_(numFlags),
-		  chars_(numChars),
-		  strings_(numStrings),
-		  hint_(0),
-		  hintOffset_(-1)
-	{
-		if (parent)
-			parent->child_ = this;
-	}
+	State();
+	State(Ref<DefinitionNode> definition, int numFlags, int numChars, int numStrings, Ref<State> parent = 0);
 
 	inline int definitionId() const { return definitionId_; }
 
@@ -46,8 +36,8 @@ public:
 	inline Ref<ByteArray> string(int id) { return strings_.at(id); }
 	inline void setString(int id, Ref<ByteArray> s) { strings_.set(id, s); }
 
-	inline Ref<SyntaxState> child() const { return child_; }
-	inline void setChild(Ref<SyntaxState> state) { child_ = state; }
+	inline Ref<State> child() const { return child_; }
+	inline void setChild(Ref<State> state) { child_ = state; }
 
 	inline const char* hint() const { return hint_; }
 	inline void setHint(const char* text) { hint_ = text; }
@@ -55,15 +45,22 @@ public:
 	inline int hintOffset() const { return hintOffset_; }
 	inline void setHintOffset(int index) { hintOffset_ = index; }
 
+	Ref<ByteArray> string(const char* name);
+
 private:
+	Ref<DefinitionNode, Owner> definition_;
 	int definitionId_;
 	Array<bool> flags_;
 	ByteArray chars_;
 	Array< Ref<ByteArray, Owner> > strings_;
-	Ref<SyntaxState, Owner> child_;
+	Ref<State, Owner> child_;
 	const char* hint_;
 	int hintOffset_;
 };
+
+} // namespace syntax
+
+typedef syntax::State SyntaxState;
 
 } // namespace ftl
 
