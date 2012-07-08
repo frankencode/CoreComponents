@@ -428,19 +428,23 @@ NODE PatternCompiler::compileRepeat(Ref<ByteArray> text, Ref<Token> token, Ref<P
 }
 
 Pattern::Pattern(const char* text)
+	:
 #ifndef NDEBUG
-	: SyntaxDefinition(new SyntaxDebugger)
+	  SyntaxDefinition(new SyntaxDebugger),
 #endif
+	  text_(text)
 {
-	PatternCompiler::instance()->compile(String(text), this);
+	PatternCompiler::instance()->compile(text_, this);
 }
 
 Pattern::Pattern(const String& text)
+	:
 #ifndef NDEBUG
-	: SyntaxDefinition(new SyntaxDebugger)
+	  SyntaxDefinition(new SyntaxDebugger),
 #endif
+	  text_(text)
 {
-	PatternCompiler::instance()->compile(text, this);
+	PatternCompiler::instance()->compile(text_, this);
 }
 
 } // namespace ftl

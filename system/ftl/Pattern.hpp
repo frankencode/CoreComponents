@@ -38,8 +38,11 @@ public:
 	Pattern(const char* text);
 	Pattern(const String& text);
 #ifndef NDEBUG
-	Ref<SyntaxDebugger> debugger() const { return debugFactory(); }
+	inline Ref<SyntaxDebugger> debugger() const { return debugFactory(); }
 #endif
+	inline String text() const { return text_; }
+private:
+	String text_;
 };
 
 } // namespace ftl

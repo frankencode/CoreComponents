@@ -32,8 +32,6 @@ class WireObject: public Map<String, Variant>
 	typedef Map<String, Variant> Super;
 
 public:
-	inline String className() const { return className_; }
-
 	WireObject() {}
 
 	explicit WireObject(const WireObject& b)
@@ -42,6 +40,8 @@ public:
 	{}
 
 	virtual Ref<Super, Owner> clone() const { return new WireObject(*this); }
+
+	inline String className() const { return className_; }
 
 	Variant member(const String& name) const;
 	void setMember(const String& name, const Variant& newValue);

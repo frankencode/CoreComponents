@@ -1,0 +1,6 @@
+Library {
+	name: "clue"
+	version: "0.3.0"
+	header: [ "*.hpp", "[a..z]{1,}" ]
+	source: [ "*.cpp" ]
+}
