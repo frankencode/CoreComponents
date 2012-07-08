@@ -5,7 +5,7 @@ int main()
 {
 	using namespace ftl;
 
-	Dir dir(Process::cwd());
+	Dir dir(".");
 	for (DirEntry entry; dir.read(&entry);)
 		output()->writeLine(entry.name());
 	return 0;

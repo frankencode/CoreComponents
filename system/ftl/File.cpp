@@ -65,7 +65,7 @@ String File::path() const
 String File::name() const
 {
 	const char sep = '/';
-	
+
 	int n = path_->length();
 	int i = n - 1;
 	while (i >= 0) {
@@ -75,11 +75,11 @@ String File::name() const
 		}
 		--i;
 	}
-	
+
 	String name;
 	if (i < n)
 		name = path_->copy(i, n);
-	
+
 	return name;
 }
 
@@ -208,9 +208,11 @@ Ref<File, Owner> File::temp()
 {
 	Ref<File, Owner> file =
 		new File(
-			Format("/tmp/%%_%%_XXXXXXXX")
+			String(
+				Format("/tmp/%%_%%_XXXXXXXX")
 				<< Path(Process::execPath()).fileName()
 				<< Process::currentId()
+			)
 		);
 	file->createUnique();
 	file->open(Read|Write);

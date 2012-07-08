@@ -21,21 +21,21 @@ class Dir: public Source<DirEntry>
 public:
 	Dir(String path);
 	~Dir();
-	
+
 	String path() const;
-	
+
 	bool access(int flags);
 	bool exists() const;
 	void create(int mode = 0755);
 	void unlink();
-	
+
 	void open();
 	void close();
 	bool read(DirEntry* entry);
 	bool isOpen() const;
-	
+
 	static void establish(String path, int mode = 0755);
-	
+
 private:
 	String path_;
 	DIR* dir_;

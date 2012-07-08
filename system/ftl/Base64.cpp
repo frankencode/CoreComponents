@@ -1,5 +1,5 @@
 /*
- * Base64.hpp -- base64 codec according to RFC4648
+ * Base64.cpp -- base64 codec according to RFC4648
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *

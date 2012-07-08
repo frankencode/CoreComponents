@@ -4,6 +4,7 @@
 #include "FileStatus.hpp"
 #include "File.hpp"
 #include "Dir.hpp"
+#include "Glob.hpp"
 #include "StandardStreams.hpp"
 #include "PrintDebug.hpp"
 
