@@ -151,8 +151,8 @@ public:
 	inline int find(int i, Ref<ByteArray> pattern) const { return find(i, pattern->data_); }
 	inline int find(const char* pattern) const { return find(0, pattern); }
 
-	inline int contains(Ref<ByteArray> pattern) { return contains(pattern->data()); }
-	inline int contains(const char* pattern) { return find(0, pattern) != size_; }
+	inline int contains(Ref<ByteArray> pattern) const { return contains(pattern->data()); }
+	inline int contains(const char* pattern) const { return find(0, pattern) != size_; }
 
 	static Ref<ByteArray, Owner> join(Ref<StringList> parts, const char* sep = "");
 	Ref<StringList, Owner> split(char sep) const;

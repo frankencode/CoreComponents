@@ -114,7 +114,7 @@ int main()
 	}
 	{
 		print("Test 7:\n");
-		List<int> a(10);
+		List<int> a(11);
 		print(a);
 	}
 	return 0;

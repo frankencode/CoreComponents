@@ -41,6 +41,13 @@ State* Definition::newState(State* parent) const { return def_->newState(parent)
 Ref<Token, Owner> Definition::find(ByteArray* media, int* i0, int* i1, Ref<TokenFactory> tokenFactory) const { return def_->find(media, i0, i1, tokenFactory); }
 Ref<Token, Owner> Definition::match(ByteArray* media, int i0, int* i1, State* state, Ref<TokenFactory> tokenFactory) const { return def_->match(media, i0, i1, state, tokenFactory); }
 
+bool Definition::completeMatch(ByteArray* media) const
+{
+	Ref<Token, Owner> token = match(media);
+	if (!token) return false;
+	return !media->has(token->length());
+}
+
 void Definition::SYNTAX(const char* name) { def_->SYNTAX(name); }
 void Definition::IMPORT(Ref<Definition> definition, const char* name) { def_->IMPORT(definition->def_, name); }
 void Definition::OPTION(const char* name, bool value) { def_->OPTION(name, value); }

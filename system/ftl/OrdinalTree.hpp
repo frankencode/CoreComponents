@@ -97,9 +97,14 @@ template<class Node>
 OrdinalTree<Node>::OrdinalTree(int n)
 	: cachedNode_(0)
 {
+	if (n <= 0) return;
+
 	Array<Node*> v(n);
-	for (int i = 0, m = 1; i < n; m *= 2) {
-		for (int i1 = i + m; i < i1; ++i) {
+
+	for (int i = 0, m = 1; i < n; m *= 2)
+	{
+		for (int i1 = i + m; i < i1; ++i)
+		{
 			if (i < n) {
 				Node* k = new Node;
 				Node* kp = 0;
@@ -120,12 +125,19 @@ OrdinalTree<Node>::OrdinalTree(int n)
 			}
 		}
 	}
+
 	for (int i = n - 1; i > 0; --i) {
 		Node* k = v.at(i);
 		Node* kp = k->parent_;
 		kp->weight_ += k->weight_;
 	}
+
 	BinaryTree<Node>::root_ = v.at(0);
+
+	/*FTL_ASSERT(BinaryTree<Node>::testStructure(BinaryTree<Node>::root_));
+	FTL_ASSERT(BinaryTree<Node>::testIteration(BinaryTree<Node>::root_));
+	FTL_ASSERT(AvlTree<Node>::testBalance(BinaryTree<Node>::root_));
+	FTL_ASSERT(OrdinalTree<Node>::testWeight(BinaryTree<Node>::root_));*/
 }
 
 template<class Node>
@@ -300,11 +312,6 @@ inline void OrdinalTree<Node>::touched(Node* kp, Node* kc, bool left, bool attac
 	}
 
 	AvlTree<Node>::touched(kp, kc, left, attached);
-
-	/*FTL_ASSERT(BinaryTree<Node>::testStructure(BinaryTree<Node>::root_));
-	FTL_ASSERT(BinaryTree<Node>::testIteration(BinaryTree<Node>::root_));
-	FTL_ASSERT(AvlTree<Node>::testBalance(BinaryTree<Node>::root_));
-	FTL_ASSERT(OrdinalTree<Node>::testWeight(BinaryTree<Node>::root_));*/
 
 	cachedNode_ = 0;
 }
