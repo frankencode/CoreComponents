@@ -49,7 +49,7 @@ bool Glob::read(DirEntry* entry)
 		child_ = 0;
 	}
 	while (dir_->read(entry)) {
-		if (pattern_->match(entry->name())) {
+		if (pattern_->completeMatch(entry->name())) {
 			if (remainder_->length() == 0)
 				return true;
 			String path = (StringList() << dir_->path() << "/" << entry->name()).join();

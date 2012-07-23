@@ -45,6 +45,7 @@ public:
 
 	Ref<Token, Owner> find(ByteArray* media, int* i0, int* i1 = 0, Ref<TokenFactory> tokenFactory = 0) const;
 	Ref<Token, Owner> match(ByteArray* media, int i0 = 0, int* i1 = 0, State* state = 0, Ref<TokenFactory> tokenFactory = 0) const;
+	bool completeMatch(ByteArray* media) const;
 
 	void SYNTAX(const char* name);
 	void IMPORT(Ref<Definition> definition, const char* name = 0);

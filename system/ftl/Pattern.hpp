@@ -37,10 +37,12 @@ class Pattern: public SyntaxDefinition
 public:
 	Pattern(const char* text);
 	Pattern(const String& text);
+
 #ifndef NDEBUG
 	inline Ref<SyntaxDebugger> debugger() const { return debugFactory(); }
 #endif
 	inline String text() const { return text_; }
+
 private:
 	String text_;
 };
