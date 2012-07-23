@@ -26,6 +26,7 @@ public:
 	typedef GenericIterator<List> Iterator;
 
 	List() {}
+	List(int n): tree_(n) {}
 
 	explicit List(const List& b): tree_(b.tree_) {}
 	virtual Ref<List, Owner> clone() const { return new List(*this); }
@@ -42,7 +43,7 @@ public:
 	inline Item get(int index) const {
 		return at(index);
 	}
-	inline const Item& at(int index) const {
+	inline Item& at(int index) const {
 		Node* node = 0;
 		if (tree_.lookupByIndex(index, &node)) return node->item_;
 		else return nullItem_;
@@ -141,7 +142,7 @@ private:
 	const List& operator=(const List& b);
 
 	Tree tree_;
-	Item nullItem_;
+	mutable Item nullItem_;
 };
 
 } // namespace ftl

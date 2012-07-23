@@ -339,9 +339,9 @@ Ref<WireObject, Owner> Wire::parseObject(Ref<ByteArray> text, Ref<Token> token)
 	return object;
 }
 
-Ref<WireArray, Owner> Wire::parseArray(Ref<ByteArray> text, Ref<Token> token)
+Ref<WireList, Owner> Wire::parseArray(Ref<ByteArray> text, Ref<Token> token)
 {
-	Ref<WireArray, Owner> array = new WireArray(token->countChildren());
+	Ref<WireList, Owner> array = new WireList(token->countChildren());
 	int i = 0;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
 		array->set(i, parseValue(text, child));
