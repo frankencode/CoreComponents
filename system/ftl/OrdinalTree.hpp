@@ -12,6 +12,7 @@
 #define FTL_ORDINALTREE_HPP
 
 #include "AvlTree.hpp"
+#include "Array.hpp"
 
 namespace ftl
 {
@@ -21,7 +22,12 @@ class OrdinalNode
 {
 public:
 	typedef ItemType Item;
-	
+
+	OrdinalNode()
+		: item_(Item()),
+		  balance_(0),
+		  weight_(1)
+	{}
 	OrdinalNode(const Item& item)
 		: item_(item),
 		  balance_(0),
@@ -32,7 +38,7 @@ public:
 		  balance_(b.balance_),
 		  weight_(b.weight_)
 	{}
-	
+
 	OrdinalNode* left_;
 	OrdinalNode* right_;
 	OrdinalNode* parent_;
@@ -47,36 +53,37 @@ class OrdinalTree: public AvlTree<NodeType>
 public:
 	typedef NodeType Node;
 	typedef typename NodeType::Item Item;
-	
+
 	OrdinalTree();
-	
+	OrdinalTree(int n);
+
 	OrdinalTree(const OrdinalTree& b);
 	const OrdinalTree& operator=(const OrdinalTree& b);
-	
+
 	inline int weight() const { return weight(BinaryTree<Node>::root_); }
-	
+
 	bool lookupByIndex(int index, Node** node = 0) const;
-	
+
 	template<class Pattern>
 	Node* find(const Pattern& pattern, bool* found = 0, bool* below = 0, int* index = 0) const;
-	
+
 	int first(const Item& a) const;
 	int last(const Item& b) const;
-	
+
 	void push(int index, const Item& item);
 	void pop(int index, Item* item);
-	
+
 protected:
 	void touched(Node* kp, Node* kc, bool left, bool attached);
 	void rotated(Node* k1, bool left);
 	void cleared();
 	static void establishWeight(Node* k);
 	inline static int weight(Node* k) { return (k) ? k->weight_ : 0; }
-	
+
 #ifndef NDEBUG
 	static bool testWeight(Node* k);
 #endif
-	
+
 	mutable Node* cachedNode_;
 	mutable int cachedIndex_;
 };
@@ -85,6 +92,41 @@ template<class Node>
 OrdinalTree<Node>::OrdinalTree()
 	: cachedNode_(0)
 {}
+
+template<class Node>
+OrdinalTree<Node>::OrdinalTree(int n)
+	: cachedNode_(0)
+{
+	Array<Node*> v(n);
+	for (int i = 0, m = 1; i < n; m *= 2) {
+		for (int i1 = i + m; i < i1; ++i) {
+			if (i < n) {
+				Node* k = new Node;
+				Node* kp = 0;
+				if (i > 0) kp = v.at((i - 1) >> 1);
+				k->parent_ = kp;
+				if (kp) {
+					if (i & 1)
+						kp->left_ = k;
+					else
+						kp->right_ = k;
+				}
+				k->left_ = 0;
+				k->right_ = 0;
+				v.set(i, k);
+			}
+			else {
+				AvlTree<Node>::touched(v.at((i - 1) >> 1), 0, i & 1, false);
+			}
+		}
+	}
+	for (int i = n - 1; i > 0; --i) {
+		Node* k = v.at(i);
+		Node* kp = k->parent_;
+		kp->weight_ += k->weight_;
+	}
+	BinaryTree<Node>::root_ = v.at(0);
+}
 
 template<class Node>
 OrdinalTree<Node>::OrdinalTree(const OrdinalTree& b)
@@ -106,7 +148,7 @@ bool OrdinalTree<Node>::lookupByIndex(int i, Node** node) const
 {
 	if (i < 0) i += weight();
 	FTL_ASSERT((0 <= i) && (i < weight()));
-	
+
 	if (cachedNode_) {
 		int d = i - cachedIndex_;
 		if (d == 0) {
@@ -126,7 +168,7 @@ bool OrdinalTree<Node>::lookupByIndex(int i, Node** node) const
 			return cachedNode_;
 		}
 	}
-	
+
 	Node* k = BinaryTree<Node>::root_;
 	int j0 = 0;
 	while (k) {
@@ -142,10 +184,10 @@ bool OrdinalTree<Node>::lookupByIndex(int i, Node** node) const
 			break;
 	}
 	if ((k) && (node)) *node = k;
-	
+
 	cachedNode_ = k;
 	cachedIndex_ = i;
-	
+
 	return k;
 }
 
@@ -256,14 +298,14 @@ inline void OrdinalTree<Node>::touched(Node* kp, Node* kc, bool left, bool attac
 		k->weight_ += delta;
 		k = k->parent_;
 	}
-	
+
 	AvlTree<Node>::touched(kp, kc, left, attached);
-	
+
 	/*FTL_ASSERT(BinaryTree<Node>::testStructure(BinaryTree<Node>::root_));
 	FTL_ASSERT(BinaryTree<Node>::testIteration(BinaryTree<Node>::root_));
 	FTL_ASSERT(AvlTree<Node>::testBalance(BinaryTree<Node>::root_));
 	FTL_ASSERT(OrdinalTree<Node>::testWeight(BinaryTree<Node>::root_));*/
-	
+
 	cachedNode_ = 0;
 }
 
