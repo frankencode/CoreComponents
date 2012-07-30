@@ -57,7 +57,7 @@ public:
 	template<class T, template<class> class P>
 	Variant(Ref<T, P> value)             : type_(RefType)    { initRef(value); }
 	Variant(String value)                : type_(StringType) { initRef(value); }
-	Variant(Path value)                  : type_(PathType)   { initRef(value.toString()); }
+	Variant(Path value)                  : type_(PathType)   { initRef(value); }
 	~Variant() { if (type_ & RefType) killRef(); }
 
 	inline const Variant& operator=(bool value)        { type_ = BoolType;  int_ = value; return *this; }

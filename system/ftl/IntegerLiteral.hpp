@@ -20,8 +20,8 @@ namespace ftl
 class IntegerLiteral: public SyntaxDefinition, public Singleton<IntegerLiteral>
 {
 public:
-	bool match(Ref<ByteArray> text, int i0, int* i1, uint64_t* value, int* sign);
-	void read(Ref<ByteArray> text, Ref<Token> rootToken, uint64_t* value, int* sign) const;
+	void read(uint64_t* value, int* sign, Ref<ByteArray> text, Ref<Token> token) const;
+	Ref<Token, Owner> read(uint64_t* value, int* sign, Ref<ByteArray> text, int i = -1) const;
 
 private:
 	friend class Singleton<IntegerLiteral>;

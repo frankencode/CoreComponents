@@ -9,6 +9,7 @@
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
 
+#include "stdio" // DEBUG
 #include "Format.hpp"
 #include "FloatLiteral.hpp"
 #include "IntegerLiteral.hpp"
@@ -288,8 +289,7 @@ Wire::Wire()
 Ref<WireObject, Owner> Wire::parse(Ref<ByteArray> text)
 {
 	Ref<SyntaxState, Owner> state = newState();
-	int i0 = 0, i1 = 0;
-	Ref<Token, Owner> token = match(text, i0, &i1, state);
+	Ref<Token, Owner> token = match(text, -1, state);
 	if (!token) {
 		String reason = "Syntax error";
 		int line = 1, pos = 1;
@@ -355,11 +355,13 @@ Variant Wire::parseValue(Ref<ByteArray> text, Ref<Token> token)
 	Variant value;
 
 	if (token->definition() == floatLiteral()->id()) {
-		value = floatLiteral()->read(text, token);
+		float64_t x;
+		floatLiteral()->read(&x, text, token);
+		value = x;
 	}
 	else if (token->definition() == integerLiteral()->id()) {
 		uint64_t x; int s;
-		integerLiteral()->read(text, token, &x, &s);
+		integerLiteral()->read(&x, &s, text, token);
 		value = int(x) * s;
 	}
 	else if (token->rule() == concatenation_) {

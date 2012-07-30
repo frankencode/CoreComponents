@@ -12,12 +12,12 @@
 #define FTL_GLOB_HPP
 
 #include "DirEntry.hpp"
+#include "Pattern.hpp"
 
 namespace ftl
 {
 
 class Dir;
-class Pattern;
 
 class Glob: public Source<DirEntry>
 {
@@ -31,7 +31,7 @@ private:
 	void init(String path);
 
 	Ref<Dir, Owner> dir_;
-	Ref<Pattern, Owner> pattern_;
+	Pattern pattern_;
 	Ref<StringList, Owner> remainder_;
 	Ref<Glob, Owner> child_;
 };

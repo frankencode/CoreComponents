@@ -26,8 +26,4 @@ String::String(const Format& b)
 	*this = *ByteArray::join(b);
 }
 
-String::String(const Path& b)
-	: Super(b.toString().Super::get())
-{}
-
 } // namespace ftl

@@ -43,9 +43,8 @@ public:
 	int keywordByName(const char* keyword);
 	State* newState(State* parent = 0) const;
 
-	Ref<Token, Owner> find(ByteArray* media, int* i0, int* i1 = 0, Ref<TokenFactory> tokenFactory = 0) const;
-	Ref<Token, Owner> match(ByteArray* media, int i0 = 0, int* i1 = 0, State* state = 0, Ref<TokenFactory> tokenFactory = 0) const;
-	bool completeMatch(ByteArray* media) const;
+	Ref<Token, Owner> find(ByteArray* media, int i = 0) const;
+	Ref<Token, Owner> match(ByteArray* media, int i = -1, Ref<SyntaxState> state = 0) const;
 
 	void SYNTAX(const char* name);
 	void IMPORT(Ref<Definition> definition, const char* name = 0);
@@ -163,7 +162,10 @@ public:
 	NODE INVOKE(const char* definitionName, NODE coverage = 0);
 
 private:
-	DefinitionNode* def_;
+	Definition(const Definition&);
+	// const Definition& operator=(const Defintion&);
+
+	Ref<DefinitionNode, Owner> def_;
 };
 
 } // namespace syntax

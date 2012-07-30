@@ -74,19 +74,12 @@ IntegerLiteral::IntegerLiteral()
 	LINK();
 }
 
-bool IntegerLiteral::match(Ref<ByteArray> text, int i0, int* i1, uint64_t* value, int* sign)
-{
-	Ref<Token, Owner> rootToken = SyntaxDefinition::match(text, i0, i1);
-	if (rootToken) read(text, rootToken, value, sign);
-	return rootToken;
-}
-
-void IntegerLiteral::read(Ref<ByteArray> text, Ref<Token> rootToken, uint64_t* value, int* sign) const
+void IntegerLiteral::read(uint64_t* value, int* sign, Ref<ByteArray> text, Ref<Token> token) const
 {
 	*sign = 1;
 	*value = 0;
 
-	Ref<Token> token = rootToken->firstChild();
+	token = token->firstChild();
 
 	if (token->rule() == sign_)
 	{
@@ -134,6 +127,14 @@ void IntegerLiteral::read(Ref<ByteArray> text, Ref<Token> rootToken, uint64_t* v
 			*value += x;
 		}
 	}
+}
+
+Ref<Token, Owner> IntegerLiteral::read(uint64_t* value, int* sign, Ref<ByteArray> text, int i) const
+{
+	Ref<Token, Owner> token = match(text, i);
+	if (token)
+		read(value, sign, text, token);
+	return token;
 }
 
 } // namespace ftl

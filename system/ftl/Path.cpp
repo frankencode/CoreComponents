@@ -22,30 +22,30 @@ namespace ftl
 {
 
 Path::Path(const char* path)
-	: path_(path)
+	: String(path)
 {}
 
 Path::Path(const String& path)
-	: path_(path)
+	: String(path)
 {}
 
-bool Path::isRoot() const { return path_ == "/"; }
+bool Path::isRoot() const { return String(*this) == "/"; }
 
 bool Path::isRelative() const { return !isAbsolute(); }
 bool Path::isAbsolute() const {
-	return (path_->length() > 0) ? (path_->get(0) == '/') : false;
+	return ((*this)->length() > 0) ? ((*this)->get(0) == '/') : false;
 }
 
 Path Path::absoluteRelativeTo(String currentDir) const
 {
 	if (isAbsolute())
-		return path_;
-	
+		return *this;
+
 	Ref<StringList, Owner> absoluteParts = new StringList;
-	Ref<StringList, Owner> parts = path_->split("/");
-	
+	Ref<StringList, Owner> parts = (*this)->split("/");
+
 	int upCount = 0;
-	
+
 	for (int i = 0; i < parts->length(); ++i)
 	{
 		String c = parts->at(i);
@@ -61,34 +61,34 @@ Path Path::absoluteRelativeTo(String currentDir) const
 			absoluteParts->append(c);
 		}
 	}
-	
+
 	String absolutePath;
 	if (currentDir->length() > 0)
 		absolutePath = currentDir->copy();
 	else
 		absolutePath = Process::cwd();
-	
+
 	while (upCount > 0) {
 		absolutePath = Path(absolutePath).reduce();
 		--upCount;
 	}
-	
+
 	absoluteParts->pushFront(absolutePath);
-	
+
 	return absoluteParts->join("/");
 }
 
 Path Path::absolute() const
 {
 	if (isAbsolute())
-		return path_;
+		return *this;
 	return absoluteRelativeTo(String());
 }
 
 String Path::fileName() const
 {
 	String name;
-	Ref<StringList, Owner> parts = path_->split("/");
+	Ref<StringList, Owner> parts = (*this)->split("/");
 	if (parts->length() > 0)
 		name = parts->at(-1);
 	return name;
@@ -109,7 +109,7 @@ String Path::fileNameSansExtension() const
 
 Path Path::reduce() const
 {
-	Ref<StringList, Owner> parts = path_->split("/");
+	Ref<StringList, Owner> parts = (*this)->split("/");
 	if (parts->length() > 0)
 		parts->popBack();
 	String resultPath = parts->join("/");
@@ -120,7 +120,7 @@ Path Path::reduce() const
 
 Path Path::expand(String component) const
 {
-	return Path(Format() << path_ << "/" << component);
+	return Path(Format() << *this << "/" << component);
 }
 
 Path Path::lookup(Ref<StringList> dirs, String fileName, int accessFlags)

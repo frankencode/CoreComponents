@@ -250,13 +250,10 @@ int ByteArray::toInt(bool* ok) const
 	if (!ok) ok = &h;
 	uint64_t value = 0;
 	int sign = 0;
-	int i1 = 0;
-	if (integerLiteral()->match(this, 0, &i1, &value, &sign)) {
-		 *ok = (value <= uint64_t(intMax)) && (i1 == size_);
-	}
-	else  {
+	if (integerLiteral()->read(&value, &sign, this, -1))
+		 *ok = (value <= uint64_t(intMax));
+	else
 		*ok = false;
-	}
 	return sign * int(value);
 }
 
@@ -267,48 +264,36 @@ double ByteArray::toFloat(bool* ok) const
 
 int64_t ByteArray::toInt64(bool* ok) const
 {
+	bool h;
+	if (!ok) ok = &h;
 	uint64_t value = 0;
 	int sign = 0;
-	int i1 = 0;
-	if (integerLiteral()->match(this, 0, &i1, &value, &sign)) {
-		if (ok)
-			*ok = ((value & (uint64_t(1) << 63)) != 0) && (i1 == size_);
-	}
-	else {
-		if (ok)
-			*ok = false;
-	}
+	if (integerLiteral()->read(&value, &sign, this, -1))
+		*ok = ((value & (uint64_t(1) << 63)) != 0);
+	else
+		*ok = false;
 	return sign * value;
 }
 
 uint64_t ByteArray::toUInt64(bool* ok) const
 {
+	bool h;
+	if (!ok) ok = &h;
 	uint64_t value = 0;
 	int sign = 0;
-	int i1 = 0;
-	if (integerLiteral()->match(this, 0, &i1, &value, &sign)) {
-		if (ok)
-			*ok = (sign == 1) && (i1 == size_);
-	}
-	else {
-		if (ok)
-			*ok = false;
-	}
+	if (integerLiteral()->read(&value, &sign, this, -1))
+		*ok = (sign == 1);
+	else
+		*ok = false;
 	return value;
 }
 
 float64_t ByteArray::toFloat64(bool* ok) const
 {
+	bool h;
+	if (!ok) ok = &h;
 	float64_t value = 0.;
-	int i1 = 0;
-	if (floatLiteral()->match(this, 0, &i1, &value)) {
-		if (ok)
-			*ok = (i1 == size_);
-	}
-	else {
-		if (ok)
-			*ok = false;
-	}
+	*ok = floatLiteral()->read(&value, this, -1);
 	return value;
 }
 

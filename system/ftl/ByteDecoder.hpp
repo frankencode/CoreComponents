@@ -14,7 +14,6 @@
 #include "atoms"
 #include "defaults.hpp"
 #include "Stream.hpp"
-#include "Array.hpp"
 
 namespace ftl
 {
@@ -25,42 +24,42 @@ public:
 	ByteDecoder(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN);
 	ByteDecoder(const void* buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN);
 	~ByteDecoder();
-	
+
 	bool read(uint8_t* x);
 	bool read(char* ch);
-	
+
 	void read(Ref<ByteArray> bytes);
 	Ref<ByteArray, Owner> read(int n);
-	
+
 	bool hasMore();
 	uint8_t readUInt8();
 	uint16_t readUInt16();
 	uint32_t readUInt32();
 	uint64_t readUInt64();
-	
+
 	int8_t readInt8();
 	int16_t readInt16();
 	int32_t readInt32();
 	int64_t readInt64();
-	
+
 	float32_t readFloat32();
 	float64_t readFloat64();
-	
+
 	void skipPad(int padSize);
-	
+
 	off_t numBytesRead() const;
-	
+
 	Ref<Stream> stream() const;
-	
+
 	bool endian() const;
 	void setEndian(int endian);
-	
+
 private:
 	Ref<Stream, Owner> stream_;
 	int endian_;
-	
+
 	void fill();
-	
+
 	int bufCapa_;
 	int bufFill_;
 	uint8_t* buf_;

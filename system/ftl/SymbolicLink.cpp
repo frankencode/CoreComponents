@@ -46,7 +46,7 @@ String SymbolicLink::resolve() const
 	Path path = path_;
 	while (FileStatus(path, false).type() == File::SymbolicLink) {
 		Path origPath = path;
-		path = SymbolicLink(origPath.toString()).read();
+		path = SymbolicLink(origPath).read();
 		if (path.isRelative())
 			path = origPath.reduce().expand(path);
 	}

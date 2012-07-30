@@ -44,17 +44,17 @@ private:
 	friend class Pattern;
 
 	PatternCompiler();
-	void compile(Ref<ByteArray> text, Ref<Pattern> pattern);
-	NODE compileChoice(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
-	NODE compileSequence(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
-	NODE compileAhead(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
-	NODE compileBehind(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
-	NODE compileCapture(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
-	NODE compileReference(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
-	char readChar(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
-	NODE compileRangeMinMax(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
-	NODE compileRangeExplicit(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern);
-	NODE compileRepeat(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern, NODE previous);
+	void compile(Ref<ByteArray> text, Ref<SyntaxDefinition> definition);
+	NODE compileChoice(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition);
+	NODE compileSequence(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition);
+	NODE compileAhead(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition);
+	NODE compileBehind(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition);
+	NODE compileCapture(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition);
+	NODE compileReference(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition);
+	char readChar(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition);
+	NODE compileRangeMinMax(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition);
+	NODE compileRangeExplicit(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition);
+	NODE compileRepeat(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition, NODE previous);
 
 	int gap_;
 	int any_;
@@ -282,133 +282,132 @@ PatternCompiler::PatternCompiler()
 	LINK();
 }
 
-void PatternCompiler::compile(Ref<ByteArray> text, Ref<Pattern> pattern)
+void PatternCompiler::compile(Ref<ByteArray> text, Ref<SyntaxDefinition> definition)
 {
 	Ref<SyntaxState, Owner> state = newState();
-	int i0 = 0, i1 = 0;
-	Ref<Token, Owner> token = match(text, i0, &i1, state);
-	if ((!token) || (i1 < text->length())) {
+	Ref<Token, Owner> token = match(text, 0, state);
+	if ((!token) || (token->length() < text->length())) {
 		String reason = "Syntax error";
-		int pos = i1;
+		int pos = token->length();
 		if (state->hint()) {
 			reason = state->hint();
 			pos = state->hintOffset();
 		}
 		throw PatternException(reason, pos);
 	}
-	NODE entry = compileChoice(text, token, pattern);
-	pattern->DEFINE("Expression", entry);
-	pattern->ENTRY("Expression");
-	pattern->LINK();
+	NODE entry = compileChoice(text, token, definition);
+	definition->DEFINE("Expression", entry);
+	definition->ENTRY("Expression");
+	definition->LINK();
 }
 
-NODE PatternCompiler::compileChoice(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+NODE PatternCompiler::compileChoice(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition)
 {
 	if (token->countChildren() == 1)
-		return compileSequence(text, token->firstChild(), pattern);
+		return compileSequence(text, token->firstChild(), definition);
 	NODE node = new syntax::ChoiceNode;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling())
-		node->appendChild(compileSequence(text, child, pattern));
-	return pattern->debug(node, "Choice");
+		node->appendChild(compileSequence(text, child, definition));
+	return definition->debug(node, "Choice");
 }
 
-NODE PatternCompiler::compileSequence(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+NODE PatternCompiler::compileSequence(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition)
 {
 	NODE node = new syntax::GlueNode;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
-		if (child->rule() == char_) node->appendChild(pattern->CHAR(readChar(text, child, pattern)));
-		else if (child->rule() == any_) node->appendChild(pattern->ANY());
-		else if (child->rule() == gap_) node->appendChild(pattern->GREEDY_REPEAT(pattern->ANY()));
-		else if (child->rule() == rangeMinMax_) node->appendChild(compileRangeMinMax(text, child, pattern));
-		else if (child->rule() == rangeExplicit_) node->appendChild(compileRangeExplicit(text, child, pattern));
-		else if (child->rule() == repeat_) node->appendChild(compileRepeat(text, child, pattern, node->lastChild()));
-		else if (child->rule() == boi_) node->appendChild(pattern->BOI());
-		else if (child->rule() == eoi_) node->appendChild(pattern->EOI());
-		else if (child->rule() == group_) node->appendChild(compileChoice(text, child->firstChild(), pattern));
-		else if (child->rule() == ahead_) node->appendChild(compileAhead(text, child, pattern));
-		else if (child->rule() == behind_) node->appendChild(compileBehind(text, child, pattern));
-		else if (child->rule() == capture_) node->appendChild(compileCapture(text, child, pattern));
-		else if (child->rule() == reference_) node->appendChild(compileReference(text, child, pattern));
+		if (child->rule() == char_) node->appendChild(definition->CHAR(readChar(text, child, definition)));
+		else if (child->rule() == any_) node->appendChild(definition->ANY());
+		else if (child->rule() == gap_) node->appendChild(definition->GREEDY_REPEAT(definition->ANY()));
+		else if (child->rule() == rangeMinMax_) node->appendChild(compileRangeMinMax(text, child, definition));
+		else if (child->rule() == rangeExplicit_) node->appendChild(compileRangeExplicit(text, child, definition));
+		else if (child->rule() == repeat_) node->appendChild(compileRepeat(text, child, definition, node->lastChild()));
+		else if (child->rule() == boi_) node->appendChild(definition->BOI());
+		else if (child->rule() == eoi_) node->appendChild(definition->EOI());
+		else if (child->rule() == group_) node->appendChild(compileChoice(text, child->firstChild(), definition));
+		else if (child->rule() == ahead_) node->appendChild(compileAhead(text, child, definition));
+		else if (child->rule() == behind_) node->appendChild(compileBehind(text, child, definition));
+		else if (child->rule() == capture_) node->appendChild(compileCapture(text, child, definition));
+		else if (child->rule() == reference_) node->appendChild(compileReference(text, child, definition));
 	}
 	if (node->firstChild() == node->lastChild()) {
 		NODE child = node->firstChild();
 		child->unlink();
 		return child;
 	}
-	return pattern->debug(node, "Glue");
+	return definition->debug(node, "Glue");
 }
 
-NODE PatternCompiler::compileAhead(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+NODE PatternCompiler::compileAhead(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition)
 {
 	return
 		(text->at(token->i0() + 2) == '=') ?
-			pattern->AHEAD(compileChoice(text, token->firstChild(), pattern)) :
-			pattern->NOT(compileChoice(text, token->firstChild(), pattern));
+			definition->AHEAD(compileChoice(text, token->firstChild(), definition)) :
+			definition->NOT(compileChoice(text, token->firstChild(), definition));
 }
 
-NODE PatternCompiler::compileBehind(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+NODE PatternCompiler::compileBehind(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition)
 {
 	return
 		(text->at(token->i0() + 3) == '=') ?
-			pattern->BEHIND(compileChoice(text, token->firstChild(), pattern)) :
-			pattern->NOT_BEHIND(compileChoice(text, token->firstChild(), pattern));
+			definition->BEHIND(compileChoice(text, token->firstChild(), definition)) :
+			definition->NOT_BEHIND(compileChoice(text, token->firstChild(), definition));
 }
 
-NODE PatternCompiler::compileCapture(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+NODE PatternCompiler::compileCapture(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition)
 {
 	String name = text->copy(token->firstChild());
-	pattern->TOUCH_STRING(name);
-	return pattern->GETSTRING(name, compileChoice(text, token->lastChild(), pattern));
+	definition->TOUCH_STRING(name);
+	return definition->GETSTRING(name, compileChoice(text, token->lastChild(), definition));
 }
 
-NODE PatternCompiler::compileReference(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+NODE PatternCompiler::compileReference(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition)
 {
 	String name = text->copy(token->firstChild());
-	return pattern->VARSTRING(name);
+	return definition->VARSTRING(name);
 }
 
-char PatternCompiler::readChar(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+char PatternCompiler::readChar(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition)
 {
 	return (token->i1() - token->i0() > 1) ?
 		text->copy(token)->expandInsitu()->at(0) :
 		text->at(token->i0());
 }
 
-NODE PatternCompiler::compileRangeMinMax(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+NODE PatternCompiler::compileRangeMinMax(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition)
 {
 	int n = token->countChildren();
 	bool invert = (text->at(token->i0() + 1) == '^');
 	if (n == 2) {
 		Ref<Token> min = token->firstChild();
 		Ref<Token> max = min->nextSibling();
-		char a = readChar(text, min, pattern);
-		char b = readChar(text, max, pattern);
-		return  invert ? pattern->EXCEPT(a, b) : pattern->RANGE(a, b);
+		char a = readChar(text, min, definition);
+		char b = readChar(text, max, definition);
+		return  invert ? definition->EXCEPT(a, b) : definition->RANGE(a, b);
 	}
 	else if (n == 1) {
 		Ref<Token> child = token->firstChild();
-		char ch = readChar(text, child, pattern);
+		char ch = readChar(text, child, definition);
 		return invert ?
-			( (child->i0() - token->i0() <= 2) ? pattern->BELOW(ch)            : pattern->GREATER(ch)        ) :
-			( (child->i0() - token->i0() <= 2) ? pattern->GREATER_OR_EQUAL(ch) : pattern->BELOW_OR_EQUAL(ch) );
+			( (child->i0() - token->i0() <= 2) ? definition->BELOW(ch)            : definition->GREATER(ch)        ) :
+			( (child->i0() - token->i0() <= 2) ? definition->GREATER_OR_EQUAL(ch) : definition->BELOW_OR_EQUAL(ch) );
 	}
-	return pattern->ANY();
+	return definition->ANY();
 }
 
-NODE PatternCompiler::compileRangeExplicit(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern)
+NODE PatternCompiler::compileRangeExplicit(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition)
 {
 	Ref<Token> child = token->firstChild();
 	bool invert = (text->at(token->i0() + 1) == '^');
 	int n = token->countChildren();
 	String s(n);
 	for (int i = 0; i < n; ++i) {
-		s->set(i, readChar(text, child, pattern));
+		s->set(i, readChar(text, child, definition));
 		child = child->nextSibling();
 	}
-	return invert ? pattern->EXCEPT(s->data()) : pattern->RANGE(s->data());
+	return invert ? definition->EXCEPT(s->data()) : definition->RANGE(s->data());
 }
 
-NODE PatternCompiler::compileRepeat(Ref<ByteArray> text, Ref<Token> token, Ref<Pattern> pattern, NODE previous)
+NODE PatternCompiler::compileRepeat(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition, NODE previous)
 {
 	Ref<Token> child = token->firstChild(), min, max;
 	while (child) {
@@ -421,30 +420,42 @@ NODE PatternCompiler::compileRepeat(Ref<ByteArray> text, Ref<Token> token, Ref<P
 	int modifier = text->at(token->i1() - 2);
 	previous->unlink();
 	if (modifier == '?')
-		return pattern->LAZY_REPEAT(minRepeat, previous);
+		return definition->LAZY_REPEAT(minRepeat, previous);
 	else if (modifier == '~')
-		return pattern->REPEAT(minRepeat, maxRepeat, previous);
-	return pattern->GREEDY_REPEAT(minRepeat, maxRepeat, previous);
+		return definition->REPEAT(minRepeat, maxRepeat, previous);
+	return definition->GREEDY_REPEAT(minRepeat, maxRepeat, previous);
 }
 
+Pattern::Pattern()
+{}
+
 Pattern::Pattern(const char* text)
-	:
-#ifndef NDEBUG
-	  SyntaxDefinition(new SyntaxDebugger),
-#endif
-	  text_(text)
 {
-	PatternCompiler::instance()->compile(text_, this);
+	*this = String(text);
 }
 
 Pattern::Pattern(const String& text)
-	:
-#ifndef NDEBUG
-	  SyntaxDefinition(new SyntaxDebugger),
-#endif
-	  text_(text)
 {
-	PatternCompiler::instance()->compile(text_, this);
+	*this = text;
+}
+
+const Pattern& Pattern::operator=(const char* text)
+{
+	return *this = String(text);
+}
+
+const Pattern& Pattern::operator=(const String& text)
+{
+	text_ = text;
+	set(
+		new SyntaxDefinition(
+#ifndef NDEBUG
+			new SyntaxDebugger
+#endif
+		)
+	);
+	PatternCompiler::instance()->compile(text_, *this);
+	return *this;
 }
 
 } // namespace ftl

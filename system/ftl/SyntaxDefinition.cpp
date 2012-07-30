@@ -20,14 +20,10 @@ namespace syntax
 
 Definition::Definition(Ref<DebugFactory> debugFactory)
 	: def_(new DefinitionNode(debugFactory))
-{
-	def_->incRefCount();
-}
+{}
 
 Definition::~Definition()
-{
-	def_->decRefCount();
-}
+{}
 
 int Definition::id() const { return def_->id(); }
 const char* Definition::name() const { return def_->name(); }
@@ -38,14 +34,19 @@ Node* Definition::debug(Node* newNode, const char* nodeType) { return def_->debu
 int Definition::keywordByName(const char* keyword) { return def_->keywordByName(keyword); }
 State* Definition::newState(State* parent) const { return def_->newState(parent); }
 
-Ref<Token, Owner> Definition::find(ByteArray* media, int* i0, int* i1, Ref<TokenFactory> tokenFactory) const { return def_->find(media, i0, i1, tokenFactory); }
-Ref<Token, Owner> Definition::match(ByteArray* media, int i0, int* i1, State* state, Ref<TokenFactory> tokenFactory) const { return def_->match(media, i0, i1, state, tokenFactory); }
-
-bool Definition::completeMatch(ByteArray* media) const
+Ref<Token, Owner> Definition::find(ByteArray* media, int i) const
 {
-	Ref<Token, Owner> token = match(media);
-	if (!token) return false;
-	return !media->has(token->length());
+	return def_->find(media, &i);
+}
+
+Ref<Token, Owner> Definition::match(ByteArray* media, int i, Ref<SyntaxState> state) const
+{
+	int i0 = (i >= 0) ? i : 0, h;
+	Ref<Token, Owner> token = def_->match(media, i0, &h, state);
+	if ((i < 0) && (token)) {
+		if (media->has(token->i1())) token = 0;
+	}
+	return token;
 }
 
 void Definition::SYNTAX(const char* name) { def_->SYNTAX(name); }

@@ -14,7 +14,6 @@
 #include "atoms"
 #include "defaults.hpp"
 #include "Stream.hpp"
-#include "Array.hpp"
 
 namespace ftl
 {
@@ -26,39 +25,39 @@ public:
 	ByteEncoder(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN);
 	ByteEncoder(void* buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN);
 	~ByteEncoder();
-	
+
 	void write(uint8_t x);
 	void write(char ch);
-	
+
 	void write(Ref<ByteArray> bytes);
-	
+
 	void writeUInt8(uint8_t x);
 	void writeUInt16(uint16_t x);
 	void writeUInt32(uint32_t x);
 	void writeUInt64(uint64_t x);
-	
+
 	void writeInt8(int8_t x);
 	void writeInt16(int16_t x);
 	void writeInt32(int32_t x);
 	void writeInt64(int64_t x);
-	
+
 	void writeFloat32(float32_t x);
 	void writeFloat64(float64_t x);
-	
+
 	void writePad(int padSize);
-	
+
 	off_t numBytesWritten() const;
 	void flush();
-	
+
 	Ref<Stream> stream() const;
-	
+
 	int endian() const;
 	void setEndian(int endian);
-	
+
 private:
 	Ref<Stream, Owner> stream_;
 	int endian_;
-	
+
 	int bufCapa_;
 	uint8_t* buf_;
 	int i_;    // byte offset within buf_
