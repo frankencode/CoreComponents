@@ -64,22 +64,13 @@ FloatLiteral::FloatLiteral()
 	LINK();
 }
 
-bool FloatLiteral::match(Ref<ByteArray> text, int i0, int* i1, float64_t* value)
+void FloatLiteral::read(float64_t* value, Ref<ByteArray> text, Ref<Token> token) const
 {
-	Ref<Token, Owner> rootToken = SyntaxDefinition::match(text, i0, i1);
-	if (rootToken) *value = read(text, rootToken);
-	return rootToken;
-}
-
-float64_t FloatLiteral::read(Ref<ByteArray> text, Ref<Token> rootToken) const
-{
-	float64_t value;
-
-	Ref<Token> token = rootToken->firstChild();
+	token = token->firstChild();
 
 	if (token->rule() == nan_)
 	{
-		value = nan;
+		*value = nan;
 	}
 	else if (token->rule() == infinite_)
 	{
@@ -87,9 +78,9 @@ float64_t FloatLiteral::read(Ref<ByteArray> text, Ref<Token> rootToken) const
 		one = 1.; zero = 0.;
 
 		if (text->get(token->index()) == '-')
-			value = -one / zero;
+			*value = -one / zero;
 		else
-			value = one / zero;
+			*value = one / zero;
 	}
 	else
 	{
@@ -136,10 +127,16 @@ float64_t FloatLiteral::read(Ref<ByteArray> text, Ref<Token> rootToken) const
 			token = token->nextSibling();
 		}
 
-		value = sign * mantissa * ::pow(10., float64_t(epSign * ep));
+		*value = sign * mantissa * ::pow(10., float64_t(epSign * ep));
 	}
+}
 
-	return value;
+Ref<Token, Owner> FloatLiteral::read(float64_t* value, Ref<ByteArray> text, int i) const
+{
+	Ref<Token, Owner> token = match(text, i);
+	if (token)
+		read(value, text, token);
+	return token;
 }
 
 } // namespace ft

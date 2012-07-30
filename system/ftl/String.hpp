@@ -20,7 +20,6 @@ namespace ftl
 
 class Format;
 class Variant;
-class Path;
 
 class String: public Ref<ByteArray, Owner>
 {
@@ -47,7 +46,6 @@ public:
 	// helper constructors
 	String(const Format& b);
 	String(const Variant& b);
-	String(const Path& b);
 
 	// initialize string by deep-copying a byte array
 	String(const char* data, int size = -1): Super(new ByteArray(data, size)) {}

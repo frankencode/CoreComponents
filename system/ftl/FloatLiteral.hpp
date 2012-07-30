@@ -20,8 +20,8 @@ namespace ftl
 class FloatLiteral: public SyntaxDefinition, public Singleton<FloatLiteral>
 {
 public:
-	bool match(Ref<ByteArray> text, int i0, int* i1, float64_t* value);
-	float64_t read(Ref<ByteArray> text, Ref<Token> token) const;
+	void read(float64_t* value, Ref<ByteArray> text, Ref<Token> token) const;
+	Ref<Token, Owner> read(float64_t* value, Ref<ByteArray> text, int i = -1) const;
 
 	inline int literal() const { return literal_; }
 

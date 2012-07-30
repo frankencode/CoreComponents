@@ -208,8 +208,7 @@ Json::Json()
 
 Variant Json::parse(String text)
 {
-	int i0 = 0, i1 = 0;
-	Ref<Token, Owner> token = match(text, i0, &i1);
+	Ref<Token, Owner> token = match(text);
 	FTL_CHECK(token, JsonException, "Invalid syntax");
 	return parseText(text, token);
 }

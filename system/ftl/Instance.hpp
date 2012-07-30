@@ -34,7 +34,7 @@ public:
 
 /** \brief reference counting and secure destruction
   *
-  * Base class for all classes T, which instances can be referred to by Ref<T>.
+  * Base class for all classes T, whose instances can be referred to by Ref<T>.
   * Enforces a consistent allocation schema by surpressing two things:
   *   - combination of static allocation and dynamic destruction
   *   - manual detruction by delete operator
@@ -44,7 +44,7 @@ class RefCounter
 {
 public:
 	RefCounter(): refCount_(0) {}
-	
+
 	virtual ~RefCounter()
 	{
 #ifndef NDEBUG
@@ -52,22 +52,22 @@ public:
 			FTL_THROW(ReferenceException, "Deleting object, which is still in use");
 #endif
 	}
-	
+
 	inline int refCount() const { return refCount_; }
-	
+
 	inline void incRefCount() {
 		__sync_add_and_fetch(&refCount_, 1);
 	}
-	
+
 	inline void decRefCount() {
 		if (__sync_sub_and_fetch(&refCount_, 1) == 0)
 			delete this;
 	}
-	
-	RefCounter(const RefCounter& b): refCount_(0) {}
-	inline const RefCounter& operator=(const RefCounter& b) { return *this; }
-	
+
 private:
+	RefCounter(const RefCounter&);
+	const RefCounter& operator=(const RefCounter&);
+
 	volatile int refCount_;
 };
 
@@ -75,7 +75,7 @@ class BackRefList
 {
 public:
 	BackRefList(): backRefHead_(0) {}
-	
+
 	virtual ~BackRefList()
 	{
 		if (backRefHead_) {
@@ -95,7 +95,7 @@ public:
 			mutex_.release();
 		}
 	}
-	
+
 	inline void addBackRef(BackRef* ref)
 	{
 		mutex_.acquire();
@@ -106,7 +106,7 @@ public:
 		backRefHead_ = ref;
 		mutex_.release();
 	}
-	
+
 	inline void delBackRef(BackRef* ref)
 	{
 		mutex_.acquire();
@@ -118,12 +118,12 @@ public:
 			backRefHead_ = backRefHead_->succ_;
 		mutex_.release();
 	}
-	
+
 	// ensure back reference lists are kept consistent on copying
 	// (in theory an automomatically synthesized assignment operator in inherited class will invoke this)
 	BackRefList(const BackRefList& b): backRefHead_(0) {}
 	inline const BackRefList& operator=(const BackRefList& b) { return *this; }
-	
+
 private:
 	SpinLock mutex_;
 	BackRef* backRefHead_;

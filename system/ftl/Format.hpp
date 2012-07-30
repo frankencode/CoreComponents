@@ -34,7 +34,6 @@ public:
 
 	inline Format& print(const String& s) { get()->insert(nextPlaceHolder()->j_, s); return *this; }
 	inline Format& print(const Ref<ByteArray, Owner>& s) { return print(String(s)); }
-	inline Format& print(Path p) { return print(p.toString()); }
 	inline Format& print(const char* s) { return print(String(s)); }
 
 	inline Format& print(char ch) { get()->insert(nextPlaceHolder()->j_, String(&ch, 1)); return *this; }

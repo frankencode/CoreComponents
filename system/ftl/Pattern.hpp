@@ -11,10 +11,10 @@
 #ifndef FTL_PATTERN_HPP
 #define FTL_PATTERN_HPP
 
-#include "SyntaxDefinition.hpp"
 #ifndef NDEBUG
 #include "SyntaxDebugger.hpp"
 #endif
+#include "SyntaxDefinition.hpp"
 #include "String.hpp"
 
 namespace ftl
@@ -26,21 +26,23 @@ public:
 	PatternException(const String& error, int pos);
 	~PatternException() throw();
 	const char* what() const throw();
+
 private:
 	String message_;
 	String error_;
 	int pos_;
 };
 
-class Pattern: public SyntaxDefinition
+class Pattern: public Ref<SyntaxDefinition, Owner>
 {
 public:
+	Pattern();
 	Pattern(const char* text);
 	Pattern(const String& text);
 
-#ifndef NDEBUG
-	inline Ref<SyntaxDebugger> debugger() const { return debugFactory(); }
-#endif
+	const Pattern& operator=(const char* text);
+	const Pattern& operator=(const String& text);
+
 	inline String text() const { return text_; }
 
 private:

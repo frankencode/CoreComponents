@@ -3,14 +3,6 @@
 
 using namespace ftl;
 
-Ref<StringList, Owner> expandFileList(String pattern, Ref<StringList, Owner> result = 0)
-{
-	Ref<StringList, Owner> fileList = result;
-	if (!fileList) fileList = new StringList;
-
-	return fileList;
-}
-
 int main(int argc, char** argv)
 {
 	Ref<Config, Owner> config = new Config("Mach");

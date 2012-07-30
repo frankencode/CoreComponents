@@ -24,9 +24,9 @@ CommandLine::CommandLine()
 	  position_(0)
 {
 	STATE_CHAR("quote", '\"');
-	
+
 	DEFINE("whitespace", REPEAT(1, RANGE(" \t")));
-	
+
 	longNameRule_ =
 		DEFINE("longName",
 			GLUE(
@@ -45,7 +45,7 @@ CommandLine::CommandLine()
 				)
 			)
 		);
-	
+
 	shortNameRule_ =
 		DEFINE("shortName",
 			CHOICE(
@@ -54,7 +54,7 @@ CommandLine::CommandLine()
 				RANGE('0', '9')
 			)
 		);
-	
+
 	DEFINE("assignment",
 		GLUE(
 			REPEAT(0, 1, INLINE("whitespace")),
@@ -63,7 +63,7 @@ CommandLine::CommandLine()
 			REF("value")
 		)
 	);
-	
+
 	valueRule_ =
 		DEFINE("value",
 			CHOICE(
@@ -89,7 +89,7 @@ CommandLine::CommandLine()
 				)
 			)
 		);
-	
+
 	optionRule_ =
 		DEFINE("option",
 			GLUE(
@@ -116,7 +116,7 @@ CommandLine::CommandLine()
 				NOT(CHAR('='))
 			)
 		);
-	
+
 	DEFINE_VOID("options",
 		GLUE(
 			REPEAT(
@@ -135,7 +135,7 @@ CommandLine::CommandLine()
 			EOI()
 		)
 	);
-	
+
 	ENTRY("options");
 	LINK();
 }
@@ -210,29 +210,28 @@ String stripQuotes(String s)
 Ref<StringList, Owner> CommandLine::read(String line)
 {
 	position_ = 0;
-	
-	int i0 = 0, i1 = -1;
-	Ref<Token, Owner> rootToken = match(line, i0, &i1);
+
+	Ref<Token, Owner> rootToken = match(line);
 	if (!rootToken)
 		FTL_THROW(CommandLineException, "Unrecognized option syntax");
-	
+
 	Ref<Token> token = rootToken->firstChild();
-	
+
 	while (token) {
 		if (token->rule() != optionRule_)
 			break;
 		readOption(line, token);
 		token = token->nextSibling();
 	}
-	
+
 	verifyTypes();
-	
+
 	Ref<StringList, Owner> files = new StringList;
 	while (token) {
 		files->append(stripQuotes(line->copy(token->i0(), token->i1())));
 		token = token->nextSibling();
 	}
-	
+
 	return files;
 }
 
@@ -241,7 +240,7 @@ void CommandLine::verifyTypes()
 	for (int i = 0; i < definedOptions_->length(); ++i)
 	{
 		Ref<CommandOption> option = definedOptions_->at(i);
-		
+
 		if ( ((option->value_.type() & option->typeMask_) == 0) &&
 		     (option->typeMask_ != 0) )
 		{
@@ -253,7 +252,7 @@ void CommandLine::verifyTypes()
 void CommandLine::readOption(String line, Ref<Token> token)
 {
 	token = token->firstChild();
-	
+
 	if (token->rule() == shortNameRule_)
 	{
 		while (token)
@@ -262,9 +261,9 @@ void CommandLine::readOption(String line, Ref<Token> token)
 			Ref<CommandOption> option = optionByShortName(name);
 			if (!option)
 				FTL_THROW(CommandLineException, str::cat(String::join(Format("Unsupported option: '-%%'") << name)->data()));
-			
+
 			usedOptions_->append(option);
-			
+
 			token = token->nextSibling();
 			if (token) {
 				if (token->rule() == valueRule_) {
@@ -286,9 +285,9 @@ void CommandLine::readOption(String line, Ref<Token> token)
 		Ref<CommandOption> option = optionByLongName(name);
 		if (!option)
 			FTL_THROW(CommandLineException, str::dup(String::join(Format("Unsupported option: '--%%'") << name)->data()));
-		
+
 		usedOptions_->append(option);
-		
+
 		token = token->nextSibling();
 		if (!token)
 			option->value_ = true;
@@ -301,7 +300,7 @@ void CommandLine::readValue(Ref<CommandOption> option, String line, Ref<Token> t
 {
 	String s = stripQuotes(line->copy(token->i0(), token->i1()));
 	Variant& value = option->value_;
-	
+
 	if (value.type() == Variant::StringType) {
 		value = s;
 	}
@@ -310,25 +309,25 @@ void CommandLine::readValue(Ref<CommandOption> option, String line, Ref<Token> t
 		bool off = (s == "0") || (s == "L") || (s == "l") || (s == "off") || (s == "Off") || (s == "false") || (s == "False");
 		if (!(on && off))
 			FTL_THROW(CommandLineException, "Unrecognized option syntax");
-		
+
 		value = on;
 	}
 	else if (value.type()== Variant::IntType) {
 		bool ok = false;
 		int x = s->toInt(&ok);
-		
+
 		if (!ok)
 			FTL_THROW(CommandLineException, "Unrecognized option syntax");
-		
+
 		value = x;
 	}
 	else if (value.type() == Variant::FloatType) {
 		bool ok = false;
 		double x = s->toFloat(&ok);
-		
+
 		if (!ok)
 			FTL_THROW(CommandLineException, "Unrecognized option syntax");
-		
+
 		value = x;
 	}
 }
@@ -362,12 +361,12 @@ String CommandLine::helpText() const
 	String synopsis = synopsis_;
 	if (synopsis == "")
 		synopsis = Format() << execName_ << " [OPTION]... [" << entity_ << "]...";
-	
+
 	String options;
 	{
 		Ref<StringList, Owner> lines = new StringList;
 		int maxLength = 0;
-		
+
 		for (int i = 0; i < definedOptions_->length(); ++i) {
 			Ref<CommandOption> option = definedOptions_->get(i);
 			Format format("  ");
@@ -390,9 +389,9 @@ String CommandLine::helpText() const
 			if (line->size() > maxLength) maxLength = line->size();
 			lines->append(line);
 		}
-		
+
 		String indent = String(maxLength + 2, ' ');
-		
+
 		for (int i = 0; (i < definedOptions_->length()) && (i < lines->length()); ++i)
 		{
 			Ref<CommandOption> option = definedOptions_->at(i);
@@ -404,10 +403,10 @@ String CommandLine::helpText() const
 			line << "\n";
 			lines->set(i, line);
 		}
-		
+
 		options = String::join(lines);
 	}
-	
+
 	Format text;
 	text << "Usage: " << synopsis << "\n";
 	if (summary_->size() > 0)
@@ -417,7 +416,7 @@ String CommandLine::helpText() const
 	text << options;
 	if (details_->size() > 0)
 		text << "\n" << details_ << "\n";
-	
+
 	return text;
 }
 
