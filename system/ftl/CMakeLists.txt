@@ -151,6 +151,10 @@ SET(FTLSYSTEM_HEADER
 	Json.hpp
 
 	Property.hpp
+
+	MachObject.hpp
+	MachCompiler.hpp
+	GccCompiler.hpp
 )
 
 SET(FTLSYSTEM_SOURCE
@@ -253,6 +257,9 @@ SET(FTLSYSTEM_SOURCE
 	WireObject.cpp
 	Config.cpp
 	Json.cpp
+
+	MachCompiler.cpp
+	GccCompiler.cpp
 )
 
 ADD_LIBRARY(ftlsystem

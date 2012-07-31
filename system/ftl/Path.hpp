@@ -37,7 +37,7 @@ public:
 	Path reduce() const;
 	Path expand(String component) const;
 
-	static Path lookup(Ref<StringList> dirs, String fileName, int accessFlags = File::Exists);
+	static Path lookup(String fileName, Ref<StringList> dirs = 0, int accessFlags = File::Execute);
 };
 
 } // namespace ftl
