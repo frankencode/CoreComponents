@@ -123,8 +123,13 @@ Path Path::expand(String component) const
 	return Path(Format() << *this << "/" << component);
 }
 
-Path Path::lookup(Ref<StringList> dirs, String fileName, int accessFlags)
+Path Path::lookup(String fileName, Ref<StringList> dirs, int accessFlags)
 {
+	Ref<StringList, Owner> h;
+	if (!dirs) {
+		h = Process::env("PATH")->split(':');
+		dirs = h;
+	}
 	String path;
 	for (int i = 0; i < dirs->length(); ++i) {
 		String candidate = Format() << dirs->at(i) << "/" << fileName;

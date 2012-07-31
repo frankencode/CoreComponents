@@ -83,9 +83,9 @@ Ref<Process, Owner> ProcessFactory::produce()
 	int inputPipe[2];
 	int outputPipe[2];
 	int errorPipe[2];
-	
+
 	int ptyMaster = -1, ptySlave = -1;
-	
+
 	if (ioPolicy_ & Process::ForwardByPseudoTerminal)
 	{
 		if (::openpty(&ptyMaster, &ptySlave, 0/*ptyname*/, 0/*termp*/, 0/*winp*/) == -1)
@@ -96,35 +96,35 @@ Ref<Process, Owner> ProcessFactory::produce()
 		if (ioPolicy_ & Process::ForwardInput)
 			if (::pipe(inputPipe) == -1)
 				FTL_SYSTEM_EXCEPTION;
-		
+
 		if (ioPolicy_ & Process::ForwardOutput)
 			if (::pipe(outputPipe) == -1)
 				FTL_SYSTEM_EXCEPTION;
-		
+
 		if (ioPolicy_ & Process::ForwardError)
 			if (::pipe(errorPipe) == -1)
 				FTL_SYSTEM_EXCEPTION;
 	}
-	
+
 	int ret = ::fork();
-	
+
 	if (ret == 0)
 	{
 		// child process
-		
+
 		if (type_ == Process::GroupLeader)
 			::setpgid(0, 0);
 		else if (type_ == Process::SessionLeader)
 			::setsid();
-		
+
 		if (ioPolicy_ & Process::ForwardByPseudoTerminal)
 		{
 			if (::close(ptyMaster) == -1)
 				FTL_SYSTEM_EXCEPTION;
-			
+
 			if (type_ == Process::SessionLeader)
 				::ioctl(ptySlave, TIOCSCTTY, 0);
-			
+
 			{
 				struct termios attr;
 				::tcgetattr(ptySlave, &attr);
@@ -135,26 +135,23 @@ Ref<Process, Owner> ProcessFactory::produce()
 				::tcsetattr(ptySlave, TCSANOW, &attr);
 			}
 		}
-		
-		String execPathAbsolute = execPath_;
+
 		if (workingDirectory_ != "") {
-			// if (!execPath_.contains("/"))
-			//	execPathAbsolute = Format() << Process::cwd() << "/" << execPath_;
 			if (::chdir(workingDirectory_) == -1)
 				FTL_SYSTEM_EXCEPTION;
 		}
-		
+
 		if (signalMask_) {
 			if (::sigprocmask(SIG_SETMASK, signalMask_->rawSet(), 0) == -1)
 				FTL_SYSTEM_EXCEPTION;
 		}
-		
+
 		if (hasFileCreationMask_) ::umask(fileCreationMask_);
-		
+
 		if (ioPolicy_ & Process::CloseInput) ::close(0);
 		if (ioPolicy_ & Process::CloseOutput) ::close(1);
 		if (ioPolicy_ & Process::CloseError) ::close(2);
-		
+
 		if (rawInput_) ::dup2(rawInput_->fd(), 0);
 		if (rawOutput_) ::dup2(rawOutput_->fd(), 1);
 		if (rawError_) ::dup2(rawError_->fd(), 2);
@@ -184,19 +181,19 @@ Ref<Process, Owner> ProcessFactory::produce()
 				::close(errorPipe[1]);
 			}
 		}
-		
+
 		if (ioPolicy_ & Process::ErrorToOutput) ::dup2(1, 2);
-		
+
 		if (execPath_ != "")
 		{
 			// prepare the argument list
-			
+
 			Ref<StringList> arguments = arguments_;
 			if (arguments) if (arguments->length() == 0) arguments = 0;
-			
+
 			int argc = arguments ? arguments->length() : 1;
 			char** argv = new char*[argc + 1];
-			
+
 			if (arguments) {
 				for (int i = 0; i < arguments->length(); ++i)
 					argv[i] = str::dup(arguments->at(i)->data());
@@ -205,11 +202,11 @@ Ref<Process, Owner> ProcessFactory::produce()
 				argv[0] = str::dup(execPath_->data());
 			}
 			argv[argc] = 0;
-			
+
 			// prepare the environment map
-			
+
 			char** envp = 0;
-			
+
 			if (envMap_) {
 				int n = envMap_->length();
 				envp = new char*[n + 1];
@@ -220,11 +217,11 @@ Ref<Process, Owner> ProcessFactory::produce()
 			else {
 				envp = Process::environ();
 			}
-			
+
 			// load new program
-			
-			::execve(execPathAbsolute, argv, envp);
-			
+
+			::execve(execPath_, argv, envp);
+
 			FTL_SYSTEM_EXCEPTION;
 		}
 		else
@@ -235,15 +232,15 @@ Ref<Process, Owner> ProcessFactory::produce()
 	else if (ret > 0)
 	{
 		// parent process
-		
+
 		Ref<SystemStream, Owner> rawInput;
 		Ref<SystemStream, Owner> rawOutput;
 		Ref<SystemStream, Owner> rawError;
-		
+
 		if (ioPolicy_ & Process::ForwardByPseudoTerminal)
 		{
 			::close(ptySlave);
-			
+
 			if (ioPolicy_ & Process::ForwardInput)
 				rawInput = new SystemStream(ptyMaster);
 			if ((ioPolicy_ & Process::ForwardOutput) || (ioPolicy_ & Process::ForwardError)) {
@@ -268,7 +265,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 				rawError = new SystemStream(errorPipe[0]);
 			}
 		}
-		
+
 		return new Process(
 			type_,
 			ioPolicy_,
@@ -282,7 +279,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 	{
 		FTL_SYSTEM_EXCEPTION;
 	}
-	
+
 	FTL_ASSERT(0 == 1);
 	return 0;
 }

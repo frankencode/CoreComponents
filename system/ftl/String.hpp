@@ -50,6 +50,11 @@ public:
 	// initialize string by deep-copying a byte array
 	String(const char* data, int size = -1): Super(new ByteArray(data, size)) {}
 
+	// syntax sugar
+	String(Ref<StringList, Owner> parts);
+	Ref<StringList, Owner> operator+(const char* b) const { return *this + String(b); }
+	Ref<StringList, Owner> operator+(const String& b) const;
+
 	inline static String join(Ref<StringList> parts, String sep = "") { return ByteArray::join(parts, sep); }
 
 	// assign a shallow copy of another string
@@ -75,6 +80,9 @@ public:
 	inline bool operator<=(const String& b) const { return str::cmp((*this)->data(), b->data()) <= 0; }
 	inline bool operator>=(const String& b) const { return str::cmp((*this)->data(), b->data()) >= 0; }
 };
+
+inline Ref<StringList, Owner> operator+(const char* a, const String& b) { return String(a) + b; }
+inline Ref<StringList, Owner> operator+(Ref<StringList, Owner> a, const String& b) { *a << b; return a; }
 
 inline bool operator< (const char* a, const String& b) { return str::cmp(a, b->data()) <  0; }
 inline bool operator==(const char* a, const String& b) { return str::cmp(a, b->data()) == 0; }

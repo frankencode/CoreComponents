@@ -37,20 +37,21 @@ namespace ftl
 
 Ref<Process, Owner> Process::start(String command, Ref<ProcessFactory> factory)
 {
-	Ref<ProcessFactory, Owner> factory_;
+	Ref<ProcessFactory, Owner> h;
 	if (!factory) {
-		factory_ = new ProcessFactory;
-		factory = factory_;
+		h = new ProcessFactory;
+		factory = h;
+		factory->setIoPolicy(ForwardInput|ForwardOutput|ForwardError);
 	}
-	
+
 	Ref<StringList, Owner> args = command->split(' ');
 	factory->setArguments(args);
 	String name = args->at(0);
-	
-	String path = Path::lookup(Process::env("PATH")->split(":"), name, File::Execute);
+
+	String path = Path::lookup(name);
 	if (path == "") path = name;
 	factory->setExecPath(path);
-	
+
 	return factory->produce();
 }
 
@@ -77,6 +78,11 @@ Process::Process(
 	if (rawInput) input_ = new LineSink(rawInput);
 	if (rawOutput) output_ = new LineSource(rawOutput);
 	if (rawError) error_ = new LineSource(rawError);
+}
+
+Process::~Process()
+{
+	if (processId_ != -1) wait();
 }
 
 int Process::type() const { return type_; }
@@ -122,6 +128,7 @@ int Process::wait()
 		status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
 		status = WTERMSIG(status) + 128;
+	processId_ = -1;
 	return status;
 }
 

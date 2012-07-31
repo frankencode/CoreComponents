@@ -33,15 +33,15 @@ class Process: public Instance
 public:
 	static Ref<Process, Owner> start(String command, Ref<ProcessFactory> factory = 0);
 	static int exec(String command, Ref<ProcessFactory> factory = 0);
-	
+
 	// -- child process control interface
-	
+
 	enum Type {
 		GroupMember,
 		GroupLeader,
 		SessionLeader
 	};
-	
+
 	enum IoPolicy {
 		ForwardInput = 1,
 		ForwardOutput = 2,
@@ -54,59 +54,59 @@ public:
 		ForwardAll = ForwardInput|ForwardOutput|ForwardError,
 		CloseAll = CloseInput|CloseOutput|CloseError
 	};
-	
+
 	int type() const;
 	int ioPolicy() const;
-	
+
 	Ref<SystemStream> rawInput() const;
 	Ref<SystemStream> rawOutput() const;
 	Ref<SystemStream> rawError() const;
-	
+
 	Ref<LineSink> input() const;
 	Ref<LineSource> output() const;
 	Ref<LineSource> error() const;
-	
+
 	pid_t id() const;
-	
+
 	void kill(int signal = SIGTERM, bool* permissionDenied = 0);
 	bool isRunning() const;
-	
+
 	int wait();
-	
+
 	// -- querying the current process status
-	
+
 	static void cd(String path);
 	static String cwd();
 	static String execPath();
-	
+
 	static mode_t setFileCreationMask(mode_t mask);
-	
+
 	static uid_t realUserId();
 	static gid_t realGroupId();
 	static uid_t effectiveUserId();
 	static gid_t effectiveGroupId();
 	static bool isSuperUser();
-	
+
 	static String env(String key);
 	static void setEnv(String key, String value);
 	static void unsetEnv(String key);
 	static char**& environ();
-	
+
 	static Ref<EnvMap, Owner> envMap();
-	
+
 	static pid_t currentId();
 	static pid_t parentId();
-	
+
 	static void kill(pid_t processId, int signal, bool* permissionDenied = 0);
 	static void killGroup(pid_t processGroupId, int signal, bool* permissionDenied = 0);
 	static void raise(int signal);
-	
+
 	static void sleep(Time duration);
 	static void exit(int exitCode);
-	
+
 protected:
 	friend class ProcessFactory;
-	
+
 	Process(
 		int type,
 		int ioPolicy,
@@ -115,19 +115,21 @@ protected:
 		Ref<SystemStream> rawError,
 		pid_t processId
 	);
-	
+
+	~Process();
+
 private:
 	int type_;
 	int ioPolicy_;
-	
+
 	Ref<SystemStream, Owner> rawInput_;
 	Ref<SystemStream, Owner> rawOutput_;
 	Ref<SystemStream, Owner> rawError_;
-	
+
 	Ref<LineSink, Owner> input_;
 	Ref<LineSource, Owner> output_;
 	Ref<LineSource, Owner> error_;
-	
+
 	pid_t processId_;
 };
 
