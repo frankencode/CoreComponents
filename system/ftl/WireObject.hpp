@@ -17,15 +17,7 @@
 namespace ftl
 {
 
-class WireObjectException: public StdException
-{
-public:
-	WireObjectException(const String& reason): reason_(reason) {}
-	~WireObjectException() throw() {}
-	const char* what() const throw() { return reason_; }
-private:
-	String reason_;
-};
+FTL_STD_EXCEPTION(WireObjectException);
 
 class WireObject: public Map<String, Variant>
 {
@@ -43,13 +35,18 @@ public:
 
 	inline String className() const { return className_; }
 
-	Variant member(const String& name) const;
-	void setMember(const String& name, const Variant& newValue);
+	bool hasMember(String path) const;
+	Variant member(String path) const;
+	void setMember(String path, Variant value);
 
 private:
 	friend class Wire;
+
+	Ref<WireObject> resolve(String path, String* name = 0, Variant* value = 0) const;
 	String className_;
 };
+
+typedef VariantList WireList;
 
 } // namespace ftl
 

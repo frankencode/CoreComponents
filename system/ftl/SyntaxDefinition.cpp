@@ -34,15 +34,15 @@ Node* Definition::debug(Node* newNode, const char* nodeType) { return def_->debu
 int Definition::keywordByName(const char* keyword) { return def_->keywordByName(keyword); }
 State* Definition::newState(State* parent) const { return def_->newState(parent); }
 
-Ref<Token, Owner> Definition::find(ByteArray* media, int i) const
+Ref<Token, Owner> Definition::find(const ByteArray* media, int i) const
 {
-	return def_->find(media, &i);
+	return def_->find(const_cast<ByteArray*>(media), &i);
 }
 
-Ref<Token, Owner> Definition::match(ByteArray* media, int i, Ref<SyntaxState> state) const
+Ref<Token, Owner> Definition::match(const ByteArray* media, int i, Ref<SyntaxState> state) const
 {
 	int i0 = (i >= 0) ? i : 0, h;
-	Ref<Token, Owner> token = def_->match(media, i0, &h, state);
+	Ref<Token, Owner> token = def_->match(const_cast<ByteArray*>(media), i0, &h, state);
 	if ((i < 0) && (token)) {
 		if (media->has(token->i1())) token = 0;
 	}

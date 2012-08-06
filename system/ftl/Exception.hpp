@@ -27,7 +27,7 @@ public:
 	Exception(const char* path, int line, const char* className, const char* reason, bool reasonOnHeap = false);
 	~Exception() throw();
 	const char* what() const throw();
-	
+
 protected:
 	const char* path_;
 	int line_;
@@ -106,6 +106,17 @@ FTL_EXCEPTION(DebugException, Exception);
 
 class Interrupt {};
 class Timeout {};
+
+#define FTL_STD_EXCEPTION(DerivedClass) \
+class DerivedClass: public StdException \
+{ \
+public: \
+	DerivedClass(const String& error): error_(error) {} \
+	~DerivedClass() throw() {} \
+	inline const char* what() const throw() { return error_; } \
+private: \
+	String error_; \
+};
 
 } // namespace ftl
 

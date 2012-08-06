@@ -2,27 +2,33 @@
 #define FTL_MACHOBJECT_HPP
 
 #include "String.hpp"
+#include "Format.hpp"
 
 namespace ftl
 {
 
+class File;
+class WireObject;
+
 class MachObject: public Instance
 {
 public:
-	MachObject(String object, String source, Ref<StringList> dependencies)
-		: object_(object),
-		  source_(source),
-		  dependencies_(dependencies)
-	{}
+	MachObject(String objectPath, String sourcePath, Ref<StringList> dependencyPaths);
 
-	inline String object() const { return object_; }
-	inline String source() const { return source_; }
-	inline Ref<StringList> dependencies() const { return dependencies_; }
+	inline String objectPath() const { return objectPath_; }
+	inline String sourcePath() const { return sourcePath_; }
+	inline Ref<StringList> dependencyPaths() const { return dependencyPaths_; }
+
+	static Ref<MachObject, Owner> parse(Ref<WireObject> wireObject);
+	void stringifyTo(Format text, String indent);
+
+	Ref<File> sourceFile();
 
 private:
-	String object_;
-	String source_;
-	Ref<StringList> dependencies_;
+	String objectPath_;
+	String sourcePath_;
+	Ref<StringList, Owner> dependencyPaths_;
+	Ref<File, Owner> sourceFile_;
 };
 
 typedef List<MachObject> MachObjectList;

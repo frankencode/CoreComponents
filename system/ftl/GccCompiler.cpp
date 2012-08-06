@@ -1,5 +1,5 @@
 #include "Path.hpp"
-#include "Format.hpp"
+#include "Pattern.hpp"
 #include "Process.hpp"
 #include "ProcessFactory.hpp"
 #include "GccCompiler.hpp"
@@ -17,7 +17,9 @@ GccCompiler::GccCompiler(int options, String execPath)
 
 Ref<MachObject, Owner> GccCompiler::analyse(String source)
 {
-	return 0;
+	String text = Process::start(execPath() + " -MM -MG " + source)->rawOutput()->readAll();
+	Ref<StringList, Owner> parts = text->split(Pattern("[:\\\\\n\r ]{1,}"));
+	return new MachObject(parts->pop(0), source, parts);
 }
 
 bool GccCompiler::compile(Ref<MachObject, Owner> object)

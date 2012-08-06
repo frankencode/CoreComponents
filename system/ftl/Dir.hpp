@@ -34,7 +34,7 @@ public:
 	bool read(DirEntry* entry);
 	bool isOpen() const;
 
-	static void establish(String path, int mode = 0755);
+	void establish(int mode = 0755);
 
 private:
 	String path_;

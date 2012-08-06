@@ -16,15 +16,7 @@
 namespace ftl
 {
 
-class ConfigException: public StdException
-{
-public:
-	ConfigException(const String& reason): reason_(reason) {}
-	~ConfigException() throw() {}
-	const char* what() const throw() { return reason_; }
-private:
-	String reason_;
-};
+FTL_STD_EXCEPTION(ConfigException);
 
 class Config: public Instance
 {

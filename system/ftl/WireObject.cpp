@@ -15,36 +15,44 @@
 namespace ftl
 {
 
-Variant WireObject::member(const String& name) const
+Ref<WireObject> WireObject::resolve(String path, String* name, Variant* value) const
 {
-	Variant value;
-	Ref<StringList, Owner> parts = name->split('.');
+	String hn;  if (!name) name = &hn;
+	Variant hv; if (!value) value = &hv;
+	Ref<StringList, Owner> parts = path->split('.');
 	Ref<WireObject> object = this;
 	for (int i = 0, n = parts->length(); i < n; ++i) {
-		if (object->lookup(parts->at(i), &value)) {
+		*name = parts->at(i);
+		if (object->lookup(*name, value)) {
 			if (i == n - 1) break;
-			object = value;
+			object = *value;
 			if (object) continue;
 		}
-		throw WireObjectException(Format("No such member: \"%%\"") << name);
+		return 0;
 	}
+	return object;
+}
+
+bool WireObject::hasMember(String path) const
+{
+	return resolve(path);
+}
+
+Variant WireObject::member(String path) const
+{
+	Variant value;
+	if (!resolve(path, 0, &value))
+		throw WireObjectException(Format("No such member: \"%%\"") << path);
 	return value;
 }
 
-void WireObject::setMember(const String& name, const Variant& newValue)
+void WireObject::setMember(String path, Variant value)
 {
-	Variant value;
-	Ref<StringList, Owner> parts = name->split('.');
-	Ref<WireObject> object = this;
-	for (int i = 0, n = parts->length(); i < n; ++i) {
-		if (object->lookup(parts->at(i), &value)) {
-			if (i == n - 1) break;
-			object = value;
-			if (object) continue;
-		}
-		throw WireObjectException(Format("No such member: \"%%\"") << name);
-	}
-	object->setValue(name, newValue);
+	String name;
+	Ref<WireObject> object = resolve(path, &name, &value);
+	if (!object)
+		throw WireObjectException(Format("No such member: \"%%\"") << path);
+	object->setValue(name, value);
 }
 
 } // namespace ftl

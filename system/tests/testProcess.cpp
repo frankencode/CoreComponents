@@ -10,7 +10,7 @@ int main(int argc, char** argv)
 {
 	if (argc == 2)
 		return echo(argc, argv);
-	
+
 	{
 		class TestFactory: public ProcessFactory
 		{
@@ -20,28 +20,28 @@ int main(int argc, char** argv)
 				return 7;
 			}
 		};
-		
+
 		print("(1) Worker clone\n\n");
-		
+
 		Ref<ProcessFactory, Owner> factory = new TestFactory;
 		Ref<Process, Owner> worker = factory->produce();
 		int ret = worker->wait();
 		print("ret = %%\n", ret);
 		print("\n");
 	}
-	
+
 	{
 		print("(2) I/O Redirection, passing of arguments and environment variables\n\n");
-		
+
 		Ref<ProcessFactory, Owner> factory = new ProcessFactory;
 		factory->setExecPath(argv[0]);
 		factory->setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
 		factory->arguments()->append(argv[0]);
 		factory->arguments()->append("--echo 123");
-		factory->envMap()->assign("Hello", "World!");
-		
+		factory->envMap()->establish("Hello", "World!");
+
 		Ref<Process, Owner> process = factory->produce();
-		
+
 		print("Created child process with pid = %%\n", unsigned(process->id()));
 
 		const char* message =
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 			"exit\n";
 		process->rawInput()->write(message, str::len(message));
 		process->rawInput()->close();
-		
+
 		const int bufSize = 16;
 		uint8_t buf[bufSize];
 		while (true) {
@@ -57,14 +57,14 @@ int main(int argc, char** argv)
 			if (bufFill == 0) break;
 			rawOutput()->write(buf, bufFill);
 		}
-		
+
 		print("Waiting for child process to finish...\n");
-		
+
 		int ret = process->wait();
 		print("ret = %%\n", ret);
 		print("\n");
 	}
-	
+
 	{
 		print("(3) Current process\n\n");
 		print("Process::cwd() = %%\n", Process::cwd());
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 		print("Process::isSuperUser() = %%\n", Process::isSuperUser());
 		print("\n");
 	}
-	
+
 	return 0;
 }
 
@@ -86,14 +86,14 @@ int echo(int argc, char** argv)
 	Process::setEnv("Hello", "Echo");
 	print("Process::env(\"Hello\") = \"%%\"\n", Process::env("Hello"));
 	print("commandLine = \"%%\"\n", commandLine->join(" "));
-	
+
 	while (true) {
 		String line = input()->readLine();
 		if ((line == "") || (line == "exit"))
 			break;
 		output()->writeLine(line);
 	}
-	
+
 	return 13;
 }
 

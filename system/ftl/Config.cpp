@@ -18,7 +18,9 @@ namespace ftl
 Config::Config(const char* path)
 {
 	try {
-		String text = File::open(path, File::Read)->readAll();
+		Ref<File, Owner> file = new File(path);
+		file->open(File::Read);
+		String text = file->readAll();
 		object_ = wire()->parse(text);
 	}
 	catch (StreamException&) {

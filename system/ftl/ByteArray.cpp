@@ -142,7 +142,7 @@ Ref<Character> ByteArray::chars() const
 	return chars_;
 }
 
-int ByteArray::find(int i, const char* pattern) const
+int ByteArray::find(const char* pattern, int i) const
 {
 	if (!has(i)) return size_;
 	if (!pattern[0]) return size_;
@@ -157,6 +157,12 @@ int ByteArray::find(int i, const char* pattern) const
 		}
 	}
 	return size_;
+}
+
+int ByteArray::find(Ref<SyntaxDefinition> pattern, int i) const
+{
+	Ref<Token, Owner> token = pattern->find(this, i);
+	return (token) ? token->i0(): size_;
 }
 
 Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, const char* sep)
@@ -198,7 +204,7 @@ Ref<StringList, Owner> ByteArray::split(const char* sep) const
 	int i0 = 0;
 	int sepLength = str::len(sep);
 	while (i0 < size_) {
-		int i1 = find(i0, sep);
+		int i1 = find(sep, i0);
 		if (i1 == size_) break;
 		parts->append(copy(i0, i1));
 		i0 = i1 + sepLength;
@@ -207,6 +213,17 @@ Ref<StringList, Owner> ByteArray::split(const char* sep) const
 		parts->append(copy(i0, size_));
 	else
 		parts->append(String());
+	return parts;
+}
+
+Ref<StringList, Owner> ByteArray::split(Ref<SyntaxDefinition> pattern) const
+{
+	Ref<StringList, Owner> parts = new StringList;
+	for (int i = 0; i < size_;) {
+		Ref<Token, Owner> token = pattern->find(this, i);
+		parts->append(copy(i, token->i0()));
+		i = token->i1();
+	}
 	return parts;
 }
 

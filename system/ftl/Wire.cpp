@@ -176,7 +176,7 @@ Wire::Wire()
 			REF("int::Literal"),
 			REF("Concatenation"),
 			REF("Object"),
-			REF("Array"),
+			REF("List"),
 			REF("SpecialValue"),
 			GLUE(
 				HINT("Invalid value"),
@@ -186,7 +186,7 @@ Wire::Wire()
 	);
 
 	array_ =
-		DEFINE("Array",
+		DEFINE("List",
 			GLUE(
 				CHAR('['),
 				INLINE("Noise"),
@@ -214,7 +214,7 @@ Wire::Wire()
 						INLINE("Noise")
 					)
 				),
-				HINT("Unterminated array, expected ']'"),
+				HINT("Unterminated list, expected ']'"),
 				CHAR(']'),
 				DONE()
 			)

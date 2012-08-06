@@ -41,7 +41,7 @@ Ref<Process, Owner> Process::start(String command, Ref<ProcessFactory> factory)
 	if (!factory) {
 		h = new ProcessFactory;
 		factory = h;
-		factory->setIoPolicy(ForwardInput|ForwardOutput|ForwardError);
+		factory->setIoPolicy(ForwardInput|ForwardOutput);
 	}
 
 	Ref<StringList, Owner> args = command->split(' ');
@@ -82,7 +82,11 @@ Process::Process(
 
 Process::~Process()
 {
-	if (processId_ != -1) wait();
+	if (processId_ != -1) {
+		int status = wait();
+		if (status != 0)
+			throw ProcessException(Format("Process unsuccessful, status = %%") << status);
+	}
 }
 
 int Process::type() const { return type_; }

@@ -6,6 +6,8 @@
 namespace ftl
 {
 
+FTL_STD_EXCEPTION(MachException);
+
 class WireObject;
 
 class MachCompiler: public Instance
@@ -25,7 +27,7 @@ public:
 	inline String machine() const { return machine_; }
 	inline int options() const { return options_; }
 
-	virtual Ref<MachObject, Owner> analyse(String source)= 0;
+	virtual Ref<MachObject, Owner> analyse(String source) = 0;
 	virtual bool compile(Ref<MachObject, Owner> object) = 0;
 	virtual bool link(Ref<MachObjectList> objectList) = 0;
 

@@ -33,8 +33,6 @@ private:
 	int pos_;
 };
 
-typedef VariantList WireList;
-
 class Wire;
 
 class Wire: public SyntaxDefinition, public Singleton<Wire>

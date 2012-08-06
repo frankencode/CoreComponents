@@ -38,7 +38,7 @@ bool Path::isAbsolute() const {
 
 Path Path::absoluteRelativeTo(String currentDir) const
 {
-	if (isAbsolute())
+	if ((isAbsolute()) || (currentDir == "."))
 		return *this;
 
 	Ref<StringList, Owner> absoluteParts = new StringList;

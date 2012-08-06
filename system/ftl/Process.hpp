@@ -28,6 +28,8 @@ class ProcessFactory;
 
 typedef Map<String, String> EnvMap;
 
+FTL_STD_EXCEPTION(ProcessException);
+
 class Process: public Instance
 {
 public:
