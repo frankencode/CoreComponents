@@ -43,8 +43,8 @@ public:
 	int keywordByName(const char* keyword);
 	State* newState(State* parent = 0) const;
 
-	Ref<Token, Owner> find(ByteArray* media, int i = 0) const;
-	Ref<Token, Owner> match(ByteArray* media, int i = -1, Ref<SyntaxState> state = 0) const;
+	Ref<Token, Owner> find(const ByteArray* media, int i = 0) const;
+	Ref<Token, Owner> match(const ByteArray* media, int i = -1, Ref<SyntaxState> state = 0) const;
 
 	void SYNTAX(const char* name);
 	void IMPORT(Ref<Definition> definition, const char* name = 0);

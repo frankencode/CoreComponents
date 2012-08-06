@@ -95,7 +95,7 @@ public:
 
 	/** Insert or overwrite a key-value mapping.
 	  */
-	inline void assign(const Key& key, const Value& value) {
+	inline void establish(const Key& key, const Value& value) {
 		int index = 0;
 		if (!insert(key, value, 0, &index))
 			valueAt(index) = value;

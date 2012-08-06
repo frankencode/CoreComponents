@@ -197,13 +197,6 @@ void File::open(int flags)
 	openFlags_ = flags;
 }
 
-Ref<File, Owner> File::open(String path, int flags)
-{
-	Ref<File, Owner> file = new File(path);
-	file->open(flags);
-	return file;
-}
-
 Ref<File, Owner> File::temp()
 {
 	Ref<File, Owner> file =
@@ -219,32 +212,28 @@ Ref<File, Owner> File::temp()
 	return file;
 }
 
-String File::load(String path)
+void File::establish(int fileMode, int dirMode)
+{
+	if (path_->contains('/'))
+		(new Dir(Path(path_).reduce()))->establish(dirMode);
+	if (!exists())
+		create(fileMode);
+}
+
+String File::load()
 {
 	String text;
-	try { text = File::open(path, File::Read)->readAll(); }
-	catch (StreamException&) {}
-	return text;
+	establish();
+	open(File::Read);
+	return readAll();
 }
 
-void File::save(String path, String text)
+void File::save(String text)
 {
-	Ref<File, Owner> file = new File(path);
-	try {
-		file->open(File::Write);
-	}
-	catch (StreamSemanticException &) {
-		establish(path);
-		file->open(File::Write);
-	}
-	file->write(text);
-}
-
-void File::establish(String path, int fileMode, int dirMode)
-{
-	if (path->contains('/'))
-		Dir::establish(Path(path).reduce(), dirMode);
-	if (!File(path).exists()) File(path).create(fileMode);
+	establish();
+	open(File::Write);
+	truncate(0);
+	write(text);
 }
 
 off_t File::seek(off_t distance, int method)

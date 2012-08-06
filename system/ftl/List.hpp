@@ -135,6 +135,14 @@ public:
 
 	Ref<List, Owner> unique(int order = SortOrder::Ascending) const { return sort(order, true); }
 
+	bool equals(Ref<List> b) const
+	{
+		if (length() != b->length()) return false;
+		for (int i = 0; i < length(); ++i)
+			if (at(i) != b->at(i)) return false;
+		return true;
+	}
+
 private:
 	typedef OrdinalTree< OrdinalNode<Item> > Tree;
 	typedef typename Tree::Node Node;

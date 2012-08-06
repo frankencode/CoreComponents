@@ -83,16 +83,17 @@ bool Dir::read(DirEntry* entry)
 
 bool Dir::isOpen() const { return dir_; }
 
-void Dir::establish(String path, int mode)
+void Dir::establish(int mode)
 {
 	Ref<StringList, Owner> missingDirs = new StringList;
+	String path = path_;
 	while ((path != "") && (path != "/")) {
-		if (Dir(path).exists()) break;
+		if (exists()) break;
 		missingDirs->push(path);
 		path = Path(path).reduce();
 	}
 	while (missingDirs->length() > 0)
-		Dir(missingDirs->pop()).create(mode);
+		(new Dir(missingDirs->pop()))->create(mode);
 }
 
 } // namespace ftl

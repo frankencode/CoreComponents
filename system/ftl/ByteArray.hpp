@@ -24,6 +24,9 @@ class Character;
 class String;
 typedef List<String> StringList;
 
+namespace syntax { class Definition; }
+typedef syntax::Definition SyntaxDefinition;
+
 class ByteArray: public Sequence<char, int>
 {
 public:
@@ -147,16 +150,17 @@ public:
 		return n;
 	}
 
-	int find(int i, const char* pattern) const;
-	inline int find(int i, Ref<ByteArray> pattern) const { return find(i, pattern->data_); }
-	inline int find(const char* pattern) const { return find(0, pattern); }
+	int find(const char* pattern, int i = 0) const;
+	inline int find(Ref<ByteArray> pattern, int i = 0) const { return find(pattern->data_, i); }
+	int find(Ref<SyntaxDefinition> pattern, int i = 0) const;
 
 	inline int contains(Ref<ByteArray> pattern) const { return contains(pattern->data()); }
-	inline int contains(const char* pattern) const { return find(0, pattern) != size_; }
+	inline int contains(const char* pattern) const { return find(pattern) != size_; }
 
 	static Ref<ByteArray, Owner> join(Ref<StringList> parts, const char* sep = "");
 	Ref<StringList, Owner> split(char sep) const;
 	Ref<StringList, Owner> split(const char* sep) const;
+	Ref<StringList, Owner> split(Ref<SyntaxDefinition> pattern) const;
 
 	void replaceInsitu(const char* pattern, const char* replacement);
 	Ref<ByteArray, Owner> replace(const char* pattern, const char* replacement) const;

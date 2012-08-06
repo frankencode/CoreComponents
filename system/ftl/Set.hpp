@@ -83,9 +83,12 @@ public:
 		return found;
 	}
 
-	/** Convenience wrapper to lookup()
-	  */
-	inline bool contains(const Item& item) { return tree_.lookup(item); }
+	inline bool contains(const Item& item)
+	{
+		bool found = false;
+		tree_.find(item, &found);
+		return found;
+	}
 
 	inline Set& push(const Item& item)
 	{
