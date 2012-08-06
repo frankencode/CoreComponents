@@ -83,6 +83,7 @@ public:
 
 inline Ref<StringList, Owner> operator+(const char* a, const String& b) { return String(a) + b; }
 inline Ref<StringList, Owner> operator+(Ref<StringList, Owner> a, const String& b) { *a << b; return a; }
+inline Ref<StringList, Owner> operator+(Ref<StringList, Owner> a, Ref<StringList, Owner> b) { *a << *b; return a; }
 
 inline bool operator< (const char* a, const String& b) { return str::cmp(a, b->data()) <  0; }
 inline bool operator==(const char* a, const String& b) { return str::cmp(a, b->data()) == 0; }

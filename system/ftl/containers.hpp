@@ -22,7 +22,7 @@ class Container: public Source<T>, public NonCopyable
 public:
 	virtual bool isEmpty() const = 0;
 	virtual T pop() = 0;
-	
+
 	inline bool read(T* item) {
 		if (!isEmpty()) {
 			pop(item);
@@ -30,14 +30,15 @@ public:
 		}
 		return false;
 	}
-	
+
 	virtual CT& push(const T& item) = 0;
 	virtual CT& pop(T* item) = 0;
 	inline CT& operator<<(const T& item) { return push(item); }
 	inline CT& operator>>(T& item) { return pop(&item); }
 	inline CT& operator<<(Source<T>& source) {
-		while (source.hasNext())
-			push(source.next());
+		T item;
+		while (source.read(&item))
+			push(item);
 		return *static_cast<CT*>(this);
 	}
 };
@@ -47,21 +48,21 @@ class GenericIterator: public Source<typename Container::Item>
 {
 public:
 	typedef typename Container::Item Item;
-	
+
 	GenericIterator(Ref<Container> container)
 		: container_(container),
 		  i_(0)
 	{}
-	
+
 	inline bool read(Item* item) {
 		bool more = container_->has(i_);
 		if (more)
 			*item = container_->get(i_++);
 		return more;
 	}
-	
+
 	inline operator int() const { return i_; }
-	
+
 private:
 	Ref<Container> container_;
 	int i_;

@@ -83,7 +83,7 @@ public:
 	inline Item popFront() { return pop(0); }
 	inline Item popBack() { return pop(length() - 1); }
 
-	int find(const Item& item, int index) const
+	int find(const Item& item, int index = 0) const
 	{
 		while (index < length()) {
 			if (at(index) == item) break;
@@ -103,7 +103,6 @@ public:
 		}
 		return numReplaced;
 	}
-	inline int find(const Item& item) const { return find(item, 0); }
 	inline bool contains(const Item& item) const { return find(item) < length(); }
 	inline Item join(const Item& sep = Item()) const { return Item::join(this, sep); }
 
