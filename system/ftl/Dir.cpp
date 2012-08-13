@@ -93,7 +93,7 @@ void Dir::establish(int mode)
 		path = Path(path).reduce();
 	}
 	while (missingDirs->length() > 0)
-		(new Dir(missingDirs->pop()))->create(mode);
+		newInstance<Dir>(missingDirs->pop())->create(mode);
 }
 
 } // namespace ftl

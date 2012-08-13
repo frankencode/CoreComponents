@@ -46,7 +46,7 @@ private:
 	Wire();
 	String parseConcatenation(Ref<ByteArray> text, Ref<Token> token);
 	Ref<WireObject, Owner> parseObject(Ref<ByteArray> text, Ref<Token> token);
-	Ref<WireList, Owner> parseArray(Ref<ByteArray> text, Ref<Token> token);
+	Ref<VariantList, Owner> parseList(Ref<ByteArray> text, Ref<Token> token);
 	Variant parseValue(Ref<ByteArray> text, Ref<Token> token);
 
 	int string_;

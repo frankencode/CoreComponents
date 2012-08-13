@@ -339,15 +339,15 @@ Ref<WireObject, Owner> Wire::parseObject(Ref<ByteArray> text, Ref<Token> token)
 	return object;
 }
 
-Ref<WireList, Owner> Wire::parseArray(Ref<ByteArray> text, Ref<Token> token)
+Ref<VariantList, Owner> Wire::parseList(Ref<ByteArray> text, Ref<Token> token)
 {
-	Ref<WireList, Owner> array = new WireList(token->countChildren());
+	Ref<VariantList, Owner> list = new VariantList(token->countChildren());
 	int i = 0;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
-		array->set(i, parseValue(text, child));
+		list->set(i, parseValue(text, child));
 		++i;
 	}
-	return array;
+	return list;
 }
 
 Variant Wire::parseValue(Ref<ByteArray> text, Ref<Token> token)
@@ -371,7 +371,7 @@ Variant Wire::parseValue(Ref<ByteArray> text, Ref<Token> token)
 		value = parseObject(text, token);
 	}
 	else if (token->rule() == array_) {
-		value = parseArray(text, token);
+		value = parseList(text, token);
 	}
 	else if (token->rule() == specialValue_) {
 		if (token->keyword() == true_)

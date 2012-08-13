@@ -46,8 +46,6 @@ private:
 	String className_;
 };
 
-typedef VariantList WireList;
-
 } // namespace ftl
 
 #endif // FTL_WIREOBJECT_HPP
