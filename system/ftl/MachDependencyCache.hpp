@@ -24,7 +24,7 @@ private:
 	Ref<MachCompiler, Owner> compiler_;
 	Ref<File, Owner> cacheFile_;
 	Time cacheTime_;
-	typedef Map< String, Ref<MachObject> > Cache;
+	typedef Map< String, Ref<MachObject, Owner> > Cache;
 	Ref<Cache, Owner> cache_;
 };
 

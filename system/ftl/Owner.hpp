@@ -58,6 +58,18 @@ private:
 	#endif
 };
 
+template<class T>
+Ref<T, Owner> newInstance() { return new T; }
+
+template<class T, class A0>
+Ref<T, Owner> newInstance(A0 a0) { return new T(a0); }
+
+template<class T, class A0, class A1>
+Ref<T, Owner> newInstance(A0 a0, A1 a1) { return new T(a0, a1); }
+
+template<class T, class A0, class A1, class A2>
+Ref<T, Owner> newInstance(A0 a0, A1 a1, A2 a2) { return new T(a0, a1, a2); }
+
 } // namespace ftl
 
 #endif // FTL_OWNER_HPP

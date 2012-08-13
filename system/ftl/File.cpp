@@ -215,7 +215,7 @@ Ref<File, Owner> File::temp()
 void File::establish(int fileMode, int dirMode)
 {
 	if (path_->contains('/'))
-		(new Dir(Path(path_).reduce()))->establish(dirMode);
+		newInstance<Dir>(Path(path_).reduce())->establish(dirMode);
 	if (!exists())
 		create(fileMode);
 }
@@ -303,8 +303,12 @@ Ref<FileStatus> File::status() const
 	if (!status_) {
 		Mutex& mutex = localStatic<Mutex, FileStatus>();
 		Guard<Mutex> guard(&mutex);
-		if (!status_)
-			status_ = new FileStatus(fd_);
+		if (!status_) {
+			if (isOpen())
+				status_ = new FileStatus(fd_);
+			else
+				status_ = new FileStatus(path_);
+		}
 	}
 	return status_;
 }
