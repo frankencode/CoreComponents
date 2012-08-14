@@ -196,6 +196,18 @@ public:
 	Ref<ByteArray, Owner> md5() const;
 	Ref<ByteArray, Owner> base64() const;
 
+	bool isRootPath() const;
+	bool isRelativePath() const;
+	bool isAbsolutePath() const;
+
+	Ref<ByteArray, Owner> makeAbsolutePathRelativeTo(String currentDir) const;
+	Ref<ByteArray, Owner> makeAbsolutePath() const;
+	Ref<ByteArray, Owner> fileName() const;
+	Ref<ByteArray, Owner> fileNameSansFirstExtension() const;
+	Ref<ByteArray, Owner> fileNameSansExtension() const;
+	Ref<ByteArray, Owner> reducePath() const;
+	Ref<ByteArray, Owner> expandPath(String component) const;
+
 protected:
 	friend class Singleton<ByteArray>;
 

@@ -60,7 +60,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 		else if (major == 3)
 			terminalName_ = Format("ttyp%%") << minor;
 	}*/
-	loginName_ = User(FileStatus(path).ownerId()).loginName();
+	loginName_ = User(FileStatus::newInstance(path)->ownerId()).loginName();
 	processStatus_ = parts->at(2)->get(0);
 	file->close();
 #else // def __linux

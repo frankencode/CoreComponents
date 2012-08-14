@@ -52,7 +52,7 @@ bool Glob::read(DirEntry* entry)
 		if (pattern_->match(entry->name())) {
 			if (remainder_->length() == 0)
 				return true;
-			String path = (StringList() << dir_->path() << "/" << entry->name()).join();
+			String path = dir_->path() + "/" + entry->name();
 			if (Dir::newInstance(path)->exists()) {
 				child_ = new Glob(path, remainder_);
 				return read(entry);

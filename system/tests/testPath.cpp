@@ -6,21 +6,21 @@ namespace ftl
 int main(int argc, char** argv)
 {
 	print("argv[0] = \"%%\"\n", argv[0]);
-	print("Path(argv[0]).fileName() = \"%%\"\n", Path(argv[0]).fileName());
-	print("Path(argv[0]).isAbsolute() = %%\n", Path(argv[0]).isAbsolute());
-	print("Path(argv[0]).makeAbsolute() = \"%%\"\n", Path(argv[0]).absolute());
+	print("String(argv[0])->fileName() = \"%%\"\n", String(argv[0])->fileName());
+	print("String(argv[0])->isAbsolutePath() = %%\n", String(argv[0])->isAbsolutePath());
+	print("String(argv[0])->makeAbsolutePath() = \"%%\"\n", String(argv[0])->makeAbsolutePath());
 	{
-		String path = Path(argv[0]).absolute();
+		String path = String(argv[0])->makeAbsolutePath();
 		while (path != "/") {
-			path = Path(path).reduce();
-			print("Path(path1).reduce() = \"%%\"\n", path);
+			path = path->reducePath();
+			print("path1->reduce() = \"%%\"\n", path);
 		}
 	}
 	{
 		String path = argv[0];
 		while (path->contains('/')) {
-			path = Path(path).reduce();
-			print("Path(path2).reduce() = \"%%\"\n", path);
+			path = path->reducePath();
+			print("path2->reduce() = \"%%\"\n", path);
 		}
 	}
 	return 0;

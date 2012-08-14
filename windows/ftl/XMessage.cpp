@@ -55,7 +55,7 @@ const char *XMessage::messageName() const
 		"client event",    // 33
 		"mapping notify"     // 34
 	};
-	
+
 	return ((0 <= messageCode) && (messageCode <= 34)) ? names[messageCode] : "unknown";
 }
 
@@ -81,7 +81,7 @@ void XError::printTo(Ref<LineSink> sink) const
 		"id choice", "name", "length", "implementation"
 	};
 	const char* errorName = errorNames[((1 <= errorCode) && (errorCode <= 17)) ? int(errorCode) : 0];
-	
+
 	if (errorCode == 2) {
 		ftl::printTo(sink, "X11 %% error (opcode: %%.%%, bad value: %%) [%%]\n",
 			errorName, majorOpcode, minorOpcode, badSomething, sequenceNumber
@@ -147,10 +147,10 @@ void XInputEvent::printTo(Ref<LineSink> sink) const
 		else if (detail == XInputEvent::Nonlinear)        detailString = "nonlinear";
 		else if (detail == XInputEvent::NonlinearVirtual) detailString = "nonlinear virtual";
 	}
-	
+
 	String stateString;
 	{
-		Ref<StringList, Owner> bitNames = new StringList;
+		Ref<StringList, Owner> bitNames = StringList::newInstance();
 		if      (state & XInputEvent::Shift)   bitNames->append("Shift");
 		else if (state & XInputEvent::Lock)    bitNames->append("Lock");
 		else if (state & XInputEvent::Control) bitNames->append("Control");
@@ -166,7 +166,7 @@ void XInputEvent::printTo(Ref<LineSink> sink) const
 		else if (state & XInputEvent::Button5) bitNames->append("Button5");
 		stateString = bitNames->join("|");
 	}
-	
+
 	ftl::printTo(sink, "X11 %% event (\n"
 		"  %%, time: %%,\n"
 		"  root window id: %%,\n"
@@ -210,7 +210,7 @@ void XFocusEvent::printTo(Ref<LineSink> sink) const
 	if      (mode == XFocusEvent::Grab)         modeString = "grab";
 	else if (mode == XFocusEvent::Ungrab)       modeString = "ungrab";
 	else if (mode == XFocusEvent::WhileGrabbed) modeString = "while grabbed";
-	
+
 	ftl::printTo(sink, "X11 %% event (\n"
 		"  %%, %%\n"
 		"  event window id: %%\n"
@@ -313,7 +313,7 @@ void XVisibilityNotifyEvent::printTo(Ref<LineSink> sink) const
 	if (state == Unobscured) stateString = "unobscured";
 	else if (state == PartiallyObscured) stateString = "partially obscured";
 	else if (state == FullyObscured) stateString = "fully obscured";
-	
+
 	ftl::printTo(sink, "X11 visibility notify event (\n"
 		"  window id: %%\n"
 		"  state: %% (%%)\n"

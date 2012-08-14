@@ -11,7 +11,6 @@
 
 #include <dlfcn.h>
 #include "SymbolicLink.hpp"
-#include "Path.hpp"
 #include "LinkInfo.hpp"
 
 int ftl_hook;

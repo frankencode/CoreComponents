@@ -41,7 +41,7 @@ Ref<ByteArray, Owner> Character::copy(int i0, int i1) const
 
 Ref<StringList, Owner> String::split(const char* pattern) const
 {
-	Ref<StringList, Owner> parts = new StringList;
+	Ref<StringList, Owner> parts = StringList::newInstance();
 	int i0 = 0;
 	int patternLength = Utf8Walker::length(pattern);
 	while (i0 < Super::get()->chars()->length()) {

@@ -70,7 +70,6 @@ SET(FTLSYSTEM_HEADER
 	Format.hpp
 	Pattern.hpp
 	Variant.hpp
-	Path.hpp
 
 	stdio
 	Stream.hpp
@@ -194,7 +193,6 @@ SET(FTLSYSTEM_SOURCE
 	FormatSpecifier.cpp
 	Format.cpp
 	Pattern.cpp
-	Path.cpp
 
 	# stdio
 	Stream.cpp

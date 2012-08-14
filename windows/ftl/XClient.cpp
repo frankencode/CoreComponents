@@ -26,7 +26,7 @@ XClient::XClient()
 	: defaultScreen_(0),
 	  resourceIdMutex_(new Mutex),
 	  nextResourceId_(0),
-	  freeResourceIds_(new List<uint32_t>),
+	  freeResourceIds_(List<uint32_t>::newInstance()),
 	  sequenceNumberMutex_(new Mutex),
 	  sequenceNumber_(0),
 	  messageFiltersMutex_(new Mutex),
@@ -34,7 +34,7 @@ XClient::XClient()
 {
 	String host = 0;
 	int display = 0;
-	
+
 	Ref<SocketAddress, Owner> address;
 	String authProtocol, authData;
 	{
@@ -54,7 +54,7 @@ XClient::XClient()
 			Ref<SocketAddressList, Owner> list = SocketAddress::resolve(host, "x11");
 			if (list->length() == 0) FTL_THROW(XException, "Unknown host");
 			address = list->get(0);
-			
+
 			if (host == "") host = SocketAddress::hostName();
 			XAuthFile file;
 			Ref<XAuthRecords> records = file.records();
@@ -71,12 +71,12 @@ XClient::XClient()
 			}
 		}
 	}
-	
+
 	socket_ = new StreamSocket(address);
 	socket_->connect();
-	
+
 	Ref<ByteEncoder, Owner> sink = new ByteEncoder(socket_);
-	
+
 	sink->writeUInt8((sink->endian() == LittleEndian) ? 'l' : 'B');
 	sink->writeUInt8(0); // unused
 	sink->writeUInt16(11); // protocol-major-version
@@ -89,12 +89,12 @@ XClient::XClient()
 	sink->write(authData);
 	sink->writePad(4);
 	sink->flush();
-	
+
 	Ref<ByteDecoder, Owner> source = new ByteDecoder(socket_);
-	
+
 	displayInfo_ = new XDisplayInfo;
 	displayInfo_->read(source);
-	
+
 	if (defaultScreen_ >= displayInfo_->screenInfo->length())
 		defaultScreen_ = displayInfo_->screenInfo->length() - 1;
 }
@@ -139,7 +139,7 @@ int XClient::createWindow(Ref<XWindow> window)
 	Ref<XScreenInfo> screenInfo = displayInfo_->screenInfo->at(defaultScreen_);
 	window->visualId_ = screenInfo->rootVisualId;
 	window->depth_ = screenInfo->rootDepth;
-	
+
 	Ref<ByteEncoder, Owner> sink = messageEncoder();
 	sink->writeUInt8(1);
 	sink->writeUInt8(window->depth_);
@@ -206,14 +206,14 @@ void XClient::run()
 	printTo(error(), "XClient::run()\n");
 	try {
 		Ref<ByteDecoder, Owner> source = new ByteDecoder(socket_);
-		
+
 		while (true) {
 			uint8_t messageCode = source->readUInt8();
 			bool synthetic = messageCode & 0x80;
 			messageCode &= 0x7F;
-			
+
 			Ref<XMessage, Owner> message;
-			
+
 			if (messageCode == XMessage::Error) {
 				message = new XError(messageCode, synthetic, source);
 			}

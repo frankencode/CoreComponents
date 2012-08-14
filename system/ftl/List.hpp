@@ -25,10 +25,9 @@ public:
 	typedef T Item;
 	typedef GenericIterator<List> Iterator;
 
-	List() {}
-	List(int n): tree_(n) {}
+	inline static Ref<List, Owner> newInstance() { return new List; }
+	inline static Ref<List, Owner> newInstance(int n) { return new List(n); }
 
-	explicit List(const List& b): tree_(b.tree_) {}
 	virtual Ref<List, Owner> clone() const { return new List(*this); }
 
 	inline Iterator iterator() const { return Iterator(this); }
@@ -146,6 +145,10 @@ private:
 	typedef OrdinalTree< OrdinalNode<Item> > Tree;
 	typedef typename Tree::Node Node;
 
+	List() {}
+	List(int n): tree_(n) {}
+
+	explicit List(const List& b): tree_(b.tree_) {}
 	const List& operator=(const List& b);
 
 	Tree tree_;

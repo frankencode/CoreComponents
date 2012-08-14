@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 
 int echo(int argc, char** argv)
 {
-	Ref<StringList, Owner> commandLine = new StringList;
+	Ref<StringList, Owner> commandLine = StringList::newInstance();
 	for (int i = 0; i < argc; ++i)
 		commandLine->append(argv[i]);
 	print("Process::cwd() = \"%%\"\n", Process::cwd());

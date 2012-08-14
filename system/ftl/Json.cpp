@@ -34,7 +34,7 @@ Json::Json()
 		)
 	);
 
-	DEFINE_VOID("begin-array",
+	DEFINE_VOID("begin-list",
 		GLUE(
 			INLINE("ws"),
 			CHAR('['),
@@ -42,7 +42,7 @@ Json::Json()
 		)
 	);
 
-	DEFINE_VOID("end-array",
+	DEFINE_VOID("end-list",
 		GLUE(
 			INLINE("ws"),
 			CHAR(']'),
@@ -138,7 +138,7 @@ Json::Json()
 			CHOICE(
 				KEYWORD("true false null"),
 				REF("object"),
-				REF("array"),
+				REF("list"),
 				REF("number"),
 				REF("string")
 			)
@@ -175,10 +175,10 @@ Json::Json()
 			)
 		);
 
-	array_ =
-		DEFINE("array",
+	list_ =
+		DEFINE("list",
 			GLUE(
-				INLINE("begin-array"),
+				INLINE("begin-list"),
 				REPEAT(0, 1,
 					GLUE(
 						REF("value"),
@@ -190,7 +190,7 @@ Json::Json()
 						)
 					)
 				),
-				INLINE("end-array")
+				INLINE("end-list")
 			)
 		);
 
@@ -198,7 +198,7 @@ Json::Json()
 		DEFINE("JSON-text",
 			CHOICE(
 				REF("object"),
-				REF("array")
+				REF("list")
 			)
 		);
 
@@ -233,14 +233,14 @@ Variant Json::parseObject(Ref<ByteArray> text, Ref<Token> token)
 
 Variant Json::parseArray(Ref<ByteArray> text, Ref<Token> token)
 {
-	FTL_CHECK(token->rule() == array_, JsonException, "");
-	Ref<VariantList, Owner> array = new VariantList(token->countChildren());
+	FTL_CHECK(token->rule() == list_, JsonException, "");
+	Ref<VariantList, Owner> list = VariantList::newInstance(token->countChildren());
 	int i = 0;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
-		array->set(i, parseValue(text, child));
+		list->set(i, parseValue(text, child));
 		++i;
 	}
-	return array;
+	return list;
 }
 
 Pair<String, Variant> Json::parseMember(Ref<ByteArray> text, Ref<Token> token)
@@ -262,7 +262,7 @@ Variant Json::parseValue(Ref<ByteArray> text, Ref<Token> token)
 		Ref<Token> child = token->firstChild();
 		if (child->rule() == object_)
 			value = parseObject(text, child);
-		else if (child->rule() == array_)
+		else if (child->rule() == list_)
 			value = parseArray(text, child);
 		else if (child->rule() == string_)
 			value = parseString(text, child);

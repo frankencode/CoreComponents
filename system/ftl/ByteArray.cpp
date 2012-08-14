@@ -18,6 +18,8 @@
 #include "Character.hpp"
 #include "Md5.hpp"
 #include "Base64.hpp"
+#include "Format.hpp"
+#include "Process.hpp"
 #include "ByteArray.hpp"
 
 namespace ftl
@@ -196,7 +198,7 @@ Ref<StringList, Owner> ByteArray::split(char sep) const
 
 Ref<StringList, Owner> ByteArray::split(const char* sep) const
 {
-	Ref<StringList, Owner> parts = new StringList;
+	Ref<StringList, Owner> parts = StringList::newInstance();
 	int i0 = 0;
 	int sepLength = str::len(sep);
 	while (i0 < size_) {
@@ -214,7 +216,7 @@ Ref<StringList, Owner> ByteArray::split(const char* sep) const
 
 Ref<StringList, Owner> ByteArray::split(Ref<SyntaxDefinition> pattern) const
 {
-	Ref<StringList, Owner> parts = new StringList;
+	Ref<StringList, Owner> parts = StringList::newInstance();
 	for (int i = 0; i < size_;) {
 		Ref<Token, Owner> token = pattern->find(this, i);
 		parts->append(copy(i, token->i0()));
@@ -431,18 +433,18 @@ Ref<ByteArray, Owner> ByteArray::trimmed() const
 
 Ref<ByteArray, Owner> ByteArray::stripTags() const
 {
-	StringList parts;
+	Ref<StringList, Owner> parts = StringList::newInstance();
 	char* o = data_;
 	char* p = o;
 	while (*p) {
 		if (*p == '<') {
-			if (o < p) parts << String(o, p-o);
+			if (o < p) parts->append(String(o, p-o));
 			while ((*p) && (*p != '>')) ++p;
 			p += (*p == '>');
 			o = p;
 		}
 		else if (*p == '&') {
-			if (o < p) parts << String(o, p-o);
+			if (o < p) parts->append(String(o, p-o));
 			while ((*p) && (*p != ';')) ++p;
 			p += (*p == ';');
 			o = p;
@@ -451,8 +453,8 @@ Ref<ByteArray, Owner> ByteArray::stripTags() const
 			++p;
 		}
 	}
-	if (o < p) parts << String(o, p-o);
-	return join(&parts);
+	if (o < p) parts->append(String(o, p-o));
+	return join(parts);
 }
 
 Ref<ByteArray, Owner> ByteArray::simplified() const
@@ -596,6 +598,108 @@ Ref<ByteArray, Owner> ByteArray::md5() const
 Ref<ByteArray, Owner> ByteArray::base64() const
 {
 	return Base64::encode(this);
+}
+
+bool ByteArray::isRootPath() const
+{
+	return String(this) == "/";
+}
+
+bool ByteArray::isRelativePath() const
+{
+	return !isAbsolutePath();
+}
+
+bool ByteArray::isAbsolutePath() const
+{
+	return (length() > 0) ? (get(0) == '/') : false;
+}
+
+Ref<ByteArray, Owner> ByteArray::makeAbsolutePathRelativeTo(String currentDir) const
+{
+	if (isAbsolutePath() || (currentDir == "."))
+		return this;
+
+	Ref<StringList, Owner> absoluteParts = StringList::newInstance();
+	Ref<StringList, Owner> parts = split("/");
+
+	int upCount = 0;
+
+	for (int i = 0; i < parts->length(); ++i)
+	{
+		String c = parts->at(i);
+		if (c == ".")
+		{}
+		else if (c == "..") {
+			if (absoluteParts->length() > 0)
+				absoluteParts->popBack();
+			else
+				++upCount;
+		}
+		else {
+			absoluteParts->append(c);
+		}
+	}
+
+	String prefix;
+	if (currentDir->length() > 0)
+		prefix = currentDir->copy();
+	else
+		prefix = Process::cwd();
+
+	while (upCount > 0) {
+		prefix = prefix->reducePath();
+		--upCount;
+	}
+
+	absoluteParts->pushFront(prefix);
+
+	return absoluteParts->join("/");
+}
+
+Ref<ByteArray, Owner> ByteArray::makeAbsolutePath() const
+{
+	if (isAbsolutePath())
+		return this;
+	return makeAbsolutePathRelativeTo(String());
+}
+
+Ref<ByteArray, Owner> ByteArray::fileName() const
+{
+	String name;
+	Ref<StringList, Owner> parts = split("/");
+	if (parts->length() > 0)
+		name = parts->at(-1);
+	return name;
+}
+
+Ref<ByteArray, Owner> ByteArray::fileNameSansFirstExtension() const
+{
+	Ref<StringList, Owner> parts = fileName()->split(".");
+	parts->popBack();
+	return parts->join(".");
+}
+
+Ref<ByteArray, Owner> ByteArray::fileNameSansExtension() const
+{
+	Ref<StringList, Owner> parts = fileName()->split(".");
+	return parts->at(0);
+}
+
+Ref<ByteArray, Owner> ByteArray::reducePath() const
+{
+	Ref<StringList, Owner> parts = split("/");
+	if (parts->length() > 0)
+		parts->popBack();
+	String resultPath = parts->join("/");
+	if ((resultPath == "") && isAbsolutePath())
+		resultPath = "/";
+	return resultPath;
+}
+
+Ref<ByteArray, Owner> ByteArray::expandPath(String component) const
+{
+	return String(Format() << String(this) << "/" << component);
 }
 
 } // namespace ftl

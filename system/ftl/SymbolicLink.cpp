@@ -11,7 +11,6 @@
 
 #include <unistd.h> // readlink
 #include "Exception.hpp"
-#include "Path.hpp"
 #include "FileStatus.hpp"
 #include "SymbolicLink.hpp"
 
@@ -43,12 +42,12 @@ String SymbolicLink::read() const
 
 String SymbolicLink::resolve() const
 {
-	Path path = path_;
-	while (FileStatus(path, false).type() == File::SymbolicLink) {
-		Path origPath = path;
+	String path = path_;
+	while (FileStatus::newInstance(path, false)->type() == File::SymbolicLink) {
+		String origPath = path;
 		path = SymbolicLink(origPath).read();
-		if (path.isRelative())
-			path = origPath.reduce().expand(path);
+		if (path->isRelativePath())
+			path = origPath->reducePath()->expandPath(path);
 	}
 	return path;
 }

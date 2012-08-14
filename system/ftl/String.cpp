@@ -11,7 +11,6 @@
 
 #include "Format.hpp"
 #include "Variant.hpp"
-#include "Path.hpp"
 #include "String.hpp"
 
 namespace ftl
@@ -29,7 +28,7 @@ String::String(const Format& b)
 String::String(Ref<StringList, Owner> parts) { *this = join(parts); }
 
 Ref<StringList, Owner> String::operator+(const String& b) const {
-	Ref<StringList, Owner> parts = new StringList;
+	Ref<StringList, Owner> parts = StringList::newInstance();
 	*parts << *this << b;
 	return parts;
 }

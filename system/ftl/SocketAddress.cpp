@@ -60,7 +60,7 @@ SocketAddress::SocketAddress(int family, String address, int port)
 	}
 	else
 		FTL_THROW(NetworkingException, "Unsupported address family");
-	
+
 	if (family != AF_LOCAL)
 		if ((address != "") && ((address != "*")))
 			if (inet_pton(family, address, addr) != 1)
@@ -94,14 +94,14 @@ int SocketAddress::protocol() const { return protocol_; }
 int SocketAddress::port() const
 {
 	int port = 0;
-	
+
 	if (addr_.sa_family == AF_INET)
 		port = inet4Address_.sin_port;
 	else if (addr_.sa_family == AF_INET6)
 		port = inet6Address_.sin6_port;
 	else
 		FTL_THROW(NetworkingException, "Unsupported address family");
-	
+
 	return ntohs(port);
 }
 
@@ -125,21 +125,21 @@ String SocketAddress::addressString() const
 	else {
 		const int bufSize = INET_ADDRSTRLEN + INET6_ADDRSTRLEN;
 		char buf[bufSize];
-		
+
 		const void* addr = 0;
 		const char* sz = 0;
-		
+
 		if (addr_.sa_family == AF_INET)
 			addr = &inet4Address_.sin_addr;
 		else if (addr_.sa_family == AF_INET6)
 			addr = &inet6Address_.sin6_addr;
 		else
 			FTL_THROW(NetworkingException, "Unsupported address family");
-		
+
 		sz = inet_ntop(addr_.sa_family, const_cast<void*>(addr), buf, bufSize);
 		if (!sz)
 			FTL_THROW(NetworkingException, "Illegal binary address format");
-		
+
 		s = sz;
 	}
 	return s;
@@ -166,14 +166,14 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String ser
 {
 	addrinfo hint;
 	addrinfo* head = 0;
-	
+
 	mem::clr(&hint, sizeof(hint));
 	hint.ai_flags = (canonicalName) ? AI_CANONNAME : 0;
 	if ((hostName == "*") || (hostName == ""))
 		hint.ai_flags |= AI_PASSIVE;
 	hint.ai_family = family;
 	hint.ai_socktype = socketType;
-	
+
 	int ret;
 	{
 		char* h = 0;
@@ -182,22 +182,22 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String ser
 		if (serviceName != "") s = serviceName;
 		ret = getaddrinfo(h, s, &hint, &head);
 	}
-		
+
 	if (ret != 0)
 		if (ret != EAI_NONAME)
 			FTL_THROW(NetworkingException, gai_strerror(ret));
-	
-	Ref<SocketAddressList, Owner> list = new SocketAddressList;
-	
+
+	Ref<SocketAddressList, Owner> list = SocketAddressList::newInstance();
+
 	if (canonicalName) {
 		if (head) {
 			if (head->ai_canonname)
 				*canonicalName = head->ai_canonname;
 		}
 	}
-	
+
 	addrinfo* next = head;
-	
+
 	while (next) {
 		if ((next->ai_family == AF_INET) || (next->ai_family == AF_INET6))
 			list->append(new SocketAddress(next));
@@ -206,10 +206,10 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String ser
 
 	if (head)
 		freeaddrinfo(head);
-	
+
 	if (list->length() == 0)
 		FTL_THROW(NetworkingException, "Failed to resolve host name");
-	
+
 	return list;
 }
 
@@ -221,9 +221,9 @@ String SocketAddress::lookupHostName(bool* failed) const
 	char serviceName[serviceNameSize];
 	int flags = NI_NAMEREQD;
 	if (socketType_ == SOCK_DGRAM) flags |= NI_DGRAM;
-	
+
 	int ret = getnameinfo(addr(), addrLen(), hostName, hostNameSize, serviceName, serviceNameSize, flags);
-	
+
 	if (ret != 0) {
 		if (!failed)
 			FTL_THROW(NetworkingException, gai_strerror(ret));
@@ -234,30 +234,30 @@ String SocketAddress::lookupHostName(bool* failed) const
 		if (failed)
 			*failed = false;
 	}
-	
+
 	return String(hostName);
 }
 
 String SocketAddress::lookupServiceName() const
 {
-	
+
 	const int hostNameSize = NI_MAXHOST;
 	const int serviceNameSize = NI_MAXSERV;
 	char hostName[hostNameSize];
 	char serviceName[serviceNameSize];
 	int flags = (socketType_ == SOCK_DGRAM) ? NI_DGRAM : 0;
-	
+
 	hostName[0] = 0;
 	serviceName[0] = 0;
 	int ret = getnameinfo(addr(), addrLen(), hostName, hostNameSize, serviceName, serviceNameSize, flags);
-	
+
 	if (ret != 0) {
 	#ifdef __MACH__
 		if (port()) // OSX 10.4 HACK
 	#endif
 		FTL_THROW(NetworkingException, gai_strerror(ret));
 	}
-	
+
 	return String(serviceName);
 }
 

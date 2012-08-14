@@ -46,7 +46,7 @@ void ProcessFactory::setWorkingDirectory(String path) { workingDirectory_ = path
 String ProcessFactory::execPath() const { return execPath_; }
 void ProcessFactory::setExecPath(String path) { execPath_ = path; }
 
-Ref<StringList> ProcessFactory::arguments() { return (arguments_) ? arguments_ : arguments_ = new StringList; }
+Ref<StringList> ProcessFactory::arguments() { return (arguments_) ? arguments_ : arguments_ = StringList::newInstance(); }
 void ProcessFactory::setArguments(Ref<StringList> list) { arguments_ = list; }
 
 Ref<EnvMap> ProcessFactory::envMap() { return (envMap_) ? envMap_ : envMap_ = Process::envMap(); }

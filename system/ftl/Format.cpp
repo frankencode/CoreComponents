@@ -16,7 +16,7 @@ namespace ftl
 {
 
 Format::Format(String format)
-	: Super(new StringList)
+	: Super(StringList::newInstance())
 {
 	Ref<PlaceHolder> lastPlaceHolder;
 
@@ -325,4 +325,4 @@ void Format::printFloat(float64_t x, bool half)
 	get()->insert(ph->j_, text);
 }
 
-} // namespace ftl
+} // name

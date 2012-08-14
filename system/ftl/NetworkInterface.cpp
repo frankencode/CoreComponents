@@ -60,7 +60,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 	Mutex& mutex = localStatic<Mutex>();
 	Guard<Mutex> guard(&mutex);
 
-	Ref<NetworkInterfaceList, Owner> list = new NetworkInterfaceList;
+	Ref<NetworkInterfaceList, Owner> list = NetworkInterfaceList::newInstance();
 	// getLink(list);
 	for (int i = 1; getLink(list, i); ++i);
 
@@ -206,7 +206,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 									label = new SocketAddressEntry(&addr4);
 								else if (data->ifa_family == AF_INET6)
 									label = new SocketAddress(&addr6);
-								if (!interface->addressList_) interface->addressList_ = new SocketAddressList;
+								if (!interface->addressList_) interface->addressList_ = SocketAddressList::newInstance();
 								interface->addressList_->append(label);
 							}
 							if ((label) && (data->ifa_family == AF_INET)) {
@@ -365,7 +365,7 @@ bool NetworkInterface::getLink(Ref<NetworkInterfaceList> list, int index)
 
 Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 {
-	Ref<NetworkInterfaceList, Owner> list = new NetworkInterfaceList;
+	Ref<NetworkInterfaceList, Owner> list = NetworkInterfaceList::newInstance();
 
 	int fd = ::socket(AF_INET, SOCK_DGRAM, 0);
 	if (fd == -1) FTL_SYSTEM_EXCEPTION;
@@ -444,7 +444,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 						label = new SocketAddressEntry(addr4);
 					else if (addr->sa_family == AF_INET6)
 						label = new SocketAddress(addr6);
-					if (!interface->addressList_) interface->addressList_ = new SocketAddressList;
+					if (!interface->addressList_) interface->addressList_ = SocketAddressList::newInstance();
 					interface->addressList_->append(label);
 
 					if ((label) && (addr->sa_family == AF_INET)) {

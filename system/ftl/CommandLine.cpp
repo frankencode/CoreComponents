@@ -11,15 +11,14 @@
 
 #include "strings.hpp"
 #include "Format.hpp"
-#include "Path.hpp"
 #include "CommandLine.hpp"
 
 namespace ftl
 {
 
 CommandLine::CommandLine()
-	: definedOptions_(new OptionList),
-	  usedOptions_(new OptionList),
+	: definedOptions_(OptionList::newInstance()),
+	  usedOptions_(OptionList::newInstance()),
 	  entity_("FILE"),
 	  position_(0)
 {
@@ -184,9 +183,9 @@ Ref<CommandOption> CommandLine::optionByLongName(String name) const
 Ref<StringList, Owner> CommandLine::read(int argc, char** argv)
 {
 	execPath_ = argv[0];
-	execName_ = Path(execPath_).fileName();
-	execDir_ = Path(execPath_).reduce().absolute();
-	Ref<StringList, Owner> line = new StringList;
+	execName_ = execPath_->fileName();
+	execDir_ = execPath_->reducePath()->makeAbsolutePath();
+	Ref<StringList, Owner> line = StringList::newInstance();
 	for (int i = 1; i < argc; ++i) {
 		line->append(String(argv[i]));
 		if (i != argc - 1)
@@ -226,7 +225,7 @@ Ref<StringList, Owner> CommandLine::read(String line)
 
 	verifyTypes();
 
-	Ref<StringList, Owner> files = new StringList;
+	Ref<StringList, Owner> files = StringList::newInstance();
 	while (token) {
 		files->append(stripQuotes(line->copy(token->i0(), token->i1())));
 		token = token->nextSibling();
@@ -364,7 +363,7 @@ String CommandLine::helpText() const
 
 	String options;
 	{
-		Ref<StringList, Owner> lines = new StringList;
+		Ref<StringList, Owner> lines = StringList::newInstance();
 		int maxLength = 0;
 
 		for (int i = 0; i < definedOptions_->length(); ++i) {
@@ -424,4 +423,4 @@ String CommandLine::execPath() const { return execPath_; }
 String CommandLine::execName() const { return execName_; }
 String CommandLine::execDir() const { return execDir_; }
 
-} // namespace ftl
+} // name
