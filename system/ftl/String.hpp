@@ -79,6 +79,11 @@ public:
 	inline bool operator!=(const String& b) const { return str::cmp((*this)->data(), b->data()) != 0; }
 	inline bool operator<=(const String& b) const { return str::cmp((*this)->data(), b->data()) <= 0; }
 	inline bool operator>=(const String& b) const { return str::cmp((*this)->data(), b->data()) >= 0; }
+
+private:
+	friend class ByteArray;
+
+	explicit String(const ByteArray* bytes): Super(bytes) {}
 };
 
 inline Ref<StringList, Owner> operator+(const char* a, const String& b) { return String(a) + b; }

@@ -14,7 +14,6 @@
 #include <new>
 #include "atoms"
 #include "String.hpp"
-#include "Path.hpp"
 
 namespace ftl
 {
@@ -44,8 +43,7 @@ public:
 		FloatType  = 4,
 		RefType    = 8,
 		StringType = 16 | RefType,
-		PathType   = 32 | RefType | StringType,
-		AnyType    = 63
+		AnyType    = 31
 	};
 
 	Variant()                            : type_(UndefType)                {}
@@ -57,7 +55,6 @@ public:
 	template<class T, template<class> class P>
 	Variant(Ref<T, P> value)             : type_(RefType)    { initRef(value); }
 	Variant(String value)                : type_(StringType) { initRef(value); }
-	Variant(Path value)                  : type_(PathType)   { initRef(value); }
 	~Variant() { if (type_ & RefType) killRef(); }
 
 	inline const Variant& operator=(bool value)        { type_ = BoolType;  int_ = value; return *this; }
@@ -66,7 +63,6 @@ public:
 	inline const Variant& operator=(double value)      { type_ = FloatType; float_ = value; return *this; }
 	inline const Variant& operator=(const char* value) { return *this = Variant(value); }
 	inline const Variant& operator=(String value)      { return *this = Variant(value); }
-	inline const Variant& operator=(Path value)        { return *this = Variant(value); }
 	template<class T, template<class> class P>
 	inline const Variant& operator=(Ref<T, P> value)   { return *this = Variant(value); }
 
@@ -96,7 +92,6 @@ public:
 	inline int toInt() const         { FTL_ASSERT2(type_ & IntType,    illegalConversion()); return int_; }
 	inline float toFloat() const     { FTL_ASSERT2(type_ & FloatType,  illegalConversion()); return float_; }
 	inline String toString() const   { FTL_ASSERT2(type_ & StringType, illegalConversion()); return String(*this); }
-	inline Path toPath() const       { FTL_ASSERT2(type_ & StringType, illegalConversion()); return Path(String(*this)); }
 	template<class T>
 	inline Ref<T> toInstance() const { FTL_ASSERT2(type_ & RefType,    illegalConversion()); return ref(); }
 
@@ -104,7 +99,6 @@ public:
 	inline operator int() const { return toInt(); }
 	inline operator float() const { return toFloat(); }
 	inline operator String() const { return toString(); }
-	inline operator Path() const { return toPath(); }
 	template<class T, template<class> class P>
 	inline operator Ref<T, P>() const { return toInstance<T>(); }
 

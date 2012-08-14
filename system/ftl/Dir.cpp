@@ -12,7 +12,6 @@
 #include <sys/stat.h> // mkdir
 #include <sys/types.h> // mode_t
 
-#include "Path.hpp"
 #include "File.hpp"
 #include "FileStatus.hpp"
 #include "Dir.hpp"
@@ -36,7 +35,9 @@ bool Dir::access(int flags) { return File::newInstance(path_)->access(flags); }
 
 bool Dir::exists() const
 {
-	return File::newInstance(path_)->exists() && (FileStatus(path_).type() == File::Directory);
+	return
+		File::newInstance(path_)->exists() &&
+		(FileStatus::newInstance(path_)->type() == File::Directory);
 }
 
 void Dir::create(int mode)
@@ -77,7 +78,7 @@ bool Dir::read(DirEntry* entry)
 	if (errorCode)
 		throw SystemException(__FILE__, __LINE__, "SystemException", str::cat("readdir_r() failed: error code = ", ftl::intToStr(errorCode)), errorCode);
 
-	entry->path_ = Path(entry->d_name).absoluteRelativeTo(path_);
+	entry->path_ = String(entry->d_name)->makeAbsolutePathRelativeTo(path_);
 	return result;
 }
 
@@ -85,12 +86,12 @@ bool Dir::isOpen() const { return dir_; }
 
 void Dir::establish(int mode)
 {
-	Ref<StringList, Owner> missingDirs = new StringList;
+	Ref<StringList, Owner> missingDirs = StringList::newInstance();
 	String path = path_;
 	while ((path != "") && (path != "/")) {
 		if (exists()) break;
 		missingDirs->push(path);
-		path = Path(path).reduce();
+		path = path->reducePath();
 	}
 	while (missingDirs->length() > 0)
 		Dir::newInstance(missingDirs->pop())->create(mode);

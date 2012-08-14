@@ -12,7 +12,7 @@ void printStatus(Ref<File, Owner> file)
 	print("file->access(File::Write) = %%\n", file->access(File::Write));
 	print("file->access(File::Execute) = %%\n", file->access(File::Execute));
 	if (file->exists()) {
-		Ref<FileStatus, Owner> status = new FileStatus(file->path());
+		Ref<FileStatus, Owner> status = FileStatus::newInstance(file->path());
 		if (status) {
 			print("status->type() = %oct%\n", status->type());
 			print("status->mode() = %oct%\n", status->mode());

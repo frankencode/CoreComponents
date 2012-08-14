@@ -14,7 +14,6 @@
 #include "AbnfCoreSyntax.hpp"
 #include "Singleton.hpp"
 #include "Variant.hpp"
-#include "Array.hpp"
 #include "Map.hpp"
 
 namespace ftl
@@ -50,7 +49,7 @@ private:
 	int value_;
 	int member_;
 	int object_;
-	int array_;
+	int list_;
 	int text_;
 
 	int false_, true_, null_;

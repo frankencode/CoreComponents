@@ -111,6 +111,8 @@ public:
 	void dataSync();
 	static void syncAll();
 
+	static String lookup(String fileName, Ref<StringList> dirs = 0, int accessFlags = Execute);
+
 	Ref<FileStatus> status() const;
 
 protected:

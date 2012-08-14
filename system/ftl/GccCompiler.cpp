@@ -1,5 +1,5 @@
-#include "Path.hpp"
 #include "Pattern.hpp"
+#include "File.hpp"
 #include "Process.hpp"
 #include "ProcessFactory.hpp"
 #include "GccCompiler.hpp"
@@ -10,7 +10,7 @@ namespace ftl
 GccCompiler::GccCompiler(int options, String execPath)
 	: MachCompiler(options)
 {
-	if (execPath == "") execPath = Path::lookup("g++");
+	if (execPath == "") execPath = File::lookup("g++");
 	String machine = Process::start(execPath + " -dumpmachine")->output()->readLine();
 	init(execPath, machine);
 }

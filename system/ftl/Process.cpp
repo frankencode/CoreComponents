@@ -24,7 +24,6 @@
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #include <crt_externs.h> // _NSGetEnviron
 #endif
-#include "Path.hpp"
 #include "ProcessFactory.hpp"
 #include "Process.hpp"
 
@@ -48,7 +47,7 @@ Ref<Process, Owner> Process::start(String command, Ref<ProcessFactory> factory)
 	factory->setArguments(args);
 	String name = args->at(0);
 
-	String path = Path::lookup(name);
+	String path = File::lookup(name);
 	if (path == "") path = name;
 	factory->setExecPath(path);
 

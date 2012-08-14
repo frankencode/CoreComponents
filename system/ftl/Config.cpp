@@ -9,6 +9,7 @@
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
 
+#include "File.hpp"
 #include "Format.hpp"
 #include "Config.hpp"
 
@@ -33,7 +34,7 @@ Config::Config(const char* path)
 
 Ref<StringList, Owner> Config::init(int argc, char** argv)
 {
-	Ref<StringList, Owner> files = new StringList;
+	Ref<StringList, Owner> files = StringList::newInstance();
 	for (int i = 1; i < argc; ++i) {
 		String s = argv[i];
 		if (!s->contains('=')) {

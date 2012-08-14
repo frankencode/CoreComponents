@@ -49,7 +49,7 @@ void Group::load(struct group* entry)
 {
 	id_ = entry->gr_gid;
 	name_ = entry->gr_name;
-	members_ = new StringList;
+	members_ = StringList::newInstance();
 	char** pcs = entry->gr_mem;
 	while (*pcs) {
 		members_->append(*pcs);

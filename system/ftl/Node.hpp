@@ -72,7 +72,7 @@ public:
 	ObjectNode(String type, Ref<ByteArray> source, Ref<Token> token)
 		: Node(source, token, Node::ObjectType),
 		  type_(type),
-		  memberNames_(new StringList),
+		  memberNames_(StringList::newInstance()),
 		  members_(new Members)
 	{}
 

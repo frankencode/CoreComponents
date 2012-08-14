@@ -10,6 +10,7 @@
  */
 
 #include "debug.hpp"
+#include "Format.hpp"
 #include "UriSyntax.hpp"
 #include "Uri.hpp"
 
@@ -41,10 +42,10 @@ void Uri::readUri(Ref<ByteArray> bytes, Ref<Token> rootToken)
 		if (!rootToken2) FTL_THROW(UriException, "URI decomposition failed, invalid syntax");
 		rootToken = rootToken2;
 	}
-	
+
 	Ref<Token> token = rootToken;
 	token = token->firstChild();
-	
+
 	while (token) {
 		if (token->rule() == uriSyntax()->scheme()) {
 			scheme_ = decode(bytes->copy(token->i0(), token->i1()));
@@ -76,55 +77,51 @@ void Uri::readUri(Ref<ByteArray> bytes, Ref<Token> rootToken)
 
 String Uri::toString() const
 {
-	StringList l;
+	Format text;
 	if (scheme_ != "") {
-		l.append(encode(scheme_));
-		l.append(":");
+		text << encode(scheme_);
+		text << ":";
 	}
 	if (host_ != "") {
-		l.append("//");
+		text << "//";
 		if (userInfo_ != "")
-			l.append(encode(userInfo_));
+			text << encode(userInfo_);
 		if (host_ != "") {
-			l.append("@");
-			l.append(encode(host_));
+			text << "@";
+			text << encode(host_);
 		}
-		if (port_ != -1) {
-			l.append(":");
-			char* s = intToStr(port_);
-			l.append(s);
-			delete[] s;
-		}
+		if (port_ != -1)
+			text << ":" << port_;
 	}
-	l.append(path_);
+	text << path_;
 	if (query_ != "") {
-		l.append("?");
-		l.append(encode(query_));
+		text << "?";
+		text << encode(query_);
 	}
 	if (fragment_ != "") {
-		l.append("#");
-		l.append(encode(fragment_));
+		text << "#";
+		text << encode(fragment_);
 	}
-	return l.join();
+	return text;
 }
 
 String Uri::encode(String s)
 {
 	s->toLowerInsitu();
-	
+
 	const char* reserved = ":/?#[]@!$&'()*+,;=";
-	StringList l;
+	Ref<StringList, Owner> l = StringList::newInstance();
 	int j = 0;
 	for (int i = 0, n = s->length(); i < n; ++i) {
 		char ch = s->at(i);
 		for (const char* r = reserved; *r; ++r) {
 			if (ch == *r) {
 				if (j < i)
-					l.append(s->copy(j, i));
+					l->append(s->copy(j, i));
 				String pct("%XX");
 				pct->set(1, ch >> 4);
 				pct->set(2, ch & 0xF);
-				l.append(pct);
+				l->append(pct);
 				j = i + 1;
 				break;
 			}
@@ -132,14 +129,14 @@ String Uri::encode(String s)
 	}
 	if (j == 0) return s;
 	if (j < s->length())
-		l.append(s->copy(j, s->length()));
-	return l.join();
+		l->append(s->copy(j, s->length()));
+	return l->join();
 }
 
 String Uri::decode(String s)
 {
 	s->toLowerInsitu();
-	
+
 	int j = 0;
 	for (int i = 0, n = s->length(); i < n; ++i, ++j) {
 		char ch = s->at(i);

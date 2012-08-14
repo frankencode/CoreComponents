@@ -256,7 +256,7 @@ public:
 
 		virtual void printNext(String indent = "") {
 			print("%%%%(", indent, declType());
-			printAttributes((StringList() << indent << debugger_->indent_).join());
+			printAttributes(Format() << indent << debugger_->indent_);
 			print(")");
 		}
 
@@ -279,7 +279,7 @@ public:
 		}
 
 		String subIndent(String indent) const {
-			return (StringList() << indent << DebugNode::debugger_->indent_).join();
+			return Format() << indent << DebugNode::debugger_->indent_;
 		}
 
 		Ref<SyntaxDebugger> debugger_;

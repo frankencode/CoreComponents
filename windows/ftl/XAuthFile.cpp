@@ -8,7 +8,7 @@ namespace ftl
 
 XAuthFile::XAuthFile(String path)
 	: path_(path),
-	  records_(new XAuthRecords)
+	  records_(XAuthRecords::newInstance())
 {
 	if (path_ == "") path_ = Process::env("XAUTHORITY");
 	if (path_ == "") return;

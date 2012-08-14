@@ -90,6 +90,12 @@ public:
 
 	inline T* operator->() const { return this->saveGet(); }
 
+	template<class T2>
+	inline Ref& operator<<(const T2& item) { *(this->saveGet()) << item; return *this; }
+
+	template<class T2>
+	inline Ref& operator>>(T2& item) { *(this->saveGet()) >> item; return *this; }
+
 protected:
 	inline T* saveGet() const {
 		T* instance = GetAndSetPolicy<T>::get();

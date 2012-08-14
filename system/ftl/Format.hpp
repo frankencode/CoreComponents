@@ -35,6 +35,7 @@ public:
 	inline Format& operator<<(const String& s) { get()->insert(nextPlaceHolder()->j_, s); return *this; }
 	inline Format& operator<<(const Ref<ByteArray, Owner>& s) { return *this << String(s); }
 	inline Format& operator<<(const char* s) { return *this << String(s); }
+	inline Format& operator<<(char* s) { return *this << String(s); }
 	inline Format& operator<<(char ch) { return *this << String(&ch, 1); }
 
 	inline Format& operator<<(unsigned char x) { printInt(x); return *this; }

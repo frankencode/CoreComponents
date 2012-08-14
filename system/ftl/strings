@@ -5,6 +5,5 @@
 #include "Format.hpp"
 #include "Pattern.hpp"
 #include "Variant.hpp"
-#include "Path.hpp"
 
 #endif // FTL_STRINGS

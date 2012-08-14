@@ -12,7 +12,7 @@ MachCompiler::MachCompiler(int options)
 
 bool MachCompiler::build(Ref<WireObject> recipe)
 {
-	Ref<StringList, Owner> sourcePaths = new StringList;
+	Ref<StringList, Owner> sourcePaths = StringList::newInstance();
 	{
 		Format sourcePatterns = Format() << recipe->value("source");
 		Ref<DirEntry, Owner> entry = DirEntry::newInstance();

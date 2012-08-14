@@ -17,10 +17,10 @@
 #include "Mutex.hpp"
 #include "LocalStatic.hpp"
 #include "Random.hpp"
-#include "Path.hpp"
 #include "Format.hpp"
 #include "FileStatus.hpp"
 #include "Dir.hpp"
+#include "Process.hpp"
 #include "File.hpp"
 
 namespace ftl
@@ -162,7 +162,7 @@ void File::truncate(off_t length)
 
 class UnlinkFile: public Action {
 public:
-	UnlinkFile(String path): path_(Path(path).absolute()) {}
+	UnlinkFile(String path): path_(path->makeAbsolutePath()) {}
 	void run() { try { File::newInstance(path_)->unlink(); } catch(...) {} }
 private:
 	String path_;
@@ -203,7 +203,7 @@ Ref<File, Owner> File::temp()
 		new File(
 			String(
 				Format("/tmp/%%_%%_XXXXXXXX")
-				<< Path(Process::execPath()).fileName()
+				<< Process::execPath()->fileName()
 				<< Process::currentId()
 			)
 		);
@@ -215,7 +215,7 @@ Ref<File, Owner> File::temp()
 void File::establish(int fileMode, int dirMode)
 {
 	if (path_->contains('/'))
-		Dir::newInstance(Path(path_).reduce())->establish(dirMode);
+		Dir::newInstance(path_->reducePath())->establish(dirMode);
 	if (!exists())
 		create(fileMode);
 }
@@ -298,6 +298,24 @@ void File::syncAll()
 	::sync();
 }
 
+String File::lookup(String fileName, Ref<StringList> dirs, int accessFlags)
+{
+	Ref<StringList, Owner> h;
+	if (!dirs) {
+		h = Process::env("PATH")->split(':');
+		dirs = h;
+	}
+	String path;
+	for (int i = 0; i < dirs->length(); ++i) {
+		String candidate = Format() << dirs->at(i) << "/" << fileName;
+		if (File::newInstance(candidate)->access(accessFlags)) {
+			path = candidate;
+			break;
+		}
+	}
+	return path;
+}
+
 Ref<FileStatus> File::status() const
 {
 	if (!status_) {
@@ -305,9 +323,9 @@ Ref<FileStatus> File::status() const
 		Guard<Mutex> guard(&mutex);
 		if (!status_) {
 			if (isOpen())
-				status_ = new FileStatus(fd_);
+				status_ = FileStatus::newInstance(fd_);
 			else
-				status_ = new FileStatus(path_);
+				status_ = FileStatus::newInstance(path_);
 		}
 	}
 	return status_;

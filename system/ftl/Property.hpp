@@ -62,7 +62,7 @@ public:
 	void connect(Recipient* recipient, void (Recipient::* method)(Value)) {
 		Ref<CallbackList, Owner> list;
 		if (!callbacks_.lookup(recipient, &list)) {
-			list = new CallbackList;
+			list = CallbackList::newInstance();
 			callbacks_.insert(recipient, list);
 		}
 		list->append(new Slot<Recipient, Value>(recipient, method));
