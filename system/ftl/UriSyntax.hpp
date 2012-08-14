@@ -32,9 +32,10 @@ public:
 
 	inline int uri() const { return uri_; }
 
-private:
-	UriSyntax(Ref<SyntaxDebugFactory> debugFactory = 0);
+protected:
 	friend class Singleton<UriSyntax>;
+
+	UriSyntax(Ref<SyntaxDebugFactory> debugFactory = 0);
 
 	int userInfo_;
 	int host_;

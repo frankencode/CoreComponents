@@ -241,6 +241,7 @@ SET(FTLSYSTEM_SOURCE
 	InetAddressSyntax.cpp
 
 	# utils
+	Time.cpp
 	Date.cpp
 	Random.cpp
 	SymbolicLink.cpp

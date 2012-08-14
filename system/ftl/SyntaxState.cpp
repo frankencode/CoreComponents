@@ -26,9 +26,9 @@ State::State()
 State::State(Ref<DefinitionNode> definition, int numFlags, int numChars, int numStrings, Ref<State> parent)
 	: definition_(definition),
 	  definitionId_(definition->id()),
-	  flags_(numFlags),
-	  chars_(numChars),
-	  strings_(numStrings),
+	  flags_(Array<bool>::newInstance(numFlags)),
+	  chars_(ByteArray::newInstance(numChars)),
+	  strings_(Array< Ref<ByteArray, Owner> >::newInstance(numStrings)),
 	  hint_(0),
 	  hintOffset_(-1)
 {

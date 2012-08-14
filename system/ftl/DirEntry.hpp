@@ -26,15 +26,19 @@ typedef struct dirent StructDirent;
 class DirEntry: public StructDirent, public Instance
 {
 public:
+	inline static Ref<DirEntry, Owner> newInstance() { return new DirEntry; }
+
 	inline String path() const { return path_; }
 	inline String name() const { return d_name; }
 	#if (defined(BSD) || (defined(_BSD_SOURCE)))
 	inline int type() const { return d_type; }
 	#endif
-	
+
 	inline bool operator<(const DirEntry& b) const { return str::casecmp(d_name, b.d_name) < 0; }
-	
-private:
+
+protected:
+	DirEntry() {}
+
 	friend class Dir;
 	String path_;
 };

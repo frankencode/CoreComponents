@@ -38,6 +38,8 @@ public:
 	Path expand(String component) const;
 
 	static Path lookup(String fileName, Ref<StringList> dirs = 0, int accessFlags = File::Execute);
+
+	inline String toString() const { return *this; }
 };
 
 } // namespace ftl

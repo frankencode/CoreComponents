@@ -85,36 +85,36 @@ Ref<Format::PlaceHolder, Owner> Format::nextPlaceHolder()
 	return ph;
 }
 
-Format& Format::print(const Variant& x)
+Format& Format::operator<<(const Variant& x)
 {
 	if (x.type() == Variant::UndefType) {
-		print("undef");
+		*this << "undef";
 	}
 	else if (x.type() == Variant::BoolType) {
-		print(bool(x));
+		*this << bool(x);
 	}
 	else if (x.type() == Variant::IntType) {
-		print(int(x));
+		*this << int(x);
 	}
 	else if (x.type() == Variant::FloatType) {
-		print(float(x));
+		*this << float(x);
 	}
 	else if (x.type() == Variant::StringType) {
-		print(String(x));
+		*this << String(x);
 	}
 	else if (x.type() == Variant::RefType) {
 		Ref<VariantList> vl = x;
 		Ref<StringList> sl = x;
 		if (vl) {
 			for (int i = 0; i < vl->length(); ++i)
-				print(vl->at(i));
+				*this << vl->at(i);
 		}
 		else if (sl) {
 			for (int i = 0; i < sl->length(); ++i)
-				print(sl->at(i));
+				*this << sl->at(i);
 		}
 		else {
-			print(Ref<>(x).get());
+			*this << (void*)Ref<>(x).get();
 		}
 	}
 	return *this;

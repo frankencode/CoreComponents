@@ -36,7 +36,7 @@ Glob::Glob(String path, Ref<StringList> remainder)
 
 void Glob::init(String path)
 {
-	dir_ = new Dir(path);
+	dir_ = Dir::newInstance(path);
 	dir_->open();
 	pattern_ = remainder_->pop(0);
 }
@@ -53,7 +53,7 @@ bool Glob::read(DirEntry* entry)
 			if (remainder_->length() == 0)
 				return true;
 			String path = (StringList() << dir_->path() << "/" << entry->name()).join();
-			if (Dir(path).exists()) {
+			if (Dir::newInstance(path)->exists()) {
 				child_ = new Glob(path, remainder_);
 				return read(entry);
 			}

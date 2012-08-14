@@ -21,7 +21,7 @@ Ref<ByteArray, Owner> Character::copy(int i0, int i1) const
 	walkTo(i0);
 	const char* p0 = walker_.pos();
 	while (i_ < i1) { ++walker_; ++i_; }
-	return new ByteArray(p0, walker_.pos() - p0);
+	return ByteArray::newInstance(p0, walker_.pos() - p0);
 }
 
 /*int String::find(int i, const char* pattern) const

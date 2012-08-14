@@ -27,6 +27,7 @@ public:
 
 private:
 	friend class Singleton<FloatLiteral>;
+
 	FloatLiteral();
 
 	int sign_;

@@ -1,5 +1,4 @@
 #include "stdio" // DEBUG
-#include "Date.hpp" // DEBUG
 #include "MachObject.hpp"
 #include "MachCompiler.hpp"
 #include "Wire.hpp"
@@ -14,7 +13,7 @@ namespace ftl
 
 MachDependencyCache::MachDependencyCache(Ref<MachCompiler> compiler, Ref<StringList> sourcePaths, String cachePath)
 	: compiler_(compiler),
-	  cacheFile_(new File(cachePath)),
+	  cacheFile_(File::newInstance(cachePath)),
 	  cache_(new Cache)
 {
 	cacheFile_->establish();
@@ -71,22 +70,11 @@ Ref<MachObject, Owner> MachDependencyCache::analyse(String sourcePath)
 {
 	Ref<MachObject, Owner> object;
 	if (cache_->lookup(sourcePath, &object)) {
-		Ref<File, Owner> sourceFile = new File(sourcePath);
+		Ref<File, Owner> sourceFile = File::newInstance(sourcePath);
 		if (sourceFile->exists()) {
-			print("EXISTS:\n");
-			print("sourceFile->status()->lastModified() = %%\n", Date(sourceFile->status()->lastModified()).toString());
-			print("cacheTime_ = %%\n", Date(cacheTime_).toString());
-			if (sourceFile->status()->lastModified() <= cacheTime_) {
-				print("HIT:\n");
+			if (sourceFile->status()->lastModified() <= cacheTime_)
 				return object;
-			}
 		}
-		else {
-			print("non-existing:\n");
-		}
-	}
-	else {
-		print("MISS: %%\n", sourcePath);
 	}
 	object = compiler_->analyse(sourcePath);
 	cache_->establish(sourcePath, object);

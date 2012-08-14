@@ -56,7 +56,7 @@ void XScreenInfo::read(Ref<ByteDecoder> source)
 	for (int i = 0, n = source->readUInt8(); i < n; ++i) {
 		int depth = source->readUInt8();
 		source->readUInt8(); // unused
-		Ref<XVisualInfoArray, Owner> visualInfoArray = new XVisualInfoArray(source->readUInt16());
+		Ref<XVisualInfoArray, Owner> visualInfoArray = XVisualInfoArray::newInstance(source->readUInt16());
 		source->readUInt32(); // unused
 		for (int j = 0; j < visualInfoArray->length(); ++j) {
 			Ref<XVisualInfo, Owner> visualInfo = new XVisualInfo;
@@ -73,12 +73,12 @@ void XDisplayInfo::read(Ref<ByteDecoder> source)
 	uint8_t reasonLength = source->readUInt8();
 	majorVersion = source->readUInt16();
 	minorVersion = source->readUInt16();
-	
+
 	if (majorVersion != 11)
 		FTL_THROW(XException, "Unsupported protocol version");
-	
+
 	source->readUInt16(); // additional data length
-	
+
 	if (response != 1) {
 		if ((response == 0) || (response == 2)) {
 			String reason = source->read(reasonLength);
@@ -86,15 +86,15 @@ void XDisplayInfo::read(Ref<ByteDecoder> source)
 		}
 		FTL_THROW(XException, "Protocol error");
 	}
-	
+
 	releaseNumber = source->readUInt32();
 	resourceIdBase = source->readUInt32();
 	resourceIdMask = source->readUInt32();
 	motionBufferSize = source->readUInt32();
 	uint16_t vendorLength = source->readUInt16();
 	maximumRequestLength = source->readUInt16();
-	screenInfo = new XScreenInfoArray(source->readUInt8());
-	pixmapInfo = new XPixmapInfoArray(source->readUInt8());
+	screenInfo = XScreenInfoArray::newInstance(source->readUInt8());
+	pixmapInfo = XPixmapInfoArray::newInstance(source->readUInt8());
 	imageByteOrder = source->readUInt8();
 	bitmapBitOrder = source->readUInt8();
 	bitmapScanlineUnit = source->readUInt8();
@@ -104,13 +104,13 @@ void XDisplayInfo::read(Ref<ByteDecoder> source)
 	source->readUInt32(); // unused
 	vendor = source->read(vendorLength);
 	source->skipPad(4);
-	
+
 	for (int i = 0; i < pixmapInfo->length(); ++i) {
 		Ref<XPixmapInfo, Owner> format = new XPixmapInfo;
 		format->read(source);
 		pixmapInfo->set(i, format);
 	}
-	
+
 	for (int i = 0; i < screenInfo->length(); ++i) {
 		Ref<XScreenInfo, Owner> screen = new XScreenInfo;
 		screen->read(source);

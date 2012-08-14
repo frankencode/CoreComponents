@@ -19,7 +19,7 @@ namespace ftl
 class Dir: public Source<DirEntry>
 {
 public:
-	Dir(String path);
+	inline static Ref<Dir, Owner> newInstance(String path) { return new Dir(path); }
 	~Dir();
 
 	String path() const;
@@ -36,7 +36,9 @@ public:
 
 	void establish(int mode = 0755);
 
-private:
+protected:
+	Dir(String path);
+
 	String path_;
 	DIR* dir_;
 };

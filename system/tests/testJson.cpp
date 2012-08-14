@@ -27,7 +27,7 @@ int main() {
 	print("Name: %%\n", object->value("Name"));
 	print("Age: %%\n", object->value("Age"));
 	print("Hobbies: ");
-	Ref<JsonArray> hobbies = object->value("Hobbies");
+	Ref<VariantList> hobbies = object->value("Hobbies");
 	for (int i = 0; i < hobbies->length(); ++i) {
 		print("%%", hobbies->get(i));
 		if (i != hobbies->length() - 1)
@@ -44,7 +44,7 @@ int main() {
 	print("  Latitude: %%\n", home->value("Latitude"));
 	print("  Longitude: %%\n", home->value("Longitude"));
 	print("Favourite Numbers: ");
-	Ref<JsonArray> numbers = object->value("FavouriteNumbers");
+	Ref<VariantList> numbers = object->value("FavouriteNumbers");
 	for (int i = 0; i < numbers->length(); ++i) {
 		print("%%", numbers->get(i));
 		if (i != numbers->length() - 1)

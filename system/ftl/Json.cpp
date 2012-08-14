@@ -234,7 +234,7 @@ Variant Json::parseObject(Ref<ByteArray> text, Ref<Token> token)
 Variant Json::parseArray(Ref<ByteArray> text, Ref<Token> token)
 {
 	FTL_CHECK(token->rule() == array_, JsonException, "");
-	Ref<JsonArray, Owner> array = new JsonArray(token->countChildren());
+	Ref<VariantList, Owner> array = new VariantList(token->countChildren());
 	int i = 0;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
 		array->set(i, parseValue(text, child));

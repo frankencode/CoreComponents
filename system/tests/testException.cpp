@@ -12,12 +12,12 @@ int y() {
 int main()
 {
 	try {
-		File("non-existing").open();
+		File::newInstance("non-existing")->open();
 	}
 	catch (Exception& ex) {
 		print("%%\n", ex.what());
 	}
-	
+
 	try {
 		Mutex m;
 		m.release();
@@ -25,9 +25,9 @@ int main()
 	catch (Exception& ex) {
 		print("%%\n", ex.what());
 	}
-	
+
 	FTL_ASSERT(y() == 1);
-	
+
 	return 0;
 }
 

@@ -19,7 +19,7 @@ Ref<MachObject, Owner> GccCompiler::analyse(String source)
 {
 	String text = Process::start(execPath() + " -MM -MG " + source)->rawOutput()->readAll();
 	Ref<StringList, Owner> parts = text->split(Pattern("[:\\\\\n\r ]{1,}"));
-	return newInstance<MachObject>(parts->pop(0), parts);
+	return new MachObject(parts->pop(0), parts);
 }
 
 bool GccCompiler::compile(Ref<MachObject, Owner> object)

@@ -23,9 +23,11 @@ public:
 	void read(uint64_t* value, int* sign, Ref<ByteArray> text, Ref<Token> token) const;
 	Ref<Token, Owner> read(uint64_t* value, int* sign, Ref<ByteArray> text, int i = -1) const;
 
-private:
+protected:
 	friend class Singleton<IntegerLiteral>;
+
 	IntegerLiteral();
+
 	int sign_;
 	int binNumber_;
 	int octNumber_;

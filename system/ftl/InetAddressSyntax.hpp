@@ -24,10 +24,10 @@ public:
 	inline int inet6Address() const { return inet6Address_; }
 	inline int inetAddress() const { return inetAddress_; }
 
-private:
-	InetAddressSyntax(Ref<SyntaxDebugFactory> debugFactory = 0);
-
+protected:
 	friend class Singleton<InetAddressSyntax>;
+
+	InetAddressSyntax(Ref<SyntaxDebugFactory> debugFactory = 0);
 
 	int inet4Address_;
 	int inet6Address_;

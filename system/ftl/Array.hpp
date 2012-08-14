@@ -25,48 +25,9 @@ public:
 	typedef int Index;
 	typedef T Item;
 
-	explicit Array(int size = 0)
-		: size_(0),
-		  data_(0)
-	{
-		if (size > 0) {
-			size_ = size;
-			data_ = new T[size];
-		}
-	}
-
-	Array(int size, T zero)
-		: size_(0),
-		  data_(0)
-	{
-		if (size > 0) {
-			size_ = size;
-			data_ = new T[size];
-			mem::clr(data_, size * sizeof(T), zero);
-		}
-	}
-
-	Array(const T* data, int size)
-		: size_(0),
-		  data_(0)
-	{
-		if (size > 0) {
-			size_ = size;
-			data_ = new T[size];
-			mem::cpy(data_, data, size * sizeof(T));
-		}
-	}
-
-	Array(const Array& b)
-		: size_(0),
-		  data_(0)
-	{
-		if (b.size_ > 0) {
-			size_ = b.size_;
-			data_ = new T[b.size_];
-			mem::cpy(data_, b.data_, b.size_ * sizeof(T));
-		}
-	}
+	inline static Ref<Array, Owner> newInstance(int size = 0) { return new Array(size); }
+	inline static Ref<Array, Owner> newInstance(int size, T zero) { return new Array(size, zero); }
+	inline static Ref<Array, Owner> newInstance(const T* data, int size) { return new Array(data, size); }
 
 	~Array()
 	{
@@ -232,6 +193,49 @@ public:
 	inline int contains(const T* pattern, int patternSize) { return find(0, pattern, patternSize) != size_; }
 
 protected:
+	Array(int size = 0)
+		: size_(0),
+		  data_(0)
+	{
+		if (size > 0) {
+			size_ = size;
+			data_ = new T[size];
+		}
+	}
+
+	Array(int size, T zero)
+		: size_(0),
+		  data_(0)
+	{
+		if (size > 0) {
+			size_ = size;
+			data_ = new T[size];
+			mem::clr(data_, size * sizeof(T), zero);
+		}
+	}
+
+	Array(const T* data, int size)
+		: size_(0),
+		  data_(0)
+	{
+		if (size > 0) {
+			size_ = size;
+			data_ = new T[size];
+			mem::cpy(data_, data, size * sizeof(T));
+		}
+	}
+
+	Array(const Array& b)
+		: size_(0),
+		  data_(0)
+	{
+		if (b.size_ > 0) {
+			size_ = b.size_;
+			data_ = new T[b.size_];
+			mem::cpy(data_, b.data_, b.size_ * sizeof(T));
+		}
+	}
+
 	int size_;
 	T* data_;
 };

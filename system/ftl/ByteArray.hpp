@@ -33,11 +33,10 @@ public:
 	typedef int Index;
 	typedef char Item;
 
-	explicit ByteArray(int size = 0);
-	ByteArray(int size, char zero);
-	ByteArray(const char* data, int size = -1);
-	ByteArray(const ByteArray& b);
-	ByteArray(ByteArray* b, int size); // FIXME, should be protected
+	inline static Ref<ByteArray, Owner> newInstance(int size = 0) { return new ByteArray(size); }
+	inline static Ref<ByteArray, Owner> newInstance(int size, char zero) { return new ByteArray(size, zero); }
+	inline static Ref<ByteArray, Owner> newInstance(const char* data, int size = -1) { return new ByteArray(data, size); }
+	inline static Ref<ByteArray, Owner> newInstance(Ref<ByteArray> parent, int size) { return new ByteArray(parent, size); }
 	~ByteArray();
 
 	inline static Ref<ByteArray> empty() { return Default<ByteArray>::instance(); }
@@ -198,10 +197,18 @@ public:
 	Ref<ByteArray, Owner> base64() const;
 
 protected:
+	friend class Singleton<ByteArray>;
+
+	explicit ByteArray(int size = 0);
+	ByteArray(int size, char zero);
+	ByteArray(const char* data, int size = -1);
+	ByteArray(const ByteArray& b);
+	ByteArray(ByteArray* b, int size); // FIXME, should be protected
+
 	int size_;
 	char* data_;
-	bool range_;
 	mutable Ref<Character, Owner> chars_;
+	Ref<ByteArray, Owner> parent_;
 };
 
 } // namespace ftl

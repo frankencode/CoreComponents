@@ -21,12 +21,12 @@ namespace ftl
 
 class ExitEvent: public Event, public Singleton<ExitEvent>
 {
-private:
+protected:
 	friend class Singleton<ExitEvent>;
-	
+
 	ExitEvent();
 	~ExitEvent();
-	
+
 	pid_t pid_;
 };
 

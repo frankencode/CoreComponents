@@ -22,17 +22,18 @@ namespace ftl
 
 FTL_EXCEPTION(JsonException, Exception);
 
-typedef Array<Variant> JsonArray;
 typedef Map<String, Variant> JsonObject;
 
 class Json: public AbnfCoreSyntax, public Singleton<Json>
 {
 public:
 	Variant parse(String text);
-	
+
 private:
 	friend class Singleton<Json>;
+
 	Json();
+
 	Variant parseText(Ref<ByteArray> text, Ref<Token> token);
 	Variant parseObject(Ref<ByteArray> text, Ref<Token> token);
 	Variant parseArray(Ref<ByteArray> text, Ref<Token> token);
@@ -40,7 +41,7 @@ private:
 	Variant parseValue(Ref<ByteArray> text, Ref<Token> token);
 	String parseString(Ref<ByteArray> text, Ref<Token> token);
 	double parseNumber(Ref<ByteArray> text, Ref<Token> token);
-	
+
 	int int_;
 	int frac_;
 	int exp_;
@@ -51,7 +52,7 @@ private:
 	int object_;
 	int array_;
 	int text_;
-	
+
 	int false_, true_, null_;
 };
 

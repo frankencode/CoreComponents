@@ -40,10 +40,11 @@ class Wire: public SyntaxDefinition, public Singleton<Wire>
 public:
 	Ref<WireObject, Owner> parse(Ref<ByteArray> text);
 
-private:
+protected:
 	friend class Singleton<Wire>;
 
 	Wire();
+
 	String parseConcatenation(Ref<ByteArray> text, Ref<Token> token);
 	Ref<WireObject, Owner> parseObject(Ref<ByteArray> text, Ref<Token> token);
 	Ref<VariantList, Owner> parseList(Ref<ByteArray> text, Ref<Token> token);

@@ -32,7 +32,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 {
 #ifdef __linux
 	String path = Format("/proc/%%/stat") << processId;
-	Ref<File, Owner> file = new File(path);
+	Ref<File, Owner> file = File::newInstance(path);
 	file->open(File::Read);
 	Ref<LineSource, Owner> source = new LineSource(file);
 	String line = source->readLine();

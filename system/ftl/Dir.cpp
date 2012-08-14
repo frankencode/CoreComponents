@@ -32,11 +32,11 @@ Dir::~Dir()
 
 String Dir::path() const { return path_; }
 
-bool Dir::access(int flags) { return File(path_).access(flags); }
+bool Dir::access(int flags) { return File::newInstance(path_)->access(flags); }
 
 bool Dir::exists() const
 {
-	return File(path_).exists() && (FileStatus(path_).type() == File::Directory);
+	return File::newInstance(path_)->exists() && (FileStatus(path_).type() == File::Directory);
 }
 
 void Dir::create(int mode)
@@ -93,7 +93,7 @@ void Dir::establish(int mode)
 		path = Path(path).reduce();
 	}
 	while (missingDirs->length() > 0)
-		newInstance<Dir>(missingDirs->pop())->create(mode);
+		Dir::newInstance(missingDirs->pop())->create(mode);
 }
 
 } // namespace ftl

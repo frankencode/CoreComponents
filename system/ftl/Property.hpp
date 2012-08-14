@@ -11,7 +11,7 @@
 #ifndef FTL_PROPERTY_HPP
 #define FTL_PROPERTY_HPP
 
-#include "List.hpp"
+#include "Format.hpp"
 #include "Map.hpp"
 
 namespace ftl
@@ -28,19 +28,19 @@ class Slot: public Callback<Value>
 {
 public:
 	typedef void (Recipient::* Method)(Value);
-	
+
 	Slot()
 		: recipient_(0),
 		  method_(0)
 	{}
-	
+
 	Slot(Ref<Recipient> recipient, Method method)
 		: recipient_(recipient),
 		  method_(method)
 	{}
-	
+
 	void invoke(Value value) { (recipient_->*method_)(value); }
-	
+
 private:
 	Ref<Recipient> recipient_;
 	Method method_;
@@ -57,7 +57,7 @@ public:
 				list->at(j)->invoke(value);
 		}
 	}
-	
+
 	template<class Recipient>
 	void connect(Recipient* recipient, void (Recipient::* method)(Value)) {
 		Ref<CallbackList, Owner> list;
@@ -67,11 +67,11 @@ public:
 		}
 		list->append(new Slot<Recipient, Value>(recipient, method));
 	}
-	
+
 	void disconnect(void* recipient) {
 		callbacks_.remove(recipient);
 	}
-	
+
 private:
 	friend class Connection;
 	typedef List< Ref<Callback<Value>, Owner> > CallbackList;
@@ -84,7 +84,7 @@ class Property
 public:
 	Property() {}
 	Property(const T& b): value_(b) {}
-	
+
 	inline operator const T&() const { return value_; }
 	inline Property& operator=(const T& b) {
 		if (b != value_) {
@@ -93,9 +93,11 @@ public:
 		}
 		return *this;
 	}
-	
+
 	inline Ref< Signal<T> > valueChanged() const { return valueChanged_; }
-	
+
+	inline String toString() const { return Format() << value_; }
+
 private:
 	Ref<Signal<T>, OnDemand> valueChanged_;
 	T value_;

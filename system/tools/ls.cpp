@@ -5,8 +5,8 @@ int main()
 {
 	using namespace ftl;
 
-	Dir dir(".");
-	for (DirEntry entry; dir.read(&entry);)
-		output()->writeLine(entry.name());
+	Ref<Dir, Owner> dir = Dir::newInstance(".");
+	for (Ref<DirEntry, Owner> entry = DirEntry::newInstance(); dir->read(entry);)
+		output()->writeLine(entry->name());
 	return 0;
 }
