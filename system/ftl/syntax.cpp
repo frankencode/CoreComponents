@@ -43,8 +43,8 @@ int InvokeNode::matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, T
 		{
 			rollBack(parentToken, lastChildSaved);
 
-			ByteArray range(media, i);
-			definition_->matchNext(&range, i0, tokenFactory, parentToken, childState);
+			Ref<ByteArray, Owner> range = ByteArray::newInstance(media, i);
+			definition_->matchNext(range, i0, tokenFactory, parentToken, childState);
 		}
 	}
 	else {

@@ -18,7 +18,7 @@ namespace ftl
 Config::Config(const char* path)
 {
 	try {
-		Ref<File, Owner> file = new File(path);
+		Ref<File, Owner> file = File::newInstance(path);
 		file->open(File::Read);
 		String text = file->readAll();
 		object_ = wire()->parse(text);

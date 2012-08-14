@@ -30,11 +30,11 @@ public:
 
 	inline int definitionId() const { return definitionId_; }
 
-	inline bool* flag(int id) { return flags_.pointerAt(id); }
-	inline char* character(int id) { return chars_.pointerAt(id); }
+	inline bool* flag(int id) { return flags_->pointerAt(id); }
+	inline char* character(int id) { return chars_->pointerAt(id); }
 
-	inline Ref<ByteArray> string(int id) { return strings_.at(id); }
-	inline void setString(int id, Ref<ByteArray> s) { strings_.set(id, s); }
+	inline Ref<ByteArray> string(int id) { return strings_->at(id); }
+	inline void setString(int id, Ref<ByteArray> s) { strings_->set(id, s); }
 
 	inline Ref<State> child() const { return child_; }
 	inline void setChild(Ref<State> state) { child_ = state; }
@@ -50,9 +50,9 @@ public:
 private:
 	Ref<DefinitionNode, Owner> definition_;
 	int definitionId_;
-	Array<bool> flags_;
-	ByteArray chars_;
-	Array< Ref<ByteArray, Owner> > strings_;
+	Ref< Array<bool>, Owner > flags_;
+	Ref<ByteArray, Owner> chars_;
+	Ref< Array< Ref<ByteArray, Owner> >, Owner > strings_;
 	Ref<State, Owner> child_;
 	const char* hint_;
 	int hintOffset_;

@@ -33,6 +33,7 @@ public:
 
 private:
 	friend class ThreadLocalSingleton<StandardStreams>;
+
 	StandardStreams();
 
 	Ref<SystemStream, Owner> rawInput_;

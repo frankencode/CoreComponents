@@ -66,7 +66,7 @@ void Md5::finish(uint8_t sum[16])
 	for (int i = 0; i < 8; ++i)
 		aux_[auxFill_++] = b >> (i * 8);
 	consume();
-	
+
 	/** serialize the message digest
 	  */
 	int k = 0;
@@ -78,7 +78,7 @@ void Md5::finish(uint8_t sum[16])
 
 Ref<ByteArray, Owner> Md5::finish()
 {
-	Ref<ByteArray, Owner> sum = new ByteArray(16);
+	Ref<ByteArray, Owner> sum = ByteArray::newInstance(16);
 	finish(reinterpret_cast<uint8_t*>(sum->data()));
 	return sum;
 }
@@ -229,4 +229,4 @@ void Md5::consume()
 	auxFill_ = 0;
 }
 
-} // namespace ftl
+} // namesp

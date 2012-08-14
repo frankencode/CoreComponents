@@ -39,11 +39,12 @@ const char* PatternException::what() const throw()
 
 class PatternCompiler: public SyntaxDefinition, public Singleton<PatternCompiler>
 {
-private:
+protected:
 	friend class Singleton<PatternCompiler>;
 	friend class Pattern;
 
 	PatternCompiler();
+
 	void compile(Ref<ByteArray> text, Ref<SyntaxDefinition> definition);
 	NODE compileChoice(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition);
 	NODE compileSequence(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition);

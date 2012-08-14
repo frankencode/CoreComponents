@@ -42,25 +42,25 @@ class SignalManager: public Instance, public Singleton<SignalManager>
 public:
 	Ref<Event> signalEvent(int signal);
 	static void defaultAction(int signal);
-	
-private:
+
+protected:
 	friend class Singleton<SignalManager>;
 	friend class SignalInitializer;
 	friend class SignalListener;
 	friend class Thread;
-	
+
 	SignalManager();
 	~SignalManager();
-	
+
 	void startListener();
 	void relay(int signal);
-	
+
 	Ref<SignalListener, Owner> signalListener_;
 	int pid_;
-	
+
 	typedef Map<int, Ref<Event, Owner> > SignalEvents;
 	Ref<SignalEvents, Owner> signalEvents_;
-	
+
 	Mutex mutex_;
 };
 

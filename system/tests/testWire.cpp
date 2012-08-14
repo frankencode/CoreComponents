@@ -27,7 +27,7 @@ int main() {
 	print("name: %%\n", object->value("name"));
 	print("age: %%\n", object->value("age"));
 	print("hobbies: ");
-	Ref<WireList> hobbies = object->value("hobbies");
+	Ref<VariantList> hobbies = object->value("hobbies");
 	for (int i = 0; i < hobbies->length(); ++i) {
 		print("%%", hobbies->get(i));
 		if (i != hobbies->length() - 1)
@@ -44,7 +44,7 @@ int main() {
 	print("  latitude: %%\n", home->value("latitude"));
 	print("  longitude: %%\n", home->value("longitude"));
 	print("favouriteNumbers: ");
-	Ref<WireList> numbers = object->value("favouriteNumbers");
+	Ref<VariantList> numbers = object->value("favouriteNumbers");
 	for (int i = 0; i < numbers->length(); ++i) {
 		print("%%", numbers->get(i));
 		if (i != numbers->length() - 1)

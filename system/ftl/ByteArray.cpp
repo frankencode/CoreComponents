@@ -25,8 +25,7 @@ namespace ftl
 
 ByteArray::ByteArray(int size)
 	: size_(0),
-	  data_(const_cast<char*>("")),
-	  range_(false)
+	  data_(const_cast<char*>(""))
 {
 	if (size > 0) {
 		size_ = size;
@@ -37,8 +36,7 @@ ByteArray::ByteArray(int size)
 
 ByteArray::ByteArray(int size, char zero)
 	: size_(0),
-	  data_(const_cast<char*>("")),
-	  range_(false)
+	  data_(const_cast<char*>(""))
 {
 	if (size > 0) {
 		size_ = size;
@@ -50,8 +48,7 @@ ByteArray::ByteArray(int size, char zero)
 
 ByteArray::ByteArray(const char* data, int size)
 	: size_(0),
-	  data_(const_cast<char*>("")),
-	  range_(false)
+	  data_(const_cast<char*>(""))
 {
 	if (size < 0) size = str::len(data);
 	if (size > 0) {
@@ -64,8 +61,7 @@ ByteArray::ByteArray(const char* data, int size)
 
 ByteArray::ByteArray(const ByteArray& b)
 	: size_(0),
-	  data_(const_cast<char*>("")),
-	  range_(false)
+	  data_(const_cast<char*>(""))
 {
 	if (b.size_ > 0) {
 		size_ = b.size_;
@@ -74,15 +70,15 @@ ByteArray::ByteArray(const ByteArray& b)
 	}
 }
 
-ByteArray::ByteArray(ByteArray* b, int size)
+ByteArray::ByteArray(ByteArray* parent, int size)
 	: size_(size),
-	  data_(b->data_),
-	  range_(true)
+	  data_(parent->data_),
+	  parent_(parent)
 {}
 
 
 ByteArray::~ByteArray() {
-	if ((size_ > 0) && (!range_)) delete[] data_;
+	if ((size_ > 0) && (!parent_)) delete[] data_;
 }
 
 ByteArray& ByteArray::operator=(const ByteArray& b)
@@ -176,7 +172,7 @@ Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, const char* sep)
 		for (int i = 0; i < parts->length(); ++i)
 			size += parts->at(i)->size();
 		size += (parts->length() - 1) * sepSize;
-		Ref<ByteArray, Owner> result = new ByteArray(size);
+		Ref<ByteArray, Owner> result = ByteArray::newInstance(size);
 		char* p = result->data_;
 		for (int i = 0; i < parts->length(); ++i) {
 			Ref<ByteArray> part = parts->at(i);
@@ -526,7 +522,7 @@ Ref<ByteArray, Owner> ByteArray::fromUtf16(const void* data, int size, int endia
 			for (uchar_t ch; source.read(&ch);)
 				size2 += Utf8Encoder::encodedSize(ch);
 		}
-		s2 = new ByteArray(size2);
+		s2 = ByteArray::newInstance(size2);
 		Utf16Decoder source(data, size, endian);
 		Utf8Encoder sink(s2->data_, size2);
 		for (uchar_t ch; source.read(&ch);)
@@ -573,7 +569,7 @@ Ref<ByteArray, Owner> ByteArray::toUtf16(int endian)
 	int size2 = 0;
 	for (int i = 0; i < chars()->length(); ++i)
 		size2 += Utf16Encoder::encodedSize(get(i));
-	Ref<ByteArray, Owner> s2 = new ByteArray(size2 + 2);
+	Ref<ByteArray, Owner> s2 = ByteArray::newInstance(size2 + 2);
 	(*s2)[size2] = 0;
 	(*s2)[size2 + 1] = 0;
 	if (size2 > 0) {

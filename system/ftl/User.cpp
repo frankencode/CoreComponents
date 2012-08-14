@@ -22,10 +22,10 @@ User::User(uid_t id)
 	int h = sysconf(_SC_GETPW_R_SIZE_MAX);
 	if (h != -1) bufSize = h;
 	#endif
-	ByteArray buf(bufSize);
+	Ref<ByteArray, Owner> buf = ByteArray::newInstance(bufSize);
 	struct passwd space;
 	struct passwd* entry = 0;
-	if (::getpwuid_r(id, &space, buf, bufSize, &entry) != 0)
+	if (::getpwuid_r(id, &space, buf->data(), buf->size(), &entry) != 0)
 		FTL_SYSTEM_EXCEPTION;
 	load(entry);
 }
@@ -35,10 +35,10 @@ User::User(const char* name)
 	int bufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
 	if (bufSize == -1)
 		FTL_SYSTEM_EXCEPTION;
-	ByteArray buf(bufSize);
+	Ref<ByteArray, Owner> buf = ByteArray::newInstance(bufSize);
 	struct passwd space;
 	struct passwd* entry = 0;
-	if (::getpwnam_r(name, &space, buf, bufSize, &entry) != 0)
+	if (::getpwnam_r(name, &space, buf->data(), buf->size(), &entry) != 0)
 		FTL_SYSTEM_EXCEPTION;
 	load(entry);
 }

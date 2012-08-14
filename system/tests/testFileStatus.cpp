@@ -33,10 +33,10 @@ void printStatus(Ref<File, Owner> file)
 
 int main(int argc, char** argv)
 {
-	printStatus(new File(argv[0]));
-	printStatus(new File("hmpf.xyz"));
+	printStatus(File::newInstance(argv[0]));
+	printStatus(File::newInstance("hmpf.xyz"));
 	printStatus(rawInput());
-	printStatus(new File("/usr/include"));
+	printStatus(File::newInstance("/usr/include"));
 	return 0;
 }
 

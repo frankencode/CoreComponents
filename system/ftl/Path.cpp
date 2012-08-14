@@ -133,7 +133,7 @@ Path Path::lookup(String fileName, Ref<StringList> dirs, int accessFlags)
 	String path;
 	for (int i = 0; i < dirs->length(); ++i) {
 		String candidate = Format() << dirs->at(i) << "/" << fileName;
-		if (File(candidate).access(accessFlags)) {
+		if (File::newInstance(candidate)->access(accessFlags)) {
 			path = candidate;
 			break;
 		}

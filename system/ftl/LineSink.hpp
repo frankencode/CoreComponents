@@ -13,7 +13,6 @@
 
 #include "atoms"
 #include "defaults.hpp"
-#include "Array.hpp"
 #include "String.hpp"
 #include "Stream.hpp"
 
@@ -24,25 +23,25 @@ class LineSink: public Sink<String>
 {
 public:
 	LineSink(Ref<Stream> stream, const char* eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA);
-	
+
 	Ref<Stream> stream() const;
-	
+
 	String prefix() const;
 	void setPrefix(String prefix);
-	
+
 	void writeLine(String line);
 	void write(String text);
-	
-private:
+
+protected:
 	void feed(const char* data, int size);
 	void flush();
 
 	Ref<Stream, Owner> stream_;
 	String eol_;
 	String prefix_;
-	
+
 	int bufFill_;
-	ByteArray buf_;
+	Ref<ByteArray, Owner> buf_;
 };
 
 } // namespace ftl

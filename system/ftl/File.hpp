@@ -74,8 +74,8 @@ public:
 		StandardError  = 2
 	};
 
-	File(String path, int openFlags = 0);
-	File(int fd);
+	inline static Ref<File, Owner> newInstance(String path, int openFlags = 0) { return new File(path, openFlags); }
+	inline static Ref<File, Owner> newInstance(int fd){ return new File(fd); }
 	~File();
 
 	String path() const;
@@ -113,7 +113,10 @@ public:
 
 	Ref<FileStatus> status() const;
 
-private:
+protected:
+	File(String path, int openFlags = 0);
+	File(int fd);
+
 	String path_;
 	int openFlags_;
 	bool unlinkWhenDone_;

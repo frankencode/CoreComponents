@@ -6,10 +6,10 @@ int main(int argc, char** argv)
 	using namespace ftl;
 
 	if (argc != 2) return 1;
-	Ref<File, Owner> file = new File(argv[1]);
+	Ref<File, Owner> file = File::newInstance(argv[1]);
 	file->open(File::Read);
 	off_t nw = 0;
-	Ref<ByteArray, Owner> buf = new ByteArray(FTL_DEFAULT_BUF_CAPA);
+	Ref<ByteArray, Owner> buf = ByteArray::newInstance(FTL_DEFAULT_BUF_CAPA);
 	while (true) {
 		if (file->status()->size() > nw) {
 			while (true) {

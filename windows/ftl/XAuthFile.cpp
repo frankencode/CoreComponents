@@ -12,27 +12,27 @@ XAuthFile::XAuthFile(String path)
 {
 	if (path_ == "") path_ = Process::env("XAUTHORITY");
 	if (path_ == "") return;
-	
-	Ref<File, Owner> file = new File(path_);
+
+	Ref<File, Owner> file = File::newInstance(path_);
 	file->open();
-	
+
 	Ref<ByteDecoder, Owner> source = new ByteDecoder(file);
 	source->setEndian(BigEndian);
-	
+
 	while (source->hasMore()) {
 		Ref<XAuthRecord, Owner> record = new XAuthRecord;
-		
+
 		int family = source->readUInt16();
 		if (family == 0) family = AF_INET;
 		else if (family == 1) family = AF_INET6;
 		else if (family == 256) family = AF_LOCAL;
-		
+
 		record->family = family;
 		record->host = source->read(source->readUInt16());
 		record->display = source->read(source->readUInt16())->toInt();
 		record->protocol = source->read(source->readUInt16());
 		record->data = source->read(source->readUInt16());
-		
+
 		records_->append(record);
 	}
 }

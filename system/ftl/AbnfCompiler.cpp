@@ -204,21 +204,21 @@ AbnfCompiler::NODE AbnfCompiler::compileNumVal(Ref<ByteArray> text, Ref<Token> n
 				n += text->at(i) == '.';
 				++i;
 			}
-			ByteArray s(n);
+			Ref<ByteArray, Owner> s = ByteArray::newInstance(n);
 			int i0 = numVal->i0() + 2;
 			int i = i0;
 			int j = 0;
 			while (i < numVal->i1()) {
 				if (text->at(i) == '.') {
-					s.set(j, strToInt(*text, i0, i, base));
+					s->set(j, strToInt(*text, i0, i, base));
 					++j;
 					i0 = i + 1;
 				}
 				++i;
 			}
-			FTL_ASSERT(j == s.size() - 1);
-			s.set(j, strToInt(*text, i0, i, base));
-			node = (s.size() > 1) ? definition->STRING(s.constData()) : definition->CHAR(s.at(0));
+			FTL_ASSERT(j == s->size() - 1);
+			s->set(j, strToInt(*text, i0, i, base));
+			node = (s->size() > 1) ? definition->STRING(s->constData()) : definition->CHAR(s->at(0));
 		}
 		else {
 			FTL_ASSERT(false);
@@ -261,17 +261,17 @@ AbnfCompiler::NODE AbnfCompiler::optimizeChoice(Ref<Node> node, Ref<Definition> 
 	}
 
 	if (isRangeExplicit) {
-		ByteArray s(numChars);
+		Ref<ByteArray, Owner> s = ByteArray::newInstance(numChars);
 		int i = 0;
 		Ref<Node> child = ignoreDebug(node)->firstChild();
 		while (child) {
 			Ref<syntax::CharNode> charNode = ignoreDebug(child);
-			s.set(i, charNode->ch());
+			s->set(i, charNode->ch());
 			++i;
 			child = child->nextSibling();
 		}
 
-		optimizedChoice = definition->RANGE(s.constData());
+		optimizedChoice = definition->RANGE(s->constData());
 	}
 	else {
 		deepOptimizeChoice(node, definition);
@@ -297,15 +297,15 @@ void AbnfCompiler::deepOptimizeChoice(Ref<Node> node, Ref<Definition> definition
 void AbnfCompiler::deepOptimizeChoice(Ref<Node> node, Ref<Node> fin, int numChars, Ref<Definition> definition)
 {
 	if (numChars > 1) {
-		ByteArray s(numChars);
+		Ref<ByteArray, Owner> s = ByteArray::newInstance(numChars);
 		int i = numChars - 1;
 		while (i >= 0) {
 			Ref<Node> charNode = (fin) ? fin->previousSibling() : ignoreDebug(node)->lastChild();
-			s.set(i, Ref<syntax::CharNode>(ignoreDebug(charNode))->ch());
+			s->set(i, Ref<syntax::CharNode>(ignoreDebug(charNode))->ch());
 			charNode->unlink();
 			--i;
 		}
-		NODE range = definition->RANGE(s.constData());
+		NODE range = definition->RANGE(s->constData());
 		if (fin)
 			ignoreDebug(node)->insertChild(range, fin->previousSibling());
 		else

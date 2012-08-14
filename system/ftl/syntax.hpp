@@ -164,7 +164,7 @@ class RangeExplicitNode: public Node
 {
 public:
 	RangeExplicitNode(const char* s, int invert)
-		: s_(s),
+		: s_(ByteArray::newInstance(s)),
 		  invert_(invert)
 	{}
 
@@ -172,9 +172,9 @@ public:
 	{
 		if (media->has(i)) {
 			char ch = media->get(i++);
-			int k = 0, len = s_.length();
+			int k = 0, len = s_->length();
 			while (k < len) {
-				if (s_.get(k) == ch) break;
+				if (s_->get(k) == ch) break;
 				++k;
 			}
 			if ((k == len) ^ invert_)
@@ -188,11 +188,11 @@ public:
 
 	inline int matchLength() const { return 1; }
 
-	inline const ByteArray& s() const { return s_; }
+	inline const ByteArray& s() const { return *s_; }
 	inline int invert() const { return invert_; }
 
 private:
-	ByteArray s_;
+	Ref<ByteArray, Owner> s_;
 	int invert_;
 };
 
@@ -200,24 +200,21 @@ class StringNode: public Node
 {
 public:
 	StringNode(const char* s, bool caseSensitive)
-		: s_(s),
+		: s_(ByteArray::newInstance(s)),
 		  caseSensitive_(caseSensitive)
 	{
-		if (!caseSensitive) {
-			for (int i = 0, n = s_.size(); i < n; ++i)
-				s_.set(i, ToLower<char>::map(s_.at(i)));
-		}
+		if (!caseSensitive) s_ = s_->toLower();
 	}
 
 	virtual int matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
 	{
 		if (media->has(i)) {
-			int k = 0, len = s_.length();
+			int k = 0, len = s_->length();
 			while ((k < len) && (media->has(i))) {
 				char ch = media->get(i++);
 				if (!caseSensitive_)
 					ch = ToLower<char>::map(ch);
-				if (s_.at(k) != ch) break;
+				if (s_->at(k) != ch) break;
 				++k;
 			}
 			if (k != len)
@@ -229,12 +226,12 @@ public:
 		return i;
 	}
 
-	inline int matchLength() const { return s_.length(); }
+	inline int matchLength() const { return s_->length(); }
 
-	inline const ByteArray& s() const { return s_; }
+	inline const ByteArray& s() const { return *s_; }
 
 private:
-	ByteArray s_;
+	Ref<ByteArray, Owner> s_;
 	bool caseSensitive_;
 };
 
@@ -930,7 +927,7 @@ class SetStringNode: public Node
 public:
 	SetStringNode(int stringId, const char* s)
 		: stringId_(stringId),
-		  s_(new ByteArray(s))
+		  s_(ByteArray::newInstance(s))
 	{}
 
 	virtual int matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
@@ -1573,7 +1570,7 @@ private:
 	public:
 		StateString(Ref<StateString> head, const char* defaultValue)
 			: next_(head),
-			  defaultValue_(new ByteArray(defaultValue))
+			  defaultValue_(ByteArray::newInstance(defaultValue))
 		{}
 		Ref<StateString, Owner> next_;
 		Ref<ByteArray, Owner> defaultValue_;

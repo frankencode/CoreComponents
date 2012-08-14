@@ -74,7 +74,7 @@ DependencyCache {
     "Condition.cpp": MachObject {
         objectPath: "Condition.o"
         dependencyPaths: [
-            "Condition.cppCondition.hppatomstypes.hppException.hppstrings.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hppMutex.hppTime.hpp"
+            "Condition.cppCondition.hppatomstypes.hppException.hppstrings.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hppMutex.hppTime.hppString.hppByteArray.hppDefault.hppSingleton.hppLocalStatic.hppGlobalCoreMutex.hppThreadLocalSingleton.hppThreadLocalOwner.hppList.hppcontainers.hppOrdinalTree.hppAvlTree.hppBinaryTree.hppArray.hppHeap.hppToken.hppTree.hppCharacter.hppUtf8Walker.hpp"
         ]
     }
     "Config.cpp": MachObject {
@@ -230,7 +230,78 @@ DependencyCache {
     "MachDependencyCache.cpp": MachObject {
         objectPath: "MachDependencyCache.o"
         dependencyPaths: [
-            "MachDependencyCache.cppstdioFileStatus.hppatomstypes.hppException.hppstrings.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hppTime.hppString.hppByteArray.hppDefault.hppSingleton.hppLocalStatic.hppGlobalCoreMutex.hppThreadLocalSingleton.hppThreadLocalOwner.hppList.hppcontainers.hppOrdinalTree.hppAvlTree.hppBinaryTree.hppArray.hppHeap.hppToken.hppTree.hppCharacter.hppUtf8Walker.hppFile.hppSystemStream.hppStream.hppDir.hppDirEntry.hppGlob.hppPattern.hppSyntaxDebugger.hppsyntax.hppCrc32.hppPrefixTree.hppPrefixTreeWalker.hppSyntaxNode.hppSyntaxState.hppTokenFactory.hppSyntaxDebugFactory.hppSyntaxSugar.hppMap.hppPrintDebug.hppFormat.hppVariant.hppPath.hpprounding.hppStack.hppStandardStreams.hppLineSource.hppCircularBuffer.hppLineSink.hppSyntaxDefinition.hppDate.hppMachObject.hppMachCompiler.hppWire.hppWireObject.hppSet.hppMachDependencyCache.hpp"
+            "MachDependencyCache.cpp"
+            "stdio"
+            "FileStatus.hpp"
+            "atoms"
+            "types.hpp"
+            "Exception.hpp"
+            "strings.hpp"
+            "generics.hpp"
+            "Instance.hpp"
+            "defaults.hpp"
+            "SpinLock.hpp"
+            "Ref.hpp"
+            "Pointer.hpp"
+            "SetNull.hpp"
+            "Owner.hpp"
+            "OnDemand.hpp"
+            "Guard.hpp"
+            "Time.hpp"
+            "String.hpp"
+            "ByteArray.hpp"
+            "Default.hpp"
+            "Singleton.hpp"
+            "LocalStatic.hpp"
+            "GlobalCoreMutex.hpp"
+            "ThreadLocalSingleton.hpp"
+            "ThreadLocalOwner.hpp"
+            "List.hpp"
+            "containers.hpp"
+            "OrdinalTree.hpp"
+            "AvlTree.hpp"
+            "BinaryTree.hpp"
+            "Array.hpp"
+            "Heap.hpp"
+            "Token.hpp"
+            "Tree.hpp"
+            "Character.hpp"
+            "Utf8Walker.hpp"
+            "File.hpp"
+            "SystemStream.hpp"
+            "Stream.hpp"
+            "Dir.hpp"
+            "DirEntry.hpp"
+            "Glob.hpp"
+            "Pattern.hpp"
+            "SyntaxDebugger.hpp"
+            "syntax.hpp"
+            "Crc32.hpp"
+            "PrefixTree.hpp"
+            "PrefixTreeWalker.hpp"
+            "SyntaxNode.hpp"
+            "SyntaxState.hpp"
+            "TokenFactory.hpp"
+            "SyntaxDebugFactory.hpp"
+            "SyntaxSugar.hpp"
+            "Map.hpp"
+            "PrintDebug.hpp"
+            "Format.hpp"
+            "Variant.hpp"
+            "Path.hpp"
+            "rounding.hpp"
+            "Stack.hpp"
+            "StandardStreams.hpp"
+            "LineSource.hpp"
+            "CircularBuffer.hpp"
+            "LineSink.hpp"
+            "SyntaxDefinition.hpp"
+            "MachObject.hpp"
+            "MachCompiler.hpp"
+            "Wire.hpp"
+            "WireObject.hpp"
+            "Set.hpp"
+            "MachDependencyCache.hpp"
         ]
     }
     "Md5.cpp": MachObject {
@@ -302,19 +373,19 @@ DependencyCache {
     "Random.cpp": MachObject {
         objectPath: "Random.o"
         dependencyPaths: [
-            "Random.cppTime.hpptypes.hppException.hppRandom.hppatomsstrings.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hpp"
+            "Random.cppTime.hpptypes.hppException.hppString.hppstrings.hppByteArray.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppDefault.hppSingleton.hppLocalStatic.hppGlobalCoreMutex.hppGuard.hppThreadLocalSingleton.hppThreadLocalOwner.hppList.hppcontainers.hppatomsOrdinalTree.hppAvlTree.hppBinaryTree.hppArray.hppHeap.hppToken.hppTree.hppCharacter.hppUtf8Walker.hppRandom.hpp"
         ]
     }
     "Semaphore.cpp": MachObject {
         objectPath: "Semaphore.o"
         dependencyPaths: [
-            "Semaphore.cppSemaphore.hppatomstypes.hppException.hppstrings.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hppMutex.hppCondition.hppTime.hpp"
+            "Semaphore.cppSemaphore.hppatomstypes.hppException.hppstrings.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hppMutex.hppCondition.hppTime.hppString.hppByteArray.hppDefault.hppSingleton.hppLocalStatic.hppGlobalCoreMutex.hppThreadLocalSingleton.hppThreadLocalOwner.hppList.hppcontainers.hppOrdinalTree.hppAvlTree.hppBinaryTree.hppArray.hppHeap.hppToken.hppTree.hppCharacter.hppUtf8Walker.hpp"
         ]
     }
     "SignalManager.cpp": MachObject {
         objectPath: "SignalManager.o"
         dependencyPaths: [
-            "SignalManager.cppCondition.hppatomstypes.hppException.hppstrings.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hppMutex.hppTime.hppSignalManager.hppSingleton.hppLocalStatic.hppGlobalCoreMutex.hppThreadLocalSingleton.hppThreadLocalOwner.hppThread.hppProcess.hppString.hppByteArray.hppDefault.hppList.hppcontainers.hppOrdinalTree.hppAvlTree.hppBinaryTree.hppArray.hppHeap.hppToken.hppTree.hppCharacter.hppUtf8Walker.hppMap.hppSystemStream.hppStream.hppLineSink.hppLineSource.hppCircularBuffer.hppEvent.hpp"
+            "SignalManager.cppCondition.hppatomstypes.hppException.hppstrings.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hppMutex.hppTime.hppString.hppByteArray.hppDefault.hppSingleton.hppLocalStatic.hppGlobalCoreMutex.hppThreadLocalSingleton.hppThreadLocalOwner.hppList.hppcontainers.hppOrdinalTree.hppAvlTree.hppBinaryTree.hppArray.hppHeap.hppToken.hppTree.hppCharacter.hppUtf8Walker.hppSignalManager.hppThread.hppProcess.hppMap.hppSystemStream.hppStream.hppLineSink.hppLineSource.hppCircularBuffer.hppEvent.hpp"
         ]
     }
     "SignalSet.cpp": MachObject {
@@ -350,7 +421,7 @@ DependencyCache {
     "StreamSocket.cpp": MachObject {
         objectPath: "StreamSocket.o"
         dependencyPaths: [
-            "StreamSocket.cppStreamSocket.hppatomstypes.hppException.hppstrings.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hppTime.hppSystemStream.hppStream.hppString.hppByteArray.hppDefault.hppSingleton.hppLocalStatic.hppGlobalCoreMutex.hppThreadLocalSingleton.hppThreadLocalOwner.hppList.hppcontainers.hppOrdinalTree.hppAvlTree.hppBinaryTree.hppArray.hppHeap.hppToken.hppTree.hppCharacter.hppUtf8Walker.hppSocketAddress.hpp"
+            "StreamSocket.cppStreamSocket.hppatomstypes.hppException.hppstrings.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hppTime.hppString.hppByteArray.hppDefault.hppSingleton.hppLocalStatic.hppGlobalCoreMutex.hppThreadLocalSingleton.hppThreadLocalOwner.hppList.hppcontainers.hppOrdinalTree.hppAvlTree.hppBinaryTree.hppArray.hppHeap.hppToken.hppTree.hppCharacter.hppUtf8Walker.hppSystemStream.hppStream.hppSocketAddress.hpp"
         ]
     }
     "String.cpp": MachObject {
@@ -392,7 +463,7 @@ DependencyCache {
     "Thread.cpp": MachObject {
         objectPath: "Thread.o"
         dependencyPaths: [
-            "Thread.cppstrings.hpptypes.hppException.hppTime.hppCondition.hppatomsgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hppMutex.hppThreadFactory.hppThread.hppSignalManager.hppSingleton.hppLocalStatic.hppGlobalCoreMutex.hppThreadLocalSingleton.hppThreadLocalOwner.hppProcess.hppString.hppByteArray.hppDefault.hppList.hppcontainers.hppOrdinalTree.hppAvlTree.hppBinaryTree.hppArray.hppHeap.hppToken.hppTree.hppCharacter.hppUtf8Walker.hppMap.hppSystemStream.hppStream.hppLineSink.hppLineSource.hppCircularBuffer.hppEvent.hpp"
+            "Thread.cppstrings.hpptypes.hppException.hppTime.hppString.hppByteArray.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppDefault.hppSingleton.hppLocalStatic.hppGlobalCoreMutex.hppGuard.hppThreadLocalSingleton.hppThreadLocalOwner.hppList.hppcontainers.hppatomsOrdinalTree.hppAvlTree.hppBinaryTree.hppArray.hppHeap.hppToken.hppTree.hppCharacter.hppUtf8Walker.hppCondition.hppMutex.hppThreadFactory.hppThread.hppSignalManager.hppProcess.hppMap.hppSystemStream.hppStream.hppLineSink.hppLineSource.hppCircularBuffer.hppEvent.hpp"
         ]
     }
     "ThreadExitEvent.cpp": MachObject {
@@ -404,7 +475,13 @@ DependencyCache {
     "ThreadFactory.cpp": MachObject {
         objectPath: "ThreadFactory.o"
         dependencyPaths: [
-            "ThreadFactory.cppThreadFactory.hppThread.hppatomstypes.hppException.hppstrings.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hppTime.hpp"
+            "ThreadFactory.cppThreadFactory.hppThread.hppatomstypes.hppException.hppstrings.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hppTime.hppString.hppByteArray.hppDefault.hppSingleton.hppLocalStatic.hppGlobalCoreMutex.hppThreadLocalSingleton.hppThreadLocalOwner.hppList.hppcontainers.hppOrdinalTree.hppAvlTree.hppBinaryTree.hppArray.hppHeap.hppToken.hppTree.hppCharacter.hppUtf8Walker.hpp"
+        ]
+    }
+    "Time.cpp": MachObject {
+        objectPath: "Time.o"
+        dependencyPaths: [
+            "Time.cppDate.hppatomstypes.hppException.hppstrings.hppgenerics.hppInstance.hppdefaults.hppSpinLock.hppRef.hppPointer.hppSetNull.hppOwner.hppOnDemand.hppGuard.hppTime.hppString.hppByteArray.hppDefault.hppSingleton.hppLocalStatic.hppGlobalCoreMutex.hppThreadLocalSingleton.hppThreadLocalOwner.hppList.hppcontainers.hppOrdinalTree.hppAvlTree.hppBinaryTree.hppArray.hppHeap.hppToken.hppTree.hppCharacter.hppUtf8Walker.hpp"
         ]
     }
     "Token.cpp": MachObject {

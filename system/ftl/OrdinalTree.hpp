@@ -99,7 +99,7 @@ OrdinalTree<Node>::OrdinalTree(int n)
 {
 	if (n <= 0) return;
 
-	Array<Node*> v(n);
+	Ref< Array<Node*>, Owner > v = Array<Node*>::newInstance(n);
 
 	for (int i = 0, m = 1; i < n; m *= 2)
 	{
@@ -108,7 +108,7 @@ OrdinalTree<Node>::OrdinalTree(int n)
 			if (i < n) {
 				Node* k = new Node;
 				Node* kp = 0;
-				if (i > 0) kp = v.at((i - 1) >> 1);
+				if (i > 0) kp = v->at((i - 1) >> 1);
 				k->parent_ = kp;
 				if (kp) {
 					if (i & 1)
@@ -118,21 +118,21 @@ OrdinalTree<Node>::OrdinalTree(int n)
 				}
 				k->left_ = 0;
 				k->right_ = 0;
-				v.set(i, k);
+				v->set(i, k);
 			}
 			else {
-				AvlTree<Node>::touched(v.at((i - 1) >> 1), 0, i & 1, false);
+				AvlTree<Node>::touched(v->at((i - 1) >> 1), 0, i & 1, false);
 			}
 		}
 	}
 
 	for (int i = n - 1; i > 0; --i) {
-		Node* k = v.at(i);
+		Node* k = v->at(i);
 		Node* kp = k->parent_;
 		kp->weight_ += k->weight_;
 	}
 
-	BinaryTree<Node>::root_ = v.at(0);
+	BinaryTree<Node>::root_ = v->at(0);
 
 	/*FTL_ASSERT(BinaryTree<Node>::testStructure(BinaryTree<Node>::root_));
 	FTL_ASSERT(BinaryTree<Node>::testIteration(BinaryTree<Node>::root_));

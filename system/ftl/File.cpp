@@ -163,7 +163,7 @@ void File::truncate(off_t length)
 class UnlinkFile: public Action {
 public:
 	UnlinkFile(String path): path_(Path(path).absolute()) {}
-	void run() { try { File(path_).unlink(); } catch(...) {} }
+	void run() { try { File::newInstance(path_)->unlink(); } catch(...) {} }
 private:
 	String path_;
 };
@@ -215,7 +215,7 @@ Ref<File, Owner> File::temp()
 void File::establish(int fileMode, int dirMode)
 {
 	if (path_->contains('/'))
-		newInstance<Dir>(Path(path_).reduce())->establish(dirMode);
+		Dir::newInstance(Path(path_).reduce())->establish(dirMode);
 	if (!exists())
 		create(fileMode);
 }

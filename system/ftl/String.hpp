@@ -30,10 +30,10 @@ public:
 	String(): Super(ByteArray::empty()) {}
 
 	// initialize string with defined size but undefined content
-	explicit String(int size): Super(new ByteArray(size)) {}
+	explicit String(int size): Super(ByteArray::newInstance(size)) {}
 
 	// initialize string with defined size and defined content
-	String(int size, char zero): Super(new ByteArray(size, zero)) {
+	String(int size, char zero): Super(ByteArray::newInstance(size, zero)) {
 		FTL_ASSERT(0 <= zero);
 	}
 
@@ -48,7 +48,7 @@ public:
 	String(const Variant& b);
 
 	// initialize string by deep-copying a byte array
-	String(const char* data, int size = -1): Super(new ByteArray(data, size)) {}
+	String(const char* data, int size = -1): Super(ByteArray::newInstance(data, size)) {}
 
 	// syntax sugar
 	String(Ref<StringList, Owner> parts);

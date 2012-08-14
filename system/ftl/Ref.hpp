@@ -90,7 +90,7 @@ public:
 
 	inline T* operator->() const { return this->saveGet(); }
 
-private:
+protected:
 	inline T* saveGet() const {
 		T* instance = GetAndSetPolicy<T>::get();
 		FTL_ASSERT2(instance, "Null reference");

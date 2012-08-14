@@ -6,9 +6,9 @@ namespace ftl
 
 int main(int argc, char** argv)
 {
-	Dir dir(Process::cwd());
-	for (DirEntry entry; dir.read(&entry);)
-		print("%% (%%)\n", entry.path(), entry.name());
+	Ref<Dir, Owner> dir = Dir::newInstance(Process::cwd());
+	for (Ref<DirEntry, Owner> entry = DirEntry::newInstance(); dir->read(entry);)
+		print("%% (%%)\n", entry->path(), entry->name());
 	return 0;
 }
 
