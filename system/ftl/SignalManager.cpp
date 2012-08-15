@@ -49,7 +49,8 @@ void SignalListener::run()
 SignalManager::SignalManager()
 	: signalListener_(new SignalListener),
 	  pid_(Process::currentId()),
-	  signalEvents_(SignalEvents::newInstance())
+	  signalEvents_(SignalEvents::newInstance()),
+	  mutex_(Mutex::newInstance())
 {}
 
 SignalManager::~SignalManager()
@@ -103,10 +104,10 @@ void SignalManager::defaultAction(int signal)
 
 Ref<Event> SignalManager::signalEvent(int signal)
 {
-	Guard<Mutex> guard(&mutex_);
+	Guard<Mutex> guard(mutex_);
 	Ref<Event, Owner> event;
 	if (!signalEvents_->lookup(signal, &event)) {
-		event = new Event;
+		event = Event::newInstance();
 		signalEvents_->insert(signal, event);
 	}
 	return event;
@@ -119,7 +120,7 @@ void SignalManager::startListener()
 
 void SignalManager::relay(int signal)
 {
-	Guard<Mutex> guard(&mutex_);
+	Guard<Mutex> guard(mutex_);
 	Ref<Event, Owner> event;
 	if (signalEvents_->lookup(signal, &event))
 		event->run();

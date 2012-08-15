@@ -90,10 +90,10 @@ public:
 	inline T* operator->() const { return this->saveGet(); }
 
 	template<class T2>
-	inline Ref& operator<<(const T2& item) { *(this->saveGet()) << item; return *this; }
+	inline Ref& operator<<(const T2& b) { *(this->saveGet()) << b; return *this; }
 
 	template<class T2>
-	inline Ref& operator>>(T2& item) { *(this->saveGet()) >> item; return *this; }
+	inline Ref& operator>>(T2& b) { *(this->saveGet()) >> b; return *this; }
 
 protected:
 	inline T* saveGet() const {

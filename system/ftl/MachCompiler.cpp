@@ -23,7 +23,7 @@ bool MachCompiler::build(Ref<WireObject> recipe)
 		}
 	}
 
-	Ref<MachDependencyCache, Owner> dependencyCache = new MachDependencyCache(this, sourcePaths);
+	Ref<MachDependencyCache, Owner> dependencyCache = MachDependencyCache::newInstance(this, sourcePaths);
 
 	for (int i = 0; i < sourcePaths->length(); ++i) {
 		Ref<MachObject, Owner> object = dependencyCache->analyse(sourcePaths->at(i));

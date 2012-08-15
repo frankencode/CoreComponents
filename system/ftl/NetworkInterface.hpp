@@ -50,7 +50,11 @@ public:
 		Loopback     = IFF_LOOPBACK,
 		PointToPoint = IFF_POINTOPOINT
 	};
-	
+
+	inline static Ref<NetworkInterface, Owner> newInstance() {
+		return new NetworkInterface;
+	}
+
 	String name() const;
 	int index() const;
 	unsigned type() const;
@@ -58,16 +62,16 @@ public:
 	uint64_t hardwareAddress() const;
 	uint32_t mtu() const;
 	Ref<SocketAddressList> addressList() const;
-	
+
 	static Ref<NetworkInterfaceList, Owner> queryAll(int family = AF_INET6);
-	
+
 private:
 	NetworkInterface();
 	#ifdef __linux
 	static bool getLink(Ref<NetworkInterfaceList> list, int index = -1);
 	static Ref<NetworkInterfaceList, Owner> queryAllIoctl(int family);
 	#endif
-	
+
 	String name_;
 	int index_;
 	unsigned type_;

@@ -4,7 +4,7 @@
 int main(int argc, char** argv)
 {
 	using namespace ftl;
-	
+
 	if (argc != 3) {
 		print("Usage: cat in_file | replace [PATTERN] [REPLACEMENT] > out_file\n\n");
 		return 1;
@@ -13,9 +13,9 @@ int main(int argc, char** argv)
 	String replacement = argv[2];
 	pattern->expandInsitu();
 	replacement->expandInsitu();
-	
-	Ref<ByteDecoder, Owner> source = new ByteDecoder(rawInput());
-	Ref<ByteEncoder, Owner> sink = new ByteEncoder(rawOutput());
+
+	Ref<ByteDecoder, Owner> source = ByteDecoder::newInstance(rawInput());
+	Ref<ByteEncoder, Owner> sink = ByteEncoder::newInstance(rawOutput());
 	int k = 0;
 	char ch = 0;
 	while (source->read(&ch)) {
@@ -36,6 +36,6 @@ int main(int argc, char** argv)
 			sink->write(ch);
 		}
 	}
-	
+
 	return 0;
 }

@@ -9,13 +9,17 @@ namespace ftl
 class GccCompiler: public MachCompiler
 {
 public:
-	GccCompiler(int options = 0, String execPath = "");
+	inline static Ref<GccCompiler, Owner> newInstance(int options = 0, String execPath = "") {
+		return new GccCompiler(options, execPath);
+	}
 
 	virtual Ref<MachObject, Owner> analyse(String source);
 	virtual bool compile(Ref<MachObject, Owner> object);
 	virtual bool link(Ref<MachObjectList> objectList);
 
-private:
+protected:
+	GccCompiler(int options, String execPath);
+
 	static String lookup(String execPath);
 };
 

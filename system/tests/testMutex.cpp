@@ -10,11 +10,11 @@ int main()
 	const int n = 1000000;
 	Time t1, t2, t3;
 	{
-		Mutex m;
+		Ref<Mutex, Owner> m = Mutex::newInstance();
 		Time t = Time::now();
 		for (int i = 0; i < n; ++i) {
-			m.acquire();
-			m.release();
+			m->acquire();
+			m->release();
 		}
 		t = Time::now() - t;
 		print("Took %% us\n", t.us());

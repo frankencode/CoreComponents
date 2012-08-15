@@ -21,35 +21,44 @@ namespace ftl
 class BitEncoder: public Instance
 {
 public:
-	BitEncoder(Ref<Stream> stream, int bufCapacity = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN);
-	BitEncoder(void* buf, int bufCapacity, int endian = FTL_DEFAULT_ENDIAN);
+	inline static Ref<BitEncoder, Owner> newInstance(Ref<Stream> stream, int bufCapacity = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+		return newInstance(stream, bufCapacity, endian);
+	}
+
+	inline static Ref<BitEncoder, Owner> newInstance(void* buf, int bufCapacity, int endian = FTL_DEFAULT_ENDIAN) {
+		return newInstance(buf, bufCapacity, endian);
+	}
+
 	~BitEncoder();
-	
+
 	void flush();
-	
+
 	void writeBit(uint8_t x);
 	void writeUInt8(uint8_t x);
 	void writeUInt16(uint16_t x);
 	void writeUInt32(uint32_t x);
 	void writeUInt64(uint64_t x);
-	
+
 	void writeUIntVlc(unsigned x, int chunkSize = FTL_VLC_CHUNKSIZE);
 	void writeIntVlc(int x, int chunkSize = FTL_VLC_CHUNKSIZE);
 
 	static int bitsPerUIntVlc(unsigned x, int chunkSize = FTL_VLC_CHUNKSIZE);
 	static int bitsPerIntVlc(int x, int chunkSize = FTL_VLC_CHUNKSIZE);
-	
+
 	void writeUInt(int bits, unsigned x);
-	
+
 	uint64_t numBytesWritten() const;
-	
+
 private:
+	BitEncoder(Ref<Stream> stream, int bufCapacity, int endian);
+	BitEncoder(void* buf, int bufCapacity, int endian);
+
 	Ref<Stream, Owner> stream_;
 	int endian_;
 
 	int bufCapacity_;
 	uint8_t* buf_;
-	
+
 	int i_;    // byte offset within buf_
 	int iBit_;    // bit offset within buf_[i_]
 	uint64_t nw_;    // accumulated number of written bytes

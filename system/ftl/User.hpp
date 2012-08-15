@@ -19,14 +19,21 @@
 namespace ftl
 {
 
+/** \brief system user information
+  * \see Group
+  */
 class User: public Instance
 {
 public:
-	User(uid_t id);
-	User(const char* name);
-	
+	inline static Ref<User, Owner> newInstance(uid_t id) {
+		return new User(id);
+	}
+	inline static Ref<User, Owner> newInstance(const char* name) {
+		return new User(name);
+	}
+
 	inline bool exists() const { return exists_; }
-	
+
 	inline uid_t id() const { return id_; }
 	inline gid_t groupId() const { return groupId_; }
 	inline String name() const { return loginName_; }
@@ -34,10 +41,11 @@ public:
 	inline String fullName() const { return fullName_; }
 	inline String home() const { return home_; }
 	inline String shell() const { return shell_; }
-	
-	// inline static isSuperUser
-	
+
 private:
+	User(uid_t id);
+	User(const char* name);
+
 	void load(struct passwd* entry);
 	bool exists_;
 	uid_t id_;

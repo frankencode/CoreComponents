@@ -21,28 +21,35 @@ namespace ftl
 class BitDecoder: public Instance
 {
 public:
-	BitDecoder(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN);
-	BitDecoder(void* buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN);
+	inline static Ref<BitDecoder, Owner> newInstance(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+		return new BitDecoder(stream, bufCapa, endian);
+	}
+	inline static Ref<BitDecoder, Owner> newInstance(void* buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
+		return new BitDecoder(buf, bufCapa, endian);
+	}
 	~BitDecoder();
-	
+
 	uint8_t readBit();
 	uint8_t readUInt8();
 	uint16_t readUInt16();
 	uint32_t readUInt32();
 	uint64_t readUInt64();
-	
+
 	unsigned readUIntVlc(int chunkSize = FTL_VLC_CHUNKSIZE);
 	int readIntVlc(int chunkSize = FTL_VLC_CHUNKSIZE);
-	
+
 	unsigned readUInt(int bits);
-	
+
 	uint64_t numBytesRead() const;
-	
+
 	Ref<Stream> stream() const;
 
 private:
+	BitDecoder(Ref<Stream> stream, int bufCapa, int endian);
+	BitDecoder(void* buf, int bufCapa, int endian );
+
 	void fill();
-	
+
 	Ref<Stream, Owner> stream_;
 	int endian_;
 
@@ -77,7 +84,7 @@ inline uint8_t BitDecoder::readUInt8()
 inline uint16_t BitDecoder::readUInt16()
 {
 	uint16_t h;
-	
+
 	if (endian_ == LittleEndian)
 	{
 		h = uint16_t(readUInt8());
@@ -95,7 +102,7 @@ inline uint16_t BitDecoder::readUInt16()
 inline uint32_t BitDecoder::readUInt32()
 {
 	uint32_t h;
-	
+
 	if (endian_ == LittleEndian)
 	{
 		h = uint32_t(readUInt8());
@@ -117,7 +124,7 @@ inline uint32_t BitDecoder::readUInt32()
 inline uint64_t BitDecoder::readUInt64()
 {
 	uint64_t h = 0;
-	
+
 	if (endian_ == LittleEndian)
 	{
 		for (int i = 0; i <= 7*8; i += 8)
@@ -128,7 +135,7 @@ inline uint64_t BitDecoder::readUInt64()
 		for (int i = 7*8; i >= 0; i -= 8)
 			h |= uint64_t(readUInt8()) << i;
 	}
-	
+
 	return h;
 }
 

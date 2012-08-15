@@ -21,21 +21,7 @@ class GenericHeap: public Container< T, GenericHeap<T, Order> >, public Order<T>
 {
 public:
 	typedef T Item;
-	
-	GenericHeap(int size)
-		: fill_(0),
-		  size_(size),
-		  bufOwner_(true),
-		  buf_(new T[size])
-	{}
-	
-	GenericHeap(T* buf, int size)
-		: fill_(0),
-		  size_(size),
-		  bufOwner_(false),
-		  buf_(buf)
-	{}
-	
+
 	~GenericHeap()
 	{
 		if (bufOwner_)
@@ -44,7 +30,7 @@ public:
 			buf_ = 0;
 		}
 	}
-	
+
 	inline int size() const { return size_; }
 	inline int fill() const { return fill_; }
 	inline int length() const { return fill_; }
@@ -69,23 +55,17 @@ public:
 		passDownFromTop();
 		return *this;
 	}
-	
+
 	inline T pop() {
 		T item;
 		pop(&item);
 		return item;
 	}
-	
+
 	inline T top() { FTL_ASSERT(!isEmpty()); return buf_[0]; }
-	
+
 	inline void clear() { fill_ = 0; }
-	
-protected:
-	int fill_;    // current number of elements
-	int size_;    // maximal number of elements
-	bool bufOwner_;
-	T* buf_;    // memory buffer used for storing elements
-	
+
 	inline static int parent(int i) { return (i - 1) / 2; }
 	inline static int leftChild(int i) { return 2 * i + 1; }
 	inline static int rightChild(int i) { return 2 * i + 2; }
@@ -102,7 +82,7 @@ protected:
 		int h = below(buf_[i], buf_[j]) ? i : j;
 		return below(buf_[h], buf_[k]) ? h : k;
 	}
-	
+
 	void passUpLast()
 	{
 		if (fill_ == 1) return;
@@ -115,7 +95,7 @@ protected:
 			i = j;
 		}
 	}
-	
+
 	void passDownFromTop()
 	{
 		if (fill_ == 0) return;
@@ -124,11 +104,11 @@ protected:
 			int j, lc, rc;
 			lc = leftChild(i);
 			rc = rightChild(i);
-			
+
 			if (rc < fill_) {
 				j = min(i, lc, rc);
 				if (j == i) break;
-				
+
 				xchg(i, j);
 				i = j;
 			}
@@ -140,6 +120,26 @@ protected:
 				break;
 		}
 	}
+
+protected:
+	GenericHeap(int size)
+		: fill_(0),
+		  size_(size),
+		  bufOwner_(true),
+		  buf_(new T[size])
+	{}
+
+	GenericHeap(T* buf, int size)
+		: fill_(0),
+		  size_(size),
+		  bufOwner_(false),
+		  buf_(buf)
+	{}
+
+	int fill_;    // current number of elements
+	int size_;    // maximal number of elements
+	bool bufOwner_;
+	T* buf_;    // memory buffer used for storing elements
 };
 
 template<class T>
@@ -147,19 +147,28 @@ class Heap: public GenericHeap<T, FlexibleSortOrder>
 {
 public:
 	typedef GenericHeap<T, FlexibleSortOrder> Super;
-	
-	Heap(int size, int order = SortOrder::Ascending)
+
+	inline static Ref<Heap, Owner> newInstance(int size, int order = SortOrder::Ascending) {
+		return new Heap(size, order);
+	}
+	inline static Ref<Heap, Owner> newInstance(T* buf, int size, int order = SortOrder::Ascending) {
+		return new Heap(buf, size, order);
+	}
+
+	void reset(int order) {
+		Super::clear();
+		Super::setSortOrder(order);
+	}
+
+private:
+	Heap(int size, int order)
 		: GenericHeap<T, FlexibleSortOrder>(size)
 	{
 		Super::setSortOrder(order);
 	}
-	Heap(T* buf, int size, int order = SortOrder::Ascending)
+	Heap(T* buf, int size, int order)
 		: GenericHeap<T, FlexibleSortOrder>(buf, size)
 	{
-		Super::setSortOrder(order);
-	}
-	void reset(int order) {
-		Super::clear();
 		Super::setSortOrder(order);
 	}
 };
@@ -168,6 +177,13 @@ template<class T>
 class MinHeap: public GenericHeap<T, Ascending>
 {
 public:
+	inline static Ref<MinHeap, Owner> newInstance(int size) {
+		return new MinHeap(size);
+	}
+	inline static Ref<MinHeap, Owner> newInstance(T* buf, int size) {
+		return new MinHeap(buf, size);
+	}
+private:
 	MinHeap(int size): GenericHeap<T, Ascending>(size) {}
 	MinHeap(T* buf, int size): GenericHeap<T, Ascending>(buf, size) {}
 };
@@ -176,6 +192,13 @@ template<class T>
 class MaxHeap: public GenericHeap<T, Descending>
 {
 public:
+	inline static Ref<MaxHeap, Owner> newInstance(int size) {
+		return new MaxHeap(size);
+	}
+	inline static Ref<MaxHeap, Owner> newInstance(T* buf, int size) {
+		return new MaxHeap(buf, size);
+	}
+private:
 	MaxHeap(int size): GenericHeap<T, Descending>(size) {}
 	MaxHeap(T* buf, int size): GenericHeap<T, Descending>(buf, size) {}
 };

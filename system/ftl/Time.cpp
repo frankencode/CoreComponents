@@ -32,6 +32,8 @@ Time Time::now()
 #endif
 }
 
-String Time::toString() const { return Date(*this).toString(); }
+String Time::toString() const {
+	return Date::newInstance(*this)->toString();
+}
 
 } // namespace ftl

@@ -21,8 +21,12 @@ namespace ftl
 class ByteDecoder: public Source<uint8_t>, Source<char>
 {
 public:
-	ByteDecoder(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN);
-	ByteDecoder(const void* buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN);
+	inline static Ref<ByteDecoder, Owner> newInstance(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+		return new ByteDecoder(stream, bufCapa, endian);
+	}
+	inline static Ref<ByteDecoder, Owner> newInstance(const void* buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
+		return new ByteDecoder(buf, bufCapa, endian);
+	}
 	~ByteDecoder();
 
 	bool read(uint8_t* x);
@@ -55,6 +59,9 @@ public:
 	void setEndian(int endian);
 
 private:
+	ByteDecoder(Ref<Stream> stream, int bufCapa, int endian);
+	ByteDecoder(const void* buf, int bufCapa, int endian);
+
 	Ref<Stream, Owner> stream_;
 	int endian_;
 

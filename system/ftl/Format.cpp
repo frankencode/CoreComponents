@@ -113,27 +113,27 @@ void Format::printInt(uint64_t x, int sign)
 	Ref<PlaceHolder, Owner> ph = nextPlaceHolder();
 
 	int buf[MaxDigits];
-	Stack<int> digits(buf, MaxDigits);
+	Ref< Stack<int>, Owner> digits = Stack<int>::newInstance(buf, MaxDigits);
 
-	digits.clear();
+	digits->clear();
 	if (x == 0) {
-		digits.push(0);
+		digits->push(0);
 	}
 	else {
 		uint64_t v = x;
 		for (int i = 0; v > 0; ++i) {
-			digits.push(int(v % ph->base_));
+			digits->push(int(v % ph->base_));
 			v /= ph->base_;
 		}
 	}
 	if (sign == -1)
-		digits.push(16);
+		digits->push(16);
 
 	int wi = (ph->wi_ > 0) ? ph->wi_ : 1;
 	int wf = ph->wf_;
 	int w = (sign == -1) + wi + (wf != 0) + wf;
 	if (w < ph->w_) w = ph->w_;
-	if (wi < digits.fill()) wi = digits.fill();
+	if (wi < digits->fill()) wi = digits->fill();
 	if (w < wi) w = wi;
 
 	String text = String(w, ph->blank_);
@@ -141,17 +141,17 @@ void Format::printInt(uint64_t x, int sign)
 
 	int wb = 0; // width of blank
 	if (wi != 0)
-		wb = wi - digits.fill();
+		wb = wi - digits->fill();
 	else if (wf != 0)
-		wb = w - digits.fill() - wf - 1;
+		wb = w - digits->fill() - wf - 1;
 	else
-		wb = w - digits.fill();
+		wb = w - digits->fill();
 
 	if (wb > 0) i += wb;
 
-	while (digits.fill() > 0) {
+	while (digits->fill() > 0) {
 		const char* letters = "0123456789ABCDEF-";
-		int d = digits.pop();
+		int d = digits->pop();
 		text->set(i++, letters[d]);
 	}
 
@@ -163,7 +163,7 @@ void Format::printFloat(float64_t x, bool half)
 	Ref<PlaceHolder, Owner> ph = nextPlaceHolder();
 
 	int buf[MaxDigits];
-	Stack<int> digits(buf, MaxDigits);
+	Ref< Stack<int>, Owner > digits = Stack<int>::newInstance(buf, MaxDigits);
 
 	int wi = (ph->wi_ == 0) ? 1 : ph->wi_;
 	int wf = ph->wf_;
@@ -225,7 +225,7 @@ void Format::printFloat(float64_t x, bool half)
 		int eszm = (half) ? 23 : 52; // effective size of mantissa
 		int ned = int(ceilToInf(log(float64_t((uint64_t(1)<<eszm)))/log(float64_t(ph->base_))) - 1); // number of exact digits
 
-		digits.clear();
+		digits->clear();
 
 		int ni = 1; // number of digits of integral part
 		if (!ph->exp_) {
@@ -237,24 +237,24 @@ void Format::printFloat(float64_t x, bool half)
 				}
 				else {
 					while (eba < 0) {
-						digits.push(0);
+						digits->push(0);
 						++eba;
 					}
 				}
 			}
 		}
 
-		while (digits.fill() < ned) {
+		while (digits->fill() < ned) {
 			int d = int(m / q);
-			digits.push(d);
+			digits->push(d);
 			m -= d * q;
 			m *= ph->base_;
 		}
 
 		int ns = 0; // number of significiant digits
 		{
-			for (int i = 0; i < digits.fill(); ++i)
-				if (digits.bottom(i) != 0)
+			for (int i = 0; i < digits->fill(); ++i)
+				if (digits->bottom(i) != 0)
 					ns = i + 1;
 		}
 
@@ -281,17 +281,17 @@ void Format::printFloat(float64_t x, bool half)
 		int k = 0; // digit index
 
 		for (int l = 0; l < ni; ++l)
-			text->set(i++, letters[digits.bottom(k++)]);
+			text->set(i++, letters[digits->bottom(k++)]);
 
 		if (wf != 0)
 		{
 			text->set(i++, '.');
 			for (int l = 0; l < wf; ++l)
 			{
-				if (digits.fill() <= k)
+				if (digits->fill() <= k)
 					text->set(i++, '0');
 				else
-					text->set(i++, letters[digits.bottom(k++)]);
+					text->set(i++, letters[digits->bottom(k++)]);
 			}
 		}
 

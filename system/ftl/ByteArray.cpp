@@ -355,9 +355,9 @@ Ref<ByteArray> ByteArray::expandInsitu()
 						hs = 0;
 					}
 					char ec[4];
-					Utf8Encoder encoder(ec, 4);
-					encoder.write(x);
-					int el = encoder.byteEncoder()->numBytesWritten();
+					Ref<Utf8Encoder, Owner> encoder = Utf8Encoder::newInstance(ec, 4);
+					encoder->write(x);
+					int el = encoder->byteEncoder()->numBytesWritten();
 					for (int k = 0; k < el; ++k)
 						data_[j++] = ec[k];
 				}
@@ -520,15 +520,15 @@ Ref<ByteArray, Owner> ByteArray::fromUtf16(const void* data, int size, int endia
 	if (size > 0) {
 		int size2 = 0;
 		{
-			Utf16Decoder source(data, size, endian);
-			for (uchar_t ch; source.read(&ch);)
+			Ref<Utf16Decoder, Owner> source = Utf16Decoder::newInstance(data, size, endian);
+			for (uchar_t ch; source->read(&ch);)
 				size2 += Utf8Encoder::encodedSize(ch);
 		}
 		s2 = ByteArray::newInstance(size2);
-		Utf16Decoder source(data, size, endian);
-		Utf8Encoder sink(s2->data_, size2);
-		for (uchar_t ch; source.read(&ch);)
-			sink.write(ch);
+		Ref<Utf16Decoder, Owner> source = Utf16Decoder::newInstance(data, size, endian);
+		Ref<Utf8Encoder, Owner> sink = Utf8Encoder::newInstance(s2->data_, size2);
+		for (uchar_t ch; source->read(&ch);)
+			sink->write(ch);
 	}
 	return s2;
 }
@@ -575,17 +575,17 @@ Ref<ByteArray, Owner> ByteArray::toUtf16(int endian)
 	(*s2)[size2] = 0;
 	(*s2)[size2 + 1] = 0;
 	if (size2 > 0) {
-		Utf16Encoder sink(s2->data(), size2, endian);
+		Ref<Utf16Encoder, Owner> sink = Utf16Encoder::newInstance(s2->data(), size2, endian);
 		for (int i = 0; i < chars()->length(); ++i)
-			sink.write(get(i));
+			sink->write(get(i));
 	}
 	return s2;
 }
 
 void ByteArray::checkUtf8() const
 {
-	Utf8Decoder source(data_, size_);
-	for (uchar_t ch = 0; source.read(&ch););
+	Ref<Utf8Decoder, Owner> source = Utf8Decoder::newInstance(data_, size_);
+	for (uchar_t ch = 0; source->read(&ch););
 }
 
 Ref<ByteArray, Owner> ByteArray::md5() const

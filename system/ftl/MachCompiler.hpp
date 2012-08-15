@@ -21,8 +21,6 @@ public:
 		StaticLibrary = 16
 	};
 
-	MachCompiler(int options = 0);
-
 	inline String execPath() const { return execPath_; }
 	inline String machine() const { return machine_; }
 	inline int options() const { return options_; }
@@ -34,6 +32,7 @@ public:
 	bool build(Ref<WireObject> recipe);
 
 protected:
+	MachCompiler(int options = 0);
 	void init(String execPath, String machine);
 
 private:
@@ -42,6 +41,6 @@ private:
 	int options_;
 };
 
-} // namespace mach
+} // namespace ftl
 
 #endif // FTL_MACHCOMPILER_HPP

@@ -19,9 +19,9 @@ void printStatus(Ref<File, Owner> file)
 			print("status->size() = %%\n", status->size());
 			print("status->ownerId() = %%\n", status->ownerId());
 			print("status->groupId() = %%\n", status->groupId());
-			print("User(status->ownerId()).loginName() = %%\n", User(status->ownerId()).loginName());
+			print("User(status->ownerId()).loginName() = %%\n", User::newInstance(status->ownerId())->loginName());
 			try {
-				print("Group(status->groupId()).name() = %%\n", Group(status->groupId()).name());
+				print("Group(status->groupId()).name() = %%\n", Group::newInstance(status->groupId())->name());
 			}
 			catch(...) {
 				// we may not have enough rights on some systems

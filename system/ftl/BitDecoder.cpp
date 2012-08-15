@@ -55,10 +55,10 @@ void BitDecoder::fill()
 	bufFill_ = stream_->readAvail(buf_, bufCapa_);
 	if (bufFill_ == 0)
 		FTL_THROW(StreamIoException, "Reading beyond end of input");
-	
+
 	nr_ += bufFill_;
 	i_ = 0;
 	iBit_ = 0;
 }
 
-} // namespace pon
+} // namespace ftl

@@ -1227,19 +1227,19 @@ public:
 		  id_(Crc32().sum()),
 		  name_(0),
 		  caseSensitive_(true),
-		  definitionByName_(new DefinitionByName),
+		  definitionByName_(DefinitionByName::newInstance()),
 		  numRules_(0),
 		  numKeywords_(0),
-		  ruleByName_(new RuleByName),
-		  keywordByName_(new KeywordByName),
+		  ruleByName_(RuleByName::newInstance()),
+		  keywordByName_(KeywordByName::newInstance()),
 		  statefulScope_(false),
 		  hasHints_(false),
 		  numStateFlags_(0),
 		  numStateChars_(0),
 		  numStateStrings_(0),
-		  flagIdByName_(new StateIdByName),
-		  charIdByName_(new StateIdByName),
-		  stringIdByName_(new StateIdByName)
+		  flagIdByName_(StateIdByName::newInstance()),
+		  charIdByName_(StateIdByName::newInstance()),
+		  stringIdByName_(StateIdByName::newInstance())
 	{
 		if (debugFactory_)
 			debugFactory_->definition_ = this;
@@ -1590,15 +1590,15 @@ private:
 	Ref<StateIdByName, Owner> stringIdByName_;
 
 	inline Ref<StateIdByName> flagIdByName() {
-		if (!flagIdByName_) flagIdByName_ = new StateIdByName;
+		if (!flagIdByName_) flagIdByName_ = StateIdByName::newInstance();
 		return flagIdByName_;
 	}
 	inline Ref<StateIdByName> charIdByName() {
-		if (!charIdByName_) charIdByName_ = new StateIdByName;
+		if (!charIdByName_) charIdByName_ = StateIdByName::newInstance();
 		return charIdByName_;
 	}
 	inline Ref<StateIdByName> stringIdByName() {
-		if (!stringIdByName_) stringIdByName_ = new StateIdByName;
+		if (!stringIdByName_) stringIdByName_ = StateIdByName::newInstance();
 		return stringIdByName_;
 	}
 

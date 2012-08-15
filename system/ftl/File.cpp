@@ -15,7 +15,6 @@
 #include "ThreadExitEvent.hpp"
 #include "Guard.hpp"
 #include "Mutex.hpp"
-#include "LocalStatic.hpp"
 #include "Random.hpp"
 #include "Format.hpp"
 #include "FileStatus.hpp"
@@ -120,12 +119,12 @@ void File::unlink()
 
 void File::createUnique(int mode, char placeHolder)
 {
-	Random random;
+	Ref<Random, Owner> random = Random::newInstance();
 	while (true) {
 		String pathSaved = path_->copy();
 		for (int i = 0, n = path_->size(); i < n; ++i) {
 			if (path_->at(i) == placeHolder) {
-				char r = random.get(0, 61);
+				char r = random->get(0, 61);
 				if ((0 <= r) && (r <= 9))
 					r += '0';
 				else if ((10 <= r) && (r <= 35))
@@ -319,8 +318,6 @@ String File::lookup(String fileName, Ref<StringList> dirs, int accessFlags)
 Ref<FileStatus> File::status() const
 {
 	if (!status_) {
-		Mutex& mutex = localStatic<Mutex, FileStatus>();
-		Guard<Mutex> guard(&mutex);
 		if (!status_) {
 			if (isOpen())
 				status_ = FileStatus::newInstance(fd_);

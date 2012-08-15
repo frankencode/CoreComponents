@@ -19,23 +19,27 @@ namespace ftl
 class LinkInfo: public Instance
 {
 public:
-	LinkInfo(void* addr = 0);
-	
+	inline static Ref<LinkInfo, Owner> newInstance(void* addr = 0) {
+		return new LinkInfo(addr);
+	}
+
 	String libraryPath() const;
 	String symbolName() const;
 	void* baseAddress() const;
 	void* symbolAddress() const;
-	
+
 	int majorVersion() const;
 	int minorVersion() const;
 	int patchLevel() const;
-	
+
 private:
+	LinkInfo(void* addr);
+
 	String libraryPath_;
 	void* baseAddress_;
 	String symbolName_;
 	void* symbolAddress_;
-	
+
 	int majorVersion_;
 	int minorVersion_;
 	int patchLevel_;

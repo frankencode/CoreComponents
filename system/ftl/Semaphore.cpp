@@ -15,7 +15,9 @@ namespace ftl
 {
 
 Semaphore::Semaphore(int value)
-	: supply_(value),
+	: mutex_(Mutex::newInstance()),
+	  notEmpty_(Condition::newInstance()),
+	  supply_(value),
 	  demand_(0)
 {
 	FTL_ASSERT(value >= 0);
@@ -23,73 +25,73 @@ Semaphore::Semaphore(int value)
 
 void Semaphore::acquire(int amount)
 {
-	mutex_.acquire();
+	mutex_->acquire();
 	demand_ += amount;
 	while (supply_ < amount)
-		notEmpty_.wait(&mutex_);
+		notEmpty_->wait(mutex_);
 	demand_ -= amount;
 	supply_ -= amount;
-	mutex_.release();
+	mutex_->release();
 }
 
 void Semaphore::release(int amount)
 {
 	if (amount <= 0) return;
-	mutex_.acquire();
+	mutex_->acquire();
 	supply_ += amount;
-	notEmpty_.broadcast();
-	mutex_.release();
+	notEmpty_->broadcast();
+	mutex_->release();
 }
 
 int Semaphore::acquireAll(int minAmount)
 {
-	mutex_.acquire();
+	mutex_->acquire();
 	while (supply_ < minAmount)
-		notEmpty_.wait(&mutex_);
+		notEmpty_->wait(mutex_);
 	int amount = supply_;
 	supply_ = 0;
-	mutex_.release();
+	mutex_->release();
 	return amount;
 }
 
 int Semaphore::releaseOnDemand(int maxAmount)
 {
-	mutex_.acquire();
+	mutex_->acquire();
 	int amount = demand_;
 	if (amount > maxAmount) amount = maxAmount;
 	if (amount > 0) {
 		supply_ += amount;
-		notEmpty_.broadcast();
+		notEmpty_->broadcast();
 	}
-	mutex_.release();
+	mutex_->release();
 	return amount;
 }
 
 bool Semaphore::tryAcquire(int amount)
 {
 	bool success = false;
-	mutex_.acquire();
+	mutex_->acquire();
 	if (supply_ >= amount) {
 		supply_ -= amount;
 		success = true;
 	}
-	mutex_.release();
+	mutex_->release();
 	return success;
 }
 
 bool Semaphore::acquireBefore(Time timeout, int amount)
 {
 	bool success = true;
-	mutex_.acquire();
+	mutex_->acquire();
 	demand_ += amount;
 	while (supply_ < amount) {
-		success = notEmpty_.waitUntil(&mutex_, timeout);
+		success = notEmpty_->waitUntil(mutex_, timeout);
 		if (!success) break;
 	}
 	demand_ -= amount;
 	if (success)
 		supply_ -= amount;
-	mutex_.release();
+	mutex_->release();
 	return success;
 }
 

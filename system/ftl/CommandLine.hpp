@@ -26,7 +26,7 @@ FTL_EXCEPTION(CommandLineException, Exception);
 class CommandLine: public SyntaxDefinition
 {
 public:
-	CommandLine();
+	inline static Ref<CommandLine, Owner> newInstance() { return new CommandLine(); }
 
 	Ref<CommandOption> define(char shortName, String longName, Variant defaultValue = false, String description = "");
 	String entity(String newValue = "");
@@ -45,6 +45,8 @@ public:
 	String execDir() const;
 
 private:
+	CommandLine();
+
 	Ref<StringList, Owner> read(String line);
 	Ref<CommandOption> optionByShortName(char name) const;
 	Ref<CommandOption> optionByLongName(String name) const;

@@ -13,17 +13,21 @@
 
 #include "atoms"
 #include "defaults.hpp"
-#include "CircularBuffer.hpp"
 #include "String.hpp"
 #include "Stream.hpp"
 
 namespace ftl
 {
 
+template<class T>
+class CircularBuffer;
+
 class LineSource: public Source<String>
 {
 public:
-	LineSource(Ref<Stream> stream, const char* eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA);
+	inline static Ref<LineSource, Owner> newInstance(Ref<Stream> stream, const char* eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
+		return new LineSource(stream, eol, maxLineLength);
+	}
 
 	Ref<Stream> stream() const;
 
@@ -31,13 +35,17 @@ public:
 	String readLine();
 
 protected:
+	LineSource(Ref<Stream> stream, const char* eol, int maxLineLength);
+
 	bool readAvail();
 	bool hasMore();
+
+	typedef CircularBuffer<char> Cache;
 
 	Ref<Stream, Owner> stream_;
 	String eol_;
 	int cachedLines_;
-	CircularBuffer<char> cache_;
+	Ref<Cache, Owner> cache_;
 	Ref<ByteArray, Owner> buf_;
 };
 

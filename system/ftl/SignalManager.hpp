@@ -61,7 +61,7 @@ protected:
 	typedef Map<int, Ref<Event, Owner> > SignalEvents;
 	Ref<SignalEvents, Owner> signalEvents_;
 
-	Mutex mutex_;
+	Ref<Mutex, Owner> mutex_;
 };
 
 Ref<Event> signalEvent(int signal);

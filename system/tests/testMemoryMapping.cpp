@@ -19,14 +19,13 @@ public:
 		Ref<File, Owner> file = File::newInstance(path_);
 		file->open(File::Read);
 		print("(clone) waiting for read access\n");
-		FileLock lock(file, FileLock::Read);
-		lock.acquire();
+		Ref<FileLock, Owner> lock = FileLock::newInstance(file, FileLock::Read);
+		Guard<FileLock> guard(lock);
 		print("(clone) granted read access\n");
 		{
 			MemoryMapping mapping(file, 0, mapLength);
 			print("(clone) reads: \"%%\"\n", reinterpret_cast<const char*>(mapping.start()));
 		}
-		lock.release();
 		return 7;
 	}
 
@@ -45,8 +44,8 @@ int main()
 	file->open(File::Read|File::Write);
 	file->truncate(mapLength);
 	print("(parent) acquiring write lock... \n");
-	FileLock lock(file, FileLock::Write);
-	lock.acquire();
+	Ref<FileLock, Owner> lock = FileLock::newInstance(file, FileLock::Write);
+	lock->acquire();
 
 	print("(parent) mapping file and writing message... \n");
 	{
@@ -63,7 +62,7 @@ int main()
 	//Thread::sleep(2);
 
 	print("(parent) releasing write lock... \n");
-	lock.release();
+	lock->release();
 
 	int ret = fork->wait();
 	print("(parent) clone terminated, ret = %%\n", ret);

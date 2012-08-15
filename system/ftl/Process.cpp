@@ -74,9 +74,9 @@ Process::Process(
 	  rawError_(rawError),
 	  processId_(processId)
 {
-	if (rawInput) input_ = new LineSink(rawInput);
-	if (rawOutput) output_ = new LineSource(rawOutput);
-	if (rawError) error_ = new LineSource(rawError);
+	if (rawInput) input_ = LineSink::newInstance(rawInput);
+	if (rawOutput) output_ = LineSource::newInstance(rawOutput);
+	if (rawError) error_ = LineSource::newInstance(rawError);
 }
 
 Process::~Process()

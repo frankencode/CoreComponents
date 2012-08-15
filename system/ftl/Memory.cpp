@@ -41,9 +41,9 @@ void Memory::operator delete(void* data, size_t size)
 	check(::munmap(data, ::sysconf(_SC_PAGE_SIZE)) == 0);
 }
 
-struct Memory::BucketHeader
+class Memory::BucketHeader: public Mutex
 {
-	Mutex mutex_;
+public:
 	uint32_t bytesDirty_;
 	uint32_t objectCount_;
 	bool open_;
@@ -59,15 +59,15 @@ void* Memory::allocate(size_t size)
 	Ref<Memory> allocator = instance();
 	BucketHeader* bucket = allocator->bucket_;
 	size_t pageSize = allocator->pageSize_;
-	
+
 	size = WORD_ALIGN(size);
-	
+
 	if (size == pageSize) {
 		void* pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 		check(pageStart != MAP_FAILED);
 		return pageStart;
 	}
-	
+
 	if (!bucket) {
 		if (size > pageSize - WORD_ALIGN(sizeof(BucketHeader))) {
 			size += sizeof(uint32_t);
@@ -89,17 +89,17 @@ void* Memory::allocate(size_t size)
 		}
 	}
 	else {
-		bucket->mutex_.acquire();
+		bucket->acquire();
 		if (size <= pageSize - bucket->bytesDirty_) {
 			void* data = (void*)(((char*)bucket) + bucket->bytesDirty_);
 			bucket->bytesDirty_ += size;
 			++bucket->objectCount_;
-			bucket->mutex_.release();
+			bucket->release();
 			return data;
 		}
 		else {
 			bucket->open_ = false;
-			bucket->mutex_.release();
+			bucket->release();
 			allocator->bucket_ = 0;
 			return allocate(size);
 		}
@@ -110,9 +110,9 @@ void Memory::free(void* data)
 {
 	Ref<Memory> allocator = instance();
 	size_t pageSize = allocator ? allocator->pageSize_ : size_t(::sysconf(_SC_PAGE_SIZE));
-	
+
 	uint32_t offset = ((char*)data - (char*)0) % pageSize;
-	
+
 	if (offset == 0) {
 		check(::munmap(data, pageSize) == 0);
 	}
@@ -123,9 +123,9 @@ void Memory::free(void* data)
 	}
 	else {
 		BucketHeader* bucket = (BucketHeader*)((char*)data - offset);
-		bucket->mutex_.acquire();
+		bucket->acquire();
 		bool dispose = ((--bucket->objectCount_) == 0) && (!bucket->open_);
-		bucket->mutex_.release();
+		bucket->release();
 		if (dispose) {
 			bucket->~BucketHeader();
 			check(::munmap((void*)((char*)data - offset), pageSize) == 0);

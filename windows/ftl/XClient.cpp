@@ -24,12 +24,12 @@ namespace ftl
 
 XClient::XClient()
 	: defaultScreen_(0),
-	  resourceIdMutex_(new Mutex),
+	  resourceIdMutex_(Mutex::newInstance()),
 	  nextResourceId_(0),
 	  freeResourceIds_(List<uint32_t>::newInstance()),
-	  sequenceNumberMutex_(new Mutex),
+	  sequenceNumberMutex_(Mutex::newInstance()),
 	  sequenceNumber_(0),
-	  messageFiltersMutex_(new Mutex),
+	  messageFiltersMutex_(Mutex::newInstance()),
 	  messageFilters_(MessageFilters::newInstance())
 {
 	String host = 0;
@@ -75,7 +75,7 @@ XClient::XClient()
 	socket_ = new StreamSocket(address);
 	socket_->connect();
 
-	Ref<ByteEncoder, Owner> sink = new ByteEncoder(socket_);
+	Ref<ByteEncoder, Owner> sink = ByteEncoder::newInstance(socket_);
 
 	sink->writeUInt8((sink->endian() == LittleEndian) ? 'l' : 'B');
 	sink->writeUInt8(0); // unused
@@ -90,7 +90,7 @@ XClient::XClient()
 	sink->writePad(4);
 	sink->flush();
 
-	Ref<ByteDecoder, Owner> source = new ByteDecoder(socket_);
+	Ref<ByteDecoder, Owner> source = ByteDecoder::newInstance(socket_);
 
 	displayInfo_ = new XDisplayInfo;
 	displayInfo_->read(source);
@@ -190,7 +190,7 @@ int XClient::getFontPath()
 Ref<ByteEncoder> XClient::messageEncoder()
 {
 	if (!messageEncoder_)
-		messageEncoder_ = new ByteEncoder(Ref<Stream>(socket_), int(displayInfo_->maximumRequestLength) * 4, localEndian());
+		messageEncoder_ = ByteEncoder::newInstance(Ref<Stream>(socket_), int(displayInfo_->maximumRequestLength) * 4, localEndian());
 	return messageEncoder_;
 }
 
@@ -205,7 +205,7 @@ void XClient::run()
 {
 	printTo(error(), "XClient::run()\n");
 	try {
-		Ref<ByteDecoder, Owner> source = new ByteDecoder(socket_);
+		Ref<ByteDecoder, Owner> source = ByteDecoder::newInstance(socket_);
 
 		while (true) {
 			uint8_t messageCode = source->readUInt8();

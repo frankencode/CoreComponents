@@ -46,12 +46,12 @@ int main()
 		for (int y = 1; y < ye; ++y) ny += daysInYear(y);
 		print("Year %% started with weekday (Mon..Sun = 0..6): %%\n", ye, ny % 7);
 	}*/
-	
-	print("%%\n", Date(Date(Time::now()).time()).toString());
-	print("%%\n", Date(Time::now()).toString());
-	print("%%\n", Date(Time::now()).localTime()->toString());
+
+	print("%%\n", Date::newInstance(Date::newInstance(Time::now())->time())->toString());
+	print("%%\n", Date::newInstance(Time::now())->toString());
+	print("%%\n", Date::newInstance(Time::now())->localTime()->toString());
 	// print("%%\n", Date(Time(0)).julianDate());
-	
+
 	return 0;
 }
 

@@ -31,8 +31,6 @@
 #include "File.hpp"
 #include "LineSource.hpp"
 #endif
-#include "LocalStatic.hpp"
-#include "Mutex.hpp"
 #include "NetworkInterface.hpp"
 
 namespace ftl
@@ -57,9 +55,6 @@ Ref<SocketAddressList> NetworkInterface::addressList() const { return addressLis
 #ifdef __linux
 Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 {
-	Mutex& mutex = localStatic<Mutex>();
-	Guard<Mutex> guard(&mutex);
-
 	Ref<NetworkInterfaceList, Owner> list = NetworkInterfaceList::newInstance();
 	// getLink(list);
 	for (int i = 1; getLink(list, i); ++i);
@@ -372,7 +367,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 
 	Ref<File, Owner> file = File::newInstance("/proc/net/dev");
 	file->open(File::Read);
-	Ref<LineSource, Owner> source = new LineSource(file);
+	Ref<LineSource, Owner> source = LineSource::newInstance(file);
 	for (String line; source->read(&line);) {
 		if (line->contains(':')) {
 			Ref<NetworkInterface, Owner> interface = new NetworkInterface;
@@ -591,4 +586,4 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 }
 #endif
 
-} // namespace ft
+} // namespace ftl
