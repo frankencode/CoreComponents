@@ -52,7 +52,7 @@ void XScreenInfo::read(Ref<ByteDecoder> source)
 	backingStores = source->readUInt8();
 	saveUnders = source->readUInt8();
 	rootDepth = source->readUInt8();
-	visualInfoByDepth = new XVisualInfoByDepth;
+	visualInfoByDepth = XVisualInfoByDepth::newInstance();
 	for (int i = 0, n = source->readUInt8(); i < n; ++i) {
 		int depth = source->readUInt8();
 		source->readUInt8(); // unused

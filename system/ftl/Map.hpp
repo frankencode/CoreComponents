@@ -27,9 +27,7 @@ public:
 	typedef Pair<Key,Value> Item;
 	typedef GenericIterator<Map> Iterator;
 
-	Map() {}
-
-	explicit Map(const Map& b): tree_(b.tree_) {}
+	inline static Ref<Map, Owner> newInstance() { return new Map(); }
 	virtual Ref<Map, Owner> clone() const { return new Map(*this); }
 
 	inline Iterator iterator() const { return Iterator(this); }
@@ -189,9 +187,12 @@ public:
 
 	inline void clear() { tree_.clear(); }
 
-private:
+protected:
 	typedef OrdinalTree< OrdinalNode<Item> > Tree;
 	typedef typename Tree::Node Node;
+
+	Map() {}
+	explicit Map(const Map& b): tree_(b.tree_) {}
 
 	const Map& operator=(const Map& b);
 

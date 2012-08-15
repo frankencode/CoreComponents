@@ -1,5 +1,5 @@
-#ifndef FTL_ATOM
-#define FTL_ATOM
+#ifndef FTL_ATOMS
+#define FTL_ATOMS
 
 #include "types.hpp"
 #include "strings.hpp"
@@ -9,6 +9,6 @@
 #include "Guard.hpp"
 #include "Instance.hpp"
 #include "Ref.hpp"
-// #include "ByteArray.hpp"
+#include "OnDemand.hpp"
 
-#endif // FTL_ATOM
+#endif // FTL_ATOMS

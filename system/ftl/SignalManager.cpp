@@ -40,7 +40,7 @@ void SignalListener::run()
 		sigset_t set;
 		sigfillset(&set);
 		sigwait(&set, &signal);
-		
+
 		if (signal == SIGUSR1) break;
 		SignalManager::instance()->relay(signal);
 	}
@@ -49,7 +49,7 @@ void SignalListener::run()
 SignalManager::SignalManager()
 	: signalListener_(new SignalListener),
 	  pid_(Process::currentId()),
-	  signalEvents_(new SignalEvents)
+	  signalEvents_(SignalEvents::newInstance())
 {}
 
 SignalManager::~SignalManager()

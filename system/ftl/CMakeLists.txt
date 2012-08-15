@@ -143,7 +143,6 @@ SET(FTLSYSTEM_HEADER
 	AbnfSyntax.hpp
 	AbnfCompiler.hpp
 
-	Node.hpp
 	Wire.hpp
 	WireObject.hpp
 	Config.hpp

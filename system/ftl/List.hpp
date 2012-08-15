@@ -107,12 +107,14 @@ public:
 
 	Ref<List, Owner> sort(int order = SortOrder::Ascending, bool unique = false) const
 	{
-		Ref<List, Owner> result = new List;
-		if (length() == 0) return result;
+		if (length() == 0)
+			return List::newInstance();
 		Heap<Item> heap(length(), order);
 		for (int i = 0; i < length(); ++i)
 			heap.push(get(i));
+		Ref<List, Owner> result;
 		if (unique) {
+			result = List::newInstance();
 			Item prev, item;
 			heap.read(&prev);
 			result->append(prev);
@@ -124,9 +126,10 @@ public:
 			}
 		}
 		else {
-		    Item item;
-			while (heap.read(&item))
-				result->append(item);
+			result = List::newInstance(length());
+			Item item;
+			for (int i = 0; heap.read(&item); ++i)
+				result->set(i, item);
 		}
 		return result;
 	}
@@ -139,6 +142,14 @@ public:
 		for (int i = 0; i < length(); ++i)
 			if (at(i) != b->at(i)) return false;
 		return true;
+	}
+
+	template<class T2>
+	Ref<List<T2>, Owner> toList() const {
+		Ref<List<T2>, Owner> result = List<T2>::newInstance(length());
+		for (int i = 0; i < length(); ++i)
+			result->set(i, at(i));
+		return result;
 	}
 
 private:

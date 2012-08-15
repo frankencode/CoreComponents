@@ -5,7 +5,6 @@
 #include "Format.hpp"
 #include "File.hpp"
 #include "FileStatus.hpp"
-#include "Set.hpp"
 #include "MachDependencyCache.hpp"
 
 namespace ftl
@@ -14,7 +13,7 @@ namespace ftl
 MachDependencyCache::MachDependencyCache(Ref<MachCompiler> compiler, Ref<StringList> sourcePaths, String cachePath)
 	: compiler_(compiler),
 	  cacheFile_(File::newInstance(cachePath)),
-	  cache_(new Cache)
+	  cache_(Cache::newInstance())
 {
 	cacheFile_->establish();
 	print("sourcePaths = [\n%%]\n", sourcePaths->join("\n  "));
@@ -38,7 +37,8 @@ MachDependencyCache::MachDependencyCache(Ref<MachCompiler> compiler, Ref<StringL
 		cache_->insert(item->key(),
 			new MachObject(
 				wire->value("objectPath"),
-				Format() << wire->value("dependencyPaths")
+				Ref<VariantList>(wire->value("dependencyPaths"))->toList<String>()
+
 			)
 		);
 	}
@@ -57,8 +57,13 @@ MachDependencyCache::~MachDependencyCache()
 			<< indent << "\"" << sourcePath << "\": MachObject {\n"
 			<< indent << indent << "objectPath: \"" << object->objectPath() << "\"\n"
 			<< indent << indent << "dependencyPaths: [\n";
-		for (int i = 0; i < object->dependencyPaths()->length(); ++i)
-			text << indent << indent << indent << "\"" << object->dependencyPaths()->at(i) << "\"\n";
+		for (int i = 0, n = object->dependencyPaths()->length(); i < n; ++i) {
+			text << indent << indent << indent << "\"" << object->dependencyPaths()->at(i);
+			if (i != n - 1)
+				text << "\",\n";
+			else
+				text << "\"\n";
+		}
 		text << indent << indent << "]\n"
 			<< indent << "}\n";
 	}

@@ -8,6 +8,10 @@
  *
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
+#ifndef FTL_ONDEMAND_HPP
+#define FTL_ONDEMAND_HPP
+
+#include "Ref.hpp"
 
 namespace ftl
 {
@@ -16,20 +20,18 @@ template<class T>
 class OnDemand
 {
 public:
-	OnDemand(): firstTime_(true) {}
-	~OnDemand() { delete instance_; }
-	
 	inline void set(T* b) {}
-	
+
 	inline T* get() const {
-		if (__sync_bool_compare_and_swap(&firstTime_, true, false))
-			instance_ = new T;
+		if (!instance_)
+			instance_ = T::newInstance();
 		return instance_;
 	}
-	
+
 private:
-	mutable volatile bool firstTime_;
-	mutable T* instance_;
+	mutable Ref<T, Owner> instance_;
 };
 
 } // namespace ftl
+
+#endif // FTL_ONDEMAND_HPP

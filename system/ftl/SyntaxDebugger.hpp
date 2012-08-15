@@ -122,7 +122,7 @@ public:
 		Ref<RuleByName> ruleByName = DebugFactory::definition()->ruleByName_;
 
 		typedef Map<int, Ref<RuleNode> > RuleById;
-		Ref<RuleById, Owner> ruleById = new RuleById;
+		Ref<RuleById, Owner> ruleById = RuleById::newInstance();
 
 		for (RuleByName::Index i = ruleByName->first(); ruleByName->has(i); ++i) {
 			Ref<RuleNode> rule = ruleByName->value(i);
@@ -938,7 +938,7 @@ private:
 
 	Ref<StateNameById, Owner> newReverseMap(Ref<StateIdByName> stateIdByName)
 	{
-		Ref<StateNameById, Owner> stateNameById = new StateNameById;
+		Ref<StateNameById, Owner> stateNameById = StateNameById::newInstance();
 		for (StateIdByName::Index i = stateIdByName->first(); stateIdByName->has(i); ++i) {
 			String name = stateIdByName->key(i);
 			int id = stateIdByName->value(i);

@@ -227,7 +227,7 @@ void Process::unsetEnv(String key)
 Ref<EnvMap, Owner> Process::envMap()
 {
 	char** env = environ();
-	Ref<EnvMap, Owner> map = new EnvMap;
+	Ref<EnvMap, Owner> map = EnvMap::newInstance();
 	int i = 0;
 	while (env[i] != 0) {
 		Ref<StringList, Owner> parts = String(env[i])->split("=");
