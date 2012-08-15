@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 		Ref<File, Owner> file = File::newInstance(argv[i]);
 		file->open(File::Read);
 		String text = file->readAll();
-		Ref<AbnfCompiler, Owner> compiler = new AbnfCompiler;
+		Ref<AbnfCompiler, Owner> compiler = AbnfCompiler::newInstance();
 		Ref<SyntaxDebugger, Owner> debugger = new SyntaxDebugger;
 		Ref<SyntaxDefinition, Owner> definition = compiler->compile(text, debugger);
 		debugger->printDefinition(false/*omitUnusedRules*/);

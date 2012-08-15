@@ -56,7 +56,7 @@ int InvokeNode::matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, T
 
 NODE DefinitionNode::KEYWORD(const char* keywords)
 {
-	Ref<KeywordMap, Owner> map = new KeywordMap;
+	Ref<KeywordMap, Owner> map = KeywordMap::newInstance();
 	const char* pos = keywords;
 	while (*pos) {
 		if ((*pos == ' ') || (*pos == '\t')) {

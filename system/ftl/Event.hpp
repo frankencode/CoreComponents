@@ -20,14 +20,19 @@ namespace ftl
 class Event: public Action
 {
 public:
-	Event();
-	
+	inline static Ref<Event, Owner> newInstance() {
+		return new Event;
+	}
+
 	void pushBack(Ref<Action> handler);
 	void pushFront(Ref<Action> handler);
 	void remove(Ref<Action> handler);
-	
+
 	virtual void run();
-	
+
+protected:
+	Event();
+
 private:
 	SpinLock mutex_;
 	typedef List< Ref<Action, Owner> > Handlers;

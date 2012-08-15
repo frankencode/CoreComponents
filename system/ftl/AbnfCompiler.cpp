@@ -21,7 +21,7 @@ Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, 
 	Ref<Token, Owner> ruleList = AbnfSyntax::match(text);
 	FTL_ASSERT(ruleList);
 
-	Ref<Definition, Owner> definition = new AbnfCoreSyntax(debugger);
+	Ref<Definition, Owner> definition = AbnfCoreSyntax::newInstance(debugger);
 	definition->OPTION("caseSensitive", false);
 
 	compileRuleList(text, ruleList, definition);

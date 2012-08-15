@@ -22,7 +22,9 @@ namespace ftl
 class LineSink: public Sink<String>
 {
 public:
-	LineSink(Ref<Stream> stream, const char* eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA);
+	inline static Ref<LineSink, Owner> newInstance(Ref<Stream> stream, const char* eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
+		return new LineSink(stream, eol, maxLineLength);
+	}
 
 	Ref<Stream> stream() const;
 
@@ -33,6 +35,8 @@ public:
 	void write(String text);
 
 protected:
+	LineSink(Ref<Stream> stream, const char* eol, int maxLineLength);
+
 	void feed(const char* data, int size);
 	void flush();
 

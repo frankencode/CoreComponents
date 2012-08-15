@@ -25,7 +25,7 @@ int main()
 		list << 1 << 2 << 3;
 		print(list);
 		Ref<IntList, Owner> list2 = IntList::newInstance();
-		*list >> *list2;
+		list >> list2;
 		print(list2);
 	}
 	{
@@ -59,20 +59,20 @@ int main()
 	{
 		print("Test 4:\n");
 		Ref<IntList, Owner> list = IntList::newInstance();
-		Random random;
+		Ref<Random, Owner> random = Random::newInstance();
 		for (int i = 0; i < 10; ++i)
-			list << random.get(0, 99);
+			list << random->get(0, 99);
 		print(list);
 
-		MinHeap<int> heap(list->length());
-		Stack<int> stack(list->length());
-		CircularBuffer<int> queue(list->length());
+		Ref< MinHeap<int>, Owner > heap = MinHeap<int>::newInstance(list->length());
+		Ref< Stack<int>, Owner > stack = Stack<int>::newInstance(list->length());
+		Ref<CircularBuffer<int>, Owner> queue = CircularBuffer<int>::newInstance(list->length());
 
-		*list >> heap >> *list;
+		list >> heap >> list;
 		print(list);
-		*list >> stack >> *list;
+		list >> stack >> list;
 		print(list);
-		*list >> queue >> *list;
+		list >> queue >> list;
 		print(list);
 		print(list->sort());
 		print(list->unique());

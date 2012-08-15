@@ -27,7 +27,7 @@ public:
 	typedef SyntaxNode Node;
 
 	SyntaxDebugger(String indent = "\t")
-		: factoryByNodeType_(new FactoryByNodeType),
+		: factoryByNodeType_(FactoryByNodeType::newInstance()),
 		  indent_(indent)
 	{
 		factoryByNodeType_->insert("Char",           new DebugNodeFactory<CharDebugNode>           (this));

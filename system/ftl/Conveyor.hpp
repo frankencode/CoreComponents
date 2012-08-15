@@ -22,9 +22,9 @@ template<class T>
 class Conveyor: public Container< T, Conveyor<T> >
 {
 public:
-	Conveyor(int size)
-		: buffer_(size)
-	{}
+	inline static Ref<Conveyor, Owner> newInstance(int size) {
+		return new Conveyor(size);
+	}
 
 	Conveyor& push(const T& item)
 	{
@@ -55,6 +55,11 @@ public:
 	}
 
 	inline bool isEmpty() const { return false; }
+
+protected:
+	Conveyor(int size)
+		: buffer_(size)
+	{}
 
 private:
 	CircularBuffer<T> buffer_;

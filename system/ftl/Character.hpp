@@ -23,27 +23,18 @@ class ByteArray;
 class Character: public Instance
 {
 public:
-	Character()
-		: walker_(0),
-		  i_(-1), n_(-1)
-	{}
-	Character(const char* data)
-		: walker_(data),
-		  i_(0), n_(-1)
-	{}
-	
 	inline bool has(int i) const {
 		walkTo(i);
 		return walker_.valid();
 	}
-	
+
 	inline uchar_t get(int i) const {
 		walkTo(i);
 		return walker_.getChar();
 	}
-	
+
 	inline uchar_t at(int i) const { return get(i); }
-	
+
 	inline int length() const {
 		if (n_ == -1) {
 			if (!walker_.valid()) {
@@ -56,18 +47,18 @@ public:
 		}
 		return n_;
 	}
-	
+
 	Ref<ByteArray, Owner> copy(int i0, int i1) const;
 	inline Ref<ByteArray, Owner> head(int n) const { return copy(0, n); }
 	inline Ref<ByteArray, Owner> tail(int n) const { return copy(length() - n, n); }
-	
+
 	inline uchar_t operator[](int i) const { return get(i); }
-	
+
 	inline const char* byte(int i) const {
 		walkTo(i);
 		return walker_.pos();
 	}
-	
+
 	inline int index(const char* pos) const {
 		if (!walker_.valid()) {
 			walker_ = Utf8Walker(walker_.data());
@@ -77,11 +68,22 @@ public:
 		while (walker_.pos() > pos) { --walker_; --i_; }
 		return i_;
 	}
-	
+
 	// int find(int i, const char* pattern) const;
 	// Ref<StringList, Owner> split(const char* pattern) const;
 
 private:
+	friend class ByteArray;
+
+	Character()
+		: walker_(0),
+		  i_(-1), n_(-1)
+	{}
+	Character(const char* data)
+		: walker_(data),
+		  i_(0), n_(-1)
+	{}
+
 	inline void walkTo(int i) const {
 		if (!walker_.valid()) {
 			walker_ = Utf8Walker(walker_.data());
@@ -90,7 +92,7 @@ private:
 		while (i_ < i) { ++walker_; ++i_; }
 		while (i_ > i) { --walker_; --i_; }
 	}
-	
+
 	mutable Utf8Walker walker_;
 	mutable int i_, n_;
 };

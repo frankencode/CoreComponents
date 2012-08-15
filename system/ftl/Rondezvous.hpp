@@ -22,7 +22,9 @@ template<class T>
 class Rondezvous: public Container< T, Rondezvous<T> >
 {
 public:
-	Rondezvous(): isFull_(false) {}
+	inline static Ref<Rondezvous, Owner> newInstance() {
+		return new Rondezvous;
+	}
 
 	Rondezvous& push(const T& item)
 	{
@@ -64,6 +66,8 @@ public:
 	inline bool isEmpty() const { return false; }
 
 private:
+	Rondezvous(): isFull_(false) {}
+
 	T table_;
 	Mutex tableMutex_;
 	bool isFull_;

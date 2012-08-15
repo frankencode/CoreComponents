@@ -22,16 +22,18 @@ namespace ftl
 class Random: public Instance
 {
 public:
-	Random(int seed = -1);
-	
+	inline static Ref<Random, Owner> newInstance(int seed = -1) {
+		return new Random(seed);
+	}
+
 	inline int max() const { return m_ - 1; }
 	inline int period() const { return m_ - 1; }
-	
+
 	inline int get() {
 		x_ = (16807 * x_) % m_; /* 7^5 == 16807 */
 		return x_;
 	}
-	
+
 	/** Return a random number in range [a, b].
 	  */
 	inline int get(int a, int b) {
@@ -39,8 +41,10 @@ public:
 		FTL_ASSERT(a <= b);
 		return (uint64_t(get()) * (b - a)) / (m_ - 1) + a;
 	}
-	
+
 private:
+	Random(int seed);
+
 	enum { m_ = (1u << 31) - 1 };
 	unsigned x_;
 };

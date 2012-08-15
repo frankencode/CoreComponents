@@ -34,11 +34,9 @@ template<class Char, class Value>
 class PrefixTree: public Tree< PrefixTree<Char, Value> >
 {
 public:
-	PrefixTree()
-		: ch_(Char()),
-		  defined_(false),
-		  value_(Value())
-	{}
+	inline static Ref<PrefixTree, Owner> newInstance() {
+		return new PrefixTree;
+	}
 
 	/** Insert a key-value mapping if no key-value mapping with the same key exists already.
 	  * If currentValue is non-null the current value the given key maps to is returned.
@@ -189,6 +187,12 @@ protected:
 	typedef Tree< PrefixTree<Char, Value> > Parent;
 	typedef PrefixTree Node;
 	friend class PrefixTreeWalker<Char, Value>;
+
+	PrefixTree()
+		: ch_(Char()),
+		  defined_(false),
+		  value_(Value())
+	{}
 
 	PrefixTree(Char ch)
 		: ch_(ch),

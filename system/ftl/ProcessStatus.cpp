@@ -34,7 +34,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	String path = Format("/proc/%%/stat") << processId;
 	Ref<File, Owner> file = File::newInstance(path);
 	file->open(File::Read);
-	Ref<LineSource, Owner> source = new LineSource(file);
+	Ref<LineSource, Owner> source = LineSource::newInstance(file);
 	String line = source->readLine();
 	{
 		// extract command name first, because it may contain whitespace
@@ -60,7 +60,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 		else if (major == 3)
 			terminalName_ = Format("ttyp%%") << minor;
 	}*/
-	loginName_ = User(FileStatus::newInstance(path)->ownerId()).loginName();
+	loginName_ = User::newInstance(FileStatus::newInstance(path)->ownerId())->loginName();
 	processStatus_ = parts->at(2)->get(0);
 	file->close();
 #else // def __linux

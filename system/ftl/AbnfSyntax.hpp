@@ -18,12 +18,10 @@ namespace ftl
 
 class AbnfSyntax: public AbnfCoreSyntax
 {
-public:
-	AbnfSyntax();
-	
 protected:
+	AbnfSyntax();
 	NODE defineValue(const char* digitRule);
-	
+
 	int numVal_;
 	int charVal_;
 	int proseVal_;

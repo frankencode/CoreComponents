@@ -19,19 +19,29 @@
 namespace ftl
 {
 
+/** \brief system group information
+  * \see User
+  */
 class Group: public Instance
 {
 public:
-	Group(gid_t id);
-	Group(const char* name);
-	
+	inline static Ref<Group, Owner> newInstance(gid_t id) {
+		return new Group(id);
+	}
+	inline static Ref<Group, Owner> newInstance(const char* name) {
+		return new Group(name);
+	}
+
 	inline bool exists() const { return exists_; }
-	
+
 	inline gid_t id() const { return id_; }
 	inline String name() const { return name_; }
 	inline Ref<StringList> members() const { return members_; }
-	
+
 private:
+	Group(gid_t id);
+	Group(const char* name);
+
 	void load(struct group* entry);
 	bool exists_;
 	gid_t id_;

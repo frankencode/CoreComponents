@@ -9,6 +9,7 @@
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
 
+#include "CircularBuffer.hpp"
 #include "LineSource.hpp"
 
 namespace ftl
@@ -18,7 +19,7 @@ LineSource::LineSource(Ref<Stream> stream, const char* eol, int maxLineLength)
 	: stream_(stream),
 	  eol_(eol),
 	  cachedLines_(0),
-	  cache_(maxLineLength),
+	  cache_(Cache::newInstance(maxLineLength)),
 	  buf_(ByteArray::newInstance(maxLineLength))
 {}
 
@@ -46,7 +47,7 @@ String LineSource::readLine()
 	int k = 0;
 	int i = 0;
 	while (k < nk) {
-		char ch = cache_.pop();
+		char ch = cache_->pop();
 		k = (ch == eol_->at(k)) ? k + 1 : 0;
 		buf_->set(i, ch);
 		++i;
@@ -63,8 +64,8 @@ bool LineSource::readAvail()
 
 	for (int i = 0, nk = eol_->size(), k = 0; i < bufFill; ++i)
 	{
-		if (cache_.fill() == cache_.size())
-			FTL_THROW(StreamIoException, str::cat("Maximum line length of ", ftl::intToStr(cache_.size()), " bytes exceeded"));
+		if (cache_->fill() == cache_->size())
+			FTL_THROW(StreamIoException, str::cat("Maximum line length of ", ftl::intToStr(cache_->size()), " bytes exceeded"));
 
 		char ch = buf_->at(i);
 		k = (ch == eol_->at(k)) ? k + 1 : 0;
@@ -74,7 +75,7 @@ bool LineSource::readAvail()
 			++cachedLines_;
 		}
 
-		cache_.push(ch);
+		cache_->push(ch);
 	}
 
 	return bufFill > 0;

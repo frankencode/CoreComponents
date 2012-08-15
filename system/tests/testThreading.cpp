@@ -9,28 +9,28 @@ class MyChannel: public Instance
 {
 public:
 	MyChannel()
-		: empty_(1),
-		  full_(0)
+		: empty_(Semaphore::newInstance(1)),
+		  full_(Semaphore::newInstance(0))
 	{}
 
 	void put(int value)
 	{
-		empty_.acquire();
+		empty_->acquire();
 		value_ = value;
-		full_.release();
+		full_->release();
 	}
 
 	int get()
 	{
-		full_.acquire();
+		full_->acquire();
 		int value = value_;
-		empty_.release();
+		empty_->release();
 		return value;
 	}
 
 private:
-	Semaphore empty_;
-	Semaphore full_;
+	Ref<Semaphore, Owner> empty_;
+	Ref<Semaphore, Owner> full_;
 	int value_;
 };
 
@@ -40,7 +40,7 @@ public:
 	Producer(Ref<MyChannel> channel)
 		: channel_(channel)
 	{}
-	
+
 private:
 	void run()
 	{
@@ -49,7 +49,7 @@ private:
 			channel_->put(i);
 		}
 	}
-	
+
 private:
 	Ref<MyChannel> channel_;
 };
@@ -60,7 +60,7 @@ public:
 	Consumer(Ref<MyChannel> channel)
 		: channel_(channel)
 	{}
-	
+
 private:
 	void run()
 	{
@@ -70,7 +70,7 @@ private:
 			print("consumer: k = %%\n", k);
 		}
 	}
-	
+
 private:
 	Ref<MyChannel> channel_;
 };
@@ -78,7 +78,7 @@ private:
 int main()
 {
 	print("PTHREAD_KEYS_MAX = %%\n", PTHREAD_KEYS_MAX);
-	
+
 	Ref<MyChannel, Owner> channel = new MyChannel;
 	Producer producer(channel);
 	Consumer consumer(channel);
@@ -89,13 +89,13 @@ int main()
 	consumer.wait();
 	dt = Time::now() - dt;
 	print("\ndt = %% us\n\n", dt.us());
-	
+
 	{
 		ThreadFactory factory;
 		print("default stack size = %%\n", int(factory.stackSize()));
 		print("default guard size = %%\n", int(factory.guardSize()));
 	}
-	
+
 	return 0;
 }
 

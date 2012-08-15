@@ -109,16 +109,16 @@ public:
 	{
 		if (length() == 0)
 			return List::newInstance();
-		Heap<Item> heap(length(), order);
+		Ref< Heap<Item>, Owner > heap = Heap<Item>::newInstance(length(), order);
 		for (int i = 0; i < length(); ++i)
-			heap.push(get(i));
+			heap->push(get(i));
 		Ref<List, Owner> result;
 		if (unique) {
 			result = List::newInstance();
 			Item prev, item;
-			heap.read(&prev);
+			heap->read(&prev);
 			result->append(prev);
-			while (heap.read(&item)) {
+			while (heap->read(&item)) {
 				if (item != prev) {
 					result->append(item);
 					prev = item;
@@ -128,7 +128,7 @@ public:
 		else {
 			result = List::newInstance(length());
 			Item item;
-			for (int i = 0; heap.read(&item); ++i)
+			for (int i = 0; heap->read(&item); ++i)
 				result->set(i, item);
 		}
 		return result;
@@ -165,6 +165,21 @@ private:
 	Tree tree_;
 	mutable Item nullItem_;
 };
+
+template<
+	class T,
+	template<class> class GASP1,
+	template<class> class GASP2
+>
+inline Ref<List<T>, Owner> operator+(Ref<List<T>, GASP1> a, Ref< List<T>, GASP2 > b)
+{
+	int n = a->length(), m = b->length();
+	Ref< List<T>, Owner > r = List<T>::newInstance(n + m);
+	int i = 0;
+	for (;i < n; ++i) r->set(i, a->at(i));
+	for (;i < n + m; ++i) r->set(i, b->at(i - n));
+	return r;
+}
 
 } // namespace ftl
 

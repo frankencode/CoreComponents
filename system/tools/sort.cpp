@@ -9,7 +9,7 @@ int main()
 	for (String line; input()->read(&line);)
 		list->append(line);
 
-	Ref<Heap<String>, Owner> heap = new Heap<String>(list->length());
+	Ref<Heap<String>, Owner> heap = Heap<String>::newInstance(list->length());
 	for (String item; list->read(&item);)
 		heap->push(item);
 	for (String item; heap->read(&item);)

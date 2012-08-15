@@ -21,20 +21,24 @@ namespace ftl
 class Semaphore: public Instance
 {
 public:
-	Semaphore(int value = 0);
-	
+	inline static Ref<Semaphore, Owner> newInstance(int value = 0) {
+		return new Semaphore(value);
+	}
+
 	void acquire(int amount = 1);
 	void release(int amount = 1);
-	
+
 	int acquireAll(int minAmount = 1);
 	int releaseOnDemand(int maxAmount = intMax);
-	
+
 	bool tryAcquire(int amount = 1);
 	bool acquireBefore(Time timeout, int amount = 1);
-	
+
 private:
-	Mutex mutex_;
-	Condition notEmpty_;
+	Semaphore(int value);
+
+	Ref<Mutex, Owner> mutex_;
+	Ref<Condition, Owner> notEmpty_;
 	int supply_, demand_;
 };
 

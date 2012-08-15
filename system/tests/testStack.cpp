@@ -5,7 +5,8 @@
 namespace ftl
 {
 
-int primeCountSimple(int n) {
+int primeCountSimple(int n)
+{
 	int m = 0;
 	for (int i = 2; i < n; ++i) {
 		bool prime = true;
@@ -19,19 +20,20 @@ int primeCountSimple(int n) {
 	return m;
 }
 
-int primeCountWithStack(int n) {
-	Stack<int> stack(n);
+int primeCountWithStack(int n)
+{
+	Ref< Stack<int>, Owner > stack = Stack<int>::newInstance(n);
 	for (int i = 2; i < n; ++i) {
 		bool prime = true;
-		int m = stack.fill();
+		int m = stack->fill();
 		for (int j = 0; (j < m) && prime; ++j)
-			prime = prime && (i % stack.bottom(j) != 0);
+			prime = prime && (i % stack->bottom(j) != 0);
 		if (prime) {
 			// print("%%: %%\n", m, i);
-			stack.push(i);
+			stack->push(i);
 		}
 	}
-	return stack.fill();
+	return stack->fill();
 }
 
 int main()

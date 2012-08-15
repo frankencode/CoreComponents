@@ -1,5 +1,5 @@
 /*
- * Pipe.hpp -- the simplest IPC media
+ * Pipe.hpp -- the most simple IPC media
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *
@@ -21,13 +21,18 @@ class Pipe: public SystemStream
 {
 public:
 	enum Mode { Input = 0, Output = 1 };
-	
-	Pipe(int mode = Input);
+
+	inline static Ref<Pipe, Owner> newInstance(int mode = Input) {
+		return new Pipe(mode);
+	}
+
 	int childFd() const;
 	void open();
 	void childOpen();
-	
+
 private:
+	Pipe(int mode);
+
 	void open(int thisEnd);
 	int mode_;
 	int pipeFd_[2];

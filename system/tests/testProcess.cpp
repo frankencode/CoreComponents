@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 		{
 		public:
 			int incarnate() {
-				print("Good morning %%.\n", User(Process::realUserId()).fullName());
+				print("Good morning %%.\n", User::newInstance(Process::realUserId())->fullName());
 				return 7;
 			}
 		};

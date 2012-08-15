@@ -71,13 +71,15 @@ public:
 	  * \param rawDiversity estimated size of the raw symbols alphabet
 	  * \param rawDynamicRange estimated dynamic range of raw symbols (max-min+1)
 	  */
-	HuffmanCodec( int rawDiversity = 0x10000,
-	              int rawDynamicRange = 0x10000 );
+	inline static Ref<HuffmanCodec, Owner> newInstance( int rawDiversity = 0x10000,
+	                                                    int rawDynamicRange = 0x10000 ) {
+		return new HuffmanCodec(rawDiversity, rawDynamicRange);
+	}
 
 	/** Free memory.
 	  */
 	~HuffmanCodec();
-	
+
 	/** Returns the number bytes allocated on heap.
       */
 	int memoryConsumption() const;
@@ -145,8 +147,11 @@ public:
 	            int rawCapacity,
 	            uint8_t* encoded,
 	            int encodedFill );
-	
+
 private:
+	HuffmanCodec( int rawDiversity = 0x10000,
+	              int rawDynamicRange = 0x10000 );
+
 	void reset();
 	void addSymbol(int x, int count0);
 
@@ -157,15 +162,15 @@ private:
 	int options_;
 	int rawDiversity_;
 	int rawDynamicRange_;
-	
+
 	SymbolNode* codeTable_;
 	SymbolNode* codeTableRoot_;
 	int codeTableFill_;
 
 	int codeMapSize_;
 	SymbolRef* codeMap_;
-	MaxHeap<SymbolRef> heap_;
-	Stack<uint8_t> bitStack_;
+	Ref< MaxHeap<SymbolRef>, Owner> heap_;
+	Ref< Stack<uint8_t>, Owner> bitStack_;
 
 	inline static int ilog2(int n)
 	{

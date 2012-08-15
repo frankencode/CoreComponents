@@ -10,15 +10,19 @@ namespace ftl
 class MachObject: public Instance
 {
 public:
-	MachObject(String objectPath, Ref<StringList> dependencyPaths)
-		: objectPath_(objectPath),
-		  dependencyPaths_(dependencyPaths)
-	{}
+	inline static Ref<MachObject, Owner> newInstance(String objectPath, Ref<StringList> dependencyPaths) {
+		return new MachObject(objectPath, dependencyPaths);
+	}
 
 	inline String objectPath() const { return objectPath_; }
 	inline Ref<StringList> dependencyPaths() const { return dependencyPaths_; }
 
 private:
+	MachObject(String objectPath, Ref<StringList> dependencyPaths)
+		: objectPath_(objectPath),
+		  dependencyPaths_(dependencyPaths)
+	{}
+
 	String objectPath_;
 	Ref<StringList, Owner> dependencyPaths_;
 };

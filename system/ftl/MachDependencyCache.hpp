@@ -15,12 +15,17 @@ class WireObject;
 class MachDependencyCache: public Instance
 {
 public:
-	MachDependencyCache(Ref<MachCompiler> compiler, Ref<StringList> sourcePaths, String cachePath = "DependencyCache");
+	inline static Ref<MachDependencyCache, Owner> newInstance(Ref<MachCompiler> compiler, Ref<StringList> sourcePaths, String cachePath = "DependencyCache") {
+		return new MachDependencyCache(compiler, sourcePaths, cachePath);
+	}
+
 	~MachDependencyCache();
 
 	Ref<MachObject, Owner> analyse(String sourcePath);
 
 private:
+	MachDependencyCache(Ref<MachCompiler> compiler, Ref<StringList> sourcePaths, String cachePath);
+
 	Ref<MachCompiler, Owner> compiler_;
 	Ref<File, Owner> cacheFile_;
 	Time cacheTime_;

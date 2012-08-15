@@ -35,10 +35,9 @@ MachDependencyCache::MachDependencyCache(Ref<MachCompiler> compiler, Ref<StringL
 		if (!sourcePaths->contains(item->key())) continue;
 		Ref<WireObject> wire = item->value();
 		cache_->insert(item->key(),
-			new MachObject(
+			MachObject::newInstance(
 				wire->value("objectPath"),
 				Ref<VariantList>(wire->value("dependencyPaths"))->toList<String>()
-
 			)
 		);
 	}

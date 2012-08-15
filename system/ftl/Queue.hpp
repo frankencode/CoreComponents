@@ -34,10 +34,10 @@ class Queue: public Container< T, Queue<T> >
 public:
 	typedef T Item;
 
-	Queue()
-		: head_(0), tail_(0), length_(0)
-	{}
-	
+	inline static Ref<Queue, Owner> newInstance() {
+		return new Queue;
+	}
+
 	~Queue()
 	{
 		Node* node = head_;
@@ -47,10 +47,10 @@ public:
 			node = next;
 		}
 	}
-	
+
 	inline int length() const { return length_; }
 	inline bool isEmpty() const { return length_ == 0; }
-	
+
 	Queue& push(const T& item)
 	{
 		Node* node = new Node(item);
@@ -65,7 +65,7 @@ public:
 		++length_;
 		return *this;
 	}
-	
+
 	Queue& pop(T* item)
 	{
 		FTL_ASSERT(length_ > 0);
@@ -77,18 +77,23 @@ public:
 		--length_;
 		return *this;
 	}
-	
+
 	inline T pop() {
 		T item;
 		pop(&item);
 		return item;
 	}
-	
+
 	inline T front() const { return head_->item_; }
 	inline T back() const { return tail_->item_; }
-	
+
 private:
 	typedef QueueNode<T> Node;
+
+	Queue()
+		: head_(0), tail_(0), length_(0)
+	{}
+
 	Node* head_;
 	Node* tail_;
 	int length_;

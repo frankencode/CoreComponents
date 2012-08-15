@@ -16,7 +16,7 @@ XAuthFile::XAuthFile(String path)
 	Ref<File, Owner> file = File::newInstance(path_);
 	file->open();
 
-	Ref<ByteDecoder, Owner> source = new ByteDecoder(file);
+	Ref<ByteDecoder, Owner> source = ByteDecoder::newInstance(file);
 	source->setEndian(BigEndian);
 
 	while (source->hasMore()) {

@@ -20,6 +20,9 @@ namespace ftl
 class AbnfCoreSyntax: public SyntaxDefinition
 {
 public:
+	inline static Ref<AbnfCoreSyntax, Owner> newInstance(Ref<SyntaxDebugFactory> debugFactory = 0) { return new AbnfCoreSyntax(debugFactory); }
+
+protected:
 	AbnfCoreSyntax(Ref<SyntaxDebugFactory> debugFactory = 0);
 };
 

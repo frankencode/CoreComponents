@@ -30,8 +30,8 @@ HuffmanCodec::HuffmanCodec( int rawDiversity,
 	  rawDynamicRange_(rawDynamicRange),
 	  codeTable_(new SymbolNode[2 * rawDiversity]),
 	  codeMap_(new SymbolRef[rawDynamicRange_]),
-	  heap_(2 * rawDiversity),
-	  bitStack_(rawDiversity)
+	  heap_(MaxHeap<SymbolRef>::newInstance(2 * rawDiversity)),
+	  bitStack_(Stack<uint8_t>::newInstance(rawDiversity))
 {
 	memoryConsumption();
 }
@@ -46,7 +46,7 @@ int HuffmanCodec::memoryConsumption() const
 {
 	int ct = sizeof(SymbolNode) * 2 * rawDiversity_;
 	int cm = sizeof(SymbolRef) * rawDynamicRange_;
-	int sh = sizeof(SymbolRef) * heap_.size();
+	int sh = sizeof(SymbolRef) * heap_->size();
 	int bs = rawDiversity_;
 #ifdef FTL_HUFFMANCODEC_PROFILING
 	print(
@@ -82,13 +82,13 @@ inline void HuffmanCodec::addSymbol(int x, int count0)
 
 void HuffmanCodec::generateCodeTable()
 {
-	heap_.clear();
+	heap_->clear();
 	for (int i = 0; i < codeTableFill_; ++i)
-		heap_.push(SymbolRef(codeTable_ + i));
-	while (heap_.fill() > 1)
+		heap_->push(SymbolRef(codeTable_ + i));
+	while (heap_->fill() > 1)
 	{
-		SymbolRef leftChild = heap_.pop();
-		SymbolRef rightChild = heap_.pop();
+		SymbolRef leftChild = heap_->pop();
+		SymbolRef rightChild = heap_->pop();
 		leftChild.symbol->parent = codeTable_ + codeTableFill_;
 		rightChild.symbol->parent = codeTable_ + codeTableFill_;
 		codeTable_[codeTableFill_].parent = 0;
@@ -96,12 +96,12 @@ void HuffmanCodec::generateCodeTable()
 		codeTable_[codeTableFill_].rightChild = rightChild.symbol;
 		codeTable_[codeTableFill_].count = leftChild.symbol->count + rightChild.symbol->count;
 		codeTable_[codeTableFill_].value = -1;
-		heap_.push(SymbolRef(codeTable_ + codeTableFill_));
+		heap_->push(SymbolRef(codeTable_ + codeTableFill_));
 		++codeTableFill_;
 	}
 
-	if (heap_.fill() > 0)
-		codeTableRoot_ = heap_.pop().symbol;
+	if (heap_->fill() > 0)
+		codeTableRoot_ = heap_->pop().symbol;
 	else
 		codeTableRoot_ = 0;
 }
@@ -114,7 +114,7 @@ void HuffmanCodec::writeRawFrame(BitEncoder* sink, int* raw, int rawFill, int ra
 	sink->writeIntVlc(rawMin);
 	sink->writeIntVlc(rawMax);
 	sink->writeBit(0);    // encoding flag
-	
+
 	const int bits = ilog2(rawMax - rawMin + 1);
 	for (int i = 0; i < rawFill; ++i)
 		sink->writeUIntVlc(bits, raw[i] - rawMin);
@@ -152,7 +152,7 @@ void HuffmanCodec::encode(BitEncoder* sink, int* raw, int rawFill, bool* userFal
 			*userFallback = true;
 		return;
 	}
-	
+
 	/** determine symbol frequencies
 	  */
 	reset();
@@ -203,7 +203,7 @@ void HuffmanCodec::encode(BitEncoder* sink, int* raw, int rawFill, bool* userFal
 		while ((sym = sym->parent) != 0) ++len;
 		outSize += len * codeTable_[i].count;
 	}
-	
+
 	outSize += tableSize;
 	int outSizeBytes = outSize / 8 + (outSize % 8 != 0);
 
@@ -230,14 +230,14 @@ void HuffmanCodec::encode(BitEncoder* sink, int* raw, int rawFill, bool* userFal
 
 	if (userFallback)
 		*userFallback = false;
-	
+
 	/** write header
 	  */
 	sink->writeUIntVlc(rawFill);
 	sink->writeIntVlc(rawMin);
 	sink->writeIntVlc(rawMax);
 	sink->writeBit(1);    // encoding flag
-	
+
 	/** write frequency table
 	  */
 	sink->writeUIntVlc(diversity);
@@ -253,17 +253,17 @@ void HuffmanCodec::encode(BitEncoder* sink, int* raw, int rawFill, bool* userFal
 	{
 
 		int x = raw[i] - rawMin;
-		
+
 		SymbolNode* sym = codeMap_[x].symbol;
-		bitStack_.clear();
+		bitStack_->clear();
 		while (sym->parent)
 		{
 			SymbolNode* parent = sym->parent;
-			bitStack_.push(parent->rightChild == sym);
+			bitStack_->push(parent->rightChild == sym);
 			sym = parent;
 		}
-		while (bitStack_.fill() > 0)
-			sink->writeBit(bitStack_.pop());
+		while (bitStack_->fill() > 0)
+			sink->writeBit(bitStack_->pop());
 	}
 }
 
@@ -290,7 +290,7 @@ int HuffmanCodec::decode( int* raw,
 			raw[i] = int(source->readUIntVlc(bits)) + rawMin;
 		return rawFill;
 	}
-	
+
 	/** read frequency table
 	  */
 	reset();
@@ -305,7 +305,7 @@ int HuffmanCodec::decode( int* raw,
 	/** generate code table
 	  */
 	generateCodeTable();
-	
+
 	/** decode symbols
 	  */
 	for (int i = 0; i < rawFill; ++i)
@@ -325,7 +325,7 @@ int HuffmanCodec::encodedCapacity(int rawCapacity, int rawDynamicRange) const
 	bytesPerSymbol += ((rawDynamicRange >> 8) > 1);
 	bytesPerSymbol += ((rawDynamicRange >> 16) > 1);
 	bytesPerSymbol += ((rawDynamicRange >> 24) > 1);
-	
+
 	int h = 36 * rawCapacity * bytesPerSymbol;
 	h = h / 32 + (h % 32 != 0);
 	h += 32;    // max frame header size
@@ -338,9 +338,9 @@ int HuffmanCodec::encode( uint8_t* encoded,
                           int rawFill,
                           bool* userFallback )
 {
-	BitEncoder sink(encoded, encodedCapacity);
-	encode(&sink, raw, rawFill, userFallback);
-	return int(sink.numBytesWritten());
+	Ref<BitEncoder, Owner> sink = BitEncoder::newInstance(encoded, encodedCapacity);
+	encode(sink, raw, rawFill, userFallback);
+	return int(sink->numBytesWritten());
 }
 
 int HuffmanCodec::decode( int* raw,
@@ -348,8 +348,8 @@ int HuffmanCodec::decode( int* raw,
                           uint8_t* encoded,
                           int encodedFill )
 {
-	BitDecoder source(encoded, encodedFill);
-	return decode(raw, rawCapacity, &source);
+	Ref<BitDecoder, Owner> source = BitDecoder::newInstance(encoded, encodedFill);
+	return decode(raw, rawCapacity, source);
 }
 
-} // namespace f
+} // namespace ftl

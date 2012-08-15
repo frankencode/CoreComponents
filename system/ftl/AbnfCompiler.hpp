@@ -24,12 +24,14 @@ class AbnfCompiler: public AbnfSyntax
 public:
 	typedef SyntaxDefinition Definition;
 
+	inline static Ref<AbnfCompiler, Owner> newInstance() { return new AbnfCompiler; }
 	Ref<Definition, Owner> compile(Ref<ByteArray> text, Ref<SyntaxDebugger> debugger = 0);
 
 private:
 	inline const char* str(Ref<ByteArray> text, Ref<Token> token) { return trap_.capture(text, token->i0(), token->i1()); }
 	StringTrap trap_;
 
+	AbnfCompiler() {}
 	Ref<Node> ignoreDebug(Ref<Node> node);
 
 	void compileRuleList(Ref<ByteArray> text, Ref<Token> ruleList, Ref<Definition> definition);

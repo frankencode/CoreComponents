@@ -6,7 +6,7 @@ using namespace ftl;
 
 int main(int argc, char** argv)
 {
-	Ref<Config, Owner> config = new Config("Recipe");
+	Ref<Config, Owner> config = Config::newInstance("Recipe");
 	config->init(argc, argv);
 
 	/*Ref<WireObject> wire = config->object();
@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 		while (glob->read(entry)) print("  %%\n", entry->name());
 	}*/
 
-	Ref<GccCompiler, Owner> compiler = new GccCompiler;
+	Ref<GccCompiler, Owner> compiler = GccCompiler::newInstance();
 	print("compiler->machine() = %%\n", compiler->machine());
 	print("compiler->execPath() = %%\n", compiler->execPath());
 

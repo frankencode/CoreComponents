@@ -17,18 +17,23 @@
 namespace ftl
 {
 
+class Condition;
+class ScopeGuard;
+
 class Mutex: public Instance, public NonCopyable
 {
 public:
-	Mutex();
+	inline static Ref<Mutex, Owner> newInstance() { return new Mutex; }
 	~Mutex();
 
 	bool tryAcquire();
 	void acquire();
 	void release();
 
-private:
+protected:
 	friend class Condition;
+	friend class ScopeGuard;
+	Mutex();
 	pthread_mutex_t mutex_;
 };
 

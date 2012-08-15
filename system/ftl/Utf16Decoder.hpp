@@ -30,26 +30,25 @@ namespace ftl
 class Utf16Decoder: public Source<uchar_t>
 {
 public:
-	Utf16Decoder(Ref<Stream> stream, int bufCapa, int endian = BigEndian)
-		: byteDecoder_(stream, bufCapa, endian)
-	{}
-	
-	Utf16Decoder(const void* buf, int bufCapa, int endian = BigEndian)
-		: byteDecoder_(buf, bufCapa, endian)
-	{}
-	
+	inline static Ref<Utf16Decoder, Owner> newInstance(Ref<Stream> stream, int bufCapa, int endian = BigEndian) {
+		return new Utf16Decoder(stream, bufCapa, endian);
+	}
+	inline static Ref<Utf16Decoder, Owner> newInstance(const void* buf, int bufCapa, int endian = BigEndian) {
+		return new Utf16Decoder(buf, bufCapa, endian);
+	}
+
 	inline bool read(uchar_t* ch)
 	{
-		bool more = byteDecoder_.hasMore();
+		bool more = byteDecoder_->hasMore();
 		if (more) {
-			uint16_t w = byteDecoder_.readUInt16();
-			if ((w == 0xFFFE) && (byteDecoder_.numBytesRead() == 0)) {
-				byteDecoder_.setEndian((byteDecoder_.endian() == BigEndian) ? LittleEndian : BigEndian);
-				w = byteDecoder_.readUInt16();
+			uint16_t w = byteDecoder_->readUInt16();
+			if ((w == 0xFFFE) && (byteDecoder_->numBytesRead() == 0)) {
+				byteDecoder_->setEndian((byteDecoder_->endian() == BigEndian) ? LittleEndian : BigEndian);
+				w = byteDecoder_->readUInt16();
 			}
 			*ch = w;
 			if ((0xD800 <= *ch) && (*ch < 0xDC00)) {
-				uint16_t w = byteDecoder_.readUInt16();
+				uint16_t w = byteDecoder_->readUInt16();
 				if (!((0xDC00 <= w) && (w < 0xE000)))
 					FTL_THROW(EncodingException, "Input data is not conforming to UTF-16 encoding");
 				*ch = 0x10000 + (((*ch - 0xD800) << 10) | (w - 0xDC00));
@@ -60,11 +59,19 @@ public:
 		}
 		return more;
 	}
-	
-	inline Ref<ByteDecoder> byteDecoder() const { return &byteDecoder_; }
-	
+
+	inline Ref<ByteDecoder> byteDecoder() const { return byteDecoder_; }
+
 private:
-	ByteDecoder byteDecoder_;
+	Utf16Decoder(Ref<Stream> stream, int bufCapa, int endian)
+		: byteDecoder_(ByteDecoder::newInstance(stream, bufCapa, endian))
+	{}
+
+	Utf16Decoder(const void* buf, int bufCapa, int endian)
+		: byteDecoder_(ByteDecoder::newInstance(buf, bufCapa, endian))
+	{}
+
+	Ref<ByteDecoder, Owner> byteDecoder_;
 };
 
 } // namespace ftl

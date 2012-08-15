@@ -21,18 +21,25 @@ namespace ftl
 
 typedef struct flock FLockStruct;
 
+/** \brief advisory file locks
+  * \see Guard
+  */
 class FileLock: public FLockStruct, public Instance
 {
 public:
 	enum Type { Read = F_RDLCK, Write = F_WRLCK };
-	
-	FileLock(Ref<File> file, int type, off_t start = 0, off_t length = 0);
-	
+
+	inline static Ref<FileLock, Owner> newInstance(Ref<File> file, int type, off_t start = 0, off_t length = 0) {
+		return new FileLock(file, type, start, length);
+	}
+
 	bool tryAcquire();
 	void acquire();
 	void release();
-	
+
 private:
+	FileLock(Ref<File> file, int type, off_t start, off_t length);
+
 	int fd_;
 };
 

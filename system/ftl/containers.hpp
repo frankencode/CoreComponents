@@ -35,13 +35,33 @@ public:
 	virtual CT& pop(T* item) = 0;
 	inline CT& operator<<(const T& item) { return push(item); }
 	inline CT& operator>>(T& item) { return pop(&item); }
-	inline CT& operator<<(Source<T>& source) {
-		T item;
-		while (source.read(&item))
-			push(item);
-		return *static_cast<CT*>(this);
-	}
 };
+
+template<
+	class T1,
+	class T2,
+	template<class> class CT1,
+	template<class> class GASP1,
+	template<class> class CT2,
+	template<class> class GASP2
+>
+inline Ref< CT1<T1>, GASP1 > operator<<(Ref< CT1<T1>, GASP1 > a, Ref< CT2<T1>, GASP2 > b) {
+	for (T2 item; b->read(&item); a->push(item));
+	return a;
+}
+
+template<
+	class T1,
+	class T2,
+	template<class> class CT1,
+	template<class> class GASP1,
+	template<class> class CT2,
+	template<class> class GASP2
+>
+inline Ref< CT2<T2>, GASP2 > operator>>(Ref< CT1<T1>, GASP1 > a, Ref< CT2<T2>, GASP2 > b) {
+	for (T1 item; a->read(&item); b->push(item));
+	return b;
+}
 
 template<class Container>
 class GenericIterator: public Source<typename Container::Item>
@@ -67,18 +87,6 @@ private:
 	Ref<Container> container_;
 	int i_;
 };
-
-template<
-	class T,
-	template<class T> class Source,
-	template<class T> class Target
->
-inline Target<T>& operator>>(Source<T>& source, Target<T>& target)
-{
-	while (!source.isEmpty())
-		target.push(source.pop());
-	return target;
-}
 
 template<class T>
 class Ascending {

@@ -21,7 +21,7 @@ namespace ftl
 class Condition: public Instance
 {
 public:
-	Condition();
+	inline static Ref<Condition, Owner> newInstance() { return new Condition; }
 	~Condition();
 	void wait(Mutex* mutex);
 	bool waitUntil(Mutex* mutex, Time timeout);
@@ -29,6 +29,8 @@ public:
 	void broadcast();
 
 private:
+	Condition();
+
 	pthread_cond_t cond_;
 };
 

@@ -19,37 +19,44 @@ namespace ftl
 class Utf8Decoder: public Source<uchar_t>
 {
 public:
-	Utf8Decoder(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA)
-		: byteDecoder_(stream, bufCapa)
-	{}
-	
-	Utf8Decoder(const void* buf, int bufCapa)
-		: byteDecoder_(buf, bufCapa)
-	{}
-	
+	inline static Ref<Utf8Decoder, Owner> newInstance(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA) {
+		return new Utf8Decoder(stream, bufCapa);
+	}
+	inline static Ref<Utf8Decoder, Owner> newInstance(const void* buf, int bufCapa = FTL_DEFAULT_BUF_CAPA) {
+		return new Utf8Decoder(buf, bufCapa);
+	}
+
 	inline bool read(uchar_t* ch)
 	{
-		bool more = byteDecoder_.hasMore();
+		bool more = byteDecoder_->hasMore();
 		if (more) {
-			*ch = byteDecoder_.readUInt8();
+			*ch = byteDecoder_->readUInt8();
 			if ((*ch & 0x80) != 0) // distinguish 7 bit ASCII from multibyte sequence
 				*ch = readMultiByte(*ch);
 		}
 		return more;
 	}
-	
-	inline Ref<ByteDecoder> byteDecoder() const { return &byteDecoder_; }
-	
+
+	inline Ref<ByteDecoder> byteDecoder() const { return byteDecoder_; }
+
 private:
+	Utf8Decoder(Ref<Stream> stream, int bufCapa)
+		: byteDecoder_(ByteDecoder::newInstance(stream, bufCapa))
+	{}
+
+	Utf8Decoder(const void* buf, int bufCapa)
+		: byteDecoder_(ByteDecoder::newInstance(buf, bufCapa))
+	{}
+
 	uchar_t readMultiByte(uchar_t ch);
-	
-	ByteDecoder byteDecoder_;
+
+	Ref<ByteDecoder, Owner> byteDecoder_;
 };
 
 inline uchar_t Utf8Decoder::readMultiByte(uchar_t ch)
 {
 	int n = -1; // number of additional bytes
-	
+
 	// translate prefix to code length (n is the number of successive bytes)
 	if ((ch >> 5) == 6) { // code prefix: 6 = (110)2
 		ch = ch & 0x1F;
@@ -63,19 +70,19 @@ inline uchar_t Utf8Decoder::readMultiByte(uchar_t ch)
 		ch = ch & 0x07;
 		n = 3;
 	}
-	
+
 	int n2 = n;
-	
+
 	// read n successive characters (chs), which carry the code prefix (10)2
 	while (n > 0) {
-		uint8_t chs = byteDecoder_.readUInt8();
+		uint8_t chs = byteDecoder_->readUInt8();
 		if ((chs >> 6) == 2) // 2 = (10)2
 			ch = (ch << 6) | (chs & 0x3F);
 		else
 			break;
 		--n;
 	}
-	
+
 	// enforce minimum code length
 	if (n == 0) {
 		if (n2 == 1) {
@@ -88,10 +95,10 @@ inline uchar_t Utf8Decoder::readMultiByte(uchar_t ch)
 			if (ch < 0x10000) n = -1;
 		}
 	}
-	
+
 	if (n < 0)
 		FTL_THROW(EncodingException, "Input data is not conforming to UTF-8 encoding");
-	
+
 	return ch;
 }
 

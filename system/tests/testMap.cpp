@@ -53,9 +53,9 @@ void performanceTest()
 void simpleRangeTest()
 {
 	Ref< Map<int, int>, Owner > map = Map<int, int>::newInstance();
-	Random r;
+	Ref<Random, Owner> random = Random::newInstance();
 	for (int i = 0; i < 20; ++i)
-		map->insert(r.get(0, 100), i);
+		map->insert(random->get(0, 100), i);
 	for (int i = 0; i < map->length(); ++i)
 		print("map->at(%%) = %% (%%)\n", i, map->at(i)->key(), map->at(i)->value());
 	const int a = 30, b = 80;
