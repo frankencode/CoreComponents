@@ -14,7 +14,7 @@ bool MachCompiler::build(Ref<WireObject> recipe)
 {
 	Ref<StringList, Owner> sourcePaths = StringList::newInstance();
 	{
-		Format sourcePatterns = Format() << recipe->value("source");
+		Ref<VariantList> sourcePatterns = recipe->value("source");
 		Ref<DirEntry, Owner> entry = DirEntry::newInstance();
 		for (int i = 0; i < sourcePatterns->length(); ++i) {
 			Ref<Glob, Owner> glob = Glob::newInstance(sourcePatterns->at(i));

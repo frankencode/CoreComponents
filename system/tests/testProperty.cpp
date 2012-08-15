@@ -10,13 +10,13 @@ public:
 	Shape()
 		: x(0), y(0)
 	{
-		name.valueChanged()->connect(this, &Shape::onNameChanged);
+		name->valueChanged()->connect(this, &Shape::onNameChanged);
 	}
-	
+
 	Property<String> name;
 	Property<int> x;
 	Property<int> y;
-	
+
 private:
 	void onNameChanged(String newName) {
 		print("name = \"%%\"\n", name);
@@ -29,15 +29,15 @@ public:
 	Observer(Ref<Shape> shape)
 		: shape_(shape)
 	{
-		shape_->x.valueChanged()->connect(this, &Observer::onXChanged);
-		shape_->y.valueChanged()->connect(this, &Observer::onYChanged);
+		shape_->x->valueChanged()->connect(this, &Observer::onXChanged);
+		shape_->y->valueChanged()->connect(this, &Observer::onYChanged);
 	}
 	~Observer()
 	{
-		shape_->x.valueChanged()->disconnect(this);
-		shape_->y.valueChanged()->disconnect(this);
+		shape_->x->valueChanged()->disconnect(this);
+		shape_->y->valueChanged()->disconnect(this);
 	}
-	
+
 private:
 	void onXChanged(int value) {
 		print("x = %%\n", value);
@@ -45,7 +45,7 @@ private:
 	void onYChanged(int value) {
 		print("y = %%\n", value);
 	}
-	
+
 	Ref<Shape, Owner> shape_;
 };
 

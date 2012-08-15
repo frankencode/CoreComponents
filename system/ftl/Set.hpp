@@ -24,10 +24,8 @@ public:
 	typedef T Item;
 	typedef GenericIterator<Set> Iterator;
 
-	Set() {}
-
-	Set(const Set& b): tree_(b.tree_) {}
-	inline const Set& operator=(const Set& b) { tree_ = b.tree_; return *this; }
+	inline static Ref<Set, Owner> newInstance() { return new Set; }
+	virtual Ref<Set, Owner> clone() const { return new Set(*this); }
 
 	inline Iterator iterator() const { return Iterator(this); }
 
@@ -122,6 +120,11 @@ public:
 private:
 	typedef OrdinalTree< OrdinalNode<Item> > Tree;
 	typedef typename Tree::Node Node;
+
+	Set() {}
+	Set(const Set& b): tree_(b.tree_) {}
+	inline const Set& operator=(const Set& b) { tree_ = b.tree_; return *this; }
+
 	Tree tree_;
 	Item nullItem_;
 };

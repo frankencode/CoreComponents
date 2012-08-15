@@ -103,19 +103,7 @@ Format& Format::operator<<(const Variant& x)
 		*this << String(x);
 	}
 	else if (x.type() == Variant::RefType) {
-		Ref<VariantList> vl = x;
-		Ref<StringList> sl = x;
-		if (vl) {
-			for (int i = 0; i < vl->length(); ++i)
-				*this << vl->at(i);
-		}
-		else if (sl) {
-			for (int i = 0; i < sl->length(); ++i)
-				*this << sl->at(i);
-		}
-		else {
-			*this << (void*)Ref<>(x).get();
-		}
+		*this << (void*)Ref<>(x).get();
 	}
 	return *this;
 }

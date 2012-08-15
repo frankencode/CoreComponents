@@ -30,7 +30,7 @@ XClient::XClient()
 	  sequenceNumberMutex_(new Mutex),
 	  sequenceNumber_(0),
 	  messageFiltersMutex_(new Mutex),
-	  messageFilters_(new MessageFilters)
+	  messageFilters_(MessageFilters::newInstance())
 {
 	String host = 0;
 	int display = 0;

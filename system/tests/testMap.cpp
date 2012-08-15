@@ -7,17 +7,17 @@ namespace ftl {
 
 void simpleInsertTest()
 {
-	Map<String, String> names;
-	names.insert("Doe", "Joe");
-	names.insert("Mustermann", "Hans");
-	names.insert("Mustermann", "Max");
-	names.insert("Müller", "Otto");
-	names.insert("Berg", "Johanna");
-	names.insert("Becker", "Günther");
-	names.insert("", "X");
-	for (int i = 0; i < names.length(); ++i) {
-		Pair<String, String> pair = names.get(i);
-		print("%%: %%\n", pair.key(), pair.value());
+	Ref< Map<String, String>, Owner > names = Map<String, String>::newInstance();
+	names->insert("Doe", "Joe");
+	names->insert("Mustermann", "Hans");
+	names->insert("Mustermann", "Max");
+	names->insert("Müller", "Otto");
+	names->insert("Berg", "Johanna");
+	names->insert("Becker", "Günther");
+	names->insert("", "X");
+	for (int i = 0; i < names->length(); ++i) {
+		Pair<String, String> pair = names->get(i);
+		print("%%: %%\n", pair->key(), pair->value());
 	}
 }
 
@@ -37,31 +37,31 @@ void performanceTest()
 		print("std::map, %% iteration steps: dt = %% us\n", n, (Time::now() - t0).us());
 	}
 	{
-		ftl::Map<int, int> map;
+		Ref< ftl::Map<int, int>, Owner> map = ftl::Map<int, int>::newInstance();
 		Time t0 = Time::now();
 		for (int i = 0; i < n; ++i)
-			map[i] = i;
+			map->establish(i, i);
 		print("ftl::Map, %% insertions: dt = %% us\n", n, (Time::now() - t0).us());
 		t0 = Time::now();
 		int s = 0;
 		for (int i = 0; i < n; ++i)
-			s += map.get(i).value();
+			s += map->get(i)->value();
 		print("ftl::Map, %% iteration steps: dt = %% us\n", n, (Time::now() - t0).us());
 	}
 }
 
 void simpleRangeTest()
 {
-	Map<int, int> map;
+	Ref< Map<int, int>, Owner > map = Map<int, int>::newInstance();
 	Random r;
 	for (int i = 0; i < 20; ++i)
-		map.insert(r.get(0, 100), i);
-	for (int i = 0; i < map.length(); ++i)
-		print("map.at(%%) = %% (%%)\n", i, map.at(i).key(), map.at(i).value());
+		map->insert(r.get(0, 100), i);
+	for (int i = 0; i < map->length(); ++i)
+		print("map->at(%%) = %% (%%)\n", i, map->at(i)->key(), map->at(i)->value());
 	const int a = 30, b = 80;
 	print("In range [%%..%%]:\n", a, b);
-	for (int i = map.first(a), j = map.last(b); i <= j; ++i)
-		print("map.at(%%) = %% (%%)\n", i, map.at(i).key(), map.at(i).value());
+	for (int i = map->first(a), j = map->last(b); i <= j; ++i)
+		print("map->at(%%) = %% (%%)\n", i, map->at(i)->key(), map->at(i)->value());
 }
 
 } // namespace ftl

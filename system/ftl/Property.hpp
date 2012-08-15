@@ -50,10 +50,12 @@ template<class Value>
 class Signal: public Instance
 {
 public:
+	inline static Ref<Signal, Owner> newInstance() { return new Signal; }
+
 	void emit(Value value) {
-		for (int i = 0, n = callbacks_.length(); i < n; ++i) {
-			Ref<CallbackList> list = callbacks_.at(i).value();
-			for (int j = 0, m = list->length(); j < m; ++j)
+		for (int i = 0; i < callbacks_->length(); ++i) {
+			Ref<CallbackList> list = callbacks_->valueAt(i);
+			for (int j = 0; j < list->length(); ++j)
 				list->at(j)->invoke(value);
 		}
 	}
@@ -61,21 +63,25 @@ public:
 	template<class Recipient>
 	void connect(Recipient* recipient, void (Recipient::* method)(Value)) {
 		Ref<CallbackList, Owner> list;
-		if (!callbacks_.lookup(recipient, &list)) {
+		if (!callbacks_->lookup(recipient, &list)) {
 			list = CallbackList::newInstance();
-			callbacks_.insert(recipient, list);
+			callbacks_->insert(recipient, list);
 		}
 		list->append(new Slot<Recipient, Value>(recipient, method));
 	}
 
 	void disconnect(void* recipient) {
-		callbacks_.remove(recipient);
+		callbacks_->remove(recipient);
 	}
 
 private:
 	friend class Connection;
 	typedef List< Ref<Callback<Value>, Owner> > CallbackList;
-	Map<void*, Ref<CallbackList, Owner> > callbacks_;
+	typedef Map<void*, Ref<CallbackList, Owner> > CallbackListByRecipient;
+
+	Signal() {}
+
+	Ref<CallbackListByRecipient, OnDemand> callbacks_;
 };
 
 template<class T>
@@ -97,6 +103,9 @@ public:
 	inline Ref< Signal<T> > valueChanged() const { return valueChanged_; }
 
 	inline String toString() const { return Format() << value_; }
+
+	Property* operator->() { return this; }
+	const Property* operator->() const { return this; }
 
 private:
 	Ref<Signal<T>, OnDemand> valueChanged_;
