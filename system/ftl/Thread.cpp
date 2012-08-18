@@ -22,9 +22,9 @@ namespace ftl
 
 void Thread::start(int detachState)
 {
-	ThreadFactory factory;
-	factory.setDetachState(detachState);
-	factory.start(this);
+	Ref<ThreadFactory, Owner> factory = ThreadFactory::newInstance();
+	factory->setDetachState(detachState);
+	factory->start(this);
 }
 
 void Thread::wait()

@@ -52,7 +52,7 @@ void ProcessFactory::setArguments(Ref<StringList> list) { arguments_ = list; }
 Ref<EnvMap> ProcessFactory::envMap() { return (envMap_) ? envMap_ : envMap_ = Process::envMap(); }
 void ProcessFactory::setEnvMap(Ref<EnvMap> map) { envMap_ = map; }
 
-Ref<SignalSet> ProcessFactory::signalMask() { return (signalMask_) ? signalMask_ : signalMask_ = new SignalSet(); }
+Ref<SignalSet> ProcessFactory::signalMask() { return (signalMask_) ? signalMask_ : signalMask_ = SignalSet::newInstance(); }
 void ProcessFactory::setSignalMask(Ref<SignalSet> mask) { signalMask_ = mask; }
 
 bool ProcessFactory::hasFileCreationMask() const { return hasFileCreationMask_; }
@@ -242,27 +242,27 @@ Ref<Process, Owner> ProcessFactory::produce()
 			::close(ptySlave);
 
 			if (ioPolicy_ & Process::ForwardInput)
-				rawInput = new SystemStream(ptyMaster);
+				rawInput = SystemStream::newInstance(ptyMaster);
 			if ((ioPolicy_ & Process::ForwardOutput) || (ioPolicy_ & Process::ForwardError)) {
 				if (rawInput)
 					rawOutput = rawInput;
 				else
-					rawOutput = new SystemStream(ptyMaster);
+					rawOutput = SystemStream::newInstance(ptyMaster);
 			}
 		}
 		else
 		{
 			if (ioPolicy_ & Process::ForwardInput) {
 				::close(inputPipe[0]);
-				rawInput = new SystemStream(inputPipe[1]);
+				rawInput = SystemStream::newInstance(inputPipe[1]);
 			}
 			if (ioPolicy_ & Process::ForwardOutput) {
 				::close(outputPipe[1]);
-				rawOutput = new SystemStream(outputPipe[0]);
+				rawOutput = SystemStream::newInstance(outputPipe[0]);
 			}
 			if (ioPolicy_ & Process::ForwardError) {
 				::close(errorPipe[1]);
-				rawError = new SystemStream(errorPipe[0]);
+				rawError = SystemStream::newInstance(errorPipe[0]);
 			}
 		}
 

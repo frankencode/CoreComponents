@@ -165,7 +165,7 @@ int main()
 	#ifdef NDEBUG
 		0;
 	#else
-		new SyntaxDebugger;
+		SyntaxDebugger::newInstance();
 	#endif
 	Ref<Expression, Owner> expression = new Expression(debugger);
 

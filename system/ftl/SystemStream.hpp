@@ -21,30 +21,34 @@ namespace ftl
 class SystemStream: public Stream
 {
 public:
-	SystemStream(int fd);
+	inline static Ref<SystemStream, Owner> newInstance(int fd) {
+		return new SystemStream(fd);
+	}
 	~SystemStream();
-	
+
 	int fd() const;
 	bool isTeletype() const;
-	
+
 	bool isOpen() const;
 	void close();
-	
+
 	bool readyRead(Time timeout);
 	bool readyReadOrWrite(Time timeout);
-	
+
 	int readAvail(void* buf, int bufCapa);
 	void write(const void* buf, int bufFill);
-	
+
 	void write(Ref<StringList> parts, const char* sep = "");
-	
+
 	inline int readAvail(String s) { return Stream::readAvail(s); }
 	inline void write(const char* s) { Stream::write(s); }
 	inline void write(String s) { write(s->data(), s->size()); }
-	
+
 	void closeOnExec();
-	
+
 protected:
+	SystemStream(int fd);
+
 	int fd_;
 	mutable bool isattyCached_, isatty_;
 };

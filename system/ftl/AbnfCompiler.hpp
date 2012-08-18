@@ -12,12 +12,11 @@
 #define FTL_ABNFCOMPILER_HPP
 
 #include "AbnfSyntax.hpp"
+#include "SyntaxDebugger.hpp"
 #include "StringTrap.hpp"
 
 namespace ftl
 {
-
-class SyntaxDebugger;
 
 class AbnfCompiler: public AbnfSyntax
 {
@@ -28,10 +27,10 @@ public:
 	Ref<Definition, Owner> compile(Ref<ByteArray> text, Ref<SyntaxDebugger> debugger = 0);
 
 private:
-	inline const char* str(Ref<ByteArray> text, Ref<Token> token) { return trap_.capture(text, token->i0(), token->i1()); }
-	StringTrap trap_;
+	inline const char* str(Ref<ByteArray> text, Ref<Token> token) { return trap_->capture(text, token->i0(), token->i1()); }
+	Ref<StringTrap, Owner> trap_;
 
-	AbnfCompiler() {}
+	AbnfCompiler();
 	Ref<Node> ignoreDebug(Ref<Node> node);
 
 	void compileRuleList(Ref<ByteArray> text, Ref<Token> ruleList, Ref<Definition> definition);

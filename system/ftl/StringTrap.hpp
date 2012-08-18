@@ -19,6 +19,10 @@ namespace ftl
 class StringTrap: public Instance
 {
 public:
+	inline static Ref<StringTrap, Owner> newInstance() {
+		return new StringTrap;
+	}
+
 	inline const char* capture(Ref<ByteArray> s) const {
 		return capture(s->constData(), s->size());
 	}
@@ -38,6 +42,8 @@ public:
 	}
 
 private:
+	StringTrap() {}
+
 	class Node: public Instance {
 	public:
 		Node(const char* s, int len): s_(ByteArray::newInstance(s, len)) {}

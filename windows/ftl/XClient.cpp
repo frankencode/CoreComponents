@@ -48,7 +48,7 @@ XClient::XClient()
 		}
 		if (host == "") {
 			String path = Format("/tmp/.X11-unix/X%%") << display;
-			address = new SocketAddress(AF_LOCAL, path);
+			address = SocketAddress::newInstance(AF_LOCAL, path);
 		}
 		else {
 			Ref<SocketAddressList, Owner> list = SocketAddress::resolve(host, "x11");
@@ -72,7 +72,7 @@ XClient::XClient()
 		}
 	}
 
-	socket_ = new StreamSocket(address);
+	socket_ = StreamSocket::newInstance(address);
 	socket_->connect();
 
 	Ref<ByteEncoder, Owner> sink = ByteEncoder::newInstance(socket_);

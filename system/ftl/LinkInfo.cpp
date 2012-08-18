@@ -28,7 +28,7 @@ LinkInfo::LinkInfo(void* addr)
 	if (!addr) addr = (void*)&ftl_hook;
 	Dl_info info;
 	if (::dladdr(addr, &info)) {
-		libraryPath_ = SymbolicLink(info.dli_fname).resolve();
+		libraryPath_ = SymbolicLink::resolve(info.dli_fname);
 		symbolName_ = info.dli_sname;
 		baseAddress_ = info.dli_fbase;
 		symbolAddress_ = info.dli_saddr;

@@ -28,28 +28,28 @@ public:
 		Joinable = PTHREAD_CREATE_JOINABLE,
 		Detached = PTHREAD_CREATE_DETACHED
 	};
-	
+
 	virtual ~Thread() {}
-	
+
 	void start(int detachState = Joinable);
 	void wait();
 	void kill(int signal = SIGUSR2);
 	bool stillAlive() const;
-	
+
 	static void sleep(Time duration);
 	static void sleepUntil(Time timeout);
-	
+
 	static void enableSignal(int signal = SIGUSR2);
 	static void disableSignal(int signal = SIGUSR2);
-	
+
 protected:
 	friend class ThreadFactory;
-	
+
 	virtual void run() = 0;
-	
+
 private:
 	static void forwardSignal(int signal);
-	
+
 	pthread_t tid_;
 };
 

@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 		file->open(File::Read);
 		String text = file->readAll();
 		Ref<AbnfCompiler, Owner> compiler = AbnfCompiler::newInstance();
-		Ref<SyntaxDebugger, Owner> debugger = new SyntaxDebugger;
+		Ref<SyntaxDebugger, Owner> debugger = SyntaxDebugger::newInstance();
 		Ref<SyntaxDefinition, Owner> definition = compiler->compile(text, debugger);
 		debugger->printDefinition(false/*omitUnusedRules*/);
 	}

@@ -20,18 +20,21 @@ namespace ftl
 class SignalSet: public Instance
 {
 public:
-	SignalSet();
-	
+	inline static Ref<SignalSet, Owner> newInstance() {
+		return new SignalSet;
+	}
+
 	void clear();
 	void fill();
 	void add(int signal);
 	void del(int signal);
-	
+
 	bool contains(int signal) const;
-	
+
 	sigset_t* rawSet();
-	
+
 private:
+	SignalSet();
 	sigset_t rawSet_;
 };
 

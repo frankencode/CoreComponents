@@ -184,6 +184,7 @@ SET(FTLSYSTEM_SOURCE
 	SyntaxState.cpp
 	SyntaxDebugFactory.cpp
 	SyntaxDefinition.cpp
+	SyntaxDebugger.cpp
 
 	# strings
 	String.cpp

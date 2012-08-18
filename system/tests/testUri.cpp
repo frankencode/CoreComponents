@@ -6,14 +6,14 @@ namespace ftl
 
 int main()
 {
-	Uri uri("http://john@example.com:8000/%7ejohn/123.php?say=hello#part1");
-	print("uri.scheme() = \"%%\"\n", uri.scheme());
-	print("uri.userInfo() = \"%%\"\n", uri.userInfo());
-	print("uri.host() = \"%%\"\n", uri.host());
-	print("uri.port() = %%\n", uri.port());
-	print("uri.path() = \"%%\"\n", uri.path());
-	print("uri.query() = \"%%\"\n", uri.query());
-	print("uri.fragment() = \"%%\"\n", uri.fragment());
+	Ref<Uri, Owner> uri = Uri::newInstance("http://john@example.com:8000/%7ejohn/123.php?say=hello#part1");
+	print("uri->scheme() = \"%%\"\n", uri->scheme());
+	print("uri->userInfo() = \"%%\"\n", uri->userInfo());
+	print("uri->host() = \"%%\"\n", uri->host());
+	print("uri->port() = %%\n", uri->port());
+	print("uri->path() = \"%%\"\n", uri->path());
+	print("uri->query() = \"%%\"\n", uri->query());
+	print("uri->fragment() = \"%%\"\n", uri->fragment());
 	return 0;
 }
 

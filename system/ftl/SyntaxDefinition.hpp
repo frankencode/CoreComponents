@@ -31,7 +31,9 @@ public:
 	typedef syntax::Node Node;
 	typedef syntax::NODE NODE;
 
-	Definition(Ref<DebugFactory> debugFactory = 0);
+	inline static Ref<Definition, Owner> newInstance(Ref<DebugFactory> debugFactory = 0) {
+		return new Definition(debugFactory);
+	}
 	~Definition();
 
 	int id() const;
@@ -160,6 +162,9 @@ public:
 
 	NODE INVOKE(DefinitionNode* definition, NODE coverage = 0);
 	NODE INVOKE(const char* definitionName, NODE coverage = 0);
+
+protected:
+	Definition(Ref<DebugFactory> debugFactory = 0);
 
 private:
 	Definition(const Definition&);

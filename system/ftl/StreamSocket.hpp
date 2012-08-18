@@ -23,9 +23,12 @@ namespace ftl
 class StreamSocket: public SystemStream
 {
 public:
-	StreamSocket(Ref<SocketAddress> address, int fd = -1);
+	inline static Ref<StreamSocket, Owner> newInstance(Ref<SocketAddress> address, int fd = -1) {
+		return new StreamSocket(address, fd);
+	}
+
 	Ref<SocketAddress> address() const;
-	
+
 	void bind();
 	void listen(int backlog = FTL_DEFAULT_BACKLOG);
 	bool readyAccept(Time idleTimeout);
@@ -33,16 +36,17 @@ public:
 	void connect();
 	bool established(Time idleTimeout);
 	void shutdown(int how = SHUT_RDWR);
-	
+
 	void setRecvTimeout(Time idleTimeout);
 	void setSendTimeout(Time idleTimeout);
-	
+
 	Ref<SocketAddress> localAddress() const;
 	Ref<SocketAddress> remoteAddress() const;
 	static Ref<SocketAddress> localAddress(int fd);
 	static Ref<SocketAddress> remoteAddress(int fd);
-	
-private:
+
+protected:
+	StreamSocket(Ref<SocketAddress> address, int fd);
 	Ref<SocketAddress, Owner> address_;
 	bool connected_;
 };
