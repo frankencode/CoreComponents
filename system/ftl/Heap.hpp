@@ -37,23 +37,21 @@ public:
 	inline bool isFull() const { return fill_ == size_; }
 	inline bool isEmpty() const { return fill_ == 0; }
 
-	inline GenericHeap& push(const T& item)
+	inline void push(const T& item)
 	{
 		FTL_ASSERT(fill_ < size_);
 		buf_[fill_] = item;
 		++fill_;
 		passUpLast();
-		return *this;
 	}
 
-	inline GenericHeap& pop(T* item)
+	inline void pop(T* item)
 	{
 		FTL_ASSERT(fill_ > 0);
 		*item = buf_[0];
 		--fill_;
 		buf_[0] = buf_[fill_];
 		passDownFromTop();
-		return *this;
 	}
 
 	inline T pop() {

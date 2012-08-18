@@ -51,7 +51,7 @@ public:
 	inline int length() const { return length_; }
 	inline bool isEmpty() const { return length_ == 0; }
 
-	Queue& push(const T& item)
+	void push(const T& item)
 	{
 		Node* node = new Node(item);
 		if (tail_) {
@@ -63,10 +63,9 @@ public:
 			tail_ = node;
 		}
 		++length_;
-		return *this;
 	}
 
-	Queue& pop(T* item)
+	void pop(T* item)
 	{
 		FTL_ASSERT(length_ > 0);
 		Node* node = head_;
@@ -75,7 +74,6 @@ public:
 		if (!head_) tail_ = 0;
 		delete node;
 		--length_;
-		return *this;
 	}
 
 	inline T pop() {

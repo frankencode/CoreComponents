@@ -69,8 +69,8 @@ public:
 		return item;
 	}
 
-	inline List& push(const Item& item) { return push(length(), item); }
-	inline List& pop(Item* item) { return pop(0, item); }
+	inline void push(const Item& item) { push(length(), item); }
+	inline void pop(Item* item) { pop(0, item); }
 	inline Item pop() { Item item; pop(&item); return item; }
 
 	inline void append(const Item& item) { push(length(), item); }

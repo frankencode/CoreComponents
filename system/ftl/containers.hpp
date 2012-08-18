@@ -31,10 +31,11 @@ public:
 		return false;
 	}
 
-	virtual CT& push(const T& item) = 0;
-	virtual CT& pop(T* item) = 0;
-	inline CT& operator<<(const T& item) { return push(item); }
-	inline CT& operator>>(T& item) { return pop(&item); }
+	virtual void push(const T& item) = 0;
+	virtual void pop(T* item) = 0;
+
+	inline CT& operator<<(const T& item) { push(item); return *static_cast<CT*>(this); }
+	inline CT& operator>>(T& item) { pop(&item); return *static_cast<CT*>(this); }
 };
 
 template<

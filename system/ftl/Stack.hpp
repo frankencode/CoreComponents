@@ -49,16 +49,13 @@ public:
 	inline T& at(int i) const { return bottom(i); }
 	inline T get(int i) const { return bottom(i); }
 
-	inline Stack& push(const T& item) {
+	inline void push(const T& item) {
 		FTL_ASSERT(fill_ < size_);
 		buf_[fill_++] = item;
-		return *this;
 	}
-	inline Stack& pop(T* item)
-	{
+	inline void pop(T* item) {
 		FTL_ASSERT(fill_ > 0);
 		*item = buf_[--fill_];
-		return *this;
 	}
 	inline T pop() {
 		T item;
