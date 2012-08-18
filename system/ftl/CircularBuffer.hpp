@@ -49,8 +49,8 @@ public:
 	inline T& at(int i) const { return front(i); }
 	inline T get(int i) const { return front(i); }
 
-	inline CircularBuffer& push(const T& item) { return pushBack(item); }
-	inline CircularBuffer& pop(T* item) { return popFront(item); }
+	inline void push(const T& item) { pushBack(item); }
+	inline void pop(T* item) { popFront(item); }
 	inline T pop() { T item; popFront(&item); return item; }
 
 	inline void clear()
@@ -60,44 +60,40 @@ public:
 		tail_ = size_ - 1;
 	}
 
-	inline CircularBuffer& pushBack(const T& item)
+	inline void pushBack(const T& item)
 	{
 		FTL_ASSERT(fill_ != size_);
 		++head_;
 		if (head_ >= size_) head_ = 0;
 		++fill_;
 		buf_[head_] = item;
-		return *this;
 	}
 
-	inline CircularBuffer& popFront(T* item)
+	inline void popFront(T* item)
 	{
 		FTL_ASSERT(fill_ > 0);
 		++tail_;
 		if (tail_ >= size_) tail_ = 0;
 		--fill_;
 		*item = buf_[tail_];
-		return *this;
 	}
 
-	inline CircularBuffer& pushFront(const T& item)
+	inline void pushFront(const T& item)
 	{
 		FTL_ASSERT(fill_ < size_);
 		buf_[tail_] = item;
 		--tail_;
 		if (tail_ < 0) tail_ = size_ - 1;
 		++fill_;
-		return *this;
 	}
 
-	inline CircularBuffer& popBack(T* item)
+	inline void popBack(T* item)
 	{
 		FTL_ASSERT(fill_ > 0);
 		*item = buf_[head_];
 		--head_;
 		if (head_ < 0) head_ = size_ - 1;
 		--fill_;
-		return *this;
 	}
 
 	inline T popFront() { T item; popFront(item); return item; }

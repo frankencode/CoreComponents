@@ -88,7 +88,7 @@ public:
 		return found;
 	}
 
-	inline Set& push(const Item& item)
+	inline void push(const Item& item)
 	{
 		bool found = false;
 		bool below = true;
@@ -97,16 +97,14 @@ public:
 			k->item_ = item;
 		else
 			tree_.attach(k, new Node(item), below);
-		return *this;
 	}
 
-	inline Set& pop(Item* item)
+	inline void pop(Item* item)
 	{
 		FTL_ASSERT(!isEmpty());
 		Node* k = tree_.min();
 		*item = k->item_;
 		tree_.remove(k);
-		return *this;
 	}
 
 	inline Item pop() {

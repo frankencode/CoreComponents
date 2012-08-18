@@ -26,23 +26,21 @@ public:
 		return new Channel;
 	}
 
-	Channel& push(const T& item)
+	void push(const T& item)
 	{
 		mutex_->acquire();
 		queue_->push(item);
 		notEmpty_->signal();
 		mutex_->release();
-		return *this;
 	}
 
-	Channel& pop(T* item)
+	void pop(T* item)
 	{
 		mutex_->acquire();
 		while (queue_->length() == 0)
 			notEmpty_->wait(mutex_);
 		queue_->pop(item);
 		mutex_->release();
-		return *this;
 	}
 
 	inline T pop() {
