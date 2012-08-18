@@ -23,9 +23,9 @@ namespace ftl
 class WireException: public StdException
 {
 public:
-	WireException(const String& error, int line, int pos);
+	WireException(const String &error, int line, int pos);
 	~WireException() throw();
-	const char* what() const throw();
+	const char *what() const throw();
 private:
 	String message_;
 	String error_;

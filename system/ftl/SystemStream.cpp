@@ -80,7 +80,7 @@ bool SystemStream::readyReadOrWrite(Time timeout)
 	return (ret > 0);
 }
 
-int SystemStream::readAvail(void* buf, int bufCapa)
+int SystemStream::readAvail(void *buf, int bufCapa)
 {
 	ssize_t ret = 0;
 	while (true) {
@@ -98,9 +98,9 @@ int SystemStream::readAvail(void* buf, int bufCapa)
 	return ret;
 }
 
-void SystemStream::write(const void* buf, int bufFill)
+void SystemStream::write(const void *buf, int bufFill)
 {
-	const uint8_t* buf2 = static_cast<const uint8_t*>(buf);
+	const uint8_t *buf2 = static_cast<const uint8_t*>(buf);
 	while (bufFill > 0)
 	{
 		ssize_t ret = ::write(fd_, buf2, bufFill);
@@ -116,7 +116,7 @@ void SystemStream::write(const void* buf, int bufFill)
 	}
 }
 
-void SystemStream::write(Ref<StringList> parts, const char* sep)
+void SystemStream::write(Ref<StringList> parts, const char *sep)
 {
 	int n = parts->length();
 	int sepLen = str::len(sep);

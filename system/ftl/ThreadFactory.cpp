@@ -77,7 +77,7 @@ void ThreadFactory::setGuardSize(size_t value)
 		FTL_PTHREAD_EXCEPTION("pthread_attr_setguardsize", ret);
 }
 
-pthread_attr_t* ThreadFactory::attr() { return &attr_; }
+pthread_attr_t *ThreadFactory::attr() { return &attr_; }
 
 Ref<Thread, Owner> ThreadFactory::produce()
 {
@@ -93,11 +93,11 @@ void ThreadFactory::start(Ref<Thread> thread)
 		FTL_PTHREAD_EXCEPTION("pthread_create", ret);
 }
 
-void* ThreadFactory::bootstrap(void* self)
+void *ThreadFactory::bootstrap(void *self)
 {
-	Thread* thread = static_cast<Thread*>(self);
+	Thread *thread = static_cast<Thread*>(self);
 	thread->run();
-	return (void*)thread;
+	return (void *)thread;
 }
 
 } // namespace ftl

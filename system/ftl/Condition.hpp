@@ -23,8 +23,8 @@ class Condition: public Instance
 public:
 	inline static Ref<Condition, Owner> newInstance() { return new Condition; }
 	~Condition();
-	void wait(Mutex* mutex);
-	bool waitUntil(Mutex* mutex, Time timeout);
+	void wait(Mutex *mutex);
+	bool waitUntil(Mutex *mutex, Time timeout);
 	void signal();
 	void broadcast();
 

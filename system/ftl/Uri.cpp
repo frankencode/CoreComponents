@@ -21,7 +21,7 @@ Uri::Uri()
 	: port_(-1)
 {}
 
-Uri::Uri(const char* text)
+Uri::Uri(const char *text)
 	: port_(-1)
 {
 	readUri(String(text));
@@ -109,12 +109,12 @@ String Uri::encode(String s)
 {
 	s->toLowerInsitu();
 
-	const char* reserved = ":/?#[]@!$&'()*+,;=";
+	const char *reserved = ":/?#[]@!$&'()*+,;=";
 	Ref<StringList, Owner> l = StringList::newInstance();
 	int j = 0;
 	for (int i = 0, n = s->length(); i < n; ++i) {
 		char ch = s->at(i);
-		for (const char* r = reserved; *r; ++r) {
+		for (const char *r = reserved; *r; ++r) {
 			if (ch == *r) {
 				if (j < i)
 					l->append(s->copy(j, i));

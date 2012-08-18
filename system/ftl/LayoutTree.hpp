@@ -23,8 +23,8 @@ class LayoutNode
 public:
 	typedef ItemType Item;
 	typedef typename ItemType::Extend Extend;
-	
-	LayoutNode(const Item& item)
+
+	LayoutNode(const Item &item)
 		: item_(item),
 		  balance_(0),
 		  weight_(1),
@@ -32,7 +32,7 @@ public:
 	{
 		item_.extend.valueChanged()->connect(this, &LayoutNode::itemExtendChanged);
 	}
-	LayoutNode(const LayoutNode& b)
+	LayoutNode(const LayoutNode &b)
 		: item_(b.item_),
 		  balance_(b.balance_),
 		  weight_(b.weight_),
@@ -40,26 +40,26 @@ public:
 	{
 		item_.extend.valueChanged()->connect(this, &LayoutNode::itemExtendChanged);
 	}
-	
+
 	inline void establishExtend()
 	{
 		extend_ = item_.extend
 			+ ((left_) ? left_->extend_ : Extend())
 			+ ((right_) ? right_->extend_ : Extend());
 	}
-	
+
 	void itemExtendChanged(Extend)
 	{
-		LayoutNode* k = this;
+		LayoutNode *k = this;
 		while (k) {
 			k->establishExtend();
 			k = k->parent_;
 		}
 	}
-	
-	LayoutNode* left_;
-	LayoutNode* right_;
-	LayoutNode* parent_;
+
+	LayoutNode *left_;
+	LayoutNode *right_;
+	LayoutNode *parent_;
 	Item item_;
 	int balance_;
 	int weight_;
@@ -73,24 +73,24 @@ public:
 	typedef NodeType Node;
 	typedef typename NodeType::Item Item;
 	typedef typename NodeType::Extend Extend;
-	
+
 	inline Extend extend() const { return extend(BinaryTree<Node>::root_); }
-	
+
 	int find(Extend x) const;
 	int first(Extend a) const;
 	int last(Extend b) const;
-	
+
 protected:
-	void touched(Node* kp, Node* kc, bool left, bool attached);
-	void rotated(Node* k1, bool left);
-	inline static void establishExtend(Node* k) { k->establishExtend(); }
-	inline static Extend extend(Node* k) { return (k) ? k->extend_ : Extend(); }
+	void touched(Node *kp, Node *kc, bool left, bool attached);
+	void rotated(Node *k1, bool left);
+	inline static void establishExtend(Node *k) { k->establishExtend(); }
+	inline static Extend extend(Node *k) { return (k) ? k->extend_ : Extend(); }
 };
 
 template<class Node>
 int LayoutTree<Node>::find(Extend x) const
 {
-	Node* k = BinaryTree<Node>::root_;
+	Node *k = BinaryTree<Node>::root_;
 	int j0 = 0, j = -1;
 	Extend y0 = 0;
 	if (k) {
@@ -135,13 +135,13 @@ inline int LayoutTree<Node>::last(Extend b) const
 }
 
 template<class Node>
-void LayoutTree<Node>::touched(Node* kp, Node* kc, bool left, bool attached)
+void LayoutTree<Node>::touched(Node *kp, Node *kc, bool left, bool attached)
 {
 	OrdinalTree<Node>::touched(kp, kc, left, attached);
-	
+
 	Extend delta = kc->extend_;
 	if (!attached) delta = -delta;
-	Node* k = kp;
+	Node *k = kp;
 	while (k) {
 		k->extend_ += delta;
 		k = k->parent_;
@@ -149,10 +149,10 @@ void LayoutTree<Node>::touched(Node* kp, Node* kc, bool left, bool attached)
 }
 
 template<class Node>
-void LayoutTree<Node>::rotated(Node* k1, bool left)
+void LayoutTree<Node>::rotated(Node *k1, bool left)
 {
 	OrdinalTree<Node>::rotated(k1, left);
-	
+
 	establishExtend(k1);
 	establishExtend(k1->parent_);
 }

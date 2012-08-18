@@ -29,48 +29,48 @@ public:
 
 	Format(String format = "");
 
-	Format(const Format& b);
-	Format& operator=(const Format& b);
+	Format(const Format &b);
+	Format &operator=(const Format &b);
 
-	inline Format& operator<<(const String& s) { get()->insert(nextPlaceHolder()->j_, s); return *this; }
-	inline Format& operator<<(const Ref<ByteArray, Owner>& s) { return *this << String(s); }
-	inline Format& operator<<(const char* s) { return *this << String(s); }
-	inline Format& operator<<(char* s) { return *this << String(s); }
-	inline Format& operator<<(char ch) { return *this << String(&ch, 1); }
+	inline Format &operator<<(const String &s) { get()->insert(nextPlaceHolder()->j_, s); return *this; }
+	inline Format &operator<<(const Ref<ByteArray, Owner>& s) { return *this << String(s); }
+	inline Format &operator<<(const char *s) { return *this << String(s); }
+	inline Format &operator<<(char *s) { return *this << String(s); }
+	inline Format &operator<<(char ch) { return *this << String(&ch, 1); }
 
-	inline Format& operator<<(unsigned char x) { printInt(x); return *this; }
-	inline Format& operator<<(unsigned short x) { printInt(x); return *this; }
-	inline Format& operator<<(unsigned int x) { printInt(x); return *this; }
-	inline Format& operator<<(unsigned long x) { printInt(x); return *this; }
-	inline Format& operator<<(unsigned long long x) { printInt(x); return *this; }
+	inline Format &operator<<(unsigned char x) { printInt(x); return *this; }
+	inline Format &operator<<(unsigned short x) { printInt(x); return *this; }
+	inline Format &operator<<(unsigned int x) { printInt(x); return *this; }
+	inline Format &operator<<(unsigned long x) { printInt(x); return *this; }
+	inline Format &operator<<(unsigned long long x) { printInt(x); return *this; }
 
-	inline Format& operator<<(short x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
-	inline Format& operator<<(int x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
-	inline Format& operator<<(long x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
-	inline Format& operator<<(long long x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
+	inline Format &operator<<(short x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
+	inline Format &operator<<(int x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
+	inline Format &operator<<(long x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
+	inline Format &operator<<(long long x) { int s = sign(x); printInt(uint64_t(s*x), s); return *this; }
 
-	inline Format& operator<<(float x) { printFloat(x, true); return *this; }
-	inline Format& operator<<(double x) { printFloat(x); return *this; }
+	inline Format &operator<<(float x) { printFloat(x, true); return *this; }
+	inline Format &operator<<(double x) { printFloat(x); return *this; }
 
-	inline Format& operator<<(bool x) { return *this << (x ? "true" : "false"); }
-	inline Format& operator<<(void* x) {
-		if (sizeof(void*) == sizeof(uint32_t))
+	inline Format &operator<<(bool x) { return *this << (x ? "true" : "false"); }
+	inline Format &operator<<(void *x) {
+		if (sizeof(void *) == sizeof(uint32_t))
 			printInt(union_cast<uint32_t>(x));
-		else if (sizeof(void*) == sizeof(uint64_t))
+		else if (sizeof(void *) == sizeof(uint64_t))
 			printInt(union_cast<uint64_t>(x)); return *this;
 		return *this;
 	}
 
-	Format& operator<<(const Variant& x);
+	Format &operator<<(const Variant &x);
 
 	template<class T>
-	inline Format& operator<<(const T& x) { return *this << x.toString(); }
+	inline Format &operator<<(const T &x) { return *this << x.toString(); }
 
 	template<class T, template<class> class P>
-	inline Format& operator<<(const Ref<T, P>& x) { return *this << x->toString(); }
+	inline Format &operator<<(const Ref<T, P>& x) { return *this << x->toString(); }
 
 	template<class T>
-	inline Format& operator<<(T* x) { return *this << (void*)x; }
+	inline Format &operator<<(T *x) { return *this << (void *)x; }
 
 private:
 	enum { ExpAutoLimit = 6 };

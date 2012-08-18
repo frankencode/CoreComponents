@@ -31,7 +31,7 @@ public:
 
 	bool contains(int signal) const;
 
-	sigset_t* rawSet();
+	sigset_t *rawSet();
 
 private:
 	SignalSet();

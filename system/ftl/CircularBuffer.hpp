@@ -26,7 +26,7 @@ public:
 	inline static Ref<CircularBuffer, Owner> newInstance(int size) {
 		return new CircularBuffer(size);
 	}
-	inline static Ref<CircularBuffer, Owner> newInstance(T* buf, int size) {
+	inline static Ref<CircularBuffer, Owner> newInstance(T *buf, int size) {
 		return new CircularBuffer(buf, size);
 	}
 
@@ -46,11 +46,11 @@ public:
 	inline bool isEmpty() const { return fill_ == 0; }
 
 	inline bool has(int i) const { return (0 <= i) && (i < fill_); }
-	inline T& at(int i) const { return front(i); }
+	inline T &at(int i) const { return front(i); }
 	inline T get(int i) const { return front(i); }
 
-	inline void push(const T& item) { pushBack(item); }
-	inline void pop(T* item) { popFront(item); }
+	inline void push(const T &item) { pushBack(item); }
+	inline void pop(T *item) { popFront(item); }
 	inline T pop() { T item; popFront(&item); return item; }
 
 	inline void clear()
@@ -60,7 +60,7 @@ public:
 		tail_ = size_ - 1;
 	}
 
-	inline void pushBack(const T& item)
+	inline void pushBack(const T &item)
 	{
 		FTL_ASSERT(fill_ != size_);
 		++head_;
@@ -69,7 +69,7 @@ public:
 		buf_[head_] = item;
 	}
 
-	inline void popFront(T* item)
+	inline void popFront(T *item)
 	{
 		FTL_ASSERT(fill_ > 0);
 		++tail_;
@@ -78,7 +78,7 @@ public:
 		*item = buf_[tail_];
 	}
 
-	inline void pushFront(const T& item)
+	inline void pushFront(const T &item)
 	{
 		FTL_ASSERT(fill_ < size_);
 		buf_[tail_] = item;
@@ -87,7 +87,7 @@ public:
 		++fill_;
 	}
 
-	inline void popBack(T* item)
+	inline void popBack(T *item)
 	{
 		FTL_ASSERT(fill_ > 0);
 		*item = buf_[head_];
@@ -99,7 +99,7 @@ public:
 	inline T popFront() { T item; popFront(item); return item; }
 	inline T popBack() { T item; popBack(item); return item; }
 
-	inline T& back(int i = 0) const
+	inline T &back(int i = 0) const
 	{
 		FTL_ASSERT((0 <= i) && (i < fill_));
 		i = -i;
@@ -108,7 +108,7 @@ public:
 		return buf_[i];
 	}
 
-	inline T& front(int i = 0) const
+	inline T &front(int i = 0) const
 	{
 		FTL_ASSERT((0 <= i) && (i < fill_));
 		i += tail_ + 1;
@@ -126,7 +126,7 @@ private:
 		  buf_(new T[size_])
 	{}
 
-	CircularBuffer(T* buf, int size)
+	CircularBuffer(T *buf, int size)
 		: fill_(0),
 		  size_(size),
 		  head_(size_-1),
@@ -140,7 +140,7 @@ private:
 	int head_;
 	int tail_;
 	bool bufOwner_;
-	T* buf_;
+	T *buf_;
 };
 
 } // namespace ftl

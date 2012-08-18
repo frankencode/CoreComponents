@@ -31,7 +31,7 @@ ByteEncoder::ByteEncoder(Ref<Stream> stream, int bufCapacity, int endian)
 	  nw_(0)
 {}
 
-ByteEncoder::ByteEncoder(void* buf, int bufCapacity, int endian)
+ByteEncoder::ByteEncoder(void *buf, int bufCapacity, int endian)
 	: stream_(0),
 	  endian_(endian),
 	  bufCapa_(bufCapacity),
@@ -55,7 +55,7 @@ void ByteEncoder::flush()
 {
 	if (!stream_)
 		FTL_THROW(EncodingException, "Output buffer exhausted");
-	stream_->write((void*)buf_, i_);
+	stream_->write((void *)buf_, i_);
 	nw_ += i_;
 	i_ = 0;
 }

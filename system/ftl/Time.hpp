@@ -38,7 +38,7 @@ public:
 	};
 
 	Time(): sec_(-1), nsec_(+1) {}
-	Time(const Time& b) { *this = b; }
+	Time(const Time &b) { *this = b; }
 	Time(int64_t sec, int32_t nsec): sec_(sec), nsec_(nsec) {}
 
 	Time(int seconds): sec_(seconds), nsec_(0) {}
@@ -52,21 +52,21 @@ public:
 	inline static Time hours(int h) { return Time(int64_t(h) * SecondsPerHour, 0); }
 	inline static Time days(int d) { return Time(int64_t(d) * SecondsPerDay, 0); }
 
-	inline const Time& operator=(const Time& b) {
+	inline const Time &operator=(const Time &b) {
 		sec_ = b.sec_; nsec_ = b.nsec_;
 		return *this;
 	}
 
-	inline const Time& operator=(int sec) {
+	inline const Time &operator=(int sec) {
 		sec_ = sec; nsec_ = 0;
 		return *this;
 	}
 
-	inline const Time& operator=(float fineSec) {
+	inline const Time &operator=(float fineSec) {
 		return *this = double(fineSec);
 	}
 
-	inline const Time& operator=(double fineSec) {
+	inline const Time &operator=(double fineSec) {
 		sec_ = int(fineSec); nsec_ = int(1000000000 * (fineSec - sec_));
 		return *this;
 	}
@@ -92,7 +92,7 @@ public:
 	inline int64_t us() const { return sec_ * 1000000 + nsec_ / 1000; }
 	inline double fineSec() const { return double(sec_) + double(nsec_)/1000000000; }
 
-	inline const Time& operator+=(const Time& b)
+	inline const Time &operator+=(const Time &b)
 	{
 		sec_ += b.sec_;
 		nsec_ += b.nsec_;
@@ -104,7 +104,7 @@ public:
 		return *this;
 	}
 
-	inline const Time& operator-=(const Time& b)
+	inline const Time &operator-=(const Time &b)
 	{
 		sec_ -= b.sec_;
 		nsec_ -= b.nsec_;
@@ -119,67 +119,67 @@ public:
 	static Time now();
 	String toString() const;
 
-	inline Time* operator->() { return this; }
-	inline const Time* operator->() const { return this; }
+	inline Time *operator->() { return this; }
+	inline const Time *operator->() const { return this; }
 
 private:
 	int64_t sec_;
 	int32_t nsec_;
 };
 
-inline Time operator+(const Time& a, const Time& b) {
+inline Time operator+(const Time &a, const Time &b) {
 	Time c = a;
 	return c += b;
 }
 
-inline Time operator-(const Time& a, const Time& b) {
+inline Time operator-(const Time &a, const Time &b) {
 	Time c = a;
 	return c -= b;
 }
 
-inline double operator/(const Time& a, const Time& b) {
+inline double operator/(const Time &a, const Time &b) {
 	return a.fineSec() / b.fineSec();
 }
 
 template<class B>
-inline Time operator+(const Time& a, B b) {
+inline Time operator+(const Time &a, B b) {
 	Time c = a;
 	return c += b;
 }
 
 template<class B>
-inline Time operator-(const Time& a, B b) {
+inline Time operator-(const Time &a, B b) {
 	Time c = a;
 	return c -= b;
 }
 
-inline bool operator==(const Time& a, const Time& b) { return ((a.sec() == b.sec()) && (a.nsec() == b.nsec())); }
-inline bool operator!=(const Time& a, const Time& b) { return !(a == b); }
-inline bool operator<(const Time& a, const Time& b) { return (a.sec() < b.sec()) || ((a.sec() == b.sec()) && (a.nsec() < b.nsec())); }
-inline bool operator>(const Time& a, const Time& b) { return (a.sec() > b.sec()) || ((a.sec() == b.sec()) && (a.nsec() > b.nsec())); }
-inline bool operator<=(const Time& a, const Time& b) { return (a < b) || (a == b); }
-inline bool operator>=(const Time& a, const Time& b) { return (a > b) || (a == b); }
+inline bool operator==(const Time &a, const Time &b) { return ((a.sec() == b.sec()) && (a.nsec() == b.nsec())); }
+inline bool operator!=(const Time &a, const Time &b) { return !(a == b); }
+inline bool operator<(const Time &a, const Time &b) { return (a.sec() < b.sec()) || ((a.sec() == b.sec()) && (a.nsec() < b.nsec())); }
+inline bool operator>(const Time &a, const Time &b) { return (a.sec() > b.sec()) || ((a.sec() == b.sec()) && (a.nsec() > b.nsec())); }
+inline bool operator<=(const Time &a, const Time &b) { return (a < b) || (a == b); }
+inline bool operator>=(const Time &a, const Time &b) { return (a > b) || (a == b); }
 
-inline bool operator==(const Time& a, int b) { return a == Time(b); }
-inline bool operator!=(const Time& a, int b) { return a != Time(b); }
-inline bool operator<(const Time& a, int b) { return a < Time(b); }
-inline bool operator>(const Time& a, int b) { return a > Time(b); }
-inline bool operator<=(const Time& a, int b) { return a <= Time(b); }
-inline bool operator>=(const Time& a, int b) { return a >= Time(b); }
+inline bool operator==(const Time &a, int b) { return a == Time(b); }
+inline bool operator!=(const Time &a, int b) { return a != Time(b); }
+inline bool operator<(const Time &a, int b) { return a < Time(b); }
+inline bool operator>(const Time &a, int b) { return a > Time(b); }
+inline bool operator<=(const Time &a, int b) { return a <= Time(b); }
+inline bool operator>=(const Time &a, int b) { return a >= Time(b); }
 
-inline bool operator==(const Time& a, float b) { return a == Time(b); }
-inline bool operator!=(const Time& a, float b) { return a != Time(b); }
-inline bool operator<(const Time& a, float b) { return a < Time(b); }
-inline bool operator>(const Time& a, float b) { return a > Time(b); }
-inline bool operator<=(const Time& a, float b) { return a <= Time(b); }
-inline bool operator>=(const Time& a, float b) { return a >= Time(b); }
+inline bool operator==(const Time &a, float b) { return a == Time(b); }
+inline bool operator!=(const Time &a, float b) { return a != Time(b); }
+inline bool operator<(const Time &a, float b) { return a < Time(b); }
+inline bool operator>(const Time &a, float b) { return a > Time(b); }
+inline bool operator<=(const Time &a, float b) { return a <= Time(b); }
+inline bool operator>=(const Time &a, float b) { return a >= Time(b); }
 
-inline bool operator==(const Time& a, double b) { return a == Time(b); }
-inline bool operator!=(const Time& a, double b) { return a != Time(b); }
-inline bool operator<(const Time& a, double b) { return a < Time(b); }
-inline bool operator>(const Time& a, double b) { return a > Time(b); }
-inline bool operator<=(const Time& a, double b) { return a <= Time(b); }
-inline bool operator>=(const Time& a, double b) { return a >= Time(b); }
+inline bool operator==(const Time &a, double b) { return a == Time(b); }
+inline bool operator!=(const Time &a, double b) { return a != Time(b); }
+inline bool operator<(const Time &a, double b) { return a < Time(b); }
+inline bool operator>(const Time &a, double b) { return a > Time(b); }
+inline bool operator<=(const Time &a, double b) { return a <= Time(b); }
+inline bool operator>=(const Time &a, double b) { return a >= Time(b); }
 
 } // namespace ftl
 

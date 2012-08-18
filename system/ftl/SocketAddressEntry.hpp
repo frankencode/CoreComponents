@@ -34,16 +34,16 @@ private:
 	inline static Ref<SocketAddressEntry, Owner> newInstance() {
 		return new SocketAddressEntry;
 	}
-	inline static Ref<SocketAddressEntry, Owner> newInstance(struct sockaddr_in* addr) {
+	inline static Ref<SocketAddressEntry, Owner> newInstance(struct sockaddr_in *addr) {
 		return new SocketAddressEntry(addr);
 	}
-	inline static Ref<SocketAddressEntry, Owner> newInstance(struct sockaddr_in6* addr) {
+	inline static Ref<SocketAddressEntry, Owner> newInstance(struct sockaddr_in6 *addr) {
 		return new SocketAddressEntry(addr);
 	}
 
 	SocketAddressEntry();
-	SocketAddressEntry(struct sockaddr_in* addr);
-	SocketAddressEntry(struct sockaddr_in6* addr);
+	SocketAddressEntry(struct sockaddr_in *addr);
+	SocketAddressEntry(struct sockaddr_in6 *addr);
 
 	Ref<SocketAddress, Owner> localAddress_;
 	Ref<SocketAddress, Owner> broadcastAddress_;

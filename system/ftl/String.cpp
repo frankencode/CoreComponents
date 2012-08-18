@@ -16,18 +16,18 @@
 namespace ftl
 {
 
-String::String(const Variant& b)
+String::String(const Variant &b)
 	: Super(b.toInstance<ByteArray>())
 {}
 
-String::String(const Format& b)
+String::String(const Format &b)
 {
 	*this = *ByteArray::join(b);
 }
 
 String::String(Ref<StringList, Owner> parts) { *this = join(parts); }
 
-Ref<StringList, Owner> String::operator+(const String& b) const {
+Ref<StringList, Owner> String::operator+(const String &b) const {
 	return StringList::newInstance() << *this << b;
 }
 

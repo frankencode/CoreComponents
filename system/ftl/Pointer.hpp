@@ -19,12 +19,12 @@ class Pointer
 {
 public:
 	Pointer(): instance_(0) {}
-	
-	inline void set(T* b) { instance_ = b; }
-	inline T* get() const { return instance_; }
-	
+
+	inline void set(T *b) { instance_ = b; }
+	inline T *get() const { return instance_; }
+
 private:
-	T* instance_;
+	T *instance_;
 };
 
 } // namespace ftl

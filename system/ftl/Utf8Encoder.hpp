@@ -23,7 +23,7 @@ public:
 		return new Utf8Encoder(stream, bufCapa);
 	}
 
-	inline static Ref<Utf8Encoder, Owner> newInstance(void* buf, int bufCapa) {
+	inline static Ref<Utf8Encoder, Owner> newInstance(void *buf, int bufCapa) {
 		return new Utf8Encoder(buf, bufCapa);
 	}
 
@@ -37,7 +37,7 @@ private:
 		: byteEncoder_(ByteEncoder::newInstance(stream, bufCapa))
 	{}
 
-	Utf8Encoder(void* buf, int bufCapa)
+	Utf8Encoder(void *buf, int bufCapa)
 		: byteEncoder_(ByteEncoder::newInstance(buf, bufCapa))
 	{}
 

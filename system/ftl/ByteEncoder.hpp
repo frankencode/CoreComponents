@@ -25,7 +25,7 @@ public:
 	inline static Ref<ByteEncoder, Owner> newInstance(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteEncoder(stream, bufCapa, endian);
 	}
-	inline static Ref<ByteEncoder, Owner> newInstance(void* buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static Ref<ByteEncoder, Owner> newInstance(void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteEncoder(buf, bufCapa, endian);
 	}
 	~ByteEncoder();
@@ -61,13 +61,13 @@ public:
 private:
 	ByteEncoder();
 	ByteEncoder(Ref<Stream> stream, int bufCapa, int endian);
-	ByteEncoder(void* buf, int bufCapa, int endian);
+	ByteEncoder(void *buf, int bufCapa, int endian);
 
 	Ref<Stream, Owner> stream_;
 	int endian_;
 
 	int bufCapa_;
-	uint8_t* buf_;
+	uint8_t *buf_;
 	int i_;    // byte offset within buf_
 	off_t nw_;    // accumulated number of written bytes
 };

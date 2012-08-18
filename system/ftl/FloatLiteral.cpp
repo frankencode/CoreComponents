@@ -64,7 +64,7 @@ FloatLiteral::FloatLiteral()
 	LINK();
 }
 
-void FloatLiteral::read(float64_t* value, Ref<ByteArray> text, Ref<Token> token) const
+void FloatLiteral::read(float64_t *value, Ref<ByteArray> text, Ref<Token> token) const
 {
 	token = token->firstChild();
 
@@ -131,7 +131,7 @@ void FloatLiteral::read(float64_t* value, Ref<ByteArray> text, Ref<Token> token)
 	}
 }
 
-Ref<Token, Owner> FloatLiteral::read(float64_t* value, Ref<ByteArray> text, int i) const
+Ref<Token, Owner> FloatLiteral::read(float64_t *value, Ref<ByteArray> text, int i) const
 {
 	Ref<Token, Owner> token = match(text, i);
 	if (token)

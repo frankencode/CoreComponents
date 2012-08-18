@@ -26,24 +26,24 @@ public:
 		Shared  = MAP_SHARED,
 		Private = MAP_PRIVATE
 	};
-	
+
 	enum ProtectionFlags {
 		Read    = PROT_READ,
 		Write   = PROT_WRITE,
 		Execute = PROT_EXEC
 	};
-	
+
 	MemoryMapping(Ref<File> file, off_t offset, size_t length, int type = Shared);
 	MemoryMapping(size_t length, int protection = Read|Write, int type = Shared);
 	~MemoryMapping();
-	
-	void* start() const;
+
+	void *start() const;
 	size_t length() const;
-	
+
 	static size_t pageSize();
-	
+
 private:
-	void* start_;
+	void *start_;
 	size_t length_;
 };
 

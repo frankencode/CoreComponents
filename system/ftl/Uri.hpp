@@ -25,7 +25,7 @@ public:
 	inline static Ref<Uri, Owner> newInstance() {
 		return new Uri;
 	}
-	inline static Ref<Uri, Owner> newInstance(const char* text) {
+	inline static Ref<Uri, Owner> newInstance(const char *text) {
 		return new Uri(text);
 	}
 	inline static Ref<Uri, Owner> newInstance(Ref<ByteArray> bytes, Ref<Token> rootToken = 0) {
@@ -57,7 +57,7 @@ public:
 
 private:
 	Uri();
-	Uri(const char* text);
+	Uri(const char *text);
 	Uri(Ref<ByteArray> bytes, Ref<Token> rootToken = 0);
 
 	void readUri(Ref<ByteArray> bytes, Ref<Token> rootToken = 0);

@@ -46,17 +46,17 @@ public:
 
 	// non-casting initialization and copy operations
 
-	Ref(const T* b) { this->set(const_cast<T*>(b)); }
-	Ref(const Ref& b) { this->set(b.get()); }
+	Ref(const T *b) { this->set(const_cast<T*>(b)); }
+	Ref(const Ref &b) { this->set(b.get()); }
 
-	inline const Ref& operator=(T* b) { this->set(b); return *this; }
-	inline const Ref& operator=(const Ref& b) { this->set(b.get()); return *this; }
+	inline const Ref &operator=(T *b) { this->set(b); return *this; }
+	inline const Ref &operator=(const Ref &b) { this->set(b.get()); return *this; }
 
 	template<template<class> class GetAndSetPolicy2>
 	explicit Ref(const Ref<T, GetAndSetPolicy2>& b) { this->set(b.get()); }
 
 	template<template<class> class GetAndSetPolicy2>
-	inline const Ref& operator=(const Ref<T, GetAndSetPolicy2>& b) { this->set(b.get()); return *this; }
+	inline const Ref &operator=(const Ref<T, GetAndSetPolicy2>& b) { this->set(b.get()); return *this; }
 
 	// auto-casting initialization and copy operations
 
@@ -64,7 +64,7 @@ public:
 	explicit Ref(const Ref<T2, GetAndSetPolicy2>& b) { this->set(FTL_CAST_FROM_TO(T2, T, b.get())); }
 
 	template<class T2, template<class> class GetAndSetPolicy2>
-	inline const Ref& operator=(const Ref<T2, GetAndSetPolicy2>& b) { this->set(FTL_CAST_FROM_TO(T2, T, b.get())); return *this; }
+	inline const Ref &operator=(const Ref<T2, GetAndSetPolicy2>& b) { this->set(FTL_CAST_FROM_TO(T2, T, b.get())); return *this; }
 
 	// non-casting conversions
 
@@ -83,21 +83,21 @@ public:
 
 	// ordering
 
-	inline bool operator<(const Ref& b) const { return this->get() < b.get(); }
+	inline bool operator<(const Ref &b) const { return this->get() < b.get(); }
 
 	// access
 
-	inline T* operator->() const { return this->saveGet(); }
+	inline T *operator->() const { return this->saveGet(); }
 
 	template<class T2>
-	inline Ref& operator<<(const T2& b) { *(this->saveGet()) << b; return *this; }
+	inline Ref &operator<<(const T2 &b) { *(this->saveGet()) << b; return *this; }
 
 	template<class T2>
-	inline Ref& operator>>(T2& b) { *(this->saveGet()) >> b; return *this; }
+	inline Ref &operator>>(T2 &b) { *(this->saveGet()) >> b; return *this; }
 
 protected:
-	inline T* saveGet() const {
-		T* instance = GetAndSetPolicy<T>::get();
+	inline T *saveGet() const {
+		T *instance = GetAndSetPolicy<T>::get();
 		FTL_ASSERT2(instance, "Null reference");
 		return instance;
 	}

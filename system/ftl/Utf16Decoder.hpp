@@ -33,11 +33,11 @@ public:
 	inline static Ref<Utf16Decoder, Owner> newInstance(Ref<Stream> stream, int bufCapa, int endian = BigEndian) {
 		return new Utf16Decoder(stream, bufCapa, endian);
 	}
-	inline static Ref<Utf16Decoder, Owner> newInstance(const void* buf, int bufCapa, int endian = BigEndian) {
+	inline static Ref<Utf16Decoder, Owner> newInstance(const void *buf, int bufCapa, int endian = BigEndian) {
 		return new Utf16Decoder(buf, bufCapa, endian);
 	}
 
-	inline bool read(uchar_t* ch)
+	inline bool read(uchar_t *ch)
 	{
 		bool more = byteDecoder_->hasMore();
 		if (more) {
@@ -67,7 +67,7 @@ private:
 		: byteDecoder_(ByteDecoder::newInstance(stream, bufCapa, endian))
 	{}
 
-	Utf16Decoder(const void* buf, int bufCapa, int endian)
+	Utf16Decoder(const void *buf, int bufCapa, int endian)
 		: byteDecoder_(ByteDecoder::newInstance(buf, bufCapa, endian))
 	{}
 

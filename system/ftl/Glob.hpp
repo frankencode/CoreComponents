@@ -24,7 +24,7 @@ class Glob: public Source<DirEntry>
 public:
 	inline static Ref<Glob, Owner> newInstance(String expression) { return new Glob(expression); }
 
-	bool read(DirEntry* entry);
+	bool read(DirEntry *entry);
 
 private:
 	Glob(String expression);

@@ -25,9 +25,9 @@ namespace ftl
 class SymbolNode
 {
 public:
-	SymbolNode* parent;
-	SymbolNode* leftChild;
-	SymbolNode* rightChild;
+	SymbolNode *parent;
+	SymbolNode *leftChild;
+	SymbolNode *rightChild;
 	int count;
 	int value;
 };
@@ -41,13 +41,13 @@ public:
 		: symbol(0)
 	{}
 
-	SymbolRef(SymbolNode* symbol)
+	SymbolRef(SymbolNode *symbol)
 		: symbol(symbol)
 	{}
 
-	SymbolNode* symbol;
+	SymbolNode *symbol;
 
-	inline bool operator<(const SymbolRef& b) const
+	inline bool operator<(const SymbolRef &b) const
 	{
 		return symbol->count < b.symbol->count;
 	}
@@ -102,10 +102,10 @@ public:
 	  * \param rawFill number of symbols to be read from input buffer
 	  * \param userFallback if not null returns raw transmission fallback indicator
 	  */
-	void encode( BitEncoder* sink,
-	             int* raw,
+	void encode( BitEncoder *sink,
+	             int *raw,
 	             int rawFill,
-	             bool* userFallback = 0 );
+	             bool *userFallback = 0 );
 
 	/** Read a complete encoded frame from a bit source and write the decoded
 	  * result to an ouput buffer.
@@ -115,9 +115,9 @@ public:
 	  * \param source bit source
 	  * \return number of symbols written to the output buffer
 	  */
-	int decode( int* raw,
+	int decode( int *raw,
 	            int rawCapacity,
-	            BitDecoder* source );
+	            BitDecoder *source );
 
 	/** Read symbols from an input buffer and write the encoded result
 	  * to an output buffer.
@@ -129,11 +129,11 @@ public:
 	  * \param userFallback if not null returns raw transmission fallback indicator
 	  * \return number of bytes written to the output buffer
 	  */
-	int encode( uint8_t* encoded,
+	int encode( uint8_t *encoded,
 	            int encodedCapacity,
-	            int* raw,
+	            int *raw,
 	            int rawFill,
-	            bool* userFallback = 0 );
+	            bool *userFallback = 0 );
 
 	/** Read an encoded buffer and write the decoded result to an output buffer.
 	  *
@@ -143,9 +143,9 @@ public:
 	  * \param encodedFill number of bytes to be read from input buffer
 	  * \return number of symbols written to the output buffer
 	  */
-	int decode( int* raw,
+	int decode( int *raw,
 	            int rawCapacity,
-	            uint8_t* encoded,
+	            uint8_t *encoded,
 	            int encodedFill );
 
 private:
@@ -157,18 +157,18 @@ private:
 
 	void generateCodeTable();
 	void debugCodeTable();
-	void writeRawFrame(BitEncoder* sink, int* frame, int frameFill, int rawMin, int rawMax);
+	void writeRawFrame(BitEncoder *sink, int *frame, int frameFill, int rawMin, int rawMax);
 
 	int options_;
 	int rawDiversity_;
 	int rawDynamicRange_;
 
-	SymbolNode* codeTable_;
-	SymbolNode* codeTableRoot_;
+	SymbolNode *codeTable_;
+	SymbolNode *codeTableRoot_;
 	int codeTableFill_;
 
 	int codeMapSize_;
-	SymbolRef* codeMap_;
+	SymbolRef *codeMap_;
 	Ref< MaxHeap<SymbolRef>, Owner> heap_;
 	Ref< Stack<uint8_t>, Owner> bitStack_;
 

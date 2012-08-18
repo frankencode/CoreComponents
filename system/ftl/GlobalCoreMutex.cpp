@@ -24,7 +24,7 @@ GlobalCoreMutexInitializer::GlobalCoreMutexInitializer()
 	}
 }
 
-GlobalCoreMutex* GlobalCoreMutex::instance()
+GlobalCoreMutex *GlobalCoreMutex::instance()
 {
 	static GlobalCoreMutex instance_;
 	return &instance_;

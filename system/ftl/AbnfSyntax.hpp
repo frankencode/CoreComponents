@@ -20,7 +20,7 @@ class AbnfSyntax: public AbnfCoreSyntax
 {
 protected:
 	AbnfSyntax();
-	NODE defineValue(const char* digitRule);
+	NODE defineValue(const char *digitRule);
 
 	int numVal_;
 	int charVal_;

@@ -49,7 +49,7 @@ while [ $n -le $MAX_ARGS ]; do
 	printf "inline void print(String templateText, "
 	let i=1
 	while [ $i -le $n ]; do
-		printf "const T$i& x$i"
+		printf "const T$i &x$i"
 		if [ $i -ne $n ]; then
 			printf ", "
 		fi
@@ -90,7 +90,7 @@ while [ $n -le $MAX_ARGS ]; do
 	printf "inline void printTo(Ref<LineSink> sink, String templateText, "
 	let i=1
 	while [ $i -le $n ]; do
-		printf "const T$i& x$i"
+		printf "const T$i &x$i"
 		if [ $i -ne $n ]; then
 			printf ", "
 		fi
@@ -136,7 +136,7 @@ while [ $n -le $MAX_ARGS ]; do
 	printf "inline void debug(String templateText, "
 	let i=1
 	while [ $i -le $n ]; do
-		printf "const T$i& x$i"
+		printf "const T$i &x$i"
 		if [ $i -ne $n ]; then
 			printf ", "
 		fi

@@ -27,12 +27,12 @@ BitDecoder::BitDecoder(Ref<Stream> stream, int bufCapa, int endian)
 	fill();
 }
 
-BitDecoder::BitDecoder(void* buf, int bufCapa, int endian)
+BitDecoder::BitDecoder(void *buf, int bufCapa, int endian)
 	: stream_(0),
 	  endian_(endian),
 	  bufCapa_(bufCapa),
 	  bufFill_(bufCapa),
-	  buf_((uint8_t*)buf),
+	  buf_((uint8_t *)buf),
 	  i_(0),
 	  iBit_(0),
 	  nr_(bufCapa)

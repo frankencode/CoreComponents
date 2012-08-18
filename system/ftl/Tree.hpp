@@ -21,43 +21,43 @@ class Tree: public Instance
 {
 public:
 	~Tree() { disbandChildren(); }
-	
+
 	inline Ref<Node> parent() const { return parent_; }
 	inline Ref<Node> firstChild() const { return firstChild_; }
 	inline Ref<Node> lastChild() const { return lastChild_; }
 	inline Ref<Node> nextSibling() const { return nextSibling_; }
 	inline Ref<Node> previousSibling() const { return previousSibling_; }
-	
+
 	inline void appendChild(Ref<Node> node) { insertChild(node, lastChild_); }
-	
+
 	void insertChild(Ref<Node> node, Ref<Node> previousSibling = 0);
 	void appendAllChildrenOf(Ref<Node> node); // HACK?, better: adoptChildrenOf(...)
 	void disbandChildren();
 	void unlink();
-	
+
 	// iterating leafs
 	Ref<Node> firstLeaf() const;
 	Ref<Node> lastLeaf() const;
 	Ref<Node> nextLeaf() const;
 	Ref<Node> previousLeaf() const;
-	
+
 	// iterating all nodes
 	inline Ref<Node> first() const { return firstLeaf(); }
 	inline Ref<Node> last() const { return lastLeaf(); }
 	inline Ref<Node> next() const { return (nextSibling_) ? nextSibling_->firstLeaf() : parent(); }
-	
+
 	inline int countChildren() const {
 		return (firstChild_) ? firstChild_->countSiblings() : 0;
 	}
 	inline bool hasChildren() const { return firstChild_; }
 	inline bool hasSingleChild() const { return (firstChild_) && (firstChild_ == lastChild_); }
-	
+
 	int countSiblings() const;
-	
+
 private:
-	inline Node* me() { return FTL_CAST_FROM_TO(Tree<Node>, Node, this); }
-	inline const Node* me() const { return FTL_CAST_FROM_TO(const Tree<Node>, const Node, this); }
-	
+	inline Node *me() { return FTL_CAST_FROM_TO(Tree<Node>, Node, this); }
+	inline const Node *me() const { return FTL_CAST_FROM_TO(const Tree<Node>, const Node, this); }
+
 	Ref<Node> parent_;
 	Ref<Node, Owner> firstChild_;
 	Ref<Node, Owner> lastChild_;
@@ -92,7 +92,7 @@ void Tree<Node>::insertChild(Ref<Node> node, Ref<Node> previousSibling)
 		node->previousSibling_ = 0;
 		firstChild_ = node;
 	}
-	
+
 	node->parent_ = me();
 }
 
@@ -175,7 +175,7 @@ template<class Node>
 Ref<Node> Tree<Node>::nextLeaf() const
 {
 	Ref<Node> node = me();
-	
+
 	if (node->nextSibling()) {
 		node = node->nextSibling()->firstLeaf();
 	}
@@ -190,7 +190,7 @@ Ref<Node> Tree<Node>::nextLeaf() const
 		if (!node->parent())
 			node = 0;
 	}
-	
+
 	return node;
 }
 
@@ -198,7 +198,7 @@ template<class Node>
 Ref<Node> Tree<Node>::previousLeaf() const
 {
 	Ref<Node> node = me();
-	
+
 	if (node->previousSibling()) {
 		node = node->previousSibling()->lastLeaf();
 	}
@@ -213,7 +213,7 @@ Ref<Node> Tree<Node>::previousLeaf() const
 		if (!node->parent())
 			node = 0;
 	}
-	
+
 	return node;
 }
 
@@ -221,7 +221,7 @@ template<class Node>
 int Tree<Node>::countSiblings() const
 {
 	int n = 0;
-	const Node* node = me();
+	const Node *node = me();
 	while (node) {
 		node = node->nextSibling_;
 		++n;

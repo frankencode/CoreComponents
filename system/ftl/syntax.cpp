@@ -18,9 +18,9 @@ namespace ftl
 namespace syntax
 {
 
-int InvokeNode::matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state) const
+int InvokeNode::matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 {
-	State* childState = 0;
+	State *childState = 0;
 	if (state) {
 		childState = state->child();
 		if (childState) {
@@ -54,10 +54,10 @@ int InvokeNode::matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, T
 	return i;
 }
 
-NODE DefinitionNode::KEYWORD(const char* keywords)
+NODE DefinitionNode::KEYWORD(const char *keywords)
 {
 	Ref<KeywordMap, Owner> map = KeywordMap::newInstance();
-	const char* pos = keywords;
+	const char *pos = keywords;
 	while (*pos) {
 		if ((*pos == ' ') || (*pos == '\t')) {
 			++pos;
@@ -119,12 +119,12 @@ void DefinitionNode::LINK(bool optimize)
 	}
 }
 
-State* DefinitionNode::newState(State* parent) const
+State *DefinitionNode::newState(State *parent) const
 {
 	if (!stateful())
 		return 0;
 
-	State* state = new State(this, numStateFlags_, numStateChars_, numStateStrings_, parent);
+	State *state = new State(this, numStateFlags_, numStateChars_, numStateStrings_, parent);
 
 	Ref<StateFlag> stateFlag = stateFlagHead_;
 	for (int id = numStateFlags_ - 1; id >= 0; --id) {
@@ -147,7 +147,7 @@ State* DefinitionNode::newState(State* parent) const
 	return state;
 }
 
-Ref<Token, Owner> DefinitionNode::find(ByteArray* media, int* i0, int* i1, Ref<TokenFactory> tokenFactory) const
+Ref<Token, Owner> DefinitionNode::find(ByteArray *media, int *i0, int *i1, Ref<TokenFactory> tokenFactory) const
 {
 	int i = *i0;
 	Ref<Token, Owner> rootToken;
@@ -160,7 +160,7 @@ Ref<Token, Owner> DefinitionNode::find(ByteArray* media, int* i0, int* i1, Ref<T
 	return rootToken;
 }
 
-Ref<Token, Owner> DefinitionNode::match(ByteArray* media, int i0, int* i1, State* state, Ref<TokenFactory> tokenFactory) const
+Ref<Token, Owner> DefinitionNode::match(ByteArray *media, int i0, int *i1, State *state, Ref<TokenFactory> tokenFactory) const
 {
 	Ref<State, Owner> localState;
 	if (!state) {
@@ -184,8 +184,8 @@ Ref<DefinitionNode> DefinitionNode::resolveScope(const char*& name) const
 {
 	Ref<DefinitionNode> scope = this;
 	int k = 0;
-	const char* p0 = name;
-	const char* p = p0;
+	const char *p0 = name;
+	const char *p = p0;
 	while (true) {
 		char ch = *(p++);
 		if (!ch) break;
@@ -203,13 +203,13 @@ Ref<DefinitionNode> DefinitionNode::resolveScope(const char*& name) const
 	return scope;
 }
 
-int DefinitionNode::syntaxError(ByteArray* media, int index, State* state) const
+int DefinitionNode::syntaxError(ByteArray *media, int index, State *state) const
 {
 	FTL_THROW(DebugException, "Unhandled syntax error");
 	return -1;
 }
 
-int DefinitionNode::errorCallBack(Ref<Instance> self, ByteArray* media, int index, State* state)
+int DefinitionNode::errorCallBack(Ref<Instance> self, ByteArray *media, int index, State *state)
 {
 	Ref<DefinitionNode> definition = self;
 	return definition->syntaxError(media, index, state);

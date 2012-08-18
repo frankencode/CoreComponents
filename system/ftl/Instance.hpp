@@ -24,8 +24,8 @@ class BackRef
 {
 public:
 	BackRef(void** instance): instance_(instance) {}
-	BackRef* pred_;
-	BackRef* succ_;
+	BackRef *pred_;
+	BackRef *succ_;
 	void** instance_;
 	#ifdef FTL_REF_THREADSAFE_SET
 	SpinLock mutex_;
@@ -65,8 +65,8 @@ public:
 	}
 
 private:
-	RefCounter(const RefCounter&);
-	const RefCounter& operator=(const RefCounter&);
+	RefCounter(const RefCounter &);
+	const RefCounter &operator=(const RefCounter &);
 
 	volatile int refCount_;
 };
@@ -80,7 +80,7 @@ public:
 	{
 		if (backRefHead_) {
 			mutex_.acquire();
-			BackRef* ref = backRefHead_;
+			BackRef *ref = backRefHead_;
 			while (ref) {
 				#ifdef FTL_REF_THREADSAFE_SET
 				ref->mutex_.acquire();
@@ -96,7 +96,7 @@ public:
 		}
 	}
 
-	inline void addBackRef(BackRef* ref)
+	inline void addBackRef(BackRef *ref)
 	{
 		mutex_.acquire();
 		ref->succ_ = backRefHead_;
@@ -107,7 +107,7 @@ public:
 		mutex_.release();
 	}
 
-	inline void delBackRef(BackRef* ref)
+	inline void delBackRef(BackRef *ref)
 	{
 		mutex_.acquire();
 		if (ref->pred_)
@@ -121,12 +121,12 @@ public:
 
 	// ensure back reference lists are kept consistent on copying
 	// (in theory an automomatically synthesized assignment operator in inherited class will invoke this)
-	BackRefList(const BackRefList& b): backRefHead_(0) {}
-	inline const BackRefList& operator=(const BackRefList& b) { return *this; }
+	BackRefList(const BackRefList &b): backRefHead_(0) {}
+	inline const BackRefList &operator=(const BackRefList &b) { return *this; }
 
 private:
 	SpinLock mutex_;
-	BackRef* backRefHead_;
+	BackRef *backRefHead_;
 };
 
 template<class T> class FTL_DEFAULT_REF_POLICY;

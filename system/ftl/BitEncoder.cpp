@@ -27,11 +27,11 @@ BitEncoder::BitEncoder(Ref<Stream> stream, int bufCapacity, int endian)
 	mem::clr(buf_, bufCapacity_);
 }
 
-BitEncoder::BitEncoder(void* buf, int bufCapacity, int endian)
+BitEncoder::BitEncoder(void *buf, int bufCapacity, int endian)
 	: stream_(0),
 	  endian_(endian),
 	  bufCapacity_(bufCapacity),
-	  buf_((uint8_t*)buf),
+	  buf_((uint8_t *)buf),
 	  i_(0),
 	  iBit_(0),
 	  nw_(0)
@@ -53,12 +53,12 @@ void BitEncoder::flush()
 {
 	if (!stream_)
 		FTL_THROW(StreamIoException, "Output buffer exhausted");
-	
+
 	int h = i_ + (iBit_ > 0);
 	if (h > 0)
 	{
-		stream_->write((void*)buf_, h);
-		mem::clr((void*)buf_, h);
+		stream_->write((void *)buf_, h);
+		mem::clr((void *)buf_, h);
 		nw_ += h;
 		i_ = 0;
 		iBit_ = 0;

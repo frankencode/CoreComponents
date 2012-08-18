@@ -30,7 +30,7 @@ public:
 	#endif
 	{}
 
-	inline void set(T* b)
+	inline void set(T *b)
 	{
 		#ifdef FTL_REF_POLICY_RACE_DETECTION
 		if (creator_ != pthread_self())
@@ -49,10 +49,10 @@ public:
 		}
 	}
 
-	inline T* get() const { return instance_; }
+	inline T *get() const { return instance_; }
 
 private:
-	T* instance_;
+	T *instance_;
 	#ifdef FTL_REF_POLICY_RACE_DETECTION
 	pthread_t creator_;
 	#endif

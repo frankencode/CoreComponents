@@ -23,17 +23,17 @@ class Md5
 {
 public:
 	enum { length = 16 };
-	
+
 	Md5();
 	~Md5();
-	void feed(const void* buf, int bufFill);
+	void feed(const void *buf, int bufFill);
 	void finish(uint8_t sum[16]);
 	Ref<ByteArray, Owner> finish();
-	
+
 private:
 	void consume();
 	int auxSize_, auxFill_;
-	uint8_t* aux_;
+	uint8_t *aux_;
 	uint64_t bytesFeed_;
 	uint32_t a_, b_, c_, d_;
 };

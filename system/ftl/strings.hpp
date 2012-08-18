@@ -21,20 +21,20 @@ namespace ftl
 namespace mem
 {
 
-inline void* alloc(size_t size) { return (void*)new char[size]; }
-inline void free(void* buf) { delete[] (char*)buf; }
+inline void *alloc(size_t size) { return (void *)new char[size]; }
+inline void free(void *buf) { delete[] (char *)buf; }
 
-inline void clr(void* s, int n, uint8_t z = 0)
+inline void clr(void *s, int n, uint8_t z = 0)
 {
-	/*uint8_t* bs = (uint8_t*)s;
+	/*uint8_t *bs = (uint8_t *)s;
 	for (int i = 0; i < n; ++i) bs[i] = z;*/
 	memset(s, z, n);
 }
 
-inline void cpy(void* d, const void* s, int n)
+inline void cpy(void *d, const void *s, int n)
 {
-	/*uint8_t* bd = (uint8_t*)d;
-	uint8_t* bs = (uint8_t*)s;
+	/*uint8_t *bd = (uint8_t *)d;
+	uint8_t *bs = (uint8_t *)s;
 	for (int i = 0; i < n; ++i)
 		bd[i] = bs[i];*/
 	memcpy(d, s, n);
@@ -46,7 +46,7 @@ namespace str
 {
 
 template<class T>
-inline int len(const T* s)
+inline int len(const T *s)
 {
 	int len = 0;
 	if (s)
@@ -55,13 +55,13 @@ inline int len(const T* s)
 }
 
 template<class T, class S>
-inline void cpy(T* t, const S* s, int n = -1)
+inline void cpy(T *t, const S *s, int n = -1)
 {
 	if (n == -1) n = len(s);
 	for (int i = 0; i < n; ++i) t[i] = s[i];
 }
 
-inline int cmp(const char* a, const char* b)
+inline int cmp(const char *a, const char *b)
 {
 	/*int ret = 0;
 	char ca, cb;
@@ -77,7 +77,7 @@ inline int cmp(const char* a, const char* b)
 	return strcmp(a, b);
 }
 
-inline int casecmp(const char* a, const char* b)
+inline int casecmp(const char *a, const char *b)
 {
 	int ret = 0;
 	char ca, cb;
@@ -94,13 +94,13 @@ inline int casecmp(const char* a, const char* b)
 	return ret;
 }
 
-char* dup(const char* s);
-char* cat(const char* s0, const char* s1 = 0, const char* s2 = 0, const char* s3 = 0, const char* s4 = 0, const char* s5 = 0, const char* s6 = 0, const char* s7 = 0);
+char *dup(const char *s);
+char *cat(const char *s0, const char *s1 = 0, const char *s2 = 0, const char *s3 = 0, const char *s4 = 0, const char *s5 = 0, const char *s6 = 0, const char *s7 = 0);
 
 } // namespace str
 
-char* intToStr(int value);
-int strToInt(const char* s, int i0 = 0, int i1 = intMax, int base = 10);
+char *intToStr(int value);
+int strToInt(const char *s, int i0 = 0, int i1 = intMax, int base = 10);
 
 } // namespace ftl
 

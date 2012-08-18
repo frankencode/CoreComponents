@@ -33,7 +33,7 @@ public:
 	size_t guardSize() const;
 	void setGuardSize(size_t value);
 
-	pthread_attr_t* attr();
+	pthread_attr_t *attr();
 
 	Ref<Thread, Owner> produce();
 	void start(Ref<Thread> thread);
@@ -42,7 +42,7 @@ protected:
 	ThreadFactory(Ref< Clonable<Thread> > prototype = 0);
 
 private:
-	static void* bootstrap(void* self);
+	static void *bootstrap(void *self);
 
 	Ref<Clonable<Thread>, Owner> prototype_;
 	pthread_attr_t attr_;

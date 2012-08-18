@@ -27,8 +27,8 @@ class State: public Instance
 public:
 	inline int definitionId() const { return definitionId_; }
 
-	inline bool* flag(int id) { return flags_->pointerAt(id); }
-	inline char* character(int id) { return chars_->pointerAt(id); }
+	inline bool *flag(int id) { return flags_->pointerAt(id); }
+	inline char *character(int id) { return chars_->pointerAt(id); }
 
 	inline Ref<ByteArray> string(int id) { return strings_->at(id); }
 	inline void setString(int id, Ref<ByteArray> s) { strings_->set(id, s); }
@@ -36,13 +36,13 @@ public:
 	inline Ref<State> child() const { return child_; }
 	inline void setChild(Ref<State> state) { child_ = state; }
 
-	inline const char* hint() const { return hint_; }
-	inline void setHint(const char* text) { hint_ = text; }
+	inline const char *hint() const { return hint_; }
+	inline void setHint(const char *text) { hint_ = text; }
 
 	inline int hintOffset() const { return hintOffset_; }
 	inline void setHintOffset(int index) { hintOffset_ = index; }
 
-	Ref<ByteArray> string(const char* name);
+	Ref<ByteArray> string(const char *name);
 
 private:
 	friend class syntax::DefinitionNode;
@@ -55,7 +55,7 @@ private:
 	Ref<ByteArray, Owner> chars_;
 	Ref< Array< Ref<ByteArray, Owner> >, Owner > strings_;
 	Ref<State, Owner> child_;
-	const char* hint_;
+	const char *hint_;
 	int hintOffset_;
 };
 

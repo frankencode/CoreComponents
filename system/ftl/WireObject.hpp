@@ -37,12 +37,12 @@ private:
 
 	WireObject() {}
 
-	explicit WireObject(const WireObject& b)
+	explicit WireObject(const WireObject &b)
 		: Super(b),
 		  className_(b.className_)
 	{}
 
-	Ref<WireObject> resolve(String path, String* name = 0, Variant* value = 0) const;
+	Ref<WireObject> resolve(String path, String *name = 0, Variant *value = 0) const;
 
 	String className_;
 };

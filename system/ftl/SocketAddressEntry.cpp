@@ -14,8 +14,8 @@
 namespace ftl
 {
 
-SocketAddressEntry::SocketAddressEntry(struct sockaddr_in* addr): SocketAddress(addr) {}
-SocketAddressEntry::SocketAddressEntry(struct sockaddr_in6* addr): SocketAddress(addr) {}
+SocketAddressEntry::SocketAddressEntry(struct sockaddr_in *addr): SocketAddress(addr) {}
+SocketAddressEntry::SocketAddressEntry(struct sockaddr_in6 *addr): SocketAddress(addr) {}
 Ref<SocketAddress> SocketAddressEntry::address() const { return const_cast<SocketAddressEntry*>(this); }
 Ref<SocketAddress> SocketAddressEntry::localAddress() const { return localAddress_; }
 Ref<SocketAddress> SocketAddressEntry::broadcastAddress() const { return broadcastAddress_; }

@@ -23,7 +23,7 @@ template<class T, class Scope = None>
 class LocalStatic
 {
 public:
-	static T& instance()
+	static T &instance()
 	{
 		Guard<SpinLock> guard(globalCoreMutex());
 		static T instance_;
@@ -32,10 +32,10 @@ public:
 };
 
 template<class T, class Scope>
-inline T& localStatic() { return LocalStatic<T, Scope>::instance(); }
+inline T &localStatic() { return LocalStatic<T, Scope>::instance(); }
 
 template<class T>
-inline T& localStatic() { return LocalStatic<T, None>::instance(); }
+inline T &localStatic() { return LocalStatic<T, None>::instance(); }
 
 } // namespace ftl
 

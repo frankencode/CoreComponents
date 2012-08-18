@@ -48,7 +48,7 @@ ByteArray::ByteArray(int size, char zero)
 	}
 }
 
-ByteArray::ByteArray(const char* data, int size)
+ByteArray::ByteArray(const char *data, int size)
 	: size_(0),
 	  data_(const_cast<char*>(""))
 {
@@ -61,7 +61,7 @@ ByteArray::ByteArray(const char* data, int size)
 	}
 }
 
-ByteArray::ByteArray(const ByteArray& b)
+ByteArray::ByteArray(const ByteArray &b)
 	: size_(0),
 	  data_(const_cast<char*>(""))
 {
@@ -72,7 +72,7 @@ ByteArray::ByteArray(const ByteArray& b)
 	}
 }
 
-ByteArray::ByteArray(ByteArray* parent, int size)
+ByteArray::ByteArray(ByteArray *parent, int size)
 	: size_(size),
 	  data_(parent->data_),
 	  parent_(parent)
@@ -83,7 +83,7 @@ ByteArray::~ByteArray() {
 	if ((size_ > 0) && (!parent_)) delete[] data_;
 }
 
-ByteArray& ByteArray::operator=(const ByteArray& b)
+ByteArray &ByteArray::operator=(const ByteArray &b)
 {
 	if (size_ != b.size_) {
 		if (size_ > 0) delete[] data_;
@@ -140,7 +140,7 @@ Ref<Character> ByteArray::chars() const
 	return chars_;
 }
 
-int ByteArray::find(const char* pattern, int i) const
+int ByteArray::find(const char *pattern, int i) const
 {
 	if (!has(i)) return size_;
 	if (!pattern[0]) return size_;
@@ -163,7 +163,7 @@ int ByteArray::find(Ref<SyntaxDefinition> pattern, int i) const
 	return (token) ? token->i0(): size_;
 }
 
-Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, const char* sep)
+Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, const char *sep)
 {
 	int sepSize = str::len(sep);
 	if (parts->length() == 0) {
@@ -175,7 +175,7 @@ Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, const char* sep)
 			size += parts->at(i)->size();
 		size += (parts->length() - 1) * sepSize;
 		Ref<ByteArray, Owner> result = ByteArray::newInstance(size);
-		char* p = result->data_;
+		char *p = result->data_;
 		for (int i = 0; i < parts->length(); ++i) {
 			Ref<ByteArray> part = parts->at(i);
 			mem::cpy(p, part->data_, part->size_);
@@ -196,7 +196,7 @@ Ref<StringList, Owner> ByteArray::split(char sep) const
 	return split(sep2);
 }
 
-Ref<StringList, Owner> ByteArray::split(const char* sep) const
+Ref<StringList, Owner> ByteArray::split(const char *sep) const
 {
 	Ref<StringList, Owner> parts = StringList::newInstance();
 	int i0 = 0;
@@ -225,7 +225,7 @@ Ref<StringList, Owner> ByteArray::split(Ref<SyntaxDefinition> pattern) const
 	return parts;
 }
 
-void ByteArray::replaceInsitu(const char* pattern, const char* replacement)
+void ByteArray::replaceInsitu(const char *pattern, const char *replacement)
 {
 	int patternLength = str::len(pattern);
 	int replacementLength = str::len(replacement);
@@ -254,12 +254,12 @@ void ByteArray::replaceInsitu(const char* pattern, const char* replacement)
 	}
 }
 
-Ref<ByteArray, Owner> ByteArray::replace(const char* pattern, const char* replacement) const
+Ref<ByteArray, Owner> ByteArray::replace(const char *pattern, const char *replacement) const
 {
 	return join(split(pattern));
 }
 
-int ByteArray::toInt(bool* ok) const
+int ByteArray::toInt(bool *ok) const
 {
 	bool h;
 	if (!ok) ok = &h;
@@ -272,12 +272,12 @@ int ByteArray::toInt(bool* ok) const
 	return sign * int(value);
 }
 
-double ByteArray::toFloat(bool* ok) const
+double ByteArray::toFloat(bool *ok) const
 {
 	return toFloat64(ok);
 }
 
-int64_t ByteArray::toInt64(bool* ok) const
+int64_t ByteArray::toInt64(bool *ok) const
 {
 	bool h;
 	if (!ok) ok = &h;
@@ -290,7 +290,7 @@ int64_t ByteArray::toInt64(bool* ok) const
 	return sign * value;
 }
 
-uint64_t ByteArray::toUInt64(bool* ok) const
+uint64_t ByteArray::toUInt64(bool *ok) const
 {
 	bool h;
 	if (!ok) ok = &h;
@@ -303,7 +303,7 @@ uint64_t ByteArray::toUInt64(bool* ok) const
 	return value;
 }
 
-float64_t ByteArray::toFloat64(bool* ok) const
+float64_t ByteArray::toFloat64(bool *ok) const
 {
 	bool h;
 	if (!ok) ok = &h;
@@ -434,8 +434,8 @@ Ref<ByteArray, Owner> ByteArray::trimmed() const
 Ref<ByteArray, Owner> ByteArray::stripTags() const
 {
 	Ref<StringList, Owner> parts = StringList::newInstance();
-	char* o = data_;
-	char* p = o;
+	char *o = data_;
+	char *p = o;
 	while (*p) {
 		if (*p == '<') {
 			if (o < p) parts->append(String(o, p-o));
@@ -491,7 +491,7 @@ Ref<ByteArray, Owner> ByteArray::normalized(bool nameCase) const
   * \arg pos position on line starting with 1 (in bytes)
   * \return true if successful
   */
-bool ByteArray::offsetToLinePos(int offset, int* line, int* pos) const
+bool ByteArray::offsetToLinePos(int offset, int *line, int *pos) const
 {
 	if ((offset < 0) || (size() <= offset)) return false;
 	int y = 1, x = 1;
@@ -509,12 +509,12 @@ bool ByteArray::offsetToLinePos(int offset, int* line, int* pos) const
 	return true;
 }
 
-Ref<ByteArray, Owner> ByteArray::fromUtf16(const void* data, int size, int endian)
+Ref<ByteArray, Owner> ByteArray::fromUtf16(const void *data, int size, int endian)
 {
 	Ref<ByteArray, Owner> s2;
 	if (size < 0) {
 		size = 0;
-		for (const uint16_t* p = reinterpret_cast<const uint16_t*>(data); *p; ++p) ++size;
+		for (const uint16_t *p = reinterpret_cast<const uint16_t*>(data); *p; ++p) ++size;
 		size *= 2;
 	}
 	if (size > 0) {
@@ -540,9 +540,9 @@ Ref<ByteArray, Owner> ByteArray::fromUtf16(const void* data, int size, int endia
   * determine the required buffer size. No zero termination is written or
   * or accounted for.
   */
-bool ByteArray::toUtf16(void* buf, int* size)
+bool ByteArray::toUtf16(void *buf, int *size)
 {
-	uint16_t* buf2 = reinterpret_cast<uint16_t*>(buf);
+	uint16_t *buf2 = reinterpret_cast<uint16_t*>(buf);
 	int j = 0, n = *size / 2;
 	for (int i = 0; i < chars()->length(); ++i) {
 		uchar_t ch = get(i);

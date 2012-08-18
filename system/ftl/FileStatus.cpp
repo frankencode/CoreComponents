@@ -47,7 +47,7 @@ void FileStatus::setTimes(Time lastAccess, Time lastModified)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-void FileStatus::update(bool* exists, bool followSymbolicLink)
+void FileStatus::update(bool *exists, bool followSymbolicLink)
 {
 	int ret = (fd_ != -1) ? ::fstat(fd_, this) : (followSymbolicLink ? ::stat(path_, this) : ::lstat(path_, this));
 	if (ret == -1) {

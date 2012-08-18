@@ -36,9 +36,9 @@ Md5::~Md5()
 	aux_ = 0;
 }
 
-void Md5::feed(const void* buf, int bufFill)
+void Md5::feed(const void *buf, int bufFill)
 {
-	const uint8_t* src = reinterpret_cast<const uint8_t*>(buf);
+	const uint8_t *src = reinterpret_cast<const uint8_t*>(buf);
 	int srcLeft = bufFill;
 	while (srcLeft > 0) {
 		while ((auxFill_ < auxSize_) && (srcLeft > 0)) {
@@ -171,26 +171,26 @@ inline static uint32_t l(uint32_t x, uint32_t y, uint32_t z) {
 	return y ^ (x | ~z);
 }
 
-inline static void r1(const uint32_t* x, uint32_t& a, uint32_t b, uint32_t c, uint32_t d, int k, int s, uint32_t t) {
+inline static void r1(const uint32_t *x, uint32_t &a, uint32_t b, uint32_t c, uint32_t d, int k, int s, uint32_t t) {
 	a = b + rol32(a + f(b, c, d) + x[k] + t, s);
 }
-inline static void r2(const uint32_t* x, uint32_t& a, uint32_t b, uint32_t c, uint32_t d, int k, int s, uint32_t t) {
+inline static void r2(const uint32_t *x, uint32_t &a, uint32_t b, uint32_t c, uint32_t d, int k, int s, uint32_t t) {
 	a = b + rol32(a + g(b, c, d) + x[k] + t, s);
 }
-inline static void r3(const uint32_t* x, uint32_t& a, uint32_t b, uint32_t c, uint32_t d, int k, int s, uint32_t t) {
+inline static void r3(const uint32_t *x, uint32_t &a, uint32_t b, uint32_t c, uint32_t d, int k, int s, uint32_t t) {
 	a = b + rol32(a + h(b, c, d) + x[k] + t, s);
 }
-inline static void r4(const uint32_t* x, uint32_t& a, uint32_t b, uint32_t c, uint32_t d, int k, int s, uint32_t t) {
+inline static void r4(const uint32_t *x, uint32_t &a, uint32_t b, uint32_t c, uint32_t d, int k, int s, uint32_t t) {
 	a = b + rol32(a + l(b, c, d) + x[k] + t, s);
 }
 
 void Md5::consume()
 {
-	uint32_t* m = reinterpret_cast<uint32_t*>(aux_);
+	uint32_t *m = reinterpret_cast<uint32_t*>(aux_);
 	for (int i = 0, nc = auxFill_ / 64; i < nc; ++i) {
 		// select 16 dwords x[0], x[1] ... x[15] and
 		// ensure value of the dwords is independent from system endianess
-		uint32_t* x = m + i * 16;
+		uint32_t *x = m + i * 16;
 		if (localEndian() == BigEndian) {
 			for (int j = 0; j < 16; ++j)
 				x[j] = swap32(x[j]);

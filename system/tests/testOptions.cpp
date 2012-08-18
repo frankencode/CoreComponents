@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 	//try {
 		ret = ftl::main(argc, argv);
 	/*}
-	catch (AnyException& ex) {
+	catch (AnyException &ex) {
 		ftl::print("%%\n", ex.what());
 	}*/
 	return ret;

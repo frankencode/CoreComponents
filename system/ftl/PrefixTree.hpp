@@ -43,7 +43,7 @@ public:
 	  * The function returns true if the new key-value mapping was inserted successfully.
 	  */
 	template<class Char2>
-	inline bool insert(const Char2* key, int keyLen, Value value, Value* currentValue = 0, bool caseSensitive = true) {
+	inline bool insert(const Char2 *key, int keyLen, Value value, Value *currentValue = 0, bool caseSensitive = true) {
 		return caseSensitive ?
 			insertFiltered<Char2, Identity>(key, keyLen, value, currentValue) :
 			insertFiltered<Char2, ToLower>(key, keyLen, value, currentValue);
@@ -53,7 +53,7 @@ public:
 	  * The function returns true if an exact match was found.
 	  */
 	template<class Char2>
-	inline bool lookup(const Char2* key, int keyLen, Value* value = 0, bool caseSensitive = true) const {
+	inline bool lookup(const Char2 *key, int keyLen, Value *value = 0, bool caseSensitive = true) const {
 		return caseSensitive ?
 			lookupFiltered<Char2, Identity>(key, keyLen, value) :
 			lookupFiltered<Char2, ToLower>(key, keyLen, value);
@@ -64,7 +64,7 @@ public:
 	  * the value is returned. In this case the function returns true.
 	  */
 	template<class Char2>
-	inline bool remove(const Char2* key, int keyLen, Value* value = 0, bool caseSensitive = true) {
+	inline bool remove(const Char2 *key, int keyLen, Value *value = 0, bool caseSensitive = true) {
 		return caseSensitive ?
 			removeFiltered<Char2, Identity>(key, keyLen) :
 			removeFiltered<Char2, ToLower>(key, keyLen);
@@ -77,30 +77,30 @@ public:
 	  * The terminal match position is given in '*i1'.
 	  */
 	template<class Media>
-	inline bool match(Media* media, int i0 = 0, int* i1 = 0, Value* value = 0, bool caseSensitive = true) const {
+	inline bool match(Media *media, int i0 = 0, int *i1 = 0, Value *value = 0, bool caseSensitive = true) const {
 		return caseSensitive ?
 			matchFiltered<Media, Identity>(media, i0, i1, value) :
 			matchFiltered<Media, ToLower>(media, i0, i1, value);
 	}
 
 	// convenience wrapper
-	inline bool lookup(const char* key, Value* value = 0, bool caseSensitive = true) const {
+	inline bool lookup(const char *key, Value *value = 0, bool caseSensitive = true) const {
 		return lookup(key, str::len(key), value, caseSensitive);
 	}
 
 	// convenience wrapper
-	inline bool insert(const char* key, Value value = Value(), Value* currentValue = 0, bool caseSensitive = true) {
+	inline bool insert(const char *key, Value value = Value(), Value *currentValue = 0, bool caseSensitive = true) {
 		return insert(key, str::len(key), value, currentValue, caseSensitive);
 	}
 
 	// convenience wrapper
-	inline bool remove(const char* key, Value* value = 0, bool caseSensitive = true) {
+	inline bool remove(const char *key, Value *value = 0, bool caseSensitive = true) {
 		return remove(key, str::len(key), value, caseSensitive);
 	}
 
 	// convenience wrapper, matches entire media
 	template<class Media>
-	bool match(Media* media, Value* value = 0) const
+	bool match(Media *media, Value *value = 0) const
 	{
 		int i1 = 0;
 		if (match(media, 0, &i1, value))
@@ -150,7 +150,7 @@ public:
 	}
 
 	template<class Char2>
-	bool predict(const Char2* key, int keyLen, Index* first, Index* last, Index* common = 0) const
+	bool predict(const Char2 *key, int keyLen, Index *first, Index *last, Index *common = 0) const
 	{
 		Ref<Node> node = this;
 		while ((node) && (keyLen > 0)) {
@@ -179,7 +179,7 @@ public:
 	}
 
 	// convenience wrapper
-	inline bool predict(const char* key, Index* first, Index* last, Index* common = 0) const {
+	inline bool predict(const char *key, Index *first, Index *last, Index *common = 0) const {
 		return predict(key, str::len(key), first, last, common);
 	}
 
@@ -200,7 +200,7 @@ protected:
 	{}
 
 	template<class Char2, template<class> class Filter>
-	bool insertFiltered(const Char2* key, int keyLen, Value value, Value* currentValue = 0)
+	bool insertFiltered(const Char2 *key, int keyLen, Value value, Value *currentValue = 0)
 	{
 		Ref<Node> node = this;
 		while (keyLen > 0) {
@@ -224,7 +224,7 @@ protected:
 	}
 
 	template<class Char2, template<class> class Filter>
-	bool lookupFiltered(const Char2* key, int keyLen, Value* value = 0) const
+	bool lookupFiltered(const Char2 *key, int keyLen, Value *value = 0) const
 	{
 		Ref<Node> node = this;
 		while ((node) && (keyLen > 0)) {
@@ -240,7 +240,7 @@ protected:
 	}
 
 	template<class Char2, template<class> class Filter>
-	bool removeFiltered(const Char* key, int keyLen, Value* value = 0) const
+	bool removeFiltered(const Char *key, int keyLen, Value *value = 0) const
 	{
 		Ref<Node> node = this;
 		while ((node) && (keyLen > 0)) {
@@ -263,7 +263,7 @@ protected:
 	}
 
 	template<class Media, template<class> class Filter>
-	bool matchFiltered(Media* media, int i0 = 0, int* i1 = 0, Value* value = 0) const
+	bool matchFiltered(Media *media, int i0 = 0, int *i1 = 0, Value *value = 0) const
 	{
 		bool found = false;
 		int i = i0;

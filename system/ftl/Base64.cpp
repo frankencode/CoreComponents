@@ -17,7 +17,7 @@ namespace ftl
 
 Ref<ByteArray, Owner> Base64::encode(Ref<ByteArray> source)
 {
-	const char* alphabet =
+	const char *alphabet =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		"abcdefghijklmnopqrstuvwxyz"
 		"0123456789+/";

@@ -85,7 +85,7 @@ public:
 	bool access(int flags) const;
 	bool exists() const;
 	void create(int mode = 0644);
-	void link(const char* newPath);
+	void link(const char *newPath);
 	void unlink();
 
 	void createUnique(int mode = 0644, char placeHolder = 'X');

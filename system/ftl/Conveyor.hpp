@@ -26,7 +26,7 @@ public:
 		return new Conveyor(size);
 	}
 
-	Conveyor& push(const T& item)
+	Conveyor &push(const T &item)
 	{
 		mutex_.acquire();
 		while (buffer_.fill() == buffer_.size())
@@ -37,7 +37,7 @@ public:
 		return *this;
 	}
 
-	Conveyor& pop(T* item)
+	Conveyor &pop(T *item)
 	{
 		mutex_.acquire();
 		while (buffer_.fill() == 0)

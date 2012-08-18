@@ -16,7 +16,7 @@
 namespace ftl
 {
 
-Config::Config(const char* path)
+Config::Config(const char *path)
 {
 	try {
 		Ref<File, Owner> file = File::newInstance(path);
@@ -24,10 +24,10 @@ Config::Config(const char* path)
 		String text = file->readAll();
 		object_ = wire()->parse(text);
 	}
-	catch (StreamException&) {
+	catch (StreamException &) {
 		throw ConfigException(Format("Can't open configuration file %%") << path);
 	}
-	catch (WireException& ex) {
+	catch (WireException &ex) {
 		throw ConfigException(Format("Syntax error in configuration file\n%%%%") << path << ex.what());
 	}
 }
@@ -49,7 +49,7 @@ Ref<StringList, Owner> Config::init(int argc, char** argv)
 		try {
 			object_->setMember(parts->at(0), parts->at(1));
 		}
-		catch (WireObjectException&) {
+		catch (WireObjectException &) {
 			throw ConfigException(Format("No such configuration parameter: \"%%\"") << parts->at(0));
 		}
 	}

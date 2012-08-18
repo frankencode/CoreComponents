@@ -74,7 +74,7 @@ IntegerLiteral::IntegerLiteral()
 	LINK();
 }
 
-void IntegerLiteral::read(uint64_t* value, int* sign, Ref<ByteArray> text, Ref<Token> token) const
+void IntegerLiteral::read(uint64_t *value, int *sign, Ref<ByteArray> text, Ref<Token> token) const
 {
 	*sign = 1;
 	*value = 0;
@@ -129,7 +129,7 @@ void IntegerLiteral::read(uint64_t* value, int* sign, Ref<ByteArray> text, Ref<T
 	}
 }
 
-Ref<Token, Owner> IntegerLiteral::read(uint64_t* value, int* sign, Ref<ByteArray> text, int i) const
+Ref<Token, Owner> IntegerLiteral::read(uint64_t *value, int *sign, Ref<ByteArray> text, int i) const
 {
 	Ref<Token, Owner> token = match(text, i);
 	if (token)

@@ -14,14 +14,14 @@ int main()
 	try {
 		File::newInstance("non-existing")->open();
 	}
-	catch (Exception& ex) {
+	catch (Exception &ex) {
 		print("%%\n", ex.what());
 	}
 
 	try {
 		Mutex::newInstance()->release();
 	}
-	catch (Exception& ex) {
+	catch (Exception &ex) {
 		print("%%\n", ex.what());
 	}
 

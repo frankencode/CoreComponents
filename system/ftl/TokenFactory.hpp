@@ -20,8 +20,8 @@ namespace ftl
 class TokenFactory: public Instance
 {
 public:
-	inline virtual Token* newToken() {
-		Token* token = 0;
+	inline virtual Token *newToken() {
+		Token *token = 0;
 		if (previous_)
 			if (previous_->refCount() == 1)
 				token = previous_;
@@ -31,15 +31,15 @@ public:
 		}
 		return token;
 	}
-	
-	inline Token* produce() {
-		Token* token = newToken();
+
+	inline Token *produce() {
+		Token *token = newToken();
 		if (!rootToken_) rootToken_ = token;
 		return token;
 	}
-	
+
 	inline Ref<Token> rootToken() const { return rootToken_; }
-	
+
 private:
 	Ref<Token, Owner> rootToken_;
 	Ref<Token, Owner> previous_;

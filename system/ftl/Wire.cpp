@@ -9,7 +9,6 @@
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
 
-#include "stdio" // DEBUG
 #include "Format.hpp"
 #include "FloatLiteral.hpp"
 #include "IntegerLiteral.hpp"
@@ -18,7 +17,7 @@
 namespace ftl
 {
 
-WireException::WireException(const String& error, int line, int pos)
+WireException::WireException(const String &error, int line, int pos)
 	: error_(error),
 	  line_(line),
 	  pos_(pos)
@@ -28,7 +27,7 @@ WireException::WireException(const String& error, int line, int pos)
 
 WireException::~WireException() throw() {}
 
-const char* WireException::what() const throw() { return message_; }
+const char *WireException::what() const throw() { return message_; }
 
 Wire::Wire()
 {

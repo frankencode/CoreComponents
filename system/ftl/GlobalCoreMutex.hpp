@@ -33,13 +33,13 @@ namespace { GlobalCoreMutexInitializer globalCoreMutexInitializer; }
 class GlobalCoreMutex: public SpinLock
 {
 public:
-	static GlobalCoreMutex* instance();
-	
+	static GlobalCoreMutex *instance();
+
 private:
 	GlobalCoreMutex() {}
 };
 
-inline GlobalCoreMutex* globalCoreMutex() { return GlobalCoreMutex::instance(); }
+inline GlobalCoreMutex *globalCoreMutex() { return GlobalCoreMutex::instance(); }
 
 } // namespace ftl
 

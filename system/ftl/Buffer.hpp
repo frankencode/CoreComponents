@@ -24,15 +24,15 @@ class Block: public Instance {
 public:
 	Block(int size);
 	~Block();
-	
-	inline char* data() const { return data_; }
+
+	inline char *data() const { return data_; }
 	inline int fill() const { return fill_; }
 	inline void setFill(int fill) { fill_ = fill; }
-	
+
 private:
 	friend class Buffer;
-	
-	char* data_;
+
+	char *data_;
 	int fill_;
 	Ref<Block, Owner> next_;
 	Ref<Block> prev_;
@@ -43,12 +43,12 @@ class Buffer: public Instance
 public:
 	Buffer(int blockSize = FTL_DEFAULT_BUF_CAPA);
 	void reset(int blockSize = FTL_DEFAULT_BUF_CAPA);
-	
+
 	inline int blockSize() const { return blockSize_; }
-	
+
 	Ref<Block> allocate();
 	Ref<ByteArray, Owner> join() const;
-	
+
 private:
 	int blockSize_;
 	Ref<Block, Owner> head_;

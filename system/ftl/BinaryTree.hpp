@@ -21,53 +21,53 @@ class BinaryTree
 {
 public:
 	typedef NodeType Node;
-	
+
 	BinaryTree(): root_(0) {}
 	virtual ~BinaryTree() { clear(); }
-	
-	inline Node* root() const { return root_; }
-	
-	void attach(Node* kp, Node* kn, bool left);
-	Node* detach(Node* k);
-	void replaceNode(Node* ki, Node* kl);
-	void rotate(Node* k1, bool left);
-	
-	inline Node* min() const { return min(root_); }
-	inline Node* max() const { return max(root_); }
-	static Node* min(Node* k);
-	static Node* max(Node* k);
-	static Node* pred(Node* k);
-	static Node* succ(Node* k);
-	static Node* pred(Node* k, int delta);
-	static Node* succ(Node* k, int delta);
-	
-	void attachBefore(Node* kb, Node* kn);
-	void attachAfter(Node* ka, Node* kn);
-	
-	static Node* clone(Node* k);
-	static void clear(Node* k);
+
+	inline Node *root() const { return root_; }
+
+	void attach(Node *kp, Node *kn, bool left);
+	Node *detach(Node *k);
+	void replaceNode(Node *ki, Node *kl);
+	void rotate(Node *k1, bool left);
+
+	inline Node *min() const { return min(root_); }
+	inline Node *max() const { return max(root_); }
+	static Node *min(Node *k);
+	static Node *max(Node *k);
+	static Node *pred(Node *k);
+	static Node *succ(Node *k);
+	static Node *pred(Node *k, int delta);
+	static Node *succ(Node *k, int delta);
+
+	void attachBefore(Node *kb, Node *kn);
+	void attachAfter(Node *ka, Node *kn);
+
+	static Node *clone(Node *k);
+	static void clear(Node *k);
 	void clear();
-	
-	void remove(Node* k);
-	
+
+	void remove(Node *k);
+
 protected:
-	inline virtual void touched(Node* kp, Node* kc, bool left, bool attached) {}
-	inline virtual void rotated(Node* k1, bool left) {}
+	inline virtual void touched(Node *kp, Node *kc, bool left, bool attached) {}
+	inline virtual void rotated(Node *k1, bool left) {}
 	inline virtual void cleared() {}
-	
+
 #ifndef NDEBUG
-	static bool testStructure(Node* k);
-	static bool testOrder(Node* k);
-	static bool testIteration(Node* k);
+	static bool testStructure(Node *k);
+	static bool testOrder(Node *k);
+	static bool testIteration(Node *k);
 #endif
-	
-	Node* root_;
+
+	Node *root_;
 };
 
 /** Attaches the new leaf node k under kp as the left or right child.
   */
 template<class Node>
-inline void BinaryTree<Node>::attach(Node* kp, Node* k, bool left)
+inline void BinaryTree<Node>::attach(Node *kp, Node *k, bool left)
 {
 	if (kp) {
 		if (left)
@@ -90,12 +90,12 @@ inline void BinaryTree<Node>::attach(Node* kp, Node* k, bool left)
 /** Detaches the leaf or list node k from the tree.
   */
 template<class Node>
-inline Node* BinaryTree<Node>::detach(Node* k)
+inline Node *BinaryTree<Node>::detach(Node *k)
 {
-	Node* kp = k->parent_;
+	Node *kp = k->parent_;
 	bool left = false;
 	if (kp) {
-		Node* kc = (k->left_ != 0) ? k->left_ : k->right_;
+		Node *kc = (k->left_ != 0) ? k->left_ : k->right_;
 		left = (kp->left_ == k);
 		if (left)
 			kp->left_ = kc;
@@ -113,18 +113,18 @@ inline Node* BinaryTree<Node>::detach(Node* k)
 /** Put the leaf node kl into the place of inner node ki
   */
 template<class Node>
-void BinaryTree<Node>::replaceNode(Node* ki, Node* kl)
+void BinaryTree<Node>::replaceNode(Node *ki, Node *kl)
 {
 	kl->balance_ = ki->balance_;
 	kl->weight_ = ki->weight_;
-	
+
 	// establish links to neighbors
 	kl->parent_ = ki->parent_;
 	kl->left_ = ki->left_;
 	kl->right_ = ki->right_;
-	
+
 	// establish links from neighbors
-	Node* kp = ki->parent_;
+	Node *kp = ki->parent_;
 	if (kp) {
 		if (kp->left_ == ki)
 			kp->left_ = kl;
@@ -158,9 +158,9 @@ void BinaryTree<Node>::replaceNode(Node* ki, Node* kl)
   *  a    b           b    c
   */
 template<class Node>
-void BinaryTree<Node>::rotate(Node* k1, bool left)
+void BinaryTree<Node>::rotate(Node *k1, bool left)
 {
-	Node* k2 = left ? k1->right_ : k1->left_;
+	Node *k2 = left ? k1->right_ : k1->left_;
 	if (k1->parent_) {
 		if (k1->parent_->left_ == k1)
 			k1->parent_->left_ = k2;
@@ -188,9 +188,9 @@ void BinaryTree<Node>::rotate(Node* k1, bool left)
 }
 
 template<class Node>
-inline Node* BinaryTree<Node>::min(Node* k)
+inline Node *BinaryTree<Node>::min(Node *k)
 {
-	Node* k2 = k;
+	Node *k2 = k;
 	while (k) {
 		k2 = k;
 		k = k->left_;
@@ -199,9 +199,9 @@ inline Node* BinaryTree<Node>::min(Node* k)
 }
 
 template<class Node>
-inline Node* BinaryTree<Node>::max(Node* k)
+inline Node *BinaryTree<Node>::max(Node *k)
 {
-	Node* k2 = k;
+	Node *k2 = k;
 	while (k) {
 		k2 = k;
 		k = k->right_;
@@ -210,11 +210,11 @@ inline Node* BinaryTree<Node>::max(Node* k)
 }
 
 template<class Node>
-Node* BinaryTree<Node>::pred(Node* k)
+Node *BinaryTree<Node>::pred(Node *k)
 {
 	if (k->left_)
 		return max(k->left_);
-	Node* kp = k->parent_;
+	Node *kp = k->parent_;
 	while (kp) {
 		if (k == kp->right_) break;
 		k = kp;
@@ -224,11 +224,11 @@ Node* BinaryTree<Node>::pred(Node* k)
 }
 
 template<class Node>
-Node* BinaryTree<Node>::succ(Node* k)
+Node *BinaryTree<Node>::succ(Node *k)
 {
 	if (k->right_)
 		return min(k->right_);
-	Node* kp = k->parent_;
+	Node *kp = k->parent_;
 	while (kp) {
 		if (k == kp->left_) break;
 		k = kp;
@@ -238,7 +238,7 @@ Node* BinaryTree<Node>::succ(Node* k)
 }
 
 template<class Node>
-inline Node* BinaryTree<Node>::pred(Node* k, int delta)
+inline Node *BinaryTree<Node>::pred(Node *k, int delta)
 {
 	while ((delta > 0) && (k)) {
 		k = pred(k);
@@ -248,7 +248,7 @@ inline Node* BinaryTree<Node>::pred(Node* k, int delta)
 }
 
 template<class Node>
-inline Node* BinaryTree<Node>::succ(Node* k, int delta)
+inline Node *BinaryTree<Node>::succ(Node *k, int delta)
 {
 	while ((delta > 0) && (k)) {
 		k = succ(k);
@@ -258,7 +258,7 @@ inline Node* BinaryTree<Node>::succ(Node* k, int delta)
 }
 
 template<class Node>
-void BinaryTree<Node>::attachBefore(Node* kb, Node* kn)
+void BinaryTree<Node>::attachBefore(Node *kb, Node *kn)
 {
 	if (!kb)
 		attach(kb, kn, true);
@@ -269,7 +269,7 @@ void BinaryTree<Node>::attachBefore(Node* kb, Node* kn)
 }
 
 template<class Node>
-void BinaryTree<Node>::attachAfter(Node* ka, Node* kn)
+void BinaryTree<Node>::attachAfter(Node *ka, Node *kn)
 {
 	if (!ka)
 		attach(ka, kn, true);
@@ -280,10 +280,10 @@ void BinaryTree<Node>::attachAfter(Node* ka, Node* kn)
 }
 
 template<class Node>
-Node* BinaryTree<Node>::clone(Node* k)
+Node *BinaryTree<Node>::clone(Node *k)
 {
 	if (!k) return 0;
-	Node* kn = new Node(*k);
+	Node *kn = new Node(*k);
 	if (!k->parent_) kn->parent_ = 0;
 	if (k->left_) {
 		kn->left_ = clone(k->left_);
@@ -311,7 +311,7 @@ void BinaryTree<Node>::clear()
 }
 
 template<class Node>
-void BinaryTree<Node>::clear(Node* k)
+void BinaryTree<Node>::clear(Node *k)
 {
 	if (!k) return;
 	clear(k->left_);
@@ -322,7 +322,7 @@ void BinaryTree<Node>::clear(Node* k)
 /** Remove the node k from the tree.
   */
 template<class Node>
-void BinaryTree<Node>::remove(Node* k)
+void BinaryTree<Node>::remove(Node *k)
 {
 	if (k->left_)
 		replaceNode(k, detach(max(k->left_)));
@@ -336,7 +336,7 @@ void BinaryTree<Node>::remove(Node* k)
 #ifndef NDEBUG
 
 template<class Node>
-bool BinaryTree<Node>::testStructure(Node* k)
+bool BinaryTree<Node>::testStructure(Node *k)
 {
 	if (!k) return true;
 	if (k->parent_) {
@@ -347,7 +347,7 @@ bool BinaryTree<Node>::testStructure(Node* k)
 }
 
 template<class Node>
-bool BinaryTree<Node>::testOrder(Node* k)
+bool BinaryTree<Node>::testOrder(Node *k)
 {
 	if (!k) return true;
 	if (k->left_) {
@@ -362,10 +362,10 @@ bool BinaryTree<Node>::testOrder(Node* k)
 }
 
 template<class Node>
-bool BinaryTree<Node>::testIteration(Node* k)
+bool BinaryTree<Node>::testIteration(Node *k)
 {
 	if (k == 0) return true;
-	Node* k2;
+	Node *k2;
 	k2 = succ(k);
 	if (k2) {
 		if (k != pred(k2))

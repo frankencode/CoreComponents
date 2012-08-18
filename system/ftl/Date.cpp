@@ -54,7 +54,7 @@ Date::Date(Time time): tm_off(0) { clear(); init(time); }
 
 void Date::clear()
 {
-	struct tm* tm = this;
+	struct tm *tm = this;
 	mem::clr(tm, sizeof(struct tm)); // for paranoid reason
 }
 
@@ -65,15 +65,15 @@ void Date::init(Time time)
 	int d400 = 146097;                              // length of the 400 year cycle
 	int d100 = 36524;                               // length of the 100 year cycle
 	int d4 = 1461;                                  // length of the 4 year cycle
-	
+
 	int tx400 = tx    % d400; // day within the 400 year cycle (starting from 0)
 	int tx100 = tx400 % d100; // day within the 100 year cycle (starting from 0)
 	int tx4   = tx100 % d4;   // day within the   4 year cycle (starting from 0)
-	
+
 	int c400 = tx    / d400; // 400 year cycle number within continuum (starting from 0)
 	int c100 = tx400 / d100; // 100 year cycle number within 400 year cycle (starting from 0)
 	int c4   = tx100 / d4;   //   4 year cycle number within 100 year cycle (starting from 0)
-	
+
 	int century = (c400 * 400 + c100 * 100) / 100;
 	int year = (century * 100) + c4 * 4 + 1;
 	int ty0 = 0; // first day in year within the 4 year cycle (starting from 0)
@@ -99,11 +99,11 @@ void Date::init(Time time)
 	tm_mday = tyx - tm0 + 1/*adjust to start with day 1*/;
 	tm_wday = (tx + 1/*adjust to start with Sunday*/) % 7;
 	tm_yday = tyx;
-	
+
 	tm_hour = (time.sec() / 3600) % 24;
 	tm_min = (time.sec() / 60) % 60;
 	tm_sec = time.sec() % 60;
-	
+
 	tm_year = year - 1900;
 }
 
@@ -147,7 +147,7 @@ String Date::toString() const
 		tz = Format("+%2.:'0'%%2.:'0'%") << (tm_off / 60) << (tm_off % 60);
 	else if (tm_off < 0)
 		tz = Format("-%2.:'0'%%2.:'0'%") << ((-tm_off) / 60) << ((-tm_off) % 60);
-	
+
 	return Format(
 		"%4.:'0'%-%2.:'0'%-%2.:'0'%T"
 		"%2.:'0'%%2.:'0'%%2.:'0'%%%"

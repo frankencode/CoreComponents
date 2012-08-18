@@ -25,7 +25,7 @@ MachDependencyCache::MachDependencyCache(Ref<MachCompiler> compiler, Ref<StringL
 	try {
 		dependencyCache = wire()->parse(cacheFile_->load());
 	}
-	catch (WireException&)
+	catch (WireException &)
 	{}
 	if (!dependencyCache) return;
 	if (dependencyCache->className() != "DependencyCache") return;

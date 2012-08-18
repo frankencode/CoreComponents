@@ -101,7 +101,7 @@ Ref<LineSource> Process::error() const { return error_; }
 
 pid_t Process::id() const { return processId_; }
 
-void Process::kill(int signal, bool* permissionDenied)
+void Process::kill(int signal, bool *permissionDenied)
 {
 	if (type() == GroupMember)
 		Process::kill(processId_, signal, permissionDenied);
@@ -144,15 +144,15 @@ void Process::cd(String path)
 String Process::cwd()
 {
 	int size = 0x1000;
-	char* buf = (char*)mem::alloc(size);
-	char* ret = 0;
+	char *buf = (char *)mem::alloc(size);
+	char *ret = 0;
 	while (true) {
 		ret = ::getcwd(buf, size);
 		if (ret) break;
 		if (errno == ERANGE) {
 			mem::free(buf);
 			size += 0x1000;
-			buf = (char*)mem::alloc(size);
+			buf = (char *)mem::alloc(size);
 		}
 		else
 			FTL_SYSTEM_EXCEPTION;
@@ -169,7 +169,7 @@ String Process::execPath()
 	String lnPath = String(Format("/proc/%%/exe") << currentId());
 	ssize_t bufSize = 1024;
 	while (true) {
-		char* buf = (char*)mem::alloc(bufSize + 1);
+		char *buf = (char *)mem::alloc(bufSize + 1);
 		mem::clr(buf, bufSize + 1);
 		ssize_t ret = ::readlink(lnPath, buf, bufSize);
 		if (ret == -1)
@@ -184,10 +184,10 @@ String Process::execPath()
 	}
 	#endif
 	#ifdef __MACH__
-	char* buf = 0;
+	char *buf = 0;
 	uint32_t bufSize = 0;
 	_NSGetExecutablePath(buf, &bufSize);
-	buf = (char*)mem::alloc(bufSize + 1);
+	buf = (char *)mem::alloc(bufSize + 1);
 	mem::clr(buf, bufSize + 1);
 	_NSGetExecutablePath(buf, &bufSize);
 	path = buf;
@@ -251,7 +251,7 @@ char**& Process::environ()
 pid_t Process::currentId() { return getpid(); }
 pid_t Process::parentId() { return getppid(); }
 
-void Process::kill(pid_t processId, int signal, bool* permissionDenied)
+void Process::kill(pid_t processId, int signal, bool *permissionDenied)
 {
 	if (::kill(processId, signal) == -1) {
 		if ((errno == EPERM) && (permissionDenied))
@@ -265,7 +265,7 @@ void Process::kill(pid_t processId, int signal, bool* permissionDenied)
 	}
 }
 
-void Process::killGroup(pid_t processGroupId, int signal, bool* permissionDenied)
+void Process::killGroup(pid_t processGroupId, int signal, bool *permissionDenied)
 {
 	Process::kill(-processGroupId, signal, permissionDenied);
 }

@@ -20,9 +20,9 @@ template<class T>
 class OnDemand
 {
 public:
-	inline void set(T* b) {}
+	inline void set(T *b) {}
 
-	inline T* get() const {
+	inline T *get() const {
 		if (!instance_)
 			instance_ = T::newInstance();
 		return instance_;

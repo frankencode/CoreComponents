@@ -30,11 +30,11 @@ SocketAddress::SocketAddress(int family, String address, int port)
 	: socketType_(0),
 	  protocol_(0)
 {
-	void* addr = 0;
+	void *addr = 0;
 
 	if (family == AF_INET) {
 		// inet4Address_.sin_len = sizeof(addr);
-		*(uint8_t*)&inet4Address_ = sizeof(inet4Address_); // uggly, but safe HACK, for BSD4.4
+		*(uint8_t *)&inet4Address_ = sizeof(inet4Address_); // uggly, but safe HACK, for BSD4.4
 		inet4Address_.sin_family = AF_INET;
 		inet4Address_.sin_port = htons(port);
 		inet4Address_.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -67,22 +67,22 @@ SocketAddress::SocketAddress(int family, String address, int port)
 				FTL_THROW(NetworkingException, "Broken address string");
 }
 
-SocketAddress::SocketAddress(struct sockaddr_in* addr)
+SocketAddress::SocketAddress(struct sockaddr_in *addr)
 	: inet4Address_(*addr)
 {}
 
-SocketAddress::SocketAddress(struct sockaddr_in6* addr)
+SocketAddress::SocketAddress(struct sockaddr_in6 *addr)
 	: inet6Address_(*addr)
 {}
 
-SocketAddress::SocketAddress(addrinfo* info)
+SocketAddress::SocketAddress(addrinfo *info)
 	: socketType_(info->ai_socktype),
 	  protocol_(info->ai_protocol)
 {
 	if (info->ai_family == AF_INET)
-		inet4Address_ = *(sockaddr_in*)info->ai_addr;
+		inet4Address_ = *(sockaddr_in *)info->ai_addr;
 	else if (info->ai_family == AF_INET6)
-		inet6Address_ = *(sockaddr_in6*)info->ai_addr;
+		inet6Address_ = *(sockaddr_in6 *)info->ai_addr;
 	else
 		FTL_THROW(NetworkingException, "Unsupported address family.");
 }
@@ -126,8 +126,8 @@ String SocketAddress::addressString() const
 		const int bufSize = INET_ADDRSTRLEN + INET6_ADDRSTRLEN;
 		char buf[bufSize];
 
-		const void* addr = 0;
-		const char* sz = 0;
+		const void *addr = 0;
+		const char *sz = 0;
 
 		if (addr_.sa_family == AF_INET)
 			addr = &inet4Address_.sin_addr;
@@ -162,10 +162,10 @@ void SocketAddress::setScope(int scope) {
 	if (addr_.sa_family == AF_INET6) inet6Address_.sin6_scope_id = scope;
 }
 
-Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String serviceName, int family, int socketType, String* canonicalName)
+Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String serviceName, int family, int socketType, String *canonicalName)
 {
 	addrinfo hint;
-	addrinfo* head = 0;
+	addrinfo *head = 0;
 
 	mem::clr(&hint, sizeof(hint));
 	hint.ai_flags = (canonicalName) ? AI_CANONNAME : 0;
@@ -176,8 +176,8 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String ser
 
 	int ret;
 	{
-		char* h = 0;
-		char* s = 0;
+		char *h = 0;
+		char *s = 0;
 		if ((hint.ai_flags & AI_PASSIVE) == 0) h = hostName;
 		if (serviceName != "") s = serviceName;
 		ret = getaddrinfo(h, s, &hint, &head);
@@ -196,7 +196,7 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String ser
 		}
 	}
 
-	addrinfo* next = head;
+	addrinfo *next = head;
 
 	while (next) {
 		if ((next->ai_family == AF_INET) || (next->ai_family == AF_INET6))
@@ -213,7 +213,7 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String ser
 	return list;
 }
 
-String SocketAddress::lookupHostName(bool* failed) const
+String SocketAddress::lookupHostName(bool *failed) const
 {
 	const int hostNameSize = NI_MAXHOST;
 	const int serviceNameSize = NI_MAXSERV;
@@ -273,8 +273,8 @@ String SocketAddress::hostName()
 	return name;
 }
 
-struct sockaddr* SocketAddress::addr() { return &addr_; }
-const struct sockaddr* SocketAddress::addr() const { return &addr_; }
+struct sockaddr *SocketAddress::addr() { return &addr_; }
+const struct sockaddr *SocketAddress::addr() const { return &addr_; }
 
 int SocketAddress::addrLen() const
 {

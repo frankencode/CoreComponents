@@ -18,19 +18,19 @@
 namespace ftl
 {
 
-const char* fileName(const char* path)
+const char *fileName(const char *path)
 {
 	char sep = '/';
-	
-	const char* p = path;
-	const char* pSaved = path;
+
+	const char *p = path;
+	const char *pSaved = path;
 	while (*p)
 	{
 		if (*p == sep)
 			pSaved = p + 1;
 		++p;
 	}
-	
+
 	return pSaved;
 }
 
@@ -38,7 +38,7 @@ Exception::Exception()
 	: message_(0)
 {}
 
-Exception::Exception(const char* path, int line, const char* className, const char* reason, bool reasonOnHeap)
+Exception::Exception(const char *path, int line, const char *className, const char *reason, bool reasonOnHeap)
 	: path_(path),
 	  line_(line),
 	  className_(className),
@@ -55,10 +55,10 @@ Exception::~Exception() throw()
 		delete[] message_;
 }
 
-const char* Exception::what() const throw() {
+const char *Exception::what() const throw() {
 	if (!message_) {
-		const char* path = fileName(path_);
-		char* lineStr = intToStr(line_);
+		const char *path = fileName(path_);
+		char *lineStr = intToStr(line_);
 		message_ = str::cat(path, ":", lineStr, ": ", className_, ": ", reason_);
 		delete[] lineStr;
 		if ((reason_) && reasonOnHeap_) {
@@ -69,34 +69,34 @@ const char* Exception::what() const throw() {
 	return message_;
 }
 
-char* captureExceptionMessage(const char* s) { return str::dup(s); }
-char* captureExceptionMessage(char* s) { return s; }
+char *captureExceptionMessage(const char *s) { return str::dup(s); }
+char *captureExceptionMessage(char *s) { return s; }
 
-char* systemError() { return systemError(errno); }
+char *systemError() { return systemError(errno); }
 
-char* systemError(int errorCode)
+char *systemError(int errorCode)
 {
 #ifdef __USE_GNU
-	const char* unknown = "Unknown error";
+	const char *unknown = "Unknown error";
 	const int bufSize = 1024; // HACK, save bet
 	char buf[bufSize];
 	mem::cpy(buf, unknown, str::len(unknown) + 1);
 	return str::dup(::strerror_r(errorCode, buf, bufSize));
 #else
-	const char* unknown = "Unknown error";
+	const char *unknown = "Unknown error";
 	const int bufSize = 1024;
-	char* buf = new char[bufSize];
+	char *buf = new char[bufSize];
 	mem::cpy(buf, unknown, str::len(unknown) + 1);
 	/*int ret = */::strerror_r(errorCode, buf, bufSize);
 	return buf;
 #endif
 }
 
-char* pthreadError(const char* callName, int errorCode)
+char *pthreadError(const char *callName, int errorCode)
 {
-	char* errorStr = systemError(errorCode);
-	char* errorCodeStr = ftl::intToStr(errorCode);
-	char* msg = str::cat(callName, "() failed: ", errorStr, " (", errorCodeStr, ")");
+	char *errorStr = systemError(errorCode);
+	char *errorCodeStr = ftl::intToStr(errorCode);
+	char *msg = str::cat(callName, "() failed: ", errorStr, " (", errorCodeStr, ")");
 	delete[] errorStr;
 	delete[] errorCodeStr;
 	return msg;

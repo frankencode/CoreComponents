@@ -21,7 +21,7 @@ namespace ftl
 class FormatSpecifier: public SyntaxDefinition, public Singleton<FormatSpecifier>
 {
 public:
-	bool find(Ref<ByteArray> text, int* i0, int* i1, int* w, int* wi, int* wf, int* base, bool* exp, char* blank);
+	bool find(Ref<ByteArray> text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank);
 
 protected:
 	friend class Singleton<FormatSpecifier>;

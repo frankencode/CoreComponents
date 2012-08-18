@@ -24,7 +24,7 @@ namespace syntax
 
 class DebugNode: public Node {
 public:
-	virtual int matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, SyntaxState* state) const {
+	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, SyntaxState *state) const {
 		return entry()->matchNext(media, i, tokenFactory, parentToken, state);
 	}
 
@@ -36,7 +36,7 @@ public:
 		return entry() ? entry()->matchLength() : -1;
 	}
 
-	virtual const char* declType() const = 0;
+	virtual const char *declType() const = 0;
 	virtual void printAttributes(String indent) {}
 
 	virtual void printNext(String indent = "");
@@ -69,7 +69,7 @@ public:
 		return new Debugger(indent);
 	}
 
-	virtual Node* produce(Node* newNode, const char* nodeType);
+	virtual Node *produce(Node *newNode, const char *nodeType);
 	void printDefinition(bool omitUnusedRules = false);
 
 	typedef syntax::DefinitionNode::StateIdByName StateIdByName;
@@ -90,7 +90,7 @@ private:
 
 	class NodeFactory: public Instance {
 	public:
-		virtual Node* produce(Node* newNode) = 0;
+		virtual Node *produce(Node *newNode) = 0;
 	};
 
 	template<class DebugNodeType>
@@ -99,7 +99,7 @@ private:
 		DebugNodeFactory(Ref<Debugger> debugger)
 			: debugger_(debugger)
 		{}
-		virtual Node* produce(Node* newNode) {
+		virtual Node *produce(Node *newNode) {
 			return new DebugNodeType(debugger_, newNode);
 		}
 	private:

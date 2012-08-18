@@ -49,13 +49,13 @@ public:
 		return new SocketAddress(family, address, port);
 	}
 
-	inline static Ref<SocketAddress, Owner> newInstance(struct sockaddr_in* addr) {
+	inline static Ref<SocketAddress, Owner> newInstance(struct sockaddr_in *addr) {
 		return new SocketAddress(addr);
 	}
-	inline static Ref<SocketAddress, Owner> newInstance(struct sockaddr_in6* addr) {
+	inline static Ref<SocketAddress, Owner> newInstance(struct sockaddr_in6 *addr) {
 		return new SocketAddress(addr);
 	}
-	inline static Ref<SocketAddress, Owner> newInstance(addrinfo* info) {
+	inline static Ref<SocketAddress, Owner> newInstance(addrinfo *info) {
 		return new SocketAddress(info);
 	}
 
@@ -82,12 +82,12 @@ public:
 	  *   The host name can be a short name relative to the local domain.
 	  * The fully qualified domain name (aka canonical name) can be optionally retrieved.
 	  */
-	static Ref<SocketAddressList, Owner> resolve(String hostName, String serviceName = String(), int family = AF_UNSPEC, int socketType = 0, String* canonicalName = 0);
+	static Ref<SocketAddressList, Owner> resolve(String hostName, String serviceName = String(), int family = AF_UNSPEC, int socketType = 0, String *canonicalName = 0);
 
 	/** Lookup the host name of given address. Usually a reverse DNS
 	  * lookup will be issued, which may take several seconds.
 	  */
-	String lookupHostName(bool* failed = 0) const;
+	String lookupHostName(bool *failed = 0) const;
 
 	/** Lookup the service name. In most setups the service name will be looked up
 	  * in a local file (/etc/services) and therefore the call returns immediately.
@@ -100,16 +100,16 @@ public:
 	  */
 	static String hostName();
 
-	struct sockaddr* addr();
-	const struct sockaddr* addr() const;
+	struct sockaddr *addr();
+	const struct sockaddr *addr() const;
 	int addrLen() const;
 
 protected:
 	SocketAddress();
 	SocketAddress(int family, String address, int port);
-	SocketAddress(struct sockaddr_in* addr);
-	SocketAddress(struct sockaddr_in6* addr);
-	SocketAddress(addrinfo* info);
+	SocketAddress(struct sockaddr_in *addr);
+	SocketAddress(struct sockaddr_in6 *addr);
+	SocketAddress(addrinfo *info);
 
 	union {
 		struct sockaddr addr_;

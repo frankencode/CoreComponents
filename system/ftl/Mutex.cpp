@@ -16,7 +16,7 @@ namespace ftl
 
 Mutex::Mutex()
 {
-	pthread_mutexattr_t* pattr = 0;
+	pthread_mutexattr_t *pattr = 0;
 	int ret;
 	#ifndef NDEBUG
 	pthread_mutexattr_t attr;

@@ -22,7 +22,7 @@ namespace ftl
 
 typedef syntax::NODE NODE;
 
-PatternException::PatternException(const String& error, int pos)
+PatternException::PatternException(const String &error, int pos)
 	: error_(error),
 	  pos_(pos)
 {
@@ -32,7 +32,7 @@ PatternException::PatternException(const String& error, int pos)
 PatternException::~PatternException() throw()
 {}
 
-const char* PatternException::what() const throw()
+const char *PatternException::what() const throw()
 {
 	return message_;
 }
@@ -430,22 +430,22 @@ NODE PatternCompiler::compileRepeat(Ref<ByteArray> text, Ref<Token> token, Ref<S
 Pattern::Pattern()
 {}
 
-Pattern::Pattern(const char* text)
+Pattern::Pattern(const char *text)
 {
 	*this = String(text);
 }
 
-Pattern::Pattern(const String& text)
+Pattern::Pattern(const String &text)
 {
 	*this = text;
 }
 
-const Pattern& Pattern::operator=(const char* text)
+const Pattern &Pattern::operator=(const char *text)
 {
 	return *this = String(text);
 }
 
-const Pattern& Pattern::operator=(const String& text)
+const Pattern &Pattern::operator=(const String &text)
 {
 	text_ = text;
 	set(

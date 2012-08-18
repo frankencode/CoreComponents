@@ -19,16 +19,16 @@ Ref<ByteArray, Owner> Character::copy(int i0, int i1) const
 {
 	FTL_ASSERT(i0 <= i1);
 	walkTo(i0);
-	const char* p0 = walker_.pos();
+	const char *p0 = walker_.pos();
 	while (i_ < i1) { ++walker_; ++i_; }
 	return ByteArray::newInstance(p0, walker_.pos() - p0);
 }
 
-/*int String::find(int i, const char* pattern) const
+/*int String::find(int i, const char *pattern) const
 {
 	if (!Super::get()->chars()->has(i)) return i;
-	const char* t = Super::get()->chars()->byte(i); // text pos
-	const char* m = pattern; // match pos
+	const char *t = Super::get()->chars()->byte(i); // text pos
+	const char *m = pattern; // match pos
 	while ((*t) && (*m)) {
 		if (*t == *m)
 			++m;
@@ -39,7 +39,7 @@ Ref<ByteArray, Owner> Character::copy(int i0, int i1) const
 	return (*m) ? Super::get()->chars()->length() : Super::get()->chars()->index(t - (m - pattern));
 }
 
-Ref<StringList, Owner> String::split(const char* pattern) const
+Ref<StringList, Owner> String::split(const char *pattern) const
 {
 	Ref<StringList, Owner> parts = StringList::newInstance();
 	int i0 = 0;

@@ -28,7 +28,7 @@ class CoreSingleton
 public:
 	static Ref<SubClass> instance()
 	{
-		SpinLock& mutex = localStatic<SpinLock, SubClass>();
+		SpinLock &mutex = localStatic<SpinLock, SubClass>();
 		Guard<SpinLock> guard(&mutex);
 		Ref<SubClass, Owner>& instance_ = localStatic< Ref<SubClass, Owner>, CoreSingleton<SubClass> >();
 		if (!instance_)
@@ -56,7 +56,7 @@ public:
 	}
 private:
 	friend class CoreSingleton<SubClass>;
-	inline static SubClass* create() { return new SubClass; }
+	inline static SubClass *create() { return new SubClass; }
 };
 
 } // namespace ftl

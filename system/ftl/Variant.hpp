@@ -51,24 +51,24 @@ public:
 	Variant(bool value)                  : type_(BoolType),  int_(value)   {}
 	Variant(float value)                 : type_(FloatType), float_(value) {}
 	Variant(double value)                : type_(FloatType), float_(value) {}
-	Variant(const char* value)           : type_(StringType) { initRef(String(value)); }
+	Variant(const char *value)           : type_(StringType) { initRef(String(value)); }
 	template<class T, template<class> class P>
 	Variant(Ref<T, P> value)             : type_(RefType)    { initRef(value); }
 	Variant(String value)                : type_(StringType) { initRef(value); }
 	~Variant() { if (type_ & RefType) killRef(); }
 
-	inline const Variant& operator=(bool value)        { type_ = BoolType;  int_ = value; return *this; }
-	inline const Variant& operator=(int value)         { type_ = IntType;   int_ = value; return *this; }
-	inline const Variant& operator=(float value)       { type_ = FloatType; float_ = value; return *this; }
-	inline const Variant& operator=(double value)      { type_ = FloatType; float_ = value; return *this; }
-	inline const Variant& operator=(const char* value) { return *this = Variant(value); }
-	inline const Variant& operator=(String value)      { return *this = Variant(value); }
+	inline const Variant &operator=(bool value)        { type_ = BoolType;  int_ = value; return *this; }
+	inline const Variant &operator=(int value)         { type_ = IntType;   int_ = value; return *this; }
+	inline const Variant &operator=(float value)       { type_ = FloatType; float_ = value; return *this; }
+	inline const Variant &operator=(double value)      { type_ = FloatType; float_ = value; return *this; }
+	inline const Variant &operator=(const char *value) { return *this = Variant(value); }
+	inline const Variant &operator=(String value)      { return *this = Variant(value); }
 	template<class T, template<class> class P>
-	inline const Variant& operator=(Ref<T, P> value)   { return *this = Variant(value); }
+	inline const Variant &operator=(Ref<T, P> value)   { return *this = Variant(value); }
 
-	Variant(const Variant& b): type_(UndefType) { *this = b; }
+	Variant(const Variant &b): type_(UndefType) { *this = b; }
 
-	inline const Variant& operator=(const Variant& b) {
+	inline const Variant &operator=(const Variant &b) {
 		type_ = b.type_;
 		if (b.type_ & RefType) {
 			if (type_ & RefType)
@@ -102,7 +102,7 @@ public:
 	template<class T, template<class> class P>
 	inline operator Ref<T, P>() const { return toInstance<T>(); }
 
-	bool operator==(const Variant& b) const
+	bool operator==(const Variant &b) const
 	{
 		bool equal = false;
 
@@ -120,7 +120,7 @@ public:
 		return equal;
 	}
 
-	bool operator<(const Variant& b) const
+	bool operator<(const Variant &b) const
 	{
 		bool below = false;
 
@@ -136,21 +136,21 @@ public:
 		return below;
 	}
 
-	inline bool operator>(const Variant& b) const { return b < *this; }
-	inline bool operator!=(const Variant& b) const { return !(*this == b); }
-	inline bool operator<=(const Variant& b) const { return (*this < b) || (*this == b); }
-	inline bool operator>=(const Variant& b) const { return (b < *this) || (*this == b); }
+	inline bool operator>(const Variant &b) const { return b < *this; }
+	inline bool operator!=(const Variant &b) const { return !(*this == b); }
+	inline bool operator<=(const Variant &b) const { return (*this < b) || (*this == b); }
+	inline bool operator>=(const Variant &b) const { return (b < *this) || (*this == b); }
 
 private:
-	inline static const char* illegalConversion() { return "Illegal variant conversion"; }
+	inline static const char *illegalConversion() { return "Illegal variant conversion"; }
 
-	inline void initRef(Instance* instance = 0) {
+	inline void initRef(Instance *instance = 0) {
 		new(dummy_)Ref<Instance, Owner>(instance);
 	}
 	inline void killRef() {
 		ref().~Ref<Instance,Owner>();
 	}
-	inline void setRef(Instance* instance) const {
+	inline void setRef(Instance *instance) const {
 		ref() = instance;
 	}
 	inline Ref<Instance, Owner>& ref() const {
