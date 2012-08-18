@@ -23,9 +23,9 @@ namespace ftl
 class PatternException: public StdException
 {
 public:
-	PatternException(const String& error, int pos);
+	PatternException(const String &error, int pos);
 	~PatternException() throw();
-	const char* what() const throw();
+	const char *what() const throw();
 
 private:
 	String message_;
@@ -37,11 +37,11 @@ class Pattern: public Ref<SyntaxDefinition, Owner>
 {
 public:
 	Pattern();
-	Pattern(const char* text);
-	Pattern(const String& text);
+	Pattern(const char *text);
+	Pattern(const String &text);
 
-	const Pattern& operator=(const char* text);
-	const Pattern& operator=(const String& text);
+	const Pattern &operator=(const char *text);
+	const Pattern &operator=(const String &text);
 
 	inline String text() const { return text_; }
 

@@ -27,7 +27,7 @@ public:
 	Ref<Definition, Owner> compile(Ref<ByteArray> text, Ref<SyntaxDebugger> debugger = 0);
 
 private:
-	inline const char* str(Ref<ByteArray> text, Ref<Token> token) { return trap_->capture(text, token->i0(), token->i1()); }
+	inline const char *str(Ref<ByteArray> text, Ref<Token> token) { return trap_->capture(text, token->i0(), token->i1()); }
 	Ref<StringTrap, Owner> trap_;
 
 	AbnfCompiler();

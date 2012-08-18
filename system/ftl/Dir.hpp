@@ -31,7 +31,7 @@ public:
 
 	void open();
 	void close();
-	bool read(DirEntry* entry);
+	bool read(DirEntry *entry);
 	bool isOpen() const;
 
 	void establish(int mode = 0755);
@@ -40,7 +40,7 @@ protected:
 	Dir(String path);
 
 	String path_;
-	DIR* dir_;
+	DIR *dir_;
 };
 
 } // namespace ftl

@@ -22,9 +22,9 @@ class PrefixTreeWalker
 {
 public:
 	PrefixTreeWalker() {}
-	
+
 	// prefix increment / decrement
-	inline PrefixTreeWalker& operator++() {
+	inline PrefixTreeWalker &operator++() {
 		FTL_ASSERT(valid());
 		while (node_) {
 			node_ = node_->next();
@@ -34,7 +34,7 @@ public:
 		}
 		return *this;
 	}
-	inline PrefixTreeWalker& operator+=(int delta) {
+	inline PrefixTreeWalker &operator+=(int delta) {
 		while (delta > 0) {
 			++*this;
 			--delta;
@@ -45,36 +45,36 @@ public:
 		}
 		return *this;
 	}
-	
+
 	// postfix increment / decrement
 	inline PrefixTreeWalker operator++(int) {
 		PrefixTreeWalker it = *this;
 		++(*this);
 		return it;
 	}
-	
+
 	inline PrefixTreeWalker operator+(int delta) const {
 		PrefixTreeWalker it = *this;
 		return it += delta;
 	}
-	
-	inline bool operator==(const PrefixTreeWalker& b) const {
+
+	inline bool operator==(const PrefixTreeWalker &b) const {
 		return node_ == b.node_;
 	}
-	inline bool operator!=(const PrefixTreeWalker& b) const {
+	inline bool operator!=(const PrefixTreeWalker &b) const {
 		return node_ != b.node_;
 	}
-	
+
 private:
 	friend class PrefixTree<Char, Value>;
 	typedef PrefixTree<Char, Value> Node;
-	
+
 	PrefixTreeWalker(Ref<Node> node)
 		: node_(node)
 	{}
-	
+
 	inline bool valid() const { return node_; }
-	
+
 	Ref<Node> node_;
 };
 

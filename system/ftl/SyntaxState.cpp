@@ -36,7 +36,7 @@ State::State(Ref<DefinitionNode> definition, int numFlags, int numChars, int num
 		parent->child_ = this;
 }
 
-Ref<ByteArray> State::string(const char* name)
+Ref<ByteArray> State::string(const char *name)
 {
 	return string(definition_->stringIdByName(name));
 }

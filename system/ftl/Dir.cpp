@@ -68,11 +68,11 @@ void Dir::close()
 	dir_ = 0;
 }
 
-bool Dir::read(DirEntry* entry)
+bool Dir::read(DirEntry *entry)
 {
 	if (!isOpen()) open();
-	struct dirent* buf = entry;
-	struct dirent* result;
+	struct dirent *buf = entry;
+	struct dirent *result;
 	mem::clr(buf, sizeof(struct dirent)); // for paranoid reason
 	int errorCode = ::readdir_r(dir_, buf, &result);
 	if (errorCode)

@@ -61,7 +61,7 @@ Ref<ByteArray, Owner> Buffer::join() const
 	}
 	Ref<ByteArray, Owner> array = ByteArray::newInstance(fill);
 	{
-		char* d = array->data();
+		char *d = array->data();
 		Ref<Block> block = head_;
 		while (block) {
 			FTL_ASSERT2((0 <= block->fill_) && (block->fill_ <= blockSize_), "Block not filled properly.");

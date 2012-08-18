@@ -41,7 +41,7 @@ void Glob::init(String path)
 	pattern_ = remainder_->pop(0);
 }
 
-bool Glob::read(DirEntry* entry)
+bool Glob::read(DirEntry *entry)
 {
 	if (child_) {
 		if (child_->read(entry))

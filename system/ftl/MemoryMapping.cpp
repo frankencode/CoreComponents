@@ -20,7 +20,7 @@ MemoryMapping::MemoryMapping(Ref<File> file, off_t offset, size_t length, int ty
 {
 	if (!file->isOpen())
 		FTL_THROW(StreamSemanticException, "File needs to be opened, before it can be mapped.");
-	
+
 	int prot = 0;
 	if ((file->openFlags() & File::Read) != 0)
 		prot |= Read;
@@ -28,7 +28,7 @@ MemoryMapping::MemoryMapping(Ref<File> file, off_t offset, size_t length, int ty
 		prot |= Write;
 	if ((file->openFlags() & File::Execute) != 0)
 		prot |= Execute;
-	
+
 	start_ = ::mmap(NULL, length, prot, type, file->fd(), offset);
 	if (start_ == MAP_FAILED)
 		FTL_SYSTEM_EXCEPTION;
@@ -51,11 +51,11 @@ MemoryMapping::MemoryMapping(size_t length, int prot, int type)
 
 MemoryMapping::~MemoryMapping()
 {
-	if (::munmap((char* /*suncc issue*/)start_, length_) == -1)
+	if (::munmap((char */*suncc issue*/)start_, length_) == -1)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-void* MemoryMapping::start() const { return start_; }
+void *MemoryMapping::start() const { return start_; }
 size_t MemoryMapping::length() const { return length_; }
 
 size_t MemoryMapping::pageSize()

@@ -14,9 +14,9 @@
 namespace ftl
 {
 
-char* str::dup(const char* s)
+char *str::dup(const char *s)
 {
-	char* s2 = 0;
+	char *s2 = 0;
 	if (s) {
 		int len = str::len(s);
 		s2 = new char[len + 1];
@@ -26,21 +26,21 @@ char* str::dup(const char* s)
 	return s2;
 }
 
-char* str::cat(const char* s0, const char* s1, const char* s2, const char* s3, const char* s4, const char* s5, const char* s6, const char* s7)
+char *str::cat(const char *s0, const char *s1, const char *s2, const char *s3, const char *s4, const char *s5, const char *s6, const char *s7)
 {
 	int len = 0;
-	const char* s[] = { s0, s1, s2, s3, s4, s5, s6, s7 };
-	const int n = sizeof(s) / sizeof(const char*);
+	const char *s[] = { s0, s1, s2, s3, s4, s5, s6, s7 };
+	const int n = sizeof(s) / sizeof(const char *);
 	for (int i = 0; i < n; ++i) {
 		if (s[i])
 			len += str::len(s[i]);
 	}
-	char* c = new char[len + 1];
+	char *c = new char[len + 1];
 	c[len] = 0;
 	int j = 0;
 	for (int i = 0; i < n; ++i) {
 		if (s[i]) {
-			const char* si = s[i];
+			const char *si = s[i];
 			int k = 0;
 			while (si[k] != 0)
 				c[j++] = si[k++];
@@ -50,25 +50,25 @@ char* str::cat(const char* s0, const char* s1, const char* s2, const char* s3, c
 	return c;
 }
 
-char* intToStr(int value)
+char *intToStr(int value)
 {
 	int n = (value <= 0) + 1;
 	for (int v = value; v != 0; v /= 10) ++n;
-	
-	char* buf = new char[n];
+
+	char *buf = new char[n];
 	int i = 0;
 	if (value < 0)
 		buf[0] = '-';
-	
+
 	i = n - 1;
 	buf[i--] = 0;
 	for (int v = value; i >= 0; v /= 10)
 		buf[i--] = '0' + (v % 10);
-	
+
 	return buf;
 }
 
-int strToInt(const char* s, int i0, int i1, int base)
+int strToInt(const char *s, int i0, int i1, int base)
 {
 	if (!s) return 0;
 	int n = 0;

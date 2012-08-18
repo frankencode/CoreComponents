@@ -61,7 +61,7 @@ public:
 	}
 
 	template<class Recipient>
-	void connect(Recipient* recipient, void (Recipient::* method)(Value)) {
+	void connect(Recipient *recipient, void (Recipient::* method)(Value)) {
 		Ref<CallbackList, Owner> list;
 		if (!callbacks_->lookup(recipient, &list)) {
 			list = CallbackList::newInstance();
@@ -70,7 +70,7 @@ public:
 		list->append(new Slot<Recipient, Value>(recipient, method));
 	}
 
-	void disconnect(void* recipient) {
+	void disconnect(void *recipient) {
 		callbacks_->remove(recipient);
 	}
 
@@ -89,10 +89,10 @@ class Property
 {
 public:
 	Property() {}
-	Property(const T& b): value_(b) {}
+	Property(const T &b): value_(b) {}
 
 	inline operator const T&() const { return value_; }
-	inline Property& operator=(const T& b) {
+	inline Property &operator=(const T &b) {
 		if (b != value_) {
 			value_ = b;
 			valueChanged_->emit(value_);
@@ -104,8 +104,8 @@ public:
 
 	inline String toString() const { return Format() << value_; }
 
-	Property* operator->() { return this; }
-	const Property* operator->() const { return this; }
+	Property *operator->() { return this; }
+	const Property *operator->() const { return this; }
 
 private:
 	Ref<Signal<T>, OnDemand> valueChanged_;

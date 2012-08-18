@@ -20,12 +20,12 @@ template<class T>
 class QueueNode
 {
 public:
-	QueueNode(const T& item)
+	QueueNode(const T &item)
 		: item_(item),
 		  next_(0)
 	{}
 	T item_;
-	QueueNode* next_;
+	QueueNode *next_;
 };
 
 template<class T>
@@ -40,9 +40,9 @@ public:
 
 	~Queue()
 	{
-		Node* node = head_;
+		Node *node = head_;
 		while (node) {
-			Node* next = node->next_;
+			Node *next = node->next_;
 			delete node;
 			node = next;
 		}
@@ -51,9 +51,9 @@ public:
 	inline int length() const { return length_; }
 	inline bool isEmpty() const { return length_ == 0; }
 
-	void push(const T& item)
+	void push(const T &item)
 	{
-		Node* node = new Node(item);
+		Node *node = new Node(item);
 		if (tail_) {
 			tail_->next_ = node;
 			tail_ = node;
@@ -65,10 +65,10 @@ public:
 		++length_;
 	}
 
-	void pop(T* item)
+	void pop(T *item)
 	{
 		FTL_ASSERT(length_ > 0);
-		Node* node = head_;
+		Node *node = head_;
 		if (item) *item = node->item_;
 		head_ = node->next_;
 		if (!head_) tail_ = 0;
@@ -92,8 +92,8 @@ private:
 		: head_(0), tail_(0), length_(0)
 	{}
 
-	Node* head_;
-	Node* tail_;
+	Node *head_;
+	Node *tail_;
 	int length_;
 };
 

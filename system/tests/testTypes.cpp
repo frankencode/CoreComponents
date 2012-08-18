@@ -58,7 +58,7 @@ void testFloat754()
 
 int main()
 {
-	print("sizeof(void*) = %%\n", int(sizeof(void*)));
+	print("sizeof(void *) = %%\n", int(sizeof(void *)));
 	print("sizeof(int) = %%\n", int(sizeof(int)));
 	print("sizeof(long) = %%\n", int(sizeof(long)));
 	print("sizeof(uint8_t) = %%\n", int(sizeof(uint8_t)));

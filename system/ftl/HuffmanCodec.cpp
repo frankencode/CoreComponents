@@ -106,7 +106,7 @@ void HuffmanCodec::generateCodeTable()
 		codeTableRoot_ = 0;
 }
 
-void HuffmanCodec::writeRawFrame(BitEncoder* sink, int* raw, int rawFill, int rawMin, int rawMax)
+void HuffmanCodec::writeRawFrame(BitEncoder *sink, int *raw, int rawFill, int rawMin, int rawMax)
 {
 	/** write header
 	  */
@@ -120,7 +120,7 @@ void HuffmanCodec::writeRawFrame(BitEncoder* sink, int* raw, int rawFill, int ra
 		sink->writeUIntVlc(bits, raw[i] - rawMin);
 }
 
-void HuffmanCodec::encode(BitEncoder* sink, int* raw, int rawFill, bool* userFallback)
+void HuffmanCodec::encode(BitEncoder *sink, int *raw, int rawFill, bool *userFallback)
 {
 	/** determine dynamic range (min, max)
 	  */
@@ -198,7 +198,7 @@ void HuffmanCodec::encode(BitEncoder* sink, int* raw, int rawFill, bool* userFal
 	{
 		tableSize += BitEncoder::bitsPerUIntVlc(codeTable_[i].value);
 		tableSize += BitEncoder::bitsPerUIntVlc(codeTable_[i].count);
-		SymbolNode* sym = codeTable_ + i;
+		SymbolNode *sym = codeTable_ + i;
 		int len = 0;
 		while ((sym = sym->parent) != 0) ++len;
 		outSize += len * codeTable_[i].count;
@@ -254,11 +254,11 @@ void HuffmanCodec::encode(BitEncoder* sink, int* raw, int rawFill, bool* userFal
 
 		int x = raw[i] - rawMin;
 
-		SymbolNode* sym = codeMap_[x].symbol;
+		SymbolNode *sym = codeMap_[x].symbol;
 		bitStack_->clear();
 		while (sym->parent)
 		{
-			SymbolNode* parent = sym->parent;
+			SymbolNode *parent = sym->parent;
 			bitStack_->push(parent->rightChild == sym);
 			sym = parent;
 		}
@@ -267,9 +267,9 @@ void HuffmanCodec::encode(BitEncoder* sink, int* raw, int rawFill, bool* userFal
 	}
 }
 
-int HuffmanCodec::decode( int* raw,
+int HuffmanCodec::decode( int *raw,
                           int rawCapacity,
-                          BitDecoder* source )
+                          BitDecoder *source )
 {
 	/** read header
 	  */
@@ -310,7 +310,7 @@ int HuffmanCodec::decode( int* raw,
 	  */
 	for (int i = 0; i < rawFill; ++i)
 	{
-		SymbolNode* sym = codeTableRoot_;
+		SymbolNode *sym = codeTableRoot_;
 		while (sym->leftChild)
 			sym = (source->readBit()) ?  sym->rightChild : sym->leftChild;
 		raw[i] = sym->value + rawMin;
@@ -332,20 +332,20 @@ int HuffmanCodec::encodedCapacity(int rawCapacity, int rawDynamicRange) const
 	return h;
 }
 
-int HuffmanCodec::encode( uint8_t* encoded,
+int HuffmanCodec::encode( uint8_t *encoded,
                           int encodedCapacity,
-                          int* raw,
+                          int *raw,
                           int rawFill,
-                          bool* userFallback )
+                          bool *userFallback )
 {
 	Ref<BitEncoder, Owner> sink = BitEncoder::newInstance(encoded, encodedCapacity);
 	encode(sink, raw, rawFill, userFallback);
 	return int(sink->numBytesWritten());
 }
 
-int HuffmanCodec::decode( int* raw,
+int HuffmanCodec::decode( int *raw,
                           int rawCapacity,
-                          uint8_t* encoded,
+                          uint8_t *encoded,
                           int encodedFill )
 {
 	Ref<BitDecoder, Owner> source = BitDecoder::newInstance(encoded, encodedFill);

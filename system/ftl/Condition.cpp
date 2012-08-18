@@ -36,7 +36,7 @@ Condition::~Condition()
   * Note that the first thread scheduled by the OS may invalidate
   * the condition again.
   */
-void Condition::wait(Mutex* mutex)
+void Condition::wait(Mutex *mutex)
 {
 	int ret = -1;
 	while (true) {
@@ -51,7 +51,7 @@ void Condition::wait(Mutex* mutex)
   * (see also: now()). Returns true if the condition was signalled
   * before 'timeout', else returns false.
   */
-bool Condition::waitUntil(Mutex* mutex, Time timeout)
+bool Condition::waitUntil(Mutex *mutex, Time timeout)
 {
 	bool success = true;
 	struct timespec ts;

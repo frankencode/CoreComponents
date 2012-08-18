@@ -70,7 +70,7 @@ public:
 
 	pid_t id() const;
 
-	void kill(int signal = SIGTERM, bool* permissionDenied = 0);
+	void kill(int signal = SIGTERM, bool *permissionDenied = 0);
 	bool isRunning() const;
 
 	int wait();
@@ -99,8 +99,8 @@ public:
 	static pid_t currentId();
 	static pid_t parentId();
 
-	static void kill(pid_t processId, int signal, bool* permissionDenied = 0);
-	static void killGroup(pid_t processGroupId, int signal, bool* permissionDenied = 0);
+	static void kill(pid_t processId, int signal, bool *permissionDenied = 0);
+	static void killGroup(pid_t processGroupId, int signal, bool *permissionDenied = 0);
 	static void raise(int signal);
 
 	static void sleep(Time duration);

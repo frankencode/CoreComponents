@@ -24,7 +24,7 @@ class DefinitionNode;
 class DebugFactory: public Instance
 {
 public:
-	virtual Node* produce(Node* newNode, const char* nodeType) = 0;
+	virtual Node *produce(Node *newNode, const char *nodeType) = 0;
 
 protected:
 	Ref<DefinitionNode> definition() const;

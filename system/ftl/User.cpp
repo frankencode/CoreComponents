@@ -24,26 +24,26 @@ User::User(uid_t id)
 	#endif
 	Ref<ByteArray, Owner> buf = ByteArray::newInstance(bufSize);
 	struct passwd space;
-	struct passwd* entry = 0;
+	struct passwd *entry = 0;
 	if (::getpwuid_r(id, &space, buf->data(), buf->size(), &entry) != 0)
 		FTL_SYSTEM_EXCEPTION;
 	load(entry);
 }
 
-User::User(const char* name)
+User::User(const char *name)
 {
 	int bufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
 	if (bufSize == -1)
 		FTL_SYSTEM_EXCEPTION;
 	Ref<ByteArray, Owner> buf = ByteArray::newInstance(bufSize);
 	struct passwd space;
-	struct passwd* entry = 0;
+	struct passwd *entry = 0;
 	if (::getpwnam_r(name, &space, buf->data(), buf->size(), &entry) != 0)
 		FTL_SYSTEM_EXCEPTION;
 	load(entry);
 }
 
-void User::load(struct passwd* entry)
+void User::load(struct passwd *entry)
 {
 	if (entry) {
 		exists_ = true;

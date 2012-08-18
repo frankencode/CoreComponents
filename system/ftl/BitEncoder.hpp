@@ -25,7 +25,7 @@ public:
 		return newInstance(stream, bufCapacity, endian);
 	}
 
-	inline static Ref<BitEncoder, Owner> newInstance(void* buf, int bufCapacity, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static Ref<BitEncoder, Owner> newInstance(void *buf, int bufCapacity, int endian = FTL_DEFAULT_ENDIAN) {
 		return newInstance(buf, bufCapacity, endian);
 	}
 
@@ -51,13 +51,13 @@ public:
 
 private:
 	BitEncoder(Ref<Stream> stream, int bufCapacity, int endian);
-	BitEncoder(void* buf, int bufCapacity, int endian);
+	BitEncoder(void *buf, int bufCapacity, int endian);
 
 	Ref<Stream, Owner> stream_;
 	int endian_;
 
 	int bufCapacity_;
-	uint8_t* buf_;
+	uint8_t *buf_;
 
 	int i_;    // byte offset within buf_
 	int iBit_;    // bit offset within buf_[i_]

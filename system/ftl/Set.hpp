@@ -39,29 +39,29 @@ public:
 	inline Item get(int index) const {
 		return at(index);
 	}
-	inline const Item& at(int index) const {
-		Node* node = 0;
+	inline const Item &at(int index) const {
+		Node *node = 0;
 		if (tree_.lookupByIndex(index, &node)) return node->item_;
 		else return nullItem_;
 	}
 
 	/** Return the index of the first item greater or equal _a_
 	  */
-	inline int first(const Item& a) const { return tree_.first(a); }
+	inline int first(const Item &a) const { return tree_.first(a); }
 
 	/** Return the index of the first item lower or equal _b_
 	  */
-	inline int last(const Item& b) const { return tree_.last(b); }
+	inline int last(const Item &b) const { return tree_.last(b); }
 
 	/** Insert a new item if no item with the same value exists already.
 	  * If currentItem is non-null the item with the same value is returned.
 	  * The function returns true if the new item was inserted successfully.
 	  */
-	inline bool insert(const Item& item, Item* currentItem = 0, int* index = 0)
+	inline bool insert(const Item &item, Item *currentItem = 0, int *index = 0)
 	{
 		bool found = false;
 		bool below = true;
-		Node* k = tree_.find(item, &found, &below, index);
+		Node *k = tree_.find(item, &found, &below, index);
 		if (found) {
 			if (currentItem)
 				*currentItem = k->item_;
@@ -72,37 +72,37 @@ public:
 		return !found;
 	}
 
-	inline bool remove(const Item& item, int* index = 0)
+	inline bool remove(const Item &item, int *index = 0)
 	{
 		bool found;
-		Node* k = tree_.find(item, &found, 0, index);
+		Node *k = tree_.find(item, &found, 0, index);
 		if (found)
 			tree_.remove(k);
 		return found;
 	}
 
-	inline bool contains(const Item& item)
+	inline bool contains(const Item &item)
 	{
 		bool found = false;
 		tree_.find(item, &found);
 		return found;
 	}
 
-	inline void push(const Item& item)
+	inline void push(const Item &item)
 	{
 		bool found = false;
 		bool below = true;
-		Node* k = tree_.find(item, &found, &below);
+		Node *k = tree_.find(item, &found, &below);
 		if (found)
 			k->item_ = item;
 		else
 			tree_.attach(k, new Node(item), below);
 	}
 
-	inline void pop(Item* item)
+	inline void pop(Item *item)
 	{
 		FTL_ASSERT(!isEmpty());
-		Node* k = tree_.min();
+		Node *k = tree_.min();
 		*item = k->item_;
 		tree_.remove(k);
 	}
@@ -120,8 +120,8 @@ private:
 	typedef typename Tree::Node Node;
 
 	Set() {}
-	Set(const Set& b): tree_(b.tree_) {}
-	inline const Set& operator=(const Set& b) { tree_ = b.tree_; return *this; }
+	Set(const Set &b): tree_(b.tree_) {}
+	inline const Set &operator=(const Set &b) { tree_ = b.tree_; return *this; }
 
 	Tree tree_;
 	Item nullItem_;

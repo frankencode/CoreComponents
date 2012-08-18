@@ -30,7 +30,7 @@ public:
 		  i1_(0)
 	{}
 
-	Token(const Token& b)
+	Token(const Token &b)
 		: definition_(b.definition_),
 		  rule_(b.rule_),
 		  keyword_(b.keyword_),

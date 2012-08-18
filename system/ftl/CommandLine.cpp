@@ -298,7 +298,7 @@ void CommandLine::readOption(String line, Ref<Token> token)
 void CommandLine::readValue(Ref<CommandOption> option, String line, Ref<Token> token)
 {
 	String s = stripQuotes(line->copy(token->i0(), token->i1()));
-	Variant& value = option->value_;
+	Variant &value = option->value_;
 
 	if (value.type() == Variant::StringType) {
 		value = s;

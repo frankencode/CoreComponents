@@ -23,7 +23,7 @@ public:
 	virtual bool isEmpty() const = 0;
 	virtual T pop() = 0;
 
-	inline bool read(T* item) {
+	inline bool read(T *item) {
 		if (!isEmpty()) {
 			pop(item);
 			return true;
@@ -31,11 +31,11 @@ public:
 		return false;
 	}
 
-	virtual void push(const T& item) = 0;
-	virtual void pop(T* item) = 0;
+	virtual void push(const T &item) = 0;
+	virtual void pop(T *item) = 0;
 
-	inline CT& operator<<(const T& item) { push(item); return *static_cast<CT*>(this); }
-	inline CT& operator>>(T& item) { pop(&item); return *static_cast<CT*>(this); }
+	inline CT &operator<<(const T &item) { push(item); return *static_cast<CT*>(this); }
+	inline CT &operator>>(T &item) { pop(&item); return *static_cast<CT*>(this); }
 };
 
 template<
@@ -75,7 +75,7 @@ public:
 		  i_(0)
 	{}
 
-	inline bool read(Item* item) {
+	inline bool read(Item *item) {
 		bool more = container_->has(i_);
 		if (more)
 			*item = container_->get(i_++);
@@ -92,13 +92,13 @@ private:
 template<class T>
 class Ascending {
 public:
-	static inline bool below(const T& a, const T& b) { return a < b; }
+	static inline bool below(const T &a, const T &b) { return a < b; }
 };
 
 template<class T>
 class Descending {
 public:
-	static inline bool below(const T& a, const T& b) { return b < a; }
+	static inline bool below(const T &a, const T &b) { return b < a; }
 };
 
 class SortOrder {
@@ -110,7 +110,7 @@ template<class T>
 class FlexibleSortOrder: public SortOrder {
 public:
 	FlexibleSortOrder(int order = Asc): asc_(order == Asc) {}
-	inline bool below(const T& a, const T& b) { return (a < b) == asc_; }
+	inline bool below(const T &a, const T &b) { return (a < b) == asc_; }
 protected:
 	void setSortOrder(int order) { asc_ = (order == Asc); }
 private:

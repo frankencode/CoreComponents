@@ -36,7 +36,7 @@ namespace ftl
 class Utf16Walker
 {
 public:
-	Utf16Walker(const uint16_t* data = 0, const uint16_t* pos = 0, int endian = localEndian())
+	Utf16Walker(const uint16_t *data = 0, const uint16_t *pos = 0, int endian = localEndian())
 		: s_(data),
 		  p_(pos),
 		  endian_(endian)
@@ -49,15 +49,15 @@ public:
 			++p_;
 		}
 	}
-	
-	Utf16Walker(const Utf16Walker& b)
+
+	Utf16Walker(const Utf16Walker &b)
 		: s_(b.s_),
 		  p_(b.p_),
 		  endian_(b.endian_)
 	{}
-	
+
 	// prefix increment
-	inline Utf16Walker& operator++() {
+	inline Utf16Walker &operator++() {
 		if (*p_) {
 			uint16_t ch = readWord(p_);
 			++p_;
@@ -70,9 +70,9 @@ public:
 		}
 		return *this;
 	}
-	
+
 	// prefix decrement
-	inline Utf16Walker& operator--() {
+	inline Utf16Walker &operator--() {
 		bool canStepBack = (s_ < p_);
 		// if at zero character figure out if before begin or at end or empty string
 		if (!*p_) canStepBack = (p_ != s_) ? *(p_ - 1) : false;
@@ -90,43 +90,43 @@ public:
 			p_ = beforeBegin();
 		return *this;
 	}
-	
+
 	// postfix increment
 	inline Utf16Walker operator++(int) {
 		Utf16Walker it = *this;
 		++(*this);
 		return it;
 	}
-	
+
 	// postfix decrement
 	inline Utf16Walker operator--(int) {
 		Utf16Walker it = *this;
 		--(*this);
 		return it;
 	}
-	
-	inline Utf16Walker& operator+=(int n) {
+
+	inline Utf16Walker &operator+=(int n) {
 		while (n > 0) { ++(*this); --n; }
 		while (n < 0) { --(*this); ++n; }
 		return *this;
 	}
-	
-	inline Utf16Walker& operator-=(int n) {
+
+	inline Utf16Walker &operator-=(int n) {
 		while (n > 0) { --(*this); --n; }
 		while (n < 0) { ++(*this); ++n; }
 		return *this;
 	}
-	
+
 	inline bool valid() const { return *p_; }
 	inline operator bool() const { return *p_; }
-	
+
 	inline bool hasNext() { return *p_; }
 	inline uchar_t next() {
 		uchar_t ch = getChar();
 		++(*this);
 		return ch;
 	}
-	
+
 	inline Utf16Walker operator+(int delta) const {
 		Utf16Walker it = *this;
 		return it += delta;
@@ -135,7 +135,7 @@ public:
 		Utf16Walker it = *this;
 		return it -= delta;
 	}
-	
+
 	// decode unicode point
 	inline uint32_t getChar() const {
 		uint32_t ch = readWord(p_);
@@ -148,15 +148,15 @@ public:
 		}
 		return ch;
 	}
-	
-	inline const char* data() const { return reinterpret_cast<const char*>(s_); }
-	inline const char* pos() const { return reinterpret_cast<const char*>(p_); }
-	
-	inline bool operator==(const Utf8Walker& b) const { return (p_ == b.p_) && (s_ == b.s_); }
-	inline bool operator!=(const Utf8Walker& b) const { return (p_ != b.p_) || (s_ != b.s_); }
-	
+
+	inline const char *data() const { return reinterpret_cast<const char*>(s_); }
+	inline const char *pos() const { return reinterpret_cast<const char*>(p_); }
+
+	inline bool operator==(const Utf8Walker &b) const { return (p_ == b.p_) && (s_ == b.s_); }
+	inline bool operator!=(const Utf8Walker &b) const { return (p_ != b.p_) || (s_ != b.s_); }
+
 	// distance in number of characters
-	inline int operator-(const Utf16Walker& b) const {
+	inline int operator-(const Utf16Walker &b) const {
 		int n = 0;
 		if (s_ == b.s_) {
 			if (p_ <= b.p_) {
@@ -171,18 +171,18 @@ public:
 		}
 		return n;
 	}
-	
+
 private:
-	static inline const uint16_t* beforeBegin() {
+	static inline const uint16_t *beforeBegin() {
 		return reinterpret_cast<const uint16_t*>("\0\0\0") + 1; // extra zero to signal before begin position
 	}
-	
-	inline uint16_t readWord(const uint16_t* p) const {
+
+	inline uint16_t readWord(const uint16_t *p) const {
 		return endianGate(*p, endian_);
 	}
-	
-	const uint16_t* s_; // zero-terminated word array
-	const uint16_t* p_; // position in word array
+
+	const uint16_t *s_; // zero-terminated word array
+	const uint16_t *p_; // position in word array
 	int endian_;
 };
 

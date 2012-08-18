@@ -23,18 +23,18 @@ public:
 		return new StringTrap;
 	}
 
-	inline const char* capture(Ref<ByteArray> s) const {
+	inline const char *capture(Ref<ByteArray> s) const {
 		return capture(s->constData(), s->size());
 	}
 
-	inline const char* capture(Ref<ByteArray> s, int i0, int i1) const {
+	inline const char *capture(Ref<ByteArray> s, int i0, int i1) const {
 		FTL_ASSERT((0 <= i0) && (i0 < s->size()));
 		FTL_ASSERT((0 <= i1) && (i1 <= s->size()));
 		FTL_ASSERT(i0 <= i1);
 		return capture(s->constData() + i0, i1 - i0);
 	}
 
-	inline const char* capture(const char* s, int len = -1) const {
+	inline const char *capture(const char *s, int len = -1) const {
 		if (len < 0) len = str::len(s);
 		if (!head_) head_ = tail_ = new Node(s, len);
 		else tail_ = tail_->next_ = new Node(s, len);
@@ -46,7 +46,7 @@ private:
 
 	class Node: public Instance {
 	public:
-		Node(const char* s, int len): s_(ByteArray::newInstance(s, len)) {}
+		Node(const char *s, int len): s_(ByteArray::newInstance(s, len)) {}
 		Ref<ByteArray, Owner> s_;
 		Ref<Node, Owner> next_;
 	};

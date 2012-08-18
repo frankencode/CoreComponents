@@ -15,7 +15,7 @@
 namespace ftl
 {
 
-Ref<WireObject> WireObject::resolve(String path, String* name, Variant* value) const
+Ref<WireObject> WireObject::resolve(String path, String *name, Variant *value) const
 {
 	String hn;  if (!name) name = &hn;
 	Variant hv; if (!value) value = &hv;

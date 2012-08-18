@@ -25,7 +25,7 @@ enum Endian { LittleEndian = 1, BigEndian = 0 };
 
 inline int localEndian() {
 	const unsigned y = 1;
-	return *((uint8_t*)&y);
+	return *((uint8_t *)&y);
 }
 
 // swap endianess, if local endian is unequal channel endian
@@ -60,11 +60,11 @@ const double inf = union_cast<double>(uint64_t(0x7FF) << 52);
 const unsigned unsignedMax = unsigned(-1);
 const int intMax = unsignedMax >> 1;
 
-inline void* addressMax()
+inline void *addressMax()
 {
-	void* p = 0;
-	unsigned char* u = (unsigned char*)&p;
-	for (unsigned i = 0; i < sizeof(void*) / sizeof(unsigned char); ++i)
+	void *p = 0;
+	unsigned char *u = (unsigned char *)&p;
+	for (unsigned i = 0; i < sizeof(void *) / sizeof(unsigned char); ++i)
 		u[i] = 0xFF;
 	return p;
 }
@@ -116,7 +116,7 @@ class DynamicCastHelper {};
 template<class T, class U>
 class DynamicCastHelper<T, U, 1> {
 public:
-	inline static U* cast(T* p) { return dynamic_cast<U*>(p); }
+	inline static U *cast(T *p) { return dynamic_cast<U*>(p); }
 };
 
 template<class T, class U, int ConversionExists = -1>
@@ -125,13 +125,13 @@ class CastHelper {};
 template<class T, class U>
 class CastHelper<T, U, 0> {
 public:
-	inline static U* cast(T* p) { return DynamicCastHelper<T, U, ConversionFromTo<U*, T*>::Exists>::cast(p); }
+	inline static U *cast(T *p) { return DynamicCastHelper<T, U, ConversionFromTo<U*, T*>::Exists>::cast(p); }
 };
 
 template<class T, class U>
 class CastHelper<T, U, 1> {
 public:
-	inline static U* cast(T* p) { return static_cast<U*>(p); }
+	inline static U *cast(T *p) { return static_cast<U*>(p); }
 };
 
 #define FTL_CAST_FROM_TO(T, U, p) CastHelper<T, U, ConversionFromTo<T*, U*>::Exists>::cast(p)
@@ -170,39 +170,39 @@ inline bool isSpace(Char ch) {
 template<class T>
 class Identity {
 public:
-	inline static T map(const T& x) { return x; }
+	inline static T map(const T &x) { return x; }
 };
 
 template<class T>
 class ToLower {
 public:
-	inline static T map(const T& x) { return ftl::toLower(x); }
+	inline static T map(const T &x) { return ftl::toLower(x); }
 };
 
 template<class T>
 class ToUpper {
 public:
-	inline static T map(const T& x) { return ftl::toUpper(x); }
+	inline static T map(const T &x) { return ftl::toUpper(x); }
 };
 
 template<class T>
 class ToAscii {
 public:
-	inline static char map(const T& x) { return char(x); }
+	inline static char map(const T &x) { return char(x); }
 };
 
 template<class T>
 class ToUnicode {
 public:
-	inline static uchar_t map(const T& x) { return uchar_t(x); }
+	inline static uchar_t map(const T &x) { return uchar_t(x); }
 };
 
 class NonCopyable
 {
 protected:
 	NonCopyable() {}
-	NonCopyable(const NonCopyable& b);
-	const NonCopyable& operator=(const NonCopyable& b);
+	NonCopyable(const NonCopyable &b);
+	const NonCopyable &operator=(const NonCopyable &b);
 };
 
 } // namespace ftl

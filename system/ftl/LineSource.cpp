@@ -15,7 +15,7 @@
 namespace ftl
 {
 
-LineSource::LineSource(Ref<Stream> stream, const char* eol, int maxLineLength)
+LineSource::LineSource(Ref<Stream> stream, const char *eol, int maxLineLength)
 	: stream_(stream),
 	  eol_(eol),
 	  cachedLines_(0),
@@ -31,7 +31,7 @@ bool LineSource::hasMore()
 	return (cachedLines_ > 0);
 }
 
-bool LineSource::read(String* line)
+bool LineSource::read(String *line)
 {
 	bool more = hasMore();
 	if (more) *line = readLine();

@@ -14,7 +14,7 @@
 namespace ftl
 {
 
-LineSink::LineSink(Ref<Stream> stream, const char* eol, int maxLineLength)
+LineSink::LineSink(Ref<Stream> stream, const char *eol, int maxLineLength)
 	: stream_(stream),
 	  eol_(eol),
 	  bufFill_(0),
@@ -56,7 +56,7 @@ void LineSink::write(String text)
 		feed(text->data() + i, j - i);
 }
 
-void LineSink::feed(const char* data, int size)
+void LineSink::feed(const char *data, int size)
 {
 	if (size > buf_->size() - bufFill_)
 		FTL_THROW(StreamIoException, str::cat("Maximum line length of ", ftl::intToStr(buf_->size()), " bytes exceeded"));

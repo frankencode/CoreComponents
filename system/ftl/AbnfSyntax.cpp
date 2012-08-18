@@ -17,7 +17,7 @@ namespace ftl
 AbnfSyntax::AbnfSyntax()
 {
 	SYNTAX("abnf");
-	
+
 	DEFINE_VOID("comment",
 		GLUE(
 			CHAR(';'),
@@ -30,21 +30,21 @@ AbnfSyntax::AbnfSyntax()
 			INLINE("CRLF")
 		)
 	);
-	
+
 	DEFINE_VOID("c-nl",
 		CHOICE(
 			INLINE("comment"),
 			INLINE("CRLF")
 		)
 	);
-	
+
 	DEFINE_VOID("c-wsp",
 		GLUE(
 			REPEAT(0, 1, INLINE("c-nl")),
 			INLINE("WSP")
 		)
 	);
-	
+
 	numVal_ =
 		DEFINE("num-val",
 			GLUE(
@@ -56,7 +56,7 @@ AbnfSyntax::AbnfSyntax()
 				)
 			)
 		);
-	
+
 	charVal_ =
 		DEFINE("char-val",
 			GLUE(
@@ -65,7 +65,7 @@ AbnfSyntax::AbnfSyntax()
 				CHAR('"')
 			)
 		);
-	
+
 	proseVal_ =
 		DEFINE("prose-val",
 			GLUE(
@@ -74,7 +74,7 @@ AbnfSyntax::AbnfSyntax()
 				CHAR('>')
 			)
 		);
-	
+
 	group_ =
 		DEFINE("group",
 			GLUE(
@@ -85,7 +85,7 @@ AbnfSyntax::AbnfSyntax()
 				CHAR(')')
 			)
 		);
-	
+
 	option_ =
 		DEFINE("option",
 			GLUE(
@@ -96,7 +96,7 @@ AbnfSyntax::AbnfSyntax()
 				CHAR(']')
 			)
 		);
-	
+
 	element_ =
 		DEFINE("element",
 			CHOICE(
@@ -108,7 +108,7 @@ AbnfSyntax::AbnfSyntax()
 				REF("prose-val")
 			)
 		);
-	
+
 	repeat_ =
 		DEFINE("repeat",
 			CHOICE(
@@ -120,7 +120,7 @@ AbnfSyntax::AbnfSyntax()
 				REPEAT(1, INLINE("DIGIT"))
 			)
 		);
-	
+
 	repetition_ =
 		DEFINE("repetition",
 			CHOICE(
@@ -131,7 +131,7 @@ AbnfSyntax::AbnfSyntax()
 				REF("option")
 			)
 		);
-	
+
 	concatenation_ =
 		DEFINE("concatenation",
 			GLUE(
@@ -144,7 +144,7 @@ AbnfSyntax::AbnfSyntax()
 				)
 			)
 		);
-	
+
 	alternation_ =
 		DEFINE("alternation",
 			GLUE(
@@ -159,7 +159,7 @@ AbnfSyntax::AbnfSyntax()
 				)
 			)
 		);
-	
+
 	ruleName_ =
 		DEFINE("rulename",
 			GLUE(
@@ -173,14 +173,14 @@ AbnfSyntax::AbnfSyntax()
 				)
 			)
 		);
-	
+
 	definedAs_ =
 		DEFINE("defined-as",
 			KEYWORD("= ~")
 				// deviation from RFC5234, no support for redefinition ("=/")
 				// and added differentiation between matching ('~') and production rules ('=')
 		);
-	
+
 	rule_ =
 		DEFINE("rule",
 			GLUE(
@@ -194,7 +194,7 @@ AbnfSyntax::AbnfSyntax()
 				INLINE("c-nl")
 			)
 		);
-	
+
 	rulelist_ =
 		DEFINE("rulelist",
 			REPEAT(1,
@@ -211,12 +211,12 @@ AbnfSyntax::AbnfSyntax()
 				)
 			)
 		);
-	
+
 	ENTRY("rulelist");
 	LINK();
 }
 
-AbnfSyntax::NODE AbnfSyntax::defineValue(const char* digitRule)
+AbnfSyntax::NODE AbnfSyntax::defineValue(const char *digitRule)
 {
 	return
 		GLUE(

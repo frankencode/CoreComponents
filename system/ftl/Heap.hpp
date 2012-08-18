@@ -37,7 +37,7 @@ public:
 	inline bool isFull() const { return fill_ == size_; }
 	inline bool isEmpty() const { return fill_ == 0; }
 
-	inline void push(const T& item)
+	inline void push(const T &item)
 	{
 		FTL_ASSERT(fill_ < size_);
 		buf_[fill_] = item;
@@ -45,7 +45,7 @@ public:
 		passUpLast();
 	}
 
-	inline void pop(T* item)
+	inline void pop(T *item)
 	{
 		FTL_ASSERT(fill_ > 0);
 		*item = buf_[0];
@@ -127,7 +127,7 @@ protected:
 		  buf_(new T[size])
 	{}
 
-	GenericHeap(T* buf, int size)
+	GenericHeap(T *buf, int size)
 		: fill_(0),
 		  size_(size),
 		  bufOwner_(false),
@@ -137,7 +137,7 @@ protected:
 	int fill_;    // current number of elements
 	int size_;    // maximal number of elements
 	bool bufOwner_;
-	T* buf_;    // memory buffer used for storing elements
+	T *buf_;    // memory buffer used for storing elements
 };
 
 template<class T>
@@ -149,7 +149,7 @@ public:
 	inline static Ref<Heap, Owner> newInstance(int size, int order = SortOrder::Ascending) {
 		return new Heap(size, order);
 	}
-	inline static Ref<Heap, Owner> newInstance(T* buf, int size, int order = SortOrder::Ascending) {
+	inline static Ref<Heap, Owner> newInstance(T *buf, int size, int order = SortOrder::Ascending) {
 		return new Heap(buf, size, order);
 	}
 
@@ -164,7 +164,7 @@ private:
 	{
 		Super::setSortOrder(order);
 	}
-	Heap(T* buf, int size, int order)
+	Heap(T *buf, int size, int order)
 		: GenericHeap<T, FlexibleSortOrder>(buf, size)
 	{
 		Super::setSortOrder(order);
@@ -178,12 +178,12 @@ public:
 	inline static Ref<MinHeap, Owner> newInstance(int size) {
 		return new MinHeap(size);
 	}
-	inline static Ref<MinHeap, Owner> newInstance(T* buf, int size) {
+	inline static Ref<MinHeap, Owner> newInstance(T *buf, int size) {
 		return new MinHeap(buf, size);
 	}
 private:
 	MinHeap(int size): GenericHeap<T, Ascending>(size) {}
-	MinHeap(T* buf, int size): GenericHeap<T, Ascending>(buf, size) {}
+	MinHeap(T *buf, int size): GenericHeap<T, Ascending>(buf, size) {}
 };
 
 template<class T>
@@ -193,12 +193,12 @@ public:
 	inline static Ref<MaxHeap, Owner> newInstance(int size) {
 		return new MaxHeap(size);
 	}
-	inline static Ref<MaxHeap, Owner> newInstance(T* buf, int size) {
+	inline static Ref<MaxHeap, Owner> newInstance(T *buf, int size) {
 		return new MaxHeap(buf, size);
 	}
 private:
 	MaxHeap(int size): GenericHeap<T, Descending>(size) {}
-	MaxHeap(T* buf, int size): GenericHeap<T, Descending>(buf, size) {}
+	MaxHeap(T *buf, int size): GenericHeap<T, Descending>(buf, size) {}
 };
 
 } // namespace ftl

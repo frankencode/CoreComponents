@@ -24,13 +24,13 @@ public:
 	inline static Ref<ByteDecoder, Owner> newInstance(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteDecoder(stream, bufCapa, endian);
 	}
-	inline static Ref<ByteDecoder, Owner> newInstance(const void* buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static Ref<ByteDecoder, Owner> newInstance(const void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteDecoder(buf, bufCapa, endian);
 	}
 	~ByteDecoder();
 
-	bool read(uint8_t* x);
-	bool read(char* ch);
+	bool read(uint8_t *x);
+	bool read(char *ch);
 
 	void read(Ref<ByteArray> bytes);
 	Ref<ByteArray, Owner> read(int n);
@@ -60,7 +60,7 @@ public:
 
 private:
 	ByteDecoder(Ref<Stream> stream, int bufCapa, int endian);
-	ByteDecoder(const void* buf, int bufCapa, int endian);
+	ByteDecoder(const void *buf, int bufCapa, int endian);
 
 	Ref<Stream, Owner> stream_;
 	int endian_;
@@ -69,12 +69,12 @@ private:
 
 	int bufCapa_;
 	int bufFill_;
-	uint8_t* buf_;
+	uint8_t *buf_;
 	int i_;    // byte offset within buf_
 	off_t nr_;    // accumulated number of bytes read
 };
 
-inline bool ByteDecoder::read(uint8_t* x)
+inline bool ByteDecoder::read(uint8_t *x)
 {
 	bool more = hasMore();
 	if (more)
@@ -82,7 +82,7 @@ inline bool ByteDecoder::read(uint8_t* x)
 	return more;
 }
 
-inline bool ByteDecoder::read(char* ch)
+inline bool ByteDecoder::read(char *ch)
 {
 	return read(reinterpret_cast<uint8_t*>(ch));
 }

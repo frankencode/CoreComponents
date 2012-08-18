@@ -37,20 +37,20 @@ public:
 	~Definition();
 
 	int id() const;
-	const char* name() const;
+	const char *name() const;
 
 	Ref<DebugFactory> debugFactory() const;
-	Node* debug(Node* newNode, const char* nodeType);
+	Node *debug(Node *newNode, const char *nodeType);
 
-	int keywordByName(const char* keyword);
-	State* newState(State* parent = 0) const;
+	int keywordByName(const char *keyword);
+	State *newState(State *parent = 0) const;
 
-	Ref<Token, Owner> find(const ByteArray* media, int i = 0) const;
-	Ref<Token, Owner> match(const ByteArray* media, int i = -1, Ref<SyntaxState> state = 0) const;
+	Ref<Token, Owner> find(const ByteArray *media, int i = 0) const;
+	Ref<Token, Owner> match(const ByteArray *media, int i = -1, Ref<SyntaxState> state = 0) const;
 
-	void SYNTAX(const char* name);
-	void IMPORT(Ref<Definition> definition, const char* name = 0);
-	void OPTION(const char* name, bool value);
+	void SYNTAX(const char *name);
+	void IMPORT(Ref<Definition> definition, const char *name = 0);
+	void OPTION(const char *name, bool value);
 
 	NODE CHAR(char ch);
 	NODE OTHER(char ch);
@@ -61,12 +61,12 @@ public:
 	NODE ANY();
 
 	NODE RANGE(char a, char b);
-	NODE RANGE(const char* s);
+	NODE RANGE(const char *s);
 	NODE EXCEPT(char a, char b);
-	NODE EXCEPT(const char* s);
+	NODE EXCEPT(const char *s);
 
-	NODE STRING(const char* s);
-	NODE KEYWORD(const char* keywords);
+	NODE STRING(const char *s);
+	NODE KEYWORD(const char *keywords);
 
 	NODE REPEAT(int minRepeat, int maxRepeat, NODE entry);
 	NODE REPEAT(int minRepeat, NODE entry);
@@ -126,18 +126,18 @@ public:
 	NODE GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14);
 	NODE GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14, NODE child15);
 
-	NODE HINT(const char* text = "");
+	NODE HINT(const char *text = "");
 	NODE DONE();
 
-	int DEFINE(const char* ruleName, NODE entry = 0);
-	void DEFINE_VOID(const char* ruleName, NODE entry = 0);
-	void ENTRY(const char* ruleName);
-	NODE REF(const char* ruleName);
-	NODE INLINE(const char* ruleName);
-	NODE PREVIOUS(const char* ruleName, const char* keyword = 0);
-	NODE CONTEXT(const char* ruleName, NODE entry = 0);
+	int DEFINE(const char *ruleName, NODE entry = 0);
+	void DEFINE_VOID(const char *ruleName, NODE entry = 0);
+	void ENTRY(const char *ruleName);
+	NODE REF(const char *ruleName);
+	NODE INLINE(const char *ruleName);
+	NODE PREVIOUS(const char *ruleName, const char *keyword = 0);
+	NODE CONTEXT(const char *ruleName, NODE entry = 0);
 
-	typedef int (*CallBack) (Ref<Instance> self, ByteArray* media, int i, State* state);
+	typedef int (*CallBack) (Ref<Instance> self, ByteArray *media, int i, State *state);
 
 	NODE CALL(CallBack callBack, Ref<Instance> self = 0);
 	NODE ERROR();
@@ -145,30 +145,30 @@ public:
 	void OPTIMIZE();
 	void LINK(bool optimize = true);
 
-	void STATE_FLAG(const char* name, bool defaultValue = false);
-	void STATE_CHAR(const char* name, char defaultValue = 0);
-	void STATE_STRING(const char* name, const char* defaultValue = "");
-	void TOUCH_STRING(const char* name);
+	void STATE_FLAG(const char *name, bool defaultValue = false);
+	void STATE_CHAR(const char *name, char defaultValue = 0);
+	void STATE_STRING(const char *name, const char *defaultValue = "");
+	void TOUCH_STRING(const char *name);
 
-	NODE SET(const char* name, bool value);
-	NODE IF(const char* name, NODE trueBranch, NODE falseBranch = 0);
-	NODE GETCHAR(const char* name);
-	NODE SETCHAR(const char* name, char value);
-	NODE VARCHAR(const char* name);
-	NODE VAROTHER(const char* name);
-	NODE GETSTRING(const char* name, NODE coverage);
-	NODE SETSTRING(const char* name, const char* value);
-	NODE VARSTRING(const char* name);
+	NODE SET(const char *name, bool value);
+	NODE IF(const char *name, NODE trueBranch, NODE falseBranch = 0);
+	NODE GETCHAR(const char *name);
+	NODE SETCHAR(const char *name, char value);
+	NODE VARCHAR(const char *name);
+	NODE VAROTHER(const char *name);
+	NODE GETSTRING(const char *name, NODE coverage);
+	NODE SETSTRING(const char *name, const char *value);
+	NODE VARSTRING(const char *name);
 
-	NODE INVOKE(DefinitionNode* definition, NODE coverage = 0);
-	NODE INVOKE(const char* definitionName, NODE coverage = 0);
+	NODE INVOKE(DefinitionNode *definition, NODE coverage = 0);
+	NODE INVOKE(const char *definitionName, NODE coverage = 0);
 
 protected:
 	Definition(Ref<DebugFactory> debugFactory = 0);
 
 private:
-	Definition(const Definition&);
-	// const Definition& operator=(const Defintion&);
+	Definition(const Definition &);
+	// const Definition &operator=(const Defintion &);
 
 	Ref<DefinitionNode, Owner> def_;
 };

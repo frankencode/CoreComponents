@@ -18,14 +18,14 @@ int ftl_hook;
 namespace ftl
 {
 
-LinkInfo::LinkInfo(void* addr)
+LinkInfo::LinkInfo(void *addr)
 	: baseAddress_(0),
 	  symbolAddress_(0),
 	  majorVersion_(0),
 	  minorVersion_(0),
 	  patchLevel_(0)
 {
-	if (!addr) addr = (void*)&ftl_hook;
+	if (!addr) addr = (void *)&ftl_hook;
 	Dl_info info;
 	if (::dladdr(addr, &info)) {
 		libraryPath_ = SymbolicLink::resolve(info.dli_fname);
@@ -45,8 +45,8 @@ LinkInfo::LinkInfo(void* addr)
 
 String LinkInfo::libraryPath() const { return libraryPath_; }
 String LinkInfo::symbolName() const { return symbolName_; }
-void* LinkInfo::baseAddress() const { return baseAddress_; }
-void* LinkInfo::symbolAddress() const { return symbolAddress_; }
+void *LinkInfo::baseAddress() const { return baseAddress_; }
+void *LinkInfo::symbolAddress() const { return symbolAddress_; }
 int LinkInfo::majorVersion() const { return majorVersion_; }
 int LinkInfo::minorVersion() const { return minorVersion_; }
 int LinkInfo::patchLevel() const { return patchLevel_; }

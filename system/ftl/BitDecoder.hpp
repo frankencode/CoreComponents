@@ -24,7 +24,7 @@ public:
 	inline static Ref<BitDecoder, Owner> newInstance(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
 		return new BitDecoder(stream, bufCapa, endian);
 	}
-	inline static Ref<BitDecoder, Owner> newInstance(void* buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static Ref<BitDecoder, Owner> newInstance(void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
 		return new BitDecoder(buf, bufCapa, endian);
 	}
 	~BitDecoder();
@@ -46,7 +46,7 @@ public:
 
 private:
 	BitDecoder(Ref<Stream> stream, int bufCapa, int endian);
-	BitDecoder(void* buf, int bufCapa, int endian );
+	BitDecoder(void *buf, int bufCapa, int endian );
 
 	void fill();
 
@@ -55,7 +55,7 @@ private:
 
 	int bufCapa_;
 	int bufFill_;
-	uint8_t* buf_;
+	uint8_t *buf_;
 
 	int i_;    // byte offset within buf_
 	int iBit_;    // bit offset in buf_[i]

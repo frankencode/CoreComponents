@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
 		print("Created child process with pid = %%\n", unsigned(process->id()));
 
-		const char* message =
+		const char *message =
 			"Hello, world!\n"
 			"exit\n";
 		process->rawInput()->write(message, str::len(message));

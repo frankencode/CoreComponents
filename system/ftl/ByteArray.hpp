@@ -35,13 +35,13 @@ public:
 
 	inline static Ref<ByteArray, Owner> newInstance(int size = 0) { return new ByteArray(size); }
 	inline static Ref<ByteArray, Owner> newInstance(int size, char zero) { return new ByteArray(size, zero); }
-	inline static Ref<ByteArray, Owner> newInstance(const char* data, int size = -1) { return new ByteArray(data, size); }
+	inline static Ref<ByteArray, Owner> newInstance(const char *data, int size = -1) { return new ByteArray(data, size); }
 	inline static Ref<ByteArray, Owner> newInstance(Ref<ByteArray> parent, int size) { return new ByteArray(parent, size); }
 	~ByteArray();
 
 	inline static Ref<ByteArray> empty() { return Default<ByteArray>::instance(); }
 
-	ByteArray& operator=(const ByteArray& b);
+	ByteArray &operator=(const ByteArray &b);
 
 	void clear(char zero = '\0');
 	void reset(int newSize = 0);
@@ -70,40 +70,38 @@ public:
 		return data_[i];
 	}
 
-	inline void set(int i, const char& item) {
+	inline void set(int i, const char &item) {
 		FTL_ASSERT(has(i));
 		if (i < 0) i += size_;
 		data_[i] = item;
 	}
 
-	inline char* pointerAt(int i) const {
+	inline char *pointerAt(int i) const {
 		FTL_ASSERT(has(i));
 		if (i < 0) i += size_;
 		return data_ + i;
 	}
 
-	inline char& at(int i) const {
+	inline char &at(int i) const {
 		FTL_ASSERT(has(i));
 		if (i < 0) i += size_;
 		return data_[i];
 	}
-	inline uint8_t& byteAt(int i) const { return reinterpret_cast<uint8_t&>(at(i)); }
+	inline uint8_t &byteAt(int i) const { return reinterpret_cast<uint8_t&>(at(i)); }
 
-	inline char* data() const { return data_; }
-	inline const char* constData() const { return data_; }
-	inline char& operator[](int i) { return at(i); }
-	inline char operator[](int i) const { return get(i); }
+	inline char *data() const { return data_; }
+	inline const char *constData() const { return data_; }
 	inline operator char*() const { return data_; }
 	inline operator bool() const { return !isEmpty(); }
 
-	inline void read(int i, char* data, int size) {
+	inline void read(int i, char *data, int size) {
 		if (size == 0) return;
 		FTL_ASSERT(has(i));
 		FTL_ASSERT(has(i + size - 1));
 		mem::cpy(data, data_ + i, size);
 	}
 
-	inline void write(int i, const char* data, int size) {
+	inline void write(int i, const char *data, int size) {
 		if (size == 0) return;
 		FTL_ASSERT(has(i));
 		FTL_ASSERT(has(i + size - 1));
@@ -149,26 +147,26 @@ public:
 		return n;
 	}
 
-	int find(const char* pattern, int i = 0) const;
+	int find(const char *pattern, int i = 0) const;
 	inline int find(Ref<ByteArray> pattern, int i = 0) const { return find(pattern->data_, i); }
 	int find(Ref<SyntaxDefinition> pattern, int i = 0) const;
 
 	inline int contains(Ref<ByteArray> pattern) const { return contains(pattern->data()); }
-	inline int contains(const char* pattern) const { return find(pattern) != size_; }
+	inline int contains(const char *pattern) const { return find(pattern) != size_; }
 
-	static Ref<ByteArray, Owner> join(Ref<StringList> parts, const char* sep = "");
+	static Ref<ByteArray, Owner> join(Ref<StringList> parts, const char *sep = "");
 	Ref<StringList, Owner> split(char sep) const;
-	Ref<StringList, Owner> split(const char* sep) const;
+	Ref<StringList, Owner> split(const char *sep) const;
 	Ref<StringList, Owner> split(Ref<SyntaxDefinition> pattern) const;
 
-	void replaceInsitu(const char* pattern, const char* replacement);
-	Ref<ByteArray, Owner> replace(const char* pattern, const char* replacement) const;
+	void replaceInsitu(const char *pattern, const char *replacement);
+	Ref<ByteArray, Owner> replace(const char *pattern, const char *replacement) const;
 
-	int toInt(bool* ok = 0) const;
-	double toFloat(bool* ok = 0) const;
-	int64_t toInt64(bool* ok = 0) const;
-	uint64_t toUInt64(bool* ok = 0) const;
-	float64_t toFloat64(bool* ok = 0) const;
+	int toInt(bool *ok = 0) const;
+	double toFloat(bool *ok = 0) const;
+	int64_t toInt64(bool *ok = 0) const;
+	uint64_t toUInt64(bool *ok = 0) const;
+	float64_t toFloat64(bool *ok = 0) const;
 
 	Ref<ByteArray> toLowerInsitu();
 	Ref<ByteArray> toUpperInsitu();
@@ -185,12 +183,12 @@ public:
 	Ref<ByteArray, Owner> simplified() const;
 	Ref<ByteArray, Owner> normalized(bool nameCase = true) const;
 
-	bool offsetToLinePos(int offset, int* line, int* pos) const;
+	bool offsetToLinePos(int offset, int *line, int *pos) const;
 
 	void checkUtf8() const;
 
-	static Ref<ByteArray, Owner> fromUtf16(const void* data, int size = -1, int endian = localEndian());
-	bool toUtf16(void* buf, int* size);
+	static Ref<ByteArray, Owner> fromUtf16(const void *data, int size = -1, int endian = localEndian());
+	bool toUtf16(void *buf, int *size);
 	Ref<ByteArray, Owner> toUtf16(int endian = localEndian());
 
 	Ref<ByteArray, Owner> md5() const;
@@ -213,12 +211,12 @@ protected:
 
 	explicit ByteArray(int size = 0);
 	ByteArray(int size, char zero);
-	ByteArray(const char* data, int size = -1);
-	ByteArray(const ByteArray& b);
-	ByteArray(ByteArray* b, int size); // FIXME, should be protected
+	ByteArray(const char *data, int size = -1);
+	ByteArray(const ByteArray &b);
+	ByteArray(ByteArray *b, int size); // FIXME, should be protected
 
 	int size_;
-	char* data_;
+	char *data_;
 	mutable Ref<Character, Owner> chars_;
 	Ref<ByteArray, Owner> parent_;
 };

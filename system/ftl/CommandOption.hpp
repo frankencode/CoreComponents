@@ -28,10 +28,10 @@ public:
 	inline String description() const { return description_; }
 
 	inline Variant defaultValue() const { return defaultValue_; }
-	inline void setDefaultValue(const Variant& value) { defaultValue_ = value; }
+	inline void setDefaultValue(const Variant &value) { defaultValue_ = value; }
 
 	inline Variant value() const { return value_; }
-	inline void setValue(const Variant& value) { value_ = value; }
+	inline void setValue(const Variant &value) { value_ = value; }
 
 private:
 	friend class CommandLine;

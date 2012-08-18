@@ -26,7 +26,7 @@ public:
 	inline static Ref<Stack, Owner> newInstance(int size) {
 		return new Stack(size);
 	}
-	inline static Ref<Stack, Owner> newInstance(T* buf, int size) {
+	inline static Ref<Stack, Owner> newInstance(T *buf, int size) {
 		return new Stack(buf, size);
 	}
 
@@ -46,14 +46,14 @@ public:
 	inline bool isEmpty() const { return fill_ == 0; }
 
 	inline bool has(int i) const { return (0 <= i) && (i < fill_); }
-	inline T& at(int i) const { return bottom(i); }
+	inline T &at(int i) const { return bottom(i); }
 	inline T get(int i) const { return bottom(i); }
 
-	inline void push(const T& item) {
+	inline void push(const T &item) {
 		FTL_ASSERT(fill_ < size_);
 		buf_[fill_++] = item;
 	}
-	inline void pop(T* item) {
+	inline void pop(T *item) {
 		FTL_ASSERT(fill_ > 0);
 		*item = buf_[--fill_];
 	}
@@ -63,7 +63,7 @@ public:
 		return item;
 	}
 
-	inline Stack& popMore(int n) {
+	inline Stack &popMore(int n) {
 		FTL_ASSERT(fill_ >= n);
 		fill_ -= n;
 		return *this;
@@ -71,17 +71,17 @@ public:
 
 	inline void clear() { fill_ = 0; }
 
-	inline T& top(int i = 0) const {
+	inline T &top(int i = 0) const {
 		FTL_ASSERT(i < fill_);
 		return buf_[fill_-i-1];
 	}
 
-	inline T& bottom(int i = 0) const {
+	inline T &bottom(int i = 0) const {
 		FTL_ASSERT(i < fill_);
 		return buf_[i];
 	}
 
-	inline T* data() const { return buf_; }
+	inline T *data() const { return buf_; }
 	inline operator T*() const { return buf_; }
 
 private:
@@ -92,7 +92,7 @@ private:
 		  buf_(new T[size])
 	{}
 
-	Stack(T* buf, int size)
+	Stack(T *buf, int size)
 		: fill_(0),
 		  size_(size),
 		  bufOwner_(false),
@@ -102,7 +102,7 @@ private:
 	int fill_;
 	int size_;
 	bool bufOwner_;
-	T* buf_;
+	T *buf_;
 };
 
 } // namespace ftl

@@ -42,36 +42,36 @@ public:
 	inline Item get(int index) const {
 		return at(index);
 	}
-	inline const Item& at(int index) const {
-		Node* node = 0;
+	inline const Item &at(int index) const {
+		Node *node = 0;
 		if (tree_.lookupByIndex(index, &node)) return node->item_;
 		else return nullItem_;
 	}
-	inline const Key& keyAt(int index) const { return at(index).key(); }
-	inline Value& valueAt(int index) const {
-		Node* node = 0;
+	inline const Key &keyAt(int index) const { return at(index).key(); }
+	inline Value &valueAt(int index) const {
+		Node *node = 0;
 		if (tree_.lookupByIndex(index, &node)) return node->item_.value();
 		else return nullItem_.value();
 	}
 
 	/** Return the index of the first item greater or equal _a_
 	  */
-	inline int first(const Key& a) const { return tree_.first(a); }
+	inline int first(const Key &a) const { return tree_.first(a); }
 
 	/** Return the index of the first item lower or equal _b_
 	  */
-	inline int last(const Key& b) const { return tree_.last(b); }
+	inline int last(const Key &b) const { return tree_.last(b); }
 
 	/** Insert a key-value mapping if no key-value mapping with the same key exists already.
 	  * If currentValue is non-null the current value the giving key maps to is returned.
 	  * The function returns true if the new key-value mapping was inserted successfully.
 	  */
-	inline bool insert(const Key& key, const Value& value, Value* currentValue = 0, int* index = 0)
+	inline bool insert(const Key &key, const Value &value, Value *currentValue = 0, int *index = 0)
 	{
 		bool found = false;
 		bool below = true;
 		Item e(key, value);
-		Node* k = tree_.find(e, &found, &below, index);
+		Node *k = tree_.find(e, &found, &below, index);
 		if (found) {
 			if (currentValue)
 				*currentValue = k->item_.value();
@@ -82,10 +82,10 @@ public:
 		return !found;
 	}
 
-	inline bool remove(const Key& key, int* index = 0)
+	inline bool remove(const Key &key, int *index = 0)
 	{
 		bool found;
-		Node* k = tree_.find(Item(key), &found, 0, index);
+		Node *k = tree_.find(Item(key), &found, 0, index);
 		if (found)
 			tree_.remove(k);
 		return found;
@@ -93,7 +93,7 @@ public:
 
 	/** Insert or overwrite a key-value mapping.
 	  */
-	inline void establish(const Key& key, const Value& value) {
+	inline void establish(const Key &key, const Value &value) {
 		int index = 0;
 		if (!insert(key, value, 0, &index))
 			valueAt(index) = value;
@@ -105,10 +105,10 @@ public:
 	  * 'value' is not set and the function returns false.
 	  */
 	template<class Value2>
-	inline bool lookup(const Key& key, Value2* value = 0, int* index = 0) const
+	inline bool lookup(const Key &key, Value2 *value = 0, int *index = 0) const
 	{
 		bool found = false;
-		Node* k = tree_.find(Item(key), &found, 0, index);
+		Node *k = tree_.find(Item(key), &found, 0, index);
 		if (found && (value))
 			*value = k->item_.value();
 		return found;
@@ -116,7 +116,7 @@ public:
 
 	/** Retrieve value of an existing key-value mapping.
 	  */
-	inline Value value(const Key& key) const
+	inline Value value(const Key &key) const
 	{
 		Value value = Value();
 		lookup(key, &value);
@@ -125,54 +125,34 @@ public:
 
 	/** Set value of an existing key-value mapping.
 	  */
-	inline bool setValue(const Key& key, const Value& value)
+	inline bool setValue(const Key &key, const Value &value)
 	{
 		int index = 0;
-		bool found = lookup(key, (Value*)0, &index);
+		bool found = lookup(key, (Value *)0, &index);
 		if (found)
 			valueAt(index) = value;
 		return found;
 	}
 
-	/** Readonly associative operator
-	  */
-	inline Value operator[](const Key& key) const { return value(key); }
-
-	/** Writable associative operator
-	  */
-	inline Value& operator[](const Key& key)
-	{
-		bool found = false;
-		bool below = true;
-		Item e(key, Value());
-		Node* k = tree_.find(e, &found, &below);
-		if (!found) {
-			Node* kn = new Node(e);
-			tree_.attach(k, kn, below);
-			k = kn;
-		}
-		return k->item_.value();
-	}
-
 	/** Convenience wrapper to lookup()
 	  */
-	inline bool contains(const Key& key) const { return lookup<Value>(key); }
+	inline bool contains(const Key &key) const { return lookup<Value>(key); }
 
-	inline void push(const Item& item)
+	inline void push(const Item &item)
 	{
 		bool found = false;
 		bool below = true;
-		Node* k = tree_.find(item, &found, &below);
+		Node *k = tree_.find(item, &found, &below);
 		if (found)
 			k->item_ = item;
 		else
 			tree_.attach(k, new Node(item), below);
 	}
 
-	inline void pop(Item* item)
+	inline void pop(Item *item)
 	{
 		FTL_ASSERT(!isEmpty());
-		Node* k = tree_.min();
+		Node *k = tree_.min();
 		*item = k->item_;
 		tree_.remove(k);
 	}
@@ -190,9 +170,9 @@ protected:
 	typedef typename Tree::Node Node;
 
 	Map() {}
-	explicit Map(const Map& b): tree_(b.tree_) {}
+	explicit Map(const Map &b): tree_(b.tree_) {}
 
-	const Map& operator=(const Map& b);
+	const Map &operator=(const Map &b);
 
 	Tree tree_;
 	mutable Item nullItem_;

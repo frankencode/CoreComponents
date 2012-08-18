@@ -25,13 +25,13 @@ template<class T>
 class Alien: public Instance
 {
 public:
-	typedef void (*DelFunc)(T*);
+	typedef void (*DelFunc)(T *);
 
-	Alien(T* guest, DelFunc delFunc = 0)
+	Alien(T *guest, DelFunc delFunc = 0)
 		: guest_(guest),
 		  delFunc_(delFunc)
 	{}
-	
+
 	~Alien()
 	{
 		if (guest_ != 0)
@@ -41,11 +41,11 @@ public:
 			guest_ = 0;
 		}
 	}
-	
-	inline T* get() const { return guest_; }
-	
+
+	inline T *get() const { return guest_; }
+
 private:
-	mutable T* guest_;
+	mutable T *guest_;
 	DelFunc delFunc_;
 };
 
@@ -66,7 +66,7 @@ template<class T>
 class Return: public T
 {
 public:
-	Return(const T& b): T(b) {}
+	Return(const T &b): T(b) {}
 	inline operator T() { return *this; }
 };
 
@@ -74,7 +74,7 @@ template<class T>
 class Source: public virtual Instance
 {
 public:
-	virtual bool read(T* item) = 0;
+	virtual bool read(T *item) = 0;
 };
 
 template<class T>
@@ -110,18 +110,18 @@ public:
 	Version(int major = 0, int minor = 0, int patch = 0)
 		: major_(major), minor_(minor), patch_(patch)
 	{}
-	
+
 	inline int major() const { return major_; }
 	inline int minor() const { return minor_; }
 	inline int patch() const { return patch_; }
-	
-	inline bool operator<(const Version& b) { return (n() < b.n()); }
-	inline bool operator<=(const Version& b) { return n() <= b.n(); }
-	inline bool operator>(const Version& b) { return n() > b.n(); }
-	inline bool operator>=(const Version& b) { return n() >= b.n(); }
-	inline bool operator==(const Version& b) { return n() == b.n(); }
-	inline bool operator!=(const Version& b) { return n() != b.n(); }
-	
+
+	inline bool operator<(const Version &b) { return (n() < b.n()); }
+	inline bool operator<=(const Version &b) { return n() <= b.n(); }
+	inline bool operator>(const Version &b) { return n() > b.n(); }
+	inline bool operator>=(const Version &b) { return n() >= b.n(); }
+	inline bool operator==(const Version &b) { return n() == b.n(); }
+	inline bool operator!=(const Version &b) { return n() != b.n(); }
+
 private:
 	inline uint32_t n() const { return (uint32_t(major_) << 24) || (uint32_t(minor_) << 16) || uint32_t(patch_); }
 	uint8_t major_;
@@ -135,38 +135,38 @@ class Pair
 public:
 	Pair()
 	{}
-	
-	Pair(const Key& key)
+
+	Pair(const Key &key)
 		: key_(key), value_(Value())
 	{}
-	
-	Pair(const Key& key, const Value& value)
+
+	Pair(const Key &key, const Value &value)
 		: key_(key), value_(value)
 	{}
-	
-	inline bool operator<(const Pair& b) const { return key_ <  b.key_; }
-	inline bool operator>(const Pair& b) const { return key_ >  b.key_; }
-	inline bool operator==(const Pair& b) const { return key_ ==  b.key_; }
-	inline bool operator!=(const Pair& b) const { return key_ !=  b.key_; }
-	inline bool operator<=(const Pair& b) const { return key_ <=  b.key_; }
-	inline bool operator>=(const Pair& b) const { return key_ >=  b.key_; }
-	
-	inline const Key& key() const { return key_; }
-	inline void setKey(const Key& key) { key_ = key; }
-	
-	inline const Value& value() const { return value_; }
-	inline Value& value() { return value_; }
-	inline void setValue(const Value& value) { value_ = value; }
-	
-	inline const Pair* operator->() const { return this; }
-	
+
+	inline bool operator<(const Pair &b) const { return key_ <  b.key_; }
+	inline bool operator>(const Pair &b) const { return key_ >  b.key_; }
+	inline bool operator==(const Pair &b) const { return key_ ==  b.key_; }
+	inline bool operator!=(const Pair &b) const { return key_ !=  b.key_; }
+	inline bool operator<=(const Pair &b) const { return key_ <=  b.key_; }
+	inline bool operator>=(const Pair &b) const { return key_ >=  b.key_; }
+
+	inline const Key &key() const { return key_; }
+	inline void setKey(const Key &key) { key_ = key; }
+
+	inline const Value &value() const { return value_; }
+	inline Value &value() { return value_; }
+	inline void setValue(const Value &value) { value_ = value; }
+
+	inline const Pair *operator->() const { return this; }
+
 private:
 	Key key_;
 	Value value_;
 };
 
 template<class Key, class Value>
-inline Pair<Key, Value> pair(const Key& key, const Value& value) { return Pair<Key, Value>(key, value); }
+inline Pair<Key, Value> pair(const Key &key, const Value &value) { return Pair<Key, Value>(key, value); }
 
 } // namespace ftl
 

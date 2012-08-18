@@ -25,13 +25,13 @@ Group::Group(gid_t id)
 	Ref<ByteArray, Owner> buf = ByteArray::newInstance(bufSize, '\0');
 	struct group space;
 	mem::clr(&space, sizeof(struct group));
-	struct group* entry = 0;
+	struct group *entry = 0;
 	if (::getgrgid_r(id, &space, buf->data(), buf->size(), &entry) != 0)
 		FTL_SYSTEM_EXCEPTION;
 	load(entry);
 }
 
-Group::Group(const char* name)
+Group::Group(const char *name)
 {
 	int bufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
 	if (bufSize == -1)
@@ -39,13 +39,13 @@ Group::Group(const char* name)
 	Ref<ByteArray, Owner>  buf = ByteArray::newInstance(bufSize, '\0');
 	struct group space;
 	mem::clr(&space, sizeof(struct group));
-	struct group* entry = 0;
+	struct group *entry = 0;
 	if (::getgrnam_r(name, &space, buf->data(), buf->size(), &entry) != 0)
 		FTL_SYSTEM_EXCEPTION;
 	load(entry);
 }
 
-void Group::load(struct group* entry)
+void Group::load(struct group *entry)
 {
 	id_ = entry->gr_gid;
 	name_ = entry->gr_name;

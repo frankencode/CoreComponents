@@ -63,12 +63,12 @@ Format::Format(String format)
 		placeHolders_ = new PlaceHolder;
 }
 
-Format::Format(const Format& b)
+Format::Format(const Format &b)
 	: Super(b.get()),
 	  placeHolders_(b.placeHolders_)
 {}
 
-Format& Format::operator=(const Format& b)
+Format &Format::operator=(const Format &b)
 {
 	set(b.get());
 	placeHolders_ = b.placeHolders_;
@@ -85,7 +85,7 @@ Ref<Format::PlaceHolder, Owner> Format::nextPlaceHolder()
 	return ph;
 }
 
-Format& Format::operator<<(const Variant& x)
+Format &Format::operator<<(const Variant &x)
 {
 	if (x.type() == Variant::UndefType) {
 		*this << "undef";
@@ -103,7 +103,7 @@ Format& Format::operator<<(const Variant& x)
 		*this << String(x);
 	}
 	else if (x.type() == Variant::RefType) {
-		*this << (void*)Ref<>(x).get();
+		*this << (void *)Ref<>(x).get();
 	}
 	return *this;
 }
@@ -150,7 +150,7 @@ void Format::printInt(uint64_t x, int sign)
 	if (wb > 0) i += wb;
 
 	while (digits->fill() > 0) {
-		const char* letters = "0123456789ABCDEF-";
+		const char *letters = "0123456789ABCDEF-";
 		int d = digits->pop();
 		text->set(i++, letters[d]);
 	}
@@ -185,7 +185,7 @@ void Format::printFloat(float64_t x, bool half)
 		int wb = w - 3;
 		if (wb > 0)
 			i += wb;
-		const char* nan = "nan";
+		const char *nan = "nan";
 		while (*nan) {
 			text->set(i++, *nan);
 			++nan;
@@ -199,7 +199,7 @@ void Format::printFloat(float64_t x, bool half)
 		if (wb > 0)
 			i += wb;
 		if (s == 1) text->set(i++, '-');
-		const char* inf = "inf";
+		const char *inf = "inf";
 		while (*inf) {
 			text->set(i++, *inf);
 			++inf;
@@ -277,7 +277,7 @@ void Format::printFloat(float64_t x, bool half)
 		if (s == 1)
 			text->set(i++, '-');
 
-		const char* letters = "0123456789ABCDEF";
+		const char *letters = "0123456789ABCDEF";
 		int k = 0; // digit index
 
 		for (int l = 0; l < ni; ++l)

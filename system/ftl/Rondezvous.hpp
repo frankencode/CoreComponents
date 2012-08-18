@@ -26,7 +26,7 @@ public:
 		return new Rondezvous;
 	}
 
-	Rondezvous& push(const T& item)
+	Rondezvous &push(const T &item)
 	{
 		tableMutex_.acquire();
 		while (isFull_)
@@ -42,7 +42,7 @@ public:
 		return *this;
 	}
 
-	Rondezvous& pop(T* item)
+	Rondezvous &pop(T *item)
 	{
 		tableMutex_.acquire();
 		while (!isFull_)

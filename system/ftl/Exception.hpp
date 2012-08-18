@@ -24,45 +24,45 @@ class Exception: public AnyException
 {
 public:
 	Exception();
-	Exception(const char* path, int line, const char* className, const char* reason, bool reasonOnHeap = false);
+	Exception(const char *path, int line, const char *className, const char *reason, bool reasonOnHeap = false);
 	~Exception() throw();
-	const char* what() const throw();
+	const char *what() const throw();
 
 protected:
-	const char* path_;
+	const char *path_;
 	int line_;
-	const char* className_;
-	mutable const char* reason_;
+	const char *className_;
+	mutable const char *reason_;
 	bool reasonOnHeap_;
-	mutable char* message_;
+	mutable char *message_;
 };
 
 #define FTL_EXCEPTION(DerivedClass, BaseClass) \
 class DerivedClass: public BaseClass \
 { \
 public: \
-	DerivedClass(const char* fileName, int line, const char* className, const char* reason, bool reasonOnHeap) \
+	DerivedClass(const char *fileName, int line, const char *className, const char *reason, bool reasonOnHeap) \
 		: BaseClass(fileName, line, className, reason, reasonOnHeap) \
 	{} \
 }
 
-inline bool reasonOnHeap(const char* reason) { return false; }
-inline bool reasonOnHeap(char* reason) { return true; }
+inline bool reasonOnHeap(const char *reason) { return false; }
+inline bool reasonOnHeap(char *reason) { return true; }
 
 #define FTL_THROW(ExceptionClass, reason) \
 	throw ExceptionClass(__FILE__, __LINE__, #ExceptionClass, reason, reasonOnHeap(reason))
 
 /*#define FTL_THROW(ExceptionClass, reason) \
-	*((char*)0) = 0; // HACK, to come around trace eaters*/
+	*((char *)0) = 0; // HACK, to come around trace eaters*/
 
-char* systemError();
-char* systemError(int errorCode);
-char* pthreadError(const char* callName, int errorCode);
+char *systemError();
+char *systemError(int errorCode);
+char *pthreadError(const char *callName, int errorCode);
 
 class SystemException: public Exception
 {
 public:
-	SystemException(const char* fileName, int line, const char* className, char* reason, int errorCode)
+	SystemException(const char *fileName, int line, const char *className, char *reason, int errorCode)
 		: Exception(fileName, line, className, reason, true),
 		  errorCode_(errorCode)
 	{}
@@ -77,7 +77,7 @@ private:
 class PthreadException: public SystemException
 {
 public:
-	PthreadException(const char* fileName, int line, const char* className, char* reason, int errorCode)
+	PthreadException(const char *fileName, int line, const char *className, char *reason, int errorCode)
 		: SystemException(fileName, line, className, reason, errorCode)
 	{}
 };
@@ -111,9 +111,9 @@ class Timeout {};
 class DerivedClass: public StdException \
 { \
 public: \
-	DerivedClass(const String& error): error_(error) {} \
+	DerivedClass(const String &error): error_(error) {} \
 	~DerivedClass() throw() {} \
-	inline const char* what() const throw() { return error_; } \
+	inline const char *what() const throw() { return error_; } \
 private: \
 	String error_; \
 };

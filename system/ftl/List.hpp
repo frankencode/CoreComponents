@@ -42,22 +42,22 @@ public:
 	inline Item get(int index) const {
 		return at(index);
 	}
-	inline Item& at(int index) const {
-		Node* node = 0;
+	inline Item &at(int index) const {
+		Node *node = 0;
 		if (tree_.lookupByIndex(index, &node)) return node->item_;
 		else return nullItem_;
 	}
-	inline void set(int index, const Item& item) {
-		Node* node = 0;
+	inline void set(int index, const Item &item) {
+		Node *node = 0;
 		if (tree_.lookupByIndex(index, &node))
 			node->item_ = item;
 	}
 
-	inline List& push(int index, const Item& item) {
+	inline List &push(int index, const Item &item) {
 		tree_.push(index, item);
 		return *this;
 	}
-	inline List& pop(int index, Item* item) {
+	inline List &pop(int index, Item *item) {
 		tree_.pop(index, item);
 		return *this;
 	}
@@ -69,20 +69,20 @@ public:
 		return item;
 	}
 
-	inline void push(const Item& item) { push(length(), item); }
-	inline void pop(Item* item) { pop(0, item); }
+	inline void push(const Item &item) { push(length(), item); }
+	inline void pop(Item *item) { pop(0, item); }
 	inline Item pop() { Item item; pop(&item); return item; }
 
-	inline void append(const Item& item) { push(length(), item); }
-	inline void insert(int index, const Item& item) { push(index, item); }
-	inline void remove(int index, Item& item) { pop(index, &item); }
+	inline void append(const Item &item) { push(length(), item); }
+	inline void insert(int index, const Item &item) { push(index, item); }
+	inline void remove(int index, Item &item) { pop(index, &item); }
 	inline void remove(int index) { pop(index); }
-	inline void pushFront(const Item& item) { push(0, item); }
-	inline void pushBack(const Item& item) { push(length(), item); }
+	inline void pushFront(const Item &item) { push(0, item); }
+	inline void pushBack(const Item &item) { push(length(), item); }
 	inline Item popFront() { return pop(0); }
 	inline Item popBack() { return pop(length() - 1); }
 
-	int find(const Item& item, int index = 0) const
+	int find(const Item &item, int index = 0) const
 	{
 		while (index < length()) {
 			if (at(index) == item) break;
@@ -90,7 +90,7 @@ public:
 		}
 		return index;
 	}
-	int replace(const Item& oldItem, const Item& newItem)
+	int replace(const Item &oldItem, const Item &newItem)
 	{
 		int index = 0;
 		int numReplaced = 0;
@@ -102,8 +102,8 @@ public:
 		}
 		return numReplaced;
 	}
-	inline bool contains(const Item& item) const { return find(item) < length(); }
-	inline Item join(const Item& sep = Item()) const { return Item::join(this, sep); }
+	inline bool contains(const Item &item) const { return find(item) < length(); }
+	inline Item join(const Item &sep = Item()) const { return Item::join(this, sep); }
 
 	Ref<List, Owner> sort(int order = SortOrder::Ascending, bool unique = false) const
 	{
@@ -159,8 +159,8 @@ private:
 	List() {}
 	List(int n): tree_(n) {}
 
-	explicit List(const List& b): tree_(b.tree_) {}
-	const List& operator=(const List& b);
+	explicit List(const List &b): tree_(b.tree_) {}
+	const List &operator=(const List &b);
 
 	Tree tree_;
 	mutable Item nullItem_;

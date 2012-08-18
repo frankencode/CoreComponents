@@ -26,17 +26,17 @@ namespace ftl
 
 #define WORD_ALIGN(x) (((x) / sizeof(int) + ((x) % sizeof(int) != 0)) * sizeof(int))
 
-void* Memory::operator new(size_t size)
+void *Memory::operator new(size_t size)
 {
 	long pageSize = ::sysconf(_SC_PAGE_SIZE);
 	check(pageSize > 0);
 	check(size <= (unsigned long)pageSize);
-	void* data = ::mmap(0, ::sysconf(_SC_PAGE_SIZE), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+	void *data = ::mmap(0, ::sysconf(_SC_PAGE_SIZE), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 	check(data != MAP_FAILED);
 	return data;
 }
 
-void Memory::operator delete(void* data, size_t size)
+void Memory::operator delete(void *data, size_t size)
 {
 	check(::munmap(data, ::sysconf(_SC_PAGE_SIZE)) == 0);
 }
@@ -54,16 +54,16 @@ Memory::Memory()
 	  bucket_(0)
 {}
 
-void* Memory::allocate(size_t size)
+void *Memory::allocate(size_t size)
 {
 	Ref<Memory> allocator = instance();
-	BucketHeader* bucket = allocator->bucket_;
+	BucketHeader *bucket = allocator->bucket_;
 	size_t pageSize = allocator->pageSize_;
 
 	size = WORD_ALIGN(size);
 
 	if (size == pageSize) {
-		void* pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+		void *pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 		check(pageStart != MAP_FAILED);
 		return pageStart;
 	}
@@ -72,26 +72,26 @@ void* Memory::allocate(size_t size)
 		if (size > pageSize - WORD_ALIGN(sizeof(BucketHeader))) {
 			size += sizeof(uint32_t);
 			uint32_t pageCount = size / pageSize + ((size % pageSize) > 0);
-			void* pageStart = ::mmap(0, pageCount * pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+			void *pageStart = ::mmap(0, pageCount * pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 			check(pageStart != MAP_FAILED);
-			*(uint32_t*)pageStart = pageCount;
-			return (void*)((uint32_t*)pageStart + 1);
+			*(uint32_t *)pageStart = pageCount;
+			return (void *)((uint32_t *)pageStart + 1);
 		}
 		else {
-			void* pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+			void *pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 			check(pageStart != MAP_FAILED);
 			bucket = new(pageStart)BucketHeader;
 			bucket->bytesDirty_ = WORD_ALIGN(sizeof(BucketHeader)) + size;
 			bucket->objectCount_ = 1;
 			bucket->open_ = true;
 			allocator->bucket_ = bucket;
-			return (void*)((char*)pageStart + WORD_ALIGN(sizeof(BucketHeader)));
+			return (void *)((char *)pageStart + WORD_ALIGN(sizeof(BucketHeader)));
 		}
 	}
 	else {
 		bucket->acquire();
 		if (size <= pageSize - bucket->bytesDirty_) {
-			void* data = (void*)(((char*)bucket) + bucket->bytesDirty_);
+			void *data = (void *)(((char *)bucket) + bucket->bytesDirty_);
 			bucket->bytesDirty_ += size;
 			++bucket->objectCount_;
 			bucket->release();
@@ -106,29 +106,29 @@ void* Memory::allocate(size_t size)
 	}
 }
 
-void Memory::free(void* data)
+void Memory::free(void *data)
 {
 	Ref<Memory> allocator = instance();
 	size_t pageSize = allocator ? allocator->pageSize_ : size_t(::sysconf(_SC_PAGE_SIZE));
 
-	uint32_t offset = ((char*)data - (char*)0) % pageSize;
+	uint32_t offset = ((char *)data - (char *)0) % pageSize;
 
 	if (offset == 0) {
 		check(::munmap(data, pageSize) == 0);
 	}
 	else if (offset == sizeof(uint32_t)) {
-		void* pageStart = (void*)((char*)data - sizeof(uint32_t));
-		uint32_t pageCount = *(uint32_t*)pageStart;
+		void *pageStart = (void *)((char *)data - sizeof(uint32_t));
+		uint32_t pageCount = *(uint32_t *)pageStart;
 		check(::munmap(pageStart, pageCount * pageSize) == 0);
 	}
 	else {
-		BucketHeader* bucket = (BucketHeader*)((char*)data - offset);
+		BucketHeader *bucket = (BucketHeader *)((char *)data - offset);
 		bucket->acquire();
 		bool dispose = ((--bucket->objectCount_) == 0) && (!bucket->open_);
 		bucket->release();
 		if (dispose) {
 			bucket->~BucketHeader();
-			check(::munmap((void*)((char*)data - offset), pageSize) == 0);
+			check(::munmap((void *)((char *)data - offset), pageSize) == 0);
 		}
 	}
 }

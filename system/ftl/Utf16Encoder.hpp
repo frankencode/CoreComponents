@@ -22,7 +22,7 @@ public:
 	inline static Ref<Utf16Encoder, Owner> newInstance(Ref<Stream> stream, int bufCapa, int endian = BigEndian) {
 		return new Utf16Encoder(stream, bufCapa, endian);
 	}
-	inline static Ref<Utf16Encoder, Owner> newInstance(void* buf, int bufCapa, int endian = BigEndian) {
+	inline static Ref<Utf16Encoder, Owner> newInstance(void *buf, int bufCapa, int endian = BigEndian) {
 		return new Utf16Encoder(buf, bufCapa, endian);
 	}
 
@@ -59,7 +59,7 @@ private:
 		: byteEncoder_(ByteEncoder::newInstance(stream, bufCapa, endian))
 	{}
 
-	Utf16Encoder(void* buf, int bufCapa, int endian = BigEndian)
+	Utf16Encoder(void *buf, int bufCapa, int endian = BigEndian)
 		: byteEncoder_(ByteEncoder::newInstance(buf, bufCapa, endian))
 	{}
 

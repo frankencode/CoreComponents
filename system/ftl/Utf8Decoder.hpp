@@ -22,11 +22,11 @@ public:
 	inline static Ref<Utf8Decoder, Owner> newInstance(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA) {
 		return new Utf8Decoder(stream, bufCapa);
 	}
-	inline static Ref<Utf8Decoder, Owner> newInstance(const void* buf, int bufCapa = FTL_DEFAULT_BUF_CAPA) {
+	inline static Ref<Utf8Decoder, Owner> newInstance(const void *buf, int bufCapa = FTL_DEFAULT_BUF_CAPA) {
 		return new Utf8Decoder(buf, bufCapa);
 	}
 
-	inline bool read(uchar_t* ch)
+	inline bool read(uchar_t *ch)
 	{
 		bool more = byteDecoder_->hasMore();
 		if (more) {
@@ -44,7 +44,7 @@ private:
 		: byteDecoder_(ByteDecoder::newInstance(stream, bufCapa))
 	{}
 
-	Utf8Decoder(const void* buf, int bufCapa)
+	Utf8Decoder(const void *buf, int bufCapa)
 		: byteDecoder_(ByteDecoder::newInstance(buf, bufCapa))
 	{}
 

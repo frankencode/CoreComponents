@@ -21,7 +21,7 @@ FTL_STD_EXCEPTION(ConfigException);
 class Config: public Instance
 {
 public:
-	static Ref<Config, Owner> newInstance(const char* path) {
+	static Ref<Config, Owner> newInstance(const char *path) {
 		return new Config(path);
 	}
 
@@ -30,7 +30,7 @@ public:
 	inline Ref<WireObject> object() const { return object_; }
 
 private:
-	Config(const char* path);
+	Config(const char *path);
 
 	Ref<WireObject, Owner> object_;
 };

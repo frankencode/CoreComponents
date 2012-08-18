@@ -26,14 +26,14 @@ namespace syntax
 class Node: public Tree<Node>
 {
 public:
-	inline static void rollBack(Token* parentToken, Token* lastChildSaved) {
+	inline static void rollBack(Token *parentToken, Token *lastChildSaved) {
 		if (parentToken) {
 			while (parentToken->lastChild() != lastChildSaved)
 				parentToken->lastChild()->unlink();
 		}
 	}
 
-	virtual int matchNext(ByteArray* media, int i, TokenFactory* tokenFactory, Token* parentToken, State* state) const = 0;
+	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const = 0;
 
 	virtual Ref<Node> succ(Ref<Node> node) const { return Ref<Node>(); }
 	virtual int matchLength() const { return -1; }

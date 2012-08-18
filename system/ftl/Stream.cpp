@@ -16,9 +16,9 @@
 namespace ftl
 {
 
-void Stream::read(void* buf, int bufFill)
+void Stream::read(void *buf, int bufFill)
 {
-	uint8_t* p = (uint8_t*)buf;
+	uint8_t *p = (uint8_t *)buf;
 	int n = bufFill;
 	while (n > 0) {
 		int dn = readAvail(p, n);

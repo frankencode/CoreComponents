@@ -45,7 +45,7 @@ static void printChar(char ch) {
 	}
 }
 
-static void printString(char* s, int size) {
+static void printString(char *s, int size) {
 	for (int i = 0; i < size; ++i) {
 		char ch = s[i];
 		if (ch == '"')
@@ -54,7 +54,7 @@ static void printString(char* s, int size) {
 	}
 }
 
-static void printString(const ByteArray& s) {
+static void printString(const ByteArray &s) {
 	printString(s.data(), s.size());
 }
 
@@ -66,7 +66,7 @@ static void printCharAttr(char ch) {
 	print("'");
 }
 
-static void printStringAttr(const ByteArray& s) {
+static void printStringAttr(const ByteArray &s) {
 	print("\"");
 	printString(s);
 	print("\"");
@@ -104,7 +104,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return charNode()->invert() ? "OTHER" : "CHAR"; }
+	virtual const char *declType() const { return charNode()->invert() ? "OTHER" : "CHAR"; }
 
 	virtual void printAttributes(String indent) {
 		printCharAttr(charNode()->ch());
@@ -121,7 +121,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return greaterNode()->invert() ? "BELOW" : "GREATER"; }
+	virtual const char *declType() const { return greaterNode()->invert() ? "BELOW" : "GREATER"; }
 
 	virtual void printAttributes(String index) {
 		printCharAttr(greaterNode()->ch());
@@ -138,7 +138,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return greaterOrEqualNode()->invert() ? "BELOW_OR_EQUAL" : "GREATER_OR_EQUAL"; }
+	virtual const char *declType() const { return greaterOrEqualNode()->invert() ? "BELOW_OR_EQUAL" : "GREATER_OR_EQUAL"; }
 
 	virtual void printAttributes(String index) {
 		printCharAttr(greaterOrEqualNode()->ch());
@@ -155,7 +155,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "ANY"; }
+	virtual const char *declType() const { return "ANY"; }
 };
 
 class RangeMinMaxDebugNode: public DebugNode {
@@ -164,7 +164,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return rangeMinMaxNode()->invert() ? "EXCEPT" : "RANGE"; }
+	virtual const char *declType() const { return rangeMinMaxNode()->invert() ? "EXCEPT" : "RANGE"; }
 
 	virtual void printAttributes(String indent) {
 		Ref<RangeMinMaxNode> node = rangeMinMaxNode();
@@ -184,7 +184,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return rangeExplicitNode()->invert() ? "EXCEPT" : "RANGE"; }
+	virtual const char *declType() const { return rangeExplicitNode()->invert() ? "EXCEPT" : "RANGE"; }
 
 	virtual void printAttributes(String indent) {
 		printStringAttr(rangeExplicitNode()->s());
@@ -201,7 +201,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "STRING"; }
+	virtual const char *declType() const { return "STRING"; }
 
 	virtual void printAttributes(String indent) {
 		printStringAttr(stringNode()->s());
@@ -218,7 +218,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "KEYWORD"; }
+	virtual const char *declType() const { return "KEYWORD"; }
 
 	virtual void printAttributes(String indent) {
 		print("\n%%\"", indent);
@@ -244,7 +244,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "REPEAT"; }
+	virtual const char *declType() const { return "REPEAT"; }
 
 	virtual void printAttributes(String indent) {
 		Ref<RepeatNode> node = repeatNode();
@@ -268,7 +268,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "LAZY_REPEAT"; }
+	virtual const char *declType() const { return "LAZY_REPEAT"; }
 
 	virtual void printAttributes(String indent) {
 		Ref<LazyRepeatNode> node = repeatNode();
@@ -290,7 +290,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "GREEDY_REPEAT"; }
+	virtual const char *declType() const { return "GREEDY_REPEAT"; }
 
 	virtual void printAttributes(String indent) {
 		Ref<GreedyRepeatNode> node = repeatNode();
@@ -314,7 +314,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "LENGTH"; }
+	virtual const char *declType() const { return "LENGTH"; }
 
 	virtual void printAttributes(String indent) {
 		Ref<LengthNode> node = lengthNode();
@@ -337,7 +337,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "BOI"; }
+	virtual const char *declType() const { return "BOI"; }
 };
 
 class EoiDebugNode: public DebugNode {
@@ -346,7 +346,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "EOI"; }
+	virtual const char *declType() const { return "EOI"; }
 };
 
 class PassDebugNode: public DebugNode {
@@ -355,7 +355,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return passNode()->invert() ? "FAIL" : "PASS"; }
+	virtual const char *declType() const { return passNode()->invert() ? "FAIL" : "PASS"; }
 
 private:
 	typedef syntax::PassNode PassNode;
@@ -368,7 +368,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "FIND"; }
+	virtual const char *declType() const { return "FIND"; }
 
 	virtual void printAttributes(String indent) {
 		print("\n");
@@ -387,7 +387,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return aheadNode()->invert() ? "NOT" : "AHEAD"; }
+	virtual const char *declType() const { return aheadNode()->invert() ? "NOT" : "AHEAD"; }
 
 	virtual void printAttributes(String indent) {
 		print("\n");
@@ -406,7 +406,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return behindNode()->invert() ? "NOT_BEHIND" : "BEHIND"; }
+	virtual const char *declType() const { return behindNode()->invert() ? "NOT_BEHIND" : "BEHIND"; }
 
 	virtual void printAttributes(String indent) {
 		print("\n");
@@ -425,7 +425,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "CHOICE"; }
+	virtual const char *declType() const { return "CHOICE"; }
 
 	virtual void printAttributes(String indent) {
 		print("\n");
@@ -449,7 +449,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "GLUE"; }
+	virtual const char *declType() const { return "GLUE"; }
 
 	virtual void printAttributes(String indent) {
 		print("\n");
@@ -473,7 +473,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return hintNode()->text() ? "HINT" : "DONE"; }
+	virtual const char *declType() const { return hintNode()->text() ? "HINT" : "DONE"; }
 
 	virtual void printAttributes(String indent) {
 		if (hintNode()->text())
@@ -491,7 +491,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return (inlineNode()) ? "INLINE" : "REF"; }
+	virtual const char *declType() const { return (inlineNode()) ? "INLINE" : "REF"; }
 
 	virtual void printAttributes(String indent) {
 		print("\"%%\"", linkNode()->ruleName());
@@ -511,7 +511,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "INLINE"; }
+	virtual const char *declType() const { return "INLINE"; }
 
 	virtual void printAttributes(String indent) {
 		print("\"%%\"", inlineNode()->ruleName());
@@ -528,7 +528,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "PREVIOUS"; }
+	virtual const char *declType() const { return "PREVIOUS"; }
 
 	virtual void printAttributes(String indent) {
 		Ref<PreviousNode> node = previousNode();
@@ -548,10 +548,10 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "CALL"; }
+	virtual const char *declType() const { return "CALL"; }
 
 	virtual void printAttributes(String indent) {
-		print("0x%hex:8.:'0'", (void*)callNode()->callBack());
+		print("0x%hex:8.:'0'", (void *)callNode()->callBack());
 	}
 
 private:
@@ -565,7 +565,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "SET"; }
+	virtual const char *declType() const { return "SET"; }
 
 	virtual void printAttributes(String indent) {
 		Ref<SetNode> node = setNode();
@@ -583,7 +583,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "IF"; }
+	virtual const char *declType() const { return "IF"; }
 
 	virtual void printAttributes(String indent) {
 		Ref<IfNode> node = ifNode();
@@ -605,7 +605,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "GETCHAR"; }
+	virtual const char *declType() const { return "GETCHAR"; }
 
 	virtual void printAttributes(String indent) {
 		print("\"%%\"", DebugNode::debugger_->charNameById()->value(getCharNode()->charId()));
@@ -622,7 +622,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "SETCHAR"; }
+	virtual const char *declType() const { return "SETCHAR"; }
 
 	virtual void printAttributes(String indent) {
 		Ref<SetCharNode> node = setCharNode();
@@ -641,7 +641,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return varCharNode()->invert() ? "VAROTHER" : "VARCHAR"; }
+	virtual const char *declType() const { return varCharNode()->invert() ? "VAROTHER" : "VARCHAR"; }
 
 	virtual void printAttributes(String indent) {
 		print("\"%%\"", DebugNode::debugger_->charNameById()->value(varCharNode()->charId()));
@@ -658,7 +658,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "GETSTRING"; }
+	virtual const char *declType() const { return "GETSTRING"; }
 
 	virtual void printAttributes(String indent) {
 		Ref<GetStringNode> node = getStringNode();
@@ -678,7 +678,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "SETSTRING"; }
+	virtual const char *declType() const { return "SETSTRING"; }
 
 	virtual void printAttributes(String indent) {
 		Ref<SetStringNode> node = setStringNode();
@@ -697,7 +697,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "VARSTRING"; }
+	virtual const char *declType() const { return "VARSTRING"; }
 
 	virtual void printAttributes(String indent) {
 		print("\"%%\"", DebugNode::debugger_->stringNameById()->value(varStringNode()->stringId()));
@@ -714,7 +714,7 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char* declType() const { return "INVOKE"; }
+	virtual const char *declType() const { return "INVOKE"; }
 
 	virtual void printAttributes(String indent) {
 		Ref<InvokeNode> node = invokeNode();
@@ -837,7 +837,7 @@ void Debugger::printDefinition(bool omitUnusedRules)
 	print("ENTRY(\"%%\");\n", DebugFactory::definition()->ruleName_);
 }
 
-Node* Debugger::produce(Node* newNode, const char* nodeType)
+Node *Debugger::produce(Node *newNode, const char *nodeType)
 {
 	Ref<NodeFactory, Owner> factory;
 	return factoryByNodeType_->lookup(nodeType, &factory) ? factory->produce(newNode) : newNode;

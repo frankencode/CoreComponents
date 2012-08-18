@@ -28,7 +28,7 @@ public:
 	inline static Ref<Group, Owner> newInstance(gid_t id) {
 		return new Group(id);
 	}
-	inline static Ref<Group, Owner> newInstance(const char* name) {
+	inline static Ref<Group, Owner> newInstance(const char *name) {
 		return new Group(name);
 	}
 
@@ -40,9 +40,9 @@ public:
 
 private:
 	Group(gid_t id);
-	Group(const char* name);
+	Group(const char *name);
 
-	void load(struct group* entry);
+	void load(struct group *entry);
 	bool exists_;
 	gid_t id_;
 	String name_;

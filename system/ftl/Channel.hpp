@@ -26,7 +26,7 @@ public:
 		return new Channel;
 	}
 
-	void push(const T& item)
+	void push(const T &item)
 	{
 		mutex_->acquire();
 		queue_->push(item);
@@ -34,7 +34,7 @@ public:
 		mutex_->release();
 	}
 
-	void pop(T* item)
+	void pop(T *item)
 	{
 		mutex_->acquire();
 		while (queue_->length() == 0)

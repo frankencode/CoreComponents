@@ -54,12 +54,12 @@ public:
 
 	inline uchar_t operator[](int i) const { return get(i); }
 
-	inline const char* byte(int i) const {
+	inline const char *byte(int i) const {
 		walkTo(i);
 		return walker_.pos();
 	}
 
-	inline int index(const char* pos) const {
+	inline int index(const char *pos) const {
 		if (!walker_.valid()) {
 			walker_ = Utf8Walker(walker_.data());
 			i_ = 0;
@@ -69,8 +69,8 @@ public:
 		return i_;
 	}
 
-	// int find(int i, const char* pattern) const;
-	// Ref<StringList, Owner> split(const char* pattern) const;
+	// int find(int i, const char *pattern) const;
+	// Ref<StringList, Owner> split(const char *pattern) const;
 
 private:
 	friend class ByteArray;
@@ -79,7 +79,7 @@ private:
 		: walker_(0),
 		  i_(-1), n_(-1)
 	{}
-	Character(const char* data)
+	Character(const char *data)
 		: walker_(data),
 		  i_(0), n_(-1)
 	{}

@@ -26,7 +26,7 @@ ByteDecoder::ByteDecoder(Ref<Stream> stream, int bufCapa, int endian)
 	fill();
 }
 
-ByteDecoder::ByteDecoder(const void* buf, int bufCapa, int endian)
+ByteDecoder::ByteDecoder(const void *buf, int bufCapa, int endian)
 	: stream_(0),
 	  endian_(endian),
 	  bufCapa_(bufCapa),
@@ -52,7 +52,7 @@ void ByteDecoder::fill()
 	bufFill_ = stream_->readAvail(buf_, bufCapa_);
 	if (bufFill_ == 0)
 		FTL_THROW(EncodingException, "Unexpected end of input");
-	
+
 	i_ = 0;
 }
 

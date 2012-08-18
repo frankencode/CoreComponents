@@ -28,7 +28,7 @@ public:
 	inline static Ref<User, Owner> newInstance(uid_t id) {
 		return new User(id);
 	}
-	inline static Ref<User, Owner> newInstance(const char* name) {
+	inline static Ref<User, Owner> newInstance(const char *name) {
 		return new User(name);
 	}
 
@@ -44,9 +44,9 @@ public:
 
 private:
 	User(uid_t id);
-	User(const char* name);
+	User(const char *name);
 
-	void load(struct passwd* entry);
+	void load(struct passwd *entry);
 	bool exists_;
 	uid_t id_;
 	gid_t groupId_;
