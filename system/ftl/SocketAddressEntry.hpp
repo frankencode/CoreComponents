@@ -22,20 +22,29 @@ class NetworkInterface;
 class SocketAddressEntry: public SocketAddress
 {
 public:
-	SocketAddressEntry(struct sockaddr_in* addr);
-	SocketAddressEntry(struct sockaddr_in6* addr);
-	
 	Ref<SocketAddress> address() const;
 	Ref<SocketAddress> localAddress() const;
 	Ref<SocketAddress> broadcastAddress() const;
 	Ref<SocketAddress> destinationAddress() const;
 	Ref<SocketAddress> anycastAddress() const;
-	
+
 private:
 	friend class NetworkInterface;
-	
+
+	inline static Ref<SocketAddressEntry, Owner> newInstance() {
+		return new SocketAddressEntry;
+	}
+	inline static Ref<SocketAddressEntry, Owner> newInstance(struct sockaddr_in* addr) {
+		return new SocketAddressEntry(addr);
+	}
+	inline static Ref<SocketAddressEntry, Owner> newInstance(struct sockaddr_in6* addr) {
+		return new SocketAddressEntry(addr);
+	}
+
 	SocketAddressEntry();
-	
+	SocketAddressEntry(struct sockaddr_in* addr);
+	SocketAddressEntry(struct sockaddr_in6* addr);
+
 	Ref<SocketAddress, Owner> localAddress_;
 	Ref<SocketAddress, Owner> broadcastAddress_;
 	Ref<SocketAddress, Owner> anycastAddress_;

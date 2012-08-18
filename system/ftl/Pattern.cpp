@@ -449,9 +449,9 @@ const Pattern& Pattern::operator=(const String& text)
 {
 	text_ = text;
 	set(
-		new SyntaxDefinition(
+		SyntaxDefinition::newInstance(
 #ifndef NDEBUG
-			new SyntaxDebugger
+			SyntaxDebugger::newInstance()
 #endif
 		)
 	);

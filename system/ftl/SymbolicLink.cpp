@@ -17,17 +17,11 @@
 namespace ftl
 {
 
-SymbolicLink::SymbolicLink(String path)
-	: path_(path)
-{}
-
-String SymbolicLink::path() const { return path_; }
-
-String SymbolicLink::read() const
+String SymbolicLink::read(String linkPath)
 {
 	String buf = String(128);
 	while (true) {
-		ssize_t numBytes = ::readlink(path_, buf, buf->size());
+		ssize_t numBytes = ::readlink(linkPath, buf, buf->size());
 		if (numBytes == -1)
 			FTL_SYSTEM_EXCEPTION;
 		if (numBytes <= buf->size()) {
@@ -40,16 +34,22 @@ String SymbolicLink::read() const
 	return buf;
 }
 
-String SymbolicLink::resolve() const
+String SymbolicLink::resolve(String linkPath)
 {
-	String path = path_;
+	String path = linkPath;
 	while (FileStatus::newInstance(path, false)->type() == File::SymbolicLink) {
 		String origPath = path;
-		path = SymbolicLink(origPath).read();
+		path = SymbolicLink::read(origPath);
 		if (path->isRelativePath())
 			path = origPath->reducePath()->expandPath(path);
 	}
 	return path;
+}
+
+void SymbolicLink::create(String origPath, String aliasPath)
+{
+	if (::symlink(origPath, aliasPath) == -1)
+		FTL_SYSTEM_EXCEPTION;
 }
 
 } // namespace ftl

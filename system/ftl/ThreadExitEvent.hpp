@@ -23,10 +23,10 @@ class ThreadExitEvent: public Event, public ThreadLocalSingleton<ThreadExitEvent
 {
 private:
 	friend class ThreadLocalSingleton<ThreadExitEvent>;
-	
+
 	ThreadExitEvent();
 	~ThreadExitEvent();
-	
+
 	pid_t pid_;
 };
 

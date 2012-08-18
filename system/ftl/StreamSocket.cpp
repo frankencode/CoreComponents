@@ -50,7 +50,7 @@ bool StreamSocket::readyAccept(Time idleTimeout)
 
 Ref<StreamSocket, Owner> StreamSocket::accept()
 {
-	Ref<SocketAddress, Owner> clientAddress = new SocketAddress(address_->family());
+	Ref<SocketAddress, Owner> clientAddress = SocketAddress::newInstance(address_->family());
 	socklen_t len = clientAddress->addrLen();
 	int fdc = ::accept(fd_, clientAddress->addr(), &len);
 	if (fdc < 0) {
@@ -64,7 +64,7 @@ Ref<StreamSocket, Owner> StreamSocket::accept()
 void StreamSocket::connect()
 {
 	int flags = 0;
-	
+
 	if (address_->family() != AF_LOCAL) {
 		flags = ::fcntl(fd_, F_GETFL, 0);
 		if (flags == -1)
@@ -72,16 +72,16 @@ void StreamSocket::connect()
 		if (::fcntl(fd_, F_SETFL, flags | O_NONBLOCK) == -1)
 			FTL_THROW(StreamSemanticException, systemError());
 	}
-	
+
 	int ret = ::connect(fd_, address_->addr(), address_->addrLen());
-	
+
 	if (ret == -1) {
 		if (errno != EINPROGRESS)
 			FTL_THROW(StreamSemanticException, systemError());
 	}
-	
+
 	connected_ = (ret != -1);
-	
+
 	if (address_->family() != AF_LOCAL) {
 		if (::fcntl(fd_, F_SETFL, flags) == -1)
 			FTL_THROW(StreamSemanticException, systemError());
@@ -98,16 +98,16 @@ bool StreamSocket::established(Time idleTimeout)
 			socklen_t len = sizeof(error);
 			if (::getsockopt(fd_, SOL_SOCKET, SO_ERROR, &error, &len) == -1)
 				FTL_THROW(StreamSemanticException, systemError());
-			
+
 			if (error != 0) {
 				errno = error;
 				FTL_THROW(StreamSemanticException, systemError());
 			}
-			
+
 			connected_ = true;
 		}
 	}
-	
+
 	return connected_;
 }
 
@@ -139,7 +139,7 @@ Ref<SocketAddress> StreamSocket::remoteAddress() const { return remoteAddress(fd
 
 Ref<SocketAddress> StreamSocket::localAddress(int fd)
 {
-	Ref<SocketAddress> address = new SocketAddress;
+	Ref<SocketAddress> address = SocketAddress::newInstance();
 	socklen_t len = address->addrLen();
 	if (::getsockname(fd, address->addr(), &len) == -1)
 		FTL_THROW(StreamSemanticException, systemError());
@@ -148,7 +148,7 @@ Ref<SocketAddress> StreamSocket::localAddress(int fd)
 
 Ref<SocketAddress> StreamSocket::remoteAddress(int fd)
 {
-	Ref<SocketAddress> address = new SocketAddress;
+	Ref<SocketAddress> address = SocketAddress::newInstance();
 	socklen_t len = address->addrLen();
 	if (::getpeername(fd, address->addr(), &len) == -1)
 		FTL_THROW(StreamSemanticException, systemError());

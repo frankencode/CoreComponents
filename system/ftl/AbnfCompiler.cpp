@@ -16,6 +16,10 @@
 namespace ftl
 {
 
+AbnfCompiler::AbnfCompiler()
+	: trap_(StringTrap::newInstance())
+{}
+
 Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, Ref<SyntaxDebugger> debugger)
 {
 	Ref<Token, Owner> ruleList = AbnfSyntax::match(text);
@@ -34,7 +38,7 @@ Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, 
 
 Ref<AbnfCompiler::Node> AbnfCompiler::ignoreDebug(Ref<Node> node)
 {
-	Ref<SyntaxDebugger::DebugNode> debugNode = node;
+	Ref<SyntaxDebugNode> debugNode = node;
 	return (debugNode) ? debugNode->entry() : node;
 }
 

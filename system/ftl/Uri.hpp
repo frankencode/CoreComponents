@@ -22,38 +22,48 @@ FTL_EXCEPTION(UriException, Exception);
 class Uri: public Instance
 {
 public:
+	inline static Ref<Uri, Owner> newInstance() {
+		return new Uri;
+	}
+	inline static Ref<Uri, Owner> newInstance(const char* text) {
+		return new Uri(text);
+	}
+	inline static Ref<Uri, Owner> newInstance(Ref<ByteArray> bytes, Ref<Token> rootToken = 0) {
+		return new Uri(bytes, rootToken);
+	}
+
+	inline String scheme() const { return scheme_; }
+	inline void setScheme(String value) { scheme_ = value; }
+
+	inline String userInfo() const { return userInfo_; }
+	inline void setUserInfo(String value) { userInfo_ = value; }
+
+	inline String host() const { return host_; }
+	inline void setHost(String value) { host_ = value; }
+
+	inline int port() const { return port_; }
+	inline void setPort(int value) { port_ = value; }
+
+	inline String path() const { return path_; }
+	inline void setPath(String value) { path_ = value; }
+
+	inline String query() const { return query_; }
+	inline void setQuery(String value) { query_ = value; }
+
+	inline String fragment() const { return fragment_; }
+	inline void setFragment(String value) { fragment_ = value; }
+
+	String toString() const;
+
+private:
 	Uri();
 	Uri(const char* text);
 	Uri(Ref<ByteArray> bytes, Ref<Token> rootToken = 0);
-	
-	inline String scheme() const { return scheme_; }
-	inline void setScheme(String value) { scheme_ = value; }
-	
-	inline String userInfo() const { return userInfo_; }
-	inline void setUserInfo(String value) { userInfo_ = value; }
-	
-	inline String host() const { return host_; }
-	inline void setHost(String value) { host_ = value; }
-	
-	inline int port() const { return port_; }
-	inline void setPort(int value) { port_ = value; }
-	
-	inline String path() const { return path_; }
-	inline void setPath(String value) { path_ = value; }
-	
-	inline String query() const { return query_; }
-	inline void setQuery(String value) { query_ = value; }
-	
-	inline String fragment() const { return fragment_; }
-	inline void setFragment(String value) { fragment_ = value; }
-	
-	String toString() const;
-	
-private:
+
 	void readUri(Ref<ByteArray> bytes, Ref<Token> rootToken = 0);
 	static String encode(String s);
 	static String decode(String s);
-	
+
 	String scheme_;
 	String userInfo_;
 	String host_;

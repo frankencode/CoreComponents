@@ -171,7 +171,7 @@ template<
 	template<class> class GASP1,
 	template<class> class GASP2
 >
-inline Ref<List<T>, Owner> operator+(Ref<List<T>, GASP1> a, Ref< List<T>, GASP2 > b)
+inline Ref< List<T>, Owner > operator+(Ref< List<T>, GASP1 > a, Ref< List<T>, GASP2 > b)
 {
 	int n = a->length(), m = b->length();
 	Ref< List<T>, Owner > r = List<T>::newInstance(n + m);

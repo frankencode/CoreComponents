@@ -19,10 +19,10 @@
 namespace ftl
 {
 
-class SyntaxDebugger;
-
 namespace syntax
 {
+
+class Debugger;
 
 class CharNode: public Node
 {
@@ -1071,7 +1071,7 @@ public:
 
 protected:
 	friend class ftl::syntax::DefinitionNode;
-	friend class ftl::SyntaxDebugger;
+	friend class ftl::syntax::Debugger;
 
 	const char* ruleName_;
 	Ref<RuleNode> rule_;
@@ -1513,7 +1513,7 @@ public:
 	}
 
 private:
-	friend class ftl::SyntaxDebugger;
+	friend class ftl::syntax::Debugger;
 	Ref<DebugFactory, Owner> debugFactory_;
 
 	friend class InvokeNode;

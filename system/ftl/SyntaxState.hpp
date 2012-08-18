@@ -25,9 +25,6 @@ class DefinitionNode;
 class State: public Instance
 {
 public:
-	State();
-	State(Ref<DefinitionNode> definition, int numFlags, int numChars, int numStrings, Ref<State> parent = 0);
-
 	inline int definitionId() const { return definitionId_; }
 
 	inline bool* flag(int id) { return flags_->pointerAt(id); }
@@ -48,6 +45,10 @@ public:
 	Ref<ByteArray> string(const char* name);
 
 private:
+	friend class syntax::DefinitionNode;
+	State();
+	State(Ref<DefinitionNode> definition, int numFlags, int numChars, int numStrings, Ref<State> parent = 0);
+
 	Ref<DefinitionNode, Owner> definition_;
 	int definitionId_;
 	Ref< Array<bool>, Owner > flags_;

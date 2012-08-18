@@ -24,13 +24,6 @@ class WireObject: public Map<String, Variant>
 	typedef Map<String, Variant> Super;
 
 public:
-	WireObject() {}
-
-	explicit WireObject(const WireObject& b)
-		: Super(b),
-		  className_(b.className_)
-	{}
-
 	virtual Ref<Super, Owner> clone() const { return new WireObject(*this); }
 
 	inline String className() const { return className_; }
@@ -42,7 +35,15 @@ public:
 private:
 	friend class Wire;
 
+	WireObject() {}
+
+	explicit WireObject(const WireObject& b)
+		: Super(b),
+		  className_(b.className_)
+	{}
+
 	Ref<WireObject> resolve(String path, String* name = 0, Variant* value = 0) const;
+
 	String className_;
 };
 

@@ -90,11 +90,9 @@ int main()
 	dt = Time::now() - dt;
 	print("\ndt = %% us\n\n", dt.us());
 
-	{
-		ThreadFactory factory;
-		print("default stack size = %%\n", int(factory.stackSize()));
-		print("default guard size = %%\n", int(factory.guardSize()));
-	}
+	Ref<ThreadFactory, Owner> factory = ThreadFactory::newInstance();
+	print("default stack size = %%\n", int(factory->stackSize()));
+	print("default guard size = %%\n", int(factory->guardSize()));
 
 	return 0;
 }

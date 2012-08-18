@@ -19,13 +19,9 @@ namespace ftl
 class SymbolicLink
 {
 public:
-	SymbolicLink(String path);
-	String path() const;
-	String read() const;
-	String resolve() const;
-	
-private:
-	String path_;
+	static String read(String linkPath);
+	static String resolve(String linkPath);
+	static void create(String origPath, String aliasPath);
 };
 
 } // namespace ftl
