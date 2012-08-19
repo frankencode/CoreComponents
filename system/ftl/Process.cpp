@@ -28,20 +28,16 @@
 #include "Process.hpp"
 
 #ifndef __MACH__
-extern "C" char** environ;
+extern "C" char **environ;
 #endif
 
 namespace ftl
 {
 
-Ref<Process, Owner> Process::start(String command, Ref<ProcessFactory> factory)
+Ref<Process, Owner> Process::start(String command, int ioPolicy)
 {
-	Ref<ProcessFactory, Owner> h;
-	if (!factory) {
-		h = new ProcessFactory;
-		factory = h;
-		factory->setIoPolicy(ForwardInput|ForwardOutput);
-	}
+	Ref<ProcessFactory, Owner> factory = ProcessFactory::newInstance();
+	factory->setIoPolicy(ioPolicy);
 
 	Ref<StringList, Owner> args = command->split(' ');
 	factory->setArguments(args);
@@ -52,11 +48,6 @@ Ref<Process, Owner> Process::start(String command, Ref<ProcessFactory> factory)
 	factory->setExecPath(path);
 
 	return factory->produce();
-}
-
-int Process::exec(String command, Ref<ProcessFactory> factory)
-{
-	return start(command, factory)->wait();
 }
 
 Process::Process(
@@ -226,7 +217,7 @@ void Process::unsetEnv(String key)
 
 Ref<EnvMap, Owner> Process::envMap()
 {
-	char** env = environ();
+	char **env = environ();
 	Ref<EnvMap, Owner> map = EnvMap::newInstance();
 	int i = 0;
 	while (env[i] != 0) {
@@ -238,7 +229,7 @@ Ref<EnvMap, Owner> Process::envMap()
 	return map;
 }
 
-char**& Process::environ()
+char **&Process::environ()
 {
 	return
 	#ifdef __MACH__

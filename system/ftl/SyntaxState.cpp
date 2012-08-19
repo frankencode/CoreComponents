@@ -36,9 +36,11 @@ State::State(Ref<DefinitionNode> definition, int numFlags, int numChars, int num
 		parent->child_ = this;
 }
 
-Ref<ByteArray> State::string(const char *name)
+Ref<ByteArray> State::string(const char *name) const
 {
-	return string(definition_->stringIdByName(name));
+	Ref<ByteArray> value = string(definition_->stringIdByName(name));
+	if (!value) value = ByteArray::empty();
+	return value;
 }
 
 } // namespace syntax

@@ -276,7 +276,7 @@ Wire::Wire()
 		DEFINE("Message",
 			GLUE(
 				INLINE("Noise"),
-				REF("Object"),
+				INLINE("Value"),
 				INLINE("Noise")
 			)
 		);
@@ -285,7 +285,7 @@ Wire::Wire()
 	LINK();
 }
 
-Ref<WireObject, Owner> Wire::parse(Ref<ByteArray> text)
+Variant Wire::parse(Ref<ByteArray> text)
 {
 	Ref<SyntaxState, Owner> state = newState();
 	Ref<Token, Owner> token = match(text, -1, state);
@@ -298,7 +298,7 @@ Ref<WireObject, Owner> Wire::parse(Ref<ByteArray> text)
 		}
 		throw WireException(reason, line, pos);
 	}
-	return parseObject(text, token->firstChild());
+	return parseValue(text, token->firstChild());
 }
 
 String Wire::parseConcatenation(Ref<ByteArray> text, Ref<Token> token)

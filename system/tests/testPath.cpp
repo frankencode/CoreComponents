@@ -3,7 +3,7 @@
 namespace ftl
 {
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	print("argv[0] = \"%%\"\n", argv[0]);
 	print("String(argv[0])->fileName() = \"%%\"\n", String(argv[0])->fileName());
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
 } // namespace ftl
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	return ftl::main(argc, argv);
 }

@@ -16,9 +16,9 @@ MachDependencyCache::MachDependencyCache(Ref<MachCompiler> compiler, Ref<StringL
 	  cache_(Cache::newInstance())
 {
 	cacheFile_->establish();
-	print("sourcePaths = [\n%%]\n", sourcePaths->join("\n  "));
+	/*print("sourcePaths = [\n%%]\n", sourcePaths->join("\n  "));
 	print("cacheFile_->exists() = %%\n", cacheFile_->exists());
-	print("cacheFile_->path() = \"%%\"\n", cacheFile_->path());
+	print("cacheFile_->path() = \"%%\"\n", cacheFile_->path());*/
 	cacheTime_ = cacheFile_->status()->lastModified();
 
 	Ref<WireObject, Owner> dependencyCache;
@@ -34,12 +34,13 @@ MachDependencyCache::MachDependencyCache(Ref<MachCompiler> compiler, Ref<StringL
 		WireObject::Item item = dependencyCache->at(i);
 		if (!sourcePaths->contains(item->key())) continue;
 		Ref<WireObject> wire = item->value();
-		cache_->insert(item->key(),
-			MachObject::newInstance(
-				wire->value("objectPath"),
-				Ref<VariantList>(wire->value("dependencyPaths"))->toList<String>()
-			)
+		Ref<MachObject, Owner> object = MachObject::newInstance(
+			wire->value("objectPath"),
+			Ref<VariantList>(wire->value("dependencyPaths"))->toList<String>(),
+			cacheTime_
 		);
+		if (object->dirty()) continue;
+		cache_->insert(item->key(), object);
 	}
 }
 
@@ -73,15 +74,10 @@ MachDependencyCache::~MachDependencyCache()
 Ref<MachObject, Owner> MachDependencyCache::analyse(String sourcePath)
 {
 	Ref<MachObject, Owner> object;
-	if (cache_->lookup(sourcePath, &object)) {
-		Ref<File, Owner> sourceFile = File::newInstance(sourcePath);
-		if (sourceFile->exists()) {
-			if (sourceFile->status()->lastModified() <= cacheTime_)
-				return object;
-		}
-	}
+	if (cache_->lookup(sourcePath, &object))
+		return object;
 	object = compiler_->analyse(sourcePath);
-	cache_->establish(sourcePath, object);
+	cache_->insert(sourcePath, object);
 	return object;
 }
 

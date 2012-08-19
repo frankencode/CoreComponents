@@ -70,10 +70,9 @@ class GenericIterator: public Source<typename Container::Item>
 public:
 	typedef typename Container::Item Item;
 
-	GenericIterator(Ref<Container> container)
-		: container_(container),
-		  i_(0)
-	{}
+	inline static Ref<GenericIterator, Owner> newInstance(Ref<Container> container) {
+		return new GenericIterator(container);
+	}
 
 	inline bool read(Item *item) {
 		bool more = container_->has(i_);
@@ -82,10 +81,15 @@ public:
 		return more;
 	}
 
-	inline operator int() const { return i_; }
+	inline int currentIndex() const { return i_; }
 
 private:
-	Ref<Container> container_;
+	GenericIterator(Ref<Container> container)
+		: container_(container),
+		  i_(0)
+	{}
+
+	Ref<Container, Owner> container_;
 	int i_;
 };
 

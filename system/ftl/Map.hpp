@@ -30,7 +30,7 @@ public:
 	inline static Ref<Map, Owner> newInstance() { return new Map(); }
 	virtual Ref<Map, Owner> clone() const { return new Map(*this); }
 
-	inline Iterator iterator() const { return Iterator(this); }
+	inline Iterator newIterator() const { return Iterator::newInstance(this); }
 
 	inline bool isEmpty() const { return tree_.weight() == 0; }
 	inline int length() const { return tree_.weight(); }

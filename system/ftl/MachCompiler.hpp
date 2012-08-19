@@ -14,11 +14,12 @@ class MachCompiler: public Instance
 {
 public:
 	enum Option {
-		DebugInfo = 1,
+		DebugInfo     = 1,
 		OptimizeSpeed = 2,
-		OptimizeSize = 4,
+		OptimizeSize  = 4,
 		SharedLibrary = 8,
-		StaticLibrary = 16
+		StaticLibrary = 16,
+		Strip         = 32
 	};
 
 	inline String execPath() const { return execPath_; }

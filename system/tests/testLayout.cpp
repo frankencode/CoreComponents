@@ -13,11 +13,11 @@ public:
 
 } // namespace testLayout
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	using namespace testLayout;
-	
+
 	LayoutTree< LayoutNode<Line> > linesLayout_;
-	
+
 	return 0;
 }

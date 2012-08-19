@@ -1,7 +1,7 @@
 #include <ftl/stdio>
 #include <ftl/binary>
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	using namespace ftl;
 

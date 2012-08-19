@@ -5,7 +5,7 @@
 namespace ftl
 {
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	Ref<CommandLine, Owner> options = CommandLine::newInstance();
 	Ref<CommandOption> echo  = options->define('e', "echo",  false, "Print \"Hello, echo!\"");
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
 } // namespace ftl
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	int ret = 1;
 	//try {

@@ -1585,22 +1585,13 @@ private:
 
 	typedef PrefixTree<char, int> StateIdByName;
 
-	Ref<StateIdByName, Owner> flagIdByName_;
-	Ref<StateIdByName, Owner> charIdByName_;
-	Ref<StateIdByName, Owner> stringIdByName_;
+	Ref<StateIdByName, OnDemand> flagIdByName_;
+	Ref<StateIdByName, OnDemand> charIdByName_;
+	Ref<StateIdByName, OnDemand> stringIdByName_;
 
-	inline Ref<StateIdByName> flagIdByName() {
-		if (!flagIdByName_) flagIdByName_ = StateIdByName::newInstance();
-		return flagIdByName_;
-	}
-	inline Ref<StateIdByName> charIdByName() {
-		if (!charIdByName_) charIdByName_ = StateIdByName::newInstance();
-		return charIdByName_;
-	}
-	inline Ref<StateIdByName> stringIdByName() {
-		if (!stringIdByName_) stringIdByName_ = StateIdByName::newInstance();
-		return stringIdByName_;
-	}
+	inline Ref<StateIdByName> flagIdByName() const { return flagIdByName_; }
+	inline Ref<StateIdByName> charIdByName() const { return charIdByName_; }
+	inline Ref<StateIdByName> stringIdByName() const { return stringIdByName_; }
 
 	static int errorCallBack(Ref<Instance> self, ByteArray *media, int index, State *state);
 };

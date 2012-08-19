@@ -31,7 +31,7 @@ void printStatus(Ref<File, Owner> file)
 	print("\n");
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	printStatus(File::newInstance(argv[0]));
 	printStatus(File::newInstance("hmpf.xyz"));
@@ -42,7 +42,7 @@ int main(int argc, char** argv)
 
 } // namespace ftl
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	return ftl::main(argc, argv);
 }

@@ -318,12 +318,10 @@ String File::lookup(String fileName, Ref<StringList> dirs, int accessFlags)
 Ref<FileStatus> File::status() const
 {
 	if (!status_) {
-		if (!status_) {
-			if (isOpen())
-				status_ = FileStatus::newInstance(fd_);
-			else
-				status_ = FileStatus::newInstance(path_);
-		}
+		if (isOpen())
+			status_ = FileStatus::newInstance(fd_);
+		else
+			status_ = FileStatus::newInstance(path_);
 	}
 	return status_;
 }

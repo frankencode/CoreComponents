@@ -25,7 +25,7 @@ public:
 		return new Config(path);
 	}
 
-	Ref<StringList, Owner> init(int argc, char** argv);
+	Ref<StringList, Owner> init(int argc, char **argv);
 
 	inline Ref<WireObject> object() const { return object_; }
 
