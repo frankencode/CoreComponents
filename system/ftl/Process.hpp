@@ -33,8 +33,7 @@ FTL_STD_EXCEPTION(ProcessException);
 class Process: public Instance
 {
 public:
-	static Ref<Process, Owner> start(String command, Ref<ProcessFactory> factory = 0);
-	static int exec(String command, Ref<ProcessFactory> factory = 0);
+	static Ref<Process, Owner> start(String command, int ioPolicy = 0);
 
 	// -- child process control interface
 
@@ -92,7 +91,7 @@ public:
 	static String env(String key);
 	static void setEnv(String key, String value);
 	static void unsetEnv(String key);
-	static char**& environ();
+	static char **&environ();
 
 	static Ref<EnvMap, Owner> envMap();
 

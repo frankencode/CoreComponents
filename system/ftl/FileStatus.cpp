@@ -19,20 +19,20 @@ namespace ftl
 FileStatus::FileStatus(int fd)
 	: fd_(fd)
 {
-	update();
+	exists_ = update();
 }
 
 FileStatus::FileStatus(Ref<SystemStream> stream)
 	: fd_(stream->fd())
 {
-	update();
+	exists_ = update();
 }
 
 FileStatus::FileStatus(String path, bool followSymbolicLink)
 	: fd_(-1),
 	  path_(path)
 {
-	update(0, followSymbolicLink);
+	exists_ = update(followSymbolicLink);
 }
 
 void FileStatus::setTimes(Time lastAccess, Time lastModified)
@@ -47,18 +47,19 @@ void FileStatus::setTimes(Time lastAccess, Time lastModified)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-void FileStatus::update(bool *exists, bool followSymbolicLink)
+bool FileStatus::update(bool followSymbolicLink)
 {
+	mem::clr(static_cast<StructStat*>(this), sizeof(StructStat));
 	int ret = (fd_ != -1) ? ::fstat(fd_, this) : (followSymbolicLink ? ::stat(path_, this) : ::lstat(path_, this));
 	if (ret == -1) {
-		if (exists) {
-			if ((errno == ENOENT) || (errno == ENOTDIR)) {
-				*exists = false;
-				return;
-			}
+		if ((errno == ENOENT) || (errno == ENOTDIR)) {
+			exists_ = false;
+			return false;
 		}
 		FTL_SYSTEM_EXCEPTION;
 	}
+	exists_ = true;
+	return true;
 }
 
 } // namespace ftl

@@ -57,7 +57,6 @@ DependencyCache {
             "Stream.hpp",
             "Time.hpp",
             "LineSource.hpp",
-            "CircularBuffer.hpp",
             "LineSink.hpp",
             "AbnfSyntax.hpp",
             "AbnfCoreSyntax.hpp",
@@ -374,8 +373,7 @@ DependencyCache {
             "SystemStream.hpp",
             "Time.hpp",
             "LineSink.hpp",
-            "LineSource.hpp",
-            "CircularBuffer.hpp"
+            "LineSource.hpp"
         ]
     }
     "ByteDecoder.cpp": MachObject {
@@ -835,8 +833,7 @@ DependencyCache {
             "Stream.hpp",
             "Time.hpp",
             "LineSink.hpp",
-            "LineSource.hpp",
-            "CircularBuffer.hpp"
+            "LineSource.hpp"
         ]
     }
     "File.cpp": MachObject {
@@ -885,7 +882,6 @@ DependencyCache {
             "Time.hpp",
             "LineSink.hpp",
             "LineSource.hpp",
-            "CircularBuffer.hpp",
             "ThreadExitEvent.hpp",
             "Mutex.hpp",
             "Random.hpp",
@@ -1127,16 +1123,11 @@ DependencyCache {
         objectPath: "GccCompiler.o"
         dependencyPaths: [
             "GccCompiler.cpp",
-            "Pattern.hpp",
-            "SyntaxDebugger.hpp",
-            "syntax.hpp",
-            "Crc32.hpp",
+            "StandardStreams.hpp",
+            "atoms",
             "types.hpp",
             "Exception.hpp",
             "strings.hpp",
-            "PrefixTree.hpp",
-            "Tree.hpp",
-            "atoms",
             "generics.hpp",
             "Instance.hpp",
             "defaults.hpp",
@@ -1147,43 +1138,47 @@ DependencyCache {
             "Owner.hpp",
             "Guard.hpp",
             "OnDemand.hpp",
-            "Array.hpp",
+            "SystemStream.hpp",
+            "Stream.hpp",
+            "String.hpp",
+            "ByteArray.hpp",
             "Default.hpp",
             "Singleton.hpp",
             "LocalStatic.hpp",
             "GlobalCoreMutex.hpp",
             "ThreadLocalSingleton.hpp",
             "ThreadLocalOwner.hpp",
-            "ByteArray.hpp",
             "List.hpp",
             "containers.hpp",
             "OrdinalTree.hpp",
             "AvlTree.hpp",
             "BinaryTree.hpp",
+            "Array.hpp",
             "Heap.hpp",
             "Token.hpp",
+            "Tree.hpp",
+            "Character.hpp",
+            "Utf8Walker.hpp",
+            "Time.hpp",
+            "LineSource.hpp",
+            "LineSink.hpp",
+            "Pattern.hpp",
+            "SyntaxDebugger.hpp",
+            "syntax.hpp",
+            "Crc32.hpp",
+            "PrefixTree.hpp",
             "PrefixTreeWalker.hpp",
             "SyntaxNode.hpp",
             "SyntaxState.hpp",
             "TokenFactory.hpp",
             "SyntaxDebugFactory.hpp",
             "SyntaxSugar.hpp",
-            "String.hpp",
-            "Character.hpp",
-            "Utf8Walker.hpp",
             "Map.hpp",
             "PrintDebug.hpp",
             "Format.hpp",
             "Variant.hpp",
             "rounding.hpp",
             "Stack.hpp",
-            "StandardStreams.hpp",
-            "SystemStream.hpp",
-            "Stream.hpp",
-            "Time.hpp",
-            "LineSource.hpp",
-            "CircularBuffer.hpp",
-            "LineSink.hpp",
             "SyntaxDefinition.hpp",
             "File.hpp",
             "Process.hpp",
@@ -1257,7 +1252,6 @@ DependencyCache {
             "Stack.hpp",
             "StandardStreams.hpp",
             "LineSource.hpp",
-            "CircularBuffer.hpp",
             "LineSink.hpp",
             "SyntaxDefinition.hpp",
             "Glob.hpp"
@@ -1540,7 +1534,8 @@ DependencyCache {
         objectPath: "LineSource.o"
         dependencyPaths: [
             "LineSource.cpp",
-            "LineSource.hpp",
+            "CircularBuffer.hpp",
+            "containers.hpp",
             "atoms",
             "types.hpp",
             "Exception.hpp",
@@ -1555,8 +1550,7 @@ DependencyCache {
             "Owner.hpp",
             "Guard.hpp",
             "OnDemand.hpp",
-            "CircularBuffer.hpp",
-            "containers.hpp",
+            "LineSource.hpp",
             "String.hpp",
             "ByteArray.hpp",
             "Default.hpp",
@@ -1684,7 +1678,6 @@ DependencyCache {
             "Stack.hpp",
             "StandardStreams.hpp",
             "LineSource.hpp",
-            "CircularBuffer.hpp",
             "LineSink.hpp",
             "SyntaxDefinition.hpp",
             "WireObject.hpp",
@@ -1758,7 +1751,6 @@ DependencyCache {
             "Stack.hpp",
             "StandardStreams.hpp",
             "LineSource.hpp",
-            "CircularBuffer.hpp",
             "LineSink.hpp",
             "SyntaxDefinition.hpp",
             "MachObject.hpp",
@@ -1766,6 +1758,51 @@ DependencyCache {
             "Wire.hpp",
             "WireObject.hpp",
             "MachDependencyCache.hpp"
+        ]
+    }
+    "MachObject.cpp": MachObject {
+        objectPath: "MachObject.o"
+        dependencyPaths: [
+            "MachObject.cpp",
+            "FileStatus.hpp",
+            "atoms",
+            "types.hpp",
+            "Exception.hpp",
+            "strings.hpp",
+            "generics.hpp",
+            "Instance.hpp",
+            "defaults.hpp",
+            "SpinLock.hpp",
+            "Ref.hpp",
+            "Pointer.hpp",
+            "SetNull.hpp",
+            "Owner.hpp",
+            "Guard.hpp",
+            "OnDemand.hpp",
+            "Time.hpp",
+            "String.hpp",
+            "ByteArray.hpp",
+            "Default.hpp",
+            "Singleton.hpp",
+            "LocalStatic.hpp",
+            "GlobalCoreMutex.hpp",
+            "ThreadLocalSingleton.hpp",
+            "ThreadLocalOwner.hpp",
+            "List.hpp",
+            "containers.hpp",
+            "OrdinalTree.hpp",
+            "AvlTree.hpp",
+            "BinaryTree.hpp",
+            "Array.hpp",
+            "Heap.hpp",
+            "Token.hpp",
+            "Tree.hpp",
+            "Character.hpp",
+            "Utf8Walker.hpp",
+            "File.hpp",
+            "SystemStream.hpp",
+            "Stream.hpp",
+            "MachObject.hpp"
         ]
     }
     "Md5.cpp": MachObject {
@@ -1939,8 +1976,6 @@ DependencyCache {
             "Stream.hpp",
             "Time.hpp",
             "LineSource.hpp",
-            "CircularBuffer.hpp",
-            "Mutex.hpp",
             "NetworkInterface.hpp",
             "SocketAddress.hpp",
             "SocketAddressEntry.hpp"
@@ -2004,7 +2039,6 @@ DependencyCache {
             "Stream.hpp",
             "Time.hpp",
             "LineSource.hpp",
-            "CircularBuffer.hpp",
             "LineSink.hpp",
             "Pattern.hpp",
             "SyntaxDefinition.hpp"
@@ -2103,8 +2137,7 @@ DependencyCache {
             "Map.hpp",
             "Process.hpp",
             "LineSink.hpp",
-            "LineSource.hpp",
-            "CircularBuffer.hpp"
+            "LineSource.hpp"
         ]
     }
     "ProcessFactory.cpp": MachObject {
@@ -2155,7 +2188,6 @@ DependencyCache {
             "Time.hpp",
             "LineSink.hpp",
             "LineSource.hpp",
-            "CircularBuffer.hpp",
             "ProcessFactory.hpp",
             "SignalSet.hpp"
         ]
@@ -2208,7 +2240,6 @@ DependencyCache {
             "rounding.hpp",
             "Stack.hpp",
             "LineSource.hpp",
-            "CircularBuffer.hpp",
             "ProcessStatus.hpp"
         ]
     }
@@ -2344,7 +2375,6 @@ DependencyCache {
             "Stream.hpp",
             "LineSink.hpp",
             "LineSource.hpp",
-            "CircularBuffer.hpp",
             "Event.hpp"
         ]
     }
@@ -2498,7 +2528,6 @@ DependencyCache {
             "Time.hpp",
             "StandardStreams.hpp",
             "LineSource.hpp",
-            "CircularBuffer.hpp",
             "LineSink.hpp"
         ]
     }
@@ -2720,6 +2749,67 @@ DependencyCache {
             "SyntaxSugar.hpp"
         ]
     }
+    "SyntaxDebugger.cpp": MachObject {
+        objectPath: "SyntaxDebugger.o"
+        dependencyPaths: [
+            "SyntaxDebugger.cpp",
+            "SyntaxDebugger.hpp",
+            "syntax.hpp",
+            "Crc32.hpp",
+            "types.hpp",
+            "Exception.hpp",
+            "strings.hpp",
+            "PrefixTree.hpp",
+            "Tree.hpp",
+            "atoms",
+            "generics.hpp",
+            "Instance.hpp",
+            "defaults.hpp",
+            "SpinLock.hpp",
+            "Ref.hpp",
+            "Pointer.hpp",
+            "SetNull.hpp",
+            "Owner.hpp",
+            "Guard.hpp",
+            "OnDemand.hpp",
+            "Array.hpp",
+            "Default.hpp",
+            "Singleton.hpp",
+            "LocalStatic.hpp",
+            "GlobalCoreMutex.hpp",
+            "ThreadLocalSingleton.hpp",
+            "ThreadLocalOwner.hpp",
+            "ByteArray.hpp",
+            "List.hpp",
+            "containers.hpp",
+            "OrdinalTree.hpp",
+            "AvlTree.hpp",
+            "BinaryTree.hpp",
+            "Heap.hpp",
+            "Token.hpp",
+            "PrefixTreeWalker.hpp",
+            "SyntaxNode.hpp",
+            "SyntaxState.hpp",
+            "TokenFactory.hpp",
+            "SyntaxDebugFactory.hpp",
+            "SyntaxSugar.hpp",
+            "String.hpp",
+            "Character.hpp",
+            "Utf8Walker.hpp",
+            "Map.hpp",
+            "PrintDebug.hpp",
+            "Format.hpp",
+            "Variant.hpp",
+            "rounding.hpp",
+            "Stack.hpp",
+            "StandardStreams.hpp",
+            "SystemStream.hpp",
+            "Stream.hpp",
+            "Time.hpp",
+            "LineSource.hpp",
+            "LineSink.hpp"
+        ]
+    }
     "SyntaxDefinition.cpp": MachObject {
         objectPath: "SyntaxDefinition.o"
         dependencyPaths: [
@@ -2902,7 +2992,6 @@ DependencyCache {
             "Stream.hpp",
             "LineSink.hpp",
             "LineSource.hpp",
-            "CircularBuffer.hpp",
             "Event.hpp"
         ]
     }
@@ -2951,8 +3040,7 @@ DependencyCache {
             "Stream.hpp",
             "Time.hpp",
             "LineSink.hpp",
-            "LineSource.hpp",
-            "CircularBuffer.hpp"
+            "LineSource.hpp"
         ]
     }
     "ThreadFactory.cpp": MachObject {
@@ -3201,8 +3289,7 @@ DependencyCache {
         objectPath: "Wire.o"
         dependencyPaths: [
             "Wire.cpp",
-            "stdio",
-            "FileStatus.hpp",
+            "Format.hpp",
             "atoms",
             "types.hpp",
             "Exception.hpp",
@@ -3217,7 +3304,6 @@ DependencyCache {
             "Owner.hpp",
             "Guard.hpp",
             "OnDemand.hpp",
-            "Time.hpp",
             "String.hpp",
             "ByteArray.hpp",
             "Default.hpp",
@@ -3237,38 +3323,19 @@ DependencyCache {
             "Tree.hpp",
             "Character.hpp",
             "Utf8Walker.hpp",
-            "File.hpp",
-            "SystemStream.hpp",
-            "Stream.hpp",
-            "Dir.hpp",
-            "DirEntry.hpp",
-            "Glob.hpp",
-            "Pattern.hpp",
-            "SyntaxDebugger.hpp",
-            "syntax.hpp",
-            "Crc32.hpp",
-            "PrefixTree.hpp",
-            "PrefixTreeWalker.hpp",
-            "SyntaxNode.hpp",
-            "SyntaxState.hpp",
-            "TokenFactory.hpp",
-            "SyntaxDebugFactory.hpp",
-            "SyntaxSugar.hpp",
-            "Map.hpp",
-            "PrintDebug.hpp",
-            "Format.hpp",
             "Variant.hpp",
             "rounding.hpp",
             "Stack.hpp",
-            "StandardStreams.hpp",
-            "LineSource.hpp",
-            "CircularBuffer.hpp",
-            "LineSink.hpp",
-            "SyntaxDefinition.hpp",
             "FloatLiteral.hpp",
+            "SyntaxDefinition.hpp",
+            "TokenFactory.hpp",
+            "SyntaxNode.hpp",
+            "SyntaxState.hpp",
+            "SyntaxDebugFactory.hpp",
             "IntegerLiteral.hpp",
             "Wire.hpp",
-            "WireObject.hpp"
+            "WireObject.hpp",
+            "Map.hpp"
         ]
     }
     "WireObject.cpp": MachObject {

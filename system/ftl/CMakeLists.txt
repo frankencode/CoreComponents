@@ -258,6 +258,7 @@ SET(FTLSYSTEM_SOURCE
 	Config.cpp
 	Json.cpp
 
+	MachObject.cpp
 	MachDependencyCache.cpp
 	MachCompiler.cpp
 	GccCompiler.cpp

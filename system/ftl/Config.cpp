@@ -11,6 +11,7 @@
 
 #include "File.hpp"
 #include "Format.hpp"
+#include "Pattern.hpp"
 #include "Config.hpp"
 
 namespace ftl
@@ -32,28 +33,40 @@ Config::Config(const char *path)
 	}
 }
 
-Ref<StringList, Owner> Config::init(int argc, char** argv)
+Ref<StringList, Owner> Config::init(int argc, char **argv)
 {
-	Ref<StringList, Owner> files = StringList::newInstance();
+	Ref<StringList, Owner> extra = StringList::newInstance();
 	for (int i = 1; i < argc; ++i) {
 		String s = argv[i];
-		if (!s->contains('=')) {
-			files->append(s);
+		if (s->at(0) != '-') {
+			extra->append(s);
 			continue;
 		}
-		Ref<StringList, Owner> parts = s->split('=');
-		if (parts->length() != 2) {
+
+		if (!Pattern("-{1,2}(?name:[^-][^=]{})(=(?value:[^=]{1,})){0,1}")->match(s))
 			throw ConfigException(Format("Illegal option syntax: \"%%\"") << s);
-			break;
+		/*if (s->head(2) == "--") s = s->tail(s->length() - 2);
+		else s = s->tail(s->length() - 1);
+		if (s->contains('=')) {
+
 		}
-		try {
-			object_->setMember(parts->at(0), parts->at(1));
+
 		}
-		catch (WireObjectException &) {
-			throw ConfigException(Format("No such configuration parameter: \"%%\"") << parts->at(0));
-		}
+		else {
+			Ref<StringList, Owner> parts = s->split('=');
+			if (parts->length() != 2) {
+				throw ConfigException(Format("Illegal option syntax: \"%%\"") << s);
+				break;
+			}
+			try {
+				object_->establish(parts->at(0), parts->at(1));
+			}
+			catch (WireObjectException &) {
+				throw ConfigException(Format("No such configuration parameter: \"%%\"") << parts->at(0));
+			}
+		}*/
 	}
-	return files;
+	return extra;
 }
 
 } // namespace ftl

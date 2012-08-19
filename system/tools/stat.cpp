@@ -40,7 +40,7 @@ String timeToString(Time time, bool human)
 	}
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	Ref<CommandLine, Owner> commandLine = CommandLine::newInstance();
 	commandLine->summary(

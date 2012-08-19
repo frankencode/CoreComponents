@@ -4,7 +4,7 @@
 namespace ftl
 {
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	Ref<Dir, Owner> dir = Dir::newInstance(Process::cwd());
 	for (Ref<DirEntry, Owner> entry = DirEntry::newInstance(); dir->read(entry);)
@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 
 } // namespace ftl
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	return ftl::main(argc, argv);
 }

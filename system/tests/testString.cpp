@@ -4,7 +4,7 @@
 namespace ftl
 {
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	{
 		String s = "Übertragung";
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
 } // namespace ftl
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	return ftl::main(argc, argv);
 }

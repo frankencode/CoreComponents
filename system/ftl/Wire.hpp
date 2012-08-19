@@ -38,7 +38,7 @@ class Wire;
 class Wire: public SyntaxDefinition, public Singleton<Wire>
 {
 public:
-	Ref<WireObject, Owner> parse(Ref<ByteArray> text);
+	Variant parse(Ref<ByteArray> text);
 
 protected:
 	friend class Singleton<Wire>;

@@ -34,7 +34,7 @@ public:
 	String summary(String newValue = "");
 	String details(String newValue = "");
 
-	Ref<StringList, Owner> read(int argc, char** argv);
+	Ref<StringList, Owner> read(int argc, char **argv);
 
 	typedef List< Ref<CommandOption, Owner> > OptionList;
 	Ref<OptionList> usedOptions() const;

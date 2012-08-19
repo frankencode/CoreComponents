@@ -4,26 +4,29 @@
 namespace ftl
 {
 
-int echo(int argc, char** argv);
+int echo(int argc, char **argv);
 
-int main(int argc, char** argv)
+class TestFactory: public ProcessFactory
+{
+public:
+	inline static Ref<TestFactory, Owner> newInstance() {
+		return new TestFactory;
+	}
+	int incarnate() {
+		print("Good morning %%.\n", User::newInstance(Process::realUserId())->fullName());
+		return 7;
+	}
+};
+
+int main(int argc, char **argv)
 {
 	if (argc == 2)
 		return echo(argc, argv);
 
 	{
-		class TestFactory: public ProcessFactory
-		{
-		public:
-			int incarnate() {
-				print("Good morning %%.\n", User::newInstance(Process::realUserId())->fullName());
-				return 7;
-			}
-		};
-
 		print("(1) Worker clone\n\n");
 
-		Ref<ProcessFactory, Owner> factory = new TestFactory;
+		Ref<ProcessFactory, Owner> factory = TestFactory::newInstance();
 		Ref<Process, Owner> worker = factory->produce();
 		int ret = worker->wait();
 		print("ret = %%\n", ret);
@@ -33,7 +36,7 @@ int main(int argc, char** argv)
 	{
 		print("(2) I/O Redirection, passing of arguments and environment variables\n\n");
 
-		Ref<ProcessFactory, Owner> factory = new ProcessFactory;
+		Ref<ProcessFactory, Owner> factory = ProcessFactory::newInstance();
 		factory->setExecPath(argv[0]);
 		factory->setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
 		factory->arguments()->append(argv[0]);
@@ -76,7 +79,7 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-int echo(int argc, char** argv)
+int echo(int argc, char **argv)
 {
 	Ref<StringList, Owner> commandLine = StringList::newInstance();
 	for (int i = 0; i < argc; ++i)
@@ -99,7 +102,7 @@ int echo(int argc, char** argv)
 
 } // namespace ftl
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	return ftl::main(argc, argv);
 }

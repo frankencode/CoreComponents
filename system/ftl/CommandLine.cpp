@@ -180,7 +180,7 @@ Ref<CommandOption> CommandLine::optionByLongName(String name) const
 	return option;
 }
 
-Ref<StringList, Owner> CommandLine::read(int argc, char** argv)
+Ref<StringList, Owner> CommandLine::read(int argc, char **argv)
 {
 	execPath_ = argv[0];
 	execName_ = execPath_->fileName();

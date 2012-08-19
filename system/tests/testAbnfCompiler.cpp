@@ -5,7 +5,7 @@
 namespace ftl
 {
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	for (int i = 1; i < argc; ++i) {
 		Ref<File, Owner> file = File::newInstance(argv[i]);
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
 } // namespace ftl
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	return ftl::main(argc, argv);
 }

@@ -27,10 +27,10 @@ class State: public Instance
 public:
 	inline int definitionId() const { return definitionId_; }
 
-	inline bool *flag(int id) { return flags_->pointerAt(id); }
+	inline bool *flag(int id) const { return flags_->pointerAt(id); }
 	inline char *character(int id) { return chars_->pointerAt(id); }
 
-	inline Ref<ByteArray> string(int id) { return strings_->at(id); }
+	inline Ref<ByteArray> string(int id) const { return strings_->at(id); }
 	inline void setString(int id, Ref<ByteArray> s) { strings_->set(id, s); }
 
 	inline Ref<State> child() const { return child_; }
@@ -42,7 +42,7 @@ public:
 	inline int hintOffset() const { return hintOffset_; }
 	inline void setHintOffset(int index) { hintOffset_ = index; }
 
-	Ref<ByteArray> string(const char *name);
+	Ref<ByteArray> string(const char *name) const;
 
 private:
 	friend class syntax::DefinitionNode;

@@ -53,7 +53,8 @@ public:
 	inline dev_t storageId() const { return st_dev; }
 	inline dev_t deviceId() const { return st_rdev; }
 
-	void update(bool *exists = 0, bool followSymbolicLink = true);
+	bool update(bool followSymbolicLink = true);
+	inline bool exists() const { return exists_; }
 
 private:
 	FileStatus(int fd);
@@ -62,7 +63,7 @@ private:
 
 	int fd_;
 	String path_;
-	char *pathUtf8_;
+	bool exists_;
 };
 
 } // namespace ftl

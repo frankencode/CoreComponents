@@ -30,25 +30,25 @@ String protocolToString(int protocol)
 	return s;
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	String hostName = SocketAddress::hostName();
 
 	if (argc == 2)
 		hostName = argv[1];
-	
+
 	print("hostName = \"%%\"\n", hostName);
-	
+
 	String canonicalName;
 	Ref<SocketAddressList, Owner> list = SocketAddress::resolve(hostName, "", AF_UNSPEC, SOCK_STREAM, &canonicalName);
-	
+
 	print("canonicalName = \"%%\"\n", canonicalName);
-	
+
 	for (int i = 0; i < list->length(); ++i)
 	{
 		Ref<SocketAddress> address = list->at(i);
 		bool failed;
-		
+
 		print("%% : %% : %% : %% : %% : %% : %%\n"
 			, familyToString(address->family())
 			, address->toString()
@@ -59,13 +59,13 @@ int main(int argc, char** argv)
 			, address->lookupServiceName()
 		);
 	}
-	
+
 	return 0;
 }
 
 } // namespace ftl
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	return ftl::main(argc, argv);
 }

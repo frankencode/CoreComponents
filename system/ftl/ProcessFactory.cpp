@@ -192,7 +192,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 			if (arguments) if (arguments->length() == 0) arguments = 0;
 
 			int argc = arguments ? arguments->length() : 1;
-			char** argv = new char*[argc + 1];
+			char **argv = new char*[argc + 1];
 
 			if (arguments) {
 				for (int i = 0; i < arguments->length(); ++i)
@@ -205,7 +205,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 
 			// prepare the environment map
 
-			char** envp = 0;
+			char **envp = 0;
 
 			if (envMap_) {
 				int n = envMap_->length();
