@@ -42,7 +42,7 @@ public:
 	inline int hintOffset() const { return hintOffset_; }
 	inline void setHintOffset(int index) { hintOffset_ = index; }
 
-	Ref<ByteArray> string(const char *name) const;
+	Ref<ByteArray, Owner> get(const char *name) const;
 
 private:
 	friend class syntax::DefinitionNode;

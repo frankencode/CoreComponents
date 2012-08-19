@@ -36,7 +36,7 @@ State::State(Ref<DefinitionNode> definition, int numFlags, int numChars, int num
 		parent->child_ = this;
 }
 
-Ref<ByteArray> State::string(const char *name) const
+Ref<ByteArray, Owner> State::get(const char *name) const
 {
 	Ref<ByteArray> value = string(definition_->stringIdByName(name));
 	if (!value) value = ByteArray::empty();
