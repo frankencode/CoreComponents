@@ -35,38 +35,24 @@ Config::Config(const char *path)
 
 Ref<StringList, Owner> Config::init(int argc, char **argv)
 {
-	Ref<StringList, Owner> extra = StringList::newInstance();
+	Ref<StringList, Owner> extras = StringList::newInstance();
 	for (int i = 1; i < argc; ++i) {
 		String s = argv[i];
 		if (s->at(0) != '-') {
-			extra->append(s);
+			extras->append(s);
 			continue;
 		}
-
-		if (!Pattern("-{1,2}(?name:[^-][^=]{})(=(?value:[^=]{1,})){0,1}")->match(s))
+		Pattern flags("-{1,2}(?name:[^-][^=]{})(=(?value:[^=]{1,})){0,1}");
+		Ref<SyntaxState, Owner> state = flags->newState();
+		if (flags->match(s))
 			throw ConfigException(Format("Illegal option syntax: \"%%\"") << s);
-		/*if (s->head(2) == "--") s = s->tail(s->length() - 2);
-		else s = s->tail(s->length() - 1);
-		if (s->contains('=')) {
-
-		}
-
-		}
-		else {
-			Ref<StringList, Owner> parts = s->split('=');
-			if (parts->length() != 2) {
-				throw ConfigException(Format("Illegal option syntax: \"%%\"") << s);
-				break;
-			}
-			try {
-				object_->establish(parts->at(0), parts->at(1));
-			}
-			catch (WireObjectException &) {
-				throw ConfigException(Format("No such configuration parameter: \"%%\"") << parts->at(0));
-			}
-		}*/
+		String name = state->get("name");
+		String valueText = state->get("value");
+		Variant value = true;
+		if (valueText != "") value = wire()->parse(valueText);
+		object_->establish(name, value);
 	}
-	return extra;
+	return extras;
 }
 
 } // namespace ftl

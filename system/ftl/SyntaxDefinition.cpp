@@ -49,6 +49,11 @@ Ref<Token, Owner> Definition::match(const ByteArray *media, int i, Ref<SyntaxSta
 	return token;
 }
 
+Ref<Token, Owner> Definition::match(const ByteArray *media, Ref<SyntaxState> state) const
+{
+	return match(media, -1, state);
+}
+
 void Definition::SYNTAX(const char *name) { def_->SYNTAX(name); }
 void Definition::IMPORT(Ref<Definition> definition, const char *name) { def_->IMPORT(definition->def_, name); }
 void Definition::OPTION(const char *name, bool value) { def_->OPTION(name, value); }
