@@ -44,7 +44,7 @@ Ref<StringList, Owner> Config::init(int argc, char **argv)
 		}
 		Pattern flags("-{1,2}(?name:[^-][^=]{})(=(?value:[^=]{1,})){0,1}");
 		Ref<SyntaxState, Owner> state = flags->newState();
-		if (flags->match(s))
+		if (flags->match(s, state))
 			throw ConfigException(Format("Illegal option syntax: \"%%\"") << s);
 		String name = state->get("name");
 		String valueText = state->get("value");
