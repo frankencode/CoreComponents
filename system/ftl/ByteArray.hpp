@@ -14,11 +14,12 @@
 #include "generics.hpp"
 #include "strings.hpp"
 #include "Default.hpp"
-#include "List.hpp"
 #include "Token.hpp"
 
 namespace ftl
 {
+
+template<class T> class List;
 
 class Character;
 class String;
@@ -117,8 +118,9 @@ public:
 		if (i1 > size_) i1 = size_;
 		return (i0 < i1) ? new ByteArray(data_ + i0, i1 - i0) : new ByteArray();
 	}
-	inline Ref<ByteArray, Owner> copy(Ref<Token> token) const {
-		return copy(token->i0(), token->i1());
+	template<class Range>
+	inline Ref<ByteArray, Owner> copy(Ref<Range> range) const {
+		return copy(range->i0(), range->i1());
 	}
 
 	inline Ref<ByteArray, Owner> head(int n) const { return copy(0, n); }

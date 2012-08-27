@@ -77,8 +77,7 @@ public:
 
 	Ref<StateNameById, Owner> newReverseMap(Ref<StateIdByName> stateIdByName);
 	Ref<StateNameById> flagNameById();
-	Ref<StateNameById> charNameById();
-	Ref<StateNameById> stringNameById();
+	Ref<StateNameById> captureNameById();
 
 private:
 	friend class syntax::DefinitionNode;
@@ -112,8 +111,7 @@ private:
 	String indent_;
 
 	Ref<StateNameById, Owner> flagNameById_;
-	Ref<StateNameById, Owner> charNameById_;
-	Ref<StateNameById, Owner> stringNameById_;
+	Ref<StateNameById, Owner> captureNameById_;
 };
 
 } // namespace syntax

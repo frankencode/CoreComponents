@@ -14,6 +14,7 @@
 #include "strings.hpp"
 #include "ByteArray.hpp"
 #include "Character.hpp"
+#include "List.hpp"
 
 namespace ftl
 {

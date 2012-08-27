@@ -92,18 +92,6 @@ public:
 	virtual Item get(Index i) const = 0;
 };
 
-class Range
-{
-public:
-	Range(int i0, int i1)
-		: i0_(i0), i1_(i1)
-	{}
-	inline int i0() const { return i0_; }
-	inline int i1() const { return i1_; }
-private:
-	int i0_, i1_;
-};
-
 class Version
 {
 public:
@@ -127,6 +115,23 @@ private:
 	uint8_t major_;
 	uint8_t minor_;
 	uint16_t patch_;
+};
+
+class Range: public Instance
+{
+public:
+	inline static Ref<Range, Owner> newInstance(int i0 = 0, int i1 = -1) { return new Range(i0, i1); }
+
+	inline int i0() const { return i0_; }
+	inline int i1() const { return i1_; }
+
+	inline int length() const { return i1_ - i0_; }
+	inline bool valid() const { return i0_ <= i1_; }
+
+protected:
+	Range(int i0 = 0, int i1 = -1): i0_(i0), i1_(i1) {}
+
+	int i0_, i1_;
 };
 
 template<class Key, class Value>
@@ -158,6 +163,7 @@ public:
 	inline Value &value() { return value_; }
 	inline void setValue(const Value &value) { value_ = value; }
 
+	inline Pair *operator->() { return this; }
 	inline const Pair *operator->() const { return this; }
 
 private:

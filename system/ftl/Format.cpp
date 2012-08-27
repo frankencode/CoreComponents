@@ -75,6 +75,12 @@ Format &Format::operator=(const Format &b)
 	return *this;
 }
 
+Format &Format::operator<<(const String &s)
+{
+	get()->insert(nextPlaceHolder()->j_, s);
+	return *this;
+}
+
 Ref<Format::PlaceHolder, Owner> Format::nextPlaceHolder()
 {
 	Ref<PlaceHolder, Owner> ph = placeHolders_;

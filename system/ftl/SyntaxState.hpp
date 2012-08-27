@@ -11,30 +11,28 @@
 #ifndef FTL_SYNTAXSTATE_HPP
 #define FTL_SYNTAXSTATE_HPP
 
-#include "atoms"
+#include "generics.hpp"
 #include "Array.hpp"
 #include "ByteArray.hpp"
 
 namespace ftl
 {
 
-namespace syntax {
+namespace syntax
+{
 
 class DefinitionNode;
 
 class State: public Instance
 {
 public:
-	inline int definitionId() const { return definitionId_; }
+	inline bool flag(int id) const { return flags_->at(id); }
+	bool flag(const char *name) const;
+	inline void setFlag(int id, bool value) { flags_->set(id, value); }
 
-	inline bool *flag(int id) const { return flags_->pointerAt(id); }
-	inline char *character(int id) { return chars_->pointerAt(id); }
-
-	inline Ref<ByteArray> string(int id) const { return strings_->at(id); }
-	inline void setString(int id, Ref<ByteArray> s) { strings_->set(id, s); }
-
-	inline Ref<State> child() const { return child_; }
-	inline void setChild(Ref<State> state) { child_ = state; }
+	inline Ref<Range> capture(int id) const { return captures_->at(id); }
+	Ref<Range> capture(const char *name) const;
+	inline void setCapture(int id, Ref<Range> capture) { captures_->set(id, capture); }
 
 	inline const char *hint() const { return hint_; }
 	inline void setHint(const char *text) { hint_ = text; }
@@ -42,19 +40,28 @@ public:
 	inline int hintOffset() const { return hintOffset_; }
 	inline void setHintOffset(int index) { hintOffset_ = index; }
 
-	Ref<ByteArray, Owner> get(const char *name) const;
+	inline int definitionId() const { return definitionId_; }
+
+	inline Ref<State> child() const { return child_; }
+	inline void setChild(Ref<State> state) { child_ = state; }
 
 private:
 	friend class syntax::DefinitionNode;
+
 	State();
-	State(Ref<DefinitionNode> definition, int numFlags, int numChars, int numStrings, Ref<State> parent = 0);
+	State(Ref<DefinitionNode> definition, int numFlags, int numCaptures, Ref<State> parent = 0);
 
 	Ref<DefinitionNode, Owner> definition_;
 	int definitionId_;
-	Ref< Array<bool>, Owner > flags_;
-	Ref<ByteArray, Owner> chars_;
-	Ref< Array< Ref<ByteArray, Owner> >, Owner > strings_;
+
 	Ref<State, Owner> child_;
+
+	typedef Array<bool> Flags;
+	typedef Array< Ref<Range, Owner> > Captures;
+
+	Ref<Flags, Owner> flags_;
+	Ref<Captures, Owner> captures_;
+
 	const char *hint_;
 	int hintOffset_;
 };

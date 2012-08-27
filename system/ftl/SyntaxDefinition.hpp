@@ -146,20 +146,10 @@ public:
 	void OPTIMIZE();
 	void LINK(bool optimize = true);
 
-	void STATE_FLAG(const char *name, bool defaultValue = false);
-	void STATE_CHAR(const char *name, char defaultValue = 0);
-	void STATE_STRING(const char *name, const char *defaultValue = "");
-	void TOUCH_STRING(const char *name);
-
 	NODE SET(const char *name, bool value);
 	NODE IF(const char *name, NODE trueBranch, NODE falseBranch = 0);
-	NODE GETCHAR(const char *name);
-	NODE SETCHAR(const char *name, char value);
-	NODE VARCHAR(const char *name);
-	NODE VAROTHER(const char *name);
-	NODE GETSTRING(const char *name, NODE coverage);
-	NODE SETSTRING(const char *name, const char *value);
-	NODE VARSTRING(const char *name);
+	NODE CAPTURE(const char *name, NODE coverage);
+	NODE REPLAY(const char *name);
 
 	NODE INVOKE(DefinitionNode *definition, NODE coverage = 0);
 	NODE INVOKE(const char *definitionName, NODE coverage = 0);

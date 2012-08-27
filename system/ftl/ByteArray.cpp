@@ -9,6 +9,7 @@
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
 
+#include "List.hpp"
 #include "IntegerLiteral.hpp"
 #include "FloatLiteral.hpp"
 #include "Utf8Decoder.hpp"

@@ -149,20 +149,10 @@ NODE Definition::ERROR() { return def_->ERROR(); }
 void Definition::OPTIMIZE() { return def_->OPTIMIZE(); }
 void Definition::LINK(bool optimize) { return def_->LINK(optimize); }
 
-void Definition::STATE_FLAG(const char *name, bool defaultValue) { return def_->STATE_FLAG(name, defaultValue); }
-void Definition::STATE_CHAR(const char *name, char defaultValue) { return def_->STATE_CHAR(name, defaultValue); }
-void Definition::STATE_STRING(const char *name, const char *defaultValue) { return def_->STATE_STRING(name, defaultValue); }
-void Definition::TOUCH_STRING(const char *name) { return def_->TOUCH_STRING(name); }
-
 NODE Definition::SET(const char *name, bool value) { return def_->SET(name, value); }
 NODE Definition::IF(const char *name, NODE trueBranch, NODE falseBranch) { return def_->IF(name, trueBranch, falseBranch); }
-NODE Definition::GETCHAR(const char *name) { return def_->GETCHAR(name); }
-NODE Definition::SETCHAR(const char *name, char value) { return def_->SETCHAR(name, value); }
-NODE Definition::VARCHAR(const char *name) { return def_->VARCHAR(name); }
-NODE Definition::VAROTHER(const char *name) { return def_->VAROTHER(name); }
-NODE Definition::GETSTRING(const char *name, NODE coverage) { return def_->GETSTRING(name, coverage); }
-NODE Definition::SETSTRING(const char *name, const char *value) { return def_->SETSTRING(name, value); }
-NODE Definition::VARSTRING(const char *name) { return def_->VARSTRING(name); }
+NODE Definition::CAPTURE(const char *name, NODE coverage) { return def_->CAPTURE(name, coverage); }
+NODE Definition::REPLAY(const char *name) { return def_->REPLAY(name); }
 
 NODE Definition::INVOKE(DefinitionNode *definition, NODE coverage) { return def_->INVOKE(definition, coverage); }
 NODE Definition::INVOKE(const char *definitionName, NODE coverage) { return def_->INVOKE(definitionName, coverage); }
