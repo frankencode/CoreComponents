@@ -46,8 +46,8 @@ Ref<StringList, Owner> Config::init(int argc, char **argv)
 		Ref<SyntaxState, Owner> state = flags->newState();
 		if (flags->match(s, state))
 			throw ConfigException(Format("Illegal option syntax: \"%%\"") << s);
-		String name = state->get("name");
-		String valueText = state->get("value");
+		String name = s->copy(state->capture("name"));
+		String valueText = s->copy(state->capture("value"));
 		Variant value = true;
 		if (valueText != "") value = wire()->parse(valueText);
 		object_->establish(name, value);

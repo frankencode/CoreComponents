@@ -23,24 +23,26 @@ State::State()
 	  hintOffset_(-1)
 {}
 
-State::State(Ref<DefinitionNode> definition, int numFlags, int numChars, int numStrings, Ref<State> parent)
+State::State(Ref<DefinitionNode> definition, int numFlags, int numCaptures, Ref<State> parent)
 	: definition_(definition),
 	  definitionId_(definition->id()),
-	  flags_(Array<bool>::newInstance(numFlags)),
-	  chars_(ByteArray::newInstance(numChars)),
-	  strings_(Array< Ref<ByteArray, Owner> >::newInstance(numStrings)),
+	  flags_(Flags::newInstance(numFlags)),
+	  captures_(Captures::newInstance(numCaptures)),
 	  hint_(0),
 	  hintOffset_(-1)
 {
-	if (parent)
-		parent->child_ = this;
+	if (parent) parent->child_ = this;
+	for (int i = 0; i < flags_->length(); ++i) flags_->set(i, false);
 }
 
-Ref<ByteArray, Owner> State::get(const char *name) const
+bool State::flag(const char *name) const
 {
-	Ref<ByteArray> value = string(definition_->stringIdByName(name));
-	if (!value) value = ByteArray::empty();
-	return value;
+	return flag(definition_->flagIdByName(name));
+}
+
+Ref<Range> State::capture(const char *name) const
+{
+	return capture(definition_->captureIdByName(name));
 }
 
 } // namespace syntax

@@ -599,113 +599,40 @@ private:
 	inline Ref<IfNode> ifNode() const { return DebugNode::entry(); }
 };
 
-class GetCharDebugNode: public DebugNode {
+class CaptureDebugNode: public DebugNode {
 public:
-	GetCharDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	CaptureDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char *declType() const { return "GETCHAR"; }
+	virtual const char *declType() const { return "CAPTURE"; }
 
 	virtual void printAttributes(String indent) {
-		print("\"%%\"", DebugNode::debugger_->charNameById()->value(getCharNode()->charId()));
-	}
-
-private:
-	typedef syntax::GetCharNode GetCharNode;
-	inline Ref<GetCharNode> getCharNode() const { return DebugNode::entry(); }
-};
-
-class SetCharDebugNode: public DebugNode {
-public:
-	SetCharDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
-		: DebugNode(debugger, newNode)
-	{}
-
-	virtual const char *declType() const { return "SETCHAR"; }
-
-	virtual void printAttributes(String indent) {
-		Ref<SetCharNode> node = setCharNode();
-		print("\"%%\", ", DebugNode::debugger_->charNameById()->value(node->charId()));
-		printCharAttr(node->value());
-	}
-
-private:
-	typedef syntax::SetCharNode SetCharNode;
-	inline Ref<SetCharNode> setCharNode() const { return DebugNode::entry(); }
-};
-
-class VarCharDebugNode: public DebugNode {
-public:
-	VarCharDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
-		: DebugNode(debugger, newNode)
-	{}
-
-	virtual const char *declType() const { return varCharNode()->invert() ? "VAROTHER" : "VARCHAR"; }
-
-	virtual void printAttributes(String indent) {
-		print("\"%%\"", DebugNode::debugger_->charNameById()->value(varCharNode()->charId()));
-	}
-
-private:
-	typedef syntax::VarCharNode VarCharNode;
-	inline Ref<VarCharNode> varCharNode() const { return DebugNode::entry(); }
-};
-
-class GetStringDebugNode: public DebugNode {
-public:
-	GetStringDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
-		: DebugNode(debugger, newNode)
-	{}
-
-	virtual const char *declType() const { return "GETSTRING"; }
-
-	virtual void printAttributes(String indent) {
-		Ref<GetStringNode> node = getStringNode();
-		print("\"%%\",\n", DebugNode::debugger_->stringNameById()->value(node->stringId()));
+		Ref<CaptureNode> node = captureNode();
+		print("\"%%\",\n", DebugNode::debugger_->captureNameById()->value(node->captureId()));
 		printBranch(node->coverage(), indent);
 		print("\n%%", DebugNode::superIndent(indent));
 	}
 
 private:
-	typedef syntax::GetStringNode GetStringNode;
-	inline Ref<GetStringNode> getStringNode() const { return DebugNode::entry(); }
+	typedef syntax::CaptureNode CaptureNode;
+	inline Ref<CaptureNode> captureNode() const { return DebugNode::entry(); }
 };
 
-class SetStringDebugNode: public DebugNode {
+class ReplayDebugNode: public DebugNode {
 public:
-	SetStringDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	ReplayDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char *declType() const { return "SETSTRING"; }
+	virtual const char *declType() const { return "REPLAY"; }
 
 	virtual void printAttributes(String indent) {
-		Ref<SetStringNode> node = setStringNode();
-		print("\"%%\", ", DebugNode::debugger_->stringNameById()->value(node->stringId()));
-		printString(*node->value());
+		print("\"%%\"", DebugNode::debugger_->captureNameById()->value(replayNode()->captureId()));
 	}
-
 private:
-	typedef syntax::SetStringNode SetStringNode;
-	inline Ref<SetStringNode> setStringNode() const { return DebugNode::entry(); }
-};
-
-class VarStringDebugNode: public DebugNode {
-public:
-	VarStringDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
-		: DebugNode(debugger, newNode)
-	{}
-
-	virtual const char *declType() const { return "VARSTRING"; }
-
-	virtual void printAttributes(String indent) {
-		print("\"%%\"", DebugNode::debugger_->stringNameById()->value(varStringNode()->stringId()));
-	}
-
-private:
-	typedef syntax::VarStringNode VarStringNode;
-	inline Ref<VarStringNode> varStringNode() const { return DebugNode::entry(); }
+	typedef syntax::ReplayNode ReplayNode;
+	inline Ref<ReplayNode> replayNode() const { return DebugNode::entry(); }
 };
 
 class InvokeDebugNode: public DebugNode {
@@ -764,12 +691,8 @@ Debugger::Debugger(String indent)
 	factoryByNodeType_->insert("Call",           new DebugNodeFactory<CallDebugNode>           (this));
 	factoryByNodeType_->insert("Set",            new DebugNodeFactory<SetDebugNode>            (this));
 	factoryByNodeType_->insert("If",             new DebugNodeFactory<IfDebugNode>             (this));
-	factoryByNodeType_->insert("GetChar",        new DebugNodeFactory<GetCharDebugNode>        (this));
-	factoryByNodeType_->insert("SetChar",        new DebugNodeFactory<SetCharDebugNode>        (this));
-	factoryByNodeType_->insert("VarChar",        new DebugNodeFactory<VarCharDebugNode>        (this));
-	factoryByNodeType_->insert("GetString",      new DebugNodeFactory<GetStringDebugNode>      (this));
-	factoryByNodeType_->insert("SetString",      new DebugNodeFactory<SetStringDebugNode>      (this));
-	factoryByNodeType_->insert("VarString",      new DebugNodeFactory<VarStringDebugNode>      (this));
+	factoryByNodeType_->insert("Capture",        new DebugNodeFactory<CaptureDebugNode>        (this));
+	factoryByNodeType_->insert("Replay",         new DebugNodeFactory<ReplayDebugNode>         (this));
 	factoryByNodeType_->insert("Invoke",         new DebugNodeFactory<InvokeDebugNode>         (this));
 }
 
@@ -777,36 +700,6 @@ void Debugger::printDefinition(bool omitUnusedRules)
 {
 	if (omitUnusedRules)
 		determineRulesInUse(DebugFactory::definition()->rule());
-
-	if (DebugFactory::definition()->stateful()) {
-		typedef DefinitionNode::StateFlag StateFlag;
-		typedef DefinitionNode::StateChar StateChar;
-		typedef DefinitionNode::StateString StateString;
-
-		Ref<StateFlag> stateFlag = DebugFactory::definition()->stateFlagHead_;
-		for (int id = DebugFactory::definition()->numStateFlags_ - 1; id >= 0; --id) {
-			print("STATE_FLAG(\"%%\", %%);\n", flagNameById()->value(id), stateFlag->defaultValue_);
-			stateFlag = stateFlag->next_;
-		}
-
-		Ref<StateChar> stateChar = DebugFactory::definition()->stateCharHead_;
-		for (int id = DebugFactory::definition()->numStateChars_ - 1; id >= 0; --id) {
-			print("STATE_CHAR(\"%%\", ", charNameById()->value(id));
-			printCharAttr(stateChar->defaultValue_);
-			print(")\n");
-			stateChar = stateChar->next_;
-		}
-
-		Ref<StateString> stateString = DebugFactory::definition()->stateStringHead_;
-		for (int id = DebugFactory::definition()->numStateStrings_ - 1; id >= 0; --id) {
-			print("STATE_STRING(\"%%\", ", stringNameById()->value(id));
-			printStringAttr(*stateString->defaultValue_);
-			print(")\n");
-			stateString = stateString->next_;
-		}
-
-		print("\n");
-	}
 
 	typedef DefinitionNode::RuleByName RuleByName;
 	typedef syntax::RuleNode RuleNode;
@@ -856,20 +749,14 @@ Ref<Debugger::StateNameById, Owner> Debugger::newReverseMap(Ref<StateIdByName> s
 
 Ref<Debugger::StateNameById> Debugger::flagNameById() {
 	if (!flagNameById_)
-		flagNameById_ = newReverseMap(this->definition()->flagIdByName());
+		flagNameById_ = newReverseMap(this->definition()->flagIdByName_);
 	return flagNameById_;
 }
 
-Ref<Debugger::StateNameById> Debugger::charNameById() {
-	if (!charNameById_)
-		charNameById_ = newReverseMap(this->definition()->charIdByName());
-	return charNameById_;
-}
-
-Ref<Debugger::StateNameById> Debugger::stringNameById() {
-	if (!stringNameById_)
-		stringNameById_ = newReverseMap(this->definition()->stringIdByName());
-	return stringNameById_;
+Ref<Debugger::StateNameById> Debugger::captureNameById() {
+	if (!captureNameById_)
+		captureNameById_ = newReverseMap(this->definition()->captureIdByName_);
+	return captureNameById_;
 }
 
 void Debugger::determineRulesInUse(Ref<syntax::RuleNode> rule)

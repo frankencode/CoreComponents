@@ -121,30 +121,9 @@ void DefinitionNode::LINK(bool optimize)
 
 State *DefinitionNode::newState(State *parent) const
 {
-	if (!stateful())
-		return 0;
-
-	State *state = new State(this, numStateFlags_, numStateChars_, numStateStrings_, parent);
-
-	Ref<StateFlag> stateFlag = stateFlagHead_;
-	for (int id = numStateFlags_ - 1; id >= 0; --id) {
-		*state->flag(id) = stateFlag->defaultValue_;
-		stateFlag = stateFlag->next_;
-	}
-
-	Ref<StateChar> stateChar = stateCharHead_;
-	for (int id = numStateChars_ - 1; id >= 0; --id) {
-		*state->character(id) = stateChar->defaultValue_;
-		stateChar = stateChar->next_;
-	}
-
-	Ref<StateString> stateString = stateStringHead_;
-	for (int id = numStateStrings_ - 1; id >= 0; --id) {
-		state->setString(id, stateString->defaultValue_);
-		stateString = stateString->next_;
-	}
-
-	return state;
+	if (stateful())
+		return new State(this, numFlags_, numCaptures_, parent);
+	return 0;
 }
 
 Ref<Token, Owner> DefinitionNode::find(ByteArray *media, int *i0, int *i1, Ref<TokenFactory> tokenFactory) const

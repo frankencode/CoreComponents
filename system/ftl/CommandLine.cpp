@@ -22,8 +22,6 @@ CommandLine::CommandLine()
 	  entity_("FILE"),
 	  position_(0)
 {
-	STATE_CHAR("quote", '\"');
-
 	DEFINE("whitespace", REPEAT(1, RANGE(" \t")));
 
 	longNameRule_ =
@@ -67,18 +65,17 @@ CommandLine::CommandLine()
 		DEFINE("value",
 			CHOICE(
 				GLUE(
-					AHEAD(RANGE("'\"")),
-					GETCHAR("quote"),
+					CAPTURE("quote", RANGE("'\"")),
 					REPEAT(
 						GLUE(
 							CHOICE(
 								CHAR('\\'),
-								NOT(VARCHAR("quote"))
+								NOT(REPLAY("quote"))
 							),
 							ANY()
 						)
 					),
-					VARCHAR("quote")
+					REPLAY("quote")
 				),
 				REPEAT(1,
 					GLUE(

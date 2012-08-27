@@ -779,7 +779,7 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		*state->flag(flagId_) = value_;
+		state->setFlag(flagId_, value_);
 		return i;
 	}
 
@@ -803,7 +803,7 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		return (*state->flag(flagId_)) ?
+		return state->flag(flagId_) ?
 			trueBranch()->matchNext(media, i, tokenFactory, parentToken, state) :
 			falseBranch()->matchNext(media, i, tokenFactory, parentToken, state);
 	}
@@ -816,85 +816,11 @@ private:
 	int flagId_;
 };
 
-class GetCharNode: public Node
+class CaptureNode: public Node
 {
 public:
-	GetCharNode(int charId)
-		: charId_(charId)
-	{}
-
-	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
-	{
-		if (media->has(i))
-			*state->character(charId_) = media->get(i++);
-		else
-			i = -1;
-
-		return i;
-	}
-
-	inline int charId() const { return charId_; }
-
-private:
-	int charId_;
-};
-
-class SetCharNode: public Node
-{
-public:
-	SetCharNode(int charId, char value)
-		: charId_(charId),
-		  value_(value)
-	{}
-
-	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
-	{
-		*state->character(charId_) = value_;
-		return i;
-	}
-
-	inline int charId() const { return charId_; }
-	inline char value() const { return value_; }
-
-private:
-	int charId_;
-	char value_;
-};
-
-class VarCharNode: public Node
-{
-public:
-	VarCharNode(int charId, int invert)
-		: charId_(charId),
-		  invert_(invert)
-	{}
-
-	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
-	{
-		if (media->has(i)) {
-			char ch = media->get(i++);
-			if ((ch != *state->character(charId_)) ^ invert_)
-				i = -1;
-		}
-		else
-			i = -1;
-
-		return i;
-	}
-
-	inline int charId() const { return charId_; }
-	inline bool invert() const { return invert_; }
-
-private:
-	int charId_;
-	int invert_;
-};
-
-class GetStringNode: public Node
-{
-public:
-	GetStringNode(int stringId, Ref<Node> coverage)
-		: stringId_(stringId)
+	CaptureNode(int captureId, Ref<Node> coverage)
+		: captureId_(captureId)
 	{
 		appendChild(coverage);
 	}
@@ -909,69 +835,39 @@ public:
 
 		if (i != -1) {
 			rollBack(parentToken, lastChildSaved);
-			state->setString(stringId_, media->copy(i0, i));
+			state->setCapture(captureId_, Range::newInstance(i0, i));
 		}
 
 		return i;
 	}
 
-	inline int stringId() const { return stringId_; }
+	inline int captureId() const { return captureId_; }
 	inline Ref<Node> coverage() const { return Node::firstChild(); }
 
 private:
-	int stringId_;
+	int captureId_;
 };
 
-class SetStringNode: public Node
+class ReplayNode: public Node
 {
 public:
-	SetStringNode(int stringId, const char *s)
-		: stringId_(stringId),
-		  s_(ByteArray::newInstance(s))
+	ReplayNode(int captureId)
+		: captureId_(captureId)
 	{}
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		state->setString(stringId_, s_);
-		return i;
-	}
-
-	inline int stringId() const { return stringId_; }
-	inline const Ref<ByteArray> value() const { return s_; }
-
-private:
-	int stringId_;
-	Ref<ByteArray, Owner> s_;
-};
-
-class VarStringNode: public Node
-{
-public:
-	VarStringNode(int stringId)
-		: stringId_(stringId)
-	{}
-
-	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
-	{
-		Ref<ByteArray> s = state->string(stringId_);
-		int k = 0, m = s->length();
-		while (media->has(i) && (k < m)) {
-			if (media->get(i) != s->get(k))
-				break;
-			++i;
-			++k;
+		Ref<Range> range = state->capture(captureId_);
+		for (int j = range->i0(); (j < range->i1()) && media->has(i) && media->has(j); ++i, ++j) {
+			if (media->get(i) != media->get(j)) return -1;
 		}
-
-		if (k != m)
-			i = -1;
-
 		return i;
 	}
 
-	inline int stringId() const { return stringId_; }
+	inline int captureId() const { return captureId_; }
 
 private:
-	int stringId_;
+	int captureId_;
 };
 
 class RefNode;
@@ -1234,12 +1130,10 @@ public:
 		  keywordByName_(KeywordByName::newInstance()),
 		  statefulScope_(false),
 		  hasHints_(false),
-		  numStateFlags_(0),
-		  numStateChars_(0),
-		  numStateStrings_(0),
+		  numFlags_(0),
+		  numCaptures_(0),
 		  flagIdByName_(StateIdByName::newInstance()),
-		  charIdByName_(StateIdByName::newInstance()),
-		  stringIdByName_(StateIdByName::newInstance())
+		  captureIdByName_(StateIdByName::newInstance())
 	{
 		if (debugFactory_)
 			debugFactory_->definition_ = this;
@@ -1383,53 +1277,19 @@ public:
 
 	//-- stateful definition interface
 
-	inline void STATE_FLAG(const char *name, bool defaultValue = false) {
-		stateFlagHead_ = new StateFlag(stateFlagHead_, defaultValue);
-		flagIdByName()->insert(name, numStateFlags_);
-		++numStateFlags_;
-	}
-	inline void STATE_CHAR(const char *name, char defaultValue = 0) {
-		stateCharHead_ = new StateChar(stateCharHead_, defaultValue);
-		charIdByName()->insert(name, numStateChars_);
-		++numStateChars_;
-	}
-	inline void STATE_STRING(const char *name, const char *defaultValue = "") {
-		stateStringHead_ = new StateString(stateStringHead_, defaultValue);
-		stringIdByName()->insert(name, numStateStrings_);
-		++numStateStrings_;
-	}
-	inline void TOUCH_STRING(const char *name) {
-		if (!stringIdByName()->lookup(name)) STATE_STRING(name);
-	}
-
 	inline NODE SET(const char *name, bool value) {
-		return debug(new SetNode(flagIdByName(name), value), "Set");
+		return debug(new SetNode(touchFlag(name), value), "Set");
 	}
 	inline NODE IF(const char *name, NODE trueBranch, NODE falseBranch = 0) {
 		if (!trueBranch) trueBranch = PASS();
 		if (!falseBranch) falseBranch = PASS();
-		return debug(new IfNode(flagIdByName(name), trueBranch, falseBranch), "If");
+		return debug(new IfNode(touchFlag(name), trueBranch, falseBranch), "If");
 	}
-	inline NODE GETCHAR(const char *name) {
-		return debug(new GetCharNode(charIdByName(name)), "GetChar");
+	inline NODE CAPTURE(const char *name, NODE coverage) {
+		return debug(new CaptureNode(touchCapture(name), coverage), "Capture");
 	}
-	inline NODE SETCHAR(const char *name, char value) {
-		return debug(new SetCharNode(charIdByName(name), value), "SetChar");
-	}
-	inline NODE VARCHAR(const char *name) {
-		return debug(new VarCharNode(charIdByName(name), 0), "VarChar");
-	}
-	inline NODE VAROTHER(const char *name) {
-		return debug(new VarCharNode(charIdByName(name), 1), "VarChar");
-	}
-	inline NODE GETSTRING(const char *name, NODE coverage) {
-		return debug(new GetStringNode(stringIdByName(name), coverage), "GetString");
-	}
-	inline NODE SETSTRING(const char *name, const char *value) {
-		return debug(new SetStringNode(stringIdByName(name), value), "SetString");
-	}
-	inline NODE VARSTRING(const char *name) {
-		return debug(new VarStringNode(stringIdByName(name)), "VarString");
+	inline NODE REPLAY(const char *name) {
+		return debug(new ReplayNode(touchCapture(name)), "Replay");
 	}
 
 	inline NODE INVOKE(DefinitionNode *definition, NODE coverage = 0) {
@@ -1446,7 +1306,7 @@ public:
 
 	inline int numRules() const { return numRules_; }
 
-	inline bool stateful() const { return (stateFlagHead_) || (stateCharHead_) || (stateStringHead_) || statefulScope_ || hasHints_; }
+	inline bool stateful() const { return (numFlags_ > 0) || (numCaptures_ > 0) || statefulScope_ || hasHints_; }
 
 	State *newState(State *parent = 0) const;
 
@@ -1485,25 +1345,17 @@ public:
 	inline int flagIdByName(const char *name)
 	{
 		int flagId = -1;
-		if (!flagIdByName()->lookup(name, &flagId))
+		if (!flagIdByName_->lookup(name, &flagId))
 			FTL_THROW(DebugException, str::cat("Undefined state flag '", name, "' referenced"));
 		return flagId;
 	}
 
-	inline int charIdByName(const char *name)
+	inline int captureIdByName(const char *name)
 	{
-		int charId = -1;
-		if (!charIdByName()->lookup(name, &charId))
-			FTL_THROW(DebugException, str::cat("Undefined state char '", name, "' referenced"));
-		return charId;
-	}
-
-	inline int stringIdByName(const char *name)
-	{
-		int stringId = -1;
-		if (!stringIdByName()->lookup(name, &stringId))
-			FTL_THROW(DebugException, str::cat("Undefined state string '", name, "' referenced"));
-		return stringId;
+		int captureId = -1;
+		if (!captureIdByName_->lookup(name, &captureId))
+			FTL_THROW(DebugException, str::cat("Undefined capture '", name, "' referenced"));
+		return captureId;
 	}
 
 	virtual int syntaxError(ByteArray *media, int index, State *state) const;
@@ -1546,52 +1398,29 @@ private:
 	bool statefulScope_;
 	bool hasHints_;
 
-	class StateFlag: public Instance {
-	public:
-		StateFlag(Ref<StateFlag> head, bool defaultValue)
-			: next_(head),
-			  defaultValue_(defaultValue)
-		{}
-		Ref<StateFlag, Owner> next_;
-		bool defaultValue_;
-	};
+	inline int touchFlag(const char *name)
+	{
+		int id = -1;
+		if (!flagIdByName_->lookup(name, &id))
+			flagIdByName_->insert(name, id = numFlags_++);
+		return id;
+	}
 
-	class StateChar: public Instance {
-	public:
-		StateChar(Ref<StateChar> head, char defaultValue)
-			: next_(head),
-			  defaultValue_(defaultValue)
-		{}
-		Ref<StateChar, Owner> next_;
-		char defaultValue_;
-	};
+	inline int touchCapture(const char *name)
+	{
+		int id = -1;
+		if (!captureIdByName_->lookup(name, &id))
+			captureIdByName_->insert(name, id = numCaptures_++);
+		return id;
+	}
 
-	class StateString: public Instance {
-	public:
-		StateString(Ref<StateString> head, const char *defaultValue)
-			: next_(head),
-			  defaultValue_(ByteArray::newInstance(defaultValue))
-		{}
-		Ref<StateString, Owner> next_;
-		Ref<ByteArray, Owner> defaultValue_;
-	};
-
-	int numStateFlags_;
-	int numStateChars_;
-	int numStateStrings_;
-	Ref<StateFlag, Owner> stateFlagHead_;
-	Ref<StateChar, Owner> stateCharHead_;
-	Ref<StateString, Owner> stateStringHead_;
+	int numFlags_;
+	int numCaptures_;
 
 	typedef PrefixTree<char, int> StateIdByName;
 
 	Ref<StateIdByName, OnDemand> flagIdByName_;
-	Ref<StateIdByName, OnDemand> charIdByName_;
-	Ref<StateIdByName, OnDemand> stringIdByName_;
-
-	inline Ref<StateIdByName> flagIdByName() const { return flagIdByName_; }
-	inline Ref<StateIdByName> charIdByName() const { return charIdByName_; }
-	inline Ref<StateIdByName> stringIdByName() const { return stringIdByName_; }
+	Ref<StateIdByName, OnDemand> captureIdByName_;
 
 	static int errorCallBack(Ref<Instance> self, ByteArray *media, int index, State *state);
 };

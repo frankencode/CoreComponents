@@ -357,14 +357,13 @@ NODE PatternCompiler::compileBehind(Ref<ByteArray> text, Ref<Token> token, Ref<S
 NODE PatternCompiler::compileCapture(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition)
 {
 	String name = text->copy(token->firstChild());
-	definition->TOUCH_STRING(name);
-	return definition->GETSTRING(name, compileChoice(text, token->lastChild(), definition));
+	return definition->CAPTURE(name, compileChoice(text, token->lastChild(), definition));
 }
 
 NODE PatternCompiler::compileReference(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition)
 {
 	String name = text->copy(token->firstChild());
-	return definition->VARSTRING(name);
+	return definition->REPLAY(name);
 }
 
 char PatternCompiler::readChar(Ref<ByteArray> text, Ref<Token> token, Ref<SyntaxDefinition> definition)

@@ -32,7 +32,7 @@ public:
 	Format(const Format &b);
 	Format &operator=(const Format &b);
 
-	inline Format &operator<<(const String &s) { get()->insert(nextPlaceHolder()->j_, s); return *this; }
+	Format &operator<<(const String &s);
 	inline Format &operator<<(const Ref<ByteArray, Owner>& s) { return *this << String(s); }
 	inline Format &operator<<(const char *s) { return *this << String(s); }
 	inline Format &operator<<(char *s) { return *this << String(s); }
