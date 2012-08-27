@@ -12,10 +12,10 @@
 #define FTL_WIRE_HPP
 
 #include "Singleton.hpp"
+#include "Array.hpp"
+#include "Map.hpp"
 #include "Variant.hpp"
 #include "SyntaxDefinition.hpp"
-#include "Array.hpp"
-#include "WireObject.hpp"
 
 namespace ftl
 {
@@ -35,10 +35,33 @@ private:
 
 class Wire;
 
+class WireObject: public Map<String, Variant>
+{
+	typedef Map<String, Variant> Super;
+
+public:
+	virtual Ref<Super, Owner> clone() const { return new WireObject(*this); }
+
+	inline String className() const { return className_; }
+
+protected:
+	friend class Wire;
+
+	WireObject() {}
+
+private:
+	explicit WireObject(const WireObject &b)
+		: Super(b),
+		  className_(b.className_)
+	{}
+
+	String className_;
+};
+
 class Wire: public SyntaxDefinition, public Singleton<Wire>
 {
 public:
-	Variant parse(Ref<ByteArray> text);
+	Variant parse(Ref<ByteArray> text, Ref<WireObject> virgin = 0);
 
 protected:
 	friend class Singleton<Wire>;
@@ -46,7 +69,7 @@ protected:
 	Wire();
 
 	String parseConcatenation(Ref<ByteArray> text, Ref<Token> token);
-	Ref<WireObject, Owner> parseObject(Ref<ByteArray> text, Ref<Token> token);
+	Ref<WireObject, Owner> parseObject(Ref<ByteArray> text, Ref<Token> token, Ref<WireObject> virgin = 0);
 	Ref<VariantList, Owner> parseList(Ref<ByteArray> text, Ref<Token> token);
 	Variant parseValue(Ref<ByteArray> text, Ref<Token> token);
 

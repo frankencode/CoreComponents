@@ -144,7 +144,6 @@ SET(FTLSYSTEM_HEADER
 	AbnfCompiler.hpp
 
 	Wire.hpp
-	WireObject.hpp
 	Config.hpp
 	Json.hpp
 
@@ -254,7 +253,6 @@ SET(FTLSYSTEM_SOURCE
 	AbnfCompiler.cpp
 
 	Wire.cpp
-	WireObject.cpp
 	Config.cpp
 	Json.cpp
 

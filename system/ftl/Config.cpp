@@ -17,13 +17,15 @@
 namespace ftl
 {
 
-Config::Config(const char *path)
+Ref<Config, Owner> Config::newInstance() { return new Config; }
+
+void Config::read(const char *path)
 {
 	try {
 		Ref<File, Owner> file = File::newInstance(path);
 		file->open(File::Read);
 		String text = file->readAll();
-		object_ = wire()->parse(text);
+		wire()->parse(text, this);
 	}
 	catch (StreamException &) {
 		throw ConfigException(Format("Can't open configuration file %%") << path);
@@ -33,26 +35,27 @@ Config::Config(const char *path)
 	}
 }
 
-Ref<StringList, Owner> Config::init(int argc, char **argv)
+void Config::read(int argc, char **argv)
 {
-	Ref<StringList, Owner> extras = StringList::newInstance();
+	arguments_ = StringList::newInstance();
 	for (int i = 1; i < argc; ++i) {
 		String s = argv[i];
 		if (s->at(0) != '-') {
-			extras->append(s);
+			arguments_->append(s);
 			continue;
 		}
 		Pattern flags("-{1,2}(?name:[^-][^=]{})(=(?value:[^=]{1,})){0,1}");
 		Ref<SyntaxState, Owner> state = flags->newState();
-		if (flags->match(s, state))
+		if (!flags->match(s, state))
 			throw ConfigException(Format("Illegal option syntax: \"%%\"") << s);
 		String name = s->copy(state->capture("name"));
 		String valueText = s->copy(state->capture("value"));
 		Variant value = true;
 		if (valueText != "") value = wire()->parse(valueText);
-		object_->establish(name, value);
+		establish(name, value);
 	}
-	return extras;
 }
+
+Ref<StringList> Config::arguments() const { return arguments_; }
 
 } // namespace ftl

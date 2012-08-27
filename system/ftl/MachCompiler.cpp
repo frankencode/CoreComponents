@@ -1,5 +1,5 @@
 #include "stdio"
-#include "WireObject.hpp"
+#include "Wire.hpp"
 #include "MachDependencyCache.hpp"
 #include "MachCompiler.hpp"
 
