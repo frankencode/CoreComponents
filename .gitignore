@@ -4,3 +4,5 @@ debug-static
 release
 release-static
 make.conf
+DependencyCache
+

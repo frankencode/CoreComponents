@@ -33,6 +33,7 @@ State::State(Ref<DefinitionNode> definition, int numFlags, int numCaptures, Ref<
 {
 	if (parent) parent->child_ = this;
 	for (int i = 0; i < flags_->length(); ++i) flags_->set(i, false);
+	for (int i = 0; i < captures_->length(); ++i) captures_->set(i, Range::newInstance());
 }
 
 bool State::flag(const char *name) const

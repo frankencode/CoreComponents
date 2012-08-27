@@ -285,7 +285,7 @@ Wire::Wire()
 	LINK();
 }
 
-Variant Wire::parse(Ref<ByteArray> text)
+Variant Wire::parse(Ref<ByteArray> text, Ref<WireObject> virgin)
 {
 	Ref<SyntaxState, Owner> state = newState();
 	Ref<Token, Owner> token = match(text, -1, state);
@@ -298,7 +298,14 @@ Variant Wire::parse(Ref<ByteArray> text)
 		}
 		throw WireException(reason, line, pos);
 	}
-	return parseValue(text, token->firstChild());
+	Ref<Token> child = token->firstChild();
+	if (virgin) {
+		if (child->rule() != object_)
+			throw WireException("Expected an object value", 0, 0);
+		parseObject(text, child, virgin);
+		return virgin;
+	}
+	return parseValue(text, child);
 }
 
 String Wire::parseConcatenation(Ref<ByteArray> text, Ref<Token> token)
@@ -312,9 +319,10 @@ String Wire::parseConcatenation(Ref<ByteArray> text, Ref<Token> token)
 	return (l->length() == 1) ? l->at(0) : l->join();
 }
 
-Ref<WireObject, Owner> Wire::parseObject(Ref<ByteArray> text, Ref<Token> token)
+Ref<WireObject, Owner> Wire::parseObject(Ref<ByteArray> text, Ref<Token> token, Ref<WireObject> virgin)
 {
-	Ref<WireObject, Owner> object = new WireObject;
+	Ref<WireObject, Owner> object = virgin;
+	if (!object) object = new WireObject;
 	token = token->firstChild();
 	if (token) {
 		if (token->rule() == className_) {
