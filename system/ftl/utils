@@ -6,6 +6,6 @@
 #include "Date.hpp"
 #include "Random.hpp"
 #include "SymbolicLink.hpp"
-#include "CommandLine.hpp"
+#include "Config.hpp"
 
 #endif // FTL_UTILS

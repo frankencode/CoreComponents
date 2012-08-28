@@ -132,8 +132,6 @@ SET(FTLSYSTEM_HEADER
 	Date.hpp
 	Random.hpp
 	SymbolicLink.hpp
-	CommandLine.hpp
-	CommandOption.hpp
 
 	misc
 	LinkInfo.hpp
@@ -242,7 +240,6 @@ SET(FTLSYSTEM_SOURCE
 	Date.cpp
 	Random.cpp
 	SymbolicLink.cpp
-	CommandLine.cpp
 
 	# misc
 	LinkInfo.cpp
