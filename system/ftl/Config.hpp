@@ -26,12 +26,14 @@ public:
 	void read(const char *path);
 	void read(int argc, char **argv);
 
+	Ref<StringList> options() const;
 	Ref<StringList> arguments() const;
 
 private:
 	Config() {}
 
 	Ref<WireObject, Owner> object_;
+	Ref<StringList, Owner> options_;
 	Ref<StringList, Owner> arguments_;
 };
 

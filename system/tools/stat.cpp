@@ -42,46 +42,56 @@ String timeToString(Time time, bool human)
 
 int main(int argc, char **argv)
 {
-	Ref<CommandLine, Owner> commandLine = CommandLine::newInstance();
-	commandLine->summary(
-		"Display file status information.\n"
-		"The list of files can also be given on standard input."
-	);
-	commandLine->details(
-		"If no options are selected the default assumption is -mlogstnu.\n"
-		"\n"
-		"Report bugs to <frank@cyblogic.de>"
-	);
-	commandLine->entity("FILE");
+	Ref<Config, Owner> config = Config::newInstance();
+	config->read(argc, argv);
 
-	Ref<CommandOption> path  = commandLine->define('p', "path",  false, "File path");
-	Ref<CommandOption> name  = commandLine->define('n', "name",  false, "File name");
-	Ref<CommandOption> type  = commandLine->define('t', "type",  false, "File type");
-	Ref<CommandOption> mode  = commandLine->define('x', "mode",  false, "File mode");
-	Ref<CommandOption> size  = commandLine->define('s', "size",  false, "File size");
-	Ref<CommandOption> du    = commandLine->define('d', "du",    false, "Disk usage");
-	Ref<CommandOption> owner = commandLine->define('o', "owner", false, "Owner");
-	Ref<CommandOption> group = commandLine->define('g', "group", false, "Group");
-	Ref<CommandOption> ta    = commandLine->define('a', "ta",    false, "Latest access time");
-	Ref<CommandOption> tm    = commandLine->define('m', "tm",    false, "Latest write access time");
-	Ref<CommandOption> tc    = commandLine->define('c', "tc",    false, "Latest time when times changed");
-	Ref<CommandOption> ino   = commandLine->define('i', "ino",   false, "Inode number");
-	Ref<CommandOption> links = commandLine->define('l', "links", false, "Number of hard links");
-	Ref<CommandOption> human = commandLine->define('u', "human", false, "Optimize readability for humans");
-	Ref<CommandOption> help  = commandLine->define('h', "help",  false, "Print help");
-
-	Ref<StringList, Owner> listOfFiles = commandLine->read(argc, argv);
-
-	if (help->value()) {
-		print(commandLine->helpText());
+	if (config->contains("h") || config->contains("help")) {
+		print(
+			"Usage: %% [OPTION]... [FILE]...\n"
+			"Display file status information.\n"
+			"The list of files can also be given on standard input.\n"
+			"\n"
+			"Options:\n"
+			"-p, --path      file path\n"
+			"-n, --name      file name\n"
+			"-t, --type      file type\n"
+			"-x, --mode      file mode\n"
+			"-s, --size      file size\n"
+			"-d, --du        disk usage\n"
+			"-o, --owner     owner\n"
+			"-g, --group     group\n"
+			"-a, --ta        access time\n"
+			"-m, --tm        modified time\n"
+			"-c, --tc        changed time\n"
+			"-i, --ino       inode number\n"
+			"-l, --links     number of hard links\n"
+			"-u, --human     optimize for readability\n"
+			"-h, --help      print help\n"
+			"\n"
+			"Report bugs to <frank@cyblogic.de>\n",
+			String(argv[0])->fileName()
+		);
 		return 0;
 	}
 
-	Ref<CommandLine::OptionList> options = commandLine->usedOptions();
-	if (options->isEmpty() || (options->contains(human) && (options->length() == 1))) {
-		options->clear();
-		*options << mode << links << owner << group << size << tm << name << human;
-	}
+	Ref<StringList, Owner> listOfFiles = config->arguments();
+
+	bool defaults = (config->options()->length() == 0);
+
+	bool humanOption        = config->contains("u") || config->contains("human") || defaults;
+	bool pathOption         = config->contains("p") || config->contains("path");
+	bool nameOption         = config->contains("n") || config->contains("name")  || defaults;
+	bool typeOption         = config->contains("t") || config->contains("type");
+	bool modeOption         = config->contains("x") || config->contains("mode");
+	bool sizeOption         = config->contains("s") || config->contains("size")  || defaults;
+	bool diskUsageOption    = config->contains("d") || config->contains("du");
+	bool ownerOption        = config->contains("o") || config->contains("owner") || defaults;
+	bool groupOption        = config->contains("g") || config->contains("group") || defaults;
+	bool accessTimeOption   = config->contains("a") || config->contains("ta");
+	bool modifiedTimeOption = config->contains("m") || config->contains("tm")    || defaults;
+	bool changedTimeOption  = config->contains("c") || config->contains("tc");
+	bool inodeNumberOption  = config->contains("i") || config->contains("inode");
+	bool linksOption        = config->contains("l") || config->contains("links") || defaults;
 
 	Ref< Source<String> > files;
 	if (rawInput()->isTeletype())
@@ -89,46 +99,36 @@ int main(int argc, char **argv)
 	else
 		files = input();
 
-	for (String file; files->read(&file);) {
+	for (String file; files->read(&file);)
+	{
 		Ref<FileStatus, Owner> status = FileStatus::newInstance(file);
-		for (int i = 0; i < options->length(); ++i) {
-			Ref<CommandOption> option = options->at(i);
-			if (option == name)
-				print(status->path()->fileName());
-			if (option == path)
-				print(status->path());
-			if (option == type)
-				print(fileTypeToString(status->type()));
-			if (option == mode)
-				print("%oct%", status->mode());
-			if (option == size)
-				print("%%", status->size());
-			if (option == du)
-				print("%%", status->sizeInBlocks() * status->sizeOfBlock());
-			if (option == owner)
-				print("%%", User::newInstance(status->ownerId())->name());
-			if (option == group) {
-				try {
-					print("%%", Group::newInstance(status->groupId())->name());
-				}
-				catch(...) {
-					// we may not have enough rights on some systems
-				}
+
+		Format line;
+
+		if (nameOption)      line << status->path()->fileName();
+		if (pathOption)      line << status->path();
+		if (typeOption)      line << fileTypeToString(status->type());
+		if (modeOption)      line << String(Format("%oct%") << status->mode());
+		if (sizeOption)      line << status->size();
+		if (diskUsageOption) line << status->sizeInBlocks() * status->sizeOfBlock();
+		if (ownerOption)     line << User::newInstance(status->ownerId())->name();
+
+		if (groupOption) {
+			try {
+				line << Group::newInstance(status->groupId())->name();
 			}
-			if (option == ta)
-				print("%%", timeToString(status->lastAccess(), human->value()));
-			if (option == tm)
-				print("%%", timeToString(status->lastModified(), human->value()));
-			if (option == tc)
-				print("%%", timeToString(status->lastChanged(), human->value()));
-			if (option == ino)
-				print("%%", status->inodeNumber());
-			if (option == links)
-				print("%%", status->numberOfHardLinks());
-			if (i + 1 < options->length())
-				print("\t");
+			catch(...) {
+				// we may not have enough rights on some systems
+			}
 		}
-		print("\n");
+
+		if (accessTimeOption)   line << timeToString(status->lastAccess(), humanOption);
+		if (modifiedTimeOption) line << timeToString(status->lastModified(), humanOption);
+		if (changedTimeOption)  line << timeToString(status->lastChanged(), humanOption);
+		if (inodeNumberOption)  line << status->inodeNumber();
+		if (linksOption)        line << status->numberOfHardLinks();
+
+		output()->writeLine(line->join("\t"));
 	}
 
 	return 0;

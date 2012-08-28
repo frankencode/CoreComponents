@@ -38,24 +38,34 @@ void Config::read(const char *path)
 void Config::read(int argc, char **argv)
 {
 	arguments_ = StringList::newInstance();
-	for (int i = 1; i < argc; ++i) {
+	options_ = StringList::newInstance();
+
+	Pattern flag("-{1,2}(?name:[^-][^=]{})(=(?value:[^=]{1,})){0,1}");
+
+	for (int i = 1; i < argc; ++i)
+	{
 		String s = argv[i];
 		if (s->at(0) != '-') {
 			arguments_->append(s);
 			continue;
 		}
-		Pattern flags("-{1,2}(?name:[^-][^=]{})(=(?value:[^=]{1,})){0,1}");
-		Ref<SyntaxState, Owner> state = flags->newState();
-		if (!flags->match(s, state))
+
+		Ref<SyntaxState, Owner> state = flag->newState();
+		if (!flag->match(s, state))
 			throw ConfigException(Format("Illegal option syntax: \"%%\"") << s);
+
+		options_->append(s);
+
 		String name = s->copy(state->capture("name"));
 		String valueText = s->copy(state->capture("value"));
 		Variant value = true;
 		if (valueText != "") value = wire()->parse(valueText);
+
 		establish(name, value);
 	}
 }
 
+Ref<StringList> Config::options() const { return options_; }
 Ref<StringList> Config::arguments() const { return arguments_; }
 
 } // namespace ftl
