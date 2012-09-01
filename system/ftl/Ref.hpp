@@ -53,18 +53,18 @@ public:
 	inline const Ref &operator=(const Ref &b) { this->set(b.get()); return *this; }
 
 	template<template<class> class GetAndSetPolicy2>
-	explicit Ref(const Ref<T, GetAndSetPolicy2>& b) { this->set(b.get()); }
+	explicit Ref(const Ref<T, GetAndSetPolicy2> &b) { this->set(b.get()); }
 
 	template<template<class> class GetAndSetPolicy2>
-	inline const Ref &operator=(const Ref<T, GetAndSetPolicy2>& b) { this->set(b.get()); return *this; }
+	inline const Ref &operator=(const Ref<T, GetAndSetPolicy2> &b) { this->set(b.get()); return *this; }
 
 	// auto-casting initialization and copy operations
 
 	template<class T2, template<class> class GetAndSetPolicy2>
-	explicit Ref(const Ref<T2, GetAndSetPolicy2>& b) { this->set(FTL_CAST_FROM_TO(T2, T, b.get())); }
+	explicit Ref(const Ref<T2, GetAndSetPolicy2> &b) { this->set(FTL_CAST_FROM_TO(T2, T, b.get())); }
 
 	template<class T2, template<class> class GetAndSetPolicy2>
-	inline const Ref &operator=(const Ref<T2, GetAndSetPolicy2>& b) { this->set(FTL_CAST_FROM_TO(T2, T, b.get())); return *this; }
+	inline const Ref &operator=(const Ref<T2, GetAndSetPolicy2> &b) { this->set(FTL_CAST_FROM_TO(T2, T, b.get())); return *this; }
 
 	// non-casting conversions
 

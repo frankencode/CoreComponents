@@ -10,16 +10,13 @@
 namespace ftl
 {
 
-MachDependencyCache::MachDependencyCache(Ref<MachCompiler> compiler, Ref<StringList> sourcePaths, String cachePath)
+MachDependencyCache::MachDependencyCache(Ref<MachCompiler> compiler, Ref<StringList> sourcePaths, int options, String cachePath)
 	: compiler_(compiler),
 	  cacheFile_(File::newInstance(cachePath)),
 	  cache_(Cache::newInstance())
 {
 	cacheFile_->establish();
-	/*print("sourcePaths = [\n%%]\n", sourcePaths->join("\n  "));
-	print("cacheFile_->exists() = %%\n", cacheFile_->exists());
-	print("cacheFile_->path() = \"%%\"\n", cacheFile_->path());*/
-	cacheTime_ = cacheFile_->status()->lastModified();
+	Time cacheTime = cacheFile_->status()->lastModified();
 
 	Ref<WireObject, Owner> dependencyCache;
 	try {
@@ -30,17 +27,37 @@ MachDependencyCache::MachDependencyCache(Ref<MachCompiler> compiler, Ref<StringL
 	if (!dependencyCache) return;
 	if (dependencyCache->className() != "DependencyCache") return;
 
-	for (int i = 0; i < dependencyCache->length(); ++i) {
+	for (int i = 0; i < dependencyCache->length(); ++i)
+	{
 		WireObject::Item item = dependencyCache->at(i);
+
 		if (!sourcePaths->contains(item->key())) continue;
+
 		Ref<WireObject> wire = item->value();
-		Ref<MachObject, Owner> object = MachObject::newInstance(
-			wire->value("objectPath"),
-			Ref<VariantList>(wire->value("dependencyPaths"))->toList<String>(),
-			cacheTime_
+		String command = wire->value("command");
+		String objectPath = wire->value("objectPath");
+		Ref<StringList, Owner> dependencyPaths = Ref<VariantList>(wire->value("dependencyPaths"))->toList<String>();
+		String sourcePath = dependencyPaths->at(0);
+
+		bool dirty = false;
+
+		Time objectTime = FileStatus::newInstance(objectPath)->lastModified();
+		for (int i = 0; i < dependencyPaths->length(); ++i) {
+			Time sourceTime = FileStatus::newInstance(dependencyPaths->at(i))->lastModified();
+			if ((sourceTime > cacheTime) || (sourceTime > objectTime)) {
+				dirty = true;
+				break;
+			}
+		}
+
+		if (dirty) continue;
+
+		if (command != compiler->analyseCommand(sourcePath, options)) continue;
+
+		cache_->insert(
+			item->key(),
+			MachObject::newInstance(command, objectPath, dependencyPaths, false)
 		);
-		if (object->dirty()) continue;
-		cache_->insert(item->key(), object);
 	}
 }
 
@@ -55,6 +72,7 @@ MachDependencyCache::~MachDependencyCache()
 		Ref<MachObject> object = item->value();
 		text
 			<< indent << "\"" << sourcePath << "\": MachObject {\n"
+			<< indent << indent << "command: \"" << object->command() << "\"\n"
 			<< indent << indent << "objectPath: \"" << object->objectPath() << "\"\n"
 			<< indent << indent << "dependencyPaths: [\n";
 		for (int i = 0, n = object->dependencyPaths()->length(); i < n; ++i) {
@@ -71,12 +89,12 @@ MachDependencyCache::~MachDependencyCache()
 	cacheFile_->save(text);
 }
 
-Ref<MachObject, Owner> MachDependencyCache::analyse(String sourcePath)
+Ref<MachObject, Owner> MachDependencyCache::analyse(String sourcePath, int options)
 {
 	Ref<MachObject, Owner> object;
 	if (cache_->lookup(sourcePath, &object))
 		return object;
-	object = compiler_->analyse(sourcePath);
+	object = compiler_->analyse(sourcePath, options);
 	cache_->insert(sourcePath, object);
 	return object;
 }

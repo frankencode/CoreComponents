@@ -33,7 +33,7 @@ public:
 	Format &operator=(const Format &b);
 
 	Format &operator<<(const String &s);
-	inline Format &operator<<(const Ref<ByteArray, Owner>& s) { return *this << String(s); }
+	inline Format &operator<<(const Ref<ByteArray, Owner> &s) { return *this << String(s); }
 	inline Format &operator<<(const char *s) { return *this << String(s); }
 	inline Format &operator<<(char *s) { return *this << String(s); }
 	inline Format &operator<<(char ch) { return *this << String(&ch, 1); }
@@ -67,7 +67,10 @@ public:
 	inline Format &operator<<(const T &x) { return *this << x.toString(); }
 
 	template<class T, template<class> class P>
-	inline Format &operator<<(const Ref<T, P>& x) { return *this << x->toString(); }
+	inline Format &operator<<(const Ref<T, P> &x) { return *this << x->toString(); }
+
+	template<template<class> class P>
+	inline Format &operator<<(const Ref<StringList, P> &x) { return *this << x->join(""); }
 
 	template<class T>
 	inline Format &operator<<(T *x) { return *this << (void *)x; }
