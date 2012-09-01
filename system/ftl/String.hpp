@@ -39,7 +39,7 @@ public:
 	}
 
 	// initialize string by given bytes
-	String(const Ref<ByteArray, Owner>& bytes): Super(bytes) {}
+	String(const Ref<ByteArray, Owner> &bytes): Super(bytes) {}
 
 	// initialize string from a shallow copy of another string
 	String(const String &b): Super(b.Super::get()) {}

@@ -6,15 +6,21 @@ using namespace ftl;
 
 int main(int argc, char **argv)
 {
-	Ref<Config, Owner> config = Config::newInstance();
-	config->read("Recipe");
-	config->read(argc, argv);
+	Ref<Config, Owner> recipe = Config::newInstance();
+	recipe->read("Recipe");
+	recipe->read(argc, argv);
 
-	if (config->contains("h") || config->contains("help")) {
+	if (recipe->flag("h") || recipe->flag("help")) {
 		print("no help, yet...\n");
 		return 0;
 	}
 
 	Ref<GccCompiler, Owner> compiler = GccCompiler::newInstance();
-	return compiler->build(config);
+
+	if (recipe->flag("c") || recipe->flag("clean")) {
+		compiler->clean(recipe);
+		return 0;
+	}
+
+	return compiler->build(recipe) ? 0 : 1;
 }

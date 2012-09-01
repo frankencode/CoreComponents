@@ -153,7 +153,7 @@ private:
 	inline void setRef(Instance *instance) const {
 		ref() = instance;
 	}
-	inline Ref<Instance, Owner>& ref() const {
+	inline Ref<Instance, Owner> &ref() const {
 		return *reinterpret_cast<Ref<Instance, Owner>*>(dummy_);
 	}
 	char type_;

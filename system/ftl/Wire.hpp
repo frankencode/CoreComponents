@@ -43,6 +43,11 @@ public:
 	virtual Ref<Super, Owner> clone() const { return new WireObject(*this); }
 
 	inline String className() const { return className_; }
+	inline bool flag(const char *name) {
+		bool h = false;
+		lookup(name, &h);
+		return h;
+	}
 
 protected:
 	friend class Wire;

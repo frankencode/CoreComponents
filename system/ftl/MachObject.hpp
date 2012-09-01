@@ -10,18 +10,25 @@ namespace ftl
 class MachObject: public Instance
 {
 public:
-	inline static Ref<MachObject, Owner> newInstance(String objectPath, Ref<StringList> dependencyPaths, Time cacheTime = Time()) {
-		return new MachObject(objectPath, dependencyPaths, cacheTime);
+	inline static Ref<MachObject, Owner> newInstance(String command, String objectPath, Ref<StringList> dependencyPaths, bool dirty) {
+		return new MachObject(command, objectPath, dependencyPaths, dirty);
 	}
 
+	inline String command() const { return command_; }
 	inline String objectPath() const { return objectPath_; }
 	inline String sourcePath() const { return dependencyPaths_->at(0); }
 	inline Ref<StringList> dependencyPaths() const { return dependencyPaths_; }
 	inline bool dirty() const { return dirty_; }
 
 private:
-	MachObject(String objectPath, Ref<StringList> dependencyPaths, Time cacheTime);
+	MachObject(String command, String objectPath, Ref<StringList> dependencyPaths, bool dirty)
+		: command_(command),
+		  objectPath_(objectPath),
+		  dependencyPaths_(dependencyPaths),
+		  dirty_(dirty)
+	{}
 
+	String command_;
 	String objectPath_;
 	Ref<StringList, Owner> dependencyPaths_;
 	bool dirty_;

@@ -30,7 +30,7 @@ public:
 	{
 		SpinLock &mutex = localStatic<SpinLock, SubClass>();
 		Guard<SpinLock> guard(&mutex);
-		Ref<SubClass, Owner>& instance_ = localStatic< Ref<SubClass, Owner>, CoreSingleton<SubClass> >();
+		Ref<SubClass, Owner> &instance_ = localStatic< Ref<SubClass, Owner>, CoreSingleton<SubClass> >();
 		if (!instance_)
 			instance_ = Singleton<SubClass>::create();
 		return instance_;

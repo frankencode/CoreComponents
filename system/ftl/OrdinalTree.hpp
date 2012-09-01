@@ -148,7 +148,7 @@ OrdinalTree<Node>::OrdinalTree(const OrdinalTree &b)
 }
 
 template<class Node>
-const OrdinalTree<Node>& OrdinalTree<Node>::operator=(const OrdinalTree &b)
+const OrdinalTree<Node> &OrdinalTree<Node>::operator=(const OrdinalTree &b)
 {
 	BinaryTree<Node>::clear();
 	BinaryTree<Node>::root_ = BinaryTree<Node>::clone(b.root_);

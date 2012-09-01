@@ -138,7 +138,7 @@ Wire::Wire()
 			CHOICE(
 				RANGE('a', 'z'),
 				RANGE('A', 'Z'),
-				CHAR('_'),
+				RANGE("_-"),
 				RANGE('0', '9')
 			)
 		)
