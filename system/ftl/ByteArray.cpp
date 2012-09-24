@@ -164,6 +164,14 @@ int ByteArray::find(Ref<SyntaxDefinition> pattern, int i) const
 	return (token) ? token->i0(): size_;
 }
 
+Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, char sep)
+{
+	char h[2];
+	h[0] = sep;
+	h[1] = 0;
+	return join(parts, h);
+}
+
 Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, const char *sep)
 {
 	int sepSize = str::len(sep);

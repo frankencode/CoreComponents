@@ -23,8 +23,6 @@ FileLock::FileLock(Ref<File> file, int type, off_t start, off_t length)
 	FLockStruct::l_start = start;
 	FLockStruct::l_len = length;
 	FLockStruct::l_whence = SEEK_SET;
-	if (!file->isOpen())
-		FTL_THROW(StreamSemanticException, "File needs to be opened, before it can be locked.");
 }
 
 bool FileLock::tryAcquire()

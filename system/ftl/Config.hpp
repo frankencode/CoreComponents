@@ -29,6 +29,12 @@ public:
 	Ref<StringList> options() const;
 	Ref<StringList> arguments() const;
 
+	inline bool flag(const char *name) {
+		bool h = false;
+		lookup(name, &h);
+		return h;
+	}
+
 private:
 	Config() {}
 

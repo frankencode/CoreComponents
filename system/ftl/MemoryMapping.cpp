@@ -18,9 +18,6 @@ namespace ftl
 MemoryMapping::MemoryMapping(Ref<File> file, off_t offset, size_t length, int type)
 	: length_(length)
 {
-	if (!file->isOpen())
-		FTL_THROW(StreamSemanticException, "File needs to be opened, before it can be mapped.");
-
 	int prot = 0;
 	if ((file->openFlags() & File::Read) != 0)
 		prot |= Read;
