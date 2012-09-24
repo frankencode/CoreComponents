@@ -156,6 +156,7 @@ public:
 	inline int contains(Ref<ByteArray> pattern) const { return contains(pattern->data()); }
 	inline int contains(const char *pattern) const { return find(pattern) != size_; }
 
+	static Ref<ByteArray, Owner> join(Ref<StringList> parts, char sep);
 	static Ref<ByteArray, Owner> join(Ref<StringList> parts, const char *sep = "");
 	Ref<StringList, Owner> split(char sep) const;
 	Ref<StringList, Owner> split(const char *sep) const;

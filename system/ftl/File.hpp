@@ -75,7 +75,7 @@ public:
 	};
 
 	inline static Ref<File, Owner> newInstance(String path, int openFlags = 0) { return new File(path, openFlags); }
-	inline static Ref<File, Owner> newInstance(int fd){ return new File(fd); }
+	inline static Ref<File, Owner> newInstance(int fd, int openFlags = Read|Write){ return new File(fd, openFlags); }
 	~File();
 
 	String path() const;
@@ -117,7 +117,7 @@ public:
 
 protected:
 	File(String path, int openFlags = 0);
-	File(int fd);
+	File(int fd, int openFlags = Read|Write);
 
 	String path_;
 	int openFlags_;

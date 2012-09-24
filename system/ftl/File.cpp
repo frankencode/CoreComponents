@@ -35,9 +35,9 @@ File::File(String path, int openFlags)
 		open(openFlags);
 }
 
-File::File(int fd)
+File::File(int fd, int openFlags)
 	: SystemStream(fd),
-	  openFlags_(0),
+	  openFlags_(openFlags),
 	  unlinkWhenDone_(false)
 {
 	if (fd == StandardInput)
@@ -46,8 +46,6 @@ File::File(int fd)
 		openFlags_ = Write;
 	else if (fd == StandardError)
 		openFlags_ = Write;
-	else
-		FTL_THROW(StreamSemanticException, "Invalid argument");
 }
 
 File::~File()
@@ -100,21 +98,20 @@ bool File::exists() const
 void File::create(int mode)
 {
 	int fd = ::open(path_, O_RDONLY|O_CREAT|O_EXCL, mode);
-	if (fd == -1)
-		FTL_THROW(StreamSemanticException, systemError());
+	if (fd == -1) FTL_SYSTEM_EXCEPTION;
 	::close(fd);
 }
 
 void File::link(const char *newPath)
 {
 	if (::link(path_, newPath) == -1)
-		FTL_THROW(StreamSemanticException, systemError());
+		FTL_SYSTEM_EXCEPTION;
 }
 
 void File::unlink()
 {
 	if (::unlink(path_) == -1)
-		FTL_THROW(StreamSemanticException, systemError());
+		FTL_SYSTEM_EXCEPTION;
 }
 
 void File::createUnique(int mode, char placeHolder)
@@ -137,7 +134,7 @@ void File::createUnique(int mode, char placeHolder)
 		int fd = ::open(path_, O_RDONLY|O_CREAT|O_EXCL, mode);
 		if (fd == -1) {
 			if (errno != EEXIST)
-				FTL_THROW(StreamSemanticException, systemError());
+				FTL_SYSTEM_EXCEPTION;
 			path_ = pathSaved;
 		}
 		else {
@@ -151,11 +148,11 @@ void File::truncate(off_t length)
 {
 	if (isOpen()) {
 		if (::ftruncate(fd_, length) == -1)
-			FTL_THROW(StreamSemanticException, systemError());
+			FTL_SYSTEM_EXCEPTION;
 	}
 	else {
 		if (::truncate(path_, length) == -1)
-			FTL_THROW(StreamSemanticException, systemError());
+			FTL_SYSTEM_EXCEPTION;
 	}
 }
 
@@ -192,7 +189,7 @@ void File::open(int flags)
 		h = O_RDWR;
 	fd_ = ::open(path_, h);
 	if (fd_ == -1)
-		FTL_THROW(StreamSemanticException, systemError());
+		FTL_SYSTEM_EXCEPTION;
 	openFlags_ = flags;
 }
 
@@ -279,14 +276,14 @@ off_t File::size()
 void File::sync()
 {
 	if (::fsync(fd_) == -1)
-		FTL_THROW(StreamIoException, systemError());
+		FTL_SYSTEM_EXCEPTION;
 }
 
 void File::dataSync()
 {
 #if _POSIX_SYNCHRONIZED_IO > 0
 	if (::fdatasync(fd_) == -1)
-		FTL_THROW(StreamIoException, systemError());
+		FTL_SYSTEM_EXCEPTION;
 #else
 	sync();
 #endif

@@ -147,10 +147,10 @@ SET(FTLSYSTEM_HEADER
 
 	Property.hpp
 
-	MachObject.hpp
-	MachDependencyCache.hpp
-	MachCompiler.hpp
-	GccCompiler.hpp
+	Module.hpp
+	DependencyCache.hpp
+	ToolChain.hpp
+	GccToolChain.hpp
 )
 
 SET(FTLSYSTEM_SOURCE
@@ -253,9 +253,9 @@ SET(FTLSYSTEM_SOURCE
 	Config.cpp
 	Json.cpp
 
-	MachDependencyCache.cpp
-	MachCompiler.cpp
-	GccCompiler.cpp
+	DependencyCache.cpp
+	ToolChain.cpp
+	GccToolChain.cpp
 )
 
 ADD_LIBRARY(ftlsystem

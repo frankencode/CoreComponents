@@ -1,6 +1,6 @@
 #include <ftl/stdio>
 #include <ftl/Config.hpp>
-#include <ftl/GccCompiler.hpp>
+#include <ftl/GccToolChain.hpp>
 
 using namespace ftl;
 
@@ -15,12 +15,12 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	Ref<GccCompiler, Owner> compiler = GccCompiler::newInstance();
+	Ref<GccToolChain, Owner> toolChain = GccToolChain::newInstance();
 
 	if (recipe->flag("c") || recipe->flag("clean")) {
-		compiler->clean(recipe);
+		toolChain->clean(recipe);
 		return 0;
 	}
 
-	return compiler->build(recipe) ? 0 : 1;
+	return toolChain->build(recipe) ? 0 : 1;
 }
