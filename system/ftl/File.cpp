@@ -114,6 +114,16 @@ void File::unlink()
 		FTL_SYSTEM_EXCEPTION;
 }
 
+bool File::link(const char *path, const char *newPath)
+{
+	return ::link(path, newPath) == -1;
+}
+
+bool File::unlink(const char *path)
+{
+	return ::unlink(path) == -1;
+}
+
 void File::createUnique(int mode, char placeHolder)
 {
 	Ref<Random, Owner> random = Random::newInstance();

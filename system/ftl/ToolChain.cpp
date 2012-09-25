@@ -1,4 +1,6 @@
-#include "stdio"
+#include "PrintDebug.hpp"
+#include "File.hpp"
+#include "Glob.hpp"
 #include "Config.hpp"
 #include "DependencyCache.hpp"
 #include "ToolChain.hpp"
@@ -87,22 +89,24 @@ bool ToolChain::build(Ref<Config> recipe)
 
 void ToolChain::clean(Ref<Config> recipe)
 {
+	clean(analyse(recipe), optionsFromRecipe(recipe));
+}
+
+void ToolChain::distClean(Ref<Config> recipe)
+{
 	Ref<ModuleList, Owner> modules = analyse(recipe);
-	try {
-		for (int i = 0; i < modules->length(); ++i) {
-			Ref<Module> module = modules->at(i);
-			File::newInstance(module->modulePath())->unlink();
-		}
-		File::newInstance(
-			linkPath(
-				recipe->value("name"),
-				recipe->value("version"),
-				optionsFromRecipe(recipe)
-			)
-		)->unlink();
-	}
-	catch (SystemException &)
-	{}
+	int options = optionsFromRecipe(recipe);
+	String name = recipe->value("name");
+	String version = recipe->value("version");
+	clean(modules, options);
+	distClean(modules, name, version, options);
+	unlink("DependencyCache");
+}
+
+bool ToolChain::unlink(const char *path)
+{
+	print("unlink %%\n", path);
+	return File::unlink(path);
 }
 
 } // namespace ftl

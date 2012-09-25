@@ -75,7 +75,7 @@ public:
 	};
 
 	inline static Ref<File, Owner> newInstance(String path, int openFlags = 0) { return new File(path, openFlags); }
-	inline static Ref<File, Owner> newInstance(int fd, int openFlags = Read|Write){ return new File(fd, openFlags); }
+	inline static Ref<File, Owner> newInstance(int fd, int openFlags = Read|Write) { return new File(fd, openFlags); }
 	~File();
 
 	String path() const;
@@ -87,6 +87,9 @@ public:
 	void create(int mode = 0644);
 	void link(const char *newPath);
 	void unlink();
+
+	static bool link(const char *path, const char *newPath);
+	static bool unlink(const char *path);
 
 	void createUnique(int mode = 0644, char placeHolder = 'X');
 	void truncate(off_t length);
