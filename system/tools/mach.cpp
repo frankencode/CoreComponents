@@ -15,10 +15,15 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	Ref<GccToolChain, Owner> toolChain = GccToolChain::newInstance();
+	Ref<ToolChain, Owner> toolChain = GccToolChain::newInstance();
 
 	if (recipe->flag("c") || recipe->flag("clean")) {
 		toolChain->clean(recipe);
+		return 0;
+	}
+
+	if (recipe->flag("dist-clean")) {
+		toolChain->distClean(recipe);
 		return 0;
 	}
 

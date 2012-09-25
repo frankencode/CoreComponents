@@ -58,7 +58,7 @@ bool GccToolChain::link(Ref<ModuleList> modules, Ref<StringList> libraries, Stri
 
 	args << execPath();
 	if (options & Static) args << "-static";
-	if ((options & Library) && (!(options & Static))) args << "-shared";
+	if ((options & Library) && !(options & Static)) args << "-shared";
 
 	if (options & Library) {
 		Ref<StringList, Owner> versions = version->split(".");
@@ -78,7 +78,7 @@ bool GccToolChain::link(Ref<ModuleList> modules, Ref<StringList> libraries, Stri
 	if (Process::start(command)->wait() != 0)
 		return false;
 
-	if (options & Library) {
+	if ((options & Library) && !(options & Static)) {
 		String fullPath = linkPath(name, version, options);
 		Ref<StringList, Owner> parts = fullPath->split('.');
 		while (parts->popBack() != "so")
@@ -86,6 +86,26 @@ bool GccToolChain::link(Ref<ModuleList> modules, Ref<StringList> libraries, Stri
 	}
 
 	return true;
+}
+
+void GccToolChain::clean(Ref<ModuleList> modules, int options)
+{
+	for (int i = 0; i < modules->length(); ++i)
+		unlink(modules->at(i)->modulePath());
+}
+
+void GccToolChain::distClean(Ref<ModuleList> modules, String name, String version, int options)
+{
+	clean(modules, options);
+
+	String fullPath = linkPath(name, version, options);
+	unlink(fullPath);
+
+	if ((options & Library) && !(options & Static)) {
+		Ref<StringList, Owner> parts = fullPath->split('.');
+		while (parts->popBack() != "so")
+			unlink(parts->join("."));
+	}
 }
 
 void GccToolChain::appendCompileOptions(Format args, int options, String modulePath) const

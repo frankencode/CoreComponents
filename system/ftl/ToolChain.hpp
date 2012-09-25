@@ -27,12 +27,18 @@ public:
 
 	virtual String analyseCommand(String source, int options = 0) const = 0;
 	virtual Ref<Module, Owner> analyse(String source, int options = 0) = 0;
+
 	virtual bool compile(Ref<Module, Owner> module, int options = 0) = 0;
+
 	virtual String linkPath(String name, String version, int options) const = 0;
 	virtual bool link(Ref<ModuleList> modules, Ref<StringList> libraries, String name, String version, int options = 0) = 0;
 
+	virtual void clean(Ref<ModuleList> modules, int options) = 0;
+	virtual void distClean(Ref<ModuleList> modules, String name, String version, int options) = 0;
+
 	bool build(Ref<Config> recipe);
 	void clean(Ref<Config> recipe);
+	void distClean(Ref<Config> recipe);
 
 protected:
 	ToolChain();
@@ -40,6 +46,8 @@ protected:
 
 	int optionsFromRecipe(Ref<Config> recipe) const;
 	Ref<ModuleList, Owner> analyse(Ref<Config> recipe);
+
+	bool unlink(const char *path);
 
 private:
 	String execPath_;
