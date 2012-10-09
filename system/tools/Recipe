@@ -1,0 +1,5 @@
+Program {
+	name: "mach"
+	source: [ "mach.cpp" ]
+	use: [ "../ftl" ]
+}

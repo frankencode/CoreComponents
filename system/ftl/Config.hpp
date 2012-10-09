@@ -23,11 +23,12 @@ class Config: public WireObject
 public:
 	static Ref<Config, Owner> newInstance();
 
-	void read(const char *path);
+	void read(String path);
 	void read(int argc, char **argv);
 
 	Ref<StringList> options() const;
 	Ref<StringList> arguments() const;
+	String path() const;
 
 	inline bool flag(const char *name) {
 		bool h = false;
@@ -41,6 +42,7 @@ private:
 	Ref<WireObject, Owner> object_;
 	Ref<StringList, Owner> options_;
 	Ref<StringList, Owner> arguments_;
+	String path_;
 };
 
 } // namespace ftl

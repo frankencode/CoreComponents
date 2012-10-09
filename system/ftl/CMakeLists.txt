@@ -131,7 +131,6 @@ SET(FTLSYSTEM_HEADER
 	Time.hpp
 	Date.hpp
 	Random.hpp
-	SymbolicLink.hpp
 
 	misc
 	LinkInfo.hpp
@@ -148,6 +147,7 @@ SET(FTLSYSTEM_HEADER
 	Property.hpp
 
 	Module.hpp
+	BuildPlan.hpp
 	DependencyCache.hpp
 	ToolChain.hpp
 	GccToolChain.hpp
@@ -239,7 +239,6 @@ SET(FTLSYSTEM_SOURCE
 	Time.cpp
 	Date.cpp
 	Random.cpp
-	SymbolicLink.cpp
 
 	# misc
 	LinkInfo.cpp
@@ -253,6 +252,7 @@ SET(FTLSYSTEM_SOURCE
 	Config.cpp
 	Json.cpp
 
+	BuildPlan.cpp
 	DependencyCache.cpp
 	ToolChain.cpp
 	GccToolChain.cpp

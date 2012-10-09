@@ -9,7 +9,12 @@
 namespace ftl
 {
 
-DependencyCache::DependencyCache(Ref<ToolChain> compiler, Ref<StringList> sourcePaths, int options, String cachePath)
+Ref<DependencyCache, Owner> DependencyCache::newInstance(Ref<ToolChain> compiler, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath)
+{
+	return new DependencyCache(compiler, sources, options, includePaths, cachePath);
+}
+
+DependencyCache::DependencyCache(Ref<ToolChain> compiler, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath)
 	: compiler_(compiler),
 	  cacheFile_(File::newInstance(cachePath)),
 	  cache_(Cache::newInstance())
@@ -30,7 +35,7 @@ DependencyCache::DependencyCache(Ref<ToolChain> compiler, Ref<StringList> source
 	{
 		WireObject::Item item = dependencyCache->at(i);
 
-		if (!sourcePaths->contains(item->key())) continue;
+		if (!sources->contains(item->key())) continue;
 
 		Ref<WireObject> wire = item->value();
 		String command = wire->value("analyseCommand");
@@ -57,7 +62,7 @@ DependencyCache::DependencyCache(Ref<ToolChain> compiler, Ref<StringList> source
 
 		if (dirty) continue;
 
-		if (command != compiler->analyseCommand(sourcePath, options)) continue;
+		if (command != compiler->analyseCommand(sourcePath, options, includePaths)) continue;
 
 		cache_->insert(
 			item->key(),
@@ -94,12 +99,12 @@ DependencyCache::~DependencyCache()
 	cacheFile_->save(text);
 }
 
-Ref<Module, Owner> DependencyCache::analyse(String sourcePath, int options)
+Ref<Module, Owner> DependencyCache::analyse(String sourcePath, int options, Ref<StringList> includePaths)
 {
 	Ref<Module, Owner> module;
 	if (cache_->lookup(sourcePath, &module))
 		return module;
-	module = compiler_->analyse(sourcePath, options);
+	module = compiler_->analyse(sourcePath, options, includePaths);
 	cache_->insert(sourcePath, module);
 	return module;
 }

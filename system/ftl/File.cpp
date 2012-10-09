@@ -17,7 +17,6 @@
 #include "Mutex.hpp"
 #include "Random.hpp"
 #include "Format.hpp"
-#include "FileStatus.hpp"
 #include "Dir.hpp"
 #include "Process.hpp"
 #include "File.hpp"
@@ -116,12 +115,47 @@ void File::unlink()
 
 bool File::link(const char *path, const char *newPath)
 {
-	return ::link(path, newPath) == -1;
+	return ::link(path, newPath) != -1;
 }
 
 bool File::unlink(const char *path)
 {
-	return ::unlink(path) == -1;
+	return ::unlink(path) != -1;
+}
+
+bool File::symlink(const char *path, const char *newPath)
+{
+	return ::symlink(path, newPath) != -1;
+}
+
+String File::readlink(const char *path)
+{
+	String buf = String(128);
+	while (true) {
+		ssize_t numBytes = ::readlink(path, buf, buf->size());
+		if (numBytes == -1)
+			return String();
+		if (numBytes <= buf->size()) {
+			if (numBytes < buf->size())
+				buf = String(buf->data(), numBytes);
+			break;
+		}
+		buf = String(numBytes);
+	}
+	return buf;
+}
+
+String File::resolve(const char *path)
+{
+	String resolvedPath = path;
+	while (FileStatus::newInstance(resolvedPath, false)->type() == File::SymbolicLink) {
+		String origPath = resolvedPath;
+		resolvedPath = File::readlink(resolvedPath);
+		if (resolvedPath == "") break;
+		if (resolvedPath->isRelativePath())
+			resolvedPath = origPath->reducePath()->expandPath(resolvedPath);
+	}
+	return resolvedPath;
 }
 
 void File::createUnique(int mode, char placeHolder)

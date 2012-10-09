@@ -10,7 +10,7 @@
  */
 
 #include <dlfcn.h>
-#include "SymbolicLink.hpp"
+#include "File.hpp"
 #include "LinkInfo.hpp"
 
 int ftl_hook;
@@ -28,7 +28,7 @@ LinkInfo::LinkInfo(void *addr)
 	if (!addr) addr = (void *)&ftl_hook;
 	Dl_info info;
 	if (::dladdr(addr, &info)) {
-		libraryPath_ = SymbolicLink::resolve(info.dli_fname);
+		libraryPath_ = File::resolve(info.dli_fname);
 		symbolName_ = info.dli_sname;
 		baseAddress_ = info.dli_fbase;
 		symbolAddress_ = info.dli_saddr;

@@ -15,16 +15,13 @@ class WireObject;
 class DependencyCache: public Instance
 {
 public:
-	inline static Ref<DependencyCache, Owner> newInstance(Ref<ToolChain> compiler, Ref<StringList> sourcePaths, int options, String cachePath = "DependencyCache") {
-		return new DependencyCache(compiler, sourcePaths, options, cachePath);
-	}
-
+	static Ref<DependencyCache, Owner> newInstance(Ref<ToolChain> compiler, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath = "DependencyCache");
 	~DependencyCache();
 
-	Ref<Module, Owner> analyse(String sourcePath, int options);
+	Ref<Module, Owner> analyse(String sources, int options, Ref<StringList> includePaths);
 
 private:
-	DependencyCache(Ref<ToolChain> compiler, Ref<StringList> sourcePaths, int options, String cachePath);
+	DependencyCache(Ref<ToolChain> compiler, Ref<StringList> sourcePaths, int options, Ref<StringList> includePaths, String cachePath);
 
 	Ref<ToolChain, Owner> compiler_;
 	Ref<File, Owner> cacheFile_;
