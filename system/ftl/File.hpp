@@ -18,11 +18,10 @@
 #include "atoms"
 #include "String.hpp"
 #include "SystemStream.hpp"
+#include "FileStatus.hpp"
 
 namespace ftl
 {
-
-class FileStatus;
 
 class File: public SystemStream
 {
@@ -90,6 +89,10 @@ public:
 
 	static bool link(const char *path, const char *newPath);
 	static bool unlink(const char *path);
+
+	static bool symlink(const char *path, const char *newPath);
+	static String readlink(const char *path);
+	static String resolve(const char *path);
 
 	void createUnique(int mode = 0644, char placeHolder = 'X');
 	void truncate(off_t length);

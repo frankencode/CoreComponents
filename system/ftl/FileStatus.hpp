@@ -16,10 +16,12 @@
 #include "atoms"
 #include "Time.hpp"
 #include "String.hpp"
-#include "File.hpp"
+#include "SystemStream.hpp"
 
 namespace ftl
 {
+
+class File;
 
 typedef struct stat StructStat;
 
@@ -28,7 +30,7 @@ class FileStatus: public StructStat, public Instance
 public:
 	inline static Ref<FileStatus, Owner> newInstance(int fd) { return new FileStatus(fd); }
 	inline static Ref<FileStatus, Owner> newInstance(Ref<SystemStream> stream) { return new FileStatus(stream); }
-	inline static Ref<FileStatus, Owner> newInstance(String path, bool followSymbolicLink = true) { return new FileStatus(path, followSymbolicLink); }
+	inline static Ref<FileStatus, Owner> newInstance(String path, bool followSymbolicLink = false) { return new FileStatus(path, followSymbolicLink); }
 
 	inline String path() const { return path_; }
 

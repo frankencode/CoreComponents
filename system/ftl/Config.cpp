@@ -19,15 +19,16 @@ namespace ftl
 
 Ref<Config, Owner> Config::newInstance() { return new Config; }
 
-void Config::read(const char *path)
+void Config::read(String path)
 {
 	try {
+		path_ = path;
 		Ref<File, Owner> file = File::newInstance(path);
 		file->open(File::Read);
 		String text = file->readAll();
 		wire()->parse(text, this);
 	}
-	catch (StreamException &) {
+	catch (SystemException &) {
 		throw ConfigException(Format("Can't open configuration file %%") << path);
 	}
 	catch (WireException &ex) {
@@ -67,5 +68,7 @@ void Config::read(int argc, char **argv)
 
 Ref<StringList> Config::options() const { return options_; }
 Ref<StringList> Config::arguments() const { return arguments_; }
+
+String Config::path() const { return path_; }
 
 } // namespace ftl

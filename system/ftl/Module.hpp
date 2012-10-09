@@ -1,5 +1,5 @@
-#ifndef FTL_MACHOBJECT_HPP
-#define FTL_MACHOBJECT_HPP
+#ifndef FTL_MODULE_HPP
+#define FTL_MODULE_HPP
 
 #include "String.hpp"
 #include "Time.hpp"
@@ -38,4 +38,4 @@ typedef List< Ref<Module, Owner> > ModuleList;
 
 } // namespace ftl
 
-#endif // FTL_MACHOBJECT_HPP
+#endif // FTL_MODULE_HPP

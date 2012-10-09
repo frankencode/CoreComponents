@@ -11,6 +11,7 @@
 
 #include <errno.h>
 #include <sys/time.h> // futimes, utimes
+#include "File.hpp"
 #include "FileStatus.hpp"
 
 namespace ftl

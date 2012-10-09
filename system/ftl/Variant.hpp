@@ -69,18 +69,12 @@ public:
 	Variant(const Variant &b): type_(UndefType) { *this = b; }
 
 	inline const Variant &operator=(const Variant &b) {
+		if (type_ & RefType) killRef();
 		type_ = b.type_;
-		if (b.type_ & RefType) {
-			if (type_ & RefType)
-				initRef(b.ref().get());
-			else
-				ref() = b.ref();
-		}
-		else {
-			if (type_ & RefType)
-				killRef();
+		if (b.type_ & RefType)
+			initRef(b.ref().get());
+		else if (b.type_)
 			int_ = b.int_;
-		}
 		return *this;
 	}
 
@@ -88,12 +82,36 @@ public:
 	inline bool defined() const { return type_ != UndefType; }
 	inline bool compatibleTo(int type) { return type_ & type; }
 
-	inline bool toBool() const       { FTL_ASSERT2(type_ & IntType,    illegalConversion()); return int_; }
-	inline int toInt() const         { FTL_ASSERT2(type_ & IntType,    illegalConversion()); return int_; }
-	inline float toFloat() const     { FTL_ASSERT2(type_ & FloatType,  illegalConversion()); return float_; }
-	inline String toString() const   { FTL_ASSERT2(type_ & StringType, illegalConversion()); return String(*this); }
+	inline bool toBool() const {
+		if (!type_) return false;
+		FTL_ASSERT2(type_ & IntType, illegalConversion());
+		return int_;
+	}
+
+	inline int toInt() const {
+		if (!type_) return -1;
+		FTL_ASSERT2(type_ & IntType, illegalConversion());
+		return int_;
+	}
+
+	inline float toFloat() const {
+		if (!type_) return ftl::nan;
+		FTL_ASSERT2(type_ & FloatType, illegalConversion());
+		return float_;
+	}
+
+	inline String toString() const {
+		if (!type_) return String();
+		FTL_ASSERT2(type_ & StringType, illegalConversion());
+		return String(*this);
+	}
+
 	template<class T>
-	inline Ref<T> toInstance() const { FTL_ASSERT2(type_ & RefType,    illegalConversion()); return ref(); }
+	inline Ref<T> toInstance() const {
+		if (!type_) return Ref<T>();
+		FTL_ASSERT2(type_ & RefType, illegalConversion());
+		return ref();
+	}
 
 	inline operator bool() const { return toBool(); }
 	inline operator int() const { return toInt(); }
@@ -148,13 +166,13 @@ private:
 		new(dummy_)Ref<Instance, Owner>(instance);
 	}
 	inline void killRef() {
-		ref().~Ref<Instance,Owner>();
+		ref().~Ref<Instance, Owner>();
 	}
 	inline void setRef(Instance *instance) const {
 		ref() = instance;
 	}
 	inline Ref<Instance, Owner> &ref() const {
-		return *reinterpret_cast<Ref<Instance, Owner>*>(dummy_);
+		return *union_cast<Ref<Instance, Owner>*>(dummy_);
 	}
 	char type_;
 	union {

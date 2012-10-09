@@ -12,7 +12,7 @@
 #include <sys/wait.h> // waitpid
 #include <sys/stat.h> // umask
 #include <errno.h> // errno
-#include <unistd.h> // chdir, readlink, __MACH__?
+#include <unistd.h> // chdir, __MACH__?
 #include <stdlib.h> // getenv, setenv, free
 #include <time.h> // nanosleep
 #include <errno.h> // errno
@@ -157,22 +157,8 @@ String Process::execPath()
 {
 	String path;
 	#ifdef __linux
-	String lnPath = String(Format("/proc/%%/exe") << currentId());
-	ssize_t bufSize = 1024;
-	while (true) {
-		char *buf = (char *)mem::alloc(bufSize + 1);
-		mem::clr(buf, bufSize + 1);
-		ssize_t ret = ::readlink(lnPath, buf, bufSize);
-		if (ret == -1)
-			FTL_SYSTEM_EXCEPTION;
-		if (ret < bufSize) {
-			path = buf;
-			mem::free(buf);
-			break;
-		}
-		bufSize *= 2;
-		mem::free(buf);
-	}
+	String linkPath = Format("/proc/%%/exe") << currentId();
+	path = File::readlink(linkPath);
 	#endif
 	#ifdef __MACH__
 	char *buf = 0;
