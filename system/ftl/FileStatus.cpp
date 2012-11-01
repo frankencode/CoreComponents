@@ -20,6 +20,11 @@ namespace ftl
 FileStatus::FileStatus(int fd)
 	: fd_(fd)
 {
+	if (fd == -1) {
+		mem::clr(static_cast<StructStat*>(this), sizeof(StructStat));
+		exists_ = false;
+		return;
+	}
 	exists_ = update();
 }
 

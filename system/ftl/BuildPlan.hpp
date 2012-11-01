@@ -3,16 +3,18 @@
 
 #include "Config.hpp"
 #include "Module.hpp"
+#include "BuildLine.hpp"
 
 namespace ftl
 {
 
+class FileStatus;
 class ToolChain;
 class BuildPlan;
 
 typedef List< Ref<BuildPlan, Owner> > BuildPlanList;
 
-class BuildPlan: public Instance
+class BuildPlan: public BuildLine
 {
 public:
 	enum Option {
@@ -22,12 +24,15 @@ public:
 		Release       = 8,
 		OptimizeSpeed = 16,
 		OptimizeSize  = 32,
-		GlobalOptions = Debug|Release|OptimizeSpeed|OptimizeSize
+		DryRun        = 64,
+		Blindfold     = 128,
+		Verbose       = 256,
+		Unspecified   = -1,
+		GlobalOptions = Debug|Release|OptimizeSpeed|OptimizeSize|DryRun|Blindfold|Verbose
 	};
 
-	static Ref<BuildPlan, Owner> newInstance(Ref<ToolChain> toolChain, String projectPath = ".", int globalOptions = 0);
+	static Ref<BuildPlan, Owner> newInstance(String projectPath = ".", int globalOptions = Unspecified);
 
-	inline Ref<ToolChain> toolChain() const { return toolChain_; }
 	inline String projectPath() const { return projectPath_; }
 	inline Ref<Config> recipe() const { return recipe_; }
 
@@ -43,19 +48,24 @@ public:
 
 	inline Ref<BuildPlanList> prequisites() const { return prequisites_; }
 
-	int run(int argc, char **argv);
+	int run(Ref<ToolChain> toolChain, int argc, char **argv);
 
 private:
-	BuildPlan(Ref<ToolChain> toolChain, String projectPath, int globalOptions = -1);
+	BuildPlan(String projectPath, int globalOptions = Unspecified);
 
-	void analyse();
-	bool build();
-	void clean();
-	void distClean();
+	virtual String runAnalyse(String command);
+	virtual bool runBuild(String command);
+	virtual bool symlink(String path, String newPath);
+	virtual bool unlink(String path);
+	virtual Ref<FileStatus, Owner> fileStatus(String path);
+
+	void analyse(Ref<ToolChain> toolChain);
+	bool build(Ref<ToolChain> toolChain);
+	void clean(Ref<ToolChain> toolChain);
+	void distClean(Ref<ToolChain> toolChain);
 
 	static int optionsFromRecipe(Ref<Config> recipe);
 
-	Ref<ToolChain, Owner> toolChain_;
 	String projectPath_;
 	Ref<Config, Owner> recipe_;
 

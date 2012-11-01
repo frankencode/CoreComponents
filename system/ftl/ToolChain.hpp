@@ -19,13 +19,13 @@ public:
 	inline String machine() const { return machine_; }
 
 	virtual String analyseCommand(String source, int options, Ref<StringList> includePaths) const = 0;
-	virtual Ref<Module, Owner> analyse(String source, int options, Ref<StringList> includePaths) = 0;
-
-	virtual bool compile(Ref<Module, Owner> module, int options, Ref<StringList> includePaths) = 0;
+	virtual Ref<Module, Owner> analyse(Ref<BuildLine> buildLine, String source, int options, Ref<StringList> includePaths) = 0;
+	virtual bool compile(Ref<BuildLine> buildLine, Ref<Module, Owner> module, int options, Ref<StringList> includePaths) = 0;
 
 	virtual String linkPath(String name, String version, int options) const = 0;
 
 	virtual bool link(
+		Ref<BuildLine> buildLine,
 		Ref<ModuleList> modules,
 		Ref<StringList> libraryPaths,
 		Ref<StringList> libraries,
@@ -34,15 +34,18 @@ public:
 		int options = 0
 	) = 0;
 
-	virtual void clean(Ref<ModuleList> modules, int options) = 0;
-	virtual void distClean(Ref<ModuleList> modules, String name, String version, int options) = 0;
-	bool unlink(const char *path);
+	virtual void clean(Ref<BuildLine> buildLine, Ref<ModuleList> modules, int options) = 0;
+	virtual void distClean(Ref<BuildLine> buildLine, Ref<ModuleList> modules, String name, String version, int options) = 0;
 
 protected:
-	ToolChain();
-	void init(String execPath, String machine);
+	ToolChain(String execPath, String machine)
+		: execPath_(execPath),
+		  machine_(machine)
+	{}
 
 private:
+	friend class BuildPlan;
+
 	String execPath_;
 	String machine_;
 };

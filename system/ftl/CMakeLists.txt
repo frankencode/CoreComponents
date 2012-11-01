@@ -147,6 +147,7 @@ SET(FTLSYSTEM_HEADER
 	Property.hpp
 
 	Module.hpp
+	BuildLine.hpp
 	BuildPlan.hpp
 	DependencyCache.hpp
 	ToolChain.hpp
@@ -254,7 +255,6 @@ SET(FTLSYSTEM_SOURCE
 
 	BuildPlan.cpp
 	DependencyCache.cpp
-	ToolChain.cpp
 	GccToolChain.cpp
 )
 
