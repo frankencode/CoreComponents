@@ -10,10 +10,8 @@ namespace ftl
 {
 
 GccToolChain::GccToolChain(String execPath)
-{
-	String machine = Process::start(execPath + " -dumpmachine", Process::ForwardOutput)->output()->readLine();
-	init(execPath, machine);
-}
+	: ToolChain(execPath, Process::start(execPath + " -dumpmachine", Process::ForwardOutput)->output()->readLine())
+{}
 
 String GccToolChain::analyseCommand(String source, int options, Ref<StringList> includePaths) const
 {
@@ -23,25 +21,21 @@ String GccToolChain::analyseCommand(String source, int options, Ref<StringList> 
 	return args->join(" ");
 }
 
-Ref<Module, Owner> GccToolChain::analyse(String source, int options, Ref<StringList> includePaths)
+Ref<Module, Owner> GccToolChain::analyse(Ref<BuildLine> buildLine, String source, int options, Ref<StringList> includePaths)
 {
 	String command = analyseCommand(source, options, includePaths);
-	output()->writeLine(command);
-	String text = Process::start(command, Process::ForwardOutput)->rawOutput()->readAll();
+	String text = buildLine->runAnalyse(command);
 	Ref<StringList, Owner> parts = text->split(Pattern("[:\\\\\n\r ]{1,}"));
 	return Module::newInstance(command, parts->pop(0), parts, true);
 }
 
-bool GccToolChain::compile(Ref<Module, Owner> module, int options, Ref<StringList> includePaths)
+bool GccToolChain::compile(Ref<BuildLine> buildLine, Ref<Module, Owner> module, int options, Ref<StringList> includePaths)
 {
 	Format args;
 	appendCompileOptions(args, options, includePaths, module->modulePath());
 	args << module->sourcePath();
-
 	String command = args->join(" ");
-	output()->writeLine(command);
-
-	return Process::start(command)->wait() == 0;
+	return buildLine->runBuild(command);
 }
 
 String GccToolChain::linkPath(String name, String version, int options) const
@@ -55,6 +49,7 @@ String GccToolChain::linkPath(String name, String version, int options) const
 }
 
 bool GccToolChain::link(
+	Ref<BuildLine> buildLine,
 	Ref<ModuleList> modules,
 	Ref<StringList> libraryPaths,
 	Ref<StringList> libraries,
@@ -85,43 +80,49 @@ bool GccToolChain::link(
 	for (int i = 0; i < libraries->length(); ++i)
 		args << "-l" + libraries->at(i);
 
-	String command = args->join(" ");
-	output()->writeLine(command);
+	if (libraryPaths->length() > 0) {
+		Ref<StringList, Owner> rpaths = StringList::newInstance();
+		for (int i = 0; i < libraryPaths->length(); ++i)
+			rpaths << "-rpath=" + libraryPaths->at(i);
+		args << "-Wl,--enable-new-dtags," + rpaths->join(",");
+	}
 
-	if (Process::start(command)->wait() != 0)
+	String command = args->join(" ");
+
+	if (!buildLine->runBuild(command))
 		return false;
 
 	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static)) {
 		String fullPath = linkPath(name, version, options);
 		Ref<StringList, Owner> parts = fullPath->split('.');
 		while (parts->popBack() != "so")
-			File::symlink(fullPath, parts->join("."));
+			buildLine->symlink(fullPath, parts->join("."));
 	}
 
 	return true;
 }
 
-void GccToolChain::clean(Ref<ModuleList> modules, int options)
+void GccToolChain::clean(Ref<BuildLine> buildLine, Ref<ModuleList> modules, int options)
 {
 	for (int i = 0; i < modules->length(); ++i)
-		unlink(modules->at(i)->modulePath());
+		buildLine->unlink(modules->at(i)->modulePath());
 }
 
-void GccToolChain::distClean(Ref<ModuleList> modules, String name, String version, int options)
+void GccToolChain::distClean(Ref<BuildLine> buildLine, Ref<ModuleList> modules, String name, String version, int options)
 {
-	clean(modules, options);
+	clean(buildLine, modules, options);
 
 	String fullPath = linkPath(name, version, options);
-	unlink(fullPath);
+	buildLine->unlink(fullPath);
 
 	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static)) {
 		Ref<StringList, Owner> parts = fullPath->split('.');
 		while (parts->popBack() != "so")
-			unlink(parts->join("."));
+			buildLine->unlink(parts->join("."));
 	}
 }
 
-void GccToolChain::appendCompileOptions(Format args, int options, Ref<StringList> includePaths, String modulePath) const
+void GccToolChain::appendCompileOptions(Format args, int options, Ref<StringList> includePaths, String outputPath) const
 {
 	args << execPath();
 	if (options & BuildPlan::Debug) args << "-g";
@@ -132,9 +133,9 @@ void GccToolChain::appendCompileOptions(Format args, int options, Ref<StringList
 	args << "-Wall" << "-pthread";
 	for (int i = 0; i < includePaths->length(); ++i)
 		args << "-I" + includePaths->at(i);
-	if (modulePath != "") {
-		args << "-c";
-		args << "-o" << modulePath;
+	if (outputPath != "") {
+		if (outputPath->tail(2) == ".o") args << "-c";
+		args << "-o" << outputPath;
 	}
 }
 

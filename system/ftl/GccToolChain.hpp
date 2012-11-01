@@ -15,13 +15,13 @@ public:
 	}
 
 	virtual String analyseCommand(String source, int options, Ref<StringList> includePaths) const;
-	virtual Ref<Module, Owner> analyse(String source, int options, Ref<StringList> includePaths);
-
-	virtual bool compile(Ref<Module, Owner> modules, int options, Ref<StringList> includePaths);
+	virtual Ref<Module, Owner> analyse(Ref<BuildLine> buildLine, String source, int options, Ref<StringList> includePaths);
+	virtual bool compile(Ref<BuildLine> buildLine, Ref<Module, Owner> modules, int options, Ref<StringList> includePaths);
 
 	virtual String linkPath(String name, String version, int options) const;
 
 	virtual bool link(
+		Ref<BuildLine> buildLine,
 		Ref<ModuleList> modules,
 		Ref<StringList> libraryPaths,
 		Ref<StringList> libraries,
@@ -30,12 +30,12 @@ public:
 		int options = 0
 	);
 
-	virtual void clean(Ref<ModuleList> modules, int options);
-	virtual void distClean(Ref<ModuleList> modules, String name, String version, int options);
+	virtual void clean(Ref<BuildLine> buildLine, Ref<ModuleList> modules, int options);
+	virtual void distClean(Ref<BuildLine> buildLine, Ref<ModuleList> modules, String name, String version, int options);
 
 protected:
 	GccToolChain(String execPath);
-	void appendCompileOptions(Format args, int options, Ref<StringList> includePaths, String modulePath = "") const;
+	void appendCompileOptions(Format args, int options, Ref<StringList> includePaths, String outputPath = "") const;
 
 	static String lookup(String execPath);
 };

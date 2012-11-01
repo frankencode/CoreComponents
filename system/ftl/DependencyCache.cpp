@@ -9,13 +9,14 @@
 namespace ftl
 {
 
-Ref<DependencyCache, Owner> DependencyCache::newInstance(Ref<ToolChain> compiler, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath)
+Ref<DependencyCache, Owner> DependencyCache::newInstance(Ref<BuildLine> buildLine, Ref<ToolChain> toolChain, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath)
 {
-	return new DependencyCache(compiler, sources, options, includePaths, cachePath);
+	return new DependencyCache(buildLine, toolChain, sources, options, includePaths, cachePath);
 }
 
-DependencyCache::DependencyCache(Ref<ToolChain> compiler, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath)
-	: compiler_(compiler),
+DependencyCache::DependencyCache(Ref<BuildLine> buildLine, Ref<ToolChain> toolChain, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath)
+	: buildLine_(buildLine),
+	  toolChain_(toolChain),
 	  cacheFile_(File::newInstance(cachePath)),
 	  cache_(Cache::newInstance())
 {
@@ -45,9 +46,9 @@ DependencyCache::DependencyCache(Ref<ToolChain> compiler, Ref<StringList> source
 
 		bool dirty = false;
 
-		Ref<FileStatus, Owner> objectStatus = FileStatus::newInstance(modulePath);
+		Ref<FileStatus, Owner> objectStatus = buildLine->fileStatus(modulePath);
 		for (int i = 0; i < dependencyPaths->length(); ++i) {
-			Time sourceTime = FileStatus::newInstance(dependencyPaths->at(i))->lastModified();
+			Time sourceTime = buildLine->fileStatus(dependencyPaths->at(i))->lastModified();
 			if (sourceTime > cacheTime) {
 				dirty = true;
 				break;
@@ -62,7 +63,7 @@ DependencyCache::DependencyCache(Ref<ToolChain> compiler, Ref<StringList> source
 
 		if (dirty) continue;
 
-		if (command != compiler->analyseCommand(sourcePath, options, includePaths)) continue;
+		if (command != toolChain->analyseCommand(sourcePath, options, includePaths)) continue;
 
 		cache_->insert(
 			item->key(),
@@ -104,7 +105,7 @@ Ref<Module, Owner> DependencyCache::analyse(String sourcePath, int options, Ref<
 	Ref<Module, Owner> module;
 	if (cache_->lookup(sourcePath, &module))
 		return module;
-	module = compiler_->analyse(sourcePath, options, includePaths);
+	module = toolChain_->analyse(buildLine_, sourcePath, options, includePaths);
 	cache_->insert(sourcePath, module);
 	return module;
 }
