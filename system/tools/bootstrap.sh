@@ -1,4 +1,4 @@
-#! /bin/bash -xe
+#! /bin/tcsh -xe
 
 pushd ../ftl
 g++ -fpic -Wall -pthread -c -o AbnfCoreSyntax.o AbnfCoreSyntax.cpp
@@ -15,7 +15,6 @@ g++ -fpic -Wall -pthread -c -o LineSource.o LineSource.cpp
 g++ -fpic -Wall -pthread -c -o AbnfSyntax.o AbnfSyntax.cpp
 g++ -fpic -Wall -pthread -c -o LinkInfo.o LinkInfo.cpp
 g++ -fpic -Wall -pthread -c -o UriSyntax.o UriSyntax.cpp
-g++ -fpic -Wall -pthread -c -o BuildLine.o BuildLine.cpp
 g++ -fpic -Wall -pthread -c -o IntegerLiteral.o IntegerLiteral.cpp
 g++ -fpic -Wall -pthread -c -o Token.o Token.cpp
 g++ -fpic -Wall -pthread -c -o ByteEncoder.o ByteEncoder.cpp
@@ -78,7 +77,7 @@ g++ -fpic -Wall -pthread -c -o Uri.o Uri.cpp
 g++ -fpic -Wall -pthread -c -o Stream.o Stream.cpp
 g++ -fpic -Wall -pthread -c -o StandardStreams.o StandardStreams.cpp
 g++ -fpic -Wall -pthread -c -o SignalManager.o SignalManager.cpp
-g++ -shared -pthread -Wl,-soname,libftlcore.so.0 -o libftlcore.so.0.3.0 AbnfCoreSyntax.o syntax.o File.o MemoryMapping.o new.o FormatSpecifier.o Date.o SyntaxState.o Dir.o GccToolChain.o LineSource.o AbnfSyntax.o LinkInfo.o UriSyntax.o BuildLine.o IntegerLiteral.o Token.o ByteEncoder.o DependencyCache.o User.o BitEncoder.o FileStatus.o SyntaxDebugFactory.o FileLock.o Condition.o Group.o SystemStream.o SocketAddressEntry.o SyntaxDefinition.o SyntaxDebugger.o Buffer.o Glob.o ProcessFactory.o Pipe.o InetAddressSyntax.o ThreadExitEvent.o Event.o Mutex.o ByteDecoder.o GlobalCoreMutex.o LineSink.o BitDecoder.o ExitEvent.o BuildPlan.o Format.o SocketAddress.o NetworkInterface.o AbnfCompiler.o Wire.o Json.o Md5.o Pattern.o ByteArray.o String.o Exception.o ProcessStatus.o Random.o FloatLiteral.o Time.o Semaphore.o Base64.o HuffmanCodec.o Config.o Thread.o SignalSet.o Memory.o Process.o debug.o StreamSocket.o ThreadFactory.o strings.o Character.o Crc32.o Uri.o Stream.o StandardStreams.o SignalManager.o -lrt -lutil -ldl
+g++ -shared -pthread -Wl,-soname,libftlcore.so.0 -o libftlcore.so.0.3.0 AbnfCoreSyntax.o syntax.o File.o MemoryMapping.o new.o FormatSpecifier.o Date.o SyntaxState.o Dir.o GccToolChain.o LineSource.o AbnfSyntax.o LinkInfo.o UriSyntax.o IntegerLiteral.o Token.o ByteEncoder.o DependencyCache.o User.o BitEncoder.o FileStatus.o SyntaxDebugFactory.o FileLock.o Condition.o Group.o SystemStream.o SocketAddressEntry.o SyntaxDefinition.o SyntaxDebugger.o Buffer.o Glob.o ProcessFactory.o Pipe.o InetAddressSyntax.o ThreadExitEvent.o Event.o Mutex.o ByteDecoder.o GlobalCoreMutex.o LineSink.o BitDecoder.o ExitEvent.o BuildPlan.o Format.o SocketAddress.o NetworkInterface.o AbnfCompiler.o Wire.o Json.o Md5.o Pattern.o ByteArray.o String.o Exception.o ProcessStatus.o Random.o FloatLiteral.o Time.o Semaphore.o Base64.o HuffmanCodec.o Config.o Thread.o SignalSet.o Memory.o Process.o debug.o StreamSocket.o ThreadFactory.o strings.o Character.o Crc32.o Uri.o Stream.o StandardStreams.o SignalManager.o -lrt -lutil -ldl
 ln -sf libftlcore.so.0.3.0 libftlcore.so.0.3
 ln -sf libftlcore.so.0.3.0 libftlcore.so.0
 ln -sf libftlcore.so.0.3.0 libftlcore.so
