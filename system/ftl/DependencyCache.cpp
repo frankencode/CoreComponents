@@ -17,7 +17,7 @@ Ref<DependencyCache, Owner> DependencyCache::newInstance(Ref<BuildLine> buildLin
 DependencyCache::DependencyCache(Ref<BuildLine> buildLine, Ref<ToolChain> toolChain, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath)
 	: buildLine_(buildLine),
 	  toolChain_(toolChain),
-	  cacheFile_(File::newInstance(cachePath)),
+	  cacheFile_(file(cachePath)),
 	  cache_(Cache::newInstance())
 {
 	cacheFile_->establish();

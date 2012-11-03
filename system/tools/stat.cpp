@@ -13,7 +13,7 @@ String fileTypeToString(int type)
 		{ File::CharDevice, "char_device" },
 		{ File::BlockDevice, "block_device" },
 		{ File::Fifo, "fifo" },
-		{ File::SymbolicLink, "symbolic_link" },
+		{ File::Link, "symbolic_link" },
 		{ File::Socket, "socket" }
 	};
 	const int mapSize = sizeof(map) / sizeof(map[0]);

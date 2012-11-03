@@ -31,13 +31,11 @@ Dir::~Dir()
 
 String Dir::path() const { return path_; }
 
-bool Dir::access(int flags) { return File::newInstance(path_)->access(flags); }
+bool Dir::access(int flags) { return file(path_)->access(flags); }
 
 bool Dir::exists() const
 {
-	return
-		File::newInstance(path_)->exists() &&
-		(FileStatus::newInstance(path_)->type() == File::Directory);
+	return file(path_)->exists() && (fileStatus(path_)->type() == File::Directory);
 }
 
 void Dir::create(int mode)

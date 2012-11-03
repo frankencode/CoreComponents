@@ -18,9 +18,9 @@ namespace ftl
 {
 
 StandardStreams::StandardStreams()
-	: rawInput_(File::newInstance(File::StandardInput)),
-	  rawOutput_(File::newInstance(File::StandardOutput)),
-	  rawError_(File::newInstance(File::StandardError)),
+	: rawInput_(file(File::StandardInput)),
+	  rawOutput_(file(File::StandardOutput)),
+	  rawError_(file(File::StandardError)),
 	  input_(LineSource::newInstance(rawInput_)),
 	  output_(LineSink::newInstance(rawOutput_)),
 	  error_(LineSink::newInstance(rawError_))
