@@ -32,9 +32,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 {
 #ifdef __linux
 	String path = Format("/proc/%%/stat") << processId;
-	Ref<File, Owner> file = File::newInstance(path);
-	file->open(File::Read);
-	Ref<LineSource, Owner> source = LineSource::newInstance(file);
+	Ref<LineSource, Owner> source = LineSource::newInstance(file(path, File::Read));
 	String line = source->readLine();
 	{
 		// extract command name first, because it may contain whitespace
@@ -60,9 +58,8 @@ ProcessStatus::ProcessStatus(pid_t processId)
 		else if (major == 3)
 			terminalName_ = Format("ttyp%%") << minor;
 	}*/
-	loginName_ = User::newInstance(FileStatus::newInstance(path)->ownerId())->loginName();
+	loginName_ = User::newInstance(fileStatus(path)->ownerId())->loginName();
 	processStatus_ = parts->at(2)->get(0);
-	file->close();
 #else // def __linux
 #ifdef KERN_PROC2 // e.g. on OpenBSD
 	size_t sz = sizeof(kinfo_proc2);

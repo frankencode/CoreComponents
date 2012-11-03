@@ -148,7 +148,7 @@ String File::readlink(const char *path)
 String File::resolve(const char *path)
 {
 	String resolvedPath = path;
-	while (FileStatus::newInstance(resolvedPath, false)->type() == File::SymbolicLink) {
+	while (linkStatus(resolvedPath)->type() == File::Link) {
 		String origPath = resolvedPath;
 		resolvedPath = File::readlink(resolvedPath);
 		if (resolvedPath == "") break;
@@ -203,7 +203,7 @@ void File::truncate(off_t length)
 class UnlinkFile: public Action {
 public:
 	UnlinkFile(String path): path_(path->makeAbsolutePath()) {}
-	void run() { try { File::newInstance(path_)->unlink(); } catch(...) {} }
+	void run() { try { file(path_)->unlink(); } catch(...) {} }
 private:
 	String path_;
 };
@@ -348,7 +348,7 @@ String File::lookup(String fileName, Ref<StringList> dirs, int accessFlags)
 	String path;
 	for (int i = 0; i < dirs->length(); ++i) {
 		String candidate = Format() << dirs->at(i) << "/" << fileName;
-		if (File::newInstance(candidate)->access(accessFlags)) {
+		if (file(candidate)->access(accessFlags)) {
 			path = candidate;
 			break;
 		}
@@ -360,9 +360,9 @@ Ref<FileStatus> File::status() const
 {
 	if (!status_) {
 		if (isOpen())
-			status_ = FileStatus::newInstance(fd_);
+			status_ = fileStatus(fd_);
 		else
-			status_ = FileStatus::newInstance(path_);
+			status_ = fileStatus(path_);
 	}
 	return status_;
 }

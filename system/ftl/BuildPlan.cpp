@@ -94,7 +94,7 @@ bool BuildPlan::symlink(String path, String newPath)
 
 bool BuildPlan::unlink(String path)
 {
-	if (fileStatus(path)->exists()) {
+	if (linkStatus(path)->exists()) {
 		printTo(error(), "rm %%\n", path);
 		if (options_ & DryRun) return true;
 		return File::unlink(path);
@@ -104,8 +104,8 @@ bool BuildPlan::unlink(String path)
 
 Ref<FileStatus, Owner> BuildPlan::fileStatus(String path)
 {
-	if (options_ & Blindfold) return FileStatus::newInstance();
-	return FileStatus::newInstance(path);
+	if (options_ & Blindfold) return ftl::fileStatus();
+	return ftl::fileStatus(path);
 }
 
 int BuildPlan::run(Ref<ToolChain> toolChain, int argc, char **argv)

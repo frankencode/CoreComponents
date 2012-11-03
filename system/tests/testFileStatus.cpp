@@ -12,7 +12,7 @@ void printStatus(Ref<File, Owner> file)
 	print("file->access(File::Write) = %%\n", file->access(File::Write));
 	print("file->access(File::Execute) = %%\n", file->access(File::Execute));
 	if (file->exists()) {
-		Ref<FileStatus, Owner> status = FileStatus::newInstance(file->path());
+		Ref<FileStatus, Owner> status = fileStatus(file->path());
 		if (status) {
 			print("status->type() = %oct%\n", status->type());
 			print("status->mode() = %oct%\n", status->mode());
@@ -33,10 +33,10 @@ void printStatus(Ref<File, Owner> file)
 
 int main(int argc, char **argv)
 {
-	printStatus(File::newInstance(argv[0]));
-	printStatus(File::newInstance("hmpf.xyz"));
+	printStatus(file(argv[0]));
+	printStatus(file("hmpf.xyz"));
 	printStatus(rawInput());
-	printStatus(File::newInstance("/usr/include"));
+	printStatus(file("/usr/include"));
 	return 0;
 }
 

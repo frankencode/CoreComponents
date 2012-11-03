@@ -16,9 +16,8 @@ public:
 
 	int incarnate()
 	{
-		Ref<File, Owner> file = File::newInstance(path_);
-		file->open(File::Read);
 		print("(clone) waiting for read access\n");
+		Ref<File, Owner> file = File::newInstance(path_, File::Read);
 		Ref<FileLock, Owner> lock = FileLock::newInstance(file, FileLock::Read);
 		Guard<FileLock> guard(lock);
 		print("(clone) granted read access\n");

@@ -30,7 +30,7 @@ class FileStatus: public StructStat, public Instance
 public:
 	inline static Ref<FileStatus, Owner> newInstance(int fd = -1) { return new FileStatus(fd); }
 	inline static Ref<FileStatus, Owner> newInstance(Ref<SystemStream> stream) { return new FileStatus(stream); }
-	inline static Ref<FileStatus, Owner> newInstance(String path, bool followSymbolicLink = false) { return new FileStatus(path, followSymbolicLink); }
+	inline static Ref<FileStatus, Owner> newInstance(String path, bool resolve = true) { return new FileStatus(path, resolve); }
 
 	inline String path() const { return path_; }
 
@@ -55,18 +55,24 @@ public:
 	inline dev_t storageId() const { return st_dev; }
 	inline dev_t deviceId() const { return st_rdev; }
 
-	bool update(bool followSymbolicLink = true);
+	bool update();
 	inline bool exists() const { return exists_; }
 
 private:
 	FileStatus(int fd);
 	FileStatus(Ref<SystemStream> stream);
-	FileStatus(String path, bool followSymbolicLink = true);
+	FileStatus(String path, bool resolve = true);
 
 	int fd_;
 	String path_;
 	bool exists_;
+	bool resolve_;
 };
+
+inline Ref<FileStatus, Owner> fileStatus(int fd = -1) { return FileStatus::newInstance(fd); }
+inline Ref<FileStatus, Owner> fileStatus(Ref<SystemStream> stream) { return FileStatus::newInstance(stream); }
+inline Ref<FileStatus, Owner> fileStatus(String path, bool resolve = true) { return FileStatus::newInstance(path, resolve); }
+inline Ref<FileStatus, Owner> linkStatus(String path) { return FileStatus::newInstance(path, false); }
 
 } // namespace ftl
 

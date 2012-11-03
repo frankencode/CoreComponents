@@ -12,7 +12,7 @@ int y() {
 int main()
 {
 	try {
-		File::newInstance("non-existing")->open();
+		file("non-existing")->open();
 	}
 	catch (Exception &ex) {
 		print("%%\n", ex.what());

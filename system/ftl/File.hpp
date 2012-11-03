@@ -32,7 +32,7 @@ public:
 		CharDevice   = S_IFCHR,
 		BlockDevice  = S_IFBLK,
 		Fifo         = S_IFIFO,
-		SymbolicLink = S_IFLNK,
+		Link         = S_IFLNK,
 		Socket       = S_IFSOCK,
 	};
 
@@ -130,6 +130,9 @@ protected:
 	bool unlinkWhenDone_;
 	mutable Ref<FileStatus, Owner> status_;
 };
+
+inline Ref<File, Owner> file(String path, int openFlags = 0) { return File::newInstance(path, openFlags); }
+inline Ref<File, Owner> file(int fd, int openFlags = File::Read|File::Write) { return File::newInstance(fd, openFlags); }
 
 } // namespace ftl
 

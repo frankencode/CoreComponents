@@ -6,9 +6,7 @@ int main(int argc, char **argv)
 
 	if (argc > 1) {
 		for (int i = 1; i < argc; ++i) {
-			Ref<File, Owner> file = File::newInstance(argv[i]);
-			file->open(File::Read);
-			rawOutput()->write(file->readAll());
+			rawOutput()->write(file(argv[i], File::Read)->readAll());
 		}
 	}
 	else {

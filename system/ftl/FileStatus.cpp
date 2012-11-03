@@ -34,11 +34,12 @@ FileStatus::FileStatus(Ref<SystemStream> stream)
 	exists_ = update();
 }
 
-FileStatus::FileStatus(String path, bool followSymbolicLink)
+FileStatus::FileStatus(String path, bool resolve)
 	: fd_(-1),
-	  path_(path)
+	  path_(path),
+	  resolve_(resolve)
 {
-	exists_ = update(followSymbolicLink);
+	exists_ = update();
 }
 
 void FileStatus::setTimes(Time lastAccess, Time lastModified)
@@ -53,10 +54,10 @@ void FileStatus::setTimes(Time lastAccess, Time lastModified)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-bool FileStatus::update(bool followSymbolicLink)
+bool FileStatus::update()
 {
 	mem::clr(static_cast<StructStat*>(this), sizeof(StructStat));
-	int ret = (fd_ != -1) ? ::fstat(fd_, this) : (followSymbolicLink ? ::stat(path_, this) : ::lstat(path_, this));
+	int ret = (fd_ != -1) ? ::fstat(fd_, this) : (resolve_ ? ::stat(path_, this) : ::lstat(path_, this));
 	if (ret == -1) {
 		if ((errno == ENOENT) || (errno == ENOTDIR)) {
 			exists_ = false;

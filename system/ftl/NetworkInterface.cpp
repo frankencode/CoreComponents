@@ -365,9 +365,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 	int fd = ::socket(AF_INET, SOCK_DGRAM, 0);
 	if (fd == -1) FTL_SYSTEM_EXCEPTION;
 
-	Ref<File, Owner> file = File::newInstance("/proc/net/dev");
-	file->open(File::Read);
-	Ref<LineSource, Owner> source = LineSource::newInstance(file);
+	Ref<LineSource, Owner> source = LineSource::newInstance(file("/proc/net/dev", File::Read));
 	for (String line; source->read(&line);) {
 		if (line->contains(':')) {
 			Ref<NetworkInterface, Owner> interface = NetworkInterface::newInstance();
