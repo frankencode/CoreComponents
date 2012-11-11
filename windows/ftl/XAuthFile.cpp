@@ -13,8 +13,7 @@ XAuthFile::XAuthFile(String path)
 	if (path_ == "") path_ = Process::env("XAUTHORITY");
 	if (path_ == "") return;
 
-	Ref<File, Owner> file = File::newInstance(path_);
-	file->open();
+	Ref<File, Owner> file = File::open(path_);
 
 	Ref<ByteDecoder, Owner> source = ByteDecoder::newInstance(file);
 	source->setEndian(BigEndian);

@@ -55,7 +55,6 @@ public:
 	inline dev_t storageId() const { return st_dev; }
 	inline dev_t deviceId() const { return st_rdev; }
 
-	bool update();
 	inline bool exists() const { return exists_; }
 
 private:
@@ -63,16 +62,13 @@ private:
 	FileStatus(Ref<SystemStream> stream);
 	FileStatus(String path, bool resolve = true);
 
+	bool update();
+
 	int fd_;
 	String path_;
 	bool exists_;
 	bool resolve_;
 };
-
-inline Ref<FileStatus, Owner> fileStatus(int fd = -1) { return FileStatus::newInstance(fd); }
-inline Ref<FileStatus, Owner> fileStatus(Ref<SystemStream> stream) { return FileStatus::newInstance(stream); }
-inline Ref<FileStatus, Owner> fileStatus(String path, bool resolve = true) { return FileStatus::newInstance(path, resolve); }
-inline Ref<FileStatus, Owner> linkStatus(String path) { return FileStatus::newInstance(path, false); }
 
 } // namespace ftl
 

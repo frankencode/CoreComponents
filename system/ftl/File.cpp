@@ -24,14 +24,179 @@
 namespace ftl
 {
 
+bool File::access(String path, int flags)
+{
+	return ::access(path, flags) == 0;
+}
+
+bool File::exists(String path)
+{
+	return (path != "") && access(path, Exists);
+}
+
+bool File::create(String path, int mode)
+{
+	int fd = ::open(path, O_RDONLY|O_CREAT|O_EXCL, mode);
+	if (fd == -1) return false;
+	::close(fd);
+	return true;
+}
+
+bool File::link(String path, String newPath)
+{
+	return ::link(path, newPath) != -1;
+}
+
+bool File::unlink(String path)
+{
+	return ::unlink(path) != -1;
+}
+
+bool File::symlink(String path, String newPath)
+{
+	return ::symlink(path, newPath) != -1;
+}
+
+String File::readlink(String path)
+{
+	String buf = String(128);
+	while (true) {
+		ssize_t numBytes = ::readlink(path, buf, buf->size());
+		if (numBytes == -1)
+			return String();
+		if (numBytes <= buf->size()) {
+			if (numBytes < buf->size())
+				buf = String(buf->data(), numBytes);
+			break;
+		}
+		buf = String(numBytes);
+	}
+	return buf;
+}
+
+String File::resolve(String path)
+{
+	String resolvedPath = path;
+	while (File::unresolvedStatus(resolvedPath)->type() == File::Link) {
+		String origPath = resolvedPath;
+		resolvedPath = File::readlink(resolvedPath);
+		if (resolvedPath == "") break;
+		if (resolvedPath->isRelativePath())
+			resolvedPath = origPath->reducePath()->expandPath(resolvedPath);
+	}
+	return resolvedPath;
+}
+
+String File::createUnique(String path, int mode, char placeHolder)
+{
+	Ref<Random, Owner> random = Random::open();
+	while (true) {
+		String candidate = path->copy();
+		for (int i = 0, n = candidate->size(); i < n; ++i) {
+			if (candidate->at(i) == placeHolder) {
+				char r = random->get(0, 61);
+				if ((0 <= r) && (r <= 9))
+					r += '0';
+				else if ((10 <= r) && (r <= 35))
+					r += 'a' - 10;
+				else if ((36 <= r) && (r <= 61))
+					r += 'A' - 36;
+				candidate->set(i, r);
+			}
+		}
+		int fd = ::open(candidate, O_RDONLY|O_CREAT|O_EXCL, mode);
+		if (fd == -1) {
+			if (errno != EEXIST)
+				return "";
+		}
+		else {
+			::close(fd);
+			return candidate;
+		}
+	}
+}
+
+bool File::establish(String path, int fileMode, int dirMode)
+{
+	if (path->contains('/'))
+		if (!Dir::establish(path->reducePath(), dirMode))
+			return false;
+	if (!File::exists(path))
+		return File::create(path, fileMode);
+	return true;
+}
+
+
+String File::lookup(String fileName, Ref<StringList> dirs, int accessFlags)
+{
+	Ref<StringList, Owner> h;
+	if (!dirs) {
+		h = Process::env("PATH")->split(':');
+		dirs = h;
+	}
+	String path;
+	for (int i = 0; i < dirs->length(); ++i) {
+		String candidate = Format() << dirs->at(i) << "/" << fileName;
+		if (access(candidate, accessFlags)) {
+			path = candidate;
+			break;
+		}
+	}
+	return path;
+}
+
+Ref<FileStatus, Owner> File::status(String path)
+{
+	return FileStatus::newInstance(path, true);
+}
+
+Ref<FileStatus, Owner> File::unresolvedStatus(String path)
+{
+	return FileStatus::newInstance(path, false);
+}
+
+String File::load(String path)
+{
+	establish(path);
+	return open(path, File::Read)->readAll();
+}
+
+void File::save(String path, String text)
+{
+	establish(path);
+	Ref<File, Owner> file = open(path, File::Write);
+	file->truncate(0);
+	file->write(text);
+}
+
+Ref<File, Owner> File::temp()
+{
+	String path = createUnique(
+		Format("/tmp/%%_%%_XXXXXXXX")
+		<< Process::execPath()->fileName()
+		<< Process::currentId()
+	);
+	if (path == "")
+		FTL_SYSTEM_EXCEPTION;
+	return open(path);
+}
+
 File::File(String path, int openFlags)
 	: SystemStream(-1),
 	  path_(path),
-	  openFlags_(0),
+	  openFlags_(openFlags),
 	  unlinkWhenDone_(false)
 {
-	if (openFlags != 0)
-		open(openFlags);
+	int h = 0;
+	if (openFlags == Read)
+		h = O_RDONLY;
+	else if (openFlags == Write)
+		h = O_WRONLY;
+	else if (openFlags == (Read|Write))
+		h = O_RDWR;
+	fd_ = ::open(path_, h);
+	if (fd_ == -1)
+		FTL_SYSTEM_EXCEPTION;
 }
 
 File::File(int fd, int openFlags)
@@ -50,7 +215,7 @@ File::File(int fd, int openFlags)
 File::~File()
 {
 	if (unlinkWhenDone_)
-		try { unlink(); } catch(...) {}
+		try { unlink(path_); } catch(...) {}
 }
 
 String File::path() const
@@ -84,108 +249,9 @@ int File::openFlags() const
 	return openFlags_;
 }
 
-bool File::access(int flags) const
+Ref<FileStatus, Owner> File::status() const
 {
-	return isOpen() ? ((openFlags_ & flags) == flags) : (::access(path_, flags) == 0);
-}
-
-bool File::exists() const
-{
-	return access(Exists) && (path_->length() > 0);
-}
-
-void File::create(int mode)
-{
-	int fd = ::open(path_, O_RDONLY|O_CREAT|O_EXCL, mode);
-	if (fd == -1) FTL_SYSTEM_EXCEPTION;
-	::close(fd);
-}
-
-void File::link(const char *newPath)
-{
-	if (::link(path_, newPath) == -1)
-		FTL_SYSTEM_EXCEPTION;
-}
-
-void File::unlink()
-{
-	if (::unlink(path_) == -1)
-		FTL_SYSTEM_EXCEPTION;
-}
-
-bool File::link(const char *path, const char *newPath)
-{
-	return ::link(path, newPath) != -1;
-}
-
-bool File::unlink(const char *path)
-{
-	return ::unlink(path) != -1;
-}
-
-bool File::symlink(const char *path, const char *newPath)
-{
-	return ::symlink(path, newPath) != -1;
-}
-
-String File::readlink(const char *path)
-{
-	String buf = String(128);
-	while (true) {
-		ssize_t numBytes = ::readlink(path, buf, buf->size());
-		if (numBytes == -1)
-			return String();
-		if (numBytes <= buf->size()) {
-			if (numBytes < buf->size())
-				buf = String(buf->data(), numBytes);
-			break;
-		}
-		buf = String(numBytes);
-	}
-	return buf;
-}
-
-String File::resolve(const char *path)
-{
-	String resolvedPath = path;
-	while (linkStatus(resolvedPath)->type() == File::Link) {
-		String origPath = resolvedPath;
-		resolvedPath = File::readlink(resolvedPath);
-		if (resolvedPath == "") break;
-		if (resolvedPath->isRelativePath())
-			resolvedPath = origPath->reducePath()->expandPath(resolvedPath);
-	}
-	return resolvedPath;
-}
-
-void File::createUnique(int mode, char placeHolder)
-{
-	Ref<Random, Owner> random = Random::newInstance();
-	while (true) {
-		String pathSaved = path_->copy();
-		for (int i = 0, n = path_->size(); i < n; ++i) {
-			if (path_->at(i) == placeHolder) {
-				char r = random->get(0, 61);
-				if ((0 <= r) && (r <= 9))
-					r += '0';
-				else if ((10 <= r) && (r <= 35))
-					r += 'a' - 10;
-				else if ((36 <= r) && (r <= 61))
-					r += 'A' - 36;
-				path_->set(i, r);
-			}
-		}
-		int fd = ::open(path_, O_RDONLY|O_CREAT|O_EXCL, mode);
-		if (fd == -1) {
-			if (errno != EEXIST)
-				FTL_SYSTEM_EXCEPTION;
-			path_ = pathSaved;
-		}
-		else {
-			::close(fd);
-			break;
-		}
-	}
+	return FileStatus::newInstance(fd_);
 }
 
 void File::truncate(off_t length)
@@ -203,7 +269,7 @@ void File::truncate(off_t length)
 class UnlinkFile: public Action {
 public:
 	UnlinkFile(String path): path_(path->makeAbsolutePath()) {}
-	void run() { try { file(path_)->unlink(); } catch(...) {} }
+	void run() { try { unlink(path_); } catch(...) {} }
 private:
 	String path_;
 };
@@ -220,60 +286,6 @@ void File::unlinkOnThreadExit()
 
 void File::unlinkWhenDone() {
 	unlinkWhenDone_ = true;
-}
-
-void File::open(int flags)
-{
-	int h = 0;
-	if (flags == Read)
-		h = O_RDONLY;
-	else if (flags == Write)
-		h = O_WRONLY;
-	else if (flags == (Read|Write))
-		h = O_RDWR;
-	fd_ = ::open(path_, h);
-	if (fd_ == -1)
-		FTL_SYSTEM_EXCEPTION;
-	openFlags_ = flags;
-}
-
-Ref<File, Owner> File::temp()
-{
-	Ref<File, Owner> file =
-		new File(
-			String(
-				Format("/tmp/%%_%%_XXXXXXXX")
-				<< Process::execPath()->fileName()
-				<< Process::currentId()
-			)
-		);
-	file->createUnique();
-	file->open(Read|Write);
-	return file;
-}
-
-void File::establish(int fileMode, int dirMode)
-{
-	if (path_->contains('/'))
-		Dir::newInstance(path_->reducePath())->establish(dirMode);
-	if (!exists())
-		create(fileMode);
-}
-
-String File::load()
-{
-	String text;
-	establish();
-	open(File::Read);
-	return readAll();
-}
-
-void File::save(String text)
-{
-	establish();
-	open(File::Write);
-	truncate(0);
-	write(text);
 }
 
 off_t File::seek(off_t distance, int method)
@@ -306,17 +318,6 @@ off_t File::seekTell()
 	return seek(0, SeekCurrent);
 }
 
-off_t File::size()
-{
-	bool closeAgain = !isOpen();
-	if (closeAgain) open(File::Read);
-	off_t h2 = seek(0, SeekCurrent);
-	off_t h = seek(0, SeekEnd);
-	seek(h2, SeekBegin);
-	if (closeAgain) close();
-	return h;
-}
-
 void File::sync()
 {
 	if (::fsync(fd_) == -1)
@@ -331,40 +332,6 @@ void File::dataSync()
 #else
 	sync();
 #endif
-}
-
-void File::syncAll()
-{
-	::sync();
-}
-
-String File::lookup(String fileName, Ref<StringList> dirs, int accessFlags)
-{
-	Ref<StringList, Owner> h;
-	if (!dirs) {
-		h = Process::env("PATH")->split(':');
-		dirs = h;
-	}
-	String path;
-	for (int i = 0; i < dirs->length(); ++i) {
-		String candidate = Format() << dirs->at(i) << "/" << fileName;
-		if (file(candidate)->access(accessFlags)) {
-			path = candidate;
-			break;
-		}
-	}
-	return path;
-}
-
-Ref<FileStatus> File::status() const
-{
-	if (!status_) {
-		if (isOpen())
-			status_ = fileStatus(fd_);
-		else
-			status_ = fileStatus(path_);
-	}
-	return status_;
 }
 
 } // namespace ftl

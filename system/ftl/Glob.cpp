@@ -36,26 +36,30 @@ Glob::Glob(String path, Ref<StringList> remainder)
 
 void Glob::init(String path)
 {
-	dir_ = Dir::newInstance(path);
-	dir_->open();
+	dir_ = Dir::open(path);
 	pattern_ = remainder_->pop(0);
 }
 
-bool Glob::read(DirEntry *entry)
+bool Glob::read(String *path)
 {
 	if (child_) {
-		if (child_->read(entry))
+		if (child_->read(path))
 			return true;
 		child_ = 0;
 	}
-	while (dir_->read(entry)) {
-		if (pattern_->match(entry->name())) {
-			if (remainder_->length() == 0)
+	String name;
+	while (dir_->read(&name)) {
+		if ((name == ".") || (name == ".."))
+			continue;
+		if (pattern_->match(name)) {
+			String node = dir_->path(name);
+			if (remainder_->length() == 0) {
+				*path = node;
 				return true;
-			String path = dir_->path() + "/" + entry->name();
-			if (Dir::newInstance(path)->exists()) {
-				child_ = new Glob(path, remainder_);
-				return read(entry);
+			}
+			if (Dir::exists(node)) {
+				child_ = new Glob(node, remainder_);
+				return read(path);
 			}
 		}
 	}

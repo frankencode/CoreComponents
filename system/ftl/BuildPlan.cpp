@@ -94,7 +94,7 @@ bool BuildPlan::symlink(String path, String newPath)
 
 bool BuildPlan::unlink(String path)
 {
-	if (linkStatus(path)->exists()) {
+	if (File::unresolvedStatus(path)->exists()) {
 		printTo(error(), "rm %%\n", path);
 		if (options_ & DryRun) return true;
 		return File::unlink(path);
@@ -104,8 +104,8 @@ bool BuildPlan::unlink(String path)
 
 Ref<FileStatus, Owner> BuildPlan::fileStatus(String path)
 {
-	if (options_ & Blindfold) return ftl::fileStatus();
-	return ftl::fileStatus(path);
+	if (options_ & Blindfold) return FileStatus::newInstance();
+	return FileStatus::newInstance(path);
 }
 
 int BuildPlan::run(Ref<ToolChain> toolChain, int argc, char **argv)
@@ -168,9 +168,9 @@ void BuildPlan::analyse(Ref<ToolChain> toolChain)
 	Ref<VariantList> sourcePatterns = recipe_->value("source");
 	Ref<DirEntry, Owner> entry = DirEntry::newInstance();
 	for (int i = 0; i < sourcePatterns->length(); ++i) {
-		Ref<Glob, Owner> glob = Glob::newInstance(sourcePatterns->at(i));
-		while (glob->read(entry))
-			sources_->append(entry->path());
+		Ref<Glob, Owner> glob = Glob::open(sourcePatterns->at(i));
+		for (String path; glob->read(&path);)
+			sources_->append(path);
 	}
 
 	modules_ = ModuleList::newInstance(sources_->length());

@@ -1,12 +1,22 @@
 #include <ftl/stdio>
 #include <ftl/process>
 
-int main()
+int main(int argc, char **argv)
 {
 	using namespace ftl;
 
-	Ref<Dir, Owner> dir = Dir::newInstance(".");
-	for (Ref<DirEntry, Owner> entry = DirEntry::newInstance(); dir->read(entry);)
-		output()->writeLine(entry->name());
+	if (argc > 1) {
+		for (int i = 1; i < argc; ++i) {
+			Ref<Glob, Owner> glob = Glob::open(argv[i]);
+			for (String path; glob->read(&path);)
+				output()->writeLine(path);
+		}
+	}
+	else {
+		Ref<Dir, Owner> dir = Dir::open(".");
+		for (String name; dir->read(&name);)
+			output()->writeLine(name);
+	}
+
 	return 0;
 }

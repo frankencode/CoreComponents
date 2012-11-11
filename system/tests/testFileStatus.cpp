@@ -4,15 +4,15 @@
 namespace ftl
 {
 
-void printStatus(Ref<File, Owner> file)
+void printStatus(String path)
 {
-	print("file->path() = \"%%\"\n", file->path());
-	print("file->exists() = %%\n", file->exists());
-	print("file->access(File::Read) = %%\n", file->access(File::Read));
-	print("file->access(File::Write) = %%\n", file->access(File::Write));
-	print("file->access(File::Execute) = %%\n", file->access(File::Execute));
-	if (file->exists()) {
-		Ref<FileStatus, Owner> status = fileStatus(file->path());
+	print("path = \"%%\"\n", path);
+	print("File::exists(\"%%\") = %%\n", path, File::exists(path));
+	print("File::access(\"%%\", File::Read) = %%\n", path, File::access(path, File::Read));
+	print("File::access(\"%%\", File::Write) = %%\n", path, File::access(path, File::Write));
+	print("File::access(\"%%\", File::Execute) = %%\n", path, File::access(path, File::Execute));
+	if (File::exists(path)) {
+		Ref<FileStatus, Owner> status = File::status(path);
 		if (status) {
 			print("status->type() = %oct%\n", status->type());
 			print("status->mode() = %oct%\n", status->mode());
@@ -33,10 +33,10 @@ void printStatus(Ref<File, Owner> file)
 
 int main(int argc, char **argv)
 {
-	printStatus(file(argv[0]));
-	printStatus(file("hmpf.xyz"));
-	printStatus(rawInput());
-	printStatus(file("/usr/include"));
+	printStatus(argv[0]);
+	printStatus("hmpf.xyz");
+	// printStatus(rawInput());
+	printStatus("/usr/include");
 	return 0;
 }
 

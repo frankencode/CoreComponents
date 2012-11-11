@@ -40,7 +40,7 @@ public:
 		: id_(id),
 		  channel_(channel),
 		  amount_(amount),
-		  random_(Random::newInstance(amount))
+		  random_(Random::open(amount))
 	{}
 
 	void run()
