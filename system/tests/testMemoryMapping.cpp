@@ -17,7 +17,7 @@ public:
 	int incarnate()
 	{
 		print("(clone) waiting for read access\n");
-		Ref<File, Owner> file = File::newInstance(path_, File::Read);
+		Ref<File, Owner> file = File::open(path_, File::Read);
 		Ref<FileLock, Owner> lock = FileLock::newInstance(file, FileLock::Read);
 		Guard<FileLock> guard(lock);
 		print("(clone) granted read access\n");
@@ -35,12 +35,8 @@ private:
 int main()
 {
 	Process::cd("/tmp");
-	Ref<File, Owner> file = File::newInstance("testMemoryMapping.XXXXXX");
-	file->createUnique();
-	file->unlinkOnExit();
-	print("(parent) file.path() = \"%%\"\n", file->path());
-
-	file->open(File::Read|File::Write);
+	Ref<File, Owner> file = File::temp();
+	print("(parent) file->path() = \"%%\"\n", file->path());
 	file->truncate(mapLength);
 	print("(parent) acquiring write lock... \n");
 	Ref<FileLock, Owner> lock = FileLock::newInstance(file, FileLock::Write);

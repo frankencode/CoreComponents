@@ -26,7 +26,7 @@ private:
 
 	Ref<BuildLine, Owner> buildLine_;
 	Ref<ToolChain, Owner> toolChain_;
-	Ref<File, Owner> cacheFile_;
+	String cachePath_;
 	typedef Map< String, Ref<Module, Owner> > Cache;
 	Ref<Cache, Owner> cache_;
 };

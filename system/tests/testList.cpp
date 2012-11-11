@@ -59,7 +59,7 @@ int main()
 	{
 		print("Test 4:\n");
 		Ref<IntList, Owner> list = IntList::newInstance();
-		Ref<Random, Owner> random = Random::newInstance();
+		Ref<Random, Owner> random = Random::open();
 		for (int i = 0; i < 10; ++i)
 			list << random->get(0, 99);
 		print(list);

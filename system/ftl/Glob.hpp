@@ -19,12 +19,12 @@ namespace ftl
 
 class Dir;
 
-class Glob: public Source<DirEntry>
+class Glob: public Source<String>
 {
 public:
-	inline static Ref<Glob, Owner> newInstance(String expression) { return new Glob(expression); }
+	inline static Ref<Glob, Owner> open(String expression) { return new Glob(expression); }
 
-	bool read(DirEntry *entry);
+	bool read(String *path);
 
 private:
 	Glob(String expression);

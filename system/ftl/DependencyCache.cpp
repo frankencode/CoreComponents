@@ -17,15 +17,15 @@ Ref<DependencyCache, Owner> DependencyCache::newInstance(Ref<BuildLine> buildLin
 DependencyCache::DependencyCache(Ref<BuildLine> buildLine, Ref<ToolChain> toolChain, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath)
 	: buildLine_(buildLine),
 	  toolChain_(toolChain),
-	  cacheFile_(file(cachePath)),
+	  cachePath_(cachePath),
 	  cache_(Cache::newInstance())
 {
-	cacheFile_->establish();
-	Time cacheTime = cacheFile_->status()->lastModified();
+	File::establish(cachePath);
+	Time cacheTime = File::status(cachePath_)->lastModified();
 
 	Ref<WireObject, Owner> dependencyCache;
 	try {
-		dependencyCache = wire()->parse(cacheFile_->load());
+		dependencyCache = wire()->parse(File::load(cachePath_));
 	}
 	catch (WireException &)
 	{}
@@ -97,7 +97,7 @@ DependencyCache::~DependencyCache()
 			<< indent << "}\n";
 	}
 	text << "}\n";
-	cacheFile_->save(text);
+	File::save(cachePath_, text);
 }
 
 Ref<Module, Owner> DependencyCache::analyse(String sourcePath, int options, Ref<StringList> includePaths)

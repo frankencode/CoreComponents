@@ -16,25 +16,21 @@
 namespace ftl
 {
 
-class Dir: public Source<DirEntry>
+class Dir: public Source<String>
 {
 public:
-	inline static Ref<Dir, Owner> newInstance(String path) { return new Dir(path); }
+	inline static Ref<Dir, Owner> open(String path) { return new Dir(path); }
 	~Dir();
 
 	String path() const;
+	String path(String name) const;
+	bool read(String *name);
 
-	bool access(int flags);
-	bool exists() const;
-	void create(int mode = 0755);
-	void unlink();
-
-	void open();
-	void close();
-	bool read(DirEntry *entry);
-	bool isOpen() const;
-
-	void establish(int mode = 0755);
+	static bool access(String path, int flags);
+	static bool exists(String path);
+	static bool create(String path, int mode = 0755);
+	static bool establish(String path, int mode = 0755);
+	static bool unlink(String path);
 
 protected:
 	Dir(String path);

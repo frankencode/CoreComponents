@@ -11,7 +11,7 @@
 #ifndef FTL_RANDOM_HPP
 #define FTL_RANDOM_HPP
 
-#include "atoms"
+#include "generics.hpp"
 
 namespace ftl
 {
@@ -19,10 +19,10 @@ namespace ftl
 /** Random number generator as described by Lewis et al/1969
   * for the System/360. The generator is reentrant.
   */
-class Random: public Instance
+class Random: public Source<int>
 {
 public:
-	inline static Ref<Random, Owner> newInstance(int seed = -1) {
+	inline static Ref<Random, Owner> open(int seed = -1) {
 		return new Random(seed);
 	}
 
@@ -40,6 +40,11 @@ public:
 		FTL_ASSERT(b <= m_ - 1);
 		FTL_ASSERT(a <= b);
 		return (uint64_t(get()) * (b - a)) / (m_ - 1) + a;
+	}
+
+	inline bool read(int *x) {
+		*x = get();
+		return true;
 	}
 
 private:

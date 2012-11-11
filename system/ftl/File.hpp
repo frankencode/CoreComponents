@@ -49,7 +49,7 @@ public:
 		Exists  = F_OK
 	};
 
-	enum CreateFlags {
+	enum ModeFlags {
 		UserRead   = 0400,
 		UserWrite  = 0200,
 		UserExec   = 0100,
@@ -73,53 +73,48 @@ public:
 		StandardError  = 2
 	};
 
-	inline static Ref<File, Owner> newInstance(String path, int openFlags = 0) { return new File(path, openFlags); }
-	inline static Ref<File, Owner> newInstance(int fd, int openFlags = Read|Write) { return new File(fd, openFlags); }
+	static bool access(String path, int flags);
+	static bool exists(String path);
+	static bool create(String path, int mode = 0644);
+	static bool link(String path, String newPath);
+	static bool unlink(String path);
+	static bool symlink(String path, String newPath);
+	static String readlink(String path);
+	static String resolve(String path);
+
+	static String createUnique(String path, int mode = 0644, char placeHolder = 'X');
+	static bool establish(String path, int fileMode = 0644, int dirMode = 0755);
+	static String lookup(String fileName, Ref<StringList> dirs = 0, int accessFlags = Execute);
+
+	static Ref<FileStatus, Owner> status(String path);
+	static Ref<FileStatus, Owner> unresolvedStatus(String path);
+
+	static String load(String path);
+	static void save(String path, String text);
+
+	inline static Ref<File, Owner> open(String path, int openFlags = Read) { return new File(path, openFlags); }
+	inline static Ref<File, Owner> open(int fd, int openFlags = Read|Write) { return new File(fd, openFlags); }
+	static Ref<File, Owner> temp();
 	~File();
 
 	String path() const;
 	String name() const;
+	Ref<FileStatus, Owner> status() const;
+
 	int openFlags() const;
 
-	bool access(int flags) const;
-	bool exists() const;
-	void create(int mode = 0644);
-	void link(const char *newPath);
-	void unlink();
-
-	static bool link(const char *path, const char *newPath);
-	static bool unlink(const char *path);
-
-	static bool symlink(const char *path, const char *newPath);
-	static String readlink(const char *path);
-	static String resolve(const char *path);
-
-	void createUnique(int mode = 0644, char placeHolder = 'X');
 	void truncate(off_t length);
 	void unlinkOnExit();
 	void unlinkOnThreadExit();
 	void unlinkWhenDone();
 
-	void open(int flags = Read);
-
-	static Ref<File, Owner> temp();
-	void establish(int fileMode = 0644, int dirMode = 0755);
-	String load();
-	void save(String text);
-
 	off_t seek(off_t distance, int method = SeekBegin);
 	void seekSet(off_t distance);
 	void seekMove(off_t distance);
 	off_t seekTell();
-	off_t size();
 
 	void sync();
 	void dataSync();
-	static void syncAll();
-
-	static String lookup(String fileName, Ref<StringList> dirs = 0, int accessFlags = Execute);
-
-	Ref<FileStatus> status() const;
 
 protected:
 	File(String path, int openFlags = 0);
@@ -128,11 +123,7 @@ protected:
 	String path_;
 	int openFlags_;
 	bool unlinkWhenDone_;
-	mutable Ref<FileStatus, Owner> status_;
 };
-
-inline Ref<File, Owner> file(String path, int openFlags = 0) { return File::newInstance(path, openFlags); }
-inline Ref<File, Owner> file(int fd, int openFlags = File::Read|File::Write) { return File::newInstance(fd, openFlags); }
 
 } // namespace ftl
 

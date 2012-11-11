@@ -23,7 +23,7 @@ void Config::read(String path)
 {
 	try {
 		path_ = path;
-		wire()->parse(file(path, File::Read)->readAll(), this);
+		wire()->parse(File::open(path, File::Read)->readAll(), this);
 	}
 	catch (SystemException &) {
 		throw ConfigException(Format("Can't open configuration file %%") << path);

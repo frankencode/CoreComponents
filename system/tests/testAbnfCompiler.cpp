@@ -8,7 +8,7 @@ namespace ftl
 int main(int argc, char **argv)
 {
 	for (int i = 1; i < argc; ++i) {
-		String text = file(argv[i], File::Read)->readAll();
+		String text = File::open(argv[i], File::Read)->readAll();
 		Ref<AbnfCompiler, Owner> compiler = AbnfCompiler::newInstance();
 		Ref<SyntaxDebugger, Owner> debugger = SyntaxDebugger::newInstance();
 		Ref<SyntaxDefinition, Owner> definition = compiler->compile(text, debugger);

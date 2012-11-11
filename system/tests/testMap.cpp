@@ -53,7 +53,7 @@ void performanceTest()
 void simpleRangeTest()
 {
 	Ref< Map<int, int>, Owner > map = Map<int, int>::newInstance();
-	Ref<Random, Owner> random = Random::newInstance();
+	Ref<Random, Owner> random = Random::open();
 	for (int i = 0; i < 20; ++i)
 		map->insert(random->get(0, 100), i);
 	for (int i = 0; i < map->length(); ++i)
