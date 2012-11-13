@@ -22,7 +22,7 @@ template<class T>
 class Rondezvous: public Container< T, Rondezvous<T> >
 {
 public:
-	inline static Ref<Rondezvous, Owner> newInstance() {
+	inline static Ref<Rondezvous, Owner> create() {
 		return new Rondezvous;
 	}
 

@@ -24,13 +24,13 @@ namespace ftl
 
 XClient::XClient()
 	: defaultScreen_(0),
-	  resourceIdMutex_(Mutex::newInstance()),
+	  resourceIdMutex_(Mutex::create()),
 	  nextResourceId_(0),
-	  freeResourceIds_(List<uint32_t>::newInstance()),
-	  sequenceNumberMutex_(Mutex::newInstance()),
+	  freeResourceIds_(List<uint32_t>::create()),
+	  sequenceNumberMutex_(Mutex::create()),
 	  sequenceNumber_(0),
-	  messageFiltersMutex_(Mutex::newInstance()),
-	  messageFilters_(MessageFilters::newInstance())
+	  messageFiltersMutex_(Mutex::create()),
+	  messageFilters_(MessageFilters::create())
 {
 	String host = 0;
 	int display = 0;
@@ -48,7 +48,7 @@ XClient::XClient()
 		}
 		if (host == "") {
 			String path = Format("/tmp/.X11-unix/X%%") << display;
-			address = SocketAddress::newInstance(AF_LOCAL, path);
+			address = SocketAddress::create(AF_LOCAL, path);
 		}
 		else {
 			Ref<SocketAddressList, Owner> list = SocketAddress::resolve(host, "x11");
@@ -72,10 +72,10 @@ XClient::XClient()
 		}
 	}
 
-	socket_ = StreamSocket::newInstance(address);
+	socket_ = StreamSocket::create(address);
 	socket_->connect();
 
-	Ref<ByteEncoder, Owner> sink = ByteEncoder::newInstance(socket_);
+	Ref<ByteEncoder, Owner> sink = ByteEncoder::open(socket_);
 
 	sink->writeUInt8((sink->endian() == LittleEndian) ? 'l' : 'B');
 	sink->writeUInt8(0); // unused
@@ -90,7 +90,7 @@ XClient::XClient()
 	sink->writePad(4);
 	sink->flush();
 
-	Ref<ByteDecoder, Owner> source = ByteDecoder::newInstance(socket_);
+	Ref<ByteDecoder, Owner> source = ByteDecoder::open(socket_);
 
 	displayInfo_ = new XDisplayInfo;
 	displayInfo_->read(source);
@@ -190,7 +190,7 @@ int XClient::getFontPath()
 Ref<ByteEncoder> XClient::messageEncoder()
 {
 	if (!messageEncoder_)
-		messageEncoder_ = ByteEncoder::newInstance(Ref<Stream>(socket_), int(displayInfo_->maximumRequestLength) * 4, localEndian());
+		messageEncoder_ = ByteEncoder::open(Ref<Stream>(socket_), int(displayInfo_->maximumRequestLength) * 4, localEndian());
 	return messageEncoder_;
 }
 
@@ -205,7 +205,7 @@ void XClient::run()
 {
 	printTo(error(), "XClient::run()\n");
 	try {
-		Ref<ByteDecoder, Owner> source = ByteDecoder::newInstance(socket_);
+		Ref<ByteDecoder, Owner> source = ByteDecoder::open(socket_);
 
 		while (true) {
 			uint8_t messageCode = source->readUInt8();

@@ -5,11 +5,11 @@ int main()
 {
 	using namespace ftl;
 
-	Ref<StringList, Owner> list = StringList::newInstance();
+	auto list = StringList::create();
 	for (String line; input()->read(&line);)
 		list->append(line);
 
-	Ref<Heap<String>, Owner> heap = Heap<String>::newInstance(list->length());
+	auto heap = Heap<String>::create(list->length());
 	for (String item; list->read(&item);)
 		heap->push(item);
 	for (String item; heap->read(&item);)

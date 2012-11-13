@@ -70,7 +70,7 @@ class GenericIterator: public Source<typename Container::Item>
 public:
 	typedef typename Container::Item Item;
 
-	inline static Ref<GenericIterator, Owner> newInstance(Ref<Container> container) {
+	inline static Ref<GenericIterator, Owner> create(Ref<Container> container) {
 		return new GenericIterator(container);
 	}
 

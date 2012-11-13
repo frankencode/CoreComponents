@@ -661,7 +661,7 @@ private:
 };
 
 Debugger::Debugger(String indent)
-	: factoryByNodeType_(FactoryByNodeType::newInstance()),
+	: factoryByNodeType_(FactoryByNodeType::create()),
 	  indent_(indent)
 {
 	factoryByNodeType_->insert("Char",           new DebugNodeFactory<CharDebugNode>           (this));
@@ -706,7 +706,7 @@ void Debugger::printDefinition(bool omitUnusedRules)
 	Ref<RuleByName> ruleByName = DebugFactory::definition()->ruleByName_;
 
 	typedef Map<int, Ref<RuleNode> > RuleById;
-	Ref<RuleById, Owner> ruleById = RuleById::newInstance();
+	Ref<RuleById, Owner> ruleById = RuleById::create();
 
 	for (RuleByName::Index i = ruleByName->first(); ruleByName->has(i); ++i) {
 		Ref<RuleNode> rule = ruleByName->value(i);
@@ -738,7 +738,7 @@ Node *Debugger::produce(Node *newNode, const char *nodeType)
 
 Ref<Debugger::StateNameById, Owner> Debugger::newReverseMap(Ref<StateIdByName> stateIdByName)
 {
-	Ref<StateNameById, Owner> stateNameById = StateNameById::newInstance();
+	Ref<StateNameById, Owner> stateNameById = StateNameById::create();
 	for (StateIdByName::Index i = stateIdByName->first(); stateIdByName->has(i); ++i) {
 		String name = stateIdByName->key(i);
 		int id = stateIdByName->value(i);

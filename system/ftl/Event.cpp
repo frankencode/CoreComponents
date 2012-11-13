@@ -16,7 +16,7 @@ namespace ftl
 {
 
 Event::Event()
-	: handlers_(Handlers::newInstance())
+	: handlers_(Handlers::create())
 {}
 
 void Event::pushBack(Ref<Action> handler)

@@ -50,7 +50,7 @@ template<class Value>
 class Signal: public Instance
 {
 public:
-	inline static Ref<Signal, Owner> newInstance() { return new Signal; }
+	inline static Ref<Signal, Owner> create() { return new Signal; }
 
 	void emit(Value value) {
 		for (int i = 0; i < callbacks_->length(); ++i) {
@@ -64,7 +64,7 @@ public:
 	void connect(Recipient *recipient, void (Recipient::* method)(Value)) {
 		Ref<CallbackList, Owner> list;
 		if (!callbacks_->lookup(recipient, &list)) {
-			list = CallbackList::newInstance();
+			list = CallbackList::create();
 			callbacks_->insert(recipient, list);
 		}
 		list->append(new Slot<Recipient, Value>(recipient, method));

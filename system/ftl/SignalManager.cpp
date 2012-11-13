@@ -49,8 +49,8 @@ void SignalListener::run()
 SignalManager::SignalManager()
 	: signalListener_(new SignalListener),
 	  pid_(Process::currentId()),
-	  signalEvents_(SignalEvents::newInstance()),
-	  mutex_(Mutex::newInstance())
+	  signalEvents_(SignalEvents::create()),
+	  mutex_(Mutex::create())
 {}
 
 SignalManager::~SignalManager()
@@ -107,7 +107,7 @@ Ref<Event> SignalManager::signalEvent(int signal)
 	Guard<Mutex> guard(mutex_);
 	Ref<Event, Owner> event;
 	if (!signalEvents_->lookup(signal, &event)) {
-		event = Event::newInstance();
+		event = Event::create();
 		signalEvents_->insert(signal, event);
 	}
 	return event;

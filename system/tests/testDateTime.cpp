@@ -47,9 +47,9 @@ int main()
 		print("Year %% started with weekday (Mon..Sun = 0..6): %%\n", ye, ny % 7);
 	}*/
 
-	print("%%\n", Date::newInstance(Date::newInstance(Time::now())->time())->toString());
-	print("%%\n", Date::newInstance(Time::now())->toString());
-	print("%%\n", Date::newInstance(Time::now())->localTime()->toString());
+	print("%%\n", Date::create(Date::create(Time::now())->time())->toString());
+	print("%%\n", Date::create(Time::now())->toString());
+	print("%%\n", Date::create(Time::now())->localTime()->toString());
 	// print("%%\n", Date(Time(0)).julianDate());
 
 	return 0;

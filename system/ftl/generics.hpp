@@ -120,7 +120,7 @@ private:
 class Range: public Instance
 {
 public:
-	inline static Ref<Range, Owner> newInstance(int i0 = 0, int i1 = -1) { return new Range(i0, i1); }
+	inline static Ref<Range, Owner> create(int i0 = 0, int i1 = -1) { return new Range(i0, i1); }
 
 	inline int i0() const { return i0_; }
 	inline int i1() const { return i1_; }

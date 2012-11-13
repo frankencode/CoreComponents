@@ -50,7 +50,7 @@ bool StreamSocket::readyAccept(Time idleTimeout)
 
 Ref<StreamSocket, Owner> StreamSocket::accept()
 {
-	Ref<SocketAddress, Owner> clientAddress = SocketAddress::newInstance(address_->family());
+	Ref<SocketAddress, Owner> clientAddress = SocketAddress::create(address_->family());
 	socklen_t len = clientAddress->addrLen();
 	int fdc = ::accept(fd_, clientAddress->addr(), &len);
 	if (fdc < 0) {
@@ -139,7 +139,7 @@ Ref<SocketAddress> StreamSocket::remoteAddress() const { return remoteAddress(fd
 
 Ref<SocketAddress> StreamSocket::localAddress(int fd)
 {
-	Ref<SocketAddress> address = SocketAddress::newInstance();
+	Ref<SocketAddress> address = SocketAddress::create();
 	socklen_t len = address->addrLen();
 	if (::getsockname(fd, address->addr(), &len) == -1)
 		FTL_THROW(StreamSemanticException, systemError());
@@ -148,7 +148,7 @@ Ref<SocketAddress> StreamSocket::localAddress(int fd)
 
 Ref<SocketAddress> StreamSocket::remoteAddress(int fd)
 {
-	Ref<SocketAddress> address = SocketAddress::newInstance();
+	Ref<SocketAddress> address = SocketAddress::create();
 	socklen_t len = address->addrLen();
 	if (::getpeername(fd, address->addr(), &len) == -1)
 		FTL_THROW(StreamSemanticException, systemError());

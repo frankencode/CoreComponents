@@ -187,7 +187,7 @@ Ref<SocketAddressList, Owner> SocketAddress::resolve(String hostName, String ser
 		if (ret != EAI_NONAME)
 			FTL_THROW(NetworkingException, gai_strerror(ret));
 
-	Ref<SocketAddressList, Owner> list = SocketAddressList::newInstance();
+	Ref<SocketAddressList, Owner> list = SocketAddressList::create();
 
 	if (canonicalName) {
 		if (head) {

@@ -19,7 +19,7 @@ int main()
 	}
 
 	try {
-		Mutex::newInstance()->release();
+		Mutex::create()->release();
 	}
 	catch (Exception &ex) {
 		print("%%\n", ex.what());

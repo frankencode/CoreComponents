@@ -183,7 +183,7 @@ Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, const char *sep)
 		for (int i = 0; i < parts->length(); ++i)
 			size += parts->at(i)->size();
 		size += (parts->length() - 1) * sepSize;
-		Ref<ByteArray, Owner> result = ByteArray::newInstance(size);
+		Ref<ByteArray, Owner> result = ByteArray::create(size);
 		char *p = result->data_;
 		for (int i = 0; i < parts->length(); ++i) {
 			Ref<ByteArray> part = parts->at(i);
@@ -207,7 +207,7 @@ Ref<StringList, Owner> ByteArray::split(char sep) const
 
 Ref<StringList, Owner> ByteArray::split(const char *sep) const
 {
-	Ref<StringList, Owner> parts = StringList::newInstance();
+	Ref<StringList, Owner> parts = StringList::create();
 	int i0 = 0;
 	int sepLength = str::len(sep);
 	while (i0 < size_) {
@@ -225,7 +225,7 @@ Ref<StringList, Owner> ByteArray::split(const char *sep) const
 
 Ref<StringList, Owner> ByteArray::split(Ref<SyntaxDefinition> pattern) const
 {
-	Ref<StringList, Owner> parts = StringList::newInstance();
+	Ref<StringList, Owner> parts = StringList::create();
 	for (int i = 0; i < size_;) {
 		Ref<Token, Owner> token = pattern->find(this, i);
 		parts->append(copy(i, token->i0()));
@@ -364,7 +364,7 @@ Ref<ByteArray> ByteArray::expandInsitu()
 						hs = 0;
 					}
 					char ec[4];
-					Ref<Utf8Encoder, Owner> encoder = Utf8Encoder::newInstance(ec, 4);
+					Ref<Utf8Encoder, Owner> encoder = Utf8Encoder::open(ec, 4);
 					encoder->write(x);
 					int el = encoder->byteEncoder()->numBytesWritten();
 					for (int k = 0; k < el; ++k)
@@ -442,7 +442,7 @@ Ref<ByteArray, Owner> ByteArray::trimmed() const
 
 Ref<ByteArray, Owner> ByteArray::stripTags() const
 {
-	Ref<StringList, Owner> parts = StringList::newInstance();
+	Ref<StringList, Owner> parts = StringList::create();
 	char *o = data_;
 	char *p = o;
 	while (*p) {
@@ -529,13 +529,13 @@ Ref<ByteArray, Owner> ByteArray::fromUtf16(const void *data, int size, int endia
 	if (size > 0) {
 		int size2 = 0;
 		{
-			Ref<Utf16Decoder, Owner> source = Utf16Decoder::newInstance(data, size, endian);
+			Ref<Utf16Decoder, Owner> source = Utf16Decoder::open(data, size, endian);
 			for (uchar_t ch; source->read(&ch);)
 				size2 += Utf8Encoder::encodedSize(ch);
 		}
-		s2 = ByteArray::newInstance(size2);
-		Ref<Utf16Decoder, Owner> source = Utf16Decoder::newInstance(data, size, endian);
-		Ref<Utf8Encoder, Owner> sink = Utf8Encoder::newInstance(s2->data_, size2);
+		s2 = ByteArray::create(size2);
+		Ref<Utf16Decoder, Owner> source = Utf16Decoder::open(data, size, endian);
+		Ref<Utf8Encoder, Owner> sink = Utf8Encoder::open(s2->data_, size2);
 		for (uchar_t ch; source->read(&ch);)
 			sink->write(ch);
 	}
@@ -580,11 +580,11 @@ Ref<ByteArray, Owner> ByteArray::toUtf16(int endian)
 	int size2 = 0;
 	for (int i = 0; i < chars()->length(); ++i)
 		size2 += Utf16Encoder::encodedSize(get(i));
-	Ref<ByteArray, Owner> s2 = ByteArray::newInstance(size2 + 2);
+	Ref<ByteArray, Owner> s2 = ByteArray::create(size2 + 2);
 	(*s2)[size2] = 0;
 	(*s2)[size2 + 1] = 0;
 	if (size2 > 0) {
-		Ref<Utf16Encoder, Owner> sink = Utf16Encoder::newInstance(s2->data(), size2, endian);
+		Ref<Utf16Encoder, Owner> sink = Utf16Encoder::create(s2->data(), size2, endian);
 		for (int i = 0; i < chars()->length(); ++i)
 			sink->write(get(i));
 	}
@@ -593,7 +593,7 @@ Ref<ByteArray, Owner> ByteArray::toUtf16(int endian)
 
 void ByteArray::checkUtf8() const
 {
-	Ref<Utf8Decoder, Owner> source = Utf8Decoder::newInstance(data_, size_);
+	Ref<Utf8Decoder, Owner> source = Utf8Decoder::create(data_, size_);
 	for (uchar_t ch = 0; source->read(&ch););
 }
 
@@ -629,7 +629,7 @@ Ref<ByteArray, Owner> ByteArray::makeAbsolutePathRelativeTo(String currentDir) c
 	if (isAbsolutePath() || (currentDir == "."))
 		return this;
 
-	Ref<StringList, Owner> absoluteParts = StringList::newInstance();
+	Ref<StringList, Owner> absoluteParts = StringList::create();
 	Ref<StringList, Owner> parts = split("/");
 
 	int upCount = 0;

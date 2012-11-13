@@ -27,7 +27,7 @@ String fileTypeToString(int type)
 
 String timeToString(Time time, bool human)
 {
-	Ref<Date, Owner> d = Date::newInstance(time);
+	auto d = Date::create(time);
 	if (human) {
 		return Format(
 			"%4.:'0'%-%2.:'0'%-%2.:'0'% "
@@ -42,7 +42,7 @@ String timeToString(Time time, bool human)
 
 int main(int argc, char **argv)
 {
-	Ref<Config, Owner> config = Config::newInstance();
+	auto config = Config::create();
 	config->read(argc, argv);
 
 	if (config->contains("h") || config->contains("help")) {
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	Ref<StringList, Owner> listOfFiles = config->arguments();
+	auto listOfFiles = config->arguments();
 
 	bool defaults = (config->options()->length() == 0);
 
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 
 	for (String file; files->read(&file);)
 	{
-		Ref<FileStatus, Owner> status = FileStatus::newInstance(file);
+		auto status = FileStatus::create(file);
 
 		Format line;
 
@@ -111,11 +111,11 @@ int main(int argc, char **argv)
 		if (modeOption)      line << String(Format("%oct%") << status->mode());
 		if (sizeOption)      line << status->size();
 		if (diskUsageOption) line << status->sizeInBlocks() * status->sizeOfBlock();
-		if (ownerOption)     line << User::newInstance(status->ownerId())->name();
+		if (ownerOption)     line << User::lookup(status->ownerId())->name();
 
 		if (groupOption) {
 			try {
-				line << Group::newInstance(status->groupId())->name();
+				line << Group::lookup(status->groupId())->name();
 			}
 			catch(...) {
 				// we may not have enough rights on some systems

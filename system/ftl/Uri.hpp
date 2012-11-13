@@ -22,13 +22,13 @@ FTL_EXCEPTION(UriException, Exception);
 class Uri: public Instance
 {
 public:
-	inline static Ref<Uri, Owner> newInstance() {
+	inline static Ref<Uri, Owner> create() {
 		return new Uri;
 	}
-	inline static Ref<Uri, Owner> newInstance(const char *text) {
+	inline static Ref<Uri, Owner> create(const char *text) {
 		return new Uri(text);
 	}
-	inline static Ref<Uri, Owner> newInstance(Ref<ByteArray> bytes, Ref<Token> rootToken = 0) {
+	inline static Ref<Uri, Owner> create(Ref<ByteArray> bytes, Ref<Token> rootToken = 0) {
 		return new Uri(bytes, rootToken);
 	}
 

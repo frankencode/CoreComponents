@@ -21,16 +21,16 @@ int main()
 
 	{
 		print("Test 1:\n");
-		Ref<IntList, Owner> list = IntList::newInstance();
+		auto list = IntList::create();
 		list << 1 << 2 << 3;
 		print(list);
-		Ref<IntList, Owner> list2 = IntList::newInstance();
+		auto list2 = IntList::create();
 		list >> list2;
 		print(list2);
 	}
 	{
 		print("Test 2:\n");
-		Ref<IntList, Owner> list = IntList::newInstance();
+		auto list = IntList::create();
 		list << 1 << 2 << 3 << 4 << 5 << 6;
 		print(list);
 		for (int i = 0; i < list->length();) {
@@ -48,7 +48,7 @@ int main()
 	}
 	{
 		print("Test 3:\n");
-		Ref<IntList, Owner> list = IntList::newInstance();
+		auto list = IntList::create();
 		list << 1 << 2 << 3;
 		print(list);
 		int x, y, z;
@@ -58,15 +58,15 @@ int main()
 	}
 	{
 		print("Test 4:\n");
-		Ref<IntList, Owner> list = IntList::newInstance();
-		Ref<Random, Owner> random = Random::open();
+		auto list = IntList::create();
+		auto random = Random::open();
 		for (int i = 0; i < 10; ++i)
 			list << random->get(0, 99);
 		print(list);
 
-		Ref< MinHeap<int>, Owner > heap = MinHeap<int>::newInstance(list->length());
-		Ref< Stack<int>, Owner > stack = Stack<int>::newInstance(list->length());
-		Ref<CircularBuffer<int>, Owner> queue = CircularBuffer<int>::newInstance(list->length());
+		auto heap = MinHeap<int>::create(list->length());
+		auto stack = Stack<int>::create(list->length());
+		auto queue = CircularBuffer<int>::create(list->length());
 
 		list >> heap >> list;
 		print(list);
@@ -79,14 +79,14 @@ int main()
 	}
 	{
 		print("Test 5:\n");
-		Ref<IntList, Owner> a = IntList::newInstance();
+		auto a = IntList::create();
 		a << 1 << 2 << 3 << 4 << 5;
 		print(a);
 		print(a->clone());
 	}
 	{
 		print("Test 6:\n");
-		Ref<IntList, Owner> a = IntList::newInstance(11);
+		auto a = IntList::create(11);
 		print(a);
 	}
 	return 0;

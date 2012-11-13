@@ -23,7 +23,7 @@ class ScopeGuard;
 class Mutex: public Instance, public NonCopyable
 {
 public:
-	inline static Ref<Mutex, Owner> newInstance() { return new Mutex; }
+	inline static Ref<Mutex, Owner> create() { return new Mutex; }
 	~Mutex();
 
 	bool tryAcquire();

@@ -150,7 +150,7 @@ void XInputEvent::printTo(Ref<LineSink> sink) const
 
 	String stateString;
 	{
-		Ref<StringList, Owner> bitNames = StringList::newInstance();
+		Ref<StringList, Owner> bitNames = StringList::create();
 		if      (state & XInputEvent::Shift)   bitNames->append("Shift");
 		else if (state & XInputEvent::Lock)    bitNames->append("Lock");
 		else if (state & XInputEvent::Control) bitNames->append("Control");

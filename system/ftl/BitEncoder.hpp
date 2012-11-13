@@ -21,12 +21,12 @@ namespace ftl
 class BitEncoder: public Instance
 {
 public:
-	inline static Ref<BitEncoder, Owner> newInstance(Ref<Stream> stream, int bufCapacity = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
-		return newInstance(stream, bufCapacity, endian);
+	inline static Ref<BitEncoder, Owner> open(Ref<Stream> stream, int bufCapacity = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+		return new BitEncoder(stream, bufCapacity, endian);
 	}
 
-	inline static Ref<BitEncoder, Owner> newInstance(void *buf, int bufCapacity, int endian = FTL_DEFAULT_ENDIAN) {
-		return newInstance(buf, bufCapacity, endian);
+	inline static Ref<BitEncoder, Owner> open(void *buf, int bufCapacity, int endian = FTL_DEFAULT_ENDIAN) {
+		return new BitEncoder(buf, bufCapacity, endian);
 	}
 
 	~BitEncoder();

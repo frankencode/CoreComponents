@@ -17,7 +17,7 @@
 namespace ftl
 {
 
-Ref<Config, Owner> Config::newInstance() { return new Config; }
+Ref<Config, Owner> Config::create() { return new Config; }
 
 void Config::read(String path)
 {
@@ -35,8 +35,8 @@ void Config::read(String path)
 
 void Config::read(int argc, char **argv)
 {
-	arguments_ = StringList::newInstance();
-	options_ = StringList::newInstance();
+	arguments_ = StringList::create();
+	options_ = StringList::create();
 
 	Pattern flag("-{1,2}(?name:[^-][^=]{})(=(?value:[^=]{1,})){0,1}");
 

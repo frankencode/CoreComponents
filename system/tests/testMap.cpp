@@ -7,7 +7,7 @@ namespace ftl {
 
 void simpleInsertTest()
 {
-	Ref< Map<String, String>, Owner > names = Map<String, String>::newInstance();
+	auto names = Map<String, String>::create();
 	names->insert("Doe", "Joe");
 	names->insert("Mustermann", "Hans");
 	names->insert("Mustermann", "Max");
@@ -16,7 +16,7 @@ void simpleInsertTest()
 	names->insert("Becker", "Günther");
 	names->insert("", "X");
 	for (int i = 0; i < names->length(); ++i) {
-		Pair<String, String> pair = names->get(i);
+		auto pair = names->get(i);
 		print("%%: %%\n", pair->key(), pair->value());
 	}
 }
@@ -37,7 +37,7 @@ void performanceTest()
 		print("std::map, %% iteration steps: dt = %% us\n", n, (Time::now() - t0).us());
 	}
 	{
-		Ref< ftl::Map<int, int>, Owner> map = ftl::Map<int, int>::newInstance();
+		auto map = ftl::Map<int, int>::create();
 		Time t0 = Time::now();
 		for (int i = 0; i < n; ++i)
 			map->establish(i, i);
@@ -52,8 +52,8 @@ void performanceTest()
 
 void simpleRangeTest()
 {
-	Ref< Map<int, int>, Owner > map = Map<int, int>::newInstance();
-	Ref<Random, Owner> random = Random::open();
+	auto map = Map<int, int>::create();
+	auto random = Random::open();
 	for (int i = 0; i < 20; ++i)
 		map->insert(random->get(0, 100), i);
 	for (int i = 0; i < map->length(); ++i)
@@ -68,8 +68,8 @@ void simpleRangeTest()
 
 int main()
 {
-	/*ftl::simpleInsertTest();
-	ftl::performanceTest();*/
-	ftl::simpleRangeTest();
+	// ftl::simpleInsertTest();
+	ftl::performanceTest();
+	// ftl::simpleRangeTest();
 	return 0;
 }

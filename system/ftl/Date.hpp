@@ -36,10 +36,10 @@ public:
 		Sat = 6
 	};
 
-	inline static Ref<Date, Owner> newInstance() {
+	inline static Ref<Date, Owner> create() {
 		return new Date;
 	}
-	inline static Ref<Date, Owner> newInstance(Time time) {
+	inline static Ref<Date, Owner> create(Time time) {
 		return new Date(time);
 	}
 

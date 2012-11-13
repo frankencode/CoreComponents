@@ -19,8 +19,8 @@ LineSource::LineSource(Ref<Stream> stream, const char *eol, int maxLineLength)
 	: stream_(stream),
 	  eol_(eol),
 	  cachedLines_(0),
-	  cache_(Cache::newInstance(maxLineLength)),
-	  buf_(ByteArray::newInstance(maxLineLength))
+	  cache_(Cache::create(maxLineLength)),
+	  buf_(ByteArray::create(maxLineLength))
 {}
 
 Ref<Stream> LineSource::stream() const { return stream_; }

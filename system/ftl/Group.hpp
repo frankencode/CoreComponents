@@ -25,10 +25,10 @@ namespace ftl
 class Group: public Instance
 {
 public:
-	inline static Ref<Group, Owner> newInstance(gid_t id) {
+	inline static Ref<Group, Owner> lookup(gid_t id) {
 		return new Group(id);
 	}
-	inline static Ref<Group, Owner> newInstance(const char *name) {
+	inline static Ref<Group, Owner> lookup(const char *name) {
 		return new Group(name);
 	}
 

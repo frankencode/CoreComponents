@@ -59,7 +59,7 @@ Ref<ByteArray, Owner> Buffer::join() const
 			block = block->next_;
 		}
 	}
-	Ref<ByteArray, Owner> array = ByteArray::newInstance(fill);
+	Ref<ByteArray, Owner> array = ByteArray::create(fill);
 	{
 		char *d = array->data();
 		Ref<Block> block = head_;

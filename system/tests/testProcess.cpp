@@ -9,11 +9,11 @@ int echo(int argc, char **argv);
 class TestFactory: public ProcessFactory
 {
 public:
-	inline static Ref<TestFactory, Owner> newInstance() {
+	inline static Ref<TestFactory, Owner> create() {
 		return new TestFactory;
 	}
 	int incarnate() {
-		print("Good morning %%.\n", User::newInstance(Process::realUserId())->fullName());
+		print("Good morning %%.\n", User::lookup(Process::realUserId())->fullName());
 		return 7;
 	}
 };
@@ -26,8 +26,8 @@ int main(int argc, char **argv)
 	{
 		print("(1) Worker clone\n\n");
 
-		Ref<ProcessFactory, Owner> factory = TestFactory::newInstance();
-		Ref<Process, Owner> worker = factory->produce();
+		auto factory = TestFactory::create();
+		auto worker = factory->produce();
 		int ret = worker->wait();
 		print("ret = %%\n", ret);
 		print("\n");
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 	{
 		print("(2) I/O Redirection, passing of arguments and environment variables\n\n");
 
-		Ref<ProcessFactory, Owner> factory = ProcessFactory::newInstance();
+		auto factory = ProcessFactory::create();
 		factory->setExecPath(argv[0]);
 		factory->setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
 		factory->arguments()->append(argv[0]);
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 
 int echo(int argc, char **argv)
 {
-	Ref<StringList, Owner> commandLine = StringList::newInstance();
+	auto commandLine = StringList::create();
 	for (int i = 0; i < argc; ++i)
 		commandLine->append(argv[i]);
 	print("Process::cwd() = \"%%\"\n", Process::cwd());

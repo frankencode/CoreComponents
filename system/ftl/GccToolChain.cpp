@@ -26,7 +26,7 @@ Ref<Module, Owner> GccToolChain::analyse(Ref<BuildLine> buildLine, String source
 	String command = analyseCommand(source, options, includePaths);
 	String text = buildLine->runAnalyse(command);
 	Ref<StringList, Owner> parts = text->split(Pattern("[:\\\\\n\r ]{1,}"));
-	return Module::newInstance(command, parts->pop(0), parts, true);
+	return Module::create(command, parts->pop(0), parts, true);
 }
 
 bool GccToolChain::compile(Ref<BuildLine> buildLine, Ref<Module, Owner> module, int options, Ref<StringList> includePaths)
@@ -81,7 +81,7 @@ bool GccToolChain::link(
 		args << "-l" + libraries->at(i);
 
 	if (libraryPaths->length() > 0) {
-		Ref<StringList, Owner> rpaths = StringList::newInstance();
+		Ref<StringList, Owner> rpaths = StringList::create();
 		for (int i = 0; i < libraryPaths->length(); ++i)
 			rpaths << "-rpath=" + libraryPaths->at(i);
 		args << "-Wl,--enable-new-dtags," + rpaths->join(",");
@@ -125,6 +125,7 @@ void GccToolChain::distClean(Ref<BuildLine> buildLine, Ref<ModuleList> modules, 
 void GccToolChain::appendCompileOptions(Format args, int options, Ref<StringList> includePaths, String outputPath) const
 {
 	args << execPath();
+	args << "-std=c++0x";
 	if (options & BuildPlan::Debug) args << "-g";
 	if (options & BuildPlan::OptimizeSpeed) args << "-O3";
 	if (options & BuildPlan::OptimizeSize) args << "-Os";

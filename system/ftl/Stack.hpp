@@ -23,10 +23,10 @@ public:
 	typedef int Index;
 	typedef T Item;
 
-	inline static Ref<Stack, Owner> newInstance(int size) {
+	inline static Ref<Stack, Owner> create(int size) {
 		return new Stack(size);
 	}
-	inline static Ref<Stack, Owner> newInstance(T *buf, int size) {
+	inline static Ref<Stack, Owner> create(T *buf, int size) {
 		return new Stack(buf, size);
 	}
 

@@ -52,11 +52,11 @@ void XScreenInfo::read(Ref<ByteDecoder> source)
 	backingStores = source->readUInt8();
 	saveUnders = source->readUInt8();
 	rootDepth = source->readUInt8();
-	visualInfoByDepth = XVisualInfoByDepth::newInstance();
+	visualInfoByDepth = XVisualInfoByDepth::create();
 	for (int i = 0, n = source->readUInt8(); i < n; ++i) {
 		int depth = source->readUInt8();
 		source->readUInt8(); // unused
-		Ref<XVisualInfoArray, Owner> visualInfoArray = XVisualInfoArray::newInstance(source->readUInt16());
+		Ref<XVisualInfoArray, Owner> visualInfoArray = XVisualInfoArray::create(source->readUInt16());
 		source->readUInt32(); // unused
 		for (int j = 0; j < visualInfoArray->length(); ++j) {
 			Ref<XVisualInfo, Owner> visualInfo = new XVisualInfo;
@@ -93,8 +93,8 @@ void XDisplayInfo::read(Ref<ByteDecoder> source)
 	motionBufferSize = source->readUInt32();
 	uint16_t vendorLength = source->readUInt16();
 	maximumRequestLength = source->readUInt16();
-	screenInfo = XScreenInfoArray::newInstance(source->readUInt8());
-	pixmapInfo = XPixmapInfoArray::newInstance(source->readUInt8());
+	screenInfo = XScreenInfoArray::create(source->readUInt8());
+	pixmapInfo = XPixmapInfoArray::create(source->readUInt8());
 	imageByteOrder = source->readUInt8();
 	bitmapBitOrder = source->readUInt8();
 	bitmapScanlineUnit = source->readUInt8();

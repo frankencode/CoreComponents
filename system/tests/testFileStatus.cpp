@@ -19,9 +19,9 @@ void printStatus(String path)
 			print("status->size() = %%\n", status->size());
 			print("status->ownerId() = %%\n", status->ownerId());
 			print("status->groupId() = %%\n", status->groupId());
-			print("User(status->ownerId()).loginName() = %%\n", User::newInstance(status->ownerId())->loginName());
+			print("User(status->ownerId()).loginName() = %%\n", User::lookup(status->ownerId())->loginName());
 			try {
-				print("Group(status->groupId()).name() = %%\n", Group::newInstance(status->groupId())->name());
+				print("Group(status->groupId()).name() = %%\n", Group::lookup(status->groupId())->name());
 			}
 			catch(...) {
 				// we may not have enough rights on some systems

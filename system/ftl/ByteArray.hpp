@@ -34,10 +34,10 @@ public:
 	typedef int Index;
 	typedef char Item;
 
-	inline static Ref<ByteArray, Owner> newInstance(int size = 0) { return new ByteArray(size); }
-	inline static Ref<ByteArray, Owner> newInstance(int size, char zero) { return new ByteArray(size, zero); }
-	inline static Ref<ByteArray, Owner> newInstance(const char *data, int size = -1) { return new ByteArray(data, size); }
-	inline static Ref<ByteArray, Owner> newInstance(Ref<ByteArray> parent, int size) { return new ByteArray(parent, size); }
+	inline static Ref<ByteArray, Owner> create(int size = 0) { return new ByteArray(size); }
+	inline static Ref<ByteArray, Owner> create(int size, char zero) { return new ByteArray(size, zero); }
+	inline static Ref<ByteArray, Owner> create(const char *data, int size = -1) { return new ByteArray(data, size); }
+	inline static Ref<ByteArray, Owner> create(Ref<ByteArray> parent, int size) { return new ByteArray(parent, size); }
 	~ByteArray();
 
 	inline static Ref<ByteArray> empty() { return Default<ByteArray>::instance(); }

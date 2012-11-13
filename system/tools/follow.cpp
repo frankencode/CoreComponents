@@ -6,9 +6,9 @@ int main(int argc, char **argv)
 	using namespace ftl;
 
 	if (argc != 2) return 1;
-	Ref<File, Owner> file = File::open(argv[1]);
+	auto file = File::open(argv[1]);
 	off_t nw = 0;
-	Ref<ByteArray, Owner> buf = ByteArray::newInstance(FTL_DEFAULT_BUF_CAPA);
+	auto buf = ByteArray::create(FTL_DEFAULT_BUF_CAPA);
 	while (true) {
 		if (File::status(file->path())->size() > nw) {
 			while (true) {

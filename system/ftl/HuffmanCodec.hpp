@@ -71,7 +71,7 @@ public:
 	  * \param rawDiversity estimated size of the raw symbols alphabet
 	  * \param rawDynamicRange estimated dynamic range of raw symbols (max-min+1)
 	  */
-	inline static Ref<HuffmanCodec, Owner> newInstance( int rawDiversity = 0x10000,
+	inline static Ref<HuffmanCodec, Owner> create( int rawDiversity = 0x10000,
 	                                                    int rawDynamicRange = 0x10000 ) {
 		return new HuffmanCodec(rawDiversity, rawDynamicRange);
 	}

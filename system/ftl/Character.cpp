@@ -21,7 +21,7 @@ Ref<ByteArray, Owner> Character::copy(int i0, int i1) const
 	walkTo(i0);
 	const char *p0 = walker_.pos();
 	while (i_ < i1) { ++walker_; ++i_; }
-	return ByteArray::newInstance(p0, walker_.pos() - p0);
+	return ByteArray::create(p0, walker_.pos() - p0);
 }
 
 /*int String::find(int i, const char *pattern) const
@@ -41,7 +41,7 @@ Ref<ByteArray, Owner> Character::copy(int i0, int i1) const
 
 Ref<StringList, Owner> String::split(const char *pattern) const
 {
-	Ref<StringList, Owner> parts = StringList::newInstance();
+	Ref<StringList, Owner> parts = StringList::create();
 	int i0 = 0;
 	int patternLength = Utf8Walker::length(pattern);
 	while (i0 < Super::get()->chars()->length()) {

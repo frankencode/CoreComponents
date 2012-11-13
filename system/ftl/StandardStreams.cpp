@@ -21,9 +21,9 @@ StandardStreams::StandardStreams()
 	: rawInput_(File::open(File::StandardInput, File::Read)),
 	  rawOutput_(File::open(File::StandardOutput, File::Write)),
 	  rawError_(File::open(File::StandardError, File::Write)),
-	  input_(LineSource::newInstance(rawInput_)),
-	  output_(LineSink::newInstance(rawOutput_)),
-	  error_(LineSink::newInstance(rawError_))
+	  input_(LineSource::open(rawInput_)),
+	  output_(LineSink::open(rawOutput_)),
+	  error_(LineSink::open(rawError_))
 {}
 
 } // namespace ftl

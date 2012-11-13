@@ -25,12 +25,12 @@ public:
 	typedef T Item;
 	typedef GenericIterator<List> Iterator;
 
-	inline static Ref<List, Owner> newInstance() { return new List; }
-	inline static Ref<List, Owner> newInstance(int n) { return new List(n); }
+	inline static Ref<List, Owner> create() { return new List; }
+	inline static Ref<List, Owner> create(int n) { return new List(n); }
 
 	virtual Ref<List, Owner> clone() const { return new List(*this); }
 
-	inline Ref<Iterator, Owner> newIterator() const { return Iterator::newInstance(this); }
+	inline Ref<Iterator, Owner> newIterator() const { return Iterator::create(this); }
 
 	inline bool isEmpty() const { return tree_.weight() == 0; }
 	inline int length() const { return tree_.weight(); }
@@ -108,13 +108,13 @@ public:
 	Ref<List, Owner> sort(int order = SortOrder::Ascending, bool unique = false) const
 	{
 		if (length() == 0)
-			return List::newInstance();
-		Ref< Heap<Item>, Owner > heap = Heap<Item>::newInstance(length(), order);
+			return List::create();
+		Ref< Heap<Item>, Owner > heap = Heap<Item>::create(length(), order);
 		for (int i = 0; i < length(); ++i)
 			heap->push(get(i));
 		Ref<List, Owner> result;
 		if (unique) {
-			result = List::newInstance();
+			result = List::create();
 			Item prev, item;
 			heap->read(&prev);
 			result->append(prev);
@@ -126,7 +126,7 @@ public:
 			}
 		}
 		else {
-			result = List::newInstance(length());
+			result = List::create(length());
 			Item item;
 			for (int i = 0; heap->read(&item); ++i)
 				result->set(i, item);
@@ -146,7 +146,7 @@ public:
 
 	template<class T2>
 	Ref<List<T2>, Owner> toList() const {
-		Ref<List<T2>, Owner> result = List<T2>::newInstance(length());
+		Ref<List<T2>, Owner> result = List<T2>::create(length());
 		for (int i = 0; i < length(); ++i)
 			result->set(i, at(i));
 		return result;
@@ -174,7 +174,7 @@ template<
 inline Ref< List<T>, Owner > operator+(Ref< List<T>, GASP1 > a, Ref< List<T>, GASP2 > b)
 {
 	int n = a->length(), m = b->length();
-	Ref< List<T>, Owner > r = List<T>::newInstance(n + m);
+	Ref< List<T>, Owner > r = List<T>::create(n + m);
 	int i = 0;
 	for (;i < n; ++i) r->set(i, a->at(i));
 	for (;i < n + m; ++i) r->set(i, b->at(i - n));

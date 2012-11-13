@@ -21,11 +21,10 @@ namespace ftl
 class ByteEncoder: public Sink<uint8_t>, public Sink<char>
 {
 public:
-	inline static Ref<ByteEncoder, Owner> newInstance() { return new ByteEncoder; }
-	inline static Ref<ByteEncoder, Owner> newInstance(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static Ref<ByteEncoder, Owner> open(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteEncoder(stream, bufCapa, endian);
 	}
-	inline static Ref<ByteEncoder, Owner> newInstance(void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static Ref<ByteEncoder, Owner> open(void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteEncoder(buf, bufCapa, endian);
 	}
 	~ByteEncoder();

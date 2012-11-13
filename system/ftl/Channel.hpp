@@ -22,7 +22,7 @@ template<class T>
 class Channel: public Container< T, Channel<T> >
 {
 public:
-	static Ref<Channel, Owner> newInstance() {
+	static Ref<Channel, Owner> create() {
 		return new Channel;
 	}
 
@@ -53,9 +53,9 @@ public:
 
 protected:
 	Channel()
-		: queue_(Queue<T>::newInstance()),
-		  mutex_(Mutex::newInstance()),
-		  notEmpty_(Condition::newInstance())
+		: queue_(Queue<T>::create()),
+		  mutex_(Mutex::create()),
+		  notEmpty_(Condition::create())
 	{}
 
 private:

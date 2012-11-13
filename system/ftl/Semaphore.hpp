@@ -21,7 +21,7 @@ namespace ftl
 class Semaphore: public Instance
 {
 public:
-	inline static Ref<Semaphore, Owner> newInstance(int value = 0) {
+	inline static Ref<Semaphore, Owner> create(int value = 0) {
 		return new Semaphore(value);
 	}
 

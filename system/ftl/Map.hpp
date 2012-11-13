@@ -27,10 +27,10 @@ public:
 	typedef Pair<Key,Value> Item;
 	typedef GenericIterator<Map> Iterator;
 
-	inline static Ref<Map, Owner> newInstance() { return new Map(); }
+	inline static Ref<Map, Owner> create() { return new Map(); }
 	virtual Ref<Map, Owner> clone() const { return new Map(*this); }
 
-	inline Iterator newIterator() const { return Iterator::newInstance(this); }
+	inline Iterator newIterator() const { return Iterator::create(this); }
 
 	inline bool isEmpty() const { return tree_.weight() == 0; }
 	inline int length() const { return tree_.weight(); }

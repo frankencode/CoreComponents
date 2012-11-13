@@ -5,7 +5,7 @@ int main()
 {
 	using namespace ftl;
 
-	Ref<ByteArray, Owner> buf = ByteArray::newInstance(FTL_DEFAULT_BUF_CAPA);
+	auto buf = ByteArray::create(FTL_DEFAULT_BUF_CAPA);
 	Md5 md5;
 	int nr = 0;
 	while ((nr = rawInput()->readAvail(buf->data(), buf->size())) > 0)

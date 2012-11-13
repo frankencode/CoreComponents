@@ -25,9 +25,9 @@ public:
 	typedef int Index;
 	typedef T Item;
 
-	inline static Ref<Array, Owner> newInstance(int size = 0) { return new Array(size); }
-	inline static Ref<Array, Owner> newInstance(int size, T zero) { return new Array(size, zero); }
-	inline static Ref<Array, Owner> newInstance(const T *data, int size) { return new Array(data, size); }
+	inline static Ref<Array, Owner> create(int size = 0) { return new Array(size); }
+	inline static Ref<Array, Owner> create(int size, T zero) { return new Array(size, zero); }
+	inline static Ref<Array, Owner> create(const T *data, int size) { return new Array(data, size); }
 
 	~Array()
 	{

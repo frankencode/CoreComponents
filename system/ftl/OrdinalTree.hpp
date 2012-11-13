@@ -99,7 +99,7 @@ OrdinalTree<Node>::OrdinalTree(int n)
 {
 	if (n <= 0) return;
 
-	Ref< Array<Node*>, Owner > v = Array<Node*>::newInstance(n);
+	Ref< Array<Node*>, Owner > v = Array<Node*>::create(n);
 
 	for (int i = 0, m = 1; i < n; m *= 2)
 	{

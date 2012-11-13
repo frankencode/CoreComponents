@@ -25,7 +25,7 @@ class CircularBuffer;
 class LineSource: public Source<String>
 {
 public:
-	inline static Ref<LineSource, Owner> newInstance(Ref<Stream> stream, const char *eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
+	inline static Ref<LineSource, Owner> open(Ref<Stream> stream, const char *eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
 		return new LineSource(stream, eol, maxLineLength);
 	}
 

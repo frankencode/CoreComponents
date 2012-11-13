@@ -12,13 +12,15 @@ typedef Channel<int> MyChannel;
 class Consumer: public Thread
 {
 public:
+	static Ref<Consumer, Owner> create(int id, Ref<MyChannel> channel, int amount) { return new Consumer(id, channel, amount); }
+
+private:
 	Consumer(int id, Ref<MyChannel> channel, int amount)
 		: id_(id),
 		  channel_(channel),
 		  amount_(amount)
 	{}
 
-private:
 	void run()
 	{
 		while (amount_ > 0) {
@@ -36,12 +38,7 @@ private:
 class Producer: public Thread
 {
 public:
-	Producer(int id, Ref<MyChannel> channel, int amount)
-		: id_(id),
-		  channel_(channel),
-		  amount_(amount),
-		  random_(Random::open(amount))
-	{}
+	static Ref<Producer, Owner> create(int id, Ref<MyChannel> channel, int amount) { return new Producer(id, channel, amount); }
 
 	void run()
 	{
@@ -54,6 +51,13 @@ public:
 	}
 
 private:
+	Producer(int id, Ref<MyChannel> channel, int amount)
+		: id_(id),
+		  channel_(channel),
+		  amount_(amount),
+		  random_(Random::open(amount))
+	{}
+
 	int id_;
 	Ref<MyChannel, Owner> channel_;
 	int amount_;
@@ -62,11 +66,11 @@ private:
 
 int main()
 {
-	Ref<MyChannel, Owner> channel = MyChannel::newInstance();
+	auto channel = MyChannel::create();
 
-	Ref<Producer, Owner> p1 = new Producer(1, channel, 8);
+	auto p1 = Producer::create(1, channel, 8);
 	// Ref<Producer, Owner> p2 = new Producer(2, channel, 12);
-	Ref<Consumer, Owner> c1 = new Consumer(1, channel, 8);
+	auto c1 = Consumer::create(1, channel, 8);
 	// Ref<Consumer, Owner> c2 = new Consumer(2, channel, 16);
 
 	Time dt = Time::now();

@@ -94,7 +94,7 @@ public:
 
 	inline static Ref<File, Owner> open(String path, int openFlags = Read) { return new File(path, openFlags); }
 	inline static Ref<File, Owner> open(int fd, int openFlags = Read|Write) { return new File(fd, openFlags); }
-	static Ref<File, Owner> temp();
+	static Ref<File, Owner> temp(int openFlags = Read|Write);
 	~File();
 
 	String path() const;

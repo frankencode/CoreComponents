@@ -223,7 +223,7 @@ Variant Json::parseText(Ref<ByteArray> text, Ref<Token> token)
 Variant Json::parseObject(Ref<ByteArray> text, Ref<Token> token)
 {
 	FTL_CHECK(token->rule() == object_, JsonException, "");
-	Ref<JsonObject, Owner> object = JsonObject::newInstance();
+	Ref<JsonObject, Owner> object = JsonObject::create();
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
 		Pair<String, Variant> member = parseMember(text, child);
 		object->insert(member.key(), member.value());
@@ -234,7 +234,7 @@ Variant Json::parseObject(Ref<ByteArray> text, Ref<Token> token)
 Variant Json::parseArray(Ref<ByteArray> text, Ref<Token> token)
 {
 	FTL_CHECK(token->rule() == list_, JsonException, "");
-	Ref<VariantList, Owner> list = VariantList::newInstance(token->countChildren());
+	Ref<VariantList, Owner> list = VariantList::create(token->countChildren());
 	int i = 0;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
 		list->set(i, parseValue(text, child));

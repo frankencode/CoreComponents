@@ -164,7 +164,7 @@ class RangeExplicitNode: public Node
 {
 public:
 	RangeExplicitNode(const char *s, int invert)
-		: s_(ByteArray::newInstance(s)),
+		: s_(ByteArray::create(s)),
 		  invert_(invert)
 	{}
 
@@ -200,7 +200,7 @@ class StringNode: public Node
 {
 public:
 	StringNode(const char *s, bool caseSensitive)
-		: s_(ByteArray::newInstance(s)),
+		: s_(ByteArray::create(s)),
 		  caseSensitive_(caseSensitive)
 	{
 		if (!caseSensitive) s_ = s_->toLower();
@@ -835,7 +835,7 @@ public:
 
 		if (i != -1) {
 			rollBack(parentToken, lastChildSaved);
-			state->setCapture(captureId_, Range::newInstance(i0, i));
+			state->setCapture(captureId_, Range::create(i0, i));
 		}
 
 		return i;
@@ -1123,17 +1123,17 @@ public:
 		  id_(Crc32().sum()),
 		  name_(0),
 		  caseSensitive_(true),
-		  definitionByName_(DefinitionByName::newInstance()),
+		  definitionByName_(DefinitionByName::create()),
 		  numRules_(0),
 		  numKeywords_(0),
-		  ruleByName_(RuleByName::newInstance()),
-		  keywordByName_(KeywordByName::newInstance()),
+		  ruleByName_(RuleByName::create()),
+		  keywordByName_(KeywordByName::create()),
 		  statefulScope_(false),
 		  hasHints_(false),
 		  numFlags_(0),
 		  numCaptures_(0),
-		  flagIdByName_(StateIdByName::newInstance()),
-		  captureIdByName_(StateIdByName::newInstance())
+		  flagIdByName_(StateIdByName::create()),
+		  captureIdByName_(StateIdByName::create())
 	{
 		if (debugFactory_)
 			debugFactory_->definition_ = this;

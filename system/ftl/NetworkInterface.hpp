@@ -51,7 +51,7 @@ public:
 		PointToPoint = IFF_POINTOPOINT
 	};
 
-	inline static Ref<NetworkInterface, Owner> newInstance() {
+	inline static Ref<NetworkInterface, Owner> create() {
 		return new NetworkInterface;
 	}
 

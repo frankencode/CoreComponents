@@ -15,8 +15,8 @@ namespace ftl
 {
 
 Semaphore::Semaphore(int value)
-	: mutex_(Mutex::newInstance()),
-	  notEmpty_(Condition::newInstance()),
+	: mutex_(Mutex::create()),
+	  notEmpty_(Condition::create()),
 	  supply_(value),
 	  demand_(0)
 {

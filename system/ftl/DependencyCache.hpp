@@ -16,7 +16,7 @@ class BuildLine;
 class DependencyCache: public Instance
 {
 public:
-	static Ref<DependencyCache, Owner> newInstance(Ref<BuildLine> buildLine, Ref<ToolChain> toolChain, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath = "DependencyCache");
+	static Ref<DependencyCache, Owner> create(Ref<BuildLine> buildLine, Ref<ToolChain> toolChain, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath = "DependencyCache");
 	~DependencyCache();
 
 	Ref<Module, Owner> analyse(String sources, int options, Ref<StringList> includePaths);
