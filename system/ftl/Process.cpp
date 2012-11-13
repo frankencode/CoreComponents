@@ -36,7 +36,7 @@ namespace ftl
 
 Ref<Process, Owner> Process::start(String command, int ioPolicy)
 {
-	Ref<ProcessFactory, Owner> factory = ProcessFactory::newInstance();
+	Ref<ProcessFactory, Owner> factory = ProcessFactory::create();
 	factory->setIoPolicy(ioPolicy);
 
 	Ref<StringList, Owner> args = command->split(' ');
@@ -65,9 +65,9 @@ Process::Process(
 	  rawError_(rawError),
 	  processId_(processId)
 {
-	if (rawInput) input_ = LineSink::newInstance(rawInput);
-	if (rawOutput) output_ = LineSource::newInstance(rawOutput);
-	if (rawError) error_ = LineSource::newInstance(rawError);
+	if (rawInput) input_ = LineSink::open(rawInput);
+	if (rawOutput) output_ = LineSource::open(rawOutput);
+	if (rawError) error_ = LineSource::open(rawError);
 }
 
 Process::~Process()
@@ -204,7 +204,7 @@ void Process::unsetEnv(String key)
 Ref<EnvMap, Owner> Process::envMap()
 {
 	char **env = environ();
-	Ref<EnvMap, Owner> map = EnvMap::newInstance();
+	Ref<EnvMap, Owner> map = EnvMap::create();
 	int i = 0;
 	while (env[i] != 0) {
 		Ref<StringList, Owner> parts = String(env[i])->split("=");

@@ -23,7 +23,7 @@ class AbnfCompiler: public AbnfSyntax
 public:
 	typedef SyntaxDefinition Definition;
 
-	inline static Ref<AbnfCompiler, Owner> newInstance() { return new AbnfCompiler; }
+	inline static Ref<AbnfCompiler, Owner> create() { return new AbnfCompiler; }
 	Ref<Definition, Owner> compile(Ref<ByteArray> text, Ref<SyntaxDebugger> debugger = 0);
 
 private:

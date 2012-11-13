@@ -18,7 +18,7 @@ LineSink::LineSink(Ref<Stream> stream, const char *eol, int maxLineLength)
 	: stream_(stream),
 	  eol_(eol),
 	  bufFill_(0),
-	  buf_(ByteArray::newInstance(maxLineLength))
+	  buf_(ByteArray::create(maxLineLength))
 {}
 
 Ref<Stream> LineSink::stream() const { return stream_; }

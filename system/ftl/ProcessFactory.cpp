@@ -46,13 +46,13 @@ void ProcessFactory::setWorkingDirectory(String path) { workingDirectory_ = path
 String ProcessFactory::execPath() const { return execPath_; }
 void ProcessFactory::setExecPath(String path) { execPath_ = path; }
 
-Ref<StringList> ProcessFactory::arguments() { return (arguments_) ? arguments_ : arguments_ = StringList::newInstance(); }
+Ref<StringList> ProcessFactory::arguments() { return (arguments_) ? arguments_ : arguments_ = StringList::create(); }
 void ProcessFactory::setArguments(Ref<StringList> list) { arguments_ = list; }
 
 Ref<EnvMap> ProcessFactory::envMap() { return (envMap_) ? envMap_ : envMap_ = Process::envMap(); }
 void ProcessFactory::setEnvMap(Ref<EnvMap> map) { envMap_ = map; }
 
-Ref<SignalSet> ProcessFactory::signalMask() { return (signalMask_) ? signalMask_ : signalMask_ = SignalSet::newInstance(); }
+Ref<SignalSet> ProcessFactory::signalMask() { return (signalMask_) ? signalMask_ : signalMask_ = SignalSet::create(); }
 void ProcessFactory::setSignalMask(Ref<SignalSet> mask) { signalMask_ = mask; }
 
 bool ProcessFactory::hasFileCreationMask() const { return hasFileCreationMask_; }
@@ -242,27 +242,27 @@ Ref<Process, Owner> ProcessFactory::produce()
 			::close(ptySlave);
 
 			if (ioPolicy_ & Process::ForwardInput)
-				rawInput = SystemStream::newInstance(ptyMaster);
+				rawInput = SystemStream::create(ptyMaster);
 			if ((ioPolicy_ & Process::ForwardOutput) || (ioPolicy_ & Process::ForwardError)) {
 				if (rawInput)
 					rawOutput = rawInput;
 				else
-					rawOutput = SystemStream::newInstance(ptyMaster);
+					rawOutput = SystemStream::create(ptyMaster);
 			}
 		}
 		else
 		{
 			if (ioPolicy_ & Process::ForwardInput) {
 				::close(inputPipe[0]);
-				rawInput = SystemStream::newInstance(inputPipe[1]);
+				rawInput = SystemStream::create(inputPipe[1]);
 			}
 			if (ioPolicy_ & Process::ForwardOutput) {
 				::close(outputPipe[1]);
-				rawOutput = SystemStream::newInstance(outputPipe[0]);
+				rawOutput = SystemStream::create(outputPipe[0]);
 			}
 			if (ioPolicy_ & Process::ForwardError) {
 				::close(errorPipe[1]);
-				rawError = SystemStream::newInstance(errorPipe[0]);
+				rawError = SystemStream::create(errorPipe[0]);
 			}
 		}
 

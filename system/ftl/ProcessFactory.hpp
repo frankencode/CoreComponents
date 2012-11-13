@@ -22,7 +22,7 @@ class Process;
 class ProcessFactory: public Instance
 {
 public:
-	inline static Ref<ProcessFactory, Owner> newInstance() {
+	inline static Ref<ProcessFactory, Owner> create() {
 		return new ProcessFactory;
 	}
 

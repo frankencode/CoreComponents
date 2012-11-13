@@ -31,7 +31,7 @@ public:
 		GlobalOptions = Debug|Release|OptimizeSpeed|OptimizeSize|DryRun|Blindfold|Verbose
 	};
 
-	static Ref<BuildPlan, Owner> newInstance(String projectPath = ".", int globalOptions = Unspecified);
+	static Ref<BuildPlan, Owner> create(String projectPath = ".", int globalOptions = Unspecified);
 
 	inline String projectPath() const { return projectPath_; }
 	inline Ref<Config> recipe() const { return recipe_; }

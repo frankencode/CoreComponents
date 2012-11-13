@@ -33,7 +33,7 @@ typedef List< Ref<SocketAddress, Owner> > SocketAddressList;
 class SocketAddress: public Instance
 {
 public:
-	inline static Ref<SocketAddress, Owner> newInstance() {
+	inline static Ref<SocketAddress, Owner> create() {
 		return new SocketAddress;
 	}
 
@@ -45,17 +45,17 @@ public:
 	  * \param address numerical host address, wildcard ("*") or file path
 	  * \param port service port
 	  */
-	inline static Ref<SocketAddress, Owner> newInstance(int family, String address = String(), int port = 0) {
+	inline static Ref<SocketAddress, Owner> create(int family, String address = String(), int port = 0) {
 		return new SocketAddress(family, address, port);
 	}
 
-	inline static Ref<SocketAddress, Owner> newInstance(struct sockaddr_in *addr) {
+	inline static Ref<SocketAddress, Owner> create(struct sockaddr_in *addr) {
 		return new SocketAddress(addr);
 	}
-	inline static Ref<SocketAddress, Owner> newInstance(struct sockaddr_in6 *addr) {
+	inline static Ref<SocketAddress, Owner> create(struct sockaddr_in6 *addr) {
 		return new SocketAddress(addr);
 	}
-	inline static Ref<SocketAddress, Owner> newInstance(addrinfo *info) {
+	inline static Ref<SocketAddress, Owner> create(addrinfo *info) {
 		return new SocketAddress(info);
 	}
 

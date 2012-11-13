@@ -5,6 +5,6 @@ using namespace ftl;
 
 int main()
 {
-	print("%%\n", User::newInstance(Process::effectiveUserId())->loginName());
+	print("%%\n", User::lookup(Process::effectiveUserId())->loginName());
 	return 0;
 }

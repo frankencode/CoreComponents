@@ -10,7 +10,7 @@ namespace ftl
 class GccToolChain: public ToolChain
 {
 public:
-	inline static Ref<GccToolChain, Owner> newInstance(String execPath = "g++") {
+	inline static Ref<GccToolChain, Owner> create(String execPath = "g++") {
 		return new GccToolChain(execPath);
 	}
 

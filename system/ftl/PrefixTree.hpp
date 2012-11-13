@@ -34,7 +34,7 @@ template<class Char, class Value>
 class PrefixTree: public Tree< PrefixTree<Char, Value> >
 {
 public:
-	inline static Ref<PrefixTree, Owner> newInstance() {
+	inline static Ref<PrefixTree, Owner> create() {
 		return new PrefixTree;
 	}
 
@@ -129,7 +129,7 @@ public:
 				}
 			}
 		}
-		Ref<Key, Owner> s = Key::newInstance(size);
+		Ref<Key, Owner> s = Key::create(size);
 		{
 			int i = size;
 			Ref<Node> node = index.node_;

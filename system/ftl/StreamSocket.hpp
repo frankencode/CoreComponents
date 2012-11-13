@@ -23,7 +23,7 @@ namespace ftl
 class StreamSocket: public SystemStream
 {
 public:
-	inline static Ref<StreamSocket, Owner> newInstance(Ref<SocketAddress> address, int fd = -1) {
+	inline static Ref<StreamSocket, Owner> create(Ref<SocketAddress> address, int fd = -1) {
 		return new StreamSocket(address, fd);
 	}
 

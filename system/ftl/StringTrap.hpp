@@ -19,7 +19,7 @@ namespace ftl
 class StringTrap: public Instance
 {
 public:
-	inline static Ref<StringTrap, Owner> newInstance() {
+	inline static Ref<StringTrap, Owner> create() {
 		return new StringTrap;
 	}
 
@@ -46,7 +46,7 @@ private:
 
 	class Node: public Instance {
 	public:
-		Node(const char *s, int len): s_(ByteArray::newInstance(s, len)) {}
+		Node(const char *s, int len): s_(ByteArray::create(s, len)) {}
 		Ref<ByteArray, Owner> s_;
 		Ref<Node, Owner> next_;
 	};

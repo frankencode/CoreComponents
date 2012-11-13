@@ -26,7 +26,7 @@ Ref<ByteArray, Owner> Base64::encode(Ref<ByteArray> source)
 	int i = 0;
 
 	const int m = 4 * (n / 3 + (n % 3 != 0));
-	Ref<ByteArray, Owner> sink = ByteArray::newInstance(m);
+	Ref<ByteArray, Owner> sink = ByteArray::create(m);
 	int l = 0;
 
 	while (i < n) {
@@ -70,7 +70,7 @@ Ref<ByteArray, Owner> Base64::decode(Ref<ByteArray> source)
 	FTL_CHECK((0 <= p) && (p <= 2), EncodingException, "base64: illegal padding");
 
 	int n = 3 * (m / 4) - p;
-	Ref<ByteArray, Owner> sink = ByteArray::newInstance(n);
+	Ref<ByteArray, Owner> sink = ByteArray::create(n);
 	int i = 0;
 
 	for (int l = 0; l < m;) {

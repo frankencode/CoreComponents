@@ -28,7 +28,7 @@ String::String(const Format &b)
 String::String(Ref<StringList, Owner> parts) { *this = join(parts); }
 
 Ref<StringList, Owner> String::operator+(const String &b) const {
-	return StringList::newInstance() << *this << b;
+	return StringList::create() << *this << b;
 }
 
 } // namespace ftl

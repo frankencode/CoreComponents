@@ -78,7 +78,7 @@ void Md5::finish(uint8_t sum[16])
 
 Ref<ByteArray, Owner> Md5::finish()
 {
-	Ref<ByteArray, Owner> sum = ByteArray::newInstance(16);
+	Ref<ByteArray, Owner> sum = ByteArray::create(16);
 	finish(reinterpret_cast<uint8_t*>(sum->data()));
 	return sum;
 }

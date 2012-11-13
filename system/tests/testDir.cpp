@@ -6,7 +6,7 @@ namespace ftl
 
 int main(int argc, char **argv)
 {
-	Ref<Dir, Owner> dir = Dir::open(Process::cwd());
+	auto dir = Dir::open(Process::cwd());
 	for (String name; dir->read(&name);)
 		output()->writeLine(name);
 	return 0;

@@ -23,10 +23,10 @@ public:
 	typedef int Index;
 	typedef T Item;
 
-	inline static Ref<CircularBuffer, Owner> newInstance(int size) {
+	inline static Ref<CircularBuffer, Owner> create(int size) {
 		return new CircularBuffer(size);
 	}
-	inline static Ref<CircularBuffer, Owner> newInstance(T *buf, int size) {
+	inline static Ref<CircularBuffer, Owner> create(T *buf, int size) {
 		return new CircularBuffer(buf, size);
 	}
 

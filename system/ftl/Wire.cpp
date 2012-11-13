@@ -310,7 +310,7 @@ Variant Wire::parse(Ref<ByteArray> text, Ref<WireObject> virgin)
 
 String Wire::parseConcatenation(Ref<ByteArray> text, Ref<Token> token)
 {
-	Ref<StringList, Owner> l = StringList::newInstance();
+	Ref<StringList, Owner> l = StringList::create();
 	token = token->firstChild();
 	while (token) {
 		l << text->copy(token->i0() + 1, token->i1() - 1);
@@ -348,7 +348,7 @@ Ref<WireObject, Owner> Wire::parseObject(Ref<ByteArray> text, Ref<Token> token, 
 
 Ref<VariantList, Owner> Wire::parseList(Ref<ByteArray> text, Ref<Token> token)
 {
-	Ref<VariantList, Owner> list = VariantList::newInstance(token->countChildren());
+	Ref<VariantList, Owner> list = VariantList::create(token->countChildren());
 	int i = 0;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
 		list->set(i, parseValue(text, child));

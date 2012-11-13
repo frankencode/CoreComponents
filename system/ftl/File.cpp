@@ -11,6 +11,7 @@
 
 #include <errno.h>
 #include <string.h>
+#include "PrintDebug.hpp" // DEBUG
 #include "ExitEvent.hpp"
 #include "ThreadExitEvent.hpp"
 #include "Guard.hpp"
@@ -147,12 +148,12 @@ String File::lookup(String fileName, Ref<StringList> dirs, int accessFlags)
 
 Ref<FileStatus, Owner> File::status(String path)
 {
-	return FileStatus::newInstance(path, true);
+	return FileStatus::create(path, true);
 }
 
 Ref<FileStatus, Owner> File::unresolvedStatus(String path)
 {
-	return FileStatus::newInstance(path, false);
+	return FileStatus::create(path, false);
 }
 
 String File::load(String path)
@@ -169,7 +170,7 @@ void File::save(String path, String text)
 	file->write(text);
 }
 
-Ref<File, Owner> File::temp()
+Ref<File, Owner> File::temp(int openFlags)
 {
 	String path = createUnique(
 		Format("/tmp/%%_%%_XXXXXXXX")
@@ -178,7 +179,7 @@ Ref<File, Owner> File::temp()
 	);
 	if (path == "")
 		FTL_SYSTEM_EXCEPTION;
-	return open(path);
+	return open(path, openFlags);
 }
 
 File::File(String path, int openFlags)
@@ -251,7 +252,7 @@ int File::openFlags() const
 
 Ref<FileStatus, Owner> File::status() const
 {
-	return FileStatus::newInstance(fd_);
+	return FileStatus::create(fd_);
 }
 
 void File::truncate(off_t length)

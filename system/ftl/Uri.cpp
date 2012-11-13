@@ -110,7 +110,7 @@ String Uri::encode(String s)
 	s->toLowerInsitu();
 
 	const char *reserved = ":/?#[]@!$&'()*+,;=";
-	Ref<StringList, Owner> l = StringList::newInstance();
+	Ref<StringList, Owner> l = StringList::create();
 	int j = 0;
 	for (int i = 0, n = s->length(); i < n; ++i) {
 		char ch = s->at(i);

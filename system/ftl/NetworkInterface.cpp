@@ -55,7 +55,7 @@ Ref<SocketAddressList> NetworkInterface::addressList() const { return addressLis
 #ifdef __linux
 Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 {
-	Ref<NetworkInterfaceList, Owner> list = NetworkInterfaceList::newInstance();
+	Ref<NetworkInterfaceList, Owner> list = NetworkInterfaceList::create();
 	// getLink(list);
 	for (int i = 1; getLink(list, i); ++i);
 
@@ -183,7 +183,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 								addr4.sin_family = AF_INET;
 								addr4.sin_addr = *(struct in_addr *)RTA_DATA(attr);
 								if (attrType != IFA_ADDRESS)
-									address = SocketAddress::newInstance(&addr4);
+									address = SocketAddress::create(&addr4);
 							}
 							else if (data->ifa_family == AF_INET6) {
 								mem::clr(&addr6, sizeof(addr6));
@@ -194,14 +194,14 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 								addr6.sin6_addr = *(struct in6_addr *)RTA_DATA(attr);
 								addr6.sin6_scope_id = data->ifa_scope;
 								if (attrType != IFA_ADDRESS)
-									address = SocketAddress::newInstance(&addr6);
+									address = SocketAddress::create(&addr6);
 							}
 							if (attrType == IFA_ADDRESS) {
 								if (data->ifa_family == AF_INET)
-									label = SocketAddressEntry::newInstance(&addr4);
+									label = SocketAddressEntry::create(&addr4);
 								else if (data->ifa_family == AF_INET6)
-									label = SocketAddress::newInstance(&addr6);
-								if (!interface->addressList_) interface->addressList_ = SocketAddressList::newInstance();
+									label = SocketAddress::create(&addr6);
+								if (!interface->addressList_) interface->addressList_ = SocketAddressList::create();
 								interface->addressList_->append(label);
 							}
 							if ((label) && (data->ifa_family == AF_INET)) {
@@ -313,7 +313,7 @@ bool NetworkInterface::getLink(Ref<NetworkInterfaceList> list, int index)
 					struct rtattr *attr = (struct rtattr *)IFLA_RTA(data);
 					int attrFill = NLMSG_PAYLOAD(msg, sizeof(struct ifinfomsg));
 
-					Ref<NetworkInterface, Owner> interface = NetworkInterface::newInstance();
+					Ref<NetworkInterface, Owner> interface = NetworkInterface::create();
 					foundSomething = true;
 					list->append(interface);
 					interface->index_ = data->ifi_index;
@@ -360,15 +360,15 @@ bool NetworkInterface::getLink(Ref<NetworkInterfaceList> list, int index)
 
 Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 {
-	Ref<NetworkInterfaceList, Owner> list = NetworkInterfaceList::newInstance();
+	Ref<NetworkInterfaceList, Owner> list = NetworkInterfaceList::create();
 
 	int fd = ::socket(AF_INET, SOCK_DGRAM, 0);
 	if (fd == -1) FTL_SYSTEM_EXCEPTION;
 
-	Ref<LineSource, Owner> source = LineSource::newInstance(File::open("/proc/net/dev", File::Read));
+	Ref<LineSource, Owner> source = LineSource::open(File::open("/proc/net/dev", File::Read));
 	for (String line; source->read(&line);) {
 		if (line->contains(':')) {
-			Ref<NetworkInterface, Owner> interface = NetworkInterface::newInstance();
+			Ref<NetworkInterface, Owner> interface = NetworkInterface::create();
 			list->append(interface);
 			Ref<StringList, Owner> parts = line->split(":");
 			String name = parts->at(0)->stripLeadingSpace();
@@ -434,10 +434,10 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 					Ref<SocketAddress, Owner> label;
 
 					if (addr->sa_family == AF_INET)
-						label = SocketAddressEntry::newInstance(addr4);
+						label = SocketAddressEntry::create(addr4);
 					else if (addr->sa_family == AF_INET6)
-						label = SocketAddress::newInstance(addr6);
-					if (!interface->addressList_) interface->addressList_ = SocketAddressList::newInstance();
+						label = SocketAddress::create(addr6);
+					if (!interface->addressList_) interface->addressList_ = SocketAddressList::create();
 					interface->addressList_->append(label);
 
 					if ((label) && (addr->sa_family == AF_INET)) {
@@ -446,13 +446,13 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 							struct ifreq ifr2 = *ifr;
 							if (::ioctl(fd, SIOCGIFBRDADDR, &ifr2) == -1)
 								FTL_SYSTEM_EXCEPTION;
-							entry->broadcastAddress_ = SocketAddress::newInstance((struct sockaddr_in *)&ifr2.ifr_broadaddr);
+							entry->broadcastAddress_ = SocketAddress::create((struct sockaddr_in *)&ifr2.ifr_broadaddr);
 						}
 						if (interface->flags_ & IFF_POINTOPOINT) {
 							struct ifreq ifr2 = *ifr;
 							if (::ioctl(fd, SIOCGIFDSTADDR, &ifr2) == -1)
 								FTL_SYSTEM_EXCEPTION;
-							entry->broadcastAddress_ = SocketAddress::newInstance((struct sockaddr_in *)&ifr2.ifr_dstaddr);
+							entry->broadcastAddress_ = SocketAddress::create((struct sockaddr_in *)&ifr2.ifr_dstaddr);
 						}
 					}
 				}
@@ -518,7 +518,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 		int msgType = msg->ifm_type;
 		int msgAddrs = msg->ifm_addrs;
 		if (msgType == RTM_IFINFO) {
-			Ref<NetworkInterface, Owner> interface = NetworkInterface::newInstance();
+			Ref<NetworkInterface, Owner> interface = NetworkInterface::create();
 			interface->index_ = msg->ifm_index;
 			interface->flags_ = msg->ifm_flags;
 			interface->mtu_ = msg->ifm_data.ifi_mtu;
@@ -556,9 +556,9 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 					int len = SA_RLEN(addr);
 					if (i == RTAX_IFA) {
 						if (addr->sa_family == AF_INET)
-							label = SocketAddressEntry::newInstance((struct sockaddr_in *)addr);
+							label = SocketAddressEntry::create((struct sockaddr_in *)addr);
 						else if (addr->sa_family == AF_INET6)
-							label = SocketAddress::newInstance((struct sockaddr_in6 *)addr);
+							label = SocketAddress::create((struct sockaddr_in6 *)addr);
 						if (!interface->addressList_) interface->addressList_ = new SocketAddressList;
 						interface->addressList_->append(label);
 					}
@@ -571,7 +571,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 						else*/
 						if (i == RTAX_BRD) {
 							if (addr->sa_family == AF_INET)
-								entry->broadcastAddress_ = SocketAddress::newInstance((struct sockaddr_in *)addr);
+								entry->broadcastAddress_ = SocketAddress::create((struct sockaddr_in *)addr);
 						}
 					}
 					attr += len;

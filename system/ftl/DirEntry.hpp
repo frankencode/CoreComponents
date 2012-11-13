@@ -26,7 +26,7 @@ typedef struct dirent StructDirent;
 class DirEntry: public StructDirent, public Instance
 {
 public:
-	inline static Ref<DirEntry, Owner> newInstance() { return new DirEntry; }
+	inline static Ref<DirEntry, Owner> create() { return new DirEntry; }
 
 	inline String path() const { return path_; }
 	inline String name() const { return d_name; }

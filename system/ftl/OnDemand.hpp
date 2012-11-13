@@ -24,7 +24,7 @@ public:
 
 	inline T *get() const {
 		if (!instance_)
-			instance_ = T::newInstance();
+			instance_ = T::create();
 		return instance_;
 	}
 

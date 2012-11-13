@@ -33,7 +33,7 @@ Time Time::now()
 }
 
 String Time::toString() const {
-	return Date::newInstance(*this)->toString();
+	return Date::create(*this)->toString();
 }
 
 } // namespace ftl

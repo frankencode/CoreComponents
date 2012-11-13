@@ -10,7 +10,7 @@ namespace ftl
 class Module: public Instance
 {
 public:
-	inline static Ref<Module, Owner> newInstance(String analyseCommand, String modulePath, Ref<StringList> dependencyPaths, bool dirty) {
+	inline static Ref<Module, Owner> create(String analyseCommand, String modulePath, Ref<StringList> dependencyPaths, bool dirty) {
 		return new Module(analyseCommand, modulePath, dependencyPaths, dirty);
 	}
 

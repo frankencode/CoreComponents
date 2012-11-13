@@ -19,7 +19,7 @@ namespace ftl
 class ThreadFactory: public Instance
 {
 public:
-	inline static Ref<ThreadFactory, Owner> newInstance(Ref< Clonable<Thread> > prototype = 0) {
+	inline static Ref<ThreadFactory, Owner> create(Ref< Clonable<Thread> > prototype = 0) {
 		return new ThreadFactory(prototype);
 	}
 	~ThreadFactory();

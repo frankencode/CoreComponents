@@ -21,7 +21,7 @@ FTL_STD_EXCEPTION(ConfigException);
 class Config: public WireObject
 {
 public:
-	static Ref<Config, Owner> newInstance();
+	static Ref<Config, Owner> create();
 
 	void read(String path);
 	void read(int argc, char **argv);

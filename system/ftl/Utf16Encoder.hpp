@@ -19,10 +19,10 @@ namespace ftl
 class Utf16Encoder: public Sink<uchar_t>
 {
 public:
-	inline static Ref<Utf16Encoder, Owner> newInstance(Ref<Stream> stream, int bufCapa, int endian = BigEndian) {
+	inline static Ref<Utf16Encoder, Owner> create(Ref<Stream> stream, int bufCapa, int endian = BigEndian) {
 		return new Utf16Encoder(stream, bufCapa, endian);
 	}
-	inline static Ref<Utf16Encoder, Owner> newInstance(void *buf, int bufCapa, int endian = BigEndian) {
+	inline static Ref<Utf16Encoder, Owner> create(void *buf, int bufCapa, int endian = BigEndian) {
 		return new Utf16Encoder(buf, bufCapa, endian);
 	}
 
@@ -56,11 +56,11 @@ public:
 
 private:
 	Utf16Encoder(Ref<Stream> stream, int bufCapa, int endian)
-		: byteEncoder_(ByteEncoder::newInstance(stream, bufCapa, endian))
+		: byteEncoder_(ByteEncoder::open(stream, bufCapa, endian))
 	{}
 
 	Utf16Encoder(void *buf, int bufCapa, int endian = BigEndian)
-		: byteEncoder_(ByteEncoder::newInstance(buf, bufCapa, endian))
+		: byteEncoder_(ByteEncoder::open(buf, bufCapa, endian))
 	{}
 
 	Ref<ByteEncoder, Owner> byteEncoder_;

@@ -20,7 +20,7 @@ namespace ftl
 class Event: public Action
 {
 public:
-	inline static Ref<Event, Owner> newInstance() {
+	inline static Ref<Event, Owner> create() {
 		return new Event;
 	}
 

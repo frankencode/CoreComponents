@@ -31,7 +31,7 @@ public:
 	typedef syntax::Node Node;
 	typedef syntax::NODE NODE;
 
-	inline static Ref<Definition, Owner> newInstance(Ref<DebugFactory> debugFactory = 0) {
+	inline static Ref<Definition, Owner> create(Ref<DebugFactory> debugFactory = 0) {
 		return new Definition(debugFactory);
 	}
 	~Definition();

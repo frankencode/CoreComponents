@@ -16,7 +16,7 @@ namespace ftl
 {
 
 Format::Format(String format)
-	: Super(StringList::newInstance())
+	: Super(StringList::create())
 {
 	Ref<PlaceHolder> lastPlaceHolder;
 
@@ -119,7 +119,7 @@ void Format::printInt(uint64_t x, int sign)
 	Ref<PlaceHolder, Owner> ph = nextPlaceHolder();
 
 	int buf[MaxDigits];
-	Ref< Stack<int>, Owner> digits = Stack<int>::newInstance(buf, MaxDigits);
+	Ref< Stack<int>, Owner> digits = Stack<int>::create(buf, MaxDigits);
 
 	digits->clear();
 	if (x == 0) {
@@ -169,7 +169,7 @@ void Format::printFloat(float64_t x, bool half)
 	Ref<PlaceHolder, Owner> ph = nextPlaceHolder();
 
 	int buf[MaxDigits];
-	Ref< Stack<int>, Owner > digits = Stack<int>::newInstance(buf, MaxDigits);
+	Ref< Stack<int>, Owner > digits = Stack<int>::create(buf, MaxDigits);
 
 	int wi = (ph->wi_ == 0) ? 1 : ph->wi_;
 	int wf = ph->wf_;

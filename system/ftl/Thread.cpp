@@ -22,7 +22,7 @@ namespace ftl
 
 void Thread::start(int detachState)
 {
-	Ref<ThreadFactory, Owner> factory = ThreadFactory::newInstance();
+	Ref<ThreadFactory, Owner> factory = ThreadFactory::create();
 	factory->setDetachState(detachState);
 	factory->start(this);
 }
@@ -56,8 +56,8 @@ void Thread::sleep(Time duration)
 
 void Thread::sleepUntil(Time timeout)
 {
-	Ref<Mutex, Owner> mutex = Mutex::newInstance();
-	Ref<Condition, Owner> condition = Condition::newInstance();
+	Ref<Mutex, Owner> mutex = Mutex::create();
+	Ref<Condition, Owner> condition = Condition::create();
 	mutex->acquire();
 	condition->waitUntil(mutex, timeout);
 	mutex->release();

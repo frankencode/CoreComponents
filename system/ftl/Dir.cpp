@@ -71,7 +71,7 @@ bool Dir::create(String path, int mode)
 
 bool Dir::establish(String path, int mode)
 {
-	Ref<StringList, Owner> missingDirs = StringList::newInstance();
+	Ref<StringList, Owner> missingDirs = StringList::create();
 	while ((path != "") && (path != "/")) {
 		if (Dir::exists(path)) break;
 		missingDirs->push(path);

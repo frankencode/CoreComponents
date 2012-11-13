@@ -21,10 +21,10 @@ namespace ftl
 class ByteDecoder: public Source<uint8_t>, Source<char>
 {
 public:
-	inline static Ref<ByteDecoder, Owner> newInstance(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static Ref<ByteDecoder, Owner> open(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteDecoder(stream, bufCapa, endian);
 	}
-	inline static Ref<ByteDecoder, Owner> newInstance(const void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static Ref<ByteDecoder, Owner> open(const void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteDecoder(buf, bufCapa, endian);
 	}
 	~ByteDecoder();
@@ -95,7 +95,7 @@ inline void ByteDecoder::read(Ref<ByteArray> bytes)
 
 inline Ref<ByteArray, Owner> ByteDecoder::read(int n)
 {
-	Ref<ByteArray, Owner> bytes = ByteArray::newInstance(n);
+	Ref<ByteArray, Owner> bytes = ByteArray::create(n);
 	read(bytes);
 	return bytes;
 }

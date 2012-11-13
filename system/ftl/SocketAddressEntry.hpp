@@ -31,13 +31,13 @@ public:
 private:
 	friend class NetworkInterface;
 
-	inline static Ref<SocketAddressEntry, Owner> newInstance() {
+	inline static Ref<SocketAddressEntry, Owner> create() {
 		return new SocketAddressEntry;
 	}
-	inline static Ref<SocketAddressEntry, Owner> newInstance(struct sockaddr_in *addr) {
+	inline static Ref<SocketAddressEntry, Owner> create(struct sockaddr_in *addr) {
 		return new SocketAddressEntry(addr);
 	}
-	inline static Ref<SocketAddressEntry, Owner> newInstance(struct sockaddr_in6 *addr) {
+	inline static Ref<SocketAddressEntry, Owner> create(struct sockaddr_in6 *addr) {
 		return new SocketAddressEntry(addr);
 	}
 

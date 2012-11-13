@@ -14,8 +14,8 @@ int main(int argc, char **argv)
 	pattern->expandInsitu();
 	replacement->expandInsitu();
 
-	Ref<ByteDecoder, Owner> source = ByteDecoder::newInstance(rawInput());
-	Ref<ByteEncoder, Owner> sink = ByteEncoder::newInstance(rawOutput());
+	auto source = ByteDecoder::open(rawInput());
+	auto sink = ByteEncoder::open(rawOutput());
 	int k = 0;
 	char ch = 0;
 	while (source->read(&ch)) {

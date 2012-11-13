@@ -9,8 +9,8 @@ class MyChannel: public Instance
 {
 public:
 	MyChannel()
-		: empty_(Semaphore::newInstance(1)),
-		  full_(Semaphore::newInstance(0))
+		: empty_(Semaphore::create(1)),
+		  full_(Semaphore::create(0))
 	{}
 
 	void put(int value)
@@ -90,7 +90,7 @@ int main()
 	dt = Time::now() - dt;
 	print("\ndt = %% us\n\n", dt.us());
 
-	Ref<ThreadFactory, Owner> factory = ThreadFactory::newInstance();
+	auto factory = ThreadFactory::create();
 	print("default stack size = %%\n", int(factory->stackSize()));
 	print("default guard size = %%\n", int(factory->guardSize()));
 

@@ -9,5 +9,5 @@ using namespace ftl;
 
 int main(int argc, char **argv)
 {
-	return BuildPlan::newInstance()->run(GccToolChain::newInstance(), argc, argv);
+	return BuildPlan::create()->run(GccToolChain::create(), argc, argv);
 }

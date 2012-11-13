@@ -17,7 +17,7 @@ namespace ftl
 {
 
 AbnfCompiler::AbnfCompiler()
-	: trap_(StringTrap::newInstance())
+	: trap_(StringTrap::create())
 {}
 
 Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, Ref<SyntaxDebugger> debugger)
@@ -25,7 +25,7 @@ Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, 
 	Ref<Token, Owner> ruleList = AbnfSyntax::match(text);
 	FTL_ASSERT(ruleList);
 
-	Ref<Definition, Owner> definition = AbnfCoreSyntax::newInstance(debugger);
+	Ref<Definition, Owner> definition = AbnfCoreSyntax::create(debugger);
 	definition->OPTION("caseSensitive", false);
 
 	compileRuleList(text, ruleList, definition);
@@ -208,7 +208,7 @@ AbnfCompiler::NODE AbnfCompiler::compileNumVal(Ref<ByteArray> text, Ref<Token> n
 				n += text->at(i) == '.';
 				++i;
 			}
-			Ref<ByteArray, Owner> s = ByteArray::newInstance(n);
+			Ref<ByteArray, Owner> s = ByteArray::create(n);
 			int i0 = numVal->i0() + 2;
 			int i = i0;
 			int j = 0;
@@ -265,7 +265,7 @@ AbnfCompiler::NODE AbnfCompiler::optimizeChoice(Ref<Node> node, Ref<Definition> 
 	}
 
 	if (isRangeExplicit) {
-		Ref<ByteArray, Owner> s = ByteArray::newInstance(numChars);
+		Ref<ByteArray, Owner> s = ByteArray::create(numChars);
 		int i = 0;
 		Ref<Node> child = ignoreDebug(node)->firstChild();
 		while (child) {
@@ -301,7 +301,7 @@ void AbnfCompiler::deepOptimizeChoice(Ref<Node> node, Ref<Definition> definition
 void AbnfCompiler::deepOptimizeChoice(Ref<Node> node, Ref<Node> fin, int numChars, Ref<Definition> definition)
 {
 	if (numChars > 1) {
-		Ref<ByteArray, Owner> s = ByteArray::newInstance(numChars);
+		Ref<ByteArray, Owner> s = ByteArray::create(numChars);
 		int i = numChars - 1;
 		while (i >= 0) {
 			Ref<Node> charNode = (fin) ? fin->previousSibling() : ignoreDebug(node)->lastChild();

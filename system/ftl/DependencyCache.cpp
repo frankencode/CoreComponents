@@ -9,7 +9,7 @@
 namespace ftl
 {
 
-Ref<DependencyCache, Owner> DependencyCache::newInstance(Ref<BuildLine> buildLine, Ref<ToolChain> toolChain, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath)
+Ref<DependencyCache, Owner> DependencyCache::create(Ref<BuildLine> buildLine, Ref<ToolChain> toolChain, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath)
 {
 	return new DependencyCache(buildLine, toolChain, sources, options, includePaths, cachePath);
 }
@@ -18,7 +18,7 @@ DependencyCache::DependencyCache(Ref<BuildLine> buildLine, Ref<ToolChain> toolCh
 	: buildLine_(buildLine),
 	  toolChain_(toolChain),
 	  cachePath_(cachePath),
-	  cache_(Cache::newInstance())
+	  cache_(Cache::create())
 {
 	File::establish(cachePath);
 	Time cacheTime = File::status(cachePath_)->lastModified();
@@ -67,7 +67,7 @@ DependencyCache::DependencyCache(Ref<BuildLine> buildLine, Ref<ToolChain> toolCh
 
 		cache_->insert(
 			item->key(),
-			Module::newInstance(command, modulePath, dependencyPaths, !objectStatus->exists())
+			Module::create(command, modulePath, dependencyPaths, !objectStatus->exists())
 		);
 	}
 }

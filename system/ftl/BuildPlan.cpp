@@ -34,7 +34,7 @@ private:
 	bool redundant_;
 };
 
-Ref<BuildPlan, Owner> BuildPlan::newInstance(String projectPath, int globalOptions)
+Ref<BuildPlan, Owner> BuildPlan::create(String projectPath, int globalOptions)
 {
 	return new BuildPlan(projectPath, globalOptions);
 }
@@ -42,7 +42,7 @@ Ref<BuildPlan, Owner> BuildPlan::newInstance(String projectPath, int globalOptio
 BuildPlan::BuildPlan(String projectPath, int globalOptions)
 	:  projectPath_(projectPath)
 {
-	recipe_ = Config::newInstance();
+	recipe_ = Config::create();
 	recipe_->read(projectPath + "/Recipe");
 
 	options_ = optionsFromRecipe(recipe_);
@@ -58,17 +58,17 @@ BuildPlan::BuildPlan(String projectPath, int globalOptions)
 	if (recipe_->contains("includePath"))
 		includePaths_ = Ref<VariantList>(recipe_->value("linkPath"))->toList<String>();
 	else
-		includePaths_ = StringList::newInstance();
+		includePaths_ = StringList::create();
 
 	if (recipe_->contains("linkPath"))
 		libraryPaths_ = Ref<VariantList>(recipe_->value("linkPath"))->toList<String>();
 	else
-		libraryPaths_ = StringList::newInstance();
+		libraryPaths_ = StringList::create();
 
 	if (recipe_->contains("link"))
 		libraries_ = Ref<VariantList>(recipe_->value("link"))->toList<String>();
 	else
-		libraries_ = StringList::newInstance();
+		libraries_ = StringList::create();
 }
 
 String BuildPlan::runAnalyse(String command)
@@ -104,8 +104,8 @@ bool BuildPlan::unlink(String path)
 
 Ref<FileStatus, Owner> BuildPlan::fileStatus(String path)
 {
-	if (options_ & Blindfold) return FileStatus::newInstance();
-	return FileStatus::newInstance(path);
+	if (options_ & Blindfold) return FileStatus::create();
+	return FileStatus::create(path);
 }
 
 int BuildPlan::run(Ref<ToolChain> toolChain, int argc, char **argv)
@@ -139,18 +139,18 @@ void BuildPlan::analyse(Ref<ToolChain> toolChain)
 	bool verbose = options_ & Verbose;
 	PathScope pathScope(projectPath_, verbose);
 
-	prequisites_ = BuildPlanList::newInstance();
+	prequisites_ = BuildPlanList::create();
 
 	Ref<StringList, Owner> prequisitePaths;
 	if (recipe_->contains("use"))
 		prequisitePaths = Ref<VariantList>(recipe_->value("use"))->toList<String>();
 	else
-		prequisitePaths = StringList::newInstance();
+		prequisitePaths = StringList::create();
 
 	for (int i = 0; i < prequisitePaths->length(); ++i) {
 		String path = prequisitePaths->at(i);
 		PathScope cwd(path, verbose);
-		Ref<Config, Owner> recipe = Config::newInstance();
+		Ref<Config, Owner> recipe = Config::create();
 		recipe->read("Recipe");
 		if (recipe->className() == "Library") {
 			String parentPath = path->reducePath();
@@ -159,22 +159,22 @@ void BuildPlan::analyse(Ref<ToolChain> toolChain)
 			libraryPaths_->append(path);
 			libraries_->append(recipe->value("name"));
 		}
-		Ref<BuildPlan, Owner> prequisite = BuildPlan::newInstance(path, options_ & GlobalOptions);
+		Ref<BuildPlan, Owner> prequisite = BuildPlan::create(path, options_ & GlobalOptions);
 		prequisite->analyse(toolChain);
 		prequisites_->append(prequisite);
 	}
 
-	sources_ = StringList::newInstance();
+	sources_ = StringList::create();
 	Ref<VariantList> sourcePatterns = recipe_->value("source");
-	Ref<DirEntry, Owner> entry = DirEntry::newInstance();
+	Ref<DirEntry, Owner> entry = DirEntry::create();
 	for (int i = 0; i < sourcePatterns->length(); ++i) {
 		Ref<Glob, Owner> glob = Glob::open(sourcePatterns->at(i));
 		for (String path; glob->read(&path);)
 			sources_->append(path);
 	}
 
-	modules_ = ModuleList::newInstance(sources_->length());
-	Ref<DependencyCache, Owner> dependencyCache = DependencyCache::newInstance(this, toolChain, sources_, options_, includePaths_);
+	modules_ = ModuleList::create(sources_->length());
+	Ref<DependencyCache, Owner> dependencyCache = DependencyCache::create(this, toolChain, sources_, options_, includePaths_);
 	for (int i = 0; i < sources_->length(); ++i)
 		modules_->set(i, dependencyCache->analyse(sources_->at(i), options_, includePaths_));
 }

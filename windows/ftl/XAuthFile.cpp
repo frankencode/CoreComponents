@@ -8,14 +8,14 @@ namespace ftl
 
 XAuthFile::XAuthFile(String path)
 	: path_(path),
-	  records_(XAuthRecords::newInstance())
+	  records_(XAuthRecords::create())
 {
 	if (path_ == "") path_ = Process::env("XAUTHORITY");
 	if (path_ == "") return;
 
 	Ref<File, Owner> file = File::open(path_);
 
-	Ref<ByteDecoder, Owner> source = ByteDecoder::newInstance(file);
+	Ref<ByteDecoder, Owner> source = ByteDecoder::open(file);
 	source->setEndian(BigEndian);
 
 	while (source->hasMore()) {

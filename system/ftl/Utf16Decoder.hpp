@@ -30,10 +30,10 @@ namespace ftl
 class Utf16Decoder: public Source<uchar_t>
 {
 public:
-	inline static Ref<Utf16Decoder, Owner> newInstance(Ref<Stream> stream, int bufCapa, int endian = BigEndian) {
+	inline static Ref<Utf16Decoder, Owner> open(Ref<Stream> stream, int bufCapa, int endian = BigEndian) {
 		return new Utf16Decoder(stream, bufCapa, endian);
 	}
-	inline static Ref<Utf16Decoder, Owner> newInstance(const void *buf, int bufCapa, int endian = BigEndian) {
+	inline static Ref<Utf16Decoder, Owner> open(const void *buf, int bufCapa, int endian = BigEndian) {
 		return new Utf16Decoder(buf, bufCapa, endian);
 	}
 
@@ -64,11 +64,11 @@ public:
 
 private:
 	Utf16Decoder(Ref<Stream> stream, int bufCapa, int endian)
-		: byteDecoder_(ByteDecoder::newInstance(stream, bufCapa, endian))
+		: byteDecoder_(ByteDecoder::open(stream, bufCapa, endian))
 	{}
 
 	Utf16Decoder(const void *buf, int bufCapa, int endian)
-		: byteDecoder_(ByteDecoder::newInstance(buf, bufCapa, endian))
+		: byteDecoder_(ByteDecoder::open(buf, bufCapa, endian))
 	{}
 
 	Ref<ByteDecoder, Owner> byteDecoder_;

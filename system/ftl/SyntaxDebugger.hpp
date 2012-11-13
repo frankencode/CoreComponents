@@ -65,7 +65,7 @@ public:
 	typedef SyntaxDefinitionNode DefinitionNode;
 	typedef SyntaxNode Node;
 
-	inline static Ref<Debugger, Owner> newInstance(String indent = "\t") {
+	inline static Ref<Debugger, Owner> create(String indent = "\t") {
 		return new Debugger(indent);
 	}
 

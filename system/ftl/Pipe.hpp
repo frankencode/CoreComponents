@@ -22,7 +22,7 @@ class Pipe: public SystemStream
 public:
 	enum Mode { Input = 0, Output = 1 };
 
-	inline static Ref<Pipe, Owner> newInstance(int mode = Input) {
+	inline static Ref<Pipe, Owner> create(int mode = Input) {
 		return new Pipe(mode);
 	}
 

@@ -20,7 +20,7 @@ namespace ftl
 class SignalSet: public Instance
 {
 public:
-	inline static Ref<SignalSet, Owner> newInstance() {
+	inline static Ref<SignalSet, Owner> create() {
 		return new SignalSet;
 	}
 

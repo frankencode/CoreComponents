@@ -43,7 +43,7 @@ int InvokeNode::matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, T
 		{
 			rollBack(parentToken, lastChildSaved);
 
-			Ref<ByteArray, Owner> range = ByteArray::newInstance(media, i);
+			Ref<ByteArray, Owner> range = ByteArray::create(media, i);
 			definition_->matchNext(range, i0, tokenFactory, parentToken, childState);
 		}
 	}
@@ -56,7 +56,7 @@ int InvokeNode::matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, T
 
 NODE DefinitionNode::KEYWORD(const char *keywords)
 {
-	Ref<KeywordMap, Owner> map = KeywordMap::newInstance();
+	Ref<KeywordMap, Owner> map = KeywordMap::create();
 	const char *pos = keywords;
 	while (*pos) {
 		if ((*pos == ' ') || (*pos == '\t')) {

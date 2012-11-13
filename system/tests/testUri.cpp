@@ -6,7 +6,7 @@ namespace ftl
 
 int main()
 {
-	Ref<Uri, Owner> uri = Uri::newInstance("http://john@example.com:8000/%7ejohn/123.php?say=hello#part1");
+	auto uri = Uri::create("http://john@example.com:8000/%7ejohn/123.php?say=hello#part1");
 	print("uri->scheme() = \"%%\"\n", uri->scheme());
 	print("uri->userInfo() = \"%%\"\n", uri->userInfo());
 	print("uri->host() = \"%%\"\n", uri->host());
