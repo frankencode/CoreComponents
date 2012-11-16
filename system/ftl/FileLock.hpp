@@ -29,7 +29,7 @@ class FileLock: public FLockStruct, public Instance
 public:
 	enum Type { Read = F_RDLCK, Write = F_WRLCK };
 
-	inline static Ref<FileLock, Owner> create(Ref<File> file, int type, off_t start = 0, off_t length = 0) {
+	static Ref<FileLock, Owner> create(Ref<File> file, int type, off_t start = 0, off_t length = 0) {
 		return new FileLock(file, type, start, length);
 	}
 
@@ -38,7 +38,7 @@ public:
 	void release();
 
 private:
-	FileLock(Ref<File> file, int type, off_t start, off_t length);
+	FileLock(Ref<File> file, int type, off_t start = 0, off_t length = 0);
 
 	int fd_;
 };

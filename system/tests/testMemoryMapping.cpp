@@ -10,15 +10,13 @@ const int mapLength = 256;
 class CloneFactory: public ProcessFactory
 {
 public:
-	CloneFactory(String path)
-		: path_(path)
-	{}
+	static Ref<CloneFactory, Owner> create(String path) { return new CloneFactory(path); }
 
 	int incarnate()
 	{
 		print("(clone) waiting for read access\n");
-		Ref<File, Owner> file = File::open(path_, File::Read);
-		Ref<FileLock, Owner> lock = FileLock::create(file, FileLock::Read);
+		auto file = File::open(path_, File::Read);
+		auto lock = FileLock::create(file, FileLock::Read);
 		Guard<FileLock> guard(lock);
 		print("(clone) granted read access\n");
 		{
@@ -29,16 +27,20 @@ public:
 	}
 
 private:
+	CloneFactory(String path)
+		: path_(path)
+	{}
+
 	String path_;
 };
 
 int main()
 {
-	Ref<File, Owner> file = File::temp();
+	auto file = File::temp();
 	print("(parent) file->path() = \"%%\"\n", file->path());
 	file->truncate(mapLength);
 	print("(parent) acquiring write lock... \n");
-	Ref<FileLock, Owner> lock = FileLock::create(file, FileLock::Write);
+	auto lock = FileLock::create(file, FileLock::Write);
 	lock->acquire();
 
 	print("(parent) mapping file and writing message... \n");
@@ -49,8 +51,8 @@ int main()
 	}
 
 	print("(parent) cloning myself... \n");
-	Ref<CloneFactory, Owner> factory = new CloneFactory(file->path());
-	Ref<Process, Owner> fork = factory->produce();
+	auto factory = CloneFactory::create(file->path());
+	auto fork = factory->produce();
 
 	//print("(parent) sleeping 2 seconds... \n");
 	//Thread::sleep(2);
