@@ -56,8 +56,9 @@ void FileStatus::setTimes(Time lastAccess, Time lastModified)
 
 bool FileStatus::update()
 {
-	mem::clr(static_cast<StructStat*>(this), sizeof(StructStat));
-	int ret = (fd_ != -1) ? ::fstat(fd_, this) : (resolve_ ? ::stat(path_, this) : ::lstat(path_, this));
+	StructStat *buf = static_cast<StructStat *>(this);
+	mem::clr(buf, sizeof(StructStat));
+	int ret = (fd_ != -1) ? ::fstat(fd_, buf) : (resolve_ ? ::stat(path_, buf) : ::lstat(path_, buf));
 	if (ret == -1) {
 		if ((errno == ENOENT) || (errno == ENOTDIR)) {
 			exists_ = false;
