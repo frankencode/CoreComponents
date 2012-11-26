@@ -147,11 +147,10 @@ SET(FTLSYSTEM_HEADER
 	Property.hpp
 
 	Module.hpp
-	BuildLine.hpp
-	BuildPlan.hpp
-	DependencyCache.hpp
 	ToolChain.hpp
 	GccToolChain.hpp
+	DependencyCache.hpp
+	BuildPlan.hpp
 )
 
 SET(FTLSYSTEM_SOURCE
@@ -253,9 +252,9 @@ SET(FTLSYSTEM_SOURCE
 	Config.cpp
 	Json.cpp
 
-	BuildPlan.cpp
-	DependencyCache.cpp
 	GccToolChain.cpp
+	DependencyCache.cpp
+	BuildPlan.cpp
 )
 
 ADD_LIBRARY(ftlsystem

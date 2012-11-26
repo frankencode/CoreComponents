@@ -4,6 +4,7 @@
 #include "Process.hpp"
 #include "ProcessFactory.hpp"
 #include "File.hpp"
+#include "BuildPlan.hpp"
 #include "GccToolChain.hpp"
 
 namespace ftl
@@ -13,51 +14,50 @@ GccToolChain::GccToolChain(String execPath)
 	: ToolChain(execPath, Process::start(execPath + " -dumpmachine", Process::ForwardOutput)->output()->readLine())
 {}
 
-String GccToolChain::analyseCommand(String source, int options, Ref<StringList> includePaths) const
+String GccToolChain::analyseCommand(Ref<BuildPlan> buildPlan, String source) const
 {
 	Format args;
-	appendCompileOptions(args, options, includePaths);
+	appendCompileOptions(args, buildPlan->options(), buildPlan->includePaths());
 	args << "-MM" << "-MG" << source;
 	return args->join(" ");
 }
 
-Ref<Module, Owner> GccToolChain::analyse(Ref<BuildLine> buildLine, String source, int options, Ref<StringList> includePaths)
+Ref<Module, Owner> GccToolChain::analyse(Ref<BuildPlan> buildPlan, String source)
 {
-	String command = analyseCommand(source, options, includePaths);
-	String text = buildLine->runAnalyse(command);
+	String command = analyseCommand(buildPlan, source);
+	String text = buildPlan->runAnalyse(command);
 	Ref<StringList, Owner> parts = text->split(Pattern("[:\\\\\n\r ]{1,}"));
 	return Module::create(command, parts->pop(0), parts, true);
 }
 
-bool GccToolChain::compile(Ref<BuildLine> buildLine, Ref<Module, Owner> module, int options, Ref<StringList> includePaths)
+bool GccToolChain::compile(Ref<BuildPlan> buildPlan, Ref<Module, Owner> module)
 {
 	Format args;
-	appendCompileOptions(args, options, includePaths, module->modulePath());
+	appendCompileOptions(args, buildPlan->options(), buildPlan->includePaths(), module->modulePath());
 	args << module->sourcePath();
 	String command = args->join(" ");
-	return buildLine->runBuild(command);
+	return buildPlan->runBuild(command);
 }
 
-String GccToolChain::linkPath(String name, String version, int options) const
+String GccToolChain::linkPath(Ref<BuildPlan> buildPlan) const
 {
 	String path;
-	if (options & BuildPlan::Library)
-		path = "lib" + name + ".so." + version;
+	if (buildPlan->options() & BuildPlan::Library)
+		path = "lib" + buildPlan->name() + ".so." + buildPlan->version();
 	else
-		path = name;
+		path =  buildPlan->name();
 	return path;
 }
 
-bool GccToolChain::link(
-	Ref<BuildLine> buildLine,
-	Ref<ModuleList> modules,
-	Ref<StringList> libraryPaths,
-	Ref<StringList> libraries,
-	String name,
-	String version,
-	int options
-)
+bool GccToolChain::link(Ref<BuildPlan> buildPlan)
 {
+	String name = buildPlan->name();
+	String version = buildPlan->version();
+	int options = buildPlan->options();
+	Ref<ModuleList> modules = buildPlan->modules();
+	Ref<StringList> libraryPaths = buildPlan->libraryPaths();
+	Ref<StringList> libraries = buildPlan->libraries();
+
 	Format args;
 
 	args << execPath();
@@ -69,7 +69,7 @@ bool GccToolChain::link(
 		Ref<StringList, Owner> versions = version->split(".");
 		args << "-Wl,-soname,lib" + name + ".so." + versions->at(0);
 	}
-	args << "-o" << linkPath(name, version, options) ;
+	args << "-o" << linkPath(buildPlan) ;
 
 	for (int i = 0; i < modules->length(); ++i)
 		args << modules->at(i)->modulePath();
@@ -89,36 +89,38 @@ bool GccToolChain::link(
 
 	String command = args->join(" ");
 
-	if (!buildLine->runBuild(command))
+	if (!buildPlan->runBuild(command))
 		return false;
 
 	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static)) {
-		String fullPath = linkPath(name, version, options);
+		String fullPath = linkPath(buildPlan);
 		Ref<StringList, Owner> parts = fullPath->split('.');
 		while (parts->popBack() != "so")
-			buildLine->symlink(fullPath, parts->join("."));
+			buildPlan->symlink(fullPath, parts->join("."));
 	}
 
 	return true;
 }
 
-void GccToolChain::clean(Ref<BuildLine> buildLine, Ref<ModuleList> modules, int options)
+void GccToolChain::clean(Ref<BuildPlan> buildPlan)
 {
-	for (int i = 0; i < modules->length(); ++i)
-		buildLine->unlink(modules->at(i)->modulePath());
+	for (int i = 0; i < buildPlan->modules()->length(); ++i)
+		buildPlan->unlink(buildPlan->modules()->at(i)->modulePath());
 }
 
-void GccToolChain::distClean(Ref<BuildLine> buildLine, Ref<ModuleList> modules, String name, String version, int options)
+void GccToolChain::distClean(Ref<BuildPlan> buildPlan)
 {
-	clean(buildLine, modules, options);
+	int options = buildPlan->options();
 
-	String fullPath = linkPath(name, version, options);
-	buildLine->unlink(fullPath);
+	clean(buildPlan);
+
+	String fullPath = linkPath(buildPlan);
+	buildPlan->unlink(fullPath);
 
 	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static)) {
 		Ref<StringList, Owner> parts = fullPath->split('.');
 		while (parts->popBack() != "so")
-			buildLine->unlink(parts->join("."));
+			buildPlan->unlink(parts->join("."));
 	}
 }
 

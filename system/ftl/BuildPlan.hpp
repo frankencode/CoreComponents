@@ -1,20 +1,19 @@
 #ifndef FTL_BUILDPLAN_HPP
 #define FTL_BUILDPLAN_HPP
 
-#include "Config.hpp"
 #include "Module.hpp"
-#include "BuildLine.hpp"
+#include "ToolChain.hpp"
 
 namespace ftl
 {
 
 class FileStatus;
-class ToolChain;
+class Config;
 class BuildPlan;
 
 typedef List< Ref<BuildPlan, Owner> > BuildPlanList;
 
-class BuildPlan: public BuildLine
+class BuildPlan: public Instance
 {
 public:
 	enum Option {
@@ -31,8 +30,9 @@ public:
 		GlobalOptions = Debug|Release|OptimizeSpeed|OptimizeSize|DryRun|Blindfold|Verbose
 	};
 
-	static Ref<BuildPlan, Owner> create(String projectPath = ".", int globalOptions = Unspecified);
+	static Ref<BuildPlan, Owner> create(int argc, char **argv);
 
+	inline Ref<ToolChain> toolChain() const { return toolChain_; }
 	inline String projectPath() const { return projectPath_; }
 	inline Ref<Config> recipe() const { return recipe_; }
 
@@ -48,25 +48,32 @@ public:
 
 	inline Ref<BuildPlanList> prequisites() const { return prequisites_; }
 
-	int run(Ref<ToolChain> toolChain, int argc, char **argv);
+	int run();
+
+	String runAnalyse(String command);
+	bool runBuild(String command);
+	bool symlink(String path, String newPath);
+	bool unlink(String path);
+	Ref<FileStatus, Owner> fileStatus(String path);
+
+protected:
+	static Ref<BuildPlan, Owner> create(Ref<ToolChain> toolChain, String projectPath, int globalOptions);
+
+	BuildPlan(int argc, char **argv);
+	BuildPlan(Ref<ToolChain> toolChain, String projectPath, int globalOptions = Unspecified);
+
+	void readRecipe();
+	String sourcePath(String source) const;
+
+	void analyse();
+	bool build();
+	void clean();
+	void distClean();
 
 private:
-	BuildPlan(String projectPath, int globalOptions = Unspecified);
-
-	virtual String runAnalyse(String command);
-	virtual bool runBuild(String command);
-	virtual bool symlink(String path, String newPath);
-	virtual bool unlink(String path);
-	virtual Ref<FileStatus, Owner> fileStatus(String path);
-
-	void analyse(Ref<ToolChain> toolChain);
-	bool build(Ref<ToolChain> toolChain);
-	void clean(Ref<ToolChain> toolChain);
-	void distClean(Ref<ToolChain> toolChain);
-
-	static int optionsFromRecipe(Ref<Config> recipe);
-
+	Ref<ToolChain, Owner> toolChain_;
 	String projectPath_;
+	String buildPath_;
 	Ref<Config, Owner> recipe_;
 
 	String name_;

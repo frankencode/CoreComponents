@@ -30,7 +30,7 @@ public:
 
 	virtual Ref<List, Owner> clone() const { return new List(*this); }
 
-	inline Ref<Iterator, Owner> newIterator() const { return Iterator::create(this); }
+	inline Ref<Iterator, Owner> createIterator() const { return Iterator::create(this); }
 
 	inline bool isEmpty() const { return tree_.weight() == 0; }
 	inline int length() const { return tree_.weight(); }

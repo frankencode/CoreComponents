@@ -11,21 +11,20 @@ class ToolChain;
 class Module;
 class File;
 class WireObject;
-class BuildLine;
+class BuildPlan;
 
 class DependencyCache: public Instance
 {
 public:
-	static Ref<DependencyCache, Owner> create(Ref<BuildLine> buildLine, Ref<ToolChain> toolChain, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath = "DependencyCache");
+	static Ref<DependencyCache, Owner> create(Ref<BuildPlan> buildPlan, String cachePath = "DependencyCache");
 	~DependencyCache();
 
-	Ref<Module, Owner> analyse(String sources, int options, Ref<StringList> includePaths);
+	Ref<Module, Owner> analyse(String source);
 
 private:
-	DependencyCache(Ref<BuildLine> buildLine, Ref<ToolChain> toolChain, Ref<StringList> sourcePaths, int options, Ref<StringList> includePaths, String cachePath);
+	DependencyCache(Ref<BuildPlan> buildPlan, String cachePath);
 
-	Ref<BuildLine, Owner> buildLine_;
-	Ref<ToolChain, Owner> toolChain_;
+	Ref<BuildPlan, Owner> buildPlan_;
 	String cachePath_;
 	typedef Map< String, Ref<Module, Owner> > Cache;
 	Ref<Cache, Owner> cache_;
