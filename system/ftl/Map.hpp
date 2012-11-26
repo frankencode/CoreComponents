@@ -30,7 +30,7 @@ public:
 	inline static Ref<Map, Owner> create() { return new Map(); }
 	virtual Ref<Map, Owner> clone() const { return new Map(*this); }
 
-	inline Iterator newIterator() const { return Iterator::create(this); }
+	inline Ref<Iterator, Owner> createIterator() const { return Iterator::create(this); }
 
 	inline bool isEmpty() const { return tree_.weight() == 0; }
 	inline int length() const { return tree_.weight(); }
@@ -180,4 +180,4 @@ protected:
 
 } // namespace ftl
 
-#endif // FTL_MAP_HPP
+#endif // FTL_MAP_HP

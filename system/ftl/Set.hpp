@@ -27,7 +27,7 @@ public:
 	inline static Ref<Set, Owner> create() { return new Set; }
 	virtual Ref<Set, Owner> clone() const { return new Set(*this); }
 
-	inline Ref<Iterator, Owner> newIterator() const { return Iterator::create(this); }
+	inline Ref<Iterator, Owner> createIterator() const { return Iterator::create(this); }
 
 	inline bool isEmpty() const { return tree_.weight() == 0; }
 	inline int length() const { return tree_.weight(); }
@@ -129,4 +129,4 @@ private:
 
 } // namespace ftl
 
-#endif // FTL_SET_HPP
+#endif // FTL_SET_HP

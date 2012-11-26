@@ -14,24 +14,15 @@ public:
 		return new GccToolChain(execPath);
 	}
 
-	virtual String analyseCommand(String source, int options, Ref<StringList> includePaths) const;
-	virtual Ref<Module, Owner> analyse(Ref<BuildLine> buildLine, String source, int options, Ref<StringList> includePaths);
-	virtual bool compile(Ref<BuildLine> buildLine, Ref<Module, Owner> modules, int options, Ref<StringList> includePaths);
+	virtual String analyseCommand(Ref<BuildPlan> buildPlan, String source) const;
+	virtual Ref<Module, Owner> analyse(Ref<BuildPlan> buildPlan, String source);
+	virtual bool compile(Ref<BuildPlan> buildPlan, Ref<Module, Owner> module);
 
-	virtual String linkPath(String name, String version, int options) const;
+	virtual String linkPath(Ref<BuildPlan> buildPlan) const;
+	virtual bool link(Ref<BuildPlan> buildPlan);
 
-	virtual bool link(
-		Ref<BuildLine> buildLine,
-		Ref<ModuleList> modules,
-		Ref<StringList> libraryPaths,
-		Ref<StringList> libraries,
-		String name,
-		String version,
-		int options = 0
-	);
-
-	virtual void clean(Ref<BuildLine> buildLine, Ref<ModuleList> modules, int options);
-	virtual void distClean(Ref<BuildLine> buildLine, Ref<ModuleList> modules, String name, String version, int options);
+	virtual void clean(Ref<BuildPlan> buildPlan);
+	virtual void distClean(Ref<BuildPlan> buildPlan);
 
 protected:
 	GccToolChain(String execPath);

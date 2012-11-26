@@ -5,6 +5,7 @@
 #include "Config.hpp"
 #include "DependencyCache.hpp"
 #include "ToolChain.hpp"
+#include "GccToolChain.hpp"
 #include "BuildPlan.hpp"
 
 namespace ftl
@@ -34,29 +35,64 @@ private:
 	bool redundant_;
 };
 
-Ref<BuildPlan, Owner> BuildPlan::create(String projectPath, int globalOptions)
+Ref<BuildPlan, Owner> BuildPlan::create(int argc, char **argv)
 {
-	return new BuildPlan(projectPath, globalOptions);
+	return new BuildPlan(argc, argv);
 }
 
-BuildPlan::BuildPlan(String projectPath, int globalOptions)
-	:  projectPath_(projectPath)
+Ref<BuildPlan, Owner> BuildPlan::create(Ref<ToolChain> toolChain, String projectPath, int globalOptions)
+{
+	return new BuildPlan(toolChain, projectPath, globalOptions);
+}
+
+BuildPlan::BuildPlan(int argc, char **argv)
+	: toolChain_(GccToolChain::create()),
+	  projectPath_(".")
 {
 	recipe_ = Config::create();
-	recipe_->read(projectPath + "/Recipe");
+	recipe_->read(argc, argv);
+	recipe_->read(projectPath_ + "/Recipe");
+	recipe_->read(argc, argv);
+	readRecipe();
+}
 
-	options_ = optionsFromRecipe(recipe_);
+BuildPlan::BuildPlan(Ref<ToolChain> toolChain, String projectPath, int globalOptions)
+	: toolChain_(toolChain),
+	  projectPath_(projectPath)
+{
+	recipe_ = Config::create();
+	recipe_->read(projectPath_ + "/Recipe");
+	readRecipe();
 
 	if (globalOptions != Unspecified) {
 		options_ &= ~GlobalOptions;
 		options_ |= globalOptions;
 	}
+}
+
+void BuildPlan::readRecipe()
+{
+	options_ = 0;
+
+	if (recipe_->className() == "Library") options_ |= Library;
+
+	if (recipe_->flag("debug"))          options_ |= Debug;
+	if (recipe_->flag("release"))        options_ |= Release;
+	if (recipe_->flag("static"))         options_ |= Static;
+	if (recipe_->flag("optimize-size"))  options_ |= OptimizeSize;
+	if (recipe_->flag("optimize-speed")) options_ |= OptimizeSpeed;
+	if (recipe_->flag("dry-run"))        options_ |= DryRun;
+	if (recipe_->flag("blindfold"))      options_ |= Blindfold;
+	if (recipe_->flag("verbose"))        options_ |= Verbose;
+
+	if (recipe_->contains("project-path"))
+		projectPath_ = recipe_->value("project-path");
 
 	name_ = recipe_->value("name");
 	version_ = recipe_->value("version");
 
 	if (recipe_->contains("includePath"))
-		includePaths_ = Ref<VariantList>(recipe_->value("linkPath"))->toList<String>();
+		includePaths_ = Ref<VariantList>(recipe_->value("includePath"))->toList<String>();
 	else
 		includePaths_ = StringList::create();
 
@@ -69,11 +105,18 @@ BuildPlan::BuildPlan(String projectPath, int globalOptions)
 		libraries_ = Ref<VariantList>(recipe_->value("link"))->toList<String>();
 	else
 		libraries_ = StringList::create();
+
+}
+
+String BuildPlan::sourcePath(String source) const
+{
+	if (projectPath_ == ".") return source;
+	return projectPath_ + "/" + source;
 }
 
 String BuildPlan::runAnalyse(String command)
 {
-	if (options_ & Verbose) printTo(error(), command);
+	if (options_ & Verbose) error()->writeLine(command);
 	return Process::start(command, Process::ForwardOutput)->rawOutput()->readAll();
 }
 
@@ -108,31 +151,28 @@ Ref<FileStatus, Owner> BuildPlan::fileStatus(String path)
 	return FileStatus::create(path);
 }
 
-int BuildPlan::run(Ref<ToolChain> toolChain, int argc, char **argv)
+int BuildPlan::run()
 {
-	recipe_->read(argc, argv);
-
 	if (recipe_->flag("h") || recipe_->flag("help")) {
 		print("no help, yet...\n");
 		return 0;
 	}
 
-	options_ = optionsFromRecipe(recipe_);
-	analyse(toolChain);
+	analyse();
 
 	if (recipe_->flag("c") || recipe_->flag("clean")) {
-		clean(toolChain);
+		clean();
 		return 0;
 	}
 	if (recipe_->flag("dist-clean")) {
-		distClean(toolChain);
+		distClean();
 		return 0;
 	}
 
-	return build(toolChain) ? 0 : 1;
+	return build() ? 0 : 1;
 }
 
-void BuildPlan::analyse(Ref<ToolChain> toolChain)
+void BuildPlan::analyse()
 {
 	if (sources_) return;
 
@@ -159,9 +199,9 @@ void BuildPlan::analyse(Ref<ToolChain> toolChain)
 			libraryPaths_->append(path);
 			libraries_->append(recipe->value("name"));
 		}
-		Ref<BuildPlan, Owner> prequisite = BuildPlan::create(path, options_ & GlobalOptions);
-		prequisite->analyse(toolChain);
-		prequisites_->append(prequisite);
+		Ref<BuildPlan, Owner> buildPlan = BuildPlan::create(toolChain_, path, options_ & GlobalOptions);
+		buildPlan->analyse();
+		prequisites_->append(buildPlan);
 	}
 
 	sources_ = StringList::create();
@@ -174,26 +214,26 @@ void BuildPlan::analyse(Ref<ToolChain> toolChain)
 	}
 
 	modules_ = ModuleList::create(sources_->length());
-	Ref<DependencyCache, Owner> dependencyCache = DependencyCache::create(this, toolChain, sources_, options_, includePaths_);
+	Ref<DependencyCache, Owner> dependencyCache = DependencyCache::create(this);
 	for (int i = 0; i < sources_->length(); ++i)
-		modules_->set(i, dependencyCache->analyse(sources_->at(i), options_, includePaths_));
+		modules_->set(i, dependencyCache->analyse(sources_->at(i)));
 }
 
-bool BuildPlan::build(Ref<ToolChain> toolChain)
+bool BuildPlan::build()
 {
 	PathScope pathScope(projectPath_);
 
 	for (int i = 0; i < prequisites_->length(); ++i)
-		if (!prequisites_->at(i)->build(toolChain)) return false;
+		if (!prequisites_->at(i)->build()) return false;
 
 	for (int i = 0; i < modules_->length(); ++i) {
 		Ref<Module> module = modules_->at(i);
 		if (module->dirty()) {
-			if (!toolChain->compile(this, module, options_, includePaths_)) return false;
+			if (!toolChain_->compile(this, module)) return false;
 		}
 	}
 
-	Ref<FileStatus, Owner> targetStatus = fileStatus(toolChain->linkPath(name_, version_, options_));
+	Ref<FileStatus, Owner> targetStatus = fileStatus(toolChain_->linkPath(this));
 	if (targetStatus->exists()) {
 		Time targetTime = targetStatus->lastModified();
 		bool targetDirty = false;
@@ -211,47 +251,28 @@ bool BuildPlan::build(Ref<ToolChain> toolChain)
 		if (!targetDirty) return true;
 	}
 
-	return toolChain->link(this, modules_, libraryPaths_, libraries_, name_, version_, options_);
+	return toolChain_->link(this);
 }
 
-void BuildPlan::clean(Ref<ToolChain> toolChain)
+void BuildPlan::clean()
 {
 	for (int i = 0; i < prequisites_->length(); ++i)
-		prequisites_->at(i)->clean(toolChain);
+		prequisites_->at(i)->clean();
 
 	PathScope pathScope(projectPath_);
 
-	toolChain->clean(this, modules_, options_);
+	toolChain_->clean(this);
 }
 
-void BuildPlan::distClean(Ref<ToolChain> toolChain)
+void BuildPlan::distClean()
 {
 	for (int i = 0; i < prequisites_->length(); ++i)
-		prequisites_->at(i)->distClean(toolChain);
+		prequisites_->at(i)->distClean();
 
 	PathScope pathScope(projectPath_);
 
-	toolChain->clean(this, modules_, options_);
-	toolChain->distClean(this, modules_, name_, version_, options_);
+	toolChain_->distClean(this);
 	unlink("DependencyCache");
-}
-
-int BuildPlan::optionsFromRecipe(Ref<Config> recipe)
-{
-	int options = 0;
-
-	if (recipe->className() == "Library") options |= Library;
-
-	if (recipe->flag("debug")) options |= Debug;
-	if (recipe->flag("release")) options |= Release;
-	if (recipe->flag("static")) options |= Static;
-	if (recipe->flag("optimize-size")) options |= OptimizeSize;
-	if (recipe->flag("optimize-speed")) options |= OptimizeSpeed;
-	if (recipe->flag("dry-run")) options |= DryRun;
-	if (recipe->flag("blindfold")) options |= Blindfold;
-	if (recipe->flag("verbose")) options |= Verbose;
-
-	return options;
 }
 
 } // namespace ftl

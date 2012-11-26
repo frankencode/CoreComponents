@@ -4,19 +4,19 @@
 #include "Format.hpp"
 #include "File.hpp"
 #include "FileStatus.hpp"
+#include "BuildPlan.hpp"
 #include "DependencyCache.hpp"
 
 namespace ftl
 {
 
-Ref<DependencyCache, Owner> DependencyCache::create(Ref<BuildLine> buildLine, Ref<ToolChain> toolChain, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath)
+Ref<DependencyCache, Owner> DependencyCache::create(Ref<BuildPlan> buildPlan, String cachePath)
 {
-	return new DependencyCache(buildLine, toolChain, sources, options, includePaths, cachePath);
+	return new DependencyCache(buildPlan, cachePath);
 }
 
-DependencyCache::DependencyCache(Ref<BuildLine> buildLine, Ref<ToolChain> toolChain, Ref<StringList> sources, int options, Ref<StringList> includePaths, String cachePath)
-	: buildLine_(buildLine),
-	  toolChain_(toolChain),
+DependencyCache::DependencyCache(Ref<BuildPlan> buildPlan, String cachePath)
+	: buildPlan_(buildPlan),
 	  cachePath_(cachePath),
 	  cache_(Cache::create())
 {
@@ -36,7 +36,7 @@ DependencyCache::DependencyCache(Ref<BuildLine> buildLine, Ref<ToolChain> toolCh
 	{
 		WireObject::Item item = dependencyCache->at(i);
 
-		if (!sources->contains(item->key())) continue;
+		if (!buildPlan->sources()->contains(item->key())) continue;
 
 		Ref<WireObject> wire = item->value();
 		String command = wire->value("analyseCommand");
@@ -46,9 +46,9 @@ DependencyCache::DependencyCache(Ref<BuildLine> buildLine, Ref<ToolChain> toolCh
 
 		bool dirty = false;
 
-		Ref<FileStatus, Owner> objectStatus = buildLine->fileStatus(modulePath);
+		Ref<FileStatus, Owner> objectStatus = buildPlan_->fileStatus(modulePath);
 		for (int i = 0; i < dependencyPaths->length(); ++i) {
-			Time sourceTime = buildLine->fileStatus(dependencyPaths->at(i))->lastModified();
+			Time sourceTime = buildPlan_->fileStatus(dependencyPaths->at(i))->lastModified();
 			if (sourceTime > cacheTime) {
 				dirty = true;
 				break;
@@ -63,7 +63,7 @@ DependencyCache::DependencyCache(Ref<BuildLine> buildLine, Ref<ToolChain> toolCh
 
 		if (dirty) continue;
 
-		if (command != toolChain->analyseCommand(sourcePath, options, includePaths)) continue;
+		if (command != buildPlan_->toolChain()->analyseCommand(buildPlan, sourcePath)) continue;
 
 		cache_->insert(
 			item->key(),
@@ -100,13 +100,13 @@ DependencyCache::~DependencyCache()
 	File::save(cachePath_, text);
 }
 
-Ref<Module, Owner> DependencyCache::analyse(String sourcePath, int options, Ref<StringList> includePaths)
+Ref<Module, Owner> DependencyCache::analyse(String source)
 {
 	Ref<Module, Owner> module;
-	if (cache_->lookup(sourcePath, &module))
+	if (cache_->lookup(source, &module))
 		return module;
-	module = toolChain_->analyse(buildLine_, sourcePath, options, includePaths);
-	cache_->insert(sourcePath, module);
+	module = buildPlan_->toolChain()->analyse(buildPlan_, source);
+	cache_->insert(source, module);
 	return module;
 }
 
