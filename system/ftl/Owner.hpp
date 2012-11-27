@@ -58,21 +58,6 @@ private:
 	#endif
 };
 
-template<class T>
-inline Ref<T, Owner> create() { return new T; }
-
-template<class T, class A0>
-inline Ref<T, Owner> create(A0 a0) { return new T(a0); }
-
-template<class T, class A0, class A1>
-inline Ref<T, Owner> create(A0 a0, A1 a1) { return new T(a0, a1); }
-
-template<class T, class A0, class A1, class A2>
-inline Ref<T, Owner> create(A0 a0, A1 a1, A2 a2) { return new T(a0, a1, a2); }
-
-template<class T, class A0, class A1, class A2, class A3>
-inline Ref<T, Owner> create(A0 a0, A1 a1, A2 a2, A3 a3) { return new T(a0, a1, a2, a3); }
-
 } // namespace ftl
 
 #endif // FTL_OWNER_HPP

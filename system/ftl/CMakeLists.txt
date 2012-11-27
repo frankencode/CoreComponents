@@ -76,7 +76,6 @@ SET(FTLSYSTEM_HEADER
 	SystemStream.hpp
 	FileStatus.hpp
 	File.hpp
-	DirEntry.hpp
 	Dir.hpp
 	Glob.hpp
 	LineSource.hpp

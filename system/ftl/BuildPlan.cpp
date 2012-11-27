@@ -1,7 +1,8 @@
 #include "PrintDebug.hpp"
 #include "File.hpp"
-#include "Process.hpp"
+#include "Dir.hpp"
 #include "Glob.hpp"
+#include "Process.hpp"
 #include "Config.hpp"
 #include "DependencyCache.hpp"
 #include "ToolChain.hpp"
@@ -10,30 +11,6 @@
 
 namespace ftl
 {
-
-class PathScope {
-public:
-	PathScope(String path, bool verbose = true)
-		: cwd_(path),
-		  verbose_(verbose),
-		  cwdSaved_(Process::cwd()),
-		  redundant_((cwdSaved_ == cwd_->makeAbsolutePath()) || (cwd_ == "."))
-	{
-		if (redundant_) return;
-		if (verbose_) printTo(error(), "pushd %%\n", cwd_);
-		Process::cd(cwd_);
-	}
-	~PathScope() {
-		if (redundant_) return;
-		if (verbose_) printTo(error(), "popd\n");
-		Process::cd(cwdSaved_);
-	}
-private:
-	String cwd_;
-	bool verbose_;
-	String cwdSaved_;
-	bool redundant_;
-};
 
 Ref<BuildPlan, Owner> BuildPlan::create(int argc, char **argv)
 {
@@ -82,17 +59,17 @@ void BuildPlan::readRecipe()
 
 	if (recipe_->className() == "Library") options_ |= Library;
 
-	if (recipe_->flag("debug"))          options_ |= Debug;
-	if (recipe_->flag("release"))        options_ |= Release;
-	if (recipe_->flag("static"))         options_ |= Static;
-	if (recipe_->flag("optimize-size"))  options_ |= OptimizeSize;
-	if (recipe_->flag("optimize-speed")) options_ |= OptimizeSpeed;
-	if (recipe_->flag("dry-run"))        options_ |= DryRun;
-	if (recipe_->flag("blindfold"))      options_ |= Blindfold;
-	if (recipe_->flag("verbose"))        options_ |= Verbose;
+	if (recipe_->flag("debug"))     options_ |= Debug;
+	if (recipe_->flag("release"))   options_ |= Release;
+	if (recipe_->flag("static"))    options_ |= Static;
+	if (recipe_->flag("min-size"))  options_ |= OptimizeSize;
+	if (recipe_->flag("max-speed")) options_ |= OptimizeSpeed;
+	if (recipe_->flag("dry-run"))   options_ |= DryRun;
+	if (recipe_->flag("blindfold")) options_ |= Blindfold;
+	if (recipe_->flag("verbose"))   options_ |= Verbose;
 
-	name_ = recipe_->value("name");
-	version_ = recipe_->value("version");
+	name_ = recipe_->value("name", "");
+	version_ = recipe_->value("version", "");
 
 	if (recipe_->contains("include-path"))
 		includePaths_ = Ref<VariantList>(recipe_->value("include-path"))->toList<String>();
@@ -108,12 +85,29 @@ void BuildPlan::readRecipe()
 		libraries_ = Ref<VariantList>(recipe_->value("link"))->toList<String>();
 	else
 		libraries_ = StringList::create();
+
+	{
+		Format f;
+		f << "." + name_;
+		if (version_ != "") f << version_;
+		if (options_ & Static) f << "static";
+		if (options_ & Debug) f << "debug";
+		if (options_ & OptimizeSize) f << "min_size";
+		if (options_ & OptimizeSpeed) f << "max_speed";
+		f << toolChain_->machine();
+		objectPath_ = f->join("-");
+	}
 }
 
 String BuildPlan::sourcePath(String source) const
 {
 	if (projectPath_ == ".") return source;
 	return projectPath_ + "/" + source;
+}
+
+String BuildPlan::objectPath(String object) const
+{
+	return objectPath_ + "/" + object;
 }
 
 String BuildPlan::runAnalyse(String command)
@@ -127,6 +121,22 @@ bool BuildPlan::runBuild(String command)
 	error()->writeLine(command);
 	if (options_ & DryRun) return true;
 	return Process::start(command)->wait() == 0;
+}
+
+bool BuildPlan::mkdir(String path)
+{
+	if (!fileStatus(path)->exists())
+		printTo(error(), "mkdir -p %%\n", path);
+	if (options_ & DryRun) return true;
+	return Dir::establish(path);
+}
+
+bool BuildPlan::rmdir(String path)
+{
+	if (fileStatus(path)->exists())
+		printTo(error(), "rmdir %%\n", path);
+	if (options_ & DryRun) return true;
+	return Dir::unlink(path);
 }
 
 bool BuildPlan::symlink(String path, String newPath)
@@ -178,9 +188,6 @@ void BuildPlan::analyse()
 {
 	if (sources_) return;
 
-	bool verbose = options_ & Verbose;
-	PathScope pathScope(projectPath_, verbose);
-
 	prequisites_ = BuildPlanList::create();
 
 	Ref<StringList, Owner> prequisitePaths;
@@ -191,26 +198,24 @@ void BuildPlan::analyse()
 
 	for (int i = 0; i < prequisitePaths->length(); ++i) {
 		String path = prequisitePaths->at(i);
-		PathScope cwd(path, verbose);
-		Ref<Config, Owner> recipe = Config::create();
-		recipe->read("Recipe");
-		if (recipe->className() == "Library") {
-			String parentPath = path->reducePath();
-			if (!includePaths_->contains(parentPath))
-				includePaths_->append(parentPath);
-			libraryPaths_->append(path);
-			libraries_->append(recipe->value("name"));
-		}
+		if (path->isRelativePath()) path = projectPath_ + "/" + path;
 		Ref<BuildPlan, Owner> buildPlan = BuildPlan::create(toolChain_, path, options_ & GlobalOptions);
+		if (buildPlan->options() & Library) {
+			path = path->reducePath();
+			if (!includePaths_->contains(path))
+				includePaths_->append(path);
+			if (!libraryPaths_->contains("."))
+				libraryPaths_->append(".");
+			libraries_->append(buildPlan->name());
+		}
 		buildPlan->analyse();
 		prequisites_->append(buildPlan);
 	}
 
 	sources_ = StringList::create();
 	Ref<VariantList> sourcePatterns = recipe_->value("source");
-	Ref<DirEntry, Owner> entry = DirEntry::create();
 	for (int i = 0; i < sourcePatterns->length(); ++i) {
-		Ref<Glob, Owner> glob = Glob::open(sourcePatterns->at(i));
+		Ref<Glob, Owner> glob = Glob::open(sourcePath(sourcePatterns->at(i)));
 		for (String path; glob->read(&path);)
 			sources_->append(path);
 	}
@@ -223,10 +228,10 @@ void BuildPlan::analyse()
 
 bool BuildPlan::build()
 {
-	PathScope pathScope(projectPath_);
-
 	for (int i = 0; i < prequisites_->length(); ++i)
 		if (!prequisites_->at(i)->build()) return false;
+
+	mkdir(objectPath_);
 
 	for (int i = 0; i < modules_->length(); ++i) {
 		Ref<Module> module = modules_->at(i);
@@ -261,8 +266,6 @@ void BuildPlan::clean()
 	for (int i = 0; i < prequisites_->length(); ++i)
 		prequisites_->at(i)->clean();
 
-	PathScope pathScope(projectPath_);
-
 	toolChain_->clean(this);
 }
 
@@ -271,10 +274,9 @@ void BuildPlan::distClean()
 	for (int i = 0; i < prequisites_->length(); ++i)
 		prequisites_->at(i)->distClean();
 
-	PathScope pathScope(projectPath_);
-
 	toolChain_->distClean(this);
-	unlink("DependencyCache");
+	unlink(DependencyCache::cachePath(this));
+	rmdir(objectPath_);
 }
 
 } // namespace ftl

@@ -624,7 +624,7 @@ bool ByteArray::isAbsolutePath() const
 	return (length() > 0) ? (get(0) == '/') : false;
 }
 
-Ref<ByteArray, Owner> ByteArray::makeAbsolutePathRelativeTo(String currentDir) const
+Ref<ByteArray, Owner> ByteArray::absolutePathRelativeTo(String currentDir) const
 {
 	if (isAbsolutePath() || (currentDir == "."))
 		return this;
@@ -666,11 +666,11 @@ Ref<ByteArray, Owner> ByteArray::makeAbsolutePathRelativeTo(String currentDir) c
 	return absoluteParts->join("/");
 }
 
-Ref<ByteArray, Owner> ByteArray::makeAbsolutePath() const
+Ref<ByteArray, Owner> ByteArray::absolutePath() const
 {
 	if (isAbsolutePath())
 		return this;
-	return makeAbsolutePathRelativeTo(String());
+	return absolutePathRelativeTo(String());
 }
 
 Ref<ByteArray, Owner> ByteArray::fileName() const

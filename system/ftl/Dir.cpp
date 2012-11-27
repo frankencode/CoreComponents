@@ -10,7 +10,6 @@
  */
 
 #include <sys/stat.h> // mkdir
-#include <sys/types.h> // mode_t
 
 #include "File.hpp"
 #include "FileStatus.hpp"
@@ -38,6 +37,7 @@ String Dir::path() const { return path_; }
 String Dir::path(String name) const
 {
 	if (path_ == ".") return name;
+	if (path_ == "/") return "/" + name;
 	return path_ + "/" + name;
 }
 

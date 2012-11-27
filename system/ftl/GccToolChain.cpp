@@ -27,7 +27,7 @@ Ref<Module, Owner> GccToolChain::analyse(Ref<BuildPlan> buildPlan, String source
 	String command = analyseCommand(buildPlan, source);
 	String text = buildPlan->runAnalyse(command);
 	Ref<StringList, Owner> parts = text->split(Pattern("[:\\\\\n\r ]{1,}"));
-	return Module::create(command, parts->pop(0), parts, true);
+	return Module::create(command, buildPlan->objectPath(parts->pop(0)), parts, true);
 }
 
 bool GccToolChain::compile(Ref<BuildPlan> buildPlan, Ref<Module, Owner> module)
@@ -83,7 +83,7 @@ bool GccToolChain::link(Ref<BuildPlan> buildPlan)
 	if (libraryPaths->length() > 0) {
 		Ref<StringList, Owner> rpaths = StringList::create();
 		for (int i = 0; i < libraryPaths->length(); ++i)
-			rpaths << "-rpath=" + libraryPaths->at(i);
+			rpaths << "-rpath=" + libraryPaths->at(i)->absolutePath();
 		args << "-Wl,--enable-new-dtags," + rpaths->join(",");
 	}
 

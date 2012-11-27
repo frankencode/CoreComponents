@@ -201,8 +201,8 @@ public:
 	bool isRelativePath() const;
 	bool isAbsolutePath() const;
 
-	Ref<ByteArray, Owner> makeAbsolutePathRelativeTo(String currentDir) const;
-	Ref<ByteArray, Owner> makeAbsolutePath() const;
+	Ref<ByteArray, Owner> absolutePathRelativeTo(String currentDir) const;
+	Ref<ByteArray, Owner> absolutePath() const;
 	Ref<ByteArray, Owner> fileName() const;
 	Ref<ByteArray, Owner> fileNameSansFirstExtension() const;
 	Ref<ByteArray, Owner> fileNameSansExtension() const;
