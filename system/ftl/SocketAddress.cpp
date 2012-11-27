@@ -84,7 +84,7 @@ SocketAddress::SocketAddress(addrinfo *info)
 	else if (info->ai_family == AF_INET6)
 		inet6Address_ = *(sockaddr_in6 *)info->ai_addr;
 	else
-		FTL_THROW(NetworkingException, "Unsupported address family.");
+		FTL_THROW(NetworkingException, "Unsupported address family");
 }
 
 int SocketAddress::family() const { return addr_.sa_family; }

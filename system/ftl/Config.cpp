@@ -29,7 +29,7 @@ void Config::read(String path)
 		throw ConfigException(Format("Can't open configuration file %%") << path);
 	}
 	catch (WireException &ex) {
-		throw ConfigException(Format("Syntax error in configuration file\n%%%%") << path << ex.what());
+		throw ConfigException(Format("Syntax error in configuration file\n%%:%%") << path << ex.what());
 	}
 }
 
@@ -57,7 +57,15 @@ void Config::read(int argc, char **argv)
 		String name = s->copy(state->capture("name"));
 		String valueText = s->copy(state->capture("value"));
 		Variant value = true;
-		if (valueText != "") value = wire()->parse(valueText);
+		if (valueText != "") {
+			try {
+				value = wire()->parse(valueText);
+			}
+			catch (WireException &ex) {
+				valueText = "\"" + valueText + "\"";
+				value = wire()->parse(valueText);
+			}
+		}
 
 		establish(name, value);
 	}

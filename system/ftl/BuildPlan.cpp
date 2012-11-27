@@ -51,6 +51,12 @@ BuildPlan::BuildPlan(int argc, char **argv)
 {
 	recipe_ = Config::create();
 	recipe_->read(argc, argv);
+	if (recipe_->arguments()->length() > 0) {
+		if (recipe_->arguments()->length() > 1)
+			FTL_THROW(BuildPlanException, "Processing multiple Recipe files at once is not supported");
+		projectPath_ = recipe_->arguments()->at(0);
+	}
+	recipe_->clear();
 	recipe_->read(projectPath_ + "/Recipe");
 	recipe_->read(argc, argv);
 	readRecipe();
@@ -85,19 +91,16 @@ void BuildPlan::readRecipe()
 	if (recipe_->flag("blindfold"))      options_ |= Blindfold;
 	if (recipe_->flag("verbose"))        options_ |= Verbose;
 
-	if (recipe_->contains("project-path"))
-		projectPath_ = recipe_->value("project-path");
-
 	name_ = recipe_->value("name");
 	version_ = recipe_->value("version");
 
-	if (recipe_->contains("includePath"))
-		includePaths_ = Ref<VariantList>(recipe_->value("includePath"))->toList<String>();
+	if (recipe_->contains("include-path"))
+		includePaths_ = Ref<VariantList>(recipe_->value("include-path"))->toList<String>();
 	else
 		includePaths_ = StringList::create();
 
-	if (recipe_->contains("linkPath"))
-		libraryPaths_ = Ref<VariantList>(recipe_->value("linkPath"))->toList<String>();
+	if (recipe_->contains("link-path"))
+		libraryPaths_ = Ref<VariantList>(recipe_->value("link-path"))->toList<String>();
 	else
 		libraryPaths_ = StringList::create();
 
@@ -105,7 +108,6 @@ void BuildPlan::readRecipe()
 		libraries_ = Ref<VariantList>(recipe_->value("link"))->toList<String>();
 	else
 		libraries_ = StringList::create();
-
 }
 
 String BuildPlan::sourcePath(String source) const

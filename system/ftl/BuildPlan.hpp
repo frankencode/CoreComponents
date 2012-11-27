@@ -13,6 +13,8 @@ class BuildPlan;
 
 typedef List< Ref<BuildPlan, Owner> > BuildPlanList;
 
+FTL_EXCEPTION(BuildPlanException, Exception);
+
 class BuildPlan: public Instance
 {
 public:
