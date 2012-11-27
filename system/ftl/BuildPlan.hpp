@@ -36,6 +36,7 @@ public:
 
 	inline Ref<ToolChain> toolChain() const { return toolChain_; }
 	inline String projectPath() const { return projectPath_; }
+	inline String objectPath() const { return objectPath_; }
 	inline Ref<Config> recipe() const { return recipe_; }
 
 	inline String name() const { return name_; }
@@ -52,8 +53,13 @@ public:
 
 	int run();
 
+	String sourcePath(String source) const;
+	String objectPath(String object) const;
+
 	String runAnalyse(String command);
 	bool runBuild(String command);
+	bool mkdir(String path);
+	bool rmdir(String path);
 	bool symlink(String path, String newPath);
 	bool unlink(String path);
 	Ref<FileStatus, Owner> fileStatus(String path);
@@ -65,7 +71,6 @@ protected:
 	BuildPlan(Ref<ToolChain> toolChain, String projectPath, int globalOptions = Unspecified);
 
 	void readRecipe();
-	String sourcePath(String source) const;
 
 	void analyse();
 	bool build();
@@ -75,7 +80,7 @@ protected:
 private:
 	Ref<ToolChain, Owner> toolChain_;
 	String projectPath_;
-	String buildPath_;
+	String objectPath_;
 	Ref<Config, Owner> recipe_;
 
 	String name_;

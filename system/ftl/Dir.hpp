@@ -11,7 +11,10 @@
 #ifndef FTL_DIR_HPP
 #define FTL_DIR_HPP
 
-#include "DirEntry.hpp"
+#include <sys/types.h> // mode_t
+#include <dirent.h> // DIR, opendir, closedir, readdir_r
+#include "generics.hpp"
+#include "String.hpp"
 
 namespace ftl
 {

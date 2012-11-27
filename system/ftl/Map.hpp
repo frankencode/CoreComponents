@@ -116,9 +116,9 @@ public:
 
 	/** Retrieve value of an existing key-value mapping.
 	  */
-	inline Value value(const Key &key) const
+	inline Value value(const Key &key, const Value &fallback = Value()) const
 	{
-		Value value = Value();
+		Value value = fallback;
 		lookup(key, &value);
 		return value;
 	}

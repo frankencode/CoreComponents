@@ -11,7 +11,6 @@
 #ifndef FTL_GLOB_HPP
 #define FTL_GLOB_HPP
 
-#include "DirEntry.hpp"
 #include "Pattern.hpp"
 
 namespace ftl

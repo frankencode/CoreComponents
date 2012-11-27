@@ -64,7 +64,7 @@ public:
 		return *this;
 	}
 
-	// assign a deep copy of a byte array
+	// assign a deep copy of a C string
 	inline String &operator=(const char *data) {
 		String b(data);
 		Super::set(b.Super::get());

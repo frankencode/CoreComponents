@@ -269,7 +269,7 @@ void File::truncate(off_t length)
 
 class UnlinkFile: public Action {
 public:
-	UnlinkFile(String path): path_(path->makeAbsolutePath()) {}
+	UnlinkFile(String path): path_(path->absolutePath()) {}
 	void run() { try { unlink(path_); } catch(...) {} }
 private:
 	String path_;

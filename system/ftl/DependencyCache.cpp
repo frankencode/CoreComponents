@@ -10,17 +10,22 @@
 namespace ftl
 {
 
-Ref<DependencyCache, Owner> DependencyCache::create(Ref<BuildPlan> buildPlan, String cachePath)
+Ref<DependencyCache, Owner> DependencyCache::create(Ref<BuildPlan> buildPlan)
 {
-	return new DependencyCache(buildPlan, cachePath);
+	return new DependencyCache(buildPlan);
 }
 
-DependencyCache::DependencyCache(Ref<BuildPlan> buildPlan, String cachePath)
+String DependencyCache::cachePath(Ref<BuildPlan> buildPlan)
+{
+	return buildPlan->objectPath("DependencyCache");
+}
+
+DependencyCache::DependencyCache(Ref<BuildPlan> buildPlan)
 	: buildPlan_(buildPlan),
-	  cachePath_(cachePath),
+	  cachePath_(cachePath(buildPlan)),
 	  cache_(Cache::create())
 {
-	File::establish(cachePath);
+	File::establish(cachePath_);
 	Time cacheTime = File::status(cachePath_)->lastModified();
 
 	Ref<WireObject, Owner> dependencyCache;
