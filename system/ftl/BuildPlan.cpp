@@ -68,8 +68,8 @@ void BuildPlan::readRecipe()
 	if (recipe_->flag("blindfold")) options_ |= Blindfold;
 	if (recipe_->flag("verbose"))   options_ |= Verbose;
 
-	name_ = recipe_->value("name", "");
-	version_ = recipe_->value("version", "");
+	name_ = recipe_->value("name");
+	version_ = recipe_->value("version");
 
 	if (recipe_->contains("include-path"))
 		includePaths_ = Ref<VariantList>(recipe_->value("include-path"))->toList<String>();
