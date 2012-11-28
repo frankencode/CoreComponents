@@ -18,7 +18,9 @@ namespace ftl
 
 String::String(const Variant &b)
 	: Super(b.toInstance<ByteArray>())
-{}
+{
+	if (!Super::get()) Super::set(ByteArray::empty());
+}
 
 String::String(const Format &b)
 {
