@@ -148,12 +148,12 @@ String File::lookup(String fileName, Ref<StringList> dirs, int accessFlags)
 
 Ref<FileStatus, Owner> File::status(String path)
 {
-	return FileStatus::create(path, true);
+	return FileStatus::read(path, true);
 }
 
 Ref<FileStatus, Owner> File::unresolvedStatus(String path)
 {
-	return FileStatus::create(path, false);
+	return FileStatus::read(path, false);
 }
 
 String File::load(String path)
@@ -252,7 +252,7 @@ int File::openFlags() const
 
 Ref<FileStatus, Owner> File::status() const
 {
-	return FileStatus::create(fd_);
+	return FileStatus::read(fd_);
 }
 
 void File::truncate(off_t length)

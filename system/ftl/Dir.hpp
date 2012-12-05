@@ -23,6 +23,7 @@ class Dir: public Source<String>
 {
 public:
 	inline static Ref<Dir, Owner> open(String path) { return new Dir(path); }
+	static Ref<Dir, Owner> tryOpen(String path);
 	~Dir();
 
 	String path() const;
@@ -36,7 +37,7 @@ public:
 	static bool unlink(String path);
 
 protected:
-	Dir(String path);
+	Dir(String path, DIR *dir = 0);
 
 	String path_;
 	DIR *dir_;

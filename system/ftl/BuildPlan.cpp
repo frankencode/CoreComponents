@@ -159,8 +159,8 @@ bool BuildPlan::unlink(String path)
 
 Ref<FileStatus, Owner> BuildPlan::fileStatus(String path)
 {
-	if (options_ & Blindfold) return FileStatus::create();
-	return FileStatus::create(path);
+	if (options_ & Blindfold) return FileStatus::read();
+	return FileStatus::read(path);
 }
 
 int BuildPlan::run()

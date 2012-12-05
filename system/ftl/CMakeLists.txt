@@ -77,6 +77,7 @@ SET(FTLSYSTEM_HEADER
 	FileStatus.hpp
 	File.hpp
 	Dir.hpp
+	DirWalker.hpp
 	Glob.hpp
 	LineSource.hpp
 	LineSink.hpp
@@ -196,6 +197,7 @@ SET(FTLSYSTEM_SOURCE
 	FileStatus.cpp
 	File.cpp
 	Dir.cpp
+	DirWalker.cpp
 	Glob.cpp
 	LineSink.cpp
 	LineSource.cpp
