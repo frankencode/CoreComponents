@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 
 	for (String file; files->read(&file);)
 	{
-		auto status = FileStatus::create(file);
+		auto status = FileStatus::read(file);
 
 		Format line;
 

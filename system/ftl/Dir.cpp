@@ -18,12 +18,22 @@
 namespace ftl
 {
 
-Dir::Dir(String path)
-	: path_(path),
-	  dir_(::opendir(path_))
+Ref<Dir, Owner> Dir::tryOpen(String path)
 {
-	if (!dir_)
-		FTL_SYSTEM_EXCEPTION;
+	DIR *dir = ::opendir(path);
+	if (!dir) return new Dir(path, dir);
+	return 0;
+}
+
+Dir::Dir(String path, DIR *dir)
+	: path_(path),
+	  dir_(dir)
+{
+	if (!dir_) {
+		dir_ = ::opendir(path_);
+		if (!dir_)
+			FTL_SYSTEM_EXCEPTION;
+	}
 }
 
 Dir::~Dir()

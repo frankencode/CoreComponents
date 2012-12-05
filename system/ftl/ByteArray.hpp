@@ -209,7 +209,7 @@ public:
 	Ref<ByteArray, Owner> reducePath() const;
 	Ref<ByteArray, Owner> expandPath(String component) const;
 
-protected:
+private:
 	friend class Singleton<ByteArray>;
 
 	explicit ByteArray(int size = 0);

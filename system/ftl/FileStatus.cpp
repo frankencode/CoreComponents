@@ -28,12 +28,6 @@ FileStatus::FileStatus(int fd)
 	exists_ = update();
 }
 
-FileStatus::FileStatus(Ref<SystemStream> stream)
-	: fd_(stream->fd())
-{
-	exists_ = update();
-}
-
 FileStatus::FileStatus(String path, bool resolve)
 	: fd_(-1),
 	  path_(path),

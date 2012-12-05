@@ -28,9 +28,9 @@ typedef struct stat StructStat;
 class FileStatus: public StructStat, public Instance
 {
 public:
-	inline static Ref<FileStatus, Owner> create(int fd = -1) { return new FileStatus(fd); }
-	inline static Ref<FileStatus, Owner> create(Ref<SystemStream> stream) { return new FileStatus(stream); }
-	inline static Ref<FileStatus, Owner> create(String path, bool resolve = true) { return new FileStatus(path, resolve); }
+	inline static Ref<FileStatus, Owner> read(int fd = -1) { return new FileStatus(fd); }
+	inline static Ref<FileStatus, Owner> read(Ref<SystemStream> stream) { return read(stream->fd()); }
+	inline static Ref<FileStatus, Owner> read(String path, bool resolve = true) { return new FileStatus(path, resolve); }
 
 	inline String path() const { return path_; }
 
@@ -59,7 +59,6 @@ public:
 
 private:
 	FileStatus(int fd);
-	FileStatus(Ref<SystemStream> stream);
 	FileStatus(String path, bool resolve = true);
 
 	bool update();
