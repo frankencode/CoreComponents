@@ -17,7 +17,7 @@ Ref<DependencyCache, Owner> DependencyCache::create(Ref<BuildPlan> buildPlan)
 
 String DependencyCache::cachePath(Ref<BuildPlan> buildPlan)
 {
-	return buildPlan->objectPath("DependencyCache");
+	return buildPlan->modulePath("DependencyCache");
 }
 
 DependencyCache::DependencyCache(Ref<BuildPlan> buildPlan)

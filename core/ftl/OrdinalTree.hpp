@@ -276,7 +276,10 @@ void OrdinalTree<Node>::push(int index, const Item &item)
 	}
 	else {
 		Node *ka = 0;
-		bool found = lookupByIndex(index, &ka);
+		#ifndef NDEBUG
+		bool found =
+		#endif
+			lookupByIndex(index, &ka);
 		FTL_ASSERT(found);
 		attachBefore(ka, kn);
 	}
@@ -288,7 +291,10 @@ template<class Node>
 void OrdinalTree<Node>::pop(int index, Item *item)
 {
 	Node *ko = 0;
-	bool found = lookupByIndex(index, &ko);
+	#ifndef NDEBUG
+	bool found =
+	#endif
+		lookupByIndex(index, &ko);
 	FTL_ASSERT(found);
 	*item = ko->item_;
 	Node *k = pred(ko);

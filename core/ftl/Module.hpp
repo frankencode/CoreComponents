@@ -17,6 +17,7 @@ public:
 	inline String analyseCommand() const { return analyseCommand_; }
 	inline String modulePath() const { return modulePath_; }
 	inline String sourcePath() const { return dependencyPaths_->at(0); }
+	inline String toolName() const { return sourcePath()->baseName(); }
 	inline Ref<StringList> dependencyPaths() const { return dependencyPaths_; }
 	inline bool dirty() const { return dirty_; }
 

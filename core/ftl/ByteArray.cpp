@@ -604,6 +604,22 @@ Ref<ByteArray, Owner> ByteArray::md5() const
 	return md5.finish();
 }
 
+Ref<ByteArray, Owner> ByteArray::hex() const
+{
+	Ref<ByteArray, Owner> s2 = ByteArray::create(size_ * 2);
+	int j = 0;
+	for (int i = 0; i < size_; ++i) {
+		unsigned char ch = (unsigned char)data_[i];
+		int d0 = ch & 0xf;
+		int d1 = (ch >> 4) & 0xf;
+		if ((0 <= d0) && (d0 < 10)) s2->data_[j++] = d0 + '0';
+		else s2->data_[j++] = (d0 - 10) + 'a';
+		if ((0 <= d1) && (d1 < 10)) s2->data_[j++] = d1 + '0';
+		else s2->data_[j++] = (d1 - 10) + 'a';
+	}
+	return s2;
+}
+
 Ref<ByteArray, Owner> ByteArray::base64() const
 {
 	return Base64::encode(this);
@@ -682,14 +698,14 @@ Ref<ByteArray, Owner> ByteArray::fileName() const
 	return name;
 }
 
-Ref<ByteArray, Owner> ByteArray::fileNameSansFirstExtension() const
+Ref<ByteArray, Owner> ByteArray::completeBaseName() const
 {
 	Ref<StringList, Owner> parts = fileName()->split(".");
 	parts->popBack();
 	return parts->join(".");
 }
 
-Ref<ByteArray, Owner> ByteArray::fileNameSansExtension() const
+Ref<ByteArray, Owner> ByteArray::baseName() const
 {
 	Ref<StringList, Owner> parts = fileName()->split(".");
 	return parts->at(0);
@@ -709,6 +725,24 @@ Ref<ByteArray, Owner> ByteArray::reducePath() const
 Ref<ByteArray, Owner> ByteArray::expandPath(String component) const
 {
 	return String(Format() << String(this) << "/" << component);
+}
+
+Ref<ByteArray, Owner> ByteArray::canonicalPath() const
+{
+	Ref<StringList, Owner> parts = split("/");
+	Ref<StringList, Owner> result = StringList::create();
+	for (int i = 0; i < parts->length(); ++i) {
+		String part = parts->at(i);
+		if ((part == "") && (i > 0)) continue;
+		if ((part == "") && (i == parts->length() - 1)) continue;
+		if ((part == ".") && (i > 0)) continue;
+		if ((part == "..") && (result->length() > 0)) {
+			result->popBack();
+			continue;
+		}
+		result->append(part);
+	}
+	return result->join("/");
 }
 
 } // namespace ftl

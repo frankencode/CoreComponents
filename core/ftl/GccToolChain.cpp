@@ -27,14 +27,35 @@ Ref<Module, Owner> GccToolChain::analyse(Ref<BuildPlan> buildPlan, String source
 	String command = analyseCommand(buildPlan, source);
 	String text = buildPlan->runAnalyse(command);
 	Ref<StringList, Owner> parts = text->split(Pattern("[:\\\\\n\r ]{1,}"));
-	return Module::create(command, buildPlan->objectPath(parts->pop(0)), parts, true);
+	return Module::create(command, buildPlan->modulePath(parts->pop(0)), parts, true);
 }
 
 bool GccToolChain::compile(Ref<BuildPlan> buildPlan, Ref<Module, Owner> module)
 {
 	Format args;
+	String outputPath;
 	appendCompileOptions(args, buildPlan->options(), buildPlan->includePaths(), module->modulePath());
 	args << module->sourcePath();
+	String command = args->join(" ");
+	if (!buildPlan->runBuild(command)) return false;
+	if (buildPlan->options() & BuildPlan::ToolSet)
+		return linkTool(buildPlan, module);
+	return true;
+}
+
+bool GccToolChain::linkTool(Ref<BuildPlan> buildPlan, Ref<Module, Owner> module)
+{
+	Format args;
+
+	args << execPath();
+
+	if (buildPlan->options() & BuildPlan::Static) args << "-static";
+	args << "-pthread";
+	args << "-o" << module->toolName();
+	args << module->modulePath();
+
+	appendLinkOptions(args, buildPlan->libraryPaths(), buildPlan->libraries());
+
 	String command = args->join(" ");
 	return buildPlan->runBuild(command);
 }
@@ -55,8 +76,6 @@ bool GccToolChain::link(Ref<BuildPlan> buildPlan)
 	String version = buildPlan->version();
 	int options = buildPlan->options();
 	Ref<ModuleList> modules = buildPlan->modules();
-	Ref<StringList> libraryPaths = buildPlan->libraryPaths();
-	Ref<StringList> libraries = buildPlan->libraries();
 
 	Format args;
 
@@ -69,23 +88,13 @@ bool GccToolChain::link(Ref<BuildPlan> buildPlan)
 		Ref<StringList, Owner> versions = version->split(".");
 		args << "-Wl,-soname,lib" + name + ".so." + versions->at(0);
 	}
-	args << "-o" << linkPath(buildPlan) ;
+
+	args << "-o" << linkPath(buildPlan);
 
 	for (int i = 0; i < modules->length(); ++i)
 		args << modules->at(i)->modulePath();
 
-	for (int i = 0; i < libraryPaths->length(); ++i)
-		args << "-L" + libraryPaths->at(i);
-
-	for (int i = 0; i < libraries->length(); ++i)
-		args << "-l" + libraries->at(i);
-
-	if (libraryPaths->length() > 0) {
-		Ref<StringList, Owner> rpaths = StringList::create();
-		for (int i = 0; i < libraryPaths->length(); ++i)
-			rpaths << "-rpath=" + libraryPaths->at(i)->absolutePath();
-		args << "-Wl,--enable-new-dtags," + rpaths->join(",");
-	}
+	appendLinkOptions(args, buildPlan->libraryPaths(), buildPlan->libraries());
 
 	String command = args->join(" ");
 
@@ -104,13 +113,18 @@ bool GccToolChain::link(Ref<BuildPlan> buildPlan)
 
 void GccToolChain::clean(Ref<BuildPlan> buildPlan)
 {
-	for (int i = 0; i < buildPlan->modules()->length(); ++i)
+	for (int i = 0; i < buildPlan->modules()->length(); ++i) {
 		buildPlan->unlink(buildPlan->modules()->at(i)->modulePath());
+		if (buildPlan->options() & BuildPlan::ToolSet)
+			buildPlan->unlink(buildPlan->modules()->at(i)->toolName());
+	}
 }
 
 void GccToolChain::distClean(Ref<BuildPlan> buildPlan)
 {
 	int options = buildPlan->options();
+	Ref<StringList> libraryPaths = buildPlan->libraryPaths();
+	Ref<StringList> libraries = buildPlan->libraries();
 
 	clean(buildPlan);
 
@@ -129,6 +143,7 @@ void GccToolChain::appendCompileOptions(Format args, int options, Ref<StringList
 	args << execPath();
 	args << "-std=c++0x";
 	if (options & BuildPlan::Debug) args << "-g";
+	if (options & BuildPlan::Release) args << "-DNDEBUG";
 	if (options & BuildPlan::OptimizeSpeed) args << "-O3";
 	if (options & BuildPlan::OptimizeSize) args << "-Os";
 	if (options & BuildPlan::Static) args << "-static";
@@ -139,6 +154,22 @@ void GccToolChain::appendCompileOptions(Format args, int options, Ref<StringList
 	if (outputPath != "") {
 		if (outputPath->tail(2) == ".o") args << "-c";
 		args << "-o" << outputPath;
+	}
+}
+
+void GccToolChain::appendLinkOptions(Format args, Ref<StringList> libraryPaths, Ref<StringList> libraries) const
+{
+	for (int i = 0; i < libraryPaths->length(); ++i)
+		args << "-L" + libraryPaths->at(i);
+
+	for (int i = 0; i < libraries->length(); ++i)
+		args << "-l" + libraries->at(i);
+
+	if (libraryPaths->length() > 0) {
+		Ref<StringList, Owner> rpaths = StringList::create();
+		for (int i = 0; i < libraryPaths->length(); ++i)
+			rpaths << "-rpath=" + libraryPaths->at(i)->absolutePath();
+		args << "-Wl,--enable-new-dtags," + rpaths->join(",");
 	}
 }
 

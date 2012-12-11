@@ -26,7 +26,9 @@ public:
 
 protected:
 	GccToolChain(String execPath);
+	bool linkTool(Ref<BuildPlan> buildPlan, Ref<Module, Owner> module);
 	void appendCompileOptions(Format args, int options, Ref<StringList> includePaths, String outputPath = "") const;
+	void appendLinkOptions(Format args, Ref<StringList> libraryPaths, Ref<StringList> libraries) const;
 
 	static String lookup(String execPath);
 };

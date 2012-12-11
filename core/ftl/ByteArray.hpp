@@ -195,6 +195,7 @@ public:
 	Ref<ByteArray, Owner> toUtf16(int endian = localEndian());
 
 	Ref<ByteArray, Owner> md5() const;
+	Ref<ByteArray, Owner> hex() const;
 	Ref<ByteArray, Owner> base64() const;
 
 	bool isRootPath() const;
@@ -204,10 +205,11 @@ public:
 	Ref<ByteArray, Owner> absolutePathRelativeTo(String currentDir) const;
 	Ref<ByteArray, Owner> absolutePath() const;
 	Ref<ByteArray, Owner> fileName() const;
-	Ref<ByteArray, Owner> fileNameSansFirstExtension() const;
-	Ref<ByteArray, Owner> fileNameSansExtension() const;
+	Ref<ByteArray, Owner> completeBaseName() const;
+	Ref<ByteArray, Owner> baseName() const;
 	Ref<ByteArray, Owner> reducePath() const;
 	Ref<ByteArray, Owner> expandPath(String component) const;
+	Ref<ByteArray, Owner> canonicalPath() const;
 
 private:
 	friend class Singleton<ByteArray>;

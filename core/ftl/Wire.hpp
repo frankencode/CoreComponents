@@ -78,7 +78,7 @@ protected:
 	int specialValue_;
 	int name_;
 	int className_;
-	int array_;
+	int list_;
 	int object_;
 	int message_;
 	int true_;
