@@ -11,12 +11,19 @@ class Dir;
 class DirWalker: public Source<String>
 {
 public:
-	inline Ref<DirWalker, Owner> open(String path) { return new DirWalker(path); }
+	enum Option {
+		DirsFirst,
+		FilesOnly,
+		DirsOnly
+	};
+
+	inline Ref<DirWalker, Owner> open(String path, int option = 0) { return new DirWalker(path, option); }
 	bool read(String *path);
 
 private:
-	Ref<DirWalker, Owner> tryOpen(String path);
-	DirWalker(String path, Ref<Dir> dir = 0);
+	Ref<DirWalker, Owner> tryOpen(String path, int option = 0);
+	DirWalker(String path, int option, Ref<Dir> dir = 0);
+	int option_;
 	Ref<Dir, Owner> dir_;
 	Ref<DirWalker, Owner> child_;
 };

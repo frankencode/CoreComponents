@@ -1,6 +1,7 @@
 #ifndef FTL_BUILDPLAN_HPP
 #define FTL_BUILDPLAN_HPP
 
+#include "PrefixTree.hpp"
 #include "Module.hpp"
 #include "ToolChain.hpp"
 
@@ -21,13 +22,15 @@ public:
 	enum Option {
 		Static        = 1,
 		Library       = 2,
-		Debug         = 4,
-		Release       = 8,
-		OptimizeSpeed = 16,
-		OptimizeSize  = 32,
-		DryRun        = 64,
-		Blindfold     = 128,
-		Verbose       = 256,
+		ToolSet       = 4,
+		Package       = 8,
+		Debug         = 16,
+		Release       = 32,
+		OptimizeSpeed = 64,
+		OptimizeSize  = 128,
+		DryRun        = 256,
+		Blindfold     = 512,
+		Verbose       = 1024,
 		Unspecified   = -1,
 		GlobalOptions = Debug|Release|OptimizeSpeed|OptimizeSize|DryRun|Blindfold|Verbose
 	};
@@ -36,7 +39,7 @@ public:
 
 	inline Ref<ToolChain> toolChain() const { return toolChain_; }
 	inline String projectPath() const { return projectPath_; }
-	inline String objectPath() const { return objectPath_; }
+	inline String modulePath() const { return modulePath_; }
 	inline Ref<Config> recipe() const { return recipe_; }
 
 	inline String name() const { return name_; }
@@ -54,7 +57,7 @@ public:
 	int run();
 
 	String sourcePath(String source) const;
-	String objectPath(String object) const;
+	String modulePath(String object) const;
 
 	String runAnalyse(String command);
 	bool runBuild(String command);
@@ -64,23 +67,24 @@ public:
 	bool unlink(String path);
 	Ref<FileStatus, Owner> fileStatus(String path);
 
-protected:
-	static Ref<BuildPlan, Owner> create(Ref<ToolChain> toolChain, String projectPath, int globalOptions);
+private:
+	Ref<BuildPlan, Owner> create(Ref<ToolChain> toolChain, String projectPath, int globalOptions);
+
+	typedef PrefixTree< char, Ref<BuildPlan> > BuildMap;
 
 	BuildPlan(int argc, char **argv);
-	BuildPlan(Ref<ToolChain> toolChain, String projectPath, int globalOptions = Unspecified);
+	BuildPlan(Ref<ToolChain> toolChain, String projectPath, int globalOptions, Ref<BuildMap> buildMap);
 
-	void readRecipe();
+	void readRecipe(int globalOptions = Unspecified);
 
 	void analyse();
 	bool build();
 	void clean();
 	void distClean();
 
-private:
 	Ref<ToolChain, Owner> toolChain_;
 	String projectPath_;
-	String objectPath_;
+	String modulePath_;
 	Ref<Config, Owner> recipe_;
 
 	String name_;
@@ -94,6 +98,15 @@ private:
 	Ref<ModuleList, Owner> modules_;
 
 	Ref<BuildPlanList, Owner> prequisites_;
+
+	Ref<BuildMap, Owner> buildMap_;
+
+	bool analyseComplete_;
+	bool buildComplete_;
+	bool cleanComplete_;
+	bool distCleanComplete_;
+
+	bool buildResult_;
 };
 
 } // namespace ftl

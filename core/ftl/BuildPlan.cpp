@@ -19,45 +19,61 @@ Ref<BuildPlan, Owner> BuildPlan::create(int argc, char **argv)
 
 Ref<BuildPlan, Owner> BuildPlan::create(Ref<ToolChain> toolChain, String projectPath, int globalOptions)
 {
-	return new BuildPlan(toolChain, projectPath, globalOptions);
+	Ref<BuildPlan> buildPlan;
+	if (buildMap_->lookup(projectPath, &buildPlan)) return buildPlan;
+	return new BuildPlan(toolChain, projectPath, globalOptions, buildMap_);
 }
 
 BuildPlan::BuildPlan(int argc, char **argv)
 	: toolChain_(GccToolChain::create()),
-	  projectPath_(".")
+	  projectPath_("."),
+	  buildMap_(BuildMap::create()),
+	  analyseComplete_(false),
+	  buildComplete_(false),
+	  cleanComplete_(false),
+	  distCleanComplete_(false),
+	  buildResult_(false)
 {
 	recipe_ = Config::create();
 	recipe_->read(argc, argv);
 	if (recipe_->arguments()->length() > 0) {
 		if (recipe_->arguments()->length() > 1)
 			FTL_THROW(BuildPlanException, "Processing multiple Recipe files at once is not supported");
-		projectPath_ = recipe_->arguments()->at(0);
+		projectPath_ = recipe_->arguments()->at(0)->canonicalPath();
 	}
 	recipe_->clear();
 	recipe_->read(projectPath_ + "/Recipe");
 	recipe_->read(argc, argv);
 	readRecipe();
+
+	buildMap_->insert(projectPath_, this);
 }
 
-BuildPlan::BuildPlan(Ref<ToolChain> toolChain, String projectPath, int globalOptions)
+BuildPlan::BuildPlan(Ref<ToolChain> toolChain, String projectPath, int globalOptions, Ref<BuildMap> buildMap)
 	: toolChain_(toolChain),
-	  projectPath_(projectPath)
+	  projectPath_(projectPath),
+	  buildMap_(buildMap),
+	  analyseComplete_(false),
+	  buildComplete_(false),
+	  cleanComplete_(false),
+	  distCleanComplete_(false),
+	  buildResult_(false)
 {
 	recipe_ = Config::create();
 	recipe_->read(projectPath_ + "/Recipe");
-	readRecipe();
 
-	if (globalOptions != Unspecified) {
-		options_ &= ~GlobalOptions;
-		options_ |= globalOptions;
-	}
+	readRecipe(globalOptions);
+
+	buildMap_->insert(projectPath_, this);
 }
 
-void BuildPlan::readRecipe()
+void BuildPlan::readRecipe(int globalOptions)
 {
 	options_ = 0;
 
 	if (recipe_->className() == "Library") options_ |= Library;
+	else if (recipe_->className() == "ToolSet") options_ |= ToolSet;
+	else if (recipe_->className() == "Package") options_ |= Package;
 
 	if (recipe_->flag("debug"))     options_ |= Debug;
 	if (recipe_->flag("release"))   options_ |= Release;
@@ -86,17 +102,45 @@ void BuildPlan::readRecipe()
 	else
 		libraries_ = StringList::create();
 
+	if (globalOptions != Unspecified) {
+		options_ &= ~GlobalOptions;
+		options_ |= globalOptions;
+	}
+
 	{
 		Format f;
-		f << "." + name_;
+		String name = (options_ & ToolSet) ? projectPath_->baseName() : name_;
+		f << "." + name;
 		if (version_ != "") f << version_;
 		if (options_ & Static) f << "static";
 		if (options_ & Debug) f << "debug";
 		if (options_ & OptimizeSize) f << "min_size";
 		if (options_ & OptimizeSpeed) f << "max_speed";
 		f << toolChain_->machine();
-		objectPath_ = f->join("-");
+		f << projectPath_->absolutePath()->md5()->hex();
+		modulePath_ = f->join("-");
 	}
+}
+
+int BuildPlan::run()
+{
+	if (recipe_->flag("h") || recipe_->flag("help")) {
+		print("no help, yet...\n");
+		return 0;
+	}
+
+	analyse();
+
+	if (recipe_->flag("c") || recipe_->flag("clean")) {
+		clean();
+		return 0;
+	}
+	if (recipe_->flag("dist-clean")) {
+		distClean();
+		return 0;
+	}
+
+	return build() ? 0 : 1;
 }
 
 String BuildPlan::sourcePath(String source) const
@@ -105,9 +149,9 @@ String BuildPlan::sourcePath(String source) const
 	return projectPath_ + "/" + source;
 }
 
-String BuildPlan::objectPath(String object) const
+String BuildPlan::modulePath(String object) const
 {
-	return objectPath_ + "/" + object;
+	return modulePath_ + "/" + object;
 }
 
 String BuildPlan::runAnalyse(String command)
@@ -163,30 +207,10 @@ Ref<FileStatus, Owner> BuildPlan::fileStatus(String path)
 	return FileStatus::read(path);
 }
 
-int BuildPlan::run()
-{
-	if (recipe_->flag("h") || recipe_->flag("help")) {
-		print("no help, yet...\n");
-		return 0;
-	}
-
-	analyse();
-
-	if (recipe_->flag("c") || recipe_->flag("clean")) {
-		clean();
-		return 0;
-	}
-	if (recipe_->flag("dist-clean")) {
-		distClean();
-		return 0;
-	}
-
-	return build() ? 0 : 1;
-}
-
 void BuildPlan::analyse()
 {
-	if (sources_) return;
+	if (analyseComplete_) return;
+	analyseComplete_ = true;
 
 	prequisites_ = BuildPlanList::create();
 
@@ -199,6 +223,7 @@ void BuildPlan::analyse()
 	for (int i = 0; i < prequisitePaths->length(); ++i) {
 		String path = prequisitePaths->at(i);
 		if (path->isRelativePath()) path = projectPath_ + "/" + path;
+		path = path->canonicalPath();
 		Ref<BuildPlan, Owner> buildPlan = BuildPlan::create(toolChain_, path, options_ & GlobalOptions);
 		if (buildPlan->options() & Library) {
 			path = path->reducePath();
@@ -213,12 +238,18 @@ void BuildPlan::analyse()
 	}
 
 	sources_ = StringList::create();
-	Ref<VariantList> sourcePatterns = recipe_->value("source");
-	for (int i = 0; i < sourcePatterns->length(); ++i) {
-		Ref<Glob, Owner> glob = Glob::open(sourcePath(sourcePatterns->at(i)));
-		for (String path; glob->read(&path);)
-			sources_->append(path);
+	if (recipe_->contains("source")) {
+		Ref<VariantList> sourcePatterns = recipe_->value("source");
+		for (int i = 0; i < sourcePatterns->length(); ++i) {
+			Ref<Glob, Owner> glob = Glob::open(sourcePath(sourcePatterns->at(i)));
+			for (String path; glob->read(&path);)
+				sources_->append(path);
+		}
 	}
+
+	if (options_ & Package) return;
+
+	mkdir(modulePath_);
 
 	modules_ = ModuleList::create(sources_->length());
 	Ref<DependencyCache, Owner> dependencyCache = DependencyCache::create(this);
@@ -228,17 +259,25 @@ void BuildPlan::analyse()
 
 bool BuildPlan::build()
 {
-	for (int i = 0; i < prequisites_->length(); ++i)
-		if (!prequisites_->at(i)->build()) return false;
+	if (buildComplete_) return buildResult_;
+	buildComplete_ = true;
 
-	mkdir(objectPath_);
+	for (int i = 0; i < prequisites_->length(); ++i)
+		if (!prequisites_->at(i)->build()) return buildResult_ = false;
+
+	if (options_ & Package) return buildResult_ = true;
 
 	for (int i = 0; i < modules_->length(); ++i) {
 		Ref<Module> module = modules_->at(i);
-		if (module->dirty()) {
-			if (!toolChain_->compile(this, module)) return false;
+		bool dirty = module->dirty();
+		if (options_ & ToolSet)
+			dirty = dirty || !fileStatus(module->toolName())->exists();
+		if (dirty) {
+			if (!toolChain_->compile(this, module)) return buildResult_ = false;
 		}
 	}
+
+	if (options_ & ToolSet) return buildResult_ = true;
 
 	Ref<FileStatus, Owner> targetStatus = fileStatus(toolChain_->linkPath(this));
 	if (targetStatus->exists()) {
@@ -255,28 +294,38 @@ bool BuildPlan::build()
 		if (recipeStatus->exists()) {
 			if (recipeStatus->lastModified() > targetTime) targetDirty = true;
 		}
-		if (!targetDirty) return true;
+		if (!targetDirty) return buildResult_ = true;
 	}
 
-	return toolChain_->link(this);
+	return buildResult_ = toolChain_->link(this);
 }
 
 void BuildPlan::clean()
 {
+	if (cleanComplete_) return;
+	cleanComplete_ = true;
+
 	for (int i = 0; i < prequisites_->length(); ++i)
 		prequisites_->at(i)->clean();
+
+	if (options_ & Package) return;
 
 	toolChain_->clean(this);
 }
 
 void BuildPlan::distClean()
 {
+	if (distCleanComplete_) return;
+	distCleanComplete_ = true;
+
 	for (int i = 0; i < prequisites_->length(); ++i)
 		prequisites_->at(i)->distClean();
 
+	if (options_ & Package) return;
+
 	toolChain_->distClean(this);
 	unlink(DependencyCache::cachePath(this));
-	rmdir(objectPath_);
+	rmdir(modulePath_);
 }
 
 } // namespace ftl

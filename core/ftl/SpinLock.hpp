@@ -20,7 +20,7 @@ class SpinLock
 {
 public:
 	SpinLock(): flag_(0) {}
-	
+
 	inline bool tryAcquire() {
 		return __sync_bool_compare_and_swap(&flag_, 0, 1);
 	}
@@ -28,7 +28,10 @@ public:
 		while (!tryAcquire());
 	}
 	inline void release() {
-		bool ok = __sync_bool_compare_and_swap(&flag_, 1, 0);
+		#ifndef NDEBUG
+		bool ok =
+		#endif
+			__sync_bool_compare_and_swap(&flag_, 1, 0);
 		FTL_ASSERT2(ok, "Double unlocking of a SpinLock");
 	}
 private:

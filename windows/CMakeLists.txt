@@ -1,4 +1,4 @@
-INCLUDE(../system/cmake/BuildOptionsFTLSystem.cmake)
+INCLUDE(../core/cmake/BuildOptionsFTLSystem.cmake)
 INCLUDE(cmake/BuildOptionsFTLWindows.cmake)
 
 INSTALL(

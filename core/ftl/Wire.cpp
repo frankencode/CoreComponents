@@ -184,7 +184,7 @@ Wire::Wire()
 		)
 	);
 
-	array_ =
+	list_ =
 		DEFINE("List",
 			GLUE(
 				CHAR('['),
@@ -348,6 +348,7 @@ Ref<WireObject, Owner> Wire::parseObject(Ref<ByteArray> text, Ref<Token> token, 
 
 Ref<VariantList, Owner> Wire::parseList(Ref<ByteArray> text, Ref<Token> token)
 {
+
 	Ref<VariantList, Owner> list = VariantList::create(token->countChildren());
 	int i = 0;
 	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
@@ -377,7 +378,7 @@ Variant Wire::parseValue(Ref<ByteArray> text, Ref<Token> token)
 	else if (token->rule() == object_) {
 		value = parseObject(text, token);
 	}
-	else if (token->rule() == array_) {
+	else if (token->rule() == list_) {
 		value = parseList(text, token);
 	}
 	else if (token->rule() == specialValue_) {

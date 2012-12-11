@@ -1,0 +1,4 @@
+ToolSet {
+	source: [ "*.cpp" ]
+	use: [ "../ftl" ]
+}

@@ -2,4 +2,4 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 PROJECT(FTL)
 
-SUBDIRS(system windows)
+SUBDIRS(core windows)
