@@ -31,7 +31,7 @@ void *Memory::operator new(size_t size)
 	long pageSize = ::sysconf(_SC_PAGE_SIZE);
 	check(pageSize > 0);
 	check(size <= (unsigned long)pageSize);
-	void *data = ::mmap(0, ::sysconf(_SC_PAGE_SIZE), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+	void *data = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 	check(data != MAP_FAILED);
 	return data;
 }
