@@ -11,6 +11,7 @@
 
 #include <sys/mman.h>
 #include <unistd.h>
+#include <assert.h>
 #include <new>
 #include "debug.hpp"
 #include "types.hpp"
@@ -24,7 +25,13 @@
 namespace ftl
 {
 
-#define WORD_ALIGN(x) (((x) / sizeof(int) + ((x) % sizeof(int) != 0)) * sizeof(int))
+#ifndef FTL_MEM_GRANULARITY
+#define FTL_MEM_GRANULARITY 16
+	// some CPUs require objects in memory to be aligned to 16 byte boundaries,
+	// e.g. the XMMS instruction movdqa may segfault on unaligned arguments
+#endif
+
+#define FTL_MEM_ALIGN(x) (((x) / FTL_MEM_GRANULARITY + ((x) % FTL_MEM_GRANULARITY != 0)) * FTL_MEM_GRANULARITY)
 
 void *Memory::operator new(size_t size)
 {
@@ -60,7 +67,7 @@ void *Memory::allocate(size_t size)
 	BucketHeader *bucket = allocator->bucket_;
 	size_t pageSize = allocator->pageSize_;
 
-	size = WORD_ALIGN(size);
+	size = FTL_MEM_ALIGN(size);
 
 	if (size == pageSize) {
 		void *pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
@@ -69,7 +76,7 @@ void *Memory::allocate(size_t size)
 	}
 
 	if (!bucket) {
-		if (size > pageSize - WORD_ALIGN(sizeof(BucketHeader))) {
+		if (size > pageSize - FTL_MEM_ALIGN(sizeof(BucketHeader))) {
 			size += sizeof(uint32_t);
 			uint32_t pageCount = size / pageSize + ((size % pageSize) > 0);
 			void *pageStart = ::mmap(0, pageCount * pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
@@ -81,11 +88,12 @@ void *Memory::allocate(size_t size)
 			void *pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 			check(pageStart != MAP_FAILED);
 			bucket = new(pageStart)BucketHeader;
-			bucket->bytesDirty_ = WORD_ALIGN(sizeof(BucketHeader)) + size;
+			check((char*)bucket == (char*)pageStart);
+			bucket->bytesDirty_ = FTL_MEM_ALIGN(sizeof(BucketHeader)) + size;
 			bucket->objectCount_ = 1;
 			bucket->open_ = true;
 			allocator->bucket_ = bucket;
-			return (void *)((char *)pageStart + WORD_ALIGN(sizeof(BucketHeader)));
+			return (void *)((char *)pageStart + FTL_MEM_ALIGN(sizeof(BucketHeader)));
 		}
 	}
 	else {
