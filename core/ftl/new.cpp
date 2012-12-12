@@ -20,7 +20,6 @@
 #define FTL_MEMORY_REDZONE_SIZE 16
 #endif
 
-#if 0
 void *operator new(std::size_t size) throw (std::bad_alloc) {
 	void *data = (void *)((char *)ftl::Memory::allocate(size + 2 * FTL_MEMORY_REDZONE_SIZE) + FTL_MEMORY_REDZONE_SIZE);
 	VALGRIND_MALLOCLIKE_BLOCK(data, size, FTL_MEMORY_REDZONE_SIZE, /*is_zeroed=*/true);
@@ -56,4 +55,3 @@ void operator delete(void *data, const std::nothrow_t &) throw() {
 void operator delete[](void *data, const std::nothrow_t &) throw() {
 	try { operator delete[](data); } catch(...) {}
 }
-#endif

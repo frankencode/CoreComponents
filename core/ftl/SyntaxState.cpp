@@ -25,12 +25,13 @@ State::State()
 
 State::State(Ref<DefinitionNode> definition, int numFlags, int numCaptures, Ref<State> parent)
 	: definition_(definition),
-	  definitionId_(definition->id()),
-	  flags_(Flags::create(numFlags)),
-	  captures_(Captures::create(numCaptures)),
-	  hint_(0),
-	  hintOffset_(-1)
+	  definitionId_(definition->id())
 {
+	flags_ = Flags::create(numFlags);
+	captures_ = Captures::create(numCaptures);
+	hint_ = 0;
+	hintOffset_ = -1;
+
 	if (parent) parent->child_ = this;
 	for (int i = 0; i < flags_->length(); ++i) flags_->set(i, false);
 	for (int i = 0; i < captures_->length(); ++i) captures_->set(i, Range::create());
