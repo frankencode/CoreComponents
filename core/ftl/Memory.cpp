@@ -25,13 +25,11 @@
 namespace ftl
 {
 
-#ifndef FTL_MEM_GRANULARITY
-#define FTL_MEM_GRANULARITY 16
+#define FTL_MEM_GRANULARITY_SHIFT(x) ((x >= 16) ?  4 : ((x >= 4) ? 2 : 0))
+#define FTL_MEM_GRANULARITY_MASK(x)  ((x >= 16) ? 15 : ((x >= 4) ? 3 : 0))
+#define FTL_MEM_ALIGN(x) ((((x) >> FTL_MEM_GRANULARITY_SHIFT(x)) + (((x) & FTL_MEM_GRANULARITY_MASK(x)) != 0)) << FTL_MEM_GRANULARITY_SHIFT(x))
 	// some CPUs require objects in memory to be aligned to 16 byte boundaries,
 	// e.g. the XMMS instruction movdqa may segfault on unaligned arguments
-#endif
-
-#define FTL_MEM_ALIGN(x) (((x) / FTL_MEM_GRANULARITY + ((x) % FTL_MEM_GRANULARITY != 0)) * FTL_MEM_GRANULARITY)
 
 void *Memory::operator new(size_t size)
 {
@@ -132,7 +130,7 @@ void Memory::free(void *data)
 	else {
 		BucketHeader *bucket = (BucketHeader *)((char *)data - offset);
 		bucket->acquire();
-		bool dispose = ((--bucket->objectCount_) == 0) && (!bucket->open_);
+		bool dispose = ((--bucket->objectCount_) == 0) && !bucket->open_;
 		bucket->release();
 		if (dispose) {
 			bucket->~BucketHeader();
