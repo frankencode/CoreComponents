@@ -1,8 +1,8 @@
 #ifndef FTL_DEPENDENCYCACHE_HPP
 #define FTL_DEPENDENCYCACHE_HPP
 
-#include "String.hpp"
-#include "Time.hpp"
+#include <ftl/String.hpp>
+#include <ftl/Time.hpp>
 
 namespace ftl
 {

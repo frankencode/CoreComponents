@@ -2,7 +2,7 @@
 #define FTL_GCCTOOLCHAIN_HPP
 
 #include "ToolChain.hpp"
-#include "Format.hpp"
+#include <ftl/Format.hpp>
 
 namespace ftl
 {

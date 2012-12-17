@@ -1,8 +1,8 @@
 #ifndef FTL_MODULE_HPP
 #define FTL_MODULE_HPP
 
-#include "String.hpp"
-#include "Time.hpp"
+#include <ftl/String.hpp>
+#include <ftl/Time.hpp>
 
 namespace ftl
 {

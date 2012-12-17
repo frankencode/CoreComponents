@@ -1,9 +1,7 @@
-#include "Module.hpp"
-#include "ToolChain.hpp"
-#include "Wire.hpp"
-#include "Format.hpp"
-#include "File.hpp"
-#include "FileStatus.hpp"
+#include <ftl/Wire.hpp>
+#include <ftl/Format.hpp>
+#include <ftl/File.hpp>
+#include <ftl/FileStatus.hpp>
 #include "BuildPlan.hpp"
 #include "DependencyCache.hpp"
 
