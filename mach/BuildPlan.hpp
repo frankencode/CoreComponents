@@ -1,7 +1,7 @@
 #ifndef FTL_BUILDPLAN_HPP
 #define FTL_BUILDPLAN_HPP
 
-#include "PrefixTree.hpp"
+#include <ftl/PrefixTree.hpp>
 #include "Module.hpp"
 #include "ToolChain.hpp"
 

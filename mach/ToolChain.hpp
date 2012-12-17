@@ -1,7 +1,7 @@
 #ifndef FTL_TOOLCHAIN_HPP
 #define FTL_TOOLCHAIN_HPP
 
-#include "Config.hpp"
+#include <ftl/Config.hpp>
 #include "Module.hpp"
 
 namespace ftl
