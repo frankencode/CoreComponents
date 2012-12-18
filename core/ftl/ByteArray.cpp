@@ -158,18 +158,20 @@ int ByteArray::find(const char *pattern, int i) const
 	return size_;
 }
 
+int ByteArray::find(String pattern, int i) const
+{
+	return find(pattern->constData(), i);
+}
+
 int ByteArray::find(Ref<SyntaxDefinition> pattern, int i) const
 {
 	Ref<Token, Owner> token = pattern->find(this, i);
 	return (token) ? token->i0(): size_;
 }
 
-Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, char sep)
+bool ByteArray::contains(String pattern) const
 {
-	char h[2];
-	h[0] = sep;
-	h[1] = 0;
-	return join(parts, h);
+	return contains(pattern->constData());
 }
 
 Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, const char *sep)
@@ -197,6 +199,19 @@ Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, const char *sep)
 		FTL_ASSERT(p == result->data_ + result->size_);
 		return result;
 	}
+}
+
+Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, char sep)
+{
+	char h[2];
+	h[0] = sep;
+	h[1] = 0;
+	return join(parts, h);
+}
+
+Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, String sep)
+{
+	return join(parts, sep->constData());
 }
 
 Ref<StringList, Owner> ByteArray::split(char sep) const
@@ -265,7 +280,12 @@ void ByteArray::replaceInsitu(const char *pattern, const char *replacement)
 
 Ref<ByteArray, Owner> ByteArray::replace(const char *pattern, const char *replacement) const
 {
-	return join(split(pattern));
+	return join(split(pattern), replacement);
+}
+
+Ref<ByteArray, Owner> ByteArray::replace(String pattern, String replacement) const
+{
+	return replace(pattern->constData(), replacement->constData());
 }
 
 int ByteArray::toInt(bool *ok) const

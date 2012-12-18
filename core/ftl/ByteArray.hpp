@@ -150,20 +150,22 @@ public:
 	}
 
 	int find(const char *pattern, int i = 0) const;
-	inline int find(Ref<ByteArray> pattern, int i = 0) const { return find(pattern->data_, i); }
+	int find(String pattern, int i = 0) const;
 	int find(Ref<SyntaxDefinition> pattern, int i = 0) const;
 
-	inline int contains(Ref<ByteArray> pattern) const { return contains(pattern->data()); }
-	inline int contains(const char *pattern) const { return find(pattern) != size_; }
+	inline bool contains(const char *pattern) const { return find(pattern) != size_; }
+	bool contains(String pattern) const;
 
-	static Ref<ByteArray, Owner> join(Ref<StringList> parts, char sep);
 	static Ref<ByteArray, Owner> join(Ref<StringList> parts, const char *sep = "");
+	static Ref<ByteArray, Owner> join(Ref<StringList> parts, char sep);
+	static Ref<ByteArray, Owner> join(Ref<StringList> parts, String sep);
 	Ref<StringList, Owner> split(char sep) const;
 	Ref<StringList, Owner> split(const char *sep) const;
 	Ref<StringList, Owner> split(Ref<SyntaxDefinition> pattern) const;
 
 	void replaceInsitu(const char *pattern, const char *replacement);
 	Ref<ByteArray, Owner> replace(const char *pattern, const char *replacement) const;
+	Ref<ByteArray, Owner> replace(String pattern, String replacement) const;
 
 	int toInt(bool *ok = 0) const;
 	double toFloat(bool *ok = 0) const;

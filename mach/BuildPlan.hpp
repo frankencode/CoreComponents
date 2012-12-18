@@ -30,9 +30,10 @@ public:
 		OptimizeSize  = 128,
 		DryRun        = 256,
 		Blindfold     = 512,
-		Verbose       = 1024,
+		Bootstrap     = 1024,
+		Verbose       = 2048,
 		Unspecified   = -1,
-		GlobalOptions = Debug|Release|OptimizeSpeed|OptimizeSize|DryRun|Blindfold|Verbose
+		GlobalOptions = Debug|Release|OptimizeSpeed|OptimizeSize|DryRun|Blindfold|Bootstrap|Verbose
 	};
 
 	static Ref<BuildPlan, Owner> create(int argc, char **argv);
@@ -59,6 +60,7 @@ public:
 	String sourcePath(String source) const;
 	String modulePath(String object) const;
 
+	String beautifyCommand(String command);
 	String runAnalyse(String command);
 	bool runBuild(String command);
 	bool mkdir(String path);
@@ -77,6 +79,7 @@ private:
 
 	void readRecipe(int globalOptions = Unspecified);
 
+	void prepare();
 	void analyse();
 	bool build();
 	void clean();
@@ -100,7 +103,9 @@ private:
 	Ref<BuildPlanList, Owner> prequisites_;
 
 	Ref<BuildMap, Owner> buildMap_;
+	String sourcePrefix_;
 
+	bool prepareComplete_;
 	bool analyseComplete_;
 	bool buildComplete_;
 	bool cleanComplete_;
