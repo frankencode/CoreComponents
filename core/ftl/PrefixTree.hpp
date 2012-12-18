@@ -183,6 +183,23 @@ public:
 		return predict(key, str::len(key), first, last, common);
 	}
 
+	Ref<Key, Owner> commonPrefix() const
+	{
+		Ref<Node> node = this;
+		int n = 0;
+		while (node->hasSingleChild()) {
+			node = node->firstChild();
+			++n;
+		}
+		Ref<Key, Owner> key = Key::create(n);
+		while (n > 0) {
+			--n;
+			key->set(n, node->ch_);
+			node = node->parent();
+		}
+		return key;
+	}
+
 protected:
 	typedef Tree< PrefixTree<Char, Value> > Parent;
 	typedef PrefixTree Node;

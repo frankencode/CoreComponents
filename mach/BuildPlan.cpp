@@ -27,6 +27,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	: toolChain_(GccToolChain::create()),
 	  projectPath_("."),
 	  buildMap_(BuildMap::create()),
+	  prepareComplete_(false),
 	  analyseComplete_(false),
 	  buildComplete_(false),
 	  cleanComplete_(false),
@@ -52,6 +53,7 @@ BuildPlan::BuildPlan(Ref<ToolChain> toolChain, String projectPath, int globalOpt
 	: toolChain_(toolChain),
 	  projectPath_(projectPath),
 	  buildMap_(buildMap),
+	  prepareComplete_(false),
 	  analyseComplete_(false),
 	  buildComplete_(false),
 	  cleanComplete_(false),
@@ -81,6 +83,7 @@ void BuildPlan::readRecipe(int globalOptions)
 	if (recipe_->flag("max-speed")) options_ |= OptimizeSpeed;
 	if (recipe_->flag("dry-run"))   options_ |= DryRun;
 	if (recipe_->flag("blindfold")) options_ |= Blindfold;
+	if (recipe_->flag("bootstrap")) options_ |= Bootstrap | DryRun | Blindfold;
 	if (recipe_->flag("verbose"))   options_ |= Verbose;
 
 	name_ = recipe_->value("name");
@@ -128,6 +131,15 @@ int BuildPlan::run()
 		return 0;
 	}
 
+	prepare();
+
+	if (options_ & Bootstrap) {
+		printTo(error(),
+			"#!/bin/sh -x\n"
+			"SOURCE=$1\n"
+		);
+	}
+
 	analyse();
 
 	if (recipe_->flag("c") || recipe_->flag("clean")) {
@@ -153,15 +165,22 @@ String BuildPlan::modulePath(String object) const
 	return modulePath_ + "/" + object;
 }
 
+String BuildPlan::beautifyCommand(String command)
+{
+	if (options_ & Bootstrap)
+		return command->replace(String(" ") + sourcePrefix_, " $SOURCE");
+	return command;
+}
+
 String BuildPlan::runAnalyse(String command)
 {
-	if (options_ & Verbose) error()->writeLine(command);
+	if (options_ & Verbose) error()->writeLine(beautifyCommand(command));
 	return Process::start(command, Process::ForwardOutput)->rawOutput()->readAll();
 }
 
 bool BuildPlan::runBuild(String command)
 {
-	error()->writeLine(command);
+	error()->writeLine(beautifyCommand(command));
 	if (options_ & DryRun) return true;
 	return Process::start(command)->wait() == 0;
 }
@@ -206,10 +225,10 @@ Ref<FileStatus, Owner> BuildPlan::fileStatus(String path)
 	return FileStatus::read(path);
 }
 
-void BuildPlan::analyse()
+void BuildPlan::prepare()
 {
-	if (analyseComplete_) return;
-	analyseComplete_ = true;
+	if (prepareComplete_) return;
+	prepareComplete_ = true;
 
 	prequisites_ = BuildPlanList::create();
 
@@ -232,7 +251,7 @@ void BuildPlan::analyse()
 				libraryPaths_->append(".");
 			libraries_->append(buildPlan->name());
 		}
-		buildPlan->analyse();
+		buildPlan->prepare();
 		prequisites_->append(buildPlan);
 	}
 
@@ -245,6 +264,17 @@ void BuildPlan::analyse()
 				sources_->append(path);
 		}
 	}
+
+	sourcePrefix_ = buildMap_->commonPrefix()->canonicalPath();
+}
+
+void BuildPlan::analyse()
+{
+	if (analyseComplete_) return;
+	analyseComplete_ = true;
+
+	for (int i = 0; i < prequisites_->length(); ++i)
+		prequisites_->at(i)->analyse();
 
 	if (options_ & Package) return;
 
