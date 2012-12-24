@@ -18,6 +18,8 @@ public:
 	inline String execPath() const { return execPath_; }
 	inline String machine() const { return machine_; }
 
+	virtual String machineCommand() const = 0;
+
 	virtual String analyseCommand(Ref<BuildPlan> buildPlan, String source) const = 0;
 	virtual Ref<Module, Owner> analyse(Ref<BuildPlan> buildPlan, String source) = 0;
 	virtual bool compile(Ref<BuildPlan> buildPlan, Ref<Module, Owner> module) = 0;
@@ -26,7 +28,6 @@ public:
 	virtual bool link(Ref<BuildPlan> buildPlan) = 0;
 
 	virtual void clean(Ref<BuildPlan> buildPlan) = 0;
-	virtual void distClean(Ref<BuildPlan> buildPlan) = 0;
 
 protected:
 	ToolChain(String execPath, String machine)
