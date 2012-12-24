@@ -134,6 +134,14 @@ public:
 		return result;
 	}
 
+	Ref<List, Owner> reverse() const
+	{
+		Ref<List, Owner> result = List::create(length());
+		for (int i = 0, n = length(); i < n; ++i)
+			result->set(i, at(n - i - 1));
+		return result;
+	}
+
 	Ref<List, Owner> unique(int order = SortOrder::Ascending) const { return sort(order, true); }
 
 	bool equals(Ref<List> b) const

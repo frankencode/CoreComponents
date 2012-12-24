@@ -83,7 +83,6 @@ private:
 	void analyse();
 	bool build();
 	void clean();
-	void distClean();
 
 	Ref<ToolChain, Owner> toolChain_;
 	String projectPath_;

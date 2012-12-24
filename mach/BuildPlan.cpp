@@ -108,20 +108,6 @@ void BuildPlan::readRecipe(int globalOptions)
 		options_ &= ~GlobalOptions;
 		options_ |= globalOptions;
 	}
-
-	{
-		Format f;
-		String name = (options_ & ToolSet) ? projectPath_->baseName() : name_;
-		f << "." + name;
-		if (version_ != "") f << version_;
-		if (options_ & Static) f << "static";
-		if (options_ & Debug) f << "debug";
-		if (options_ & OptimizeSize) f << "min_size";
-		if (options_ & OptimizeSpeed) f << "max_speed";
-		f << toolChain_->machine();
-		f << projectPath_->absolutePath()->md5()->hex();
-		modulePath_ = f->join("-");
-	}
 }
 
 int BuildPlan::run()
@@ -135,8 +121,10 @@ int BuildPlan::run()
 
 	if (options_ & Bootstrap) {
 		printTo(error(),
-			"#!/bin/sh -x\n"
+			"#!/bin/sh -ex\n"
 			"SOURCE=$1\n"
+			"MACHINE=$(%%)\n",
+			toolChain_->machineCommand()
 		);
 	}
 
@@ -144,10 +132,6 @@ int BuildPlan::run()
 
 	if (recipe_->flag("c") || recipe_->flag("clean")) {
 		clean();
-		return 0;
-	}
-	if (recipe_->flag("dist-clean")) {
-		distClean();
 		return 0;
 	}
 
@@ -264,14 +248,40 @@ void BuildPlan::prepare()
 				sources_->append(path);
 		}
 	}
-
-	sourcePrefix_ = buildMap_->commonPrefix()->canonicalPath();
 }
 
 void BuildPlan::analyse()
 {
 	if (analyseComplete_) return;
 	analyseComplete_ = true;
+
+	sourcePrefix_ = buildMap_->commonPrefix()->canonicalPath();
+
+	{
+		Format f;
+		f << ".modules";
+		{
+			Format h;
+			String path = projectPath_->absolutePath();
+			String topLevel = sourcePrefix_->absolutePath();
+			while (path != topLevel) {
+				h << path->fileName();
+				path = path->reducePath();
+			} ;
+			h << topLevel->fileName();
+			f << h->reverse()->join("_");
+		}
+		if (version_ != "") f << version_;
+		if (options_ & Static) f << "static";
+		if (options_ & Debug) f << "debug";
+		if (options_ & OptimizeSize) f << "min_size";
+		if (options_ & OptimizeSpeed) f << "max_speed";
+		if (options_ & Bootstrap)
+			f << "$MACHINE";
+		else
+			f << toolChain_->machine();
+		modulePath_ = f->join("-");
+	}
 
 	for (int i = 0; i < prequisites_->length(); ++i)
 		prequisites_->at(i)->analyse();
@@ -340,19 +350,6 @@ void BuildPlan::clean()
 	if (options_ & Package) return;
 
 	toolChain_->clean(this);
-}
-
-void BuildPlan::distClean()
-{
-	if (distCleanComplete_) return;
-	distCleanComplete_ = true;
-
-	for (int i = 0; i < prequisites_->length(); ++i)
-		prequisites_->at(i)->distClean();
-
-	if (options_ & Package) return;
-
-	toolChain_->distClean(this);
 	unlink(DependencyCache::cachePath(this));
 	rmdir(modulePath_);
 }

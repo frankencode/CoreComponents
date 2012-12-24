@@ -11,8 +11,18 @@ namespace ftl
 {
 
 GccToolChain::GccToolChain(String execPath)
-	: ToolChain(execPath, Process::start(execPath + " -dumpmachine", Process::ForwardOutput)->output()->readLine())
+	: ToolChain(execPath, Process::start(machineCommand(execPath), Process::ForwardOutput)->output()->readLine())
 {}
+
+String GccToolChain::machineCommand(String execPath)
+{
+	return execPath + " -dumpmachine";
+}
+
+String GccToolChain::machineCommand() const
+{
+	return machineCommand(execPath());
+}
 
 String GccToolChain::analyseCommand(Ref<BuildPlan> buildPlan, String source) const
 {
@@ -118,20 +128,11 @@ void GccToolChain::clean(Ref<BuildPlan> buildPlan)
 		if (buildPlan->options() & BuildPlan::ToolSet)
 			buildPlan->unlink(buildPlan->modules()->at(i)->toolName());
 	}
-}
-
-void GccToolChain::distClean(Ref<BuildPlan> buildPlan)
-{
-	int options = buildPlan->options();
-	Ref<StringList> libraryPaths = buildPlan->libraryPaths();
-	Ref<StringList> libraries = buildPlan->libraries();
-
-	clean(buildPlan);
 
 	String fullPath = linkPath(buildPlan);
 	buildPlan->unlink(fullPath);
 
-	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static)) {
+	if ((buildPlan->options() & BuildPlan::Library) && !(buildPlan->options() & BuildPlan::Static)) {
 		Ref<StringList, Owner> parts = fullPath->split('.');
 		while (parts->popBack() != "so")
 			buildPlan->unlink(parts->join("."));
