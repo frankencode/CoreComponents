@@ -96,7 +96,9 @@ void ThreadFactory::start(Ref<Thread> thread)
 void *ThreadFactory::bootstrap(void *self)
 {
 	Thread *thread = static_cast<Thread*>(self);
+	Thread::self_ = thread;
 	thread->run();
+	Thread::self_ = 0;
 	return (void *)thread;
 }
 

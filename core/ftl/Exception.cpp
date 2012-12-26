@@ -13,6 +13,7 @@
 #include <string.h> // strerror_r
 #include "types.hpp"
 #include "strings.hpp"
+#include "Thread.hpp"
 #include "Exception.hpp"
 
 namespace ftl
@@ -100,6 +101,12 @@ char *pthreadError(const char *callName, int errorCode)
 	delete[] errorStr;
 	delete[] errorCodeStr;
 	return msg;
+}
+
+Interrupt::Interrupt()
+{
+	__sync_synchronize();
+	signal_ = Thread::self()->lastSignal_;
 }
 
 } // namespace ftl

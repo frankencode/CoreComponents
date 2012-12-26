@@ -12,14 +12,16 @@
 #define FTL_THREAD_HPP
 
 #include <pthread.h>
-#include <signal.h> // SIGTERM, etc.
+#include <signal.h>
 #include "atoms"
 #include "Time.hpp"
+#include "SignalSet.hpp"
 
 namespace ftl
 {
 
 class ThreadFactory;
+class Interrupt;
 
 class Thread: public Action
 {
@@ -31,26 +33,36 @@ public:
 
 	virtual ~Thread() {}
 
+	static Ref<Thread> self();
+
 	void start(int detachState = Joinable);
 	void wait();
-	void kill(int signal = SIGUSR2);
+	void kill(int signal);
 	bool stillAlive() const;
 
 	static void sleep(Time duration);
 	static void sleepUntil(Time timeout);
 
-	static void enableSignal(int signal = SIGUSR2);
-	static void disableSignal(int signal = SIGUSR2);
+	static void blockAllSignals();
+	static void blockSignal(int signal);
+	static void unblockSignal(int signal);
+	static void hookSignal(int signal);
+	static void unhookSignal(int signal);
 
 protected:
 	friend class ThreadFactory;
+	friend class Interrupt;
 
-	virtual void run() = 0;
+	Thread(): lastSignal_(0) {}
+
+	virtual void run();
+	virtual void handleSignal(int signal);
 
 private:
 	static void forwardSignal(int signal);
-
+	static Ref<Thread, ThreadLocalOwner> self_;
 	pthread_t tid_;
+	int lastSignal_;
 };
 
 } // namespace ftl

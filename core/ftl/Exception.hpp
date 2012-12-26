@@ -104,7 +104,14 @@ FTL_EXCEPTION(DebugException, Exception);
 #define FTL_ASSERT2(condition, reason);
 #endif
 
-class Interrupt {};
+class Interrupt {
+public:
+	Interrupt();
+	inline int signal() const { return signal_; }
+private:
+	int signal_;
+};
+
 class Timeout {};
 
 #define FTL_STD_EXCEPTION(DerivedClass) \

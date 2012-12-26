@@ -40,9 +40,13 @@ void ProcessFactory::setType(int type) { type_ = type; }
 int ProcessFactory::ioPolicy() const { return ioPolicy_; }
 void ProcessFactory::setIoPolicy(int flags) { ioPolicy_ = flags; }
 
+/** working directory of new process
+  */
 String ProcessFactory::workingDirectory() { return (workingDirectory_ != "") ? workingDirectory_ : workingDirectory_ = Process::cwd(); }
 void ProcessFactory::setWorkingDirectory(String path) { workingDirectory_ = path; }
 
+/** relative or absolute path to executable image or script
+  */
 String ProcessFactory::execPath() const { return execPath_; }
 void ProcessFactory::setExecPath(String path) { execPath_ = path; }
 
@@ -52,7 +56,7 @@ void ProcessFactory::setArguments(Ref<StringList> list) { arguments_ = list; }
 Ref<EnvMap> ProcessFactory::envMap() { return (envMap_) ? envMap_ : envMap_ = Process::envMap(); }
 void ProcessFactory::setEnvMap(Ref<EnvMap> map) { envMap_ = map; }
 
-Ref<SignalSet> ProcessFactory::signalMask() { return (signalMask_) ? signalMask_ : signalMask_ = SignalSet::create(); }
+Ref<SignalSet> ProcessFactory::signalMask() { return (signalMask_) ? signalMask_ : signalMask_ = SignalSet::createEmpty(); }
 void ProcessFactory::setSignalMask(Ref<SignalSet> mask) { signalMask_ = mask; }
 
 bool ProcessFactory::hasFileCreationMask() const { return hasFileCreationMask_; }
