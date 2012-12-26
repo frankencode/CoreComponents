@@ -12,7 +12,7 @@
 #define FTL_SIGNALSET_HPP
 
 #include <signal.h>
-#include "atoms"
+#include "Ref.hpp"
 
 namespace ftl
 {
@@ -20,21 +20,23 @@ namespace ftl
 class SignalSet: public Instance
 {
 public:
-	inline static Ref<SignalSet, Owner> create() {
-		return new SignalSet;
+	inline static Ref<SignalSet, Owner> createEmpty() {
+		return new SignalSet(Empty);
+	}
+	inline static Ref<SignalSet, Owner> createFull() {
+		return new SignalSet(Full);
 	}
 
-	void clear();
-	void fill();
-	void add(int signal);
-	void del(int signal);
+	void insert(int signal);
+	void remove(int signal);
 
 	bool contains(int signal) const;
 
 	sigset_t *rawSet();
 
 private:
-	SignalSet();
+	enum { Empty, Full };
+	SignalSet(int preset);
 	sigset_t rawSet_;
 };
 

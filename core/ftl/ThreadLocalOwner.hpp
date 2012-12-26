@@ -55,8 +55,8 @@ public:
 private:
 	static void threadExitEvent(void *arg)
 	{
-		T *instance = reinterpret_cast<T*>(arg);
-		instance->decRefCount();
+		T *a = reinterpret_cast<T*>(arg);
+		if (a) a->decRefCount();
 	}
 
 	pthread_key_t key_;

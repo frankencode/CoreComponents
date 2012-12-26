@@ -1,6 +1,7 @@
 #include <ftl/stdio>
 #include <ftl/threads>
 #include <ftl/utils>
+#include <ftl/System.hpp>
 
 namespace ftl
 {
@@ -8,10 +9,9 @@ namespace ftl
 class MyChannel: public Instance
 {
 public:
-	MyChannel()
-		: empty_(Semaphore::create(1)),
-		  full_(Semaphore::create(0))
-	{}
+	static Ref<MyChannel, Owner> create() {
+		return new MyChannel;
+	}
 
 	void put(int value)
 	{
@@ -29,6 +29,11 @@ public:
 	}
 
 private:
+	MyChannel()
+		: empty_(Semaphore::create(1)),
+		  full_(Semaphore::create(0))
+	{}
+
 	Ref<Semaphore, Owner> empty_;
 	Ref<Semaphore, Owner> full_;
 	int value_;
@@ -37,11 +42,15 @@ private:
 class Producer: public Thread
 {
 public:
+	static Ref<Producer, Owner> create(Ref<MyChannel> channel) {
+		return new Producer(channel);
+	}
+
+private:
 	Producer(Ref<MyChannel> channel)
 		: channel_(channel)
 	{}
 
-private:
 	void run()
 	{
 		for (int i = 0; i < 10; ++i) {
@@ -57,11 +66,15 @@ private:
 class Consumer: public Thread
 {
 public:
+	static Ref<Consumer, Owner> create(Ref<MyChannel> channel) {
+		return new Consumer(channel);
+	}
+
+private:
 	Consumer(Ref<MyChannel> channel)
 		: channel_(channel)
 	{}
 
-private:
 	void run()
 	{
 		int k = 0;
@@ -77,22 +90,25 @@ private:
 
 int main()
 {
-	print("PTHREAD_KEYS_MAX = %%\n", PTHREAD_KEYS_MAX);
 
-	Ref<MyChannel, Owner> channel = new MyChannel;
-	Producer producer(channel);
-	Consumer consumer(channel);
+	auto channel = MyChannel::create();
+	auto producer = Producer::create(channel);
+	auto consumer = Consumer::create(channel);
 	Time dt = Time::now();
-	producer.start();
-	consumer.start();
-	producer.wait();
-	consumer.wait();
+	producer->start();
+	consumer->start();
+	producer->wait();
+	consumer->wait();
 	dt = Time::now() - dt;
 	print("\ndt = %% us\n\n", dt.us());
 
 	auto factory = ThreadFactory::create();
-	print("default stack size = %%\n", int(factory->stackSize()));
+	print("default stack size = %% bytes = %% MB\n", int(factory->stackSize()), double(factory->stackSize()) / 1024. / 1024.);
 	print("default guard size = %%\n", int(factory->guardSize()));
+	print("\n");
+
+	print("System::concurrency() = %%\n", System::concurrency());
+	print("PTHREAD_KEYS_MAX = %%\n", PTHREAD_KEYS_MAX);
 
 	return 0;
 }

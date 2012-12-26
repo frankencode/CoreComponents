@@ -14,16 +14,27 @@
 #include "Time.hpp"
 #include "Condition.hpp"
 #include "ThreadFactory.hpp"
-#include "SignalManager.hpp"
 #include "Thread.hpp"
 
 namespace ftl
 {
 
+Ref<Thread, ThreadLocalOwner> Thread::self_;
+
+Ref<Thread> Thread::self()
+{
+	if (!self_) {
+		self_ = new Thread;
+		self_->tid_ = pthread_self();
+	}
+	return self_;
+}
+
 void Thread::start(int detachState)
 {
 	Ref<ThreadFactory, Owner> factory = ThreadFactory::create();
-	factory->setDetachState(detachState);
+	if (detachState != Joinable)
+		factory->setDetachState(detachState);
 	factory->start(this);
 }
 
@@ -63,17 +74,27 @@ void Thread::sleepUntil(Time timeout)
 	mutex->release();
 }
 
-void Thread::enableSignal(int signal)
+void Thread::blockAllSignals()
 {
-	struct sigaction action;
-	mem::clr(&action, sizeof(action));
-	sigset_t mask;
-	sigfillset(&mask);
-	action.sa_handler = Thread::forwardSignal;
-	action.sa_mask = mask;
-	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
-		FTL_SYSTEM_EXCEPTION;
+	sigset_t set;
+	sigfillset(&set);
+	int ret = pthread_sigmask(SIG_SETMASK, &set, 0/*oset*/);
+	if (ret != 0)
+		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
+}
 
+void Thread::blockSignal(int signal)
+{
+	sigset_t set;
+	sigemptyset(&set);
+	sigaddset(&set, signal);
+	int ret = pthread_sigmask(SIG_BLOCK, &set, 0/*oset*/);
+	if (ret != 0)
+		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
+}
+
+void Thread::unblockSignal(int signal)
+{
 	sigset_t set;
 	sigemptyset(&set);
 	sigaddset(&set, signal);
@@ -82,25 +103,42 @@ void Thread::enableSignal(int signal)
 		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
 }
 
-void Thread::disableSignal(int signal)
+void Thread::hookSignal(int signal)
 {
-	sigset_t set;
-	sigemptyset(&set);
-	sigaddset(&set, signal);
-	int ret = pthread_sigmask(SIG_BLOCK, &set, 0/*oset*/);
-	if (ret != 0)
-		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
+	self();
 
 	struct sigaction action;
 	mem::clr(&action, sizeof(action));
-	action.sa_handler = SIG_DFL;
+	sigset_t mask;
+	sigfillset(&mask);
+	action.sa_handler = forwardSignal;
+	action.sa_mask = mask;
 	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
 		FTL_SYSTEM_EXCEPTION;
 }
 
+void Thread::unhookSignal(int signal)
+{
+	struct sigaction action;
+	mem::clr(&action, sizeof(action));
+	sigset_t mask;
+	sigfillset(&mask);
+	action.sa_handler = SIG_DFL;
+	action.sa_mask = mask;
+	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
+		FTL_SYSTEM_EXCEPTION;
+}
+
+void Thread::run()
+{}
+
+void Thread::handleSignal(int signal)
+{}
+
 void Thread::forwardSignal(int signal)
 {
-	SignalManager::instance()->relay(signal);
+	self()->lastSignal_ = signal;
+	self()->handleSignal(signal);
 }
 
 } // namespace ftl

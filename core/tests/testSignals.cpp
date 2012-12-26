@@ -1,48 +1,69 @@
-#include <ftl/stdio>
-#include <ftl/threads>
-#include <ftl/events>
+#include <unistd.h> // alarm(2)
+#include <ftl/PrintDebug.hpp>
+#include <ftl/Thread.hpp>
 
-namespace ftl
-{
+using namespace ftl;
 
-class Echo: public Action
-{
+class SignalEater: public Thread {
 public:
-	Echo(String signalName, int signal)
-		: signalName_(signalName),
-		  signal_(signal)
-	{}
-private:
-	virtual void run() {
-		print("[%%]\n", signalName_);
-		SignalManager::defaultAction(signal_);
+	static Ref<SignalEater, Owner> create() {
+		return new SignalEater;
 	}
-	String signalName_;
-	int signal_;
+
+private:
+	SignalEater() {}
+
+	virtual void run()
+	{
+		hookSignal(SIGINT);
+		hookSignal(SIGALRM);
+		hookSignal(SIGWINCH);
+		hookSignal(SIGTSTP);
+		hookSignal(SIGCONT);
+		unblockSignal(SIGINT);
+		unblockSignal(SIGALRM);
+		unblockSignal(SIGWINCH);
+		unblockSignal(SIGTSTP);
+		unblockSignal(SIGCONT);
+
+		while (true) {
+			try {
+				String line = input()->readLine();
+				if (line == "") break;
+			}
+			catch (Interrupt& ex) {
+				if (ex.signal() == SIGINT) {
+					print("[SIGINT]\n");
+					break;
+				}
+				else if (ex.signal() == SIGALRM) {
+					print("[SIGALRM]\n");
+					::alarm(1);
+				}
+				else if (ex.signal() == SIGWINCH) {
+					print("[SIGWINCH]\n");
+				}
+				else if (ex.signal() == SIGTSTP) {
+					print("[SIGTSTP]\n");
+					unhookSignal(SIGTSTP);
+					kill(SIGTSTP);
+				}
+				else if (ex.signal() == SIGCONT) {
+					print("[SIGCONT]\n");
+				}
+				else
+					print("[%%]\n", ex.signal());
+			}
+		}
+	}
 };
 
-int main()
+int main(int argc, char **argv)
 {
-	signalEvent(SIGINT)->pushBack(new Echo("SIGINT", SIGINT));
-	signalEvent(SIGTERM)->pushBack(new Echo("SIGTERM", SIGTERM));
-	signalEvent(SIGQUIT)->pushBack(new Echo("SIGQUIT", SIGQUIT));
-	signalEvent(SIGHUP)->pushBack(new Echo("SIGHUP", SIGHUP));
-	signalEvent(SIGTSTP)->pushBack(new Echo("SIGTSTP", SIGTSTP));
-	signalEvent(SIGCONT)->pushBack(new Echo("SIGCONT", SIGCONT));
-	signalEvent(SIGWINCH)->pushBack(new Echo("SIGWINCH", SIGWINCH));
-	
-	int n = 0;
-	while (true) {
-		print("%%\n", ++n);
-		Thread::sleep(1);
-	}
-	
+	auto signalEater = SignalEater::create();
+	Thread::blockAllSignals();
+	::alarm(1);
+	signalEater->start();
+	signalEater->wait();
 	return 0;
-}
-
-} // namespace ftl
-
-int main()
-{
-	return ftl::main();
 }

@@ -108,15 +108,16 @@ bool Process::isRunning() const
 	return (ret == 0);
 }
 
+/*! wait for until child process terminates
+  * Throws Interrupt exception, if the calling process received a signal while waiting.
+  * \ret exit status of child
+  */
 int Process::wait()
 {
 	int status = 0;
-	while (true) {
-		if (::waitpid(processId_, &status, 0) == -1) {
-			if (errno == EINTR) continue;
-			FTL_SYSTEM_EXCEPTION;
-		}
-		break;
+	if (::waitpid(processId_, &status, 0) == -1) {
+		if (errno == EINTR) throw Interrupt();
+		FTL_SYSTEM_EXCEPTION;
 	}
 	if (WIFEXITED(status))
 		status = WEXITSTATUS(status);
@@ -124,6 +125,26 @@ int Process::wait()
 		status = WTERMSIG(status) + 128;
 	processId_ = -1;
 	return status;
+}
+
+/*! Suspend execution of the calling process until one of its children terminates.
+  * Throws Interrupt exception, if the calling process received a signal while waiting.
+  * \ret exist status of child
+  */
+pid_t Process::wait(int *status)
+{
+	int h;
+	pid_t pid = ::waitpid(-1, &h, 0);
+	if (pid == -1) {
+		if (errno == EINTR) throw Interrupt();
+		FTL_SYSTEM_EXCEPTION;
+	}
+	if (WIFEXITED(h))
+		h = WEXITSTATUS(h);
+	else if (WIFSIGNALED(h))
+		h = WTERMSIG(h) + 128;
+	if (status) *status = h;
+	return pid;
 }
 
 void Process::cd(String path)
