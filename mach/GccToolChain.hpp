@@ -15,6 +15,8 @@ public:
 	}
 
 	virtual String machineCommand() const;
+	virtual int defaultSpeedOptimizationLevel() const;
+	virtual int defaultSizeOptimizationLevel() const;
 
 	virtual String analyseCommand(Ref<BuildPlan> buildPlan, String source) const;
 	virtual Ref<Module, Owner> analyse(Ref<BuildPlan> buildPlan, String source);
@@ -30,7 +32,7 @@ protected:
 	static String machineCommand(String execPath);
 
 	bool linkTool(Ref<BuildPlan> buildPlan, Ref<Module, Owner> module);
-	void appendCompileOptions(Format args, int options, Ref<StringList> includePaths, String outputPath = "") const;
+	void appendCompileOptions(Format args, Ref<BuildPlan> buildPlan, String outputPath = "") const;
 	void appendLinkOptions(Format args, Ref<StringList> libraryPaths, Ref<StringList> libraries) const;
 
 	static String lookup(String execPath);

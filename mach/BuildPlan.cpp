@@ -20,7 +20,7 @@ Ref<BuildPlan, Owner> BuildPlan::create(Ref<ToolChain> toolChain, String project
 {
 	Ref<BuildPlan> buildPlan;
 	if (buildMap_->lookup(projectPath, &buildPlan)) return buildPlan;
-	return new BuildPlan(toolChain, projectPath, globalOptions, buildMap_);
+	return new BuildPlan(toolChain, projectPath, this);
 }
 
 BuildPlan::BuildPlan(int argc, char **argv)
@@ -49,10 +49,10 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	buildMap_->insert(projectPath_, this);
 }
 
-BuildPlan::BuildPlan(Ref<ToolChain> toolChain, String projectPath, int globalOptions, Ref<BuildMap> buildMap)
+BuildPlan::BuildPlan(Ref<ToolChain> toolChain, String projectPath, Ref<BuildPlan> parentPlan)
 	: toolChain_(toolChain),
 	  projectPath_(projectPath),
-	  buildMap_(buildMap),
+	  buildMap_(parentPlan->buildMap_),
 	  prepareComplete_(false),
 	  analyseComplete_(false),
 	  buildComplete_(false),
@@ -63,31 +63,48 @@ BuildPlan::BuildPlan(Ref<ToolChain> toolChain, String projectPath, int globalOpt
 	recipe_ = Config::create();
 	recipe_->read(projectPath_ + "/Recipe");
 
-	readRecipe(globalOptions);
+	readRecipe(parentPlan);
 
 	buildMap_->insert(projectPath_, this);
 }
 
-void BuildPlan::readRecipe(int globalOptions)
+void BuildPlan::readRecipe(Ref<BuildPlan> parentPlan)
 {
+	name_ = recipe_->value("name");
+	version_ = recipe_->value("version");
 	options_ = 0;
+	speedOptimizationLevel_ = -1;
+	sizeOptimizationLevel_ = -1;
 
-	if (recipe_->className() == "Library") options_ |= Library;
+	if (recipe_->className() == "Application") options_ |= Application;
+	else if (recipe_->className() == "Library") options_ |= Library;
 	else if (recipe_->className() == "ToolSet") options_ |= ToolSet;
 	else if (recipe_->className() == "Package") options_ |= Package;
 
 	if (recipe_->flag("debug"))     options_ |= Debug;
 	if (recipe_->flag("release"))   options_ |= Release;
 	if (recipe_->flag("static"))    options_ |= Static;
-	if (recipe_->flag("min-size"))  options_ |= OptimizeSize;
-	if (recipe_->flag("max-speed")) options_ |= OptimizeSpeed;
 	if (recipe_->flag("dry-run"))   options_ |= DryRun;
 	if (recipe_->flag("blindfold")) options_ |= Blindfold;
 	if (recipe_->flag("bootstrap")) options_ |= Bootstrap | DryRun | Blindfold;
 	if (recipe_->flag("verbose"))   options_ |= Verbose;
 
-	name_ = recipe_->value("name");
-	version_ = recipe_->value("version");
+	if (recipe_->contains("optimize-speed")) {
+		options_ |= OptimizeSpeed;
+		Variant h = recipe_->value("optimize-speed");
+		if (h.type() == Variant::IntType)
+			speedOptimizationLevel_ = h;
+		else
+			speedOptimizationLevel_ = toolChain_->defaultSpeedOptimizationLevel();
+	}
+	if (recipe_->contains("optimize-size")) {
+		options_ |= OptimizeSize;
+		Variant h = recipe_->value("optimize-size");
+		if (h.type() == Variant::IntType)
+			sizeOptimizationLevel_ = h;
+		else
+			sizeOptimizationLevel_ = toolChain_->defaultSizeOptimizationLevel();
+	}
 
 	if (recipe_->contains("include-path"))
 		includePaths_ = Ref<VariantList>(recipe_->value("include-path"))->toList<String>();
@@ -104,9 +121,11 @@ void BuildPlan::readRecipe(int globalOptions)
 	else
 		libraries_ = StringList::create();
 
-	if (globalOptions != Unspecified) {
+	if (parentPlan) {
 		options_ &= ~GlobalOptions;
-		options_ |= globalOptions;
+		options_ |= (parentPlan->options() & GlobalOptions);
+		speedOptimizationLevel_ = parentPlan->speedOptimizationLevel();
+		sizeOptimizationLevel_ = parentPlan->sizeOptimizationLevel();
 	}
 }
 
@@ -274,8 +293,17 @@ void BuildPlan::analyse()
 		if (version_ != "") f << version_;
 		if (options_ & Static) f << "static";
 		if (options_ & Debug) f << "debug";
-		if (options_ & OptimizeSize) f << "min_size";
-		if (options_ & OptimizeSpeed) f << "max_speed";
+		if (options_ & Release) f << "release";
+		if (options_ & OptimizeSpeed) {
+			Format h;
+			h << "optimize" << "speed" << speedOptimizationLevel_;
+			f << h->join("-");
+		}
+		if (options_ & OptimizeSize) {
+			Format h;
+			h << "optimize" << "size" << sizeOptimizationLevel_;
+			f << h->join("-");
+		}
 		if (options_ & Bootstrap)
 			f << "$MACHINE";
 		else

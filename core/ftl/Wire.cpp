@@ -171,8 +171,8 @@ Wire::Wire()
 
 	DEFINE_VOID("Value",
 		CHOICE(
-			REF("float::Literal"),
 			REF("int::Literal"),
+			REF("float::Literal"),
 			REF("Concatenation"),
 			REF("Object"),
 			REF("List"),

@@ -21,19 +21,20 @@ class BuildPlan: public Instance
 public:
 	enum Option {
 		Static        = 1,
-		Library       = 2,
-		ToolSet       = 4,
-		Package       = 8,
-		Debug         = 16,
-		Release       = 32,
-		OptimizeSpeed = 64,
-		OptimizeSize  = 128,
-		DryRun        = 256,
-		Blindfold     = 512,
-		Bootstrap     = 1024,
-		Verbose       = 2048,
+		Application   = 2,
+		Library       = 4,
+		ToolSet       = 8,
+		Package       = 16,
+		Debug         = 32,
+		Release       = 64,
+		DryRun        = 128,
+		Blindfold     = 256,
+		Bootstrap     = 512,
+		Verbose       = 1024,
+		OptimizeSpeed = 2048,
+		OptimizeSize  = 4096,
 		Unspecified   = -1,
-		GlobalOptions = Debug|Release|OptimizeSpeed|OptimizeSize|DryRun|Blindfold|Bootstrap|Verbose
+		GlobalOptions = Debug|Release|DryRun|Blindfold|Bootstrap|Verbose|OptimizeSpeed|OptimizeSize
 	};
 
 	static Ref<BuildPlan, Owner> create(int argc, char **argv);
@@ -46,6 +47,8 @@ public:
 	inline String name() const { return name_; }
 	inline String version() const { return version_; }
 	inline int options() const { return options_; }
+	inline int speedOptimizationLevel() const { return speedOptimizationLevel_; }
+	inline int sizeOptimizationLevel() const { return sizeOptimizationLevel_; }
 
 	inline Ref<StringList> includePaths() const { return includePaths_; }
 	inline Ref<StringList> libraryPaths() const { return libraryPaths_; }
@@ -75,9 +78,9 @@ private:
 	typedef PrefixTree< char, Ref<BuildPlan> > BuildMap;
 
 	BuildPlan(int argc, char **argv);
-	BuildPlan(Ref<ToolChain> toolChain, String projectPath, int globalOptions, Ref<BuildMap> buildMap);
+	BuildPlan(Ref<ToolChain> toolChain, String projectPath, Ref<BuildPlan> parentPlan);
 
-	void readRecipe(int globalOptions = Unspecified);
+	void readRecipe(Ref<BuildPlan> parentPlan = 0);
 
 	void prepare();
 	void analyse();
@@ -92,6 +95,8 @@ private:
 	String name_;
 	String version_;
 	int options_;
+	int speedOptimizationLevel_;
+	int sizeOptimizationLevel_;
 
 	Ref<StringList, Owner> includePaths_;
 	Ref<StringList, Owner> libraryPaths_;

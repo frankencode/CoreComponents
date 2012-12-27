@@ -19,6 +19,8 @@ public:
 	inline String machine() const { return machine_; }
 
 	virtual String machineCommand() const = 0;
+	virtual int defaultSpeedOptimizationLevel() const = 0;
+	virtual int defaultSizeOptimizationLevel() const = 0;
 
 	virtual String analyseCommand(Ref<BuildPlan> buildPlan, String source) const = 0;
 	virtual Ref<Module, Owner> analyse(Ref<BuildPlan> buildPlan, String source) = 0;
