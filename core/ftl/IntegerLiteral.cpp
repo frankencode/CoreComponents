@@ -66,7 +66,8 @@ IntegerLiteral::IntegerLiteral()
 					REF("OctNumber"),
 					REF("HexNumber"),
 					REF("DecNumber")
-				)
+				),
+				NOT(RANGE(".eE"))
 			)
 		);
 

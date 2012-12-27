@@ -1,9 +1,9 @@
 #include <ftl/StandardStreams.hpp>
 #include <ftl/Pattern.hpp>
+#include <ftl/Format.hpp>
 #include <ftl/File.hpp>
 #include <ftl/Process.hpp>
 #include <ftl/ProcessFactory.hpp>
-#include <ftl/File.hpp>
 #include "BuildPlan.hpp"
 #include "GccToolChain.hpp"
 
@@ -24,10 +24,20 @@ String GccToolChain::machineCommand() const
 	return machineCommand(execPath());
 }
 
+int GccToolChain::defaultSpeedOptimizationLevel() const
+{
+	return 2;
+}
+
+int GccToolChain::defaultSizeOptimizationLevel() const
+{
+	return 1;
+}
+
 String GccToolChain::analyseCommand(Ref<BuildPlan> buildPlan, String source) const
 {
 	Format args;
-	appendCompileOptions(args, buildPlan->options(), buildPlan->includePaths());
+	appendCompileOptions(args, buildPlan);
 	args << "-MM" << "-MG" << source;
 	return args->join(" ");
 }
@@ -44,7 +54,7 @@ bool GccToolChain::compile(Ref<BuildPlan> buildPlan, Ref<Module, Owner> module)
 {
 	Format args;
 	String outputPath;
-	appendCompileOptions(args, buildPlan->options(), buildPlan->includePaths(), module->modulePath());
+	appendCompileOptions(args, buildPlan, module->modulePath());
 	args << module->sourcePath();
 	String command = args->join(" ");
 	if (!buildPlan->runBuild(command)) return false;
@@ -139,19 +149,20 @@ void GccToolChain::clean(Ref<BuildPlan> buildPlan)
 	}
 }
 
-void GccToolChain::appendCompileOptions(Format args, int options, Ref<StringList> includePaths, String outputPath) const
+
+void GccToolChain::appendCompileOptions(Format args, Ref<BuildPlan> buildPlan, String outputPath) const
 {
 	args << execPath();
 	args << "-std=c++0x";
-	if (options & BuildPlan::Debug) args << "-g";
-	if (options & BuildPlan::Release) args << "-DNDEBUG";
-	if (options & BuildPlan::OptimizeSpeed) args << "-O3";
-	if (options & BuildPlan::OptimizeSize) args << "-Os";
-	if (options & BuildPlan::Static) args << "-static";
-	if (options & BuildPlan::Library) args << "-fpic";
+	if (buildPlan->options() & BuildPlan::Debug) args << "-g";
+	if (buildPlan->options() & BuildPlan::Release) args << "-DNDEBUG";
+	if (buildPlan->options() & BuildPlan::OptimizeSpeed) args << String(Format("-O%%") << buildPlan->speedOptimizationLevel());
+	if (buildPlan->options() & BuildPlan::OptimizeSize) args << "-Os";
+	if (buildPlan->options() & BuildPlan::Static) args << "-static";
+	if (buildPlan->options() & BuildPlan::Library) args << "-fpic";
 	args << "-Wall" << "-pthread";
-	for (int i = 0; i < includePaths->length(); ++i)
-		args << "-I" + includePaths->at(i);
+	for (int i = 0; i < buildPlan->includePaths()->length(); ++i)
+		args << "-I" + buildPlan->includePaths()->at(i);
 	if (outputPath != "") {
 		if (outputPath->tail(2) == ".o") args << "-c";
 		args << "-o" << outputPath;
