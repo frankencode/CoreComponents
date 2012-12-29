@@ -5,7 +5,7 @@
 #include "BuildPlan.hpp"
 #include "DependencyCache.hpp"
 
-namespace ftl
+namespace mach
 {
 
 Ref<DependencyCache, Owner> DependencyCache::create(Ref<BuildPlan> buildPlan)
@@ -113,4 +113,4 @@ Ref<Module, Owner> DependencyCache::analyse(String source)
 	return module;
 }
 
-} // namespace ftl
+} // namespace mach

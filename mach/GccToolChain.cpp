@@ -7,7 +7,7 @@
 #include "BuildPlan.hpp"
 #include "GccToolChain.hpp"
 
-namespace ftl
+namespace mach
 {
 
 GccToolChain::GccToolChain(String execPath)
@@ -50,7 +50,7 @@ Ref<Module, Owner> GccToolChain::analyse(Ref<BuildPlan> buildPlan, String source
 	return Module::create(command, buildPlan->modulePath(parts->pop(0)), parts, true);
 }
 
-bool GccToolChain::compile(Ref<BuildPlan> buildPlan, Ref<Module, Owner> module)
+bool GccToolChain::compile(Ref<BuildPlan> buildPlan, Ref<Module> module)
 {
 	Format args;
 	String outputPath;
@@ -63,7 +63,7 @@ bool GccToolChain::compile(Ref<BuildPlan> buildPlan, Ref<Module, Owner> module)
 	return true;
 }
 
-bool GccToolChain::linkTool(Ref<BuildPlan> buildPlan, Ref<Module, Owner> module)
+bool GccToolChain::linkTool(Ref<BuildPlan> buildPlan, Ref<Module> module)
 {
 	Format args;
 
@@ -185,4 +185,4 @@ void GccToolChain::appendLinkOptions(Format args, Ref<StringList> libraryPaths, 
 	}
 }
 
-} // namespace ftl
+} // namespace mach
