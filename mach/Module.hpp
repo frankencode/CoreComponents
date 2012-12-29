@@ -4,8 +4,10 @@
 #include <ftl/String.hpp>
 #include <ftl/Time.hpp>
 
-namespace ftl
+namespace mach
 {
+
+using namespace ftl;
 
 class Module: public Instance
 {
@@ -37,6 +39,6 @@ private:
 
 typedef List< Ref<Module, Owner> > ModuleList;
 
-} // namespace ftl
+} // namespace mach
 
 #endif // FTL_MODULE_HPP

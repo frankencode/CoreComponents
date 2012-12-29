@@ -4,8 +4,10 @@
 #include <ftl/Config.hpp>
 #include "Module.hpp"
 
-namespace ftl
+namespace mach
 {
+
+using namespace ftl;
 
 FTL_STD_EXCEPTION(MachException);
 
@@ -24,7 +26,7 @@ public:
 
 	virtual String analyseCommand(Ref<BuildPlan> buildPlan, String source) const = 0;
 	virtual Ref<Module, Owner> analyse(Ref<BuildPlan> buildPlan, String source) = 0;
-	virtual bool compile(Ref<BuildPlan> buildPlan, Ref<Module, Owner> module) = 0;
+	virtual bool compile(Ref<BuildPlan> buildPlan, Ref<Module> module) = 0;
 
 	virtual String linkPath(Ref<BuildPlan> buildPlan) const = 0;
 	virtual bool link(Ref<BuildPlan> buildPlan) = 0;
@@ -42,6 +44,6 @@ private:
 	String machine_;
 };
 
-} // namespace ftl
+} // namespace mach
 
 #endif // FTL_TOOLCHAIN_HPP

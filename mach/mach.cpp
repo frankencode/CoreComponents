@@ -1,6 +1,6 @@
 #include "BuildPlan.hpp"
 
-using namespace ftl;
+using namespace mach;
 
 int main(int argc, char **argv)
 {

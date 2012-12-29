@@ -8,7 +8,7 @@
 #include "GccToolChain.hpp"
 #include "BuildPlan.hpp"
 
-namespace ftl
+namespace mach
 {
 
 Ref<BuildPlan, Owner> BuildPlan::create(int argc, char **argv)
@@ -382,4 +382,4 @@ void BuildPlan::clean()
 	rmdir(modulePath_);
 }
 
-} // namespace ftl
+} // namespace mach

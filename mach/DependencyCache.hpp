@@ -4,13 +4,18 @@
 #include <ftl/String.hpp>
 #include <ftl/Time.hpp>
 
-namespace ftl
+namespace ftl {
+	class File;
+	class WireObject;
+} // namespace ftl
+
+namespace mach
 {
+
+using namespace ftl;
 
 class ToolChain;
 class Module;
-class File;
-class WireObject;
 class BuildPlan;
 
 class DependencyCache: public Instance
@@ -32,6 +37,6 @@ private:
 	Ref<Cache, Owner> cache_;
 };
 
-} // namespace ftl
+} // namespace mach
 
 #endif // FTL_DEPENDENCYCACHE_HPP

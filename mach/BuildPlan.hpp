@@ -5,11 +5,16 @@
 #include "Module.hpp"
 #include "ToolChain.hpp"
 
-namespace ftl
+namespace ftl {
+	class FileStatus;
+	class Config;
+} // namespace ftl
+
+namespace mach
 {
 
-class FileStatus;
-class Config;
+using namespace ftl;
+
 class BuildPlan;
 
 typedef List< Ref<BuildPlan, Owner> > BuildPlanList;
@@ -118,6 +123,6 @@ private:
 	bool buildResult_;
 };
 
-} // namespace ftl
+} // namespace mach
 
 #endif // FTL_BUILDPLAN_HPP
