@@ -11,6 +11,7 @@
 #ifndef FTL_PROCESSFACTORY_HPP
 #define FTL_PROCESSFACTORY_HPP
 
+#include "String.hpp"
 #include "SignalSet.hpp"
 #include "Map.hpp"
 
@@ -18,6 +19,7 @@ namespace ftl
 {
 
 class Process;
+class SystemStream;
 
 class ProcessFactory: public Instance
 {
