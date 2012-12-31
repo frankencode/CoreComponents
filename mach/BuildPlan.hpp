@@ -1,5 +1,5 @@
-#ifndef FTL_BUILDPLAN_HPP
-#define FTL_BUILDPLAN_HPP
+#ifndef MACH_BUILDPLAN_HPP
+#define MACH_BUILDPLAN_HPP
 
 #include <ftl/PrefixTree.hpp>
 #include "Module.hpp"
@@ -125,4 +125,4 @@ private:
 
 } // namespace mach
 
-#endif // FTL_BUILDPLAN_HPP
+#endif // MACH_BUILDPLAN_HPP

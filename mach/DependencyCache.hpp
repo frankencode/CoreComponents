@@ -1,5 +1,5 @@
-#ifndef FTL_DEPENDENCYCACHE_HPP
-#define FTL_DEPENDENCYCACHE_HPP
+#ifndef MACH_DEPENDENCYCACHE_HPP
+#define MACH_DEPENDENCYCACHE_HPP
 
 #include <ftl/String.hpp>
 #include <ftl/Time.hpp>
@@ -38,4 +38,4 @@ private:
 
 } // namespace mach
 
-#endif // FTL_DEPENDENCYCACHE_HPP
+#endif // MACH_DEPENDENCYCACHE_HPP

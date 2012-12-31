@@ -1,14 +1,16 @@
-#ifndef FTL_JOB_HPP
-#define FTL_JOB_HPP
+#ifndef MACH_JOB_HPP
+#define MACH_JOB_HPP
 
-#include <ftl/Process.hpp>
+#include <ftl/String.hpp>
+#include <ftl/List.hpp>
+#include <ftl/Channel.hpp>
 
 namespace mach
 {
 
 using namespace ftl;
 
-class JobScheduler;
+class JobServer;
 
 class Job: public Instance
 {
@@ -23,7 +25,7 @@ public:
 	inline String outputText() const { return outputText_; }
 
 private:
-	friend class JobScheduler;
+	friend class JobServer;
 
 	Job(String command)
 		: command_(command),
@@ -31,14 +33,14 @@ private:
 	{}
 
 	String command_;
-	Ref<Process, Owner> process_;
+
 	int status_;
 	String outputText_;
 };
 
 typedef List< Ref<Job, Owner> > JobList;
-typedef Map<pid_t, Ref<Job, Owner> > RunMap;
+typedef Channel< Ref<Job, Owner> > JobChannel;
 
 } // namespace mach
 
-#endif // FTL_JOB_HPP
+#endif // MACH_JOB_HPP

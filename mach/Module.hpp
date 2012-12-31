@@ -1,5 +1,5 @@
-#ifndef FTL_MODULE_HPP
-#define FTL_MODULE_HPP
+#ifndef MACH_MODULE_HPP
+#define MACH_MODULE_HPP
 
 #include <ftl/String.hpp>
 #include <ftl/Time.hpp>
@@ -41,4 +41,4 @@ typedef List< Ref<Module, Owner> > ModuleList;
 
 } // namespace mach
 
-#endif // FTL_MODULE_HPP
+#endif // MACH_MODULE_HPP

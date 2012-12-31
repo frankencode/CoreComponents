@@ -75,8 +75,6 @@ public:
 
 	int wait();
 
-	static pid_t wait(int *status);
-
 	// -- querying the current process status
 
 	static void cd(String path);

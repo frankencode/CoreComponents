@@ -14,11 +14,11 @@
 #include "String.hpp"
 #include "SignalSet.hpp"
 #include "Map.hpp"
+#include "Process.hpp"
 
 namespace ftl
 {
 
-class Process;
 class SystemStream;
 
 class ProcessFactory: public Instance
@@ -54,6 +54,9 @@ public:
 	void setFileCreationMask(int mask);
 	void unsetFileCreationMask();
 
+	String command() const;
+	void setCommand(String command);
+
 	Ref<SystemStream> rawInput() const;
 	Ref<SystemStream> rawOutput() const;
 	Ref<SystemStream> rawError() const;
@@ -83,6 +86,8 @@ private:
 
 	bool hasFileCreationMask_;
 	int fileCreationMask_;
+
+	String command_;
 
 	Ref<SystemStream, Owner> rawInput_;
 	Ref<SystemStream, Owner> rawOutput_;
