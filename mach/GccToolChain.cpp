@@ -42,12 +42,15 @@ String GccToolChain::analyseCommand(Ref<BuildPlan> buildPlan, String source) con
 	return args->join(" ");
 }
 
-Ref<Module, Owner> GccToolChain::analyse(Ref<BuildPlan> buildPlan, String source)
+Ref<Job, Owner> GccToolChain::createAnalyseJob(Ref<BuildPlan> buildPlan, String source)
 {
-	String command = analyseCommand(buildPlan, source);
-	String text = buildPlan->runAnalyse(command);
-	Ref<StringList, Owner> parts = text->split(Pattern("[:\\\\\n\r ]{1,}"));
-	return Module::create(command, buildPlan->modulePath(parts->pop(0)), parts, true);
+	return Job::create(analyseCommand(buildPlan, source));
+}
+
+Ref<Module, Owner> GccToolChain::finishAnalyseJob(Ref<BuildPlan> buildPlan, Ref<Job> job)
+{
+	Ref<StringList, Owner> parts = job->outputText()->split(Pattern("[:\\\\\n\r ]{1,}"));
+	return Module::create(job->command(), buildPlan->modulePath(parts->pop(0)), parts, true);
 }
 
 bool GccToolChain::compile(Ref<BuildPlan> buildPlan, Ref<Module> module)

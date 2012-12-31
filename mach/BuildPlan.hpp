@@ -6,8 +6,8 @@
 #include "ToolChain.hpp"
 
 namespace ftl {
-	class FileStatus;
-	class Config;
+class FileStatus;
+class Config;
 } // namespace ftl
 
 namespace mach

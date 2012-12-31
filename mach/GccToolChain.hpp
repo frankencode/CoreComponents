@@ -21,7 +21,9 @@ public:
 	virtual int defaultSizeOptimizationLevel() const;
 
 	virtual String analyseCommand(Ref<BuildPlan> buildPlan, String source) const;
-	virtual Ref<Module, Owner> analyse(Ref<BuildPlan> buildPlan, String source);
+	virtual Ref<Job, Owner> createAnalyseJob(Ref<BuildPlan> buildPlan, String source);
+	virtual Ref<Module, Owner> finishAnalyseJob(Ref<BuildPlan> buildPlan, Ref<Job> job);
+
 	virtual bool compile(Ref<BuildPlan> buildPlan, Ref<Module> module);
 
 	virtual String linkPath(Ref<BuildPlan> buildPlan) const;

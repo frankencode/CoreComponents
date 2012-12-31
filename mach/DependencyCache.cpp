@@ -103,14 +103,9 @@ DependencyCache::~DependencyCache()
 	File::save(cachePath_, text);
 }
 
-Ref<Module, Owner> DependencyCache::analyse(String source)
+bool DependencyCache::lookup(String source, Ref<Module, Owner> *module)
 {
-	Ref<Module, Owner> module;
-	if (cache_->lookup(source, &module))
-		return module;
-	module = buildPlan_->toolChain()->analyse(buildPlan_, source);
-	cache_->insert(source, module);
-	return module;
+	return cache_->lookup(source, module);
 }
 
 } // namespace mach

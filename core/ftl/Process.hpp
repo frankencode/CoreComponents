@@ -34,6 +34,7 @@ class Process: public Instance
 {
 public:
 	static Ref<Process, Owner> start(String command, int ioPolicy = 0);
+	static Ref<Process, Owner> start(String command, Ref<ProcessFactory> factory);
 
 	// -- child process control interface
 

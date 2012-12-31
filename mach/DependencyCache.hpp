@@ -5,8 +5,8 @@
 #include <ftl/Time.hpp>
 
 namespace ftl {
-	class File;
-	class WireObject;
+class File;
+class WireObject;
 } // namespace ftl
 
 namespace mach
@@ -14,7 +14,6 @@ namespace mach
 
 using namespace ftl;
 
-class ToolChain;
 class Module;
 class BuildPlan;
 
@@ -26,7 +25,7 @@ public:
 
 	static String cachePath(Ref<BuildPlan> buildPlan);
 
-	Ref<Module, Owner> analyse(String source);
+	bool lookup(String source, Ref<Module, Owner> *module);
 
 private:
 	DependencyCache(Ref<BuildPlan> buildPlan);

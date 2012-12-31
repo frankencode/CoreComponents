@@ -2,6 +2,7 @@
 #define FTL_TOOLCHAIN_HPP
 
 #include <ftl/Config.hpp>
+#include "Job.hpp"
 #include "Module.hpp"
 
 namespace mach
@@ -25,7 +26,9 @@ public:
 	virtual int defaultSizeOptimizationLevel() const = 0;
 
 	virtual String analyseCommand(Ref<BuildPlan> buildPlan, String source) const = 0;
-	virtual Ref<Module, Owner> analyse(Ref<BuildPlan> buildPlan, String source) = 0;
+	virtual Ref<Job, Owner> createAnalyseJob(Ref<BuildPlan> buildPlan, String source) = 0;
+	virtual Ref<Module, Owner> finishAnalyseJob(Ref<BuildPlan> buildPlan, Ref<Job> job) = 0;
+
 	virtual bool compile(Ref<BuildPlan> buildPlan, Ref<Module> module) = 0;
 
 	virtual String linkPath(Ref<BuildPlan> buildPlan) const = 0;
