@@ -4,8 +4,10 @@
 #include <ftl/Glob.hpp>
 #include <ftl/Process.hpp>
 #include <ftl/Config.hpp>
+#include <ftl/System.hpp>
 #include "DependencyCache.hpp"
 #include "GccToolChain.hpp"
+#include "JobScheduler.hpp"
 #include "BuildPlan.hpp"
 
 namespace mach
@@ -318,10 +320,31 @@ void BuildPlan::analyse()
 
 	mkdir(modulePath_);
 
-	modules_ = ModuleList::create(sources_->length());
+	modules_ = ModuleList::create();
+	Ref<JobList, Owner> jobList = JobList::create();
+
 	Ref<DependencyCache, Owner> dependencyCache = DependencyCache::create(this);
-	for (int i = 0; i < sources_->length(); ++i)
-		modules_->set(i, dependencyCache->analyse(sources_->at(i)));
+	for (int i = 0; i < sources_->length(); ++i) {
+		/*Ref<Module, Owner> module;
+		if (dependencyCache->lookup(sources_->at(i), &module))
+			modules_->append(module);
+		else*/
+			jobList->append(toolChain_->createAnalyseJob(this, sources_->at(i)));
+	}
+
+	if (jobList->length() == 0) return;
+
+	Ref<JobScheduler, Owner> scheduler = JobScheduler::start(jobList);
+
+	for (Ref<Job> job; scheduler->collect(&job);) {
+		if (options_ & Verbose) {
+			error()->writeLine(beautifyCommand(job->command()));
+			error()->writeLine(job->outputText());
+		}
+		modules_->append(toolChain_->finishAnalyseJob(this, job));
+	}
+
+	// FIXME: missing error handling
 }
 
 bool BuildPlan::build()

@@ -38,7 +38,11 @@ Ref<Process, Owner> Process::start(String command, int ioPolicy)
 {
 	Ref<ProcessFactory, Owner> factory = ProcessFactory::create();
 	factory->setIoPolicy(ioPolicy);
+	return start(command, factory);
+}
 
+Ref<Process, Owner> Process::start(String command, Ref<ProcessFactory> factory)
+{
 	Ref<StringList, Owner> args = command->split(' ');
 	factory->setArguments(args);
 	String name = args->at(0);
@@ -73,7 +77,15 @@ Process::Process(
 Process::~Process()
 {
 	if (processId_ != -1) {
-		int status = wait();
+		int status = 0;
+		while (true) {
+			if (::waitpid(processId_, &status, 0) == -1) {
+				if (errno == EINTR) continue;
+				if (errno == ECHILD) break;
+				FTL_SYSTEM_EXCEPTION;
+			}
+			break;
+		}
 		if (status != 0)
 			throw ProcessException(Format("Process unsuccessful, status = %%") << status);
 	}

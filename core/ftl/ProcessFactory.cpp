@@ -237,9 +237,9 @@ Ref<Process, Owner> ProcessFactory::produce()
 	{
 		// parent process
 
-		Ref<SystemStream, Owner> rawInput;
-		Ref<SystemStream, Owner> rawOutput;
-		Ref<SystemStream, Owner> rawError;
+		Ref<SystemStream, Owner> rawInput = rawInput_;
+		Ref<SystemStream, Owner> rawOutput = rawOutput_;
+		Ref<SystemStream, Owner> rawError = rawError_;
 
 		if (ioPolicy_ & Process::ForwardByPseudoTerminal)
 		{
