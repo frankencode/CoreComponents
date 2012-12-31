@@ -336,7 +336,7 @@ void BuildPlan::analyse()
 
 	Ref<JobScheduler, Owner> scheduler = JobScheduler::start(jobList);
 
-	for (Ref<Job> job; scheduler->collect(&job);) {
+	for (Ref<Job, Owner> job; scheduler->collect(&job);) {
 		if (options_ & Verbose) {
 			error()->writeLine(beautifyCommand(job->command()));
 			error()->writeLine(job->outputText());

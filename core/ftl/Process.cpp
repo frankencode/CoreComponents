@@ -43,14 +43,7 @@ Ref<Process, Owner> Process::start(String command, int ioPolicy)
 
 Ref<Process, Owner> Process::start(String command, Ref<ProcessFactory> factory)
 {
-	Ref<StringList, Owner> args = command->split(' ');
-	factory->setArguments(args);
-	String name = args->at(0);
-
-	String path = File::lookup(name);
-	if (path == "") path = name;
-	factory->setExecPath(path);
-
+	factory->setCommand(command);
 	return factory->produce();
 }
 
@@ -137,26 +130,6 @@ int Process::wait()
 		status = WTERMSIG(status) + 128;
 	processId_ = -1;
 	return status;
-}
-
-/*! Suspend execution of the calling process until one of its children terminates.
-  * Throws Interrupt exception, if the calling process received a signal while waiting.
-  * \ret exist status of child
-  */
-pid_t Process::wait(int *status)
-{
-	int h;
-	pid_t pid = ::waitpid(-1, &h, 0);
-	if (pid == -1) {
-		if (errno == EINTR) throw Interrupt();
-		FTL_SYSTEM_EXCEPTION;
-	}
-	if (WIFEXITED(h))
-		h = WEXITSTATUS(h);
-	else if (WIFSIGNALED(h))
-		h = WTERMSIG(h) + 128;
-	if (status) *status = h;
-	return pid;
 }
 
 void Process::cd(String path)

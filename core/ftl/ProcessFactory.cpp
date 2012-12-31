@@ -22,7 +22,7 @@
 #include <util.h>
 #endif
 #include "Format.hpp"
-#include "Process.hpp"
+#include "File.hpp"
 #include "ProcessFactory.hpp"
 
 namespace ftl
@@ -65,6 +65,21 @@ void ProcessFactory::setFileCreationMask(int mask) {
 	hasFileCreationMask_ = true;
 }
 void ProcessFactory::unsetFileCreationMask() { hasFileCreationMask_ = false; }
+
+String ProcessFactory::command() const { return command_; }
+
+void ProcessFactory::setCommand(String command)
+{
+	command_ = command;
+
+	Ref<StringList, Owner> args = command->split(' ');
+	setArguments(args);
+	String name = args->at(0);
+
+	String path = File::lookup(name);
+	if (path == "") path = name;
+	setExecPath(path);
+}
 
 Ref<SystemStream> ProcessFactory::rawInput() const { return rawInput_; }
 Ref<SystemStream> ProcessFactory::rawOutput() const { return rawOutput_; }

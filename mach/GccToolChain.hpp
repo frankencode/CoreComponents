@@ -1,5 +1,5 @@
-#ifndef FTL_GCCTOOLCHAIN_HPP
-#define FTL_GCCTOOLCHAIN_HPP
+#ifndef MACH_GCCTOOLCHAIN_HPP
+#define MACH_GCCTOOLCHAIN_HPP
 
 #include <ftl/Format.hpp>
 #include "ToolChain.hpp"
@@ -44,4 +44,4 @@ protected:
 
 } // namespace mach
 
-#endif // FTL_GCCTOOLCHAIN_HPP
+#endif // MACH_GCCTOOLCHAIN_HPP

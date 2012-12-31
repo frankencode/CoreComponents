@@ -1,5 +1,5 @@
-#ifndef FTL_TOOLCHAIN_HPP
-#define FTL_TOOLCHAIN_HPP
+#ifndef MACH_TOOLCHAIN_HPP
+#define MACH_TOOLCHAIN_HPP
 
 #include <ftl/Config.hpp>
 #include "Job.hpp"
@@ -49,4 +49,4 @@ private:
 
 } // namespace mach
 
-#endif // FTL_TOOLCHAIN_HPP
+#endif // MACH_TOOLCHAIN_HPP

@@ -1,8 +1,8 @@
 #include <ftl/Guard.hpp>
 #include <ftl/System.hpp>
-#include <ftl/Semaphore.hpp>
 #include <ftl/ProcessFactory.hpp>
 #include <ftl/File.hpp>
+#include "JobServer.hpp"
 #include "JobScheduler.hpp"
 
 namespace mach
@@ -10,94 +10,37 @@ namespace mach
 
 Ref<JobScheduler, Owner> JobScheduler::start(Ref<JobList> jobList, int concurrency)
 {
-	Ref<JobScheduler, Owner> newScheduler = new JobScheduler(jobList, concurrency);
-	newScheduler->Thread::start();
-	return newScheduler;
+	return new JobScheduler(jobList, concurrency);
 }
 
 JobScheduler::JobScheduler(Ref<JobList> jobList, int concurrency)
-	: jobList_(jobList),
-	  slots_(Semaphore::create((concurrency > 0) ? concurrency : System::concurrency())),
-	  running_(Semaphore::create()),
-	  starting_(Mutex::create()),
-	  factory_(ProcessFactory::create()),
-	  runMap_(RunMap::create()),
+	: concurrency_((concurrency > 0) ? concurrency : System::concurrency()),
+	  requestChannel_(JobChannel::create()),
+	  replyChannel_(JobChannel::create()),
+	  serverPool_(JobServerList::create(concurrency_)),
 	  status_(0),
 	  totalCount_(jobList->length()),
 	  finishCount_(0)
 {
-	factory_->setIoPolicy(Process::CloseInput);
+	for (int i = 0; i < jobList->length(); ++i)
+		requestChannel_->push(jobList->at(i));
+	for (int i = 0; i < serverPool_->length(); ++i)
+		serverPool_->set(i, JobServer::start(requestChannel_, replyChannel_));
 }
 
-JobScheduler::~JobScheduler()
-{
-	wait();
-}
-
-bool JobScheduler::collect(Ref<Job> *completedJob)
+bool JobScheduler::collect(Ref<Job, Owner> *completedJob)
 {
 	if (finishCount_ == totalCount_) {
 		*completedJob = 0;
 		return false;
 	}
 
-	Ref<Job> job;
-
-	while (true)
-	{
-		if (status_ == 0) {
-			running_->acquire();
-		}
-		else {
-			if (!running_->tryAcquire()) break;
-		}
-
-		int status = 0;
-		pid_t pid = Process::wait(&status);
-		{
-			Guard<Mutex> guard(starting_);
-			job = runMap_->value(pid);
-		}
-
-		Ref<File> file = job->process_->rawOutput();
-		file->seek(0);
-		job->outputText_ = file->readAll();
-		job->status_ = status;
-
-		{
-			Guard<Instance> guard(this);
-			if (status_ == 0) status_ = status;
-		}
-		++finishCount_;
-
-		slots_->release();
-		break;
-	}
-
+	Ref<Job, Owner> job = replyChannel_->pop();
 	*completedJob = job;
-	return job;
-}
+	if (job->status() != 0) status_ = job->status();
+	++finishCount_;
 
-void JobScheduler::run()
-{
-	for (int i = 0; i < jobList_->length(); ++i)
-	{
-		slots_->acquire();
-		{
-			Guard<Instance> guard(this);
-			if (status_ != 0) break;
-		}
-		Ref<Job> job = jobList_->at(i);
-		Ref<File, Owner> file = File::temp();
-		factory_->setRawOutput(file);
-		factory_->setRawError(file);
-		{
-			Guard<Mutex> guard(starting_);
-			job->process_ = Process::start(job->command_, factory_);
-			runMap_->insert(job->process_->id(), job);
-		}
-		running_->release();
-	}
+	return job;
 }
 
 } // namespace mach
