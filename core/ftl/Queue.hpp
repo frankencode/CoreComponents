@@ -1,5 +1,5 @@
 /*
- * Queue.hpp -- a single-linked queue
+ * Queue.hpp -- a double-linked queue
  *
  * Copyright (c) 2007-2012, Frank Mertens
  *
@@ -22,10 +22,12 @@ class QueueNode
 public:
 	QueueNode(const T &item)
 		: item_(item),
-		  next_(0)
+		  next_(0),
+		  prev_(0)
 	{}
 	T item_;
 	QueueNode *next_;
+	QueueNode *prev_;
 };
 
 template<class T>
@@ -56,7 +58,23 @@ public:
 		Node *node = new Node(item);
 		if (tail_) {
 			tail_->next_ = node;
+			node->prev_ = tail_;
 			tail_ = node;
+		}
+		else {
+			head_ = node;
+			tail_ = node;
+		}
+		++length_;
+	}
+
+	void pushFront(const T &item)
+	{
+		Node *node = new Node(item);
+		if (head_) {
+			head_->prev_ = node;
+			node->next_ = head_;
+			head_ = node;
 		}
 		else {
 			head_ = node;
@@ -72,6 +90,7 @@ public:
 		if (item) *item = node->item_;
 		head_ = node->next_;
 		if (!head_) tail_ = 0;
+		else head_->prev_ = 0;
 		delete node;
 		--length_;
 	}

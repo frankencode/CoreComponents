@@ -13,7 +13,7 @@ JobServer::JobServer(Ref<JobChannel> requestChannel, Ref<JobChannel> replyChanne
 
 JobServer::~JobServer()
 {
-	requestChannel_->push(0);
+	requestChannel_->pushFront(0);
 	wait();
 }
 

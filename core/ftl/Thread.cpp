@@ -30,12 +30,10 @@ Ref<Thread> Thread::self()
 	return self_;
 }
 
-void Thread::start(int detachState)
+
+void Thread::start()
 {
-	Ref<ThreadFactory, Owner> factory = ThreadFactory::create();
-	if (detachState != Joinable)
-		factory->setDetachState(detachState);
-	factory->start(this);
+	ThreadFactory::create()->start(this);
 }
 
 void Thread::wait()
@@ -78,6 +76,15 @@ void Thread::blockAllSignals()
 {
 	sigset_t set;
 	sigfillset(&set);
+	int ret = pthread_sigmask(SIG_SETMASK, &set, 0/*oset*/);
+	if (ret != 0)
+		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
+}
+
+void Thread::unblockAllSignals()
+{
+	sigset_t set;
+	sigemptyset(&set);
 	int ret = pthread_sigmask(SIG_SETMASK, &set, 0/*oset*/);
 	if (ret != 0)
 		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
