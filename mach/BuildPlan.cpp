@@ -341,6 +341,7 @@ void BuildPlan::analyse()
 			error()->writeLine(beautifyCommand(job->command()));
 			error()->writeLine(job->outputText());
 		}
+		if (job->status() != 0) break;
 		modules_->append(toolChain_->finishAnalyseJob(this, job));
 	}
 

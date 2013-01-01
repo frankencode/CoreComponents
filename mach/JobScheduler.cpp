@@ -30,14 +30,17 @@ JobScheduler::JobScheduler(Ref<JobList> jobList, int concurrency)
 
 bool JobScheduler::collect(Ref<Job, Owner> *completedJob)
 {
-	if (finishCount_ == totalCount_) {
+	if ((finishCount_ == totalCount_) || !serverPool_) {
 		*completedJob = 0;
 		return false;
 	}
 
 	Ref<Job, Owner> job = replyChannel_->pop();
 	*completedJob = job;
-	if (job->status() != 0) status_ = job->status();
+	if (job->status() != 0) {
+		status_ = job->status();
+		serverPool_ = 0;
+	}
 	++finishCount_;
 
 	return job;

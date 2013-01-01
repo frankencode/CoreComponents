@@ -28,19 +28,24 @@ public:
 
 	void push(const T &item)
 	{
-		mutex_->acquire();
+		Guard<Mutex> guard(mutex_);
 		queue_->push(item);
 		notEmpty_->signal();
-		mutex_->release();
+	}
+
+	void pushFront(const T &item)
+	{
+		Guard<Mutex> guard(mutex_);
+		queue_->pushFront(item);
+		notEmpty_->signal();
 	}
 
 	void pop(T *item)
 	{
-		mutex_->acquire();
+		Guard<Mutex> guard(mutex_);
 		while (queue_->length() == 0)
 			notEmpty_->wait(mutex_);
 		queue_->pop(item);
-		mutex_->release();
 	}
 
 	inline T pop() {
@@ -59,7 +64,7 @@ protected:
 	{}
 
 private:
-	Ref< Queue<T>, Owner > queue_;
+	Ref<Queue<T>, Owner> queue_;
 	Ref<Mutex, Owner> mutex_;
 	Ref<Condition, Owner> notEmpty_;
 };
