@@ -37,6 +37,7 @@ int GccToolChain::defaultSizeOptimizationLevel() const
 String GccToolChain::analyseCommand(Ref<BuildPlan> buildPlan, String source) const
 {
 	Format args;
+	args << execPath();
 	appendCompileOptions(args, buildPlan);
 	args << "-MM" << "-MG" << source;
 	return args->join(" ");
@@ -53,34 +54,17 @@ Ref<Module, Owner> GccToolChain::finishAnalyseJob(Ref<BuildPlan> buildPlan, Ref<
 	return Module::create(job->command(), buildPlan->modulePath(parts->pop(0)), parts, true);
 }
 
-bool GccToolChain::compile(Ref<BuildPlan> buildPlan, Ref<Module> module)
+Ref<Job, Owner> GccToolChain::createCompileJob(Ref<BuildPlan> buildPlan, Ref<Module> module)
 {
 	Format args;
-	String outputPath;
-	appendCompileOptions(args, buildPlan, module->modulePath());
-	args << module->sourcePath();
-	String command = args->join(" ");
-	if (!buildPlan->runBuild(command)) return false;
-	if (buildPlan->options() & BuildPlan::ToolSet)
-		return linkTool(buildPlan, module);
-	return true;
-}
-
-bool GccToolChain::linkTool(Ref<BuildPlan> buildPlan, Ref<Module> module)
-{
-	Format args;
-
 	args << execPath();
-
-	if (buildPlan->options() & BuildPlan::Static) args << "-static";
-	args << "-pthread";
-	args << "-o" << module->toolName();
-	args << module->modulePath();
-
-	appendLinkOptions(args, buildPlan->libraryPaths(), buildPlan->libraries());
-
+	String outputPath = (buildPlan->options() & BuildPlan::ToolSet) ? module->toolName() : module->modulePath();
+	appendCompileOptions(args, buildPlan, outputPath);
+	args << module->sourcePath();
+	if (buildPlan->options() & BuildPlan::ToolSet)
+		appendLinkOptions(args, buildPlan->libraryPaths(), buildPlan->libraries());
 	String command = args->join(" ");
-	return buildPlan->runBuild(command);
+	return Job::create(command);
 }
 
 String GccToolChain::linkPath(Ref<BuildPlan> buildPlan) const
@@ -155,7 +139,6 @@ void GccToolChain::clean(Ref<BuildPlan> buildPlan)
 
 void GccToolChain::appendCompileOptions(Format args, Ref<BuildPlan> buildPlan, String outputPath) const
 {
-	args << execPath();
 	args << "-std=c++0x";
 	if (buildPlan->options() & BuildPlan::Debug) args << "-g";
 	if (buildPlan->options() & BuildPlan::Release) args << "-DNDEBUG";

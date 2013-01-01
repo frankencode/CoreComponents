@@ -69,8 +69,8 @@ public:
 	String modulePath(String object) const;
 
 	String beautifyCommand(String command);
-	String runAnalyse(String command);
 	bool runBuild(String command);
+
 	bool mkdir(String path);
 	bool rmdir(String path);
 	bool symlink(String path, String newPath);
@@ -88,7 +88,7 @@ private:
 	void readRecipe(Ref<BuildPlan> parentPlan = 0);
 
 	void prepare();
-	void analyse();
+	bool analyse();
 	bool build();
 	void clean();
 
@@ -120,6 +120,7 @@ private:
 	bool cleanComplete_;
 	bool distCleanComplete_;
 
+	bool analyseResult_;
 	bool buildResult_;
 };
 

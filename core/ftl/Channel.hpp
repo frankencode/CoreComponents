@@ -26,10 +26,10 @@ public:
 		return new Channel;
 	}
 
-	void push(const T &item)
+	void pushBack(const T &item)
 	{
 		Guard<Mutex> guard(mutex_);
-		queue_->push(item);
+		queue_->pushBack(item);
 		notEmpty_->signal();
 	}
 
@@ -40,19 +40,31 @@ public:
 		notEmpty_->signal();
 	}
 
-	void pop(T *item)
+	void popBack(T *item)
 	{
 		Guard<Mutex> guard(mutex_);
 		while (queue_->length() == 0)
 			notEmpty_->wait(mutex_);
-		queue_->pop(item);
+		queue_->popBack(item);
 	}
 
-	inline T pop() {
+	void popFront(T *item)
+	{
+		Guard<Mutex> guard(mutex_);
+		while (queue_->length() == 0)
+			notEmpty_->wait(mutex_);
+		queue_->popFront(item);
+	}
+
+	inline T popFront() {
 		T item;
-		pop(&item);
+		popFront(&item);
 		return item;
 	}
+
+	inline void push(const T &item) { return pushBack(item); }
+	inline void pop(T *item) { return popFront(item); }
+	inline T pop() { return popFront(); }
 
 	inline bool isEmpty() const { return false; }
 

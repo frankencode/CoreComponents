@@ -2,6 +2,7 @@
 #include <ftl/Format.hpp>
 #include <ftl/File.hpp>
 #include <ftl/FileStatus.hpp>
+#include <ftl/PrintDebug.hpp> // DEBUG
 #include "BuildPlan.hpp"
 #include "DependencyCache.hpp"
 
@@ -106,6 +107,11 @@ DependencyCache::~DependencyCache()
 bool DependencyCache::lookup(String source, Ref<Module, Owner> *module)
 {
 	return cache_->lookup(source, module);
+}
+
+void DependencyCache::insert(String source, Ref<Module> module)
+{
+	cache_->insert(source, module);
 }
 
 } // namespace mach

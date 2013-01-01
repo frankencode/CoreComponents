@@ -53,7 +53,7 @@ public:
 	inline int length() const { return length_; }
 	inline bool isEmpty() const { return length_ == 0; }
 
-	void push(const T &item)
+	void pushBack(const T &item)
 	{
 		Node *node = new Node(item);
 		if (tail_) {
@@ -83,7 +83,19 @@ public:
 		++length_;
 	}
 
-	void pop(T *item)
+	void popBack(T *item)
+	{
+		FTL_ASSERT(length_ > 0);
+		Node *node = tail_;
+		if (item) *item = node->item_;
+		tail_ = node->prev_;
+		if (!tail_) head_ = 0;
+		else tail_->next_ = 0;
+		delete node;
+		--length_;
+	}
+
+	void popFront(T *item)
 	{
 		FTL_ASSERT(length_ > 0);
 		Node *node = head_;
@@ -95,11 +107,15 @@ public:
 		--length_;
 	}
 
-	inline T pop() {
+	inline T popFront() {
 		T item;
-		pop(&item);
+		popFront(&item);
 		return item;
 	}
+
+	inline void push(const T &item) { pushBack(item); }
+	inline void pop(T *item) { return popFront(item); }
+	inline T pop() { return popFront(); }
 
 	inline T front() const { return head_->item_; }
 	inline T back() const { return tail_->item_; }

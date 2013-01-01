@@ -1,31 +1,32 @@
-#include <ftl/Guard.hpp>
 #include <ftl/System.hpp>
-#include <ftl/ProcessFactory.hpp>
-#include <ftl/File.hpp>
 #include "JobServer.hpp"
 #include "JobScheduler.hpp"
 
 namespace mach
 {
 
-Ref<JobScheduler, Owner> JobScheduler::start(Ref<JobList> jobList, int concurrency)
+Ref<JobScheduler, Owner> JobScheduler::start(int concurrency)
 {
-	return new JobScheduler(jobList, concurrency);
+	return new JobScheduler(concurrency);
 }
 
-JobScheduler::JobScheduler(Ref<JobList> jobList, int concurrency)
-	: concurrency_((concurrency > 0) ? concurrency : System::concurrency()),
+JobScheduler::JobScheduler(int concurrency)
+	: concurrency_((concurrency > 0) ? concurrency : (System::concurrency() + 1)),
 	  requestChannel_(JobChannel::create()),
 	  replyChannel_(JobChannel::create()),
-	  serverPool_(JobServerList::create(concurrency_)),
+	  serverPool_(ServerPool::create()),
 	  status_(0),
-	  totalCount_(jobList->length()),
+	  totalCount_(0),
 	  finishCount_(0)
 {
-	for (int i = 0; i < jobList->length(); ++i)
-		requestChannel_->push(jobList->at(i));
-	for (int i = 0; i < serverPool_->length(); ++i)
-		serverPool_->set(i, JobServer::start(requestChannel_, replyChannel_));
+	for (int i = 0; i < concurrency_; ++i)
+		serverPool_->pushBack(JobServer::start(requestChannel_, replyChannel_));
+}
+
+void JobScheduler::schedule(Ref<Job> job)
+{
+	requestChannel_->pushBack(job);
+	++totalCount_;
 }
 
 bool JobScheduler::collect(Ref<Job, Owner> *completedJob)
@@ -35,7 +36,7 @@ bool JobScheduler::collect(Ref<Job, Owner> *completedJob)
 		return false;
 	}
 
-	Ref<Job, Owner> job = replyChannel_->pop();
+	Ref<Job, Owner> job = replyChannel_->popFront();
 	*completedJob = job;
 	if (job->status() != 0) {
 		status_ = job->status();
@@ -43,7 +44,7 @@ bool JobScheduler::collect(Ref<Job, Owner> *completedJob)
 	}
 	++finishCount_;
 
-	return job;
+	return true;
 }
 
 } // namespace mach

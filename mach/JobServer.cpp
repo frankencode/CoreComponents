@@ -23,13 +23,13 @@ void JobServer::run()
 	factory->setIoPolicy(Process::CloseInput|Process::ForwardOutput|Process::ErrorToOutput);
 
 	while (true) {
-		Ref<Job, Owner> job = requestChannel_->pop();
+		Ref<Job, Owner> job = requestChannel_->popFront();
 		if (!job) break;
 		factory->setCommand(job->command_);
 		Ref<Process, Owner> process = factory->produce();
 		job->outputText_ = process->rawOutput()->readAll();
 		job->status_ = process->wait();
-		replyChannel_->push(job);
+		replyChannel_->pushBack(job);
 	}
 }
 

@@ -40,7 +40,7 @@ public:
   *   - manual detruction by delete operator
   * In both cases an exception of type ReferenceException is thrown.
   */
-class RefCounter: public SpinLock
+class RefCounter
 {
 public:
 	RefCounter(): refCount_(0) {}
