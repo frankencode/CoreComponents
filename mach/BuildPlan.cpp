@@ -60,6 +60,7 @@ BuildPlan::BuildPlan(Ref<ToolChain> toolChain, String projectPath, Ref<BuildPlan
 	  buildComplete_(false),
 	  cleanComplete_(false),
 	  distCleanComplete_(false),
+	  analyseResult_(false),
 	  buildResult_(false)
 {
 	recipe_ = Config::create();
@@ -149,7 +150,7 @@ int BuildPlan::run()
 		);
 	}
 
-	analyse();
+	if (!analyse()) return 1;
 
 	if (recipe_->flag("c") || recipe_->flag("clean")) {
 		clean();
@@ -175,12 +176,6 @@ String BuildPlan::beautifyCommand(String command)
 	if (options_ & Bootstrap)
 		return command->replace(String(" ") + sourcePrefix_, " $SOURCE");
 	return command;
-}
-
-String BuildPlan::runAnalyse(String command)
-{
-	if (options_ & Verbose) error()->writeLine(beautifyCommand(command));
-	return Process::start(command, Process::ForwardOutput)->rawOutput()->readAll();
 }
 
 bool BuildPlan::runBuild(String command)
@@ -271,9 +266,9 @@ void BuildPlan::prepare()
 	}
 }
 
-void BuildPlan::analyse()
+bool BuildPlan::analyse()
 {
-	if (analyseComplete_) return;
+	if (analyseComplete_) return analyseResult_;
 	analyseComplete_ = true;
 
 	sourcePrefix_ = buildMap_->commonPrefix()->canonicalPath();
@@ -314,38 +309,41 @@ void BuildPlan::analyse()
 	}
 
 	for (int i = 0; i < prequisites_->length(); ++i)
-		prequisites_->at(i)->analyse();
+		if (!prequisites_->at(i)->analyse()) return analyseResult_ = false;
 
-	if (options_ & Package) return;
+	if (options_ & Package) return analyseResult_ = true;
 
 	mkdir(modulePath_);
 
 	modules_ = ModuleList::create();
-	Ref<JobList, Owner> jobList = JobList::create();
+	Ref<JobScheduler, Owner> scheduler;
 
 	Ref<DependencyCache, Owner> dependencyCache = DependencyCache::create(this);
 	for (int i = 0; i < sources_->length(); ++i) {
-		/*Ref<Module, Owner> module;
-		if (dependencyCache->lookup(sources_->at(i), &module))
+		Ref<Module, Owner> module;
+		if (dependencyCache->lookup(sources_->at(i), &module)) {
 			modules_->append(module);
-		else*/
-			jobList->append(toolChain_->createAnalyseJob(this, sources_->at(i)));
+		}
+		else {
+			if (!scheduler) scheduler = JobScheduler::start();
+			scheduler->schedule(toolChain_->createAnalyseJob(this, sources_->at(i)));
+		}
 	}
 
-	if (jobList->length() == 0) return;
-
-	Ref<JobScheduler, Owner> scheduler = JobScheduler::start(jobList);
+	if (!scheduler) return analyseResult_ = true;
 
 	for (Ref<Job, Owner> job; scheduler->collect(&job);) {
-		if (options_ & Verbose) {
+		if ((options_ & Verbose) || (job->status() != 0)) {
 			error()->writeLine(beautifyCommand(job->command()));
-			error()->writeLine(job->outputText());
+			// error()->writeLine(job->outputText());
 		}
 		if (job->status() != 0) break;
-		modules_->append(toolChain_->finishAnalyseJob(this, job));
+		Ref<Module, Owner> module = toolChain_->finishAnalyseJob(this, job);
+		dependencyCache->insert(module->sourcePath(), module);
+		modules_->append(module);
 	}
 
-	// FIXME: missing error handling
+	return analyseResult_ = (scheduler->status() == 0);
 }
 
 bool BuildPlan::build()
@@ -358,13 +356,30 @@ bool BuildPlan::build()
 
 	if (options_ & Package) return buildResult_ = true;
 
+	Ref<JobScheduler, Owner> scheduler;
+
 	for (int i = 0; i < modules_->length(); ++i) {
 		Ref<Module> module = modules_->at(i);
 		bool dirty = module->dirty();
 		if (options_ & ToolSet)
 			dirty = dirty || !fileStatus(module->toolName())->exists();
 		if (dirty) {
-			if (!toolChain_->compile(this, module)) return buildResult_ = false;
+			Ref<Job, Owner> job = toolChain_->createCompileJob(this, module);
+			if (options_ & DryRun) {
+				error()->writeLine(beautifyCommand(job->command()));
+			}
+			else {
+				if (!scheduler) scheduler = JobScheduler::start();
+				scheduler->schedule(job);
+			}
+		}
+	}
+
+	if (scheduler) {
+		for (Ref<Job, Owner> job; scheduler->collect(&job);) {
+			error()->writeLine(beautifyCommand(job->command()));
+			rawOutput()->write(job->outputText());
+			if (job->status() != 0) return buildResult_ = false;
 		}
 	}
 

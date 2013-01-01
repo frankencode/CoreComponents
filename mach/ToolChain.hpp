@@ -29,7 +29,7 @@ public:
 	virtual Ref<Job, Owner> createAnalyseJob(Ref<BuildPlan> buildPlan, String source) = 0;
 	virtual Ref<Module, Owner> finishAnalyseJob(Ref<BuildPlan> buildPlan, Ref<Job> job) = 0;
 
-	virtual bool compile(Ref<BuildPlan> buildPlan, Ref<Module> module) = 0;
+	virtual Ref<Job, Owner> createCompileJob(Ref<BuildPlan> buildPlan, Ref<Module> module) = 0;
 
 	virtual String linkPath(Ref<BuildPlan> buildPlan) const = 0;
 	virtual bool link(Ref<BuildPlan> buildPlan) = 0;

@@ -11,7 +11,6 @@
 #ifndef FTL_SPINLOCK_HPP
 #define FTL_SPINLOCK_HPP
 
-#include <pthread.h>
 #include "Exception.hpp"
 
 namespace ftl
@@ -26,7 +25,7 @@ public:
 		return __sync_bool_compare_and_swap(&flag_, 0, 1);
 	}
 	inline void acquire() {
-		while (!tryAcquire()) pthread_yield();
+		while (!tryAcquire());
 	}
 	inline void release() {
 		bool ok = __sync_bool_compare_and_swap(&flag_, 1, 0);

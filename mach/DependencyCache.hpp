@@ -26,6 +26,7 @@ public:
 	static String cachePath(Ref<BuildPlan> buildPlan);
 
 	bool lookup(String source, Ref<Module, Owner> *module);
+	void insert(String source, Ref<Module> module);
 
 private:
 	DependencyCache(Ref<BuildPlan> buildPlan);

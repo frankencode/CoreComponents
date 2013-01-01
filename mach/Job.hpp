@@ -2,7 +2,6 @@
 #define MACH_JOB_HPP
 
 #include <ftl/String.hpp>
-#include <ftl/List.hpp>
 #include <ftl/Channel.hpp>
 
 namespace mach
@@ -38,7 +37,6 @@ private:
 	String outputText_;
 };
 
-typedef List< Ref<Job, Owner> > JobList;
 typedef Channel< Ref<Job, Owner> > JobChannel;
 
 } // namespace mach
