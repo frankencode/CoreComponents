@@ -5,7 +5,7 @@
 namespace mach
 {
 
-Ref<JobScheduler, Owner> JobScheduler::start(int concurrency)
+Ref<JobScheduler, Owner> JobScheduler::create(int concurrency)
 {
 	return new JobScheduler(concurrency);
 }
@@ -14,11 +14,17 @@ JobScheduler::JobScheduler(int concurrency)
 	: concurrency_((concurrency > 0) ? concurrency : (System::concurrency() + 1)),
 	  requestChannel_(JobChannel::create()),
 	  replyChannel_(JobChannel::create()),
-	  serverPool_(ServerPool::create()),
+	  started_(false),
 	  status_(0),
 	  totalCount_(0),
 	  finishCount_(0)
+{}
+
+void JobScheduler::start()
 {
+	if (started_) return;
+	started_ = true;
+	serverPool_ = ServerPool::create();
 	for (int i = 0; i < concurrency_; ++i)
 		serverPool_->pushBack(JobServer::start(requestChannel_, replyChannel_));
 }
@@ -31,6 +37,7 @@ void JobScheduler::schedule(Ref<Job> job)
 
 bool JobScheduler::collect(Ref<Job, Owner> *completedJob)
 {
+	start();
 	if ((finishCount_ == totalCount_) || !serverPool_) {
 		*completedJob = 0;
 		return false;
