@@ -325,7 +325,10 @@ bool BuildPlan::analyse()
 			modules_->append(module);
 		}
 		else {
-			if (!scheduler) scheduler = JobScheduler::start();
+			if (!scheduler) {
+				scheduler = JobScheduler::create();
+				scheduler->start();
+			}
 			scheduler->schedule(toolChain_->createAnalyseJob(this, sources_->at(i)));
 		}
 	}
@@ -356,7 +359,8 @@ bool BuildPlan::build()
 
 	if (options_ & Package) return buildResult_ = true;
 
-	Ref<JobScheduler, Owner> scheduler;
+	Ref<JobScheduler, Owner> compileScheduler;
+	Ref<JobScheduler, Owner> linkScheduler;
 
 	for (int i = 0; i < modules_->length(); ++i) {
 		Ref<Module> module = modules_->at(i);
@@ -369,21 +373,38 @@ bool BuildPlan::build()
 				error()->writeLine(beautifyCommand(job->command()));
 			}
 			else {
-				if (!scheduler) scheduler = JobScheduler::start();
-				scheduler->schedule(job);
+				if (!compileScheduler) {
+					compileScheduler = JobScheduler::create();
+					compileScheduler->start();
+				}
+				compileScheduler->schedule(job);
+				if (options_ & ToolSet) {
+					if (!linkScheduler) linkScheduler = JobScheduler::create();
+					linkScheduler->schedule(toolChain_->createLinkJob(this, module));
+				}
 			}
 		}
 	}
 
-	if (scheduler) {
-		for (Ref<Job, Owner> job; scheduler->collect(&job);) {
+	if (compileScheduler) {
+		for (Ref<Job, Owner> job; compileScheduler->collect(&job);) {
 			error()->writeLine(beautifyCommand(job->command()));
-			rawOutput()->write(job->outputText());
+			output()->write(job->outputText());
 			if (job->status() != 0) return buildResult_ = false;
 		}
 	}
 
-	if (options_ & ToolSet) return buildResult_ = true;
+	if (options_ & ToolSet) {
+		if (linkScheduler) {
+			linkScheduler->start();
+			for (Ref<Job, Owner> job; linkScheduler->collect(&job);) {
+				error()->writeLine(beautifyCommand(job->command()));
+				output()->write(job->outputText());
+				if (job->status() != 0) return buildResult_ = false;
+			}
+		}
+		return buildResult_ = true;
+	}
 
 	Ref<FileStatus, Owner> targetStatus = fileStatus(toolChain_->linkPath(this));
 	if (targetStatus->exists()) {

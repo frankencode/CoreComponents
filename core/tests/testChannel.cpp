@@ -67,21 +67,14 @@ private:
 int main()
 {
 	auto channel = MyChannel::create();
-
 	auto p1 = Producer::create(1, channel, 8);
-	// Ref<Producer, Owner> p2 = new Producer(2, channel, 12);
 	auto c1 = Consumer::create(1, channel, 8);
-	// Ref<Consumer, Owner> c2 = new Consumer(2, channel, 16);
 
 	Time dt = Time::now();
 	c1->start();
 	p1->start();
-	//c2->start();
-	//p2->start();
 	c1->wait();
-	//c2->wait();
 	p1->wait();
-	//p2->wait();
 	dt = Time::now() - dt;
 
 	print("\ndt = %% us\n\n", dt.us());

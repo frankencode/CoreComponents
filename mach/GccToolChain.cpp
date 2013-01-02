@@ -58,11 +58,22 @@ Ref<Job, Owner> GccToolChain::createCompileJob(Ref<BuildPlan> buildPlan, Ref<Mod
 {
 	Format args;
 	args << execPath();
-	String outputPath = (buildPlan->options() & BuildPlan::ToolSet) ? module->toolName() : module->modulePath();
-	appendCompileOptions(args, buildPlan, outputPath);
+	appendCompileOptions(args, buildPlan);
+	args << "-c" << "-o" << module->modulePath();
 	args << module->sourcePath();
-	if (buildPlan->options() & BuildPlan::ToolSet)
-		appendLinkOptions(args, buildPlan->libraryPaths(), buildPlan->libraries());
+	String command = args->join(" ");
+	return Job::create(command);
+}
+
+Ref<Job, Owner> GccToolChain::createLinkJob(Ref<BuildPlan> buildPlan, Ref<Module> module)
+{
+	Format args;
+	args << execPath();
+	if (buildPlan->options() & BuildPlan::Static) args << "-static";
+	args << "-pthread";
+	args << "-o" << module->toolName();
+	args << module->modulePath();
+	appendLinkOptions(args, buildPlan);
 	String command = args->join(" ");
 	return Job::create(command);
 }
@@ -101,7 +112,7 @@ bool GccToolChain::link(Ref<BuildPlan> buildPlan)
 	for (int i = 0; i < modules->length(); ++i)
 		args << modules->at(i)->modulePath();
 
-	appendLinkOptions(args, buildPlan->libraryPaths(), buildPlan->libraries());
+	appendLinkOptions(args, buildPlan);
 
 	String command = args->join(" ");
 
@@ -136,8 +147,7 @@ void GccToolChain::clean(Ref<BuildPlan> buildPlan)
 	}
 }
 
-
-void GccToolChain::appendCompileOptions(Format args, Ref<BuildPlan> buildPlan, String outputPath) const
+void GccToolChain::appendCompileOptions(Format args, Ref<BuildPlan> buildPlan)
 {
 	args << "-std=c++0x";
 	if (buildPlan->options() & BuildPlan::Debug) args << "-g";
@@ -149,14 +159,13 @@ void GccToolChain::appendCompileOptions(Format args, Ref<BuildPlan> buildPlan, S
 	args << "-Wall" << "-pthread";
 	for (int i = 0; i < buildPlan->includePaths()->length(); ++i)
 		args << "-I" + buildPlan->includePaths()->at(i);
-	if (outputPath != "") {
-		if (outputPath->tail(2) == ".o") args << "-c";
-		args << "-o" << outputPath;
-	}
 }
 
-void GccToolChain::appendLinkOptions(Format args, Ref<StringList> libraryPaths, Ref<StringList> libraries) const
+void GccToolChain::appendLinkOptions(Format args, Ref<BuildPlan> buildPlan)
 {
+	Ref<StringList> libraryPaths = buildPlan->libraryPaths();
+	Ref<StringList> libraries = buildPlan->libraries();
+
 	for (int i = 0; i < libraryPaths->length(); ++i)
 		args << "-L" + libraryPaths->at(i);
 

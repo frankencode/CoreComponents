@@ -12,10 +12,11 @@ using namespace ftl;
 class JobScheduler: public Instance
 {
 public:
-	static Ref<JobScheduler, Owner> start(int concurrency = -1);
+	static Ref<JobScheduler, Owner> create(int concurrency = -1);
 
 	inline int concurrency() const { return concurrency_; }
 
+	void start();
 	void schedule(Ref<Job> job);
 	bool collect(Ref<Job, Owner> *completedJob);
 
@@ -34,6 +35,7 @@ private:
 	typedef Queue< Ref<JobServer, Owner> > ServerPool;
 	Ref<ServerPool, Owner> serverPool_;
 
+	bool started_;
 	int status_;
 	int totalCount_;
 	int finishCount_;

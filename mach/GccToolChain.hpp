@@ -25,6 +25,7 @@ public:
 	virtual Ref<Module, Owner> finishAnalyseJob(Ref<BuildPlan> buildPlan, Ref<Job> job);
 
 	virtual Ref<Job, Owner> createCompileJob(Ref<BuildPlan> buildPlan, Ref<Module> module);
+	virtual Ref<Job, Owner> createLinkJob(Ref<BuildPlan> buildPlan, Ref<Module> module);
 
 	virtual String linkPath(Ref<BuildPlan> buildPlan) const;
 	virtual bool link(Ref<BuildPlan> buildPlan);
@@ -35,8 +36,8 @@ protected:
 	GccToolChain(String execPath);
 	static String machineCommand(String execPath);
 
-	void appendCompileOptions(Format args, Ref<BuildPlan> buildPlan, String outputPath = "") const;
-	void appendLinkOptions(Format args, Ref<StringList> libraryPaths, Ref<StringList> libraries) const;
+	static void appendCompileOptions(Format args, Ref<BuildPlan> buildPlan);
+	static void appendLinkOptions(Format args, Ref<BuildPlan> buildPlan);
 
 	static String lookup(String execPath);
 };
