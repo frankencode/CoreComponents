@@ -75,7 +75,7 @@ public:
 
 	int wait();
 
-	// -- querying the current process status
+	// -- query / modify the current process status
 
 	static void cd(String path);
 	static String cwd();
@@ -103,6 +103,9 @@ public:
 	static void killGroup(pid_t processGroupId, int signal, bool *permissionDenied = 0);
 	static void raise(int signal);
 
+	static void hookSignal(int signal);
+	static void unhookSignal(int signal);
+
 	static void sleep(Time duration);
 	static void exit(int exitCode);
 
@@ -121,6 +124,8 @@ protected:
 	~Process();
 
 private:
+	static void forwardSignal(int signal);
+
 	int type_;
 	int ioPolicy_;
 

@@ -17,7 +17,7 @@
 namespace ftl
 {
 
-class SignalSet: public Instance
+class SignalSet: public Instance, public sigset_t
 {
 public:
 	inline static Ref<SignalSet, Owner> createEmpty() {
@@ -31,8 +31,6 @@ public:
 	void remove(int signal);
 
 	bool contains(int signal) const;
-
-	sigset_t *rawSet();
 
 private:
 	enum { Empty, Full };

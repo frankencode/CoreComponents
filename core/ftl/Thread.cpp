@@ -72,68 +72,18 @@ void Thread::sleepUntil(Time timeout)
 	mutex->release();
 }
 
-void Thread::blockAllSignals()
+void Thread::blockSignals(Ref<SignalSet> set)
 {
-	sigset_t set;
-	sigfillset(&set);
-	int ret = pthread_sigmask(SIG_SETMASK, &set, 0/*oset*/);
+	int ret = pthread_sigmask(SIG_BLOCK, set, 0/*oset*/);
 	if (ret != 0)
 		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
 }
 
-void Thread::unblockAllSignals()
+void Thread::unblockSignals(Ref<SignalSet> set)
 {
-	sigset_t set;
-	sigemptyset(&set);
-	int ret = pthread_sigmask(SIG_SETMASK, &set, 0/*oset*/);
+	int ret = pthread_sigmask(SIG_UNBLOCK, set, 0/*oset*/);
 	if (ret != 0)
 		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
-}
-
-void Thread::blockSignal(int signal)
-{
-	sigset_t set;
-	sigemptyset(&set);
-	sigaddset(&set, signal);
-	int ret = pthread_sigmask(SIG_BLOCK, &set, 0/*oset*/);
-	if (ret != 0)
-		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
-}
-
-void Thread::unblockSignal(int signal)
-{
-	sigset_t set;
-	sigemptyset(&set);
-	sigaddset(&set, signal);
-	int ret = pthread_sigmask(SIG_UNBLOCK, &set, 0/*oset*/);
-	if (ret != 0)
-		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
-}
-
-void Thread::hookSignal(int signal)
-{
-	self();
-
-	struct sigaction action;
-	mem::clr(&action, sizeof(action));
-	sigset_t mask;
-	sigfillset(&mask);
-	action.sa_handler = forwardSignal;
-	action.sa_mask = mask;
-	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
-		FTL_SYSTEM_EXCEPTION;
-}
-
-void Thread::unhookSignal(int signal)
-{
-	struct sigaction action;
-	mem::clr(&action, sizeof(action));
-	sigset_t mask;
-	sigfillset(&mask);
-	action.sa_handler = SIG_DFL;
-	action.sa_mask = mask;
-	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
-		FTL_SYSTEM_EXCEPTION;
 }
 
 void Thread::run()
@@ -141,11 +91,5 @@ void Thread::run()
 
 void Thread::handleSignal(int signal)
 {}
-
-void Thread::forwardSignal(int signal)
-{
-	self()->lastSignal_ = signal;
-	self()->handleSignal(signal);
-}
 
 } // namespace ftl

@@ -1,6 +1,7 @@
 #include <unistd.h> // alarm(2)
 #include <ftl/PrintDebug.hpp>
 #include <ftl/Thread.hpp>
+#include <ftl/Process.hpp>
 
 using namespace ftl;
 
@@ -15,16 +16,13 @@ private:
 
 	virtual void run()
 	{
-		hookSignal(SIGINT);
-		hookSignal(SIGALRM);
-		hookSignal(SIGWINCH);
-		hookSignal(SIGTSTP);
-		hookSignal(SIGCONT);
-		unblockSignal(SIGINT);
-		unblockSignal(SIGALRM);
-		unblockSignal(SIGWINCH);
-		unblockSignal(SIGTSTP);
-		unblockSignal(SIGCONT);
+		auto set = SignalSet::createEmpty();
+		set->insert(SIGINT);
+		set->insert(SIGALRM);
+		set->insert(SIGWINCH);
+		set->insert(SIGTSTP);
+		set->insert(SIGCONT);
+		unblockSignals(set);
 
 		while (true) {
 			try {
@@ -45,7 +43,7 @@ private:
 				}
 				else if (ex.signal() == SIGTSTP) {
 					print("[SIGTSTP]\n");
-					unhookSignal(SIGTSTP);
+					Process::unhookSignal(SIGTSTP);
 					kill(SIGTSTP);
 				}
 				else if (ex.signal() == SIGCONT) {
@@ -60,9 +58,14 @@ private:
 
 int main(int argc, char **argv)
 {
-	auto signalEater = SignalEater::create();
-	Thread::blockAllSignals();
+	Process::hookSignal(SIGINT);
+	Process::hookSignal(SIGALRM);
+	Process::hookSignal(SIGWINCH);
+	Process::hookSignal(SIGTSTP);
+	Process::hookSignal(SIGCONT);
+	Thread::blockSignals(SignalSet::createFull());
 	::alarm(1);
+	auto signalEater = SignalEater::create();
 	signalEater->start();
 	signalEater->wait();
 	return 0;

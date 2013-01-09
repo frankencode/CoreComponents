@@ -14,10 +14,9 @@
 namespace ftl
 {
 
-SignalSet::SignalSet(int preset) { if (preset == Empty) sigemptyset(&rawSet_); else sigfillset(&rawSet_); }
-void SignalSet::insert(int signal) { sigaddset(&rawSet_, signal); }
-void SignalSet::remove(int signal) { sigdelset(&rawSet_, signal); }
-bool SignalSet::contains(int signal) const { return sigismember(&rawSet_, signal); }
-sigset_t *SignalSet::rawSet() { return &rawSet_; }
+SignalSet::SignalSet(int preset) { if (preset == Empty) sigemptyset(this); else sigfillset(this); }
+void SignalSet::insert(int signal) { sigaddset(this, signal); }
+void SignalSet::remove(int signal) { sigdelset(this, signal); }
+bool SignalSet::contains(int signal) const { return sigismember(this, signal); }
 
 } // namespace ftl
