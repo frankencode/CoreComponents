@@ -15,6 +15,7 @@
 #include <signal.h>
 #include "atoms"
 #include "Time.hpp"
+#include "SignalSet.hpp"
 
 namespace ftl
 {
@@ -35,12 +36,8 @@ public:
 	static void sleep(Time duration);
 	static void sleepUntil(Time timeout);
 
-	static void blockAllSignals();
-	static void unblockAllSignals();
-	static void blockSignal(int signal);
-	static void unblockSignal(int signal);
-	static void hookSignal(int signal);
-	static void unhookSignal(int signal);
+	static void blockSignals(Ref<SignalSet> set);
+	static void unblockSignals(Ref<SignalSet> set);
 
 protected:
 	Thread(): lastSignal_(0) {}
@@ -51,8 +48,8 @@ protected:
 private:
 	friend class ThreadFactory;
 	friend class Interrupt;
+	friend class Process;
 
-	static void forwardSignal(int signal);
 	static Ref<Thread, ThreadLocalOwner> self_;
 	pthread_t tid_;
 	int lastSignal_;

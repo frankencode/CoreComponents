@@ -24,6 +24,7 @@
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #include <crt_externs.h> // _NSGetEnviron
 #endif
+#include "Thread.hpp"
 #include "ProcessFactory.hpp"
 #include "Process.hpp"
 
@@ -256,6 +257,38 @@ void Process::killGroup(pid_t processGroupId, int signal, bool *permissionDenied
 void Process::raise(int signal)
 {
 	if (::raise(signal) == -1)
+		FTL_SYSTEM_EXCEPTION;
+}
+
+void Process::forwardSignal(int signal)
+{
+	Thread::self()->lastSignal_ = signal;
+	Thread::self()->handleSignal(signal);
+}
+
+void Process::hookSignal(int signal)
+{
+	Thread::self();
+
+	struct sigaction action;
+	mem::clr(&action, sizeof(action));
+	sigset_t mask;
+	sigfillset(&mask);
+	action.sa_handler = forwardSignal;
+	action.sa_mask = mask;
+	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
+		FTL_SYSTEM_EXCEPTION;
+}
+
+void Process::unhookSignal(int signal)
+{
+	struct sigaction action;
+	mem::clr(&action, sizeof(action));
+	sigset_t mask;
+	sigfillset(&mask);
+	action.sa_handler = SIG_DFL;
+	action.sa_mask = mask;
+	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
 		FTL_SYSTEM_EXCEPTION;
 }
 
