@@ -28,6 +28,8 @@ typedef List<String> StringList;
 namespace syntax { class Definition; }
 typedef syntax::Definition SyntaxDefinition;
 
+class File;
+
 class ByteArray: public Sequence<char, int>
 {
 public:
@@ -215,17 +217,20 @@ public:
 
 private:
 	friend class Singleton<ByteArray>;
+	friend class File;
 
 	explicit ByteArray(int size = 0);
 	ByteArray(int size, char zero);
-	ByteArray(const char *data, int size = -1);
+	ByteArray(const char *data, int size, size_t mapSize = 0);
 	ByteArray(const ByteArray &b);
-	ByteArray(ByteArray *b, int size); // FIXME, should be protected
+	ByteArray(ByteArray *b, int size);
 
 	int size_;
 	char *data_;
 	mutable Ref<Character, Owner> chars_;
 	Ref<ByteArray, Owner> parent_;
+
+	size_t mapSize_;
 };
 
 } // namespace ftl

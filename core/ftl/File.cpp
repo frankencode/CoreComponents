@@ -9,6 +9,7 @@
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
 
+#include <sys/mman.h> // mmap
 #include <errno.h>
 #include <string.h>
 #include "PrintDebug.hpp" // DEBUG
@@ -20,10 +21,202 @@
 #include "Format.hpp"
 #include "Dir.hpp"
 #include "Process.hpp"
+#include "System.hpp"
 #include "File.hpp"
 
 namespace ftl
 {
+
+int File::translateOpenFlags(int openFlags)
+{
+	int h = 0;
+	if (openFlags == Read)
+		h = O_RDONLY;
+	else if (openFlags == Write)
+		h = O_WRONLY;
+	else if (openFlags == (Read|Write))
+		h = O_RDWR;
+	return h;
+}
+
+Ref<File, Owner> File::open(String path, int openFlags)
+{
+	int fd = ::open(path, translateOpenFlags(openFlags));
+	if (fd == -1)
+		FTL_SYSTEM_EXCEPTION;
+	return new File(path, openFlags, fd);
+}
+
+Ref<File, Owner> File::tryOpen(String path, int openFlags)
+{
+	int fd = ::open(path, translateOpenFlags(openFlags));
+	if (fd != -1) return new File(path, openFlags, fd);
+	return 0;
+}
+
+Ref<File, Owner> File::open(int fd, int openFlags)
+{
+	return new File("", openFlags, fd);
+}
+
+Ref<File, Owner> File::temp(int openFlags)
+{
+	String path = createUnique(
+		Format("/tmp/%%_%%_XXXXXXXX")
+		<< Process::execPath()->fileName()
+		<< Process::currentId()
+	);
+	if (path == "")
+		FTL_SYSTEM_EXCEPTION;
+	return open(path, openFlags);
+}
+
+File::File(String path, int openFlags, int fd)
+	: SystemStream(fd),
+	  path_(path),
+	  openFlags_(openFlags),
+	  unlinkWhenDone_(false)
+{}
+
+File::~File()
+{
+	if (unlinkWhenDone_)
+		try { unlink(path_); } catch(...) {}
+}
+
+String File::path() const
+{
+	return path_;
+}
+
+String File::name() const
+{
+	const char sep = '/';
+
+	int n = path_->length();
+	int i = n - 1;
+	while (i >= 0) {
+		if (path_->at(i) == sep) {
+			++i;
+			break;
+		}
+		--i;
+	}
+
+	String name;
+	if (i < n)
+		name = path_->copy(i, n);
+
+	return name;
+}
+
+int File::openFlags() const
+{
+	return openFlags_;
+}
+
+Ref<FileStatus, Owner> File::status() const
+{
+	return FileStatus::read(fd_);
+}
+
+void File::truncate(off_t length)
+{
+	if (isOpen()) {
+		if (::ftruncate(fd_, length) == -1)
+			FTL_SYSTEM_EXCEPTION;
+	}
+	else {
+		if (::truncate(path_, length) == -1)
+			FTL_SYSTEM_EXCEPTION;
+	}
+}
+
+class UnlinkFile: public Action {
+public:
+	UnlinkFile(String path): path_(path->absolutePath()) {}
+	void run() { try { unlink(path_); } catch(...) {} }
+private:
+	String path_;
+};
+
+void File::unlinkOnExit()
+{
+	exitEvent()->pushBack(new UnlinkFile(path_));
+}
+
+void File::unlinkOnThreadExit()
+{
+	threadExitEvent()->pushBack(new UnlinkFile(path_));
+}
+
+void File::unlinkWhenDone()
+{
+	unlinkWhenDone_ = true;
+}
+
+off_t File::seek(off_t distance, int method)
+{
+	int method2 = SEEK_SET;
+	if (method == SeekBegin)
+		method2 = SEEK_SET;
+	else if (method == SeekCurrent)
+		method2 = SEEK_CUR;
+	else if (method == SeekEnd)
+		method2 = SEEK_END;
+	off_t ret = ::lseek(fd_, distance, method2);
+	if (ret == -1)
+		FTL_THROW(StreamSemanticException, systemError());
+	return ret;
+}
+
+String File::map() const
+{
+	off_t fileSize = ::lseek(fd_, 0, SEEK_END);
+	if (fileSize == -1)
+		FTL_SYSTEM_EXCEPTION;
+	if (fileSize == 0) return "";
+	if (fileSize >= intMax) fileSize = intMax;
+	int pageSize = System::pageSize();
+	int protection =
+		(PROT_READ * (openFlags_ & Read)) |
+		(PROT_WRITE * (openFlags_ & Write)) |
+		(PROT_EXEC * (openFlags_ & Execute));
+	if (fileSize % pageSize != 0) {
+		void *p = ::mmap(0, fileSize, protection, MAP_PRIVATE, fd_, 0);
+		if (p == MAP_FAILED)
+			FTL_SYSTEM_EXCEPTION;
+		return String(Ref<ByteArray, Owner>(new ByteArray((char*)p, fileSize, fileSize)));
+	}
+	else {
+		#ifndef MAP_ANONYMOUS
+		#define MAP_ANONYMOUS MAP_ANON
+		#endif
+		void *p = (char*)::mmap(0, fileSize + pageSize, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+		if (p == MAP_FAILED)
+			FTL_SYSTEM_EXCEPTION;
+		p = (char*)::mmap(p, fileSize, protection, MAP_PRIVATE, fd_, 0);
+		if (p == MAP_FAILED)
+			FTL_SYSTEM_EXCEPTION;
+		return String(Ref<ByteArray, Owner>(new ByteArray((char*)p, fileSize, fileSize + pageSize)));
+	}
+}
+
+void File::sync()
+{
+	if (::fsync(fd_) == -1)
+		FTL_SYSTEM_EXCEPTION;
+}
+
+void File::dataSync()
+{
+#if _POSIX_SYNCHRONIZED_IO > 0
+	if (::fdatasync(fd_) == -1)
+		FTL_SYSTEM_EXCEPTION;
+#else
+	sync();
+#endif
+}
 
 bool File::access(String path, int flags)
 {
@@ -168,171 +361,6 @@ void File::save(String path, String text)
 	Ref<File, Owner> file = open(path, File::Write);
 	file->truncate(0);
 	file->write(text);
-}
-
-Ref<File, Owner> File::temp(int openFlags)
-{
-	String path = createUnique(
-		Format("/tmp/%%_%%_XXXXXXXX")
-		<< Process::execPath()->fileName()
-		<< Process::currentId()
-	);
-	if (path == "")
-		FTL_SYSTEM_EXCEPTION;
-	return open(path, openFlags);
-}
-
-File::File(String path, int openFlags)
-	: SystemStream(-1),
-	  path_(path),
-	  openFlags_(openFlags),
-	  unlinkWhenDone_(false)
-{
-	int h = 0;
-	if (openFlags == Read)
-		h = O_RDONLY;
-	else if (openFlags == Write)
-		h = O_WRONLY;
-	else if (openFlags == (Read|Write))
-		h = O_RDWR;
-	fd_ = ::open(path_, h);
-	if (fd_ == -1)
-		FTL_SYSTEM_EXCEPTION;
-}
-
-File::File(int fd, int openFlags)
-	: SystemStream(fd),
-	  openFlags_(openFlags),
-	  unlinkWhenDone_(false)
-{
-	if (fd == StandardInput)
-		openFlags_ = Read;
-	else if (fd == StandardOutput)
-		openFlags_ = Write;
-	else if (fd == StandardError)
-		openFlags_ = Write;
-}
-
-File::~File()
-{
-	if (unlinkWhenDone_)
-		try { unlink(path_); } catch(...) {}
-}
-
-String File::path() const
-{
-	return path_;
-}
-
-String File::name() const
-{
-	const char sep = '/';
-
-	int n = path_->length();
-	int i = n - 1;
-	while (i >= 0) {
-		if (path_->at(i) == sep) {
-			++i;
-			break;
-		}
-		--i;
-	}
-
-	String name;
-	if (i < n)
-		name = path_->copy(i, n);
-
-	return name;
-}
-
-int File::openFlags() const
-{
-	return openFlags_;
-}
-
-Ref<FileStatus, Owner> File::status() const
-{
-	return FileStatus::read(fd_);
-}
-
-void File::truncate(off_t length)
-{
-	if (isOpen()) {
-		if (::ftruncate(fd_, length) == -1)
-			FTL_SYSTEM_EXCEPTION;
-	}
-	else {
-		if (::truncate(path_, length) == -1)
-			FTL_SYSTEM_EXCEPTION;
-	}
-}
-
-class UnlinkFile: public Action {
-public:
-	UnlinkFile(String path): path_(path->absolutePath()) {}
-	void run() { try { unlink(path_); } catch(...) {} }
-private:
-	String path_;
-};
-
-void File::unlinkOnExit()
-{
-	exitEvent()->pushBack(new UnlinkFile(path_));
-}
-
-void File::unlinkOnThreadExit()
-{
-	threadExitEvent()->pushBack(new UnlinkFile(path_));
-}
-
-void File::unlinkWhenDone() {
-	unlinkWhenDone_ = true;
-}
-
-off_t File::seek(off_t distance, int method)
-{
-	int method2 = SEEK_SET;
-	if (method == SeekBegin)
-		method2 = SEEK_SET;
-	else if (method == SeekCurrent)
-		method2 = SEEK_CUR;
-	else if (method == SeekEnd)
-		method2 = SEEK_END;
-	off_t ret = ::lseek(fd_, distance, method2);
-	if (ret == -1)
-		FTL_THROW(StreamSemanticException, systemError());
-	return ret;
-}
-
-void File::seekSet(off_t distance)
-{
-	seek(distance, SeekBegin);
-}
-
-void File::seekMove(off_t distance)
-{
-	seek(distance, SeekCurrent);
-}
-
-off_t File::seekTell()
-{
-	return seek(0, SeekCurrent);
-}
-
-void File::sync()
-{
-	if (::fsync(fd_) == -1)
-		FTL_SYSTEM_EXCEPTION;
-}
-
-void File::dataSync()
-{
-#if _POSIX_SYNCHRONIZED_IO > 0
-	if (::fdatasync(fd_) == -1)
-		FTL_SYSTEM_EXCEPTION;
-#else
-	sync();
-#endif
 }
 
 } // namespace ftl

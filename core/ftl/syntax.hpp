@@ -918,6 +918,8 @@ public:
 		return i;
 	}
 
+	inline int matchLength() const { return entry()->matchLength(); }
+
 	int numberOfRefs() {
 		if (numberOfRefs_ == -1) {
 			numberOfRefs_ = 0;
@@ -965,9 +967,11 @@ public:
 	inline const char *ruleName() const { return ruleName_; }
 	inline Ref<RuleNode> rule() const { return rule_; }
 
+	inline int matchLength() const { return rule_->matchLength(); }
+
 protected:
-	friend class ftl::syntax::DefinitionNode;
-	friend class ftl::syntax::Debugger;
+	friend class DefinitionNode;
+	friend class Debugger;
 
 	const char *ruleName_;
 	Ref<RuleNode> rule_;
@@ -1365,7 +1369,7 @@ public:
 	}
 
 private:
-	friend class ftl::syntax::Debugger;
+	friend class Debugger;
 	Ref<DebugFactory, Owner> debugFactory_;
 
 	friend class InvokeNode;

@@ -8,6 +8,7 @@ class System
 {
 public:
 	static int concurrency();
+	static int pageSize();
 };
 
 } // namespace ftl

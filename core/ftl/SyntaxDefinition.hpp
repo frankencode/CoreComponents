@@ -49,6 +49,8 @@ public:
 	Ref<Token, Owner> match(const ByteArray *media, int i = -1, Ref<SyntaxState> state = 0) const;
 	Ref<Token, Owner> match(const ByteArray *media, Ref<SyntaxState> state) const;
 
+	int matchLength() const;
+
 	void SYNTAX(const char *name);
 	void IMPORT(Ref<Definition> definition, const char *name = 0);
 	void OPTION(const char *name, bool value);

@@ -296,7 +296,9 @@ void PatternCompiler::compile(Ref<ByteArray> text, Ref<SyntaxDefinition> definit
 		}
 		throw PatternException(reason, pos);
 	}
-	NODE entry = compileChoice(text, token, definition);
+	NODE entry;
+	if (text->length() == 0) entry = definition->PASS();
+	else entry = compileChoice(text, token, definition);
 	definition->DEFINE("Expression", entry);
 	definition->ENTRY("Expression");
 	definition->LINK();
@@ -439,6 +441,11 @@ Pattern::Pattern(const String &text)
 	*this = text;
 }
 
+Pattern::Pattern(const Variant &text)
+{
+	*this = text.toString();
+}
+
 const Pattern &Pattern::operator=(const char *text)
 {
 	return *this = String(text);
@@ -456,6 +463,11 @@ const Pattern &Pattern::operator=(const String &text)
 	);
 	PatternCompiler::instance()->compile(text_, *this);
 	return *this;
+}
+
+const Pattern &Pattern::operator=(const Variant &text)
+{
+	return *this = String(text);
 }
 
 } // namespace ftl

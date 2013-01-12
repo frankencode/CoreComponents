@@ -73,6 +73,29 @@ public:
 		StandardError  = 2
 	};
 
+	static Ref<File, Owner> open(String path, int openFlags = Read);
+	static Ref<File, Owner> tryOpen(String path, int openFlags = Read);
+	static Ref<File, Owner> open(int fd, int openFlags);
+	static Ref<File, Owner> temp(int openFlags = Read|Write);
+
+	String path() const;
+	String name() const;
+	Ref<FileStatus, Owner> status() const;
+
+	int openFlags() const;
+
+	void truncate(off_t length);
+	void unlinkOnExit();
+	void unlinkOnThreadExit();
+	void unlinkWhenDone();
+
+	off_t seek(off_t distance, int method = SeekBegin);
+
+	String map() const;
+
+	void sync();
+	void dataSync();
+
 	static bool access(String path, int flags);
 	static bool exists(String path);
 	static bool create(String path, int mode = 0644);
@@ -92,33 +115,11 @@ public:
 	static String load(String path);
 	static void save(String path, String text);
 
-	inline static Ref<File, Owner> open(String path, int openFlags = Read) { return new File(path, openFlags); }
-	inline static Ref<File, Owner> open(int fd, int openFlags = Read|Write) { return new File(fd, openFlags); }
-	static Ref<File, Owner> temp(int openFlags = Read|Write);
+private:
+	static int translateOpenFlags(int openFlags);
+
+	File(String path, int openFlags, int fd);
 	~File();
-
-	String path() const;
-	String name() const;
-	Ref<FileStatus, Owner> status() const;
-
-	int openFlags() const;
-
-	void truncate(off_t length);
-	void unlinkOnExit();
-	void unlinkOnThreadExit();
-	void unlinkWhenDone();
-
-	off_t seek(off_t distance, int method = SeekBegin);
-	void seekSet(off_t distance);
-	void seekMove(off_t distance);
-	off_t seekTell();
-
-	void sync();
-	void dataSync();
-
-protected:
-	File(String path, int openFlags = 0);
-	File(int fd, int openFlags = Read|Write);
 
 	String path_;
 	int openFlags_;

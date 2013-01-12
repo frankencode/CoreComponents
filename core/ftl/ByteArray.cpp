@@ -9,6 +9,7 @@
  * See the LICENSE.txt file for details at the top-level of FTL's sources.
  */
 
+#include <sys/mman.h> // munmap
 #include "List.hpp"
 #include "IntegerLiteral.hpp"
 #include "FloatLiteral.hpp"
@@ -28,7 +29,8 @@ namespace ftl
 
 ByteArray::ByteArray(int size)
 	: size_(0),
-	  data_(const_cast<char*>(""))
+	  data_(const_cast<char*>("")),
+	  mapSize_(0)
 {
 	if (size > 0) {
 		size_ = size;
@@ -39,7 +41,8 @@ ByteArray::ByteArray(int size)
 
 ByteArray::ByteArray(int size, char zero)
 	: size_(0),
-	  data_(const_cast<char*>(""))
+	  data_(const_cast<char*>("")),
+	  mapSize_(0)
 {
 	if (size > 0) {
 		size_ = size;
@@ -49,9 +52,10 @@ ByteArray::ByteArray(int size, char zero)
 	}
 }
 
-ByteArray::ByteArray(const char *data, int size)
+ByteArray::ByteArray(const char *data, int size, size_t mapSize)
 	: size_(0),
-	  data_(const_cast<char*>(""))
+	  data_(const_cast<char*>("")),
+	  mapSize_(mapSize)
 {
 	if (size < 0) size = str::len(data);
 	if (size > 0) {
@@ -64,7 +68,8 @@ ByteArray::ByteArray(const char *data, int size)
 
 ByteArray::ByteArray(const ByteArray &b)
 	: size_(0),
-	  data_(const_cast<char*>(""))
+	  data_(const_cast<char*>("")),
+	  mapSize_(0)
 {
 	if (b.size_ > 0) {
 		size_ = b.size_;
@@ -76,12 +81,19 @@ ByteArray::ByteArray(const ByteArray &b)
 ByteArray::ByteArray(ByteArray *parent, int size)
 	: size_(size),
 	  data_(parent->data_),
-	  parent_(parent)
+	  parent_(parent),
+	  mapSize_(0)
 {}
 
 
-ByteArray::~ByteArray() {
-	if ((size_ > 0) && (!parent_)) delete[] data_;
+ByteArray::~ByteArray()
+{
+	if (mapSize_ > 0) {
+		::munmap((void*)data_, mapSize_);
+	}
+	else if ((size_ > 0) && (!parent_)) {
+		delete[] data_;
+	}
 }
 
 ByteArray &ByteArray::operator=(const ByteArray &b)
