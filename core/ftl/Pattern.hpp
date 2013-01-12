@@ -39,9 +39,11 @@ public:
 	Pattern();
 	Pattern(const char *text);
 	Pattern(const String &text);
+	Pattern(const Variant &variant);
 
 	const Pattern &operator=(const char *text);
 	const Pattern &operator=(const String &text);
+	const Pattern &operator=(const Variant &text);
 
 	inline String text() const { return text_; }
 

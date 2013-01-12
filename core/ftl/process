@@ -16,7 +16,6 @@
 #include "ProcessFactory.hpp"
 #include "ProcessStatus.hpp"
 #include "FileLock.hpp"
-#include "MemoryMapping.hpp"
 #include "Pipe.hpp"
 
 #endif // FTL_PROCESS

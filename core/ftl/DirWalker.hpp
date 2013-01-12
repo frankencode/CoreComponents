@@ -13,17 +13,23 @@ class DirWalker: public Source<String>
 public:
 	enum Option {
 		DirsFirst,
-		FilesOnly,
-		DirsOnly
+		FilesFirst,
+		DirsOnly,
+		FilesOnly
 	};
 
-	inline Ref<DirWalker, Owner> open(String path, int option = 0) { return new DirWalker(path, option); }
+	static Ref<DirWalker, Owner> open(String path, int option = DirsFirst);
+	inline int maxDepth() const { return maxDepth_; }
+	inline void setMaxDepth(int depth) { maxDepth_ = depth; }
+
 	bool read(String *path);
 
 private:
-	Ref<DirWalker, Owner> tryOpen(String path, int option = 0);
+	Ref<DirWalker, Owner> tryOpen(String path, int option);
 	DirWalker(String path, int option, Ref<Dir> dir = 0);
 	int option_;
+	int maxDepth_;
+	int depth_;
 	Ref<Dir, Owner> dir_;
 	Ref<DirWalker, Owner> child_;
 };

@@ -21,7 +21,7 @@ namespace ftl
 Ref<Dir, Owner> Dir::tryOpen(String path)
 {
 	DIR *dir = ::opendir(path);
-	if (!dir) return new Dir(path, dir);
+	if (dir) return new Dir(path, dir);
 	return 0;
 }
 

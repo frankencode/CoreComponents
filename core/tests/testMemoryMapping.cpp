@@ -5,8 +5,6 @@
 namespace ftl
 {
 
-const int mapLength = 256;
-
 class CloneFactory: public ProcessFactory
 {
 public:
@@ -19,10 +17,7 @@ public:
 		auto lock = FileLock::create(file, FileLock::Read);
 		Guard<FileLock> guard(lock);
 		print("(clone) granted read access\n");
-		{
-			MemoryMapping mapping(file, 0, mapLength);
-			print("(clone) reads: \"%%\"\n", reinterpret_cast<const char*>(mapping.start()));
-		}
+		print("(clone) reads: \"%%\"\n", file->map());
 		return 7;
 	}
 
@@ -37,25 +32,22 @@ private:
 int main()
 {
 	auto file = File::temp();
+	file->unlinkOnExit();
 	print("(parent) file->path() = \"%%\"\n", file->path());
-	file->truncate(mapLength);
+
 	print("(parent) acquiring write lock... \n");
 	auto lock = FileLock::create(file, FileLock::Write);
 	lock->acquire();
 
-	print("(parent) mapping file and writing message... \n");
-	{
-		MemoryMapping mapping(file, 0, mapLength);
-		String message = "Hello, clone!";
-		mem::cpy(reinterpret_cast<char*>(mapping.start()), message->data(), message->size());
-	}
+	print("(parent) writing message... \n");
+	file->write("Hello, clone!");
 
 	print("(parent) cloning myself... \n");
 	auto factory = CloneFactory::create(file->path());
 	auto fork = factory->produce();
 
-	//print("(parent) sleeping 2 seconds... \n");
-	//Thread::sleep(2);
+	print("(parent) sleeping 2 seconds... \n");
+	Thread::sleep(2);
 
 	print("(parent) releasing write lock... \n");
 	lock->release();

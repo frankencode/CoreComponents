@@ -33,4 +33,9 @@ int System::concurrency()
 	return 1;
 }
 
+int System::pageSize()
+{
+	return sysconf(_SC_PAGE_SIZE);
+}
+
 } // namespace ftl

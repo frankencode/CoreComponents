@@ -24,7 +24,6 @@ class Dir: public Source<String>
 public:
 	inline static Ref<Dir, Owner> open(String path) { return new Dir(path); }
 	static Ref<Dir, Owner> tryOpen(String path);
-	~Dir();
 
 	String path() const;
 	String path(String name) const;
@@ -38,6 +37,7 @@ public:
 
 protected:
 	Dir(String path, DIR *dir = 0);
+	~Dir();
 
 	String path_;
 	DIR *dir_;
