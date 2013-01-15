@@ -52,23 +52,20 @@ int main(int argc, char **argv)
 			"The list of files can also be given on standard input.\n"
 			"\n"
 			"Options:\n"
-			"-p, -path     file path\n"
-			"-n, -name     file name\n"
-			"-t, -type     file type\n"
-			"-x, -mode     file mode\n"
-			"-s, -size     file size\n"
-			"-d, -du       disk usage\n"
-			"-o, -owner    owner\n"
-			"-g, -group    group\n"
-			"-a, -ta       access time\n"
-			"-m, -tm       modified time\n"
-			"-c, -tc       changed time\n"
-			"-i, -ino      inode number\n"
-			"-l, -links    number of hard links\n"
-			"-u, -human    optimize for readability\n"
-			"-h, -help     print help\n"
-			"\n"
-			"Report bugs to <frank@cyblogic.de>\n",
+			"  -path     file path\n"
+			"  -name     file name\n"
+			"  -type     file type\n"
+			"  -mode     file mode\n"
+			"  -size     file size\n"
+			"  -du       disk usage\n"
+			"  -owner    owner\n"
+			"  -group    group\n"
+			"  -ta       access time\n"
+			"  -tm       modified time\n"
+			"  -tc       changed time\n"
+			"  -ino      inode number\n"
+			"  -links    number of hard links\n"
+			"  -human    optimize for readability\n",
 			String(argv[0])->fileName()
 		);
 		return 0;
@@ -78,20 +75,20 @@ int main(int argc, char **argv)
 
 	bool defaults = (config->options()->length() == 0);
 
-	bool humanOption        = config->contains("u") || config->contains("human") || defaults;
-	bool pathOption         = config->contains("p") || config->contains("path");
-	bool nameOption         = config->contains("n") || config->contains("name")  || defaults;
-	bool typeOption         = config->contains("t") || config->contains("type");
-	bool modeOption         = config->contains("x") || config->contains("mode");
-	bool sizeOption         = config->contains("s") || config->contains("size")  || defaults;
-	bool diskUsageOption    = config->contains("d") || config->contains("du");
-	bool ownerOption        = config->contains("o") || config->contains("owner") || defaults;
-	bool groupOption        = config->contains("g") || config->contains("group") || defaults;
-	bool accessTimeOption   = config->contains("a") || config->contains("ta");
-	bool modifiedTimeOption = config->contains("m") || config->contains("tm")    || defaults;
-	bool changedTimeOption  = config->contains("c") || config->contains("tc");
-	bool inodeNumberOption  = config->contains("i") || config->contains("inode");
-	bool linksOption        = config->contains("l") || config->contains("links") || defaults;
+	bool humanOption        = config->contains("human") || defaults;
+	bool pathOption         = config->contains("path");
+	bool nameOption         = config->contains("name")  || defaults;
+	bool typeOption         = config->contains("type");
+	bool modeOption         = config->contains("mode");
+	bool sizeOption         = config->contains("size")  || defaults;
+	bool diskUsageOption    = config->contains("du");
+	bool ownerOption        = config->contains("owner") || defaults;
+	bool groupOption        = config->contains("group") || defaults;
+	bool accessTimeOption   = config->contains("ta");
+	bool modifiedTimeOption = config->contains("tm")    || defaults;
+	bool changedTimeOption  = config->contains("tc");
+	bool inodeNumberOption  = config->contains("inode");
+	bool linksOption        = config->contains("links") || defaults;
 
 	Ref< Source<String> > files;
 	if (rawInput()->isTeletype())

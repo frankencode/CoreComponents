@@ -190,7 +190,8 @@ public:
 	Ref<ByteArray, Owner> simplified() const;
 	Ref<ByteArray, Owner> normalized(bool nameCase = true) const;
 
-	bool offsetToLinePos(int offset, int *line, int *pos) const;
+	bool offsetToLinePos(int offset, int *line = 0, int *pos = 0) const;
+	bool linePosToOffset(int line, int pos, int *offset = 0) const;
 
 	void checkUtf8() const;
 
@@ -221,7 +222,8 @@ private:
 
 	explicit ByteArray(int size = 0);
 	ByteArray(int size, char zero);
-	ByteArray(const char *data, int size, size_t mapSize = 0);
+	ByteArray(const char *data, int size);
+	ByteArray(char *data, int size, size_t mapSize);
 	ByteArray(const ByteArray &b);
 	ByteArray(ByteArray *b, int size);
 

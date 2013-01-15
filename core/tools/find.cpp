@@ -23,10 +23,10 @@ int main(int argc, char **argv)
 			"             l .. symbolic link\n"
 			"             c .. character device\n"
 			"             b .. block device\n"
-		    "             f .. fifo\n"
-		    "             s .. socket\n"
-		    "  -text    content pattern\n"
-		    "  -depth   maximum search depth\n",
+			"             f .. fifo\n"
+			"             s .. socket\n"
+			"  -text    content pattern\n"
+			"  -depth   maximum search depth\n",
 			String(argv[0])->fileName()
 		);
 		return 0;
@@ -76,17 +76,16 @@ int main(int argc, char **argv)
 					continue;
 				}
 				String text = file->map();
-				int ln = 1, li = 0;
+				int ln = 1;
 				for (int i = 0; i < text->length();) {
 					Ref<Token, Owner> token = textPattern->find(text, i);
 					if (!token) break;
-					for (;i < token->i1(); ++i) {
-						if (text->at(i) == '\n') {
-							++ln;
-							li = i;
-						}
-					}
-					print("%%:%%:%%..%%\n", path, ln, token->i0() - li, token->i1() - li);
+					for (;i < token->i0(); ++i)
+						if (text->at(i) == '\n') ++ln;
+					print("%%:%%:%%..%%\n", path, ln, token->i0(), token->i1());
+					for (;i < token->i1(); ++i)
+						if (text->at(i) == '\n') ++ln;
+					if (token->i0() == token->i1()) ++i;
 				}
 				continue;
 			}
