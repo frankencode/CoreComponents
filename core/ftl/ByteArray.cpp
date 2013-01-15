@@ -52,10 +52,10 @@ ByteArray::ByteArray(int size, char zero)
 	}
 }
 
-ByteArray::ByteArray(const char *data, int size, size_t mapSize)
+ByteArray::ByteArray(const char *data, int size)
 	: size_(0),
 	  data_(const_cast<char*>("")),
-	  mapSize_(mapSize)
+	  mapSize_(0)
 {
 	if (size < 0) size = str::len(data);
 	if (size > 0) {
@@ -65,6 +65,12 @@ ByteArray::ByteArray(const char *data, int size, size_t mapSize)
 		data_[size] = 0;
 	}
 }
+
+ByteArray::ByteArray(char *data, int size, size_t mapSize)
+	: size_(size),
+	  data_(data),
+	  mapSize_(mapSize)
+{}
 
 ByteArray::ByteArray(const ByteArray &b)
 	: size_(0),
@@ -528,6 +534,7 @@ Ref<ByteArray, Owner> ByteArray::normalized(bool nameCase) const
 }
 
 /** \brief Map a byte offset to editor coordinates.
+  * \arg offset byte offset
   * \arg line n-th line starting with 1
   * \arg pos position on line starting with 1 (in bytes)
   * \return true if successful
@@ -545,8 +552,26 @@ bool ByteArray::offsetToLinePos(int offset, int *line, int *pos) const
 			++x;
 		}
 	}
-	*line = y;
-	*pos = x;
+	if (line) *line = y;
+	if (pos) *pos = x;
+	return true;
+}
+
+/** \brief Map editor coordinates to a byte offset
+  * \arg line n-th line starting with 1
+  * \arg pos position on line starting with 1 (in bytes)
+  * \arg offset byte offset
+  * \return true if successful
+  */
+bool ByteArray::linePosToOffset(int line, int pos, int *offset) const
+{
+	if (line <= 0) return false;
+	int i = 0;
+	for (int y = 1; y < line && i < size_; ++i)
+		if (data_[i] == '\n') ++y;
+	if (i + pos >= size_)
+		return false;
+	if (offset) *offset = i + pos;
 	return true;
 }
 

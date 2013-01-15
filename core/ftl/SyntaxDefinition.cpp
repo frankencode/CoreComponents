@@ -32,7 +32,7 @@ Ref<DebugFactory> Definition::debugFactory() const { return def_->debugFactory()
 Node *Definition::debug(Node *newNode, const char *nodeType) { return def_->debug(newNode, nodeType); }
 
 int Definition::keywordByName(const char *keyword) { return def_->keywordByName(keyword); }
-State *Definition::newState(State *parent) const { return def_->newState(parent); }
+Ref<State, Owner> Definition::newState(State *parent) const { return def_->newState(parent); }
 
 Ref<Token, Owner> Definition::find(const ByteArray *media, int i) const
 {

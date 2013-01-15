@@ -43,7 +43,7 @@ public:
 	Node *debug(Node *newNode, const char *nodeType);
 
 	int keywordByName(const char *keyword);
-	State *newState(State *parent = 0) const;
+	Ref<State, Owner> newState(State *parent = 0) const;
 
 	Ref<Token, Owner> find(const ByteArray *media, int i = 0) const;
 	Ref<Token, Owner> match(const ByteArray *media, int i = -1, Ref<SyntaxState> state = 0) const;

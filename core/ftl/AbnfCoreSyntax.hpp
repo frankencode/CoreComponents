@@ -12,7 +12,6 @@
 #define FTL_ABNFCORESYNTAX_HPP
 
 #include "SyntaxDefinition.hpp"
-#include "Array.hpp"
 
 namespace ftl
 {

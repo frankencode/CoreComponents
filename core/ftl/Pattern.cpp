@@ -231,6 +231,7 @@ PatternCompiler::PatternCompiler()
 				CHOICE(
 					RANGE('a', 'z'),
 					RANGE('A', 'Z'),
+					RANGE('0', '9'),
 					CHAR('_')
 				)
 			)
