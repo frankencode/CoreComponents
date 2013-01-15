@@ -192,10 +192,10 @@ String File::map() const
 		#ifndef MAP_ANONYMOUS
 		#define MAP_ANONYMOUS MAP_ANON
 		#endif
-		void *p = (char*)::mmap(0, fileSize + pageSize, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+		void *p = ::mmap(0, fileSize + pageSize, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 		if (p == MAP_FAILED)
 			FTL_SYSTEM_EXCEPTION;
-		p = (char*)::mmap(p, fileSize, protection, MAP_PRIVATE, fd_, 0);
+		p = ::mmap(p, fileSize, protection, MAP_PRIVATE | MAP_FIXED, fd_, 0);
 		if (p == MAP_FAILED)
 			FTL_SYSTEM_EXCEPTION;
 		return String(Ref<ByteArray, Owner>(new ByteArray((char*)p, fileSize, fileSize + pageSize)));

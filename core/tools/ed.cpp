@@ -48,8 +48,10 @@ int main(int argc, char **argv)
 
 		// printTo(error(), "%%:%%:%%..%%:%%\n", path, ln, i0, i1, cmd);
 
-		if (cmd == "view") {
+		if (cmd == "view")
+		{
 			String text = File::open(path)->map();
+
 			if (i1 < 0) {
 				if (ln > 0) {
 					if (!text->linePosToOffset(ln, 1, &i0)) {
@@ -104,8 +106,6 @@ int main(int argc, char **argv)
 				++ln;
 				++j1;
 			}
-
-			return 0;
 		}
 	}
 
