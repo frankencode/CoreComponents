@@ -14,7 +14,6 @@
 #include "generics.hpp"
 #include "strings.hpp"
 #include "Default.hpp"
-#include "Token.hpp"
 
 namespace ftl
 {
