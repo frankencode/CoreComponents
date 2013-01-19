@@ -203,7 +203,7 @@ public:
 		: s_(ByteArray::create(s)),
 		  caseSensitive_(caseSensitive)
 	{
-		if (!caseSensitive) s_ = s_->toLower();
+		if (!caseSensitive) s_->toLowerInsitu();
 	}
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
