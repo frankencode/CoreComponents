@@ -1,13 +1,11 @@
-/*
- * Mutex.hpp -- non-recursive mutex lock
- *
- * Copyright (c) 2007-2012, Frank Mertens
- *
- * This file is part of the a free software library. You can redistribute
- * it and/or modify it under the terms of FTL's 2-clause BSD license.
- *
- * See the LICENSE.txt file for details at the top-level of FTL's sources.
- */
+ /*
+  * Copyright (C) 2007-2013 Frank Mertens.
+  *
+  * This program is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU General Public License
+  * as published by the Free Software Foundation; either version
+  * 2 of the License, or (at your option) any later version.
+  */
 #ifndef FTL_MUTEX_HPP
 #define FTL_MUTEX_HPP
 
