@@ -173,8 +173,11 @@ String BuildPlan::modulePath(String object) const
 
 String BuildPlan::beautifyCommand(String command)
 {
-	if (options_ & Bootstrap)
-		return command->replace(sourcePrefix_, String("$SOURCE"));
+	if (options_ & Bootstrap) {
+		return command
+			->replace(sourcePrefix_, String("$SOURCE"))
+			->replace(Process::cwd(), String("$PWD"));
+	}
 	return command;
 }
 
