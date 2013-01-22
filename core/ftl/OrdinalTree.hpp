@@ -58,9 +58,9 @@ public:
 	OrdinalTree(const OrdinalTree &b);
 	const OrdinalTree &operator=(const OrdinalTree &b);
 
-	inline int weight() const { return weight(BinaryTree<Node>::root_); }
+	inline int weight() const { return weight(this->root_); }
 
-	bool lookupByIndex(int index, Node** node = 0) const;
+	bool lookupByIndex(int index, Node **node = 0) const;
 
 	template<class Pattern>
 	Node *find(const Pattern &pattern, bool *found = 0, bool *below = 0, int *index = 0) const;
@@ -97,7 +97,7 @@ OrdinalTree<Node>::OrdinalTree(int n)
 {
 	if (n <= 0) return;
 
-	Ref< Array<Node*>, Owner > v = Array<Node*>::create(n);
+	Ref< Array<Node *>, Owner > v = Array<Node *>::create(n);
 
 	for (int i = 0, m = 1; i < n; m *= 2)
 	{
@@ -130,31 +130,31 @@ OrdinalTree<Node>::OrdinalTree(int n)
 		kp->weight_ += k->weight_;
 	}
 
-	BinaryTree<Node>::root_ = v->at(0);
+	this->root_ = v->at(0);
 
-	/*FTL_ASSERT(BinaryTree<Node>::testStructure(BinaryTree<Node>::root_));
-	FTL_ASSERT(BinaryTree<Node>::testIteration(BinaryTree<Node>::root_));
-	FTL_ASSERT(AvlTree<Node>::testBalance(BinaryTree<Node>::root_));
-	FTL_ASSERT(OrdinalTree<Node>::testWeight(BinaryTree<Node>::root_));*/
+	/*FTL_ASSERT(BinaryTree<Node>::testStructure(this->root_));
+	FTL_ASSERT(BinaryTree<Node>::testIteration(this->root_));
+	FTL_ASSERT(AvlTree<Node>::testBalance(this->:root_));
+	FTL_ASSERT(OrdinalTree<Node>::testWeight(this->root_));*/
 }
 
 template<class Node>
 OrdinalTree<Node>::OrdinalTree(const OrdinalTree &b)
 	: cachedNode_(0)
 {
-	BinaryTree<Node>::root_ = BinaryTree<Node>::clone(b.root_);
+	this->root_ = BinaryTree<Node>::clone(b.root_);
 }
 
 template<class Node>
 const OrdinalTree<Node> &OrdinalTree<Node>::operator=(const OrdinalTree &b)
 {
-	BinaryTree<Node>::clear();
-	BinaryTree<Node>::root_ = BinaryTree<Node>::clone(b.root_);
+	this->clear();
+	this->root_ = BinaryTree<Node>::clone(b.root_);
 	return *this;
 }
 
 template<class Node>
-bool OrdinalTree<Node>::lookupByIndex(int i, Node** node) const
+bool OrdinalTree<Node>::lookupByIndex(int i, Node **node) const
 {
 	if (i < 0) i += weight();
 	FTL_ASSERT((0 <= i) && (i < weight()));
@@ -167,19 +167,19 @@ bool OrdinalTree<Node>::lookupByIndex(int i, Node** node) const
 		}
 		else if (d == 1) {
 			++cachedIndex_;
-			cachedNode_ = succ(cachedNode_);
+			cachedNode_ = this->succ(cachedNode_);
 			if ((cachedNode_) && (node)) *node = cachedNode_;
 			return cachedNode_;
 		}
 		else if (d == -1) {
 			--cachedIndex_;
-			cachedNode_ = pred(cachedNode_);
+			cachedNode_ = this->pred(cachedNode_);
 			if ((cachedNode_) && (node)) *node = cachedNode_;
 			return cachedNode_;
 		}
 	}
 
-	Node *k = BinaryTree<Node>::root_;
+	Node *k = this->root_;
 	int j0 = 0;
 	while (k) {
 		int j = j0 + weight(k->left_);
@@ -205,7 +205,7 @@ template<class Node>
 template<class Pattern>
 Node *OrdinalTree<Node>::find(const Pattern &pattern, bool *found, bool *below, int *index) const
 {
-	Node *k = BinaryTree<Node>::root_;
+	Node *k = this->root_;
 	Node *k2 = 0;
 	if (found) *found = false;
 	int j0 = 0, j = -1;
@@ -243,7 +243,7 @@ inline int OrdinalTree<Node>::first(const Item &a) const
 {
 	bool found = false, below = true;
 	int index = 0;
-	if (!BinaryTree<Node>::root_) return 0;
+	if (!this->root_) return 0;
 	find(a, &found, &below, &index);
 	if (found) return index;
 	return below ? index : index + 1;
@@ -254,7 +254,7 @@ inline int OrdinalTree<Node>::last(const Item &b) const
 {
 	bool found = false, below = true;
 	int index = 0;
-	if (!BinaryTree<Node>::root_) return 0;
+	if (!this->root_) return 0;
 	find(b, &found, &below, &index);
 	if (found) return index;
 	return below ? index - 1 : index;
@@ -269,8 +269,8 @@ void OrdinalTree<Node>::push(int index, const Item &item)
 		if (cachedNode_)
 			if (cachedIndex_ == index)
 				kp = cachedNode_;
-		if (!kp) kp = BinaryTree<Node>::max();
-		attach(kp, kn, false);
+		if (!kp) kp = this->max();
+		this->attach(kp, kn, false);
 	}
 	else {
 		Node *ka = 0;
@@ -279,7 +279,7 @@ void OrdinalTree<Node>::push(int index, const Item &item)
 		#endif
 			lookupByIndex(index, &ka);
 		FTL_ASSERT(found);
-		attachBefore(ka, kn);
+		this->attachBefore(ka, kn);
 	}
 	cachedNode_ = kn;
 	cachedIndex_ = index;
@@ -295,10 +295,10 @@ void OrdinalTree<Node>::pop(int index, Item *item)
 		lookupByIndex(index, &ko);
 	FTL_ASSERT(found);
 	*item = ko->item_;
-	Node *k = pred(ko);
+	Node *k = this->pred(ko);
 	if (k) --index;
-	else k = succ(ko);
-	BinaryTree<Node>::remove(ko);
+	else k = this->succ(ko);
+	this->remove(ko);
 	if (k) {
 		cachedNode_ = k;
 		cachedIndex_ = index;

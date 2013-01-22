@@ -79,7 +79,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 
 		// send request
 		{
-			int msgLen = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
+			size_t msgLen = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
 			struct nlmsghdr *msg = (struct nlmsghdr *)mem::alloc(msgLen);
 			if (!msg) FTL_SYSTEM_EXCEPTION;
 
@@ -118,12 +118,12 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			mem::clr(&hdr, sizeof(hdr));
 
 			ssize_t bufSize = ::recvmsg(fd, &hdr, MSG_PEEK|MSG_TRUNC);
-			if (bufSize == -1) FTL_SYSTEM_EXCEPTION;
+			if (bufSize < 0) FTL_SYSTEM_EXCEPTION;
 
 			void *buf = mem::alloc(bufSize);
 			if (!buf) FTL_SYSTEM_EXCEPTION;
 
-			struct iovec iov = { buf, bufSize };
+			struct iovec iov = { buf, (size_t)bufSize };
 			hdr.msg_iov = &iov;
 			hdr.msg_iovlen = 1;
 			ssize_t bufFill = ::recvmsg(fd, &hdr, 0/*flags*/);
@@ -247,7 +247,7 @@ bool NetworkInterface::getLink(Ref<NetworkInterfaceList> list, int index)
 
 		// send request
 		{
-			int msgLen = NLMSG_LENGTH(sizeof(struct ifinfomsg));
+			size_t msgLen = NLMSG_LENGTH(sizeof(struct ifinfomsg));
 			struct nlmsghdr *msg = (struct nlmsghdr *)mem::alloc(msgLen);
 			if (!msg) FTL_SYSTEM_EXCEPTION;
 
@@ -288,12 +288,12 @@ bool NetworkInterface::getLink(Ref<NetworkInterfaceList> list, int index)
 			mem::clr(&hdr, sizeof(hdr));
 
 			ssize_t bufSize = ::recvmsg(fd, &hdr, MSG_PEEK|MSG_TRUNC);
-			if (bufSize == -1) FTL_SYSTEM_EXCEPTION;
+			if (bufSize < 0) FTL_SYSTEM_EXCEPTION;
 
 			void *buf = mem::alloc(bufSize);
 			if (!buf) FTL_SYSTEM_EXCEPTION;
 
-			struct iovec iov = { buf, bufSize };
+			struct iovec iov = { buf, (size_t)bufSize };
 			hdr.msg_iov = &iov;
 			hdr.msg_iovlen = 1;
 			ssize_t bufFill = ::recvmsg(fd, &hdr, 0/*flags*/);

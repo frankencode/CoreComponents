@@ -59,14 +59,14 @@ Node *AvlTree<Node>::restoreBalance(Node *k1)
 			k1->balance_ = -(k3->balance_ == 1);
 			k2->balance_ = (k3->balance_ == -1);
 			k3->balance_ = 0;
-			rotate(k2, true);
-			rotate(k1, false);
+			this->rotate(k2, true);
+			this->rotate(k1, false);
 		}
 		else {
 			// -- case Ib, Ic
 			k1->balance_ = (k2->balance_ <= 0);
 			k2->balance_ = k2->balance_ - 1;
-			rotate(k1, false);
+			this->rotate(k1, false);
 		}
 	}
 	else {
@@ -77,14 +77,14 @@ Node *AvlTree<Node>::restoreBalance(Node *k1)
 			k1->balance_ = (k3->balance_ == -1);
 			k2->balance_ = -(k3->balance_ == 1);
 			k3->balance_ = 0;
-			rotate(k2, false);
-			rotate(k1, true);
+			this->rotate(k2, false);
+			this->rotate(k1, true);
 		}
 		else {
 			// -- case IIa, IIb
 			k1->balance_ = -(k2->balance_ >= 0);
 			k2->balance_ = k2->balance_ + 1;
-			rotate(k1, true);
+			this->rotate(k1, true);
 		}
 	}
 	return k1->parent_;

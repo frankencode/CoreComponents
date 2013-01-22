@@ -75,8 +75,8 @@ public:
 
 	int min(int i, int j, int k)
 	{
-		int h = below(buf_[i], buf_[j]) ? i : j;
-		return below(buf_[h], buf_[k]) ? h : k;
+		int h = Order<T>::below(buf_[i], buf_[j]) ? i : j;
+		return Order<T>::below(buf_[h], buf_[k]) ? h : k;
 	}
 
 	void passUpLast()
@@ -86,7 +86,7 @@ public:
 		while (i != 0) {
 			int j;
 			j = parent(i);
-			if (below(buf_[j], buf_[i])) break;
+			if (Order<T>::below(buf_[j], buf_[i])) break;
 			xchg(i, j);
 			i = j;
 		}
@@ -109,7 +109,7 @@ public:
 				i = j;
 			}
 			else if (lc < fill_) {
-				if (below(buf_[lc], buf_[i])) xchg(i, lc);
+				if (Order<T>::below(buf_[lc], buf_[i])) xchg(i, lc);
 				break;
 			}
 			else
