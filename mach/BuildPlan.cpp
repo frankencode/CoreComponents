@@ -174,7 +174,7 @@ String BuildPlan::modulePath(String object) const
 String BuildPlan::beautifyCommand(String command)
 {
 	if (options_ & Bootstrap)
-		return command->replace(String(" ") + sourcePrefix_, " $SOURCE");
+		return command->replace(sourcePrefix_, String("$SOURCE"));
 	return command;
 }
 
