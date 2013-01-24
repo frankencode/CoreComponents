@@ -14,6 +14,7 @@
 #include "atoms"
 #include "Time.hpp"
 #include "SignalSet.hpp"
+#include "TLO.hpp"
 
 namespace ftl
 {
@@ -24,7 +25,7 @@ class Interrupt;
 class Thread: public Instance
 {
 public:
-	static Ref<Thread> self();
+	static Thread *self();
 
 	void start();
 	void wait();
@@ -48,7 +49,7 @@ private:
 	friend class Interrupt;
 	friend class Process;
 
-	static Ref<Thread, ThreadLocalOwner> self_;
+	static TLO<Thread> self_;
 	pthread_t tid_;
 	int lastSignal_;
 };

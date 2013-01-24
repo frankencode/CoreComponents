@@ -3,7 +3,6 @@
 
 #include "GlobalCoreMutex.hpp"
 #include "LocalStatic.hpp"
-#include "ThreadLocalOwner.hpp"
 #include "ThreadLocalSingleton.hpp"
 #include "Singleton.hpp"
 #include "Thread.hpp"
