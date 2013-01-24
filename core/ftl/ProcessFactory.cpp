@@ -123,6 +123,43 @@ Ref<Process, Owner> ProcessFactory::produce()
 				FTL_SYSTEM_EXCEPTION;
 	}
 
+	char **argv = 0, **envp = 0;
+
+	if (execPath_ != "")
+	{
+		// prepare the argument list
+
+		Ref<StringList> arguments = arguments_;
+		if (arguments) if (arguments->length() == 0) arguments = 0;
+
+		int argc = arguments ? arguments->length() : 1;
+		argv = new char*[argc + 1];
+
+		if (arguments) {
+			for (int i = 0; i < arguments->length(); ++i)
+				argv[i] = str::dup(arguments->at(i)->data());
+		}
+		else {
+			argv[0] = str::dup(execPath_->data());
+		}
+		argv[argc] = 0;
+
+		// prepare the environment map
+
+		envp = 0;
+
+		if (envMap_) {
+			int n = envMap_->length();
+			envp = new char*[n + 1];
+			for (int i = 0; i < n; ++i)
+				envp[i] = str::dup(String(Format() << envMap_->get(i).key() <<  "=" << envMap_->get(i).value())->data());
+			envp[n] = 0;
+		}
+		else {
+			envp = Process::environ();
+		}
+	}
+
 	int ret = ::fork();
 
 	if (ret == 0)
@@ -203,38 +240,6 @@ Ref<Process, Owner> ProcessFactory::produce()
 
 		if (execPath_ != "")
 		{
-			// prepare the argument list
-
-			Ref<StringList> arguments = arguments_;
-			if (arguments) if (arguments->length() == 0) arguments = 0;
-
-			int argc = arguments ? arguments->length() : 1;
-			char **argv = new char*[argc + 1];
-
-			if (arguments) {
-				for (int i = 0; i < arguments->length(); ++i)
-					argv[i] = str::dup(arguments->at(i)->data());
-			}
-			else {
-				argv[0] = str::dup(execPath_->data());
-			}
-			argv[argc] = 0;
-
-			// prepare the environment map
-
-			char **envp = 0;
-
-			if (envMap_) {
-				int n = envMap_->length();
-				envp = new char*[n + 1];
-				for (int i = 0; i < n; ++i)
-					envp[i] = str::dup(String(Format() << envMap_->get(i).key() <<  "=" << envMap_->get(i).value())->data());
-				envp[n] = 0;
-			}
-			else {
-				envp = Process::environ();
-			}
-
 			// load new program
 
 			::execve(execPath_, argv, envp);

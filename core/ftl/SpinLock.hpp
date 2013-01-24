@@ -23,7 +23,7 @@ public:
 		return __sync_bool_compare_and_swap(&flag_, 0, 1);
 	}
 	inline void acquire() {
-		while (!tryAcquire());
+		while (!tryAcquire()) yield();
 	}
 	inline void release() {
 		bool ok = __sync_bool_compare_and_swap(&flag_, 1, 0);
@@ -31,6 +31,7 @@ public:
 		FTL_ASSERT2(ok, "Double unlocking of a SpinLock");
 	}
 private:
+	void yield();
 	volatile char flag_;
 };
 
