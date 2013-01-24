@@ -29,7 +29,7 @@ public:
 	typedef syntax::Node Node;
 	typedef syntax::NODE NODE;
 
-	inline static Ref<Definition, Owner> create(Ref<DebugFactory> debugFactory = 0) {
+	inline static Ref<Definition, Owner> create(DebugFactory *debugFactory = 0) {
 		return new Definition(debugFactory);
 	}
 	~Definition();
@@ -37,20 +37,20 @@ public:
 	int id() const;
 	const char *name() const;
 
-	Ref<DebugFactory> debugFactory() const;
+	DebugFactory *debugFactory() const;
 	Node *debug(Node *newNode, const char *nodeType);
 
 	int keywordByName(const char *keyword);
 	Ref<State, Owner> newState(State *parent = 0) const;
 
 	Ref<Token, Owner> find(const ByteArray *media, int i = 0) const;
-	Ref<Token, Owner> match(const ByteArray *media, int i = -1, Ref<SyntaxState> state = 0) const;
-	Ref<Token, Owner> match(const ByteArray *media, Ref<SyntaxState> state) const;
+	Ref<Token, Owner> match(const ByteArray *media, int i = -1, SyntaxState *state = 0) const;
+	Ref<Token, Owner> match(const ByteArray *media, SyntaxState *state) const;
 
 	int matchLength() const;
 
 	void SYNTAX(const char *name);
-	void IMPORT(Ref<Definition> definition, const char *name = 0);
+	void IMPORT(Definition *definition, const char *name = 0);
 	void OPTION(const char *name, bool value);
 
 	NODE CHAR(char ch);
@@ -138,9 +138,9 @@ public:
 	NODE PREVIOUS(const char *ruleName, const char *keyword = 0);
 	NODE CONTEXT(const char *ruleName, NODE entry = 0);
 
-	typedef int (*CallBack) (Ref<Instance> self, ByteArray *media, int i, State *state);
+	typedef int (*CallBack) (Instance *self, ByteArray *media, int i, State *state);
 
-	NODE CALL(CallBack callBack, Ref<Instance> self = 0);
+	NODE CALL(CallBack callBack, Instance *self = 0);
 	NODE ERROR();
 
 	void OPTIMIZE();
@@ -155,7 +155,7 @@ public:
 	NODE INVOKE(const char *definitionName, NODE coverage = 0);
 
 protected:
-	Definition(Ref<DebugFactory> debugFactory = 0);
+	Definition(DebugFactory *debugFactory = 0);
 
 private:
 	Definition(const Definition &);

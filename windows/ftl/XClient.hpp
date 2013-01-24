@@ -29,17 +29,17 @@ class ByteEncoder;
 class XClient: public Thread, public Singleton<XClient>
 {
 public:
-	Ref<XDisplayInfo> displayInfo() const { return displayInfo_; }
+	XDisplayInfo *displayInfo() const { return displayInfo_; }
 
 	uint32_t allocateResourceId();
 	void freeResourceId(uint32_t id);
 
-	void activate(Ref<XMessageFilter> filter);
-	void deactivate(Ref<XMessageFilter> filter);
+	void activate(XMessageFilter *filter);
+	void deactivate(XMessageFilter *filter);
 
-	int createWindow(Ref<XWindow> window);
-	int mapWindow(Ref<XWindow> window);
-	int unmapWindow(Ref<XWindow> window);
+	int createWindow(XWindow *window);
+	int mapWindow(XWindow *window);
+	int unmapWindow(XWindow *window);
 
 	int getFontPath();
 
@@ -49,7 +49,7 @@ private:
 	~XClient();
 
 	ByteEncoder *messageEncoder();
-	int flush(Ref<ByteEncoder> sink);
+	int flush(ByteEncoder *sink);
 
 	virtual void run();
 
@@ -71,7 +71,7 @@ private:
 	Ref<MessageFilters, Owner> messageFilters_;
 };
 
-inline Ref<XClient> xClient() { return XClient::instance(); }
+inline XClient *xClient() { return XClient::instance(); }
 
 } // namespace ftl
 

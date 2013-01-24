@@ -25,11 +25,11 @@ public:
 	virtual Node *produce(Node *newNode, const char *nodeType) = 0;
 
 protected:
-	Ref<DefinitionNode> definition() const;
+	DefinitionNode *definition() const;
 
 private:
 	friend class DefinitionNode;
-	Ref<DefinitionNode> definition_;
+	DefinitionNode *definition_;
 };
 
 } // namespace syntax

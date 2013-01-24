@@ -39,7 +39,6 @@ void testFloat754()
 	print("sizeof(Instance) = %%\n", int(sizeof(Instance)));
 	print("sizeof(SpinLock) = %%\n", int(sizeof(SpinLock)));
 	print("sizeof(Mutex) = %%\n", int(sizeof(Mutex)));
-	print("sizeof(Ref<Instance>) = %%\n", int(sizeof(Ref<Instance>)));
 	print("sizeof(Ref<Instance, Owner>) = %%\n", int(sizeof(Ref<Instance, Owner>)));
 	print("sizeof(String) = %%\n", int(sizeof(String)));
 	print("sizeof(Format) = %%\n", int(sizeof(Format)));

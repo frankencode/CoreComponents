@@ -16,7 +16,7 @@ namespace ftl
 namespace syntax
 {
 
-Definition::Definition(Ref<DebugFactory> debugFactory)
+Definition::Definition(DebugFactory *debugFactory)
 	: def_(new DefinitionNode(debugFactory))
 {}
 
@@ -26,7 +26,7 @@ Definition::~Definition()
 int Definition::id() const { return def_->id(); }
 const char *Definition::name() const { return def_->name(); }
 
-Ref<DebugFactory> Definition::debugFactory() const { return def_->debugFactory(); }
+DebugFactory *Definition::debugFactory() const { return def_->debugFactory(); }
 Node *Definition::debug(Node *newNode, const char *nodeType) { return def_->debug(newNode, nodeType); }
 
 int Definition::keywordByName(const char *keyword) { return def_->keywordByName(keyword); }
@@ -37,7 +37,7 @@ Ref<Token, Owner> Definition::find(const ByteArray *media, int i) const
 	return def_->find(const_cast<ByteArray*>(media), &i);
 }
 
-Ref<Token, Owner> Definition::match(const ByteArray *media, int i, Ref<SyntaxState> state) const
+Ref<Token, Owner> Definition::match(const ByteArray *media, int i, SyntaxState *state) const
 {
 	int i0 = (i >= 0) ? i : 0, h;
 	Ref<Token, Owner> token = def_->match(const_cast<ByteArray*>(media), i0, &h, state);
@@ -47,7 +47,7 @@ Ref<Token, Owner> Definition::match(const ByteArray *media, int i, Ref<SyntaxSta
 	return token;
 }
 
-Ref<Token, Owner> Definition::match(const ByteArray *media, Ref<SyntaxState> state) const
+Ref<Token, Owner> Definition::match(const ByteArray *media, SyntaxState *state) const
 {
 	return match(media, -1, state);
 }
@@ -58,7 +58,7 @@ int Definition::matchLength() const
 }
 
 void Definition::SYNTAX(const char *name) { def_->SYNTAX(name); }
-void Definition::IMPORT(Ref<Definition> definition, const char *name) { def_->IMPORT(definition->def_, name); }
+void Definition::IMPORT(Definition *definition, const char *name) { def_->IMPORT(definition->def_, name); }
 void Definition::OPTION(const char *name, bool value) { def_->OPTION(name, value); }
 
 NODE Definition::CHAR(char ch) { return def_->CHAR(ch); }
@@ -146,7 +146,7 @@ NODE Definition::INLINE(const char *ruleName) { return def_->INLINE(ruleName); }
 NODE Definition::PREVIOUS(const char *ruleName, const char *keyword) { return def_->PREVIOUS(ruleName, keyword); }
 NODE Definition::CONTEXT(const char *ruleName, NODE entry) { return def_->CONTEXT(ruleName, entry); }
 
-NODE Definition::CALL(CallBack callBack, Ref<Instance> self) { return def_->CALL(callBack, self); }
+NODE Definition::CALL(CallBack callBack, Instance *self) { return def_->CALL(callBack, self); }
 NODE Definition::ERROR() { return def_->ERROR(); }
 
 void Definition::OPTIMIZE() { return def_->OPTIMIZE(); }

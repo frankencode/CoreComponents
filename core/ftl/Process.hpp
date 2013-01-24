@@ -32,7 +32,7 @@ class Process: public Instance
 {
 public:
 	static Ref<Process, Owner> start(String command, int ioPolicy = 0);
-	static Ref<Process, Owner> start(String command, Ref<ProcessFactory> factory);
+	static Ref<Process, Owner> start(String command, ProcessFactory *factory);
 
 	// -- child process control interface
 
@@ -58,13 +58,13 @@ public:
 	int type() const;
 	int ioPolicy() const;
 
-	Ref<SystemStream> rawInput() const;
-	Ref<SystemStream> rawOutput() const;
-	Ref<SystemStream> rawError() const;
+	SystemStream *rawInput() const;
+	SystemStream *rawOutput() const;
+	SystemStream *rawError() const;
 
-	Ref<LineSink> input() const;
-	Ref<LineSource> output() const;
-	Ref<LineSource> error() const;
+	LineSink *input() const;
+	LineSource *output() const;
+	LineSource *error() const;
 
 	pid_t id() const;
 
@@ -113,9 +113,9 @@ protected:
 	Process(
 		int type,
 		int ioPolicy,
-		Ref<SystemStream> rawInput,
-		Ref<SystemStream> rawOutput,
-		Ref<SystemStream> rawError,
+		SystemStream *rawInput,
+		SystemStream *rawOutput,
+		SystemStream *rawError,
 		pid_t processId
 	);
 

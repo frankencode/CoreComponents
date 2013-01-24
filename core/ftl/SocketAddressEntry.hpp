@@ -20,11 +20,11 @@ class NetworkInterface;
 class SocketAddressEntry: public SocketAddress
 {
 public:
-	Ref<SocketAddress> address() const;
-	Ref<SocketAddress> localAddress() const;
-	Ref<SocketAddress> broadcastAddress() const;
-	Ref<SocketAddress> destinationAddress() const;
-	Ref<SocketAddress> anycastAddress() const;
+	SocketAddress *address() const;
+	SocketAddress *localAddress() const;
+	SocketAddress *broadcastAddress() const;
+	SocketAddress *destinationAddress() const;
+	SocketAddress *anycastAddress() const;
 
 private:
 	friend class NetworkInterface;

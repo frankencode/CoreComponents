@@ -19,7 +19,7 @@ namespace ftl
 class BitEncoder: public Instance
 {
 public:
-	inline static Ref<BitEncoder, Owner> open(Ref<Stream> stream, int bufCapacity = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static Ref<BitEncoder, Owner> open(Stream *stream, int bufCapacity = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
 		return new BitEncoder(stream, bufCapacity, endian);
 	}
 
@@ -48,7 +48,7 @@ public:
 	uint64_t numBytesWritten() const;
 
 private:
-	BitEncoder(Ref<Stream> stream, int bufCapacity, int endian);
+	BitEncoder(Stream *stream, int bufCapacity, int endian);
 	BitEncoder(void *buf, int bufCapacity, int endian);
 
 	Ref<Stream, Owner> stream_;

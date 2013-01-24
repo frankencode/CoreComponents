@@ -18,7 +18,7 @@ AbnfCompiler::AbnfCompiler()
 	: trap_(StringTrap::create())
 {}
 
-Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, Ref<SyntaxDebugger> debugger)
+Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(ByteArray *text, SyntaxDebugger *debugger)
 {
 	Ref<Token, Owner> ruleList = AbnfSyntax::match(text);
 	FTL_ASSERT(ruleList);
@@ -34,23 +34,23 @@ Ref<AbnfCompiler::Definition, Owner> AbnfCompiler::compile(Ref<ByteArray> text, 
 	return definition;
 }
 
-Ref<AbnfCompiler::Node> AbnfCompiler::ignoreDebug(Ref<Node> node)
+AbnfCompiler::Node *AbnfCompiler::ignoreDebug(Node *node)
 {
-	Ref<SyntaxDebugNode> debugNode = node;
+	SyntaxDebugNode *debugNode = cast<SyntaxDebugNode>(node);
 	return (debugNode) ? debugNode->entry() : node;
 }
 
-void AbnfCompiler::compileRuleList(Ref<ByteArray> text, Ref<Token> ruleList, Ref<Definition> definition)
+void AbnfCompiler::compileRuleList(ByteArray *text, Token *ruleList, Definition *definition)
 {
 	FTL_ASSERT(ruleList->rule() == AbnfSyntax::rulelist_);
 
-	Ref<Token> rule = ruleList->firstChild();
+	Token *rule = ruleList->firstChild();
 	while (rule) {
 		FTL_ASSERT(rule->rule() == AbnfSyntax::rule_);
 
-		Ref<Token> ruleName = rule->firstChild();
-		Ref<Token> definedAs = ruleName->nextSibling();
-		Ref<Token> alternation = definedAs->nextSibling();
+		Token *ruleName = rule->firstChild();
+		Token *definedAs = ruleName->nextSibling();
+		Token *alternation = definedAs->nextSibling();
 
 		FTL_ASSERT(ruleName->rule() == AbnfSyntax::ruleName_);
 		FTL_ASSERT(definedAs->rule() == AbnfSyntax::definedAs_);
@@ -67,24 +67,24 @@ void AbnfCompiler::compileRuleList(Ref<ByteArray> text, Ref<Token> ruleList, Ref
 	}
 }
 
-void AbnfCompiler::compileEntry(Ref<ByteArray> text, Ref<Token> ruleList, Ref<Definition> definition)
+void AbnfCompiler::compileEntry(ByteArray *text, Token *ruleList, Definition *definition)
 {
-	Ref<Token> rule = ruleList->firstChild();
+	Token *rule = ruleList->firstChild();
 	FTL_ASSERT(rule);
 	FTL_ASSERT(rule->rule() == AbnfSyntax::rule_);
-	Ref<Token> ruleName = rule->firstChild();
+	Token *ruleName = rule->firstChild();
 	FTL_ASSERT(ruleName->rule() == AbnfSyntax::ruleName_);
 
 	definition->ENTRY(str(text, ruleName));
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileAlternation(Ref<ByteArray> text, Ref<Token> alternation, Ref<Definition> definition)
+AbnfCompiler::NODE AbnfCompiler::compileAlternation(ByteArray *text, Token *alternation, Definition *definition)
 {
 	FTL_ASSERT(alternation->rule() == AbnfSyntax::alternation_);
 	if (alternation->firstChild() == alternation->lastChild())
 		return compileConcatenation(text, alternation->firstChild(), definition);
 	NODE node = definition->CHOICE();
-	Ref<Token> token = alternation->firstChild();
+	Token *token = alternation->firstChild();
 	while (token) {
 		ignoreDebug(node)->appendChild(compileConcatenation(text, token, definition));
 		token = token->nextSibling();
@@ -92,13 +92,13 @@ AbnfCompiler::NODE AbnfCompiler::compileAlternation(Ref<ByteArray> text, Ref<Tok
 	return optimizeChoice(node, definition);
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileConcatenation(Ref<ByteArray> text, Ref<Token> concatenation, Ref<Definition> definition)
+AbnfCompiler::NODE AbnfCompiler::compileConcatenation(ByteArray *text, Token *concatenation, Definition *definition)
 {
 	FTL_ASSERT(concatenation->rule() == AbnfSyntax::concatenation_);
 	if (concatenation->firstChild() == concatenation->lastChild())
 		return compileRepetition(text, concatenation->firstChild(), definition);
 	NODE node = definition->GLUE();
-	Ref<Token> token = concatenation->firstChild();
+	Token *token = concatenation->firstChild();
 	while (token) {
 		ignoreDebug(node)->appendChild(compileRepetition(text, token, definition));
 		token = token->nextSibling();
@@ -106,10 +106,10 @@ AbnfCompiler::NODE AbnfCompiler::compileConcatenation(Ref<ByteArray> text, Ref<T
 	return node;
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileRepetition(Ref<ByteArray> text, Ref<Token> repetition, Ref<Definition> definition)
+AbnfCompiler::NODE AbnfCompiler::compileRepetition(ByteArray *text, Token *repetition, Definition *definition)
 {
 	NODE node = 0;
-	Ref<Token> token = repetition->firstChild();
+	Token *token = repetition->firstChild();
 	if (token->rule() == AbnfSyntax::repeat_) {
 		int i = token->i0();
 		while (i < token->i1()) {
@@ -142,19 +142,19 @@ AbnfCompiler::NODE AbnfCompiler::compileRepetition(Ref<ByteArray> text, Ref<Toke
 	return node;
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileOption(Ref<ByteArray> text, Ref<Token> option, Ref<Definition> definition)
+AbnfCompiler::NODE AbnfCompiler::compileOption(ByteArray *text, Token *option, Definition *definition)
 {
 	FTL_ASSERT(option->rule() == AbnfSyntax::option_);
-	Ref<Token> alternation = option->firstChild();
+	Token *alternation = option->firstChild();
 	FTL_ASSERT(alternation);
 	return definition->REPEAT(0, 1, compileAlternation(text, alternation, definition));
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileElement(Ref<ByteArray> text, Ref<Token> element, Ref<Definition> definition)
+AbnfCompiler::NODE AbnfCompiler::compileElement(ByteArray *text, Token *element, Definition *definition)
 {
 	NODE node = 0;
 	FTL_ASSERT(element->rule() == AbnfSyntax::element_);
-	Ref<Token> token = element->firstChild();
+	Token *token = element->firstChild();
 	if (token->rule() == AbnfSyntax::ruleName_) {
 		node = definition->REF(str(text, token));
 	}
@@ -176,7 +176,7 @@ AbnfCompiler::NODE AbnfCompiler::compileElement(Ref<ByteArray> text, Ref<Token> 
 	return node;
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileNumVal(Ref<ByteArray> text, Ref<Token> numVal, Ref<Definition> definition)
+AbnfCompiler::NODE AbnfCompiler::compileNumVal(ByteArray *text, Token *numVal, Definition *definition)
 {
 	NODE node = 0;
 
@@ -234,7 +234,7 @@ AbnfCompiler::NODE AbnfCompiler::compileNumVal(Ref<ByteArray> text, Ref<Token> n
 	return node;
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileCharVal(Ref<ByteArray> text, Ref<Token> charVal, Ref<Definition> definition)
+AbnfCompiler::NODE AbnfCompiler::compileCharVal(ByteArray *text, Token *charVal, Definition *definition)
 {
 	return
 		(charVal->length() - 2 > 1) ?
@@ -242,21 +242,21 @@ AbnfCompiler::NODE AbnfCompiler::compileCharVal(Ref<ByteArray> text, Ref<Token> 
 			definition->CHAR(text->at(charVal->i0() + 1));
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileProseVal(Ref<ByteArray> text, Ref<Token> proseVal, Ref<Definition> definition)
+AbnfCompiler::NODE AbnfCompiler::compileProseVal(ByteArray *text, Token *proseVal, Definition *definition)
 {
 	return compileCharVal(text, proseVal, definition);
 }
 
-AbnfCompiler::NODE AbnfCompiler::optimizeChoice(Ref<Node> node, Ref<Definition> definition)
+AbnfCompiler::NODE AbnfCompiler::optimizeChoice(Node *node, Definition *definition)
 {
 	NODE optimizedChoice = node;
 
 	int numChars = 0;
 	bool isRangeExplicit = true;
 	{
-		Ref<Node> child = ignoreDebug(node)->firstChild();
+		Node *child = ignoreDebug(node)->firstChild();
 		while ((child) && isRangeExplicit) {
-			isRangeExplicit = Ref<syntax::CharNode>(ignoreDebug(child));
+			isRangeExplicit = cast<syntax::CharNode>(ignoreDebug(child));
 			child = child->nextSibling();
 			++numChars;
 		}
@@ -265,9 +265,9 @@ AbnfCompiler::NODE AbnfCompiler::optimizeChoice(Ref<Node> node, Ref<Definition> 
 	if (isRangeExplicit) {
 		Ref<ByteArray, Owner> s = ByteArray::create(numChars);
 		int i = 0;
-		Ref<Node> child = ignoreDebug(node)->firstChild();
+		Node *child = ignoreDebug(node)->firstChild();
 		while (child) {
-			Ref<syntax::CharNode> charNode = ignoreDebug(child);
+			Ref<syntax::CharNode> charNode = cast<syntax::CharNode>(ignoreDebug(child));
 			s->set(i, charNode->ch());
 			++i;
 			child = child->nextSibling();
@@ -282,12 +282,12 @@ AbnfCompiler::NODE AbnfCompiler::optimizeChoice(Ref<Node> node, Ref<Definition> 
 	return optimizedChoice;
 }
 
-void AbnfCompiler::deepOptimizeChoice(Ref<Node> node, Ref<Definition> definition)
+void AbnfCompiler::deepOptimizeChoice(Node *node, Definition *definition)
 {
 	int numChars = 0;
-	Ref<Node> child = ignoreDebug(node)->firstChild();
+	Node *child = ignoreDebug(node)->firstChild();
 	while (child) {
-		if (Ref<syntax::CharNode>(ignoreDebug(child)))
+		if (cast<syntax::CharNode>(ignoreDebug(child)))
 			++numChars;
 		else
 			deepOptimizeChoice(node, child, numChars, definition);
@@ -296,14 +296,14 @@ void AbnfCompiler::deepOptimizeChoice(Ref<Node> node, Ref<Definition> definition
 	deepOptimizeChoice(node, 0, numChars, definition);
 }
 
-void AbnfCompiler::deepOptimizeChoice(Ref<Node> node, Ref<Node> fin, int numChars, Ref<Definition> definition)
+void AbnfCompiler::deepOptimizeChoice(Node *node, Node *fin, int numChars, Definition *definition)
 {
 	if (numChars > 1) {
 		Ref<ByteArray, Owner> s = ByteArray::create(numChars);
 		int i = numChars - 1;
 		while (i >= 0) {
-			Ref<Node> charNode = (fin) ? fin->previousSibling() : ignoreDebug(node)->lastChild();
-			s->set(i, Ref<syntax::CharNode>(ignoreDebug(charNode))->ch());
+			Node *charNode = (fin) ? fin->previousSibling() : ignoreDebug(node)->lastChild();
+			s->set(i, cast<syntax::CharNode>(ignoreDebug(charNode))->ch());
 			charNode->unlink();
 			--i;
 		}

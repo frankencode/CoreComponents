@@ -238,7 +238,7 @@ typedef PrefixTree<char, int> KeywordMap;
 class KeywordNode: public Node
 {
 public:
-	KeywordNode(Ref<KeywordMap> map, bool caseSensitive)
+	KeywordNode(KeywordMap *map, bool caseSensitive)
 		: map_(map),
 		  caseSensitive_(caseSensitive)
 	{}
@@ -262,7 +262,7 @@ public:
 		return i;
 	}
 
-	inline Ref<KeywordMap> map() const { return map_; }
+	inline KeywordMap *map() const { return map_; }
 
 private:
 	Ref<KeywordMap, Owner> map_;
@@ -272,7 +272,7 @@ private:
 class RepeatNode: public Node
 {
 public:
-	RepeatNode(int minRepeat, int maxRepeat, Ref<Node> entry)
+	RepeatNode(int minRepeat, int maxRepeat, Node *entry)
 		: minRepeat_(minRepeat),
 		  maxRepeat_(maxRepeat)
 	{
@@ -281,7 +281,7 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Ref<Token> lastChildSaved;
+		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
 		int repeatCount = 0;
@@ -311,7 +311,7 @@ public:
 
 	inline int minRepeat() const { return minRepeat_; }
 	inline int maxRepeat() const { return maxRepeat_; }
-	inline Ref<Node> entry() const { return Node::firstChild(); }
+	inline Node *entry() const { return Node::firstChild(); }
 
 private:
 	int minRepeat_;
@@ -321,7 +321,7 @@ private:
 class LazyRepeatNode: public Node
 {
 public:
-	LazyRepeatNode(int minRepeat, Ref<Node> entry)
+	LazyRepeatNode(int minRepeat, Node *entry)
 		: minRepeat_(minRepeat)
 	{
 		appendChild(entry);
@@ -329,7 +329,7 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Ref<Token> lastChildSaved;
+		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
 		int repeatCount = 0;
@@ -343,9 +343,9 @@ public:
 				++repeatCount;
 				if (minRepeat_ <= repeatCount) {
 					int j = h;
-					Ref<Node> succ = Node::succ();
+					Node *succ = Node::succ();
 					if (succ) {
-						Ref<Token> lastChildSaved2;
+						Token *lastChildSaved2 = 0;
 						if (parentToken) lastChildSaved2 = parentToken->lastChild();
 						while (succ) {
 							j = succ->matchNext(media, j, tokenFactory, parentToken, state);
@@ -366,7 +366,7 @@ public:
 	inline int matchLength() const { return -1; }
 
 	inline int minRepeat() const { return minRepeat_; }
-	inline Ref<Node> entry() const { return Node::firstChild(); }
+	inline Node *entry() const { return Node::firstChild(); }
 
 private:
 	int minRepeat_;
@@ -375,7 +375,7 @@ private:
 class GreedyRepeatNode: public Node
 {
 public:
-	GreedyRepeatNode(int minRepeat, int maxRepeat, Ref<Node> entry)
+	GreedyRepeatNode(int minRepeat, int maxRepeat, Node *entry)
 		: minRepeat_(minRepeat),
 		  maxRepeat_(maxRepeat)
 	{
@@ -384,7 +384,7 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Ref<Token> lastChildSaved, lastChildSaved2;
+		Token *lastChildSaved = 0, *lastChildSaved2 = 0;
 		if (parentToken) {
 			lastChildSaved = parentToken->lastChild();
 			lastChildSaved2 = parentToken->lastChild();
@@ -400,9 +400,9 @@ public:
 			if (h != -1) {
 				++repeatCount;
 				if (minRepeat_ <= repeatCount) {
-					Ref<Node> succ = Node::succ();
+					Node *succ = Node::succ();
 					if (succ) {
-						Ref<Token> lastChildSaved3;
+						Token *lastChildSaved3 = 0;
 						if (parentToken) lastChildSaved3 = parentToken->lastChild();
 						j = h;
 						while (succ) {
@@ -440,7 +440,7 @@ public:
 
 	inline int minRepeat() const { return minRepeat_; }
 	inline int maxRepeat() const { return maxRepeat_; }
-	inline Ref<Node> entry() const { return Node::firstChild(); }
+	inline Node *entry() const { return Node::firstChild(); }
 
 private:
 	int minRepeat_;
@@ -450,7 +450,7 @@ private:
 class LengthNode: public Node
 {
 public:
-	LengthNode(int minLength, int maxLength, Ref<Node> entry)
+	LengthNode(int minLength, int maxLength, Node *entry)
 		: minLength_(minLength),
 		  maxLength_(maxLength)
 	{
@@ -459,7 +459,7 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Ref<Token> lastChildSaved;
+		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
 		int h = entry()->matchNext(media, i, tokenFactory, parentToken, state);
@@ -479,7 +479,7 @@ public:
 
 	inline int minLength() const { return minLength_; }
 	inline int maxLength() const { return maxLength_; }
-	inline Ref<Node> entry() const { return Node::firstChild(); }
+	inline Node *entry() const { return Node::firstChild(); }
 
 private:
 	int minLength_;
@@ -530,14 +530,14 @@ private:
 class FindNode: public Node
 {
 public:
-	FindNode(Ref<Node> entry)
+	FindNode(Node *entry)
 	{
 		appendChild(entry);
 	}
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Ref<Token> lastChildSaved;
+		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
 		bool found = false;
@@ -561,13 +561,13 @@ public:
 
 	inline int matchLength() const { return 0; }
 
-	inline Ref<Node> entry() const { return Node::firstChild(); }
+	inline Node *entry() const { return Node::firstChild(); }
 };
 
 class AheadNode: public Node
 {
 public:
-	AheadNode(Ref<Node> entry, int invert)
+	AheadNode(Node *entry, int invert)
 		: invert_(invert)
 	{
 		appendChild(entry);
@@ -575,7 +575,7 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Ref<Token> lastChildSaved;
+		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
 		int h = i;
@@ -592,7 +592,7 @@ public:
 
 	inline int matchLength() const { return 0; }
 
-	inline Ref<Node> entry() const { return Node::firstChild(); }
+	inline Node *entry() const { return Node::firstChild(); }
 	inline int invert() const { return invert_; }
 
 private:
@@ -602,7 +602,7 @@ private:
 class BehindNode: public Node
 {
 public:
-	BehindNode(Ref<Node> entry, int invert)
+	BehindNode(Node *entry, int invert)
 		: invert_(invert),
 		  length_(entry->matchLength())
 	{
@@ -611,7 +611,7 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Ref<Token> lastChildSaved;
+		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
 		if (!media->has(i - length_))
@@ -626,7 +626,7 @@ public:
 
 	inline int matchLength() const { return 0; }
 
-	inline Ref<Node> entry() const { return Node::firstChild(); }
+	inline Node *entry() const { return Node::firstChild(); }
 	inline int invert() const { return invert_; }
 	inline int length() const { return length_; }
 
@@ -640,11 +640,11 @@ class ChoiceNode: public Node
 public:
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Ref<Token> lastChildSaved;
+		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
 		int h = -1;
-		Ref<Node> node = Node::firstChild();
+		Node *node = Node::firstChild();
 		while ((node) && (h == -1)) {
 			h = node->matchNext(media, i, tokenFactory, parentToken, state);
 			if (h == -1)
@@ -658,15 +658,15 @@ public:
 		return h;
 	}
 
-	virtual Ref<Node> succ(Ref<Node> node) const
+	virtual Node *succ(Node *node) const
 	{
-		return Node::parent() ? Node::parent()->succ(this) : Ref<Node>();
+		return Node::parent() ? Node::parent()->succ(Node::self()) : null<Node>();
 	}
 
 	virtual int matchLength() const
 	{
 		int len = -1;
-		for (Ref<Node> node = Node::firstChild(); node; node = Node::nextSibling()) {
+		for (Node *node = Node::firstChild(); node; node = Node::nextSibling()) {
 			int len2 = node->matchLength();
 			if ((len != -1) && (len2 != len))
 				return -1;
@@ -675,8 +675,8 @@ public:
 		return len;
 	}
 
-	inline Ref<Node> firstChoice() const { return Node::firstChild(); }
-	inline Ref<Node> lastChoice() const { return Node::lastChild(); }
+	inline Node *firstChoice() const { return Node::firstChild(); }
+	inline Node *lastChoice() const { return Node::lastChild(); }
 };
 
 class GlueNode: public Node
@@ -684,10 +684,10 @@ class GlueNode: public Node
 public:
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Ref<Token> lastChildSaved;
+		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
-		Ref<Node> node = Node::firstChild();
+		Node *node = Node::firstChild();
 		while ((node) && (i != -1)) {
 			i = node->matchNext(media, i, tokenFactory, parentToken, state);
 			node = node->nextSibling();
@@ -699,17 +699,17 @@ public:
 		return i;
 	}
 
-	virtual Ref<Node> succ(Ref<Node> node) const
+	virtual Node *succ(Node *node) const
 	{
-		Ref<Node> succ = node->nextSibling();
-		if ((!succ) && (Node::parent())) succ = Node::parent()->succ(this);
+		Node *succ = node->nextSibling();
+		if ((!succ) && (Node::parent())) succ = Node::parent()->succ(Node::self());
 		return succ;
 	}
 
 	virtual int matchLength() const
 	{
 		int len = 0;
-		for (Ref<Node> node = Node::firstChild(); node; node = node->nextSibling()) {
+		for (Node *node = Node::firstChild(); node; node = node->nextSibling()) {
 			int len2 = node->matchLength();
 			if (len2 == -1) {
 				len = -1;
@@ -745,12 +745,12 @@ private:
 	const char *text_;
 };
 
-typedef int (*CallBack) (Ref<Instance> self, ByteArray *media, int i, State *state);
+typedef int (*CallBack) (Instance *self, ByteArray *media, int i, State *state);
 
 class CallNode: public Node
 {
 public:
-	CallNode(CallBack callBack, Ref<Instance> self)
+	CallNode(CallBack callBack, Instance *self)
 		: callBack_(callBack),
 		  self_(self)
 	{}
@@ -764,7 +764,7 @@ public:
 
 private:
 	CallBack callBack_;
-	Ref<Instance> self_;
+	Instance *self_;
 };
 
 class SetNode: public Node
@@ -792,7 +792,7 @@ private:
 class IfNode: public Node
 {
 public:
-	IfNode(int flagId, Ref<Node> trueBranch, Ref<Node> falseBranch)
+	IfNode(int flagId, Node *trueBranch, Node *falseBranch)
 		: flagId_(flagId)
 	{
 		appendChild(trueBranch);
@@ -807,8 +807,8 @@ public:
 	}
 
 	inline int flagId() const { return flagId_; }
-	inline Ref<Node> trueBranch() const { return Node::firstChild(); }
-	inline Ref<Node> falseBranch() const { return Node::lastChild(); }
+	inline Node *trueBranch() const { return Node::firstChild(); }
+	inline Node *falseBranch() const { return Node::lastChild(); }
 
 private:
 	int flagId_;
@@ -817,7 +817,7 @@ private:
 class CaptureNode: public Node
 {
 public:
-	CaptureNode(int captureId, Ref<Node> coverage)
+	CaptureNode(int captureId, Node *coverage)
 		: captureId_(captureId)
 	{
 		appendChild(coverage);
@@ -825,7 +825,7 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Ref<Token> lastChildSaved;
+		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
 		int i0 = i;
@@ -840,7 +840,7 @@ public:
 	}
 
 	inline int captureId() const { return captureId_; }
-	inline Ref<Node> coverage() const { return Node::firstChild(); }
+	inline Node *coverage() const { return Node::firstChild(); }
 
 private:
 	int captureId_;
@@ -855,7 +855,7 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Ref<Range> range = state->capture(captureId_);
+		Range *range = state->capture(captureId_);
 		for (int j = range->i0(); (j < range->i1()) && media->has(i) && media->has(j); ++i, ++j) {
 			if (media->get(i) != media->get(j)) return -1;
 		}
@@ -874,7 +874,7 @@ class DefinitionNode;
 class RuleNode: public Node
 {
 public:
-	RuleNode(int definitionId, const char *name, int ruleId, Ref<Node> entry, bool isVoid = false)
+	RuleNode(int definitionId, const char *name, int ruleId, Node *entry, bool isVoid = false)
 		: definitionId_(definitionId),
 		  name_(name),
 		  id_(ruleId),
@@ -921,11 +921,8 @@ public:
 	int numberOfRefs() {
 		if (numberOfRefs_ == -1) {
 			numberOfRefs_ = 0;
-			Ref<Node> node = Node::first();
-			while (node) {
-				if (Ref<RefNode>(node)) ++numberOfRefs_;
-				node = node->next();
-			}
+			for (Node *node = Node::first(); node; node = node->next())
+				if (cast<RefNode>(node)) ++numberOfRefs_;
 		}
 		return numberOfRefs_;
 	}
@@ -933,7 +930,7 @@ public:
 	inline int id() const { return id_; }
 	inline const char *name() const { return name_; }
 
-	inline Ref<Node> entry() const { return Node::firstChild(); }
+	inline Node *entry() const { return Node::firstChild(); }
 	inline bool isVoid() const { return isVoid_; }
 
 	inline bool used() const { return used_; }
@@ -957,13 +954,13 @@ public:
 		: ruleName_(ruleName)
 	{}
 
-	LinkNode(Ref<RuleNode> rule)
+	LinkNode(RuleNode *rule)
 		: ruleName_(rule->name()),
 		  rule_(rule)
 	{}
 
 	inline const char *ruleName() const { return ruleName_; }
-	inline Ref<RuleNode> rule() const { return rule_; }
+	inline RuleNode *rule() const { return rule_; }
 
 	inline int matchLength() const { return rule_->matchLength(); }
 
@@ -972,7 +969,7 @@ protected:
 	friend class Debugger;
 
 	const char *ruleName_;
-	Ref<RuleNode> rule_;
+	RuleNode *rule_;
 	Ref<LinkNode, Owner> unresolvedNext_;
 };
 
@@ -983,13 +980,13 @@ public:
 		: LinkNode(ruleName)
 	{}
 
-	RefNode(Ref<RuleNode> rule)
+	RefNode(RuleNode *rule)
 		: LinkNode(rule)
 	{}
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Ref<Token> lastChildSaved;
+		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
 		i = LinkNode::rule_->matchNext(media, i, tokenFactory, parentToken, state);
@@ -1008,7 +1005,7 @@ public:
 		: LinkNode(ruleName)
 	{}
 
-	InlineNode(Ref<RuleNode> rule)
+	InlineNode(RuleNode *rule)
 		: LinkNode(rule)
 	{}
 
@@ -1031,7 +1028,7 @@ public:
 	{
 		int h = -1;
 		if (parentToken) {
-			Ref<Token> sibling = parentToken->previousSibling();
+			Token *sibling = parentToken->previousSibling();
 			if (sibling)
 				if ( (sibling->rule() == LinkNode::rule_->id()) &&
 					 ((keyword_ == -1) || (sibling->keyword() == keyword_)) )
@@ -1053,7 +1050,7 @@ protected:
 class ContextNode: public LinkNode
 {
 public:
-	ContextNode(const char *ruleName, Ref<Node> entry = 0)
+	ContextNode(const char *ruleName, Node *entry = 0)
 		: LinkNode(ruleName)
 	{
 		if (entry) appendChild(entry);
@@ -1069,7 +1066,7 @@ public:
 				if (parentToken->rule() == LinkNode::rule_->id()) {
 					h = i;
 					if (Node::firstChild()) {
-						Ref<Token> lastChildSaved;
+						Token *lastChildSaved = 0;
 						if (parentToken) lastChildSaved = parentToken->lastChild();
 
 						h = Node::firstChild()->matchNext(media, h, tokenFactory, parentToken, state);
@@ -1092,13 +1089,13 @@ class DebugFactory;
 class InvokeNode: public Node
 {
 public:
-	InvokeNode(Ref<DefinitionNode> definition, Ref<Node> coverage)
+	InvokeNode(DefinitionNode *definition, Node *coverage)
 		: definition_(definition)
 	{
 		if (coverage) appendChild(coverage);
 	}
 
-	InvokeNode(const char *name, Ref<Node> coverage)
+	InvokeNode(const char *name, Node *coverage)
 		: definitionName_(name)
 	{
 		if (coverage) appendChild(coverage);
@@ -1107,20 +1104,20 @@ public:
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const;
 
 	inline const char *definitionName() const { return definitionName_; }
-	inline Ref<Node> coverage() const { return Node::firstChild(); }
+	inline Node *coverage() const { return Node::firstChild(); }
 
 private:
 	friend class DefinitionNode;
 
 	const char *definitionName_;
-	Ref<DefinitionNode> definition_;
+	DefinitionNode *definition_;
 	Ref<InvokeNode, Owner> unresolvedNext_;
 };
 
 class DefinitionNode: public RefNode
 {
 public:
-	DefinitionNode(Ref<DebugFactory> debugFactory = 0)
+	DefinitionNode(DebugFactory *debugFactory = 0)
 		: debugFactory_(debugFactory),
 		  id_(Crc32().sum()),
 		  name_(0),
@@ -1141,7 +1138,7 @@ public:
 			debugFactory_->definition_ = this;
 	}
 
-	inline Ref<DebugFactory> debugFactory() const { return debugFactory_; }
+	inline DebugFactory *debugFactory() const { return debugFactory_; }
 
 	inline int id() const { return id_; }
 	inline const char *name() const { return name_; }
@@ -1153,7 +1150,7 @@ public:
 		name_ = name;
 	}
 
-	inline void IMPORT(Ref<DefinitionNode> definition, const char *name = 0) {
+	inline void IMPORT(DefinitionNode *definition, const char *name = 0) {
 		if (!name) name = definition->name();
 		if (!name)
 			FTL_THROW(DebugException, "Cannot import anonymous syntax definition");
@@ -1264,9 +1261,9 @@ public:
 		return debug(link, "Context");
 	}
 
-	typedef int (*CallBack) (Ref<Instance> self, ByteArray *media, int i, State *state);
+	typedef int (*CallBack) (Instance *self, ByteArray *media, int i, State *state);
 
-	inline NODE CALL(CallBack callBack, Ref<Instance> self = 0) {
+	inline NODE CALL(CallBack callBack, Instance *self = 0) {
 		if (!self) self = this;
 		return debug(new CallNode(callBack, self), "Call");
 	}
@@ -1312,23 +1309,23 @@ public:
 
 	State *newState(State *parent = 0) const;
 
-	Ref<Token, Owner> find(ByteArray *media, int *i0, int *i1 = 0, Ref<TokenFactory> tokenFactory = 0) const;
-	Ref<Token, Owner> match(ByteArray *media, int i0 = 0, int *i1 = 0, State *state = 0, Ref<TokenFactory> tokenFactory = 0) const;
+	Ref<Token, Owner> find(ByteArray *media, int *i0, int *i1 = 0, TokenFactory *tokenFactory = 0) const;
+	Ref<Token, Owner> match(ByteArray *media, int i0 = 0, int *i1 = 0, State *state = 0, TokenFactory *tokenFactory = 0) const;
 
-	Ref<DefinitionNode> resolveScope(const char*& name) const;
+	const DefinitionNode *resolveScope(const char*& name) const;
 
-	inline Ref<DefinitionNode> definitionByName(const char *name) const
+	inline DefinitionNode *definitionByName(const char *name) const
 	{
 		Ref<DefinitionNode, Owner> definition;
-		Ref<DefinitionNode> scope = resolveScope(name);
+		const DefinitionNode *scope = resolveScope(name);
 		if (!scope->definitionByName_->lookup(name, &definition))
 			FTL_THROW(DebugException, str::cat("Undefined definition '", name, "' referenced"));
 		return definition;
 	}
 
-	inline Ref<RuleNode> ruleByName(const char *name) const
+	inline RuleNode *ruleByName(const char *name) const
 	{
-		Ref<DefinitionNode> scope = resolveScope(name);
+		const DefinitionNode *scope = resolveScope(name);
 		Ref<RuleNode, Owner> node;
 		FTL_ASSERT(scope);
 		if (!scope->ruleByName_->lookup(name, &node))
@@ -1387,7 +1384,7 @@ private:
 	Ref<RuleByName, Owner> ruleByName_;
 	Ref<KeywordByName, Owner> keywordByName_;
 
-	void addRule(Ref<RuleNode> rule)
+	void addRule(RuleNode *rule)
 	{
 		if (!ruleByName_->insert(rule->name(), rule))
 			FTL_THROW(DebugException, str::cat("Redefinition of rule '", rule->name(), "'"));
@@ -1424,7 +1421,7 @@ private:
 	Ref<StateIdByName, OnDemand> flagIdByName_;
 	Ref<StateIdByName, OnDemand> captureIdByName_;
 
-	static int errorCallBack(Ref<Instance> self, ByteArray *media, int index, State *state);
+	static int errorCallBack(Instance *self, ByteArray *media, int index, State *state);
 };
 
 } // namespace syntax

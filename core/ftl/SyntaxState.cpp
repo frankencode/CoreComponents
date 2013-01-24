@@ -21,7 +21,7 @@ State::State()
 	  hintOffset_(-1)
 {}
 
-State::State(Ref<DefinitionNode> definition, int numFlags, int numCaptures, Ref<State> parent)
+State::State(const DefinitionNode *definition, int numFlags, int numCaptures, State *parent)
 	: definition_(definition),
 	  definitionId_(definition->id())
 {
@@ -40,7 +40,7 @@ bool State::flag(const char *name) const
 	return flag(definition_->flagIdByName(name));
 }
 
-Ref<Range> State::capture(const char *name) const
+Range *State::capture(const char *name) const
 {
 	return capture(definition_->captureIdByName(name));
 }

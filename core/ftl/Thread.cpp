@@ -70,14 +70,14 @@ void Thread::sleepUntil(Time timeout)
 	mutex->release();
 }
 
-void Thread::blockSignals(Ref<SignalSet> set)
+void Thread::blockSignals(SignalSet *set)
 {
 	int ret = pthread_sigmask(SIG_BLOCK, set, 0/*oset*/);
 	if (ret != 0)
 		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
 }
 
-void Thread::unblockSignals(Ref<SignalSet> set)
+void Thread::unblockSignals(SignalSet *set)
 {
 	int ret = pthread_sigmask(SIG_UNBLOCK, set, 0/*oset*/);
 	if (ret != 0)

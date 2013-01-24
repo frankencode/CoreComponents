@@ -32,7 +32,7 @@ public:
 		if (size_ > 0) delete[] data_;
 	}
 
-	inline static Ref<Array> empty() { return Default< Array<T> >::instance(); }
+	inline static Array *empty() { return Default< Array<T> >::instance(); }
 
 	inline Array &operator=(const Array &b)
 	{
@@ -171,7 +171,7 @@ public:
 		return n;
 	}
 
-	inline int find(int i, Ref<Array> pattern) const { return find(i, pattern->data(), pattern->size()); }
+	inline int find(int i, Array *pattern) const { return find(i, pattern->data(), pattern->size()); }
 	inline int find(int i, const T *pattern, int patternSize) const {
 		if (patternSize == 0) return size_;
 		for (int j = i, k = 0; j < size_;) {
@@ -185,7 +185,7 @@ public:
 		return size_;
 	}
 
-	inline int contains(Ref<Array> pattern) { return contains(pattern->data(), pattern->size()); }
+	inline int contains(Array *pattern) { return contains(pattern->data(), pattern->size()); }
 	inline int contains(const T *pattern, int patternSize) { return find(0, pattern, patternSize) != size_; }
 
 protected:

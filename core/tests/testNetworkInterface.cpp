@@ -8,7 +8,7 @@ int main()
 {
 	Ref<NetworkInterfaceList, Owner> interfaces = NetworkInterface::queryAll(AF_UNSPEC);
 	for (int i = 0; i < interfaces->length(); ++i) {
-		Ref<NetworkInterface> interface = interfaces->get(i);
+		NetworkInterface *interface = interfaces->get(i);
 		if (i != 0) print("\n");
 		print("%%:\n", interface->name());
 		print("  Flags: ");
@@ -24,12 +24,12 @@ int main()
 		print("\n");
 		print("  HwAddr: %hex:%\n", interface->hardwareAddress());
 		print("  MTU:    %%\n", interface->mtu());
-		Ref<SocketAddressList> addressList = interface->addressList();
+		SocketAddressList *addressList = interface->addressList();
 		if (addressList) {
 			for (int k = 0; k < addressList->length(); ++k) {
-				Ref<SocketAddress> address = addressList->at(k);
+				SocketAddress *address = addressList->at(k);
 				print("  Addr:   %%", address->toString());
-				Ref<SocketAddressEntry> addressEntry = address;
+				SocketAddressEntry *addressEntry = cast<SocketAddressEntry>(address);
 				if (addressEntry) {
 					bool comma = false;
 					bool delim = true;

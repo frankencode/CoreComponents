@@ -77,9 +77,9 @@ void DebugNode::printNext(String indent)
 	print(")");
 }
 
-void DebugNode::printBranch(Ref<Node> node, String indent) {
+void DebugNode::printBranch(Node *node, String indent) {
 	if (node) {
-		Ref<DebugNode> debugNode = node;
+		DebugNode *debugNode = cast<DebugNode>(node);
 		if (debugNode) debugNode->printNext(indent);
 		else print(indent);
 	}
@@ -98,7 +98,7 @@ String DebugNode::subIndent(String indent) const {
 
 class CharDebugNode: public DebugNode {
 public:
-	CharDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	CharDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -110,12 +110,12 @@ public:
 
 private:
 	typedef syntax::CharNode CharNode;
-	inline Ref<CharNode> charNode() const { return DebugNode::entry(); }
+	inline CharNode *charNode() const { return cast<CharNode>(DebugNode::entry()); }
 };
 
 class GreaterDebugNode: public DebugNode {
 public:
-	GreaterDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	GreaterDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -127,12 +127,12 @@ public:
 
 private:
 	typedef syntax::GreaterNode GreaterNode;
-	inline Ref<GreaterNode> greaterNode() const { return DebugNode::entry(); }
+	inline GreaterNode *greaterNode() const { return cast<GreaterNode>(DebugNode::entry()); }
 };
 
 class GreaterOrEqualDebugNode: public DebugNode {
 public:
-	GreaterOrEqualDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	GreaterOrEqualDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -144,12 +144,12 @@ public:
 
 private:
 	typedef syntax::GreaterOrEqualNode GreaterOrEqualNode;
-	inline Ref<GreaterOrEqualNode> greaterOrEqualNode() const { return DebugNode::entry(); }
+	inline GreaterOrEqualNode *greaterOrEqualNode() const { return cast<GreaterOrEqualNode>(DebugNode::entry()); }
 };
 
 class AnyDebugNode: public DebugNode {
 public:
-	AnyDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	AnyDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -158,14 +158,14 @@ public:
 
 class RangeMinMaxDebugNode: public DebugNode {
 public:
-	RangeMinMaxDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	RangeMinMaxDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
 	virtual const char *declType() const { return rangeMinMaxNode()->invert() ? "EXCEPT" : "RANGE"; }
 
 	virtual void printAttributes(String indent) {
-		Ref<RangeMinMaxNode> node = rangeMinMaxNode();
+		RangeMinMaxNode *node = rangeMinMaxNode();
 		printCharAttr(node->a());
 		print(", ");
 		printCharAttr(node->b());
@@ -173,12 +173,12 @@ public:
 
 private:
 	typedef syntax::RangeMinMaxNode RangeMinMaxNode;
-	inline Ref<RangeMinMaxNode> rangeMinMaxNode() const { return DebugNode::entry(); }
+	inline RangeMinMaxNode *rangeMinMaxNode() const { return cast<RangeMinMaxNode>(DebugNode::entry()); }
 };
 
 class RangeExplicitDebugNode: public DebugNode {
 public:
-	RangeExplicitDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	RangeExplicitDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -190,12 +190,12 @@ public:
 
 private:
 	typedef syntax::RangeExplicitNode RangeExplicitNode;
-	inline Ref<RangeExplicitNode> rangeExplicitNode() const { return DebugNode::entry(); }
+	inline RangeExplicitNode *rangeExplicitNode() const { return cast<RangeExplicitNode>(DebugNode::entry()); }
 };
 
 class StringDebugNode: public DebugNode {
 public:
-	StringDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	StringDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -207,12 +207,12 @@ public:
 
 private:
 	typedef syntax::StringNode StringNode;
-	inline Ref<StringNode> stringNode() const { return DebugNode::entry(); }
+	inline StringNode *stringNode() const { return cast<StringNode>(DebugNode::entry()); }
 };
 
 class KeywordDebugNode: public DebugNode {
 public:
-	KeywordDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	KeywordDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -220,7 +220,7 @@ public:
 
 	virtual void printAttributes(String indent) {
 		print("\n%%\"", indent);
-		Ref<KeywordMap> map = keywordNode()->map();
+		KeywordMap *map = keywordNode()->map();
 		for (KeywordMap::Index index = map->first(); map->has(index); ++index) {
 			Ref<KeywordMap::Key, Owner> s = map->key(index);
 			printString(*s);
@@ -233,19 +233,19 @@ public:
 private:
 	typedef syntax::KeywordNode KeywordNode;
 	typedef syntax::KeywordMap KeywordMap;
-	inline Ref<KeywordNode> keywordNode() const { return DebugNode::entry(); }
+	inline KeywordNode *keywordNode() const { return cast<KeywordNode>(DebugNode::entry()); }
 };
 
 class RepeatDebugNode: public DebugNode {
 public:
-	RepeatDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	RepeatDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
 	virtual const char *declType() const { return "REPEAT"; }
 
 	virtual void printAttributes(String indent) {
-		Ref<RepeatNode> node = repeatNode();
+		RepeatNode *node = repeatNode();
 		if (node->maxRepeat() != intMax)
 			print("%%, %%,", node->minRepeat(), node->maxRepeat());
 		else if (node->minRepeat() != 0)
@@ -257,19 +257,19 @@ public:
 
 private:
 	typedef syntax::RepeatNode RepeatNode;
-	inline Ref<RepeatNode> repeatNode() const { return DebugNode::entry(); }
+	inline RepeatNode *repeatNode() const { return cast<RepeatNode>(DebugNode::entry()); }
 };
 
 class LazyRepeatDebugNode: public DebugNode {
 public:
-	LazyRepeatDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	LazyRepeatDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
 	virtual const char *declType() const { return "LAZY_REPEAT"; }
 
 	virtual void printAttributes(String indent) {
-		Ref<LazyRepeatNode> node = repeatNode();
+		LazyRepeatNode *node = repeatNode();
 		if (node->minRepeat() != 0)
 			print("%%,", node->minRepeat());
 		print("\n");
@@ -279,19 +279,19 @@ public:
 
 private:
 	typedef syntax::LazyRepeatNode LazyRepeatNode;
-	inline Ref<LazyRepeatNode> repeatNode() const { return DebugNode::entry(); }
+	inline LazyRepeatNode *repeatNode() const { return cast<LazyRepeatNode>(DebugNode::entry()); }
 };
 
 class GreedyRepeatDebugNode: public DebugNode {
 public:
-	GreedyRepeatDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	GreedyRepeatDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
 	virtual const char *declType() const { return "GREEDY_REPEAT"; }
 
 	virtual void printAttributes(String indent) {
-		Ref<GreedyRepeatNode> node = repeatNode();
+		GreedyRepeatNode *node = repeatNode();
 		if (node->maxRepeat() != intMax)
 			print("%%, %%,", node->minRepeat(), node->maxRepeat());
 		else if (node->minRepeat() != 0)
@@ -303,19 +303,19 @@ public:
 
 private:
 	typedef syntax::GreedyRepeatNode GreedyRepeatNode;
-	inline Ref<GreedyRepeatNode> repeatNode() const { return DebugNode::entry(); }
+	inline GreedyRepeatNode *repeatNode() const { return cast<GreedyRepeatNode>(DebugNode::entry()); }
 };
 
 class LengthDebugNode: public DebugNode {
 public:
-	LengthDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	LengthDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
 	virtual const char *declType() const { return "LENGTH"; }
 
 	virtual void printAttributes(String indent) {
-		Ref<LengthNode> node = lengthNode();
+		LengthNode *node = lengthNode();
 		if (node->maxLength() != intMax)
 			print("%%, %%,\n", node->minLength(), node->maxLength());
 		else
@@ -326,12 +326,12 @@ public:
 
 private:
 	typedef syntax::LengthNode LengthNode;
-	inline Ref<LengthNode> lengthNode() const { return DebugNode::entry(); }
+	inline LengthNode *lengthNode() const { return cast<LengthNode>(DebugNode::entry()); }
 };
 
 class BoiDebugNode: public DebugNode {
 public:
-	BoiDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	BoiDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -340,7 +340,7 @@ public:
 
 class EoiDebugNode: public DebugNode {
 public:
-	EoiDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	EoiDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -349,7 +349,7 @@ public:
 
 class PassDebugNode: public DebugNode {
 public:
-	PassDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	PassDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -357,12 +357,12 @@ public:
 
 private:
 	typedef syntax::PassNode PassNode;
-	inline Ref<PassNode> passNode() const { return DebugNode::entry(); }
+	inline PassNode *passNode() const { return cast<PassNode>(DebugNode::entry()); }
 };
 
 class FindDebugNode: public DebugNode {
 public:
-	FindDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	FindDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -376,12 +376,12 @@ public:
 
 private:
 	typedef syntax::FindNode FindNode;
-	inline Ref<FindNode> findNode() const { return DebugNode::entry(); }
+	inline FindNode *findNode() const { return cast<FindNode>(DebugNode::entry()); }
 };
 
 class AheadDebugNode: public DebugNode {
 public:
-	AheadDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	AheadDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -395,12 +395,12 @@ public:
 
 private:
 	typedef syntax::AheadNode AheadNode;
-	inline Ref<AheadNode> aheadNode() const { return DebugNode::entry(); }
+	inline AheadNode *aheadNode() const { return cast<AheadNode>(DebugNode::entry()); }
 };
 
 class BehindDebugNode: public DebugNode {
 public:
-	BehindDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	BehindDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -414,12 +414,12 @@ public:
 
 private:
 	typedef syntax::BehindNode BehindNode;
-	inline Ref<BehindNode> behindNode() const { return DebugNode::entry(); }
+	inline BehindNode *behindNode() const { return cast<BehindNode>(DebugNode::entry()); }
 };
 
 class ChoiceDebugNode: public DebugNode {
 public:
-	ChoiceDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	ChoiceDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -427,7 +427,7 @@ public:
 
 	virtual void printAttributes(String indent) {
 		print("\n");
-		Ref<Node> node = choiceNode()->firstChoice();
+		Node *node = choiceNode()->firstChoice();
 		while (node) {
 			printBranch(node, indent);
 			node = node->nextSibling();
@@ -438,12 +438,12 @@ public:
 
 private:
 	typedef syntax::ChoiceNode ChoiceNode;
-	inline Ref<ChoiceNode> choiceNode() const { return DebugNode::entry(); }
+	inline ChoiceNode *choiceNode() const { return cast<ChoiceNode>(DebugNode::entry()); }
 };
 
 class GlueDebugNode: public DebugNode {
 public:
-	GlueDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	GlueDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -451,7 +451,7 @@ public:
 
 	virtual void printAttributes(String indent) {
 		print("\n");
-		Ref<Node> node = glueNode()->firstChild();
+		Node *node = glueNode()->firstChild();
 		while (node) {
 			printBranch(node, indent);
 			node = node->nextSibling();
@@ -462,12 +462,12 @@ public:
 
 private:
 	typedef syntax::GlueNode GlueNode;
-	inline Ref<GlueNode> glueNode() const { return DebugNode::entry(); }
+	inline GlueNode *glueNode() const { return cast<GlueNode>(DebugNode::entry()); }
 };
 
 class HintDebugNode: public DebugNode {
 public:
-	HintDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	HintDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -480,12 +480,12 @@ public:
 
 private:
 	typedef syntax::HintNode HintNode;
-	inline Ref<HintNode> hintNode() const { return DebugNode::entry(); }
+	inline HintNode *hintNode() const { return cast<HintNode>(DebugNode::entry()); }
 };
 
 class RefDebugNode: public DebugNode {
 public:
-	RefDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	RefDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -497,15 +497,15 @@ public:
 
 private:
 	typedef syntax::LinkNode LinkNode;
-	inline Ref<LinkNode> linkNode() const { return DebugNode::entry(); }
+	inline LinkNode *linkNode() const { return cast<LinkNode>(DebugNode::entry()); }
 
 	typedef syntax::InlineNode InlineNode;
-	inline Ref<InlineNode> inlineNode() const { return DebugNode::entry(); }
+	inline InlineNode *inlineNode() const { return cast<InlineNode>(DebugNode::entry()); }
 };
 
 class InlineDebugNode: public DebugNode {
 public:
-	InlineDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	InlineDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -517,19 +517,19 @@ public:
 
 private:
 	typedef syntax::InlineNode InlineNode;
-	inline Ref<InlineNode> inlineNode() const { return DebugNode::entry(); }
+	inline InlineNode *inlineNode() const { return cast<InlineNode>(DebugNode::entry()); }
 };
 
 class PreviousDebugNode: public DebugNode {
 public:
-	PreviousDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	PreviousDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
 	virtual const char *declType() const { return "PREVIOUS"; }
 
 	virtual void printAttributes(String indent) {
-		Ref<PreviousNode> node = previousNode();
+		PreviousNode *node = previousNode();
 		print("\"%%\"", node->ruleName());
 		if (node->keywordName())
 			print(", \"%%\"", node->keywordName());
@@ -537,12 +537,12 @@ public:
 
 private:
 	typedef syntax::PreviousNode PreviousNode;
-	inline Ref<PreviousNode> previousNode() const { return DebugNode::entry(); }
+	inline PreviousNode *previousNode() const { return cast<PreviousNode>(DebugNode::entry()); }
 };
 
 class CallDebugNode: public DebugNode {
 public:
-	CallDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	CallDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -554,37 +554,37 @@ public:
 
 private:
 	typedef syntax::CallNode CallNode;
-	inline Ref<CallNode> callNode() const { return DebugNode::entry(); }
+	inline CallNode *callNode() const { return cast<CallNode>(DebugNode::entry()); }
 };
 
 class SetDebugNode: public DebugNode {
 public:
-	SetDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	SetDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
 	virtual const char *declType() const { return "SET"; }
 
 	virtual void printAttributes(String indent) {
-		Ref<SetNode> node = setNode();
+		SetNode *node = setNode();
 		print("\"%%\", %%", DebugNode::debugger_->flagNameById()->value(node->flagId()), node->value());
 	}
 
 private:
 	typedef syntax::SetNode SetNode;
-	inline Ref<SetNode> setNode() const { return DebugNode::entry(); }
+	inline SetNode *setNode() const { return cast<SetNode>(DebugNode::entry()); }
 };
 
 class IfDebugNode: public DebugNode {
 public:
-	IfDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	IfDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
 	virtual const char *declType() const { return "IF"; }
 
 	virtual void printAttributes(String indent) {
-		Ref<IfNode> node = ifNode();
+		IfNode *node = ifNode();
 		print("\"%%\",\n", DebugNode::debugger_->flagNameById()->value(node->flagId()));
 		printBranch(node->trueBranch(), indent);
 		print(",\n");
@@ -594,19 +594,19 @@ public:
 
 private:
 	typedef syntax::IfNode IfNode;
-	inline Ref<IfNode> ifNode() const { return DebugNode::entry(); }
+	inline IfNode *ifNode() const { return cast<IfNode>(DebugNode::entry()); }
 };
 
 class CaptureDebugNode: public DebugNode {
 public:
-	CaptureDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	CaptureDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
 	virtual const char *declType() const { return "CAPTURE"; }
 
 	virtual void printAttributes(String indent) {
-		Ref<CaptureNode> node = captureNode();
+		CaptureNode *node = captureNode();
 		print("\"%%\",\n", DebugNode::debugger_->captureNameById()->value(node->captureId()));
 		printBranch(node->coverage(), indent);
 		print("\n%%", DebugNode::superIndent(indent));
@@ -614,12 +614,12 @@ public:
 
 private:
 	typedef syntax::CaptureNode CaptureNode;
-	inline Ref<CaptureNode> captureNode() const { return DebugNode::entry(); }
+	inline CaptureNode *captureNode() const { return cast<CaptureNode>(DebugNode::entry()); }
 };
 
 class ReplayDebugNode: public DebugNode {
 public:
-	ReplayDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	ReplayDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
@@ -630,19 +630,19 @@ public:
 	}
 private:
 	typedef syntax::ReplayNode ReplayNode;
-	inline Ref<ReplayNode> replayNode() const { return DebugNode::entry(); }
+	inline ReplayNode *replayNode() const { return cast<ReplayNode>(DebugNode::entry()); }
 };
 
 class InvokeDebugNode: public DebugNode {
 public:
-	InvokeDebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	InvokeDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
 	virtual const char *declType() const { return "INVOKE"; }
 
 	virtual void printAttributes(String indent) {
-		Ref<InvokeNode> node = invokeNode();
+		InvokeNode *node = invokeNode();
 		if (node->coverage()) {
 			print("\"%%\",\n", node->definitionName());
 			printBranch(node->coverage(), indent);
@@ -655,7 +655,7 @@ public:
 
 private:
 	typedef syntax::InvokeNode InvokeNode;
-	inline Ref<InvokeNode> invokeNode() const { return DebugNode::entry(); }
+	inline InvokeNode *invokeNode() const { return cast<InvokeNode>(DebugNode::entry()); }
 };
 
 Debugger::Debugger(String indent)
@@ -701,22 +701,22 @@ void Debugger::printDefinition(bool omitUnusedRules)
 
 	typedef DefinitionNode::RuleByName RuleByName;
 	typedef syntax::RuleNode RuleNode;
-	Ref<RuleByName> ruleByName = DebugFactory::definition()->ruleByName_;
+	RuleByName *ruleByName = DebugFactory::definition()->ruleByName_;
 
-	typedef Map<int, Ref<RuleNode> > RuleById;
+	typedef Map<int, RuleNode *> RuleById;
 	Ref<RuleById, Owner> ruleById = RuleById::create();
 
 	for (RuleByName::Index i = ruleByName->first(); ruleByName->has(i); ++i) {
-		Ref<RuleNode> rule = ruleByName->value(i);
+		RuleNode *rule = ruleByName->value(i);
 		ruleById->insert(rule->id(), rule);
 	}
 
 	for (int i = 0; i < ruleById->length(); ++i) {
-		Ref<RuleNode> rule = ruleById->get(i).value();
+		RuleNode *rule = ruleById->get(i).value();
 		if (omitUnusedRules && !rule->used()) continue;
 		print("DEFINE%%(\"%%\",\n", rule->isVoid() ? "_VOID" : "", rule->name());
 		if (rule->entry()) {
-			Ref<DebugNode> debugNode = rule->entry();
+			DebugNode *debugNode = cast<DebugNode>(rule->entry());
 			if (debugNode) debugNode->printNext(indent_);
 		}
 		else {
@@ -734,7 +734,7 @@ Node *Debugger::produce(Node *newNode, const char *nodeType)
 	return factoryByNodeType_->lookup(nodeType, &factory) ? factory->produce(newNode) : newNode;
 }
 
-Ref<Debugger::StateNameById, Owner> Debugger::newReverseMap(Ref<StateIdByName> stateIdByName)
+Ref<Debugger::StateNameById, Owner> Debugger::newReverseMap(StateIdByName *stateIdByName)
 {
 	Ref<StateNameById, Owner> stateNameById = StateNameById::create();
 	for (StateIdByName::Index i = stateIdByName->first(); stateIdByName->has(i); ++i) {
@@ -745,25 +745,25 @@ Ref<Debugger::StateNameById, Owner> Debugger::newReverseMap(Ref<StateIdByName> s
 	return stateNameById;
 }
 
-Ref<Debugger::StateNameById> Debugger::flagNameById() {
+Debugger::StateNameById *Debugger::flagNameById() {
 	if (!flagNameById_)
 		flagNameById_ = newReverseMap(this->definition()->flagIdByName_);
 	return flagNameById_;
 }
 
-Ref<Debugger::StateNameById> Debugger::captureNameById() {
+Debugger::StateNameById *Debugger::captureNameById() {
 	if (!captureNameById_)
 		captureNameById_ = newReverseMap(this->definition()->captureIdByName_);
 	return captureNameById_;
 }
 
-void Debugger::determineRulesInUse(Ref<syntax::RuleNode> rule)
+void Debugger::determineRulesInUse(RuleNode *rule)
 {
 	if (!rule->used()) {
 		rule->markUsed();
-		Ref<Node> node = rule->entry()->first();
+		Node *node = rule->entry()->first();
 		while (node) {
-			Ref<syntax::LinkNode> link = node;
+			LinkNode *link = cast<LinkNode>(node);
 			if (link)
 				determineRulesInUse(link->rule());
 			node = node->next();

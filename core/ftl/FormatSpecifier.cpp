@@ -73,7 +73,7 @@ FormatSpecifier::FormatSpecifier()
 	LINK();
 }
 
-bool FormatSpecifier::find(Ref<ByteArray> text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank)
+bool FormatSpecifier::find(ByteArray *text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank)
 {
 	Ref<Token, Owner> rootToken = SyntaxDefinition::find(text, *i0);
 
@@ -82,7 +82,7 @@ bool FormatSpecifier::find(Ref<ByteArray> text, int *i0, int *i1, int *w, int *w
 		if (i0) *i0 = rootToken->i0();
 		if (i1) *i1 = rootToken->i1();
 
-		Ref<Token> token = rootToken->firstChild();
+		Token *token = rootToken->firstChild();
 
 		while (token)
 		{

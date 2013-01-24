@@ -134,6 +134,9 @@ public:
 
 #define FTL_CAST_FROM_TO(T, U, p) CastHelper<T, U, ConversionFromTo<T*, U*>::Exists>::cast(p)
 
+template<class T>
+inline T *null() { return reinterpret_cast<T *>(0); }
+
 typedef uint32_t uchar_t;
 
 template<class Char>

@@ -319,7 +319,7 @@ bool File::establish(String path, int fileMode, int dirMode)
 }
 
 
-String File::lookup(String fileName, Ref<StringList> dirs, int accessFlags)
+String File::lookup(String fileName, StringList *dirs, int accessFlags)
 {
 	Ref<StringList, Owner> h;
 	if (!dirs) {

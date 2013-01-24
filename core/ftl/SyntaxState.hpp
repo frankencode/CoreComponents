@@ -28,9 +28,9 @@ public:
 	bool flag(const char *name) const;
 	inline void setFlag(int id, bool value) { flags_->set(id, value); }
 
-	inline Ref<Range> capture(int id) const { return captures_->at(id); }
-	Ref<Range> capture(const char *name) const;
-	inline void setCapture(int id, Ref<Range> capture) { captures_->set(id, capture); }
+	inline Range *capture(int id) const { return captures_->at(id); }
+	Range *capture(const char *name) const;
+	inline void setCapture(int id, Range *capture) { captures_->set(id, capture); }
 
 	inline const char *hint() const { return hint_; }
 	inline void setHint(const char *text) { hint_ = text; }
@@ -40,14 +40,14 @@ public:
 
 	inline int definitionId() const { return definitionId_; }
 
-	inline Ref<State> child() const { return child_; }
-	inline void setChild(Ref<State> state) { child_ = state; }
+	inline State *child() const { return child_; }
+	inline void setChild(State *state) { child_ = state; }
 
 private:
 	friend class syntax::DefinitionNode;
 
 	State();
-	State(Ref<DefinitionNode> definition, int numFlags, int numCaptures, Ref<State> parent = 0);
+	State(const DefinitionNode *definition, int numFlags, int numCaptures, State *parent = 0);
 
 	Ref<DefinitionNode, Owner> definition_;
 	int definitionId_;

@@ -84,7 +84,7 @@ Ref<Thread, Owner> ThreadFactory::produce()
 	return thread;
 }
 
-void ThreadFactory::start(Ref<Thread> thread)
+void ThreadFactory::start(Thread *thread)
 {
 	int ret = pthread_create(&thread->tid_, &attr_, &bootstrap, static_cast<void*>(thread));
 	if (ret != 0)

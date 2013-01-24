@@ -54,7 +54,7 @@ public:
 	Ref<StringList, Owner> operator+(const char *b) const { return *this + String(b); }
 	Ref<StringList, Owner> operator+(const String &b) const;
 
-	inline static String join(Ref<StringList> parts, String sep = "") { return ByteArray::join(parts, sep); }
+	inline static String join(const StringList *parts, String sep = "") { return ByteArray::join(parts, sep); }
 
 	// assign a shallow copy of another string
 	inline String &operator=(const String &b) {

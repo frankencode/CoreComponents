@@ -13,7 +13,7 @@
 namespace ftl
 {
 
-BitEncoder::BitEncoder(Ref<Stream> stream, int bufCapacity, int endian)
+BitEncoder::BitEncoder(Stream *stream, int bufCapacity, int endian)
 	: stream_(stream),
 	  endian_(endian),
 	  bufCapacity_(bufCapacity),

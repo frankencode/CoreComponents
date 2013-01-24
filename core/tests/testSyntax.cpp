@@ -10,7 +10,7 @@ namespace ftl
 class Expression: public SyntaxDefinition
 {
 public:
-	Expression(Ref<SyntaxDebugger> debugger = 0)
+	Expression(SyntaxDebugger *debugger = 0)
 		: SyntaxDefinition(debugger)
 	{
 		number_ =
@@ -81,7 +81,7 @@ public:
 	}
 
 private:
-	double eval(Ref<Token> token)
+	double eval(Token *token)
 	{
 		double value = nan;
 

@@ -69,8 +69,8 @@ void Config::read(int argc, char **argv)
 	}
 }
 
-Ref<StringList> Config::options() const { return options_; }
-Ref<StringList> Config::arguments() const { return arguments_; }
+StringList *Config::options() const { return options_; }
+StringList *Config::arguments() const { return arguments_; }
 
 String Config::path() const { return path_; }
 

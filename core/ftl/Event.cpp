@@ -17,19 +17,19 @@ Event::Event()
 	: handlers_(Handlers::create())
 {}
 
-void Event::pushBack(Ref<Action> handler)
+void Event::pushBack(Action *handler)
 {
 	Guard<SpinLock> guard(&mutex_);
 	handlers_->pushBack(handler);
 }
 
-void Event::pushFront(Ref<Action> handler)
+void Event::pushFront(Action *handler)
 {
 	Guard<SpinLock> guard(&mutex_);
 	handlers_->pushFront(handler);
 }
 
-void Event::remove(Ref<Action> handler)
+void Event::remove(Action *handler)
 {
 	Guard<SpinLock> guard(&mutex_);
 	int i = handlers_->find(handler);

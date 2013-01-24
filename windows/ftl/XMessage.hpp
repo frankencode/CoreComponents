@@ -67,10 +67,10 @@ public:
 	static bool focusEvent(uint8_t messageCode) { return (FocusIn <= messageCode) && (messageCode <= FocusOut); }
 	inline bool inputEvent() { return inputEvent(messageCode); }
 	inline bool focusEvent() { return focusEvent(messageCode); }
-	
+
 	const char *messageName() const;
-	virtual void printTo(Ref<LineSink> sink) const;
-	
+	virtual void printTo(LineSink *sink) const;
+
 	uint8_t messageCode;
 	bool synthetic;
 };
@@ -97,9 +97,9 @@ public:
 		Length         = 16,
 		Implementation = 17
 	};
-	
-	XError(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
-	
+
+	XError(uint8_t messageCode, bool synthetic, ByteDecoder *source);
+
 	inline int valueError() const { return errorCode == Value; }
 	inline int resourceError() {
 		return
@@ -109,9 +109,9 @@ public:
 			(errorCode == GContext) ||
 			(errorCode == IdChoice);
 	}
-	
-	void printTo(Ref<LineSink> sink) const;
-	
+
+	void printTo(LineSink *sink) const;
+
 	uint8_t errorCode;
 	uint16_t sequenceNumber;
 	union {
@@ -159,9 +159,9 @@ public:
 		Ungrab = 2
 	};
 
-	XInputEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
+	XInputEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source);
 
-	void printTo(Ref<LineSink> sink) const;
+	void printTo(LineSink *sink) const;
 
 	union {
 		uint8_t keyCode;
@@ -200,9 +200,9 @@ public:
 		WhileGrabbed = 3
 	};
 
-	XFocusEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
-	void printTo(Ref<LineSink> sink) const;
-	
+	XFocusEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source);
+	void printTo(LineSink *sink) const;
+
 	uint8_t detail;
 	uint16_t sequenceNumber;
 	uint32_t eventWindowId;
@@ -212,9 +212,9 @@ public:
 class XExposeEvent: public XMessage
 {
 public:
-	XExposeEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
-	void printTo(Ref<LineSink> sink) const;
-	
+	XExposeEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source);
+	void printTo(LineSink *sink) const;
+
 	uint16_t sequenceNumber;
 	uint32_t windowId;
 	uint16_t x, y, width, height;
@@ -224,8 +224,8 @@ public:
 class XGraphicsExposureEvent: public XMessage
 {
 public:
-	XGraphicsExposureEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
-	void printTo(Ref<LineSink> sink) const;
+	XGraphicsExposureEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source);
+	void printTo(LineSink *sink) const;
 
 	uint16_t sequenceNumber;
 	uint32_t drawableId;
@@ -238,8 +238,8 @@ public:
 class XNoExposureEvent: public XMessage
 {
 public:
-	XNoExposureEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
-	void printTo(Ref<LineSink> sink) const;
+	XNoExposureEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source);
+	void printTo(LineSink *sink) const;
 
 	uint16_t sequenceNumber;
 	uint32_t drawableId;
@@ -255,10 +255,10 @@ public:
 		PartiallyObscured = 1,
 		FullyObscured     = 2
 	};
-	
-	XVisibilityNotifyEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
-	void printTo(Ref<LineSink> sink) const;
-	
+
+	XVisibilityNotifyEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source);
+	void printTo(LineSink *sink) const;
+
 	uint16_t sequenceNumber;
 	uint32_t windowId;
 	uint8_t state;
@@ -267,9 +267,9 @@ public:
 class XConfigureNotifyEvent: public XMessage
 {
 public:
-	XConfigureNotifyEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
-	void printTo(Ref<LineSink> sink) const;
-	
+	XConfigureNotifyEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source);
+	void printTo(LineSink *sink) const;
+
 	uint16_t sequenceNumber;
 	uint32_t eventWindowId;
 	uint32_t windowId;
@@ -283,9 +283,9 @@ public:
 class XMapNotifyEvent: public XMessage
 {
 public:
-	XMapNotifyEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
-	void printTo(Ref<LineSink> sink) const;
-	
+	XMapNotifyEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source);
+	void printTo(LineSink *sink) const;
+
 	uint16_t sequenceNumber;
 	uint32_t eventWindowId;
 	uint32_t windowId;
@@ -295,9 +295,9 @@ public:
 class XUnmapNotifyEvent: public XMessage
 {
 public:
-	XUnmapNotifyEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
-	void printTo(Ref<LineSink> sink) const;
-	
+	XUnmapNotifyEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source);
+	void printTo(LineSink *sink) const;
+
 	uint16_t sequenceNumber;
 	uint32_t eventWindowId;
 	uint32_t windowId;
@@ -307,13 +307,13 @@ public:
 /*class XResizeRequest: public XMessage
 {
 public:
-	XResizeRequest(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source);
-	void printTo(Ref<LineSink> sink) const;
-	
+	XResizeRequest(uint8_t messageCode, bool synthetic, ByteDecoder *source);
+	void printTo(LineSink *sink) const;
+
 	uint16_t sequenceNumber;
 	uint32_t windowId;
 	uint16_t width, height;
-	
+
 };*/
 
 } // namespace ftl

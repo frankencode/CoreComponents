@@ -15,7 +15,7 @@
 namespace ftl
 {
 
-StreamSocket::StreamSocket(Ref<SocketAddress> address, int fd)
+StreamSocket::StreamSocket(SocketAddress *address, int fd)
 	: SystemStream(fd),
 	  address_(address),
 	  connected_(fd != -1)
@@ -27,7 +27,7 @@ StreamSocket::StreamSocket(Ref<SocketAddress> address, int fd)
 	}
 }
 
-Ref<SocketAddress> StreamSocket::address() const { return address_; }
+SocketAddress *StreamSocket::address() const { return address_; }
 
 void StreamSocket::bind()
 {
@@ -132,21 +132,21 @@ void StreamSocket::setSendTimeout(Time idleTimeout)
 		FTL_THROW(StreamSemanticException, systemError());
 }
 
-Ref<SocketAddress> StreamSocket::localAddress() const { return localAddress(fd_); }
-Ref<SocketAddress> StreamSocket::remoteAddress() const { return remoteAddress(fd_); }
+SocketAddress *StreamSocket::localAddress() const { return localAddress(fd_); }
+SocketAddress *StreamSocket::remoteAddress() const { return remoteAddress(fd_); }
 
-Ref<SocketAddress> StreamSocket::localAddress(int fd)
+SocketAddress *StreamSocket::localAddress(int fd)
 {
-	Ref<SocketAddress> address = SocketAddress::create();
+	SocketAddress *address = SocketAddress::create();
 	socklen_t len = address->addrLen();
 	if (::getsockname(fd, address->addr(), &len) == -1)
 		FTL_THROW(StreamSemanticException, systemError());
 	return address;
 }
 
-Ref<SocketAddress> StreamSocket::remoteAddress(int fd)
+SocketAddress *StreamSocket::remoteAddress(int fd)
 {
-	Ref<SocketAddress> address = SocketAddress::create();
+	SocketAddress *address = SocketAddress::create();
 	socklen_t len = address->addrLen();
 	if (::getpeername(fd, address->addr(), &len) == -1)
 		FTL_THROW(StreamSemanticException, systemError());

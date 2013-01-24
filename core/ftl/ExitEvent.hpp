@@ -28,7 +28,7 @@ protected:
 	pid_t pid_;
 };
 
-inline Ref<ExitEvent> exitEvent() { return ExitEvent::instance(); }
+inline ExitEvent *exitEvent() { return ExitEvent::instance(); }
 
 } // namespace ftl
 

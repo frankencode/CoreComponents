@@ -32,7 +32,7 @@ public:
 		  method_(0)
 	{}
 
-	Slot(Ref<Recipient> recipient, Method method)
+	Slot(Recipient *recipient, Method method)
 		: recipient_(recipient),
 		  method_(method)
 	{}
@@ -40,7 +40,7 @@ public:
 	void invoke(Value value) { (recipient_->*method_)(value); }
 
 private:
-	Ref<Recipient> recipient_;
+	Recipient *recipient_;
 	Method method_;
 };
 
@@ -52,7 +52,7 @@ public:
 
 	void emit(Value value) {
 		for (int i = 0; i < callbacks_->length(); ++i) {
-			Ref<CallbackList> list = callbacks_->valueAt(i);
+			CallbackList *list = callbacks_->valueAt(i);
 			for (int j = 0; j < list->length(); ++j)
 				list->at(j)->invoke(value);
 		}

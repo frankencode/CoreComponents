@@ -22,7 +22,7 @@ namespace ftl
 
 /** A variant can represent different types.
   * The type of a variant is defined implicitly at construction time or on assignment.
-  * Variants automatically cast to bool, int, float, String and Ref<Instance> if the
+  * Variants automatically cast to bool, int, float if the
   * variant type is compatible with the target type requested by an expression.
   * In debug mode a DebugException will be thrown on illegal type casts.
   * You can check for type compatibility using compatibleTo() and for exact type match
@@ -105,10 +105,10 @@ public:
 	}
 
 	template<class T>
-	inline Ref<T> toInstance() const {
-		if (!type_) return Ref<T>();
+	inline T *toInstance() const {
+		if (!type_) return null<T>();
 		FTL_ASSERT2(type_ & RefType, illegalConversion());
-		return ref();
+		return cast<T>(ref().get());
 	}
 
 	inline operator bool() const { return toBool(); }
@@ -183,6 +183,9 @@ private:
 // #ifdef __GNUC__
 // #pragma pack(pop)
 // #endif
+
+template<class U>
+inline U *cast(const Variant &a) { return a.toInstance<U>(); }
 
 typedef List<Variant> VariantList;
 

@@ -59,14 +59,14 @@ public:
 	unsigned flags() const;
 	uint64_t hardwareAddress() const;
 	uint32_t mtu() const;
-	Ref<SocketAddressList> addressList() const;
+	SocketAddressList *addressList() const;
 
 	static Ref<NetworkInterfaceList, Owner> queryAll(int family = AF_INET6);
 
 private:
 	NetworkInterface();
 	#ifdef __linux
-	static bool getLink(Ref<NetworkInterfaceList> list, int index = -1);
+	static bool getLink(NetworkInterfaceList *list, int index = -1);
 	static Ref<NetworkInterfaceList, Owner> queryAllIoctl(int family);
 	#endif
 

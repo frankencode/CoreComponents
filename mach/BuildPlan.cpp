@@ -18,9 +18,9 @@ Ref<BuildPlan, Owner> BuildPlan::create(int argc, char **argv)
 	return new BuildPlan(argc, argv);
 }
 
-Ref<BuildPlan, Owner> BuildPlan::create(Ref<ToolChain> toolChain, String projectPath, int globalOptions)
+Ref<BuildPlan, Owner> BuildPlan::create(ToolChain *toolChain, String projectPath, int globalOptions)
 {
-	Ref<BuildPlan> buildPlan;
+	BuildPlan *buildPlan;
 	if (buildMap_->lookup(projectPath, &buildPlan)) return buildPlan;
 	return new BuildPlan(toolChain, projectPath, this);
 }
@@ -51,7 +51,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	buildMap_->insert(projectPath_, this);
 }
 
-BuildPlan::BuildPlan(Ref<ToolChain> toolChain, String projectPath, Ref<BuildPlan> parentPlan)
+BuildPlan::BuildPlan(ToolChain *toolChain, String projectPath, BuildPlan *parentPlan)
 	: toolChain_(toolChain),
 	  projectPath_(projectPath),
 	  buildMap_(parentPlan->buildMap_),
@@ -71,7 +71,7 @@ BuildPlan::BuildPlan(Ref<ToolChain> toolChain, String projectPath, Ref<BuildPlan
 	buildMap_->insert(projectPath_, this);
 }
 
-void BuildPlan::readRecipe(Ref<BuildPlan> parentPlan)
+void BuildPlan::readRecipe(BuildPlan *parentPlan)
 {
 	name_ = recipe_->value("name");
 	version_ = recipe_->value("version");
@@ -110,17 +110,17 @@ void BuildPlan::readRecipe(Ref<BuildPlan> parentPlan)
 	}
 
 	if (recipe_->contains("include-path"))
-		includePaths_ = Ref<VariantList>(recipe_->value("include-path"))->toList<String>();
+		includePaths_ = cast<VariantList>(recipe_->value("include-path"))->toList<String>();
 	else
 		includePaths_ = StringList::create();
 
 	if (recipe_->contains("link-path"))
-		libraryPaths_ = Ref<VariantList>(recipe_->value("link-path"))->toList<String>();
+		libraryPaths_ = cast<VariantList>(recipe_->value("link-path"))->toList<String>();
 	else
 		libraryPaths_ = StringList::create();
 
 	if (recipe_->contains("link"))
-		libraries_ = Ref<VariantList>(recipe_->value("link"))->toList<String>();
+		libraries_ = cast<VariantList>(recipe_->value("link"))->toList<String>();
 	else
 		libraries_ = StringList::create();
 
@@ -237,7 +237,7 @@ void BuildPlan::prepare()
 
 	Ref<StringList, Owner> prequisitePaths;
 	if (recipe_->contains("use"))
-		prequisitePaths = Ref<VariantList>(recipe_->value("use"))->toList<String>();
+		prequisitePaths = cast<VariantList>(recipe_->value("use"))->toList<String>();
 	else
 		prequisitePaths = StringList::create();
 
@@ -260,7 +260,7 @@ void BuildPlan::prepare()
 
 	sources_ = StringList::create();
 	if (recipe_->contains("source")) {
-		Ref<VariantList> sourcePatterns = recipe_->value("source");
+		VariantList *sourcePatterns = cast<VariantList>(recipe_->value("source"));
 		for (int i = 0; i < sourcePatterns->length(); ++i) {
 			Ref<Glob, Owner> glob = Glob::open(sourcePath(sourcePatterns->at(i)));
 			for (String path; glob->read(&path);)
@@ -366,7 +366,7 @@ bool BuildPlan::build()
 	Ref<JobScheduler, Owner> linkScheduler;
 
 	for (int i = 0; i < modules_->length(); ++i) {
-		Ref<Module> module = modules_->at(i);
+		Module *module = modules_->at(i);
 		bool dirty = module->dirty();
 		if (options_ & ToolSet)
 			dirty = dirty || !fileStatus(module->toolName())->exists();
@@ -414,7 +414,7 @@ bool BuildPlan::build()
 		Time targetTime = targetStatus->lastModified();
 		bool targetDirty = false;
 		for (int i = 0; i < modules_->length(); ++i) {
-			Ref<Module> module = modules_->at(i);
+			Module *module = modules_->at(i);
 			if (fileStatus(module->modulePath())->lastModified() > targetTime) {
 				targetDirty = true;
 				break;

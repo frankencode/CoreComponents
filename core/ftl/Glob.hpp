@@ -25,7 +25,7 @@ public:
 
 private:
 	Glob(String expression);
-	Glob(String path, Ref<StringList> remainder);
+	Glob(String path, StringList *remainder);
 	void init(String path);
 
 	Ref<Dir, Owner> dir_;

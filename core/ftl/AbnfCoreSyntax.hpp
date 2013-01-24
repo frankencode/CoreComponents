@@ -17,10 +17,10 @@ namespace ftl
 class AbnfCoreSyntax: public SyntaxDefinition
 {
 public:
-	inline static Ref<AbnfCoreSyntax, Owner> create(Ref<SyntaxDebugFactory> debugFactory = 0) { return new AbnfCoreSyntax(debugFactory); }
+	inline static Ref<AbnfCoreSyntax, Owner> create(SyntaxDebugFactory *debugFactory = 0) { return new AbnfCoreSyntax(debugFactory); }
 
 protected:
-	AbnfCoreSyntax(Ref<SyntaxDebugFactory> debugFactory = 0);
+	AbnfCoreSyntax(SyntaxDebugFactory *debugFactory = 0);
 };
 
 } // namespace ftl

@@ -26,7 +26,7 @@ public:
 	inline static Ref<Uri, Owner> create(const char *text) {
 		return new Uri(text);
 	}
-	inline static Ref<Uri, Owner> create(Ref<ByteArray> bytes, Ref<Token> rootToken = 0) {
+	inline static Ref<Uri, Owner> create(ByteArray *bytes, Token *rootToken = 0) {
 		return new Uri(bytes, rootToken);
 	}
 
@@ -56,9 +56,9 @@ public:
 private:
 	Uri();
 	Uri(const char *text);
-	Uri(Ref<ByteArray> bytes, Ref<Token> rootToken = 0);
+	Uri(ByteArray *bytes, Token *rootToken = 0);
 
-	void readUri(Ref<ByteArray> bytes, Ref<Token> rootToken = 0);
+	void readUri(ByteArray *bytes, Token *rootToken = 0);
 	static String encode(String s);
 	static String decode(String s);
 

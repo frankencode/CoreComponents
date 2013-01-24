@@ -151,7 +151,7 @@ void ByteArray::truncate(int newSize)
 	}
 }
 
-Ref<Character> ByteArray::chars() const
+Character *ByteArray::chars() const
 {
 	if (!chars_) chars_ = new Character(data_);
 	return chars_;
@@ -179,7 +179,7 @@ int ByteArray::find(String pattern, int i) const
 	return find(pattern->constData(), i);
 }
 
-int ByteArray::find(Ref<SyntaxDefinition> pattern, int i) const
+int ByteArray::find(SyntaxDefinition *pattern, int i) const
 {
 	Ref<Token, Owner> token = pattern->find(this, i);
 	return (token) ? token->i0(): size_;
@@ -190,7 +190,7 @@ bool ByteArray::contains(String pattern) const
 	return contains(pattern->constData());
 }
 
-Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, const char *sep)
+Ref<ByteArray, Owner> ByteArray::join(const StringList *parts, const char *sep)
 {
 	int sepSize = str::len(sep);
 	if (parts->length() == 0) {
@@ -204,7 +204,7 @@ Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, const char *sep)
 		Ref<ByteArray, Owner> result = ByteArray::create(size);
 		char *p = result->data_;
 		for (int i = 0; i < parts->length(); ++i) {
-			Ref<ByteArray> part = parts->at(i);
+			ByteArray *part = parts->at(i);
 			mem::cpy(p, part->data_, part->size_);
 			p += part->size_;
 			if (i + 1 < parts->length()) {
@@ -217,7 +217,7 @@ Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, const char *sep)
 	}
 }
 
-Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, char sep)
+Ref<ByteArray, Owner> ByteArray::join(const StringList *parts, char sep)
 {
 	char h[2];
 	h[0] = sep;
@@ -225,7 +225,7 @@ Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, char sep)
 	return join(parts, h);
 }
 
-Ref<ByteArray, Owner> ByteArray::join(Ref<StringList> parts, String sep)
+Ref<ByteArray, Owner> ByteArray::join(const StringList *parts, String sep)
 {
 	return join(parts, sep->constData());
 }
@@ -254,7 +254,7 @@ Ref<StringList, Owner> ByteArray::split(const char *sep) const
 	return parts;
 }
 
-Ref<StringList, Owner> ByteArray::split(Ref<SyntaxDefinition> pattern) const
+Ref<StringList, Owner> ByteArray::split(SyntaxDefinition *pattern) const
 {
 	Ref<StringList, Owner> parts = StringList::create();
 	for (int i = 0; i < size_;) {
@@ -357,21 +357,21 @@ float64_t ByteArray::toFloat64(bool *ok) const
 	return value;
 }
 
-Ref<ByteArray> ByteArray::toLowerInsitu()
+ByteArray *ByteArray::toLowerInsitu()
 {
 	for (int i = 0; i < size_; ++i)
 		data_[i] = ftl::toLower(data_[i]);
 	return this;
 }
 
-Ref<ByteArray> ByteArray::toUpperInsitu()
+ByteArray *ByteArray::toUpperInsitu()
 {
 	for (int i = 0; i < size_; ++i)
 		data_[i] = ftl::toUpper(data_[i]);
 	return this;
 }
 
-Ref<ByteArray> ByteArray::expandInsitu()
+ByteArray *ByteArray::expandInsitu()
 {
 	int j = 0;
 	uint32_t hs = 0; // high surrogate, saved

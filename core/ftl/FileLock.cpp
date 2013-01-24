@@ -13,7 +13,7 @@
 namespace ftl
 {
 
-FileLock::FileLock(Ref<File> file, int type, off_t start, off_t length)
+FileLock::FileLock(File *file, int type, off_t start, off_t length)
 	: fd_(file->fd())
 {
 	mem::clr(static_cast<FLockStruct*>(this), sizeof(FLockStruct));

@@ -7,15 +7,18 @@ namespace ftl
 class Shape: public Instance
 {
 public:
+	static Ref<Shape, Owner> create() { return new Shape; }
+
+	Property<String> name;
+	Property<int> x;
+	Property<int> y;
+
+protected:
 	Shape()
 		: x(0), y(0)
 	{
 		name->valueChanged()->connect(this, &Shape::onNameChanged);
 	}
-
-	Property<String> name;
-	Property<int> x;
-	Property<int> y;
 
 private:
 	void onNameChanged(String newName) {
@@ -26,7 +29,7 @@ private:
 class Observer: public Instance
 {
 public:
-	Observer(Ref<Shape> shape)
+	Observer(Shape *shape)
 		: shape_(shape)
 	{
 		shape_->x->valueChanged()->connect(this, &Observer::onXChanged);
@@ -51,7 +54,7 @@ private:
 
 int main()
 {
-	Ref<Shape, Owner> shape = new Shape;
+	auto shape = Shape::create();
 	{
 		Observer observer(shape);
 		shape->name = "circle1";

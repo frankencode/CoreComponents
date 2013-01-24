@@ -36,10 +36,10 @@ public:
 	inline static Ref<ByteArray, Owner> create(int size = 0) { return new ByteArray(size); }
 	inline static Ref<ByteArray, Owner> create(int size, char zero) { return new ByteArray(size, zero); }
 	inline static Ref<ByteArray, Owner> create(const char *data, int size = -1) { return new ByteArray(data, size); }
-	inline static Ref<ByteArray, Owner> create(Ref<ByteArray> parent, int size) { return new ByteArray(parent, size); }
+	inline static Ref<ByteArray, Owner> create(ByteArray *parent, int size) { return new ByteArray(parent, size); }
 	~ByteArray();
 
-	inline static Ref<ByteArray> empty() { return Default<ByteArray>::instance(); }
+	inline static ByteArray *empty() { return Default<ByteArray>::instance(); }
 
 	ByteArray &operator=(const ByteArray &b);
 
@@ -47,7 +47,7 @@ public:
 	void reset(int newSize = 0);
 	void truncate(int newSize);
 
-	Ref<Character> chars() const;
+	Character *chars() const;
 
 	inline int size() const { return size_; }
 	inline int length() const { return size_; }
@@ -117,8 +117,9 @@ public:
 		if (i1 > size_) i1 = size_;
 		return (i0 < i1) ? new ByteArray(data_ + i0, i1 - i0) : new ByteArray();
 	}
+
 	template<class Range>
-	inline Ref<ByteArray, Owner> copy(Ref<Range> range) const {
+	inline Ref<ByteArray, Owner> copy(Range *range) const {
 		return copy(range->i0(), range->i1());
 	}
 
@@ -150,17 +151,17 @@ public:
 
 	int find(const char *pattern, int i = 0) const;
 	int find(String pattern, int i = 0) const;
-	int find(Ref<SyntaxDefinition> pattern, int i = 0) const;
+	int find(SyntaxDefinition *pattern, int i = 0) const;
 
 	inline bool contains(const char *pattern) const { return find(pattern) != size_; }
 	bool contains(String pattern) const;
 
-	static Ref<ByteArray, Owner> join(Ref<StringList> parts, const char *sep = "");
-	static Ref<ByteArray, Owner> join(Ref<StringList> parts, char sep);
-	static Ref<ByteArray, Owner> join(Ref<StringList> parts, String sep);
+	static Ref<ByteArray, Owner> join(const StringList *parts, const char *sep = "");
+	static Ref<ByteArray, Owner> join(const StringList *parts, char sep);
+	static Ref<ByteArray, Owner> join(const StringList *parts, String sep);
 	Ref<StringList, Owner> split(char sep) const;
 	Ref<StringList, Owner> split(const char *sep) const;
-	Ref<StringList, Owner> split(Ref<SyntaxDefinition> pattern) const;
+	Ref<StringList, Owner> split(SyntaxDefinition *pattern) const;
 
 	void replaceInsitu(const char *pattern, const char *replacement);
 	Ref<ByteArray, Owner> replace(const char *pattern, const char *replacement) const;
@@ -172,12 +173,12 @@ public:
 	uint64_t toUInt64(bool *ok = 0) const;
 	float64_t toFloat64(bool *ok = 0) const;
 
-	Ref<ByteArray> toLowerInsitu();
-	Ref<ByteArray> toUpperInsitu();
+	ByteArray *toLowerInsitu();
+	ByteArray *toUpperInsitu();
 	inline Ref<ByteArray, Owner> toLower() const { return copy()->toLowerInsitu(); }
 	inline Ref<ByteArray, Owner> toUpper() const { return copy()->toUpperInsitu(); }
 
-	Ref<ByteArray> expandInsitu();
+	ByteArray *expandInsitu();
 	inline Ref<ByteArray, Owner> expand() const { return copy()->expandInsitu(); }
 
 	Ref<ByteArray, Owner> stripLeadingSpace() const;

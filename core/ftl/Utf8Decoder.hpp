@@ -17,7 +17,7 @@ namespace ftl
 class Utf8Decoder: public Source<uchar_t>
 {
 public:
-	inline static Ref<Utf8Decoder, Owner> create(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA) {
+	inline static Ref<Utf8Decoder, Owner> create(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA) {
 		return new Utf8Decoder(stream, bufCapa);
 	}
 	inline static Ref<Utf8Decoder, Owner> create(const void *buf, int bufCapa = FTL_DEFAULT_BUF_CAPA) {
@@ -35,10 +35,10 @@ public:
 		return more;
 	}
 
-	inline Ref<ByteDecoder> byteDecoder() const { return byteDecoder_; }
+	inline ByteDecoder *byteDecoder() const { return byteDecoder_; }
 
 private:
-	Utf8Decoder(Ref<Stream> stream, int bufCapa)
+	Utf8Decoder(Stream *stream, int bufCapa)
 		: byteDecoder_(ByteDecoder::open(stream, bufCapa))
 	{}
 

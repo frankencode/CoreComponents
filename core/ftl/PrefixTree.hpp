@@ -119,7 +119,7 @@ public:
 		FTL_ASSERT(has(index));
 		int size = 0;
 		{
-			Ref<Node> node = index.node_;
+			Node *node = index.node_;
 			if (node) {
 				while (node != this) {
 					node = node->parent();
@@ -130,7 +130,7 @@ public:
 		Ref<Key, Owner> s = Key::create(size);
 		{
 			int i = size;
-			Ref<Node> node = index.node_;
+			Node *node = index.node_;
 			if (node) {
 				while (node != this) {
 					--i;
@@ -150,7 +150,7 @@ public:
 	template<class Char2>
 	bool predict(const Char2 *key, int keyLen, Index *first, Index *last, Index *common = 0) const
 	{
-		Ref<Node> node = this;
+		Node *node = const_cast<Node *>(this);
 		while ((node) && (keyLen > 0)) {
 			node = node->step<Identity>(*key);
 			++key;
@@ -160,12 +160,12 @@ public:
 		if (found) {
 			*first = Index(node->firstLeaf());
 			{
-				Ref<Node> lastNode = node;
+				Node *lastNode = node;
 				while (!lastNode->defined_) lastNode = lastNode->lastChild();
 				*last = Index(lastNode);
 			}
 			if (common) {
-				Ref<Node> commonNode = node;
+				Node *commonNode = node;
 				while (commonNode->hasSingleChild()) {
 					commonNode = commonNode->firstChild();
 					if (commonNode->defined_) break;
@@ -183,7 +183,7 @@ public:
 
 	Ref<Key, Owner> commonPrefix() const
 	{
-		Ref<Node> node = this;
+		Node *node = const_cast<Node *>(this);
 		int n = 0;
 		while (node->hasSingleChild()) {
 			node = node->firstChild();
@@ -217,9 +217,9 @@ protected:
 	template<class Char2, template<class> class Filter>
 	bool insertFiltered(const Char2 *key, int keyLen, Value value, Value *currentValue = 0)
 	{
-		Ref<Node> node = this;
+		Node *node = this;
 		while (keyLen > 0) {
-			Ref<Node> parent = node;
+			Node *parent = node;
 			node = node->step<Filter>(*key);
 			if (!node) {
 				node = new Node(*key);
@@ -241,7 +241,7 @@ protected:
 	template<class Char2, template<class> class Filter>
 	bool lookupFiltered(const Char2 *key, int keyLen, Value *value = 0) const
 	{
-		Ref<Node> node = this;
+		Node *node = const_cast<Node *>(this);
 		while ((node) && (keyLen > 0)) {
 			node = node->step<Filter>(*key);
 			if (node)
@@ -257,7 +257,7 @@ protected:
 	template<class Char2, template<class> class Filter>
 	bool removeFiltered(const Char *key, int keyLen, Value *value = 0) const
 	{
-		Ref<Node> node = this;
+		Node *node = const_cast<Node *>(this);
 		while ((node) && (keyLen > 0)) {
 			node = node->step<Filter>(*key);
 			++key;
@@ -269,7 +269,7 @@ protected:
 			node->defined_ = false;
 			while (node) {
 				if (node->defined_ || node->hasChildren()) break;
-				Ref<Node> parent = node->parent();
+				Node *parent = node->parent();
 				node->unlink();
 				node = parent;
 			}
@@ -282,27 +282,26 @@ protected:
 	{
 		bool found = false;
 		int i = i0;
-		Ref<Node> node = this;
+		Node *node = const_cast<Node *>(this);
 		while ((node) && media->has(i)) {
-			Ref<Node> parent = node;
 			node = node->step<Filter>(media->get(i++));
-			if (node)
-				if (node->defined_)
-				{
+			if (node) {
+				if (node->defined_) {
 					if (i1) *i1 = i;
 					if (value) *value = node->value_;
 					found = true;
 				}
+			}
 		}
 		return found;
 	}
 
 	template<template<class> class Filter>
-	inline Ref<Node> step(Char ch) const
+	inline Node *step(Char ch) const
 	{
 		ch = Filter<Char>::map(ch);
 		bool found = false;
-		Ref<Node> node = this->firstChild();
+		Node *node = this->firstChild();
 		while (node) {
 			found = (Filter<Char>::map(node->ch_) == ch);
 			if (found) break;

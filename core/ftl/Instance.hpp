@@ -19,7 +19,7 @@ FTL_EXCEPTION(ReferenceException, Exception);
 
 /** \brief reference counting and secure destruction
   *
-  * Base class for all classes T, whose instances can be referred to by Ref<T>.
+  * Base class for all classes T, whose instances can be referred to by Ref<T, Owner>.
   * Enforces a consistent allocation schema by surpressing two things:
   *   - combination of static allocation and dynamic destruction
   *   - manual detruction by delete operator
@@ -55,6 +55,9 @@ private:
 
 	volatile int refCount_;
 };
+
+template<class U, class T>
+inline U *cast(T *p) { return CastHelper<T, U, ConversionFromTo<T*, U*>::Exists>::cast(p); }
 
 } // namespace ftl
 

@@ -24,7 +24,7 @@ template<class SubClass>
 class CoreSingleton
 {
 public:
-	static Ref<SubClass> instance()
+	static SubClass *instance()
 	{
 		SpinLock &mutex = localStatic<SpinLock, SubClass>();
 		Guard<SpinLock> guard(&mutex);
@@ -49,7 +49,7 @@ template<class SubClass>
 class Singleton: public ThreadLocalSingleton< CoreSingletonWrapper<SubClass> >
 {
 public:
-	inline static Ref<SubClass> instance() {
+	inline static SubClass *instance() {
 		return ThreadLocalSingleton< CoreSingletonWrapper<SubClass> >::instance()->instance_;
 	}
 private:

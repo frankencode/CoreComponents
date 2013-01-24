@@ -24,8 +24,8 @@ public:
 	void read(String path);
 	void read(int argc, char **argv);
 
-	Ref<StringList> options() const;
-	Ref<StringList> arguments() const;
+	StringList *options() const;
+	StringList *arguments() const;
 	String path() const;
 
 	inline bool flag(const char *name) {

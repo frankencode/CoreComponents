@@ -13,7 +13,7 @@
 namespace ftl
 {
 
-void XPixmapInfo::read(Ref<ByteDecoder> source)
+void XPixmapInfo::read(ByteDecoder *source)
 {
 	depth = source->readUInt8();
 	bpp = source->readUInt8();
@@ -21,7 +21,7 @@ void XPixmapInfo::read(Ref<ByteDecoder> source)
 	for (int j = 0; j < 5; ++j) source->readUInt8(); // unused
 }
 
-void XVisualInfo::read(Ref<ByteDecoder> source)
+void XVisualInfo::read(ByteDecoder *source)
 {
 	visualId = source->readUInt32();
 	type = source->readUInt8();
@@ -33,7 +33,7 @@ void XVisualInfo::read(Ref<ByteDecoder> source)
 	source->readInt32(); // unused
 }
 
-void XScreenInfo::read(Ref<ByteDecoder> source)
+void XScreenInfo::read(ByteDecoder *source)
 {
 	rootWindowId = source->readUInt32();
 	defaultColormapId = source->readUInt32();
@@ -65,7 +65,7 @@ void XScreenInfo::read(Ref<ByteDecoder> source)
 	}
 }
 
-void XDisplayInfo::read(Ref<ByteDecoder> source)
+void XDisplayInfo::read(ByteDecoder *source)
 {
 	uint8_t response = source->readUInt8();
 	uint8_t reasonLength = source->readUInt8();

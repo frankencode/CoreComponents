@@ -12,7 +12,7 @@
 namespace ftl
 {
 
-AbnfCoreSyntax::AbnfCoreSyntax(Ref<SyntaxDebugFactory> debugFactory)
+AbnfCoreSyntax::AbnfCoreSyntax(SyntaxDebugFactory *debugFactory)
 	: SyntaxDefinition(debugFactory)
 {
 	SYNTAX("abnf-core");

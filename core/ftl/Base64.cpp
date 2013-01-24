@@ -13,7 +13,7 @@
 namespace ftl
 {
 
-Ref<ByteArray, Owner> Base64::encode(Ref<ByteArray> source)
+Ref<ByteArray, Owner> Base64::encode(const ByteArray *source)
 {
 	const char *alphabet =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -51,7 +51,7 @@ Ref<ByteArray, Owner> Base64::encode(Ref<ByteArray> source)
 	return sink;
 }
 
-Ref<ByteArray, Owner> Base64::decode(Ref<ByteArray> source)
+Ref<ByteArray, Owner> Base64::decode(const ByteArray *source)
 {
 	FTL_CHECK(source->size() % 4 == 0, EncodingException, "base64: encoded input needs to be a multiple of 4 bytes");
 

@@ -28,7 +28,7 @@ private:
 	pid_t pid_;
 };
 
-inline Ref<ThreadExitEvent> threadExitEvent() { return ThreadExitEvent::instance(); }
+inline ThreadExitEvent *threadExitEvent() { return ThreadExitEvent::instance(); }
 
 } // namespace ftl
 

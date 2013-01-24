@@ -105,7 +105,7 @@ public:
 
 	static String createUnique(String path, int mode = 0644, char placeHolder = 'X');
 	static bool establish(String path, int fileMode = 0644, int dirMode = 0755);
-	static String lookup(String fileName, Ref<StringList> dirs = 0, int accessFlags = Execute);
+	static String lookup(String fileName, StringList *dirs = 0, int accessFlags = Execute);
 
 	static Ref<FileStatus, Owner> status(String path);
 	static Ref<FileStatus, Owner> unresolvedStatus(String path);

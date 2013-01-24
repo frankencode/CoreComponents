@@ -44,10 +44,10 @@ public:
 
 	static Ref<BuildPlan, Owner> create(int argc, char **argv);
 
-	inline Ref<ToolChain> toolChain() const { return toolChain_; }
+	inline ToolChain *toolChain() const { return toolChain_; }
 	inline String projectPath() const { return projectPath_; }
 	inline String modulePath() const { return modulePath_; }
-	inline Ref<Config> recipe() const { return recipe_; }
+	inline Config *recipe() const { return recipe_; }
 
 	inline String name() const { return name_; }
 	inline String version() const { return version_; }
@@ -55,13 +55,13 @@ public:
 	inline int speedOptimizationLevel() const { return speedOptimizationLevel_; }
 	inline int sizeOptimizationLevel() const { return sizeOptimizationLevel_; }
 
-	inline Ref<StringList> includePaths() const { return includePaths_; }
-	inline Ref<StringList> libraryPaths() const { return libraryPaths_; }
-	inline Ref<StringList> libraries() const { return libraries_; }
-	inline Ref<StringList> sources() const { return sources_; }
-	inline Ref<ModuleList> modules() const { return modules_; }
+	inline StringList *includePaths() const { return includePaths_; }
+	inline StringList *libraryPaths() const { return libraryPaths_; }
+	inline StringList *libraries() const { return libraries_; }
+	inline StringList *sources() const { return sources_; }
+	inline ModuleList *modules() const { return modules_; }
 
-	inline Ref<BuildPlanList> prequisites() const { return prequisites_; }
+	inline BuildPlanList *prequisites() const { return prequisites_; }
 
 	int run();
 
@@ -78,14 +78,14 @@ public:
 	Ref<FileStatus, Owner> fileStatus(String path);
 
 private:
-	Ref<BuildPlan, Owner> create(Ref<ToolChain> toolChain, String projectPath, int globalOptions);
+	Ref<BuildPlan, Owner> create(ToolChain *toolChain, String projectPath, int globalOptions);
 
-	typedef PrefixTree< char, Ref<BuildPlan> > BuildMap;
+	typedef PrefixTree<char, BuildPlan *> BuildMap;
 
 	BuildPlan(int argc, char **argv);
-	BuildPlan(Ref<ToolChain> toolChain, String projectPath, Ref<BuildPlan> parentPlan);
+	BuildPlan(ToolChain *toolChain, String projectPath, BuildPlan *parentPlan);
 
-	void readRecipe(Ref<BuildPlan> parentPlan = 0);
+	void readRecipe(BuildPlan *parentPlan = 0);
 
 	void prepare();
 	bool analyse();

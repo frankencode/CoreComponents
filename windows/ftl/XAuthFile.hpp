@@ -33,8 +33,8 @@ class XAuthFile: public Instance
 public:
 	XAuthFile(String path = "");
 	inline String path() const { return path_; }
-	inline Ref<XAuthRecords> records() const { return records_; }
-	
+	inline XAuthRecords *records() const { return records_; }
+
 private:
 	String path_;
 	Ref<XAuthRecords, Owner> records_;

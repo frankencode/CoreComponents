@@ -48,14 +48,14 @@ void ProcessFactory::setWorkingDirectory(String path) { workingDirectory_ = path
 String ProcessFactory::execPath() const { return execPath_; }
 void ProcessFactory::setExecPath(String path) { execPath_ = path; }
 
-Ref<StringList> ProcessFactory::arguments() { return (arguments_) ? arguments_ : arguments_ = StringList::create(); }
-void ProcessFactory::setArguments(Ref<StringList> list) { arguments_ = list; }
+StringList *ProcessFactory::arguments() { return (arguments_) ? arguments_ : arguments_ = StringList::create(); }
+void ProcessFactory::setArguments(StringList *list) { arguments_ = list; }
 
-Ref<EnvMap> ProcessFactory::envMap() { return (envMap_) ? envMap_ : envMap_ = Process::envMap(); }
-void ProcessFactory::setEnvMap(Ref<EnvMap> map) { envMap_ = map; }
+EnvMap *ProcessFactory::envMap() { return (envMap_) ? envMap_ : envMap_ = Process::envMap(); }
+void ProcessFactory::setEnvMap(EnvMap *map) { envMap_ = map; }
 
-Ref<SignalSet> ProcessFactory::signalMask() { return (signalMask_) ? signalMask_ : signalMask_ = SignalSet::createEmpty(); }
-void ProcessFactory::setSignalMask(Ref<SignalSet> mask) { signalMask_ = mask; }
+SignalSet *ProcessFactory::signalMask() { return (signalMask_) ? signalMask_ : signalMask_ = SignalSet::createEmpty(); }
+void ProcessFactory::setSignalMask(SignalSet *mask) { signalMask_ = mask; }
 
 bool ProcessFactory::hasFileCreationMask() const { return hasFileCreationMask_; }
 void ProcessFactory::setFileCreationMask(int mask) {
@@ -79,13 +79,13 @@ void ProcessFactory::setCommand(String command)
 	setExecPath(path);
 }
 
-Ref<SystemStream> ProcessFactory::rawInput() const { return rawInput_; }
-Ref<SystemStream> ProcessFactory::rawOutput() const { return rawOutput_; }
-Ref<SystemStream> ProcessFactory::rawError() const { return rawError_; }
+SystemStream *ProcessFactory::rawInput() const { return rawInput_; }
+SystemStream *ProcessFactory::rawOutput() const { return rawOutput_; }
+SystemStream *ProcessFactory::rawError() const { return rawError_; }
 
-void ProcessFactory::setRawInput(Ref<SystemStream> stream) { rawInput_ = stream; }
-void ProcessFactory::setRawOutput(Ref<SystemStream> stream) { rawOutput_ = stream; }
-void ProcessFactory::setRawError(Ref<SystemStream> stream) { rawError_ = stream; }
+void ProcessFactory::setRawInput(SystemStream *stream) { rawInput_ = stream; }
+void ProcessFactory::setRawOutput(SystemStream *stream) { rawOutput_ = stream; }
+void ProcessFactory::setRawError(SystemStream *stream) { rawError_ = stream; }
 
 void ProcessFactory::daemonize()
 {
@@ -129,7 +129,7 @@ Ref<Process, Owner> ProcessFactory::produce()
 	{
 		// prepare the argument list
 
-		Ref<StringList> arguments = arguments_;
+		StringList *arguments = arguments_;
 		if (arguments) if (arguments->length() == 0) arguments = 0;
 
 		int argc = arguments ? arguments->length() : 1;

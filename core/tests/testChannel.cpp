@@ -12,10 +12,10 @@ typedef Channel<int> MyChannel;
 class Consumer: public Thread
 {
 public:
-	static Ref<Consumer, Owner> create(int id, Ref<MyChannel> channel, int amount) { return new Consumer(id, channel, amount); }
+	static Ref<Consumer, Owner> create(int id, MyChannel *channel, int amount) { return new Consumer(id, channel, amount); }
 
 private:
-	Consumer(int id, Ref<MyChannel> channel, int amount)
+	Consumer(int id, MyChannel *channel, int amount)
 		: id_(id),
 		  channel_(channel),
 		  amount_(amount)
@@ -38,7 +38,7 @@ private:
 class Producer: public Thread
 {
 public:
-	static Ref<Producer, Owner> create(int id, Ref<MyChannel> channel, int amount) { return new Producer(id, channel, amount); }
+	static Ref<Producer, Owner> create(int id, MyChannel *channel, int amount) { return new Producer(id, channel, amount); }
 
 	void run()
 	{
@@ -51,7 +51,7 @@ public:
 	}
 
 private:
-	Producer(int id, Ref<MyChannel> channel, int amount)
+	Producer(int id, MyChannel *channel, int amount)
 		: id_(id),
 		  channel_(channel),
 		  amount_(amount),

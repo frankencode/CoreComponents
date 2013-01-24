@@ -114,7 +114,7 @@ void SystemStream::write(const void *buf, int bufFill)
 	}
 }
 
-void SystemStream::write(Ref<StringList> parts, const char *sep)
+void SystemStream::write(StringList *parts, const char *sep)
 {
 	int n = parts->length();
 	int sepLen = str::len(sep);
@@ -127,7 +127,7 @@ void SystemStream::write(Ref<StringList> parts, const char *sep)
 			iov[i].iov_len = sepLen;
 		}
 		else {
-			Ref<ByteArray> part = parts->at(j++);
+			ByteArray *part = parts->at(j++);
 			iov[i].iov_base = part->data();
 			iov[i].iov_len = part->size();
 		}

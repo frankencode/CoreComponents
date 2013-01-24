@@ -36,12 +36,6 @@ public:
 		return a_;
 	}
 
-	template<class I>
-	inline T &operator<<(const I &item) {
-		FTL_ASSERT2(a_, "Null reference");
-		return *a_ << item;
-	}
-
 private:
 	inline void set(T *b) {
 		if (a_ != b) {

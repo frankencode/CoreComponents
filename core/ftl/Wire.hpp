@@ -59,17 +59,17 @@ private:
 class Wire: public SyntaxDefinition, public Singleton<Wire>
 {
 public:
-	Variant parse(Ref<ByteArray> text, Ref<WireObject> virgin = 0);
+	Variant parse(ByteArray *text, WireObject *virgin = 0);
 
 protected:
 	friend class Singleton<Wire>;
 
 	Wire();
 
-	String parseConcatenation(Ref<ByteArray> text, Ref<Token> token);
-	Ref<WireObject, Owner> parseObject(Ref<ByteArray> text, Ref<Token> token, Ref<WireObject> virgin = 0);
-	Ref<VariantList, Owner> parseList(Ref<ByteArray> text, Ref<Token> token);
-	Variant parseValue(Ref<ByteArray> text, Ref<Token> token);
+	String parseConcatenation(ByteArray *text, Token *token);
+	Ref<WireObject, Owner> parseObject(ByteArray *text, Token *token, WireObject *virgin = 0);
+	Ref<VariantList, Owner> parseList(ByteArray *text, Token *token);
+	Variant parseValue(ByteArray *text, Token *token);
 
 	int string_;
 	int concatenation_;
@@ -84,7 +84,7 @@ protected:
 	int null_;
 };
 
-inline Ref<Wire> wire() { return Wire::instance(); }
+inline Wire *wire() { return Wire::instance(); }
 
 } // namespace ftl
 
