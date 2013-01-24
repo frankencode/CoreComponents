@@ -18,7 +18,7 @@ namespace ftl
   *
   * A Byte-Order-Mark (BOM) at the start of the stream automatically sets
   * endianess. The decoder is designed to be as strict as possible. It checks
-  * that the input streams delivers full 16-bit words and it requires high
+  * if the input streams delivers full 16-bit words and it requires high
   * surrogates to be followed by low surrogates.
   *
   * A 7-bit ASCII text is be decoded as UTF-16 without error if stream length is
@@ -28,7 +28,7 @@ namespace ftl
 class Utf16Decoder: public Source<uchar_t>
 {
 public:
-	inline static Ref<Utf16Decoder, Owner> open(Ref<Stream> stream, int bufCapa, int endian = BigEndian) {
+	inline static Ref<Utf16Decoder, Owner> open(Stream *stream, int bufCapa, int endian = BigEndian) {
 		return new Utf16Decoder(stream, bufCapa, endian);
 	}
 	inline static Ref<Utf16Decoder, Owner> open(const void *buf, int bufCapa, int endian = BigEndian) {
@@ -58,10 +58,10 @@ public:
 		return more;
 	}
 
-	inline Ref<ByteDecoder> byteDecoder() const { return byteDecoder_; }
+	inline ByteDecoder *byteDecoder() const { return byteDecoder_; }
 
 private:
-	Utf16Decoder(Ref<Stream> stream, int bufCapa, int endian)
+	Utf16Decoder(Stream *stream, int bufCapa, int endian)
 		: byteDecoder_(ByteDecoder::open(stream, bufCapa, endian))
 	{}
 

@@ -4,7 +4,7 @@
 namespace mach
 {
 
-JobServer::JobServer(Ref<JobChannel> requestChannel, Ref<JobChannel> replyChannel)
+JobServer::JobServer(JobChannel *requestChannel, JobChannel *replyChannel)
 	: requestChannel_(requestChannel),
 	  replyChannel_(replyChannel)
 {

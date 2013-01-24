@@ -7,7 +7,7 @@ int main() {
 	Pattern p = "^#{}.(?<=.)(?<!hello)(t[..]{?}|(?a:#)[^abc](?&a))$";
 	#ifndef NDEBUG
 	if (p->debugFactory())
-		Ref<SyntaxDebugger>(p->debugFactory())->printDefinition();
+		cast<SyntaxDebugger>(p->debugFactory())->printDefinition();
 	#endif
 	String s = "abc.txt";
 	Ref<Token, Owner> token = p->match(s);

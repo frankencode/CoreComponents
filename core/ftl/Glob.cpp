@@ -26,7 +26,7 @@ Glob::Glob(String expression)
 	}
 }
 
-Glob::Glob(String path, Ref<StringList> remainder)
+Glob::Glob(String path, StringList *remainder)
 	: remainder_(remainder->clone())
 {
 	init(path);

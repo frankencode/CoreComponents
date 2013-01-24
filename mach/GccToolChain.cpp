@@ -34,7 +34,7 @@ int GccToolChain::defaultSizeOptimizationLevel() const
 	return 1;
 }
 
-String GccToolChain::analyseCommand(Ref<BuildPlan> buildPlan, String source) const
+String GccToolChain::analyseCommand(BuildPlan *buildPlan, String source) const
 {
 	Format args;
 	args << execPath();
@@ -43,18 +43,18 @@ String GccToolChain::analyseCommand(Ref<BuildPlan> buildPlan, String source) con
 	return args->join(" ");
 }
 
-Ref<Job, Owner> GccToolChain::createAnalyseJob(Ref<BuildPlan> buildPlan, String source)
+Ref<Job, Owner> GccToolChain::createAnalyseJob(BuildPlan *buildPlan, String source)
 {
 	return Job::create(analyseCommand(buildPlan, source));
 }
 
-Ref<Module, Owner> GccToolChain::finishAnalyseJob(Ref<BuildPlan> buildPlan, Ref<Job> job)
+Ref<Module, Owner> GccToolChain::finishAnalyseJob(BuildPlan *buildPlan, Job *job)
 {
 	Ref<StringList, Owner> parts = job->outputText()->split(Pattern("[:\\\\\n\r ]{1,}"));
 	return Module::create(job->command(), buildPlan->modulePath(parts->pop(0)), parts, true);
 }
 
-Ref<Job, Owner> GccToolChain::createCompileJob(Ref<BuildPlan> buildPlan, Ref<Module> module)
+Ref<Job, Owner> GccToolChain::createCompileJob(BuildPlan *buildPlan, Module *module)
 {
 	Format args;
 	args << execPath();
@@ -65,7 +65,7 @@ Ref<Job, Owner> GccToolChain::createCompileJob(Ref<BuildPlan> buildPlan, Ref<Mod
 	return Job::create(command);
 }
 
-Ref<Job, Owner> GccToolChain::createLinkJob(Ref<BuildPlan> buildPlan, Ref<Module> module)
+Ref<Job, Owner> GccToolChain::createLinkJob(BuildPlan *buildPlan, Module *module)
 {
 	Format args;
 	args << execPath();
@@ -78,7 +78,7 @@ Ref<Job, Owner> GccToolChain::createLinkJob(Ref<BuildPlan> buildPlan, Ref<Module
 	return Job::create(command);
 }
 
-String GccToolChain::linkPath(Ref<BuildPlan> buildPlan) const
+String GccToolChain::linkPath(BuildPlan *buildPlan) const
 {
 	String path;
 	if (buildPlan->options() & BuildPlan::Library)
@@ -88,12 +88,12 @@ String GccToolChain::linkPath(Ref<BuildPlan> buildPlan) const
 	return path;
 }
 
-bool GccToolChain::link(Ref<BuildPlan> buildPlan)
+bool GccToolChain::link(BuildPlan *buildPlan)
 {
 	String name = buildPlan->name();
 	String version = buildPlan->version();
 	int options = buildPlan->options();
-	Ref<ModuleList> modules = buildPlan->modules();
+	ModuleList *modules = buildPlan->modules();
 
 	Format args;
 
@@ -129,7 +129,7 @@ bool GccToolChain::link(Ref<BuildPlan> buildPlan)
 	return true;
 }
 
-void GccToolChain::clean(Ref<BuildPlan> buildPlan)
+void GccToolChain::clean(BuildPlan *buildPlan)
 {
 	for (int i = 0; i < buildPlan->modules()->length(); ++i) {
 		buildPlan->unlink(buildPlan->modules()->at(i)->modulePath());
@@ -147,7 +147,7 @@ void GccToolChain::clean(Ref<BuildPlan> buildPlan)
 	}
 }
 
-void GccToolChain::appendCompileOptions(Format args, Ref<BuildPlan> buildPlan)
+void GccToolChain::appendCompileOptions(Format args, BuildPlan *buildPlan)
 {
 	args << "-std=c++0x";
 	if (buildPlan->options() & BuildPlan::Debug) args << "-g";
@@ -161,10 +161,10 @@ void GccToolChain::appendCompileOptions(Format args, Ref<BuildPlan> buildPlan)
 		args << "-I" + buildPlan->includePaths()->at(i);
 }
 
-void GccToolChain::appendLinkOptions(Format args, Ref<BuildPlan> buildPlan)
+void GccToolChain::appendLinkOptions(Format args, BuildPlan *buildPlan)
 {
-	Ref<StringList> libraryPaths = buildPlan->libraryPaths();
-	Ref<StringList> libraries = buildPlan->libraries();
+	StringList *libraryPaths = buildPlan->libraryPaths();
+	StringList *libraries = buildPlan->libraries();
 
 	for (int i = 0; i < libraryPaths->length(); ++i)
 		args << "-L" + libraryPaths->at(i);

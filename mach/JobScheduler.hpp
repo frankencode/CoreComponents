@@ -17,7 +17,7 @@ public:
 	inline int concurrency() const { return concurrency_; }
 
 	void start();
-	void schedule(Ref<Job> job);
+	void schedule(Job *job);
 	bool collect(Ref<Job, Owner> *completedJob);
 
 	inline int status() const { return status_; }

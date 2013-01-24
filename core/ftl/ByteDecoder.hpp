@@ -19,7 +19,7 @@ namespace ftl
 class ByteDecoder: public Source<uint8_t>, Source<char>
 {
 public:
-	inline static Ref<ByteDecoder, Owner> open(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static Ref<ByteDecoder, Owner> open(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteDecoder(stream, bufCapa, endian);
 	}
 	inline static Ref<ByteDecoder, Owner> open(const void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
@@ -30,7 +30,7 @@ public:
 	bool read(uint8_t *x);
 	bool read(char *ch);
 
-	void read(Ref<ByteArray> bytes);
+	void read(ByteArray *bytes);
 	Ref<ByteArray, Owner> read(int n);
 
 	bool hasMore();
@@ -51,13 +51,13 @@ public:
 
 	off_t numBytesRead() const;
 
-	Ref<Stream> stream() const;
+	Stream *stream() const;
 
 	bool endian() const;
 	void setEndian(int endian);
 
 private:
-	ByteDecoder(Ref<Stream> stream, int bufCapa, int endian);
+	ByteDecoder(Stream *stream, int bufCapa, int endian);
 	ByteDecoder(const void *buf, int bufCapa, int endian);
 
 	Ref<Stream, Owner> stream_;
@@ -85,7 +85,7 @@ inline bool ByteDecoder::read(char *ch)
 	return read(reinterpret_cast<uint8_t*>(ch));
 }
 
-inline void ByteDecoder::read(Ref<ByteArray> bytes)
+inline void ByteDecoder::read(ByteArray *bytes)
 {
 	for (int i = 0, n = bytes->length(); i < n; ++i)
 		bytes->set(i, readUInt8());
@@ -184,7 +184,7 @@ inline void ByteDecoder::skipPad(int padSize) {
 
 inline off_t ByteDecoder::numBytesRead() const { return nr_; }
 
-inline Ref<Stream> ByteDecoder::stream() const { return stream_; }
+inline Stream *ByteDecoder::stream() const { return stream_; }
 
 inline bool ByteDecoder::endian() const { return endian_; }
 inline void ByteDecoder::setEndian(int endian) { endian_ = endian; }

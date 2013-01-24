@@ -23,17 +23,17 @@ class CircularBuffer;
 class LineSource: public Source<String>
 {
 public:
-	inline static Ref<LineSource, Owner> open(Ref<Stream> stream, const char *eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
+	inline static Ref<LineSource, Owner> open(Stream *stream, const char *eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
 		return new LineSource(stream, eol, maxLineLength);
 	}
 
-	Ref<Stream> stream() const;
+	Stream *stream() const;
 
 	bool read(String *line);
 	String readLine();
 
 protected:
-	LineSource(Ref<Stream> stream, const char *eol, int maxLineLength);
+	LineSource(Stream *stream, const char *eol, int maxLineLength);
 
 	bool readAvail();
 	bool hasMore();

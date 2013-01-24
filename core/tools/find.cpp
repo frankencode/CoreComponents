@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 	if (config->lookup("type", &h)) typePattern = h;
 	if (config->lookup("text", &h)) textPattern = h;
 
-	Ref<StringList> dirPaths = config->arguments();
+	StringList *dirPaths = config->arguments();
 	if (dirPaths->length() == 0) dirPaths->append(".");
 
 	for (int i = 0; i < dirPaths->length(); ++i) {

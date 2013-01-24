@@ -19,7 +19,7 @@ namespace ftl
 class FormatSpecifier: public SyntaxDefinition, public Singleton<FormatSpecifier>
 {
 public:
-	bool find(Ref<ByteArray> text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank);
+	bool find(ByteArray *text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank);
 
 protected:
 	friend class Singleton<FormatSpecifier>;
@@ -35,7 +35,7 @@ protected:
 	int format_;
 };
 
-inline Ref<FormatSpecifier> formatSpecifier() { return FormatSpecifier::instance(); }
+inline FormatSpecifier *formatSpecifier() { return FormatSpecifier::instance(); }
 
 } // namespace ftl
 

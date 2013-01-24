@@ -21,11 +21,11 @@ public:
 		return new StringTrap;
 	}
 
-	inline const char *capture(Ref<ByteArray> s) const {
+	inline const char *capture(ByteArray *s) const {
 		return capture(s->constData(), s->size());
 	}
 
-	inline const char *capture(Ref<ByteArray> s, int i0, int i1) const {
+	inline const char *capture(ByteArray *s, int i0, int i1) const {
 		FTL_ASSERT((0 <= i0) && (i0 < s->size()));
 		FTL_ASSERT((0 <= i1) && (i1 <= s->size()));
 		FTL_ASSERT(i0 <= i1);
@@ -40,7 +40,7 @@ public:
 	}
 
 private:
-	StringTrap() {}
+	StringTrap(): head_(0), tail_(0) {}
 
 	class Node: public Instance {
 	public:
@@ -49,7 +49,7 @@ private:
 		Ref<Node, Owner> next_;
 	};
 	mutable Ref<Node, Owner> head_;
-	mutable Ref<Node> tail_;
+	mutable Node *tail_;
 };
 
 } // namespace ftl

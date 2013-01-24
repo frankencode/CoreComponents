@@ -23,8 +23,8 @@ public:
 	uint8_t depth;
 	uint8_t bpp;
 	uint8_t pad;
-	
-	void read(Ref<ByteDecoder> source);
+
+	void read(ByteDecoder *source);
 };
 
 class XVisualInfo: public Instance {
@@ -36,8 +36,8 @@ public:
 	uint32_t redMask;
 	uint32_t greenMask;
 	uint32_t blueMask;
-	
-	void read(Ref<ByteDecoder> source);
+
+	void read(ByteDecoder *source);
 };
 
 typedef Array< Ref< XVisualInfo, Owner > > XVisualInfoArray;
@@ -60,10 +60,10 @@ public:
 	uint8_t backingStores;
 	uint8_t saveUnders;
 	uint8_t rootDepth;
-	
+
 	Ref<XVisualInfoByDepth, Owner> visualInfoByDepth;
-	
-	void read(Ref<ByteDecoder> source);
+
+	void read(ByteDecoder *source);
 };
 
 typedef Array< Ref<XPixmapInfo, Owner> > XPixmapInfoArray;
@@ -72,7 +72,7 @@ typedef Array< Ref<XScreenInfo, Owner> > XScreenInfoArray;
 class XDisplayInfo: public Instance {
 public:
 	enum Endianess { LittleEndian = 0, BigEndian = 1 };
-	
+
 	uint16_t majorVersion;
 	uint16_t minorVersion;
 	uint32_t releaseNumber;
@@ -87,11 +87,11 @@ public:
 	uint8_t minKeyCode;
 	uint8_t maxKeyCode;
 	String vendor;
-	
+
 	Ref<XPixmapInfoArray, Owner> pixmapInfo;
 	Ref<XScreenInfoArray, Owner> screenInfo;
-	
-	void read(Ref<ByteDecoder> source);
+
+	void read(ByteDecoder *source);
 };
 
 } // namespace ftl

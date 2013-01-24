@@ -59,7 +59,7 @@ Memory::Memory()
 
 void *Memory::allocate(size_t size)
 {
-	Ref<Memory> allocator = instance();
+	Memory *allocator = instance();
 	BucketHeader *bucket = allocator->bucket_;
 	size_t pageSize = allocator->pageSize_;
 
@@ -112,7 +112,7 @@ void *Memory::allocate(size_t size)
 
 void Memory::free(void *data)
 {
-	Ref<Memory> allocator = instance();
+	Memory *allocator = instance();
 	size_t pageSize = allocator ? allocator->pageSize_ : size_t(::sysconf(_SC_PAGE_SIZE));
 
 	uint32_t offset = ((char *)data - (char *)0) % pageSize;

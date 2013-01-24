@@ -38,15 +38,15 @@ public:
 	String execPath() const;
 	void setExecPath(String path);
 
-	Ref<StringList> arguments();
-	void setArguments(Ref<StringList> list);
+	StringList *arguments();
+	void setArguments(StringList *list);
 
 	typedef Map<String, String> EnvMap;
-	Ref<EnvMap> envMap();
-	void setEnvMap(Ref<EnvMap> map);
+	EnvMap *envMap();
+	void setEnvMap(EnvMap *map);
 
-	Ref<SignalSet> signalMask();
-	void setSignalMask(Ref<SignalSet> mask);
+	SignalSet *signalMask();
+	void setSignalMask(SignalSet *mask);
 
 	bool hasFileCreationMask() const;
 	void setFileCreationMask(int mask);
@@ -55,13 +55,13 @@ public:
 	String command() const;
 	void setCommand(String command);
 
-	Ref<SystemStream> rawInput() const;
-	Ref<SystemStream> rawOutput() const;
-	Ref<SystemStream> rawError() const;
+	SystemStream *rawInput() const;
+	SystemStream *rawOutput() const;
+	SystemStream *rawError() const;
 
-	void setRawInput(Ref<SystemStream> stream);
-	void setRawOutput(Ref<SystemStream> stream);
-	void setRawError(Ref<SystemStream> stream);
+	void setRawInput(SystemStream *stream);
+	void setRawOutput(SystemStream *stream);
+	void setRawError(SystemStream *stream);
 
 	void daemonize();
 

@@ -23,7 +23,7 @@ public:
 
 private:
 	void run();
-	Ref<XMessageFilter> messageFilter_;
+	XMessageFilter *messageFilter_;
 };
 
 } // namespace ftl

@@ -25,7 +25,7 @@ Ref<DirWalker, Owner> DirWalker::open(String path, int option)
 	return new DirWalker(path, option);
 }
 
-DirWalker::DirWalker(String path, int option, Ref<Dir> dir)
+DirWalker::DirWalker(String path, int option, Dir *dir)
 	: option_(option),
 	  maxDepth_(-1),
 	  depth_(0),

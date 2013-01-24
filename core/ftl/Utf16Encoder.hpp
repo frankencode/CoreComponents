@@ -17,7 +17,7 @@ namespace ftl
 class Utf16Encoder: public Sink<uchar_t>
 {
 public:
-	inline static Ref<Utf16Encoder, Owner> create(Ref<Stream> stream, int bufCapa, int endian = BigEndian) {
+	inline static Ref<Utf16Encoder, Owner> create(Stream *stream, int bufCapa, int endian = BigEndian) {
 		return new Utf16Encoder(stream, bufCapa, endian);
 	}
 	inline static Ref<Utf16Encoder, Owner> create(void *buf, int bufCapa, int endian = BigEndian) {
@@ -50,10 +50,10 @@ public:
 		return 2 * (1 + (0xFFFF < ch));
 	}
 
-	inline Ref<ByteEncoder> byteEncoder() const { return byteEncoder_; }
+	inline ByteEncoder *byteEncoder() const { return byteEncoder_; }
 
 private:
-	Utf16Encoder(Ref<Stream> stream, int bufCapa, int endian)
+	Utf16Encoder(Stream *stream, int bufCapa, int endian)
 		: byteEncoder_(ByteEncoder::open(stream, bufCapa, endian))
 	{}
 

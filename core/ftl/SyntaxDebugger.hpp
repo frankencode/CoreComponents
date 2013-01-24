@@ -26,8 +26,8 @@ public:
 		return entry()->matchNext(media, i, tokenFactory, parentToken, state);
 	}
 
-	virtual Ref<Node> succ(Ref<Node> node) const {
-		return Node::parent() ? Node::parent()->succ(this) : Ref<Node>();
+	virtual Node *succ(Node *node) const {
+		return Node::parent() ? Node::parent()->succ(Node::self()) : null<Node>();
 	}
 
 	virtual int matchLength() const {
@@ -39,28 +39,27 @@ public:
 
 	virtual void printNext(String indent = "");
 
-	inline Ref<Node> entry() const { return Node::firstChild(); }
+	inline Node *entry() const { return Node::firstChild(); }
 
 protected:
-	DebugNode(Ref<Debugger> debugger, Ref<Node> newNode)
+	DebugNode(Debugger *debugger, Node *newNode)
 		: debugger_(debugger)
 	{
 		appendChild(newNode);
 	}
 
-	void printBranch(Ref<Node> node, String indent);
+	void printBranch(Node *node, String indent);
 
 	String superIndent(String indent) const;
 	String subIndent(String indent) const;
 
-	Ref<Debugger> debugger_;
+	Debugger *debugger_;
 };
 
 class Debugger: public SyntaxDebugFactory
 {
 public:
 	typedef SyntaxDebugFactory DebugFactory;
-	typedef SyntaxDefinitionNode DefinitionNode;
 	typedef SyntaxNode Node;
 
 	inline static Ref<Debugger, Owner> create(String indent = "\t") {
@@ -70,20 +69,20 @@ public:
 	virtual Node *produce(Node *newNode, const char *nodeType);
 	void printDefinition(bool omitUnusedRules = false);
 
-	typedef syntax::DefinitionNode::StateIdByName StateIdByName;
+	typedef DefinitionNode::StateIdByName StateIdByName;
 	typedef Map<int, String> StateNameById;
 
-	Ref<StateNameById, Owner> newReverseMap(Ref<StateIdByName> stateIdByName);
-	Ref<StateNameById> flagNameById();
-	Ref<StateNameById> captureNameById();
+	Ref<StateNameById, Owner> newReverseMap(StateIdByName *stateIdByName);
+	StateNameById *flagNameById();
+	StateNameById *captureNameById();
 
 private:
-	friend class syntax::DefinitionNode;
+	friend class DefinitionNode;
 	friend class DebugNode;
 
 	Debugger(String indent);
 
-	static void determineRulesInUse(Ref<syntax::RuleNode> rule);
+	static void determineRulesInUse(RuleNode *rule);
 
 	class NodeFactory: public Instance {
 	public:
@@ -93,14 +92,14 @@ private:
 	template<class DebugNodeType>
 	class DebugNodeFactory: public NodeFactory {
 	public:
-		DebugNodeFactory(Ref<Debugger> debugger)
+		DebugNodeFactory(Debugger *debugger)
 			: debugger_(debugger)
 		{}
 		virtual Node *produce(Node *newNode) {
 			return new DebugNodeType(debugger_, newNode);
 		}
 	private:
-		Ref<Debugger> debugger_;
+		Debugger *debugger_;
 	};
 
 	typedef PrefixTree< char, Ref<NodeFactory, Owner> > FactoryByNodeType;

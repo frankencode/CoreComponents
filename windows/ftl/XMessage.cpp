@@ -57,12 +57,12 @@ const char *XMessage::messageName() const
 	return ((0 <= messageCode) && (messageCode <= 34)) ? names[messageCode] : "unknown";
 }
 
-void XMessage::printTo(Ref<LineSink> sink) const
+void XMessage::printTo(LineSink *sink) const
 {
 	ftl::printTo(sink, "X11 %% (%%)\n", messageName(), messageCode);
 }
 
-XError::XError(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source)
+XError::XError(uint8_t messageCode, bool synthetic, ByteDecoder *source)
 	: XMessage(messageCode, synthetic),
 	  errorCode(source->readUInt8()),
 	  sequenceNumber(source->readUInt16()),
@@ -71,7 +71,7 @@ XError::XError(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source)
 	  majorOpcode(source->readUInt8())
 {}
 
-void XError::printTo(Ref<LineSink> sink) const
+void XError::printTo(LineSink *sink) const
 {
 	const char* errorNames[] = {
 		"unknown", "request", "value", "window", "pixmap", "atom", "cursor", "font",
@@ -99,7 +99,7 @@ void XError::printTo(Ref<LineSink> sink) const
 }
 
 
-XInputEvent::XInputEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source)
+XInputEvent::XInputEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source)
 	: XMessage(messageCode, synthetic),
 	  detail(source->readUInt8()),
 	  sequenceNumber(source->readUInt16()),
@@ -126,7 +126,7 @@ XInputEvent::XInputEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> s
 	}
 }
 
-void XInputEvent::printTo(Ref<LineSink> sink) const
+void XInputEvent::printTo(LineSink *sink) const
 {
 	String detailString;
 	if ((messageCode == XMessage::KeyPress) || (messageCode == XMessage::KeyRelease)) {
@@ -186,7 +186,7 @@ void XInputEvent::printTo(Ref<LineSink> sink) const
 	);
 }
 
-XFocusEvent::XFocusEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source)
+XFocusEvent::XFocusEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source)
 	: XMessage(messageCode, synthetic),
 	  detail(source->readUInt8()),
 	  sequenceNumber(source->readUInt16()),
@@ -194,7 +194,7 @@ XFocusEvent::XFocusEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> s
 	  mode(source->readUInt8())
 {}
 
-void XFocusEvent::printTo(Ref<LineSink> sink) const
+void XFocusEvent::printTo(LineSink *sink) const
 {
 	String detailString = "none";
 	if      (detail == XFocusEvent::Ancestor)         detailString = "ancestor";
@@ -220,7 +220,7 @@ void XFocusEvent::printTo(Ref<LineSink> sink) const
 	);
 }
 
-XExposeEvent::XExposeEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source)
+XExposeEvent::XExposeEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source)
 	: XMessage(messageCode, synthetic),
 	  sequenceNumber(source->readUInt16()),
 	  windowId(source->readUInt32()),
@@ -231,7 +231,7 @@ XExposeEvent::XExposeEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder>
 	  count(source->readUInt16())
 {}
 
-void XExposeEvent::printTo(Ref<LineSink> sink) const
+void XExposeEvent::printTo(LineSink *sink) const
 {
 	ftl::printTo(sink, "X11 expose event (\n"
 		"  window id: %%\n"
@@ -247,7 +247,7 @@ void XExposeEvent::printTo(Ref<LineSink> sink) const
 	);
 }
 
-XGraphicsExposureEvent::XGraphicsExposureEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source)
+XGraphicsExposureEvent::XGraphicsExposureEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source)
 	: XMessage(messageCode, synthetic),
 	  sequenceNumber(source->readUInt16()),
 	  drawableId(source->readUInt32()),
@@ -260,7 +260,7 @@ XGraphicsExposureEvent::XGraphicsExposureEvent(uint8_t messageCode, bool synthet
 	  majorOpcode(source->readUInt8())
 {}
 
-void XGraphicsExposureEvent::printTo(Ref<LineSink> sink) const
+void XGraphicsExposureEvent::printTo(LineSink *sink) const
 {
 	ftl::printTo(sink, "X11 graphics exposure event (\n"
 		"  drawable id: %%\n"
@@ -278,7 +278,7 @@ void XGraphicsExposureEvent::printTo(Ref<LineSink> sink) const
 	);
 }
 
-XNoExposureEvent::XNoExposureEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source)
+XNoExposureEvent::XNoExposureEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source)
 	: XMessage(messageCode, synthetic),
 	  sequenceNumber(source->readUInt16()),
 	  drawableId(source->readUInt16()),
@@ -286,7 +286,7 @@ XNoExposureEvent::XNoExposureEvent(uint8_t messageCode, bool synthetic, Ref<Byte
 	  majorOpcode(source->readUInt8())
 {}
 
-void XNoExposureEvent::printTo(Ref<LineSink> sink) const
+void XNoExposureEvent::printTo(LineSink *sink) const
 {
 	ftl::printTo(sink, "X11 no exposure event (\n"
 		"  drawable id: %%\n"
@@ -298,14 +298,14 @@ void XNoExposureEvent::printTo(Ref<LineSink> sink) const
 	);
 }
 
-XVisibilityNotifyEvent::XVisibilityNotifyEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source)
+XVisibilityNotifyEvent::XVisibilityNotifyEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source)
 	: XMessage(messageCode, synthetic),
 	  sequenceNumber(source->readUInt16()),
 	  windowId(source->readUInt32()),
 	  state(source->readUInt8())
 {}
 
-void XVisibilityNotifyEvent::printTo(Ref<LineSink> sink) const
+void XVisibilityNotifyEvent::printTo(LineSink *sink) const
 {
 	String stateString = "undefined";
 	if (state == Unobscured) stateString = "unobscured";
@@ -322,7 +322,7 @@ void XVisibilityNotifyEvent::printTo(Ref<LineSink> sink) const
 	);
 }
 
-XConfigureNotifyEvent::XConfigureNotifyEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source)
+XConfigureNotifyEvent::XConfigureNotifyEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source)
 	: XMessage(messageCode, synthetic),
 	  sequenceNumber(source->readUInt16()),
 	  eventWindowId(source->readUInt32()),
@@ -336,7 +336,7 @@ XConfigureNotifyEvent::XConfigureNotifyEvent(uint8_t messageCode, bool synthetic
 	  overrideRedirect(source->readUInt8())
 {}
 
-void XConfigureNotifyEvent::printTo(Ref<LineSink> sink) const
+void XConfigureNotifyEvent::printTo(LineSink *sink) const
 {
 	ftl::printTo(sink, "X11 configure notify event (\n"
 		"  event window id: %%\n"
@@ -358,7 +358,7 @@ void XConfigureNotifyEvent::printTo(Ref<LineSink> sink) const
 	);
 }
 
-XMapNotifyEvent::XMapNotifyEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source)
+XMapNotifyEvent::XMapNotifyEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source)
 	: XMessage(messageCode, synthetic),
 	  sequenceNumber(source->readUInt16()),
 	  eventWindowId(source->readUInt32()),
@@ -366,7 +366,7 @@ XMapNotifyEvent::XMapNotifyEvent(uint8_t messageCode, bool synthetic, Ref<ByteDe
 	  overrideRedirect(source->readUInt8())
 {}
 
-void XMapNotifyEvent::printTo(Ref<LineSink> sink) const
+void XMapNotifyEvent::printTo(LineSink *sink) const
 {
 	ftl::printTo(sink, "X11 map notify event (\n"
 		"  eventWindowId: %%\n"
@@ -380,7 +380,7 @@ void XMapNotifyEvent::printTo(Ref<LineSink> sink) const
 	);
 }
 
-XUnmapNotifyEvent::XUnmapNotifyEvent(uint8_t messageCode, bool synthetic, Ref<ByteDecoder> source)
+XUnmapNotifyEvent::XUnmapNotifyEvent(uint8_t messageCode, bool synthetic, ByteDecoder *source)
 	: XMessage(messageCode, synthetic),
 	  sequenceNumber(source->readUInt16()),
 	  eventWindowId(source->readUInt32()),
@@ -388,7 +388,7 @@ XUnmapNotifyEvent::XUnmapNotifyEvent(uint8_t messageCode, bool synthetic, Ref<By
 	  fromConfigure(source->readUInt8())
 {}
 
-void XUnmapNotifyEvent::printTo(Ref<LineSink> sink) const
+void XUnmapNotifyEvent::printTo(LineSink *sink) const
 {
 	ftl::printTo(sink, "X11 unap notify event (\n"
 		"  eventWindowId: %%\n"

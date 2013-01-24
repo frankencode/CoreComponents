@@ -33,7 +33,7 @@ public:
 protected:
 	friend class Singleton<UriSyntax>;
 
-	UriSyntax(Ref<SyntaxDebugFactory> debugFactory = 0);
+	UriSyntax(SyntaxDebugFactory *debugFactory = 0);
 
 	int userInfo_;
 	int host_;
@@ -46,7 +46,7 @@ protected:
 	int uri_;
 };
 
-inline Ref<UriSyntax> uriSyntax() { return UriSyntax::instance(); }
+inline UriSyntax *uriSyntax() { return UriSyntax::instance(); }
 
 } // namespace ftl
 

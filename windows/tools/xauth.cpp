@@ -3,11 +3,11 @@
 
 int main() {
 	using namespace ftl;
-	
+
 	Ref<XAuthFile, Owner> authFile = new XAuthFile;
-	Ref<XAuthRecords> records = authFile->records();
+	XAuthRecords *records = authFile->records();
 	for (int i = 0, n = records->length(); i < n; ++i) {
-		Ref<XAuthRecord> record = records->get(i);
+		XAuthRecord *record = records->get(i);
 		print(record->host);
 		if (record->family == AF_INET)
 			print("/inet");
@@ -20,6 +20,6 @@ int main() {
 			print("%hex:2:'0'%", uint8_t(record->data->get(i)));
 		print("\n");
 	}
-	
+
 	return 0;
 }

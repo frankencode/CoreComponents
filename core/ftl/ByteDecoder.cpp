@@ -12,7 +12,7 @@
 namespace ftl
 {
 
-ByteDecoder::ByteDecoder(Ref<Stream> stream, int bufCapa, int endian)
+ByteDecoder::ByteDecoder(Stream *stream, int bufCapa, int endian)
 	: stream_(stream),
 	  endian_(endian),
 	  bufCapa_(bufCapa),
@@ -29,7 +29,7 @@ ByteDecoder::ByteDecoder(const void *buf, int bufCapa, int endian)
 	  endian_(endian),
 	  bufCapa_(bufCapa),
 	  bufFill_(bufCapa),
-	  buf_(reinterpret_cast<uint8_t*>(const_cast<void*>(buf))),
+	  buf_(reinterpret_cast<uint8_t *>(const_cast<void*>(buf))),
 	  i_(0),
 	  nr_(0)
 {}

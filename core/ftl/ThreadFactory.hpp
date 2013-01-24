@@ -34,7 +34,7 @@ public:
 	pthread_attr_t *attr();
 
 	Ref<Thread, Owner> produce();
-	void start(Ref<Thread> thread);
+	void start(Thread *thread);
 
 protected:
 	ThreadFactory(Ref< Clonable<Thread> > prototype = 0);

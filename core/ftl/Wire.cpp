@@ -283,7 +283,7 @@ Wire::Wire()
 	LINK();
 }
 
-Variant Wire::parse(Ref<ByteArray> text, Ref<WireObject> virgin)
+Variant Wire::parse(ByteArray *text, WireObject *virgin)
 {
 	Ref<SyntaxState, Owner> state = newState();
 	Ref<Token, Owner> token = match(text, -1, state);
@@ -296,7 +296,7 @@ Variant Wire::parse(Ref<ByteArray> text, Ref<WireObject> virgin)
 		}
 		throw WireException(reason, line, pos);
 	}
-	Ref<Token> child = token->firstChild();
+	Token *child = token->firstChild();
 	if (virgin) {
 		if (child->rule() != object_)
 			throw WireException("Expected an object value", 0, 0);
@@ -306,7 +306,7 @@ Variant Wire::parse(Ref<ByteArray> text, Ref<WireObject> virgin)
 	return parseValue(text, child);
 }
 
-String Wire::parseConcatenation(Ref<ByteArray> text, Ref<Token> token)
+String Wire::parseConcatenation(ByteArray *text, Token *token)
 {
 	Ref<StringList, Owner> l = StringList::create();
 	token = token->firstChild();
@@ -317,7 +317,7 @@ String Wire::parseConcatenation(Ref<ByteArray> text, Ref<Token> token)
 	return (l->length() == 1) ? l->at(0) : l->join();
 }
 
-Ref<WireObject, Owner> Wire::parseObject(Ref<ByteArray> text, Ref<Token> token, Ref<WireObject> virgin)
+Ref<WireObject, Owner> Wire::parseObject(ByteArray *text, Token *token, WireObject *virgin)
 {
 	Ref<WireObject, Owner> object = virgin;
 	if (!object) object = new WireObject;
@@ -344,19 +344,19 @@ Ref<WireObject, Owner> Wire::parseObject(Ref<ByteArray> text, Ref<Token> token, 
 	return object;
 }
 
-Ref<VariantList, Owner> Wire::parseList(Ref<ByteArray> text, Ref<Token> token)
+Ref<VariantList, Owner> Wire::parseList(ByteArray *text, Token *token)
 {
 
 	Ref<VariantList, Owner> list = VariantList::create(token->countChildren());
 	int i = 0;
-	for (Ref<Token> child = token->firstChild(); child; child = child->nextSibling()) {
+	for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
 		list->set(i, parseValue(text, child));
 		++i;
 	}
 	return list;
 }
 
-Variant Wire::parseValue(Ref<ByteArray> text, Ref<Token> token)
+Variant Wire::parseValue(ByteArray *text, Token *token)
 {
 	Variant value;
 

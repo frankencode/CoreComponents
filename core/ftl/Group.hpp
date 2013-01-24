@@ -34,7 +34,7 @@ public:
 
 	inline gid_t id() const { return id_; }
 	inline String name() const { return name_; }
-	inline Ref<StringList> members() const { return members_; }
+	inline StringList *members() const { return members_; }
 
 private:
 	Group(gid_t id);

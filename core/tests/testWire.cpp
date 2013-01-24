@@ -27,7 +27,7 @@ int main() {
 	print("name: %%\n", object->value("name"));
 	print("age: %%\n", object->value("age"));
 	print("hobbies: ");
-	Ref<VariantList> hobbies = object->value("hobbies");
+	VariantList *hobbies = cast<VariantList>(object->value("hobbies"));
 	for (int i = 0; i < hobbies->length(); ++i) {
 		print("%%", hobbies->get(i));
 		if (i != hobbies->length() - 1)
@@ -35,16 +35,16 @@ int main() {
 	}
 	print("\n");
 	print("picture:\n");
-	Ref<WireObject> picture = object->value("picture");
+	WireObject *picture = cast<WireObject>(object->value("picture"));
 	print("  uri: %%\n", picture->value("uri"));
 	print("  width: %%\n", picture->value("width"));
 	print("  height: %%\n", picture->value("height"));
-	Ref<WireObject> home = object->value("home");
+	WireObject *home = cast<WireObject>(object->value("home"));
 	print("home:\n");
 	print("  latitude: %%\n", home->value("latitude"));
 	print("  longitude: %%\n", home->value("longitude"));
 	print("favouriteNumbers: ");
-	Ref<VariantList> numbers = object->value("favouriteNumbers");
+	VariantList *numbers = cast<VariantList>(object->value("favouriteNumbers"));
 	for (int i = 0; i < numbers->length(); ++i) {
 		print("%%", numbers->get(i));
 		if (i != numbers->length() - 1)

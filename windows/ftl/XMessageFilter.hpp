@@ -21,7 +21,7 @@ public:
 	XMessageFilter();
 	~XMessageFilter();
 
-	virtual bool match(Ref<XMessage> event) { return true; }
+	virtual bool match(XMessage *event) { return true; }
 };
 
 } // namespace ftl

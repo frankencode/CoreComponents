@@ -21,11 +21,11 @@ namespace ftl
 class StreamSocket: public SystemStream
 {
 public:
-	inline static Ref<StreamSocket, Owner> create(Ref<SocketAddress> address, int fd = -1) {
+	inline static Ref<StreamSocket, Owner> create(SocketAddress *address, int fd = -1) {
 		return new StreamSocket(address, fd);
 	}
 
-	Ref<SocketAddress> address() const;
+	SocketAddress *address() const;
 
 	void bind();
 	void listen(int backlog = FTL_DEFAULT_BACKLOG);
@@ -38,13 +38,13 @@ public:
 	void setRecvTimeout(Time idleTimeout);
 	void setSendTimeout(Time idleTimeout);
 
-	Ref<SocketAddress> localAddress() const;
-	Ref<SocketAddress> remoteAddress() const;
-	static Ref<SocketAddress> localAddress(int fd);
-	static Ref<SocketAddress> remoteAddress(int fd);
+	SocketAddress *localAddress() const;
+	SocketAddress *remoteAddress() const;
+	static SocketAddress *localAddress(int fd);
+	static SocketAddress *remoteAddress(int fd);
 
 protected:
-	StreamSocket(Ref<SocketAddress> address, int fd);
+	StreamSocket(SocketAddress *address, int fd);
 	Ref<SocketAddress, Owner> address_;
 	bool connected_;
 };

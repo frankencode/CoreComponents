@@ -33,7 +33,7 @@ private:
 	char *data_;
 	int fill_;
 	Ref<Block, Owner> next_;
-	Ref<Block> prev_;
+	Block *prev_;
 };
 
 class Buffer: public Instance
@@ -44,13 +44,13 @@ public:
 
 	inline int blockSize() const { return blockSize_; }
 
-	Ref<Block> allocate();
+	Block *allocate();
 	Ref<ByteArray, Owner> join() const;
 
 private:
 	int blockSize_;
 	Ref<Block, Owner> head_;
-	Ref<Block> tail_;
+	Block *tail_;
 };
 
 } // namespace ftl

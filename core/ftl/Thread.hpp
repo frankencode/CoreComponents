@@ -35,8 +35,8 @@ public:
 	static void sleep(Time duration);
 	static void sleepUntil(Time timeout);
 
-	static void blockSignals(Ref<SignalSet> set);
-	static void unblockSignals(Ref<SignalSet> set);
+	static void blockSignals(SignalSet *set);
+	static void unblockSignals(SignalSet *set);
 
 protected:
 	Thread(): lastSignal_(0) {}

@@ -17,7 +17,7 @@ namespace ftl
 class XErrorFilter: public XMessageFilter
 {
 public:
-	inline bool match(Ref<XMessage> message) const { return message->code == XMessage::Error; }
+	inline bool match(XMessage *message) const { return message->code == XMessage::Error; }
 };
 
 } // namespace ftl

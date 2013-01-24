@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 
 	for (int i = 0; i < list->length(); ++i)
 	{
-		Ref<SocketAddress> address = list->at(i);
+		SocketAddress *address = list->at(i);
 		bool failed;
 
 		print("%% : %% : %% : %% : %% : %% : %%\n"

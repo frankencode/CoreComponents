@@ -16,7 +16,7 @@ namespace ftl
 namespace syntax
 {
 
-Ref<DefinitionNode> DebugFactory::definition() const { return definition_; }
+DefinitionNode *DebugFactory::definition() const { return definition_; }
 
 } // namespace syntax
 

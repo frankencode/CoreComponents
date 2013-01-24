@@ -48,7 +48,7 @@ unsigned NetworkInterface::type() const { return type_; }
 unsigned NetworkInterface::flags() const { return flags_; }
 uint64_t NetworkInterface::hardwareAddress() const { return hardwareAddress_; }
 uint32_t NetworkInterface::mtu() const { return mtu_; }
-Ref<SocketAddressList> NetworkInterface::addressList() const { return addressList_; }
+SocketAddressList *NetworkInterface::addressList() const { return addressList_; }
 
 #ifdef __linux
 Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
@@ -145,7 +145,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 					int attrFill = NLMSG_PAYLOAD(msg, sizeof(struct ifaddrmsg));
 
 					Ref<SocketAddress, Owner> label;
-					Ref<NetworkInterface> interface;
+					NetworkInterface *interface = 0;
 
 					for (int i = 0; i < list->length(); ++i) {
 						if (unsigned(list->at(i)->index_) == data->ifa_index) {
@@ -203,7 +203,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 								interface->addressList_->append(label);
 							}
 							if ((label) && (data->ifa_family == AF_INET)) {
-								Ref<SocketAddressEntry> entry = label;
+								SocketAddressEntry *entry = cast<SocketAddressEntry>(label.get());
 								if (attrType == IFA_LOCAL)
 									entry->localAddress_ = address;
 								else if (attrType == IFA_BROADCAST)
@@ -229,7 +229,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 	return list;
 }
 
-bool NetworkInterface::getLink(Ref<NetworkInterfaceList> list, int index)
+bool NetworkInterface::getLink(NetworkInterfaceList *list, int index)
 {
 	bool foundSomething = false;
 
@@ -422,7 +422,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 
 			for (int k = 0; k < list->length(); ++k)
 			{
-				Ref<NetworkInterface> interface = list->at(k);
+				NetworkInterface *interface = list->at(k);
 
 				if (interface->name_ == ifr->ifr_name) {
 					struct sockaddr *addr = &ifr->ifr_addr;
@@ -439,7 +439,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAllIoctl(int family)
 					interface->addressList_->append(label);
 
 					if ((label) && (addr->sa_family == AF_INET)) {
-						Ref<SocketAddressEntry> entry = label;
+						SocketAddressEntry *entry = cast<SocketAddressEntry>(label.get());
 						if (interface->flags_ & IFF_BROADCAST) {
 							struct ifreq ifr2 = *ifr;
 							if (::ioctl(fd, SIOCGIFBRDADDR, &ifr2) == -1)
@@ -544,7 +544,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 			struct ifa_msghdr *msga = (struct ifa_msghdr *)msg;
 			char *attr = (char *)(msga + 1);
 			FTL_ASSERT(list->length() > 0);
-			Ref<NetworkInterface> interface = list->at(-1);
+			NetworkInterface *interface = list->at(-1);
 			// FTL_ASSERT(interface->index_ == msga->ifam_index); // HACK, OpenBSD can fullfill
 			Ref<SocketAddress, Owner> label;
 			for (int i = 0; i < RTAX_MAX; ++i) {
@@ -562,7 +562,7 @@ Ref<NetworkInterfaceList, Owner> NetworkInterface::queryAll(int family)
 					}
 					if (addr->sa_family == AF_INET) {
 
-						Ref<SocketAddressEntry> entry = label;
+						SocketAddressEntry *entry = cast<SocketAddressEntry>(label);
 						/*/if (i == RTAX_NETMASK) {
 								label->netmask_ = netmask;
 						}

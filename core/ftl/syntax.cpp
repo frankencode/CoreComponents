@@ -31,7 +31,7 @@ int InvokeNode::matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, T
 
 	if (coverage())
 	{
-		Ref<Token> lastChildSaved;
+		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
 		int i0 = i;
@@ -78,10 +78,10 @@ NODE DefinitionNode::KEYWORD(const char *keywords)
 void DefinitionNode::OPTIMIZE()
 {
 	while (unresolvedLinkHead_) {
-		Ref<LinkNode> link = unresolvedLinkHead_;
+		LinkNode *link = unresolvedLinkHead_;
 		link->rule_ = ruleByName(link->ruleName_);
 		if (link->rule_->isVoid()) {
-			if (Ref<RefNode>(link)) {
+			if (cast<RefNode>(link)) {
 				if (link->rule_->numberOfRefs() == 0) {
 					Ref<LinkNode, Owner> iLink = new InlineNode(link->ruleName_);
 					link->parent()->insertChild(iLink, link);
@@ -124,7 +124,7 @@ State *DefinitionNode::newState(State *parent) const
 	return 0;
 }
 
-Ref<Token, Owner> DefinitionNode::find(ByteArray *media, int *i0, int *i1, Ref<TokenFactory> tokenFactory) const
+Ref<Token, Owner> DefinitionNode::find(ByteArray *media, int *i0, int *i1, TokenFactory *tokenFactory) const
 {
 	int i = *i0;
 	Ref<Token, Owner> rootToken;
@@ -137,7 +137,7 @@ Ref<Token, Owner> DefinitionNode::find(ByteArray *media, int *i0, int *i1, Ref<T
 	return rootToken;
 }
 
-Ref<Token, Owner> DefinitionNode::match(ByteArray *media, int i0, int *i1, State *state, Ref<TokenFactory> tokenFactory) const
+Ref<Token, Owner> DefinitionNode::match(ByteArray *media, int i0, int *i1, State *state, TokenFactory *tokenFactory) const
 {
 	Ref<State, Owner> localState;
 	if (!state) {
@@ -154,12 +154,12 @@ Ref<Token, Owner> DefinitionNode::match(ByteArray *media, int i0, int *i1, State
 	if ((i1 != 0) && (h != -1))
 		*i1 = h;
 
-	return (h != -1) ? tokenFactory->rootToken() : Ref<Token>();
+	return (h != -1) ? tokenFactory->rootToken() : null<Token>();
 }
 
-Ref<DefinitionNode> DefinitionNode::resolveScope(const char*& name) const
+const DefinitionNode *DefinitionNode::resolveScope(const char *&name) const
 {
-	Ref<DefinitionNode> scope = this;
+	const DefinitionNode *scope = this;
 	int k = 0;
 	const char *p0 = name;
 	const char *p = p0;
@@ -186,9 +186,9 @@ int DefinitionNode::syntaxError(ByteArray *media, int index, State *state) const
 	return -1;
 }
 
-int DefinitionNode::errorCallBack(Ref<Instance> self, ByteArray *media, int index, State *state)
+int DefinitionNode::errorCallBack(Instance *self, ByteArray *media, int index, State *state)
 {
-	Ref<DefinitionNode> definition = self;
+	DefinitionNode *definition = cast<DefinitionNode>(self);
 	return definition->syntaxError(media, index, state);
 }
 

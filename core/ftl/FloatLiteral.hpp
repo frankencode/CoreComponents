@@ -18,8 +18,8 @@ namespace ftl
 class FloatLiteral: public SyntaxDefinition, public Singleton<FloatLiteral>
 {
 public:
-	void read(float64_t *value, Ref<ByteArray> text, Ref<Token> token) const;
-	Ref<Token, Owner> read(float64_t *value, Ref<ByteArray> text, int i = -1) const;
+	void read(float64_t *value, const ByteArray *text, Token *token) const;
+	Ref<Token, Owner> read(float64_t *value, const ByteArray *text, int i = -1) const;
 
 	inline int literal() const { return literal_; }
 
@@ -38,7 +38,7 @@ private:
 	int literal_;
 };
 
-inline Ref<FloatLiteral> floatLiteral() { return FloatLiteral::instance(); }
+inline FloatLiteral *floatLiteral() { return FloatLiteral::instance(); }
 
 } // namespace ftl
 

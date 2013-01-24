@@ -68,7 +68,7 @@ class GenericIterator: public Source<typename Container::Item>
 public:
 	typedef typename Container::Item Item;
 
-	inline static Ref<GenericIterator, Owner> create(Ref<Container> container) {
+	inline static Ref<GenericIterator, Owner> create(Container *container) {
 		return new GenericIterator(container);
 	}
 
@@ -82,7 +82,7 @@ public:
 	inline int currentIndex() const { return i_; }
 
 private:
-	GenericIterator(Ref<Container> container)
+	GenericIterator(Container *container)
 		: container_(container),
 		  i_(0)
 	{}

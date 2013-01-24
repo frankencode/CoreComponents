@@ -6,18 +6,17 @@
   * as published by the Free Software Foundation; either version
   * 2 of the License, or (at your option) any later version.
   */
-// #include "streams" // DEBUG
-#include "TokenScreen.hpp"
+
 #include "Token.hpp"
 
 namespace ftl
 {
 
-bool Token::glow(Ref<TokenScreen> screen)
+bool Token::glow(TokenScreen *screen)
 {
 	int i = i0_;
-	
-	Ref<Token> child = firstChild();
+
+	Token *child = firstChild();
 	while (child) {
 		if (i < child->i0_) {
 			if (!screen->project(this, i, child->i0_))
@@ -29,27 +28,26 @@ bool Token::glow(Ref<TokenScreen> screen)
 		i = child->i1_;
 		child = child->nextSibling();
 	}
-	
+
 	if (i < i1_)
 		if (!screen->project(this, i, i1_))
 			return false;
-	
+
 	return true;
 }
 
-void Token::meld(Ref<Token> root0, Ref<Token> root1)
+void Token::meld(Token *root0, Token *root1)
 {
 	if ((!root0) || (!root1)) return;
-	
+
 	if (!root1->firstChild()) return;
-	
-	Token result_;
-	Ref<Token, Pointer> result = &result_;
+
+	Token result_, *result = &result_;
 	Ref<Token, Owner> token0 = root0->firstChild();
 	Ref<Token, Owner> token1 = root1->firstChild();
-	
+
 	// debug("Token::meld(): [%%: %%], [%%: %%]\n", root0->ruleName_, root0->countChildren(), root1->ruleName_, root1->countChildren());
-	
+
 	while (true)
 	{
 		bool take0 = (token0);
@@ -58,11 +56,11 @@ void Token::meld(Ref<Token> root0, Ref<Token> root1)
 			take0 = (token0->i0_ < token1->i0_);
 			take1 = !take0;
 		}
-		
+
 		if (take0) {
 			// debug("p0 [%%, %%, %%]\n", token0->ruleName_, token0->i0_, token0->i1_);
 			Ref<Token, Owner> next0 = token0->nextSibling();
-			Ref<Token> previousResult = result->lastChild();
+			Token *previousResult = result->lastChild();
 			token0->unlink();
 			result->insertChild(token0, previousResult);
 			if (previousResult)
@@ -72,7 +70,7 @@ void Token::meld(Ref<Token> root0, Ref<Token> root1)
 		else if (take1) {
 			// debug("p1 [%%, %%, %%]\n", token1->ruleName_, token1->i0_, token1->i1_);
 			Ref<Token, Owner> next1 = token1->nextSibling();
-			Ref<Token> previousResult = result->lastChild();
+			Token *previousResult = result->lastChild();
 			token1->unlink();
 			if (previousResult) {
 				if ((previousResult->i0_ < token1->i0_) && (token1->i1_ < previousResult->i1_)) {
@@ -92,16 +90,16 @@ void Token::meld(Ref<Token> root0, Ref<Token> root1)
 		else
 			break;
 	}
-	
+
 	root0->appendAllChildrenOf(result);
 }
 
 bool Token::burn(int b0, int b1)
 {
 	// debug("burn: [%%, %%, %%] / (%%, %%)\n", ruleName_, i0_, i1_, b0, b1);
-	
+
 	// see book 28/76
-	
+
 	if ((i1_ <= b0) || (b1 <= i0_)) // case 3, 4
 	{
 		return false;
@@ -119,21 +117,21 @@ bool Token::burn(int b0, int b1)
 	{
 		i0_ = b1;
 	}
-	
-	Ref<Token> child = firstChild();
+
+	Token *child = firstChild();
 	while (child) {
-		Ref<Token> next = child->nextSibling();
+		Token *next = child->nextSibling();
 		child->burn(b0, b1);
 		child = next;
 	}
-	
+
 	return true;
 }
 
-Ref<Token> Token::at(int i) const
+Token *Token::at(int i) const
 {
-	Ref<Token> token = this;
-	Ref<Token> child = firstChild();
+	Token *token = const_cast<Token *>(this);
+	Token *child = firstChild();
 	while (child) {
 		if ((child->i0() <= i) && (i < child->i1())) {
 			token = child->at(i);

@@ -29,13 +29,13 @@ void Stream::read(void *buf, int bufFill)
 
 String Stream::readAll()
 {
-	Buffer buffer;
+	Ref<Buffer, Owner> buffer = new Buffer;
 	while (true) {
-		Ref<Block> block = buffer.allocate();
-		block->setFill(readAvail(block->data(), buffer.blockSize()));
+		Block *block = buffer->allocate();
+		block->setFill(readAvail(block->data(), buffer->blockSize()));
 		if (block->fill() == 0) break;
 	}
-	return buffer.join();
+	return buffer->join();
 }
 
 } // namespace ftl

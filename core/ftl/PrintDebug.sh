@@ -73,7 +73,7 @@ done
 
 ######################### printTo() ##################################
 
-printf "inline void printTo(Ref<LineSink> sink, String text) { sink->write(text); }\n"
+printf "inline void printTo(LineSink *sink, String text) { sink->write(text); }\n"
 printf "\n"
 let n=1
 while [ $n -le $MAX_ARGS ]; do
@@ -87,7 +87,7 @@ while [ $n -le $MAX_ARGS ]; do
 		let i=i+1
 	done
 	printf ">\n"
-	printf "inline void printTo(Ref<LineSink> sink, String templateText, "
+	printf "inline void printTo(LineSink *sink, String templateText, "
 	let i=1
 	while [ $i -le $n ]; do
 		printf "const T$i &x$i"

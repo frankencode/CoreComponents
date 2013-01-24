@@ -34,7 +34,7 @@ public:
 
 private:
 	Ref<DirWalker, Owner> tryOpen(String path, int option);
-	DirWalker(String path, int option, Ref<Dir> dir = 0);
+	DirWalker(String path, int option, Dir *dir = 0);
 	int option_;
 	int maxDepth_;
 	int depth_;

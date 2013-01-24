@@ -27,7 +27,7 @@ class FileStatus: public StructStat, public Instance
 {
 public:
 	inline static Ref<FileStatus, Owner> read(int fd = -1) { return new FileStatus(fd); }
-	inline static Ref<FileStatus, Owner> read(Ref<SystemStream> stream) { return read(stream->fd()); }
+	inline static Ref<FileStatus, Owner> read(SystemStream *stream) { return read(stream->fd()); }
 	inline static Ref<FileStatus, Owner> read(String path, bool resolve = true) { return new FileStatus(path, resolve); }
 
 	inline String path() const { return path_; }

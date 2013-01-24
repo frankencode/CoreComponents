@@ -36,7 +36,7 @@ public:
 	int readAvail(void *buf, int bufCapa);
 	void write(const void *buf, int bufFill);
 
-	void write(Ref<StringList> parts, const char *sep = "");
+	void write(StringList *parts, const char *sep = "");
 
 	inline int readAvail(String s) { return Stream::readAvail(s); }
 	inline void write(const char *s) { Stream::write(s); }

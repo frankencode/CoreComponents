@@ -17,7 +17,7 @@ namespace ftl
 class Utf8Encoder: public Sink<uchar_t>
 {
 public:
-	inline static Ref<Utf8Encoder, Owner> open(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA) {
+	inline static Ref<Utf8Encoder, Owner> open(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA) {
 		return new Utf8Encoder(stream, bufCapa);
 	}
 
@@ -28,10 +28,10 @@ public:
 	void write(uchar_t ch);
 	static int encodedSize(uchar_t ch);
 
-	inline Ref<ByteEncoder> byteEncoder() const { return byteEncoder_; }
+	inline ByteEncoder *byteEncoder() const { return byteEncoder_; }
 
 private:
-	Utf8Encoder(Ref<Stream> stream, int bufCapa)
+	Utf8Encoder(Stream *stream, int bufCapa)
 		: byteEncoder_(ByteEncoder::open(stream, bufCapa))
 	{}
 

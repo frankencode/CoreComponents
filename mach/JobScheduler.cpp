@@ -29,7 +29,7 @@ void JobScheduler::start()
 		serverPool_->pushBack(JobServer::start(requestChannel_, replyChannel_));
 }
 
-void JobScheduler::schedule(Ref<Job> job)
+void JobScheduler::schedule(Job *job)
 {
 	requestChannel_->pushBack(job);
 	++totalCount_;

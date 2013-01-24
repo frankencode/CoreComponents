@@ -12,7 +12,7 @@
 namespace ftl
 {
 
-InetAddressSyntax::InetAddressSyntax(Ref<SyntaxDebugFactory> debugFactory)
+InetAddressSyntax::InetAddressSyntax(SyntaxDebugFactory *debugFactory)
 {
 	DEFINE_VOID("DecimalOctet",
 		REPEAT(0, 3, RANGE('0', '9'))

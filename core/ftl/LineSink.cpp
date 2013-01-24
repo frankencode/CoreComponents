@@ -12,14 +12,14 @@
 namespace ftl
 {
 
-LineSink::LineSink(Ref<Stream> stream, const char *eol, int maxLineLength)
+LineSink::LineSink(Stream *stream, const char *eol, int maxLineLength)
 	: stream_(stream),
 	  eol_(eol),
 	  bufFill_(0),
 	  buf_(ByteArray::create(maxLineLength))
 {}
 
-Ref<Stream> LineSink::stream() const { return stream_; }
+Stream *LineSink::stream() const { return stream_; }
 
 String LineSink::prefix() const { return prefix_; }
 

@@ -36,7 +36,7 @@ public:
 		return token;
 	}
 
-	inline Ref<Token> rootToken() const { return rootToken_; }
+	inline Token *rootToken() const { return rootToken_; }
 
 private:
 	Ref<Token, Owner> rootToken_;

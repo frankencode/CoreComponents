@@ -50,7 +50,7 @@ void XWindow::run()
 		Ref<XMessage, Owner> message = messageFilter_->pop();
 		if (!message) break;
 		if (message->messageCode == XMessage::ConfigureNotify) {
-			Ref<XConfigureNotifyEvent> event = message;
+			XConfigureNotifyEvent *event = cast<XConfigureNotifyEvent>(message.get());
 			if (event->windowId != id_) continue;
 			x_ = event->x;
 			y_ = event->y;

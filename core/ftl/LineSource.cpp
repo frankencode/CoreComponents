@@ -13,7 +13,7 @@
 namespace ftl
 {
 
-LineSource::LineSource(Ref<Stream> stream, const char *eol, int maxLineLength)
+LineSource::LineSource(Stream *stream, const char *eol, int maxLineLength)
 	: stream_(stream),
 	  eol_(eol),
 	  cachedLines_(0),
@@ -21,7 +21,7 @@ LineSource::LineSource(Ref<Stream> stream, const char *eol, int maxLineLength)
 	  buf_(ByteArray::create(maxLineLength))
 {}
 
-Ref<Stream> LineSource::stream() const { return stream_; }
+Stream *LineSource::stream() const { return stream_; }
 
 bool LineSource::hasMore()
 {

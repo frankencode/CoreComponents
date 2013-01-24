@@ -19,7 +19,7 @@ namespace ftl
 class ByteEncoder: public Sink<uint8_t>, public Sink<char>
 {
 public:
-	inline static Ref<ByteEncoder, Owner> open(Ref<Stream> stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static Ref<ByteEncoder, Owner> open(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteEncoder(stream, bufCapa, endian);
 	}
 	inline static Ref<ByteEncoder, Owner> open(void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
@@ -30,7 +30,7 @@ public:
 	void write(uint8_t x);
 	void write(char ch);
 
-	void write(Ref<ByteArray> bytes);
+	void write(ByteArray *bytes);
 
 	void writeUInt8(uint8_t x);
 	void writeUInt16(uint16_t x);
@@ -50,14 +50,14 @@ public:
 	off_t numBytesWritten() const;
 	void flush();
 
-	Ref<Stream> stream() const;
+	Stream *stream() const;
 
 	int endian() const;
 	void setEndian(int endian);
 
 private:
 	ByteEncoder();
-	ByteEncoder(Ref<Stream> stream, int bufCapa, int endian);
+	ByteEncoder(Stream *stream, int bufCapa, int endian);
 	ByteEncoder(void *buf, int bufCapa, int endian);
 
 	Ref<Stream, Owner> stream_;
@@ -79,7 +79,7 @@ inline void ByteEncoder::write(char ch)
 	writeUInt8((uint8_t)ch);
 }
 
-inline void ByteEncoder::write(Ref<ByteArray> bytes)
+inline void ByteEncoder::write(ByteArray *bytes)
 {
 	for (int i = 0, n = bytes->length(); i < n; ++i)
 		write(bytes->get(i));
@@ -156,7 +156,7 @@ inline off_t ByteEncoder::numBytesWritten() const
 	return nw_ + /* consumed buffer bytes */ i_;
 }
 
-inline Ref<Stream> ByteEncoder::stream() const { return stream_; }
+inline Stream *ByteEncoder::stream() const { return stream_; }
 
 inline int ByteEncoder::endian() const { return endian_; }
 inline void ByteEncoder::setEndian(int endian) { endian_ = endian; }

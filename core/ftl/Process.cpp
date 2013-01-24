@@ -40,7 +40,7 @@ Ref<Process, Owner> Process::start(String command, int ioPolicy)
 	return start(command, factory);
 }
 
-Ref<Process, Owner> Process::start(String command, Ref<ProcessFactory> factory)
+Ref<Process, Owner> Process::start(String command, ProcessFactory *factory)
 {
 	factory->setCommand(command);
 	return factory->produce();
@@ -49,9 +49,9 @@ Ref<Process, Owner> Process::start(String command, Ref<ProcessFactory> factory)
 Process::Process(
 	int type,
 	int ioPolicy,
-	Ref<SystemStream> rawInput,
-	Ref<SystemStream> rawOutput,
-	Ref<SystemStream> rawError,
+	SystemStream *rawInput,
+	SystemStream *rawOutput,
+	SystemStream *rawError,
 	pid_t processId
 )
 	: type_(type),
@@ -86,13 +86,13 @@ Process::~Process()
 int Process::type() const { return type_; }
 int Process::ioPolicy() const { return ioPolicy_; }
 
-Ref<SystemStream> Process::rawInput() const { return rawInput_; }
-Ref<SystemStream> Process::rawOutput() const { return rawOutput_; }
-Ref<SystemStream> Process::rawError() const { return rawError_; }
+SystemStream *Process::rawInput() const { return rawInput_; }
+SystemStream *Process::rawOutput() const { return rawOutput_; }
+SystemStream *Process::rawError() const { return rawError_; }
 
-Ref<LineSink> Process::input() const { return input_; }
-Ref<LineSource> Process::output() const { return output_; }
-Ref<LineSource> Process::error() const { return error_; }
+LineSink *Process::input() const { return input_; }
+LineSource *Process::output() const { return output_; }
+LineSource *Process::error() const { return error_; }
 
 pid_t Process::id() const { return processId_; }
 

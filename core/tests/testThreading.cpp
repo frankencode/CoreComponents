@@ -42,12 +42,12 @@ private:
 class Producer: public Thread
 {
 public:
-	static Ref<Producer, Owner> create(Ref<MyChannel> channel) {
+	static Ref<Producer, Owner> create(MyChannel *channel) {
 		return new Producer(channel);
 	}
 
 private:
-	Producer(Ref<MyChannel> channel)
+	Producer(MyChannel *channel)
 		: channel_(channel)
 	{}
 
@@ -60,18 +60,18 @@ private:
 	}
 
 private:
-	Ref<MyChannel> channel_;
+	MyChannel *channel_;
 };
 
 class Consumer: public Thread
 {
 public:
-	static Ref<Consumer, Owner> create(Ref<MyChannel> channel) {
+	static Ref<Consumer, Owner> create(MyChannel *channel) {
 		return new Consumer(channel);
 	}
 
 private:
-	Consumer(Ref<MyChannel> channel)
+	Consumer(MyChannel *channel)
 		: channel_(channel)
 	{}
 
@@ -85,12 +85,11 @@ private:
 	}
 
 private:
-	Ref<MyChannel> channel_;
+	MyChannel *channel_;
 };
 
 int main()
 {
-
 	auto channel = MyChannel::create();
 	auto producer = Producer::create(channel);
 	auto consumer = Consumer::create(channel);

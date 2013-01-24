@@ -20,7 +20,7 @@ ByteEncoder::ByteEncoder()
 	  nw_(0)
 {}
 
-ByteEncoder::ByteEncoder(Ref<Stream> stream, int bufCapacity, int endian)
+ByteEncoder::ByteEncoder(Stream *stream, int bufCapacity, int endian)
 	: stream_(stream),
 	  endian_(endian),
 	  bufCapa_(bufCapacity),

@@ -21,13 +21,13 @@ namespace ftl
 class StandardStreams: public Instance, public ThreadLocalSingleton<StandardStreams>
 {
 public:
-	inline Ref<SystemStream> rawInput() { return rawInput_; }
-	inline Ref<SystemStream> rawOutput() { return rawOutput_; }
-	inline Ref<SystemStream> rawError() { return rawError_; }
+	inline SystemStream *rawInput() { return rawInput_; }
+	inline SystemStream *rawOutput() { return rawOutput_; }
+	inline SystemStream *rawError() { return rawError_; }
 
-	inline Ref<LineSource> input() { return input_; }
-	inline Ref<LineSink> output() { return output_; }
-	inline Ref<LineSink> error() { return error_; }
+	inline LineSource *input() { return input_; }
+	inline LineSink *output() { return output_; }
+	inline LineSink *error() { return error_; }
 
 private:
 	friend class ThreadLocalSingleton<StandardStreams>;
@@ -42,13 +42,13 @@ private:
 	Ref<LineSink, Owner> error_;
 };
 
-inline Ref<SystemStream> rawInput() { return StandardStreams::instance()->rawInput(); }
-inline Ref<SystemStream> rawOutput() { return StandardStreams::instance()->rawOutput(); }
-inline Ref<SystemStream> rawError() { return StandardStreams::instance()->rawError(); }
+inline SystemStream *rawInput() { return StandardStreams::instance()->rawInput(); }
+inline SystemStream *rawOutput() { return StandardStreams::instance()->rawOutput(); }
+inline SystemStream *rawError() { return StandardStreams::instance()->rawError(); }
 
-inline Ref<LineSource> input() { return StandardStreams::instance()->input(); }
-inline Ref<LineSink> output() { return StandardStreams::instance()->output(); }
-inline Ref<LineSink> error() { return StandardStreams::instance()->error(); }
+inline LineSource *input() { return StandardStreams::instance()->input(); }
+inline LineSink *output() { return StandardStreams::instance()->output(); }
+inline LineSink *error() { return StandardStreams::instance()->error(); }
 
 } // namespace ftl
 

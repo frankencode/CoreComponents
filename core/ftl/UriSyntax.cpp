@@ -13,7 +13,7 @@
 namespace ftl
 {
 
-UriSyntax::UriSyntax(Ref<SyntaxDebugFactory> debugFactory)
+UriSyntax::UriSyntax(SyntaxDebugFactory *debugFactory)
 	: AbnfCoreSyntax(debugFactory)
 {
 	SYNTAX("uri");

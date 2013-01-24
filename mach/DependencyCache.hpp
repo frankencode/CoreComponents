@@ -20,16 +20,16 @@ class BuildPlan;
 class DependencyCache: public Instance
 {
 public:
-	static Ref<DependencyCache, Owner> create(Ref<BuildPlan> buildPlan);
+	static Ref<DependencyCache, Owner> create(BuildPlan *buildPlan);
 	~DependencyCache();
 
-	static String cachePath(Ref<BuildPlan> buildPlan);
+	static String cachePath(BuildPlan *buildPlan);
 
 	bool lookup(String source, Ref<Module, Owner> *module);
-	void insert(String source, Ref<Module> module);
+	void insert(String source, Module *module);
 
 private:
-	DependencyCache(Ref<BuildPlan> buildPlan);
+	DependencyCache(BuildPlan *buildPlan);
 
 	Ref<BuildPlan, Owner> buildPlan_;
 	String cachePath_;

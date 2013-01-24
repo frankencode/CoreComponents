@@ -12,7 +12,7 @@
 namespace ftl
 {
 
-BitDecoder::BitDecoder(Ref<Stream> stream, int bufCapa, int endian)
+BitDecoder::BitDecoder(Stream *stream, int bufCapa, int endian)
 	: stream_(stream),
 	  endian_(endian),
 	  bufCapa_(bufCapa),

@@ -16,11 +16,11 @@ namespace ftl
 Format::Format(String format)
 	: Super(StringList::create())
 {
-	Ref<PlaceHolder> lastPlaceHolder;
+	PlaceHolder *lastPlaceHolder = 0;
 
 	if (format->contains('%'))
 	{
-		Ref<FormatSpecifier> specifier = formatSpecifier();
+		FormatSpecifier *specifier = formatSpecifier();
 		int i0Saved = 0, i0 = 0, i1 = 0;
 
 		int nph = 0; // number of placeholders
@@ -107,7 +107,7 @@ Format &Format::operator<<(const Variant &x)
 		*this << String(x);
 	}
 	else if (x.type() == Variant::RefType) {
-		*this << (void *)Ref<>(x).get();
+		*this << (void *)cast<Instance>(x);
 	}
 	return *this;
 }

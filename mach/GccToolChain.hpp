@@ -20,24 +20,24 @@ public:
 	virtual int defaultSpeedOptimizationLevel() const;
 	virtual int defaultSizeOptimizationLevel() const;
 
-	virtual String analyseCommand(Ref<BuildPlan> buildPlan, String source) const;
-	virtual Ref<Job, Owner> createAnalyseJob(Ref<BuildPlan> buildPlan, String source);
-	virtual Ref<Module, Owner> finishAnalyseJob(Ref<BuildPlan> buildPlan, Ref<Job> job);
+	virtual String analyseCommand(BuildPlan *buildPlan, String source) const;
+	virtual Ref<Job, Owner> createAnalyseJob(BuildPlan *buildPlan, String source);
+	virtual Ref<Module, Owner> finishAnalyseJob(BuildPlan *buildPlan, Job *job);
 
-	virtual Ref<Job, Owner> createCompileJob(Ref<BuildPlan> buildPlan, Ref<Module> module);
-	virtual Ref<Job, Owner> createLinkJob(Ref<BuildPlan> buildPlan, Ref<Module> module);
+	virtual Ref<Job, Owner> createCompileJob(BuildPlan *buildPlan, Module *module);
+	virtual Ref<Job, Owner> createLinkJob(BuildPlan *buildPlan, Module *module);
 
-	virtual String linkPath(Ref<BuildPlan> buildPlan) const;
-	virtual bool link(Ref<BuildPlan> buildPlan);
+	virtual String linkPath(BuildPlan *buildPlan) const;
+	virtual bool link(BuildPlan *buildPlan);
 
-	virtual void clean(Ref<BuildPlan> buildPlan);
+	virtual void clean(BuildPlan *buildPlan);
 
 protected:
 	GccToolChain(String execPath);
 	static String machineCommand(String execPath);
 
-	static void appendCompileOptions(Format args, Ref<BuildPlan> buildPlan);
-	static void appendLinkOptions(Format args, Ref<BuildPlan> buildPlan);
+	static void appendCompileOptions(Format args, BuildPlan *buildPlan);
+	static void appendLinkOptions(Format args, BuildPlan *buildPlan);
 
 	static String lookup(String execPath);
 };

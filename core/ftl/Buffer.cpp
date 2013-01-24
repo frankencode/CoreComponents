@@ -29,7 +29,7 @@ Buffer::Buffer(int blockSize)
 
 void Buffer::reset(int blockSize)
 {
-	Ref<Block> block = tail_;
+	Block *block = tail_;
 	while (block) {
 		block->next_ = 0;
 		block = block->prev_;
@@ -38,7 +38,7 @@ void Buffer::reset(int blockSize)
 	blockSize_ = blockSize;
 }
 
-Ref<Block> Buffer::allocate()
+Block *Buffer::allocate()
 {
 	Ref<Block, Owner> newBlock = new Block(blockSize_);
 	newBlock->prev_ = tail_;
@@ -51,7 +51,7 @@ Ref<ByteArray, Owner> Buffer::join() const
 {
 	int fill = 0;
 	{
-		Ref<Block> block = head_;
+		Block *block = head_;
 		while (block) {
 			fill += block->fill_;
 			block = block->next_;
@@ -60,7 +60,7 @@ Ref<ByteArray, Owner> Buffer::join() const
 	Ref<ByteArray, Owner> array = ByteArray::create(fill);
 	{
 		char *d = array->data();
-		Ref<Block> block = head_;
+		Block *block = head_;
 		while (block) {
 			FTL_ASSERT2((0 <= block->fill_) && (block->fill_ <= blockSize_), "Block not filled properly.");
 			mem::cpy(d, block->data_, block->fill_);

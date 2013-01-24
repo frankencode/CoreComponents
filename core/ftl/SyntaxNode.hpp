@@ -33,12 +33,14 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const = 0;
 
-	virtual Ref<Node> succ(Ref<Node> node) const { return Ref<Node>(); }
+	virtual Node *succ(Node *node) const { return null<Node>(); }
 	virtual int matchLength() const { return -1; }
 
-	inline Ref<Node> succ() const {
-		return parent() ? parent()->succ(this) : Ref<Node>();
+	inline Node *succ() const {
+		return parent() ? parent()->succ(Node::self()) : null<Node>();
 	}
+
+	inline Node *self() const { return const_cast<Node *>(this); }
 };
 
 typedef Ref<Node, Owner> NODE;

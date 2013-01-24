@@ -22,9 +22,9 @@ public:
 		return new Event;
 	}
 
-	void pushBack(Ref<Action> handler);
-	void pushFront(Ref<Action> handler);
-	void remove(Ref<Action> handler);
+	void pushBack(Action *handler);
+	void pushFront(Action *handler);
+	void remove(Action *handler);
 
 	virtual void run();
 

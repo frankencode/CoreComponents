@@ -25,13 +25,13 @@ Uri::Uri(const char *text)
 	readUri(String(text));
 }
 
-Uri::Uri(Ref<ByteArray> bytes, Ref<Token> rootToken)
+Uri::Uri(ByteArray *bytes, Token *rootToken)
 	: port_(-1)
 {
 	readUri(bytes, rootToken);
 }
 
-void Uri::readUri(Ref<ByteArray> bytes, Ref<Token> rootToken)
+void Uri::readUri(ByteArray *bytes, Token *rootToken)
 {
 	Ref<Token, Owner> rootToken2;
 	if (!rootToken) {
@@ -41,7 +41,7 @@ void Uri::readUri(Ref<ByteArray> bytes, Ref<Token> rootToken)
 		rootToken = rootToken2;
 	}
 
-	Ref<Token> token = rootToken;
+	Token *token = rootToken;
 	token = token->firstChild();
 
 	while (token) {
@@ -49,7 +49,7 @@ void Uri::readUri(Ref<ByteArray> bytes, Ref<Token> rootToken)
 			scheme_ = decode(bytes->copy(token->i0(), token->i1()));
 		}
 		else if (token->rule() == uriSyntax()->authority()) {
-			Ref<Token> child = token->firstChild();
+			Token *child = token->firstChild();
 			while (child) {
 				if (child->rule() == uriSyntax()->userInfo())
 					userInfo_ = decode(bytes->copy(child->i0(), child->i1()));

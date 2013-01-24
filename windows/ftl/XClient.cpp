@@ -54,10 +54,10 @@ XClient::XClient()
 			address = list->get(0);
 
 			if (host == "") host = SocketAddress::hostName();
-			XAuthFile file;
-			Ref<XAuthRecords> records = file.records();
+			Ref<XAuthFile, Owner> file = new XAuthFile;
+			XAuthRecords *records = file->records();
 			for (int i = 0, n = records->length(); i < n; ++i) {
-				Ref<XAuthRecord> record = records->get(i);
+				XAuthRecord *record = records->get(i);
 				if ( (record->family == address->family()) &&
 				     (record->host == host) &&
 				     (record->display == display) )
@@ -119,22 +119,22 @@ void XClient::freeResourceId(uint32_t id)
 	freeResourceIds_->push(id);
 }
 
-void XClient::activate(Ref<XMessageFilter> filter)
+void XClient::activate(XMessageFilter *filter)
 {
 	Guard<Mutex> guard(messageFiltersMutex_);
 	messageFilters_->insert(filter);
 }
 
-void XClient::deactivate(Ref<XMessageFilter> filter)
+void XClient::deactivate(XMessageFilter *filter)
 {
 	if (!messageFiltersMutex_) return;
 	Guard<Mutex> guard(messageFiltersMutex_);
 	messageFilters_->remove(filter);
 }
 
-int XClient::createWindow(Ref<XWindow> window)
+int XClient::createWindow(XWindow *window)
 {
-	Ref<XScreenInfo> screenInfo = displayInfo_->screenInfo->at(defaultScreen_);
+	XScreenInfo *screenInfo = displayInfo_->screenInfo->at(defaultScreen_);
 	window->visualId_ = screenInfo->rootVisualId;
 	window->depth_ = screenInfo->rootDepth;
 
@@ -156,7 +156,7 @@ int XClient::createWindow(Ref<XWindow> window)
 	return flush(sink);
 }
 
-int XClient::mapWindow(Ref<XWindow> window)
+int XClient::mapWindow(XWindow *window)
 {
 	Ref<ByteEncoder, Owner> sink = messageEncoder();
 	sink->writeUInt8(8);
@@ -166,7 +166,7 @@ int XClient::mapWindow(Ref<XWindow> window)
 	return flush(sink);
 }
 
-int XClient::unmapWindow(Ref<XWindow> window)
+int XClient::unmapWindow(XWindow *window)
 {
 	Ref<ByteEncoder, Owner> sink = messageEncoder();
 	sink->writeUInt8(10);
@@ -188,11 +188,11 @@ int XClient::getFontPath()
 ByteEncoder *XClient::messageEncoder()
 {
 	if (!messageEncoder_)
-		messageEncoder_ = ByteEncoder::open(Ref<Stream>(socket_), int(displayInfo_->maximumRequestLength) * 4, localEndian());
+		messageEncoder_ = ByteEncoder::open(socket_, int(displayInfo_->maximumRequestLength) * 4, localEndian());
 	return messageEncoder_;
 }
 
-int XClient::flush(Ref<ByteEncoder> sink)
+int XClient::flush(ByteEncoder *sink)
 {
 	Guard<Mutex> guard(sequenceNumberMutex_);
 	sink->flush();
@@ -256,7 +256,7 @@ void XClient::run()
 			{
 				Guard<Mutex> guard(messageFiltersMutex_);
 				for (int i = 0, n = messageFilters_->length(); i < n; ++i) {
-					Ref<XMessageFilter> filter = messageFilters_->at(i);
+					XMessageFilter *filter = messageFilters_->at(i);
 					if (filter->match(message)) filter->push(message);
 				}
 			}

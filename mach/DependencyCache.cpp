@@ -9,17 +9,17 @@
 namespace mach
 {
 
-Ref<DependencyCache, Owner> DependencyCache::create(Ref<BuildPlan> buildPlan)
+Ref<DependencyCache, Owner> DependencyCache::create(BuildPlan *buildPlan)
 {
 	return new DependencyCache(buildPlan);
 }
 
-String DependencyCache::cachePath(Ref<BuildPlan> buildPlan)
+String DependencyCache::cachePath(BuildPlan *buildPlan)
 {
 	return buildPlan->modulePath("DependencyCache");
 }
 
-DependencyCache::DependencyCache(Ref<BuildPlan> buildPlan)
+DependencyCache::DependencyCache(BuildPlan *buildPlan)
 	: buildPlan_(buildPlan),
 	  cachePath_(cachePath(buildPlan)),
 	  cache_(Cache::create())
@@ -42,10 +42,10 @@ DependencyCache::DependencyCache(Ref<BuildPlan> buildPlan)
 
 		if (!buildPlan->sources()->contains(item->key())) continue;
 
-		Ref<WireObject> wire = item->value();
+		WireObject *wire = cast<WireObject>(item->value());
 		String command = wire->value("analyseCommand");
 		String modulePath = wire->value("modulePath");
-		Ref<StringList, Owner> dependencyPaths = Ref<VariantList>(wire->value("dependencyPaths"))->toList<String>();
+		Ref<StringList, Owner> dependencyPaths = cast<VariantList>(wire->value("dependencyPaths"))->toList<String>();
 		String sourcePath = dependencyPaths->at(0);
 
 		bool dirty = false;
@@ -84,7 +84,7 @@ DependencyCache::~DependencyCache()
 	for (int i = 0; i < cache_->length(); ++i) {
 		Cache::Item item = cache_->at(i);
 		String sourcePath = item->key();
-		Ref<Module> module = item->value();
+		Module *module = item->value();
 		text
 			<< indent << "\"" << sourcePath << "\": Module {\n"
 			<< indent << indent << "analyseCommand: \"" << module->analyseCommand() << "\"\n"
@@ -109,7 +109,7 @@ bool DependencyCache::lookup(String source, Ref<Module, Owner> *module)
 	return cache_->lookup(source, module);
 }
 
-void DependencyCache::insert(String source, Ref<Module> module)
+void DependencyCache::insert(String source, Module *module)
 {
 	cache_->insert(source, module);
 }

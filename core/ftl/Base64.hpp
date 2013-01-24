@@ -17,8 +17,8 @@ namespace ftl
 class Base64: public Instance
 {
 public:
-	static Ref<ByteArray, Owner> encode(Ref<ByteArray> source);
-	static Ref<ByteArray, Owner> decode(Ref<ByteArray> source);
+	static Ref<ByteArray, Owner> encode(const ByteArray *source);
+	static Ref<ByteArray, Owner> decode(const ByteArray *source);
 };
 
 } // namespace ftl

@@ -4,9 +4,9 @@
 int main()
 {
 	using namespace ftl;
-	
-	Ref<XDisplayInfo> displayInfo = xClient()->displayInfo();
-	
+
+	XDisplayInfo *displayInfo = xClient()->displayInfo();
+
 	print("protocol version: %%.%%\n", displayInfo->majorVersion, displayInfo->minorVersion);
 	print("vendor: %%\n", displayInfo->vendor);
 	if (displayInfo->vendor->contains("X.Org"))
@@ -27,16 +27,16 @@ int main()
 	print("bitmap scanline pad: %%\n", displayInfo->bitmapScanlinePad);
 	print("min keycode: %%\n", displayInfo->minKeyCode);
 	print("max keycode: %%\n", displayInfo->maxKeyCode);
-	
-	Ref<XPixmapInfoArray> pixmapInfo = displayInfo->pixmapInfo;
+
+	XPixmapInfoArray *pixmapInfo = displayInfo->pixmapInfo;
 	for (int i = 0; i < pixmapInfo->length(); ++i) {
-		Ref<XPixmapInfo> format = pixmapInfo->at(i);
+		XPixmapInfo *format = pixmapInfo->at(i);
 		print("pixmap format: depth: %2.%, bpp: %2.%, pad: %2.%\n", format->depth, format->bpp, format->pad);
 	}
-	
-	Ref<XScreenInfoArray> screenInfoArray = displayInfo->screenInfo;
+
+	XScreenInfoArray *screenInfoArray = displayInfo->screenInfo;
 	for (int i = 0; i < screenInfoArray->length(); ++i) {
-		Ref<XScreenInfo> screenInfo = screenInfoArray->at(i);
+		XScreenInfo *screenInfo = screenInfoArray->at(i);
 		print("screen %%:\n", i);
 		print("  root window ID: %%\n", screenInfo->rootWindowId);
 		print("  root visual ID: %%\n", screenInfo->rootVisualId);
@@ -60,16 +60,16 @@ int main()
 		print("  save unders: %%\n", screenInfo->saveUnders);
 		print("  root depth: %%\n", screenInfo->rootDepth);
 		print("  supported depths: ");
-		Ref<XVisualInfoByDepth> visualInfoByDepth = screenInfo->visualInfoByDepth;
+		XVisualInfoByDepth *visualInfoByDepth = screenInfo->visualInfoByDepth;
 		for (int j = 0, m = visualInfoByDepth->length(); j < m; ++j) {
 			print("%%", visualInfoByDepth->at(j)->key());
 			if (j != m - 1) print(", ");
 		}
 		print("\n");
 		for (int j = 0; j < visualInfoByDepth->length(); ++j) {
-			Ref<XVisualInfoArray> visualInfoArray = visualInfoByDepth->at(j)->value();
+			XVisualInfoArray *visualInfoArray = visualInfoByDepth->at(j)->value();
 			for (int k = 0; k < visualInfoArray->length(); ++k) {
-				Ref<XVisualInfo> visualInfo = visualInfoArray->at(k);
+				XVisualInfo *visualInfo = visualInfoArray->at(k);
 				String typeName = "unknown";
 				if (visualInfo->type == 0) typeName = "static gray";
 				else if (visualInfo->type == 1) typeName = "gray scale";
@@ -90,6 +90,6 @@ int main()
 			}
 		}
 	}
-	
+
 	return 0;
 }

@@ -25,14 +25,14 @@ public:
 protected:
 	friend class Singleton<InetAddressSyntax>;
 
-	InetAddressSyntax(Ref<SyntaxDebugFactory> debugFactory = 0);
+	InetAddressSyntax(SyntaxDebugFactory *debugFactory = 0);
 
 	int inet4Address_;
 	int inet6Address_;
 	int inetAddress_;
 };
 
-inline Ref<InetAddressSyntax> inetAddressSyntax() { return InetAddressSyntax::instance(); }
+inline InetAddressSyntax *inetAddressSyntax() { return InetAddressSyntax::instance(); }
 
 } // namespace ftl
 

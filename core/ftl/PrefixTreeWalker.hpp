@@ -67,13 +67,13 @@ private:
 	friend class PrefixTree<Char, Value>;
 	typedef PrefixTree<Char, Value> Node;
 
-	PrefixTreeWalker(Ref<Node> node)
+	PrefixTreeWalker(Node *node)
 		: node_(node)
 	{}
 
 	inline bool valid() const { return node_; }
 
-	Ref<Node> node_;
+	Node *node_;
 };
 
 } // namespace ftl

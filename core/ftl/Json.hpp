@@ -31,13 +31,13 @@ private:
 
 	Json();
 
-	Variant parseText(Ref<ByteArray> text, Ref<Token> token);
-	Variant parseObject(Ref<ByteArray> text, Ref<Token> token);
-	Variant parseArray(Ref<ByteArray> text, Ref<Token> token);
-	Pair<String, Variant> parseMember(Ref<ByteArray> text, Ref<Token> token);
-	Variant parseValue(Ref<ByteArray> text, Ref<Token> token);
-	String parseString(Ref<ByteArray> text, Ref<Token> token);
-	double parseNumber(Ref<ByteArray> text, Ref<Token> token);
+	Variant parseText(ByteArray *text, Token *token);
+	Variant parseObject(ByteArray *text, Token *token);
+	Variant parseArray(ByteArray *text, Token *token);
+	Pair<String, Variant> parseMember(ByteArray *text, Token *token);
+	Variant parseValue(ByteArray *text, Token *token);
+	String parseString(ByteArray *text, Token *token);
+	double parseNumber(ByteArray *text, Token *token);
 
 	int int_;
 	int frac_;
@@ -53,7 +53,7 @@ private:
 	int false_, true_, null_;
 };
 
-inline Ref<Json> json() { return Json::instance(); }
+inline Json *json() { return Json::instance(); }
 
 } // namespace ftl
 
