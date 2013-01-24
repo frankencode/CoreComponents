@@ -11,8 +11,8 @@
 
 #include "defaults.hpp"
 #include "types.hpp"
+#include "Instance.hpp"
 #include "Pointer.hpp"
-#include "SetNull.hpp"
 #include "Owner.hpp"
 
 namespace ftl
@@ -30,10 +30,10 @@ namespace ftl
   *
   * Notes on thread-safety:
   *   - reference counting on Instance::incRefCount(), Instance::decRefCount() is thread-safe
-  *   - Owner and SetNull policies aren't thread-safe regarding concurrent assignment
+  *   - the Owner policy isn't thread-safe regarding concurrent assignment
   *     (race condition is detected if compiled with -DFTL_REF_POLICY_RACE_DETECTION)
   */
-template<class T = Instance, template<class> class GetAndSetPolicy = FTL_DEFAULT_REF_POLICY>
+template<class T = Instance, template<class> class GetAndSetPolicy = Pointer>
 class Ref: public GetAndSetPolicy<T>
 {
 public:
