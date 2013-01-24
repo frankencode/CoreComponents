@@ -6,8 +6,8 @@
   * as published by the Free Software Foundation; either version
   * 2 of the License, or (at your option) any later version.
   */
-#ifndef FTL_THREADLOCALOWNER_HPP
-#define FTL_THREADLOCALOWNER_HPP
+#ifndef FTL_TLO_HPP
+#define FTL_TLO_HPP
 
 #include <pthread.h>
 #include "Exception.hpp"
@@ -15,46 +15,55 @@
 namespace ftl
 {
 
+/** \internal
+  * \brief Thread Local Owner Pointer
+  */
 template<class T>
-class ThreadLocalOwner
+class TLO
 {
 public:
-	ThreadLocalOwner()
-	{
+	TLO(T *b = 0) {
 		int ret = ::pthread_key_create(&key_, &threadExitEvent);
 		if (ret != 0)
 			FTL_PTHREAD_EXCEPTION("pthread_key_create", ret);
+		if (b) set(b);
 	}
 
-	~ThreadLocalOwner()
-	{
+	~TLO() {
+		set(reinterpret_cast<T *>(0));
 		::pthread_key_delete(key_);
-		// no error handling, because key could have been deleted automatically
 	}
 
-	inline T *get() const {
-		return reinterpret_cast<T*>(::pthread_getspecific(key_));
+	inline TLO &operator=(T *b) {
+		set(b);
+		return *this;
 	}
 
-	inline void set(T *b)
-	{
+	inline operator T *() { return get(); }
+
+	inline T *operator->() const {
 		T *a = get();
+		FTL_ASSERT2(a, "Null reference");
+		return a;
+	}
 
-		if (a != b)
-		{
+private:
+	static void threadExitEvent(void *v) {
+		T *a = reinterpret_cast<T*>(v);
+		if (a) a->decRefCount();
+	}
+
+	inline void set(T *b) {
+		T *a = get();
+		if (a != b) {
 			if (a) a->decRefCount();
-
 			::pthread_setspecific(key_, b);
-
  			if (b) b->incRefCount();
 		}
 	}
 
-private:
-	static void threadExitEvent(void *arg)
-	{
-		T *a = reinterpret_cast<T*>(arg);
-		if (a) a->decRefCount();
+	inline T *get() const {
+		return reinterpret_cast<T*>(::pthread_getspecific(key_));
 	}
 
 	pthread_key_t key_;
@@ -62,4 +71,4 @@ private:
 
 } // namespace ftl
 
-#endif // FTL_THREADLOCALOWNER_HPP
+#endif // FTL_TLO_HPP

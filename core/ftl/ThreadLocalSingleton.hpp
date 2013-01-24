@@ -11,7 +11,7 @@
 
 #include "Instance.hpp"
 #include "Ref.hpp"
-#include "ThreadLocalOwner.hpp"
+#include "TLO.hpp"
 #include "LocalStatic.hpp"
 
 namespace ftl
@@ -21,9 +21,9 @@ template<class SubClass>
 class ThreadLocalSingleton
 {
 public:
-	static Ref<SubClass> instance()
+	static SubClass *instance()
 	{
-		Ref<SubClass, ThreadLocalOwner> &instance_ = localStatic< Ref<SubClass, ThreadLocalOwner>, ThreadLocalSingleton<SubClass> >();
+		TLO<SubClass> &instance_ = localStatic< TLO<SubClass>, ThreadLocalSingleton<SubClass> >();
 		if (!instance_)
 			instance_ = new SubClass;
 		return instance_;

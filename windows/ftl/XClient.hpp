@@ -30,42 +30,42 @@ class XClient: public Thread, public Singleton<XClient>
 {
 public:
 	Ref<XDisplayInfo> displayInfo() const { return displayInfo_; }
-	
+
 	uint32_t allocateResourceId();
 	void freeResourceId(uint32_t id);
-	
+
 	void activate(Ref<XMessageFilter> filter);
 	void deactivate(Ref<XMessageFilter> filter);
-	
+
 	int createWindow(Ref<XWindow> window);
 	int mapWindow(Ref<XWindow> window);
 	int unmapWindow(Ref<XWindow> window);
-	
+
 	int getFontPath();
-	
+
 private:
 	friend class Singleton<XClient>;
 	XClient();
 	~XClient();
-	
-	Ref<ByteEncoder> messageEncoder();
+
+	ByteEncoder *messageEncoder();
 	int flush(Ref<ByteEncoder> sink);
-	
+
 	virtual void run();
-	
+
 	Ref<StreamSocket, Owner> socket_;
 	Ref<XDisplayInfo, Owner> displayInfo_;
 	int defaultScreen_;
-	
+
 	Ref<Mutex, Owner> resourceIdMutex_;
 	uint32_t nextResourceId_;
 	Ref<List<uint32_t>, Owner> freeResourceIds_;
-	
+
 	Ref<Mutex, Owner> sequenceNumberMutex_;
 	uint16_t sequenceNumber_;
-	
-	Ref<ByteEncoder, ThreadLocalOwner> messageEncoder_;
-	
+
+	TLO<ByteEncoder> messageEncoder_;
+
 	Ref<Mutex, Owner> messageFiltersMutex_;
 	typedef Set< Ref<XMessageFilter, Owner> > MessageFilters;
 	Ref<MessageFilters, Owner> messageFilters_;

@@ -17,9 +17,9 @@
 namespace ftl
 {
 
-Ref<Thread, ThreadLocalOwner> Thread::self_;
+TLO<Thread> Thread::self_;
 
-Ref<Thread> Thread::self()
+Thread *Thread::self()
 {
 	if (!self_) {
 		self_ = new Thread;

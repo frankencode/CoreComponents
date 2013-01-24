@@ -185,7 +185,7 @@ int XClient::getFontPath()
 	return flush(sink);
 }
 
-Ref<ByteEncoder> XClient::messageEncoder()
+ByteEncoder *XClient::messageEncoder()
 {
 	if (!messageEncoder_)
 		messageEncoder_ = ByteEncoder::open(Ref<Stream>(socket_), int(displayInfo_->maximumRequestLength) * 4, localEndian());
