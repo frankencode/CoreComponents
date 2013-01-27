@@ -7,7 +7,7 @@ namespace ftl
 class Shape: public Instance
 {
 public:
-	static Ref<Shape, Owner> create() { return new Shape; }
+	static O<Shape> create() { return new Shape; }
 
 	Property<String> name;
 	Property<int> x;
@@ -49,7 +49,7 @@ private:
 		print("y = %%\n", value);
 	}
 
-	Ref<Shape, Owner> shape_;
+	O<Shape> shape_;
 };
 
 int main()

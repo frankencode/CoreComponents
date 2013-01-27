@@ -21,7 +21,7 @@ int main() {
 		"  \"Is a super hero?\": true\n"
 		"}";
 	print("%%\n", text);
-	Ref<WireObject, Owner> object = wire()->parse(text);
+	O<WireObject> object = wire()->parse(text);
 	print("\n");
 	print("className: %%\n", object->className());
 	print("name: %%\n", object->value("name"));

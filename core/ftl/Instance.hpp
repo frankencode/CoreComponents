@@ -9,8 +9,9 @@
 #ifndef FTL_INSTANCE_HPP
 #define FTL_INSTANCE_HPP
 
-#include "Exception.hpp"
+#include "types.hpp"
 #include "O.hpp"
+#include "Exception.hpp"
 
 namespace ftl
 {
@@ -19,7 +20,7 @@ FTL_EXCEPTION(ReferenceException, Exception);
 
 /** \brief reference counting and secure destruction
   *
-  * Base class for all classes T, whose instances can be referred to by Ref<T, Owner>.
+  * Base class for all classes T, whose instances can be referred to by O<T>.
   * Enforces a consistent allocation schema by surpressing two things:
   *   - combination of static allocation and dynamic destruction
   *   - manual detruction by delete operator
@@ -40,11 +41,11 @@ public:
 
 	inline int refCount() const { return refCount_; }
 
-	inline void incRefCount() {
+	inline void incRefCount() const {
 		__sync_add_and_fetch(&refCount_, 1);
 	}
 
-	inline void decRefCount() {
+	inline void decRefCount() const {
 		if (__sync_sub_and_fetch(&refCount_, 1) == 0)
 			delete this;
 	}
@@ -53,7 +54,7 @@ private:
 	Instance(const Instance &);
 	const Instance &operator=(const Instance &);
 
-	volatile int refCount_;
+	mutable volatile int refCount_;
 };
 
 template<class U, class T>

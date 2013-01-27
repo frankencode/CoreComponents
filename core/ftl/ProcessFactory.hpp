@@ -22,7 +22,7 @@ class SystemStream;
 class ProcessFactory: public Instance
 {
 public:
-	inline static Ref<ProcessFactory, Owner> create() {
+	inline static O<ProcessFactory> create() {
 		return new ProcessFactory;
 	}
 
@@ -65,7 +65,7 @@ public:
 
 	void daemonize();
 
-	Ref<Process, Owner> produce();
+	O<Process> produce();
 
 protected:
 	virtual int incarnate();
@@ -77,19 +77,19 @@ private:
 	String workingDirectory_;
 
 	String execPath_;
-	Ref<StringList, Owner> arguments_;
-	Ref<EnvMap, Owner> envMap_;
+	O<StringList> arguments_;
+	O<EnvMap> envMap_;
 
-	Ref<SignalSet, Owner> signalMask_;
+	O<SignalSet> signalMask_;
 
 	bool hasFileCreationMask_;
 	int fileCreationMask_;
 
 	String command_;
 
-	Ref<SystemStream, Owner> rawInput_;
-	Ref<SystemStream, Owner> rawOutput_;
-	Ref<SystemStream, Owner> rawError_;
+	O<SystemStream> rawInput_;
+	O<SystemStream> rawOutput_;
+	O<SystemStream> rawError_;
 };
 
 } // namespace ftl

@@ -9,7 +9,7 @@ int echo(int argc, char **argv);
 class TestFactory: public ProcessFactory
 {
 public:
-	inline static Ref<TestFactory, Owner> create() {
+	inline static O<TestFactory> create() {
 		return new TestFactory;
 	}
 	int incarnate() {
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 		factory->arguments()->append("--echo 123");
 		factory->envMap()->establish("Hello", "World!");
 
-		Ref<Process, Owner> process = factory->produce();
+		O<Process> process = factory->produce();
 
 		print("Created child process with pid = %%\n", unsigned(process->id()));
 

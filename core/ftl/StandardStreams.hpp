@@ -34,12 +34,12 @@ private:
 
 	StandardStreams();
 
-	Ref<SystemStream, Owner> rawInput_;
-	Ref<SystemStream, Owner> rawOutput_;
-	Ref<SystemStream, Owner> rawError_;
-	Ref<LineSource, Owner> input_;
-	Ref<LineSink, Owner> output_;
-	Ref<LineSink, Owner> error_;
+	O<SystemStream> rawInput_;
+	O<SystemStream> rawOutput_;
+	O<SystemStream> rawError_;
+	O<LineSource> input_;
+	O<LineSink> output_;
+	O<LineSink> error_;
 };
 
 inline SystemStream *rawInput() { return StandardStreams::instance()->rawInput(); }

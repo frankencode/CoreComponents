@@ -20,7 +20,7 @@ namespace ftl
 class Random: public Source<int>
 {
 public:
-	inline static Ref<Random, Owner> open(int seed = -1) {
+	inline static O<Random> open(int seed = -1) {
 		return new Random(seed);
 	}
 

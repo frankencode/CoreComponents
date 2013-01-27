@@ -12,7 +12,7 @@ using namespace ftl;
 class Module: public Instance
 {
 public:
-	inline static Ref<Module, Owner> create(String analyseCommand, String modulePath, StringList *dependencyPaths, bool dirty) {
+	inline static O<Module> create(String analyseCommand, String modulePath, StringList *dependencyPaths, bool dirty) {
 		return new Module(analyseCommand, modulePath, dependencyPaths, dirty);
 	}
 
@@ -33,11 +33,11 @@ private:
 
 	String analyseCommand_;
 	String modulePath_;
-	Ref<StringList, Owner> dependencyPaths_;
+	O<StringList> dependencyPaths_;
 	bool dirty_;
 };
 
-typedef List< Ref<Module, Owner> > ModuleList;
+typedef List< O<Module> > ModuleList;
 
 } // namespace mach
 

@@ -34,7 +34,7 @@ public:
 
 private:
 	friend class XClient;
-	
+
 	enum EventMask {
 		KeyPress             = 0x00000001,
 		KeyRelease           = 0x00000002,
@@ -71,13 +71,13 @@ private:
 	};
 
 	void run();
-	
+
 	uint32_t id_;
 	uint32_t visualId_;
 	int depth_;
 	int x_, y_, width_, height_;
-	
-	Ref<XMessageFilter, Owner> messageFilter_;
+
+	O<XMessageFilter> messageFilter_;
 };
 
 } // namespace ftl

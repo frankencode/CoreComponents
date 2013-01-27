@@ -26,7 +26,7 @@ public:
 	String data;
 };
 
-typedef List< Ref<XAuthRecord, Owner> > XAuthRecords;
+typedef List< O<XAuthRecord> > XAuthRecords;
 
 class XAuthFile: public Instance
 {
@@ -37,7 +37,7 @@ public:
 
 private:
 	String path_;
-	Ref<XAuthRecords, Owner> records_;
+	O<XAuthRecords> records_;
 };
 
 } // namespace ftl

@@ -33,10 +33,10 @@ public:
 	typedef int Index;
 	typedef char Item;
 
-	inline static Ref<ByteArray, Owner> create(int size = 0) { return new ByteArray(size); }
-	inline static Ref<ByteArray, Owner> create(int size, char zero) { return new ByteArray(size, zero); }
-	inline static Ref<ByteArray, Owner> create(const char *data, int size = -1) { return new ByteArray(data, size); }
-	inline static Ref<ByteArray, Owner> create(ByteArray *parent, int size) { return new ByteArray(parent, size); }
+	inline static O<ByteArray> create(int size = 0) { return new ByteArray(size); }
+	inline static O<ByteArray> create(int size, char zero) { return new ByteArray(size, zero); }
+	inline static O<ByteArray> create(const char *data, int size = -1) { return new ByteArray(data, size); }
+	inline static O<ByteArray> create(ByteArray *parent, int size) { return new ByteArray(parent, size); }
 	~ByteArray();
 
 	inline static ByteArray *empty() { return Default<ByteArray>::instance(); }
@@ -108,9 +108,9 @@ public:
 		mem::cpy(data_ + i, data, size);
 	}
 
-	inline Ref<ByteArray, Owner> copy() const { return new ByteArray(*this); }
+	inline O<ByteArray> copy() const { return new ByteArray(*this); }
 
-	inline Ref<ByteArray, Owner> copy(int i0, int i1) const {
+	inline O<ByteArray> copy(int i0, int i1) const {
 		if (i0 < 0) i0 = 0;
 		if (i0 > size_) i0 = size_;
 		if (i1 < 0) i1 = 0;
@@ -119,12 +119,12 @@ public:
 	}
 
 	template<class Range>
-	inline Ref<ByteArray, Owner> copy(Range *range) const {
+	inline O<ByteArray> copy(Range *range) const {
 		return copy(range->i0(), range->i1());
 	}
 
-	inline Ref<ByteArray, Owner> head(int n) const { return copy(0, n); }
-	inline Ref<ByteArray, Owner> tail(int n) const { return copy(size_ - n, size_); }
+	inline O<ByteArray> head(int n) const { return copy(0, n); }
+	inline O<ByteArray> tail(int n) const { return copy(size_ - n, size_); }
 
 	inline int find(char ch) const { return find(0, ch); }
 	inline int find(int i, char ch) const {
@@ -156,16 +156,16 @@ public:
 	inline bool contains(const char *pattern) const { return find(pattern) != size_; }
 	bool contains(String pattern) const;
 
-	static Ref<ByteArray, Owner> join(const StringList *parts, const char *sep = "");
-	static Ref<ByteArray, Owner> join(const StringList *parts, char sep);
-	static Ref<ByteArray, Owner> join(const StringList *parts, String sep);
-	Ref<StringList, Owner> split(char sep) const;
-	Ref<StringList, Owner> split(const char *sep) const;
-	Ref<StringList, Owner> split(SyntaxDefinition *pattern) const;
+	static O<ByteArray> join(const StringList *parts, const char *sep = "");
+	static O<ByteArray> join(const StringList *parts, char sep);
+	static O<ByteArray> join(const StringList *parts, String sep);
+	O<StringList> split(char sep) const;
+	O<StringList> split(const char *sep) const;
+	O<StringList> split(SyntaxDefinition *pattern) const;
 
 	void replaceInsitu(const char *pattern, const char *replacement);
-	Ref<ByteArray, Owner> replace(const char *pattern, const char *replacement) const;
-	Ref<ByteArray, Owner> replace(String pattern, String replacement) const;
+	O<ByteArray> replace(const char *pattern, const char *replacement) const;
+	O<ByteArray> replace(String pattern, String replacement) const;
 
 	int toInt(bool *ok = 0) const;
 	double toFloat(bool *ok = 0) const;
@@ -175,44 +175,44 @@ public:
 
 	ByteArray *toLowerInsitu();
 	ByteArray *toUpperInsitu();
-	inline Ref<ByteArray, Owner> toLower() const { return copy()->toLowerInsitu(); }
-	inline Ref<ByteArray, Owner> toUpper() const { return copy()->toUpperInsitu(); }
+	inline O<ByteArray> toLower() const { return copy()->toLowerInsitu(); }
+	inline O<ByteArray> toUpper() const { return copy()->toUpperInsitu(); }
 
 	ByteArray *expandInsitu();
-	inline Ref<ByteArray, Owner> expand() const { return copy()->expandInsitu(); }
+	inline O<ByteArray> expand() const { return copy()->expandInsitu(); }
 
-	Ref<ByteArray, Owner> stripLeadingSpace() const;
-	Ref<ByteArray, Owner> stripTrailingSpace() const;
-	Ref<ByteArray, Owner> trimmed() const;
-	Ref<ByteArray, Owner> stripTags() const;
-	Ref<ByteArray, Owner> simplified() const;
-	Ref<ByteArray, Owner> normalized(bool nameCase = true) const;
+	O<ByteArray> stripLeadingSpace() const;
+	O<ByteArray> stripTrailingSpace() const;
+	O<ByteArray> trimmed() const;
+	O<ByteArray> stripTags() const;
+	O<ByteArray> simplified() const;
+	O<ByteArray> normalized(bool nameCase = true) const;
 
 	bool offsetToLinePos(int offset, int *line = 0, int *pos = 0) const;
 	bool linePosToOffset(int line, int pos, int *offset = 0) const;
 
 	void checkUtf8() const;
 
-	static Ref<ByteArray, Owner> fromUtf16(const void *data, int size = -1, int endian = localEndian());
+	static O<ByteArray> fromUtf16(const void *data, int size = -1, int endian = localEndian());
 	bool toUtf16(void *buf, int *size);
-	Ref<ByteArray, Owner> toUtf16(int endian = localEndian());
+	O<ByteArray> toUtf16(int endian = localEndian());
 
-	Ref<ByteArray, Owner> md5() const;
-	Ref<ByteArray, Owner> hex() const;
-	Ref<ByteArray, Owner> base64() const;
+	O<ByteArray> md5() const;
+	O<ByteArray> hex() const;
+	O<ByteArray> base64() const;
 
 	bool isRootPath() const;
 	bool isRelativePath() const;
 	bool isAbsolutePath() const;
 
-	Ref<ByteArray, Owner> absolutePathRelativeTo(String currentDir) const;
-	Ref<ByteArray, Owner> absolutePath() const;
-	Ref<ByteArray, Owner> fileName() const;
-	Ref<ByteArray, Owner> completeBaseName() const;
-	Ref<ByteArray, Owner> baseName() const;
-	Ref<ByteArray, Owner> reducePath() const;
-	Ref<ByteArray, Owner> expandPath(String component) const;
-	Ref<ByteArray, Owner> canonicalPath() const;
+	O<ByteArray> absolutePathRelativeTo(String currentDir) const;
+	O<ByteArray> absolutePath() const;
+	O<ByteArray> fileName() const;
+	O<ByteArray> completeBaseName() const;
+	O<ByteArray> baseName() const;
+	O<ByteArray> reducePath() const;
+	O<ByteArray> expandPath(String component) const;
+	O<ByteArray> canonicalPath() const;
 
 private:
 	friend class Singleton<ByteArray>;
@@ -227,8 +227,8 @@ private:
 
 	int size_;
 	char *data_;
-	mutable Ref<Character, Owner> chars_;
-	Ref<ByteArray, Owner> parent_;
+	mutable O<Character> chars_;
+	O<ByteArray> parent_;
 
 	size_t mapSize_;
 };

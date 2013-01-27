@@ -71,14 +71,14 @@ public:
 		StandardError  = 2
 	};
 
-	static Ref<File, Owner> open(String path, int openFlags = Read);
-	static Ref<File, Owner> tryOpen(String path, int openFlags = Read);
-	static Ref<File, Owner> open(int fd, int openFlags);
-	static Ref<File, Owner> temp(int openFlags = Read|Write);
+	static O<File> open(String path, int openFlags = Read);
+	static O<File> tryOpen(String path, int openFlags = Read);
+	static O<File> open(int fd, int openFlags);
+	static O<File> temp(int openFlags = Read|Write);
 
 	String path() const;
 	String name() const;
-	Ref<FileStatus, Owner> status() const;
+	O<FileStatus> status() const;
 
 	int openFlags() const;
 
@@ -107,8 +107,8 @@ public:
 	static bool establish(String path, int fileMode = 0644, int dirMode = 0755);
 	static String lookup(String fileName, StringList *dirs = 0, int accessFlags = Execute);
 
-	static Ref<FileStatus, Owner> status(String path);
-	static Ref<FileStatus, Owner> unresolvedStatus(String path);
+	static O<FileStatus> status(String path);
+	static O<FileStatus> unresolvedStatus(String path);
 
 	static String load(String path);
 	static void save(String path, String text);

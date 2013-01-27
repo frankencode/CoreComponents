@@ -17,7 +17,7 @@ namespace ftl
 class LinkInfo: public Instance
 {
 public:
-	inline static Ref<LinkInfo, Owner> create(void *addr = 0) {
+	inline static O<LinkInfo> create(void *addr = 0) {
 		return new LinkInfo(addr);
 	}
 

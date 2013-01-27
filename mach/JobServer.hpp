@@ -11,7 +11,7 @@ namespace mach
 class JobServer: public Thread
 {
 public:
-	inline static Ref<JobServer, Owner> start(JobChannel *requestChannel, JobChannel *replyChannel) {
+	inline static O<JobServer> start(JobChannel *requestChannel, JobChannel *replyChannel) {
 		return new JobServer(requestChannel, replyChannel);
 	}
 
@@ -20,8 +20,8 @@ private:
 	~JobServer();
 	virtual void run();
 
-	Ref<JobChannel, Owner> requestChannel_;
-	Ref<JobChannel, Owner> replyChannel_;
+	O<JobChannel> requestChannel_;
+	O<JobChannel> replyChannel_;
 };
 
 } // namespace mach

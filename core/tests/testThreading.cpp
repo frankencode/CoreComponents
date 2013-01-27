@@ -9,7 +9,7 @@ namespace ftl
 class MyChannel: public Instance
 {
 public:
-	static Ref<MyChannel, Owner> create() {
+	static O<MyChannel> create() {
 		return new MyChannel;
 	}
 
@@ -34,15 +34,15 @@ private:
 		  full_(Semaphore::create(0))
 	{}
 
-	Ref<Semaphore, Owner> empty_;
-	Ref<Semaphore, Owner> full_;
+	O<Semaphore> empty_;
+	O<Semaphore> full_;
 	int value_;
 };
 
 class Producer: public Thread
 {
 public:
-	static Ref<Producer, Owner> create(MyChannel *channel) {
+	static O<Producer> create(MyChannel *channel) {
 		return new Producer(channel);
 	}
 
@@ -66,7 +66,7 @@ private:
 class Consumer: public Thread
 {
 public:
-	static Ref<Consumer, Owner> create(MyChannel *channel) {
+	static O<Consumer> create(MyChannel *channel) {
 		return new Consumer(channel);
 	}
 

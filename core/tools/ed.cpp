@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 
 	for (String line; input()->read(&line);)
 	{
-		Ref<SyntaxState, Owner> state = commandSyntax->newState();
+		O<SyntaxState> state = commandSyntax->newState();
 		if (!commandSyntax->match(line, 0, state)) {
 			printTo(error(), "Syntax error: \"%%\"\n", line);
 			return 1;
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 		}
 		else if (command == "replace") {
 			String newText = text->copy(0, i0) + value + text->copy(i1, text->length());
-			Ref<File, Owner> file = File::open(path, File::Write);
+			O<File> file = File::open(path, File::Write);
 			file->truncate(0);
 			file->write(newText);
 		}

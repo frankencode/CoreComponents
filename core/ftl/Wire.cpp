@@ -285,8 +285,8 @@ Wire::Wire()
 
 Variant Wire::parse(ByteArray *text, WireObject *virgin)
 {
-	Ref<SyntaxState, Owner> state = newState();
-	Ref<Token, Owner> token = match(text, -1, state);
+	O<SyntaxState> state = newState();
+	O<Token> token = match(text, -1, state);
 	if (!token) {
 		String reason = "Syntax error";
 		int line = 1, pos = 1;
@@ -308,18 +308,18 @@ Variant Wire::parse(ByteArray *text, WireObject *virgin)
 
 String Wire::parseConcatenation(ByteArray *text, Token *token)
 {
-	Ref<StringList, Owner> l = StringList::create();
+	O<StringList> l = StringList::create();
 	token = token->firstChild();
 	while (token) {
-		l << text->copy(token->i0() + 1, token->i1() - 1);
+		*l << text->copy(token->i0() + 1, token->i1() - 1);
 		token = token->nextSibling();
 	}
 	return (l->length() == 1) ? l->at(0) : l->join();
 }
 
-Ref<WireObject, Owner> Wire::parseObject(ByteArray *text, Token *token, WireObject *virgin)
+O<WireObject> Wire::parseObject(ByteArray *text, Token *token, WireObject *virgin)
 {
-	Ref<WireObject, Owner> object = virgin;
+	O<WireObject> object = virgin;
 	if (!object) object = new WireObject;
 	token = token->firstChild();
 	if (token) {
@@ -344,10 +344,10 @@ Ref<WireObject, Owner> Wire::parseObject(ByteArray *text, Token *token, WireObje
 	return object;
 }
 
-Ref<VariantList, Owner> Wire::parseList(ByteArray *text, Token *token)
+O<VariantList> Wire::parseList(ByteArray *text, Token *token)
 {
 
-	Ref<VariantList, Owner> list = VariantList::create(token->countChildren());
+	O<VariantList> list = VariantList::create(token->countChildren());
 	int i = 0;
 	for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
 		list->set(i, parseValue(text, child));

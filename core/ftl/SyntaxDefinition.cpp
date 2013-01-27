@@ -30,24 +30,24 @@ DebugFactory *Definition::debugFactory() const { return def_->debugFactory(); }
 Node *Definition::debug(Node *newNode, const char *nodeType) { return def_->debug(newNode, nodeType); }
 
 int Definition::keywordByName(const char *keyword) { return def_->keywordByName(keyword); }
-Ref<State, Owner> Definition::newState(State *parent) const { return def_->newState(parent); }
+O<State> Definition::newState(State *parent) const { return def_->newState(parent); }
 
-Ref<Token, Owner> Definition::find(const ByteArray *media, int i) const
+O<Token> Definition::find(const ByteArray *media, int i) const
 {
 	return def_->find(const_cast<ByteArray*>(media), &i);
 }
 
-Ref<Token, Owner> Definition::match(const ByteArray *media, int i, SyntaxState *state) const
+O<Token> Definition::match(const ByteArray *media, int i, SyntaxState *state) const
 {
 	int i0 = (i >= 0) ? i : 0, h;
-	Ref<Token, Owner> token = def_->match(const_cast<ByteArray*>(media), i0, &h, state);
+	O<Token> token = def_->match(const_cast<ByteArray*>(media), i0, &h, state);
 	if ((i < 0) && (token)) {
 		if (media->has(token->i1())) token = 0;
 	}
 	return token;
 }
 
-Ref<Token, Owner> Definition::match(const ByteArray *media, SyntaxState *state) const
+O<Token> Definition::match(const ByteArray *media, SyntaxState *state) const
 {
 	return match(media, -1, state);
 }

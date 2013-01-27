@@ -20,7 +20,7 @@ template<class T>
 class Channel: public Container< T, Channel<T> >
 {
 public:
-	static Ref<Channel, Owner> create() {
+	static O<Channel> create() {
 		return new Channel;
 	}
 
@@ -74,9 +74,9 @@ protected:
 	{}
 
 private:
-	Ref<Queue<T>, Owner> queue_;
-	Ref<Mutex, Owner> mutex_;
-	Ref<Condition, Owner> notEmpty_;
+	O<Queue<T>> queue_;
+	O<Mutex> mutex_;
+	O<Condition> notEmpty_;
 };
 
 } // namespace ftl

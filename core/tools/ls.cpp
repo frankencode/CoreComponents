@@ -7,13 +7,13 @@ int main(int argc, char **argv)
 
 	if (argc > 1) {
 		for (int i = 1; i < argc; ++i) {
-			Ref<Glob, Owner> glob = Glob::open(argv[i]);
+			O<Glob> glob = Glob::open(argv[i]);
 			for (String path; glob->read(&path);)
 				output()->writeLine(path);
 		}
 	}
 	else {
-		Ref<Dir, Owner> dir = Dir::open(".");
+		O<Dir> dir = Dir::open(".");
 		for (String name; dir->read(&name);)
 			output()->writeLine(name);
 	}

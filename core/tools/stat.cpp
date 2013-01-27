@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 	bool inodeNumberOption  = config->contains("inode");
 	bool linksOption        = config->contains("links") || defaults;
 
-	Ref< Source<String> > files;
+	O< Source<String> > files;
 	if (rawInput()->isTeletype())
 		files = listOfFiles;
 	else

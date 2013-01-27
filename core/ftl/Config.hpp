@@ -19,7 +19,7 @@ FTL_STD_EXCEPTION(ConfigException);
 class Config: public WireObject
 {
 public:
-	static Ref<Config, Owner> create();
+	static O<Config> create();
 
 	void read(String path);
 	void read(int argc, char **argv);
@@ -37,9 +37,9 @@ public:
 private:
 	Config() {}
 
-	Ref<WireObject, Owner> object_;
-	Ref<StringList, Owner> options_;
-	Ref<StringList, Owner> arguments_;
+	O<WireObject> object_;
+	O<StringList> options_;
+	O<StringList> arguments_;
 	String path_;
 };
 

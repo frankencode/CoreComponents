@@ -4,7 +4,7 @@
 int main() {
 	using namespace ftl;
 
-	Ref<XAuthFile, Owner> authFile = new XAuthFile;
+	O<XAuthFile> authFile = new XAuthFile;
 	XAuthRecords *records = authFile->records();
 	for (int i = 0, n = records->length(); i < n; ++i) {
 		XAuthRecord *record = records->get(i);

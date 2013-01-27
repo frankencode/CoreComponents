@@ -34,10 +34,10 @@ public:
 		Sat = 6
 	};
 
-	inline static Ref<Date, Owner> create() {
+	inline static O<Date> create() {
 		return new Date;
 	}
-	inline static Ref<Date, Owner> create(Time time) {
+	inline static O<Date> create(Time time) {
 		return new Date(time);
 	}
 
@@ -45,8 +45,8 @@ public:
 	// improve logic (add date validation, bool validated_, etc...)
 	inline bool valid() const { return tm_off != -2;}
 
-	static Ref<Date, Owner> localTime();
-	static Ref<Date, Owner> localTime(Time time);
+	static O<Date> localTime();
+	static O<Date> localTime(Time time);
 
 	inline int year() const { return tm_year + 1900; }
 	inline int month() const { return tm_mon; }
@@ -62,7 +62,7 @@ public:
 
 	// \todo
 	String toString() const;
-	// static Ref<Date, Owner> fromString(String s);
+	// static O<Date> fromString(String s);
 
 	// \todo
 	// local time formatting

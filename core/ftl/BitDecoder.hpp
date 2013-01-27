@@ -19,10 +19,10 @@ namespace ftl
 class BitDecoder: public Instance
 {
 public:
-	inline static Ref<BitDecoder, Owner> open(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static O<BitDecoder> open(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
 		return new BitDecoder(stream, bufCapa, endian);
 	}
-	inline static Ref<BitDecoder, Owner> open(void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static O<BitDecoder> open(void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
 		return new BitDecoder(buf, bufCapa, endian);
 	}
 	~BitDecoder();
@@ -48,7 +48,7 @@ private:
 
 	void fill();
 
-	Ref<Stream, Owner> stream_;
+	O<Stream> stream_;
 	int endian_;
 
 	int bufCapa_;

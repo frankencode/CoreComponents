@@ -14,7 +14,7 @@ class JobServer;
 class Job: public Instance
 {
 public:
-	inline static Ref<Job, Owner> create(String command) {
+	inline static O<Job> create(String command) {
 		return new Job(command);
 	}
 
@@ -37,7 +37,7 @@ private:
 	String outputText_;
 };
 
-typedef Channel< Ref<Job, Owner> > JobChannel;
+typedef Channel< O<Job> > JobChannel;
 
 } // namespace mach
 

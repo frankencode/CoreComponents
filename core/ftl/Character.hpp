@@ -10,7 +10,7 @@
 #define FTL_CHARACTER_HPP
 
 #include "Instance.hpp"
-#include "Ref.hpp"
+#include "O.hpp"
 #include "Utf8Walker.hpp"
 
 namespace ftl
@@ -46,9 +46,9 @@ public:
 		return n_;
 	}
 
-	Ref<ByteArray, Owner> copy(int i0, int i1) const;
-	inline Ref<ByteArray, Owner> head(int n) const { return copy(0, n); }
-	inline Ref<ByteArray, Owner> tail(int n) const { return copy(length() - n, n); }
+	O<ByteArray> copy(int i0, int i1) const;
+	inline O<ByteArray> head(int n) const { return copy(0, n); }
+	inline O<ByteArray> tail(int n) const { return copy(length() - n, n); }
 
 	inline uchar_t operator[](int i) const { return get(i); }
 
@@ -68,7 +68,7 @@ public:
 	}
 
 	// int find(int i, const char *pattern) const;
-	// Ref<StringList, Owner> split(const char *pattern) const;
+	// O<StringList> split(const char *pattern) const;
 
 private:
 	friend class ByteArray;

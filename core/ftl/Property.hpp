@@ -48,11 +48,11 @@ template<class Value>
 class Signal: public Instance
 {
 public:
-	inline static Ref<Signal, Owner> create() { return new Signal; }
+	inline static O<Signal> create() { return new Signal; }
 
 	void emit(Value value) {
-		for (int i = 0; i < callbacks_->length(); ++i) {
-			CallbackList *list = callbacks_->valueAt(i);
+		for (int i = 0; i < callbacks()->length(); ++i) {
+			CallbackList *list = callbacks()->valueAt(i);
 			for (int j = 0; j < list->length(); ++j)
 				list->at(j)->invoke(value);
 		}
@@ -60,26 +60,31 @@ public:
 
 	template<class Recipient>
 	void connect(Recipient *recipient, void (Recipient::* method)(Value)) {
-		Ref<CallbackList, Owner> list;
-		if (!callbacks_->lookup(recipient, &list)) {
+		O<CallbackList> list;
+		if (!callbacks()->lookup(recipient, &list)) {
 			list = CallbackList::create();
-			callbacks_->insert(recipient, list);
+			callbacks()->insert(recipient, list);
 		}
 		list->append(new Slot<Recipient, Value>(recipient, method));
 	}
 
 	void disconnect(void *recipient) {
-		callbacks_->remove(recipient);
+		callbacks()->remove(recipient);
 	}
 
 private:
 	friend class Connection;
-	typedef List< Ref<Callback<Value>, Owner> > CallbackList;
-	typedef Map<void*, Ref<CallbackList, Owner> > CallbackListByRecipient;
+	typedef List< O< Callback<Value> > > CallbackList;
+	typedef Map<void*, O<CallbackList> > CallbackListByRecipient;
 
 	Signal() {}
 
-	Ref<CallbackListByRecipient, OnDemand> callbacks_;
+	inline CallbackListByRecipient *callbacks() {
+		if (!callbacks_) callbacks_ = CallbackListByRecipient::create();
+		return callbacks_;
+	}
+
+	O<CallbackListByRecipient> callbacks_;
 };
 
 template<class T>
@@ -93,12 +98,16 @@ public:
 	inline Property &operator=(const T &b) {
 		if (b != value_) {
 			value_ = b;
-			valueChanged_->emit(value_);
+			if (valueChanged_)
+				valueChanged_->emit(value_);
 		}
 		return *this;
 	}
 
-	inline Ref< Signal<T> > valueChanged() const { return valueChanged_; }
+	Signal<T> *valueChanged() {
+		if (!valueChanged_) valueChanged_ = Signal<T>::create();
+		return valueChanged_;
+	}
 
 	inline String toString() const { return Format() << value_; }
 
@@ -106,7 +115,7 @@ public:
 	const Property *operator->() const { return this; }
 
 private:
-	Ref<Signal<T>, OnDemand> valueChanged_;
+	O< Signal<T> > valueChanged_;
 	T value_;
 };
 

@@ -44,15 +44,15 @@ public:
 		AnyType    = 31
 	};
 
-	Variant()                            : type_(UndefType)                {}
-	Variant(int value)                   : type_(IntType),   int_(value)   {}
-	Variant(bool value)                  : type_(BoolType),  int_(value)   {}
-	Variant(float value)                 : type_(FloatType), float_(value) {}
-	Variant(double value)                : type_(FloatType), float_(value) {}
-	Variant(const char *value)           : type_(StringType) { initRef(String(value)); }
-	template<class T, template<class> class P>
-	Variant(Ref<T, P> value)             : type_(RefType)    { initRef(value); }
-	Variant(String value)                : type_(StringType) { initRef(value); }
+	Variant()                 : type_(UndefType)                {}
+	Variant(int value)        : type_(IntType),   int_(value)   {}
+	Variant(bool value)       : type_(BoolType),  int_(value)   {}
+	Variant(float value)      : type_(FloatType), float_(value) {}
+	Variant(double value)     : type_(FloatType), float_(value) {}
+	Variant(const char *value): type_(StringType) { initRef(String(value)); }
+	template<class T>
+	Variant(O<T> value)       : type_(RefType)    { initRef(value); }
+	Variant(String value)     : type_(StringType) { initRef(value); }
 	~Variant() { if (type_ & RefType) killRef(); }
 
 	inline const Variant &operator=(bool value)        { type_ = BoolType;  int_ = value; return *this; }
@@ -61,8 +61,8 @@ public:
 	inline const Variant &operator=(double value)      { type_ = FloatType; float_ = value; return *this; }
 	inline const Variant &operator=(const char *value) { return *this = Variant(value); }
 	inline const Variant &operator=(String value)      { return *this = Variant(value); }
-	template<class T, template<class> class P>
-	inline const Variant &operator=(Ref<T, P> value)   { return *this = Variant(value); }
+	template<class T>
+	inline const Variant &operator=(const O<T> &value) { return *this = Variant(value); }
 
 	Variant(const Variant &b): type_(UndefType) { *this = b; }
 
@@ -115,8 +115,8 @@ public:
 	inline operator int() const { return toInt(); }
 	inline operator float() const { return toFloat(); }
 	inline operator String() const { return toString(); }
-	template<class T, template<class> class P>
-	inline operator Ref<T, P>() const { return toInstance<T>(); }
+	template<class T>
+	inline operator O<T>() const { return toInstance<T>(); }
 
 	bool operator==(const Variant &b) const
 	{
@@ -161,22 +161,22 @@ private:
 	inline static const char *illegalConversion() { return "Illegal variant conversion"; }
 
 	inline void initRef(Instance *instance = 0) {
-		new(dummy_)Ref<Instance, Owner>(instance);
+		new(dummy_)O<Instance>(instance);
 	}
 	inline void killRef() {
-		ref().~Ref<Instance, Owner>();
+		ref().~O<Instance>();
 	}
 	inline void setRef(Instance *instance) const {
 		ref() = instance;
 	}
-	inline Ref<Instance, Owner> &ref() const {
-		return *union_cast<Ref<Instance, Owner>*>(dummy_);
+	inline O<Instance> &ref() const {
+		return *union_cast<O<Instance>*>(dummy_);
 	}
 	char type_;
 	union {
 		int32_t int_;
 		float32_t float_;
-		mutable char dummy_[sizeof(Ref<Instance, Owner>)];
+		mutable char dummy_[sizeof(O<Instance>)];
 	};
 };
 

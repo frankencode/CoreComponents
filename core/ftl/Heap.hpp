@@ -144,10 +144,10 @@ class Heap: public GenericHeap<T, FlexibleSortOrder>
 public:
 	typedef GenericHeap<T, FlexibleSortOrder> Super;
 
-	inline static Ref<Heap, Owner> create(int size, int order = SortOrder::Ascending) {
+	inline static O<Heap> create(int size, int order = SortOrder::Ascending) {
 		return new Heap(size, order);
 	}
-	inline static Ref<Heap, Owner> create(T *buf, int size, int order = SortOrder::Ascending) {
+	inline static O<Heap> create(T *buf, int size, int order = SortOrder::Ascending) {
 		return new Heap(buf, size, order);
 	}
 
@@ -173,10 +173,10 @@ template<class T>
 class MinHeap: public GenericHeap<T, Ascending>
 {
 public:
-	inline static Ref<MinHeap, Owner> create(int size) {
+	inline static O<MinHeap> create(int size) {
 		return new MinHeap(size);
 	}
-	inline static Ref<MinHeap, Owner> create(T *buf, int size) {
+	inline static O<MinHeap> create(T *buf, int size) {
 		return new MinHeap(buf, size);
 	}
 private:
@@ -188,10 +188,10 @@ template<class T>
 class MaxHeap: public GenericHeap<T, Descending>
 {
 public:
-	inline static Ref<MaxHeap, Owner> create(int size) {
+	inline static O<MaxHeap> create(int size) {
 		return new MaxHeap(size);
 	}
-	inline static Ref<MaxHeap, Owner> create(T *buf, int size) {
+	inline static O<MaxHeap> create(T *buf, int size) {
 		return new MaxHeap(buf, size);
 	}
 private:

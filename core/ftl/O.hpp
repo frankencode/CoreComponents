@@ -9,34 +9,35 @@
 #ifndef FTL_O_HPP
 #define FTL_O_HPP
 
-#include "types.hpp"
-#include "Exception.hpp"
-
 namespace ftl
 {
 
-/** \internal
-  * \brief Ownership Pointer
+/** \brief ownership pointer
   */
 template<class T>
 class O
 {
 public:
-	O(T *b = 0): a_(0) { set(b); }
-	O(const T &b): a_(0) { set(b.a_); }
-	~O() { set(reinterpret_cast<T *>(0)); }
+	O(): a_(0) {}
+	~O() { set(0); }
+
+	O(T *b): a_(0) { set(b); }
+	O(const O &b): a_(0) { set(b.a_); }
 
 	inline const O &operator=(T *b) { set(b); return *this; }
 	inline const O &operator=(const O &b) { set(b.a_); return *this; }
 
 	inline operator T *() const { return a_; }
 
+	inline bool operator<(const O &b) const { return a_ < b.a_; }
+
 	inline T *operator->() const {
 		FTL_ASSERT2(a_, "Null reference");
 		return a_;
 	}
 
-private:
+	inline T *get() const { return a_; }
+
 	inline void set(T *b) {
 		if (a_ != b) {
 			if (b) b->incRefCount();
@@ -45,6 +46,7 @@ private:
 		}
 	}
 
+private:
 	T *a_;
 };
 

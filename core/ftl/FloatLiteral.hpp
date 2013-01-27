@@ -19,7 +19,7 @@ class FloatLiteral: public SyntaxDefinition, public Singleton<FloatLiteral>
 {
 public:
 	void read(float64_t *value, const ByteArray *text, Token *token) const;
-	Ref<Token, Owner> read(float64_t *value, const ByteArray *text, int i = -1) const;
+	O<Token> read(float64_t *value, const ByteArray *text, int i = -1) const;
 
 	inline int literal() const { return literal_; }
 

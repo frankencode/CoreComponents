@@ -21,13 +21,13 @@ XAuthFile::XAuthFile(String path)
 	if (path_ == "") path_ = Process::env("XAUTHORITY");
 	if (path_ == "") return;
 
-	Ref<File, Owner> file = File::open(path_);
+	O<File> file = File::open(path_);
 
-	Ref<ByteDecoder, Owner> source = ByteDecoder::open(file);
+	O<ByteDecoder> source = ByteDecoder::open(file);
 	source->setEndian(BigEndian);
 
 	while (source->hasMore()) {
-		Ref<XAuthRecord, Owner> record = new XAuthRecord;
+		O<XAuthRecord> record = new XAuthRecord;
 
 		int family = source->readUInt16();
 		if (family == 0) family = AF_INET;

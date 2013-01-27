@@ -53,22 +53,22 @@ private:
 
 	virtual void run();
 
-	Ref<StreamSocket, Owner> socket_;
-	Ref<XDisplayInfo, Owner> displayInfo_;
+	O<StreamSocket> socket_;
+	O<XDisplayInfo> displayInfo_;
 	int defaultScreen_;
 
-	Ref<Mutex, Owner> resourceIdMutex_;
+	O<Mutex> resourceIdMutex_;
 	uint32_t nextResourceId_;
-	Ref<List<uint32_t>, Owner> freeResourceIds_;
+	O< List<uint32_t> > freeResourceIds_;
 
-	Ref<Mutex, Owner> sequenceNumberMutex_;
+	O<Mutex> sequenceNumberMutex_;
 	uint16_t sequenceNumber_;
 
 	TLO<ByteEncoder> messageEncoder_;
 
-	Ref<Mutex, Owner> messageFiltersMutex_;
-	typedef Set< Ref<XMessageFilter, Owner> > MessageFilters;
-	Ref<MessageFilters, Owner> messageFilters_;
+	O<Mutex> messageFiltersMutex_;
+	typedef Set< O<XMessageFilter> > MessageFilters;
+	O<MessageFilters> messageFilters_;
 };
 
 inline XClient *xClient() { return XClient::instance(); }
