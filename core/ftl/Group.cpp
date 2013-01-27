@@ -20,7 +20,7 @@ Group::Group(gid_t id)
 	int h = sysconf(_SC_GETGR_R_SIZE_MAX);
 	if (h != -1) bufSize = h;
 	#endif
-	Ref<ByteArray, Owner> buf = ByteArray::create(bufSize, '\0');
+	O<ByteArray> buf = ByteArray::create(bufSize, '\0');
 	struct group space;
 	mem::clr(&space, sizeof(struct group));
 	struct group *entry = 0;
@@ -34,7 +34,7 @@ Group::Group(const char *name)
 	int bufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
 	if (bufSize == -1)
 		FTL_SYSTEM_EXCEPTION;
-	Ref<ByteArray, Owner>  buf = ByteArray::create(bufSize, '\0');
+	O<ByteArray>  buf = ByteArray::create(bufSize, '\0');
 	struct group space;
 	mem::clr(&space, sizeof(struct group));
 	struct group *entry = 0;

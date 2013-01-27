@@ -33,10 +33,10 @@ XClient::XClient()
 	String host = 0;
 	int display = 0;
 
-	Ref<SocketAddress, Owner> address;
+	O<SocketAddress> address;
 	String authProtocol, authData;
 	{
-		Ref<StringList, Owner> parts = Process::env("DISPLAY")->split(':');
+		O<StringList> parts = Process::env("DISPLAY")->split(':');
 		if (parts->length() == 2) {
 			host = parts->get(0);
 			parts = parts->get(1)->split('.');
@@ -49,12 +49,12 @@ XClient::XClient()
 			address = SocketAddress::create(AF_LOCAL, path);
 		}
 		else {
-			Ref<SocketAddressList, Owner> list = SocketAddress::resolve(host, "x11");
+			O<SocketAddressList> list = SocketAddress::resolve(host, "x11");
 			if (list->length() == 0) FTL_THROW(XException, "Unknown host");
 			address = list->get(0);
 
 			if (host == "") host = SocketAddress::hostName();
-			Ref<XAuthFile, Owner> file = new XAuthFile;
+			O<XAuthFile> file = new XAuthFile;
 			XAuthRecords *records = file->records();
 			for (int i = 0, n = records->length(); i < n; ++i) {
 				XAuthRecord *record = records->get(i);
@@ -73,7 +73,7 @@ XClient::XClient()
 	socket_ = StreamSocket::create(address);
 	socket_->connect();
 
-	Ref<ByteEncoder, Owner> sink = ByteEncoder::open(socket_);
+	O<ByteEncoder> sink = ByteEncoder::open(socket_);
 
 	sink->writeUInt8((sink->endian() == LittleEndian) ? 'l' : 'B');
 	sink->writeUInt8(0); // unused
@@ -88,7 +88,7 @@ XClient::XClient()
 	sink->writePad(4);
 	sink->flush();
 
-	Ref<ByteDecoder, Owner> source = ByteDecoder::open(socket_);
+	O<ByteDecoder> source = ByteDecoder::open(socket_);
 
 	displayInfo_ = new XDisplayInfo;
 	displayInfo_->read(source);
@@ -138,7 +138,7 @@ int XClient::createWindow(XWindow *window)
 	window->visualId_ = screenInfo->rootVisualId;
 	window->depth_ = screenInfo->rootDepth;
 
-	Ref<ByteEncoder, Owner> sink = messageEncoder();
+	O<ByteEncoder> sink = messageEncoder();
 	sink->writeUInt8(1);
 	sink->writeUInt8(window->depth_);
 	sink->writeUInt16(8 + 1); // request length
@@ -158,7 +158,7 @@ int XClient::createWindow(XWindow *window)
 
 int XClient::mapWindow(XWindow *window)
 {
-	Ref<ByteEncoder, Owner> sink = messageEncoder();
+	O<ByteEncoder> sink = messageEncoder();
 	sink->writeUInt8(8);
 	sink->writeUInt8(0); // unused
 	sink->writeUInt16(2); // request length
@@ -168,7 +168,7 @@ int XClient::mapWindow(XWindow *window)
 
 int XClient::unmapWindow(XWindow *window)
 {
-	Ref<ByteEncoder, Owner> sink = messageEncoder();
+	O<ByteEncoder> sink = messageEncoder();
 	sink->writeUInt8(10);
 	sink->writeUInt8(0); // unused
 	sink->writeUInt16(2); // request length
@@ -178,7 +178,7 @@ int XClient::unmapWindow(XWindow *window)
 
 int XClient::getFontPath()
 {
-	Ref<ByteEncoder, Owner> sink = messageEncoder();
+	O<ByteEncoder> sink = messageEncoder();
 	sink->writeUInt8(52);
 	sink->writeUInt8(0); // unused
 	sink->writeUInt16(1); // request list
@@ -203,14 +203,14 @@ void XClient::run()
 {
 	printTo(error(), "XClient::run()\n");
 	try {
-		Ref<ByteDecoder, Owner> source = ByteDecoder::open(socket_);
+		O<ByteDecoder> source = ByteDecoder::open(socket_);
 
 		while (true) {
 			uint8_t messageCode = source->readUInt8();
 			bool synthetic = messageCode & 0x80;
 			messageCode &= 0x7F;
 
-			Ref<XMessage, Owner> message;
+			O<XMessage> message;
 
 			if (messageCode == XMessage::Error) {
 				message = new XError(messageCode, synthetic, source);
@@ -268,7 +268,7 @@ void XClient::run()
 	{
 		Guard<Mutex> guard(messageFiltersMutex_);
 		for (int i = 0, n = messageFilters_->length(); i < n; ++i)
-			messageFilters_->at(i)->push(Ref<XMessage, Owner>());
+			messageFilters_->at(i)->push(null<XMessage>());
 	}
 }
 

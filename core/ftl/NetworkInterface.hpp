@@ -21,7 +21,7 @@ namespace ftl
 
 class NetworkInterface;
 
-typedef List< Ref<NetworkInterface, Owner> > NetworkInterfaceList;
+typedef List< O<NetworkInterface> > NetworkInterfaceList;
 
 class NetworkInterface: public Instance
 {
@@ -49,7 +49,7 @@ public:
 		PointToPoint = IFF_POINTOPOINT
 	};
 
-	inline static Ref<NetworkInterface, Owner> create() {
+	inline static O<NetworkInterface> create() {
 		return new NetworkInterface;
 	}
 
@@ -61,13 +61,13 @@ public:
 	uint32_t mtu() const;
 	SocketAddressList *addressList() const;
 
-	static Ref<NetworkInterfaceList, Owner> queryAll(int family = AF_INET6);
+	static O<NetworkInterfaceList> queryAll(int family = AF_INET6);
 
 private:
 	NetworkInterface();
 	#ifdef __linux
 	static bool getLink(NetworkInterfaceList *list, int index = -1);
-	static Ref<NetworkInterfaceList, Owner> queryAllIoctl(int family);
+	static O<NetworkInterfaceList> queryAllIoctl(int family);
 	#endif
 
 	String name_;
@@ -76,7 +76,7 @@ private:
 	unsigned flags_;
 	uint64_t hardwareAddress_;
 	uint32_t mtu_;
-	Ref<SocketAddressList, Owner> addressList_;
+	O<SocketAddressList> addressList_;
 };
 
 } // namespace ftl

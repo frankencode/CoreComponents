@@ -32,33 +32,19 @@ public:
 	virtual void push(const T &item) = 0;
 	virtual void pop(T *item) = 0;
 
-	inline CT &operator<<(const T &item) { push(item); return *static_cast<CT*>(this); }
-	inline CT &operator>>(T &item) { pop(&item); return *static_cast<CT*>(this); }
+	inline CT &operator<<(const T &item) { push(item); return *static_cast<CT *>(this); }
+	inline CT &operator>>(T &item) { pop(&item); return *static_cast<CT *>(this); }
 };
 
-template<
-	class T1,
-	class T2,
-	template<class> class CT1,
-	template<class> class GASP1,
-	template<class> class CT2,
-	template<class> class GASP2
->
-inline Ref< CT1<T1>, GASP1 > operator<<(Ref< CT1<T1>, GASP1 > a, Ref< CT2<T1>, GASP2 > b) {
-	for (T2 item; b->read(&item); a->push(item));
+template<class T1, class T2, template<class> class CT1, template<class> class CT2>
+inline CT1<T1> &operator<<(CT1<T1> &a, CT2<T2> &b) {
+	for (T2 item; b.read(&item); a.push(item));
 	return a;
 }
 
-template<
-	class T1,
-	class T2,
-	template<class> class CT1,
-	template<class> class GASP1,
-	template<class> class CT2,
-	template<class> class GASP2
->
-inline Ref< CT2<T2>, GASP2 > operator>>(Ref< CT1<T1>, GASP1 > a, Ref< CT2<T2>, GASP2 > b) {
-	for (T1 item; a->read(&item); b->push(item));
+template<class T1, class T2, template<class> class CT1, template<class> class CT2>
+inline CT2<T2> &operator>>(CT1<T1> &a, CT2<T2> &b) {
+	for (T1 item; a.read(&item); b.push(item));
 	return b;
 }
 
@@ -68,7 +54,7 @@ class GenericIterator: public Source<typename Container::Item>
 public:
 	typedef typename Container::Item Item;
 
-	inline static Ref<GenericIterator, Owner> create(Container *container) {
+	inline static O<GenericIterator> create(Container *container) {
 		return new GenericIterator(container);
 	}
 
@@ -87,7 +73,7 @@ private:
 		  i_(0)
 	{}
 
-	Ref<Container, Owner> container_;
+	O<Container> container_;
 	int i_;
 };
 

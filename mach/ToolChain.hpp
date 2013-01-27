@@ -26,11 +26,11 @@ public:
 	virtual int defaultSizeOptimizationLevel() const = 0;
 
 	virtual String analyseCommand(BuildPlan *buildPlan, String source) const = 0;
-	virtual Ref<Job, Owner> createAnalyseJob(BuildPlan *buildPlan, String source) = 0;
-	virtual Ref<Module, Owner> finishAnalyseJob(BuildPlan *buildPlan, Job *job) = 0;
+	virtual O<Job> createAnalyseJob(BuildPlan *buildPlan, String source) = 0;
+	virtual O<Module> finishAnalyseJob(BuildPlan *buildPlan, Job *job) = 0;
 
-	virtual Ref<Job, Owner> createCompileJob(BuildPlan *buildPlan, Module *module) = 0;
-	virtual Ref<Job, Owner> createLinkJob(BuildPlan *buildPlan, Module *module) = 0;
+	virtual O<Job> createCompileJob(BuildPlan *buildPlan, Module *module) = 0;
+	virtual O<Job> createLinkJob(BuildPlan *buildPlan, Module *module) = 0;
 
 	virtual String linkPath(BuildPlan *buildPlan) const = 0;
 	virtual bool link(BuildPlan *buildPlan) = 0;

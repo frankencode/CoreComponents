@@ -19,7 +19,7 @@ namespace ftl
 class Condition: public Instance
 {
 public:
-	inline static Ref<Condition, Owner> create() { return new Condition; }
+	inline static O<Condition> create() { return new Condition; }
 	~Condition();
 	void wait(Mutex *mutex);
 	bool waitUntil(Mutex *mutex, Time timeout);

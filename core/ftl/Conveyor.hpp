@@ -20,7 +20,7 @@ template<class T>
 class Conveyor: public Container< T, Conveyor<T> >
 {
 public:
-	inline static Ref<Conveyor, Owner> create(int size) {
+	inline static O<Conveyor> create(int size) {
 		return new Conveyor(size);
 	}
 

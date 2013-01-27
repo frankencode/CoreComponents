@@ -49,16 +49,16 @@ private:
 	State();
 	State(const DefinitionNode *definition, int numFlags, int numCaptures, State *parent = 0);
 
-	Ref<DefinitionNode, Owner> definition_;
+	O<const DefinitionNode> definition_;
 	int definitionId_;
 
-	Ref<State, Owner> child_;
+	O<State> child_;
 
 	typedef Array<bool> Flags;
-	typedef Array< Ref<Range, Owner> > Captures;
+	typedef Array< O<Range> > Captures;
 
-	Ref<Flags, Owner> flags_;
-	Ref<Captures, Owner> captures_;
+	O<Flags> flags_;
+	O<Captures> captures_;
 
 	const char *hint_;
 	int hintOffset_;

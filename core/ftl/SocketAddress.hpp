@@ -26,12 +26,12 @@ FTL_EXCEPTION(NetworkingException, Exception);
 
 class SocketAddress;
 
-typedef List< Ref<SocketAddress, Owner> > SocketAddressList;
+typedef List< O<SocketAddress> > SocketAddressList;
 
 class SocketAddress: public Instance
 {
 public:
-	inline static Ref<SocketAddress, Owner> create() {
+	inline static O<SocketAddress> create() {
 		return new SocketAddress;
 	}
 
@@ -43,17 +43,17 @@ public:
 	  * \param address numerical host address, wildcard ("*") or file path
 	  * \param port service port
 	  */
-	inline static Ref<SocketAddress, Owner> create(int family, String address = String(), int port = 0) {
+	inline static O<SocketAddress> create(int family, String address = String(), int port = 0) {
 		return new SocketAddress(family, address, port);
 	}
 
-	inline static Ref<SocketAddress, Owner> create(struct sockaddr_in *addr) {
+	inline static O<SocketAddress> create(struct sockaddr_in *addr) {
 		return new SocketAddress(addr);
 	}
-	inline static Ref<SocketAddress, Owner> create(struct sockaddr_in6 *addr) {
+	inline static O<SocketAddress> create(struct sockaddr_in6 *addr) {
 		return new SocketAddress(addr);
 	}
-	inline static Ref<SocketAddress, Owner> create(addrinfo *info) {
+	inline static O<SocketAddress> create(addrinfo *info) {
 		return new SocketAddress(info);
 	}
 
@@ -80,7 +80,7 @@ public:
 	  *   The host name can be a short name relative to the local domain.
 	  * The fully qualified domain name (aka canonical name) can be optionally retrieved.
 	  */
-	static Ref<SocketAddressList, Owner> resolve(String hostName, String serviceName = String(), int family = AF_UNSPEC, int socketType = 0, String *canonicalName = 0);
+	static O<SocketAddressList> resolve(String hostName, String serviceName = String(), int family = AF_UNSPEC, int socketType = 0, String *canonicalName = 0);
 
 	/** Lookup the host name of given address. Usually a reverse DNS
 	  * lookup will be issued, which may take several seconds.

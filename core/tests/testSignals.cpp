@@ -7,7 +7,7 @@ using namespace ftl;
 
 class SignalEater: public Thread {
 public:
-	static Ref<SignalEater, Owner> create() {
+	static O<SignalEater> create() {
 		return new SignalEater;
 	}
 

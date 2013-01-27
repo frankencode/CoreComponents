@@ -8,7 +8,7 @@ namespace ftl
 class CloneFactory: public ProcessFactory
 {
 public:
-	static Ref<CloneFactory, Owner> create(String path) { return new CloneFactory(path); }
+	static O<CloneFactory> create(String path) { return new CloneFactory(path); }
 
 	int incarnate()
 	{

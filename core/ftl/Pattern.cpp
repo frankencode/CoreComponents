@@ -284,8 +284,8 @@ PatternCompiler::PatternCompiler()
 
 void PatternCompiler::compile(ByteArray *text, SyntaxDefinition *definition)
 {
-	Ref<SyntaxState, Owner> state = newState();
-	Ref<Token, Owner> token = match(text, 0, state);
+	O<SyntaxState> state = newState();
+	O<Token> token = match(text, 0, state);
 	if ((!token) || (token->length() < text->length())) {
 		String reason = "Syntax error";
 		int pos = token->length();

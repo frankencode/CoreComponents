@@ -54,10 +54,10 @@ void XScreenInfo::read(ByteDecoder *source)
 	for (int i = 0, n = source->readUInt8(); i < n; ++i) {
 		int depth = source->readUInt8();
 		source->readUInt8(); // unused
-		Ref<XVisualInfoArray, Owner> visualInfoArray = XVisualInfoArray::create(source->readUInt16());
+		O<XVisualInfoArray> visualInfoArray = XVisualInfoArray::create(source->readUInt16());
 		source->readUInt32(); // unused
 		for (int j = 0; j < visualInfoArray->length(); ++j) {
-			Ref<XVisualInfo, Owner> visualInfo = new XVisualInfo;
+			O<XVisualInfo> visualInfo = new XVisualInfo;
 			visualInfo->read(source);
 			visualInfoArray->set(j, visualInfo);
 		}
@@ -104,13 +104,13 @@ void XDisplayInfo::read(ByteDecoder *source)
 	source->skipPad(4);
 
 	for (int i = 0; i < pixmapInfo->length(); ++i) {
-		Ref<XPixmapInfo, Owner> format = new XPixmapInfo;
+		O<XPixmapInfo> format = new XPixmapInfo;
 		format->read(source);
 		pixmapInfo->set(i, format);
 	}
 
 	for (int i = 0; i < screenInfo->length(); ++i) {
-		Ref<XScreenInfo, Owner> screen = new XScreenInfo;
+		O<XScreenInfo> screen = new XScreenInfo;
 		screen->read(source);
 		screenInfo->set(i, screen);
 	}

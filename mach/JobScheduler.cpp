@@ -5,7 +5,7 @@
 namespace mach
 {
 
-Ref<JobScheduler, Owner> JobScheduler::create(int concurrency)
+O<JobScheduler> JobScheduler::create(int concurrency)
 {
 	return new JobScheduler(concurrency);
 }
@@ -35,7 +35,7 @@ void JobScheduler::schedule(Job *job)
 	++totalCount_;
 }
 
-bool JobScheduler::collect(Ref<Job, Owner> *completedJob)
+bool JobScheduler::collect(O<Job> *completedJob)
 {
 	start();
 	if ((finishCount_ == totalCount_) || !serverPool_) {
@@ -43,7 +43,7 @@ bool JobScheduler::collect(Ref<Job, Owner> *completedJob)
 		return false;
 	}
 
-	Ref<Job, Owner> job = replyChannel_->popFront();
+	O<Job> job = replyChannel_->popFront();
 	*completedJob = job;
 	if (job->status() != 0) {
 		status_ = job->status();

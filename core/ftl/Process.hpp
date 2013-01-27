@@ -31,8 +31,8 @@ FTL_STD_EXCEPTION(ProcessException);
 class Process: public Instance
 {
 public:
-	static Ref<Process, Owner> start(String command, int ioPolicy = 0);
-	static Ref<Process, Owner> start(String command, ProcessFactory *factory);
+	static O<Process> start(String command, int ioPolicy = 0);
+	static O<Process> start(String command, ProcessFactory *factory);
 
 	// -- child process control interface
 
@@ -92,7 +92,7 @@ public:
 	static void unsetEnv(String key);
 	static char **&environ();
 
-	static Ref<EnvMap, Owner> envMap();
+	static O<EnvMap> envMap();
 
 	static pid_t currentId();
 	static pid_t parentId();
@@ -127,13 +127,13 @@ private:
 	int type_;
 	int ioPolicy_;
 
-	Ref<SystemStream, Owner> rawInput_;
-	Ref<SystemStream, Owner> rawOutput_;
-	Ref<SystemStream, Owner> rawError_;
+	O<SystemStream> rawInput_;
+	O<SystemStream> rawOutput_;
+	O<SystemStream> rawError_;
 
-	Ref<LineSink, Owner> input_;
-	Ref<LineSource, Owner> output_;
-	Ref<LineSource, Owner> error_;
+	O<LineSink> input_;
+	O<LineSource> output_;
+	O<LineSource> error_;
 
 	pid_t processId_;
 };

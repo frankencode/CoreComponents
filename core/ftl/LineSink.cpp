@@ -25,7 +25,7 @@ String LineSink::prefix() const { return prefix_; }
 
 void LineSink::setPrefix(String prefix)
 {
-	Ref<ByteArray, Owner> bufSaved;
+	O<ByteArray> bufSaved;
 	if (bufFill_ > prefix_->size())
 		bufSaved = buf_->copy(prefix_->size(), bufFill_);
 	bufFill_ = 0;

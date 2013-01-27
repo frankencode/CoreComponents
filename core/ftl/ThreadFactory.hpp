@@ -17,7 +17,7 @@ namespace ftl
 class ThreadFactory: public Instance
 {
 public:
-	inline static Ref<ThreadFactory, Owner> create(Ref< Clonable<Thread> > prototype = 0) {
+	inline static O<ThreadFactory> create(O< Clonable<Thread> > prototype = 0) {
 		return new ThreadFactory(prototype);
 	}
 	~ThreadFactory();
@@ -33,16 +33,16 @@ public:
 
 	pthread_attr_t *attr();
 
-	Ref<Thread, Owner> produce();
+	O<Thread> produce();
 	void start(Thread *thread);
 
 protected:
-	ThreadFactory(Ref< Clonable<Thread> > prototype = 0);
+	ThreadFactory(O< Clonable<Thread> > prototype = 0);
 
 private:
 	static void *bootstrap(void *self);
 
-	Ref<Clonable<Thread>, Owner> prototype_;
+	O<Clonable<Thread>> prototype_;
 	pthread_attr_t attr_;
 };
 

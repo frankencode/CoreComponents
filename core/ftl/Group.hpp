@@ -23,10 +23,10 @@ namespace ftl
 class Group: public Instance
 {
 public:
-	inline static Ref<Group, Owner> lookup(gid_t id) {
+	inline static O<Group> lookup(gid_t id) {
 		return new Group(id);
 	}
-	inline static Ref<Group, Owner> lookup(const char *name) {
+	inline static O<Group> lookup(const char *name) {
 		return new Group(name);
 	}
 
@@ -44,7 +44,7 @@ private:
 	bool exists_;
 	gid_t id_;
 	String name_;
-	Ref<StringList, Owner> members_;
+	O<StringList> members_;
 };
 
 } // namespace ftl

@@ -22,10 +22,10 @@ public:
 	typedef T Item;
 	typedef GenericIterator<Set> Iterator;
 
-	inline static Ref<Set, Owner> create() { return new Set; }
-	virtual Ref<Set, Owner> clone() const { return new Set(*this); }
+	inline static O<Set> create() { return new Set; }
+	virtual O<Set> clone() const { return new Set(*this); }
 
-	inline Ref<Iterator, Owner> createIterator() const { return Iterator::create(this); }
+	inline O<Iterator> createIterator() const { return Iterator::create(this); }
 
 	inline bool isEmpty() const { return tree_.weight() == 0; }
 	inline int length() const { return tree_.weight(); }

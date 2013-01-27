@@ -10,7 +10,7 @@
 #define FTL_SIGNALSET_HPP
 
 #include <signal.h>
-#include "Ref.hpp"
+#include "Instance.hpp"
 
 namespace ftl
 {
@@ -18,10 +18,10 @@ namespace ftl
 class SignalSet: public Instance, public sigset_t
 {
 public:
-	inline static Ref<SignalSet, Owner> createEmpty() {
+	inline static O<SignalSet> createEmpty() {
 		return new SignalSet(Empty);
 	}
-	inline static Ref<SignalSet, Owner> createFull() {
+	inline static O<SignalSet> createFull() {
 		return new SignalSet(Full);
 	}
 

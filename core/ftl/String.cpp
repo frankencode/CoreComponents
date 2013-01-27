@@ -25,10 +25,12 @@ String::String(const Format &b)
 	*this = *ByteArray::join(b);
 }
 
-String::String(Ref<StringList, Owner> parts) { *this = join(parts); }
+String::String(O<StringList> parts) { *this = join(parts); }
 
-Ref<StringList, Owner> String::operator+(const String &b) const {
-	return StringList::create() << *this << b;
+O<StringList> String::operator+(const String &b) const {
+	O<StringList> l = StringList::create();
+	*l << *this << b;
+	return l;
 }
 
 } // namespace ftl

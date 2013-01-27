@@ -15,7 +15,7 @@
 namespace ftl
 {
 
-class XMessageFilter: public Channel< Ref<XMessage, Owner> >
+class XMessageFilter: public Channel< O<XMessage> >
 {
 public:
 	XMessageFilter();

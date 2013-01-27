@@ -105,15 +105,15 @@ void Date::init(Time time)
 	tm_year = year - 1900;
 }
 
-Ref<Date, Owner> Date::localTime()
+O<Date> Date::localTime()
 {
 	return localTime(Time::now());
 }
 
-Ref<Date, Owner> Date::localTime(Time time)
+O<Date> Date::localTime(Time time)
 {
 	Date utc(time);
-	Ref<Date, Owner> local = new Date;
+	O<Date> local = new Date;
 	time_t seconds = time.sec();
 	localtime_r(&seconds, local);
 	Time offset = local->time() - utc.time();

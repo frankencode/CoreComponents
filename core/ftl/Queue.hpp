@@ -34,7 +34,7 @@ class Queue: public Container< T, Queue<T> >
 public:
 	typedef T Item;
 
-	inline static Ref<Queue, Owner> create() {
+	inline static O<Queue> create() {
 		return new Queue;
 	}
 

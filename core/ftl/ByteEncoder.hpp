@@ -19,10 +19,10 @@ namespace ftl
 class ByteEncoder: public Sink<uint8_t>, public Sink<char>
 {
 public:
-	inline static Ref<ByteEncoder, Owner> open(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static O<ByteEncoder> open(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteEncoder(stream, bufCapa, endian);
 	}
-	inline static Ref<ByteEncoder, Owner> open(void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static O<ByteEncoder> open(void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteEncoder(buf, bufCapa, endian);
 	}
 	~ByteEncoder();
@@ -60,7 +60,7 @@ private:
 	ByteEncoder(Stream *stream, int bufCapa, int endian);
 	ByteEncoder(void *buf, int bufCapa, int endian);
 
-	Ref<Stream, Owner> stream_;
+	O<Stream> stream_;
 	int endian_;
 
 	int bufCapa_;

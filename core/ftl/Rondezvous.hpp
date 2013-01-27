@@ -20,7 +20,7 @@ template<class T>
 class Rondezvous: public Container< T, Rondezvous<T> >
 {
 public:
-	inline static Ref<Rondezvous, Owner> create() {
+	inline static O<Rondezvous> create() {
 		return new Rondezvous;
 	}
 

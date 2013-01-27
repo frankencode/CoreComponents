@@ -21,10 +21,10 @@ public:
 	typedef int Index;
 	typedef T Item;
 
-	inline static Ref<CircularBuffer, Owner> create(int size) {
+	inline static O<CircularBuffer> create(int size) {
 		return new CircularBuffer(size);
 	}
-	inline static Ref<CircularBuffer, Owner> create(T *buf, int size) {
+	inline static O<CircularBuffer> create(T *buf, int size) {
 		return new CircularBuffer(buf, size);
 	}
 

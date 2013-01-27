@@ -19,7 +19,7 @@ class Dir;
 class Glob: public Source<String>
 {
 public:
-	inline static Ref<Glob, Owner> open(String expression) { return new Glob(expression); }
+	inline static O<Glob> open(String expression) { return new Glob(expression); }
 
 	bool read(String *path);
 
@@ -28,10 +28,10 @@ private:
 	Glob(String path, StringList *remainder);
 	void init(String path);
 
-	Ref<Dir, Owner> dir_;
+	O<Dir> dir_;
 	Pattern pattern_;
-	Ref<StringList, Owner> remainder_;
-	Ref<Glob, Owner> child_;
+	O<StringList> remainder_;
+	O<Glob> child_;
 };
 
 } // namespace ftl

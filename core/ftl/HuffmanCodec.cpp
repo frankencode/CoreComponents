@@ -336,7 +336,7 @@ int HuffmanCodec::encode( uint8_t *encoded,
                           int rawFill,
                           bool *userFallback )
 {
-	Ref<BitEncoder, Owner> sink = BitEncoder::open(encoded, encodedCapacity);
+	O<BitEncoder> sink = BitEncoder::open(encoded, encodedCapacity);
 	encode(sink, raw, rawFill, userFallback);
 	return int(sink->numBytesWritten());
 }
@@ -346,7 +346,7 @@ int HuffmanCodec::decode( int *raw,
                           uint8_t *encoded,
                           int encodedFill )
 {
-	Ref<BitDecoder, Owner> source = BitDecoder::open(encoded, encodedFill);
+	O<BitDecoder> source = BitDecoder::open(encoded, encodedFill);
 	return decode(raw, rawCapacity, source);
 }
 

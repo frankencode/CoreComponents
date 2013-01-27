@@ -9,7 +9,7 @@
 namespace mach
 {
 
-Ref<DependencyCache, Owner> DependencyCache::create(BuildPlan *buildPlan)
+O<DependencyCache> DependencyCache::create(BuildPlan *buildPlan)
 {
 	return new DependencyCache(buildPlan);
 }
@@ -27,7 +27,7 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 	File::establish(cachePath_);
 	Time cacheTime = File::status(cachePath_)->lastModified();
 
-	Ref<WireObject, Owner> dependencyCache;
+	O<WireObject> dependencyCache;
 	try {
 		dependencyCache = wire()->parse(File::load(cachePath_));
 	}
@@ -45,12 +45,12 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 		WireObject *wire = cast<WireObject>(item->value());
 		String command = wire->value("analyseCommand");
 		String modulePath = wire->value("modulePath");
-		Ref<StringList, Owner> dependencyPaths = cast<VariantList>(wire->value("dependencyPaths"))->toList<String>();
+		O<StringList> dependencyPaths = cast<VariantList>(wire->value("dependencyPaths"))->toList<String>();
 		String sourcePath = dependencyPaths->at(0);
 
 		bool dirty = false;
 
-		Ref<FileStatus, Owner> objectStatus = buildPlan_->fileStatus(modulePath);
+		O<FileStatus> objectStatus = buildPlan_->fileStatus(modulePath);
 		for (int i = 0; i < dependencyPaths->length(); ++i) {
 			Time sourceTime = buildPlan_->fileStatus(dependencyPaths->at(i))->lastModified();
 			if (sourceTime > cacheTime) {
@@ -104,7 +104,7 @@ DependencyCache::~DependencyCache()
 	File::save(cachePath_, text);
 }
 
-bool DependencyCache::lookup(String source, Ref<Module, Owner> *module)
+bool DependencyCache::lookup(String source, O<Module> *module)
 {
 	return cache_->lookup(source, module);
 }

@@ -46,9 +46,9 @@ bool StreamSocket::readyAccept(Time idleTimeout)
 	return readyRead(idleTimeout);
 }
 
-Ref<StreamSocket, Owner> StreamSocket::accept()
+O<StreamSocket> StreamSocket::accept()
 {
-	Ref<SocketAddress, Owner> clientAddress = SocketAddress::create(address_->family());
+	O<SocketAddress> clientAddress = SocketAddress::create(address_->family());
 	socklen_t len = clientAddress->addrLen();
 	int fdc = ::accept(fd_, clientAddress->addr(), &len);
 	if (fdc < 0) {

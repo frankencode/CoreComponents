@@ -19,10 +19,10 @@ namespace ftl
 class ByteDecoder: public Source<uint8_t>, Source<char>
 {
 public:
-	inline static Ref<ByteDecoder, Owner> open(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static O<ByteDecoder> open(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteDecoder(stream, bufCapa, endian);
 	}
-	inline static Ref<ByteDecoder, Owner> open(const void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static O<ByteDecoder> open(const void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
 		return new ByteDecoder(buf, bufCapa, endian);
 	}
 	~ByteDecoder();
@@ -31,7 +31,7 @@ public:
 	bool read(char *ch);
 
 	void read(ByteArray *bytes);
-	Ref<ByteArray, Owner> read(int n);
+	O<ByteArray> read(int n);
 
 	bool hasMore();
 	uint8_t readUInt8();
@@ -60,7 +60,7 @@ private:
 	ByteDecoder(Stream *stream, int bufCapa, int endian);
 	ByteDecoder(const void *buf, int bufCapa, int endian);
 
-	Ref<Stream, Owner> stream_;
+	O<Stream> stream_;
 	int endian_;
 
 	void fill();
@@ -91,9 +91,9 @@ inline void ByteDecoder::read(ByteArray *bytes)
 		bytes->set(i, readUInt8());
 }
 
-inline Ref<ByteArray, Owner> ByteDecoder::read(int n)
+inline O<ByteArray> ByteDecoder::read(int n)
 {
-	Ref<ByteArray, Owner> bytes = ByteArray::create(n);
+	O<ByteArray> bytes = ByteArray::create(n);
 	read(bytes);
 	return bytes;
 }

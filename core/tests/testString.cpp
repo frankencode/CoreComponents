@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 		String s = "bin/testPath";
 		// print("s = \"%%\"\n", s);
 		print("s->find(\"/\") = %%\n", s->find("/"));
-		Ref<StringList, Owner> parts = s->split("/");
+		O<StringList> parts = s->split("/");
 		print("s.split(\"/\") = [\n");
 		for (int i = 0; i < parts->length(); ++i)
 			print("  \"%%\"\n", parts->get(i));

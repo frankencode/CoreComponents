@@ -181,7 +181,7 @@ int ByteArray::find(String pattern, int i) const
 
 int ByteArray::find(SyntaxDefinition *pattern, int i) const
 {
-	Ref<Token, Owner> token = pattern->find(this, i);
+	O<Token> token = pattern->find(this, i);
 	return (token) ? token->i0(): size_;
 }
 
@@ -190,7 +190,7 @@ bool ByteArray::contains(String pattern) const
 	return contains(pattern->constData());
 }
 
-Ref<ByteArray, Owner> ByteArray::join(const StringList *parts, const char *sep)
+O<ByteArray> ByteArray::join(const StringList *parts, const char *sep)
 {
 	int sepSize = str::len(sep);
 	if (parts->length() == 0) {
@@ -201,7 +201,7 @@ Ref<ByteArray, Owner> ByteArray::join(const StringList *parts, const char *sep)
 		for (int i = 0; i < parts->length(); ++i)
 			size += parts->at(i)->size();
 		size += (parts->length() - 1) * sepSize;
-		Ref<ByteArray, Owner> result = ByteArray::create(size);
+		O<ByteArray> result = ByteArray::create(size);
 		char *p = result->data_;
 		for (int i = 0; i < parts->length(); ++i) {
 			ByteArray *part = parts->at(i);
@@ -217,7 +217,7 @@ Ref<ByteArray, Owner> ByteArray::join(const StringList *parts, const char *sep)
 	}
 }
 
-Ref<ByteArray, Owner> ByteArray::join(const StringList *parts, char sep)
+O<ByteArray> ByteArray::join(const StringList *parts, char sep)
 {
 	char h[2];
 	h[0] = sep;
@@ -225,20 +225,20 @@ Ref<ByteArray, Owner> ByteArray::join(const StringList *parts, char sep)
 	return join(parts, h);
 }
 
-Ref<ByteArray, Owner> ByteArray::join(const StringList *parts, String sep)
+O<ByteArray> ByteArray::join(const StringList *parts, String sep)
 {
 	return join(parts, sep->constData());
 }
 
-Ref<StringList, Owner> ByteArray::split(char sep) const
+O<StringList> ByteArray::split(char sep) const
 {
 	char sep2[2] = { sep, '\0' };
 	return split(sep2);
 }
 
-Ref<StringList, Owner> ByteArray::split(const char *sep) const
+O<StringList> ByteArray::split(const char *sep) const
 {
-	Ref<StringList, Owner> parts = StringList::create();
+	O<StringList> parts = StringList::create();
 	int i0 = 0;
 	int sepLength = str::len(sep);
 	while (i0 < size_) {
@@ -254,11 +254,11 @@ Ref<StringList, Owner> ByteArray::split(const char *sep) const
 	return parts;
 }
 
-Ref<StringList, Owner> ByteArray::split(SyntaxDefinition *pattern) const
+O<StringList> ByteArray::split(SyntaxDefinition *pattern) const
 {
-	Ref<StringList, Owner> parts = StringList::create();
+	O<StringList> parts = StringList::create();
 	for (int i = 0; i < size_;) {
-		Ref<Token, Owner> token = pattern->find(this, i);
+		O<Token> token = pattern->find(this, i);
 		parts->append(copy(i, token->i0()));
 		i = token->i1();
 	}
@@ -294,12 +294,12 @@ void ByteArray::replaceInsitu(const char *pattern, const char *replacement)
 	}
 }
 
-Ref<ByteArray, Owner> ByteArray::replace(const char *pattern, const char *replacement) const
+O<ByteArray> ByteArray::replace(const char *pattern, const char *replacement) const
 {
 	return join(split(pattern), replacement);
 }
 
-Ref<ByteArray, Owner> ByteArray::replace(String pattern, String replacement) const
+O<ByteArray> ByteArray::replace(String pattern, String replacement) const
 {
 	return replace(pattern->constData(), replacement->constData());
 }
@@ -400,7 +400,7 @@ ByteArray *ByteArray::expandInsitu()
 						hs = 0;
 					}
 					char ec[4];
-					Ref<Utf8Encoder, Owner> encoder = Utf8Encoder::open(ec, 4);
+					O<Utf8Encoder> encoder = Utf8Encoder::open(ec, 4);
 					encoder->write(x);
 					int el = encoder->byteEncoder()->numBytesWritten();
 					for (int k = 0; k < el; ++k)
@@ -441,7 +441,7 @@ ByteArray *ByteArray::expandInsitu()
 	return this;
 }
 
-Ref<ByteArray, Owner> ByteArray::stripLeadingSpace() const
+O<ByteArray> ByteArray::stripLeadingSpace() const
 {
 	int i = 0;
 	while (i < size_) {
@@ -451,7 +451,7 @@ Ref<ByteArray, Owner> ByteArray::stripLeadingSpace() const
 	return copy(i, size_ - i);
 }
 
-Ref<ByteArray, Owner> ByteArray::stripTrailingSpace() const
+O<ByteArray> ByteArray::stripTrailingSpace() const
 {
 	int n = size_;
 	while (n > 0) {
@@ -461,7 +461,7 @@ Ref<ByteArray, Owner> ByteArray::stripTrailingSpace() const
 	return copy(0, n);
 }
 
-Ref<ByteArray, Owner> ByteArray::trimmed() const
+O<ByteArray> ByteArray::trimmed() const
 {
 	int t = 0, i = 0, n = size_;
 	while (t < n) {
@@ -476,9 +476,9 @@ Ref<ByteArray, Owner> ByteArray::trimmed() const
 	return copy(i, n);
 }
 
-Ref<ByteArray, Owner> ByteArray::stripTags() const
+O<ByteArray> ByteArray::stripTags() const
 {
-	Ref<StringList, Owner> parts = StringList::create();
+	O<StringList> parts = StringList::create();
 	char *o = data_;
 	char *p = o;
 	while (*p) {
@@ -502,18 +502,18 @@ Ref<ByteArray, Owner> ByteArray::stripTags() const
 	return join(parts);
 }
 
-Ref<ByteArray, Owner> ByteArray::simplified() const
+O<ByteArray> ByteArray::simplified() const
 {
 	return normalized(false);
 }
 
-Ref<ByteArray, Owner> ByteArray::normalized(bool nameCase) const
+O<ByteArray> ByteArray::normalized(bool nameCase) const
 {
 	for (int i = 0; i < size_; ++i) {
 		if ((0 <= data_[i]) && (data_[i] < 32))
 			data_[i] = 32;
 	}
-	Ref<StringList, Owner> parts = split(" ");
+	O<StringList> parts = split(" ");
 	for (int i = 0; i < parts->length(); ++i) {
 		String s = parts->at(i);
 		if (s->isEmpty()) {
@@ -573,9 +573,9 @@ bool ByteArray::linePosToOffset(int line, int pos, int *offset) const
 	return true;
 }
 
-Ref<ByteArray, Owner> ByteArray::fromUtf16(const void *data, int size, int endian)
+O<ByteArray> ByteArray::fromUtf16(const void *data, int size, int endian)
 {
-	Ref<ByteArray, Owner> s2;
+	O<ByteArray> s2;
 	if (size < 0) {
 		size = 0;
 		for (const uint16_t *p = reinterpret_cast<const uint16_t*>(data); *p; ++p) ++size;
@@ -584,13 +584,13 @@ Ref<ByteArray, Owner> ByteArray::fromUtf16(const void *data, int size, int endia
 	if (size > 0) {
 		int size2 = 0;
 		{
-			Ref<Utf16Decoder, Owner> source = Utf16Decoder::open(data, size, endian);
+			O<Utf16Decoder> source = Utf16Decoder::open(data, size, endian);
 			for (uchar_t ch; source->read(&ch);)
 				size2 += Utf8Encoder::encodedSize(ch);
 		}
 		s2 = ByteArray::create(size2);
-		Ref<Utf16Decoder, Owner> source = Utf16Decoder::open(data, size, endian);
-		Ref<Utf8Encoder, Owner> sink = Utf8Encoder::open(s2->data_, size2);
+		O<Utf16Decoder> source = Utf16Decoder::open(data, size, endian);
+		O<Utf8Encoder> sink = Utf8Encoder::open(s2->data_, size2);
 		for (uchar_t ch; source->read(&ch);)
 			sink->write(ch);
 	}
@@ -630,16 +630,16 @@ bool ByteArray::toUtf16(void *buf, int *size)
 	return (j <= n);
 }
 
-Ref<ByteArray, Owner> ByteArray::toUtf16(int endian)
+O<ByteArray> ByteArray::toUtf16(int endian)
 {
 	int size2 = 0;
 	for (int i = 0; i < chars()->length(); ++i)
 		size2 += Utf16Encoder::encodedSize(get(i));
-	Ref<ByteArray, Owner> s2 = ByteArray::create(size2 + 2);
+	O<ByteArray> s2 = ByteArray::create(size2 + 2);
 	(*s2)[size2] = 0;
 	(*s2)[size2 + 1] = 0;
 	if (size2 > 0) {
-		Ref<Utf16Encoder, Owner> sink = Utf16Encoder::create(s2->data(), size2, endian);
+		O<Utf16Encoder> sink = Utf16Encoder::create(s2->data(), size2, endian);
 		for (int i = 0; i < chars()->length(); ++i)
 			sink->write(get(i));
 	}
@@ -648,20 +648,20 @@ Ref<ByteArray, Owner> ByteArray::toUtf16(int endian)
 
 void ByteArray::checkUtf8() const
 {
-	Ref<Utf8Decoder, Owner> source = Utf8Decoder::create(data_, size_);
+	O<Utf8Decoder> source = Utf8Decoder::create(data_, size_);
 	for (uchar_t ch = 0; source->read(&ch););
 }
 
-Ref<ByteArray, Owner> ByteArray::md5() const
+O<ByteArray> ByteArray::md5() const
 {
 	Md5 md5;
 	md5.feed(data_, size_);
 	return md5.finish();
 }
 
-Ref<ByteArray, Owner> ByteArray::hex() const
+O<ByteArray> ByteArray::hex() const
 {
-	Ref<ByteArray, Owner> s2 = ByteArray::create(size_ * 2);
+	O<ByteArray> s2 = ByteArray::create(size_ * 2);
 	int j = 0;
 	for (int i = 0; i < size_; ++i) {
 		unsigned char ch = (unsigned char)data_[i];
@@ -675,7 +675,7 @@ Ref<ByteArray, Owner> ByteArray::hex() const
 	return s2;
 }
 
-Ref<ByteArray, Owner> ByteArray::base64() const
+O<ByteArray> ByteArray::base64() const
 {
 	return Base64::encode(this);
 }
@@ -695,13 +695,13 @@ bool ByteArray::isAbsolutePath() const
 	return (length() > 0) ? (get(0) == '/') : false;
 }
 
-Ref<ByteArray, Owner> ByteArray::absolutePathRelativeTo(String currentDir) const
+O<ByteArray> ByteArray::absolutePathRelativeTo(String currentDir) const
 {
 	if (isAbsolutePath() || (currentDir == "."))
-		return this;
+		return const_cast<ByteArray *>(this);
 
-	Ref<StringList, Owner> absoluteParts = StringList::create();
-	Ref<StringList, Owner> parts = split("/");
+	O<StringList> absoluteParts = StringList::create();
+	O<StringList> parts = split("/");
 
 	int upCount = 0;
 
@@ -737,38 +737,38 @@ Ref<ByteArray, Owner> ByteArray::absolutePathRelativeTo(String currentDir) const
 	return absoluteParts->join("/");
 }
 
-Ref<ByteArray, Owner> ByteArray::absolutePath() const
+O<ByteArray> ByteArray::absolutePath() const
 {
 	if (isAbsolutePath())
-		return this;
+		return const_cast<ByteArray *>(this);
 	return absolutePathRelativeTo(String());
 }
 
-Ref<ByteArray, Owner> ByteArray::fileName() const
+O<ByteArray> ByteArray::fileName() const
 {
 	String name;
-	Ref<StringList, Owner> parts = split("/");
+	O<StringList> parts = split("/");
 	if (parts->length() > 0)
 		name = parts->at(-1);
 	return name;
 }
 
-Ref<ByteArray, Owner> ByteArray::completeBaseName() const
+O<ByteArray> ByteArray::completeBaseName() const
 {
-	Ref<StringList, Owner> parts = fileName()->split(".");
+	O<StringList> parts = fileName()->split(".");
 	parts->popBack();
 	return parts->join(".");
 }
 
-Ref<ByteArray, Owner> ByteArray::baseName() const
+O<ByteArray> ByteArray::baseName() const
 {
-	Ref<StringList, Owner> parts = fileName()->split(".");
+	O<StringList> parts = fileName()->split(".");
 	return parts->at(0);
 }
 
-Ref<ByteArray, Owner> ByteArray::reducePath() const
+O<ByteArray> ByteArray::reducePath() const
 {
-	Ref<StringList, Owner> parts = split("/");
+	O<StringList> parts = split("/");
 	if (parts->length() > 0)
 		parts->popBack();
 	String resultPath = parts->join("/");
@@ -777,15 +777,15 @@ Ref<ByteArray, Owner> ByteArray::reducePath() const
 	return resultPath;
 }
 
-Ref<ByteArray, Owner> ByteArray::expandPath(String component) const
+O<ByteArray> ByteArray::expandPath(String component) const
 {
 	return String(Format() << String(this) << "/" << component);
 }
 
-Ref<ByteArray, Owner> ByteArray::canonicalPath() const
+O<ByteArray> ByteArray::canonicalPath() const
 {
-	Ref<StringList, Owner> parts = split("/");
-	Ref<StringList, Owner> result = StringList::create();
+	O<StringList> parts = split("/");
+	O<StringList> result = StringList::create();
 	for (int i = 0; i < parts->length(); ++i) {
 		String part = parts->at(i);
 		if ((part == "") && (i > 0)) continue;

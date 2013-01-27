@@ -40,8 +40,8 @@ public:
 	void read(ByteDecoder *source);
 };
 
-typedef Array< Ref< XVisualInfo, Owner > > XVisualInfoArray;
-typedef Map< int, Ref<XVisualInfoArray, Owner> > XVisualInfoByDepth;
+typedef Array< O<XVisualInfo> > XVisualInfoArray;
+typedef Map< int, O<XVisualInfoArray> > XVisualInfoByDepth;
 
 class XScreenInfo: public Instance {
 public:
@@ -61,13 +61,13 @@ public:
 	uint8_t saveUnders;
 	uint8_t rootDepth;
 
-	Ref<XVisualInfoByDepth, Owner> visualInfoByDepth;
+	O<XVisualInfoByDepth> visualInfoByDepth;
 
 	void read(ByteDecoder *source);
 };
 
-typedef Array< Ref<XPixmapInfo, Owner> > XPixmapInfoArray;
-typedef Array< Ref<XScreenInfo, Owner> > XScreenInfoArray;
+typedef Array< O<XPixmapInfo> > XPixmapInfoArray;
+typedef Array< O<XScreenInfo> > XScreenInfoArray;
 
 class XDisplayInfo: public Instance {
 public:
@@ -88,8 +88,8 @@ public:
 	uint8_t maxKeyCode;
 	String vendor;
 
-	Ref<XPixmapInfoArray, Owner> pixmapInfo;
-	Ref<XScreenInfoArray, Owner> screenInfo;
+	O<XPixmapInfoArray> pixmapInfo;
+	O<XScreenInfoArray> screenInfo;
 
 	void read(ByteDecoder *source);
 };

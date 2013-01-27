@@ -19,7 +19,7 @@ namespace ftl
 class SystemStream: public Stream
 {
 public:
-	inline static Ref<SystemStream, Owner> create(int fd) {
+	inline static O<SystemStream> create(int fd) {
 		return new SystemStream(fd);
 	}
 	~SystemStream();

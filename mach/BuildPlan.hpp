@@ -17,7 +17,7 @@ using namespace ftl;
 
 class BuildPlan;
 
-typedef List< Ref<BuildPlan, Owner> > BuildPlanList;
+typedef List< O<BuildPlan> > BuildPlanList;
 
 FTL_EXCEPTION(BuildPlanException, Exception);
 
@@ -42,7 +42,7 @@ public:
 		GlobalOptions = Debug|Release|DryRun|Blindfold|Bootstrap|Verbose|OptimizeSpeed|OptimizeSize
 	};
 
-	static Ref<BuildPlan, Owner> create(int argc, char **argv);
+	static O<BuildPlan> create(int argc, char **argv);
 
 	inline ToolChain *toolChain() const { return toolChain_; }
 	inline String projectPath() const { return projectPath_; }
@@ -75,10 +75,10 @@ public:
 	bool rmdir(String path);
 	bool symlink(String path, String newPath);
 	bool unlink(String path);
-	Ref<FileStatus, Owner> fileStatus(String path);
+	O<FileStatus> fileStatus(String path);
 
 private:
-	Ref<BuildPlan, Owner> create(ToolChain *toolChain, String projectPath, int globalOptions);
+	O<BuildPlan> create(ToolChain *toolChain, String projectPath, int globalOptions);
 
 	typedef PrefixTree<char, BuildPlan *> BuildMap;
 
@@ -92,10 +92,10 @@ private:
 	bool build();
 	void clean();
 
-	Ref<ToolChain, Owner> toolChain_;
+	O<ToolChain> toolChain_;
 	String projectPath_;
 	String modulePath_;
-	Ref<Config, Owner> recipe_;
+	O<Config> recipe_;
 
 	String name_;
 	String version_;
@@ -103,15 +103,15 @@ private:
 	int speedOptimizationLevel_;
 	int sizeOptimizationLevel_;
 
-	Ref<StringList, Owner> includePaths_;
-	Ref<StringList, Owner> libraryPaths_;
-	Ref<StringList, Owner> libraries_;
-	Ref<StringList, Owner> sources_;
-	Ref<ModuleList, Owner> modules_;
+	O<StringList> includePaths_;
+	O<StringList> libraryPaths_;
+	O<StringList> libraries_;
+	O<StringList> sources_;
+	O<ModuleList> modules_;
 
-	Ref<BuildPlanList, Owner> prequisites_;
+	O<BuildPlanList> prequisites_;
 
-	Ref<BuildMap, Owner> buildMap_;
+	O<BuildMap> buildMap_;
 	String sourcePrefix_;
 
 	bool prepareComplete_;

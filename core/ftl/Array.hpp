@@ -23,9 +23,9 @@ public:
 	typedef int Index;
 	typedef T Item;
 
-	inline static Ref<Array, Owner> create(int size = 0) { return new Array(size); }
-	inline static Ref<Array, Owner> create(int size, T zero) { return new Array(size, zero); }
-	inline static Ref<Array, Owner> create(const T *data, int size) { return new Array(data, size); }
+	inline static O<Array> create(int size = 0) { return new Array(size); }
+	inline static O<Array> create(int size, T zero) { return new Array(size, zero); }
+	inline static O<Array> create(const T *data, int size) { return new Array(data, size); }
 
 	~Array()
 	{
@@ -138,9 +138,9 @@ public:
 		mem::cpy(data_ + i, data, size * sizeof(T));
 	}
 
-	inline Ref<Array, Owner> copy() const { return copy(0, size_); }
+	inline O<Array> copy() const { return copy(0, size_); }
 
-	inline Ref<Array, Owner> copy(int i0, int i1) const {
+	inline O<Array> copy(int i0, int i1) const {
 		if (i0 < 0) i0 = 0;
 		if (i0 > size_) i0 = size_;
 		if (i1 < 0) i1 = 0;
@@ -148,8 +148,8 @@ public:
 		return (i0 < i1) ? new Array(data_ + i0, i1 - i0) : new Array();
 	}
 
-	inline Ref<Array, Owner> head(int n) const { return copy(0, n); }
-	inline Ref<Array, Owner> tail(int n) const { return copy(size_ - n, size_); }
+	inline O<Array> head(int n) const { return copy(0, n); }
+	inline O<Array> tail(int n) const { return copy(size_ - n, size_); }
 
 	inline int find(const T &item) const { return find(0, item); }
 	inline int find(int i, const T &item) const {

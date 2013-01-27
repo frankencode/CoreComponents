@@ -190,7 +190,7 @@ public:
 	inline int invert() const { return invert_; }
 
 private:
-	Ref<ByteArray, Owner> s_;
+	O<ByteArray> s_;
 	int invert_;
 };
 
@@ -229,7 +229,7 @@ public:
 	inline const ByteArray &s() const { return *s_; }
 
 private:
-	Ref<ByteArray, Owner> s_;
+	O<ByteArray> s_;
 	bool caseSensitive_;
 };
 
@@ -265,7 +265,7 @@ public:
 	inline KeywordMap *map() const { return map_; }
 
 private:
-	Ref<KeywordMap, Owner> map_;
+	O<KeywordMap> map_;
 	bool caseSensitive_;
 };
 
@@ -887,7 +887,7 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Ref<Token, Owner> token;
+		O<Token> token;
 		if (tokenFactory) {
 			token = tokenFactory->produce();
 			token->init(definitionId_, id_);
@@ -970,7 +970,7 @@ protected:
 
 	const char *ruleName_;
 	RuleNode *rule_;
-	Ref<LinkNode, Owner> unresolvedNext_;
+	O<LinkNode> unresolvedNext_;
 };
 
 class RefNode: public LinkNode
@@ -1044,7 +1044,7 @@ protected:
 	friend class DefinitionNode;
 	const char *keywordName_;
 	int keyword_;
-	Ref<PreviousNode, Owner> unresolvedKeywordNext_;
+	O<PreviousNode> unresolvedKeywordNext_;
 };
 
 class ContextNode: public LinkNode
@@ -1111,7 +1111,7 @@ private:
 
 	const char *definitionName_;
 	DefinitionNode *definition_;
-	Ref<InvokeNode, Owner> unresolvedNext_;
+	O<InvokeNode> unresolvedNext_;
 };
 
 class DefinitionNode: public RefNode
@@ -1157,8 +1157,8 @@ public:
 		definitionByName_->insert(name, definition);
 	}
 
-	typedef Ref<Node, Owner> NODE;
-	typedef Ref<RuleNode, Owner> RULE;
+	typedef O<Node> NODE;
+	typedef O<RuleNode> RULE;
 
 	inline void OPTION(const char *name, bool value) {
 		if (str::casecmp(name, "caseSensitive") == 0)
@@ -1219,13 +1219,13 @@ public:
 
 	inline int DEFINE(const char *ruleName, NODE entry = 0) {
 		if (!entry) entry = PASS();
-		Ref<RuleNode, Owner> rule = new RuleNode(id_, ruleName, numRules_++, entry);
+		O<RuleNode> rule = new RuleNode(id_, ruleName, numRules_++, entry);
 		addRule(rule);
 		return rule->id();
 	}
 	inline void DEFINE_VOID(const char *ruleName, NODE entry = 0) {
 		if (!entry) entry = PASS();
-		Ref<RuleNode, Owner> rule = new RuleNode(id_, ruleName, numRules_++, entry, true);
+		O<RuleNode> rule = new RuleNode(id_, ruleName, numRules_++, entry, true);
 		addRule(rule);
 	}
 	inline void ENTRY(const char *ruleName) {
@@ -1233,19 +1233,19 @@ public:
 	}
 
 	inline NODE REF(const char *ruleName) {
-		Ref<RefNode, Owner> link = new RefNode(ruleName);
+		O<RefNode> link = new RefNode(ruleName);
 		link->unresolvedNext_ = unresolvedLinkHead_;
 		unresolvedLinkHead_ = link;
 		return debug(link, "Ref");
 	}
 	inline NODE INLINE(const char *ruleName) {
-		Ref<InlineNode, Owner> link = new InlineNode(ruleName);
+		O<InlineNode> link = new InlineNode(ruleName);
 		link->unresolvedNext_ = unresolvedLinkHead_;
 		unresolvedLinkHead_ = link;
 		return debug(link, "Inline");
 	}
 	inline NODE PREVIOUS(const char *ruleName, const char *keyword = 0) {
-		Ref<PreviousNode, Owner> link = new PreviousNode(ruleName, keyword);
+		O<PreviousNode> link = new PreviousNode(ruleName, keyword);
 		link->unresolvedNext_ = unresolvedLinkHead_;
 		unresolvedLinkHead_ = link;
 		if (keyword) {
@@ -1255,7 +1255,7 @@ public:
 		return debug(link, "Previous");
 	}
 	inline NODE CONTEXT(const char *ruleName, NODE entry = 0) {
-		Ref<ContextNode, Owner> link = new ContextNode(ruleName, entry);
+		O<ContextNode> link = new ContextNode(ruleName, entry);
 		link->unresolvedNext_ = unresolvedLinkHead_;
 		unresolvedLinkHead_ = link;
 		return debug(link, "Context");
@@ -1295,7 +1295,7 @@ public:
 		return debug(new InvokeNode(definition, coverage), "Invoke");
 	}
 	inline NODE INVOKE(const char *definitionName, NODE coverage = 0) {
-		Ref<InvokeNode, Owner> node = new InvokeNode(definitionName, coverage);
+		O<InvokeNode> node = new InvokeNode(definitionName, coverage);
 		node->unresolvedNext_ = unresolvedInvokeHead_;
 		unresolvedInvokeHead_ = node;
 		return debug(node, "Invoke");
@@ -1309,14 +1309,14 @@ public:
 
 	State *newState(State *parent = 0) const;
 
-	Ref<Token, Owner> find(ByteArray *media, int *i0, int *i1 = 0, TokenFactory *tokenFactory = 0) const;
-	Ref<Token, Owner> match(ByteArray *media, int i0 = 0, int *i1 = 0, State *state = 0, TokenFactory *tokenFactory = 0) const;
+	O<Token> find(ByteArray *media, int *i0, int *i1 = 0, TokenFactory *tokenFactory = 0) const;
+	O<Token> match(ByteArray *media, int i0 = 0, int *i1 = 0, State *state = 0, TokenFactory *tokenFactory = 0) const;
 
 	const DefinitionNode *resolveScope(const char*& name) const;
 
 	inline DefinitionNode *definitionByName(const char *name) const
 	{
-		Ref<DefinitionNode, Owner> definition;
+		O<DefinitionNode> definition;
 		const DefinitionNode *scope = resolveScope(name);
 		if (!scope->definitionByName_->lookup(name, &definition))
 			FTL_THROW(DebugException, str::cat("Undefined definition '", name, "' referenced"));
@@ -1326,14 +1326,14 @@ public:
 	inline RuleNode *ruleByName(const char *name) const
 	{
 		const DefinitionNode *scope = resolveScope(name);
-		Ref<RuleNode, Owner> node;
+		O<RuleNode> node;
 		FTL_ASSERT(scope);
 		if (!scope->ruleByName_->lookup(name, &node))
 			FTL_THROW(DebugException, str::cat("Undefined rule '", name, "' referenced"));
 		return node;
 	}
 
-	inline int keywordByName(const char *keyword)
+	inline int keywordByName(const char *keyword) const
 	{
 		int tokenType = -1;
 		if (!keywordByName_->lookup(keyword, &tokenType))
@@ -1341,7 +1341,7 @@ public:
 		return tokenType;
 	}
 
-	inline int flagIdByName(const char *name)
+	inline int flagIdByName(const char *name) const
 	{
 		int flagId = -1;
 		if (!flagIdByName_->lookup(name, &flagId))
@@ -1349,7 +1349,7 @@ public:
 		return flagId;
 	}
 
-	inline int captureIdByName(const char *name)
+	inline int captureIdByName(const char *name) const
 	{
 		int captureId = -1;
 		if (!captureIdByName_->lookup(name, &captureId))
@@ -1365,7 +1365,7 @@ public:
 
 private:
 	friend class Debugger;
-	Ref<DebugFactory, Owner> debugFactory_;
+	O<DebugFactory> debugFactory_;
 
 	friend class InvokeNode;
 
@@ -1373,16 +1373,16 @@ private:
 	const char *name_;
 	bool caseSensitive_;
 
-	typedef PrefixTree<char, Ref<DefinitionNode, Owner> > DefinitionByName;
-	Ref<DefinitionByName, Owner> definitionByName_;
+	typedef PrefixTree<char, O<DefinitionNode> > DefinitionByName;
+	O<DefinitionByName> definitionByName_;
 
-	typedef PrefixTree<char, Ref<RuleNode, Owner> > RuleByName;
+	typedef PrefixTree<char, O<RuleNode> > RuleByName;
 	typedef PrefixTree<char, int> KeywordByName;
 
 	int numRules_;
 	int numKeywords_;
-	Ref<RuleByName, Owner> ruleByName_;
-	Ref<KeywordByName, Owner> keywordByName_;
+	O<RuleByName> ruleByName_;
+	O<KeywordByName> keywordByName_;
 
 	void addRule(RuleNode *rule)
 	{
@@ -1390,10 +1390,10 @@ private:
 			FTL_THROW(DebugException, str::cat("Redefinition of rule '", rule->name(), "'"));
 	}
 
-	Ref<LinkNode, Owner> unresolvedLinkHead_;
-	Ref<PreviousNode, Owner> unresolvedKeywordHead_;
-	Ref<InvokeNode, Owner> unresolvedInvokeHead_;
-	Ref<DefinitionNode, Owner> unresolvedNext_;
+	O<LinkNode> unresolvedLinkHead_;
+	O<PreviousNode> unresolvedKeywordHead_;
+	O<InvokeNode> unresolvedInvokeHead_;
+	O<DefinitionNode> unresolvedNext_;
 	bool statefulScope_;
 	bool hasHints_;
 
@@ -1418,8 +1418,8 @@ private:
 
 	typedef PrefixTree<char, int> StateIdByName;
 
-	Ref<StateIdByName, OnDemand> flagIdByName_;
-	Ref<StateIdByName, OnDemand> captureIdByName_;
+	O<StateIdByName> flagIdByName_;
+	O<StateIdByName> captureIdByName_;
 
 	static int errorCallBack(Instance *self, ByteArray *media, int index, State *state);
 };

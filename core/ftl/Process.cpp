@@ -33,14 +33,14 @@ extern "C" char **environ;
 namespace ftl
 {
 
-Ref<Process, Owner> Process::start(String command, int ioPolicy)
+O<Process> Process::start(String command, int ioPolicy)
 {
-	Ref<ProcessFactory, Owner> factory = ProcessFactory::create();
+	O<ProcessFactory> factory = ProcessFactory::create();
 	factory->setIoPolicy(ioPolicy);
 	return start(command, factory);
 }
 
-Ref<Process, Owner> Process::start(String command, ProcessFactory *factory)
+O<Process> Process::start(String command, ProcessFactory *factory)
 {
 	factory->setCommand(command);
 	return factory->produce();
@@ -206,13 +206,13 @@ void Process::unsetEnv(String key)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-Ref<EnvMap, Owner> Process::envMap()
+O<EnvMap> Process::envMap()
 {
 	char **env = environ();
-	Ref<EnvMap, Owner> map = EnvMap::create();
+	O<EnvMap> map = EnvMap::create();
 	int i = 0;
 	while (env[i] != 0) {
-		Ref<StringList, Owner> parts = String(env[i])->split("=");
+		O<StringList> parts = String(env[i])->split("=");
 		if (parts->length() == 2)
 			map->insert(parts->at(0), parts->at(1));
 		++i;

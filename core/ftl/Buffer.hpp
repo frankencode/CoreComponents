@@ -32,7 +32,7 @@ private:
 
 	char *data_;
 	int fill_;
-	Ref<Block, Owner> next_;
+	O<Block> next_;
 	Block *prev_;
 };
 
@@ -45,11 +45,11 @@ public:
 	inline int blockSize() const { return blockSize_; }
 
 	Block *allocate();
-	Ref<ByteArray, Owner> join() const;
+	O<ByteArray> join() const;
 
 private:
 	int blockSize_;
-	Ref<Block, Owner> head_;
+	O<Block> head_;
 	Block *tail_;
 };
 

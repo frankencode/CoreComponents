@@ -20,10 +20,10 @@ namespace ftl
 class Format;
 class Variant;
 
-class String: public Ref<ByteArray, Owner>
+class String: public O<ByteArray>
 {
 public:
-	typedef Ref<ByteArray, Owner> Super;
+	typedef O<ByteArray> Super;
 
 	// initialize empty string
 	String(): Super(ByteArray::empty()) {}
@@ -37,7 +37,7 @@ public:
 	}
 
 	// initialize string by given bytes
-	String(const Ref<ByteArray, Owner> &bytes): Super(bytes) {}
+	String(const O<ByteArray> &bytes): Super(bytes) {}
 
 	// initialize string from a shallow copy of another string
 	String(const String &b): Super(b.Super::get()) {}
@@ -50,9 +50,9 @@ public:
 	String(const char *data, int size = -1): Super(ByteArray::create(data, size)) {}
 
 	// syntax sugar
-	String(Ref<StringList, Owner> parts);
-	Ref<StringList, Owner> operator+(const char *b) const { return *this + String(b); }
-	Ref<StringList, Owner> operator+(const String &b) const;
+	String(O<StringList> parts);
+	O<StringList> operator+(const char *b) const { return *this + String(b); }
+	O<StringList> operator+(const String &b) const;
 
 	inline static String join(const StringList *parts, String sep = "") { return ByteArray::join(parts, sep); }
 
@@ -82,12 +82,12 @@ public:
 private:
 	friend class ByteArray;
 
-	explicit String(const ByteArray *bytes): Super(bytes) {}
+	explicit String(ByteArray *bytes): Super(bytes) {}
 };
 
-inline Ref<StringList, Owner> operator+(const char *a, const String &b) { return String(a) + b; }
-inline Ref<StringList, Owner> operator+(Ref<ByteArray, Owner> a, const String &b) { return String(a) + b; }
-inline Ref<StringList, Owner> operator+(Ref<StringList, Owner> a, const String &b) { a << b; return a; }
+inline O<StringList> operator+(const char *a, const String &b) { return String(a) + b; }
+inline O<StringList> operator+(O<ByteArray> a, const String &b) { return String(a) + b; }
+inline O<StringList> operator+(O<StringList> a, const String &b) { *a << b; return a; }
 
 inline bool operator< (const char *a, const String &b) { return str::cmp(a, b->data()) <  0; }
 inline bool operator==(const char *a, const String &b) { return str::cmp(a, b->data()) == 0; }

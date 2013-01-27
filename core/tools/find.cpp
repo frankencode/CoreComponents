@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 			if (textPattern) {
 				if (FileStatus::read(path)->type() != File::Regular)
 					continue;
-				Ref<File, Owner> file = File::tryOpen(path);
+				O<File> file = File::tryOpen(path);
 				if (!file) {
 					printTo(error(), "Failed to open %%\n", path);
 					continue;
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 				String text = file->map();
 				int ln = 1;
 				for (int i = 0; i < text->length();) {
-					Ref<Token, Owner> token = textPattern->find(text, i);
+					O<Token> token = textPattern->find(text, i);
 					if (!token) break;
 					for (;i < token->i0(); ++i)
 						if (text->at(i) == '\n') ++ln;
