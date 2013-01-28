@@ -152,7 +152,7 @@ public:
 
 	template<class T2>
 	O< List<T2> > toList() const {
-		O< List<T2 >> result = List<T2>::create(length());
+		O< List<T2 > > result = List<T2>::create(length());
 		for (int i = 0; i < length(); ++i)
 			result->set(i, at(i));
 		return result;

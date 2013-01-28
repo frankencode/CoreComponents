@@ -6,7 +6,7 @@ namespace ftl
 {
 
 template<class T>
-void print(O<List<T>> list) {
+void print(O< List<T> > list) {
 	print("[");
 	for (int i = 0; i < list->length(); ++i) {
 		print("%%", list->at(i));
@@ -21,17 +21,14 @@ int main()
 
 	{
 		print("Test 1:\n");
-		auto list = IntList::create();
-		*list << 1 << 2 << 3;
+		O<IntList> list = IntList::create();
+		list << 1 << 2 << 3;
 		print(list);
-		auto list2 = IntList::create();
-		*list >> *list2;
-		print(list2);
 	}
 	{
 		print("Test 2:\n");
-		auto list = IntList::create();
-		*list << 1 << 2 << 3 << 4 << 5 << 6;
+		O<IntList> list = IntList::create();
+		list << 1 << 2 << 3 << 4 << 5 << 6;
 		print(list);
 		for (int i = 0; i < list->length();) {
 			if (list->at(i) % 2 != 0)
@@ -48,45 +45,34 @@ int main()
 	}
 	{
 		print("Test 3:\n");
-		auto list = IntList::create();
-		*list << 1 << 2 << 3;
+		O<IntList> list = IntList::create();
+		list << 1 << 2 << 3;
 		print(list);
 		int x, y, z;
-		*list >> x >> y >> z;
+		list >> x >> y >> z;
 		print(list);
 		print("x, y, z = %%, %%, %%\n", x, y, z);
 	}
 	{
 		print("Test 4:\n");
-		auto list = IntList::create();
-		auto random = Random::open();
+		O<IntList> list = IntList::create();
+		O<Random> random = Random::open();
 		for (int i = 0; i < 10; ++i)
-			*list << random->get(0, 99);
-		print(list);
-
-		auto heap = MinHeap<int>::create(list->length());
-		auto stack = Stack<int>::create(list->length());
-		auto queue = CircularBuffer<int>::create(list->length());
-
-		*list >> *heap >> *list;
-		print(list);
-		*list >> *stack >> *list;
-		print(list);
-		*list >> *queue >> *list;
+			list << random->get(0, 99);
 		print(list);
 		print(list->sort());
 		print(list->unique());
 	}
 	{
 		print("Test 5:\n");
-		auto a = IntList::create();
-		*a << 1 << 2 << 3 << 4 << 5;
+		O<IntList> a = IntList::create();
+		a << 1 << 2 << 3 << 4 << 5;
 		print(a);
 		print(a->clone());
 	}
 	{
 		print("Test 6:\n");
-		auto a = IntList::create(11);
+		O<IntList> a = IntList::create(11);
 		print(a);
 	}
 	return 0;

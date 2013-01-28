@@ -54,7 +54,7 @@ private:
 
 int main()
 {
-	auto shape = Shape::create();
+	O<Shape> shape = Shape::create();
 	{
 		Observer observer(shape);
 		shape->name = "circle1";

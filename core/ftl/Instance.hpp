@@ -57,9 +57,6 @@ private:
 	mutable volatile int refCount_;
 };
 
-template<class U, class T>
-inline U *cast(T *p) { return CastHelper<T, U, ConversionFromTo<T*, U*>::Exists>::cast(p); }
-
 } // namespace ftl
 
 #endif // FTL_INSTANCE_HPP

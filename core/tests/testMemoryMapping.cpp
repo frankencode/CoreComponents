@@ -13,8 +13,8 @@ public:
 	int incarnate()
 	{
 		print("(clone) waiting for read access\n");
-		auto file = File::open(path_, File::Read);
-		auto lock = FileLock::create(file, FileLock::Read);
+		O<File> file = File::open(path_, File::Read);
+		O<FileLock> lock = FileLock::create(file, FileLock::Read);
 		Guard<FileLock> guard(lock);
 		print("(clone) granted read access\n");
 		print("(clone) reads: \"%%\"\n", file->map());
@@ -31,20 +31,20 @@ private:
 
 int main()
 {
-	auto file = File::temp();
+	O<File> file = File::temp();
 	file->unlinkOnExit();
 	print("(parent) file->path() = \"%%\"\n", file->path());
 
 	print("(parent) acquiring write lock... \n");
-	auto lock = FileLock::create(file, FileLock::Write);
+	O<FileLock> lock = FileLock::create(file, FileLock::Write);
 	lock->acquire();
 
 	print("(parent) writing message... \n");
 	file->write("Hello, clone!");
 
 	print("(parent) cloning myself... \n");
-	auto factory = CloneFactory::create(file->path());
-	auto fork = factory->produce();
+	O<ProcessFactory> factory = CloneFactory::create(file->path());
+	O<Process> fork = factory->produce();
 
 	print("(parent) sleeping 2 seconds... \n");
 	Thread::sleep(2);

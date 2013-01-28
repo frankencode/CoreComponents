@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
 	using namespace ftl;
 
-	auto config = Config::create();
+	O<Config> config = Config::create();
 	config->read(argc, argv);
 	if (config->contains("h") || config->contains("help")) {
 		print(
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 
 	for (int i = 0; i < dirPaths->length(); ++i) {
 		String dirPath = dirPaths->at(i)->canonicalPath();
-		auto dirWalker = DirWalker::open(dirPath);
+		O<DirWalker> dirWalker = DirWalker::open(dirPath);
 		dirWalker->setMaxDepth(maxDepth);
 		String path;
 		while (dirWalker->read(&path)) {

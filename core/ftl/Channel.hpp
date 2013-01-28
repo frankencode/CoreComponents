@@ -74,7 +74,7 @@ protected:
 	{}
 
 private:
-	O<Queue<T>> queue_;
+	O< Queue<T> > queue_;
 	O<Mutex> mutex_;
 	O<Condition> notEmpty_;
 };

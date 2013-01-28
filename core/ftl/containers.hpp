@@ -36,18 +36,6 @@ public:
 	inline CT &operator>>(T &item) { pop(&item); return *static_cast<CT *>(this); }
 };
 
-template<class T1, class T2, template<class> class CT1, template<class> class CT2>
-inline CT1<T1> &operator<<(CT1<T1> &a, CT2<T2> &b) {
-	for (T2 item; b.read(&item); a.push(item));
-	return a;
-}
-
-template<class T1, class T2, template<class> class CT1, template<class> class CT2>
-inline CT2<T2> &operator>>(CT1<T1> &a, CT2<T2> &b) {
-	for (T1 item; a.read(&item); b.push(item));
-	return b;
-}
-
 template<class Container>
 class GenericIterator: public Source<typename Container::Item>
 {

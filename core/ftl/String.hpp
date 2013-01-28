@@ -45,14 +45,10 @@ public:
 	// helper constructors
 	String(const Format &b);
 	String(const Variant &b);
+	String(O<StringList> parts);
 
 	// initialize string by deep-copying a byte array
 	String(const char *data, int size = -1): Super(ByteArray::create(data, size)) {}
-
-	// syntax sugar
-	String(O<StringList> parts);
-	O<StringList> operator+(const char *b) const { return *this + String(b); }
-	O<StringList> operator+(const String &b) const;
 
 	inline static String join(const StringList *parts, String sep = "") { return ByteArray::join(parts, sep); }
 
@@ -70,14 +66,7 @@ public:
 	}
 
 	// provide access to the shared bytes
-	inline operator char*() const { return Super::get()->data(); }
-
-	inline bool operator< (const String &b) const { return str::cmp((*this)->data(), b->data()) <  0; }
-	inline bool operator==(const String &b) const { return str::cmp((*this)->data(), b->data()) == 0; }
-	inline bool operator> (const String &b) const { return str::cmp((*this)->data(), b->data()) >  0; }
-	inline bool operator!=(const String &b) const { return str::cmp((*this)->data(), b->data()) != 0; }
-	inline bool operator<=(const String &b) const { return str::cmp((*this)->data(), b->data()) <= 0; }
-	inline bool operator>=(const String &b) const { return str::cmp((*this)->data(), b->data()) >= 0; }
+	inline operator char *() const { return Super::get()->data(); }
 
 private:
 	friend class ByteArray;
@@ -85,9 +74,19 @@ private:
 	explicit String(ByteArray *bytes): Super(bytes) {}
 };
 
-inline O<StringList> operator+(const char *a, const String &b) { return String(a) + b; }
-inline O<StringList> operator+(O<ByteArray> a, const String &b) { return String(a) + b; }
-inline O<StringList> operator+(O<StringList> a, const String &b) { *a << b; return a; }
+inline O<StringList> operator+(const String &a, const String &b) {
+	O<StringList> l = StringList::create();
+	*l << a << b;
+	return l;
+}
+inline O<StringList> operator+(O<StringList> &a, const String &b) { a << b; return a; }
+
+inline bool operator< (const String &a, const String &b) { return str::cmp(a->data(), b->data()) <  0; }
+inline bool operator==(const String &a, const String &b) { return str::cmp(a->data(), b->data()) == 0; }
+inline bool operator> (const String &a, const String &b) { return str::cmp(a->data(), b->data()) >  0; }
+inline bool operator!=(const String &a, const String &b) { return str::cmp(a->data(), b->data()) != 0; }
+inline bool operator<=(const String &a, const String &b) { return str::cmp(a->data(), b->data()) <= 0; }
+inline bool operator>=(const String &a, const String &b) { return str::cmp(a->data(), b->data()) >= 0; }
 
 inline bool operator< (const char *a, const String &b) { return str::cmp(a, b->data()) <  0; }
 inline bool operator==(const char *a, const String &b) { return str::cmp(a, b->data()) == 0; }

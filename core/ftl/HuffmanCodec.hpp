@@ -167,8 +167,8 @@ private:
 
 	int codeMapSize_;
 	SymbolRef *codeMap_;
-	O< MaxHeap<SymbolRef>> heap_;
-	O< Stack<uint8_t>> bitStack_;
+	O< MaxHeap<SymbolRef> > heap_;
+	O< Stack<uint8_t> > bitStack_;
 
 	inline static int ilog2(int n)
 	{

@@ -90,9 +90,9 @@ private:
 
 int main()
 {
-	auto channel = MyChannel::create();
-	auto producer = Producer::create(channel);
-	auto consumer = Consumer::create(channel);
+	O<MyChannel> channel = MyChannel::create();
+	O<Producer> producer = Producer::create(channel);
+	O<Consumer> consumer = Consumer::create(channel);
 	Time dt = Time::now();
 	producer->start();
 	consumer->start();
@@ -101,7 +101,7 @@ int main()
 	dt = Time::now() - dt;
 	print("\ndt = %% us\n\n", dt.us());
 
-	auto factory = ThreadFactory::create();
+	O<ThreadFactory> factory = ThreadFactory::create();
 	print("default stack size = %% bytes = %% MB\n", int(factory->stackSize()), double(factory->stackSize()) / 1024. / 1024.);
 	print("default guard size = %%\n", int(factory->guardSize()));
 	print("\n");

@@ -16,7 +16,7 @@ private:
 
 	virtual void run()
 	{
-		auto set = SignalSet::createEmpty();
+		O<SignalSet> set = SignalSet::createEmpty();
 		set->insert(SIGINT);
 		set->insert(SIGALRM);
 		set->insert(SIGWINCH);
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 	Process::hookSignal(SIGCONT);
 	Thread::blockSignals(SignalSet::createFull());
 	::alarm(1);
-	auto signalEater = SignalEater::create();
+	O<SignalEater> signalEater = SignalEater::create();
 	signalEater->start();
 	signalEater->wait();
 	return 0;

@@ -66,9 +66,9 @@ private:
 
 int main()
 {
-	auto channel = MyChannel::create();
-	auto p1 = Producer::create(1, channel, 8);
-	auto c1 = Consumer::create(1, channel, 8);
+	O<MyChannel> channel = MyChannel::create();
+	O<Producer> p1 = Producer::create(1, channel, 8);
+	O<Consumer> c1 = Consumer::create(1, channel, 8);
 
 	Time dt = Time::now();
 	c1->start();
