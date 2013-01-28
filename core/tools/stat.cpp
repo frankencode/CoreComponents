@@ -27,7 +27,7 @@ String fileTypeToString(int type)
 
 String timeToString(Time time, bool human)
 {
-	auto d = Date::create(time);
+	O<Date> d = Date::create(time);
 	if (human) {
 		return Format(
 			"%4.:'0'%-%2.:'0'%-%2.:'0'% "
@@ -42,7 +42,7 @@ String timeToString(Time time, bool human)
 
 int main(int argc, char **argv)
 {
-	auto config = Config::create();
+	O<Config> config = Config::create();
 	config->read(argc, argv);
 
 	if (config->contains("h") || config->contains("help")) {
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	auto listOfFiles = config->arguments();
+	O<StringList> listOfFiles = config->arguments();
 
 	bool defaults = (config->options()->length() == 0);
 
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 
 	for (String file; files->read(&file);)
 	{
-		auto status = FileStatus::read(file);
+		O<FileStatus> status = FileStatus::read(file);
 
 		Format line;
 

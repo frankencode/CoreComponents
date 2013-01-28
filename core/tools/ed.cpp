@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 {
 	using namespace ftl;
 
-	auto config = Config::create();
+	O<Config> config = Config::create();
 	config->read(argc, argv);
 	if (config->contains("h") || config->contains("help")) {
 		print(
@@ -66,11 +66,11 @@ int main(int argc, char **argv)
 
 		String path = line->copy(state->capture("path"));
 		int ln = -1; {
-			auto range = state->capture("ln");
+			Range *range = state->capture("ln");
 			if (range->valid()) ln = line->copy(range)->toInt();
 		}
 		int i0 = 0, i1 = -1; {
-			auto range = state->capture("i0");
+			Range *range = state->capture("i0");
 			if (range->valid()) {
 				i0 = line->copy(range)->toInt();
 				i1 = line->copy(state->capture("i1"))->toInt();
@@ -78,12 +78,12 @@ int main(int argc, char **argv)
 		}
 
 		String command = globalCommand; if (command == "") {
-			auto range = state->capture("command");
+			Range *range = state->capture("command");
 			if (range->valid()) command = line->copy(range);
 			else command = "view";
 		}
 		String value = globalValue; if (value == "") {
-			auto range = state->capture("value");
+			Range *range = state->capture("value");
 			if (range->valid()) value = line->copy(range);
 		}
 

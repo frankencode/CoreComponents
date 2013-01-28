@@ -9,6 +9,8 @@
 #ifndef FTL_O_HPP
 #define FTL_O_HPP
 
+#include "types.hpp"
+
 namespace ftl
 {
 
@@ -23,11 +25,13 @@ public:
 
 	O(T *b): a_(0) { set(b); }
 	O(const O &b): a_(0) { set(b.a_); }
-
 	inline const O &operator=(T *b) { set(b); return *this; }
 	inline const O &operator=(const O &b) { set(b.a_); return *this; }
-
 	inline operator T *() const { return a_; }
+
+	template<class T2> O(const O<T2> &b): a_(0) { set(cast<T>(b.get())); }
+	template<class T2> inline const O &operator=(T2 *b) { set(cast<T>(b)); return *this; }
+	template<class T2> inline const O &operator=(const O<T2> &b) { set(cast<T>(b.get())); return *this; }
 
 	inline bool operator<(const O &b) const { return a_ < b.a_; }
 
@@ -44,6 +48,20 @@ public:
 			if (a_) a_->decRefCount();
 			a_ = b;
 		}
+	}
+
+	template<class T2>
+	inline O<T> &operator<<(T2 x) {
+		FTL_ASSERT2(a_, "Null reference");
+		*a_ << x;
+		return *this;
+	}
+
+	template<class T2>
+	inline O<T> &operator>>(T2 &x) {
+		FTL_ASSERT2(a_, "Null reference");
+		*a_ >> x;
+		return *this;
 	}
 
 private:

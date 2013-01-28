@@ -149,7 +149,7 @@ void GccToolChain::clean(BuildPlan *buildPlan)
 
 void GccToolChain::appendCompileOptions(Format args, BuildPlan *buildPlan)
 {
-	args << "-std=c++0x";
+	// args << "-std=c++0x";
 	if (buildPlan->options() & BuildPlan::Debug) args << "-g";
 	if (buildPlan->options() & BuildPlan::Release) args << "-DNDEBUG";
 	if (buildPlan->options() & BuildPlan::OptimizeSpeed) args << String(Format("-O%%") << buildPlan->speedOptimizationLevel());

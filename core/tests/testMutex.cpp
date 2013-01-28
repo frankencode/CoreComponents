@@ -10,7 +10,7 @@ int main()
 	const int n = 1000000;
 	Time t1, t2, t3;
 	{
-		auto m = Mutex::create();
+		O<Mutex> m = Mutex::create();
 		Time t = Time::now();
 		for (int i = 0; i < n; ++i) {
 			m->acquire();

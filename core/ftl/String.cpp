@@ -27,10 +27,4 @@ String::String(const Format &b)
 
 String::String(O<StringList> parts) { *this = join(parts); }
 
-O<StringList> String::operator+(const String &b) const {
-	O<StringList> l = StringList::create();
-	*l << *this << b;
-	return l;
-}
-
 } // namespace ftl

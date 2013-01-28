@@ -42,7 +42,7 @@ protected:
 private:
 	static void *bootstrap(void *self);
 
-	O<Clonable<Thread>> prototype_;
+	O< Clonable<Thread> > prototype_;
 	pthread_attr_t attr_;
 };
 

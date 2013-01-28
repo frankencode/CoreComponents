@@ -22,7 +22,7 @@ int primeCountSimple(int n)
 
 int primeCountWithStack(int n)
 {
-	auto stack = Stack<int>::create(n);
+	O< Stack<int> > stack = Stack<int>::create(n);
 	for (int i = 2; i < n; ++i) {
 		bool prime = true;
 		int m = stack->fill();

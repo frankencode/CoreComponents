@@ -7,7 +7,8 @@ namespace ftl {
 
 void simpleInsertTest()
 {
-	auto names = Map<String, String>::create();
+	typedef Map<String, String> StringMap;
+	O<StringMap> names = StringMap::create();
 	names->insert("Doe", "Joe");
 	names->insert("Mustermann", "Hans");
 	names->insert("Mustermann", "Max");
@@ -16,7 +17,7 @@ void simpleInsertTest()
 	names->insert("Becker", "Günther");
 	names->insert("", "X");
 	for (int i = 0; i < names->length(); ++i) {
-		auto pair = names->get(i);
+		Pair<String, String> pair = names->get(i);
 		print("%%: %%\n", pair->key(), pair->value());
 	}
 }
@@ -37,7 +38,7 @@ void performanceTest()
 		print("std::map, %% iteration steps: dt = %% us\n", n, (Time::now() - t0).us());
 	}
 	{
-		auto map = ftl::Map<int, int>::create();
+		O< Map<int, int> > map = Map<int, int>::create();
 		Time t0 = Time::now();
 		for (int i = 0; i < n; ++i)
 			map->establish(i, i);
@@ -52,8 +53,8 @@ void performanceTest()
 
 void simpleRangeTest()
 {
-	auto map = Map<int, int>::create();
-	auto random = Random::open();
+	O< Map<int, int> > map = Map<int, int>::create();
+	O<Random> random = Random::open();
 	for (int i = 0; i < 20; ++i)
 		map->insert(random->get(0, 100), i);
 	for (int i = 0; i < map->length(); ++i)
