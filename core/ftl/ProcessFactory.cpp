@@ -19,7 +19,7 @@
 #else
 #include <util.h>
 #endif
-#include "Format.hpp"
+#include "format.hpp"
 #include "File.hpp"
 #include "ProcessFactory.hpp"
 
@@ -152,7 +152,7 @@ hook<Process> ProcessFactory::produce()
 			int n = envMap_->length();
 			envp = new char*[n + 1];
 			for (int i = 0; i < n; ++i)
-				envp[i] = str::dup(string(Format() << envMap_->get(i).key() <<  "=" << envMap_->get(i).value())->data());
+				envp[i] = str::dup(string(format() << envMap_->get(i).key() <<  "=" << envMap_->get(i).value())->data());
 			envp[n] = 0;
 		}
 		else {

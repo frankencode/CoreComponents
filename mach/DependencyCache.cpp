@@ -1,5 +1,5 @@
 #include <ftl/Wire.hpp>
-#include <ftl/Format.hpp>
+#include <ftl/format.hpp>
 #include <ftl/File.hpp>
 #include <ftl/FileStatus.hpp>
 #include <ftl/PrintDebug.hpp> // DEBUG
@@ -52,7 +52,12 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 
 		hook<FileStatus> objectStatus = buildPlan_->fileStatus(modulePath);
 		for (int i = 0; i < dependencyPaths->length(); ++i) {
-			Time sourceTime = buildPlan_->fileStatus(dependencyPaths->at(i))->lastModified();
+			hook<FileStatus> sourceStatus = buildPlan_->fileStatus(dependencyPaths->at(i));
+			if (!sourceStatus->exists()) {
+				dirty = true;
+				break;
+			}
+			Time sourceTime = sourceStatus->lastModified();
 			if (sourceTime > cacheTime) {
 				dirty = true;
 				break;
@@ -78,7 +83,7 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 
 DependencyCache::~DependencyCache()
 {
-	Format text;
+	format text;
 	string indent(4, ' ');
 	text << "DependencyCache {\n";
 	for (int i = 0; i < cache_->length(); ++i) {

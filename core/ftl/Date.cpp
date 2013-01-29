@@ -7,7 +7,7 @@
   * 2 of the License, or (at your option) any later version.
   */
 
-#include "Format.hpp"
+#include "format.hpp"
 #include "Date.hpp"
 
 namespace ftl
@@ -142,11 +142,11 @@ string Date::toString() const
 {
 	string tz = "Z";
 	if (tm_off > 0)
-		tz = Format("+%2.:'0'%%2.:'0'%") << (tm_off / 60) << (tm_off % 60);
+		tz = format("+%2.:'0'%%2.:'0'%") << (tm_off / 60) << (tm_off % 60);
 	else if (tm_off < 0)
-		tz = Format("-%2.:'0'%%2.:'0'%") << ((-tm_off) / 60) << ((-tm_off) % 60);
+		tz = format("-%2.:'0'%%2.:'0'%") << ((-tm_off) / 60) << ((-tm_off) % 60);
 
-	return Format(
+	return format(
 		"%4.:'0'%-%2.:'0'%-%2.:'0'%T"
 		"%2.:'0'%%2.:'0'%%2.:'0'%%%"
 	) << (tm_year + 1900) << (tm_mon + 1) << tm_mday

@@ -12,7 +12,7 @@
 #include <ftl/Mutex.hpp>
 #include <ftl/ByteEncoder.hpp>
 #include <ftl/ByteDecoder.hpp>
-#include <ftl/Format.hpp>
+#include <ftl/format.hpp>
 #include <ftl/stdio>
 #include "XAuthFile.hpp"
 #include "XClient.hpp"
@@ -45,7 +45,7 @@ XClient::XClient()
 				defaultScreen_ = parts->get(1)->toInt();
 		}
 		if (host == "") {
-			string path = Format("/tmp/.X11-unix/X%%") << display;
+			string path = format("/tmp/.X11-unix/X%%") << display;
 			address = SocketAddress::create(AF_LOCAL, path);
 		}
 		else {

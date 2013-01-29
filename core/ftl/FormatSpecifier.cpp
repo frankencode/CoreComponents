@@ -40,7 +40,7 @@ FormatSpecifier::FormatSpecifier()
 	);
 
 	format_ =
-		DEFINE("Format",
+		DEFINE("format",
 			GLUE(
 				CHAR('%'),
 				REPEAT(0, 5,
@@ -69,7 +69,7 @@ FormatSpecifier::FormatSpecifier()
 			)
 		);
 
-	ENTRY("Format");
+	ENTRY("format");
 	LINK();
 }
 

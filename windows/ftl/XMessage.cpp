@@ -130,10 +130,10 @@ void XInputEvent::printTo(LineSink *sink) const
 {
 	string detailString;
 	if ((messageCode == XMessage::KeyPress) || (messageCode == XMessage::KeyRelease)) {
-		detailString = Format("keycode: %%") << keyCode;
+		detailString = format("keycode: %%") << keyCode;
 	}
 	else if ((messageCode == XMessage::ButtonPress) || (messageCode == XMessage::ButtonRelease)) {
-		detailString = Format("button: %%") << button;
+		detailString = format("button: %%") << button;
 	}
 	else if (messageCode == XMessage::MotionNotify) {
 		detailString = (detail == XInputEvent::Hint) ? "hint" : "normal";

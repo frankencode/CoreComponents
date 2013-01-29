@@ -13,7 +13,7 @@
 #include <netdb.h> // getaddrinfo, freeaddrinfo, getnameinfo
 #include <errno.h>
 #include "strings.hpp"
-#include "Format.hpp"
+#include "format.hpp"
 #include "SocketAddress.hpp"
 
 namespace ftl
@@ -145,7 +145,7 @@ string SocketAddress::addressString() const
 
 string SocketAddress::toString() const
 {
-	Format s(addressString());
+	format s(addressString());
 	if (addr_.sa_family != AF_LOCAL) {
 		if (port() != 0)
 			s << ":" << port();

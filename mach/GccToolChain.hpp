@@ -1,7 +1,7 @@
 #ifndef MACH_GCCTOOLCHAIN_HPP
 #define MACH_GCCTOOLCHAIN_HPP
 
-#include <ftl/Format.hpp>
+#include <ftl/format.hpp>
 #include "ToolChain.hpp"
 
 namespace mach
@@ -36,8 +36,8 @@ protected:
 	GccToolChain(string execPath);
 	static string machineCommand(string execPath);
 
-	static void appendCompileOptions(Format args, BuildPlan *buildPlan);
-	static void appendLinkOptions(Format args, BuildPlan *buildPlan);
+	static void appendCompileOptions(format args, BuildPlan *buildPlan);
+	static void appendLinkOptions(format args, BuildPlan *buildPlan);
 
 	static string lookup(string execPath);
 };

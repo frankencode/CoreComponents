@@ -8,12 +8,12 @@
   */
 
 #include "FormatSpecifier.hpp"
-#include "Format.hpp"
+#include "format.hpp"
 
 namespace ftl
 {
 
-Format::Format(string format)
+format::format(string format)
 	: Super(StringList::create())
 {
 	PlaceHolder *lastPlaceHolder = 0;
@@ -61,25 +61,25 @@ Format::Format(string format)
 		placeHolders_ = new PlaceHolder;
 }
 
-Format::Format(const Format &b)
+format::format(const format &b)
 	: Super(b.get()),
 	  placeHolders_(b.placeHolders_)
 {}
 
-Format &Format::operator=(const Format &b)
+format &format::operator=(const format &b)
 {
 	set(b.get());
 	placeHolders_ = b.placeHolders_;
 	return *this;
 }
 
-Format &Format::operator<<(const string &s)
+format &format::operator<<(const string &s)
 {
 	get()->insert(nextPlaceHolder()->j_, s);
 	return *this;
 }
 
-hook<Format::PlaceHolder> Format::nextPlaceHolder()
+hook<format::PlaceHolder> format::nextPlaceHolder()
 {
 	hook<PlaceHolder> ph = placeHolders_;
 	if (placeHolders_->next_)
@@ -89,7 +89,7 @@ hook<Format::PlaceHolder> Format::nextPlaceHolder()
 	return ph;
 }
 
-Format &Format::operator<<(const variant &x)
+format &format::operator<<(const variant &x)
 {
 	if (type(x) == UndefType) {
 		*this << "undef";
@@ -112,7 +112,7 @@ Format &Format::operator<<(const variant &x)
 	return *this;
 }
 
-void Format::printInt(uint64_t x, int sign)
+void format::printInt(uint64_t x, int sign)
 {
 	hook<PlaceHolder> ph = nextPlaceHolder();
 
@@ -162,7 +162,7 @@ void Format::printInt(uint64_t x, int sign)
 	get()->insert(ph->j_, text);
 }
 
-void Format::printFloat(float64_t x, bool half)
+void format::printFloat(float64_t x, bool half)
 {
 	hook<PlaceHolder> ph = nextPlaceHolder();
 

@@ -17,7 +17,7 @@
 namespace ftl
 {
 
-class Format;
+class format;
 class variant;
 
 class string: public hook<ByteArray>
@@ -43,7 +43,7 @@ public:
 	string(const string &b): Super(b.Super::get()) {}
 
 	// helper constructors
-	string(const Format &b);
+	string(const format &b);
 	string(const variant &b);
 	string(hook<StringList> parts);
 

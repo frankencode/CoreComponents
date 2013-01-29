@@ -26,7 +26,7 @@ string protocolToString(int protocol)
 	string s("UNKNOWN");
 	if (protocol == IPPROTO_TCP) s = "TCP";
 	else if (protocol == IPPROTO_UDP) s = "UDP";
-	else s = Format("<%%>") << protocol;
+	else s = format("<%%>") << protocol;
 	return s;
 }
 

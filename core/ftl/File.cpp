@@ -16,7 +16,7 @@
 #include "Guard.hpp"
 #include "Mutex.hpp"
 #include "Random.hpp"
-#include "Format.hpp"
+#include "format.hpp"
 #include "Dir.hpp"
 #include "Process.hpp"
 #include "System.hpp"
@@ -60,7 +60,7 @@ hook<File> File::open(int fd, int openFlags)
 hook<File> File::temp(int openFlags)
 {
 	string path = createUnique(
-		Format("/tmp/%%_%%_XXXXXXXX")
+		format("/tmp/%%_%%_XXXXXXXX")
 		<< Process::execPath()->fileName()
 		<< Process::currentId()
 	);
@@ -328,7 +328,7 @@ string File::lookup(string fileName, StringList *dirs, int accessFlags)
 	}
 	string path;
 	for (int i = 0; i < dirs->length(); ++i) {
-		string candidate = Format() << dirs->at(i) << "/" << fileName;
+		string candidate = format() << dirs->at(i) << "/" << fileName;
 		if (access(candidate, accessFlags)) {
 			path = candidate;
 			break;

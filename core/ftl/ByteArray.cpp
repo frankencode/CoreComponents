@@ -18,7 +18,7 @@
 #include "Character.hpp"
 #include "Md5.hpp"
 #include "Base64.hpp"
-#include "Format.hpp"
+#include "format.hpp"
 #include "Process.hpp"
 #include "ByteArray.hpp"
 
@@ -779,7 +779,7 @@ hook<ByteArray> ByteArray::reducePath() const
 
 hook<ByteArray> ByteArray::expandPath(string component) const
 {
-	return string(Format() << string(this) << "/" << component);
+	return string(format() << string(this) << "/" << component);
 }
 
 hook<ByteArray> ByteArray::canonicalPath() const

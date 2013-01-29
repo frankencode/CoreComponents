@@ -8,7 +8,7 @@
   */
 
 #include "debug.hpp"
-#include "Format.hpp"
+#include "format.hpp"
 #include "UriSyntax.hpp"
 #include "Uri.hpp"
 
@@ -75,7 +75,7 @@ void Uri::readUri(ByteArray *bytes, Token *rootToken)
 
 string Uri::toString() const
 {
-	Format text;
+	format text;
 	if (scheme_ != "") {
 		text << encode(scheme_);
 		text << ":";

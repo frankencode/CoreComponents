@@ -12,7 +12,7 @@
 #include "SyntaxDebugger.hpp"
 #endif
 #include "syntax.hpp"
-#include "Format.hpp"
+#include "format.hpp"
 #include "Pattern.hpp"
 
 namespace ftl
@@ -24,7 +24,7 @@ PatternException::PatternException(const string &error, int pos)
 	: error_(error),
 	  pos_(pos)
 {
-	message_ = Format("%%: %%") << pos << error;
+	message_ = format("%%: %%") << pos << error;
 }
 
 PatternException::~PatternException() throw()
