@@ -283,7 +283,7 @@ Wire::Wire()
 	LINK();
 }
 
-Variant Wire::parse(ByteArray *text, WireObject *virgin)
+variant Wire::parse(ByteArray *text, WireObject *virgin)
 {
 	hook<SyntaxState> state = newState();
 	hook<Token> token = match(text, -1, state);
@@ -337,7 +337,7 @@ hook<WireObject> Wire::parseObject(ByteArray *text, Token *token, WireObject *vi
 			throw WireException(Format("Ambiguous member name \"%%\"") << name, line, pos);
 		}
 		token = token->nextSibling();
-		Variant value = parseValue(text, token);
+		variant value = parseValue(text, token);
 		object->insert(name, value);
 		token = token->nextSibling();
 	}
@@ -356,9 +356,9 @@ hook<VariantList> Wire::parseList(ByteArray *text, Token *token)
 	return list;
 }
 
-Variant Wire::parseValue(ByteArray *text, Token *token)
+variant Wire::parseValue(ByteArray *text, Token *token)
 {
-	Variant value;
+	variant value;
 
 	if (token->definition() == floatLiteral()->id()) {
 		float64_t x;

@@ -18,7 +18,7 @@ namespace ftl
 {
 
 class Format;
-class Variant;
+class variant;
 
 class string: public hook<ByteArray>
 {
@@ -44,7 +44,7 @@ public:
 
 	// helper constructors
 	string(const Format &b);
-	string(const Variant &b);
+	string(const variant &b);
 	string(hook<StringList> parts);
 
 	// initialize string by deep-copying a byte array

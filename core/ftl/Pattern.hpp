@@ -37,11 +37,11 @@ public:
 	Pattern();
 	Pattern(const char *text);
 	Pattern(const string &text);
-	Pattern(const Variant &variant);
+	Pattern(const variant &variant);
 
 	const Pattern &operator=(const char *text);
 	const Pattern &operator=(const string &text);
-	const Pattern &operator=(const Variant &text);
+	const Pattern &operator=(const variant &text);
 
 	inline operator string() const { return text_; }
 

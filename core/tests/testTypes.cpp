@@ -42,7 +42,7 @@ void testFloat754()
 	print("sizeof(hook<Instance>) = %%\n", int(sizeof(hook<Instance>)));
 	print("sizeof(string) = %%\n", int(sizeof(string)));
 	print("sizeof(Format) = %%\n", int(sizeof(Format)));
-	print("sizeof(Variant) = %%\n", int(sizeof(Variant)));
+	print("sizeof(variant) = %%\n", int(sizeof(variant)));
 	print("sizeof(Token) = %%\n", sizeof(Token));
 
 	print("sizeof(time_t) = %%\n", sizeof(time_t));

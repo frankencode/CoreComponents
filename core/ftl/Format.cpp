@@ -89,7 +89,7 @@ hook<Format::PlaceHolder> Format::nextPlaceHolder()
 	return ph;
 }
 
-Format &Format::operator<<(const Variant &x)
+Format &Format::operator<<(const variant &x)
 {
 	if (type(x) == UndefType) {
 		*this << "undef";

@@ -3,7 +3,6 @@
 
 #include "User.hpp"
 #include "Group.hpp"
-#include "Variant.hpp"
 #include "SignalSet.hpp"
 #include "Process.hpp"
 #include "ProcessFactory.hpp"

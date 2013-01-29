@@ -8,13 +8,13 @@
   */
 
 #include "Format.hpp"
-#include "Variant.hpp"
+#include "variant.hpp"
 #include "string.hpp"
 
 namespace ftl
 {
 
-string::string(const Variant &b)
+string::string(const variant &b)
 	: Super(cast<ByteArray>(b))
 {
 	if (!Super::get()) Super::set(ByteArray::empty());
