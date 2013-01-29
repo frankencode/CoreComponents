@@ -53,22 +53,22 @@ private:
 
 	virtual void run();
 
-	O<StreamSocket> socket_;
-	O<XDisplayInfo> displayInfo_;
+	hook<StreamSocket> socket_;
+	hook<XDisplayInfo> displayInfo_;
 	int defaultScreen_;
 
-	O<Mutex> resourceIdMutex_;
+	hook<Mutex> resourceIdMutex_;
 	uint32_t nextResourceId_;
-	O< List<uint32_t> > freeResourceIds_;
+	hook< List<uint32_t> > freeResourceIds_;
 
-	O<Mutex> sequenceNumberMutex_;
+	hook<Mutex> sequenceNumberMutex_;
 	uint16_t sequenceNumber_;
 
 	TLO<ByteEncoder> messageEncoder_;
 
-	O<Mutex> messageFiltersMutex_;
-	typedef Set< O<XMessageFilter> > MessageFilters;
-	O<MessageFilters> messageFilters_;
+	hook<Mutex> messageFiltersMutex_;
+	typedef Set< hook<XMessageFilter> > MessageFilters;
+	hook<MessageFilters> messageFilters_;
 };
 
 inline XClient *xClient() { return XClient::instance(); }

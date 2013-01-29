@@ -19,7 +19,7 @@ namespace ftl
 class Semaphore: public Instance
 {
 public:
-	inline static O<Semaphore> create(int value = 0) {
+	inline static hook<Semaphore> create(int value = 0) {
 		return new Semaphore(value);
 	}
 
@@ -35,8 +35,8 @@ public:
 private:
 	Semaphore(int value);
 
-	O<Mutex> mutex_;
-	O<Condition> notEmpty_;
+	hook<Mutex> mutex_;
+	hook<Condition> notEmpty_;
 	int supply_, demand_;
 };
 

@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 {
 	using namespace ftl;
 
-	O<Config> config = Config::create();
+	hook<Config> config = Config::create();
 	config->read(argc, argv);
 	if (config->contains("h") || config->contains("help")) {
 		print(
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 
 	for (String line; input()->read(&line);)
 	{
-		O<SyntaxState> state = commandSyntax->newState();
+		hook<SyntaxState> state = commandSyntax->newState();
 		if (!commandSyntax->match(line, 0, state)) {
 			printTo(error(), "Syntax error: \"%%\"\n", line);
 			return 1;
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 		}
 		else if (command == "replace") {
 			String newText = text->copy(0, i0) + value + text->copy(i1, text->length());
-			O<File> file = File::open(path, File::Write);
+			hook<File> file = File::open(path, File::Write);
 			file->truncate(0);
 			file->write(newText);
 		}

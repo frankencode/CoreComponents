@@ -23,10 +23,10 @@ namespace ftl
 class User: public Instance
 {
 public:
-	inline static O<User> lookup(uid_t id) {
+	inline static hook<User> lookup(uid_t id) {
 		return new User(id);
 	}
-	inline static O<User> lookup(const char *name) {
+	inline static hook<User> lookup(const char *name) {
 		return new User(name);
 	}
 

@@ -20,8 +20,8 @@ namespace ftl
 class Dir: public Source<String>
 {
 public:
-	inline static O<Dir> open(String path) { return new Dir(path); }
-	static O<Dir> tryOpen(String path);
+	inline static hook<Dir> open(String path) { return new Dir(path); }
+	static hook<Dir> tryOpen(String path);
 
 	String path() const;
 	String path(String name) const;

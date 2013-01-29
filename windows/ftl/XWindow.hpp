@@ -77,7 +77,7 @@ private:
 	int depth_;
 	int x_, y_, width_, height_;
 
-	O<XMessageFilter> messageFilter_;
+	hook<XMessageFilter> messageFilter_;
 };
 
 } // namespace ftl

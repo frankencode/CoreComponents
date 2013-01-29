@@ -13,7 +13,7 @@
 namespace ftl
 {
 
-O<ByteArray> Base64::encode(const ByteArray *source)
+hook<ByteArray> Base64::encode(const ByteArray *source)
 {
 	const char *alphabet =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -24,7 +24,7 @@ O<ByteArray> Base64::encode(const ByteArray *source)
 	int i = 0;
 
 	const int m = 4 * (n / 3 + (n % 3 != 0));
-	O<ByteArray> sink = ByteArray::create(m);
+	hook<ByteArray> sink = ByteArray::create(m);
 	int l = 0;
 
 	while (i < n) {
@@ -51,7 +51,7 @@ O<ByteArray> Base64::encode(const ByteArray *source)
 	return sink;
 }
 
-O<ByteArray> Base64::decode(const ByteArray *source)
+hook<ByteArray> Base64::decode(const ByteArray *source)
 {
 	FTL_CHECK(source->size() % 4 == 0, EncodingException, "base64: encoded input needs to be a multiple of 4 bytes");
 
@@ -68,7 +68,7 @@ O<ByteArray> Base64::decode(const ByteArray *source)
 	FTL_CHECK((0 <= p) && (p <= 2), EncodingException, "base64: illegal padding");
 
 	int n = 3 * (m / 4) - p;
-	O<ByteArray> sink = ByteArray::create(n);
+	hook<ByteArray> sink = ByteArray::create(n);
 	int i = 0;
 
 	for (int l = 0; l < m;) {

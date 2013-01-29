@@ -48,7 +48,7 @@ public:
 	Variant(const char *value): type_(StringType)               { initRef(String(value)); }
 	Variant(String value):      type_(StringType)               { initRef(value); }
 	template<class T>
-	Variant(O<T> value):        type_(RefType)                  { initRef(value); }
+	Variant(hook<T> value):        type_(RefType)                  { initRef(value); }
 	Variant(const Variant &b):  type_(UndefType)                { *this = b; }
 
 	~Variant() { if (type_ & RefType) killRef(); }
@@ -60,7 +60,7 @@ public:
 	inline const Variant &operator=(const char *value) { return *this = Variant(value); }
 	inline const Variant &operator=(String value)      { return *this = Variant(value); }
 	template<class T>
-	inline const Variant &operator=(const O<T> &value) { return *this = Variant(value); }
+	inline const Variant &operator=(const hook<T> &value) { return *this = Variant(value); }
 
 	inline const Variant &operator=(const Variant &b) {
 		if (type_ & RefType) killRef();
@@ -94,7 +94,7 @@ public:
 	}
 
 	template<class T>
-	inline operator O<T>() const {
+	inline operator hook<T>() const {
 		if (!type_) return null<T>();
 		FTL_ASSERT2(type_ & RefType, illegalConversion());
 		return cast<T>(ref().get());
@@ -145,22 +145,22 @@ private:
 	inline static const char *illegalConversion() { return "Illegal variant conversion"; }
 
 	inline void initRef(Instance *instance = 0) {
-		new(dummy_)O<Instance>(instance);
+		new(dummy_)hook<Instance>(instance);
 	}
 	inline void killRef() {
-		ref().~O<Instance>();
+		ref().~hook<Instance>();
 	}
 	inline void setRef(Instance *instance) const {
 		ref() = instance;
 	}
-	inline O<Instance> &ref() const {
-		return *union_cast< O<Instance> *>(dummy_);
+	inline hook<Instance> &ref() const {
+		return *union_cast< hook<Instance> *>(dummy_);
 	}
 	char type_;
 	union {
 		int32_t int_;
 		float32_t float_;
-		mutable char dummy_[sizeof(O<Instance>)];
+		mutable char dummy_[sizeof(hook<Instance>)];
 	};
 };
 
@@ -169,7 +169,7 @@ typedef List<Variant> VariantList;
 inline int type(const Variant &value) { return value.type_; }
 
 template<class U>
-inline U *cast(const Variant &value) { return O<U>(value); }
+inline U *cast(const Variant &value) { return hook<U>(value); }
 
 } // namespace ftl
 

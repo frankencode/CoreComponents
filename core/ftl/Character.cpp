@@ -13,7 +13,7 @@
 namespace ftl
 {
 
-O<ByteArray> Character::copy(int i0, int i1) const
+hook<ByteArray> Character::copy(int i0, int i1) const
 {
 	FTL_ASSERT(i0 <= i1);
 	walkTo(i0);
@@ -37,9 +37,9 @@ O<ByteArray> Character::copy(int i0, int i1) const
 	return (*m) ? Super::get()->chars()->length() : Super::get()->chars()->index(t - (m - pattern));
 }
 
-O<StringList> String::split(const char *pattern) const
+hook<StringList> String::split(const char *pattern) const
 {
-	O<StringList> parts = StringList::create();
+	hook<StringList> parts = StringList::create();
 	int i0 = 0;
 	int patternLength = Utf8Walker::length(pattern);
 	while (i0 < Super::get()->chars()->length()) {

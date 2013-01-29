@@ -17,11 +17,11 @@ namespace ftl
 class Utf8Encoder: public Sink<uchar_t>
 {
 public:
-	inline static O<Utf8Encoder> open(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA) {
+	inline static hook<Utf8Encoder> open(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA) {
 		return new Utf8Encoder(stream, bufCapa);
 	}
 
-	inline static O<Utf8Encoder> open(void *buf, int bufCapa) {
+	inline static hook<Utf8Encoder> open(void *buf, int bufCapa) {
 		return new Utf8Encoder(buf, bufCapa);
 	}
 
@@ -39,7 +39,7 @@ private:
 		: byteEncoder_(ByteEncoder::open(buf, bufCapa))
 	{}
 
-	O<ByteEncoder> byteEncoder_;
+	hook<ByteEncoder> byteEncoder_;
 };
 
 inline void Utf8Encoder::write(uchar_t ch)

@@ -9,7 +9,7 @@ namespace ftl
 class MyChannel: public Instance
 {
 public:
-	static O<MyChannel> create() {
+	static hook<MyChannel> create() {
 		return new MyChannel;
 	}
 
@@ -34,15 +34,15 @@ private:
 		  full_(Semaphore::create(0))
 	{}
 
-	O<Semaphore> empty_;
-	O<Semaphore> full_;
+	hook<Semaphore> empty_;
+	hook<Semaphore> full_;
 	int value_;
 };
 
 class Producer: public Thread
 {
 public:
-	static O<Producer> create(MyChannel *channel) {
+	static hook<Producer> create(MyChannel *channel) {
 		return new Producer(channel);
 	}
 
@@ -66,7 +66,7 @@ private:
 class Consumer: public Thread
 {
 public:
-	static O<Consumer> create(MyChannel *channel) {
+	static hook<Consumer> create(MyChannel *channel) {
 		return new Consumer(channel);
 	}
 
@@ -90,9 +90,9 @@ private:
 
 int main()
 {
-	O<MyChannel> channel = MyChannel::create();
-	O<Producer> producer = Producer::create(channel);
-	O<Consumer> consumer = Consumer::create(channel);
+	hook<MyChannel> channel = MyChannel::create();
+	hook<Producer> producer = Producer::create(channel);
+	hook<Consumer> consumer = Consumer::create(channel);
 	Time dt = Time::now();
 	producer->start();
 	consumer->start();
@@ -101,7 +101,7 @@ int main()
 	dt = Time::now() - dt;
 	print("\ndt = %% us\n\n", dt.us());
 
-	O<ThreadFactory> factory = ThreadFactory::create();
+	hook<ThreadFactory> factory = ThreadFactory::create();
 	print("default stack size = %% bytes = %% MB\n", int(factory->stackSize()), double(factory->stackSize()) / 1024. / 1024.);
 	print("default guard size = %%\n", int(factory->guardSize()));
 	print("\n");

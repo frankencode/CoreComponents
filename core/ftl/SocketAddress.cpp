@@ -160,7 +160,7 @@ void SocketAddress::setScope(int scope) {
 	if (addr_.sa_family == AF_INET6) inet6Address_.sin6_scope_id = scope;
 }
 
-O<SocketAddressList> SocketAddress::resolve(String hostName, String serviceName, int family, int socketType, String *canonicalName)
+hook<SocketAddressList> SocketAddress::resolve(String hostName, String serviceName, int family, int socketType, String *canonicalName)
 {
 	addrinfo hint;
 	addrinfo *head = 0;
@@ -185,7 +185,7 @@ O<SocketAddressList> SocketAddress::resolve(String hostName, String serviceName,
 		if (ret != EAI_NONAME)
 			FTL_THROW(NetworkingException, gai_strerror(ret));
 
-	O<SocketAddressList> list = SocketAddressList::create();
+	hook<SocketAddressList> list = SocketAddressList::create();
 
 	if (canonicalName) {
 		if (head) {

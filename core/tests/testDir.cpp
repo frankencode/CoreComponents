@@ -6,7 +6,7 @@ namespace ftl
 
 int main(int argc, char **argv)
 {
-	O<Dir> dir = Dir::open(Process::cwd());
+	hook<Dir> dir = Dir::open(Process::cwd());
 	for (String name; dir->read(&name);)
 		output()->writeLine(name);
 	return 0;

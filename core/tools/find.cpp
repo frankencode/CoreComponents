@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
 	using namespace ftl;
 
-	O<Config> config = Config::create();
+	hook<Config> config = Config::create();
 	config->read(argc, argv);
 	if (config->contains("h") || config->contains("help")) {
 		print(
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 
 	for (int i = 0; i < dirPaths->length(); ++i) {
 		String dirPath = dirPaths->at(i)->canonicalPath();
-		O<DirWalker> dirWalker = DirWalker::open(dirPath);
+		hook<DirWalker> dirWalker = DirWalker::open(dirPath);
 		dirWalker->setMaxDepth(maxDepth);
 		String path;
 		while (dirWalker->read(&path)) {
@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 			if (textPattern) {
 				if (FileStatus::read(path)->type() != File::Regular)
 					continue;
-				O<File> file = File::tryOpen(path);
+				hook<File> file = File::tryOpen(path);
 				if (!file) {
 					printTo(error(), "Failed to open %%\n", path);
 					continue;
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 				String text = file->map();
 				int ln = 1;
 				for (int i = 0; i < text->length();) {
-					O<Token> token = textPattern->find(text, i);
+					hook<Token> token = textPattern->find(text, i);
 					if (!token) break;
 					for (;i < token->i0(); ++i)
 						if (text->at(i) == '\n') ++ln;

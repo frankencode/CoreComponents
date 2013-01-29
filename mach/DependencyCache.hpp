@@ -20,21 +20,21 @@ class BuildPlan;
 class DependencyCache: public Instance
 {
 public:
-	static O<DependencyCache> create(BuildPlan *buildPlan);
+	static hook<DependencyCache> create(BuildPlan *buildPlan);
 	~DependencyCache();
 
 	static String cachePath(BuildPlan *buildPlan);
 
-	bool lookup(String source, O<Module> *module);
+	bool lookup(String source, hook<Module> *module);
 	void insert(String source, Module *module);
 
 private:
 	DependencyCache(BuildPlan *buildPlan);
 
-	O<BuildPlan> buildPlan_;
+	hook<BuildPlan> buildPlan_;
 	String cachePath_;
-	typedef Map< String, O<Module> > Cache;
-	O<Cache> cache_;
+	typedef Map< String, hook<Module> > Cache;
+	hook<Cache> cache_;
 };
 
 } // namespace mach

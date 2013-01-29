@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 		for (int i = 0; i < s->chars()->length(); ++i)
 			print("s[%%] = '%%' (%%)\n", i, s->chars()->copy(i, i + 1), s->chars()->get(i));
 		print("s->chars()->copy(s->chars()->length()-3, s->chars()->length()) = \"%%\"\n", s->chars()->copy(s->chars()->length()-3, s->chars()->length()));
-		O<StringList> parts = s->split("a");
+		hook<StringList> parts = s->split("a");
 		print("s.split(\"a\") = [\n");
 		for (int i = 0; i < parts->length(); ++i)
 			print("  \"%%\"\n", parts->get(i));
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 		String s = "bin/testPath";
 		// print("s = \"%%\"\n", s);
 		print("s->find(\"/\") = %%\n", s->find("/"));
-		O<StringList> parts = s->split("/");
+		hook<StringList> parts = s->split("/");
 		print("s.split(\"/\") = [\n");
 		for (int i = 0; i < parts->length(); ++i)
 			print("  \"%%\"\n", parts->get(i));

@@ -22,7 +22,7 @@ int main() {
 		"  \"Superman\": true\n"
 		"}";
 	print("text = %%\n", text);
-	O<JsonObject> object = json()->parse(text);
+	hook<JsonObject> object = json()->parse(text);
 	print("\n");
 	print("Name: %%\n", object->value("Name"));
 	print("Age: %%\n", object->value("Age"));

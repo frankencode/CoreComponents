@@ -70,7 +70,7 @@ void ProcessFactory::setCommand(String command)
 {
 	command_ = command;
 
-	O<StringList> args = command->split(' ');
+	hook<StringList> args = command->split(' ');
 	setArguments(args);
 	String name = args->at(0);
 
@@ -95,7 +95,7 @@ void ProcessFactory::daemonize()
 	setWorkingDirectory("/");
 }
 
-O<Process> ProcessFactory::produce()
+hook<Process> ProcessFactory::produce()
 {
 	int inputPipe[2];
 	int outputPipe[2];
@@ -255,9 +255,9 @@ O<Process> ProcessFactory::produce()
 	{
 		// parent process
 
-		O<SystemStream> rawInput = rawInput_;
-		O<SystemStream> rawOutput = rawOutput_;
-		O<SystemStream> rawError = rawError_;
+		hook<SystemStream> rawInput = rawInput_;
+		hook<SystemStream> rawOutput = rawOutput_;
+		hook<SystemStream> rawError = rawError_;
 
 		if (ioPolicy_ & Process::ForwardByPseudoTerminal)
 		{

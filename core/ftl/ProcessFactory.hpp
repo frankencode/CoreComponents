@@ -22,7 +22,7 @@ class SystemStream;
 class ProcessFactory: public Instance
 {
 public:
-	inline static O<ProcessFactory> create() {
+	inline static hook<ProcessFactory> create() {
 		return new ProcessFactory;
 	}
 
@@ -65,7 +65,7 @@ public:
 
 	void daemonize();
 
-	O<Process> produce();
+	hook<Process> produce();
 
 protected:
 	virtual int incarnate();
@@ -77,19 +77,19 @@ private:
 	String workingDirectory_;
 
 	String execPath_;
-	O<StringList> arguments_;
-	O<EnvMap> envMap_;
+	hook<StringList> arguments_;
+	hook<EnvMap> envMap_;
 
-	O<SignalSet> signalMask_;
+	hook<SignalSet> signalMask_;
 
 	bool hasFileCreationMask_;
 	int fileCreationMask_;
 
 	String command_;
 
-	O<SystemStream> rawInput_;
-	O<SystemStream> rawOutput_;
-	O<SystemStream> rawError_;
+	hook<SystemStream> rawInput_;
+	hook<SystemStream> rawOutput_;
+	hook<SystemStream> rawError_;
 };
 
 } // namespace ftl

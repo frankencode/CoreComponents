@@ -6,7 +6,7 @@ namespace ftl
 
 int main()
 {
-	O<NetworkInterfaceList> interfaces = NetworkInterface::queryAll(AF_UNSPEC);
+	hook<NetworkInterfaceList> interfaces = NetworkInterface::queryAll(AF_UNSPEC);
 	for (int i = 0; i < interfaces->length(); ++i) {
 		NetworkInterface *interface = interfaces->get(i);
 		if (i != 0) print("\n");

@@ -26,9 +26,9 @@ typedef struct stat StructStat;
 class FileStatus: public StructStat, public Instance
 {
 public:
-	inline static O<FileStatus> read(int fd = -1) { return new FileStatus(fd); }
-	inline static O<FileStatus> read(SystemStream *stream) { return read(stream->fd()); }
-	inline static O<FileStatus> read(String path, bool resolve = true) { return new FileStatus(path, resolve); }
+	inline static hook<FileStatus> read(int fd = -1) { return new FileStatus(fd); }
+	inline static hook<FileStatus> read(SystemStream *stream) { return read(stream->fd()); }
+	inline static hook<FileStatus> read(String path, bool resolve = true) { return new FileStatus(path, resolve); }
 
 	inline String path() const { return path_; }
 

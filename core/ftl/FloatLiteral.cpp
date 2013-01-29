@@ -129,9 +129,9 @@ void FloatLiteral::read(float64_t *value, const ByteArray *text, Token *token) c
 	}
 }
 
-O<Token> FloatLiteral::read(float64_t *value, const ByteArray *text, int i) const
+hook<Token> FloatLiteral::read(float64_t *value, const ByteArray *text, int i) const
 {
-	O<Token> token = match(text, i);
+	hook<Token> token = match(text, i);
 	if (token)
 		read(value, text, token);
 	return token;

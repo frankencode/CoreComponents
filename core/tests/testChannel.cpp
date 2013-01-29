@@ -12,7 +12,7 @@ typedef Channel<int> MyChannel;
 class Consumer: public Thread
 {
 public:
-	static O<Consumer> create(int id, MyChannel *channel, int amount) { return new Consumer(id, channel, amount); }
+	static hook<Consumer> create(int id, MyChannel *channel, int amount) { return new Consumer(id, channel, amount); }
 
 private:
 	Consumer(int id, MyChannel *channel, int amount)
@@ -31,14 +31,14 @@ private:
 	}
 
 	int id_;
-	O<MyChannel> channel_;
+	hook<MyChannel> channel_;
 	int amount_;
 };
 
 class Producer: public Thread
 {
 public:
-	static O<Producer> create(int id, MyChannel *channel, int amount) { return new Producer(id, channel, amount); }
+	static hook<Producer> create(int id, MyChannel *channel, int amount) { return new Producer(id, channel, amount); }
 
 	void run()
 	{
@@ -59,16 +59,16 @@ private:
 	{}
 
 	int id_;
-	O<MyChannel> channel_;
+	hook<MyChannel> channel_;
 	int amount_;
-	O<Random> random_;
+	hook<Random> random_;
 };
 
 int main()
 {
-	O<MyChannel> channel = MyChannel::create();
-	O<Producer> p1 = Producer::create(1, channel, 8);
-	O<Consumer> c1 = Consumer::create(1, channel, 8);
+	hook<MyChannel> channel = MyChannel::create();
+	hook<Producer> p1 = Producer::create(1, channel, 8);
+	hook<Consumer> c1 = Consumer::create(1, channel, 8);
 
 	Time dt = Time::now();
 	c1->start();

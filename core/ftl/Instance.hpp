@@ -10,7 +10,7 @@
 #define FTL_INSTANCE_HPP
 
 #include "types.hpp"
-#include "O.hpp"
+#include "hook.hpp"
 #include "Exception.hpp"
 
 namespace ftl
@@ -20,7 +20,7 @@ FTL_EXCEPTION(ReferenceException, Exception);
 
 /** \brief reference counting and secure destruction
   *
-  * Base class for all classes T, whose instances can be referred to by O<T>.
+  * Base class for all classes T, whose instances can be referred to by hook<T>.
   * Enforces a consistent allocation schema by surpressing two things:
   *   - combination of static allocation and dynamic destruction
   *   - manual detruction by delete operator

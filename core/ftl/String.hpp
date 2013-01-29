@@ -20,10 +20,10 @@ namespace ftl
 class Format;
 class Variant;
 
-class String: public O<ByteArray>
+class String: public hook<ByteArray>
 {
 public:
-	typedef O<ByteArray> Super;
+	typedef hook<ByteArray> Super;
 
 	// initialize empty string
 	String(): Super(ByteArray::empty()) {}
@@ -37,7 +37,7 @@ public:
 	}
 
 	// initialize string by given bytes
-	String(const O<ByteArray> &bytes): Super(bytes) {}
+	String(const hook<ByteArray> &bytes): Super(bytes) {}
 
 	// initialize string from a shallow copy of another string
 	String(const String &b): Super(b.Super::get()) {}
@@ -45,7 +45,7 @@ public:
 	// helper constructors
 	String(const Format &b);
 	String(const Variant &b);
-	String(O<StringList> parts);
+	String(hook<StringList> parts);
 
 	// initialize string by deep-copying a byte array
 	String(const char *data, int size = -1): Super(ByteArray::create(data, size)) {}
@@ -74,12 +74,12 @@ private:
 	explicit String(ByteArray *bytes): Super(bytes) {}
 };
 
-inline O<StringList> operator+(const String &a, const String &b) {
-	O<StringList> l = StringList::create();
+inline hook<StringList> operator+(const String &a, const String &b) {
+	hook<StringList> l = StringList::create();
 	*l << a << b;
 	return l;
 }
-inline O<StringList> operator+(O<StringList> &a, const String &b) { a << b; return a; }
+inline hook<StringList> operator+(hook<StringList> &a, const String &b) { a << b; return a; }
 
 inline bool operator< (const String &a, const String &b) { return str::cmp(a->data(), b->data()) <  0; }
 inline bool operator==(const String &a, const String &b) { return str::cmp(a->data(), b->data()) == 0; }

@@ -21,7 +21,7 @@ class ScopeGuard;
 class Mutex: public Instance, public NonCopyable
 {
 public:
-	inline static O<Mutex> create() { return new Mutex; }
+	inline static hook<Mutex> create() { return new Mutex; }
 	~Mutex();
 
 	bool tryAcquire();

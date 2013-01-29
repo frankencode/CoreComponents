@@ -19,11 +19,11 @@ namespace ftl
 class BitEncoder: public Instance
 {
 public:
-	inline static O<BitEncoder> open(Stream *stream, int bufCapacity = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static hook<BitEncoder> open(Stream *stream, int bufCapacity = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
 		return new BitEncoder(stream, bufCapacity, endian);
 	}
 
-	inline static O<BitEncoder> open(void *buf, int bufCapacity, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static hook<BitEncoder> open(void *buf, int bufCapacity, int endian = FTL_DEFAULT_ENDIAN) {
 		return new BitEncoder(buf, bufCapacity, endian);
 	}
 
@@ -51,7 +51,7 @@ private:
 	BitEncoder(Stream *stream, int bufCapacity, int endian);
 	BitEncoder(void *buf, int bufCapacity, int endian);
 
-	O<Stream> stream_;
+	hook<Stream> stream_;
 	int endian_;
 
 	int bufCapacity_;
@@ -180,4 +180,4 @@ inline uint64_t BitEncoder::numBytesWritten() const
 
 } // namespace ftl
 
-#endif // FTL_BITENCODER_HP
+#endif // FTL_BITENC

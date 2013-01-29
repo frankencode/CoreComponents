@@ -33,10 +33,10 @@ public:
 	typedef int Index;
 	typedef char Item;
 
-	inline static O<ByteArray> create(int size = 0) { return new ByteArray(size); }
-	inline static O<ByteArray> create(int size, char zero) { return new ByteArray(size, zero); }
-	inline static O<ByteArray> create(const char *data, int size = -1) { return new ByteArray(data, size); }
-	inline static O<ByteArray> create(ByteArray *parent, int size) { return new ByteArray(parent, size); }
+	inline static hook<ByteArray> create(int size = 0) { return new ByteArray(size); }
+	inline static hook<ByteArray> create(int size, char zero) { return new ByteArray(size, zero); }
+	inline static hook<ByteArray> create(const char *data, int size = -1) { return new ByteArray(data, size); }
+	inline static hook<ByteArray> create(ByteArray *parent, int size) { return new ByteArray(parent, size); }
 	~ByteArray();
 
 	inline static ByteArray *empty() { return Default<ByteArray>::instance(); }
@@ -108,9 +108,9 @@ public:
 		mem::cpy(data_ + i, data, size);
 	}
 
-	inline O<ByteArray> copy() const { return new ByteArray(*this); }
+	inline hook<ByteArray> copy() const { return new ByteArray(*this); }
 
-	inline O<ByteArray> copy(int i0, int i1) const {
+	inline hook<ByteArray> copy(int i0, int i1) const {
 		if (i0 < 0) i0 = 0;
 		if (i0 > size_) i0 = size_;
 		if (i1 < 0) i1 = 0;
@@ -119,12 +119,12 @@ public:
 	}
 
 	template<class Range>
-	inline O<ByteArray> copy(Range *range) const {
+	inline hook<ByteArray> copy(Range *range) const {
 		return copy(range->i0(), range->i1());
 	}
 
-	inline O<ByteArray> head(int n) const { return copy(0, n); }
-	inline O<ByteArray> tail(int n) const { return copy(size_ - n, size_); }
+	inline hook<ByteArray> head(int n) const { return copy(0, n); }
+	inline hook<ByteArray> tail(int n) const { return copy(size_ - n, size_); }
 
 	inline int find(char ch) const { return find(0, ch); }
 	inline int find(int i, char ch) const {
@@ -156,16 +156,16 @@ public:
 	inline bool contains(const char *pattern) const { return find(pattern) != size_; }
 	bool contains(String pattern) const;
 
-	static O<ByteArray> join(const StringList *parts, const char *sep = "");
-	static O<ByteArray> join(const StringList *parts, char sep);
-	static O<ByteArray> join(const StringList *parts, String sep);
-	O<StringList> split(char sep) const;
-	O<StringList> split(const char *sep) const;
-	O<StringList> split(SyntaxDefinition *pattern) const;
+	static hook<ByteArray> join(const StringList *parts, const char *sep = "");
+	static hook<ByteArray> join(const StringList *parts, char sep);
+	static hook<ByteArray> join(const StringList *parts, String sep);
+	hook<StringList> split(char sep) const;
+	hook<StringList> split(const char *sep) const;
+	hook<StringList> split(SyntaxDefinition *pattern) const;
 
 	void replaceInsitu(const char *pattern, const char *replacement);
-	O<ByteArray> replace(const char *pattern, const char *replacement) const;
-	O<ByteArray> replace(String pattern, String replacement) const;
+	hook<ByteArray> replace(const char *pattern, const char *replacement) const;
+	hook<ByteArray> replace(String pattern, String replacement) const;
 
 	int toInt(bool *ok = 0) const;
 	double toFloat(bool *ok = 0) const;
@@ -175,44 +175,44 @@ public:
 
 	ByteArray *toLowerInsitu();
 	ByteArray *toUpperInsitu();
-	inline O<ByteArray> toLower() const { return copy()->toLowerInsitu(); }
-	inline O<ByteArray> toUpper() const { return copy()->toUpperInsitu(); }
+	inline hook<ByteArray> toLower() const { return copy()->toLowerInsitu(); }
+	inline hook<ByteArray> toUpper() const { return copy()->toUpperInsitu(); }
 
 	ByteArray *expandInsitu();
-	inline O<ByteArray> expand() const { return copy()->expandInsitu(); }
+	inline hook<ByteArray> expand() const { return copy()->expandInsitu(); }
 
-	O<ByteArray> stripLeadingSpace() const;
-	O<ByteArray> stripTrailingSpace() const;
-	O<ByteArray> trimmed() const;
-	O<ByteArray> stripTags() const;
-	O<ByteArray> simplified() const;
-	O<ByteArray> normalized(bool nameCase = true) const;
+	hook<ByteArray> stripLeadingSpace() const;
+	hook<ByteArray> stripTrailingSpace() const;
+	hook<ByteArray> trimmed() const;
+	hook<ByteArray> stripTags() const;
+	hook<ByteArray> simplified() const;
+	hook<ByteArray> normalized(bool nameCase = true) const;
 
 	bool offsetToLinePos(int offset, int *line = 0, int *pos = 0) const;
 	bool linePosToOffset(int line, int pos, int *offset = 0) const;
 
 	void checkUtf8() const;
 
-	static O<ByteArray> fromUtf16(const void *data, int size = -1, int endian = localEndian());
+	static hook<ByteArray> fromUtf16(const void *data, int size = -1, int endian = localEndian());
 	bool toUtf16(void *buf, int *size);
-	O<ByteArray> toUtf16(int endian = localEndian());
+	hook<ByteArray> toUtf16(int endian = localEndian());
 
-	O<ByteArray> md5() const;
-	O<ByteArray> hex() const;
-	O<ByteArray> base64() const;
+	hook<ByteArray> md5() const;
+	hook<ByteArray> hex() const;
+	hook<ByteArray> base64() const;
 
 	bool isRootPath() const;
 	bool isRelativePath() const;
 	bool isAbsolutePath() const;
 
-	O<ByteArray> absolutePathRelativeTo(String currentDir) const;
-	O<ByteArray> absolutePath() const;
-	O<ByteArray> fileName() const;
-	O<ByteArray> completeBaseName() const;
-	O<ByteArray> baseName() const;
-	O<ByteArray> reducePath() const;
-	O<ByteArray> expandPath(String component) const;
-	O<ByteArray> canonicalPath() const;
+	hook<ByteArray> absolutePathRelativeTo(String currentDir) const;
+	hook<ByteArray> absolutePath() const;
+	hook<ByteArray> fileName() const;
+	hook<ByteArray> completeBaseName() const;
+	hook<ByteArray> baseName() const;
+	hook<ByteArray> reducePath() const;
+	hook<ByteArray> expandPath(String component) const;
+	hook<ByteArray> canonicalPath() const;
 
 private:
 	friend class Singleton<ByteArray>;
@@ -227,8 +227,8 @@ private:
 
 	int size_;
 	char *data_;
-	mutable O<Character> chars_;
-	O<ByteArray> parent_;
+	mutable hook<Character> chars_;
+	hook<ByteArray> parent_;
 
 	size_t mapSize_;
 };

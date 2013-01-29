@@ -20,7 +20,7 @@ template<class T>
 class Channel: public Container< T, Channel<T> >
 {
 public:
-	static O<Channel> create() {
+	static hook<Channel> create() {
 		return new Channel;
 	}
 
@@ -74,9 +74,9 @@ protected:
 	{}
 
 private:
-	O< Queue<T> > queue_;
-	O<Mutex> mutex_;
-	O<Condition> notEmpty_;
+	hook< Queue<T> > queue_;
+	hook<Mutex> mutex_;
+	hook<Condition> notEmpty_;
 };
 
 } // namespace ftl

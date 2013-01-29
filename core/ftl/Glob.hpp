@@ -19,7 +19,7 @@ class Dir;
 class Glob: public Source<String>
 {
 public:
-	inline static O<Glob> open(String expression) { return new Glob(expression); }
+	inline static hook<Glob> open(String expression) { return new Glob(expression); }
 
 	bool read(String *path);
 
@@ -28,10 +28,10 @@ private:
 	Glob(String path, StringList *remainder);
 	void init(String path);
 
-	O<Dir> dir_;
+	hook<Dir> dir_;
 	Pattern pattern_;
-	O<StringList> remainder_;
-	O<Glob> child_;
+	hook<StringList> remainder_;
+	hook<Glob> child_;
 };
 
 } // namespace ftl
