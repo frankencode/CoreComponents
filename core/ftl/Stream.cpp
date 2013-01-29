@@ -29,7 +29,7 @@ void Stream::read(void *buf, int bufFill)
 
 String Stream::readAll()
 {
-	O<Buffer> buffer = new Buffer;
+	hook<Buffer> buffer = new Buffer;
 	while (true) {
 		Block *block = buffer->allocate();
 		block->setFill(readAvail(block->data(), buffer->blockSize()));

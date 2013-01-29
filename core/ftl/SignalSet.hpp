@@ -18,10 +18,10 @@ namespace ftl
 class SignalSet: public Instance, public sigset_t
 {
 public:
-	inline static O<SignalSet> createEmpty() {
+	inline static hook<SignalSet> createEmpty() {
 		return new SignalSet(Empty);
 	}
-	inline static O<SignalSet> createFull() {
+	inline static hook<SignalSet> createFull() {
 		return new SignalSet(Full);
 	}
 

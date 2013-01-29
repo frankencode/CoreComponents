@@ -42,7 +42,7 @@ class GenericIterator: public Source<typename Container::Item>
 public:
 	typedef typename Container::Item Item;
 
-	inline static O<GenericIterator> create(Container *container) {
+	inline static hook<GenericIterator> create(Container *container) {
 		return new GenericIterator(container);
 	}
 
@@ -61,7 +61,7 @@ private:
 		  i_(0)
 	{}
 
-	O<Container> container_;
+	hook<Container> container_;
 	int i_;
 };
 

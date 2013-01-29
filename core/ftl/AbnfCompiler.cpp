@@ -18,12 +18,12 @@ AbnfCompiler::AbnfCompiler()
 	: trap_(StringTrap::create())
 {}
 
-O<AbnfCompiler::Definition> AbnfCompiler::compile(ByteArray *text, SyntaxDebugger *debugger)
+hook<AbnfCompiler::Definition> AbnfCompiler::compile(ByteArray *text, SyntaxDebugger *debugger)
 {
-	O<Token> ruleList = AbnfSyntax::match(text);
+	hook<Token> ruleList = AbnfSyntax::match(text);
 	FTL_ASSERT(ruleList);
 
-	O<Definition> definition = cast<Definition>(AbnfCoreSyntax::create(debugger));
+	hook<Definition> definition = cast<Definition>(AbnfCoreSyntax::create(debugger));
 	definition->OPTION("caseSensitive", false);
 
 	compileRuleList(text, ruleList, definition);
@@ -206,7 +206,7 @@ AbnfCompiler::NODE AbnfCompiler::compileNumVal(ByteArray *text, Token *numVal, D
 				n += text->at(i) == '.';
 				++i;
 			}
-			O<ByteArray> s = ByteArray::create(n);
+			hook<ByteArray> s = ByteArray::create(n);
 			int i0 = numVal->i0() + 2;
 			int i = i0;
 			int j = 0;
@@ -263,11 +263,11 @@ AbnfCompiler::NODE AbnfCompiler::optimizeChoice(Node *node, Definition *definiti
 	}
 
 	if (isRangeExplicit) {
-		O<ByteArray> s = ByteArray::create(numChars);
+		hook<ByteArray> s = ByteArray::create(numChars);
 		int i = 0;
 		Node *child = ignoreDebug(node)->firstChild();
 		while (child) {
-			O<syntax::CharNode> charNode = cast<syntax::CharNode>(ignoreDebug(child));
+			hook<syntax::CharNode> charNode = cast<syntax::CharNode>(ignoreDebug(child));
 			s->set(i, charNode->ch());
 			++i;
 			child = child->nextSibling();
@@ -299,7 +299,7 @@ void AbnfCompiler::deepOptimizeChoice(Node *node, Definition *definition)
 void AbnfCompiler::deepOptimizeChoice(Node *node, Node *fin, int numChars, Definition *definition)
 {
 	if (numChars > 1) {
-		O<ByteArray> s = ByteArray::create(numChars);
+		hook<ByteArray> s = ByteArray::create(numChars);
 		int i = numChars - 1;
 		while (i >= 0) {
 			Node *charNode = (fin) ? fin->previousSibling() : ignoreDebug(node)->lastChild();
@@ -316,4 +316,4 @@ void AbnfCompiler::deepOptimizeChoice(Node *node, Node *fin, int numChars, Defin
 	numChars = 0;
 }
 
-} // namespace ftl
+} // namesp

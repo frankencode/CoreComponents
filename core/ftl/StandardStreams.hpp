@@ -34,12 +34,12 @@ private:
 
 	StandardStreams();
 
-	O<SystemStream> rawInput_;
-	O<SystemStream> rawOutput_;
-	O<SystemStream> rawError_;
-	O<LineSource> input_;
-	O<LineSink> output_;
-	O<LineSink> error_;
+	hook<SystemStream> rawInput_;
+	hook<SystemStream> rawOutput_;
+	hook<SystemStream> rawError_;
+	hook<LineSource> input_;
+	hook<LineSink> output_;
+	hook<LineSink> error_;
 };
 
 inline SystemStream *rawInput() { return StandardStreams::instance()->rawInput(); }

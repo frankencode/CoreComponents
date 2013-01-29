@@ -71,14 +71,14 @@ public:
 		StandardError  = 2
 	};
 
-	static O<File> open(String path, int openFlags = Read);
-	static O<File> tryOpen(String path, int openFlags = Read);
-	static O<File> open(int fd, int openFlags);
-	static O<File> temp(int openFlags = Read|Write);
+	static hook<File> open(String path, int openFlags = Read);
+	static hook<File> tryOpen(String path, int openFlags = Read);
+	static hook<File> open(int fd, int openFlags);
+	static hook<File> temp(int openFlags = Read|Write);
 
 	String path() const;
 	String name() const;
-	O<FileStatus> status() const;
+	hook<FileStatus> status() const;
 
 	int openFlags() const;
 
@@ -107,8 +107,8 @@ public:
 	static bool establish(String path, int fileMode = 0644, int dirMode = 0755);
 	static String lookup(String fileName, StringList *dirs = 0, int accessFlags = Execute);
 
-	static O<FileStatus> status(String path);
-	static O<FileStatus> unresolvedStatus(String path);
+	static hook<FileStatus> status(String path);
+	static hook<FileStatus> unresolvedStatus(String path);
 
 	static String load(String path);
 	static void save(String path, String text);

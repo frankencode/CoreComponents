@@ -12,7 +12,7 @@
 namespace ftl
 {
 
-ThreadFactory::ThreadFactory(O< Clonable<Thread> > prototype)
+ThreadFactory::ThreadFactory(hook< Clonable<Thread> > prototype)
 	: prototype_(prototype)
 {
 	int ret = pthread_attr_init(&attr_);
@@ -77,9 +77,9 @@ void ThreadFactory::setGuardSize(size_t value)
 
 pthread_attr_t *ThreadFactory::attr() { return &attr_; }
 
-O<Thread> ThreadFactory::produce()
+hook<Thread> ThreadFactory::produce()
 {
-	O<Thread> thread = prototype_->clone();
+	hook<Thread> thread = prototype_->clone();
 	start(thread);
 	return thread;
 }

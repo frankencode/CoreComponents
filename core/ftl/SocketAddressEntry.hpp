@@ -29,13 +29,13 @@ public:
 private:
 	friend class NetworkInterface;
 
-	inline static O<SocketAddressEntry> create() {
+	inline static hook<SocketAddressEntry> create() {
 		return new SocketAddressEntry;
 	}
-	inline static O<SocketAddressEntry> create(struct sockaddr_in *addr) {
+	inline static hook<SocketAddressEntry> create(struct sockaddr_in *addr) {
 		return new SocketAddressEntry(addr);
 	}
-	inline static O<SocketAddressEntry> create(struct sockaddr_in6 *addr) {
+	inline static hook<SocketAddressEntry> create(struct sockaddr_in6 *addr) {
 		return new SocketAddressEntry(addr);
 	}
 
@@ -43,9 +43,9 @@ private:
 	SocketAddressEntry(struct sockaddr_in *addr);
 	SocketAddressEntry(struct sockaddr_in6 *addr);
 
-	O<SocketAddress> localAddress_;
-	O<SocketAddress> broadcastAddress_;
-	O<SocketAddress> anycastAddress_;
+	hook<SocketAddress> localAddress_;
+	hook<SocketAddress> broadcastAddress_;
+	hook<SocketAddress> anycastAddress_;
 };
 
 } // namespace ftl

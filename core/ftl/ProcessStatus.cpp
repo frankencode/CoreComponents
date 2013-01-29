@@ -30,7 +30,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 {
 #ifdef __linux
 	String path = Format("/proc/%%/stat") << processId;
-	O<LineSource> source = LineSource::open(File::open(path, File::Read));
+	hook<LineSource> source = LineSource::open(File::open(path, File::Read));
 	String line = source->readLine();
 	{
 		// extract command name first, because it may contain whitespace
@@ -39,7 +39,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 		for (int i = i0; i < i1; ++i)
 			line->set(i, 'x');
 	}
-	O<StringList> parts = line->split(" ");
+	hook<StringList> parts = line->split(" ");
 	processId_ = parts->at(0)->toInt();
 	parentProcessId_ = parts->at(3)->toInt();
 	processGroupId_ = parts->at(4)->toInt();

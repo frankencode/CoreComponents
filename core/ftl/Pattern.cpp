@@ -207,6 +207,7 @@ PatternCompiler::PatternCompiler()
 		DEFINE("Ahead",
 			GLUE(
 				STRING("(?"),
+				REPEAT(0, 1, CHAR('>')),
 				RANGE("=!"),
 				REF("Choice"),
 				CHAR(')')
@@ -284,8 +285,8 @@ PatternCompiler::PatternCompiler()
 
 void PatternCompiler::compile(ByteArray *text, SyntaxDefinition *definition)
 {
-	O<SyntaxState> state = newState();
-	O<Token> token = match(text, 0, state);
+	hook<SyntaxState> state = newState();
+	hook<Token> token = match(text, 0, state);
 	if ((!token) || (token->length() < text->length())) {
 		String reason = "Syntax error";
 		int pos = token->length();
@@ -342,7 +343,7 @@ NODE PatternCompiler::compileSequence(ByteArray *text, Token *token, SyntaxDefin
 NODE PatternCompiler::compileAhead(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
 	return
-		(text->at(token->i0() + 2) == '=') ?
+		((text->at(token->i0() + 2) == '>') ? (text->at(token->i0() + 3) == '=') : (text->at(token->i0() + 2) == '=')) ?
 			definition->AHEAD(compileChoice(text, token->firstChild(), definition)) :
 			definition->NOT(compileChoice(text, token->firstChild(), definition));
 }

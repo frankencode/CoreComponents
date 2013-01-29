@@ -17,8 +17,8 @@ namespace ftl
 class Base64: public Instance
 {
 public:
-	static O<ByteArray> encode(const ByteArray *source);
-	static O<ByteArray> decode(const ByteArray *source);
+	static hook<ByteArray> encode(const ByteArray *source);
+	static hook<ByteArray> decode(const ByteArray *source);
 };
 
 } // namespace ftl

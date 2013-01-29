@@ -128,9 +128,9 @@ void IntegerLiteral::read(uint64_t *value, int *sign, const ByteArray *text, Tok
 	}
 }
 
-O<Token> IntegerLiteral::read(uint64_t *value, int *sign, const ByteArray *text, int i) const
+hook<Token> IntegerLiteral::read(uint64_t *value, int *sign, const ByteArray *text, int i) const
 {
-	O<Token> token = match(text, i);
+	hook<Token> token = match(text, i);
 	if (token)
 		read(value, sign, text, token);
 	return token;

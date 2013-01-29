@@ -69,7 +69,7 @@ public:
 
 	double eval(String text)
 	{
-		O<Token> rootToken = match(text);
+		hook<Token> rootToken = match(text);
 		double value = nan;
 
 		if (rootToken) {
@@ -161,13 +161,13 @@ private:
 
 int main()
 {
-	O<SyntaxDebugger> debugger =
+	hook<SyntaxDebugger> debugger =
 	#ifdef NDEBUG
 		0;
 	#else
 		SyntaxDebugger::create();
 	#endif
-	O<Expression> expression = new Expression(debugger);
+	hook<Expression> expression = new Expression(debugger);
 
 	Time dt = Time::now();
 

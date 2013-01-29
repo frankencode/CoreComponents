@@ -27,7 +27,7 @@ class FileLock: public FLockStruct, public Instance
 public:
 	enum Type { Read = F_RDLCK, Write = F_WRLCK };
 
-	static O<FileLock> create(File *file, int type, off_t start = 0, off_t length = 0) {
+	static hook<FileLock> create(File *file, int type, off_t start = 0, off_t length = 0) {
 		return new FileLock(file, type, start, length);
 	}
 

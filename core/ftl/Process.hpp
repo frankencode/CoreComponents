@@ -31,8 +31,8 @@ FTL_STD_EXCEPTION(ProcessException);
 class Process: public Instance
 {
 public:
-	static O<Process> start(String command, int ioPolicy = 0);
-	static O<Process> start(String command, ProcessFactory *factory);
+	static hook<Process> start(String command, int ioPolicy = 0);
+	static hook<Process> start(String command, ProcessFactory *factory);
 
 	// -- child process control interface
 
@@ -92,7 +92,7 @@ public:
 	static void unsetEnv(String key);
 	static char **&environ();
 
-	static O<EnvMap> envMap();
+	static hook<EnvMap> envMap();
 
 	static pid_t currentId();
 	static pid_t parentId();
@@ -100,9 +100,9 @@ public:
 	static void kill(pid_t processId, int signal, bool *permissionDenied = 0);
 	static void killGroup(pid_t processGroupId, int signal, bool *permissionDenied = 0);
 	static void raise(int signal);
+	static int alarm(int seconds);
 
-	static void hookSignal(int signal);
-	static void unhookSignal(int signal);
+	static void throwSignal(int signal, bool on = true);
 
 	static void sleep(Time duration);
 	static void exit(int exitCode);
@@ -127,13 +127,13 @@ private:
 	int type_;
 	int ioPolicy_;
 
-	O<SystemStream> rawInput_;
-	O<SystemStream> rawOutput_;
-	O<SystemStream> rawError_;
+	hook<SystemStream> rawInput_;
+	hook<SystemStream> rawOutput_;
+	hook<SystemStream> rawError_;
 
-	O<LineSink> input_;
-	O<LineSource> output_;
-	O<LineSource> error_;
+	hook<LineSink> input_;
+	hook<LineSource> output_;
+	hook<LineSource> error_;
 
 	pid_t processId_;
 };

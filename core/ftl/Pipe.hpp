@@ -20,7 +20,7 @@ class Pipe: public SystemStream
 public:
 	enum Mode { Input = 0, Output = 1 };
 
-	inline static O<Pipe> create(int mode = Input) {
+	inline static hook<Pipe> create(int mode = Input) {
 		return new Pipe(mode);
 	}
 

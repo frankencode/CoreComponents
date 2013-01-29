@@ -56,9 +56,9 @@ private:
 	inline Node *me() const { return cast<Node>(const_cast<Tree<Node> *>(this)); }
 
 	Node *parent_;
-	O<Node> firstChild_;
-	O<Node> lastChild_;
-	O<Node> nextSibling_;
+	hook<Node> firstChild_;
+	hook<Node> lastChild_;
+	hook<Node> nextSibling_;
 	Node *previousSibling_;
 };
 
@@ -135,7 +135,7 @@ void Tree<Node>::disbandChildren()
 template<class Node>
 void Tree<Node>::unlink()
 {
-	O<Node> self = me();
+	hook<Node> self = me();
 	if (previousSibling_)
 		previousSibling_->nextSibling_ = nextSibling_;
 	if (nextSibling_)

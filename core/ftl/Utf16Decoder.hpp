@@ -28,10 +28,10 @@ namespace ftl
 class Utf16Decoder: public Source<uchar_t>
 {
 public:
-	inline static O<Utf16Decoder> open(Stream *stream, int bufCapa, int endian = BigEndian) {
+	inline static hook<Utf16Decoder> open(Stream *stream, int bufCapa, int endian = BigEndian) {
 		return new Utf16Decoder(stream, bufCapa, endian);
 	}
-	inline static O<Utf16Decoder> open(const void *buf, int bufCapa, int endian = BigEndian) {
+	inline static hook<Utf16Decoder> open(const void *buf, int bufCapa, int endian = BigEndian) {
 		return new Utf16Decoder(buf, bufCapa, endian);
 	}
 
@@ -69,7 +69,7 @@ private:
 		: byteDecoder_(ByteDecoder::open(buf, bufCapa, endian))
 	{}
 
-	O<ByteDecoder> byteDecoder_;
+	hook<ByteDecoder> byteDecoder_;
 };
 
 } // namespace ftl

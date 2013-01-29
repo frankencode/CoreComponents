@@ -18,7 +18,7 @@ namespace ftl
 class Event: public Action
 {
 public:
-	inline static O<Event> create() {
+	inline static hook<Event> create() {
 		return new Event;
 	}
 
@@ -33,8 +33,8 @@ protected:
 
 private:
 	SpinLock mutex_;
-	typedef List< O<Action> > Handlers;
-	O<Handlers> handlers_;
+	typedef List< hook<Action> > Handlers;
+	hook<Handlers> handlers_;
 };
 
 } // namespace ftl

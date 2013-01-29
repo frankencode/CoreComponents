@@ -14,7 +14,7 @@ class JobServer;
 class Job: public Instance
 {
 public:
-	inline static O<Job> create(String command) {
+	inline static hook<Job> create(String command) {
 		return new Job(command);
 	}
 
@@ -37,7 +37,7 @@ private:
 	String outputText_;
 };
 
-typedef Channel< O<Job> > JobChannel;
+typedef Channel< hook<Job> > JobChannel;
 
 } // namespace mach
 

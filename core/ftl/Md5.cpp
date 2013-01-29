@@ -74,9 +74,9 @@ void Md5::finish(uint8_t sum[16])
 	for (int i = 0; i < 4; ++i) sum[k++] = d_ >> (8 * i);
 }
 
-O<ByteArray> Md5::finish()
+hook<ByteArray> Md5::finish()
 {
-	O<ByteArray> sum = ByteArray::create(16);
+	hook<ByteArray> sum = ByteArray::create(16);
 	finish(reinterpret_cast<uint8_t*>(sum->data()));
 	return sum;
 }
@@ -227,4 +227,4 @@ void Md5::consume()
 	auxFill_ = 0;
 }
 
-} // namesp
+} // namespace ftl

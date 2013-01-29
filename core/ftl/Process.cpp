@@ -10,7 +10,7 @@
 #include <sys/wait.h> // waitpid
 #include <sys/stat.h> // umask
 #include <errno.h> // errno
-#include <unistd.h> // chdir, __MACH__?
+#include <unistd.h> // chdir, alarm, __MACH__?
 #include <stdlib.h> // getenv, setenv, free
 #include <time.h> // nanosleep
 #include <errno.h> // errno
@@ -33,14 +33,14 @@ extern "C" char **environ;
 namespace ftl
 {
 
-O<Process> Process::start(String command, int ioPolicy)
+hook<Process> Process::start(String command, int ioPolicy)
 {
-	O<ProcessFactory> factory = ProcessFactory::create();
+	hook<ProcessFactory> factory = ProcessFactory::create();
 	factory->setIoPolicy(ioPolicy);
 	return start(command, factory);
 }
 
-O<Process> Process::start(String command, ProcessFactory *factory)
+hook<Process> Process::start(String command, ProcessFactory *factory)
 {
 	factory->setCommand(command);
 	return factory->produce();
@@ -206,13 +206,13 @@ void Process::unsetEnv(String key)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-O<EnvMap> Process::envMap()
+hook<EnvMap> Process::envMap()
 {
 	char **env = environ();
-	O<EnvMap> map = EnvMap::create();
+	hook<EnvMap> map = EnvMap::create();
 	int i = 0;
 	while (env[i] != 0) {
-		O<StringList> parts = String(env[i])->split("=");
+		hook<StringList> parts = String(env[i])->split("=");
 		if (parts->length() == 2)
 			map->insert(parts->at(0), parts->at(1));
 		++i;
@@ -258,36 +258,43 @@ void Process::raise(int signal)
 		FTL_SYSTEM_EXCEPTION;
 }
 
+int Process::alarm(int seconds)
+{
+	int ret = ::alarm(seconds);
+	if (ret == -1) FTL_SYSTEM_EXCEPTION;
+	return ret;
+}
+
 void Process::forwardSignal(int signal)
 {
 	Thread::self()->lastSignal_ = signal;
 	Thread::self()->handleSignal(signal);
 }
 
-void Process::hookSignal(int signal)
+void Process::throwSignal(int signal, bool on)
 {
-	Thread::self();
+	if (on) {
+		Thread::self();
 
-	struct sigaction action;
-	mem::clr(&action, sizeof(action));
-	sigset_t mask;
-	sigfillset(&mask);
-	action.sa_handler = forwardSignal;
-	action.sa_mask = mask;
-	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
-		FTL_SYSTEM_EXCEPTION;
-}
-
-void Process::unhookSignal(int signal)
-{
-	struct sigaction action;
-	mem::clr(&action, sizeof(action));
-	sigset_t mask;
-	sigfillset(&mask);
-	action.sa_handler = SIG_DFL;
-	action.sa_mask = mask;
-	if (::sigaction(signal, &action, 0/*oldact*/) == -1)
-		FTL_SYSTEM_EXCEPTION;
+		struct sigaction action;
+		mem::clr(&action, sizeof(action));
+		sigset_t mask;
+		sigfillset(&mask);
+		action.sa_handler = forwardSignal;
+		action.sa_mask = mask;
+		if (::sigaction(signal, &action, 0/*oldact*/) == -1)
+			FTL_SYSTEM_EXCEPTION;
+	}
+	else {
+		struct sigaction action;
+		mem::clr(&action, sizeof(action));
+		sigset_t mask;
+		sigfillset(&mask);
+		action.sa_handler = SIG_DFL;
+		action.sa_mask = mask;
+		if (::sigaction(signal, &action, 0/*oldact*/) == -1)
+			FTL_SYSTEM_EXCEPTION;
+	}
 }
 
 void Process::sleep(Time duration)

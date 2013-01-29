@@ -26,20 +26,20 @@ public:
 		FilesOnly
 	};
 
-	static O<DirWalker> open(String path, int option = DirsFirst);
+	static hook<DirWalker> open(String path, int option = DirsFirst);
 	inline int maxDepth() const { return maxDepth_; }
 	inline void setMaxDepth(int depth) { maxDepth_ = depth; }
 
 	bool read(String *path);
 
 private:
-	O<DirWalker> tryOpen(String path, int option);
+	hook<DirWalker> tryOpen(String path, int option);
 	DirWalker(String path, int option, Dir *dir = 0);
 	int option_;
 	int maxDepth_;
 	int depth_;
-	O<Dir> dir_;
-	O<DirWalker> child_;
+	hook<Dir> dir_;
+	hook<DirWalker> child_;
 };
 
 } // namespace ftl

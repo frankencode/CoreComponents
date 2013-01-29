@@ -13,14 +13,14 @@
 namespace ftl
 {
 
-O<DirWalker> DirWalker::tryOpen(String path, int option)
+hook<DirWalker> DirWalker::tryOpen(String path, int option)
 {
-	O<Dir> dir = Dir::tryOpen(path);
+	hook<Dir> dir = Dir::tryOpen(path);
 	if (dir) return new DirWalker(path, option, dir);
 	return 0;
 }
 
-O<DirWalker> DirWalker::open(String path, int option)
+hook<DirWalker> DirWalker::open(String path, int option)
 {
 	return new DirWalker(path, option);
 }

@@ -8,6 +8,6 @@
 #include "SpinLock.hpp"
 #include "Guard.hpp"
 #include "Instance.hpp"
-#include "O.hpp"
+#include "hook.hpp"
 
 #endif // FTL_ATOMS

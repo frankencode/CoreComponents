@@ -31,7 +31,7 @@ private:
 	int pos_;
 };
 
-class Pattern: public O<SyntaxDefinition>
+class Pattern: public hook<SyntaxDefinition>
 {
 public:
 	Pattern();

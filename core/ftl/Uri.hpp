@@ -20,13 +20,13 @@ FTL_EXCEPTION(UriException, Exception);
 class Uri: public Instance
 {
 public:
-	inline static O<Uri> create() {
+	inline static hook<Uri> create() {
 		return new Uri;
 	}
-	inline static O<Uri> create(const char *text) {
+	inline static hook<Uri> create(const char *text) {
 		return new Uri(text);
 	}
-	inline static O<Uri> create(ByteArray *bytes, Token *rootToken = 0) {
+	inline static hook<Uri> create(ByteArray *bytes, Token *rootToken = 0) {
 		return new Uri(bytes, rootToken);
 	}
 

@@ -49,16 +49,16 @@ private:
 	State();
 	State(const DefinitionNode *definition, int numFlags, int numCaptures, State *parent = 0);
 
-	O<const DefinitionNode> definition_;
+	hook<const DefinitionNode> definition_;
 	int definitionId_;
 
-	O<State> child_;
+	hook<State> child_;
 
 	typedef Array<bool> Flags;
-	typedef Array< O<Range> > Captures;
+	typedef Array< hook<Range> > Captures;
 
-	O<Flags> flags_;
-	O<Captures> captures_;
+	hook<Flags> flags_;
+	hook<Captures> captures_;
 
 	const char *hint_;
 	int hintOffset_;

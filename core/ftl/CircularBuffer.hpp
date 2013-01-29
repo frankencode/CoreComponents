@@ -21,10 +21,10 @@ public:
 	typedef int Index;
 	typedef T Item;
 
-	inline static O<CircularBuffer> create(int size) {
+	inline static hook<CircularBuffer> create(int size) {
 		return new CircularBuffer(size);
 	}
-	inline static O<CircularBuffer> create(T *buf, int size) {
+	inline static hook<CircularBuffer> create(T *buf, int size) {
 		return new CircularBuffer(buf, size);
 	}
 
@@ -143,4 +143,4 @@ private:
 
 } // namespace ftl
 
-#endif // FTL_CIRCULARBUFFER_HPP
+#endif // FTL_CIRCULARBUFFER

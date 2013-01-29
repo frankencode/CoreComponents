@@ -19,10 +19,10 @@ namespace ftl
 class BitDecoder: public Instance
 {
 public:
-	inline static O<BitDecoder> open(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static hook<BitDecoder> open(Stream *stream, int bufCapa = FTL_DEFAULT_BUF_CAPA, int endian = FTL_DEFAULT_ENDIAN) {
 		return new BitDecoder(stream, bufCapa, endian);
 	}
-	inline static O<BitDecoder> open(void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
+	inline static hook<BitDecoder> open(void *buf, int bufCapa, int endian = FTL_DEFAULT_ENDIAN) {
 		return new BitDecoder(buf, bufCapa, endian);
 	}
 	~BitDecoder();
@@ -48,7 +48,7 @@ private:
 
 	void fill();
 
-	O<Stream> stream_;
+	hook<Stream> stream_;
 	int endian_;
 
 	int bufCapa_;
@@ -184,4 +184,4 @@ inline Stream *BitDecoder::stream() const
 
 } // namespace ftl
 
-#endif // FTL_BITDECODER_HP
+#endif // FTL_BITDEC

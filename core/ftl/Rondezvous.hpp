@@ -20,7 +20,7 @@ template<class T>
 class Rondezvous: public Container< T, Rondezvous<T> >
 {
 public:
-	inline static O<Rondezvous> create() {
+	inline static hook<Rondezvous> create() {
 		return new Rondezvous;
 	}
 

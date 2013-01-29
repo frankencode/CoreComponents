@@ -34,10 +34,10 @@ public:
 		Sat = 6
 	};
 
-	inline static O<Date> create() {
+	inline static hook<Date> create() {
 		return new Date;
 	}
-	inline static O<Date> create(Time time) {
+	inline static hook<Date> create(Time time) {
 		return new Date(time);
 	}
 
@@ -45,8 +45,8 @@ public:
 	// improve logic (add date validation, bool validated_, etc...)
 	inline bool valid() const { return tm_off != -2;}
 
-	static O<Date> localTime();
-	static O<Date> localTime(Time time);
+	static hook<Date> localTime();
+	static hook<Date> localTime(Time time);
 
 	inline int year() const { return tm_year + 1900; }
 	inline int month() const { return tm_mon; }
@@ -62,7 +62,7 @@ public:
 
 	// \todo
 	String toString() const;
-	// static O<Date> fromString(String s);
+	// static hook<Date> fromString(String s);
 
 	// \todo
 	// local time formatting
