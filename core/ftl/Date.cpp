@@ -138,9 +138,9 @@ Time Date::time() const
 	return Time(t, 0);
 }
 
-String Date::toString() const
+string Date::toString() const
 {
-	String tz = "Z";
+	string tz = "Z";
 	if (tm_off > 0)
 		tz = Format("+%2.:'0'%%2.:'0'%") << (tm_off / 60) << (tm_off % 60);
 	else if (tm_off < 0)

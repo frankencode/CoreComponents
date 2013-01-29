@@ -40,13 +40,13 @@ void ProcessFactory::setIoPolicy(int flags) { ioPolicy_ = flags; }
 
 /** working directory of new process
   */
-String ProcessFactory::workingDirectory() { return (workingDirectory_ != "") ? workingDirectory_ : workingDirectory_ = Process::cwd(); }
-void ProcessFactory::setWorkingDirectory(String path) { workingDirectory_ = path; }
+string ProcessFactory::workingDirectory() { return (workingDirectory_ != "") ? workingDirectory_ : workingDirectory_ = Process::cwd(); }
+void ProcessFactory::setWorkingDirectory(string path) { workingDirectory_ = path; }
 
 /** relative or absolute path to executable image or script
   */
-String ProcessFactory::execPath() const { return execPath_; }
-void ProcessFactory::setExecPath(String path) { execPath_ = path; }
+string ProcessFactory::execPath() const { return execPath_; }
+void ProcessFactory::setExecPath(string path) { execPath_ = path; }
 
 StringList *ProcessFactory::arguments() { return (arguments_) ? arguments_ : arguments_ = StringList::create(); }
 void ProcessFactory::setArguments(StringList *list) { arguments_ = list; }
@@ -64,17 +64,17 @@ void ProcessFactory::setFileCreationMask(int mask) {
 }
 void ProcessFactory::unsetFileCreationMask() { hasFileCreationMask_ = false; }
 
-String ProcessFactory::command() const { return command_; }
+string ProcessFactory::command() const { return command_; }
 
-void ProcessFactory::setCommand(String command)
+void ProcessFactory::setCommand(string command)
 {
 	command_ = command;
 
 	hook<StringList> args = command->split(' ');
 	setArguments(args);
-	String name = args->at(0);
+	string name = args->at(0);
 
-	String path = File::lookup(name);
+	string path = File::lookup(name);
 	if (path == "") path = name;
 	setExecPath(path);
 }
@@ -152,7 +152,7 @@ hook<Process> ProcessFactory::produce()
 			int n = envMap_->length();
 			envp = new char*[n + 1];
 			for (int i = 0; i < n; ++i)
-				envp[i] = str::dup(String(Format() << envMap_->get(i).key() <<  "=" << envMap_->get(i).value())->data());
+				envp[i] = str::dup(string(Format() << envMap_->get(i).key() <<  "=" << envMap_->get(i).value())->data());
 			envp[n] = 0;
 		}
 		else {

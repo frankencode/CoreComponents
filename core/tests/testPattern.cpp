@@ -9,7 +9,7 @@ int main() {
 	if (p->debugFactory())
 		cast<SyntaxDebugger>(p->debugFactory())->printDefinition();
 	#endif
-	String s = "abc.txt";
+	string s = "abc.txt";
 	hook<Token> token = p->match(s);
 	print("p->match(\"%%\") = 0x%hex%\n", s, (void *)token);
 	if (token)

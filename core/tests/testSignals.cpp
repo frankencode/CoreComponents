@@ -25,7 +25,7 @@ private:
 
 		while (true) {
 			try {
-				String line = input()->readLine();
+				string line = input()->readLine();
 				if (line == "") break;
 			}
 			catch (Interrupt& ex) {

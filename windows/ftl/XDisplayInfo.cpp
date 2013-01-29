@@ -79,7 +79,7 @@ void XDisplayInfo::read(ByteDecoder *source)
 
 	if (response != 1) {
 		if ((response == 0) || (response == 2)) {
-			String reason = source->read(reasonLength);
+			string reason = source->read(reasonLength);
 			FTL_THROW(XException, reason->constData());
 		}
 		FTL_THROW(XException, "Protocol error");

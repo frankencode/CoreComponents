@@ -6,7 +6,7 @@ int main(int argc, char **argv)
 
 	for (int i = 1; i < argc; ++i) {
 		hook<LineSource> source = LineSource::open(File::open(argv[i]));
-		for(String line; source->read(&line);) {
+		for(string line; source->read(&line);) {
 			line = line->replace("\\", "\\\\");
 			line = line->replace("\"", "\\\"");
 			print("\"%%\\n\"\n", line);

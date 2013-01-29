@@ -174,7 +174,7 @@ int ByteArray::find(const char *pattern, int i) const
 	return size_;
 }
 
-int ByteArray::find(String pattern, int i) const
+int ByteArray::find(string pattern, int i) const
 {
 	return find(pattern->constData(), i);
 }
@@ -185,7 +185,7 @@ int ByteArray::find(SyntaxDefinition *pattern, int i) const
 	return (token) ? token->i0(): size_;
 }
 
-bool ByteArray::contains(String pattern) const
+bool ByteArray::contains(string pattern) const
 {
 	return contains(pattern->constData());
 }
@@ -225,7 +225,7 @@ hook<ByteArray> ByteArray::join(const StringList *parts, char sep)
 	return join(parts, h);
 }
 
-hook<ByteArray> ByteArray::join(const StringList *parts, String sep)
+hook<ByteArray> ByteArray::join(const StringList *parts, string sep)
 {
 	return join(parts, sep->constData());
 }
@@ -250,7 +250,7 @@ hook<StringList> ByteArray::split(const char *sep) const
 	if (i0 < size_)
 		parts->append(copy(i0, size_));
 	else
-		parts->append(String());
+		parts->append(string());
 	return parts;
 }
 
@@ -299,7 +299,7 @@ hook<ByteArray> ByteArray::replace(const char *pattern, const char *replacement)
 	return join(split(pattern), replacement);
 }
 
-hook<ByteArray> ByteArray::replace(String pattern, String replacement) const
+hook<ByteArray> ByteArray::replace(string pattern, string replacement) const
 {
 	return replace(pattern->constData(), replacement->constData());
 }
@@ -483,13 +483,13 @@ hook<ByteArray> ByteArray::stripTags() const
 	char *p = o;
 	while (*p) {
 		if (*p == '<') {
-			if (o < p) parts->append(String(o, p-o));
+			if (o < p) parts->append(string(o, p-o));
 			while ((*p) && (*p != '>')) ++p;
 			p += (*p == '>');
 			o = p;
 		}
 		else if (*p == '&') {
-			if (o < p) parts->append(String(o, p-o));
+			if (o < p) parts->append(string(o, p-o));
 			while ((*p) && (*p != ';')) ++p;
 			p += (*p == ';');
 			o = p;
@@ -498,7 +498,7 @@ hook<ByteArray> ByteArray::stripTags() const
 			++p;
 		}
 	}
-	if (o < p) parts->append(String(o, p-o));
+	if (o < p) parts->append(string(o, p-o));
 	return join(parts);
 }
 
@@ -515,7 +515,7 @@ hook<ByteArray> ByteArray::normalized(bool nameCase) const
 	}
 	hook<StringList> parts = split(" ");
 	for (int i = 0; i < parts->length(); ++i) {
-		String s = parts->at(i);
+		string s = parts->at(i);
 		if (s->isEmpty()) {
 			parts->remove(i);
 		}
@@ -682,7 +682,7 @@ hook<ByteArray> ByteArray::base64() const
 
 bool ByteArray::isRootPath() const
 {
-	return String(this) == "/";
+	return string(this) == "/";
 }
 
 bool ByteArray::isRelativePath() const
@@ -695,7 +695,7 @@ bool ByteArray::isAbsolutePath() const
 	return (length() > 0) ? (get(0) == '/') : false;
 }
 
-hook<ByteArray> ByteArray::absolutePathRelativeTo(String currentDir) const
+hook<ByteArray> ByteArray::absolutePathRelativeTo(string currentDir) const
 {
 	if (isAbsolutePath() || (currentDir == "."))
 		return const_cast<ByteArray *>(this);
@@ -707,7 +707,7 @@ hook<ByteArray> ByteArray::absolutePathRelativeTo(String currentDir) const
 
 	for (int i = 0; i < parts->length(); ++i)
 	{
-		String c = parts->at(i);
+		string c = parts->at(i);
 		if (c == ".")
 		{}
 		else if (c == "..") {
@@ -721,7 +721,7 @@ hook<ByteArray> ByteArray::absolutePathRelativeTo(String currentDir) const
 		}
 	}
 
-	String prefix;
+	string prefix;
 	if (currentDir->length() > 0)
 		prefix = currentDir->copy();
 	else
@@ -741,12 +741,12 @@ hook<ByteArray> ByteArray::absolutePath() const
 {
 	if (isAbsolutePath())
 		return const_cast<ByteArray *>(this);
-	return absolutePathRelativeTo(String());
+	return absolutePathRelativeTo(string());
 }
 
 hook<ByteArray> ByteArray::fileName() const
 {
-	String name;
+	string name;
 	hook<StringList> parts = split("/");
 	if (parts->length() > 0)
 		name = parts->at(-1);
@@ -771,15 +771,15 @@ hook<ByteArray> ByteArray::reducePath() const
 	hook<StringList> parts = split("/");
 	if (parts->length() > 0)
 		parts->popBack();
-	String resultPath = parts->join("/");
+	string resultPath = parts->join("/");
 	if ((resultPath == "") && isAbsolutePath())
 		resultPath = "/";
 	return resultPath;
 }
 
-hook<ByteArray> ByteArray::expandPath(String component) const
+hook<ByteArray> ByteArray::expandPath(string component) const
 {
-	return String(Format() << String(this) << "/" << component);
+	return string(Format() << string(this) << "/" << component);
 }
 
 hook<ByteArray> ByteArray::canonicalPath() const
@@ -787,7 +787,7 @@ hook<ByteArray> ByteArray::canonicalPath() const
 	hook<StringList> parts = split("/");
 	hook<StringList> result = StringList::create();
 	for (int i = 0; i < parts->length(); ++i) {
-		String part = parts->at(i);
+		string part = parts->at(i);
 		if ((part == "") && (i > 0)) continue;
 		if ((part == "") && (i == parts->length() - 1)) continue;
 		if ((part == ".") && (i > 0)) continue;

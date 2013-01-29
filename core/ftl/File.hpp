@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "atoms"
-#include "String.hpp"
+#include "string.hpp"
 #include "SystemStream.hpp"
 #include "FileStatus.hpp"
 
@@ -71,13 +71,13 @@ public:
 		StandardError  = 2
 	};
 
-	static hook<File> open(String path, int openFlags = Read);
-	static hook<File> tryOpen(String path, int openFlags = Read);
+	static hook<File> open(string path, int openFlags = Read);
+	static hook<File> tryOpen(string path, int openFlags = Read);
 	static hook<File> open(int fd, int openFlags);
 	static hook<File> temp(int openFlags = Read|Write);
 
-	String path() const;
-	String name() const;
+	string path() const;
+	string name() const;
 	hook<FileStatus> status() const;
 
 	int openFlags() const;
@@ -89,37 +89,37 @@ public:
 
 	off_t seek(off_t distance, int method = SeekBegin);
 
-	String map() const;
+	string map() const;
 
 	void sync();
 	void dataSync();
 
-	static bool access(String path, int flags);
-	static bool exists(String path);
-	static bool create(String path, int mode = 0644);
-	static bool link(String path, String newPath);
-	static bool unlink(String path);
-	static bool symlink(String path, String newPath);
-	static String readlink(String path);
-	static String resolve(String path);
+	static bool access(string path, int flags);
+	static bool exists(string path);
+	static bool create(string path, int mode = 0644);
+	static bool link(string path, string newPath);
+	static bool unlink(string path);
+	static bool symlink(string path, string newPath);
+	static string readlink(string path);
+	static string resolve(string path);
 
-	static String createUnique(String path, int mode = 0644, char placeHolder = 'X');
-	static bool establish(String path, int fileMode = 0644, int dirMode = 0755);
-	static String lookup(String fileName, StringList *dirs = 0, int accessFlags = Execute);
+	static string createUnique(string path, int mode = 0644, char placeHolder = 'X');
+	static bool establish(string path, int fileMode = 0644, int dirMode = 0755);
+	static string lookup(string fileName, StringList *dirs = 0, int accessFlags = Execute);
 
-	static hook<FileStatus> status(String path);
-	static hook<FileStatus> unresolvedStatus(String path);
+	static hook<FileStatus> status(string path);
+	static hook<FileStatus> unresolvedStatus(string path);
 
-	static String load(String path);
-	static void save(String path, String text);
+	static string load(string path);
+	static void save(string path, string text);
 
 private:
 	static int translateOpenFlags(int openFlags);
 
-	File(String path, int openFlags, int fd);
+	File(string path, int openFlags, int fd);
 	~File();
 
-	String path_;
+	string path_;
 	int openFlags_;
 	bool unlinkWhenDone_;
 };

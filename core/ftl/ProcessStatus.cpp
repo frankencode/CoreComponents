@@ -29,9 +29,9 @@ namespace ftl
 ProcessStatus::ProcessStatus(pid_t processId)
 {
 #ifdef __linux
-	String path = Format("/proc/%%/stat") << processId;
+	string path = Format("/proc/%%/stat") << processId;
 	hook<LineSource> source = LineSource::open(File::open(path, File::Read));
-	String line = source->readLine();
+	string line = source->readLine();
 	{
 		// extract command name first, because it may contain whitespace
 		int i0 = line->find('(') + 1, i1 = line->find(')');
@@ -145,9 +145,9 @@ pid_t ProcessStatus::processId() const { return processId_; }
 pid_t ProcessStatus::parentProcessId() const { return parentProcessId_; }
 gid_t ProcessStatus::processGroupId() const { return processGroupId_; }
 gid_t ProcessStatus::foregroundProcessGroupId() const { return foregroundProcessGroupId_; }
-// String ProcessStatus::terminalName() const { return terminalName_; }
-String ProcessStatus::loginName() const { return loginName_; }
-String ProcessStatus::commandName() const { return commandName_; }
+// string ProcessStatus::terminalName() const { return terminalName_; }
+string ProcessStatus::loginName() const { return loginName_; }
+string ProcessStatus::commandName() const { return commandName_; }
 char ProcessStatus::processStatus() const { return processStatus_; }
 
 } // namespace ftl

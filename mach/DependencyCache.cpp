@@ -14,7 +14,7 @@ hook<DependencyCache> DependencyCache::create(BuildPlan *buildPlan)
 	return new DependencyCache(buildPlan);
 }
 
-String DependencyCache::cachePath(BuildPlan *buildPlan)
+string DependencyCache::cachePath(BuildPlan *buildPlan)
 {
 	return buildPlan->modulePath("DependencyCache");
 }
@@ -43,10 +43,10 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 		if (!buildPlan->sources()->contains(item->key())) continue;
 
 		WireObject *wire = cast<WireObject>(item->value());
-		String command = wire->value("analyseCommand");
-		String modulePath = wire->value("modulePath");
-		hook<StringList> dependencyPaths = cast<VariantList>(wire->value("dependencyPaths"))->toList<String>();
-		String sourcePath = dependencyPaths->at(0);
+		string command = wire->value("analyseCommand");
+		string modulePath = wire->value("modulePath");
+		hook<StringList> dependencyPaths = cast<VariantList>(wire->value("dependencyPaths"))->toList<string>();
+		string sourcePath = dependencyPaths->at(0);
 
 		bool dirty = false;
 
@@ -79,11 +79,11 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 DependencyCache::~DependencyCache()
 {
 	Format text;
-	String indent(4, ' ');
+	string indent(4, ' ');
 	text << "DependencyCache {\n";
 	for (int i = 0; i < cache_->length(); ++i) {
 		Cache::Item item = cache_->at(i);
-		String sourcePath = item->key();
+		string sourcePath = item->key();
 		Module *module = item->value();
 		text
 			<< indent << "\"" << sourcePath << "\": Module {\n"
@@ -104,12 +104,12 @@ DependencyCache::~DependencyCache()
 	File::save(cachePath_, text);
 }
 
-bool DependencyCache::lookup(String source, hook<Module> *module)
+bool DependencyCache::lookup(string source, hook<Module> *module)
 {
 	return cache_->lookup(source, module);
 }
 
-void DependencyCache::insert(String source, Module *module)
+void DependencyCache::insert(string source, Module *module)
 {
 	cache_->insert(source, module);
 }

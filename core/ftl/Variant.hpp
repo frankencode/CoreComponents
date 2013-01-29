@@ -11,7 +11,7 @@
 
 #include <new>
 #include "atoms"
-#include "String.hpp"
+#include "string.hpp"
 
 namespace ftl
 {
@@ -45,8 +45,8 @@ public:
 	Variant(bool value):        type_(BoolType),  int_(value)   {}
 	Variant(float value):       type_(FloatType), float_(value) {}
 	Variant(double value):      type_(FloatType), float_(value) {}
-	Variant(const char *value): type_(StringType)               { initRef(String(value)); }
-	Variant(String value):      type_(StringType)               { initRef(value); }
+	Variant(const char *value): type_(StringType)               { initRef(string(value)); }
+	Variant(string value):      type_(StringType)               { initRef(value); }
 	template<class T>
 	Variant(hook<T> value):        type_(RefType)                  { initRef(value); }
 	Variant(const Variant &b):  type_(UndefType)                { *this = b; }
@@ -58,7 +58,7 @@ public:
 	inline const Variant &operator=(float value)       { type_ = FloatType; float_ = value; return *this; }
 	inline const Variant &operator=(double value)      { type_ = FloatType; float_ = value; return *this; }
 	inline const Variant &operator=(const char *value) { return *this = Variant(value); }
-	inline const Variant &operator=(String value)      { return *this = Variant(value); }
+	inline const Variant &operator=(string value)      { return *this = Variant(value); }
 	template<class T>
 	inline const Variant &operator=(const hook<T> &value) { return *this = Variant(value); }
 
@@ -87,10 +87,10 @@ public:
 		FTL_ASSERT2(type_ & FloatType, illegalConversion());
 		return float_;
 	}
-	inline operator String() const {
-		if (!type_) return String();
+	inline operator string() const {
+		if (!type_) return string();
 		FTL_ASSERT2(type_ & StringType, illegalConversion());
-		return String(*this);
+		return string(*this);
 	}
 
 	template<class T>
@@ -109,7 +109,7 @@ public:
 		else if ((type_ & FloatType) && (b.type_ & FloatType))
 			equal = (float_ == b.float_);
 		else if ((type_ == StringType) && (b.type_ == StringType))
-			equal = (String(*this) == String(b));
+			equal = (string(*this) == string(b));
 		else if ((type_ == RefType) && (b.type_ == RefType))
 			equal = (ref().get() == b.ref().get());
 		else
@@ -127,7 +127,7 @@ public:
 		else if ((type_ & FloatType) && (b.type_ & FloatType))
 			below = (float_ < b.float_);
 		else if ((type_ == StringType) && (b.type_ == StringType))
-			below = (String(*this) < String(b));
+			below = (string(*this) < string(b));
 		else if ((type_ == RefType) && (b.type_ == RefType))
 			below = (ref().get() < b.ref().get());
 

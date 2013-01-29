@@ -53,7 +53,7 @@ public:
 		return new NetworkInterface;
 	}
 
-	String name() const;
+	string name() const;
 	int index() const;
 	unsigned type() const;
 	unsigned flags() const;
@@ -70,7 +70,7 @@ private:
 	static hook<NetworkInterfaceList> queryAllIoctl(int family);
 	#endif
 
-	String name_;
+	string name_;
 	int index_;
 	unsigned type_;
 	unsigned flags_;

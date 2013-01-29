@@ -70,7 +70,7 @@ int main()
 			XVisualInfoArray *visualInfoArray = visualInfoByDepth->at(j)->value();
 			for (int k = 0; k < visualInfoArray->length(); ++k) {
 				XVisualInfo *visualInfo = visualInfoArray->at(k);
-				String typeName = "unknown";
+				string typeName = "unknown";
 				if (visualInfo->type == 0) typeName = "static gray";
 				else if (visualInfo->type == 1) typeName = "gray scale";
 				else if (visualInfo->type == 2) typeName = "static color";

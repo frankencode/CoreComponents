@@ -20,7 +20,7 @@ namespace ftl
 
 typedef syntax::NODE NODE;
 
-PatternException::PatternException(const String &error, int pos)
+PatternException::PatternException(const string &error, int pos)
 	: error_(error),
 	  pos_(pos)
 {
@@ -288,7 +288,7 @@ void PatternCompiler::compile(ByteArray *text, SyntaxDefinition *definition)
 	hook<SyntaxState> state = newState();
 	hook<Token> token = match(text, 0, state);
 	if ((!token) || (token->length() < text->length())) {
-		String reason = "Syntax error";
+		string reason = "Syntax error";
 		int pos = token->length();
 		if (state->hint()) {
 			reason = state->hint();
@@ -358,13 +358,13 @@ NODE PatternCompiler::compileBehind(ByteArray *text, Token *token, SyntaxDefinit
 
 NODE PatternCompiler::compileCapture(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
-	String name = text->copy(token->firstChild());
+	string name = text->copy(token->firstChild());
 	return definition->CAPTURE(name, compileChoice(text, token->lastChild(), definition));
 }
 
 NODE PatternCompiler::compileReference(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
-	String name = text->copy(token->firstChild());
+	string name = text->copy(token->firstChild());
 	return definition->REPLAY(name);
 }
 
@@ -401,7 +401,7 @@ NODE PatternCompiler::compileRangeExplicit(ByteArray *text, Token *token, Syntax
 	Token *child = token->firstChild();
 	bool invert = (text->at(token->i0() + 1) == '^');
 	int n = token->countChildren();
-	String s(n);
+	string s(n);
 	for (int i = 0; i < n; ++i) {
 		s->set(i, readChar(text, child, definition));
 		child = child->nextSibling();
@@ -433,25 +433,25 @@ Pattern::Pattern()
 
 Pattern::Pattern(const char *text)
 {
-	*this = String(text);
+	*this = string(text);
 }
 
-Pattern::Pattern(const String &text)
+Pattern::Pattern(const string &text)
 {
 	*this = text;
 }
 
 Pattern::Pattern(const Variant &text)
 {
-	*this = String(text);
+	*this = string(text);
 }
 
 const Pattern &Pattern::operator=(const char *text)
 {
-	return *this = String(text);
+	return *this = string(text);
 }
 
-const Pattern &Pattern::operator=(const String &text)
+const Pattern &Pattern::operator=(const string &text)
 {
 	text_ = text;
 	set(
@@ -467,7 +467,7 @@ const Pattern &Pattern::operator=(const String &text)
 
 const Pattern &Pattern::operator=(const Variant &text)
 {
-	return *this = String(text);
+	return *this = string(text);
 }
 
 } // namespace ftl

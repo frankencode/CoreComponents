@@ -11,7 +11,7 @@
 
 #include <sys/types.h>
 #include "atoms"
-#include "String.hpp"
+#include "string.hpp"
 
 namespace ftl
 {
@@ -25,9 +25,9 @@ public:
 	pid_t parentProcessId() const;
 	gid_t processGroupId() const;
 	gid_t foregroundProcessGroupId() const;
-	// String terminalName() const;
-	String loginName() const;
-	String commandName() const;
+	// string terminalName() const;
+	string loginName() const;
+	string commandName() const;
 	char processStatus() const;
 	
 private:
@@ -35,9 +35,9 @@ private:
 	pid_t parentProcessId_;
 	gid_t processGroupId_;
 	gid_t foregroundProcessGroupId_;
-	// String terminalName_;
-	String loginName_;
-	String commandName_;
+	// string terminalName_;
+	string loginName_;
+	string commandName_;
 	char processStatus_;
 };
 

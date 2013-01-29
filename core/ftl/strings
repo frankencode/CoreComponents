@@ -1,7 +1,7 @@
 #ifndef FTL_STRINGS
 #define FTL_STRINGS
 
-#include "String.hpp"
+#include "string.hpp"
 #include "Format.hpp"
 #include "Pattern.hpp"
 #include "Variant.hpp"

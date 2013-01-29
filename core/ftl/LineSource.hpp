@@ -11,7 +11,7 @@
 
 #include "atoms"
 #include "defaults.hpp"
-#include "String.hpp"
+#include "string.hpp"
 #include "Stream.hpp"
 
 namespace ftl
@@ -20,7 +20,7 @@ namespace ftl
 template<class T>
 class CircularBuffer;
 
-class LineSource: public Source<String>
+class LineSource: public Source<string>
 {
 public:
 	inline static hook<LineSource> open(Stream *stream, const char *eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
@@ -29,8 +29,8 @@ public:
 
 	Stream *stream() const;
 
-	bool read(String *line);
-	String readLine();
+	bool read(string *line);
+	string readLine();
 
 protected:
 	LineSource(Stream *stream, const char *eol, int maxLineLength);
@@ -41,7 +41,7 @@ protected:
 	typedef CircularBuffer<char> Cache;
 
 	hook<Stream> stream_;
-	String eol_;
+	string eol_;
 	int cachedLines_;
 	hook<Cache> cache_;
 	hook<ByteArray> buf_;

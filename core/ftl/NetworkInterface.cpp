@@ -42,7 +42,7 @@ NetworkInterface::NetworkInterface()
 	  mtu_(0)
 {}
 
-String NetworkInterface::name() const { return name_; }
+string NetworkInterface::name() const { return name_; }
 int NetworkInterface::index() const { return index_; }
 unsigned NetworkInterface::type() const { return type_; }
 unsigned NetworkInterface::flags() const { return flags_; }
@@ -364,12 +364,12 @@ hook<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
 	if (fd == -1) FTL_SYSTEM_EXCEPTION;
 
 	hook<LineSource> source = LineSource::open(File::open("/proc/net/dev", File::Read));
-	for (String line; source->read(&line);) {
+	for (string line; source->read(&line);) {
 		if (line->contains(':')) {
 			hook<NetworkInterface> interface = NetworkInterface::create();
 			list->append(interface);
 			hook<StringList> parts = line->split(":");
-			String name = parts->at(0)->stripLeadingSpace();
+			string name = parts->at(0)->stripLeadingSpace();
 			interface->name_ = name;
 
 			{
@@ -526,7 +526,7 @@ hook<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 				if (addr->sdl_family == AF_LINK) { // paranoid check
 					interface->type_ = addr->sdl_type;
 					if (addr->sdl_nlen > 0)
-						interface->name_ = String(addr->sdl_data, addr->sdl_nlen);
+						interface->name_ = string(addr->sdl_data, addr->sdl_nlen);
 					if (addr->sdl_alen > 0) {
 						// strange fact: hardware address always stored in little endian
 						unsigned char *value = (unsigned char *)addr->sdl_data + addr->sdl_nlen;

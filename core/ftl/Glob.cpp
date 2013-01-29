@@ -14,7 +14,7 @@
 namespace ftl
 {
 
-Glob::Glob(String expression)
+Glob::Glob(string expression)
 	: remainder_(expression->split('/'))
 {
 	if (expression->head(1) == "/") {
@@ -26,31 +26,31 @@ Glob::Glob(String expression)
 	}
 }
 
-Glob::Glob(String path, StringList *remainder)
+Glob::Glob(string path, StringList *remainder)
 	: remainder_(remainder->clone())
 {
 	init(path);
 }
 
-void Glob::init(String path)
+void Glob::init(string path)
 {
 	dir_ = Dir::open(path);
 	pattern_ = remainder_->pop(0);
 }
 
-bool Glob::read(String *path)
+bool Glob::read(string *path)
 {
 	if (child_) {
 		if (child_->read(path))
 			return true;
 		child_ = 0;
 	}
-	String name;
+	string name;
 	while (dir_->read(&name)) {
 		if (name == ".") continue;
 		if ((name == "..") && (pattern_ != "..")) continue;
 		if (pattern_->match(name)) {
-			String node = dir_->path(name);
+			string node = dir_->path(name);
 			if (remainder_->length() == 0) {
 				*path = node;
 				return true;

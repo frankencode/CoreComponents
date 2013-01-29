@@ -21,12 +21,12 @@ class Config: public WireObject
 public:
 	static hook<Config> create();
 
-	void read(String path);
+	void read(string path);
 	void read(int argc, char **argv);
 
 	StringList *options() const;
 	StringList *arguments() const;
-	String path() const;
+	string path() const;
 
 	inline bool flag(const char *name) {
 		bool h = false;
@@ -40,7 +40,7 @@ private:
 	hook<WireObject> object_;
 	hook<StringList> options_;
 	hook<StringList> arguments_;
-	String path_;
+	string path_;
 };
 
 } // namespace ftl

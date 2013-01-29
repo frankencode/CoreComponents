@@ -45,12 +45,12 @@ public:
 	static hook<BuildPlan> create(int argc, char **argv);
 
 	inline ToolChain *toolChain() const { return toolChain_; }
-	inline String projectPath() const { return projectPath_; }
-	inline String modulePath() const { return modulePath_; }
+	inline string projectPath() const { return projectPath_; }
+	inline string modulePath() const { return modulePath_; }
 	inline Config *recipe() const { return recipe_; }
 
-	inline String name() const { return name_; }
-	inline String version() const { return version_; }
+	inline string name() const { return name_; }
+	inline string version() const { return version_; }
 	inline int options() const { return options_; }
 	inline int speedOptimizationLevel() const { return speedOptimizationLevel_; }
 	inline int sizeOptimizationLevel() const { return sizeOptimizationLevel_; }
@@ -65,25 +65,25 @@ public:
 
 	int run();
 
-	String sourcePath(String source) const;
-	String modulePath(String object) const;
+	string sourcePath(string source) const;
+	string modulePath(string object) const;
 
-	String beautifyCommand(String command);
-	bool runBuild(String command);
+	string beautifyCommand(string command);
+	bool runBuild(string command);
 
-	bool mkdir(String path);
-	bool rmdir(String path);
-	bool symlink(String path, String newPath);
-	bool unlink(String path);
-	hook<FileStatus> fileStatus(String path);
+	bool mkdir(string path);
+	bool rmdir(string path);
+	bool symlink(string path, string newPath);
+	bool unlink(string path);
+	hook<FileStatus> fileStatus(string path);
 
 private:
-	hook<BuildPlan> create(ToolChain *toolChain, String projectPath, int globalOptions);
+	hook<BuildPlan> create(ToolChain *toolChain, string projectPath, int globalOptions);
 
 	typedef PrefixTree<char, BuildPlan *> BuildMap;
 
 	BuildPlan(int argc, char **argv);
-	BuildPlan(ToolChain *toolChain, String projectPath, BuildPlan *parentPlan);
+	BuildPlan(ToolChain *toolChain, string projectPath, BuildPlan *parentPlan);
 
 	void readRecipe(BuildPlan *parentPlan = 0);
 
@@ -93,12 +93,12 @@ private:
 	void clean();
 
 	hook<ToolChain> toolChain_;
-	String projectPath_;
-	String modulePath_;
+	string projectPath_;
+	string modulePath_;
 	hook<Config> recipe_;
 
-	String name_;
-	String version_;
+	string name_;
+	string version_;
 	int options_;
 	int speedOptimizationLevel_;
 	int sizeOptimizationLevel_;
@@ -112,7 +112,7 @@ private:
 	hook<BuildPlanList> prequisites_;
 
 	hook<BuildMap> buildMap_;
-	String sourcePrefix_;
+	string sourcePrefix_;
 
 	bool prepareComplete_;
 	bool analyseComplete_;

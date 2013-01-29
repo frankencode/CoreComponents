@@ -9,7 +9,7 @@
 #ifndef FTL_PROCESSFACTORY_HPP
 #define FTL_PROCESSFACTORY_HPP
 
-#include "String.hpp"
+#include "string.hpp"
 #include "SignalSet.hpp"
 #include "Map.hpp"
 #include "Process.hpp"
@@ -32,16 +32,16 @@ public:
 	int ioPolicy() const;
 	void setIoPolicy(int flags);
 
-	String workingDirectory();
-	void setWorkingDirectory(String path);
+	string workingDirectory();
+	void setWorkingDirectory(string path);
 
-	String execPath() const;
-	void setExecPath(String path);
+	string execPath() const;
+	void setExecPath(string path);
 
 	StringList *arguments();
 	void setArguments(StringList *list);
 
-	typedef Map<String, String> EnvMap;
+	typedef Map<string, string> EnvMap;
 	EnvMap *envMap();
 	void setEnvMap(EnvMap *map);
 
@@ -52,8 +52,8 @@ public:
 	void setFileCreationMask(int mask);
 	void unsetFileCreationMask();
 
-	String command() const;
-	void setCommand(String command);
+	string command() const;
+	void setCommand(string command);
 
 	SystemStream *rawInput() const;
 	SystemStream *rawOutput() const;
@@ -74,9 +74,9 @@ protected:
 private:
 	int type_;
 	int ioPolicy_;
-	String workingDirectory_;
+	string workingDirectory_;
 
-	String execPath_;
+	string execPath_;
 	hook<StringList> arguments_;
 	hook<EnvMap> envMap_;
 
@@ -85,7 +85,7 @@ private:
 	bool hasFileCreationMask_;
 	int fileCreationMask_;
 
-	String command_;
+	string command_;
 
 	hook<SystemStream> rawInput_;
 	hook<SystemStream> rawOutput_;

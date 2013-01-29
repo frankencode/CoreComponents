@@ -16,14 +16,14 @@
 namespace ftl
 {
 
-hook<Dir> Dir::tryOpen(String path)
+hook<Dir> Dir::tryOpen(string path)
 {
 	DIR *dir = ::opendir(path);
 	if (dir) return new Dir(path, dir);
 	return 0;
 }
 
-Dir::Dir(String path, DIR *dir)
+Dir::Dir(string path, DIR *dir)
 	: path_(path),
 	  dir_(dir)
 {
@@ -40,16 +40,16 @@ Dir::~Dir()
 		FTL_SYSTEM_EXCEPTION;
 }
 
-String Dir::path() const { return path_; }
+string Dir::path() const { return path_; }
 
-String Dir::path(String name) const
+string Dir::path(string name) const
 {
 	if (path_ == ".") return name;
 	if (path_ == "/") return "/" + name;
 	return path_ + "/" + name;
 }
 
-bool Dir::read(String *name)
+bool Dir::read(string *name)
 {
 	struct dirent buf;
 	struct dirent *result;
@@ -62,22 +62,22 @@ bool Dir::read(String *name)
 	return result;
 }
 
-bool Dir::access(String path, int flags)
+bool Dir::access(string path, int flags)
 {
 	return access(path, flags);
 }
 
-bool Dir::exists(String path)
+bool Dir::exists(string path)
 {
 	return File::exists(path) && (File::status(path)->type() == File::Directory);
 }
 
-bool Dir::create(String path, int mode)
+bool Dir::create(string path, int mode)
 {
 	return ::mkdir(path, mode) != -1;
 }
 
-bool Dir::establish(String path, int mode)
+bool Dir::establish(string path, int mode)
 {
 	hook<StringList> missingDirs = StringList::create();
 	while ((path != "") && (path != "/")) {
@@ -92,7 +92,7 @@ bool Dir::establish(String path, int mode)
 	return true;
 }
 
-bool Dir::unlink(String path)
+bool Dir::unlink(string path)
 {
 	return ::rmdir(path) != -1;
 }

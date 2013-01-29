@@ -11,7 +11,7 @@
 
 #include "atoms"
 #include "Time.hpp"
-#include "String.hpp"
+#include "string.hpp"
 
 namespace ftl
 {
@@ -61,8 +61,8 @@ public:
 	Time time() const;
 
 	// \todo
-	String toString() const;
-	// static hook<Date> fromString(String s);
+	string toString() const;
+	// static hook<Date> fromString(string s);
 
 	// \todo
 	// local time formatting
@@ -72,7 +72,7 @@ private:
 	Date(Time time);
 
 	// \todo
-	// Date(String s);
+	// Date(string s);
 	// Date(int year, int month, int day, int hour = 0, int min = 0, int sec = 0);
 
 	void clear();

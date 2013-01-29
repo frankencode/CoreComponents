@@ -12,32 +12,32 @@
 #include <sys/types.h> // mode_t
 #include <dirent.h> // DIR, opendir, closedir, readdir_r
 #include "generics.hpp"
-#include "String.hpp"
+#include "string.hpp"
 
 namespace ftl
 {
 
-class Dir: public Source<String>
+class Dir: public Source<string>
 {
 public:
-	inline static hook<Dir> open(String path) { return new Dir(path); }
-	static hook<Dir> tryOpen(String path);
+	inline static hook<Dir> open(string path) { return new Dir(path); }
+	static hook<Dir> tryOpen(string path);
 
-	String path() const;
-	String path(String name) const;
-	bool read(String *name);
+	string path() const;
+	string path(string name) const;
+	bool read(string *name);
 
-	static bool access(String path, int flags);
-	static bool exists(String path);
-	static bool create(String path, int mode = 0755);
-	static bool establish(String path, int mode = 0755);
-	static bool unlink(String path);
+	static bool access(string path, int flags);
+	static bool exists(string path);
+	static bool create(string path, int mode = 0755);
+	static bool establish(string path, int mode = 0755);
+	static bool unlink(string path);
 
 protected:
-	Dir(String path, DIR *dir = 0);
+	Dir(string path, DIR *dir = 0);
 	~Dir();
 
-	String path_;
+	string path_;
 	DIR *dir_;
 };
 

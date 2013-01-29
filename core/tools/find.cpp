@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 			"             s .. socket\n"
 			"  -text    content pattern\n"
 			"  -depth   maximum search depth\n",
-			String(argv[0])->fileName()
+			string(argv[0])->fileName()
 		);
 		return 0;
 	}
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 	Pattern textPattern;
 	int maxDepth = config->value("depth", -1);
 
-	String h;
+	string h;
 	if (config->lookup("name", &h)) namePattern = h;
 	if (config->lookup("type", &h)) typePattern = h;
 	if (config->lookup("text", &h)) textPattern = h;
@@ -46,10 +46,10 @@ int main(int argc, char **argv)
 	if (dirPaths->length() == 0) dirPaths->append(".");
 
 	for (int i = 0; i < dirPaths->length(); ++i) {
-		String dirPath = dirPaths->at(i)->canonicalPath();
+		string dirPath = dirPaths->at(i)->canonicalPath();
 		hook<DirWalker> dirWalker = DirWalker::open(dirPath);
 		dirWalker->setMaxDepth(maxDepth);
-		String path;
+		string path;
 		while (dirWalker->read(&path)) {
 			if (namePattern) {
 				if (!namePattern->match(path->fileName())) continue;
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 			if (typePattern) {
 				int type = FileStatus::read(path, false)->type();
 				bool shortMode = (typePattern->matchLength() == 1);
-				String typeString;
+				string typeString;
 				if (type == File::Regular)          typeString = shortMode ? "r" : "regular file";
 				else if (type == File::Directory)   typeString = shortMode ? "d" : "directory";
 				else if (type == File::Link)        typeString = shortMode ? "l" : "link";
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 					printTo(error(), "Failed to open %%\n", path);
 					continue;
 				}
-				String text = file->map();
+				string text = file->map();
 				int ln = 1;
 				for (int i = 0; i < text->length();) {
 					hook<Token> token = textPattern->find(text, i);

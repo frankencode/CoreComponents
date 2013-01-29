@@ -10,7 +10,7 @@
 #define FTL_FORMAT_HPP
 
 #include "atoms"
-#include "String.hpp"
+#include "string.hpp"
 #include "Variant.hpp"
 #include "rounding.hpp"
 #include "Stack.hpp"
@@ -25,16 +25,16 @@ class Format: public hook<StringList>
 public:
 	typedef hook<StringList> Super;
 
-	Format(String format = "");
+	Format(string format = "");
 
 	Format(const Format &b);
 	Format &operator=(const Format &b);
 
-	Format &operator<<(const String &s);
-	inline Format &operator<<(const hook<ByteArray> &s) { return *this << String(s); }
-	inline Format &operator<<(const char *s) { return *this << String(s); }
-	inline Format &operator<<(char *s) { return *this << String(s); }
-	inline Format &operator<<(char ch) { return *this << String(&ch, 1); }
+	Format &operator<<(const string &s);
+	inline Format &operator<<(const hook<ByteArray> &s) { return *this << string(s); }
+	inline Format &operator<<(const char *s) { return *this << string(s); }
+	inline Format &operator<<(char *s) { return *this << string(s); }
+	inline Format &operator<<(char ch) { return *this << string(&ch, 1); }
 
 	inline Format &operator<<(unsigned char x) { printInt(x); return *this; }
 	inline Format &operator<<(unsigned short x) { printInt(x); return *this; }

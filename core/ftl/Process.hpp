@@ -12,7 +12,7 @@
 #include <sys/types.h> // pid_t
 #include <signal.h> // SIGTERM, etc.
 #include "atoms"
-#include "String.hpp"
+#include "string.hpp"
 #include "Map.hpp"
 #include "SystemStream.hpp"
 #include "LineSink.hpp"
@@ -24,15 +24,15 @@ namespace ftl
 
 class ProcessFactory;
 
-typedef Map<String, String> EnvMap;
+typedef Map<string, string> EnvMap;
 
 FTL_STD_EXCEPTION(ProcessException);
 
 class Process: public Instance
 {
 public:
-	static hook<Process> start(String command, int ioPolicy = 0);
-	static hook<Process> start(String command, ProcessFactory *factory);
+	static hook<Process> start(string command, int ioPolicy = 0);
+	static hook<Process> start(string command, ProcessFactory *factory);
 
 	// -- child process control interface
 
@@ -75,9 +75,9 @@ public:
 
 	// -- query / modify the current process status
 
-	static void cd(String path);
-	static String cwd();
-	static String execPath();
+	static void cd(string path);
+	static string cwd();
+	static string execPath();
 
 	static mode_t setFileCreationMask(mode_t mask);
 
@@ -87,9 +87,9 @@ public:
 	static gid_t effectiveGroupId();
 	static bool isSuperUser();
 
-	static String env(String key);
-	static void setEnv(String key, String value);
-	static void unsetEnv(String key);
+	static string env(string key);
+	static void setEnv(string key, string value);
+	static void unsetEnv(string key);
 	static char **&environ();
 
 	static hook<EnvMap> envMap();

@@ -4,7 +4,7 @@
 using namespace ftl;
 
 int main() {
-	String text =
+	string text =
 		"{\n"
 		"  \"Name\": \"Hans Mustermann\",\n"
 		"  \"Age\": 17,\n"

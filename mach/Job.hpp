@@ -1,7 +1,7 @@
 #ifndef MACH_JOB_HPP
 #define MACH_JOB_HPP
 
-#include <ftl/String.hpp>
+#include <ftl/string.hpp>
 #include <ftl/Channel.hpp>
 
 namespace mach
@@ -14,27 +14,27 @@ class JobServer;
 class Job: public Instance
 {
 public:
-	inline static hook<Job> create(String command) {
+	inline static hook<Job> create(string command) {
 		return new Job(command);
 	}
 
-	inline String command() const { return command_; }
+	inline string command() const { return command_; }
 
 	inline int status() const { return status_; }
-	inline String outputText() const { return outputText_; }
+	inline string outputText() const { return outputText_; }
 
 private:
 	friend class JobServer;
 
-	Job(String command)
+	Job(string command)
 		: command_(command),
 		  status_(-1)
 	{}
 
-	String command_;
+	string command_;
 
 	int status_;
-	String outputText_;
+	string outputText_;
 };
 
 typedef Channel< hook<Job> > JobChannel;

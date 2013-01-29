@@ -67,7 +67,7 @@ public:
 		LINK();
 	}
 
-	double eval(String text)
+	double eval(string text)
 	{
 		hook<Token> rootToken = match(text);
 		double value = nan;
@@ -156,7 +156,7 @@ private:
 	int product_;
 	int sum_;
 
-	String text_;
+	string text_;
 };
 
 int main()

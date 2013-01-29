@@ -15,7 +15,7 @@
 namespace ftl
 {
 
-WireException::WireException(const String &error, int line, int pos)
+WireException::WireException(const string &error, int line, int pos)
 	: error_(error),
 	  line_(line),
 	  pos_(pos)
@@ -94,7 +94,7 @@ Wire::Wire()
 	);
 
 	string_ =
-		DEFINE("String",
+		DEFINE("string",
 			GLUE(
 				CHAR('"'),
 				REPEAT(
@@ -112,11 +112,11 @@ Wire::Wire()
 	concatenation_ =
 		DEFINE("Concatenation",
 			GLUE(
-				REF("String"),
+				REF("string"),
 				REPEAT(
 					GLUE(
 						INLINE("Noise"),
-						REF("String")
+						REF("string")
 					)
 				)
 			)
@@ -151,7 +151,7 @@ Wire::Wire()
 						NOT(RANGE('0', '9')),
 						INLINE("Identifier")
 					),
-					INLINE("String")
+					INLINE("string")
 				),
 				DONE()
 			)
@@ -288,7 +288,7 @@ Variant Wire::parse(ByteArray *text, WireObject *virgin)
 	hook<SyntaxState> state = newState();
 	hook<Token> token = match(text, -1, state);
 	if (!token) {
-		String reason = "Syntax error";
+		string reason = "Syntax error";
 		int line = 1, pos = 1;
 		if (state->hint()) {
 			reason = state->hint();
@@ -306,7 +306,7 @@ Variant Wire::parse(ByteArray *text, WireObject *virgin)
 	return parseValue(text, child);
 }
 
-String Wire::parseConcatenation(ByteArray *text, Token *token)
+string Wire::parseConcatenation(ByteArray *text, Token *token)
 {
 	hook<StringList> l = StringList::create();
 	token = token->firstChild();
@@ -330,7 +330,7 @@ hook<WireObject> Wire::parseObject(ByteArray *text, Token *token, WireObject *vi
 	}
 	while (token) {
 		bool stripQuotation = (text->at(token->i0()) == '"');
-		String name = text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
+		string name = text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
 		if (object->contains(name)) {
 			int line = 1, pos = 1;
 			text->offsetToLinePos(token->i1(), &line, &pos);

@@ -7,7 +7,7 @@ namespace ftl {
 
 void simpleInsertTest()
 {
-	typedef Map<String, String> StringMap;
+	typedef Map<string, string> StringMap;
 	hook<StringMap> names = StringMap::create();
 	names->insert("Doe", "Joe");
 	names->insert("Mustermann", "Hans");
@@ -17,7 +17,7 @@ void simpleInsertTest()
 	names->insert("Becker", "Günther");
 	names->insert("", "X");
 	for (int i = 0; i < names->length(); ++i) {
-		Pair<String, String> pair = names->get(i);
+		Pair<string, string> pair = names->get(i);
 		print("%%: %%\n", pair->key(), pair->value());
 	}
 }

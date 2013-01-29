@@ -13,7 +13,7 @@
 #include "SyntaxDebugger.hpp"
 #endif
 #include "SyntaxDefinition.hpp"
-#include "String.hpp"
+#include "string.hpp"
 
 namespace ftl
 {
@@ -21,13 +21,13 @@ namespace ftl
 class PatternException: public StdException
 {
 public:
-	PatternException(const String &error, int pos);
+	PatternException(const string &error, int pos);
 	~PatternException() throw();
 	const char *what() const throw();
 
 private:
-	String message_;
-	String error_;
+	string message_;
+	string error_;
 	int pos_;
 };
 
@@ -36,17 +36,17 @@ class Pattern: public hook<SyntaxDefinition>
 public:
 	Pattern();
 	Pattern(const char *text);
-	Pattern(const String &text);
+	Pattern(const string &text);
 	Pattern(const Variant &variant);
 
 	const Pattern &operator=(const char *text);
-	const Pattern &operator=(const String &text);
+	const Pattern &operator=(const string &text);
 	const Pattern &operator=(const Variant &text);
 
-	inline operator String() const { return text_; }
+	inline operator string() const { return text_; }
 
 private:
-	String text_;
+	string text_;
 };
 
 } // namespace ftl
