@@ -26,7 +26,7 @@ FileStatus::FileStatus(int fd)
 	exists_ = update();
 }
 
-FileStatus::FileStatus(String path, bool resolve)
+FileStatus::FileStatus(string path, bool resolve)
 	: fd_(-1),
 	  path_(path),
 	  resolve_(resolve)

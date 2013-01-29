@@ -10,16 +10,16 @@
 namespace mach
 {
 
-GccToolChain::GccToolChain(String execPath)
+GccToolChain::GccToolChain(string execPath)
 	: ToolChain(execPath, Process::start(machineCommand(execPath), Process::ForwardOutput)->output()->readLine())
 {}
 
-String GccToolChain::machineCommand(String execPath)
+string GccToolChain::machineCommand(string execPath)
 {
 	return execPath + " -dumpmachine";
 }
 
-String GccToolChain::machineCommand() const
+string GccToolChain::machineCommand() const
 {
 	return machineCommand(execPath());
 }
@@ -34,7 +34,7 @@ int GccToolChain::defaultSizeOptimizationLevel() const
 	return 1;
 }
 
-String GccToolChain::analyseCommand(BuildPlan *buildPlan, String source) const
+string GccToolChain::analyseCommand(BuildPlan *buildPlan, string source) const
 {
 	Format args;
 	args << execPath();
@@ -43,7 +43,7 @@ String GccToolChain::analyseCommand(BuildPlan *buildPlan, String source) const
 	return args->join(" ");
 }
 
-hook<Job> GccToolChain::createAnalyseJob(BuildPlan *buildPlan, String source)
+hook<Job> GccToolChain::createAnalyseJob(BuildPlan *buildPlan, string source)
 {
 	return Job::create(analyseCommand(buildPlan, source));
 }
@@ -61,7 +61,7 @@ hook<Job> GccToolChain::createCompileJob(BuildPlan *buildPlan, Module *module)
 	appendCompileOptions(args, buildPlan);
 	args << "-c" << "-o" << module->modulePath();
 	args << module->sourcePath();
-	String command = args->join(" ");
+	string command = args->join(" ");
 	return Job::create(command);
 }
 
@@ -74,13 +74,13 @@ hook<Job> GccToolChain::createLinkJob(BuildPlan *buildPlan, Module *module)
 	args << "-o" << module->toolName();
 	args << module->modulePath();
 	appendLinkOptions(args, buildPlan);
-	String command = args->join(" ");
+	string command = args->join(" ");
 	return Job::create(command);
 }
 
-String GccToolChain::linkPath(BuildPlan *buildPlan) const
+string GccToolChain::linkPath(BuildPlan *buildPlan) const
 {
-	String path;
+	string path;
 	if (buildPlan->options() & BuildPlan::Library)
 		path = "lib" + buildPlan->name() + ".so." + buildPlan->version();
 	else
@@ -90,8 +90,8 @@ String GccToolChain::linkPath(BuildPlan *buildPlan) const
 
 bool GccToolChain::link(BuildPlan *buildPlan)
 {
-	String name = buildPlan->name();
-	String version = buildPlan->version();
+	string name = buildPlan->name();
+	string version = buildPlan->version();
 	int options = buildPlan->options();
 	ModuleList *modules = buildPlan->modules();
 
@@ -114,13 +114,13 @@ bool GccToolChain::link(BuildPlan *buildPlan)
 
 	appendLinkOptions(args, buildPlan);
 
-	String command = args->join(" ");
+	string command = args->join(" ");
 
 	if (!buildPlan->runBuild(command))
 		return false;
 
 	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static)) {
-		String fullPath = linkPath(buildPlan);
+		string fullPath = linkPath(buildPlan);
 		hook<StringList> parts = fullPath->split('.');
 		while (parts->popBack() != "so")
 			buildPlan->symlink(fullPath, parts->join("."));
@@ -137,7 +137,7 @@ void GccToolChain::clean(BuildPlan *buildPlan)
 			buildPlan->unlink(buildPlan->modules()->at(i)->toolName());
 	}
 
-	String fullPath = linkPath(buildPlan);
+	string fullPath = linkPath(buildPlan);
 	buildPlan->unlink(fullPath);
 
 	if ((buildPlan->options() & BuildPlan::Library) && !(buildPlan->options() & BuildPlan::Static)) {
@@ -152,7 +152,7 @@ void GccToolChain::appendCompileOptions(Format args, BuildPlan *buildPlan)
 	// args << "-std=c++0x";
 	if (buildPlan->options() & BuildPlan::Debug) args << "-g";
 	if (buildPlan->options() & BuildPlan::Release) args << "-DNDEBUG";
-	if (buildPlan->options() & BuildPlan::OptimizeSpeed) args << String(Format("-O%%") << buildPlan->speedOptimizationLevel());
+	if (buildPlan->options() & BuildPlan::OptimizeSpeed) args << string(Format("-O%%") << buildPlan->speedOptimizationLevel());
 	if (buildPlan->options() & BuildPlan::OptimizeSize) args << "-Os";
 	if (buildPlan->options() & BuildPlan::Static) args << "-static";
 	if (buildPlan->options() & BuildPlan::Library) args << "-fpic";

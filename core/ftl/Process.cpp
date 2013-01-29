@@ -33,14 +33,14 @@ extern "C" char **environ;
 namespace ftl
 {
 
-hook<Process> Process::start(String command, int ioPolicy)
+hook<Process> Process::start(string command, int ioPolicy)
 {
 	hook<ProcessFactory> factory = ProcessFactory::create();
 	factory->setIoPolicy(ioPolicy);
 	return start(command, factory);
 }
 
-hook<Process> Process::start(String command, ProcessFactory *factory)
+hook<Process> Process::start(string command, ProcessFactory *factory)
 {
 	factory->setCommand(command);
 	return factory->produce();
@@ -131,13 +131,13 @@ int Process::wait()
 	return status;
 }
 
-void Process::cd(String path)
+void Process::cd(string path)
 {
 	if (::chdir(path) == -1)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-String Process::cwd()
+string Process::cwd()
 {
 	int size = 0x1000;
 	char *buf = (char *)mem::alloc(size);
@@ -153,16 +153,16 @@ String Process::cwd()
 		else
 			FTL_SYSTEM_EXCEPTION;
 	}
-	String path(ret);
+	string path(ret);
 	mem::free(buf);
 	return path;
 }
 
-String Process::execPath()
+string Process::execPath()
 {
-	String path;
+	string path;
 	#ifdef __linux
-	String linkPath = Format("/proc/%%/exe") << currentId();
+	string linkPath = Format("/proc/%%/exe") << currentId();
 	path = File::readlink(linkPath);
 	#endif
 	#ifdef __MACH__
@@ -187,18 +187,18 @@ gid_t Process::effectiveGroupId() { return ::getegid(); }
 
 bool Process::isSuperUser() { return (::geteuid() == 0) || (::getegid() == 0); }
 
-String Process::env(String key)
+string Process::env(string key)
 {
 	return getenv(key);
 }
 
-void Process::setEnv(String key, String value)
+void Process::setEnv(string key, string value)
 {
 	if (setenv(key, value, 1) == -1)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-void Process::unsetEnv(String key)
+void Process::unsetEnv(string key)
 {
 	errno = 0;
 	unsetenv(key);
@@ -212,7 +212,7 @@ hook<EnvMap> Process::envMap()
 	hook<EnvMap> map = EnvMap::create();
 	int i = 0;
 	while (env[i] != 0) {
-		hook<StringList> parts = String(env[i])->split("=");
+		hook<StringList> parts = string(env[i])->split("=");
 		if (parts->length() == 2)
 			map->insert(parts->at(0), parts->at(1));
 		++i;

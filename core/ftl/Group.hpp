@@ -12,7 +12,7 @@
 #include <sys/types.h>
 #include <grp.h>
 #include "atoms"
-#include "String.hpp"
+#include "string.hpp"
 
 namespace ftl
 {
@@ -33,7 +33,7 @@ public:
 	inline bool exists() const { return exists_; }
 
 	inline gid_t id() const { return id_; }
-	inline String name() const { return name_; }
+	inline string name() const { return name_; }
 	inline StringList *members() const { return members_; }
 
 private:
@@ -43,7 +43,7 @@ private:
 	void load(struct group *entry);
 	bool exists_;
 	gid_t id_;
-	String name_;
+	string name_;
 	hook<StringList> members_;
 };
 

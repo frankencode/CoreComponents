@@ -14,7 +14,7 @@
 namespace ftl
 {
 
-XAuthFile::XAuthFile(String path)
+XAuthFile::XAuthFile(string path)
 	: path_(path),
 	  records_(XAuthRecords::create())
 {

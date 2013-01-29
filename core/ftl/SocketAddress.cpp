@@ -24,7 +24,7 @@ SocketAddress::SocketAddress()
 	  protocol_(0)
 {}
 
-SocketAddress::SocketAddress(int family, String address, int port)
+SocketAddress::SocketAddress(int family, string address, int port)
 	: socketType_(0),
 	  protocol_(0)
 {
@@ -114,9 +114,9 @@ void SocketAddress::setPort(int port)
 		FTL_THROW(NetworkingException, "Unsupported address family");
 }
 
-String SocketAddress::addressString() const
+string SocketAddress::addressString() const
 {
-	String s;
+	string s;
 	if (addr_.sa_family == AF_LOCAL) {
 		s = localAddress_.sun_path;
 	}
@@ -143,7 +143,7 @@ String SocketAddress::addressString() const
 	return s;
 }
 
-String SocketAddress::toString() const
+string SocketAddress::toString() const
 {
 	Format s(addressString());
 	if (addr_.sa_family != AF_LOCAL) {
@@ -160,7 +160,7 @@ void SocketAddress::setScope(int scope) {
 	if (addr_.sa_family == AF_INET6) inet6Address_.sin6_scope_id = scope;
 }
 
-hook<SocketAddressList> SocketAddress::resolve(String hostName, String serviceName, int family, int socketType, String *canonicalName)
+hook<SocketAddressList> SocketAddress::resolve(string hostName, string serviceName, int family, int socketType, string *canonicalName)
 {
 	addrinfo hint;
 	addrinfo *head = 0;
@@ -211,7 +211,7 @@ hook<SocketAddressList> SocketAddress::resolve(String hostName, String serviceNa
 	return list;
 }
 
-String SocketAddress::lookupHostName(bool *failed) const
+string SocketAddress::lookupHostName(bool *failed) const
 {
 	const int hostNameSize = NI_MAXHOST;
 	const int serviceNameSize = NI_MAXSERV;
@@ -233,10 +233,10 @@ String SocketAddress::lookupHostName(bool *failed) const
 			*failed = false;
 	}
 
-	return String(hostName);
+	return string(hostName);
 }
 
-String SocketAddress::lookupServiceName() const
+string SocketAddress::lookupServiceName() const
 {
 
 	const int hostNameSize = NI_MAXHOST;
@@ -256,14 +256,14 @@ String SocketAddress::lookupServiceName() const
 		FTL_THROW(NetworkingException, gai_strerror(ret));
 	}
 
-	return String(serviceName);
+	return string(serviceName);
 }
 
-String SocketAddress::hostName()
+string SocketAddress::hostName()
 {
 	const int bufSize = 1024;
 	char buf[bufSize + 1];
-	String name;
+	string name;
 	if (gethostname(buf, bufSize) != -1) {
 		buf[bufSize] = 0;
 		name = buf;

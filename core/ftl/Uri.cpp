@@ -22,7 +22,7 @@ Uri::Uri()
 Uri::Uri(const char *text)
 	: port_(-1)
 {
-	readUri(String(text));
+	readUri(string(text));
 }
 
 Uri::Uri(ByteArray *bytes, Token *rootToken)
@@ -73,7 +73,7 @@ void Uri::readUri(ByteArray *bytes, Token *rootToken)
 	}
 }
 
-String Uri::toString() const
+string Uri::toString() const
 {
 	Format text;
 	if (scheme_ != "") {
@@ -103,7 +103,7 @@ String Uri::toString() const
 	return text;
 }
 
-String Uri::encode(String s)
+string Uri::encode(string s)
 {
 	s->toLowerInsitu();
 
@@ -116,7 +116,7 @@ String Uri::encode(String s)
 			if (ch == *r) {
 				if (j < i)
 					l->append(s->copy(j, i));
-				String pct("%XX");
+				string pct("%XX");
 				pct->set(1, ch >> 4);
 				pct->set(2, ch & 0xF);
 				l->append(pct);
@@ -131,7 +131,7 @@ String Uri::encode(String s)
 	return l->join();
 }
 
-String Uri::decode(String s)
+string Uri::decode(string s)
 {
 	s->toLowerInsitu();
 

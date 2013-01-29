@@ -16,17 +16,17 @@ namespace ftl
 
 class Dir;
 
-class Glob: public Source<String>
+class Glob: public Source<string>
 {
 public:
-	inline static hook<Glob> open(String expression) { return new Glob(expression); }
+	inline static hook<Glob> open(string expression) { return new Glob(expression); }
 
-	bool read(String *path);
+	bool read(string *path);
 
 private:
-	Glob(String expression);
-	Glob(String path, StringList *remainder);
-	void init(String path);
+	Glob(string expression);
+	Glob(string path, StringList *remainder);
+	void init(string path);
 
 	hook<Dir> dir_;
 	Pattern pattern_;

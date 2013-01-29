@@ -204,7 +204,7 @@ Json::Json()
 	LINK();
 }
 
-Variant Json::parse(String text)
+Variant Json::parse(string text)
 {
 	hook<Token> token = match(text);
 	FTL_CHECK(token, JsonException, "Invalid syntax");
@@ -223,7 +223,7 @@ Variant Json::parseObject(ByteArray *text, Token *token)
 	FTL_CHECK(token->rule() == object_, JsonException, "");
 	hook<JsonObject> object = JsonObject::create();
 	for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
-		Pair<String, Variant> member = parseMember(text, child);
+		Pair<string, Variant> member = parseMember(text, child);
 		object->insert(member.key(), member.value());
 	}
 	return object;
@@ -241,11 +241,11 @@ Variant Json::parseArray(ByteArray *text, Token *token)
 	return list;
 }
 
-Pair<String, Variant> Json::parseMember(ByteArray *text, Token *token)
+Pair<string, Variant> Json::parseMember(ByteArray *text, Token *token)
 {
 	FTL_CHECK(token->rule() == member_, JsonException, "");
 	FTL_CHECK(token->countChildren() == 2, JsonException, "");
-	return Pair<String, Variant>(
+	return Pair<string, Variant>(
 		parseString(text, token->firstChild()),
 		parseValue(text, token->lastChild())
 	);
@@ -282,7 +282,7 @@ Variant Json::parseValue(ByteArray *text, Token *token)
 	return value;
 }
 
-String Json::parseString(ByteArray *text, Token *token)
+string Json::parseString(ByteArray *text, Token *token)
 {
 	FTL_CHECK(token->rule() == string_, JsonException, "");
 	return text->copy(token->i0() + 1, token->i1() - 1);
@@ -292,7 +292,7 @@ double Json::parseNumber(ByteArray *text, Token *token)
 {
 	FTL_CHECK(token->rule() == number_, JsonException, "");
 	bool ok = true;
-	double value = String(text->copy(token->i0(), token->i1()))->toFloat(&ok);
+	double value = string(text->copy(token->i0(), token->i1()))->toFloat(&ok);
 	FTL_CHECK(ok, JsonException, "Malformed number");
 	return value;
 }

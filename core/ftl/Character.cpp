@@ -22,7 +22,7 @@ hook<ByteArray> Character::copy(int i0, int i1) const
 	return ByteArray::create(p0, walker_.pos() - p0);
 }
 
-/*int String::find(int i, const char *pattern) const
+/*int string::find(int i, const char *pattern) const
 {
 	if (!Super::get()->chars()->has(i)) return i;
 	const char *t = Super::get()->chars()->byte(i); // text pos
@@ -37,7 +37,7 @@ hook<ByteArray> Character::copy(int i0, int i1) const
 	return (*m) ? Super::get()->chars()->length() : Super::get()->chars()->index(t - (m - pattern));
 }
 
-hook<StringList> String::split(const char *pattern) const
+hook<StringList> string::split(const char *pattern) const
 {
 	hook<StringList> parts = StringList::create();
 	int i0 = 0;
@@ -51,7 +51,7 @@ hook<StringList> String::split(const char *pattern) const
 	if (i0 < Super::get()->chars()->length())
 		parts->append(Super::get()->chars()->copy(i0, Super::get()->chars()->length()));
 	else
-		parts->append(String());
+		parts->append(string());
 	return parts;
 }*/
 

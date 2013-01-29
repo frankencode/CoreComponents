@@ -21,26 +21,26 @@ namespace ftl
 class WireException: public StdException
 {
 public:
-	WireException(const String &error, int line, int pos);
+	WireException(const string &error, int line, int pos);
 	~WireException() throw();
 	const char *what() const throw();
 private:
-	String message_;
-	String error_;
+	string message_;
+	string error_;
 	int line_;
 	int pos_;
 };
 
 class Wire;
 
-class WireObject: public Map<String, Variant>
+class WireObject: public Map<string, Variant>
 {
-	typedef Map<String, Variant> Super;
+	typedef Map<string, Variant> Super;
 
 public:
 	virtual hook<Super> clone() const { return new WireObject(*this); }
 
-	inline String className() const { return className_; }
+	inline string className() const { return className_; }
 
 protected:
 	friend class Wire;
@@ -53,7 +53,7 @@ private:
 		  className_(b.className_)
 	{}
 
-	String className_;
+	string className_;
 };
 
 class Wire: public SyntaxDefinition, public Singleton<Wire>
@@ -66,7 +66,7 @@ protected:
 
 	Wire();
 
-	String parseConcatenation(ByteArray *text, Token *token);
+	string parseConcatenation(ByteArray *text, Token *token);
 	hook<WireObject> parseObject(ByteArray *text, Token *token, WireObject *virgin = 0);
 	hook<VariantList> parseList(ByteArray *text, Token *token);
 	Variant parseValue(ByteArray *text, Token *token);

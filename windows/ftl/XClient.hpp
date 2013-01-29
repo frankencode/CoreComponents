@@ -10,7 +10,7 @@
 #define FTL_XCLIENT_HPP
 
 #include <ftl/Exception.hpp>
-#include <ftl/String.hpp>
+#include <ftl/string.hpp>
 #include <ftl/Thread.hpp>
 #include <ftl/Set.hpp>
 #include "XDisplayInfo.hpp"

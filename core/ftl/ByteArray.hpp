@@ -19,8 +19,8 @@ namespace ftl
 template<class T> class List;
 
 class Character;
-class String;
-typedef List<String> StringList;
+class string;
+typedef List<string> StringList;
 
 namespace syntax { class Definition; }
 typedef syntax::Definition SyntaxDefinition;
@@ -150,22 +150,22 @@ public:
 	}
 
 	int find(const char *pattern, int i = 0) const;
-	int find(String pattern, int i = 0) const;
+	int find(string pattern, int i = 0) const;
 	int find(SyntaxDefinition *pattern, int i = 0) const;
 
 	inline bool contains(const char *pattern) const { return find(pattern) != size_; }
-	bool contains(String pattern) const;
+	bool contains(string pattern) const;
 
 	static hook<ByteArray> join(const StringList *parts, const char *sep = "");
 	static hook<ByteArray> join(const StringList *parts, char sep);
-	static hook<ByteArray> join(const StringList *parts, String sep);
+	static hook<ByteArray> join(const StringList *parts, string sep);
 	hook<StringList> split(char sep) const;
 	hook<StringList> split(const char *sep) const;
 	hook<StringList> split(SyntaxDefinition *pattern) const;
 
 	void replaceInsitu(const char *pattern, const char *replacement);
 	hook<ByteArray> replace(const char *pattern, const char *replacement) const;
-	hook<ByteArray> replace(String pattern, String replacement) const;
+	hook<ByteArray> replace(string pattern, string replacement) const;
 
 	int toInt(bool *ok = 0) const;
 	double toFloat(bool *ok = 0) const;
@@ -205,13 +205,13 @@ public:
 	bool isRelativePath() const;
 	bool isAbsolutePath() const;
 
-	hook<ByteArray> absolutePathRelativeTo(String currentDir) const;
+	hook<ByteArray> absolutePathRelativeTo(string currentDir) const;
 	hook<ByteArray> absolutePath() const;
 	hook<ByteArray> fileName() const;
 	hook<ByteArray> completeBaseName() const;
 	hook<ByteArray> baseName() const;
 	hook<ByteArray> reducePath() const;
-	hook<ByteArray> expandPath(String component) const;
+	hook<ByteArray> expandPath(string component) const;
 	hook<ByteArray> canonicalPath() const;
 
 private:

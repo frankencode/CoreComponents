@@ -11,13 +11,13 @@
 
 #include "atoms"
 #include "defaults.hpp"
-#include "String.hpp"
+#include "string.hpp"
 #include "Stream.hpp"
 
 namespace ftl
 {
 
-class LineSink: public Sink<String>
+class LineSink: public Sink<string>
 {
 public:
 	inline static hook<LineSink> open(Stream *stream, const char *eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
@@ -26,11 +26,11 @@ public:
 
 	Stream *stream() const;
 
-	String prefix() const;
-	void setPrefix(String prefix);
+	string prefix() const;
+	void setPrefix(string prefix);
 
-	void writeLine(String line);
-	void write(String text);
+	void writeLine(string line);
+	void write(string text);
 
 protected:
 	LineSink(Stream *stream, const char *eol, int maxLineLength);
@@ -39,8 +39,8 @@ protected:
 	void flush();
 
 	hook<Stream> stream_;
-	String eol_;
-	String prefix_;
+	string eol_;
+	string prefix_;
 
 	int bufFill_;
 	hook<ByteArray> buf_;

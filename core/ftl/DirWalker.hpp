@@ -9,14 +9,14 @@
 #ifndef FTL_DIRWALKER_HPP
 #define FTL_DIRWALKER_HPP
 
-#include "String.hpp"
+#include "string.hpp"
 
 namespace ftl
 {
 
 class Dir;
 
-class DirWalker: public Source<String>
+class DirWalker: public Source<string>
 {
 public:
 	enum Option {
@@ -26,15 +26,15 @@ public:
 		FilesOnly
 	};
 
-	static hook<DirWalker> open(String path, int option = DirsFirst);
+	static hook<DirWalker> open(string path, int option = DirsFirst);
 	inline int maxDepth() const { return maxDepth_; }
 	inline void setMaxDepth(int depth) { maxDepth_ = depth; }
 
-	bool read(String *path);
+	bool read(string *path);
 
 private:
-	hook<DirWalker> tryOpen(String path, int option);
-	DirWalker(String path, int option, Dir *dir = 0);
+	hook<DirWalker> tryOpen(string path, int option);
+	DirWalker(string path, int option, Dir *dir = 0);
 	int option_;
 	int maxDepth_;
 	int depth_;

@@ -116,11 +116,11 @@ class Timeout {};
 class DerivedClass: public StdException \
 { \
 public: \
-	DerivedClass(const String &error): error_(error) {} \
+	DerivedClass(const string &error): error_(error) {} \
 	~DerivedClass() throw() {} \
 	inline const char *what() const throw() { return error_; } \
 private: \
-	String error_; \
+	string error_; \
 };
 
 } // namespace ftl

@@ -9,7 +9,7 @@ class Shape: public Instance
 public:
 	static hook<Shape> create() { return new Shape; }
 
-	Property<String> name;
+	Property<string> name;
 	Property<int> x;
 	Property<int> y;
 
@@ -21,7 +21,7 @@ protected:
 	}
 
 private:
-	void onNameChanged(String newName) {
+	void onNameChanged(string newName) {
 		print("name = \"%%\"\n", name);
 	}
 };

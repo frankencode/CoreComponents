@@ -10,7 +10,7 @@
 #define FTL_TIME_HPP
 
 #include "types.hpp"
-#include "String.hpp"
+#include "string.hpp"
 
 namespace ftl
 {
@@ -115,7 +115,7 @@ public:
 	}
 
 	static Time now();
-	String toString() const;
+	string toString() const;
 
 	inline Time *operator->() { return this; }
 	inline const Time *operator->() const { return this; }

@@ -27,7 +27,7 @@ void Stream::read(void *buf, int bufFill)
 	}
 }
 
-String Stream::readAll()
+string Stream::readAll()
 {
 	hook<Buffer> buffer = new Buffer;
 	while (true) {

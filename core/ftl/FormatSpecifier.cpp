@@ -7,7 +7,7 @@
   * 2 of the License, or (at your option) any later version.
   */
 
-#include "String.hpp"
+#include "string.hpp"
 #include "FormatSpecifier.hpp"
 
 namespace ftl
@@ -86,7 +86,7 @@ bool FormatSpecifier::find(ByteArray *text, int *i0, int *i1, int *w, int *wi, i
 
 		while (token)
 		{
-			String value = text->copy(token->i0(), token->i1());
+			string value = text->copy(token->i0(), token->i1());
 
 			if (token->rule() == width_)
 			{

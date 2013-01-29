@@ -8,7 +8,7 @@ namespace ftl
 class CloneFactory: public ProcessFactory
 {
 public:
-	static hook<CloneFactory> create(String path) { return new CloneFactory(path); }
+	static hook<CloneFactory> create(string path) { return new CloneFactory(path); }
 
 	int incarnate()
 	{
@@ -22,11 +22,11 @@ public:
 	}
 
 private:
-	CloneFactory(String path)
+	CloneFactory(string path)
 		: path_(path)
 	{}
 
-	String path_;
+	string path_;
 };
 
 int main()

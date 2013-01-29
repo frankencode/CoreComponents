@@ -27,12 +27,12 @@ int main(int argc, char **argv)
 			"  -replace   replacement text\n"
 			"  -paste     replacement text from file\n"
 			"  -delete    delete text\n",
-			String(argv[0])->fileName()
+			string(argv[0])->fileName()
 		);
 		return 0;
 	}
 
-	String globalCommand, globalValue;
+	string globalCommand, globalValue;
 
 	if (config->contains("print")) {
 		globalCommand = "print";
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 		"(:(?command:([a..z]|[A..Z]|_){1,}(=(?value:#{1,})){0,1})){0,1}"
 	);
 
-	for (String line; input()->read(&line);)
+	for (string line; input()->read(&line);)
 	{
 		hook<SyntaxState> state = commandSyntax->newState();
 		if (!commandSyntax->match(line, 0, state)) {
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 			return 1;
 		}
 
-		String path = line->copy(state->capture("path"));
+		string path = line->copy(state->capture("path"));
 		int ln = -1; {
 			Range *range = state->capture("ln");
 			if (range->valid()) ln = line->copy(range)->toInt();
@@ -77,12 +77,12 @@ int main(int argc, char **argv)
 			}
 		}
 
-		String command = globalCommand; if (command == "") {
+		string command = globalCommand; if (command == "") {
 			Range *range = state->capture("command");
 			if (range->valid()) command = line->copy(range);
 			else command = "view";
 		}
-		String value = globalValue; if (value == "") {
+		string value = globalValue; if (value == "") {
 			Range *range = state->capture("value");
 			if (range->valid()) value = line->copy(range);
 		}
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
 			value = "";
 		}
 
-		String text = File::open(path)->map();
+		string text = File::open(path)->map();
 
 		if (i1 < 0) {
 			if (ln > 0) {
@@ -154,7 +154,7 @@ int main(int argc, char **argv)
 			print("%%: %%\n", path, text->copy(i0, i1));
 		}
 		else if (command == "replace") {
-			String newText = text->copy(0, i0) + value + text->copy(i1, text->length());
+			string newText = text->copy(0, i0) + value + text->copy(i1, text->length());
 			hook<File> file = File::open(path, File::Write);
 			file->truncate(0);
 			file->write(newText);

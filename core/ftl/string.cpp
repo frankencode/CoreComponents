@@ -9,22 +9,22 @@
 
 #include "Format.hpp"
 #include "Variant.hpp"
-#include "String.hpp"
+#include "string.hpp"
 
 namespace ftl
 {
 
-String::String(const Variant &b)
+string::string(const Variant &b)
 	: Super(cast<ByteArray>(b))
 {
 	if (!Super::get()) Super::set(ByteArray::empty());
 }
 
-String::String(const Format &b)
+string::string(const Format &b)
 {
 	*this = *ByteArray::join(b);
 }
 
-String::String(hook<StringList> parts) { *this = join(parts); }
+string::string(hook<StringList> parts) { *this = join(parts); }
 
 } // namespace ftl

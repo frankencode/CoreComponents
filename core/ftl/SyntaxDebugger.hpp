@@ -10,7 +10,7 @@
 #define FTL_SYNTAXDEBUGGER_HPP
 
 #include "syntax.hpp"
-#include "String.hpp"
+#include "string.hpp"
 #include "Map.hpp"
 #include "PrintDebug.hpp"
 
@@ -35,9 +35,9 @@ public:
 	}
 
 	virtual const char *declType() const = 0;
-	virtual void printAttributes(String indent) {}
+	virtual void printAttributes(string indent) {}
 
-	virtual void printNext(String indent = "");
+	virtual void printNext(string indent = "");
 
 	inline Node *entry() const { return Node::firstChild(); }
 
@@ -48,10 +48,10 @@ protected:
 		appendChild(newNode);
 	}
 
-	void printBranch(Node *node, String indent);
+	void printBranch(Node *node, string indent);
 
-	String superIndent(String indent) const;
-	String subIndent(String indent) const;
+	string superIndent(string indent) const;
+	string subIndent(string indent) const;
 
 	Debugger *debugger_;
 };
@@ -62,7 +62,7 @@ public:
 	typedef SyntaxDebugFactory DebugFactory;
 	typedef SyntaxNode Node;
 
-	inline static hook<Debugger> create(String indent = "\t") {
+	inline static hook<Debugger> create(string indent = "\t") {
 		return new Debugger(indent);
 	}
 
@@ -70,7 +70,7 @@ public:
 	void printDefinition(bool omitUnusedRules = false);
 
 	typedef DefinitionNode::StateIdByName StateIdByName;
-	typedef Map<int, String> StateNameById;
+	typedef Map<int, string> StateNameById;
 
 	hook<StateNameById> newReverseMap(StateIdByName *stateIdByName);
 	StateNameById *flagNameById();
@@ -80,7 +80,7 @@ private:
 	friend class DefinitionNode;
 	friend class DebugNode;
 
-	Debugger(String indent);
+	Debugger(string indent);
 
 	static void determineRulesInUse(RuleNode *rule);
 
@@ -105,7 +105,7 @@ private:
 	typedef PrefixTree< char, hook<NodeFactory> > FactoryByNodeType;
 	hook<FactoryByNodeType> factoryByNodeType_;
 
-	String indent_;
+	string indent_;
 
 	hook<StateNameById> flagNameById_;
 	hook<StateNameById> captureNameById_;

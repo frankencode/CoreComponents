@@ -30,11 +30,11 @@ XClient::XClient()
 	  messageFiltersMutex_(Mutex::create()),
 	  messageFilters_(MessageFilters::create())
 {
-	String host = 0;
+	string host = 0;
 	int display = 0;
 
 	hook<SocketAddress> address;
-	String authProtocol, authData;
+	string authProtocol, authData;
 	{
 		hook<StringList> parts = Process::env("DISPLAY")->split(':');
 		if (parts->length() == 2) {
@@ -45,7 +45,7 @@ XClient::XClient()
 				defaultScreen_ = parts->get(1)->toInt();
 		}
 		if (host == "") {
-			String path = Format("/tmp/.X11-unix/X%%") << display;
+			string path = Format("/tmp/.X11-unix/X%%") << display;
 			address = SocketAddress::create(AF_LOCAL, path);
 		}
 		else {

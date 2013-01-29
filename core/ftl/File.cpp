@@ -37,7 +37,7 @@ int File::translateOpenFlags(int openFlags)
 	return h;
 }
 
-hook<File> File::open(String path, int openFlags)
+hook<File> File::open(string path, int openFlags)
 {
 	int fd = ::open(path, translateOpenFlags(openFlags));
 	if (fd == -1)
@@ -45,7 +45,7 @@ hook<File> File::open(String path, int openFlags)
 	return new File(path, openFlags, fd);
 }
 
-hook<File> File::tryOpen(String path, int openFlags)
+hook<File> File::tryOpen(string path, int openFlags)
 {
 	int fd = ::open(path, translateOpenFlags(openFlags));
 	if (fd != -1) return new File(path, openFlags, fd);
@@ -59,7 +59,7 @@ hook<File> File::open(int fd, int openFlags)
 
 hook<File> File::temp(int openFlags)
 {
-	String path = createUnique(
+	string path = createUnique(
 		Format("/tmp/%%_%%_XXXXXXXX")
 		<< Process::execPath()->fileName()
 		<< Process::currentId()
@@ -69,7 +69,7 @@ hook<File> File::temp(int openFlags)
 	return open(path, openFlags);
 }
 
-File::File(String path, int openFlags, int fd)
+File::File(string path, int openFlags, int fd)
 	: SystemStream(fd),
 	  path_(path),
 	  openFlags_(openFlags),
@@ -82,12 +82,12 @@ File::~File()
 		try { unlink(path_); } catch(...) {}
 }
 
-String File::path() const
+string File::path() const
 {
 	return path_;
 }
 
-String File::name() const
+string File::name() const
 {
 	const char sep = '/';
 
@@ -101,7 +101,7 @@ String File::name() const
 		--i;
 	}
 
-	String name;
+	string name;
 	if (i < n)
 		name = path_->copy(i, n);
 
@@ -132,10 +132,10 @@ void File::truncate(off_t length)
 
 class UnlinkFile: public Action {
 public:
-	UnlinkFile(String path): path_(path->absolutePath()) {}
+	UnlinkFile(string path): path_(path->absolutePath()) {}
 	void run() { try { unlink(path_); } catch(...) {} }
 private:
-	String path_;
+	string path_;
 };
 
 void File::unlinkOnExit()
@@ -168,7 +168,7 @@ off_t File::seek(off_t distance, int method)
 	return ret;
 }
 
-String File::map() const
+string File::map() const
 {
 	off_t fileSize = ::lseek(fd_, 0, SEEK_END);
 	if (fileSize == -1)
@@ -184,7 +184,7 @@ String File::map() const
 		void *p = ::mmap(0, fileSize, protection, MAP_PRIVATE, fd_, 0);
 		if (p == MAP_FAILED)
 			FTL_SYSTEM_EXCEPTION;
-		return String(hook<ByteArray>(new ByteArray((char*)p, fileSize, fileSize)));
+		return string(hook<ByteArray>(new ByteArray((char*)p, fileSize, fileSize)));
 	}
 	else {
 		#ifndef MAP_ANONYMOUS
@@ -196,7 +196,7 @@ String File::map() const
 		p = ::mmap(p, fileSize, protection, MAP_PRIVATE | MAP_FIXED, fd_, 0);
 		if (p == MAP_FAILED)
 			FTL_SYSTEM_EXCEPTION;
-		return String(hook<ByteArray>(new ByteArray((char*)p, fileSize, fileSize + pageSize)));
+		return string(hook<ByteArray>(new ByteArray((char*)p, fileSize, fileSize + pageSize)));
 	}
 }
 
@@ -216,17 +216,17 @@ void File::dataSync()
 #endif
 }
 
-bool File::access(String path, int flags)
+bool File::access(string path, int flags)
 {
 	return ::access(path, flags) == 0;
 }
 
-bool File::exists(String path)
+bool File::exists(string path)
 {
 	return (path != "") && access(path, Exists);
 }
 
-bool File::create(String path, int mode)
+bool File::create(string path, int mode)
 {
 	int fd = ::open(path, O_RDONLY|O_CREAT|O_EXCL, mode);
 	if (fd == -1) return false;
@@ -234,43 +234,43 @@ bool File::create(String path, int mode)
 	return true;
 }
 
-bool File::link(String path, String newPath)
+bool File::link(string path, string newPath)
 {
 	return ::link(path, newPath) != -1;
 }
 
-bool File::unlink(String path)
+bool File::unlink(string path)
 {
 	return ::unlink(path) != -1;
 }
 
-bool File::symlink(String path, String newPath)
+bool File::symlink(string path, string newPath)
 {
 	return ::symlink(path, newPath) != -1;
 }
 
-String File::readlink(String path)
+string File::readlink(string path)
 {
-	String buf = String(128);
+	string buf = string(128);
 	while (true) {
 		ssize_t numBytes = ::readlink(path, buf, buf->size());
 		if (numBytes == -1)
-			return String();
+			return string();
 		if (numBytes <= buf->size()) {
 			if (numBytes < buf->size())
-				buf = String(buf->data(), numBytes);
+				buf = string(buf->data(), numBytes);
 			break;
 		}
-		buf = String(numBytes);
+		buf = string(numBytes);
 	}
 	return buf;
 }
 
-String File::resolve(String path)
+string File::resolve(string path)
 {
-	String resolvedPath = path;
+	string resolvedPath = path;
 	while (File::unresolvedStatus(resolvedPath)->type() == File::Link) {
-		String origPath = resolvedPath;
+		string origPath = resolvedPath;
 		resolvedPath = File::readlink(resolvedPath);
 		if (resolvedPath == "") break;
 		if (resolvedPath->isRelativePath())
@@ -279,11 +279,11 @@ String File::resolve(String path)
 	return resolvedPath;
 }
 
-String File::createUnique(String path, int mode, char placeHolder)
+string File::createUnique(string path, int mode, char placeHolder)
 {
 	hook<Random> random = Random::open();
 	while (true) {
-		String candidate = path->copy();
+		string candidate = path->copy();
 		for (int i = 0, n = candidate->size(); i < n; ++i) {
 			if (candidate->at(i) == placeHolder) {
 				char r = random->get(0, 61);
@@ -308,7 +308,7 @@ String File::createUnique(String path, int mode, char placeHolder)
 	}
 }
 
-bool File::establish(String path, int fileMode, int dirMode)
+bool File::establish(string path, int fileMode, int dirMode)
 {
 	if (path->contains('/'))
 		if (!Dir::establish(path->reducePath(), dirMode))
@@ -319,16 +319,16 @@ bool File::establish(String path, int fileMode, int dirMode)
 }
 
 
-String File::lookup(String fileName, StringList *dirs, int accessFlags)
+string File::lookup(string fileName, StringList *dirs, int accessFlags)
 {
 	hook<StringList> h;
 	if (!dirs) {
 		h = Process::env("PATH")->split(':');
 		dirs = h;
 	}
-	String path;
+	string path;
 	for (int i = 0; i < dirs->length(); ++i) {
-		String candidate = Format() << dirs->at(i) << "/" << fileName;
+		string candidate = Format() << dirs->at(i) << "/" << fileName;
 		if (access(candidate, accessFlags)) {
 			path = candidate;
 			break;
@@ -337,23 +337,23 @@ String File::lookup(String fileName, StringList *dirs, int accessFlags)
 	return path;
 }
 
-hook<FileStatus> File::status(String path)
+hook<FileStatus> File::status(string path)
 {
 	return FileStatus::read(path, true);
 }
 
-hook<FileStatus> File::unresolvedStatus(String path)
+hook<FileStatus> File::unresolvedStatus(string path)
 {
 	return FileStatus::read(path, false);
 }
 
-String File::load(String path)
+string File::load(string path)
 {
 	establish(path);
 	return open(path, File::Read)->readAll();
 }
 
-void File::save(String path, String text)
+void File::save(string path, string text)
 {
 	establish(path);
 	hook<File> file = open(path, File::Write);

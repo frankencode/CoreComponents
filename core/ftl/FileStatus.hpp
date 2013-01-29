@@ -13,7 +13,7 @@
 #include <sys/stat.h>
 #include "atoms"
 #include "Time.hpp"
-#include "String.hpp"
+#include "string.hpp"
 #include "SystemStream.hpp"
 
 namespace ftl
@@ -28,9 +28,9 @@ class FileStatus: public StructStat, public Instance
 public:
 	inline static hook<FileStatus> read(int fd = -1) { return new FileStatus(fd); }
 	inline static hook<FileStatus> read(SystemStream *stream) { return read(stream->fd()); }
-	inline static hook<FileStatus> read(String path, bool resolve = true) { return new FileStatus(path, resolve); }
+	inline static hook<FileStatus> read(string path, bool resolve = true) { return new FileStatus(path, resolve); }
 
-	inline String path() const { return path_; }
+	inline string path() const { return path_; }
 
 	inline int type() const  { return st_mode & S_IFMT; }
 	inline int mode() const { return st_mode & (~S_IFMT); }
@@ -57,12 +57,12 @@ public:
 
 private:
 	FileStatus(int fd);
-	FileStatus(String path, bool resolve = true);
+	FileStatus(string path, bool resolve = true);
 
 	bool update();
 
 	int fd_;
-	String path_;
+	string path_;
 	bool exists_;
 	bool resolve_;
 };

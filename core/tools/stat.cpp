@@ -5,9 +5,9 @@
 
 using namespace ftl;
 
-String fileTypeToString(int type)
+string fileTypeToString(int type)
 {
-	struct { int type; String name; } map[] = {
+	struct { int type; string name; } map[] = {
 		{ File::Regular, "regular" },
 		{ File::Directory, "directory" },
 		{ File::CharDevice, "char_device" },
@@ -25,7 +25,7 @@ String fileTypeToString(int type)
 	return Format("type_%%") << type;
 }
 
-String timeToString(Time time, bool human)
+string timeToString(Time time, bool human)
 {
 	hook<Date> d = Date::create(time);
 	if (human) {
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 			"  -ino      inode number\n"
 			"  -links    number of hard links\n"
 			"  -human    optimize for readability\n",
-			String(argv[0])->fileName()
+			string(argv[0])->fileName()
 		);
 		return 0;
 	}
@@ -90,13 +90,13 @@ int main(int argc, char **argv)
 	bool inodeNumberOption  = config->contains("inode");
 	bool linksOption        = config->contains("links") || defaults;
 
-	hook< Source<String> > files;
+	hook< Source<string> > files;
 	if (rawInput()->isTeletype())
 		files = listOfFiles;
 	else
 		files = input();
 
-	for (String file; files->read(&file);)
+	for (string file; files->read(&file);)
 	{
 		hook<FileStatus> status = FileStatus::read(file);
 
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 		if (nameOption)      line << status->path()->fileName();
 		if (pathOption)      line << status->path();
 		if (typeOption)      line << fileTypeToString(status->type());
-		if (modeOption)      line << String(Format("%oct%") << status->mode());
+		if (modeOption)      line << string(Format("%oct%") << status->mode());
 		if (sizeOption)      line << status->size();
 		if (diskUsageOption) line << status->sizeInBlocks() * status->sizeOfBlock();
 		if (ownerOption)     line << User::lookup(status->ownerId())->name();

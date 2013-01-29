@@ -18,7 +18,7 @@ hook<BuildPlan> BuildPlan::create(int argc, char **argv)
 	return new BuildPlan(argc, argv);
 }
 
-hook<BuildPlan> BuildPlan::create(ToolChain *toolChain, String projectPath, int globalOptions)
+hook<BuildPlan> BuildPlan::create(ToolChain *toolChain, string projectPath, int globalOptions)
 {
 	BuildPlan *buildPlan;
 	if (buildMap_->lookup(projectPath, &buildPlan)) return buildPlan;
@@ -51,7 +51,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	buildMap_->insert(projectPath_, this);
 }
 
-BuildPlan::BuildPlan(ToolChain *toolChain, String projectPath, BuildPlan *parentPlan)
+BuildPlan::BuildPlan(ToolChain *toolChain, string projectPath, BuildPlan *parentPlan)
 	: toolChain_(toolChain),
 	  projectPath_(projectPath),
 	  buildMap_(parentPlan->buildMap_),
@@ -110,17 +110,17 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 	}
 
 	if (recipe_->contains("include-path"))
-		includePaths_ = cast<VariantList>(recipe_->value("include-path"))->toList<String>();
+		includePaths_ = cast<VariantList>(recipe_->value("include-path"))->toList<string>();
 	else
 		includePaths_ = StringList::create();
 
 	if (recipe_->contains("link-path"))
-		libraryPaths_ = cast<VariantList>(recipe_->value("link-path"))->toList<String>();
+		libraryPaths_ = cast<VariantList>(recipe_->value("link-path"))->toList<string>();
 	else
 		libraryPaths_ = StringList::create();
 
 	if (recipe_->contains("link"))
-		libraries_ = cast<VariantList>(recipe_->value("link"))->toList<String>();
+		libraries_ = cast<VariantList>(recipe_->value("link"))->toList<string>();
 	else
 		libraries_ = StringList::create();
 
@@ -160,35 +160,35 @@ int BuildPlan::run()
 	return build() ? 0 : 1;
 }
 
-String BuildPlan::sourcePath(String source) const
+string BuildPlan::sourcePath(string source) const
 {
 	if (projectPath_ == ".") return source;
 	return projectPath_ + "/" + source;
 }
 
-String BuildPlan::modulePath(String object) const
+string BuildPlan::modulePath(string object) const
 {
 	return modulePath_ + "/" + object;
 }
 
-String BuildPlan::beautifyCommand(String command)
+string BuildPlan::beautifyCommand(string command)
 {
 	if (options_ & Bootstrap) {
 		return command
-			->replace(sourcePrefix_, String("$SOURCE"))
-			->replace(Process::cwd(), String("$PWD"));
+			->replace(sourcePrefix_, string("$SOURCE"))
+			->replace(Process::cwd(), string("$PWD"));
 	}
 	return command;
 }
 
-bool BuildPlan::runBuild(String command)
+bool BuildPlan::runBuild(string command)
 {
 	error()->writeLine(beautifyCommand(command));
 	if (options_ & DryRun) return true;
 	return Process::start(command)->wait() == 0;
 }
 
-bool BuildPlan::mkdir(String path)
+bool BuildPlan::mkdir(string path)
 {
 	if (!fileStatus(path)->exists())
 		printTo(error(), "mkdir -p %%\n", path);
@@ -196,7 +196,7 @@ bool BuildPlan::mkdir(String path)
 	return Dir::establish(path);
 }
 
-bool BuildPlan::rmdir(String path)
+bool BuildPlan::rmdir(string path)
 {
 	if (fileStatus(path)->exists())
 		printTo(error(), "rmdir %%\n", path);
@@ -204,7 +204,7 @@ bool BuildPlan::rmdir(String path)
 	return Dir::unlink(path);
 }
 
-bool BuildPlan::symlink(String path, String newPath)
+bool BuildPlan::symlink(string path, string newPath)
 {
 	printTo(error(), "ln -sf %% %%\n", path, newPath);
 	if (options_ & DryRun) return true;
@@ -212,7 +212,7 @@ bool BuildPlan::symlink(String path, String newPath)
 	return File::symlink(path, newPath);
 }
 
-bool BuildPlan::unlink(String path)
+bool BuildPlan::unlink(string path)
 {
 	if (File::unresolvedStatus(path)->exists()) {
 		printTo(error(), "rm %%\n", path);
@@ -222,7 +222,7 @@ bool BuildPlan::unlink(String path)
 	return true;
 }
 
-hook<FileStatus> BuildPlan::fileStatus(String path)
+hook<FileStatus> BuildPlan::fileStatus(string path)
 {
 	if (options_ & Blindfold) return FileStatus::read();
 	return FileStatus::read(path);
@@ -237,12 +237,12 @@ void BuildPlan::prepare()
 
 	hook<StringList> prequisitePaths;
 	if (recipe_->contains("use"))
-		prequisitePaths = cast<VariantList>(recipe_->value("use"))->toList<String>();
+		prequisitePaths = cast<VariantList>(recipe_->value("use"))->toList<string>();
 	else
 		prequisitePaths = StringList::create();
 
 	for (int i = 0; i < prequisitePaths->length(); ++i) {
-		String path = prequisitePaths->at(i);
+		string path = prequisitePaths->at(i);
 		if (path->isRelativePath()) path = projectPath_ + "/" + path;
 		path = path->canonicalPath();
 		hook<BuildPlan> buildPlan = BuildPlan::create(toolChain_, path, options_ & GlobalOptions);
@@ -263,7 +263,7 @@ void BuildPlan::prepare()
 		VariantList *sourcePatterns = cast<VariantList>(recipe_->value("source"));
 		for (int i = 0; i < sourcePatterns->length(); ++i) {
 			hook<Glob> glob = Glob::open(sourcePath(sourcePatterns->at(i)));
-			for (String path; glob->read(&path);)
+			for (string path; glob->read(&path);)
 				sources_->append(path);
 		}
 	}
@@ -281,8 +281,8 @@ bool BuildPlan::analyse()
 		f << ".modules";
 		{
 			Format h;
-			String path = projectPath_->absolutePath();
-			String topLevel = sourcePrefix_->absolutePath();
+			string path = projectPath_->absolutePath();
+			string topLevel = sourcePrefix_->absolutePath();
 			while (path != topLevel) {
 				h << path->fileName();
 				path = path->reducePath();

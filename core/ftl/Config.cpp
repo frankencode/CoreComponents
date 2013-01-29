@@ -17,7 +17,7 @@ namespace ftl
 
 hook<Config> Config::create() { return new Config; }
 
-void Config::read(String path)
+void Config::read(string path)
 {
 	try {
 		path_ = path;
@@ -40,7 +40,7 @@ void Config::read(int argc, char **argv)
 
 	for (int i = 1; i < argc; ++i)
 	{
-		String s = argv[i];
+		string s = argv[i];
 		if (s->at(0) != '-') {
 			arguments_->append(s);
 			continue;
@@ -52,8 +52,8 @@ void Config::read(int argc, char **argv)
 
 		options_->append(s);
 
-		String name = s->copy(state->capture("name"));
-		String valueText = s->copy(state->capture("value"));
+		string name = s->copy(state->capture("name"));
+		string valueText = s->copy(state->capture("value"));
 		Variant value = true;
 		if (valueText != "") {
 			try {
@@ -72,6 +72,6 @@ void Config::read(int argc, char **argv)
 StringList *Config::options() const { return options_; }
 StringList *Config::arguments() const { return arguments_; }
 
-String Config::path() const { return path_; }
+string Config::path() const { return path_; }
 
 } // namespace ftl

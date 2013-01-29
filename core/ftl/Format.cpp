@@ -13,7 +13,7 @@
 namespace ftl
 {
 
-Format::Format(String format)
+Format::Format(string format)
 	: Super(StringList::create())
 {
 	PlaceHolder *lastPlaceHolder = 0;
@@ -33,7 +33,7 @@ Format::Format(String format)
 			if (i0 != i0Saved)
 				get()->append(format->copy(i0Saved, i0));
 			else
-				get()->append(String());
+				get()->append(string());
 
 			ph->j_ = get()->length() + nph;
 			ph->check();
@@ -73,7 +73,7 @@ Format &Format::operator=(const Format &b)
 	return *this;
 }
 
-Format &Format::operator<<(const String &s)
+Format &Format::operator<<(const string &s)
 {
 	get()->insert(nextPlaceHolder()->j_, s);
 	return *this;
@@ -104,7 +104,7 @@ Format &Format::operator<<(const Variant &x)
 		*this << float(x);
 	}
 	else if (type(x) == StringType) {
-		*this << String(x);
+		*this << string(x);
 	}
 	else if (type(x) == RefType) {
 		*this << (void *)cast<Instance>(x);
@@ -140,7 +140,7 @@ void Format::printInt(uint64_t x, int sign)
 	if (wi < digits->fill()) wi = digits->fill();
 	if (w < wi) w = wi;
 
-	String text = String(w, ph->blank_);
+	string text = string(w, ph->blank_);
 	int i = 0;
 
 	int wb = 0; // width of blank
@@ -179,13 +179,13 @@ void Format::printFloat(float64_t x, bool half)
 	int e = int((xi << 1) >> 53); // exponent
 	int s = int(xi >> 63); // sign
 
-	String text;
+	string text;
 	int i = 0;
 
 	if ((e == 0x7FF) && (f != 0)) // NaN
 	{
 		if (w < 3) w = 3;
-		text = String(w, ph->blank_);
+		text = string(w, ph->blank_);
 		int wb = w - 3;
 		if (wb > 0)
 			i += wb;
@@ -198,7 +198,7 @@ void Format::printFloat(float64_t x, bool half)
 	else if ((e == 0x7FF) && (f == 0)) // infinite
 	{
 		if (w < 3 + s) w = 3 + s;
-		text = String(w, ph->blank_);
+		text = string(w, ph->blank_);
 		int wb = w - 3 - s;
 		if (wb > 0)
 			i += wb;
@@ -273,7 +273,7 @@ void Format::printFloat(float64_t x, bool half)
 		int h = wi + int(wf != 0) + wf + int(ne != 0) * (1 + int(eba < 0) + ne);
 		if (w < h) w = h; // w too small
 
-		text = String(w, ph->blank_);
+		text = string(w, ph->blank_);
 
 		int wb = wi - ni - s;
 		if (wb > 0) i += wb;
@@ -310,7 +310,7 @@ void Format::printFloat(float64_t x, bool half)
 	}
 	else // if ((e == 0) && (f == 0)) // zero
 	{
-		text = String(w, ph->blank_);
+		text = string(w, ph->blank_);
 		text->set(i + wi - 1, '0');
 	}
 

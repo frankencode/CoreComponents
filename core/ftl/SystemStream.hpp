@@ -38,9 +38,9 @@ public:
 
 	void write(StringList *parts, const char *sep = "");
 
-	inline int readAvail(String s) { return Stream::readAvail(s); }
+	inline int readAvail(string s) { return Stream::readAvail(s); }
 	inline void write(const char *s) { Stream::write(s); }
-	inline void write(String s) { write(s->data(), s->size()); }
+	inline void write(string s) { write(s->data(), s->size()); }
 
 	void closeOnExec();
 
