@@ -91,22 +91,22 @@ O<Format::PlaceHolder> Format::nextPlaceHolder()
 
 Format &Format::operator<<(const Variant &x)
 {
-	if (x.type() == Variant::UndefType) {
+	if (type(x) == UndefType) {
 		*this << "undef";
 	}
-	else if (x.type() == Variant::BoolType) {
+	else if (type(x) == BoolType) {
 		*this << bool(x);
 	}
-	else if (x.type() == Variant::IntType) {
+	else if (type(x) == IntType) {
 		*this << int(x);
 	}
-	else if (x.type() == Variant::FloatType) {
+	else if (type(x) == FloatType) {
 		*this << float(x);
 	}
-	else if (x.type() == Variant::StringType) {
+	else if (type(x) == StringType) {
 		*this << String(x);
 	}
-	else if (x.type() == Variant::RefType) {
+	else if (type(x) == RefType) {
 		*this << (void *)cast<Instance>(x);
 	}
 	return *this;

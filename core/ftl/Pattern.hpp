@@ -43,7 +43,7 @@ public:
 	const Pattern &operator=(const String &text);
 	const Pattern &operator=(const Variant &text);
 
-	inline String text() const { return text_; }
+	inline operator String() const { return text_; }
 
 private:
 	String text_;
