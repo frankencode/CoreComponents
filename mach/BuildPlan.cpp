@@ -339,11 +339,12 @@ bool BuildPlan::analyse()
 	if (!scheduler) return analyseResult_ = true;
 
 	for (hook<Job> job; scheduler->collect(&job);) {
-		if ((options_ & Verbose) || (job->status() != 0)) {
+		if (options_ & Verbose)
 			error()->writeLine(beautifyCommand(job->command()));
-			// error()->writeLine(job->outputText());
+		if (job->status() != 0) {
+			error()->writeLine(job->outputText());
+			break;
 		}
-		if (job->status() != 0) break;
 		hook<Module> module = toolChain_->finishAnalyseJob(this, job);
 		dependencyCache->insert(module->sourcePath(), module);
 		modules_->append(module);

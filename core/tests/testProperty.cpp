@@ -1,5 +1,5 @@
 #include <ftl/stdio>
-#include <ftl/Property.hpp>
+#include <ftl/property.hpp>
 
 namespace ftl
 {
@@ -9,9 +9,9 @@ class Shape: public Instance
 public:
 	static hook<Shape> create() { return new Shape; }
 
-	Property<string> name;
-	Property<int> x;
-	Property<int> y;
+	property<string> name;
+	property<int> x;
+	property<int> y;
 
 protected:
 	Shape()

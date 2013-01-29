@@ -5,7 +5,7 @@
 #include "UriSyntax.hpp"
 #include "Uri.hpp"
 #include "AbnfCompiler.hpp"
-#include "Property.hpp"
+#include "property.hpp"
 #include "Wire.hpp"
 #include "Json.hpp"
 

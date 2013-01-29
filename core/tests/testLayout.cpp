@@ -1,4 +1,5 @@
 #include <ftl/LayoutTree.hpp>
+#include <ftl/property.hpp>
 
 namespace testLayout
 {
@@ -8,7 +9,7 @@ using namespace ftl;
 class Line {
 public:
 	typedef int Extend;
-	Property<Extend> extend;
+	property<Extend> extend;
 };
 
 } // namespace testLayout
