@@ -1,6 +1,6 @@
 #include <ftl/PrintDebug.hpp>
 #include <ftl/Config.hpp>
-#include <ftl/Pattern.hpp>
+#include <ftl/pattern.hpp>
 #include <ftl/DirWalker.hpp>
 #include <ftl/File.hpp>
 
@@ -32,9 +32,9 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	Pattern namePattern;
-	Pattern typePattern;
-	Pattern textPattern;
+	pattern namePattern;
+	pattern typePattern;
+	pattern textPattern;
 	int maxDepth = config->value("depth", -1);
 
 	string h;

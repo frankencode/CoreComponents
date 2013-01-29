@@ -3,7 +3,7 @@
 
 #include "string.hpp"
 #include "format.hpp"
-#include "Pattern.hpp"
+#include "pattern.hpp"
 #include "variant.hpp"
 
 #endif // FTL_STRINGS

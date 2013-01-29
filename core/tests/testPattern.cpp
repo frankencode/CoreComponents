@@ -4,7 +4,7 @@
 using namespace ftl;
 
 int main() {
-	Pattern p = "^#{}.(?<=.)(?<!hello)(t[..]{?}|(?a:#)[^abc](?&a))$";
+	pattern p = "^#{}.(?<=.)(?<!hello)(t[..]{?}|(?a:#)[^abc](?&a))$";
 	#ifndef NDEBUG
 	if (p->debugFactory())
 		cast<SyntaxDebugger>(p->debugFactory())->printDefinition();

@@ -8,7 +8,7 @@
   */
 
 #include "Dir.hpp"
-#include "Pattern.hpp"
+#include "pattern.hpp"
 #include "Glob.hpp"
 
 namespace ftl
