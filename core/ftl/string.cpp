@@ -7,7 +7,7 @@
   * 2 of the License, or (at your option) any later version.
   */
 
-#include "Format.hpp"
+#include "format.hpp"
 #include "variant.hpp"
 #include "string.hpp"
 
@@ -20,7 +20,7 @@ string::string(const variant &b)
 	if (!Super::get()) Super::set(ByteArray::empty());
 }
 
-string::string(const Format &b)
+string::string(const format &b)
 {
 	*this = *ByteArray::join(b);
 }

@@ -9,7 +9,7 @@
 #ifndef FTL_PROPERTY_HPP
 #define FTL_PROPERTY_HPP
 
-#include "Format.hpp"
+#include "format.hpp"
 #include "Map.hpp"
 
 namespace ftl
@@ -109,7 +109,7 @@ public:
 		return valueChanged_;
 	}
 
-	inline string toString() const { return Format() << value_; }
+	inline string toString() const { return format() << value_; }
 
 	Property *operator->() { return this; }
 	const Property *operator->() const { return this; }

@@ -41,7 +41,7 @@ void testFloat754()
 	print("sizeof(Mutex) = %%\n", int(sizeof(Mutex)));
 	print("sizeof(hook<Instance>) = %%\n", int(sizeof(hook<Instance>)));
 	print("sizeof(string) = %%\n", int(sizeof(string)));
-	print("sizeof(Format) = %%\n", int(sizeof(Format)));
+	print("sizeof(format) = %%\n", int(sizeof(format)));
 	print("sizeof(variant) = %%\n", int(sizeof(variant)));
 	print("sizeof(Token) = %%\n", sizeof(Token));
 

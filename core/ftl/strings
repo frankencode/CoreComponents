@@ -2,7 +2,7 @@
 #define FTL_STRINGS
 
 #include "string.hpp"
-#include "Format.hpp"
+#include "format.hpp"
 #include "Pattern.hpp"
 #include "variant.hpp"
 

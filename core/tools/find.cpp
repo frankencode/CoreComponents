@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 					if (!token) break;
 					for (;i < token->i0(); ++i)
 						if (text->at(i) == '\n') ++ln;
-					matches->append(Format("%%:%%:%%..%%\n") << path << ln << token->i0() << token->i1());
+					matches->append(format("%%:%%:%%..%%\n") << path << ln << token->i0() << token->i1());
 					for (;i < token->i1(); ++i)
 						if (text->at(i) == '\n') ++ln;
 					if (token->i0() == token->i1()) ++i;

@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 			for (int j1 = j0; j0 < i1; j0 = j1) {
 				for (;j1 < text->length(); ++j1)
 					if (text->at(j1) == '\n') break;
-				Format line;
+				format line;
 				line << ln << ": ";
 				int k0 = j0, k1 = j1;
 				if (j0 <= i0 && i0 < j1) k0 = i0;

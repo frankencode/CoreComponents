@@ -11,7 +11,7 @@
 #include "File.hpp"
 #include "FileStatus.hpp"
 #include "User.hpp"
-#include "Format.hpp"
+#include "format.hpp"
 #include "LineSource.hpp"
 #else
 #include <sys/param.h>
@@ -29,7 +29,7 @@ namespace ftl
 ProcessStatus::ProcessStatus(pid_t processId)
 {
 #ifdef __linux
-	string path = Format("/proc/%%/stat") << processId;
+	string path = format("/proc/%%/stat") << processId;
 	hook<LineSource> source = LineSource::open(File::open(path, File::Read));
 	string line = source->readLine();
 	{
@@ -50,11 +50,11 @@ ProcessStatus::ProcessStatus(pid_t processId)
 		int minor = (code & 0xFF) | ((code >> 20) << 8);
 		// interpretation according to lanana.org
 		if (major == 4)
-			terminalName_ = Format("tty%%") << minor;
+			terminalName_ = format("tty%%") << minor;
 		else if ((136 <= major) && (major <= 143))
-			terminalName_ = Format("pts/%%") << minor;
+			terminalName_ = format("pts/%%") << minor;
 		else if (major == 3)
-			terminalName_ = Format("ttyp%%") << minor;
+			terminalName_ = format("ttyp%%") << minor;
 	}*/
 	loginName_ = User::lookup(File::status(path)->ownerId())->loginName();
 	processStatus_ = parts->at(2)->get(0);

@@ -16,7 +16,7 @@
 #include <errno.h> // errno
 #ifdef __linux
 #include "File.hpp" // to read /proc
-#include "Format.hpp"
+#include "format.hpp"
 #endif
 #ifdef __MACH__
 #include <mach-o/dyld.h> // _NSGetExecutablePath
@@ -79,7 +79,7 @@ Process::~Process()
 			break;
 		}
 		if (status != 0)
-			throw ProcessException(Format("Process unsuccessful, status = %%") << status);
+			throw ProcessException(format("Process unsuccessful, status = %%") << status);
 	}
 }
 
@@ -162,7 +162,7 @@ string Process::execPath()
 {
 	string path;
 	#ifdef __linux
-	string linkPath = Format("/proc/%%/exe") << currentId();
+	string linkPath = format("/proc/%%/exe") << currentId();
 	path = File::readlink(linkPath);
 	#endif
 	#ifdef __MACH__

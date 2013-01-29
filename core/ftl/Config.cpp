@@ -8,7 +8,7 @@
   */
 
 #include "File.hpp"
-#include "Format.hpp"
+#include "format.hpp"
 #include "Pattern.hpp"
 #include "Config.hpp"
 
@@ -24,10 +24,10 @@ void Config::read(string path)
 		wire()->parse(File::open(path, File::Read)->readAll(), this);
 	}
 	catch (SystemException &) {
-		throw ConfigException(Format("Can't open configuration file %%") << path);
+		throw ConfigException(format("Can't open configuration file %%") << path);
 	}
 	catch (WireException &ex) {
-		throw ConfigException(Format("Syntax error in configuration file\n%%:%%") << path << ex.what());
+		throw ConfigException(format("Syntax error in configuration file\n%%:%%") << path << ex.what());
 	}
 }
 
@@ -48,7 +48,7 @@ void Config::read(int argc, char **argv)
 
 		hook<SyntaxState> state = flag->newState();
 		if (!flag->match(s, state))
-			throw ConfigException(Format("Illegal option syntax: \"%%\"") << s);
+			throw ConfigException(format("Illegal option syntax: \"%%\"") << s);
 
 		options_->append(s);
 

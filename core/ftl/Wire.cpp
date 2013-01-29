@@ -7,7 +7,7 @@
   * 2 of the License, or (at your option) any later version.
   */
 
-#include "Format.hpp"
+#include "format.hpp"
 #include "FloatLiteral.hpp"
 #include "IntegerLiteral.hpp"
 #include "Wire.hpp"
@@ -20,7 +20,7 @@ WireException::WireException(const string &error, int line, int pos)
 	  line_(line),
 	  pos_(pos)
 {
-	message_ = Format("%%:%%: %%") << line << pos << error;
+	message_ = format("%%:%%: %%") << line << pos << error;
 }
 
 WireException::~WireException() throw() {}
@@ -334,7 +334,7 @@ hook<WireObject> Wire::parseObject(ByteArray *text, Token *token, WireObject *vi
 		if (object->contains(name)) {
 			int line = 1, pos = 1;
 			text->offsetToLinePos(token->i1(), &line, &pos);
-			throw WireException(Format("Ambiguous member name \"%%\"") << name, line, pos);
+			throw WireException(format("Ambiguous member name \"%%\"") << name, line, pos);
 		}
 		token = token->nextSibling();
 		variant value = parseValue(text, token);
