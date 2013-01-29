@@ -9,7 +9,6 @@
 #ifndef FTL_LAYOUTTREE_HPP
 #define FTL_LAYOUTTREE_HPP
 
-#include "Property.hpp"
 #include "OrdinalTree.hpp"
 
 namespace ftl

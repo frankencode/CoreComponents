@@ -88,14 +88,14 @@ private:
 };
 
 template<class T>
-class Property
+class property
 {
 public:
-	Property() {}
-	Property(const T &b): value_(b) {}
+	property() {}
+	property(const T &b): value_(b) {}
 
 	inline operator const T&() const { return value_; }
-	inline Property &operator=(const T &b) {
+	inline property &operator=(const T &b) {
 		if (b != value_) {
 			value_ = b;
 			if (valueChanged_)
@@ -111,8 +111,8 @@ public:
 
 	inline string toString() const { return format() << value_; }
 
-	Property *operator->() { return this; }
-	const Property *operator->() const { return this; }
+	property *operator->() { return this; }
+	const property *operator->() const { return this; }
 
 private:
 	hook< Signal<T> > valueChanged_;
