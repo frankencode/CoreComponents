@@ -204,32 +204,32 @@ Json::Json()
 	LINK();
 }
 
-Variant Json::parse(string text)
+variant Json::parse(string text)
 {
 	hook<Token> token = match(text);
 	FTL_CHECK(token, JsonException, "Invalid syntax");
 	return parseText(text, token);
 }
 
-Variant Json::parseText(ByteArray *text, Token *token)
+variant Json::parseText(ByteArray *text, Token *token)
 {
 	FTL_CHECK(token->rule() == text_, JsonException, "");
 	Token *child = token->firstChild();
 	return (child->rule() == object_) ? parseObject(text, child) : parseArray(text, child);
 }
 
-Variant Json::parseObject(ByteArray *text, Token *token)
+variant Json::parseObject(ByteArray *text, Token *token)
 {
 	FTL_CHECK(token->rule() == object_, JsonException, "");
 	hook<JsonObject> object = JsonObject::create();
 	for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
-		Pair<string, Variant> member = parseMember(text, child);
+		Pair<string, variant> member = parseMember(text, child);
 		object->insert(member.key(), member.value());
 	}
 	return object;
 }
 
-Variant Json::parseArray(ByteArray *text, Token *token)
+variant Json::parseArray(ByteArray *text, Token *token)
 {
 	FTL_CHECK(token->rule() == list_, JsonException, "");
 	hook<VariantList> list = VariantList::create(token->countChildren());
@@ -241,20 +241,20 @@ Variant Json::parseArray(ByteArray *text, Token *token)
 	return list;
 }
 
-Pair<string, Variant> Json::parseMember(ByteArray *text, Token *token)
+Pair<string, variant> Json::parseMember(ByteArray *text, Token *token)
 {
 	FTL_CHECK(token->rule() == member_, JsonException, "");
 	FTL_CHECK(token->countChildren() == 2, JsonException, "");
-	return Pair<string, Variant>(
+	return Pair<string, variant>(
 		parseString(text, token->firstChild()),
 		parseValue(text, token->lastChild())
 	);
 }
 
-Variant Json::parseValue(ByteArray *text, Token *token)
+variant Json::parseValue(ByteArray *text, Token *token)
 {
 	FTL_CHECK(token->rule() == value_, JsonException, "");
-	Variant value;
+	variant value;
 	if (token->hasChildren()) {
 		FTL_CHECK(token->countChildren() == 1, JsonException, "");
 		Token *child = token->firstChild();

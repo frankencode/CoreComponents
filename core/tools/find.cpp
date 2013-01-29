@@ -77,16 +77,19 @@ int main(int argc, char **argv)
 				}
 				string text = file->map();
 				int ln = 1;
+				hook<StringList> matches = StringList::create();
 				for (int i = 0; i < text->length();) {
 					hook<Token> token = textPattern->find(text, i);
 					if (!token) break;
 					for (;i < token->i0(); ++i)
 						if (text->at(i) == '\n') ++ln;
-					print("%%:%%:%%..%%\n", path, ln, token->i0(), token->i1());
+					matches->append(Format("%%:%%:%%..%%\n") << path << ln << token->i0() << token->i1());
 					for (;i < token->i1(); ++i)
 						if (text->at(i) == '\n') ++ln;
 					if (token->i0() == token->i1()) ++i;
 				}
+				for (int i = 0; i < matches->length(); ++i)
+					output()->write(matches->at(i));
 				continue;
 			}
 			output()->writeLine(path);

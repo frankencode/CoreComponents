@@ -54,7 +54,7 @@ void Config::read(int argc, char **argv)
 
 		string name = s->copy(state->capture("name"));
 		string valueText = s->copy(state->capture("value"));
-		Variant value = true;
+		variant value = true;
 		if (valueText != "") {
 			try {
 				value = wire()->parse(valueText);

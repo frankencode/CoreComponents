@@ -4,6 +4,6 @@
 #include "string.hpp"
 #include "Format.hpp"
 #include "Pattern.hpp"
-#include "Variant.hpp"
+#include "variant.hpp"
 
 #endif // FTL_STRINGS

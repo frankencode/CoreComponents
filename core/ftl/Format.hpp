@@ -11,7 +11,7 @@
 
 #include "atoms"
 #include "string.hpp"
-#include "Variant.hpp"
+#include "variant.hpp"
 #include "rounding.hpp"
 #include "Stack.hpp"
 
@@ -59,7 +59,7 @@ public:
 		return *this;
 	}
 
-	Format &operator<<(const Variant &x);
+	Format &operator<<(const variant &x);
 
 	template<class T>
 	inline Format &operator<<(const T &x) { return *this << x.toString(); }

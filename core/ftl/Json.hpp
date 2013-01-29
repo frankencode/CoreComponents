@@ -11,7 +11,7 @@
 
 #include "AbnfCoreSyntax.hpp"
 #include "Singleton.hpp"
-#include "Variant.hpp"
+#include "variant.hpp"
 #include "Map.hpp"
 
 namespace ftl
@@ -19,23 +19,23 @@ namespace ftl
 
 FTL_EXCEPTION(JsonException, Exception);
 
-typedef Map<string, Variant> JsonObject;
+typedef Map<string, variant> JsonObject;
 
 class Json: public AbnfCoreSyntax, public Singleton<Json>
 {
 public:
-	Variant parse(string text);
+	variant parse(string text);
 
 private:
 	friend class Singleton<Json>;
 
 	Json();
 
-	Variant parseText(ByteArray *text, Token *token);
-	Variant parseObject(ByteArray *text, Token *token);
-	Variant parseArray(ByteArray *text, Token *token);
-	Pair<string, Variant> parseMember(ByteArray *text, Token *token);
-	Variant parseValue(ByteArray *text, Token *token);
+	variant parseText(ByteArray *text, Token *token);
+	variant parseObject(ByteArray *text, Token *token);
+	variant parseArray(ByteArray *text, Token *token);
+	Pair<string, variant> parseMember(ByteArray *text, Token *token);
+	variant parseValue(ByteArray *text, Token *token);
 	string parseString(ByteArray *text, Token *token);
 	double parseNumber(ByteArray *text, Token *token);
 

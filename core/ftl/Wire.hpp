@@ -12,7 +12,7 @@
 #include "Singleton.hpp"
 #include "Array.hpp"
 #include "Map.hpp"
-#include "Variant.hpp"
+#include "variant.hpp"
 #include "SyntaxDefinition.hpp"
 
 namespace ftl
@@ -33,9 +33,9 @@ private:
 
 class Wire;
 
-class WireObject: public Map<string, Variant>
+class WireObject: public Map<string, variant>
 {
-	typedef Map<string, Variant> Super;
+	typedef Map<string, variant> Super;
 
 public:
 	virtual hook<Super> clone() const { return new WireObject(*this); }
@@ -59,7 +59,7 @@ private:
 class Wire: public SyntaxDefinition, public Singleton<Wire>
 {
 public:
-	Variant parse(ByteArray *text, WireObject *virgin = 0);
+	variant parse(ByteArray *text, WireObject *virgin = 0);
 
 protected:
 	friend class Singleton<Wire>;
@@ -69,7 +69,7 @@ protected:
 	string parseConcatenation(ByteArray *text, Token *token);
 	hook<WireObject> parseObject(ByteArray *text, Token *token, WireObject *virgin = 0);
 	hook<VariantList> parseList(ByteArray *text, Token *token);
-	Variant parseValue(ByteArray *text, Token *token);
+	variant parseValue(ByteArray *text, Token *token);
 
 	int string_;
 	int concatenation_;

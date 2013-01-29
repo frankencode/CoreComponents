@@ -11,7 +11,7 @@ int main()
 		print("s = \"%%\"\n", s);
 	}
 	{
-		Variant a = 1, b = true, c = "abc", d = 3.3;
+		variant a = 1, b = true, c = "abc", d = 3.3;
 		print(Format() << a << ", " << b << ", " << c << ", " << d << "\n");
 	}
 	{

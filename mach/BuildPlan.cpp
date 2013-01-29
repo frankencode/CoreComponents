@@ -94,7 +94,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
 	if (recipe_->contains("optimize-speed")) {
 		options_ |= OptimizeSpeed;
-		Variant h = recipe_->value("optimize-speed");
+		variant h = recipe_->value("optimize-speed");
 		if (type(h) == IntType)
 			speedOptimizationLevel_ = h;
 		else
@@ -102,7 +102,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 	}
 	if (recipe_->contains("optimize-size")) {
 		options_ |= OptimizeSize;
-		Variant h = recipe_->value("optimize-size");
+		variant h = recipe_->value("optimize-size");
 		if (type(h) == IntType)
 			sizeOptimizationLevel_ = h;
 		else

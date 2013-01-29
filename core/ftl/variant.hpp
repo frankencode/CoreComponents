@@ -32,37 +32,37 @@ enum Type {
   * variant type is compatible with the target type requested by an expression.
   * In debug mode a DebugException will be thrown on illegal type casts.
   * You can check for type compatibility using compatibleTo() and for exact type match
-  * by comparing type() with Variant::Type.
+  * by comparing type() with variant::Type.
   * Variants can be savely passed by value. The size of a variant is ranges from 5
   * to 12 bytes depending on compiler and platform.
   * Variants provide 32 bit precision for both integer and floating point values.
   */
-class Variant
+class variant
 {
 public:
-	Variant():                  type_(UndefType)                {}
-	Variant(int value):         type_(IntType),   int_(value)   {}
-	Variant(bool value):        type_(BoolType),  int_(value)   {}
-	Variant(float value):       type_(FloatType), float_(value) {}
-	Variant(double value):      type_(FloatType), float_(value) {}
-	Variant(const char *value): type_(StringType)               { initRef(string(value)); }
-	Variant(string value):      type_(StringType)               { initRef(value); }
+	variant():                  type_(UndefType)                {}
+	variant(int value):         type_(IntType),   int_(value)   {}
+	variant(bool value):        type_(BoolType),  int_(value)   {}
+	variant(float value):       type_(FloatType), float_(value) {}
+	variant(double value):      type_(FloatType), float_(value) {}
+	variant(const char *value): type_(StringType)               { initRef(string(value)); }
+	variant(string value):      type_(StringType)               { initRef(value); }
 	template<class T>
-	Variant(hook<T> value):        type_(RefType)                  { initRef(value); }
-	Variant(const Variant &b):  type_(UndefType)                { *this = b; }
+	variant(hook<T> value):        type_(RefType)                  { initRef(value); }
+	variant(const variant &b):  type_(UndefType)                { *this = b; }
 
-	~Variant() { if (type_ & RefType) killRef(); }
+	~variant() { if (type_ & RefType) killRef(); }
 
-	inline const Variant &operator=(bool value)        { type_ = BoolType;  int_ = value; return *this; }
-	inline const Variant &operator=(int value)         { type_ = IntType;   int_ = value; return *this; }
-	inline const Variant &operator=(float value)       { type_ = FloatType; float_ = value; return *this; }
-	inline const Variant &operator=(double value)      { type_ = FloatType; float_ = value; return *this; }
-	inline const Variant &operator=(const char *value) { return *this = Variant(value); }
-	inline const Variant &operator=(string value)      { return *this = Variant(value); }
+	inline const variant &operator=(bool value)        { type_ = BoolType;  int_ = value; return *this; }
+	inline const variant &operator=(int value)         { type_ = IntType;   int_ = value; return *this; }
+	inline const variant &operator=(float value)       { type_ = FloatType; float_ = value; return *this; }
+	inline const variant &operator=(double value)      { type_ = FloatType; float_ = value; return *this; }
+	inline const variant &operator=(const char *value) { return *this = variant(value); }
+	inline const variant &operator=(string value)      { return *this = variant(value); }
 	template<class T>
-	inline const Variant &operator=(const hook<T> &value) { return *this = Variant(value); }
+	inline const variant &operator=(const hook<T> &value) { return *this = variant(value); }
 
-	inline const Variant &operator=(const Variant &b) {
+	inline const variant &operator=(const variant &b) {
 		if (type_ & RefType) killRef();
 		type_ = b.type_;
 		if (b.type_ & RefType)
@@ -100,7 +100,7 @@ public:
 		return cast<T>(ref().get());
 	}
 
-	bool operator==(const Variant &b) const
+	bool operator==(const variant &b) const
 	{
 		bool equal = false;
 
@@ -118,7 +118,7 @@ public:
 		return equal;
 	}
 
-	bool operator<(const Variant &b) const
+	bool operator<(const variant &b) const
 	{
 		bool below = false;
 
@@ -134,13 +134,13 @@ public:
 		return below;
 	}
 
-	inline bool operator>(const Variant &b) const  { return b < *this; }
-	inline bool operator!=(const Variant &b) const { return !(*this == b); }
-	inline bool operator<=(const Variant &b) const { return (*this < b) || (*this == b); }
-	inline bool operator>=(const Variant &b) const { return (b < *this) || (*this == b); }
+	inline bool operator>(const variant &b) const  { return b < *this; }
+	inline bool operator!=(const variant &b) const { return !(*this == b); }
+	inline bool operator<=(const variant &b) const { return (*this < b) || (*this == b); }
+	inline bool operator>=(const variant &b) const { return (b < *this) || (*this == b); }
 
 private:
-	friend int type(const Variant &value);
+	friend int type(const variant &value);
 
 	inline static const char *illegalConversion() { return "Illegal variant conversion"; }
 
@@ -164,12 +164,12 @@ private:
 	};
 };
 
-typedef List<Variant> VariantList;
+typedef List<variant> VariantList;
 
-inline int type(const Variant &value) { return value.type_; }
+inline int type(const variant &value) { return value.type_; }
 
 template<class U>
-inline U *cast(const Variant &value) { return hook<U>(value); }
+inline U *cast(const variant &value) { return hook<U>(value); }
 
 } // namespace ftl
 
