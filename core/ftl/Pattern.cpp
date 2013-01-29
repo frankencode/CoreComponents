@@ -442,7 +442,7 @@ Pattern::Pattern(const String &text)
 
 Pattern::Pattern(const Variant &text)
 {
-	*this = text.toString();
+	*this = String(text);
 }
 
 const Pattern &Pattern::operator=(const char *text)

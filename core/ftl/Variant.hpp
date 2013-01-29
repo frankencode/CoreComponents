@@ -16,9 +16,15 @@
 namespace ftl
 {
 
-// #ifdef __GNUC__
-// #pragma pack(push,1)
-// #endif
+enum Type {
+	UndefType  = 0,
+	IntType    = 1,
+	BoolType   = 2 | IntType,
+	FloatType  = 4,
+	RefType    = 8,
+	StringType = 16 | RefType,
+	AnyType    = 31
+};
 
 /** A variant can represent different types.
   * The type of a variant is defined implicitly at construction time or on assignment.
@@ -34,25 +40,17 @@ namespace ftl
 class Variant
 {
 public:
-	enum Type {
-		UndefType  = 0,
-		IntType    = 1,
-		BoolType   = 2 | IntType,
-		FloatType  = 4,
-		RefType    = 8,
-		StringType = 16 | RefType,
-		AnyType    = 31
-	};
-
-	Variant()                 : type_(UndefType)                {}
-	Variant(int value)        : type_(IntType),   int_(value)   {}
-	Variant(bool value)       : type_(BoolType),  int_(value)   {}
-	Variant(float value)      : type_(FloatType), float_(value) {}
-	Variant(double value)     : type_(FloatType), float_(value) {}
-	Variant(const char *value): type_(StringType) { initRef(String(value)); }
+	Variant():                  type_(UndefType)                {}
+	Variant(int value):         type_(IntType),   int_(value)   {}
+	Variant(bool value):        type_(BoolType),  int_(value)   {}
+	Variant(float value):       type_(FloatType), float_(value) {}
+	Variant(double value):      type_(FloatType), float_(value) {}
+	Variant(const char *value): type_(StringType)               { initRef(String(value)); }
+	Variant(String value):      type_(StringType)               { initRef(value); }
 	template<class T>
-	Variant(O<T> value)       : type_(RefType)    { initRef(value); }
-	Variant(String value)     : type_(StringType) { initRef(value); }
+	Variant(O<T> value):        type_(RefType)                  { initRef(value); }
+	Variant(const Variant &b):  type_(UndefType)                { *this = b; }
+
 	~Variant() { if (type_ & RefType) killRef(); }
 
 	inline const Variant &operator=(bool value)        { type_ = BoolType;  int_ = value; return *this; }
@@ -64,8 +62,6 @@ public:
 	template<class T>
 	inline const Variant &operator=(const O<T> &value) { return *this = Variant(value); }
 
-	Variant(const Variant &b): type_(UndefType) { *this = b; }
-
 	inline const Variant &operator=(const Variant &b) {
 		if (type_ & RefType) killRef();
 		type_ = b.type_;
@@ -76,47 +72,33 @@ public:
 		return *this;
 	}
 
-	inline int type() const { return type_; }
-	inline bool defined() const { return type_ != UndefType; }
-	inline bool compatibleTo(int type) { return type_ & type; }
-
-	inline bool toBool() const {
+	inline operator bool() const {
 		if (!type_) return false;
 		FTL_ASSERT2(type_ & IntType, illegalConversion());
 		return int_;
 	}
-
-	inline int toInt() const {
+	inline operator int() const {
 		if (!type_) return -1;
 		FTL_ASSERT2(type_ & IntType, illegalConversion());
 		return int_;
 	}
-
-	inline float toFloat() const {
+	inline operator float() const {
 		if (!type_) return ftl::nan;
 		FTL_ASSERT2(type_ & FloatType, illegalConversion());
 		return float_;
 	}
-
-	inline String toString() const {
+	inline operator String() const {
 		if (!type_) return String();
 		FTL_ASSERT2(type_ & StringType, illegalConversion());
 		return String(*this);
 	}
 
 	template<class T>
-	inline T *toInstance() const {
+	inline operator O<T>() const {
 		if (!type_) return null<T>();
 		FTL_ASSERT2(type_ & RefType, illegalConversion());
 		return cast<T>(ref().get());
 	}
-
-	inline operator bool() const { return toBool(); }
-	inline operator int() const { return toInt(); }
-	inline operator float() const { return toFloat(); }
-	inline operator String() const { return toString(); }
-	template<class T>
-	inline operator O<T>() const { return toInstance<T>(); }
 
 	bool operator==(const Variant &b) const
 	{
@@ -152,12 +134,14 @@ public:
 		return below;
 	}
 
-	inline bool operator>(const Variant &b) const { return b < *this; }
+	inline bool operator>(const Variant &b) const  { return b < *this; }
 	inline bool operator!=(const Variant &b) const { return !(*this == b); }
 	inline bool operator<=(const Variant &b) const { return (*this < b) || (*this == b); }
 	inline bool operator>=(const Variant &b) const { return (b < *this) || (*this == b); }
 
 private:
+	friend int type(const Variant &value);
+
 	inline static const char *illegalConversion() { return "Illegal variant conversion"; }
 
 	inline void initRef(Instance *instance = 0) {
@@ -170,7 +154,7 @@ private:
 		ref() = instance;
 	}
 	inline O<Instance> &ref() const {
-		return *union_cast<O<Instance>*>(dummy_);
+		return *union_cast< O<Instance> *>(dummy_);
 	}
 	char type_;
 	union {
@@ -180,14 +164,12 @@ private:
 	};
 };
 
-// #ifdef __GNUC__
-// #pragma pack(pop)
-// #endif
+typedef List<Variant> VariantList;
+
+inline int type(const Variant &value) { return value.type_; }
 
 template<class U>
-inline U *cast(const Variant &a) { return a.toInstance<U>(); }
-
-typedef List<Variant> VariantList;
+inline U *cast(const Variant &value) { return O<U>(value); }
 
 } // namespace ftl
 
