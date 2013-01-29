@@ -13,7 +13,7 @@
 #endif
 #include "syntax.hpp"
 #include "format.hpp"
-#include "Pattern.hpp"
+#include "pattern.hpp"
 
 namespace ftl
 {
@@ -39,7 +39,7 @@ class PatternCompiler: public SyntaxDefinition, public Singleton<PatternCompiler
 {
 protected:
 	friend class Singleton<PatternCompiler>;
-	friend class Pattern;
+	friend class pattern;
 
 	PatternCompiler();
 
@@ -428,30 +428,30 @@ NODE PatternCompiler::compileRepeat(ByteArray *text, Token *token, SyntaxDefinit
 	return definition->GREEDY_REPEAT(minRepeat, maxRepeat, previous);
 }
 
-Pattern::Pattern()
+pattern::pattern()
 {}
 
-Pattern::Pattern(const char *text)
+pattern::pattern(const char *text)
 {
 	*this = string(text);
 }
 
-Pattern::Pattern(const string &text)
+pattern::pattern(const string &text)
 {
 	*this = text;
 }
 
-Pattern::Pattern(const variant &text)
+pattern::pattern(const variant &text)
 {
 	*this = string(text);
 }
 
-const Pattern &Pattern::operator=(const char *text)
+const pattern &pattern::operator=(const char *text)
 {
 	return *this = string(text);
 }
 
-const Pattern &Pattern::operator=(const string &text)
+const pattern &pattern::operator=(const string &text)
 {
 	text_ = text;
 	set(
@@ -465,7 +465,7 @@ const Pattern &Pattern::operator=(const string &text)
 	return *this;
 }
 
-const Pattern &Pattern::operator=(const variant &text)
+const pattern &pattern::operator=(const variant &text)
 {
 	return *this = string(text);
 }

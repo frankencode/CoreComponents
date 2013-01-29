@@ -1,5 +1,5 @@
 #include <ftl/StandardStreams.hpp>
-#include <ftl/Pattern.hpp>
+#include <ftl/pattern.hpp>
 #include <ftl/format.hpp>
 #include <ftl/File.hpp>
 #include <ftl/Process.hpp>
@@ -50,7 +50,7 @@ hook<Job> GccToolChain::createAnalyseJob(BuildPlan *buildPlan, string source)
 
 hook<Module> GccToolChain::finishAnalyseJob(BuildPlan *buildPlan, Job *job)
 {
-	hook<StringList> parts = job->outputText()->split(Pattern("[:\\\\\n\r ]{1,}"));
+	hook<StringList> parts = job->outputText()->split(pattern("[:\\\\\n\r ]{1,}"));
 	return Module::create(job->command(), buildPlan->modulePath(parts->pop(0)), parts, true);
 }
 

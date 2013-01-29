@@ -9,7 +9,7 @@
 
 #include "File.hpp"
 #include "format.hpp"
-#include "Pattern.hpp"
+#include "pattern.hpp"
 #include "Config.hpp"
 
 namespace ftl
@@ -36,7 +36,7 @@ void Config::read(int argc, char **argv)
 	arguments_ = StringList::create();
 	options_ = StringList::create();
 
-	Pattern flag("-{1,2}(?name:[^-][^=]{})(=(?value:[^=]{1,})){0,1}");
+	pattern flag("-{1,2}(?name:[^-][^=]{})(=(?value:[^=]{1,})){0,1}");
 
 	for (int i = 1; i < argc; ++i)
 	{

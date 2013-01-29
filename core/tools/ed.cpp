@@ -1,6 +1,6 @@
 #include <ftl/PrintDebug.hpp>
 #include <ftl/Config.hpp>
-#include <ftl/Pattern.hpp>
+#include <ftl/pattern.hpp>
 #include <ftl/File.hpp>
 
 int main(int argc, char **argv)
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 		globalCommand = "replace";
 	}
 
-	Pattern commandSyntax(
+	pattern commandSyntax(
 		"(?path:[^:]{~})"
 		"(:(?ln:[0..9]{1,})){0,1}"
 		"(:(?i0:[0..9]{1,})..(?i1:[0..9]{1,})){0,1}"

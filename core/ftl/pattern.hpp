@@ -31,17 +31,17 @@ private:
 	int pos_;
 };
 
-class Pattern: public hook<SyntaxDefinition>
+class pattern: public hook<SyntaxDefinition>
 {
 public:
-	Pattern();
-	Pattern(const char *text);
-	Pattern(const string &text);
-	Pattern(const variant &variant);
+	pattern();
+	pattern(const char *text);
+	pattern(const string &text);
+	pattern(const variant &variant);
 
-	const Pattern &operator=(const char *text);
-	const Pattern &operator=(const string &text);
-	const Pattern &operator=(const variant &text);
+	const pattern &operator=(const char *text);
+	const pattern &operator=(const string &text);
+	const pattern &operator=(const variant &text);
 
 	inline operator string() const { return text_; }
 

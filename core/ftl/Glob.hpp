@@ -9,7 +9,7 @@
 #ifndef FTL_GLOB_HPP
 #define FTL_GLOB_HPP
 
-#include "Pattern.hpp"
+#include "pattern.hpp"
 
 namespace ftl
 {
@@ -29,7 +29,7 @@ private:
 	void init(string path);
 
 	hook<Dir> dir_;
-	Pattern pattern_;
+	pattern pattern_;
 	hook<StringList> remainder_;
 	hook<Glob> child_;
 };
