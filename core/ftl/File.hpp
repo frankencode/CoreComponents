@@ -60,9 +60,9 @@ public:
 	};
 
 	enum SeekMethod {
-		SeekBegin   = 1,
-		SeekCurrent = 2,
-		SeekEnd     = 3
+		SeekBegin   = SEEK_SET,
+		SeekCurrent = SEEK_CUR,
+		SeekEnd     = SEEK_END
 	};
 
 	enum StandardStreams {
@@ -88,6 +88,7 @@ public:
 	void unlinkWhenDone();
 
 	off_t seek(off_t distance, int method = SeekBegin);
+	bool seekable() const;
 
 	string map() const;
 

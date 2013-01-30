@@ -90,7 +90,7 @@ public:
 	inline operator string() const {
 		if (!type_) return string();
 		FTL_ASSERT2(type_ & StringType, illegalConversion());
-		return string(*this);
+		return hook<ByteArray>(ref());
 	}
 
 	template<class T>

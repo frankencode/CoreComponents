@@ -62,10 +62,10 @@ public:
 	format &operator<<(const variant &x);
 
 	template<class T>
-	inline format &operator<<(const T &x) { return *this << x.toString(); }
+	inline format &operator<<(const T &x) { return *this << string(x); }
 
 	template<class T>
-	inline format &operator<<(const hook<T> &x) { return *this << x->toString(); }
+	inline format &operator<<(const hook<T> &x) { return *this << string(*x); }
 
 	inline format &operator<<(const hook<StringList> &x) { return *this << x->join(""); }
 

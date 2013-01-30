@@ -6,8 +6,8 @@
   * as published by the Free Software Foundation; either version
   * 2 of the License, or (at your option) any later version.
   */
-#ifndef FTL_O_HPP
-#define FTL_O_HPP
+#ifndef FTL_HOOK_HPP
+#define FTL_HOOK_HPP
 
 #include "types.hpp"
 
@@ -68,6 +68,9 @@ private:
 	T *a_;
 };
 
+template<class U, class T>
+inline U *cast(const hook<T>& p) { return cast<U>(p.get()); }
+
 } // namespace ftl
 
-#endif // FTL_O_HPP
+#endif // FTL_HOOK_HPP

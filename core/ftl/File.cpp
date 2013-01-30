@@ -155,17 +155,14 @@ void File::unlinkWhenDone()
 
 off_t File::seek(off_t distance, int method)
 {
-	int method2 = SEEK_SET;
-	if (method == SeekBegin)
-		method2 = SEEK_SET;
-	else if (method == SeekCurrent)
-		method2 = SEEK_CUR;
-	else if (method == SeekEnd)
-		method2 = SEEK_END;
-	off_t ret = ::lseek(fd_, distance, method2);
-	if (ret == -1)
-		FTL_THROW(StreamSemanticException, systemError());
+	off_t ret = ::lseek(fd_, distance, method);
+	if (ret == -1) FTL_SYSTEM_EXCEPTION;
 	return ret;
+}
+
+bool File::seekable() const
+{
+	return ::lseek(fd_, 0, SeekCurrent) != -1;
 }
 
 string File::map() const

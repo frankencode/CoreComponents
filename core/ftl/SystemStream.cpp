@@ -7,7 +7,8 @@
   * 2 of the License, or (at your option) any later version.
   */
 
-#include <sys/uio.h>
+#include <sys/types.h>
+#include <sys/uio.h> // readv
 #include <errno.h>
 #include <string.h>
 #include <unistd.h> // read, write, select
@@ -45,7 +46,7 @@ bool SystemStream::isOpen() const { return fd_ != -1; }
 void SystemStream::close()
 {
 	if (::close(fd_) == -1)
-		FTL_THROW(StreamSemanticException, systemError());
+		FTL_SYSTEM_EXCEPTION;
 	fd_ = -1;
 }
 
@@ -59,7 +60,7 @@ bool SystemStream::readyRead(Time timeout)
 	tv.tv_usec = timeout.nsec() / 1000;
 	int ret = ::select(fd_ + 1, &set, 0, 0, &tv);
 	if (ret == -1)
-		FTL_THROW(StreamSemanticException, systemError());
+		FTL_SYSTEM_EXCEPTION;
 	return (ret > 0);
 }
 
@@ -74,7 +75,7 @@ bool SystemStream::readyReadOrWrite(Time timeout)
 	tv.tv_usec = timeout.nsec() / 1000;
 	int ret = ::select(fd_ + 1, &rset, &wset, 0, &tv);
 	if (ret == -1)
-		FTL_THROW(StreamSemanticException, systemError());
+		FTL_SYSTEM_EXCEPTION;
 	return (ret > 0);
 }
 
@@ -89,7 +90,7 @@ int SystemStream::readAvail(void *buf, int bufCapa)
 			if (errno == EWOULDBLOCK)
 				throw Timeout();
 			if (isTeletype()) { ret = 0; break; } // fancy HACK, needs review
-			FTL_THROW(StreamIoException, systemError());
+			FTL_SYSTEM_EXCEPTION;
 		}
 		break;
 	}
@@ -107,7 +108,7 @@ void SystemStream::write(const void *buf, int bufFill)
 				throw Interrupt();
 			if (errno == EWOULDBLOCK)
 				throw Timeout();
-			FTL_THROW(StreamIoException, systemError());
+			FTL_SYSTEM_EXCEPTION;
 		}
 		buf2 += ret;
 		bufFill -= ret;
@@ -138,14 +139,14 @@ void SystemStream::write(StringList *parts, const char *sep)
 			throw Interrupt();
 		if (errno == EWOULDBLOCK)
 			throw Timeout();
-		FTL_THROW(StreamIoException, systemError());
+		FTL_SYSTEM_EXCEPTION;
 	}
 }
 
 void SystemStream::closeOnExec()
 {
 	if (::fcntl(fd_, F_SETFD, FD_CLOEXEC) == -1)
-		FTL_THROW(StreamSemanticException, systemError());
+		FTL_SYSTEM_EXCEPTION;
 }
 
 } // namespace ftl

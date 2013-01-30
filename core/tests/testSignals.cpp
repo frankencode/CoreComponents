@@ -58,11 +58,11 @@ private:
 
 int main(int argc, char **argv)
 {
-	Process::throwSignal(SIGINT);
-	Process::throwSignal(SIGALRM);
-	Process::throwSignal(SIGWINCH);
-	Process::throwSignal(SIGTSTP);
-	Process::throwSignal(SIGCONT);
+	Process::enableInterrupt(SIGINT);
+	Process::enableInterrupt(SIGALRM);
+	Process::enableInterrupt(SIGWINCH);
+	Process::enableInterrupt(SIGTSTP);
+	Process::enableInterrupt(SIGCONT);
 	Thread::blockSignals(SignalSet::createFull());
 	Process::alarm(1);
 	hook<SignalEater> signalEater = SignalEater::create();

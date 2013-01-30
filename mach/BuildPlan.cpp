@@ -20,7 +20,7 @@ hook<BuildPlan> BuildPlan::create(int argc, char **argv)
 
 hook<BuildPlan> BuildPlan::create(ToolChain *toolChain, string projectPath, int globalOptions)
 {
-	BuildPlan *buildPlan;
+	BuildPlan *buildPlan = 0;
 	if (buildMap_->lookup(projectPath, &buildPlan)) return buildPlan;
 	return new BuildPlan(toolChain, projectPath, this);
 }

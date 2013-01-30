@@ -25,47 +25,32 @@ class string: public hook<ByteArray>
 public:
 	typedef hook<ByteArray> Super;
 
-	// initialize empty string
 	string(): Super(ByteArray::empty()) {}
-
-	// initialize string with defined size but undefined content
 	explicit string(int size): Super(ByteArray::create(size)) {}
-
-	// initialize string with defined size and defined content
 	string(int size, char zero): Super(ByteArray::create(size, zero)) {
 		FTL_ASSERT(0 <= zero);
 	}
-
-	// initialize string by given bytes
 	string(const hook<ByteArray> &bytes): Super(bytes) {}
-
-	// initialize string from a shallow copy of another string
 	string(const string &b): Super(b.Super::get()) {}
-
-	// helper constructors
 	string(const format &b);
 	string(const variant &b);
 	string(hook<StringList> parts);
 
-	// initialize string by deep-copying a byte array
-	string(const char *data, int size = -1): Super(ByteArray::create(data, size)) {}
+	string(const char *data, int size = -1): Super(ByteArray::copy(data, size)) {}
 
 	inline static string join(const StringList *parts, string sep = "") { return ByteArray::join(parts, sep); }
 
-	// assign a shallow copy of another string
 	inline string &operator=(const string &b) {
 		Super::set(b.Super::get());
 		return *this;
 	}
 
-	// assign a deep copy of a C string
 	inline string &operator=(const char *data) {
 		string b(data);
 		Super::set(b.Super::get());
 		return *this;
 	}
 
-	// provide access to the shared bytes
 	inline operator char *() const { return Super::get()->data(); }
 
 private:

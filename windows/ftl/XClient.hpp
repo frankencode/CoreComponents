@@ -64,7 +64,7 @@ private:
 	hook<Mutex> sequenceNumberMutex_;
 	uint16_t sequenceNumber_;
 
-	TLO<ByteEncoder> messageEncoder_;
+	thread_local_hook<ByteEncoder> messageEncoder_;
 
 	hook<Mutex> messageFiltersMutex_;
 	typedef Set< hook<XMessageFilter> > MessageFilters;

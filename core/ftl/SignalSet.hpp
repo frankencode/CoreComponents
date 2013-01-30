@@ -15,7 +15,9 @@
 namespace ftl
 {
 
-class SignalSet: public Instance, public sigset_t
+class Thread;
+
+class SignalSet: public Instance
 {
 public:
 	inline static hook<SignalSet> createEmpty() {
@@ -30,7 +32,11 @@ public:
 
 	bool contains(int signal) const;
 
+	inline sigset_t *rawSet() { return &rawSet_; }
+
 private:
+	friend class Thread;
+
 	enum { Empty, Full };
 	SignalSet(int preset);
 	sigset_t rawSet_;

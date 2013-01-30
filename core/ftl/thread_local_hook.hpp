@@ -19,22 +19,22 @@ namespace ftl
   * \brief Thread Local Owner Pointer
   */
 template<class T>
-class TLO
+class thread_local_hook
 {
 public:
-	TLO(T *b = 0) {
+	thread_local_hook(T *b = 0) {
 		int ret = ::pthread_key_create(&key_, &threadExitEvent);
 		if (ret != 0)
 			FTL_PTHREAD_EXCEPTION("pthread_key_create", ret);
 		if (b) set(b);
 	}
 
-	~TLO() {
+	~thread_local_hook() {
 		set(reinterpret_cast<T *>(0));
 		::pthread_key_delete(key_);
 	}
 
-	inline TLO &operator=(T *b) {
+	inline thread_local_hook &operator=(T *b) {
 		set(b);
 		return *this;
 	}
