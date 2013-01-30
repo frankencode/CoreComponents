@@ -15,9 +15,7 @@ namespace ftl
 
 void SpinLock::yield()
 {
-	int ret = pthread_yield();
-	if (ret != 0)
-		FTL_PTHREAD_EXCEPTION("pthread_yield", ret);
+	pthread_yield();
 }
 
 } // namespace ftl

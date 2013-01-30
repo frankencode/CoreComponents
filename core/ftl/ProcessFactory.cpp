@@ -196,7 +196,7 @@ hook<Process> ProcessFactory::produce()
 		}
 
 		if (signalMask_) {
-			if (::sigprocmask(SIG_SETMASK, signalMask_, 0) == -1)
+			if (::sigprocmask(SIG_SETMASK, signalMask_->rawSet(), 0) == -1)
 				FTL_SYSTEM_EXCEPTION;
 		}
 

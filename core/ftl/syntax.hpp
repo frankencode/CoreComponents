@@ -162,7 +162,7 @@ class RangeExplicitNode: public Node
 {
 public:
 	RangeExplicitNode(const char *s, int invert)
-		: s_(ByteArray::create(s)),
+		: s_(ByteArray::copy(s)),
 		  invert_(invert)
 	{}
 
@@ -198,7 +198,7 @@ class StringNode: public Node
 {
 public:
 	StringNode(const char *s, bool caseSensitive)
-		: s_(ByteArray::create(s)),
+		: s_(ByteArray::copy(s)),
 		  caseSensitive_(caseSensitive)
 	{
 		if (!caseSensitive) s_->toLowerInsitu();

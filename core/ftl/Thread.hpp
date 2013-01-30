@@ -14,7 +14,7 @@
 #include "atoms"
 #include "Time.hpp"
 #include "SignalSet.hpp"
-#include "TLO.hpp"
+#include "thread_local_hook.hpp"
 
 namespace ftl
 {
@@ -49,11 +49,11 @@ private:
 	friend class Interrupt;
 	friend class Process;
 
-	static TLO<Thread> self_;
+	static thread_local_hook<Thread> self_;
 	pthread_t tid_;
 	int lastSignal_;
 };
 
 } // namespace ftl
 
-#endif // FTL_THREAD_HPP
+#endif // FT

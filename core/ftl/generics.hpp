@@ -90,6 +90,13 @@ public:
 	virtual Item get(Index i) const = 0;
 };
 
+#ifdef major
+#undef major
+#endif
+#ifdef minor
+#undef minor
+#endif
+
 class Version
 {
 public:

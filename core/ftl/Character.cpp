@@ -19,7 +19,7 @@ hook<ByteArray> Character::copy(int i0, int i1) const
 	walkTo(i0);
 	const char *p0 = walker_.pos();
 	while (i_ < i1) { ++walker_; ++i_; }
-	return ByteArray::create(p0, walker_.pos() - p0);
+	return ByteArray::copy(p0, walker_.pos() - p0);
 }
 
 /*int string::find(int i, const char *pattern) const

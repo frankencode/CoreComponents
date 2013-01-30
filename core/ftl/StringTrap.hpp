@@ -44,7 +44,7 @@ private:
 
 	class Node: public Instance {
 	public:
-		Node(const char *s, int len): s_(ByteArray::create(s, len)) {}
+		Node(const char *s, int len): s_(ByteArray::copy(s, len)) {}
 		hook<ByteArray> s_;
 		hook<Node> next_;
 	};

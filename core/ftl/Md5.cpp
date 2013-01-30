@@ -152,9 +152,11 @@ inline static uint32_t rol32(uint32_t x, int r) {
 	return (x << r) | (x >> (32 - r));
 }
 
+#ifndef swap32
 inline static uint32_t swap32(uint32_t z) {
 	return (z << 24) | ((z & 0xFF00) << 8) | ((z & 0xFF0000) >> 8) | (z >> 24);
 }
+#endif
 
 inline static uint32_t f(uint32_t x, uint32_t y, uint32_t z) {
 	return (x & y) | ((~x) & z);

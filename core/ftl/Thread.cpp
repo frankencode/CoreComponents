@@ -17,7 +17,7 @@
 namespace ftl
 {
 
-TLO<Thread> Thread::self_;
+thread_local_hook<Thread> Thread::self_;
 
 Thread *Thread::self()
 {
@@ -72,14 +72,14 @@ void Thread::sleepUntil(Time timeout)
 
 void Thread::blockSignals(SignalSet *set)
 {
-	int ret = pthread_sigmask(SIG_BLOCK, set, 0/*oset*/);
+	int ret = pthread_sigmask(SIG_BLOCK, set->rawSet(), 0/*oset*/);
 	if (ret != 0)
 		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
 }
 
 void Thread::unblockSignals(SignalSet *set)
 {
-	int ret = pthread_sigmask(SIG_UNBLOCK, set, 0/*oset*/);
+	int ret = pthread_sigmask(SIG_UNBLOCK, set->rawSet(), 0/*oset*/);
 	if (ret != 0)
 		FTL_PTHREAD_EXCEPTION("pthread_sigmask", ret);
 }

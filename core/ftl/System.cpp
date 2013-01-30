@@ -9,6 +9,9 @@
 #include <unistd.h> // sysconf(3), alarm(2)
 #ifndef __linux
 #include <sys/types.h>
+#ifdef __OpenBSD__
+#include <sys/param.h>
+#endif
 #include <sys/sysctl.h>
 #endif
 #include "System.hpp"
@@ -32,7 +35,7 @@ int System::concurrency()
 	size_t sz = sizeof(n);
 	int mib[4];
 	mib[0] = CTL_HW;
-	mib[1] = HW_NCPU
+	mib[1] = HW_NCPU;
 	sysctl(mib, 2, &n, &sz, NULL, 0);
 	if(n > 1) return n;
 	#endif

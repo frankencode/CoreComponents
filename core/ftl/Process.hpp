@@ -102,7 +102,7 @@ public:
 	static void raise(int signal);
 	static int alarm(int seconds);
 
-	static void throwSignal(int signal, bool on = true);
+	static void enableInterrupt(int signal, bool on = true);
 
 	static void sleep(Time duration);
 	static void exit(int exitCode);

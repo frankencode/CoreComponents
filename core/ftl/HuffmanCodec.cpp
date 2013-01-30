@@ -277,7 +277,7 @@ int HuffmanCodec::decode( int *raw,
 	int encodingFlag = source->readBit();
 
 	if (rawFill > rawCapacity)
-		FTL_THROW(StreamSemanticException, "Decoding buffer of insufficient size provided");
+		FTL_THROW(Exception, "Decoding buffer of insufficient size provided");
 
 	/** optional fallback to raw data transmission
 	  */

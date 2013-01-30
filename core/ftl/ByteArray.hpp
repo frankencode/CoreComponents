@@ -35,7 +35,7 @@ public:
 
 	inline static hook<ByteArray> create(int size = 0) { return new ByteArray(size); }
 	inline static hook<ByteArray> create(int size, char zero) { return new ByteArray(size, zero); }
-	inline static hook<ByteArray> create(const char *data, int size = -1) { return new ByteArray(data, size); }
+	inline static hook<ByteArray> copy(const char *data, int size = -1) { return new ByteArray(data, size); }
 	inline static hook<ByteArray> create(ByteArray *parent, int size) { return new ByteArray(parent, size); }
 	~ByteArray();
 

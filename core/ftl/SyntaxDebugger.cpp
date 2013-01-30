@@ -35,11 +35,8 @@ static void printChar(char ch) {
 			print("\\");
 		print("%%", ToAscii<char>::map(ch));
 	}
-	else if (ch < 256) {
-		print("\\%oct%", ToUnicode<char>::map(ch));
-	}
 	else {
-		print("\\x%hex%", ToUnicode<char>::map(ch));
+		print("\\%oct%", ToUnicode<char>::map(ch));
 	}
 }
 

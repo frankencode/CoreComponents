@@ -109,7 +109,7 @@ public:
 		return valueChanged_;
 	}
 
-	inline string toString() const { return format() << value_; }
+	inline operator string() const { return format() << value_; }
 
 	property *operator->() { return this; }
 	const property *operator->() const { return this; }

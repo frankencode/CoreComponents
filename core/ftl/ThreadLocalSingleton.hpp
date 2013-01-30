@@ -11,7 +11,7 @@
 
 #include "Instance.hpp"
 #include "hook.hpp"
-#include "TLO.hpp"
+#include "thread_local_hook.hpp"
 #include "LocalStatic.hpp"
 
 namespace ftl
@@ -23,7 +23,7 @@ class ThreadLocalSingleton
 public:
 	static SubClass *instance()
 	{
-		TLO<SubClass> &instance_ = localStatic< TLO<SubClass>, ThreadLocalSingleton<SubClass> >();
+		thread_local_hook<SubClass> &instance_ = localStatic< thread_local_hook<SubClass>, ThreadLocalSingleton<SubClass> >();
 		if (!instance_)
 			instance_ = new SubClass;
 		return instance_;

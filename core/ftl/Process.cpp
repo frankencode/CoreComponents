@@ -16,12 +16,12 @@
 #include <errno.h> // errno
 #ifdef __linux
 #include "File.hpp" // to read /proc
-#include "format.hpp"
 #endif
 #ifdef __MACH__
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #include <crt_externs.h> // _NSGetEnviron
 #endif
+#include "format.hpp"
 #include "Thread.hpp"
 #include "ProcessFactory.hpp"
 #include "Process.hpp"
@@ -271,7 +271,7 @@ void Process::forwardSignal(int signal)
 	Thread::self()->handleSignal(signal);
 }
 
-void Process::throwSignal(int signal, bool on)
+void Process::enableInterrupt(int signal, bool on)
 {
 	if (on) {
 		Thread::self();

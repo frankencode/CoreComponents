@@ -474,7 +474,7 @@ hook<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
 
 hook<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 {
-	hook<NetworkInterfaceList> list = new NetworkInterfaceList;
+	hook<NetworkInterfaceList> list = NetworkInterfaceList::create();
 
 	int mib[6];
 	mib[0] = CTL_NET;
@@ -557,7 +557,7 @@ hook<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 							label = SocketAddressEntry::create((struct sockaddr_in *)addr);
 						else if (addr->sa_family == AF_INET6)
 							label = SocketAddress::create((struct sockaddr_in6 *)addr);
-						if (!interface->addressList_) interface->addressList_ = new SocketAddressList;
+						if (!interface->addressList_) interface->addressList_ = SocketAddressList::create();
 						interface->addressList_->append(label);
 					}
 					if (addr->sa_family == AF_INET) {
