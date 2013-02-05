@@ -9,7 +9,6 @@
 #ifndef FTL_SEMAPHORE_HPP
 #define FTL_SEMAPHORE_HPP
 
-#include "atoms"
 #include "Mutex.hpp"
 #include "Condition.hpp"
 

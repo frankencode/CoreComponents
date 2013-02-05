@@ -11,7 +11,6 @@
 
 #include <sys/types.h> // pid_t
 #include <signal.h> // SIGTERM, etc.
-#include "atoms"
 #include "string.hpp"
 #include "Map.hpp"
 #include "SystemStream.hpp"

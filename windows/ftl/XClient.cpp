@@ -13,7 +13,7 @@
 #include <ftl/ByteEncoder.hpp>
 #include <ftl/ByteDecoder.hpp>
 #include <ftl/format.hpp>
-#include <ftl/stdio>
+#include <ftl/PrintDebug.hpp>
 #include "XAuthFile.hpp"
 #include "XClient.hpp"
 

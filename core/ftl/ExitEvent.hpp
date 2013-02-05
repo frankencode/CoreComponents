@@ -9,7 +9,6 @@
 #ifndef FTL_EXITEVENT_HPP
 #define FTL_EXITEVENT_HPP
 
-#include "atoms"
 #include "Singleton.hpp"
 #include "Event.hpp"
 #include "Process.hpp"

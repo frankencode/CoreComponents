@@ -12,7 +12,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <net/if.h> // IFF_UP, etc.
-#include "atoms"
 #include "SocketAddress.hpp"
 #include "SocketAddressEntry.hpp"
 

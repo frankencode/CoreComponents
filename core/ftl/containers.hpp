@@ -9,7 +9,7 @@
 #ifndef FTL_CONTAINERS_HPP
 #define FTL_CONTAINERS_HPP
 
-#include "atoms"
+#include "generics.hpp"
 
 namespace ftl
 {

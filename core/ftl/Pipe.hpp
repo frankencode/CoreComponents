@@ -9,7 +9,6 @@
 #ifndef FTL_PIPE_HPP
 #define FTL_PIPE_HPP
 
-#include "atoms"
 #include "SystemStream.hpp"
 
 namespace ftl

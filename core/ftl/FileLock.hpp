@@ -11,7 +11,6 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include "atoms"
 #include "File.hpp"
 
 namespace ftl

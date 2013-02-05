@@ -1,6 +1,7 @@
-#include <ftl/stdio>
-#include <ftl/threads>
-#include <ftl/syntax>
+#include <ftl/PrintDebug.hpp>
+#include <ftl/SpinLock.hpp>
+#include <ftl/Mutex.hpp>
+#include <ftl/Token.hpp>
 
 namespace ftl
 {

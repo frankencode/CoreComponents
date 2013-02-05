@@ -9,7 +9,6 @@
 #ifndef FTL_BITDECODER_HPP
 #define FTL_BITDECODER_HPP
 
-#include "atoms"
 #include "defaults.hpp"
 #include "Stream.hpp"
 

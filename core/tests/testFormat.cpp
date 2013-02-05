@@ -1,5 +1,5 @@
-#include <ftl/stdio>
-#include <ftl/utils>
+#include <ftl/PrintDebug.hpp>
+#include <ftl/format.hpp>
 
 namespace ftl
 {
@@ -19,15 +19,15 @@ int main()
 	}
 	{
 		const double x[] = {
-			1., 0.1, 1.1, 0., 1.234e10, 1e-308, nan, inf 
+			1., 0.1, 1.1, 0., 1.234e10, 1e-308, nan, inf
 			-1./3., -0.55, 0.49, 15, -1.5, 1.1111111111,
 			1.1111111111111111111111111111111,
 			1e-16
 		};
-		
+
 		{
 			string tmpl = "%dec:15:5.:'_'%\n"; // also to be tested: 5.5, 5.e, 10:5. ...etc
-			
+
 			for (int i = 0, n = sizeof(x) / sizeof(x[0]); i < n; ++i)
 				print(format(tmpl) << x[i]);
 		}
@@ -42,7 +42,7 @@ int main()
 			print(format("%.5e%") << x); printf(" = %g\n", x);
 		}
 	}*/
-	
+
 	return 0;
 }
 

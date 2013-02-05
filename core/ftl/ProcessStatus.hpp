@@ -10,7 +10,6 @@
 #define FTL_PROCESSSTATUS_HPP
 
 #include <sys/types.h>
-#include "atoms"
 #include "string.hpp"
 
 namespace ftl
@@ -20,7 +19,7 @@ class ProcessStatus: public Instance
 {
 public:
 	ProcessStatus(pid_t processId);
-	
+
 	pid_t processId() const;
 	pid_t parentProcessId() const;
 	gid_t processGroupId() const;
@@ -29,7 +28,7 @@ public:
 	string loginName() const;
 	string commandName() const;
 	char processStatus() const;
-	
+
 private:
 	pid_t processId_;
 	pid_t parentProcessId_;

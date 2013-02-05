@@ -1,9 +1,0 @@
-#ifndef FTL_STRINGS
-#define FTL_STRINGS
-
-#include "string.hpp"
-#include "format.hpp"
-#include "pattern.hpp"
-#include "variant.hpp"
-
-#endif // FTL_STRINGS

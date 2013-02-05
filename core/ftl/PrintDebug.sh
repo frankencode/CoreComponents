@@ -20,9 +20,8 @@ cat <<EOD
 #ifndef FTL_PRINTDEBUG_HPP
 #define FTL_PRINTDEBUG_HPP
 
-#include "atoms"
-#include "String.hpp"
-#include "Format.hpp"
+#include "string.hpp"
+#include "format.hpp"
 #include "StandardStreams.hpp"
 
 namespace ftl

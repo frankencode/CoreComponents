@@ -1,5 +1,6 @@
-#include <ftl/stdio>
-#include <ftl/process>
+#include <ftl/PrintDebug.hpp>
+#include <ftl/ProcessStatus.hpp>
+#include <ftl/Process.hpp>
 
 namespace ftl
 {

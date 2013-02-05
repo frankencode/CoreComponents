@@ -1,5 +1,6 @@
-#include <ftl/stdio>
-#include <ftl/process>
+#include <ftl/PrintDebug.hpp>
+#include <ftl/Glob.hpp>
+#include <ftl/Dir.hpp>
 
 int main(int argc, char **argv)
 {

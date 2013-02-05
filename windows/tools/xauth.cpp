@@ -1,5 +1,5 @@
 #include <ftl/XAuthFile.hpp>
-#include <ftl/stdio>
+#include <ftl/PrintDebug.hpp>
 
 int main() {
 	using namespace ftl;

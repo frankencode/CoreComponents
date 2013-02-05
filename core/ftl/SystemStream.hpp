@@ -9,7 +9,6 @@
 #ifndef FTL_SYSTEMSTREAM_HPP
 #define FTL_SYSTEMSTREAM_HPP
 
-#include "atoms"
 #include "Stream.hpp"
 #include "Time.hpp"
 

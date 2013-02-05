@@ -9,7 +9,6 @@
 #ifndef FTL_STREAMSOCKET_HPP
 #define FTL_STREAMSOCKET_HPP
 
-#include "atoms"
 #include "defaults.hpp"
 #include "Time.hpp"
 #include "SystemStream.hpp"

@@ -13,7 +13,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "atoms"
 #include "string.hpp"
 #include "SystemStream.hpp"
 #include "FileStatus.hpp"

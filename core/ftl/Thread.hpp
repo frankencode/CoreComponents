@@ -11,7 +11,6 @@
 
 #include <pthread.h>
 #include <signal.h>
-#include "atoms"
 #include "Time.hpp"
 #include "SignalSet.hpp"
 #include "thread_local_hook.hpp"

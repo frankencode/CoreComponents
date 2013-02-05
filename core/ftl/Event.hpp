@@ -9,7 +9,6 @@
 #ifndef FTL_EVENT_HPP
 #define FTL_EVENT_HPP
 
-#include "atoms"
 #include "List.hpp"
 
 namespace ftl

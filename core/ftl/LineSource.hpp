@@ -9,7 +9,6 @@
 #ifndef FTL_LINESOURCE_HPP
 #define FTL_LINESOURCE_HPP
 
-#include "atoms"
 #include "defaults.hpp"
 #include "string.hpp"
 #include "Stream.hpp"

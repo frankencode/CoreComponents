@@ -1,5 +1,5 @@
-#include <ftl/stdio>
-#include <ftl/sockets>
+#include <ftl/PrintDebug.hpp>
+#include <ftl/NetworkInterface.hpp>
 
 namespace ftl
 {
