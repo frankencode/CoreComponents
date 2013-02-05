@@ -30,7 +30,7 @@ XClient::XClient()
 	  messageFiltersMutex_(Mutex::create()),
 	  messageFilters_(MessageFilters::create())
 {
-	string host = 0;
+	string host = "";
 	int display = 0;
 
 	hook<SocketAddress> address;

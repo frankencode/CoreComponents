@@ -342,7 +342,7 @@ bool BuildPlan::analyse()
 		if (options_ & Verbose)
 			error()->writeLine(beautifyCommand(job->command()));
 		if (job->status() != 0) {
-			error()->writeLine(job->outputText());
+			output()->writeLine(job->outputText());
 			break;
 		}
 		hook<Module> module = toolChain_->finishAnalyseJob(this, job);
