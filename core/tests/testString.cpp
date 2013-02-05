@@ -4,6 +4,33 @@
 namespace ftl
 {
 
+void testRef1(string s)
+{
+	print("testRef1(): s->refCount() = %% (s = '%%')\n", s->refCount(), s);
+}
+
+void testRef2(const string &s)
+{
+	print("testRef2(): s->refCount() = %% (s = '%%')\n", s->refCount(), s);
+}
+
+inline void testRef3(string s)
+{
+	print("testRef3(): s->refCount() = %% (s = '%%')\n", s->refCount(), s);
+}
+
+typedef ByteArray String;
+
+inline void testRef4(String *s)
+{
+	print("testRef4(): s->refCount() == %% (s = '%%')\n", s->refCount(), s);
+}
+
+inline void testRef5(const string s)
+{
+	print("testRef5(): s->refCount() == %% (s = '%%')\n", s->refCount(), s);
+}
+
 int main(int argc, char **argv)
 {
 	{
@@ -46,6 +73,14 @@ int main(int argc, char **argv)
 		string s = "..Привет, Привет!";
 		s->replaceInsitu("Привет", "Hello");
 		print("s = \"%%\"\n", s);
+	}
+	{
+		string s = "test 1, 2, 3...";
+		testRef1(s);
+		testRef2(s);
+		testRef3(s);
+		testRef4(s);
+		testRef5(s);
 	}
 	return 0;
 }

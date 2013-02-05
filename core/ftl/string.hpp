@@ -30,7 +30,8 @@ public:
 	string(int size, char zero): Super(ByteArray::create(size, zero)) {
 		FTL_ASSERT(0 <= zero);
 	}
-	string(const hook<ByteArray> &bytes): Super(bytes) {}
+	string(const hook<ByteArray> &b): Super(b) {}
+	string(ByteArray *b): Super(b) {}
 	string(const string &b): Super(b.Super::get()) {}
 	string(const format &b);
 	string(const variant &b);
@@ -56,7 +57,7 @@ public:
 private:
 	friend class ByteArray;
 
-	explicit string(ByteArray *bytes): Super(bytes) {}
+	// explicit string(ByteArray *bytes): Super(bytes) {}
 };
 
 inline hook<StringList> operator+(const string &a, const string &b) {

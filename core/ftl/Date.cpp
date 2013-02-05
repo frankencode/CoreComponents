@@ -28,7 +28,7 @@ inline bool herschelLeapYear(int y)
 	return leapYear(y) && (y % 4000 != 0);
 }
 
-/** Days in a year are arbitrary distributed but weighted to make the
+/** Days in a year are arbitrarily distributed but weighted to make the
   * average length of a year match the length of the solar year.
   * Interestingly the length of the year is measured in days, which is a duration
   * depending on Earth's angular velocity.
