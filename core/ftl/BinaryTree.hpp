@@ -9,8 +9,6 @@
 #ifndef FTL_BINARYTREE_HPP
 #define FTL_BINARYTREE_HPP
 
-#include "atoms"
-
 namespace ftl
 {
 

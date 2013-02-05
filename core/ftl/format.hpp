@@ -9,7 +9,6 @@
 #ifndef FTL_FORMAT_HPP
 #define FTL_FORMAT_HPP
 
-#include "atoms"
 #include "string.hpp"
 #include "variant.hpp"
 #include "rounding.hpp"

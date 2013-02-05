@@ -15,7 +15,6 @@
 #include <sys/socket.h> // connect
 #include <sys/un.h> // sockaddr_un
 
-#include "atoms"
 #include "string.hpp"
 #include "List.hpp"
 

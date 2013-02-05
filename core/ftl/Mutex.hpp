@@ -10,7 +10,7 @@
 #define FTL_MUTEX_HPP
 
 #include <pthread.h>
-#include "atoms"
+#include "generics.hpp"
 
 namespace ftl
 {

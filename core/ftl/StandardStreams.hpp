@@ -9,7 +9,6 @@
 #ifndef FTL_STANDARDSTREAMS_HPP
 #define FTL_STANDARDSTREAMS_HPP
 
-#include "atoms"
 #include "SystemStream.hpp"
 #include "LineSource.hpp"
 #include "LineSink.hpp"

@@ -9,7 +9,6 @@
 #ifndef FTL_LINESINK_HPP
 #define FTL_LINESINK_HPP
 
-#include "atoms"
 #include "defaults.hpp"
 #include "string.hpp"
 #include "Stream.hpp"

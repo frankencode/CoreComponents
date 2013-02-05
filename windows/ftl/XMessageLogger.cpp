@@ -7,7 +7,7 @@
   * 2 of the License, or (at your option) any later version.
   */
 
-#include <ftl/stdio>
+#include <ftl/StandardStreams.hpp>
 #include "XMessageFilter.hpp"
 #include "XMessageLogger.hpp"
 

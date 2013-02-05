@@ -9,7 +9,6 @@
 #ifndef FTL_THREADEXITEVENT_HPP
 #define FTL_THREADEXITEVENT_HPP
 
-#include "atoms"
 #include "ThreadLocalSingleton.hpp"
 #include "Event.hpp"
 #include "Process.hpp"

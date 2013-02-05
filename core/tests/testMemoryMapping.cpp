@@ -1,6 +1,7 @@
-#include <ftl/stdio>
-#include <ftl/process>
-#include <ftl/threads>
+#include <ftl/PrintDebug.hpp>
+#include <ftl/ProcessFactory.hpp>
+#include <ftl/FileLock.hpp>
+#include <ftl/Thread.hpp>
 
 namespace ftl
 {

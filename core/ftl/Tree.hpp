@@ -9,7 +9,7 @@
 #ifndef FTL_TREE_HPP
 #define FTL_TREE_HPP
 
-#include "atoms"
+#include "Instance.hpp"
 
 namespace ftl
 {

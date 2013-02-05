@@ -1,7 +1,7 @@
 #include <ftl/XClient.hpp>
 #include <ftl/XMessageLogger.hpp>
 #include <ftl/Process.hpp>
-#include <ftl/stdio>
+#include <ftl/PrintDebug.hpp>
 
 int main()
 {

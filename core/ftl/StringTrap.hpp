@@ -9,8 +9,6 @@
 #ifndef FTL_STRINGTRAP_HPP
 #define FTL_STRINGTRAP_HPP
 
-#include "atoms"
-
 namespace ftl
 {
 

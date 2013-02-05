@@ -11,7 +11,6 @@
 
 #include <sys/types.h>
 #include <pwd.h>
-#include "atoms"
 #include "string.hpp"
 
 namespace ftl

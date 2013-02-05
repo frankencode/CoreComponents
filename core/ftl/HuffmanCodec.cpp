@@ -11,10 +11,10 @@
 // #define FTL_HUFFMANCODEC_DEBUG_STATISTICS
 
 #ifdef FTL_HUFFMANCODEC_PROFILING
-#include "streams"
+#include "StandardStreams.hpp"
 #else
 #ifdef FTL_HUFFMANCODEC_DEBUG_STATISTICS
-#include "streams"
+#include "StandardStreams.hpp"
 #endif
 #endif
 #include "HuffmanCodec.hpp"

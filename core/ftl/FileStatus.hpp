@@ -11,7 +11,6 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "atoms"
 #include "Time.hpp"
 #include "string.hpp"
 #include "SystemStream.hpp"

@@ -9,7 +9,6 @@
 #ifndef FTL_HUFFMANCODEC_HPP
 #define FTL_HUFFMANCODEC_HPP
 
-#include "atoms"
 #include "BitEncoder.hpp"
 #include "BitDecoder.hpp"
 #include "Heap.hpp"

@@ -1,6 +1,0 @@
-#ifndef FTL_SYNTAX
-#define FTL_SYNTAX
-
-#include "SyntaxDefinition.hpp"
-
-#endif // FTL_SYNTAX

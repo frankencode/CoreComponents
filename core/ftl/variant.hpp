@@ -10,7 +10,6 @@
 #define FTL_VARIANT_HPP
 
 #include <new>
-#include "atoms"
 #include "string.hpp"
 
 namespace ftl

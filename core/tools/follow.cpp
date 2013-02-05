@@ -1,5 +1,6 @@
-#include <ftl/stdio>
-#include <ftl/process>
+#include <ftl/PrintDebug.hpp>
+#include <ftl/Thread.hpp>
+#include <ftl/File.hpp>
 
 int main(int argc, char **argv)
 {
@@ -18,7 +19,7 @@ int main(int argc, char **argv)
 				rawOutput()->write(buf->data(), nr);
 			}
 		}
-		Process::sleep(1);
+		Thread::sleep(1);
 	}
 
 	return 0;

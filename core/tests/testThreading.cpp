@@ -1,7 +1,8 @@
-#include <ftl/stdio>
-#include <ftl/threads>
-#include <ftl/utils>
+#include <ftl/PrintDebug.hpp>
+#include <ftl/Semaphore.hpp>
 #include <ftl/System.hpp>
+#include <ftl/ThreadFactory.hpp>
+#include <pthread.h>
 
 namespace ftl
 {
@@ -107,7 +108,9 @@ int main()
 	print("\n");
 
 	print("System::concurrency() = %%\n", System::concurrency());
+	#ifdef PTHREAD_KEYS_MAX
 	print("PTHREAD_KEYS_MAX = %%\n", PTHREAD_KEYS_MAX);
+	#endif
 
 	return 0;
 }

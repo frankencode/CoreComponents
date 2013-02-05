@@ -9,7 +9,6 @@
 #ifndef FTL_SOCKETADDRESSENTRY_HPP
 #define FTL_SOCKETADDRESSENTRY_HPP
 
-#include "atoms"
 #include "SocketAddress.hpp"
 
 namespace ftl

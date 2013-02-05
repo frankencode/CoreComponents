@@ -1,5 +1,5 @@
-#include <ftl/stdio>
-#include <ftl/misc>
+#include <ftl/PrintDebug.hpp>
+#include <ftl/LinkInfo.hpp>
 
 int main()
 {
