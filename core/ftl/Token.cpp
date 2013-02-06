@@ -43,8 +43,8 @@ void Token::meld(Token *root0, Token *root1)
 	if (!root1->firstChild()) return;
 
 	Token result_, *result = &result_;
-	hook<Token> token0 = root0->firstChild();
-	hook<Token> token1 = root1->firstChild();
+	Ref<Token> token0 = root0->firstChild();
+	Ref<Token> token1 = root1->firstChild();
 
 	// debug("Token::meld(): [%%: %%], [%%: %%]\n", root0->ruleName_, root0->countChildren(), root1->ruleName_, root1->countChildren());
 
@@ -59,7 +59,7 @@ void Token::meld(Token *root0, Token *root1)
 
 		if (take0) {
 			// debug("p0 [%%, %%, %%]\n", token0->ruleName_, token0->i0_, token0->i1_);
-			hook<Token> next0 = token0->nextSibling();
+			Ref<Token> next0 = token0->nextSibling();
 			Token *previousResult = result->lastChild();
 			token0->unlink();
 			result->insertChild(token0, previousResult);
@@ -69,7 +69,7 @@ void Token::meld(Token *root0, Token *root1)
 		}
 		else if (take1) {
 			// debug("p1 [%%, %%, %%]\n", token1->ruleName_, token1->i0_, token1->i1_);
-			hook<Token> next1 = token1->nextSibling();
+			Ref<Token> next1 = token1->nextSibling();
 			Token *previousResult = result->lastChild();
 			token1->unlink();
 			if (previousResult) {

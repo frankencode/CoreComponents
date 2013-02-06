@@ -105,15 +105,15 @@ void Date::init(Time time)
 	tm_year = year - 1900;
 }
 
-hook<Date> Date::localTime()
+Ref<Date> Date::localTime()
 {
 	return localTime(Time::now());
 }
 
-hook<Date> Date::localTime(Time time)
+Ref<Date> Date::localTime(Time time)
 {
 	Date utc(time);
-	hook<Date> local = new Date;
+	Ref<Date> local = new Date;
 	time_t seconds = time.sec();
 	localtime_r(&seconds, local);
 	Time offset = local->time() - utc.time();

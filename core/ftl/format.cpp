@@ -26,7 +26,7 @@ format::format(string format)
 		int nph = 0; // number of placeholders
 
 		while (true) {
-			hook<PlaceHolder> ph = new PlaceHolder;
+			Ref<PlaceHolder> ph = new PlaceHolder;
 
 			if (!specifier->find(format, &i0, &i1, &ph->w_, &ph->wi_, &ph->wf_, &ph->base_, &ph->exp_, &ph->blank_)) break;
 
@@ -79,9 +79,9 @@ format &format::operator<<(const string &s)
 	return *this;
 }
 
-hook<format::PlaceHolder> format::nextPlaceHolder()
+Ref<format::PlaceHolder> format::nextPlaceHolder()
 {
-	hook<PlaceHolder> ph = placeHolders_;
+	Ref<PlaceHolder> ph = placeHolders_;
 	if (placeHolders_->next_)
 		placeHolders_ = placeHolders_->next_;
 	else
@@ -114,10 +114,10 @@ format &format::operator<<(const variant &x)
 
 void format::printInt(uint64_t x, int sign)
 {
-	hook<PlaceHolder> ph = nextPlaceHolder();
+	Ref<PlaceHolder> ph = nextPlaceHolder();
 
 	int buf[MaxDigits];
-	hook< Stack<int> > digits = Stack<int>::create(buf, MaxDigits);
+	Ref< Stack<int> > digits = Stack<int>::create(buf, MaxDigits);
 
 	digits->clear();
 	if (x == 0) {
@@ -164,10 +164,10 @@ void format::printInt(uint64_t x, int sign)
 
 void format::printFloat(float64_t x, bool half)
 {
-	hook<PlaceHolder> ph = nextPlaceHolder();
+	Ref<PlaceHolder> ph = nextPlaceHolder();
 
 	int buf[MaxDigits];
-	hook< Stack<int> > digits = Stack<int>::create(buf, MaxDigits);
+	Ref< Stack<int> > digits = Stack<int>::create(buf, MaxDigits);
 
 	int wi = (ph->wi_ == 0) ? 1 : ph->wi_;
 	int wf = ph->wf_;

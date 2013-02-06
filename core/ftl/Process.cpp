@@ -33,14 +33,14 @@ extern "C" char **environ;
 namespace ftl
 {
 
-hook<Process> Process::start(string command, int ioPolicy)
+Ref<Process> Process::start(string command, int ioPolicy)
 {
-	hook<ProcessFactory> factory = ProcessFactory::create();
+	Ref<ProcessFactory> factory = ProcessFactory::create();
 	factory->setIoPolicy(ioPolicy);
 	return start(command, factory);
 }
 
-hook<Process> Process::start(string command, ProcessFactory *factory)
+Ref<Process> Process::start(string command, ProcessFactory *factory)
 {
 	factory->setCommand(command);
 	return factory->produce();
@@ -206,13 +206,13 @@ void Process::unsetEnv(string key)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-hook<EnvMap> Process::envMap()
+Ref<EnvMap> Process::envMap()
 {
 	char **env = environ();
-	hook<EnvMap> map = EnvMap::create();
+	Ref<EnvMap> map = EnvMap::create();
 	int i = 0;
 	while (env[i] != 0) {
-		hook<StringList> parts = string(env[i])->split("=");
+		Ref<StringList> parts = string(env[i])->split("=");
 		if (parts->length() == 2)
 			map->insert(parts->at(0), parts->at(1));
 		++i;

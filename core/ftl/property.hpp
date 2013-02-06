@@ -48,7 +48,7 @@ template<class Value>
 class Signal: public Instance
 {
 public:
-	inline static hook<Signal> create() { return new Signal; }
+	inline static Ref<Signal> create() { return new Signal; }
 
 	void emit(Value value) {
 		for (int i = 0; i < callbacks()->length(); ++i) {
@@ -60,7 +60,7 @@ public:
 
 	template<class Recipient>
 	void connect(Recipient *recipient, void (Recipient::* method)(Value)) {
-		hook<CallbackList> list;
+		Ref<CallbackList> list;
 		if (!callbacks()->lookup(recipient, &list)) {
 			list = CallbackList::create();
 			callbacks()->insert(recipient, list);
@@ -74,8 +74,8 @@ public:
 
 private:
 	friend class Connection;
-	typedef List< hook< Callback<Value> > > CallbackList;
-	typedef Map<void*, hook<CallbackList> > CallbackListByRecipient;
+	typedef List< Ref< Callback<Value> > > CallbackList;
+	typedef Map<void*, Ref<CallbackList> > CallbackListByRecipient;
 
 	Signal() {}
 
@@ -84,7 +84,7 @@ private:
 		return callbacks_;
 	}
 
-	hook<CallbackListByRecipient> callbacks_;
+	Ref<CallbackListByRecipient> callbacks_;
 };
 
 template<class T>
@@ -115,7 +115,7 @@ public:
 	const property *operator->() const { return this; }
 
 private:
-	hook< Signal<T> > valueChanged_;
+	Ref< Signal<T> > valueChanged_;
 	T value_;
 };
 

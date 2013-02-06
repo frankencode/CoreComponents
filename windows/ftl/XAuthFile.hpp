@@ -26,7 +26,7 @@ public:
 	string data;
 };
 
-typedef List< hook<XAuthRecord> > XAuthRecords;
+typedef List< Ref<XAuthRecord> > XAuthRecords;
 
 class XAuthFile: public Instance
 {
@@ -37,7 +37,7 @@ public:
 
 private:
 	string path_;
-	hook<XAuthRecords> records_;
+	Ref<XAuthRecords> records_;
 };
 
 } // namespace ftl

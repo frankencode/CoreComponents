@@ -14,7 +14,7 @@ void printStatus(string path)
 	print("File::access(\"%%\", File::Write) = %%\n", path, File::access(path, File::Write));
 	print("File::access(\"%%\", File::Execute) = %%\n", path, File::access(path, File::Execute));
 	if (File::exists(path)) {
-		hook<FileStatus> status = File::status(path);
+		Ref<FileStatus> status = File::status(path);
 		if (status) {
 			print("status->type() = %oct%\n", status->type());
 			print("status->mode() = %oct%\n", status->mode());

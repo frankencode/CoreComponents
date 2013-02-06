@@ -10,7 +10,7 @@
 #define FTL_THREADLOCALSINGLETON_HPP
 
 #include "Instance.hpp"
-#include "hook.hpp"
+#include "Ref.hpp"
 #include "thread_local_hook.hpp"
 #include "LocalStatic.hpp"
 

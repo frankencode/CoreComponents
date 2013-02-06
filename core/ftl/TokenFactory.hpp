@@ -39,8 +39,8 @@ public:
 	inline Token *rootToken() const { return rootToken_; }
 
 private:
-	hook<Token> rootToken_;
-	hook<Token> previous_;
+	Ref<Token> rootToken_;
+	Ref<Token> previous_;
 };
 
 } // namespace ftl

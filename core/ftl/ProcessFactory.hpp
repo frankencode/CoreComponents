@@ -22,7 +22,7 @@ class SystemStream;
 class ProcessFactory: public Instance
 {
 public:
-	inline static hook<ProcessFactory> create() {
+	inline static Ref<ProcessFactory> create() {
 		return new ProcessFactory;
 	}
 
@@ -65,7 +65,7 @@ public:
 
 	void daemonize();
 
-	hook<Process> produce();
+	Ref<Process> produce();
 
 protected:
 	virtual int incarnate();
@@ -77,19 +77,19 @@ private:
 	string workingDirectory_;
 
 	string execPath_;
-	hook<StringList> arguments_;
-	hook<EnvMap> envMap_;
+	Ref<StringList> arguments_;
+	Ref<EnvMap> envMap_;
 
-	hook<SignalSet> signalMask_;
+	Ref<SignalSet> signalMask_;
 
 	bool hasFileCreationMask_;
 	int fileCreationMask_;
 
 	string command_;
 
-	hook<SystemStream> rawInput_;
-	hook<SystemStream> rawOutput_;
-	hook<SystemStream> rawError_;
+	Ref<SystemStream> rawInput_;
+	Ref<SystemStream> rawOutput_;
+	Ref<SystemStream> rawError_;
 };
 
 } // namespace ftl

@@ -11,7 +11,7 @@ namespace mach
 class JobServer: public Thread
 {
 public:
-	inline static hook<JobServer> start(JobChannel *requestChannel, JobChannel *replyChannel) {
+	inline static Ref<JobServer> start(JobChannel *requestChannel, JobChannel *replyChannel) {
 		return new JobServer(requestChannel, replyChannel);
 	}
 
@@ -20,8 +20,8 @@ private:
 	~JobServer();
 	virtual void run();
 
-	hook<JobChannel> requestChannel_;
-	hook<JobChannel> replyChannel_;
+	Ref<JobChannel> requestChannel_;
+	Ref<JobChannel> replyChannel_;
 };
 
 } // namespace mach

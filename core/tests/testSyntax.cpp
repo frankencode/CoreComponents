@@ -68,7 +68,7 @@ public:
 
 	double eval(string text)
 	{
-		hook<Token> rootToken = match(text);
+		Ref<Token> rootToken = match(text);
 		double value = nan;
 
 		if (rootToken) {
@@ -160,13 +160,13 @@ private:
 
 int main()
 {
-	hook<SyntaxDebugger> debugger =
+	Ref<SyntaxDebugger> debugger =
 	#ifdef NDEBUG
 		0;
 	#else
 		SyntaxDebugger::create();
 	#endif
-	hook<Expression> expression = new Expression(debugger);
+	Ref<Expression> expression = new Expression(debugger);
 
 	Time dt = Time::now();
 

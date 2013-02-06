@@ -20,10 +20,10 @@ class Thread;
 class SignalSet: public Instance
 {
 public:
-	inline static hook<SignalSet> createEmpty() {
+	inline static Ref<SignalSet> createEmpty() {
 		return new SignalSet(Empty);
 	}
-	inline static hook<SignalSet> createFull() {
+	inline static Ref<SignalSet> createFull() {
 		return new SignalSet(Full);
 	}
 

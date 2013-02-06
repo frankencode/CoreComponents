@@ -19,7 +19,7 @@ namespace ftl
 class LineSink: public Sink<string>
 {
 public:
-	inline static hook<LineSink> open(Stream *stream, const char *eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
+	inline static Ref<LineSink> open(Stream *stream, const char *eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
 		return new LineSink(stream, eol, maxLineLength);
 	}
 
@@ -37,12 +37,12 @@ protected:
 	void feed(const char *data, int size);
 	void flush();
 
-	hook<Stream> stream_;
+	Ref<Stream> stream_;
 	string eol_;
 	string prefix_;
 
 	int bufFill_;
-	hook<ByteArray> buf_;
+	Ref<ByteArray> buf_;
 };
 
 } // namespace ftl

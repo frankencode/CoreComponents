@@ -17,7 +17,7 @@ using namespace ftl;
 
 class BuildPlan;
 
-typedef List< hook<BuildPlan> > BuildPlanList;
+typedef List< Ref<BuildPlan> > BuildPlanList;
 
 FTL_EXCEPTION(BuildPlanException, Exception);
 
@@ -42,7 +42,7 @@ public:
 		GlobalOptions = Debug|Release|DryRun|Blindfold|Bootstrap|Verbose|OptimizeSpeed|OptimizeSize
 	};
 
-	static hook<BuildPlan> create(int argc, char **argv);
+	static Ref<BuildPlan> create(int argc, char **argv);
 
 	inline ToolChain *toolChain() const { return toolChain_; }
 	inline string projectPath() const { return projectPath_; }
@@ -75,10 +75,10 @@ public:
 	bool rmdir(string path);
 	bool symlink(string path, string newPath);
 	bool unlink(string path);
-	hook<FileStatus> fileStatus(string path);
+	Ref<FileStatus> fileStatus(string path);
 
 private:
-	hook<BuildPlan> create(ToolChain *toolChain, string projectPath, int globalOptions);
+	Ref<BuildPlan> create(ToolChain *toolChain, string projectPath, int globalOptions);
 
 	typedef PrefixTree<char, BuildPlan *> BuildMap;
 
@@ -92,10 +92,10 @@ private:
 	bool build();
 	void clean();
 
-	hook<ToolChain> toolChain_;
+	Ref<ToolChain> toolChain_;
 	string projectPath_;
 	string modulePath_;
-	hook<Config> recipe_;
+	Ref<Config> recipe_;
 
 	string name_;
 	string version_;
@@ -103,15 +103,15 @@ private:
 	int speedOptimizationLevel_;
 	int sizeOptimizationLevel_;
 
-	hook<StringList> includePaths_;
-	hook<StringList> libraryPaths_;
-	hook<StringList> libraries_;
-	hook<StringList> sources_;
-	hook<ModuleList> modules_;
+	Ref<StringList> includePaths_;
+	Ref<StringList> libraryPaths_;
+	Ref<StringList> libraries_;
+	Ref<StringList> sources_;
+	Ref<ModuleList> modules_;
 
-	hook<BuildPlanList> prequisites_;
+	Ref<BuildPlanList> prequisites_;
 
-	hook<BuildMap> buildMap_;
+	Ref<BuildMap> buildMap_;
 	string sourcePrefix_;
 
 	bool prepareComplete_;

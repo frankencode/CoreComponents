@@ -10,7 +10,7 @@ int echo(int argc, char **argv);
 class TestFactory: public ProcessFactory
 {
 public:
-	inline static hook<TestFactory> create() {
+	inline static Ref<TestFactory> create() {
 		return new TestFactory;
 	}
 	int incarnate() {
@@ -27,8 +27,8 @@ int main(int argc, char **argv)
 	{
 		print("(1) Worker clone\n\n");
 
-		hook<ProcessFactory> factory = TestFactory::create();
-		hook<Process> worker = factory->produce();
+		Ref<ProcessFactory> factory = TestFactory::create();
+		Ref<Process> worker = factory->produce();
 		int ret = worker->wait();
 		print("ret = %%\n", ret);
 		print("\n");
@@ -37,14 +37,14 @@ int main(int argc, char **argv)
 	{
 		print("(2) I/O Redirection, passing of arguments and environment variables\n\n");
 
-		hook<ProcessFactory> factory = ProcessFactory::create();
+		Ref<ProcessFactory> factory = ProcessFactory::create();
 		factory->setExecPath(argv[0]);
 		factory->setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
 		factory->arguments()->append(argv[0]);
 		factory->arguments()->append("--echo 123");
 		factory->envMap()->establish("Hello", "World!");
 
-		hook<Process> process = factory->produce();
+		Ref<Process> process = factory->produce();
 
 		print("Created child process with pid = %%\n", unsigned(process->id()));
 
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 
 int echo(int argc, char **argv)
 {
-	hook<StringList> commandLine = StringList::create();
+	Ref<StringList> commandLine = StringList::create();
 	for (int i = 0; i < argc; ++i)
 		commandLine->append(argv[i]);
 	print("Process::cwd() = \"%%\"\n", Process::cwd());

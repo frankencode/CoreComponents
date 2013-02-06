@@ -20,22 +20,22 @@ namespace ftl
 class format;
 class variant;
 
-class string: public hook<ByteArray>
+class string: public Ref<ByteArray>
 {
 public:
-	typedef hook<ByteArray> Super;
+	typedef Ref<ByteArray> Super;
 
 	string(): Super(ByteArray::empty()) {}
 	explicit string(int size): Super(ByteArray::create(size)) {}
 	string(int size, char zero): Super(ByteArray::create(size, zero)) {
 		FTL_ASSERT(0 <= zero);
 	}
-	string(const hook<ByteArray> &b): Super(b) {}
+	string(const Ref<ByteArray> &b): Super(b) {}
 	string(ByteArray *b): Super(b) {}
 	string(const string &b): Super(b.Super::get()) {}
 	string(const format &b);
 	string(const variant &b);
-	string(hook<StringList> parts);
+	string(Ref<StringList> parts);
 
 	string(const char *data, int size = -1): Super(ByteArray::copy(data, size)) {}
 
@@ -56,16 +56,14 @@ public:
 
 private:
 	friend class ByteArray;
-
-	// explicit string(ByteArray *bytes): Super(bytes) {}
 };
 
-inline hook<StringList> operator+(const string &a, const string &b) {
-	hook<StringList> l = StringList::create();
+inline Ref<StringList> operator+(const string &a, const string &b) {
+	Ref<StringList> l = StringList::create();
 	*l << a << b;
 	return l;
 }
-inline hook<StringList> operator+(hook<StringList> &a, const string &b) { a << b; return a; }
+inline Ref<StringList> operator+(Ref<StringList> &a, const string &b) { a << b; return a; }
 
 inline bool operator< (const string &a, const string &b) { return str::cmp(a->data(), b->data()) <  0; }
 inline bool operator==(const string &a, const string &b) { return str::cmp(a->data(), b->data()) == 0; }

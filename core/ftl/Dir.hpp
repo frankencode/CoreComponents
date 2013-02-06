@@ -20,8 +20,8 @@ namespace ftl
 class Dir: public Source<string>
 {
 public:
-	inline static hook<Dir> open(string path) { return new Dir(path); }
-	static hook<Dir> tryOpen(string path);
+	inline static Ref<Dir> open(string path) { return new Dir(path); }
+	static Ref<Dir> tryOpen(string path);
 
 	string path() const;
 	string path(string name) const;

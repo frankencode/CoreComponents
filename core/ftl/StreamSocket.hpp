@@ -20,7 +20,7 @@ namespace ftl
 class StreamSocket: public SystemStream
 {
 public:
-	inline static hook<StreamSocket> create(SocketAddress *address, int fd = -1) {
+	inline static Ref<StreamSocket> create(SocketAddress *address, int fd = -1) {
 		return new StreamSocket(address, fd);
 	}
 
@@ -29,7 +29,7 @@ public:
 	void bind();
 	void listen(int backlog = FTL_DEFAULT_BACKLOG);
 	bool readyAccept(Time idleTimeout);
-	hook<StreamSocket> accept();
+	Ref<StreamSocket> accept();
 	void connect();
 	bool established(Time idleTimeout);
 	void shutdown(int how = SHUT_RDWR);
@@ -44,7 +44,7 @@ public:
 
 protected:
 	StreamSocket(SocketAddress *address, int fd);
-	hook<SocketAddress> address_;
+	Ref<SocketAddress> address_;
 	bool connected_;
 };
 

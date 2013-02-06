@@ -285,8 +285,8 @@ PatternCompiler::PatternCompiler()
 
 void PatternCompiler::compile(ByteArray *text, SyntaxDefinition *definition)
 {
-	hook<SyntaxState> state = newState();
-	hook<Token> token = match(text, 0, state);
+	Ref<SyntaxState> state = newState();
+	Ref<Token> token = match(text, 0, state);
 	if ((!token) || (token->length() < text->length())) {
 		string reason = "Syntax error";
 		int pos = token->length();

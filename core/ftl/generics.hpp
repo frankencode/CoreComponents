@@ -10,7 +10,7 @@
 #define FTL_GENERICS_HPP
 
 #include "Instance.hpp"
-#include "hook.hpp"
+#include "Ref.hpp"
 
 namespace ftl
 {
@@ -57,7 +57,7 @@ template<class T>
 class Clonable: public T
 {
 public:
-	virtual hook<T> clone() const = 0;
+	virtual Ref<T> clone() const = 0;
 };
 
 template<class T>
@@ -125,7 +125,7 @@ private:
 class Range: public Instance
 {
 public:
-	inline static hook<Range> create(int i0 = 0, int i1 = -1) { return new Range(i0, i1); }
+	inline static Ref<Range> create(int i0 = 0, int i1 = -1) { return new Range(i0, i1); }
 
 	inline int i0() const { return i0_; }
 	inline int i1() const { return i1_; }

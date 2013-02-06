@@ -33,10 +33,10 @@ public:
 		Sat = 6
 	};
 
-	inline static hook<Date> create() {
+	inline static Ref<Date> create() {
 		return new Date;
 	}
-	inline static hook<Date> create(Time time) {
+	inline static Ref<Date> create(Time time) {
 		return new Date(time);
 	}
 
@@ -44,8 +44,8 @@ public:
 	// improve logic (add date validation, bool validated_, etc...)
 	inline bool valid() const { return tm_off != -2;}
 
-	static hook<Date> localTime();
-	static hook<Date> localTime(Time time);
+	static Ref<Date> localTime();
+	static Ref<Date> localTime(Time time);
 
 	inline int year() const { return tm_year + 1900; }
 	inline int month() const { return tm_mon; }
@@ -61,7 +61,7 @@ public:
 
 	// \todo
 	string toString() const;
-	// static hook<Date> fromString(string s);
+	// static Ref<Date> fromString(string s);
 
 	// \todo
 	// local time formatting

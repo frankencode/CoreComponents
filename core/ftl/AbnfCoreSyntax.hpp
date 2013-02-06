@@ -17,7 +17,7 @@ namespace ftl
 class AbnfCoreSyntax: public SyntaxDefinition
 {
 public:
-	inline static hook<AbnfCoreSyntax> create(SyntaxDebugFactory *debugFactory = 0) { return new AbnfCoreSyntax(debugFactory); }
+	inline static Ref<AbnfCoreSyntax> create(SyntaxDebugFactory *debugFactory = 0) { return new AbnfCoreSyntax(debugFactory); }
 
 protected:
 	AbnfCoreSyntax(SyntaxDebugFactory *debugFactory = 0);

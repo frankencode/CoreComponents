@@ -190,7 +190,7 @@ public:
 	inline int invert() const { return invert_; }
 
 private:
-	hook<ByteArray> s_;
+	Ref<ByteArray> s_;
 	int invert_;
 };
 
@@ -229,7 +229,7 @@ public:
 	inline const ByteArray &s() const { return *s_; }
 
 private:
-	hook<ByteArray> s_;
+	Ref<ByteArray> s_;
 	bool caseSensitive_;
 };
 
@@ -265,7 +265,7 @@ public:
 	inline KeywordMap *map() const { return map_; }
 
 private:
-	hook<KeywordMap> map_;
+	Ref<KeywordMap> map_;
 	bool caseSensitive_;
 };
 
@@ -887,7 +887,7 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		hook<Token> token;
+		Ref<Token> token;
 		if (tokenFactory) {
 			token = tokenFactory->produce();
 			token->init(definitionId_, id_);
@@ -970,7 +970,7 @@ protected:
 
 	const char *ruleName_;
 	RuleNode *rule_;
-	hook<LinkNode> unresolvedNext_;
+	Ref<LinkNode> unresolvedNext_;
 };
 
 class RefNode: public LinkNode
@@ -1044,7 +1044,7 @@ protected:
 	friend class DefinitionNode;
 	const char *keywordName_;
 	int keyword_;
-	hook<PreviousNode> unresolvedKeywordNext_;
+	Ref<PreviousNode> unresolvedKeywordNext_;
 };
 
 class ContextNode: public LinkNode
@@ -1111,7 +1111,7 @@ private:
 
 	const char *definitionName_;
 	DefinitionNode *definition_;
-	hook<InvokeNode> unresolvedNext_;
+	Ref<InvokeNode> unresolvedNext_;
 };
 
 class DefinitionNode: public RefNode
@@ -1157,8 +1157,8 @@ public:
 		definitionByName_->insert(name, definition);
 	}
 
-	typedef hook<Node> NODE;
-	typedef hook<RuleNode> RULE;
+	typedef Ref<Node> NODE;
+	typedef Ref<RuleNode> RULE;
 
 	inline void OPTION(const char *name, bool value) {
 		if (str::casecmp(name, "caseSensitive") == 0)
@@ -1219,13 +1219,13 @@ public:
 
 	inline int DEFINE(const char *ruleName, NODE entry = 0) {
 		if (!entry) entry = PASS();
-		hook<RuleNode> rule = new RuleNode(id_, ruleName, numRules_++, entry);
+		Ref<RuleNode> rule = new RuleNode(id_, ruleName, numRules_++, entry);
 		addRule(rule);
 		return rule->id();
 	}
 	inline void DEFINE_VOID(const char *ruleName, NODE entry = 0) {
 		if (!entry) entry = PASS();
-		hook<RuleNode> rule = new RuleNode(id_, ruleName, numRules_++, entry, true);
+		Ref<RuleNode> rule = new RuleNode(id_, ruleName, numRules_++, entry, true);
 		addRule(rule);
 	}
 	inline void ENTRY(const char *ruleName) {
@@ -1233,19 +1233,19 @@ public:
 	}
 
 	inline NODE REF(const char *ruleName) {
-		hook<RefNode> link = new RefNode(ruleName);
+		Ref<RefNode> link = new RefNode(ruleName);
 		link->unresolvedNext_ = unresolvedLinkHead_;
 		unresolvedLinkHead_ = link;
 		return debug(link, "Ref");
 	}
 	inline NODE INLINE(const char *ruleName) {
-		hook<InlineNode> link = new InlineNode(ruleName);
+		Ref<InlineNode> link = new InlineNode(ruleName);
 		link->unresolvedNext_ = unresolvedLinkHead_;
 		unresolvedLinkHead_ = link;
 		return debug(link, "Inline");
 	}
 	inline NODE PREVIOUS(const char *ruleName, const char *keyword = 0) {
-		hook<PreviousNode> link = new PreviousNode(ruleName, keyword);
+		Ref<PreviousNode> link = new PreviousNode(ruleName, keyword);
 		link->unresolvedNext_ = unresolvedLinkHead_;
 		unresolvedLinkHead_ = link;
 		if (keyword) {
@@ -1255,7 +1255,7 @@ public:
 		return debug(link, "Previous");
 	}
 	inline NODE CONTEXT(const char *ruleName, NODE entry = 0) {
-		hook<ContextNode> link = new ContextNode(ruleName, entry);
+		Ref<ContextNode> link = new ContextNode(ruleName, entry);
 		link->unresolvedNext_ = unresolvedLinkHead_;
 		unresolvedLinkHead_ = link;
 		return debug(link, "Context");
@@ -1295,7 +1295,7 @@ public:
 		return debug(new InvokeNode(definition, coverage), "Invoke");
 	}
 	inline NODE INVOKE(const char *definitionName, NODE coverage = 0) {
-		hook<InvokeNode> node = new InvokeNode(definitionName, coverage);
+		Ref<InvokeNode> node = new InvokeNode(definitionName, coverage);
 		node->unresolvedNext_ = unresolvedInvokeHead_;
 		unresolvedInvokeHead_ = node;
 		return debug(node, "Invoke");
@@ -1309,14 +1309,14 @@ public:
 
 	State *newState(State *parent = 0) const;
 
-	hook<Token> find(ByteArray *media, int *i0, int *i1 = 0, TokenFactory *tokenFactory = 0) const;
-	hook<Token> match(ByteArray *media, int i0 = 0, int *i1 = 0, State *state = 0, TokenFactory *tokenFactory = 0) const;
+	Ref<Token> find(ByteArray *media, int *i0, int *i1 = 0, TokenFactory *tokenFactory = 0) const;
+	Ref<Token> match(ByteArray *media, int i0 = 0, int *i1 = 0, State *state = 0, TokenFactory *tokenFactory = 0) const;
 
 	const DefinitionNode *resolveScope(const char*& name) const;
 
 	inline DefinitionNode *definitionByName(const char *name) const
 	{
-		hook<DefinitionNode> definition;
+		Ref<DefinitionNode> definition;
 		const DefinitionNode *scope = resolveScope(name);
 		if (!scope->definitionByName_->lookup(name, &definition))
 			FTL_THROW(DebugException, str::cat("Undefined definition '", name, "' referenced"));
@@ -1326,7 +1326,7 @@ public:
 	inline RuleNode *ruleByName(const char *name) const
 	{
 		const DefinitionNode *scope = resolveScope(name);
-		hook<RuleNode> node;
+		Ref<RuleNode> node;
 		FTL_ASSERT(scope);
 		if (!scope->ruleByName_->lookup(name, &node))
 			FTL_THROW(DebugException, str::cat("Undefined rule '", name, "' referenced"));
@@ -1365,7 +1365,7 @@ public:
 
 private:
 	friend class Debugger;
-	hook<DebugFactory> debugFactory_;
+	Ref<DebugFactory> debugFactory_;
 
 	friend class InvokeNode;
 
@@ -1373,16 +1373,16 @@ private:
 	const char *name_;
 	bool caseSensitive_;
 
-	typedef PrefixTree<char, hook<DefinitionNode> > DefinitionByName;
-	hook<DefinitionByName> definitionByName_;
+	typedef PrefixTree<char, Ref<DefinitionNode> > DefinitionByName;
+	Ref<DefinitionByName> definitionByName_;
 
-	typedef PrefixTree<char, hook<RuleNode> > RuleByName;
+	typedef PrefixTree<char, Ref<RuleNode> > RuleByName;
 	typedef PrefixTree<char, int> KeywordByName;
 
 	int numRules_;
 	int numKeywords_;
-	hook<RuleByName> ruleByName_;
-	hook<KeywordByName> keywordByName_;
+	Ref<RuleByName> ruleByName_;
+	Ref<KeywordByName> keywordByName_;
 
 	void addRule(RuleNode *rule)
 	{
@@ -1390,10 +1390,10 @@ private:
 			FTL_THROW(DebugException, str::cat("Redefinition of rule '", rule->name(), "'"));
 	}
 
-	hook<LinkNode> unresolvedLinkHead_;
-	hook<PreviousNode> unresolvedKeywordHead_;
-	hook<InvokeNode> unresolvedInvokeHead_;
-	hook<DefinitionNode> unresolvedNext_;
+	Ref<LinkNode> unresolvedLinkHead_;
+	Ref<PreviousNode> unresolvedKeywordHead_;
+	Ref<InvokeNode> unresolvedInvokeHead_;
+	Ref<DefinitionNode> unresolvedNext_;
 	bool statefulScope_;
 	bool hasHints_;
 
@@ -1418,8 +1418,8 @@ private:
 
 	typedef PrefixTree<char, int> StateIdByName;
 
-	hook<StateIdByName> flagIdByName_;
-	hook<StateIdByName> captureIdByName_;
+	Ref<StateIdByName> flagIdByName_;
+	Ref<StateIdByName> captureIdByName_;
 
 	static int errorCallBack(Instance *self, ByteArray *media, int index, State *state);
 };

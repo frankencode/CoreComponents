@@ -23,12 +23,12 @@ public:
 	typedef T Item;
 	typedef GenericIterator<List> Iterator;
 
-	inline static hook<List> create() { return new List; }
-	inline static hook<List> create(int n) { return new List(n); }
+	inline static Ref<List> create() { return new List; }
+	inline static Ref<List> create(int n) { return new List(n); }
 
-	virtual hook<List> clone() const { return new List(*this); }
+	virtual Ref<List> clone() const { return new List(*this); }
 
-	inline hook<Iterator> createIterator() const { return Iterator::create(this); }
+	inline Ref<Iterator> createIterator() const { return Iterator::create(this); }
 
 	inline bool isEmpty() const { return tree_.weight() == 0; }
 	inline int length() const { return tree_.weight(); }
@@ -103,14 +103,14 @@ public:
 	inline bool contains(const Item &item) const { return find(item) < length(); }
 	inline Item join(const Item &sep = Item()) const { return Item::join(this, sep); }
 
-	hook<List> sort(int order = SortOrder::Ascending, bool unique = false) const
+	Ref<List> sort(int order = SortOrder::Ascending, bool unique = false) const
 	{
 		if (length() == 0)
 			return List::create();
-		hook< Heap<Item> > heap = Heap<Item>::create(length(), order);
+		Ref< Heap<Item> > heap = Heap<Item>::create(length(), order);
 		for (int i = 0; i < length(); ++i)
 			heap->push(get(i));
-		hook<List> result;
+		Ref<List> result;
 		if (unique) {
 			result = List::create();
 			Item prev, item;
@@ -132,15 +132,15 @@ public:
 		return result;
 	}
 
-	hook<List> reverse() const
+	Ref<List> reverse() const
 	{
-		hook<List> result = List::create(length());
+		Ref<List> result = List::create(length());
 		for (int i = 0, n = length(); i < n; ++i)
 			result->set(i, at(n - i - 1));
 		return result;
 	}
 
-	hook<List> unique(int order = SortOrder::Ascending) const { return sort(order, true); }
+	Ref<List> unique(int order = SortOrder::Ascending) const { return sort(order, true); }
 
 	bool equals(List *b) const
 	{
@@ -151,8 +151,8 @@ public:
 	}
 
 	template<class T2>
-	hook< List<T2> > toList() const {
-		hook< List<T2 > > result = List<T2>::create(length());
+	Ref< List<T2> > toList() const {
+		Ref< List<T2 > > result = List<T2>::create(length());
 		for (int i = 0; i < length(); ++i)
 			result->set(i, at(i));
 		return result;
@@ -177,10 +177,10 @@ private:
 	template<class> class GASP1,
 	template<class> class GASP2
 >
-inline hook< List<T> > operator+(hook< List<T>, GASP1 > a, hook< List<T>, GASP2 > b)
+inline Ref< List<T> > operator+(Ref< List<T>, GASP1 > a, Ref< List<T>, GASP2 > b)
 {
 	int n = a->length(), m = b->length();
-	hook< List<T> > r = List<T>::create(n + m);
+	Ref< List<T> > r = List<T>::create(n + m);
 	int i = 0;
 	for (;i < n; ++i) r->set(i, a->at(i));
 	for (;i < n + m; ++i) r->set(i, b->at(i - n));

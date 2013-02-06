@@ -219,7 +219,7 @@ public:
 		print("\n%%\"", indent);
 		KeywordMap *map = keywordNode()->map();
 		for (KeywordMap::Index index = map->first(); map->has(index); ++index) {
-			hook<KeywordMap::Key> s = map->key(index);
+			Ref<KeywordMap::Key> s = map->key(index);
 			printString(*s);
 			if (index != map->last())
 				print(" ");
@@ -701,7 +701,7 @@ void Debugger::printDefinition(bool omitUnusedRules)
 	RuleByName *ruleByName = DebugFactory::definition()->ruleByName_;
 
 	typedef Map<int, RuleNode *> RuleById;
-	hook<RuleById> ruleById = RuleById::create();
+	Ref<RuleById> ruleById = RuleById::create();
 
 	for (RuleByName::Index i = ruleByName->first(); ruleByName->has(i); ++i) {
 		RuleNode *rule = ruleByName->value(i);
@@ -727,13 +727,13 @@ void Debugger::printDefinition(bool omitUnusedRules)
 
 Node *Debugger::produce(Node *newNode, const char *nodeType)
 {
-	hook<NodeFactory> factory;
+	Ref<NodeFactory> factory;
 	return factoryByNodeType_->lookup(nodeType, &factory) ? factory->produce(newNode) : newNode;
 }
 
-hook<Debugger::StateNameById> Debugger::newReverseMap(StateIdByName *stateIdByName)
+Ref<Debugger::StateNameById> Debugger::newReverseMap(StateIdByName *stateIdByName)
 {
-	hook<StateNameById> stateNameById = StateNameById::create();
+	Ref<StateNameById> stateNameById = StateNameById::create();
 	for (StateIdByName::Index i = stateIdByName->first(); stateIdByName->has(i); ++i) {
 		string name = stateIdByName->key(i);
 		int id = stateIdByName->value(i);

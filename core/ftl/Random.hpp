@@ -20,7 +20,7 @@ namespace ftl
 class Random: public Source<int>
 {
 public:
-	inline static hook<Random> open(int seed = -1) {
+	inline static Ref<Random> open(int seed = -1) {
 		return new Random(seed);
 	}
 

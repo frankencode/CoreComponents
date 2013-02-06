@@ -25,12 +25,12 @@ FTL_EXCEPTION(NetworkingException, Exception);
 
 class SocketAddress;
 
-typedef List< hook<SocketAddress> > SocketAddressList;
+typedef List< Ref<SocketAddress> > SocketAddressList;
 
 class SocketAddress: public Instance
 {
 public:
-	inline static hook<SocketAddress> create() {
+	inline static Ref<SocketAddress> create() {
 		return new SocketAddress;
 	}
 
@@ -42,17 +42,17 @@ public:
 	  * \param address numerical host address, wildcard ("*") or file path
 	  * \param port service port
 	  */
-	inline static hook<SocketAddress> create(int family, string address = string(), int port = 0) {
+	inline static Ref<SocketAddress> create(int family, string address = string(), int port = 0) {
 		return new SocketAddress(family, address, port);
 	}
 
-	inline static hook<SocketAddress> create(struct sockaddr_in *addr) {
+	inline static Ref<SocketAddress> create(struct sockaddr_in *addr) {
 		return new SocketAddress(addr);
 	}
-	inline static hook<SocketAddress> create(struct sockaddr_in6 *addr) {
+	inline static Ref<SocketAddress> create(struct sockaddr_in6 *addr) {
 		return new SocketAddress(addr);
 	}
-	inline static hook<SocketAddress> create(addrinfo *info) {
+	inline static Ref<SocketAddress> create(addrinfo *info) {
 		return new SocketAddress(info);
 	}
 
@@ -79,7 +79,7 @@ public:
 	  *   The host name can be a short name relative to the local domain.
 	  * The fully qualified domain name (aka canonical name) can be optionally retrieved.
 	  */
-	static hook<SocketAddressList> resolve(string hostName, string serviceName = string(), int family = AF_UNSPEC, int socketType = 0, string *canonicalName = 0);
+	static Ref<SocketAddressList> resolve(string hostName, string serviceName = string(), int family = AF_UNSPEC, int socketType = 0, string *canonicalName = 0);
 
 	/** Lookup the host name of given address. Usually a reverse DNS
 	  * lookup will be issued, which may take several seconds.

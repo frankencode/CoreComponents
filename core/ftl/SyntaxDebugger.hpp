@@ -62,7 +62,7 @@ public:
 	typedef SyntaxDebugFactory DebugFactory;
 	typedef SyntaxNode Node;
 
-	inline static hook<Debugger> create(string indent = "\t") {
+	inline static Ref<Debugger> create(string indent = "\t") {
 		return new Debugger(indent);
 	}
 
@@ -72,7 +72,7 @@ public:
 	typedef DefinitionNode::StateIdByName StateIdByName;
 	typedef Map<int, string> StateNameById;
 
-	hook<StateNameById> newReverseMap(StateIdByName *stateIdByName);
+	Ref<StateNameById> newReverseMap(StateIdByName *stateIdByName);
 	StateNameById *flagNameById();
 	StateNameById *captureNameById();
 
@@ -102,13 +102,13 @@ private:
 		Debugger *debugger_;
 	};
 
-	typedef PrefixTree< char, hook<NodeFactory> > FactoryByNodeType;
-	hook<FactoryByNodeType> factoryByNodeType_;
+	typedef PrefixTree< char, Ref<NodeFactory> > FactoryByNodeType;
+	Ref<FactoryByNodeType> factoryByNodeType_;
 
 	string indent_;
 
-	hook<StateNameById> flagNameById_;
-	hook<StateNameById> captureNameById_;
+	Ref<StateNameById> flagNameById_;
+	Ref<StateNameById> captureNameById_;
 };
 
 } // namespace syntax

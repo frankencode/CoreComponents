@@ -15,7 +15,7 @@ namespace ftl
 class StringTrap: public Instance
 {
 public:
-	inline static hook<StringTrap> create() {
+	inline static Ref<StringTrap> create() {
 		return new StringTrap;
 	}
 
@@ -43,10 +43,10 @@ private:
 	class Node: public Instance {
 	public:
 		Node(const char *s, int len): s_(ByteArray::copy(s, len)) {}
-		hook<ByteArray> s_;
-		hook<Node> next_;
+		Ref<ByteArray> s_;
+		Ref<Node> next_;
 	};
-	mutable hook<Node> head_;
+	mutable Ref<Node> head_;
 	mutable Node *tail_;
 };
 

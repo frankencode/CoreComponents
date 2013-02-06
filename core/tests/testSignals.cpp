@@ -6,7 +6,7 @@ using namespace ftl;
 
 class SignalEater: public Thread {
 public:
-	static hook<SignalEater> create() {
+	static Ref<SignalEater> create() {
 		return new SignalEater;
 	}
 
@@ -15,7 +15,7 @@ private:
 
 	virtual void run()
 	{
-		hook<SignalSet> set = SignalSet::createEmpty();
+		Ref<SignalSet> set = SignalSet::createEmpty();
 		set->insert(SIGINT);
 		set->insert(SIGALRM);
 		set->insert(SIGWINCH);
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 	Process::enableInterrupt(SIGCONT);
 	Thread::blockSignals(SignalSet::createFull());
 	Process::alarm(1);
-	hook<SignalEater> signalEater = SignalEater::create();
+	Ref<SignalEater> signalEater = SignalEater::create();
 	signalEater->start();
 	signalEater->wait();
 	return 0;

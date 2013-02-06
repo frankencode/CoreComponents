@@ -22,7 +22,7 @@ class CircularBuffer;
 class LineSource: public Source<string>
 {
 public:
-	inline static hook<LineSource> open(Stream *stream, const char *eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
+	inline static Ref<LineSource> open(Stream *stream, const char *eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
 		return new LineSource(stream, eol, maxLineLength);
 	}
 
@@ -39,11 +39,11 @@ protected:
 
 	typedef CircularBuffer<char> Cache;
 
-	hook<Stream> stream_;
+	Ref<Stream> stream_;
 	string eol_;
 	int cachedLines_;
-	hook<Cache> cache_;
-	hook<ByteArray> buf_;
+	Ref<Cache> cache_;
+	Ref<ByteArray> buf_;
 };
 
 } // namespace ftl

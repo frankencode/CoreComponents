@@ -12,7 +12,7 @@ using namespace ftl;
 class Module: public Instance
 {
 public:
-	inline static hook<Module> create(string analyseCommand, string modulePath, StringList *dependencyPaths, bool dirty) {
+	inline static Ref<Module> create(string analyseCommand, string modulePath, StringList *dependencyPaths, bool dirty) {
 		return new Module(analyseCommand, modulePath, dependencyPaths, dirty);
 	}
 
@@ -33,11 +33,11 @@ private:
 
 	string analyseCommand_;
 	string modulePath_;
-	hook<StringList> dependencyPaths_;
+	Ref<StringList> dependencyPaths_;
 	bool dirty_;
 };
 
-typedef List< hook<Module> > ModuleList;
+typedef List< Ref<Module> > ModuleList;
 
 } // namespace mach
 

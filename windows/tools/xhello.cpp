@@ -6,9 +6,9 @@
 int main()
 {
 	using namespace ftl;
-	hook<XWindow> window = new XWindow(100, 100, 200, 200);
+	Ref<XWindow> window = new XWindow(100, 100, 200, 200);
 	window->show();
-	hook<XMessageLogger> logger = new XMessageLogger;
+	Ref<XMessageLogger> logger = new XMessageLogger;
 	logger->start();
 	xClient()->start();
 	xClient()->wait();

@@ -40,14 +40,14 @@ void Buffer::reset(int blockSize)
 
 Block *Buffer::allocate()
 {
-	hook<Block> newBlock = new Block(blockSize_);
+	Ref<Block> newBlock = new Block(blockSize_);
 	newBlock->prev_ = tail_;
 	if (!tail_) head_ = tail_ = newBlock;
 	else tail_ = tail_->next_ = newBlock;
 	return newBlock;
 }
 
-hook<ByteArray> Buffer::join() const
+Ref<ByteArray> Buffer::join() const
 {
 	int fill = 0;
 	{
@@ -57,7 +57,7 @@ hook<ByteArray> Buffer::join() const
 			block = block->next_;
 		}
 	}
-	hook<ByteArray> array = ByteArray::create(fill);
+	Ref<ByteArray> array = ByteArray::create(fill);
 	{
 		char *d = array->data();
 		Block *block = head_;

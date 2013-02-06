@@ -43,7 +43,7 @@ public:
 	inline Node *self() const { return const_cast<Node *>(this); }
 };
 
-typedef hook<Node> NODE;
+typedef Ref<Node> NODE;
 
 } // namespace syntax
 

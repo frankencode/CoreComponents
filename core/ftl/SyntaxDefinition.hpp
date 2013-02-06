@@ -29,7 +29,7 @@ public:
 	typedef syntax::Node Node;
 	typedef syntax::NODE NODE;
 
-	inline static hook<Definition> create(DebugFactory *debugFactory = 0) {
+	inline static Ref<Definition> create(DebugFactory *debugFactory = 0) {
 		return new Definition(debugFactory);
 	}
 	~Definition();
@@ -41,11 +41,11 @@ public:
 	Node *debug(Node *newNode, const char *nodeType);
 
 	int keywordByName(const char *keyword);
-	hook<State> newState(State *parent = 0) const;
+	Ref<State> newState(State *parent = 0) const;
 
-	hook<Token> find(const ByteArray *media, int i = 0) const;
-	hook<Token> match(const ByteArray *media, int i = -1, SyntaxState *state = 0) const;
-	hook<Token> match(const ByteArray *media, SyntaxState *state) const;
+	Ref<Token> find(const ByteArray *media, int i = 0) const;
+	Ref<Token> match(const ByteArray *media, int i = -1, SyntaxState *state = 0) const;
+	Ref<Token> match(const ByteArray *media, SyntaxState *state) const;
 
 	int matchLength() const;
 
@@ -161,7 +161,7 @@ private:
 	Definition(const Definition &);
 	// const Definition &operator=(const Defintion &);
 
-	hook<DefinitionNode> def_;
+	Ref<DefinitionNode> def_;
 };
 
 } // namespace syntax

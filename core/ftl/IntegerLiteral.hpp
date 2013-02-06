@@ -19,7 +19,7 @@ class IntegerLiteral: public SyntaxDefinition, public Singleton<IntegerLiteral>
 {
 public:
 	void read(uint64_t *value, int *sign, const ByteArray *text, Token *token) const;
-	hook<Token> read(uint64_t *value, int *sign, const ByteArray *text, int i = -1) const;
+	Ref<Token> read(uint64_t *value, int *sign, const ByteArray *text, int i = -1) const;
 
 protected:
 	friend class Singleton<IntegerLiteral>;

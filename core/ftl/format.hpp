@@ -19,10 +19,10 @@ namespace ftl
 
 FTL_EXCEPTION(FormatException, Exception);
 
-class format: public hook<StringList>
+class format: public Ref<StringList>
 {
 public:
-	typedef hook<StringList> Super;
+	typedef Ref<StringList> Super;
 
 	format(string format = "");
 
@@ -30,7 +30,8 @@ public:
 	format &operator=(const format &b);
 
 	format &operator<<(const string &s);
-	inline format &operator<<(const hook<ByteArray> &s) { return *this << string(s); }
+	inline format &operator<<(const Ref<ByteArray> &s) { return *this << string(s); }
+	inline format &operator<<(ByteArray *s) { return *this << string(s); }
 	inline format &operator<<(const char *s) { return *this << string(s); }
 	inline format &operator<<(char *s) { return *this << string(s); }
 	inline format &operator<<(char ch) { return *this << string(&ch, 1); }
@@ -64,9 +65,9 @@ public:
 	inline format &operator<<(const T &x) { return *this << string(x); }
 
 	template<class T>
-	inline format &operator<<(const hook<T> &x) { return *this << string(*x); }
+	inline format &operator<<(const Ref<T> &x) { return *this << string(*x); }
 
-	inline format &operator<<(const hook<StringList> &x) { return *this << x->join(""); }
+	inline format &operator<<(const Ref<StringList> &x) { return *this << x->join(""); }
 
 	template<class T>
 	inline format &operator<<(T *x) { return *this << (void *)x; }
@@ -95,15 +96,15 @@ private:
 		int w_, wi_, wf_, base_;
 		bool exp_;
 		char blank_;
-		hook<PlaceHolder> next_;
+		Ref<PlaceHolder> next_;
 	};
 
-	hook<PlaceHolder> nextPlaceHolder();
+	Ref<PlaceHolder> nextPlaceHolder();
 
 	void printInt(uint64_t x, int sign = 1);
 	void printFloat(float64_t x, bool half = false);
 
-	hook<PlaceHolder> placeHolders_;
+	Ref<PlaceHolder> placeHolders_;
 };
 
 } // namespace ftl

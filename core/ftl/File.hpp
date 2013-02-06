@@ -70,14 +70,14 @@ public:
 		StandardError  = 2
 	};
 
-	static hook<File> open(string path, int openFlags = Read);
-	static hook<File> tryOpen(string path, int openFlags = Read);
-	static hook<File> open(int fd, int openFlags);
-	static hook<File> temp(int openFlags = Read|Write);
+	static Ref<File> open(string path, int openFlags = Read);
+	static Ref<File> tryOpen(string path, int openFlags = Read);
+	static Ref<File> open(int fd, int openFlags);
+	static Ref<File> temp(int openFlags = Read|Write);
 
 	string path() const;
 	string name() const;
-	hook<FileStatus> status() const;
+	Ref<FileStatus> status() const;
 
 	int openFlags() const;
 
@@ -107,8 +107,8 @@ public:
 	static bool establish(string path, int fileMode = 0644, int dirMode = 0755);
 	static string lookup(string fileName, StringList *dirs = 0, int accessFlags = Execute);
 
-	static hook<FileStatus> status(string path);
-	static hook<FileStatus> unresolvedStatus(string path);
+	static Ref<FileStatus> status(string path);
+	static Ref<FileStatus> unresolvedStatus(string path);
 
 	static string load(string path);
 	static void save(string path, string text);

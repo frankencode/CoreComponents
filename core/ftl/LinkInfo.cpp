@@ -30,7 +30,7 @@ LinkInfo::LinkInfo(void *addr)
 		symbolName_ = info.dli_sname;
 		baseAddress_ = info.dli_fbase;
 		symbolAddress_ = info.dli_saddr;
-		hook<StringList> parts = libraryPath_->split(".");
+		Ref<StringList> parts = libraryPath_->split(".");
 		if (parts->length() > 3) {
 			int i = parts->length() - 1;
 			if (parts->at(i) == "dylib") --i;

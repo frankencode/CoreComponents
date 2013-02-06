@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	print("hostName = \"%%\"\n", hostName);
 
 	string canonicalName;
-	hook<SocketAddressList> list = SocketAddress::resolve(hostName, "", AF_UNSPEC, SOCK_STREAM, &canonicalName);
+	Ref<SocketAddressList> list = SocketAddress::resolve(hostName, "", AF_UNSPEC, SOCK_STREAM, &canonicalName);
 
 	print("canonicalName = \"%%\"\n", canonicalName);
 

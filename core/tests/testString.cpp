@@ -34,6 +34,16 @@ inline void testRef5(const string s)
 int main(int argc, char **argv)
 {
 	{
+		typedef List< Ref<ByteArray> > Parts;
+		Ref<Parts> parts = Parts::create();
+		parts->append(ByteArray::copy("Hello!"));
+		Ref<ByteArray> s = parts;
+		print("s = \"%%\"\n", s);
+	}
+
+	return 0;
+
+	{
 		string s = "Übertragung";
 		print("s = \"%%\"\n", s);
 		print("s->chars()->length() = %%\n", s->chars()->length());
@@ -43,7 +53,7 @@ int main(int argc, char **argv)
 		for (int i = 0; i < s->chars()->length(); ++i)
 			print("s[%%] = '%%' (%%)\n", i, s->chars()->copy(i, i + 1), s->chars()->get(i));
 		print("s->chars()->copy(s->chars()->length()-3, s->chars()->length()) = \"%%\"\n", s->chars()->copy(s->chars()->length()-3, s->chars()->length()));
-		hook<StringList> parts = s->split("a");
+		Ref<StringList> parts = s->split("a");
 		print("s.split(\"a\") = [\n");
 		for (int i = 0; i < parts->length(); ++i)
 			print("  \"%%\"\n", parts->get(i));
@@ -53,7 +63,7 @@ int main(int argc, char **argv)
 		string s = "bin/testPath";
 		// print("s = \"%%\"\n", s);
 		print("s->find(\"/\") = %%\n", s->find("/"));
-		hook<StringList> parts = s->split("/");
+		Ref<StringList> parts = s->split("/");
 		print("s.split(\"/\") = [\n");
 		for (int i = 0; i < parts->length(); ++i)
 			print("  \"%%\"\n", parts->get(i));
