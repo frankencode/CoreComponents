@@ -10,7 +10,7 @@
 #define FTL_SINGLETON_HPP
 
 #include "Instance.hpp"
-#include "hook.hpp"
+#include "Ref.hpp"
 #include "LocalStatic.hpp"
 #include "ThreadLocalSingleton.hpp"
 
@@ -28,7 +28,7 @@ public:
 	{
 		SpinLock &mutex = localStatic<SpinLock, SubClass>();
 		Guard<SpinLock> guard(&mutex);
-		hook<SubClass> &instance_ = localStatic< hook<SubClass>, CoreSingleton<SubClass> >();
+		Ref<SubClass> &instance_ = localStatic< Ref<SubClass>, CoreSingleton<SubClass> >();
 		if (!instance_)
 			instance_ = Singleton<SubClass>::create();
 		return instance_;
@@ -42,7 +42,7 @@ public:
 	CoreSingletonWrapper()
 		: instance_(CoreSingleton<SubClass>::instance())
 	{}
-	hook<SubClass> instance_;
+	Ref<SubClass> instance_;
 };
 
 template<class SubClass>

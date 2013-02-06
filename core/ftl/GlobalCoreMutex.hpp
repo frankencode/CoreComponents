@@ -11,7 +11,7 @@
 
 #include "Instance.hpp"
 #include "SpinLock.hpp"
-#include "hook.hpp"
+#include "Ref.hpp"
 
 namespace ftl
 {

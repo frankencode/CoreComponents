@@ -16,7 +16,7 @@
 namespace ftl
 {
 
-hook<Dir> Dir::tryOpen(string path)
+Ref<Dir> Dir::tryOpen(string path)
 {
 	DIR *dir = ::opendir(path);
 	if (dir) return new Dir(path, dir);
@@ -79,7 +79,7 @@ bool Dir::create(string path, int mode)
 
 bool Dir::establish(string path, int mode)
 {
-	hook<StringList> missingDirs = StringList::create();
+	Ref<StringList> missingDirs = StringList::create();
 	while ((path != "") && (path != "/")) {
 		if (Dir::exists(path)) break;
 		missingDirs->push(path);

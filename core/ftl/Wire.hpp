@@ -38,7 +38,7 @@ class WireObject: public Map<string, variant>
 	typedef Map<string, variant> Super;
 
 public:
-	virtual hook<Super> clone() const { return new WireObject(*this); }
+	virtual Ref<Super> clone() const { return new WireObject(*this); }
 
 	inline string className() const { return className_; }
 
@@ -67,8 +67,8 @@ protected:
 	Wire();
 
 	string parseConcatenation(ByteArray *text, Token *token);
-	hook<WireObject> parseObject(ByteArray *text, Token *token, WireObject *virgin = 0);
-	hook<VariantList> parseList(ByteArray *text, Token *token);
+	Ref<WireObject> parseObject(ByteArray *text, Token *token, WireObject *virgin = 0);
+	Ref<VariantList> parseList(ByteArray *text, Token *token);
 	variant parseValue(ByteArray *text, Token *token);
 
 	int string_;

@@ -9,7 +9,7 @@
 namespace mach
 {
 
-hook<DependencyCache> DependencyCache::create(BuildPlan *buildPlan)
+Ref<DependencyCache> DependencyCache::create(BuildPlan *buildPlan)
 {
 	return new DependencyCache(buildPlan);
 }
@@ -27,7 +27,7 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 	File::establish(cachePath_);
 	Time cacheTime = File::status(cachePath_)->lastModified();
 
-	hook<WireObject> dependencyCache;
+	Ref<WireObject> dependencyCache;
 	try {
 		dependencyCache = wire()->parse(File::load(cachePath_));
 	}
@@ -45,14 +45,14 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 		WireObject *wire = cast<WireObject>(item->value());
 		string command = wire->value("analyseCommand");
 		string modulePath = wire->value("modulePath");
-		hook<StringList> dependencyPaths = cast<VariantList>(wire->value("dependencyPaths"))->toList<string>();
+		Ref<StringList> dependencyPaths = cast<VariantList>(wire->value("dependencyPaths"))->toList<string>();
 		string sourcePath = dependencyPaths->at(0);
 
 		bool dirty = false;
 
-		hook<FileStatus> objectStatus = buildPlan_->fileStatus(modulePath);
+		Ref<FileStatus> objectStatus = buildPlan_->fileStatus(modulePath);
 		for (int i = 0; i < dependencyPaths->length(); ++i) {
-			hook<FileStatus> sourceStatus = buildPlan_->fileStatus(dependencyPaths->at(i));
+			Ref<FileStatus> sourceStatus = buildPlan_->fileStatus(dependencyPaths->at(i));
 			if (!sourceStatus->exists()) {
 				dirty = true;
 				break;
@@ -109,7 +109,7 @@ DependencyCache::~DependencyCache()
 	File::save(cachePath_, text);
 }
 
-bool DependencyCache::lookup(string source, hook<Module> *module)
+bool DependencyCache::lookup(string source, Ref<Module> *module)
 {
 	return cache_->lookup(source, module);
 }

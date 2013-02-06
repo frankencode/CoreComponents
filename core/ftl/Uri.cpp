@@ -33,7 +33,7 @@ Uri::Uri(ByteArray *bytes, Token *rootToken)
 
 void Uri::readUri(ByteArray *bytes, Token *rootToken)
 {
-	hook<Token> rootToken2;
+	Ref<Token> rootToken2;
 	if (!rootToken) {
 		check(uriSyntax());
 		rootToken2 = uriSyntax()->match(bytes);
@@ -108,7 +108,7 @@ string Uri::encode(string s)
 	s->toLowerInsitu();
 
 	const char *reserved = ":/?#[]@!$&'()*+,;=";
-	hook<StringList> l = StringList::create();
+	Ref<StringList> l = StringList::create();
 	int j = 0;
 	for (int i = 0, n = s->length(); i < n; ++i) {
 		char ch = s->at(i);

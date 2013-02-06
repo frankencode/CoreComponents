@@ -74,9 +74,9 @@ void Md5::finish(uint8_t sum[16])
 	for (int i = 0; i < 4; ++i) sum[k++] = d_ >> (8 * i);
 }
 
-hook<ByteArray> Md5::finish()
+Ref<ByteArray> Md5::finish()
 {
-	hook<ByteArray> sum = ByteArray::create(16);
+	Ref<ByteArray> sum = ByteArray::create(16);
 	finish(reinterpret_cast<uint8_t*>(sum->data()));
 	return sum;
 }

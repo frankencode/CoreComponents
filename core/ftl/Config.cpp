@@ -15,7 +15,7 @@
 namespace ftl
 {
 
-hook<Config> Config::create() { return new Config; }
+Ref<Config> Config::create() { return new Config; }
 
 void Config::read(string path)
 {
@@ -46,7 +46,7 @@ void Config::read(int argc, char **argv)
 			continue;
 		}
 
-		hook<SyntaxState> state = flag->newState();
+		Ref<SyntaxState> state = flag->newState();
 		if (!flag->match(s, state))
 			throw ConfigException(format("Illegal option syntax: \"%%\"") << s);
 

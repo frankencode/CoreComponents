@@ -18,7 +18,7 @@ namespace ftl
 class SystemStream: public Stream
 {
 public:
-	inline static hook<SystemStream> create(int fd) {
+	inline static Ref<SystemStream> create(int fd) {
 		return new SystemStream(fd);
 	}
 	~SystemStream();

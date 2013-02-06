@@ -37,7 +37,7 @@ int File::translateOpenFlags(int openFlags)
 	return h;
 }
 
-hook<File> File::open(string path, int openFlags)
+Ref<File> File::open(string path, int openFlags)
 {
 	int fd = ::open(path, translateOpenFlags(openFlags));
 	if (fd == -1)
@@ -45,19 +45,19 @@ hook<File> File::open(string path, int openFlags)
 	return new File(path, openFlags, fd);
 }
 
-hook<File> File::tryOpen(string path, int openFlags)
+Ref<File> File::tryOpen(string path, int openFlags)
 {
 	int fd = ::open(path, translateOpenFlags(openFlags));
 	if (fd != -1) return new File(path, openFlags, fd);
 	return 0;
 }
 
-hook<File> File::open(int fd, int openFlags)
+Ref<File> File::open(int fd, int openFlags)
 {
 	return new File("", openFlags, fd);
 }
 
-hook<File> File::temp(int openFlags)
+Ref<File> File::temp(int openFlags)
 {
 	string path = createUnique(
 		format("/tmp/%%_%%_XXXXXXXX")
@@ -113,7 +113,7 @@ int File::openFlags() const
 	return openFlags_;
 }
 
-hook<FileStatus> File::status() const
+Ref<FileStatus> File::status() const
 {
 	return FileStatus::read(fd_);
 }
@@ -181,7 +181,7 @@ string File::map() const
 		void *p = ::mmap(0, fileSize, protection, MAP_PRIVATE, fd_, 0);
 		if (p == MAP_FAILED)
 			FTL_SYSTEM_EXCEPTION;
-		return string(hook<ByteArray>(new ByteArray((char*)p, fileSize, fileSize)));
+		return string(Ref<ByteArray>(new ByteArray((char*)p, fileSize, fileSize)));
 	}
 	else {
 		#ifndef MAP_ANONYMOUS
@@ -193,7 +193,7 @@ string File::map() const
 		p = ::mmap(p, fileSize, protection, MAP_PRIVATE | MAP_FIXED, fd_, 0);
 		if (p == MAP_FAILED)
 			FTL_SYSTEM_EXCEPTION;
-		return string(hook<ByteArray>(new ByteArray((char*)p, fileSize, fileSize + pageSize)));
+		return string(Ref<ByteArray>(new ByteArray((char*)p, fileSize, fileSize + pageSize)));
 	}
 }
 
@@ -278,7 +278,7 @@ string File::resolve(string path)
 
 string File::createUnique(string path, int mode, char placeHolder)
 {
-	hook<Random> random = Random::open();
+	Ref<Random> random = Random::open();
 	while (true) {
 		string candidate = path->copy();
 		for (int i = 0, n = candidate->size(); i < n; ++i) {
@@ -318,7 +318,7 @@ bool File::establish(string path, int fileMode, int dirMode)
 
 string File::lookup(string fileName, StringList *dirs, int accessFlags)
 {
-	hook<StringList> h;
+	Ref<StringList> h;
 	if (!dirs) {
 		h = Process::env("PATH")->split(':');
 		dirs = h;
@@ -334,12 +334,12 @@ string File::lookup(string fileName, StringList *dirs, int accessFlags)
 	return path;
 }
 
-hook<FileStatus> File::status(string path)
+Ref<FileStatus> File::status(string path)
 {
 	return FileStatus::read(path, true);
 }
 
-hook<FileStatus> File::unresolvedStatus(string path)
+Ref<FileStatus> File::unresolvedStatus(string path)
 {
 	return FileStatus::read(path, false);
 }
@@ -353,7 +353,7 @@ string File::load(string path)
 void File::save(string path, string text)
 {
 	establish(path);
-	hook<File> file = open(path, File::Write);
+	Ref<File> file = open(path, File::Write);
 	file->truncate(0);
 	file->write(text);
 }

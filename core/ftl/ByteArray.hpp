@@ -32,11 +32,14 @@ class ByteArray: public Sequence<char, int>
 public:
 	typedef int Index;
 	typedef char Item;
+	typedef List< Ref<ByteArray> > Parts;
 
-	inline static hook<ByteArray> create(int size = 0) { return new ByteArray(size); }
-	inline static hook<ByteArray> create(int size, char zero) { return new ByteArray(size, zero); }
-	inline static hook<ByteArray> copy(const char *data, int size = -1) { return new ByteArray(data, size); }
-	inline static hook<ByteArray> create(ByteArray *parent, int size) { return new ByteArray(parent, size); }
+	inline static Ref<ByteArray> create(int size = 0) { return new ByteArray(size); }
+	inline static Ref<ByteArray> create(int size, char zero) { return new ByteArray(size, zero); }
+	inline static Ref<ByteArray> copy(const char *data, int size = -1) { return new ByteArray(data, size); }
+	inline static Ref<ByteArray> create(ByteArray *parent, int size) { return new ByteArray(parent, size); }
+	static Ref<ByteArray> join(Parts *parts, const char *sep = "");
+
 	~ByteArray();
 
 	inline static ByteArray *empty() { return Default<ByteArray>::instance(); }
@@ -108,9 +111,9 @@ public:
 		mem::cpy(data_ + i, data, size);
 	}
 
-	inline hook<ByteArray> copy() const { return new ByteArray(*this); }
+	inline Ref<ByteArray> copy() const { return new ByteArray(*this); }
 
-	inline hook<ByteArray> copy(int i0, int i1) const {
+	inline Ref<ByteArray> copy(int i0, int i1) const {
 		if (i0 < 0) i0 = 0;
 		if (i0 > size_) i0 = size_;
 		if (i1 < 0) i1 = 0;
@@ -119,12 +122,12 @@ public:
 	}
 
 	template<class Range>
-	inline hook<ByteArray> copy(Range *range) const {
+	inline Ref<ByteArray> copy(Range *range) const {
 		return copy(range->i0(), range->i1());
 	}
 
-	inline hook<ByteArray> head(int n) const { return copy(0, n); }
-	inline hook<ByteArray> tail(int n) const { return copy(size_ - n, size_); }
+	inline Ref<ByteArray> head(int n) const { return copy(0, n); }
+	inline Ref<ByteArray> tail(int n) const { return copy(size_ - n, size_); }
 
 	inline int find(char ch) const { return find(0, ch); }
 	inline int find(int i, char ch) const {
@@ -136,7 +139,12 @@ public:
 		return i;
 	}
 
-	inline bool contains(char item) const { return find(item) < size_; }
+	inline bool contains(char ch) const { return find(ch) < size_; }
+	inline int count(char ch) const {
+		int n = 0;
+		for (char *p = data_; *p; ++p) n += (*p == ch);
+		return n;
+	}
 
 	inline int replace(char oldItem, char newItem) {
 		int n = 0;
@@ -156,16 +164,16 @@ public:
 	inline bool contains(const char *pattern) const { return find(pattern) != size_; }
 	bool contains(string pattern) const;
 
-	static hook<ByteArray> join(const StringList *parts, const char *sep = "");
-	static hook<ByteArray> join(const StringList *parts, char sep);
-	static hook<ByteArray> join(const StringList *parts, string sep);
-	hook<StringList> split(char sep) const;
-	hook<StringList> split(const char *sep) const;
-	hook<StringList> split(SyntaxDefinition *pattern) const;
+	static Ref<ByteArray> join(const StringList *parts, const char *sep = "");
+	static Ref<ByteArray> join(const StringList *parts, char sep);
+	static Ref<ByteArray> join(const StringList *parts, string sep);
+	Ref<StringList> split(char sep) const;
+	Ref<StringList> split(const char *sep) const;
+	Ref<StringList> split(SyntaxDefinition *pattern) const;
 
 	void replaceInsitu(const char *pattern, const char *replacement);
-	hook<ByteArray> replace(const char *pattern, const char *replacement) const;
-	hook<ByteArray> replace(string pattern, string replacement) const;
+	Ref<ByteArray> replace(const char *pattern, const char *replacement) const;
+	Ref<ByteArray> replace(string pattern, string replacement) const;
 
 	int toInt(bool *ok = 0) const;
 	double toFloat(bool *ok = 0) const;
@@ -175,44 +183,44 @@ public:
 
 	ByteArray *toLowerInsitu();
 	ByteArray *toUpperInsitu();
-	inline hook<ByteArray> toLower() const { return copy()->toLowerInsitu(); }
-	inline hook<ByteArray> toUpper() const { return copy()->toUpperInsitu(); }
+	inline Ref<ByteArray> toLower() const { return copy()->toLowerInsitu(); }
+	inline Ref<ByteArray> toUpper() const { return copy()->toUpperInsitu(); }
 
 	ByteArray *expandInsitu();
-	inline hook<ByteArray> expand() const { return copy()->expandInsitu(); }
+	inline Ref<ByteArray> expand() const { return copy()->expandInsitu(); }
 
-	hook<ByteArray> stripLeadingSpace() const;
-	hook<ByteArray> stripTrailingSpace() const;
-	hook<ByteArray> trimmed() const;
-	hook<ByteArray> stripTags() const;
-	hook<ByteArray> simplified() const;
-	hook<ByteArray> normalized(bool nameCase = true) const;
+	Ref<ByteArray> stripLeadingSpace() const;
+	Ref<ByteArray> stripTrailingSpace() const;
+	Ref<ByteArray> trimmed() const;
+	Ref<ByteArray> stripTags() const;
+	Ref<ByteArray> simplified() const;
+	Ref<ByteArray> normalized(bool nameCase = true) const;
 
 	bool offsetToLinePos(int offset, int *line = 0, int *pos = 0) const;
 	bool linePosToOffset(int line, int pos, int *offset = 0) const;
 
 	void checkUtf8() const;
 
-	static hook<ByteArray> fromUtf16(const void *data, int size = -1, int endian = localEndian());
+	static Ref<ByteArray> fromUtf16(const void *data, int size = -1, int endian = localEndian());
 	bool toUtf16(void *buf, int *size);
-	hook<ByteArray> toUtf16(int endian = localEndian());
+	Ref<ByteArray> toUtf16(int endian = localEndian());
 
-	hook<ByteArray> md5() const;
-	hook<ByteArray> hex() const;
-	hook<ByteArray> base64() const;
+	Ref<ByteArray> md5() const;
+	Ref<ByteArray> hex() const;
+	Ref<ByteArray> base64() const;
 
 	bool isRootPath() const;
 	bool isRelativePath() const;
 	bool isAbsolutePath() const;
 
-	hook<ByteArray> absolutePathRelativeTo(string currentDir) const;
-	hook<ByteArray> absolutePath() const;
-	hook<ByteArray> fileName() const;
-	hook<ByteArray> completeBaseName() const;
-	hook<ByteArray> baseName() const;
-	hook<ByteArray> reducePath() const;
-	hook<ByteArray> expandPath(string component) const;
-	hook<ByteArray> canonicalPath() const;
+	Ref<ByteArray> absolutePathRelativeTo(string currentDir) const;
+	Ref<ByteArray> absolutePath() const;
+	Ref<ByteArray> fileName() const;
+	Ref<ByteArray> completeBaseName() const;
+	Ref<ByteArray> baseName() const;
+	Ref<ByteArray> reducePath() const;
+	Ref<ByteArray> expandPath(string component) const;
+	Ref<ByteArray> canonicalPath() const;
 
 private:
 	friend class Singleton<ByteArray>;
@@ -227,8 +235,8 @@ private:
 
 	int size_;
 	char *data_;
-	mutable hook<Character> chars_;
-	hook<ByteArray> parent_;
+	mutable Ref<Character> chars_;
+	Ref<ByteArray> parent_;
 
 	size_t mapSize_;
 };

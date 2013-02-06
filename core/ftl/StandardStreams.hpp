@@ -33,12 +33,12 @@ private:
 
 	StandardStreams();
 
-	hook<SystemStream> rawInput_;
-	hook<SystemStream> rawOutput_;
-	hook<SystemStream> rawError_;
-	hook<LineSource> input_;
-	hook<LineSink> output_;
-	hook<LineSink> error_;
+	Ref<SystemStream> rawInput_;
+	Ref<SystemStream> rawOutput_;
+	Ref<SystemStream> rawError_;
+	Ref<LineSource> input_;
+	Ref<LineSink> output_;
+	Ref<LineSink> error_;
 };
 
 inline SystemStream *rawInput() { return StandardStreams::instance()->rawInput(); }

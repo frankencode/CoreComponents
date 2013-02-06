@@ -19,14 +19,14 @@ JobServer::~JobServer()
 
 void JobServer::run()
 {
-	hook<ProcessFactory> factory = ProcessFactory::create();
+	Ref<ProcessFactory> factory = ProcessFactory::create();
 	factory->setIoPolicy(Process::CloseInput|Process::ForwardOutput|Process::ErrorToOutput);
 
 	while (true) {
-		hook<Job> job = requestChannel_->popFront();
+		Ref<Job> job = requestChannel_->popFront();
 		if (!job) break;
 		factory->setCommand(job->command_);
-		hook<Process> process = factory->produce();
+		Ref<Process> process = factory->produce();
 		job->outputText_ = process->rawOutput()->readAll();
 		job->status_ = process->wait();
 		replyChannel_->pushBack(job);

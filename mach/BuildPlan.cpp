@@ -13,12 +13,12 @@
 namespace mach
 {
 
-hook<BuildPlan> BuildPlan::create(int argc, char **argv)
+Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
 {
 	return new BuildPlan(argc, argv);
 }
 
-hook<BuildPlan> BuildPlan::create(ToolChain *toolChain, string projectPath, int globalOptions)
+Ref<BuildPlan> BuildPlan::create(ToolChain *toolChain, string projectPath, int globalOptions)
 {
 	BuildPlan *buildPlan = 0;
 	if (buildMap_->lookup(projectPath, &buildPlan)) return buildPlan;
@@ -222,7 +222,7 @@ bool BuildPlan::unlink(string path)
 	return true;
 }
 
-hook<FileStatus> BuildPlan::fileStatus(string path)
+Ref<FileStatus> BuildPlan::fileStatus(string path)
 {
 	if (options_ & Blindfold) return FileStatus::read();
 	return FileStatus::read(path);
@@ -235,7 +235,7 @@ void BuildPlan::prepare()
 
 	prequisites_ = BuildPlanList::create();
 
-	hook<StringList> prequisitePaths;
+	Ref<StringList> prequisitePaths;
 	if (recipe_->contains("use"))
 		prequisitePaths = cast<VariantList>(recipe_->value("use"))->toList<string>();
 	else
@@ -245,7 +245,7 @@ void BuildPlan::prepare()
 		string path = prequisitePaths->at(i);
 		if (path->isRelativePath()) path = projectPath_ + "/" + path;
 		path = path->canonicalPath();
-		hook<BuildPlan> buildPlan = BuildPlan::create(toolChain_, path, options_ & GlobalOptions);
+		Ref<BuildPlan> buildPlan = BuildPlan::create(toolChain_, path, options_ & GlobalOptions);
 		if (buildPlan->options() & Library) {
 			path = path->reducePath();
 			if (!includePaths_->contains(path))
@@ -262,7 +262,7 @@ void BuildPlan::prepare()
 	if (recipe_->contains("source")) {
 		VariantList *sourcePatterns = cast<VariantList>(recipe_->value("source"));
 		for (int i = 0; i < sourcePatterns->length(); ++i) {
-			hook<Glob> glob = Glob::open(sourcePath(sourcePatterns->at(i)));
+			Ref<Glob> glob = Glob::open(sourcePath(sourcePatterns->at(i)));
 			for (string path; glob->read(&path);)
 				sources_->append(path);
 		}
@@ -319,11 +319,11 @@ bool BuildPlan::analyse()
 	mkdir(modulePath_);
 
 	modules_ = ModuleList::create();
-	hook<JobScheduler> scheduler;
+	Ref<JobScheduler> scheduler;
 
-	hook<DependencyCache> dependencyCache = DependencyCache::create(this);
+	Ref<DependencyCache> dependencyCache = DependencyCache::create(this);
 	for (int i = 0; i < sources_->length(); ++i) {
-		hook<Module> module;
+		Ref<Module> module;
 		if (dependencyCache->lookup(sources_->at(i), &module)) {
 			modules_->append(module);
 		}
@@ -338,14 +338,14 @@ bool BuildPlan::analyse()
 
 	if (!scheduler) return analyseResult_ = true;
 
-	for (hook<Job> job; scheduler->collect(&job);) {
+	for (Ref<Job> job; scheduler->collect(&job);) {
 		if (options_ & Verbose)
 			error()->writeLine(beautifyCommand(job->command()));
 		if (job->status() != 0) {
 			output()->writeLine(job->outputText());
 			break;
 		}
-		hook<Module> module = toolChain_->finishAnalyseJob(this, job);
+		Ref<Module> module = toolChain_->finishAnalyseJob(this, job);
 		dependencyCache->insert(module->sourcePath(), module);
 		modules_->append(module);
 	}
@@ -363,8 +363,8 @@ bool BuildPlan::build()
 
 	if (options_ & Package) return buildResult_ = true;
 
-	hook<JobScheduler> compileScheduler;
-	hook<JobScheduler> linkScheduler;
+	Ref<JobScheduler> compileScheduler;
+	Ref<JobScheduler> linkScheduler;
 
 	for (int i = 0; i < modules_->length(); ++i) {
 		Module *module = modules_->at(i);
@@ -372,7 +372,7 @@ bool BuildPlan::build()
 		if (options_ & ToolSet)
 			dirty = dirty || !fileStatus(module->toolName())->exists();
 		if (dirty) {
-			hook<Job> job = toolChain_->createCompileJob(this, module);
+			Ref<Job> job = toolChain_->createCompileJob(this, module);
 			if (options_ & DryRun) {
 				error()->writeLine(beautifyCommand(job->command()));
 			}
@@ -391,7 +391,7 @@ bool BuildPlan::build()
 	}
 
 	if (compileScheduler) {
-		for (hook<Job> job; compileScheduler->collect(&job);) {
+		for (Ref<Job> job; compileScheduler->collect(&job);) {
 			error()->writeLine(beautifyCommand(job->command()));
 			output()->write(job->outputText());
 			if (job->status() != 0) return buildResult_ = false;
@@ -401,7 +401,7 @@ bool BuildPlan::build()
 	if (options_ & ToolSet) {
 		if (linkScheduler) {
 			linkScheduler->start();
-			for (hook<Job> job; linkScheduler->collect(&job);) {
+			for (Ref<Job> job; linkScheduler->collect(&job);) {
 				error()->writeLine(beautifyCommand(job->command()));
 				output()->write(job->outputText());
 				if (job->status() != 0) return buildResult_ = false;
@@ -410,7 +410,7 @@ bool BuildPlan::build()
 		return buildResult_ = true;
 	}
 
-	hook<FileStatus> targetStatus = fileStatus(toolChain_->linkPath(this));
+	Ref<FileStatus> targetStatus = fileStatus(toolChain_->linkPath(this));
 	if (targetStatus->exists()) {
 		Time targetTime = targetStatus->lastModified();
 		bool targetDirty = false;
@@ -421,7 +421,7 @@ bool BuildPlan::build()
 				break;
 			}
 		}
-		hook<FileStatus> recipeStatus = fileStatus(recipe_->path());
+		Ref<FileStatus> recipeStatus = fileStatus(recipe_->path());
 		if (recipeStatus->exists()) {
 			if (recipeStatus->lastModified() > targetTime) targetDirty = true;
 		}

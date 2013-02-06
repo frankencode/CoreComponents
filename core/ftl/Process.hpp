@@ -30,8 +30,8 @@ FTL_STD_EXCEPTION(ProcessException);
 class Process: public Instance
 {
 public:
-	static hook<Process> start(string command, int ioPolicy = 0);
-	static hook<Process> start(string command, ProcessFactory *factory);
+	static Ref<Process> start(string command, int ioPolicy = 0);
+	static Ref<Process> start(string command, ProcessFactory *factory);
 
 	// -- child process control interface
 
@@ -91,7 +91,7 @@ public:
 	static void unsetEnv(string key);
 	static char **&environ();
 
-	static hook<EnvMap> envMap();
+	static Ref<EnvMap> envMap();
 
 	static pid_t currentId();
 	static pid_t parentId();
@@ -126,13 +126,13 @@ private:
 	int type_;
 	int ioPolicy_;
 
-	hook<SystemStream> rawInput_;
-	hook<SystemStream> rawOutput_;
-	hook<SystemStream> rawError_;
+	Ref<SystemStream> rawInput_;
+	Ref<SystemStream> rawOutput_;
+	Ref<SystemStream> rawError_;
 
-	hook<LineSink> input_;
-	hook<LineSource> output_;
-	hook<LineSource> error_;
+	Ref<LineSink> input_;
+	Ref<LineSource> output_;
+	Ref<LineSource> error_;
 
 	pid_t processId_;
 };

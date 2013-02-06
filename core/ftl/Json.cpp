@@ -206,7 +206,7 @@ Json::Json()
 
 variant Json::parse(string text)
 {
-	hook<Token> token = match(text);
+	Ref<Token> token = match(text);
 	FTL_CHECK(token, JsonException, "Invalid syntax");
 	return parseText(text, token);
 }
@@ -221,7 +221,7 @@ variant Json::parseText(ByteArray *text, Token *token)
 variant Json::parseObject(ByteArray *text, Token *token)
 {
 	FTL_CHECK(token->rule() == object_, JsonException, "");
-	hook<JsonObject> object = JsonObject::create();
+	Ref<JsonObject> object = JsonObject::create();
 	for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
 		Pair<string, variant> member = parseMember(text, child);
 		object->insert(member.key(), member.value());
@@ -232,7 +232,7 @@ variant Json::parseObject(ByteArray *text, Token *token)
 variant Json::parseArray(ByteArray *text, Token *token)
 {
 	FTL_CHECK(token->rule() == list_, JsonException, "");
-	hook<VariantList> list = VariantList::create(token->countChildren());
+	Ref<VariantList> list = VariantList::create(token->countChildren());
 	int i = 0;
 	for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
 		list->set(i, parseValue(text, child));

@@ -9,13 +9,13 @@ namespace ftl
 class CloneFactory: public ProcessFactory
 {
 public:
-	static hook<CloneFactory> create(string path) { return new CloneFactory(path); }
+	static Ref<CloneFactory> create(string path) { return new CloneFactory(path); }
 
 	int incarnate()
 	{
 		print("(clone) waiting for read access\n");
-		hook<File> file = File::open(path_, File::Read);
-		hook<FileLock> lock = FileLock::create(file, FileLock::Read);
+		Ref<File> file = File::open(path_, File::Read);
+		Ref<FileLock> lock = FileLock::create(file, FileLock::Read);
 		Guard<FileLock> guard(lock);
 		print("(clone) granted read access\n");
 		print("(clone) reads: \"%%\"\n", file->map());
@@ -32,20 +32,20 @@ private:
 
 int main()
 {
-	hook<File> file = File::temp();
+	Ref<File> file = File::temp();
 	file->unlinkOnExit();
 	print("(parent) file->path() = \"%%\"\n", file->path());
 
 	print("(parent) acquiring write lock... \n");
-	hook<FileLock> lock = FileLock::create(file, FileLock::Write);
+	Ref<FileLock> lock = FileLock::create(file, FileLock::Write);
 	lock->acquire();
 
 	print("(parent) writing message... \n");
 	file->write("Hello, clone!");
 
 	print("(parent) cloning myself... \n");
-	hook<ProcessFactory> factory = CloneFactory::create(file->path());
-	hook<Process> fork = factory->produce();
+	Ref<ProcessFactory> factory = CloneFactory::create(file->path());
+	Ref<Process> fork = factory->produce();
 
 	print("(parent) sleeping 2 seconds... \n");
 	Thread::sleep(2);

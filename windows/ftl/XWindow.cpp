@@ -47,7 +47,7 @@ void XWindow::hide()
 void XWindow::run()
 {
 	while (true) {
-		hook<XMessage> message = messageFilter_->pop();
+		Ref<XMessage> message = messageFilter_->pop();
 		if (!message) break;
 		if (message->messageCode == XMessage::ConfigureNotify) {
 			XConfigureNotifyEvent *event = cast<XConfigureNotifyEvent>(message.get());

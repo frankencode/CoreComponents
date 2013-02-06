@@ -26,11 +26,11 @@ public:
 	virtual int defaultSizeOptimizationLevel() const = 0;
 
 	virtual string analyseCommand(BuildPlan *buildPlan, string source) const = 0;
-	virtual hook<Job> createAnalyseJob(BuildPlan *buildPlan, string source) = 0;
-	virtual hook<Module> finishAnalyseJob(BuildPlan *buildPlan, Job *job) = 0;
+	virtual Ref<Job> createAnalyseJob(BuildPlan *buildPlan, string source) = 0;
+	virtual Ref<Module> finishAnalyseJob(BuildPlan *buildPlan, Job *job) = 0;
 
-	virtual hook<Job> createCompileJob(BuildPlan *buildPlan, Module *module) = 0;
-	virtual hook<Job> createLinkJob(BuildPlan *buildPlan, Module *module) = 0;
+	virtual Ref<Job> createCompileJob(BuildPlan *buildPlan, Module *module) = 0;
+	virtual Ref<Job> createLinkJob(BuildPlan *buildPlan, Module *module) = 0;
 
 	virtual string linkPath(BuildPlan *buildPlan) const = 0;
 	virtual bool link(BuildPlan *buildPlan) = 0;

@@ -18,7 +18,7 @@ namespace ftl
 class Condition: public Instance
 {
 public:
-	inline static hook<Condition> create() { return new Condition; }
+	inline static Ref<Condition> create() { return new Condition; }
 	~Condition();
 	void wait(Mutex *mutex);
 	bool waitUntil(Mutex *mutex, Time timeout);

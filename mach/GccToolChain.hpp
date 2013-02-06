@@ -12,7 +12,7 @@ using namespace ftl;
 class GccToolChain: public ToolChain
 {
 public:
-	inline static hook<GccToolChain> create(string execPath = "g++") {
+	inline static Ref<GccToolChain> create(string execPath = "g++") {
 		return new GccToolChain(execPath);
 	}
 
@@ -21,11 +21,11 @@ public:
 	virtual int defaultSizeOptimizationLevel() const;
 
 	virtual string analyseCommand(BuildPlan *buildPlan, string source) const;
-	virtual hook<Job> createAnalyseJob(BuildPlan *buildPlan, string source);
-	virtual hook<Module> finishAnalyseJob(BuildPlan *buildPlan, Job *job);
+	virtual Ref<Job> createAnalyseJob(BuildPlan *buildPlan, string source);
+	virtual Ref<Module> finishAnalyseJob(BuildPlan *buildPlan, Job *job);
 
-	virtual hook<Job> createCompileJob(BuildPlan *buildPlan, Module *module);
-	virtual hook<Job> createLinkJob(BuildPlan *buildPlan, Module *module);
+	virtual Ref<Job> createCompileJob(BuildPlan *buildPlan, Module *module);
+	virtual Ref<Job> createLinkJob(BuildPlan *buildPlan, Module *module);
 
 	virtual string linkPath(BuildPlan *buildPlan) const;
 	virtual bool link(BuildPlan *buildPlan);

@@ -17,10 +17,10 @@ namespace ftl
 class Utf16Encoder: public Sink<uchar_t>
 {
 public:
-	inline static hook<Utf16Encoder> create(Stream *stream, int bufCapa, int endian = BigEndian) {
+	inline static Ref<Utf16Encoder> create(Stream *stream, int bufCapa, int endian = BigEndian) {
 		return new Utf16Encoder(stream, bufCapa, endian);
 	}
-	inline static hook<Utf16Encoder> create(void *buf, int bufCapa, int endian = BigEndian) {
+	inline static Ref<Utf16Encoder> create(void *buf, int bufCapa, int endian = BigEndian) {
 		return new Utf16Encoder(buf, bufCapa, endian);
 	}
 
@@ -61,7 +61,7 @@ private:
 		: byteEncoder_(ByteEncoder::open(buf, bufCapa, endian))
 	{}
 
-	hook<ByteEncoder> byteEncoder_;
+	Ref<ByteEncoder> byteEncoder_;
 };
 
 } // namespace ftl

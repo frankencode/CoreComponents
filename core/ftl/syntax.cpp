@@ -41,7 +41,7 @@ int InvokeNode::matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, T
 		{
 			rollBack(parentToken, lastChildSaved);
 
-			hook<ByteArray> range = ByteArray::create(media, i);
+			Ref<ByteArray> range = ByteArray::create(media, i);
 			definition_->matchNext(range, i0, tokenFactory, parentToken, childState);
 		}
 	}
@@ -54,7 +54,7 @@ int InvokeNode::matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, T
 
 NODE DefinitionNode::KEYWORD(const char *keywords)
 {
-	hook<KeywordMap> map = KeywordMap::create();
+	Ref<KeywordMap> map = KeywordMap::create();
 	const char *pos = keywords;
 	while (*pos) {
 		if ((*pos == ' ') || (*pos == '\t')) {
@@ -83,7 +83,7 @@ void DefinitionNode::OPTIMIZE()
 		if (link->rule_->isVoid()) {
 			if (cast<RefNode>(link)) {
 				if (link->rule_->numberOfRefs() == 0) {
-					hook<LinkNode> iLink = new InlineNode(link->ruleName_);
+					Ref<LinkNode> iLink = new InlineNode(link->ruleName_);
 					link->parent()->insertChild(iLink, link);
 					iLink->rule_ = link->rule_;
 					link->unlink();
@@ -124,10 +124,10 @@ State *DefinitionNode::newState(State *parent) const
 	return 0;
 }
 
-hook<Token> DefinitionNode::find(ByteArray *media, int *i0, int *i1, TokenFactory *tokenFactory) const
+Ref<Token> DefinitionNode::find(ByteArray *media, int *i0, int *i1, TokenFactory *tokenFactory) const
 {
 	int i = *i0;
-	hook<Token> rootToken;
+	Ref<Token> rootToken;
 	while (media->has(i)) {
 		if (rootToken = match(media, i, i1, 0, tokenFactory))
 			break;
@@ -137,9 +137,9 @@ hook<Token> DefinitionNode::find(ByteArray *media, int *i0, int *i1, TokenFactor
 	return rootToken;
 }
 
-hook<Token> DefinitionNode::match(ByteArray *media, int i0, int *i1, State *state, TokenFactory *tokenFactory) const
+Ref<Token> DefinitionNode::match(ByteArray *media, int i0, int *i1, State *state, TokenFactory *tokenFactory) const
 {
-	hook<State> localState;
+	Ref<State> localState;
 	if (!state) {
 		localState = newState();
 		state = localState;
@@ -168,7 +168,7 @@ const DefinitionNode *DefinitionNode::resolveScope(const char *&name) const
 		if (!ch) break;
 		k = (ch == ':') ? k + 1 : 0;
 		if (k == 2) {
-			hook<DefinitionNode> childScope;
+			Ref<DefinitionNode> childScope;
 			if (!scope->definitionByName_->lookup(p0, p - p0 - k, &childScope))
 				FTL_THROW(DebugException, str::cat("Undefined scope '", name, "' referenced"));
 			scope = childScope;

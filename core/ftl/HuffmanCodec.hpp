@@ -68,7 +68,7 @@ public:
 	  * \param rawDiversity estimated size of the raw symbols alphabet
 	  * \param rawDynamicRange estimated dynamic range of raw symbols (max-min+1)
 	  */
-	inline static hook<HuffmanCodec> create( int rawDiversity = 0x10000,
+	inline static Ref<HuffmanCodec> create( int rawDiversity = 0x10000,
 	                                                    int rawDynamicRange = 0x10000 ) {
 		return new HuffmanCodec(rawDiversity, rawDynamicRange);
 	}
@@ -166,8 +166,8 @@ private:
 
 	int codeMapSize_;
 	SymbolRef *codeMap_;
-	hook< MaxHeap<SymbolRef> > heap_;
-	hook< Stack<uint8_t> > bitStack_;
+	Ref< MaxHeap<SymbolRef> > heap_;
+	Ref< Stack<uint8_t> > bitStack_;
 
 	inline static int ilog2(int n)
 	{

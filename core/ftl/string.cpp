@@ -25,6 +25,6 @@ string::string(const format &b)
 	*this = *ByteArray::join(b);
 }
 
-string::string(hook<StringList> parts) { *this = join(parts); }
+string::string(Ref<StringList> parts) { *this = join(parts); }
 
 } // namespace ftl

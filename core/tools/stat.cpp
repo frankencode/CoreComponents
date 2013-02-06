@@ -30,7 +30,7 @@ string fileTypeToString(int type)
 
 string timeToString(Time time, bool human)
 {
-	hook<Date> d = Date::create(time);
+	Ref<Date> d = Date::create(time);
 	if (human) {
 		return format(
 			"%4.:'0'%-%2.:'0'%-%2.:'0'% "
@@ -45,7 +45,7 @@ string timeToString(Time time, bool human)
 
 int main(int argc, char **argv)
 {
-	hook<Config> config = Config::create();
+	Ref<Config> config = Config::create();
 	config->read(argc, argv);
 
 	if (config->contains("h") || config->contains("help")) {
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	hook<StringList> listOfFiles = config->arguments();
+	Ref<StringList> listOfFiles = config->arguments();
 
 	bool defaults = (config->options()->length() == 0);
 
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 	bool inodeNumberOption  = config->contains("inode");
 	bool linksOption        = config->contains("links") || defaults;
 
-	hook< Source<string> > files;
+	Ref< Source<string> > files;
 	if (rawInput()->isTeletype())
 		files = listOfFiles;
 	else
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 
 	for (string file; files->read(&file);)
 	{
-		hook<FileStatus> status = FileStatus::read(file);
+		Ref<FileStatus> status = FileStatus::read(file);
 
 		format line;
 

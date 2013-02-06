@@ -23,9 +23,9 @@ public:
 	typedef int Index;
 	typedef T Item;
 
-	inline static hook<Array> create(int size = 0) { return new Array(size); }
-	inline static hook<Array> create(int size, T zero) { return new Array(size, zero); }
-	inline static hook<Array> create(const T *data, int size) { return new Array(data, size); }
+	inline static Ref<Array> create(int size = 0) { return new Array(size); }
+	inline static Ref<Array> create(int size, T zero) { return new Array(size, zero); }
+	inline static Ref<Array> create(const T *data, int size) { return new Array(data, size); }
 
 	~Array()
 	{
@@ -138,9 +138,9 @@ public:
 		mem::cpy(data_ + i, data, size * sizeof(T));
 	}
 
-	inline hook<Array> copy() const { return copy(0, size_); }
+	inline Ref<Array> copy() const { return copy(0, size_); }
 
-	inline hook<Array> copy(int i0, int i1) const {
+	inline Ref<Array> copy(int i0, int i1) const {
 		if (i0 < 0) i0 = 0;
 		if (i0 > size_) i0 = size_;
 		if (i1 < 0) i1 = 0;
@@ -148,8 +148,8 @@ public:
 		return (i0 < i1) ? new Array(data_ + i0, i1 - i0) : new Array();
 	}
 
-	inline hook<Array> head(int n) const { return copy(0, n); }
-	inline hook<Array> tail(int n) const { return copy(size_ - n, size_); }
+	inline Ref<Array> head(int n) const { return copy(0, n); }
+	inline Ref<Array> tail(int n) const { return copy(size_ - n, size_); }
 
 	inline int find(const T &item) const { return find(0, item); }
 	inline int find(int i, const T &item) const {

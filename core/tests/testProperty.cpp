@@ -7,7 +7,7 @@ namespace ftl
 class Shape: public Instance
 {
 public:
-	static hook<Shape> create() { return new Shape; }
+	static Ref<Shape> create() { return new Shape; }
 
 	property<string> name;
 	property<int> x;
@@ -49,12 +49,12 @@ private:
 		print("y = %%\n", value);
 	}
 
-	hook<Shape> shape_;
+	Ref<Shape> shape_;
 };
 
 int main()
 {
-	hook<Shape> shape = Shape::create();
+	Ref<Shape> shape = Shape::create();
 	{
 		Observer observer(shape);
 		shape->name = "circle1";

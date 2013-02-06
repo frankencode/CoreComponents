@@ -32,7 +32,7 @@ private:
 
 	char *data_;
 	int fill_;
-	hook<Block> next_;
+	Ref<Block> next_;
 	Block *prev_;
 };
 
@@ -45,11 +45,11 @@ public:
 	inline int blockSize() const { return blockSize_; }
 
 	Block *allocate();
-	hook<ByteArray> join() const;
+	Ref<ByteArray> join() const;
 
 private:
 	int blockSize_;
-	hook<Block> head_;
+	Ref<Block> head_;
 	Block *tail_;
 };
 

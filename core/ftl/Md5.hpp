@@ -26,7 +26,7 @@ public:
 	~Md5();
 	void feed(const void *buf, int bufFill);
 	void finish(uint8_t sum[16]);
-	hook<ByteArray> finish();
+	Ref<ByteArray> finish();
 
 private:
 	void consume();

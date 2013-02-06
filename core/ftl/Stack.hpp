@@ -21,10 +21,10 @@ public:
 	typedef int Index;
 	typedef T Item;
 
-	inline static hook<Stack> create(int size) {
+	inline static Ref<Stack> create(int size) {
 		return new Stack(size);
 	}
-	inline static hook<Stack> create(T *buf, int size) {
+	inline static Ref<Stack> create(T *buf, int size) {
 		return new Stack(buf, size);
 	}
 

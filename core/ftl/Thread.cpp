@@ -63,8 +63,8 @@ void Thread::sleep(Time duration)
 
 void Thread::sleepUntil(Time timeout)
 {
-	hook<Mutex> mutex = Mutex::create();
-	hook<Condition> condition = Condition::create();
+	Ref<Mutex> mutex = Mutex::create();
+	Ref<Condition> condition = Condition::create();
 	mutex->acquire();
 	condition->waitUntil(mutex, timeout);
 	mutex->release();

@@ -43,18 +43,18 @@ string GccToolChain::analyseCommand(BuildPlan *buildPlan, string source) const
 	return args->join(" ");
 }
 
-hook<Job> GccToolChain::createAnalyseJob(BuildPlan *buildPlan, string source)
+Ref<Job> GccToolChain::createAnalyseJob(BuildPlan *buildPlan, string source)
 {
 	return Job::create(analyseCommand(buildPlan, source));
 }
 
-hook<Module> GccToolChain::finishAnalyseJob(BuildPlan *buildPlan, Job *job)
+Ref<Module> GccToolChain::finishAnalyseJob(BuildPlan *buildPlan, Job *job)
 {
-	hook<StringList> parts = job->outputText()->split(pattern("[:\\\\\n\r ]{1,}"));
+	Ref<StringList> parts = job->outputText()->split(pattern("[:\\\\\n\r ]{1,}"));
 	return Module::create(job->command(), buildPlan->modulePath(parts->pop(0)), parts, true);
 }
 
-hook<Job> GccToolChain::createCompileJob(BuildPlan *buildPlan, Module *module)
+Ref<Job> GccToolChain::createCompileJob(BuildPlan *buildPlan, Module *module)
 {
 	format args;
 	args << execPath();
@@ -65,7 +65,7 @@ hook<Job> GccToolChain::createCompileJob(BuildPlan *buildPlan, Module *module)
 	return Job::create(command);
 }
 
-hook<Job> GccToolChain::createLinkJob(BuildPlan *buildPlan, Module *module)
+Ref<Job> GccToolChain::createLinkJob(BuildPlan *buildPlan, Module *module)
 {
 	format args;
 	args << execPath();
@@ -103,7 +103,7 @@ bool GccToolChain::link(BuildPlan *buildPlan)
 	args << "-pthread";
 
 	if (options & BuildPlan::Library) {
-		hook<StringList> versions = version->split(".");
+		Ref<StringList> versions = version->split(".");
 		args << "-Wl,-soname,lib" + name + ".so." + versions->at(0);
 	}
 
@@ -121,7 +121,7 @@ bool GccToolChain::link(BuildPlan *buildPlan)
 
 	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static)) {
 		string fullPath = linkPath(buildPlan);
-		hook<StringList> parts = fullPath->split('.');
+		Ref<StringList> parts = fullPath->split('.');
 		while (parts->popBack() != "so")
 			buildPlan->symlink(fullPath, parts->join("."));
 	}
@@ -141,7 +141,7 @@ void GccToolChain::clean(BuildPlan *buildPlan)
 	buildPlan->unlink(fullPath);
 
 	if ((buildPlan->options() & BuildPlan::Library) && !(buildPlan->options() & BuildPlan::Static)) {
-		hook<StringList> parts = fullPath->split('.');
+		Ref<StringList> parts = fullPath->split('.');
 		while (parts->popBack() != "so")
 			buildPlan->unlink(parts->join("."));
 	}
@@ -173,7 +173,7 @@ void GccToolChain::appendLinkOptions(format args, BuildPlan *buildPlan)
 		args << "-l" + libraries->at(i);
 
 	if (libraryPaths->length() > 0) {
-		hook<StringList> rpaths = StringList::create();
+		Ref<StringList> rpaths = StringList::create();
 		for (int i = 0; i < libraryPaths->length(); ++i)
 			*rpaths << "-rpath=" + libraryPaths->at(i)->absolutePath();
 		args << "-Wl,--enable-new-dtags," + rpaths->join(",");

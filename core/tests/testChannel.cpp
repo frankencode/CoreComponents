@@ -14,7 +14,7 @@ typedef Channel<int> MyChannel;
 class Consumer: public Thread
 {
 public:
-	static hook<Consumer> create(int id, MyChannel *channel, int amount) { return new Consumer(id, channel, amount); }
+	static Ref<Consumer> create(int id, MyChannel *channel, int amount) { return new Consumer(id, channel, amount); }
 
 private:
 	Consumer(int id, MyChannel *channel, int amount)
@@ -33,14 +33,14 @@ private:
 	}
 
 	int id_;
-	hook<MyChannel> channel_;
+	Ref<MyChannel> channel_;
 	int amount_;
 };
 
 class Producer: public Thread
 {
 public:
-	static hook<Producer> create(int id, MyChannel *channel, int amount) { return new Producer(id, channel, amount); }
+	static Ref<Producer> create(int id, MyChannel *channel, int amount) { return new Producer(id, channel, amount); }
 
 	void run()
 	{
@@ -61,16 +61,16 @@ private:
 	{}
 
 	int id_;
-	hook<MyChannel> channel_;
+	Ref<MyChannel> channel_;
 	int amount_;
-	hook<Random> random_;
+	Ref<Random> random_;
 };
 
 int main()
 {
-	hook<MyChannel> channel = MyChannel::create();
-	hook<Producer> p1 = Producer::create(1, channel, 8);
-	hook<Consumer> c1 = Consumer::create(1, channel, 8);
+	Ref<MyChannel> channel = MyChannel::create();
+	Ref<Producer> p1 = Producer::create(1, channel, 8);
+	Ref<Consumer> c1 = Consumer::create(1, channel, 8);
 
 	Time dt = Time::now();
 	c1->start();

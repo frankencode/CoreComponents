@@ -51,9 +51,9 @@ uint32_t NetworkInterface::mtu() const { return mtu_; }
 SocketAddressList *NetworkInterface::addressList() const { return addressList_; }
 
 #ifdef __linux
-hook<NetworkInterfaceList> NetworkInterface::queryAll(int family)
+Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 {
-	hook<NetworkInterfaceList> list = NetworkInterfaceList::create();
+	Ref<NetworkInterfaceList> list = NetworkInterfaceList::create();
 	// getLink(list);
 	for (int i = 1; getLink(list, i); ++i);
 
@@ -144,7 +144,7 @@ hook<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 					struct rtattr *attr = (struct rtattr *)IFA_RTA(data);
 					int attrFill = NLMSG_PAYLOAD(msg, sizeof(struct ifaddrmsg));
 
-					hook<SocketAddress> label;
+					Ref<SocketAddress> label;
 					NetworkInterface *interface = 0;
 
 					for (int i = 0; i < list->length(); ++i) {
@@ -171,7 +171,7 @@ hook<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 						     (attrType == IFA_ANYCAST)
 						   )
 						{
-							hook<SocketAddress> address;
+							Ref<SocketAddress> address;
 							struct sockaddr_in addr4;
 							struct sockaddr_in6 addr6;
 							if (data->ifa_family == AF_INET) {
@@ -311,7 +311,7 @@ bool NetworkInterface::getLink(NetworkInterfaceList *list, int index)
 					struct rtattr *attr = (struct rtattr *)IFLA_RTA(data);
 					int attrFill = NLMSG_PAYLOAD(msg, sizeof(struct ifinfomsg));
 
-					hook<NetworkInterface> interface = NetworkInterface::create();
+					Ref<NetworkInterface> interface = NetworkInterface::create();
 					foundSomething = true;
 					list->append(interface);
 					interface->index_ = data->ifi_index;
@@ -356,19 +356,19 @@ bool NetworkInterface::getLink(NetworkInterfaceList *list, int index)
 	return foundSomething;
 }
 
-hook<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
+Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
 {
-	hook<NetworkInterfaceList> list = NetworkInterfaceList::create();
+	Ref<NetworkInterfaceList> list = NetworkInterfaceList::create();
 
 	int fd = ::socket(AF_INET, SOCK_DGRAM, 0);
 	if (fd == -1) FTL_SYSTEM_EXCEPTION;
 
-	hook<LineSource> source = LineSource::open(File::open("/proc/net/dev", File::Read));
+	Ref<LineSource> source = LineSource::open(File::open("/proc/net/dev", File::Read));
 	for (string line; source->read(&line);) {
 		if (line->contains(':')) {
-			hook<NetworkInterface> interface = NetworkInterface::create();
+			Ref<NetworkInterface> interface = NetworkInterface::create();
 			list->append(interface);
-			hook<StringList> parts = line->split(":");
+			Ref<StringList> parts = line->split(":");
 			string name = parts->at(0)->stripLeadingSpace();
 			interface->name_ = name;
 
@@ -429,7 +429,7 @@ hook<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
 					struct sockaddr_in *addr4 = (struct sockaddr_in *)addr;
 					struct sockaddr_in6 *addr6 = (struct sockaddr_in6 *)addr;
 
-					hook<SocketAddress> label;
+					Ref<SocketAddress> label;
 
 					if (addr->sa_family == AF_INET)
 						label = SocketAddressEntry::create(addr4);
@@ -472,9 +472,9 @@ hook<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
 #endif
 #define SA_RLEN(sa) ((sa)->sa_len ? (((sa)->sa_len + SALIGN) & ~SALIGN) : (SALIGN + 1))
 
-hook<NetworkInterfaceList> NetworkInterface::queryAll(int family)
+Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 {
-	hook<NetworkInterfaceList> list = NetworkInterfaceList::create();
+	Ref<NetworkInterfaceList> list = NetworkInterfaceList::create();
 
 	int mib[6];
 	mib[0] = CTL_NET;
@@ -516,7 +516,7 @@ hook<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 		int msgType = msg->ifm_type;
 		int msgAddrs = msg->ifm_addrs;
 		if (msgType == RTM_IFINFO) {
-			hook<NetworkInterface> interface = NetworkInterface::create();
+			Ref<NetworkInterface> interface = NetworkInterface::create();
 			interface->index_ = msg->ifm_index;
 			interface->flags_ = msg->ifm_flags;
 			interface->mtu_ = msg->ifm_data.ifi_mtu;
@@ -546,11 +546,11 @@ hook<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 			FTL_ASSERT(list->length() > 0);
 			NetworkInterface *interface = list->at(-1);
 			// FTL_ASSERT(interface->index_ == msga->ifam_index); // HACK, OpenBSD can fullfill
-			hook<SocketAddress> label;
+			Ref<SocketAddress> label;
 			for (int i = 0; i < RTAX_MAX; ++i) {
 				if (msga->ifam_addrs & (1 << i)) {
 					struct sockaddr *addr = (struct sockaddr *) attr;
-					hook<SocketAddress> address;
+					Ref<SocketAddress> address;
 					int len = SA_RLEN(addr);
 					if (i == RTAX_IFA) {
 						if (addr->sa_family == AF_INET)

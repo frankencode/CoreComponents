@@ -34,7 +34,7 @@ class Queue: public Container< T, Queue<T> >
 public:
 	typedef T Item;
 
-	inline static hook<Queue> create() {
+	inline static Ref<Queue> create() {
 		return new Queue;
 	}
 

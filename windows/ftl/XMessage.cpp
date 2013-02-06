@@ -148,7 +148,7 @@ void XInputEvent::printTo(LineSink *sink) const
 
 	string stateString;
 	{
-		hook<StringList> bitNames = StringList::create();
+		Ref<StringList> bitNames = StringList::create();
 		if      (state & XInputEvent::Shift)   bitNames->append("Shift");
 		else if (state & XInputEvent::Lock)    bitNames->append("Lock");
 		else if (state & XInputEvent::Control) bitNames->append("Control");

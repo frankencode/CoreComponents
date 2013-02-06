@@ -21,7 +21,7 @@ XMessageLogger::XMessageLogger()
 void XMessageLogger::run()
 {
 	while (true) {
-		hook<XMessage> event = messageFilter_->pop();
+		Ref<XMessage> event = messageFilter_->pop();
 		if (!event) break;
 		event->printTo(error());
 	}

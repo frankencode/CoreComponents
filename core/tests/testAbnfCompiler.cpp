@@ -10,9 +10,9 @@ int main(int argc, char **argv)
 {
 	for (int i = 1; i < argc; ++i) {
 		string text = File::open(argv[i], File::Read)->readAll();
-		hook<AbnfCompiler> compiler = AbnfCompiler::create();
-		hook<SyntaxDebugger> debugger = SyntaxDebugger::create();
-		hook<SyntaxDefinition> definition = compiler->compile(text, debugger);
+		Ref<AbnfCompiler> compiler = AbnfCompiler::create();
+		Ref<SyntaxDebugger> debugger = SyntaxDebugger::create();
+		Ref<SyntaxDefinition> definition = compiler->compile(text, debugger);
 		debugger->printDefinition(false/*omitUnusedRules*/);
 	}
 	return 0;

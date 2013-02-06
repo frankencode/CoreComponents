@@ -32,7 +32,7 @@ template<class Char, class Value>
 class PrefixTree: public Tree< PrefixTree<Char, Value> >
 {
 public:
-	inline static hook<PrefixTree> create() {
+	inline static Ref<PrefixTree> create() {
 		return new PrefixTree;
 	}
 
@@ -114,7 +114,7 @@ public:
 
 	inline bool has(Index index) const { return index.valid(); }
 
-	hook<Key> key(Index index) const
+	Ref<Key> key(Index index) const
 	{
 		FTL_ASSERT(has(index));
 		int size = 0;
@@ -127,7 +127,7 @@ public:
 				}
 			}
 		}
-		hook<Key> s = Key::create(size);
+		Ref<Key> s = Key::create(size);
 		{
 			int i = size;
 			Node *node = index.node_;
@@ -181,7 +181,7 @@ public:
 		return predict(key, str::len(key), first, last, common);
 	}
 
-	hook<Key> commonPrefix() const
+	Ref<Key> commonPrefix() const
 	{
 		Node *node = const_cast<Node *>(this);
 		int n = 0;
@@ -189,7 +189,7 @@ public:
 			node = node->firstChild();
 			++n;
 		}
-		hook<Key> key = Key::create(n);
+		Ref<Key> key = Key::create(n);
 		while (n > 0) {
 			--n;
 			key->set(n, node->ch_);

@@ -47,7 +47,7 @@ public:
 	variant(const char *value): type_(StringType)               { initRef(string(value)); }
 	variant(string value):      type_(StringType)               { initRef(value); }
 	template<class T>
-	variant(hook<T> value):        type_(RefType)                  { initRef(value); }
+	variant(Ref<T> value):        type_(RefType)                  { initRef(value); }
 	variant(const variant &b):  type_(UndefType)                { *this = b; }
 
 	~variant() { if (type_ & RefType) killRef(); }
@@ -59,7 +59,7 @@ public:
 	inline const variant &operator=(const char *value) { return *this = variant(value); }
 	inline const variant &operator=(string value)      { return *this = variant(value); }
 	template<class T>
-	inline const variant &operator=(const hook<T> &value) { return *this = variant(value); }
+	inline const variant &operator=(const Ref<T> &value) { return *this = variant(value); }
 
 	inline const variant &operator=(const variant &b) {
 		if (type_ & RefType) killRef();
@@ -89,11 +89,11 @@ public:
 	inline operator string() const {
 		if (!type_) return string();
 		FTL_ASSERT2(type_ & StringType, illegalConversion());
-		return hook<ByteArray>(ref());
+		return Ref<ByteArray>(ref());
 	}
 
 	template<class T>
-	inline operator hook<T>() const {
+	inline operator Ref<T>() const {
 		if (!type_) return null<T>();
 		FTL_ASSERT2(type_ & RefType, illegalConversion());
 		return cast<T>(ref().get());
@@ -141,25 +141,28 @@ public:
 private:
 	friend int type(const variant &value);
 
+	template<class U>
+	friend U *cast(const variant &value);
+
 	inline static const char *illegalConversion() { return "Illegal variant conversion"; }
 
 	inline void initRef(Instance *instance = 0) {
-		new(dummy_)hook<Instance>(instance);
+		new(dummy_)Ref<Instance>(instance);
 	}
 	inline void killRef() {
-		ref().~hook<Instance>();
+		ref().~Ref<Instance>();
 	}
 	inline void setRef(Instance *instance) const {
 		ref() = instance;
 	}
-	inline hook<Instance> &ref() const {
-		return *union_cast< hook<Instance> *>(dummy_);
+	inline Ref<Instance> &ref() const {
+		return *union_cast< Ref<Instance> *>(dummy_);
 	}
 	char type_;
 	union {
 		int32_t int_;
 		float32_t float_;
-		mutable char dummy_[sizeof(hook<Instance>)];
+		mutable char dummy_[sizeof(Ref<Instance>)];
 	};
 };
 
@@ -168,7 +171,7 @@ typedef List<variant> VariantList;
 inline int type(const variant &value) { return value.type_; }
 
 template<class U>
-inline U *cast(const variant &value) { return hook<U>(value); }
+inline U *cast(const variant &value) { return cast<U>(value.ref()); }
 
 } // namespace ftl
 

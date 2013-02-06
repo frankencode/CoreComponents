@@ -25,6 +25,33 @@
 namespace ftl
 {
 
+Ref<ByteArray> ByteArray::join(Parts *parts, const char *sep)
+{
+	int sepSize = str::len(sep);
+	if (parts->length() == 0) {
+		return ByteArray::empty();
+	}
+	else {
+		int size = 0;
+		for (int i = 0; i < parts->length(); ++i)
+			size += parts->at(i)->size();
+		size += (parts->length() - 1) * sepSize;
+		Ref<ByteArray> result = ByteArray::create(size);
+		char *p = result->data_;
+		for (int i = 0; i < parts->length(); ++i) {
+			ByteArray *part = parts->at(i);
+			mem::cpy(p, part->data_, part->size_);
+			p += part->size_;
+			if (i + 1 < parts->length()) {
+				mem::cpy(p, sep, sepSize);
+				p += sepSize;
+			}
+		}
+		FTL_ASSERT(p == result->data_ + result->size_);
+		return result;
+	}
+}
+
 ByteArray::ByteArray(int size)
 	: size_(0),
 	  data_(const_cast<char*>("")),
@@ -181,7 +208,7 @@ int ByteArray::find(string pattern, int i) const
 
 int ByteArray::find(SyntaxDefinition *pattern, int i) const
 {
-	hook<Token> token = pattern->find(this, i);
+	Ref<Token> token = pattern->find(this, i);
 	return (token) ? token->i0(): size_;
 }
 
@@ -190,7 +217,7 @@ bool ByteArray::contains(string pattern) const
 	return contains(pattern->constData());
 }
 
-hook<ByteArray> ByteArray::join(const StringList *parts, const char *sep)
+Ref<ByteArray> ByteArray::join(const StringList *parts, const char *sep)
 {
 	int sepSize = str::len(sep);
 	if (parts->length() == 0) {
@@ -201,7 +228,7 @@ hook<ByteArray> ByteArray::join(const StringList *parts, const char *sep)
 		for (int i = 0; i < parts->length(); ++i)
 			size += parts->at(i)->size();
 		size += (parts->length() - 1) * sepSize;
-		hook<ByteArray> result = ByteArray::create(size);
+		Ref<ByteArray> result = ByteArray::create(size);
 		char *p = result->data_;
 		for (int i = 0; i < parts->length(); ++i) {
 			ByteArray *part = parts->at(i);
@@ -217,7 +244,7 @@ hook<ByteArray> ByteArray::join(const StringList *parts, const char *sep)
 	}
 }
 
-hook<ByteArray> ByteArray::join(const StringList *parts, char sep)
+Ref<ByteArray> ByteArray::join(const StringList *parts, char sep)
 {
 	char h[2];
 	h[0] = sep;
@@ -225,20 +252,20 @@ hook<ByteArray> ByteArray::join(const StringList *parts, char sep)
 	return join(parts, h);
 }
 
-hook<ByteArray> ByteArray::join(const StringList *parts, string sep)
+Ref<ByteArray> ByteArray::join(const StringList *parts, string sep)
 {
 	return join(parts, sep->constData());
 }
 
-hook<StringList> ByteArray::split(char sep) const
+Ref<StringList> ByteArray::split(char sep) const
 {
 	char sep2[2] = { sep, '\0' };
 	return split(sep2);
 }
 
-hook<StringList> ByteArray::split(const char *sep) const
+Ref<StringList> ByteArray::split(const char *sep) const
 {
-	hook<StringList> parts = StringList::create();
+	Ref<StringList> parts = StringList::create();
 	int i0 = 0;
 	int sepLength = str::len(sep);
 	while (i0 < size_) {
@@ -254,11 +281,11 @@ hook<StringList> ByteArray::split(const char *sep) const
 	return parts;
 }
 
-hook<StringList> ByteArray::split(SyntaxDefinition *pattern) const
+Ref<StringList> ByteArray::split(SyntaxDefinition *pattern) const
 {
-	hook<StringList> parts = StringList::create();
+	Ref<StringList> parts = StringList::create();
 	for (int i = 0; i < size_;) {
-		hook<Token> token = pattern->find(this, i);
+		Ref<Token> token = pattern->find(this, i);
 		parts->append(copy(i, token->i0()));
 		i = token->i1();
 	}
@@ -294,12 +321,12 @@ void ByteArray::replaceInsitu(const char *pattern, const char *replacement)
 	}
 }
 
-hook<ByteArray> ByteArray::replace(const char *pattern, const char *replacement) const
+Ref<ByteArray> ByteArray::replace(const char *pattern, const char *replacement) const
 {
 	return join(split(pattern), replacement);
 }
 
-hook<ByteArray> ByteArray::replace(string pattern, string replacement) const
+Ref<ByteArray> ByteArray::replace(string pattern, string replacement) const
 {
 	return replace(pattern->constData(), replacement->constData());
 }
@@ -400,7 +427,7 @@ ByteArray *ByteArray::expandInsitu()
 						hs = 0;
 					}
 					char ec[4];
-					hook<Utf8Encoder> encoder = Utf8Encoder::open(ec, 4);
+					Ref<Utf8Encoder> encoder = Utf8Encoder::open(ec, 4);
 					encoder->write(x);
 					int el = encoder->byteEncoder()->numBytesWritten();
 					for (int k = 0; k < el; ++k)
@@ -441,7 +468,7 @@ ByteArray *ByteArray::expandInsitu()
 	return this;
 }
 
-hook<ByteArray> ByteArray::stripLeadingSpace() const
+Ref<ByteArray> ByteArray::stripLeadingSpace() const
 {
 	int i = 0;
 	while (i < size_) {
@@ -451,7 +478,7 @@ hook<ByteArray> ByteArray::stripLeadingSpace() const
 	return copy(i, size_ - i);
 }
 
-hook<ByteArray> ByteArray::stripTrailingSpace() const
+Ref<ByteArray> ByteArray::stripTrailingSpace() const
 {
 	int n = size_;
 	while (n > 0) {
@@ -461,7 +488,7 @@ hook<ByteArray> ByteArray::stripTrailingSpace() const
 	return copy(0, n);
 }
 
-hook<ByteArray> ByteArray::trimmed() const
+Ref<ByteArray> ByteArray::trimmed() const
 {
 	int t = 0, i = 0, n = size_;
 	while (t < n) {
@@ -476,9 +503,9 @@ hook<ByteArray> ByteArray::trimmed() const
 	return copy(i, n);
 }
 
-hook<ByteArray> ByteArray::stripTags() const
+Ref<ByteArray> ByteArray::stripTags() const
 {
-	hook<StringList> parts = StringList::create();
+	Ref<StringList> parts = StringList::create();
 	char *o = data_;
 	char *p = o;
 	while (*p) {
@@ -502,18 +529,18 @@ hook<ByteArray> ByteArray::stripTags() const
 	return join(parts);
 }
 
-hook<ByteArray> ByteArray::simplified() const
+Ref<ByteArray> ByteArray::simplified() const
 {
 	return normalized(false);
 }
 
-hook<ByteArray> ByteArray::normalized(bool nameCase) const
+Ref<ByteArray> ByteArray::normalized(bool nameCase) const
 {
 	for (int i = 0; i < size_; ++i) {
 		if ((0 <= data_[i]) && (data_[i] < 32))
 			data_[i] = 32;
 	}
-	hook<StringList> parts = split(" ");
+	Ref<StringList> parts = split(" ");
 	for (int i = 0; i < parts->length(); ++i) {
 		string s = parts->at(i);
 		if (s->isEmpty()) {
@@ -573,9 +600,9 @@ bool ByteArray::linePosToOffset(int line, int pos, int *offset) const
 	return true;
 }
 
-hook<ByteArray> ByteArray::fromUtf16(const void *data, int size, int endian)
+Ref<ByteArray> ByteArray::fromUtf16(const void *data, int size, int endian)
 {
-	hook<ByteArray> s2;
+	Ref<ByteArray> s2;
 	if (size < 0) {
 		size = 0;
 		for (const uint16_t *p = reinterpret_cast<const uint16_t*>(data); *p; ++p) ++size;
@@ -584,13 +611,13 @@ hook<ByteArray> ByteArray::fromUtf16(const void *data, int size, int endian)
 	if (size > 0) {
 		int size2 = 0;
 		{
-			hook<Utf16Decoder> source = Utf16Decoder::open(data, size, endian);
+			Ref<Utf16Decoder> source = Utf16Decoder::open(data, size, endian);
 			for (uchar_t ch; source->read(&ch);)
 				size2 += Utf8Encoder::encodedSize(ch);
 		}
 		s2 = ByteArray::create(size2);
-		hook<Utf16Decoder> source = Utf16Decoder::open(data, size, endian);
-		hook<Utf8Encoder> sink = Utf8Encoder::open(s2->data_, size2);
+		Ref<Utf16Decoder> source = Utf16Decoder::open(data, size, endian);
+		Ref<Utf8Encoder> sink = Utf8Encoder::open(s2->data_, size2);
 		for (uchar_t ch; source->read(&ch);)
 			sink->write(ch);
 	}
@@ -630,16 +657,16 @@ bool ByteArray::toUtf16(void *buf, int *size)
 	return (j <= n);
 }
 
-hook<ByteArray> ByteArray::toUtf16(int endian)
+Ref<ByteArray> ByteArray::toUtf16(int endian)
 {
 	int size2 = 0;
 	for (int i = 0; i < chars()->length(); ++i)
 		size2 += Utf16Encoder::encodedSize(get(i));
-	hook<ByteArray> s2 = ByteArray::create(size2 + 2);
+	Ref<ByteArray> s2 = ByteArray::create(size2 + 2);
 	(*s2)[size2] = 0;
 	(*s2)[size2 + 1] = 0;
 	if (size2 > 0) {
-		hook<Utf16Encoder> sink = Utf16Encoder::create(s2->data(), size2, endian);
+		Ref<Utf16Encoder> sink = Utf16Encoder::create(s2->data(), size2, endian);
 		for (int i = 0; i < chars()->length(); ++i)
 			sink->write(get(i));
 	}
@@ -648,20 +675,20 @@ hook<ByteArray> ByteArray::toUtf16(int endian)
 
 void ByteArray::checkUtf8() const
 {
-	hook<Utf8Decoder> source = Utf8Decoder::create(data_, size_);
+	Ref<Utf8Decoder> source = Utf8Decoder::create(data_, size_);
 	for (uchar_t ch = 0; source->read(&ch););
 }
 
-hook<ByteArray> ByteArray::md5() const
+Ref<ByteArray> ByteArray::md5() const
 {
 	Md5 md5;
 	md5.feed(data_, size_);
 	return md5.finish();
 }
 
-hook<ByteArray> ByteArray::hex() const
+Ref<ByteArray> ByteArray::hex() const
 {
-	hook<ByteArray> s2 = ByteArray::create(size_ * 2);
+	Ref<ByteArray> s2 = ByteArray::create(size_ * 2);
 	int j = 0;
 	for (int i = 0; i < size_; ++i) {
 		unsigned char ch = (unsigned char)data_[i];
@@ -675,7 +702,7 @@ hook<ByteArray> ByteArray::hex() const
 	return s2;
 }
 
-hook<ByteArray> ByteArray::base64() const
+Ref<ByteArray> ByteArray::base64() const
 {
 	return Base64::encode(this);
 }
@@ -695,13 +722,13 @@ bool ByteArray::isAbsolutePath() const
 	return (length() > 0) ? (get(0) == '/') : false;
 }
 
-hook<ByteArray> ByteArray::absolutePathRelativeTo(string currentDir) const
+Ref<ByteArray> ByteArray::absolutePathRelativeTo(string currentDir) const
 {
 	if (isAbsolutePath() || (currentDir == "."))
 		return const_cast<ByteArray *>(this);
 
-	hook<StringList> absoluteParts = StringList::create();
-	hook<StringList> parts = split("/");
+	Ref<StringList> absoluteParts = StringList::create();
+	Ref<StringList> parts = split("/");
 
 	int upCount = 0;
 
@@ -737,38 +764,38 @@ hook<ByteArray> ByteArray::absolutePathRelativeTo(string currentDir) const
 	return absoluteParts->join("/");
 }
 
-hook<ByteArray> ByteArray::absolutePath() const
+Ref<ByteArray> ByteArray::absolutePath() const
 {
 	if (isAbsolutePath())
 		return const_cast<ByteArray *>(this);
 	return absolutePathRelativeTo(string());
 }
 
-hook<ByteArray> ByteArray::fileName() const
+Ref<ByteArray> ByteArray::fileName() const
 {
 	string name;
-	hook<StringList> parts = split("/");
+	Ref<StringList> parts = split("/");
 	if (parts->length() > 0)
 		name = parts->at(-1);
 	return name;
 }
 
-hook<ByteArray> ByteArray::completeBaseName() const
+Ref<ByteArray> ByteArray::completeBaseName() const
 {
-	hook<StringList> parts = fileName()->split(".");
+	Ref<StringList> parts = fileName()->split(".");
 	parts->popBack();
 	return parts->join(".");
 }
 
-hook<ByteArray> ByteArray::baseName() const
+Ref<ByteArray> ByteArray::baseName() const
 {
-	hook<StringList> parts = fileName()->split(".");
+	Ref<StringList> parts = fileName()->split(".");
 	return parts->at(0);
 }
 
-hook<ByteArray> ByteArray::reducePath() const
+Ref<ByteArray> ByteArray::reducePath() const
 {
-	hook<StringList> parts = split("/");
+	Ref<StringList> parts = split("/");
 	if (parts->length() > 0)
 		parts->popBack();
 	string resultPath = parts->join("/");
@@ -777,15 +804,15 @@ hook<ByteArray> ByteArray::reducePath() const
 	return resultPath;
 }
 
-hook<ByteArray> ByteArray::expandPath(string component) const
+Ref<ByteArray> ByteArray::expandPath(string component) const
 {
 	return string(format() << string(this) << "/" << component);
 }
 
-hook<ByteArray> ByteArray::canonicalPath() const
+Ref<ByteArray> ByteArray::canonicalPath() const
 {
-	hook<StringList> parts = split("/");
-	hook<StringList> result = StringList::create();
+	Ref<StringList> parts = split("/");
+	Ref<StringList> result = StringList::create();
 	for (int i = 0; i < parts->length(); ++i) {
 		string part = parts->at(i);
 		if ((part == "") && (i > 0)) continue;

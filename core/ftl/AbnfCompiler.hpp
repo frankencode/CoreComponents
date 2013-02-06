@@ -21,12 +21,12 @@ class AbnfCompiler: public AbnfSyntax
 public:
 	typedef SyntaxDefinition Definition;
 
-	inline static hook<AbnfCompiler> create() { return new AbnfCompiler; }
-	hook<Definition> compile(ByteArray *text, SyntaxDebugger *debugger = 0);
+	inline static Ref<AbnfCompiler> create() { return new AbnfCompiler; }
+	Ref<Definition> compile(ByteArray *text, SyntaxDebugger *debugger = 0);
 
 private:
 	inline const char *str(ByteArray *text, Token *token) { return trap_->capture(text, token->i0(), token->i1()); }
-	hook<StringTrap> trap_;
+	Ref<StringTrap> trap_;
 
 	AbnfCompiler();
 	Node *ignoreDebug(Node *node);
