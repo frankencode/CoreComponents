@@ -52,7 +52,7 @@ public:
 		return new NetworkInterface;
 	}
 
-	string name() const;
+	String name() const;
 	int index() const;
 	unsigned type() const;
 	unsigned flags() const;
@@ -69,7 +69,7 @@ private:
 	static Ref<NetworkInterfaceList> queryAllIoctl(int family);
 	#endif
 
-	string name_;
+	String name_;
 	int index_;
 	unsigned type_;
 	unsigned flags_;

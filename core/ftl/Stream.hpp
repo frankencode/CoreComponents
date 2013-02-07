@@ -9,7 +9,7 @@
 #ifndef FTL_STREAM_HPP
 #define FTL_STREAM_HPP
 
-#include "string.hpp"
+#include "String.hpp"
 
 namespace ftl
 {
@@ -26,13 +26,13 @@ public:
 	virtual void write(const void *buf, int bufFill) = 0;
 
 	void read(void *buf, int bufFill);
-	string readAll();
+	String readAll();
 
-	inline int readAvail(string s) { return readAvail(s->data(), s->size()); }
-	inline void read(string s) { read(s->data(), s->size()); }
-	inline string read(int size) { string s(size); read(s); return s; }
+	inline int readAvail(String s) { return readAvail(s->data(), s->size()); }
+	inline void read(String s) { read(s->data(), s->size()); }
+	inline String read(int size) { String s(size); read(s); return s; }
 	inline void write(const char *s) { write(s, str::len(s)); }
-	inline void write(string s) { write(s->data(), s->size()); }
+	inline void write(String s) { write(s->data(), s->size()); }
 };
 
 } // namespace ftl

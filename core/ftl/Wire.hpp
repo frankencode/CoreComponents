@@ -12,7 +12,7 @@
 #include "Singleton.hpp"
 #include "Array.hpp"
 #include "Map.hpp"
-#include "variant.hpp"
+#include "Variant.hpp"
 #include "SyntaxDefinition.hpp"
 
 namespace ftl
@@ -21,26 +21,26 @@ namespace ftl
 class WireException: public StdException
 {
 public:
-	WireException(const string &error, int line, int pos);
+	WireException(const String &error, int line, int pos);
 	~WireException() throw();
 	const char *what() const throw();
 private:
-	string message_;
-	string error_;
+	String message_;
+	String error_;
 	int line_;
 	int pos_;
 };
 
 class Wire;
 
-class WireObject: public Map<string, variant>
+class WireObject: public Map<String, Variant>
 {
-	typedef Map<string, variant> Super;
+	typedef Map<String, Variant> Super;
 
 public:
 	virtual Ref<Super> clone() const { return new WireObject(*this); }
 
-	inline string className() const { return className_; }
+	inline String className() const { return className_; }
 
 protected:
 	friend class Wire;
@@ -53,23 +53,23 @@ private:
 		  className_(b.className_)
 	{}
 
-	string className_;
+	String className_;
 };
 
 class Wire: public SyntaxDefinition, public Singleton<Wire>
 {
 public:
-	variant parse(ByteArray *text, WireObject *virgin = 0);
+	Variant parse(ByteArray *text, WireObject *virgin = 0);
 
 protected:
 	friend class Singleton<Wire>;
 
 	Wire();
 
-	string parseConcatenation(ByteArray *text, Token *token);
+	String parseConcatenation(ByteArray *text, Token *token);
 	Ref<WireObject> parseObject(ByteArray *text, Token *token, WireObject *virgin = 0);
 	Ref<VariantList> parseList(ByteArray *text, Token *token);
-	variant parseValue(ByteArray *text, Token *token);
+	Variant parseValue(ByteArray *text, Token *token);
 
 	int string_;
 	int concatenation_;

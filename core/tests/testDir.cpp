@@ -8,7 +8,7 @@ namespace ftl
 int main(int argc, char **argv)
 {
 	Ref<Dir> dir = Dir::open(Process::cwd());
-	for (string name; dir->read(&name);)
+	for (String name; dir->read(&name);)
 		output()->writeLine(name);
 	return 0;
 }

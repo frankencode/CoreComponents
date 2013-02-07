@@ -7,7 +7,7 @@
   * 2 of the License, or (at your option) any later version.
   */
 
-#include "format.hpp"
+#include "Format.hpp"
 #include "FloatLiteral.hpp"
 #include "IntegerLiteral.hpp"
 #include "Wire.hpp"
@@ -15,12 +15,12 @@
 namespace ftl
 {
 
-WireException::WireException(const string &error, int line, int pos)
+WireException::WireException(const String &error, int line, int pos)
 	: error_(error),
 	  line_(line),
 	  pos_(pos)
 {
-	message_ = format("%%:%%: %%") << line << pos << error;
+	message_ = Format("%%:%%: %%") << line << pos << error;
 }
 
 WireException::~WireException() throw() {}
@@ -94,7 +94,7 @@ Wire::Wire()
 	);
 
 	string_ =
-		DEFINE("string",
+		DEFINE("String",
 			GLUE(
 				CHAR('"'),
 				REPEAT(
@@ -112,11 +112,11 @@ Wire::Wire()
 	concatenation_ =
 		DEFINE("Concatenation",
 			GLUE(
-				REF("string"),
+				REF("String"),
 				REPEAT(
 					GLUE(
 						INLINE("Noise"),
-						REF("string")
+						REF("String")
 					)
 				)
 			)
@@ -151,7 +151,7 @@ Wire::Wire()
 						NOT(RANGE('0', '9')),
 						INLINE("Identifier")
 					),
-					INLINE("string")
+					INLINE("String")
 				),
 				DONE()
 			)
@@ -283,12 +283,12 @@ Wire::Wire()
 	LINK();
 }
 
-variant Wire::parse(ByteArray *text, WireObject *virgin)
+Variant Wire::parse(ByteArray *text, WireObject *virgin)
 {
 	Ref<SyntaxState> state = newState();
 	Ref<Token> token = match(text, -1, state);
 	if (!token) {
-		string reason = "Syntax error";
+		String reason = "Syntax error";
 		int line = 1, pos = 1;
 		if (state->hint()) {
 			reason = state->hint();
@@ -306,7 +306,7 @@ variant Wire::parse(ByteArray *text, WireObject *virgin)
 	return parseValue(text, child);
 }
 
-string Wire::parseConcatenation(ByteArray *text, Token *token)
+String Wire::parseConcatenation(ByteArray *text, Token *token)
 {
 	Ref<StringList> l = StringList::create();
 	token = token->firstChild();
@@ -330,14 +330,14 @@ Ref<WireObject> Wire::parseObject(ByteArray *text, Token *token, WireObject *vir
 	}
 	while (token) {
 		bool stripQuotation = (text->at(token->i0()) == '"');
-		string name = text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
+		String name = text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
 		if (object->contains(name)) {
 			int line = 1, pos = 1;
 			text->offsetToLinePos(token->i1(), &line, &pos);
-			throw WireException(format("Ambiguous member name \"%%\"") << name, line, pos);
+			throw WireException(Format("Ambiguous member name \"%%\"") << name, line, pos);
 		}
 		token = token->nextSibling();
-		variant value = parseValue(text, token);
+		Variant value = parseValue(text, token);
 		object->insert(name, value);
 		token = token->nextSibling();
 	}
@@ -356,9 +356,9 @@ Ref<VariantList> Wire::parseList(ByteArray *text, Token *token)
 	return list;
 }
 
-variant Wire::parseValue(ByteArray *text, Token *token)
+Variant Wire::parseValue(ByteArray *text, Token *token)
 {
-	variant value;
+	Variant value;
 
 	if (token->definition() == floatLiteral()->id()) {
 		float64_t x;

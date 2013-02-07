@@ -6,7 +6,7 @@
 namespace ftl
 {
 
-void printStatus(string path)
+void printStatus(String path)
 {
 	print("path = \"%%\"\n", path);
 	print("File::exists(\"%%\") = %%\n", path, File::exists(path));

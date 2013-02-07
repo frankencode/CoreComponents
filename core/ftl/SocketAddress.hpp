@@ -15,7 +15,7 @@
 #include <sys/socket.h> // connect
 #include <sys/un.h> // sockaddr_un
 
-#include "string.hpp"
+#include "String.hpp"
 #include "List.hpp"
 
 namespace ftl
@@ -42,7 +42,7 @@ public:
 	  * \param address numerical host address, wildcard ("*") or file path
 	  * \param port service port
 	  */
-	inline static Ref<SocketAddress> create(int family, string address = string(), int port = 0) {
+	inline static Ref<SocketAddress> create(int family, String address = String(), int port = 0) {
 		return new SocketAddress(family, address, port);
 	}
 
@@ -62,8 +62,8 @@ public:
 	int port() const;
 	void setPort(int port);
 
-	string addressString() const;
-	string toString() const;
+	String addressString() const;
+	String toString() const;
 
 	int scope() const;
 	void setScope(int scope);
@@ -79,23 +79,23 @@ public:
 	  *   The host name can be a short name relative to the local domain.
 	  * The fully qualified domain name (aka canonical name) can be optionally retrieved.
 	  */
-	static Ref<SocketAddressList> resolve(string hostName, string serviceName = string(), int family = AF_UNSPEC, int socketType = 0, string *canonicalName = 0);
+	static Ref<SocketAddressList> resolve(String hostName, String serviceName = String(), int family = AF_UNSPEC, int socketType = 0, String *canonicalName = 0);
 
 	/** Lookup the host name of given address. Usually a reverse DNS
 	  * lookup will be issued, which may take several seconds.
 	  */
-	string lookupHostName(bool *failed = 0) const;
+	String lookupHostName(bool *failed = 0) const;
 
 	/** Lookup the service name. In most setups the service name will be looked up
 	  * in a local file (/etc/services) and therefore the call returns immediately.
 	  */
-	string lookupServiceName() const;
+	String lookupServiceName() const;
 
 	/** Returns the name of this host.
 	  *   On a properly configured server the host name returned should be a fully
 	  * qualified domain name.
 	  */
-	static string hostName();
+	static String hostName();
 
 	struct sockaddr *addr();
 	const struct sockaddr *addr() const;
@@ -103,7 +103,7 @@ public:
 
 protected:
 	SocketAddress();
-	SocketAddress(int family, string address, int port);
+	SocketAddress(int family, String address, int port);
 	SocketAddress(struct sockaddr_in *addr);
 	SocketAddress(struct sockaddr_in6 *addr);
 	SocketAddress(addrinfo *info);

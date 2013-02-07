@@ -67,14 +67,14 @@ static void printStringAttr(const ByteArray &s) {
 	print("\"");
 }
 
-void DebugNode::printNext(string indent)
+void DebugNode::printNext(String indent)
 {
 	print("%%%%(", indent, declType());
-	printAttributes(format() << indent << debugger_->indent_);
+	printAttributes(Format() << indent << debugger_->indent_);
 	print(")");
 }
 
-void DebugNode::printBranch(Node *node, string indent) {
+void DebugNode::printBranch(Node *node, String indent) {
 	if (node) {
 		DebugNode *debugNode = cast<DebugNode>(node);
 		if (debugNode) debugNode->printNext(indent);
@@ -85,12 +85,12 @@ void DebugNode::printBranch(Node *node, string indent) {
 	}
 }
 
-string DebugNode::superIndent(string indent) const {
+String DebugNode::superIndent(String indent) const {
 	return (indent != "") ? indent->copy(0, indent->size() - debugger_->indent_->size()) : indent;
 }
 
-string DebugNode::subIndent(string indent) const {
-	return format() << indent << DebugNode::debugger_->indent_;
+String DebugNode::subIndent(String indent) const {
+	return Format() << indent << DebugNode::debugger_->indent_;
 }
 
 class CharDebugNode: public DebugNode {
@@ -101,7 +101,7 @@ public:
 
 	virtual const char *declType() const { return charNode()->invert() ? "OTHER" : "CHAR"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		printCharAttr(charNode()->ch());
 	}
 
@@ -118,7 +118,7 @@ public:
 
 	virtual const char *declType() const { return greaterNode()->invert() ? "BELOW" : "GREATER"; }
 
-	virtual void printAttributes(string index) {
+	virtual void printAttributes(String index) {
 		printCharAttr(greaterNode()->ch());
 	}
 
@@ -135,7 +135,7 @@ public:
 
 	virtual const char *declType() const { return greaterOrEqualNode()->invert() ? "BELOW_OR_EQUAL" : "GREATER_OR_EQUAL"; }
 
-	virtual void printAttributes(string index) {
+	virtual void printAttributes(String index) {
 		printCharAttr(greaterOrEqualNode()->ch());
 	}
 
@@ -161,7 +161,7 @@ public:
 
 	virtual const char *declType() const { return rangeMinMaxNode()->invert() ? "EXCEPT" : "RANGE"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		RangeMinMaxNode *node = rangeMinMaxNode();
 		printCharAttr(node->a());
 		print(", ");
@@ -181,7 +181,7 @@ public:
 
 	virtual const char *declType() const { return rangeExplicitNode()->invert() ? "EXCEPT" : "RANGE"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		printStringAttr(rangeExplicitNode()->s());
 	}
 
@@ -198,7 +198,7 @@ public:
 
 	virtual const char *declType() const { return "STRING"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		printStringAttr(stringNode()->s());
 	}
 
@@ -215,7 +215,7 @@ public:
 
 	virtual const char *declType() const { return "KEYWORD"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		print("\n%%\"", indent);
 		KeywordMap *map = keywordNode()->map();
 		for (KeywordMap::Index index = map->first(); map->has(index); ++index) {
@@ -241,7 +241,7 @@ public:
 
 	virtual const char *declType() const { return "REPEAT"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		RepeatNode *node = repeatNode();
 		if (node->maxRepeat() != intMax)
 			print("%%, %%,", node->minRepeat(), node->maxRepeat());
@@ -265,7 +265,7 @@ public:
 
 	virtual const char *declType() const { return "LAZY_REPEAT"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		LazyRepeatNode *node = repeatNode();
 		if (node->minRepeat() != 0)
 			print("%%,", node->minRepeat());
@@ -287,7 +287,7 @@ public:
 
 	virtual const char *declType() const { return "GREEDY_REPEAT"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		GreedyRepeatNode *node = repeatNode();
 		if (node->maxRepeat() != intMax)
 			print("%%, %%,", node->minRepeat(), node->maxRepeat());
@@ -311,7 +311,7 @@ public:
 
 	virtual const char *declType() const { return "LENGTH"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		LengthNode *node = lengthNode();
 		if (node->maxLength() != intMax)
 			print("%%, %%,\n", node->minLength(), node->maxLength());
@@ -365,7 +365,7 @@ public:
 
 	virtual const char *declType() const { return "FIND"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		print("\n");
 		printBranch(findNode()->entry(), indent);
 		print("\n%%", DebugNode::superIndent(indent));
@@ -384,7 +384,7 @@ public:
 
 	virtual const char *declType() const { return aheadNode()->invert() ? "NOT" : "AHEAD"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		print("\n");
 		printBranch(aheadNode()->entry(), indent);
 		print("\n%%", DebugNode::superIndent(indent));
@@ -403,7 +403,7 @@ public:
 
 	virtual const char *declType() const { return behindNode()->invert() ? "NOT_BEHIND" : "BEHIND"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		print("\n");
 		printBranch(behindNode()->entry(), indent);
 		print("\n%%", DebugNode::superIndent(indent));
@@ -422,7 +422,7 @@ public:
 
 	virtual const char *declType() const { return "CHOICE"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		print("\n");
 		Node *node = choiceNode()->firstChoice();
 		while (node) {
@@ -446,7 +446,7 @@ public:
 
 	virtual const char *declType() const { return "GLUE"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		print("\n");
 		Node *node = glueNode()->firstChild();
 		while (node) {
@@ -470,7 +470,7 @@ public:
 
 	virtual const char *declType() const { return hintNode()->text() ? "HINT" : "DONE"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		if (hintNode()->text())
 			print("\"%%\"", hintNode()->text());
 	}
@@ -488,7 +488,7 @@ public:
 
 	virtual const char *declType() const { return (inlineNode()) ? "INLINE" : "REF"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		print("\"%%\"", linkNode()->ruleName());
 	}
 
@@ -508,7 +508,7 @@ public:
 
 	virtual const char *declType() const { return "INLINE"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		print("\"%%\"", inlineNode()->ruleName());
 	}
 
@@ -525,7 +525,7 @@ public:
 
 	virtual const char *declType() const { return "PREVIOUS"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		PreviousNode *node = previousNode();
 		print("\"%%\"", node->ruleName());
 		if (node->keywordName())
@@ -545,7 +545,7 @@ public:
 
 	virtual const char *declType() const { return "CALL"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		print("0x%hex:8.:'0'", (void *)callNode()->callBack());
 	}
 
@@ -562,7 +562,7 @@ public:
 
 	virtual const char *declType() const { return "SET"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		SetNode *node = setNode();
 		print("\"%%\", %%", DebugNode::debugger_->flagNameById()->value(node->flagId()), node->value());
 	}
@@ -580,7 +580,7 @@ public:
 
 	virtual const char *declType() const { return "IF"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		IfNode *node = ifNode();
 		print("\"%%\",\n", DebugNode::debugger_->flagNameById()->value(node->flagId()));
 		printBranch(node->trueBranch(), indent);
@@ -602,7 +602,7 @@ public:
 
 	virtual const char *declType() const { return "CAPTURE"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		CaptureNode *node = captureNode();
 		print("\"%%\",\n", DebugNode::debugger_->captureNameById()->value(node->captureId()));
 		printBranch(node->coverage(), indent);
@@ -622,7 +622,7 @@ public:
 
 	virtual const char *declType() const { return "REPLAY"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		print("\"%%\"", DebugNode::debugger_->captureNameById()->value(replayNode()->captureId()));
 	}
 private:
@@ -638,7 +638,7 @@ public:
 
 	virtual const char *declType() const { return "INVOKE"; }
 
-	virtual void printAttributes(string indent) {
+	virtual void printAttributes(String indent) {
 		InvokeNode *node = invokeNode();
 		if (node->coverage()) {
 			print("\"%%\",\n", node->definitionName());
@@ -655,7 +655,7 @@ private:
 	inline InvokeNode *invokeNode() const { return cast<InvokeNode>(DebugNode::entry()); }
 };
 
-Debugger::Debugger(string indent)
+Debugger::Debugger(String indent)
 	: factoryByNodeType_(FactoryByNodeType::create()),
 	  indent_(indent)
 {
@@ -665,7 +665,7 @@ Debugger::Debugger(string indent)
 	factoryByNodeType_->insert("Any",            new DebugNodeFactory<AnyDebugNode>            (this));
 	factoryByNodeType_->insert("RangeMinMax",    new DebugNodeFactory<RangeMinMaxDebugNode>    (this));
 	factoryByNodeType_->insert("RangeExplicit",  new DebugNodeFactory<RangeExplicitDebugNode>  (this));
-	factoryByNodeType_->insert("string",         new DebugNodeFactory<StringDebugNode>         (this));
+	factoryByNodeType_->insert("String",         new DebugNodeFactory<StringDebugNode>         (this));
 	factoryByNodeType_->insert("Keyword",        new DebugNodeFactory<KeywordDebugNode>        (this));
 	factoryByNodeType_->insert("Repeat",         new DebugNodeFactory<RepeatDebugNode>         (this));
 	factoryByNodeType_->insert("LazyRepeat",     new DebugNodeFactory<LazyRepeatDebugNode>     (this));
@@ -735,7 +735,7 @@ Ref<Debugger::StateNameById> Debugger::newReverseMap(StateIdByName *stateIdByNam
 {
 	Ref<StateNameById> stateNameById = StateNameById::create();
 	for (StateIdByName::Index i = stateIdByName->first(); stateIdByName->has(i); ++i) {
-		string name = stateIdByName->key(i);
+		String name = stateIdByName->key(i);
 		int id = stateIdByName->value(i);
 		stateNameById->insert(id, name);
 	}

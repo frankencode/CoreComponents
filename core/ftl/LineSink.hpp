@@ -10,13 +10,13 @@
 #define FTL_LINESINK_HPP
 
 #include "defaults.hpp"
-#include "string.hpp"
+#include "String.hpp"
 #include "Stream.hpp"
 
 namespace ftl
 {
 
-class LineSink: public Sink<string>
+class LineSink: public Sink<String>
 {
 public:
 	inline static Ref<LineSink> open(Stream *stream, const char *eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
@@ -25,11 +25,11 @@ public:
 
 	Stream *stream() const;
 
-	string prefix() const;
-	void setPrefix(string prefix);
+	String prefix() const;
+	void setPrefix(String prefix);
 
-	void writeLine(string line);
-	void write(string text);
+	void writeLine(String line);
+	void write(String text);
 
 protected:
 	LineSink(Stream *stream, const char *eol, int maxLineLength);
@@ -38,8 +38,8 @@ protected:
 	void flush();
 
 	Ref<Stream> stream_;
-	string eol_;
-	string prefix_;
+	String eol_;
+	String prefix_;
 
 	int bufFill_;
 	Ref<ByteArray> buf_;

@@ -13,19 +13,19 @@
 namespace ftl
 {
 
-Ref<DirWalker> DirWalker::tryOpen(string path, int option)
+Ref<DirWalker> DirWalker::tryOpen(String path, int option)
 {
 	Ref<Dir> dir = Dir::tryOpen(path);
 	if (dir) return new DirWalker(path, option, dir);
 	return 0;
 }
 
-Ref<DirWalker> DirWalker::open(string path, int option)
+Ref<DirWalker> DirWalker::open(String path, int option)
 {
 	return new DirWalker(path, option);
 }
 
-DirWalker::DirWalker(string path, int option, Dir *dir)
+DirWalker::DirWalker(String path, int option, Dir *dir)
 	: option_(option),
 	  maxDepth_(-1),
 	  depth_(0),
@@ -34,7 +34,7 @@ DirWalker::DirWalker(string path, int option, Dir *dir)
 	if (!dir_) dir_ = Dir::open(path);
 }
 
-bool DirWalker::read(string *path)
+bool DirWalker::read(String *path)
 {
 	if (child_) {
 		if (child_->read(path))
@@ -47,10 +47,10 @@ bool DirWalker::read(string *path)
 		}
 		child_ = 0;
 	}
-	string name;
+	String name;
 	while (dir_->read(&name)) {
 		if ((name == "") || (name == ".") || (name == "..")) continue;
-		string h = dir_->path(name);
+		String h = dir_->path(name);
 		child_ = tryOpen(h, option_);
 		if (child_) {
 			if (depth_ == maxDepth_) continue;

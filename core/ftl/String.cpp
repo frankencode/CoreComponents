@@ -7,24 +7,24 @@
   * 2 of the License, or (at your option) any later version.
   */
 
-#include "format.hpp"
-#include "variant.hpp"
-#include "string.hpp"
+#include "Format.hpp"
+#include "Variant.hpp"
+#include "String.hpp"
 
 namespace ftl
 {
 
-string::string(const variant &b)
+String::String(const Variant &b)
 	: Super(cast<ByteArray>(b))
 {
 	if (!Super::get()) Super::set(ByteArray::empty());
 }
 
-string::string(const format &b)
+String::String(const Format &b)
 {
 	*this = *ByteArray::join(b);
 }
 
-string::string(Ref<StringList> parts) { *this = join(parts); }
+String::String(Ref<StringList> parts) { *this = join(parts); }
 
 } // namespace ftl

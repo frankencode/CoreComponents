@@ -27,7 +27,7 @@ void Stream::read(void *buf, int bufFill)
 	}
 }
 
-string Stream::readAll()
+String Stream::readAll()
 {
 	Ref<Buffer> buffer = new Buffer;
 	while (true) {

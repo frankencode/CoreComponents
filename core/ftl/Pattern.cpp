@@ -12,19 +12,19 @@
 #include "SyntaxDebugger.hpp"
 #endif
 #include "syntax.hpp"
-#include "format.hpp"
-#include "pattern.hpp"
+#include "Format.hpp"
+#include "Pattern.hpp"
 
 namespace ftl
 {
 
 typedef syntax::NODE NODE;
 
-PatternException::PatternException(const string &error, int pos)
+PatternException::PatternException(const String &error, int pos)
 	: error_(error),
 	  pos_(pos)
 {
-	message_ = format("%%: %%") << pos << error;
+	message_ = Format("%%: %%") << pos << error;
 }
 
 PatternException::~PatternException() throw()
@@ -39,7 +39,7 @@ class PatternCompiler: public SyntaxDefinition, public Singleton<PatternCompiler
 {
 protected:
 	friend class Singleton<PatternCompiler>;
-	friend class pattern;
+	friend class Pattern;
 
 	PatternCompiler();
 
@@ -288,7 +288,7 @@ void PatternCompiler::compile(ByteArray *text, SyntaxDefinition *definition)
 	Ref<SyntaxState> state = newState();
 	Ref<Token> token = match(text, 0, state);
 	if ((!token) || (token->length() < text->length())) {
-		string reason = "Syntax error";
+		String reason = "Syntax error";
 		int pos = token->length();
 		if (state->hint()) {
 			reason = state->hint();
@@ -358,13 +358,13 @@ NODE PatternCompiler::compileBehind(ByteArray *text, Token *token, SyntaxDefinit
 
 NODE PatternCompiler::compileCapture(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
-	string name = text->copy(token->firstChild());
+	String name = text->copy(token->firstChild());
 	return definition->CAPTURE(name, compileChoice(text, token->lastChild(), definition));
 }
 
 NODE PatternCompiler::compileReference(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
-	string name = text->copy(token->firstChild());
+	String name = text->copy(token->firstChild());
 	return definition->REPLAY(name);
 }
 
@@ -401,7 +401,7 @@ NODE PatternCompiler::compileRangeExplicit(ByteArray *text, Token *token, Syntax
 	Token *child = token->firstChild();
 	bool invert = (text->at(token->i0() + 1) == '^');
 	int n = token->countChildren();
-	string s(n);
+	String s(n);
 	for (int i = 0; i < n; ++i) {
 		s->set(i, readChar(text, child, definition));
 		child = child->nextSibling();
@@ -428,30 +428,30 @@ NODE PatternCompiler::compileRepeat(ByteArray *text, Token *token, SyntaxDefinit
 	return definition->GREEDY_REPEAT(minRepeat, maxRepeat, previous);
 }
 
-pattern::pattern()
+Pattern::Pattern()
 {}
 
-pattern::pattern(const char *text)
+Pattern::Pattern(const char *text)
 {
-	*this = string(text);
+	*this = String(text);
 }
 
-pattern::pattern(const string &text)
+Pattern::Pattern(const String &text)
 {
 	*this = text;
 }
 
-pattern::pattern(const variant &text)
+Pattern::Pattern(const Variant &text)
 {
-	*this = string(text);
+	*this = String(text);
 }
 
-const pattern &pattern::operator=(const char *text)
+const Pattern &Pattern::operator=(const char *text)
 {
-	return *this = string(text);
+	return *this = String(text);
 }
 
-const pattern &pattern::operator=(const string &text)
+const Pattern &Pattern::operator=(const String &text)
 {
 	text_ = text;
 	set(
@@ -465,9 +465,9 @@ const pattern &pattern::operator=(const string &text)
 	return *this;
 }
 
-const pattern &pattern::operator=(const variant &text)
+const Pattern &Pattern::operator=(const Variant &text)
 {
-	return *this = string(text);
+	return *this = String(text);
 }
 
 } // namespace ftl

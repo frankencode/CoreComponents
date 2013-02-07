@@ -9,27 +9,27 @@
 #ifndef FTL_GLOB_HPP
 #define FTL_GLOB_HPP
 
-#include "pattern.hpp"
+#include "Pattern.hpp"
 
 namespace ftl
 {
 
 class Dir;
 
-class Glob: public Source<string>
+class Glob: public Source<String>
 {
 public:
-	inline static Ref<Glob> open(string expression) { return new Glob(expression); }
+	inline static Ref<Glob> open(String expression) { return new Glob(expression); }
 
-	bool read(string *path);
+	bool read(String *path);
 
 private:
-	Glob(string expression);
-	Glob(string path, StringList *remainder);
-	void init(string path);
+	Glob(String expression);
+	Glob(String path, StringList *remainder);
+	void init(String path);
 
 	Ref<Dir> dir_;
-	pattern pattern_;
+	Pattern pattern_;
 	Ref<StringList> remainder_;
 	Ref<Glob> child_;
 };

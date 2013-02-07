@@ -19,13 +19,18 @@ namespace ftl
 template<class T> class List;
 
 class Character;
-class string;
-typedef List<string> StringList;
+class String;
+typedef List<String> StringList;
 
 namespace syntax { class Definition; }
 typedef syntax::Definition SyntaxDefinition;
 
 class File;
+
+class ByteArray;
+typedef ByteArray StringNg;
+
+typedef List< Ref<StringNg> > StringListNg;
 
 class ByteArray: public Sequence<char, int>
 {
@@ -158,22 +163,22 @@ public:
 	}
 
 	int find(const char *pattern, int i = 0) const;
-	int find(string pattern, int i = 0) const;
+	int find(String pattern, int i = 0) const;
 	int find(SyntaxDefinition *pattern, int i = 0) const;
 
 	inline bool contains(const char *pattern) const { return find(pattern) != size_; }
-	bool contains(string pattern) const;
+	bool contains(String pattern) const;
 
 	static Ref<ByteArray> join(const StringList *parts, const char *sep = "");
 	static Ref<ByteArray> join(const StringList *parts, char sep);
-	static Ref<ByteArray> join(const StringList *parts, string sep);
+	static Ref<ByteArray> join(const StringList *parts, String sep);
 	Ref<StringList> split(char sep) const;
 	Ref<StringList> split(const char *sep) const;
 	Ref<StringList> split(SyntaxDefinition *pattern) const;
 
 	void replaceInsitu(const char *pattern, const char *replacement);
 	Ref<ByteArray> replace(const char *pattern, const char *replacement) const;
-	Ref<ByteArray> replace(string pattern, string replacement) const;
+	Ref<ByteArray> replace(String pattern, String replacement) const;
 
 	int toInt(bool *ok = 0) const;
 	double toFloat(bool *ok = 0) const;
@@ -213,13 +218,13 @@ public:
 	bool isRelativePath() const;
 	bool isAbsolutePath() const;
 
-	Ref<ByteArray> absolutePathRelativeTo(string currentDir) const;
+	Ref<ByteArray> absolutePathRelativeTo(String currentDir) const;
 	Ref<ByteArray> absolutePath() const;
 	Ref<ByteArray> fileName() const;
 	Ref<ByteArray> completeBaseName() const;
 	Ref<ByteArray> baseName() const;
 	Ref<ByteArray> reducePath() const;
-	Ref<ByteArray> expandPath(string component) const;
+	Ref<ByteArray> expandPath(String component) const;
 	Ref<ByteArray> canonicalPath() const;
 
 private:

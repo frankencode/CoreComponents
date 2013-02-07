@@ -29,14 +29,14 @@ bool LineSource::hasMore()
 	return (cachedLines_ > 0);
 }
 
-bool LineSource::read(string *line)
+bool LineSource::read(String *line)
 {
 	bool more = hasMore();
 	if (more) *line = readLine();
 	return more;
 }
 
-string LineSource::readLine()
+String LineSource::readLine()
 {
 	if (!hasMore())
 		return "";
@@ -53,7 +53,7 @@ string LineSource::readLine()
 
 	--cachedLines_;
 
-	return string(buf_->data(), i - nk);
+	return String(buf_->data(), i - nk);
 }
 
 bool LineSource::readAvail()

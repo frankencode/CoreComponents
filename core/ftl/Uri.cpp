@@ -8,7 +8,7 @@
   */
 
 #include "debug.hpp"
-#include "format.hpp"
+#include "Format.hpp"
 #include "UriSyntax.hpp"
 #include "Uri.hpp"
 
@@ -22,7 +22,7 @@ Uri::Uri()
 Uri::Uri(const char *text)
 	: port_(-1)
 {
-	readUri(string(text));
+	readUri(String(text));
 }
 
 Uri::Uri(ByteArray *bytes, Token *rootToken)
@@ -73,9 +73,9 @@ void Uri::readUri(ByteArray *bytes, Token *rootToken)
 	}
 }
 
-string Uri::toString() const
+String Uri::toString() const
 {
-	format text;
+	Format text;
 	if (scheme_ != "") {
 		text << encode(scheme_);
 		text << ":";
@@ -103,7 +103,7 @@ string Uri::toString() const
 	return text;
 }
 
-string Uri::encode(string s)
+String Uri::encode(String s)
 {
 	s->toLowerInsitu();
 
@@ -116,7 +116,7 @@ string Uri::encode(string s)
 			if (ch == *r) {
 				if (j < i)
 					l->append(s->copy(j, i));
-				string pct("%XX");
+				String pct("%XX");
 				pct->set(1, ch >> 4);
 				pct->set(2, ch & 0xF);
 				l->append(pct);
@@ -131,7 +131,7 @@ string Uri::encode(string s)
 	return l->join();
 }
 
-string Uri::decode(string s)
+String Uri::decode(String s)
 {
 	s->toLowerInsitu();
 

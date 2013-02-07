@@ -8,9 +8,9 @@
 
 using namespace ftl;
 
-string fileTypeToString(int type)
+String fileTypeToString(int type)
 {
-	struct { int type; string name; } map[] = {
+	struct { int type; String name; } map[] = {
 		{ File::Regular, "regular" },
 		{ File::Directory, "directory" },
 		{ File::CharDevice, "char_device" },
@@ -25,14 +25,14 @@ string fileTypeToString(int type)
 		if (type == map[i].type)
 			return map[i].name;
 
-	return format("type_%%") << type;
+	return Format("type_%%") << type;
 }
 
-string timeToString(Time time, bool human)
+String timeToString(Time time, bool human)
 {
 	Ref<Date> d = Date::create(time);
 	if (human) {
-		return format(
+		return Format(
 			"%4.:'0'%-%2.:'0'%-%2.:'0'% "
 			"%2.:'0'%:%2.:'0'%"
 		) << d->year() << d->month() << d->day()
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 			"  -ino      inode number\n"
 			"  -links    number of hard links\n"
 			"  -human    optimize for readability\n",
-			string(argv[0])->fileName()
+			String(argv[0])->fileName()
 		);
 		return 0;
 	}
@@ -93,22 +93,22 @@ int main(int argc, char **argv)
 	bool inodeNumberOption  = config->contains("inode");
 	bool linksOption        = config->contains("links") || defaults;
 
-	Ref< Source<string> > files;
+	Ref< Source<String> > files;
 	if (rawInput()->isTeletype())
 		files = listOfFiles;
 	else
 		files = input();
 
-	for (string file; files->read(&file);)
+	for (String file; files->read(&file);)
 	{
 		Ref<FileStatus> status = FileStatus::read(file);
 
-		format line;
+		Format line;
 
 		if (nameOption)      line << status->path()->fileName();
 		if (pathOption)      line << status->path();
 		if (typeOption)      line << fileTypeToString(status->type());
-		if (modeOption)      line << string(format("%oct%") << status->mode());
+		if (modeOption)      line << String(Format("%oct%") << status->mode());
 		if (sizeOption)      line << status->size();
 		if (diskUsageOption) line << status->sizeInBlocks() * status->sizeOfBlock();
 		if (ownerOption)     line << User::lookup(status->ownerId())->name();

@@ -1180,7 +1180,7 @@ public:
 	inline NODE EXCEPT(char a, char b) { return debug(new RangeMinMaxNode(a, b, 1), "RangeMinMax"); }
 	inline NODE EXCEPT(const char *s) { return debug(new RangeExplicitNode(s, 1), "RangeExplicit"); }
 
-	inline NODE STRING(const char *s) { return debug(new StringNode(s, caseSensitive_), "string"); }
+	inline NODE STRING(const char *s) { return debug(new StringNode(s, caseSensitive_), "String"); }
 	NODE KEYWORD(const char *keywords);
 
 	inline NODE REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new RepeatNode(minRepeat, maxRepeat, entry), "Repeat"); }

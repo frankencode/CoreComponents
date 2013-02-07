@@ -9,7 +9,7 @@
 #ifndef FTL_PROPERTY_HPP
 #define FTL_PROPERTY_HPP
 
-#include "format.hpp"
+#include "Format.hpp"
 #include "Map.hpp"
 
 namespace ftl
@@ -88,14 +88,14 @@ private:
 };
 
 template<class T>
-class property
+class Property
 {
 public:
-	property() {}
-	property(const T &b): value_(b) {}
+	Property() {}
+	Property(const T &b): value_(b) {}
 
 	inline operator const T&() const { return value_; }
-	inline property &operator=(const T &b) {
+	inline Property &operator=(const T &b) {
 		if (b != value_) {
 			value_ = b;
 			if (valueChanged_)
@@ -109,10 +109,10 @@ public:
 		return valueChanged_;
 	}
 
-	inline operator string() const { return format() << value_; }
+	inline operator String() const { return Format() << value_; }
 
-	property *operator->() { return this; }
-	const property *operator->() const { return this; }
+	Property *operator->() { return this; }
+	const Property *operator->() const { return this; }
 
 private:
 	Ref< Signal<T> > valueChanged_;

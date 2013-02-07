@@ -45,12 +45,12 @@ public:
 	static Ref<BuildPlan> create(int argc, char **argv);
 
 	inline ToolChain *toolChain() const { return toolChain_; }
-	inline string projectPath() const { return projectPath_; }
-	inline string modulePath() const { return modulePath_; }
+	inline String projectPath() const { return projectPath_; }
+	inline String modulePath() const { return modulePath_; }
 	inline Config *recipe() const { return recipe_; }
 
-	inline string name() const { return name_; }
-	inline string version() const { return version_; }
+	inline String name() const { return name_; }
+	inline String version() const { return version_; }
 	inline int options() const { return options_; }
 	inline int speedOptimizationLevel() const { return speedOptimizationLevel_; }
 	inline int sizeOptimizationLevel() const { return sizeOptimizationLevel_; }
@@ -65,25 +65,25 @@ public:
 
 	int run();
 
-	string sourcePath(string source) const;
-	string modulePath(string object) const;
+	String sourcePath(String source) const;
+	String modulePath(String object) const;
 
-	string beautifyCommand(string command);
-	bool runBuild(string command);
+	String beautifyCommand(String command);
+	bool runBuild(String command);
 
-	bool mkdir(string path);
-	bool rmdir(string path);
-	bool symlink(string path, string newPath);
-	bool unlink(string path);
-	Ref<FileStatus> fileStatus(string path);
+	bool mkdir(String path);
+	bool rmdir(String path);
+	bool symlink(String path, String newPath);
+	bool unlink(String path);
+	Ref<FileStatus> fileStatus(String path);
 
 private:
-	Ref<BuildPlan> create(ToolChain *toolChain, string projectPath, int globalOptions);
+	Ref<BuildPlan> create(ToolChain *toolChain, String projectPath, int globalOptions);
 
 	typedef PrefixTree<char, BuildPlan *> BuildMap;
 
 	BuildPlan(int argc, char **argv);
-	BuildPlan(ToolChain *toolChain, string projectPath, BuildPlan *parentPlan);
+	BuildPlan(ToolChain *toolChain, String projectPath, BuildPlan *parentPlan);
 
 	void readRecipe(BuildPlan *parentPlan = 0);
 
@@ -93,12 +93,12 @@ private:
 	void clean();
 
 	Ref<ToolChain> toolChain_;
-	string projectPath_;
-	string modulePath_;
+	String projectPath_;
+	String modulePath_;
 	Ref<Config> recipe_;
 
-	string name_;
-	string version_;
+	String name_;
+	String version_;
 	int options_;
 	int speedOptimizationLevel_;
 	int sizeOptimizationLevel_;
@@ -112,7 +112,7 @@ private:
 	Ref<BuildPlanList> prequisites_;
 
 	Ref<BuildMap> buildMap_;
-	string sourcePrefix_;
+	String sourcePrefix_;
 
 	bool prepareComplete_;
 	bool analyseComplete_;

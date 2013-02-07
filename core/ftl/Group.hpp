@@ -11,7 +11,7 @@
 
 #include <sys/types.h>
 #include <grp.h>
-#include "string.hpp"
+#include "String.hpp"
 
 namespace ftl
 {
@@ -32,7 +32,7 @@ public:
 	inline bool exists() const { return exists_; }
 
 	inline gid_t id() const { return id_; }
-	inline string name() const { return name_; }
+	inline String name() const { return name_; }
 	inline StringList *members() const { return members_; }
 
 private:
@@ -42,7 +42,7 @@ private:
 	void load(struct group *entry);
 	bool exists_;
 	gid_t id_;
-	string name_;
+	String name_;
 	Ref<StringList> members_;
 };
 

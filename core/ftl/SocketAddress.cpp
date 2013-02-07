@@ -13,7 +13,7 @@
 #include <netdb.h> // getaddrinfo, freeaddrinfo, getnameinfo
 #include <errno.h>
 #include "strings.hpp"
-#include "format.hpp"
+#include "Format.hpp"
 #include "SocketAddress.hpp"
 
 namespace ftl
@@ -24,7 +24,7 @@ SocketAddress::SocketAddress()
 	  protocol_(0)
 {}
 
-SocketAddress::SocketAddress(int family, string address, int port)
+SocketAddress::SocketAddress(int family, String address, int port)
 	: socketType_(0),
 	  protocol_(0)
 {
@@ -62,7 +62,7 @@ SocketAddress::SocketAddress(int family, string address, int port)
 	if (family != AF_LOCAL)
 		if ((address != "") && ((address != "*")))
 			if (inet_pton(family, address, addr) != 1)
-				FTL_THROW(NetworkingException, "Broken address string");
+				FTL_THROW(NetworkingException, "Broken address String");
 }
 
 SocketAddress::SocketAddress(struct sockaddr_in *addr)
@@ -114,9 +114,9 @@ void SocketAddress::setPort(int port)
 		FTL_THROW(NetworkingException, "Unsupported address family");
 }
 
-string SocketAddress::addressString() const
+String SocketAddress::addressString() const
 {
-	string s;
+	String s;
 	if (addr_.sa_family == AF_LOCAL) {
 		s = localAddress_.sun_path;
 	}
@@ -143,9 +143,9 @@ string SocketAddress::addressString() const
 	return s;
 }
 
-string SocketAddress::toString() const
+String SocketAddress::toString() const
 {
-	format s(addressString());
+	Format s(addressString());
 	if (addr_.sa_family != AF_LOCAL) {
 		if (port() != 0)
 			s << ":" << port();
@@ -160,7 +160,7 @@ void SocketAddress::setScope(int scope) {
 	if (addr_.sa_family == AF_INET6) inet6Address_.sin6_scope_id = scope;
 }
 
-Ref<SocketAddressList> SocketAddress::resolve(string hostName, string serviceName, int family, int socketType, string *canonicalName)
+Ref<SocketAddressList> SocketAddress::resolve(String hostName, String serviceName, int family, int socketType, String *canonicalName)
 {
 	addrinfo hint;
 	addrinfo *head = 0;
@@ -211,7 +211,7 @@ Ref<SocketAddressList> SocketAddress::resolve(string hostName, string serviceNam
 	return list;
 }
 
-string SocketAddress::lookupHostName(bool *failed) const
+String SocketAddress::lookupHostName(bool *failed) const
 {
 	const int hostNameSize = NI_MAXHOST;
 	const int serviceNameSize = NI_MAXSERV;
@@ -233,10 +233,10 @@ string SocketAddress::lookupHostName(bool *failed) const
 			*failed = false;
 	}
 
-	return string(hostName);
+	return String(hostName);
 }
 
-string SocketAddress::lookupServiceName() const
+String SocketAddress::lookupServiceName() const
 {
 
 	const int hostNameSize = NI_MAXHOST;
@@ -256,14 +256,14 @@ string SocketAddress::lookupServiceName() const
 		FTL_THROW(NetworkingException, gai_strerror(ret));
 	}
 
-	return string(serviceName);
+	return String(serviceName);
 }
 
-string SocketAddress::hostName()
+String SocketAddress::hostName()
 {
 	const int bufSize = 1024;
 	char buf[bufSize + 1];
-	string name;
+	String name;
 	if (gethostname(buf, bufSize) != -1) {
 		buf[bufSize] = 0;
 		name = buf;

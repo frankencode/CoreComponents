@@ -1,6 +1,6 @@
 #include <ftl/StandardStreams.hpp>
-#include <ftl/pattern.hpp>
-#include <ftl/format.hpp>
+#include <ftl/Pattern.hpp>
+#include <ftl/Format.hpp>
 #include <ftl/File.hpp>
 #include <ftl/Process.hpp>
 #include <ftl/ProcessFactory.hpp>
@@ -10,16 +10,16 @@
 namespace mach
 {
 
-GccToolChain::GccToolChain(string execPath)
+GccToolChain::GccToolChain(String execPath)
 	: ToolChain(execPath, Process::start(machineCommand(execPath), Process::ForwardOutput)->output()->readLine())
 {}
 
-string GccToolChain::machineCommand(string execPath)
+String GccToolChain::machineCommand(String execPath)
 {
 	return execPath + " -dumpmachine";
 }
 
-string GccToolChain::machineCommand() const
+String GccToolChain::machineCommand() const
 {
 	return machineCommand(execPath());
 }
@@ -34,53 +34,53 @@ int GccToolChain::defaultSizeOptimizationLevel() const
 	return 1;
 }
 
-string GccToolChain::analyseCommand(BuildPlan *buildPlan, string source) const
+String GccToolChain::analyseCommand(BuildPlan *buildPlan, String source) const
 {
-	format args;
+	Format args;
 	args << execPath();
 	appendCompileOptions(args, buildPlan);
 	args << "-MM" << "-MG" << source;
 	return args->join(" ");
 }
 
-Ref<Job> GccToolChain::createAnalyseJob(BuildPlan *buildPlan, string source)
+Ref<Job> GccToolChain::createAnalyseJob(BuildPlan *buildPlan, String source)
 {
 	return Job::create(analyseCommand(buildPlan, source));
 }
 
 Ref<Module> GccToolChain::finishAnalyseJob(BuildPlan *buildPlan, Job *job)
 {
-	Ref<StringList> parts = job->outputText()->split(pattern("[:\\\\\n\r ]{1,}"));
+	Ref<StringList> parts = job->outputText()->split(Pattern("[:\\\\\n\r ]{1,}"));
 	return Module::create(job->command(), buildPlan->modulePath(parts->pop(0)), parts, true);
 }
 
 Ref<Job> GccToolChain::createCompileJob(BuildPlan *buildPlan, Module *module)
 {
-	format args;
+	Format args;
 	args << execPath();
 	appendCompileOptions(args, buildPlan);
 	args << "-c" << "-o" << module->modulePath();
 	args << module->sourcePath();
-	string command = args->join(" ");
+	String command = args->join(" ");
 	return Job::create(command);
 }
 
 Ref<Job> GccToolChain::createLinkJob(BuildPlan *buildPlan, Module *module)
 {
-	format args;
+	Format args;
 	args << execPath();
 	if (buildPlan->options() & BuildPlan::Static) args << "-static";
 	args << "-pthread";
 	args << "-o" << module->toolName();
 	args << module->modulePath();
 	appendLinkOptions(args, buildPlan);
-	string command = args->join(" ");
+	String command = args->join(" ");
 	return Job::create(command);
 }
 
-string GccToolChain::linkPath(BuildPlan *buildPlan) const
+String GccToolChain::linkPath(BuildPlan *buildPlan) const
 {
-	string path;
+	String path;
 	if (buildPlan->options() & BuildPlan::Library)
 		path = "lib" + buildPlan->name() + ".so." + buildPlan->version();
 	else
@@ -90,12 +90,12 @@ string GccToolChain::linkPath(BuildPlan *buildPlan) const
 
 bool GccToolChain::link(BuildPlan *buildPlan)
 {
-	string name = buildPlan->name();
-	string version = buildPlan->version();
+	String name = buildPlan->name();
+	String version = buildPlan->version();
 	int options = buildPlan->options();
 	ModuleList *modules = buildPlan->modules();
 
-	format args;
+	Format args;
 
 	args << execPath();
 	if (options & BuildPlan::Static) args << "-static";
@@ -114,13 +114,13 @@ bool GccToolChain::link(BuildPlan *buildPlan)
 
 	appendLinkOptions(args, buildPlan);
 
-	string command = args->join(" ");
+	String command = args->join(" ");
 
 	if (!buildPlan->runBuild(command))
 		return false;
 
 	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static)) {
-		string fullPath = linkPath(buildPlan);
+		String fullPath = linkPath(buildPlan);
 		Ref<StringList> parts = fullPath->split('.');
 		while (parts->popBack() != "so")
 			buildPlan->symlink(fullPath, parts->join("."));
@@ -137,7 +137,7 @@ void GccToolChain::clean(BuildPlan *buildPlan)
 			buildPlan->unlink(buildPlan->modules()->at(i)->toolName());
 	}
 
-	string fullPath = linkPath(buildPlan);
+	String fullPath = linkPath(buildPlan);
 	buildPlan->unlink(fullPath);
 
 	if ((buildPlan->options() & BuildPlan::Library) && !(buildPlan->options() & BuildPlan::Static)) {
@@ -147,12 +147,12 @@ void GccToolChain::clean(BuildPlan *buildPlan)
 	}
 }
 
-void GccToolChain::appendCompileOptions(format args, BuildPlan *buildPlan)
+void GccToolChain::appendCompileOptions(Format args, BuildPlan *buildPlan)
 {
 	// args << "-std=c++0x";
 	if (buildPlan->options() & BuildPlan::Debug) args << "-g";
 	if (buildPlan->options() & BuildPlan::Release) args << "-DNDEBUG";
-	if (buildPlan->options() & BuildPlan::OptimizeSpeed) args << string(format("-O%%") << buildPlan->speedOptimizationLevel());
+	if (buildPlan->options() & BuildPlan::OptimizeSpeed) args << String(Format("-O%%") << buildPlan->speedOptimizationLevel());
 	if (buildPlan->options() & BuildPlan::OptimizeSize) args << "-Os";
 	if (buildPlan->options() & BuildPlan::Static) args << "-static";
 	if (buildPlan->options() & BuildPlan::Library) args << "-fpic";
@@ -161,7 +161,7 @@ void GccToolChain::appendCompileOptions(format args, BuildPlan *buildPlan)
 		args << "-I" + buildPlan->includePaths()->at(i);
 }
 
-void GccToolChain::appendLinkOptions(format args, BuildPlan *buildPlan)
+void GccToolChain::appendLinkOptions(Format args, BuildPlan *buildPlan)
 {
 	StringList *libraryPaths = buildPlan->libraryPaths();
 	StringList *libraries = buildPlan->libraries();

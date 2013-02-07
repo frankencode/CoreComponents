@@ -9,7 +9,7 @@ namespace ftl
 class CloneFactory: public ProcessFactory
 {
 public:
-	static Ref<CloneFactory> create(string path) { return new CloneFactory(path); }
+	static Ref<CloneFactory> create(String path) { return new CloneFactory(path); }
 
 	int incarnate()
 	{
@@ -23,11 +23,11 @@ public:
 	}
 
 private:
-	CloneFactory(string path)
+	CloneFactory(String path)
 		: path_(path)
 	{}
 
-	string path_;
+	String path_;
 };
 
 int main()

@@ -17,7 +17,7 @@ namespace ftl
 /** \brief Iterating UTF-16 encoded strings
   *
   * The Utf16Walker allows iterating Unicode characters over any zero terminated word sequence.
-  * The walker will always halt at the string boundaries. If stepping over the string boundary
+  * The walker will always halt at the string boundaries. If stepping over the String boundary
   * the walker will switch to valid() == false and start delivering zero characters.
   *
   * If placed at a string's terminating zero character it is possible to step backwards

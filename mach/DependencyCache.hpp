@@ -1,7 +1,7 @@
 #ifndef MACH_DEPENDENCYCACHE_HPP
 #define MACH_DEPENDENCYCACHE_HPP
 
-#include <ftl/string.hpp>
+#include <ftl/String.hpp>
 #include <ftl/Time.hpp>
 
 namespace ftl {
@@ -23,17 +23,17 @@ public:
 	static Ref<DependencyCache> create(BuildPlan *buildPlan);
 	~DependencyCache();
 
-	static string cachePath(BuildPlan *buildPlan);
+	static String cachePath(BuildPlan *buildPlan);
 
-	bool lookup(string source, Ref<Module> *module);
-	void insert(string source, Module *module);
+	bool lookup(String source, Ref<Module> *module);
+	void insert(String source, Module *module);
 
 private:
 	DependencyCache(BuildPlan *buildPlan);
 
 	Ref<BuildPlan> buildPlan_;
-	string cachePath_;
-	typedef Map< string, Ref<Module> > Cache;
+	String cachePath_;
+	typedef Map< String, Ref<Module> > Cache;
 	Ref<Cache> cache_;
 };
 

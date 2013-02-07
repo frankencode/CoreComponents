@@ -16,7 +16,7 @@
 #include "Guard.hpp"
 #include "Mutex.hpp"
 #include "Random.hpp"
-#include "format.hpp"
+#include "Format.hpp"
 #include "Dir.hpp"
 #include "Process.hpp"
 #include "System.hpp"
@@ -37,7 +37,7 @@ int File::translateOpenFlags(int openFlags)
 	return h;
 }
 
-Ref<File> File::open(string path, int openFlags)
+Ref<File> File::open(String path, int openFlags)
 {
 	int fd = ::open(path, translateOpenFlags(openFlags));
 	if (fd == -1)
@@ -45,7 +45,7 @@ Ref<File> File::open(string path, int openFlags)
 	return new File(path, openFlags, fd);
 }
 
-Ref<File> File::tryOpen(string path, int openFlags)
+Ref<File> File::tryOpen(String path, int openFlags)
 {
 	int fd = ::open(path, translateOpenFlags(openFlags));
 	if (fd != -1) return new File(path, openFlags, fd);
@@ -59,8 +59,8 @@ Ref<File> File::open(int fd, int openFlags)
 
 Ref<File> File::temp(int openFlags)
 {
-	string path = createUnique(
-		format("/tmp/%%_%%_XXXXXXXX")
+	String path = createUnique(
+		Format("/tmp/%%_%%_XXXXXXXX")
 		<< Process::execPath()->fileName()
 		<< Process::currentId()
 	);
@@ -69,7 +69,7 @@ Ref<File> File::temp(int openFlags)
 	return open(path, openFlags);
 }
 
-File::File(string path, int openFlags, int fd)
+File::File(String path, int openFlags, int fd)
 	: SystemStream(fd),
 	  path_(path),
 	  openFlags_(openFlags),
@@ -82,12 +82,12 @@ File::~File()
 		try { unlink(path_); } catch(...) {}
 }
 
-string File::path() const
+String File::path() const
 {
 	return path_;
 }
 
-string File::name() const
+String File::name() const
 {
 	const char sep = '/';
 
@@ -101,7 +101,7 @@ string File::name() const
 		--i;
 	}
 
-	string name;
+	String name;
 	if (i < n)
 		name = path_->copy(i, n);
 
@@ -132,10 +132,10 @@ void File::truncate(off_t length)
 
 class UnlinkFile: public Action {
 public:
-	UnlinkFile(string path): path_(path->absolutePath()) {}
+	UnlinkFile(String path): path_(path->absolutePath()) {}
 	void run() { try { unlink(path_); } catch(...) {} }
 private:
-	string path_;
+	String path_;
 };
 
 void File::unlinkOnExit()
@@ -165,7 +165,7 @@ bool File::seekable() const
 	return ::lseek(fd_, 0, SeekCurrent) != -1;
 }
 
-string File::map() const
+String File::map() const
 {
 	off_t fileSize = ::lseek(fd_, 0, SEEK_END);
 	if (fileSize == -1)
@@ -181,7 +181,7 @@ string File::map() const
 		void *p = ::mmap(0, fileSize, protection, MAP_PRIVATE, fd_, 0);
 		if (p == MAP_FAILED)
 			FTL_SYSTEM_EXCEPTION;
-		return string(Ref<ByteArray>(new ByteArray((char*)p, fileSize, fileSize)));
+		return String(Ref<ByteArray>(new ByteArray((char*)p, fileSize, fileSize)));
 	}
 	else {
 		#ifndef MAP_ANONYMOUS
@@ -193,7 +193,7 @@ string File::map() const
 		p = ::mmap(p, fileSize, protection, MAP_PRIVATE | MAP_FIXED, fd_, 0);
 		if (p == MAP_FAILED)
 			FTL_SYSTEM_EXCEPTION;
-		return string(Ref<ByteArray>(new ByteArray((char*)p, fileSize, fileSize + pageSize)));
+		return String(Ref<ByteArray>(new ByteArray((char*)p, fileSize, fileSize + pageSize)));
 	}
 }
 
@@ -213,17 +213,17 @@ void File::dataSync()
 #endif
 }
 
-bool File::access(string path, int flags)
+bool File::access(String path, int flags)
 {
 	return ::access(path, flags) == 0;
 }
 
-bool File::exists(string path)
+bool File::exists(String path)
 {
 	return (path != "") && access(path, Exists);
 }
 
-bool File::create(string path, int mode)
+bool File::create(String path, int mode)
 {
 	int fd = ::open(path, O_RDONLY|O_CREAT|O_EXCL, mode);
 	if (fd == -1) return false;
@@ -231,43 +231,43 @@ bool File::create(string path, int mode)
 	return true;
 }
 
-bool File::link(string path, string newPath)
+bool File::link(String path, String newPath)
 {
 	return ::link(path, newPath) != -1;
 }
 
-bool File::unlink(string path)
+bool File::unlink(String path)
 {
 	return ::unlink(path) != -1;
 }
 
-bool File::symlink(string path, string newPath)
+bool File::symlink(String path, String newPath)
 {
 	return ::symlink(path, newPath) != -1;
 }
 
-string File::readlink(string path)
+String File::readlink(String path)
 {
-	string buf = string(128);
+	String buf = String(128);
 	while (true) {
 		ssize_t numBytes = ::readlink(path, buf, buf->size());
 		if (numBytes == -1)
-			return string();
+			return String();
 		if (numBytes <= buf->size()) {
 			if (numBytes < buf->size())
-				buf = string(buf->data(), numBytes);
+				buf = String(buf->data(), numBytes);
 			break;
 		}
-		buf = string(numBytes);
+		buf = String(numBytes);
 	}
 	return buf;
 }
 
-string File::resolve(string path)
+String File::resolve(String path)
 {
-	string resolvedPath = path;
+	String resolvedPath = path;
 	while (File::unresolvedStatus(resolvedPath)->type() == File::Link) {
-		string origPath = resolvedPath;
+		String origPath = resolvedPath;
 		resolvedPath = File::readlink(resolvedPath);
 		if (resolvedPath == "") break;
 		if (resolvedPath->isRelativePath())
@@ -276,11 +276,11 @@ string File::resolve(string path)
 	return resolvedPath;
 }
 
-string File::createUnique(string path, int mode, char placeHolder)
+String File::createUnique(String path, int mode, char placeHolder)
 {
 	Ref<Random> random = Random::open();
 	while (true) {
-		string candidate = path->copy();
+		String candidate = path->copy();
 		for (int i = 0, n = candidate->size(); i < n; ++i) {
 			if (candidate->at(i) == placeHolder) {
 				char r = random->get(0, 61);
@@ -305,7 +305,7 @@ string File::createUnique(string path, int mode, char placeHolder)
 	}
 }
 
-bool File::establish(string path, int fileMode, int dirMode)
+bool File::establish(String path, int fileMode, int dirMode)
 {
 	if (path->contains('/'))
 		if (!Dir::establish(path->reducePath(), dirMode))
@@ -316,16 +316,16 @@ bool File::establish(string path, int fileMode, int dirMode)
 }
 
 
-string File::lookup(string fileName, StringList *dirs, int accessFlags)
+String File::lookup(String fileName, StringList *dirs, int accessFlags)
 {
 	Ref<StringList> h;
 	if (!dirs) {
 		h = Process::env("PATH")->split(':');
 		dirs = h;
 	}
-	string path;
+	String path;
 	for (int i = 0; i < dirs->length(); ++i) {
-		string candidate = format() << dirs->at(i) << "/" << fileName;
+		String candidate = Format() << dirs->at(i) << "/" << fileName;
 		if (access(candidate, accessFlags)) {
 			path = candidate;
 			break;
@@ -334,23 +334,23 @@ string File::lookup(string fileName, StringList *dirs, int accessFlags)
 	return path;
 }
 
-Ref<FileStatus> File::status(string path)
+Ref<FileStatus> File::status(String path)
 {
 	return FileStatus::read(path, true);
 }
 
-Ref<FileStatus> File::unresolvedStatus(string path)
+Ref<FileStatus> File::unresolvedStatus(String path)
 {
 	return FileStatus::read(path, false);
 }
 
-string File::load(string path)
+String File::load(String path)
 {
 	establish(path);
 	return open(path, File::Read)->readAll();
 }
 
-void File::save(string path, string text)
+void File::save(String path, String text)
 {
 	establish(path);
 	Ref<File> file = open(path, File::Write);

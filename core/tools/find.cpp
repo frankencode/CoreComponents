@@ -1,6 +1,6 @@
 #include <ftl/PrintDebug.hpp>
 #include <ftl/Config.hpp>
-#include <ftl/pattern.hpp>
+#include <ftl/Pattern.hpp>
 #include <ftl/DirWalker.hpp>
 #include <ftl/File.hpp>
 
@@ -16,7 +16,7 @@ typedef List< Ref<Match> > Matches;
 
 void displayMatch(ByteArray *path, ByteArray *text, Match *match);
 
-string replaceMatches(ByteArray *text, Matches *matches, ByteArray *replacement);
+String replaceMatches(ByteArray *text, Matches *matches, ByteArray *replacement);
 
 int main(int argc, char **argv)
 {
@@ -43,24 +43,24 @@ int main(int argc, char **argv)
 			"  -display  display match in context\n"
 			"  -replace  replace matches by given text\n"
 			"  -paste  paste replacements from file\n",
-			string(argv[0])->fileName()
+			String(argv[0])->fileName()
 		);
 		return 0;
 	}
 
-	pattern namePattern;
-	pattern typePattern;
+	Pattern namePattern;
+	Pattern typePattern;
 	int maxDepth = config->value("depth", -1);
-	pattern textPattern;
+	Pattern textPattern;
 	bool displayOption = config->value("display", false);
 	bool replaceOption = false;
-	string replacement;
+	String replacement;
 
-	string h;
+	String h;
 	if (config->lookup("name", &h)) namePattern = h;
 	if (config->lookup("type", &h)) typePattern = h;
 	if (config->lookup("text", &h)) textPattern = h;
-	if (config->lookup("word", &h)) textPattern = string("(?<![a..z]|[A..Z]|_)" + h + "(?>![a..z][A..Z]|_)");
+	if (config->lookup("word", &h)) textPattern = String("(?<![a..z]|[A..Z]|_)" + h + "(?>![a..z]|[A..Z]|_)");
 
 	if (config->lookup("replace", &h)) {
 		replaceOption = true;
@@ -75,10 +75,10 @@ int main(int argc, char **argv)
 	if (dirPaths->length() == 0) dirPaths->append(".");
 
 	for (int i = 0; i < dirPaths->length(); ++i) {
-		string dirPath = dirPaths->at(i)->canonicalPath();
+		String dirPath = dirPaths->at(i)->canonicalPath();
 		Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
 		dirWalker->setMaxDepth(maxDepth);
-		string path;
+		String path;
 		while (dirWalker->read(&path)) {
 			if (namePattern) {
 				if (!namePattern->match(path->fileName())) continue;
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 			if (typePattern) {
 				int type = FileStatus::read(path, false)->type();
 				bool shortMode = (typePattern->matchLength() == 1);
-				string typeString;
+				String typeString;
 				if (type == File::Regular)          typeString = shortMode ? "r" : "regular file";
 				else if (type == File::Directory)   typeString = shortMode ? "d" : "directory";
 				else if (type == File::Link)        typeString = shortMode ? "l" : "link";
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 					continue;
 				}
 				Ref<Matches> matches = Matches::create();
-				string text = file->map();
+				String text = file->map();
 				int ln = 1;
 				for (int i = 0; i < text->length();) {
 					Ref<Token> token = textPattern->find(text, i);
@@ -161,7 +161,7 @@ void displayMatch(ByteArray *path, ByteArray *text, Match *match)
 	for (int j1 = j0; j0 < i1; j0 = j1) {
 		for (;j1 < text->length(); ++j1)
 			if (text->at(j1) == '\n') break;
-		format line;
+		Format line;
 		line << ln << ": ";
 		int k0 = j0, k1 = j1;
 		if (j0 <= i0 && i0 < j1) k0 = i0;
@@ -176,7 +176,7 @@ void displayMatch(ByteArray *path, ByteArray *text, Match *match)
 	}
 }
 
-string replaceMatches(ByteArray *text, Matches *matches, ByteArray *replacement)
+String replaceMatches(ByteArray *text, Matches *matches, ByteArray *replacement)
 {
 	Ref<StringList> fragments = StringList::create();
 	int fi0 = 0; // begin of fragment

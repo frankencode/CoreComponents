@@ -10,7 +10,7 @@
 #define FTL_DATE_HPP
 
 #include "Time.hpp"
-#include "string.hpp"
+#include "String.hpp"
 
 namespace ftl
 {
@@ -60,18 +60,18 @@ public:
 	Time time() const;
 
 	// \todo
-	string toString() const;
-	// static Ref<Date> fromString(string s);
+	String toString() const;
+	// static Ref<Date> fromString(String s);
 
 	// \todo
-	// local time formatting
+	// local time Formatting
 
 private:
 	Date();
 	Date(Time time);
 
 	// \todo
-	// Date(string s);
+	// Date(String s);
 	// Date(int year, int month, int day, int hour = 0, int min = 0, int sec = 0);
 
 	void clear();
@@ -80,7 +80,7 @@ private:
 	// \todo: replace by a unixDay(;)
 	static int julianDay(int year, int month, int day);
 	int tm_off;
-	// \todo: fully enable ms resolution (ss.fraction in string output)
+	// \todo: fully enable ms resolution (ss.fraction in String output)
 	// int tm_ms;
 };
 

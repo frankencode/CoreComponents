@@ -128,12 +128,12 @@ XInputEvent::XInputEvent(uint8_t messageCode, bool synthetic, ByteDecoder *sourc
 
 void XInputEvent::printTo(LineSink *sink) const
 {
-	string detailString;
+	String detailString;
 	if ((messageCode == XMessage::KeyPress) || (messageCode == XMessage::KeyRelease)) {
-		detailString = format("keycode: %%") << keyCode;
+		detailString = Format("keycode: %%") << keyCode;
 	}
 	else if ((messageCode == XMessage::ButtonPress) || (messageCode == XMessage::ButtonRelease)) {
-		detailString = format("button: %%") << button;
+		detailString = Format("button: %%") << button;
 	}
 	else if (messageCode == XMessage::MotionNotify) {
 		detailString = (detail == XInputEvent::Hint) ? "hint" : "normal";
@@ -146,7 +146,7 @@ void XInputEvent::printTo(LineSink *sink) const
 		else if (detail == XInputEvent::NonlinearVirtual) detailString = "nonlinear virtual";
 	}
 
-	string stateString;
+	String stateString;
 	{
 		Ref<StringList> bitNames = StringList::create();
 		if      (state & XInputEvent::Shift)   bitNames->append("Shift");
@@ -196,7 +196,7 @@ XFocusEvent::XFocusEvent(uint8_t messageCode, bool synthetic, ByteDecoder *sourc
 
 void XFocusEvent::printTo(LineSink *sink) const
 {
-	string detailString = "none";
+	String detailString = "none";
 	if      (detail == XFocusEvent::Ancestor)         detailString = "ancestor";
 	else if (detail == XFocusEvent::Virtual)          detailString = "virtual";
 	else if (detail == XFocusEvent::Inferior)         detailString = "inferior";
@@ -204,7 +204,7 @@ void XFocusEvent::printTo(LineSink *sink) const
 	else if (detail == XFocusEvent::NonlinearVirtual) detailString = "nonlinear virtual";
 	else if (detail == XFocusEvent::Pointer)          detailString = "pointer";
 	else if (detail == XFocusEvent::PointerRoot)      detailString = "pointer root";
-	string modeString = "normal";
+	String modeString = "normal";
 	if      (mode == XFocusEvent::Grab)         modeString = "grab";
 	else if (mode == XFocusEvent::Ungrab)       modeString = "ungrab";
 	else if (mode == XFocusEvent::WhileGrabbed) modeString = "while grabbed";
@@ -307,7 +307,7 @@ XVisibilityNotifyEvent::XVisibilityNotifyEvent(uint8_t messageCode, bool synthet
 
 void XVisibilityNotifyEvent::printTo(LineSink *sink) const
 {
-	string stateString = "undefined";
+	String stateString = "undefined";
 	if (state == Unobscured) stateString = "unobscured";
 	else if (state == PartiallyObscured) stateString = "partially obscured";
 	else if (state == FullyObscured) stateString = "fully obscured";
