@@ -8,8 +8,8 @@
   */
 
 #include "File.hpp"
-#include "format.hpp"
-#include "pattern.hpp"
+#include "Format.hpp"
+#include "Pattern.hpp"
 #include "Config.hpp"
 
 namespace ftl
@@ -17,17 +17,17 @@ namespace ftl
 
 Ref<Config> Config::create() { return new Config; }
 
-void Config::read(string path)
+void Config::read(String path)
 {
 	try {
 		path_ = path;
 		wire()->parse(File::open(path, File::Read)->readAll(), this);
 	}
 	catch (SystemException &) {
-		throw ConfigException(format("Can't open configuration file %%") << path);
+		throw ConfigException(Format("Can't open configuration file %%") << path);
 	}
 	catch (WireException &ex) {
-		throw ConfigException(format("Syntax error in configuration file\n%%:%%") << path << ex.what());
+		throw ConfigException(Format("Syntax error in configuration file\n%%:%%") << path << ex.what());
 	}
 }
 
@@ -36,11 +36,11 @@ void Config::read(int argc, char **argv)
 	arguments_ = StringList::create();
 	options_ = StringList::create();
 
-	pattern flag("-{1,2}(?name:[^-][^=]{})(=(?value:[^=]{1,})){0,1}");
+	Pattern flag("-{1,2}(?name:[^-][^=]{})(=(?value:[^=]{1,})){0,1}");
 
 	for (int i = 1; i < argc; ++i)
 	{
-		string s = argv[i];
+		String s = argv[i];
 		if (s->at(0) != '-') {
 			arguments_->append(s);
 			continue;
@@ -48,13 +48,13 @@ void Config::read(int argc, char **argv)
 
 		Ref<SyntaxState> state = flag->newState();
 		if (!flag->match(s, state))
-			throw ConfigException(format("Illegal option syntax: \"%%\"") << s);
+			throw ConfigException(Format("Illegal option syntax: \"%%\"") << s);
 
 		options_->append(s);
 
-		string name = s->copy(state->capture("name"));
-		string valueText = s->copy(state->capture("value"));
-		variant value = true;
+		String name = s->copy(state->capture("name"));
+		String valueText = s->copy(state->capture("value"));
+		Variant value = true;
 		if (valueText != "") {
 			try {
 				value = wire()->parse(valueText);
@@ -72,6 +72,6 @@ void Config::read(int argc, char **argv)
 StringList *Config::options() const { return options_; }
 StringList *Config::arguments() const { return arguments_; }
 
-string Config::path() const { return path_; }
+String Config::path() const { return path_; }
 
 } // namespace ftl

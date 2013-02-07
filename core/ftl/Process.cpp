@@ -21,7 +21,7 @@
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #include <crt_externs.h> // _NSGetEnviron
 #endif
-#include "format.hpp"
+#include "Format.hpp"
 #include "Thread.hpp"
 #include "ProcessFactory.hpp"
 #include "Process.hpp"
@@ -33,14 +33,14 @@ extern "C" char **environ;
 namespace ftl
 {
 
-Ref<Process> Process::start(string command, int ioPolicy)
+Ref<Process> Process::start(String command, int ioPolicy)
 {
 	Ref<ProcessFactory> factory = ProcessFactory::create();
 	factory->setIoPolicy(ioPolicy);
 	return start(command, factory);
 }
 
-Ref<Process> Process::start(string command, ProcessFactory *factory)
+Ref<Process> Process::start(String command, ProcessFactory *factory)
 {
 	factory->setCommand(command);
 	return factory->produce();
@@ -79,7 +79,7 @@ Process::~Process()
 			break;
 		}
 		if (status != 0)
-			throw ProcessException(format("Process unsuccessful, status = %%") << status);
+			throw ProcessException(Format("Process unsuccessful, status = %%") << status);
 	}
 }
 
@@ -131,13 +131,13 @@ int Process::wait()
 	return status;
 }
 
-void Process::cd(string path)
+void Process::cd(String path)
 {
 	if (::chdir(path) == -1)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-string Process::cwd()
+String Process::cwd()
 {
 	int size = 0x1000;
 	char *buf = (char *)mem::alloc(size);
@@ -153,16 +153,16 @@ string Process::cwd()
 		else
 			FTL_SYSTEM_EXCEPTION;
 	}
-	string path(ret);
+	String path(ret);
 	mem::free(buf);
 	return path;
 }
 
-string Process::execPath()
+String Process::execPath()
 {
-	string path;
+	String path;
 	#ifdef __linux
-	string linkPath = format("/proc/%%/exe") << currentId();
+	String linkPath = Format("/proc/%%/exe") << currentId();
 	path = File::readlink(linkPath);
 	#endif
 	#ifdef __MACH__
@@ -187,18 +187,18 @@ gid_t Process::effectiveGroupId() { return ::getegid(); }
 
 bool Process::isSuperUser() { return (::geteuid() == 0) || (::getegid() == 0); }
 
-string Process::env(string key)
+String Process::env(String key)
 {
 	return getenv(key);
 }
 
-void Process::setEnv(string key, string value)
+void Process::setEnv(String key, String value)
 {
 	if (setenv(key, value, 1) == -1)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-void Process::unsetEnv(string key)
+void Process::unsetEnv(String key)
 {
 	errno = 0;
 	unsetenv(key);
@@ -212,7 +212,7 @@ Ref<EnvMap> Process::envMap()
 	Ref<EnvMap> map = EnvMap::create();
 	int i = 0;
 	while (env[i] != 0) {
-		Ref<StringList> parts = string(env[i])->split("=");
+		Ref<StringList> parts = String(env[i])->split("=");
 		if (parts->length() == 2)
 			map->insert(parts->at(0), parts->at(1));
 		++i;

@@ -13,7 +13,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "string.hpp"
+#include "String.hpp"
 #include "SystemStream.hpp"
 #include "FileStatus.hpp"
 
@@ -70,13 +70,13 @@ public:
 		StandardError  = 2
 	};
 
-	static Ref<File> open(string path, int openFlags = Read);
-	static Ref<File> tryOpen(string path, int openFlags = Read);
+	static Ref<File> open(String path, int openFlags = Read);
+	static Ref<File> tryOpen(String path, int openFlags = Read);
 	static Ref<File> open(int fd, int openFlags);
 	static Ref<File> temp(int openFlags = Read|Write);
 
-	string path() const;
-	string name() const;
+	String path() const;
+	String name() const;
 	Ref<FileStatus> status() const;
 
 	int openFlags() const;
@@ -89,37 +89,37 @@ public:
 	off_t seek(off_t distance, int method = SeekBegin);
 	bool seekable() const;
 
-	string map() const;
+	String map() const;
 
 	void sync();
 	void dataSync();
 
-	static bool access(string path, int flags);
-	static bool exists(string path);
-	static bool create(string path, int mode = 0644);
-	static bool link(string path, string newPath);
-	static bool unlink(string path);
-	static bool symlink(string path, string newPath);
-	static string readlink(string path);
-	static string resolve(string path);
+	static bool access(String path, int flags);
+	static bool exists(String path);
+	static bool create(String path, int mode = 0644);
+	static bool link(String path, String newPath);
+	static bool unlink(String path);
+	static bool symlink(String path, String newPath);
+	static String readlink(String path);
+	static String resolve(String path);
 
-	static string createUnique(string path, int mode = 0644, char placeHolder = 'X');
-	static bool establish(string path, int fileMode = 0644, int dirMode = 0755);
-	static string lookup(string fileName, StringList *dirs = 0, int accessFlags = Execute);
+	static String createUnique(String path, int mode = 0644, char placeHolder = 'X');
+	static bool establish(String path, int fileMode = 0644, int dirMode = 0755);
+	static String lookup(String fileName, StringList *dirs = 0, int accessFlags = Execute);
 
-	static Ref<FileStatus> status(string path);
-	static Ref<FileStatus> unresolvedStatus(string path);
+	static Ref<FileStatus> status(String path);
+	static Ref<FileStatus> unresolvedStatus(String path);
 
-	static string load(string path);
-	static void save(string path, string text);
+	static String load(String path);
+	static void save(String path, String text);
 
 private:
 	static int translateOpenFlags(int openFlags);
 
-	File(string path, int openFlags, int fd);
+	File(String path, int openFlags, int fd);
 	~File();
 
-	string path_;
+	String path_;
 	int openFlags_;
 	bool unlinkWhenDone_;
 };

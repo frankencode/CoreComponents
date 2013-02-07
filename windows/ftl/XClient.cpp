@@ -12,7 +12,7 @@
 #include <ftl/Mutex.hpp>
 #include <ftl/ByteEncoder.hpp>
 #include <ftl/ByteDecoder.hpp>
-#include <ftl/format.hpp>
+#include <ftl/Format.hpp>
 #include <ftl/PrintDebug.hpp>
 #include "XAuthFile.hpp"
 #include "XClient.hpp"
@@ -30,11 +30,11 @@ XClient::XClient()
 	  messageFiltersMutex_(Mutex::create()),
 	  messageFilters_(MessageFilters::create())
 {
-	string host = "";
+	String host = "";
 	int display = 0;
 
 	Ref<SocketAddress> address;
-	string authProtocol, authData;
+	String authProtocol, authData;
 	{
 		Ref<StringList> parts = Process::env("DISPLAY")->split(':');
 		if (parts->length() == 2) {
@@ -45,7 +45,7 @@ XClient::XClient()
 				defaultScreen_ = parts->get(1)->toInt();
 		}
 		if (host == "") {
-			string path = format("/tmp/.X11-unix/X%%") << display;
+			String path = Format("/tmp/.X11-unix/X%%") << display;
 			address = SocketAddress::create(AF_LOCAL, path);
 		}
 		else {

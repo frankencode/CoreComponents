@@ -11,7 +11,7 @@
 #include "File.hpp"
 #include "FileStatus.hpp"
 #include "User.hpp"
-#include "format.hpp"
+#include "Format.hpp"
 #include "LineSource.hpp"
 #else
 #include <sys/param.h>
@@ -29,9 +29,9 @@ namespace ftl
 ProcessStatus::ProcessStatus(pid_t processId)
 {
 #ifdef __linux
-	string path = format("/proc/%%/stat") << processId;
+	String path = Format("/proc/%%/stat") << processId;
 	Ref<LineSource> source = LineSource::open(File::open(path, File::Read));
-	string line = source->readLine();
+	String line = source->readLine();
 	{
 		// extract command name first, because it may contain whitespace
 		int i0 = line->find('(') + 1, i1 = line->find(')');
@@ -50,11 +50,11 @@ ProcessStatus::ProcessStatus(pid_t processId)
 		int minor = (code & 0xFF) | ((code >> 20) << 8);
 		// interpretation according to lanana.org
 		if (major == 4)
-			terminalName_ = format("tty%%") << minor;
+			terminalName_ = Format("tty%%") << minor;
 		else if ((136 <= major) && (major <= 143))
-			terminalName_ = format("pts/%%") << minor;
+			terminalName_ = Format("pts/%%") << minor;
 		else if (major == 3)
-			terminalName_ = format("ttyp%%") << minor;
+			terminalName_ = Format("ttyp%%") << minor;
 	}*/
 	loginName_ = User::lookup(File::status(path)->ownerId())->loginName();
 	processStatus_ = parts->at(2)->get(0);
@@ -146,9 +146,9 @@ pid_t ProcessStatus::processId() const { return processId_; }
 pid_t ProcessStatus::parentProcessId() const { return parentProcessId_; }
 gid_t ProcessStatus::processGroupId() const { return processGroupId_; }
 gid_t ProcessStatus::foregroundProcessGroupId() const { return foregroundProcessGroupId_; }
-// string ProcessStatus::terminalName() const { return terminalName_; }
-string ProcessStatus::loginName() const { return loginName_; }
-string ProcessStatus::commandName() const { return commandName_; }
+// String ProcessStatus::terminalName() const { return terminalName_; }
+String ProcessStatus::loginName() const { return loginName_; }
+String ProcessStatus::commandName() const { return commandName_; }
 char ProcessStatus::processStatus() const { return processStatus_; }
 
 } // namespace ftl

@@ -9,7 +9,7 @@
 #ifndef FTL_LINKINFO_HPP
 #define FTL_LINKINFO_HPP
 
-#include "string.hpp"
+#include "String.hpp"
 
 namespace ftl
 {
@@ -21,8 +21,8 @@ public:
 		return new LinkInfo(addr);
 	}
 
-	string libraryPath() const;
-	string symbolName() const;
+	String libraryPath() const;
+	String symbolName() const;
 	void *baseAddress() const;
 	void *symbolAddress() const;
 
@@ -33,9 +33,9 @@ public:
 private:
 	LinkInfo(void *addr);
 
-	string libraryPath_;
+	String libraryPath_;
 	void *baseAddress_;
-	string symbolName_;
+	String symbolName_;
 	void *symbolAddress_;
 
 	int majorVersion_;

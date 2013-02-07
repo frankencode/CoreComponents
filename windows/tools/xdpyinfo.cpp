@@ -30,8 +30,8 @@ int main()
 
 	XPixmapInfoArray *pixmapInfo = displayInfo->pixmapInfo;
 	for (int i = 0; i < pixmapInfo->length(); ++i) {
-		XPixmapInfo *format = pixmapInfo->at(i);
-		print("pixmap format: depth: %2.%, bpp: %2.%, pad: %2.%\n", format->depth, format->bpp, format->pad);
+		XPixmapInfo *Format = pixmapInfo->at(i);
+		print("pixmap Format: depth: %2.%, bpp: %2.%, pad: %2.%\n", Format->depth, Format->bpp, Format->pad);
 	}
 
 	XScreenInfoArray *screenInfoArray = displayInfo->screenInfo;
@@ -70,7 +70,7 @@ int main()
 			XVisualInfoArray *visualInfoArray = visualInfoByDepth->at(j)->value();
 			for (int k = 0; k < visualInfoArray->length(); ++k) {
 				XVisualInfo *visualInfo = visualInfoArray->at(k);
-				string typeName = "unknown";
+				String typeName = "unknown";
 				if (visualInfo->type == 0) typeName = "static gray";
 				else if (visualInfo->type == 1) typeName = "gray scale";
 				else if (visualInfo->type == 2) typeName = "static color";

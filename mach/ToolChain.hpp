@@ -18,34 +18,34 @@ class DependencyCache;
 class ToolChain: public Instance
 {
 public:
-	inline string execPath() const { return execPath_; }
-	inline string machine() const { return machine_; }
+	inline String execPath() const { return execPath_; }
+	inline String machine() const { return machine_; }
 
-	virtual string machineCommand() const = 0;
+	virtual String machineCommand() const = 0;
 	virtual int defaultSpeedOptimizationLevel() const = 0;
 	virtual int defaultSizeOptimizationLevel() const = 0;
 
-	virtual string analyseCommand(BuildPlan *buildPlan, string source) const = 0;
-	virtual Ref<Job> createAnalyseJob(BuildPlan *buildPlan, string source) = 0;
+	virtual String analyseCommand(BuildPlan *buildPlan, String source) const = 0;
+	virtual Ref<Job> createAnalyseJob(BuildPlan *buildPlan, String source) = 0;
 	virtual Ref<Module> finishAnalyseJob(BuildPlan *buildPlan, Job *job) = 0;
 
 	virtual Ref<Job> createCompileJob(BuildPlan *buildPlan, Module *module) = 0;
 	virtual Ref<Job> createLinkJob(BuildPlan *buildPlan, Module *module) = 0;
 
-	virtual string linkPath(BuildPlan *buildPlan) const = 0;
+	virtual String linkPath(BuildPlan *buildPlan) const = 0;
 	virtual bool link(BuildPlan *buildPlan) = 0;
 
 	virtual void clean(BuildPlan *buildPlan) = 0;
 
 protected:
-	ToolChain(string execPath, string machine)
+	ToolChain(String execPath, String machine)
 		: execPath_(execPath),
 		  machine_(machine)
 	{}
 
 private:
-	string execPath_;
-	string machine_;
+	String execPath_;
+	String machine_;
 };
 
 } // namespace mach

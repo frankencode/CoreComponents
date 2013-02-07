@@ -30,7 +30,7 @@ Time Time::now()
 #endif
 }
 
-string Time::toString() const {
+String Time::toString() const {
 	return Date::create(*this)->toString();
 }
 

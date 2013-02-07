@@ -92,7 +92,7 @@ int echo(int argc, char **argv)
 	print("commandLine = \"%%\"\n", commandLine->join(" "));
 
 	while (true) {
-		string line = input()->readLine();
+		String line = input()->readLine();
 		if ((line == "") || (line == "exit"))
 			break;
 		output()->writeLine(line);

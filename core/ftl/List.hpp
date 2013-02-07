@@ -158,12 +158,13 @@ public:
 		return result;
 	}
 
+protected:
+	List() {}
+	List(int n): tree_(n) {}
+
 private:
 	typedef OrdinalTree< OrdinalNode<Item> > Tree;
 	typedef typename Tree::Node Node;
-
-	List() {}
-	List(int n): tree_(n) {}
 
 	explicit List(const List &b): tree_(b.tree_) {}
 	const List &operator=(const List &b);

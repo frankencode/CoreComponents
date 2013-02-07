@@ -8,17 +8,17 @@
   */
 
 #include "FormatSpecifier.hpp"
-#include "format.hpp"
+#include "Format.hpp"
 
 namespace ftl
 {
 
-format::format(string format)
+Format::Format(String Format)
 	: Super(StringList::create())
 {
 	PlaceHolder *lastPlaceHolder = 0;
 
-	if (format->contains('%'))
+	if (Format->contains('%'))
 	{
 		FormatSpecifier *specifier = formatSpecifier();
 		int i0Saved = 0, i0 = 0, i1 = 0;
@@ -28,12 +28,12 @@ format::format(string format)
 		while (true) {
 			Ref<PlaceHolder> ph = new PlaceHolder;
 
-			if (!specifier->find(format, &i0, &i1, &ph->w_, &ph->wi_, &ph->wf_, &ph->base_, &ph->exp_, &ph->blank_)) break;
+			if (!specifier->find(Format, &i0, &i1, &ph->w_, &ph->wi_, &ph->wf_, &ph->base_, &ph->exp_, &ph->blank_)) break;
 
 			if (i0 != i0Saved)
-				get()->append(format->copy(i0Saved, i0));
+				get()->append(Format->copy(i0Saved, i0));
 			else
-				get()->append(string());
+				get()->append(String());
 
 			ph->j_ = get()->length() + nph;
 			ph->check();
@@ -47,11 +47,11 @@ format::format(string format)
 			i0 = i1;
 			i0Saved = i0;
 		}
-		if (i0Saved < format->size())
-			get()->append(format->copy(i0Saved, format->size()));
+		if (i0Saved < Format->size())
+			get()->append(Format->copy(i0Saved, Format->size()));
 	}
-	else if (!format->isEmpty()) {
-		get()->append(format);
+	else if (!Format->isEmpty()) {
+		get()->append(Format);
 	}
 
 	// add default placeholder
@@ -61,25 +61,25 @@ format::format(string format)
 		placeHolders_ = new PlaceHolder;
 }
 
-format::format(const format &b)
+Format::Format(const Format &b)
 	: Super(b.get()),
 	  placeHolders_(b.placeHolders_)
 {}
 
-format &format::operator=(const format &b)
+Format &Format::operator=(const Format &b)
 {
 	set(b.get());
 	placeHolders_ = b.placeHolders_;
 	return *this;
 }
 
-format &format::operator<<(const string &s)
+Format &Format::operator<<(const String &s)
 {
 	get()->insert(nextPlaceHolder()->j_, s);
 	return *this;
 }
 
-Ref<format::PlaceHolder> format::nextPlaceHolder()
+Ref<Format::PlaceHolder> Format::nextPlaceHolder()
 {
 	Ref<PlaceHolder> ph = placeHolders_;
 	if (placeHolders_->next_)
@@ -89,7 +89,7 @@ Ref<format::PlaceHolder> format::nextPlaceHolder()
 	return ph;
 }
 
-format &format::operator<<(const variant &x)
+Format &Format::operator<<(const Variant &x)
 {
 	if (type(x) == UndefType) {
 		*this << "undef";
@@ -104,7 +104,7 @@ format &format::operator<<(const variant &x)
 		*this << float(x);
 	}
 	else if (type(x) == StringType) {
-		*this << string(x);
+		*this << String(x);
 	}
 	else if (type(x) == RefType) {
 		*this << (void *)cast<Instance>(x);
@@ -112,7 +112,7 @@ format &format::operator<<(const variant &x)
 	return *this;
 }
 
-void format::printInt(uint64_t x, int sign)
+void Format::printInt(uint64_t x, int sign)
 {
 	Ref<PlaceHolder> ph = nextPlaceHolder();
 
@@ -140,7 +140,7 @@ void format::printInt(uint64_t x, int sign)
 	if (wi < digits->fill()) wi = digits->fill();
 	if (w < wi) w = wi;
 
-	string text = string(w, ph->blank_);
+	String text = String(w, ph->blank_);
 	int i = 0;
 
 	int wb = 0; // width of blank
@@ -162,7 +162,7 @@ void format::printInt(uint64_t x, int sign)
 	get()->insert(ph->j_, text);
 }
 
-void format::printFloat(float64_t x, bool half)
+void Format::printFloat(float64_t x, bool half)
 {
 	Ref<PlaceHolder> ph = nextPlaceHolder();
 
@@ -179,13 +179,13 @@ void format::printFloat(float64_t x, bool half)
 	int e = int((xi << 1) >> 53); // exponent
 	int s = int(xi >> 63); // sign
 
-	string text;
+	String text;
 	int i = 0;
 
 	if ((e == 0x7FF) && (f != 0)) // NaN
 	{
 		if (w < 3) w = 3;
-		text = string(w, ph->blank_);
+		text = String(w, ph->blank_);
 		int wb = w - 3;
 		if (wb > 0)
 			i += wb;
@@ -198,7 +198,7 @@ void format::printFloat(float64_t x, bool half)
 	else if ((e == 0x7FF) && (f == 0)) // infinite
 	{
 		if (w < 3 + s) w = 3 + s;
-		text = string(w, ph->blank_);
+		text = String(w, ph->blank_);
 		int wb = w - 3 - s;
 		if (wb > 0)
 			i += wb;
@@ -273,7 +273,7 @@ void format::printFloat(float64_t x, bool half)
 		int h = wi + int(wf != 0) + wf + int(ne != 0) * (1 + int(eba < 0) + ne);
 		if (w < h) w = h; // w too small
 
-		text = string(w, ph->blank_);
+		text = String(w, ph->blank_);
 
 		int wb = wi - ni - s;
 		if (wb > 0) i += wb;
@@ -310,7 +310,7 @@ void format::printFloat(float64_t x, bool half)
 	}
 	else // if ((e == 0) && (f == 0)) // zero
 	{
-		text = string(w, ph->blank_);
+		text = String(w, ph->blank_);
 		text->set(i + wi - 1, '0');
 	}
 

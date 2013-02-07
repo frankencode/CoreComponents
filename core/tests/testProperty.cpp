@@ -1,5 +1,5 @@
 #include <ftl/PrintDebug.hpp>
-#include <ftl/property.hpp>
+#include <ftl/Property.hpp>
 
 namespace ftl
 {
@@ -9,9 +9,9 @@ class Shape: public Instance
 public:
 	static Ref<Shape> create() { return new Shape; }
 
-	property<string> name;
-	property<int> x;
-	property<int> y;
+	Property<String> name;
+	Property<int> x;
+	Property<int> y;
 
 protected:
 	Shape()
@@ -21,7 +21,7 @@ protected:
 	}
 
 private:
-	void onNameChanged(string newName) {
+	void onNameChanged(String newName) {
 		print("name = \"%%\"\n", name);
 	}
 };

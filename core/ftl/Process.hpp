@@ -11,7 +11,7 @@
 
 #include <sys/types.h> // pid_t
 #include <signal.h> // SIGTERM, etc.
-#include "string.hpp"
+#include "String.hpp"
 #include "Map.hpp"
 #include "SystemStream.hpp"
 #include "LineSink.hpp"
@@ -23,15 +23,15 @@ namespace ftl
 
 class ProcessFactory;
 
-typedef Map<string, string> EnvMap;
+typedef Map<String, String> EnvMap;
 
 FTL_STD_EXCEPTION(ProcessException);
 
 class Process: public Instance
 {
 public:
-	static Ref<Process> start(string command, int ioPolicy = 0);
-	static Ref<Process> start(string command, ProcessFactory *factory);
+	static Ref<Process> start(String command, int ioPolicy = 0);
+	static Ref<Process> start(String command, ProcessFactory *factory);
 
 	// -- child process control interface
 
@@ -74,9 +74,9 @@ public:
 
 	// -- query / modify the current process status
 
-	static void cd(string path);
-	static string cwd();
-	static string execPath();
+	static void cd(String path);
+	static String cwd();
+	static String execPath();
 
 	static mode_t setFileCreationMask(mode_t mask);
 
@@ -86,9 +86,9 @@ public:
 	static gid_t effectiveGroupId();
 	static bool isSuperUser();
 
-	static string env(string key);
-	static void setEnv(string key, string value);
-	static void unsetEnv(string key);
+	static String env(String key);
+	static void setEnv(String key, String value);
+	static void unsetEnv(String key);
 	static char **&environ();
 
 	static Ref<EnvMap> envMap();

@@ -21,9 +21,9 @@ LineSink::LineSink(Stream *stream, const char *eol, int maxLineLength)
 
 Stream *LineSink::stream() const { return stream_; }
 
-string LineSink::prefix() const { return prefix_; }
+String LineSink::prefix() const { return prefix_; }
 
-void LineSink::setPrefix(string prefix)
+void LineSink::setPrefix(String prefix)
 {
 	Ref<ByteArray> bufSaved;
 	if (bufFill_ > prefix_->size())
@@ -36,13 +36,13 @@ void LineSink::setPrefix(string prefix)
 		feed(bufSaved->data(), bufSaved->size());
 }
 
-void LineSink::writeLine(string line)
+void LineSink::writeLine(String line)
 {
 	write(line);
 	flush();
 }
 
-void LineSink::write(string text)
+void LineSink::write(String text)
 {
 	int i = 0, j = 0;
 	while ((j = text->find(i, '\n')) != text->size()) {

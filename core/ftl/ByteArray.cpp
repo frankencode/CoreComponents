@@ -18,7 +18,7 @@
 #include "Character.hpp"
 #include "Md5.hpp"
 #include "Base64.hpp"
-#include "format.hpp"
+#include "Format.hpp"
 #include "Process.hpp"
 #include "ByteArray.hpp"
 
@@ -201,7 +201,7 @@ int ByteArray::find(const char *pattern, int i) const
 	return size_;
 }
 
-int ByteArray::find(string pattern, int i) const
+int ByteArray::find(String pattern, int i) const
 {
 	return find(pattern->constData(), i);
 }
@@ -212,7 +212,7 @@ int ByteArray::find(SyntaxDefinition *pattern, int i) const
 	return (token) ? token->i0(): size_;
 }
 
-bool ByteArray::contains(string pattern) const
+bool ByteArray::contains(String pattern) const
 {
 	return contains(pattern->constData());
 }
@@ -252,7 +252,7 @@ Ref<ByteArray> ByteArray::join(const StringList *parts, char sep)
 	return join(parts, h);
 }
 
-Ref<ByteArray> ByteArray::join(const StringList *parts, string sep)
+Ref<ByteArray> ByteArray::join(const StringList *parts, String sep)
 {
 	return join(parts, sep->constData());
 }
@@ -277,7 +277,7 @@ Ref<StringList> ByteArray::split(const char *sep) const
 	if (i0 < size_)
 		parts->append(copy(i0, size_));
 	else
-		parts->append(string());
+		parts->append(String());
 	return parts;
 }
 
@@ -326,7 +326,7 @@ Ref<ByteArray> ByteArray::replace(const char *pattern, const char *replacement) 
 	return join(split(pattern), replacement);
 }
 
-Ref<ByteArray> ByteArray::replace(string pattern, string replacement) const
+Ref<ByteArray> ByteArray::replace(String pattern, String replacement) const
 {
 	return replace(pattern->constData(), replacement->constData());
 }
@@ -510,13 +510,13 @@ Ref<ByteArray> ByteArray::stripTags() const
 	char *p = o;
 	while (*p) {
 		if (*p == '<') {
-			if (o < p) parts->append(string(o, p-o));
+			if (o < p) parts->append(String(o, p-o));
 			while ((*p) && (*p != '>')) ++p;
 			p += (*p == '>');
 			o = p;
 		}
 		else if (*p == '&') {
-			if (o < p) parts->append(string(o, p-o));
+			if (o < p) parts->append(String(o, p-o));
 			while ((*p) && (*p != ';')) ++p;
 			p += (*p == ';');
 			o = p;
@@ -525,7 +525,7 @@ Ref<ByteArray> ByteArray::stripTags() const
 			++p;
 		}
 	}
-	if (o < p) parts->append(string(o, p-o));
+	if (o < p) parts->append(String(o, p-o));
 	return join(parts);
 }
 
@@ -542,7 +542,7 @@ Ref<ByteArray> ByteArray::normalized(bool nameCase) const
 	}
 	Ref<StringList> parts = split(" ");
 	for (int i = 0; i < parts->length(); ++i) {
-		string s = parts->at(i);
+		String s = parts->at(i);
 		if (s->isEmpty()) {
 			parts->remove(i);
 		}
@@ -709,7 +709,7 @@ Ref<ByteArray> ByteArray::base64() const
 
 bool ByteArray::isRootPath() const
 {
-	return string(this) == "/";
+	return String(this) == "/";
 }
 
 bool ByteArray::isRelativePath() const
@@ -722,7 +722,7 @@ bool ByteArray::isAbsolutePath() const
 	return (length() > 0) ? (get(0) == '/') : false;
 }
 
-Ref<ByteArray> ByteArray::absolutePathRelativeTo(string currentDir) const
+Ref<ByteArray> ByteArray::absolutePathRelativeTo(String currentDir) const
 {
 	if (isAbsolutePath() || (currentDir == "."))
 		return const_cast<ByteArray *>(this);
@@ -734,7 +734,7 @@ Ref<ByteArray> ByteArray::absolutePathRelativeTo(string currentDir) const
 
 	for (int i = 0; i < parts->length(); ++i)
 	{
-		string c = parts->at(i);
+		String c = parts->at(i);
 		if (c == ".")
 		{}
 		else if (c == "..") {
@@ -748,7 +748,7 @@ Ref<ByteArray> ByteArray::absolutePathRelativeTo(string currentDir) const
 		}
 	}
 
-	string prefix;
+	String prefix;
 	if (currentDir->length() > 0)
 		prefix = currentDir->copy();
 	else
@@ -768,12 +768,12 @@ Ref<ByteArray> ByteArray::absolutePath() const
 {
 	if (isAbsolutePath())
 		return const_cast<ByteArray *>(this);
-	return absolutePathRelativeTo(string());
+	return absolutePathRelativeTo(String());
 }
 
 Ref<ByteArray> ByteArray::fileName() const
 {
-	string name;
+	String name;
 	Ref<StringList> parts = split("/");
 	if (parts->length() > 0)
 		name = parts->at(-1);
@@ -798,15 +798,15 @@ Ref<ByteArray> ByteArray::reducePath() const
 	Ref<StringList> parts = split("/");
 	if (parts->length() > 0)
 		parts->popBack();
-	string resultPath = parts->join("/");
+	String resultPath = parts->join("/");
 	if ((resultPath == "") && isAbsolutePath())
 		resultPath = "/";
 	return resultPath;
 }
 
-Ref<ByteArray> ByteArray::expandPath(string component) const
+Ref<ByteArray> ByteArray::expandPath(String component) const
 {
-	return string(format() << string(this) << "/" << component);
+	return String(Format() << String(this) << "/" << component);
 }
 
 Ref<ByteArray> ByteArray::canonicalPath() const
@@ -814,7 +814,7 @@ Ref<ByteArray> ByteArray::canonicalPath() const
 	Ref<StringList> parts = split("/");
 	Ref<StringList> result = StringList::create();
 	for (int i = 0; i < parts->length(); ++i) {
-		string part = parts->at(i);
+		String part = parts->at(i);
 		if ((part == "") && (i > 0)) continue;
 		if ((part == "") && (i == parts->length() - 1)) continue;
 		if ((part == ".") && (i > 0)) continue;

@@ -41,8 +41,8 @@ LinkInfo::LinkInfo(void *addr)
 	}
 }
 
-string LinkInfo::libraryPath() const { return libraryPath_; }
-string LinkInfo::symbolName() const { return symbolName_; }
+String LinkInfo::libraryPath() const { return libraryPath_; }
+String LinkInfo::symbolName() const { return symbolName_; }
 void *LinkInfo::baseAddress() const { return baseAddress_; }
 void *LinkInfo::symbolAddress() const { return symbolAddress_; }
 int LinkInfo::majorVersion() const { return majorVersion_; }

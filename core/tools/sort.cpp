@@ -1,5 +1,5 @@
 #include <ftl/PrintDebug.hpp>
-#include <ftl/string.hpp>
+#include <ftl/String.hpp>
 #include <ftl/Heap.hpp>
 
 int main()
@@ -7,13 +7,13 @@ int main()
 	using namespace ftl;
 
 	Ref<StringList> list = StringList::create();
-	for (string line; input()->read(&line);)
+	for (String line; input()->read(&line);)
 		list->append(line);
 
-	Ref< Heap<string> > heap = Heap<string>::create(list->length());
-	for (string item; list->read(&item);)
+	Ref< Heap<String> > heap = Heap<String>::create(list->length());
+	for (String item; list->read(&item);)
 		heap->push(item);
-	for (string item; heap->read(&item);)
+	for (String item; heap->read(&item);)
 		output()->writeLine(item);
 
 	return 0;

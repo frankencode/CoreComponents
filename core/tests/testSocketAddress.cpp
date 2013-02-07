@@ -4,42 +4,42 @@
 namespace ftl
 {
 
-string familyToString(int family)
+String familyToString(int family)
 {
-	string s("UNKNOWN");
+	String s("UNKNOWN");
 	if (family == AF_INET) s = "INET";
 	else if (family == AF_INET6) s = "INET6";
 	else if (family == AF_UNSPEC) s = "UNSPEC";
 	return s;
 }
 
-string socketTypeToString(int type)
+String socketTypeToString(int type)
 {
-	string s("UNKNOWN");
+	String s("UNKNOWN");
 	if (type == SOCK_DGRAM) s = "DGRAM";
 	else if (type == SOCK_STREAM) s = "STREAM";
 	return s;
 }
 
-string protocolToString(int protocol)
+String protocolToString(int protocol)
 {
-	string s("UNKNOWN");
+	String s("UNKNOWN");
 	if (protocol == IPPROTO_TCP) s = "TCP";
 	else if (protocol == IPPROTO_UDP) s = "UDP";
-	else s = format("<%%>") << protocol;
+	else s = Format("<%%>") << protocol;
 	return s;
 }
 
 int main(int argc, char **argv)
 {
-	string hostName = SocketAddress::hostName();
+	String hostName = SocketAddress::hostName();
 
 	if (argc == 2)
 		hostName = argv[1];
 
 	print("hostName = \"%%\"\n", hostName);
 
-	string canonicalName;
+	String canonicalName;
 	Ref<SocketAddressList> list = SocketAddress::resolve(hostName, "", AF_UNSPEC, SOCK_STREAM, &canonicalName);
 
 	print("canonicalName = \"%%\"\n", canonicalName);

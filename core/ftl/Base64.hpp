@@ -9,7 +9,7 @@
 #ifndef FTL_BASE64_HPP
 #define FTL_BASE64_HPP
 
-#include "string.hpp"
+#include "String.hpp"
 
 namespace ftl
 {

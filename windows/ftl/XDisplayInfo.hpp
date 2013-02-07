@@ -10,7 +10,7 @@
 #define FTL_XDISPLAYINFO_HPP
 
 #include <ftl/types.hpp>
-#include <ftl/string.hpp>
+#include <ftl/String.hpp>
 #include <ftl/Array.hpp>
 #include <ftl/Map.hpp>
 #include <ftl/ByteDecoder.hpp>
@@ -86,7 +86,7 @@ public:
 	uint8_t bitmapScanlinePad;
 	uint8_t minKeyCode;
 	uint8_t maxKeyCode;
-	string vendor;
+	String vendor;
 
 	Ref<XPixmapInfoArray> pixmapInfo;
 	Ref<XScreenInfoArray> screenInfo;

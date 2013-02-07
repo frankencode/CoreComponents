@@ -79,7 +79,7 @@ void XDisplayInfo::read(ByteDecoder *source)
 
 	if (response != 1) {
 		if ((response == 0) || (response == 2)) {
-			string reason = source->read(reasonLength);
+			String reason = source->read(reasonLength);
 			FTL_THROW(XException, reason->constData());
 		}
 		FTL_THROW(XException, "Protocol error");
@@ -104,9 +104,9 @@ void XDisplayInfo::read(ByteDecoder *source)
 	source->skipPad(4);
 
 	for (int i = 0; i < pixmapInfo->length(); ++i) {
-		Ref<XPixmapInfo> format = new XPixmapInfo;
-		format->read(source);
-		pixmapInfo->set(i, format);
+		Ref<XPixmapInfo> Format = new XPixmapInfo;
+		Format->read(source);
+		pixmapInfo->set(i, Format);
 	}
 
 	for (int i = 0; i < screenInfo->length(); ++i) {

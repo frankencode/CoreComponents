@@ -10,7 +10,7 @@
 #define FTL_XAUTHFILE_HPP
 
 #include <arpa/inet.h>
-#include <ftl/string.hpp>
+#include <ftl/String.hpp>
 #include <ftl/List.hpp>
 
 namespace ftl
@@ -20,10 +20,10 @@ class XAuthRecord: public Instance
 {
 public:
 	int family;
-	string host;
+	String host;
 	int display;
-	string protocol;
-	string data;
+	String protocol;
+	String data;
 };
 
 typedef List< Ref<XAuthRecord> > XAuthRecords;
@@ -31,12 +31,12 @@ typedef List< Ref<XAuthRecord> > XAuthRecords;
 class XAuthFile: public Instance
 {
 public:
-	XAuthFile(string path = "");
-	inline string path() const { return path_; }
+	XAuthFile(String path = "");
+	inline String path() const { return path_; }
 	inline XAuthRecords *records() const { return records_; }
 
 private:
-	string path_;
+	String path_;
 	Ref<XAuthRecords> records_;
 };
 

@@ -18,7 +18,7 @@ Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
 	return new BuildPlan(argc, argv);
 }
 
-Ref<BuildPlan> BuildPlan::create(ToolChain *toolChain, string projectPath, int globalOptions)
+Ref<BuildPlan> BuildPlan::create(ToolChain *toolChain, String projectPath, int globalOptions)
 {
 	BuildPlan *buildPlan = 0;
 	if (buildMap_->lookup(projectPath, &buildPlan)) return buildPlan;
@@ -51,7 +51,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	buildMap_->insert(projectPath_, this);
 }
 
-BuildPlan::BuildPlan(ToolChain *toolChain, string projectPath, BuildPlan *parentPlan)
+BuildPlan::BuildPlan(ToolChain *toolChain, String projectPath, BuildPlan *parentPlan)
 	: toolChain_(toolChain),
 	  projectPath_(projectPath),
 	  buildMap_(parentPlan->buildMap_),
@@ -94,7 +94,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
 	if (recipe_->contains("optimize-speed")) {
 		options_ |= OptimizeSpeed;
-		variant h = recipe_->value("optimize-speed");
+		Variant h = recipe_->value("optimize-speed");
 		if (type(h) == IntType)
 			speedOptimizationLevel_ = h;
 		else
@@ -102,7 +102,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 	}
 	if (recipe_->contains("optimize-size")) {
 		options_ |= OptimizeSize;
-		variant h = recipe_->value("optimize-size");
+		Variant h = recipe_->value("optimize-size");
 		if (type(h) == IntType)
 			sizeOptimizationLevel_ = h;
 		else
@@ -110,17 +110,17 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 	}
 
 	if (recipe_->contains("include-path"))
-		includePaths_ = cast<VariantList>(recipe_->value("include-path"))->toList<string>();
+		includePaths_ = cast<VariantList>(recipe_->value("include-path"))->toList<String>();
 	else
 		includePaths_ = StringList::create();
 
 	if (recipe_->contains("link-path"))
-		libraryPaths_ = cast<VariantList>(recipe_->value("link-path"))->toList<string>();
+		libraryPaths_ = cast<VariantList>(recipe_->value("link-path"))->toList<String>();
 	else
 		libraryPaths_ = StringList::create();
 
 	if (recipe_->contains("link"))
-		libraries_ = cast<VariantList>(recipe_->value("link"))->toList<string>();
+		libraries_ = cast<VariantList>(recipe_->value("link"))->toList<String>();
 	else
 		libraries_ = StringList::create();
 
@@ -160,35 +160,35 @@ int BuildPlan::run()
 	return build() ? 0 : 1;
 }
 
-string BuildPlan::sourcePath(string source) const
+String BuildPlan::sourcePath(String source) const
 {
 	if (projectPath_ == ".") return source;
 	return projectPath_ + "/" + source;
 }
 
-string BuildPlan::modulePath(string object) const
+String BuildPlan::modulePath(String object) const
 {
 	return modulePath_ + "/" + object;
 }
 
-string BuildPlan::beautifyCommand(string command)
+String BuildPlan::beautifyCommand(String command)
 {
 	if (options_ & Bootstrap) {
 		return command
-			->replace(sourcePrefix_, string("$SOURCE"))
-			->replace(Process::cwd(), string("$PWD"));
+			->replace(sourcePrefix_, String("$SOURCE"))
+			->replace(Process::cwd(), String("$PWD"));
 	}
 	return command;
 }
 
-bool BuildPlan::runBuild(string command)
+bool BuildPlan::runBuild(String command)
 {
 	error()->writeLine(beautifyCommand(command));
 	if (options_ & DryRun) return true;
 	return Process::start(command)->wait() == 0;
 }
 
-bool BuildPlan::mkdir(string path)
+bool BuildPlan::mkdir(String path)
 {
 	if (!fileStatus(path)->exists())
 		printTo(error(), "mkdir -p %%\n", path);
@@ -196,7 +196,7 @@ bool BuildPlan::mkdir(string path)
 	return Dir::establish(path);
 }
 
-bool BuildPlan::rmdir(string path)
+bool BuildPlan::rmdir(String path)
 {
 	if (fileStatus(path)->exists())
 		printTo(error(), "rmdir %%\n", path);
@@ -204,7 +204,7 @@ bool BuildPlan::rmdir(string path)
 	return Dir::unlink(path);
 }
 
-bool BuildPlan::symlink(string path, string newPath)
+bool BuildPlan::symlink(String path, String newPath)
 {
 	printTo(error(), "ln -sf %% %%\n", path, newPath);
 	if (options_ & DryRun) return true;
@@ -212,7 +212,7 @@ bool BuildPlan::symlink(string path, string newPath)
 	return File::symlink(path, newPath);
 }
 
-bool BuildPlan::unlink(string path)
+bool BuildPlan::unlink(String path)
 {
 	if (File::unresolvedStatus(path)->exists()) {
 		printTo(error(), "rm %%\n", path);
@@ -222,7 +222,7 @@ bool BuildPlan::unlink(string path)
 	return true;
 }
 
-Ref<FileStatus> BuildPlan::fileStatus(string path)
+Ref<FileStatus> BuildPlan::fileStatus(String path)
 {
 	if (options_ & Blindfold) return FileStatus::read();
 	return FileStatus::read(path);
@@ -237,12 +237,12 @@ void BuildPlan::prepare()
 
 	Ref<StringList> prequisitePaths;
 	if (recipe_->contains("use"))
-		prequisitePaths = cast<VariantList>(recipe_->value("use"))->toList<string>();
+		prequisitePaths = cast<VariantList>(recipe_->value("use"))->toList<String>();
 	else
 		prequisitePaths = StringList::create();
 
 	for (int i = 0; i < prequisitePaths->length(); ++i) {
-		string path = prequisitePaths->at(i);
+		String path = prequisitePaths->at(i);
 		if (path->isRelativePath()) path = projectPath_ + "/" + path;
 		path = path->canonicalPath();
 		Ref<BuildPlan> buildPlan = BuildPlan::create(toolChain_, path, options_ & GlobalOptions);
@@ -263,7 +263,7 @@ void BuildPlan::prepare()
 		VariantList *sourcePatterns = cast<VariantList>(recipe_->value("source"));
 		for (int i = 0; i < sourcePatterns->length(); ++i) {
 			Ref<Glob> glob = Glob::open(sourcePath(sourcePatterns->at(i)));
-			for (string path; glob->read(&path);)
+			for (String path; glob->read(&path);)
 				sources_->append(path);
 		}
 	}
@@ -277,12 +277,12 @@ bool BuildPlan::analyse()
 	sourcePrefix_ = buildMap_->commonPrefix()->canonicalPath();
 
 	{
-		format f;
+		Format f;
 		f << ".modules";
 		{
-			format h;
-			string path = projectPath_->absolutePath();
-			string topLevel = sourcePrefix_->absolutePath();
+			Format h;
+			String path = projectPath_->absolutePath();
+			String topLevel = sourcePrefix_->absolutePath();
 			while (path != topLevel) {
 				h << path->fileName();
 				path = path->reducePath();
@@ -295,12 +295,12 @@ bool BuildPlan::analyse()
 		if (options_ & Debug) f << "debug";
 		if (options_ & Release) f << "release";
 		if (options_ & OptimizeSpeed) {
-			format h;
+			Format h;
 			h << "optimize" << "speed" << speedOptimizationLevel_;
 			f << h->join("-");
 		}
 		if (options_ & OptimizeSize) {
-			format h;
+			Format h;
 			h << "optimize" << "size" << sizeOptimizationLevel_;
 			f << h->join("-");
 		}

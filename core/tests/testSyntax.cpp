@@ -66,7 +66,7 @@ public:
 		LINK();
 	}
 
-	double eval(string text)
+	double eval(String text)
 	{
 		Ref<Token> rootToken = match(text);
 		double value = nan;
@@ -155,7 +155,7 @@ private:
 	int product_;
 	int sum_;
 
-	string text_;
+	String text_;
 };
 
 int main()

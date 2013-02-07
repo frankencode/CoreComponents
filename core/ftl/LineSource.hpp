@@ -10,7 +10,7 @@
 #define FTL_LINESOURCE_HPP
 
 #include "defaults.hpp"
-#include "string.hpp"
+#include "String.hpp"
 #include "Stream.hpp"
 
 namespace ftl
@@ -19,7 +19,7 @@ namespace ftl
 template<class T>
 class CircularBuffer;
 
-class LineSource: public Source<string>
+class LineSource: public Source<String>
 {
 public:
 	inline static Ref<LineSource> open(Stream *stream, const char *eol = "\n", int maxLineLength = FTL_DEFAULT_BUF_CAPA) {
@@ -28,8 +28,8 @@ public:
 
 	Stream *stream() const;
 
-	bool read(string *line);
-	string readLine();
+	bool read(String *line);
+	String readLine();
 
 protected:
 	LineSource(Stream *stream, const char *eol, int maxLineLength);
@@ -40,7 +40,7 @@ protected:
 	typedef CircularBuffer<char> Cache;
 
 	Ref<Stream> stream_;
-	string eol_;
+	String eol_;
 	int cachedLines_;
 	Ref<Cache> cache_;
 	Ref<ByteArray> buf_;

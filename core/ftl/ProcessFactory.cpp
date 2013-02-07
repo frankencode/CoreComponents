@@ -19,7 +19,7 @@
 #else
 #include <util.h>
 #endif
-#include "format.hpp"
+#include "Format.hpp"
 #include "File.hpp"
 #include "ProcessFactory.hpp"
 
@@ -40,13 +40,13 @@ void ProcessFactory::setIoPolicy(int flags) { ioPolicy_ = flags; }
 
 /** working directory of new process
   */
-string ProcessFactory::workingDirectory() { return (workingDirectory_ != "") ? workingDirectory_ : workingDirectory_ = Process::cwd(); }
-void ProcessFactory::setWorkingDirectory(string path) { workingDirectory_ = path; }
+String ProcessFactory::workingDirectory() { return (workingDirectory_ != "") ? workingDirectory_ : workingDirectory_ = Process::cwd(); }
+void ProcessFactory::setWorkingDirectory(String path) { workingDirectory_ = path; }
 
 /** relative or absolute path to executable image or script
   */
-string ProcessFactory::execPath() const { return execPath_; }
-void ProcessFactory::setExecPath(string path) { execPath_ = path; }
+String ProcessFactory::execPath() const { return execPath_; }
+void ProcessFactory::setExecPath(String path) { execPath_ = path; }
 
 StringList *ProcessFactory::arguments() { return (arguments_) ? arguments_ : arguments_ = StringList::create(); }
 void ProcessFactory::setArguments(StringList *list) { arguments_ = list; }
@@ -64,17 +64,17 @@ void ProcessFactory::setFileCreationMask(int mask) {
 }
 void ProcessFactory::unsetFileCreationMask() { hasFileCreationMask_ = false; }
 
-string ProcessFactory::command() const { return command_; }
+String ProcessFactory::command() const { return command_; }
 
-void ProcessFactory::setCommand(string command)
+void ProcessFactory::setCommand(String command)
 {
 	command_ = command;
 
 	Ref<StringList> args = command->split(' ');
 	setArguments(args);
-	string name = args->at(0);
+	String name = args->at(0);
 
-	string path = File::lookup(name);
+	String path = File::lookup(name);
 	if (path == "") path = name;
 	setExecPath(path);
 }
@@ -152,7 +152,7 @@ Ref<Process> ProcessFactory::produce()
 			int n = envMap_->length();
 			envp = new char*[n + 1];
 			for (int i = 0; i < n; ++i)
-				envp[i] = str::dup(string(format() << envMap_->get(i).key() <<  "=" << envMap_->get(i).value())->data());
+				envp[i] = str::dup(String(Format() << envMap_->get(i).key() <<  "=" << envMap_->get(i).value())->data());
 			envp[n] = 0;
 		}
 		else {

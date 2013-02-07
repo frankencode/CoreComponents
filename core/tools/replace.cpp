@@ -10,8 +10,8 @@ int main(int argc, char **argv)
 		print("Usage: cat in_file | replace [PATTERN] [REPLACEMENT] > out_file\n\n");
 		return 1;
 	}
-	string pattern = argv[1];
-	string replacement = argv[2];
+	String pattern = argv[1];
+	String replacement = argv[2];
 	pattern->expandInsitu();
 	replacement->expandInsitu();
 

@@ -1,22 +1,22 @@
 #include <ftl/PrintDebug.hpp>
-#include <ftl/variant.hpp>
+#include <ftl/Variant.hpp>
 
 namespace ftl
 {
 
 int main()
 {
-	variant x = 1;
-	variant y = "2.";
-	variant z = true;
-	variant a = string("abc");
+	Variant x = 1;
+	Variant y = "2.";
+	Variant z = true;
+	Variant a = String("abc");
 
-	print("x, y, z, a = %%, \"%%\", %%, \"%%\"\n", int(x), string(y), bool(z), string(a));
+	print("x, y, z, a = %%, \"%%\", %%, \"%%\"\n", int(x), String(y), bool(z), String(a));
 	print("(x < y), (x == y) = %%, %%\n", x < y, x == y);
 	print("(x < z), (x == z) = %%, %%\n", x < z, x == z);
 	print("(y < a), (y == a) = %%, %%\n", y < a, y == a);
-	print("(variant() < x), (x == variant()) = %%, %%\n", variant() < x, x == variant());
-	print("(variant() < variant()), (variant() == variant()) = %%, %%\n", variant() < variant(), variant() == variant());
+	print("(Variant() < x), (x == Variant()) = %%, %%\n", Variant() < x, x == Variant());
+	print("(Variant() < Variant()), (Variant() == Variant()) = %%, %%\n", Variant() < Variant(), Variant() == Variant());
 
 	return 0;
 }

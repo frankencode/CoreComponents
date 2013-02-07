@@ -7,7 +7,7 @@
   * 2 of the License, or (at your option) any later version.
   */
 
-#include "string.hpp"
+#include "String.hpp"
 #include "FormatSpecifier.hpp"
 
 namespace ftl
@@ -40,7 +40,7 @@ FormatSpecifier::FormatSpecifier()
 	);
 
 	format_ =
-		DEFINE("format",
+		DEFINE("Format",
 			GLUE(
 				CHAR('%'),
 				REPEAT(0, 5,
@@ -69,7 +69,7 @@ FormatSpecifier::FormatSpecifier()
 			)
 		);
 
-	ENTRY("format");
+	ENTRY("Format");
 	LINK();
 }
 
@@ -86,7 +86,7 @@ bool FormatSpecifier::find(ByteArray *text, int *i0, int *i1, int *w, int *wi, i
 
 		while (token)
 		{
-			string value = text->copy(token->i0(), token->i1());
+			String value = text->copy(token->i0(), token->i1());
 
 			if (token->rule() == width_)
 			{

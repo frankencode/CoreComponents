@@ -1,5 +1,5 @@
 #include <ftl/PrintDebug.hpp>
-#include <ftl/format.hpp>
+#include <ftl/Format.hpp>
 
 namespace ftl
 {
@@ -7,15 +7,15 @@ namespace ftl
 int main()
 {
 	{
-		string s = format() << 1 << ',' << " 2, " << 3.3 << ", " << &s;
+		String s = Format() << 1 << ',' << " 2, " << 3.3 << ", " << &s;
 		print("s = \"%%\"\n", s);
 	}
 	{
-		variant a = 1, b = true, c = "abc", d = 3.3;
-		print(format() << a << ", " << b << ", " << c << ", " << d << "\n");
+		Variant a = 1, b = true, c = "abc", d = 3.3;
+		print(Format() << a << ", " << b << ", " << c << ", " << d << "\n");
 	}
 	{
-		print(format("(%hex%)16, (%oct%)8, (%bin%)2...\n") << 123 << 123 << 123.);
+		print(Format("(%hex%)16, (%oct%)8, (%bin%)2...\n") << 123 << 123 << 123.);
 	}
 	{
 		const double x[] = {
@@ -26,10 +26,10 @@ int main()
 		};
 
 		{
-			string tmpl = "%dec:15:5.:'_'%\n"; // also to be tested: 5.5, 5.e, 10:5. ...etc
+			String tmpl = "%dec:15:5.:'_'%\n"; // also to be tested: 5.5, 5.e, 10:5. ...etc
 
 			for (int i = 0, n = sizeof(x) / sizeof(x[0]); i < n; ++i)
-				print(format(tmpl) << x[i]);
+				print(Format(tmpl) << x[i]);
 		}
 	}
 	/*{
@@ -39,7 +39,7 @@ int main()
 			double b = double(random.next()) / random.max();
 			double e = random.next() % 200;
 			double x = pow(b, e);
-			print(format("%.5e%") << x); printf(" = %g\n", x);
+			print(Format("%.5e%") << x); printf(" = %g\n", x);
 		}
 	}*/
 

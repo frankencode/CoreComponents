@@ -10,7 +10,7 @@
 #define FTL_URI_HPP
 
 #include "Token.hpp"
-#include "string.hpp"
+#include "String.hpp"
 
 namespace ftl
 {
@@ -30,28 +30,28 @@ public:
 		return new Uri(bytes, rootToken);
 	}
 
-	inline string scheme() const { return scheme_; }
-	inline void setScheme(string value) { scheme_ = value; }
+	inline String scheme() const { return scheme_; }
+	inline void setScheme(String value) { scheme_ = value; }
 
-	inline string userInfo() const { return userInfo_; }
-	inline void setUserInfo(string value) { userInfo_ = value; }
+	inline String userInfo() const { return userInfo_; }
+	inline void setUserInfo(String value) { userInfo_ = value; }
 
-	inline string host() const { return host_; }
-	inline void setHost(string value) { host_ = value; }
+	inline String host() const { return host_; }
+	inline void setHost(String value) { host_ = value; }
 
 	inline int port() const { return port_; }
 	inline void setPort(int value) { port_ = value; }
 
-	inline string path() const { return path_; }
-	inline void setPath(string value) { path_ = value; }
+	inline String path() const { return path_; }
+	inline void setPath(String value) { path_ = value; }
 
-	inline string query() const { return query_; }
-	inline void setQuery(string value) { query_ = value; }
+	inline String query() const { return query_; }
+	inline void setQuery(String value) { query_ = value; }
 
-	inline string fragment() const { return fragment_; }
-	inline void setFragment(string value) { fragment_ = value; }
+	inline String fragment() const { return fragment_; }
+	inline void setFragment(String value) { fragment_ = value; }
 
-	string toString() const;
+	String toString() const;
 
 private:
 	Uri();
@@ -59,16 +59,16 @@ private:
 	Uri(ByteArray *bytes, Token *rootToken = 0);
 
 	void readUri(ByteArray *bytes, Token *rootToken = 0);
-	static string encode(string s);
-	static string decode(string s);
+	static String encode(String s);
+	static String decode(String s);
 
-	string scheme_;
-	string userInfo_;
-	string host_;
+	String scheme_;
+	String userInfo_;
+	String host_;
 	int port_;
-	string path_;
-	string query_;
-	string fragment_;
+	String path_;
+	String query_;
+	String fragment_;
 };
 
 } // namespace ftl

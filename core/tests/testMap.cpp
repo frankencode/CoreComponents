@@ -8,7 +8,7 @@ namespace ftl {
 
 void simpleInsertTest()
 {
-	typedef Map<string, string> StringMap;
+	typedef Map<String, String> StringMap;
 	Ref<StringMap> names = StringMap::create();
 	names->insert("Doe", "Joe");
 	names->insert("Mustermann", "Hans");
@@ -18,7 +18,7 @@ void simpleInsertTest()
 	names->insert("Becker", "Günther");
 	names->insert("", "X");
 	for (int i = 0; i < names->length(); ++i) {
-		Pair<string, string> pair = names->get(i);
+		Pair<String, String> pair = names->get(i);
 		print("%%: %%\n", pair->key(), pair->value());
 	}
 }
