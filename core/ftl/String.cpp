@@ -20,10 +20,9 @@ String::String(const Variant &b)
 	if (!Super::get()) Super::set(ByteArray::empty());
 }
 
-String::String(const Format &b)
-{
-	*this = *ByteArray::join(b);
-}
+String::String(const Ref<Format> &b)
+	: Super(ByteArray::join(b))
+{}
 
 String::String(Ref<StringList> parts) { *this = join(parts); }
 

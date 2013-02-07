@@ -45,7 +45,7 @@ XClient::XClient()
 				defaultScreen_ = parts->get(1)->toInt();
 		}
 		if (host == "") {
-			String path = Format("/tmp/.X11-unix/X%%") << display;
+			String path = format("/tmp/.X11-unix/X%%") << display;
 			address = SocketAddress::create(AF_LOCAL, path);
 		}
 		else {

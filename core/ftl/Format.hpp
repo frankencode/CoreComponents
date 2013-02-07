@@ -19,15 +19,12 @@ namespace ftl
 
 FTL_EXCEPTION(FormatException, Exception);
 
-class Format: public Ref<StringList>
+class Format: public StringList
 {
 public:
 	typedef Ref<StringList> Super;
 
-	Format(String Format = "");
-
-	Format(const Format &b);
-	Format &operator=(const Format &b);
+	inline static Ref<Format> create(const String &format) { return new Format(format); }
 
 	Format &operator<<(const String &s);
 	inline Format &operator<<(const Ref<ByteArray> &s) { return *this << String(s); }
@@ -73,6 +70,8 @@ public:
 	inline Format &operator<<(T *x) { return *this << (void *)x; }
 
 private:
+	Format(String format = "");
+
 	enum { ExpAutoLimit = 6 };
 	enum { MaxDigits = 128 }; // safe guess, 65 + ExpAutoLimit should be sufficient
 
@@ -99,13 +98,15 @@ private:
 		Ref<PlaceHolder> next_;
 	};
 
-	Ref<PlaceHolder> nextPlaceHolder();
+	int getNextPlaceHolder(Ref<PlaceHolder> *ph = 0);
 
 	void printInt(uint64_t x, int sign = 1);
 	void printFloat(float64_t x, bool half = false);
 
 	Ref<PlaceHolder> placeHolders_;
 };
+
+inline Ref<Format> format(const String &s = String()) { return Format::create(s); }
 
 } // namespace ftl
 

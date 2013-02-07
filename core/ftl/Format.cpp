@@ -13,12 +13,11 @@
 namespace ftl
 {
 
-Format::Format(String Format)
-	: Super(StringList::create())
+Format::Format(String format)
 {
 	PlaceHolder *lastPlaceHolder = 0;
 
-	if (Format->contains('%'))
+	if (format->contains('%'))
 	{
 		FormatSpecifier *specifier = formatSpecifier();
 		int i0Saved = 0, i0 = 0, i1 = 0;
@@ -28,14 +27,14 @@ Format::Format(String Format)
 		while (true) {
 			Ref<PlaceHolder> ph = new PlaceHolder;
 
-			if (!specifier->find(Format, &i0, &i1, &ph->w_, &ph->wi_, &ph->wf_, &ph->base_, &ph->exp_, &ph->blank_)) break;
+			if (!specifier->find(format, &i0, &i1, &ph->w_, &ph->wi_, &ph->wf_, &ph->base_, &ph->exp_, &ph->blank_)) break;
 
 			if (i0 != i0Saved)
-				get()->append(Format->copy(i0Saved, i0));
+				this->append(format->copy(i0Saved, i0));
 			else
-				get()->append(String());
+				this->append(String());
 
-			ph->j_ = get()->length() + nph;
+			ph->j_ = this->length() + nph;
 			ph->check();
 			if (lastPlaceHolder)
 				lastPlaceHolder->next_ = ph;
@@ -47,46 +46,35 @@ Format::Format(String Format)
 			i0 = i1;
 			i0Saved = i0;
 		}
-		if (i0Saved < Format->size())
-			get()->append(Format->copy(i0Saved, Format->size()));
+		if (i0Saved < format->size())
+			this->append(format->copy(i0Saved, format->size()));
 	}
-	else if (!Format->isEmpty()) {
-		get()->append(Format);
+	else if (!format->isEmpty()) {
+		this->append(format);
 	}
-
-	// add default placeholder
-	if (lastPlaceHolder)
-		lastPlaceHolder->next_ = new PlaceHolder;
-	else
-		placeHolders_ = new PlaceHolder;
 }
 
-Format::Format(const Format &b)
-	: Super(b.get()),
-	  placeHolders_(b.placeHolders_)
-{}
-
-Format &Format::operator=(const Format &b)
+int Format::getNextPlaceHolder(Ref<PlaceHolder> *ph)
 {
-	set(b.get());
-	placeHolders_ = b.placeHolders_;
-	return *this;
+	int j = 0;
+
+	if (placeHolders_) {
+		if (ph) *ph = placeHolders_;
+		j = placeHolders_->j_;
+		placeHolders_ = placeHolders_->next_;
+	}
+	else {
+		if (ph) *ph = new PlaceHolder;
+		j = this->length();
+	}
+
+	return j;
 }
 
 Format &Format::operator<<(const String &s)
 {
-	get()->insert(nextPlaceHolder()->j_, s);
+	this->insert(getNextPlaceHolder(), s);
 	return *this;
-}
-
-Ref<Format::PlaceHolder> Format::nextPlaceHolder()
-{
-	Ref<PlaceHolder> ph = placeHolders_;
-	if (placeHolders_->next_)
-		placeHolders_ = placeHolders_->next_;
-	else
-		ph->j_ = get()->length();
-	return ph;
 }
 
 Format &Format::operator<<(const Variant &x)
@@ -114,7 +102,8 @@ Format &Format::operator<<(const Variant &x)
 
 void Format::printInt(uint64_t x, int sign)
 {
-	Ref<PlaceHolder> ph = nextPlaceHolder();
+	Ref<PlaceHolder> ph;
+	int j = getNextPlaceHolder(&ph);
 
 	int buf[MaxDigits];
 	Ref< Stack<int> > digits = Stack<int>::create(buf, MaxDigits);
@@ -159,12 +148,13 @@ void Format::printInt(uint64_t x, int sign)
 		text->set(i++, letters[d]);
 	}
 
-	get()->insert(ph->j_, text);
+	this->insert(j, text);
 }
 
 void Format::printFloat(float64_t x, bool half)
 {
-	Ref<PlaceHolder> ph = nextPlaceHolder();
+	Ref<PlaceHolder> ph;
+	int j = getNextPlaceHolder(&ph);
 
 	int buf[MaxDigits];
 	Ref< Stack<int> > digits = Stack<int>::create(buf, MaxDigits);
@@ -314,7 +304,7 @@ void Format::printFloat(float64_t x, bool half)
 		text->set(i + wi - 1, '0');
 	}
 
-	get()->insert(ph->j_, text);
+	this->insert(j, text);
 }
 
 } // name

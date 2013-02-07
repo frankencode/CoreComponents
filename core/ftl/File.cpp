@@ -60,7 +60,7 @@ Ref<File> File::open(int fd, int openFlags)
 Ref<File> File::temp(int openFlags)
 {
 	String path = createUnique(
-		Format("/tmp/%%_%%_XXXXXXXX")
+		format("/tmp/%%_%%_XXXXXXXX")
 		<< Process::execPath()->fileName()
 		<< Process::currentId()
 	);
@@ -325,7 +325,7 @@ String File::lookup(String fileName, StringList *dirs, int accessFlags)
 	}
 	String path;
 	for (int i = 0; i < dirs->length(); ++i) {
-		String candidate = Format() << dirs->at(i) << "/" << fileName;
+		String candidate = format() << dirs->at(i) << "/" << fileName;
 		if (access(candidate, accessFlags)) {
 			path = candidate;
 			break;

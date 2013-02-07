@@ -75,7 +75,7 @@ void Uri::readUri(ByteArray *bytes, Token *rootToken)
 
 String Uri::toString() const
 {
-	Format text;
+	Ref<Format> text = format();
 	if (scheme_ != "") {
 		text << encode(scheme_);
 		text << ":";

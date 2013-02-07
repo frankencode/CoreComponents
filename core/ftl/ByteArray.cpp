@@ -806,7 +806,7 @@ Ref<ByteArray> ByteArray::reducePath() const
 
 Ref<ByteArray> ByteArray::expandPath(String component) const
 {
-	return String(Format() << String(this) << "/" << component);
+	return String(format() << this << "/" << component);
 }
 
 Ref<ByteArray> ByteArray::canonicalPath() const

@@ -70,7 +70,7 @@ static void printStringAttr(const ByteArray &s) {
 void DebugNode::printNext(String indent)
 {
 	print("%%%%(", indent, declType());
-	printAttributes(Format() << indent << debugger_->indent_);
+	printAttributes(format() << indent << debugger_->indent_);
 	print(")");
 }
 
@@ -90,7 +90,7 @@ String DebugNode::superIndent(String indent) const {
 }
 
 String DebugNode::subIndent(String indent) const {
-	return Format() << indent << DebugNode::debugger_->indent_;
+	return format() << indent << DebugNode::debugger_->indent_;
 }
 
 class CharDebugNode: public DebugNode {
