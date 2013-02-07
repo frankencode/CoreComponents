@@ -36,8 +36,8 @@ protected:
 	GccToolChain(String execPath);
 	static String machineCommand(String execPath);
 
-	static void appendCompileOptions(Format args, BuildPlan *buildPlan);
-	static void appendLinkOptions(Format args, BuildPlan *buildPlan);
+	static void appendCompileOptions(Ref<Format> args, BuildPlan *buildPlan);
+	static void appendLinkOptions(Ref<Format> args, BuildPlan *buildPlan);
 
 	static String lookup(String execPath);
 };

@@ -50,6 +50,9 @@ public:
 			delete this;
 	}
 
+
+	inline bool operator<(const Instance &b) const { return this < &b; }
+
 private:
 	Instance(const Instance &);
 	const Instance &operator=(const Instance &);

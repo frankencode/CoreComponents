@@ -24,7 +24,7 @@ PatternException::PatternException(const String &error, int pos)
 	: error_(error),
 	  pos_(pos)
 {
-	message_ = Format("%%: %%") << pos << error;
+	message_ = format("%%: %%") << pos << error;
 }
 
 PatternException::~PatternException() throw()
