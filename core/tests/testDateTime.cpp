@@ -1,4 +1,5 @@
 #include <ftl/PrintDebug.hpp>
+#include <ftl/System.hpp>
 #include <ftl/Date.hpp>
 
 namespace ftl
@@ -47,9 +48,9 @@ int main()
 		print("Year %% started with weekday (Mon..Sun = 0..6): %%\n", ye, ny % 7);
 	}*/
 
-	print("%%\n", Date::create(Date::create(Time::now())->time())->toString());
-	print("%%\n", Date::create(Time::now())->toString());
-	print("%%\n", Date::create(Time::now())->localTime()->toString());
+	print("%%\n", Date::create(Date::create(System::now())->time())->toString());
+	print("%%\n", Date::create(System::now())->toString());
+	print("%%\n", Date::create(System::now())->localTime()->toString());
 	// print("%%\n", Date(Time(0)).julianDate());
 
 	return 0;

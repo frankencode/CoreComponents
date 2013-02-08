@@ -16,7 +16,6 @@
 #include "SystemStream.hpp"
 #include "LineSink.hpp"
 #include "LineSource.hpp"
-#include "Time.hpp"
 
 namespace ftl
 {
@@ -103,7 +102,7 @@ public:
 
 	static void enableInterrupt(int signal, bool on = true);
 
-	static void sleep(Time duration);
+	static void sleep(double duration);
 	static void exit(int exitCode);
 
 protected:

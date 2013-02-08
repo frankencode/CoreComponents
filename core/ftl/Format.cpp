@@ -61,6 +61,23 @@ Format::Format(String Format)
 		placeHolders_ = new PlaceHolder;
 }
 
+int Format::getNextPlaceHolder(Ref<PlaceHolder> *ph)
+{
+	int j = 0;
+
+	if (placeHolders_) {
+		if (ph) *ph = placeHolders_;
+		j = placeHolders_->j_;
+		placeHolders_ = placeHolders_->next_;
+	}
+	else {
+		if (ph) *ph = new PlaceHolder;
+		j = get()->length();
+	}
+
+	return j;
+}
+
 Format::Format(const Format &b)
 	: Super(b.get()),
 	  placeHolders_(b.placeHolders_)
@@ -75,18 +92,8 @@ Format &Format::operator=(const Format &b)
 
 Format &Format::operator<<(const String &s)
 {
-	get()->insert(nextPlaceHolder()->j_, s);
+	get()->insert(getNextPlaceHolder(), s);
 	return *this;
-}
-
-Ref<Format::PlaceHolder> Format::nextPlaceHolder()
-{
-	Ref<PlaceHolder> ph = placeHolders_;
-	if (placeHolders_->next_)
-		placeHolders_ = placeHolders_->next_;
-	else
-		ph->j_ = get()->length();
-	return ph;
 }
 
 Format &Format::operator<<(const Variant &x)
@@ -114,7 +121,8 @@ Format &Format::operator<<(const Variant &x)
 
 void Format::printInt(uint64_t x, int sign)
 {
-	Ref<PlaceHolder> ph = nextPlaceHolder();
+	Ref<PlaceHolder> ph;
+	int j = getNextPlaceHolder(&ph);
 
 	int buf[MaxDigits];
 	Ref< Stack<int> > digits = Stack<int>::create(buf, MaxDigits);
@@ -159,12 +167,13 @@ void Format::printInt(uint64_t x, int sign)
 		text->set(i++, letters[d]);
 	}
 
-	get()->insert(ph->j_, text);
+	get()->insert(j, text);
 }
 
 void Format::printFloat(float64_t x, bool half)
 {
-	Ref<PlaceHolder> ph = nextPlaceHolder();
+	Ref<PlaceHolder> ph;
+	int j = getNextPlaceHolder(&ph);
 
 	int buf[MaxDigits];
 	Ref< Stack<int> > digits = Stack<int>::create(buf, MaxDigits);
@@ -314,7 +323,7 @@ void Format::printFloat(float64_t x, bool half)
 		text->set(i + wi - 1, '0');
 	}
 
-	get()->insert(ph->j_, text);
+	get()->insert(j, text);
 }
 
 } // name

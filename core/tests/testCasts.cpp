@@ -1,5 +1,5 @@
 #include <ftl/PrintDebug.hpp>
-#include <ftl/Time.hpp>
+#include <ftl/System.hpp>
 
 namespace ftl
 {
@@ -31,56 +31,56 @@ int main()
 	const int n = 1000000;
 	{
 		A *b = new B;
-		Time t = Time::now();
+		double t = System::now();
 		for (int i = 0; i < n; ++i)
 			b->toB()->doSmth();
-		t = Time::now() - t;
-		print("%% vtable casting, casting upwards, cost %% us\n", n, t.us());
+		t = System::now() - t;
+		print("%% vtable casting, casting upwards, cost %% us\n", n, t * 1e6);
 		delete b;
 	}
 	{
 		A *b = new B;
-		Time t = Time::now();
+		double t = System::now();
 		for (int i = 0; i < n; ++i)
 			dynamic_cast<B*>(b)->doSmth();
-		t = Time::now() - t;
-		print("%% dynamic_cast, casting upwards, cost %% us\n", n, t.us());
+		t = System::now() - t;
+		print("%% dynamic_cast, casting upwards, cost %% us\n", n, t * 1e6);
 		delete b;
 	}
 	{
 		B *b = new B;
-		Time t = Time::now();
+		double t = System::now();
 		for (int i = 0; i < n; ++i)
 			dynamic_cast<A*>(b)->doSmth();
-		t = Time::now() - t;
-		print("%% dynamic_cast, casting downwards, cost %% us\n", n, t.us());
+		t = System::now() - t;
+		print("%% dynamic_cast, casting downwards, cost %% us\n", n, t * 1e6);
 		delete b;
 	}
 	{
 		B *b = new B;
-		Time t = Time::now();
+		double t = System::now();
 		for (int i = 0; i < n; ++i)
 			dynamic_cast<B*>(b)->doSmth();
-		t = Time::now() - t;
-		print("%% dynamic_cast, identity cast, cost %% us\n", n, t.us());
+		t = System::now() - t;
+		print("%% dynamic_cast, identity cast, cost %% us\n", n, t * 1e6);
 		delete b;
 	}
 	{
 		B *b = new B;
-		Time t = Time::now();
+		double t = System::now();
 		for (int i = 0; i < n; ++i)
 			b->doSmth();
-		t = Time::now() - t;
-		print("%% no cast, cost %% us\n", n, t.us());
+		t = System::now() - t;
+		print("%% no cast, cost %% us\n", n, t * 1e6);
 		delete b;
 	}
 	{
 		B *b = new B;
-		Time t = Time::now();
+		double t = System::now();
 		for (int i = 0; i < n; ++i)
 			static_cast<A*>(b)->doSmth();
-		t = Time::now() - t;
-		print("%% static_cast, casting downwards, cost %% us\n", n, t.us());
+		t = System::now() - t;
+		print("%% static_cast, casting downwards, cost %% us\n", n, t * 1e6);
 		delete b;
 	}
 	return 0;

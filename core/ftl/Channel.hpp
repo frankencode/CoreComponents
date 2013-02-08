@@ -11,6 +11,7 @@
 
 #include "Queue.hpp"
 #include "Mutex.hpp"
+#include "Guard.hpp"
 #include "Condition.hpp"
 
 namespace ftl

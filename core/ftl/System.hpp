@@ -17,6 +17,7 @@ class System
 public:
 	static int concurrency();
 	static int pageSize();
+	static double now();
 };
 
 } // namespace ftl

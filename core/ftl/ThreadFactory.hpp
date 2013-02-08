@@ -9,6 +9,7 @@
 #ifndef FTL_THREADFACTORY_HPP
 #define FTL_THREADFACTORY_HPP
 
+#include "generics.hpp"
 #include "Thread.hpp"
 
 namespace ftl

@@ -10,7 +10,6 @@
 #define FTL_STREAMSOCKET_HPP
 
 #include "defaults.hpp"
-#include "Time.hpp"
 #include "SystemStream.hpp"
 #include "SocketAddress.hpp"
 
@@ -28,14 +27,14 @@ public:
 
 	void bind();
 	void listen(int backlog = FTL_DEFAULT_BACKLOG);
-	bool readyAccept(Time idleTimeout);
+	bool readyAccept(double idleTimeout);
 	Ref<StreamSocket> accept();
 	void connect();
-	bool established(Time idleTimeout);
+	bool established(double idleTimeout);
 	void shutdown(int how = SHUT_RDWR);
 
-	void setRecvTimeout(Time idleTimeout);
-	void setSendTimeout(Time idleTimeout);
+	void setRecvTimeout(double idleTimeout);
+	void setSendTimeout(double idleTimeout);
 
 	SocketAddress *localAddress() const;
 	SocketAddress *remoteAddress() const;

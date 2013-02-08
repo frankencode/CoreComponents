@@ -1,7 +1,7 @@
 #include <ftl/PrintDebug.hpp>
 #include <ftl/Mutex.hpp>
 #include <ftl/SpinLock.hpp>
-#include <ftl/Time.hpp>
+#include <ftl/System.hpp>
 
 namespace ftl
 {
@@ -9,38 +9,38 @@ namespace ftl
 int main()
 {
 	const int n = 1000000;
-	Time t1, t2, t3;
+	double t1, t2, t3;
 	{
 		Ref<Mutex> m = Mutex::create();
-		Time t = Time::now();
+		double t = System::now();
 		for (int i = 0; i < n; ++i) {
 			m->acquire();
 			m->release();
 		}
-		t = Time::now() - t;
-		print("Took %% us\n", t.us());
+		t = System::now() - t;
+		print("Took %% us\n", t * 1e6);
 		t1 = t;
 	}
 	{
 		SpinLock m;
-		Time t = Time::now();
+		double t = System::now();
 		for (int i = 0; i < n; ++i) {
 			m.acquire();
 			m.release();
 		}
-		t = Time::now() - t;
-		print("Took %% us\n", t.us());
+		t = System::now() - t;
+		print("Took %% us\n", t * 1e6);
 		t2 = t;
 	}
 	{
 		volatile int flag = 0;
-		Time t = Time::now();
+		double t = System::now();
 		for (int i = 0; i < n; ++i) {
 			++flag;
 			--flag;
 		}
-		t = Time::now() - t;
-		print("Took %% us\n", t.us());
+		t = System::now() - t;
+		print("Took %% us\n", t * 1e6);
 		t3 = t;
 	}
 	print("Ratio: t1/t2, t2/t3 = %.3%, %.3%\n", t1/t2, t2/t3);

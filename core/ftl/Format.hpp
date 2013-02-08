@@ -99,7 +99,7 @@ private:
 		Ref<PlaceHolder> next_;
 	};
 
-	Ref<PlaceHolder> nextPlaceHolder();
+	int getNextPlaceHolder(Ref<PlaceHolder> *ph = 0);
 
 	void printInt(uint64_t x, int sign = 1);
 	void printFloat(float64_t x, bool half = false);

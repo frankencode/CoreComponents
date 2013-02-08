@@ -31,8 +31,6 @@ public:
 
 	template<class T2> Ref(const Ref<T2> &b): a_(0) { set(cast<T>(b.get())); }
 
-	Ref(Ref< List< Ref<T> > > parts): a_(0) { set(T::join(parts)); }
-
 	inline const Ref &operator=(T *b) { set(b); return *this; }
 	inline const Ref &operator=(const Ref &b) { set(b.a_); return *this; }
 	inline operator T *() const { return a_; }

@@ -11,7 +11,6 @@
 
 #include <pthread.h>
 #include <signal.h>
-#include "Time.hpp"
 #include "SignalSet.hpp"
 #include "thread_local_hook.hpp"
 
@@ -31,8 +30,8 @@ public:
 	void kill(int signal);
 	bool stillAlive() const;
 
-	static void sleep(Time duration);
-	static void sleepUntil(Time timeout);
+	static void sleep(double duration);
+	static void sleepUntil(double timeout);
 
 	static void blockSignals(SignalSet *set);
 	static void unblockSignals(SignalSet *set);

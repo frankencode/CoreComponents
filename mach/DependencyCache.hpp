@@ -2,7 +2,6 @@
 #define MACH_DEPENDENCYCACHE_HPP
 
 #include <ftl/String.hpp>
-#include <ftl/Time.hpp>
 
 namespace ftl {
 class File;

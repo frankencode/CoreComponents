@@ -7,7 +7,7 @@
   * 2 of the License, or (at your option) any later version.
   */
 
-#include "Time.hpp"
+#include "System.hpp"
 #include "Random.hpp"
 
 namespace ftl
@@ -18,7 +18,7 @@ Random::Random(int seed)
 {
 	if (seed < 0) {
 		while (x_ <= 1)
-			x_ = Time::now().nsec();
+			x_ = int(System::now() * 1e9);
 	}
 	else {
 		x_ = seed + 2;

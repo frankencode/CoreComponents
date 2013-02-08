@@ -1,6 +1,6 @@
 #include <ftl/PrintDebug.hpp>
 #include <ftl/Stack.hpp>
-#include <ftl/Time.hpp>
+#include <ftl/System.hpp>
 
 namespace ftl
 {
@@ -48,16 +48,16 @@ int main()
 	print("\n");
 	{
 		int usecRef = 40653;
-		Time dt = Time::now();
+		double dt = System::now();
 		int m = primeCountSimple(n);
-		int usec = (Time::now() - dt).us();
+		int usec = (System::now() - dt) * 1e6;
 		print("primeCountSimple(): %% prime numbers, dt = %% us (%% % of reference system)\n", m, usec, (100 * usecRef) / usec);
 	}
 	{
 		int usecRef = 5952;
-		Time dt = Time::now();
+		double dt = System::now();
 		int m = primeCountWithStack(n);
-		int usec = (Time::now() - dt).us();
+		int usec = (System::now() - dt) * 1e6;
 		print("primeCountWithStack(): %% prime numbers, dt = %% us (%% % of reference system)\n", m, usec, (100 * usecRef) / usec);
 	}
 	print("\n");

@@ -36,8 +36,8 @@ void FileLock::acquire()
 {
 	while (true) {
 		if (::fcntl(fd_, F_SETLKW, static_cast<FLockStruct*>(this)) == -1) {
-			if (errno != EINTR)
-				FTL_SYSTEM_EXCEPTION;
+			if (errno == EINTR) throw Interrupt();
+			FTL_SYSTEM_EXCEPTION;
 		}
 		else
 			break;

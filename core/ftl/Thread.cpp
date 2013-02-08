@@ -9,9 +9,9 @@
 
 #include "strings.hpp"
 #include "Exception.hpp"
-#include "Time.hpp"
 #include "Condition.hpp"
 #include "ThreadFactory.hpp"
+#include "System.hpp"
 #include "Thread.hpp"
 
 namespace ftl
@@ -56,12 +56,12 @@ bool Thread::stillAlive() const
 	return (ret == 0);
 }
 
-void Thread::sleep(Time duration)
+void Thread::sleep(double duration)
 {
-	sleepUntil(Time::now() + duration);
+	sleepUntil(System::now() + duration);
 }
 
-void Thread::sleepUntil(Time timeout)
+void Thread::sleepUntil(double timeout)
 {
 	Ref<Mutex> mutex = Mutex::create();
 	Ref<Condition> condition = Condition::create();

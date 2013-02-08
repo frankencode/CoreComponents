@@ -10,7 +10,6 @@
 #define FTL_SYSTEMSTREAM_HPP
 
 #include "Stream.hpp"
-#include "Time.hpp"
 
 namespace ftl
 {
@@ -29,8 +28,8 @@ public:
 	bool isOpen() const;
 	void close();
 
-	bool readyRead(Time timeout);
-	bool readyReadOrWrite(Time timeout);
+	bool readyRead(double timeout);
+	bool readyReadOrWrite(double timeout);
 
 	int readAvail(void *buf, int bufCapa);
 	void write(const void *buf, int bufFill);

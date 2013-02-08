@@ -25,33 +25,6 @@
 namespace ftl
 {
 
-Ref<ByteArray> ByteArray::join(Parts *parts, const char *sep)
-{
-	int sepSize = str::len(sep);
-	if (parts->length() == 0) {
-		return ByteArray::empty();
-	}
-	else {
-		int size = 0;
-		for (int i = 0; i < parts->length(); ++i)
-			size += parts->at(i)->size();
-		size += (parts->length() - 1) * sepSize;
-		Ref<ByteArray> result = ByteArray::create(size);
-		char *p = result->data_;
-		for (int i = 0; i < parts->length(); ++i) {
-			ByteArray *part = parts->at(i);
-			mem::cpy(p, part->data_, part->size_);
-			p += part->size_;
-			if (i + 1 < parts->length()) {
-				mem::cpy(p, sep, sepSize);
-				p += sepSize;
-			}
-		}
-		FTL_ASSERT(p == result->data_ + result->size_);
-		return result;
-	}
-}
-
 ByteArray::ByteArray(int size)
 	: size_(0),
 	  data_(const_cast<char*>("")),

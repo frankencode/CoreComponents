@@ -1,7 +1,7 @@
 #include <ftl/PrintDebug.hpp>
 #include <ftl/SyntaxDebugger.hpp>
 #include <ftl/SyntaxDefinition.hpp>
-#include <ftl/Time.hpp>
+#include <ftl/System.hpp>
 
 namespace ftl
 {
@@ -168,12 +168,12 @@ int main()
 	#endif
 	Ref<Expression> expression = new Expression(debugger);
 
-	Time dt = Time::now();
+	double dt = System::now();
 
 	double result = expression->eval("(-12+34)*(56-78)");
 
-	dt = Time::now() - dt;
-	print("took %% us\n", dt.us());
+	dt = System::now() - dt;
+	print("took %% us\n", dt * 1e6);
 	print("evaluates to %%\n", result);
 
 	if (debugger)
