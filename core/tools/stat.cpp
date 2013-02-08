@@ -25,14 +25,14 @@ String fileTypeToString(int type)
 		if (type == map[i].type)
 			return map[i].name;
 
-	return format("type_%%") << type;
+	return Format("type_%%") << type;
 }
 
 String timeToString(Time time, bool human)
 {
 	Ref<Date> d = Date::create(time);
 	if (human) {
-		return format(
+		return Format(
 			"%4.:'0'%-%2.:'0'%-%2.:'0'% "
 			"%2.:'0'%:%2.:'0'%"
 		) << d->year() << d->month() << d->day()
@@ -103,12 +103,12 @@ int main(int argc, char **argv)
 	{
 		Ref<FileStatus> status = FileStatus::read(file);
 
-		Ref<Format> line = format();
+		Format line;
 
 		if (nameOption)      line << status->path()->fileName();
 		if (pathOption)      line << status->path();
 		if (typeOption)      line << fileTypeToString(status->type());
-		if (modeOption)      line << String(format("%oct%") << status->mode());
+		if (modeOption)      line << String(Format("%oct%") << status->mode());
 		if (sizeOption)      line << status->size();
 		if (diskUsageOption) line << status->sizeInBlocks() * status->sizeOfBlock();
 		if (ownerOption)     line << User::lookup(status->ownerId())->name();

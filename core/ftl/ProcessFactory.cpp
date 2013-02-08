@@ -150,11 +150,9 @@ Ref<Process> ProcessFactory::produce()
 
 		if (envMap_) {
 			int n = envMap_->length();
-			envp = new char *[n + 1];
-			for (int i = 0; i < n; ++i) {
-				String h = format() << envMap_->get(i).key() <<  "=" << envMap_->get(i).value();
-				envp[i] = str::dup(h->data());
-			}
+			envp = new char*[n + 1];
+			for (int i = 0; i < n; ++i)
+				envp[i] = str::dup(String(Format() << envMap_->get(i).key() <<  "=" << envMap_->get(i).value())->data());
 			envp[n] = 0;
 		}
 		else {
