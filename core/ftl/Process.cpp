@@ -297,13 +297,15 @@ void Process::enableInterrupt(int signal, bool on)
 	}
 }
 
-void Process::sleep(Time duration)
+void Process::sleep(double duration)
 {
 	struct timespec req, rem;
-	req.tv_sec = duration.sec();
-	req.tv_nsec = duration.nsec();
-	rem.tv_sec = 0;
+
+	double sec = 0;
+	req.tv_nsec = modf(duration, &sec) * 1e9;
+	req.tv_sec = sec;
 	rem.tv_nsec = 0;
+	rem.tv_sec = 0;
 	while (true) {
 		if (::nanosleep(&req, &rem) == -1) {
 			if (errno == EINTR) {

@@ -8,6 +8,7 @@
   */
 
 #include <pthread.h>
+#include <math.h>
 #include "Condition.hpp"
 
 namespace ftl
@@ -49,12 +50,13 @@ void Condition::wait(Mutex *mutex)
   * (see also: now()). Returns true if the condition was signalled
   * before 'timeout', else returns false.
   */
-bool Condition::waitUntil(Mutex *mutex, Time timeout)
+bool Condition::waitUntil(Mutex *mutex, double timeout)
 {
 	bool success = true;
 	struct timespec ts;
-	ts.tv_sec = timeout.sec();
-	ts.tv_nsec = timeout.nsec();
+	double sec = 0;
+	ts.tv_nsec = modf(timeout, &sec) * 1e9;
+	ts.tv_sec = sec;
 	int ret = -1;
 	while (true) {
 		ret = pthread_cond_timedwait(&cond_, &mutex->Mutex::mutex_, &ts);

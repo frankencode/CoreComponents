@@ -2,7 +2,6 @@
 #define MACH_MODULE_HPP
 
 #include <ftl/String.hpp>
-#include <ftl/Time.hpp>
 
 namespace mach
 {

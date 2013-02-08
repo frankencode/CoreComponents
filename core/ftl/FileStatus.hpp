@@ -11,7 +11,6 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "Time.hpp"
 #include "String.hpp"
 #include "SystemStream.hpp"
 
@@ -41,10 +40,10 @@ public:
 	inline uid_t ownerId() const { return st_uid; }
 	inline gid_t groupId() const { return st_gid; }
 
-	inline Time lastAccess() const { return Time(st_atime, 0); }
-	inline Time lastModified() const { return Time(st_mtime, 0); }
-	inline Time lastChanged() const { return Time(st_ctime, 0); }
-	void setTimes(Time lastAccess, Time lastModified);
+	inline double lastAccess() const { return st_atime; }
+	inline double lastModified() const { return st_mtime; }
+	inline double lastChanged() const { return st_ctime; }
+	void setTimes(double lastAccess, double lastModified);
 
 	inline ino_t inodeNumber() const { return st_ino; }
 	inline nlink_t numberOfHardLinks() const { return st_nlink; }

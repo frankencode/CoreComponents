@@ -29,7 +29,7 @@ public:
 	int releaseOnDemand(int maxAmount = intMax);
 
 	bool tryAcquire(int amount = 1);
-	bool acquireBefore(Time timeout, int amount = 1);
+	bool acquireBefore(double timeout, int amount = 1);
 
 private:
 	Semaphore(int value);

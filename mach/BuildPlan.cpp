@@ -412,7 +412,7 @@ bool BuildPlan::build()
 
 	Ref<FileStatus> targetStatus = fileStatus(toolChain_->linkPath(this));
 	if (targetStatus->exists()) {
-		Time targetTime = targetStatus->lastModified();
+		double targetTime = targetStatus->lastModified();
 		bool targetDirty = false;
 		for (int i = 0; i < modules_->length(); ++i) {
 			Module *module = modules_->at(i);

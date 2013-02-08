@@ -13,6 +13,7 @@
 #include <string.h>
 #include <unistd.h> // read, write, select
 #include <fcntl.h> // fcntl
+#include <math.h> // modf
 #include "SystemStream.hpp"
 
 namespace ftl
@@ -50,29 +51,31 @@ void SystemStream::close()
 	fd_ = -1;
 }
 
-bool SystemStream::readyRead(Time timeout)
+bool SystemStream::readyRead(double timeout)
 {
 	fd_set set;
 	FD_ZERO(&set);
 	FD_SET(fd_, &set);
 	struct timeval tv;
-	tv.tv_sec = timeout.sec();
-	tv.tv_usec = timeout.nsec() / 1000;
+	double sec = 0;
+	tv.tv_usec = modf(timeout, &sec) * 1e6;
+	tv.tv_sec = sec;
 	int ret = ::select(fd_ + 1, &set, 0, 0, &tv);
 	if (ret == -1)
 		FTL_SYSTEM_EXCEPTION;
 	return (ret > 0);
 }
 
-bool SystemStream::readyReadOrWrite(Time timeout)
+bool SystemStream::readyReadOrWrite(double timeout)
 {
 	fd_set rset, wset;
 	FD_ZERO(&rset);
 	FD_SET(fd_, &rset);
 	wset = rset;
 	struct timeval tv;
-	tv.tv_sec = timeout.sec();
-	tv.tv_usec = timeout.nsec() / 1000;
+	double sec = 0;
+	tv.tv_usec = modf(timeout, &sec) * 1e6;
+	tv.tv_sec = sec;
 	int ret = ::select(fd_ + 1, &rset, &wset, 0, &tv);
 	if (ret == -1)
 		FTL_SYSTEM_EXCEPTION;
@@ -104,10 +107,8 @@ void SystemStream::write(const void *buf, int bufFill)
 	{
 		ssize_t ret = ::write(fd_, buf2, bufFill);
 		if (ret == -1) {
-			if (errno == EINTR)
-				throw Interrupt();
-			if (errno == EWOULDBLOCK)
-				throw Timeout();
+			if (errno == EINTR) throw Interrupt();
+			if (errno == EWOULDBLOCK) throw Timeout();
 			FTL_SYSTEM_EXCEPTION;
 		}
 		buf2 += ret;
@@ -135,10 +136,8 @@ void SystemStream::write(StringList *parts, const char *sep)
 	}
 	ssize_t ret = ::writev(fd_, &iov[0], n);
 	if (ret == -1) {
-		if (errno == EINTR)
-			throw Interrupt();
-		if (errno == EWOULDBLOCK)
-			throw Timeout();
+		if (errno == EINTR) throw Interrupt();
+		if (errno == EWOULDBLOCK) throw Timeout();
 		FTL_SYSTEM_EXCEPTION;
 	}
 }

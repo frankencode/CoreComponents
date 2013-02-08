@@ -7,8 +7,9 @@
   * 2 of the License, or (at your option) any later version.
   */
 
-#include <errno.h>
 #include <sys/time.h> // futimes, utimes
+#include <errno.h>
+#include <math.h>
 #include "File.hpp"
 #include "FileStatus.hpp"
 
@@ -34,13 +35,14 @@ FileStatus::FileStatus(String path, bool resolve)
 	exists_ = update();
 }
 
-void FileStatus::setTimes(Time lastAccess, Time lastModified)
+void FileStatus::setTimes(double lastAccess, double lastModified)
 {
 	struct timeval tv[2];
-	tv[0].tv_sec = lastAccess.sec();
-	tv[0].tv_usec = lastAccess.usec();
-	tv[1].tv_sec = lastModified.sec();
-	tv[1].tv_usec = lastModified.usec();
+	double sec;
+	tv[0].tv_usec = modf(lastAccess, &sec) * 1e6;
+	tv[0].tv_sec = sec;
+	tv[1].tv_usec = modf(lastModified, &sec) * 1e6;
+	tv[1].tv_sec = sec;
 	int ret = (fd_ != -1) ? ::futimes(fd_, tv) : ::utimes(path_, tv);
 	if(ret == -1)
 		FTL_SYSTEM_EXCEPTION;

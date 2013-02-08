@@ -28,7 +28,7 @@ String fileTypeToString(int type)
 	return Format("type_%%") << type;
 }
 
-String timeToString(Time time, bool human)
+String timeToString(double time, bool human)
 {
 	Ref<Date> d = Date::create(time);
 	if (human) {

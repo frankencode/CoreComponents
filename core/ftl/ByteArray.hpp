@@ -16,21 +16,15 @@
 namespace ftl
 {
 
-template<class T> class List;
-
-class Character;
 class String;
+template<class T> class List;
 typedef List<String> StringList;
 
 namespace syntax { class Definition; }
 typedef syntax::Definition SyntaxDefinition;
 
+class Character;
 class File;
-
-class ByteArray;
-typedef ByteArray StringNg;
-
-typedef List< Ref<StringNg> > StringListNg;
 
 class ByteArray: public Sequence<char, int>
 {
@@ -43,7 +37,9 @@ public:
 	inline static Ref<ByteArray> create(int size, char zero) { return new ByteArray(size, zero); }
 	inline static Ref<ByteArray> copy(const char *data, int size = -1) { return new ByteArray(data, size); }
 	inline static Ref<ByteArray> create(ByteArray *parent, int size) { return new ByteArray(parent, size); }
-	static Ref<ByteArray> join(Parts *parts, const char *sep = "");
+	static Ref<ByteArray> join(const StringList *parts, const char *sep = "");
+	static Ref<ByteArray> join(const StringList *parts, char sep);
+	static Ref<ByteArray> join(const StringList *parts, String sep);
 
 	~ByteArray();
 
@@ -169,9 +165,6 @@ public:
 	inline bool contains(const char *pattern) const { return find(pattern) != size_; }
 	bool contains(String pattern) const;
 
-	static Ref<ByteArray> join(const StringList *parts, const char *sep = "");
-	static Ref<ByteArray> join(const StringList *parts, char sep);
-	static Ref<ByteArray> join(const StringList *parts, String sep);
 	Ref<StringList> split(char sep) const;
 	Ref<StringList> split(const char *sep) const;
 	Ref<StringList> split(SyntaxDefinition *pattern) const;

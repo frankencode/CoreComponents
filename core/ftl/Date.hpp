@@ -9,7 +9,6 @@
 #ifndef FTL_DATE_HPP
 #define FTL_DATE_HPP
 
-#include "Time.hpp"
 #include "String.hpp"
 
 namespace ftl
@@ -36,7 +35,7 @@ public:
 	inline static Ref<Date> create() {
 		return new Date;
 	}
-	inline static Ref<Date> create(Time time) {
+	inline static Ref<Date> create(double time) {
 		return new Date(time);
 	}
 
@@ -45,7 +44,7 @@ public:
 	inline bool valid() const { return tm_off != -2;}
 
 	static Ref<Date> localTime();
-	static Ref<Date> localTime(Time time);
+	static Ref<Date> localTime(double time);
 
 	inline int year() const { return tm_year + 1900; }
 	inline int month() const { return tm_mon; }
@@ -57,7 +56,7 @@ public:
 	inline int second() const { return tm_sec; }
 	inline int offset() const { return tm_off; }
 
-	Time time() const;
+	double time() const;
 
 	// \todo
 	String toString() const;
@@ -68,14 +67,14 @@ public:
 
 private:
 	Date();
-	Date(Time time);
+	Date(double time);
 
 	// \todo
 	// Date(String s);
 	// Date(int year, int month, int day, int hour = 0, int min = 0, int sec = 0);
 
 	void clear();
-	void init(Time time);
+	void init(double time);
 
 	// \todo: replace by a unixDay(;)
 	static int julianDay(int year, int month, int day);

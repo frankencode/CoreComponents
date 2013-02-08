@@ -10,7 +10,6 @@
 #define FTL_CONDITION_HPP
 
 #include "Mutex.hpp"
-#include "Time.hpp"
 
 namespace ftl
 {
@@ -21,7 +20,7 @@ public:
 	inline static Ref<Condition> create() { return new Condition; }
 	~Condition();
 	void wait(Mutex *mutex);
-	bool waitUntil(Mutex *mutex, Time timeout);
+	bool waitUntil(Mutex *mutex, double timeout);
 	void signal();
 	void broadcast();
 

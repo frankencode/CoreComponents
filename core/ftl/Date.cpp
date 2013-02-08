@@ -7,6 +7,8 @@
   * 2 of the License, or (at your option) any later version.
   */
 
+#include <stdint.h>
+#include "System.hpp"
 #include "Format.hpp"
 #include "Date.hpp"
 
@@ -48,7 +50,7 @@ inline int daysInMonth(int i, int y)
 }
 
 Date::Date(): tm_off(-2) { clear(); }
-Date::Date(Time time): tm_off(0) { clear(); init(time); }
+Date::Date(double time): tm_off(0) { clear(); init(time); }
 
 void Date::clear()
 {
@@ -56,13 +58,15 @@ void Date::clear()
 	mem::clr(tm, sizeof(struct tm)); // for paranoid reason
 }
 
-void Date::init(Time time)
+void Date::init(double time)
 {
-	const int t0 = 719162;                          // linear day number (starting from 0) of 1st Jan 1970
-	int tx = t0 + time.sec() / Time::SecondsPerDay; // linear day number of this date
-	int d400 = 146097;                              // length of the 400 year cycle
-	int d100 = 36524;                               // length of the 100 year cycle
-	int d4 = 1461;                                  // length of the 4 year cycle
+	uint64_t seconds = time;
+
+	const int t0 = 719162;         // linear day number (starting from 0) of 1st Jan 1970
+	int tx = t0 + seconds / 86400; // linear day number of this date
+	int d400 = 146097;             // length of the 400 year cycle
+	int d100 = 36524;              // length of the 100 year cycle
+	int d4 = 1461;                 // length of the 4 year cycle
 
 	int tx400 = tx    % d400; // day within the 400 year cycle (starting from 0)
 	int tx100 = tx400 % d100; // day within the 100 year cycle (starting from 0)
@@ -98,26 +102,26 @@ void Date::init(Time time)
 	tm_wday = (tx + 1/*adjust to start with Sunday*/) % 7;
 	tm_yday = tyx;
 
-	tm_hour = (time.sec() / 3600) % 24;
-	tm_min = (time.sec() / 60) % 60;
-	tm_sec = time.sec() % 60;
+	tm_hour = (seconds / 3600) % 24;
+	tm_min = (seconds / 60) % 60;
+	tm_sec = seconds % 60;
 
 	tm_year = year - 1900;
 }
 
 Ref<Date> Date::localTime()
 {
-	return localTime(Time::now());
+	return localTime(System::now());
 }
 
-Ref<Date> Date::localTime(Time time)
+Ref<Date> Date::localTime(double time)
 {
 	Date utc(time);
 	Ref<Date> local = new Date;
-	time_t seconds = time.sec();
+	time_t seconds = time;
 	localtime_r(&seconds, local);
-	Time offset = local->time() - utc.time();
-	local->tm_off = offset.sec() / 60;
+	int offset = local->time() - utc.time();
+	local->tm_off = offset / 60;
 	return local;
 }
 
@@ -128,14 +132,14 @@ Ref<Date> Date::localTime(Time time)
 		(tm_hour - 12) / 24. + tm_min / 1440. + tm_sec / 86400.;
 }*/
 
-Time Date::time() const
+double Date::time() const
 {
-	int64_t t = 0;
-	t += (julianDay(tm_year + 1900, tm_mon + 1, tm_mday) - julianDay(1970, 1, 1)) * Time::SecondsPerDay;
-	t += tm_hour * Time::SecondsPerHour;
-	t += tm_min * Time::SecondsPerMinute;
+	double t = 0;
+	t += (julianDay(tm_year + 1900, tm_mon + 1, tm_mday) - julianDay(1970, 1, 1)) * 86400;
+	t += tm_hour * 3600;
+	t += tm_min * 60;
 	t += tm_sec;
-	return Time(t, 0);
+	return t;
 }
 
 String Date::toString() const

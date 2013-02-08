@@ -2,7 +2,7 @@
 #include <ftl/Thread.hpp>
 #include <ftl/Channel.hpp>
 #include <ftl/Random.hpp>
-#include <ftl/Time.hpp>
+#include <ftl/System.hpp>
 
 namespace ftl
 {
@@ -72,14 +72,14 @@ int main()
 	Ref<Producer> p1 = Producer::create(1, channel, 8);
 	Ref<Consumer> c1 = Consumer::create(1, channel, 8);
 
-	Time dt = Time::now();
+	double dt = System::now();
 	c1->start();
 	p1->start();
 	c1->wait();
 	p1->wait();
-	dt = Time::now() - dt;
+	dt = System::now() - dt;
 
-	print("\ndt = %% us\n\n", dt.us());
+	print("\ndt = %% us\n\n", dt * 1e6);
 
 	return 0;
 }

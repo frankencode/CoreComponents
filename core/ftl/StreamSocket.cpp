@@ -10,6 +10,7 @@
 #include <unistd.h> // close, select
 #include <fcntl.h> // fcntl
 #include <errno.h> // errno
+#include <math.h> // modf
 #include "StreamSocket.hpp"
 
 namespace ftl
@@ -41,7 +42,7 @@ void StreamSocket::listen(int backlog)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-bool StreamSocket::readyAccept(Time idleTimeout)
+bool StreamSocket::readyAccept(double idleTimeout)
 {
 	return readyRead(idleTimeout);
 }
@@ -52,8 +53,7 @@ Ref<StreamSocket> StreamSocket::accept()
 	socklen_t len = clientAddress->addrLen();
 	int fdc = ::accept(fd_, clientAddress->addr(), &len);
 	if (fdc < 0) {
-		if (errno == EINTR)
-			return 0;
+		if (errno == EINTR) throw Interrupt();
 		FTL_SYSTEM_EXCEPTION;
 	}
 	return new StreamSocket(clientAddress, fdc);
@@ -86,7 +86,7 @@ void StreamSocket::connect()
 	}
 }
 
-bool StreamSocket::established(Time idleTimeout)
+bool StreamSocket::established(double idleTimeout)
 {
 	if (!connected_)
 	{
@@ -114,20 +114,22 @@ void StreamSocket::shutdown(int how)
 	::shutdown(fd_, how);
 }
 
-void StreamSocket::setRecvTimeout(Time idleTimeout)
+void StreamSocket::setRecvTimeout(double idleTimeout)
 {
 	struct timeval tval;
-	tval.tv_sec = idleTimeout.sec();
-	tval.tv_usec = idleTimeout.usec();
+	double sec = 0;
+	tval.tv_usec = modf(idleTimeout, &sec) * 1e6;
+	tval.tv_sec = sec;
 	if (::setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, &tval, sizeof(tval)) == -1)
 		FTL_SYSTEM_EXCEPTION;
 }
 
-void StreamSocket::setSendTimeout(Time idleTimeout)
+void StreamSocket::setSendTimeout(double idleTimeout)
 {
 	struct timeval tval;
-	tval.tv_sec = idleTimeout.sec();
-	tval.tv_usec = idleTimeout.usec();
+	double sec = 0;
+	tval.tv_usec = modf(idleTimeout, &sec) * 1e6;
+	tval.tv_sec = sec;
 	if (::setsockopt(fd_, SOL_SOCKET, SO_SNDTIMEO, &tval, sizeof(tval)) == -1)
 		FTL_SYSTEM_EXCEPTION;
 }

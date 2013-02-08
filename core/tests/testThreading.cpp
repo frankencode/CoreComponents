@@ -94,13 +94,13 @@ int main()
 	Ref<MyChannel> channel = MyChannel::create();
 	Ref<Producer> producer = Producer::create(channel);
 	Ref<Consumer> consumer = Consumer::create(channel);
-	Time dt = Time::now();
+	double dt = System::now();
 	producer->start();
 	consumer->start();
 	producer->wait();
 	consumer->wait();
-	dt = Time::now() - dt;
-	print("\ndt = %% us\n\n", dt.us());
+	dt = System::now() - dt;
+	print("\ndt = %% us\n\n", dt * 1e6);
 
 	Ref<ThreadFactory> factory = ThreadFactory::create();
 	print("default stack size = %% bytes = %% MB\n", int(factory->stackSize()), double(factory->stackSize()) / 1024. / 1024.);

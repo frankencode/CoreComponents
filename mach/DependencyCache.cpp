@@ -25,7 +25,7 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 	  cache_(Cache::create())
 {
 	File::establish(cachePath_);
-	Time cacheTime = File::status(cachePath_)->lastModified();
+	double cacheTime = File::status(cachePath_)->lastModified();
 
 	Ref<WireObject> dependencyCache;
 	try {
@@ -57,7 +57,7 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 				dirty = true;
 				break;
 			}
-			Time sourceTime = sourceStatus->lastModified();
+			double sourceTime = sourceStatus->lastModified();
 			if (sourceTime > cacheTime) {
 				dirty = true;
 				break;

@@ -4,51 +4,8 @@
 namespace ftl
 {
 
-void testRef1(String s)
-{
-	print("testRef1(): s->refCount() = %% (s = '%%')\n", s->refCount(), s);
-}
-
-void testRef2(const String &s)
-{
-	print("testRef2(): s->refCount() = %% (s = '%%')\n", s->refCount(), s);
-}
-
-inline void testRef3(String s)
-{
-	print("testRef3(): s->refCount() = %% (s = '%%')\n", s->refCount(), s);
-}
-
-inline void testRef4(ByteArray *s)
-{
-	print("testRef4(): s->refCount() == %% (s = '%%')\n", s->refCount(), s);
-}
-
-inline void testRef5(const String s)
-{
-	print("testRef5(): s->refCount() == %% (s = '%%')\n", s->refCount(), s);
-}
-
-void printIt(Ref<ByteArray> s)
-{
-	print("s = \"%%\"\n", s);
-}
-
 int main(int argc, char **argv)
 {
-	{
-		typedef List< Ref<ByteArray> > Parts;
-		Ref<Parts> parts = Parts::create();
-		parts->append(ByteArray::copy("Hello!"));
-		Ref<ByteArray> s = parts;
-		print("s = \"%%\"\n", s);
-		class Smth: public Parts { public: Smth() { append(ByteArray::copy("hi!")); } };
-		Ref<Parts> parts2 = new Smth;
-		printIt(parts2);
-	}
-
-	return 0;
-
 	{
 		String s = "Übertragung";
 		print("s = \"%%\"\n", s);
@@ -89,14 +46,6 @@ int main(int argc, char **argv)
 		String s = "..Привет, Привет!";
 		s->replaceInsitu("Привет", "Hello");
 		print("s = \"%%\"\n", s);
-	}
-	{
-		String s = "test 1, 2, 3...";
-		testRef1(s);
-		testRef2(s);
-		testRef3(s);
-		testRef4(s);
-		testRef5(s);
 	}
 	return 0;
 }
