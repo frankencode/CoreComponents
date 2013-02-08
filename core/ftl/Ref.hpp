@@ -40,7 +40,7 @@ public:
 	template<class T2> inline const Ref &operator=(T2 *b) { set(cast<T>(b)); return *this; }
 	template<class T2> inline const Ref &operator=(const Ref<T2> &b) { set(cast<T>(b.get())); return *this; }
 
-	inline bool operator<(const Ref &b) const { return *a_ < *b.a_; }
+	inline bool operator<(const Ref &b) const { return a_ < b.a_; }
 
 	inline T *operator->() const {
 		FTL_ASSERT2(a_, "Null reference");
@@ -58,17 +58,15 @@ public:
 	}
 
 	template<class T2>
-	inline Ref &operator<<(T2 x) {
+	inline T &operator<<(T2 x) {
 		FTL_ASSERT2(a_, "Null reference");
-		*a_ << x;
-		return *this;
+		return *a_ << x;
 	}
 
 	template<class T2>
-	inline Ref &operator>>(T2 &x) {
+	inline T &operator>>(T2 &x) {
 		FTL_ASSERT2(a_, "Null reference");
-		*a_ >> x;
-		return *this;
+		return *a_ >> x;
 	}
 
 private:

@@ -246,8 +246,6 @@ private:
 	size_t mapSize_;
 };
 
-inline bool operator<(const ByteArray &a, const ByteArray &b) { return str::cmp(a.data(), b.data()) < 0; }
-
 } // namespace ftl
 
 #endif // FTL_BYTEARRAY_HPP

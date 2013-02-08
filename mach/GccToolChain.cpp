@@ -36,7 +36,7 @@ int GccToolChain::defaultSizeOptimizationLevel() const
 
 String GccToolChain::analyseCommand(BuildPlan *buildPlan, String source) const
 {
-	Ref<Format> args = format();
+	Format args;
 	args << execPath();
 	appendCompileOptions(args, buildPlan);
 	args << "-MM" << "-MG" << source;
@@ -56,7 +56,7 @@ Ref<Module> GccToolChain::finishAnalyseJob(BuildPlan *buildPlan, Job *job)
 
 Ref<Job> GccToolChain::createCompileJob(BuildPlan *buildPlan, Module *module)
 {
-	Ref<Format> args = format();
+	Format args;
 	args << execPath();
 	appendCompileOptions(args, buildPlan);
 	args << "-c" << "-o" << module->modulePath();
@@ -67,7 +67,7 @@ Ref<Job> GccToolChain::createCompileJob(BuildPlan *buildPlan, Module *module)
 
 Ref<Job> GccToolChain::createLinkJob(BuildPlan *buildPlan, Module *module)
 {
-	Ref<Format> args = format();
+	Format args;
 	args << execPath();
 	if (buildPlan->options() & BuildPlan::Static) args << "-static";
 	args << "-pthread";
@@ -95,7 +95,7 @@ bool GccToolChain::link(BuildPlan *buildPlan)
 	int options = buildPlan->options();
 	ModuleList *modules = buildPlan->modules();
 
-	Ref<Format> args = format();
+	Format args;
 
 	args << execPath();
 	if (options & BuildPlan::Static) args << "-static";
@@ -147,12 +147,12 @@ void GccToolChain::clean(BuildPlan *buildPlan)
 	}
 }
 
-void GccToolChain::appendCompileOptions(Ref<Format> args, BuildPlan *buildPlan)
+void GccToolChain::appendCompileOptions(Format args, BuildPlan *buildPlan)
 {
 	// args << "-std=c++0x";
 	if (buildPlan->options() & BuildPlan::Debug) args << "-g";
 	if (buildPlan->options() & BuildPlan::Release) args << "-DNDEBUG";
-	if (buildPlan->options() & BuildPlan::OptimizeSpeed) args << String(format("-O%%") << buildPlan->speedOptimizationLevel());
+	if (buildPlan->options() & BuildPlan::OptimizeSpeed) args << String(Format("-O%%") << buildPlan->speedOptimizationLevel());
 	if (buildPlan->options() & BuildPlan::OptimizeSize) args << "-Os";
 	if (buildPlan->options() & BuildPlan::Static) args << "-static";
 	if (buildPlan->options() & BuildPlan::Library) args << "-fpic";
@@ -161,7 +161,7 @@ void GccToolChain::appendCompileOptions(Ref<Format> args, BuildPlan *buildPlan)
 		args << "-I" + buildPlan->includePaths()->at(i);
 }
 
-void GccToolChain::appendLinkOptions(Ref<Format> args, BuildPlan *buildPlan)
+void GccToolChain::appendLinkOptions(Format args, BuildPlan *buildPlan)
 {
 	StringList *libraryPaths = buildPlan->libraryPaths();
 	StringList *libraries = buildPlan->libraries();

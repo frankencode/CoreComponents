@@ -83,7 +83,7 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 
 DependencyCache::~DependencyCache()
 {
-	Ref<Format> text = format();
+	Format text;
 	String indent(4, ' ');
 	text << "DependencyCache {\n";
 	for (int i = 0; i < cache_->length(); ++i) {

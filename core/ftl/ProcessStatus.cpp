@@ -29,7 +29,7 @@ namespace ftl
 ProcessStatus::ProcessStatus(pid_t processId)
 {
 #ifdef __linux
-	String path = format("/proc/%%/stat") << processId;
+	String path = Format("/proc/%%/stat") << processId;
 	Ref<LineSource> source = LineSource::open(File::open(path, File::Read));
 	String line = source->readLine();
 	{

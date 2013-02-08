@@ -145,7 +145,7 @@ String SocketAddress::addressString() const
 
 String SocketAddress::toString() const
 {
-	Ref<Format> s = format(addressString());
+	Format s(addressString());
 	if (addr_.sa_family != AF_LOCAL) {
 		if (port() != 0)
 			s << ":" << port();

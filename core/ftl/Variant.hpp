@@ -141,6 +141,9 @@ public:
 private:
 	friend int type(const Variant &value);
 
+	template<class U>
+	friend U *cast(const Variant &value);
+
 	inline static const char *illegalConversion() { return "Illegal Variant conversion"; }
 
 	inline void initRef(Instance *instance = 0) {
@@ -168,7 +171,7 @@ typedef List<Variant> VariantList;
 inline int type(const Variant &value) { return value.type_; }
 
 template<class U>
-inline U *cast(const Variant &value) { return value.operator Ref<U>(); }
+inline U *cast(const Variant &value) { return cast<U>(value.ref()); }
 
 } // namespace ftl
 

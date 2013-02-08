@@ -33,7 +33,7 @@ public:
 	String(const Ref<ByteArray> &b): Super(b) {}
 	String(ByteArray *b): Super(b) {}
 	String(const String &b): Super(b.Super::get()) {}
-	String(const Ref<Format> &b);
+	String(const Format &b);
 	String(const Variant &b);
 	String(Ref<StringList> parts);
 

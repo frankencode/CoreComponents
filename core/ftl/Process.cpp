@@ -79,7 +79,7 @@ Process::~Process()
 			break;
 		}
 		if (status != 0)
-			throw ProcessException(format("Process unsuccessful, status = %%") << status);
+			throw ProcessException(Format("Process unsuccessful, status = %%") << status);
 	}
 }
 
@@ -162,7 +162,7 @@ String Process::execPath()
 {
 	String path;
 	#ifdef __linux
-	String linkPath = format("/proc/%%/exe") << currentId();
+	String linkPath = Format("/proc/%%/exe") << currentId();
 	path = File::readlink(linkPath);
 	#endif
 	#ifdef __MACH__

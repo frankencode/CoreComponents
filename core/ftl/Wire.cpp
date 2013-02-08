@@ -20,7 +20,7 @@ WireException::WireException(const String &error, int line, int pos)
 	  line_(line),
 	  pos_(pos)
 {
-	message_ = format("%%:%%: %%") << line << pos << error;
+	message_ = Format("%%:%%: %%") << line << pos << error;
 }
 
 WireException::~WireException() throw() {}
@@ -334,7 +334,7 @@ Ref<WireObject> Wire::parseObject(ByteArray *text, Token *token, WireObject *vir
 		if (object->contains(name)) {
 			int line = 1, pos = 1;
 			text->offsetToLinePos(token->i1(), &line, &pos);
-			throw WireException(format("Ambiguous member name \"%%\"") << name, line, pos);
+			throw WireException(Format("Ambiguous member name \"%%\"") << name, line, pos);
 		}
 		token = token->nextSibling();
 		Variant value = parseValue(text, token);

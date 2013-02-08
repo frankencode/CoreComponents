@@ -277,16 +277,16 @@ bool BuildPlan::analyse()
 	sourcePrefix_ = buildMap_->commonPrefix()->canonicalPath();
 
 	{
-		Ref<Format> f = format();
+		Format f;
 		f << ".modules";
 		{
-			Ref<Format> h = format();
+			Format h;
 			String path = projectPath_->absolutePath();
 			String topLevel = sourcePrefix_->absolutePath();
 			while (path != topLevel) {
 				h << path->fileName();
 				path = path->reducePath();
-			}
+			} ;
 			h << topLevel->fileName();
 			f << h->reverse()->join("_");
 		}
@@ -295,12 +295,12 @@ bool BuildPlan::analyse()
 		if (options_ & Debug) f << "debug";
 		if (options_ & Release) f << "release";
 		if (options_ & OptimizeSpeed) {
-			Ref<Format> h = format();
+			Format h;
 			h << "optimize" << "speed" << speedOptimizationLevel_;
 			f << h->join("-");
 		}
 		if (options_ & OptimizeSize) {
-			Ref<Format> h = format();
+			Format h;
 			h << "optimize" << "size" << sizeOptimizationLevel_;
 			f << h->join("-");
 		}
