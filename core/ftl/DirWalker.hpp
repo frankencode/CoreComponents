@@ -19,24 +19,25 @@ class Dir;
 class DirWalker: public Source<String>
 {
 public:
-	enum Option {
-		DirsFirst,
-		FilesFirst,
-		DirsOnly,
-		FilesOnly
-	};
+	static Ref<DirWalker> open(String path);
 
-	static Ref<DirWalker> open(String path, int option = DirsFirst);
 	inline int maxDepth() const { return maxDepth_; }
 	inline void setMaxDepth(int depth) { maxDepth_ = depth; }
+
+	inline bool followSymlink() const { return followSymlink_; }
+	inline void setFollowSymlink(bool on) { followSymlink_ = on; }
+
+	inline bool deleteOrder() const { return deleteOrder_; }
+	inline void setDeleteOrder(bool on) { deleteOrder_ = on; }
 
 	bool read(String *path);
 
 private:
-	Ref<DirWalker> tryOpen(String path, int option);
-	DirWalker(String path, int option, Dir *dir = 0);
-	int option_;
+	Ref<DirWalker> tryOpen(String path);
+	DirWalker(String path, Dir *dir = 0);
 	int maxDepth_;
+	bool followSymlink_;
+	bool deleteOrder_;
 	int depth_;
 	Ref<Dir> dir_;
 	Ref<DirWalker> child_;
