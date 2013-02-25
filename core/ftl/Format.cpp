@@ -98,22 +98,22 @@ Format &Format::operator<<(const String &s)
 
 Format &Format::operator<<(const Variant &x)
 {
-	if (type(x) == UndefType) {
+	if (type(x) == Variant::UndefType) {
 		*this << "undef";
 	}
-	else if (type(x) == BoolType) {
+	else if (type(x) == Variant::BoolType) {
 		*this << bool(x);
 	}
-	else if (type(x) == IntType) {
+	else if (type(x) == Variant::IntType) {
 		*this << int(x);
 	}
-	else if (type(x) == FloatType) {
+	else if (type(x) == Variant::FloatType) {
 		*this << float(x);
 	}
-	else if (type(x) == StringType) {
+	else if (type(x) == Variant::StringType) {
 		*this << String(x);
 	}
-	else if (type(x) == RefType) {
+	else if (type(x) == Variant::RefType) {
 		*this << (void *)cast<Instance>(x);
 	}
 	return *this;
