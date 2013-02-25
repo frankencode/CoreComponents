@@ -15,16 +15,6 @@
 namespace ftl
 {
 
-enum Type {
-	UndefType  = 0,
-	IntType    = 1,
-	BoolType   = 2 | IntType,
-	FloatType  = 4,
-	RefType    = 8,
-	StringType = 16 | RefType,
-	AnyType    = 31
-};
-
 /** A Variant can represent different types.
   * The type of a Variant is defined implicitly at construction time or on assignment.
   * Variants automatically cast to bool, int, float if the
@@ -39,6 +29,16 @@ enum Type {
 class Variant
 {
 public:
+	enum Type {
+		UndefType  = 0,
+		IntType    = 1,
+		BoolType   = 2 | IntType,
+		FloatType  = 4,
+		RefType    = 8,
+		StringType = 16 | RefType,
+		AnyType    = 31
+	};
+
 	Variant():                  type_(UndefType)                {}
 	Variant(int value):         type_(IntType),   int_(value)   {}
 	Variant(bool value):        type_(BoolType),  int_(value)   {}
@@ -47,7 +47,7 @@ public:
 	Variant(const char *value): type_(StringType)               { initRef(String(value)); }
 	Variant(String value):      type_(StringType)               { initRef(value); }
 	template<class T>
-	Variant(Ref<T> value):        type_(RefType)                  { initRef(value); }
+	Variant(Ref<T> value):      type_(RefType)                  { initRef(value); }
 	Variant(const Variant &b):  type_(UndefType)                { *this = b; }
 
 	~Variant() { if (type_ & RefType) killRef(); }
@@ -171,7 +171,7 @@ typedef List<Variant> VariantList;
 inline int type(const Variant &value) { return value.type_; }
 
 template<class U>
-inline U *cast(const Variant &value) { return cast<U>(value.ref()); }
+inline U *cast(const Variant &value) { return type(value) & Variant::RefType ? cast<U>(value.ref()) : null<U>(); }
 
 } // namespace ftl
 

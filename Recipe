@@ -1,3 +1,3 @@
 Package {
-	use: [ "mach", "core", "windows" ]
+	use: [ "core", "mach", "windows" ]
 }
