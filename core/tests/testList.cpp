@@ -1,18 +1,18 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/Random.hpp>
-#include <ftl/List.hpp>
+#include <fkit/stdio.h>
+#include <fkit/check.h>
+#include <fkit/Random.h>
+#include <fkit/List.h>
 
-namespace ftl
-{
+using namespace fkit;
 
 template<class T>
 void print(Ref< List<T> > list) {
-	print("[");
+	fout("[");
 	for (int i = 0; i < list->length(); ++i) {
-		print("%%", list->at(i));
-		if (i + 1 < list->length()) print(", ");
+		fout() << list->at(i);
+		if (i + 1 < list->length()) fout(", ");
 	}
-	print("]\n");
+	fout("]\n");
 }
 
 int main()
@@ -20,67 +20,61 @@ int main()
 	typedef List<int> IntList;
 
 	{
-		print("Test 1:\n");
+		fout("Insertion, iteration...\n");
 		Ref<IntList> list = IntList::create();
-		list << 1 << 2 << 3;
+		for (int i = 0; i < 10; ++i)
+			list->append(i);
 		print(list);
+		for (int i = 0; i < 10; ++i)
+			check(list->at(i) == i);
 	}
 	{
-		print("Test 2:\n");
+		fout("Insertion, removal...\n");
 		Ref<IntList> list = IntList::create();
-		list << 1 << 2 << 3 << 4 << 5 << 6;
+		for (int i = 0; i < 10; ++i)
+			list->append(i);
 		print(list);
-		for (int i = 0; i < list->length();) {
-			if (list->at(i) % 2 != 0)
-				list->pop(i);
-			else
-				++i;
+		for (int i = 0; i < list->length(); ++i)
+			if (list->at(i) % 2 != 0) list->remove(i);
+		print(list);
+		for (int i = 0; i < 10; ++i) {
+			if (i % 2 == 0)
+				check(list->popFront() == i);
 		}
-		print(list);
-		list->clear();
-		print(list);
-		list->append(1);
-		list->append(2);
-		print(list);
 	}
 	{
-		print("Test 3:\n");
-		Ref<IntList> list = IntList::create();
-		list << 1 << 2 << 3;
-		print(list);
-		int x, y, z;
-		list >> x >> y >> z;
-		print(list);
-		print("x, y, z = %%, %%, %%\n", x, y, z);
-	}
-	{
-		print("Test 4:\n");
+		fout("Sorting, making unique...\n");
 		Ref<IntList> list = IntList::create();
 		Ref<Random> random = Random::open();
 		for (int i = 0; i < 10; ++i)
-			list << random->get(0, 99);
+			list->append(random->get(0, 99));
 		print(list);
-		print(list->sort());
-		print(list->unique());
+		Ref<IntList> list2 = list->sort();
+		print(list2);
+		check(list2->length() == list->length());
+		for (int i = 0; i < list2->length() - 1; ++i)
+			check(list2->at(i) <= list2->at(i + 1));
+		Ref<IntList> list3 = list->unique();
+		print(list3);
+		for (int i = 0; i < list3->length() - 1; ++i)
+			check(list3->at(i) < list3->at(i + 1));
 	}
 	{
-		print("Test 5:\n");
+		fout("Cloning...\n");
+		Ref<Random> random = Random::open();
 		Ref<IntList> a = IntList::create();
-		a << 1 << 2 << 3 << 4 << 5;
+		for (int i = 0; i < 10; ++i)
+			a->append(random->get(0, 99));
+		Ref<IntList> b = IntList::clone(a);
 		print(a);
-		print(a->clone());
+		print(b);
+		check(*a == *b);
 	}
 	{
-		print("Test 6:\n");
+		fout("Preallocation...\n");
 		Ref<IntList> a = IntList::create(11);
 		print(a);
+		check(a->length() == 11);
 	}
 	return 0;
-}
-
-} // namespace ftl
-
-int main()
-{
-	return ftl::main();
 }

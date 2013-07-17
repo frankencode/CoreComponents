@@ -1,33 +1,36 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/Thread.hpp>
-#include <ftl/Channel.hpp>
-#include <ftl/Random.hpp>
-#include <ftl/System.hpp>
+#include <fkit/stdio.h>
+#include <fkit/Thread.h>
+#include <fkit/Channel.h>
+#include <fkit/List.h>
+#include <fkit/Random.h>
+#include <fkit/System.h>
+#include <fkit/check.h>
 
-namespace ftl
-{
+using namespace fkit;
 
-// typedef Rondezvous<int> MyChannel;
-// typedef Conveyor<int> MyChannel;
 typedef Channel<int> MyChannel;
+typedef List<int> IntList;
 
 class Consumer: public Thread
 {
 public:
 	static Ref<Consumer> create(int id, MyChannel *channel, int amount) { return new Consumer(id, channel, amount); }
+	inline Ref<IntList> list() const { return list_; }
 
 private:
 	Consumer(int id, MyChannel *channel, int amount)
 		: id_(id),
 		  channel_(channel),
-		  amount_(amount)
+		  amount_(amount),
+		  list_(IntList::create())
 	{}
 
 	void run()
 	{
 		while (amount_ > 0) {
 			int x = channel_->pop();
-			print("consumer %%: consuming %%\n", id_, x);
+			fout("consumer %%: consuming %%\n") << id_ << x;
+			list_->append(x);
 			--amount_;
 		}
 	}
@@ -35,58 +38,58 @@ private:
 	int id_;
 	Ref<MyChannel> channel_;
 	int amount_;
+	Ref<IntList> list_;
 };
 
 class Producer: public Thread
 {
 public:
 	static Ref<Producer> create(int id, MyChannel *channel, int amount) { return new Producer(id, channel, amount); }
-
-	void run()
-	{
-		while (amount_ > 0) {
-			int x = random_->get();
-			print("producer %%: producing %%\n", id_, x);
-			channel_->push(x);
-			--amount_;
-		}
-	}
+	inline Ref<IntList> list() const { return list_; }
 
 private:
 	Producer(int id, MyChannel *channel, int amount)
 		: id_(id),
 		  channel_(channel),
 		  amount_(amount),
-		  random_(Random::open(amount))
+		  random_(Random::open(amount)),
+		  list_(IntList::create())
 	{}
+
+	void run()
+	{
+		while (amount_ > 0) {
+			int x = random_->get();
+			fout("producer %%: producing %%\n") << id_ << x;
+			list_->append(x);
+			channel_->push(x);
+			--amount_;
+		}
+	}
 
 	int id_;
 	Ref<MyChannel> channel_;
 	int amount_;
 	Ref<Random> random_;
+	Ref<IntList> list_;
 };
 
 int main()
 {
 	Ref<MyChannel> channel = MyChannel::create();
-	Ref<Producer> p1 = Producer::create(1, channel, 8);
-	Ref<Consumer> c1 = Consumer::create(1, channel, 8);
+	Ref<Producer> p = Producer::create(1, channel, 8);
+	Ref<Consumer> c = Consumer::create(1, channel, 8);
 
 	double dt = System::now();
-	c1->start();
-	p1->start();
-	c1->wait();
-	p1->wait();
+	c->start();
+	p->start();
+	c->wait();
+	p->wait();
 	dt = System::now() - dt;
 
-	print("\ndt = %% us\n\n", dt * 1e6);
+	fout("\ndt = %% us\n\n") << int(dt * 1e6);
+
+	check(*p->list() == *c->list());
 
 	return 0;
-}
-
-} // namespace ftl
-
-int main()
-{
-	return ftl::main();
 }

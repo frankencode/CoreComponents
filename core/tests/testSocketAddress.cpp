@@ -1,8 +1,7 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/SocketAddress.hpp>
+#include <fkit/stdio.h>
+#include <fkit/SocketAddress.h>
 
-namespace ftl
-{
+using namespace fkit;
 
 String familyToString(int family)
 {
@@ -37,35 +36,27 @@ int main(int argc, char **argv)
 	if (argc == 2)
 		hostName = argv[1];
 
-	print("hostName = \"%%\"\n", hostName);
+	fout("hostName = \"%%\"\n") << hostName;
 
 	String canonicalName;
 	Ref<SocketAddressList> list = SocketAddress::resolve(hostName, "", AF_UNSPEC, SOCK_STREAM, &canonicalName);
 
-	print("canonicalName = \"%%\"\n", canonicalName);
+	fout("canonicalName = \"%%\"\n") << canonicalName;
 
 	for (int i = 0; i < list->length(); ++i)
 	{
 		SocketAddress *address = list->at(i);
 		bool failed;
 
-		print("%% : %% : %% : %% : %% : %% : %%\n"
-			, familyToString(address->family())
-			, address->toString()
-			, address->port()
-			, socketTypeToString(address->socketType())
-			, protocolToString(address->protocol())
-			, address->lookupHostName(&failed)
-			, address->lookupServiceName()
-		);
+		fout("%% : %% : %% : %% : %% : %% : %%\n")
+			<< familyToString(address->family())
+			<< address->toString()
+			<< address->port()
+			<< socketTypeToString(address->socketType())
+			<< protocolToString(address->protocol())
+			<< address->lookupHostName(&failed)
+			<< address->lookupServiceName();
 	}
 
 	return 0;
-}
-
-} // namespace ftl
-
-int main(int argc, char **argv)
-{
-	return ftl::main(argc, argv);
 }

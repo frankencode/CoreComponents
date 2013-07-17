@@ -1,25 +1,25 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/Uri.hpp>
+#include <fkit/stdio.h>
+#include <fkit/check.h>
+#include <fkit/Uri.h>
 
-namespace ftl
-{
+using namespace fkit;
 
 int main()
 {
 	Ref<Uri> uri = Uri::create("http://john@example.com:8000/%7ejohn/123.php?say=hello#part1");
-	print("uri->scheme() = \"%%\"\n", uri->scheme());
-	print("uri->userInfo() = \"%%\"\n", uri->userInfo());
-	print("uri->host() = \"%%\"\n", uri->host());
-	print("uri->port() = %%\n", uri->port());
-	print("uri->path() = \"%%\"\n", uri->path());
-	print("uri->query() = \"%%\"\n", uri->query());
-	print("uri->fragment() = \"%%\"\n", uri->fragment());
+	fout("uri->scheme() = \"%%\"\n") << uri->scheme();
+	fout("uri->userInfo() = \"%%\"\n") << uri->userInfo();
+	fout("uri->host() = \"%%\"\n") << uri->host();
+	fout("uri->port() = %%\n") << uri->port();
+	fout("uri->path() = \"%%\"\n") << uri->path();
+	fout("uri->query() = \"%%\"\n") << uri->query();
+	fout("uri->fragment() = \"%%\"\n") << uri->fragment();
+	check(uri->scheme() == "http");
+	check(uri->userInfo() == "john");
+	check(uri->host() == "example.com");
+	check(uri->port() == 8000);
+	check(uri->path() == "/~john/123.php");
+	check(uri->query() == "say=hello");
+	check(uri->fragment() == "part1");
 	return 0;
-}
-
-} // namespace ftl
-
-int main()
-{
-	return ftl::main();
 }

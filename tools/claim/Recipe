@@ -1,0 +1,5 @@
+Application {
+	name: fclaim
+	source: *.cpp
+	use: [ ../../core/fkit, ../../crypto/fkit ]
+}

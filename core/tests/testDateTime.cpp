@@ -1,65 +1,37 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/System.hpp>
-#include <ftl/Date.hpp>
+#include <fkit/stdio.h>
+#include <fkit/System.h>
+#include <fkit/Date.h>
+#include <fkit/check.h>
 
-namespace ftl
-{
+using namespace fkit;
 
 int main()
 {
-	/*{
-		int ny = 0;
-		for (int y = 1; y <= 400; ++y) {
-			int nd = daysInYear(y);
-			ny += nd;
-			// print("y, nd, ny = %%, %%, %%\n", y, nd, ny);
-		}
-		print("Length of a 400 year cycle: %% days\n", ny);
-		print("Average length of a solar year: %% days\n", ny / 400.);
-	}
 	{
-		int ny = 0;
-		for (int y = 1; y <= 100; ++y) {
-			int nd = daysInYear(y);
-			ny += nd;
-			// print("y, nd, ny = %%, %%, %%\n", y, nd, ny);
-		}
-		print("Length of a 100 year cycle: %% days\n", ny);
-	}
-	{
-		int ny = 0;
-		for (int y = 1; y <= 4; ++y) {
-			int nd = daysInYear(y);
-			ny += nd;
-			// print("y, nd, ny = %%, %%, %%\n", y, nd, ny);
-		}
-		print("Length of a 4 year cycle: %% days\n", ny);
-	}
-	{
-		int ny = 0;
-		for (int y = 1; y < 1970; ++y) ny += daysInYear(y);
-		print("Linear day number (starting with day 0) of 1st Jan 1970: %%\n", ny);
-		print("That must have been weekday (Mon..Sun = 0..6): %%\n", ny % 7);
-	}
-	{
-		int ny = 0;
-		int ye = 2012;
-		for (int y = 1; y < ye; ++y) ny += daysInYear(y);
-		print("Year %% started with weekday (Mon..Sun = 0..6): %%\n", ye, ny % 7);
-	}*/
+		fout() << "Basic date formatting..." << nl;
 
-	print("%%\n", Date::create(Date::create(System::now())->time())->toString());
-	print("%%\n", Date::create(System::now())->toString());
-	print("%%\n", Date::create(System::now())->localTime()->toString());
-	// print("%%\n", Date(Time(0)).julianDate());
+		double t = System::now();
+		String s1 = str(Date::create(Date::create(t)->time()));
+		String s2 = str(Date::create(t));
+
+		fout("%%\n") << s1;
+		fout("%%\n") << s2;
+		fout("%%\n") << Date::create(t)->localTime();
+
+		check(s1 == s2);
+	}
+
+	{
+		fout() << "Begin of Epoch..." << nl;
+
+		Ref<Date> date = Date::create(0);
+		fout() << date << nl;
+		fout() << "year: " << date->year() << nl;
+		fout() << "month: " << date->month() << nl;
+		fout() << "day: " << date->day() << nl;
+
+		check(date->year() == 1970 && date->month() == 0 && date->day() == 1 && date->valid());
+	}
 
 	return 0;
-}
-
-} // namespace ftl
-
-
-int main()
-{
-	return ftl::main();
 }

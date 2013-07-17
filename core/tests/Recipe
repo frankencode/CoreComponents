@@ -1,4 +1,4 @@
-ToolSet {
-	source: [ "*.cpp" ]
-	use: [ "../ftl" ]
+Tests {
+	source: *.cpp
+	use: ../fkit
 }

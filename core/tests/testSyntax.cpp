@@ -1,10 +1,10 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/SyntaxDebugger.hpp>
-#include <ftl/SyntaxDefinition.hpp>
-#include <ftl/System.hpp>
+#include <fkit/stdio.h>
+#include <fkit/check.h>
+#include <fkit/SyntaxDebugger.h>
+#include <fkit/SyntaxDefinition.h>
+#include <fkit/System.h>
 
-namespace ftl
-{
+using namespace fkit;
 
 class Expression: public SyntaxDefinition
 {
@@ -173,18 +173,13 @@ int main()
 	double result = expression->eval("(-12+34)*(56-78)");
 
 	dt = System::now() - dt;
-	print("took %% us\n", dt * 1e6);
-	print("evaluates to %%\n", result);
+	fout("took %% us\n") << int(dt * 1e6);
+	fout("evaluates to %%\n") << result;
+
+	check(result == -484);
 
 	if (debugger)
 		debugger->printDefinition();
 
 	return 0;
-}
-
-} // namespace ftl
-
-int main()
-{
-	return ftl::main();
 }

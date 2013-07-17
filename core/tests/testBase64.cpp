@@ -1,14 +1,19 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/Base64.hpp>
+#include <fkit/stdio.h>
+#include <fkit/Base64.h>
+#include <fkit/check.h>
 
-int main() {
-	using namespace ftl;
-	print("String(\"Man\")->base64() = \"%%\"\n", String("Man")->base64());
-	print("String(\"Hello world\")->base64() = \"%%\"\n", String("Hello world")->base64());
-	print("String(\"\")->base64() = \"%%\"\n", String("")->base64());
-	print("s1 = \"%%\"\n", Base64::decode(Base64::encode(String("Man"))));
-	print("s2 = \"%%\"\n", Base64::decode(Base64::encode(String("Hello world"))));
-	print("s3 = \"%%\"\n", Base64::decode(Base64::encode(String("1"))));
-	print("s4 = \"%%\"\n", Base64::decode(Base64::encode(String(""))));
+using namespace fkit;
+
+int main()
+{
+	String test[] = { "Man", "Hello world", "", "1" };
+	const int testCount = sizeof(test) / sizeof(test[0]);
+
+	for (int i = 0; i < testCount; ++i) {
+		String a = test[i], b = Base64::encode(a);
+		fout("base64(\"%%\") = \"%%\"\n") << a << b;
+		check(Base64::decode(b) == a);
+	}
+
 	return 0;
 }

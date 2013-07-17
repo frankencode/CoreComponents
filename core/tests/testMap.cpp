@@ -1,77 +1,88 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/Random.hpp>
-#include <ftl/System.hpp>
-#include <ftl/Map.hpp>
+#include <fkit/stdio.h>
+#include <fkit/check.h>
+#include <fkit/System.h>
+#include <fkit/Map.h>
+#if 0
+#include <fkit/Random.h>
 #include <map>
+#endif
 
-namespace ftl {
+using namespace fkit;
 
-void simpleInsertTest()
+int fib(int n)
 {
-	typedef Map<String, String> StringMap;
-	Ref<StringMap> names = StringMap::create();
-	names->insert("Doe", "Joe");
-	names->insert("Mustermann", "Hans");
-	names->insert("Mustermann", "Max");
-	names->insert("Müller", "Otto");
-	names->insert("Berg", "Johanna");
-	names->insert("Becker", "Günther");
-	names->insert("", "X");
-	for (int i = 0; i < names->length(); ++i) {
-		Pair<String, String> pair = names->get(i);
-		print("%%: %%\n", pair->key(), pair->value());
-	}
+	if (n == 0) return 0;
+	if (n == 1) return 1;
+	return fib(n - 1) + fib(n - 2);
 }
-
-void performanceTest()
-{
-	const int n = 10000;
-	{
-		std::map<int, int> map;
-		double t0 = System::now();
-		for (int i = 0; i < n; ++i)
-			map[i] = i;
-		print("std::map, %% insertions: dt = %% us\n", n, (System::now() - t0) * 1e6);
-		t0 = System::now();
-		int s = 0;
-		for (std::map<int, int>::const_iterator i = map.begin(); i != map.end(); ++i)
-			s += i->second;
-		print("std::map, %% iteration steps: dt = %% us\n", n, (System::now() - t0) * 1e6);
-	}
-	{
-		Ref< Map<int, int> > map = Map<int, int>::create();
-		double t0 = System::now();
-		for (int i = 0; i < n; ++i)
-			map->establish(i, i);
-		print("ftl::Map, %% insertions: dt = %% us\n", n, (System::now() - t0) * 1e6);
-		t0 = System::now();
-		int s = 0;
-		for (int i = 0; i < n; ++i)
-			s += map->get(i)->value();
-		print("ftl::Map, %% iteration steps: dt = %% us\n", n, (System::now() - t0) * 1e6);
-	}
-}
-
-void simpleRangeTest()
-{
-	Ref< Map<int, int> > map = Map<int, int>::create();
-	Ref<Random> random = Random::open();
-	for (int i = 0; i < 20; ++i)
-		map->insert(random->get(0, 100), i);
-	for (int i = 0; i < map->length(); ++i)
-		print("map->at(%%) = %% (%%)\n", i, map->at(i)->key(), map->at(i)->value());
-	const int a = 30, b = 80;
-	print("In range [%%..%%]:\n", a, b);
-	for (int i = map->first(a), j = map->last(b); i <= j; ++i)
-		print("map->at(%%) = %% (%%)\n", i, map->at(i)->key(), map->at(i)->value());
-}
-
-} // namespace ftl
 
 int main()
 {
-	// ftl::simpleInsertTest();
-	ftl::performanceTest();
-	// ftl::simpleRangeTest();
+	{
+		fout() << "Insertion, iteration..." << nl;
+		typedef Map<String, String> StringMap;
+		Ref<StringMap> names = StringMap::create();
+		String test[6][2] = {
+			{ "Joe", "Doe" },
+			{ "Hans", "Mustermax" },
+			{ "Max", "Musterhans" },
+			{ "Otto", "Müller" },
+			{ "Johanna", "Berg" },
+			{ "Güther", "Becker" }
+		};
+		const int testCount = sizeof(test) / sizeof(test[0]);
+		for (int i = 0; i < testCount; ++i)
+			names->insert(test[i][0], test[i][1]);
+		for (int i = 0; i < names->length(); ++i) {
+			Pair<String, String> pair = names->get(i);
+			fout("%% %%\n") << pair->key() << pair->value();
+		}
+		for (int i = 0; i < testCount; ++i)
+			check(names->value(test[i][0]) == test[i][1]);
+	}
+	{
+		fout() << "Range selection..." << nl;
+		Ref< Map<int, int> > map = Map<int, int>::create();
+		for (int i = 0; i < 20; ++i)
+			map->insert(fib(i), i);
+		for (int i = 0; i < map->length(); ++i)
+			fout("map->at(%%) = %% (%%)\n") << i << map->at(i)->key() << map->at(i)->value();
+		const int a = 20, b = 120;
+		fout("In range [%%..%%]:\n") << a << b;
+		int n = 0;
+		for (int i = map->first(a), j = map->last(b); i <= j; ++i, ++n)
+			fout("map->at(%%) = %% (%%)\n") << i << map->at(i)->key() << map->at(i)->value();
+		check(n == 4 && map->first(a) == 7 && map->last(b) == 10);
+	}
+	#if 0
+	{
+		fout() << "Performance..." << nl;
+		const int n = 10000;
+		{
+			std::map<int, int> map;
+			double t0 = System::now();
+			for (int i = 0; i < n; ++i)
+				map[i] = i;
+			fout("std::map, %% insertions: dt = %% us\n") << n << int((System::now() - t0) * 1e6);
+			t0 = System::now();
+			int s = 0;
+			for (std::map<int, int>::const_iterator i = map.begin(); i != map.end(); ++i)
+				s += i->second;
+			fout("std::map, %% iteration steps: dt = %% us\n") << n << int((System::now() - t0) * 1e6);
+		}
+		{
+			Ref< Map<int, int> > map = Map<int, int>::create();
+			double t0 = System::now();
+			for (int i = 0; i < n; ++i)
+				map->establish(i, i);
+			fout("fkit::Map, %% insertions: dt = %% us\n") << n << int((System::now() - t0) * 1e6);
+			t0 = System::now();
+			int s = 0;
+			for (int i = 0; i < n; ++i)
+				s += map->get(i)->value();
+			fout("fkit::Map, %% iteration steps: dt = %% us\n") << n << int((System::now() - t0) * 1e6);
+		}
+	}
+	#endif
 	return 0;
 }

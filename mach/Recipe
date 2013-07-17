@@ -1,5 +1,0 @@
-Application {
-	name: "mach"
-	source: [ "*.cpp" ]
-	use: [ "../core/ftl" ]
-}

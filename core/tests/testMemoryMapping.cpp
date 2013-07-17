@@ -1,10 +1,10 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/ProcessFactory.hpp>
-#include <ftl/FileLock.hpp>
-#include <ftl/Thread.hpp>
+#include <fkit/stdio.h>
+#include <fkit/check.h>
+#include <fkit/ProcessFactory.h>
+#include <fkit/FileLock.h>
+#include <fkit/Thread.h>
 
-namespace ftl
-{
+using namespace fkit;
 
 class CloneFactory: public ProcessFactory
 {
@@ -13,12 +13,12 @@ public:
 
 	int incarnate()
 	{
-		print("(clone) waiting for read access\n");
+		fout("(clone) waiting for read access\n");
 		Ref<File> file = File::open(path_, File::Read);
 		Ref<FileLock> lock = FileLock::create(file, FileLock::Read);
 		Guard<FileLock> guard(lock);
-		print("(clone) granted read access\n");
-		print("(clone) reads: \"%%\"\n", file->map());
+		fout("(clone) granted read access\n");
+		fout("(clone) reads: \"%%\"\n") << file->map();
 		return 7;
 	}
 
@@ -34,34 +34,29 @@ int main()
 {
 	Ref<File> file = File::temp();
 	file->unlinkOnExit();
-	print("(parent) file->path() = \"%%\"\n", file->path());
+	fout("(parent) file->path() = \"%%\"\n") << file->path();
 
-	print("(parent) acquiring write lock... \n");
+	fout("(parent) acquiring write lock... \n");
 	Ref<FileLock> lock = FileLock::create(file, FileLock::Write);
 	lock->acquire();
 
-	print("(parent) writing message... \n");
+	fout("(parent) writing message... \n");
 	file->write("Hello, clone!");
 
-	print("(parent) cloning myself... \n");
+	fout("(parent) cloning myself... \n");
 	Ref<ProcessFactory> factory = CloneFactory::create(file->path());
 	Ref<Process> fork = factory->produce();
 
-	print("(parent) sleeping 2 seconds... \n");
-	Thread::sleep(2);
+	fout("(parent) sleeping 2 ms... \n");
+	Thread::sleep(0.002);
 
-	print("(parent) releasing write lock... \n");
+	fout("(parent) releasing write lock... \n");
 	lock->release();
 
 	int ret = fork->wait();
-	print("(parent) clone terminated, ret = %%\n", ret);
+	fout("(parent) clone terminated, ret = %%\n") << ret;
+
+	check(ret == 7);
 
 	return 0;
-}
-
-} // namespace ftl
-
-int main()
-{
-	return ftl::main();
 }

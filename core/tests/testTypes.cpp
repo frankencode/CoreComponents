@@ -1,10 +1,9 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/SpinLock.hpp>
-#include <ftl/Mutex.hpp>
-#include <ftl/Token.hpp>
+#include <fkit/stdio.h>
+#include <fkit/SpinLock.h>
+#include <fkit/Mutex.h>
+#include <fkit/Token.h>
 
-namespace ftl
-{
+using namespace fkit;
 
 void testFloat754()
 {
@@ -21,57 +20,54 @@ void testFloat754()
 	};
 
 	for (unsigned i = 0; i < sizeof(values)/sizeof(double); ++i)
-		print("%%|\n", values[i]);
+		fout("%%|\n") << values[i];
 
 	double one, zero;
 	one = 1.;
 	zero = 0.;
 
-	print("%%|\n", one/zero);
-	print("%%|\n", -one/zero);
-	print("%%|\n", zero/zero);
-	print("%%|\n", 0.);
+	fout("%%|\n") << one/zero;
+	fout("%%|\n") << -one/zero;
+	fout("%%|\n") << zero/zero;
+	fout("%%|\n") << 0.;
 
-	print("bin(zero/zero) = %hex%\n", union_cast<uint64_t>(zero/zero));
-	print("bin(one/zero) = %hex%\n", union_cast<uint64_t>(one/zero));
-	print("bin(nan) = %hex%\n", union_cast<uint64_t>(zero/zero));
-	print("unsignedMax, intMax = %%, %%\n", unsignedMax, intMax);
+	fout("bin(zero/zero) = %%\n") << hex(union_cast<uint64_t>(zero/zero));
+	fout("bin(one/zero) = %%\n") << hex(union_cast<uint64_t>(one/zero));
+	fout("bin(nan) = %%\n") << hex(union_cast<uint64_t>(zero/zero));
+}
 
-	print("sizeof(Instance) = %%\n", int(sizeof(Instance)));
-	print("sizeof(SpinLock) = %%\n", int(sizeof(SpinLock)));
-	print("sizeof(Mutex) = %%\n", int(sizeof(Mutex)));
-	print("sizeof(Ref<Instance>) = %%\n", int(sizeof(Ref<Instance>)));
-	print("sizeof(String) = %%\n", int(sizeof(String)));
-	print("sizeof(Format) = %%\n", int(sizeof(Format)));
-	print("sizeof(Variant) = %%\n", int(sizeof(Variant)));
-	print("sizeof(Token) = %%\n", sizeof(Token));
+int main()
+{
+	fout("sizeof(void *) = %%\n") << sizeof(void *);
+	fout("sizeof(int) = %%\n") << sizeof(int);
+	fout("sizeof(long) = %%\n") << sizeof(long);
+	fout("sizeof(uint8_t) = %%\n") << sizeof(uint8_t);
+	fout("sizeof(uint16_t) = %%\n") << sizeof(uint16_t);
+	fout("sizeof(uint32_t) = %%\n") << sizeof(uint32_t);
+	fout("sizeof(uint64_t) = %%\n") << sizeof(uint64_t);
+	fout("sizeof(float32_t) = %%\n") << sizeof(float32_t);
+	fout("sizeof(float64_t) = %%\n") << sizeof(float64_t);
+	fout("unsignedMax, intMax = %%, %%\n") << unsignedMax << intMax;
 
-	print("sizeof(time_t) = %%\n", sizeof(time_t));
+	fout("sizeof(Object) = %%\n") << sizeof(Object);
+	fout("sizeof(SpinLock) = %%\n") << sizeof(SpinLock);
+	fout("sizeof(Mutex) = %%\n") << sizeof(Mutex);
+	fout("sizeof(Ref<Object>) = %%\n") << sizeof(Ref<Object>);
+	fout("sizeof(String) = %%\n") << sizeof(String);
+	fout("sizeof(Format) = %%\n") << sizeof(Format);
+	fout("sizeof(Variant) = %%\n") << sizeof(Variant);
+	fout("sizeof(Token) = %%\n") << sizeof(Token);
+
+	fout("sizeof(time_t) = %%\n") << sizeof(time_t);
+	fout("sizeof(size_t) = %%\n") << sizeof(size_t);
 	timeval tv;
 	timespec ts;
-	print("sizeof(timeval.tv_sec) = %%\n", sizeof(tv.tv_sec));
-	print("sizeof(timespec.ts_sec) = %%\n", sizeof(ts.tv_sec));
-}
+	fout("sizeof(timeval.tv_sec) = %%\n") << sizeof(tv.tv_sec);
+	fout("sizeof(timespec.ts_sec) = %%\n") << sizeof(ts.tv_sec);
 
-int main()
-{
-	print("sizeof(void *) = %%\n", int(sizeof(void *)));
-	print("sizeof(int) = %%\n", int(sizeof(int)));
-	print("sizeof(long) = %%\n", int(sizeof(long)));
-	print("sizeof(uint8_t) = %%\n", int(sizeof(uint8_t)));
-	print("sizeof(uint16_t) = %%\n", int(sizeof(uint16_t)));
-	print("sizeof(uint32_t) = %%\n", int(sizeof(uint32_t)));
-	print("sizeof(uint64_t) = %%\n", int(sizeof(uint64_t)));
-	print("sizeof(float32_t) = %%\n", int(sizeof(float32_t)));
-	print("sizeof(float64_t) = %%\n", int(sizeof(float64_t)));
-	print("------\n");
+	fout("------\n");
+
 	testFloat754();
+
 	return 0;
-}
-
-} // namespace ftl
-
-int main()
-{
-	return ftl::main();
 }

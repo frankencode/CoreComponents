@@ -1,7 +1,8 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/Pattern.hpp>
+#include <fkit/stdio.h>
+#include <fkit/check.h>
+#include <fkit/Pattern.h>
 
-using namespace ftl;
+using namespace fkit;
 
 int main() {
 	Pattern p = "^#{}.(?<=.)(?<!hello)(t[..]{?}|(?a:#)[^abc](?&a))$";
@@ -11,8 +12,8 @@ int main() {
 	#endif
 	String s = "abc.txt";
 	Ref<Token> token = p->match(s);
-	print("p->match(\"%%\") = 0x%hex%\n", s, (void *)token);
-	if (token)
-		print("i0, i1 = %%, %%\n", token->i0(), token->i1());
+	fout("p->match(\"%%\") = 0x%%\n") << s << str((void *)token);
+	check(token);
+	fout("i0, i1 = %%, %%\n") << token->i0() << token->i1();
 	return 0;
 }

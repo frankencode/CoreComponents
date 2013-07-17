@@ -1,13 +1,12 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/Semaphore.hpp>
-#include <ftl/System.hpp>
-#include <ftl/ThreadFactory.hpp>
+#include <fkit/stdio.h>
+#include <fkit/Semaphore.h>
+#include <fkit/System.h>
+#include <fkit/ThreadFactory.h>
 #include <pthread.h>
 
-namespace ftl
-{
+using namespace fkit;
 
-class MyChannel: public Instance
+class MyChannel: public Object
 {
 public:
 	static Ref<MyChannel> create() {
@@ -55,7 +54,7 @@ private:
 	void run()
 	{
 		for (int i = 0; i < 10; ++i) {
-			print("producer: i = %%\n", i);
+			fout("producer: i = %%\n") << i;
 			channel_->put(i);
 		}
 	}
@@ -81,7 +80,7 @@ private:
 		int k = 0;
 		while (k != 9) {
 			k = channel_->get();
-			print("consumer: k = %%\n", k);
+			fout("consumer: k = %%\n") << k;
 		}
 	}
 
@@ -100,24 +99,17 @@ int main()
 	producer->wait();
 	consumer->wait();
 	dt = System::now() - dt;
-	print("\ndt = %% us\n\n", dt * 1e6);
+	fout("\ndt = %% us\n\n") << int(dt * 1e6);
 
 	Ref<ThreadFactory> factory = ThreadFactory::create();
-	print("default stack size = %% bytes = %% MB\n", int(factory->stackSize()), double(factory->stackSize()) / 1024. / 1024.);
-	print("default guard size = %%\n", int(factory->guardSize()));
-	print("\n");
+	fout("default stack size = %% bytes = %% MB\n") << int(factory->stackSize()) << double(factory->stackSize()) / 1024. / 1024.;
+	fout("default guard size = %%\n") << int(factory->guardSize());
+	fout("\n");
 
-	print("System::concurrency() = %%\n", System::concurrency());
+	fout("System::concurrency() = %%\n") << System::concurrency();
 	#ifdef PTHREAD_KEYS_MAX
-	print("PTHREAD_KEYS_MAX = %%\n", PTHREAD_KEYS_MAX);
+	fout("PTHREAD_KEYS_MAX = %%\n") << PTHREAD_KEYS_MAX;
 	#endif
 
 	return 0;
-}
-
-} // namespace ftl
-
-int main()
-{
-	return ftl::main();
 }

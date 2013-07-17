@@ -1,8 +1,8 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/Variant.hpp>
+#include <fkit/stdio.h>
+#include <fkit/check.h>
+#include <fkit/Variant.h>
 
-namespace ftl
-{
+using namespace fkit;
 
 int main()
 {
@@ -11,19 +11,16 @@ int main()
 	Variant z = true;
 	Variant a = String("abc");
 
-	print("x, y, z, a = %%, \"%%\", %%, \"%%\"\n", int(x), String(y), bool(z), String(a));
-	print("(x < y), (x == y) = %%, %%\n", x < y, x == y);
-	print("(x < z), (x == z) = %%, %%\n", x < z, x == z);
-	print("(y < a), (y == a) = %%, %%\n", y < a, y == a);
-	print("(Variant() < x), (x == Variant()) = %%, %%\n", Variant() < x, x == Variant());
-	print("(Variant() < Variant()), (Variant() == Variant()) = %%, %%\n", Variant() < Variant(), Variant() == Variant());
+	check(!(x < y));
+	check(!(x == y));
+	check(!(x < z));
+	check(x == z);
+	check(y < a);
+	check(y != a);
+	check(!(Variant() < x));
+	check(!(x == Variant()));
+	check(!(Variant() < Variant()));
+	check(Variant() == Variant());
 
 	return 0;
-}
-
-} // namespace ftl
-
-int main()
-{
-	return ftl::main();
 }
