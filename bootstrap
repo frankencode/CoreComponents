@@ -1,10 +1,10 @@
 #!/bin/sh
 
 if [ $# -ne 0 ]; then
-	echo "Usage: path/to/FTL/bootstrap"
+	echo "Usage: path/to/fkit/bootstrap"
 	echo
-	echo "Bootstraps the FTL library's build system (Mach)."
-	exit 0
+	echo "Bootstraps fkit's build system (fmake)."
+	exit 1
 fi
 
 if [ -f $PWD/Recipe ]; then
@@ -12,4 +12,4 @@ if [ -f $PWD/Recipe ]; then
 	exit 1
 fi
 
-$(dirname $0)/mach/bootstrap $(dirname $0)
+$(dirname $0)/make/bootstrap $(dirname $0)

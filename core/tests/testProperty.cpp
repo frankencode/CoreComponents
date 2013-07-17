@@ -1,10 +1,12 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/Property.hpp>
+#include <fkit/stdio.h>
+#include <fkit/check.h>
+#include <fkit/Property.h>
 
-namespace ftl
-{
+using namespace fkit;
 
-class Shape: public Instance
+int changedNotices = 0;
+
+class Shape: public Object
 {
 public:
 	static Ref<Shape> create() { return new Shape; }
@@ -22,11 +24,12 @@ protected:
 
 private:
 	void onNameChanged(String newName) {
-		print("name = \"%%\"\n", name);
+		fout("name = \"%%\"\n") << name;
+		++changedNotices;
 	}
 };
 
-class Observer: public Instance
+class Observer: public Object
 {
 public:
 	Observer(Shape *shape)
@@ -43,10 +46,12 @@ public:
 
 private:
 	void onXChanged(int value) {
-		print("x = %%\n", value);
+		fout("x = %%\n") << value;
+		++changedNotices;
 	}
 	void onYChanged(int value) {
-		print("y = %%\n", value);
+		fout("y = %%\n") << value;
+		++changedNotices;
 	}
 
 	Ref<Shape> shape_;
@@ -63,12 +68,6 @@ int main()
 		shape->y = 93;
 	}
 	shape->x = 8;
+	check(changedNotices == 3);
 	return 0;
-}
-
-} // namespace ftl
-
-int main()
-{
-	return ftl::main();
 }

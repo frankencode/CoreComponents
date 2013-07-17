@@ -1,7 +1,0 @@
-Library {
-	name: "ftlwindows"
-	version: "0.0.1"
-	header: [ "*.hpp", "[a..z]{1,}" ]
-	source: [ "*.cpp" ]
-	use: [ "../../core/ftl" ]
-}

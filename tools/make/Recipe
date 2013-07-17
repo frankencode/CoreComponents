@@ -1,0 +1,5 @@
+Application {
+	name: fmake
+	source: *.cpp
+	use: ../../core/fkit
+}

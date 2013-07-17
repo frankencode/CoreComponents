@@ -1,50 +1,42 @@
-#include <ftl/PrintDebug.hpp>
-#include <ftl/File.hpp>
-#include <ftl/User.hpp>
-#include <ftl/Group.hpp>
+#include <fkit/stdio.h>
+#include <fkit/check.h>
+#include <fkit/User.h>
+#include <fkit/Group.h>
 
-namespace ftl
-{
+using namespace fkit;
 
-void printStatus(String path)
+int main(int argc, char **argv)
 {
-	print("path = \"%%\"\n", path);
-	print("File::exists(\"%%\") = %%\n", path, File::exists(path));
-	print("File::access(\"%%\", File::Read) = %%\n", path, File::access(path, File::Read));
-	print("File::access(\"%%\", File::Write) = %%\n", path, File::access(path, File::Write));
-	print("File::access(\"%%\", File::Execute) = %%\n", path, File::access(path, File::Execute));
-	if (File::exists(path)) {
-		Ref<FileStatus> status = File::status(path);
-		if (status) {
-			print("status->type() = %oct%\n", status->type());
-			print("status->mode() = %oct%\n", status->mode());
-			print("status->size() = %%\n", status->size());
-			print("status->ownerId() = %%\n", status->ownerId());
-			print("status->groupId() = %%\n", status->groupId());
-			print("User(status->ownerId()).loginName() = %%\n", User::lookup(status->ownerId())->loginName());
-			try {
-				print("Group(status->groupId()).name() = %%\n", Group::lookup(status->groupId())->name());
-			}
-			catch(...) {
-				// we may not have enough rights on some systems
+	String path = argv[0];
+	fout("path = \"%%\"\n") << path;
+	fout("File::exists(\"%%\") = %%\n") << path << File::exists(path);
+	fout("File::access(\"%%\", File::Read) = %%\n") << path << File::access(path, File::Read);
+	fout("File::access(\"%%\", File::Write) = %%\n") << path << File::access(path, File::Write);
+	fout("File::access(\"%%\", File::Execute) = %%\n") << path << File::access(path, File::Execute);
+	if (!File::access(path, File::Execute)) return 1;
+	try {
+		if (File::exists(path)) {
+			Ref<FileStatus> status = File::status(path);
+			if (status) {
+				fout("status->type() = %%\n") << oct(status->type());
+				fout("status->mode() = %%\n") << oct(status->mode());
+				fout("status->size() = %%\n") << status->size();
+				fout("status->ownerId() = %%\n") << status->ownerId();
+				fout("status->groupId() = %%\n") << status->groupId();
+				fout("User(status->ownerId()).loginName() = %%\n") << User::lookup(status->ownerId())->loginName();
+				try {
+					fout("Group(status->groupId()).name() = %%\n") << Group::lookup(status->groupId())->name();
+				}
+				catch(...) {
+					// we may not have enough rights on some systems
+				}
 			}
 		}
+		fout("\n");
 	}
-	print("\n");
-}
-
-int main(int argc, char **argv)
-{
-	printStatus(argv[0]);
-	printStatus("hmpf.xyz");
-	// printStatus(rawInput());
-	printStatus("/usr/include");
+	catch (AnyException &ex) {
+		ferr() << ex.what() << nl;
+		check(false);
+	}
 	return 0;
-}
-
-} // namespace ftl
-
-int main(int argc, char **argv)
-{
-	return ftl::main(argc, argv);
 }

@@ -1,0 +1,5 @@
+Tools {
+	source: *.cpp
+	use: ../../core/fkit
+	prefix: /usr/lib/fkit/examples
+}
