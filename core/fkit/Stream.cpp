@@ -15,20 +15,18 @@ namespace fkit
 
 void Stream::read(ByteArray *buf)
 {
-	while (buf->size() > 0) {
-		int n = readAvail(buf);
+	int bufFill = 0;
+	while (bufFill < buf->size()) {
+		int n = readAvail(ByteRange(buf, bufFill, buf->size()));
 		if (n == 0)
 			FKIT_THROW(StreamIoException, "Reading beyond end of input");
-		buf->select(n, buf->size());
+		bufFill += n;
 	}
-	buf->unselect();
 }
 
-String Stream::read(int size)
+void Stream::write(const StringList *parts, const char *sep)
 {
-	String s(size);
-	read(s);
-	return s;
+	write(parts->join(sep));
 }
 
 String Stream::readAll()

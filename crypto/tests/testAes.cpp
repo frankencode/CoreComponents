@@ -11,7 +11,7 @@ using namespace fkit::aes;
 
 void printKeySchedule(ByteArray *w)
 {
-	for (int i = 0; i < w->length() / 4; ++i) {
+	for (int i = 0; i < w->size() / 4; ++i) {
 		uint8_t b0 = w->byteAt(i * 4);
 		uint8_t b1 = w->byteAt(i * 4 + 1);
 		uint8_t b2 = w->byteAt(i * 4 + 2);
@@ -25,10 +25,10 @@ bool testKeyExpansion128()
 	const uint8_t k[16] = { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c };
 	Ref<ByteArray> w = keyExpansion(ByteArray::copy((char*)k, sizeof(k)), -1);
 	return
-		w->byteAt(w->length() - 4) == 0xb6 &&
-		w->byteAt(w->length() - 3) == 0x63 &&
-		w->byteAt(w->length() - 2) == 0x0c &&
-		w->byteAt(w->length() - 1) == 0xa6;
+		w->byteAt(w->size() - 4) == 0xb6 &&
+		w->byteAt(w->size() - 3) == 0x63 &&
+		w->byteAt(w->size() - 2) == 0x0c &&
+		w->byteAt(w->size() - 1) == 0xa6;
 }
 
 bool testKeyExpansion196()
@@ -39,10 +39,10 @@ bool testKeyExpansion196()
 	};
 	Ref<ByteArray> w = keyExpansion(ByteArray::copy((char*)k, sizeof(k)), -1);
 	return
-		w->at(w->length() - 4) == 0x01 &&
-		w->at(w->length() - 3) == 0x00 &&
-		w->at(w->length() - 2) == 0x22 &&
-		w->at(w->length() - 1) == 0x02;
+		w->at(w->size() - 4) == 0x01 &&
+		w->at(w->size() - 3) == 0x00 &&
+		w->at(w->size() - 2) == 0x22 &&
+		w->at(w->size() - 1) == 0x02;
 }
 
 bool testKeyExpansion256()
@@ -53,10 +53,10 @@ bool testKeyExpansion256()
 	};
 	Ref<ByteArray> w = keyExpansion(ByteArray::copy((char*)k, sizeof(k)), -1);
 	return
-		w->at(w->length() - 4) == 0x70 &&
-		w->at(w->length() - 3) == 0x6c &&
-		w->at(w->length() - 2) == 0x63 &&
-		w->at(w->length() - 1) == 0x1e;
+		w->at(w->size() - 4) == 0x70 &&
+		w->at(w->size() - 3) == 0x6c &&
+		w->at(w->size() - 2) == 0x63 &&
+		w->at(w->size() - 1) == 0x1e;
 }
 
 void printState(const char *name, Ref<ByteArray> s)

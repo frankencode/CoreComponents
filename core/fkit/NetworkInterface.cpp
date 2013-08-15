@@ -147,7 +147,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 					Ref<SocketAddress> label;
 					NetworkInterface *interface = 0;
 
-					for (int i = 0; i < list->length(); ++i) {
+					for (int i = 0; i < list->size(); ++i) {
 						if (unsigned(list->at(i)->index_) == data->ifa_index) {
 							interface = list->at(i);
 							break;
@@ -156,7 +156,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 
 					if (!interface) {
 						if (!getLink(list, data->ifa_index)) continue;
-						interface = list->at(list->length() - 1);
+						interface = list->at(list->size() - 1);
 					}
 
 
@@ -223,7 +223,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 		}
 	}
 
-	if (list->length() == 0)
+	if (list->size() == 0)
 		list = queryAllIoctl(family);
 
 	return list;
@@ -375,8 +375,8 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
 			{
 				struct ifreq ifr;
 				memclr(&ifr, sizeof(ifr));
-				for (int i = 0, n = name->length(); i < n; ++i)
-					ifr.ifr_name[i] = name->get(i);
+				for (int i = 0, n = name->size(); i < n; ++i)
+					ifr.ifr_name[i] = name->at(i);
 
 				if (::ioctl(fd, SIOCGIFHWADDR, &ifr) == -1)
 					FKIT_SYSTEM_EXCEPTION;
@@ -420,7 +420,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
 			if ((family != AF_UNSPEC) && (family != ifr->ifr_addr.sa_family))
 				continue;
 
-			for (int k = 0; k < list->length(); ++k)
+			for (int k = 0; k < list->size(); ++k)
 			{
 				NetworkInterface *interface = list->at(k);
 
@@ -543,8 +543,8 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 		else if ((msgType == RTM_NEWADDR) && (family != -1)) {
 			struct ifa_msghdr *msga = (struct ifa_msghdr *)msg;
 			char *attr = (char *)(msga + 1);
-			FKIT_ASSERT(list->length() > 0);
-			NetworkInterface *interface = list->at(-1);
+			FKIT_ASSERT(list->size() > 0);
+			NetworkInterface *interface = list->at(list->size() - 1);
 			// FKIT_ASSERT(interface->index_ == msga->ifam_index); // HACK, OpenBSD can fullfill
 			Ref<SocketAddress> label;
 			for (int i = 0; i < RTAX_MAX; ++i) {

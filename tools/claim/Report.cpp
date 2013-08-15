@@ -22,7 +22,7 @@ Report::Report(StringList *dirPaths, Pattern works)
 	  coverageByHolder_(CoverageByHolder::create()),
 	  statementByDigest_(StatementByDigest::create())
 {
-	for (int i = 0; i < dirPaths->length(); ++i) {
+	for (int i = 0; i < dirPaths->size(); ++i) {
 		String dirPath = dirPaths->at(i)->canonicalPath();
 		Ref<DirWalker> dirWalker = DirWalker::create(dirPath);
 		dirWalker->setIgnoreHidden(true);
@@ -32,7 +32,7 @@ Report::Report(StringList *dirPaths, Pattern works)
 			Ref<Notice> notice;
 			{
 				const HeaderScannerList *headerScanners = registry()->headerScanners();
-				for (int j = 0; j < headerScanners->length(); ++j) {
+				for (int j = 0; j < headerScanners->size(); ++j) {
 					Ref<Header> header = headerScanners->at(j)->scanHeader(path);
 					if (header) {
 						notice = noticeParser()->readNotice(header);
@@ -53,7 +53,7 @@ Report::Report(StringList *dirPaths, Pattern works)
 				}
 				{
 					CopyrightList *copyrights = notice->copyrights();
-					for (int j = 0; j < copyrights->length(); ++j) {
+					for (int j = 0; j < copyrights->size(); ++j) {
 						String holder = copyrights->at(j)->holder();
 						Ref<Coverage> coverage;
 						if (!coverageByHolder_->lookup(holder, &coverage))

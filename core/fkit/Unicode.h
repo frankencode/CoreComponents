@@ -7,34 +7,34 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FKIT_CHARACTER_H
-#define FKIT_CHARACTER_H
+#ifndef FKIT_UNICODE_H
+#define FKIT_UNICODE_H
 
-#include "Object.h"
-#include "Ref.h"
+#include "ByteArray.h"
 #include "Utf8Walker.h"
 
 namespace fkit
 {
 
-class ByteArray;
-
-class Character: public Object
+class Unicode: public Object
 {
 public:
+	inline static Ref<Unicode> open(ByteArray *bytes)
+	{
+		return new Unicode(bytes);
+	}
+
 	inline bool has(int i) const {
 		walkTo(i);
 		return walker_.valid();
 	}
 
-	inline uchar_t get(int i) const {
+	inline uchar_t at(int i) const {
 		walkTo(i);
 		return walker_.getChar();
 	}
 
-	inline uchar_t at(int i) const { return get(i); }
-
-	inline int length() const {
+	inline int size() const {
 		if (n_ == -1) {
 			if (!walker_.valid()) {
 				walker_ = Utf8Walker(walker_.data());
@@ -49,9 +49,7 @@ public:
 
 	Ref<ByteArray> copy(int i0, int i1) const;
 	inline Ref<ByteArray> head(int n) const { return copy(0, n); }
-	inline Ref<ByteArray> tail(int n) const { return copy(length() - n, n); }
-
-	inline uchar_t operator[](int i) const { return get(i); }
+	inline Ref<ByteArray> tail(int n) const { return copy(size() - n, n); }
 
 	inline const char *byte(int i) const {
 		walkTo(i);
@@ -72,14 +70,9 @@ public:
 	// Ref<StringList> split(const char *pattern) const;
 
 private:
-	friend class ByteArray;
-
-	Character()
-		: walker_(0),
-		  i_(-1), n_(-1)
-	{}
-	Character(const char *data)
-		: walker_(data),
+	Unicode(ByteArray *bytes)
+		: bytes_(bytes),
+		  walker_(bytes->data()),
 		  i_(0), n_(-1)
 	{}
 
@@ -92,10 +85,11 @@ private:
 		while (i_ > i) { --walker_; --i_; }
 	}
 
+	Ref<ByteArray> bytes_;
 	mutable Utf8Walker walker_;
 	mutable int i_, n_;
 };
 
 } // namespace fkit
 
-#endif // FKIT_CHARACTER_H
+#endif // FKIT_UNICODE_H

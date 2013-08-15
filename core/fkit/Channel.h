@@ -19,7 +19,7 @@ namespace fkit
 {
 
 template<class T>
-class Channel: public Container< T, Channel<T> >
+class Channel: public Object
 {
 public:
 	static Ref<Channel> create() {
@@ -40,33 +40,35 @@ public:
 		notEmpty_->signal();
 	}
 
-	void popBack(T *item)
+	T popBack(T *item = 0)
 	{
 		Guard<Mutex> guard(mutex_);
-		while (queue_->length() == 0)
+		while (queue_->size() == 0)
 			notEmpty_->wait(mutex_);
+		T h;
+		if (!item) item = &h;
 		queue_->popBack(item);
+		return *item;
 	}
 
-	void popFront(T *item)
+	T popFront(T *item = 0)
 	{
 		Guard<Mutex> guard(mutex_);
-		while (queue_->length() == 0)
+		while (queue_->size() == 0)
 			notEmpty_->wait(mutex_);
+		T h;
+		if (!item) item = &h;
 		queue_->popFront(item);
-	}
-
-	inline T popFront() {
-		T item;
-		popFront(&item);
-		return item;
+		return *item;
 	}
 
 	inline void push(const T &item) { return pushBack(item); }
-	inline void pop(T *item) { return popFront(item); }
-	inline T pop() { return popFront(); }
+	inline T pop(T *item = 0) { return popFront(item); }
 
-	inline bool isEmpty() const { return false; }
+	inline int size() const {
+		Guard<Mutex> guard(mutex_);
+		return queue_->size();
+	}
 
 protected:
 	Channel()

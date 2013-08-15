@@ -216,7 +216,7 @@ Ref<EnvMap> Process::envMap()
 	int i = 0;
 	while (env[i] != 0) {
 		Ref<StringList> parts = String(env[i])->split("=");
-		if (parts->length() == 2)
+		if (parts->size() == 2)
 			map->insert(parts->at(0), parts->at(1));
 		++i;
 	}

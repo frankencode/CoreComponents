@@ -16,7 +16,7 @@ namespace fkit
 {
 
 template<class T>
-class Stack: public Container< T, Stack<T> >
+class Stack: public Object
 {
 public:
 	typedef int Index;
@@ -25,7 +25,7 @@ public:
 	inline static Ref<Stack> create(int size) {
 		return new Stack(size);
 	}
-	inline static Ref<Stack> create(T *buf, int size) {
+	inline static Ref<Stack> wrap(T *buf, int size) {
 		return new Stack(buf, size);
 	}
 
@@ -38,11 +38,8 @@ public:
 		}
 	}
 
-	inline int size() const { return size_; }
-	inline int fill() const { return fill_; }
-	inline int length() const { return fill_; }
-	inline bool isFull() const { return fill_ == size_; }
-	inline bool isEmpty() const { return fill_ == 0; }
+	inline int maxSize() const { return size_; }
+	inline int size() const { return fill_; }
 
 	inline bool has(int i) const { return (0 <= i) && (i < fill_); }
 	inline T &at(int i) const { return bottom(i); }

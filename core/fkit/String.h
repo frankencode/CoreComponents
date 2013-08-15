@@ -12,7 +12,6 @@
 
 #include "strings.h"
 #include "ByteArray.h"
-#include "Character.h"
 #include "List.h"
 
 namespace fkit
@@ -33,9 +32,10 @@ public:
 	}
 	String(const Ref<ByteArray> &b): Super(b) {}
 	String(ByteArray *b): Super(b) {}
+	String(const ByteArray *b): Super(const_cast<ByteArray *>(b)) {}
 	String(const String &b): Super(b.Super::get()) {}
 	String(const Format &b);
-	String(const Variant &b);
+	explicit String(const Variant &b);
 	String(Ref<StringList> parts);
 
 	String(const char *data, int size = -1): Super(ByteArray::copy(data, size)) {}
@@ -61,10 +61,11 @@ private:
 
 inline Ref<StringList> operator+(const String &a, const String &b) {
 	Ref<StringList> l = StringList::create();
-	*l << a << b;
+	l->append(a);
+	l->append(b);
 	return l;
 }
-inline Ref<StringList> operator+(Ref<StringList> &a, const String &b) { a << b; return a; }
+inline Ref<StringList> operator+(Ref<StringList> &a, const String &b) { a->append(b); return a; }
 
 inline bool operator< (const String &a, const String &b) { return strcmp(a->data(), b->data()) <  0; }
 inline bool operator==(const String &a, const String &b) { return strcmp(a->data(), b->data()) == 0; }

@@ -76,7 +76,7 @@ void FloatLiteral::read(float64_t *value, const ByteArray *text, Token *token) c
 		float64_t one, zero;
 		one = 1.; zero = 0.;
 
-		if (text->get(token->index()) == '-')
+		if (text->at(token->index()) == '-')
 			*value = -one / zero;
 		else
 			*value = one / zero;
@@ -92,7 +92,7 @@ void FloatLiteral::read(float64_t *value, const ByteArray *text, Token *token) c
 		{
 			if (token->rule() == sign_)
 			{
-				if (text->get(token->index()) == '-')
+				if (text->at(token->index()) == '-')
 					sign = -1;
 			}
 			else if (token->rule() == integerPart_)
@@ -100,18 +100,18 @@ void FloatLiteral::read(float64_t *value, const ByteArray *text, Token *token) c
 				for (int i = token->i0(); i < token->i1(); ++i)
 				{
 					mantissa *= 10;
-					mantissa += text->get(i) - '0';
+					mantissa += text->at(i) - '0';
 				}
 			}
 			else if (token->rule() == fractionPart_)
 			{
 				float64_t h = 0.1;
 				for (int i = token->i0(); i < token->i1(); ++i, h /= 10)
-					mantissa += h * (text->get(i) - '0');
+					mantissa += h * (text->at(i) - '0');
 			}
 			else if (token->rule() == exponentSign_)
 			{
-				if (text->get(token->index()) == '-')
+				if (text->at(token->index()) == '-')
 					epSign = -1;
 			}
 			else if (token->rule() == exponent_)
@@ -119,7 +119,7 @@ void FloatLiteral::read(float64_t *value, const ByteArray *text, Token *token) c
 				for (int i = token->i0(); i < token->i1(); ++i)
 				{
 					ep *= 10;
-					ep += text->get(i) - '0';
+					ep += text->at(i) - '0';
 				}
 			}
 

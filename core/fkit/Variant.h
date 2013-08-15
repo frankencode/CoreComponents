@@ -66,12 +66,12 @@ public:
 
 	~Variant() { if (type_ & ObjectType) killRef(); }
 
-	inline const Variant &operator=(bool value)        { type_ = BoolType; int_ = value; return *this; }
-	inline const Variant &operator=(int value)         { type_ = IntType;  int_ = value; return *this; }
-	inline const Variant &operator=(float value)       { type_ = FloatType; float_ = value; return *this; }
-	inline const Variant &operator=(double value)      { type_ = FloatType; float_ = value; return *this; }
-	inline const Variant &operator=(const char *value) { return *this = Variant(value); }
-	inline const Variant &operator=(String value)      { return *this = Variant(value); }
+	inline const Variant &operator=(bool value)          { type_ = BoolType; int_ = value; return *this; }
+	inline const Variant &operator=(int value)           { type_ = IntType;  int_ = value; return *this; }
+	inline const Variant &operator=(float value)         { type_ = FloatType; float_ = value; return *this; }
+	inline const Variant &operator=(double value)        { type_ = FloatType; float_ = value; return *this; }
+	inline const Variant &operator=(const char *value)   { return *this = Variant(value); }
+	inline const Variant &operator=(const String &value) { return *this = Variant(value); }
 	template<class T>
 	inline const Variant &operator=(const Ref<T> &value) { return *this = Variant(value); }
 
@@ -87,17 +87,17 @@ public:
 	}
 
 	inline operator bool() const {
-		if (!type_) return false;
+		if (!type_) return bool();
 		FKIT_ASSERT2(type_ & IntType, illegalConversion());
 		return int_;
 	}
 	inline operator int() const {
-		if (!type_) return -1;
+		if (!type_) return int();
 		FKIT_ASSERT2(type_ & IntType, illegalConversion());
 		return int_;
 	}
 	inline operator float() const {
-		if (!type_) return fkit::nan;
+		if (!type_) return float();
 		FKIT_ASSERT2(type_ & FloatType, illegalConversion());
 		return float_;
 	}
@@ -109,7 +109,7 @@ public:
 
 	template<class T>
 	inline operator Ref<T>() const {
-		if (!type_) return null<T>();
+		if (!type_) return Ref<T>();
 		FKIT_ASSERT2(type_ & ObjectType, illegalConversion());
 		return cast<T>(ref().get());
 	}

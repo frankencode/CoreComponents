@@ -24,6 +24,7 @@ namespace fkit
 
 FKIT_EXCEPTION(NetworkingException, Exception);
 
+class SystemStream;
 class SocketAddress;
 
 typedef List< Ref<SocketAddress> > SocketAddressList;
@@ -57,13 +58,16 @@ public:
 		return new SocketAddress(info);
 	}
 
+	static Ref<SocketAddress> getLocalAddress(SystemStream *socket);
+	static Ref<SocketAddress> getRemoteAddress(SystemStream *socket);
+
 	int family() const;
 	int socketType() const;
 	int protocol() const;
 	int port() const;
 	void setPort(int port);
 
-	String addressString() const;
+	String networkAddress() const;
 	String toString() const;
 
 	int scope() const;

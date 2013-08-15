@@ -10,7 +10,6 @@
 #ifndef FKIT_BYTEARRAY_H
 #define FKIT_BYTEARRAY_H
 
-#include "generics.h"
 #include "containers.h"
 #include "strings.h"
 #include "Default.h"
@@ -25,10 +24,9 @@ typedef List<String> StringList;
 namespace syntax { class Definition; }
 typedef syntax::Definition SyntaxDefinition;
 
-class Character;
 class File;
 
-class ByteArray: public Sequence<char, int>
+class ByteArray: public Object
 {
 public:
 	typedef int Index;
@@ -49,46 +47,24 @@ public:
 	ByteArray &operator=(const ByteArray &b);
 	ByteArray &operator^=(const ByteArray &b);
 
-	void select(int i0, int i1);
-	void unselect();
-
 	void clear(char zero = '\0');
 
-	Character *chars() const;
-
 	inline int size() const { return size_; }
-	inline int length() const { return size_; }
-	inline bool isEmpty() const { return size_ == 0; }
 
 	inline int first() const { return 0; }
 	inline int last() const { return size_ - 1; }
 
 	inline bool has(int i) const {
-		if (i < 0) i += size_;
 		return (0 <= i) && (i < size_);
-	}
-
-	inline char get(int i) const {
-		FKIT_ASSERT(has(i));
-		if (i < 0) i += size_;
-		return data_[i];
-	}
-
-	inline void set(int i, const char &item) {
-		FKIT_ASSERT(has(i));
-		if (i < 0) i += size_;
-		data_[i] = item;
 	}
 
 	inline char *pointerAt(int i) const {
 		FKIT_ASSERT(has(i));
-		if (i < 0) i += size_;
 		return data_ + i;
 	}
 
 	inline char &at(int i) const {
 		FKIT_ASSERT(has(i));
-		if (i < 0) i += size_;
 		return data_[i];
 	}
 	inline uint8_t &byteAt(int i) const {
@@ -104,7 +80,6 @@ public:
 	inline uint8_t *bytes() const { return reinterpret_cast<uint8_t *>(data_); }
 	inline const char *constData() const { return data_; }
 	inline operator char*() const { return data_; }
-	inline operator bool() const { return !isEmpty(); }
 
 	inline void read(int i, char *data, int size) {
 		if (size == 0) return;
@@ -138,8 +113,8 @@ public:
 	inline Ref<ByteArray> head(int n) const { return copy(0, n); }
 	inline Ref<ByteArray> tail(int n) const { return copy(size_ - n, size_); }
 
-	inline int find(char ch) const { return find(0, ch); }
-	inline int find(int i, char ch) const {
+	inline int find(char ch) const { return find(ch, 0); }
+	inline int find(char ch, int i) const {
 		if (i < 0) i = 0;
 		while (i < size_) {
 			if (data_[i] == ch) break;
@@ -178,7 +153,7 @@ public:
 	Ref<StringList> split(SyntaxDefinition *pattern) const;
 	Ref<StringList> breakUp(int chunkSize) const;
 
-	void replaceInsitu(const char *pattern, const char *replacement);
+	ByteArray *replaceInsitu(const char *pattern, const char *replacement);
 	Ref<ByteArray> replace(const char *pattern, const char *replacement) const;
 	Ref<ByteArray> replace(String pattern, String replacement) const;
 
@@ -196,6 +171,9 @@ public:
 	inline Ref<ByteArray> expand() const { return copy()->expandInsitu(); }
 	Ref<ByteArray> escape() const;
 	ByteArray *expandInsitu();
+
+	ByteArray *truncate(int i1);
+	ByteArray *truncate(int i0, int i1);
 
 	inline Ref<ByteArray> trim(const char *space = " \t\n\r") const { return copy()->trimInsitu(space); }
 	ByteArray *trimInsitu(const char *space = " \t\n\r");
@@ -230,6 +208,7 @@ public:
 private:
 	friend class Singleton<ByteArray>;
 	friend class File;
+	friend class ByteRange;
 
 	explicit ByteArray(int size = 0, char zero = 0);
 	ByteArray(const char *data, int size);
@@ -247,25 +226,46 @@ private:
 	char *origData_;
 	size_t mapSize_;
 	bool wrapped_;
-	mutable Ref<Character> chars_;
 };
 
 class ByteRange
 {
 public:
-	ByteRange(ByteArray *buf, int i0, int i1)
-		: buf_(buf)
+	ByteRange(ByteArray *array, int i0, int i1)
+		: array_(array),
+		  origData_(array->data_),
+		  origSize_(array->size_),
+		  origEnd_(0)
 	{
-		buf_->select(i0, i1);
+		if (i0 < 0) i0 = 0;
+		if (i0 > origSize_) i0 = origSize_;
+		if (i1 < i0) i1 = i0;
+		if (i1 > origSize_) i1 = origSize_;
+		origEnd_ = origData_[i1];
+		origData_[i1] = 0;
+		array_->data_ = origData_ + i0;
+		array_->size_ = i1 - i0;
 	}
-	~ByteRange()
-	{
-		buf_->unselect();
+
+	~ByteRange() {
+		array_->data_[array_->size_] = origEnd_;
+		array_->data_ = origData_;
+		array_->size_ = origSize_;
+		array_ = 0;
 	}
-	inline operator ByteArray *() { return buf_; }
+
+	inline operator ByteArray*() const { return array_; }
+
 private:
-	ByteRange(const ByteRange &b) {}
-	ByteArray *buf_;
+	ByteRange(const ByteRange&);
+	ByteRange &operator=(const ByteRange &b);
+	void *operator new(size_t size);
+	void operator delete(void *data, size_t size);
+
+	Ref<ByteArray> array_;
+	char *origData_;
+	int origSize_;
+	char origEnd_;
 };
 
 inline bool operator==(const ByteArray &a, const ByteArray &b) { return container::compare(a, b) == 0; }

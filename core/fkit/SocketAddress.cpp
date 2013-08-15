@@ -14,10 +14,29 @@
 #include <errno.h>
 #include "strings.h"
 #include "Format.h"
+#include "SystemStream.h"
 #include "SocketAddress.h"
 
 namespace fkit
 {
+
+Ref<SocketAddress> SocketAddress::getLocalAddress(SystemStream *socket)
+{
+	Ref<SocketAddress> address = SocketAddress::create();
+	socklen_t len = address->addrLen();
+	if (::getsockname(socket->fd(), address->addr(), &len) == -1)
+		FKIT_SYSTEM_EXCEPTION;
+	return address;
+}
+
+Ref<SocketAddress> SocketAddress::getRemoteAddress(SystemStream *socket)
+{
+	Ref<SocketAddress> address = SocketAddress::create();
+	socklen_t len = address->addrLen();
+	if (::getpeername(socket->fd(), address->addr(), &len) == -1)
+		FKIT_SYSTEM_EXCEPTION;
+	return address;
+}
 
 SocketAddress::SocketAddress()
 	: socketType_(0),
@@ -114,7 +133,7 @@ void SocketAddress::setPort(int port)
 		FKIT_THROW(NetworkingException, "Unsupported address family");
 }
 
-String SocketAddress::addressString() const
+String SocketAddress::networkAddress() const
 {
 	String s;
 	if (addr_.sa_family == AF_LOCAL) {
@@ -145,7 +164,7 @@ String SocketAddress::addressString() const
 
 String SocketAddress::toString() const
 {
-	Format s(addressString());
+	Format s(networkAddress());
 	if (addr_.sa_family != AF_LOCAL) {
 		if (port() != 0)
 			s << ":" << port();
@@ -205,7 +224,7 @@ Ref<SocketAddressList> SocketAddress::resolve(String hostName, String serviceNam
 	if (head)
 		freeaddrinfo(head);
 
-	if (list->length() == 0)
+	if (list->size() == 0)
 		FKIT_THROW(NetworkingException, "Failed to resolve host name");
 
 	return list;

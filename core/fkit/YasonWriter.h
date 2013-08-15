@@ -15,8 +15,6 @@
 namespace fkit
 {
 
-class LineSink;
-
 class YasonWriter: public Object
 {
 public:
@@ -27,6 +25,7 @@ protected:
 	YasonWriter(Format format, String indent);
 	void writeValue(Variant value, int depth);
 	void writeList(Variant value, int depth);
+	bool isIdentifier(String name) const;
 	void writeObject(Variant value, int depth);
 	void writeIndent(int depth);
 

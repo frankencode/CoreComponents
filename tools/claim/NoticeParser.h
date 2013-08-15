@@ -23,7 +23,7 @@ private:
 	Ref<NoticeSyntax> noticeSyntax_;
 };
 
-inline NoticeParser *noticeParser() { return NoticeParser::instance(); }
+NoticeParser *noticeParser();
 
 } // namespace fclaim
 

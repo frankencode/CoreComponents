@@ -42,9 +42,9 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	initFlags();
 
 	recipe_ = Config::read(argc, argv);
-	if (recipe_->arguments()->length() > 0) {
-		if (recipe_->arguments()->length() > 1)
-			FKIT_THROW(BuildPlanException, "Processing multiple Recipe files at once is not supported");
+	if (recipe_->arguments()->size() > 0) {
+		if (recipe_->arguments()->size() > 1)
+			throw UserException("Processing multiple Recipe files at once is not supported");
 		projectPath_ = recipe_->arguments()->at(0)->canonicalPath();
 	}
 
@@ -261,8 +261,11 @@ bool BuildPlan::install(String sourcePath, String destPath)
 bool BuildPlan::unlink(String path)
 {
 	if (File::unresolvedStatus(path)->exists()) {
+		if (options_ & Simulate) {
+			ferr("rm -f %%\n") << path;
+			return true;
+		}
 		ferr("rm %%\n") << path;
-		if (options_ & Simulate) return true;
 		try {
 			File::unlink(path) || FKIT_SYSTEM_EXCEPTION;
 		}
@@ -291,7 +294,7 @@ void BuildPlan::prepare()
 
 	Ref<StringList> prequisitePaths = cast<StringList>(recipe_->value("use"));
 
-	for (int i = 0; i < prequisitePaths->length(); ++i) {
+	for (int i = 0; i < prequisitePaths->size(); ++i) {
 		String path = prequisitePaths->at(i);
 		if (path->isRelativePath()) path = projectPath_ + "/" + path;
 		path = path->canonicalPath();
@@ -311,7 +314,7 @@ void BuildPlan::prepare()
 	sources_ = StringList::create();
 	if (recipe_->contains("source")) {
 		StringList *sourcePatterns = cast<StringList>(recipe_->value("source"));
-		for (int i = 0; i < sourcePatterns->length(); ++i) {
+		for (int i = 0; i < sourcePatterns->size(); ++i) {
 			Ref<Glob> glob = Glob::open(sourcePath(sourcePatterns->at(i)));
 			for (String path; glob->read(&path);)
 				sources_->append(path);
@@ -365,7 +368,7 @@ bool BuildPlan::analyse()
 		modulePath_ = f->join("-");
 	}
 
-	for (int i = 0; i < prequisites_->length(); ++i)
+	for (int i = 0; i < prequisites_->size(); ++i)
 		if (!prequisites_->at(i)->analyse()) return analyseResult_ = false;
 
 	if (options_ & Package) return analyseResult_ = true;
@@ -378,7 +381,7 @@ bool BuildPlan::analyse()
 	Ref<DependencyCache> dependencyCache = DependencyCache::create(this);
 	previousSources_ = dependencyCache->previousSources();
 
-	for (int i = 0; i < sources_->length(); ++i) {
+	for (int i = 0; i < sources_->size(); ++i) {
 		Ref<Module> module;
 		if (dependencyCache->lookup(sources_->at(i), &module)) {
 			modules_->append(module);
@@ -416,7 +419,7 @@ bool BuildPlan::build()
 
 	if ((options_ & Tests) && !(options_ & BuildTests)) return buildResult_ = true;
 
-	for (int i = 0; i < prequisites_->length(); ++i)
+	for (int i = 0; i < prequisites_->size(); ++i)
 		if (!prequisites_->at(i)->build()) return buildResult_ = false;
 
 	if (options_ & Package) return buildResult_ = true;
@@ -424,7 +427,7 @@ bool BuildPlan::build()
 	Ref<JobScheduler> compileScheduler;
 	Ref<JobScheduler> linkScheduler;
 
-	for (int i = 0; i < modules_->length(); ++i) {
+	for (int i = 0; i < modules_->size(); ++i) {
 		Module *module = modules_->at(i);
 		bool dirty = module->dirty();
 		if (options_ & Tools)
@@ -472,7 +475,7 @@ bool BuildPlan::build()
 	if (productStatus->exists() && *sources_ == *previousSources_) {
 		double productTime = productStatus->lastModified();
 		bool dirty = false;
-		for (int i = 0; i < modules_->length(); ++i) {
+		for (int i = 0; i < modules_->size(); ++i) {
 			Module *module = modules_->at(i);
 			Ref<FileStatus> moduleStatus = fileStatus(module->modulePath());
 			if (moduleStatus->lastModified() > productTime) {
@@ -483,6 +486,13 @@ bool BuildPlan::build()
 		Ref<FileStatus> recipeStatus = fileStatus(recipe_->path());
 		if (recipeStatus->exists()) {
 			if (recipeStatus->lastModified() > productTime) dirty = true;
+			for (int i = 0; i < prequisites_->size(); ++i) {
+				Ref<FileStatus> recipeStatus = fileStatus(prequisites_->at(i)->recipe_->path());
+				if (recipeStatus->lastModified() > productTime) {
+					dirty = true;
+					break;
+				}
+			}
 		}
 		if (!dirty) return buildResult_ = true;
 	}
@@ -495,7 +505,7 @@ int BuildPlan::testRun()
 	if (testRunComplete_) return testRunResult_;
 	testRunComplete_ = true;
 
-	for (int i = 0; i < prequisites_->length(); ++i) {
+	for (int i = 0; i < prequisites_->size(); ++i) {
 		testRunResult_ = prequisites_->at(i)->testRun();
 		if (testRunResult_ != 0) return testRunResult_;
 	}
@@ -504,7 +514,7 @@ int BuildPlan::testRun()
 
 	Ref<JobScheduler> scheduler = JobScheduler::create();
 
-	for (int i = 0; i < modules_->length(); ++i) {
+	for (int i = 0; i < modules_->size(); ++i) {
 		Module *module = modules_->at(i);
 		scheduler->schedule(toolChain_->createTestJob(this, module));
 	}
@@ -526,13 +536,13 @@ bool BuildPlan::install()
 
 	if (options_ & Tests) return true;
 
-	for (int i = 0; i < prequisites_->length(); ++i)
+	for (int i = 0; i < prequisites_->size(); ++i)
 		if (!prequisites_->at(i)->install()) return false;
 
 	if (options_ & Package) return true;
 
 	if (options_ & Tools) {
-		for (int i = 0; i < modules_->length(); ++i) {
+		for (int i = 0; i < modules_->size(); ++i) {
 			if (!toolChain_->install(this, modules_->at(i)))
 				return false;
 		}
@@ -549,13 +559,13 @@ bool BuildPlan::uninstall()
 
 	if (options_ & Tests) return true;
 
-	for (int i = 0; i < prequisites_->length(); ++i)
+	for (int i = 0; i < prequisites_->size(); ++i)
 		if (!prequisites_->at(i)->uninstall()) return false;
 
 	if (options_ & Package) return true;
 
 	if (options_ & Tools) {
-		for (int i = 0; i < modules_->length(); ++i) {
+		for (int i = 0; i < modules_->size(); ++i) {
 			if (!toolChain_->uninstall(this, modules_->at(i)))
 				return false;
 		}
@@ -570,7 +580,7 @@ void BuildPlan::clean()
 	if (cleanComplete_) return;
 	cleanComplete_ = true;
 
-	for (int i = 0; i < prequisites_->length(); ++i)
+	for (int i = 0; i < prequisites_->size(); ++i)
 		prequisites_->at(i)->clean();
 
 	if (options_ & Package) return;

@@ -12,6 +12,7 @@
 
 #include "AvlTree.h"
 #include "Array.h"
+#include "ExclusiveAccess.h"
 
 namespace fkit
 {
@@ -23,27 +24,51 @@ public:
 	typedef ItemType Item;
 
 	OrdinalNode()
-		: item_(Item()),
+		: weight_(1),
 		  balance_(0),
-		  weight_(1)
+		  item_(Item())
 	{}
 	OrdinalNode(const Item &item)
-		: item_(item),
+		: weight_(1),
 		  balance_(0),
-		  weight_(1)
+		  item_(item)
 	{}
 	OrdinalNode(const OrdinalNode &b)
-		: item_(b.item_),
+		: weight_(b.weight_),
 		  balance_(b.balance_),
-		  weight_(b.weight_)
+		  item_(b.item_)
 	{}
 
 	OrdinalNode *left_;
 	OrdinalNode *right_;
 	OrdinalNode *parent_;
-	Item item_;
-	int balance_;
 	int weight_;
+	int balance_;
+	Item item_;
+};
+
+class Index
+{
+public:
+	Index(int i): i_(i), tree_(0) {}
+	inline operator int() const { return i_; }
+	inline Index &operator=(int b) { i_ = b; return *this; }
+
+	inline Index &operator+=(int b) { i_ += b; return *this; }
+	inline Index &operator-=(int b) { i_ -= b; return *this; }
+	inline Index &operator*=(int b) { i_ *= b; return *this; }
+	inline Index &operator/=(int b) { i_ /= b; return *this; }
+	inline Index &operator++() { ++i_; return *this; }
+	inline Index &operator--() { --i_; return *this; }
+	inline Index operator++(int) { Index h = *this; ++i_; return h; }
+	inline Index operator--(int) { Index h = *this; --i_; return h; }
+
+private:
+	template<class> friend class OrdinalTree;
+
+	int i_, cachedIndex_;
+	void *tree_, *cachedNode_;
+	uint64_t revision_;
 };
 
 template<class NodeType>
@@ -83,6 +108,7 @@ protected:
 	static bool testWeight(Node *k);
 #endif
 
+	mutable ExclusiveSection cacheExclusive_;
 	mutable Node *cachedNode_;
 	mutable int cachedIndex_;
 };
@@ -117,7 +143,7 @@ OrdinalTree<Node>::OrdinalTree(int n)
 				}
 				k->left_ = 0;
 				k->right_ = 0;
-				v->set(i, k);
+				v->at(i) = k;
 			}
 			else {
 				AvlTree<Node>::touched(v->at((i - 1) >> 1), 0, i & 1, false);
@@ -157,26 +183,28 @@ const OrdinalTree<Node> &OrdinalTree<Node>::operator=(const OrdinalTree &b)
 template<class Node>
 bool OrdinalTree<Node>::lookupByIndex(int i, Node **node) const
 {
-	if (i < 0) i += weight();
 	FKIT_ASSERT((0 <= i) && (i < weight()));
 
-	if (cachedNode_) {
-		int d = i - cachedIndex_;
-		if (d == 0) {
-			if (node) *node = cachedNode_;
-			return cachedNode_;
-		}
-		else if (d == 1) {
-			++cachedIndex_;
-			cachedNode_ = this->succ(cachedNode_);
-			if ((cachedNode_) && (node)) *node = cachedNode_;
-			return cachedNode_;
-		}
-		else if (d == -1) {
-			--cachedIndex_;
-			cachedNode_ = this->pred(cachedNode_);
-			if ((cachedNode_) && (node)) *node = cachedNode_;
-			return cachedNode_;
+	ExclusiveAccess cacheAccess(&cacheExclusive_);
+	if (cacheAccess) {
+		if (cachedNode_) {
+			const int d = i - cachedIndex_;
+			if (d == 1) {
+				++cachedIndex_;
+				cachedNode_ = this->succ(cachedNode_);
+				if ((cachedNode_) && (node)) *node = cachedNode_;
+				return cachedNode_;
+			}
+			else if (d == 0) {
+				if (node) *node = cachedNode_;
+				return cachedNode_;
+			}
+			else if (d == -1) {
+				--cachedIndex_;
+				cachedNode_ = this->pred(cachedNode_);
+				if ((cachedNode_) && (node)) *node = cachedNode_;
+				return cachedNode_;
+			}
 		}
 	}
 
@@ -196,8 +224,10 @@ bool OrdinalTree<Node>::lookupByIndex(int i, Node **node) const
 	}
 	if ((k) && (node)) *node = k;
 
-	cachedNode_ = k;
-	cachedIndex_ = i;
+	if (cacheAccess) {
+		cachedNode_ = k;
+		cachedIndex_ = i;
+	}
 
 	return k;
 }
@@ -267,21 +297,20 @@ void OrdinalTree<Node>::push(int index, const Item &item)
 	Node *kn = new Node(item);
 	if (index == weight()) {
 		Node *kp = 0;
-		if (cachedNode_)
+		if (cachedNode_) {
 			if (cachedIndex_ == index)
 				kp = cachedNode_;
+		}
 		if (!kp) kp = this->max();
 		this->attach(kp, kn, false);
 	}
 	else {
 		Node *ka = 0;
-		#ifndef NDEBUG
-		bool found =
-		#endif
-			lookupByIndex(index, &ka);
-		FKIT_ASSERT(found);
+		if (!lookupByIndex(index, &ka))
+			FKIT_ASSERT(false);
 		this->attachBefore(ka, kn);
 	}
+
 	cachedNode_ = kn;
 	cachedIndex_ = index;
 }
@@ -290,11 +319,8 @@ template<class Node>
 void OrdinalTree<Node>::pop(int index, Item *item)
 {
 	Node *ko = 0;
-	#ifndef NDEBUG
-	bool found =
-	#endif
-		lookupByIndex(index, &ko);
-	FKIT_ASSERT(found);
+	if (!lookupByIndex(index, &ko))
+		FKIT_ASSERT(false);
 	*item = ko->item_;
 	Node *k = this->pred(ko);
 	if (k) --index;

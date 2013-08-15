@@ -8,12 +8,12 @@
  */
 
 #include "ByteArray.h"
-#include "Character.h"
+#include "Unicode.h"
 
 namespace fkit
 {
 
-Ref<ByteArray> Character::copy(int i0, int i1) const
+Ref<ByteArray> Unicode::copy(int i0, int i1) const
 {
 	FKIT_ASSERT(i0 <= i1);
 	walkTo(i0);

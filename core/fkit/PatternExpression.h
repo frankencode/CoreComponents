@@ -32,7 +32,8 @@ protected:
 	NODE compileBehind(ByteArray *text, Token *token, SyntaxDefinition *definition);
 	NODE compileCapture(ByteArray *text, Token *token, SyntaxDefinition *definition);
 	NODE compileReference(ByteArray *text, Token *token, SyntaxDefinition *definition);
-	char readChar(ByteArray *text, Token *token, SyntaxDefinition *definition);
+	char readChar(ByteArray *text, Token *token);
+	String readString(ByteArray *text, Token *token);
 	NODE compileRangeMinMax(ByteArray *text, Token *token, SyntaxDefinition *definition);
 	NODE compileRangeExplicit(ByteArray *text, Token *token, SyntaxDefinition *definition);
 	NODE compileRepeat(ByteArray *text, Token *token, SyntaxDefinition *definition, NODE previous);
@@ -42,6 +43,7 @@ protected:
 	int boi_;
 	int eoi_;
 	int char_;
+	int string_;
 	int rangeMinMax_;
 	int rangeExplicit_;
 	int minRepeat_;

@@ -37,13 +37,13 @@ String Base64::encode(const String &source)
 		bits >>= 8;
 
 		for (int k = 0; k < 4; ++k) {
-			sink->set(l++, alphabet[(bits & 0xfc0000) >> 18]);
+			sink->at(l++) = alphabet[(bits & 0xfc0000) >> 18];
 			bits <<= 6;
 		}
 	}
 	if (i > 0) {
 		while (i > n) {
-			sink->set(--l, '=');
+			sink->at(--l) = '=';
 			--i;
 		}
 	}

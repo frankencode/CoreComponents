@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 	}
 
 	StringList *dirPaths = config->arguments();
-	if (dirPaths->length() == 0) dirPaths->append(".");
+	if (dirPaths->size() == 0) dirPaths->append(".");
 
 	Ref<Report> report = Report::create(dirPaths, works);
 
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 					Format line(out());
 					line << coverage->keyAt(j) << " (";
 					CopyrightList *copyrights = notice->copyrights();
-					for (int k = 0; k < copyrights->length(); ++k) {
+					for (int k = 0; k < copyrights->size(); ++k) {
 						Copyright *copyright = copyrights->at(k);
 						if (copyright->holder() == holder) {
 							if (copyright->yearStart() < copyright->yearEnd())
@@ -108,12 +108,12 @@ int main(int argc, char **argv)
 			String path = coverage->keyAt(i);
 			Notice *notice = coverage->valueAt(i);
 			CopyrightList *copyrights = notice->copyrights();
-			for (int j = 0; j < copyrights->length(); ++j)
+			for (int j = 0; j < copyrights->size(); ++j)
 				if (copyrights->at(j)->holder() != holder) continue;
 			Token *token = notice->header()->token();
 			Ref<File> file = File::open(path, File::Read|File::Write);
 			String text = file->map();
-			String newText = Format() << text->copy(0, token->i0()) << text->copy(token->i1(), text->length());
+			String newText = Format() << text->copy(0, token->i0()) << text->copy(token->i1(), text->size());
 			file->seek(0);
 			file->truncate(0);
 			file->write(newText);

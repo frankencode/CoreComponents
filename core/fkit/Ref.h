@@ -56,7 +56,7 @@ public:
 		}
 	}
 
-	template<class T2>
+	/*template<class T2>
 	inline T &operator<<(T2 x) {
 		FKIT_ASSERT2(a_, "Null reference");
 		return *a_ << x;
@@ -66,7 +66,7 @@ public:
 	inline T &operator>>(T2 &x) {
 		FKIT_ASSERT2(a_, "Null reference");
 		return *a_ >> x;
-	}
+	}*/
 
 private:
 	T *a_;

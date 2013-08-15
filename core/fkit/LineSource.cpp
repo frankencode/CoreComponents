@@ -7,76 +7,93 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "CircularBuffer.h"
 #include "LineSource.h"
 
 namespace fkit
 {
 
-LineSource::LineSource(Stream *stream, const char *eol, int maxLineLength)
+LineSource::LineSource(Stream *stream, ByteArray *buf)
 	: stream_(stream),
-	  eol_(eol),
-	  cachedLines_(0),
-	  cache_(Cache::create(maxLineLength)),
-	  buf_(ByteArray::create(maxLineLength))
-{}
-
-Stream *LineSource::stream() const { return stream_; }
-
-bool LineSource::hasMore()
+	  eoi_(false),
+	  buf_(buf),
+	  i_(0), n_(0)
 {
-	while ((cachedLines_ == 0) && (readAvail()));
-	return (cachedLines_ > 0);
+	if (!buf) buf_ = String(0x3FFFF);
 }
 
 bool LineSource::read(String *line)
 {
-	bool more = hasMore();
-	if (more) *line = readLine();
-	return more;
+	if (eoi_) {
+		*line = String();
+		return false;
+	}
+
+	Ref<StringList> backlog;
+
+	while (true) {
+		if (i_ < n_) {
+			int i0 = i_;
+			i_ = findEol(buf_, n_, i_);
+			if (i_ < n_) {
+				if (backlog) {
+					backlog->append(buf_->copy(i0, i_));
+					*line = backlog->join();
+				}
+				else {
+					*line = buf_->copy(i0, i_);
+				}
+				i_ = skipEol(buf_, n_, i_);
+				return true;
+			}
+			if (!backlog)
+				backlog = StringList::create();
+			backlog->append(buf_->copy(i0, i_));
+		}
+
+		if (!stream_) break;
+
+		n_ = stream_->readAvail(buf_);
+		if (n_ == 0) break;
+		i_ = 0;
+	}
+
+	eoi_ = true;
+	if (backlog) {
+		*line = backlog->join();
+		return true;
+	}
+	*line = String();
+	return false;
 }
 
 String LineSource::readLine()
 {
-	if (!hasMore())
-		return "";
-
-	int nk = eol_->size();
-	int k = 0;
-	int i = 0;
-	while (k < nk) {
-		char ch = cache_->pop();
-		k = (ch == eol_->at(k)) ? k + 1 : 0;
-		buf_->set(i, ch);
-		++i;
-	}
-
-	--cachedLines_;
-
-	return String(buf_->data(), i - nk);
+	String s;
+	read(&s);
+	return s;
 }
 
-bool LineSource::readAvail()
+String LineSource::pendingData() const
 {
-	int bufFill = stream_->readAvail(buf_);
+	if (eoi_) return String();
+	return buf_->copy(i_, n_);
+}
 
-	for (int i = 0, nk = eol_->size(), k = 0; i < bufFill; ++i)
-	{
-		if (cache_->fill() == cache_->size())
-			FKIT_THROW(StreamIoException, strcat("Maximum line length of ", fkit::intToStr(cache_->size()), " bytes exceeded"));
-
-		char ch = buf_->at(i);
-		k = (ch == eol_->at(k)) ? k + 1 : 0;
-
-		if (k == nk) {
-			k = 0;
-			++cachedLines_;
-		}
-
-		cache_->push(ch);
+int LineSource::findEol(ByteArray *buf, int n, int i) const
+{
+	for (; i < n; ++i) {
+		char ch = buf->at(i);
+		if (ch == '\n' || ch == '\r')
+			break;
 	}
+	return i;
+}
 
-	return bufFill > 0;
+int LineSource::skipEol(ByteArray *buf, int n, int i) const
+{
+	if (i < n) if (buf->at(i) == '\r') ++i;
+	if (i < n) if (buf->at(i) == '\n') ++i;
+	return i;
 }
 
 } // namespace fkit

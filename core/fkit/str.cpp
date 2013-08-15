@@ -82,7 +82,7 @@ String fnum(float64_t x, int precision, int base, int screen)
 			}
 		}
 
-		while (digits->fill() < precision) {
+		while (digits->size() < precision) {
 			int d = int(m / q);
 			digits->push(d);
 			m -= d * q;
@@ -91,7 +91,7 @@ String fnum(float64_t x, int precision, int base, int screen)
 
 		int ns = 0; // number of significiant digits
 		{
-			for (int i = 0; i < digits->fill(); ++i)
+			for (int i = 0; i < digits->size(); ++i)
 				if (digits->bottom(i) != 0)
 					ns = i + 1;
 		}
@@ -107,32 +107,32 @@ String fnum(float64_t x, int precision, int base, int screen)
 		text = String(wi + int(wf != 0) + wf + int(ne != 0) * (1 + int(eba < 0) + ne), ' ');
 
 		if (s == 1)
-			text->set(i++, '-');
+			text->at(i++) = '-';
 
 		const char *fig = "0123456789abcdef";
 		int k = 0; // digit index
 
 		for (int l = 0; l < ni; ++l)
-			text->set(i++, fig[digits->bottom(k++)]);
+			text->at(i++) = fig[digits->bottom(k++)];
 
 		if (wf != 0)
 		{
-			text->set(i++, '.');
+			text->at(i++) = '.';
 			for (int l = 0; l < wf; ++l)
 			{
-				if (digits->fill() <= k)
-					text->set(i++, '0');
+				if (digits->size() <= k)
+					text->at(i++) = '0';
 				else
-					text->set(i++, fig[digits->bottom(k++)]);
+					text->at(i++) = fig[digits->bottom(k++)];
 			}
 		}
 
 		if (ne != 0)
 		{
-			text->set(i++, 'e');
-			if (eba < 0) { text->set(i++, '-'); eba = -eba; }
+			text->at(i++) = 'e';
+			if (eba < 0) { text->at(i++) = '-'; eba = -eba; }
 			for (int l = ne-1, h = eba; l >= 0; --l, h /= base)
-				text->set(i+l, fig[h % base]);
+				text->at(i+l) = fig[h % base];
 			i += ne;
 		}
 	}
@@ -140,11 +140,11 @@ String fnum(float64_t x, int precision, int base, int screen)
 	return text;
 }
 
-String dec(const Variant &x, int m)
+String dec(const Variant &x, int n)
 {
 	return (type(x) == Variant::FloatType) ?
-		dec(float(x), m > 0 ? m : 7) :
-		dec(int(x), m);
+		dec(float(x), n > 0 ? n : 7) :
+		dec(int(x), n);
 }
 
 String str(void *x)
@@ -157,14 +157,14 @@ String str(void *x)
 
 String left(const String &s, int w, char blank)
 {
-	if (s->length() > w) return s;
-	else return s + String(w - s->length(), blank);
+	if (s->size() > w) return s;
+	else return s + String(w - s->size(), blank);
 }
 
 String right(const String &s, int w, char blank)
 {
-	if (s->length() > w) return s;
-	else return String(w - s->length(), blank) + s;
+	if (s->size() > w) return s;
+	else return String(w - s->size(), blank) + s;
 }
 
 } // namespace fkit

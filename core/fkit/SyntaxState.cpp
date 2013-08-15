@@ -33,8 +33,8 @@ State::State(const DefinitionNode *definition, int numFlags, int numCaptures, St
 	hintOffset_ = -1;
 
 	if (parent) parent->child_ = this;
-	for (int i = 0; i < flags_->length(); ++i) flags_->set(i, false);
-	for (int i = 0; i < captures_->length(); ++i) captures_->set(i, Range::create());
+	for (int i = 0; i < flags_->size(); ++i) flags_->at(i) =  false;
+	for (int i = 0; i < captures_->size(); ++i) captures_->at(i) = Range::create();
 }
 
 bool State::flag(const char *name) const

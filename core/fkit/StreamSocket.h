@@ -19,30 +19,26 @@ namespace fkit
 class StreamSocket: public SystemStream
 {
 public:
-	inline static Ref<StreamSocket> create(SocketAddress *address, int fd = -1) {
-		return new StreamSocket(address, fd);
-	}
+	static Ref<StreamSocket> listen(SocketAddress *address);
+	static Ref<StreamSocket> connect(SocketAddress *address);
 
 	SocketAddress *address() const;
 
-	void bind();
-	void listen(int backlog = 8);
 	bool readyAccept(double idleTimeout);
 	Ref<StreamSocket> accept();
-	void connect();
 	bool established(double idleTimeout);
 	void shutdown(int how = SHUT_RDWR);
 
 	void setRecvTimeout(double idleTimeout);
 	void setSendTimeout(double idleTimeout);
 
-	SocketAddress *localAddress() const;
-	SocketAddress *remoteAddress() const;
-	static SocketAddress *localAddress(int fd);
-	static SocketAddress *remoteAddress(int fd);
-
 protected:
-	StreamSocket(SocketAddress *address, int fd);
+	StreamSocket(SocketAddress *address);
+	StreamSocket(SocketAddress *address, int fdc);
+	void bind();
+	void listen(int backlog = 8);
+	void connect();
+
 	Ref<SocketAddress> address_;
 	bool connected_;
 };

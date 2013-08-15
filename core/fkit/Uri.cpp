@@ -110,15 +110,15 @@ String Uri::encode(String s)
 	const char *reserved = ":/?#[]@!$&'()*+,;=";
 	Ref<StringList> l = StringList::create();
 	int j = 0;
-	for (int i = 0, n = s->length(); i < n; ++i) {
+	for (int i = 0, n = s->size(); i < n; ++i) {
 		char ch = s->at(i);
 		for (const char *r = reserved; *r; ++r) {
 			if (ch == *r) {
 				if (j < i)
 					l->append(s->copy(j, i));
 				String pct("%XX");
-				pct->set(1, ch >> 4);
-				pct->set(2, ch & 0xF);
+				pct->at(1) = ch >> 4;
+				pct->at(2) = ch & 0xF;
 				l->append(pct);
 				j = i + 1;
 				break;
@@ -126,8 +126,8 @@ String Uri::encode(String s)
 		}
 	}
 	if (j == 0) return s;
-	if (j < s->length())
-		l->append(s->copy(j, s->length()));
+	if (j < s->size())
+		l->append(s->copy(j, s->size()));
 	return l->join();
 }
 
@@ -136,7 +136,7 @@ String Uri::decode(String s)
 	s->downcaseInsitu();
 
 	int j = 0;
-	for (int i = 0, n = s->length(); i < n; ++i, ++j) {
+	for (int i = 0, n = s->size(); i < n; ++i, ++j) {
 		char ch = s->at(i);
 		if ((ch == '%') && (i + 2 < n)) {
 			unsigned char x = 0;
@@ -159,10 +159,9 @@ String Uri::decode(String s)
 				}
 			}
 		}
-		if (j < i) s->set(j, ch);
+		if (j < i) s->at(j) = ch;
 	}
-	if (j < s->length())
-		s->select(0, j);
+	s->truncate(j);
 	return s;
 }
 

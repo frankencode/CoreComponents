@@ -90,7 +90,7 @@ String File::name() const
 {
 	const char sep = '/';
 
-	int n = path_->length();
+	int n = path_->size();
 	int i = n - 1;
 	while (i >= 0) {
 		if (path_->at(i) == sep) {
@@ -297,7 +297,7 @@ String File::createUnique(String path, int mode, char placeHolder)
 					r += 'a' - 10;
 				else if ((36 <= r) && (r <= 61))
 					r += 'A' - 36;
-				candidate->set(i, r);
+				candidate->at(i) = r;
 			}
 		}
 		int fd = ::open(candidate, O_RDONLY|O_CREAT|O_EXCL, mode);
@@ -331,7 +331,7 @@ String File::lookup(String fileName, StringList *dirs, int accessFlags)
 		dirs = h;
 	}
 	String path;
-	for (int i = 0; i < dirs->length(); ++i) {
+	for (int i = 0; i < dirs->size(); ++i) {
 		String candidate = Format() << dirs->at(i) << "/" << fileName;
 		if (access(candidate, accessFlags)) {
 			path = candidate;

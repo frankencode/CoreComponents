@@ -11,8 +11,8 @@ int main()
 
 	list = list->sort();
 
-	for (String item; list->read(&item);)
-		fout() << item << nl;
+	for (int i = 0; i < list->size(); ++i)
+		fout() << list->at(i) << nl;
 
 	return 0;
 }

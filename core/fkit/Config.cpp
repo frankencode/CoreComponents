@@ -87,6 +87,17 @@ Ref<Config> Config::read(int argc, char **argv, Config *config)
 		config->establish(name, value);
 	}
 
+	if (config->prototype_) {
+		if (config->prototype_->size() != config->size()) {
+			YasonObject *prototype = config->prototype_;
+			for (int i = 0; i < prototype->size(); ++i) {
+				String name = prototype->keyAt(i);
+				if (config->size() <= i || config->keyAt(i) != name)
+					config->insert(name, prototype->valueAt(i));
+			}
+		}
+	}
+
 	return config;
 }
 

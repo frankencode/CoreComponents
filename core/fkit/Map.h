@@ -17,41 +17,28 @@ namespace fkit
 {
 
 template<class Key, class Value, class Mixin = None>
-class Map:
-	public Container< Pair<Key, Value>, Map<Key, Value, Mixin> >,
-	public Sequence< Pair<Key, Value>, int >,
-	public Mixin
+class Map: public Object, public Mixin
 {
 public:
 	typedef Pair<Key,Value> Item;
-	typedef GenericIterator<Map> Iterator;
 
 	inline static Ref<Map> create() { return new Map(); }
 	inline static Ref<Map> clone(Map *a) { return new Map(a); }
 
-	inline Ref<Iterator> createIterator() const { return Iterator::create(this); }
-
-	inline bool isEmpty() const { return tree_.weight() == 0; }
-	inline int length() const { return tree_.weight(); }
 	inline int size() const { return tree_.weight(); }
 
 	inline bool has(int index) const {
-		return index < length();
-	}
-	inline Item get(int index) const {
-		return at(index);
+		return 0 <= index && index < size();
 	}
 	inline const Item &at(int index) const {
 		Node *node = 0;
-		if (tree_.lookupByIndex(index, &node)) return node->item_;
-		else return nullItem_;
+		if (!tree_.lookupByIndex(index, &node))
+			FKIT_ASSERT(false);
+		return node->item_;
 	}
+
 	inline const Key &keyAt(int index) const { return at(index).key(); }
-	inline Value &valueAt(int index) const {
-		Node *node = 0;
-		if (tree_.lookupByIndex(index, &node)) return node->item_.value();
-		else return nullItem_.value();
-	}
+	inline Value &valueAt(int index) const { return const_cast<Item &>(at(index)).value(); }
 
 	/** Return the index of the first item greater or equal _a_
 	  */
@@ -150,7 +137,7 @@ public:
 
 	inline void pop(Item *item)
 	{
-		FKIT_ASSERT(!isEmpty());
+		FKIT_ASSERT(size() > 0);
 		Node *k = tree_.min();
 		*item = k->item_;
 		tree_.remove(k);
@@ -179,4 +166,4 @@ protected:
 
 } // namespace fkit
 
-#endif // FKIT_MAP_HP
+#endif // FKIT_MAP_H

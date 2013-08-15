@@ -7,7 +7,6 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "LineSink.h"
 #include "Format.h"
 #include "YasonWriter.h"
 
@@ -64,6 +63,22 @@ void YasonWriter::writeList(Variant value, int depth)
 		writeTypedList<Variant>(value, depth);
 }
 
+bool YasonWriter::isIdentifier(String name) const
+{
+	for (int i = 0, n = name->size(); i < n; ++i) {
+		char ch = name->at(i);
+		if (!(
+			(('a' <= ch) && (ch <= 'z')) ||
+			(('A' <= ch) && (ch <= 'Z')) ||
+			(ch == '_') ||
+			(ch == '-') ||
+			(('0' <= ch) && (ch <= '9'))
+		))
+			return false;
+	}
+	return true;
+}
+
 void YasonWriter::writeObject(Variant value, int depth)
 {
 	Ref<YasonObject> object = cast<YasonObject>(value);
@@ -71,25 +86,35 @@ void YasonWriter::writeObject(Variant value, int depth)
 		format_ << object->className();
 		format_ << " ";
 	}
-	if (object->length() == 0) {
+	if (object->size() == 0) {
 		format_ << "{}";
 		return;
 	}
 	format_ << "{\n";
 	writeIndent(depth + 1);
-	for (int i = 0; i < object->length(); ++i) {
+	for (int i = 0; i < object->size(); ++i) {
 		String memberName = object->keyAt(i);
 		Variant memberValue = object->valueAt(i);
-		format_ << "\"" << memberName << "\": ";
+		if (isIdentifier(memberName))
+			format_ << memberName << ": ";
+		else
+			format_ << "\"" << memberName << "\": ";
 		writeValue(memberValue, depth + 1);
-		if (i < object->length() - 1) {
-			format_ << ",\n";
+		format_ << "\n";
+		if (i < object->size() - 1)
 			writeIndent(depth + 1);
-		}
-		else {
-			format_ << "\n";
+		else
 			writeIndent(depth);
+	}
+	if (object->hasChildren()) {
+		YasonObjectList *children = object->children();
+		for (int i = 0; i < children->size(); ++i) {
+			writeIndent(depth + 1);
+			writeObject(children->at(i), depth + 1);
+			format_ << "\n";
 		}
+		if (children->size() > 0)
+			writeIndent(depth);
 	}
 	format_ << "}";
 }
@@ -103,14 +128,14 @@ template<class T>
 void YasonWriter::writeTypedList(Variant value, int depth)
 {
 	List<T> *list = cast< List<T> >(value);
-	if (list->length() == 0) {
+	if (list->size() == 0) {
 		format_ << "[]";
 		return;
 	}
 	format_ << "[ ";
-	for (int i = 0; i < list->length(); ++i) {
+	for (int i = 0; i < list->size(); ++i) {
 		writeValue(list->at(i), depth);
-		if (i < list->length() - 1)
+		if (i < list->size() - 1)
 			format_ << ", ";
 	}
 	format_ << " ]";

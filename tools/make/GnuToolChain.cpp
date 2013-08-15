@@ -122,7 +122,7 @@ bool GnuToolChain::link(BuildPlan *buildPlan)
 
 	args << "-o" << linkName(buildPlan);
 
-	for (int i = 0; i < modules->length(); ++i)
+	for (int i = 0; i < modules->size(); ++i)
 		args << modules->at(i)->modulePath();
 
 	appendLinkOptions(args, buildPlan);
@@ -177,7 +177,7 @@ bool GnuToolChain::uninstall(BuildPlan *buildPlan, Module *module)
 
 void GnuToolChain::clean(BuildPlan *buildPlan)
 {
-	for (int i = 0; i < buildPlan->modules()->length(); ++i) {
+	for (int i = 0; i < buildPlan->modules()->size(); ++i) {
 		buildPlan->unlink(buildPlan->modules()->at(i)->modulePath());
 		if (buildPlan->options() & BuildPlan::Tools)
 			buildPlan->unlink(buildPlan->modules()->at(i)->toolName());
@@ -201,7 +201,7 @@ void GnuToolChain::appendCompileOptions(Format args, BuildPlan *buildPlan)
 	if (buildPlan->options() & BuildPlan::Static) args << "-static";
 	if (buildPlan->options() & BuildPlan::Library) args << "-fpic";
 	args << "-Wall" << "-pthread";
-	for (int i = 0; i < buildPlan->includePaths()->length(); ++i)
+	for (int i = 0; i < buildPlan->includePaths()->size(); ++i)
 		args << "-I" + buildPlan->includePaths()->at(i);
 }
 
@@ -210,15 +210,15 @@ void GnuToolChain::appendLinkOptions(Format args, BuildPlan *buildPlan)
 	StringList *libraryPaths = buildPlan->libraryPaths();
 	StringList *libraries = buildPlan->libraries();
 
-	for (int i = 0; i < libraryPaths->length(); ++i)
+	for (int i = 0; i < libraryPaths->size(); ++i)
 		args << "-L" + libraryPaths->at(i);
 
-	for (int i = 0; i < libraries->length(); ++i)
+	for (int i = 0; i < libraries->size(); ++i)
 		args << "-l" + libraries->at(i);
 
-	if (libraryPaths->length() > 0) {
+	if (libraryPaths->size() > 0) {
 		Ref<StringList> rpaths = StringList::create();
-		for (int i = 0; i < libraryPaths->length(); ++i)
+		for (int i = 0; i < libraryPaths->size(); ++i)
 			*rpaths << "-rpath=" + libraryPaths->at(i)->absolutePath();
 		args << "-Wl,--enable-new-dtags," + rpaths->join(",");
 	}

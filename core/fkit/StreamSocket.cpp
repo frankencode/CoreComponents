@@ -16,22 +16,45 @@
 namespace fkit
 {
 
-StreamSocket::StreamSocket(SocketAddress *address, int fd)
-	: SystemStream(fd),
-	  address_(address),
-	  connected_(fd != -1)
+Ref<StreamSocket> StreamSocket::listen(SocketAddress *address)
 {
-	if (fd_ == -1) {
-		fd_ = ::socket(address->family(), SOCK_STREAM, 0);
-		if (fd_ == -1)
-			FKIT_SYSTEM_EXCEPTION;
-	}
+	Ref<StreamSocket> s = new StreamSocket(address);
+	s->bind();
+	s->listen();
+	return s;
 }
+
+Ref<StreamSocket> StreamSocket::connect(SocketAddress *address)
+{
+	Ref<StreamSocket> s = new StreamSocket(address);
+	s->connect();
+	return s;
+}
+
+StreamSocket::StreamSocket(SocketAddress *address)
+	: SystemStream(::socket(address->family(), SOCK_STREAM, 0)),
+	  address_(address),
+	  connected_(false)
+{
+	if (fd_ == -1)
+		FKIT_SYSTEM_EXCEPTION;
+}
+
+StreamSocket::StreamSocket(SocketAddress *address, int fdc)
+	: SystemStream(fdc),
+	  address_(address),
+	  connected_(true)
+{}
 
 SocketAddress *StreamSocket::address() const { return address_; }
 
 void StreamSocket::bind()
 {
+	if (address_->port() != 0) {
+		int on = 1;
+		if (setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) == -1)
+			FKIT_SYSTEM_EXCEPTION;
+	}
 	if (::bind(fd_, address_->addr(), address_->addrLen()) == -1)
 		FKIT_SYSTEM_EXCEPTION;
 }
@@ -132,27 +155,6 @@ void StreamSocket::setSendTimeout(double idleTimeout)
 	tval.tv_sec = sec;
 	if (::setsockopt(fd_, SOL_SOCKET, SO_SNDTIMEO, &tval, sizeof(tval)) == -1)
 		FKIT_SYSTEM_EXCEPTION;
-}
-
-SocketAddress *StreamSocket::localAddress() const { return localAddress(fd_); }
-SocketAddress *StreamSocket::remoteAddress() const { return remoteAddress(fd_); }
-
-SocketAddress *StreamSocket::localAddress(int fd)
-{
-	SocketAddress *address = SocketAddress::create();
-	socklen_t len = address->addrLen();
-	if (::getsockname(fd, address->addr(), &len) == -1)
-		FKIT_SYSTEM_EXCEPTION;
-	return address;
-}
-
-SocketAddress *StreamSocket::remoteAddress(int fd)
-{
-	SocketAddress *address = SocketAddress::create();
-	socklen_t len = address->addrLen();
-	if (::getpeername(fd, address->addr(), &len) == -1)
-		FKIT_SYSTEM_EXCEPTION;
-	return address;
 }
 
 } // namespace fkit

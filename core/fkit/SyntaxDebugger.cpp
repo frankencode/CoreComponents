@@ -734,8 +734,8 @@ void Debugger::printDefinition(bool omitUnusedRules)
 		ruleById->insert(rule->id(), rule);
 	}
 
-	for (int i = 0; i < ruleById->length(); ++i) {
-		RuleNode *rule = ruleById->get(i).value();
+	for (int i = 0; i < ruleById->size(); ++i) {
+		RuleNode *rule = ruleById->valueAt(i);
 		if (omitUnusedRules && !rule->used()) continue;
 		fout("DEFINE%%(\"%%\",\n") << (rule->isVoid() ? "_VOID" : "") << rule->name();
 		if (rule->entry()) {

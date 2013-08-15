@@ -61,6 +61,13 @@ PatternExpression::PatternExpression()
 			)
 		);
 
+	string_ =
+		DEFINE("String",
+			REPEAT(2,
+				REF("Char")
+			)
+		);
+
 	rangeMinMax_ =
 		DEFINE("RangeMinMax",
 			GLUE(
@@ -113,10 +120,12 @@ PatternExpression::PatternExpression()
 		DEFINE("Repeat",
 			GLUE(
 				CHOICE(
+					PREVIOUS("String"),
 					PREVIOUS("Char"),
 					PREVIOUS("Any"),
 					PREVIOUS("RangeMinMax"),
 					PREVIOUS("RangeExplicit"),
+					PREVIOUS("Reference"),
 					PREVIOUS("Group")
 				),
 				CHAR('{'),
@@ -137,6 +146,7 @@ PatternExpression::PatternExpression()
 			REPEAT(
 				CHOICE(
 					REF("Repeat"),
+					REF("String"),
 					REF("Char"),
 					REF("Any"),
 					REF("Gap"),
@@ -145,9 +155,9 @@ PatternExpression::PatternExpression()
 					REF("Boi"),
 					REF("Eoi"),
 					REF("Capture"),
-					REF("Ahead"),
-					REF("Behind"),
 					REF("Reference"),
+					REF("Behind"),
+					REF("Ahead"),
 					REF("Group")
 				)
 			)
@@ -237,9 +247,9 @@ void PatternExpression::compile(ByteArray *text, SyntaxDefinition *definition)
 {
 	Ref<SyntaxState> state = newState();
 	Ref<Token> token = match(text, 0, state);
-	if ((!token) || (token->length() < text->length())) {
+	if ((!token) || (token->size() < text->size())) {
 		String reason = "Syntax error";
-		int pos = token->length();
+		int pos = token->size();
 		if (state->hint()) {
 			reason = state->hint();
 			pos = state->hintOffset();
@@ -247,7 +257,7 @@ void PatternExpression::compile(ByteArray *text, SyntaxDefinition *definition)
 		throw PatternException(reason, pos);
 	}
 	NODE entry;
-	if (text->length() == 0) entry = definition->PASS();
+	if (text->size() == 0) entry = definition->PASS();
 	else entry = compileChoice(text, token, definition);
 	definition->DEFINE("Expression", entry);
 	definition->ENTRY("Expression");
@@ -268,12 +278,20 @@ NODE PatternExpression::compileSequence(ByteArray *text, Token *token, SyntaxDef
 {
 	NODE node = new syntax::GlueNode;
 	for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
-		if (child->rule() == char_) node->appendChild(definition->CHAR(readChar(text, child, definition)));
+		if (child->rule() == string_) node->appendChild(definition->STRING(readString(text, child)));
+		else if (child->rule() == char_) node->appendChild(definition->CHAR(readChar(text, child)));
 		else if (child->rule() == any_) node->appendChild(definition->ANY());
 		else if (child->rule() == gap_) node->appendChild(definition->GREEDY_REPEAT(definition->ANY()));
 		else if (child->rule() == rangeMinMax_) node->appendChild(compileRangeMinMax(text, child, definition));
 		else if (child->rule() == rangeExplicit_) node->appendChild(compileRangeExplicit(text, child, definition));
-		else if (child->rule() == repeat_) node->appendChild(compileRepeat(text, child, definition, node->lastChild()));
+		else if (child->rule() == repeat_) {
+			NODE previous = node->lastChild();
+			if (child->previousSibling()){
+				if (child->previousSibling()->rule() == string_)
+					previous = definition->CHAR(readChar(text, child->previousSibling()->lastChild()));
+			}
+			node->appendChild(compileRepeat(text, child, definition, previous));
+		}
 		else if (child->rule() == boi_) node->appendChild(definition->BOI());
 		else if (child->rule() == eoi_) node->appendChild(definition->EOI());
 		else if (child->rule() == group_) node->appendChild(compileChoice(text, child->firstChild(), definition));
@@ -318,11 +336,20 @@ NODE PatternExpression::compileReference(ByteArray *text, Token *token, SyntaxDe
 	return definition->REPLAY(name);
 }
 
-char PatternExpression::readChar(ByteArray *text, Token *token, SyntaxDefinition *definition)
+char PatternExpression::readChar(ByteArray *text, Token *token)
 {
 	return (token->i1() - token->i0() > 1) ?
 		text->copy(token)->expandInsitu()->at(0) :
 		text->at(token->i0());
+}
+
+String PatternExpression::readString(ByteArray *text, Token *token)
+{
+	String s(token->countChildren());
+	int i = 0;
+	for (Token *child = token->firstChild(); child; child = child->nextSibling())
+		s->at(i++) = readChar(text, child);
+	return s;
 }
 
 NODE PatternExpression::compileRangeMinMax(ByteArray *text, Token *token, SyntaxDefinition *definition)
@@ -332,13 +359,13 @@ NODE PatternExpression::compileRangeMinMax(ByteArray *text, Token *token, Syntax
 	if (n == 2) {
 		Token *min = token->firstChild();
 		Token *max = min->nextSibling();
-		char a = readChar(text, min, definition);
-		char b = readChar(text, max, definition);
+		char a = readChar(text, min);
+		char b = readChar(text, max);
 		return  invert ? definition->EXCEPT(a, b) : definition->RANGE(a, b);
 	}
 	else if (n == 1) {
 		Token *child = token->firstChild();
-		char ch = readChar(text, child, definition);
+		char ch = readChar(text, child);
 		return invert ?
 			( (child->i0() - token->i0() <= 2) ? definition->BELOW(ch)            : definition->GREATER(ch)        ) :
 			( (child->i0() - token->i0() <= 2) ? definition->GREATER_OR_EQUAL(ch) : definition->BELOW_OR_EQUAL(ch) );
@@ -353,7 +380,7 @@ NODE PatternExpression::compileRangeExplicit(ByteArray *text, Token *token, Synt
 	int n = token->countChildren();
 	String s(n);
 	for (int i = 0; i < n; ++i) {
-		s->set(i, readChar(text, child, definition));
+		s->at(i) = readChar(text, child);
 		child = child->nextSibling();
 	}
 	return invert ? definition->EXCEPT(s->data()) : definition->RANGE(s->data());

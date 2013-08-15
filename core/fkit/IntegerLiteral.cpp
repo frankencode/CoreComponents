@@ -82,7 +82,7 @@ void IntegerLiteral::read(uint64_t *value, int *sign, const ByteArray *text, Tok
 
 	if (token->rule() == sign_)
 	{
-		if (text->get(token->index()) == '-')
+		if (text->at(token->index()) == '-')
 			*sign = -1;
 		token = token->nextSibling();
 	}
@@ -91,7 +91,7 @@ void IntegerLiteral::read(uint64_t *value, int *sign, const ByteArray *text, Tok
 	{
 		for (int i = token->i0() + 2; i < token->i1(); ++i)
 		{
-			int x = text->get(i) - '0';
+			int x = text->at(i) - '0';
 			*value *= 2;
 			*value += x;
 		}
@@ -100,7 +100,7 @@ void IntegerLiteral::read(uint64_t *value, int *sign, const ByteArray *text, Tok
 	{
 		for (int i = token->i0() + 1; i < token->i1(); ++i)
 		{
-			int x = text->get(i) - '0';
+			int x = text->at(i) - '0';
 			*value *= 8;
 			*value += x;
 		}
@@ -109,7 +109,7 @@ void IntegerLiteral::read(uint64_t *value, int *sign, const ByteArray *text, Tok
 	{
 		for (int i = token->i0() + 2; i < token->i1(); ++i)
 		{
-			int x = text->get(i);
+			int x = text->at(i);
 			if (('0' <= x) && (x <= '9')) x -= '0';
 			else if (('a' <= x) && (x <= 'z')) x -= 'a' - 10;
 			else if (('A' <= x) && (x <= 'Z')) x -= 'A' - 10;
@@ -121,7 +121,7 @@ void IntegerLiteral::read(uint64_t *value, int *sign, const ByteArray *text, Tok
 	{
 		for (int i = token->i0(); i < token->i1(); ++i)
 		{
-			int x = text->get(i) - '0';
+			int x = text->at(i) - '0';
 			*value *= 10;
 			*value += x;
 		}

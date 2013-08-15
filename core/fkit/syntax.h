@@ -34,7 +34,7 @@ public:
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
 		if (media->has(i)) {
-			char ch = media->get(i++);
+			char ch = media->at(i++);
 			if ((ch != ch_) ^ invert_)
 				i = -1;
 		}
@@ -65,7 +65,7 @@ public:
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
 		if (media->has(i)) {
-			char ch = media->get(i++);
+			char ch = media->at(i++);
 			if ((ch <= ch_) ^ invert_)
 				i = -1;
 		}
@@ -97,7 +97,7 @@ public:
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
 		if (media->has(i)) {
-			char ch = media->get(i++);
+			char ch = media->at(i++);
 			if ((ch < ch_) ^ invert_)
 				i = -1;
 		}
@@ -138,7 +138,7 @@ public:
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
 		if (media->has(i)) {
-			char ch = media->get(i++);
+			char ch = media->at(i++);
 			if (((ch < a_) || (b_ < ch)) ^ invert_)
 				i = -1;
 		}
@@ -170,10 +170,10 @@ public:
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
 		if (media->has(i)) {
-			char ch = media->get(i++);
-			int k = 0, len = s_->length();
+			char ch = media->at(i++);
+			int k = 0, len = s_->size();
 			while (k < len) {
-				if (s_->get(k) == ch) break;
+				if (s_->at(k) == ch) break;
 				++k;
 			}
 			if ((k == len) ^ invert_)
@@ -208,9 +208,9 @@ public:
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
 		if (media->has(i)) {
-			int k = 0, len = s_->length();
+			int k = 0, len = s_->size();
 			while ((k < len) && (media->has(i))) {
-				char ch = media->get(i++);
+				char ch = media->at(i++);
 				if (!caseSensitive_)
 					ch = ToLower<char>::map(ch);
 				if (s_->at(k) != ch) break;
@@ -225,7 +225,7 @@ public:
 		return i;
 	}
 
-	inline int matchLength() const { return s_->length(); }
+	inline int matchLength() const { return s_->size(); }
 
 	inline const ByteArray &s() const { return *s_; }
 
@@ -612,10 +612,13 @@ public:
 		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
+		int h = i;
 		if (!media->has(i - length_))
-			i = -1;
-		else if ((entry()->matchNext(media, i - length_, tokenFactory, parentToken, state) == -1) ^ invert_)
-			i = -1;
+			h = -1;
+		else if (entry()->matchNext(media, i - length_, tokenFactory, parentToken, state) == -1)
+			h = -1;
+
+		i = ((h == -1) ^ invert_) ? h : i;
 
 		rollBack(parentToken, lastChildSaved);
 
@@ -626,7 +629,7 @@ public:
 
 	inline Node *entry() const { return Node::firstChild(); }
 	inline int invert() const { return invert_; }
-	inline int length() const { return length_; }
+	inline int size() const { return length_; }
 
 private:
 	int invert_;
@@ -872,7 +875,7 @@ public:
 	{
 		Range *range = state->capture(captureId_);
 		for (int j = range->i0(); (j < range->i1()) && media->has(i) && media->has(j); ++i, ++j) {
-			if (media->get(i) != media->get(j)) return -1;
+			if (media->at(i) != media->at(j)) return -1;
 		}
 		return i;
 	}
