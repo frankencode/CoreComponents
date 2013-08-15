@@ -17,9 +17,21 @@ namespace fkit
 {
 
 template<class T>
+struct Sign { inline static int get(T x) { return x < 0; } };
+
+template<>
+struct Sign<unsigned char> { inline static int get(unsigned char x) { return 0; } };
+
+template<>
+struct Sign<unsigned int> { inline static int get(unsigned int x) { return 0; } };
+
+template<>
+struct Sign<unsigned long> { inline static int get(unsigned long x) { return 0; } };
+
+template<class T>
 String inum(T x, int n = -1, int base = 10)
 {
-	int sign = x < 0;
+	int sign = Sign<T>::get(x);
 	if (sign) x = -x;
 	int m = n;
 	if (m <= 0) {
@@ -33,7 +45,7 @@ String inum(T x, int n = -1, int base = 10)
 	if (m <= sign) ++m;
 	String s(m, '0');
 	if (sign) s->at(0) = '-';
-	for (int i = s->length() - 1; x > 0; x /= base, --i) {
+	for (int i = s->size() - 1; x > 0; x /= base, --i) {
 		const char *fig = "0123456789abcdef";
 		s->at(i) = fig[x % base];
 	}
@@ -60,7 +72,7 @@ inline String sci(float64_t x, int p = 17) { return fnum(x, p, 10, 0); }
 inline String dec(float32_t x, int p = 8) { return fnum(x, p, 10); }
 inline String dec(float64_t x, int p = 17) { return fnum(x, p, 10); }
 
-String dec(const Variant &x, int m = -1);
+String dec(const Variant &x, int n = -1);
 
 inline String str(const String &s) { return s; }
 inline String str(const Ref<ByteArray> &s) { return String(s); }

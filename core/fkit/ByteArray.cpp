@@ -11,14 +11,15 @@
 #include "List.h"
 #include "IntegerLiteral.h"
 #include "FloatLiteral.h"
+#include "Unicode.h"
 #include "Utf8Source.h"
 #include "Utf8Sink.h"
 #include "Utf16Source.h"
 #include "Utf16Sink.h"
-#include "Character.h"
 #include "Base64.h"
 #include "Format.h"
 #include "Process.h"
+#include "Memory.h"
 #include "ByteArray.h"
 
 namespace fkit
@@ -35,10 +36,8 @@ ByteArray::ByteArray(int size, char zero)
 	if (size > 0) {
 		size_ = origSize_ = size;
 		data_ = origData_ = new char[size + 1];
-		if (zero) {
-			memset(data_, zero, size_);
-			data_[size] = 0;
-		}
+		if (zero) memset(data_, zero, size_);
+		data_[size] = 0;
 	}
 }
 
@@ -54,10 +53,8 @@ ByteArray::ByteArray(const char *data, int size)
 	if (size > 0) {
 		size_ = origSize_ = size;
 		data_ = origData_ = new char[size + 1];
-		if (data) {
-			memcpy(data_, data, size);
-			data_[size] = 0;
-		}
+		if (data) memcpy(data_, data, size);
+		data_[size] = 0;
 	}
 }
 
@@ -89,7 +86,8 @@ ByteArray::ByteArray(const ByteArray &b)
 	if (b.size_ > 0) {
 		size_ = origSize_ = b.size_;
 		data_ = origData_ = new char[b.size_ + 1];
-		memcpy(data_, b.data_, b.size_ + 1);
+		memcpy(data_, b.data_, b.size_);
+		data_[size_] = 0;
 	}
 }
 
@@ -105,7 +103,6 @@ ByteArray &ByteArray::operator=(const ByteArray &b)
 {
 	int n = (size_ < b.size_) ? size_ : b.size_;
 	memcpy(data_, b.data_, n);
-	chars_ = 0;
 	return *this;
 }
 
@@ -117,34 +114,9 @@ ByteArray &ByteArray::operator^=(const ByteArray &b)
 	return *this;
 }
 
-void ByteArray::select(int i0, int i1)
-{
-	if (i0 < 0) i0 = 0;
-	if (i1 < 0) i1 = 0;
-	if (i1 < i0) i1 = i0;
-	if (i0 >= size_) i0 = i1 = size_;
-	if (i1 > size_) i1 = size_;
-	data_ += i0;
-	size_ = i1 - i0;
-	if (data_[i1]) data_[i1] = 0;
-	chars_ = 0;
-}
-
-void ByteArray::unselect()
-{
-	data_ = origData_;
-	size_ = origSize_;
-}
-
 void ByteArray::clear(char zero)
 {
 	memset(data_, zero, size_);
-}
-
-Character *ByteArray::chars() const
-{
-	if (!chars_) chars_ = new Character(data_);
-	return chars_;
 }
 
 int ByteArray::find(const char *pattern, int i) const
@@ -183,21 +155,21 @@ bool ByteArray::contains(String pattern) const
 Ref<ByteArray> ByteArray::join(const StringList *parts, const char *sep)
 {
 	int sepSize = strlen(sep);
-	if (parts->length() == 0) {
+	if (parts->size() == 0) {
 		return ByteArray::empty();
 	}
 	else {
 		int size = 0;
-		for (int i = 0; i < parts->length(); ++i)
+		for (int i = 0; i < parts->size(); ++i)
 			size += parts->at(i)->size();
-		size += (parts->length() - 1) * sepSize;
+		size += (parts->size() - 1) * sepSize;
 		Ref<ByteArray> result = ByteArray::create(size);
 		char *p = result->data_;
-		for (int i = 0; i < parts->length(); ++i) {
+		for (int i = 0; i < parts->size(); ++i) {
 			ByteArray *part = parts->at(i);
 			memcpy(p, part->data_, part->size_);
 			p += part->size_;
-			if (i + 1 < parts->length()) {
+			if (i + 1 < parts->size()) {
 				memcpy(p, sep, sepSize);
 				p += sepSize;
 			}
@@ -268,7 +240,7 @@ Ref<StringList> ByteArray::breakUp(int chunkSize) const
 	return parts;
 }
 
-void ByteArray::replaceInsitu(const char *pattern, const char *replacement)
+ByteArray *ByteArray::replaceInsitu(const char *pattern, const char *replacement)
 {
 	int patternLength = strlen(pattern);
 	int replacementLength = strlen(replacement);
@@ -293,8 +265,9 @@ void ByteArray::replaceInsitu(const char *pattern, const char *replacement)
 				k = 0;
 			}
 		}
-		if (j < i) select(0, j);
+		truncate(j);
 	}
+	return this;
 }
 
 Ref<ByteArray> ByteArray::replace(const char *pattern, const char *replacement) const
@@ -441,8 +414,7 @@ ByteArray *ByteArray::expandInsitu()
 			++j;
 		}
 	}
-	select(0, j);
-	return this;
+	return truncate(j);
 }
 
 Ref<ByteArray> ByteArray::escape() const
@@ -464,8 +436,8 @@ Ref<ByteArray> ByteArray::escape() const
 				else {
 					String s = "\\u00XX";
 					const char *hex = "0123456789ABCDEF";
-					s->set(4, hex[ch / 16]);
-					s->set(5, hex[ch % 16]);
+					s->at(4) = hex[ch / 16];
+					s->at(5) = hex[ch % 16];
 					parts->append(s);
 				}
 			}
@@ -476,6 +448,29 @@ Ref<ByteArray> ByteArray::escape() const
 	if (i0 < i) parts->append(copy(i0, i));
 
 	return parts->join();
+}
+
+ByteArray *ByteArray::truncate(int i1)
+{
+	if (i1 < size_) {
+		if (i1 < 0) i1 = 0;
+		if (i1 > size_) i1 = size_;
+		size_ = i1;
+		data_[size_] = 0;
+	}
+	return this;
+}
+
+ByteArray *ByteArray::truncate(int i0, int i1)
+{
+	if (i0 < 0) i0 = 0;
+	if (i0 > size_) i0 = size_;
+	if (i1 < i0) i1 = i0;
+	if (i1 > size_) i1 = size_;
+	data_ += i0;
+	size_ = i1 - i0;
+	data_[size_] = 0;
+	return this;
 }
 
 ByteArray *ByteArray::trimInsitu(const char *space)
@@ -495,8 +490,7 @@ ByteArray *ByteArray::trimInsitu(const char *space)
 		if (!*p) break;
 		--i1;
 	}
-	select(i0, i1);
-	return this;
+	return truncate(i0, i1);
 }
 
 Ref<ByteArray> ByteArray::stripTags() const
@@ -537,16 +531,16 @@ Ref<ByteArray> ByteArray::normalize(bool nameCase) const
 			data_[i] = 32;
 	}
 	Ref<StringList> parts = split(" ");
-	for (int i = 0; i < parts->length(); ++i) {
+	for (int i = 0; i < parts->size(); ++i) {
 		String s = parts->at(i);
-		if (s->isEmpty()) {
+		if (s->size() == 0) {
 			parts->remove(i);
 		}
 		else {
 			if (nameCase) {
 				s = s->downcase();
-				s->set(0, fkit::upcase(s->at(0)));
-				parts->set(i, s);
+				s->at(0) = fkit::upcase(s->at(0));
+				parts->at(i) = s;
 			}
 			++i;
 		}
@@ -636,8 +630,9 @@ bool ByteArray::toUtf16(void *buf, int *size)
 {
 	uint16_t *buf2 = reinterpret_cast<uint16_t*>(buf);
 	int j = 0, n = *size / 2;
-	for (int i = 0; i < chars()->length(); ++i) {
-		uchar_t ch = get(i);
+	Ref<Unicode> chars = Unicode::open(this);
+	for (int i = 0; i < chars->size(); ++i) {
+		uchar_t ch = chars->at(i);
 		if (ch < 0x10000) {
 			if (j < n) buf2[j] = ch;
 			++j;
@@ -661,18 +656,19 @@ bool ByteArray::toUtf16(void *buf, int *size)
 Ref<ByteArray> ByteArray::toUtf16(int endian)
 {
 	Ref<ByteArray> out;
+	Ref<Unicode> chars = Unicode::open(this);
 	{
 		int n = 0;
-		for (int i = 0; i < chars()->length(); ++i)
-			n += Utf16Sink::encodedSize(chars()->at(i));
+		for (int i = 0; i < chars->size(); ++i)
+			n += Utf16Sink::encodedSize(chars->at(i));
 		out = ByteArray::create(n + 2);
 		out->at(n) = 0;
 		out->at(n + 1) = 0;
 	}
 	if (out->size() > 0) {
 		Ref<Utf16Sink> sink = Utf16Sink::open(out, endian);
-		for (int i = 0; i < chars()->length(); ++i)
-			sink->write(chars()->at(i));
+		for (int i = 0; i < chars->size(); ++i)
+			sink->write(chars->at(i));
 	}
 	return out;
 }
@@ -711,7 +707,7 @@ bool ByteArray::isRelativePath() const
 
 bool ByteArray::isAbsolutePath() const
 {
-	return (length() > 0) ? (get(0) == '/') : false;
+	return (size() > 0) ? (at(0) == '/') : false;
 }
 
 Ref<ByteArray> ByteArray::absolutePathRelativeTo(String currentDir) const
@@ -724,13 +720,13 @@ Ref<ByteArray> ByteArray::absolutePathRelativeTo(String currentDir) const
 
 	int upCount = 0;
 
-	for (int i = 0; i < parts->length(); ++i)
+	for (int i = 0; i < parts->size(); ++i)
 	{
 		String c = parts->at(i);
 		if (c == ".")
 		{}
 		else if (c == "..") {
-			if (absoluteParts->length() > 0)
+			if (absoluteParts->size() > 0)
 				absoluteParts->popBack();
 			else
 				++upCount;
@@ -741,7 +737,7 @@ Ref<ByteArray> ByteArray::absolutePathRelativeTo(String currentDir) const
 	}
 
 	String prefix;
-	if (currentDir->length() > 0)
+	if (currentDir->size() > 0)
 		prefix = currentDir->copy();
 	else
 		prefix = Process::cwd();
@@ -767,8 +763,8 @@ Ref<ByteArray> ByteArray::fileName() const
 {
 	String name;
 	Ref<StringList> parts = split("/");
-	if (parts->length() > 0)
-		name = parts->at(-1);
+	if (parts->size() > 0)
+		name = parts->at(parts->size() - 1);
 	return name;
 }
 
@@ -788,7 +784,7 @@ Ref<ByteArray> ByteArray::baseName() const
 Ref<ByteArray> ByteArray::reducePath() const
 {
 	Ref<StringList> parts = split("/");
-	if (parts->length() > 0)
+	if (parts->size() > 0)
 		parts->popBack();
 	String resultPath = parts->join("/");
 	if ((resultPath == "") && isAbsolutePath())
@@ -805,12 +801,12 @@ Ref<ByteArray> ByteArray::canonicalPath() const
 {
 	Ref<StringList> parts = split("/");
 	Ref<StringList> result = StringList::create();
-	for (int i = 0; i < parts->length(); ++i) {
+	for (int i = 0; i < parts->size(); ++i) {
 		String part = parts->at(i);
 		if ((part == "") && (i > 0)) continue;
-		if ((part == "") && (i == parts->length() - 1)) continue;
+		if ((part == "") && (i == parts->size() - 1)) continue;
 		if ((part == ".") && (i > 0)) continue;
-		if ((part == "..") && (result->length() > 0)) {
+		if ((part == "..") && (result->size() > 0)) {
 			result->popBack();
 			continue;
 		}

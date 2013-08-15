@@ -196,15 +196,18 @@ YasonParser::YasonParser()
 		);
 
 	DEFINE_VOID("Member",
-		GLUE(
-			REF("Name"),
-			INLINE("Noise"),
-			EXPECT("expected ':'",
-				CHAR(':')
-			),
-			INLINE("Noise"),
-			EXPECT("expected value",
-				INLINE("Value")
+		CHOICE(
+			REF("Object"),
+			GLUE(
+				REF("Name"),
+				INLINE("Noise"),
+				EXPECT("expected ':'",
+					CHAR(':')
+				),
+				INLINE("Noise"),
+				EXPECT("expected value",
+					INLINE("Value")
+				)
 			)
 		)
 	);
@@ -336,7 +339,7 @@ YasonObject *YasonParser::selectPrototype(ByteArray *text, Token *token, YasonPr
 				className = text->copy(token->i0(), token->i1());
 		if (!protocol->lookup(className, &prototype)) {
 			throw YasonException(
-				Format("Object class \"%%\" is not supported") << className,
+				Format("Object class \"%%\" is allowed here") << className,
 				text, token ? token->i1() : 0
 			);
 		}
@@ -367,46 +370,57 @@ Ref<YasonObject> YasonParser::parseObject(ByteArray *text, Token *token, YasonOb
 	}
 
 	while (token) {
-		bool stripQuotation = (text->at(token->i0()) == '"');
-		String name = text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
+		if (token->rule() == name_) {
+			bool stripQuotation = (text->at(token->i0()) == '"');
+			String name = text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
 
-		Variant defaultValue;
-		YasonObject *memberPrototype = 0;
-		if (prototype) {
-			if (!prototype->lookup(name, &defaultValue))
-				throw YasonException(
-					Format("Member \"%%\" is not supported") << name,
-					text, token->i1()
-				);
-			if (type(defaultValue) == Variant::ObjectType)
-				memberPrototype = cast<YasonObject>(defaultValue);
+			Variant defaultValue;
+			YasonObject *memberPrototype = 0;
+			if (prototype) {
+				if (!prototype->lookup(name, &defaultValue))
+					throw YasonException(
+						Format("Member \"%%\" is not supported") << name,
+						text, token->i1()
+					);
+				if (type(defaultValue) == Variant::ObjectType)
+					memberPrototype = cast<YasonObject>(defaultValue);
+			}
+
+			token = token->nextSibling();
+
+			Variant value;
+			if (memberPrototype)
+				value = parseObject(text, token, memberPrototype);
+			else
+				value = parseValue(text, token, type(defaultValue), itemType(defaultValue));
+
+			Variant existingValue;
+			if (object->lookup(name, &existingValue))
+				if (value != existingValue)
+					throw YasonException(
+						Format("Ambiguous value for member \"%%\"") << name,
+						text, token->i1()
+					);
+
+			object->insert(name, value);
 		}
-
-		token = token->nextSibling();
-
-		Variant value;
-		if (memberPrototype)
-			value = parseObject(text, token, memberPrototype);
-		else
-			value = parseValue(text, token, type(defaultValue), itemType(defaultValue));
-
-		Variant existingValue;
-		if (object->lookup(name, &existingValue))
-			if (value != existingValue)
-				throw YasonException(
-					Format("Ambiguous value for member \"%%\"") << name,
-					text, token->i1()
-				);
-
-		object->insert(name, value);
+		else {
+			YasonObject *memberPrototype = 0;
+			if (prototype) {
+				if (prototype->protocol())
+					memberPrototype = selectPrototype(text, token, prototype->protocol());
+			}
+			Ref<YasonObject> child = parseObject(text, token, memberPrototype);
+			object->children()->append(child);
+		}
 		token = token->nextSibling();
 	}
 
 	if (prototype) {
-		if (object->length() != prototype->length()) {
-			for (int i = 0; i < prototype->length(); ++i) {
+		if (object->size() != prototype->size()) {
+			for (int i = 0; i < prototype->size(); ++i) {
 				String name = prototype->keyAt(i);
-				if (object->length() <= i || object->keyAt(i) != name)
+				if (object->size() <= i || object->keyAt(i) != name)
 					object->insert(name, prototype->valueAt(i));
 			}
 		}
@@ -552,10 +566,10 @@ String YasonParser::parseText(ByteArray *text, Token *token)
 	else {
 		Ref<StringList> l = StringList::create();
 		while (token) {
-			*l << text->copy(token->i0() + 1, token->i1() - 1);
+			l->append(text->copy(token->i0() + 1, token->i1() - 1));
 			token = token->nextSibling();
 		}
-		s = (l->length() == 1) ? l->at(0) : l->join();
+		s = (l->size() == 1) ? l->at(0) : l->join();
 	}
 
 	return s->expandInsitu();

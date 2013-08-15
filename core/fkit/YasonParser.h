@@ -56,7 +56,7 @@ Ref< List<T> > YasonParser::parseTypedList(ByteArray *text, Token *token, int ex
 	Ref< List<T> > list = List<T>::create(token->countChildren());
 	int i = 0;
 	for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
-		list->set(i, parseValue(text, child, expectedItemType));
+		list->at(i) = parseValue(text, child, expectedItemType);
 		++i;
 	}
 	return list;

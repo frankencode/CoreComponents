@@ -17,31 +17,24 @@ namespace fkit
 {
 
 template<class T>
-class Set: public Container< T, Set<T> >, public Sequence<T, int>
+class Set: public Object
 {
 public:
 	typedef T Item;
-	typedef GenericIterator<Set> Iterator;
 
 	inline static Ref<Set> create() { return new Set; }
 	inline static Ref<Set> clone(Set *a) { return new Set(a); }
 
-	inline Ref<Iterator> createIterator() const { return Iterator::create(this); }
-
-	inline bool isEmpty() const { return tree_.weight() == 0; }
-	inline int length() const { return tree_.weight(); }
 	inline int size() const { return tree_.weight(); }
 
 	inline bool has(int index) const {
-		return index < length();
-	}
-	inline Item get(int index) const {
-		return at(index);
+		return 0 <= index && index < size();
 	}
 	inline const Item &at(int index) const {
 		Node *node = 0;
-		if (tree_.lookupByIndex(index, &node)) return node->item_;
-		else return nullItem_;
+		if (!tree_.lookupByIndex(index, &node))
+			FKIT_ASSERT(false);
+		return node->item_;
 	}
 
 	/** Return the index of the first item greater or equal _a_
@@ -100,7 +93,7 @@ public:
 
 	inline void pop(Item *item)
 	{
-		FKIT_ASSERT(!isEmpty());
+		FKIT_ASSERT(size() > 0);
 		Node *k = tree_.min();
 		*item = k->item_;
 		tree_.remove(k);

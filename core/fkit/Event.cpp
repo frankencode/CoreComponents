@@ -33,14 +33,14 @@ void Event::remove(Action *handler)
 {
 	Guard<SpinLock> guard(&mutex_);
 	int i = handlers_->find(handler);
-	if (i < handlers_->length())
+	if (i < handlers_->size())
 		handlers_->remove(i);
 }
 
 void Event::run()
 {
 	Guard<SpinLock> guard(&mutex_);
-	for (int i = 0; i < handlers_->length(); ++i)
+	for (int i = 0; i < handlers_->size(); ++i)
 		handlers_->at(i)->run();
 }
 

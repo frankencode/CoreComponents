@@ -37,7 +37,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 		int i0 = line->find('(') + 1, i1 = line->find(')');
 		commandName_ = line->copy(i0, i1);
 		for (int i = i0; i < i1; ++i)
-			line->set(i, 'x');
+			line->at(i) = 'x';
 	}
 	Ref<StringList> parts = line->split(" ");
 	processId_ = parts->at(0)->toInt();
@@ -57,7 +57,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 			terminalName_ = Format("ttyp%%") << minor;
 	}*/
 	loginName_ = User::lookup(File::status(path)->ownerId())->loginName();
-	processStatus_ = parts->at(2)->get(0);
+	processStatus_ = parts->at(2)->at(0);
 #else // def __linux
 #ifdef __OpenBSD__
 	struct kinfo_proc *proc;

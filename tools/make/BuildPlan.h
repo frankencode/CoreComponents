@@ -28,8 +28,6 @@ class BuildPlan;
 
 typedef List< Ref<BuildPlan> > BuildPlanList;
 
-FKIT_EXCEPTION(BuildPlanException, Exception);
-
 class BuildPlan: public Object
 {
 public:
@@ -152,7 +150,6 @@ private:
 	bool installComplete_;
 	bool uninstallComplete_;
 	bool cleanComplete_;
-	bool distCleanComplete_;
 
 	bool analyseResult_;
 	bool buildResult_;

@@ -18,41 +18,29 @@ namespace fkit
 {
 
 template<class T>
-class List: public Container< T, List<T> >, public Sequence<T, int>
+class List: public Object
 {
 public:
 	typedef T Item;
-	typedef GenericIterator<List> Iterator;
 
 	inline static Ref<List> create() { return new List; }
 	inline static Ref<List> create(int n) { return new List(n); }
 	inline static Ref<List> clone(List *a) { return new List(*a); }
 
-	inline Ref<Iterator> createIterator() const { return Iterator::create(this); }
-
-	inline bool isEmpty() const { return tree_.weight() == 0; }
-	inline int length() const { return tree_.weight(); }
 	inline int size() const { return tree_.weight(); }
 
 	inline bool has(int index) const {
-		return index < length();
-	}
-	inline Item get(int index) const {
-		return at(index);
+		return 0 <= index && index < size();
 	}
 	inline Item &at(int index) const {
 		Node *node = 0;
-		if (tree_.lookupByIndex(index, &node)) return node->item_;
-		else return nullItem_;
-	}
-	inline void set(int index, const Item &item) {
-		Node *node = 0;
-		if (tree_.lookupByIndex(index, &node))
-			node->item_ = item;
+		if (!tree_.lookupByIndex(index, &node))
+			FKIT_ASSERT(false);
+		return node->item_;
 	}
 
 	inline Item& first() const { return at(0); }
-	inline Item& last() const { return at(length() - 1); }
+	inline Item& last() const { return at(size() - 1); }
 
 	inline List &push(int index, const Item &item) {
 		tree_.push(index, item);
@@ -70,22 +58,22 @@ public:
 		return item;
 	}
 
-	inline void push(const Item &item) { push(length(), item); }
+	inline void push(const Item &item) { push(size(), item); }
 	inline void pop(Item *item) { pop(0, item); }
 	inline Item pop() { Item item; pop(&item); return item; }
 
-	inline void append(const Item &item) { push(length(), item); }
+	inline void append(const Item &item) { push(size(), item); }
 	inline void insert(int index, const Item &item) { push(index, item); }
 	inline void remove(int index, Item &item) { pop(index, &item); }
 	inline void remove(int index) { pop(index); }
 	inline void pushFront(const Item &item) { push(0, item); }
-	inline void pushBack(const Item &item) { push(length(), item); }
+	inline void pushBack(const Item &item) { push(size(), item); }
 	inline Item popFront() { return pop(0); }
-	inline Item popBack() { return pop(length() - 1); }
+	inline Item popBack() { return pop(size() - 1); }
 
 	int find(const Item &item, int index = 0) const
 	{
-		while (index < length()) {
+		while (index < size()) {
 			if (at(index) == item) break;
 			++index;
 		}
@@ -95,7 +83,7 @@ public:
 	{
 		int index = 0;
 		int numReplaced = 0;
-		while (index < length()) {
+		while (index < size()) {
 			if (at(index) == oldItem)
 				set(index, newItem);
 			++index;
@@ -103,23 +91,24 @@ public:
 		}
 		return numReplaced;
 	}
-	inline bool contains(const Item &item) const { return find(item) < length(); }
+	inline bool contains(const Item &item) const { return find(item) < size(); }
 	inline Item join(const Item &sep = Item()) const { return Item::join(this, sep); }
 
 	Ref<List> sort(int order = SortOrder::Ascending, bool unique = false) const
 	{
-		if (length() == 0)
+		if (size() == 0)
 			return List::create();
-		Ref< Heap<Item> > heap = Heap<Item>::create(length(), order);
-		for (int i = 0; i < length(); ++i)
-			heap->push(get(i));
+		Ref< Heap<Item> > heap = Heap<Item>::create(size(), order);
+		for (int i = 0; i < size(); ++i)
+			heap->push(at(i));
 		Ref<List> result;
 		if (unique) {
 			result = List::create();
 			Item prev, item;
-			heap->read(&prev);
+			heap->pop(&prev);
 			result->append(prev);
-			while (heap->read(&item)) {
+			while (!heap->isEmpty()) {
+				heap->pop(&item);
 				if (item != prev) {
 					result->append(item);
 					prev = item;
@@ -127,19 +116,18 @@ public:
 			}
 		}
 		else {
-			result = List::create(length());
-			Item item;
-			for (int i = 0; heap->read(&item); ++i)
-				result->set(i, item);
+			result = List::create(size());
+			for (int i = 0, n = result->size(); i < n; ++i)
+				result->at(i) = heap->pop();
 		}
 		return result;
 	}
 
 	Ref<List> reverse() const
 	{
-		Ref<List> result = List::create(length());
-		for (int i = 0, n = length(); i < n; ++i)
-			result->set(i, at(n - i - 1));
+		Ref<List> result = List::create(size());
+		for (int i = 0, n = size(); i < n; ++i)
+			result->at(i) = at(n - i - 1);
 		return result;
 	}
 
@@ -147,11 +135,14 @@ public:
 
 	template<class T2>
 	Ref< List<T2> > toList() const {
-		Ref< List<T2 > > result = List<T2>::create(length());
-		for (int i = 0; i < length(); ++i)
-			result->set(i, at(i));
+		Ref< List<T2 > > result = List<T2>::create(size());
+		for (int i = 0; i < size(); ++i)
+			result->at(i) = at(i);
 		return result;
 	}
+
+	inline List &operator<<(const T& item) { push(item); return *this; }
+	inline List &operator>>(T* item) { pop(item); return *this; }
 
 protected:
 	List() {}

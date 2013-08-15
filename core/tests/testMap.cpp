@@ -33,10 +33,8 @@ int main()
 		const int testCount = sizeof(test) / sizeof(test[0]);
 		for (int i = 0; i < testCount; ++i)
 			names->insert(test[i][0], test[i][1]);
-		for (int i = 0; i < names->length(); ++i) {
-			Pair<String, String> pair = names->get(i);
-			fout("%% %%\n") << pair->key() << pair->value();
-		}
+		for (int i = 0; i < names->size(); ++i)
+			fout("%% %%\n") << names->keyAt(i) << names->valueAt(i);
 		for (int i = 0; i < testCount; ++i)
 			check(names->value(test[i][0]) == test[i][1]);
 	}
@@ -45,7 +43,7 @@ int main()
 		Ref< Map<int, int> > map = Map<int, int>::create();
 		for (int i = 0; i < 20; ++i)
 			map->insert(fib(i), i);
-		for (int i = 0; i < map->length(); ++i)
+		for (int i = 0; i < map->size(); ++i)
 			fout("map->at(%%) = %% (%%)\n") << i << map->at(i)->key() << map->at(i)->value();
 		const int a = 20, b = 120;
 		fout("In range [%%..%%]:\n") << a << b;
@@ -57,7 +55,7 @@ int main()
 	#if 0
 	{
 		fout() << "Performance..." << nl;
-		const int n = 10000;
+		const int n = 100000;
 		{
 			std::map<int, int> map;
 			double t0 = System::now();
@@ -79,7 +77,7 @@ int main()
 			t0 = System::now();
 			int s = 0;
 			for (int i = 0; i < n; ++i)
-				s += map->get(i)->value();
+				s += map->valueAt(i);
 			fout("fkit::Map, %% iteration steps: dt = %% us\n") << n << int((System::now() - t0) * 1e6);
 		}
 	}

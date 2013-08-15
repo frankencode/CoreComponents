@@ -39,32 +39,44 @@ private:
 	int pos_;
 };
 
+class YasonObject;
+
+typedef List< Ref<YasonObject> > YasonObjectList;
+typedef Map<String, Ref<YasonObject> > YasonProtocol;
+
 class YasonObject: public Map<String, Variant>
 {
 	typedef Map<String, Variant> Super;
 
 public:
-	inline static Ref<YasonObject> create(const String &className = "") { return new YasonObject(className); }
+	inline static Ref<YasonObject> create(const String &className = "", YasonProtocol *protocol = 0) {
+		return new YasonObject(className, protocol);
+	}
 	inline static Ref<YasonObject> clone(YasonObject *a) { return new YasonObject(*a); }
 
 	inline String className() const { return className_; }
 	Variant toVariant() const;
 	String toString() const;
 
+	inline bool hasChildren() const { return children_; }
+	YasonObjectList *children() const;
+
+	inline YasonProtocol *protocol() const { return protocol_; }
+
 protected:
 	friend class YasonParser;
 
-	YasonObject(const String &className = ""): className_(className) {}
-
-	explicit YasonObject(const YasonObject &b)
-		: Super(b),
-		  className_(b.className_)
+	YasonObject(const String &className = "", YasonProtocol *protocol = 0)
+		: className_(className),
+		  protocol_(protocol)
 	{}
 
-	String className_;
-};
+	explicit YasonObject(const YasonObject &b);
 
-typedef Map<String, Ref<YasonObject> > YasonProtocol;
+	String className_;
+	mutable Ref<YasonObjectList> children_;
+	Ref<YasonProtocol> protocol_;
+};
 
 class Yason
 {

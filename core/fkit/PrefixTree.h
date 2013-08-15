@@ -135,7 +135,7 @@ public:
 			if (node) {
 				while (node != this) {
 					--i;
-					s->set(i, node->ch_);
+					s->at(i) = node->ch_;
 					node = node->parent();
 				}
 			}
@@ -200,7 +200,7 @@ public:
 		Ref<Key> key = Key::create(n);
 		while (n > 0) {
 			--n;
-			key->set(n, node->ch_);
+			key->at(n) = node->ch_;
 			node = node->parent();
 		}
 		return key;
@@ -292,7 +292,7 @@ protected:
 		int i = i0;
 		Node *node = const_cast<Node *>(this);
 		while ((node) && media->has(i)) {
-			node = node->step<Filter>(media->get(i++));
+			node = node->step<Filter>(media->at(i++));
 			if (node) {
 				if (node->defined_) {
 					if (i1) *i1 = i;

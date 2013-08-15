@@ -43,11 +43,18 @@ public:
 
 	Format &operator<<(const FormatSignal &s);
 
+	inline Format &operator<<(const ByteArray *s) {
+		return *this << String(s);
+	}
+
 	template<class T>
-	inline Format &operator<<(const T &x) { return *this << str(x); }
+	inline Format &operator<<(const T &x) {
+		return *this << str(x);
+	}
 
-	inline Format &operator<<(const Ref<StringList> &x) { return *this << x->join(""); }
-
+	inline Format &operator<<(const Ref<StringList> &x) {
+		return *this << x->join("");
+	}
 
 private:
 	void flush();

@@ -10,16 +10,15 @@
 #ifndef FKIT_ARRAY_H
 #define FKIT_ARRAY_H
 
-#include "generics.h"
-#include "containers.h"
 #include "strings.h"
+#include "containers.h"
 #include "Default.h"
 
 namespace fkit
 {
 
 template<class T>
-class Array: public Sequence<T, int>
+class Array: public Object
 {
 public:
 	typedef int Index;
@@ -83,45 +82,27 @@ public:
 	}
 
 	inline int size() const { return size_; }
-	inline int length() const { return size_; }
-	inline bool isEmpty() const { return size_ == 0; }
 
 	inline int first() const { return 0; }
 	inline int last() const { return size_ - 1; }
 
 	inline bool has(int i) const {
-		if (i < 0) i += size_;
 		return (0 <= i) && (i < size_);
-	}
-
-	inline T get(int i) const {
-		FKIT_ASSERT(has(i));
-		if (i < 0) i += size_;
-		return data_[i];
-	}
-
-	inline void set(int i, const T &item) {
-		FKIT_ASSERT(has(i));
-		if (i < 0) i += size_;
-		data_[i] = item;
 	}
 
 	inline T *pointerAt(int i) const {
 		FKIT_ASSERT(has(i));
-		if (i < 0) i += size_;
 		return data_ + i;
 	}
 
 	inline T &at(int i) const {
 		FKIT_ASSERT(has(i));
-		if (i < 0) i += size_;
 		return data_[i];
 	}
 
 	inline T *data() const { return data_; }
 	inline const T *constData() const { return data_; }
 	inline operator T*() const { return data_; }
-	inline operator bool() const { return !isEmpty(); }
 
 	inline void read(int i, T *data, int size) {
 		if (size == 0) return;
@@ -151,7 +132,7 @@ public:
 	inline Ref<Array> tail(int n) const { return copy(size_ - n, size_); }
 
 	inline int find(const T &item) const { return find(0, item); }
-	inline int find(int i, const T &item) const {
+	inline int find(const T &item, int i) const {
 		while (i < size_)
 			if (data_[i++] == item) return i - 1;
 		return size_;
@@ -170,8 +151,8 @@ public:
 		return n;
 	}
 
-	inline int find(int i, Array *pattern) const { return find(i, pattern->data(), pattern->size()); }
-	inline int find(int i, const T *pattern, int patternSize) const {
+	inline int find(Array *pattern, int i) const { return find(i, pattern->data(), pattern->size()); }
+	inline int find(const T *pattern, int patternSize, int i) const {
 		if (patternSize == 0) return size_;
 		for (int j = i, k = 0; j < size_;) {
 			if (data_[j++] == pattern[k]) {

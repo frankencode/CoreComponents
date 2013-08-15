@@ -55,4 +55,4 @@ private:
 
 } // namespace fkit
 
-#endif // FT
+#endif // FKIT_THREAD_H

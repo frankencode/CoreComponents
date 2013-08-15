@@ -60,7 +60,7 @@ private:
 		  n_(stream_ ? 0 : buf->size())
 	{
 		if (!buf_)
-			buf_ = ByteArray::create(0x4000);
+			buf_ = ByteArray::create(0x3FFF);
 	}
 
 	Ref<Stream> stream_;
@@ -79,8 +79,8 @@ inline bool ByteSource::read(uint8_t *x)
 
 inline void ByteSource::read(ByteArray *bytes)
 {
-	for (int i = 0, n = bytes->length(); i < n; ++i)
-		bytes->set(i, readUInt8());
+	for (int i = 0, n = bytes->size(); i < n; ++i)
+		bytes->at(i) = readUInt8();
 }
 
 inline Ref<ByteArray> ByteSource::read(int n)

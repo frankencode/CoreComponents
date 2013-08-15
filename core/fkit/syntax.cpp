@@ -41,8 +41,7 @@ int InvokeNode::matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, T
 		{
 			rollBack(parentToken, lastChildSaved);
 
-			ByteRange range(media, i, media->size());
-			definition_->matchNext(range, i0, tokenFactory, parentToken, childState);
+			definition_->matchNext(ByteRange(media, i, media->size()), i0, tokenFactory, parentToken, childState);
 		}
 	}
 	else {
@@ -129,7 +128,7 @@ Ref<Token> DefinitionNode::find(ByteArray *media, int *i0, int *i1, TokenFactory
 	int i = *i0;
 	Ref<Token> rootToken;
 	while (media->has(i)) {
-		if (rootToken = match(media, i, i1, 0, tokenFactory))
+		if ((rootToken = match(media, i, i1, 0, tokenFactory)))
 			break;
 		++i;
 	}

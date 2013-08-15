@@ -49,11 +49,11 @@ void User::load(struct passwd *entry)
 		groupId_ = entry->pw_gid;
 		loginName_ = entry->pw_name;
 		fullName_ = entry->pw_gecos;
-		if (fullName_->length() > 0)
-			if ((fullName_->get(0) == ',') || (fullName_->get(-1) == ',')) {
+		if (fullName_->size() > 0)
+			if ((fullName_->at(0) == ',') || (fullName_->at(fullName_->size() - 1) == ',')) {
 				fullName_ = loginName_->copy();
 				if (isLower(fullName_->at(0)))
-					fullName_->set(0, downcase(fullName_->at(0)));
+					fullName_->at(0) = downcase(fullName_->at(0));
 				// fullName_ << " Anonymous";
 			}
 		home_ = entry->pw_dir;

@@ -41,8 +41,11 @@ public:
 	inline operator String() const { return text_; }
 
 private:
+	friend String str(const Pattern &pattern);
 	String text_;
 };
+
+inline String str(const Pattern &pattern) { return pattern.text_; }
 
 } // namespace fkit
 

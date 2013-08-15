@@ -78,11 +78,9 @@ int echo(int argc, char **argv)
 	Ref<StringList> commandLine = StringList::create();
 	for (int i = 0; i < argc; ++i)
 		commandLine->append(argv[i]);
-	fout("Process::cwd() = \"%%\"\n") << Process::cwd();
-	fout("Process::env(\"Hello\") = \"%%\"\n") << Process::env("Hello");
-	Process::setEnv("Hello", "Echo");
-	fout("Process::env(\"Hello\") = \"%%\"\n") << Process::env("Hello");
-	fout("commandLine = \"%%\"\n") << commandLine->join(" ");
+	ferr("Process::cwd() = \"%%\"\n") << Process::cwd();
+	ferr("Process::env(\"Hello\") = \"%%\"\n") << Process::env("Hello");
+	ferr("commandLine = \"%%\"\n") << commandLine->join(" ");
 
 	while (true) {
 		String line = lineInput()->readLine();

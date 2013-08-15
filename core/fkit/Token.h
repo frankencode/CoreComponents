@@ -62,7 +62,7 @@ public:
 	inline int i0() const { return i0_; }
 	inline int i1() const { return i1_; }
 	inline int index() const { return i0_; }
-	inline int length() const { return i1_ - i0_; }
+	inline int size() const { return i1_ - i0_; }
 
 	bool glow(TokenScreen *screen);
 	static void meld(Token *root0, Token *root1);

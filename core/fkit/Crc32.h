@@ -12,6 +12,7 @@
 
 #include "types.h"
 #include "strings.h"
+#include "ByteArray.h"
 
 namespace fkit
 {
@@ -39,6 +40,12 @@ inline uint32_t crc32(const void *buf, int bufSize) {
 inline uint32_t crc32(const char *s) {
 	Crc32 crc;
 	crc.feed(s, strlen(s));
+	return crc.sum();
+}
+
+inline uint32_t crc32(ByteArray *buf) {
+	Crc32 crc;
+	crc.feed(buf->constData(), buf->size());
 	return crc.sum();
 }
 

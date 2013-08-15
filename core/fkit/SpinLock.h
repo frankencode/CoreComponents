@@ -27,10 +27,9 @@ public:
 		while (!tryAcquire()) yield();
 	}
 	inline void release() {
-		bool ok = __sync_bool_compare_and_swap(&flag_, 1, 0);
-		(void)ok;
-		FKIT_ASSERT2(ok, "Double unlocking of a SpinLock");
+		flag_ = 0;
 	}
+
 private:
 	void yield();
 	volatile char flag_;

@@ -189,4 +189,9 @@ Ref<Notice> NoticeParser::readNotice(Header *header) const
 	return noticeSyntax_->readNotice(header);
 }
 
+NoticeParser *noticeParser()
+{
+	return NoticeParser::instance();
+}
+
 } // namespace fclaim

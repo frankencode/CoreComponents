@@ -17,7 +17,7 @@ namespace fkit
 {
 
 /** Wrapper class to allow taking reference to classes not inherited
-  * from fkit::Object. Please note, that it is impossible to reference
+  * from fkit::Object. Beware that it is impossible to reference
   * the same alien object by two different alien wrappers.
   */
 template<class T>

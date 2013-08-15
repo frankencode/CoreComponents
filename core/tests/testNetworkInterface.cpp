@@ -6,8 +6,8 @@ using namespace fkit;
 int main()
 {
 	Ref<NetworkInterfaceList> interfaces = NetworkInterface::queryAll(AF_UNSPEC);
-	for (int i = 0; i < interfaces->length(); ++i) {
-		NetworkInterface *interface = interfaces->get(i);
+	for (int i = 0; i < interfaces->size(); ++i) {
+		NetworkInterface *interface = interfaces->at(i);
 		if (i != 0) fout() << nl;
 		fout() << interface->name() << ":" << nl;
 		fout() << "  Flags: ";
@@ -25,7 +25,7 @@ int main()
 		fout() << "  MTU:    " << interface->mtu() << nl;
 		SocketAddressList *addressList = interface->addressList();
 		if (addressList) {
-			for (int k = 0; k < addressList->length(); ++k) {
+			for (int k = 0; k < addressList->size(); ++k) {
 				SocketAddress *address = addressList->at(k);
 				fout() << "  Addr:   " << address;
 				SocketAddressEntry *addressEntry = cast<SocketAddressEntry>(address);

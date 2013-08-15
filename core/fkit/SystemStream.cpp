@@ -61,8 +61,10 @@ bool SystemStream::readyRead(double timeout)
 	tv.tv_usec = modf(timeout, &sec) * 1e6;
 	tv.tv_sec = sec;
 	int ret = ::select(fd_ + 1, &set, 0, 0, &tv);
-	if (ret == -1)
+	if (ret == -1) {
+		if (errno == EINTR) throw Interrupt();
 		FKIT_SYSTEM_EXCEPTION;
+	}
 	return (ret > 0);
 }
 
@@ -77,8 +79,10 @@ bool SystemStream::readyReadOrWrite(double timeout)
 	tv.tv_usec = modf(timeout, &sec) * 1e6;
 	tv.tv_sec = sec;
 	int ret = ::select(fd_ + 1, &rset, &wset, 0, &tv);
-	if (ret == -1)
+	if (ret == -1) {
+		if (errno == EINTR) throw Interrupt();
 		FKIT_SYSTEM_EXCEPTION;
+	}
 	return (ret > 0);
 }
 
@@ -114,9 +118,9 @@ void SystemStream::write(const ByteArray *buf)
 	}
 }
 
-void SystemStream::write(StringList *parts, const char *sep)
+void SystemStream::write(const StringList *parts, const char *sep)
 {
-	int n = parts->length();
+	int n = parts->size();
 	int sepLen = strlen(sep);
 	if (n <= 0) return;
 	if (sepLen > 0) n += n - 1;

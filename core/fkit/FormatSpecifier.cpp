@@ -117,7 +117,7 @@ bool FormatSpecifier::find(ByteArray *text, int *i0, int *i1, int *w, int *wi, i
 			}
 			else if (token->rule() == blank_)
 			{
-				*blank = value->get(1);
+				*blank = value->at(1);
 			}
 
 			token = token->nextSibling();

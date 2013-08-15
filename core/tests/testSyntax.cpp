@@ -101,7 +101,7 @@ private:
 						value -= eval(token);
 				}
 				else
-					op = text_->get(token->index());
+					op = text_->at(token->index());
 
 				token = token->nextSibling();
 				++i;
@@ -124,7 +124,7 @@ private:
 						value /= eval(token);
 				}
 				else
-					op = text_->get(token->index());
+					op = text_->at(token->index());
 
 				token = token->nextSibling();
 				++i;
@@ -136,11 +136,11 @@ private:
 		}
 		else if (token->rule() == number_)
 		{
-			int sign = (text_->get(token->index()) == '-') ? -1 : 1;
+			int sign = (text_->at(token->index()) == '-') ? -1 : 1;
 			value = 0;
 			for (int i = token->i0() + (sign == -1); i < token->i1(); ++i) {
 				value *= 10;
-				value += text_->get(i) - '0';
+				value += text_->at(i) - '0';
 			}
 			value *= sign;
 		}

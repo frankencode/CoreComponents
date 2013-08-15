@@ -15,8 +15,8 @@
 namespace fkit
 {
 
-template<class T, template<class T> class Order = Ascending>
-class GenericHeap: public Container< T, GenericHeap<T, Order> >, public Order<T>
+template<class T, template<class> class Order = Ascending>
+class GenericHeap: public Object, public Order<T>
 {
 public:
 	typedef T Item;
@@ -30,9 +30,6 @@ public:
 		}
 	}
 
-	inline int size() const { return size_; }
-	inline int fill() const { return fill_; }
-	inline int length() const { return fill_; }
 	inline bool isFull() const { return fill_ == size_; }
 	inline bool isEmpty() const { return fill_ == 0; }
 
@@ -67,14 +64,14 @@ public:
 	inline static int leftChild(int i) { return 2 * i + 1; }
 	inline static int rightChild(int i) { return 2 * i + 2; }
 
-	void xchg(int i, int j)
+	inline void xchg(int i, int j)
 	{
 		T h = buf_[i];
 		buf_[i] = buf_[j];
 		buf_[j] = h;
 	}
 
-	int min(int i, int j, int k)
+	inline int min(int i, int j, int k)
 	{
 		int h = Order<T>::below(buf_[i], buf_[j]) ? i : j;
 		return Order<T>::below(buf_[h], buf_[k]) ? h : k;
@@ -85,9 +82,8 @@ public:
 		if (fill_ == 1) return;
 		int i = fill_ - 1;
 		while (i != 0) {
-			int j;
-			j = parent(i);
-			if (Order<T>::below(buf_[j], buf_[i])) break;
+			int j = parent(i);
+			if (!Order<T>::below(buf_[i], buf_[j])) break;
 			xchg(i, j);
 			i = j;
 		}
@@ -101,11 +97,10 @@ public:
 			int j, lc, rc;
 			lc = leftChild(i);
 			rc = rightChild(i);
-
 			if (rc < fill_) {
-				j = min(i, lc, rc);
+				j = Order<T>::below(buf_[lc], buf_[i]) ? lc : i;
+				j = Order<T>::below(buf_[rc], buf_[j]) ? rc : j;
 				if (j == i) break;
-
 				xchg(i, j);
 				i = j;
 			}

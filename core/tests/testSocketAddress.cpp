@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
 	fout("canonicalName = \"%%\"\n") << canonicalName;
 
-	for (int i = 0; i < list->length(); ++i)
+	for (int i = 0; i < list->size(); ++i)
 	{
 		SocketAddress *address = list->at(i);
 		bool failed;

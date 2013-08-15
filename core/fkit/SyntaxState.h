@@ -27,11 +27,11 @@ class State: public Object
 public:
 	inline bool flag(int id) const { return flags_->at(id); }
 	bool flag(const char *name) const;
-	inline void setFlag(int id, bool value) { flags_->set(id, value); }
+	inline void setFlag(int id, bool value) { flags_->at(id) = value; }
 
 	inline Range *capture(int id) const { return captures_->at(id); }
 	Range *capture(const char *name) const;
-	inline void setCapture(int id, Range *capture) { captures_->set(id, capture); }
+	inline void setCapture(int id, Range *capture) { captures_->at(id) = capture; }
 
 	inline const char *hint() const { return hint_; }
 	inline void setHint(const char *text) { hint_ = text; }

@@ -243,10 +243,10 @@ inline uint8_t rCon(int i)
 
 Ref<ByteArray> keyExpansion(ByteArray *key, int Nr)
 {
-	if (Nr <= 0) Nr = numRounds(key->length() / 4);
+	if (Nr <= 0) Nr = numRounds(key->size() / 4);
 	Ref<ByteArray> w = ByteArray::create(Ns * (Nr + 1));
 
-	const int Nk = key->length() / 4;
+	const int Nk = key->size() / 4;
 	int i = 0;
 
 	for (; i < Nk; ++i) {
@@ -259,7 +259,7 @@ Ref<ByteArray> keyExpansion(ByteArray *key, int Nr)
 			);
 	}
 
-	for (; i < w->length() / 4; ++i) {
+	for (; i < w->size() / 4; ++i) {
 		uint32_t h = w->wordAt(i - 1);
 		if (i % Nk == 0)
 			h = subWord(rotWord(h)) ^ rCon(i / Nk);
@@ -277,18 +277,18 @@ using namespace aes;
 
 Aes::Aes(ByteArray *key)
 	: BlockCipher(16),
-	  Nk_(key->length() / 4),
+	  Nk_(key->size() / 4),
 	  Nr_(numRounds(Nk_)),
 	  s_(ByteArray::create(Ns)),
 	  w_(keyExpansion(key, Nr_))
 {
-	FKIT_ASSERT(key && (key->length() == 16 || key->length() == 24 || key->length() == 32));
+	FKIT_ASSERT(key && (key->size() == 16 || key->size() == 24 || key->size() == 32));
 }
 
 void Aes::encode(ByteArray *p, ByteArray *c)
 {
-	FKIT_ASSERT(p && p->length() == Ns);
-	FKIT_ASSERT(c && c->length() == Ns);
+	FKIT_ASSERT(p && p->size() == Ns);
+	FKIT_ASSERT(c && c->size() == Ns);
 
 	*s_ = *p;
 
@@ -310,8 +310,8 @@ void Aes::encode(ByteArray *p, ByteArray *c)
 
 void Aes::decode(ByteArray *c, ByteArray *p)
 {
-	FKIT_ASSERT(c && c->length() == Ns);
-	FKIT_ASSERT(p && p->length() == Ns);
+	FKIT_ASSERT(c && c->size() == Ns);
+	FKIT_ASSERT(p && p->size() == Ns);
 
 	*s_ = *c;
 

@@ -63,7 +63,7 @@ private:
 		  i_(0)
 	{
 		if (!buf_)
-			buf_ = ByteArray::create(0x4000);
+			buf_ = ByteArray::create(0x3FFF);
 	}
 
 	Ref<Stream> stream_;
@@ -82,8 +82,8 @@ inline void ByteSink::flush()
 
 inline void ByteSink::write(ByteArray *bytes)
 {
-	for (int i = 0, n = bytes->length(); i < n; ++i)
-		write(bytes->get(i));
+	for (int i = 0, n = bytes->size(); i < n; ++i)
+		write(bytes->at(i));
 }
 
 inline void ByteSink::writeUInt8(uint8_t x)

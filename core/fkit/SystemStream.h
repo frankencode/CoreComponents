@@ -32,10 +32,10 @@ public:
 	bool readyRead(double timeout);
 	bool readyReadOrWrite(double timeout);
 
-	int readAvail(ByteArray *buf);
-	void write(const ByteArray *buf);
+	virtual int readAvail(ByteArray *buf);
+	virtual void write(const ByteArray *buf);
 
-	void write(StringList *parts, const char *sep = "");
+	virtual void write(const StringList *parts, const char *sep = "");
 
 	inline void write(String s) { write(s.get()); }
 

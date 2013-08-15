@@ -30,7 +30,7 @@ public:
 };
 
 template<class T>
-class Queue: public Container< T, Queue<T> >
+class Queue: public Object
 {
 public:
 	typedef T Item;
@@ -49,8 +49,7 @@ public:
 		}
 	}
 
-	inline int length() const { return length_; }
-	inline bool isEmpty() const { return length_ == 0; }
+	inline int size() const { return length_; }
 
 	void pushBack(const T &item)
 	{
@@ -82,7 +81,7 @@ public:
 		++length_;
 	}
 
-	void popBack(T *item)
+	T popBack(T *item)
 	{
 		FKIT_ASSERT(length_ > 0);
 		Node *node = tail_;
@@ -92,9 +91,10 @@ public:
 		else tail_->next_ = 0;
 		delete node;
 		--length_;
+		return *item;
 	}
 
-	void popFront(T *item)
+	T popFront(T *item)
 	{
 		FKIT_ASSERT(length_ > 0);
 		Node *node = head_;
@@ -104,22 +104,21 @@ public:
 		else head_->prev_ = 0;
 		delete node;
 		--length_;
+		return *item;
 	}
 
 	inline T popBack() {
 		T item;
-		popBack(&item);
-		return item;
+		return popBack(&item);
 	}
 
 	inline T popFront() {
 		T item;
-		popFront(&item);
-		return item;
+		return popFront(&item);
 	}
 
 	inline void push(const T &item) { pushBack(item); }
-	inline void pop(T *item) { return popFront(item); }
+	inline T pop(T *item) { return popFront(item); }
 	inline T pop() { return popFront(); }
 
 	inline T front() const { return head_->item_; }

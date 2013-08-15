@@ -16,34 +16,31 @@
 namespace fkit
 {
 
-template<class T>
-class CircularBuffer;
-
 class LineSource: public Source<String>
 {
 public:
-	inline static Ref<LineSource> open(Stream *stream, const char *eol = "\n", int maxLineLength = 0x4000) {
-		return new LineSource(stream, eol, maxLineLength);
+	inline static Ref<LineSource> open(Stream *stream, ByteArray *buf = 0) {
+		return new LineSource(stream, buf);
 	}
 
-	Stream *stream() const;
+	inline Stream *stream() const { return stream_; }
 
 	bool read(String *line);
 	String readLine();
 
+	String pendingData() const;
+
 protected:
-	LineSource(Stream *stream, const char *eol, int maxLineLength);
+	LineSource(Stream *stream, ByteArray *buf);
 
-	bool readAvail();
-	bool hasMore();
+	virtual int findEol(ByteArray *buf, int n, int i) const;
+	virtual int skipEol(ByteArray *buf, int n, int i) const;
 
-	typedef CircularBuffer<char> Cache;
-
+private:
 	Ref<Stream> stream_;
-	String eol_;
-	int cachedLines_;
-	Ref<Cache> cache_;
-	Ref<ByteArray> buf_;
+	bool eoi_;
+	String buf_;
+	int i_, n_;
 };
 
 } // namespace fkit
