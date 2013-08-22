@@ -45,9 +45,9 @@ public:
 
 private:
 	ServiceWorker(ServiceInstance *serviceInstance, ClosedConnections *closedConnections);
-
 	~ServiceWorker();
 
+	static void logDelivery(ClientConnection *client, int statusCode);
 	virtual void run();
 
 	Ref<ServiceInstance> serviceInstance_;

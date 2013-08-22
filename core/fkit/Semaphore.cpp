@@ -83,7 +83,7 @@ bool Semaphore::acquireBefore(double timeout, int amount)
 	mutex_->acquire();
 	demand_ += amount;
 	while (supply_ < amount) {
-		success = notEmpty_->waitUntil(mutex_, timeout);
+		success = notEmpty_->waitUntil(timeout, mutex_);
 		if (!success) break;
 	}
 	demand_ -= amount;

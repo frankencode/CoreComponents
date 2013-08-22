@@ -10,6 +10,7 @@
 #include <sys/mman.h> // mmap
 #include <errno.h>
 #include <string.h>
+#include <stdio.h> // rename
 #include "ExitEvent.h"
 #include "ThreadExitEvent.h"
 #include "Guard.h"
@@ -24,21 +25,9 @@
 namespace fkit
 {
 
-int File::translateOpenFlags(int openFlags)
-{
-	int h = 0;
-	if (openFlags == Read)
-		h = O_RDONLY;
-	else if (openFlags == Write)
-		h = O_WRONLY;
-	else if (openFlags == (Read|Write))
-		h = O_RDWR;
-	return h;
-}
-
 Ref<File> File::open(String path, int openFlags)
 {
-	int fd = ::open(path, translateOpenFlags(openFlags));
+	int fd = ::open(path, openFlags);
 	if (fd == -1)
 		FKIT_SYSTEM_EXCEPTION;
 	return new File(path, openFlags, fd);
@@ -46,7 +35,7 @@ Ref<File> File::open(String path, int openFlags)
 
 Ref<File> File::tryOpen(String path, int openFlags)
 {
-	int fd = ::open(path, translateOpenFlags(openFlags));
+	int fd = ::open(path, openFlags);
 	if (fd != -1) return new File(path, openFlags, fd);
 	return 0;
 }
@@ -174,10 +163,7 @@ String File::map() const
 	if (fileSize >= size_t(intMax)) fileSize = intMax;
 	int pageSize = System::pageSize();
 	size_t mapSize = fileSize;
-	int protection =
-		(PROT_READ * (openFlags_ & Read)) |
-		(PROT_WRITE * (openFlags_ & Write)) |
-		(PROT_EXEC * (openFlags_ & Execute));
+	int protection = PROT_READ | (PROT_WRITE * (openFlags_ & (O_WRONLY|O_RDWR)));
 	void *p = 0;
 	if (fileSize % pageSize > 0) {
 		mapSize += pageSize - fileSize % pageSize;
@@ -236,6 +222,11 @@ bool File::create(String path, int mode)
 	if (fd == -1) return false;
 	::close(fd);
 	return true;
+}
+
+bool File::rename(String path, String newPath)
+{
+	return ::rename(path, newPath) != -1;
 }
 
 bool File::link(String path, String newPath)
@@ -354,13 +345,13 @@ Ref<FileStatus> File::unresolvedStatus(String path)
 String File::load(String path)
 {
 	establish(path);
-	return open(path, File::Read)->readAll();
+	return open(path)->readAll();
 }
 
 void File::save(String path, String text)
 {
 	establish(path);
-	Ref<File> file = open(path, File::Write);
+	Ref<File> file = open(path, File::WriteOnly);
 	file->truncate(0);
 	file->write(text);
 }

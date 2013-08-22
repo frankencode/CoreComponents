@@ -10,9 +10,11 @@
 #include <fkit/IoMonitor.h>
 #include <fkit/Thread.h>
 #include <fkit/Process.h>
+#include <fkit/User.h>
 #include <fkit/stdio.h>
 #include "exceptions.h"
-#include "NodeLog.h"
+#include "ErrorLog.h"
+#include "AccessLog.h"
 #include "NodeConfig.h"
 #include "WorkerPool.h"
 #include "ServiceRegistry.h"
@@ -54,9 +56,14 @@ int NodeMaster::run(int argc, char **argv)
 void NodeMaster::runNode(int argc, char **argv)
 {
 	nodeConfig()->load(argc, argv);
-	nodeLog()->init(nodeConfig()->logLevel());
 
-	status() << "Starting..." << nl;
+	if (nodeConfig()->daemon() && !Process::isDaemonized())
+		Process::daemonize();
+
+	errorLog()->open(nodeConfig()->errorLogConfig());
+	accessLog()->open(nodeConfig()->accessLogConfig());
+
+	notice() << "Starting..." << nl;
 
 	Ref<DispatchInstance> dispatchInstance;
 	for (int i = 0; i < nodeConfig()->serviceInstances()->size(); ++i) {
@@ -98,7 +105,13 @@ void NodeMaster::runNode(int argc, char **argv)
 		listeningSockets->at(i) = socket;
 	}
 
-	status() << "Accepting connections..." << nl;
+	if (nodeConfig()->user() != "") {
+		Ref<User> user = User::lookup(nodeConfig()->user());
+		if (!user->exists()) throw UserException("No such user: \"" + nodeConfig()->user() + "\"");
+		Process::setUserId(user->id());
+	}
+
+	debug() << "Accepting connections..." << nl;
 
 	try {
 		Ref<IoMonitor> ioMonitor = IoMonitor::create();
@@ -120,7 +133,7 @@ void NodeMaster::runNode(int argc, char **argv)
 		}
 	}
 	catch (Interrupt &ex) {
-		status() << "Shutting down..." << nl;
+		notice() << "Shutting down..." << nl;
 		dispatchInstance->workerPools_ = 0;
 		throw ex;
 	}

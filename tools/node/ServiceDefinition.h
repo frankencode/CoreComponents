@@ -23,10 +23,10 @@ using namespace fkit;
 class ServicePrototype: public YasonObject
 {
 public:
-	static Ref<ServicePrototype> create(String className);
+	static Ref<ServicePrototype> create(String className, YasonProtocol *protocol = 0);
 
 protected:
-	ServicePrototype(String className);
+	ServicePrototype(String className, YasonProtocol *protocol);
 };
 
 class ServiceWorker;

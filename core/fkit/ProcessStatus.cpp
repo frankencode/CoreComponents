@@ -30,7 +30,7 @@ ProcessStatus::ProcessStatus(pid_t processId)
 {
 #ifdef __linux
 	String path = Format("/proc/%%/stat") << processId;
-	Ref<LineSource> source = LineSource::open(File::open(path, File::Read));
+	Ref<LineSource> source = LineSource::open(File::open(path));
 	String line = source->readLine();
 	{
 		// extract command name first, because it may contain whitespace

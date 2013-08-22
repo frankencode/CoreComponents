@@ -11,7 +11,7 @@
 #include <fkit/Config.h>
 #include "ConfigProtocol.h"
 #include "ServiceRegistry.h"
-#include "NodeLog.h"
+#include "ErrorLog.h"
 #include "NodeConfig.h"
 
 namespace fnode
@@ -19,16 +19,6 @@ namespace fnode
 
 NodeConfig::NodeConfig()
 {}
-
-int decodeLogLevel(String levelName)
-{
-	if (levelName == "debug")   return NodeLog::DebugLevel;
-	if (levelName == "summary") return NodeLog::SummaryLevel;
-	if (levelName == "status")  return NodeLog::StatusLevel;
-	if (levelName == "warning") return NodeLog::WarningLevel;
-	if (levelName == "error")   return NodeLog::ErrorLevel;
-	return 0;
-}
 
 void NodeConfig::load(int argc, char **argv)
 {
@@ -56,14 +46,17 @@ void NodeConfig::load(int argc, char **argv)
 
 	user_ = config->value("user");
 	version_ = config->value("version");
-	logLevel_ = decodeLogLevel(config->value("log_level"));
+	stackSize_ = config->value("stack_size");
+	daemon_ = config->value("daemon");
+	errorLogConfig_ = LogConfig::load(cast<YasonObject>(config->value("error_log")));
+	accessLogConfig_ = LogConfig::load(cast<YasonObject>(config->value("access_log")));
 
 	serviceInstances_ = ServiceInstances::create();
 	if (config->hasChildren()) {
 		for (int i = 0; i < config->children()->size(); ++i) {
-			YasonObject *serviceConfig = config->children()->at(i);
-			ServiceDefinition *service = serviceRegistry()->serviceByName(serviceConfig->className());
-			serviceInstances_->append(service->createInstance(serviceConfig));
+			YasonObject *child = config->children()->at(i);
+			ServiceDefinition *service = serviceRegistry()->serviceByName(child->className());
+			serviceInstances_->append(service->createInstance(child));
 		}
 	}
 }

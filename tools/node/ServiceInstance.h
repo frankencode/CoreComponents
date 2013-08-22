@@ -12,6 +12,7 @@
 
 #include <fkit/Pattern.h>
 #include <fkit/List.h>
+#include "LogConfig.h"
 
 namespace fkit { class YasonObject; }
 
@@ -32,11 +33,12 @@ public:
 
 	inline int concurrency() const { return concurrency_; }
 	inline int stackSize() const { return stackSize_; }
-	inline int maxConnections() const { return maxConnections_; }
-	inline int maxConnectionsPerClient() const { return maxConnectionsPerClient_; }
 	inline double connectionTimeout() const { return connectionTimeout_; }
 	inline Pattern host() const { return host_; }
 	inline Pattern uri() const { return uri_; }
+
+	inline LogConfig *errorLogConfig() const { return errorLogConfig_; }
+	inline LogConfig *accessLogConfig() const { return accessLogConfig_; }
 
 protected:
 	ServiceInstance(YasonObject *config);
@@ -45,11 +47,12 @@ protected:
 
 	int concurrency_;
 	int stackSize_;
-	int maxConnections_;
-	int maxConnectionsPerClient_;
 	double connectionTimeout_;
 	Pattern host_;
 	Pattern uri_;
+
+	Ref<LogConfig> errorLogConfig_;
+	Ref<LogConfig> accessLogConfig_;
 };
 
 typedef List< Ref<ServiceInstance> > ServiceInstances;

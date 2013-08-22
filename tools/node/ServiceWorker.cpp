@@ -10,9 +10,10 @@
 #include <fkit/Memory.h>
 #include <fkit/Format.h>
 #include <fkit/RefGuard.h>
-#include <fkit/stdio.h> // DEBUG
+#include <fkit/System.h>
 #include "exceptions.h"
-#include "NodeLog.h"
+#include "ErrorLog.h"
+#include "AccessLog.h"
 #include "NodeConfig.h"
 #include "ServiceDefinition.h"
 #include "ServiceDelegate.h"
@@ -41,8 +42,31 @@ ServiceWorker::~ServiceWorker()
 	wait();
 }
 
+void ServiceWorker::logDelivery(ClientConnection *client, int statusCode)
+{
+	Stream *stream = accessLog()->noticeStream();
+	if (400 <= statusCode && statusCode <= 499) stream = accessLog()->warningStream();
+	else if (500 <= statusCode) stream = accessLog()->errorStream();
+
+	Request *request = client->request_;
+	String requestLine = request ? request->requestLine() : "INVALID";
+	double requestTime = request ? request->requestTime() : System::now();
+	String userAgent =   request ? request->value("User-Agent") : "";
+
+	Format(stream)
+		<< client->address()->networkAddress() << " "
+		<< Date::localTime(requestTime)->toString() << " "
+		<< "\"" << requestLine << "\" "
+		<< statusCode << " "
+		<< "\"" << userAgent << "\" "
+		<< nl;
+}
+
 void ServiceWorker::run()
 {
+	errorLog()->open(serviceInstance_->errorLogConfig());
+	accessLog()->open(serviceInstance_->accessLogConfig());
+
 	while (pendingConnections_->pop(&client_)) {
 		try {
 			while (client_) {
@@ -55,7 +79,11 @@ void ServiceWorker::run()
 				{
 					RefGuard<Response> guard(&response_);
 					response_ = Response::create(client_->stream_);
+					Ref<ClientConnection> keepAlive = client_;
 					serviceDelegate_->process(client_->request_);
+					response_->end();
+					if (response_->delivered())
+						logDelivery(client_, response_->statusCode());
 				}
 				if (client_) {
 					if (client_->request_->value("Connection") == "close")
@@ -67,11 +95,15 @@ void ServiceWorker::run()
 		}
 		catch (ProtocolException &ex) {
 			Format("HTTP/1.1 %% %%\r\n\r\n", client_->stream_) << ex.statusCode() << " " << ex.message();
+			logDelivery(client_, ex.statusCode());
 		}
+		#ifdef NDEBUG
 		catch (Exception &ex) {
-			debug() << ex.message() << nl;
+			error() << ex.message() << nl;
 			Format("HTTP/1.1 500 Internal Server Error: %%\r\n\r\n", client_->stream_) << ex.message();
+			logDelivery(client_, 500);
 		}
+		#endif
 		client_ = 0;
 		// closedConnections_->push(clientAddress); // TODO
 	}

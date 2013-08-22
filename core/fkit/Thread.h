@@ -26,7 +26,7 @@ class Thread: public Object
 public:
 	static Thread *self();
 
-	void start();
+	void start(int stackSize = -1);
 	void wait();
 	void kill(int signal);
 	bool stillAlive() const;

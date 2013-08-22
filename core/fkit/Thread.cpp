@@ -29,9 +29,12 @@ Thread *Thread::self()
 }
 
 
-void Thread::start()
+void Thread::start(int stackSize)
 {
-	ThreadFactory::create()->start(this);
+	Ref<ThreadFactory> factory = ThreadFactory::create();
+	if (stackSize > 0)
+		factory->setStackSize(stackSize);
+	factory->start(this);
 }
 
 void Thread::wait()
@@ -66,7 +69,7 @@ void Thread::sleepUntil(double timeout)
 	Ref<Mutex> mutex = Mutex::create();
 	Ref<Condition> condition = Condition::create();
 	mutex->acquire();
-	condition->waitUntil(mutex, timeout);
+	condition->waitUntil(timeout, mutex);
 	mutex->release();
 }
 

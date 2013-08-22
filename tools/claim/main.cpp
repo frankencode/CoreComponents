@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 			for (int j = 0; j < copyrights->size(); ++j)
 				if (copyrights->at(j)->holder() != holder) continue;
 			Token *token = notice->header()->token();
-			Ref<File> file = File::open(path, File::Read|File::Write);
+			Ref<File> file = File::open(path, File::ReadWrite);
 			String text = file->map();
 			String newText = Format() << text->copy(0, token->i0()) << text->copy(token->i1(), text->size());
 			file->seek(0);
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
 		Exposure *exposure = report->exposure();
 		for (int i = 0; i < exposure->size(); ++i) {
 			String path = exposure->at(i);
-			Ref<File> file = File::open(path, File::Read|File::Write);
+			Ref<File> file = File::open(path, File::ReadWrite);
 			String newText = Format() << header << file->map();
 			file->seek(0);
 			file->truncate(0);

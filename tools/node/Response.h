@@ -20,12 +20,14 @@ namespace fnode
 using namespace fkit;
 
 class ChunkStream;
+class ServiceWorker;
 
 class Response: public Map<String, String>
 {
 public:
 	static Ref<Response> create(Stream *client);
 
+	void status(int statusCode, String reasonPhrase = "");
 	void header(String name, String value);
 	void begin();
 	void write(String bytes);
@@ -33,15 +35,21 @@ public:
 	Format chunk();
 	void end();
 
+	inline bool delivered() const { return headerWritten_; }
+	inline int statusCode() const { return statusCode_; }
+
 private:
+	friend class ServiceWorker;
+
 	Response(Stream *client);
-	~Response();
 
 	void writeHeader();
 
 	Ref<Stream> client_;
 	bool headerWritten_;
 	Ref<ChunkStream> payload_;
+	int statusCode_;
+	String reasonPhrase_;
 };
 
 } // namespace fnode

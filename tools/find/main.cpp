@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 			if (textPattern) {
 				if (FileStatus::read(path)->type() != File::Regular)
 					continue;
-				Ref<File> file = File::tryOpen(path, File::Read);
+				Ref<File> file = File::tryOpen(path, File::ReadOnly);
 				if (!file) {
 					ferr("Failed to open %%\n") << path;
 					continue;
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 					if (token->i0() == token->i1()) ++i;
 				}
 				if (replaceOption && matches->size() > 0) {
-					file = File::tryOpen(path, File::Read | File::Write);
+					file = File::tryOpen(path, File::ReadWrite);
 					if (!file) {
 						ferr("Failed to write %%\n") << path;
 						continue;

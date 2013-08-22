@@ -33,7 +33,7 @@ public:
 		notEmpty_->signal();
 	}
 
-	void pushFront(const T &item)
+	void pushFront(const T &item, int priority = 0)
 	{
 		Guard<Mutex> guard(mutex_);
 		queue_->pushFront(item, priority);
@@ -45,10 +45,7 @@ public:
 		Guard<Mutex> guard(mutex_);
 		while (queue_->size() == 0)
 			notEmpty_->wait(mutex_);
-		T h;
-		if (!item) item = &h;
-		queue_->popBack(item);
-		return *item;
+		return queue_->popBack(item);
 	}
 
 	T popFront(T *item = 0)
@@ -56,14 +53,35 @@ public:
 		Guard<Mutex> guard(mutex_);
 		while (queue_->size() == 0)
 			notEmpty_->wait(mutex_);
-		T h;
-		if (!item) item = &h;
+		return queue_->popFront(item);
+	}
+
+	bool popBackBefore(double timeout, T *item)
+	{
+		Guard<Mutex> guard(mutex_);
+		while (queue_->size() == 0) {
+			if (!notEmpty_->waitUntil(timeout, mutex_))
+				return false;
+		}
+		queue_->popBack(item);
+		return true;
+	}
+
+	bool popFrontBefore(double timeout, T *item)
+	{
+		Guard<Mutex> guard(mutex_);
+		while (queue_->size() == 0) {
+			if (!notEmpty_->waitUntil(timeout, mutex_))
+				return false;
+		}
 		queue_->popFront(item);
-		return *item;
+		return true;
 	}
 
 	inline void push(const T &item, int priority = 0) { return pushBack(item, priority); }
 	inline T pop(T *item = 0) { return popFront(item); }
+
+	inline bool popBefore(double timeout, T *item = 0) { return popFrontBefore(timeout, item); }
 
 	inline int size() const {
 		Guard<Mutex> guard(mutex_);

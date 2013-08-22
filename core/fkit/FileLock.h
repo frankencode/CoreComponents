@@ -25,7 +25,7 @@ typedef struct flock FLockStruct;
 class FileLock: public FLockStruct, public Object
 {
 public:
-	enum Type { Read = F_RDLCK, Write = F_WRLCK };
+	enum Type { ReadLock = F_RDLCK, WriteLock = F_WRLCK };
 
 	static Ref<FileLock> create(File *file, int type, off_t start = 0, off_t length = 0) {
 		return new FileLock(file, type, start, length);

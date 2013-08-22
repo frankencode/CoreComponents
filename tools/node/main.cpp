@@ -29,6 +29,7 @@ int main(int argc, char **argv)
 			"  -port      port to listen on (default 8000)\n"
 			"  -protocol  protocol: IPv4 or IPv6 (default both)\n"
 			"  -user      switch to user after opening listening socket\n"
+			"  -daemon    start as a daemon\n"
 		) << String(argv[0])->fileName();
 	}
 	catch (UserException &ex) {

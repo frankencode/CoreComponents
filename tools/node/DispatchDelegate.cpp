@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "NodeLog.h"
+#include "ErrorLog.h"
 #include "DispatchInstance.h"
 #include "DispatchDelegate.h"
 

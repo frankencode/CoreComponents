@@ -83,6 +83,7 @@ public:
 	static uid_t effectiveUserId();
 	static gid_t effectiveGroupId();
 	static bool isSuperUser();
+	static void setUserId(uid_t uid);
 
 	static String env(String key);
 	static void setEnv(String key, String value);
@@ -103,6 +104,9 @@ public:
 
 	static void sleep(double duration);
 	static void exit(int exitCode);
+
+	static void daemonize();
+	static bool isDaemonized();
 
 protected:
 	friend class ProcessFactory;
