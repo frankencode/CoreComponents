@@ -8,7 +8,7 @@
  */
 
 #include <fkit/ThreadFactory.h>
-#include "NodeLog.h"
+#include "ErrorLog.h"
 #include "NodeConfig.h"
 #include "ServiceInstance.h"
 #include "WorkerPool.h"
@@ -33,7 +33,7 @@ WorkerPool::WorkerPool(ServiceInstance *serviceInstance)
 	        << "uri = \"" << serviceInstance->uri() << "\"" << nl;
 
 	Ref<ThreadFactory> threadFactory = ThreadFactory::create();
-	threadFactory->setStackSize(serviceInstance->stackSize());
+	/*threadFactory->setStackSize(serviceInstance->stackSize());*/
 
 	for (int i = 0; i < serviceWorkers_->size(); ++i) {
 		Ref<ServiceWorker> worker = ServiceWorker::create(serviceInstance_, closedConnections_);

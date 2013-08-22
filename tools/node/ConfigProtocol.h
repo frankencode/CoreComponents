@@ -10,8 +10,8 @@
 #ifndef FNODE_CONFIGPROTOCOL_H
 #define FNODE_CONFIGPROTOCOL_H
 
-#include <fkit/Yason.h>
 #include <fkit/Singleton.h>
+#include <fkit/Yason.h>
 
 namespace fnode
 {

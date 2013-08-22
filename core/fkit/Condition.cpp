@@ -50,7 +50,7 @@ void Condition::wait(Mutex *mutex)
   * (see also: now()). Returns true if the condition was signalled
   * before 'timeout', else returns false.
   */
-bool Condition::waitUntil(Mutex *mutex, double timeout)
+bool Condition::waitUntil(double timeout, Mutex *mutex)
 {
 	bool success = true;
 	struct timespec ts;

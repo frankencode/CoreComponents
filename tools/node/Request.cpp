@@ -9,6 +9,7 @@
 
 #include <fkit/TransferLimiter.h>
 #include <fkit/LineSource.h>
+#include <fkit/System.h>
 #include "exceptions.h"
 #include "ClientConnection.h"
 #include "Request.h"
@@ -22,6 +23,7 @@ Ref<Request> Request::parse(ClientConnection *client, int maxHeaderSize)
 }
 
 Request::Request(ClientConnection *client, int maxHeaderSize)
+	: requestTime_(System::now())
 {
 	try {
 		Ref<TransferLimiter> limiter = TransferLimiter::open(client->stream(), maxHeaderSize);
@@ -29,7 +31,10 @@ Request::Request(ClientConnection *client, int maxHeaderSize)
 		Ref<LineSource> source = LineSource::open(limiter, buf);
 
 		String line;
+
 		if (!source->read(&line)) throw BadRequest();
+		requestLine_ = line;
+
 		if (line->count(' ') != 2) throw BadRequest();
 		{
 			int i0 = 0, i1 = line->find(' ');

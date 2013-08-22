@@ -31,7 +31,6 @@ public:
 
 protected:
 	friend class Condition;
-	friend class ScopeGuard;
 	Mutex();
 	pthread_mutex_t mutex_;
 };

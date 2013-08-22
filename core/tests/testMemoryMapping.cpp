@@ -14,8 +14,8 @@ public:
 	int incarnate()
 	{
 		fout("(clone) waiting for read access\n");
-		Ref<File> file = File::open(path_, File::Read);
-		Ref<FileLock> lock = FileLock::create(file, FileLock::Read);
+		Ref<File> file = File::open(path_, File::ReadOnly);
+		Ref<FileLock> lock = FileLock::create(file, FileLock::ReadLock);
 		Guard<FileLock> guard(lock);
 		fout("(clone) granted read access\n");
 		fout("(clone) reads: \"%%\"\n") << file->map();
@@ -37,7 +37,7 @@ int main()
 	fout("(parent) file->path() = \"%%\"\n") << file->path();
 
 	fout("(parent) acquiring write lock... \n");
-	Ref<FileLock> lock = FileLock::create(file, FileLock::Write);
+	Ref<FileLock> lock = FileLock::create(file, FileLock::WriteLock);
 	lock->acquire();
 
 	fout("(parent) writing message... \n");

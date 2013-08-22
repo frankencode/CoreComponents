@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "LogPrototype.h"
 #include "ConfigProtocol.h"
 
 namespace fnode
@@ -29,13 +30,10 @@ protected:
 		insert("protocol", "");
 		insert("user", "");
 		insert("version", "Fnode/0.0.1");
-		insert("log_level",
-			#ifdef NDEBUG
-				"status"
-			#else
-				"debug"
-			#endif
-			);
+		insert("stack_size", 65536);
+		insert("daemon", false);
+		insert("error_log", LogPrototype::create());
+		insert("access_log", LogPrototype::create());
 	}
 };
 

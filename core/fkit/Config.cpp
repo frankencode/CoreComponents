@@ -24,7 +24,7 @@ Ref<Config> Config::read(String path, YasonProtocol *protocol)
 {
 	Ref<Config> config = new Config(path);
 	try {
-		Yason::parse(File::open(path, File::Read)->map(), protocol, config);
+		Yason::parse(File::open(path)->map(), protocol, config);
 	}
 	catch (SystemException &) {
 		throw ConfigException(Format("Failed to open configuration file %%") << path);

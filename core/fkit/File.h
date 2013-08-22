@@ -40,11 +40,18 @@ public:
 		StickyBit  = S_ISVTX
 	};
 
+	enum OpenFlags {
+		ReadOnly  = O_RDONLY,
+		WriteOnly = O_WRONLY,
+		ReadWrite = O_RDWR,
+		Append    = O_APPEND
+	};
+
 	enum AccessFlags {
-		Read    = R_OK,
-		Write   = W_OK,
-		Execute = X_OK,
-		Exists  = F_OK
+		Readable    = R_OK,
+		Writeable   = W_OK,
+		Executable  = X_OK,
+		Exists      = F_OK
 	};
 
 	enum ModeFlags {
@@ -71,10 +78,10 @@ public:
 		StandardError  = 2
 	};
 
-	static Ref<File> open(String path, int openFlags = Read);
-	static Ref<File> tryOpen(String path, int openFlags = Read);
+	static Ref<File> open(String path, int openFlags = ReadOnly);
+	static Ref<File> tryOpen(String path, int openFlags = ReadOnly);
 	static Ref<File> open(int fd, int openFlags);
-	static Ref<File> temp(int openFlags = Read|Write);
+	static Ref<File> temp(int openFlags = ReadWrite);
 
 	String path() const;
 	String name() const;
@@ -98,6 +105,7 @@ public:
 	static bool access(String path, int flags);
 	static bool exists(String path);
 	static bool create(String path, int mode = 0644);
+	static bool rename(String path, String newPath);
 	static bool link(String path, String newPath);
 	static bool unlink(String path);
 	static bool symlink(String path, String newPath);
@@ -106,7 +114,7 @@ public:
 
 	static String createUnique(String path, int mode = 0644, char placeHolder = 'X');
 	static bool establish(String path, int fileMode = 0644, int dirMode = 0755);
-	static String lookup(String fileName, StringList *dirs = 0, int accessFlags = Execute);
+	static String lookup(String fileName, StringList *dirs = 0, int accessFlags = Executable);
 
 	static Ref<FileStatus> status(String path);
 	static Ref<FileStatus> unresolvedStatus(String path);

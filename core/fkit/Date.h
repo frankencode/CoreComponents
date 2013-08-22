@@ -17,22 +17,30 @@ namespace fkit
 
 typedef struct tm StructTm;
 
+enum Weekday {
+	Sun = 0,
+	Mon = 1,
+	Tue = 2,
+	Wed = 3,
+	Thu = 4,
+	Fri = 5,
+	Sat = 6
+};
+
+enum {
+	SecondsPerHour = 3600,
+	SecondsPerDay  = 24 * SecondsPerHour
+};
+
+inline double hours(double n) { return n * SecondsPerHour; }
+inline double days(double n) { return n * SecondsPerDay; }
+
 /** \brief broken-down time
   * \see Time
   */
 class Date: public StructTm, public Object
 {
 public:
-	enum Weekday {
-		Sun = 0,
-		Mon = 1,
-		Tue = 2,
-		Wed = 3,
-		Thu = 4,
-		Fri = 5,
-		Sat = 6
-	};
-
 	inline static Ref<Date> create() {
 		return new Date;
 	}

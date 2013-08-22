@@ -14,6 +14,7 @@
 #include <fkit/String.h>
 #include <fkit/Map.h>
 #include "ServiceDefinition.h"
+#include "LogConfig.h"
 
 namespace fnode
 {
@@ -29,7 +30,11 @@ public:
 	inline SocketAddressList *address() const { return address_; }
 	inline String user() const { return user_; }
 	inline String version() const { return version_; }
-	inline int logLevel() const { return logLevel_; }
+	inline int stackSize() const { return stackSize_; }
+	inline bool daemon() const { return daemon_; }
+
+	inline LogConfig *errorLogConfig() const { return errorLogConfig_; }
+	inline LogConfig *accessLogConfig() const { return accessLogConfig_; }
 
 	inline ServiceInstances *serviceInstances() const { return serviceInstances_; }
 
@@ -42,7 +47,11 @@ private:
 	Ref<SocketAddressList> address_;
 	String user_;
 	String version_;
-	int logLevel_;
+	int stackSize_;
+	bool daemon_;
+
+	Ref<LogConfig> errorLogConfig_;
+	Ref<LogConfig> accessLogConfig_;
 
 	Ref<ServiceInstances> serviceInstances_;
 };

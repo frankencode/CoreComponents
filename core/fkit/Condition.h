@@ -21,7 +21,7 @@ public:
 	inline static Ref<Condition> create() { return new Condition; }
 	~Condition();
 	void wait(Mutex *mutex);
-	bool waitUntil(Mutex *mutex, double timeout);
+	bool waitUntil(double timeout, Mutex *mutex);
 	void signal();
 	void broadcast();
 

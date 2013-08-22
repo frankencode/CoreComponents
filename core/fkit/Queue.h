@@ -51,7 +51,7 @@ public:
 
 	inline int size() const { return length_; }
 
-	void pushBack(const T &item)
+	void pushBack(const T &item, int = 0)
 	{
 		Node *node = new Node(item);
 		if (tail_) {
@@ -66,7 +66,7 @@ public:
 		++length_;
 	}
 
-	void pushFront(const T &item)
+	void pushFront(const T &item, int = 0)
 	{
 		Node *node = new Node(item);
 		if (head_) {
@@ -84,8 +84,10 @@ public:
 	T popBack(T *item)
 	{
 		FKIT_ASSERT(length_ > 0);
+		T h;
+		if (!item) item = &h;
 		Node *node = tail_;
-		if (item) *item = node->item_;
+		*item = node->item_;
 		tail_ = node->prev_;
 		if (!tail_) head_ = 0;
 		else tail_->next_ = 0;
@@ -97,8 +99,10 @@ public:
 	T popFront(T *item)
 	{
 		FKIT_ASSERT(length_ > 0);
+		T h;
+		if (!item) item = &h;
 		Node *node = head_;
-		if (item) *item = node->item_;
+		*item = node->item_;
 		head_ = node->next_;
 		if (!head_) tail_ = 0;
 		else head_->prev_ = 0;
@@ -117,7 +121,7 @@ public:
 		return popFront(&item);
 	}
 
-	inline void push(const T &item) { pushBack(item); }
+	inline void push(const T &item, int = 0) { pushBack(item); }
 	inline T pop(T *item) { return popFront(item); }
 	inline T pop() { return popFront(); }
 

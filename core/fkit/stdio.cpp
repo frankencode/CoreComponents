@@ -17,17 +17,17 @@ class StdIo: public Object, public ThreadLocalSingleton<StdIo>
 {
 public:
 	inline File *in() {
-		if (!in_) in_ = File::open(File::StandardInput, File::Read);
+		if (!in_) in_ = File::open(File::StandardInput, File::ReadOnly);
 		return in_;
 	}
 
 	inline File *out() {
-		if (!out_) out_ = File::open(File::StandardOutput, File::Write);
+		if (!out_) out_ = File::open(File::StandardOutput, File::WriteOnly);
 		return out_;
 	}
 
 	inline File *err() {
-		if (!err_) err_ = File::open(File::StandardError, File::Write);
+		if (!err_) err_ = File::open(File::StandardError, File::WriteOnly);
 		return err_;
 	}
 

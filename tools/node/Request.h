@@ -30,6 +30,9 @@ public:
 	inline String version() const { return version_; }
 	inline String host() const { return host_; }
 
+	inline String requestLine() const { return requestLine_; }
+	inline double requestTime() const { return requestTime_; }
+
 private:
 	Request(ClientConnection *client, int maxHeaderSize);
 
@@ -37,6 +40,9 @@ private:
 	String target_;
 	String version_;
 	String host_;
+
+	String requestLine_;
+	double requestTime_;
 };
 
 } // namespace fnode

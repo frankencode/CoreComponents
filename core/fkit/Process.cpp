@@ -15,6 +15,7 @@
 #include <stdlib.h> // getenv, setenv, free
 #include <time.h> // nanosleep
 #include <errno.h> // errno
+#include <string.h> // strcmp
 #ifdef __linux
 #include "File.h" // to read /proc
 #endif
@@ -190,6 +191,11 @@ gid_t Process::effectiveGroupId() { return ::getegid(); }
 
 bool Process::isSuperUser() { return (::geteuid() == 0) || (::getegid() == 0); }
 
+void Process::setUserId(uid_t uid)
+{
+	if (::setuid(uid) == -1) FKIT_SYSTEM_EXCEPTION;
+}
+
 String Process::env(String key)
 {
 	return getenv(key);
@@ -327,6 +333,23 @@ void Process::sleep(double duration)
 void Process::exit(int exitCode)
 {
 	::exit(exitCode);
+}
+
+void Process::daemonize()
+{
+	pid_t pid = ::fork();
+	if (pid == -1) FKIT_SYSTEM_EXCEPTION;
+	if (pid != 0) ::exit(0);
+	::setsid();
+	::umask(0);
+	::close(0);
+	::close(1);
+	::close(2);
+}
+
+bool Process::isDaemonized()
+{
+	return ::getsid(0) == ::getpgid(0) && ::isatty(0) != 1;
 }
 
 } // namespace fkit

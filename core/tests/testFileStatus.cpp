@@ -10,10 +10,10 @@ int main(int argc, char **argv)
 	String path = argv[0];
 	fout("path = \"%%\"\n") << path;
 	fout("File::exists(\"%%\") = %%\n") << path << File::exists(path);
-	fout("File::access(\"%%\", File::Read) = %%\n") << path << File::access(path, File::Read);
-	fout("File::access(\"%%\", File::Write) = %%\n") << path << File::access(path, File::Write);
-	fout("File::access(\"%%\", File::Execute) = %%\n") << path << File::access(path, File::Execute);
-	if (!File::access(path, File::Execute)) return 1;
+	fout("File::access(\"%%\", File::Read) = %%\n") << path << File::access(path, File::Readable);
+	fout("File::access(\"%%\", File::Write) = %%\n") << path << File::access(path, File::Writeable);
+	fout("File::access(\"%%\", File::Execute) = %%\n") << path << File::access(path, File::Executable);
+	if (!File::access(path, File::Executable)) return 1;
 	try {
 		if (File::exists(path)) {
 			Ref<FileStatus> status = File::status(path);

@@ -246,7 +246,7 @@ bool BuildPlan::install(String sourcePath, String destPath)
 		Ref<FileStatus> sourceStatus = FileStatus::read(sourcePath);
 		if (File::exists(destPath)) File::unlink(destPath);
 		File::create(destPath, sourceStatus->mode()) || FKIT_SYSTEM_EXCEPTION;
-		Ref<File> sink = File::open(destPath, File::Write);
+		Ref<File> sink = File::open(destPath, File::WriteOnly);
 		sink->truncate(0);
 		sink->write(source->map());
 	}
