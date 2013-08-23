@@ -33,6 +33,8 @@ private:
 	String message_;
 };
 
+class CloseRequest {};
+
 class BadRequest: public ProtocolException
 {
 public:
