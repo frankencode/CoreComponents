@@ -11,18 +11,19 @@
 #include <fkit/System.h>
 #include <fkit/Date.h>
 #include "NodeConfig.h"
+#include "ClientConnection.h"
 #include "ChunkStream.h"
 #include "Response.h"
 
 namespace fnode
 {
 
-Ref<Response> Response::create(Stream *client)
+Ref<Response> Response::create(ClientConnection *client)
 {
 	return new Response(client);
 }
 
-Response::Response(Stream *client)
+Response::Response(ClientConnection *client)
 	: client_(client),
 	  headerWritten_(false),
 	  statusCode_(200),
@@ -99,7 +100,7 @@ String httpDate(double time)
 
 void Response::writeHeader()
 {
-	Format header(client_);
+	Format header(client_->stream());
 	header << "HTTP/1.1 " << statusCode_ << " " << reasonPhrase_ << "\r\n";
 	establish("Transfer-Encoding", "chunked");
 	String now = httpDate(System::now());
@@ -117,25 +118,30 @@ void Response::writeHeader()
 void Response::begin()
 {
 	if (!headerWritten_) writeHeader();
-	payload_ = ChunkStream::open(client_);
+}
+
+ChunkStream *Response::payload()
+{
+	if (!payload_) {
+		if (!headerWritten_) writeHeader();
+		payload_ = ChunkStream::open(client_->stream());
+	}
+	return payload_;
 }
 
 void Response::write(String bytes)
 {
-	if (!payload_) begin();
-	payload_->write(bytes);
+	payload()->write(bytes);
 }
 
 Format Response::chunk(String pattern)
 {
-	if (!payload_) begin();
-	return Format(pattern, payload_);
+	return Format(pattern, payload());
 }
 
 Format Response::chunk()
 {
-	if (!payload_) begin();
-	return Format(payload_);
+	return Format(payload());
 }
 
 void Response::end()

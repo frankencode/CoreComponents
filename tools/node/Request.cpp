@@ -32,7 +32,7 @@ Request::Request(ClientConnection *client, int maxHeaderSize)
 
 		String line;
 
-		if (!source->read(&line)) throw BadRequest();
+		if (!source->read(&line)) throw CloseRequest();
 		requestLine_ = line;
 
 		if (line->count(' ') != 2) throw BadRequest();

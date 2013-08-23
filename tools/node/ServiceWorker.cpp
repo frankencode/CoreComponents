@@ -78,8 +78,7 @@ void ServiceWorker::run()
 				}
 				{
 					RefGuard<Response> guard(&response_);
-					response_ = Response::create(client_->stream_);
-					Ref<ClientConnection> keepAlive = client_;
+					response_ = Response::create(client_);
 					serviceDelegate_->process(client_->request_);
 					response_->end();
 					if (response_->delivered())
@@ -87,7 +86,7 @@ void ServiceWorker::run()
 				}
 				if (client_) {
 					if (client_->request_->value("Connection") == "close")
-						client_ = 0;
+						close();
 					else
 						client_->request_ = 0;
 				}
@@ -104,7 +103,8 @@ void ServiceWorker::run()
 			logDelivery(client_, 500);
 		}
 		#endif
-		client_ = 0;
+		catch (CloseRequest &) {}
+		close();
 		// closedConnections_->push(clientAddress); // TODO
 	}
 }
@@ -116,7 +116,10 @@ Response *ServiceWorker::response() const
 
 void ServiceWorker::close()
 {
-	client_ = 0;
+	if (client_) {
+		debug() << "Closing connection to " << client_->address() << nl;
+		client_ = 0;
+	}
 }
 
 } // namespace fnode
