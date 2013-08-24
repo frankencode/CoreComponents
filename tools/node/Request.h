@@ -12,6 +12,7 @@
 
 #include <fkit/String.h>
 #include <fkit/Map.h>
+#include "PayloadSource.h"
 
 namespace fnode
 {
@@ -33,6 +34,8 @@ public:
 	inline String requestLine() const { return requestLine_; }
 	inline double requestTime() const { return requestTime_; }
 
+	PayloadSource *payload() const { return payload_; }
+
 private:
 	Request(ClientConnection *client, int maxHeaderSize);
 
@@ -43,6 +46,8 @@ private:
 
 	String requestLine_;
 	double requestTime_;
+
+	Ref<PayloadSource> payload_;
 };
 
 } // namespace fnode

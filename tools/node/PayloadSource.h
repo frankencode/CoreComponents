@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_CHUNKSTREAM_H
-#define FNODE_CHUNKSTREAM_H
+#ifndef FNODE_PAYLOADSOURCE_H
+#define FNODE_PAYLOADSOURCE_H
 
 #include <fkit/Stream.h>
 
@@ -17,21 +17,27 @@ namespace fnode
 
 using namespace fkit;
 
-class ChunkStream: public Stream
+class Request;
+
+class PayloadSource: public Stream
 {
 public:
-	static Ref<ChunkStream> open(Stream *client = 0);
+	static Ref<PayloadSource> open(Stream *stream, Request *request);
 
+	virtual bool readyRead(double interval) const;
 	virtual int readAvail(ByteArray *buf);
-	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts, const char *sep = "");
+
+	bool isConsumed() const;
+	void drain();
 
 private:
-	ChunkStream(Stream *client);
-	~ChunkStream();
-	Ref<Stream> client_;
+	PayloadSource(Stream *client, Request *request);
+
+	Ref<Stream> stream_;
+	int64_t contentLength_;
+	int64_t bytesLeft_;
 };
 
 } // namespace fnode
 
-#endif // FNODE_CHUNKSTREAM_H
+#endif // FNODE_PAYLOADSOURCE_H

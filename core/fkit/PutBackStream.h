@@ -7,32 +7,33 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FKIT_STREAM_H
-#define FKIT_STREAM_H
+#ifndef FKIT_PUTBACKSTREAM_H
+#define FKIT_PUTBACKSTREAM_H
 
-#include "String.h"
+#include "Stream.h"
 
 namespace fkit
 {
 
-FKIT_EXCEPTION(StreamIoException, Exception);
-FKIT_EXCEPTION(EncodingException, StreamIoException);
-
-class Stream: public Object
+class PutBackStream: public Stream
 {
 public:
-	virtual ~Stream() {}
+	static Ref<PutBackStream> open(Stream *stream);
 
 	virtual bool readyRead(double interval) const;
 	virtual int readAvail(ByteArray *buf);
 	virtual void write(const ByteArray *buf);
 	virtual void write(const StringList *parts, const char *sep = "");
 
-	void read(ByteArray *buf);
+	void putBack(ByteArray *pending);
 
-	String readAll();
+private:
+	PutBackStream(Stream *stream);
+
+	Ref<Stream> stream_;
+	Ref<ByteArray> pending_;
 };
 
 } // namespace fkit
 
-#endif // FKIT_STREAM_H
+#endif // FKIT_PUTBACKSTREAM_H

@@ -9,45 +9,37 @@
 
 #include <fkit/Format.h>
 #include <fkit/stdio.h> // DEBUG
-#include "ChunkStream.h"
+#include "PayloadSink.h"
 
 namespace fnode
 {
 
-Ref<ChunkStream> ChunkStream::open(Stream *client)
+Ref<PayloadSink> PayloadSink::open(Stream *stream)
 {
-	return new ChunkStream(client);
+	return new PayloadSink(stream);
 }
 
-ChunkStream::ChunkStream(Stream *client)
-	: client_(client)
+PayloadSink::PayloadSink(Stream *stream)
+	: stream_(stream)
 {}
 
-ChunkStream::~ChunkStream()
+PayloadSink::~PayloadSink()
 {
-	if (!client_) return;
-
-	Format chunk(client_);
+	Format chunk(stream_);
 	chunk << 0 << "\r\n" << "\r\n";
 	ferr() << chunk->join();
 }
 
-int ChunkStream::readAvail(ByteArray *buf) { return 0; }
-
-void ChunkStream::write(const ByteArray *buf)
+void PayloadSink::write(const ByteArray *buf)
 {
-	if (!client_) return;
-
-	Format chunk(client_);
+	Format chunk(stream_);
 	chunk << hex(buf->size()) << "\r\n" << buf << "\r\n";
 	ferr() << chunk->join();
 }
 
-void ChunkStream::write(const StringList *parts, const char *sep)
+void PayloadSink::write(const StringList *parts, const char *sep)
 {
-	if (!client_) return;
-
-	Format chunk(client_);
+	Format chunk(stream_);
 	int total = 0;
 	for (int i = 0; i < parts->size(); ++i)
 		total += parts->at(i)->size();

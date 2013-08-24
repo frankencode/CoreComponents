@@ -20,7 +20,7 @@ namespace fnode
 using namespace fkit;
 
 class ClientConnection;
-class ChunkStream;
+class PayloadSink;
 class ServiceWorker;
 
 class Response: public Map<String, String>
@@ -42,14 +42,14 @@ private:
 	Response(ClientConnection *client);
 
 	void writeHeader();
-	ChunkStream *payload();
+	PayloadSink *payload();
 
 	inline bool delivered() const { return headerWritten_; }
 	inline int statusCode() const { return statusCode_; }
 
 	Ref<ClientConnection> client_;
 	bool headerWritten_;
-	Ref<ChunkStream> payload_;
+	Ref<PayloadSink> payload_;
 	int statusCode_;
 	String reasonPhrase_;
 };

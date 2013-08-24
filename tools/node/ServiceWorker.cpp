@@ -71,23 +71,27 @@ void ServiceWorker::run()
 	while (pendingConnections_->pop(&client_)) {
 		try {
 			if (serviceInstance_->connectionTimeout() > 0) {
-				client_->stream_ = TimeoutLimiter::open(client_->stream_, System::now() + serviceInstance_->connectionTimeout());
+				client_->stream_ = TimeoutLimiter::open(client_->stream(), System::now() + serviceInstance_->connectionTimeout());
 				debug() << "Established connection timeout of " << serviceInstance_->connectionTimeout() << "s" << nl;
 			}
 			while (client_) {
-				if (!client_->request_) {
+				if (!client_->request()) {
 					debug() << "Reading request header..." << nl;
 					client_->request_ = Request::parse(client_);
-					if ( (client_->request_->method() != "GET") &&
-					     (client_->request_->method() != "HEAD") ) throw NotImplemented();
 				}
 				{
 					RefGuard<Response> guard(&response_);
 					response_ = Response::create(client_);
-					serviceDelegate_->process(client_->request_);
+					serviceDelegate_->process(client_->request());
 					response_->end();
-					if (response_->delivered())
+					if (response_->delivered()) {
 						logDelivery(client_, response_->statusCode());
+						if (!client_->request()->payload()->isConsumed())
+							throw CloseRequest();
+					}
+					else {
+						throw CloseRequest();
+					}
 				}
 				if (client_) {
 					if (client_->request_->value("Connection") == "close")
@@ -98,13 +102,13 @@ void ServiceWorker::run()
 			}
 		}
 		catch (ProtocolException &ex) {
-			Format("HTTP/1.1 %% %%\r\n\r\n", client_->stream_) << ex.statusCode() << " " << ex.message();
+			Format("HTTP/1.1 %% %%\r\n\r\n", client_->stream()) << ex.statusCode() << " " << ex.message();
 			logDelivery(client_, ex.statusCode());
 		}
 		#ifdef NDEBUG
 		catch (Exception &ex) {
 			error() << ex.message() << nl;
-			Format("HTTP/1.1 500 Internal Server Error: %%\r\n\r\n", client_->stream_) << ex.message();
+			Format("HTTP/1.1 500 Internal Server Error: %%\r\n\r\n", client_->stream()) << ex.message();
 			logDelivery(client_, 500);
 		}
 		#endif
