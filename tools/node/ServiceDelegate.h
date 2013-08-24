@@ -39,9 +39,6 @@ protected:
 	void end();
 	void close();
 
-	bool readyRead(double interval) const;
-	int readAvail(ByteArray *buf);
-
 private:
 	ServiceWorker *worker_;
 };

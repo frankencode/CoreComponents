@@ -21,11 +21,19 @@ public:
 
 	virtual void process(Request *request)
 	{
-		if (request->method() != "GET") return;
-		Format echo = chunk();
-		echo << request->method() << " " << request->target() << " " << request->version() << "\r\n";
-		for (int i = 0; i < request->size(); ++i)
-			echo << request->keyAt(i) << ": " << request->valueAt(i) << "\r\n";
+		{
+			Format echo = chunk();
+			echo << request->method() << " " << request->target() << " " << request->version() << "\r\n";
+			for (int i = 0; i < request->size(); ++i)
+				echo << request->keyAt(i) << ": " << request->valueAt(i) << "\r\n";
+			echo << "\r\n";
+		}
+		Ref<ByteArray> buf = ByteArray::create(0x3FFF);
+		while (true) {
+			int n = request->payload()->readAvail(buf);
+			if (n == 0) break;
+			write(ByteRange(buf, 0, n));
+		}
 	}
 
 private:
