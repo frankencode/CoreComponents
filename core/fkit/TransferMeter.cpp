@@ -22,6 +22,11 @@ TransferMeter::TransferMeter(Stream *stream)
 	  totalWritten_(0)
 {}
 
+bool TransferMeter::readyRead(double interval) const
+{
+	return stream_->readyRead(interval);
+}
+
 int TransferMeter::readAvail(ByteArray *buf)
 {
 	int n = stream_->readAvail(buf);

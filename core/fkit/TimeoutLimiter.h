@@ -7,22 +7,23 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FKIT_TRANSFERMETER_H
-#define FKIT_TRANSFERMETER_H
+#ifndef FKIT_TIMEOUTLIMITER_H
+#define FKIT_TIMEOUTLIMITER_H
 
 #include "Stream.h"
 
 namespace fkit
 {
 
-class TransferMeter: public Stream
+class TimeoutExceeded {};
+
+class TimeoutLimiter: public Stream
 {
 public:
-	static Ref<TransferMeter> open(Stream *stream);
+	static Ref<TimeoutLimiter> open(Stream *stream, double timeout = 0);
 
 	inline Stream *stream() const { return stream_; }
-	inline size_t totalRead() const { return totalRead_; }
-	inline size_t totalWritten() const { return totalWritten_; }
+	inline double timeout() const { return timeout_; }
 
 	virtual bool readyRead(double interval) const;
 	virtual int readAvail(ByteArray *buf);
@@ -30,13 +31,12 @@ public:
 	virtual void write(const StringList *parts, const char *sep = "");
 
 private:
-	TransferMeter(Stream *stream);
+	TimeoutLimiter(Stream *stream, double timeout);
 
 	Ref<Stream> stream_;
-	size_t totalRead_;
-	size_t totalWritten_;
+	double timeout_;
 };
 
 } // namespace fkit
 
-#endif // FKIT_TRANSFERMETER_H
+#endif // FKIT_TIMEOUTLIMITER_H

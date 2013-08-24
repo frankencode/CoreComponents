@@ -22,7 +22,6 @@ ServicePrototype::ServicePrototype(String className, YasonProtocol *protocol)
 	: YasonObject(className, protocol)
 {
 	insert("concurrency", 8);
-	insert("stack_size", 65536);
 	insert("connection_timeout", 30.);
 	insert("host", "");
 	insert("uri", "");

@@ -24,13 +24,13 @@ public:
 
 	SocketAddress *address() const;
 
-	bool readyAccept(double idleTimeout);
+	bool readyAccept(double interval);
 	Ref<StreamSocket> accept();
-	bool established(double idleTimeout);
+	bool established(double interval);
 	void shutdown(int how = SHUT_RDWR);
 
-	void setRecvTimeout(double idleTimeout);
-	void setSendTimeout(double idleTimeout);
+	void setRecvTimeout(double interval);
+	void setSendTimeout(double interval);
 
 protected:
 	StreamSocket(SocketAddress *address);

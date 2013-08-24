@@ -51,14 +51,14 @@ void SystemStream::close()
 	fd_ = -1;
 }
 
-bool SystemStream::readyRead(double timeout)
+bool SystemStream::readyRead(double interval) const
 {
 	fd_set set;
 	FD_ZERO(&set);
 	FD_SET(fd_, &set);
 	struct timeval tv;
 	double sec = 0;
-	tv.tv_usec = modf(timeout, &sec) * 1e6;
+	tv.tv_usec = modf(interval, &sec) * 1e6;
 	tv.tv_sec = sec;
 	int ret = ::select(fd_ + 1, &set, 0, 0, &tv);
 	if (ret == -1) {
@@ -68,7 +68,7 @@ bool SystemStream::readyRead(double timeout)
 	return (ret > 0);
 }
 
-bool SystemStream::readyReadOrWrite(double timeout)
+bool SystemStream::readyReadOrWrite(double interval) const
 {
 	fd_set rset, wset;
 	FD_ZERO(&rset);
@@ -76,7 +76,7 @@ bool SystemStream::readyReadOrWrite(double timeout)
 	wset = rset;
 	struct timeval tv;
 	double sec = 0;
-	tv.tv_usec = modf(timeout, &sec) * 1e6;
+	tv.tv_usec = modf(interval, &sec) * 1e6;
 	tv.tv_sec = sec;
 	int ret = ::select(fd_ + 1, &rset, &wset, 0, &tv);
 	if (ret == -1) {
@@ -124,19 +124,19 @@ void SystemStream::write(const StringList *parts, const char *sep)
 	int sepLen = strlen(sep);
 	if (n <= 0) return;
 	if (sepLen > 0) n += n - 1;
-	struct iovec iov[n];
+	Ref< Array<struct iovec> > iov = Array<struct iovec>::create(n);
 	for (int i = 0, j = 0; i < n; ++i) {
 		if ((sepLen > 0) && ((i % 2) == 1)) {
-			iov[i].iov_base = const_cast<char*>(sep);
-			iov[i].iov_len = sepLen;
+			iov->at(i).iov_base = const_cast<char*>(sep);
+			iov->at(i).iov_len = sepLen;
 		}
 		else {
 			ByteArray *part = parts->at(j++);
-			iov[i].iov_base = part->data();
-			iov[i].iov_len = part->size();
+			iov->at(i).iov_base = part->data();
+			iov->at(i).iov_len = part->size();
 		}
 	}
-	ssize_t ret = ::writev(fd_, &iov[0], n);
+	ssize_t ret = ::writev(fd_, iov->data(), iov->size());
 	if (ret == -1) {
 		if (errno == EINTR) throw Interrupt();
 		if (errno == EWOULDBLOCK) throw Timeout();

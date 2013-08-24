@@ -23,7 +23,7 @@ LogMaster::LogMaster()
 	  timerByPath_(TimerByPath::create()),
 	  rotate_(Rotate::create())
 {
-	start(/*nodeConfig()->stackSize()*/);
+	start();
 }
 
 LogMaster::~LogMaster()

@@ -39,7 +39,7 @@ void IoMonitor::reset()
 	if (readyExcept_) readyExcept_->clear();
 }
 
-int IoMonitor::wait(double timeout)
+int IoMonitor::wait(double interval)
 {
 	int sz = 0;
 	fd_set *rr = 0, *rw = 0, *re = 0;
@@ -66,10 +66,10 @@ int IoMonitor::wait(double timeout)
 
 	timeval *tv = 0;
 	timeval h;
-	if (timeout >= 0) {
+	if (interval >= 0) {
 		tv = &h;
 		double sec = 0;
-		tv->tv_usec = modf(timeout, &sec) * 1e6;
+		tv->tv_usec = modf(interval, &sec) * 1e6;
 		tv->tv_sec = sec;
 	}
 

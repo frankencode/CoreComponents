@@ -24,6 +24,11 @@ TransferLimiter::TransferLimiter(Stream *stream, size_t readLimit, size_t writeL
 	  totalWritten_(0)
 {}
 
+bool TransferLimiter::readyRead(double interval) const
+{
+	return stream_->readyRead(interval);
+}
+
 int TransferLimiter::readAvail(ByteArray *buf)
 {
 	if (readLimit_ > 0 && totalRead_ >= readLimit_)

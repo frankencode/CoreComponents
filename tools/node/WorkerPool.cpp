@@ -26,14 +26,13 @@ WorkerPool::WorkerPool(ServiceInstance *serviceInstance)
 	  closedConnections_(ClosedConnections::create()),
 	  serviceWorkers_(ServiceWorkers::create(serviceInstance->concurrency()))
 {
-	debug() << "Creating worker pool for " << serviceInstance->serviceName() << " service..." << nl;
-	debug() << "concurrency = " << serviceInstance->concurrency() << ", "
-	        << "stack_size = " << serviceInstance->stackSize() << nl;
-	debug() << "host = \"" << serviceInstance->host() << "\", "
-	        << "uri = \"" << serviceInstance->uri() << "\"" << nl;
+	debug()
+		<< "Creating worker pool for " << serviceInstance->serviceName() << " service..." << nl
+		<< "concurrency = " << serviceInstance->concurrency() << nl
+		<< "host = \"" << serviceInstance->host() << "\"" << nl
+		<< "uri = \"" << serviceInstance->uri() << "\"" << nl;
 
 	Ref<ThreadFactory> threadFactory = ThreadFactory::create();
-	/*threadFactory->setStackSize(serviceInstance->stackSize());*/
 
 	for (int i = 0; i < serviceWorkers_->size(); ++i) {
 		Ref<ServiceWorker> worker = ServiceWorker::create(serviceInstance_, closedConnections_);

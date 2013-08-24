@@ -8,7 +8,6 @@ namespace fnode
 ServiceInstance::ServiceInstance(YasonObject *config)
 	: serviceName_(config->className()),
 	  concurrency_(config->value("concurrency")),
-	  stackSize_(config->value("stack_size")),
 	  connectionTimeout_(config->value("connection_timeout")),
 	  host_(String(config->value("host"))),
 	  uri_(String(config->value("uri"))),

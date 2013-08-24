@@ -46,7 +46,6 @@ void NodeConfig::load(int argc, char **argv)
 
 	user_ = config->value("user");
 	version_ = config->value("version");
-	stackSize_ = config->value("stack_size");
 	daemon_ = config->value("daemon");
 	errorLogConfig_ = LogConfig::load(cast<YasonObject>(config->value("error_log")));
 	accessLogConfig_ = LogConfig::load(cast<YasonObject>(config->value("access_log")));
