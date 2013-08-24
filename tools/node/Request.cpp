@@ -12,6 +12,7 @@
 #include <fkit/System.h>
 #include "exceptions.h"
 #include "ClientConnection.h"
+#include "PayloadSource.h"
 #include "Request.h"
 
 namespace fnode
@@ -19,7 +20,9 @@ namespace fnode
 
 Ref<Request> Request::parse(ClientConnection *client, int maxHeaderSize)
 {
-	return new Request(client, maxHeaderSize);
+	Ref<Request> request = new Request(client, maxHeaderSize);
+	request->payload_ = PayloadSource::open(client->stream(), request);
+	return request;
 }
 
 Request::Request(ClientConnection *client, int maxHeaderSize)
@@ -27,7 +30,7 @@ Request::Request(ClientConnection *client, int maxHeaderSize)
 {
 	try {
 		Ref<TransferLimiter> limiter = TransferLimiter::open(client->stream(), maxHeaderSize);
-		Ref<ByteArray> buf = ByteArray::create(4093);
+		Ref<ByteArray> buf = ByteArray::create(0xFFF);
 		Ref<LineSource> source = LineSource::open(limiter, buf);
 
 		String line;
@@ -71,7 +74,7 @@ Request::Request(ClientConnection *client, int maxHeaderSize)
 		}
 		if (multiValue)
 			establish(name, multiValue->join());
-		client->pendingData_ = source->pendingData();
+		client->putBack(source->pendingData());
 	}
 	catch (ReadLimitExceeded &) {
 		throw BadRequest();

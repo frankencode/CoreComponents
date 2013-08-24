@@ -28,7 +28,9 @@ public:
 private:
 	DispatchService()
 		: configPrototype_(ServicePrototype::create("Dispatch"))
-	{}
+	{
+		configPrototype_->establish("connection_timeout", 0.);
+	}
 
 	Ref<ServicePrototype> configPrototype_;
 };

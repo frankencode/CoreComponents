@@ -63,4 +63,14 @@ void ServiceDelegate::close()
 	worker_->close();
 }
 
+bool ServiceDelegate::readyRead(double interval) const
+{
+	return worker_->client()->request()->payload()->readyRead(interval);
+}
+
+int ServiceDelegate::readAvail(ByteArray *buf)
+{
+	return worker_->client()->request()->payload()->readAvail(buf);
+}
+
 } // namespace fnode

@@ -26,7 +26,7 @@ protected:
 		: YasonObject(className, protocol)
 	{
 		insert("address", "localhost");
-		insert("port", 8000);
+		insert("port", 8080);
 		insert("protocol", "");
 		insert("user", "");
 		insert("version", "Fnode/0.0.1");

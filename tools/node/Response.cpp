@@ -12,7 +12,7 @@
 #include <fkit/Date.h>
 #include "NodeConfig.h"
 #include "ClientConnection.h"
-#include "ChunkStream.h"
+#include "PayloadSink.h"
 #include "Response.h"
 
 namespace fnode
@@ -120,11 +120,11 @@ void Response::begin()
 	if (!headerWritten_) writeHeader();
 }
 
-ChunkStream *Response::payload()
+PayloadSink *Response::payload()
 {
 	if (!payload_) {
 		if (!headerWritten_) writeHeader();
-		payload_ = ChunkStream::open(client_->stream());
+		payload_ = PayloadSink::open(client_->stream());
 	}
 	return payload_;
 }

@@ -13,6 +13,24 @@
 namespace fkit
 {
 
+bool Stream::readyRead(double interval) const
+{
+	return true;
+}
+
+int Stream::readAvail(ByteArray *buf)
+{
+	return 0;
+}
+
+void Stream::write(const ByteArray *buf)
+{}
+
+void Stream::write(const StringList *parts, const char *sep)
+{
+	write(parts->join(sep));
+}
+
 void Stream::read(ByteArray *buf)
 {
 	int bufFill = 0;
@@ -24,20 +42,10 @@ void Stream::read(ByteArray *buf)
 	}
 }
 
-bool Stream::readyRead(double interval) const
-{
-	return true;
-}
-
-void Stream::write(const StringList *parts, const char *sep)
-{
-	write(parts->join(sep));
-}
-
 String Stream::readAll()
 {
 	Ref<StringList> parts = StringList::create();
-	String s(0x4000);
+	String s(0x3FFF);
 	while (true) {
 		int n = readAvail(s);
 		if (n == 0) break;
