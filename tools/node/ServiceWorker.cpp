@@ -11,6 +11,7 @@
 #include <fkit/Format.h>
 #include <fkit/RefGuard.h>
 #include <fkit/System.h>
+#include <fkit/TimeoutLimiter.h>
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "AccessLog.h"
@@ -69,6 +70,10 @@ void ServiceWorker::run()
 
 	while (pendingConnections_->pop(&client_)) {
 		try {
+			if (serviceInstance_->connectionTimeout() > 0) {
+				client_->stream_ = TimeoutLimiter::open(client_->stream_, System::now() + serviceInstance_->connectionTimeout());
+				debug() << "Established connection timeout of " << serviceInstance_->connectionTimeout() << "s" << nl;
+			}
 			while (client_) {
 				if (!client_->request_) {
 					debug() << "Reading request header..." << nl;
@@ -103,6 +108,7 @@ void ServiceWorker::run()
 			logDelivery(client_, 500);
 		}
 		#endif
+		catch (TimeoutExceeded &) { debug() << "Connection timed out (" << client_->address() << ")" << nl; }
 		catch (CloseRequest &) {}
 		close();
 		// closedConnections_->push(clientAddress); // TODO

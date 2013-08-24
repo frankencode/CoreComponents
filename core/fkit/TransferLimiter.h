@@ -24,16 +24,16 @@ class TransferLimiter: public Stream
 public:
 	static Ref<TransferLimiter> open(Stream *stream, size_t readLimit, size_t writeLimit = 0);
 
-	virtual int readAvail(ByteArray *buf);
-	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts, const char *sep = "");
-
+	inline Stream *stream() const { return stream_; }
 	inline size_t readLimit() const { return readLimit_; }
 	inline size_t writeLimit() const { return writeLimit_; }
 	inline size_t totalRead() const { return totalRead_; }
 	inline size_t totalWritten() const { return totalWritten_; }
 
-	inline Stream *stream() const { return stream_; }
+	virtual bool readyRead(double interval) const;
+	virtual int readAvail(ByteArray *buf);
+	virtual void write(const ByteArray *buf);
+	virtual void write(const StringList *parts, const char *sep = "");
 
 private:
 	TransferLimiter(Stream *stream, size_t readLimit, size_t writeLimit);

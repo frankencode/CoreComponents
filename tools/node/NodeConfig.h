@@ -30,7 +30,6 @@ public:
 	inline SocketAddressList *address() const { return address_; }
 	inline String user() const { return user_; }
 	inline String version() const { return version_; }
-	inline int stackSize() const { return stackSize_; }
 	inline bool daemon() const { return daemon_; }
 
 	inline LogConfig *errorLogConfig() const { return errorLogConfig_; }
@@ -47,7 +46,6 @@ private:
 	Ref<SocketAddressList> address_;
 	String user_;
 	String version_;
-	int stackSize_;
 	bool daemon_;
 
 	Ref<LogConfig> errorLogConfig_;

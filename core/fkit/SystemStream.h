@@ -29,12 +29,11 @@ public:
 	bool isOpen() const;
 	void close();
 
-	bool readyRead(double timeout);
-	bool readyReadOrWrite(double timeout);
+	bool readyRead(double interval) const;
+	bool readyReadOrWrite(double interval) const;
 
 	virtual int readAvail(ByteArray *buf);
 	virtual void write(const ByteArray *buf);
-
 	virtual void write(const StringList *parts, const char *sep = "");
 
 	inline void write(String s) { write(s.get()); }

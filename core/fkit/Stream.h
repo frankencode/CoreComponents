@@ -26,6 +26,7 @@ public:
 	virtual int readAvail(ByteArray *buf) = 0;
 	virtual void write(const ByteArray *buf) = 0;
 
+	virtual bool readyRead(double interval) const;
 	virtual void write(const StringList *parts, const char *sep = "");
 
 	void read(ByteArray *buf);

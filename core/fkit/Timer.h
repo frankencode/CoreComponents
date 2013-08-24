@@ -34,7 +34,7 @@ private:
 		  tick_(tick),
 		  shutdown_(Channel<bool>::create())
 	{
-		Thread::start(/*4096*/);
+		Thread::start();
 	}
 
 	~Timer() {

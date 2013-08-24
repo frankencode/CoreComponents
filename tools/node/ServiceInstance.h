@@ -32,7 +32,6 @@ public:
 	inline String serviceName() const { return serviceName_; }
 
 	inline int concurrency() const { return concurrency_; }
-	inline int stackSize() const { return stackSize_; }
 	inline double connectionTimeout() const { return connectionTimeout_; }
 	inline Pattern host() const { return host_; }
 	inline Pattern uri() const { return uri_; }
@@ -46,7 +45,6 @@ protected:
 	String serviceName_;
 
 	int concurrency_;
-	int stackSize_;
 	double connectionTimeout_;
 	Pattern host_;
 	Pattern uri_;

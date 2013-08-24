@@ -24,6 +24,11 @@ void Stream::read(ByteArray *buf)
 	}
 }
 
+bool Stream::readyRead(double interval) const
+{
+	return true;
+}
+
 void Stream::write(const StringList *parts, const char *sep)
 {
 	write(parts->join(sep));

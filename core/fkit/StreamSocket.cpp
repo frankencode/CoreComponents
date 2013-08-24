@@ -65,9 +65,9 @@ void StreamSocket::listen(int backlog)
 		FKIT_SYSTEM_EXCEPTION;
 }
 
-bool StreamSocket::readyAccept(double idleTimeout)
+bool StreamSocket::readyAccept(double interval)
 {
-	return readyRead(idleTimeout);
+	return readyRead(interval);
 }
 
 Ref<StreamSocket> StreamSocket::accept()
@@ -109,11 +109,11 @@ void StreamSocket::connect()
 	}
 }
 
-bool StreamSocket::established(double idleTimeout)
+bool StreamSocket::established(double interval)
 {
 	if (!connected_)
 	{
-		if (readyReadOrWrite(idleTimeout))
+		if (readyReadOrWrite(interval))
 		{
 			int error = 0;
 			socklen_t len = sizeof(error);
@@ -137,21 +137,21 @@ void StreamSocket::shutdown(int how)
 	::shutdown(fd_, how);
 }
 
-void StreamSocket::setRecvTimeout(double idleTimeout)
+void StreamSocket::setRecvTimeout(double interval)
 {
 	struct timeval tval;
 	double sec = 0;
-	tval.tv_usec = modf(idleTimeout, &sec) * 1e6;
+	tval.tv_usec = modf(interval, &sec) * 1e6;
 	tval.tv_sec = sec;
 	if (::setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, &tval, sizeof(tval)) == -1)
 		FKIT_SYSTEM_EXCEPTION;
 }
 
-void StreamSocket::setSendTimeout(double idleTimeout)
+void StreamSocket::setSendTimeout(double interval)
 {
 	struct timeval tval;
 	double sec = 0;
-	tval.tv_usec = modf(idleTimeout, &sec) * 1e6;
+	tval.tv_usec = modf(interval, &sec) * 1e6;
 	tval.tv_sec = sec;
 	if (::setsockopt(fd_, SOL_SOCKET, SO_SNDTIMEO, &tval, sizeof(tval)) == -1)
 		FKIT_SYSTEM_EXCEPTION;

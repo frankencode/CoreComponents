@@ -26,7 +26,7 @@ public:
 
 	inline IoSet *readyAccept() { return readyRead(); }
 
-	int wait(double timeout = -1);
+	int wait(double interval = -1);
 	void reset();
 
 protected:

@@ -30,7 +30,6 @@ protected:
 		insert("protocol", "");
 		insert("user", "");
 		insert("version", "Fnode/0.0.1");
-		insert("stack_size", 65536);
 		insert("daemon", false);
 		insert("error_log", LogPrototype::create());
 		insert("access_log", LogPrototype::create());
