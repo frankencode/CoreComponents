@@ -815,4 +815,9 @@ Ref<ByteArray> ByteArray::canonicalPath() const
 	return result->join("/");
 }
 
+ByteRange::operator String() const
+{
+	return array_;
+}
+
 } // namespace fkit

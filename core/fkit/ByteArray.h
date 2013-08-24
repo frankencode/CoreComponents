@@ -256,6 +256,7 @@ public:
 
 	inline operator ByteArray*() const { return array_; }
 	inline ByteArray *operator*() const { return array_; }
+	operator String() const;
 
 private:
 	ByteRange(const ByteRange&);
