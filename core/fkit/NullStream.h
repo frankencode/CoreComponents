@@ -19,7 +19,7 @@ namespace fkit
 class NullStream: public Stream, public Singleton<NullStream>
 {
 public:
-	virtual int readAvail(ByteArray *buf);
+	virtual int read(ByteArray *buf);
 	virtual void write(const ByteArray *buf);
 
 private:

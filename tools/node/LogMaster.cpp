@@ -10,7 +10,6 @@
 #include <fkit/Guard.h>
 #include <fkit/File.h>
 #include <fkit/System.h>
-#include <fkit/stdio.h> // DEBUG
 #include "Log.h"
 #include "NodeConfig.h"
 #include "LogMaster.h"

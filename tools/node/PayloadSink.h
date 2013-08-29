@@ -23,7 +23,7 @@ public:
 	static Ref<PayloadSink> open(Stream *stream);
 
 	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts, const char *sep = "");
+	virtual void write(const StringList *parts);
 
 private:
 	PayloadSink(Stream *client);

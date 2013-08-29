@@ -30,7 +30,7 @@ public:
 		}
 		Ref<ByteArray> buf = ByteArray::create(0x3FFF);
 		while (true) {
-			int n = request->payload()->readAvail(buf);
+			int n = request->payload()->read(buf);
 			if (n == 0) break;
 			write(ByteRange(buf, 0, n));
 		}

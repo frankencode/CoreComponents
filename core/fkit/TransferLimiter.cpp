@@ -29,11 +29,11 @@ bool TransferLimiter::readyRead(double interval) const
 	return stream_->readyRead(interval);
 }
 
-int TransferLimiter::readAvail(ByteArray *buf)
+int TransferLimiter::read(ByteArray *buf)
 {
 	if (readLimit_ > 0 && totalRead_ >= readLimit_)
 		throw ReadLimitExceeded();
-	int n = stream_->readAvail(buf);
+	int n = stream_->read(buf);
 	totalRead_ += n;
 	return n;
 }
@@ -46,14 +46,13 @@ void TransferLimiter::write(const ByteArray *buf)
 	totalWritten_ += buf->size();
 }
 
-void TransferLimiter::write(const StringList *parts, const char *sep)
+void TransferLimiter::write(const StringList *parts)
 {
 	size_t h = 0;
 	for (int i = 0, n = parts->size(); i < n; ++i)
 		h += parts->at(i)->size();
-	h += (parts->size() - 1) * strlen(sep);
 	if (totalWritten_ + h > writeLimit_) throw WriteLimitExceeded();
-	write(parts, sep);
+	write(parts);
 	totalWritten_ += h;
 }
 

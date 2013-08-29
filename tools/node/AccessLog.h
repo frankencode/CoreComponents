@@ -31,12 +31,6 @@ inline Format accessNotice()  { return Format(accessLog()->noticeStream()); }
 inline Format accessInfo()    { return Format(accessLog()->infoStream()); }
 inline Format accessDebug()   { return Format(accessLog()->debugStream()); }
 
-inline Format accessError  (String format) { return Format(format, accessLog()->errorStream()); }
-inline Format accessWarning(String format) { return Format(format, accessLog()->warningStream()); }
-inline Format accessNotice (String format) { return Format(format, accessLog()->noticeStream()); }
-inline Format accessInfo   (String format) { return Format(format, accessLog()->infoStream()); }
-inline Format accessDebug  (String format) { return Format(format, accessLog()->debugStream()); }
-
 } // namespace fnode
 
 #endif // FNODE_ACCESSLOG_H

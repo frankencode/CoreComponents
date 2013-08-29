@@ -52,7 +52,7 @@ bool LineSource::read(String *line)
 
 		if (!stream_) break;
 
-		n_ = stream_->readAvail(buf_);
+		n_ = stream_->read(buf_);
 		if (n_ == 0) break;
 		i_ = 0;
 	}

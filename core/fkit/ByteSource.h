@@ -93,7 +93,7 @@ inline Ref<ByteArray> ByteSource::read(int n)
 inline bool ByteSource::hasMore()
 {
 	if (i_ == n_ && stream_) {
-		n_ = stream_->readAvail(buf_);
+		n_ = stream_->read(buf_);
 		i_ = 0;
 	}
 	return i_ < n_;
@@ -105,7 +105,7 @@ inline uint8_t ByteSource::readUInt8()
 		if (!stream_)
 			FKIT_THROW(EncodingException, "Unexpected end of input");
 
-		n_ = stream_->readAvail(buf_);
+		n_ = stream_->read(buf_);
 		i_ = 0;
 
 		if (n_ == 0)

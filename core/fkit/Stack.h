@@ -19,7 +19,6 @@ template<class T>
 class Stack: public Object
 {
 public:
-	typedef int Index;
 	typedef T Item;
 
 	inline static Ref<Stack> create(int size) {

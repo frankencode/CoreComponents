@@ -30,13 +30,12 @@ public:
 
 	String pendingData() const;
 
-protected:
+private:
 	LineSource(Stream *stream, ByteArray *buf);
 
-	virtual int findEol(ByteArray *buf, int n, int i) const;
-	virtual int skipEol(ByteArray *buf, int n, int i) const;
+	int findEol(ByteArray *buf, int n, int i) const;
+	int skipEol(ByteArray *buf, int n, int i) const;
 
-private:
 	Ref<Stream> stream_;
 	bool eoi_;
 	String buf_;

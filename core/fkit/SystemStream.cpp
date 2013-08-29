@@ -56,11 +56,15 @@ bool SystemStream::readyRead(double interval) const
 	fd_set set;
 	FD_ZERO(&set);
 	FD_SET(fd_, &set);
-	struct timeval tv;
-	double sec = 0;
-	tv.tv_usec = modf(interval, &sec) * 1e6;
-	tv.tv_sec = sec;
-	int ret = ::select(fd_ + 1, &set, 0, 0, &tv);
+	struct timeval tv, *to = 0;
+	if (interval != inf) {
+		if (interval < 0) interval = 0;
+		to = &tv;
+		double sec = 0;
+		to->tv_usec = modf(interval, &sec) * 1e6;
+		to->tv_sec = sec;
+	}
+	int ret = ::select(fd_ + 1, &set, 0, 0, to);
 	if (ret == -1) {
 		if (errno == EINTR) throw Interrupt();
 		FKIT_SYSTEM_EXCEPTION;
@@ -74,11 +78,15 @@ bool SystemStream::readyReadOrWrite(double interval) const
 	FD_ZERO(&rset);
 	FD_SET(fd_, &rset);
 	wset = rset;
-	struct timeval tv;
-	double sec = 0;
-	tv.tv_usec = modf(interval, &sec) * 1e6;
-	tv.tv_sec = sec;
-	int ret = ::select(fd_ + 1, &rset, &wset, 0, &tv);
+	struct timeval tv, *to = 0;
+	if (interval != inf) {
+		if (interval < 0) interval = 0;
+		to = &tv;
+		double sec = 0;
+		to->tv_usec = modf(interval, &sec) * 1e6;
+		to->tv_sec = sec;
+	}
+	int ret = ::select(fd_ + 1, &rset, &wset, 0, to);
 	if (ret == -1) {
 		if (errno == EINTR) throw Interrupt();
 		FKIT_SYSTEM_EXCEPTION;
@@ -86,7 +94,7 @@ bool SystemStream::readyReadOrWrite(double interval) const
 	return (ret > 0);
 }
 
-int SystemStream::readAvail(ByteArray *buf)
+int SystemStream::read(ByteArray *buf)
 {
 	ssize_t ret = 0;
 	while (true) {
@@ -118,23 +126,15 @@ void SystemStream::write(const ByteArray *buf)
 	}
 }
 
-void SystemStream::write(const StringList *parts, const char *sep)
+void SystemStream::write(const StringList *parts)
 {
 	int n = parts->size();
-	int sepLen = strlen(sep);
 	if (n <= 0) return;
-	if (sepLen > 0) n += n - 1;
 	Ref< Array<struct iovec> > iov = Array<struct iovec>::create(n);
-	for (int i = 0, j = 0; i < n; ++i) {
-		if ((sepLen > 0) && ((i % 2) == 1)) {
-			iov->at(i).iov_base = const_cast<char*>(sep);
-			iov->at(i).iov_len = sepLen;
-		}
-		else {
-			ByteArray *part = parts->at(j++);
-			iov->at(i).iov_base = part->data();
-			iov->at(i).iov_len = part->size();
-		}
+	for (int i = 0; i < n; ++i) {
+		ByteArray *part = parts->at(i);
+		iov->at(i).iov_base = part->data();
+		iov->at(i).iov_len = part->size();
 	}
 	ssize_t ret = ::writev(fd_, iov->data(), iov->size());
 	if (ret == -1) {

@@ -14,6 +14,7 @@
 #include <signal.h>
 #include "SignalSet.h"
 #include "ThreadLocalRef.h"
+#include "String.h"
 
 namespace fkit
 {
@@ -37,6 +38,11 @@ public:
 	static void blockSignals(SignalSet *set);
 	static void unblockSignals(SignalSet *set);
 
+	inline String name() const { return name_; }
+	inline void setName(String newName) { name_ = newName; }
+
+	pthread_t id() const { return tid_; }
+
 protected:
 	Thread(): lastSignal_(0) {}
 
@@ -51,7 +57,10 @@ private:
 	static ThreadLocalRef<Thread> self_;
 	pthread_t tid_;
 	int lastSignal_;
+	String name_;
 };
+
+inline Thread *thread() { return Thread::self(); }
 
 } // namespace fkit
 

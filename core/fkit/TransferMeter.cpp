@@ -27,9 +27,9 @@ bool TransferMeter::readyRead(double interval) const
 	return stream_->readyRead(interval);
 }
 
-int TransferMeter::readAvail(ByteArray *buf)
+int TransferMeter::read(ByteArray *buf)
 {
-	int n = stream_->readAvail(buf);
+	int n = stream_->read(buf);
 	totalRead_ += n;
 	return n;
 }
@@ -40,12 +40,11 @@ void TransferMeter::write(const ByteArray *buf)
 	totalWritten_ += buf->size();
 }
 
-void TransferMeter::write(const StringList *parts, const char *sep)
+void TransferMeter::write(const StringList *parts)
 {
-	write(parts, sep);
+	write(parts);
 	for (int i = 0, n = parts->size(); i < n; ++i)
 		totalWritten_ += parts->at(i)->size();
-	totalWritten_ += (parts->size() - 1) * strlen(sep);
 }
 
 } // namespace fkit

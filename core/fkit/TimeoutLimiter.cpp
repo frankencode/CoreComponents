@@ -28,12 +28,12 @@ bool TimeoutLimiter::readyRead(double interval) const
 	return stream_->readyRead(interval);
 }
 
-int TimeoutLimiter::readAvail(ByteArray *buf)
+int TimeoutLimiter::read(ByteArray *buf)
 {
 	double interval = timeout_- System::now();
 	if (interval <= 0 || !stream_->readyRead(interval))
 		throw TimeoutExceeded();
-	return stream_->readAvail(buf);
+	return stream_->read(buf);
 }
 
 void TimeoutLimiter::write(const ByteArray *buf)
@@ -41,9 +41,9 @@ void TimeoutLimiter::write(const ByteArray *buf)
 	stream_->write(buf);
 }
 
-void TimeoutLimiter::write(const StringList *parts, const char *sep)
+void TimeoutLimiter::write(const StringList *parts)
 {
-	stream_->write(parts, sep);
+	stream_->write(parts);
 }
 
 } // namespace fkit
