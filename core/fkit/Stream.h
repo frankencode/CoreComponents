@@ -15,8 +15,7 @@
 namespace fkit
 {
 
-FKIT_EXCEPTION(StreamIoException, Exception);
-FKIT_EXCEPTION(EncodingException, StreamIoException);
+FKIT_EXCEPTION(EncodingException, Exception); // FIXME
 
 class Stream: public Object
 {
@@ -24,11 +23,10 @@ public:
 	virtual ~Stream() {}
 
 	virtual bool readyRead(double interval) const;
-	virtual int readAvail(ByteArray *buf);
-	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts, const char *sep = "");
+	virtual int read(ByteArray *buf);
 
-	void read(ByteArray *buf);
+	virtual void write(const ByteArray *buf);
+	virtual void write(const StringList *parts);
 
 	String readAll();
 };

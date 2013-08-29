@@ -31,11 +31,15 @@ inline Format notice()  { return Format(errorLog()->noticeStream()); }
 inline Format info()    { return Format(errorLog()->infoStream()); }
 inline Format debug()   { return Format(errorLog()->debugStream()); }
 
-inline Format error  (String format) { return Format(format, errorLog()->errorStream()); }
-inline Format warning(String format) { return Format(format, errorLog()->warningStream()); }
-inline Format notice (String format) { return Format(format, errorLog()->noticeStream()); }
-inline Format info   (String format) { return Format(format, errorLog()->infoStream()); }
-inline Format debug  (String format) { return Format(format, errorLog()->debugStream()); }
+#define FNODE_LOG(sink) \
+  sink() << (thread()->name() == "") ? str(thread()->id()) : pthread()->name() << ":" \
+         << __FILE__ << ":" << __LINE__ << ": "
+
+#define FNODE_ERROR()   FNODE_LOG(error)
+#define FNODE_WARNING() FNODE_LOG(warning)
+#define FNODE_NOTICE()  FNODE_LOG(notice)
+#define FNODE_INFO()    FNODE_LOG(info)
+#define FNODE_DEBUG()   FNODE_LOG(debug)
 
 } // namespace fnode
 

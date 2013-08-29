@@ -25,9 +25,9 @@ public:
 	inline size_t totalWritten() const { return totalWritten_; }
 
 	virtual bool readyRead(double interval) const;
-	virtual int readAvail(ByteArray *buf);
+	virtual int read(ByteArray *buf);
 	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts, const char *sep = "");
+	virtual void write(const StringList *parts);
 
 private:
 	TransferMeter(Stream *stream);

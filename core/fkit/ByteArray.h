@@ -29,7 +29,6 @@ class File;
 class ByteArray: public Object
 {
 public:
-	typedef int Index;
 	typedef char Item;
 
 	inline static Ref<ByteArray> create(int size = 0) { return new ByteArray(size); }
@@ -43,6 +42,8 @@ public:
 	~ByteArray();
 
 	inline static ByteArray *empty() { return Default<ByteArray>::instance(); }
+
+	void resize(int newSize);
 
 	ByteArray &operator=(const ByteArray &b);
 	ByteArray &operator^=(const ByteArray &b);
@@ -216,6 +217,7 @@ private:
 	ByteArray(void *data, int size);
 	ByteArray(const ByteArray &b);
 	ByteArray(ByteArray *b, int size);
+	void destroy();
 
 	int size_, origSize_;
 	union {
@@ -226,6 +228,9 @@ private:
 	char *origData_;
 	size_t mapSize_;
 	bool wrapped_;
+	#ifndef NDEBUG
+	int rangeCount_;
+	#endif
 };
 
 class ByteRange
@@ -245,6 +250,9 @@ public:
 		origData_[i1] = 0;
 		array_->data_ = origData_ + i0;
 		array_->size_ = i1 - i0;
+		#ifndef NDEBUG
+		++array_->rangeCount_;
+		#endif
 	}
 
 	~ByteRange() {
@@ -252,6 +260,9 @@ public:
 		array_->data_ = origData_;
 		array_->size_ = origSize_;
 		array_ = 0;
+		#ifndef NDEBUG
+		--array_->rangeCount_;
+		#endif
 	}
 
 	inline operator ByteArray*() const { return array_; }

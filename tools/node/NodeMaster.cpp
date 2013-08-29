@@ -11,7 +11,6 @@
 #include <fkit/Thread.h>
 #include <fkit/Process.h>
 #include <fkit/User.h>
-#include <fkit/stdio.h>
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "AccessLog.h"

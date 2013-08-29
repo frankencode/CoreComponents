@@ -15,9 +15,10 @@ namespace fkit
 NullStream::NullStream()
 {}
 
-int NullStream::readAvail(ByteArray *buf)
+int NullStream::read(ByteArray *buf)
 {
-	buf->clear();
+	if (buf->size() == 0) buf->resize(0xFFF);
+	else buf->clear();
 	return buf->size();
 }
 

@@ -46,11 +46,11 @@ bool PayloadSource::readyRead(double interval) const
 	return stream_->readyRead(interval) || bytesLeft_ == 0;
 }
 
-int PayloadSource::readAvail(ByteArray *buf)
+int PayloadSource::read(ByteArray *buf)
 {
 	if (bytesLeft_ == 0) return 0;
 	int h = buf->size() > bytesLeft_ ? bytesLeft_ : buf->size();
-	h = stream_->readAvail(ByteRange(buf, 0, h));
+	h = stream_->read(ByteRange(buf, 0, h));
 	bytesLeft_ -= h;
 	return h;
 }
@@ -65,7 +65,7 @@ void PayloadSource::drain()
 	if (bytesLeft_ == 0) return;
 	Ref<ByteArray> buf = ByteArray::create(0x3FFF);
 	while (bytesLeft_ > 0) {
-		if (readAvail(buf) == 0) break;
+		if (read(buf) == 0) break;
 	}
 }
 

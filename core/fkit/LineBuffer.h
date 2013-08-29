@@ -7,36 +7,33 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FKIT_TIMEOUTLIMITER_H
-#define FKIT_TIMEOUTLIMITER_H
+#ifndef FKIT_LINEBUFFER_H
+#define FKIT_LINEBUFFER_H
 
 #include "Stream.h"
 
 namespace fkit
 {
 
-class TimeoutExceeded {};
-
-class TimeoutLimiter: public Stream
+class LineBuffer: public Stream
 {
 public:
-	static Ref<TimeoutLimiter> open(Stream *stream, double timeout = 0);
-
-	inline Stream *stream() const { return stream_; }
-	inline double timeout() const { return timeout_; }
+	static Ref<LineBuffer> open(Stream *stream, String prefix = "");
 
 	virtual bool readyRead(double interval) const;
 	virtual int read(ByteArray *buf);
+
 	virtual void write(const ByteArray *buf);
 	virtual void write(const StringList *parts);
 
 private:
-	TimeoutLimiter(Stream *stream, double timeout);
+	LineBuffer(Stream *stream, String prefix);
 
 	Ref<Stream> stream_;
-	double timeout_;
+	String prefix_;
+	Ref<StringList> backlog_;
 };
 
 } // namespace fkit
 
-#endif // FKIT_TIMEOUTLIMITER_H
+#endif // FKIT_LINEBUFFER_H

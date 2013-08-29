@@ -25,7 +25,7 @@ public:
 	static Ref<PayloadSource> open(Stream *stream, Request *request);
 
 	virtual bool readyRead(double interval) const;
-	virtual int readAvail(ByteArray *buf);
+	virtual int read(ByteArray *buf);
 
 	bool isConsumed() const;
 	void drain();

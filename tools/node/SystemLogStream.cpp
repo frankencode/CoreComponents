@@ -21,7 +21,7 @@ SystemLogStream::SystemLogStream(int priority)
 	: priority_(priority)
 {}
 
-int SystemLogStream::readAvail(ByteArray *buf)
+int SystemLogStream::read(ByteArray *buf)
 {
 	return 0;
 }
@@ -31,9 +31,9 @@ void SystemLogStream::write(const ByteArray *buf)
 	syslog(priority_, "%s", buf->constData());
 }
 
-void SystemLogStream::write(const StringList *parts, const char *sep)
+void SystemLogStream::write(const StringList *parts)
 {
-	syslog(priority_, "%s", parts->join(sep)->constData());
+	for (int i = 0, n = parts->size(); i < n; ++i) write(parts->at(i));
 }
 
 } // namespace fnode

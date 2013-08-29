@@ -21,7 +21,6 @@ template<class T>
 class Array: public Object
 {
 public:
-	typedef int Index;
 	typedef T Item;
 
 	inline static Ref<Array> create(int size = 0) { return new Array(size); }

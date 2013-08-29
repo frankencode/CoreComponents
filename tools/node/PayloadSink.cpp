@@ -8,7 +8,6 @@
  */
 
 #include <fkit/Format.h>
-#include <fkit/stdio.h> // DEBUG
 #include "PayloadSink.h"
 
 namespace fnode
@@ -25,19 +24,15 @@ PayloadSink::PayloadSink(Stream *stream)
 
 PayloadSink::~PayloadSink()
 {
-	Format chunk(stream_);
-	chunk << 0 << "\r\n" << "\r\n";
-	ferr() << chunk->join();
+	Format(stream_) << 0 << "\r\n" << "\r\n";
 }
 
 void PayloadSink::write(const ByteArray *buf)
 {
-	Format chunk(stream_);
-	chunk << hex(buf->size()) << "\r\n" << buf << "\r\n";
-	ferr() << chunk->join();
+	Format(stream_) << hex(buf->size()) << "\r\n" << buf << "\r\n";
 }
 
-void PayloadSink::write(const StringList *parts, const char *sep)
+void PayloadSink::write(const StringList *parts)
 {
 	Format chunk(stream_);
 	int total = 0;
@@ -47,7 +42,6 @@ void PayloadSink::write(const StringList *parts, const char *sep)
 	for (int i = 0; i < parts->size(); ++i)
 		chunk << parts->at(i);
 	chunk << "\r\n";
-	ferr() << chunk->join();
 }
 
 } // namespace fnode

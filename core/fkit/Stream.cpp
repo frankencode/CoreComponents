@@ -18,7 +18,7 @@ bool Stream::readyRead(double interval) const
 	return true;
 }
 
-int Stream::readAvail(ByteArray *buf)
+int Stream::read(ByteArray *buf)
 {
 	return 0;
 }
@@ -26,20 +26,10 @@ int Stream::readAvail(ByteArray *buf)
 void Stream::write(const ByteArray *buf)
 {}
 
-void Stream::write(const StringList *parts, const char *sep)
+void Stream::write(const StringList *parts)
 {
-	write(parts->join(sep));
-}
-
-void Stream::read(ByteArray *buf)
-{
-	int bufFill = 0;
-	while (bufFill < buf->size()) {
-		int n = readAvail(ByteRange(buf, bufFill, buf->size()));
-		if (n == 0)
-			FKIT_THROW(StreamIoException, "Reading beyond end of input");
-		bufFill += n;
-	}
+	for (int i = 0, n = parts->size(); i < n; ++i)
+		write(parts->at(i));
 }
 
 String Stream::readAll()
@@ -47,7 +37,7 @@ String Stream::readAll()
 	Ref<StringList> parts = StringList::create();
 	String s(0x3FFF);
 	while (true) {
-		int n = readAvail(s);
+		int n = read(s);
 		if (n == 0) break;
 		parts->append(s->copy(0, n));
 	}

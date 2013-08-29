@@ -7,6 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "Mutex.h"
+#include "Guard.h"
 #include "PutBackStream.h"
 
 namespace fkit
@@ -18,7 +20,8 @@ Ref<PutBackStream> PutBackStream::open(Stream *stream)
 }
 
 PutBackStream::PutBackStream(Stream *stream)
-	: stream_(stream)
+	: stream_(stream),
+	  mutex_(Mutex::create())
 {}
 
 bool PutBackStream::readyRead(double interval) const
@@ -27,7 +30,7 @@ bool PutBackStream::readyRead(double interval) const
 	return stream_->readyRead(interval);
 }
 
-int PutBackStream::readAvail(ByteArray *buf)
+int PutBackStream::read(ByteArray *buf)
 {
 	if (pending_) {
 		*buf = *pending_;
@@ -41,7 +44,7 @@ int PutBackStream::readAvail(ByteArray *buf)
 			return h;
 		}
 	}
-	return stream_->readAvail(buf);
+	return stream_->read(buf);
 }
 
 void PutBackStream::write(const ByteArray *buf)
@@ -49,13 +52,14 @@ void PutBackStream::write(const ByteArray *buf)
 	stream_->write(buf);
 }
 
-void PutBackStream::write(const StringList *parts, const char *sep)
+void PutBackStream::write(const StringList *parts)
 {
-	stream_->write(parts, sep);
+	stream_->write(parts);
 }
 
 void PutBackStream::putBack(ByteArray *pending)
 {
+	Guard<Mutex> guard(mutex_);
 	pending_ = pending;
 	if (pending_) {
 		if (pending_->size() == 0)

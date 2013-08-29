@@ -7,7 +7,6 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/stdio.h> // DEBUG
 #include <fkit/System.h>
 #include <fkit/Date.h>
 #include "NodeConfig.h"
@@ -110,7 +109,6 @@ void Response::writeHeader()
 	for (int i = 0; i < size(); ++i)
 		header << keyAt(i) << ":" << valueAt(i) << "\r\n";
 	header << "\r\n";
-	ferr() << header->join();
 
 	headerWritten_ = true;
 }

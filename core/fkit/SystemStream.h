@@ -32,9 +32,9 @@ public:
 	bool readyRead(double interval) const;
 	bool readyReadOrWrite(double interval) const;
 
-	virtual int readAvail(ByteArray *buf);
+	virtual int read(ByteArray *buf);
 	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts, const char *sep = "");
+	virtual void write(const StringList *parts);
 
 	inline void write(String s) { write(s.get()); }
 

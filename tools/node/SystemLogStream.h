@@ -23,9 +23,9 @@ class SystemLogStream: public Stream
 public:
 	static Ref<SystemLogStream> open(int priority);
 
-	virtual int readAvail(ByteArray *buf);
+	virtual int read(ByteArray *buf);
 	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts, const char *sep = "");
+	virtual void write(const StringList *parts);
 
 private:
 	SystemLogStream(int priority);

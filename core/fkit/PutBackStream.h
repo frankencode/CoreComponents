@@ -15,15 +15,17 @@
 namespace fkit
 {
 
+class Mutex;
+
 class PutBackStream: public Stream
 {
 public:
 	static Ref<PutBackStream> open(Stream *stream);
 
 	virtual bool readyRead(double interval) const;
-	virtual int readAvail(ByteArray *buf);
+	virtual int read(ByteArray *buf);
 	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts, const char *sep = "");
+	virtual void write(const StringList *parts);
 
 	void putBack(ByteArray *pending);
 
@@ -31,6 +33,7 @@ private:
 	PutBackStream(Stream *stream);
 
 	Ref<Stream> stream_;
+	Ref<Mutex> mutex_;
 	Ref<ByteArray> pending_;
 };
 

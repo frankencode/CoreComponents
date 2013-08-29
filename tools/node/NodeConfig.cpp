@@ -7,7 +7,6 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/stdio.h>
 #include <fkit/Config.h>
 #include "ConfigProtocol.h"
 #include "ServiceRegistry.h"

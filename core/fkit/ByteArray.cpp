@@ -19,7 +19,6 @@
 #include "Base64.h"
 #include "Format.h"
 #include "Process.h"
-#include "Memory.h"
 #include "ByteArray.h"
 
 namespace fkit
@@ -32,6 +31,9 @@ ByteArray::ByteArray(int size, char zero)
 	  origData_(data_),
 	  mapSize_(0),
 	  wrapped_(false)
+	  #ifndef NDEBUG
+	  , rangeCount_(0)
+	  #endif
 {
 	if (size > 0) {
 		size_ = origSize_ = size;
@@ -48,6 +50,9 @@ ByteArray::ByteArray(const char *data, int size)
 	  origData_(data_),
 	  mapSize_(0),
 	  wrapped_(false)
+	  #ifndef NDEBUG
+	  , rangeCount_(0)
+	  #endif
 {
 	if (size < 0) size = strlen(data);
 	if (size > 0) {
@@ -65,6 +70,9 @@ ByteArray::ByteArray(char *data, int size, size_t mapSize)
 	  origData_(data),
 	  mapSize_(mapSize),
 	  wrapped_(false)
+	  #ifndef NDEBUG
+	  , rangeCount_(0)
+	  #endif
 {}
 
 ByteArray::ByteArray(void *data, int size)
@@ -74,6 +82,9 @@ ByteArray::ByteArray(void *data, int size)
 	  origData_(reinterpret_cast<char*>(data)),
 	  mapSize_(0),
 	  wrapped_(true)
+	  #ifndef NDEBUG
+	  , rangeCount_(0)
+	  #endif
 {}
 
 ByteArray::ByteArray(const ByteArray &b)
@@ -81,7 +92,11 @@ ByteArray::ByteArray(const ByteArray &b)
 	  origSize_(0),
 	  data_(const_cast<char*>("")),
 	  origData_(data_),
-	  mapSize_(0)
+	  mapSize_(0),
+	  wrapped_(false)
+	  #ifndef NDEBUG
+	  , rangeCount_(0)
+	  #endif
 {
 	if (b.size_ > 0) {
 		size_ = origSize_ = b.size_;
@@ -93,10 +108,40 @@ ByteArray::ByteArray(const ByteArray &b)
 
 ByteArray::~ByteArray()
 {
+	destroy();
+}
+
+void ByteArray::destroy()
+{
 	if (mapSize_ > 0)
 		::munmap((void*)origData_, mapSize_);
 	else if (origSize_ > 0 && !wrapped_)
 		delete[] origData_;
+}
+
+void ByteArray::resize(int newSize)
+{
+	if (newSize <= size_) {
+		truncate(newSize);
+		return;
+	}
+	FKIT_ASSERT2(rangeCount_ == 0, "Cannot resize a ByteArray with a ByteRange in effect");
+	if (newSize > 0) {
+		char *newData = new char[newSize + 1];
+		memcpy(newData, data_, size_);
+		newData[newSize] = 0;
+		destroy();
+		data_ = origData_ = newData;
+		size_ = origSize_ = newSize;
+	}
+	else {
+		data_ = const_cast<char*>("");
+		size_ = 0;
+	}
+	origData_ = data_;
+	origSize_ = size_;
+	mapSize_ = 0;
+	wrapped_ = false;
 }
 
 ByteArray &ByteArray::operator=(const ByteArray &b)
@@ -452,6 +497,7 @@ Ref<ByteArray> ByteArray::escape() const
 
 ByteArray *ByteArray::truncate(int i1)
 {
+	FKIT_ASSERT2(rangeCount_ == 0, "Cannot truncate a ByteArray with a ByteRange in effect");
 	if (i1 < size_) {
 		if (i1 < 0) i1 = 0;
 		if (i1 > size_) i1 = size_;
@@ -463,6 +509,7 @@ ByteArray *ByteArray::truncate(int i1)
 
 ByteArray *ByteArray::truncate(int i0, int i1)
 {
+	FKIT_ASSERT2(rangeCount_ == 0, "Cannot truncate a ByteArray with a ByteRange in effect");
 	if (i0 < 0) i0 = 0;
 	if (i0 > size_) i0 = size_;
 	if (i1 < i0) i1 = i0;
