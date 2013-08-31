@@ -44,4 +44,13 @@ String Stream::readAll()
 	return parts->join();
 }
 
+void Stream::drain()
+{
+	String s(0x3FFF);
+	while (true) {
+		int n = read(s);
+		if (n == 0) break;
+	}
+}
+
 } // namespace fkit

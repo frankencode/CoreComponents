@@ -17,6 +17,8 @@ namespace fnode
 
 using namespace fkit;
 
+class CloseRequest {};
+
 class ProtocolException
 {
 public:
@@ -32,8 +34,6 @@ private:
 	int statusCode_;
 	String message_;
 };
-
-class CloseRequest {};
 
 class BadRequest: public ProtocolException
 {

@@ -19,11 +19,11 @@ namespace fkit
 class LineSource: public Source<String>
 {
 public:
-	inline static Ref<LineSource> open(Stream *stream, ByteArray *buf = 0) {
-		return new LineSource(stream, buf);
-	}
+	static Ref<LineSource> open(ByteArray *buf);
+	static Ref<LineSource> open(Stream *stream, ByteArray *buf = 0);
 
 	inline Stream *stream() const { return stream_; }
+	inline ByteArray *buf() const { return buf_; }
 
 	bool read(String *line);
 	String readLine();
@@ -37,8 +37,8 @@ private:
 	int skipEol(ByteArray *buf, int n, int i) const;
 
 	Ref<Stream> stream_;
-	bool eoi_;
 	String buf_;
+	bool eoi_;
 	int i_, n_;
 };
 

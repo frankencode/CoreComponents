@@ -34,9 +34,6 @@ PayloadSource::PayloadSource(Stream *stream, Request *request)
 			contentLength_ = h->toInt64(&ok);
 			if (!ok || contentLength_ < 0) throw BadRequest();
 		}
-		else {
-			contentLength_ = 0;
-		}
 	}
 	bytesLeft_ = contentLength_;
 }
