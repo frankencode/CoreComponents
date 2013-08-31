@@ -49,9 +49,9 @@ void ServiceWorker::logDelivery(ClientConnection *client, int statusCode)
 	if (400 <= statusCode && statusCode <= 499) stream = accessLog()->warningStream();
 	else if (500 <= statusCode) stream = accessLog()->errorStream();
 
-	Request *request = client->request_;
-	String requestLine = request ? request->requestLine() : "INVALID";
-	double requestTime = request ? request->requestTime() : System::now();
+	Request *request = client->request();
+	String requestLine = request ? request->line() : "INVALID";
+	double requestTime = request ? request->time() : System::now();
 	String userAgent =   request ? request->value("User-Agent") : "";
 
 	Format(stream)
@@ -71,33 +71,29 @@ void ServiceWorker::run()
 	while (pendingConnections_->pop(&client_)) {
 		try {
 			if (serviceInstance_->connectionTimeout() > 0) {
-				client_->stream_ = TimeoutLimiter::open(client_->stream(), System::now() + serviceInstance_->connectionTimeout());
-				debug() << "Established connection timeout of " << serviceInstance_->connectionTimeout() << "s" << nl;
+				debug() << "Establishing connection timeout of " << serviceInstance_->connectionTimeout() << "s..." << nl;
+				client_->stream()->setupTimeout(serviceInstance_->connectionTimeout());
 			}
 			while (client_) {
-				if (!client_->request()) {
-					debug() << "Reading request header..." << nl;
-					client_->request_ = Request::parse(client_);
-				}
+				debug() << "Reading request..." << nl;
+				Ref<Request> request = client_->readRequest();
 				{
 					RefGuard<Response> guard(&response_);
 					response_ = Response::create(client_);
-					serviceDelegate_->process(client_->request());
+					serviceDelegate_->process(request);
 					response_->end();
 					if (response_->delivered()) {
 						logDelivery(client_, response_->statusCode());
-						if (!client_->request()->payload()->isConsumed())
-							throw CloseRequest();
+						if (!client_->stream()->isConsumed())
+							close();
 					}
 					else {
-						throw CloseRequest();
+						close();
 					}
 				}
 				if (client_) {
-					if (client_->request_->value("Connection") == "close")
+					if (client_ && request->value("Connection") == "close")
 						close();
-					else
-						client_->request_ = 0;
 				}
 			}
 		}

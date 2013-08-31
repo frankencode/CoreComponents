@@ -11,8 +11,7 @@
 #define FNODE_CLIENTCONNECTION_H
 
 #include <fkit/StreamSocket.h>
-#include <fkit/PutBackStream.h>
-#include "Request.h"
+#include "RequestStream.h"
 
 namespace fnode
 {
@@ -28,23 +27,25 @@ public:
 		return new ClientConnection(socket);
 	}
 
-	inline Stream *stream() const { return stream_; }
+	inline RequestStream *stream() const { return stream_; }
 	inline SocketAddress *address() const { return address_; }
 	inline Request *request() const { return request_; }
 
-	inline void putBack(ByteArray *pending) { putBackStream_->putBack(pending); }
+	inline Ref<Request> readRequest() {
+		request_ = 0;
+		request_ = stream_->readRequest();
+		return request_;
+	}
 
 private:
 	friend class ServiceWorker;
 
 	ClientConnection(StreamSocket *socket)
-		: putBackStream_(PutBackStream::open(socket)),
-		  stream_(putBackStream_),
+		: stream_(RequestStream::open(socket)),
 		  address_(SocketAddress::getRemoteAddress(socket))
 	{}
 
-	Ref<PutBackStream> putBackStream_;
-	Ref<Stream> stream_;
+	Ref<RequestStream> stream_;
 	Ref<SocketAddress> address_;
 	Ref<Request> request_;
 };

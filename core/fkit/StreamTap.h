@@ -7,36 +7,30 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FKIT_PUTBACKSTREAM_H
-#define FKIT_PUTBACKSTREAM_H
+#ifndef FKIT_STREAMTAP_H
+#define FKIT_STREAMTAP_H
 
 #include "Stream.h"
 
 namespace fkit
 {
 
-class Mutex;
-
-class PutBackStream: public Stream
+class StreamTap: public Stream
 {
 public:
-	static Ref<PutBackStream> open(Stream *stream);
+	static Ref<StreamTap> open(Stream *stream, Stream *inputTap, Stream *outputTap);
 
 	virtual bool readyRead(double interval) const;
 	virtual int read(ByteArray *buf);
 	virtual void write(const ByteArray *buf);
 	virtual void write(const StringList *parts);
 
-	void putBack(ByteArray *pending);
-
 private:
-	PutBackStream(Stream *stream);
+	StreamTap(Stream *stream, Stream *inputTap, Stream *outputTap);
 
-	Ref<Stream> stream_;
-	Ref<Mutex> mutex_;
-	Ref<ByteArray> pending_;
+	Ref<Stream> stream_, inputTap_, outputTap_;
 };
 
 } // namespace fkit
 
-#endif // FKIT_PUTBACKSTREAM_H
+#endif // FKIT_STREAMTAP_H

@@ -12,42 +12,40 @@
 
 #include <fkit/String.h>
 #include <fkit/Map.h>
-#include "PayloadSource.h"
+#include <fkit/Stream.h>
 
 namespace fnode
 {
 
 using namespace fkit;
 
-class ClientConnection;
-
 class Request: public Map<String, String>
 {
 public:
-	static Ref<Request> parse(ClientConnection *client, int maxHeaderSize = 65536);
-
 	inline String method() const { return method_; }
 	inline String target() const { return target_; }
 	inline String version() const { return version_; }
 	inline String host() const { return host_; }
 
-	inline String requestLine() const { return requestLine_; }
-	inline double requestTime() const { return requestTime_; }
+	inline String line() const { return line_; }
+	inline double time() const { return time_; }
 
-	PayloadSource *payload() const { return payload_; }
+	inline Stream *payload() const { return payload_; }
 
 private:
-	Request(ClientConnection *client, int maxHeaderSize);
+	friend class RequestStream;
+	inline static Ref<Request> create() { return new Request; }
+	Request() {}
 
 	String method_;
 	String target_;
 	String version_;
 	String host_;
 
-	String requestLine_;
-	double requestTime_;
+	String line_;
+	double time_;
 
-	Ref<PayloadSource> payload_;
+	Ref<Stream> payload_;
 };
 
 } // namespace fnode
