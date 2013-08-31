@@ -12,10 +12,18 @@
 namespace fkit
 {
 
+Ref<LineSource> LineSource::open(ByteArray *buf) {
+	return new LineSource(0, buf);
+}
+
+Ref<LineSource> LineSource::open(Stream *stream, ByteArray *buf) {
+	return new LineSource(stream, buf);
+}
+
 LineSource::LineSource(Stream *stream, ByteArray *buf)
 	: stream_(stream),
-	  eoi_(false),
 	  buf_(buf),
+	  eoi_(false),
 	  i_(0), n_(0)
 {
 	if (!buf) buf_ = String(0x3FFFF);

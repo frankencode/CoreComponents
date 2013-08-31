@@ -29,6 +29,7 @@ public:
 	virtual void write(const StringList *parts);
 
 	String readAll();
+	void drain();
 };
 
 } // namespace fkit
