@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_PAYLOADSINK_H
-#define FNODE_PAYLOADSINK_H
+#ifndef FNODE_CHUNKEDSINK_H
+#define FNODE_CHUNKEDSINK_H
 
 #include <fkit/Stream.h>
 
@@ -17,20 +17,20 @@ namespace fnode
 
 using namespace fkit;
 
-class PayloadSink: public Stream
+class ChunkedSink: public Stream
 {
 public:
-	static Ref<PayloadSink> open(Stream *stream);
+	static Ref<ChunkedSink> open(Stream *stream);
 
 	virtual void write(const ByteArray *buf);
 	virtual void write(const StringList *parts);
 
 private:
-	PayloadSink(Stream *client);
-	~PayloadSink();
+	ChunkedSink(Stream *client);
+	~ChunkedSink();
 	Ref<Stream> stream_;
 };
 
 } // namespace fnode
 
-#endif // FNODE_PAYLOADSINK_H
+#endif // FNODE_CHUNKEDSINK_H

@@ -9,9 +9,10 @@
 
 #include <fkit/System.h>
 #include <fkit/Date.h>
+#include <fkit/TransferMeter.h>
 #include "NodeConfig.h"
 #include "ClientConnection.h"
-#include "PayloadSink.h"
+#include "ChunkedSink.h"
 #include "Response.h"
 
 namespace fnode
@@ -26,6 +27,7 @@ Response::Response(ClientConnection *client)
 	: client_(client),
 	  headerWritten_(false),
 	  statusCode_(200),
+	  bytesWritten_(0),
 	  reasonPhrase_("OK")
 {}
 
@@ -118,11 +120,14 @@ void Response::begin()
 	if (!headerWritten_) writeHeader();
 }
 
-PayloadSink *Response::payload()
+Stream *Response::payload()
 {
 	if (!payload_) {
 		if (!headerWritten_) writeHeader();
-		payload_ = PayloadSink::open(client_->stream());
+		payload_ =
+			TransferMeter::open(
+				ChunkedSink::open(client_->stream())
+			);
 	}
 	return payload_;
 }
@@ -144,6 +149,7 @@ Format Response::chunk()
 
 void Response::end()
 {
+	bytesWritten_ = (payload_) ? payload_->totalWritten() : 0;
 	payload_ = 0;
 }
 
