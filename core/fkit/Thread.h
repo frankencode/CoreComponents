@@ -38,9 +38,6 @@ public:
 	static void blockSignals(SignalSet *set);
 	static void unblockSignals(SignalSet *set);
 
-	inline String name() const { return name_; }
-	inline void setName(String newName) { name_ = newName; }
-
 	pthread_t id() const { return tid_; }
 
 protected:
@@ -57,7 +54,6 @@ private:
 	static ThreadLocalRef<Thread> self_;
 	pthread_t tid_;
 	int lastSignal_;
-	String name_;
 };
 
 inline Thread *thread() { return Thread::self(); }

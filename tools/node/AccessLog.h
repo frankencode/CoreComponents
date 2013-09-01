@@ -25,12 +25,6 @@ private:
 
 inline AccessLog *accessLog() { return AccessLog::instance(); }
 
-inline Format accessError()   { return Format(accessLog()->errorStream()); }
-inline Format accessWarning() { return Format(accessLog()->warningStream()); }
-inline Format accessNotice()  { return Format(accessLog()->noticeStream()); }
-inline Format accessInfo()    { return Format(accessLog()->infoStream()); }
-inline Format accessDebug()   { return Format(accessLog()->debugStream()); }
-
 } // namespace fnode
 
 #endif // FNODE_ACCESSLOG_H

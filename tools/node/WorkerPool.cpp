@@ -26,11 +26,11 @@ WorkerPool::WorkerPool(ServiceInstance *serviceInstance)
 	  closedConnections_(ClosedConnections::create()),
 	  serviceWorkers_(ServiceWorkers::create(serviceInstance->concurrency()))
 {
-	debug()
+	FNODE_DEBUG()
 		<< "Creating worker pool for " << serviceInstance->serviceName() << " service..." << nl
-		<< "concurrency = " << serviceInstance->concurrency() << nl
-		<< "host = \"" << serviceInstance->host() << "\"" << nl
-		<< "uri = \"" << serviceInstance->uri() << "\"" << nl;
+		<< "  concurrency = " << serviceInstance->concurrency() << nl
+		<< "  host = \"" << serviceInstance->host() << "\"" << nl
+		<< "  uri = \"" << serviceInstance->uri() << "\"" << nl;
 
 	Ref<ThreadFactory> threadFactory = ThreadFactory::create();
 
@@ -43,7 +43,7 @@ WorkerPool::WorkerPool(ServiceInstance *serviceInstance)
 
 WorkerPool::~WorkerPool()
 {
-	debug() << "Terminating worker pool for service " << serviceInstance_->serviceName() << "..." << nl;
+	FNODE_DEBUG() << "Terminating worker pool for service " << serviceInstance_->serviceName() << "..." << nl;
 }
 
 void WorkerPool::dispatch(ClientConnection *client)
@@ -66,7 +66,7 @@ void WorkerPool::dispatch(ClientConnection *client)
 		}
 	}
 
-	debug() << "Assigning client connection to " << workerCandidate->serviceInstance()->serviceName() << " service worker " << (void*)workerCandidate << nl;
+	FNODE_DEBUG() << "Assigning client connection to " << workerCandidate->serviceInstance()->serviceName() << " service worker " << (void*)workerCandidate << nl;
 	workerCandidate->pendingConnections()->push(client);
 }
 

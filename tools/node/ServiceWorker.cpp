@@ -71,11 +71,11 @@ void ServiceWorker::run()
 	while (pendingConnections_->pop(&client_)) {
 		try {
 			if (serviceInstance_->connectionTimeout() > 0) {
-				debug() << "Establishing connection timeout of " << serviceInstance_->connectionTimeout() << "s..." << nl;
-				client_->stream()->setupTimeout(serviceInstance_->connectionTimeout());
+				FNODE_DEBUG() << "Establishing connection timeout of " << serviceInstance_->connectionTimeout() << "s..." << nl;
+				client_->setupTimeout(serviceInstance_->connectionTimeout());
 			}
 			while (client_) {
-				debug() << "Reading request..." << nl;
+				FNODE_DEBUG() << "Reading request..." << nl;
 				Ref<Request> request = client_->readRequest();
 				{
 					RefGuard<Response> guard(&response_);
@@ -84,7 +84,7 @@ void ServiceWorker::run()
 					response_->end();
 					if (response_->delivered()) {
 						logDelivery(client_, response_->statusCode(), response_->bytesWritten());
-						if (!client_->stream()->isConsumed())
+						if (!client_->isPayloadConsumed())
 							close();
 					}
 					else {
@@ -103,12 +103,12 @@ void ServiceWorker::run()
 		}
 		#ifdef NDEBUG
 		catch (Exception &ex) {
-			error() << ex.message() << nl;
+			FNODE_ERROR() << ex.message() << nl;
 			Format("HTTP/1.1 500 Internal Server Error: %%\r\n\r\n", client_->stream()) << ex.message();
 			logDelivery(client_, 500);
 		}
 		#endif
-		catch (TimeoutExceeded &) { debug() << "Connection timed out (" << client_->address() << ")" << nl; }
+		catch (TimeoutExceeded &) { FNODE_DEBUG() << "Connection timed out (" << client_->address() << ")" << nl; }
 		catch (CloseRequest &) {}
 		close();
 		// closedConnections_->push(clientAddress); // TODO
@@ -123,7 +123,7 @@ Response *ServiceWorker::response() const
 void ServiceWorker::close()
 {
 	if (client_) {
-		debug() << "Closing connection to " << client_->address() << nl;
+		FNODE_DEBUG() << "Closing connection to " << client_->address() << nl;
 		client_ = 0;
 	}
 }

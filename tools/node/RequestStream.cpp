@@ -37,12 +37,6 @@ void RequestStream::setupTimeout(double interval)
 
 Ref<Request> RequestStream::readRequest()
 {
-	if (pendingRequest_) {
-		Ref<Request> h = pendingRequest_;
-		pendingRequest_ = 0;
-		return h;
-	}
-
 	nextHeader();
 
 	Ref<Request> request = Request::create();
@@ -120,14 +114,9 @@ Ref<Request> RequestStream::readRequest()
 	return request;
 }
 
-bool RequestStream::isConsumed() const
+bool RequestStream::isPayloadConsumed() const
 {
 	return bytesLeft_ == 0;
-}
-
-void RequestStream::putBack(Request *request)
-{
-	pendingRequest_ = request;
 }
 
 void RequestStream::nextHeader()

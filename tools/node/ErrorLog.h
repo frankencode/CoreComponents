@@ -12,6 +12,7 @@
 
 #include <fkit/ThreadLocalSingleton.h>
 #include <fkit/Format.h>
+#include <fkit/str.h>
 #include "Log.h"
 
 namespace fnode
@@ -32,14 +33,17 @@ inline Format info()    { return Format(errorLog()->infoStream()); }
 inline Format debug()   { return Format(errorLog()->debugStream()); }
 
 #define FNODE_LOG(sink) \
-  sink() << (thread()->name() == "") ? str(thread()->id()) : pthread()->name() << ":" \
-         << __FILE__ << ":" << __LINE__ << ": "
+	sink() << "(" << inum(thread()->id(), 62) << ") " << String(__FILE__)->baseName() << ": "
 
 #define FNODE_ERROR()   FNODE_LOG(error)
 #define FNODE_WARNING() FNODE_LOG(warning)
 #define FNODE_NOTICE()  FNODE_LOG(notice)
 #define FNODE_INFO()    FNODE_LOG(info)
+#ifndef NDEBUG
 #define FNODE_DEBUG()   FNODE_LOG(debug)
+#else
+#define FNODE_DEBUG()   NullFormat()
+#endif
 
 } // namespace fnode
 

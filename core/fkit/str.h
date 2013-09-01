@@ -29,7 +29,7 @@ template<>
 struct Sign<unsigned long> { inline static int get(unsigned long x) { return 0; } };
 
 template<class T>
-String inum(T x, int n = -1, int base = 10)
+String inum(T x, int base = 10, int n = -1)
 {
 	int sign = Sign<T>::get(x);
 	if (sign) x = -x;
@@ -46,7 +46,11 @@ String inum(T x, int n = -1, int base = 10)
 	String s(m, '0');
 	if (sign) s->at(0) = '-';
 	for (int i = s->size() - 1; x > 0; x /= base, --i) {
-		const char *fig = "0123456789abcdef";
+		const char *fig =
+			"0123456789"
+			"abcdefghijklmnopqrstuvwxyz"
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+			"\\_";
 		s->at(i) = fig[x % base];
 	}
 	return s;
@@ -55,16 +59,16 @@ String inum(T x, int n = -1, int base = 10)
 String fnum(float64_t x, int precision = 16, int base = 10, int screen = 6);
 
 template<class T>
-inline String dec(T x, int n = -1) { return inum(x, n, 10); }
+inline String dec(T x, int n = -1) { return inum(x, 10, n); }
 
 template<class T>
-inline String hex(T x, int n = -1) { return inum(x, n, 16); }
+inline String hex(T x, int n = -1) { return inum(x, 16, n); }
 
 template<class T>
-inline String oct(T x, int n = -1) { return inum(x, n, 8); }
+inline String oct(T x, int n = -1) { return inum(x, 8, n); }
 
 template<class T>
-inline String bin(T x, int n = -1) { return inum(x, n, 2); }
+inline String bin(T x, int n = -1) { return inum(x, 2, n); }
 
 inline String sci(float32_t x, int p = 8) { return fnum(x, p, 10, 0); }
 inline String sci(float64_t x, int p = 17) { return fnum(x, p, 10, 0); }
