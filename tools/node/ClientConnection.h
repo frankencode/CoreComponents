@@ -11,7 +11,7 @@
 #define FNODE_CLIENTCONNECTION_H
 
 #include <fkit/StreamSocket.h>
-#include "RequestStream.h"
+#include "Request.h"
 
 namespace fnode
 {
@@ -19,35 +19,33 @@ namespace fnode
 using namespace fkit;
 
 class ServiceWorker;
+class RequestStream;
 
 class ClientConnection: public Object
 {
 public:
-	inline static Ref<ClientConnection> create(StreamSocket *socket) {
-		return new ClientConnection(socket);
-	}
+	static Ref<ClientConnection> create(StreamSocket *socket);
 
-	inline RequestStream *stream() const { return stream_; }
+	inline Stream *stream() const { return stream_; }
 	inline SocketAddress *address() const { return address_; }
 	inline Request *request() const { return request_; }
 
-	inline Ref<Request> readRequest() {
-		request_ = 0;
-		request_ = stream_->readRequest();
-		return request_;
-	}
+	Ref<Request> readRequest();
+
+	void putBack(Request *request);
+
+	void setupTimeout(double interval);
+	bool isPayloadConsumed() const;
 
 private:
 	friend class ServiceWorker;
 
-	ClientConnection(StreamSocket *socket)
-		: stream_(RequestStream::open(socket)),
-		  address_(SocketAddress::getRemoteAddress(socket))
-	{}
+	ClientConnection(StreamSocket *socket);
 
-	Ref<RequestStream> stream_;
+	Ref<RequestStream> requestStream_;
+	Ref<Stream> stream_;
 	Ref<SocketAddress> address_;
-	Ref<Request> request_;
+	Ref<Request> request_, pendingRequest_;
 };
 
 } // namespace fnode

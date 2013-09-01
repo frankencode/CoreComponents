@@ -20,6 +20,8 @@ class StreamTap: public Stream
 public:
 	static Ref<StreamTap> open(Stream *stream, Stream *inputTap, Stream *outputTap);
 
+	inline Stream *stream() const { return stream_; }
+
 	virtual bool readyRead(double interval) const;
 	virtual int read(ByteArray *buf);
 	virtual void write(const ByteArray *buf);

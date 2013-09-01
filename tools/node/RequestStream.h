@@ -26,9 +26,7 @@ public:
 	void setupTimeout(double interval);
 
 	Ref<Request> readRequest();
-	bool isConsumed() const;
-
-	void putBack(Request *request);
+	bool isPayloadConsumed() const;
 
 private:
 	RequestStream(Stream *stream);
@@ -45,7 +43,6 @@ private:
 	virtual void write(const StringList *parts);
 
 	Ref<Stream> stream_;
-	Ref<Request> pendingRequest_;
 	Ref<ByteArray> pending_;
 	int64_t bytesLeft_;
 	int nlCount_, nlMax_;

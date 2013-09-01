@@ -20,7 +20,7 @@ Ref<DispatchDelegate> DispatchDelegate::create(ServiceWorker *worker) {
 
 void DispatchDelegate::process(Request *request)
 {
-	debug() << "Dispatching request, host = \"" << request->host() << "\", target = \"" << request->target() << "\"..." << nl;
+	FNODE_DEBUG() << "Dispatching request, host = \"" << request->host() << "\", target = \"" << request->target() << "\"..." << nl;
 	WorkerPools *workerPools = dispatchInstance_->workerPools();
 	for (int i = 0; i < workerPools->size(); ++i) {
 		WorkerPool *workerPool = workerPools->at(i);
@@ -29,14 +29,14 @@ void DispatchDelegate::process(Request *request)
 			serviceInstance->host()->match(request->host()) ||
 			serviceInstance->uri()->match(request->target())
 		) {
-			debug() << "Dispatching to " << serviceInstance->serviceName() << " service..." << nl;
-			client()->stream()->putBack(request);
+			FNODE_DEBUG() << "Dispatching to " << serviceInstance->serviceName() << " service..." << nl;
+			client()->putBack(request);
 			workerPool->dispatch(client());
 			close();
 			return;
 		}
 	}
-	warning() << "Failed to dispatch request, host = \"" << request->host() << "\", target = \"" << request->target() << "\"" << nl;
+	FNODE_WARNING() << "Failed to dispatch request, host = \"" << request->host() << "\", target = \"" << request->target() << "\"" << nl;
 }
 
 DispatchDelegate::DispatchDelegate(ServiceWorker *worker)

@@ -44,15 +44,18 @@ public:
 	Format &operator<<(const FormatSignal &s);
 
 	inline Format &operator<<(const ByteArray *s) {
+		if (isNull_) return *this;
 		return *this << String(s);
 	}
 
 	template<class T>
 	inline Format &operator<<(const T &x) {
+		if (isNull_) return *this;
 		return *this << str(x);
 	}
 
 	inline Format &operator<<(const Ref<StringList> &x) {
+		if (isNull_) return *this;
 		return *this << x->join("");
 	}
 
@@ -60,7 +63,14 @@ private:
 	void flush();
 
 	Ref<Stream> stream_;
+	bool isNull_;
 	Ref< Queue<int> > placeHolder_;
+};
+
+class NullFormat {
+public:
+	template<class T>
+	inline const NullFormat &operator<<(T) const { return *this; }
 };
 
 } // namespace fkit

@@ -20,6 +20,8 @@ class LineBuffer: public Stream
 public:
 	static Ref<LineBuffer> open(Stream *stream, String prefix = "");
 
+	inline Stream *stream() const { return stream_; }
+
 	virtual bool readyRead(double interval) const;
 	virtual int read(ByteArray *buf);
 

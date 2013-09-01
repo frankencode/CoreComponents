@@ -9,6 +9,7 @@
 
 #include "stdio.h"
 #include "Queue.h"
+#include "NullStream.h"
 #include "Format.h"
 
 namespace fkit
@@ -18,9 +19,11 @@ FormatSignal nl;
 FormatSignal flush;
 
 Format::Format(String pattern, Stream *stream)
-	: Super(StringList::create()),
-	  stream_(stream)
+	: stream_(stream),
+	  isNull_(stream && nullStream() ? stream == nullStream() : false)
 {
+	if (isNull_) return;
+	set(StringList::create());
 	int i0 = 0, n = 0;
 	while (true) {
 		int i1 = pattern->find("%%", i0);
@@ -36,9 +39,11 @@ Format::Format(String pattern, Stream *stream)
 }
 
 Format::Format(Stream *stream)
-	: Super(StringList::create()),
-	  stream_(stream)
-{}
+	: stream_(stream),
+	  isNull_(stream && nullStream() ? stream == nullStream() : false)
+{
+	set(StringList::create());
+}
 
 Format::~Format()
 {
@@ -47,6 +52,7 @@ Format::~Format()
 
 void Format::flush()
 {
+	if (isNull_) return;
 	if (stream_ && get()->size() > 0) {
 		stream_->write(get());
 		get()->clear();
@@ -56,6 +62,7 @@ void Format::flush()
 Format::Format(const Format &b)
 	: Super(b.get()),
 	  stream_(b.stream_),
+	  isNull_(b.isNull_),
 	  placeHolder_(b.placeHolder_)
 {}
 
@@ -64,11 +71,13 @@ Format &Format::operator=(const Format &b)
 	set(b.get());
 	stream_ = b.stream_;
 	placeHolder_ = b.placeHolder_;
+	isNull_ = b.isNull_;
 	return *this;
 }
 
 Format &Format::operator<<(const String &s)
 {
+	if (isNull_) return *this;
 	int j = get()->size();
 	if (placeHolder_) {
 		if (placeHolder_->size() > 0)
@@ -80,6 +89,7 @@ Format &Format::operator<<(const String &s)
 
 Format &Format::operator<<(const FormatSignal &s)
 {
+	if (isNull_) return *this;
 	if (&s == &fkit::nl) operator<<(String("\n"));
 	else if (&s == &fkit::flush) Format::flush();
 	return *this;
