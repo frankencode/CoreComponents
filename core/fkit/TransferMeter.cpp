@@ -36,13 +36,13 @@ int TransferMeter::read(ByteArray *buf)
 
 void TransferMeter::write(const ByteArray *buf)
 {
-	write(buf);
+	stream_->write(buf);
 	totalWritten_ += buf->size();
 }
 
 void TransferMeter::write(const StringList *parts)
 {
-	write(parts);
+	stream_->write(parts);
 	for (int i = 0, n = parts->size(); i < n; ++i)
 		totalWritten_ += parts->at(i)->size();
 }
