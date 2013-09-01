@@ -43,7 +43,7 @@ ServiceWorker::~ServiceWorker()
 	wait();
 }
 
-void ServiceWorker::logDelivery(ClientConnection *client, int statusCode)
+void ServiceWorker::logDelivery(ClientConnection *client, int statusCode, size_t bytesWritten)
 {
 	Stream *stream = accessLog()->noticeStream();
 	if (400 <= statusCode && statusCode <= 499) stream = accessLog()->warningStream();
@@ -58,7 +58,7 @@ void ServiceWorker::logDelivery(ClientConnection *client, int statusCode)
 		<< client->address()->networkAddress() << " "
 		<< Date::localTime(requestTime)->toString() << " "
 		<< "\"" << requestLine << "\" "
-		<< statusCode << " "
+		<< statusCode << " " << bytesWritten << " "
 		<< "\"" << userAgent << "\" "
 		<< nl;
 }
@@ -83,7 +83,7 @@ void ServiceWorker::run()
 					serviceDelegate_->process(request);
 					response_->end();
 					if (response_->delivered()) {
-						logDelivery(client_, response_->statusCode());
+						logDelivery(client_, response_->statusCode(), response_->bytesWritten());
 						if (!client_->stream()->isConsumed())
 							close();
 					}

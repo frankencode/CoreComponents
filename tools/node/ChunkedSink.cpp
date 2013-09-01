@@ -8,31 +8,31 @@
  */
 
 #include <fkit/Format.h>
-#include "PayloadSink.h"
+#include "ChunkedSink.h"
 
 namespace fnode
 {
 
-Ref<PayloadSink> PayloadSink::open(Stream *stream)
+Ref<ChunkedSink> ChunkedSink::open(Stream *stream)
 {
-	return new PayloadSink(stream);
+	return new ChunkedSink(stream);
 }
 
-PayloadSink::PayloadSink(Stream *stream)
+ChunkedSink::ChunkedSink(Stream *stream)
 	: stream_(stream)
 {}
 
-PayloadSink::~PayloadSink()
+ChunkedSink::~ChunkedSink()
 {
 	Format(stream_) << 0 << "\r\n" << "\r\n";
 }
 
-void PayloadSink::write(const ByteArray *buf)
+void ChunkedSink::write(const ByteArray *buf)
 {
 	Format(stream_) << hex(buf->size()) << "\r\n" << buf << "\r\n";
 }
 
-void PayloadSink::write(const StringList *parts)
+void ChunkedSink::write(const StringList *parts)
 {
 	Format chunk(stream_);
 	int total = 0;

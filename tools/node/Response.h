@@ -14,13 +14,14 @@
 #include <fkit/Map.h>
 #include <fkit/Stream.h>
 
+namespace fkit { class TransferMeter; }
+
 namespace fnode
 {
 
 using namespace fkit;
 
 class ClientConnection;
-class PayloadSink;
 class ServiceWorker;
 
 class Response: public Map<String, String>
@@ -42,15 +43,17 @@ private:
 	Response(ClientConnection *client);
 
 	void writeHeader();
-	PayloadSink *payload();
+	Stream *payload();
 
 	inline bool delivered() const { return headerWritten_; }
 	inline int statusCode() const { return statusCode_; }
+	inline size_t bytesWritten() const { return bytesWritten_; }
 
 	Ref<ClientConnection> client_;
 	bool headerWritten_;
-	Ref<PayloadSink> payload_;
+	Ref<TransferMeter> payload_;
 	int statusCode_;
+	size_t bytesWritten_;
 	String reasonPhrase_;
 };
 
