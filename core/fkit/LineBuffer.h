@@ -21,6 +21,7 @@ public:
 	static Ref<LineBuffer> open(Stream *stream, String prefix = "");
 
 	inline Stream *stream() const { return stream_; }
+	virtual String prefix() const;
 
 	virtual bool readyRead(double interval) const;
 	virtual int read(ByteArray *buf);
@@ -28,9 +29,10 @@ public:
 	virtual void write(const ByteArray *buf);
 	virtual void write(const StringList *parts);
 
-private:
-	LineBuffer(Stream *stream, String prefix);
+protected:
+	LineBuffer(Stream *stream, String prefix = "");
 
+private:
 	Ref<Stream> stream_;
 	String prefix_;
 	Ref<StringList> backlog_;

@@ -24,12 +24,7 @@ public:
 	static Ref<RequestStream> open(Stream *stream);
 
 	void setupTimeout(double interval);
-
-	Ref<Request> readRequest();
 	bool isPayloadConsumed() const;
-
-private:
-	RequestStream(Stream *stream);
 
 	void nextHeader();
 	void nextPayload(int64_t length);
@@ -41,6 +36,9 @@ private:
 
 	virtual void write(const ByteArray *buf);
 	virtual void write(const StringList *parts);
+
+private:
+	RequestStream(Stream *stream);
 
 	Ref<Stream> stream_;
 	Ref<ByteArray> pending_;
