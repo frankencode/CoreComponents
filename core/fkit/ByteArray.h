@@ -259,10 +259,10 @@ public:
 		array_->data_[array_->size_] = origEnd_;
 		array_->data_ = origData_;
 		array_->size_ = origSize_;
-		array_ = 0;
 		#ifndef NDEBUG
 		--array_->rangeCount_;
 		#endif
+		array_ = 0;
 	}
 
 	inline operator ByteArray*() const { return array_; }

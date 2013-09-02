@@ -33,7 +33,7 @@ public:
 	inline Stream *payload() const { return payload_; }
 
 private:
-	friend class RequestStream;
+	friend class ClientConnection;
 	inline static Ref<Request> create() { return new Request; }
 	Request() {}
 

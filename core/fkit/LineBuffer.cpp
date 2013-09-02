@@ -23,6 +23,11 @@ LineBuffer::LineBuffer(Stream *stream, String prefix)
 	  backlog_(StringList::create())
 {}
 
+String LineBuffer::prefix() const
+{
+	return prefix_;
+}
+
 bool LineBuffer::readyRead(double interval) const
 {
 	return stream_->readyRead(interval);
@@ -43,7 +48,8 @@ void LineBuffer::write(const ByteArray *buf)
 			++i;
 			backlog_->pushBack(buf->copy(i0, i));
 			i0 = i;
-			if (prefix_ != "") backlog_->pushFront(prefix_);
+			String h = prefix();
+			if (h != "") backlog_->pushFront(h);
 			stream_->write(backlog_);
 			backlog_ = StringList::create();
 		}

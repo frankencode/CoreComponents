@@ -42,6 +42,8 @@ private:
 
 	ClientConnection(StreamSocket *socket);
 
+	Ref<Request> scanRequest();
+
 	Ref<RequestStream> requestStream_;
 	Ref<Stream> stream_;
 	Ref<SocketAddress> address_;
