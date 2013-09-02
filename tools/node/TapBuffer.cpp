@@ -29,4 +29,10 @@ String TapBuffer::prefix() const
 	return "(" + inum(thread()->id(), 62) + ") " + prefix_;
 }
 
+void TapBuffer::write(const ByteArray *buf)
+{
+	if (buf->contains('\r')) LineBuffer::write(buf->replace("\r", ""));
+	else LineBuffer::write(buf);
+}
+
 } // namespace fnode

@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <fkit/LineBuffer.h>
 #include "SystemLogStream.h"
 #include "SystemLog.h"
 
@@ -14,14 +15,14 @@ namespace fnode
 {
 
 SystemLog::SystemLog()
-	: emergencyStream_(SystemLogStream::open(LOG_EMERG)),
-	  alertStream_    (SystemLogStream::open(LOG_ALERT)),
-	  criticalStream_ (SystemLogStream::open(LOG_CRIT)),
-	  errorStream_    (SystemLogStream::open(LOG_ERR)),
-	  warningStream_  (SystemLogStream::open(LOG_WARNING)),
-	  noticeStream_   (SystemLogStream::open(LOG_NOTICE)),
-	  infoStream_     (SystemLogStream::open(LOG_INFO)),
-	  debugStream_    (SystemLogStream::open(LOG_DEBUG))
+	: emergencyStream_(LineBuffer::open(SystemLogStream::open(LOG_EMERG))),
+	  alertStream_    (LineBuffer::open(SystemLogStream::open(LOG_ALERT))),
+	  criticalStream_ (LineBuffer::open(SystemLogStream::open(LOG_CRIT))),
+	  errorStream_    (LineBuffer::open(SystemLogStream::open(LOG_ERR))),
+	  warningStream_  (LineBuffer::open(SystemLogStream::open(LOG_WARNING))),
+	  noticeStream_   (LineBuffer::open(SystemLogStream::open(LOG_NOTICE))),
+	  infoStream_     (LineBuffer::open(SystemLogStream::open(LOG_INFO))),
+	  debugStream_    (LineBuffer::open(SystemLogStream::open(LOG_DEBUG)))
 {}
 
 void SystemLog::open(const char *identifier, int option, int facility)

@@ -24,6 +24,8 @@ public:
 
 	virtual String prefix() const;
 
+	void write(const ByteArray *buf);
+
 private:
 	TapBuffer(Stream *stream, String prefix);
 

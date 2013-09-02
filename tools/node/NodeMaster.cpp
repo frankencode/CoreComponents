@@ -29,11 +29,13 @@ NodeMaster::NodeMaster()
 int NodeMaster::run(int argc, char **argv)
 {
 	Process::enableInterrupt(SIGINT);
+	Process::enableInterrupt(SIGTERM);
 	Process::enableInterrupt(SIGHUP);
 	Thread::blockSignals(SignalSet::createFull());
 	{
 		Ref<SignalSet> signalSet = SignalSet::createEmpty();
 		signalSet->insert(SIGINT);
+		signalSet->insert(SIGTERM);
 		signalSet->insert(SIGHUP);
 		Thread::unblockSignals(signalSet);
 	}
@@ -43,7 +45,7 @@ int NodeMaster::run(int argc, char **argv)
 			runNode(argc, argv);
 		}
 		catch (Interrupt &ex) {
-			if (ex.signal() == SIGINT) break;
+			if (ex.signal() == SIGINT || ex.signal() == SIGTERM) break;
 			if (ex.signal() == SIGHUP) continue;
 			return ex.signal() + 128;
 		}
