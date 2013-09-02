@@ -33,7 +33,7 @@ void SystemLogStream::write(const ByteArray *buf)
 
 void SystemLogStream::write(const StringList *parts)
 {
-	for (int i = 0, n = parts->size(); i < n; ++i) write(parts->at(i));
+	write(parts->join());
 }
 
 } // namespace fnode
