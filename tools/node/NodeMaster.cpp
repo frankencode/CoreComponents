@@ -14,6 +14,7 @@
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "AccessLog.h"
+#include "SystemLog.h"
 #include "NodeConfig.h"
 #include "WorkerPool.h"
 #include "ServiceRegistry.h"
@@ -28,6 +29,8 @@ NodeMaster::NodeMaster()
 
 int NodeMaster::run(int argc, char **argv)
 {
+	SystemLog::open(String(argv[0])->baseName(), 0, LOG_DAEMON);
+
 	Process::enableInterrupt(SIGINT);
 	Process::enableInterrupt(SIGTERM);
 	Process::enableInterrupt(SIGHUP);

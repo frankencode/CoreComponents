@@ -25,7 +25,7 @@ SystemLog::SystemLog()
 	  debugStream_    (LineBuffer::open(SystemLogStream::open(LOG_DEBUG)))
 {}
 
-void SystemLog::open(const char *identifier, int option, int facility)
+void SystemLog::open(String identifier, int option, int facility)
 {
 	openlog(identifier, option, facility);
 }
