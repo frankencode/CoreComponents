@@ -11,7 +11,7 @@
 #define FNODE_SYSTEMLOG_H
 
 #include <fkit/Stream.h>
-#include <fkit/Singleton.h>
+#include <fkit/ThreadLocalSingleton.h>
 #include <syslog.h>
 
 namespace fnode
@@ -19,10 +19,10 @@ namespace fnode
 
 using namespace fkit;
 
-class SystemLog: public Object, public Singleton<SystemLog>
+class SystemLog: public Object, public ThreadLocalSingleton<SystemLog>
 {
 public:
-	void open(const char *identifier, int option, int facility);
+	static void open(String identifier, int option, int facility);
 
 	inline Stream *emergencyStream() const { return emergencyStream_; }
 	inline Stream *alertStream()     const { return alertStream_; }
@@ -34,7 +34,7 @@ public:
 	inline Stream *debugStream()     const { return debugStream_; }
 
 private:
-	friend class Singleton<SystemLog>;
+	friend class ThreadLocalSingleton<SystemLog>;
 	SystemLog();
 
 	Ref<Stream> emergencyStream_;
