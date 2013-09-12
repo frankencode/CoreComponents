@@ -47,37 +47,40 @@ public:
 	inline static Ref<Date> create(double time) {
 		return new Date(time);
 	}
+	inline static Ref<Date> create(int year, int month, int day, int hour = 0, int minutes = 0, int seconds = 0, int offset = 0) {
+		return new Date(year, month, day, hour, minutes, seconds, offset);
+	}
 
 	Ref<Date> copy() const;
 
 	inline bool valid() const { return time_ != fkit::nan;}
 
+	static Ref<Date> now();
 	static Ref<Date> localTime();
 	static Ref<Date> localTime(double time);
 
 	inline int year() const { return tm_year + 1900; }
-	inline int month() const { return tm_mon; }
+	inline int month() const { return tm_mon + 1; }
 	inline int day() const { return tm_mday; }
 	inline int weekday() const { return tm_wday; }
 	inline int yearday() const { return tm_yday; }
 	inline int hour() const { return tm_hour; }
-	inline int minute() const { return tm_min; }
-	inline int second() const { return tm_sec; }
+	inline int minutes() const { return tm_min; }
+	inline int seconds() const { return tm_sec; }
 	inline int offset() const { return tm_off; }
 
 	double time() const;
-
 	String toString() const;
+
+	String monthName() const;
+	String dayName() const;
 
 private:
 	Date();
 	Date(double time);
-
-	void clear();
-	void init(double time);
+	Date(int year, int month, int day, int hour, int seconds, int minutes, int offset);
 
 	int tm_off;
-
 	double time_;
 };
 
