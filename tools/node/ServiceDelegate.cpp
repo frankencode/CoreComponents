@@ -28,14 +28,19 @@ ClientConnection *ServiceDelegate::client() const
 	return worker_->client();
 }
 
+void ServiceDelegate::status(int statusCode, String reasonPhrase)
+{
+	worker_->response()->status(statusCode, reasonPhrase);
+}
+
 void ServiceDelegate::header(String name, String value)
 {
 	worker_->response()->header(name, value);
 }
 
-void ServiceDelegate::begin()
+void ServiceDelegate::begin(ssize_t contentLength)
 {
-	worker_->response()->begin();
+	worker_->response()->begin(contentLength);
 }
 
 void ServiceDelegate::write(String bytes)

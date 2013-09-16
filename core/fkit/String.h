@@ -53,6 +53,18 @@ public:
 		return *this;
 	}
 
+	inline String &operator+=(const String &b) {
+		Ref<StringList> l = StringList::create();
+		l->append(*this);
+		l->append(b);
+		*this = l->join();
+		return *this;
+	}
+
+	inline String &operator+=(const char *b) {
+		return *this += String(b);
+	}
+
 	inline operator char *() const { return Super::get()->data(); }
 
 private:

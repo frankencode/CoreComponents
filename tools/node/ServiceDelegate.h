@@ -31,8 +31,9 @@ protected:
 	ServiceInstance *serviceInstance() const;
 	ClientConnection *client() const;
 
+	void status(int statusCode, String reasonPhrase = "");
 	void header(String name, String value);
-	void begin();
+	void begin(ssize_t contentLength = -1);
 	void write(String bytes);
 	Format chunk(String pattern);
 	Format chunk();

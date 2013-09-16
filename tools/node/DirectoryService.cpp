@@ -9,44 +9,42 @@
 
 #include "ServiceRegistry.h"
 #include "ServiceDefinition.h"
-#include "WorkerPool.h"
-#include "DispatchInstance.h"
+#include "DirectoryInstance.h"
 
 namespace fnode
 {
 
-class DispatchService: public ServiceDefinition
+class DirectoryService: public ServiceDefinition
 {
 public:
-	static Ref<DispatchService> create() {
-		return new DispatchService;
+	static Ref<DirectoryService> create() {
+		return new DirectoryService;
 	}
 
 	virtual ServicePrototype *configPrototype() const { return configPrototype_; }
-	virtual Ref<ServiceInstance> createInstance(YasonObject *config) const { return DispatchInstance::create(config); }
+	virtual Ref<ServiceInstance> createInstance(YasonObject *config) const { return DirectoryInstance::create(config); }
 
 private:
-	DispatchService()
-		: configPrototype_(ServicePrototype::create("Dispatch"))
+	DirectoryService()
+		: configPrototype_(ServicePrototype::create("Directory"))
 	{
-		configPrototype_->remove("connection_timeout");
+		configPrototype_->insert("path", "");
 	}
 
 	Ref<ServicePrototype> configPrototype_;
 };
 
-class DispatchAnnouncer {
+class DirectoryAnnouncer {
 public:
-	DispatchAnnouncer()
-	{
+	DirectoryAnnouncer() {
 		static bool done = false;
 		if (done) return;
-		Ref<DispatchService> dispatchService = DispatchService::create();
-		serviceRegistry()->registerService(dispatchService);
+		Ref<DirectoryService> directoryService = DirectoryService::create();
+		serviceRegistry()->registerService(directoryService);
 		done = true;
 	}
 };
 
-namespace { DispatchAnnouncer announcer; }
+namespace { DirectoryAnnouncer announcer; }
 
 } // namespace fnode

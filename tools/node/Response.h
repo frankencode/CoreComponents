@@ -31,7 +31,7 @@ public:
 
 	void status(int statusCode, String reasonPhrase = "");
 	void header(String name, String value);
-	void begin();
+	void begin(ssize_t contentLength = -1);
 	void write(String bytes);
 	Format chunk(String pattern);
 	Format chunk();
@@ -47,12 +47,13 @@ private:
 
 	inline bool delivered() const { return headerWritten_; }
 	inline int statusCode() const { return statusCode_; }
-	inline size_t bytesWritten() const { return bytesWritten_; }
+	size_t bytesWritten() const;
 
 	Ref<ClientConnection> client_;
 	bool headerWritten_;
 	Ref<TransferMeter> payload_;
 	int statusCode_;
+	ssize_t contentLength_;
 	size_t bytesWritten_;
 	String reasonPhrase_;
 };

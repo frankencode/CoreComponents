@@ -30,6 +30,7 @@ public:
 	Ref(T *b): a_(0) { set(b); }
 	Ref(const Ref &b): a_(0) { set(b.a_); }
 
+	template<class T2> Ref(T2 *b): a_(0) { set(cast<T>(b)); }
 	template<class T2> Ref(const Ref<T2> &b): a_(0) { set(cast<T>(b.get())); }
 
 	inline const Ref &operator=(T *b) { set(b); return *this; }
