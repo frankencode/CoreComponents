@@ -10,6 +10,7 @@
 #include <fkit/System.h>
 #include <fkit/Date.h>
 #include <fkit/TransferMeter.h>
+#include "utils.h"
 #include "NodeConfig.h"
 #include "ClientConnection.h"
 #include "ChunkedSink.h"
@@ -27,54 +28,10 @@ Response::Response(ClientConnection *client)
 	: client_(client),
 	  headerWritten_(false),
 	  statusCode_(200),
+	  contentLength_(-1),
 	  bytesWritten_(0),
 	  reasonPhrase_("OK")
 {}
-
-const char *reasonPhraseByStatusCode(int statusCode)
-{
-	const char *phrase = "";
-	switch (statusCode) {
-	case 100: phrase = "Continue"; break;
-	case 101: phrase = "Switching Protocols"; break;
-	case 200: phrase = "OK"; break;
-	case 201: phrase = "Created"; break;
-	case 202: phrase = "Accepted"; break;
-	case 203: phrase = "Non-Authoritative Information"; break;
-	case 204: phrase = "No Content"; break;
-	case 205: phrase = "Reset Content"; break;
-	case 206: phrase = "Partial Content"; break;
-	case 300: phrase = "Multiple Choices"; break;
-	case 301: phrase = "Moved Permanently"; break;
-	case 302: phrase = "Moved Temporarily"; break;
-	case 303: phrase = "See Other"; break;
-	case 304: phrase = "Not Modified"; break;
-	case 305: phrase = "Use Proxy"; break;
-	case 400: phrase = "Bad Request"; break;
-	case 401: phrase = "Unauthorized"; break;
-	case 402: phrase = "Payment Required"; break;
-	case 403: phrase = "Forbidden"; break;
-	case 404: phrase = "Not Found"; break;
-	case 405: phrase = "Method Not Allowed"; break;
-	case 406: phrase = "Not Acceptable"; break;
-	case 407: phrase = "Proxy Authentication Required"; break;
-	case 408: phrase = "Request Timeout"; break;
-	case 409: phrase = "Conflict"; break;
-	case 410: phrase = "Gone"; break;
-	case 411: phrase = "Length Required"; break;
-	case 412: phrase = "Precondition Failed"; break;
-	case 413: phrase = "Request Entity Too Large"; break;
-	case 414: phrase = "Request-URI Too Long"; break;
-	case 415: phrase = "Unsupported Media Type"; break;
-	case 500: phrase = "Internal Server Error"; break;
-	case 501: phrase = "Not Implemented"; break;
-	case 502: phrase = "Bad Gateway"; break;
-	case 503: phrase = "Service Unavailable"; break;
-	case 504: phrase = "Gateway Timeout"; break;
-	case 505: phrase = "HTTP Version Not Supported"; break;
-	}
-	return phrase;
-}
 
 void Response::status(int statusCode, String reasonPhrase)
 {
@@ -88,26 +45,24 @@ void Response::header(String name, String value)
 	insert(name, value);
 }
 
-String httpDate(double time)
-{
-	Ref<Date> date = Date::create(time);
-	const char *dayNames[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-	const char *monthNames[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-	return Format()
-		<< dayNames[date->weekday()] << ", "
-		<< dec(date->day(), 2) << " " << monthNames[date->month()] << " " << date->year() << " "
-		<< dec(date->hour(), 2) << ":" << dec(date->minute(), 2) << ":" << dec(date->second(), 2) << " GMT";
-}
-
 void Response::writeHeader()
 {
+	insert("Server", nodeConfig()->version());
+	String now = formatDate(Date::now());
+	insert("Date", now);
+	if (statusCode_ != 304) {
+		if (contentLength_ >= 0) {
+			remove("Transfer-Encoding");
+			establish("Content-Length", str(contentLength_));
+		}
+		else {
+			establish("Transfer-Encoding", "chunked");
+		}
+		insert("Last-Modified", now);
+	}
+
 	Format header(client_->stream());
 	header << "HTTP/1.1 " << statusCode_ << " " << reasonPhrase_ << "\r\n";
-	establish("Transfer-Encoding", "chunked");
-	String now = httpDate(System::now());
-	insert("Last-Modified", now);
-	insert("Date", now);
-	insert("Server", nodeConfig()->version());
 	for (int i = 0; i < size(); ++i)
 		header << keyAt(i) << ":" << valueAt(i) << "\r\n";
 	header << "\r\n";
@@ -115,21 +70,30 @@ void Response::writeHeader()
 	headerWritten_ = true;
 }
 
-void Response::begin()
+void Response::begin(ssize_t contentLength)
 {
-	if (!headerWritten_) writeHeader();
+	if (!headerWritten_) {
+		contentLength_ = contentLength;
+		writeHeader();
+	}
 }
 
 Stream *Response::payload()
 {
 	if (!payload_) {
 		if (!headerWritten_) writeHeader();
-		payload_ =
-			TransferMeter::open(
-				ChunkedSink::open(client_->stream())
-			);
+		Ref<Stream> stream = client_->stream();
+		if (contentLength_ < 0) {
+			stream = ChunkedSink::open(stream);
+		}
+		payload_ = TransferMeter::open(stream);
 	}
 	return payload_;
+}
+
+size_t Response::bytesWritten() const
+{
+	return (payload_) ? payload_->totalWritten() : bytesWritten_;
 }
 
 void Response::write(String bytes)
@@ -149,8 +113,10 @@ Format Response::chunk()
 
 void Response::end()
 {
-	bytesWritten_ = (payload_) ? payload_->totalWritten() : 0;
-	payload_ = 0;
+	if (payload_) {
+		bytesWritten_ = payload_->totalWritten();
+		payload_ = 0;
+	}
 }
 
 } // namespace fnode

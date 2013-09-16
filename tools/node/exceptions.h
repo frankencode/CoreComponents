@@ -41,6 +41,12 @@ public:
 	BadRequest(): ProtocolException(400, "Bad Request") {}
 };
 
+class Forbidden: public ProtocolException
+{
+public:
+	Forbidden(): ProtocolException(403, "Forbidden") {}
+};
+
 class UnsupportedVersion: public ProtocolException
 {
 public:

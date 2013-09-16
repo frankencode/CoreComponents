@@ -33,24 +33,17 @@ String inum(T x, int base = 10, int n = -1)
 {
 	int sign = Sign<T>::get(x);
 	if (sign) x = -x;
-	int m = n;
-	if (m <= 0) {
-		m = 0;
-		for (T y = x; y > 0; y /= base) ++m;
-		if (sign && m == n) ++m;
-	}
-	else {
-		if (sign) ++m;
-	}
-	if (m <= sign) ++m;
+	int m = (x == 0);
+	for (T y = x; y > 0; y /= base) ++m;
+	if (sign) ++m;
+	if (n > 0 && m < n) m = n;
 	String s(m, '0');
 	if (sign) s->at(0) = '-';
-	for (int i = s->size() - 1; x > 0; x /= base, --i) {
+	for (int i = s->size() - 1; x > 0 && s->has(i); x /= base, --i) {
 		const char *fig =
 			"0123456789"
 			"abcdefghijklmnopqrstuvwxyz"
-			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-			"\\_";
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		s->at(i) = fig[x % base];
 	}
 	return s;

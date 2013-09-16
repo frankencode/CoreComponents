@@ -32,7 +32,7 @@ void NodeConfig::load(int argc, char **argv)
 	}
 
 	String address = config->value("address", "localhost");
-	int port = config->value("port", 8000);
+	int port = config->value("port", 8080);
 	String protocol = config->value("protocol");
 
 	int family = AF_UNSPEC;

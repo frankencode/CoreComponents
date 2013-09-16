@@ -7,9 +7,6 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_ECHOINSTANCE_H
-#define FNODE_ECHOINSTANCE_H
-
 #include "EchoDelegate.h"
 
 namespace fnode
@@ -33,5 +30,3 @@ private:
 };
 
 } // namespace fnode
-
-#endif // FNODE_ECHOINSTANCE_H
