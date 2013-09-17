@@ -58,15 +58,14 @@ inline int daysInMonth(int i, int y)
 }
 
 Date::Date()
-	: tm_off(0),
-	  time_(fkit::nan)
+	: time_(fkit::nan)
 {
-	tm_isdst = -1;
+	tm_isdst = 0;
+	tm_gmtoff = 0;
 }
 
-Date::Date(double time)
-	: tm_off(0),
-	  time_(time)
+Date::Date(double time, int offset)
+	: time_(time)
 {
 	const int C1   = 365;
 	const int C4   =  4 * C1 + 1;
@@ -119,10 +118,11 @@ Date::Date(double time)
 	}
 	tm_mday = n + 1;
 
-	tm_isdst = -1;
+	tm_isdst = 0;
+	tm_gmtoff = offset;
 }
 
-Date::Date(int year, int month, int day, int hour, int seconds, int minutes, int offset)
+Date::Date(int year, int month, int day, int hour, int minutes, int seconds, int offset)
 {
 	if (year < 1) year = 1;
 	if (month > 12) month = 12;
@@ -162,20 +162,9 @@ Date::Date(int year, int month, int day, int hour, int seconds, int minutes, int
 	tm_hour = hour;
 	tm_min = minutes;
 	tm_sec = seconds;
-	tm_off = offset;
 
 	tm_isdst = -1;
-}
-
-Ref<Date> Date::copy() const
-{
-	Ref<Date> newDate = Date::create();
-	const struct tm *tm1 = this;
-	struct tm *tm2 = newDate;
-	*tm2 = *tm1;
-	newDate->tm_off = tm_off;
-	newDate->time_ = time_;
-	return newDate;
+	tm_gmtoff = offset;
 }
 
 Ref<Date> Date::now()
@@ -190,14 +179,21 @@ Ref<Date> Date::localTime()
 
 Ref<Date> Date::localTime(double time)
 {
-	#if defined(_SVID_SOURCE) || defined(_XOPEN_SOURCE)
-	tzset();
-	Ref<Date> local = Date::create(time - timezone);
-	local->tm_off = -timezone / 60;
-	return local;
-	#else
-	return Date::create(time);
-	#endif
+	Ref<Date> d = Date::create();
+	d->time_ = time;
+	time_t tt = d->time_;
+	localtime_r(&tt, d);
+	return d;
+}
+
+Ref<Date> Date::copy() const
+{
+	Ref<Date> newDate = Date::create();
+	const struct tm *tm1 = this;
+	struct tm *tm2 = newDate;
+	*tm2 = *tm1;
+	newDate->time_ = time_;
+	return newDate;
 }
 
 double Date::time() const
@@ -211,10 +207,11 @@ String Date::toString() const
 	//! \todo local time Formatting
 
 	String tz = "Z";
-	if (tm_off > 0)
-		tz = Format() << "+" << dec(tm_off / 60, 2) << dec(tm_off % 60, 2);
-	else if (tm_off < 0)
-		tz = Format() << "-" << dec((-tm_off) / 60, 2) << dec((-tm_off) % 60, 2);
+	int offset = tm_gmtoff / 60;
+	if (offset > 0)
+		tz = Format() << "+" << dec(offset / 60, 2) << dec(offset % 60, 2);
+	else if (offset < 0)
+		tz = Format() << "-" << dec((-offset) / 60, 2) << dec((-offset) % 60, 2);
 
 	return Format()
 		<< dec(tm_year + 1900, 4) << "-" << dec(tm_mon + 1, 2) << "-" << dec(tm_mday, 2)

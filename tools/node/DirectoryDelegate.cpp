@@ -34,7 +34,6 @@ void DirectoryDelegate::process(Request *request)
 {
 	String path = directoryInstance_->path() + "/" + request->target();
 	path = path->canonicalPath();
-	FNODE_DEBUG() << directoryInstance_->path() << "," << path << nl;
 	if (path->head(directoryInstance_->path()->size()) != directoryInstance_->path()) throw Forbidden();
 
 	Ref<FileStatus> fileStatus = FileStatus::read(path);

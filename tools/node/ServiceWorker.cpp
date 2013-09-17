@@ -56,7 +56,7 @@ void ServiceWorker::logDelivery(ClientConnection *client, int statusCode, size_t
 
 	Format(stream)
 		<< client->address()->networkAddress() << " "
-		<< Date::localTime(requestTime)->toString() << " "
+		<< Date::create(requestTime)->toString() << " "
 		<< "\"" << requestLine << "\" "
 		<< statusCode << " " << bytesWritten << " "
 		<< "\"" << userAgent << "\" "

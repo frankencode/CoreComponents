@@ -91,6 +91,8 @@ Ref<Date> scanDate(String text, bool *ok)
 		for (; month < 12; ++month) {
 			if (s == names[month]) break;
 		}
+		if (month > 11) return 0;
+		++month;
 	}
 	int year = 0;
 	{
@@ -113,9 +115,11 @@ Ref<Date> scanDate(String text, bool *ok)
 				else if (p == &minutes) p = &seconds;
 				else return 0;
 			}
-			*p *= 10;
-			if ('0' <= ch && ch <= '9') *p += ch - '0';
-			else return 0;
+			else {
+				*p *= 10;
+				if ('0' <= ch && ch <= '9') *p += ch - '0';
+				else return 0;
+			}
 		}
 	}
 	if (ok) *ok = true;
