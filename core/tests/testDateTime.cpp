@@ -20,13 +20,15 @@ int main()
 	{
 		fout() << "Basic date formatting..." << nl;
 
+		Ref<Date> n = Date::now(), l = Date::localTime(n->time());
+		fout() << n << ", " << l << nl;
+
 		double t = System::now();
 		Ref<Date> d1 = Date::create(Date::create(t)->time());
 		Ref<Date> d2 = Date::create(t);
 
 		fout() << d1->dayName() << ", " << d1 << nl;
 		fout() << d2->dayName() << ", " << d2 << nl;
-		fout() << Date::create(t)->localTime() << nl;
 
 		check(str(d1) == str(d2));
 	}
