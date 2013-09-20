@@ -251,6 +251,17 @@ Ref<Process> ProcessFactory::produce()
 	{
 		// parent process
 
+		if (argv) {
+			for (int i = 0; argv[i]; ++i)
+				fkit::free(argv[i]);
+			delete[] argv;
+		}
+		if (envMap_) {
+			for (int i = 0; envp[i]; ++i)
+				fkit::free(envp[i]);
+			delete[] envp;
+		}
+
 		Ref<SystemStream> in = in_;
 		Ref<SystemStream> out = out_;
 		Ref<SystemStream> err = err_;
