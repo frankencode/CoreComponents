@@ -34,9 +34,11 @@ void DirectoryDelegate::process(Request *request)
 {
 	String path = directoryInstance_->path() + "/" + request->target();
 	path = path->canonicalPath();
+	String prefix = path->head(directoryInstance_->path()->size());
 	if (path->head(directoryInstance_->path()->size()) != directoryInstance_->path()) throw Forbidden();
 
 	Ref<FileStatus> fileStatus = FileStatus::read(path);
+	if (!fileStatus->exists()) throw NotFound();
 
 	{
 		String h;
