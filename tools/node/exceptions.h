@@ -47,6 +47,12 @@ public:
 	Forbidden(): ProtocolException(403, "Forbidden") {}
 };
 
+class NotFound: public ProtocolException
+{
+public:
+	NotFound(): ProtocolException(404, "Not Found") {}
+};
+
 class UnsupportedVersion: public ProtocolException
 {
 public:
