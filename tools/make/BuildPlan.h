@@ -81,7 +81,7 @@ public:
 	inline StringList *previousSources() const { return previousSources_; }
 	inline ModuleList *modules() const { return modules_; }
 
-	inline BuildPlanList *prequisites() const { return prequisites_; }
+	inline BuildPlanList *prerequisites() const { return prerequisites_; }
 
 	int make();
 
@@ -137,7 +137,7 @@ private:
 	Ref<StringList> previousSources_;
 	Ref<ModuleList> modules_;
 
-	Ref<BuildPlanList> prequisites_;
+	Ref<BuildPlanList> prerequisites_;
 
 	Ref<BuildMap> buildMap_;
 	String sourcePrefix_;

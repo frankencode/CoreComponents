@@ -290,12 +290,12 @@ void BuildPlan::prepare()
 
 	if ((options_ & Tests) && !(options_ & BuildTests)) return;
 
-	prequisites_ = BuildPlanList::create();
+	prerequisites_ = BuildPlanList::create();
 
-	Ref<StringList> prequisitePaths = cast<StringList>(recipe_->value("use"));
+	StringList *prerequisitePaths = cast<StringList>(recipe_->value("use"));
 
-	for (int i = 0; i < prequisitePaths->size(); ++i) {
-		String path = prequisitePaths->at(i);
+	for (int i = 0; i < prerequisitePaths->size(); ++i) {
+		String path = prerequisitePaths->at(i);
 		if (path->isRelativePath()) path = projectPath_ + "/" + path;
 		path = path->canonicalPath();
 		Ref<BuildPlan> buildPlan = BuildPlan::create(path);
@@ -308,7 +308,7 @@ void BuildPlan::prepare()
 			libraries_->append(buildPlan->name());
 		}
 		buildPlan->prepare();
-		prequisites_->append(buildPlan);
+		prerequisites_->append(buildPlan);
 	}
 
 	sources_ = StringList::create();
@@ -368,8 +368,8 @@ bool BuildPlan::analyse()
 		modulePath_ = f->join("-");
 	}
 
-	for (int i = 0; i < prequisites_->size(); ++i)
-		if (!prequisites_->at(i)->analyse()) return analyseResult_ = false;
+	for (int i = 0; i < prerequisites_->size(); ++i)
+		if (!prerequisites_->at(i)->analyse()) return analyseResult_ = false;
 
 	if (options_ & Package) return analyseResult_ = true;
 
@@ -419,8 +419,8 @@ bool BuildPlan::build()
 
 	if ((options_ & Tests) && !(options_ & BuildTests)) return buildResult_ = true;
 
-	for (int i = 0; i < prequisites_->size(); ++i)
-		if (!prequisites_->at(i)->build()) return buildResult_ = false;
+	for (int i = 0; i < prerequisites_->size(); ++i)
+		if (!prerequisites_->at(i)->build()) return buildResult_ = false;
 
 	if (options_ & Package) return buildResult_ = true;
 
@@ -486,8 +486,8 @@ bool BuildPlan::build()
 		Ref<FileStatus> recipeStatus = fileStatus(recipe_->path());
 		if (recipeStatus->exists()) {
 			if (recipeStatus->lastModified() > productTime) dirty = true;
-			for (int i = 0; i < prequisites_->size(); ++i) {
-				Ref<FileStatus> recipeStatus = fileStatus(prequisites_->at(i)->recipe_->path());
+			for (int i = 0; i < prerequisites_->size(); ++i) {
+				Ref<FileStatus> recipeStatus = fileStatus(prerequisites_->at(i)->recipe_->path());
 				if (recipeStatus->lastModified() > productTime) {
 					dirty = true;
 					break;
@@ -505,8 +505,8 @@ int BuildPlan::testRun()
 	if (testRunComplete_) return testRunResult_;
 	testRunComplete_ = true;
 
-	for (int i = 0; i < prequisites_->size(); ++i) {
-		testRunResult_ = prequisites_->at(i)->testRun();
+	for (int i = 0; i < prerequisites_->size(); ++i) {
+		testRunResult_ = prerequisites_->at(i)->testRun();
 		if (testRunResult_ != 0) return testRunResult_;
 	}
 
@@ -536,8 +536,8 @@ bool BuildPlan::install()
 
 	if (options_ & Tests) return true;
 
-	for (int i = 0; i < prequisites_->size(); ++i)
-		if (!prequisites_->at(i)->install()) return false;
+	for (int i = 0; i < prerequisites_->size(); ++i)
+		if (!prerequisites_->at(i)->install()) return false;
 
 	if (options_ & Package) return true;
 
@@ -559,8 +559,8 @@ bool BuildPlan::uninstall()
 
 	if (options_ & Tests) return true;
 
-	for (int i = 0; i < prequisites_->size(); ++i)
-		if (!prequisites_->at(i)->uninstall()) return false;
+	for (int i = 0; i < prerequisites_->size(); ++i)
+		if (!prerequisites_->at(i)->uninstall()) return false;
 
 	if (options_ & Package) return true;
 
@@ -580,8 +580,8 @@ void BuildPlan::clean()
 	if (cleanComplete_) return;
 	cleanComplete_ = true;
 
-	for (int i = 0; i < prequisites_->size(); ++i)
-		prequisites_->at(i)->clean();
+	for (int i = 0; i < prerequisites_->size(); ++i)
+		prerequisites_->at(i)->clean();
 
 	if (options_ & Package) return;
 
