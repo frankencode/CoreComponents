@@ -199,7 +199,8 @@ void GnuToolChain::appendCompileOptions(Format args, BuildPlan *buildPlan)
 	if (buildPlan->options() & BuildPlan::OptimizeSize) args << "-Os";
 	if (buildPlan->options() & BuildPlan::OptimizeDebug) args << "-Og";
 	if (buildPlan->options() & BuildPlan::Static) args << "-static";
-	if (buildPlan->options() & BuildPlan::Library) args << "-fpic";
+	if (buildPlan->options() & BuildPlan::Library) args << "-fPIC";
+	else args << "-fPIE";
 	args << "-Wall" << "-pthread";
 	for (int i = 0; i < buildPlan->includePaths()->size(); ++i)
 		args << "-I" + buildPlan->includePaths()->at(i);
