@@ -42,7 +42,20 @@ private:
 class YasonObject;
 
 typedef List< Ref<YasonObject> > YasonObjectList;
-typedef Map<String, Ref<YasonObject> > YasonProtocol;
+
+class YasonProtocol: public Map<String, Ref<YasonObject> >
+{
+public:
+	inline static Ref<YasonProtocol> create() {
+		return new YasonProtocol;
+	}
+
+	template<class Prototype>
+	void add() {
+		Ref<Prototype> prototype = Prototype::create();
+		insert(prototype->className(), prototype);
+	}
+};
 
 class YasonObject: public Map<String, Variant>
 {
