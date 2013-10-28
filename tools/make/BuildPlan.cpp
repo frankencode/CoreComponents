@@ -8,11 +8,8 @@
  */
 
 #include <fkit/stdio.h>
-#include <fkit/Dir.h>
 #include <fkit/Glob.h>
-#include <fkit/Process.h>
 #include <fkit/Config.h>
-#include <fkit/System.h>
 #include "DependencyCache.h"
 #include "GnuToolChain.h"
 #include "JobScheduler.h"
@@ -29,13 +26,14 @@ Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
 
 Ref<BuildPlan> BuildPlan::create(String projectPath)
 {
-	BuildPlan *buildPlan = 0;
-	if (buildMap_->lookup(projectPath, &buildPlan)) return buildPlan;
+	BuildPlan *plan = 0;
+	if (buildMap_->lookup(projectPath, &plan)) return plan;
 	return new BuildPlan(projectPath, this);
 }
 
 BuildPlan::BuildPlan(int argc, char **argv)
-	: toolChain_(GnuToolChain::create()),
+	: Shell(this),
+	  toolChain_(GnuToolChain::create()),
 	  projectPath_("."),
 	  buildMap_(BuildMap::create())
 {
@@ -56,7 +54,8 @@ BuildPlan::BuildPlan(int argc, char **argv)
 }
 
 BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
-	: toolChain_(parentPlan->toolChain_),
+	: Shell(this),
+	  toolChain_(parentPlan->toolChain_),
 	  projectPath_(projectPath),
 	  buildMap_(parentPlan->buildMap_)
 {
@@ -189,100 +188,6 @@ String BuildPlan::installPath(String relativeInstallPath) const
 	return installPrefix_ + "/" + relativeInstallPath;
 }
 
-String BuildPlan::beautifyCommand(String command)
-{
-	if (options_ & Bootstrap) {
-		return command
-			->replace(sourcePrefix_, String("$SOURCE"))
-			->replace(Process::cwd(), String("$PWD"));
-	}
-	return command;
-}
-
-bool BuildPlan::runBuild(String command)
-{
-	ferr() << beautifyCommand(command) << nl;
-	if (options_ & Simulate) return true;
-	return Process::start(command)->wait() == 0;
-}
-
-bool BuildPlan::mkdir(String path)
-{
-	if (!fileStatus(path)->exists())
-		ferr("mkdir -p %%\n") << path;
-	if (options_ & Simulate) return true;
-	return Dir::establish(path);
-}
-
-bool BuildPlan::rmdir(String path)
-{
-	if (fileStatus(path)->exists())
-		ferr("rmdir %%\n") << path;
-	if (options_ & Simulate) return true;
-	return Dir::unlink(path);
-}
-
-bool BuildPlan::symlink(String path, String newPath)
-{
-	ferr("ln -sf %% %%\n") << path << newPath;
-	if (options_ & Simulate) return true;
-	File::unlink(newPath);
-	return File::symlink(path, newPath);
-}
-
-bool BuildPlan::install(String sourcePath, String destPath)
-{
-	String destDirPath = destPath->reducePath();
-	bool destDirMissing = destDirPath != "" && !fileStatus(destDirPath)->exists();
-	if (destDirMissing) ferr("install -d %%\n") << destDirPath;
-
-	ferr("install %% %%\n") << sourcePath << destPath;
-
-	if (options_ & Simulate) return true;
-
-	try {
-		if (destDirMissing) Dir::establish(destDirPath) || FKIT_SYSTEM_EXCEPTION;
-		Ref<File> source = File::open(sourcePath);
-		Ref<FileStatus> sourceStatus = FileStatus::read(sourcePath);
-		if (File::exists(destPath)) File::unlink(destPath);
-		File::create(destPath, sourceStatus->mode()) || FKIT_SYSTEM_EXCEPTION;
-		Ref<File> sink = File::open(destPath, File::WriteOnly);
-		sink->truncate(0);
-		sink->write(source->map());
-	}
-	catch (SystemException &ex) {
-		ferr("%%\n") << ex.what();
-		return false;
-	}
-
-	return true;
-}
-
-bool BuildPlan::unlink(String path)
-{
-	if (File::unresolvedStatus(path)->exists()) {
-		if (options_ & Simulate) {
-			ferr("rm -f %%\n") << path;
-			return true;
-		}
-		ferr("rm %%\n") << path;
-		try {
-			File::unlink(path) || FKIT_SYSTEM_EXCEPTION;
-		}
-		catch (SystemException &ex) {
-			ferr("%%\n") << ex.message();
-			return false;
-		}
-	}
-	return true;
-}
-
-Ref<FileStatus> BuildPlan::fileStatus(String path)
-{
-	if (options_ & Blindfold) return FileStatus::read();
-	return FileStatus::read(path);
-}
-
 void BuildPlan::prepare()
 {
 	if (prepareComplete_) return;
@@ -298,17 +203,17 @@ void BuildPlan::prepare()
 		String path = prerequisitePaths->at(i);
 		if (path->isRelativePath()) path = projectPath_ + "/" + path;
 		path = path->canonicalPath();
-		Ref<BuildPlan> buildPlan = BuildPlan::create(path);
-		if (buildPlan->options() & Library) {
+		Ref<BuildPlan> plan = BuildPlan::create(path);
+		if (plan->options() & Library) {
 			path = path->reducePath();
 			if (!includePaths_->contains(path))
 				includePaths_->append(path);
 			if (!libraryPaths_->contains("."))
 				libraryPaths_->append(".");
-			libraries_->append(buildPlan->name());
+			libraries_->append(plan->name());
 		}
-		buildPlan->prepare();
-		prerequisites_->append(buildPlan);
+		plan->prepare();
+		prerequisites_->append(plan);
 	}
 
 	sources_ = StringList::create();
@@ -399,7 +304,7 @@ bool BuildPlan::analyse()
 
 	for (Ref<Job> job; scheduler->collect(&job);) {
 		if (options_ & Verbose)
-			ferr() << beautifyCommand(job->command()) << nl;
+			ferr() << beautify(job->command()) << nl;
 		if (job->status() != 0) {
 			fout() << job->outputText();
 			break;
@@ -434,8 +339,12 @@ bool BuildPlan::build()
 			dirty = dirty || !fileStatus(module->toolName())->exists();
 		if (dirty) {
 			Ref<Job> job = toolChain_->createCompileJob(this, module);
+			Ref<Job> linkJob;
+			if (options_ & Tools) linkJob = toolChain_->createLinkJob(this, module);
 			if (options_ & Simulate) {
-				ferr() << beautifyCommand(job->command()) << nl;
+				ferr() << beautify(job->command()) << nl;
+				if (linkJob)
+					ferr() << beautify(linkJob->command()) << nl;
 			}
 			else {
 				if (!compileScheduler) {
@@ -443,9 +352,9 @@ bool BuildPlan::build()
 					compileScheduler->start();
 				}
 				compileScheduler->schedule(job);
-				if (options_ & Tools) {
+				if (linkJob) {
 					if (!linkScheduler) linkScheduler = JobScheduler::create();
-					linkScheduler->schedule(toolChain_->createLinkJob(this, module));
+					linkScheduler->schedule(linkJob);
 				}
 			}
 		}
@@ -453,7 +362,7 @@ bool BuildPlan::build()
 
 	if (compileScheduler) {
 		for (Ref<Job> job; compileScheduler->collect(&job);) {
-			ferr() << beautifyCommand(job->command()) << nl;
+			ferr() << beautify(job->command()) << nl;
 			fout() << job->outputText();
 			if (job->status() != 0) return buildResult_ = false;
 		}
@@ -463,7 +372,7 @@ bool BuildPlan::build()
 		if (linkScheduler) {
 			linkScheduler->start();
 			for (Ref<Job> job; linkScheduler->collect(&job);) {
-				ferr() << beautifyCommand(job->command()) << nl;
+				ferr() << beautify(job->command()) << nl;
 				fout() << job->outputText();
 				if (job->status() != 0) return buildResult_ = false;
 			}

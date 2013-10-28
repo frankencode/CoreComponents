@@ -12,6 +12,7 @@
 
 #include <fkit/PrefixTree.h>
 #include "Module.h"
+#include "Shell.h"
 #include "ToolChain.h"
 
 namespace fkit {
@@ -25,10 +26,9 @@ namespace fmake
 using namespace fkit;
 
 class BuildPlan;
-
 typedef List< Ref<BuildPlan> > BuildPlanList;
 
-class BuildPlan: public Object
+class BuildPlan: public Object, private Shell
 {
 public:
 	enum Option {
@@ -85,20 +85,13 @@ public:
 
 	int make();
 
+	inline String sourcePrefix() const { return sourcePrefix_; }
+
 	String sourcePath(String source) const;
 	String modulePath(String object) const;
 	String installPath(String relativeInstallPath) const;
 
-	String beautifyCommand(String command);
-	bool runBuild(String command);
-
-	bool mkdir(String path);
-	bool rmdir(String path);
-	bool symlink(String path, String newPath);
-	bool unlink(String path);
-	bool install(String sourcePath, String destPath);
-
-	Ref<FileStatus> fileStatus(String path);
+	inline Shell *shell() { return this; }
 
 private:
 	Ref<BuildPlan> create(String projectPath);
