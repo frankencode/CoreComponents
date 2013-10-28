@@ -32,7 +32,8 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 }
 
 BuildPlan::BuildPlan(int argc, char **argv)
-	: Shell(this),
+	: BuildShell(this),
+	  AnalyseStage(this),
 	  toolChain_(GnuToolChain::create()),
 	  projectPath_("."),
 	  buildMap_(BuildMap::create())
@@ -54,7 +55,8 @@ BuildPlan::BuildPlan(int argc, char **argv)
 }
 
 BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
-	: Shell(this),
+	: BuildShell(this),
+	  AnalyseStage(this),
 	  toolChain_(parentPlan->toolChain_),
 	  projectPath_(projectPath),
 	  buildMap_(parentPlan->buildMap_)
@@ -70,8 +72,6 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 
 void BuildPlan::initFlags()
 {
-	prepareComplete_ = false;
-	analyseComplete_ = false;
 	buildComplete_ = false;
 	testRunComplete_ = false;
 	installComplete_ = false;
@@ -135,9 +135,11 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 	}
 }
 
-int BuildPlan::make()
+int BuildPlan::run()
 {
-	prepare();
+	readPrequisites();
+	globSources();
+	initModules();
 
 	if (options_ & Bootstrap) {
 		ferr(
@@ -147,7 +149,7 @@ int BuildPlan::make()
 		) << toolChain_->machineCommand();
 	}
 
-	if (!analyse()) return 1;
+	if (!analyseStage()->run()) return 1;
 
 	if (recipe_->value("clean")) {
 		clean();
@@ -188,10 +190,9 @@ String BuildPlan::installPath(String relativeInstallPath) const
 	return installPrefix_ + "/" + relativeInstallPath;
 }
 
-void BuildPlan::prepare()
+void BuildPlan::readPrequisites()
 {
-	if (prepareComplete_) return;
-	prepareComplete_ = true;
+	if (prerequisites_) return;
 
 	if ((options_ & Tests) && !(options_ & BuildTests)) return;
 
@@ -212,9 +213,16 @@ void BuildPlan::prepare()
 				libraryPaths_->append(".");
 			libraries_->append(plan->name());
 		}
-		plan->prepare();
+		plan->readPrequisites();
 		prerequisites_->append(plan);
 	}
+}
+
+void BuildPlan::globSources()
+{
+	if (sources_) return;
+
+	if ((options_ & Tests) && !(options_ & BuildTests)) return;
 
 	sources_ = StringList::create();
 	if (recipe_->contains("source")) {
@@ -225,96 +233,56 @@ void BuildPlan::prepare()
 				sources_->append(path);
 		}
 	}
-
 	sources_ = sources_->sort();
-}
-
-bool BuildPlan::analyse()
-{
-	if (analyseComplete_) return analyseResult_;
-	analyseComplete_ = true;
-
-	if ((options_ & Tests) && !(options_ & BuildTests)) return analyseResult_ = true;
-
 	sourcePrefix_ = buildMap_->commonPrefix('/')->canonicalPath();
 
-	{
-		Format f;
-		f << ".modules";
-		{
-			Format h;
-			String path = projectPath_->absolutePath();
-			String topLevel = sourcePrefix_->absolutePath();
-			while (path != topLevel) {
-				h << path->fileName();
-				path = path->reducePath();
-			} ;
-			h << topLevel->fileName();
-			f << h->reverse()->join("_");
-		}
-		if (version_ != "") f << version_;
-		if (options_ & Static)    f << "static";
-		if (options_ & Debug)     f << "debug";
-		if (options_ & Release)   f << "release";
-		if (options_ & OptimizeSpeed) {
-			Format h;
-			h << "optimize" << "speed" << speedOptimizationLevel_;
-			f << h->join("-");
-		}
-		if (options_ & OptimizeSize) {
-			Format h;
-			h << "optimize" << "size" << sizeOptimizationLevel_;
-			f << h->join("-");
-		}
-		if (options_ & Bootstrap)
-			f << "$MACHINE";
-		else
-			f << toolChain_->machine();
-		modulePath_ = f->join("-");
-	}
-
 	for (int i = 0; i < prerequisites_->size(); ++i)
-		if (!prerequisites_->at(i)->analyse()) return analyseResult_ = false;
+		prerequisites_->at(i)->globSources();
+}
 
-	if (options_ & Package) return analyseResult_ = true;
+void BuildPlan::initModules()
+{
+	if (modules_) return;
 
-	mkdir(modulePath_);
+	if ((options_ & Tests) && !(options_ & BuildTests)) return;
 
 	modules_ = ModuleList::create();
-	Ref<JobScheduler> scheduler;
 
-	Ref<DependencyCache> dependencyCache = DependencyCache::create(this);
-	previousSources_ = dependencyCache->previousSources();
-
-	for (int i = 0; i < sources_->size(); ++i) {
-		Ref<Module> module;
-		if (dependencyCache->lookup(sources_->at(i), &module)) {
-			modules_->append(module);
-		}
-		else {
-			if (!scheduler) {
-				scheduler = JobScheduler::create();
-				scheduler->start();
-			}
-			scheduler->schedule(toolChain_->createAnalyseJob(this, sources_->at(i)));
-		}
+	Format f;
+	f << ".modules";
+	{
+		Format h;
+		String path = projectPath_->absolutePath();
+		String topLevel = sourcePrefix_->absolutePath();
+		while (path != topLevel) {
+			h << path->fileName();
+			path = path->reducePath();
+		} ;
+		h << topLevel->fileName();
+		f << h->reverse()->join("_");
 	}
-
-	if (!scheduler) return analyseResult_ = true;
-
-	for (Ref<Job> job; scheduler->collect(&job);) {
-		if (options_ & Verbose)
-			ferr() << beautify(job->command()) << nl;
-		if (job->status() != 0) {
-			fout() << job->outputText();
-			break;
-		}
-		Ref<Module> module = toolChain_->finishAnalyseJob(this, job);
-		dependencyCache->insert(module->sourcePath(), module);
-		modules_->append(module);
+	if (version_ != "") f << version_;
+	if (options_ & Static)    f << "static";
+	if (options_ & Debug)     f << "debug";
+	if (options_ & Release)   f << "release";
+	if (options_ & OptimizeSpeed) {
+		Format h;
+		h << "optimize" << "speed" << speedOptimizationLevel_;
+		f << h->join("-");
 	}
+	if (options_ & OptimizeSize) {
+		Format h;
+		h << "optimize" << "size" << sizeOptimizationLevel_;
+		f << h->join("-");
+	}
+	if (options_ & Bootstrap)
+		f << "$MACHINE";
+	else
+		f << toolChain_->machine();
+	modulePath_ = f->join("-");
 
-	return analyseResult_ = (scheduler->status() == 0);
+	for (int i = 0; i < prerequisites_->size(); ++i)
+		prerequisites_->at(i)->initModules();
 }
 
 bool BuildPlan::build()
@@ -381,7 +349,7 @@ bool BuildPlan::build()
 	}
 
 	Ref<FileStatus> productStatus = fileStatus(toolChain_->linkName(this));
-	if (productStatus->exists() && *sources_ == *previousSources_) {
+	if (productStatus->exists() && *sources_ == *analyseStage()->previousSources()) {
 		double productTime = productStatus->lastModified();
 		bool dirty = false;
 		for (int i = 0; i < modules_->size(); ++i) {

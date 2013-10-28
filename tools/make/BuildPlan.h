@@ -12,8 +12,9 @@
 
 #include <fkit/PrefixTree.h>
 #include "Module.h"
-#include "Shell.h"
+#include "BuildShell.h"
 #include "ToolChain.h"
+#include "AnalyseStage.h"
 
 namespace fkit {
 class FileStatus;
@@ -28,7 +29,7 @@ using namespace fkit;
 class BuildPlan;
 typedef List< Ref<BuildPlan> > BuildPlanList;
 
-class BuildPlan: public Object, private Shell
+class BuildPlan: public Object, private BuildShell, public AnalyseStage
 {
 public:
 	enum Option {
@@ -78,12 +79,11 @@ public:
 	inline StringList *libraryPaths() const { return libraryPaths_; }
 	inline StringList *libraries() const { return libraries_; }
 	inline StringList *sources() const { return sources_; }
-	inline StringList *previousSources() const { return previousSources_; }
 	inline ModuleList *modules() const { return modules_; }
 
 	inline BuildPlanList *prerequisites() const { return prerequisites_; }
 
-	int make();
+	int run();
 
 	inline String sourcePrefix() const { return sourcePrefix_; }
 
@@ -91,7 +91,9 @@ public:
 	String modulePath(String object) const;
 	String installPath(String relativeInstallPath) const;
 
-	inline Shell *shell() { return this; }
+	inline BuildShell *shell() { return this; }
+
+	inline AnalyseStage *analyseStage() { return this; }
 
 private:
 	Ref<BuildPlan> create(String projectPath);
@@ -104,8 +106,10 @@ private:
 
 	void readRecipe(BuildPlan *parentPlan = 0);
 
-	void prepare();
-	bool analyse();
+	void readPrequisites();
+	void globSources();
+	void initModules();
+
 	bool build();
 	int testRun();
 	bool install();
@@ -127,7 +131,6 @@ private:
 	Ref<StringList> libraryPaths_;
 	Ref<StringList> libraries_;
 	Ref<StringList> sources_;
-	Ref<StringList> previousSources_;
 	Ref<ModuleList> modules_;
 
 	Ref<BuildPlanList> prerequisites_;
@@ -136,8 +139,6 @@ private:
 	String sourcePrefix_;
 	String installPrefix_;
 
-	bool prepareComplete_;
-	bool analyseComplete_;
 	bool buildComplete_;
 	bool testRunComplete_;
 	bool installComplete_;

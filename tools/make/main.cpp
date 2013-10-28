@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 {
 	int exitCode = 0;
 	try {
-		exitCode = BuildPlan::create(argc, argv)->make();
+		exitCode = BuildPlan::create(argc, argv)->run();
 	}
 	catch (HelpException &) {
 		fout(

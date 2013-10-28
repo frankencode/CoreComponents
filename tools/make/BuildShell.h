@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_SHELL_H
-#define FMAKE_SHELL_H
+#ifndef FMAKE_BUILDSHELL_H
+#define FMAKE_BUILDSHELL_H
 
 #include <fkit/String.h>
 
@@ -21,7 +21,7 @@ using namespace fkit;
 
 class BuildPlan;
 
-class Shell
+class BuildShell
 {
 public:
 	inline BuildPlan *plan() const { return plan_; }
@@ -39,7 +39,7 @@ public:
 	bool unlink(String path);
 
 protected:
-	Shell(BuildPlan *plan);
+	BuildShell(BuildPlan *plan);
 
 private:
 	BuildPlan *plan_;
@@ -47,4 +47,4 @@ private:
 
 } // namespace fmake
 
-#endif // FMAKE_SHELL_H
+#endif // FMAKE_BUILDSHELL_H
