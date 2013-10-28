@@ -29,33 +29,33 @@ public:
 	virtual int defaultSpeedOptimizationLevel() const;
 	virtual int defaultSizeOptimizationLevel() const;
 
-	virtual String analyseCommand(BuildPlan *buildPlan, String source) const;
-	virtual Ref<Job> createAnalyseJob(BuildPlan *buildPlan, String source);
-	virtual Ref<Module> finishAnalyseJob(BuildPlan *buildPlan, Job *job);
+	virtual String analyseCommand(BuildPlan *plan, String source) const;
+	virtual Ref<Job> createAnalyseJob(BuildPlan *plan, String source);
+	virtual Ref<Module> finishAnalyseJob(BuildPlan *plan, Job *job);
 
-	virtual Ref<Job> createCompileJob(BuildPlan *buildPlan, Module *module);
-	virtual Ref<Job> createLinkJob(BuildPlan *buildPlan, Module *module);
-	virtual Ref<Job> createTestJob(BuildPlan *buildPlan, Module *module);
+	virtual Ref<Job> createCompileJob(BuildPlan *plan, Module *module);
+	virtual Ref<Job> createLinkJob(BuildPlan *plan, Module *module);
+	virtual Ref<Job> createTestJob(BuildPlan *plan, Module *module);
 
-	virtual String linkName(BuildPlan *buildPlan) const;
-	virtual bool link(BuildPlan *buildPlan);
+	virtual String linkName(BuildPlan *plan) const;
+	virtual bool link(BuildPlan *plan);
 
-	virtual bool install(BuildPlan *buildPlan);
-	virtual bool install(BuildPlan *buildPlan, Module *module);
-	virtual bool uninstall(BuildPlan *buildPlan);
-	virtual bool uninstall(BuildPlan *buildPlan, Module *module);
+	virtual bool install(BuildPlan *plan);
+	virtual bool install(BuildPlan *plan, Module *module);
+	virtual bool uninstall(BuildPlan *plan);
+	virtual bool uninstall(BuildPlan *plan, Module *module);
 
-	virtual void clean(BuildPlan *buildPlan);
+	virtual void clean(BuildPlan *plan);
 
 protected:
 	GnuToolChain(String execPath);
 	static String machineCommand(String execPath);
 
-	static void appendCompileOptions(Format args, BuildPlan *buildPlan);
-	static void appendLinkOptions(Format args, BuildPlan *buildPlan);
+	static void appendCompileOptions(Format args, BuildPlan *plan);
+	static void appendLinkOptions(Format args, BuildPlan *plan);
 
-	static void createLibrarySymlinks(BuildPlan *buildPlan, String libPath);
-	static void cleanLibrarySymlinks(BuildPlan *buildPlan, String libPath);
+	static void createLibrarySymlinks(BuildPlan *plan, String libPath);
+	static void cleanLibrarySymlinks(BuildPlan *plan, String libPath);
 };
 
 } // namespace fmake

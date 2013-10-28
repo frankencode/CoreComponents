@@ -17,19 +17,19 @@
 namespace fmake
 {
 
-Ref<DependencyCache> DependencyCache::create(BuildPlan *buildPlan)
+Ref<DependencyCache> DependencyCache::create(BuildPlan *plan)
 {
-	return new DependencyCache(buildPlan);
+	return new DependencyCache(plan);
 }
 
-String DependencyCache::cachePath(BuildPlan *buildPlan)
+String DependencyCache::cachePath(BuildPlan *plan)
 {
-	return buildPlan->modulePath("DependencyCache");
+	return plan->modulePath("DependencyCache");
 }
 
-DependencyCache::DependencyCache(BuildPlan *buildPlan)
-	: buildPlan_(buildPlan),
-	  cachePath_(cachePath(buildPlan)),
+DependencyCache::DependencyCache(BuildPlan *plan)
+	: buildPlan_(plan),
+	  cachePath_(cachePath(plan)),
 	  cache_(Cache::create()),
 	  previousSources_(StringList::create())
 {
@@ -51,7 +51,7 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 
 		previousSources_->append(item->key());
 
-		if (!buildPlan->sources()->contains(item->key())) continue;
+		if (!plan->sources()->contains(item->key())) continue;
 
 		YasonObject *yason = cast<YasonObject>(item->value());
 		String command = yason->value("analyseCommand");
@@ -61,9 +61,9 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 
 		bool dirty = false;
 
-		Ref<FileStatus> objectStatus = buildPlan_->fileStatus(modulePath);
+		Ref<FileStatus> objectStatus = buildPlan_->shell()->fileStatus(modulePath);
 		for (int i = 0; i < dependencyPaths->size(); ++i) {
-			Ref<FileStatus> sourceStatus = buildPlan_->fileStatus(dependencyPaths->at(i));
+			Ref<FileStatus> sourceStatus = buildPlan_->shell()->fileStatus(dependencyPaths->at(i));
 			if (!sourceStatus->exists()) {
 				dirty = true;
 				break;
@@ -83,7 +83,7 @@ DependencyCache::DependencyCache(BuildPlan *buildPlan)
 
 		if (dirty) continue;
 
-		if (command != buildPlan_->toolChain()->analyseCommand(buildPlan, sourcePath)) continue;
+		if (command != buildPlan_->toolChain()->analyseCommand(plan, sourcePath)) continue;
 
 		cache_->insert(
 			item->key(),

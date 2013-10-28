@@ -28,10 +28,10 @@ class BuildPlan;
 class DependencyCache: public Object
 {
 public:
-	static Ref<DependencyCache> create(BuildPlan *buildPlan);
+	static Ref<DependencyCache> create(BuildPlan *plan);
 	~DependencyCache();
 
-	static String cachePath(BuildPlan *buildPlan);
+	static String cachePath(BuildPlan *plan);
 
 	StringList *previousSources() const;
 
@@ -39,7 +39,7 @@ public:
 	void insert(String source, Module *module);
 
 private:
-	DependencyCache(BuildPlan *buildPlan);
+	DependencyCache(BuildPlan *plan);
 
 	Ref<BuildPlan> buildPlan_;
 	String cachePath_;
