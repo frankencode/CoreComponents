@@ -13,16 +13,16 @@
 #include <fkit/File.h>
 #include <fkit/Dir.h>
 #include "BuildPlan.h"
-#include "Shell.h"
+#include "BuildShell.h"
 
 namespace fmake
 {
 
-Shell::Shell(BuildPlan *plan)
+BuildShell::BuildShell(BuildPlan *plan)
 	: plan_(plan)
 {}
 
-String Shell::beautify(String command)
+String BuildShell::beautify(String command)
 {
 	if (plan()->options() & BuildPlan::Bootstrap) {
 		return command
@@ -32,20 +32,20 @@ String Shell::beautify(String command)
 	return command;
 }
 
-bool Shell::run(String command)
+bool BuildShell::run(String command)
 {
 	ferr() << beautify(command) << nl;
 	if (plan()->options() & BuildPlan::Simulate) return true;
 	return Process::start(command)->wait() == 0;
 }
 
-Ref<FileStatus> Shell::fileStatus(String path)
+Ref<FileStatus> BuildShell::fileStatus(String path)
 {
 	if (plan()->options() & BuildPlan::Blindfold) return FileStatus::read();
 	return FileStatus::read(path);
 }
 
-bool Shell::mkdir(String path)
+bool BuildShell::mkdir(String path)
 {
 	if (!fileStatus(path)->exists())
 		ferr("mkdir -p %%\n") << path;
@@ -53,7 +53,7 @@ bool Shell::mkdir(String path)
 	return Dir::establish(path);
 }
 
-bool Shell::rmdir(String path)
+bool BuildShell::rmdir(String path)
 {
 	if (fileStatus(path)->exists())
 		ferr("rmdir %%\n") << path;
@@ -61,7 +61,7 @@ bool Shell::rmdir(String path)
 	return Dir::unlink(path);
 }
 
-bool Shell::symlink(String path, String newPath)
+bool BuildShell::symlink(String path, String newPath)
 {
 	ferr("ln -sf %% %%\n") << path << newPath;
 	if (plan()->options() & BuildPlan::Simulate) return true;
@@ -69,7 +69,7 @@ bool Shell::symlink(String path, String newPath)
 	return File::symlink(path, newPath);
 }
 
-bool Shell::install(String sourcePath, String destPath)
+bool BuildShell::install(String sourcePath, String destPath)
 {
 	String destDirPath = destPath->reducePath();
 	bool destDirMissing = destDirPath != "" && !fileStatus(destDirPath)->exists();
@@ -97,7 +97,7 @@ bool Shell::install(String sourcePath, String destPath)
 	return true;
 }
 
-bool Shell::unlink(String path)
+bool BuildShell::unlink(String path)
 {
 	if (File::unresolvedStatus(path)->exists()) {
 		if (plan()->options() & BuildPlan::Simulate) {

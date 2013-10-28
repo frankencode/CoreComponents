@@ -11,6 +11,7 @@
 #define FMAKE_DEPENDENCYCACHE_H
 
 #include <fkit/String.h>
+#include <fkit/Map.h>
 
 namespace fkit {
 class File;
