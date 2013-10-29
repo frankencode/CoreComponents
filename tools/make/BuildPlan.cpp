@@ -35,6 +35,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	: shell_(this),
 	  analyseStage_(this),
 	  compileLinkStage_(this),
+	  testRunStage_(this),
 	  toolChain_(GnuToolChain::create()),
 	  projectPath_("."),
 	  buildMap_(BuildMap::create())
@@ -59,6 +60,7 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 	: shell_(this),
 	  analyseStage_(this),
 	  compileLinkStage_(this),
+	  testRunStage_(this),
 	  toolChain_(parentPlan->toolChain_),
 	  projectPath_(projectPath),
 	  buildMap_(parentPlan->buildMap_)
@@ -74,7 +76,6 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 
 void BuildPlan::initFlags()
 {
-	testRunComplete_ = false;
 	installComplete_ = false;
 	uninstallComplete_ = false;
 	cleanComplete_ = false;
@@ -163,7 +164,7 @@ int BuildPlan::run()
 	if (!compileLinkStage()->run()) return 2;
 
 	if (recipe_->value("test-run")) {
-		int ret = testRun();
+		int ret = testRunStage()->run();
 		if (ret != 0) return ret;
 	}
 
@@ -283,35 +284,6 @@ void BuildPlan::initModules()
 
 	for (int i = 0; i < prerequisites_->size(); ++i)
 		prerequisites_->at(i)->initModules();
-}
-
-int BuildPlan::testRun()
-{
-	if (testRunComplete_) return testRunResult_;
-	testRunComplete_ = true;
-
-	for (int i = 0; i < prerequisites_->size(); ++i) {
-		testRunResult_ = prerequisites_->at(i)->testRun();
-		if (testRunResult_ != 0) return testRunResult_;
-	}
-
-	if (!(options_ & Tests)) return 0;
-
-	Ref<JobScheduler> scheduler = JobScheduler::create();
-
-	for (int i = 0; i < modules_->size(); ++i) {
-		Module *module = modules_->at(i);
-		scheduler->schedule(toolChain_->createTestJob(this, module));
-	}
-
-	for (Ref<Job> job; scheduler->collect(&job);) {
-		ferr() << job->command() << nl;
-		fout() << job->outputText();
-		if (job->status() != 0)
-			return testRunResult_ = job->status();
-	}
-
-	return testRunResult_ = 0;
 }
 
 bool BuildPlan::install()
