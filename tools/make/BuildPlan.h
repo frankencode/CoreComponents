@@ -15,6 +15,7 @@
 #include "BuildShell.h"
 #include "ToolChain.h"
 #include "AnalyseStage.h"
+#include "CompileLinkStage.h"
 
 namespace fkit {
 class FileStatus;
@@ -29,7 +30,7 @@ using namespace fkit;
 class BuildPlan;
 typedef List< Ref<BuildPlan> > BuildPlanList;
 
-class BuildPlan: public Object, private BuildShell, public AnalyseStage
+class BuildPlan: public Object
 {
 public:
 	enum Option {
@@ -91,9 +92,10 @@ public:
 	String modulePath(String object) const;
 	String installPath(String relativeInstallPath) const;
 
-	inline BuildShell *shell() { return this; }
+	inline BuildShell *shell() { return &shell_; }
 
-	inline AnalyseStage *analyseStage() { return this; }
+	inline AnalyseStage *analyseStage() { return &analyseStage_; }
+	inline CompileLinkStage *compileLinkStage() { return &compileLinkStage_; }
 
 private:
 	Ref<BuildPlan> create(String projectPath);
@@ -110,11 +112,14 @@ private:
 	void globSources();
 	void initModules();
 
-	bool build();
 	int testRun();
 	bool install();
 	bool uninstall();
 	void clean();
+
+	BuildShell shell_;
+	AnalyseStage analyseStage_;
+	CompileLinkStage compileLinkStage_;
 
 	Ref<ToolChain> toolChain_;
 	String projectPath_;
@@ -139,13 +144,11 @@ private:
 	String sourcePrefix_;
 	String installPrefix_;
 
-	bool buildComplete_;
 	bool testRunComplete_;
 	bool installComplete_;
 	bool uninstallComplete_;
 	bool cleanComplete_;
 
-	bool analyseResult_;
 	bool buildResult_;
 	int testRunResult_;
 };

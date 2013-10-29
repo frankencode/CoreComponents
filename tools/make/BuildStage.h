@@ -29,12 +29,7 @@ protected:
 	BuildShell *shell() const;
 	ToolChain *toolChain() const;
 
-	BuildStage(BuildPlan *plan)
-		: plan_(plan),
-		  complete_(false),
-		  success_(false),
-		  status_(0)
-	{}
+	BuildStage(BuildPlan *plan);
 
 	BuildPlan *plan_;
 	bool complete_, success_;

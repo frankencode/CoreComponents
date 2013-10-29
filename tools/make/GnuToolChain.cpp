@@ -19,8 +19,13 @@ namespace fmake
 {
 
 GnuToolChain::GnuToolChain(String execPath)
-	: ToolChain(execPath, Process::start(machineCommand(execPath), Process::ForwardOutput)->lineOut()->readLine())
+	: ToolChain(execPath, queryMachine(execPath))
 {}
+
+String GnuToolChain::queryMachine(String execPath)
+{
+	return Process::start(machineCommand(execPath), Process::ForwardOutput)->lineOut()->readLine();
+}
 
 String GnuToolChain::machineCommand(String execPath)
 {
