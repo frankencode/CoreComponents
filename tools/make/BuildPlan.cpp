@@ -138,7 +138,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
 int BuildPlan::run()
 {
-	readPrequisites();
+	readPrerequisites();
 	globSources();
 	initModules();
 
@@ -191,7 +191,7 @@ String BuildPlan::installPath(String relativeInstallPath) const
 	return installPrefix_ + "/" + relativeInstallPath;
 }
 
-void BuildPlan::readPrequisites()
+void BuildPlan::readPrerequisites()
 {
 	if (prerequisites_) return;
 
@@ -214,7 +214,7 @@ void BuildPlan::readPrequisites()
 				libraryPaths_->append(".");
 			libraries_->append(plan->name());
 		}
-		plan->readPrequisites();
+		plan->readPrerequisites();
 		prerequisites_->append(plan);
 	}
 }
