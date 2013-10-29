@@ -163,8 +163,8 @@ int BuildPlan::run()
 	if (!compileLinkStage()->run()) return 1;
 
 	if (recipe_->value("test-run")) {
-		int ret = testRunStage()->run();
-		if (ret != 0) return ret;
+		if (!testRunStage()->run())
+			return testRunStage()->status();
 	}
 
 	if (recipe_->value("install")) {

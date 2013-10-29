@@ -57,14 +57,15 @@ bool AnalyseStage::run()
 			ferr() << shell()->beautify(job->command()) << nl;
 		if (job->status() != 0) {
 			fout() << job->outputText();
-			break;
+			status_ = job->status();
+			return success_ = false;
 		}
 		Ref<Module> module = toolChain()->finishAnalyseJob(plan(), job);
 		dependencyCache->insert(module->sourcePath(), module);
 		plan()->modules()->append(module);
 	}
 
-	return success_ = (scheduler->status() == 0);
+	return success_ = true;
 }
 
 } // namespace fmake
