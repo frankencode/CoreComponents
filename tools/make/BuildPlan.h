@@ -110,7 +110,7 @@ private:
 
 	void readRecipe(BuildPlan *parentPlan = 0);
 
-	void readPrequisites();
+	void readPrerequisites();
 	void globSources();
 	void initModules();
 
