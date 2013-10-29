@@ -16,7 +16,7 @@ namespace fmake
 BuildStage::BuildStage(BuildPlan *plan)
 	: plan_(plan),
 	  complete_(false),
-	  success_(false),
+	  success_(true),
 	  status_(0)
 {}
 

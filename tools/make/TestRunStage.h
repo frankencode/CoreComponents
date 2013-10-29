@@ -19,7 +19,7 @@ class TestRunStage: public BuildStage
 {
 public:
 	TestRunStage(BuildPlan *plan): BuildStage(plan) {}
-	int run();
+	bool run();
 };
 
 } // namespace fmake

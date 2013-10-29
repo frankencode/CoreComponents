@@ -15,17 +15,20 @@
 namespace fmake
 {
 
-int TestRunStage::run()
+bool TestRunStage::run()
 {
-	if (complete_) return status_;
+	if (complete_) return success_;
 	complete_ = true;
 
 	for (int i = 0; i < plan()->prerequisites()->size(); ++i) {
-		status_ = plan()->prerequisites()->at(i)->testRunStage()->run();
-		if (status_ != 0) return status_;
+		TestRunStage *stage = plan()->prerequisites()->at(i)->testRunStage();
+		if (!stage->run()) {
+			status_ = stage->status();
+			return success_ = false;
+		}
 	}
 
-	if (!(plan()->options() & BuildPlan::Tests)) return 0;
+	if (!(plan()->options() & BuildPlan::Tests)) return success_ = true;
 
 	Ref<JobScheduler> scheduler = JobScheduler::create();
 
@@ -37,11 +40,13 @@ int TestRunStage::run()
 	for (Ref<Job> job; scheduler->collect(&job);) {
 		ferr() << job->command() << nl;
 		fout() << job->outputText();
-		if (job->status() != 0)
-			return status_ = job->status();
+		if (job->status() != 0) {
+			status_ = job->status();
+			return success_ = false;
+		}
 	}
 
-	return status_ = 0;
+	return success_ = true;
 }
 
 } // namespace fmake
