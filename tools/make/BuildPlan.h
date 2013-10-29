@@ -16,6 +16,7 @@
 #include "ToolChain.h"
 #include "AnalyseStage.h"
 #include "CompileLinkStage.h"
+#include "TestRunStage.h"
 
 namespace fkit {
 class FileStatus;
@@ -96,6 +97,7 @@ public:
 
 	inline AnalyseStage *analyseStage() { return &analyseStage_; }
 	inline CompileLinkStage *compileLinkStage() { return &compileLinkStage_; }
+	inline TestRunStage *testRunStage() { return &testRunStage_; }
 
 private:
 	Ref<BuildPlan> create(String projectPath);
@@ -112,7 +114,6 @@ private:
 	void globSources();
 	void initModules();
 
-	int testRun();
 	bool install();
 	bool uninstall();
 	void clean();
@@ -120,6 +121,7 @@ private:
 	BuildShell shell_;
 	AnalyseStage analyseStage_;
 	CompileLinkStage compileLinkStage_;
+	TestRunStage testRunStage_;
 
 	Ref<ToolChain> toolChain_;
 	String projectPath_;
@@ -144,7 +146,6 @@ private:
 	String sourcePrefix_;
 	String installPrefix_;
 
-	bool testRunComplete_;
 	bool installComplete_;
 	bool uninstallComplete_;
 	bool cleanComplete_;
