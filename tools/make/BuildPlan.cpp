@@ -32,8 +32,9 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 }
 
 BuildPlan::BuildPlan(int argc, char **argv)
-	: BuildShell(this),
-	  AnalyseStage(this),
+	: shell_(this),
+	  analyseStage_(this),
+	  compileLinkStage_(this),
 	  toolChain_(GnuToolChain::create()),
 	  projectPath_("."),
 	  buildMap_(BuildMap::create())
@@ -55,8 +56,9 @@ BuildPlan::BuildPlan(int argc, char **argv)
 }
 
 BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
-	: BuildShell(this),
-	  AnalyseStage(this),
+	: shell_(this),
+	  analyseStage_(this),
+	  compileLinkStage_(this),
 	  toolChain_(parentPlan->toolChain_),
 	  projectPath_(projectPath),
 	  buildMap_(parentPlan->buildMap_)
@@ -72,12 +74,10 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 
 void BuildPlan::initFlags()
 {
-	buildComplete_ = false;
 	testRunComplete_ = false;
 	installComplete_ = false;
 	uninstallComplete_ = false;
 	cleanComplete_ = false;
-	analyseResult_ = false;
 	buildResult_ = false;
 	testRunResult_ = 0;
 }
@@ -160,7 +160,7 @@ int BuildPlan::run()
 		return uninstall() ? 0 : 3;
 	}
 
-	if (!build()) return 2;
+	if (!compileLinkStage()->run()) return 2;
 
 	if (recipe_->value("test-run")) {
 		int ret = testRun();
@@ -283,98 +283,6 @@ void BuildPlan::initModules()
 
 	for (int i = 0; i < prerequisites_->size(); ++i)
 		prerequisites_->at(i)->initModules();
-}
-
-bool BuildPlan::build()
-{
-	if (buildComplete_) return buildResult_;
-	buildComplete_ = true;
-
-	if ((options_ & Tests) && !(options_ & BuildTests)) return buildResult_ = true;
-
-	for (int i = 0; i < prerequisites_->size(); ++i)
-		if (!prerequisites_->at(i)->build()) return buildResult_ = false;
-
-	if (options_ & Package) return buildResult_ = true;
-
-	Ref<JobScheduler> compileScheduler;
-	Ref<JobScheduler> linkScheduler;
-
-	for (int i = 0; i < modules_->size(); ++i) {
-		Module *module = modules_->at(i);
-		bool dirty = module->dirty();
-		if (options_ & Tools)
-			dirty = dirty || !fileStatus(module->toolName())->exists();
-		if (dirty) {
-			Ref<Job> job = toolChain_->createCompileJob(this, module);
-			Ref<Job> linkJob;
-			if (options_ & Tools) linkJob = toolChain_->createLinkJob(this, module);
-			if (options_ & Simulate) {
-				ferr() << beautify(job->command()) << nl;
-				if (linkJob)
-					ferr() << beautify(linkJob->command()) << nl;
-			}
-			else {
-				if (!compileScheduler) {
-					compileScheduler = JobScheduler::create();
-					compileScheduler->start();
-				}
-				compileScheduler->schedule(job);
-				if (linkJob) {
-					if (!linkScheduler) linkScheduler = JobScheduler::create();
-					linkScheduler->schedule(linkJob);
-				}
-			}
-		}
-	}
-
-	if (compileScheduler) {
-		for (Ref<Job> job; compileScheduler->collect(&job);) {
-			ferr() << beautify(job->command()) << nl;
-			fout() << job->outputText();
-			if (job->status() != 0) return buildResult_ = false;
-		}
-	}
-
-	if (options_ & Tools) {
-		if (linkScheduler) {
-			linkScheduler->start();
-			for (Ref<Job> job; linkScheduler->collect(&job);) {
-				ferr() << beautify(job->command()) << nl;
-				fout() << job->outputText();
-				if (job->status() != 0) return buildResult_ = false;
-			}
-		}
-		return buildResult_ = true;
-	}
-
-	Ref<FileStatus> productStatus = fileStatus(toolChain_->linkName(this));
-	if (productStatus->exists() && *sources_ == *analyseStage()->previousSources()) {
-		double productTime = productStatus->lastModified();
-		bool dirty = false;
-		for (int i = 0; i < modules_->size(); ++i) {
-			Module *module = modules_->at(i);
-			Ref<FileStatus> moduleStatus = fileStatus(module->modulePath());
-			if (moduleStatus->lastModified() > productTime) {
-				dirty = true;
-				break;
-			}
-		}
-		Ref<FileStatus> recipeStatus = fileStatus(recipe_->path());
-		if (recipeStatus->exists()) {
-			if (recipeStatus->lastModified() > productTime) dirty = true;
-			for (int i = 0; i < prerequisites_->size(); ++i) {
-				Ref<FileStatus> recipeStatus = fileStatus(prerequisites_->at(i)->recipe_->path());
-				if (recipeStatus->lastModified() > productTime) {
-					dirty = true;
-					break;
-				}
-			}
-		}
-		if (!dirty) return buildResult_ = true;
-	}
-
-	return buildResult_ = toolChain_->link(this);
 }
 
 int BuildPlan::testRun()

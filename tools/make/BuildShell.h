@@ -24,6 +24,7 @@ class BuildPlan;
 class BuildShell
 {
 public:
+	BuildShell(BuildPlan *plan);
 	inline BuildPlan *plan() const { return plan_; }
 
 	String beautify(String command);
@@ -37,9 +38,6 @@ public:
 
 	bool install(String sourcePath, String destPath);
 	bool unlink(String path);
-
-protected:
-	BuildShell(BuildPlan *plan);
 
 private:
 	BuildPlan *plan_;

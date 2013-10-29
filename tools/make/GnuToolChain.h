@@ -49,6 +49,9 @@ public:
 
 protected:
 	GnuToolChain(String execPath);
+	void clangColorWorkaround(String execPath);
+
+	static String queryMachine(String execPath);
 	static String machineCommand(String execPath);
 
 	static void appendCompileOptions(Format args, BuildPlan *plan);

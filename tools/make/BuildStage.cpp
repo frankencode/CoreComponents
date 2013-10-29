@@ -13,6 +13,13 @@
 namespace fmake
 {
 
+BuildStage::BuildStage(BuildPlan *plan)
+	: plan_(plan),
+	  complete_(false),
+	  success_(false),
+	  status_(0)
+{}
+
 BuildShell *BuildStage::shell() const { return plan_->shell(); }
 ToolChain *BuildStage::toolChain() const { return plan_->toolChain(); }
 
