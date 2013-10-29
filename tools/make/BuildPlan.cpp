@@ -32,13 +32,14 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 }
 
 BuildPlan::BuildPlan(int argc, char **argv)
-	: shell_(this),
+	: toolChain_(GnuToolChain::create()),
+	  projectPath_("."),
+	  buildMap_(BuildMap::create()),
+	  shell_(this),
 	  analyseStage_(this),
 	  compileLinkStage_(this),
 	  testRunStage_(this),
-	  toolChain_(GnuToolChain::create()),
-	  projectPath_("."),
-	  buildMap_(BuildMap::create())
+	  installStage_(this)
 {
 	initFlags();
 
@@ -57,13 +58,14 @@ BuildPlan::BuildPlan(int argc, char **argv)
 }
 
 BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
-	: shell_(this),
+	: toolChain_(parentPlan->toolChain_),
+	  projectPath_(projectPath),
+	  buildMap_(parentPlan->buildMap_),
+	  shell_(this),
 	  analyseStage_(this),
 	  compileLinkStage_(this),
 	  testRunStage_(this),
-	  toolChain_(parentPlan->toolChain_),
-	  projectPath_(projectPath),
-	  buildMap_(parentPlan->buildMap_)
+	  installStage_(this)
 {
 	initFlags();
 
@@ -76,11 +78,8 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 
 void BuildPlan::initFlags()
 {
-	installComplete_ = false;
 	uninstallComplete_ = false;
 	cleanComplete_ = false;
-	buildResult_ = false;
-	testRunResult_ = 0;
 }
 
 void BuildPlan::readRecipe(BuildPlan *parentPlan)
@@ -158,10 +157,10 @@ int BuildPlan::run()
 	}
 
 	if (recipe_->value("uninstall")) {
-		return uninstall() ? 0 : 3;
+		return uninstall() ? 0 : 1;
 	}
 
-	if (!compileLinkStage()->run()) return 2;
+	if (!compileLinkStage()->run()) return 1;
 
 	if (recipe_->value("test-run")) {
 		int ret = testRunStage()->run();
@@ -169,7 +168,7 @@ int BuildPlan::run()
 	}
 
 	if (recipe_->value("install")) {
-		if (!install()) return 2;
+		if (!installStage()->run()) return 1;
 	}
 
 	return 0;
@@ -284,29 +283,6 @@ void BuildPlan::initModules()
 
 	for (int i = 0; i < prerequisites_->size(); ++i)
 		prerequisites_->at(i)->initModules();
-}
-
-bool BuildPlan::install()
-{
-	if (installComplete_) return true;
-	installComplete_ = true;
-
-	if (options_ & Tests) return true;
-
-	for (int i = 0; i < prerequisites_->size(); ++i)
-		if (!prerequisites_->at(i)->install()) return false;
-
-	if (options_ & Package) return true;
-
-	if (options_ & Tools) {
-		for (int i = 0; i < modules_->size(); ++i) {
-			if (!toolChain_->install(this, modules_->at(i)))
-				return false;
-		}
-		return true;
-	}
-
-	return toolChain_->install(this);
 }
 
 bool BuildPlan::uninstall()

@@ -11,7 +11,6 @@
 #include <fkit/FileStatus.h>
 #include "JobScheduler.h"
 #include "BuildShell.h"
-#include "ToolChain.h"
 #include "BuildPlan.h"
 #include "CompileLinkStage.h"
 

@@ -17,6 +17,7 @@
 #include "AnalyseStage.h"
 #include "CompileLinkStage.h"
 #include "TestRunStage.h"
+#include "InstallStage.h"
 
 namespace fkit {
 class FileStatus;
@@ -67,6 +68,7 @@ public:
 	static Ref<BuildPlan> create(int argc, char **argv);
 
 	inline ToolChain *toolChain() const { return toolChain_; }
+
 	inline String projectPath() const { return projectPath_; }
 	inline String modulePath() const { return modulePath_; }
 	inline Config *recipe() const { return recipe_; }
@@ -98,6 +100,7 @@ public:
 	inline AnalyseStage *analyseStage() { return &analyseStage_; }
 	inline CompileLinkStage *compileLinkStage() { return &compileLinkStage_; }
 	inline TestRunStage *testRunStage() { return &testRunStage_; }
+	inline InstallStage *installStage() { return &installStage_; }
 
 private:
 	Ref<BuildPlan> create(String projectPath);
@@ -114,16 +117,11 @@ private:
 	void globSources();
 	void initModules();
 
-	bool install();
 	bool uninstall();
 	void clean();
 
-	BuildShell shell_;
-	AnalyseStage analyseStage_;
-	CompileLinkStage compileLinkStage_;
-	TestRunStage testRunStage_;
-
 	Ref<ToolChain> toolChain_;
+
 	String projectPath_;
 	String modulePath_;
 	Ref<Config> recipe_;
@@ -146,12 +144,15 @@ private:
 	String sourcePrefix_;
 	String installPrefix_;
 
-	bool installComplete_;
 	bool uninstallComplete_;
 	bool cleanComplete_;
 
-	bool buildResult_;
-	int testRunResult_;
+	BuildShell shell_;
+
+	AnalyseStage analyseStage_;
+	CompileLinkStage compileLinkStage_;
+	TestRunStage testRunStage_;
+	InstallStage installStage_;
 };
 
 } // namespace fmake
