@@ -18,6 +18,7 @@
 #include "CompileLinkStage.h"
 #include "TestRunStage.h"
 #include "InstallStage.h"
+#include "UninstallStage.h"
 
 namespace fkit {
 class FileStatus;
@@ -101,6 +102,7 @@ public:
 	inline CompileLinkStage *compileLinkStage() { return &compileLinkStage_; }
 	inline TestRunStage *testRunStage() { return &testRunStage_; }
 	inline InstallStage *installStage() { return &installStage_; }
+	inline UninstallStage *uninstallStage() { return &uninstallStage_; }
 
 private:
 	Ref<BuildPlan> create(String projectPath);
@@ -117,7 +119,6 @@ private:
 	void globSources();
 	void initModules();
 
-	bool uninstall();
 	void clean();
 
 	Ref<ToolChain> toolChain_;
@@ -144,7 +145,6 @@ private:
 	String sourcePrefix_;
 	String installPrefix_;
 
-	bool uninstallComplete_;
 	bool cleanComplete_;
 
 	BuildShell shell_;
@@ -153,6 +153,7 @@ private:
 	CompileLinkStage compileLinkStage_;
 	TestRunStage testRunStage_;
 	InstallStage installStage_;
+	UninstallStage uninstallStage_;
 };
 
 } // namespace fmake

@@ -31,15 +31,19 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 	return new BuildPlan(projectPath, this);
 }
 
+#define FMAKE_STAGES_INIT \
+	shell_(this), \
+	analyseStage_(this), \
+	compileLinkStage_(this), \
+	testRunStage_(this), \
+	installStage_(this), \
+	uninstallStage_(this)
+
 BuildPlan::BuildPlan(int argc, char **argv)
 	: toolChain_(GnuToolChain::create()),
 	  projectPath_("."),
 	  buildMap_(BuildMap::create()),
-	  shell_(this),
-	  analyseStage_(this),
-	  compileLinkStage_(this),
-	  testRunStage_(this),
-	  installStage_(this)
+	  FMAKE_STAGES_INIT
 {
 	initFlags();
 
@@ -61,11 +65,7 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 	: toolChain_(parentPlan->toolChain_),
 	  projectPath_(projectPath),
 	  buildMap_(parentPlan->buildMap_),
-	  shell_(this),
-	  analyseStage_(this),
-	  compileLinkStage_(this),
-	  testRunStage_(this),
-	  installStage_(this)
+	  FMAKE_STAGES_INIT
 {
 	initFlags();
 
@@ -78,7 +78,6 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 
 void BuildPlan::initFlags()
 {
-	uninstallComplete_ = false;
 	cleanComplete_ = false;
 }
 
@@ -157,7 +156,7 @@ int BuildPlan::run()
 	}
 
 	if (recipe_->value("uninstall")) {
-		return uninstall() ? 0 : 1;
+		return uninstallStage()->run() ? 0 : 1;
 	}
 
 	if (!compileLinkStage()->run()) return 1;
@@ -283,29 +282,6 @@ void BuildPlan::initModules()
 
 	for (int i = 0; i < prerequisites_->size(); ++i)
 		prerequisites_->at(i)->initModules();
-}
-
-bool BuildPlan::uninstall()
-{
-	if (uninstallComplete_) return true;
-	uninstallComplete_ = true;
-
-	if (options_ & Tests) return true;
-
-	for (int i = 0; i < prerequisites_->size(); ++i)
-		if (!prerequisites_->at(i)->uninstall()) return false;
-
-	if (options_ & Package) return true;
-
-	if (options_ & Tools) {
-		for (int i = 0; i < modules_->size(); ++i) {
-			if (!toolChain_->uninstall(this, modules_->at(i)))
-				return false;
-		}
-		return true;
-	}
-
-	return toolChain_->uninstall(this);
 }
 
 void BuildPlan::clean()
