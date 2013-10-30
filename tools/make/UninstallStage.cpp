@@ -8,12 +8,12 @@
  */
 
 #include "BuildPlan.h"
-#include "InstallStage.h"
+#include "UninstallStage.h"
 
 namespace fmake
 {
 
-bool InstallStage::run()
+bool UninstallStage::run()
 {
 	if (complete_) return success_;
 	complete_ = true;
@@ -21,7 +21,7 @@ bool InstallStage::run()
 	if (plan()->options() & BuildPlan::Tests) return success_ = true;
 
 	for (int i = 0; i < plan()->prerequisites()->size(); ++i) {
-		if (!plan()->prerequisites()->at(i)->installStage()->run())
+		if (!plan()->prerequisites()->at(i)->uninstallStage()->run())
 			return success_ = false;
 	}
 
@@ -29,13 +29,13 @@ bool InstallStage::run()
 
 	if (plan()->options() & BuildPlan::Tools) {
 		for (int i = 0; i < plan()->modules()->size(); ++i) {
-			if (!toolChain()->install(plan(), plan()->modules()->at(i)))
+			if (!toolChain()->uninstall(plan(), plan()->modules()->at(i)))
 				return success_ = false;
 		}
 		return success_ = true;
 	}
 
-	return success_ = toolChain()->install(plan());
+	return success_ = toolChain()->uninstall(plan());
 }
 
 } // namespace fmake
