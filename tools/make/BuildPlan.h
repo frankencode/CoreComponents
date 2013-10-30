@@ -19,6 +19,7 @@
 #include "TestRunStage.h"
 #include "InstallStage.h"
 #include "UninstallStage.h"
+#include "CleanStage.h"
 
 namespace fkit {
 class FileStatus;
@@ -103,6 +104,7 @@ public:
 	inline TestRunStage *testRunStage() { return &testRunStage_; }
 	inline InstallStage *installStage() { return &installStage_; }
 	inline UninstallStage *uninstallStage() { return &uninstallStage_; }
+	inline CleanStage *cleanStage() { return &cleanStage_; }
 
 private:
 	Ref<BuildPlan> create(String projectPath);
@@ -111,15 +113,12 @@ private:
 
 	BuildPlan(int argc, char **argv);
 	BuildPlan(String projectPath, BuildPlan *parentPlan);
-	void initFlags();
 
 	void readRecipe(BuildPlan *parentPlan = 0);
 
 	void readPrerequisites();
 	void globSources();
 	void initModules();
-
-	void clean();
 
 	Ref<ToolChain> toolChain_;
 
@@ -145,8 +144,6 @@ private:
 	String sourcePrefix_;
 	String installPrefix_;
 
-	bool cleanComplete_;
-
 	BuildShell shell_;
 
 	AnalyseStage analyseStage_;
@@ -154,6 +151,7 @@ private:
 	TestRunStage testRunStage_;
 	InstallStage installStage_;
 	UninstallStage uninstallStage_;
+	CleanStage cleanStage_;
 };
 
 } // namespace fmake

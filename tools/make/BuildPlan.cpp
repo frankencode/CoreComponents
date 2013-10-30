@@ -31,22 +31,21 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 	return new BuildPlan(projectPath, this);
 }
 
-#define FMAKE_STAGES_INIT \
+#define FMAKE_BUILDPLAN_COMPONENTS_INIT \
 	shell_(this), \
 	analyseStage_(this), \
 	compileLinkStage_(this), \
 	testRunStage_(this), \
 	installStage_(this), \
-	uninstallStage_(this)
+	uninstallStage_(this), \
+	cleanStage_(this)
 
 BuildPlan::BuildPlan(int argc, char **argv)
 	: toolChain_(GnuToolChain::create()),
 	  projectPath_("."),
 	  buildMap_(BuildMap::create()),
-	  FMAKE_STAGES_INIT
+	  FMAKE_BUILDPLAN_COMPONENTS_INIT
 {
-	initFlags();
-
 	recipe_ = Config::read(argc, argv);
 	if (recipe_->arguments()->size() > 0) {
 		if (recipe_->arguments()->size() > 1)
@@ -65,20 +64,13 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 	: toolChain_(parentPlan->toolChain_),
 	  projectPath_(projectPath),
 	  buildMap_(parentPlan->buildMap_),
-	  FMAKE_STAGES_INIT
+	  FMAKE_BUILDPLAN_COMPONENTS_INIT
 {
-	initFlags();
-
 	recipe_ = Config::read(projectPath_ + "/Recipe", recipeProtocol());
 
 	readRecipe(parentPlan);
 
 	buildMap_->insert(projectPath_, this);
-}
-
-void BuildPlan::initFlags()
-{
-	cleanComplete_ = false;
 }
 
 void BuildPlan::readRecipe(BuildPlan *parentPlan)
@@ -151,8 +143,7 @@ int BuildPlan::run()
 	if (!analyseStage()->run()) return 1;
 
 	if (recipe_->value("clean")) {
-		clean();
-		return 0;
+		return cleanStage()->run() ? 0 : 1;
 	}
 
 	if (recipe_->value("uninstall")) {
@@ -282,21 +273,6 @@ void BuildPlan::initModules()
 
 	for (int i = 0; i < prerequisites_->size(); ++i)
 		prerequisites_->at(i)->initModules();
-}
-
-void BuildPlan::clean()
-{
-	if (cleanComplete_) return;
-	cleanComplete_ = true;
-
-	for (int i = 0; i < prerequisites_->size(); ++i)
-		prerequisites_->at(i)->clean();
-
-	if (options_ & Package) return;
-
-	toolChain_->clean(this);
-	unlink(DependencyCache::cachePath(this));
-	rmdir(modulePath_);
 }
 
 } // namespace fmake
