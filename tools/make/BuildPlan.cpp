@@ -33,6 +33,7 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 
 #define FMAKE_BUILDPLAN_COMPONENTS_INIT \
 	shell_(this), \
+	configureStage_(this), \
 	analyseStage_(this), \
 	compileLinkStage_(this), \
 	testRunStage_(this), \
@@ -168,6 +169,10 @@ int BuildPlan::run()
 
 	if (!analyseStage()->run()) return 1;
 
+	if (systemPrerequisitesByName_) {
+		if (!configureStage()->run()) return 1;
+	}
+
 	if (recipe_->value("clean")) {
 		return cleanStage()->run() ? 0 : 1;
 	}
@@ -204,6 +209,25 @@ String BuildPlan::modulePath(String object) const
 String BuildPlan::installPath(String relativeInstallPath) const
 {
 	return installPrefix_ + "/" + relativeInstallPath;
+}
+
+void BuildPlan::readSystemPrerequisites()
+{
+	if (systemPrerequisitesByName_) return;
+
+	if (!recipe_->hasChildren()) return;
+
+	systemPrerequisitesByName_ = SystemPrerequisitesByName::create();
+
+	for (int i = 0; i < recipe_->children()->size(); ++i) {
+		YasonObject *object = recipe_->children()->at(i);
+		if (object->className() != "SystemPrerequisite") continue;
+		Ref<SystemPrerequisite> p = SystemPrerequisite::read(object);
+		Ref<SystemPrerequisiteList> l;
+		if (!systemPrerequisitesByName_->lookup(p->name(), &l))
+			systemPrerequisitesByName_->insert(p->name(), l = SystemPrerequisiteList::create());
+		l->append(p);
+	}
 }
 
 void BuildPlan::readPrerequisites()
@@ -278,9 +302,9 @@ void BuildPlan::initModules()
 		f << h->reverse()->join("_");
 	}
 	if (version_ != "") f << version_;
-	if (options_ & Static)    f << "static";
-	if (options_ & Debug)     f << "debug";
-	if (options_ & Release)   f << "release";
+	if (options_ & Static) f << "static";
+	if (options_ & Debug) f << "debug";
+	if (options_ & Release) f << "release";
 	if (options_ & OptimizeSpeed) {
 		Format h;
 		h << "optimize" << "speed" << speedOptimizationLevel_;
