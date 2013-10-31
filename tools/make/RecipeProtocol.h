@@ -23,12 +23,6 @@ class RecipeProtocol: public YasonProtocol, public Singleton<RecipeProtocol>
 protected:
 	friend class Singleton<RecipeProtocol>;
 	RecipeProtocol();
-
-	template<class Prototype>
-	void add() {
-		Ref<Prototype> prototype = Prototype::create();
-		insert(prototype->className(), prototype);
-	}
 };
 
 inline RecipeProtocol *recipeProtocol() { return RecipeProtocol::instance(); }

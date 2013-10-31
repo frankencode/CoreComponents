@@ -207,12 +207,21 @@ void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan)
 	if (plan->options() & BuildPlan::Library) args << "-fPIC";
 	else args << "-fPIE";
 	args << "-Wall" << "-pthread";
+	if (plan->customCompileFlags()) {
+		for (int i = 0; i < plan->customCompileFlags()->size(); ++i)
+			args << plan->customCompileFlags()->at(i);
+	}
 	for (int i = 0; i < plan->includePaths()->size(); ++i)
 		args << "-I" + plan->includePaths()->at(i);
 }
 
 void GnuToolChain::appendLinkOptions(Format args, BuildPlan *plan)
 {
+	if (plan->customLinkFlags()) {
+		for (int i = 0; i < plan->customLinkFlags()->size(); ++i)
+			args << plan->customLinkFlags()->at(i);
+	}
+
 	StringList *libraryPaths = plan->libraryPaths();
 	StringList *libraries = plan->libraries();
 

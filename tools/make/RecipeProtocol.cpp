@@ -15,8 +15,8 @@ namespace fmake
 class GenericPrototype: public YasonObject
 {
 protected:
-	GenericPrototype(const String &className)
-		: YasonObject(className)
+	GenericPrototype(const String &className, YasonProtocol *protocol = 0)
+		: YasonObject(className, protocol)
 	{
 		insert("use", StringList::create());
 		insert("debug", false);
@@ -38,9 +38,43 @@ protected:
 		insert("link", Ref<StringList>());
 		insert("prefix", "/usr");
 
+		insert("compile-flags", Ref<StringList>());
+		insert("link-flags", Ref<StringList>());
+		insert("debug-compile-flags", Ref<StringList>());
+		insert("release-compile-flags", Ref<StringList>());
+		insert("debug-link-flags", Ref<StringList>());
+		insert("release-link-flags", Ref<StringList>());
+
 		insert("clean", false);
 		insert("install", false);
 		insert("uninstall", false);
+	}
+};
+
+class SystemPrerequisitePrototype: public YasonObject
+{
+public:
+	static Ref<YasonObject> create() {
+		return new SystemPrerequisitePrototype("SystemPrerequisite");
+	}
+
+protected:
+	SystemPrerequisitePrototype(const String &className)
+		: YasonObject(className)
+	{
+		insert("name", "");
+		insert("value", "");
+		insert("description", "");
+		insert("optional", false);
+		insert("include-path", Ref<StringList>());
+		insert("include-test", Ref<StringList>());
+		insert("link-path", Ref<StringList>());
+		insert("link-test", Ref<StringList>());
+		insert("link", Ref<StringList>());
+
+		insert("compile-flags", Ref<StringList>());
+		insert("debug-compile-flags", Ref<StringList>());
+		insert("release-compile-flags", Ref<StringList>());
 	}
 };
 
@@ -52,8 +86,14 @@ public:
 	}
 
 protected:
+	static Ref<YasonProtocol> createProtocol() {
+		Ref<YasonProtocol> protocol = YasonProtocol::create();
+		protocol->add<SystemPrerequisitePrototype>();
+		return protocol;
+	}
+
 	ApplicationPrototype(const String &className)
-		: GenericPrototype(className)
+		: GenericPrototype(className, createProtocol())
 	{
 		insert("name", "");
 		insert("source", StringList::create());
