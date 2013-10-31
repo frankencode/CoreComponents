@@ -15,6 +15,8 @@
 #include "Module.h"
 #include "BuildShell.h"
 #include "ToolChain.h"
+#include "SystemPrerequisite.h"
+#include "ConfigureStage.h"
 #include "AnalyseStage.h"
 #include "CompileLinkStage.h"
 #include "TestRunStage.h"
@@ -103,6 +105,7 @@ public:
 
 	inline BuildShell *shell() { return &shell_; }
 
+	inline ConfigureStage *configureStage() { return &configureStage_; }
 	inline AnalyseStage *analyseStage() { return &analyseStage_; }
 	inline CompileLinkStage *compileLinkStage() { return &compileLinkStage_; }
 	inline TestRunStage *testRunStage() { return &testRunStage_; }
@@ -120,6 +123,7 @@ private:
 
 	void readRecipe(BuildPlan *parentPlan = 0);
 
+	void readSystemPrerequisites();
 	void readPrerequisites();
 	void globSources();
 	void initModules();
@@ -144,6 +148,7 @@ private:
 	Ref<StringList> customCompileFlags_;
 	Ref<StringList> customLinkFlags_;
 
+	Ref<SystemPrerequisitesByName> systemPrerequisitesByName_;
 	Ref<BuildPlanList> prerequisites_;
 
 	Ref<BuildMap> buildMap_;
@@ -152,6 +157,7 @@ private:
 
 	BuildShell shell_;
 
+	ConfigureStage configureStage_;
 	AnalyseStage analyseStage_;
 	CompileLinkStage compileLinkStage_;
 	TestRunStage testRunStage_;

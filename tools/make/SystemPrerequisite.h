@@ -53,6 +53,7 @@ private:
 };
 
 typedef List< Ref<SystemPrerequisite> > SystemPrerequisiteList;
+typedef Map< String, Ref<SystemPrerequisiteList> > SystemPrerequisitesByName;
 
 } // namespace fmake
 

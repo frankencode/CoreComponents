@@ -70,7 +70,7 @@ Ref<Module> GnuToolChain::finishAnalyseJob(BuildPlan *plan, Job *job)
 Ref<Job> GnuToolChain::createCompileJob(BuildPlan *plan, Module *module)
 {
 	Format args;
-	args << execPath();
+	args << execPath(/*module*/);
 	appendCompileOptions(args, plan);
 	args << "-c" << "-o" << module->modulePath();
 	args << module->sourcePath();
