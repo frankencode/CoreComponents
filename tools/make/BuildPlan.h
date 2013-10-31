@@ -11,6 +11,7 @@
 #define FMAKE_BUILDPLAN_H
 
 #include <fkit/PrefixTree.h>
+#include <fkit/Map.h>
 #include "Module.h"
 #include "BuildShell.h"
 #include "ToolChain.h"
@@ -87,6 +88,9 @@ public:
 	inline StringList *sources() const { return sources_; }
 	inline ModuleList *modules() const { return modules_; }
 
+	inline StringList *customCompileFlags() const { return customCompileFlags_; }
+	inline StringList *customLinkFlags() const { return customLinkFlags_; }
+
 	inline BuildPlanList *prerequisites() const { return prerequisites_; }
 
 	int run();
@@ -137,6 +141,8 @@ private:
 	Ref<StringList> libraries_;
 	Ref<StringList> sources_;
 	Ref<ModuleList> modules_;
+	Ref<StringList> customCompileFlags_;
+	Ref<StringList> customLinkFlags_;
 
 	Ref<BuildPlanList> prerequisites_;
 
