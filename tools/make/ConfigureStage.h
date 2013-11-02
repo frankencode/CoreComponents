@@ -20,6 +20,10 @@ class ConfigureStage: public BuildStage
 public:
 	ConfigureStage(BuildPlan *plan): BuildStage(plan) {}
 	bool run();
+
+private:
+	bool findIncludePath(SystemPrerequisite *prerequisite, String *includePath);
+	bool findLibraryPath(SystemPrerequisite *prerequisite, String *libraryPath);
 };
 
 } // namespace fmake

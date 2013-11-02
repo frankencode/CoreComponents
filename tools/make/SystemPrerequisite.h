@@ -26,11 +26,11 @@ public:
 	inline String value() const { return value_; }
 	inline String description() const { return description_; }
 	inline bool optional() const { return optional_; }
-	inline StringList *includePath() const { return includePath_; }
-	inline StringList *includeTest() const { return includeTest_; }
-	inline StringList *linkPath() const { return linkPath_; }
-	inline StringList *linkTest() const { return linkTest_; }
-	inline StringList *link() const { return link_; }
+	inline StringList *includePaths() const { return includePaths_; }
+	inline StringList *testIncludes() const { return testIncludes_; }
+	inline StringList *libraryPaths() const { return libraryPaths_; }
+	inline StringList *testLibraries() const { return testLibraries_; }
+	inline StringList *libraries() const { return libraries_; }
 	inline StringList *compileFlags() const { return compileFlags_; }
 	inline StringList *debugCompileFlags() const { return debugCompileFlags_; }
 	inline StringList *releaseCompileFlags() const { return releaseCompileFlags_; }
@@ -42,11 +42,11 @@ private:
 	String value_;
 	String description_;
 	bool optional_;
-	Ref<StringList> includePath_;
-	Ref<StringList> includeTest_;
-	Ref<StringList> linkPath_;
-	Ref<StringList> linkTest_;
-	Ref<StringList> link_;
+	Ref<StringList> includePaths_;
+	Ref<StringList> testIncludes_;
+	Ref<StringList> libraryPaths_;
+	Ref<StringList> testLibraries_;
+	Ref<StringList> libraries_;
 	Ref<StringList> compileFlags_;
 	Ref<StringList> debugCompileFlags_;
 	Ref<StringList> releaseCompileFlags_;

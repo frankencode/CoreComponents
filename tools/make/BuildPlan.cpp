@@ -119,28 +119,26 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
 	customCompileFlags_ = cast<StringList>(recipe_->value("compile-flags"));
 	customLinkFlags_ = cast<StringList>(recipe_->value("link-flags"));
+	if (!customCompileFlags_) customCompileFlags_ = StringList::create();
+	if (!customLinkFlags_) customLinkFlags_ = StringList::create();
 	if (options_ & Debug) {
 		if (recipe_->contains("debug-compile-flags")) {
 			Ref<StringList> h = cast<StringList>(recipe_->value("debug-compile-flags"));
-			if (!customCompileFlags_) customCompileFlags_ = h;
-			else for (int i = 0; i < h->size(); ++i) customCompileFlags_->append(h->at(i));
+			if (h) for (int i = 0; i < h->size(); ++i) customCompileFlags_->append(h->at(i));
 		}
 		if (recipe_->contains("debug-link-flags")) {
 			Ref<StringList> h = cast<StringList>(recipe_->value("debug-link-flags"));
-			if (!customLinkFlags_) customLinkFlags_ = h;
-			else for (int i = 0; i < h->size(); ++i) customLinkFlags_->append(h->at(i));
+			if (h) for (int i = 0; i < h->size(); ++i) customLinkFlags_->append(h->at(i));
 		}
 	}
 	else if (options_ & Release) {
 		if (recipe_->contains("release-compile-flags")) {
 			Ref<StringList> h = cast<StringList>(recipe_->value("release-compile-flags"));
-			if (!customCompileFlags_) customCompileFlags_ = h;
-			else for (int i = 0; i < h->size(); ++i) customCompileFlags_->append(h->at(i));
+			if (h) for (int i = 0; i < h->size(); ++i) customCompileFlags_->append(h->at(i));
 		}
 		if (recipe_->contains("release-link-flags")) {
 			Ref<StringList> h = cast<StringList>(recipe_->value("release-link-flags"));
-			if (!customLinkFlags_) customLinkFlags_ = h;
-			else for (int i = 0; i < h->size(); ++i) customLinkFlags_->append(h->at(i));
+			if (h) for (int i = 0; i < h->size(); ++i) customLinkFlags_->append(h->at(i));
 		}
 	}
 

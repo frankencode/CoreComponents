@@ -41,7 +41,6 @@ int main(int argc, char **argv)
 			"  -prefix     installation prefix (default: /usr)\n"
 			"  -install    install headers and binaries\n"
 			"  -uninstall  delete installed files\n"
-			"  -configure  force reconfiguration\n"
 		) << String(argv[0])->fileName();
 	}
 	catch (UserException &ex) {

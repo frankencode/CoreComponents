@@ -70,7 +70,7 @@ Ref<Module> GnuToolChain::finishAnalyseJob(BuildPlan *plan, Job *job)
 Ref<Job> GnuToolChain::createCompileJob(BuildPlan *plan, Module *module)
 {
 	Format args;
-	args << execPath(/*module*/);
+	args << execPath();
 	appendCompileOptions(args, plan);
 	args << "-c" << "-o" << module->modulePath();
 	args << module->sourcePath();
@@ -141,6 +141,21 @@ bool GnuToolChain::link(BuildPlan *plan)
 		createLibrarySymlinks(plan, linkName(plan));
 
 	return true;
+}
+
+bool GnuToolChain::linkTest(BuildPlan *plan, String linkPath, StringList *linkTest) const
+{
+	Ref<File> src = File::temp();
+	src->unlinkWhenDone();
+	src->write("int main() { return 0; }\n");
+	src->close();
+	Format args;
+	args << execPath() << src->path() << "-L" + linkPath;
+	for (int i = 0; i < linkTest->size(); ++i) args << "-l" + linkTest->at(i);
+	args << "-o" + src->path() + "_";
+
+	String command = args->join(" ");
+	return plan->shell()->run(command);
 }
 
 bool GnuToolChain::install(BuildPlan *plan)
