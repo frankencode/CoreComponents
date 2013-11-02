@@ -24,6 +24,8 @@ GnuToolChain::GnuToolChain(String execPath)
 
 String GnuToolChain::queryMachine(String execPath)
 {
+	String machType = Process::env("MACHTYPE");
+	if (machType != "") return machType;
 	return Process::start(machineCommand(execPath), Process::ForwardOutput)->lineOut()->readLine();
 }
 
