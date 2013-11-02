@@ -22,6 +22,7 @@ bool ConfigureStage::run()
 
 	for (int i = 0; i < plan()->systemPrerequisitesByName()->size(); ++i)
 	{
+		String name = plan()->systemPrerequisitesByName()->keyAt(i);
 		SystemPrerequisiteList *prerequisiteList = plan()->systemPrerequisitesByName()->valueAt(i);
 
 		for (int j = 0; j < prerequisiteList->size(); ++j)
