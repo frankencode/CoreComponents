@@ -127,10 +127,10 @@ bool GnuToolChain::link(BuildPlan *plan)
 
 	args << "-o" << linkName(plan);
 
+	appendLinkOptions(args, plan);
+
 	for (int i = 0; i < modules->size(); ++i)
 		args << modules->at(i)->modulePath();
-
-	appendLinkOptions(args, plan);
 
 	String command = args->join(" ");
 
@@ -212,7 +212,6 @@ void GnuToolChain::clean(BuildPlan *plan)
 
 void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan)
 {
-	// args << "-std=c++0x";
 	if (plan->options() & BuildPlan::Debug) args << "-g";
 	if (plan->options() & BuildPlan::Release) args << "-DNDEBUG";
 	if (plan->options() & BuildPlan::OptimizeSpeed) args << String(Format("-O") << plan->speedOptimizationLevel());
@@ -221,7 +220,7 @@ void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan)
 	if (plan->options() & BuildPlan::Static) args << "-static";
 	if (plan->options() & BuildPlan::Library) args << "-fPIC";
 	else args << "-fPIE";
-	args << "-Wall" << "-pthread";
+	args << "-Wall" << "-pthread" << "-pipe";
 	if (plan->customCompileFlags()) {
 		for (int i = 0; i < plan->customCompileFlags()->size(); ++i)
 			args << plan->customCompileFlags()->at(i);

@@ -153,6 +153,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
 int BuildPlan::run()
 {
+	readSystemPrerequisites();
 	readPrerequisites();
 	globSources();
 	initModules();

@@ -149,8 +149,8 @@ private:
 	Ref<StringList> customCompileFlags_;
 	Ref<StringList> customLinkFlags_;
 
-	Ref<BuildPlanList> prerequisites_;
 	Ref<SystemPrerequisitesByName> systemPrerequisitesByName_;
+	Ref<BuildPlanList> prerequisites_;
 
 	Ref<BuildMap> buildMap_;
 	String sourcePrefix_;
