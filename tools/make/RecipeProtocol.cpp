@@ -45,7 +45,6 @@ protected:
 		insert("debug-link-flags", Ref<StringList>());
 		insert("release-link-flags", Ref<StringList>());
 
-		insert("configure", false);
 		insert("clean", false);
 		insert("install", false);
 		insert("uninstall", false);
@@ -67,15 +66,15 @@ protected:
 		insert("value", "");
 		insert("description", "");
 		insert("optional", false);
-		insert("include-path", Ref<StringList>());
-		insert("include-test", Ref<StringList>());
-		insert("link-path", Ref<StringList>());
-		insert("link-test", Ref<StringList>());
-		insert("link", Ref<StringList>());
+		insert("include-path", StringList::create());
+		insert("include-test", StringList::create());
+		insert("link-path", StringList::create());
+		insert("link-test", StringList::create());
+		insert("link", StringList::create());
 
-		insert("compile-flags", Ref<StringList>());
-		insert("debug-compile-flags", Ref<StringList>());
-		insert("release-compile-flags", Ref<StringList>());
+		insert("compile-flags", StringList::create());
+		insert("debug-compile-flags", StringList::create());
+		insert("release-compile-flags", StringList::create());
 	}
 };
 

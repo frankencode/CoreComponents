@@ -44,6 +44,7 @@ public:
 
 	virtual String linkName(BuildPlan *plan) const = 0;
 	virtual bool link(BuildPlan *plan) = 0;
+	virtual bool linkTest(BuildPlan *plan, String linkPath, StringList *linkTest) const = 0;
 
 	virtual bool install(BuildPlan *plan) = 0;
 	virtual bool install(BuildPlan *plan, Module *module) = 0;

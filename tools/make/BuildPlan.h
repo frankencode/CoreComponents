@@ -94,6 +94,7 @@ public:
 	inline StringList *customLinkFlags() const { return customLinkFlags_; }
 
 	inline BuildPlanList *prerequisites() const { return prerequisites_; }
+	inline SystemPrerequisitesByName *systemPrerequisitesByName() const { return systemPrerequisitesByName_; }
 
 	int run();
 
@@ -148,8 +149,8 @@ private:
 	Ref<StringList> customCompileFlags_;
 	Ref<StringList> customLinkFlags_;
 
-	Ref<SystemPrerequisitesByName> systemPrerequisitesByName_;
 	Ref<BuildPlanList> prerequisites_;
+	Ref<SystemPrerequisitesByName> systemPrerequisitesByName_;
 
 	Ref<BuildMap> buildMap_;
 	String sourcePrefix_;
