@@ -166,11 +166,11 @@ int BuildPlan::run()
 		) << toolChain_->machineCommand();
 	}
 
-	if (!analyseStage()->run()) return 1;
-
 	if (systemPrerequisitesByName_) {
 		if (!configureStage()->run()) return 1;
 	}
+
+	if (!analyseStage()->run()) return 1;
 
 	if (recipe_->value("clean")) {
 		return cleanStage()->run() ? 0 : 1;
@@ -273,7 +273,9 @@ void BuildPlan::globSources()
 		}
 	}
 	sources_ = sources_->sort();
-	sourcePrefix_ = buildMap_->commonPrefix('/')->canonicalPath();
+	sourcePrefix_ = buildMap_->commonPrefix('/');
+	if (sourcePrefix_ == "") sourcePrefix_ = projectPath_;
+	else sourcePrefix_ = sourcePrefix_->canonicalPath();
 
 	for (int i = 0; i < prerequisites_->size(); ++i)
 		prerequisites_->at(i)->globSources();
@@ -296,7 +298,7 @@ void BuildPlan::initModules()
 		while (path != topLevel) {
 			h << path->fileName();
 			path = path->reducePath();
-		} ;
+		}
 		h << topLevel->fileName();
 		f << h->reverse()->join("_");
 	}

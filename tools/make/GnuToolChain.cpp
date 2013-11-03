@@ -52,7 +52,7 @@ String GnuToolChain::analyseCommand(BuildPlan *plan, String source) const
 	Format args;
 	args << execPath();
 	appendCompileOptions(args, plan);
-	args << "-MM" << "-MG" << source;
+	args << "-MM" << source;
 	return args->join(" ");
 }
 
