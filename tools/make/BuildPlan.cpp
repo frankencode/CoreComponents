@@ -42,8 +42,7 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 	cleanStage_(this)
 
 BuildPlan::BuildPlan(int argc, char **argv)
-	: toolChain_(GnuToolChain::create()),
-	  projectPath_("."),
+	: projectPath_("."),
 	  concurrency_(-1),
 	  buildMap_(BuildMap::create()),
 	  FMAKE_BUILDPLAN_COMPONENTS_INIT
@@ -59,6 +58,10 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	recipe_ = Config::read(argc, argv, recipe_);
 	readRecipe();
 
+	toolChain_ = GnuToolChain::create(recipe_->value("compiler"));
+	if (speedOptimizationLevel_ < 0) speedOptimizationLevel_ = toolChain_->defaultSpeedOptimizationLevel();
+	if (sizeOptimizationLevel_ < 0) sizeOptimizationLevel_ = toolChain_->defaultSizeOptimizationLevel();
+
 	buildMap_->insert(projectPath_, this);
 }
 
@@ -72,6 +75,8 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 	recipe_ = Config::read(projectPath_ + "/Recipe", recipeProtocol());
 
 	readRecipe(parentPlan);
+	if (speedOptimizationLevel_ < 0) speedOptimizationLevel_ = toolChain_->defaultSpeedOptimizationLevel();
+	if (sizeOptimizationLevel_ < 0) sizeOptimizationLevel_ = toolChain_->defaultSizeOptimizationLevel();
 
 	buildMap_->insert(projectPath_, this);
 }
@@ -107,8 +112,6 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
 	speedOptimizationLevel_ = recipe_->value("speed-optimization-level", -1);
 	sizeOptimizationLevel_ = recipe_->value("size-optimization-level", -1);
-	if (speedOptimizationLevel_ < 0) speedOptimizationLevel_ = toolChain_->defaultSpeedOptimizationLevel();
-	if (sizeOptimizationLevel_ < 0) sizeOptimizationLevel_ = toolChain_->defaultSizeOptimizationLevel();
 
 	includePaths_ = cast<StringList>(recipe_->value("include-path"));
 	libraryPaths_ = cast<StringList>(recipe_->value("link-path"));

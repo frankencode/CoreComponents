@@ -45,6 +45,7 @@ protected:
 		insert("debug-link-flags", Ref<StringList>());
 		insert("release-link-flags", Ref<StringList>());
 
+		insert("compiler", "");
 		insert("concurrency", -1);
 
 		insert("clean", false);
