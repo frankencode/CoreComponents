@@ -89,6 +89,7 @@ public:
 	inline StringList *libraries() const { return libraries_; }
 	inline StringList *sources() const { return sources_; }
 	inline ModuleList *modules() const { return modules_; }
+	inline bool containsCPlusPlus() const { return containsCPlusPlus_; }
 
 	inline StringList *customCompileFlags() const { return customCompileFlags_; }
 	inline StringList *customLinkFlags() const { return customLinkFlags_; }
@@ -146,6 +147,7 @@ private:
 	Ref<StringList> libraries_;
 	Ref<StringList> sources_;
 	Ref<ModuleList> modules_;
+	bool containsCPlusPlus_;
 	Ref<StringList> customCompileFlags_;
 	Ref<StringList> customLinkFlags_;
 

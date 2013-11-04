@@ -7,7 +7,6 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/stdio.h>
 #include <fkit/Pattern.h>
 #include <fkit/File.h>
 #include <fkit/Process.h>
@@ -244,6 +243,8 @@ void GnuToolChain::appendLinkOptions(Format args, BuildPlan *plan)
 
 	for (int i = 0; i < libraries->size(); ++i)
 		args << "-l" + libraries->at(i);
+
+	if (plan->containsCPlusPlus()) args << "-lstdc++";
 
 	if (libraryPaths->size() > 0) {
 		Ref<StringList> rpaths = StringList::create();
