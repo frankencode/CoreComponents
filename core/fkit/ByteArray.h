@@ -202,6 +202,7 @@ public:
 	Ref<ByteArray> fileName() const;
 	Ref<ByteArray> completeBaseName() const;
 	Ref<ByteArray> baseName() const;
+	Ref<ByteArray> suffix() const;
 	Ref<ByteArray> reducePath() const;
 	Ref<ByteArray> expandPath(String component) const;
 	Ref<ByteArray> canonicalPath() const;

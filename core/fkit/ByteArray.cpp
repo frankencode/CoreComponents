@@ -824,8 +824,14 @@ Ref<ByteArray> ByteArray::completeBaseName() const
 
 Ref<ByteArray> ByteArray::baseName() const
 {
+	return fileName()->split(".")->at(0);
+}
+
+Ref<ByteArray>  ByteArray::suffix() const
+{
 	Ref<StringList> parts = fileName()->split(".");
-	return parts->at(0);
+	parts->pop(0);
+	return parts->join(".");
 }
 
 Ref<ByteArray> ByteArray::reducePath() const
