@@ -21,7 +21,7 @@ using namespace fkit;
 class GnuToolChain: public ToolChain
 {
 public:
-	inline static Ref<GnuToolChain> create(String execPath = "g++") {
+	inline static Ref<GnuToolChain> create(String execPath = "gcc") {
 		return new GnuToolChain(execPath);
 	}
 

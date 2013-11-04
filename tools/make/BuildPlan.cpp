@@ -277,6 +277,15 @@ void BuildPlan::globSources()
 	if (sourcePrefix_ == "") sourcePrefix_ = projectPath_;
 	else sourcePrefix_ = sourcePrefix_->canonicalPath();
 
+	containsCPlusPlus_ = false;
+	for (int i = 0; i < sources_->size(); ++i) {
+		String suffix = sources_->at(i)->suffix();
+		if (suffix == "cpp" || suffix == "cc" || suffix == "cxx" || suffix == "mm") {
+			containsCPlusPlus_ = true;
+			break;
+		}
+	}
+
 	for (int i = 0; i < prerequisites_->size(); ++i)
 		prerequisites_->at(i)->globSources();
 }
