@@ -94,6 +94,8 @@ public:
 	inline StringList *customCompileFlags() const { return customCompileFlags_; }
 	inline StringList *customLinkFlags() const { return customLinkFlags_; }
 
+	inline int concurrency() const { return concurrency_; }
+
 	inline BuildPlanList *prerequisites() const { return prerequisites_; }
 	inline SystemPrerequisitesByName *systemPrerequisitesByName() const { return systemPrerequisitesByName_; }
 
@@ -150,6 +152,8 @@ private:
 	bool containsCPlusPlus_;
 	Ref<StringList> customCompileFlags_;
 	Ref<StringList> customLinkFlags_;
+
+	int concurrency_;
 
 	Ref<SystemPrerequisitesByName> systemPrerequisitesByName_;
 	Ref<BuildPlanList> prerequisites_;

@@ -44,6 +44,7 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 BuildPlan::BuildPlan(int argc, char **argv)
 	: toolChain_(GnuToolChain::create()),
 	  projectPath_("."),
+	  concurrency_(-1),
 	  buildMap_(BuildMap::create()),
 	  FMAKE_BUILDPLAN_COMPONENTS_INIT
 {
@@ -64,6 +65,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 	: toolChain_(parentPlan->toolChain_),
 	  projectPath_(projectPath),
+	  concurrency_(parentPlan->concurrency_),
 	  buildMap_(parentPlan->buildMap_),
 	  FMAKE_BUILDPLAN_COMPONENTS_INIT
 {
@@ -142,12 +144,15 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 		}
 	}
 
+	concurrency_ = recipe_->value("concurrency");
+
 	if (parentPlan) {
 		options_ &= ~GlobalOptions;
 		options_ |= parentPlan->options() & GlobalOptions;
 		speedOptimizationLevel_ = parentPlan->speedOptimizationLevel();
 		sizeOptimizationLevel_ = parentPlan->sizeOptimizationLevel();
 		installPrefix_ = parentPlan->installPrefix_;
+		concurrency_ = parentPlan->concurrency_;
 	}
 }
 

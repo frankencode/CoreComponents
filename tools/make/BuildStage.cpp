@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "JobScheduler.h"
 #include "BuildPlan.h"
 #include "BuildStage.h"
 
@@ -22,5 +23,6 @@ BuildStage::BuildStage(BuildPlan *plan)
 
 BuildShell *BuildStage::shell() const { return plan_->shell(); }
 ToolChain *BuildStage::toolChain() const { return plan_->toolChain(); }
+Ref<JobScheduler> BuildStage::createScheduler() const { return JobScheduler::create(plan_->concurrency()); }
 
 } // namespace fmake

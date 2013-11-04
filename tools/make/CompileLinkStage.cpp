@@ -49,12 +49,12 @@ bool CompileLinkStage::run()
 			}
 			else {
 				if (!compileScheduler) {
-					compileScheduler = JobScheduler::create();
+					compileScheduler = createScheduler();
 					compileScheduler->start();
 				}
 				compileScheduler->schedule(job);
 				if (linkJob) {
-					if (!linkScheduler) linkScheduler = JobScheduler::create();
+					if (!linkScheduler) linkScheduler = createScheduler();
 					linkScheduler->schedule(linkJob);
 				}
 			}

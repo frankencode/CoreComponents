@@ -30,7 +30,7 @@ bool TestRunStage::run()
 
 	if (!(plan()->options() & BuildPlan::Tests)) return success_ = true;
 
-	Ref<JobScheduler> scheduler = JobScheduler::create();
+	Ref<JobScheduler> scheduler = createScheduler();
 
 	for (int i = 0; i < plan()->modules()->size(); ++i) {
 		Module *module = plan()->modules()->at(i);

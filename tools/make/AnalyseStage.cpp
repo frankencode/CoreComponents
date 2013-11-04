@@ -43,7 +43,7 @@ bool AnalyseStage::run()
 		}
 		else {
 			if (!scheduler) {
-				scheduler = JobScheduler::create();
+				scheduler = createScheduler();
 				scheduler->start();
 			}
 			scheduler->schedule(toolChain()->createAnalyseJob(plan(), plan()->sources()->at(i)));
