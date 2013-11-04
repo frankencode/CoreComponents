@@ -16,6 +16,7 @@ namespace fmake
 class BuildPlan;
 class BuildShell;
 class ToolChain;
+class JobScheduler;
 
 class BuildStage
 {
@@ -25,11 +26,12 @@ public:
 	inline int status() const { return status_; }
 
 protected:
+	BuildStage(BuildPlan *plan);
+
 	inline BuildPlan *plan() const { return plan_; }
 	BuildShell *shell() const;
 	ToolChain *toolChain() const;
-
-	BuildStage(BuildPlan *plan);
+	Ref<JobScheduler> createScheduler() const;
 
 	BuildPlan *plan_;
 	bool complete_, success_;
