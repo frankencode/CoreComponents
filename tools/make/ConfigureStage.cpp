@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <fkit/stdio.h>
 #include <fkit/Dir.h>
 #include <fkit/File.h>
 #include "BuildPlan.h"
@@ -30,11 +31,17 @@ bool ConfigureStage::run()
 			SystemPrerequisite *prerequisite = prerequisiteList->at(j);
 			String includePath;
 			if (!findIncludePath(prerequisite, &includePath)) {
-				if (!prerequisite->optional()) return success_ = false;
+				if (!prerequisite->optional()) {
+					fout() << "Missing system prerequisite \"" << prerequisite->name() << "\": Include path not found" << nl;
+					return success_ = false;
+				}
 			}
 			String libraryPath;
 			if (!findLibraryPath(prerequisite, &libraryPath)) {
-				if (!prerequisite->optional()) return success_ = false;
+				if (!prerequisite->optional()) {
+					fout() << "Missing system prerequisite \"" << prerequisite->name() << "\": Library path not found" << nl;
+					return success_ = false;
+				}
 			}
 
 			if (includePath != "") plan()->includePaths()->append(includePath);
