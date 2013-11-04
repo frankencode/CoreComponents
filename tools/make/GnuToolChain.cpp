@@ -17,6 +17,12 @@
 namespace fmake
 {
 
+Ref<GnuToolChain> GnuToolChain::create(String execPath)
+{
+	if (execPath == "") execPath = "gcc";
+	return new GnuToolChain(execPath);
+}
+
 GnuToolChain::GnuToolChain(String execPath)
 	: ToolChain(execPath, queryMachine(execPath))
 {}

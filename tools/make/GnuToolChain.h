@@ -21,9 +21,7 @@ using namespace fkit;
 class GnuToolChain: public ToolChain
 {
 public:
-	inline static Ref<GnuToolChain> create(String execPath = "gcc") {
-		return new GnuToolChain(execPath);
-	}
+	static Ref<GnuToolChain> create(String execPath);
 
 	virtual String machineCommand() const;
 	virtual int defaultSpeedOptimizationLevel() const;

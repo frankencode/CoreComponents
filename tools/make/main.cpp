@@ -38,6 +38,7 @@ int main(int argc, char **argv)
 			"  -test-run        run all tests\n"
 			"  -compile-flags   custom compile flags\n"
 			"  -link-flags      custom link flags\n"
+			"  -compiler        select compiler\n"
 			"  -concurrency     number of concurrent jobs to spawn\n"
 			"  -simulate        print build commands without executing them\n"
 			"  -blindfold       do not see any existing files\n"
