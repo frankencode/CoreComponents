@@ -71,6 +71,7 @@ bool ConfigureStage::findIncludePath(SystemPrerequisite *prerequisite, String *i
 {
 	for (int i = 0; i < prerequisite->includePaths()->size(); ++i) {
 		String path = prerequisite->includePaths()->at(i);
+		if (!path->isAbsolutePath()) path = "/usr/include/" + path;
 		if (!Dir::exists(path)) continue;
 		int j = 0;
 		for (; j < prerequisite->testIncludes()->size(); ++j) {
