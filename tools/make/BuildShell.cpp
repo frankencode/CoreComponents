@@ -34,7 +34,7 @@ String BuildShell::beautify(String command)
 
 bool BuildShell::run(String command)
 {
-	ferr() << beautify(command) << nl;
+	fout() << beautify(command) << nl;
 	if (plan()->options() & BuildPlan::Simulate) return true;
 	return Process::start(command)->wait() == 0;
 }
@@ -48,7 +48,7 @@ Ref<FileStatus> BuildShell::fileStatus(String path)
 bool BuildShell::mkdir(String path)
 {
 	if (!fileStatus(path)->exists())
-		ferr("mkdir -p %%\n") << path;
+		fout("mkdir -p %%\n") << path;
 	if (plan()->options() & BuildPlan::Simulate) return true;
 	return Dir::establish(path);
 }
@@ -56,14 +56,14 @@ bool BuildShell::mkdir(String path)
 bool BuildShell::rmdir(String path)
 {
 	if (fileStatus(path)->exists())
-		ferr("rmdir %%\n") << path;
+		fout("rmdir %%\n") << path;
 	if (plan()->options() & BuildPlan::Simulate) return true;
 	return Dir::unlink(path);
 }
 
 bool BuildShell::symlink(String path, String newPath)
 {
-	ferr("ln -sf %% %%\n") << path << newPath;
+	fout("ln -sf %% %%\n") << path << newPath;
 	if (plan()->options() & BuildPlan::Simulate) return true;
 	File::unlink(newPath);
 	return File::symlink(path, newPath);
@@ -73,9 +73,9 @@ bool BuildShell::install(String sourcePath, String destPath)
 {
 	String destDirPath = destPath->reducePath();
 	bool destDirMissing = destDirPath != "" && !fileStatus(destDirPath)->exists();
-	if (destDirMissing) ferr("install -d %%\n") << destDirPath;
+	if (destDirMissing) fout("install -d %%\n") << destDirPath;
 
-	ferr("install %% %%\n") << sourcePath << destPath;
+	fout("install %% %%\n") << sourcePath << destPath;
 
 	if (plan()->options() & BuildPlan::Simulate) return true;
 
@@ -90,7 +90,7 @@ bool BuildShell::install(String sourcePath, String destPath)
 		sink->write(source->map());
 	}
 	catch (SystemException &ex) {
-		ferr("%%\n") << ex.what();
+		fout("%%\n") << ex.what();
 		return false;
 	}
 
@@ -101,15 +101,15 @@ bool BuildShell::unlink(String path)
 {
 	if (File::unresolvedStatus(path)->exists()) {
 		if (plan()->options() & BuildPlan::Simulate) {
-			ferr("rm -f %%\n") << path;
+			fout("rm -f %%\n") << path;
 			return true;
 		}
-		ferr("rm %%\n") << path;
+		fout("rm %%\n") << path;
 		try {
 			File::unlink(path) || FKIT_SYSTEM_EXCEPTION;
 		}
 		catch (SystemException &ex) {
-			ferr("%%\n") << ex.message();
+			fout("%%\n") << ex.message();
 			return false;
 		}
 	}

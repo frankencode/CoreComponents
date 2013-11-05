@@ -167,7 +167,7 @@ int BuildPlan::run()
 	initModules();
 
 	if (options_ & Bootstrap) {
-		ferr(
+		fout(
 			"#!/bin/sh -ex\n"
 			"SOURCE=$1\n"
 			"MACHINE=$(%%)\n"

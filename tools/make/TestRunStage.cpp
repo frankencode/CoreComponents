@@ -38,8 +38,8 @@ bool TestRunStage::run()
 	}
 
 	for (Ref<Job> job; scheduler->collect(&job);) {
-		ferr() << job->command() << nl;
-		fout() << job->outputText();
+		fout() << job->command() << nl;
+		ferr() << job->outputText();
 		if (job->status() != 0) {
 			status_ = job->status();
 			return success_ = false;

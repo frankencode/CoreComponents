@@ -32,14 +32,14 @@ bool ConfigureStage::run()
 			String includePath;
 			if (!findIncludePath(prerequisite, &includePath)) {
 				if (!prerequisite->optional()) {
-					fout() << "Missing system prerequisite \"" << prerequisite->name() << "\": Include path not found" << nl;
+					ferr() << "Missing system prerequisite \"" << prerequisite->name() << "\": Include path not found" << nl;
 					return success_ = false;
 				}
 			}
 			String libraryPath;
 			if (!findLibraryPath(prerequisite, &libraryPath)) {
 				if (!prerequisite->optional()) {
-					fout() << "Missing system prerequisite \"" << prerequisite->name() << "\": Library path not found" << nl;
+					ferr() << "Missing system prerequisite \"" << prerequisite->name() << "\": Library path not found" << nl;
 					return success_ = false;
 				}
 			}
