@@ -27,7 +27,7 @@ class DependencyCache;
 class ToolChain: public Object
 {
 public:
-	inline String execPath() const { return execPath_; }
+	inline String compiler() const { return compiler_; }
 	inline String machine() const { return machine_; }
 
 	virtual String machineCommand() const = 0;
@@ -54,13 +54,13 @@ public:
 	virtual void clean(BuildPlan *plan) = 0;
 
 protected:
-	ToolChain(String execPath, String machine)
-		: execPath_(execPath),
+	ToolChain(String compiler, String machine)
+		: compiler_(compiler),
 		  machine_(machine)
 	{}
 
 private:
-	String execPath_;
+	String compiler_;
 	String machine_;
 };
 

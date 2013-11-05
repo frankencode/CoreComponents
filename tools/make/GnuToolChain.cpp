@@ -17,29 +17,29 @@
 namespace fmake
 {
 
-Ref<GnuToolChain> GnuToolChain::create(String execPath)
+Ref<GnuToolChain> GnuToolChain::create(String compiler)
 {
-	if (execPath == "") execPath = "gcc";
-	return new GnuToolChain(execPath);
+	if (compiler == "") compiler = "gcc";
+	return new GnuToolChain(compiler);
 }
 
-GnuToolChain::GnuToolChain(String execPath)
-	: ToolChain(execPath, queryMachine(execPath))
+GnuToolChain::GnuToolChain(String compiler)
+	: ToolChain(compiler, queryMachine(compiler))
 {}
 
-String GnuToolChain::queryMachine(String execPath)
+String GnuToolChain::queryMachine(String compiler)
 {
-	return Process::start(machineCommand(execPath), Process::ForwardOutput)->lineOut()->readLine();
+	return Process::start(machineCommand(compiler), Process::ForwardOutput)->lineOut()->readLine();
 }
 
-String GnuToolChain::machineCommand(String execPath)
+String GnuToolChain::machineCommand(String compiler)
 {
-	return execPath + " -dumpmachine";
+	return compiler + " -dumpmachine";
 }
 
 String GnuToolChain::machineCommand() const
 {
-	return machineCommand(execPath());
+	return machineCommand(compiler());
 }
 
 int GnuToolChain::defaultSpeedOptimizationLevel() const
@@ -55,7 +55,7 @@ int GnuToolChain::defaultSizeOptimizationLevel() const
 String GnuToolChain::analyseCommand(BuildPlan *plan, String source) const
 {
 	Format args;
-	args << execPath();
+	args << compiler();
 	appendCompileOptions(args, plan);
 	args << "-MM" << source;
 	return args->join(" ");
@@ -75,7 +75,7 @@ Ref<Module> GnuToolChain::finishAnalyseJob(BuildPlan *plan, Job *job)
 Ref<Job> GnuToolChain::createCompileJob(BuildPlan *plan, Module *module)
 {
 	Format args;
-	args << execPath();
+	args << compiler();
 	appendCompileOptions(args, plan);
 	args << "-c" << "-o" << module->modulePath();
 	args << module->sourcePath();
@@ -86,7 +86,7 @@ Ref<Job> GnuToolChain::createCompileJob(BuildPlan *plan, Module *module)
 Ref<Job> GnuToolChain::createLinkJob(BuildPlan *plan, Module *module)
 {
 	Format args;
-	args << execPath();
+	args << compiler();
 	if (plan->options() & BuildPlan::Static) args << "-static";
 	args << "-pthread";
 	args << "-o" << module->toolName();
@@ -120,7 +120,7 @@ bool GnuToolChain::link(BuildPlan *plan)
 
 	Format args;
 
-	args << execPath();
+	args << compiler();
 	if (options & BuildPlan::Static) args << "-static";
 	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static)) args << "-shared";
 	args << "-pthread";
@@ -155,7 +155,7 @@ bool GnuToolChain::linkTest(BuildPlan *plan, String linkPath, StringList *linkTe
 	src->write("int main() { return 0; }\n");
 	src->close();
 	Format args;
-	args << execPath() << src->path() << "-L" + linkPath;
+	args << compiler() << src->path() << "-L" + linkPath;
 	for (int i = 0; i < linkTest->size(); ++i) args << "-l" + linkTest->at(i);
 	args << "-o" + src->path() + "_";
 

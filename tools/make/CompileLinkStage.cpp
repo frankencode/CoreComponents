@@ -43,9 +43,9 @@ bool CompileLinkStage::run()
 			Ref<Job> linkJob;
 			if (plan()->options() & BuildPlan::Tools) linkJob = toolChain()->createLinkJob(plan(), module);
 			if (plan()->options() & BuildPlan::Simulate) {
-				ferr() << shell()->beautify(job->command()) << nl;
+				fout() << shell()->beautify(job->command()) << nl;
 				if (linkJob)
-					ferr() << shell()->beautify(linkJob->command()) << nl;
+					fout() << shell()->beautify(linkJob->command()) << nl;
 			}
 			else {
 				if (!compileScheduler) {
@@ -63,8 +63,8 @@ bool CompileLinkStage::run()
 
 	if (compileScheduler) {
 		for (Ref<Job> job; compileScheduler->collect(&job);) {
-			ferr() << shell()->beautify(job->command()) << nl;
-			fout() << job->outputText();
+			fout() << shell()->beautify(job->command()) << nl;
+			ferr() << job->outputText();
 			if (job->status() != 0) {
 				status_ = job->status();
 				return success_ = false;
@@ -75,8 +75,8 @@ bool CompileLinkStage::run()
 	if (linkScheduler) {
 		linkScheduler->start();
 		for (Ref<Job> job; linkScheduler->collect(&job);) {
-			ferr() << shell()->beautify(job->command()) << nl;
-			fout() << job->outputText();
+			fout() << shell()->beautify(job->command()) << nl;
+			ferr() << job->outputText();
 			if (job->status() != 0) {
 				status_ = job->status();
 				return success_ = false;

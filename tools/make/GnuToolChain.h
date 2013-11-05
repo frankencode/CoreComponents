@@ -21,7 +21,7 @@ using namespace fkit;
 class GnuToolChain: public ToolChain
 {
 public:
-	static Ref<GnuToolChain> create(String execPath);
+	static Ref<GnuToolChain> create(String compiler);
 
 	virtual String machineCommand() const;
 	virtual int defaultSpeedOptimizationLevel() const;
@@ -47,11 +47,11 @@ public:
 	virtual void clean(BuildPlan *plan);
 
 protected:
-	GnuToolChain(String execPath);
-	void clangColorWorkaround(String execPath);
+	GnuToolChain(String compiler);
+	void clangColorWorkaround(String compiler);
 
-	static String queryMachine(String execPath);
-	static String machineCommand(String execPath);
+	static String queryMachine(String compiler);
+	static String machineCommand(String compiler);
 
 	static void appendCompileOptions(Format args, BuildPlan *plan);
 	static void appendLinkOptions(Format args, BuildPlan *plan);
