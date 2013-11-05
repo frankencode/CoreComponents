@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/System.h>
+#include <flux/System.h>
 #include "JobServer.h"
 #include "JobScheduler.h"
 

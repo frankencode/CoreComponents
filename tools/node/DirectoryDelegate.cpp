@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/File.h>
-#include <fkit/Dir.h>
+#include <flux/File.h>
+#include <flux/Dir.h>
 #include "utils.h"
 #include "exceptions.h"
 #include "ServiceWorker.h"

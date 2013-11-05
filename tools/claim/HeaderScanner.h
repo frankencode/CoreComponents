@@ -1,13 +1,13 @@
 #ifndef FCLAIM_HEADERSCANNER_H
 #define FCLAIM_HEADERSCANNER_H
 
-#include <fkit/List.h>
+#include <flux/List.h>
 #include "Header.h"
 
 namespace fclaim
 {
 
-using namespace fkit;
+using namespace flux;
 
 class HeaderScanner: public Object
 {

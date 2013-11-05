@@ -7,9 +7,9 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/stdio.h>
-#include <fkit/Glob.h>
-#include <fkit/Config.h>
+#include <flux/stdio.h>
+#include <flux/Glob.h>
+#include <flux/Config.h>
 #include "DependencyCache.h"
 #include "GnuToolChain.h"
 #include "JobScheduler.h"

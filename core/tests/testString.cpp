@@ -1,8 +1,8 @@
-#include <fkit/stdio.h>
-#include <fkit/String.h>
-#include <fkit/Unicode.h>
+#include <flux/stdio.h>
+#include <flux/String.h>
+#include <flux/Unicode.h>
 
-using namespace fkit;
+using namespace flux;
 
 int main()
 {

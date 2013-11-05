@@ -1,0 +1,7 @@
+Library {
+	name: fluxcrypto
+	version: 0.0.1
+	header: *.h
+	source: *.cpp
+	use: ../../core/flux
+}

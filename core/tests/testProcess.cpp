@@ -1,9 +1,9 @@
-#include <fkit/stdio.h>
-#include <fkit/check.h>
-#include <fkit/ProcessFactory.h>
-#include <fkit/User.h>
+#include <flux/stdio.h>
+#include <flux/check.h>
+#include <flux/ProcessFactory.h>
+#include <flux/User.h>
 
-using namespace fkit;
+using namespace flux;
 
 int echo(int argc, char **argv);
 

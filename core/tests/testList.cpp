@@ -1,9 +1,9 @@
-#include <fkit/stdio.h>
-#include <fkit/check.h>
-#include <fkit/Random.h>
-#include <fkit/List.h>
+#include <flux/stdio.h>
+#include <flux/check.h>
+#include <flux/Random.h>
+#include <flux/List.h>
 
-using namespace fkit;
+using namespace flux;
 
 template<class T>
 void print(Ref< List<T> > list) {

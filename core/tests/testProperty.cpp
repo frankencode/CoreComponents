@@ -1,8 +1,8 @@
-#include <fkit/stdio.h>
-#include <fkit/check.h>
-#include <fkit/Property.h>
+#include <flux/stdio.h>
+#include <flux/check.h>
+#include <flux/Property.h>
 
-using namespace fkit;
+using namespace flux;
 
 int changedNotices = 0;
 

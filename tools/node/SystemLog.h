@@ -10,14 +10,14 @@
 #ifndef FNODE_SYSTEMLOG_H
 #define FNODE_SYSTEMLOG_H
 
-#include <fkit/Stream.h>
-#include <fkit/ThreadLocalSingleton.h>
+#include <flux/Stream.h>
+#include <flux/ThreadLocalSingleton.h>
 #include <syslog.h>
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class SystemLog: public Object, public ThreadLocalSingleton<SystemLog>
 {

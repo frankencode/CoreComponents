@@ -1,14 +1,14 @@
 #ifndef FCLAIM_NOTICE_H
 #define FCLAIM_NOTICE_H
 
-#include <fkit/String.h>
+#include <flux/String.h>
 #include "Header.h"
 #include "Copyright.h"
 
 namespace fclaim
 {
 
-using namespace fkit;
+using namespace flux;
 
 class Notice: public Object
 {

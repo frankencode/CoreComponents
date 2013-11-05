@@ -7,10 +7,10 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/Pattern.h>
-#include <fkit/File.h>
-#include <fkit/Process.h>
-#include <fkit/ProcessFactory.h>
+#include <flux/Pattern.h>
+#include <flux/File.h>
+#include <flux/Process.h>
+#include <flux/ProcessFactory.h>
 #include "BuildPlan.h"
 #include "GnuToolChain.h"
 

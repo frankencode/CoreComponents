@@ -10,13 +10,13 @@
 #ifndef FMAKE_RECIPEPROTOCOL_H
 #define FMAKE_RECIPEPROTOCOL_H
 
-#include <fkit/Yason.h>
-#include <fkit/Singleton.h>
+#include <flux/Yason.h>
+#include <flux/Singleton.h>
 
 namespace fmake
 {
 
-using namespace fkit;
+using namespace flux;
 
 class RecipeProtocol: public YasonProtocol, public Singleton<RecipeProtocol>
 {

@@ -1,6 +1,6 @@
-#include <fkit/SyntaxDefinition.h>
-#include <fkit/File.h>
-#include <fkit/stdio.h> // DEBUG
+#include <flux/SyntaxDefinition.h>
+#include <flux/File.h>
+#include <flux/stdio.h> // DEBUG
 #include "Registry.h"
 #include "CHeaderScanner.h"
 

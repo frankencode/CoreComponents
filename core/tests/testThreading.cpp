@@ -1,10 +1,10 @@
-#include <fkit/stdio.h>
-#include <fkit/Semaphore.h>
-#include <fkit/System.h>
-#include <fkit/ThreadFactory.h>
+#include <flux/stdio.h>
+#include <flux/Semaphore.h>
+#include <flux/System.h>
+#include <flux/ThreadFactory.h>
 #include <pthread.h>
 
-using namespace fkit;
+using namespace flux;
 
 class MyChannel: public Object
 {

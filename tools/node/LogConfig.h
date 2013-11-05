@@ -10,12 +10,12 @@
 #ifndef FNODE_LOGCONFIG_H
 #define FNODE_LOGCONFIG_H
 
-#include <fkit/Yason.h>
+#include <flux/Yason.h>
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class LogConfig: public Object
 {

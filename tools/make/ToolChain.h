@@ -10,16 +10,16 @@
 #ifndef FMAKE_TOOLCHAIN_H
 #define FMAKE_TOOLCHAIN_H
 
-#include <fkit/Config.h>
+#include <flux/Config.h>
 #include "Job.h"
 #include "Module.h"
 
 namespace fmake
 {
 
-using namespace fkit;
+using namespace flux;
 
-FKIT_STD_EXCEPTION(MachException);
+FLUX_STD_EXCEPTION(MachException);
 
 class BuildPlan;
 class DependencyCache;

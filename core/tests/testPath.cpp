@@ -1,6 +1,6 @@
-#include <fkit/stdio.h>
+#include <flux/stdio.h>
 
-using namespace fkit;
+using namespace flux;
 
 int main(int argc, char **argv)
 {

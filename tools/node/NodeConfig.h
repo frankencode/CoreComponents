@@ -10,16 +10,16 @@
 #ifndef FNODE_NODECONFIG_H
 #define FNODE_NODECONFIG_H
 
-#include <fkit/SocketAddress.h>
-#include <fkit/String.h>
-#include <fkit/Map.h>
+#include <flux/SocketAddress.h>
+#include <flux/String.h>
+#include <flux/Map.h>
 #include "ServiceDefinition.h"
 #include "LogConfig.h"
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class NodeConfig: public Object, public Singleton<NodeConfig>
 {

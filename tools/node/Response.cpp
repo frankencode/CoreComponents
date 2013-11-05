@@ -7,9 +7,9 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/System.h>
-#include <fkit/Date.h>
-#include <fkit/TransferMeter.h>
+#include <flux/System.h>
+#include <flux/Date.h>
+#include <flux/TransferMeter.h>
 #include "utils.h"
 #include "NodeConfig.h"
 #include "ClientConnection.h"

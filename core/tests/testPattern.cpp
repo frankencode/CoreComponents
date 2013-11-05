@@ -1,8 +1,8 @@
-#include <fkit/stdio.h>
-#include <fkit/check.h>
-#include <fkit/Pattern.h>
+#include <flux/stdio.h>
+#include <flux/check.h>
+#include <flux/Pattern.h>
 
-using namespace fkit;
+using namespace flux;
 
 int main() {
 	Pattern p = "^#{}.(?<=.)(?<!hello)(t[..]{?}|(?a:#)[^abc](?&a))$";

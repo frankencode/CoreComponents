@@ -6,7 +6,7 @@
 namespace fclaim
 {
 
-using namespace fkit;
+using namespace flux;
 
 class CHeaderScannerInitializer
 {

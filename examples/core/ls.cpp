@@ -1,8 +1,8 @@
-#include <fkit/stdio.h>
-#include <fkit/Process.h>
-#include <fkit/Dir.h>
+#include <flux/stdio.h>
+#include <flux/Process.h>
+#include <flux/Dir.h>
 
-using namespace fkit;
+using namespace flux;
 
 int main()
 {

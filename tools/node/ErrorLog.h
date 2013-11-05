@@ -10,9 +10,9 @@
 #ifndef FNODE_ERRORLOG_H
 #define FNODE_ERRORLOG_H
 
-#include <fkit/ThreadLocalSingleton.h>
-#include <fkit/Format.h>
-#include <fkit/str.h>
+#include <flux/ThreadLocalSingleton.h>
+#include <flux/Format.h>
+#include <flux/str.h>
 #include "Log.h"
 
 namespace fnode

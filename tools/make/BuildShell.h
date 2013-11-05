@@ -10,14 +10,14 @@
 #ifndef FMAKE_BUILDSHELL_H
 #define FMAKE_BUILDSHELL_H
 
-#include <fkit/String.h>
+#include <flux/String.h>
 
-namespace fkit { class FileStatus; }
+namespace flux { class FileStatus; }
 
 namespace fmake
 {
 
-using namespace fkit;
+using namespace flux;
 
 class BuildPlan;
 

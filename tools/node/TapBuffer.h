@@ -7,15 +7,15 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FKIT_TAPBUFFER_H
-#define FKIT_TAPBUFFER_H
+#ifndef FLUX_TAPBUFFER_H
+#define FLUX_TAPBUFFER_H
 
-#include <fkit/LineBuffer.h>
+#include <flux/LineBuffer.h>
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class TapBuffer: public LineBuffer
 {
@@ -34,4 +34,4 @@ private:
 
 } // namespace fnode
 
-#endif // FKIT_TAPBUFFER_H
+#endif // FLUX_TAPBUFFER_H

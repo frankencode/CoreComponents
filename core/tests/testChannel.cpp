@@ -1,12 +1,12 @@
-#include <fkit/stdio.h>
-#include <fkit/Thread.h>
-#include <fkit/Channel.h>
-#include <fkit/List.h>
-#include <fkit/Random.h>
-#include <fkit/System.h>
-#include <fkit/check.h>
+#include <flux/stdio.h>
+#include <flux/Thread.h>
+#include <flux/Channel.h>
+#include <flux/List.h>
+#include <flux/Random.h>
+#include <flux/System.h>
+#include <flux/check.h>
 
-using namespace fkit;
+using namespace flux;
 
 typedef Channel<int> MyChannel;
 typedef List<int> IntList;

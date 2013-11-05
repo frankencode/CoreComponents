@@ -1,11 +1,11 @@
-#include <fkit/stdio.h>
-#include <fkit/System.h>
-#include <fkit/Date.h>
-#include <fkit/check.h>
+#include <flux/stdio.h>
+#include <flux/System.h>
+#include <flux/Date.h>
+#include <flux/check.h>
 
-using namespace fkit;
+using namespace flux;
 
-namespace fkit {
+namespace flux {
 	bool leapYear(int y);
 }
 

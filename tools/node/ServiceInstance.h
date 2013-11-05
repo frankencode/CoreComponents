@@ -10,16 +10,16 @@
 #ifndef FNODE_SERVICEINSTANCE_H
 #define FNODE_SERVICEINSTANCE_H
 
-#include <fkit/Pattern.h>
-#include <fkit/List.h>
+#include <flux/Pattern.h>
+#include <flux/List.h>
 #include "LogConfig.h"
 
-namespace fkit { class YasonObject; }
+namespace flux { class YasonObject; }
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class ServiceDelegate;
 class ServiceWorker;

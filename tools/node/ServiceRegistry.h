@@ -10,7 +10,7 @@
 #ifndef FNODE_SERVICEREGISTRY_H
 #define FNODE_SERVICEREGISTRY_H
 
-#include <fkit/Map.h>
+#include <flux/Map.h>
 #include "ServiceDefinition.h"
 
 namespace fnode

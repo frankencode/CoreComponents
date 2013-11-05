@@ -1,13 +1,13 @@
-#include <fkit/stdio.h>
-#include <fkit/check.h>
-#include <fkit/System.h>
-#include <fkit/Map.h>
+#include <flux/stdio.h>
+#include <flux/check.h>
+#include <flux/System.h>
+#include <flux/Map.h>
 #if 0
-#include <fkit/Random.h>
+#include <flux/Random.h>
 #include <map>
 #endif
 
-using namespace fkit;
+using namespace flux;
 
 int fib(int n)
 {
@@ -73,12 +73,12 @@ int main()
 			double t0 = System::now();
 			for (int i = 0; i < n; ++i)
 				map->establish(i, i);
-			fout("fkit::Map, %% insertions: dt = %% us\n") << n << int((System::now() - t0) * 1e6);
+			fout("flux::Map, %% insertions: dt = %% us\n") << n << int((System::now() - t0) * 1e6);
 			t0 = System::now();
 			int s = 0;
 			for (int i = 0; i < n; ++i)
 				s += map->valueAt(i);
-			fout("fkit::Map, %% iteration steps: dt = %% us\n") << n << int((System::now() - t0) * 1e6);
+			fout("flux::Map, %% iteration steps: dt = %% us\n") << n << int((System::now() - t0) * 1e6);
 		}
 	}
 	#endif

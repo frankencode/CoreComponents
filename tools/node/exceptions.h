@@ -10,12 +10,12 @@
 #ifndef FNODE_EXCEPTIONS_H
 #define FNODE_EXCEPTIONS_H
 
-#include <fkit/String.h>
+#include <flux/String.h>
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class CloseRequest {};
 

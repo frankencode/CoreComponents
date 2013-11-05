@@ -10,15 +10,15 @@
 #ifndef FNODE_SERVICEDEFINITION_H
 #define FNODE_SERVICEDEFINITION_H
 
-#include <fkit/Yason.h>
-#include <fkit/Pattern.h>
+#include <flux/Yason.h>
+#include <flux/Pattern.h>
 #include "ServiceDelegate.h"
 #include "ServiceInstance.h"
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class ServicePrototype: public YasonObject
 {

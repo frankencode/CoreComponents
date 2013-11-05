@@ -1,5 +1,5 @@
 Application {
-	name: fclaim
+	name: fluxclaim
 	source: *.cpp
-	use: [ ../../core/fkit, ../../crypto/fkit ]
+	use: [ ../../core/flux, ../../crypto/flux ]
 }

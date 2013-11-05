@@ -10,13 +10,13 @@
 #ifndef FNODE_CLIENTCONNECTION_H
 #define FNODE_CLIENTCONNECTION_H
 
-#include <fkit/StreamSocket.h>
+#include <flux/StreamSocket.h>
 #include "Request.h"
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class ServiceWorker;
 class RequestStream;

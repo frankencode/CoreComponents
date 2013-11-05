@@ -7,11 +7,11 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/stdio.h>
-#include <fkit/Process.h>
-#include <fkit/FileStatus.h>
-#include <fkit/File.h>
-#include <fkit/Dir.h>
+#include <flux/stdio.h>
+#include <flux/Process.h>
+#include <flux/FileStatus.h>
+#include <flux/File.h>
+#include <flux/Dir.h>
 #include "BuildPlan.h"
 #include "BuildShell.h"
 
@@ -80,11 +80,11 @@ bool BuildShell::install(String sourcePath, String destPath)
 	if (plan()->options() & BuildPlan::Simulate) return true;
 
 	try {
-		if (destDirMissing) Dir::establish(destDirPath) || FKIT_SYSTEM_EXCEPTION;
+		if (destDirMissing) Dir::establish(destDirPath) || FLUX_SYSTEM_EXCEPTION;
 		Ref<File> source = File::open(sourcePath);
 		Ref<FileStatus> sourceStatus = FileStatus::read(sourcePath);
 		if (File::exists(destPath)) File::unlink(destPath);
-		File::create(destPath, sourceStatus->mode()) || FKIT_SYSTEM_EXCEPTION;
+		File::create(destPath, sourceStatus->mode()) || FLUX_SYSTEM_EXCEPTION;
 		Ref<File> sink = File::open(destPath, File::WriteOnly);
 		sink->truncate(0);
 		sink->write(source->map());
@@ -106,7 +106,7 @@ bool BuildShell::unlink(String path)
 		}
 		fout("rm %%\n") << path;
 		try {
-			File::unlink(path) || FKIT_SYSTEM_EXCEPTION;
+			File::unlink(path) || FLUX_SYSTEM_EXCEPTION;
 		}
 		catch (SystemException &ex) {
 			fout("%%\n") << ex.message();

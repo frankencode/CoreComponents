@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/stdio.h>
-#include <fkit/UserException.h>
+#include <flux/stdio.h>
+#include <flux/UserException.h>
 #include "NodeMaster.h"
 
 using namespace fnode;

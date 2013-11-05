@@ -1,5 +1,5 @@
 Application {
-	name: ffind
+	name: fluxfind
 	source: *.cpp
-	use: ../../core/fkit
+	use: ../../core/flux
 }

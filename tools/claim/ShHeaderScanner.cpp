@@ -1,5 +1,5 @@
-#include <fkit/SyntaxDefinition.h>
-#include <fkit/File.h>
+#include <flux/SyntaxDefinition.h>
+#include <flux/File.h>
 #include "Registry.h"
 #include "ShHeaderScanner.h"
 

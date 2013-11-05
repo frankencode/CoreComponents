@@ -1,9 +1,9 @@
-#include <fkit/stdio.h>
-#include <fkit/SpinLock.h>
-#include <fkit/Mutex.h>
-#include <fkit/Token.h>
+#include <flux/stdio.h>
+#include <flux/SpinLock.h>
+#include <flux/Mutex.h>
+#include <flux/Token.h>
 
-using namespace fkit;
+using namespace flux;
 
 void testFloat754()
 {

@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/stdio.h>
+#include <flux/stdio.h>
 #include "BuildPlan.h"
 #include "JobScheduler.h"
 #include "TestRunStage.h"

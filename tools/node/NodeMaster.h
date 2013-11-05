@@ -10,13 +10,13 @@
 #ifndef FNODE_NODEMASTER_H
 #define FNODE_NODEMASTER_H
 
-#include <fkit/Object.h>
-#include <fkit/Singleton.h>
+#include <flux/Object.h>
+#include <flux/Singleton.h>
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class NodeMaster: public Object, public Singleton<NodeMaster>
 {

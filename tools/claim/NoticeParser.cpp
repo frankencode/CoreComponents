@@ -1,6 +1,6 @@
-#include <fkit/Exception.h>
-#include <fkit/SyntaxDefinition.h>
-#include <fkit/stdio.h>
+#include <flux/Exception.h>
+#include <flux/SyntaxDefinition.h>
+#include <flux/stdio.h>
 #include "NoticeParser.h"
 
 namespace fclaim
@@ -140,7 +140,7 @@ Ref<Notice> NoticeSyntax::readNotice(Header *header) const
 	Ref<Token> rootToken = match(message);
 	if (!rootToken) return Ref<Notice>();
 	Token *token = rootToken->firstChild();
-	FKIT_ASSERT(token);
+	FLUX_ASSERT(token);
 	token = token->nextSibling();
 	Ref<CopyrightList> copyrights = CopyrightList::create();
 	while (token) {
@@ -148,31 +148,31 @@ Ref<Notice> NoticeSyntax::readNotice(Header *header) const
 		copyrights->append(readCopyright(token, message));
 		token = token->nextSibling();
 	}
-	FKIT_ASSERT(token->rule() == statement_);
+	FLUX_ASSERT(token->rule() == statement_);
 	String statement = message->copy(token);
 	return Notice::create(header, copyrights, statement);
 }
 
 Ref<Copyright> NoticeSyntax::readCopyright(Token *token, String message) const
 {
-	FKIT_ASSERT(token->rule() == copyright_);
+	FLUX_ASSERT(token->rule() == copyright_);
 	token = token->firstChild();
-	FKIT_ASSERT(token->rule() == yearStart_);
+	FLUX_ASSERT(token->rule() == yearStart_);
 	int yearStart = message->copy(token)->toInt();
 	int yearEnd = yearStart;
 	token = token->nextSibling();
-	FKIT_ASSERT(token);
+	FLUX_ASSERT(token);
 	if (token->rule() == yearEnd_) {
 		yearEnd = message->copy(token)->toInt();
 		token = token->nextSibling();
 	}
-	FKIT_ASSERT(token);
-	FKIT_ASSERT(token->rule() == holder_);
+	FLUX_ASSERT(token);
+	FLUX_ASSERT(token->rule() == holder_);
 	token = token->firstChild();
-	FKIT_ASSERT(token);
+	FLUX_ASSERT(token);
 	Ref<StringList> parts = StringList::create();
 	while (token) {
-		FKIT_ASSERT(token->rule() == word_);
+		FLUX_ASSERT(token->rule() == word_);
 		parts->append(message->copy(token));
 		token = token->nextSibling();
 	}

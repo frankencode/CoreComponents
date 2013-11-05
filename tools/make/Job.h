@@ -10,13 +10,13 @@
 #ifndef FMAKE_JOB_H
 #define FMAKE_JOB_H
 
-#include <fkit/String.h>
-#include <fkit/Channel.h>
+#include <flux/String.h>
+#include <flux/Channel.h>
 
 namespace fmake
 {
 
-using namespace fkit;
+using namespace flux;
 
 class JobServer;
 

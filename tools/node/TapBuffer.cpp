@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/Thread.h>
-#include <fkit/str.h>
+#include <flux/Thread.h>
+#include <flux/str.h>
 #include "TapBuffer.h"
 
 namespace fnode

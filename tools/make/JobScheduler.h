@@ -10,13 +10,13 @@
 #ifndef FMAKE_JOBSCHEDULER_H
 #define FMAKE_JOBSCHEDULER_H
 
-#include <fkit/Thread.h>
+#include <flux/Thread.h>
 #include "Job.h"
 
 namespace fmake
 {
 
-using namespace fkit;
+using namespace flux;
 
 class JobScheduler: public Object
 {

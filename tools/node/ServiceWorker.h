@@ -10,16 +10,16 @@
 #ifndef FNODE_SERVICEWORKER_H
 #define FNODE_SERVICEWORKER_H
 
-#include <fkit/Thread.h>
-#include <fkit/Channel.h>
-#include <fkit/StreamSocket.h>
-#include <fkit/Map.h>
+#include <flux/Thread.h>
+#include <flux/Channel.h>
+#include <flux/StreamSocket.h>
+#include <flux/Map.h>
 #include "ClientConnection.h"
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class ServiceWorker;
 

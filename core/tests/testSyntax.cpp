@@ -1,10 +1,10 @@
-#include <fkit/stdio.h>
-#include <fkit/check.h>
-#include <fkit/SyntaxDebugger.h>
-#include <fkit/SyntaxDefinition.h>
-#include <fkit/System.h>
+#include <flux/stdio.h>
+#include <flux/check.h>
+#include <flux/SyntaxDebugger.h>
+#include <flux/SyntaxDefinition.h>
+#include <flux/System.h>
 
-using namespace fkit;
+using namespace flux;
 
 class Expression: public SyntaxDefinition
 {

@@ -10,12 +10,12 @@
 #ifndef FMAKE_MODULE_H
 #define FMAKE_MODULE_H
 
-#include <fkit/String.h>
+#include <flux/String.h>
 
 namespace fmake
 {
 
-using namespace fkit;
+using namespace flux;
 
 class Module: public Object
 {

@@ -10,15 +10,15 @@
 #ifndef FNODE_MEDIATYPEDATABASE_H
 #define FNODE_MEDIATYPEDATABASE_H
 
-#include <fkit/Singleton.h>
-#include <fkit/String.h>
-#include <fkit/PrefixTree.h>
-#include <fkit/Map.h>
+#include <flux/Singleton.h>
+#include <flux/String.h>
+#include <flux/PrefixTree.h>
+#include <flux/Map.h>
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class MediaTypeDatabase: public Object, public Singleton<MediaTypeDatabase>
 {

@@ -1,8 +1,8 @@
-#include <fkit/stdio.h>
-#include <fkit/ProcessStatus.h>
-#include <fkit/Process.h>
+#include <flux/stdio.h>
+#include <flux/ProcessStatus.h>
+#include <flux/Process.h>
 
-using namespace fkit;
+using namespace flux;
 
 int main(int argc, char **argv)
 {

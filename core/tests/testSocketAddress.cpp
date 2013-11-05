@@ -1,7 +1,7 @@
-#include <fkit/stdio.h>
-#include <fkit/SocketAddress.h>
+#include <flux/stdio.h>
+#include <flux/SocketAddress.h>
 
-using namespace fkit;
+using namespace flux;
 
 String familyToString(int family)
 {

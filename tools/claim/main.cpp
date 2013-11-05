@@ -7,11 +7,11 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/stdio.h>
-#include <fkit/Config.h>
+#include <flux/stdio.h>
+#include <flux/Config.h>
 #include "Report.h"
 
-using namespace fkit;
+using namespace flux;
 using namespace fclaim;
 
 int main(int argc, char **argv)

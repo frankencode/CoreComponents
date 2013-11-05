@@ -1,6 +1,6 @@
-#include <fkit/DirWalker.h>
-#include <fkit/File.h>
-#include <fkit/Sha1.h>
+#include <flux/DirWalker.h>
+#include <flux/File.h>
+#include <flux/Sha1.h>
 #include "Registry.h"
 #include "NoticeParser.h"
 #include "Report.h"

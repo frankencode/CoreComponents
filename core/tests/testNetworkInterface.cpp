@@ -1,7 +1,7 @@
-#include <fkit/stdio.h>
-#include <fkit/NetworkInterface.h>
+#include <flux/stdio.h>
+#include <flux/NetworkInterface.h>
 
-using namespace fkit;
+using namespace flux;
 
 int main()
 {

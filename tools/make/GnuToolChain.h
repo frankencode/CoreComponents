@@ -10,13 +10,13 @@
 #ifndef FMAKE_GNUTOOLCHAIN_H
 #define FMAKE_GNUTOOLCHAIN_H
 
-#include <fkit/Format.h>
+#include <flux/Format.h>
 #include "ToolChain.h"
 
 namespace fmake
 {
 
-using namespace fkit;
+using namespace flux;
 
 class GnuToolChain: public ToolChain
 {

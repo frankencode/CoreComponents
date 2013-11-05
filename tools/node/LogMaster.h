@@ -10,18 +10,18 @@
 #ifndef FNODE_LOGMASTER_H
 #define FNODE_LOGMASTER_H
 
-#include <fkit/Thread.h>
-#include <fkit/Singleton.h>
-#include <fkit/Mutex.h>
-#include <fkit/Channel.h>
-#include <fkit/Timer.h>
-#include <fkit/Map.h>
-#include <fkit/Set.h>
+#include <flux/Thread.h>
+#include <flux/Singleton.h>
+#include <flux/Mutex.h>
+#include <flux/Channel.h>
+#include <flux/Timer.h>
+#include <flux/Map.h>
+#include <flux/Set.h>
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class Log;
 

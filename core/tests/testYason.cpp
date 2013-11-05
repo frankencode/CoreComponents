@@ -1,8 +1,8 @@
-#include <fkit/stdio.h>
-#include <fkit/check.h>
-#include <fkit/Yason.h>
+#include <flux/stdio.h>
+#include <flux/check.h>
+#include <flux/Yason.h>
 
-using namespace fkit;
+using namespace flux;
 
 void testData(YasonObject *object)
 {

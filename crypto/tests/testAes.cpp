@@ -1,13 +1,13 @@
-#include <fkit/stdio.h>
-#include <fkit/Aes.h>
+#include <flux/stdio.h>
+#include <flux/Aes.h>
 
-namespace fkit {
+namespace flux {
 namespace aes {
 Ref<ByteArray> keyExpansion(ByteArray *k, int Nr);
 }}
 
-using namespace fkit;
-using namespace fkit::aes;
+using namespace flux;
+using namespace flux::aes;
 
 void printKeySchedule(ByteArray *w)
 {

@@ -7,9 +7,9 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/stdio.h>
-#include <fkit/Dir.h>
-#include <fkit/File.h>
+#include <flux/stdio.h>
+#include <flux/Dir.h>
+#include <flux/File.h>
 #include "BuildPlan.h"
 #include "ConfigureStage.h"
 
