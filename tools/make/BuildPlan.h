@@ -10,8 +10,8 @@
 #ifndef FMAKE_BUILDPLAN_H
 #define FMAKE_BUILDPLAN_H
 
-#include <fkit/PrefixTree.h>
-#include <fkit/Map.h>
+#include <flux/PrefixTree.h>
+#include <flux/Map.h>
 #include "Module.h"
 #include "BuildShell.h"
 #include "ToolChain.h"
@@ -24,15 +24,15 @@
 #include "UninstallStage.h"
 #include "CleanStage.h"
 
-namespace fkit {
+namespace flux {
 class FileStatus;
 class Config;
-} // namespace fkit
+} // namespace flux
 
 namespace fmake
 {
 
-using namespace fkit;
+using namespace flux;
 
 class BuildPlan;
 typedef List< Ref<BuildPlan> > BuildPlanList;

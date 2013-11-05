@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/Config.h>
+#include <flux/Config.h>
 #include "ConfigProtocol.h"
 #include "ServiceRegistry.h"
 #include "ErrorLog.h"

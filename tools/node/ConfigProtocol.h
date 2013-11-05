@@ -10,13 +10,13 @@
 #ifndef FNODE_CONFIGPROTOCOL_H
 #define FNODE_CONFIGPROTOCOL_H
 
-#include <fkit/Singleton.h>
-#include <fkit/Yason.h>
+#include <flux/Singleton.h>
+#include <flux/Yason.h>
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class ConfigProtocol: public YasonProtocol, public Singleton<ConfigProtocol>
 {

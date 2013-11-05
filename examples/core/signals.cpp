@@ -1,8 +1,8 @@
-#include <fkit/stdio.h>
-#include <fkit/Thread.h>
-#include <fkit/Process.h>
+#include <flux/stdio.h>
+#include <flux/Thread.h>
+#include <flux/Process.h>
 
-using namespace fkit;
+using namespace flux;
 
 class SignalEater: public Thread {
 public:

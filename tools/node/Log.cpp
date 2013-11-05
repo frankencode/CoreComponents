@@ -7,11 +7,11 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/Process.h>
-#include <fkit/NullStream.h>
-#include <fkit/Mutex.h>
-#include <fkit/Guard.h>
-#include <fkit/stdio.h>
+#include <flux/Process.h>
+#include <flux/NullStream.h>
+#include <flux/Mutex.h>
+#include <flux/Guard.h>
+#include <flux/stdio.h>
 #include "LogMaster.h"
 #include "SystemLog.h"
 #include "Log.h"

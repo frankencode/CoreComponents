@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/ProcessFactory.h>
+#include <flux/ProcessFactory.h>
 #include "JobServer.h"
 
 namespace fmake

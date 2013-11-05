@@ -10,13 +10,13 @@
 #ifndef FNODE_LOGPROTOTYPE_H
 #define FNODE_LOGPROTOTYPE_H
 
-#include <fkit/Yason.h>
-#include <fkit/Date.h>
+#include <flux/Yason.h>
+#include <flux/Date.h>
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class LogPrototype: public YasonObject
 {

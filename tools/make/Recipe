@@ -1,5 +1,5 @@
 Application {
-	name: fmake
+	name: fluxmake
 	source: *.cpp
-	use: ../../core/fkit
+	use: ../../core/flux
 }

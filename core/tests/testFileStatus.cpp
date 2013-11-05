@@ -1,9 +1,9 @@
-#include <fkit/stdio.h>
-#include <fkit/check.h>
-#include <fkit/User.h>
-#include <fkit/Group.h>
+#include <flux/stdio.h>
+#include <flux/check.h>
+#include <flux/User.h>
+#include <flux/Group.h>
 
-using namespace fkit;
+using namespace flux;
 
 int main(int argc, char **argv)
 {

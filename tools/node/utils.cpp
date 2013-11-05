@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/Date.h>
-#include <fkit/Format.h>
+#include <flux/Date.h>
+#include <flux/Format.h>
 #include "utils.h"
 
 namespace fnode

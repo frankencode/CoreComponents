@@ -1,8 +1,8 @@
-#include <fkit/stdio.h>
-#include <fkit/check.h>
-#include <fkit/Uri.h>
+#include <flux/stdio.h>
+#include <flux/check.h>
+#include <flux/Uri.h>
 
-using namespace fkit;
+using namespace flux;
 
 int main()
 {

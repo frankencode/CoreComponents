@@ -10,16 +10,16 @@
 #ifndef FNODE_RESPONSE_H
 #define FNODE_RESPONSE_H
 
-#include <fkit/String.h>
-#include <fkit/Map.h>
-#include <fkit/Stream.h>
+#include <flux/String.h>
+#include <flux/Map.h>
+#include <flux/Stream.h>
 
-namespace fkit { class TransferMeter; }
+namespace flux { class TransferMeter; }
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class ClientConnection;
 class ServiceWorker;

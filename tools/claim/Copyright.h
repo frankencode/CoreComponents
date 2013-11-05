@@ -1,13 +1,13 @@
 #ifndef FCLAIM_COPYRIGHT_H
 #define FCLAIM_COPYRIGHT_H
 
-#include <fkit/String.h>
-#include <fkit/List.h>
+#include <flux/String.h>
+#include <flux/List.h>
 
 namespace fclaim
 {
 
-using namespace fkit;
+using namespace flux;
 
 class Copyright: public Object
 {

@@ -1,5 +1,5 @@
 Tools {
 	source: *.cpp
-	use: ../../core/fkit
-	prefix: /usr/lib/fkit/examples
+	use: ../../core/flux
+	prefix: /usr/lib/flux/examples
 }

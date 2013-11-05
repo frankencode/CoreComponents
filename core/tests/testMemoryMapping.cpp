@@ -1,10 +1,10 @@
-#include <fkit/stdio.h>
-#include <fkit/check.h>
-#include <fkit/ProcessFactory.h>
-#include <fkit/FileLock.h>
-#include <fkit/Thread.h>
+#include <flux/stdio.h>
+#include <flux/check.h>
+#include <flux/ProcessFactory.h>
+#include <flux/FileLock.h>
+#include <flux/Thread.h>
 
-using namespace fkit;
+using namespace flux;
 
 class CloneFactory: public ProcessFactory
 {

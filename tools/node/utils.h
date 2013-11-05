@@ -10,12 +10,12 @@
 #ifndef FNODE_UTILS_H
 #define FNODE_UTILS_H
 
-#include <fkit/Date.h>
+#include <flux/Date.h>
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 const char *reasonPhraseByStatusCode(int statusCode);
 String formatDate(Date *date);

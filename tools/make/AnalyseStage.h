@@ -10,7 +10,7 @@
 #ifndef FMAKE_ANALYSESTAGE_H
 #define FMAKE_ANALYSESTAGE_H
 
-#include <fkit/String.h>
+#include <flux/String.h>
 #include "BuildStage.h"
 
 namespace fmake

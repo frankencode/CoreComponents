@@ -7,10 +7,10 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/Yason.h>
-#include <fkit/Format.h>
-#include <fkit/File.h>
-#include <fkit/FileStatus.h>
+#include <flux/Yason.h>
+#include <flux/Format.h>
+#include <flux/File.h>
+#include <flux/FileStatus.h>
 #include "BuildPlan.h"
 #include "DependencyCache.h"
 

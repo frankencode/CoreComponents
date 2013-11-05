@@ -11,12 +11,12 @@
 #define FNODE_SYSTEMLOGSTREAM_H
 
 #include <syslog.h>
-#include <fkit/Stream.h>
+#include <flux/Stream.h>
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class SystemLogStream: public Stream
 {

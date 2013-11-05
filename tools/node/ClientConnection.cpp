@@ -7,12 +7,12 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/TransferLimiter.h>
-#include <fkit/TimeoutLimiter.h>
-#include <fkit/LineSource.h>
-#include <fkit/System.h>
-#include <fkit/StreamTap.h>
-#include <fkit/LineBuffer.h>
+#include <flux/TransferLimiter.h>
+#include <flux/TimeoutLimiter.h>
+#include <flux/LineSource.h>
+#include <flux/System.h>
+#include <flux/StreamTap.h>
+#include <flux/LineBuffer.h>
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "TapBuffer.h"

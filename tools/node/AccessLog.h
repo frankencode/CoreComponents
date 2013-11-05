@@ -10,8 +10,8 @@
 #ifndef FNODE_ACCESSLOG_H
 #define FNODE_ACCESSLOG_H
 
-#include <fkit/ThreadLocalSingleton.h>
-#include <fkit/Format.h>
+#include <flux/ThreadLocalSingleton.h>
+#include <flux/Format.h>
 #include "Log.h"
 
 namespace fnode

@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/Format.h>
+#include <flux/Format.h>
 #include "ChunkedSink.h"
 
 namespace fnode

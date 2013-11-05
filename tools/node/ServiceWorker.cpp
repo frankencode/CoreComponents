@@ -7,11 +7,11 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/Memory.h>
-#include <fkit/Format.h>
-#include <fkit/RefGuard.h>
-#include <fkit/System.h>
-#include <fkit/TimeoutLimiter.h>
+#include <flux/Memory.h>
+#include <flux/Format.h>
+#include <flux/RefGuard.h>
+#include <flux/System.h>
+#include <flux/TimeoutLimiter.h>
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "AccessLog.h"

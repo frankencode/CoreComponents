@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/LineBuffer.h>
+#include <flux/LineBuffer.h>
 #include "SystemLogStream.h"
 #include "SystemLog.h"
 

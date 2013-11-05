@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/ThreadFactory.h>
+#include <flux/ThreadFactory.h>
 #include "ErrorLog.h"
 #include "NodeConfig.h"
 #include "ServiceInstance.h"

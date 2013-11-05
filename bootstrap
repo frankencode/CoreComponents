@@ -1,9 +1,9 @@
 #!/bin/sh
 
 if [ $# -ne 0 ]; then
-	echo "Usage: path/to/fkit/bootstrap"
+	echo "Usage: path/to/flux/bootstrap"
 	echo
-	echo "Bootstraps fkit's build system (fmake)."
+	echo "Bootstraps the build system (fluxmake)."
 	exit 1
 fi
 

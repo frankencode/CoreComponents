@@ -1,0 +1,329 @@
+/*
+ * Copyright (C) 2007-2013 Frank Mertens.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version
+ * 2 of the License, or (at your option) any later version.
+ */
+
+#ifndef FLUX_PREFIXTREE_H
+#define FLUX_PREFIXTREE_H
+
+#include "types.h"
+#include "strings.h"
+#include "Tree.h"
+#include "Array.h"
+#include "ByteArray.h"
+#include "PrefixTreeWalker.h"
+
+namespace flux
+{
+
+template<class Char, class Value>
+class PrefixTree;
+
+template<class Char>
+class PrefixTreeKeyByCharType { public: typedef Array<Char> Key; };
+
+template<>
+class PrefixTreeKeyByCharType<char> { public: typedef ByteArray Key; };
+
+template<class Char, class Value>
+class PrefixTree: public Tree< PrefixTree<Char, Value> >
+{
+public:
+	inline static Ref<PrefixTree> create() {
+		return new PrefixTree;
+	}
+
+	/** Insert a key-value mapping if no key-value mapping with the same key exists already.
+	  * If currentValue is non-null the current value the given key maps to is returned.
+	  * The function returns true if the new key-value mapping was inserted successfully.
+	  */
+	template<class Char2>
+	inline bool insert(const Char2 *key, int keyLen, Value value, Value *currentValue = 0, bool caseSensitive = true) {
+		return caseSensitive ?
+			insertFiltered<Char2, Identity>(key, keyLen, value, currentValue) :
+			insertFiltered<Char2, ToLower>(key, keyLen, value, currentValue);
+	}
+
+	/** Lookup the key-value mapping with the longest matching key.
+	  * The function returns true if an exact match was found.
+	  */
+	template<class Char2>
+	inline bool lookup(const Char2 *key, int keyLen, Value *value = 0, bool caseSensitive = true) const {
+		return caseSensitive ?
+			lookupFiltered<Char2, Identity>(key, keyLen, value) :
+			lookupFiltered<Char2, ToLower>(key, keyLen, value);
+	}
+
+	/** Remove the key-value mapping with the exactly matching key.
+	  * If an exactly matching key-value pair is found, it is removed and
+	  * the value is returned. In this case the function returns true.
+	  */
+	template<class Char2>
+	inline bool remove(const Char2 *key, int keyLen, Value *value = 0, bool caseSensitive = true) {
+		return caseSensitive ?
+			removeFiltered<Char2, Identity>(key, keyLen) :
+			removeFiltered<Char2, ToLower>(key, keyLen);
+	}
+
+	/** Match given media to the longest key-value mapping of this tree.
+	  * The media is read starting from position i0.
+	  * The function returns true if a matching key was found.
+	  * The value of the matching key is returned in '*value'.
+	  * The terminal match position is given in '*i1'.
+	  */
+	template<class Media>
+	inline bool match(Media *media, int i0 = 0, int *i1 = 0, Value *value = 0, bool caseSensitive = true) const {
+		return caseSensitive ?
+			matchFiltered<Media, Identity>(media, i0, i1, value) :
+			matchFiltered<Media, ToLower>(media, i0, i1, value);
+	}
+
+	// convenience wrapper
+	inline bool lookup(const char *key, Value *value = 0, bool caseSensitive = true) const {
+		return lookup(key, strlen(key), value, caseSensitive);
+	}
+
+	// convenience wrapper
+	inline bool insert(const char *key, Value value = Value(), Value *currentValue = 0, bool caseSensitive = true) {
+		return insert(key, strlen(key), value, currentValue, caseSensitive);
+	}
+
+	// convenience wrapper
+	inline bool remove(const char *key, Value *value = 0, bool caseSensitive = true) {
+		return remove(key, strlen(key), value, caseSensitive);
+	}
+
+	// convenience wrapper, matches entire media
+	template<class Media>
+	bool match(Media *media, Value *value = 0) const
+	{
+		int i1 = 0;
+		if (match(media, 0, &i1, value))
+			return !media->has(i1);
+		return false;
+	}
+
+	typedef PrefixTreeWalker<Char, Value> Index;
+	typedef typename PrefixTreeKeyByCharType<Char>::Key Key;
+
+	inline Index first() const { return Index(Parent::firstLeaf()); }
+	inline Index last() const { return Index(Parent::lastLeaf()); }
+
+	inline bool has(Index index) const { return index.valid(); }
+
+	Ref<Key> key(Index index) const
+	{
+		FLUX_ASSERT(has(index));
+		int size = 0;
+		{
+			Node *node = index.node_;
+			if (node) {
+				while (node != this) {
+					node = node->parent();
+					++size;
+				}
+			}
+		}
+		Ref<Key> s = Key::create(size);
+		{
+			int i = size;
+			Node *node = index.node_;
+			if (node) {
+				while (node != this) {
+					--i;
+					s->at(i) = node->ch_;
+					node = node->parent();
+				}
+			}
+		}
+		return s;
+	}
+
+	inline Value value(Index index) const {
+		FLUX_ASSERT(has(index));
+		return index.node_->value_;
+	}
+
+	template<class Char2>
+	bool predict(const Char2 *key, int keyLen, Index *first, Index *last, Index *common = 0) const
+	{
+		Node *node = const_cast<Node *>(this);
+		while ((node) && (keyLen > 0)) {
+			node = node->step<Identity>(*key);
+			++key;
+			--keyLen;
+		}
+		bool found = (node) ? node->hasChildren() : false;
+		if (found) {
+			*first = Index(node->firstLeaf());
+			{
+				Node *lastNode = node;
+				while (!lastNode->defined_) lastNode = lastNode->lastChild();
+				*last = Index(lastNode);
+			}
+			if (common) {
+				Node *commonNode = node;
+				while (commonNode->hasSingleChild()) {
+					commonNode = commonNode->firstChild();
+					if (commonNode->defined_) break;
+				}
+				*common = Index(commonNode);
+			}
+		}
+		return found;
+	}
+
+	// convenience wrapper
+	inline bool predict(const char *key, Index *first, Index *last, Index *common = 0) const {
+		return predict(key, strlen(key), first, last, common);
+	}
+
+	Ref<Key> commonPrefix(char separator = 0) const
+	{
+		Node *node = const_cast<Node *>(this);
+		int n = 0;
+		while (node->hasSingleChild()) {
+			node = node->firstChild();
+			++n;
+		}
+		if (separator) {
+			while (node->parent()) {
+				if (node->ch_ == separator) break;
+				node = node->parent();
+				--n;
+			}
+		}
+		Ref<Key> key = Key::create(n);
+		while (n > 0) {
+			--n;
+			key->at(n) = node->ch_;
+			node = node->parent();
+		}
+		return key;
+	}
+
+protected:
+	typedef Tree< PrefixTree<Char, Value> > Parent;
+	typedef PrefixTree Node;
+	friend class PrefixTreeWalker<Char, Value>;
+
+	PrefixTree()
+		: ch_(Char()),
+		  defined_(false),
+		  value_(Value())
+	{}
+
+	PrefixTree(Char ch)
+		: ch_(ch),
+		  defined_(false)
+	{}
+
+	template<class Char2, template<class> class Filter>
+	bool insertFiltered(const Char2 *key, int keyLen, Value value, Value *currentValue = 0)
+	{
+		Node *node = this;
+		while (keyLen > 0) {
+			Node *parent = node;
+			node = node->step<Filter>(*key);
+			if (!node) {
+				node = new Node(*key);
+				parent->appendChild(node);
+			}
+			++key;
+			--keyLen;
+		}
+		bool undefined = !node->defined_;
+		if (undefined) {
+			node->value_ = value;
+			node->defined_ = true;
+		}
+		if (currentValue)
+			*currentValue = node->value_;
+		return undefined;
+	}
+
+	template<class Char2, template<class> class Filter>
+	bool lookupFiltered(const Char2 *key, int keyLen, Value *value = 0) const
+	{
+		Node *node = const_cast<Node *>(this);
+		while ((node) && (keyLen > 0)) {
+			node = node->step<Filter>(*key);
+			if (node)
+				if (node->defined_)
+					if (value)
+						*value = node->value_;
+			++key;
+			--keyLen;
+		}
+		return node ? ((keyLen == 0) && (node->defined_)) : false;
+	}
+
+	template<class Char2, template<class> class Filter>
+	bool removeFiltered(const Char *key, int keyLen, Value *value = 0) const
+	{
+		Node *node = const_cast<Node *>(this);
+		while ((node) && (keyLen > 0)) {
+			node = node->step<Filter>(*key);
+			++key;
+			--keyLen;
+		}
+		bool matchExact = (node) ? node->defined_ : false;
+		if (matchExact) {
+			if (value) *value = node->value_;
+			node->defined_ = false;
+			while (node) {
+				if (node->defined_ || node->hasChildren()) break;
+				Node *parent = node->parent();
+				node->unlink();
+				node = parent;
+			}
+		}
+		return matchExact;
+	}
+
+	template<class Media, template<class> class Filter>
+	bool matchFiltered(Media *media, int i0 = 0, int *i1 = 0, Value *value = 0) const
+	{
+		bool found = false;
+		int i = i0;
+		Node *node = const_cast<Node *>(this);
+		while ((node) && media->has(i)) {
+			node = node->step<Filter>(media->at(i++));
+			if (node) {
+				if (node->defined_) {
+					if (i1) *i1 = i;
+					if (value) *value = node->value_;
+					found = true;
+				}
+			}
+		}
+		return found;
+	}
+
+	template<template<class> class Filter>
+	inline Node *step(Char ch) const
+	{
+		ch = Filter<Char>::map(ch);
+		bool found = false;
+		Node *node = this->firstChild();
+		while (node) {
+			found = (Filter<Char>::map(node->ch_) == ch);
+			if (found) break;
+			node = node->nextSibling();
+		}
+
+		return node;
+	}
+
+	Char ch_;
+	bool defined_;
+	Value value_;
+};
+
+} // namespace flux
+
+#endif // FLUX_PREFIXTREE_H

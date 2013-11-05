@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/File.h>
+#include <flux/File.h>
 #include "exceptions.h"
 #include "DirectoryInstance.h"
 

@@ -1,13 +1,13 @@
 #ifndef FCLAIM_HEADER_H
 #define FCLAIM_HEADER_H
 
-#include <fkit/Token.h>
-#include <fkit/String.h>
+#include <flux/Token.h>
+#include <flux/String.h>
 
 namespace fclaim
 {
 
-using namespace fkit;
+using namespace flux;
 
 class Header: public Object
 {

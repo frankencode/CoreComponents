@@ -10,12 +10,12 @@
 #ifndef FNODE_CHUNKEDSINK_H
 #define FNODE_CHUNKEDSINK_H
 
-#include <fkit/Stream.h>
+#include <flux/Stream.h>
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class ChunkedSink: public Stream
 {

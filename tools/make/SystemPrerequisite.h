@@ -10,12 +10,12 @@
 #ifndef FMAKE_SYSTEMPREREQUISITE_H
 #define FMAKE_SYSTEMPREREQUISITE_H
 
-#include <fkit/Yason.h>
+#include <flux/Yason.h>
 
 namespace fmake
 {
 
-using namespace fkit;
+using namespace flux;
 
 class SystemPrerequisite: public Object
 {

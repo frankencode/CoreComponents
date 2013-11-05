@@ -1,7 +1,7 @@
-#include <fkit/stdio.h>
-#include <fkit/File.h>
+#include <flux/stdio.h>
+#include <flux/File.h>
 
-using namespace fkit;
+using namespace flux;
 
 int main(int argc, char **argv)
 {

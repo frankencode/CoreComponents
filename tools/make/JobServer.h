@@ -10,8 +10,8 @@
 #ifndef FMAKE_JOBSERVER_H
 #define FMAKE_JOBSERVER_H
 
-#include <fkit/Thread.h>
-#include <fkit/Channel.h>
+#include <flux/Thread.h>
+#include <flux/Channel.h>
 #include "Job.h"
 
 namespace fmake

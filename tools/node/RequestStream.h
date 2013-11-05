@@ -10,13 +10,13 @@
 #ifndef FNODE_REQUESTSTREAM_H
 #define FNODE_REQUESTSTREAM_H
 
-#include <fkit/Stream.h>
+#include <flux/Stream.h>
 #include "Request.h"
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class RequestStream: public Stream
 {

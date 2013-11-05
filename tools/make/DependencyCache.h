@@ -10,18 +10,18 @@
 #ifndef FMAKE_DEPENDENCYCACHE_H
 #define FMAKE_DEPENDENCYCACHE_H
 
-#include <fkit/String.h>
-#include <fkit/Map.h>
+#include <flux/String.h>
+#include <flux/Map.h>
 
-namespace fkit {
+namespace flux {
 class File;
 class YasonObject;
-} // namespace fkit
+} // namespace flux
 
 namespace fmake
 {
 
-using namespace fkit;
+using namespace flux;
 
 class Module;
 class BuildPlan;

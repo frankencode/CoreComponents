@@ -7,13 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/stdio.h>
-#include <fkit/Config.h>
-#include <fkit/Pattern.h>
-#include <fkit/DirWalker.h>
-#include <fkit/File.h>
+#include <flux/stdio.h>
+#include <flux/Config.h>
+#include <flux/Pattern.h>
+#include <flux/DirWalker.h>
+#include <flux/File.h>
 
-using namespace fkit;
+using namespace flux;
 
 class Match: public Object {
 public:

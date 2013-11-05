@@ -1,6 +1,0 @@
-Library {
-	name: fkitcore
-	version: 0.1.0
-	header: *.h
-	source: *.cpp
-}

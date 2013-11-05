@@ -7,9 +7,9 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/TimeoutLimiter.h>
-#include <fkit/TransferLimiter.h>
-#include <fkit/System.h>
+#include <flux/TimeoutLimiter.h>
+#include <flux/TransferLimiter.h>
+#include <flux/System.h>
 #include "exceptions.h"
 #include "RequestStream.h"
 

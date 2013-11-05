@@ -7,9 +7,9 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/Guard.h>
-#include <fkit/File.h>
-#include <fkit/System.h>
+#include <flux/Guard.h>
+#include <flux/File.h>
+#include <flux/System.h>
 #include "Log.h"
 #include "NodeConfig.h"
 #include "LogMaster.h"

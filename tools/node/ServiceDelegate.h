@@ -10,7 +10,7 @@
 #ifndef FNODE_SERVICEDELEGATE_H
 #define FNODE_SERVICEDELEGATE_H
 
-#include <fkit/Format.h>
+#include <flux/Format.h>
 #include "Request.h"
 
 namespace fnode

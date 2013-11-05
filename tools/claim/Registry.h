@@ -1,14 +1,14 @@
 #ifndef FCLAIM_REGISTRY_H
 #define FCLAIM_REGISTRY_H
 
-#include <fkit/Singleton.h>
-#include <fkit/List.h>
+#include <flux/Singleton.h>
+#include <flux/List.h>
 #include "HeaderScanner.h"
 
 namespace fclaim
 {
 
-using namespace fkit;
+using namespace flux;
 
 class Registry: public Singleton<Registry>, public Object
 {

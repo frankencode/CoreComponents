@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/stdio.h>
-#include <fkit/FileStatus.h>
+#include <flux/stdio.h>
+#include <flux/FileStatus.h>
 #include "JobScheduler.h"
 #include "BuildShell.h"
 #include "BuildPlan.h"

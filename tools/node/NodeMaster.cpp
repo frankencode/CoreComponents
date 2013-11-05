@@ -7,10 +7,10 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <fkit/IoMonitor.h>
-#include <fkit/Thread.h>
-#include <fkit/Process.h>
-#include <fkit/User.h>
+#include <flux/IoMonitor.h>
+#include <flux/Thread.h>
+#include <flux/Process.h>
+#include <flux/User.h>
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "AccessLog.h"

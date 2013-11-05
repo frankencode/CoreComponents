@@ -1,13 +1,13 @@
 #ifndef FCLAIM_NOTICEPARSER_H
 #define FCLAIM_NOTICEPARSER_H
 
-#include <fkit/Singleton.h>
+#include <flux/Singleton.h>
 #include "Notice.h"
 
 namespace fclaim
 {
 
-using namespace fkit;
+using namespace flux;
 
 class NoticeSyntax;
 

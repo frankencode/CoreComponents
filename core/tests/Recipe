@@ -1,4 +1,4 @@
 Tests {
 	source: *.cpp
-	use: ../fkit
+	use: ../flux
 }

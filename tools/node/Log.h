@@ -10,15 +10,15 @@
 #ifndef FNODE_LOG_H
 #define FNODE_LOG_H
 
-#include <fkit/Date.h>
-#include <fkit/Stream.h>
-#include <fkit/Mutex.h>
+#include <flux/Date.h>
+#include <flux/Stream.h>
+#include <flux/Mutex.h>
 #include "LogConfig.h"
 
 namespace fnode
 {
 
-using namespace fkit;
+using namespace flux;
 
 class LogMaster;
 

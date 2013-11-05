@@ -1,15 +1,15 @@
 #ifndef FCLAIM_REPORT_H
 #define FCLAIM_REPORT_H
 
-#include <fkit/Pattern.h>
-#include <fkit/Map.h>
-#include <fkit/Set.h>
+#include <flux/Pattern.h>
+#include <flux/Map.h>
+#include <flux/Set.h>
 #include "Notice.h"
 
 namespace fclaim
 {
 
-using namespace fkit;
+using namespace flux;
 
 typedef Map<String, Ref<Notice> > Coverage;
 typedef Set<String> Exposure;
