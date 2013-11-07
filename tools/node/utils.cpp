@@ -11,7 +11,7 @@
 #include <flux/Format.h>
 #include "utils.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 const char *reasonPhraseByStatusCode(int statusCode)
@@ -126,4 +126,4 @@ Ref<Date> scanDate(String text, bool *ok)
 	return Date::create(year, month, day, hour, minutes, seconds);
 }
 
-} // namespace fnode
+} // namespace fluxnode

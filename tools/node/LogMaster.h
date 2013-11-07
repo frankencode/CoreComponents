@@ -18,7 +18,7 @@
 #include <flux/Map.h>
 #include <flux/Set.h>
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -52,6 +52,6 @@ private:
 
 inline LogMaster *logMaster() { return LogMaster::instance(); }
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_LOGMASTER_H

@@ -12,7 +12,7 @@
 
 #include "HeaderScanner.h"
 
-namespace fclaim
+namespace fluxclaim
 {
 
 using namespace flux;
@@ -40,6 +40,6 @@ private:
 	Ref<ShHeaderSyntax> headerSyntax_;
 };
 
-} // namespace fclaim
+} // namespace fluxclaim
 
 #endif // FLUXCLAIM_SHHEADERSCANNER_H

@@ -13,7 +13,7 @@
 #include "ServiceDelegate.h"
 #include "WorkerPool.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class DispatchInstance;
@@ -31,6 +31,6 @@ private:
 	Ref<DispatchInstance> dispatchInstance_;
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_DISPATCHDELEGATE_H

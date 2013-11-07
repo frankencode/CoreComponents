@@ -12,7 +12,7 @@
 
 #include "BuildStage.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 class ConfigureStage: public BuildStage
@@ -26,6 +26,6 @@ private:
 	bool findLibraryPath(SystemPrerequisite *prerequisite, String *libraryPath);
 };
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_CONFIGURESTAGE_H

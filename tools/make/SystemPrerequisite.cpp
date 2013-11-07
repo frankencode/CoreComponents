@@ -9,7 +9,7 @@
 
 #include "SystemPrerequisite.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 Ref<SystemPrerequisite> SystemPrerequisite::read(YasonObject *object)
@@ -32,4 +32,4 @@ SystemPrerequisite::SystemPrerequisite(YasonObject *object)
 	  releaseCompileFlags_(object->value("release-compile-flags"))
 {}
 
-} // namespace fmake
+} // namespace fluxmake

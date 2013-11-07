@@ -14,7 +14,7 @@
 #include <flux/Channel.h>
 #include "Job.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 class JobServer: public Thread
@@ -33,6 +33,6 @@ private:
 	Ref<JobChannel> replyChannel_;
 };
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_JOBSERVER_H

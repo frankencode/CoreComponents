@@ -11,7 +11,7 @@
 #include "ServiceWorker.h"
 #include "ServiceDelegate.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 ServiceDelegate::ServiceDelegate(ServiceWorker *worker)
@@ -68,4 +68,4 @@ void ServiceDelegate::close()
 	worker_->close();
 }
 
-} // namespace fnode
+} // namespace fluxnode

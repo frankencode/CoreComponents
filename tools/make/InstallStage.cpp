@@ -10,7 +10,7 @@
 #include "BuildPlan.h"
 #include "InstallStage.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 bool InstallStage::run()
@@ -38,4 +38,4 @@ bool InstallStage::run()
 	return success_ = toolChain()->install(plan());
 }
 
-} // namespace fmake
+} // namespace fluxmake

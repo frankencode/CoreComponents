@@ -9,7 +9,7 @@
 
 #include "EchoDelegate.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class EchoInstance: public ServiceInstance
@@ -29,4 +29,4 @@ private:
 	{}
 };
 
-} // namespace fnode
+} // namespace fluxnode

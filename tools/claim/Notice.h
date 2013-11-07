@@ -14,7 +14,7 @@
 #include "Header.h"
 #include "Copyright.h"
 
-namespace fclaim
+namespace fluxclaim
 {
 
 using namespace flux;
@@ -42,6 +42,6 @@ private:
 	String statement_;
 };
 
-} // namespace fclaim
+} // namespace fluxclaim
 
 #endif // FLUXCLAIM_NOTICE_H

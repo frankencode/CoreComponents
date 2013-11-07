@@ -11,7 +11,7 @@
 #include "ServiceDefinition.h"
 #include "DirectoryInstance.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class DirectoryService: public ServiceDefinition
@@ -47,4 +47,4 @@ public:
 
 namespace { DirectoryAnnouncer announcer; }
 
-} // namespace fnode
+} // namespace fluxnode

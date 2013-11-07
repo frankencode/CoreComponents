@@ -13,7 +13,7 @@
 #include <flux/List.h>
 #include "Header.h"
 
-namespace fclaim
+namespace fluxclaim
 {
 
 using namespace flux;
@@ -29,6 +29,6 @@ protected:
 
 typedef List< Ref<HeaderScanner> > HeaderScannerList;
 
-} // namespace fclaim
+} // namespace fluxclaim
 
 #endif // FLUXCLAIM_HEADERSCANNER_H

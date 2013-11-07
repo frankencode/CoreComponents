@@ -13,7 +13,7 @@
 #include "exceptions.h"
 #include "RequestStream.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Ref<RequestStream> RequestStream::open(Stream *stream)
@@ -155,4 +155,4 @@ void RequestStream::write(const StringList *parts)
 	stream_->write(parts);
 }
 
-} // namespace fnode
+} // namespace fluxnode

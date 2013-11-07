@@ -13,7 +13,7 @@
 #include <flux/String.h>
 #include <flux/Channel.h>
 
-namespace fmake
+namespace fluxmake
 {
 
 using namespace flux;
@@ -48,6 +48,6 @@ private:
 
 typedef Channel< Ref<Job> > JobChannel;
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_JOB_H

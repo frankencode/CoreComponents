@@ -11,7 +11,7 @@
 #include "DependencyCache.h"
 #include "CleanStage.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 bool CleanStage::run()
@@ -33,4 +33,4 @@ bool CleanStage::run()
 	return success_ = true;
 }
 
-} // namespace fmake
+} // namespace fluxmake

@@ -9,7 +9,7 @@
 
 #include "RecipeProtocol.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 class GenericPrototype: public YasonObject
@@ -172,4 +172,4 @@ RecipeProtocol::RecipeProtocol()
 	add<PackagePrototype>();
 }
 
-} // namespace fmake
+} // namespace fluxmake

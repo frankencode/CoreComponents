@@ -11,7 +11,7 @@
 #include <flux/str.h>
 #include "TapBuffer.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Ref<TapBuffer> TapBuffer::open(Stream *stream, String prefix)
@@ -35,4 +35,4 @@ void TapBuffer::write(const ByteArray *buf)
 	else LineBuffer::write(buf);
 }
 
-} // namespace fnode
+} // namespace fluxnode

@@ -12,7 +12,7 @@
 #include <flux/stdio.h>
 #include "NoticeParser.h"
 
-namespace fclaim
+namespace fluxclaim
 {
 
 class NoticeSyntax: public SyntaxDefinition
@@ -203,4 +203,4 @@ NoticeParser *noticeParser()
 	return NoticeParser::instance();
 }
 
-} // namespace fclaim
+} // namespace fluxclaim

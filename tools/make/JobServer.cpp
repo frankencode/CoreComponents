@@ -10,7 +10,7 @@
 #include <flux/ProcessFactory.h>
 #include "JobServer.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 JobServer::JobServer(JobChannel *requestChannel, JobChannel *replyChannel)
@@ -42,4 +42,4 @@ void JobServer::run()
 	}
 }
 
-} // namespace fmake
+} // namespace fluxmake

@@ -13,7 +13,7 @@
 #include "ErrorLog.h"
 #include "NodeConfig.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 NodeConfig::NodeConfig()
@@ -59,4 +59,4 @@ void NodeConfig::load(int argc, char **argv)
 	}
 }
 
-} // namespace fnode
+} // namespace fluxnode

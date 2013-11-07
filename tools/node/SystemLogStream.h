@@ -13,7 +13,7 @@
 #include <syslog.h>
 #include <flux/Stream.h>
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -32,6 +32,6 @@ private:
 	int priority_;
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_SYSTEMLOGSTREAM_H

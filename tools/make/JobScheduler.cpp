@@ -11,7 +11,7 @@
 #include "JobServer.h"
 #include "JobScheduler.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 Ref<JobScheduler> JobScheduler::create(int concurrency)
@@ -63,4 +63,4 @@ bool JobScheduler::collect(Ref<Job> *completedJob)
 	return true;
 }
 
-} // namespace fmake
+} // namespace fluxmake

@@ -16,7 +16,7 @@
 
 namespace flux { class TransferMeter; }
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -58,6 +58,6 @@ private:
 	String reasonPhrase_;
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_RESPONSE_H

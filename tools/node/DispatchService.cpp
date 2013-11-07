@@ -12,7 +12,7 @@
 #include "WorkerPool.h"
 #include "DispatchInstance.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class DispatchService: public ServiceDefinition
@@ -49,4 +49,4 @@ public:
 
 namespace { DispatchAnnouncer announcer; }
 
-} // namespace fnode
+} // namespace fluxnode

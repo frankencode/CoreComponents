@@ -11,7 +11,7 @@
 #include "DispatchInstance.h"
 #include "DispatchDelegate.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Ref<DispatchDelegate> DispatchDelegate::create(ServiceWorker *worker) {
@@ -45,4 +45,4 @@ DispatchDelegate::DispatchDelegate(ServiceWorker *worker)
 	dispatchInstance_ = worker->serviceInstance();
 }
 
-} // namespace fnode
+} // namespace fluxnode

@@ -13,7 +13,7 @@
 #include <flux/StreamSocket.h>
 #include "Request.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -50,6 +50,6 @@ private:
 	Ref<Request> request_, pendingRequest_;
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_CLIENTCONNECTION_H

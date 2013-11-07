@@ -16,7 +16,7 @@
 #include "RecipeProtocol.h"
 #include "BuildPlan.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
@@ -343,4 +343,4 @@ void BuildPlan::initModules()
 		prerequisites_->at(i)->initModules();
 }
 
-} // namespace fmake
+} // namespace fluxmake

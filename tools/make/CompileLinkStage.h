@@ -12,7 +12,7 @@
 
 #include "BuildStage.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 class CompileLinkStage: public BuildStage
@@ -22,6 +22,6 @@ public:
 	bool run();
 };
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_COMPILELINKSTAGE_H

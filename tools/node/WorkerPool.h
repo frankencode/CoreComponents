@@ -12,7 +12,7 @@
 
 #include "ServiceWorker.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class WorkerPool: public Object
@@ -37,6 +37,6 @@ private:
 
 typedef Array< Ref<WorkerPool> > WorkerPools;
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_WORKERPOOL_H

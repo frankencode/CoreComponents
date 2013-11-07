@@ -10,7 +10,7 @@
 #include "BuildPlan.h"
 #include "UninstallStage.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 bool UninstallStage::run()
@@ -38,4 +38,4 @@ bool UninstallStage::run()
 	return success_ = toolChain()->uninstall(plan());
 }
 
-} // namespace fmake
+} // namespace fluxmake

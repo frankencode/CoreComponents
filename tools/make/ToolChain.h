@@ -14,7 +14,7 @@
 #include "Job.h"
 #include "Module.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 using namespace flux;
@@ -64,6 +64,6 @@ private:
 	String machine_;
 };
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_TOOLCHAIN_H

@@ -12,7 +12,7 @@
 
 #include "ServiceDelegate.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class DirectoryInstance;
@@ -32,6 +32,6 @@ private:
 	Ref<DirectoryInstance> directoryInstance_;
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_DIRECTORYDELEGATE_H

@@ -13,7 +13,7 @@
 #include <flux/Singleton.h>
 #include "Notice.h"
 
-namespace fclaim
+namespace fluxclaim
 {
 
 using namespace flux;
@@ -34,6 +34,6 @@ private:
 
 NoticeParser *noticeParser();
 
-} // namespace fclaim
+} // namespace fluxclaim
 
 #endif // FLUXCLAIM_NOTICEPARSER_H

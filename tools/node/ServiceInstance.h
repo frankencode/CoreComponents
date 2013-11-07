@@ -16,7 +16,7 @@
 
 namespace flux { class YasonObject; }
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -55,6 +55,6 @@ protected:
 
 typedef List< Ref<ServiceInstance> > ServiceInstances;
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_SERVICEINSTANCE_H

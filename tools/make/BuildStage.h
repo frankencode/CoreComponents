@@ -10,7 +10,7 @@
 #ifndef FLUXMAKE_BUILDSTAGE_H
 #define FLUXMAKE_BUILDSTAGE_H
 
-namespace fmake
+namespace fluxmake
 {
 
 class BuildPlan;
@@ -38,6 +38,6 @@ protected:
 	int status_;
 };
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_BUILDSTAGE_H

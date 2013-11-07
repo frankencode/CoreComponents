@@ -13,7 +13,7 @@
 #include <flux/Yason.h>
 #include <flux/Singleton.h>
 
-namespace fmake
+namespace fluxmake
 {
 
 using namespace flux;
@@ -27,6 +27,6 @@ protected:
 
 inline RecipeProtocol *recipeProtocol() { return RecipeProtocol::instance(); }
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_RECIPEPROTOCOL_H

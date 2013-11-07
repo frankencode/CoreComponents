@@ -16,7 +16,7 @@
 #include "SystemLog.h"
 #include "Log.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Log::Log()
@@ -76,4 +76,4 @@ Stream *Log::noticeStream()  const { Guard<Mutex> guard(mutex_); return noticeSt
 Stream *Log::infoStream()    const { Guard<Mutex> guard(mutex_); return infoStream_; }
 Stream *Log::debugStream()   const { Guard<Mutex> guard(mutex_); return debugStream_; }
 
-} // namespace fnode
+} // namespace fluxnode

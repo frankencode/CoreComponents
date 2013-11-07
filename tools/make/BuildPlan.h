@@ -29,7 +29,7 @@ class FileStatus;
 class Config;
 } // namespace flux
 
-namespace fmake
+namespace fluxmake
 {
 
 using namespace flux;
@@ -173,6 +173,6 @@ private:
 	CleanStage cleanStage_;
 };
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_BUILDPLAN_H

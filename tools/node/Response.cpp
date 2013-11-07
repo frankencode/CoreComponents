@@ -16,7 +16,7 @@
 #include "ChunkedSink.h"
 #include "Response.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Ref<Response> Response::create(ClientConnection *client)
@@ -119,4 +119,4 @@ void Response::end()
 	}
 }
 
-} // namespace fnode
+} // namespace fluxnode

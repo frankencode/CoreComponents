@@ -13,7 +13,7 @@
 #include <flux/Map.h>
 #include "ServiceDefinition.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class ServiceRegistry: public Object, public Singleton<ServiceRegistry>
@@ -33,6 +33,6 @@ private:
 
 inline ServiceRegistry *serviceRegistry() { return ServiceRegistry::instance(); }
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_SERVICEREGISTRY_H

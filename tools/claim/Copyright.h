@@ -13,7 +13,7 @@
 #include <flux/String.h>
 #include <flux/List.h>
 
-namespace fclaim
+namespace fluxclaim
 {
 
 using namespace flux;
@@ -43,6 +43,6 @@ private:
 
 typedef List< Ref<Copyright> > CopyrightList;
 
-} // namespace fclaim
+} // namespace fluxclaim
 
 #endif // FLUXCLAIM_COPYRIGHT_H

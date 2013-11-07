@@ -21,7 +21,7 @@
 #include "DispatchInstance.h"
 #include "NodeMaster.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 NodeMaster::NodeMaster()
@@ -143,4 +143,4 @@ void NodeMaster::runNode(int argc, char **argv)
 	}
 }
 
-} // namespace fnode
+} // namespace fluxnode

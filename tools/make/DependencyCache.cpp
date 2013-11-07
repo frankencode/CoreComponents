@@ -14,7 +14,7 @@
 #include "BuildPlan.h"
 #include "DependencyCache.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 Ref<DependencyCache> DependencyCache::create(BuildPlan *plan)
@@ -135,4 +135,4 @@ void DependencyCache::insert(String source, Module *module)
 	cache_->insert(source, module);
 }
 
-} // namespace fmake
+} // namespace fluxmake

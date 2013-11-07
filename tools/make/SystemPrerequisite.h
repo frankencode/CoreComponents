@@ -12,7 +12,7 @@
 
 #include <flux/Yason.h>
 
-namespace fmake
+namespace fluxmake
 {
 
 using namespace flux;
@@ -55,6 +55,6 @@ private:
 typedef List< Ref<SystemPrerequisite> > SystemPrerequisiteList;
 typedef Map< String, Ref<SystemPrerequisiteList> > SystemPrerequisitesByName;
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_SYSTEMPREREQUISITE_H

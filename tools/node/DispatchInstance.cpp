@@ -10,7 +10,7 @@
 #include "DispatchDelegate.h"
 #include "DispatchInstance.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Ref<DispatchInstance> DispatchInstance::create(YasonObject *config) {
@@ -25,4 +25,4 @@ DispatchInstance::DispatchInstance(YasonObject *config)
 	: ServiceInstance(config)
 {}
 
-} // namespace fnode
+} // namespace fluxnode

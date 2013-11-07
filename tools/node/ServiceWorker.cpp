@@ -21,7 +21,7 @@
 #include "Response.h"
 #include "ServiceWorker.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Ref<ServiceWorker> ServiceWorker::create(ServiceInstance *serviceInstance, ClosedConnections *closedConnections)
@@ -128,4 +128,4 @@ void ServiceWorker::close()
 	}
 }
 
-} // namespace fnode
+} // namespace fluxnode

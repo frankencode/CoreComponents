@@ -16,7 +16,7 @@
 #include "ServiceDefinition.h"
 #include "LogConfig.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -56,6 +56,6 @@ private:
 
 inline NodeConfig *nodeConfig() { return NodeConfig::instance(); }
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_NODECONFIG_H

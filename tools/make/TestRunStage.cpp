@@ -12,7 +12,7 @@
 #include "JobScheduler.h"
 #include "TestRunStage.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 bool TestRunStage::run()
@@ -49,4 +49,4 @@ bool TestRunStage::run()
 	return success_ = true;
 }
 
-} // namespace fmake
+} // namespace fluxmake

@@ -12,7 +12,7 @@
 
 #include <flux/Stream.h>
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -31,6 +31,6 @@ private:
 	Ref<Stream> stream_;
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_CHUNKEDSINK_H

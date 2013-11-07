@@ -15,7 +15,7 @@
 #include "ServiceDelegate.h"
 #include "ServiceInstance.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -38,6 +38,6 @@ public:
 	virtual Ref<ServiceInstance> createInstance(YasonObject *config) const = 0;
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_SERVICEDEFINITION_H

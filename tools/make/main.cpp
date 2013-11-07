@@ -10,7 +10,7 @@
 #include <flux/stdio.h>
 #include "BuildPlan.h"
 
-using namespace fmake;
+using namespace fluxmake;
 
 int main(int argc, char **argv)
 {

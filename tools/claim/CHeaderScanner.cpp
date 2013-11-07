@@ -13,7 +13,7 @@
 #include "Registry.h"
 #include "CHeaderScanner.h"
 
-namespace fclaim
+namespace fluxclaim
 {
 
 CHeaderScannerInitializer::CHeaderScannerInitializer()
@@ -66,4 +66,4 @@ Ref<Header> CHeaderScanner::scanHeader(String path) const
 	return Header::create(path, rootToken, text, message);
 }
 
-} // namespace fclaim
+} // namespace fluxclaim

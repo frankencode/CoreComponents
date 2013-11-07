@@ -10,7 +10,7 @@
 #include "LogPrototype.h"
 #include "ConfigProtocol.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class NodePrototype: public YasonObject
@@ -48,4 +48,4 @@ void ConfigProtocol::registerService(YasonObject *configPrototype)
 	nodeProtocol_->insert(configPrototype->className(), configPrototype);
 }
 
-} // namespace fnode
+} // namespace fluxnode
