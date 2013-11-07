@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_BUILDPLAN_H
-#define FMAKE_BUILDPLAN_H
+#ifndef FLUXMAKE_BUILDPLAN_H
+#define FLUXMAKE_BUILDPLAN_H
 
 #include <flux/PrefixTree.h>
 #include <flux/Map.h>
@@ -175,4 +175,4 @@ private:
 
 } // namespace fmake
 
-#endif // FMAKE_BUILDPLAN_H
+#endif // FLUXMAKE_BUILDPLAN_H

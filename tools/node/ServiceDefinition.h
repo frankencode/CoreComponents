@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_SERVICEDEFINITION_H
-#define FNODE_SERVICEDEFINITION_H
+#ifndef FLUXNODE_SERVICEDEFINITION_H
+#define FLUXNODE_SERVICEDEFINITION_H
 
 #include <flux/Yason.h>
 #include <flux/Pattern.h>
@@ -40,4 +40,4 @@ public:
 
 } // namespace fnode
 
-#endif // FNODE_SERVICEDEFINITION_H
+#endif // FLUXNODE_SERVICEDEFINITION_H

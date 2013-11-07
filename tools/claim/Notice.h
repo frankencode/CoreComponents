@@ -1,5 +1,5 @@
-#ifndef FCLAIM_NOTICE_H
-#define FCLAIM_NOTICE_H
+#ifndef FLUXCLAIM_NOTICE_H
+#define FLUXCLAIM_NOTICE_H
 
 #include <flux/String.h>
 #include "Header.h"
@@ -35,4 +35,4 @@ private:
 
 } // namespace fclaim
 
-#endif // FCLAIM_NOTICE_H
+#endif // FLUXCLAIM_NOTICE_H

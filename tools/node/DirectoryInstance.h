@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_DIRECTORYINSTANCE_H
-#define FNODE_DIRECTORYINSTANCE_H
+#ifndef FLUXNODE_DIRECTORYINSTANCE_H
+#define FLUXNODE_DIRECTORYINSTANCE_H
 
 #include "ServiceInstance.h"
 #include "DirectoryDelegate.h"
@@ -32,4 +32,4 @@ private:
 
 } // namespace fnode
 
-#endif // FNODE_DIRECTORYINSTANCE_H
+#endif // FLUXNODE_DIRECTORYINSTANCE_H

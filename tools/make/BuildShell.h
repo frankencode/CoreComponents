@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_BUILDSHELL_H
-#define FMAKE_BUILDSHELL_H
+#ifndef FLUXMAKE_BUILDSHELL_H
+#define FLUXMAKE_BUILDSHELL_H
 
 #include <flux/String.h>
 
@@ -45,4 +45,4 @@ private:
 
 } // namespace fmake
 
-#endif // FMAKE_BUILDSHELL_H
+#endif // FLUXMAKE_BUILDSHELL_H

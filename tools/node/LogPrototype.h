@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_LOGPROTOTYPE_H
-#define FNODE_LOGPROTOTYPE_H
+#ifndef FLUXNODE_LOGPROTOTYPE_H
+#define FLUXNODE_LOGPROTOTYPE_H
 
 #include <flux/Yason.h>
 #include <flux/Date.h>
@@ -36,4 +36,4 @@ private:
 
 } // namespace fnode
 
-#endif // FNODE_LOGPROTOTYPE_H
+#endif // FLUXNODE_LOGPROTOTYPE_H

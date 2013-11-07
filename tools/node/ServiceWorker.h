@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_SERVICEWORKER_H
-#define FNODE_SERVICEWORKER_H
+#ifndef FLUXNODE_SERVICEWORKER_H
+#define FLUXNODE_SERVICEWORKER_H
 
 #include <flux/Thread.h>
 #include <flux/Channel.h>
@@ -62,4 +62,4 @@ private:
 
 } // namespace fnode
 
-#endif // FNODE_SERVICEWORKER_H
+#endif // FLUXNODE_SERVICEWORKER_H

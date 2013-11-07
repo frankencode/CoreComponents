@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_SYSTEMLOGSTREAM_H
-#define FNODE_SYSTEMLOGSTREAM_H
+#ifndef FLUXNODE_SYSTEMLOGSTREAM_H
+#define FLUXNODE_SYSTEMLOGSTREAM_H
 
 #include <syslog.h>
 #include <flux/Stream.h>
@@ -34,4 +34,4 @@ private:
 
 } // namespace fnode
 
-#endif // FNODE_SYSTEMLOGSTREAM_H
+#endif // FLUXNODE_SYSTEMLOGSTREAM_H

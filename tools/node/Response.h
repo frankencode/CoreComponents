@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_RESPONSE_H
-#define FNODE_RESPONSE_H
+#ifndef FLUXNODE_RESPONSE_H
+#define FLUXNODE_RESPONSE_H
 
 #include <flux/String.h>
 #include <flux/Map.h>
@@ -60,4 +60,4 @@ private:
 
 } // namespace fnode
 
-#endif // FNODE_RESPONSE_H
+#endif // FLUXNODE_RESPONSE_H

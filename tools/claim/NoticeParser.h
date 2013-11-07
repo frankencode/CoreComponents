@@ -1,5 +1,5 @@
-#ifndef FCLAIM_NOTICEPARSER_H
-#define FCLAIM_NOTICEPARSER_H
+#ifndef FLUXCLAIM_NOTICEPARSER_H
+#define FLUXCLAIM_NOTICEPARSER_H
 
 #include <flux/Singleton.h>
 #include "Notice.h"
@@ -27,4 +27,4 @@ NoticeParser *noticeParser();
 
 } // namespace fclaim
 
-#endif // FCLAIM_NOTICEPARSER_H
+#endif // FLUXCLAIM_NOTICEPARSER_H

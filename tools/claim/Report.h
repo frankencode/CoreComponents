@@ -1,5 +1,5 @@
-#ifndef FCLAIM_REPORT_H
-#define FCLAIM_REPORT_H
+#ifndef FLUXCLAIM_REPORT_H
+#define FLUXCLAIM_REPORT_H
 
 #include <flux/Pattern.h>
 #include <flux/Map.h>
@@ -43,4 +43,4 @@ private:
 
 } // namespace fclaim
 
-#endif // FCLAIM_REPORT_H
+#endif // FLUXCLAIM_REPORT_H

@@ -1,5 +1,5 @@
-#ifndef FCLAIM_HEADER_H
-#define FCLAIM_HEADER_H
+#ifndef FLUXCLAIM_HEADER_H
+#define FLUXCLAIM_HEADER_H
 
 #include <flux/Token.h>
 #include <flux/String.h>
@@ -37,4 +37,4 @@ private:
 
 } // namespace fclaim
 
-#endif // FCLAIM_HEADER_H
+#endif // FLUXCLAIM_HEADER_H

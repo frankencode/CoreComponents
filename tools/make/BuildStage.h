@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_BUILDSTAGE_H
-#define FMAKE_BUILDSTAGE_H
+#ifndef FLUXMAKE_BUILDSTAGE_H
+#define FLUXMAKE_BUILDSTAGE_H
 
 namespace fmake
 {
@@ -40,4 +40,4 @@ protected:
 
 } // namespace fmake
 
-#endif // FMAKE_BUILDSTAGE_H
+#endif // FLUXMAKE_BUILDSTAGE_H

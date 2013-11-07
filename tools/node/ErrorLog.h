@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_ERRORLOG_H
-#define FNODE_ERRORLOG_H
+#ifndef FLUXNODE_ERRORLOG_H
+#define FLUXNODE_ERRORLOG_H
 
 #include <flux/ThreadLocalSingleton.h>
 #include <flux/Format.h>
@@ -32,19 +32,19 @@ inline Format notice()  { return Format(errorLog()->noticeStream()); }
 inline Format info()    { return Format(errorLog()->infoStream()); }
 inline Format debug()   { return Format(errorLog()->debugStream()); }
 
-#define FNODE_LOG(sink) \
+#define FLUXNODE_LOG(sink) \
 	sink() << "(" << inum(thread()->id(), 62) << ") " << String(__FILE__)->baseName() << ": "
 
-#define FNODE_ERROR()   FNODE_LOG(error)
-#define FNODE_WARNING() FNODE_LOG(warning)
-#define FNODE_NOTICE()  FNODE_LOG(notice)
-#define FNODE_INFO()    FNODE_LOG(info)
+#define FLUXNODE_ERROR()   FLUXNODE_LOG(error)
+#define FLUXNODE_WARNING() FLUXNODE_LOG(warning)
+#define FLUXNODE_NOTICE()  FLUXNODE_LOG(notice)
+#define FLUXNODE_INFO()    FLUXNODE_LOG(info)
 #ifndef NDEBUG
-#define FNODE_DEBUG()   FNODE_LOG(debug)
+#define FLUXNODE_DEBUG()   FLUXNODE_LOG(debug)
 #else
-#define FNODE_DEBUG()   NullFormat()
+#define FLUXNODE_DEBUG()   NullFormat()
 #endif
 
 } // namespace fnode
 
-#endif // FNODE_ERRORLOG_H
+#endif // FLUXNODE_ERRORLOG_H

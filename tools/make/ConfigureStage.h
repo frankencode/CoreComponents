@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_CONFIGURESTAGE_H
-#define FMAKE_CONFIGURESTAGE_H
+#ifndef FLUXMAKE_CONFIGURESTAGE_H
+#define FLUXMAKE_CONFIGURESTAGE_H
 
 #include "BuildStage.h"
 
@@ -28,4 +28,4 @@ private:
 
 } // namespace fmake
 
-#endif // FMAKE_CONFIGURESTAGE_H
+#endif // FLUXMAKE_CONFIGURESTAGE_H

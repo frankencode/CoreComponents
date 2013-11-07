@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_DIRECTORYDELEGATE_H
-#define FNODE_DIRECTORYDELEGATE_H
+#ifndef FLUXNODE_DIRECTORYDELEGATE_H
+#define FLUXNODE_DIRECTORYDELEGATE_H
 
 #include "ServiceDelegate.h"
 
@@ -34,4 +34,4 @@ private:
 
 } // namespace fnode
 
-#endif // FNODE_DIRECTORYDELEGATE_H
+#endif // FLUXNODE_DIRECTORYDELEGATE_H

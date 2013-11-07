@@ -1,5 +1,5 @@
-#ifndef FCLAIM_HEADERSCANNER_H
-#define FCLAIM_HEADERSCANNER_H
+#ifndef FLUXCLAIM_HEADERSCANNER_H
+#define FLUXCLAIM_HEADERSCANNER_H
 
 #include <flux/List.h>
 #include "Header.h"
@@ -22,4 +22,4 @@ typedef List< Ref<HeaderScanner> > HeaderScannerList;
 
 } // namespace fclaim
 
-#endif // FCLAIM_HEADERSCANNER_H
+#endif // FLUXCLAIM_HEADERSCANNER_H

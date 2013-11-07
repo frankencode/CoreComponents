@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_CONFIGPROTOCOL_H
-#define FNODE_CONFIGPROTOCOL_H
+#ifndef FLUXNODE_CONFIGPROTOCOL_H
+#define FLUXNODE_CONFIGPROTOCOL_H
 
 #include <flux/Singleton.h>
 #include <flux/Yason.h>
@@ -33,4 +33,4 @@ inline ConfigProtocol *configProtocol() { return ConfigProtocol::instance(); }
 
 } // namespace fnode
 
-#endif // FNODE_CONFIGPROTOCOL_H
+#endif // FLUXNODE_CONFIGPROTOCOL_H

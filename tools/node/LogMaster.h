@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_LOGMASTER_H
-#define FNODE_LOGMASTER_H
+#ifndef FLUXNODE_LOGMASTER_H
+#define FLUXNODE_LOGMASTER_H
 
 #include <flux/Thread.h>
 #include <flux/Singleton.h>
@@ -54,4 +54,4 @@ inline LogMaster *logMaster() { return LogMaster::instance(); }
 
 } // namespace fnode
 
-#endif // FNODE_LOGMASTER_H
+#endif // FLUXNODE_LOGMASTER_H

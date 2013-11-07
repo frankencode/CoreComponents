@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_NODECONFIG_H
-#define FNODE_NODECONFIG_H
+#ifndef FLUXNODE_NODECONFIG_H
+#define FLUXNODE_NODECONFIG_H
 
 #include <flux/SocketAddress.h>
 #include <flux/String.h>
@@ -58,4 +58,4 @@ inline NodeConfig *nodeConfig() { return NodeConfig::instance(); }
 
 } // namespace fnode
 
-#endif // FNODE_NODECONFIG_H
+#endif // FLUXNODE_NODECONFIG_H

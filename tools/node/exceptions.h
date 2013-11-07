@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_EXCEPTIONS_H
-#define FNODE_EXCEPTIONS_H
+#ifndef FLUXNODE_EXCEPTIONS_H
+#define FLUXNODE_EXCEPTIONS_H
 
 #include <flux/String.h>
 
@@ -67,4 +67,4 @@ public:
 
 } // namespace fnode
 
-#endif // FNODE_EXCEPTIONS_H
+#endif // FLUXNODE_EXCEPTIONS_H

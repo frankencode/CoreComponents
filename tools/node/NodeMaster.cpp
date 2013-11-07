@@ -67,7 +67,7 @@ void NodeMaster::runNode(int argc, char **argv)
 	errorLog()->open(nodeConfig()->errorLogConfig());
 	accessLog()->open(nodeConfig()->accessLogConfig());
 
-	FNODE_NOTICE() << "Starting..." << nl;
+	FLUXNODE_NOTICE() << "Starting..." << nl;
 
 	Ref<DispatchInstance> dispatchInstance;
 	for (int i = 0; i < nodeConfig()->serviceInstances()->size(); ++i) {
@@ -86,7 +86,7 @@ void NodeMaster::runNode(int argc, char **argv)
 
 	if (nodeConfig()->serviceInstances()->size() == 0)
 	{
-		FNODE_WARNING() << "No service configured, falling back to Echo service" << nl;
+		FLUXNODE_WARNING() << "No service configured, falling back to Echo service" << nl;
 
 		ServiceDefinition *echoService = serviceRegistry()->serviceByName("Echo");
 		YasonObject *config = echoService->configPrototype();
@@ -115,7 +115,7 @@ void NodeMaster::runNode(int argc, char **argv)
 		Process::setUserId(user->id());
 	}
 
-	FNODE_DEBUG() << "Accepting connections..." << nl;
+	FLUXNODE_DEBUG() << "Accepting connections..." << nl;
 
 	try {
 		Ref<IoMonitor> ioMonitor = IoMonitor::create();
@@ -129,7 +129,7 @@ void NodeMaster::runNode(int argc, char **argv)
 					StreamSocket *socket = listeningSockets->at(i);
 					if (ioMonitor->readyAccept()->contains(socket)) {
 						Ref<ClientConnection> client = ClientConnection::create(socket->accept());
-						FNODE_DEBUG() << "Accepted connection from " << client->address() << nl;
+						FLUXNODE_DEBUG() << "Accepted connection from " << client->address() << nl;
 						dispatchPool->dispatch(client);
 					}
 				}
@@ -137,7 +137,7 @@ void NodeMaster::runNode(int argc, char **argv)
 		}
 	}
 	catch (Interrupt &ex) {
-		FNODE_NOTICE() << "Shutting down..." << nl;
+		FLUXNODE_NOTICE() << "Shutting down..." << nl;
 		dispatchInstance->workerPools_ = 0;
 		throw ex;
 	}

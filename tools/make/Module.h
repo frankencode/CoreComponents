@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_MODULE_H
-#define FMAKE_MODULE_H
+#ifndef FLUXMAKE_MODULE_H
+#define FLUXMAKE_MODULE_H
 
 #include <flux/String.h>
 
@@ -49,4 +49,4 @@ typedef List< Ref<Module> > ModuleList;
 
 } // namespace fmake
 
-#endif // FMAKE_MODULE_H
+#endif // FLUXMAKE_MODULE_H
