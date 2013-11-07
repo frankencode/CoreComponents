@@ -13,7 +13,7 @@
 #include "ServiceInstance.h"
 #include "WorkerPool.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class NodeMaster;
@@ -34,6 +34,6 @@ private:
 	Ref<WorkerPools> workerPools_;
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_DISPATCHINSTANCE_H

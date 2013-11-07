@@ -13,7 +13,7 @@
 #include "ServiceInstance.h"
 #include "DirectoryDelegate.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class DirectoryInstance: public ServiceInstance
@@ -30,6 +30,6 @@ private:
 	String path_;
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_DIRECTORYINSTANCE_H

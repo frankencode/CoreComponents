@@ -9,7 +9,7 @@
 
 #include "SystemLogStream.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Ref<SystemLogStream> SystemLogStream::open(int priority)
@@ -36,4 +36,4 @@ void SystemLogStream::write(const StringList *parts)
 	write(parts->join());
 }
 
-} // namespace fnode
+} // namespace fluxnode

@@ -14,7 +14,7 @@
 #include "NodeConfig.h"
 #include "LogMaster.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 LogMaster::LogMaster()
@@ -86,4 +86,4 @@ void LogMaster::run()
 	}
 }
 
-} // namespace fnode
+} // namespace fluxnode

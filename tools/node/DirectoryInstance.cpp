@@ -11,7 +11,7 @@
 #include "exceptions.h"
 #include "DirectoryInstance.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Ref<DirectoryInstance> DirectoryInstance::create(YasonObject *config)
@@ -43,4 +43,4 @@ Ref<ServiceDelegate> DirectoryInstance::createDelegate(ServiceWorker *worker) co
 	return DirectoryDelegate::create(worker);
 }
 
-} // namespace fnode
+} // namespace fluxnode

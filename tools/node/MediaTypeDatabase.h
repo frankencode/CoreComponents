@@ -15,7 +15,7 @@
 #include <flux/PrefixTree.h>
 #include <flux/Map.h>
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -35,6 +35,6 @@ private:
 
 inline MediaTypeDatabase *mediaTypeDatabase() { return MediaTypeDatabase::instance(); }
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_MEDIATYPEDATABASE_H

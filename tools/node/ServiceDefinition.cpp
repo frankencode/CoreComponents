@@ -10,7 +10,7 @@
 #include "LogPrototype.h"
 #include "ServiceDefinition.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Ref<ServicePrototype> ServicePrototype::create(String className, YasonProtocol *protocol)
@@ -29,4 +29,4 @@ ServicePrototype::ServicePrototype(String className, YasonProtocol *protocol)
 	insert("access_log", LogPrototype::create());
 }
 
-} // namespace fnode
+} // namespace fluxnode

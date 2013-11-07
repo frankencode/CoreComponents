@@ -12,7 +12,7 @@
 
 #include "BuildStage.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 class InstallStage: public BuildStage
@@ -22,6 +22,6 @@ public:
 	bool run();
 };
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_INSTALLSTAGE_H

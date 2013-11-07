@@ -11,7 +11,7 @@
 #include "Log.h"
 #include "LogConfig.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 int decodeLogLevel(String levelName)
@@ -50,4 +50,4 @@ LogConfig::LogConfig(YasonObject *config)
 	  rotationInterval_(config->value("rotation"))
 {}
 
-} // namespace fnode
+} // namespace fluxnode

@@ -13,7 +13,7 @@
 #include <flux/Format.h>
 #include "ToolChain.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 using namespace flux;
@@ -60,6 +60,6 @@ protected:
 	static void cleanLibrarySymlinks(BuildPlan *plan, String libPath);
 };
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_GNUTOOLCHAIN_H

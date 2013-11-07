@@ -12,7 +12,7 @@
 
 #include <flux/Yason.h>
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -38,6 +38,6 @@ private:
 	double rotationInterval_;
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_LOGCONFIG_H

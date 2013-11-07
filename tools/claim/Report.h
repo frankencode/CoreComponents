@@ -15,7 +15,7 @@
 #include <flux/Set.h>
 #include "Notice.h"
 
-namespace fclaim
+namespace fluxclaim
 {
 
 using namespace flux;
@@ -50,6 +50,6 @@ private:
 	Ref<StatementByDigest> statementByDigest_;
 };
 
-} // namespace fclaim
+} // namespace fluxclaim
 
 #endif // FLUXCLAIM_REPORT_H

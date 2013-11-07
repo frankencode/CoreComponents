@@ -13,7 +13,7 @@
 #include <flux/Singleton.h>
 #include <flux/Yason.h>
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -31,6 +31,6 @@ private:
 
 inline ConfigProtocol *configProtocol() { return ConfigProtocol::instance(); }
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_CONFIGPROTOCOL_H

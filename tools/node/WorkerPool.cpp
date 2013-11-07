@@ -13,7 +13,7 @@
 #include "ServiceInstance.h"
 #include "WorkerPool.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Ref<WorkerPool> WorkerPool::create(ServiceInstance *serviceInstance)
@@ -70,4 +70,4 @@ void WorkerPool::dispatch(ClientConnection *client)
 	workerCandidate->pendingConnections()->push(client);
 }
 
-} // namespace fnode
+} // namespace fluxnode

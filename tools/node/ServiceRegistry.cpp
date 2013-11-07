@@ -10,7 +10,7 @@
 #include "ConfigProtocol.h"
 #include "ServiceRegistry.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 ServiceRegistry::ServiceRegistry()
@@ -28,4 +28,4 @@ ServiceDefinition *ServiceRegistry::serviceByName(String name) const
 	return serviceByName_->value(name);
 }
 
-} // namespace fnode
+} // namespace fluxnode

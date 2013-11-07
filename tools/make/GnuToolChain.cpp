@@ -14,7 +14,7 @@
 #include "BuildPlan.h"
 #include "GnuToolChain.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 Ref<GnuToolChain> GnuToolChain::create(String compiler)
@@ -276,4 +276,4 @@ void GnuToolChain::cleanLibrarySymlinks(BuildPlan *plan, String libPath)
 		plan->shell()->unlink(parts->join("."));
 }
 
-} // namespace fmake
+} // namespace fluxmake

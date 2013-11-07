@@ -14,7 +14,7 @@
 #include <flux/List.h>
 #include "HeaderScanner.h"
 
-namespace fclaim
+namespace fluxclaim
 {
 
 using namespace flux;
@@ -34,6 +34,6 @@ private:
 
 inline Registry *registry() { return Registry::instance(); }
 
-} // namespace fclaim
+} // namespace fluxclaim
 
 #endif // FLUXCLAIM_REGISTRY_H

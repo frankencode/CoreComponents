@@ -12,7 +12,7 @@
 
 #include <flux/LineBuffer.h>
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -32,6 +32,6 @@ private:
 	String prefix_;
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUX_TAPBUFFER_H

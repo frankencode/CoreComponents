@@ -14,7 +14,7 @@
 #include "NoticeParser.h"
 #include "Report.h"
 
-namespace fclaim
+namespace fluxclaim
 {
 
 Ref<Report> Report::create(StringList *dirPaths, Pattern works)
@@ -78,4 +78,4 @@ Report::Report(StringList *dirPaths, Pattern works)
 	}
 }
 
-} // namespace fclaim
+} // namespace fluxclaim

@@ -12,7 +12,7 @@
 
 #include <flux/Date.h>
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -21,6 +21,6 @@ const char *reasonPhraseByStatusCode(int statusCode);
 String formatDate(Date *date);
 Ref<Date> scanDate(String text, bool *ok = 0);
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_UTILS_H

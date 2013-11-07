@@ -15,7 +15,7 @@
 #include <flux/str.h>
 #include "Log.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class ErrorLog: public Log, public ThreadLocalSingleton<ErrorLog>
@@ -45,6 +45,6 @@ inline Format debug()   { return Format(errorLog()->debugStream()); }
 #define FLUXNODE_DEBUG()   NullFormat()
 #endif
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_ERRORLOG_H

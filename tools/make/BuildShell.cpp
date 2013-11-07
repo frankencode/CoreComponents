@@ -15,7 +15,7 @@
 #include "BuildPlan.h"
 #include "BuildShell.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 BuildShell::BuildShell(BuildPlan *plan)
@@ -116,4 +116,4 @@ bool BuildShell::unlink(String path)
 	return true;
 }
 
-} // namespace fmake
+} // namespace fluxmake

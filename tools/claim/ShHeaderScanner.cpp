@@ -12,7 +12,7 @@
 #include "Registry.h"
 #include "ShHeaderScanner.h"
 
-namespace fclaim
+namespace fluxclaim
 {
 
 ShHeaderScannerInitializer::ShHeaderScannerInitializer()
@@ -78,4 +78,4 @@ Ref<Header> ShHeaderScanner::scanHeader(String path) const
 	return Header::create(path, rootToken, text, message);
 }
 
-} // namespace fclaim
+} // namespace fluxclaim

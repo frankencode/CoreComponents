@@ -9,7 +9,7 @@
 
 #include "Registry.h"
 
-namespace fclaim
+namespace fluxclaim
 {
 
 Registry::Registry()
@@ -26,4 +26,4 @@ void Registry::registerHeaderScanner(HeaderScanner *scanner)
 	headerScanners_->append(scanner);
 }
 
-} // namespace fclaim
+} // namespace fluxclaim

@@ -14,7 +14,7 @@
 
 namespace flux { class FileStatus; }
 
-namespace fmake
+namespace fluxmake
 {
 
 using namespace flux;
@@ -43,6 +43,6 @@ private:
 	BuildPlan *plan_;
 };
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_BUILDSHELL_H

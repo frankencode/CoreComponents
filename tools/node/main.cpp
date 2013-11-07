@@ -11,7 +11,7 @@
 #include <flux/UserException.h>
 #include "NodeMaster.h"
 
-using namespace fnode;
+using namespace fluxnode;
 
 int main(int argc, char **argv)
 {

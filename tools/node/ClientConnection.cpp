@@ -19,7 +19,7 @@
 #include "RequestStream.h"
 #include "ClientConnection.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Ref<ClientConnection> ClientConnection::create(StreamSocket *socket)
@@ -145,4 +145,4 @@ Ref<Request> ClientConnection::scanRequest()
 	return request;
 }
 
-} // namespace fnode
+} // namespace fluxnode

@@ -11,7 +11,7 @@
 #include "SystemLogStream.h"
 #include "SystemLog.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 SystemLog::SystemLog()
@@ -30,4 +30,4 @@ void SystemLog::open(String identifier, int option, int facility)
 	openlog(identifier, option, facility);
 }
 
-} // namespace fnode
+} // namespace fluxnode

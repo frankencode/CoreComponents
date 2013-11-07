@@ -13,7 +13,7 @@
 #include <flux/String.h>
 #include "BuildStage.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 class AnalyseStage: public BuildStage
@@ -27,6 +27,6 @@ private:
 	Ref<StringList> previousSources_;
 };
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_ANALYSESTAGE_H

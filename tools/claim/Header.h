@@ -13,7 +13,7 @@
 #include <flux/Token.h>
 #include <flux/String.h>
 
-namespace fclaim
+namespace fluxclaim
 {
 
 using namespace flux;
@@ -44,6 +44,6 @@ private:
 	String message_;
 };
 
-} // namespace fclaim
+} // namespace fluxclaim
 
 #endif // FLUXCLAIM_HEADER_H

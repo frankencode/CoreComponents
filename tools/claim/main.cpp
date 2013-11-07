@@ -12,7 +12,7 @@
 #include "Report.h"
 
 using namespace flux;
-using namespace fclaim;
+using namespace fluxclaim;
 
 int main(int argc, char **argv)
 {

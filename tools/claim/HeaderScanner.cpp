@@ -9,7 +9,7 @@
 
 #include "HeaderScanner.h"
 
-namespace fclaim
+namespace fluxclaim
 {
 
 String HeaderScanner::trimHeader(String text, const char *space)
@@ -32,4 +32,4 @@ String HeaderScanner::trimHeader(String text, const char *space)
 	return lines->join("\n");
 }
 
-} // namespace fclaim
+} // namespace fluxclaim

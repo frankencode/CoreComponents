@@ -13,7 +13,7 @@
 #include "BuildPlan.h"
 #include "ConfigureStage.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 bool ConfigureStage::run()
@@ -101,4 +101,4 @@ bool ConfigureStage::findLibraryPath(SystemPrerequisite *prerequisite, String *l
 	return prerequisite->libraryPaths()->size() == 0;
 }
 
-} // namespace fmake
+} // namespace fluxmake

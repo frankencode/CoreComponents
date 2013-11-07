@@ -14,7 +14,7 @@
 #include <flux/ThreadLocalSingleton.h>
 #include <syslog.h>
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -49,6 +49,6 @@ private:
 
 inline SystemLog *systemLog() { return SystemLog::instance(); }
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_SYSTEMLOG_H

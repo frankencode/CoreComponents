@@ -15,7 +15,7 @@
 #include <flux/Mutex.h>
 #include "LogConfig.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -68,6 +68,6 @@ private:
 	Ref<Stream> debugStream_;
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_LOG_H

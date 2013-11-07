@@ -13,7 +13,7 @@
 #include <flux/Thread.h>
 #include "Job.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 using namespace flux;
@@ -50,6 +50,6 @@ private:
 	int finishCount_;
 };
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_JOBSCHEDULER_H

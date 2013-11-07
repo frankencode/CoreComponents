@@ -11,7 +11,7 @@
 #include "ServiceDefinition.h"
 #include "EchoInstance.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class EchoService: public ServiceDefinition
@@ -46,4 +46,4 @@ public:
 
 namespace { EchoAnnouncer announcer; }
 
-} // namespace fnode
+} // namespace fluxnode

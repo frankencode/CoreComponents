@@ -9,7 +9,7 @@
 
 #include "MediaTypeDatabase.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 MediaTypeDatabase::MediaTypeDatabase()
@@ -46,4 +46,4 @@ String MediaTypeDatabase::lookup(String path, String content) const
 	return value;
 }
 
-} // namespace fnode
+} // namespace fluxnode

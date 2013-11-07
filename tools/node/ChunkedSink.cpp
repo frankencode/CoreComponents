@@ -10,7 +10,7 @@
 #include <flux/Format.h>
 #include "ChunkedSink.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Ref<ChunkedSink> ChunkedSink::open(Stream *stream)
@@ -44,4 +44,4 @@ void ChunkedSink::write(const StringList *parts)
 	chunk << "\r\n";
 }
 
-} // namespace fnode
+} // namespace fluxnode

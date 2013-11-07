@@ -13,7 +13,7 @@
 #include <flux/Object.h>
 #include <flux/Singleton.h>
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -32,6 +32,6 @@ private:
 
 inline NodeMaster* nodeMaster() { return NodeMaster::instance(); }
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_NODEMASTER_H

@@ -2,7 +2,7 @@
 #include "LogConfig.h"
 #include "ServiceInstance.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 ServiceInstance::ServiceInstance(YasonObject *config)
@@ -15,4 +15,4 @@ ServiceInstance::ServiceInstance(YasonObject *config)
 	  accessLogConfig_(LogConfig::load(cast<YasonObject>(config->value("access_log"))))
 {}
 
-} // namespace fnode
+} // namespace fluxnode

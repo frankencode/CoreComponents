@@ -17,7 +17,7 @@
 #include "MediaTypeDatabase.h"
 #include "DirectoryDelegate.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 Ref<DirectoryDelegate> DirectoryDelegate::create(ServiceWorker *worker)
@@ -112,4 +112,4 @@ void DirectoryDelegate::listDirectory(Request *request, String path)
 		"</html>\n";
 }
 
-} // namespace fnode
+} // namespace fluxnode

@@ -14,7 +14,7 @@
 #include "BuildPlan.h"
 #include "CompileLinkStage.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 bool CompileLinkStage::run()
@@ -116,4 +116,4 @@ bool CompileLinkStage::run()
 	return success_ = toolChain()->link(plan());
 }
 
-} // namespace fmake
+} // namespace fluxmake

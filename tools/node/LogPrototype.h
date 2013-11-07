@@ -13,7 +13,7 @@
 #include <flux/Yason.h>
 #include <flux/Date.h>
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -34,6 +34,6 @@ private:
 	}
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_LOGPROTOTYPE_H

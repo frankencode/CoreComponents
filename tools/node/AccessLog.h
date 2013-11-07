@@ -14,7 +14,7 @@
 #include <flux/Format.h>
 #include "Log.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class AccessLog: public Log, public ThreadLocalSingleton<AccessLog>
@@ -25,6 +25,6 @@ private:
 
 inline AccessLog *accessLog() { return AccessLog::instance(); }
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_ACCESSLOG_H

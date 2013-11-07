@@ -11,7 +11,7 @@
 #include "BuildPlan.h"
 #include "BuildStage.h"
 
-namespace fmake
+namespace fluxmake
 {
 
 BuildStage::BuildStage(BuildPlan *plan)
@@ -25,4 +25,4 @@ BuildShell *BuildStage::shell() const { return plan_->shell(); }
 ToolChain *BuildStage::toolChain() const { return plan_->toolChain(); }
 Ref<JobScheduler> BuildStage::createScheduler() const { return JobScheduler::create(plan_->concurrency()); }
 
-} // namespace fmake
+} // namespace fluxmake

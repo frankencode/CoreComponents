@@ -12,7 +12,7 @@
 
 #include <flux/String.h>
 
-namespace fmake
+namespace fluxmake
 {
 
 using namespace flux;
@@ -47,6 +47,6 @@ private:
 
 typedef List< Ref<Module> > ModuleList;
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_MODULE_H

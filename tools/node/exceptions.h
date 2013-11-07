@@ -12,7 +12,7 @@
 
 #include <flux/String.h>
 
-namespace fnode
+namespace fluxnode
 {
 
 using namespace flux;
@@ -65,6 +65,6 @@ public:
 	NotImplemented(): ProtocolException(501, "Not implemented") {}
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_EXCEPTIONS_H

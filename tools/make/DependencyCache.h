@@ -18,7 +18,7 @@ class File;
 class YasonObject;
 } // namespace flux
 
-namespace fmake
+namespace fluxmake
 {
 
 using namespace flux;
@@ -50,6 +50,6 @@ private:
 	Ref<StringList> previousSources_;
 };
 
-} // namespace fmake
+} // namespace fluxmake
 
 #endif // FLUXMAKE_DEPENDENCYCACHE_H

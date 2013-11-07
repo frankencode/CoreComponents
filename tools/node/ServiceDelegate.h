@@ -13,7 +13,7 @@
 #include <flux/Format.h>
 #include "Request.h"
 
-namespace fnode
+namespace fluxnode
 {
 
 class ServiceWorker;
@@ -44,6 +44,6 @@ private:
 	ServiceWorker *worker_;
 };
 
-} // namespace fnode
+} // namespace fluxnode
 
 #endif // FLUXNODE_SERVICEDELEGATE_H
