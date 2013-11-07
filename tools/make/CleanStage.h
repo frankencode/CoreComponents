@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_CLEANSTAGE_H
-#define FMAKE_CLEANSTAGE_H
+#ifndef FLUXMAKE_CLEANSTAGE_H
+#define FLUXMAKE_CLEANSTAGE_H
 
 #include "BuildStage.h"
 
@@ -24,4 +24,4 @@ public:
 
 } // namespace fmake
 
-#endif // FMAKE_CLEANSTAGE_H
+#endif // FLUXMAKE_CLEANSTAGE_H

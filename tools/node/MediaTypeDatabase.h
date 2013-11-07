@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_MEDIATYPEDATABASE_H
-#define FNODE_MEDIATYPEDATABASE_H
+#ifndef FLUXNODE_MEDIATYPEDATABASE_H
+#define FLUXNODE_MEDIATYPEDATABASE_H
 
 #include <flux/Singleton.h>
 #include <flux/String.h>
@@ -37,4 +37,4 @@ inline MediaTypeDatabase *mediaTypeDatabase() { return MediaTypeDatabase::instan
 
 } // namespace fnode
 
-#endif // FNODE_MEDIATYPEDATABASE_H
+#endif // FLUXNODE_MEDIATYPEDATABASE_H

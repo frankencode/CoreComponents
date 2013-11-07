@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_TESTRUNSTAGE_H
-#define FMAKE_TESTRUNSTAGE_H
+#ifndef FLUXMAKE_TESTRUNSTAGE_H
+#define FLUXMAKE_TESTRUNSTAGE_H
 
 #include "BuildStage.h"
 
@@ -24,4 +24,4 @@ public:
 
 } // namespace fmake
 
-#endif // FMAKE_TESTRUNSTAGE_H
+#endif // FLUXMAKE_TESTRUNSTAGE_H

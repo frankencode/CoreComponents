@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_DEPENDENCYCACHE_H
-#define FMAKE_DEPENDENCYCACHE_H
+#ifndef FLUXMAKE_DEPENDENCYCACHE_H
+#define FLUXMAKE_DEPENDENCYCACHE_H
 
 #include <flux/String.h>
 #include <flux/Map.h>
@@ -52,4 +52,4 @@ private:
 
 } // namespace fmake
 
-#endif // FMAKE_DEPENDENCYCACHE_H
+#endif // FLUXMAKE_DEPENDENCYCACHE_H

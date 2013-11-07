@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_SERVICEREGISTRY_H
-#define FNODE_SERVICEREGISTRY_H
+#ifndef FLUXNODE_SERVICEREGISTRY_H
+#define FLUXNODE_SERVICEREGISTRY_H
 
 #include <flux/Map.h>
 #include "ServiceDefinition.h"
@@ -35,4 +35,4 @@ inline ServiceRegistry *serviceRegistry() { return ServiceRegistry::instance(); 
 
 } // namespace fnode
 
-#endif // FNODE_SERVICEREGISTRY_H
+#endif // FLUXNODE_SERVICEREGISTRY_H

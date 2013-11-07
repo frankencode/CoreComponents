@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_SYSTEMPREREQUISITE_H
-#define FMAKE_SYSTEMPREREQUISITE_H
+#ifndef FLUXMAKE_SYSTEMPREREQUISITE_H
+#define FLUXMAKE_SYSTEMPREREQUISITE_H
 
 #include <flux/Yason.h>
 
@@ -57,4 +57,4 @@ typedef Map< String, Ref<SystemPrerequisiteList> > SystemPrerequisitesByName;
 
 } // namespace fmake
 
-#endif // FMAKE_SYSTEMPREREQUISITE_H
+#endif // FLUXMAKE_SYSTEMPREREQUISITE_H

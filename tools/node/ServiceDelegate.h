@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_SERVICEDELEGATE_H
-#define FNODE_SERVICEDELEGATE_H
+#ifndef FLUXNODE_SERVICEDELEGATE_H
+#define FLUXNODE_SERVICEDELEGATE_H
 
 #include <flux/Format.h>
 #include "Request.h"
@@ -46,4 +46,4 @@ private:
 
 } // namespace fnode
 
-#endif // FNODE_SERVICEDELEGATE_H
+#endif // FLUXNODE_SERVICEDELEGATE_H

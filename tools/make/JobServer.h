@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_JOBSERVER_H
-#define FMAKE_JOBSERVER_H
+#ifndef FLUXMAKE_JOBSERVER_H
+#define FLUXMAKE_JOBSERVER_H
 
 #include <flux/Thread.h>
 #include <flux/Channel.h>
@@ -35,4 +35,4 @@ private:
 
 } // namespace fmake
 
-#endif // FMAKE_JOBSERVER_H
+#endif // FLUXMAKE_JOBSERVER_H

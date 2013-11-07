@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_JOBSCHEDULER_H
-#define FMAKE_JOBSCHEDULER_H
+#ifndef FLUXMAKE_JOBSCHEDULER_H
+#define FLUXMAKE_JOBSCHEDULER_H
 
 #include <flux/Thread.h>
 #include "Job.h"
@@ -52,4 +52,4 @@ private:
 
 } // namespace fmake
 
-#endif // FMAKE_JOBSCHEDULER_H
+#endif // FLUXMAKE_JOBSCHEDULER_H

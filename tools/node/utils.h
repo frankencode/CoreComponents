@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_UTILS_H
-#define FNODE_UTILS_H
+#ifndef FLUXNODE_UTILS_H
+#define FLUXNODE_UTILS_H
 
 #include <flux/Date.h>
 
@@ -23,4 +23,4 @@ Ref<Date> scanDate(String text, bool *ok = 0);
 
 } // namespace fnode
 
-#endif // FNODE_UTILS_H
+#endif // FLUXNODE_UTILS_H

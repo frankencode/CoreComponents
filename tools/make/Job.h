@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_JOB_H
-#define FMAKE_JOB_H
+#ifndef FLUXMAKE_JOB_H
+#define FLUXMAKE_JOB_H
 
 #include <flux/String.h>
 #include <flux/Channel.h>
@@ -50,4 +50,4 @@ typedef Channel< Ref<Job> > JobChannel;
 
 } // namespace fmake
 
-#endif // FMAKE_JOB_H
+#endif // FLUXMAKE_JOB_H

@@ -1,5 +1,5 @@
-#ifndef FCLAIM_REGISTRY_H
-#define FCLAIM_REGISTRY_H
+#ifndef FLUXCLAIM_REGISTRY_H
+#define FLUXCLAIM_REGISTRY_H
 
 #include <flux/Singleton.h>
 #include <flux/List.h>
@@ -27,4 +27,4 @@ inline Registry *registry() { return Registry::instance(); }
 
 } // namespace fclaim
 
-#endif // FCLAIM_REGISTRY_H
+#endif // FLUXCLAIM_REGISTRY_H

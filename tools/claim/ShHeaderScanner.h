@@ -1,5 +1,5 @@
-#ifndef FCLAIM_SHHEADERSCANNER_H
-#define FCLAIM_SHHEADERSCANNER_H
+#ifndef FLUXCLAIM_SHHEADERSCANNER_H
+#define FLUXCLAIM_SHHEADERSCANNER_H
 
 #include "HeaderScanner.h"
 
@@ -33,4 +33,4 @@ private:
 
 } // namespace fclaim
 
-#endif // FCLAIM_SHHEADERSCANNER_H
+#endif // FLUXCLAIM_SHHEADERSCANNER_H

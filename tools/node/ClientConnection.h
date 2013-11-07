@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_CLIENTCONNECTION_H
-#define FNODE_CLIENTCONNECTION_H
+#ifndef FLUXNODE_CLIENTCONNECTION_H
+#define FLUXNODE_CLIENTCONNECTION_H
 
 #include <flux/StreamSocket.h>
 #include "Request.h"
@@ -52,4 +52,4 @@ private:
 
 } // namespace fnode
 
-#endif // FNODE_CLIENTCONNECTION_H
+#endif // FLUXNODE_CLIENTCONNECTION_H

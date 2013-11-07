@@ -1,5 +1,5 @@
-#ifndef FCLAIM_COPYRIGHT_H
-#define FCLAIM_COPYRIGHT_H
+#ifndef FLUXCLAIM_COPYRIGHT_H
+#define FLUXCLAIM_COPYRIGHT_H
 
 #include <flux/String.h>
 #include <flux/List.h>
@@ -36,4 +36,4 @@ typedef List< Ref<Copyright> > CopyrightList;
 
 } // namespace fclaim
 
-#endif // FCLAIM_COPYRIGHT_H
+#endif // FLUXCLAIM_COPYRIGHT_H

@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_ANALYSESTAGE_H
-#define FMAKE_ANALYSESTAGE_H
+#ifndef FLUXMAKE_ANALYSESTAGE_H
+#define FLUXMAKE_ANALYSESTAGE_H
 
 #include <flux/String.h>
 #include "BuildStage.h"
@@ -29,4 +29,4 @@ private:
 
 } // namespace fmake
 
-#endif // FMAKE_ANALYSESTAGE_H
+#endif // FLUXMAKE_ANALYSESTAGE_H

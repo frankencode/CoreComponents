@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_LOG_H
-#define FNODE_LOG_H
+#ifndef FLUXNODE_LOG_H
+#define FLUXNODE_LOG_H
 
 #include <flux/Date.h>
 #include <flux/Stream.h>
@@ -70,4 +70,4 @@ private:
 
 } // namespace fnode
 
-#endif // FNODE_LOG_H
+#endif // FLUXNODE_LOG_H

@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_SYSTEMLOG_H
-#define FNODE_SYSTEMLOG_H
+#ifndef FLUXNODE_SYSTEMLOG_H
+#define FLUXNODE_SYSTEMLOG_H
 
 #include <flux/Stream.h>
 #include <flux/ThreadLocalSingleton.h>
@@ -51,4 +51,4 @@ inline SystemLog *systemLog() { return SystemLog::instance(); }
 
 } // namespace fnode
 
-#endif // FNODE_SYSTEMLOG_H
+#endif // FLUXNODE_SYSTEMLOG_H

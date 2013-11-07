@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_CHUNKEDSINK_H
-#define FNODE_CHUNKEDSINK_H
+#ifndef FLUXNODE_CHUNKEDSINK_H
+#define FLUXNODE_CHUNKEDSINK_H
 
 #include <flux/Stream.h>
 
@@ -33,4 +33,4 @@ private:
 
 } // namespace fnode
 
-#endif // FNODE_CHUNKEDSINK_H
+#endif // FLUXNODE_CHUNKEDSINK_H

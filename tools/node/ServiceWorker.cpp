@@ -71,11 +71,11 @@ void ServiceWorker::run()
 	while (pendingConnections_->pop(&client_)) {
 		try {
 			if (serviceInstance_->connectionTimeout() > 0) {
-				FNODE_DEBUG() << "Establishing connection timeout of " << serviceInstance_->connectionTimeout() << "s..." << nl;
+				FLUXNODE_DEBUG() << "Establishing connection timeout of " << serviceInstance_->connectionTimeout() << "s..." << nl;
 				client_->setupTimeout(serviceInstance_->connectionTimeout());
 			}
 			while (client_) {
-				FNODE_DEBUG() << "Reading request..." << nl;
+				FLUXNODE_DEBUG() << "Reading request..." << nl;
 				Ref<Request> request = client_->readRequest();
 				{
 					RefGuard<Response> guard(&response_);
@@ -103,12 +103,12 @@ void ServiceWorker::run()
 		}
 		#ifdef NDEBUG
 		catch (Exception &ex) {
-			FNODE_ERROR() << ex.message() << nl;
+			FLUXNODE_ERROR() << ex.message() << nl;
 			Format("HTTP/1.1 500 Internal Server Error: %%\r\n\r\n", client_->stream()) << ex.message();
 			logDelivery(client_, 500);
 		}
 		#endif
-		catch (TimeoutExceeded &) { FNODE_DEBUG() << "Connection timed out (" << client_->address() << ")" << nl; }
+		catch (TimeoutExceeded &) { FLUXNODE_DEBUG() << "Connection timed out (" << client_->address() << ")" << nl; }
 		catch (CloseRequest &) {}
 		close();
 		// closedConnections_->push(clientAddress); // TODO
@@ -123,7 +123,7 @@ Response *ServiceWorker::response() const
 void ServiceWorker::close()
 {
 	if (client_) {
-		FNODE_DEBUG() << "Closing connection to " << client_->address() << nl;
+		FLUXNODE_DEBUG() << "Closing connection to " << client_->address() << nl;
 		client_ = 0;
 	}
 }

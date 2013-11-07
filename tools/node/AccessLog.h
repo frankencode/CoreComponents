@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_ACCESSLOG_H
-#define FNODE_ACCESSLOG_H
+#ifndef FLUXNODE_ACCESSLOG_H
+#define FLUXNODE_ACCESSLOG_H
 
 #include <flux/ThreadLocalSingleton.h>
 #include <flux/Format.h>
@@ -27,4 +27,4 @@ inline AccessLog *accessLog() { return AccessLog::instance(); }
 
 } // namespace fnode
 
-#endif // FNODE_ACCESSLOG_H
+#endif // FLUXNODE_ACCESSLOG_H

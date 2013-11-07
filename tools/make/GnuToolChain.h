@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_GNUTOOLCHAIN_H
-#define FMAKE_GNUTOOLCHAIN_H
+#ifndef FLUXMAKE_GNUTOOLCHAIN_H
+#define FLUXMAKE_GNUTOOLCHAIN_H
 
 #include <flux/Format.h>
 #include "ToolChain.h"
@@ -62,4 +62,4 @@ protected:
 
 } // namespace fmake
 
-#endif // FMAKE_GNUTOOLCHAIN_H
+#endif // FLUXMAKE_GNUTOOLCHAIN_H

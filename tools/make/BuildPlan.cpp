@@ -31,7 +31,7 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 	return new BuildPlan(projectPath, this);
 }
 
-#define FMAKE_BUILDPLAN_COMPONENTS_INIT \
+#define FLUXMAKE_BUILDPLAN_COMPONENTS_INIT \
 	shell_(this), \
 	configureStage_(this), \
 	analyseStage_(this), \
@@ -45,7 +45,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	: projectPath_("."),
 	  concurrency_(-1),
 	  buildMap_(BuildMap::create()),
-	  FMAKE_BUILDPLAN_COMPONENTS_INIT
+	  FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
 {
 	recipe_ = Config::read(argc, argv);
 	if (recipe_->arguments()->size() > 0) {
@@ -70,7 +70,7 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 	  projectPath_(projectPath),
 	  concurrency_(parentPlan->concurrency_),
 	  buildMap_(parentPlan->buildMap_),
-	  FMAKE_BUILDPLAN_COMPONENTS_INIT
+	  FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
 {
 	recipe_ = Config::read(projectPath_ + "/Recipe", recipeProtocol());
 

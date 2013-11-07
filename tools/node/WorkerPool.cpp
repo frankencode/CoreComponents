@@ -26,7 +26,7 @@ WorkerPool::WorkerPool(ServiceInstance *serviceInstance)
 	  closedConnections_(ClosedConnections::create()),
 	  serviceWorkers_(ServiceWorkers::create(serviceInstance->concurrency()))
 {
-	FNODE_DEBUG()
+	FLUXNODE_DEBUG()
 		<< "Creating worker pool for " << serviceInstance->serviceName() << " service..." << nl
 		<< "  concurrency = " << serviceInstance->concurrency() << nl
 		<< "  host = \"" << serviceInstance->host() << "\"" << nl
@@ -43,7 +43,7 @@ WorkerPool::WorkerPool(ServiceInstance *serviceInstance)
 
 WorkerPool::~WorkerPool()
 {
-	FNODE_DEBUG() << "Terminating worker pool for service " << serviceInstance_->serviceName() << "..." << nl;
+	FLUXNODE_DEBUG() << "Terminating worker pool for service " << serviceInstance_->serviceName() << "..." << nl;
 }
 
 void WorkerPool::dispatch(ClientConnection *client)
@@ -66,7 +66,7 @@ void WorkerPool::dispatch(ClientConnection *client)
 		}
 	}
 
-	FNODE_DEBUG() << "Assigning client connection to " << workerCandidate->serviceInstance()->serviceName() << " service worker " << (void*)workerCandidate << nl;
+	FLUXNODE_DEBUG() << "Assigning client connection to " << workerCandidate->serviceInstance()->serviceName() << " service worker " << (void*)workerCandidate << nl;
 	workerCandidate->pendingConnections()->push(client);
 }
 

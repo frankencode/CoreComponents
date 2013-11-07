@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_TOOLCHAIN_H
-#define FMAKE_TOOLCHAIN_H
+#ifndef FLUXMAKE_TOOLCHAIN_H
+#define FLUXMAKE_TOOLCHAIN_H
 
 #include <flux/Config.h>
 #include "Job.h"
@@ -66,4 +66,4 @@ private:
 
 } // namespace fmake
 
-#endif // FMAKE_TOOLCHAIN_H
+#endif // FLUXMAKE_TOOLCHAIN_H

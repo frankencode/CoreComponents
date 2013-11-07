@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_NODEMASTER_H
-#define FNODE_NODEMASTER_H
+#ifndef FLUXNODE_NODEMASTER_H
+#define FLUXNODE_NODEMASTER_H
 
 #include <flux/Object.h>
 #include <flux/Singleton.h>
@@ -34,4 +34,4 @@ inline NodeMaster* nodeMaster() { return NodeMaster::instance(); }
 
 } // namespace fnode
 
-#endif // FNODE_NODEMASTER_H
+#endif // FLUXNODE_NODEMASTER_H

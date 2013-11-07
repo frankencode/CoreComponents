@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_WORKERPOOL_H
-#define FNODE_WORKERPOOL_H
+#ifndef FLUXNODE_WORKERPOOL_H
+#define FLUXNODE_WORKERPOOL_H
 
 #include "ServiceWorker.h"
 
@@ -39,4 +39,4 @@ typedef Array< Ref<WorkerPool> > WorkerPools;
 
 } // namespace fnode
 
-#endif // FNODE_WORKERPOOL_H
+#endif // FLUXNODE_WORKERPOOL_H

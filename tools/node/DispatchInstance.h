@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_DISPATCHINSTANCE_H
-#define FNODE_DISPATCHINSTANCE_H
+#ifndef FLUXNODE_DISPATCHINSTANCE_H
+#define FLUXNODE_DISPATCHINSTANCE_H
 
 #include "ServiceInstance.h"
 #include "WorkerPool.h"
@@ -36,4 +36,4 @@ private:
 
 } // namespace fnode
 
-#endif // FNODE_DISPATCHINSTANCE_H
+#endif // FLUXNODE_DISPATCHINSTANCE_H

@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_UNINSTALLSTAGE_H
-#define FMAKE_UNINSTALLSTAGE_H
+#ifndef FLUXMAKE_UNINSTALLSTAGE_H
+#define FLUXMAKE_UNINSTALLSTAGE_H
 
 #include "BuildStage.h"
 
@@ -24,4 +24,4 @@ public:
 
 } // namespace fmake
 
-#endif // FMAKE_UNINSTALLSTAGE_H
+#endif // FLUXMAKE_UNINSTALLSTAGE_H

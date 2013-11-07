@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FMAKE_RECIPEPROTOCOL_H
-#define FMAKE_RECIPEPROTOCOL_H
+#ifndef FLUXMAKE_RECIPEPROTOCOL_H
+#define FLUXMAKE_RECIPEPROTOCOL_H
 
 #include <flux/Yason.h>
 #include <flux/Singleton.h>
@@ -29,4 +29,4 @@ inline RecipeProtocol *recipeProtocol() { return RecipeProtocol::instance(); }
 
 } // namespace fmake
 
-#endif // FMAKE_RECIPEPROTOCOL_H
+#endif // FLUXMAKE_RECIPEPROTOCOL_H

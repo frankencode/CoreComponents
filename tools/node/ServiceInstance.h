@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_SERVICEINSTANCE_H
-#define FNODE_SERVICEINSTANCE_H
+#ifndef FLUXNODE_SERVICEINSTANCE_H
+#define FLUXNODE_SERVICEINSTANCE_H
 
 #include <flux/Pattern.h>
 #include <flux/List.h>
@@ -57,4 +57,4 @@ typedef List< Ref<ServiceInstance> > ServiceInstances;
 
 } // namespace fnode
 
-#endif // FNODE_SERVICEINSTANCE_H
+#endif // FLUXNODE_SERVICEINSTANCE_H

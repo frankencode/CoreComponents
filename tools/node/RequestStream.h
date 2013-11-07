@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FNODE_REQUESTSTREAM_H
-#define FNODE_REQUESTSTREAM_H
+#ifndef FLUXNODE_REQUESTSTREAM_H
+#define FLUXNODE_REQUESTSTREAM_H
 
 #include <flux/Stream.h>
 #include "Request.h"
@@ -50,4 +50,4 @@ private:
 
 } // namespace fnode
 
-#endif // FNODE_REQUESTSTREAM_H
+#endif // FLUXNODE_REQUESTSTREAM_H
