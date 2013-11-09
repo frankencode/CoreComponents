@@ -153,41 +153,52 @@ bool File::seekable() const
 	return ::lseek(fd_, 0, SeekCurrent) != -1;
 }
 
-String File::map() const
+String File::map(off_t i0, off_t i1) const
 {
-	off_t fileEnd = ::lseek(fd_, 0, SEEK_END);
-	if (fileEnd == -1)
-		FLUX_SYSTEM_EXCEPTION;
-	size_t fileSize = fileEnd;
-	if (fileSize == 0) return "";
-	if (fileSize >= size_t(intMax)) fileSize = intMax;
-	int pageSize = System::pageSize();
-	size_t mapSize = fileSize;
-	int protection = PROT_READ | (PROT_WRITE * (openFlags_ & (O_WRONLY|O_RDWR)));
+	if (i0 < 0) i0 = 0;
+	if (i1 < i0) {
+		i1 = ::lseek(fd_, 0, SEEK_END);
+		if (i1 == -1) FLUX_SYSTEM_EXCEPTION;
+	}
+
+	if (i1 == 0) return String();
+
+	const int np = System::pageSize();
+
+	int nt = 0;
+	if (i0 > 0) {
+		nt = i0 % np;
+		i0 -= nt;
+	}
+
+	size_t n = i1 - i0;
+	if (n >= off_t(intMax)) n = intMax - 1;
+
+	size_t m = (n % np == 0) ? n + np : n;
+
+	#ifndef MAP_ANONYMOUS
+	#ifdef MAP_ANON
+	#define MAP_ANONYMOUS MAP_ANON
+	#endif
+	#endif
 	void *p = 0;
-	if (fileSize % pageSize > 0) {
-		mapSize += pageSize - fileSize % pageSize;
-		p = ::mmap(0, fileSize, protection, MAP_PRIVATE, fd_, 0);
-		if (p == MAP_FAILED)
-			FLUX_SYSTEM_EXCEPTION;
+	if (m > n) {
+		p = ::mmap(0, m, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+		if (p == MAP_FAILED) FLUX_SYSTEM_EXCEPTION;
 	}
-	else {
-		#ifndef MAP_ANONYMOUS
-		#define MAP_ANONYMOUS MAP_ANON
-		#endif
-		mapSize += pageSize;
-		p = ::mmap(0, mapSize, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-		if (p == MAP_FAILED)
-			FLUX_SYSTEM_EXCEPTION;
-		p = ::mmap(p, fileSize, protection, MAP_PRIVATE | MAP_FIXED, fd_, 0);
-		if (p == MAP_FAILED)
-			FLUX_SYSTEM_EXCEPTION;
-	}
+
+	p = ::mmap(p, n, PROT_READ | ((openFlags_ & (O_WRONLY|O_RDWR)) ? PROT_WRITE : 0), MAP_PRIVATE | ((p) ? MAP_FIXED : 0), fd_, i0);
+	if (p == MAP_FAILED) FLUX_SYSTEM_EXCEPTION;
+
 	#ifdef MADV_SEQUENTIAL
-	if (::madvise(p, mapSize, MADV_SEQUENTIAL) == -1)
+	if (::madvise(p, n, MADV_SEQUENTIAL) == -1)
 		FLUX_SYSTEM_EXCEPTION;
 	#endif
-	return String(Ref<ByteArray>(new ByteArray((char*)p, fileSize, mapSize)));
+
+	Ref<ByteArray> data = new ByteArray((char*)p, n, m);
+	if (nt > 0) data->truncate(nt, n);
+
+	return data;
 }
 
 void File::sync()

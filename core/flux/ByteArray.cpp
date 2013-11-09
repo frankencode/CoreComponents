@@ -378,6 +378,22 @@ float64_t ByteArray::toFloat64(bool *ok) const
 	return value;
 }
 
+int ByteArray::scanString(String *x, const char *term, int i0, int i1) const
+{
+	if (i1 < 0 || i1 > size_) i1 = size_;
+	if (i0 > i1) i0 = i1;
+	int i = i0;
+	for (; i < i1; ++i) {
+		const char *p = term;
+		for(; *p && at(i); ++p) {
+			if (at(i) == *p) break;
+		}
+		if (*p) break;
+	}
+	*x = copy(i0, i);
+	return i;
+}
+
 ByteArray *ByteArray::downcaseInsitu()
 {
 	for (int i = 0; i < size_; ++i)
