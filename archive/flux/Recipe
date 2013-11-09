@@ -1,0 +1,7 @@
+Library {
+	name: fluxarchive
+	version: 0.0.1
+	header: *.h
+	source: *.cpp
+	use: ../../core/flux
+}

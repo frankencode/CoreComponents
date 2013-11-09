@@ -164,6 +164,11 @@ public:
 	uint64_t toUInt64(bool *ok = 0) const;
 	float64_t toFloat64(bool *ok = 0) const;
 
+	int scanString(String *x, const char *term = " \t\n", int i0 = 0, int i1 = -1) const;
+
+	template<class T>
+	int scanInt(T *x, int base = 10, int i0 = 0, int i1 = -1) const;
+
 	inline Ref<ByteArray> downcase() const { return copy()->downcaseInsitu(); }
 	inline Ref<ByteArray> upcase() const { return copy()->upcaseInsitu(); }
 	ByteArray *downcaseInsitu();
@@ -281,6 +286,38 @@ private:
 	int origSize_;
 	char origEnd_;
 };
+
+template<class T>
+int ByteArray::scanInt(T *x, int base, int i0, int i1) const
+{
+	int i = i0;
+	if (i1 < 0) i1 = size_;
+	if (i > i1) i = i1;
+	*x = T();
+	bool minus = false;
+	if (T(-1) < T() && i < i1) {
+		if (at(i) == '-') {
+			minus = true;
+			++i;
+		}
+		else if (at(i) == '+') {
+			minus = false;
+			++i;
+		}
+	}
+	while (i < i1) {
+		char ch = at(i);
+		int z = -1;
+		if ('0' <= ch && ch <= '9') z = ch - '0';
+		else if ('a' <= ch && ch <= 'z') z = ch - 'a';
+		else if ('A' <= ch && ch <= 'Z') z = ch - 'A';
+		if (z < 0 || base <= z) break;
+		*x *= base;
+		*x += z;
+		++i;
+	}
+	return i;
+}
 
 inline bool operator==(const ByteArray &a, const ByteArray &b) { return container::compare(a, b) == 0; }
 inline bool operator!=(const ByteArray &a, const ByteArray &b) { return container::compare(a, b) != 0; }
