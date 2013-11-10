@@ -1,0 +1,5 @@
+Application {
+	name: fluxpack
+	source: *.cpp
+	use: [ ../../core/flux, ../../pack/flux ]
+}

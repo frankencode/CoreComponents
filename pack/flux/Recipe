@@ -1,5 +1,5 @@
 Library {
-	name: fluxarchive
+	name: fluxpack
 	version: 0.0.1
 	header: *.h
 	source: *.cpp

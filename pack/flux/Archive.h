@@ -10,24 +10,35 @@
 #ifndef FLUX_ARCHIVE_H
 #define FLUX_ARCHIVE_H
 
-#include <flux/Map.h>
 #include "ArchiveEntry.h"
 
 namespace flux
 {
 
-class Archive: public Map<String, Ref<ArchiveEntry> >
+class File;
+
+class Archive: public Object
 {
 public:
 	static Ref<Archive> open(String path);
 	inline String path() const { return path_; }
 
+	bool read(Ref<ArchiveEntry> *entry);
+
 private:
 	Archive(String path);
-	void read();
-	void readDenseFormat(File *file, String data);
-	void readBlockFormat(File *file, String data);
+
+	void openStream();
+	bool readArHeader(ArchiveEntry *entry);
+	bool readTarHeader(ArchiveEntry *entry);
+
+	static unsigned computeChecksum(ByteArray *data, int i0);
+
 	String path_;
+	Ref<File> file_;
+	String data_;
+	bool tapeFormat_;
+	off_t i_;
 };
 
 } // namespace flux
