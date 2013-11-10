@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 		exitCode = BuildPlan::create(argc, argv)->run();
 	}
 	catch (HelpException &) {
-		ferr(
+		fout(
 			"Usage: %% [OPTION]... [DIR]\n"
 			"Build binaries from source DIR.\n"
 			"\n"

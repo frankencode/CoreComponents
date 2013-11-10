@@ -30,10 +30,6 @@ public:
 		Fifo        = '6'
 	};
 
-	static Ref<ArchiveEntry> create() {
-		return new ArchiveEntry();
-	}
-
 	inline int type() const { return type_; }
 	inline String path() const { return path_; }
 	inline String linkPath() const { return linkPath_; }
@@ -43,12 +39,18 @@ public:
 	inline String userName() const { return userName_; }
 	inline String groupName() const { return groupName_; }
 	inline int mode() const { return mode_; }
-	inline String data() const { return data_; }
+	inline off_t offset() const { return offset_; }
+	inline off_t size() const { return size_; }
 
-private:
+protected:
 	friend class Archive;
 
+	static Ref<ArchiveEntry> create() {
+		return new ArchiveEntry();
+	}
+
 	ArchiveEntry()
+		: type_('0')
 	{}
 
 	int type_;
@@ -60,7 +62,8 @@ private:
 	String userName_;
 	String groupName_;
 	int mode_;
-	String data_;
+	off_t offset_;
+	off_t size_;
 };
 
 } // namespace flux

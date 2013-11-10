@@ -385,7 +385,8 @@ int ByteArray::scanString(String *x, const char *term, int i0, int i1) const
 	int i = i0;
 	for (; i < i1; ++i) {
 		const char *p = term;
-		for(; *p && at(i); ++p) {
+		if (!at(i)) break;
+		for(; *p; ++p) {
 			if (at(i) == *p) break;
 		}
 		if (*p) break;
@@ -532,7 +533,8 @@ ByteArray *ByteArray::truncate(int i0, int i1)
 	if (i1 > size_) i1 = size_;
 	data_ += i0;
 	size_ = i1 - i0;
-	data_[size_] = 0;
+	if (data_[size_])
+		data_[size_] = 0;
 	return this;
 }
 

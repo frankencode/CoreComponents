@@ -97,7 +97,7 @@ public:
 	off_t seek(off_t distance, int method = SeekBegin);
 	bool seekable() const;
 
-	String map(off_t i0 = 0, off_t i1 = -1) const;
+	String map() const;
 
 	void sync();
 	void dataSync();
