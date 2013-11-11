@@ -53,7 +53,7 @@ bool AnalyseStage::run()
 	if (!scheduler) return success_ = true;
 
 	for (Ref<Job> job; scheduler->collect(&job);) {
-		if (plan()->options() & BuildPlan::Verbose)
+		if (plan()->options() & BuildPlan::Verbose || job->status() != 0)
 			fout() << shell()->beautify(job->command()) << nl;
 		if (job->status() != 0) {
 			ferr() << job->outputText();

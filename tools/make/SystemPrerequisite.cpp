@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/str.h>
 #include "SystemPrerequisite.h"
 
 namespace fluxmake
@@ -30,6 +31,10 @@ SystemPrerequisite::SystemPrerequisite(YasonObject *object)
 	  compileFlags_(object->value("compile-flags")),
 	  debugCompileFlags_(object->value("debug-compile-flags")),
 	  releaseCompileFlags_(object->value("release-compile-flags"))
-{}
+{
+	if (name_ == "" && libraries_->size() == 1)
+		name_ = libraries_->at(0);
+	if (name_ == "") name_ = hex(uint64_t(this));
+}
 
 } // namespace fluxmake
