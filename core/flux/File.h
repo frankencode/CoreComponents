@@ -105,6 +105,7 @@ public:
 	static bool access(String path, int flags);
 	static bool exists(String path);
 	static bool create(String path, int mode = 0644);
+	static bool chown(String path, uid_t ownerId, gid_t groupId);
 	static bool rename(String path, String newPath);
 	static bool link(String path, String newPath);
 	static bool unlink(String path);
