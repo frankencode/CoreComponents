@@ -149,6 +149,20 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
 	concurrency_ = recipe_->value("concurrency");
 
+	if (recipe_->hasChildren()) {
+		for (int i = 0; i < recipe_->children()->size(); ++i) {
+			YasonObject *object = recipe_->children()->at(i);
+			if (object->className() != "SystemPrerequisite") continue;
+			Ref<SystemPrerequisite> p = SystemPrerequisite::read(object);
+			Ref<SystemPrerequisiteList> l;
+			if (!systemPrerequisitesByName_)
+				systemPrerequisitesByName_ = SystemPrerequisitesByName::create();
+			if (!systemPrerequisitesByName_->lookup(p->name(), &l))
+				systemPrerequisitesByName_->insert(p->name(), l = SystemPrerequisiteList::create());
+			l->append(p);
+		}
+	}
+
 	if (parentPlan) {
 		options_ &= ~GlobalOptions;
 		options_ |= parentPlan->options() & GlobalOptions;
@@ -161,7 +175,6 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
 int BuildPlan::run()
 {
-	readSystemPrerequisites();
 	readPrerequisites();
 	globSources();
 	initModules();
@@ -174,19 +187,11 @@ int BuildPlan::run()
 		) << toolChain_->machineCommand();
 	}
 
-	if (systemPrerequisitesByName_) {
-		if (!configureStage()->run()) return 1;
-	}
-
+	if (!configureStage()->run()) return 1;
 	if (!analyseStage()->run()) return 1;
 
-	if (recipe_->value("clean")) {
-		return cleanStage()->run() ? 0 : 1;
-	}
-
-	if (recipe_->value("uninstall")) {
-		return uninstallStage()->run() ? 0 : 1;
-	}
+	if (recipe_->value("clean")) return !cleanStage()->run();
+	if (recipe_->value("uninstall")) return !uninstallStage()->run();
 
 	if (!compileLinkStage()->run()) return 1;
 
@@ -195,9 +200,7 @@ int BuildPlan::run()
 			return testRunStage()->status();
 	}
 
-	if (recipe_->value("install")) {
-		if (!installStage()->run()) return 1;
-	}
+	if (recipe_->value("install")) return !installStage()->run();
 
 	return 0;
 }
@@ -216,25 +219,6 @@ String BuildPlan::modulePath(String object) const
 String BuildPlan::installPath(String relativeInstallPath) const
 {
 	return installPrefix_ + "/" + relativeInstallPath;
-}
-
-void BuildPlan::readSystemPrerequisites()
-{
-	if (systemPrerequisitesByName_) return;
-
-	if (!recipe_->hasChildren()) return;
-
-	systemPrerequisitesByName_ = SystemPrerequisitesByName::create();
-
-	for (int i = 0; i < recipe_->children()->size(); ++i) {
-		YasonObject *object = recipe_->children()->at(i);
-		if (object->className() != "SystemPrerequisite") continue;
-		Ref<SystemPrerequisite> p = SystemPrerequisite::read(object);
-		Ref<SystemPrerequisiteList> l;
-		if (!systemPrerequisitesByName_->lookup(p->name(), &l))
-			systemPrerequisitesByName_->insert(p->name(), l = SystemPrerequisiteList::create());
-		l->append(p);
-	}
 }
 
 void BuildPlan::readPrerequisites()

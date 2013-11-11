@@ -21,6 +21,13 @@ bool ConfigureStage::run()
 	if (complete_) return success_;
 	complete_ = true;
 
+	for (int i = 0; i < plan()->prerequisites()->size(); ++i) {
+		if (!plan()->prerequisites()->at(i)->configureStage()->run())
+			return success_ = false;
+	}
+
+	if (!plan()->systemPrerequisitesByName()) return success_ = true;
+
 	for (int i = 0; i < plan()->systemPrerequisitesByName()->size(); ++i)
 	{
 		String name = plan()->systemPrerequisitesByName()->keyAt(i);
