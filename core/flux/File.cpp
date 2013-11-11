@@ -224,6 +224,11 @@ bool File::create(String path, int mode)
 	return true;
 }
 
+bool File::chown(String path, uid_t ownerId, gid_t groupId)
+{
+	return ::chown(path, ownerId, groupId) != -1;
+}
+
 bool File::rename(String path, String newPath)
 {
 	return ::rename(path, newPath) != -1;

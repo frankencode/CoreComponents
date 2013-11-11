@@ -12,6 +12,9 @@
 #include <flux/Date.h>
 #include <flux/File.h>
 #include <flux/Dir.h>
+#include <flux/Process.h>
+#include <flux/User.h>
+#include <flux/Group.h>
 #include <flux/Archive.h>
 
 using namespace flux;
@@ -72,6 +75,18 @@ int main(int argc, char **argv)
 					else if (entry->type() == ArchiveEntry::Regular) {
 						if (!File::create(entry->path(), entry->mode()))
 							FLUX_SYSTEM_EXCEPTION;
+						if (Process::isSuperUser()) {
+							uid_t userId = entry->userId();
+							gid_t groupId = entry->groupId();
+							if (entry->userName() != "")
+								userId = User::lookup(entry->userName())->id();
+							if (entry->groupName() != "")
+								groupId = Group::lookup(entry->groupName())->id();
+							if (userId != 0 || groupId != 0) {
+								if (!File::chown(entry->path(), userId, groupId))
+									FLUX_SYSTEM_EXCEPTION;
+							}
+						}
 						Ref<File> file = File::open(entry->path(), File::WriteOnly);
 						file->write(ByteArray::wrap(archive->data()->data() + entry->offset(), entry->size()));
 					}
