@@ -36,7 +36,9 @@ public:
 	virtual void write(const ByteArray *buf);
 	virtual void write(const StringList *parts);
 
+	inline void write(Ref<ByteArray> buf) { write(buf.get()); }
 	inline void write(String s) { write(s.get()); }
+	inline void write(const char *s) { write(String(s)); }
 
 	void closeOnExec();
 

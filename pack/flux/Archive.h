@@ -10,18 +10,19 @@
 #ifndef FLUX_ARCHIVE_H
 #define FLUX_ARCHIVE_H
 
+#include <flux/File.h>
 #include "ArchiveEntry.h"
 
 namespace flux
 {
-
-class File;
 
 class Archive: public Object
 {
 public:
 	static Ref<Archive> open(String path);
 	inline String path() const { return path_; }
+	inline File *file() const { return file_; }
+	inline ByteArray *data() const { return data_; }
 
 	bool read(Ref<ArchiveEntry> *entry);
 
