@@ -276,7 +276,7 @@ public:
 	operator String() const;
 
 private:
-	ByteRange(const ByteRange&);
+	// ByteRange(const ByteRange&);
 	ByteRange &operator=(const ByteRange &b);
 	void *operator new(size_t size);
 	void operator delete(void *data, size_t size);

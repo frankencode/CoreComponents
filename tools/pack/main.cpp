@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	catch (UserException &ex) {
-		fout() << ex.message() << nl;
+		ferr() << ex.message() << nl;
 		return 1;
 	}
 
