@@ -84,6 +84,7 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 void BuildPlan::readRecipe(BuildPlan *parentPlan)
 {
 	name_ = recipe_->value("name");
+	alias_ = recipe_->value("alias");
 	version_ = recipe_->value("version");
 	options_ = 0;
 	speedOptimizationLevel_ = -1;

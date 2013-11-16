@@ -833,21 +833,18 @@ Ref<ByteArray> ByteArray::fileName() const
 	return name;
 }
 
-Ref<ByteArray> ByteArray::completeBaseName() const
+Ref<ByteArray> ByteArray::baseName(bool complete) const
 {
 	Ref<StringList> parts = fileName()->split(".");
-	parts->popBack();
+	if (!complete) return parts->at(0);
+	parts->pop(parts->size() - 1);
 	return parts->join(".");
 }
 
-Ref<ByteArray> ByteArray::baseName() const
-{
-	return fileName()->split(".")->at(0);
-}
-
-Ref<ByteArray>  ByteArray::suffix() const
+Ref<ByteArray>  ByteArray::suffix(bool complete) const
 {
 	Ref<StringList> parts = fileName()->split(".");
+	if (!complete) return parts->at(parts->size() - 1);
 	parts->pop(0);
 	return parts->join(".");
 }

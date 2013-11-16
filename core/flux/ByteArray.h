@@ -205,9 +205,8 @@ public:
 	Ref<ByteArray> absolutePathRelativeTo(String currentDir) const;
 	Ref<ByteArray> absolutePath() const;
 	Ref<ByteArray> fileName() const;
-	Ref<ByteArray> completeBaseName() const;
-	Ref<ByteArray> baseName() const;
-	Ref<ByteArray> suffix() const;
+	Ref<ByteArray> baseName(bool complete = true) const;
+	Ref<ByteArray> suffix(bool complete = false) const;
 	Ref<ByteArray> reducePath() const;
 	Ref<ByteArray> expandPath(String component) const;
 	Ref<ByteArray> canonicalPath() const;

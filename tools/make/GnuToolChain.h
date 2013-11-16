@@ -56,8 +56,11 @@ protected:
 	static void appendCompileOptions(Format args, BuildPlan *plan);
 	static void appendLinkOptions(Format args, BuildPlan *plan);
 
-	static void createLibrarySymlinks(BuildPlan *plan, String libPath);
-	static void cleanLibrarySymlinks(BuildPlan *plan, String libPath);
+	static void createLibrarySymlinks(BuildPlan *plan, String libName);
+	static void cleanLibrarySymlinks(BuildPlan *plan, String libName);
+
+	static void createAliasSymlinks(BuildPlan *plan, String appName);
+	static void cleanAliasSymlinks(BuildPlan *plan, String appName);
 };
 
 } // namespace fluxmake
