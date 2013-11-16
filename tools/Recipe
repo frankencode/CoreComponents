@@ -1,3 +1,3 @@
 Package {
-	use: [ find, make, pack, unzip, claim, node ]
+	use: [ find, make, pack, claim, node ]
 }
