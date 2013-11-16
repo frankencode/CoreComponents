@@ -145,6 +145,9 @@ bool GnuToolChain::link(BuildPlan *plan)
 	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static))
 		createLibrarySymlinks(plan, linkName(plan));
 
+	if (options & BuildPlan::Application)
+		createAliasSymlinks(plan, linkName(plan));
+
 	return true;
 }
 
@@ -163,16 +166,33 @@ bool GnuToolChain::linkTest(BuildPlan *plan, String linkPath, StringList *linkTe
 	return plan->shell()->run(command);
 }
 
+class CwdGuard {
+public:
+	CwdGuard(String dirPath): cwdSaved_(Process::cwd()) { Process::cd(dirPath); }
+	~CwdGuard() { Process::cd(cwdSaved_); }
+private:
+	String cwdSaved_;
+};
+
 bool GnuToolChain::install(BuildPlan *plan)
 {
-	String product = linkName(plan);
 	int options = plan->options();
-	String installPath = plan->installPath(
-		((options & BuildPlan::Library) ? "lib/" : "bin/") + product
-	);
+	String product = linkName(plan);
+	String installPrefix = plan->installPath((options & BuildPlan::Library) ? "lib" : "bin");
+	String installPath = installPrefix->expandPath(product);
+
 	if (!plan->shell()->install(product, installPath)) return false;
-	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static))
-		createLibrarySymlinks(plan, installPath);
+
+	{
+		CwdGuard guard(installPrefix);
+
+		if ((options & BuildPlan::Library) && !(options & BuildPlan::Static))
+			createLibrarySymlinks(plan, product);
+
+		if (options & BuildPlan::Application)
+			createAliasSymlinks(plan, product);
+	}
+
 	return true;
 }
 
@@ -184,14 +204,23 @@ bool GnuToolChain::install(BuildPlan *plan, Module *module)
 
 bool GnuToolChain::uninstall(BuildPlan *plan)
 {
-	String product = linkName(plan);
 	int options = plan->options();
-	String installPath = plan->installPath(
-		((options & BuildPlan::Library) ? "lib/" : "bin/") + product
-	);
+	String product = linkName(plan);
+	String installPrefix = plan->installPath((options & BuildPlan::Library) ? "lib" : "bin");
+	String installPath = installPrefix->expandPath(product);
+
 	if (!plan->shell()->unlink(installPath)) return false;
-	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static))
-		cleanLibrarySymlinks(plan, installPath);
+
+	{
+		CwdGuard guard(installPrefix);
+
+		if ((options & BuildPlan::Library) && !(options & BuildPlan::Static))
+			cleanLibrarySymlinks(plan, product);
+
+		if (options & BuildPlan::Application)
+			cleanAliasSymlinks(plan, product);
+	}
+
 	return false;
 }
 
@@ -213,6 +242,9 @@ void GnuToolChain::clean(BuildPlan *plan)
 
 	if ((plan->options() & BuildPlan::Library) && !(plan->options() & BuildPlan::Static))
 		cleanLibrarySymlinks(plan, product);
+
+	if (plan->options() & BuildPlan::Application)
+		cleanAliasSymlinks(plan, product);
 }
 
 void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan)
@@ -260,20 +292,34 @@ void GnuToolChain::appendLinkOptions(Format args, BuildPlan *plan)
 	}
 }
 
-void GnuToolChain::createLibrarySymlinks(BuildPlan *plan, String libPath)
+void GnuToolChain::createLibrarySymlinks(BuildPlan *plan, String libName)
 {
-	cleanLibrarySymlinks(plan, libPath);
+	cleanLibrarySymlinks(plan, libName);
 
-	Ref<StringList> parts = libPath->split('.');
+	Ref<StringList> parts = libName->split('.');
 	while (parts->popBack() != "so")
-		plan->shell()->symlink(libPath, parts->join("."));
+		plan->shell()->symlink(libName, parts->join("."));
 }
 
-void GnuToolChain::cleanLibrarySymlinks(BuildPlan *plan, String libPath)
+void GnuToolChain::cleanLibrarySymlinks(BuildPlan *plan, String libName)
 {
-	Ref<StringList> parts = libPath->split('.');
+	Ref<StringList> parts = libName->split('.');
 	while (parts->popBack() != "so")
 		plan->shell()->unlink(parts->join("."));
+}
+
+void GnuToolChain::createAliasSymlinks(BuildPlan *plan, String appName)
+{
+	cleanAliasSymlinks(plan, appName);
+
+	for (int i = 0; i < plan->alias()->size(); ++i)
+		plan->shell()->symlink(appName, plan->alias()->at(i));
+}
+
+void GnuToolChain::cleanAliasSymlinks(BuildPlan *plan, String appName)
+{
+	for (int i = 0; i < plan->alias()->size(); ++i)
+		plan->shell()->unlink(plan->alias()->at(i));
 }
 
 } // namespace fluxmake

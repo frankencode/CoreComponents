@@ -99,6 +99,7 @@ protected:
 		: GenericPrototype(className, createProtocol())
 	{
 		insert("name", "");
+		insert("alias", StringList::create());
 		insert("source", StringList::create());
 	}
 };

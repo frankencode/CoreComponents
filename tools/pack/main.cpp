@@ -61,7 +61,9 @@ int main(int argc, char **argv)
 				for (Ref<ArchiveEntry> entry; archive->read(&entry);) {
 					fout() << entry->path() << nl;
 					if (entry->type() == ArchiveEntry::Directory) {
-						if (!Dir::create(entry->path(), entry->mode()))
+						if (entry->path() == "." || entry->path() == "./")
+							;
+						else if (!Dir::create(entry->path(), entry->mode()))
 							FLUX_SYSTEM_EXCEPTION;
 					}
 					else if (entry->type() == ArchiveEntry::Link) {

@@ -79,6 +79,7 @@ public:
 	inline Config *recipe() const { return recipe_; }
 
 	inline String name() const { return name_; }
+	inline StringList *alias() const { return alias_; }
 	inline String version() const { return version_; }
 	inline int options() const { return options_; }
 	inline int speedOptimizationLevel() const { return speedOptimizationLevel_; }
@@ -138,6 +139,7 @@ private:
 	Ref<Config> recipe_;
 
 	String name_;
+	Ref<StringList> alias_;
 	String version_;
 	int options_;
 	int speedOptimizationLevel_;
