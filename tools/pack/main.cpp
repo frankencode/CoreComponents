@@ -27,12 +27,13 @@ void pack(Config *options);
 int main(int argc, char **argv)
 {
 	String toolName = String(argv[0])->fileName();
+	bool packMode = !toolName->contains("unpack");
 	try {
 		Ref<YasonObject> prototype = YasonObject::create();
 		prototype->insert("list", false);
 		prototype->insert("status", false);
-		prototype->insert("unpack", toolName->contains("unpack"));
-		prototype->insert("pack", !toolName->contains("unpack"));
+		prototype->insert("unpack", !packMode);
+		prototype->insert("pack", packMode);
 		Ref<Config> options = Config::read(argc, argv, prototype);
 		if (options->value("list")) list(options);
 		else if (options->value("status")) status(options);
@@ -40,16 +41,26 @@ int main(int argc, char **argv)
 		else if (options->value("pack")) pack(options);
 	}
 	catch (HelpException &) {
-		fout(
-			"Usage: %% [OPTION]... [FILE|DIR]...\n"
-			"Pack, unpack or list the contents of archive files.\n"
-			"\n"
-			"Options:\n"
-			"  -list    list contents of given archive files\n"
-			"  -status  show archived file status for each archive member\n"
-			"  -unpack  unpack archive files\n"
-			"  -pack    pack each directory into an archive file\n"
-		) << toolName;
+		if (packMode) {
+			fout(
+				"Usage: %% [DIR]...\n"
+				"Pack archive files (see also: %%).\n"
+			) << toolName << toolName->replace("pack", "unpack");
+		}
+		else {
+			fout(
+				"Usage: %% [OPTION]... [FILE]...\n"
+				"Unpack archive files (see also: %%).\n"
+				"\n"
+				"Options:\n"
+				"-list\tlist contents\n"
+				"-status\tlist archived file status\n"
+			) << toolName << toolName->replace("unpack", "pack");
+		}
+		return 1;
+	}
+	catch (BrokenArchive &ex) {
+		ferr() << "Broken archive: " << ex.reason() << "(" << ex.offset() << ")" << nl;
 		return 1;
 	}
 	catch (UserException &ex) {
@@ -77,13 +88,13 @@ void status(Config *options)
 		Ref<ArchiveReader> archive = ArchiveReader::open(path);
 		for (Ref<ArchiveEntry> entry; archive->readHeader(&entry); archive->skipData(entry)) {
 			Format status = fout();
-			status << oct(entry->mode()) << " ";
-			if (entry->userName() != "") status << entry->userName() << " ";
-			else status << entry->userId() << " ";
-			if (entry->groupName() != "") status << entry->groupName() << " ";
-			else status << entry->groupId() << " ";
-			status << entry->size() << " ";
-			status << Date::create(entry->lastModified()) << " ";
+			status << oct(entry->mode()) << "\t";
+			if (entry->userName() != "") status << entry->userName() << "\t";
+			else status << entry->userId() << "\t";
+			if (entry->groupName() != "") status << entry->groupName() << "\t";
+			else status << entry->groupId() << "\t";
+			status << entry->size() << "\t";
+			status << Date::create(entry->lastModified()) << "\t";
 			status << entry->path() << nl;
 		}
 	}

@@ -7,21 +7,19 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/UserException.h>
 #include <flux/File.h>
 #include "ArReader.h"
 
 namespace flux
 {
 
-Ref<ArReader> ArReader::open(String path)
+Ref<ArReader> ArReader::open(Stream *source)
 {
-	return new ArReader(path);
+	return new ArReader(source);
 }
 
-ArReader::ArReader(String path)
-	: path_(path),
-	  file_(File::open(path)),
+ArReader::ArReader(Stream *source)
+	: source_(source),
 	  i_(0)
 {}
 
@@ -29,9 +27,10 @@ bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 {
 	if (i_ == 0) {
 		String magic(8);
-		i_ = file_->read(magic);
+		source_->read(magic);
 		if (magic != "!<arch>\n")
-			throw UserException(path_ + ": unsupported archive format");
+			throw BrokenArchive(i_, "Expected ar file header");
+		i_ = magic->size();
 	}
 
 	if (!data_) data_ = ByteArray::create(60);
@@ -40,12 +39,10 @@ bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 	ByteArray *data = data_;
 	ArchiveEntry *entry = *nextEntry;
 
-	if (file_->read(data) < data->size()) return false;
-	i_ += data->size();
-	entry->offset_ = i_;
+	if (source_->read(data) < data->size()) return false;
 
 	if (data->at(58) != 0x60 || data->at(59) != 0x0a)
-		throw UserException(path_ + ": unsupported archive format");
+		throw BrokenArchive(i_ + 58, "Expected ar header magic (0x50, 0x0a)");
 
 	data->scanString(&entry->path_,      " ",  0, 16);
 	data->scanInt(&entry->lastModified_,  10, 16, 28);
@@ -54,16 +51,16 @@ bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 	data->scanInt(&entry->mode_,           8, 40, 48);
 	data->scanInt(&entry->size_,          10, 48, 58);
 
+	i_ += data->size();
+	entry->offset_ = i_;
+
 	return true;
 }
 
 void ArReader::readData(ArchiveEntry *entry, Stream* sink)
 {
-	off_t n = entry->size();
-	n += n % 2;
-	if (sink) file_->transfer(sink, n);
-	else file_->skip(n);
-	i_ += n;
+	off_t count = entry->size() + entry->size() % 2;
+	i_ += source_->transfer(sink, count);
 }
 
 } // namespace flux
