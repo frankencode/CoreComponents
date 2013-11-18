@@ -4,10 +4,10 @@ Library {
 	header: *.h
 	source: *.cpp
 	use: ../../core/flux
-	SystemPrerequisite {
+	/*SystemPrerequisite {
 		name: zlib
 		optional: true
 		link: z
 		compile-flags: -DFLUX_ZLIB
-	}
+	}*/
 }

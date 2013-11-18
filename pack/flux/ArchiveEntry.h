@@ -15,7 +15,7 @@
 
 namespace flux {
 
-class Archive;
+class ArchiveReader;
 
 class ArchiveEntry: public Object
 {
@@ -30,6 +30,10 @@ public:
 		Fifo        = '6'
 	};
 
+	static Ref<ArchiveEntry> create() {
+		return new ArchiveEntry();
+	}
+
 	inline int type() const { return type_; }
 	inline String path() const { return path_; }
 	inline String linkPath() const { return linkPath_; }
@@ -42,17 +46,6 @@ public:
 	inline off_t offset() const { return offset_; }
 	inline off_t size() const { return size_; }
 
-protected:
-	friend class Archive;
-
-	static Ref<ArchiveEntry> create() {
-		return new ArchiveEntry();
-	}
-
-	ArchiveEntry()
-		: type_('0')
-	{}
-
 	int type_;
 	String path_;
 	String linkPath_;
@@ -64,6 +57,11 @@ protected:
 	int mode_;
 	off_t offset_;
 	off_t size_;
+
+private:
+	ArchiveEntry()
+		: type_('0')
+	{}
 };
 
 } // namespace flux

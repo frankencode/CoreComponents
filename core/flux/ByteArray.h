@@ -271,7 +271,8 @@ public:
 	}
 
 	inline operator ByteArray*() const { return array_; }
-	inline ByteArray *operator*() const { return array_; }
+	inline ByteArray *operator*() const { return array_; } // FIXME, better return "ByteArray &" ?
+	inline ByteArray *operator->() const { return array_; }
 	operator String() const;
 
 private:
