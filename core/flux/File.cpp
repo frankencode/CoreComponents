@@ -150,7 +150,13 @@ off_t File::seek(off_t distance, int method)
 
 bool File::seekable() const
 {
-	return ::lseek(fd_, 0, SeekCurrent) != -1;
+	return ::lseek(fd_, 0, SEEK_CUR) != -1;
+}
+
+off_t File::skip(off_t n)
+{
+	File::seek(n, SeekCurrent);
+	return n;
 }
 
 String File::map() const

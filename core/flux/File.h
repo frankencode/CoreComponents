@@ -96,6 +96,7 @@ public:
 
 	off_t seek(off_t distance, int method = SeekBegin);
 	bool seekable() const;
+	virtual off_t skip(off_t n);
 
 	String map() const;
 

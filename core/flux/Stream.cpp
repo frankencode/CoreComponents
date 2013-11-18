@@ -23,6 +23,33 @@ int Stream::read(ByteArray *buf)
 	return 0;
 }
 
+off_t Stream::skip(off_t n)
+{
+	return 0;
+}
+
+off_t Stream::transfer(Stream *sink, off_t count, ByteArray *buf)
+{
+	off_t total = 0;
+	Ref<ByteArray> h;
+	if (!buf) {
+		h = ByteArray::create(0x4000 > count ? count : 0x4000);
+		buf = h;
+	}
+	while (true) {
+		int n = read(buf);
+		if (n == 0) break;
+		sink->write(ByteRange(buf, 0, n));
+		total += n;
+		if (count > 0) {
+			count -= n;
+			if (count == 0) break;
+			if (count < buf->size()) buf->truncate(count);
+		}
+	}
+	return total;
+}
+
 void Stream::write(const ByteArray *buf)
 {}
 
