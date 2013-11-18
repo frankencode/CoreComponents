@@ -17,8 +17,9 @@ namespace flux
 
 Ref<ArchiveReader> ArchiveReader::open(String path)
 {
-	if (path->suffix() == "a" || path->suffix() == "deb") return ArReader::open(path);
-	return TarReader::open(path);
+	Ref<File> file = File::open(path);
+	if (path->suffix() == "a" || path->suffix() == "deb") return ArReader::open(file);
+	return TarReader::open(file);
 }
 
 void ArchiveReader::skipData(ArchiveEntry *entry)

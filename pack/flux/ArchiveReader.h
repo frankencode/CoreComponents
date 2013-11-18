@@ -16,6 +16,20 @@
 namespace flux
 {
 
+class BrokenArchive {
+public:
+	BrokenArchive(off_t offset, String reason)
+		: offset_(offset), reason_(reason)
+	{}
+
+	inline off_t offset() const { return offset_; }
+	inline String reason() const { return reason_; }
+
+private:
+	off_t offset_;
+	String reason_;
+};
+
 class ArchiveReader: public Object
 {
 public:

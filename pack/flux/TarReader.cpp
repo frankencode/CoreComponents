@@ -7,9 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/stdio.h>
 #include <flux/File.h>
-#include <flux/UserException.h>
+#include <flux/Format.h>
 #include "TarReader.h"
 
 namespace flux
@@ -24,14 +23,13 @@ unsigned tarHeaderSum(ByteArray *data)
 	return sum;
 }
 
-Ref<TarReader> TarReader::open(String path)
+Ref<TarReader> TarReader::open(Stream *source)
 {
-	return new TarReader(path);
+	return new TarReader(source);
 }
 
-TarReader::TarReader(String path)
-	: path_(path),
-	  file_(File::open(path)),
+TarReader::TarReader(Stream *source)
+	: source_(source),
 	  i_(0)
 {}
 
@@ -43,8 +41,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 	ByteArray *data = data_;
 	ArchiveEntry *entry = *nextEntry;
 
-	if (file_->read(data) < data->size()) return false;
-	i_ += data->size();
+	if (source_->read(data) < data->size()) return false;
 
 	String magic;
 	data->scanString(&magic, "", 257, 263);
@@ -56,7 +53,8 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 	data->scanInt(&checksum, 8, 148, 156);
 	probesum = tarHeaderSum(data);
 	if (checksum != probesum)
-		ferr() << "Warning: checksum failure on block " << i_/512 << "(" << oct(checksum) << "!=" << oct(probesum) << ")" << nl;
+		throw BrokenArchive(i_, Format("Checksum mismatch (%% != %%)") << oct(checksum) << oct(probesum));
+	i_ += data->size();
 
 	entry->type_ = data->at(156);
 	data->scanString(&entry->path_,     "", 0,   100);
@@ -66,8 +64,8 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 		if ((entry->type_ == 'L' || entry->type_ == 'K') && entry->path_ == "././@LongLink") {
 			Ref<StringList> parts = StringList::create();
 			while (true) {
-				if (file_->read(data) < data->size())
-					throw UserException(path_ + ": broken archive, expected GNU @LongLink data");
+				if (source_->read(data) < data->size())
+					throw BrokenArchive(i_, "Expected GNU @LongLink data");
 				i_ += data->size();
 				String h;
 				data->scanString(&h, "", 0, data->size());
@@ -76,8 +74,8 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 			}
 			if (entry->type_ == 'L') entry->path_ = parts->join();
 			else if (entry->type_ == 'K') entry->linkPath_ = parts->join();
-			if (file_->read(data) < data->size())
-				throw UserException(path_ + ": broken archive, expected GNU @LongLink header");
+			if (source_->read(data) < data->size())
+				throw BrokenArchive(i_, "Expected GNU @LongLink header");
 			i_ += data->size();
 			entry->type_ = data->at(156);
 		}
@@ -108,9 +106,8 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 
 void TarReader::readData(ArchiveEntry *entry, Stream* sink)
 {
-	off_t n = (entry->size() / 512 + (entry->size() % 512 != 0)) * 512;
-	if (sink) i_ += file_->transfer(sink, n);
-	else i_ += file_->skip(n);
+	off_t count = (entry->size() / 512 + (entry->size() % 512 != 0)) * 512;
+	i_ += source_->transfer(sink, count);
 }
 
 } // namespace flux

@@ -24,8 +24,8 @@ public:
 
 	virtual bool readyRead(double interval) const;
 	virtual int read(ByteArray *buf);
-	virtual off_t skip(off_t n);
-	virtual off_t transfer(Stream *sink, off_t count = -1, ByteArray *buf = 0);
+	virtual off_t skip(off_t count);
+	virtual off_t transfer(Stream *sink = 0, off_t count = -1, ByteArray *buf = 0);
 
 	virtual void write(const ByteArray *buf);
 	virtual void write(const StringList *parts);

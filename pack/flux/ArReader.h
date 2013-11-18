@@ -15,21 +15,18 @@
 namespace flux
 {
 
-class File;
-
 class ArReader: public ArchiveReader
 {
 public:
-	static Ref<ArReader> open(String path);
+	static Ref<ArReader> open(Stream *source);
 
 	bool readHeader(Ref<ArchiveEntry> *entry);
 	void readData(ArchiveEntry *entry, Stream* sink = 0);
 
 private:
-	ArReader(String path);
+	ArReader(Stream *source);
 
-	String path_;
-	Ref<File> file_;
+	Ref<Stream> source_;
 	Ref<ByteArray> data_;
 	off_t i_;
 };
