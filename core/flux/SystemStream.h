@@ -32,12 +32,12 @@ public:
 	bool readyRead(double interval) const;
 	bool readyReadOrWrite(double interval) const;
 
-	virtual int read(ByteArray *buf);
-	virtual void write(const ByteArray *buf);
+	virtual int read(ByteArray *data);
+	virtual void write(const ByteArray *data);
 	virtual void write(const StringList *parts);
 
 	inline void write(const ByteRange& range) { write(*range); }
-	inline void write(Ref<ByteArray> buf) { write(buf.get()); }
+	inline void write(Ref<ByteArray> data) { write(data.get()); }
 	inline void write(String s) { write(s.get()); }
 	inline void write(const char *s) { write(String(s)); }
 

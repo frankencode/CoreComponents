@@ -18,20 +18,22 @@ bool Stream::readyRead(double interval) const
 	return true;
 }
 
-int Stream::read(ByteArray *buf)
+int Stream::read(ByteArray *data)
 {
 	return 0;
 }
 
-off_t Stream::skip(off_t count)
+void Stream::write(const ByteArray *data)
+{}
+
+void Stream::write(const StringList *parts)
 {
-	return 0;
+	for (int i = 0, n = parts->size(); i < n; ++i)
+		write(parts->at(i));
 }
 
-off_t Stream::transfer(Stream *sink, off_t count, ByteArray *buf)
+off_t Stream::transfer(off_t count, Stream *sink, ByteArray *buf)
 {
-	if (!sink) return skip(count);
-
 	off_t total = 0;
 	Ref<ByteArray> h;
 	if (!buf) {
@@ -42,7 +44,7 @@ off_t Stream::transfer(Stream *sink, off_t count, ByteArray *buf)
 	while (true) {
 		int n = read(buf);
 		if (n == 0) break;
-		sink->write(ByteRange(buf, 0, n));
+		if (sink) sink->write(ByteRange(buf, 0, n));
 		total += n;
 		if (count > 0) {
 			count -= n;
@@ -54,34 +56,38 @@ off_t Stream::transfer(Stream *sink, off_t count, ByteArray *buf)
 	return total;
 }
 
-void Stream::write(const ByteArray *buf)
-{}
-
-void Stream::write(const StringList *parts)
+int Stream::readAll(ByteArray *data)
 {
-	for (int i = 0, n = parts->size(); i < n; ++i)
-		write(parts->at(i));
+	const int w = data->size();
+	int m = 0;
+	while (m < w) {
+		int n = read(ByteRange(data, m, w));
+		if (n == 0) break;
+		m += n;
+	}
+	return m;
 }
 
-String Stream::readAll()
+String Stream::readAll(int count)
 {
-	Ref<StringList> parts = StringList::create();
-	String s(0x3FFF);
-	while (true) {
-		int n = read(s);
-		if (n == 0) break;
-		parts->append(s->copy(0, n));
-	}
-	return parts->join();
-}
+	if (count == 0) return String();
 
-void Stream::drain()
-{
-	String s(0x3FFF);
-	while (true) {
-		int n = read(s);
-		if (n == 0) break;
+	if (count < 0) {
+		Ref<StringList> parts = StringList::create();
+		String s(0x4000);
+		while (true) {
+			int n = read(s);
+			if (n == 0) break;
+			parts->append(s->copy(0, n));
+		}
+		return parts->join();
 	}
+
+	String s(count);
+	int n = readAll(s);
+	if (n == 0) return String();
+	s->truncate(n);
+	return s;
 }
 
 } // namespace flux

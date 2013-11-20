@@ -94,11 +94,11 @@ bool SystemStream::readyReadOrWrite(double interval) const
 	return (ret > 0);
 }
 
-int SystemStream::read(ByteArray *buf)
+int SystemStream::read(ByteArray *data)
 {
 	ssize_t ret = 0;
 	while (true) {
-		ret = ::read(fd_, buf->data(), buf->size());
+		ret = ::read(fd_, data->bytes(), data->size());
 		if (ret == -1) {
 			if (errno == EINTR) throw Interrupt();
 			if (errno == EWOULDBLOCK) throw Timeout();
@@ -109,11 +109,11 @@ int SystemStream::read(ByteArray *buf)
 	return ret;
 }
 
-void SystemStream::write(const ByteArray *buf)
+void SystemStream::write(const ByteArray *data)
 {
-	const char *p = buf->data();
+	const unsigned char *p = data->bytes();
 
-	for (int n = buf->size(); n > 0;)
+	for (int n = data->size(); n > 0;)
 	{
 		ssize_t ret = ::write(fd_, p, n);
 		if (ret == -1) {

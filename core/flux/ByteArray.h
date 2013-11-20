@@ -238,55 +238,6 @@ private:
 	#endif
 };
 
-class ByteRange
-{
-public:
-	ByteRange(ByteArray *array, int i0, int i1)
-		: array_(array),
-		  origData_(array->data_),
-		  origSize_(array->size_),
-		  origEnd_(0)
-	{
-		if (i0 < 0) i0 = 0;
-		if (i0 > origSize_) i0 = origSize_;
-		if (i1 < i0) i1 = i0;
-		if (i1 > origSize_) i1 = origSize_;
-		origEnd_ = origData_[i1];
-		origData_[i1] = 0;
-		array_->data_ = origData_ + i0;
-		array_->size_ = i1 - i0;
-		#ifndef NDEBUG
-		++array_->rangeCount_;
-		#endif
-	}
-
-	~ByteRange() {
-		array_->data_[array_->size_] = origEnd_;
-		array_->data_ = origData_;
-		array_->size_ = origSize_;
-		#ifndef NDEBUG
-		--array_->rangeCount_;
-		#endif
-		array_ = 0;
-	}
-
-	inline operator ByteArray*() const { return array_; }
-	inline ByteArray *operator*() const { return array_; } // FIXME, better return "ByteArray &" ?
-	inline ByteArray *operator->() const { return array_; }
-	operator String() const;
-
-private:
-	// ByteRange(const ByteRange&);
-	ByteRange &operator=(const ByteRange &b);
-	void *operator new(size_t size);
-	void operator delete(void *data, size_t size);
-
-	Ref<ByteArray> array_;
-	char *origData_;
-	int origSize_;
-	char origEnd_;
-};
-
 template<class T>
 int ByteArray::scanInt(T *x, int base, int i0, int i1) const
 {
@@ -325,6 +276,55 @@ inline bool operator< (const ByteArray &a, const ByteArray &b) { return containe
 inline bool operator> (const ByteArray &a, const ByteArray &b) { return container::compare(a, b) >  0; }
 inline bool operator<=(const ByteArray &a, const ByteArray &b) { return container::compare(a, b) <= 0; }
 inline bool operator>=(const ByteArray &a, const ByteArray &b) { return container::compare(a, b) >= 0; }
+
+class ByteRange
+{
+public:
+	ByteRange(ByteArray *array, int i0, int i1)
+		: array_(array),
+		  origData_(array->data_),
+		  origSize_(array->size_),
+		  origEnd_(0)
+	{
+		if (i0 < 0) i0 = 0;
+		if (i0 > origSize_) i0 = origSize_;
+		if (i1 < i0) i1 = i0;
+		if (i1 > origSize_) i1 = origSize_;
+		origEnd_ = origData_[i1];
+		origData_[i1] = 0;
+		array_->data_ = origData_ + i0;
+		array_->size_ = i1 - i0;
+		#ifndef NDEBUG
+		++array_->rangeCount_;
+		#endif
+	}
+
+	~ByteRange() {
+		array_->data_[array_->size_] = origEnd_;
+		array_->data_ = origData_;
+		array_->size_ = origSize_;
+		#ifndef NDEBUG
+		--array_->rangeCount_;
+		#endif
+		array_ = 0;
+	}
+
+	inline operator ByteArray*() const { return array_; }
+	inline ByteArray &operator*() const { return *array_; }
+	inline ByteArray *operator->() const { return array_; }
+	operator String() const;
+
+private:
+	// ByteRange(const ByteRange&);
+	ByteRange &operator=(const ByteRange &b);
+	void *operator new(size_t size);
+	void operator delete(void *data, size_t size);
+
+	Ref<ByteArray> array_;
+	char *origData_;
+	int origSize_;
+	char origEnd_;
+};
 
 } // namespace flux
 
