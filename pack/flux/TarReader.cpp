@@ -41,7 +41,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 	ByteArray *data = data_;
 	ArchiveEntry *entry = *nextEntry;
 
-	if (source_->read(data) < data->size()) return false;
+	if (source_->readAll(data) < data->size()) return false;
 
 	String magic;
 	data->scanString(&magic, "", 257, 263);
@@ -106,8 +106,9 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 
 void TarReader::readData(ArchiveEntry *entry, Stream* sink)
 {
-	off_t count = (entry->size() / 512 + (entry->size() % 512 != 0)) * 512;
-	i_ += source_->transfer(sink, count);
+	i_ += source_->transfer(entry->size(), sink);
+	if (entry->size() % 512 != 0)
+		i_ += source_->skip(512 - entry->size() % 512);
 }
 
 } // namespace flux

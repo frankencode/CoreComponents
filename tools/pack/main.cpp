@@ -9,20 +9,9 @@
 
 #include <flux/stdio.h>
 #include <flux/Config.h>
-#include <flux/Date.h>
-#include <flux/File.h>
-#include <flux/Dir.h>
-#include <flux/Process.h>
-#include <flux/User.h>
-#include <flux/Group.h>
-#include <flux/ArchiveReader.h>
+#include "unpack.h"
 
 using namespace flux;
-
-void list(Config *options);
-void status(Config *options);
-void unpack(Config *options);
-void pack(Config *options);
 
 int main(int argc, char **argv)
 {
@@ -35,10 +24,22 @@ int main(int argc, char **argv)
 		prototype->insert("unpack", !packMode);
 		prototype->insert("pack", packMode);
 		Ref<Config> options = Config::read(argc, argv, prototype);
-		if (options->value("list")) list(options);
-		else if (options->value("status")) status(options);
-		else if (options->value("unpack")) unpack(options);
-		else if (options->value("pack")) pack(options);
+		bool listOption = options->value("list");
+		bool statusOption = options->value("status");
+		bool unpackOption = options->value("unpack");
+		bool packOption = options->value("pack");
+		for (int i = 0; i < options->arguments()->size(); ++i) {
+			String path = options->arguments()->at(i);
+			if (listOption || statusOption || unpackOption) {
+				Ref<ArchiveReader> archive = ArchiveReader::open(path);
+				if (listOption) fluxpack::list(archive);
+				else if (statusOption) fluxpack::status(archive);
+				else if (unpackOption) fluxpack::unpack(archive);
+			}
+			else if (packOption) {
+				// TODO
+			}
+		}
 	}
 	catch (HelpException &) {
 		if (packMode) {
@@ -60,7 +61,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	catch (BrokenArchive &ex) {
-		ferr() << "Broken archive: " << ex.reason() << "(" << ex.offset() << ")" << nl;
+		ferr() << "Broken archive: " << ex.reason() << " (file offset " << ex.offset() << ")" << nl;
 		return 1;
 	}
 	catch (UserException &ex) {
@@ -69,83 +70,4 @@ int main(int argc, char **argv)
 	}
 
 	return 0;
-}
-
-void list(Config *options)
-{
-	for (int i = 0; i < options->arguments()->size(); ++i) {
-		String path = options->arguments()->at(i);
-		Ref<ArchiveReader> archive = ArchiveReader::open(path);
-		for (Ref<ArchiveEntry> entry; archive->readHeader(&entry); archive->skipData(entry))
-			fout() << entry->path() << nl;
-	}
-}
-
-void status(Config *options)
-{
-	for (int i = 0; i < options->arguments()->size(); ++i) {
-		String path = options->arguments()->at(i);
-		Ref<ArchiveReader> archive = ArchiveReader::open(path);
-		for (Ref<ArchiveEntry> entry; archive->readHeader(&entry); archive->skipData(entry)) {
-			Format status = fout();
-			status << oct(entry->mode()) << "\t";
-			if (entry->userName() != "") status << entry->userName() << "\t";
-			else status << entry->userId() << "\t";
-			if (entry->groupName() != "") status << entry->groupName() << "\t";
-			else status << entry->groupId() << "\t";
-			status << entry->size() << "\t";
-			status << Date::create(entry->lastModified()) << "\t";
-			status << entry->path() << nl;
-		}
-	}
-}
-
-void unpack(Config *options)
-{
-	for (int i = 0; i < options->arguments()->size(); ++i) {
-		String path = options->arguments()->at(i);
-		Ref<ArchiveReader> archive = ArchiveReader::open(path);
-		for (Ref<ArchiveEntry> entry; archive->readHeader(&entry);) {
-			fout() << entry->path() << nl;
-			if (entry->type() == ArchiveEntry::Directory) {
-				if (entry->path() == "." || entry->path() == "./")
-					;
-				else if (!Dir::create(entry->path(), entry->mode()))
-					FLUX_SYSTEM_EXCEPTION;
-			}
-			else if (entry->type() == ArchiveEntry::Link) {
-				if (!File::link(entry->linkPath(), entry->path()))
-					FLUX_SYSTEM_EXCEPTION;
-			}
-			else if (entry->type() == ArchiveEntry::Symlink) {
-				if (!File::symlink(entry->linkPath(), entry->path()))
-					FLUX_SYSTEM_EXCEPTION;
-			}
-			else if (entry->type() == ArchiveEntry::Regular) {
-				if (!File::create(entry->path(), entry->mode()))
-					FLUX_SYSTEM_EXCEPTION;
-				if (Process::isSuperUser()) {
-					uid_t userId = entry->userId();
-					gid_t groupId = entry->groupId();
-					if (entry->userName() != "")
-						userId = User::lookup(entry->userName())->id();
-					if (entry->groupName() != "")
-						groupId = Group::lookup(entry->groupName())->id();
-					if (userId != 0 || groupId != 0) {
-						if (!File::chown(entry->path(), userId, groupId))
-							FLUX_SYSTEM_EXCEPTION;
-					}
-				}
-				if (entry->size() > 0) {
-					Ref<File> file = File::open(entry->path(), File::WriteOnly);
-					archive->readData(entry, file);
-				}
-			}
-		}
-	}
-}
-
-void pack(Config *options)
-{
-	// TODO
 }

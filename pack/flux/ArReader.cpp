@@ -27,7 +27,7 @@ bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 {
 	if (i_ == 0) {
 		String magic(8);
-		source_->read(magic);
+		source_->readAll(magic);
 		if (magic != "!<arch>\n")
 			throw BrokenArchive(i_, "Expected ar file header");
 		i_ = magic->size();
@@ -39,7 +39,7 @@ bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 	ByteArray *data = data_;
 	ArchiveEntry *entry = *nextEntry;
 
-	if (source_->read(data) < data->size()) return false;
+	if (source_->readAll(data) < data->size()) return false;
 
 	if (data->at(58) != 0x60 || data->at(59) != 0x0a)
 		throw BrokenArchive(i_ + 58, "Expected ar header magic (0x50, 0x0a)");
@@ -59,8 +59,9 @@ bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 
 void ArReader::readData(ArchiveEntry *entry, Stream* sink)
 {
-	off_t count = entry->size() + entry->size() % 2;
-	i_ += source_->transfer(sink, count);
+	i_ += source_->transfer(entry->size(), sink);
+	if (entry->size() % 2 != 0)
+		i_ += source_->skip(entry->size() % 2);
 }
 
 } // namespace flux

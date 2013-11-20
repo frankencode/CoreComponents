@@ -153,10 +153,17 @@ bool File::seekable() const
 	return ::lseek(fd_, 0, SEEK_CUR) != -1;
 }
 
-off_t File::skip(off_t n)
+off_t File::transfer(off_t count, Stream *sink, ByteArray *buf)
 {
-	File::seek(n, SeekCurrent);
-	return n;
+	if (count == 0) return 0;
+	if (!sink) {
+		if (count > 0)
+			File::seek(count, SeekCurrent);
+		else
+			File::seek(0, SeekEnd);
+		return count;
+	}
+	return Stream::transfer(count, sink, buf);
 }
 
 String File::map() const

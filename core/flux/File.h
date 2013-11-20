@@ -96,7 +96,8 @@ public:
 
 	off_t seek(off_t distance, int method = SeekBegin);
 	bool seekable() const;
-	virtual off_t skip(off_t n);
+
+	virtual off_t transfer(off_t count = -1, Stream *sink = 0, ByteArray *buf = 0);
 
 	String map() const;
 

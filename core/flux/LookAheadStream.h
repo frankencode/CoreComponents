@@ -7,35 +7,37 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_STREAM_H
-#define FLUX_STREAM_H
+#ifndef FLUX_LOOKAHEADSTREAM_H
+#define FLUX_LOOKAHEADSTREAM_H
 
-#include "String.h"
+#include "Stream.h"
 
 namespace flux
 {
 
-FLUX_EXCEPTION(EncodingException, Exception); // FIXME
-
-class Stream: public Object
+class LookAheadStream: public Stream
 {
 public:
-	virtual ~Stream() {}
+	static Ref<LookAheadStream> open(Stream *source, int windowSize);
 
 	virtual bool readyRead(double interval) const;
-	virtual int read(ByteArray *data);
-
-	virtual void write(const ByteArray *data);
-	virtual void write(const StringList *parts);
-
+	virtual int read(ByteArray *buf);
 	virtual off_t transfer(off_t count = -1, Stream *sink = 0, ByteArray *buf = 0);
-	inline off_t skip(off_t count) { return transfer(count); }
-	inline void drain() { transfer(); }
 
-	int readAll(ByteArray *data);
-	String readAll(int count = -1);
+	void replay();
+	void done();
+
+private:
+	LookAheadStream(Stream *source, int windowSize);
+
+	Ref<Stream> source_;
+	Ref<ByteArray> window_;
+	const int w_; // window size
+	int m_; // window fill
+	int i_; // read offset
+	bool done_;
 };
 
 } // namespace flux
 
-#endif // FLUX_STREAM_H
+#endif // FLUX_LOOKAHEADSTREAM_H
