@@ -20,11 +20,11 @@ Group::Group(gid_t id)
 	int h = sysconf(_SC_GETGR_R_SIZE_MAX);
 	if (h != -1) bufSize = h;
 	#endif
-	Ref<ByteArray> buf = ByteArray::create(bufSize, '\0');
+	String buf(bufSize);
 	struct group space;
 	memclr(&space, sizeof(struct group));
 	struct group *entry = 0;
-	if (::getgrgid_r(id, &space, buf->data(), buf->size(), &entry) != 0)
+	if (::getgrgid_r(id, &space, buf->chars(), buf->size(), &entry) != 0)
 		FLUX_SYSTEM_EXCEPTION;
 	load(entry);
 }
@@ -34,11 +34,11 @@ Group::Group(const char *name)
 	int bufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
 	if (bufSize == -1)
 		FLUX_SYSTEM_EXCEPTION;
-	Ref<ByteArray>  buf = ByteArray::create(bufSize, '\0');
+	String buf(bufSize);
 	struct group space;
 	memclr(&space, sizeof(struct group));
 	struct group *entry = 0;
-	if (::getgrnam_r(name, &space, buf->data(), buf->size(), &entry) != 0)
+	if (::getgrnam_r(name, &space, buf->chars(), buf->size(), &entry) != 0)
 		FLUX_SYSTEM_EXCEPTION;
 	load(entry);
 }

@@ -133,7 +133,7 @@ void SystemStream::write(const StringList *parts)
 	Ref< Array<struct iovec> > iov = Array<struct iovec>::create(n);
 	for (int i = 0; i < n; ++i) {
 		ByteArray *part = parts->at(i);
-		iov->at(i).iov_base = part->data();
+		iov->at(i).iov_base = part->bytes();
 		iov->at(i).iov_len = part->size();
 	}
 	ssize_t ret = ::writev(fd_, iov->data(), iov->size());

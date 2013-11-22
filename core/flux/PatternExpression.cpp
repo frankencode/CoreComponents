@@ -383,7 +383,7 @@ NODE PatternExpression::compileRangeExplicit(ByteArray *text, Token *token, Synt
 		s->at(i) = readChar(text, child);
 		child = child->nextSibling();
 	}
-	return invert ? definition->EXCEPT(s->data()) : definition->RANGE(s->data());
+	return invert ? definition->EXCEPT(s) : definition->RANGE(s);
 }
 
 NODE PatternExpression::compileRepeat(ByteArray *text, Token *token, SyntaxDefinition *definition, NODE previous)

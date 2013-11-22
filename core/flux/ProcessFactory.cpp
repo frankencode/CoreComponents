@@ -136,10 +136,10 @@ Ref<Process> ProcessFactory::produce()
 
 		if (arguments) {
 			for (int i = 0; i < arguments->size(); ++i)
-				argv[i] = strdup(arguments->at(i)->data());
+				argv[i] = strdup(arguments->at(i)->chars());
 		}
 		else {
-			argv[0] = strdup(execPath_->data());
+			argv[0] = strdup(execPath_->chars());
 		}
 		argv[argc] = 0;
 
@@ -151,7 +151,7 @@ Ref<Process> ProcessFactory::produce()
 			int n = envMap_->size();
 			envp = new char*[n + 1];
 			for (int i = 0; i < n; ++i)
-				envp[i] = strdup(String(Format() << envMap_->keyAt(i) <<  "=" << envMap_->valueAt(i))->data());
+				envp[i] = strdup(String(Format() << envMap_->keyAt(i) <<  "=" << envMap_->valueAt(i))->chars());
 			envp[n] = 0;
 		}
 		else {

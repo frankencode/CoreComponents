@@ -51,7 +51,7 @@ static void printString(char *s, int size) {
 }
 
 static void printString(const ByteArray &s) {
-	printString(s.data(), s.size());
+	printString(s.chars(), s.size());
 }
 
 static void printCharAttr(char ch) {

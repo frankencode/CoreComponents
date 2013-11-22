@@ -19,9 +19,9 @@ namespace flux
 class Unicode: public Object
 {
 public:
-	inline static Ref<Unicode> open(ByteArray *bytes)
+	inline static Ref<Unicode> open(ByteArray *data)
 	{
-		return new Unicode(bytes);
+		return new Unicode(data);
 	}
 
 	inline bool has(int i) const {
@@ -70,9 +70,9 @@ public:
 	// Ref<StringList> split(const char *pattern) const;
 
 private:
-	Unicode(ByteArray *bytes)
-		: bytes_(bytes),
-		  walker_(bytes->data()),
+	Unicode(ByteArray *data)
+		: data_(data),
+		  walker_(data->chars()),
 		  i_(0), n_(-1)
 	{}
 
@@ -85,7 +85,7 @@ private:
 		while (i_ > i) { --walker_; --i_; }
 	}
 
-	Ref<ByteArray> bytes_;
+	Ref<ByteArray> data_;
 	mutable Utf8Walker walker_;
 	mutable int i_, n_;
 };

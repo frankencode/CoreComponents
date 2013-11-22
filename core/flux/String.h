@@ -65,7 +65,7 @@ public:
 		return *this += String(b);
 	}
 
-	inline operator char *() const { return Super::get()->data(); }
+	inline operator char *() const { return Super::get()->chars(); }
 
 private:
 	friend class ByteArray;
@@ -79,40 +79,40 @@ inline Ref<StringList> operator+(const String &a, const String &b) {
 }
 inline Ref<StringList> operator+(Ref<StringList> &a, const String &b) { a->append(b); return a; }
 
-inline bool operator< (const String &a, const String &b) { return strcmp(a->data(), b->data()) <  0; }
-inline bool operator==(const String &a, const String &b) { return strcmp(a->data(), b->data()) == 0; }
-inline bool operator> (const String &a, const String &b) { return strcmp(a->data(), b->data()) >  0; }
-inline bool operator!=(const String &a, const String &b) { return strcmp(a->data(), b->data()) != 0; }
-inline bool operator<=(const String &a, const String &b) { return strcmp(a->data(), b->data()) <= 0; }
-inline bool operator>=(const String &a, const String &b) { return strcmp(a->data(), b->data()) >= 0; }
+inline bool operator< (const String &a, const String &b) { return strcmp(a->chars(), b->chars()) <  0; }
+inline bool operator==(const String &a, const String &b) { return strcmp(a->chars(), b->chars()) == 0; }
+inline bool operator> (const String &a, const String &b) { return strcmp(a->chars(), b->chars()) >  0; }
+inline bool operator!=(const String &a, const String &b) { return strcmp(a->chars(), b->chars()) != 0; }
+inline bool operator<=(const String &a, const String &b) { return strcmp(a->chars(), b->chars()) <= 0; }
+inline bool operator>=(const String &a, const String &b) { return strcmp(a->chars(), b->chars()) >= 0; }
 
-inline bool operator< (const char *a, const String &b) { return strcmp(a, b->data()) <  0; }
-inline bool operator==(const char *a, const String &b) { return strcmp(a, b->data()) == 0; }
-inline bool operator> (const char *a, const String &b) { return strcmp(a, b->data()) >  0; }
-inline bool operator!=(const char *a, const String &b) { return strcmp(a, b->data()) != 0; }
-inline bool operator<=(const char *a, const String &b) { return strcmp(a, b->data()) <= 0; }
-inline bool operator>=(const char *a, const String &b) { return strcmp(a, b->data()) >= 0; }
+inline bool operator< (const char *a, const String &b) { return strcmp(a, b->chars()) <  0; }
+inline bool operator==(const char *a, const String &b) { return strcmp(a, b->chars()) == 0; }
+inline bool operator> (const char *a, const String &b) { return strcmp(a, b->chars()) >  0; }
+inline bool operator!=(const char *a, const String &b) { return strcmp(a, b->chars()) != 0; }
+inline bool operator<=(const char *a, const String &b) { return strcmp(a, b->chars()) <= 0; }
+inline bool operator>=(const char *a, const String &b) { return strcmp(a, b->chars()) >= 0; }
 
-inline bool operator< (char *a, const String &b) { return strcmp(a, b->data()) <  0; }
-inline bool operator==(char *a, const String &b) { return strcmp(a, b->data()) == 0; }
-inline bool operator> (char *a, const String &b) { return strcmp(a, b->data()) >  0; }
-inline bool operator!=(char *a, const String &b) { return strcmp(a, b->data()) != 0; }
-inline bool operator<=(char *a, const String &b) { return strcmp(a, b->data()) <= 0; }
-inline bool operator>=(char *a, const String &b) { return strcmp(a, b->data()) >= 0; }
+inline bool operator< (char *a, const String &b) { return strcmp(a, b->chars()) <  0; }
+inline bool operator==(char *a, const String &b) { return strcmp(a, b->chars()) == 0; }
+inline bool operator> (char *a, const String &b) { return strcmp(a, b->chars()) >  0; }
+inline bool operator!=(char *a, const String &b) { return strcmp(a, b->chars()) != 0; }
+inline bool operator<=(char *a, const String &b) { return strcmp(a, b->chars()) <= 0; }
+inline bool operator>=(char *a, const String &b) { return strcmp(a, b->chars()) >= 0; }
 
-inline bool operator< (const String &a, const char *b) { return strcmp(a->data(), b) <  0; }
-inline bool operator==(const String &a, const char *b) { return strcmp(a->data(), b) == 0; }
-inline bool operator> (const String &a, const char *b) { return strcmp(a->data(), b) >  0; }
-inline bool operator!=(const String &a, const char *b) { return strcmp(a->data(), b) != 0; }
-inline bool operator<=(const String &a, const char *b) { return strcmp(a->data(), b) <= 0; }
-inline bool operator>=(const String &a, const char *b) { return strcmp(a->data(), b) >= 0; }
+inline bool operator< (const String &a, const char *b) { return strcmp(a->chars(), b) <  0; }
+inline bool operator==(const String &a, const char *b) { return strcmp(a->chars(), b) == 0; }
+inline bool operator> (const String &a, const char *b) { return strcmp(a->chars(), b) >  0; }
+inline bool operator!=(const String &a, const char *b) { return strcmp(a->chars(), b) != 0; }
+inline bool operator<=(const String &a, const char *b) { return strcmp(a->chars(), b) <= 0; }
+inline bool operator>=(const String &a, const char *b) { return strcmp(a->chars(), b) >= 0; }
 
-inline bool operator< (const String &a, char *b) { return strcmp(a->data(), b) <  0; }
-inline bool operator==(const String &a, char *b) { return strcmp(a->data(), b) == 0; }
-inline bool operator> (const String &a, char *b) { return strcmp(a->data(), b) >  0; }
-inline bool operator!=(const String &a, char *b) { return strcmp(a->data(), b) != 0; }
-inline bool operator<=(const String &a, char *b) { return strcmp(a->data(), b) <= 0; }
-inline bool operator>=(const String &a, char *b) { return strcmp(a->data(), b) >= 0; }
+inline bool operator< (const String &a, char *b) { return strcmp(a->chars(), b) <  0; }
+inline bool operator==(const String &a, char *b) { return strcmp(a->chars(), b) == 0; }
+inline bool operator> (const String &a, char *b) { return strcmp(a->chars(), b) >  0; }
+inline bool operator!=(const String &a, char *b) { return strcmp(a->chars(), b) != 0; }
+inline bool operator<=(const String &a, char *b) { return strcmp(a->chars(), b) <= 0; }
+inline bool operator>=(const String &a, char *b) { return strcmp(a->chars(), b) >= 0; }
 
 } // namespace flux
 

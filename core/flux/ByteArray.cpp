@@ -26,18 +26,17 @@ namespace flux
 
 ByteArray::ByteArray(int size, char zero)
 	: size_(0),
-	  origSize_(0),
 	  data_(const_cast<char*>("")),
-	  origData_(data_),
 	  mapSize_(0),
-	  wrapped_(false)
+	  wrapped_(true)
 	  #ifndef NDEBUG
 	  , rangeCount_(0)
 	  #endif
 {
 	if (size > 0) {
-		size_ = origSize_ = size;
-		data_ = origData_ = new char[size + 1];
+		size_ = size;
+		data_ = new char[size + 1];
+		wrapped_ = false;
 		if (zero) memset(data_, zero, size_);
 		data_[size] = 0;
 	}
@@ -45,19 +44,18 @@ ByteArray::ByteArray(int size, char zero)
 
 ByteArray::ByteArray(const char *data, int size)
 	: size_(0),
-	  origSize_(0),
 	  data_(const_cast<char*>("")),
-	  origData_(data_),
 	  mapSize_(0),
-	  wrapped_(false)
+	  wrapped_(true)
 	  #ifndef NDEBUG
 	  , rangeCount_(0)
 	  #endif
 {
 	if (size < 0) size = strlen(data);
 	if (size > 0) {
-		size_ = origSize_ = size;
-		data_ = origData_ = new char[size + 1];
+		size_ = size;
+		data_ = new char[size + 1];
+		wrapped_ = false;
 		if (data) memcpy(data_, data, size);
 		data_[size] = 0;
 	}
@@ -65,9 +63,7 @@ ByteArray::ByteArray(const char *data, int size)
 
 ByteArray::ByteArray(char *data, int size, size_t mapSize)
 	: size_(size),
-	  origSize_(size),
 	  data_(data),
-	  origData_(data),
 	  mapSize_(mapSize),
 	  wrapped_(false)
 	  #ifndef NDEBUG
@@ -77,9 +73,7 @@ ByteArray::ByteArray(char *data, int size, size_t mapSize)
 
 ByteArray::ByteArray(void *data, int size)
 	: size_(size),
-	  origSize_(size),
 	  data_(reinterpret_cast<char*>(data)),
-	  origData_(reinterpret_cast<char*>(data)),
 	  mapSize_(0),
 	  wrapped_(true)
 	  #ifndef NDEBUG
@@ -89,18 +83,17 @@ ByteArray::ByteArray(void *data, int size)
 
 ByteArray::ByteArray(const ByteArray &b)
 	: size_(0),
-	  origSize_(0),
 	  data_(const_cast<char*>("")),
-	  origData_(data_),
 	  mapSize_(0),
-	  wrapped_(false)
+	  wrapped_(true)
 	  #ifndef NDEBUG
 	  , rangeCount_(0)
 	  #endif
 {
 	if (b.size_ > 0) {
-		size_ = origSize_ = b.size_;
-		data_ = origData_ = new char[b.size_ + 1];
+		size_ = b.size_;
+		data_ = new char[b.size_ + 1];
+		wrapped_ = false;
 		memcpy(data_, b.data_, b.size_);
 		data_[size_] = 0;
 	}
@@ -114,9 +107,9 @@ ByteArray::~ByteArray()
 void ByteArray::destroy()
 {
 	if (mapSize_ > 0)
-		::munmap((void*)origData_, mapSize_);
-	else if (origSize_ > 0 && !wrapped_)
-		delete[] origData_;
+		::munmap((void*)data_, mapSize_);
+	else if (!wrapped_)
+		delete[] data_;
 }
 
 void ByteArray::resize(int newSize)
@@ -131,17 +124,16 @@ void ByteArray::resize(int newSize)
 		memcpy(newData, data_, size_);
 		newData[newSize] = 0;
 		destroy();
-		data_ = origData_ = newData;
-		size_ = origSize_ = newSize;
+		data_ = newData;
+		size_ = newSize;
+		wrapped_ = false;
 	}
 	else {
 		data_ = const_cast<char*>("");
 		size_ = 0;
+		wrapped_ = true;
 	}
-	origData_ = data_;
-	origSize_ = size_;
 	mapSize_ = 0;
-	wrapped_ = false;
 }
 
 ByteArray &ByteArray::operator=(const ByteArray &b)
@@ -183,7 +175,7 @@ int ByteArray::find(const char *pattern, int i) const
 
 int ByteArray::find(String pattern, int i) const
 {
-	return find(pattern->constData(), i);
+	return find(pattern->chars(), i);
 }
 
 int ByteArray::find(SyntaxDefinition *pattern, int i) const
@@ -194,7 +186,7 @@ int ByteArray::find(SyntaxDefinition *pattern, int i) const
 
 bool ByteArray::contains(String pattern) const
 {
-	return contains(pattern->constData());
+	return contains(pattern->chars());
 }
 
 Ref<ByteArray> ByteArray::join(const StringList *parts, const char *sep)
@@ -234,7 +226,7 @@ Ref<ByteArray> ByteArray::join(const StringList *parts, char sep)
 
 Ref<ByteArray> ByteArray::join(const StringList *parts, String sep)
 {
-	return join(parts, sep->constData());
+	return join(parts, sep->chars());
 }
 
 Ref<StringList> ByteArray::split(char sep) const
@@ -322,7 +314,7 @@ Ref<ByteArray> ByteArray::replace(const char *pattern, const char *replacement) 
 
 Ref<ByteArray> ByteArray::replace(String pattern, String replacement) const
 {
-	return replace(pattern->constData(), replacement->constData());
+	return replace(pattern->chars(), replacement->chars());
 }
 
 int ByteArray::toInt(bool *ok) const
@@ -512,29 +504,15 @@ Ref<ByteArray> ByteArray::escape() const
 	return parts->join();
 }
 
-ByteArray *ByteArray::truncate(int i1)
+ByteArray *ByteArray::truncate(int newSize)
 {
 	FLUX_ASSERT2(rangeCount_ == 0, "Cannot truncate a ByteArray with a ByteRange in effect");
-	if (i1 < size_) {
-		if (i1 < 0) i1 = 0;
-		if (i1 > size_) i1 = size_;
-		size_ = i1;
+	if (newSize < size_) {
+		if (newSize < 0) newSize = 0;
+		if (newSize > size_) newSize = size_;
+		size_ = newSize;
 		data_[size_] = 0;
 	}
-	return this;
-}
-
-ByteArray *ByteArray::truncate(int i0, int i1)
-{
-	FLUX_ASSERT2(rangeCount_ == 0, "Cannot truncate a ByteArray with a ByteRange in effect");
-	if (i0 < 0) i0 = 0;
-	if (i0 > size_) i0 = size_;
-	if (i1 < i0) i1 = i0;
-	if (i1 > size_) i1 = size_;
-	data_ += i0;
-	size_ = i1 - i0;
-	if (data_[size_])
-		data_[size_] = 0;
 	return this;
 }
 
@@ -555,7 +533,8 @@ ByteArray *ByteArray::trimInsitu(const char *space)
 		if (!*p) break;
 		--i1;
 	}
-	return truncate(i0, i1);
+	if (i0 > 0 && i0 < i1) memmove(data_, data_ + i0, i1 - i0);
+	return truncate(i1 - i0);
 }
 
 Ref<ByteArray> ByteArray::stripTags() const
