@@ -100,12 +100,12 @@ int RequestStream::read(ByteArray *buf)
 	if (eoi_) return 0;
 	if (bytesLeft_ == 0) return 0;
 	if (pending_) {
-		*buf = *pending_;
-		if (buf->size() < pending_->size()) {
-			pending_->truncate(buf->size(), pending_->size());
+		*buf = *ByteRange(pending_, pendingIndex_, pending_->size());
+		int h = pending_->size() - pendingIndex_;
+		if (buf->size() < h) {
+			pendingIndex_ += buf->size();
 			return buf->size();
 		}
-		int h = pending_->size();
 		pending_ = 0;
 		return h;
 	}
@@ -130,6 +130,7 @@ int RequestStream::read(ByteArray *buf)
 		}
 		if (nlCount_ == nlMax_) {
 			pending_ = buf->copy(i, n);
+			pendingIndex_ = 0;
 			bytesLeft_ = 0;
 			return i;
 		}
@@ -137,6 +138,7 @@ int RequestStream::read(ByteArray *buf)
 	}
 	if (bytesLeft_ < n) {
 		pending_ = buf->copy(bytesLeft_, n);
+		pendingIndex_ = 0;
 		int h = bytesLeft_;
 		bytesLeft_ = 0;
 		if (chunked_) nextChunk();

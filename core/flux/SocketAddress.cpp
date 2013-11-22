@@ -73,7 +73,7 @@ SocketAddress::SocketAddress(int family, String address, int port)
 		if ((address == "") || (address == "*"))
 			localAddress_.sun_path[0] = 0;
 		else
-			memcpy(localAddress_.sun_path, address->data(), address->size() + 1);
+			memcpy(localAddress_.sun_path, address->chars(), address->size() + 1);
 	}
 	else
 		FLUX_THROW(NetworkingException, "Unsupported address family");

@@ -34,7 +34,6 @@ public:
 	inline static Ref<ByteArray> create(int size = 0) { return new ByteArray(size); }
 	inline static Ref<ByteArray> create(int size, char zero) { return new ByteArray(size, zero); }
 	inline static Ref<ByteArray> copy(const char *data, int size = -1) { return new ByteArray(data, size); }
-	inline static Ref<ByteArray> wrap(void *data, int size) { return new ByteArray(data, size); }
 	static Ref<ByteArray> join(const StringList *parts, const char *sep = "");
 	static Ref<ByteArray> join(const StringList *parts, char sep);
 	static Ref<ByteArray> join(const StringList *parts, String sep);
@@ -77,24 +76,9 @@ public:
 		return words_[j];
 	}
 
-	inline char *data() const { return data_; }
-	inline uint8_t *bytes() const { return reinterpret_cast<uint8_t *>(data_); }
-	inline const char *constData() const { return data_; }
-	inline operator char*() const { return data_; }
-
-	inline void read(int i, char *data, int size) {
-		if (size == 0) return;
-		FLUX_ASSERT(has(i));
-		FLUX_ASSERT(has(i + size - 1));
-		memcpy(data, data_ + i, size);
-	}
-
-	inline void write(int i, const char *data, int size) {
-		if (size == 0) return;
-		FLUX_ASSERT(has(i));
-		FLUX_ASSERT(has(i + size - 1));
-		memcpy(data_ + i, data, size);
-	}
+	inline uint8_t *bytes() const { return bytes_; }
+	inline char *chars() const { return chars_; }
+	inline operator char*() const { return chars(); }
 
 	inline Ref<ByteArray> copy() const { return new ByteArray(*this); }
 
@@ -178,8 +162,7 @@ public:
 	Ref<ByteArray> escape() const;
 	ByteArray *expandInsitu();
 
-	ByteArray *truncate(int i1);
-	ByteArray *truncate(int i0, int i1);
+	ByteArray *truncate(int newSize);
 
 	inline Ref<ByteArray> trim(const char *space = " \t\n\r") const { return copy()->trimInsitu(space); }
 	ByteArray *trimInsitu(const char *space = " \t\n\r");
@@ -224,13 +207,13 @@ private:
 	ByteArray(ByteArray *b, int size);
 	void destroy();
 
-	int size_, origSize_;
+	int size_;
 	union {
 		char *data_;
+		char *chars_;
 		uint8_t *bytes_;
 		uint32_t *words_;
 	};
-	char *origData_;
 	size_t mapSize_;
 	bool wrapped_;
 	#ifndef NDEBUG

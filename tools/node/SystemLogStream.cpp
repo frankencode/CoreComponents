@@ -28,7 +28,7 @@ int SystemLogStream::read(ByteArray *buf)
 
 void SystemLogStream::write(const ByteArray *buf)
 {
-	syslog(priority_, "%s", buf->constData());
+	syslog(priority_, "%s", buf->chars());
 }
 
 void SystemLogStream::write(const StringList *parts)

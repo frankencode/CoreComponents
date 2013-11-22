@@ -271,7 +271,7 @@ String File::readlink(String path)
 			return String();
 		if (numBytes <= buf->size()) {
 			if (numBytes < buf->size())
-				buf = String(buf->data(), numBytes);
+				buf = String(buf->chars(), numBytes);
 			break;
 		}
 		buf = String(numBytes);

@@ -20,10 +20,10 @@ User::User(uid_t id)
 	int h = sysconf(_SC_GETPW_R_SIZE_MAX);
 	if (h != -1) bufSize = h;
 	#endif
-	Ref<ByteArray> buf = ByteArray::create(bufSize);
+	String buf(bufSize);
 	struct passwd space;
 	struct passwd *entry = 0;
-	if (::getpwuid_r(id, &space, buf->data(), buf->size(), &entry) != 0)
+	if (::getpwuid_r(id, &space, buf->chars(), buf->size(), &entry) != 0)
 		FLUX_SYSTEM_EXCEPTION;
 	load(entry);
 }
@@ -33,10 +33,10 @@ User::User(const char *name)
 	int bufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
 	if (bufSize == -1)
 		FLUX_SYSTEM_EXCEPTION;
-	Ref<ByteArray> buf = ByteArray::create(bufSize);
+	String buf(bufSize);
 	struct passwd space;
 	struct passwd *entry = 0;
-	if (::getpwnam_r(name, &space, buf->data(), buf->size(), &entry) != 0)
+	if (::getpwnam_r(name, &space, buf->chars(), buf->size(), &entry) != 0)
 		FLUX_SYSTEM_EXCEPTION;
 	load(entry);
 }

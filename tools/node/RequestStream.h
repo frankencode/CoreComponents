@@ -42,6 +42,7 @@ private:
 
 	Ref<Stream> stream_;
 	Ref<ByteArray> pending_;
+	int pendingIndex_;
 	int64_t bytesLeft_;
 	int nlCount_, nlMax_;
 	bool eoi_;
