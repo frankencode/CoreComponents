@@ -21,7 +21,7 @@ public:
 	static Ref<LookAheadStream> open(Stream *source, int windowSize);
 
 	virtual bool readyRead(double interval) const;
-	virtual int read(ByteArray *buf);
+	virtual int read(ByteArray *data);
 	virtual off_t transfer(off_t count = -1, Stream *sink = 0, ByteArray *buf = 0);
 
 	void replay();

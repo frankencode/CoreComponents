@@ -60,6 +60,10 @@ int main(int argc, char **argv)
 		}
 		return 1;
 	}
+	catch (UnsupportedArchiveFormat &ex) {
+		ferr() << "Unsupported archive format" << nl;
+		return 1;
+	}
 	catch (BrokenArchive &ex) {
 		ferr() << "Broken archive: " << ex.reason() << " (file offset " << ex.offset() << ")" << nl;
 		return 1;

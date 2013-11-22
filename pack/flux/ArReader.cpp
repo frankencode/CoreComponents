@@ -23,14 +23,17 @@ ArReader::ArReader(Stream *source)
 	  i_(0)
 {}
 
+bool ArReader::testFormat(Stream *source)
+{
+	return source->readAll(8) == "!<arch>\n";
+}
+
 bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 {
 	if (i_ == 0) {
-		String magic(8);
-		source_->readAll(magic);
-		if (magic != "!<arch>\n")
+		if (!testFormat(source_))
 			throw BrokenArchive(i_, "Expected ar file header");
-		i_ = magic->size();
+		i_ = 8;
 	}
 
 	if (!data_) data_ = ByteArray::create(60);
