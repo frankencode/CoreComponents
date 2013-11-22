@@ -8,6 +8,7 @@
  */
 
 #include <flux/File.h>
+#include <flux/LookAheadStream.h>
 #include "ArReader.h"
 #include "TarReader.h"
 #include "ArchiveReader.h"
@@ -18,8 +19,23 @@ namespace flux
 Ref<ArchiveReader> ArchiveReader::open(String path)
 {
 	Ref<File> file = File::open(path);
-	if (path->suffix() == "a" || path->suffix() == "deb") return ArReader::open(file);
-	return TarReader::open(file);
+	return ArchiveReader::open(file);
+}
+
+Ref<ArchiveReader> ArchiveReader::open(Stream *source)
+{
+	Ref<LookAheadStream> probe = LookAheadStream::open(source, 0x1000);
+	if (ArReader::testFormat(probe)) {
+		probe->done();
+		return ArReader::open(probe);
+	}
+	probe->replay();
+	if (TarReader::testFormat(probe)) {
+		probe->done();
+		return TarReader::open(probe);
+	}
+	throw UnsupportedArchiveFormat();
+	return 0;
 }
 
 void ArchiveReader::skipData(ArchiveEntry *entry)

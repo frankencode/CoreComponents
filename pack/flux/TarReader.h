@@ -20,6 +20,8 @@ class TarReader: public ArchiveReader
 public:
 	static Ref<TarReader> open(Stream *source);
 
+	static bool testFormat(Stream *source);
+
 	bool readHeader(Ref<ArchiveEntry> *entry);
 	void readData(ArchiveEntry *entry, Stream* sink = 0);
 

@@ -28,6 +28,15 @@ Ref<TarReader> TarReader::open(Stream *source)
 	return new TarReader(source);
 }
 
+bool TarReader::testFormat(Stream *source)
+{
+	Ref<ByteArray> data = ByteArray::create(512);
+	if (source->readAll(data) < data->size()) return false;
+	String magic;
+	data->scanString(&magic, "", 257, 263);
+	return magic == "ustar " || magic == "ustar";
+}
+
 TarReader::TarReader(Stream *source)
 	: source_(source),
 	  i_(0)
