@@ -37,7 +37,7 @@ off_t Stream::transfer(off_t count, Stream *sink, ByteArray *buf)
 	off_t total = 0;
 	Ref<ByteArray> h;
 	if (!buf) {
-		h = ByteArray::create(0x4000 > count ? count : 0x4000);
+		h = ByteArray::allocate(0x4000 > count ? count : 0x4000);
 		buf = h;
 	}
 
@@ -74,11 +74,11 @@ String Stream::readAll(int count)
 
 	if (count < 0) {
 		Ref<StringList> parts = StringList::create();
-		String s(0x4000);
+		Ref<ByteArray> data = ByteArray::allocate(0x4000);
 		while (true) {
-			int n = read(s);
+			int n = read(data);
 			if (n == 0) break;
-			parts->append(s->copy(0, n));
+			parts->append(data->copy(0, n));
 		}
 		return parts->join();
 	}
