@@ -126,10 +126,14 @@ public:
 	static void save(String path, String text);
 
 private:
+	friend class ByteArray;
+
 	static int translateOpenFlags(int openFlags);
 
 	File(String path, int openFlags, int fd);
 	~File();
+
+	static void unmap(ByteArray *s);
 
 	String path_;
 	int openFlags_;

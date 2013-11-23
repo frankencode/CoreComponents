@@ -200,7 +200,24 @@ String File::map() const
 	if (::madvise(p, mapSize, MADV_SEQUENTIAL) == -1)
 		FLUX_SYSTEM_EXCEPTION;
 	#endif*/
-	return String(Ref<ByteArray>(new ByteArray((char*)p, fileSize, mapSize)));
+	return String(
+		Ref<ByteArray>(
+			new ByteArray(
+				reinterpret_cast<char *>(p),
+				fileSize,
+				ByteArray::Mapped | ByteArray::Terminated | (((protection & PROT_READ) != 0) * ByteArray::Readonly)
+			)
+		)
+	);
+}
+
+void File::unmap(ByteArray *s)
+{
+	int pageSize = System::pageSize();
+	size_t mapSize = s->size();
+	if (s->size() % pageSize > 0) mapSize += pageSize - s->size() % pageSize;
+	else mapSize += pageSize;
+	::munmap((void *)s->bytes(), mapSize);
 }
 
 void File::sync()

@@ -31,9 +31,16 @@ class ByteArray: public Object
 public:
 	typedef char Item;
 
-	inline static Ref<ByteArray> create(int size = 0) { return new ByteArray(size); }
-	inline static Ref<ByteArray> create(int size, char zero) { return new ByteArray(size, zero); }
-	inline static Ref<ByteArray> copy(const char *data, int size = -1) { return new ByteArray(data, size); }
+	inline static Ref<ByteArray> create(int size = 0) { return new ByteArray(0, size, Terminated); }
+	inline static Ref<ByteArray> create(int size, char zero) {
+		Ref<ByteArray> newArray = new ByteArray(0, size, Terminated);
+		newArray->clear(zero);
+		return newArray;
+	}
+	inline static Ref<ByteArray> copy(const char *data, int size = -1) { return new ByteArray(data, size, Terminated); }
+
+	inline static Ref<ByteArray> allocate(int size) { return new ByteArray(0, size, Unterminated); }
+
 	static Ref<ByteArray> join(const StringList *parts, const char *sep = "");
 	static Ref<ByteArray> join(const StringList *parts, char sep);
 	static Ref<ByteArray> join(const StringList *parts, String sep);
@@ -76,8 +83,11 @@ public:
 		return words_[j];
 	}
 
+	inline char *chars() const {
+		FLUX_ASSERT2(flags_ & Terminated, "ByteArray is not terminated by zero and therefore cannot safely be converted to a C string");
+		return chars_;
+	}
 	inline uint8_t *bytes() const { return bytes_; }
-	inline char *chars() const { return chars_; }
 	inline operator char*() const { return chars(); }
 
 	inline Ref<ByteArray> copy() const { return new ByteArray(*this); }
@@ -188,8 +198,8 @@ public:
 	Ref<ByteArray> absolutePathRelativeTo(String currentDir) const;
 	Ref<ByteArray> absolutePath() const;
 	Ref<ByteArray> fileName() const;
-	Ref<ByteArray> baseName(bool complete = true) const;
-	Ref<ByteArray> suffix(bool complete = false) const;
+	Ref<ByteArray> baseName() const;
+	Ref<ByteArray> suffix() const;
 	Ref<ByteArray> reducePath() const;
 	Ref<ByteArray> expandPath(String component) const;
 	Ref<ByteArray> canonicalPath() const;
@@ -199,12 +209,9 @@ private:
 	friend class File;
 	friend class ByteRange;
 
-	explicit ByteArray(int size = 0, char zero = 0);
-	ByteArray(const char *data, int size);
-	ByteArray(char *data, int size, size_t mapSize);
-	ByteArray(void *data, int size);
+	ByteArray(const char *data = 0, int size = -1, int flags = Terminated);
 	ByteArray(const ByteArray &b);
-	ByteArray(ByteArray *b, int size);
+
 	void destroy();
 
 	int size_;
@@ -214,8 +221,16 @@ private:
 		uint8_t *bytes_;
 		uint32_t *words_;
 	};
-	size_t mapSize_;
-	bool wrapped_;
+
+	enum Flags {
+		Unterminated = 0,
+		Terminated   = 1,
+		Readonly     = 2,
+		Wrapped      = 4,
+		Mapped       = 8
+	};
+	int flags_;
+
 	#ifndef NDEBUG
 	int rangeCount_;
 	#endif
@@ -260,53 +275,34 @@ inline bool operator> (const ByteArray &a, const ByteArray &b) { return containe
 inline bool operator<=(const ByteArray &a, const ByteArray &b) { return container::compare(a, b) <= 0; }
 inline bool operator>=(const ByteArray &a, const ByteArray &b) { return container::compare(a, b) >= 0; }
 
-class ByteRange
+class ByteRange: public ByteArray
 {
 public:
 	ByteRange(ByteArray *array, int i0, int i1)
-		: array_(array),
-		  origData_(array->data_),
-		  origSize_(array->size_),
-		  origEnd_(0)
+		: array_(array)
 	{
 		if (i0 < 0) i0 = 0;
-		if (i0 > origSize_) i0 = origSize_;
+		else if (i0 > array->size_) i0 = array->size_;
 		if (i1 < i0) i1 = i0;
-		if (i1 > origSize_) i1 = origSize_;
-		origEnd_ = origData_[i1];
-		origData_[i1] = 0;
-		array_->data_ = origData_ + i0;
-		array_->size_ = i1 - i0;
+		else if (i1 > array->size_) i1 = array->size_;
+		size_ = i1 - i0;
+		data_ = array->data_ + i0;
+		flags_ = ByteArray::Wrapped;
 		#ifndef NDEBUG
-		++array_->rangeCount_;
+		rangeCount_ = array->rangeCount_;
 		#endif
 	}
 
-	~ByteRange() {
-		array_->data_[array_->size_] = origEnd_;
-		array_->data_ = origData_;
-		array_->size_ = origSize_;
-		#ifndef NDEBUG
-		--array_->rangeCount_;
-		#endif
-		array_ = 0;
-	}
-
-	inline operator ByteArray*() const { return array_; }
-	inline ByteArray &operator*() const { return *array_; }
-	inline ByteArray *operator->() const { return array_; }
+	inline operator ByteArray *() { return this; }
+	inline ByteArray &operator*() { return *this; }
+	inline ByteArray *operator->() { return this; }
 	operator String() const;
 
 private:
 	// ByteRange(const ByteRange&);
 	ByteRange &operator=(const ByteRange &b);
-	void *operator new(size_t size);
-	void operator delete(void *data, size_t size);
 
 	Ref<ByteArray> array_;
-	char *origData_;
-	int origSize_;
-	char origEnd_;
 };
 
 } // namespace flux

@@ -7,7 +7,6 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <sys/mman.h> // munmap
 #include "List.h"
 #include "IntegerLiteral.h"
 #include "FloatLiteral.h"
@@ -19,73 +18,41 @@
 #include "Base64.h"
 #include "Format.h"
 #include "Process.h"
+#include "File.h"
 #include "ByteArray.h"
 
 namespace flux
 {
 
-ByteArray::ByteArray(int size, char zero)
+ByteArray::ByteArray(const char *data, int size, int flags)
 	: size_(0),
-	  data_(const_cast<char*>("")),
-	  mapSize_(0),
-	  wrapped_(true)
+	  data_(const_cast<char *>("")),
+	  flags_(Wrapped|Terminated)
 	  #ifndef NDEBUG
 	  , rangeCount_(0)
 	  #endif
 {
+	if (size < 0 && data) size = strlen(data);
 	if (size > 0) {
-		size_ = size;
-		data_ = new char[size + 1];
-		wrapped_ = false;
-		if (zero) memset(data_, zero, size_);
-		data_[size] = 0;
+		if (flags & (Wrapped|Mapped)) {
+			size_ = size;
+			data_ = const_cast<char *>(data);
+			flags_ = flags;
+		}
+		else {
+			size_ = size;
+			data_ = new char[size + ((flags & Terminated) != 0)];
+			flags_ = flags;
+			if (data) memcpy(data_, data, size);
+			if (flags & Terminated) data_[size] = 0;
+		}
 	}
 }
-
-ByteArray::ByteArray(const char *data, int size)
-	: size_(0),
-	  data_(const_cast<char*>("")),
-	  mapSize_(0),
-	  wrapped_(true)
-	  #ifndef NDEBUG
-	  , rangeCount_(0)
-	  #endif
-{
-	if (size < 0) size = strlen(data);
-	if (size > 0) {
-		size_ = size;
-		data_ = new char[size + 1];
-		wrapped_ = false;
-		if (data) memcpy(data_, data, size);
-		data_[size] = 0;
-	}
-}
-
-ByteArray::ByteArray(char *data, int size, size_t mapSize)
-	: size_(size),
-	  data_(data),
-	  mapSize_(mapSize),
-	  wrapped_(false)
-	  #ifndef NDEBUG
-	  , rangeCount_(0)
-	  #endif
-{}
-
-ByteArray::ByteArray(void *data, int size)
-	: size_(size),
-	  data_(reinterpret_cast<char*>(data)),
-	  mapSize_(0),
-	  wrapped_(true)
-	  #ifndef NDEBUG
-	  , rangeCount_(0)
-	  #endif
-{}
 
 ByteArray::ByteArray(const ByteArray &b)
 	: size_(0),
-	  data_(const_cast<char*>("")),
-	  mapSize_(0),
-	  wrapped_(true)
+	  data_(const_cast<char *>("")),
+	  flags_(Wrapped|Terminated)
 	  #ifndef NDEBUG
 	  , rangeCount_(0)
 	  #endif
@@ -93,7 +60,7 @@ ByteArray::ByteArray(const ByteArray &b)
 	if (b.size_ > 0) {
 		size_ = b.size_;
 		data_ = new char[b.size_ + 1];
-		wrapped_ = false;
+		flags_ = Terminated;
 		memcpy(data_, b.data_, b.size_);
 		data_[size_] = 0;
 	}
@@ -106,10 +73,9 @@ ByteArray::~ByteArray()
 
 void ByteArray::destroy()
 {
-	if (mapSize_ > 0)
-		::munmap((void*)data_, mapSize_);
-	else if (!wrapped_)
-		delete[] data_;
+	if (flags_ & Wrapped) ;
+	else if (flags_ & Mapped) File::unmap(this);
+	else delete[] data_;
 }
 
 void ByteArray::resize(int newSize)
@@ -124,16 +90,15 @@ void ByteArray::resize(int newSize)
 		memcpy(newData, data_, size_);
 		newData[newSize] = 0;
 		destroy();
-		data_ = newData;
 		size_ = newSize;
-		wrapped_ = false;
+		data_ = newData;
+		flags_ = Terminated;
 	}
 	else {
-		data_ = const_cast<char*>("");
 		size_ = 0;
-		wrapped_ = true;
+		data_ = const_cast<char *>("");
+		flags_ = Wrapped|Terminated;
 	}
-	mapSize_ = 0;
 }
 
 ByteArray &ByteArray::operator=(const ByteArray &b)
@@ -540,26 +505,26 @@ ByteArray *ByteArray::trimInsitu(const char *space)
 Ref<ByteArray> ByteArray::stripTags() const
 {
 	Ref<StringList> parts = StringList::create();
-	char *o = data_;
-	char *p = o;
-	while (*p) {
-		if (*p == '<') {
-			if (o < p) parts->append(String(o, p-o));
-			while ((*p) && (*p != '>')) ++p;
-			p += (*p == '>');
-			o = p;
+	int i = 0, j = 0;
+	while (i < size_) {
+		char ch = data_[i];
+		if (ch == '<') {
+			if (j < i) parts->append(copy(j, i));
+			for (; i < size_; ++i) if (data_[i] == '>') break;
+			i += (i != size_);
+			j = i;
 		}
-		else if (*p == '&') {
-			if (o < p) parts->append(String(o, p-o));
-			while ((*p) && (*p != ';')) ++p;
-			p += (*p == ';');
-			o = p;
+		else if (ch == '&') {
+			if (j < i) parts->append(copy(j, i));
+			for (; i < size_; ++i) if (data_[i] == ';') break;
+			i += (i != size_);
+			j = i;
 		}
 		else {
-			++p;
+			++i;
 		}
 	}
-	if (o < p) parts->append(String(o, p-o));
+	if (j < i) parts->append(copy(j, i));
 	return join(parts);
 }
 
@@ -728,7 +693,7 @@ Ref<ByteArray> ByteArray::hex() const
 	Ref<ByteArray> s2 = ByteArray::create(size_ * 2);
 	int j = 0;
 	for (int i = 0; i < size_; ++i) {
-		unsigned char ch = (unsigned char)data_[i];
+		unsigned char ch = bytes_[i];
 		int d0 = (ch >> 4) & 0xf;
 		int d1 = ch & 0xf;
 		if ((0 <= d0) && (d0 < 10)) s2->data_[j++] = d0 + '0';
@@ -812,20 +777,17 @@ Ref<ByteArray> ByteArray::fileName() const
 	return name;
 }
 
-Ref<ByteArray> ByteArray::baseName(bool complete) const
+Ref<ByteArray> ByteArray::baseName() const
 {
 	Ref<StringList> parts = fileName()->split(".");
-	if (!complete) return parts->at(0);
 	parts->pop(parts->size() - 1);
 	return parts->join(".");
 }
 
-Ref<ByteArray>  ByteArray::suffix(bool complete) const
+Ref<ByteArray>  ByteArray::suffix() const
 {
 	Ref<StringList> parts = fileName()->split(".");
-	if (!complete) return parts->at(parts->size() - 1);
-	parts->pop(0);
-	return parts->join(".");
+	return parts->at(parts->size() - 1);
 }
 
 Ref<ByteArray> ByteArray::reducePath() const
