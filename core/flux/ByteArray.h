@@ -299,10 +299,10 @@ public:
 	operator String() const;
 
 private:
-	// ByteRange(const ByteRange&);
+	ByteRange(const ByteRange&);
 	ByteRange &operator=(const ByteRange &b);
 
-	Ref<ByteArray> array_;
+	ByteArray *array_;
 };
 
 } // namespace flux
