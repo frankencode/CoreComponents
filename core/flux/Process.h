@@ -24,9 +24,20 @@ class ProcessFactory;
 
 typedef Map<String, String> EnvMap;
 
-FLUX_STD_EXCEPTION(ProcessException);
+class ProcessException {
+public:
+	ProcessException(int status, String command)
+		: status_(status),
+		  command_(command)
+	{}
+	inline int status() const { return status_; }
+	inline String command() const { return command_; }
+private:
+	int status_;
+	String command_;
+};
 
-class Process: public Object
+class Process: public Stream
 {
 public:
 	static Ref<Process> start(String command, int ioPolicy = 0);
@@ -69,6 +80,12 @@ public:
 	bool isRunning() const;
 
 	int wait();
+
+	// -- stream interface
+
+	virtual bool readyRead(double interval) const;
+	virtual int read(ByteArray *data);
+	virtual void write(const ByteArray *data);
 
 	// -- query / modify the current process status
 
@@ -117,7 +134,8 @@ protected:
 		SystemStream *rawInput,
 		SystemStream *rawOutput,
 		SystemStream *rawError,
-		pid_t processId
+		pid_t processId,
+		String command
 	);
 
 	~Process();
@@ -136,6 +154,7 @@ private:
 	Ref<LineSource> lineErr_;
 
 	pid_t processId_;
+	String command_;
 };
 
 } // namespace flux

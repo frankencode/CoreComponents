@@ -295,7 +295,7 @@ Ref<Process> ProcessFactory::produce()
 			}
 		}
 
-		return new Process(type_, ioPolicy_, in, out, err, ret);
+		return new Process(type_, ioPolicy_, in, out, err, ret, command_);
 	}
 	else if (ret < 0)
 	{

@@ -28,16 +28,26 @@ int main(int argc, char **argv)
 		bool statusOption = options->value("status");
 		bool unpackOption = options->value("unpack");
 		bool packOption = options->value("pack");
-		for (int i = 0; i < options->arguments()->size(); ++i) {
-			String path = options->arguments()->at(i);
+		if (options->arguments()->size() == 0) {
 			if (listOption || statusOption || unpackOption) {
-				Ref<ArchiveReader> archive = ArchiveReader::open(path);
+				Ref<ArchiveReader> archive = ArchiveReader::open(in());
 				if (listOption) fluxpack::list(archive);
 				else if (statusOption) fluxpack::status(archive);
 				else if (unpackOption) fluxpack::unpack(archive);
 			}
-			else if (packOption) {
-				// TODO
+		}
+		else {
+			for (int i = 0; i < options->arguments()->size(); ++i) {
+				String path = options->arguments()->at(i);
+				if (listOption || statusOption || unpackOption) {
+					Ref<ArchiveReader> archive = ArchiveReader::open(path);
+					if (listOption) fluxpack::list(archive);
+					else if (statusOption) fluxpack::status(archive);
+					else if (unpackOption) fluxpack::unpack(archive);
+				}
+				else if (packOption) {
+					// TODO
+				}
 			}
 		}
 	}

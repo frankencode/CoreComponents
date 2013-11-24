@@ -157,11 +157,10 @@ off_t File::transfer(off_t count, Stream *sink, ByteArray *buf)
 {
 	if (count == 0) return 0;
 	if (!sink) {
-		if (count > 0)
-			File::seek(count, SeekCurrent);
-		else
-			File::seek(0, SeekEnd);
-		return count;
+		off_t ret = 0;
+		if (count > 0) ret = ::lseek(fd_, count, SEEK_CUR);
+		else ret = ::lseek(fd_, 0, SEEK_END);
+		if (ret != -1) return count;
 	}
 	return Stream::transfer(count, sink, buf);
 }

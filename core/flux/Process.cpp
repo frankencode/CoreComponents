@@ -54,14 +54,16 @@ Process::Process(
 	SystemStream *in,
 	SystemStream *out,
 	SystemStream *err,
-	pid_t processId
+	pid_t processId,
+	String command
 )
 	: type_(type),
 	  ioPolicy_(ioPolicy),
 	  in_(in),
 	  out_(out),
 	  err_(err),
-	  processId_(processId)
+	  processId_(processId),
+	  command_(command)
 {}
 
 Process::~Process()
@@ -77,7 +79,7 @@ Process::~Process()
 			break;
 		}
 		if (status != 0)
-			throw ProcessException(Format("Process unsuccessful, status = %%") << status);
+			throw ProcessException(status, command_);
 	}
 }
 
@@ -133,6 +135,21 @@ int Process::wait()
 		status = WTERMSIG(status) + 128;
 	processId_ = -1;
 	return status;
+}
+
+bool Process::readyRead(double interval) const
+{
+	return out()->readyRead(interval);
+}
+
+int Process::read(ByteArray *data)
+{
+	return out()->read(data);
+}
+
+void Process::write(const ByteArray *data)
+{
+	in()->write(data);
 }
 
 void Process::cd(String path)

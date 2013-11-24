@@ -29,7 +29,10 @@ GnuToolChain::GnuToolChain(String compiler)
 
 String GnuToolChain::queryMachine(String compiler)
 {
-	return Process::start(machineCommand(compiler), Process::ForwardOutput)->lineOut()->readLine();
+	String machine = Process::start(machineCommand(compiler), Process::ForwardOutput)->readAll();
+	machine->trimInsitu();
+	machine->replaceInsitu("-pc-", "-"); // workaround for clang/bash
+	return machine;
 }
 
 String GnuToolChain::machineCommand(String compiler)
