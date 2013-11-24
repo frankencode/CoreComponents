@@ -15,7 +15,9 @@
 namespace flux
 {
 
-class Utf8Source: public Source<uchar_t>
+class Utf8DecodeError {};
+
+class Utf8Source: public Object
 {
 public:
 	inline static Ref<Utf8Source> open(Stream *stream, ByteArray *buf = 0) {
@@ -91,8 +93,7 @@ inline uchar_t Utf8Source::readMultiByte(uchar_t ch)
 		}
 	}
 
-	if (n < 0)
-		FLUX_THROW(EncodingException, "Input data is not conforming to UTF-8 encoding");
+	if (n < 0) throw Utf8DecodeError();
 
 	return ch;
 }

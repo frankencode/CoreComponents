@@ -15,7 +15,12 @@
 namespace flux
 {
 
-class Utf16Sink: public Sink<uchar_t>
+class Utf16EncodeError {};
+class Utf16EncodeSurrogatePairError: public Utf16EncodeError {};
+class Utf16EncodeByteOrderMarkError: public Utf16EncodeError {};
+class Utf16EncodeIllegalCodePointError: public Utf16EncodeError {};
+
+class Utf16Sink: public Object
 {
 public:
 	inline static Ref<Utf16Sink> open(Stream *stream, ByteArray *buf, int endian = BigEndian) {
@@ -32,15 +37,12 @@ public:
 	inline void write(uchar_t ch)
 	{
 		if (ch < 0x10000) {
-			if ((0xD800 <= ch) && (ch <= 0xDFFF))
-				FLUX_THROW(EncodingException, "UTF-16 disallows encoding of surrogate pairs (0xD800..0xDFFF)");
-			else if ((ch == 0xFEFF) || (ch == 0xFFFE))
-				FLUX_THROW(EncodingException, "UTF-16 disallows non-characters reserved for BOM (0xFEFF and 0xFFFE)");
+			if ((0xD800 <= ch) && (ch <= 0xDFFF)) throw Utf16EncodeSurrogatePairError();
+			else if ((ch == 0xFEFF) || (ch == 0xFFFE)) throw Utf16EncodeByteOrderMarkError();
 			byteSink_->writeUInt16(ch);
 		}
 		else {
-			if (0x10FFFF < ch)
-				FLUX_THROW(EncodingException, "UTF-16 disallows encoding of code points above 0x10FFFF");
+			if (0x10FFFF < ch) throw Utf16EncodeIllegalCodePointError();
 			ch -= 0x10000;
 			byteSink_->writeUInt16((ch >> 10) + 0xD800);
 			byteSink_->writeUInt16((ch & 0x3FF) + 0xDC00);

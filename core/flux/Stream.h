@@ -15,8 +15,6 @@
 namespace flux
 {
 
-FLUX_EXCEPTION(EncodingException, Exception); // FIXME
-
 class Stream: public Object
 {
 public:

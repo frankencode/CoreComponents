@@ -15,18 +15,16 @@
 namespace flux
 {
 
+class Utf16DecodeError {};
+
 /** \brief UTF-16 decoder
   *
   * A Byte-Order-Mark (BOM) at the start of the stream automatically sets
   * endianess. The decoder is designed to be as strict as possible. It checks
   * if the input streams delivers full 16-bit words and it requires high
   * surrogates to be followed by low surrogates.
-  *
-  * A 7-bit ASCII text is be decoded as UTF-16 without error if stream length is
-  * a multiple of 2. Means there is a 50% chance of reading an 7-bit ASCII text
-  * as UTF-16 without throwing an EncodingException.
   */
-class Utf16Source: public Source<uchar_t>
+class Utf16Source: public Object
 {
 public:
 	inline static Ref<Utf16Source> open(Stream *stream, ByteArray *buf, int endian = BigEndian) {
@@ -49,13 +47,10 @@ public:
 			*ch = w;
 			if ((0xD800 <= *ch) && (*ch < 0xDC00)) {
 				uint16_t w = byteSource_->readUInt16();
-				if (!((0xDC00 <= w) && (w < 0xE000)))
-					FLUX_THROW(EncodingException, "Input data is not conforming to UTF-16 encoding");
+				if (!((0xDC00 <= w) && (w < 0xE000))) throw Utf16DecodeError();
 				*ch = 0x10000 + (((*ch - 0xD800) << 10) | (w - 0xDC00));
 			}
-			else if (0x10FFFF < *ch) {
-				FLUX_THROW(EncodingException, "Input data is not conforming to UTF-16 encoding");
-			}
+			else if (0x10FFFF < *ch) throw Utf16DecodeError();
 		}
 		return more;
 	}

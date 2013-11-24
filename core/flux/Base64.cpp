@@ -53,7 +53,7 @@ String Base64::encode(const String &source)
 
 String Base64::decode(const String &source)
 {
-	FLUX_CHECK(source->size() % 4 == 0, EncodingException, "base64: encoded input needs to be a multiple of 4 bytes");
+	if (source->size() % 4 != 0) throw Base64IllegalInputSize4();
 
 	const int m = source->size();
 	int p = 0;
@@ -65,7 +65,7 @@ String Base64::decode(const String &source)
 		}
 	}
 
-	FLUX_CHECK((0 <= p) && (p <= 2), EncodingException, "base64: illegal padding");
+	if (!((0 <= p) && (p <= 2))) throw Base64IllegalPadding();
 
 	int n = 3 * (m / 4) - p;
 	String sink(n);
@@ -81,7 +81,7 @@ String Base64::decode(const String &source)
 			else if (ch == '+') ch = 62;
 			else if (ch == '/') ch = 63;
 			else if (ch == '=') ch = 0;
-			else FLUX_CHECK(false, EncodingException, "base64: illegal character");
+			else throw Base64IllegalCharacter();
 			bits |= ch;
 			bits <<= 6;
 		}

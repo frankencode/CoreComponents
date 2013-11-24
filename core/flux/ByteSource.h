@@ -15,7 +15,9 @@
 namespace flux
 {
 
-class ByteSource: public Source<uint8_t>, Source<char>
+class ByteSourceUnexpectedEndOfInput {};
+
+class ByteSource: public Object
 {
 public:
 	inline static Ref<ByteSource> open(Stream *stream, ByteArray *buf = 0, int endian = LittleEndian) {
@@ -59,8 +61,7 @@ private:
 		  i_(0),
 		  n_(stream_ ? 0 : buf->size())
 	{
-		if (!buf_)
-			buf_ = ByteArray::create(0x3FFF);
+		if (!buf_) buf_ = ByteArray::allocate(0x4000);
 	}
 
 	Ref<Stream> stream_;
@@ -102,14 +103,12 @@ inline bool ByteSource::hasMore()
 inline uint8_t ByteSource::readUInt8()
 {
 	if (i_ == n_) {
-		if (!stream_)
-			FLUX_THROW(EncodingException, "Unexpected end of input");
+		if (!stream_) throw ByteSourceUnexpectedEndOfInput();
 
 		n_ = stream_->read(buf_);
 		i_ = 0;
 
-		if (n_ == 0)
-			FLUX_THROW(EncodingException, "Unexpected end of input");
+		if (n_ == 0) throw ByteSourceUnexpectedEndOfInput();
 	}
 
 	return buf_->at(i_++);

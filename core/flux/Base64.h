@@ -15,6 +15,11 @@
 namespace flux
 {
 
+class Base64DecodeError {};
+class Base64IllegalInputSize4: public Base64DecodeError {};
+class Base64IllegalPadding   : public Base64DecodeError {};
+class Base64IllegalCharacter : public Base64DecodeError {};
+
 class Base64: public Object
 {
 public:

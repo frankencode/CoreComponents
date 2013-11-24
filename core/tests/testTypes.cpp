@@ -38,6 +38,7 @@ void testFloat754()
 
 int main()
 {
+	fout("sizeof(bool) = %%\n") << sizeof(bool);
 	fout("sizeof(void *) = %%\n") << sizeof(void *);
 	fout("sizeof(int) = %%\n") << sizeof(int);
 	fout("sizeof(long) = %%\n") << sizeof(long);
