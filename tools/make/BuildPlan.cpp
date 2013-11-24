@@ -226,9 +226,9 @@ void BuildPlan::readPrerequisites()
 {
 	if (prerequisites_) return;
 
-	if ((options_ & Tests) && !(options_ & BuildTests)) return;
-
 	prerequisites_ = BuildPlanList::create();
+
+	if ((options_ & Tests) && !(options_ & BuildTests)) return;
 
 	StringList *prerequisitePaths = cast<StringList>(recipe_->value("use"));
 

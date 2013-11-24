@@ -8,6 +8,7 @@
  */
 
 #include <flux/File.h>
+#include <flux/ProcessFactory.h>
 #include <flux/LookAheadStream.h>
 #include "ArReader.h"
 #include "TarReader.h"
@@ -18,8 +19,28 @@ namespace flux
 
 Ref<ArchiveReader> ArchiveReader::open(String path)
 {
+	Ref<Stream> source;
+
 	Ref<File> file = File::open(path);
-	return ArchiveReader::open(file);
+
+	String suffix = path->suffix();
+	String filter;
+	if (suffix == "gz" || suffix == "tgz") filter = "gunzip";
+	else if (suffix == "bz2") filter = "bunzip2";
+	else if (suffix == "xz") filter = "unxz";
+
+	if (filter != "") {
+		Ref<ProcessFactory> factory = ProcessFactory::create();
+		factory->setCommand(filter);
+		factory->setIoPolicy(Process::ForwardOutput);
+		factory->setIn(file);
+		source = factory->produce();
+	}
+	else {
+		source = file;
+	}
+
+	return ArchiveReader::open(source);
 }
 
 Ref<ArchiveReader> ArchiveReader::open(Stream *source)
