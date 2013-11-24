@@ -18,7 +18,7 @@ namespace flux
 /** Random number generator as described by Lewis et al/1969
   * for the System/360. The generator is reentrant.
   */
-class Random: public Source<int>
+class Random: public Object
 {
 public:
 	inline static Ref<Random> open(int seed = -1) {

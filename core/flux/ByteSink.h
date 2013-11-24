@@ -15,7 +15,9 @@
 namespace flux
 {
 
-class ByteSink: public Sink<uint8_t>, public Sink<char>
+class ByteSinkBufferOverflow {};
+
+class ByteSink: public Object
 {
 public:
 	inline static Ref<ByteSink> open(Stream *stream, ByteArray *buf, int endian = LittleEndian) {
@@ -62,8 +64,7 @@ private:
 		  endian_(endian),
 		  i_(0)
 	{
-		if (!buf_)
-			buf_ = ByteArray::create(0x3FFF);
+		if (!buf_) buf_ = ByteArray::allocate(0x4000);
 	}
 
 	Ref<Stream> stream_;
@@ -74,8 +75,8 @@ private:
 
 inline void ByteSink::flush()
 {
-	if (!stream_)
-		FLUX_THROW(EncodingException, "Output buffer exhausted");
+	if (!stream_) throw ByteSinkBufferOverflow();
+
 	stream_->write(ByteRange(buf_, 0, i_));
 	i_ = 0;
 }

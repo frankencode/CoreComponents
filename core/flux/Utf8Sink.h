@@ -15,7 +15,12 @@
 namespace flux
 {
 
-class Utf8Sink: public Sink<uchar_t>
+class Utf8EncodeError {};
+class Utf8EncodeSurrogatePairError   : public Utf8EncodeError {};
+class Utf8EncodeNonCharacterError    : public Utf8EncodeError {};
+class Utf8EncodeIllegalCodePointError: public Utf8EncodeError {};
+
+class Utf8Sink: public Object
 {
 public:
 	inline static Ref<Utf8Sink> open(Stream *stream, ByteArray* buf = 0) {
@@ -49,24 +54,21 @@ inline void Utf8Sink::write(uchar_t ch)
 		byteSink_->writeUInt8((ch & 0x3F) | 0x80); // 0x8 = (1000)2, code prefix: (10)2
 	}
 	else if (ch < 0x10000) { // three-byte codes: 1110yyyy | 10yyyyxx | 10xxxxxx
-		if ((0xD800 <= ch) && (ch <= 0xDFFF))
-			FLUX_THROW(EncodingException, "UTF-8 disallows encoding of UTF-16 surrogate pairs 0xD800..0xDFFF");
-		else if ((0xFDD0 <= ch) && (ch <= 0xFDEF))
-			FLUX_THROW(EncodingException, "UTF-8 disallows encoding of non-characters 0xFDD0..0xFDEF");
+		if ((0xD800 <= ch) && (ch <= 0xDFFF)) throw Utf8EncodeSurrogatePairError();
+		else if ((0xFDD0 <= ch) && (ch <= 0xFDEF)) throw Utf8EncodeNonCharacterError();
 		byteSink_->writeUInt8((ch >> 12) | 0xE0);         // 0xE = (1110)2, code prefix: (1110)2
 		byteSink_->writeUInt8(((ch >> 6) & 0x3F) | 0x80); // 0x8 = (1000)2, code prefix: (10)2
 		byteSink_->writeUInt8((ch & 0x3F) | 0x80);        // 0x8 = (1000)2, code prefix: (10)2
 	}
 	else if (ch < 0x110000) { // four-byte codes: 11110zzz | 10zzyyyy | 10yyyyxx | 10xxxxxx
-		if ((ch & 0xFFFE) == 0xFFFE)
-			FLUX_THROW(EncodingException, "UTF-8 disallows encoding of non-characters 0x??FFFE,0x??FFFF");
+		if ((ch & 0xFFFE) == 0xFFFE) throw Utf8EncodeNonCharacterError();
 		byteSink_->writeUInt8((ch >> 18) | 0xF0);           // 0xF = (1111)2, code prefix: (11110)2
 		byteSink_->writeUInt8(((ch >> 12) & 0x3F) | 0x80); // 0x8 = (1000)2, code prefix: (10)2
 		byteSink_->writeUInt8(((ch >> 6) & 0x3F) | 0x80);  // 0x8 = (1000)2, code prefix: (10)2
 		byteSink_->writeUInt8((ch & 0x3F) | 0x80);         // 0x8 = (1000)2, code prefix: (10)2
 	}
 	else {
-		FLUX_THROW(EncodingException, "UTF-8 disallows encoding of code points above 0x10FFFF");
+		throw Utf8EncodeIllegalCodePointError();
 	}
 }
 
