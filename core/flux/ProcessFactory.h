@@ -23,54 +23,30 @@ class SystemStream;
 class ProcessFactory: public Object
 {
 public:
-	inline static Ref<ProcessFactory> create() {
-		return new ProcessFactory;
+	inline static Ref<ProcessFactory> create(int type = Process::GroupMember) {
+		return new ProcessFactory(type);
 	}
 
-	int type() const;
-	void setType(int type);
-
-	int ioPolicy() const;
-	void setIoPolicy(int flags);
-
-	String workingDirectory();
+	void setExecPath(String path);
+	void setArguments(StringList *list);
+	void setEnvMap(EnvMap *map);
 	void setWorkingDirectory(String path);
 
-	String execPath() const;
-	void setExecPath(String path);
-
-	StringList *arguments();
-	void setArguments(StringList *list);
-
-	typedef Map<String, String> EnvMap;
-	EnvMap *envMap();
-	void setEnvMap(EnvMap *map);
-
-	SignalSet *signalMask();
-	void setSignalMask(SignalSet *mask);
-
-	bool hasFileCreationMask() const;
-	void setFileCreationMask(int mask);
-	void unsetFileCreationMask();
-
-	String command() const;
-	void setCommand(String command);
-
-	SystemStream *in() const;
-	SystemStream *out() const;
-	SystemStream *err() const;
-
+	void setIoPolicy(int flags);
 	void setIn(SystemStream *stream);
 	void setOut(SystemStream *stream);
 	void setErr(SystemStream *stream);
 
-	void daemonize();
+	void setSignalMask(SignalSet *mask);
+	void setFileCreationMask(int mask);
+
+	void setCommand(String command);
 
 	Ref<Process> produce();
 
 protected:
 	virtual int incarnate();
-	ProcessFactory();
+	ProcessFactory(int type = Process::GroupMember);
 
 private:
 	int type_;
@@ -82,8 +58,6 @@ private:
 	Ref<EnvMap> envMap_;
 
 	Ref<SignalSet> signalMask_;
-
-	bool hasFileCreationMask_;
 	int fileCreationMask_;
 
 	String command_;
