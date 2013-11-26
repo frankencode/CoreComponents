@@ -21,45 +21,24 @@
 namespace flux
 {
 
-ProcessFactory::ProcessFactory()
-	: type_(Process::GroupMember),
+ProcessFactory::ProcessFactory(int type)
+	: type_(type),
 	  ioPolicy_(0),
-	  hasFileCreationMask_(false)
+	  fileCreationMask_(-1)
 {}
 
-int ProcessFactory::type() const { return type_; }
-void ProcessFactory::setType(int type) { type_ = type; }
-
-int ProcessFactory::ioPolicy() const { return ioPolicy_; }
-void ProcessFactory::setIoPolicy(int flags) { ioPolicy_ = flags; }
-
-/** working directory of new process
-  */
-String ProcessFactory::workingDirectory() { return (workingDirectory_ != "") ? workingDirectory_ : workingDirectory_ = Process::cwd(); }
+void ProcessFactory::setExecPath(String path) { execPath_ = path; }
+void ProcessFactory::setArguments(StringList *list) { arguments_ = list; }
+void ProcessFactory::setEnvMap(EnvMap *map) { envMap_ = map; }
 void ProcessFactory::setWorkingDirectory(String path) { workingDirectory_ = path; }
 
-/** relative or absolute path to executable image or script
-  */
-String ProcessFactory::execPath() const { return execPath_; }
-void ProcessFactory::setExecPath(String path) { execPath_ = path; }
+void ProcessFactory::setIoPolicy(int flags) { ioPolicy_ = flags; }
+void ProcessFactory::setIn(SystemStream *stream) { in_ = stream; }
+void ProcessFactory::setOut(SystemStream *stream) { out_ = stream; }
+void ProcessFactory::setErr(SystemStream *stream) { err_ = stream; }
 
-StringList *ProcessFactory::arguments() { return (arguments_) ? arguments_ : arguments_ = StringList::create(); }
-void ProcessFactory::setArguments(StringList *list) { arguments_ = list; }
-
-EnvMap *ProcessFactory::envMap() { return (envMap_) ? envMap_ : envMap_ = Process::envMap(); }
-void ProcessFactory::setEnvMap(EnvMap *map) { envMap_ = map; }
-
-SignalSet *ProcessFactory::signalMask() { return (signalMask_) ? signalMask_ : signalMask_ = SignalSet::createEmpty(); }
 void ProcessFactory::setSignalMask(SignalSet *mask) { signalMask_ = mask; }
-
-bool ProcessFactory::hasFileCreationMask() const { return hasFileCreationMask_; }
-void ProcessFactory::setFileCreationMask(int mask) {
-	fileCreationMask_ = mask;
-	hasFileCreationMask_ = true;
-}
-void ProcessFactory::unsetFileCreationMask() { hasFileCreationMask_ = false; }
-
-String ProcessFactory::command() const { return command_; }
+void ProcessFactory::setFileCreationMask(int mask) { fileCreationMask_ = mask; }
 
 void ProcessFactory::setCommand(String command)
 {
@@ -72,22 +51,6 @@ void ProcessFactory::setCommand(String command)
 	String path = File::lookup(name);
 	if (path == "") path = name;
 	setExecPath(path);
-}
-
-SystemStream *ProcessFactory::in() const { return in_; }
-SystemStream *ProcessFactory::out() const { return out_; }
-SystemStream *ProcessFactory::err() const { return err_; }
-
-void ProcessFactory::setIn(SystemStream *stream) { in_ = stream; }
-void ProcessFactory::setOut(SystemStream *stream) { out_ = stream; }
-void ProcessFactory::setErr(SystemStream *stream) { err_ = stream; }
-
-void ProcessFactory::daemonize()
-{
-	setFileCreationMask(0);
-	setType(Process::SessionLeader);
-	setIoPolicy(Process::CloseInput|Process::CloseOutput|Process::CloseError);
-	setWorkingDirectory("/");
 }
 
 Ref<Process> ProcessFactory::produce()
@@ -199,7 +162,7 @@ Ref<Process> ProcessFactory::produce()
 				FLUX_SYSTEM_EXCEPTION;
 		}
 
-		if (hasFileCreationMask_) ::umask(fileCreationMask_);
+		if (fileCreationMask_ >= 0) ::umask(fileCreationMask_);
 
 		if (ioPolicy_ & Process::CloseInput) ::close(0);
 		if (ioPolicy_ & Process::CloseOutput) ::close(1);

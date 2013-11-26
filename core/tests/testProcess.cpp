@@ -42,9 +42,8 @@ int main(int argc, char **argv)
 		Ref<ProcessFactory> factory = ProcessFactory::create();
 		factory->setExecPath(argv[0]);
 		factory->setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
-		factory->arguments()->append(argv[0]);
-		factory->arguments()->append("--echo 123");
-		factory->envMap()->establish("Hello", "World!");
+		factory->setArguments(StringList::create() << argv[0] << "--echo 123");
+		factory->setEnvMap(Process::envMap() << EnvMap::Item("Hello", "World!"));
 
 		Ref<Process> process = factory->produce();
 
