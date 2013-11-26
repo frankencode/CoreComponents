@@ -151,6 +151,9 @@ public:
 
 	inline void clear() { tree_.clear(); }
 
+	inline Map &operator<<(const Item &item) { push(item); return *this; }
+	inline operator Map *() { return this; }
+
 protected:
 	typedef OrdinalTree< OrdinalNode<Item> > Tree;
 	typedef typename Tree::Node Node;
