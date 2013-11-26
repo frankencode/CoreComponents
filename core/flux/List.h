@@ -143,6 +143,7 @@ public:
 
 	inline List &operator<<(const T& item) { push(item); return *this; }
 	inline List &operator>>(T* item) { pop(item); return *this; }
+	inline operator List*() { return this; }
 
 protected:
 	List() {}
