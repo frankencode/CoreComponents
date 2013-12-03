@@ -254,6 +254,8 @@ int ByteArray::scanInt(T *x, int base, int i0, int i1) const
 			++i;
 		}
 	}
+	else minus = false;
+
 	while (i < i1) {
 		char ch = at(i);
 		int z = -1;

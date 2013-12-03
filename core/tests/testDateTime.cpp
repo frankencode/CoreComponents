@@ -62,7 +62,7 @@ int main()
 			{  1,  1, 1900,  0,  0,  0 },
 			{  1,  1,    1,  0,  0,  0 }
 		};
-		for (int i = 0; i < sizeof(tests)/sizeof(tests[0]); ++i) {
+		for (unsigned i = 0; i < sizeof(tests)/sizeof(tests[0]); ++i) {
 			TestDate *d = &tests[i];
 			Ref<Date> date0 = Date::create(d->year, d->month, d->day, d->hour, d->minutes, d->seconds);
 			Ref<Date> date1 = Date::create(date0->time());
