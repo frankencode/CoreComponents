@@ -66,6 +66,7 @@ public:
 	}
 
 	inline operator char *() const { return Super::get()->chars(); }
+	inline ByteArray &operator *() const { return *Super::get(); }
 
 private:
 	friend class ByteArray;

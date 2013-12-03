@@ -44,7 +44,7 @@ bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 
 	if (source_->readAll(data) < data->size()) return false;
 
-	if (data->at(58) != 0x60 || data->at(59) != 0x0a)
+	if (data->byteAt(58) != 0x60 || data->byteAt(59) != 0x0a)
 		throw BrokenArchive(i_ + 58, "Expected ar header magic (0x50, 0x0a)");
 
 	data->scanString(&entry->path_,      " ",  0, 16);
