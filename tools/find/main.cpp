@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 				String typeString;
 				if (type == File::Regular)          typeString = shortMode ? "r" : "regular file";
 				else if (type == File::Directory)   typeString = shortMode ? "d" : "directory";
-				else if (type == File::Link)        typeString = shortMode ? "l" : "link";
+				else if (type == File::Symlink)     typeString = shortMode ? "l" : "symlink";
 				else if (type == File::CharDevice)  typeString = shortMode ? "c" : "character device";
 				else if (type == File::BlockDevice) typeString = shortMode ? "b" : "block device";
 				else if (type == File::Fifo)        typeString = shortMode ? "f" : "fifo";

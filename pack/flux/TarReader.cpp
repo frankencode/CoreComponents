@@ -9,19 +9,11 @@
 
 #include <flux/File.h>
 #include <flux/Format.h>
+#include "TarCommon.h"
 #include "TarReader.h"
 
 namespace flux
 {
-
-unsigned tarHeaderSum(ByteArray *data)
-{
-	unsigned sum = 0;
-	for (int i = 0;       i < 148; ++i) sum += data->byteAt(i);
-	for (int i = 0 + 148; i < 156; ++i) sum += ' ';
-	for (int i = 0 + 156; i < 512; ++i) sum += data->byteAt(i);
-	return sum;
-}
 
 Ref<TarReader> TarReader::open(Stream *source)
 {
@@ -70,20 +62,19 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 	data->scanString(&entry->linkPath_, "", 157, 257);
 
 	if (gnuMagic) {
-		if ((entry->type_ == 'L' || entry->type_ == 'K') && entry->path_ == "././@LongLink") {
-			Ref<StringList> parts = StringList::create();
-			while (true) {
-				if (source_->read(data) < data->size())
-					throw BrokenArchive(i_, "Expected GNU @LongLink data");
-				i_ += data->size();
-				String h;
-				data->scanString(&h, "", 0, data->size());
-				parts->append(h);
-				if (h->size() < data->size()) break;
-			}
-			if (entry->type_ == 'L') entry->path_ = parts->join();
-			else if (entry->type_ == 'K') entry->linkPath_ = parts->join();
-			if (source_->read(data) < data->size())
+		while ((entry->type_ == 'L' || entry->type_ == 'K') /*&& entry->path_ == "././@LongLink"*/) {
+			data->scanInt(&entry->size_,         8, 124, 136);
+			String longPath = source_->readAll(entry->size_);
+			if (longPath->size() < entry->size_)
+				throw BrokenArchive(i_, "Expected GNU @LongLink data");
+			i_ += entry->size_;
+			if (longPath->byteAt(longPath->size() - 1) == 0)
+				longPath->truncate(longPath->size() - 1);
+			if (entry->type_ == 'L') entry->path_ = longPath;
+			else if (entry->type_ == 'K') entry->linkPath_ = longPath;
+			if (entry->size() % 512 != 0)
+				i_ += source_->skip(512 - entry->size() % 512);
+			if (source_->readAll(data) < data->size())
 				throw BrokenArchive(i_, "Expected GNU @LongLink header");
 			i_ += data->size();
 			entry->type_ = data->at(156);

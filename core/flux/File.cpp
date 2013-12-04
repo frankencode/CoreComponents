@@ -298,7 +298,7 @@ String File::readlink(String path)
 String File::resolve(String path)
 {
 	String resolvedPath = path;
-	while (File::unresolvedStatus(resolvedPath)->type() == File::Link) {
+	while (File::unresolvedStatus(resolvedPath)->type() == File::Symlink) {
 		String origPath = resolvedPath;
 		resolvedPath = File::readlink(resolvedPath);
 		if (resolvedPath == "") break;
