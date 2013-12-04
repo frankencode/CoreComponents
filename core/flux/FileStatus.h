@@ -46,10 +46,10 @@ public:
 	inline double lastChanged() const { return st_ctime; }
 	void setTimes(double lastAccess, double lastModified);
 
+	inline dev_t storageId() const { return st_dev; }
 	inline ino_t inodeNumber() const { return st_ino; }
 	inline nlink_t numberOfHardLinks() const { return st_nlink; }
 
-	inline dev_t storageId() const { return st_dev; }
 	inline dev_t deviceId() const { return st_rdev; }
 
 	inline bool exists() const { return exists_; }

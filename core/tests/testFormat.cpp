@@ -23,6 +23,7 @@ int main()
 			uint64_t b = union_cast<uint64_t>(String(Format() << x)->toFloat64());
 			fout() << "0x" << hex(a) << nl;
 			fout() << "0x" << hex(b) << nl;
+			fout() << oct(1, 3) << nl;
 			fout() << nl;
 			check(a == b);
 		}

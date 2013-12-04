@@ -7,20 +7,16 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_ARCHIVEWRITER_H
-#define FLUX_ARCHIVEWRITER_H
+#ifndef FLUX_TARCOMMON_H
+#define FLUX_TARCOMMON_H
 
-#include <flux/String.h>
+#include <flux/ByteArray.h>
 
 namespace flux
 {
 
-class ArchiveWriter: public Object
-{
-public:
-	virtual void appendFile(String path) = 0;
-};
+unsigned tarHeaderSum(ByteArray *data);
 
 } // namespace flux
 
-#endif // FLUX_ARCHIVEWRITER_H
+#endif // FLUX_TARCOMMON_H

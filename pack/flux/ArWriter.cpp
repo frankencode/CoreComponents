@@ -7,21 +7,22 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/File.h>
 #include <flux/str.h>
+#include <flux/Exception.h>
+#include <flux/File.h>
 #include "ArWriter.h"
 
 namespace flux
 {
 
-ArWriter::ArWriter(Stream *sink)
-	: sink_(sink)
-{}
-
 Ref<ArWriter> ArWriter::open(Stream *sink)
 {
 	return new ArWriter(sink);
 }
+
+ArWriter::ArWriter(Stream *sink)
+	: sink_(sink)
+{}
 
 void ArWriter::appendFile(String path)
 {
@@ -59,7 +60,9 @@ void ArWriter::appendFile(String path)
 	magic->byteAt(1) = 0x0a;
 	headerFields->append(magic);
 
-	sink_->write(headerFields);
+	String header = headerFields->join();
+	FLUX_ASSERT(header->size() == 60);
+	sink_->write(header);
 	file->transfer(status->size(), sink_);
 }
 

@@ -30,7 +30,7 @@ public:
 		CharDevice   = S_IFCHR,
 		BlockDevice  = S_IFBLK,
 		Fifo         = S_IFIFO,
-		Link         = S_IFLNK,
+		Symlink      = S_IFLNK,
 		Socket       = S_IFSOCK,
 	};
 
