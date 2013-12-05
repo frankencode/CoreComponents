@@ -55,6 +55,7 @@ private:
 
 	typedef Map<FileId, String> HardLinks;
 
+	String zero_;
 	Ref<HardLinks> hardLinks_;
 	Ref<FileStatus> longPathStatus_;
 	Ref<FileStatus> longLinkStatus_;
