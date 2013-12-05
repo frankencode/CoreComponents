@@ -24,10 +24,11 @@ class TarWriter: public ArchiveWriter
 public:
 	static Ref<TarWriter> open(Stream *sink);
 
-	void appendFile(String path);
+	void writeFile(String path);
 
 private:
 	TarWriter(Stream *sink);
+	void writeFile(String path, FileStatus *status);
 
 	Ref<Stream> sink_;
 
@@ -55,6 +56,8 @@ private:
 	typedef Map<FileId, String> HardLinks;
 
 	Ref<HardLinks> hardLinks_;
+	Ref<FileStatus> longPathStatus_;
+	Ref<FileStatus> longLinkStatus_;
 };
 
 } // namespace flux

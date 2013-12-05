@@ -18,7 +18,7 @@ namespace flux
 class ArchiveWriter: public Object
 {
 public:
-	virtual void appendFile(String path) = 0;
+	virtual void writeFile(String path) = 0;
 };
 
 } // namespace flux

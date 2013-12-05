@@ -21,7 +21,7 @@ class ArWriter: public ArchiveWriter
 public:
 	static Ref<ArWriter> open(Stream *sink);
 
-	void appendFile(String path);
+	void writeFile(String path);
 
 private:
 	ArWriter(Stream *sink);
