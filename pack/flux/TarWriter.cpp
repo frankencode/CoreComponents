@@ -10,6 +10,8 @@
 #include <flux/str.h>
 #include <flux/Exception.h>
 #include <flux/File.h>
+#include <flux/User.h>
+#include <flux/Group.h>
 #include "TarCommon.h"
 #include "TarWriter.h"
 
@@ -23,53 +25,104 @@ Ref<TarWriter> TarWriter::open(Stream *sink)
 
 TarWriter::TarWriter(Stream *sink)
 	: sink_(sink),
-	  hardLinks_(HardLinks::create())
+	  hardLinks_(HardLinks::create()),
+	  longPathStatus_(FileStatus::read()),
+	  longLinkStatus_(FileStatus::read())
 {}
 
-void TarWriter::appendFile(String path)
+void TarWriter::writeFile(String path)
 {
-	Ref<File> file = File::open(path);
 	Ref<FileStatus> status = FileStatus::read(path, false);
+	writeFile(path, status);
+}
 
+void TarWriter::writeFile(String path, FileStatus *status)
+{
 	Ref<StringList> headerFields = StringList::create();
 
-	bool longLink = path->size() >= 100;
-	String pathField(100, '\0');
-	if (longLink) *pathField = *String("././@LongLink");
-	else *pathField = *path;
+	String pathField(99, '\0');
+	if (status == longPathStatus_ || status == longLinkStatus_)
+		*pathField = *String("././@LongLink");
+	else
+		*pathField = *path;
 	headerFields->append(pathField);
+	headerFields->append(String("\0", 1));
 
 	headerFields->append(oct(status->mode(), 8));
 	headerFields->append(oct(status->ownerId(), 8));
 	headerFields->append(oct(status->groupId(), 8));
-	headerFields->append(oct(status->size(), 12));
+	if (status == longPathStatus_ || status == longLinkStatus_)
+		headerFields->append(oct(path->size() + 1, 12));
+	else
+		headerFields->append(oct(status->size(), 12));
 	headerFields->append(oct(status->st_mtime, 12));
 
 	String checksumField(6, '0');
 	headerFields->append(checksumField);
-	headerFields->append(String("\0 "));
+	headerFields->append(String("\0 ", 2));
 
-	String typeField;
-	     if (status->type() == File::Regular)     typeField = "0";
-	else if (status->type() == File::Directory)   typeField = "5";
-	else if (status->type() == File::Symlink)     typeField = "2";
-	else if (status->type() == File::CharDevice)  typeField = "3";
-	else if (status->type() == File::BlockDevice) typeField = "4";
-	else if (status->type() == File::Fifo)        typeField = "6";
-	else                                          typeField = "0";
+	String typeField, linkTarget;
+	if (status == longPathStatus_)                    typeField = "K";
+	else if (status == longLinkStatus_ )              typeField = "L";
+	else {
+		     if (status->type() == File::Regular)     ;
+		else if (status->type() == File::Directory)   typeField = "5";
+		else if (status->type() == File::Symlink)     typeField = "2";
+		else if (status->type() == File::CharDevice)  typeField = "3";
+		else if (status->type() == File::BlockDevice) typeField = "4";
+		else if (status->type() == File::Fifo)        typeField = "6";
+		if (status->numberOfHardLinks() > 1) {
+			FileId fid(status);
+			if (hardLinks_->lookup(fid, &linkTarget)) typeField = "1";
+			else { hardLinks_->insert(fid, path);     typeField = "0"; }
+		}
+		else if (status->type() == File::Symlink) {
+			linkTarget = File::readlink(path);
+		}
+		if (typeField == "")                          typeField = "0";
+	}
+	headerFields->append(typeField);
 
-	String linkTarget;
-	if (status->numberOfHardLinks() > 1) {
-		FileId fid(status);
-		if (hardLinks_->lookup(fid, &linkTarget)) typeField = "1";
-		else hardLinks_->insert(fid, path);
+	String linkField(99, '\0');
+	*linkField = *linkTarget;
+	headerFields->append(linkField);
+	headerFields->append(String("\0", 1));
+
+	String gnuMagicField("ustar  \0");
+	headerFields->append(gnuMagicField);
+
+	String userField(31, '\0');
+	*userField = *User::lookup(status->ownerId())->name();
+	headerFields->append(userField);
+	headerFields->append(String("\0", 1));
+
+	String groupField(31, '\0');
+	*groupField = *Group::lookup(status->groupId())->name();
+	headerFields->append(groupField);
+	headerFields->append(String("\0", 1));
+
+	if (status != longPathStatus_ && status != longLinkStatus_) {
+		if (path->size() > pathField->size()) writeFile(path, longPathStatus_);
+		if (linkTarget->size() > linkField->size()) writeFile(linkTarget, longLinkStatus_);
 	}
 
 	String header = headerFields->join();
+	FLUX_ASSERT(header->size() == 329);
 	unsigned checksum = tarHeaderSum(header);
 	*checksumField = *oct(checksum, 6);
+	headerFields->append(String(512 - header->size(), '\0'));
 	header = headerFields->join();
 	sink_->write(header);
+
+	if (status == longPathStatus_ || status == longLinkStatus_) {
+		sink_->write(path);
+		sink_->write(String("\0", 1));
+		if (512 % (path->size() + 1) != 0)
+			sink_->write(String(512 - 512 % (path->size() + 1), '\0'));
+	}
+	else {
+		File::open(path)->transfer(status->size(), sink_);
+	}
 }
 
 } // namespace flux

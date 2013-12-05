@@ -24,7 +24,7 @@ ArWriter::ArWriter(Stream *sink)
 	: sink_(sink)
 {}
 
-void ArWriter::appendFile(String path)
+void ArWriter::writeFile(String path)
 {
 	Ref<File> file = File::open(path);
 	Ref<FileStatus> status = file->status();
