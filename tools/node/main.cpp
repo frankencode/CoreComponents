@@ -8,7 +8,7 @@
  */
 
 #include <flux/stdio.h>
-#include <flux/UserException.h>
+#include <flux/UserError.h>
 #include "NodeMaster.h"
 
 using namespace fluxnode;
@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 	try {
 		exitCode = nodeMaster()->run(argc, argv);
 	}
-	catch (HelpException &) {
+	catch (HelpError &) {
 		fout(
 			"Usage: %% [OPTION]... [CONFIG]|[DIR]...\n"
 			"Start a HTTP server on this machine.\n"
@@ -32,8 +32,8 @@ int main(int argc, char **argv)
 			"  -daemon    start as a daemon\n"
 		) << String(argv[0])->fileName();
 	}
-	catch (UserException &ex) {
-		ferr("%%\n") << ex.message();
+	catch (UserError &ex) {
+		ferr("%%\n") << ex.what();
 		exitCode = 7;
 	}
 	return exitCode;

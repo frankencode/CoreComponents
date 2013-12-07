@@ -24,15 +24,15 @@ DirectoryInstance::DirectoryInstance(YasonObject *config)
 	  path_(config->value("path"))
 {
 	if (path_ == "")
-		throw UserException("DirectoryInstance: Mandatory argument \"path\" is missing");
+		throw UserError("DirectoryInstance: Mandatory argument \"path\" is missing");
 	path_ = path_->canonicalPath();
 	if (!File::exists(path_)) {
-		throw UserException(
+		throw UserError(
 			Format("DirectoryInstance: Directory path \"%%\" does not exist") << path_
 		);
 	}
 	if (File::status(path_)->type() != File::Directory) {
-		throw UserException(
+		throw UserError(
 			Format("DirectoryInstance: Path \"%%\" does not point to a directory") << path_
 		);
 	}

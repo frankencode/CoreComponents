@@ -11,7 +11,7 @@
 #define FLUX_PATTERN_H
 
 #include "String.h"
-#include "UserException.h"
+#include "UserError.h"
 #ifndef NDEBUG
 #include "SyntaxDebugger.h"
 #endif
@@ -20,7 +20,7 @@
 namespace flux
 {
 
-class PatternException: public UserException
+class PatternException: public UserError
 {
 public:
 	PatternException(const String &error, int pos);

@@ -30,7 +30,7 @@ Ref<Config> Config::read(String path, YasonProtocol *protocol)
 		throw ConfigException(Format("Failed to open configuration file %%") << path);
 	}
 	catch (YasonException &ex) {
-		throw ConfigException(Format("Error in configuration file\n%%:%%") << path << ex.message());
+		throw ConfigException(Format("Error in configuration file\n%%:%%") << path << ex.what());
 	}
 	if (protocol) config->prototype_ = protocol->value(config->className());
 	return config;
@@ -53,7 +53,7 @@ Ref<Config> Config::read(int argc, char **argv, Config *config)
 		}
 
 		if (s == "-h" || s == "-help" || s == "--help" || s == "-?")
-			throw HelpException();
+			throw HelpError();
 
 		Ref<SyntaxState> state = flag->newState();
 		if (!flag->match(s, state))

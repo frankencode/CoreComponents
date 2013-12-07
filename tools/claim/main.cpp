@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 	try {
 		config = Config::read(argc, argv);
 	}
-	catch (HelpException &) {
+	catch (HelpError &) {
 		fout(
 			"Usage: %% [OPTION]... [DIR]...\n"
 			"Find and update copyright statements.\n"

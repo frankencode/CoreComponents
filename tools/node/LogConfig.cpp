@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/UserException.h>
+#include <flux/UserError.h>
 #include "Log.h"
 #include "LogConfig.h"
 
@@ -23,7 +23,7 @@ int decodeLogLevel(String levelName)
 	if (levelName == "error")   return ErrorLogLevel;
 	if (levelName == "silent")  return SilentLogLevel;
 	if (levelName == "")        return DefaultLogLevel;
-	throw UserException("Unknown log level \"" + levelName + "\"");
+	throw UserError("Unknown log level \"" + levelName + "\"");
 	return 0;
 }
 

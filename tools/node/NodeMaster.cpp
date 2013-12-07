@@ -111,7 +111,7 @@ void NodeMaster::runNode(int argc, char **argv)
 
 	if (nodeConfig()->user() != "") {
 		Ref<User> user = User::lookup(nodeConfig()->user());
-		if (!user->exists()) throw UserException("No such user: \"" + nodeConfig()->user() + "\"");
+		if (!user->exists()) throw UserError("No such user: \"" + nodeConfig()->user() + "\"");
 		Process::setUserId(user->id());
 	}
 
