@@ -15,9 +15,9 @@ namespace flux
 unsigned tarHeaderSum(ByteArray *data)
 {
 	unsigned sum = 0;
-	for (int i = 0;       i < 148; ++i) sum += data->byteAt(i);
-	for (int i = 0 + 148; i < 156; ++i) sum += ' ';
-	for (int i = 0 + 156; i < 512; ++i) sum += data->byteAt(i);
+	for (int i = 0;       i < 148 && i < data->size(); ++i) sum += data->byteAt(i);
+	for (int i = 0 + 148; i < 156 && i < data->size(); ++i) sum += ' ';
+	for (int i = 0 + 156; i < 512 && i < data->size(); ++i) sum += data->byteAt(i);
 	return sum;
 }
 

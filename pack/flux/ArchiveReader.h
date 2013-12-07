@@ -35,9 +35,6 @@ class UnsupportedArchiveFormat {};
 class ArchiveReader: public Object
 {
 public:
-	static Ref<ArchiveReader> open(String path);
-	static Ref<ArchiveReader> open(Stream *source);
-
 	virtual bool readHeader(Ref<ArchiveEntry> *entry) = 0;
 	virtual void readData(ArchiveEntry *entry, Stream *sink = 0) = 0;
 	void skipData(ArchiveEntry *entry);

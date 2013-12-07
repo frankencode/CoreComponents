@@ -34,6 +34,8 @@ void Stream::write(const StringList *parts)
 
 off_t Stream::transfer(off_t count, Stream *sink, ByteArray *buf)
 {
+	if (count == 0) return 0;
+
 	off_t total = 0;
 	Ref<ByteArray> h;
 	if (!buf) {

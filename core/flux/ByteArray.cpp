@@ -793,8 +793,10 @@ Ref<ByteArray>  ByteArray::suffix() const
 Ref<ByteArray> ByteArray::reducePath() const
 {
 	Ref<StringList> parts = split("/");
-	if (parts->size() > 0)
-		parts->popBack();
+	while (parts->size() > 0) {
+		String component = parts->popBack();
+		if (component != "") break;
+	}
 	String resultPath = parts->join("/");
 	if ((resultPath == "") && isAbsolutePath())
 		resultPath = "/";

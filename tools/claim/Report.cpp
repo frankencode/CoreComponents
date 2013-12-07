@@ -33,7 +33,7 @@ Report::Report(StringList *dirPaths, Pattern works)
 {
 	for (int i = 0; i < dirPaths->size(); ++i) {
 		String dirPath = dirPaths->at(i)->canonicalPath();
-		Ref<DirWalker> dirWalker = DirWalker::create(dirPath);
+		Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
 		dirWalker->setIgnoreHidden(true);
 		for (String path; dirWalker->read(&path);) {
 			if (FileStatus::read(path)->type() != File::Regular) continue;
