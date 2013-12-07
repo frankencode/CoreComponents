@@ -21,13 +21,22 @@ Ref<ArWriter> ArWriter::open(Stream *sink)
 }
 
 ArWriter::ArWriter(Stream *sink)
-	: sink_(sink)
+	: sink_(sink),
+	  firstTime_(true)
 {}
 
 void ArWriter::writeFile(String path)
 {
+	if (firstTime_) {
+		firstTime_ = false;
+		sink_->write(String("!<arch>\n"));
+	}
+
 	Ref<File> file = File::open(path);
 	Ref<FileStatus> status = file->status();
+
+	off_t contentSize = status->size();
+	if (status->type() != File::Regular) contentSize = 0;
 
 	Ref<StringList> headerFields = StringList::create();
 
@@ -63,7 +72,10 @@ void ArWriter::writeFile(String path)
 	String header = headerFields->join();
 	FLUX_ASSERT(header->size() == 60);
 	sink_->write(header);
-	file->transfer(status->size(), sink_);
+	file->transfer(contentSize, sink_);
+
+	if (contentSize % 2 != 0)
+		sink_->write(String("\0", 1));
 }
 
 } // namespace flux
