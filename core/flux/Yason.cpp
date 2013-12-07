@@ -23,7 +23,7 @@ YasonException::YasonException(const String &error, ByteArray *text, int offset)
 	  pos_(0)
 {
 	text->offsetToLinePos(offset, &line_, &pos_);
-	UserException::message_ = Format("%%:%%: %%") << line_ << pos_ << error;
+	UserError::message_ = Format("%%:%%: %%") << line_ << pos_ << error;
 }
 
 YasonObject::YasonObject(const YasonObject &b)

@@ -20,7 +20,7 @@ namespace flux
 
 
 PatternException::PatternException(const String &error, int pos)
-	: UserException(Format("%%: %%") << pos << error)
+	: UserError(Format("%%: %%") << pos << error)
 {}
 
 typedef syntax::NODE NODE;

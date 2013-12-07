@@ -88,7 +88,7 @@ int main() {
 		testData(object2);
 	}
 	catch (YasonException &ex) {
-		ferr() << ex.message() << nl;
+		ferr() << ex.what() << nl;
 		check(false);
 	}
 

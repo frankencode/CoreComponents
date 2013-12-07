@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 	try {
 		exitCode = BuildPlan::create(argc, argv)->run();
 	}
-	catch (HelpException &) {
+	catch (HelpError &) {
 		fout(
 			"Usage: %% [OPTION]... [DIR]\n"
 			"Build binaries from source DIR.\n"
@@ -45,8 +45,8 @@ int main(int argc, char **argv)
 			"  -bootstrap       write bootstrap script\n"
 		) << String(argv[0])->fileName();
 	}
-	catch (UserException &ex) {
-		fout("%%\n") << ex.message();
+	catch (UserError &ex) {
+		fout("%%\n") << ex.what();
 		exitCode = 7;
 	}
 	return exitCode;

@@ -50,7 +50,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	recipe_ = Config::read(argc, argv);
 	if (recipe_->arguments()->size() > 0) {
 		if (recipe_->arguments()->size() > 1)
-			throw UserException("Processing multiple Recipe files at once is not supported");
+			throw UserError("Processing multiple Recipe files at once is not supported");
 		projectPath_ = recipe_->arguments()->at(0)->canonicalPath();
 	}
 

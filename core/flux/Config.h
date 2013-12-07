@@ -11,16 +11,16 @@
 #define FLUX_CONFIG_H
 
 #include "Yason.h"
-#include "UserException.h"
+#include "UserError.h"
 
 namespace flux
 {
 
-class ConfigException: public UserException
+class ConfigException: public UserError
 {
 public:
 	ConfigException(String message)
-		: UserException(message)
+		: UserError(message)
 	{}
 };
 

@@ -12,13 +12,13 @@
 
 #include "Map.h"
 #include "Variant.h"
-#include "UserException.h"
+#include "UserError.h"
 #include "Stream.h"
 
 namespace flux
 {
 
-class YasonException: public UserException
+class YasonException: public UserError
 {
 public:
 	YasonException(const String &error, ByteArray *text, int offset);

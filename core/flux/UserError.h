@@ -7,29 +7,35 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_USEREXCEPTION_H
-#define FLUX_USEREXCEPTION_H
+#ifndef FLUX_USERERROR_H
+#define FLUX_USERERROR_H
 
 #include "String.h"
 
 namespace flux
 {
 
-class UserException
+class UserError
 {
 public:
-	UserException(String message = ""): message_(message) {}
-	String message() const { return message_; }
+	UserError(String message = ""): message_(message) {}
+	inline String what() const { return message_; }
 protected:
 	String message_;
 };
 
-class HelpException: public UserException
+class HelpError: public UserError
 {
 public:
-	HelpException(): UserException("No help, yet ...") {}
+	HelpError(): UserError("No help, yet ...") {}
+};
+
+class SystemError: public UserError
+{
+public:
+	SystemError(String details = "");
 };
 
 } // namespace flux
 
-#endif // FLUX_USEREXCEPTION_H
+#endif // FLUX_USERERROR_H
