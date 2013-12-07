@@ -14,7 +14,7 @@
 namespace flux
 {
 
-Ref<DirWalker> DirWalker::create(String path)
+Ref<DirWalker> DirWalker::open(String path)
 {
 	return new DirWalker(path);
 }

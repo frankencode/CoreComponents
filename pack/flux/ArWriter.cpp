@@ -66,5 +66,4 @@ void ArWriter::writeFile(String path)
 	file->transfer(status->size(), sink_);
 }
 
-
 } // namespace flux

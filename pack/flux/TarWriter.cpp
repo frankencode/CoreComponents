@@ -41,6 +41,9 @@ void TarWriter::writeFile(String path, FileStatus *status)
 {
 	Ref<StringList> headerFields = StringList::create();
 
+	off_t contentSize = status->size();
+	if (status->type() != File::Regular) contentSize = 0;
+
 	if (status->type() == File::Directory) {
 		if (path->tail(1) != "/") path = path + "/";
 	}
@@ -62,7 +65,7 @@ void TarWriter::writeFile(String path, FileStatus *status)
 	if (status == longPathStatus_ || status == longLinkStatus_)
 		headerFields->append(oct(path->size() + 1, 11));
 	else
-		headerFields->append(oct(status->size(), 11));
+		headerFields->append(oct(contentSize, 11));
 	headerFields->append(zero_);
 	headerFields->append(oct(status->st_mtime, 11));
 	headerFields->append(zero_);
@@ -72,8 +75,8 @@ void TarWriter::writeFile(String path, FileStatus *status)
 	headerFields->append(String("\0 ", 2));
 
 	String typeField, linkTarget;
-	if (status == longPathStatus_)                    typeField = "K";
-	else if (status == longLinkStatus_ )              typeField = "L";
+	if (status == longLinkStatus_ )                   typeField = "K";
+	else if (status == longPathStatus_)               typeField = "L";
 	else {
 		     if (status->type() == File::Regular)     ;
 		else if (status->type() == File::Directory)   typeField = "5";
@@ -84,12 +87,13 @@ void TarWriter::writeFile(String path, FileStatus *status)
 		if (status->numberOfHardLinks() > 1) {
 			FileId fid(status);
 			if (hardLinks_->lookup(fid, &linkTarget)) typeField = "1";
-			else { hardLinks_->insert(fid, path);     typeField = "0"; }
+			else hardLinks_->insert(fid, path);
 		}
 		else if (status->type() == File::Symlink) {
 			linkTarget = File::readlink(path);
 		}
 		if (typeField == "")                          typeField = "0";
+		if (typeField != "0") contentSize = 0;
 	}
 	headerFields->append(typeField);
 
@@ -121,19 +125,25 @@ void TarWriter::writeFile(String path, FileStatus *status)
 	FLUX_ASSERT(header->size() == 329);
 	unsigned checksum = tarHeaderSum(header);
 	*checksumField = *oct(checksum, 6);
-	headerFields->append(String(512 - header->size(), '\0'));
 	header = headerFields->join();
 	sink_->write(header);
+	writePadding(header->size());
 
 	if (status == longPathStatus_ || status == longLinkStatus_) {
 		sink_->write(path);
 		sink_->write(zero_);
-		if (512 % (path->size() + 1) != 0)
-			sink_->write(String(512 - 512 % (path->size() + 1), '\0'));
+		writePadding(path->size() + 1);
 	}
-	else {
-		File::open(path)->transfer(status->size(), sink_);
+	else if (contentSize > 0) {
+		File::open(path)->transfer(contentSize, sink_);
+		writePadding(contentSize);
 	}
+}
+
+void TarWriter::writePadding(off_t unpaddedSize)
+{
+	if (unpaddedSize % 512 != 0)
+		sink_->write(String(512 - unpaddedSize % 512, '\0'));
 }
 
 } // namespace flux

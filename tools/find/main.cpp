@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 
 	for (int i = 0; i < dirPaths->size(); ++i) {
 		String dirPath = dirPaths->at(i)->canonicalPath();
-		Ref<DirWalker> dirWalker = DirWalker::create(dirPath);
+		Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
 		dirWalker->setMaxDepth(maxDepth);
 		String path;
 		while (dirWalker->read(&path)) {

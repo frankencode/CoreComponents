@@ -1,6 +1,0 @@
-Application {
-	name: fluxpack
-	alias: fluxunpack
-	source: *.cpp
-	use: [ ../../core/flux, ../../pack/flux ]
-}

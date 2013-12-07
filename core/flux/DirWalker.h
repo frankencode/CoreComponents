@@ -20,7 +20,7 @@ class Dir;
 class DirWalker: public Source<String>
 {
 public:
-	static Ref<DirWalker> create(String path);
+	static Ref<DirWalker> open(String path);
 
 	inline int maxDepth() const { return maxDepth_; }
 	inline void setMaxDepth(int depth) { maxDepth_ = depth; }
