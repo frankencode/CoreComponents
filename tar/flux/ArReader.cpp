@@ -64,7 +64,7 @@ void ArReader::readData(ArchiveEntry *entry, Stream* sink)
 {
 	i_ += source_->transfer(entry->size(), sink);
 	if (entry->size() % 2 != 0)
-		i_ += source_->skip(entry->size() % 2);
+		i_ += source_->skip(1);
 }
 
 } // namespace flux

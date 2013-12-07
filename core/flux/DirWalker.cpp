@@ -19,6 +19,14 @@ Ref<DirWalker> DirWalker::open(String path)
 	return new DirWalker(path);
 }
 
+Ref<DirWalker> DirWalker::tryOpen(String path)
+{
+	Ref<Dir> dir = Dir::tryOpen(path);
+	Ref<DirWalker> walker;
+	if (dir) walker = new DirWalker(path, dir);
+	return walker;
+}
+
 DirWalker::DirWalker(String path, Dir *dir)
 	: maxDepth_(-1),
 	  ignoreHidden_(false),
@@ -47,9 +55,7 @@ bool DirWalker::read(String *path)
 		if (name == "" || name == "." || name == "..") continue;
 		if (ignoreHidden_) if (name->at(0) == '.') continue;
 		String h = dir_->path(name);
-		Ref<Dir> dir = Dir::tryOpen(h);
-		if (dir) child_ = new DirWalker(h, dir);
-		else child_ = 0;
+		child_ = tryOpen(h);
 		if (child_) {
 			if (depth_ != maxDepth_) {
 				if (!followSymlink_ && File::readlink(h) != "") {

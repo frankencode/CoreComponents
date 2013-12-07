@@ -27,6 +27,7 @@ private:
 	ArWriter(Stream *sink);
 
 	Ref<Stream> sink_;
+	bool firstTime_;
 };
 
 } // namespace flux
