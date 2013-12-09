@@ -38,6 +38,11 @@ inline uint32_t f(int t, uint32_t b, uint32_t c, uint32_t d)
 
 } // namespace _sha1
 
+Ref<Sha1> Sha1::create()
+{
+	return new Sha1;
+}
+
 Sha1::Sha1()
 	: h_(ByteArray::create(20)),
 	  m_(ByteArray::create(64)),
@@ -52,17 +57,17 @@ Sha1::Sha1()
 	h_->wordAt(4) = 0xC3D2E1F0;
 }
 
-void Sha1::feed(ByteArray *chunk)
+void Sha1::feed(ByteArray *data)
 {
-	for (int i = 0; i < chunk->size(); ++i) {
-		uint8_t b = chunk->byteAt(i);
+	for (int i = 0; i < data->size(); ++i) {
+		uint8_t b = data->byteAt(i);
 		m_->byteAt(j_++) = b;
 		if (j_ == 64) consume();
 	}
-	l_ += uint64_t(chunk->size()) * 8;
+	l_ += uint64_t(data->size()) * 8;
 }
 
-void Sha1::finish()
+Ref<ByteArray> Sha1::finish()
 {
 	m_->byteAt(j_++) = 0x80;
 	if (j_ == 64) consume();
@@ -82,6 +87,8 @@ void Sha1::finish()
 		h_->byteAt(4 * t + 2) = (h >> 8) & 0xFF;
 		h_->byteAt(4 * t + 3) = h & 0xFF;
 	}
+
+	return h_;
 }
 
 void Sha1::consume()
@@ -121,14 +128,11 @@ void Sha1::consume()
 	h[4] += e;
 }
 
-ByteArray *Sha1::sum() const { return h_; }
-
-Ref<ByteArray> sha1(ByteArray *message)
+Ref<ByteArray> sha1(ByteArray *data)
 {
 	Ref<Sha1> h = Sha1::create();
-	h->feed(message);
-	h->finish();
-	return h->sum();
+	h->feed(data);
+	return h->finish();
 }
 
 } // namespace flux

@@ -88,6 +88,7 @@ public:
 		return chars_;
 	}
 	inline uint8_t *bytes() const { return bytes_; }
+	inline uint32_t *words() const { return words_; }
 	inline operator char*() const { return chars(); }
 
 	inline Ref<ByteArray> copy() const { return new ByteArray(*this); }
