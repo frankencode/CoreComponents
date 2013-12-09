@@ -28,6 +28,7 @@ public:
 
 private:
 	TarWriter(Stream *sink);
+	~TarWriter();
 	void writeFile(String path, FileStatus *status);
 	void writePadding(off_t unpaddedSize);
 
