@@ -151,7 +151,7 @@ public:
 
 	inline void clear() { tree_.clear(); }
 
-	inline Map &operator<<(const Item &item) { push(item); return *this; }
+	inline void operator<<(const Item &item) { push(item); }
 	inline operator Map *() { return this; }
 
 protected:

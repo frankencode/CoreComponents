@@ -141,8 +141,8 @@ public:
 		return result;
 	}
 
-	inline List &operator<<(const T& item) { push(item); return *this; }
-	inline List &operator>>(T* item) { pop(item); return *this; }
+	inline void operator<<(const T& item) { push(item); }
+	inline void operator>>(T* item) { pop(item); }
 	inline operator List *() { return this; }
 
 protected:

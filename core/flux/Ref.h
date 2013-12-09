@@ -58,15 +58,17 @@ public:
 	}
 
 	template<class T2>
-	inline T &operator<<(T2 x) {
+	inline Ref<T> &operator<<(T2 x) {
 		FLUX_ASSERT2(a_, "Null reference");
-		return *a_ << x;
+		*a_ << x;
+		return *this;
 	}
 
 	template<class T2>
-	inline T &operator>>(T2 &x) {
+	inline Ref<T> &operator>>(T2 &x) {
 		FLUX_ASSERT2(a_, "Null reference");
-		return *a_ >> x;
+		*a_ >> x;
+		return *this;
 	}
 
 private:

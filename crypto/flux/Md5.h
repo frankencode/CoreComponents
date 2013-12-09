@@ -7,37 +7,36 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_SHA1_H
-#define FLUX_SHA1_H
+#ifndef FLUX_MD5_H
+#define FLUX_MD5_H
 
 #include <flux/ByteArray.h>
 
 namespace flux
 {
 
-class Sha1: public Object
+class Md5: public Object
 {
 public:
-	enum { Size = 20 };
+	enum { Size = 16 };
 
-	static Ref<Sha1> create();
+	static Ref<Md5> create();
 
 	void feed(ByteArray *data);
 	Ref<ByteArray> finish();
 
 private:
-	Sha1();
+	Md5();
 	void consume();
 
-	Ref<ByteArray> h_;
-	Ref<ByteArray> m_;
-	Ref<ByteArray> w_;
-	int j_;
-	uint64_t l_;
+	Ref<ByteArray> aux_;
+	int auxFill_;
+	uint64_t bytesFeed_;
+	uint32_t a_, b_, c_, d_;
 };
 
-Ref<ByteArray> sha1(ByteArray *data);
+Ref<ByteArray> md5(ByteArray *data);
 
 } // namespace flux
 
-#endif // FLUX_SHA1_H
+#endif // FLUX_MD5_H
