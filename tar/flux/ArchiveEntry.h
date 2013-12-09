@@ -27,7 +27,9 @@ public:
 		CharDevice  = '3',
 		BlockDevive = '4',
 		Directory   = '5',
-		Fifo        = '6'
+		Fifo        = '6',
+		MinType     = Regular,
+		MaxType     = Fifo
 	};
 
 	static Ref<ArchiveEntry> create() {

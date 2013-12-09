@@ -45,6 +45,16 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 	if (source_->readAll(data) < data->size()) return false;
 	i_ += data->size();
 
+	bool eoi = true;
+	for (int i = 0; i < data->size(); ++i) {
+		if (data->byteAt(i) != 0) {
+			eoi = false;
+			break;
+		}
+	}
+
+	if (eoi) return false;
+
 	bool ustarMagic = false;
 	bool gnuMagic = false;
 
@@ -56,17 +66,16 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 		data->scanString(&magic, "", 257, 263);
 		ustarMagic = (magic == "ustar");
 		gnuMagic   = (magic == "ustar ");
-		if (!(ustarMagic || gnuMagic)) return false;
 
 		unsigned checksum, probesum;
 		data->scanInt(&checksum, 8, 148, 156);
-		probesum = tarHeaderSum(data);
-		if (checksum != probesum)
-			throw BrokenArchive(i_ - data->size(), Format("Checksum mismatch (%% != %%)") << oct(checksum) << oct(probesum));
-
 		entry->type_ = data->at(156);
 		if (entry->path_ == "")     data->scanString(&entry->path_,     "", 0,   100);
 		if (entry->linkPath_ == "") data->scanString(&entry->linkPath_, "", 157, 257);
+
+		probesum = tarHeaderSum(data);
+		if (checksum != probesum)
+			throw BrokenArchive(i_ - data->size(), Format("Checksum mismatch (%% != %%), path = \"%%\"") << oct(checksum, 6) << oct(probesum, 6) << entry->path());
 
 		if (gnuMagic) {
 			while ((entry->type_ == 'K' || entry->type_ == 'L') /*&& entry->path_ == "././@LongLink"*/) {
@@ -107,9 +116,12 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 	data->scanInt(&entry->size_,         8, 124, 136);
 	data->scanInt(&entry->lastModified_, 8, 136, 148);
 
+	if (entry->type() == 0 && entry->path()->size() > 0) {
+		if (entry->path()->at(entry->path()->size() - 1) == '/')
+			entry->type_ = ArchiveEntry::Directory;
+	}
+
 	entry->offset_ = i_;
-	i_ += entry->size_;
-	if (i_ % 512 > 0) i_ += 512 - i_ % 512;
 
 	return true;
 }

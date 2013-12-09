@@ -31,6 +31,11 @@ TarWriter::TarWriter(Stream *sink)
 	  longLinkStatus_(FileStatus::read())
 {}
 
+TarWriter::~TarWriter()
+{
+	sink_->write(String(1024, '\0'));
+}
+
 void TarWriter::writeFile(String path)
 {
 	Ref<FileStatus> status = FileStatus::read(path, false);
@@ -45,7 +50,9 @@ void TarWriter::writeFile(String path, FileStatus *status)
 	if (status->type() != File::Regular) contentSize = 0;
 
 	if (status->type() == File::Directory) {
-		if (path->tail(1) != "/") path = path + "/";
+		if (path->size() > 0) {
+			if (path->at(path->size() - 1) != '/') path = path + "/";
+		}
 	}
 
 	String pathField(99, '\0');

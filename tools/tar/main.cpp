@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	catch (BrokenArchive &ex) {
-		ferr() << toolName << ": Broken archive: " << ex.reason() << " (file offset " << ex.offset() << ")" << nl;
+		ferr() << toolName << ": Broken archive: " << ex.reason() << " (file offset 0x" << hex(ex.offset()) << ")" << nl;
 		return 1;
 	}
 	catch (UserError &ex) {
