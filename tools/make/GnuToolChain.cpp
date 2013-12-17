@@ -45,14 +45,11 @@ String GnuToolChain::machineCommand() const
 	return machineCommand(compiler());
 }
 
-int GnuToolChain::defaultSpeedOptimizationLevel() const
+String GnuToolChain::defaultOptimization(BuildPlan *plan) const
 {
-	return 2;
-}
-
-int GnuToolChain::defaultSizeOptimizationLevel() const
-{
-	return 1;
+	/*if ((plan->options() & BuildPlan::Debug) && (plan->options() & BuildPlan::Release)) return "g";*/
+	if (plan->options() & BuildPlan::Release) return "2";
+	else return "";
 }
 
 String GnuToolChain::analyseCommand(BuildPlan *plan, String source) const
@@ -90,7 +87,7 @@ Ref<Job> GnuToolChain::createLinkJob(BuildPlan *plan, Module *module)
 {
 	Format args;
 	args << compiler();
-	if (plan->options() & BuildPlan::Static) args << "-static";
+	if (plan->linkStatic()) args << "-static";
 	args << "-pthread";
 	args << "-o" << module->toolName();
 	args << module->modulePath();
@@ -124,8 +121,8 @@ bool GnuToolChain::link(BuildPlan *plan)
 	Format args;
 
 	args << compiler();
-	if (options & BuildPlan::Static) args << "-static";
-	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static)) args << "-shared";
+	if (plan->linkStatic()) args << "-static";
+	if ((options & BuildPlan::Library) && !plan->linkStatic()) args << "-shared";
 	args << "-pthread";
 
 	if (options & BuildPlan::Library) {
@@ -145,7 +142,7 @@ bool GnuToolChain::link(BuildPlan *plan)
 	if (!plan->shell()->run(command))
 		return false;
 
-	if ((options & BuildPlan::Library) && !(options & BuildPlan::Static))
+	if ((options & BuildPlan::Library) && !plan->linkStatic())
 		createLibrarySymlinks(plan, linkName(plan));
 
 	if (options & BuildPlan::Application)
@@ -189,7 +186,7 @@ bool GnuToolChain::install(BuildPlan *plan)
 	{
 		CwdGuard guard(installPrefix);
 
-		if ((options & BuildPlan::Library) && !(options & BuildPlan::Static))
+		if ((options & BuildPlan::Library) && !plan->linkStatic())
 			createLibrarySymlinks(plan, product);
 
 		if (options & BuildPlan::Application)
@@ -217,7 +214,7 @@ bool GnuToolChain::uninstall(BuildPlan *plan)
 	{
 		CwdGuard guard(installPrefix);
 
-		if ((options & BuildPlan::Library) && !(options & BuildPlan::Static))
+		if ((options & BuildPlan::Library) && !plan->linkStatic())
 			cleanLibrarySymlinks(plan, product);
 
 		if (options & BuildPlan::Application)
@@ -243,7 +240,7 @@ void GnuToolChain::clean(BuildPlan *plan)
 	String product = linkName(plan);
 	plan->shell()->unlink(product);
 
-	if ((plan->options() & BuildPlan::Library) && !(plan->options() & BuildPlan::Static))
+	if ((plan->options() & BuildPlan::Library) && !plan->linkStatic())
 		cleanLibrarySymlinks(plan, product);
 
 	if (plan->options() & BuildPlan::Application)
@@ -254,10 +251,8 @@ void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan)
 {
 	if (plan->options() & BuildPlan::Debug) args << "-g";
 	if (plan->options() & BuildPlan::Release) args << "-DNDEBUG";
-	if (plan->options() & BuildPlan::OptimizeSpeed) args << String(Format("-O") << plan->speedOptimizationLevel());
-	if (plan->options() & BuildPlan::OptimizeSize) args << "-Os";
-	if (plan->options() & BuildPlan::OptimizeDebug) args << "-Og";
-	if (plan->options() & BuildPlan::Static) args << "-static";
+	if (plan->optimize() != "") args << "-O" + plan->optimize();
+	if (plan->linkStatic()) args << "-static";
 	if (plan->options() & BuildPlan::Library) args << "-fPIC";
 	else args << "-fPIE";
 	args << "-Wall" << "-pthread" << "-pipe";

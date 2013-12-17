@@ -14,6 +14,7 @@ using namespace fluxmake;
 
 int main(int argc, char **argv)
 {
+	String toolName = String(argv[0])->fileName();
 	int exitCode = 0;
 	try {
 		exitCode = BuildPlan::create(argc, argv)->run();
@@ -43,11 +44,11 @@ int main(int argc, char **argv)
 			"  -simulate        print build commands without executing them\n"
 			"  -blindfold       do not see any existing files\n"
 			"  -bootstrap       write bootstrap script\n"
-		) << String(argv[0])->fileName();
+		) << toolName;
 	}
 	catch (UserError &ex) {
-		fout("%%\n") << ex.what();
-		exitCode = 7;
+		ferr() << toolName << ": " << ex.what() << nl;
+		return 1;
 	}
 	return exitCode;
 }

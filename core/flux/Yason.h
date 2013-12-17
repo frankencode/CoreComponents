@@ -55,6 +55,11 @@ public:
 		Ref<Prototype> prototype = Prototype::create();
 		insert(prototype->className(), prototype);
 	}
+
+	template<class Prototype>
+	void add(String className) {
+		insert(className, Prototype::create(className));
+	}
 };
 
 class YasonObject: public Map<String, Variant>

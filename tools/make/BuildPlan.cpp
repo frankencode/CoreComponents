@@ -50,7 +50,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	recipe_ = Config::read(argc, argv);
 	if (recipe_->arguments()->size() > 0) {
 		if (recipe_->arguments()->size() > 1)
-			throw UserError("Processing multiple Recipe files at once is not supported");
+			throw UserError("Handling multiple source directories at once is not supported");
 		projectPath_ = recipe_->arguments()->at(0)->canonicalPath();
 	}
 
@@ -58,9 +58,8 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	recipe_ = Config::read(argc, argv, recipe_);
 	readRecipe();
 
-	toolChain_ = GnuToolChain::create(recipe_->value("compiler"));
-	if (speedOptimizationLevel_ < 0) speedOptimizationLevel_ = toolChain_->defaultSpeedOptimizationLevel();
-	if (sizeOptimizationLevel_ < 0) sizeOptimizationLevel_ = toolChain_->defaultSizeOptimizationLevel();
+	toolChain_ = GnuToolChain::create(compiler());
+	if (optimize_ == "") optimize_ = toolChain_->defaultOptimization(this);
 
 	buildMap_->insert(projectPath_, this);
 }
@@ -73,11 +72,7 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 	  FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
 {
 	recipe_ = Config::read(projectPath_ + "/Recipe", recipeProtocol());
-
 	readRecipe(parentPlan);
-	if (speedOptimizationLevel_ < 0) speedOptimizationLevel_ = toolChain_->defaultSpeedOptimizationLevel();
-	if (sizeOptimizationLevel_ < 0) sizeOptimizationLevel_ = toolChain_->defaultSizeOptimizationLevel();
-
 	buildMap_->insert(projectPath_, this);
 }
 
@@ -86,9 +81,9 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 	name_ = recipe_->value("name");
 	alias_ = recipe_->value("alias");
 	version_ = recipe_->value("version");
+	installPrefix_ = recipe_->value("prefix");
+
 	options_ = 0;
-	speedOptimizationLevel_ = -1;
-	sizeOptimizationLevel_ = -1;
 
 	if (recipe_->className() == "Application")  options_ |= Application;
 	else if (recipe_->className() == "Library") options_ |= Library;
@@ -98,7 +93,6 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
 	if (recipe_->value("debug"))     options_ |= Debug;
 	if (recipe_->value("release"))   options_ |= Release;
-	if (recipe_->value("static"))    options_ |= Static;
 	if (recipe_->value("simulate"))  options_ |= Simulate;
 	if (recipe_->value("blindfold")) options_ |= Blindfold;
 	if (recipe_->value("bootstrap")) options_ |= Bootstrap | Simulate | Blindfold;
@@ -107,68 +101,35 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 	if (recipe_->value("clean"))     options_ |= BuildTests;
 	if (recipe_->value("verbose"))   options_ |= Verbose;
 
-	if (recipe_->value("optimize-speed")) options_ |= OptimizeSpeed;
-	if (recipe_->value("optimize-size"))  options_ |= OptimizeSize;
-	if (recipe_->value("optimize-debug")) options_ |= OptimizeDebug;
-
-	speedOptimizationLevel_ = recipe_->value("speed-optimization-level", -1);
-	sizeOptimizationLevel_ = recipe_->value("size-optimization-level", -1);
-
-	includePaths_ = cast<StringList>(recipe_->value("include-path"));
-	libraryPaths_ = cast<StringList>(recipe_->value("link-path"));
-	libraries_ = cast<StringList>(recipe_->value("link"));
-	if (!includePaths_) includePaths_ = StringList::create();
-	if (!libraryPaths_) libraryPaths_ = StringList::create();
-	if (!libraries_) libraries_ = StringList::create();
-
-	installPrefix_ = recipe_->value("prefix");
-
-	customCompileFlags_ = cast<StringList>(recipe_->value("compile-flags"));
-	customLinkFlags_ = cast<StringList>(recipe_->value("link-flags"));
-	if (!customCompileFlags_) customCompileFlags_ = StringList::create();
-	if (!customLinkFlags_) customLinkFlags_ = StringList::create();
-	if (options_ & Debug) {
-		if (recipe_->contains("debug-compile-flags")) {
-			Ref<StringList> h = cast<StringList>(recipe_->value("debug-compile-flags"));
-			if (h) for (int i = 0; i < h->size(); ++i) customCompileFlags_->append(h->at(i));
-		}
-		if (recipe_->contains("debug-link-flags")) {
-			Ref<StringList> h = cast<StringList>(recipe_->value("debug-link-flags"));
-			if (h) for (int i = 0; i < h->size(); ++i) customLinkFlags_->append(h->at(i));
-		}
-	}
-	else if (options_ & Release) {
-		if (recipe_->contains("release-compile-flags")) {
-			Ref<StringList> h = cast<StringList>(recipe_->value("release-compile-flags"));
-			if (h) for (int i = 0; i < h->size(); ++i) customCompileFlags_->append(h->at(i));
-		}
-		if (recipe_->contains("release-link-flags")) {
-			Ref<StringList> h = cast<StringList>(recipe_->value("release-link-flags"));
-			if (h) for (int i = 0; i < h->size(); ++i) customLinkFlags_->append(h->at(i));
-		}
-	}
-
 	concurrency_ = recipe_->value("concurrency");
+
+	BuildParameters::read(recipe_);
 
 	if (recipe_->hasChildren()) {
 		for (int i = 0; i < recipe_->children()->size(); ++i) {
 			YasonObject *object = recipe_->children()->at(i);
-			if (object->className() != "SystemPrerequisite") continue;
-			Ref<SystemPrerequisite> p = SystemPrerequisite::read(object);
-			Ref<SystemPrerequisiteList> l;
-			if (!systemPrerequisitesByName_)
-				systemPrerequisitesByName_ = SystemPrerequisitesByName::create();
-			if (!systemPrerequisitesByName_->lookup(p->name(), &l))
-				systemPrerequisitesByName_->insert(p->name(), l = SystemPrerequisiteList::create());
-			l->append(p);
+			if (object->className() == "Debug") {
+				if (options_ & Debug) BuildParameters::readSpecific(object);
+			}
+			else if (object->className() == "Release") {
+				if (options_ & Release) BuildParameters::readSpecific(object);
+			}
+			else if (object->className() == "SystemPrerequisite") {
+				Ref<SystemPrerequisite> p = SystemPrerequisite::read(object);
+				Ref<SystemPrerequisiteList> l;
+				if (!systemPrerequisitesByName_)
+					systemPrerequisitesByName_ = SystemPrerequisitesByName::create();
+				if (!systemPrerequisitesByName_->lookup(p->name(), &l))
+					systemPrerequisitesByName_->insert(p->name(), l = SystemPrerequisiteList::create());
+				l->append(p);
+			}
 		}
 	}
 
 	if (parentPlan) {
 		options_ &= ~GlobalOptions;
 		options_ |= parentPlan->options() & GlobalOptions;
-		speedOptimizationLevel_ = parentPlan->speedOptimizationLevel();
-		sizeOptimizationLevel_ = parentPlan->sizeOptimizationLevel();
+		optimize_ = parentPlan->optimize();
 		installPrefix_ = parentPlan->installPrefix_;
 		concurrency_ = parentPlan->concurrency_;
 	}
@@ -238,6 +199,7 @@ void BuildPlan::readPrerequisites()
 		path = path->canonicalPath();
 		Ref<BuildPlan> plan = BuildPlan::create(path);
 		if (plan->options() & Library) {
+			// TODO: handling of Usage objects...
 			path = path->reducePath();
 			if (!includePaths_->contains(path))
 				includePaths_->append(path);
@@ -305,19 +267,10 @@ void BuildPlan::initModules()
 		f << h->reverse()->join("_");
 	}
 	if (version_ != "") f << version_;
-	if (options_ & Static) f << "static";
+	if (linkStatic_) f << "static";
 	if (options_ & Debug) f << "debug";
 	if (options_ & Release) f << "release";
-	if (options_ & OptimizeSpeed) {
-		Format h;
-		h << "optimize" << "speed" << speedOptimizationLevel_;
-		f << h->join("-");
-	}
-	if (options_ & OptimizeSize) {
-		Format h;
-		h << "optimize" << "size" << sizeOptimizationLevel_;
-		f << h->join("-");
-	}
+	if (optimize_ != "") f << "O" + optimize_;
 	if (options_ & Bootstrap)
 		f << "$MACHINE";
 	else
