@@ -24,8 +24,8 @@ public:
 	static Ref<GnuToolChain> create(String compiler);
 
 	virtual String machineCommand() const;
-	virtual int defaultSpeedOptimizationLevel() const;
-	virtual int defaultSizeOptimizationLevel() const;
+
+	virtual String defaultOptimization(BuildPlan *plan) const;
 
 	virtual String analyseCommand(BuildPlan *plan, String source) const;
 	virtual Ref<Job> createAnalyseJob(BuildPlan *plan, String source);

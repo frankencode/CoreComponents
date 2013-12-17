@@ -63,6 +63,7 @@ public:
 	inline Item pop() { Item item; pop(&item); return item; }
 
 	inline void append(const Item &item) { push(size(), item); }
+	inline void append(List *b) { if (b) for (int i = 0; i < b->size(); ++i) append(b->at(i)); }
 	inline void insert(int index, const Item &item) { push(index, item); }
 	inline void remove(int index, Item &item) { pop(index, &item); }
 	inline void remove(int index) { pop(index); }

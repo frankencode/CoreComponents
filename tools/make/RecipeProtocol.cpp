@@ -12,49 +12,66 @@
 namespace fluxmake
 {
 
-class GenericPrototype: public YasonObject
+class BuildParametersPrototype: public YasonObject
 {
+public:
+	static Ref<BuildParametersPrototype> create(const String &className) {
+		return new BuildParametersPrototype(className);
+	}
+
 protected:
-	GenericPrototype(const String &className, YasonProtocol *protocol = 0)
+	BuildParametersPrototype(const String &className, YasonProtocol *protocol = 0)
 		: YasonObject(className, protocol)
 	{
+		insert("compiler", "");
+		insert("optimize", "");
+		insert("static", false);
+
+		insert("include-path", Ref<StringList>());
+		insert("link-path", Ref<StringList>());
+		insert("link", Ref<StringList>());
+
+		insert("compile-flags", Ref<StringList>());
+		insert("link-flags", Ref<StringList>());
+	}
+};
+
+class BuildOptionsPrototype: public BuildParametersPrototype
+{
+protected:
+	static Ref<YasonProtocol> createProtocol(YasonProtocol *protocol) {
+		Ref<YasonProtocol> newProtocol;
+		if (!protocol) protocol = newProtocol = YasonProtocol::create();
+		protocol->add<BuildParametersPrototype>("Debug");
+		protocol->add<BuildParametersPrototype>("Release");
+		return protocol;
+	}
+
+	BuildOptionsPrototype(const String &className, YasonProtocol *protocol = 0)
+		: BuildParametersPrototype(className, createProtocol(protocol))
+	{
 		insert("use", StringList::create());
+		insert("prefix", "/usr");
+
 		insert("debug", false);
 		insert("release", false);
-		insert("static", false);
+
 		insert("simulate", false);
 		insert("blindfold", false);
 		insert("bootstrap", false);
 		insert("install", false);
 		insert("test", false);
 		insert("test-run", false);
-		insert("verbose", false);
-		insert("optimize-speed", false);
-		insert("optimize-size", false);
-		insert("speed-optimization-level", -1);
-		insert("size-optimization-level", -1);
-		insert("include-path", Ref<StringList>());
-		insert("link-path", Ref<StringList>());
-		insert("link", Ref<StringList>());
-		insert("prefix", "/usr");
-
-		insert("compile-flags", Ref<StringList>());
-		insert("link-flags", Ref<StringList>());
-		insert("debug-compile-flags", Ref<StringList>());
-		insert("release-compile-flags", Ref<StringList>());
-		insert("debug-link-flags", Ref<StringList>());
-		insert("release-link-flags", Ref<StringList>());
-
-		insert("compiler", "");
-		insert("concurrency", -1);
-
 		insert("clean", false);
 		insert("install", false);
 		insert("uninstall", false);
+
+		insert("verbose", false);
+		insert("concurrency", -1);
 	}
 };
 
-class SystemPrerequisitePrototype: public YasonObject
+class SystemPrerequisitePrototype: public BuildParametersPrototype
 {
 public:
 	static Ref<YasonObject> create() {
@@ -62,26 +79,27 @@ public:
 	}
 
 protected:
+	static Ref<YasonProtocol> createProtocol() {
+		Ref<YasonProtocol> protocol = YasonProtocol::create();
+		protocol->add<BuildParametersPrototype>("Debug");
+		protocol->add<BuildParametersPrototype>("Release");
+		return protocol;
+	}
+
 	SystemPrerequisitePrototype(const String &className)
-		: YasonObject(className)
+		: BuildParametersPrototype(className, createProtocol())
 	{
 		insert("name", "");
 		insert("value", "");
 		insert("description", "");
 		insert("optional", false);
-		insert("include-path", StringList::create());
-		insert("include-test", StringList::create());
-		insert("link-path", StringList::create());
-		insert("link-test", StringList::create());
-		insert("link", StringList::create());
 
-		insert("compile-flags", StringList::create());
-		insert("debug-compile-flags", StringList::create());
-		insert("release-compile-flags", StringList::create());
+		insert("include-test", StringList::create());
+		insert("link-test", StringList::create());
 	}
 };
 
-class ApplicationPrototype: public GenericPrototype
+class ApplicationPrototype: public BuildOptionsPrototype
 {
 public:
 	static Ref<YasonObject> create() {
@@ -89,14 +107,15 @@ public:
 	}
 
 protected:
-	static Ref<YasonProtocol> createProtocol() {
-		Ref<YasonProtocol> protocol = YasonProtocol::create();
+	static Ref<YasonProtocol> createProtocol(YasonProtocol *protocol) {
+		Ref<YasonProtocol> newProtocol;
+		if (!protocol) protocol = newProtocol = YasonProtocol::create();
 		protocol->add<SystemPrerequisitePrototype>();
 		return protocol;
 	}
 
-	ApplicationPrototype(const String &className)
-		: GenericPrototype(className, createProtocol())
+	ApplicationPrototype(const String &className, YasonProtocol *protocol = 0)
+		: BuildOptionsPrototype(className, createProtocol(protocol))
 	{
 		insert("name", "");
 		insert("alias", StringList::create());
@@ -112,8 +131,14 @@ public:
 	}
 
 protected:
+	static Ref<YasonProtocol> createProtocol() {
+		Ref<YasonProtocol> protocol = YasonProtocol::create();
+		protocol->add<BuildParametersPrototype>("Usage");
+		return protocol;
+	}
+
 	LibraryPrototype(const String &className)
-		: ApplicationPrototype(className)
+		: ApplicationPrototype(className, createProtocol())
 	{
 		insert("version", "0.0.1");
 		insert("header", StringList::create());
@@ -151,7 +176,7 @@ protected:
 	}
 };
 
-class PackagePrototype: public GenericPrototype
+class PackagePrototype: public BuildOptionsPrototype
 {
 public:
 	static Ref<YasonObject> create(const String &className = "Package") {
@@ -160,7 +185,7 @@ public:
 
 protected:
 	PackagePrototype(const String &className)
-		: GenericPrototype(className)
+		: BuildOptionsPrototype(className)
 	{}
 };
 

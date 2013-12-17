@@ -31,8 +31,7 @@ public:
 	inline String machine() const { return machine_; }
 
 	virtual String machineCommand() const = 0;
-	virtual int defaultSpeedOptimizationLevel() const = 0;
-	virtual int defaultSizeOptimizationLevel() const = 0;
+	virtual String defaultOptimization(BuildPlan *plan) const = 0;
 
 	virtual String analyseCommand(BuildPlan *plan, String source) const = 0;
 	virtual Ref<Job> createAnalyseJob(BuildPlan *plan, String source) = 0;

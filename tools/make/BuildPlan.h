@@ -13,6 +13,7 @@
 #include <flux/PrefixTree.h>
 #include <flux/Map.h>
 #include "Module.h"
+#include "BuildParameters.h"
 #include "BuildShell.h"
 #include "ToolChain.h"
 #include "SystemPrerequisite.h"
@@ -37,26 +38,22 @@ using namespace flux;
 class BuildPlan;
 typedef List< Ref<BuildPlan> > BuildPlanList;
 
-class BuildPlan: public Object
+class BuildPlan: public BuildParameters
 {
 public:
 	enum Option {
-		Static        = 1 << 0,
-		Application   = 1 << 1,
-		Library       = 1 << 2,
-		Tools         = 1 << 3,
-		Tests         = 1 << 4,
-		Package       = 1 << 5,
-		Debug         = 1 << 6,
-		Release       = 1 << 7,
-		Simulate      = 1 << 8,
-		Blindfold     = 1 << 9,
-		Bootstrap     = 1 << 10,
-		BuildTests    = 1 << 11,
-		Verbose       = 1 << 12,
-		OptimizeSpeed = 1 << 13,
-		OptimizeSize  = 1 << 14,
-		OptimizeDebug = 1 << 15,
+		Application   = 1 << 0,
+		Library       = 1 << 1,
+		Tools         = 1 << 2,
+		Tests         = 1 << 3,
+		Package       = 1 << 4,
+		Debug         = 1 << 5,
+		Release       = 1 << 6,
+		Simulate      = 1 << 7,
+		Blindfold     = 1 << 8,
+		Bootstrap     = 1 << 9,
+		BuildTests    = 1 << 10,
+		Verbose       = 1 << 11,
 		Unspecified   = -1,
 		GlobalOptions = Debug|
 		                Release|
@@ -64,10 +61,7 @@ public:
 		                Blindfold|
 		                Bootstrap|
 		                BuildTests|
-		                Verbose|
-		                OptimizeSpeed|
-		                OptimizeSize|
-		                OptimizeDebug
+		                Verbose
 	};
 
 	static Ref<BuildPlan> create(int argc, char **argv);
@@ -82,18 +76,10 @@ public:
 	inline StringList *alias() const { return alias_; }
 	inline String version() const { return version_; }
 	inline int options() const { return options_; }
-	inline int speedOptimizationLevel() const { return speedOptimizationLevel_; }
-	inline int sizeOptimizationLevel() const { return sizeOptimizationLevel_; }
 
-	inline StringList *includePaths() const { return includePaths_; }
-	inline StringList *libraryPaths() const { return libraryPaths_; }
-	inline StringList *libraries() const { return libraries_; }
 	inline StringList *sources() const { return sources_; }
 	inline ModuleList *modules() const { return modules_; }
 	inline bool containsCPlusPlus() const { return containsCPlusPlus_; }
-
-	inline StringList *customCompileFlags() const { return customCompileFlags_; }
-	inline StringList *customLinkFlags() const { return customLinkFlags_; }
 
 	inline int concurrency() const { return concurrency_; }
 
@@ -142,17 +128,10 @@ private:
 	Ref<StringList> alias_;
 	String version_;
 	int options_;
-	int speedOptimizationLevel_;
-	int sizeOptimizationLevel_;
 
-	Ref<StringList> includePaths_;
-	Ref<StringList> libraryPaths_;
-	Ref<StringList> libraries_;
 	Ref<StringList> sources_;
 	Ref<ModuleList> modules_;
 	bool containsCPlusPlus_;
-	Ref<StringList> customCompileFlags_;
-	Ref<StringList> customLinkFlags_;
 
 	int concurrency_;
 
