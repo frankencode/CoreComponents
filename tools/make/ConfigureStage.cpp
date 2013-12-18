@@ -54,20 +54,9 @@ bool ConfigureStage::run()
 			if (includePath != "") plan()->includePaths()->append(includePath);
 			if (libraryPath != "") plan()->libraryPaths()->append(libraryPath);
 
-			for (int k = 0; k < prerequisite->libraries()->size(); ++k)
-				plan()->libraries()->append(prerequisite->libraries()->at(k));
-
-			for (int k = 0; k < prerequisite->compileFlags()->size(); ++k)
-				plan()->customCompileFlags()->append(prerequisite->compileFlags()->at(k));
-
-			if (plan()->options() & BuildPlan::Debug) {
-				for (int k = 0; k < prerequisite->debugCompileFlags()->size(); ++k)
-					plan()->customCompileFlags()->append(prerequisite->debugCompileFlags()->at(k));
-			}
-			if (plan()->options() & BuildPlan::Release) {
-				for (int k = 0; k < prerequisite->releaseCompileFlags()->size(); ++k)
-					plan()->customCompileFlags()->append(prerequisite->releaseCompileFlags()->at(k));
-			}
+			plan()->customCompileFlags()->append(prerequisite->customCompileFlags());
+			plan()->customLinkFlags()->append(prerequisite->customLinkFlags());
+			plan()->libraries()->append(prerequisite->libraries());
 		}
 	}
 

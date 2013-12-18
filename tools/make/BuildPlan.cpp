@@ -103,19 +103,13 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
 	concurrency_ = recipe_->value("concurrency");
 
-	BuildParameters::read(recipe_);
+	BuildParameters::read(this, recipe_);
 
 	if (recipe_->hasChildren()) {
 		for (int i = 0; i < recipe_->children()->size(); ++i) {
 			YasonObject *object = recipe_->children()->at(i);
-			if (object->className() == "Debug") {
-				if (options_ & Debug) BuildParameters::readSpecific(object);
-			}
-			else if (object->className() == "Release") {
-				if (options_ & Release) BuildParameters::readSpecific(object);
-			}
-			else if (object->className() == "SystemPrerequisite") {
-				Ref<SystemPrerequisite> p = SystemPrerequisite::read(object);
+			if (object->className() == "SystemPrerequisite") {
+				Ref<SystemPrerequisite> p = SystemPrerequisite::read(this, object);
 				Ref<SystemPrerequisiteList> l;
 				if (!systemPrerequisitesByName_)
 					systemPrerequisitesByName_ = SystemPrerequisitesByName::create();
