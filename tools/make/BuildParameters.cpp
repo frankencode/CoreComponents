@@ -7,12 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "BuildPlan.h"
 #include "BuildParameters.h"
 
 namespace fluxmake
 {
 
-void BuildParameters::read(YasonObject *object)
+void BuildParameters::read(BuildPlan *plan, YasonObject *object)
 {
 	compiler_ = object->value("compiler");
 	optimize_ = object->value("optimize");
@@ -29,6 +30,18 @@ void BuildParameters::read(YasonObject *object)
 	customLinkFlags_ = cast<StringList>(object->value("link-flags"));
 	if (!customCompileFlags_) customCompileFlags_ = StringList::create();
 	if (!customLinkFlags_) customLinkFlags_ = StringList::create();
+
+	if (object->hasChildren()) {
+		for (int i = 0; i < object->children()->size(); ++i) {
+			YasonObject *child = object->children()->at(i);
+			if (child->className() == "Debug") {
+				if (plan->options() && BuildPlan::Debug) readSpecific(child);
+			}
+			else if (child->className() == "Release") {
+				if (plan->options() && BuildPlan::Release) readSpecific(child);
+			}
+		}
+	}
 }
 
 void BuildParameters::readSpecific(YasonObject *object)
@@ -36,8 +49,8 @@ void BuildParameters::readSpecific(YasonObject *object)
 	String specificCompiler = object->value("compiler");
 	if (specificCompiler != "") compiler_ = specificCompiler;
 
-	String optimizeSpecific = object->value("optimize");
-	if (optimizeSpecific != "") optimize_ = optimizeSpecific;
+	String speficicOptimize = object->value("optimize");
+	if (speficicOptimize != "") optimize_ = speficicOptimize;
 
 	if (object->value("static")) linkStatic_ = true;
 

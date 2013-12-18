@@ -17,6 +17,8 @@ namespace fluxmake
 
 using namespace flux;
 
+class BuildPlan;
+
 class BuildParameters: public Object
 {
 public:
@@ -32,7 +34,7 @@ public:
 	inline StringList *customLinkFlags() const { return customLinkFlags_; }
 
 protected:
-	void read(YasonObject *object);
+	void read(BuildPlan *plan, YasonObject *object);
 	void readSpecific(YasonObject *object);
 
 	String compiler_;
