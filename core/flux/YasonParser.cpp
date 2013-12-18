@@ -106,7 +106,7 @@ YasonParser::YasonParser()
 							GLUE(
 								REPEAT(
 									CHOICE(
-										RANGE(" \t\r"),
+										RANGE(" \t\r}"),
 										INLINE("CommentLine"),
 										INLINE("CommentText")
 									)
