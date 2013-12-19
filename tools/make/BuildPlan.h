@@ -72,19 +72,21 @@ public:
 	inline String modulePath() const { return modulePath_; }
 	inline Config *recipe() const { return recipe_; }
 
+	inline int options() const { return options_; }
+	inline int concurrency() const { return concurrency_; }
+
 	inline String name() const { return name_; }
 	inline StringList *alias() const { return alias_; }
 	inline String version() const { return version_; }
-	inline int options() const { return options_; }
 
 	inline StringList *sources() const { return sources_; }
 	inline ModuleList *modules() const { return modules_; }
 	inline bool containsCPlusPlus() const { return containsCPlusPlus_; }
 
-	inline int concurrency() const { return concurrency_; }
-
 	inline BuildPlanList *prerequisites() const { return prerequisites_; }
 	inline SystemPrerequisitesByName *systemPrerequisitesByName() const { return systemPrerequisitesByName_; }
+
+	inline BuildParameters *usage() const { return usage_; }
 
 	int run();
 
@@ -124,19 +126,21 @@ private:
 	String modulePath_;
 	Ref<Config> recipe_;
 
+	int options_;
+	int concurrency_;
+
 	String name_;
 	Ref<StringList> alias_;
 	String version_;
-	int options_;
 
 	Ref<StringList> sources_;
 	Ref<ModuleList> modules_;
 	bool containsCPlusPlus_;
 
-	int concurrency_;
-
 	Ref<SystemPrerequisitesByName> systemPrerequisitesByName_;
 	Ref<BuildPlanList> prerequisites_;
+
+	Ref<BuildParameters> usage_;
 
 	Ref<BuildMap> buildMap_;
 	String sourcePrefix_;

@@ -13,7 +13,7 @@
 namespace fluxmake
 {
 
-void BuildParameters::read(BuildPlan *plan, YasonObject *object)
+void BuildParameters::read(YasonObject *object, BuildPlan *plan)
 {
 	compiler_ = object->value("compiler");
 	optimize_ = object->value("optimize");
@@ -46,20 +46,23 @@ void BuildParameters::read(BuildPlan *plan, YasonObject *object)
 
 void BuildParameters::readSpecific(YasonObject *object)
 {
-	String specificCompiler = object->value("compiler");
-	if (specificCompiler != "") compiler_ = specificCompiler;
+	Ref<BuildParameters> specific = BuildParameters::create();
+	specific->read(object);
+	readSpecific(specific);
+}
 
-	String speficicOptimize = object->value("optimize");
-	if (speficicOptimize != "") optimize_ = speficicOptimize;
+void BuildParameters::readSpecific(BuildParameters *specific)
+{
+	if (specific->compiler() != "") compiler_ = specific->compiler();
+	if (specific->optimize() != "") optimize_ = specific->optimize();
+	if (specific->linkStatic()) linkStatic_ = true;
 
-	if (object->value("static")) linkStatic_ = true;
+	includePaths_->append(specific->includePaths());
+	libraryPaths_->append(specific->libraryPaths());
+	libraries_->append(specific->libraries());
 
-	includePaths_->append(cast<StringList>(object->value("include-path")));
-	libraryPaths_->append(cast<StringList>(object->value("link-path")));
-	libraries_->append(cast<StringList>(object->value("link")));
-
-	customCompileFlags_->append(cast<StringList>(object->value("compile-flags")));
-	customLinkFlags_->append(cast<StringList>(object->value("link-flags")));
+	customCompileFlags_->append(specific->customCompileFlags());
+	customLinkFlags_->append(specific->customLinkFlags());
 }
 
 } // namespace fluxmake

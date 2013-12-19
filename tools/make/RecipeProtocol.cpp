@@ -36,8 +36,13 @@ protected:
 	}
 };
 
-class BuildOptionsPrototype: public BuildParametersPrototype
+class SpecificBuildParametersPrototype: public BuildParametersPrototype
 {
+public:
+	static Ref<SpecificBuildParametersPrototype> create(const String &className) {
+		return new SpecificBuildParametersPrototype(className);
+	}
+
 protected:
 	static Ref<YasonProtocol> createProtocol(YasonProtocol *protocol) {
 		Ref<YasonProtocol> newProtocol;
@@ -47,8 +52,16 @@ protected:
 		return protocol;
 	}
 
-	BuildOptionsPrototype(const String &className, YasonProtocol *protocol = 0)
+	SpecificBuildParametersPrototype(const String &className, YasonProtocol *protocol = 0)
 		: BuildParametersPrototype(className, createProtocol(protocol))
+	{}
+};
+
+class BuildOptionsPrototype: public SpecificBuildParametersPrototype
+{
+protected:
+	BuildOptionsPrototype(const String &className, YasonProtocol *protocol = 0)
+		: SpecificBuildParametersPrototype(className, protocol)
 	{
 		insert("use", StringList::create());
 		insert("prefix", "/usr");
@@ -71,7 +84,7 @@ protected:
 	}
 };
 
-class SystemPrerequisitePrototype: public BuildParametersPrototype
+class SystemPrerequisitePrototype: public SpecificBuildParametersPrototype
 {
 public:
 	static Ref<YasonObject> create() {
@@ -79,15 +92,8 @@ public:
 	}
 
 protected:
-	static Ref<YasonProtocol> createProtocol() {
-		Ref<YasonProtocol> protocol = YasonProtocol::create();
-		protocol->add<BuildParametersPrototype>("Debug");
-		protocol->add<BuildParametersPrototype>("Release");
-		return protocol;
-	}
-
 	SystemPrerequisitePrototype(const String &className)
-		: BuildParametersPrototype(className, createProtocol())
+		: SpecificBuildParametersPrototype(className)
 	{
 		insert("name", "");
 		insert("value", "");
@@ -133,7 +139,7 @@ public:
 protected:
 	static Ref<YasonProtocol> createProtocol() {
 		Ref<YasonProtocol> protocol = YasonProtocol::create();
-		protocol->add<BuildParametersPrototype>("Usage");
+		protocol->add<SpecificBuildParametersPrototype>("Usage");
 		return protocol;
 	}
 

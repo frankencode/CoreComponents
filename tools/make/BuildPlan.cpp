@@ -103,13 +103,20 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
 	concurrency_ = recipe_->value("concurrency");
 
-	BuildParameters::read(this, recipe_);
+	if (parentPlan) {
+		options_ &= ~GlobalOptions;
+		options_ |= parentPlan->options() & GlobalOptions;
+		concurrency_ = parentPlan->concurrency_;
+		installPrefix_ = parentPlan->installPrefix_;
+	}
+
+	BuildParameters::read(recipe_, this);
 
 	if (recipe_->hasChildren()) {
 		for (int i = 0; i < recipe_->children()->size(); ++i) {
 			YasonObject *object = recipe_->children()->at(i);
 			if (object->className() == "SystemPrerequisite") {
-				Ref<SystemPrerequisite> p = SystemPrerequisite::read(this, object);
+				Ref<SystemPrerequisite> p = SystemPrerequisite::read(object, this);
 				Ref<SystemPrerequisiteList> l;
 				if (!systemPrerequisitesByName_)
 					systemPrerequisitesByName_ = SystemPrerequisitesByName::create();
@@ -117,15 +124,17 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 					systemPrerequisitesByName_->insert(p->name(), l = SystemPrerequisiteList::create());
 				l->append(p);
 			}
+			else if (object->className() == "Usage") {
+				usage_ = BuildParameters::create();
+				usage_->read(object, this);
+				BuildParameters::readSpecific(usage_);
+			}
 		}
 	}
 
 	if (parentPlan) {
-		options_ &= ~GlobalOptions;
-		options_ |= parentPlan->options() & GlobalOptions;
 		optimize_ = parentPlan->optimize();
-		installPrefix_ = parentPlan->installPrefix_;
-		concurrency_ = parentPlan->concurrency_;
+		linkStatic_ = parentPlan->linkStatic();
 	}
 }
 
@@ -187,19 +196,22 @@ void BuildPlan::readPrerequisites()
 
 	StringList *prerequisitePaths = cast<StringList>(recipe_->value("use"));
 
-	for (int i = 0; i < prerequisitePaths->size(); ++i) {
+	for (int i = 0; i < prerequisitePaths->size(); ++i)
+	{
 		String path = prerequisitePaths->at(i);
 		if (path->isRelativePath()) path = projectPath_ + "/" + path;
 		path = path->canonicalPath();
 		Ref<BuildPlan> plan = BuildPlan::create(path);
+
 		if (plan->options() & Library) {
-			// TODO: handling of Usage objects...
 			path = path->reducePath();
 			if (!includePaths_->contains(path))
 				includePaths_->append(path);
 			if (!libraryPaths_->contains("."))
 				libraryPaths_->append(".");
 			libraries_->append(plan->name());
+
+			if (plan->usage()) BuildParameters::readSpecific(plan->usage());
 		}
 		plan->readPrerequisites();
 		prerequisites_->append(plan);
