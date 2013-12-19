@@ -22,6 +22,11 @@ class BuildPlan;
 class BuildParameters: public Object
 {
 public:
+	inline static Ref<BuildParameters> create() { return new BuildParameters; }
+	void read(YasonObject *object, BuildPlan *plan = 0);
+	void readSpecific(YasonObject *object);
+	void readSpecific(BuildParameters *specific);
+
 	inline String compiler() const { return compiler_; }
 	inline String optimize() const { return optimize_; }
 	inline bool linkStatic() const { return linkStatic_; }
@@ -34,8 +39,7 @@ public:
 	inline StringList *customLinkFlags() const { return customLinkFlags_; }
 
 protected:
-	void read(BuildPlan *plan, YasonObject *object);
-	void readSpecific(YasonObject *object);
+	BuildParameters() {}
 
 	String compiler_;
 	String optimize_;

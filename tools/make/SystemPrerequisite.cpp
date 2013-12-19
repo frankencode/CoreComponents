@@ -13,12 +13,12 @@
 namespace fluxmake
 {
 
-Ref<SystemPrerequisite> SystemPrerequisite::read(BuildPlan *plan, YasonObject *object)
+Ref<SystemPrerequisite> SystemPrerequisite::read(YasonObject *object, BuildPlan *plan)
 {
-	return new SystemPrerequisite(plan, object);
+	return new SystemPrerequisite(object, plan);
 }
 
-SystemPrerequisite::SystemPrerequisite(BuildPlan *plan, YasonObject *object)
+SystemPrerequisite::SystemPrerequisite(YasonObject *object, BuildPlan *plan)
 	: name_(object->value("name")),
 	  value_(object->value("value")),
 	  description_(object->value("description")),
@@ -29,7 +29,7 @@ SystemPrerequisite::SystemPrerequisite(BuildPlan *plan, YasonObject *object)
 	if (name_ == "" && libraries_->size() == 1)
 		name_ = libraries_->at(0);
 	if (name_ == "") name_ = hex(uint64_t(this));
-	BuildParameters::read(plan, object);
+	BuildParameters::read(object, plan);
 }
 
 } // namespace fluxmake
