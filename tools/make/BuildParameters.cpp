@@ -40,6 +40,35 @@ void BuildParameters::read(YasonObject *object, BuildPlan *plan)
 			else if (child->className() == "Release") {
 				if (plan->options() && BuildPlan::Release) readSpecific(child);
 			}
+			else {
+				#ifdef __linux
+				if (child->className() == "Linux") readSpecific(child);
+				#endif
+				#ifdef __OpenBSD__
+				if (child->className() == "OpenBSD") readSpecific(child);
+				#endif
+				#ifdef __FreeBSD__
+				if (child->className() == "FreeBSD") readSpecific(child);
+				#endif
+				#ifdef __NetBSD__
+				if (child->className() == "NetBSD") readSpecific(child);
+				#endif
+				#ifdef __DragonFly__
+				if (child->className() == "DragonFly") readSpecific(child);
+				#endif
+				#ifdef __APPLE__
+				if (child->className() == "MacOSX") readSpecific(child);
+				#endif
+				#ifdef __sun
+				if (child->className() == "Solaris") readSpecific(child);
+				#endif
+				#ifdef __MACH__
+				if (child->className() == "Mach") readSpecific(child);
+				#endif
+				#ifdef __hpux
+				if (child->className() == "HPUX") readSpecific(child);
+				#endif
+			}
 		}
 	}
 }

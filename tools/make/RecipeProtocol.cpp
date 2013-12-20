@@ -47,8 +47,13 @@ protected:
 	static Ref<YasonProtocol> createProtocol(YasonProtocol *protocol) {
 		Ref<YasonProtocol> newProtocol;
 		if (!protocol) protocol = newProtocol = YasonProtocol::create();
-		protocol->add<BuildParametersPrototype>("Debug");
-		protocol->add<BuildParametersPrototype>("Release");
+		const char *paramClasses[] = {
+			"Debug", "Release",
+			"Linux", "OpenBSD", "FreeBSD", "NetBSD", "DragonFly",
+			"MacOSX", "Solaris", "Mach", "HPUX"
+		};
+		for (int i = 0, n = sizeof(paramClasses) / sizeof(paramClasses[0]); i < n; ++i)
+			protocol->add<BuildParametersPrototype>(paramClasses[i]);
 		return protocol;
 	}
 
