@@ -77,6 +77,13 @@ public:
 		return found;
 	}
 
+	inline bool removeAt(int index) {
+		Node *node = 0;
+		if (!tree_.lookupByIndex(index, &node)) return false;
+		tree_.remove(node);
+		return true;
+	}
+
 	/** Insert or overwrite a key-value mapping.
 	  */
 	inline void establish(const Key &key, const Value &value) {

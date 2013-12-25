@@ -30,7 +30,8 @@ Ref<ClientConnection> ClientConnection::create(StreamSocket *socket)
 ClientConnection::ClientConnection(StreamSocket *socket)
 	: requestStream_(RequestStream::open(socket)),
 	  stream_(requestStream_),
-	  address_(SocketAddress::getRemoteAddress(socket))
+	  address_(SocketAddress::getRemoteAddress(socket)),
+	  visit_(Visit::create(address_))
 {
 	if (errorLog()->level() >= DebugLogLevel) {
 		Ref<Stream> requestBuffer =TapBuffer::open(errorLog()->debugStream(), address_->networkAddress() + " > ");

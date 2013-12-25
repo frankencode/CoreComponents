@@ -30,7 +30,7 @@ bool TimeoutLimiter::readyRead(double interval) const
 
 int TimeoutLimiter::read(ByteArray *buf)
 {
-	double interval = timeout_- System::now();
+	double interval = timeout_ - System::now();
 	if (interval <= 0 || !stream_->readyRead(interval))
 		throw TimeoutExceeded();
 	return stream_->read(buf);

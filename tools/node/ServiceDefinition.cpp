@@ -25,8 +25,9 @@ ServicePrototype::ServicePrototype(String className, YasonProtocol *protocol)
 	insert("connection_timeout", 30.);
 	insert("host", "");
 	insert("uri", "");
-	insert("error_log", LogPrototype::create());
+	insert("error_log",  LogPrototype::create());
 	insert("access_log", LogPrototype::create());
+	insert("visit_log",  LogPrototype::create());
 }
 
 } // namespace fluxnode

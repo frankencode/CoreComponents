@@ -27,6 +27,13 @@ int main()
 			fout() << nl;
 			check(a == b);
 		}
+
+		fout() << fixed(1.23, 3) << nl;
+		fout() << fixed(-10.01, 4) << nl;
+		fout() << fixed(0.01, 2) << nl;
+		check(fixed(1.23, 3) == "1.230");
+		check(fixed(-10.01, 4) == "-10.0100");
+		check(fixed(0.01, 2) == "0.01");
 	}
 	{
 		fout() << "Testing variants..." << nl;

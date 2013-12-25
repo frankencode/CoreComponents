@@ -19,6 +19,7 @@
 #include "WorkerPool.h"
 #include "ServiceRegistry.h"
 #include "DispatchInstance.h"
+#include "ConnectionManager.h"
 #include "NodeMaster.h"
 
 namespace fluxnode
@@ -65,7 +66,7 @@ void NodeMaster::runNode(int argc, char **argv)
 		Process::daemonize();
 
 	errorLog()->open(nodeConfig()->errorLogConfig());
-	accessLog()->open(nodeConfig()->accessLogConfig());
+	// accessLog()->open(nodeConfig()->accessLogConfig());
 
 	FLUXNODE_NOTICE() << "Starting..." << nl;
 
@@ -95,11 +96,13 @@ void NodeMaster::runNode(int argc, char **argv)
 		nodeConfig()->serviceInstances()->append(echoInstance);
 	}
 
+	Ref<ConnectionManager> connectionManager = ConnectionManager::create(nodeConfig()->serviceWindow());
+
 	dispatchInstance->workerPools_ = WorkerPools::create(nodeConfig()->serviceInstances()->size());
 	for (int i = 0; i < nodeConfig()->serviceInstances()->size(); ++i)
-		dispatchInstance->workerPools_->at(i) = WorkerPool::create(nodeConfig()->serviceInstances()->at(i));
+		dispatchInstance->workerPools_->at(i) = WorkerPool::create(nodeConfig()->serviceInstances()->at(i), connectionManager->closedConnections());
 
-	Ref<WorkerPool> dispatchPool = WorkerPool::create(dispatchInstance);
+	Ref<WorkerPool> dispatchPool = WorkerPool::create(dispatchInstance, connectionManager->closedConnections());
 
 	typedef List< Ref<StreamSocket> > ListeningSockets;
 	Ref<ListeningSockets> listeningSockets = ListeningSockets::create(nodeConfig()->address()->size());
@@ -115,7 +118,7 @@ void NodeMaster::runNode(int argc, char **argv)
 		Process::setUserId(user->id());
 	}
 
-	FLUXNODE_DEBUG() << "Accepting connections..." << nl;
+	FLUXNODE_DEBUG() << "Accepting connections with a service window of " << nodeConfig()->serviceWindow() << "s..." << nl;
 
 	try {
 		Ref<IoMonitor> ioMonitor = IoMonitor::create();
@@ -129,11 +132,13 @@ void NodeMaster::runNode(int argc, char **argv)
 					StreamSocket *socket = listeningSockets->at(i);
 					if (ioMonitor->readyAccept()->contains(socket)) {
 						Ref<ClientConnection> client = ClientConnection::create(socket->accept());
-						FLUXNODE_DEBUG() << "Accepted connection from " << client->address() << nl;
+						connectionManager->prioritize(client);
+						FLUXNODE_DEBUG() << "Accepted connection from " << client->address() << " with priority " << client->priority() << nl;
 						dispatchPool->dispatch(client);
 					}
 				}
 			}
+			connectionManager->cycle();
 		}
 	}
 	catch (Interrupt &ex) {

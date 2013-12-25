@@ -31,6 +31,7 @@ protected:
 		insert("user", "");
 		insert("version", "Fnode/0.0.1");
 		insert("daemon", false);
+		insert("service_window", 30);
 		insert("error_log", LogPrototype::create());
 		insert("access_log", LogPrototype::create());
 	}

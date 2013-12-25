@@ -12,6 +12,7 @@
 
 #include <flux/Thread.h>
 #include <flux/Channel.h>
+#include <flux/PriorityQueue.h>
 #include <flux/StreamSocket.h>
 #include <flux/Map.h>
 #include "ClientConnection.h"
@@ -23,8 +24,8 @@ using namespace flux;
 
 class ServiceWorker;
 
-typedef Channel< Ref<ClientConnection> > PendingConnections;
-typedef Channel< Ref<SocketAddress> > ClosedConnections;
+typedef Channel< Ref<ClientConnection>, PriorityQueue > PendingConnections;
+typedef Channel< Ref<Visit> > ClosedConnections;
 
 class ServiceInstance;
 class ServiceDelegate;
@@ -48,6 +49,7 @@ private:
 	~ServiceWorker();
 
 	static void logDelivery(ClientConnection *client, int statusCode, size_t bytesWritten = 0);
+	static void logVisit(Visit *visit);
 	virtual void run();
 
 	Ref<ServiceInstance> serviceInstance_;

@@ -31,6 +31,7 @@ public:
 	inline String user() const { return user_; }
 	inline String version() const { return version_; }
 	inline bool daemon() const { return daemon_; }
+	inline int serviceWindow() const { return serviceWindow_; }
 
 	inline LogConfig *errorLogConfig() const { return errorLogConfig_; }
 	inline LogConfig *accessLogConfig() const { return accessLogConfig_; }
@@ -47,6 +48,7 @@ private:
 	String user_;
 	String version_;
 	bool daemon_;
+	int serviceWindow_;
 
 	Ref<LogConfig> errorLogConfig_;
 	Ref<LogConfig> accessLogConfig_;

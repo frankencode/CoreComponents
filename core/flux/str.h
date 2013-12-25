@@ -50,6 +50,7 @@ String inum(T x, int base = 10, int n = -1)
 }
 
 String fnum(float64_t x, int precision = 16, int base = 10, int screen = 6);
+String fixed(float64_t x, int nf);
 
 template<class T>
 inline String dec(T x, int n = -1) { return inum(x, 10, n); }

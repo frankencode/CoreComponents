@@ -11,19 +11,20 @@
 #include "ErrorLog.h"
 #include "NodeConfig.h"
 #include "ServiceInstance.h"
+#include "ConnectionManager.h"
 #include "WorkerPool.h"
 
 namespace fluxnode
 {
 
-Ref<WorkerPool> WorkerPool::create(ServiceInstance *serviceInstance)
+Ref<WorkerPool> WorkerPool::create(ServiceInstance *serviceInstance, ClosedConnections *closedConnections)
 {
-	return new WorkerPool(serviceInstance);
+	return new WorkerPool(serviceInstance, closedConnections);
 }
 
-WorkerPool::WorkerPool(ServiceInstance *serviceInstance)
-	: serviceInstance_(serviceInstance),
-	  closedConnections_(ClosedConnections::create()),
+WorkerPool::WorkerPool(ServiceInstance *serviceInstance, ClosedConnections *closedConnections)
+	: closedConnections_(closedConnections),
+	  serviceInstance_(serviceInstance),
 	  serviceWorkers_(ServiceWorkers::create(serviceInstance->concurrency()))
 {
 	FLUXNODE_DEBUG()
@@ -51,7 +52,7 @@ void WorkerPool::dispatch(ClientConnection *client)
 	for (int i = 0; i < serviceWorkers_->size(); ++i) {
 		ServiceWorker *worker = serviceWorkers_->at(i);
 		if (worker->pendingConnections()->size() == 0) {
-			worker->pendingConnections()->push(client);
+			worker->pendingConnections()->push(client, client->priority());
 			return;
 		}
 	}
@@ -66,8 +67,8 @@ void WorkerPool::dispatch(ClientConnection *client)
 		}
 	}
 
-	FLUXNODE_DEBUG() << "Assigning client connection to " << workerCandidate->serviceInstance()->serviceName() << " service worker " << (void*)workerCandidate << nl;
-	workerCandidate->pendingConnections()->push(client);
+	FLUXNODE_DEBUG() << "Assigning client connection to " << workerCandidate->serviceInstance()->serviceName() << " service worker " << (void *)workerCandidate << nl;
+	workerCandidate->pendingConnections()->push(client, client->priority());
 }
 
 } // namespace fluxnode
