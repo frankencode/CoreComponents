@@ -153,7 +153,7 @@ String SocketAddress::networkAddress() const
 		else
 			FLUX_THROW(NetworkingException, "Unsupported address family");
 
-		sz = inet_ntop(addr_.sa_family, const_cast<void*>(addr), buf, bufSize);
+		sz = inet_ntop(addr_.sa_family, const_cast<void *>(addr), buf, bufSize);
 		if (!sz)
 			FLUX_THROW(NetworkingException, "Illegal binary address format");
 
@@ -288,6 +288,22 @@ String SocketAddress::hostName()
 		name = buf;
 	}
 	return name;
+}
+
+uint64_t SocketAddress::networkPrefix() const
+{
+	uint64_t prefix = 0;
+	if (family() == AF_INET) {
+		prefix = endianGate(inet4Address_.sin_addr.s_addr);
+	}
+	else if (family() == AF_INET6) {
+		uint8_t const *a = inet6Address_.sin6_addr.s6_addr;
+		for (int i = 0; i < 8; ++i) {
+			prefix <<= 8;
+			prefix |= a[i];
+		}
+	}
+	return prefix;
 }
 
 struct sockaddr *SocketAddress::addr() { return &addr_; }

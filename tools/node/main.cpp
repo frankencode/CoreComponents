@@ -15,6 +15,7 @@ using namespace fluxnode;
 
 int main(int argc, char **argv)
 {
+	String toolName = String(argv[0])->fileName();
 	int exitCode = 0;
 	try {
 		exitCode = nodeMaster()->run(argc, argv);
@@ -30,10 +31,10 @@ int main(int argc, char **argv)
 			"  -protocol  protocol: IPv4 or IPv6 (default both)\n"
 			"  -user      switch to user after opening listening socket\n"
 			"  -daemon    start as a daemon\n"
-		) << String(argv[0])->fileName();
+		) << toolName;
 	}
 	catch (UserError &ex) {
-		ferr("%%\n") << ex.what();
+		ferr() << toolName << ": " << ex.what() << nl;
 		exitCode = 7;
 	}
 	return exitCode;

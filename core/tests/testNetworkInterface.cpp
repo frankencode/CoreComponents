@@ -27,7 +27,7 @@ int main()
 		if (addressList) {
 			for (int k = 0; k < addressList->size(); ++k) {
 				SocketAddress *address = addressList->at(k);
-				fout() << "  Addr:   " << address;
+				fout() << "  Addr:   " << address << " (0x" << hex(address->networkPrefix()) << ")";
 				SocketAddressEntry *addressEntry = cast<SocketAddressEntry>(address);
 				if (addressEntry) {
 					bool comma = false;

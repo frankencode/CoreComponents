@@ -11,6 +11,7 @@
 #define FLUXNODE_CLIENTCONNECTION_H
 
 #include <flux/StreamSocket.h>
+#include "Visit.h"
 #include "Request.h"
 
 namespace fluxnode
@@ -37,6 +38,9 @@ public:
 	void setupTimeout(double interval);
 	bool isPayloadConsumed() const;
 
+	inline Visit *visit() const { return visit_; }
+	inline int priority() const { return visit_->priority(); }
+
 private:
 	friend class ServiceWorker;
 
@@ -48,6 +52,8 @@ private:
 	Ref<Stream> stream_;
 	Ref<SocketAddress> address_;
 	Ref<Request> request_, pendingRequest_;
+
+	Ref<Visit> visit_;
 };
 
 } // namespace fluxnode

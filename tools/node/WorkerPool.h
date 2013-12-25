@@ -18,20 +18,20 @@ namespace fluxnode
 class WorkerPool: public Object
 {
 public:
-	static Ref<WorkerPool> create(ServiceInstance *serviceInstance);
+	static Ref<WorkerPool> create(ServiceInstance *serviceInstance, ClosedConnections *closedConnections);
 
 	inline ServiceInstance *serviceInstance() const { return serviceInstance_; }
 
 	void dispatch(ClientConnection *client);
 
 private:
-	WorkerPool(ServiceInstance *serviceInstance);
+	WorkerPool(ServiceInstance *serviceInstance, ClosedConnections *closedConnections);
 	~WorkerPool();
 
-	Ref<ServiceInstance> serviceInstance_;
-	Ref<ClosedConnections> closedConnections_;
-
 	typedef Array< Ref<ServiceWorker> > ServiceWorkers;
+
+	Ref<ClosedConnections> closedConnections_;
+	Ref<ServiceInstance> serviceInstance_;
 	Ref<ServiceWorkers> serviceWorkers_;
 };
 

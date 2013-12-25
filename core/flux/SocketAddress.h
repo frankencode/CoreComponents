@@ -102,6 +102,11 @@ public:
 	  */
 	static String hostName();
 
+	/** Returns the network prefix of an IPv6 address (the first 64 bits).
+	  * For IPv4 addresses the entire address is returned.
+	  */
+	uint64_t networkPrefix() const;
+
 	struct sockaddr *addr();
 	const struct sockaddr *addr() const;
 	int addrLen() const;

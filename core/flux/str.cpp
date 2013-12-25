@@ -140,6 +140,21 @@ String fnum(float64_t x, int precision, int base, int screen)
 	return text;
 }
 
+String fixed(float64_t x, int nf)
+{
+	double ip;
+	double fp = modf(x, &ip);
+	String sip = inum(int64_t(ip));
+	if (nf <= 0) return sip;
+	String s = String(sip->size() + 1 + nf, '.');
+	*s = *sip;
+	if (fp < 0) fp = -fp;
+	for (int i = 0; i < nf; ++i) fp *= 10;
+	fp = round(fp);
+	*ByteRange(s, sip->size() + 1, s->size()) = *right(inum(uint64_t(fp)), nf, '0');
+	return s;
+}
+
 String dec(const Variant &x, int n)
 {
 	return (type(x) == Variant::FloatType) ?

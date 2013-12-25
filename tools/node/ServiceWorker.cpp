@@ -7,7 +7,6 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/Memory.h>
 #include <flux/Format.h>
 #include <flux/RefGuard.h>
 #include <flux/System.h>
@@ -15,6 +14,7 @@
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "AccessLog.h"
+#include "VisitLog.h"
 #include "NodeConfig.h"
 #include "ServiceDefinition.h"
 #include "ServiceDelegate.h"
@@ -60,15 +60,26 @@ void ServiceWorker::logDelivery(ClientConnection *client, int statusCode, size_t
 		<< "\"" << requestLine << "\" "
 		<< statusCode << " " << bytesWritten << " "
 		<< "\"" << userAgent << "\" "
+		<< client->priority()
 		<< nl;
+}
+
+void ServiceWorker::logVisit(Visit *visit)
+{
+	Stream *stream = (visit->priority() == 0) ? visitLog()->noticeStream() : visitLog()->infoStream();
+	Format(stream) << visit->remoteAddress()->networkAddress() << " " << fixed(visit->departureTime() - visit->arrivalTime(), 3) << " " << visit->priority() << nl;
 }
 
 void ServiceWorker::run()
 {
 	errorLog()->open(serviceInstance_->errorLogConfig());
 	accessLog()->open(serviceInstance_->accessLogConfig());
+	visitLog()->open(serviceInstance_->visitLogConfig());
 
-	while (pendingConnections_->pop(&client_)) {
+	while (pendingConnections_->pop(&client_))
+	{
+		Ref<Visit> visit;
+
 		try {
 			if (serviceInstance_->connectionTimeout() > 0) {
 				FLUXNODE_DEBUG() << "Establishing connection timeout of " << serviceInstance_->connectionTimeout() << "s..." << nl;
@@ -83,6 +94,7 @@ void ServiceWorker::run()
 					serviceDelegate_->process(request);
 					response_->end();
 					if (response_->delivered()) {
+						visit = client_->visit();
 						logDelivery(client_, response_->statusCode(), response_->bytesWritten());
 						if (!client_->isPayloadConsumed())
 							close();
@@ -111,7 +123,12 @@ void ServiceWorker::run()
 		catch (TimeoutExceeded &) { FLUXNODE_DEBUG() << "Connection timed out (" << client_->address() << ")" << nl; }
 		catch (CloseRequest &) {}
 		close();
-		// closedConnections_->push(clientAddress); // TODO
+
+		if (visit) {
+			visit->updateDepartureTime();
+			logVisit(visit);
+			closedConnections_->push(visit);
+		}
 	}
 }
 

@@ -20,7 +20,7 @@ template<class T>
 class PriorityQueue: public Object
 {
 public:
-	Ref<PriorityQueue> create() { return new PriorityQueue; }
+	inline static Ref<PriorityQueue> create() { return new PriorityQueue; }
 
 	inline void pushBack(const T &item, int priority = 0)
 	{
@@ -62,7 +62,7 @@ public:
 
 private:
 	PriorityQueue()
-		: queueByPriorty_(QueueByPriority::create()),
+		: queueByPriority_(QueueByPriority::create()),
 		  size_(0)
 	{}
 
@@ -81,7 +81,7 @@ private:
 	Ref< Queue<T> > outputQueue()
 	{
 		--size_;
-		QueueByPriority::Item pair = queueByPriority_->at(queueByPriority_->size() - 1);
+		typename QueueByPriority::Item pair = queueByPriority_->at(queueByPriority_->size() - 1);
 		if (pair->value()->size() == 1) queueByPriority_->remove(pair->key());
 		return pair->value();
 	}

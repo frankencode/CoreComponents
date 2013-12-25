@@ -38,6 +38,7 @@ public:
 
 	inline LogConfig *errorLogConfig() const { return errorLogConfig_; }
 	inline LogConfig *accessLogConfig() const { return accessLogConfig_; }
+	inline LogConfig *visitLogConfig() const { return visitLogConfig_; }
 
 protected:
 	ServiceInstance(YasonObject *config);
@@ -51,6 +52,7 @@ protected:
 
 	Ref<LogConfig> errorLogConfig_;
 	Ref<LogConfig> accessLogConfig_;
+	Ref<LogConfig> visitLogConfig_;
 };
 
 typedef List< Ref<ServiceInstance> > ServiceInstances;
