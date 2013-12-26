@@ -1,90 +1,106 @@
 #!/bin/sh -ex
 SOURCE=$1
-MACHINE=$(g++ -dumpmachine)
-mkdir -p .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE
-mkdir -p .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/AbnfSyntaxDefinition.o $SOURCE/core/fkit/AbnfSyntaxDefinition.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Base64.o $SOURCE/core/fkit/Base64.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/ByteArray.o $SOURCE/core/fkit/ByteArray.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Condition.o $SOURCE/core/fkit/Condition.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Date.o $SOURCE/core/fkit/Date.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Crc32.o $SOURCE/core/fkit/Crc32.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Config.o $SOURCE/core/fkit/Config.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Dir.o $SOURCE/core/fkit/Dir.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Event.o $SOURCE/core/fkit/Event.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/DirWalker.o $SOURCE/core/fkit/DirWalker.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Exception.o $SOURCE/core/fkit/Exception.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/ExitEvent.o $SOURCE/core/fkit/ExitEvent.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/FileLock.o $SOURCE/core/fkit/FileLock.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/File.o $SOURCE/core/fkit/File.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Format.o $SOURCE/core/fkit/Format.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/FileStatus.o $SOURCE/core/fkit/FileStatus.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/FloatLiteral.o $SOURCE/core/fkit/FloatLiteral.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/FormatSpecifier.o $SOURCE/core/fkit/FormatSpecifier.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Glob.o $SOURCE/core/fkit/Glob.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/GlobalCoreMutex.o $SOURCE/core/fkit/GlobalCoreMutex.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/InetAddressSyntax.o $SOURCE/core/fkit/InetAddressSyntax.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/IntegerLiteral.o $SOURCE/core/fkit/IntegerLiteral.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Group.o $SOURCE/core/fkit/Group.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/LineSource.o $SOURCE/core/fkit/LineSource.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/IoMonitor.o $SOURCE/core/fkit/IoMonitor.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/JsonWriter.o $SOURCE/core/fkit/JsonWriter.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Mutex.o $SOURCE/core/fkit/Mutex.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Memory.o $SOURCE/core/fkit/Memory.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/NetworkInterface.o $SOURCE/core/fkit/NetworkInterface.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/NullStream.o $SOURCE/core/fkit/NullStream.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/PatternExpression.o $SOURCE/core/fkit/PatternExpression.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Pattern.o $SOURCE/core/fkit/Pattern.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/ProcessStatus.o $SOURCE/core/fkit/ProcessStatus.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Process.o $SOURCE/core/fkit/Process.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/ProcessFactory.o $SOURCE/core/fkit/ProcessFactory.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Random.o $SOURCE/core/fkit/Random.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SignalSet.o $SOURCE/core/fkit/SignalSet.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Semaphore.o $SOURCE/core/fkit/Semaphore.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SocketAddress.o $SOURCE/core/fkit/SocketAddress.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SpinLock.o $SOURCE/core/fkit/SpinLock.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SocketAddressEntry.o $SOURCE/core/fkit/SocketAddressEntry.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Stream.o $SOURCE/core/fkit/Stream.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/String.o $SOURCE/core/fkit/String.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/StreamSocket.o $SOURCE/core/fkit/StreamSocket.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SyntaxDebugFactory.o $SOURCE/core/fkit/SyntaxDebugFactory.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SyntaxDefinition.o $SOURCE/core/fkit/SyntaxDefinition.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SyntaxDebugger.o $SOURCE/core/fkit/SyntaxDebugger.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/System.o $SOURCE/core/fkit/System.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SyntaxState.o $SOURCE/core/fkit/SyntaxState.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/ThreadExitEvent.o $SOURCE/core/fkit/ThreadExitEvent.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SystemStream.o $SOURCE/core/fkit/SystemStream.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Thread.o $SOURCE/core/fkit/Thread.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/ThreadFactory.o $SOURCE/core/fkit/ThreadFactory.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/TransferLimiter.o $SOURCE/core/fkit/TransferLimiter.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Token.o $SOURCE/core/fkit/Token.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/TransferMeter.o $SOURCE/core/fkit/TransferMeter.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Uri.o $SOURCE/core/fkit/Uri.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Unicode.o $SOURCE/core/fkit/Unicode.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/UriSyntax.o $SOURCE/core/fkit/UriSyntax.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/User.o $SOURCE/core/fkit/User.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Variant.o $SOURCE/core/fkit/Variant.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/YasonParser.o $SOURCE/core/fkit/YasonParser.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Yason.o $SOURCE/core/fkit/Yason.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/YasonWriter.o $SOURCE/core/fkit/YasonWriter.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/new.o $SOURCE/core/fkit/new.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/check.o $SOURCE/core/fkit/check.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/strings.o $SOURCE/core/fkit/strings.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/str.o $SOURCE/core/fkit/str.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/stdio.o $SOURCE/core/fkit/stdio.cpp
-g++ -DNDEBUG -O2 -fpic -Wall -pthread -c -o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/syntax.o $SOURCE/core/fkit/syntax.cpp
-g++ -shared -pthread -Wl,-soname,libfkitcore.so.0 -o libfkitcore.so.0.1.0 .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/AbnfSyntaxDefinition.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Base64.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/ByteArray.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Condition.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Date.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Crc32.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Config.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Dir.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Event.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/DirWalker.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Exception.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/ExitEvent.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/FileLock.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/File.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Format.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/FileStatus.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/FloatLiteral.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/FormatSpecifier.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Glob.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/GlobalCoreMutex.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/InetAddressSyntax.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/IntegerLiteral.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Group.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/LineSource.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/IoMonitor.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/JsonWriter.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Mutex.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Memory.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/NetworkInterface.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/NullStream.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/PatternExpression.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Pattern.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/ProcessStatus.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Process.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/ProcessFactory.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Random.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SignalSet.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Semaphore.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SocketAddress.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SpinLock.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SocketAddressEntry.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Stream.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/String.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/StreamSocket.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SyntaxDebugFactory.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SyntaxDefinition.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SyntaxDebugger.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/System.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SyntaxState.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/ThreadExitEvent.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/SystemStream.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Thread.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/ThreadFactory.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/TransferLimiter.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Token.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/TransferMeter.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Uri.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Unicode.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/UriSyntax.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/User.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Variant.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/YasonParser.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/Yason.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/YasonWriter.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/new.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/check.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/strings.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/str.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/stdio.o .modules-Fkit_core_fkit-0.1.0-release-optimize-speed-2-$MACHINE/syntax.o
-rm -f libfkitcore.so.0.1
-rm -f libfkitcore.so.0
-rm -f libfkitcore.so
-ln -sf libfkitcore.so.0.1.0 libfkitcore.so.0.1
-ln -sf libfkitcore.so.0.1.0 libfkitcore.so.0
-ln -sf libfkitcore.so.0.1.0 libfkitcore.so
-g++ -DNDEBUG -O2 -Wall -pthread -I$SOURCE/core -c -o .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/BuildPlan.o $SOURCE/tools/make/BuildPlan.cpp
-g++ -DNDEBUG -O2 -Wall -pthread -I$SOURCE/core -c -o .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/GnuToolChain.o $SOURCE/tools/make/GnuToolChain.cpp
-g++ -DNDEBUG -O2 -Wall -pthread -I$SOURCE/core -c -o .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/JobServer.o $SOURCE/tools/make/JobServer.cpp
-g++ -DNDEBUG -O2 -Wall -pthread -I$SOURCE/core -c -o .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/DependencyCache.o $SOURCE/tools/make/DependencyCache.cpp
-g++ -DNDEBUG -O2 -Wall -pthread -I$SOURCE/core -c -o .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/JobScheduler.o $SOURCE/tools/make/JobScheduler.cpp
-g++ -DNDEBUG -O2 -Wall -pthread -I$SOURCE/core -c -o .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/main.o $SOURCE/tools/make/main.cpp
-g++ -DNDEBUG -O2 -Wall -pthread -I$SOURCE/core -c -o .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/RecipeProtocol.o $SOURCE/tools/make/RecipeProtocol.cpp
-g++ -pthread -o fmake .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/BuildPlan.o .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/GnuToolChain.o .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/JobServer.o .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/DependencyCache.o .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/JobScheduler.o .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/main.o .modules-Fkit_tools_make-release-optimize-speed-2-$MACHINE/RecipeProtocol.o -L. -lfkitcore -Wl,--enable-new-dtags,-rpath=$PWD
+MACHINE=$(gcc -dumpmachine)
+mkdir -p .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE
+mkdir -p .modules-fluxkit_tools_make-debug-$MACHINE
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Base64.o $SOURCE/core/flux/Base64.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/AbnfSyntaxDefinition.o $SOURCE/core/flux/AbnfSyntaxDefinition.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/ByteArray.o $SOURCE/core/flux/ByteArray.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Config.o $SOURCE/core/flux/Config.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Condition.o $SOURCE/core/flux/Condition.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Crc32.o $SOURCE/core/flux/Crc32.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Dir.o $SOURCE/core/flux/Dir.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Date.o $SOURCE/core/flux/Date.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/DirWalker.o $SOURCE/core/flux/DirWalker.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Exception.o $SOURCE/core/flux/Exception.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Event.o $SOURCE/core/flux/Event.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/ExitEvent.o $SOURCE/core/flux/ExitEvent.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/FileLock.o $SOURCE/core/flux/FileLock.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/File.o $SOURCE/core/flux/File.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/FileStatus.o $SOURCE/core/flux/FileStatus.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/FloatLiteral.o $SOURCE/core/flux/FloatLiteral.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/FormatSpecifier.o $SOURCE/core/flux/FormatSpecifier.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Format.o $SOURCE/core/flux/Format.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Glob.o $SOURCE/core/flux/Glob.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Group.o $SOURCE/core/flux/Group.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/GlobalCoreMutex.o $SOURCE/core/flux/GlobalCoreMutex.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/InetAddressSyntax.o $SOURCE/core/flux/InetAddressSyntax.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/IoMonitor.o $SOURCE/core/flux/IoMonitor.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/IntegerLiteral.o $SOURCE/core/flux/IntegerLiteral.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/JsonWriter.o $SOURCE/core/flux/JsonWriter.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/LineBuffer.o $SOURCE/core/flux/LineBuffer.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/LookAheadStream.o $SOURCE/core/flux/LookAheadStream.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/LineSource.o $SOURCE/core/flux/LineSource.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Mutex.o $SOURCE/core/flux/Mutex.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Memory.o $SOURCE/core/flux/Memory.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/NullStream.o $SOURCE/core/flux/NullStream.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/NetworkInterface.o $SOURCE/core/flux/NetworkInterface.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/PatternExpression.o $SOURCE/core/flux/PatternExpression.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Pattern.o $SOURCE/core/flux/Pattern.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/ProcessFactory.o $SOURCE/core/flux/ProcessFactory.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Process.o $SOURCE/core/flux/Process.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Random.o $SOURCE/core/flux/Random.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/ProcessStatus.o $SOURCE/core/flux/ProcessStatus.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Semaphore.o $SOURCE/core/flux/Semaphore.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SignalSet.o $SOURCE/core/flux/SignalSet.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SpinLock.o $SOURCE/core/flux/SpinLock.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SocketAddress.o $SOURCE/core/flux/SocketAddress.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SocketAddressEntry.o $SOURCE/core/flux/SocketAddressEntry.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/StreamTap.o $SOURCE/core/flux/StreamTap.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/StreamSocket.o $SOURCE/core/flux/StreamSocket.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Stream.o $SOURCE/core/flux/Stream.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SyntaxDebugger.o $SOURCE/core/flux/SyntaxDebugger.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/String.o $SOURCE/core/flux/String.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SyntaxDebugFactory.o $SOURCE/core/flux/SyntaxDebugFactory.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/System.o $SOURCE/core/flux/System.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SyntaxState.o $SOURCE/core/flux/SyntaxState.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SyntaxDefinition.o $SOURCE/core/flux/SyntaxDefinition.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SystemStream.o $SOURCE/core/flux/SystemStream.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/ThreadExitEvent.o $SOURCE/core/flux/ThreadExitEvent.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/ThreadFactory.o $SOURCE/core/flux/ThreadFactory.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Thread.o $SOURCE/core/flux/Thread.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Token.o $SOURCE/core/flux/Token.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/TimeoutLimiter.o $SOURCE/core/flux/TimeoutLimiter.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/TransferLimiter.o $SOURCE/core/flux/TransferLimiter.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/TransferMeter.o $SOURCE/core/flux/TransferMeter.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Unicode.o $SOURCE/core/flux/Unicode.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Uri.o $SOURCE/core/flux/Uri.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/User.o $SOURCE/core/flux/User.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/UriSyntax.o $SOURCE/core/flux/UriSyntax.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Variant.o $SOURCE/core/flux/Variant.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/UserError.o $SOURCE/core/flux/UserError.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Yason.o $SOURCE/core/flux/Yason.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/YasonParser.o $SOURCE/core/flux/YasonParser.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/check.o $SOURCE/core/flux/check.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/YasonWriter.o $SOURCE/core/flux/YasonWriter.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/stdio.o $SOURCE/core/flux/stdio.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/new.o $SOURCE/core/flux/new.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/syntax.o $SOURCE/core/flux/syntax.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/str.o $SOURCE/core/flux/str.cpp
+gcc -g -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/strings.o $SOURCE/core/flux/strings.cpp
+gcc -shared -pthread -Wl,-soname,libfluxcore.so.0 -o libfluxcore.so.0.1.0 -lstdc++ .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Base64.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/AbnfSyntaxDefinition.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/ByteArray.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Config.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Condition.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Crc32.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Dir.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Date.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/DirWalker.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Exception.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Event.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/ExitEvent.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/FileLock.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/File.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/FileStatus.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/FloatLiteral.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/FormatSpecifier.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Format.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Glob.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Group.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/GlobalCoreMutex.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/InetAddressSyntax.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/IoMonitor.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/IntegerLiteral.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/JsonWriter.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/LineBuffer.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/LookAheadStream.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/LineSource.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Mutex.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Memory.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/NullStream.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/NetworkInterface.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/PatternExpression.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Pattern.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/ProcessFactory.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Process.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Random.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/ProcessStatus.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Semaphore.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SignalSet.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SpinLock.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SocketAddress.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SocketAddressEntry.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/StreamTap.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/StreamSocket.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Stream.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SyntaxDebugger.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/String.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SyntaxDebugFactory.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/System.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SyntaxState.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SyntaxDefinition.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/SystemStream.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/ThreadExitEvent.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/ThreadFactory.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Thread.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Token.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/TimeoutLimiter.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/TransferLimiter.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/TransferMeter.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Unicode.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Uri.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/User.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/UriSyntax.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Variant.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/UserError.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/Yason.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/YasonParser.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/check.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/YasonWriter.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/stdio.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/new.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/syntax.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/str.o .modules-fluxkit_core_flux-0.1.0-debug-$MACHINE/strings.o
+rm -f libfluxcore.so.0.1
+rm -f libfluxcore.so.0
+rm -f libfluxcore.so
+ln -sf libfluxcore.so.0.1.0 libfluxcore.so.0.1
+ln -sf libfluxcore.so.0.1.0 libfluxcore.so.0
+ln -sf libfluxcore.so.0.1.0 libfluxcore.so
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/BuildParameters.o $SOURCE/tools/make/BuildParameters.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/BuildPlan.o $SOURCE/tools/make/BuildPlan.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/AnalyseStage.o $SOURCE/tools/make/AnalyseStage.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/BuildStage.o $SOURCE/tools/make/BuildStage.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/BuildShell.o $SOURCE/tools/make/BuildShell.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/CleanStage.o $SOURCE/tools/make/CleanStage.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/DependencyCache.o $SOURCE/tools/make/DependencyCache.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/ConfigureStage.o $SOURCE/tools/make/ConfigureStage.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/CompileLinkStage.o $SOURCE/tools/make/CompileLinkStage.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/InstallStage.o $SOURCE/tools/make/InstallStage.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/GnuToolChain.o $SOURCE/tools/make/GnuToolChain.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/JobScheduler.o $SOURCE/tools/make/JobScheduler.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/JobServer.o $SOURCE/tools/make/JobServer.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/RecipeProtocol.o $SOURCE/tools/make/RecipeProtocol.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/SystemPrerequisite.o $SOURCE/tools/make/SystemPrerequisite.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/TestRunStage.o $SOURCE/tools/make/TestRunStage.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/UninstallStage.o $SOURCE/tools/make/UninstallStage.cpp
+gcc -g -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-debug-$MACHINE/main.o $SOURCE/tools/make/main.cpp
+gcc -pthread -o fluxmake -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD .modules-fluxkit_tools_make-debug-$MACHINE/BuildParameters.o .modules-fluxkit_tools_make-debug-$MACHINE/BuildPlan.o .modules-fluxkit_tools_make-debug-$MACHINE/AnalyseStage.o .modules-fluxkit_tools_make-debug-$MACHINE/BuildStage.o .modules-fluxkit_tools_make-debug-$MACHINE/BuildShell.o .modules-fluxkit_tools_make-debug-$MACHINE/CleanStage.o .modules-fluxkit_tools_make-debug-$MACHINE/DependencyCache.o .modules-fluxkit_tools_make-debug-$MACHINE/ConfigureStage.o .modules-fluxkit_tools_make-debug-$MACHINE/CompileLinkStage.o .modules-fluxkit_tools_make-debug-$MACHINE/InstallStage.o .modules-fluxkit_tools_make-debug-$MACHINE/GnuToolChain.o .modules-fluxkit_tools_make-debug-$MACHINE/JobScheduler.o .modules-fluxkit_tools_make-debug-$MACHINE/JobServer.o .modules-fluxkit_tools_make-debug-$MACHINE/RecipeProtocol.o .modules-fluxkit_tools_make-debug-$MACHINE/SystemPrerequisite.o .modules-fluxkit_tools_make-debug-$MACHINE/TestRunStage.o .modules-fluxkit_tools_make-debug-$MACHINE/UninstallStage.o .modules-fluxkit_tools_make-debug-$MACHINE/main.o
