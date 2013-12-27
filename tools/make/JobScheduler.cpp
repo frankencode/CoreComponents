@@ -20,7 +20,7 @@ Ref<JobScheduler> JobScheduler::create(int concurrency)
 }
 
 JobScheduler::JobScheduler(int concurrency)
-	: concurrency_((concurrency > 0) ? concurrency : (System::concurrency() + 1)),
+	: concurrency_((concurrency > 0) ? concurrency : System::concurrency()),
 	  requestChannel_(JobChannel::create()),
 	  replyChannel_(JobChannel::create()),
 	  started_(false),

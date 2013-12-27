@@ -3,6 +3,5 @@ Library {
 	version: 0.1.0
 	header: *.h
 	source: *.cpp
-	// Usage { compile-flags: -std=c++11 }
 	link: rt
-}
+}	// Usage { compile-flags: -std=c++11 }
