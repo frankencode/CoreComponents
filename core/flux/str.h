@@ -20,13 +20,16 @@ template<class T>
 struct Sign { inline static int get(T x) { return x < 0; } };
 
 template<>
-struct Sign<unsigned char> { inline static int get(unsigned char x) { return 0; } };
+struct Sign<unsigned char> { inline static int get(unsigned char) { return 0; } };
 
 template<>
-struct Sign<unsigned int> { inline static int get(unsigned int x) { return 0; } };
+struct Sign<unsigned int> { inline static int get(unsigned int) { return 0; } };
 
 template<>
-struct Sign<unsigned long> { inline static int get(unsigned long x) { return 0; } };
+struct Sign<unsigned long> { inline static int get(unsigned long) { return 0; } };
+
+template<>
+struct Sign<unsigned long long> { inline static int get(unsigned long long) { return 0; } };
 
 template<class T>
 String inum(T x, int base = 10, int n = -1)

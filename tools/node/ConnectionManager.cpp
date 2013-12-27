@@ -43,11 +43,11 @@ void ConnectionManager::cycle()
 
 			Ref<Visit> visit = visits_->pop(0);
 			uint64_t origin = visit->remoteAddress()->networkPrefix();
-			int priority = 0;
+			int count = 0;
 			int index = 0;
-			connectionCounts_->lookup(origin, &priority, &index);
+			connectionCounts_->lookup(origin, &count, &index);
 			if (priority == 1) connectionCounts_->removeAt(index);
-			else connectionCounts_->valueAt(index) = priority - 1;
+			else connectionCounts_->valueAt(index) = count - 1;
 		}
 	}
 }
@@ -55,11 +55,11 @@ void ConnectionManager::cycle()
 void ConnectionManager::prioritize(ClientConnection *client)
 {
 	uint64_t origin = client->address()->networkPrefix();
-	int priority = 0;
+	int count = 0;
 	int index = 0;
-	if (!connectionCounts_->insert(origin, 1, &priority, &index))
-		connectionCounts_->valueAt(index) = priority + 1;
-	client->visit()->setPriority(priority);
+	if (!connectionCounts_->insert(origin, 1, &count, &index))
+		connectionCounts_->valueAt(index) = count + 1;
+	client->visit()->setPriority(-count);
 }
 
 } // namespace fluxnode
