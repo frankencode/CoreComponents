@@ -355,7 +355,7 @@ int ByteArray::scanString(String *x, const char *term, int i0, int i1) const
 ByteArray *ByteArray::downcaseInsitu()
 {
 	for (int i = 0; i < size_; ++i)
-		data_[i] = flux::downcase(data_[i]);
+		chars_[i] = flux::downcase(chars_[i]);
 	return this;
 }
 
@@ -824,6 +824,23 @@ Ref<ByteArray> ByteArray::canonicalPath() const
 		result->append(part);
 	}
 	return result->join("/");
+}
+
+bool ByteArray::equalsCaseInsensitive(ByteArray *b) const
+{
+	if (size_ != b->size_) return false;
+	for (int i = 0; i < size_; ++i)
+		if (flux::downcase(chars_[i]) != flux::downcase(b->chars_[i])) return false;
+	return true;
+}
+
+bool ByteArray::equalsCaseInsensitive(const char *b) const
+{
+	int bSize = strlen(b);
+	if (size_ != bSize) return false;
+	for (int i = 0; i < size_; ++i)
+		if (flux::downcase(chars_[i]) != flux::downcase(b[i])) return false;
+	return true;
 }
 
 ByteRange::operator String() const

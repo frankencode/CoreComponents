@@ -104,7 +104,7 @@ void ServiceWorker::run()
 					}
 				}
 				if (client_) {
-					if (client_ && request->value("Connection") == "close")
+					if (client_ && request->value("Connection")->equalsCaseInsensitive("close"))
 						close();
 				}
 			}

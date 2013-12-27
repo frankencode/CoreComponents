@@ -205,6 +205,9 @@ public:
 	Ref<ByteArray> expandPath(String component) const;
 	Ref<ByteArray> canonicalPath() const;
 
+	bool equalsCaseInsensitive(ByteArray *b) const;
+	bool equalsCaseInsensitive(const char *b) const;
+
 private:
 	friend class Singleton<ByteArray>;
 	friend class File;
