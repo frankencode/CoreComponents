@@ -34,7 +34,7 @@ ClientConnection::ClientConnection(StreamSocket *socket)
 	  visit_(Visit::create(address_))
 {
 	if (errorLog()->level() >= DebugLogLevel) {
-		Ref<Stream> requestBuffer =TapBuffer::open(errorLog()->debugStream(), address_->networkAddress() + " > ");
+		Ref<Stream> requestBuffer = TapBuffer::open(errorLog()->debugStream(), address_->networkAddress() + " > ");
 		Ref<Stream> responseBuffer = TapBuffer::open(errorLog()->debugStream(), address_->networkAddress() + " < ");
 		stream_ = StreamTap::open(stream_, requestBuffer, responseBuffer);
 	}

@@ -27,26 +27,10 @@ public:
 		inputQueue(priority)->pushBack(item);
 	}
 
-	inline void pushFront(const T &item, int priority = 0)
-	{
-		inputQueue(priority)->pushFront(item);
-	}
-
-	inline T popBack(T *item)
-	{
-		FLUX_ASSERT(size_ > 0);
-		return outputQueue()->popBack(item);
-	}
-
 	inline T popFront(T *item)
 	{
 		FLUX_ASSERT(size_ > 0);
 		return outputQueue()->popFront(item);
-	}
-
-	inline T popBack() {
-		T item;
-		return popBack(&item);
 	}
 
 	inline T popFront() {
@@ -59,6 +43,7 @@ public:
 	inline T pop() { return popFront(); }
 
 	inline int size() const { return size_; }
+	inline T front() { return readQueue()->front(); }
 
 private:
 	PriorityQueue()
@@ -66,7 +51,7 @@ private:
 		  size_(0)
 	{}
 
-	Queue<T> *inputQueue(int priority)
+	inline Queue<T> *inputQueue(int priority)
 	{
 		++size_;
 		Queue<T> *queue = queueByPriority_->value(priority);
@@ -78,12 +63,17 @@ private:
 		return queue;
 	}
 
-	Ref< Queue<T> > outputQueue()
+	inline Ref< Queue<T> > outputQueue()
 	{
 		--size_;
 		typename QueueByPriority::Item pair = queueByPriority_->at(queueByPriority_->size() - 1);
 		if (pair->value()->size() == 1) queueByPriority_->remove(pair->key());
 		return pair->value();
+	}
+
+	inline Queue<T> *readQueue() const
+	{
+		return queueByPriority_->valueAt(queueByPriority_->size() - 1);
 	}
 
 	typedef Map<int, Ref< Queue<T> > > QueueByPriority;

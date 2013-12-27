@@ -83,9 +83,16 @@ public:
 
 	inline bool popBefore(double timeout, T *item = 0) { return popFrontBefore(timeout, item); }
 
-	inline int size() const {
+	inline int size() const { Guard<Mutex> guard(mutex_); return queue_->size(); }
+
+	T waitNext(T *item = 0)
+	{
 		Guard<Mutex> guard(mutex_);
-		return queue_->size();
+		while (queue_->size() == 0)
+			notEmpty_->wait(mutex_);
+		T h = queue_->front();
+		if (item) *item = h;
+		return h;
 	}
 
 protected:

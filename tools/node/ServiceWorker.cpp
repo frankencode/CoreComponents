@@ -76,7 +76,7 @@ void ServiceWorker::run()
 	accessLog()->open(serviceInstance_->accessLogConfig());
 	visitLog()->open(serviceInstance_->visitLogConfig());
 
-	while (pendingConnections_->pop(&client_))
+	while (pendingConnections_->waitNext(&client_))
 	{
 		Ref<Visit> visit;
 
@@ -91,6 +91,7 @@ void ServiceWorker::run()
 				{
 					RefGuard<Response> guard(&response_);
 					response_ = Response::create(client_);
+					// response_->insert("Keep-Alive", Format("timeout=%%, max=100000") << serviceInstance()->connectionTimeout());
 					serviceDelegate_->process(request);
 					response_->end();
 					if (response_->delivered()) {
@@ -141,6 +142,7 @@ void ServiceWorker::close()
 {
 	if (client_) {
 		FLUXNODE_DEBUG() << "Closing connection to " << client_->address() << nl;
+		pendingConnections_->popFront();
 		client_ = 0;
 	}
 }

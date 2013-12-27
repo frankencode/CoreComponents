@@ -47,9 +47,10 @@ void Response::header(String name, String value)
 
 void Response::writeHeader()
 {
-	insert("Server", nodeConfig()->version());
 	String now = formatDate(Date::now());
+	insert("Server", nodeConfig()->version());
 	insert("Date", now);
+	// insert("Connection", "keep-alive");
 	if (statusCode_ != 304) {
 		if (contentLength_ >= 0) {
 			remove("Transfer-Encoding");

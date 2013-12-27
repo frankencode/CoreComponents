@@ -49,8 +49,6 @@ public:
 		}
 	}
 
-	inline int size() const { return length_; }
-
 	void pushBack(const T &item, int = 0)
 	{
 		Node *node = new Node(item);
@@ -124,6 +122,8 @@ public:
 	inline void push(const T &item, int = 0) { pushBack(item); }
 	inline T pop(T *item) { return popFront(item); }
 	inline T pop() { return popFront(); }
+
+	inline int size() const { return length_; }
 
 	inline T front() const { return head_->item_; }
 	inline T back() const { return tail_->item_; }
