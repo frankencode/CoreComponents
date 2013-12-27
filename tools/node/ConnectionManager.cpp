@@ -46,7 +46,7 @@ void ConnectionManager::cycle()
 			int count = 0;
 			int index = 0;
 			connectionCounts_->lookup(origin, &count, &index);
-			if (priority == 1) connectionCounts_->removeAt(index);
+			if (count == 1) connectionCounts_->removeAt(index);
 			else connectionCounts_->valueAt(index) = count - 1;
 		}
 	}
