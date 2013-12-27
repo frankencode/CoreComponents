@@ -94,9 +94,11 @@ inline String str(unsigned char x) { return dec(x); }
 inline String str(unsigned short x) { return dec(x); }
 inline String str(unsigned int x) { return dec(x); }
 inline String str(unsigned long x) { return dec(x); }
+inline String str(unsigned long long x) { return dec(x); }
 inline String str(short x) { return dec(x); }
 inline String str(int x) { return dec(x); }
 inline String str(long x) { return dec(x); }
+inline String str(long long x) { return dec(x); }
 inline String str(float x) { return dec(x); }
 inline String str(double x) { return dec(x); }
 
