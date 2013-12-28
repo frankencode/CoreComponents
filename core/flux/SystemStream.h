@@ -44,10 +44,10 @@ public:
 	void closeOnExec();
 
 protected:
-	SystemStream(int fd);
+	SystemStream(int fd, bool iov = true);
 
 	int fd_;
-	mutable bool isattyCached_, isatty_;
+	bool iov_;
 };
 
 } // namespace flux

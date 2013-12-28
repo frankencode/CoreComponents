@@ -19,9 +19,9 @@
 namespace flux
 {
 
-SystemStream::SystemStream(int fd)
+SystemStream::SystemStream(int fd, bool iov)
 	: fd_(fd),
-	  isattyCached_(false)
+	  iov_(iov)
 {}
 
 SystemStream::~SystemStream()
@@ -35,11 +35,7 @@ int SystemStream::fd() const { return fd_; }
 
 bool SystemStream::isTeletype() const
 {
-	if (!isattyCached_) {
-		isatty_ = ::isatty(fd_);
-		isattyCached_ = true;
-	}
-	return isatty_;
+	return ::isatty(fd_);
 }
 
 bool SystemStream::isOpen() const { return fd_ != -1; }
@@ -128,6 +124,10 @@ void SystemStream::write(const ByteArray *data)
 
 void SystemStream::write(const StringList *parts)
 {
+	if (!iov_) {
+		write(parts->join());
+		return;
+	}
 	int n = parts->size();
 	if (n <= 0) return;
 	Ref< Array<struct iovec> > iov = Array<struct iovec>::create(n);
