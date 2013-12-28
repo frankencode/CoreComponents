@@ -58,7 +58,7 @@ Ref<File> File::temp(int openFlags)
 }
 
 File::File(String path, int openFlags, int fd)
-	: SystemStream(fd),
+	: SystemStream(fd, (fd >= 0) ? (!::isatty(fd)) : true),
 	  path_(path),
 	  openFlags_(openFlags),
 	  unlinkWhenDone_(false)
