@@ -21,7 +21,7 @@ Ref<ServicePrototype> ServicePrototype::create(String className, YasonProtocol *
 ServicePrototype::ServicePrototype(String className, YasonProtocol *protocol)
 	: YasonObject(className, protocol)
 {
-	insert("concurrency", 32);
+	insert("concurrency", 64);
 	insert("connection_timeout", 5.);
 	insert("host", "");
 	insert("uri", "");

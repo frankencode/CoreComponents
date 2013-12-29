@@ -25,6 +25,7 @@ namespace syntax { class Definition; }
 typedef syntax::Definition SyntaxDefinition;
 
 class File;
+class ThreadFactory;
 
 class ByteArray: public Object
 {
@@ -211,6 +212,7 @@ public:
 private:
 	friend class Singleton<ByteArray>;
 	friend class File;
+	friend class ThreadFactory;
 	friend class ByteRange;
 
 	ByteArray(const char *data = 0, int size = -1, int flags = Terminated);
@@ -231,7 +233,8 @@ private:
 		Terminated   = 1,
 		Readonly     = 2,
 		Wrapped      = 4,
-		Mapped       = 8
+		Mapped       = 8,
+		Stack        = 16
 	};
 	int flags_;
 
