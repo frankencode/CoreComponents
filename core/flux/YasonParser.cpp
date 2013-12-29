@@ -572,7 +572,7 @@ String YasonParser::parseText(ByteArray *text, Token *token)
 		s = (l->size() == 1) ? l->at(0) : l->join();
 	}
 
-	return s->expandInsitu();
+	return s->unescapeInsitu();
 }
 
 } // namespace flux

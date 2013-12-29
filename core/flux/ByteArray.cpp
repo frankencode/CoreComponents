@@ -366,7 +366,38 @@ ByteArray *ByteArray::upcaseInsitu()
 	return this;
 }
 
-ByteArray *ByteArray::expandInsitu()
+Ref<ByteArray> ByteArray::escape() const
+{
+	Ref<StringList> parts;
+	int i = 0, i0 = 0;
+	for (; i < size_; ++i) {
+		char ch = chars_[i];
+		if (ch < 32 && ch >= 0) {
+			if (!parts) parts = StringList::create();
+			if (i0 < i) parts->append(copy(i0, i));
+			i0 = i + 1;
+			if (ch == 0x08) parts->append("\\b");
+			else if (ch == 0x09) parts->append("\\t");
+			else if (ch == 0x0A) parts->append("\\n");
+			else if (ch == 0x0D) parts->append("\\r");
+			else if (ch == 0x0C) parts->append("\\f");
+			else {
+				String s = "\\u00XX";
+				const char *hex = "0123456789ABCDEF";
+				s->at(s->size() - 2) = hex[ch / 16];
+				s->at(s->size() - 1) = hex[ch % 16];
+				parts->append(s);
+			}
+		}
+	}
+	if (!parts) return const_cast<ByteArray *>(this);
+
+	if (i0 < i) parts->append(copy(i0, i));
+
+	return parts->join();
+}
+
+ByteArray *ByteArray::unescapeInsitu()
 {
 	if (!contains('\\')) return this;
 	int j = 0;
@@ -434,39 +465,6 @@ ByteArray *ByteArray::expandInsitu()
 		}
 	}
 	return truncate(j);
-}
-
-Ref<ByteArray> ByteArray::escape() const
-{
-	Ref<StringList> parts;
-	int i = 0, i0 = 0;
-	for (; i < size_; ++i) {
-		char ch = data_[i];
-		if (ch < 32 && ch >= 0) {
-			if (i > i0) {
-				if (!parts) parts = StringList::create();
-				parts->append(copy(i0, i));
-				i0 = i + 1;
-				if (ch == 0x08) parts->append("\\b");
-				else if (ch == 0x09) parts->append("\\t");
-				else if (ch == 0x0A) parts->append("\\n");
-				else if (ch == 0x0D) parts->append("\\r");
-				else if (ch == 0x0C) parts->append("\\f");
-				else {
-					String s = "\\u00XX";
-					const char *hex = "0123456789ABCDEF";
-					s->at(4) = hex[ch / 16];
-					s->at(5) = hex[ch % 16];
-					parts->append(s);
-				}
-			}
-		}
-	}
-	if (!parts) return const_cast<ByteArray *>(this);
-
-	if (i0 < i) parts->append(copy(i0, i));
-
-	return parts->join();
 }
 
 ByteArray *ByteArray::truncate(int newSize)

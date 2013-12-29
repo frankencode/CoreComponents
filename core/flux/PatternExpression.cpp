@@ -339,7 +339,7 @@ NODE PatternExpression::compileReference(ByteArray *text, Token *token, SyntaxDe
 char PatternExpression::readChar(ByteArray *text, Token *token)
 {
 	return (token->i1() - token->i0() > 1) ?
-		text->copy(token)->expandInsitu()->at(0) :
+		text->copy(token)->unescapeInsitu()->at(0) :
 		text->at(token->i0());
 }
 

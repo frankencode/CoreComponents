@@ -169,9 +169,9 @@ public:
 	ByteArray *downcaseInsitu();
 	ByteArray *upcaseInsitu();
 
-	inline Ref<ByteArray> expand() const { return copy()->expandInsitu(); }
 	Ref<ByteArray> escape() const;
-	ByteArray *expandInsitu();
+	inline Ref<ByteArray> unescape() const { return copy()->unescapeInsitu(); }
+	ByteArray *unescapeInsitu();
 
 	ByteArray *truncate(int newSize);
 
