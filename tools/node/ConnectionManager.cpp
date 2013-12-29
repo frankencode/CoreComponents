@@ -59,7 +59,7 @@ void ConnectionManager::prioritize(ClientConnection *client)
 	int index = 0;
 	if (!connectionCounts_->insert(origin, 1, &count, &index))
 		connectionCounts_->valueAt(index) = count + 1;
-	client->visit()->setPriority(-count);
+	client->visit()->setPriority(count < 8 ? 0 : -count);
 }
 
 } // namespace fluxnode

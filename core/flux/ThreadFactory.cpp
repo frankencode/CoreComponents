@@ -86,14 +86,14 @@ Ref<Thread> ThreadFactory::produce()
 
 void ThreadFactory::start(Thread *thread)
 {
-	int ret = pthread_create(&thread->tid_, &attr_, &bootstrap, static_cast<void*>(thread));
+	int ret = pthread_create(&thread->tid_, &attr_, &bootstrap, static_cast<void *>(thread));
 	if (ret != 0)
 		FLUX_PTHREAD_EXCEPTION("pthread_create", ret);
 }
 
 void *ThreadFactory::bootstrap(void *self)
 {
-	Thread *thread = static_cast<Thread*>(self);
+	Thread *thread = static_cast<Thread *>(self);
 	Thread::self_ = thread;
 	thread->run();
 	Thread::self_ = 0;
