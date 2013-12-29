@@ -58,26 +58,23 @@ void DirectoryDelegate::process(Request *request)
 	header("Last-Modified", formatDate(Date::create(fileStatus->lastModified())));
 
 	if (fileStatus->type() == File::Directory) {
-		listDirectory(request, path);
+		String indexPath;
+		const char *indexNames[] = { "index.html", "index.htm" };
+		for (int i = 0, n = sizeof(indexNames) / sizeof(indexNames[0]); i < n; ++i) {
+			String candidate = path->expandPath(indexNames[i]);
+			if (File::exists(candidate)) {
+				indexPath = candidate;
+				break;
+			}
+		}
+		if (indexPath != "") deliverFile(indexPath);
+		else listDirectory(request, path);
 	}
 	else if (fileStatus->type() == File::Regular) {
-		String content = File::open(path)->map();
-		String mediaType = mediaTypeDatabase()->lookup(path, content);
-		if (mediaType != "") header("Content-Type", mediaType);
-		begin(content->size());
-		write(content);
-		end();
+		deliverFile(path);
 	}
 	else {
-		String mediaType = mediaTypeDatabase()->lookup(path, "");
-		if (mediaType != "") header("Content-Type", mediaType);
-		Ref<File> file = File::open(path);
-		Ref<ByteArray> buf = ByteArray::create(0x10000);
-		while (true) {
-			int n = file->read(buf);
-			if (n == 0) break;
-			write(ByteRange(buf, 0, n));
-		}
+		streamFile(path);
 	}
 }
 
@@ -110,6 +107,29 @@ void DirectoryDelegate::listDirectory(Request *request, String path)
 	chunk() <<
 		"</body>\n"
 		"</html>\n";
+}
+
+void DirectoryDelegate::deliverFile(String path)
+{
+	String content = File::open(path)->map();
+	String mediaType = mediaTypeDatabase()->lookup(path, content);
+	if (mediaType != "") header("Content-Type", mediaType);
+	begin(content->size());
+	write(content);
+	end();
+}
+
+void DirectoryDelegate::streamFile(String path)
+{
+	String mediaType = mediaTypeDatabase()->lookup(path, "");
+	if (mediaType != "") header("Content-Type", mediaType);
+	Ref<File> file = File::open(path);
+	Ref<ByteArray> buf = ByteArray::create(0x10000);
+	while (true) {
+		int n = file->read(buf);
+		if (n == 0) break;
+		write(ByteRange(buf, 0, n));
+	}
 }
 
 } // namespace fluxnode

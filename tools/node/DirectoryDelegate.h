@@ -28,6 +28,8 @@ private:
 	DirectoryDelegate(ServiceWorker *worker);
 
 	void listDirectory(Request *request, String path);
+	void deliverFile(String path);
+	void streamFile(String path);
 
 	Ref<DirectoryInstance> directoryInstance_;
 };
