@@ -24,14 +24,13 @@ public:
 	}
 	~ThreadFactory();
 
+	int stackSize() const;
+	void setStackSize(int value);
+
+	int guardSize() const;
+
 	int detachState() const;
 	void setDetachState(int value);
-
-	size_t stackSize() const;
-	void setStackSize(size_t value);
-
-	size_t guardSize() const;
-	void setGuardSize(size_t value);
 
 	pthread_attr_t *attr();
 
@@ -42,10 +41,16 @@ protected:
 	ThreadFactory(Ref< Clonable<Thread> > prototype = 0);
 
 private:
+	friend class ByteArray;
+
+	Ref<ByteArray> allocateStack() const;
+	static void freeStack(ByteArray *stack);
 	static void *bootstrap(void *self);
 
 	Ref< Clonable<Thread> > prototype_;
 	pthread_attr_t attr_;
+	int stackSize_;
+	int guardSize_;
 };
 
 } // namespace flux

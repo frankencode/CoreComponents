@@ -7,72 +7,55 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <sys/mman.h>
+#include "System.h"
 #include "ThreadFactory.h"
 
 namespace flux
 {
 
 ThreadFactory::ThreadFactory(Ref< Clonable<Thread> > prototype)
-	: prototype_(prototype)
+	: prototype_(prototype),
+	  stackSize_(1 << 20),
+	  guardSize_(System::pageSize())
 {
 	int ret = pthread_attr_init(&attr_);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_attr_init", ret);
+	if (ret != 0) FLUX_PTHREAD_EXCEPTION("pthread_attr_init", ret);
 }
 
 ThreadFactory::~ThreadFactory()
 {
 	int ret = pthread_attr_destroy(&attr_);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_attr_destroy", ret);
+	if (ret != 0) FLUX_PTHREAD_EXCEPTION("pthread_attr_destroy", ret);
+}
+
+int ThreadFactory::stackSize() const
+{
+	return stackSize_;
+}
+
+void ThreadFactory::setStackSize(int value)
+{
+	stackSize_ = value;
+}
+
+int ThreadFactory::guardSize() const
+{
+	return guardSize_;
 }
 
 int ThreadFactory::detachState() const
 {
 	int value = 0;
 	int ret = pthread_attr_getdetachstate(&attr_, &value);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_attr_getdetachstate", ret);
+	if (ret != 0) FLUX_PTHREAD_EXCEPTION("pthread_attr_getdetachstate", ret);
 	return value;
 }
 
 void ThreadFactory::setDetachState(int value)
 {
 	int ret = pthread_attr_setdetachstate(&attr_, value);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_attr_setdetachstate", ret);
-}
-
-size_t ThreadFactory::stackSize() const
-{
-	size_t value = 0;
-	int ret = pthread_attr_getstacksize(&attr_, &value);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_attr_getstacksize", ret);
-	return value;
-}
-
-void ThreadFactory::setStackSize(size_t value)
-{
-	int ret = pthread_attr_setstacksize(&attr_, value);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_attr_setstacksize", ret);
-}
-
-size_t ThreadFactory::guardSize() const
-{
-	size_t value = 0;
-	int ret = pthread_attr_getguardsize(&attr_, &value);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_attr_getguardsize", ret);
-	return value;
-}
-
-void ThreadFactory::setGuardSize(size_t value)
-{
-	int ret = pthread_attr_setguardsize(&attr_, value);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_attr_setguardsize", ret);
+	if (ret != 0) FLUX_PTHREAD_EXCEPTION("pthread_attr_setdetachstate", ret);
 }
 
 pthread_attr_t *ThreadFactory::attr() { return &attr_; }
@@ -86,9 +69,28 @@ Ref<Thread> ThreadFactory::produce()
 
 void ThreadFactory::start(Thread *thread)
 {
-	int ret = pthread_create(&thread->tid_, &attr_, &bootstrap, static_cast<void *>(thread));
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_create", ret);
+	thread->stack_ = allocateStack();
+	int ret = pthread_attr_setstack(&attr_, thread->stack_->bytes() + guardSize_, thread->stack_->size() - 2 * guardSize_);
+	if (ret != 0) FLUX_PTHREAD_EXCEPTION("pthread_attr_setstack", ret);
+	ret = pthread_create(&thread->tid_, &attr_, &bootstrap, static_cast<void *>(thread));
+	if (ret != 0) FLUX_PTHREAD_EXCEPTION("pthread_create", ret);
+}
+
+Ref<ByteArray> ThreadFactory::allocateStack() const
+{
+	#ifndef MAP_ANONYMOUS
+	#define MAP_ANONYMOUS MAP_ANON
+	#endif
+	void *protection = ::mmap(0, stackSize_, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (protection == MAP_FAILED) FLUX_SYSTEM_EXCEPTION;
+	void *stack = ::mmap((char *)protection + guardSize_, stackSize_ - 2 * guardSize_, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (stack == MAP_FAILED) FLUX_SYSTEM_EXCEPTION;
+	return new ByteArray((char *)protection, stackSize_, ByteArray::Stack|ByteArray::Terminated);
+}
+
+void ThreadFactory::freeStack(ByteArray *stack)
+{
+	if (::munmap(stack->bytes(), stack->size()) == -1) FLUX_SYSTEM_EXCEPTION;
 }
 
 void *ThreadFactory::bootstrap(void *self)

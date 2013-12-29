@@ -19,6 +19,7 @@
 #include "Format.h"
 #include "Process.h"
 #include "File.h"
+#include "ThreadFactory.h"
 #include "ByteArray.h"
 
 namespace flux
@@ -34,7 +35,7 @@ ByteArray::ByteArray(const char *data, int size, int flags)
 {
 	if (size < 0 && data) size = strlen(data);
 	if (size > 0) {
-		if (flags & (Wrapped|Mapped)) {
+		if (flags & (Wrapped|Mapped|Stack)) {
 			size_ = size;
 			data_ = const_cast<char *>(data);
 			flags_ = flags;
@@ -75,6 +76,7 @@ void ByteArray::destroy()
 {
 	if (flags_ & Wrapped) ;
 	else if (flags_ & Mapped) File::unmap(this);
+	else if (flags_ & Stack) ThreadFactory::freeStack(this);
 	else delete[] data_;
 }
 

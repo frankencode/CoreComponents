@@ -52,6 +52,7 @@ private:
 	friend class Process;
 
 	static ThreadLocalRef<Thread> self_;
+	Ref<ByteArray> stack_;
 	pthread_t tid_;
 	int lastSignal_;
 };
