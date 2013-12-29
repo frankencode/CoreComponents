@@ -32,7 +32,7 @@ int main()
 	{
 		String s = "Hallo!, \n\\u041F\\u0440\\u0438\\u0432\\u0435\\u0442!, \\ud834\\udd22, Hello!";
 		fout("s = \"%%\"\n") << s;
-		String se = s->expand();
+		String se = s->unescape();
 		fout("Unicode::open(se)->at(17) = 0x%%\n") << hex(Unicode::open(se)->at(17), 2);
 		fout("se = \"%%\"\n") << se;
 	}
