@@ -42,7 +42,7 @@ PatternExpression::PatternExpression()
 						CHOICE(
 							RANGE(
 								"#*\\[](){}|^$"
-								"fnrt"
+								"nstrf"
 								"\"/"
 							),
 							GLUE(
@@ -119,24 +119,17 @@ PatternExpression::PatternExpression()
 	repeat_ =
 		DEFINE("Repeat",
 			GLUE(
-				CHOICE(
-					PREVIOUS("String"),
-					PREVIOUS("Char"),
-					PREVIOUS("Any"),
-					PREVIOUS("RangeMinMax"),
-					PREVIOUS("RangeExplicit"),
-					PREVIOUS("Reference"),
-					PREVIOUS("Group")
-				),
 				CHAR('{'),
+				REPEAT(0, 1, RANGE("?~")),
 				REPEAT(0, 1,
 					GLUE(
 						REPEAT(0, 1, REF("MinRepeat")),
-						CHAR(','),
-						REPEAT(0, 1, REF("MaxRepeat"))
+						STRING(".."),
+						REPEAT(0, 1, REF("MaxRepeat")),
+						CHAR(':')
 					)
 				),
-				REPEAT(0, 1, RANGE("~?")),
+				REF("Choice"),
 				CHAR('}')
 			)
 		);
@@ -155,7 +148,7 @@ PatternExpression::PatternExpression()
 					REF("Boi"),
 					REF("Eoi"),
 					REF("Capture"),
-					REF("Reference"),
+					REF("Replay"),
 					REF("Behind"),
 					REF("Ahead"),
 					REF("Group")
@@ -166,9 +159,9 @@ PatternExpression::PatternExpression()
 	ahead_ =
 		DEFINE("Ahead",
 			GLUE(
-				STRING("(?"),
-				REPEAT(0, 1, CHAR('>')),
-				REPEAT(0, 1, RANGE("=!")),
+				STRING("("),
+				REPEAT(0, 1, CHAR('!')),
+				STRING(">:"),
 				REF("Choice"),
 				CHAR(')')
 			)
@@ -177,8 +170,9 @@ PatternExpression::PatternExpression()
 	behind_ =
 		DEFINE("Behind",
 			GLUE(
-				STRING("(?<"),
-				REPEAT(0, 1, RANGE("=!")),
+				STRING("("),
+				REPEAT(0, 1, CHAR('!')),
+				STRING("<:"),
 				REF("Choice"),
 				CHAR(')')
 			)
@@ -199,7 +193,7 @@ PatternExpression::PatternExpression()
 	capture_ =
 		DEFINE("Capture",
 			GLUE(
-				STRING("(?"),
+				STRING("(&"),
 				REF("Identifier"),
 				CHAR(':'),
 				REF("Choice"),
@@ -207,12 +201,12 @@ PatternExpression::PatternExpression()
 			)
 		);
 
-	reference_ =
-		DEFINE("Reference",
+	replay_ =
+		DEFINE("Replay",
 			GLUE(
-				STRING("(?&"),
+				STRING("(&"),
 				REF("Identifier"),
-				CHAR(')')
+				STRING(";)")
 			)
 		);
 
@@ -220,7 +214,7 @@ PatternExpression::PatternExpression()
 		DEFINE("Group",
 			GLUE(
 				CHAR('('),
-				NOT(CHAR('?')),
+				NOT(RANGE("<>!&")),
 				REF("Choice"),
 				CHAR(')')
 			)
@@ -284,21 +278,14 @@ NODE PatternExpression::compileSequence(ByteArray *text, Token *token, SyntaxDef
 		else if (child->rule() == gap_) node->appendChild(definition->GREEDY_REPEAT(definition->ANY()));
 		else if (child->rule() == rangeMinMax_) node->appendChild(compileRangeMinMax(text, child, definition));
 		else if (child->rule() == rangeExplicit_) node->appendChild(compileRangeExplicit(text, child, definition));
-		else if (child->rule() == repeat_) {
-			NODE previous = node->lastChild();
-			if (child->previousSibling()){
-				if (child->previousSibling()->rule() == string_)
-					previous = definition->CHAR(readChar(text, child->previousSibling()->lastChild()));
-			}
-			node->appendChild(compileRepeat(text, child, definition, previous));
-		}
+		else if (child->rule() == repeat_) { node->appendChild(compileRepeat(text, child, definition)); }
 		else if (child->rule() == boi_) node->appendChild(definition->BOI());
 		else if (child->rule() == eoi_) node->appendChild(definition->EOI());
 		else if (child->rule() == group_) node->appendChild(compileChoice(text, child->firstChild(), definition));
 		else if (child->rule() == ahead_) node->appendChild(compileAhead(text, child, definition));
 		else if (child->rule() == behind_) node->appendChild(compileBehind(text, child, definition));
 		else if (child->rule() == capture_) node->appendChild(compileCapture(text, child, definition));
-		else if (child->rule() == reference_) node->appendChild(compileReference(text, child, definition));
+		else if (child->rule() == replay_) node->appendChild(compileReference(text, child, definition));
 	}
 	if (node->firstChild() == node->lastChild()) {
 		NODE child = node->firstChild();
@@ -310,18 +297,16 @@ NODE PatternExpression::compileSequence(ByteArray *text, Token *token, SyntaxDef
 
 NODE PatternExpression::compileAhead(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
-	return
-		((text->at(token->i0() + 2) == '>') ? (text->at(token->i0() + 3) == '=') : (text->at(token->i0() + 2) == '=')) ?
-			definition->AHEAD(compileChoice(text, token->firstChild(), definition)) :
-			definition->NOT(compileChoice(text, token->firstChild(), definition));
+	return (text->at(token->i0() + 1) == '>') ?
+		definition->AHEAD(compileChoice(text, token->firstChild(), definition)) :
+		definition->NOT(compileChoice(text, token->firstChild(), definition));
 }
 
 NODE PatternExpression::compileBehind(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
-	return
-		(text->at(token->i0() + 3) == '=') ?
-			definition->BEHIND(compileChoice(text, token->firstChild(), definition)) :
-			definition->NOT_BEHIND(compileChoice(text, token->firstChild(), definition));
+	return (text->at(token->i0() + 1) == '<') ?
+		definition->BEHIND(compileChoice(text, token->firstChild(), definition)) :
+		definition->NOT_BEHIND(compileChoice(text, token->firstChild(), definition));
 }
 
 NODE PatternExpression::compileCapture(ByteArray *text, Token *token, SyntaxDefinition *definition)
@@ -386,7 +371,7 @@ NODE PatternExpression::compileRangeExplicit(ByteArray *text, Token *token, Synt
 	return invert ? definition->EXCEPT(s) : definition->RANGE(s);
 }
 
-NODE PatternExpression::compileRepeat(ByteArray *text, Token *token, SyntaxDefinition *definition, NODE previous)
+NODE PatternExpression::compileRepeat(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
 	Token *child = token->firstChild(), *min = 0, *max = 0;
 	while (child) {
@@ -396,13 +381,13 @@ NODE PatternExpression::compileRepeat(ByteArray *text, Token *token, SyntaxDefin
 	}
 	int minRepeat = min ? text->copy(min)->toInt() : 0;
 	int maxRepeat = max ? text->copy(max)->toInt() : intMax;
-	int modifier = text->at(token->i1() - 2);
-	previous->unlink();
+	char modifier = text->at(token->i0() + 1);
+	NODE node = compileChoice(text, token->lastChild(), definition);
 	if (modifier == '?')
-		return definition->LAZY_REPEAT(minRepeat, previous);
+		return definition->LAZY_REPEAT(minRepeat, node);
 	else if (modifier == '~')
-		return definition->REPEAT(minRepeat, maxRepeat, previous);
-	return definition->GREEDY_REPEAT(minRepeat, maxRepeat, previous);
+		return definition->REPEAT(minRepeat, maxRepeat, node);
+	return definition->GREEDY_REPEAT(minRepeat, maxRepeat, node);
 }
 
 } // namespace flux

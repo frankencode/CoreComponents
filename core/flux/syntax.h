@@ -618,7 +618,8 @@ public:
 		else if (entry()->matchNext(media, i - length_, tokenFactory, parentToken, state) == -1)
 			h = -1;
 
-		i = ((h == -1) ^ invert_) ? h : i;
+		if ((h == -1) ^ invert_)
+			i = -1;
 
 		rollBack(parentToken, lastChildSaved);
 

@@ -36,7 +36,7 @@ protected:
 	String readString(ByteArray *text, Token *token);
 	NODE compileRangeMinMax(ByteArray *text, Token *token, SyntaxDefinition *definition);
 	NODE compileRangeExplicit(ByteArray *text, Token *token, SyntaxDefinition *definition);
-	NODE compileRepeat(ByteArray *text, Token *token, SyntaxDefinition *definition, NODE previous);
+	NODE compileRepeat(ByteArray *text, Token *token, SyntaxDefinition *definition);
 
 	int gap_;
 	int any_;
@@ -54,7 +54,7 @@ protected:
 	int behind_;
 	int identifier_;
 	int capture_;
-	int reference_;
+	int replay_;
 	int group_;
 	int choice_;
 };
