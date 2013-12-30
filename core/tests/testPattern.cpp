@@ -4,16 +4,92 @@
 
 using namespace flux;
 
-int main() {
-	Pattern p = "^#{}.(?<=.)(?<!hello)(t[..]{?}|(?a:#)[^abc](?&a))$";
+void testEmailValidation()
+{
+	Pattern pattern =
+		"(!>:[.-])"
+		"{1..:(!>:..|--)([a..z]|[A..Z]|[0..9]|[.-])}"
+		"(!<:[.-])"
+		"@"
+		"(!>:[.-])"
+		"{1..:(!>:..|--)([a..z]|[A..Z]|[0..9]|[.-])}"
+		"(!<:[.-])";
+
 	#ifndef NDEBUG
-	if (p->debugFactory())
-		cast<SyntaxDebugger>(p->debugFactory())->printDefinition();
+	SyntaxDebugger *debugger = cast<SyntaxDebugger>(pattern->debugFactory());
+	debugger->printDefinition();
+	fout() << nl;
 	#endif
-	String s = "abc.txt";
-	Ref<Token> token = p->match(s);
-	fout("p->match(\"%%\") = 0x%%\n") << s << str((void *)token);
-	check(token);
-	fout("i0, i1 = %%, %%\n") << token->i0() << token->i1();
+
+	Ref<StringList> address = StringList::create()
+		<< "info@cyblogic.com"
+		<< "@lala.de"
+		<< "otto@übertragungsfehler.de"
+		<< ""
+		<< "a@B"
+		<< "a--b@C"
+		<< "a-b.@C"
+		<< "b-@C"
+		<< "a.b.c@d.e.f";
+
+	Ref< List<bool> > result = List<bool>::create()
+		<< true
+		<< false
+		<< false
+		<< false
+		<< true
+		<< false
+		<< false
+		<< false
+		<< true;
+
+	for (int i = 0; i < address->size(); ++i) {
+		bool valid = pattern->match(address->at(i));
+		fout() << i << ": \"" << address->at(i) << "\": " << valid << nl;
+		check(valid == result->at(i));
+	}
+
+	fout() << nl;
+}
+
+void testGlobbing()
+{
+	Pattern pattern = "*.(c|h){..2:[^.]}";
+
+	Ref<StringList> path = StringList::create()
+		<< "/home/hans/glück.hh"
+		<< "a.b.c"
+		<< "a.b.c.d.e.f"
+		<< "test.cpp"
+		<< "std.hxx"
+		<< "stdio.h";
+
+	#ifndef NDEBUG
+	SyntaxDebugger *debugger = cast<SyntaxDebugger>(pattern->debugFactory());
+	debugger->printDefinition();
+	fout() << nl;
+	#endif
+
+	Ref< List<bool> > result = List<bool>::create()
+		<< true
+		<< true
+		<< false
+		<< true
+		<< true
+		<< true;
+
+	for (int i = 0; i < path->size(); ++i) {
+		bool valid = pattern->match(path->at(i));
+		fout() << i << ": \"" << path->at(i) << "\": " << valid << nl;
+		check(valid == result->at(i));
+	}
+
+	fout() << nl;
+}
+
+int main()
+{
+	testEmailValidation();
+	testGlobbing();
 	return 0;
 }

@@ -454,6 +454,7 @@ ByteArray *ByteArray::unescapeInsitu()
 				else if (ch == 'n') data_[j++] = 0x0A;
 				else if (ch == 'r') data_[j++] = 0x0D;
 				else if (ch == 'f') data_[j++] = 0x0C;
+				else if (ch == 's') data_[j++] = 0x20;
 				else data_[j++] = ch;
 			}
 		}

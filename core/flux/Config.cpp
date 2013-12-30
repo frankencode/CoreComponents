@@ -42,7 +42,7 @@ Ref<Config> Config::read(int argc, char **argv, Config *config)
 	if (!config)
 		config = newConfig = new Config;
 
-	Pattern flag("-{1,2}(?name:[^-][^=]{})(=(?value:[^=]{1,})){0,1}");
+	Pattern flag("{1..2:-}(&name:[^-]{[^=]}){0..1:=(&value:{1..:[^=]})}");
 
 	for (int i = 1; i < argc; ++i)
 	{
