@@ -8,6 +8,7 @@
  */
 
 #include <flux/System.h>
+#include "ErrorLog.h"
 #include "ClientConnection.h"
 #include "ConnectionManager.h"
 
@@ -24,7 +25,9 @@ ConnectionManager::ConnectionManager(int serviceWindow)
 	  connectionCounts_(ConnectionCounts::create()),
 	  visits_(Visits::create()),
 	  serviceWindow_(serviceWindow)
-{}
+{
+	FLUXNODE_DEBUG() << "Service window of " << serviceWindow << "s will be used to prioritize connections" << nl;
+}
 
 void ConnectionManager::cycle()
 {

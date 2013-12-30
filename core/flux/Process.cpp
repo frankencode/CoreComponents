@@ -213,6 +213,11 @@ void Process::setUserId(uid_t uid)
 	if (::setuid(uid) == -1) FLUX_SYSTEM_EXCEPTION;
 }
 
+void Process::setEffectiveUserId(uid_t uid)
+{
+	if (::seteuid(uid) == -1) FLUX_SYSTEM_EXCEPTION;
+}
+
 String Process::env(String key)
 {
 	return getenv(key);

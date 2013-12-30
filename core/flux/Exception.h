@@ -116,6 +116,7 @@ class Interrupt {
 public:
 	Interrupt();
 	inline int signal() const { return signal_; }
+	const char *signalName() const;
 private:
 	int signal_;
 };
