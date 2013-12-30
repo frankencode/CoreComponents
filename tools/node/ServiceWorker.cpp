@@ -46,7 +46,7 @@ ServiceWorker::~ServiceWorker()
 void ServiceWorker::logDelivery(ClientConnection *client, int statusCode, size_t bytesWritten)
 {
 	Stream *stream = accessLog()->noticeStream();
-	if (400 <= statusCode && statusCode <= 499) stream = accessLog()->warningStream();
+	if (400 <= statusCode && statusCode <= 499) stream = accessLog()->debugStream();
 	else if (500 <= statusCode) stream = accessLog()->errorStream();
 
 	Request *request = client->request();
@@ -121,7 +121,11 @@ void ServiceWorker::run()
 			logDelivery(client_, 500);
 		}
 		#endif
-		catch (TimeoutExceeded &) { FLUXNODE_DEBUG() << "Connection timed out (" << client_->address() << ")" << nl; }
+		catch (TimeoutExceeded &) {
+			FLUXNODE_DEBUG() << "Connection timed out (" << client_->address() << ")" << nl;
+			Format("HTTP/1.1 408 Request Timeout\r\n\r\n", client_->stream());
+			logDelivery(client_, 408);
+		}
 		catch (CloseRequest &) {}
 		close();
 

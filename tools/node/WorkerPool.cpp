@@ -27,8 +27,8 @@ WorkerPool::WorkerPool(ServiceInstance *serviceInstance, ClosedConnections *clos
 	  serviceInstance_(serviceInstance),
 	  serviceWorkers_(ServiceWorkers::create(serviceInstance->concurrency()))
 {
-	FLUXNODE_DEBUG()
-		<< "Creating worker pool for " << serviceInstance->serviceName() << " service..." << nl
+	FLUXNODE_NOTICE()
+		<< "Creating worker pool for " << serviceInstance->serviceName() << " service" << nl
 		<< "  concurrency = " << serviceInstance->concurrency() << nl
 		<< "  host = \"" << serviceInstance->host() << "\"" << nl
 		<< "  uri = \"" << serviceInstance->uri() << "\"" << nl;
@@ -44,7 +44,7 @@ WorkerPool::WorkerPool(ServiceInstance *serviceInstance, ClosedConnections *clos
 
 WorkerPool::~WorkerPool()
 {
-	FLUXNODE_DEBUG() << "Terminating worker pool for service " << serviceInstance_->serviceName() << "..." << nl;
+	FLUXNODE_NOTICE() << "Shutting down worker pool for " << serviceInstance_->serviceName() << " service" << nl;
 }
 
 void WorkerPool::dispatch(ClientConnection *client)

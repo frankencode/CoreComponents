@@ -101,6 +101,7 @@ public:
 	static gid_t effectiveGroupId();
 	static bool isSuperUser();
 	static void setUserId(uid_t uid);
+	static void setEffectiveUserId(uid_t uid);
 
 	static String env(String key);
 	static void setEnv(String key, String value);

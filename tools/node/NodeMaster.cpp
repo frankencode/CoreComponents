@@ -49,10 +49,14 @@ int NodeMaster::run(int argc, char **argv)
 			runNode(argc, argv);
 		}
 		catch (Interrupt &ex) {
-			if (ex.signal() == SIGINT || ex.signal() == SIGTERM) break;
-			if (ex.signal() == SIGHUP) continue;
+			if (ex.signal() == SIGINT || ex.signal() == SIGTERM || ex.signal() == SIGHUP) break;
 			return ex.signal() + 128;
 		}
+		#ifdef NDEBUG
+		catch (SystemException &ex) {
+			return 1;
+		}
+		#endif
 	}
 
 	return 0;
@@ -66,9 +70,23 @@ void NodeMaster::runNode(int argc, char **argv)
 		Process::daemonize();
 
 	errorLog()->open(nodeConfig()->errorLogConfig());
-	// accessLog()->open(nodeConfig()->accessLogConfig());
 
-	FLUXNODE_NOTICE() << "Starting..." << nl;
+	#ifdef NDEBUG
+	try {
+		runNode();
+	}
+	catch (SystemException &ex) {
+		FLUXNODE_ERROR() << ex.what() << nl;
+		throw ex;
+	}
+	#else
+	runNode();
+	#endif
+}
+
+void NodeMaster::runNode()
+{
+	FLUXNODE_NOTICE() << "Starting (pid = " << Process::currentId() << ")" << nl;
 
 	Ref<DispatchInstance> dispatchInstance;
 	for (int i = 0; i < nodeConfig()->serviceInstances()->size(); ++i) {
@@ -96,6 +114,23 @@ void NodeMaster::runNode(int argc, char **argv)
 		nodeConfig()->serviceInstances()->append(echoInstance);
 	}
 
+	typedef List< Ref<StreamSocket> > ListeningSockets;
+	Ref<ListeningSockets> listeningSockets = ListeningSockets::create(nodeConfig()->address()->size());
+
+	for (int i = 0; i < nodeConfig()->address()->size(); ++i) {
+		SocketAddress *address = nodeConfig()->address()->at(i);
+		FLUXNODE_NOTICE() << "Start listening at " << address << nl;
+		Ref<StreamSocket> socket = StreamSocket::listen(address);
+		listeningSockets->at(i) = socket;
+	}
+
+	if (nodeConfig()->user() != "") {
+		Ref<User> user = User::lookup(nodeConfig()->user());
+		if (!user->exists()) throw UserError("No such user: \"" + nodeConfig()->user() + "\"");
+		FLUXNODE_NOTICE() << "Switching to user " << user->name() << " (uid = " << user->id() << ")" << nl;
+		Process::setUserId(user->id());
+	}
+
 	Ref<ConnectionManager> connectionManager = ConnectionManager::create(nodeConfig()->serviceWindow());
 
 	dispatchInstance->workerPools_ = WorkerPools::create(nodeConfig()->serviceInstances()->size());
@@ -104,23 +139,10 @@ void NodeMaster::runNode(int argc, char **argv)
 
 	Ref<WorkerPool> dispatchPool = WorkerPool::create(dispatchInstance, connectionManager->closedConnections());
 
-	typedef List< Ref<StreamSocket> > ListeningSockets;
-	Ref<ListeningSockets> listeningSockets = ListeningSockets::create(nodeConfig()->address()->size());
-
-	for (int i = 0; i < nodeConfig()->address()->size(); ++i) {
-		Ref<StreamSocket> socket = StreamSocket::listen(nodeConfig()->address()->at(i));
-		listeningSockets->at(i) = socket;
-	}
-
-	if (nodeConfig()->user() != "") {
-		Ref<User> user = User::lookup(nodeConfig()->user());
-		if (!user->exists()) throw UserError("No such user: \"" + nodeConfig()->user() + "\"");
-		Process::setUserId(user->id());
-	}
-
-	FLUXNODE_DEBUG() << "Accepting connections with a service window of " << nodeConfig()->serviceWindow() << "s..." << nl;
+	FLUXNODE_NOTICE() << "Up and running (pid = " << Process::currentId() << ")" << nl;
 
 	try {
+		FLUXNODE_DEBUG() << "Accepting connections" << nl;
 		Ref<IoMonitor> ioMonitor = IoMonitor::create();
 		while (true) {
 			ioMonitor->readyAccept()->clear();
@@ -142,8 +164,10 @@ void NodeMaster::runNode(int argc, char **argv)
 		}
 	}
 	catch (Interrupt &ex) {
-		FLUXNODE_NOTICE() << "Shutting down..." << nl;
+		FLUXNODE_NOTICE() << "Received " << ex.signalName() << ", shutting down" << nl;
 		dispatchInstance->workerPools_ = 0;
+		dispatchPool = 0;
+		FLUXNODE_NOTICE() << "Shutdown complete" << nl;
 		throw ex;
 	}
 }

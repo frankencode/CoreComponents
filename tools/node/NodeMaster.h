@@ -28,6 +28,7 @@ private:
 
 	NodeMaster();
 	void runNode(int argc, char **argv);
+	void runNode();
 };
 
 inline NodeMaster* nodeMaster() { return NodeMaster::instance(); }
