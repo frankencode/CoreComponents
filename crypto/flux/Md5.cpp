@@ -29,7 +29,7 @@ Md5::Md5()
 	FLUX_ASSERT((aux_->size() % 64) == 0);
 }
 
-void Md5::feed(ByteArray *data)
+void Md5::feed(const ByteArray *data)
 {
 	const uint8_t *src = data->bytes();
 	int srcLeft = data->size();

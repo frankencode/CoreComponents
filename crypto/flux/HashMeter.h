@@ -7,18 +7,19 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_STREAM_H
-#define FLUX_STREAM_H
+#ifndef FLUX_HASHMETER_H
+#define FLUX_HASHMETER_H
 
-#include "String.h"
+#include <flux/Stream.h>
+#include "HashSum.h"
 
 namespace flux
 {
 
-class Stream: public Object
+class HashMeter: public Stream
 {
 public:
-	virtual ~Stream() {}
+	static Ref<HashMeter> open(HashSum *hashSum, Stream *stream = 0);
 
 	virtual bool readyRead(double interval) const;
 	virtual int read(ByteArray *data);
@@ -26,15 +27,15 @@ public:
 	virtual void write(const ByteArray *data);
 	virtual void write(const StringList *parts);
 
-	virtual off_t transfer(off_t count = -1, Stream *sink = 0, ByteArray *buf = 0);
-	inline off_t transferAll(Stream *sink, ByteArray *buf = 0) { return transfer(-1, sink, buf); }
-	inline off_t skip(off_t count) { return transfer(count); }
-	inline void drain() { transfer(); }
+	Ref<ByteArray> finish();
 
-	int readAll(ByteArray *data);
-	String readAll(int count = -1);
+private:
+	HashMeter(HashSum *hashSum, Stream *stream);
+
+	Ref<HashSum> hashSum_;
+	Ref<Stream> stream_;
 };
 
 } // namespace flux
 
-#endif // FLUX_STREAM_H
+#endif // FLUX_HASHMETER_H
