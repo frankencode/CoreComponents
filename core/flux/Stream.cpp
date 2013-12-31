@@ -39,7 +39,7 @@ off_t Stream::transfer(off_t count, Stream *sink, ByteArray *buf)
 	off_t total = 0;
 	Ref<ByteArray> h;
 	if (!buf) {
-		h = ByteArray::allocate(0x4000 > count ? count : 0x4000);
+		h = ByteArray::allocate((0 < count && count < 0x4000) ? count : 0x4000);
 		buf = h;
 	}
 

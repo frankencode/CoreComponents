@@ -10,20 +10,20 @@
 #ifndef FLUX_MD5_H
 #define FLUX_MD5_H
 
-#include <flux/ByteArray.h>
+#include "HashSum.h"
 
 namespace flux
 {
 
-class Md5: public Object
+class Md5: public HashSum
 {
 public:
 	enum { Size = 16 };
 
 	static Ref<Md5> create();
 
-	void feed(ByteArray *data);
-	Ref<ByteArray> finish();
+	virtual void feed(const ByteArray *data);
+	virtual Ref<ByteArray> finish();
 
 private:
 	Md5();

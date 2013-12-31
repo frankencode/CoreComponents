@@ -57,7 +57,7 @@ Sha1::Sha1()
 	h_->wordAt(4) = 0xC3D2E1F0;
 }
 
-void Sha1::feed(ByteArray *data)
+void Sha1::feed(const ByteArray *data)
 {
 	for (int i = 0; i < data->size(); ++i) {
 		uint8_t b = data->byteAt(i);
