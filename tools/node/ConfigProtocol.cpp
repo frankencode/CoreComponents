@@ -29,7 +29,7 @@ protected:
 		insert("port", 8080);
 		insert("protocol", "");
 		insert("user", "");
-		insert("version", "Fnode/0.0.1");
+		insert("version", "Fnode/0.0.2");
 		insert("daemon", false);
 		insert("service_window", 30);
 		insert("error_log", LogPrototype::create());
