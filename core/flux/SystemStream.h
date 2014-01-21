@@ -15,6 +15,8 @@
 namespace flux
 {
 
+class ConnectionResetByPeer {};
+
 class SystemStream: public Stream
 {
 public:

@@ -50,13 +50,15 @@ void ServiceWorker::logDelivery(ClientConnection *client, int statusCode, size_t
 	else if (500 <= statusCode) stream = accessLog()->errorStream();
 
 	Request *request = client->request();
-	String requestLine = request ? request->line() : "INVALID";
+	String requestHost = request ? request->host() : "-";
+	String requestLine = request ? request->line() : "-";
 	double requestTime = request ? request->time() : System::now();
-	String userAgent =   request ? request->value("User-Agent") : "";
+	String userAgent =   request ? request->value("User-Agent") : "-";
 
 	Format(stream)
 		<< client->address()->networkAddress() << " "
 		<< Date::create(requestTime)->toString() << " "
+		<< "\"" << requestHost << "\" "
 		<< "\"" << requestLine << "\" "
 		<< statusCode << " " << bytesWritten << " "
 		<< "\"" << userAgent << "\" "
@@ -114,19 +116,20 @@ void ServiceWorker::run()
 			Format("HTTP/1.1 %% %%\r\n\r\n", client_->stream()) << ex.statusCode() << " " << ex.message();
 			logDelivery(client_, ex.statusCode());
 		}
-		#ifdef NDEBUG
-		catch (Exception &ex) {
-			FLUXNODE_ERROR() << ex.message() << nl;
-			Format("HTTP/1.1 500 Internal Server Error: %%\r\n\r\n", client_->stream()) << ex.message();
-			logDelivery(client_, 500);
-		}
-		#endif
 		catch (TimeoutExceeded &) {
 			FLUXNODE_DEBUG() << "Connection timed out (" << client_->address() << ")" << nl;
 			Format("HTTP/1.1 408 Request Timeout\r\n\r\n", client_->stream());
 			logDelivery(client_, 408);
 		}
-		catch (CloseRequest &) {}
+		catch (ConnectionResetByPeer &)
+		{}
+		catch (CloseRequest &)
+		{}
+		catch (Exception &ex) {
+			FLUXNODE_ERROR() << ex.message() << nl;
+			// Format("HTTP/1.1 500 Internal Server Error: %%\r\n\r\n", client_->stream()) << ex.message();
+			// logDelivery(client_, 500);
+		}
 		close();
 
 		if (visit) {

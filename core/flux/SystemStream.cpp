@@ -115,6 +115,7 @@ void SystemStream::write(const ByteArray *data)
 		if (ret == -1) {
 			if (errno == EINTR) throw Interrupt();
 			if (errno == EWOULDBLOCK) throw Timeout();
+			if (errno == ECONNRESET) throw ConnectionResetByPeer();
 			FLUX_SYSTEM_EXCEPTION;
 		}
 		p += ret;
