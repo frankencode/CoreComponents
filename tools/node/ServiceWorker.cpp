@@ -50,10 +50,10 @@ void ServiceWorker::logDelivery(ClientConnection *client, int statusCode, size_t
 	else if (500 <= statusCode) stream = accessLog()->errorStream();
 
 	Request *request = client->request();
-	String requestHost = request ? request->host() : "-";
-	String requestLine = request ? request->line() : "-";
+	String requestHost = request ? request->host() : "";
+	String requestLine = request ? request->line() : "";
 	double requestTime = request ? request->time() : System::now();
-	String userAgent =   request ? request->value("User-Agent") : "-";
+	String userAgent =   request ? request->value("User-Agent") : "";
 
 	Format(stream)
 		<< client->address()->networkAddress() << " "
