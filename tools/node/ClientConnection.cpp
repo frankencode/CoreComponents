@@ -127,6 +127,7 @@ Ref<Request> ClientConnection::scanRequest()
 	}
 
 	request->host_ = request->value("Host");
+	request->host_->downcaseInsitu();
 	if (request->host_ == "") throw BadRequest();
 
 	if (request->value("Transfer-Encoding") == "chunked") {
