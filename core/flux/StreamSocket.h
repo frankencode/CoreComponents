@@ -23,6 +23,7 @@ public:
 	static Ref<StreamSocket> connect(SocketAddress *address);
 
 	SocketAddress *address() const;
+	bool getPeerAddress(SocketAddress *address);
 
 	bool readyAccept(double interval);
 	Ref<StreamSocket> accept();

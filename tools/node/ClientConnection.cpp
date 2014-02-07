@@ -22,15 +22,15 @@
 namespace fluxnode
 {
 
-Ref<ClientConnection> ClientConnection::create(StreamSocket *socket)
+Ref<ClientConnection> ClientConnection::create(StreamSocket *socket, SocketAddress *address)
 {
-	return new ClientConnection(socket);
+	return new ClientConnection(socket, address);
 }
 
-ClientConnection::ClientConnection(StreamSocket *socket)
+ClientConnection::ClientConnection(StreamSocket *socket, SocketAddress *address)
 	: requestStream_(RequestStream::open(socket)),
 	  stream_(requestStream_),
-	  address_(SocketAddress::getRemoteAddress(socket)),
+	  address_(address),
 	  visit_(Visit::create(address_))
 {
 	if (errorLog()->level() >= DebugLogLevel) {

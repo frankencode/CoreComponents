@@ -20,24 +20,6 @@
 namespace flux
 {
 
-Ref<SocketAddress> SocketAddress::getLocalAddress(SystemStream *socket)
-{
-	Ref<SocketAddress> address = SocketAddress::create();
-	socklen_t len = address->addrLen();
-	if (::getsockname(socket->fd(), address->addr(), &len) == -1)
-		FLUX_SYSTEM_EXCEPTION;
-	return address;
-}
-
-Ref<SocketAddress> SocketAddress::getRemoteAddress(SystemStream *socket)
-{
-	Ref<SocketAddress> address = SocketAddress::create();
-	socklen_t len = address->addrLen();
-	if (::getpeername(socket->fd(), address->addr(), &len) == -1)
-		FLUX_SYSTEM_EXCEPTION;
-	return address;
-}
-
 SocketAddress::SocketAddress()
 	: socketType_(0),
 	  protocol_(0)

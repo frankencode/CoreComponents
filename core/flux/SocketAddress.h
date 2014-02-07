@@ -58,9 +58,6 @@ public:
 		return new SocketAddress(info);
 	}
 
-	static Ref<SocketAddress> getLocalAddress(SystemStream *socket);
-	static Ref<SocketAddress> getRemoteAddress(SystemStream *socket);
-
 	int family() const;
 	int socketType() const;
 	int protocol() const;
