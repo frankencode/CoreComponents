@@ -153,7 +153,13 @@ void NodeMaster::runNode()
 				for (int i = 0; i < listeningSockets->size(); ++i) {
 					StreamSocket *socket = listeningSockets->at(i);
 					if (ioMonitor->readyAccept()->contains(socket)) {
-						Ref<ClientConnection> client = ClientConnection::create(socket->accept());
+						Ref<StreamSocket> clientSocket = socket->accept();
+						Ref<SocketAddress> clientAddress = SocketAddress::create();
+						if (!clientSocket->getPeerAddress(clientAddress)) {
+							FLUXNODE_DEBUG() << "Failed to get peer address" << nl;
+							continue;
+						}
+						Ref<ClientConnection> client = ClientConnection::create(clientSocket, clientAddress);
 						connectionManager->prioritize(client);
 						FLUXNODE_DEBUG() << "Accepted connection from " << client->address() << " with priority " << client->priority() << nl;
 						dispatchPool->dispatch(client);

@@ -48,6 +48,12 @@ StreamSocket::StreamSocket(SocketAddress *address, int fdc)
 
 SocketAddress *StreamSocket::address() const { return address_; }
 
+bool StreamSocket::getPeerAddress(SocketAddress *address)
+{
+	socklen_t len = address->addrLen();
+	return ::getpeername(fd_, address->addr(), &len) == 0;
+}
+
 void StreamSocket::bind()
 {
 	if (address_->port() != 0) {

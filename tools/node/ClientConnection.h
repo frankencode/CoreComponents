@@ -25,7 +25,7 @@ class RequestStream;
 class ClientConnection: public Object
 {
 public:
-	static Ref<ClientConnection> create(StreamSocket *socket);
+	static Ref<ClientConnection> create(StreamSocket *socket, SocketAddress *address);
 
 	inline Stream *stream() const { return stream_; }
 	inline SocketAddress *address() const { return address_; }
@@ -44,7 +44,7 @@ public:
 private:
 	friend class ServiceWorker;
 
-	ClientConnection(StreamSocket *socket);
+	ClientConnection(StreamSocket *socket, SocketAddress *address);
 
 	Ref<Request> scanRequest();
 
