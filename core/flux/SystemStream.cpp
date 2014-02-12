@@ -98,6 +98,7 @@ int SystemStream::read(ByteArray *data)
 		if (ret == -1) {
 			if (errno == EINTR) throw Interrupt();
 			if (errno == EWOULDBLOCK) throw Timeout();
+			if (errno == ECONNRESET) throw ConnectionResetByPeer();
 			FLUX_SYSTEM_EXCEPTION;
 		}
 		break;
@@ -141,6 +142,7 @@ void SystemStream::write(const StringList *parts)
 	if (ret == -1) {
 		if (errno == EINTR) throw Interrupt();
 		if (errno == EWOULDBLOCK) throw Timeout();
+		if (errno == ECONNRESET) throw ConnectionResetByPeer();
 		FLUX_SYSTEM_EXCEPTION;
 	}
 }
