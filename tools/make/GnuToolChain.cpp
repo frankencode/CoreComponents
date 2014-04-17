@@ -132,10 +132,10 @@ bool GnuToolChain::link(BuildPlan *plan)
 
 	args << "-o" << linkName(plan);
 
-	appendLinkOptions(args, plan);
-
 	for (int i = 0; i < modules->size(); ++i)
 		args << modules->at(i)->modulePath();
+
+	appendLinkOptions(args, plan);
 
 	String command = args->join(" ");
 
