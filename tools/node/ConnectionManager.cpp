@@ -26,7 +26,7 @@ ConnectionManager::ConnectionManager(int serviceWindow)
 	  visits_(Visits::create()),
 	  serviceWindow_(serviceWindow)
 {
-	FLUXNODE_DEBUG() << "Service window of " << serviceWindow << "s will be used to prioritize connections" << nl;
+	FLUXNODE_NOTICE() << "Service window of " << serviceWindow << "s will be used to prioritize connections" << nl;
 }
 
 void ConnectionManager::cycle()
@@ -48,7 +48,8 @@ void ConnectionManager::cycle()
 			uint64_t origin = visit->remoteAddress()->networkPrefix();
 			int count = 0;
 			int index = 0;
-			connectionCounts_->lookup(origin, &count, &index);
+			if (!connectionCounts_->lookup(origin, &count, &index)) continue;
+
 			if (count == 1) connectionCounts_->removeAt(index);
 			else connectionCounts_->valueAt(index) = count - 1;
 		}

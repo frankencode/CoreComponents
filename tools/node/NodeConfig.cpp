@@ -39,7 +39,7 @@ void NodeConfig::load(int argc, char **argv)
 	if (protocol->downcase() == "ipv6") family = AF_INET6;
 	else if (protocol->downcase() == "ipv4") family = AF_INET;
 
-	address_ = SocketAddress::resolve(address, "", family, SOCK_STREAM, &canonicalName_);
+	address_ = SocketAddress::resolve(address, "http", family, SOCK_STREAM);
 	for (int i = 0; i < address_->size(); ++i)
 		address_->at(i)->setPort(port);
 
