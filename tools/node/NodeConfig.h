@@ -26,7 +26,6 @@ class NodeConfig: public Object, public Singleton<NodeConfig>
 public:
 	void load(int argc, char **argv);
 
-	inline String canoncialName() const { return canonicalName_; }
 	inline SocketAddressList *address() const { return address_; }
 	inline String user() const { return user_; }
 	inline String version() const { return version_; }
@@ -43,7 +42,6 @@ private:
 
 	NodeConfig();
 
-	String canonicalName_;
 	Ref<SocketAddressList> address_;
 	String user_;
 	String version_;

@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 	fout("hostName = \"%%\"\n") << hostName;
 
 	String canonicalName;
-	Ref<SocketAddressList> list = SocketAddress::resolve(hostName, "", AF_UNSPEC, SOCK_STREAM, &canonicalName);
+	Ref<SocketAddressList> list = SocketAddress::resolve(hostName, "http", AF_UNSPEC, SOCK_STREAM, &canonicalName);
 
 	fout("canonicalName = \"%%\"\n") << canonicalName;
 

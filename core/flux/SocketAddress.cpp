@@ -167,19 +167,18 @@ Ref<SocketAddressList> SocketAddress::resolve(String hostName, String serviceNam
 	addrinfo *head = 0;
 
 	memclr(&hint, sizeof(hint));
-	hint.ai_flags = (canonicalName) ? AI_CANONNAME : 0;
-	if ((hostName == "*") || (hostName == ""))
-		hint.ai_flags |= AI_PASSIVE;
-	hint.ai_family = family;
+	if ((hostName == "*") || (hostName == "")) hint.ai_flags |= AI_PASSIVE;
+	hint.ai_flags |= (canonicalName && (hint.ai_flags & AI_PASSIVE) == 0) ? AI_CANONNAME : 0;
+	hint.ai_family = (hostName == "*") ? AF_INET : family;
 	hint.ai_socktype = socketType;
 
 	int ret;
 	{
-		char *h = 0;
+		char *n = 0;
 		char *s = 0;
-		if ((hint.ai_flags & AI_PASSIVE) == 0) h = hostName;
+		if ((hint.ai_flags & AI_PASSIVE) == 0) n = hostName;
 		if (serviceName != "") s = serviceName;
-		ret = getaddrinfo(h, s, &hint, &head);
+		ret = getaddrinfo(n, s, &hint, &head);
 	}
 
 	if (ret != 0)
