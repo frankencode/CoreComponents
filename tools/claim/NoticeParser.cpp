@@ -36,7 +36,7 @@ private:
 
 NoticeSyntax::NoticeSyntax()
 {
-	DEFINE_VOID("Year",
+	DEFINE("Year",
 		GLUE(
 			RANGE('1', '3'),
 			REPEAT(3, 3,

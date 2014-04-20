@@ -737,7 +737,7 @@ void Debugger::printDefinition(bool omitUnusedRules)
 	for (int i = 0; i < ruleById->size(); ++i) {
 		RuleNode *rule = ruleById->valueAt(i);
 		if (omitUnusedRules && !rule->used()) continue;
-		fout("DEFINE%%(\"%%\",\n") << (rule->isVoid() ? "_VOID" : "") << rule->name();
+		fout("DEFINE(\"%%\",\n") << rule->name();
 		if (rule->entry()) {
 			DebugNode *debugNode = cast<DebugNode>(rule->entry());
 			if (debugNode) debugNode->printNext(indent_);

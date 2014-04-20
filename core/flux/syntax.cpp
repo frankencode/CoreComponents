@@ -74,29 +74,8 @@ NODE DefinitionNode::KEYWORD(const char *keywords)
 	return debug(new KeywordNode(map, caseSensitive_), "Keyword");
 }
 
-void DefinitionNode::OPTIMIZE()
+void DefinitionNode::LINK()
 {
-	while (unresolvedLinkHead_) {
-		LinkNode *link = unresolvedLinkHead_;
-		link->rule_ = ruleByName(link->ruleName_);
-		if (link->rule_->isVoid()) {
-			if (cast<RefNode>(link)) {
-				if (link->rule_->numberOfRefs() == 0) {
-					Ref<LinkNode> iLink = new InlineNode(link->ruleName_);
-					link->parent()->insertChild(iLink, link);
-					iLink->rule_ = link->rule_;
-					link->unlink();
-				}
-			}
-		}
-		unresolvedLinkHead_ = link->unresolvedNext_;
-	}
-}
-
-void DefinitionNode::LINK(bool optimize)
-{
-	if (optimize) OPTIMIZE();
-
 	while (unresolvedLinkHead_) {
 		unresolvedLinkHead_->rule_ = ruleByName(unresolvedLinkHead_->ruleName_);
 		unresolvedLinkHead_ = unresolvedLinkHead_->unresolvedNext_;

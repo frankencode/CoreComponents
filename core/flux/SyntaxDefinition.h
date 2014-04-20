@@ -131,7 +131,6 @@ public:
 	NODE EXPECT(const char *text, NODE entry);
 
 	int DEFINE(const char *ruleName, NODE entry = 0);
-	void DEFINE_VOID(const char *ruleName, NODE entry = 0);
 	void ENTRY(const char *ruleName);
 	NODE REF(const char *ruleName);
 	NODE INLINE(const char *ruleName);
@@ -143,8 +142,7 @@ public:
 	NODE CALL(CallBack callBack, Object *self = 0);
 	NODE ERROR();
 
-	void OPTIMIZE();
-	void LINK(bool optimize = true);
+	void LINK();
 
 	NODE SET(const char *name, bool value);
 	NODE IF(const char *name, NODE trueBranch, NODE falseBranch = 0);

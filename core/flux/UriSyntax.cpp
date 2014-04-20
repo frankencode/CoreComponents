@@ -19,18 +19,18 @@ UriSyntax::UriSyntax(SyntaxDebugFactory *debugFactory)
 	SYNTAX("uri");
 	IMPORT(inetAddressSyntax(), "inet");
 
-	DEFINE_VOID("ALPHA",
+	DEFINE("ALPHA",
 		CHOICE(
 			RANGE('a', 'z'), // 0x61 - 0x7A
 			RANGE('A', 'Z')  // 0x41 - 0x5A
 		)
 	);
 
-	DEFINE_VOID("DIGIT",
+	DEFINE("DIGIT",
 		RANGE('0', '9') // 0x30 - 0x39
 	);
 
-	DEFINE_VOID("HEXDIG",
+	DEFINE("HEXDIG",
 		CHOICE(
 			INLINE("DIGIT"),
 			CHOICE(
@@ -40,22 +40,22 @@ UriSyntax::UriSyntax(SyntaxDebugFactory *debugFactory)
 		)
 	);
 
-	DEFINE_VOID("Delimiter",
+	DEFINE("Delimiter",
 		RANGE(":/?#[]@")
 	);
 
-	DEFINE_VOID("Punctuator",
+	DEFINE("Punctuator",
 		RANGE("!$&'()*+,;=")
 	);
 
-	/*DEFINE_VOID("Reserved",
+	/*DEFINE("Reserved",
 		CHOICE(
 			INLINE("Delimiter"),
 			INLINE("Punctuator")
 		)
 	);*/
 
-	DEFINE_VOID("Unreserved",
+	DEFINE("Unreserved",
 		CHOICE(
 			INLINE("ALPHA"),
 			INLINE("DIGIT"),
@@ -63,7 +63,7 @@ UriSyntax::UriSyntax(SyntaxDebugFactory *debugFactory)
 		)
 	);
 
-	DEFINE_VOID("PathChar",
+	DEFINE("PathChar",
 		CHOICE(
 			INLINE("Unreserved"),
 			INLINE("PercentEncoded"),
@@ -72,7 +72,7 @@ UriSyntax::UriSyntax(SyntaxDebugFactory *debugFactory)
 		)
 	);
 
-	DEFINE_VOID("PercentEncoded",
+	DEFINE("PercentEncoded",
 		GLUE(
 			CHAR('%'),
 			INLINE("HEXDIG"),

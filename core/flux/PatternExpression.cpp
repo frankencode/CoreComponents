@@ -107,7 +107,7 @@ PatternExpression::PatternExpression()
 			)
 		);
 
-	DEFINE_VOID("Number",
+	DEFINE("Number",
 		REPEAT(1, 20,
 			RANGE('0', '9')
 		)

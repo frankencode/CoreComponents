@@ -14,11 +14,11 @@ namespace flux
 
 InetAddressSyntax::InetAddressSyntax(SyntaxDebugFactory *debugFactory)
 {
-	DEFINE_VOID("DecimalOctet",
+	DEFINE("DecimalOctet",
 		REPEAT(0, 3, RANGE('0', '9'))
 	);
 
-	DEFINE_VOID("HexWord",
+	DEFINE("HexWord",
 		REPEAT(1, 4,
 			CHOICE(
 				RANGE('0', '9'),
@@ -31,13 +31,13 @@ InetAddressSyntax::InetAddressSyntax(SyntaxDebugFactory *debugFactory)
 	inet4Address_ =
 		DEFINE("Inet4Address",
 			GLUE(
-				REF("DecimalOctet"),
+				INLINE("DecimalOctet"),
 				CHAR('.'),
-				REF("DecimalOctet"),
+				INLINE("DecimalOctet"),
 				CHAR('.'),
-				REF("DecimalOctet"),
+				INLINE("DecimalOctet"),
 				CHAR('.'),
-				REF("DecimalOctet")
+				INLINE("DecimalOctet")
 			)
 		);
 

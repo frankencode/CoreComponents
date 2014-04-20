@@ -138,7 +138,6 @@ NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE c
 NODE Definition::EXPECT(const char *text, NODE entry)  { return def_->EXPECT(text, entry); }
 
 int Definition::DEFINE(const char *ruleName, NODE entry) { return def_->DEFINE(ruleName, entry); }
-void Definition::DEFINE_VOID(const char *ruleName, NODE entry) { def_->DEFINE_VOID(ruleName, entry); }
 void Definition::ENTRY(const char *ruleName) { def_->ENTRY(ruleName); }
 NODE Definition::REF(const char *ruleName) { return def_->REF(ruleName); }
 NODE Definition::INLINE(const char *ruleName) { return def_->INLINE(ruleName); }
@@ -148,8 +147,7 @@ NODE Definition::CONTEXT(const char *ruleName, NODE inContext, NODE outOfContext
 NODE Definition::CALL(CallBack callBack, Object *self) { return def_->CALL(callBack, self); }
 NODE Definition::ERROR() { return def_->ERROR(); }
 
-void Definition::OPTIMIZE() { return def_->OPTIMIZE(); }
-void Definition::LINK(bool optimize) { return def_->LINK(optimize); }
+void Definition::LINK() { return def_->LINK(); }
 
 NODE Definition::SET(const char *name, bool value) { return def_->SET(name, value); }
 NODE Definition::IF(const char *name, NODE trueBranch, NODE falseBranch) { return def_->IF(name, trueBranch, falseBranch); }
