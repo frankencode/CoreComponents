@@ -17,12 +17,12 @@ namespace flux
 
 YasonParser::YasonParser()
 {
-	SYNTAX("Yason");
+	SYNTAX("yason");
 
 	IMPORT(floatLiteral(), "float");
 	IMPORT(integerLiteral(), "int");
 
-	DEFINE_VOID("CommentLine",
+	DEFINE("CommentLine",
 		GLUE(
 			STRING("//"),
 			CHOICE(
@@ -32,7 +32,7 @@ YasonParser::YasonParser()
 		)
 	);
 
-	DEFINE_VOID("CommentText",
+	DEFINE("CommentText",
 		GLUE(
 			STRING("/*"),
 			REPEAT(
@@ -50,7 +50,7 @@ YasonParser::YasonParser()
 		)
 	);
 
-	DEFINE_VOID("Noise",
+	DEFINE("Noise",
 		REPEAT(
 			CHOICE(
 				RANGE(" \t\n\r"),
@@ -60,7 +60,7 @@ YasonParser::YasonParser()
 		)
 	);
 
-	DEFINE_VOID("EscapedChar",
+	DEFINE("EscapedChar",
 		GLUE(
 			CHAR('\\'),
 			EXPECT("illegal escape sequence",
@@ -165,7 +165,7 @@ YasonParser::YasonParser()
 	true_ = keywordByName("true");
 	false_ = keywordByName("false");
 
-	DEFINE_VOID("Identifier",
+	DEFINE("Identifier",
 		REPEAT(1,
 			CHOICE(
 				RANGE('a', 'z'),
@@ -195,7 +195,7 @@ YasonParser::YasonParser()
 			)
 		);
 
-	DEFINE_VOID("Member",
+	DEFINE("Member",
 		CHOICE(
 			REF("Object"),
 			GLUE(
@@ -280,7 +280,7 @@ YasonParser::YasonParser()
 			)
 		);
 
-	DEFINE_VOID("Value",
+	DEFINE("Value",
 		CHOICE(
 			REF("int::Literal"),
 			REF("float::Literal"),

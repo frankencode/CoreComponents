@@ -893,11 +893,10 @@ class DefinitionNode;
 class RuleNode: public Node
 {
 public:
-	RuleNode(int definitionId, const char *name, int ruleId, Node *entry, bool isVoid = false)
+	RuleNode(int definitionId, const char *name, int ruleId, Node *entry)
 		: definitionId_(definitionId),
 		  name_(name),
 		  id_(ruleId),
-		  isVoid_(isVoid),
 		  used_(false),
 		  numberOfRefs_(-1)
 	{
@@ -917,19 +916,11 @@ public:
 		int i0 = i;
 		i = (entry()) ? entry()->matchNext(media, i, tokenFactory, token, state) : i;
 
-		if (tokenFactory) {
-			if (i != -1) {
-				if ((isVoid_) && (parentToken)) {
-					parentToken->appendAllChildrenOf(token);
-					token->unlink();
-				}
-				else {
-					token->setRange(i0, i);
-				}
-			}
-			else {
+		if (token) {
+			if (i != -1)
+				token->setRange(i0, i);
+			else
 				token->unlink();
-			}
 		}
 
 		return i;
@@ -948,9 +939,7 @@ public:
 
 	inline int id() const { return id_; }
 	inline const char *name() const { return name_; }
-
 	inline Node *entry() const { return Node::firstChild(); }
-	inline bool isVoid() const { return isVoid_; }
 
 	inline bool used() const { return used_; }
 	inline void markUsed() { used_ = true; }
@@ -961,7 +950,6 @@ protected:
 	int definitionId_;
 	const char *name_;
 	int id_;
-	bool isVoid_;
 	bool used_;
 	int numberOfRefs_;
 };
@@ -1005,15 +993,7 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Token *lastChildSaved = 0;
-		if (parentToken) lastChildSaved = parentToken->lastChild();
-
-		i = LinkNode::rule_->matchNext(media, i, tokenFactory, parentToken, state);
-
-		if (i == -1)
-			rollBack(parentToken, lastChildSaved);
-
-		return i;
+		return LinkNode::rule_->matchNext(media, i, tokenFactory, parentToken, state);
 	}
 };
 
@@ -1243,11 +1223,6 @@ public:
 		addRule(rule);
 		return rule->id();
 	}
-	inline void DEFINE_VOID(const char *ruleName, NODE entry = 0) {
-		if (!entry) entry = PASS();
-		Ref<RuleNode> rule = new RuleNode(id_, ruleName, numRules_++, entry, true);
-		addRule(rule);
-	}
 	inline void ENTRY(const char *ruleName) {
 		LinkNode::ruleName_ = ruleName;
 	}
@@ -1293,8 +1268,7 @@ public:
 		return debug(new CallNode(errorCallBack, this), "Call");
 	}
 
-	void OPTIMIZE();
-	void LINK(bool optimize = true);
+	void LINK();
 
 	//-- stateful definition interface
 
