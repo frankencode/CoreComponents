@@ -43,8 +43,20 @@ void testData(YasonObject *object)
 	check(object->value("Is a super hero?"));
 	check(
 		String(object->value("motto")) ==
-			String("What I cannot create,\n"
-			"I do not understand.")
+		String(
+			"What I cannot create,\n"
+			"I do not understand."
+		)
+	);
+	check(
+		String(object->value("smiley")) ==
+		String(
+			"******\n"
+			"* ** *\n"
+			"******\n"
+			"*    *\n"
+			"******\n"
+		)
 	);
 	check(object->children()->size() == 2);
 	check(String(object->children()->at(0)->value("name")) == "Jane");
@@ -70,6 +82,13 @@ int main() {
 		"  motto:\n"
 		"    \"What I cannot create,\\n\"\n"
 		"    \"I do not understand.\"\n"
+		"  smiley:<<EOI\n"
+		"******\n"
+		"* ** *\n"
+		"******\n"
+		"*    *\n"
+		"******\n"
+		"EOI\n"
 		"  Person {\n"
 		"    name: Jane\n"
 		"  }\n"

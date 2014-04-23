@@ -17,15 +17,15 @@
 namespace flux
 {
 
-class YasonParser: public SyntaxDefinition, public Singleton<YasonParser>
+class YasonSyntax: public SyntaxDefinition, public Singleton<YasonSyntax>
 {
 public:
 	Variant parseMessage(ByteArray *text, YasonProtocol *protocol = 0, YasonObject *virgin = 0);
 
 protected:
-	friend class Singleton<YasonParser>;
+	friend class Singleton<YasonSyntax>;
 
-	YasonParser();
+	YasonSyntax();
 
 	YasonObject *selectPrototype(ByteArray *text, Token *token, YasonProtocol *protocol);
 	Ref<YasonObject> parseObject(ByteArray *text, Token *token, YasonObject *prototype = 0, YasonObject *virgin = 0);
@@ -39,6 +39,7 @@ protected:
 	int item_;
 	int line_;
 	int string_;
+	int document_;
 	int text_;
 	int boolean_;
 	int true_;
@@ -51,7 +52,7 @@ protected:
 };
 
 template<class T>
-Ref< List<T> > YasonParser::parseTypedList(ByteArray *text, Token *token, int expectedItemType)
+Ref< List<T> > YasonSyntax::parseTypedList(ByteArray *text, Token *token, int expectedItemType)
 {
 	Ref< List<T> > list = List<T>::create(token->countChildren());
 	int i = 0;
@@ -62,7 +63,7 @@ Ref< List<T> > YasonParser::parseTypedList(ByteArray *text, Token *token, int ex
 	return list;
 }
 
-inline YasonParser *yasonParser() { return YasonParser::instance(); }
+inline YasonSyntax *yasonSyntax() { return YasonSyntax::instance(); }
 
 } // namespace flux
 
