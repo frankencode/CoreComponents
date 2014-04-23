@@ -8,7 +8,7 @@
  */
 
 #include "Format.h"
-#include "YasonParser.h"
+#include "YasonSyntax.h"
 #include "YasonWriter.h"
 #include "Yason.h"
 
@@ -55,7 +55,7 @@ YasonObjectList *YasonObject::children() const
 
 Variant Yason::parse(ByteArray *text, YasonProtocol *protocol, YasonObject *virgin)
 {
-	return yasonParser()->parseMessage(text, protocol, virgin);
+	return yasonSyntax()->parseMessage(text, protocol, virgin);
 }
 
 String Yason::stringify(Variant value)

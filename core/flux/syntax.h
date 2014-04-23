@@ -850,10 +850,10 @@ public:
 		int i0 = i;
 		i = coverage()->matchNext(media, i, tokenFactory, parentToken, state);
 
-		if (i != -1) {
+		if (i == -1)
 			rollBack(parentToken, lastChildSaved);
+		else
 			state->setCapture(captureId_, Range::create(i0, i));
-		}
 
 		return i;
 	}

@@ -10,12 +10,12 @@
 #include "Format.h"
 #include "FloatLiteral.h"
 #include "IntegerLiteral.h"
-#include "YasonParser.h"
+#include "YasonSyntax.h"
 
 namespace flux
 {
 
-YasonParser::YasonParser()
+YasonSyntax::YasonSyntax()
 {
 	SYNTAX("yason");
 
@@ -138,6 +138,11 @@ YasonParser::YasonParser()
 			)
 		);
 
+	document_ =
+		DEFINE("Document",
+			FIND(AHEAD(REPLAY("eod")))
+		);
+
 	text_ =
 		DEFINE("Text",
 			CHOICE(
@@ -149,6 +154,15 @@ YasonParser::YasonParser()
 							REF("String")
 						)
 					)
+				),
+				GLUE(
+					STRING("<<"),
+					CAPTURE("eod", INLINE("Identifier")),
+					REPEAT(RANGE(" \t")),
+					REPEAT(0, 1, INLINE("CommentLine")),
+					CHAR('\n'),
+					REF("Document"),
+					REPLAY("eod")
 				),
 				CONTEXT("List",
 					REF("Item"),
@@ -304,7 +318,7 @@ YasonParser::YasonParser()
 	LINK();
 }
 
-Variant YasonParser::parseMessage(ByteArray *text, YasonProtocol *protocol, YasonObject *virgin)
+Variant YasonSyntax::parseMessage(ByteArray *text, YasonProtocol *protocol, YasonObject *virgin)
 {
 	Ref<SyntaxState> state = newState();
 	Ref<Token> token = match(text, -1, state);
@@ -326,7 +340,7 @@ Variant YasonParser::parseMessage(ByteArray *text, YasonProtocol *protocol, Yaso
 	return parseValue(text, valueToken);
 }
 
-YasonObject *YasonParser::selectPrototype(ByteArray *text, Token *token, YasonProtocol *protocol)
+YasonObject *YasonSyntax::selectPrototype(ByteArray *text, Token *token, YasonProtocol *protocol)
 {
 	YasonObject *prototype = 0;
 	String className;
@@ -347,7 +361,7 @@ YasonObject *YasonParser::selectPrototype(ByteArray *text, Token *token, YasonPr
 	return prototype;
 }
 
-Ref<YasonObject> YasonParser::parseObject(ByteArray *text, Token *token, YasonObject *prototype, YasonObject *virgin)
+Ref<YasonObject> YasonSyntax::parseObject(ByteArray *text, Token *token, YasonObject *prototype, YasonObject *virgin)
 {
 	if (token->rule() != object_)
 		throw YasonException("Expected an object value", text, token->i0());
@@ -429,7 +443,7 @@ Ref<YasonObject> YasonParser::parseObject(ByteArray *text, Token *token, YasonOb
 	return object;
 }
 
-Variant YasonParser::parseValue(ByteArray *text, Token *token, int expectedType, int expectedItemType)
+Variant YasonSyntax::parseValue(ByteArray *text, Token *token, int expectedType, int expectedItemType)
 {
 	Variant value;
 	bool typeError = false;
@@ -538,7 +552,7 @@ Variant YasonParser::parseValue(ByteArray *text, Token *token, int expectedType,
 	return value;
 }
 
-Variant YasonParser::parseList(ByteArray *text, Token *token, int expectedItemType)
+Variant YasonSyntax::parseList(ByteArray *text, Token *token, int expectedItemType)
 {
 	Variant list;
 	if (expectedItemType == Variant::IntType)
@@ -554,7 +568,7 @@ Variant YasonParser::parseList(ByteArray *text, Token *token, int expectedItemTy
 	return list;
 }
 
-String YasonParser::parseText(ByteArray *text, Token *token)
+String YasonSyntax::parseText(ByteArray *text, Token *token)
 {
 	token = token->firstChild();
 
@@ -570,9 +584,10 @@ String YasonParser::parseText(ByteArray *text, Token *token)
 			token = token->nextSibling();
 		}
 		s = (l->size() == 1) ? l->at(0) : l->join();
+		s->unescapeInsitu();
 	}
 
-	return s->unescapeInsitu();
+	return s;
 }
 
 } // namespace flux

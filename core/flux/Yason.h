@@ -82,7 +82,7 @@ public:
 	inline YasonProtocol *protocol() const { return protocol_; }
 
 protected:
-	friend class YasonParser;
+	friend class YasonSyntax;
 
 	YasonObject(const String &className = "", YasonProtocol *protocol = 0)
 		: className_(className),
