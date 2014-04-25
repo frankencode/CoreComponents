@@ -8,7 +8,7 @@
  */
 
 #include "LogPrototype.h"
-#include "ConfigProtocol.h"
+#include "NodeConfigProtocol.h"
 
 namespace fluxnode
 {
@@ -37,14 +37,14 @@ protected:
 	}
 };
 
-ConfigProtocol::ConfigProtocol()
+NodeConfigProtocol::NodeConfigProtocol()
 	: nodeProtocol_(YasonProtocol::create())
 {
 	Ref<NodePrototype> nodePrototype = NodePrototype::create(nodeProtocol_);
 	insert(nodePrototype->className(), nodePrototype);
 }
 
-void ConfigProtocol::registerService(YasonObject *configPrototype)
+void NodeConfigProtocol::registerService(YasonObject *configPrototype)
 {
 	nodeProtocol_->insert(configPrototype->className(), configPrototype);
 }

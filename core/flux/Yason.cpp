@@ -26,17 +26,6 @@ YasonException::YasonException(const String &error, ByteArray *text, int offset)
 	UserError::message_ = Format("%%:%%: %%") << line_ << pos_ << error;
 }
 
-YasonObject::YasonObject(const YasonObject &b)
-	: Super(b),
-	  className_(b.className_)
-{
-	if (b.children_) {
-		children_ = YasonObjectList::create(b.children_->size());
-		for (int i = 0; i < b.children_->size(); ++i)
-			children_->at(i) = YasonObject::clone(b.children_->at(i));
-	}
-}
-
 Variant YasonObject::toVariant() const
 {
 	return Ref<YasonObject>(const_cast<YasonObject *>(this));
@@ -53,9 +42,9 @@ YasonObjectList *YasonObject::children() const
 	return children_;
 }
 
-Variant Yason::parse(ByteArray *text, YasonProtocol *protocol, YasonObject *virgin)
+Variant Yason::parse(ByteArray *text, YasonProtocol *protocol)
 {
-	return yasonSyntax()->parseMessage(text, protocol, virgin);
+	return yasonSyntax()->parseMessage(text, protocol);
 }
 
 String Yason::stringify(Variant value)

@@ -45,8 +45,8 @@ public:
 	Ref<State> newState(State *parent = 0) const;
 
 	Ref<Token> find(const ByteArray *media, int i = 0) const;
-	Ref<Token> match(const ByteArray *media, int i = -1, SyntaxState *state = 0) const;
-	Ref<Token> match(const ByteArray *media, SyntaxState *state) const;
+	Ref<Token> match(const ByteArray *media, int i = -1, SyntaxState *state = 0, TokenFactory *tokenFactory = 0) const;
+	Ref<Token> match(const ByteArray *media, SyntaxState *state, TokenFactory *tokenFactory = 0) const;
 
 	int matchLength() const;
 

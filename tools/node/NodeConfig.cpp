@@ -8,7 +8,7 @@
  */
 
 #include <flux/Config.h>
-#include "ConfigProtocol.h"
+#include "NodeConfigProtocol.h"
 #include "ServiceRegistry.h"
 #include "ErrorLog.h"
 #include "NodeConfig.h"
