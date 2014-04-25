@@ -7,30 +7,30 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUXNODE_CONFIGPROTOCOL_H
-#define FLUXNODE_CONFIGPROTOCOL_H
+#ifndef FLUXNODE_NODECONFIGPROTOCOL_H
+#define FLUXNODE_NODECONFIGPROTOCOL_H
 
 #include <flux/Singleton.h>
-#include <flux/Yason.h>
+#include <flux/Config.h>
 
 namespace fluxnode
 {
 
 using namespace flux;
 
-class ConfigProtocol: public YasonProtocol, public Singleton<ConfigProtocol>
+class NodeConfigProtocol: public ConfigProtocol, public Singleton<NodeConfigProtocol>
 {
 public:
 	void registerService(YasonObject *configPrototype);
 
 private:
-	friend class Singleton<ConfigProtocol>;
-	ConfigProtocol();
+	friend class Singleton<NodeConfigProtocol>;
+	NodeConfigProtocol();
 	Ref<YasonProtocol> nodeProtocol_;
 };
 
-inline ConfigProtocol *configProtocol() { return ConfigProtocol::instance(); }
+inline NodeConfigProtocol *configProtocol() { return NodeConfigProtocol::instance(); }
 
 } // namespace fluxnode
 
-#endif // FLUXNODE_CONFIGPROTOCOL_H
+#endif // FLUXNODE_NODECONFIGPROTOCOL_H

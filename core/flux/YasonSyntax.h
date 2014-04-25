@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,15 +20,14 @@ namespace flux
 class YasonSyntax: public SyntaxDefinition, public Singleton<YasonSyntax>
 {
 public:
-	Variant parseMessage(ByteArray *text, YasonProtocol *protocol = 0, YasonObject *virgin = 0);
+	Variant parseMessage(ByteArray *text, YasonProtocol *protocol = 0);
+	Ref<YasonObject> parseObject(ByteArray *text, Token *token, YasonProtocol *protocol = 0, YasonObject *prototype = 0);
 
 protected:
 	friend class Singleton<YasonSyntax>;
 
 	YasonSyntax();
 
-	YasonObject *selectPrototype(ByteArray *text, Token *token, YasonProtocol *protocol);
-	Ref<YasonObject> parseObject(ByteArray *text, Token *token, YasonObject *prototype = 0, YasonObject *virgin = 0);
 	Variant parseValue(ByteArray *text, Token *token, int expectedType = Variant::UndefType, int expectedItemType = Variant::UndefType);
 	Variant parseList(ByteArray *text, Token *token, int expectedItemType = Variant::UndefType);
 	String parseText(ByteArray *text, Token *token);

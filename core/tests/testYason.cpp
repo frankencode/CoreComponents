@@ -97,7 +97,7 @@ int main() {
 		"  }\n"
 		"}";
 
-	try {
+	// try {
 		Ref<YasonObject> object = Yason::parse(text);
 		testData(object);
 
@@ -105,11 +105,11 @@ int main() {
 		fout() << text2;
 		Ref<YasonObject> object2 = Yason::parse(text2);
 		testData(object2);
-	}
-	catch (YasonException &ex) {
+	//}
+	/*catch (YasonException &ex) {
 		ferr() << ex.what() << nl;
 		check(false);
-	}
+	}*/
 
 	return 0;
 }

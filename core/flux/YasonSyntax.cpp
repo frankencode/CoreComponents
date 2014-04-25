@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -318,7 +318,7 @@ YasonSyntax::YasonSyntax()
 	LINK();
 }
 
-Variant YasonSyntax::parseMessage(ByteArray *text, YasonProtocol *protocol, YasonObject *virgin)
+Variant YasonSyntax::parseMessage(ByteArray *text, YasonProtocol *protocol)
 {
 	Ref<SyntaxState> state = newState();
 	Ref<Token> token = match(text, -1, state);
@@ -332,56 +332,47 @@ Variant YasonSyntax::parseMessage(ByteArray *text, YasonProtocol *protocol, Yaso
 		throw YasonException(reason, text, offset);
 	}
 	Token *valueToken = token->firstChild();
-	if (virgin || protocol) {
-		YasonObject *prototype = selectPrototype(text, valueToken, protocol);
-		parseObject(text, valueToken, prototype, virgin);
-		return virgin;
-	}
+	if (protocol) return parseObject(text, valueToken, protocol);
 	return parseValue(text, valueToken);
 }
 
-YasonObject *YasonSyntax::selectPrototype(ByteArray *text, Token *token, YasonProtocol *protocol)
+Ref<YasonObject> YasonSyntax::parseObject(ByteArray *text, Token *token, YasonProtocol *protocol, YasonObject *prototype)
 {
-	YasonObject *prototype = 0;
-	String className;
 	if (token->rule() != object_)
 		throw YasonException("Expected an object value", text, token->i0());
+
+	token = token->firstChild();
+
+	String className;
+	if (token->rule() == className_)
+		className = text->copy(token->i0(), token->i1());
+
 	if (protocol) {
-		token = token->firstChild();
-		if (token)
-			if (token->rule() == className_)
-				className = text->copy(token->i0(), token->i1());
 		if (!protocol->lookup(className, &prototype)) {
 			throw YasonException(
-				Format("Object class \"%%\" is allowed here") << className,
-				text, token ? token->i1() : 0
+				Format("Object of class \"%%\" is not allowed here") << className,
+				text, token->i1()
 			);
 		}
 	}
-	return prototype;
-}
-
-Ref<YasonObject> YasonSyntax::parseObject(ByteArray *text, Token *token, YasonObject *prototype, YasonObject *virgin)
-{
-	if (token->rule() != object_)
-		throw YasonException("Expected an object value", text, token->i0());
-
-	Ref<YasonObject> object = virgin;
-	if (!object) object = YasonObject::create();
-
-	token = token->firstChild();
-	if (token) {
-		if (token->rule() == className_) {
-			object->className_ = text->copy(token->i0(), token->i1());
-			if (prototype)
-				if (object->className() != prototype->className())
-					throw YasonException(
-						Format("Expected an object of class \"%%\"") << prototype->className_,
-						text, token->i1()
-					);
-			token = token->nextSibling();
+	else if (prototype) {
+		if (className != prototype->className()) {
+			throw YasonException(
+				Format("Expected an object of class \"%%\"") << prototype->className_,
+				text, token->i1()
+			);
 		}
 	}
+
+	if (token->rule() == className_)
+		token = token->nextSibling();
+
+	Ref<YasonObject> object;
+	if (prototype) {
+		if (protocol) object = protocol->produce(prototype);
+		else object = prototype->produce();
+	}
+	else object = YasonObject::create(className);
 
 	while (token) {
 		if (token->rule() == name_) {
@@ -404,7 +395,7 @@ Ref<YasonObject> YasonSyntax::parseObject(ByteArray *text, Token *token, YasonOb
 
 			Variant value;
 			if (memberPrototype)
-				value = parseObject(text, token, memberPrototype);
+				value = parseObject(text, token, 0, memberPrototype);
 			else
 				value = parseValue(text, token, type(defaultValue), itemType(defaultValue));
 
@@ -419,12 +410,9 @@ Ref<YasonObject> YasonSyntax::parseObject(ByteArray *text, Token *token, YasonOb
 			object->insert(name, value);
 		}
 		else {
-			YasonObject *memberPrototype = 0;
-			if (prototype) {
-				if (prototype->protocol())
-					memberPrototype = selectPrototype(text, token, prototype->protocol());
-			}
-			Ref<YasonObject> child = parseObject(text, token, memberPrototype);
+			YasonProtocol *prototypeProtocol = 0;
+			if (prototype) prototypeProtocol = prototype->protocol();
+			Ref<YasonObject> child = parseObject(text, token, prototypeProtocol);
 			object->children()->append(child);
 		}
 		token = token->nextSibling();
@@ -439,6 +427,8 @@ Ref<YasonObject> YasonSyntax::parseObject(ByteArray *text, Token *token, YasonOb
 			}
 		}
 	}
+
+	object->realize();
 
 	return object;
 }

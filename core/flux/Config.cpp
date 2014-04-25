@@ -15,16 +15,17 @@
 namespace flux
 {
 
-Config::Config(String path)
-	: arguments_(StringList::create()),
-	  path_(path)
+Config::Config(String className)
+	: YasonObject(className),
+	  arguments_(StringList::create())
 {}
 
-Ref<Config> Config::read(String path, YasonProtocol *protocol)
+Ref<Config> Config::read(String path, ConfigProtocol *protocol)
 {
-	Ref<Config> config = new Config(path);
+	Ref<Config> config;
 	try {
-		Yason::parse(File::open(path)->map(), protocol, config);
+		config = Yason::parse(File::open(path)->map(), protocol);
+		config->path_ = path;
 	}
 	catch (SystemException &) {
 		throw ConfigException(Format("Failed to open configuration file %%") << path);
@@ -108,8 +109,11 @@ Ref<Config> Config::read(int argc, char **argv, YasonObject *prototype)
 	return read(argc, argv, config);
 }
 
-StringList *Config::arguments() const { return arguments_; }
-
-String Config::path() const { return path_; }
+Ref<YasonObject> ConfigProtocol::produce(YasonObject *prototype)
+{
+	String className;
+	if (prototype) className = prototype->className();
+	return new Config(className);
+}
 
 } // namespace flux

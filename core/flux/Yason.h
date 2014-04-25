@@ -43,6 +43,46 @@ class YasonObject;
 
 typedef List< Ref<YasonObject> > YasonObjectList;
 
+class YasonProtocol;
+
+class YasonObject: public Map<String, Variant>
+{
+	typedef Map<String, Variant> Super;
+
+public:
+	inline static Ref<YasonObject> create(const String &className = "", YasonProtocol *protocol = 0) {
+		return new YasonObject(className, protocol);
+	}
+
+	inline String className() const { return className_; }
+	Variant toVariant() const;
+	String toString() const;
+
+	inline bool hasChildren() const { return children_; }
+	YasonObjectList *children() const;
+
+	inline YasonProtocol *protocol() const { return protocol_; }
+
+protected:
+	friend class YasonSyntax;
+	friend class YasonProtocol;
+
+	YasonObject(const String &className = "", YasonProtocol *protocol = 0)
+		: className_(className),
+		  protocol_(protocol)
+	{}
+
+	virtual Ref<YasonObject> produce() {
+		return YasonObject::create(className());
+	}
+
+	virtual void realize() {}
+
+	String className_;
+	mutable Ref<YasonObjectList> children_;
+	Ref<YasonProtocol> protocol_;
+};
+
 class YasonProtocol: public Map<String, Ref<YasonObject> >
 {
 public:
@@ -60,46 +100,19 @@ public:
 	void add(String className) {
 		insert(className, Prototype::create(className));
 	}
-};
-
-class YasonObject: public Map<String, Variant>
-{
-	typedef Map<String, Variant> Super;
-
-public:
-	inline static Ref<YasonObject> create(const String &className = "", YasonProtocol *protocol = 0) {
-		return new YasonObject(className, protocol);
-	}
-	inline static Ref<YasonObject> clone(YasonObject *a) { return new YasonObject(*a); }
-
-	inline String className() const { return className_; }
-	Variant toVariant() const;
-	String toString() const;
-
-	inline bool hasChildren() const { return children_; }
-	YasonObjectList *children() const;
-
-	inline YasonProtocol *protocol() const { return protocol_; }
 
 protected:
 	friend class YasonSyntax;
 
-	YasonObject(const String &className = "", YasonProtocol *protocol = 0)
-		: className_(className),
-		  protocol_(protocol)
-	{}
-
-	explicit YasonObject(const YasonObject &b);
-
-	String className_;
-	mutable Ref<YasonObjectList> children_;
-	Ref<YasonProtocol> protocol_;
+	virtual Ref<YasonObject> produce(YasonObject *prototype) {
+		return prototype->produce();
+	}
 };
 
 class Yason
 {
 public:
-	static Variant parse(ByteArray *text, YasonProtocol *protocol = 0, YasonObject *virgin = 0);
+	static Variant parse(ByteArray *text, YasonProtocol *protocol = 0);
 	static String stringify(Variant value);
 };
 

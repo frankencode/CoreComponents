@@ -24,22 +24,32 @@ public:
 	{}
 };
 
+class ConfigProtocol;
+
 class Config: public YasonObject
 {
 public:
-	static Ref<Config> read(String path, YasonProtocol *protocol = 0);
+	static Ref<Config> read(String path, ConfigProtocol *protocol = 0);
 	static Ref<Config> read(int argc, char **argv, Config *config = 0);
 	static Ref<Config> read(int argc, char **argv, YasonObject *prototype);
 
-	StringList *arguments() const;
-	String path() const;
+	inline StringList *arguments() const { return arguments_; }
+	inline String path() const { return path_; }
 
 private:
-	Config(String path = "");
+	friend class ConfigProtocol;
+
+	Config(String className = "");
 
 	Ref<YasonObject> prototype_;
 	Ref<StringList> arguments_;
 	String path_;
+};
+
+class ConfigProtocol: public YasonProtocol
+{
+protected:
+	virtual Ref<YasonObject> produce(YasonObject *prototype);
 };
 
 } // namespace flux

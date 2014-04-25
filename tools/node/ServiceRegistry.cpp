@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "ConfigProtocol.h"
+#include "NodeConfigProtocol.h"
 #include "ServiceRegistry.h"
 
 namespace fluxnode

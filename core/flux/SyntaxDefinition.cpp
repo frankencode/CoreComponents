@@ -37,19 +37,19 @@ Ref<Token> Definition::find(const ByteArray *media, int i) const
 	return def_->find(const_cast<ByteArray*>(media), &i);
 }
 
-Ref<Token> Definition::match(const ByteArray *media, int i, SyntaxState *state) const
+Ref<Token> Definition::match(const ByteArray *media, int i, SyntaxState *state, TokenFactory *tokenFactory) const
 {
 	int i0 = (i >= 0) ? i : 0, h;
-	Ref<Token> token = def_->match(const_cast<ByteArray*>(media), i0, &h, state);
+	Ref<Token> token = def_->match(const_cast<ByteArray*>(media), i0, &h, state, tokenFactory);
 	if ((i < 0) && (token)) {
 		if (media->has(token->i1())) token = 0;
 	}
 	return token;
 }
 
-Ref<Token> Definition::match(const ByteArray *media, SyntaxState *state) const
+Ref<Token> Definition::match(const ByteArray *media, SyntaxState *state, TokenFactory *tokenFactory) const
 {
-	return match(media, -1, state);
+	return match(media, -1, state, tokenFactory);
 }
 
 int Definition::matchLength() const
