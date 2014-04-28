@@ -318,15 +318,15 @@ YasonSyntax::YasonSyntax()
 	LINK();
 }
 
-Variant YasonSyntax::parseMessage(ByteArray *text, YasonProtocol *protocol)
+Variant YasonSyntax::parseMessage(const ByteArray *text, YasonProtocol *protocol)
 {
 	Ref<SyntaxState> state = newState();
-	Ref<Token> token = match(text, -1, state);
+	Ref<Token> token = match(text, state);
 	if (!token) {
 		String reason = "Syntax error";
 		int offset = 0;
 		if (state->hint()) {
-			reason = reason + ", " + state->hint();
+			reason = reason + ": " + state->hint();
 			offset = state->hintOffset();
 		}
 		throw YasonException(reason, text, offset);
@@ -336,11 +336,12 @@ Variant YasonSyntax::parseMessage(ByteArray *text, YasonProtocol *protocol)
 	return parseValue(text, valueToken);
 }
 
-Ref<YasonObject> YasonSyntax::parseObject(ByteArray *text, Token *token, YasonProtocol *protocol, YasonObject *prototype)
+Ref<YasonObject> YasonSyntax::parseObject(const ByteArray *text, Token *token, YasonProtocol *protocol, YasonObject *prototype)
 {
 	if (token->rule() != object_)
 		throw YasonException("Expected an object value", text, token->i0());
 
+	Token *objectToken = token;
 	token = token->firstChild();
 
 	String className;
@@ -400,14 +401,17 @@ Ref<YasonObject> YasonSyntax::parseObject(ByteArray *text, Token *token, YasonPr
 				value = parseValue(text, token, type(defaultValue), itemType(defaultValue));
 
 			Variant existingValue;
-			if (object->lookup(name, &existingValue))
-				if (value != existingValue)
+			if (object->lookup(name, &existingValue)) {
+				if (value != existingValue) {
 					throw YasonException(
 						Format("Ambiguous value for member \"%%\"") << name,
 						text, token->i1()
 					);
-
+				}
+			}
 			object->insert(name, value);
+
+			object->realizeMember(name, value, text, token->previousSibling(), token);
 		}
 		else {
 			YasonProtocol *prototypeProtocol = 0;
@@ -428,12 +432,12 @@ Ref<YasonObject> YasonSyntax::parseObject(ByteArray *text, Token *token, YasonPr
 		}
 	}
 
-	object->realize();
+	object->realize(objectToken);
 
 	return object;
 }
 
-Variant YasonSyntax::parseValue(ByteArray *text, Token *token, int expectedType, int expectedItemType)
+Variant YasonSyntax::parseValue(const ByteArray *text, Token *token, int expectedType, int expectedItemType)
 {
 	Variant value;
 	bool typeError = false;
@@ -542,7 +546,7 @@ Variant YasonSyntax::parseValue(ByteArray *text, Token *token, int expectedType,
 	return value;
 }
 
-Variant YasonSyntax::parseList(ByteArray *text, Token *token, int expectedItemType)
+Variant YasonSyntax::parseList(const ByteArray *text, Token *token, int expectedItemType)
 {
 	Variant list;
 	if (expectedItemType == Variant::IntType)
@@ -558,7 +562,7 @@ Variant YasonSyntax::parseList(ByteArray *text, Token *token, int expectedItemTy
 	return list;
 }
 
-String YasonSyntax::parseText(ByteArray *text, Token *token)
+String YasonSyntax::parseText(const ByteArray *text, Token *token)
 {
 	token = token->firstChild();
 

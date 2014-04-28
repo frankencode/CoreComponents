@@ -1308,7 +1308,7 @@ public:
 	Ref<Token> find(ByteArray *media, int *i0, int *i1 = 0, TokenFactory *tokenFactory = 0) const;
 	Ref<Token> match(ByteArray *media, int i0 = 0, int *i1 = 0, State *state = 0, TokenFactory *tokenFactory = 0) const;
 
-	const DefinitionNode *resolveScope(const char*& name) const;
+	const DefinitionNode *resolveScope(const char *&name) const;
 
 	inline DefinitionNode *definitionByName(const char *name) const
 	{

@@ -20,20 +20,20 @@ namespace flux
 class YasonSyntax: public SyntaxDefinition, public Singleton<YasonSyntax>
 {
 public:
-	Variant parseMessage(ByteArray *text, YasonProtocol *protocol = 0);
-	Ref<YasonObject> parseObject(ByteArray *text, Token *token, YasonProtocol *protocol = 0, YasonObject *prototype = 0);
+	Variant parseMessage(const ByteArray *text, YasonProtocol *protocol = 0);
+	Ref<YasonObject> parseObject(const ByteArray *text, Token *token, YasonProtocol *protocol = 0, YasonObject *prototype = 0);
 
 protected:
 	friend class Singleton<YasonSyntax>;
 
 	YasonSyntax();
 
-	Variant parseValue(ByteArray *text, Token *token, int expectedType = Variant::UndefType, int expectedItemType = Variant::UndefType);
-	Variant parseList(ByteArray *text, Token *token, int expectedItemType = Variant::UndefType);
-	String parseText(ByteArray *text, Token *token);
+	Variant parseValue(const ByteArray *text, Token *token, int expectedType = Variant::UndefType, int expectedItemType = Variant::UndefType);
+	Variant parseList(const ByteArray *text, Token *token, int expectedItemType = Variant::UndefType);
+	String parseText(const ByteArray *text, Token *token);
 
 	template<class T>
-	Ref< List<T> > parseTypedList(ByteArray *text, Token *token, int expectedItemType);
+	Ref< List<T> > parseTypedList(const ByteArray *text, Token *token, int expectedItemType);
 
 	int item_;
 	int line_;
@@ -51,7 +51,7 @@ protected:
 };
 
 template<class T>
-Ref< List<T> > YasonSyntax::parseTypedList(ByteArray *text, Token *token, int expectedItemType)
+Ref< List<T> > YasonSyntax::parseTypedList(const ByteArray *text, Token *token, int expectedItemType)
 {
 	Ref< List<T> > list = List<T>::create(token->countChildren());
 	int i = 0;
