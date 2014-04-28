@@ -15,7 +15,7 @@
 namespace flux
 {
 
-YasonException::YasonException(const String &error, ByteArray *text, int offset)
+YasonException::YasonException(const String &error, const ByteArray *text, int offset)
 	: error_(error),
 	  text_(text),
 	  offset_(offset),
@@ -42,7 +42,7 @@ YasonObjectList *YasonObject::children() const
 	return children_;
 }
 
-Variant Yason::parse(ByteArray *text, YasonProtocol *protocol)
+Variant Yason::parse(const ByteArray *text, YasonProtocol *protocol)
 {
 	return yasonSyntax()->parseMessage(text, protocol);
 }

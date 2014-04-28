@@ -14,6 +14,7 @@
 #include "Variant.h"
 #include "UserError.h"
 #include "Stream.h"
+#include "Token.h"
 
 namespace flux
 {
@@ -21,7 +22,7 @@ namespace flux
 class YasonException: public UserError
 {
 public:
-	YasonException(const String &error, ByteArray *text, int offset);
+	YasonException(const String &error, const ByteArray *text, int offset);
 
 	String error() const { return error_; }
 
@@ -76,7 +77,8 @@ protected:
 		return YasonObject::create(className());
 	}
 
-	virtual void realize() {}
+	virtual void realizeMember(const String &name, const Variant &value, const ByteArray *text, Token *nameToken, Token *valueToken) {}
+	virtual void realize(Token *objectToken) {}
 
 	String className_;
 	mutable Ref<YasonObjectList> children_;
@@ -112,7 +114,7 @@ protected:
 class Yason
 {
 public:
-	static Variant parse(ByteArray *text, YasonProtocol *protocol = 0);
+	static Variant parse(const ByteArray *text, YasonProtocol *protocol = 0);
 	static String stringify(Variant value);
 };
 
