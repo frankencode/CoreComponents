@@ -789,21 +789,24 @@ private:
 class SetNode: public Node
 {
 public:
-	SetNode(int flagId, bool value)
-		: flagId_(flagId),
+	SetNode(DefinitionNode *scope, int flagId, bool value)
+		: scope_(scope),
+		  flagId_(flagId),
 		  value_(value)
 	{}
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		state->setFlag(flagId_, value_);
+		state->setFlag(scope_, flagId_, value_);
 		return i;
 	}
 
+	inline DefinitionNode *scope() const { return scope_; }
 	inline int flagId() const { return flagId_; }
 	inline bool value() const { return value_; }
 
 private:
+	DefinitionNode *scope_;
 	int flagId_;
 	bool value_;
 };
@@ -811,8 +814,9 @@ private:
 class IfNode: public Node
 {
 public:
-	IfNode(int flagId, Node *trueBranch, Node *falseBranch)
-		: flagId_(flagId)
+	IfNode(DefinitionNode *scope, int flagId, Node *trueBranch, Node *falseBranch)
+		: scope_(scope),
+		  flagId_(flagId)
 	{
 		appendChild(trueBranch);
 		appendChild(falseBranch);
@@ -820,24 +824,27 @@ public:
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		return state->flag(flagId_) ?
+		return state->flag(scope_, flagId_) ?
 			trueBranch()->matchNext(media, i, tokenFactory, parentToken, state) :
 			falseBranch()->matchNext(media, i, tokenFactory, parentToken, state);
 	}
 
+	inline DefinitionNode *scope() const { return scope_; }
 	inline int flagId() const { return flagId_; }
 	inline Node *trueBranch() const { return Node::firstChild(); }
 	inline Node *falseBranch() const { return Node::lastChild(); }
 
 private:
+	DefinitionNode *scope_;
 	int flagId_;
 };
 
 class CaptureNode: public Node
 {
 public:
-	CaptureNode(int captureId, Node *coverage)
-		: captureId_(captureId)
+	CaptureNode(DefinitionNode *scope, int captureId, Node *coverage)
+		: scope_(scope),
+		  captureId_(captureId)
 	{
 		appendChild(coverage);
 	}
@@ -853,37 +860,42 @@ public:
 		if (i == -1)
 			rollBack(parentToken, lastChildSaved);
 		else
-			state->setCapture(captureId_, Range::create(i0, i));
+			state->setCapture(scope_, captureId_, Range::create(i0, i));
 
 		return i;
 	}
 
+	inline DefinitionNode *scope() const { return scope_; }
 	inline int captureId() const { return captureId_; }
 	inline Node *coverage() const { return Node::firstChild(); }
 
 private:
+	DefinitionNode *scope_;
 	int captureId_;
 };
 
 class ReplayNode: public Node
 {
 public:
-	ReplayNode(int captureId)
-		: captureId_(captureId)
+	ReplayNode(DefinitionNode *scope, int captureId)
+		: scope_(scope),
+		  captureId_(captureId)
 	{}
 
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
-		Range *range = state->capture(captureId_);
+		Range *range = state->capture(scope_, captureId_);
 		for (int j = range->i0(); (j < range->i1()) && media->has(i) && media->has(j); ++i, ++j) {
 			if (media->at(i) != media->at(j)) return -1;
 		}
 		return i;
 	}
 
+	inline DefinitionNode *scope() const { return scope_; }
 	inline int captureId() const { return captureId_; }
 
 private:
+	DefinitionNode *scope_;
 	int captureId_;
 };
 
@@ -1084,36 +1096,7 @@ public:
 };
 
 class DefinitionNode;
-class InvokeNode;
 class DebugFactory;
-
-class InvokeNode: public Node
-{
-public:
-	InvokeNode(DefinitionNode *definition, Node *coverage)
-		: definition_(definition)
-	{
-		if (coverage) appendChild(coverage);
-	}
-
-	InvokeNode(const char *name, Node *coverage)
-		: definitionName_(name)
-	{
-		if (coverage) appendChild(coverage);
-	}
-
-	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const;
-
-	inline const char *definitionName() const { return definitionName_; }
-	inline Node *coverage() const { return Node::firstChild(); }
-
-private:
-	friend class DefinitionNode;
-
-	const char *definitionName_;
-	DefinitionNode *definition_;
-	Ref<InvokeNode> unresolvedNext_;
-};
 
 class DefinitionNode: public RefNode
 {
@@ -1156,6 +1139,7 @@ public:
 		if (!name)
 			FLUX_THROW(DebugException, "Cannot import anonymous syntax definition");
 		definitionByName_->insert(name, definition);
+		statefulScope_ = statefulScope_ || definition->stateful();
 	}
 
 	typedef Ref<Node> NODE;
@@ -1273,28 +1257,18 @@ public:
 	//-- stateful definition interface
 
 	inline NODE SET(const char *name, bool value) {
-		return debug(new SetNode(touchFlag(name), value), "Set");
+		return debug(new SetNode(this, touchFlag(name), value), "Set");
 	}
 	inline NODE IF(const char *name, NODE trueBranch, NODE falseBranch = 0) {
 		if (!trueBranch) trueBranch = PASS();
 		if (!falseBranch) falseBranch = PASS();
-		return debug(new IfNode(touchFlag(name), trueBranch, falseBranch), "If");
+		return debug(new IfNode(this, touchFlag(name), trueBranch, falseBranch), "If");
 	}
 	inline NODE CAPTURE(const char *name, NODE coverage) {
-		return debug(new CaptureNode(touchCapture(name), coverage), "Capture");
+		return debug(new CaptureNode(this, touchCapture(name), coverage), "Capture");
 	}
 	inline NODE REPLAY(const char *name) {
-		return debug(new ReplayNode(touchCapture(name)), "Replay");
-	}
-
-	inline NODE INVOKE(DefinitionNode *definition, NODE coverage = 0) {
-		return debug(new InvokeNode(definition, coverage), "Invoke");
-	}
-	inline NODE INVOKE(const char *definitionName, NODE coverage = 0) {
-		Ref<InvokeNode> node = new InvokeNode(definitionName, coverage);
-		node->unresolvedNext_ = unresolvedInvokeHead_;
-		unresolvedInvokeHead_ = node;
-		return debug(node, "Invoke");
+		return debug(new ReplayNode(this, touchCapture(name)), "Replay");
 	}
 
 	//-- execution interface
@@ -1303,7 +1277,7 @@ public:
 
 	inline bool stateful() const { return (numFlags_ > 0) || (numCaptures_ > 0) || statefulScope_ || hasHints_; }
 
-	State *newState(State *parent = 0) const;
+	State *newState() const;
 
 	Ref<Token> find(ByteArray *media, int *i0, int *i1 = 0, TokenFactory *tokenFactory = 0) const;
 	Ref<Token> match(ByteArray *media, int i0 = 0, int *i1 = 0, State *state = 0, TokenFactory *tokenFactory = 0) const;
@@ -1363,8 +1337,6 @@ private:
 	friend class Debugger;
 	Ref<DebugFactory> debugFactory_;
 
-	friend class InvokeNode;
-
 	int id_;
 	const char *name_;
 	bool caseSensitive_;
@@ -1388,7 +1360,6 @@ private:
 
 	Ref<LinkNode> unresolvedLinkHead_;
 	Ref<PreviousNode> unresolvedKeywordHead_;
-	Ref<InvokeNode> unresolvedInvokeHead_;
 	Ref<DefinitionNode> unresolvedNext_;
 	bool statefulScope_;
 	bool hasHints_;

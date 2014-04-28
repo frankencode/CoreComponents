@@ -30,7 +30,7 @@ DebugFactory *Definition::debugFactory() const { return def_->debugFactory(); }
 Node *Definition::debug(Node *newNode, const char *nodeType) { return def_->debug(newNode, nodeType); }
 
 int Definition::keywordByName(const char *keyword) { return def_->keywordByName(keyword); }
-Ref<State> Definition::newState(State *parent) const { return def_->newState(parent); }
+Ref<State> Definition::newState() const { return def_->newState(); }
 
 Ref<Token> Definition::find(const ByteArray *media, int i) const
 {
@@ -153,9 +153,6 @@ NODE Definition::SET(const char *name, bool value) { return def_->SET(name, valu
 NODE Definition::IF(const char *name, NODE trueBranch, NODE falseBranch) { return def_->IF(name, trueBranch, falseBranch); }
 NODE Definition::CAPTURE(const char *name, NODE coverage) { return def_->CAPTURE(name, coverage); }
 NODE Definition::REPLAY(const char *name) { return def_->REPLAY(name); }
-
-NODE Definition::INVOKE(DefinitionNode *definition, NODE coverage) { return def_->INVOKE(definition, coverage); }
-NODE Definition::INVOKE(const char *definitionName, NODE coverage) { return def_->INVOKE(definitionName, coverage); }
 
 } // namespace syntax
 

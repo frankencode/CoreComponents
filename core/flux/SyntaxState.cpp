@@ -22,29 +22,48 @@ State::State()
 	  finalize_(false)
 {}
 
-State::State(const DefinitionNode *definition, int numFlags, int numCaptures, State *parent)
+State::State(const DefinitionNode *definition, int numFlags, int numCaptures)
 	: definition_(definition),
-	  definitionId_(definition->id()),
+	  flags_(Flags::create(numFlags)),
+	  captures_(Captures::create(numCaptures)),
+	  hint_(0),
+	  hintOffset_(-1),
 	  finalize_(false)
 {
-	flags_ = Flags::create(numFlags);
-	captures_ = Captures::create(numCaptures);
-	hint_ = 0;
-	hintOffset_ = -1;
-
-	if (parent) parent->child_ = this;
 	for (int i = 0; i < flags_->size(); ++i) flags_->at(i) =  false;
 	for (int i = 0; i < captures_->size(); ++i) captures_->at(i) = Range::create();
 }
 
 bool State::flag(const char *name) const
 {
-	return flag(definition_->flagIdByName(name));
+	const DefinitionNode *scope = definition_->resolveScope(name);
+	int flagId = scope->flagIdByName(name);
+	if (scope == definition_) return flags_->at(flagId);
+	Ref<State> state;
+	if (!stateByScope_->lookup(scope, &state)) return false;
+	return state->flags_->at(flagId);
 }
 
 Range *State::capture(const char *name) const
 {
-	return capture(definition_->captureIdByName(name));
+	const DefinitionNode *scope = definition_->resolveScope(name);
+	int captureId = scope->captureIdByName(name);
+	if (scope == definition_) return captures_->at(captureId);
+	Ref<State> state;
+	if (!stateByScope_->lookup(scope, &state)) return 0;
+	return state->captures_->at(captureId);
+}
+
+State *State::stateByScope(const DefinitionNode *scope)
+{
+	if (scope == definition_) return this;
+	if (!stateByScope_) stateByScope_ = StateByScope::create();
+	Ref<State> state;
+	if (!stateByScope_->lookup(scope, &state)) {
+		state = scope->newState();
+		stateByScope_->insert(scope, state);
+	}
+	return state;
 }
 
 } // namespace syntax

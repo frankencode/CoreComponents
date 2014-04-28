@@ -655,31 +655,6 @@ private:
 	inline ReplayNode *replayNode() const { return cast<ReplayNode>(DebugNode::entry()); }
 };
 
-class InvokeDebugNode: public DebugNode {
-public:
-	InvokeDebugNode(Debugger *debugger, Node *newNode)
-		: DebugNode(debugger, newNode)
-	{}
-
-	virtual const char *declType() const { return "INVOKE"; }
-
-	virtual void printAttributes(String indent) {
-		InvokeNode *node = invokeNode();
-		if (node->coverage()) {
-			fout("\"%%\",\n") << node->definitionName();
-			printBranch(node->coverage(), indent);
-			fout() << "\n" << DebugNode::superIndent(indent);
-		}
-		else {
-			fout("\"%%\"") << node->definitionName();
-		}
-	}
-
-private:
-	typedef syntax::InvokeNode InvokeNode;
-	inline InvokeNode *invokeNode() const { return cast<InvokeNode>(DebugNode::entry()); }
-};
-
 Debugger::Debugger(String indent)
 	: factoryByNodeType_(FactoryByNodeType::create()),
 	  indent_(indent)
@@ -714,7 +689,6 @@ Debugger::Debugger(String indent)
 	factoryByNodeType_->insert("If",             new DebugNodeFactory<IfDebugNode>             (this));
 	factoryByNodeType_->insert("Capture",        new DebugNodeFactory<CaptureDebugNode>        (this));
 	factoryByNodeType_->insert("Replay",         new DebugNodeFactory<ReplayDebugNode>         (this));
-	factoryByNodeType_->insert("Invoke",         new DebugNodeFactory<InvokeDebugNode>         (this));
 }
 
 void Debugger::printDefinition(bool omitUnusedRules)

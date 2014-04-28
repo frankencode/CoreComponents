@@ -42,7 +42,7 @@ public:
 	Node *debug(Node *newNode, const char *nodeType);
 
 	int keywordByName(const char *keyword);
-	Ref<State> newState(State *parent = 0) const;
+	Ref<State> newState() const;
 
 	Ref<Token> find(const ByteArray *media, int i = 0) const;
 	Ref<Token> match(const ByteArray *media, int i = -1, SyntaxState *state = 0, TokenFactory *tokenFactory = 0) const;
@@ -148,9 +148,6 @@ public:
 	NODE IF(const char *name, NODE trueBranch, NODE falseBranch = 0);
 	NODE CAPTURE(const char *name, NODE coverage);
 	NODE REPLAY(const char *name);
-
-	NODE INVOKE(DefinitionNode *definition, NODE coverage = 0);
-	NODE INVOKE(const char *definitionName, NODE coverage = 0);
 
 protected:
 	Definition(DebugFactory *debugFactory = 0);
