@@ -12,7 +12,7 @@
 
 #include "generics.h"
 #include "Array.h"
-#include "ByteArray.h"
+#include "Map.h"
 
 namespace flux
 {
@@ -21,17 +21,16 @@ namespace syntax
 {
 
 class DefinitionNode;
+class SetNode;
+class IfNode;
+class CaptureNode;
+class ReplayNode;
 
 class State: public Object
 {
 public:
-	inline bool flag(int id) const { return flags_->at(id); }
 	bool flag(const char *name) const;
-	inline void setFlag(int id, bool value) { flags_->at(id) = value; }
-
-	inline Range *capture(int id) const { return captures_->at(id); }
 	Range *capture(const char *name) const;
-	inline void setCapture(int id, Range *capture) { captures_->at(id) = capture; }
 
 	inline const char *hint() const { return hint_; }
 	inline void setHint(const char *text) { hint_ = text; }
@@ -39,24 +38,46 @@ public:
 	inline int hintOffset() const { return hintOffset_; }
 	inline void setHintOffset(int index) { hintOffset_ = index; }
 
-	inline int definitionId() const { return definitionId_; }
-
-	inline State *child() const { return child_; }
-	inline void setChild(State *state) { child_ = state; }
+	// inline State *child() const { return child_; }
+	// inline void setChild(State *state) { child_ = state; }
 
 	inline bool finalize() const { return finalize_; }
 	inline void setFinalize() { finalize_ = true; }
 
 private:
 	friend class syntax::DefinitionNode;
+	friend class syntax::SetNode;
+	friend class syntax::IfNode;
+	friend class syntax::CaptureNode;
+	friend class syntax::ReplayNode;
 
 	State();
-	State(const DefinitionNode *definition, int numFlags, int numCaptures, State *parent = 0);
+	State(const DefinitionNode *definition, int numFlags, int numCaptures);
+
+	State *stateByScope(const DefinitionNode *definition);
+
+	inline bool flag(const DefinitionNode *scope, int flagId) {
+		return stateByScope(scope)->flags_->at(flagId);
+	}
+
+	inline void setFlag(const DefinitionNode *scope, int flagId, bool value) {
+		stateByScope(scope)->flags_->at(flagId) = value;
+	}
+
+	inline Range *capture(const DefinitionNode *scope, int captureId) {
+		return stateByScope(scope)->captures_->at(captureId);
+	}
+
+	inline void setCapture(const DefinitionNode *scope, int captureId, Range *capture) {
+		stateByScope(scope)->captures_->at(captureId) = capture;
+	}
 
 	Ref<const DefinitionNode> definition_;
-	int definitionId_;
 
-	Ref<State> child_;
+	typedef Map< const DefinitionNode *, Ref<State> > StateByScope;
+	Ref<StateByScope> stateByScope_;
+
+	// Ref<State> child_;
 
 	typedef Array<bool> Flags;
 	typedef Array< Ref<Range> > Captures;

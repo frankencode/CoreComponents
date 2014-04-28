@@ -16,41 +16,6 @@ namespace flux
 namespace syntax
 {
 
-int InvokeNode::matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
-{
-	State *childState = 0;
-	if (state) {
-		childState = state->child();
-		if (childState) {
-			if (childState->definitionId() != definition_->id())
-				childState = 0;
-		}
-		if (!childState)
-			childState = definition_->newState(state);
-	}
-
-	if (coverage())
-	{
-		Token *lastChildSaved = 0;
-		if (parentToken) lastChildSaved = parentToken->lastChild();
-
-		int i0 = i;
-		i = coverage()->matchNext(media, i, 0, parentToken, state);
-
-		if (i != -1)
-		{
-			rollBack(parentToken, lastChildSaved);
-
-			definition_->matchNext(ByteRange(media, i, media->size()), i0, tokenFactory, parentToken, childState);
-		}
-	}
-	else {
-		i = definition_->matchNext(media, i, tokenFactory, parentToken, childState);
-	}
-
-	return i;
-}
-
 NODE DefinitionNode::KEYWORD(const char *keywords)
 {
 	Ref<KeywordMap> map = KeywordMap::create();
@@ -84,10 +49,6 @@ void DefinitionNode::LINK()
 		unresolvedKeywordHead_->keyword_ = keywordByName(unresolvedKeywordHead_->keywordName_);
 		unresolvedKeywordHead_ = unresolvedKeywordHead_->unresolvedKeywordNext_;
 	}
-	while (unresolvedInvokeHead_) {
-		unresolvedInvokeHead_->definition_ = definitionByName(unresolvedInvokeHead_->definitionName_);
-		unresolvedInvokeHead_ = unresolvedInvokeHead_->unresolvedNext_;
-	}
 	if (!LinkNode::rule_) {
 		if (!LinkNode::ruleName_)
 			FLUX_THROW(DebugException, "Missing entry rule declaration");
@@ -95,10 +56,10 @@ void DefinitionNode::LINK()
 	}
 }
 
-State *DefinitionNode::newState(State *parent) const
+State *DefinitionNode::newState() const
 {
 	if (stateful())
-		return new State(this, numFlags_, numCaptures_, parent);
+		return new State(this, numFlags_, numCaptures_);
 	return 0;
 }
 
