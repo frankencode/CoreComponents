@@ -25,6 +25,7 @@ class SetNode;
 class IfNode;
 class CaptureNode;
 class ReplayNode;
+class ExpectNode;
 
 class State: public Object
 {
@@ -33,16 +34,8 @@ public:
 	Range *capture(const char *name) const;
 
 	inline const char *hint() const { return hint_; }
-	inline void setHint(const char *text) { hint_ = text; }
-
 	inline int hintOffset() const { return hintOffset_; }
-	inline void setHintOffset(int index) { hintOffset_ = index; }
-
-	// inline State *child() const { return child_; }
-	// inline void setChild(State *state) { child_ = state; }
-
 	inline bool finalize() const { return finalize_; }
-	inline void setFinalize() { finalize_ = true; }
 
 private:
 	friend class syntax::DefinitionNode;
@@ -50,6 +43,7 @@ private:
 	friend class syntax::IfNode;
 	friend class syntax::CaptureNode;
 	friend class syntax::ReplayNode;
+	friend class syntax::ExpectNode;
 
 	State();
 	State(const DefinitionNode *definition, int numFlags, int numCaptures);
@@ -77,8 +71,6 @@ private:
 	typedef Map< const DefinitionNode *, Ref<State> > StateByScope;
 	Ref<StateByScope> stateByScope_;
 
-	// Ref<State> child_;
-
 	typedef Array<bool> Flags;
 	typedef Array< Ref<Range> > Captures;
 
@@ -87,7 +79,6 @@ private:
 
 	const char *hint_;
 	int hintOffset_;
-
 	bool finalize_;
 };
 

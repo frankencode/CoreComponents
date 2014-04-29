@@ -747,10 +747,10 @@ public:
 	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
 	{
 		int h = entry()->matchNext(media, i, tokenFactory, parentToken, state);
-		if (h == -1 && !state->finalize()) {
-			state->setHint(message_);
-			state->setHintOffset(i);
-			state->setFinalize();
+		if (h == -1 && !state->finalize_) {
+			state->hint_ = message_;
+			state->hintOffset_ = i;
+			state->finalize_ = true;
 		}
 		return h;
 	}
