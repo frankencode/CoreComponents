@@ -25,7 +25,7 @@ class String: public Ref<ByteArray>
 public:
 	typedef Ref<ByteArray> Super;
 
-	String(): Super(ByteArray::empty()) {}
+	String();
 	explicit String(int size): Super(ByteArray::create(size)) {}
 	String(int size, char zero): Super(ByteArray::create(size, zero)) {
 		FLUX_ASSERT(0 <= zero);

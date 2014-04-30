@@ -13,6 +13,7 @@
 #include "AvlTree.h"
 #include "Array.h"
 #include "ExclusiveAccess.h"
+#include "assert.h"
 
 namespace flux
 {

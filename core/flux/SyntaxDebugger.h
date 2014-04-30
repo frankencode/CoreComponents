@@ -56,12 +56,9 @@ protected:
 	Debugger *debugger_;
 };
 
-class Debugger: public SyntaxDebugFactory
+class Debugger: public DebugFactory
 {
 public:
-	typedef SyntaxDebugFactory DebugFactory;
-	typedef SyntaxNode Node;
-
 	inline static Ref<Debugger> create(String indent = "\t") {
 		return new Debugger(indent);
 	}

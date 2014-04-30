@@ -1,7 +1,7 @@
 #include <flux/stdio.h>
+#include <flux/check.h>
 #include <flux/System.h>
 #include <flux/Date.h>
-#include <flux/check.h>
 
 using namespace flux;
 

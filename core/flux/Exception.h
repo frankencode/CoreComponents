@@ -12,6 +12,7 @@
 
 #include <exception>
 #include <errno.h> // EBUSY, errno
+#include "String.h"
 
 namespace flux
 {
@@ -94,23 +95,6 @@ public:
 	throw PthreadException(__FILE__, __LINE__, "PthreadException", pthreadError(callName, errorCode), errorCode)
 
 FLUX_EXCEPTION(DebugException, Exception);
-
-#define FLUX_CHECK(condition, Exception, reason) \
-	if (!(condition)) FLUX_THROW(Exception, reason)
-
-#ifndef NDEBUG
-#define FLUX_ASSERT(condition) \
-	FLUX_CHECK(condition, DebugException, "")
-#else
-#define FLUX_ASSERT(condition);
-#endif
-
-#ifndef NDEBUG
-#define FLUX_ASSERT2(condition, reason) \
-	FLUX_CHECK(condition, DebugException, reason)
-#else
-#define FLUX_ASSERT2(condition, reason);
-#endif
 
 class Interrupt {
 public:

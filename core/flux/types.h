@@ -12,7 +12,7 @@
 
 #include <sys/types.h> // ssize_t, etc.
 #include <stdint.h> // (u)int8_t .. (u)int64_t
-#include "Exception.h"
+#include "assert.h"
 
 typedef float float32_t;
 typedef double float64_t;

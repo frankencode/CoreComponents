@@ -11,6 +11,7 @@
 #define FLUX_EVENT_H
 
 #include "List.h"
+#include "SpinLock.h"
 
 namespace flux
 {

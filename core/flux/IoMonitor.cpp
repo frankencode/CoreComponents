@@ -9,6 +9,7 @@
 
 #include <sys/time.h>
 #include <math.h> // modf
+#include "Exception.h"
 #include "IoMonitor.h"
 
 namespace flux

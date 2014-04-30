@@ -12,7 +12,6 @@
 
 #include "strings.h"
 #include "containers.h"
-#include "Default.h"
 
 namespace flux
 {
@@ -31,8 +30,6 @@ public:
 	{
 		if (size_ > 0) delete[] data_;
 	}
-
-	inline static Array *empty() { return Default< Array<T> >::instance(); }
 
 	inline Array &operator=(const Array &b)
 	{

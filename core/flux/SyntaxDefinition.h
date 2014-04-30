@@ -19,30 +19,27 @@
 namespace flux
 {
 
-namespace syntax
-{
+namespace syntax { class DefinitionNode; }
 
-class DefinitionNode;
-
-class Definition: public Object
+class SyntaxDefinition: public Object
 {
 public:
-	typedef syntax::Node Node;
 	typedef syntax::NODE NODE;
 
-	inline static Ref<Definition> create(DebugFactory *debugFactory = 0) {
-		return new Definition(debugFactory);
+	inline static Ref<SyntaxDefinition> create(SyntaxDebugFactory *debugFactory = 0) {
+		return new SyntaxDefinition(debugFactory);
 	}
-	~Definition();
+
+	~SyntaxDefinition();
 
 	int id() const;
 	const char *name() const;
 
-	DebugFactory *debugFactory() const;
-	Node *debug(Node *newNode, const char *nodeType);
+	SyntaxDebugFactory *debugFactory() const;
+	SyntaxNode *debug(SyntaxNode *newNode, const char *nodeType);
 
 	int keywordByName(const char *keyword);
-	Ref<State> newState() const;
+	Ref<SyntaxState> newState() const;
 
 	Ref<Token> find(const ByteArray *text, int i = 0) const;
 	Ref<Token> match(const ByteArray *text, int i = -1, SyntaxState *state = 0, TokenFactory *tokenFactory = 0) const;
@@ -51,7 +48,7 @@ public:
 	int matchLength() const;
 
 	void SYNTAX(const char *name);
-	void IMPORT(Definition *definition, const char *name = 0);
+	void IMPORT(SyntaxDefinition *definition, const char *name = 0);
 	void OPTION(const char *name, bool value);
 
 	NODE CHAR(char ch);
@@ -137,7 +134,7 @@ public:
 	NODE PREVIOUS(const char *ruleName, const char *keyword = 0);
 	NODE CONTEXT(const char *ruleName, NODE inContext = 0, NODE outOfContext = 0);
 
-	typedef int (*CallBack) (Object *self, ByteArray *text, int i, State *state);
+	typedef int (*CallBack) (Object *self, ByteArray *text, int i, SyntaxState *state);
 
 	NODE CALL(CallBack callBack, Object *self = 0);
 	NODE ERROR();
@@ -150,18 +147,15 @@ public:
 	NODE REPLAY(const char *name);
 
 protected:
-	Definition(DebugFactory *debugFactory = 0);
+	SyntaxDefinition(SyntaxDebugFactory *debugFactory = 0);
 
 private:
-	Definition(const Definition &);
-	// const Definition &operator=(const Defintion &);
+	SyntaxDefinition(const SyntaxDefinition &);
 
-	Ref<DefinitionNode> def_;
+	Ref<syntax::DefinitionNode> def_;
 };
 
-} // namespace syntax
-
-typedef syntax::Definition SyntaxDefinition;
+namespace syntax { typedef SyntaxDefinition Definition; }
 
 } // namespace flux
 

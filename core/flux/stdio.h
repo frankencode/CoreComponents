@@ -13,6 +13,7 @@
 #include "File.h"
 #include "Format.h"
 #include "LineSource.h"
+#include "Exception.h" // FIXME
 
 namespace flux
 {

@@ -11,7 +11,6 @@
 #define FLUX_SPINLOCK_H
 
 #include "helgrind.h"
-#include "Exception.h"
 
 namespace flux
 {

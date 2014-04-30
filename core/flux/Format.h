@@ -22,8 +22,6 @@ class FormatSignal {};
 extern FormatSignal nl;
 extern FormatSignal flush;
 
-FLUX_EXCEPTION(FormatException, Exception);
-
 class Stream;
 template<class T> class Queue;
 

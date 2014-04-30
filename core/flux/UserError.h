@@ -45,11 +45,14 @@ public:
 class SystemError: public UserError
 {
 public:
-	SystemError(String details = "");
+	SystemError(String resource = "");
 	~SystemError() throw() {}
-	virtual String message() const { return message_; }
+	inline String resource() const { return resource_; }
+	inline int errorCode() const { return errorCode_; }
+	virtual String message() const;
 private:
-	String message_;
+	String resource_;
+	int errorCode_;
 };
 
 } // namespace flux

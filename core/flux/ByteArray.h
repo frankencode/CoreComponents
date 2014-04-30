@@ -12,7 +12,6 @@
 
 #include "containers.h"
 #include "strings.h"
-#include "Default.h"
 
 namespace flux
 {
@@ -21,11 +20,12 @@ class String;
 template<class T> class List;
 typedef List<String> StringList;
 
-namespace syntax { class Definition; }
-typedef syntax::Definition SyntaxDefinition;
+class SyntaxDefinition;
 
 class File;
 class ThreadFactory;
+
+template<class T> class Singleton;
 
 class ByteArray: public Object
 {
@@ -47,8 +47,6 @@ public:
 	static Ref<ByteArray> join(const StringList *parts, String sep);
 
 	~ByteArray();
-
-	inline static ByteArray *empty() { return Default<ByteArray>::instance(); }
 
 	void resize(int newSize);
 

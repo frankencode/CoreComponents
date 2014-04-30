@@ -14,16 +14,13 @@
 namespace flux
 {
 
-namespace syntax
-{
-
-State::State()
+SyntaxState::SyntaxState()
 	: hint_(0),
 	  hintOffset_(-1),
 	  finalize_(false)
 {}
 
-State::State(const DefinitionNode *definition, int numFlags, int numCaptures)
+SyntaxState::SyntaxState(const DefinitionNode *definition, int numFlags, int numCaptures)
 	: definition_(definition),
 	  flags_(Flags::create(numFlags)),
 	  captures_(Captures::create(numCaptures)),
@@ -35,38 +32,36 @@ State::State(const DefinitionNode *definition, int numFlags, int numCaptures)
 	for (int i = 0; i < captures_->size(); ++i) captures_->at(i) = Range::create();
 }
 
-bool State::flag(const char *name) const
+bool SyntaxState::flag(const char *name) const
 {
 	const DefinitionNode *scope = definition_->resolveScope(name);
 	int flagId = scope->flagIdByName(name);
 	if (scope == definition_) return flags_->at(flagId);
-	Ref<State> state;
+	Ref<SyntaxState> state;
 	if (!stateByScope_->lookup(scope, &state)) return false;
 	return state->flags_->at(flagId);
 }
 
-Range *State::capture(const char *name) const
+Range *SyntaxState::capture(const char *name) const
 {
 	const DefinitionNode *scope = definition_->resolveScope(name);
 	int captureId = scope->captureIdByName(name);
 	if (scope == definition_) return captures_->at(captureId);
-	Ref<State> state;
+	Ref<SyntaxState> state;
 	if (!stateByScope_->lookup(scope, &state)) return 0;
 	return state->captures_->at(captureId);
 }
 
-State *State::stateByScope(const DefinitionNode *scope)
+SyntaxState *SyntaxState::stateByScope(const DefinitionNode *scope)
 {
 	if (scope == definition_) return this;
 	if (!stateByScope_) stateByScope_ = StateByScope::create();
-	Ref<State> state;
+	Ref<SyntaxState> state;
 	if (!stateByScope_->lookup(scope, &state)) {
 		state = scope->newState();
 		stateByScope_->insert(scope, state);
 	}
 	return state;
 }
-
-} // namespace syntax
 
 } // namespace flux

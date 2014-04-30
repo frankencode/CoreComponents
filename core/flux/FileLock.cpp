@@ -8,6 +8,7 @@
  */
 
 #include <errno.h>
+#include "Exception.h"
 #include "FileLock.h"
 
 namespace flux
