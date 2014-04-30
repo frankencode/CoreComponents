@@ -28,10 +28,10 @@ Ref<Config> Config::read(String path, ConfigProtocol *protocol)
 		config->path_ = path;
 	}
 	catch (SystemException &) {
-		throw ConfigException(Format("Failed to open configuration file %%") << path);
+		throw ConfigError(Format("Failed to open configuration file %%") << path);
 	}
-	catch (YasonException &ex) {
-		throw ConfigException(Format("Error in configuration file\n%%:%%") << path << ex.what());
+	catch (TextError &ex) {
+		throw ConfigError(Format("Error in configuration file\n%%:%%") << path << ex.what());
 	}
 	if (protocol) config->prototype_ = protocol->value(config->className());
 	return config;
@@ -58,7 +58,7 @@ Ref<Config> Config::read(int argc, char **argv, Config *config)
 
 		Ref<SyntaxState> state = flag->newState();
 		if (!flag->match(s, state))
-			throw ConfigException(Format("Illegal option syntax: \"%%\"") << s);
+			throw ConfigError(Format("Illegal option syntax: \"%%\"") << s);
 
 		String name = s->copy(state->capture("name"));
 		String valueText = s->copy(state->capture("value"));
@@ -68,7 +68,7 @@ Ref<Config> Config::read(int argc, char **argv, Config *config)
 			try {
 				value = Yason::parse(valueText);
 			}
-			catch (YasonException &ex) {
+			catch (TextError &) {
 				valueText = "\"" + valueText + "\"";
 				value = Yason::parse(valueText);
 			}
@@ -77,9 +77,9 @@ Ref<Config> Config::read(int argc, char **argv, Config *config)
 		if (config->prototype_) {
 			Variant defaultValue;
 			if (!config->prototype_->lookup(name, &defaultValue))
-				throw ConfigException(Format("No such option: \"-%%\"") << name);
+				throw ConfigError(Format("No such option: \"-%%\"") << name);
 			if (type(value) != type(defaultValue)) {
-				throw ConfigException(
+				throw ConfigError(
 					Format("Option \"-%%\" expects type %%") << name << Variant::typeName(type(defaultValue), itemType(defaultValue))
 				);
 			}

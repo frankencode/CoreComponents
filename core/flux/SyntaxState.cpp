@@ -8,6 +8,7 @@
  */
 
 #include "syntax.h"
+#include "Default.h"
 #include "SyntaxState.h"
 
 namespace flux

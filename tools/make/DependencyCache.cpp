@@ -40,7 +40,7 @@ DependencyCache::DependencyCache(BuildPlan *plan)
 	try {
 		dependencyCache = Yason::parse(File::load(cachePath_));
 	}
-	catch (YasonException &)
+	catch (TextError &)
 	{}
 	if (!dependencyCache) return;
 	if (dependencyCache->className() != "DependencyCache") return;

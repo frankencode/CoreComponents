@@ -322,15 +322,7 @@ Variant YasonSyntax::parseMessage(const ByteArray *text, YasonProtocol *protocol
 {
 	Ref<SyntaxState> state = newState();
 	Ref<Token> token = match(text, state);
-	if (!token) {
-		String reason = "Syntax error";
-		int offset = 0;
-		if (state->hint()) {
-			reason = reason + ": " + state->hint();
-			offset = state->hintOffset();
-		}
-		throw YasonException(reason, text, offset);
-	}
+	if (!token) throw SyntaxError(text, state);
 	Token *valueToken = token->firstChild();
 	if (protocol) return parseObject(text, valueToken, protocol);
 	return parseValue(text, valueToken);
@@ -339,7 +331,7 @@ Variant YasonSyntax::parseMessage(const ByteArray *text, YasonProtocol *protocol
 Ref<YasonObject> YasonSyntax::parseObject(const ByteArray *text, Token *token, YasonProtocol *protocol, YasonObject *prototype)
 {
 	if (token->rule() != object_)
-		throw YasonException("Expected an object value", text, token->i0());
+		throw SemanticError("Expected an object value", text, token->i0());
 
 	Token *objectToken = token;
 	token = token->firstChild();
@@ -350,7 +342,7 @@ Ref<YasonObject> YasonSyntax::parseObject(const ByteArray *text, Token *token, Y
 
 	if (protocol) {
 		if (!protocol->lookup(className, &prototype)) {
-			throw YasonException(
+			throw SemanticError(
 				Format("Object of class \"%%\" is not allowed here") << className,
 				text, token->i1()
 			);
@@ -358,7 +350,7 @@ Ref<YasonObject> YasonSyntax::parseObject(const ByteArray *text, Token *token, Y
 	}
 	else if (prototype) {
 		if (className != prototype->className()) {
-			throw YasonException(
+			throw SemanticError(
 				Format("Expected an object of class \"%%\"") << prototype->className_,
 				text, token->i1()
 			);
@@ -384,7 +376,7 @@ Ref<YasonObject> YasonSyntax::parseObject(const ByteArray *text, Token *token, Y
 			YasonObject *memberPrototype = 0;
 			if (prototype) {
 				if (!prototype->lookup(name, &defaultValue))
-					throw YasonException(
+					throw SemanticError(
 						Format("Member \"%%\" is not supported") << name,
 						text, token->i1()
 					);
@@ -403,7 +395,7 @@ Ref<YasonObject> YasonSyntax::parseObject(const ByteArray *text, Token *token, Y
 			Variant existingValue;
 			if (object->lookup(name, &existingValue)) {
 				if (value != existingValue) {
-					throw YasonException(
+					throw SemanticError(
 						Format("Ambiguous value for member \"%%\"") << name,
 						text, token->i1()
 					);
@@ -509,7 +501,7 @@ Variant YasonSyntax::parseValue(const ByteArray *text, Token *token, int expecte
 	}
 
 	if (typeError) {
-		throw YasonException(
+		throw SemanticError(
 			Format("Expected a value of type %%") << Variant::typeName(expectedType, expectedItemType),
 			text, token->i0()
 		);

@@ -26,6 +26,8 @@ class IfNode;
 class CaptureNode;
 class ReplayNode;
 class ExpectNode;
+class ChoiceNode;
+class GlueNode;
 
 class State: public Object
 {
@@ -35,7 +37,6 @@ public:
 
 	inline const char *hint() const { return hint_; }
 	inline int hintOffset() const { return hintOffset_; }
-	inline bool finalize() const { return finalize_; }
 
 private:
 	friend class syntax::DefinitionNode;
@@ -44,6 +45,8 @@ private:
 	friend class syntax::CaptureNode;
 	friend class syntax::ReplayNode;
 	friend class syntax::ExpectNode;
+	friend class syntax::ChoiceNode;
+	friend class syntax::GlueNode;
 
 	State();
 	State(const DefinitionNode *definition, int numFlags, int numCaptures);

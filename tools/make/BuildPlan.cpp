@@ -50,7 +50,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	recipe_ = Config::read(argc, argv);
 	if (recipe_->arguments()->size() > 0) {
 		if (recipe_->arguments()->size() > 1)
-			throw UserError("Handling multiple source directories at once is not supported");
+			throw UsageError("Handling multiple source directories at once is not supported");
 		projectPath_ = recipe_->arguments()->at(0)->canonicalPath();
 	}
 

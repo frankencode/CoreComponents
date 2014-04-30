@@ -16,12 +16,13 @@
 namespace flux
 {
 
-class ConfigException: public UserError
+class ConfigError: public UsageError
 {
 public:
-	ConfigException(String message)
-		: UserError(message)
+	ConfigError(String message)
+		: UsageError(message)
 	{}
+	~ConfigError() throw() {}
 };
 
 class ConfigProtocol;

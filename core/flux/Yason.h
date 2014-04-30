@@ -12,33 +12,12 @@
 
 #include "Map.h"
 #include "Variant.h"
-#include "UserError.h"
 #include "Stream.h"
 #include "Token.h"
+#include "TextError.h"
 
 namespace flux
 {
-
-class YasonException: public UserError
-{
-public:
-	YasonException(const String &error, const ByteArray *text, int offset);
-
-	String error() const { return error_; }
-
-	String text() const { return text_; }
-	int offset() const { return offset_; }
-
-	int line() const { return line_; }
-	int pos() const { return pos_; }
-
-private:
-	String error_;
-	String text_;
-	int offset_;
-	int line_;
-	int pos_;
-};
 
 class YasonObject;
 

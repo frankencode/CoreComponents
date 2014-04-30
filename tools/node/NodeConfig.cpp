@@ -25,7 +25,7 @@ void NodeConfig::load(int argc, char **argv)
 	Ref<Config> config = Config::read(argc, argv, nodePrototype);
 	if (config->arguments()->size() > 0) {
 		if (config->arguments()->size() > 1)
-			throw UserError("Loading multiple config files at once is not supported");
+			throw UsageError("Loading multiple config files at once is not supported");
 		String path = config->arguments()->at(0);
 		config = Config::read(path, configProtocol());
 		config = Config::read(argc, argv, config);

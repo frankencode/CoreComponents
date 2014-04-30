@@ -20,12 +20,6 @@
 namespace flux
 {
 
-class PatternException: public UserError
-{
-public:
-	PatternException(const String &error, int pos);
-};
-
 class Pattern: public Ref<SyntaxDefinition>
 {
 public:
