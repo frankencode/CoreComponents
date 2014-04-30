@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "PatternExpression.h"
+#include "PatternSyntax.h"
 #include "Pattern.h"
 
 namespace flux

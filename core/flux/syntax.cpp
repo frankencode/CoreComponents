@@ -63,12 +63,12 @@ State *DefinitionNode::newState() const
 	return 0;
 }
 
-Ref<Token> DefinitionNode::find(ByteArray *media, int *i0, int *i1, TokenFactory *tokenFactory) const
+Ref<Token> DefinitionNode::find(ByteArray *text, int *i0, int *i1, TokenFactory *tokenFactory) const
 {
 	int i = *i0;
 	Ref<Token> rootToken;
-	while (media->has(i)) {
-		if ((rootToken = match(media, i, i1, 0, tokenFactory)))
+	while (text->has(i)) {
+		if ((rootToken = match(text, i, i1, 0, tokenFactory)))
 			break;
 		++i;
 	}
@@ -76,7 +76,7 @@ Ref<Token> DefinitionNode::find(ByteArray *media, int *i0, int *i1, TokenFactory
 	return rootToken;
 }
 
-Ref<Token> DefinitionNode::match(ByteArray *media, int i0, int *i1, State *state, TokenFactory *tokenFactory) const
+Ref<Token> DefinitionNode::match(ByteArray *text, int i0, int *i1, State *state, TokenFactory *tokenFactory) const
 {
 	Ref<State> localState;
 	if (!state) {
@@ -88,7 +88,7 @@ Ref<Token> DefinitionNode::match(ByteArray *media, int i0, int *i1, State *state
 	if (!tokenFactory)
 		tokenFactory = &localTokenFactory;
 
-	int h = matchNext(media, i0, tokenFactory, 0, state);
+	int h = matchNext(text, i0, tokenFactory, 0, state);
 
 	if ((i1 != 0) && (h != -1))
 		*i1 = h;
@@ -119,16 +119,16 @@ const DefinitionNode *DefinitionNode::resolveScope(const char *&name) const
 	return scope;
 }
 
-int DefinitionNode::syntaxError(ByteArray *media, int index, State *state) const
+int DefinitionNode::syntaxError(ByteArray *text, int index, State *state) const
 {
 	FLUX_THROW(DebugException, "Unhandled syntax error");
 	return -1;
 }
 
-int DefinitionNode::errorCallBack(Object *self, ByteArray *media, int index, State *state)
+int DefinitionNode::errorCallBack(Object *self, ByteArray *text, int index, State *state)
 {
 	DefinitionNode *definition = cast<DefinitionNode>(self);
-	return definition->syntaxError(media, index, state);
+	return definition->syntaxError(text, index, state);
 }
 
 } // namespace syntax

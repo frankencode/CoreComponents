@@ -44,9 +44,9 @@ public:
 	int keywordByName(const char *keyword);
 	Ref<State> newState() const;
 
-	Ref<Token> find(const ByteArray *media, int i = 0) const;
-	Ref<Token> match(const ByteArray *media, int i = -1, SyntaxState *state = 0, TokenFactory *tokenFactory = 0) const;
-	Ref<Token> match(const ByteArray *media, SyntaxState *state, TokenFactory *tokenFactory = 0) const;
+	Ref<Token> find(const ByteArray *text, int i = 0) const;
+	Ref<Token> match(const ByteArray *text, int i = -1, SyntaxState *state = 0, TokenFactory *tokenFactory = 0) const;
+	Ref<Token> match(const ByteArray *text, SyntaxState *state, TokenFactory *tokenFactory = 0) const;
 
 	int matchLength() const;
 
@@ -137,7 +137,7 @@ public:
 	NODE PREVIOUS(const char *ruleName, const char *keyword = 0);
 	NODE CONTEXT(const char *ruleName, NODE inContext = 0, NODE outOfContext = 0);
 
-	typedef int (*CallBack) (Object *self, ByteArray *media, int i, State *state);
+	typedef int (*CallBack) (Object *self, ByteArray *text, int i, State *state);
 
 	NODE CALL(CallBack callBack, Object *self = 0);
 	NODE ERROR();

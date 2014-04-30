@@ -13,20 +13,17 @@
 #include "syntax.h"
 #include "Format.h"
 #include "Pattern.h"
-#include "PatternExpression.h"
+#include "PatternSyntax.h"
 
 namespace flux
 {
 
-
-PatternException::PatternException(const String &error, int pos)
-	: UserError(Format("%%: %%") << pos << error)
-{}
-
 typedef syntax::NODE NODE;
 
-PatternExpression::PatternExpression()
+PatternSyntax::PatternSyntax()
 {
+	SYNTAX("pattern");
+
 	any_ = DEFINE("Any", CHAR('#'));
 	gap_ = DEFINE("Gap", CHAR('*'));
 	boi_ = DEFINE("Boi", CHAR('^'));
@@ -233,32 +230,32 @@ PatternExpression::PatternExpression()
 			)
 		);
 
-	ENTRY("Choice");
+	pattern_ =
+		DEFINE("Pattern",
+			GLUE(
+				REF("Choice"),
+				EOI()
+			)
+		);
+
+	ENTRY("Pattern");
 	LINK();
 }
 
-void PatternExpression::compile(ByteArray *text, SyntaxDefinition *definition)
+void PatternSyntax::compile(ByteArray *text, SyntaxDefinition *definition)
 {
 	Ref<SyntaxState> state = newState();
 	Ref<Token> token = match(text, 0, state);
-	if ((!token) || (token->size() < text->size())) {
-		String reason = "Syntax error";
-		int pos = token->size();
-		if (state->hint()) {
-			reason = state->hint();
-			pos = state->hintOffset();
-		}
-		throw PatternException(reason, pos);
-	}
+	if (!token) throw SyntaxError(text, state);
 	NODE entry;
 	if (text->size() == 0) entry = definition->PASS();
-	else entry = compileChoice(text, token, definition);
+	else entry = compileChoice(text, token->firstChild(), definition);
 	definition->DEFINE("Expression", entry);
 	definition->ENTRY("Expression");
 	definition->LINK();
 }
 
-NODE PatternExpression::compileChoice(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileChoice(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
 	if (token->countChildren() == 1)
 		return compileSequence(text, token->firstChild(), definition);
@@ -268,7 +265,7 @@ NODE PatternExpression::compileChoice(ByteArray *text, Token *token, SyntaxDefin
 	return definition->debug(node, "Choice");
 }
 
-NODE PatternExpression::compileSequence(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileSequence(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
 	NODE node = new syntax::GlueNode;
 	for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
@@ -295,40 +292,40 @@ NODE PatternExpression::compileSequence(ByteArray *text, Token *token, SyntaxDef
 	return definition->debug(node, "Glue");
 }
 
-NODE PatternExpression::compileAhead(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileAhead(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
 	return (text->at(token->i0() + 1) == '>') ?
 		definition->AHEAD(compileChoice(text, token->firstChild(), definition)) :
 		definition->NOT(compileChoice(text, token->firstChild(), definition));
 }
 
-NODE PatternExpression::compileBehind(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileBehind(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
 	return (text->at(token->i0() + 1) == '<') ?
 		definition->BEHIND(compileChoice(text, token->firstChild(), definition)) :
 		definition->NOT_BEHIND(compileChoice(text, token->firstChild(), definition));
 }
 
-NODE PatternExpression::compileCapture(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileCapture(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
 	String name = text->copy(token->firstChild());
 	return definition->CAPTURE(name, compileChoice(text, token->lastChild(), definition));
 }
 
-NODE PatternExpression::compileReference(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileReference(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
 	String name = text->copy(token->firstChild());
 	return definition->REPLAY(name);
 }
 
-char PatternExpression::readChar(ByteArray *text, Token *token)
+char PatternSyntax::readChar(ByteArray *text, Token *token)
 {
 	return (token->i1() - token->i0() > 1) ?
 		text->copy(token)->unescapeInsitu()->at(0) :
 		text->at(token->i0());
 }
 
-String PatternExpression::readString(ByteArray *text, Token *token)
+String PatternSyntax::readString(ByteArray *text, Token *token)
 {
 	String s(token->countChildren());
 	int i = 0;
@@ -337,7 +334,7 @@ String PatternExpression::readString(ByteArray *text, Token *token)
 	return s;
 }
 
-NODE PatternExpression::compileRangeMinMax(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileRangeMinMax(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
 	int n = token->countChildren();
 	bool invert = (text->at(token->i0() + 1) == '^');
@@ -358,7 +355,7 @@ NODE PatternExpression::compileRangeMinMax(ByteArray *text, Token *token, Syntax
 	return definition->ANY();
 }
 
-NODE PatternExpression::compileRangeExplicit(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileRangeExplicit(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
 	Token *child = token->firstChild();
 	bool invert = (text->at(token->i0() + 1) == '^');
@@ -371,7 +368,7 @@ NODE PatternExpression::compileRangeExplicit(ByteArray *text, Token *token, Synt
 	return invert ? definition->EXCEPT(s) : definition->RANGE(s);
 }
 
-NODE PatternExpression::compileRepeat(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileRepeat(ByteArray *text, Token *token, SyntaxDefinition *definition)
 {
 	Token *child = token->firstChild(), *min = 0, *max = 0;
 	while (child) {

@@ -15,17 +15,6 @@
 namespace flux
 {
 
-YasonException::YasonException(const String &error, const ByteArray *text, int offset)
-	: error_(error),
-	  text_(text),
-	  offset_(offset),
-	  line_(1),
-	  pos_(0)
-{
-	text->offsetToLinePos(offset, &line_, &pos_);
-	UserError::message_ = Format("%%:%%: %%") << line_ << pos_ << error;
-}
-
 Variant YasonObject::toVariant() const
 {
 	return Ref<YasonObject>(const_cast<YasonObject *>(this));

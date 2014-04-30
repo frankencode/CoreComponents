@@ -15,7 +15,7 @@ namespace flux
 {
 
 SystemError::SystemError(String details)
-	: UserError(Format() << systemError() << ((details != "") ? ": " : " ") << details)
+	: message_(Format() << systemError() << ((details != "") ? ": " : " ") << details)
 {}
 
 } // namespace flux

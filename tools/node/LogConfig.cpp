@@ -23,7 +23,7 @@ int decodeLogLevel(String levelName)
 	if (levelName == "error")   return ErrorLogLevel;
 	if (levelName == "silent")  return SilentLogLevel;
 	if (levelName == "")        return DefaultLogLevel;
-	throw UserError("Unknown log level \"" + levelName + "\"");
+	throw UsageError("Unknown log level \"" + levelName + "\"");
 	return 0;
 }
 

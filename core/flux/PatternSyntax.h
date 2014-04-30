@@ -7,23 +7,24 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_PATTERNEXPRESSION_H
-#define FLUX_PATTERNEXPRESSION_H
+#ifndef FLUX_PATTERNSYNTAX_H
+#define FLUX_PATTERNSYNTAX_H
 
 #include "String.h"
 #include "Singleton.h"
 #include "SyntaxDefinition.h"
+#include "TextError.h"
 
 namespace flux
 {
 
-class PatternExpression: public SyntaxDefinition, public Singleton<PatternExpression>
+class PatternSyntax: public SyntaxDefinition, public Singleton<PatternSyntax>
 {
 protected:
-	friend class Singleton<PatternExpression>;
+	friend class Singleton<PatternSyntax>;
 	friend class Pattern;
 
-	PatternExpression();
+	PatternSyntax();
 
 	void compile(ByteArray *text, SyntaxDefinition *definition);
 	NODE compileChoice(ByteArray *text, Token *token, SyntaxDefinition *definition);
@@ -57,10 +58,11 @@ protected:
 	int replay_;
 	int group_;
 	int choice_;
+	int pattern_;
 };
 
-inline PatternExpression *patternExpression() { return PatternExpression::instance(); }
+inline PatternSyntax *patternExpression() { return PatternSyntax::instance(); }
 
 } // namespace flux
 
-#endif // FLUX_PATTERNEXPRESSION_H
+#endif // FLUX_PATTERNSYNTAX_H

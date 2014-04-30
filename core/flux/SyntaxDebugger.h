@@ -22,8 +22,8 @@ namespace syntax
 
 class DebugNode: public Node {
 public:
-	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, SyntaxState *state) const {
-		return entry()->matchNext(media, i, tokenFactory, parentToken, state);
+	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, SyntaxState *state) const {
+		return entry()->matchNext(text, i, tokenFactory, parentToken, state);
 	}
 
 	virtual Node *succ(Node *node) const {

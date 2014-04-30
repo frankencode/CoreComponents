@@ -126,7 +126,7 @@ void NodeMaster::runNode()
 
 	if (nodeConfig()->user() != "") {
 		Ref<User> user = User::lookup(nodeConfig()->user());
-		if (!user->exists()) throw UserError("No such user: \"" + nodeConfig()->user() + "\"");
+		if (!user->exists()) throw UsageError("No such user: \"" + nodeConfig()->user() + "\"");
 		FLUXNODE_NOTICE() << "Switching to user " << user->name() << " (uid = " << user->id() << ")" << nl;
 		Process::setUserId(user->id());
 	}

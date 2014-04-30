@@ -32,24 +32,24 @@ Node *Definition::debug(Node *newNode, const char *nodeType) { return def_->debu
 int Definition::keywordByName(const char *keyword) { return def_->keywordByName(keyword); }
 Ref<State> Definition::newState() const { return def_->newState(); }
 
-Ref<Token> Definition::find(const ByteArray *media, int i) const
+Ref<Token> Definition::find(const ByteArray *text, int i) const
 {
-	return def_->find(const_cast<ByteArray*>(media), &i);
+	return def_->find(const_cast<ByteArray *>(text), &i);
 }
 
-Ref<Token> Definition::match(const ByteArray *media, int i, SyntaxState *state, TokenFactory *tokenFactory) const
+Ref<Token> Definition::match(const ByteArray *text, int i, SyntaxState *state, TokenFactory *tokenFactory) const
 {
 	int i0 = (i >= 0) ? i : 0, h;
-	Ref<Token> token = def_->match(const_cast<ByteArray*>(media), i0, &h, state, tokenFactory);
+	Ref<Token> token = def_->match(const_cast<ByteArray *>(text), i0, &h, state, tokenFactory);
 	if ((i < 0) && (token)) {
-		if (media->has(token->i1())) token = 0;
+		if (text->has(token->i1())) token = 0;
 	}
 	return token;
 }
 
-Ref<Token> Definition::match(const ByteArray *media, SyntaxState *state, TokenFactory *tokenFactory) const
+Ref<Token> Definition::match(const ByteArray *text, SyntaxState *state, TokenFactory *tokenFactory) const
 {
-	return match(media, -1, state, tokenFactory);
+	return match(text, -1, state, tokenFactory);
 }
 
 int Definition::matchLength() const

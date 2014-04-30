@@ -32,7 +32,7 @@ public:
 		}
 	}
 
-	virtual int matchNext(ByteArray *media, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const = 0;
+	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const = 0;
 
 	virtual Node *succ(Node *node) const { return null<Node>(); }
 	virtual int matchLength() const { return -1; }

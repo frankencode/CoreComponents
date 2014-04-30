@@ -104,6 +104,7 @@ public:
 
 	template<class Range>
 	inline Ref<ByteArray> copy(Range *range) const {
+		if (!range) return new ByteArray();
 		return copy(range->i0(), range->i1());
 	}
 
