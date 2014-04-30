@@ -2,6 +2,7 @@
 #include <flux/check.h>
 #include <flux/ProcessFactory.h>
 #include <flux/FileLock.h>
+#include <flux/Guard.h>
 #include <flux/Thread.h>
 
 using namespace flux;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -8,20 +8,14 @@
  */
 
 #include "Exception.h"
-#include "Format.h"
-#include "UserError.h"
+#include "assert.h"
 
 namespace flux
 {
 
-SystemError::SystemError(String resource)
-	: resource_(resource),
-	  errorCode_(errno)
-{}
-
-String SystemError::message() const
+void throwDebugException(const char *fileName, int line, const char *reason)
 {
-	return Format() << systemError(errorCode_) << ((resource_ != "") ? ": " : " ") << resource_;
+	throw DebugException(fileName, line, "DebugException", reason, false);
 }
 
 } // namespace flux

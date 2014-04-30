@@ -9,15 +9,18 @@
 
 #include "Format.h"
 #include "Variant.h"
+#include "Default.h"
 #include "String.h"
 
 namespace flux
 {
 
+String::String(): Super(Default<ByteArray>::instance()) {}
+
 String::String(const Variant &b)
 	: Super(cast<ByteArray>(b))
 {
-	if (!Super::get()) Super::set(ByteArray::empty());
+	if (!Super::get()) Super::set(Default<ByteArray>::instance());
 }
 
 String::String(const Format &b)

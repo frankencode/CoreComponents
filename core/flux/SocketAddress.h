@@ -18,6 +18,7 @@
 
 #include "String.h"
 #include "List.h"
+#include "Exception.h"
 
 namespace flux
 {

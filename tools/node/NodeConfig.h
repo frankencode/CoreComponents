@@ -13,6 +13,7 @@
 #include <flux/SocketAddress.h>
 #include <flux/String.h>
 #include <flux/Map.h>
+#include <flux/Singleton.h>
 #include "ServiceDefinition.h"
 #include "LogConfig.h"
 

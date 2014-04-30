@@ -19,8 +19,6 @@ namespace fluxmake
 
 using namespace flux;
 
-FLUX_STD_EXCEPTION(MachException);
-
 class BuildPlan;
 class DependencyCache;
 

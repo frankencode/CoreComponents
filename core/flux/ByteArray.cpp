@@ -20,6 +20,7 @@
 #include "Process.h"
 #include "File.h"
 #include "ThreadFactory.h"
+#include "Default.h"
 #include "ByteArray.h"
 
 namespace flux
@@ -82,6 +83,9 @@ void ByteArray::destroy()
 
 void ByteArray::resize(int newSize)
 {
+	if (size_ == 0 && newSize > 0) {
+		FLUX_ASSERT(this != Default<ByteArray>::instance());
+	}
 	if (newSize <= size_) {
 		truncate(newSize);
 		return;
@@ -160,7 +164,7 @@ Ref<ByteArray> ByteArray::join(const StringList *parts, const char *sep)
 {
 	int sepSize = strlen(sep);
 	if (parts->size() == 0) {
-		return ByteArray::empty();
+		return Default<ByteArray>::instance();
 	}
 	else {
 		int size = 0;

@@ -17,6 +17,8 @@
 namespace flux
 {
 
+class SyntaxState;
+
 namespace syntax
 {
 
@@ -29,7 +31,9 @@ class ExpectNode;
 class ChoiceNode;
 class GlueNode;
 
-class State: public Object
+} // namespace syntax
+
+class SyntaxState: public Object
 {
 public:
 	bool flag(const char *name) const;
@@ -48,10 +52,12 @@ private:
 	friend class syntax::ChoiceNode;
 	friend class syntax::GlueNode;
 
-	State();
-	State(const DefinitionNode *definition, int numFlags, int numCaptures);
+	typedef syntax::DefinitionNode DefinitionNode;
 
-	State *stateByScope(const DefinitionNode *definition);
+	SyntaxState();
+	SyntaxState(const DefinitionNode *definition, int numFlags, int numCaptures);
+
+	SyntaxState *stateByScope(const DefinitionNode *definition);
 
 	inline bool flag(const DefinitionNode *scope, int flagId) {
 		return stateByScope(scope)->flags_->at(flagId);
@@ -71,7 +77,7 @@ private:
 
 	Ref<const DefinitionNode> definition_;
 
-	typedef Map< const DefinitionNode *, Ref<State> > StateByScope;
+	typedef Map< const DefinitionNode *, Ref<SyntaxState> > StateByScope;
 	Ref<StateByScope> stateByScope_;
 
 	typedef Array<bool> Flags;
@@ -85,9 +91,7 @@ private:
 	bool finalize_;
 };
 
-} // namespace syntax
-
-typedef syntax::State SyntaxState;
+namespace syntax { typedef SyntaxState State; }
 
 } // namespace flux
 

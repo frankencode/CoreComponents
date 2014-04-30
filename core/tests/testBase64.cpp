@@ -1,6 +1,6 @@
 #include <flux/stdio.h>
-#include <flux/Base64.h>
 #include <flux/check.h>
+#include <flux/Base64.h>
 
 using namespace flux;
 

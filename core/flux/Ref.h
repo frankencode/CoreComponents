@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -14,9 +14,6 @@
 
 namespace flux
 {
-
-template<class T>
-class List;
 
 /** \brief ownership pointer
   */
@@ -43,7 +40,7 @@ public:
 	inline bool operator<(const Ref &b) const { return a_ < b.a_; }
 
 	inline T *operator->() const {
-		FLUX_ASSERT2(a_, "Null reference");
+		FLUX_ASSERT2(a_, "Null reference accessed");
 		return a_;
 	}
 
@@ -59,14 +56,14 @@ public:
 
 	template<class T2>
 	inline Ref<T> &operator<<(T2 x) {
-		FLUX_ASSERT2(a_, "Null reference");
+		FLUX_ASSERT2(a_, "Null reference shifted left");
 		*a_ << x;
 		return *this;
 	}
 
 	template<class T2>
 	inline Ref<T> &operator>>(T2 &x) {
-		FLUX_ASSERT2(a_, "Null reference");
+		FLUX_ASSERT2(a_, "Null reference shifted right");
 		*a_ >> x;
 		return *this;
 	}

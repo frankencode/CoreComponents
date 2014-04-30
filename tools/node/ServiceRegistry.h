@@ -11,6 +11,7 @@
 #define FLUXNODE_SERVICEREGISTRY_H
 
 #include <flux/Map.h>
+#include <flux/Singleton.h>
 #include "ServiceDefinition.h"
 
 namespace fluxnode

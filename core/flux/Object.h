@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -10,14 +10,10 @@
 #ifndef FLUX_OBJECT_H
 #define FLUX_OBJECT_H
 
-#include "types.h"
 #include "Ref.h"
-#include "Exception.h"
 
 namespace flux
 {
-
-FLUX_EXCEPTION(ReferenceException, Exception);
 
 /** \brief reference counting and secure destruction
   *
@@ -25,19 +21,15 @@ FLUX_EXCEPTION(ReferenceException, Exception);
   * Enforces a consistent allocation schema by surpressing two things:
   *   - combination of static allocation and dynamic destruction
   *   - manual detruction by delete operator
-  * In both cases an exception of type ReferenceException is thrown.
+  * In debug mode in both cases a DebugException is thrown.
   */
 class Object
 {
 public:
 	Object(): refCount_(0) {}
 
-	virtual ~Object()
-	{
-#ifndef NDEBUG
-		if (refCount_ > 0)
-			FLUX_THROW(ReferenceException, "Deleting object, which is still in use");
-#endif
+	virtual ~Object() {
+		FLUX_ASSERT2(refCount_ == 0, "Deleting object, which is still in use");
 	}
 
 	inline int refCount() const { return refCount_; }

@@ -12,7 +12,6 @@
 
 #include <string.h> // memset, memcpy, strcmp
 #include "types.h"
-#include "Exception.h"
 
 namespace flux
 {

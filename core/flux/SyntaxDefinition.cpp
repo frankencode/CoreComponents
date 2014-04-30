@@ -13,31 +13,28 @@
 namespace flux
 {
 
-namespace syntax
-{
-
-Definition::Definition(DebugFactory *debugFactory)
-	: def_(new DefinitionNode(debugFactory))
+SyntaxDefinition::SyntaxDefinition(SyntaxDebugFactory *debugFactory)
+	: def_(new syntax::DefinitionNode(debugFactory))
 {}
 
-Definition::~Definition()
+SyntaxDefinition::~SyntaxDefinition()
 {}
 
-int Definition::id() const { return def_->id(); }
-const char *Definition::name() const { return def_->name(); }
+int SyntaxDefinition::id() const { return def_->id(); }
+const char *SyntaxDefinition::name() const { return def_->name(); }
 
-DebugFactory *Definition::debugFactory() const { return def_->debugFactory(); }
-Node *Definition::debug(Node *newNode, const char *nodeType) { return def_->debug(newNode, nodeType); }
+SyntaxDebugFactory *SyntaxDefinition::debugFactory() const { return def_->debugFactory(); }
+SyntaxNode *SyntaxDefinition::debug(SyntaxNode *newNode, const char *nodeType) { return def_->debug(newNode, nodeType); }
 
-int Definition::keywordByName(const char *keyword) { return def_->keywordByName(keyword); }
-Ref<State> Definition::newState() const { return def_->newState(); }
+int SyntaxDefinition::keywordByName(const char *keyword) { return def_->keywordByName(keyword); }
+Ref<SyntaxState> SyntaxDefinition::newState() const { return def_->newState(); }
 
-Ref<Token> Definition::find(const ByteArray *text, int i) const
+Ref<Token> SyntaxDefinition::find(const ByteArray *text, int i) const
 {
 	return def_->find(const_cast<ByteArray *>(text), &i);
 }
 
-Ref<Token> Definition::match(const ByteArray *text, int i, SyntaxState *state, TokenFactory *tokenFactory) const
+Ref<Token> SyntaxDefinition::match(const ByteArray *text, int i, SyntaxState *state, TokenFactory *tokenFactory) const
 {
 	int i0 = (i >= 0) ? i : 0, h;
 	Ref<Token> token = def_->match(const_cast<ByteArray *>(text), i0, &h, state, tokenFactory);
@@ -47,113 +44,113 @@ Ref<Token> Definition::match(const ByteArray *text, int i, SyntaxState *state, T
 	return token;
 }
 
-Ref<Token> Definition::match(const ByteArray *text, SyntaxState *state, TokenFactory *tokenFactory) const
+Ref<Token> SyntaxDefinition::match(const ByteArray *text, SyntaxState *state, TokenFactory *tokenFactory) const
 {
 	return match(text, -1, state, tokenFactory);
 }
 
-int Definition::matchLength() const
+int SyntaxDefinition::matchLength() const
 {
 	return def_->matchLength();
 }
 
-void Definition::SYNTAX(const char *name) { def_->SYNTAX(name); }
-void Definition::IMPORT(Definition *definition, const char *name) { def_->IMPORT(definition->def_, name); }
-void Definition::OPTION(const char *name, bool value) { def_->OPTION(name, value); }
+typedef syntax::NODE NODE;
 
-NODE Definition::CHAR(char ch) { return def_->CHAR(ch); }
-NODE Definition::OTHER(char ch) { return def_->OTHER(ch); }
-NODE Definition::GREATER(char ch) { return def_->GREATER(ch); }
-NODE Definition::BELOW(char ch) { return def_->BELOW(ch); }
-NODE Definition::GREATER_OR_EQUAL(char ch) { return def_->GREATER_OR_EQUAL(ch); }
-NODE Definition::BELOW_OR_EQUAL(char ch) { return def_->BELOW_OR_EQUAL(ch); }
-NODE Definition::ANY() { return def_->ANY(); }
+void SyntaxDefinition::SYNTAX(const char *name) { def_->SYNTAX(name); }
+void SyntaxDefinition::IMPORT(SyntaxDefinition *definition, const char *name) { def_->IMPORT(definition->def_, name); }
+void SyntaxDefinition::OPTION(const char *name, bool value) { def_->OPTION(name, value); }
 
-NODE Definition::RANGE(char a, char b) { return def_->RANGE(a, b); }
-NODE Definition::RANGE(const char *s) { return def_->RANGE(s); }
-NODE Definition::EXCEPT(char a, char b) { return def_->EXCEPT(a, b); }
-NODE Definition::EXCEPT(const char *s) { return def_->EXCEPT(s); }
+NODE SyntaxDefinition::CHAR(char ch) { return def_->CHAR(ch); }
+NODE SyntaxDefinition::OTHER(char ch) { return def_->OTHER(ch); }
+NODE SyntaxDefinition::GREATER(char ch) { return def_->GREATER(ch); }
+NODE SyntaxDefinition::BELOW(char ch) { return def_->BELOW(ch); }
+NODE SyntaxDefinition::GREATER_OR_EQUAL(char ch) { return def_->GREATER_OR_EQUAL(ch); }
+NODE SyntaxDefinition::BELOW_OR_EQUAL(char ch) { return def_->BELOW_OR_EQUAL(ch); }
+NODE SyntaxDefinition::ANY() { return def_->ANY(); }
 
-NODE Definition::STRING(const char *s) { return def_->STRING(s); }
-NODE Definition::KEYWORD(const char *keywords) { return def_->KEYWORD(keywords); }
+NODE SyntaxDefinition::RANGE(char a, char b) { return def_->RANGE(a, b); }
+NODE SyntaxDefinition::RANGE(const char *s) { return def_->RANGE(s); }
+NODE SyntaxDefinition::EXCEPT(char a, char b) { return def_->EXCEPT(a, b); }
+NODE SyntaxDefinition::EXCEPT(const char *s) { return def_->EXCEPT(s); }
 
-NODE Definition::REPEAT(int minRepeat, int maxRepeat, NODE entry) { return def_->REPEAT(minRepeat, maxRepeat, entry); }
-NODE Definition::REPEAT(int minRepeat, NODE entry) { return def_->REPEAT(minRepeat, entry); }
-NODE Definition::REPEAT(NODE entry) { return def_->REPEAT(entry); }
+NODE SyntaxDefinition::STRING(const char *s) { return def_->STRING(s); }
+NODE SyntaxDefinition::KEYWORD(const char *keywords) { return def_->KEYWORD(keywords); }
 
-NODE Definition::LAZY_REPEAT(int minRepeat, NODE entry) { return def_->LAZY_REPEAT(minRepeat, entry); }
-NODE Definition::LAZY_REPEAT(NODE entry) { return def_->LAZY_REPEAT(entry); }
+NODE SyntaxDefinition::REPEAT(int minRepeat, int maxRepeat, NODE entry) { return def_->REPEAT(minRepeat, maxRepeat, entry); }
+NODE SyntaxDefinition::REPEAT(int minRepeat, NODE entry) { return def_->REPEAT(minRepeat, entry); }
+NODE SyntaxDefinition::REPEAT(NODE entry) { return def_->REPEAT(entry); }
 
-NODE Definition::GREEDY_REPEAT(int minRepeat, int maxRepeat, NODE entry) { return def_->GREEDY_REPEAT(minRepeat, maxRepeat, entry); }
-NODE Definition::GREEDY_REPEAT(int minRepeat, NODE entry) { return def_->GREEDY_REPEAT(minRepeat, entry); }
-NODE Definition::GREEDY_REPEAT(NODE entry) { return def_->GREEDY_REPEAT(entry); }
+NODE SyntaxDefinition::LAZY_REPEAT(int minRepeat, NODE entry) { return def_->LAZY_REPEAT(minRepeat, entry); }
+NODE SyntaxDefinition::LAZY_REPEAT(NODE entry) { return def_->LAZY_REPEAT(entry); }
 
-NODE Definition::LENGTH(int minLength, int maxLength, NODE entry) { return def_->LENGTH(minLength, maxLength, entry); }
-NODE Definition::LENGTH(int minLength, NODE entry) { return def_->LENGTH(minLength, entry); }
-NODE Definition::BOI() { return def_->BOI(); }
-NODE Definition::EOI() { return def_->EOI(); }
-NODE Definition::PASS() { return def_->PASS(); }
-NODE Definition::FAIL() { return def_->FAIL(); }
-NODE Definition::FIND(NODE entry) { return def_->FIND(entry); }
-NODE Definition::AHEAD(NODE entry) { return def_->AHEAD(entry); }
-NODE Definition::NOT(NODE entry) { return def_->NOT(entry); }
-NODE Definition::BEHIND(NODE entry) { return def_->BEHIND(entry); }
-NODE Definition::NOT_BEHIND(NODE entry) { return def_->NOT_BEHIND(entry); }
+NODE SyntaxDefinition::GREEDY_REPEAT(int minRepeat, int maxRepeat, NODE entry) { return def_->GREEDY_REPEAT(minRepeat, maxRepeat, entry); }
+NODE SyntaxDefinition::GREEDY_REPEAT(int minRepeat, NODE entry) { return def_->GREEDY_REPEAT(minRepeat, entry); }
+NODE SyntaxDefinition::GREEDY_REPEAT(NODE entry) { return def_->GREEDY_REPEAT(entry); }
 
-NODE Definition::CHOICE() { return def_->CHOICE(); } // FIXME
-NODE Definition::GLUE() { return def_->GLUE(); }
+NODE SyntaxDefinition::LENGTH(int minLength, int maxLength, NODE entry) { return def_->LENGTH(minLength, maxLength, entry); }
+NODE SyntaxDefinition::LENGTH(int minLength, NODE entry) { return def_->LENGTH(minLength, entry); }
+NODE SyntaxDefinition::BOI() { return def_->BOI(); }
+NODE SyntaxDefinition::EOI() { return def_->EOI(); }
+NODE SyntaxDefinition::PASS() { return def_->PASS(); }
+NODE SyntaxDefinition::FAIL() { return def_->FAIL(); }
+NODE SyntaxDefinition::FIND(NODE entry) { return def_->FIND(entry); }
+NODE SyntaxDefinition::AHEAD(NODE entry) { return def_->AHEAD(entry); }
+NODE SyntaxDefinition::NOT(NODE entry) { return def_->NOT(entry); }
+NODE SyntaxDefinition::BEHIND(NODE entry) { return def_->BEHIND(entry); }
+NODE SyntaxDefinition::NOT_BEHIND(NODE entry) { return def_->NOT_BEHIND(entry); }
 
-NODE Definition::CHOICE(NODE choice0, NODE choice1) { return def_->CHOICE(choice0, choice1); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2) { return def_->CHOICE(choice0, choice1, choice2); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3) { return def_->CHOICE(choice0, choice1, choice2, choice3); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11, choice12); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12, NODE choice13) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11, choice12, choice13); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12, NODE choice13, NODE choice14) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11, choice12, choice13, choice14); }
-NODE Definition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12, NODE choice13, NODE choice14, NODE choice15) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11, choice12, choice13, choice14, choice15); }
+NODE SyntaxDefinition::CHOICE() { return def_->CHOICE(); } // FIXME
+NODE SyntaxDefinition::GLUE() { return def_->GLUE(); }
 
-NODE Definition::GLUE(NODE child0, NODE child1) { return def_->GLUE(child0, child1); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2) { return def_->GLUE(child0, child1, child2); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3) { return def_->GLUE(child0, child1, child2, child3); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4) { return def_->GLUE(child0, child1, child2, child3, child4); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5) { return def_->GLUE(child0, child1, child2, child3, child4, child5); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12, child13); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12, child13, child14); }
-NODE Definition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14, NODE child15) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12, child13, child14, child15); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1) { return def_->CHOICE(choice0, choice1); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2) { return def_->CHOICE(choice0, choice1, choice2); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3) { return def_->CHOICE(choice0, choice1, choice2, choice3); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11, choice12); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12, NODE choice13) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11, choice12, choice13); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12, NODE choice13, NODE choice14) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11, choice12, choice13, choice14); }
+NODE SyntaxDefinition::CHOICE(NODE choice0, NODE choice1, NODE choice2, NODE choice3, NODE choice4, NODE choice5, NODE choice6, NODE choice7, NODE choice8, NODE choice9, NODE choice10, NODE choice11, NODE choice12, NODE choice13, NODE choice14, NODE choice15) { return def_->CHOICE(choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9, choice10, choice11, choice12, choice13, choice14, choice15); }
 
-NODE Definition::EXPECT(const char *text, NODE entry)  { return def_->EXPECT(text, entry); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1) { return def_->GLUE(child0, child1); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2) { return def_->GLUE(child0, child1, child2); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3) { return def_->GLUE(child0, child1, child2, child3); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4) { return def_->GLUE(child0, child1, child2, child3, child4); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5) { return def_->GLUE(child0, child1, child2, child3, child4, child5); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12, child13); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12, child13, child14); }
+NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14, NODE child15) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12, child13, child14, child15); }
 
-int Definition::DEFINE(const char *ruleName, NODE entry) { return def_->DEFINE(ruleName, entry); }
-void Definition::ENTRY(const char *ruleName) { def_->ENTRY(ruleName); }
-NODE Definition::REF(const char *ruleName) { return def_->REF(ruleName); }
-NODE Definition::INLINE(const char *ruleName) { return def_->INLINE(ruleName); }
-NODE Definition::PREVIOUS(const char *ruleName, const char *keyword) { return def_->PREVIOUS(ruleName, keyword); }
-NODE Definition::CONTEXT(const char *ruleName, NODE inContext, NODE outOfContext) { return def_->CONTEXT(ruleName, inContext, outOfContext); }
+NODE SyntaxDefinition::EXPECT(const char *text, NODE entry)  { return def_->EXPECT(text, entry); }
 
-NODE Definition::CALL(CallBack callBack, Object *self) { return def_->CALL(callBack, self); }
-NODE Definition::ERROR() { return def_->ERROR(); }
+int SyntaxDefinition::DEFINE(const char *ruleName, NODE entry) { return def_->DEFINE(ruleName, entry); }
+void SyntaxDefinition::ENTRY(const char *ruleName) { def_->ENTRY(ruleName); }
+NODE SyntaxDefinition::REF(const char *ruleName) { return def_->REF(ruleName); }
+NODE SyntaxDefinition::INLINE(const char *ruleName) { return def_->INLINE(ruleName); }
+NODE SyntaxDefinition::PREVIOUS(const char *ruleName, const char *keyword) { return def_->PREVIOUS(ruleName, keyword); }
+NODE SyntaxDefinition::CONTEXT(const char *ruleName, NODE inContext, NODE outOfContext) { return def_->CONTEXT(ruleName, inContext, outOfContext); }
 
-void Definition::LINK() { return def_->LINK(); }
+NODE SyntaxDefinition::CALL(CallBack callBack, Object *self) { return def_->CALL(callBack, self); }
+NODE SyntaxDefinition::ERROR() { return def_->ERROR(); }
 
-NODE Definition::SET(const char *name, bool value) { return def_->SET(name, value); }
-NODE Definition::IF(const char *name, NODE trueBranch, NODE falseBranch) { return def_->IF(name, trueBranch, falseBranch); }
-NODE Definition::CAPTURE(const char *name, NODE coverage) { return def_->CAPTURE(name, coverage); }
-NODE Definition::REPLAY(const char *name) { return def_->REPLAY(name); }
+void SyntaxDefinition::LINK() { return def_->LINK(); }
 
-} // namespace syntax
+NODE SyntaxDefinition::SET(const char *name, bool value) { return def_->SET(name, value); }
+NODE SyntaxDefinition::IF(const char *name, NODE trueBranch, NODE falseBranch) { return def_->IF(name, trueBranch, falseBranch); }
+NODE SyntaxDefinition::CAPTURE(const char *name, NODE coverage) { return def_->CAPTURE(name, coverage); }
+NODE SyntaxDefinition::REPLAY(const char *name) { return def_->REPLAY(name); }
 
 } // namespace flux
