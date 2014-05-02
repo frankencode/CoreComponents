@@ -29,6 +29,7 @@
 #include "File.h"
 #include "LineSource.h"
 #endif
+#include "exceptions.h"
 #include "NetworkInterface.h"
 
 namespace flux
@@ -67,7 +68,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 		family = families[j];
 
 		int fd = ::socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
-		if (fd == -1) FLUX_SYSTEM_EXCEPTION;
+		if (fd == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
 		int seq = 0;
 
 		struct sockaddr_nl src;
@@ -75,13 +76,13 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 		src.nl_family = AF_NETLINK;
 		src.nl_pid = ::getpid();
 		if (::bind(fd, (struct sockaddr *)&src, (socklen_t)sizeof(src)) == -1)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 		// send request
 		{
 			size_t msgLen = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
 			struct nlmsghdr *msg = (struct nlmsghdr *)flux::malloc(msgLen);
-			if (!msg) FLUX_SYSTEM_EXCEPTION;
+			if (!msg) FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 			memclr(msg, msgLen);
 			msg->nlmsg_type = RTM_GETADDR;
@@ -107,7 +108,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 			hdr.msg_namelen = sizeof(dst);
 
 			if (::sendmsg(fd, &hdr, 0/*flags*/) == -1)
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 			flux::free(msg);
 		}
@@ -118,10 +119,10 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 			memclr(&hdr, sizeof(hdr));
 
 			ssize_t bufSize = ::recvmsg(fd, &hdr, MSG_PEEK|MSG_TRUNC);
-			if (bufSize < 0) FLUX_SYSTEM_EXCEPTION;
+			if (bufSize < 0) FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 			void *buf = flux::malloc(bufSize);
-			if (!buf) FLUX_SYSTEM_EXCEPTION;
+			if (!buf) FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 			struct iovec iov = { buf, (size_t)bufSize };
 			hdr.msg_iov = &iov;
@@ -129,7 +130,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 			ssize_t bufFill = ::recvmsg(fd, &hdr, 0/*flags*/);
 
 			if (::close(fd) == -1)
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 			struct nlmsghdr *msg = (struct nlmsghdr *)buf;
 
@@ -235,7 +236,7 @@ bool NetworkInterface::getLink(NetworkInterfaceList *list, int index)
 
 	{
 		int fd = ::socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
-		if (fd == -1) FLUX_SYSTEM_EXCEPTION;
+		if (fd == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
 		int seq = 0;
 
 		struct sockaddr_nl src;
@@ -243,13 +244,13 @@ bool NetworkInterface::getLink(NetworkInterfaceList *list, int index)
 		src.nl_family = AF_NETLINK;
 		src.nl_pid = ::getpid();
 		if (::bind(fd, (struct sockaddr *)&src, (socklen_t)sizeof(src)) == -1)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 		// send request
 		{
 			size_t msgLen = NLMSG_LENGTH(sizeof(struct ifinfomsg));
 			struct nlmsghdr *msg = (struct nlmsghdr *)flux::malloc(msgLen);
-			if (!msg) FLUX_SYSTEM_EXCEPTION;
+			if (!msg) FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 			memclr(msg, msgLen);
 			msg->nlmsg_type = RTM_GETLINK;
@@ -277,7 +278,7 @@ bool NetworkInterface::getLink(NetworkInterfaceList *list, int index)
 			hdr.msg_namelen = sizeof(dst);
 
 			if (::sendmsg(fd, &hdr, 0/*flags*/) == -1)
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 			flux::free(msg);
 		}
@@ -288,10 +289,10 @@ bool NetworkInterface::getLink(NetworkInterfaceList *list, int index)
 			memclr(&hdr, sizeof(hdr));
 
 			ssize_t bufSize = ::recvmsg(fd, &hdr, MSG_PEEK|MSG_TRUNC);
-			if (bufSize < 0) FLUX_SYSTEM_EXCEPTION;
+			if (bufSize < 0) FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 			void *buf = flux::malloc(bufSize);
-			if (!buf) FLUX_SYSTEM_EXCEPTION;
+			if (!buf) FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 			struct iovec iov = { buf, (size_t)bufSize };
 			hdr.msg_iov = &iov;
@@ -351,7 +352,7 @@ bool NetworkInterface::getLink(NetworkInterfaceList *list, int index)
 			flux::free(buf);
 		}
 		if (::close(fd) == -1)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 	return foundSomething;
 }
@@ -361,7 +362,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
 	Ref<NetworkInterfaceList> list = NetworkInterfaceList::create();
 
 	int fd = ::socket(AF_INET, SOCK_DGRAM, 0);
-	if (fd == -1) FLUX_SYSTEM_EXCEPTION;
+	if (fd == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 	Ref<LineSource> source = LineSource::open(File::open("/proc/net/dev"));
 	for (String line; source->read(&line);) {
@@ -379,16 +380,16 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
 					ifr.ifr_name[i] = name->at(i);
 
 				if (::ioctl(fd, SIOCGIFHWADDR, &ifr) == -1)
-					FLUX_SYSTEM_EXCEPTION;
+					FLUX_SYSTEM_DEBUG_ERROR(errno);
 				interface->hardwareAddress_ = 0;
 				for (int i = 0, n = 6; i < n; ++i) // quick HACK, 6 is just a safe bet
 					interface->hardwareAddress_ = (interface->hardwareAddress_ << 8) | ((unsigned char *)ifr.ifr_hwaddr.sa_data)[i];
 				if (::ioctl(fd, SIOCGIFFLAGS, &ifr) == -1)
-					FLUX_SYSTEM_EXCEPTION;
+					FLUX_SYSTEM_DEBUG_ERROR(errno);
 				interface->flags_ = ifr.ifr_flags;
 
 				if (::ioctl(fd, SIOCGIFMTU, &ifr) == -1)
-					FLUX_SYSTEM_EXCEPTION;
+					FLUX_SYSTEM_DEBUG_ERROR(errno);
 				interface->mtu_ = ifr.ifr_mtu;
 			}
 		}
@@ -402,7 +403,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
 
 		while (true) {
 			if (::ioctl(fd, SIOCGIFCONF, &ifc) == -1)
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 			if (ifc.ifc_len == capa) {
 				flux::free(ifc.ifc_req);
 				capa *= 2;
@@ -443,13 +444,13 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
 						if (interface->flags_ & IFF_BROADCAST) {
 							struct ifreq ifr2 = *ifr;
 							if (::ioctl(fd, SIOCGIFBRDADDR, &ifr2) == -1)
-								FLUX_SYSTEM_EXCEPTION;
+								FLUX_SYSTEM_DEBUG_ERROR(errno);
 							entry->broadcastAddress_ = SocketAddress::create((struct sockaddr_in *)&ifr2.ifr_broadaddr);
 						}
 						if (interface->flags_ & IFF_POINTOPOINT) {
 							struct ifreq ifr2 = *ifr;
 							if (::ioctl(fd, SIOCGIFDSTADDR, &ifr2) == -1)
-								FLUX_SYSTEM_EXCEPTION;
+								FLUX_SYSTEM_DEBUG_ERROR(errno);
 							entry->broadcastAddress_ = SocketAddress::create((struct sockaddr_in *)&ifr2.ifr_dstaddr);
 						}
 					}
@@ -486,13 +487,13 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 
 	size_t bufSize = 0;
 	if (::sysctl(mib, 6, NULL, &bufSize, NULL, 0) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 	// race against changing address configuration
 	char *buf = 0;
 	while (true) {
 		buf = (char *)flux::malloc(bufSize);
-		if (!buf) FLUX_SYSTEM_EXCEPTION;
+		if (!buf) FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 		if (::sysctl(mib, 6, (void *)buf, &bufSize, NULL, 0) == -1) {
 			if (errno == ENOMEM) {
@@ -501,7 +502,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 				buf = (char *)flux::malloc(bufSize);
 				continue;
 			}
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 		}
 		else
 			break;

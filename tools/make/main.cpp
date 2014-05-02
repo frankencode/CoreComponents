@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 			"  -bootstrap       write bootstrap script\n"
 		) << toolName;
 	}
-	catch (UserError &ex) {
+	catch (Exception &ex) {
 		ferr() << toolName << ": " << ex.what() << nl;
 		return 1;
 	}

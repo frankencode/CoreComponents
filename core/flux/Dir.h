@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,9 +30,9 @@ public:
 
 	static bool access(String path, int flags);
 	static bool exists(String path);
-	static bool create(String path, int mode = 0755);
-	static bool establish(String path, int mode = 0755);
-	static bool unlink(String path);
+	static void create(String path, int mode = 0755);
+	static void establish(String path, int mode = 0755);
+	static void unlink(String path);
 
 protected:
 	Dir(String path, DIR *dir = 0);

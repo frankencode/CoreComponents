@@ -106,17 +106,17 @@ public:
 
 	static bool access(String path, int flags);
 	static bool exists(String path);
-	static bool create(String path, int mode = 0644);
-	static bool chown(String path, uid_t ownerId, gid_t groupId);
-	static bool rename(String path, String newPath);
-	static bool link(String path, String newPath);
-	static bool unlink(String path);
-	static bool symlink(String path, String newPath);
+	static void create(String path, int mode = 0644);
+	static void chown(String path, uid_t ownerId, gid_t groupId);
+	static void rename(String path, String newPath);
+	static void link(String path, String newPath);
+	static void unlink(String path);
+	static void symlink(String path, String newPath);
 	static String readlink(String path);
 	static String resolve(String path);
 
 	static String createUnique(String path, int mode = 0644, char placeHolder = 'X');
-	static bool establish(String path, int fileMode = 0644, int dirMode = 0755);
+	static void establish(String path, int fileMode = 0644, int dirMode = 0755);
 	static String lookup(String fileName, StringList *dirs = 0, int accessFlags = Executable);
 
 	static Ref<FileStatus> status(String path);

@@ -10,13 +10,13 @@
 #ifndef FLUX_TEXTERROR_H
 #define FLUX_TEXTERROR_H
 
-#include "UserError.h"
+#include "exceptions.h"
 #include "SyntaxState.h"
 
 namespace flux
 {
 
-class TextError: public UserError
+class TextError: public Exception
 {
 public:
 	inline String text() const { return text_; }
@@ -36,8 +36,8 @@ protected:
 class SyntaxError: public TextError
 {
 public:
-	SyntaxError(String text, SyntaxState *state)
-		: TextError(text, state->hintOffset()),
+	SyntaxError(String text, SyntaxState *state = 0)
+		: TextError(text, state ? state->hintOffset() : -1),
 		  state_(state)
 	{}
 	~SyntaxError() throw() {}

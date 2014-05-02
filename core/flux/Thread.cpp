@@ -8,7 +8,6 @@
  */
 
 #include "strings.h"
-#include "Exception.h"
 #include "Condition.h"
 #include "ThreadFactory.h"
 #include "System.h"
@@ -40,22 +39,20 @@ void Thread::start(int stackSize)
 void Thread::wait()
 {
 	int ret = pthread_join(tid_, 0);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_join", ret);
+	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 void Thread::kill(int signal)
 {
 	int ret = pthread_kill(tid_, signal);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_kill", ret);
+	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 bool Thread::stillAlive() const
 {
 	int ret = pthread_kill(tid_, 0);
 	if ((ret != 0) && (ret != ESRCH))
-		FLUX_PTHREAD_EXCEPTION("pthread_kill", ret);
+		FLUX_SYSTEM_DEBUG_ERROR(ret);
 	return (ret == 0);
 }
 
@@ -76,15 +73,13 @@ void Thread::sleepUntil(double timeout)
 void Thread::blockSignals(SignalSet *set)
 {
 	int ret = pthread_sigmask(SIG_BLOCK, set->rawSet(), 0/*oset*/);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_sigmask", ret);
+	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 void Thread::unblockSignals(SignalSet *set)
 {
 	int ret = pthread_sigmask(SIG_UNBLOCK, set->rawSet(), 0/*oset*/);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_sigmask", ret);
+	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 void Thread::run()

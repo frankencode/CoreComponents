@@ -53,7 +53,7 @@ int NodeMaster::run(int argc, char **argv)
 			return ex.signal() + 128;
 		}
 		#ifdef NDEBUG
-		catch (SystemException &ex) {
+		catch (SystemError &ex) {
 			return 1;
 		}
 		#endif
@@ -75,9 +75,9 @@ void NodeMaster::runNode(int argc, char **argv)
 	try {
 		runNode();
 	}
-	catch (SystemException &ex) {
+	catch (SystemError &ex) {
 		FLUXNODE_ERROR() << ex.what() << nl;
-		throw ex;
+		throw;
 	}
 	#else
 	runNode();

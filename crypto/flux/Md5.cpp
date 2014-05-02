@@ -8,7 +8,6 @@
  */
 
 #include <string.h> // FIXME
-#include <flux/Exception.h>
 #include "Md5.h"
 
 namespace flux

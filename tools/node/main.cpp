@@ -8,7 +8,7 @@
  */
 
 #include <flux/stdio.h>
-#include <flux/UserError.h>
+#include <flux/exceptions.h>
 #include "NodeMaster.h"
 
 using namespace fluxnode;
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 			"  -daemon    start as a daemon\n"
 		) << toolName;
 	}
-	catch (UserError &ex) {
+	catch (Exception &ex) {
 		ferr() << toolName << ": " << ex.what() << nl;
 		exitCode = 7;
 	}

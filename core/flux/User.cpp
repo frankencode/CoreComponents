@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -8,7 +8,7 @@
  */
 
 #include <unistd.h> // sysconf
-#include "Exception.h"
+#include "exceptions.h"
 #include "User.h"
 
 namespace flux
@@ -16,29 +16,28 @@ namespace flux
 
 User::User(uid_t id)
 {
-	int bufSize = 1024;
-	#ifdef _SC_GETPW_R_SIZE_MAX
-	int h = sysconf(_SC_GETPW_R_SIZE_MAX);
-	if (h != -1) bufSize = h;
-	#endif
+	int bufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
+	if (bufSize == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
+
 	String buf(bufSize);
 	struct passwd space;
 	struct passwd *entry = 0;
-	if (::getpwuid_r(id, &space, buf->chars(), buf->size(), &entry) != 0)
-		FLUX_SYSTEM_EXCEPTION;
+	int ret = ::getpwuid_r(id, &space, buf->chars(), buf->size(), &entry);
+	if ((!entry) && ret == 0) ret = ENOENT;
+	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 	load(entry);
 }
 
 User::User(const char *name)
 {
 	int bufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
-	if (bufSize == -1)
-		FLUX_SYSTEM_EXCEPTION;
+	if (bufSize == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
 	String buf(bufSize);
 	struct passwd space;
 	struct passwd *entry = 0;
-	if (::getpwnam_r(name, &space, buf->chars(), buf->size(), &entry) != 0)
-		FLUX_SYSTEM_EXCEPTION;
+	int ret = ::getpwnam_r(name, &space, buf->chars(), buf->size(), &entry);
+	if ((!entry) && ret == 0) ret = ENOENT;
+	if (ret != 0) FLUX_SYSTEM_RESOURCE_ERROR(ret, name);
 	load(entry);
 }
 

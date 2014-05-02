@@ -1,20 +1,12 @@
 #include <flux/stdio.h>
 #include <flux/check.h>
 #include <flux/Mutex.h>
-#include <flux/UserError.h>
+#include <flux/exceptions.h>
 
 using namespace flux;
 
 int main()
 {
-	try {
-		File::open("non-existing");
-		return 1;
-	}
-	catch (Exception &ex) {
-		fout() << ex.what() << nl;
-	}
-
 	try {
 		Mutex::create()->release();
 		check(false);
@@ -24,9 +16,26 @@ int main()
 	}
 
 	try {
-		if (!File::tryOpen("blablabla.txt"))
-			throw SystemError("blablabla.txt");
-	} catch (UserError &ex) {
+		String path = "test123.abc";
+		if (!File::tryOpen(path)) FLUX_SYSTEM_RESOURCE_ERROR(errno, path);
+	}
+	catch (Exception &ex) {
+		fout() << ex.what() << nl;
+	}
+
+	try {
+		String path = "testabc.123";
+		if (!File::tryOpen(path)) FLUX_SYSTEM_DEBUG_ERROR(errno);
+	}
+	catch (Exception &ex) {
+		fout() << ex.what() << nl;
+	}
+
+	try {
+		File::open("non-existing");
+		return 1;
+	}
+	catch (Exception &ex) {
 		fout() << ex.what() << nl;
 	}
 

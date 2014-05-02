@@ -11,7 +11,7 @@
 #define FLUX_CONFIG_H
 
 #include "Yason.h"
-#include "UserError.h"
+#include "exceptions.h"
 
 namespace flux
 {

@@ -20,7 +20,7 @@
 #include "strings.h" // memclr
 #include "User.h"
 #endif
-
+#include "exceptions.h"
 #include "ProcessStatus.h"
 
 namespace flux
@@ -68,11 +68,11 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	mib[3] = processId;
 	size_t sz = 0;
 	if (::sysctl(mib, 4, NULL, &sz, NULL, 0) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	proc = (kinfo_proc *)flux::malloc(sz);
 	memclr(proc, sz);
 	if (::sysctl(mib, 4, proc, &sz, NULL, 0) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	processId_ = proc->p_pid;
 	parentProcessId_ = proc->p_ppid;
 	processGroupId_ = proc->p__pgid;
@@ -106,11 +106,11 @@ ProcessStatus::ProcessStatus(pid_t processId)
 	mib[3] = processId;
 	size_t sz = 0;
 	if (::sysctl(mib, 4, NULL, &sz, NULL, 0) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	proc = (kinfo_proc *)flux::malloc(sz);
 	memclr(proc, sz);
 	if (::sysctl(mib, 4, proc, &sz, NULL, 0) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	processId_ = proc->kp_proc.p_pid;
 	parentProcessId_ = proc->kp_eproc.e_ppid;
 	processGroupId_ = proc->kp_eproc.e_pgid;

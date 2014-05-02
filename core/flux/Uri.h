@@ -16,8 +16,6 @@
 namespace flux
 {
 
-FLUX_EXCEPTION(UriException, Exception);
-
 class Uri: public Object
 {
 public:
@@ -27,8 +25,8 @@ public:
 	inline static Ref<Uri> create(const char *text) {
 		return new Uri(text);
 	}
-	inline static Ref<Uri> create(ByteArray *bytes, Token *rootToken = 0) {
-		return new Uri(bytes, rootToken);
+	inline static Ref<Uri> create(ByteArray *text, Token *rootToken = 0) {
+		return new Uri(text, rootToken);
 	}
 
 	inline String scheme() const { return scheme_; }
@@ -57,9 +55,9 @@ public:
 private:
 	Uri();
 	Uri(const char *text);
-	Uri(ByteArray *bytes, Token *rootToken = 0);
+	Uri(ByteArray *text, Token *rootToken = 0);
 
-	void readUri(ByteArray *bytes, Token *rootToken = 0);
+	void readUri(ByteArray *text, Token *rootToken = 0);
 	static String encode(String s);
 	static String decode(String s);
 

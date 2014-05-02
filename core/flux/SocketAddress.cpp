@@ -14,6 +14,7 @@
 #include <errno.h>
 #include "strings.h"
 #include "Format.h"
+#include "exceptions.h"
 #include "SystemStream.h"
 #include "SocketAddress.h"
 
@@ -51,19 +52,19 @@ SocketAddress::SocketAddress(int family, String address, int port)
 	else if (family == AF_LOCAL) {
 		localAddress_.sun_family = AF_LOCAL;
 		if (unsigned(address->size()) + 1 > sizeof(localAddress_.sun_path))
-			FLUX_THROW(NetworkingException, "Socket path exceeds maximum length");
+			FLUX_DEBUG_ERROR("Socket path exceeds maximum length");
 		if ((address == "") || (address == "*"))
 			localAddress_.sun_path[0] = 0;
 		else
 			memcpy(localAddress_.sun_path, address->chars(), address->size() + 1);
 	}
 	else
-		FLUX_THROW(NetworkingException, "Unsupported address family");
+		FLUX_DEBUG_ERROR("Unsupported address family");
 
 	if (family != AF_LOCAL)
 		if ((address != "") && ((address != "*")))
 			if (inet_pton(family, address, addr) != 1)
-				FLUX_THROW(NetworkingException, "Broken address String");
+				FLUX_DEBUG_ERROR("Broken address string");
 }
 
 SocketAddress::SocketAddress(struct sockaddr_in *addr)
@@ -83,7 +84,7 @@ SocketAddress::SocketAddress(addrinfo *info)
 	else if (info->ai_family == AF_INET6)
 		inet6Address_ = *(sockaddr_in6 *)info->ai_addr;
 	else
-		FLUX_THROW(NetworkingException, "Unsupported address family");
+		FLUX_DEBUG_ERROR("Unsupported address family");
 }
 
 int SocketAddress::family() const { return addr_.sa_family; }
@@ -99,7 +100,7 @@ int SocketAddress::port() const
 	else if (addr_.sa_family == AF_INET6)
 		port = inet6Address_.sin6_port;
 	else
-		FLUX_THROW(NetworkingException, "Unsupported address family");
+		FLUX_DEBUG_ERROR("Unsupported address family");
 
 	return ntohs(port);
 }
@@ -112,7 +113,7 @@ void SocketAddress::setPort(int port)
 	else if (addr_.sa_family == AF_INET6)
 		inet6Address_.sin6_port = port;
 	else
-		FLUX_THROW(NetworkingException, "Unsupported address family");
+		FLUX_DEBUG_ERROR("Unsupported address family");
 }
 
 String SocketAddress::networkAddress() const
@@ -133,11 +134,11 @@ String SocketAddress::networkAddress() const
 		else if (addr_.sa_family == AF_INET6)
 			addr = &inet6Address_.sin6_addr;
 		else
-			FLUX_THROW(NetworkingException, "Unsupported address family");
+			FLUX_DEBUG_ERROR("Unsupported address family");
 
 		sz = inet_ntop(addr_.sa_family, const_cast<void *>(addr), buf, bufSize);
 		if (!sz)
-			FLUX_THROW(NetworkingException, "Illegal binary address format");
+			FLUX_DEBUG_ERROR("Illegal binary address format");
 
 		s = sz;
 	}
@@ -183,7 +184,7 @@ Ref<SocketAddressList> SocketAddress::resolve(String hostName, String serviceNam
 
 	if (ret != 0)
 		if (ret != EAI_NONAME)
-			FLUX_THROW(NetworkingException, gai_strerror(ret));
+			FLUX_DEBUG_ERROR(gai_strerror(ret));
 
 	Ref<SocketAddressList> list = SocketAddressList::create();
 
@@ -206,7 +207,7 @@ Ref<SocketAddressList> SocketAddress::resolve(String hostName, String serviceNam
 		freeaddrinfo(head);
 
 	if (list->size() == 0)
-		FLUX_THROW(NetworkingException, "Failed to resolve host name");
+		FLUX_DEBUG_ERROR("Failed to resolve host name");
 
 	return list;
 }
@@ -224,7 +225,7 @@ String SocketAddress::lookupHostName(bool *failed) const
 
 	if (ret != 0) {
 		if (!failed)
-			FLUX_THROW(NetworkingException, gai_strerror(ret));
+			FLUX_DEBUG_ERROR(gai_strerror(ret));
 		*failed = true;
 		hostName[0] = 0;
 	}
@@ -253,7 +254,7 @@ String SocketAddress::lookupServiceName() const
 	#ifdef __MACH__
 		if (port()) // OSX 10.4 HACK
 	#endif
-		FLUX_THROW(NetworkingException, gai_strerror(ret));
+		FLUX_DEBUG_ERROR(gai_strerror(ret));
 	}
 
 	return String(serviceName);

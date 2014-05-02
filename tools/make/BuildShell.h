@@ -32,9 +32,9 @@ public:
 
 	Ref<FileStatus> fileStatus(String path);
 
-	bool mkdir(String path);
-	bool rmdir(String path);
-	bool symlink(String path, String newPath);
+	void mkdir(String path);
+	void rmdir(String path);
+	void symlink(String path, String newPath);
 
 	bool install(String sourcePath, String destPath);
 	bool unlink(String path);

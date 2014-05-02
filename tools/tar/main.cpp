@@ -45,13 +45,10 @@ int main(int argc, char **argv)
 				String path = options->arguments()->at(i);
 
 				Ref<Stream> source;
-				if (path != "") {
-					source = File::tryOpen(path);
-					if (!source) throw SystemError(path);
-				}
+				if (path != "") source = File::open(path);
 				else source = in();
-				Ref<ArchiveReader> archive;
 
+				Ref<ArchiveReader> archive;
 				if (tarMode) archive = TarReader::open(source);
 				else archive = ArReader::open(source);
 
@@ -64,7 +61,7 @@ int main(int argc, char **argv)
 			Ref<Stream> sink;
 			String sinkPath = options->value("output");
 			if (sinkPath != "") {
-				File::unlink(sinkPath);
+				try { File::unlink(sinkPath); } catch (SystemError &) {}
 				File::create(sinkPath);
 				sink = File::open(sinkPath, File::WriteOnly);
 			}
@@ -110,7 +107,7 @@ int main(int argc, char **argv)
 		ferr() << toolName << ": Broken archive: " << ex.reason() << " (file offset 0x" << hex(ex.offset()) << ")" << nl;
 		return 1;
 	}
-	catch (UserError &ex) {
+	catch (Exception &ex) {
 		ferr() << toolName << ": " << ex.what() << nl;
 		return 1;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -10,7 +10,7 @@
 #include <sys/stat.h> // mkdir
 #include "File.h"
 #include "FileStatus.h"
-#include "Exception.h"
+#include "exceptions.h"
 #include "Dir.h"
 
 namespace flux
@@ -29,15 +29,14 @@ Dir::Dir(String path, DIR *dir)
 {
 	if (!dir_) {
 		dir_ = ::opendir(path_);
-		if (!dir_)
-			FLUX_SYSTEM_EXCEPTION;
+		if (!dir_) FLUX_SYSTEM_RESOURCE_ERROR(errno, path);
 	}
 }
 
 Dir::~Dir()
 {
 	if (::closedir(dir_) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 String Dir::path() const { return path_; }
@@ -54,9 +53,8 @@ bool Dir::read(String *name)
 	struct dirent buf;
 	struct dirent *result;
 	memclr(&buf, sizeof(buf));
-	int errorCode = ::readdir_r(dir_, &buf, &result);
-	if (errorCode)
-		throw SystemException(__FILE__, __LINE__, "SystemException", strcat("readdir_r() failed: error code = ", flux::intToStr(errorCode)), errorCode);
+	int ret = ::readdir_r(dir_, &buf, &result);
+	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 	if (result)
 		*name = buf.d_name;
 	return result;
@@ -72,12 +70,13 @@ bool Dir::exists(String path)
 	return File::exists(path) && (File::status(path)->type() == File::Directory);
 }
 
-bool Dir::create(String path, int mode)
+void Dir::create(String path, int mode)
 {
-	return ::mkdir(path, mode) != -1;
+	if (::mkdir(path, mode) == -1)
+		FLUX_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-bool Dir::establish(String path, int mode)
+void Dir::establish(String path, int mode)
 {
 	Ref<StringList> missingDirs = StringList::create();
 	while ((path != "") && (path != "/")) {
@@ -85,16 +84,14 @@ bool Dir::establish(String path, int mode)
 		missingDirs->pushFront(path);
 		path = path->reducePath();
 	}
-	while (missingDirs->size() > 0) {
-		if (!Dir::create(missingDirs->popFront(), mode))
-			return false;
-	}
-	return true;
+	while (missingDirs->size() > 0)
+		Dir::create(missingDirs->popFront(), mode);
 }
 
-bool Dir::unlink(String path)
+void Dir::unlink(String path)
 {
-	return ::rmdir(path) != -1;
+	if (::rmdir(path) == -1)
+		FLUX_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
 } // namespace flux

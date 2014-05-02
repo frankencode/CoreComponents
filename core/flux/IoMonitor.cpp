@@ -9,7 +9,7 @@
 
 #include <sys/time.h>
 #include <math.h> // modf
-#include "Exception.h"
+#include "exceptions.h"
 #include "IoMonitor.h"
 
 namespace flux
@@ -77,7 +77,7 @@ int IoMonitor::wait(double interval)
 	int ret = ::select(sz, rr, rw, re, tv);
 	if (ret == -1) {
 		if (errno == EINTR) throw Interrupt();
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 
 	return ret;

@@ -11,6 +11,7 @@
 #include <fcntl.h> // fcntl
 #include <errno.h> // errno
 #include <math.h> // modf
+#include "exceptions.h"
 #include "StreamSocket.h"
 
 namespace flux
@@ -37,7 +38,7 @@ StreamSocket::StreamSocket(SocketAddress *address)
 	  connected_(false)
 {
 	if (fd_ == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 StreamSocket::StreamSocket(SocketAddress *address, int fdc)
@@ -59,16 +60,16 @@ void StreamSocket::bind()
 	if (address_->port() != 0) {
 		int on = 1;
 		if (setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) == -1)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 	if (::bind(fd_, address_->addr(), address_->addrLen()) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 void StreamSocket::listen(int backlog)
 {
 	if (::listen(fd_, backlog) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 bool StreamSocket::readyAccept(double interval)
@@ -83,7 +84,7 @@ Ref<StreamSocket> StreamSocket::accept()
 	int fdc = ::accept(fd_, clientAddress->addr(), &len);
 	if (fdc < 0) {
 		if (errno == EINTR) throw Interrupt();
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 	return new StreamSocket(clientAddress, fdc);
 }
@@ -95,23 +96,23 @@ void StreamSocket::connect()
 	if (address_->family() != AF_LOCAL) {
 		flags = ::fcntl(fd_, F_GETFL, 0);
 		if (flags == -1)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 		if (::fcntl(fd_, F_SETFL, flags | O_NONBLOCK) == -1)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 
 	int ret = ::connect(fd_, address_->addr(), address_->addrLen());
 
 	if (ret == -1) {
 		if (errno != EINPROGRESS)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 
 	connected_ = (ret != -1);
 
 	if (address_->family() != AF_LOCAL) {
 		if (::fcntl(fd_, F_SETFL, flags) == -1)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 }
 
@@ -124,11 +125,11 @@ bool StreamSocket::established(double interval)
 			int error = 0;
 			socklen_t len = sizeof(error);
 			if (::getsockopt(fd_, SOL_SOCKET, SO_ERROR, &error, &len) == -1)
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 			if (error != 0) {
 				errno = error;
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 			}
 
 			connected_ = true;
@@ -150,7 +151,7 @@ void StreamSocket::setRecvTimeout(double interval)
 	tval.tv_usec = modf(interval, &sec) * 1e6;
 	tval.tv_sec = sec;
 	if (::setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, &tval, sizeof(tval)) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 void StreamSocket::setSendTimeout(double interval)
@@ -160,7 +161,7 @@ void StreamSocket::setSendTimeout(double interval)
 	tval.tv_usec = modf(interval, &sec) * 1e6;
 	tval.tv_sec = sec;
 	if (::setsockopt(fd_, SOL_SOCKET, SO_SNDTIMEO, &tval, sizeof(tval)) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 } // namespace flux

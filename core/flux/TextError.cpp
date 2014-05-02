@@ -17,13 +17,13 @@ String SyntaxError::message() const
 {
 	Format format;
 	const char *error = "Syntax error";
-	if (state_->hint()) {
+	if (state_) if (state_->hint()) {
 		int line = 0, pos = 0;
 		text_->offsetToLinePos(state_->hintOffset(), &line, &pos);
 		format << line << ":" << pos << ": ";
 	}
 	format << error;
-	if (state_->hint()) format << ": " << state_->hint();
+	if (state_) if (state_->hint()) format << ": " << state_->hint();
 	return format;
 }
 

@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdio.h> // rename
+#include "exceptions.h"
 #include "ExitEvent.h"
 #include "ThreadExitEvent.h"
 #include "Guard.h"
@@ -28,8 +29,7 @@ namespace flux
 Ref<File> File::open(String path, int openFlags)
 {
 	int fd = ::open(path, openFlags);
-	if (fd == -1)
-		FLUX_SYSTEM_EXCEPTION;
+	if (fd == -1) FLUX_SYSTEM_ERROR(errno, path);
 	return new File(path, openFlags, fd);
 }
 
@@ -52,8 +52,6 @@ Ref<File> File::temp(int openFlags)
 		<< Process::execPath()->fileName()
 		<< Process::currentId()
 	);
-	if (path == "")
-		FLUX_SYSTEM_EXCEPTION;
 	return open(path, openFlags);
 }
 
@@ -110,11 +108,11 @@ void File::truncate(off_t length)
 {
 	if (isOpen()) {
 		if (::ftruncate(fd_, length) == -1)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_ERROR(errno, path_);
 	}
 	else {
 		if (::truncate(path_, length) == -1)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_ERROR(errno, path_);
 	}
 }
 
@@ -144,7 +142,7 @@ void File::unlinkWhenDone()
 off_t File::seek(off_t distance, int method)
 {
 	off_t ret = ::lseek(fd_, distance, method);
-	if (ret == -1) FLUX_SYSTEM_EXCEPTION;
+	if (ret == -1) FLUX_SYSTEM_ERROR(errno, path_);
 	return ret;
 }
 
@@ -169,7 +167,7 @@ String File::map() const
 {
 	off_t fileEnd = ::lseek(fd_, 0, SEEK_END);
 	if (fileEnd == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_ERROR(errno, path_);
 	size_t fileSize = fileEnd;
 	if (fileSize == 0) return "";
 	if (fileSize >= size_t(intMax)) fileSize = intMax;
@@ -181,7 +179,7 @@ String File::map() const
 		mapSize += pageSize - fileSize % pageSize;
 		p = ::mmap(0, fileSize, protection, MAP_PRIVATE, fd_, 0);
 		if (p == MAP_FAILED)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_ERROR(errno, path_);
 	}
 	else {
 		#ifndef MAP_ANONYMOUS
@@ -190,14 +188,14 @@ String File::map() const
 		mapSize += pageSize;
 		p = ::mmap(0, mapSize, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 		if (p == MAP_FAILED)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 		p = ::mmap(p, fileSize, protection, MAP_PRIVATE | MAP_FIXED, fd_, 0);
 		if (p == MAP_FAILED)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_ERROR(errno, path_);
 	}
 	/*#ifdef MADV_SEQUENTIAL
 	if (::madvise(p, mapSize, MADV_SEQUENTIAL) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	#endif*/
 	return String(
 		Ref<ByteArray>(
@@ -222,14 +220,14 @@ void File::unmap(ByteArray *s)
 void File::sync()
 {
 	if (::fsync(fd_) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_ERROR(errno, path_);
 }
 
 void File::dataSync()
 {
 #if _POSIX_SYNCHRONIZED_IO > 0
 	if (::fdatasync(fd_) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_ERROR(errno, path_);
 #else
 	sync();
 #endif
@@ -245,37 +243,41 @@ bool File::exists(String path)
 	return (path != "") && access(path, Exists);
 }
 
-bool File::create(String path, int mode)
+void File::create(String path, int mode)
 {
 	int fd = ::open(path, O_RDONLY|O_CREAT|O_EXCL, mode);
-	if (fd == -1) return false;
+	if (fd == -1) FLUX_SYSTEM_RESOURCE_ERROR(errno, path);
 	::close(fd);
-	return true;
 }
 
-bool File::chown(String path, uid_t ownerId, gid_t groupId)
+void File::chown(String path, uid_t ownerId, gid_t groupId)
 {
-	return ::chown(path, ownerId, groupId) != -1;
+	if (::chown(path, ownerId, groupId) == -1)
+		FLUX_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-bool File::rename(String path, String newPath)
+void File::rename(String path, String newPath)
 {
-	return ::rename(path, newPath) != -1;
+	if (::rename(path, newPath) == -1)
+		FLUX_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-bool File::link(String path, String newPath)
+void File::link(String path, String newPath)
 {
-	return ::link(path, newPath) != -1;
+	if (::link(path, newPath) == -1)
+		FLUX_SYSTEM_RESOURCE_ERROR(errno, newPath);
 }
 
-bool File::unlink(String path)
+void File::unlink(String path)
 {
-	return ::unlink(path) != -1;
+	if (::unlink(path) == -1)
+		FLUX_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-bool File::symlink(String path, String newPath)
+void File::symlink(String path, String newPath)
 {
-	return ::symlink(path, newPath) != -1;
+	if (::symlink(path, newPath) == -1)
+		FLUX_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
 String File::readlink(String path)
@@ -328,7 +330,7 @@ String File::createUnique(String path, int mode, char placeHolder)
 		int fd = ::open(candidate, O_RDONLY|O_CREAT|O_EXCL, mode);
 		if (fd == -1) {
 			if (errno != EEXIST)
-				return "";
+				FLUX_SYSTEM_RESOURCE_ERROR(errno, candidate);
 		}
 		else {
 			::close(fd);
@@ -337,14 +339,12 @@ String File::createUnique(String path, int mode, char placeHolder)
 	}
 }
 
-bool File::establish(String path, int fileMode, int dirMode)
+void File::establish(String path, int fileMode, int dirMode)
 {
 	if (path->contains('/'))
-		if (!Dir::establish(path->reducePath(), dirMode))
-			return false;
+		Dir::establish(path->reducePath(), dirMode);
 	if (!File::exists(path))
-		return File::create(path, fileMode);
-	return true;
+		File::create(path, fileMode);
 }
 
 

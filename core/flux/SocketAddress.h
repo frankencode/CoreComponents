@@ -18,12 +18,9 @@
 
 #include "String.h"
 #include "List.h"
-#include "Exception.h"
 
 namespace flux
 {
-
-FLUX_EXCEPTION(NetworkingException, Exception);
 
 class SystemStream;
 class SocketAddress;
