@@ -7,15 +7,15 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "Exception.h"
+#include "exceptions.h"
 #include "assert.h"
 
 namespace flux
 {
 
-void throwDebugException(const char *fileName, int line, const char *reason)
+void throwDebugError(const char *reason, const char *source, int line)
 {
-	throw DebugException(fileName, line, "DebugException", reason, false);
+	throw DebugError(reason, source, line);
 }
 
 } // namespace flux

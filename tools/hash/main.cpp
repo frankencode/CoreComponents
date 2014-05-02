@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 			"Computes SHA1 sums of files.\n"
 		) << toolName;
 	}
-	catch (UserError &ex) {
+	catch (Exception &ex) {
 		ferr() << toolName << ": " << ex.what() << nl;
 		return 1;
 	}

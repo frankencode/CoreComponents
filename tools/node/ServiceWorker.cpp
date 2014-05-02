@@ -126,7 +126,7 @@ void ServiceWorker::run()
 		catch (CloseRequest &)
 		{}
 		catch (Exception &ex) {
-			FLUXNODE_ERROR() << ex.message() << nl;
+			FLUXNODE_ERROR() << ex.what() << nl;
 			// Format("HTTP/1.1 500 Internal Server Error: %%\r\n\r\n", client_->stream()) << ex.message();
 			// logDelivery(client_, 500);
 		}

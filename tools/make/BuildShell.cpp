@@ -45,28 +45,28 @@ Ref<FileStatus> BuildShell::fileStatus(String path)
 	return FileStatus::read(path);
 }
 
-bool BuildShell::mkdir(String path)
+void BuildShell::mkdir(String path)
 {
 	if (!fileStatus(path)->exists())
 		fout("mkdir -p %%\n") << path;
-	if (plan()->options() & BuildPlan::Simulate) return true;
-	return Dir::establish(path);
+	if (plan()->options() & BuildPlan::Simulate) return;
+	Dir::establish(path);
 }
 
-bool BuildShell::rmdir(String path)
+void BuildShell::rmdir(String path)
 {
-	if (fileStatus(path)->exists())
-		fout("rmdir %%\n") << path;
-	if (plan()->options() & BuildPlan::Simulate) return true;
-	return Dir::unlink(path);
+	bool exists = fileStatus(path)->exists();
+	if (exists) fout("rmdir %%\n") << path;
+	if (plan()->options() & BuildPlan::Simulate) return;
+	if (exists) try { Dir::unlink(path); } catch (SystemError &) { /*FIXME, directory might not be empty */ }
 }
 
-bool BuildShell::symlink(String path, String newPath)
+void BuildShell::symlink(String path, String newPath)
 {
 	fout("ln -sf %% %%\n") << path << newPath;
-	if (plan()->options() & BuildPlan::Simulate) return true;
-	File::unlink(newPath);
-	return File::symlink(path, newPath);
+	if (plan()->options() & BuildPlan::Simulate) return;
+	try { File::unlink(newPath); } catch (SystemError &) {}
+	File::symlink(path, newPath);
 }
 
 bool BuildShell::install(String sourcePath, String destPath)
@@ -80,16 +80,16 @@ bool BuildShell::install(String sourcePath, String destPath)
 	if (plan()->options() & BuildPlan::Simulate) return true;
 
 	try {
-		if (destDirMissing) Dir::establish(destDirPath) || FLUX_SYSTEM_EXCEPTION;
+		if (destDirMissing) Dir::establish(destDirPath);
 		Ref<File> source = File::open(sourcePath);
 		Ref<FileStatus> sourceStatus = FileStatus::read(sourcePath);
 		if (File::exists(destPath)) File::unlink(destPath);
-		File::create(destPath, sourceStatus->mode()) || FLUX_SYSTEM_EXCEPTION;
+		File::create(destPath, sourceStatus->mode());
 		Ref<File> sink = File::open(destPath, File::WriteOnly);
 		sink->truncate(0);
 		sink->write(source->map());
 	}
-	catch (SystemException &ex) {
+	catch (SystemError &ex) {
 		fout("%%\n") << ex.what();
 		return false;
 	}
@@ -106,10 +106,10 @@ bool BuildShell::unlink(String path)
 		}
 		fout("rm %%\n") << path;
 		try {
-			File::unlink(path) || FLUX_SYSTEM_EXCEPTION;
+			File::unlink(path);
 		}
-		catch (SystemException &ex) {
-			fout("%%\n") << ex.message();
+		catch (SystemError &ex) {
+			fout("%%\n") << ex.what();
 			return false;
 		}
 	}

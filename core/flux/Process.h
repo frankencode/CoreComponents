@@ -24,19 +24,6 @@ class ProcessFactory;
 
 typedef Map<String, String> EnvMap;
 
-class ProcessException {
-public:
-	ProcessException(int status, String command)
-		: status_(status),
-		  command_(command)
-	{}
-	inline int status() const { return status_; }
-	inline String command() const { return command_; }
-private:
-	int status_;
-	String command_;
-};
-
 class Process: public Stream
 {
 public:

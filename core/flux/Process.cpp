@@ -23,6 +23,7 @@
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #include <crt_externs.h> // _NSGetEnviron
 #endif
+#include "exceptions.h"
 #include "Format.h"
 #include "Thread.h"
 #include "ProcessFactory.h"
@@ -74,12 +75,12 @@ Process::~Process()
 			if (::waitpid(processId_, &status, 0) == -1) {
 				if (errno == EINTR) continue;
 				if (errno == ECHILD) break;
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 			}
 			break;
 		}
 		if (status != 0)
-			throw ProcessException(status, command_);
+			throw ProcessError(status, command_);
 	}
 }
 
@@ -114,7 +115,7 @@ bool Process::isRunning() const
 {
 	int ret = ::kill(processId_, 0);
 	if ((ret != 0) && (errno != ESRCH))
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	return (ret == 0);
 }
 
@@ -127,7 +128,7 @@ int Process::wait()
 	int status = 0;
 	if (::waitpid(processId_, &status, 0) == -1) {
 		if (errno == EINTR) throw Interrupt();
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 	if (WIFEXITED(status))
 		status = WEXITSTATUS(status);
@@ -155,7 +156,7 @@ void Process::write(const ByteArray *data)
 void Process::cd(String path)
 {
 	if (::chdir(path) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 String Process::cwd()
@@ -172,7 +173,7 @@ String Process::cwd()
 			buf = (char *)flux::malloc(size);
 		}
 		else
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 	String path(ret);
 	flux::free(buf);
@@ -210,12 +211,12 @@ bool Process::isSuperUser() { return (::geteuid() == 0) || (::getegid() == 0); }
 
 void Process::setUserId(uid_t uid)
 {
-	if (::setuid(uid) == -1) FLUX_SYSTEM_EXCEPTION;
+	if (::setuid(uid) == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 void Process::setEffectiveUserId(uid_t uid)
 {
-	if (::seteuid(uid) == -1) FLUX_SYSTEM_EXCEPTION;
+	if (::seteuid(uid) == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 String Process::env(String key)
@@ -226,7 +227,7 @@ String Process::env(String key)
 void Process::setEnv(String key, String value)
 {
 	if (setenv(key, value, 1) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 void Process::unsetEnv(String key)
@@ -234,7 +235,7 @@ void Process::unsetEnv(String key)
 	errno = 0;
 	unsetenv(key);
 	if (errno != 0)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 Ref<EnvMap> Process::envMap()
@@ -270,7 +271,7 @@ void Process::kill(pid_t processId, int signal, bool *permissionDenied)
 		if ((errno == EPERM) && (permissionDenied))
 			*permissionDenied = true;
 		else
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 	else {
 		if (permissionDenied)
@@ -286,13 +287,13 @@ void Process::killGroup(pid_t processGroupId, int signal, bool *permissionDenied
 void Process::raise(int signal)
 {
 	if (::raise(signal) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 int Process::alarm(int seconds)
 {
 	int ret = ::alarm(seconds);
-	if (ret == -1) FLUX_SYSTEM_EXCEPTION;
+	if (ret == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
 	return ret;
 }
 
@@ -314,7 +315,7 @@ void Process::enableInterrupt(int signal, bool on)
 		action.sa_handler = forwardSignal;
 		action.sa_mask = mask;
 		if (::sigaction(signal, &action, 0/*oldact*/) == -1)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 	else {
 		struct sigaction action;
@@ -324,7 +325,7 @@ void Process::enableInterrupt(int signal, bool on)
 		action.sa_handler = SIG_DFL;
 		action.sa_mask = mask;
 		if (::sigaction(signal, &action, 0/*oldact*/) == -1)
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 }
 
@@ -346,7 +347,7 @@ void Process::sleep(double duration)
 				}
 			}
 			else
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 		}
 		break;
 	}
@@ -360,7 +361,7 @@ void Process::exit(int exitCode)
 void Process::daemonize()
 {
 	pid_t pid = ::fork();
-	if (pid == -1) FLUX_SYSTEM_EXCEPTION;
+	if (pid == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
 	if (pid != 0) ::exit(0);
 	::setsid();
 	::umask(0);

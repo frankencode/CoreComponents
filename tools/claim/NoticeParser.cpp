@@ -7,7 +7,6 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/Exception.h>
 #include <flux/SyntaxDefinition.h>
 #include <flux/stdio.h>
 #include "NoticeParser.h"

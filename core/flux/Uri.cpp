@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "check.h"
+#include "TextError.h"
 #include "Format.h"
 #include "UriSyntax.h"
 #include "Uri.h"
@@ -25,19 +25,18 @@ Uri::Uri(const char *text)
 	readUri(String(text));
 }
 
-Uri::Uri(ByteArray *bytes, Token *rootToken)
+Uri::Uri(ByteArray *text, Token *rootToken)
 	: port_(-1)
 {
-	readUri(bytes, rootToken);
+	readUri(text, rootToken);
 }
 
-void Uri::readUri(ByteArray *bytes, Token *rootToken)
+void Uri::readUri(ByteArray *text, Token *rootToken)
 {
 	Ref<Token> rootToken2;
 	if (!rootToken) {
-		check(uriSyntax());
-		rootToken2 = uriSyntax()->match(bytes);
-		if (!rootToken2) FLUX_THROW(UriException, "URI decomposition failed, invalid syntax");
+		rootToken2 = uriSyntax()->match(text);
+		if (!rootToken2) throw SyntaxError(text);
 		rootToken = rootToken2;
 	}
 
@@ -46,28 +45,28 @@ void Uri::readUri(ByteArray *bytes, Token *rootToken)
 
 	while (token) {
 		if (token->rule() == uriSyntax()->scheme()) {
-			scheme_ = decode(bytes->copy(token->i0(), token->i1()));
+			scheme_ = decode(text->copy(token->i0(), token->i1()));
 		}
 		else if (token->rule() == uriSyntax()->authority()) {
 			Token *child = token->firstChild();
 			while (child) {
 				if (child->rule() == uriSyntax()->userInfo())
-					userInfo_ = decode(bytes->copy(child->i0(), child->i1()));
+					userInfo_ = decode(text->copy(child->i0(), child->i1()));
 				else if (child->rule() == uriSyntax()->host())
-					host_ = decode(bytes->copy(child->i0(), child->i1()));
+					host_ = decode(text->copy(child->i0(), child->i1()));
 				else if (child->rule() == uriSyntax()->port())
-					port_ = decode(bytes->copy(child->i0(), child->i1()))->toInt();
+					port_ = decode(text->copy(child->i0(), child->i1()))->toInt();
 				child = child->nextSibling();
 			}
 		}
 		else if (token->rule() == uriSyntax()->path()) {
-			path_ = decode(bytes->copy(token->i0(), token->i1()));
+			path_ = decode(text->copy(token->i0(), token->i1()));
 		}
 		else if (token->rule() == uriSyntax()->query()) {
-			query_ = decode(bytes->copy(token->i0(), token->i1()));
+			query_ = decode(text->copy(token->i0(), token->i1()));
 		}
 		else if (token->rule() == uriSyntax()->fragment()) {
-			fragment_ = decode(bytes->copy(token->i0(), token->i1()));
+			fragment_ = decode(text->copy(token->i0(), token->i1()));
 		}
 		token = token->nextSibling();
 	}

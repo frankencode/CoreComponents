@@ -11,7 +11,7 @@
 #define FLUX_THREADLOCALREF_H
 
 #include <pthread.h>
-#include "Exception.h"
+#include "exceptions.h"
 
 namespace flux
 {
@@ -25,8 +25,7 @@ class ThreadLocalRef
 public:
 	ThreadLocalRef(T *b = 0) {
 		int ret = ::pthread_key_create(&key_, &threadExitEvent);
-		if (ret != 0)
-			FLUX_PTHREAD_EXCEPTION("pthread_key_create", ret);
+		if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 		if (b) set(b);
 	}
 

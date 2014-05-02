@@ -13,18 +13,18 @@
 namespace flux
 {
 
-void throwDebugException(const char *fileName, int line, const char *reason);
+void throwDebugError(const char *reason, const char *source, int line);
 
 #ifndef NDEBUG
 #define FLUX_ASSERT(condition) \
-	if (!(condition)) throwDebugException(__FILE__, __LINE__, #condition);
+	if (!(condition)) throwDebugError(#condition, __FILE__, __LINE__);
 #else
 #define FLUX_ASSERT(condition) ;
 #endif
 
 #ifndef NDEBUG
 #define FLUX_ASSERT2(condition, reason) \
-	if (!(condition)) throwDebugException(__FILE__, __LINE__, reason);
+	if (!(condition)) throwDebugError(reason, __FILE__, __LINE__);
 #else
 #define FLUX_ASSERT2(condition, reason);
 #endif

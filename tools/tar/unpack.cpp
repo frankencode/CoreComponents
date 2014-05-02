@@ -14,6 +14,7 @@
 #include <flux/Process.h>
 #include <flux/User.h>
 #include <flux/Group.h>
+#include <flux/exceptions.h>
 #include "unpack.h"
 
 namespace fluxtar
@@ -45,22 +46,18 @@ void unpack(ArchiveReader *archive, bool verbose)
 	for (Ref<ArchiveEntry> entry; archive->readHeader(&entry);) {
 		if (verbose) fout() << entry->path() << nl;
 		if (entry->type() == ArchiveEntry::Directory) {
-			if (entry->path() == "." || entry->path() == "./")
-				;
-			else if (!Dir::establish(entry->path(), entry->mode()))
-				FLUX_SYSTEM_EXCEPTION;
+			if (entry->path() == "." || entry->path() == "./") ;
+			else Dir::establish(entry->path(), entry->mode());
 		}
 		else if (entry->type() == ArchiveEntry::Link) {
-			if (!File::link(entry->linkPath(), entry->path()))
-				FLUX_SYSTEM_EXCEPTION;
+			File::link(entry->linkPath(), entry->path());
+				FLUX_SYSTEM_RESOURCE_ERROR(errno, entry->linkPath());
 		}
 		else if (entry->type() == ArchiveEntry::Symlink) {
-			if (!File::symlink(entry->linkPath(), entry->path()))
-				FLUX_SYSTEM_EXCEPTION;
+			File::symlink(entry->linkPath(), entry->path());
 		}
 		else if (entry->type() == ArchiveEntry::Regular) {
-			if (!File::create(entry->path(), entry->mode()))
-				FLUX_SYSTEM_EXCEPTION;
+			File::create(entry->path(), entry->mode());
 			if (Process::isSuperUser()) {
 				uid_t userId = entry->userId();
 				gid_t groupId = entry->groupId();
@@ -68,10 +65,8 @@ void unpack(ArchiveReader *archive, bool verbose)
 					userId = User::lookup(entry->userName())->id();
 				if (entry->groupName() != "")
 					groupId = Group::lookup(entry->groupName())->id();
-				if (userId != 0 || groupId != 0) {
-					if (!File::chown(entry->path(), userId, groupId))
-						FLUX_SYSTEM_EXCEPTION;
-				}
+				if (userId != 0 || groupId != 0)
+					File::chown(entry->path(), userId, groupId);
 			}
 			if (entry->size() > 0) {
 				Ref<File> file = File::open(entry->path(), File::WriteOnly);

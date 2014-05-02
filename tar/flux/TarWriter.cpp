@@ -8,7 +8,6 @@
  */
 
 #include <flux/str.h>
-#include <flux/Exception.h>
 #include <flux/File.h>
 #include <flux/User.h>
 #include <flux/Group.h>

@@ -9,7 +9,7 @@
 
 #include <pthread.h>
 #include <math.h>
-#include "Exception.h"
+#include "exceptions.h"
 #include "Condition.h"
 
 namespace flux
@@ -18,15 +18,13 @@ namespace flux
 Condition::Condition()
 {
 	int ret = pthread_cond_init(&cond_, 0);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_cond_init", ret);
+	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 Condition::~Condition()
 {
 	int ret = pthread_cond_destroy(&cond_);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_cond_destroy", ret);
+	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 /** Enter wait state and atomically unlock provided mutex.
@@ -43,8 +41,7 @@ void Condition::wait(Mutex *mutex)
 		ret = pthread_cond_wait(&cond_, &mutex->Mutex::mutex_);
 		if (ret != EINTR) break;
 	}
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_cond_wait", ret);
+	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 /** Same as wait(), but also wakeup if system time reaches 'timeout'.
@@ -67,7 +64,7 @@ bool Condition::waitUntil(double timeout, Mutex *mutex)
 		if (ret == ETIMEDOUT)
 			success = false;
 		else
-			FLUX_PTHREAD_EXCEPTION("pthread_cond_timedwait", ret);
+			FLUX_SYSTEM_DEBUG_ERROR(ret);
 	}
 	return success;
 }
@@ -78,8 +75,7 @@ bool Condition::waitUntil(double timeout, Mutex *mutex)
 void Condition::signal()
 {
 	int ret = pthread_cond_signal(&cond_);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_cond_signal", ret);
+	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 /** Wakeup all waiting threads.
@@ -87,8 +83,7 @@ void Condition::signal()
 void Condition::broadcast()
 {
 	int ret = pthread_cond_broadcast(&cond_);
-	if (ret != 0)
-		FLUX_PTHREAD_EXCEPTION("pthread_cond_broadcast", ret);
+	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 } // namespace flux

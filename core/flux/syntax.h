@@ -14,7 +14,8 @@
 #include "PrefixTree.h"
 #include "SyntaxNode.h"
 #include "SyntaxDebugFactory.h"
-#include "Exception.h"
+#include "exceptions.h"
+#include "Format.h"
 
 namespace flux
 {
@@ -292,7 +293,7 @@ public:
 		{
 			h = entry()->matchNext(text, h, tokenFactory, parentToken, state);
 			if (h == i)
-				FLUX_THROW(DebugException, "Repeated empty match, bailing out");
+				FLUX_DEBUG_ERROR("Repeated empty match, bailing out");
 			if (h != -1) {
 				i = h;
 				++repeatCount;
@@ -395,7 +396,7 @@ public:
 		{
 			h = entry()->matchNext(text, h, tokenFactory, parentToken, state);
 			if (h == i)
-				FLUX_THROW(DebugException, "Repeated empty match, bailing out");
+				FLUX_DEBUG_ERROR("Repeated empty match, bailing out");
 			if (h != -1) {
 				++repeatCount;
 				if (minRepeat_ <= repeatCount) {
@@ -1138,7 +1139,7 @@ public:
 	inline void IMPORT(DefinitionNode *definition, const char *name = 0) {
 		if (!name) name = definition->name();
 		if (!name)
-			FLUX_THROW(DebugException, "Cannot import anonymous syntax definition");
+			FLUX_DEBUG_ERROR("Cannot import anonymous syntax definition");
 		definitionByName_->insert(name, definition);
 		statefulScope_ = statefulScope_ || definition->stateful();
 	}
@@ -1150,7 +1151,7 @@ public:
 		if (strcasecmp(name, "caseSensitive") == 0)
 			caseSensitive_ = value;
 		else
-			FLUX_THROW(DebugException, strcat("Unknown option '", name, "'"));
+			FLUX_DEBUG_ERROR(Format("Unknown option '%%'") << name);
 	}
 
 	inline NODE CHAR(char ch) { return debug(new CharNode(ch, 0), "Char"); }
@@ -1290,7 +1291,7 @@ public:
 		Ref<DefinitionNode> definition;
 		const DefinitionNode *scope = resolveScope(name);
 		if (!scope->definitionByName_->lookup(name, &definition))
-			FLUX_THROW(DebugException, strcat("Undefined definition '", name, "' referenced"));
+			FLUX_DEBUG_ERROR(Format("Undefined definition '%%'") << name);
 		return definition;
 	}
 
@@ -1300,7 +1301,7 @@ public:
 		Ref<RuleNode> node;
 		FLUX_ASSERT(scope);
 		if (!scope->ruleByName_->lookup(name, &node))
-			FLUX_THROW(DebugException, strcat("Undefined rule '", name, "' referenced"));
+			FLUX_DEBUG_ERROR(Format("Undefined rule '%%'") << name);
 		return node;
 	}
 
@@ -1308,7 +1309,7 @@ public:
 	{
 		int tokenType = -1;
 		if (!keywordByName_->lookup(keyword, &tokenType))
-			FLUX_THROW(DebugException, strcat("Undefined keyword '", keyword, "' referenced"));
+			FLUX_DEBUG_ERROR(Format("Undefined keyword '%%'") <<  keyword);
 		return tokenType;
 	}
 
@@ -1316,7 +1317,7 @@ public:
 	{
 		int flagId = -1;
 		if (!flagIdByName_->lookup(name, &flagId))
-			FLUX_THROW(DebugException, strcat("Undefined state flag '", name, "' referenced"));
+			FLUX_DEBUG_ERROR(Format("Undefined state flag '%%'") << name);
 		return flagId;
 	}
 
@@ -1324,7 +1325,7 @@ public:
 	{
 		int captureId = -1;
 		if (!captureIdByName_->lookup(name, &captureId))
-			FLUX_THROW(DebugException, strcat("Undefined capture '", name, "' referenced"));
+			FLUX_DEBUG_ERROR(Format("Undefined capture '%%'") << name);
 		return captureId;
 	}
 
@@ -1356,7 +1357,7 @@ private:
 	void addRule(RuleNode *rule)
 	{
 		if (!ruleByName_->insert(rule->name(), rule))
-			FLUX_THROW(DebugException, strcat("Redefinition of rule '", rule->name(), "'"));
+			FLUX_DEBUG_ERROR(Format("Redefinition of rule '%%'") << rule->name());
 	}
 
 	Ref<LinkNode> unresolvedLinkHead_;

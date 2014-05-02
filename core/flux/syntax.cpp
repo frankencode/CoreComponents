@@ -51,7 +51,7 @@ void DefinitionNode::LINK()
 	}
 	if (!LinkNode::rule_) {
 		if (!LinkNode::ruleName_)
-			FLUX_THROW(DebugException, "Missing entry rule declaration");
+			FLUX_DEBUG_ERROR("Missing entry rule declaration");
 		LinkNode::rule_ = ruleByName(LinkNode::ruleName_);
 	}
 }
@@ -109,7 +109,7 @@ const DefinitionNode *DefinitionNode::resolveScope(const char *&name) const
 		if (k == 2) {
 			Ref<DefinitionNode> childScope;
 			if (!scope->definitionByName_->lookup(p0, p - p0 - k, &childScope))
-				FLUX_THROW(DebugException, strcat("Undefined scope '", name, "' referenced"));
+				FLUX_DEBUG_ERROR(Format("Undefined scope '%%'") << name);
 			scope = childScope;
 			p0 = p;
 			k = 0;
@@ -121,7 +121,7 @@ const DefinitionNode *DefinitionNode::resolveScope(const char *&name) const
 
 int DefinitionNode::syntaxError(ByteArray *text, int index, State *state) const
 {
-	FLUX_THROW(DebugException, "Unhandled syntax error");
+	FLUX_DEBUG_ERROR("Unhandled syntax error");
 	return -1;
 }
 

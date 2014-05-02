@@ -11,7 +11,7 @@
 #include <errno.h>
 #include <math.h>
 #include "File.h"
-#include "Exception.h"
+#include "exceptions.h"
 #include "FileStatus.h"
 
 namespace flux
@@ -45,8 +45,7 @@ void FileStatus::setTimes(double lastAccess, double lastModified)
 	tv[1].tv_usec = modf(lastModified, &sec) * 1e6;
 	tv[1].tv_sec = sec;
 	int ret = (fd_ != -1) ? ::futimes(fd_, tv) : ::utimes(path_, tv);
-	if(ret == -1)
-		FLUX_SYSTEM_EXCEPTION;
+	if(ret == -1) FLUX_SYSTEM_ERROR(errno, path_);
 }
 
 bool FileStatus::update()
@@ -59,7 +58,7 @@ bool FileStatus::update()
 			exists_ = false;
 			return false;
 		}
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_ERROR(errno, path_);
 	}
 	exists_ = true;
 	return true;

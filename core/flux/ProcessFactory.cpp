@@ -16,7 +16,7 @@
 #include <termios.h> // tcgetattr, tcsetattr
 #include "Format.h"
 #include "File.h"
-#include "Exception.h"
+#include "exceptions.h"
 #include "ProcessFactory.h"
 
 namespace flux
@@ -65,25 +65,25 @@ Ref<Process> ProcessFactory::produce()
 	if (ioPolicy_ & Process::ForwardByPseudoTerminal)
 	{
 		ptyMaster = ::posix_openpt(O_RDWR|O_NOCTTY);
-		if (ptyMaster == -1) FLUX_SYSTEM_EXCEPTION;
-		if (::grantpt(ptyMaster) == -1) FLUX_SYSTEM_EXCEPTION;
-		if (::unlockpt(ptyMaster) == -1) FLUX_SYSTEM_EXCEPTION;
+		if (ptyMaster == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
+		if (::grantpt(ptyMaster) == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
+		if (::unlockpt(ptyMaster) == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
 		ptySlave = ::open(ptsname(ptyMaster), O_RDWR|O_NOCTTY);
-		if (ptySlave == -1) FLUX_SYSTEM_EXCEPTION;
+		if (ptySlave == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 	else
 	{
 		if (ioPolicy_ & Process::ForwardInput)
 			if (::pipe(inputPipe) == -1)
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 		if (ioPolicy_ & Process::ForwardOutput)
 			if (::pipe(outputPipe) == -1)
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 		if (ioPolicy_ & Process::ForwardError)
 			if (::pipe(errorPipe) == -1)
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 
 	char **argv = 0, **envp = 0;
@@ -137,7 +137,7 @@ Ref<Process> ProcessFactory::produce()
 		if (ioPolicy_ & Process::ForwardByPseudoTerminal)
 		{
 			if (::close(ptyMaster) == -1)
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 
 			if (type_ == Process::SessionLeader)
 				::ioctl(ptySlave, TIOCSCTTY, 0);
@@ -155,12 +155,12 @@ Ref<Process> ProcessFactory::produce()
 
 		if (workingDirectory_ != "") {
 			if (::chdir(workingDirectory_) == -1)
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 		}
 
 		if (signalMask_) {
 			if (::sigprocmask(SIG_SETMASK, signalMask_->rawSet(), 0) == -1)
-				FLUX_SYSTEM_EXCEPTION;
+				FLUX_SYSTEM_DEBUG_ERROR(errno);
 		}
 
 		if (fileCreationMask_ >= 0) ::umask(fileCreationMask_);
@@ -204,7 +204,7 @@ Ref<Process> ProcessFactory::produce()
 
 			::execve(execPath_, argv, envp);
 
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 		}
 		else
 		{
@@ -263,7 +263,7 @@ Ref<Process> ProcessFactory::produce()
 	}
 	else if (ret < 0)
 	{
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 
 	FLUX_ASSERT(0 == 1);

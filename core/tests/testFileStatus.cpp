@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 		}
 		fout("\n");
 	}
-	catch (AnyException &ex) {
+	catch (std::exception &ex) {
 		ferr() << ex.what() << nl;
 		check(false);
 	}

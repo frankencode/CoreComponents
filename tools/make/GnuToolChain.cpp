@@ -209,7 +209,12 @@ bool GnuToolChain::uninstall(BuildPlan *plan)
 	String installPrefix = plan->installPath((options & BuildPlan::Library) ? "lib" : "bin");
 	String installPath = installPrefix->expandPath(product);
 
-	if (!plan->shell()->unlink(installPath)) return false;
+	try {
+		plan->shell()->unlink(installPath);
+	}
+	catch (SystemError &) {
+		return false;
+	}
 
 	{
 		CwdGuard guard(installPrefix);

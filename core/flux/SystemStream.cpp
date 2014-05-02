@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -14,7 +14,7 @@
 #include <unistd.h> // read, write, select
 #include <fcntl.h> // fcntl
 #include <math.h> // modf
-#include "Exception.h"
+#include "exceptions.h"
 #include "SystemStream.h"
 
 namespace flux
@@ -44,7 +44,7 @@ bool SystemStream::isOpen() const { return fd_ != -1; }
 void SystemStream::close()
 {
 	if (::close(fd_) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	fd_ = -1;
 }
 
@@ -64,7 +64,7 @@ bool SystemStream::readyRead(double interval) const
 	int ret = ::select(fd_ + 1, &set, 0, 0, to);
 	if (ret == -1) {
 		if (errno == EINTR) throw Interrupt();
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 	return (ret > 0);
 }
@@ -86,7 +86,7 @@ bool SystemStream::readyReadOrWrite(double interval) const
 	int ret = ::select(fd_ + 1, &rset, &wset, 0, to);
 	if (ret == -1) {
 		if (errno == EINTR) throw Interrupt();
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 	return (ret > 0);
 }
@@ -100,7 +100,7 @@ int SystemStream::read(ByteArray *data)
 			if (errno == EINTR) throw Interrupt();
 			if (errno == EWOULDBLOCK) throw Timeout();
 			if (errno == ECONNRESET) throw ConnectionResetByPeer();
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 		}
 		break;
 	}
@@ -118,7 +118,7 @@ void SystemStream::write(const ByteArray *data)
 			if (errno == EINTR) throw Interrupt();
 			if (errno == EWOULDBLOCK) throw Timeout();
 			if (errno == ECONNRESET) throw ConnectionResetByPeer();
-			FLUX_SYSTEM_EXCEPTION;
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
 		}
 		p += ret;
 		n -= ret;
@@ -144,14 +144,14 @@ void SystemStream::write(const StringList *parts)
 		if (errno == EINTR) throw Interrupt();
 		if (errno == EWOULDBLOCK) throw Timeout();
 		if (errno == ECONNRESET) throw ConnectionResetByPeer();
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 }
 
 void SystemStream::closeOnExec()
 {
 	if (::fcntl(fd_, F_SETFD, FD_CLOEXEC) == -1)
-		FLUX_SYSTEM_EXCEPTION;
+		FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 } // namespace flux
