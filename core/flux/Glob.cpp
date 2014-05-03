@@ -49,7 +49,7 @@ bool Glob::read(String *path)
 	while (dir_->read(&name)) {
 		if (name == ".") continue;
 		if ((name == "..") && (pattern_ != "..")) continue;
-		if (pattern_->match(name)) {
+		if (pattern_->match(name)->valid()) {
 			String node = dir_->path(name);
 			if (remainder_->size() == 0) {
 				*path = node;

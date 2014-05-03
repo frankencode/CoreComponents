@@ -130,7 +130,7 @@ void IntegerLiteral::read(uint64_t *value, int *sign, const ByteArray *text, Tok
 
 Ref<Token> IntegerLiteral::read(uint64_t *value, int *sign, const ByteArray *text, int i) const
 {
-	Ref<Token> token = match(text, i);
+	Ref<Token> token = match(text, i)->rootToken();
 	if (token)
 		read(value, sign, text, token);
 	return token;

@@ -29,24 +29,14 @@ SyntaxNode *SyntaxDefinition::debug(SyntaxNode *newNode, const char *nodeType) {
 int SyntaxDefinition::keywordByName(const char *keyword) { return def_->keywordByName(keyword); }
 Ref<SyntaxState> SyntaxDefinition::createState() const { return def_->createState(); }
 
-Ref<Token> SyntaxDefinition::find(const ByteArray *text, int i) const
+Ref<SyntaxState> SyntaxDefinition::find(const ByteArray *text, int i) const
 {
-	return def_->find(const_cast<ByteArray *>(text), &i);
+	return def_->find(const_cast<ByteArray *>(text), i);
 }
 
-Ref<Token> SyntaxDefinition::match(const ByteArray *text, int i, SyntaxState *state, TokenFactory *tokenFactory) const
+Ref<SyntaxState> SyntaxDefinition::match(const ByteArray *text, int i) const
 {
-	int i0 = (i >= 0) ? i : 0, h;
-	Ref<Token> token = def_->match(const_cast<ByteArray *>(text), i0, &h, state, tokenFactory);
-	if ((i < 0) && (token)) {
-		if (text->has(token->i1())) token = 0;
-	}
-	return token;
-}
-
-Ref<Token> SyntaxDefinition::match(const ByteArray *text, SyntaxState *state, TokenFactory *tokenFactory) const
-{
-	return match(text, -1, state, tokenFactory);
+	return def_->match(const_cast<ByteArray *>(text), i);
 }
 
 int SyntaxDefinition::matchLength() const

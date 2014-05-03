@@ -37,7 +37,7 @@ Report::Report(StringList *dirPaths, Pattern works)
 		dirWalker->setIgnoreHidden(true);
 		for (String path; dirWalker->read(&path);) {
 			if (FileStatus::read(path)->type() != File::Regular) continue;
-			if (!works->match(path->fileName())) continue;
+			if (!works->match(path->fileName())->valid()) continue;
 			Ref<Notice> notice;
 			{
 				const HeaderScannerList *headerScanners = registry()->headerScanners();

@@ -145,7 +145,7 @@ NoticeSyntax::NoticeSyntax()
 Ref<Notice> NoticeSyntax::readNotice(Header *header) const
 {
 	String message = header->message();
-	Ref<Token> rootToken = match(message);
+	Ref<Token> rootToken = match(message)->rootToken();
 	if (!rootToken) return Ref<Notice>();
 	Token *token = rootToken->firstChild();
 	FLUX_ASSERT(token);

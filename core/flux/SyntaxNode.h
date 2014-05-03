@@ -13,7 +13,6 @@
 #include "Tree.h"
 #include "SyntaxState.h"
 #include "Token.h"
-#include "TokenFactory.h"
 #include "ByteArray.h"
 
 namespace flux
@@ -32,7 +31,7 @@ public:
 		}
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const = 0;
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const = 0;
 
 	virtual Node *succ(Node *node) const { return null<Node>(); }
 	virtual int matchLength() const { return -1; }

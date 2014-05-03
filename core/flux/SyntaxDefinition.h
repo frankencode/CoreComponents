@@ -11,7 +11,6 @@
 #define FLUX_SYNTAXDEFINITION_H
 
 #include "ByteArray.h"
-#include "TokenFactory.h"
 #include "SyntaxNode.h"
 #include "SyntaxDebugFactory.h"
 #include "SyntaxState.h"
@@ -41,9 +40,8 @@ public:
 	int keywordByName(const char *keyword);
 	Ref<SyntaxState> createState() const;
 
-	Ref<Token> find(const ByteArray *text, int i = 0) const;
-	Ref<Token> match(const ByteArray *text, int i = -1, SyntaxState *state = 0, TokenFactory *tokenFactory = 0) const;
-	Ref<Token> match(const ByteArray *text, SyntaxState *state, TokenFactory *tokenFactory = 0) const;
+	Ref<SyntaxState> find(const ByteArray *text, int i = 0) const;
+	Ref<SyntaxState> match(const ByteArray *text, int i = -1) const;
 
 	int matchLength() const;
 

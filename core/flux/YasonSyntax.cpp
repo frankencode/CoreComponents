@@ -320,10 +320,9 @@ YasonSyntax::YasonSyntax()
 
 Variant YasonSyntax::parseMessage(const ByteArray *text, YasonProtocol *protocol)
 {
-	Ref<SyntaxState> state = createState();
-	Ref<Token> token = match(text, state);
-	if (!token) throw SyntaxError(text, state);
-	Token *valueToken = token->firstChild();
+	Ref<SyntaxState> state = match(text);
+	if (!state->valid()) throw SyntaxError(text, state);
+	Token *valueToken = state->rootToken()->firstChild();
 	if (protocol) return parseObject(text, valueToken, protocol);
 	return parseValue(text, valueToken);
 }

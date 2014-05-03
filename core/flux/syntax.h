@@ -33,7 +33,7 @@ public:
 		  invert_(invert)
 	{}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		if (text->has(i)) {
 			char ch = text->at(i++);
@@ -64,7 +64,7 @@ public:
 		  invert_(invert)
 	{}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		if (text->has(i)) {
 			char ch = text->at(i++);
@@ -96,7 +96,7 @@ public:
 		  invert_(invert)
 	{}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		if (text->has(i)) {
 			char ch = text->at(i++);
@@ -122,7 +122,7 @@ private:
 class AnyNode: public Node
 {
 public:
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		return text->has(i) ? i + 1 : -1;
 	}
@@ -137,7 +137,7 @@ public:
 		  invert_(invert)
 	{}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		if (text->has(i)) {
 			char ch = text->at(i++);
@@ -169,7 +169,7 @@ public:
 		  invert_(invert)
 	{}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		if (text->has(i)) {
 			char ch = text->at(i++);
@@ -207,7 +207,7 @@ public:
 		if (!caseSensitive) s_->downcaseInsitu();
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		if (text->has(i)) {
 			int k = 0, len = s_->size();
@@ -246,7 +246,7 @@ public:
 		  caseSensitive_(caseSensitive)
 	{}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		if (text->has(i)) {
 			int h = 0;
@@ -282,7 +282,7 @@ public:
 		appendChild(entry);
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -291,7 +291,7 @@ public:
 		int h = i;
 		while ((repeatCount < maxRepeat_) && (h != -1))
 		{
-			h = entry()->matchNext(text, h, tokenFactory, parentToken, state);
+			h = entry()->matchNext(text, h, parentToken, state);
 			if (h == i)
 				FLUX_DEBUG_ERROR("Repeated empty match, bailing out");
 			if (h != -1) {
@@ -330,7 +330,7 @@ public:
 		appendChild(entry);
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -347,7 +347,7 @@ public:
 					Token *lastChildSaved2 = 0;
 					if (parentToken) lastChildSaved2 = parentToken->lastChild();
 					while (succ) {
-						j = succ->matchNext(text, j, tokenFactory, parentToken, state);
+						j = succ->matchNext(text, j, parentToken, state);
 						if (j == -1) break;
 						succ = succ->succ();
 					}
@@ -355,7 +355,7 @@ public:
 				}
 				if (j != -1) return h;
 			}
-			h = entry()->matchNext(text, h, tokenFactory, parentToken, state);
+			h = entry()->matchNext(text, h, parentToken, state);
 			repeatCount += (h != -1);
 		}
 
@@ -382,7 +382,7 @@ public:
 		appendChild(entry);
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		Token *lastChildSaved = 0, *lastChildSaved2 = 0;
 		if (parentToken) {
@@ -394,7 +394,7 @@ public:
 		int h = i, j = -1;
 		while ((repeatCount < maxRepeat_) && (h != -1))
 		{
-			h = entry()->matchNext(text, h, tokenFactory, parentToken, state);
+			h = entry()->matchNext(text, h, parentToken, state);
 			if (h == i)
 				FLUX_DEBUG_ERROR("Repeated empty match, bailing out");
 			if (h != -1) {
@@ -406,7 +406,7 @@ public:
 						if (parentToken) lastChildSaved3 = parentToken->lastChild();
 						j = h;
 						while (succ) {
-							j = succ->matchNext(text, j, tokenFactory, parentToken, state);
+							j = succ->matchNext(text, j, parentToken, state);
 							if (j == -1) break;
 							succ = succ->succ();
 						}
@@ -457,12 +457,12 @@ public:
 		appendChild(entry);
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
-		int h = entry()->matchNext(text, i, tokenFactory, parentToken, state);
+		int h = entry()->matchNext(text, i, parentToken, state);
 		if (h != -1) {
 			int d = h - i;
 			if ((d < minLength_) || (maxLength_ < d))
@@ -489,7 +489,7 @@ private:
 class BoiNode: public Node
 {
 public:
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		return (i == 0) ? i : -1;
 	}
@@ -499,7 +499,7 @@ public:
 class EoiNode: public Node
 {
 public:
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		bool eoi = (!text->has(i)) && ((i == 0) || (text->has(i - 1)));
 		return eoi ? i : -1;
@@ -514,7 +514,7 @@ public:
 		: invert_(invert)
 	{}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		return invert_ ? -1 : i;
 	}
@@ -535,14 +535,14 @@ public:
 		appendChild(entry);
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
 		bool found = false;
 		while (text->has(i) || text->has(i - 1)) {
-			int h = entry()->matchNext(text, i, tokenFactory, parentToken, state);
+			int h = entry()->matchNext(text, i, parentToken, state);
 			if (h != -1) {
 				found = true;
 				i = h;
@@ -573,14 +573,14 @@ public:
 		appendChild(entry);
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
 		int h = i;
 		if (entry())
-			h = entry()->matchNext(text, i, tokenFactory, parentToken, state);
+			h = entry()->matchNext(text, i, parentToken, state);
 
 		if ((h == -1) ^ invert_)
 			i = -1;
@@ -609,7 +609,7 @@ public:
 		appendChild(entry);
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -617,7 +617,7 @@ public:
 		int h = i;
 		if (!text->has(i - length_))
 			h = -1;
-		else if (entry()->matchNext(text, i - length_, tokenFactory, parentToken, state) == -1)
+		else if (entry()->matchNext(text, i - length_, parentToken, state) == -1)
 			h = -1;
 
 		if ((h == -1) ^ invert_)
@@ -642,7 +642,7 @@ private:
 class ChoiceNode: public Node
 {
 public:
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -656,7 +656,7 @@ public:
 					break;
 				}
 			}
-			h = node->matchNext(text, i, tokenFactory, parentToken, state);
+			h = node->matchNext(text, i, parentToken, state);
 			if (h == -1)
 				rollBack(parentToken, lastChildSaved);
 			node = node->nextSibling();
@@ -692,7 +692,7 @@ public:
 class GlueNode: public Node
 {
 public:
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -705,7 +705,7 @@ public:
 					break;
 				}
 			}
-			i = node->matchNext(text, i, tokenFactory, parentToken, state);
+			i = node->matchNext(text, i, parentToken, state);
 			node = node->nextSibling();
 		}
 
@@ -746,9 +746,9 @@ public:
 		appendChild(entry);
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
-		int h = entry()->matchNext(text, i, tokenFactory, parentToken, state);
+		int h = entry()->matchNext(text, i, parentToken, state);
 		if (h == -1 && !state->finalize_) {
 			state->hint_ = message_;
 			state->hintOffset_ = i;
@@ -776,7 +776,7 @@ public:
 		  self_(self)
 	{}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		return callBack_(self_, text, i, state);
 	}
@@ -797,7 +797,7 @@ public:
 		  value_(value)
 	{}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		state->setFlag(scope_, flagId_, value_);
 		return i;
@@ -824,11 +824,11 @@ public:
 		appendChild(falseBranch);
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		return state->flag(scope_, flagId_) ?
-			trueBranch()->matchNext(text, i, tokenFactory, parentToken, state) :
-			falseBranch()->matchNext(text, i, tokenFactory, parentToken, state);
+			trueBranch()->matchNext(text, i, parentToken, state) :
+			falseBranch()->matchNext(text, i, parentToken, state);
 	}
 
 	inline DefinitionNode *scope() const { return scope_; }
@@ -851,13 +851,13 @@ public:
 		appendChild(coverage);
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
 		int i0 = i;
-		i = coverage()->matchNext(text, i, tokenFactory, parentToken, state);
+		i = coverage()->matchNext(text, i, parentToken, state);
 
 		if (i == -1)
 			rollBack(parentToken, lastChildSaved);
@@ -884,7 +884,7 @@ public:
 		  captureId_(captureId)
 	{}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		Range *range = state->capture(scope_, captureId_);
 		for (int j = range->i0(); (j < range->i1()) && text->has(i) && text->has(j); ++i, ++j) {
@@ -917,18 +917,15 @@ public:
 		appendChild(entry);
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
-		Ref<Token> token;
-		if (tokenFactory) {
-			token = tokenFactory->produce(name_);
-			token->init(definitionId_, id_);
-			if (parentToken)
-				parentToken->appendChild(token);
-		}
+		Ref<Token> token = state->produceToken(name_);
+		token->init(definitionId_, id_);
+		if (parentToken)
+			parentToken->appendChild(token);
 
 		int i0 = i;
-		i = (entry()) ? entry()->matchNext(text, i, tokenFactory, token, state) : i;
+		i = (entry()) ? entry()->matchNext(text, i, token, state) : i;
 
 		if (token) {
 			if (i != -1)
@@ -1005,9 +1002,9 @@ public:
 		: LinkNode(rule)
 	{}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
-		return LinkNode::rule_->matchNext(text, i, tokenFactory, parentToken, state);
+		return LinkNode::rule_->matchNext(text, i, parentToken, state);
 	}
 };
 
@@ -1022,9 +1019,9 @@ public:
 		: LinkNode(rule)
 	{}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
-		return LinkNode::rule_->entry()->matchNext(text, i, tokenFactory, parentToken, state);
+		return LinkNode::rule_->entry()->matchNext(text, i, parentToken, state);
 	}
 };
 
@@ -1037,7 +1034,7 @@ public:
 		  keyword_(-1)
 	{}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		int h = -1;
 		if (parentToken) {
@@ -1070,7 +1067,7 @@ public:
 		appendChild(outOfContext);
 	}
 
-	virtual int matchNext(ByteArray *text, int i, TokenFactory *tokenFactory, Token *parentToken, State *state) const
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		int h = -1;
 
@@ -1082,7 +1079,7 @@ public:
 					Token *lastChildSaved = 0;
 					if (parentToken) lastChildSaved = parentToken->lastChild();
 
-					h = entry->matchNext(text, i, tokenFactory, parentToken, state);
+					h = entry->matchNext(text, i, parentToken, state);
 
 					if (h == -1)
 						rollBack(parentToken, lastChildSaved);
@@ -1281,8 +1278,8 @@ public:
 
 	State *createState() const;
 
-	Ref<Token> find(ByteArray *text, int *i0, int *i1 = 0, TokenFactory *tokenFactory = 0) const;
-	Ref<Token> match(ByteArray *text, int i0 = 0, int *i1 = 0, State *state = 0, TokenFactory *tokenFactory = 0) const;
+	Ref<State> find(ByteArray *text, int i) const;
+	Ref<State> match(ByteArray *text, int i = -1) const;
 
 	const DefinitionNode *resolveScope(const char *&name) const;
 

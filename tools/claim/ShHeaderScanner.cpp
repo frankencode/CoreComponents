@@ -71,7 +71,7 @@ ShHeaderScanner::ShHeaderScanner()
 Ref<Header> ShHeaderScanner::scanHeader(String path) const
 {
 	String text = File::open(path)->map();
-	Ref<Token> rootToken = headerSyntax_->match(text, 0);
+	Ref<Token> rootToken = headerSyntax_->match(text, 0)->rootToken();
 	if (!rootToken) return Ref<Header>();
 	Token *token = rootToken->firstChild();
 	String message = trimHeader(text->copy(token->i0(), token->i1()), " \t\r#");
