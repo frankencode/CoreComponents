@@ -244,7 +244,7 @@ PatternSyntax::PatternSyntax()
 
 void PatternSyntax::compile(ByteArray *text, SyntaxDefinition *definition)
 {
-	Ref<SyntaxState> state = newState();
+	Ref<SyntaxState> state = createState();
 	Ref<Token> token = match(text, 0, state);
 	if (!token) throw SyntaxError(text, state);
 	NODE entry;

@@ -16,10 +16,19 @@
 namespace flux
 {
 
-class TokenFactory: public Object
+class TokenFactory // : public Object
 {
 public:
-	inline virtual Token *newToken() {
+	inline virtual Token *produce(const char *ruleName) {
+		Token *token = newToken();
+		if (!rootToken_) rootToken_ = token;
+		return token;
+	}
+
+	inline Token *rootToken() const { return rootToken_; }
+
+private:
+	inline Token *newToken() {
 		Token *token = 0;
 		if (previous_)
 			if (previous_->refCount() == 1)
@@ -31,15 +40,6 @@ public:
 		return token;
 	}
 
-	inline Token *produce() {
-		Token *token = newToken();
-		if (!rootToken_) rootToken_ = token;
-		return token;
-	}
-
-	inline Token *rootToken() const { return rootToken_; }
-
-private:
 	Ref<Token> rootToken_;
 	Ref<Token> previous_;
 };

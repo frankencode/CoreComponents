@@ -320,7 +320,7 @@ YasonSyntax::YasonSyntax()
 
 Variant YasonSyntax::parseMessage(const ByteArray *text, YasonProtocol *protocol)
 {
-	Ref<SyntaxState> state = newState();
+	Ref<SyntaxState> state = createState();
 	Ref<Token> token = match(text, state);
 	if (!token) throw SyntaxError(text, state);
 	Token *valueToken = token->firstChild();
@@ -434,7 +434,7 @@ Variant YasonSyntax::parseValue(const ByteArray *text, Token *token, int expecte
 	Variant value;
 	bool typeError = false;
 
-	if (token->definition() == floatLiteral()->id())
+	if (token->scope() == floatLiteral()->id())
 	{
 		if ( expectedType == Variant::UndefType ||
 		     expectedType == Variant::FloatType ||
@@ -447,7 +447,7 @@ Variant YasonSyntax::parseValue(const ByteArray *text, Token *token, int expecte
 		else
 			typeError = true;
 	}
-	else if (token->definition() == integerLiteral()->id())
+	else if (token->scope() == integerLiteral()->id())
 	{
 		if ( expectedType == Variant::UndefType ||
 		     expectedType == Variant::FloatType ||

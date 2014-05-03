@@ -56,7 +56,7 @@ Ref<Config> Config::read(int argc, char **argv, Config *config)
 		if (s == "-h" || s == "-help" || s == "--help" || s == "-?")
 			throw HelpError();
 
-		Ref<SyntaxState> state = flag->newState();
+		Ref<SyntaxState> state = flag->createState();
 		if (!flag->match(s, state))
 			throw ConfigError(Format("Illegal option syntax: \"%%\"") << s);
 

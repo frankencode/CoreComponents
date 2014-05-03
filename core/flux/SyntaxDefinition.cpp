@@ -27,7 +27,7 @@ SyntaxDebugFactory *SyntaxDefinition::debugFactory() const { return def_->debugF
 SyntaxNode *SyntaxDefinition::debug(SyntaxNode *newNode, const char *nodeType) { return def_->debug(newNode, nodeType); }
 
 int SyntaxDefinition::keywordByName(const char *keyword) { return def_->keywordByName(keyword); }
-Ref<SyntaxState> SyntaxDefinition::newState() const { return def_->newState(); }
+Ref<SyntaxState> SyntaxDefinition::createState() const { return def_->createState(); }
 
 Ref<Token> SyntaxDefinition::find(const ByteArray *text, int i) const
 {

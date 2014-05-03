@@ -56,7 +56,7 @@ void DefinitionNode::LINK()
 	}
 }
 
-State *DefinitionNode::newState() const
+State *DefinitionNode::createState() const
 {
 	if (stateful())
 		return new State(this, numFlags_, numCaptures_);
@@ -80,7 +80,7 @@ Ref<Token> DefinitionNode::match(ByteArray *text, int i0, int *i1, State *state,
 {
 	Ref<State> localState;
 	if (!state) {
-		localState = newState();
+		localState = createState();
 		state = localState;
 	}
 
@@ -108,7 +108,7 @@ const DefinitionNode *DefinitionNode::resolveScope(const char *&name) const
 		k = (ch == ':') ? k + 1 : 0;
 		if (k == 2) {
 			Ref<DefinitionNode> childScope;
-			if (!scope->definitionByName_->lookup(p0, p - p0 - k, &childScope))
+			if (!scope->scopeByName_->lookup(p0, p - p0 - k, &childScope))
 				FLUX_DEBUG_ERROR(Format("Undefined scope '%%'") << name);
 			scope = childScope;
 			p0 = p;
