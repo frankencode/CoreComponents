@@ -23,11 +23,16 @@ public:
 	virtual bool project(Token *token, int i0, int i1) = 0;
 };
 
+namespace syntax {
+	class RuleNode;
+	class KeywordNode;
+}
+
 class Token: public Tree<Token>
 {
 public:
 	Token()
-		: definition_(-1),
+		: scope_(-1),
 		  rule_(-1),
 		  keyword_(-1),
 		  i0_(0),
@@ -35,29 +40,17 @@ public:
 	{}
 
 	Token(const Token &b)
-		: definition_(b.definition_),
+		: scope_(b.scope_),
 		  rule_(b.rule_),
 		  keyword_(b.keyword_),
 		  i0_(b.i0_),
 		  i1_(b.i1_)
 	{}
 
-	inline void init(int definition, int rule)
-	{
-		definition_ = definition;
-		rule_ = rule;
-	}
-
-	inline void setRange(int i0, int i1)
-	{
-		i0_ = i0;
-		i1_ = i1;
-	}
-
-	inline int definition() const { return definition_; }
+	inline bool valid() const { return rule_ != -1; }
+	inline int scope() const { return scope_; }
 	inline int rule() const { return rule_; }
 	inline int keyword() const { return keyword_; }
-	inline void setKeyword(int value) { keyword_ = value; }
 
 	inline int i0() const { return i0_; }
 	inline int i1() const { return i1_; }
@@ -70,9 +63,26 @@ public:
 	Token *at(int i) const;
 
 private:
+	friend class syntax::RuleNode;
+	friend class syntax::KeywordNode;
+
+	inline void init(int scope, int rule)
+	{
+		scope_ = scope;
+		rule_ = rule;
+	}
+
+	inline void setRange(int i0, int i1)
+	{
+		i0_ = i0;
+		i1_ = i1;
+	}
+
+	inline void setKeyword(int value) { keyword_ = value; }
+
 	bool burn(int b0, int b1);
 
-	int definition_;
+	int scope_;
 	int rule_;
 	int keyword_;
 	int i0_;

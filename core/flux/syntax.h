@@ -921,7 +921,7 @@ public:
 	{
 		Ref<Token> token;
 		if (tokenFactory) {
-			token = tokenFactory->produce();
+			token = tokenFactory->produce(name_);
 			token->init(definitionId_, id_);
 			if (parentToken)
 				parentToken->appendChild(token);
@@ -1108,7 +1108,7 @@ public:
 		  id_(Crc32().sum()),
 		  name_(0),
 		  caseSensitive_(true),
-		  definitionByName_(DefinitionByName::create()),
+		  scopeByName_(ScopeByName::create()),
 		  numRules_(0),
 		  numKeywords_(0),
 		  ruleByName_(RuleByName::create()),
@@ -1140,7 +1140,7 @@ public:
 		if (!name) name = definition->name();
 		if (!name)
 			FLUX_DEBUG_ERROR("Cannot import anonymous syntax definition");
-		definitionByName_->insert(name, definition);
+		scopeByName_->insert(name, definition);
 		statefulScope_ = statefulScope_ || definition->stateful();
 	}
 
@@ -1279,18 +1279,18 @@ public:
 
 	inline bool stateful() const { return (numFlags_ > 0) || (numCaptures_ > 0) || statefulScope_ || hasHints_; }
 
-	State *newState() const;
+	State *createState() const;
 
 	Ref<Token> find(ByteArray *text, int *i0, int *i1 = 0, TokenFactory *tokenFactory = 0) const;
 	Ref<Token> match(ByteArray *text, int i0 = 0, int *i1 = 0, State *state = 0, TokenFactory *tokenFactory = 0) const;
 
 	const DefinitionNode *resolveScope(const char *&name) const;
 
-	inline DefinitionNode *definitionByName(const char *name) const
+	inline DefinitionNode *scopeByName(const char *name) const
 	{
 		Ref<DefinitionNode> definition;
 		const DefinitionNode *scope = resolveScope(name);
-		if (!scope->definitionByName_->lookup(name, &definition))
+		if (!scope->scopeByName_->lookup(name, &definition))
 			FLUX_DEBUG_ERROR(Format("Undefined definition '%%'") << name);
 		return definition;
 	}
@@ -1343,8 +1343,8 @@ private:
 	const char *name_;
 	bool caseSensitive_;
 
-	typedef PrefixTree<char, Ref<DefinitionNode> > DefinitionByName;
-	Ref<DefinitionByName> definitionByName_;
+	typedef PrefixTree<char, Ref<DefinitionNode> > ScopeByName;
+	Ref<ScopeByName> scopeByName_;
 
 	typedef PrefixTree<char, Ref<RuleNode> > RuleByName;
 	typedef PrefixTree<char, int> KeywordByName;

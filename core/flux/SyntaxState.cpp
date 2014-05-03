@@ -8,7 +8,7 @@
  */
 
 #include "syntax.h"
-#include "Default.h"
+#include "SyntaxDefinition.h"
 #include "SyntaxState.h"
 
 namespace flux
@@ -58,7 +58,7 @@ SyntaxState *SyntaxState::stateByScope(const DefinitionNode *scope)
 	if (!stateByScope_) stateByScope_ = StateByScope::create();
 	Ref<SyntaxState> state;
 	if (!stateByScope_->lookup(scope, &state)) {
-		state = scope->newState();
+		state = scope->createState();
 		stateByScope_->insert(scope, state);
 	}
 	return state;
