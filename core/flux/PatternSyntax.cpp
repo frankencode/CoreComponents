@@ -244,12 +244,11 @@ PatternSyntax::PatternSyntax()
 
 void PatternSyntax::compile(ByteArray *text, SyntaxDefinition *definition)
 {
-	Ref<SyntaxState> state = createState();
-	Ref<Token> token = match(text, 0, state);
-	if (!token) throw SyntaxError(text, state);
+	Ref<SyntaxState> state = match(text);
+	if (!state->valid()) throw SyntaxError(text, state);
 	NODE entry;
 	if (text->size() == 0) entry = definition->PASS();
-	else entry = compileChoice(text, token->firstChild(), definition);
+	else entry = compileChoice(text, state->rootToken()->firstChild(), definition);
 	definition->DEFINE("Expression", entry);
 	definition->ENTRY("Expression");
 	definition->LINK();

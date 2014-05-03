@@ -59,7 +59,7 @@ CHeaderScanner::CHeaderScanner()
 Ref<Header> CHeaderScanner::scanHeader(String path) const
 {
 	String text = File::open(path)->map();
-	Ref<Token> rootToken = headerSyntax_->match(text, 0);
+	Ref<Token> rootToken = headerSyntax_->match(text, 0)->rootToken();
 	if (!rootToken) return Ref<Header>();
 	Token *token = rootToken->firstChild();
 	String message = trimHeader(text->copy(token->i0() + 2, token->i1() - 2), " \t\r*");

@@ -43,7 +43,7 @@ Ref<Config> Config::read(int argc, char **argv, Config *config)
 	if (!config)
 		config = newConfig = new Config;
 
-	Pattern flag("{1..2:-}(&name:[^-]{[^=]}){0..1:=(&value:{1..:[^=]})}");
+	Pattern flag("{1..2:-}(&name:[^-]{[^=]}){0..1:=(&value:{1..:#})}");
 
 	for (int i = 1; i < argc; ++i)
 	{
@@ -56,8 +56,8 @@ Ref<Config> Config::read(int argc, char **argv, Config *config)
 		if (s == "-h" || s == "-help" || s == "--help" || s == "-?")
 			throw HelpError();
 
-		Ref<SyntaxState> state = flag->createState();
-		if (!flag->match(s, state))
+		Ref<SyntaxState> state = flag->match(s);
+		if (!state->valid())
 			throw ConfigError(Format("Illegal option syntax: \"%%\"") << s);
 
 		String name = s->copy(state->capture("name"));

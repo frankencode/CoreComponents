@@ -75,7 +75,7 @@ FormatSpecifier::FormatSpecifier()
 
 bool FormatSpecifier::find(ByteArray *text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank)
 {
-	Ref<Token> rootToken = SyntaxDefinition::find(text, *i0);
+	Ref<Token> rootToken = SyntaxDefinition::find(text, *i0)->rootToken();
 
 	if (rootToken)
 	{

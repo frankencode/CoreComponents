@@ -26,8 +26,8 @@ void DispatchDelegate::process(Request *request)
 		WorkerPool *workerPool = workerPools->at(i);
 		ServiceInstance *serviceInstance = workerPool->serviceInstance();
 		if (
-			serviceInstance->host()->match(request->host()) ||
-			serviceInstance->uri()->match(request->target())
+			serviceInstance->host()->match(request->host())->valid() ||
+			serviceInstance->uri()->match(request->target())->valid()
 		) {
 			FLUXNODE_DEBUG() << "Dispatching to " << serviceInstance->serviceName() << " service..." << nl;
 			client()->putBack(request);

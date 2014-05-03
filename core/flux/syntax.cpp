@@ -58,42 +58,28 @@ void DefinitionNode::LINK()
 
 State *DefinitionNode::createState() const
 {
-	if (stateful())
-		return new State(this, numFlags_, numCaptures_);
-	return 0;
+	return new State(this, numFlags_, numCaptures_);
 }
 
-Ref<Token> DefinitionNode::find(ByteArray *text, int *i0, int *i1, TokenFactory *tokenFactory) const
+Ref<State> DefinitionNode::find(ByteArray *text, int i) const
 {
-	int i = *i0;
-	Ref<Token> rootToken;
+	Ref<State> state = createState();
 	while (text->has(i)) {
-		if ((rootToken = match(text, i, i1, 0, tokenFactory)))
-			break;
+		int h = matchNext(text, i, 0, state);
+		if (h == -1) state->rootToken_ = 0;
+		else break;
 		++i;
 	}
-	*i0 = i;
-	return rootToken;
+	return state;
 }
 
-Ref<Token> DefinitionNode::match(ByteArray *text, int i0, int *i1, State *state, TokenFactory *tokenFactory) const
+Ref<State> DefinitionNode::match(ByteArray *text, int i) const
 {
-	Ref<State> localState;
-	if (!state) {
-		localState = createState();
-		state = localState;
-	}
-
-	TokenFactory localTokenFactory;
-	if (!tokenFactory)
-		tokenFactory = &localTokenFactory;
-
-	int h = matchNext(text, i0, tokenFactory, 0, state);
-
-	if ((i1 != 0) && (h != -1))
-		*i1 = h;
-
-	return (h != -1) ? tokenFactory->rootToken() : null<Token>();
+	Ref<State> state = createState();
+	int h = i < 0 ? 0 : i;
+	h = matchNext(text, h, 0, state);
+	if ( (h == -1) || (i < 0 && h < text->size()) ) state->rootToken_ = 0;
+	return state;
 }
 
 const DefinitionNode *DefinitionNode::resolveScope(const char *&name) const

@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 	if (config->lookup("name", &h)) namePattern = h;
 	if (config->lookup("type", &h)) typePattern = h;
 	if (config->lookup("text", &h)) textPattern = h;
-	if (config->lookup("word", &h)) textPattern = String("(?<![a..z]|[A..Z]|_)" + h + "(?>![a..z]|[A..Z]|_)");
+	if (config->lookup("word", &h)) textPattern = String("(!<:[a..z]|[A..Z]|_)" + h + "(!>:[a..z]|[A..Z]|_)");
 
 	if (config->lookup("replace", &h)) {
 		replaceOption = true;
@@ -95,10 +95,10 @@ int main(int argc, char **argv)
 		String path;
 		while (dirWalker->read(&path)) {
 			if (pathPattern) {
-				if (!pathPattern->match(path)) continue;
+				if (!pathPattern->match(path)->valid()) continue;
 			}
 			if (namePattern) {
-				if (!namePattern->match(path->fileName())) continue;
+				if (!namePattern->match(path->fileName())->valid()) continue;
 			}
 			if (typePattern) {
 				int type = FileStatus::read(path, false)->type();
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 				else if (type == File::BlockDevice) typeString = shortMode ? "b" : "block device";
 				else if (type == File::Fifo)        typeString = shortMode ? "f" : "fifo";
 				else if (type == File::Socket)      typeString = shortMode ? "s" : "socket";
-				if (!typePattern->find(typeString)) continue;
+				if (!typePattern->find(typeString)->valid()) continue;
 			}
 			if (textPattern) {
 				if (FileStatus::read(path)->type() != File::Regular)
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 				String text = file->map();
 				int ln = 1;
 				for (int i = 0; i < text->size();) {
-					Ref<Token> token = textPattern->find(text, i);
+					Ref<Token> token = textPattern->find(text, i)->rootToken();
 					if (!token) break;
 					for (;i < token->i0(); ++i)
 						if (text->at(i) == '\n') ++ln;
@@ -166,18 +166,18 @@ void displayMatch(ByteArray *path, ByteArray *text, Match *match)
 	int i0 = match->i0_;
 	int i1 = match->i1_;
 
+	int j0 = i0;
+	for (;j0 > 0; --j0)
+		if (text->at(j0 - 1) == '\n') break;
+
 	fout("%%:") << path;
 	if (i0 == i1) {
-		fout("%%: %%\n") << ln << text->copy(i0, text->find("\n", i0));
+		fout("%%: %%\n") << ln << text->copy(j0, text->find("\n", i0));
 		return;
 	}
 
 	bool multiline = text->copy(i0, i1)->contains('\n');
 	if (multiline) fout() << nl;
-
-	int j0 = i0;
-	for (;j0 > 0; --j0)
-		if (text->at(j0 - 1) == '\n') break;
 
 	for (int j1 = j0; j0 < i1; j0 = j1) {
 		for (;j1 < text->size(); ++j1)

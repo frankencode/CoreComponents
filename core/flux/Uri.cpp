@@ -35,7 +35,7 @@ void Uri::readUri(ByteArray *text, Token *rootToken)
 {
 	Ref<Token> rootToken2;
 	if (!rootToken) {
-		rootToken2 = uriSyntax()->match(text);
+		rootToken2 = uriSyntax()->match(text)->rootToken();
 		if (!rootToken2) throw SyntaxError(text);
 		rootToken = rootToken2;
 	}

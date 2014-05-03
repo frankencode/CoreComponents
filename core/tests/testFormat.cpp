@@ -17,7 +17,8 @@ int main()
 
 		for (int i = 0, n = sizeof(test) / sizeof(test[0]); i < n; ++i) {
 			double x = test[i];
-			fout() << x << " => " << String(Format() << x)->toFloat64() << nl;
+			bool ok = true;
+			fout() << x << " => " << String(Format() << x)->toFloat64(&ok) << " (" << ok << ")" << nl;
 			fout() << (String(Format() << x)->toFloat64() - x) << nl;
 			uint64_t a = union_cast<uint64_t>(x);
 			uint64_t b = union_cast<uint64_t>(String(Format() << x)->toFloat64());

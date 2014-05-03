@@ -13,6 +13,7 @@
 #include "generics.h"
 #include "Array.h"
 #include "Map.h"
+#include "Token.h"
 
 namespace flux
 {
@@ -21,6 +22,7 @@ namespace syntax
 {
 
 class DefinitionNode;
+class RuleNode;
 class SetNode;
 class IfNode;
 class CaptureNode;
@@ -32,18 +34,28 @@ class GlueNode;
 } // namespace syntax
 
 class SyntaxDefinition;
+class TokenFactory;
 
 class SyntaxState: public Object
 {
 public:
+	inline Token *rootToken() const { return rootToken_; }
+	inline bool valid() const { return rootToken_; }
+	inline int i0() const { return rootToken_ ? rootToken_->i0() : 0; }
+	inline int i1() const { return rootToken_ ? rootToken_->i1() : -1; }
+
 	bool flag(const char *name) const;
 	Range *capture(const char *name) const;
 
 	inline const char *hint() const { return hint_; }
 	inline int hintOffset() const { return hintOffset_; }
 
+	bool debugging() const;
+	void setDebugging(bool on);
+
 private:
 	friend class syntax::DefinitionNode;
+	friend class syntax::RuleNode;
 	friend class syntax::SetNode;
 	friend class syntax::IfNode;
 	friend class syntax::CaptureNode;
@@ -56,6 +68,8 @@ private:
 
 	SyntaxState();
 	SyntaxState(const DefinitionNode *definition, int numFlags, int numCaptures);
+
+	Token *produceToken(const char *ruleName);
 
 	SyntaxState *stateByScope(const DefinitionNode *definition);
 
@@ -85,7 +99,9 @@ private:
 
 	Ref<Flags> flags_;
 	Ref<Captures> captures_;
+	Ref<Token> rootToken_;
 
+	Ref<TokenFactory> tokenFactory_;
 	const char *hint_;
 	int hintOffset_;
 	bool finalize_;

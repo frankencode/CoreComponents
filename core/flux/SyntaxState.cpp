@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -9,6 +9,7 @@
 
 #include "syntax.h"
 #include "SyntaxDefinition.h"
+#include "TokenFactory.h"
 #include "SyntaxState.h"
 
 namespace flux
@@ -24,12 +25,23 @@ SyntaxState::SyntaxState(const DefinitionNode *definition, int numFlags, int num
 	: definition_(definition),
 	  flags_(Flags::create(numFlags)),
 	  captures_(Captures::create(numCaptures)),
+	  tokenFactory_(TokenFactory::create()),
 	  hint_(0),
 	  hintOffset_(-1),
 	  finalize_(false)
 {
 	for (int i = 0; i < flags_->size(); ++i) flags_->at(i) =  false;
 	for (int i = 0; i < captures_->size(); ++i) captures_->at(i) = Range::create();
+}
+
+bool SyntaxState::debugging() const { return tokenFactory_->debugging(); }
+void SyntaxState::setDebugging(bool on) { tokenFactory_->setDebugging(on); }
+
+Token *SyntaxState::produceToken(const char *ruleName)
+{
+	Token *token = tokenFactory_->produce(ruleName);
+	if (!rootToken_) rootToken_ = token;
+	return token;
 }
 
 bool SyntaxState::flag(const char *name) const

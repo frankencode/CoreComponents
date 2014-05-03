@@ -134,9 +134,8 @@ void FloatLiteral::read(float64_t *value, const ByteArray *text, Token *token) c
 
 Ref<Token> FloatLiteral::read(float64_t *value, const ByteArray *text, int i) const
 {
-	Ref<Token> token = match(text, i);
-	if (token)
-		read(value, text, token);
+	Ref<Token> token = match(text, i)->rootToken();
+	if (token) read(value, text, token);
 	return token;
 }
 

@@ -68,7 +68,7 @@ public:
 
 	double eval(String text)
 	{
-		Ref<Token> rootToken = match(text);
+		Ref<Token> rootToken = match(text)->rootToken();
 		double value = nan;
 
 		if (rootToken) {
