@@ -15,14 +15,19 @@
 namespace flux
 {
 
+class DebugTokenFactory;
+
 class DebugToken: public Token
 {
+	friend class DebugTokenFactory;
+
 public:
+	inline const char *ruleName() const { return ruleName_; }
+
+protected:
 	DebugToken(const char *ruleName)
 		: ruleName_(ruleName)
 	{}
-
-	inline const char *ruleName() const { return ruleName_; }
 
 private:
 	const char *ruleName_;

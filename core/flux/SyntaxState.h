@@ -50,9 +50,6 @@ public:
 	inline const char *hint() const { return hint_; }
 	inline int hintOffset() const { return hintOffset_; }
 
-	bool debugging() const;
-	void setDebugging(bool on);
-
 private:
 	friend class syntax::DefinitionNode;
 	friend class syntax::RuleNode;
@@ -67,7 +64,7 @@ private:
 	typedef syntax::DefinitionNode DefinitionNode;
 
 	SyntaxState();
-	SyntaxState(const DefinitionNode *definition, int numFlags, int numCaptures);
+	SyntaxState(const DefinitionNode *definition, int numFlags, int numCaptures, TokenFactory *tokenFactory);
 
 	Token *produceToken(const char *ruleName);
 

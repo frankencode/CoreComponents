@@ -11,16 +11,25 @@
 #define FLUX_TOKENFACTORY_H
 
 #include "Token.h"
-#include "DebugToken.h"
 
 namespace flux
 {
 
+class SyntaxState;
+
 class TokenFactory: public Object
 {
+	friend class SyntaxState;
+
 public:
 	inline static Ref<TokenFactory> create() { return new TokenFactory; }
 
+protected:
+	TokenFactory() {}
+
+	virtual Token *createToken(const char *ruleName) { return new Token; }
+
+private:
 	inline Token *produce(const char *ruleName)
 	{
 		Token *token = 0;
@@ -28,21 +37,12 @@ public:
 			if (previous_->refCount() == 1)
 				token = previous_;
 		if (!token) {
-			if (!debugging_)
-				token = new Token;
-			else
-				token = new DebugToken(ruleName);
+			token = createToken(ruleName);
 			previous_ = token;
 		}
 		return token;
 	}
 
-	inline bool debugging() const { return debugging_; }
-	inline void setDebugging(bool on) { debugging_ = on; }
-
-private:
-	TokenFactory(): debugging_(false) {}
-	bool debugging_;
 	Ref<Token> previous_;
 };
 
