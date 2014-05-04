@@ -29,9 +29,9 @@ SyntaxState::SyntaxState(const DefinitionNode *definition, int numFlags, int num
 	for (int i = 0; i < captures_->size(); ++i) captures_->at(i) = Range::create();
 }
 
-Token *SyntaxState::produceToken(const char *ruleName)
+Token *SyntaxState::produceToken(int scope, int rule, const char *scopeName, const char *ruleName)
 {
-	Token *token = tokenFactory_->produce(ruleName);
+	Token *token = tokenFactory_->produce(scope, rule, scopeName, ruleName);
 	if (!rootToken_) rootToken_ = token;
 	return token;
 }
@@ -62,7 +62,7 @@ SyntaxState *SyntaxState::stateByScope(const DefinitionNode *scope)
 	if (!stateByScope_) stateByScope_ = StateByScope::create();
 	Ref<SyntaxState> state;
 	if (!stateByScope_->lookup(scope, &state)) {
-		state = scope->createState();
+		state = scope->createState(tokenFactory_);
 		stateByScope_->insert(scope, state);
 	}
 	return state;

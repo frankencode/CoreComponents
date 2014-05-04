@@ -907,10 +907,11 @@ class DefinitionNode;
 class RuleNode: public Node
 {
 public:
-	RuleNode(int definitionId, const char *name, int ruleId, Node *entry)
-		: definitionId_(definitionId),
+	RuleNode(const char *scopeName, const char *name, int scope, int id, Node *entry)
+		: scopeName_(scopeName),
 		  name_(name),
-		  id_(ruleId),
+		  scope_(scope),
+		  id_(id),
 		  used_(false),
 		  numberOfRefs_(-1)
 	{
@@ -919,8 +920,7 @@ public:
 
 	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
-		Ref<Token> token = state->produceToken(name_);
-		token->init(definitionId_, id_);
+		Ref<Token> token = state->produceToken(scope_, id_, scopeName_, name_);
 		if (parentToken)
 			parentToken->appendChild(token);
 
@@ -958,8 +958,9 @@ public:
 protected:
 	friend class InlineNode;
 
-	int definitionId_;
+	const char *scopeName_;
 	const char *name_;
+	int scope_;
 	int id_;
 	bool used_;
 	int numberOfRefs_;
@@ -1200,7 +1201,7 @@ public:
 
 	inline int DEFINE(const char *ruleName, NODE entry = 0) {
 		if (!entry) entry = PASS();
-		Ref<RuleNode> rule = new RuleNode(id_, ruleName, numRules_++, entry);
+		Ref<RuleNode> rule = new RuleNode(name_, ruleName, id_, numRules_++, entry);
 		addRule(rule);
 		return rule->id();
 	}

@@ -31,7 +31,6 @@ public:
 private:
 	friend class Singleton<Markup>;
 	Markup();
-	void printToken(ByteArray *text, Token *token, int depth = 0) const;
 };
 
 inline Markup *markup() { return Markup::instance(); }
