@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "Memory.h"
 #include "Token.h"
 
 namespace flux

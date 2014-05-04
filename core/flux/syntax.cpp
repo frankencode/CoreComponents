@@ -41,6 +41,7 @@ NODE DefinitionNode::KEYWORD(const char *keywords)
 
 void DefinitionNode::LINK()
 {
+	if (LinkNode::rule_) return;
 	while (unresolvedLinkHead_) {
 		unresolvedLinkHead_->rule_ = ruleByName(unresolvedLinkHead_->ruleName_);
 		unresolvedLinkHead_ = unresolvedLinkHead_->unresolvedNext_;
@@ -49,11 +50,9 @@ void DefinitionNode::LINK()
 		unresolvedKeywordHead_->keyword_ = keywordByName(unresolvedKeywordHead_->keywordName_);
 		unresolvedKeywordHead_ = unresolvedKeywordHead_->unresolvedKeywordNext_;
 	}
-	if (!LinkNode::rule_) {
-		if (!LinkNode::ruleName_)
-			FLUX_DEBUG_ERROR("Missing entry rule declaration");
-		LinkNode::rule_ = ruleByName(LinkNode::ruleName_);
-	}
+	if (!LinkNode::ruleName_)
+		FLUX_DEBUG_ERROR("Missing entry rule declaration");
+	LinkNode::rule_ = ruleByName(LinkNode::ruleName_);
 }
 
 Ref<State> DefinitionNode::find(ByteArray *text, int i, TokenFactory *tokenFactory) const

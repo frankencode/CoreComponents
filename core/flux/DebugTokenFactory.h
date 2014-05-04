@@ -24,7 +24,7 @@ public:
 protected:
 	DebugTokenFactory() {}
 
-	virtual Token *createToken(const char *ruleName) { return new DebugToken(ruleName); }
+	virtual Token *produce(const char *ruleName) { return new DebugToken(ruleName); }
 };
 
 } // namespace flux
