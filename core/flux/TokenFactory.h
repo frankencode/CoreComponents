@@ -26,10 +26,9 @@ public:
 
 protected:
 	TokenFactory() {}
-	virtual Token *produce(const char *ruleName) { return new Token; }
-
-private:
-	Ref<Token> previous_;
+	virtual Token *produce(int scope, int rule, const char *scopeName, const char *ruleName) {
+		return new Token(scope, rule);
+	}
 };
 
 } // namespace flux

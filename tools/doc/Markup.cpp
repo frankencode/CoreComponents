@@ -130,21 +130,8 @@ Ref<FragmentList> Markup::parse(ByteArray *text) const
 	Ref<DebugTokenFactory> tokenFactory = DebugTokenFactory::create();
 	Ref<SyntaxState> state = match(text, 0, tokenFactory);
 	if (!state->valid()) throw SyntaxError(text, state);
-	printToken(text, state->rootToken());
+	cast<DebugToken>(state->rootToken())->printTo(err(), text);
 	return Ref<FragmentList>();
-}
-
-void Markup::printToken(ByteArray *text, Token *rootToken, int depth) const
-{
-	for (
-		Token *token = rootToken->firstChild();
-		token;
-		token = token->nextSibling())
-	{
-		DebugToken *h = cast<DebugToken>(token);
-		ferr() << String(depth * 2, ' ') << "[" << h->ruleName() << "(" << h->i0() << ".." << h->i1() << "):"<< text->copy(h) << "]" << nl;
-		printToken(text, token, depth + 1);
-	}
 }
 
 } // namespace fluxdoc

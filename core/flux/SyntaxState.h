@@ -66,7 +66,7 @@ private:
 	SyntaxState();
 	SyntaxState(const DefinitionNode *definition, int numFlags, int numCaptures, TokenFactory *tokenFactory);
 
-	Token *produceToken(const char *ruleName);
+	Token *produceToken(int scope, int rule, const char *scopeName, const char *ruleName);
 
 	SyntaxState *stateByScope(const DefinitionNode *definition);
 

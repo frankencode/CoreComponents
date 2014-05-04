@@ -15,6 +15,12 @@
 namespace flux
 {
 
+namespace syntax {
+	class RuleNode;
+	class KeywordNode;
+}
+
+class TokenFactory;
 class Token;
 
 class TokenScreen: public virtual Object
@@ -22,13 +28,6 @@ class TokenScreen: public virtual Object
 public:
 	virtual bool project(Token *token, int i0, int i1) = 0;
 };
-
-namespace syntax {
-	class RuleNode;
-	class KeywordNode;
-}
-
-class TokenFactory;
 
 class Token: public Tree<Token>
 {
@@ -53,31 +52,16 @@ public:
 	Token *at(int i) const;
 
 protected:
-	Token()
-		: scope_(-1),
-		  rule_(-1),
+	Token(int scope = 0, int rule = 0)
+		: scope_(scope),
+		  rule_(rule),
 		  keyword_(-1),
 		  i0_(0),
 		  i1_(0)
 	{}
 
-	Token(const Token &b)
-		: scope_(b.scope_),
-		  rule_(b.rule_),
-		  keyword_(b.keyword_),
-		  i0_(b.i0_),
-		  i1_(b.i1_)
-	{}
-
 private:
-	inline void init(int scope, int rule)
-	{
-		scope_ = scope;
-		rule_ = rule;
-	}
-
-	inline void setRange(int i0, int i1)
-	{
+	inline void setRange(int i0, int i1) {
 		i0_ = i0;
 		i1_ = i1;
 	}
