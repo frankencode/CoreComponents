@@ -56,14 +56,9 @@ void DefinitionNode::LINK()
 	}
 }
 
-State *DefinitionNode::createState() const
+Ref<State> DefinitionNode::find(ByteArray *text, int i, TokenFactory *tokenFactory) const
 {
-	return new State(this, numFlags_, numCaptures_);
-}
-
-Ref<State> DefinitionNode::find(ByteArray *text, int i) const
-{
-	Ref<State> state = createState();
+	Ref<State> state = createState(tokenFactory);
 	while (text->has(i)) {
 		int h = matchNext(text, i, 0, state);
 		if (h == -1) state->rootToken_ = 0;
@@ -73,9 +68,9 @@ Ref<State> DefinitionNode::find(ByteArray *text, int i) const
 	return state;
 }
 
-Ref<State> DefinitionNode::match(ByteArray *text, int i) const
+Ref<State> DefinitionNode::match(ByteArray *text, int i, TokenFactory *tokenFactory) const
 {
-	Ref<State> state = createState();
+	Ref<State> state = createState(tokenFactory);
 	int h = i < 0 ? 0 : i;
 	h = matchNext(text, h, 0, state);
 	if ( (h == -1) || (i < 0 && h < text->size()) ) state->rootToken_ = 0;

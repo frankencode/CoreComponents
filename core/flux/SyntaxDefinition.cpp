@@ -27,16 +27,15 @@ SyntaxDebugFactory *SyntaxDefinition::debugFactory() const { return def_->debugF
 SyntaxNode *SyntaxDefinition::debug(SyntaxNode *newNode, const char *nodeType) { return def_->debug(newNode, nodeType); }
 
 int SyntaxDefinition::keywordByName(const char *keyword) { return def_->keywordByName(keyword); }
-Ref<SyntaxState> SyntaxDefinition::createState() const { return def_->createState(); }
 
-Ref<SyntaxState> SyntaxDefinition::find(const ByteArray *text, int i) const
+Ref<SyntaxState> SyntaxDefinition::find(const ByteArray *text, int i, TokenFactory *tokenFactory) const
 {
-	return def_->find(const_cast<ByteArray *>(text), i);
+	return def_->find(const_cast<ByteArray *>(text), i, tokenFactory);
 }
 
-Ref<SyntaxState> SyntaxDefinition::match(const ByteArray *text, int i) const
+Ref<SyntaxState> SyntaxDefinition::match(const ByteArray *text, int i, TokenFactory *tokenFactory) const
 {
-	return def_->match(const_cast<ByteArray *>(text), i);
+	return def_->match(const_cast<ByteArray *>(text), i, tokenFactory);
 }
 
 int SyntaxDefinition::matchLength() const

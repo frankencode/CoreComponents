@@ -1110,7 +1110,6 @@ public:
 		  numKeywords_(0),
 		  ruleByName_(RuleByName::create()),
 		  keywordByName_(KeywordByName::create()),
-		  statefulScope_(false),
 		  hasHints_(false),
 		  numFlags_(0),
 		  numCaptures_(0),
@@ -1138,7 +1137,6 @@ public:
 		if (!name)
 			FLUX_DEBUG_ERROR("Cannot import anonymous syntax definition");
 		scopeByName_->insert(name, definition);
-		statefulScope_ = statefulScope_ || definition->stateful();
 	}
 
 	typedef Ref<Node> NODE;
@@ -1274,12 +1272,12 @@ public:
 
 	inline int numRules() const { return numRules_; }
 
-	inline bool stateful() const { return (numFlags_ > 0) || (numCaptures_ > 0) || statefulScope_ || hasHints_; }
+	inline State *createState(TokenFactory *tokenFactory = 0) const {
+		return new State(this, numFlags_, numCaptures_, tokenFactory);
+	}
 
-	State *createState() const;
-
-	Ref<State> find(ByteArray *text, int i) const;
-	Ref<State> match(ByteArray *text, int i = -1) const;
+	Ref<State> find(ByteArray *text, int i, TokenFactory *tokenFactory = 0) const;
+	Ref<State> match(ByteArray *text, int i = -1, TokenFactory *tokenFactory = 0) const;
 
 	const DefinitionNode *resolveScope(const char *&name) const;
 
@@ -1360,7 +1358,6 @@ private:
 	Ref<LinkNode> unresolvedLinkHead_;
 	Ref<PreviousNode> unresolvedKeywordHead_;
 	Ref<DefinitionNode> unresolvedNext_;
-	bool statefulScope_;
 	bool hasHints_;
 
 	inline int touchFlag(const char *name)

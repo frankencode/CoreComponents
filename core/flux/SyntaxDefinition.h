@@ -38,10 +38,9 @@ public:
 	SyntaxNode *debug(SyntaxNode *newNode, const char *nodeType);
 
 	int keywordByName(const char *keyword);
-	Ref<SyntaxState> createState() const;
 
-	Ref<SyntaxState> find(const ByteArray *text, int i = 0) const;
-	Ref<SyntaxState> match(const ByteArray *text, int i = -1) const;
+	Ref<SyntaxState> find(const ByteArray *text, int i = 0, TokenFactory *tokenFactory = 0) const;
+	Ref<SyntaxState> match(const ByteArray *text, int i = -1, TokenFactory *tokenFactory = 0) const;
 
 	int matchLength() const;
 

@@ -28,9 +28,31 @@ namespace syntax {
 	class KeywordNode;
 }
 
+class TokenFactory;
+
 class Token: public Tree<Token>
 {
+	friend class TokenFactory;
+	friend class syntax::RuleNode;
+	friend class syntax::KeywordNode;
+
 public:
+	inline bool valid() const { return rule_ != -1; }
+	inline int scope() const { return scope_; }
+	inline int rule() const { return rule_; }
+	inline int keyword() const { return keyword_; }
+
+	inline int i0() const { return i0_; }
+	inline int i1() const { return i1_; }
+	inline int index() const { return i0_; }
+	inline int size() const { return i1_ - i0_; }
+
+	bool glow(TokenScreen *screen);
+	static void meld(Token *root0, Token *root1);
+
+	Token *at(int i) const;
+
+protected:
 	Token()
 		: scope_(-1),
 		  rule_(-1),
@@ -47,25 +69,7 @@ public:
 		  i1_(b.i1_)
 	{}
 
-	inline bool valid() const { return rule_ != -1; }
-	inline int scope() const { return scope_; }
-	inline int rule() const { return rule_; }
-	inline int keyword() const { return keyword_; }
-
-	inline int i0() const { return i0_; }
-	inline int i1() const { return i1_; }
-	inline int index() const { return i0_; }
-	inline int size() const { return i1_ - i0_; }
-
-	bool glow(TokenScreen *screen);
-	static void meld(Token *root0, Token *root1);
-
-	Token *at(int i) const;
-
 private:
-	friend class syntax::RuleNode;
-	friend class syntax::KeywordNode;
-
 	inline void init(int scope, int rule)
 	{
 		scope_ = scope;

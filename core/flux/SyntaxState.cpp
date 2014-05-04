@@ -15,27 +15,19 @@
 namespace flux
 {
 
-SyntaxState::SyntaxState()
-	: hint_(0),
-	  hintOffset_(-1),
-	  finalize_(false)
-{}
-
-SyntaxState::SyntaxState(const DefinitionNode *definition, int numFlags, int numCaptures)
+SyntaxState::SyntaxState(const DefinitionNode *definition, int numFlags, int numCaptures, TokenFactory *tokenFactory)
 	: definition_(definition),
 	  flags_(Flags::create(numFlags)),
 	  captures_(Captures::create(numCaptures)),
-	  tokenFactory_(TokenFactory::create()),
+	  tokenFactory_(tokenFactory),
 	  hint_(0),
 	  hintOffset_(-1),
 	  finalize_(false)
 {
+	if (!tokenFactory_) tokenFactory_ = new TokenFactory;
 	for (int i = 0; i < flags_->size(); ++i) flags_->at(i) =  false;
 	for (int i = 0; i < captures_->size(); ++i) captures_->at(i) = Range::create();
 }
-
-bool SyntaxState::debugging() const { return tokenFactory_->debugging(); }
-void SyntaxState::setDebugging(bool on) { tokenFactory_->setDebugging(on); }
 
 Token *SyntaxState::produceToken(const char *ruleName)
 {
