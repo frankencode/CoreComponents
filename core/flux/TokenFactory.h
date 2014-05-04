@@ -26,23 +26,9 @@ public:
 
 protected:
 	TokenFactory() {}
-
-	virtual Token *createToken(const char *ruleName) { return new Token; }
+	virtual Token *produce(const char *ruleName) { return new Token; }
 
 private:
-	inline Token *produce(const char *ruleName)
-	{
-		Token *token = 0;
-		if (previous_)
-			if (previous_->refCount() == 1)
-				token = previous_;
-		if (!token) {
-			token = createToken(ruleName);
-			previous_ = token;
-		}
-		return token;
-	}
-
 	Ref<Token> previous_;
 };
 
