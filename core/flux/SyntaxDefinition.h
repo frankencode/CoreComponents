@@ -128,6 +128,7 @@ public:
 	void ENTRY(const char *ruleName);
 	NODE REF(const char *ruleName);
 	NODE INLINE(const char *ruleName);
+	NODE INVOKE(const char *ruleName);
 	NODE PREVIOUS(const char *ruleName, const char *keyword = 0);
 	NODE CONTEXT(const char *ruleName, NODE inContext = 0, NODE outOfContext = 0);
 

@@ -907,10 +907,9 @@ class DefinitionNode;
 class RuleNode: public Node
 {
 public:
-	RuleNode(const char *scopeName, const char *name, int scope, int id, Node *entry)
-		: scopeName_(scopeName),
+	RuleNode(DefinitionNode *scope, const char *name, int id, Node *entry)
+		: scope_(scope),
 		  name_(name),
-		  scope_(scope),
 		  id_(id),
 		  used_(false),
 		  numberOfRefs_(-1)
@@ -918,24 +917,7 @@ public:
 		appendChild(entry);
 	}
 
-	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
-	{
-		Ref<Token> token = state->produceToken(scope_, id_, scopeName_, name_);
-		if (parentToken)
-			parentToken->appendChild(token);
-
-		int i0 = i;
-		i = (entry()) ? entry()->matchNext(text, i, token, state) : i;
-
-		if (token) {
-			if (i != -1)
-				token->setRange(i0, i);
-			else
-				token->unlink();
-		}
-
-		return i;
-	}
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const;
 
 	inline int matchLength() const { return entry()->matchLength(); }
 
@@ -948,8 +930,9 @@ public:
 		return numberOfRefs_;
 	}
 
-	inline int id() const { return id_; }
+	inline DefinitionNode *scope() const { return scope_; }
 	inline const char *name() const { return name_; }
+	inline int id() const { return id_; }
 	inline Node *entry() const { return Node::firstChild(); }
 
 	inline bool used() const { return used_; }
@@ -958,9 +941,8 @@ public:
 protected:
 	friend class InlineNode;
 
-	const char *scopeName_;
+	DefinitionNode *scope_;
 	const char *name_;
-	int scope_;
 	int id_;
 	bool used_;
 	int numberOfRefs_;
@@ -1024,6 +1006,23 @@ public:
 	{
 		return LinkNode::rule_->entry()->matchNext(text, i, parentToken, state);
 	}
+};
+
+class InvokeNode: public RefNode
+{
+public:
+	InvokeNode(const char *ruleName, Node *coverage = 0)
+		: RefNode(ruleName)
+	{
+		if (coverage) appendChild(coverage);
+	}
+
+	virtual int matchNext(ByteArray *media, int i, Token *parentToken, State *state) const;
+
+	inline Node *coverage() const { return Node::firstChild(); }
+
+private:
+	static void shiftTree(Token *root, int delta);
 };
 
 class PreviousNode: public LinkNode
@@ -1095,7 +1094,6 @@ public:
 	inline Node *outOfContext() const { return Node::lastChild(); }
 };
 
-class DefinitionNode;
 class DebugFactory;
 
 class DefinitionNode: public RefNode
@@ -1201,7 +1199,7 @@ public:
 
 	inline int DEFINE(const char *ruleName, NODE entry = 0) {
 		if (!entry) entry = PASS();
-		Ref<RuleNode> rule = new RuleNode(name_, ruleName, id_, numRules_++, entry);
+		Ref<RuleNode> rule = new RuleNode(this, ruleName, numRules_++, entry);
 		addRule(rule);
 		return rule->id();
 	}
@@ -1220,6 +1218,12 @@ public:
 		link->unresolvedNext_ = unresolvedLinkHead_;
 		unresolvedLinkHead_ = link;
 		return debug(link, "Inline");
+	}
+	inline NODE INVOKE(const char *ruleName) {
+		Ref<RefNode> link = new InvokeNode(ruleName);
+		link->unresolvedNext_ = unresolvedLinkHead_;
+		unresolvedLinkHead_ = link;
+		return debug(link, "Invoke");
 	}
 	inline NODE PREVIOUS(const char *ruleName, const char *keyword = 0) {
 		Ref<PreviousNode> link = new PreviousNode(ruleName, keyword);
