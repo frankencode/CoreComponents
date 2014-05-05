@@ -48,8 +48,9 @@ int InvokeNode::matchNext(ByteArray *text, int i, Token *parentToken, State *sta
 	if (i == -1) return i;
 
 	Ref<SyntaxState> childState = LinkNode::rule()->scope()->createState(state->tokenFactory_);
-	RefNode::matchNext(ByteRange(text, i0, i), 0, parentToken, childState);
+	i = RefNode::matchNext(ByteRange(text, i0, coverage() ? i : text->size()), 0, parentToken, childState);
 	if (i0 != 0) {
+		i += i0;
 		for (
 			Token *token = lastChildSaved ? lastChildSaved : parentToken->firstChild();
 			token;
