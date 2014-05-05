@@ -16,6 +16,63 @@ namespace flux
 namespace syntax
 {
 
+int RuleNode::matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+{
+	Ref<Token> token = state->produceToken(scope_->id(), id_, scope_->name(), name_);
+	if (parentToken)
+		parentToken->appendChild(token);
+
+	int i0 = i;
+	i = (entry()) ? entry()->matchNext(text, i, token, state) : i;
+
+	if (token) {
+		if (i != -1)
+			token->setRange(i0, i);
+		else
+			token->unlink();
+	}
+
+	return i;
+}
+
+int InvokeNode::matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+{
+	int i0 = i;
+	Token *lastChildSaved = parentToken->lastChild();
+
+	if (coverage()) {
+		i = coverage()->matchNext(text, i, parentToken, state);
+		rollBack(parentToken, lastChildSaved);
+	}
+
+	if (i == -1) return i;
+
+	Ref<SyntaxState> childState = LinkNode::rule()->scope()->createState(state->tokenFactory_);
+	RefNode::matchNext(ByteRange(text, i0, i), 0, parentToken, childState);
+	if (i0 != 0) {
+		for (
+			Token *token = lastChildSaved ? lastChildSaved : parentToken->firstChild();
+			token;
+			token = token->nextSibling()
+		)
+			shiftTree(token, i0);
+	}
+
+	if (childState->hint_) {
+		state->hint_ = childState->hint_;
+		state->hintOffset_ = childState->hintOffset_ + i0;
+	}
+
+	return i;
+}
+
+void InvokeNode::shiftTree(Token *root, int delta)
+{
+	root->setRange(root->i0() + delta, root->i1() + delta);
+	for (Token *token = root->firstChild(); token; token = token->nextSibling())
+		shiftTree(token, delta);
+}
+
 NODE DefinitionNode::KEYWORD(const char *keywords)
 {
 	Ref<KeywordMap> map = KeywordMap::create();

@@ -520,6 +520,23 @@ private:
 	inline InlineNode *inlineNode() const { return cast<InlineNode>(DebugNode::entry()); }
 };
 
+class InvokeDebugNode: public DebugNode {
+public:
+	InvokeDebugNode(Debugger *debugger, Node *newNode)
+		: DebugNode(debugger, newNode)
+	{}
+
+	virtual const char *declType() const { return "INVOKE"; }
+
+	virtual void printAttributes(String indent) {
+		fout("\"%%\"") << invokeNode()->ruleName();
+	}
+
+private:
+	typedef syntax::InvokeNode InvokeNode;
+	inline InvokeNode *invokeNode() const { return cast<InvokeNode>(DebugNode::entry()); }
+};
+
 class PreviousDebugNode: public DebugNode {
 public:
 	PreviousDebugNode(Debugger *debugger, Node *newNode)
@@ -682,6 +699,7 @@ Debugger::Debugger(String indent)
 	factoryByNodeType_->insert("Expect",         new DebugNodeFactory<ExpectDebugNode>         (this));
 	factoryByNodeType_->insert("Ref",            new DebugNodeFactory<RefDebugNode>            (this));
 	factoryByNodeType_->insert("Inline",         new DebugNodeFactory<InlineDebugNode>         (this));
+	factoryByNodeType_->insert("Invoke",         new DebugNodeFactory<InvokeDebugNode>         (this));
 	factoryByNodeType_->insert("Previous",       new DebugNodeFactory<PreviousDebugNode>       (this));
 	factoryByNodeType_->insert("Context",        new DebugNodeFactory<ContextDebugNode>        (this));
 	factoryByNodeType_->insert("Call",           new DebugNodeFactory<CallDebugNode>           (this));

@@ -23,6 +23,7 @@ namespace syntax
 
 class DefinitionNode;
 class RuleNode;
+class InvokeNode;
 class SetNode;
 class IfNode;
 class CaptureNode;
@@ -53,6 +54,7 @@ public:
 private:
 	friend class syntax::DefinitionNode;
 	friend class syntax::RuleNode;
+	friend class syntax::InvokeNode;
 	friend class syntax::SetNode;
 	friend class syntax::IfNode;
 	friend class syntax::CaptureNode;

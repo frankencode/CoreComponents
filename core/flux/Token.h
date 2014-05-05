@@ -17,6 +17,7 @@ namespace flux
 
 namespace syntax {
 	class RuleNode;
+	class InvokeNode;
 	class KeywordNode;
 }
 
@@ -33,6 +34,7 @@ class Token: public Tree<Token>
 {
 	friend class TokenFactory;
 	friend class syntax::RuleNode;
+	friend class syntax::InvokeNode;
 	friend class syntax::KeywordNode;
 
 public:
@@ -47,7 +49,7 @@ public:
 	inline int size() const { return i1_ - i0_; }
 
 	bool glow(TokenScreen *screen);
-	static void meld(Token *root0, Token *root1);
+	// static void meld(Token *root0, Token *root1);
 
 	Token *at(int i) const;
 

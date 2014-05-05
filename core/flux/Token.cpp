@@ -37,7 +37,8 @@ bool Token::glow(TokenScreen *screen)
 	return true;
 }
 
-void Token::meld(Token *root0, Token *root1)
+
+/*void Token::meld(Token *root0, Token *root1)
 {
 	if ((!root0) || (!root1)) return;
 
@@ -93,7 +94,7 @@ void Token::meld(Token *root0, Token *root1)
 	}
 
 	root0->appendAllChildrenOf(result);
-}
+}*/
 
 bool Token::burn(int b0, int b1)
 {
