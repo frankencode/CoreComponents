@@ -125,10 +125,13 @@ public:
 	NODE EXPECT(const char *text, NODE entry);
 
 	int DEFINE(const char *ruleName, NODE entry = 0);
+	inline void DEFINE(const char *ruleName, int *ruleId, NODE entry) {
+		*ruleId = DEFINE(ruleName, entry);
+	}
 	void ENTRY(const char *ruleName);
 	NODE REF(const char *ruleName);
 	NODE INLINE(const char *ruleName);
-	NODE INVOKE(const char *ruleName);
+	NODE INVOKE(const char *ruleName, NODE converage = 0);
 	NODE PREVIOUS(const char *ruleName, const char *keyword = 0);
 	NODE CONTEXT(const char *ruleName, NODE inContext = 0, NODE outOfContext = 0);
 

@@ -1,5 +1,5 @@
-#include "MarkupProtocol.h"
 #include "fragments.h"
+#include "MarkupProtocol.h"
 
 namespace fluxdoc
 {

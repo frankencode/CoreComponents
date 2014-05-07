@@ -1197,11 +1197,10 @@ public:
 		return debug(new ExpectNode(text, entry), "Expect");
 	}
 
-	inline int DEFINE(const char *ruleName, NODE entry = 0) {
-		if (!entry) entry = PASS();
-		Ref<RuleNode> rule = new RuleNode(this, ruleName, numRules_++, entry);
-		addRule(rule);
-		return rule->id();
+	inline int DEFINE(const char *ruleName, NODE entry) {
+		Ref<RuleNode> ruleNode = new RuleNode(this, ruleName, numRules_++, entry);
+		addRule(ruleNode);
+		return ruleNode->id();
 	}
 	inline void ENTRY(const char *ruleName) {
 		LinkNode::ruleName_ = ruleName;
@@ -1219,8 +1218,8 @@ public:
 		unresolvedLinkHead_ = link;
 		return debug(link, "Inline");
 	}
-	inline NODE INVOKE(const char *ruleName) {
-		Ref<RefNode> link = new InvokeNode(ruleName);
+	inline NODE INVOKE(const char *ruleName, NODE coverage = 0) {
+		Ref<RefNode> link = new InvokeNode(ruleName, coverage);
 		link->unresolvedNext_ = unresolvedLinkHead_;
 		unresolvedLinkHead_ = link;
 		return debug(link, "Invoke");

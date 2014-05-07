@@ -51,8 +51,9 @@ public:
 	Variant(float value):  type_(FloatType), itemType_(UndefType), float_(value) {}
 	Variant(double value): type_(FloatType), itemType_(UndefType), float_(value) {}
 
-	Variant(const char *value):   type_(StringType), itemType_(UndefType) { initRef(String(value)); }
-	Variant(String value):        type_(StringType), itemType_(UndefType) { initRef(value); }
+	Variant(const char *value):    type_(StringType), itemType_(UndefType) { initRef(String(value)); }
+	Variant(Ref<ByteArray> value): type_(StringType), itemType_(UndefType) { initRef(value); }
+	Variant(String value):         type_(StringType), itemType_(UndefType) { initRef(value); }
 	template<class T>
 	Variant(const Ref<T> &value): type_(ObjectType), itemType_(UndefType) { initRef(value); }
 

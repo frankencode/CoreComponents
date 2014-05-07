@@ -8,14 +8,21 @@ namespace fluxdoc
 
 using namespace flux;
 
+class Markup;
+
 class TextFragment: public Fragment
 {
 public:
 	inline String text() const { return text_; }
 
 protected:
+	friend class Markup;
+
 	TextFragment(String className)
 		: Fragment(className)
+	{}
+
+	virtual void define()
 	{
 		insert("text", "");
 	}
@@ -25,23 +32,21 @@ protected:
 		text_ = value("text");
 	}
 
-private:
 	String text_;
 };
 
 class Title: public TextFragment
 {
 public:
-	static Ref<Title> create(String className = "Title") {
-		return new Title(className);
-	}
+	static Ref<Title> create() { return new Title; }
 
 protected:
-	Title(String className)
+	Title(String className = "Title")
 		: TextFragment(className)
 	{}
 
-	virtual Ref<YasonObject> produce() {
+	virtual Ref<YasonObject> produce()
+	{
 		return create();
 	}
 };
@@ -49,31 +54,33 @@ protected:
 class Author: public Fragment
 {
 public:
-	static Ref<Author> create(String className = "Author") {
-		return new Author(className);
-	}
+	static Ref<Author> create() { return new Author; }
 
 	String name() const { return name_; }
 	String email() const { return email_; }
 
 protected:
-	Author(String className)
+	Author(String className = "Author")
 		: Fragment(className)
+	{}
+
+	virtual void define()
 	{
 		insert("name", "");
 		insert("email", "");
 	}
 
-	virtual Ref<YasonObject> produce() {
+	virtual Ref<YasonObject> produce()
+	{
 		return create();
 	}
 
-	virtual void realize(Token *) {
+	virtual void realize(Token *)
+	{
 		name_ = value("name");
 		email_ = value("email");
 	}
 
-private:
 	String name_;
 	String email_;
 };
@@ -81,16 +88,15 @@ private:
 class Heading: public TextFragment
 {
 public:
-	static Ref<Heading> create(String className = "Heading") {
-		return new Heading(className);
-	}
+	static Ref<Heading> create() { return new Heading; }
 
 protected:
-	Heading(String className)
+	Heading(String className = "Heading")
 		: TextFragment(className)
 	{}
 
-	virtual Ref<YasonObject> produce() {
+	virtual Ref<YasonObject> produce()
+	{
 		return create();
 	}
 };
@@ -98,16 +104,15 @@ protected:
 class Paragraph: public TextFragment
 {
 public:
-	static Ref<Paragraph> create(String className = "Paragraph") {
-		return new Paragraph(className);
-	}
+	static Ref<Paragraph> create() { return new Paragraph; }
 
 protected:
-	Paragraph(String className)
+	Paragraph(String className = "Paragraph")
 		: TextFragment(className)
 	{}
 
-	virtual Ref<YasonObject> produce() {
+	virtual Ref<YasonObject> produce()
+	{
 		return create();
 	}
 };
@@ -115,29 +120,34 @@ protected:
 class Item: public TextFragment
 {
 public:
-	static Ref<Item> create(String className = "Item") {
-		return new Item(className);
-	}
+	static Ref<Item> create() { return new Item; }
 
 	inline int depth() const { return depth_; }
 
 protected:
-	Item(String className)
+	friend class Markup;
+
+	Item(String className = "Item")
 		: TextFragment(className)
+	{}
+
+	virtual void define()
 	{
+		TextFragment::define();
 		insert("depth", 1);
 	}
 
-	virtual Ref<YasonObject> produce() {
+	virtual Ref<YasonObject> produce()
+	{
 		return create();
 	}
 
-	virtual void realize(Token *objectToken) {
+	virtual void realize(Token *objectToken)
+	{
 		TextFragment::realize(objectToken);
 		depth_ = value("depth");
 	}
 
-private:
 	int depth_;
 };
 
@@ -150,18 +160,22 @@ public:
 protected:
 	PathFragment(String className)
 		: TextFragment(className)
+	{}
+
+	virtual void define()
 	{
+		TextFragment::define();
 		insert("path", "");
 		insert("title", "");
 	}
 
-	virtual void realize(Token *objectToken) {
+	virtual void realize(Token *objectToken)
+	{
 		TextFragment::realize(objectToken);
 		path_ = value("path");
 		title_ = value("title");
 	}
 
-private:
 	String path_;
 	String title_;
 };
@@ -169,16 +183,15 @@ private:
 class Part: public PathFragment
 {
 public:
-	static Ref<Part> create(String className = "Part") {
-		return new Part(className);
-	}
+	static Ref<Part> create() { return new Part; }
 
 protected:
-	Part(String className)
+	Part(String className = "Part")
 		: PathFragment(className)
 	{}
 
-	virtual Ref<YasonObject> produce() {
+	virtual Ref<YasonObject> produce()
+	{
 		return create();
 	}
 };
@@ -186,16 +199,15 @@ protected:
 class Image: public PathFragment
 {
 public:
-	static Ref<Image> create(String className = "Image") {
-		return new Image(className);
-	}
+	static Ref<Image> create() { return new Image; }
 
 protected:
-	Image(String className)
+	Image(String className = "Image")
 		: PathFragment(className)
 	{}
 
-	virtual Ref<YasonObject> produce() {
+	virtual Ref<YasonObject> produce()
+	{
 		return create();
 	}
 };
@@ -203,16 +215,15 @@ protected:
 class Code: public PathFragment
 {
 public:
-	static Ref<Code> create(String className = "Code") {
-		return new Code(className);
-	}
+	static Ref<Code> create() { return new Code; }
 
 protected:
-	Code(String className)
+	Code(String className = "Code")
 		: PathFragment(className)
 	{}
 
-	virtual Ref<YasonObject> produce() {
+	virtual Ref<YasonObject> produce()
+	{
 		return create();
 	}
 };

@@ -132,6 +132,61 @@ private:
 		else FLUX_SYSTEM_DEBUG_ERROR(errorCode); \
 	}
 
+class TextError: public Exception
+{
+public:
+	inline String text() const { return text_; }
+	inline int offset() const { return offset_; }
+	inline String resource() const { return resource_; }
+
+	void setResource(String resource) { resource_ = resource; }
+
+protected:
+	TextError(String text, int offset, String resource = "")
+		: text_(text),
+		  offset_(offset),
+		  resource_(resource)
+	{}
+	~TextError() throw() {}
+
+	String text_;
+	int offset_;
+	String resource_;
+};
+
+class SyntaxState;
+
+class SyntaxError: public TextError
+{
+public:
+	SyntaxError(String text, SyntaxState *state = 0, String resource = "");
+	~SyntaxError() throw() {}
+
+	inline SyntaxState *state() const { return state_; }
+
+	virtual String message() const;
+
+private:
+	SyntaxState *state_;
+};
+
+class SemanticError: public TextError
+{
+public:
+	SemanticError(String reason, String text, int offset = -1, String resource = "")
+		: TextError(text, offset, resource),
+		  reason_(reason)
+	{}
+	~SemanticError() throw() {}
+
+	inline String reason() const { return reason_; }
+
+	virtual String message() const;
+
+private:
+	String reason_;
+};
+
 class Interrupt: public Exception
 {
 public:

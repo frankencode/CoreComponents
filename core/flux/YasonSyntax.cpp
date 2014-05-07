@@ -318,16 +318,16 @@ YasonSyntax::YasonSyntax()
 	LINK();
 }
 
-Variant YasonSyntax::parseMessage(const ByteArray *text, YasonProtocol *protocol)
+Variant YasonSyntax::parse(const ByteArray *text, YasonProtocol *protocol)
 {
 	Ref<SyntaxState> state = match(text);
 	if (!state->valid()) throw SyntaxError(text, state);
 	Token *valueToken = state->rootToken()->firstChild();
-	if (protocol) return parseObject(text, valueToken, protocol);
-	return parseValue(text, valueToken);
+	if (protocol) return readObject(text, valueToken, protocol);
+	return readValue(text, valueToken);
 }
 
-Ref<YasonObject> YasonSyntax::parseObject(const ByteArray *text, Token *token, YasonProtocol *protocol, YasonObject *prototype)
+Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, YasonProtocol *protocol, YasonObject *prototype)
 {
 	if (token->rule() != object_)
 		throw SemanticError("Expected an object value", text, token->i0());
@@ -387,9 +387,9 @@ Ref<YasonObject> YasonSyntax::parseObject(const ByteArray *text, Token *token, Y
 
 			Variant value;
 			if (memberPrototype)
-				value = parseObject(text, token, 0, memberPrototype);
+				value = readObject(text, token, 0, memberPrototype);
 			else
-				value = parseValue(text, token, type(defaultValue), itemType(defaultValue));
+				value = readValue(text, token, type(defaultValue), itemType(defaultValue));
 
 			Variant existingValue;
 			if (object->lookup(name, &existingValue)) {
@@ -407,7 +407,7 @@ Ref<YasonObject> YasonSyntax::parseObject(const ByteArray *text, Token *token, Y
 		else {
 			YasonProtocol *prototypeProtocol = 0;
 			if (prototype) prototypeProtocol = prototype->protocol();
-			Ref<YasonObject> child = parseObject(text, token, prototypeProtocol);
+			Ref<YasonObject> child = readObject(text, token, prototypeProtocol);
 			object->children()->append(child);
 		}
 		token = token->nextSibling();
@@ -428,7 +428,7 @@ Ref<YasonObject> YasonSyntax::parseObject(const ByteArray *text, Token *token, Y
 	return object;
 }
 
-Variant YasonSyntax::parseValue(const ByteArray *text, Token *token, int expectedType, int expectedItemType)
+Variant YasonSyntax::readValue(const ByteArray *text, Token *token, int expectedType, int expectedItemType)
 {
 	Variant value;
 	bool typeError = false;
@@ -468,19 +468,19 @@ Variant YasonSyntax::parseValue(const ByteArray *text, Token *token, int expecte
 		if ( expectedType == Variant::UndefType ||
 		     expectedType == Variant::StringType ||
 		     expectedItemType == Variant::StringType )
-			value = parseText(text, token);
+			value = readText(text, token);
 		else
 			typeError = true;
 	}
 	else if (token->rule() == object_)
 	{
-		value = parseObject(text, token);
+		value = readObject(text, token);
 	}
 	else if (token->rule() == list_)
 	{
 		if ( expectedType == Variant::UndefType ||
 		     expectedType == Variant::ListType )
-			value = parseList(text, token, expectedItemType);
+			value = readList(text, token, expectedItemType);
 		else
 			typeError = true;
 	}
@@ -537,7 +537,7 @@ Variant YasonSyntax::parseValue(const ByteArray *text, Token *token, int expecte
 	return value;
 }
 
-Variant YasonSyntax::parseList(const ByteArray *text, Token *token, int expectedItemType)
+Variant YasonSyntax::readList(const ByteArray *text, Token *token, int expectedItemType)
 {
 	Variant list;
 	if (expectedItemType == Variant::IntType)
@@ -553,7 +553,7 @@ Variant YasonSyntax::parseList(const ByteArray *text, Token *token, int expected
 	return list;
 }
 
-String YasonSyntax::parseText(const ByteArray *text, Token *token)
+String YasonSyntax::readText(const ByteArray *text, Token *token)
 {
 	token = token->firstChild();
 

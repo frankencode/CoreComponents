@@ -82,6 +82,10 @@ bool YasonWriter::isIdentifier(String name) const
 void YasonWriter::writeObject(Variant value, int depth)
 {
 	Ref<YasonObject> object = cast<YasonObject>(value);
+	if (!object) {
+		format_ << "null";
+		return;
+	}
 	if (object->className() != "") {
 		format_ << object->className();
 		format_ << " ";

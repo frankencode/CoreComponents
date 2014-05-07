@@ -11,7 +11,7 @@
 #define FLUXDOC_MARKUP_H
 
 #include <flux/SyntaxDefinition.h>
-#include <flux/TextError.h>
+#include <flux/exceptions.h>
 #include <flux/Singleton.h>
 #include "Fragment.h"
 
@@ -26,11 +26,19 @@ typedef List< Ref<Fragment> > FragmentList;
 class Markup: public SyntaxDefinition, public Singleton<Markup>
 {
 public:
-	Ref<FragmentList> parse(ByteArray *text) const;
+	Ref<FragmentList> parse(ByteArray *text, String resource = "") const;
 
 private:
 	friend class Singleton<Markup>;
 	Markup();
+	Ref<FragmentList> readPart(ByteArray *text, Token *partToken) const;
+
+	int escapedChar_;
+	int object_;
+	int line_;
+	int chunk_;
+	int heading_;
+	int item_;
 };
 
 inline Markup *markup() { return Markup::instance(); }

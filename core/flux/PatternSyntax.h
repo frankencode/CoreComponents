@@ -13,7 +13,6 @@
 #include "String.h"
 #include "Singleton.h"
 #include "SyntaxDefinition.h"
-#include "TextError.h"
 
 namespace flux
 {
