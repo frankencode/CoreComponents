@@ -33,7 +33,7 @@ YasonObjectList *YasonObject::children() const
 
 Variant Yason::parse(const ByteArray *text, YasonProtocol *protocol)
 {
-	return yasonSyntax()->parseMessage(text, protocol);
+	return yasonSyntax()->parse(text, protocol);
 }
 
 String Yason::stringify(Variant value)

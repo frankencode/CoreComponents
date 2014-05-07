@@ -10,11 +10,11 @@
 #ifndef FLUX_YASON_H
 #define FLUX_YASON_H
 
+#include "exceptions.h"
 #include "Map.h"
 #include "Variant.h"
 #include "Stream.h"
 #include "Token.h"
-#include "TextError.h"
 
 namespace flux
 {
@@ -52,6 +52,8 @@ protected:
 		  protocol_(protocol)
 	{}
 
+	virtual void define() {}
+
 	virtual Ref<YasonObject> produce() {
 		return YasonObject::create(className());
 	}
@@ -73,13 +75,16 @@ public:
 
 	template<class Prototype>
 	void add() {
-		Ref<Prototype> prototype = Prototype::create();
+		Ref<YasonObject> prototype = Prototype::create();
+		prototype->define();
 		insert(prototype->className(), prototype);
 	}
 
 	template<class Prototype>
 	void add(String className) {
-		insert(className, Prototype::create(className));
+		Ref<YasonObject> prototype = Prototype::create(className);
+		prototype->define();
+		insert(className, prototype);
 	}
 
 protected:

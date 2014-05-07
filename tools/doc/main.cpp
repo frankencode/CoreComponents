@@ -9,6 +9,7 @@
 
 #include <flux/stdio.h>
 #include <flux/Config.h>
+#include <flux/Yason.h> // DEBUG
 #include "Markup.h"
 #include "Registry.h"
 
@@ -22,8 +23,10 @@ int main(int argc, char **argv)
 		prototype->insert("format", "html");
 		Ref<Config> options = Config::read(argc, argv, prototype);
 		for (int i = 0; i < options->arguments()->size(); ++i) {
-			String text = File::open(options->arguments()->at(i))->map();
-			Ref<FragmentList> fragments = markup()->parse(text);
+			String path = options->arguments()->at(i);
+			String text = File::open(path)->map();
+			Ref<FragmentList> fragments = markup()->parse(text, path);
+			for (int i = 0; i < fragments->size(); ++i) ferr() << Yason::stringify(fragments->at(i));
 		}
 	}
 	catch (HelpError &) {

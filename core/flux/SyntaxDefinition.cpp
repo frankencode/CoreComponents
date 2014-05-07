@@ -129,7 +129,7 @@ int SyntaxDefinition::DEFINE(const char *ruleName, NODE entry) { return def_->DE
 void SyntaxDefinition::ENTRY(const char *ruleName) { def_->ENTRY(ruleName); }
 NODE SyntaxDefinition::REF(const char *ruleName) { return def_->REF(ruleName); }
 NODE SyntaxDefinition::INLINE(const char *ruleName) { return def_->INLINE(ruleName); }
-NODE SyntaxDefinition::INVOKE(const char *ruleName) { return def_->INVOKE(ruleName); }
+NODE SyntaxDefinition::INVOKE(const char *ruleName, NODE coverage) { return def_->INVOKE(ruleName, coverage); }
 NODE SyntaxDefinition::PREVIOUS(const char *ruleName, const char *keyword) { return def_->PREVIOUS(ruleName, keyword); }
 NODE SyntaxDefinition::CONTEXT(const char *ruleName, NODE inContext, NODE outOfContext) { return def_->CONTEXT(ruleName, inContext, outOfContext); }
 
