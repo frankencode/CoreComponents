@@ -513,35 +513,19 @@ ByteArray *ByteArray::trimInsitu(const char *space)
 	return truncate(i1 - i0);
 }
 
-Ref<ByteArray> ByteArray::stripTags() const
+ByteArray *ByteArray::simplifyInsitu(const char *space)
 {
-	Ref<StringList> parts = StringList::create();
-	int i = 0, j = 0;
-	while (i < size_) {
-		char ch = data_[i];
-		if (ch == '<') {
-			if (j < i) parts->append(copy(j, i));
-			for (; i < size_; ++i) if (data_[i] == '>') break;
-			i += (i != size_);
-			j = i;
-		}
-		else if (ch == '&') {
-			if (j < i) parts->append(copy(j, i));
-			for (; i < size_; ++i) if (data_[i] == ';') break;
-			i += (i != size_);
-			j = i;
-		}
-		else {
-			++i;
-		}
+	int j = 0;
+	for (int i = 0, s = 0; i < size_; ++i) {
+		const char *p = space;
+		for (; *p; ++p)
+			if (data_[i] == *p) break;
+		s = (*p) ? s + 1 : 0;
+		data_[j] = (*p) ? ' ' : data_[i];
+		j += (s < 2);
 	}
-	if (j < i) parts->append(copy(j, i));
-	return join(parts);
-}
-
-Ref<ByteArray> ByteArray::simplify() const
-{
-	return normalize(false);
+	truncate(j);
+	return trimInsitu(space);
 }
 
 Ref<ByteArray> ByteArray::normalize(bool nameCase) const
@@ -566,6 +550,32 @@ Ref<ByteArray> ByteArray::normalize(bool nameCase) const
 		}
 	}
 	return join(parts, " ");
+}
+
+Ref<ByteArray> ByteArray::stripTags() const
+{
+	Ref<StringList> parts = StringList::create();
+	int i = 0, j = 0;
+	while (i < size_) {
+		char ch = data_[i];
+		if (ch == '<') {
+			if (j < i) parts->append(copy(j, i));
+			for (; i < size_; ++i) if (data_[i] == '>') break;
+			i += (i != size_);
+			j = i;
+		}
+		else if (ch == '&') {
+			if (j < i) parts->append(copy(j, i));
+			for (; i < size_; ++i) if (data_[i] == ';') break;
+			i += (i != size_);
+			j = i;
+		}
+		else {
+			++i;
+		}
+	}
+	if (j < i) parts->append(copy(j, i));
+	return join(parts);
 }
 
 /** \brief Map a byte offset to editor coordinates.

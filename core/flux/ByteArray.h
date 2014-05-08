@@ -177,9 +177,10 @@ public:
 
 	inline Ref<ByteArray> trim(const char *space = " \t\n\r") const { return copy()->trimInsitu(space); }
 	ByteArray *trimInsitu(const char *space = " \t\n\r");
-	Ref<ByteArray> stripTags() const;
-	Ref<ByteArray> simplify() const;
+	inline Ref<ByteArray> simplify(const char *space = " \t\n\r") const { return copy()->simplifyInsitu(); }
+	ByteArray *simplifyInsitu(const char *space = " \t\n\r");
 	Ref<ByteArray> normalize(bool nameCase = true) const;
+	Ref<ByteArray> stripTags() const;
 
 	bool offsetToLinePos(int offset, int *line = 0, int *pos = 0) const;
 	bool linePosToOffset(int line, int pos, int *offset = 0) const;

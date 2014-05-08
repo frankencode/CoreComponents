@@ -1,7 +1,7 @@
 #ifndef FLUXDOC_HTMLFORMAT_H
 #define FLUXDOC_HTMLFORMAT_H
 
-#include "Registry.h"
+#include "OutputFormat.h"
 
 namespace fluxdoc
 {
@@ -21,7 +21,9 @@ private:
 
 class HtmlFormatRegistration {
 public:
-	HtmlFormatRegistration() { registry()->registerOutputFormat(HtmlFormat::create()); }
+	HtmlFormatRegistration();
+private:
+	static int count_;
 };
 
 namespace {

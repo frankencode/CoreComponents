@@ -32,11 +32,15 @@ private:
 	friend class Singleton<Markup>;
 	Markup();
 	Ref<FragmentList> readPart(ByteArray *text, Token *partToken) const;
+	String readLines(ByteArray *text, Token *lineToken) const;
+	String readChunks(ByteArray *text, Token *chunkToken) const;
 
 	int escapedChar_;
+	int comment_;
 	int object_;
-	int line_;
 	int chunk_;
+	int line_;
+	int paragraph_;
 	int heading_;
 	int item_;
 };
