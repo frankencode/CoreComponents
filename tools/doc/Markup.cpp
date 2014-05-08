@@ -47,6 +47,13 @@ Markup::Markup()
 		)
 	);
 
+	DEFINE("Comment", &comment_,
+		CHOICE(
+			INLINE("yason::CommentText"),
+			INLINE("yason::CommentLine")
+		)
+	);
+
 	DEFINE("LineEnd",
 		GLUE(
 			INLINE("Gap"),
@@ -57,26 +64,38 @@ Markup::Markup()
 		)
 	);
 
+	DEFINE("Noise",
+		REPEAT(
+			CHOICE(
+				LENGTH(1, INLINE("Gap")),
+				INLINE("Comment")
+			)
+		)
+	);
+
 	DEFINE("Object", &object_,
 		GLUE(
-			REPEAT(
-				CHOICE(
-					LENGTH(1, INLINE("Gap")),
-					INLINE("yason::CommentText")
-				)
-			),
+			INLINE("Noise"),
 			CHAR('@'),
 			EXPECT("expected YASON object",
 				REF("yason::Object")
 			),
-			REPEAT(
-				CHOICE(
-					LENGTH(1, INLINE("Gap")),
-					REF("yason::CommentText"),
-					REF("yason::CommentLine")
-				)
-			),
+			INLINE("Noise"),
 			INLINE("LineEnd")
+		)
+	);
+
+	DEFINE("Chunk", &chunk_,
+		REPEAT(1,
+			GLUE(
+				NOT(INLINE("LineEnd")),
+				NOT(INLINE("Comment")),
+				CHOICE(
+					REF("EscapedChar"),
+					OTHER('@'),
+					EXPECT("Please escape the '@' symbol", FAIL())
+				)
+			)
 		)
 	);
 
@@ -86,27 +105,10 @@ Markup::Markup()
 				GLUE(
 					NOT(INLINE("LineEnd")),
 					CHOICE(
-						REF("yason::CommentText"),
-						REF("yason::CommentLine"),
-						REF("EscapedChar"),
-						OTHER('@'),
-						GLUE(
-							CHAR('@'),
-							EXPECT("Please escape the '@' symbol", FAIL())
-						)
+						REF("Chunk"),
+						INLINE("Comment")
 					)
 				)
-			)
-		)
-	);
-
-	DEFINE("Chunk", &chunk_,
-		REPEAT(
-			GLUE(
-				INLINE("Gap"),
-				NOT(RANGE("!*")),
-				REF("Line"),
-				INLINE("LineEnd")
 			)
 		)
 	);
@@ -116,6 +118,7 @@ Markup::Markup()
 			INLINE("Gap"),
 			CHAR('!'),
 			INLINE("Gap"),
+			NOT(RANGE("!*@")),
 			REF("Line"),
 			INLINE("LineEnd")
 		)
@@ -125,8 +128,49 @@ Markup::Markup()
 		GLUE(
 			REF("Gap"),
 			CHAR('*'),
+			REPEAT(1,
+				GLUE(
+					INLINE("Gap"),
+					NOT(RANGE("!*@")),
+					REF("Line"),
+					INLINE("LineEnd")
+				)
+			)
+		)
+	);
+
+	DEFINE("ParagraphEnd",
+		AHEAD(
+			CHOICE(
+				GLUE(
+					BEHIND(
+						CHAR('\n')
+					),
+					CHOICE(
+						REPEAT(1, RANGE(" \t\n")),
+						RANGE("!*@")
+					)
+				),
+				EOI()
+			)
+		)
+	);
+
+	DEFINE("Paragraph", &paragraph_,
+		GLUE(
 			INLINE("Gap"),
-			REF("Chunk")
+			NOT(RANGE("!*@")),
+			REF("Line"),
+			INLINE("LineEnd"),
+			REPEAT(
+				GLUE(
+					NOT(INLINE("ParagraphEnd")),
+					INLINE("Gap"),
+					NOT(RANGE("!*@")),
+					REF("Line"),
+					INLINE("LineEnd")
+				)
+			)
 		)
 	);
 
@@ -139,15 +183,17 @@ Markup::Markup()
 						REF("Object"),
 						REF("Item"),
 						REF("Heading"),
+						REF("Paragraph"),
 						GLUE(
 							INLINE("Gap"),
-							REPEAT(0, 1, REF("Line")),
-							INLINE("LineEnd")
+							CHAR('\n')
 						)
 					)
 				)
 			),
-			EOI()
+			EXPECT("",
+				EOI()
+			)
 		)
 	);
 
@@ -190,9 +236,9 @@ Ref<FragmentList> Markup::readPart(ByteArray *text, Token *partToken) const
 		if (token->rule() == object_) {
 			fragment = yasonSyntax()->readObject(text, token->firstChild(), markupProtocol());
 		}
-		else if (token->rule() == line_) {
+		else if (token->rule() == paragraph_) {
 			Ref<Paragraph> paragraph = Paragraph::create();
-			paragraph->insert("text", text->copy(token));
+			paragraph->insert("text", readLines(text, token->firstChild()));
 			paragraph->realize(token);
 			fragment = paragraph;
 		}
@@ -204,23 +250,13 @@ Ref<FragmentList> Markup::readPart(ByteArray *text, Token *partToken) const
 		}
 		else if (token->rule() == item_) {
 			Token *gapToken = token->firstChild();
-			Token *chunkToken = gapToken->nextSibling();
-
-			int gapSize = text->copy(gapToken)->size();
+			int gapSize = gapToken->size();
 			normalizedDepth += (realDepth < gapSize) - (gapSize < realDepth);
 			realDepth = gapSize;
 
-			Ref<StringList> lines = StringList::create();
-			for (
-				Token *lineToken = chunkToken->firstChild();
-				lineToken;
-				lineToken = lineToken->nextSibling()
-			)
-				lines->append(text->copy(lineToken));
-
 			Ref<Item> item = Item::create();
 			item->insert("depth", normalizedDepth);
-			item->insert("text", lines->join("\n"));
+			item->insert("text", readLines(text, gapToken->nextSibling()));
 			item->realize(token);
 			fragment = item;
 		}
@@ -232,6 +268,22 @@ Ref<FragmentList> Markup::readPart(ByteArray *text, Token *partToken) const
 	}
 
 	return fragments;
+}
+
+String Markup::readLines(ByteArray *text, Token *lineToken) const
+{
+	Ref<StringList> lines = StringList::create();
+	for (; lineToken; lineToken = lineToken->nextSibling())
+		lines->append(readChunks(text, lineToken->firstChild()));
+	return lines->join(" ")->simplifyInsitu(" \t");
+}
+
+String Markup::readChunks(ByteArray *text, Token *chunkToken) const
+{
+	Ref<StringList> chunks = StringList::create();
+	for (; chunkToken; chunkToken = chunkToken->nextSibling())
+		chunks->append(text->copy(chunkToken));
+	return chunks->join();
 }
 
 } // namespace fluxdoc
