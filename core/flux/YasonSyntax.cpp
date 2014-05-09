@@ -368,8 +368,7 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, Ya
 
 	while (token) {
 		if (token->rule() == name_) {
-			bool stripQuotation = (text->at(token->i0()) == '"');
-			String name = text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
+			String name = readName(text, token);
 
 			Variant defaultValue;
 			YasonObject *memberPrototype = 0;
@@ -401,8 +400,6 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, Ya
 				}
 			}
 			object->insert(name, value);
-
-			object->realizeMember(name, value, text, token->previousSibling(), token);
 		}
 		else {
 			YasonProtocol *prototypeProtocol = 0;
@@ -423,9 +420,33 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, Ya
 		}
 	}
 
-	object->realize(objectToken);
+	object->realize(text, objectToken);
 
 	return object;
+}
+
+Token *YasonSyntax::nameToken(const ByteArray *text, Token *objectToken, const String &memberName)
+{
+	for (Token *token = objectToken->firstChild(); token; token = token->nextSibling()) {
+		if (token->rule() == name_) {
+			if (readName(text, token) == memberName)
+				return token;
+		}
+	}
+	return 0;
+}
+
+Token *YasonSyntax::valueToken(const ByteArray *text, Token *objectToken, const String &memberName)
+{
+	Token *token = nameToken(text, objectToken, memberName);
+	if (token) return token->nextSibling();
+	return 0;
+}
+
+String YasonSyntax::readName(const ByteArray *text, Token *token)
+{
+	bool stripQuotation = (text->at(token->i0()) == '"');
+	return text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
 }
 
 Variant YasonSyntax::readValue(const ByteArray *text, Token *token, int expectedType, int expectedItemType)

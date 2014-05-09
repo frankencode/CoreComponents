@@ -23,11 +23,15 @@ public:
 	Variant parse(const ByteArray *text, YasonProtocol *protocol = 0);
 	Ref<YasonObject> readObject(const ByteArray *text, Token *token, YasonProtocol *protocol = 0, YasonObject *prototype = 0);
 
+	Token *nameToken(const ByteArray *text, Token *objectToken, const String &memberName);
+	Token *valueToken(const ByteArray *text, Token *objectToken, const String &memberName);
+
 protected:
 	friend class Singleton<YasonSyntax>;
 
 	YasonSyntax();
 
+	String readName(const ByteArray *text, Token *token);
 	Variant readValue(const ByteArray *text, Token *token, int expectedType = Variant::UndefType, int expectedItemType = Variant::UndefType);
 	Variant readList(const ByteArray *text, Token *token, int expectedItemType = Variant::UndefType);
 	String readText(const ByteArray *text, Token *token);

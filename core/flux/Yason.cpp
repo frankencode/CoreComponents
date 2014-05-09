@@ -31,6 +31,16 @@ YasonObjectList *YasonObject::children() const
 	return children_;
 }
 
+Token *YasonObject::nameToken(const ByteArray *text, Token *objectToken, const String &memberName)
+{
+	return yasonSyntax()->nameToken(text, objectToken, memberName);
+}
+
+Token *YasonObject::valueToken(const ByteArray *text, Token *objectToken, const String &memberName)
+{
+	return yasonSyntax()->valueToken(text, objectToken, memberName);
+}
+
 Variant Yason::parse(const ByteArray *text, YasonProtocol *protocol)
 {
 	return yasonSyntax()->parse(text, protocol);

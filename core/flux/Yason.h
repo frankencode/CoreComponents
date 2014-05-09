@@ -58,9 +58,12 @@ protected:
 		return YasonObject::create(className());
 	}
 
-	virtual void realizeMember(const String &name, const Variant &value, const ByteArray *text, Token *nameToken, Token *valueToken) {}
-	virtual void realize(Token *objectToken) {}
+	virtual void realize(const ByteArray *text, Token *objectToken) {}
 
+	static Token *nameToken(const ByteArray *text, Token *objectToken, const String &memberName);
+	static Token *valueToken(const ByteArray *text, Token *objectToken, const String &memberName);
+
+private:
 	String className_;
 	mutable Ref<YasonObjectList> children_;
 	Ref<YasonProtocol> protocol_;

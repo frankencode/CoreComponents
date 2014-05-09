@@ -10,7 +10,7 @@
 #include <flux/stdio.h>
 #include <flux/Config.h>
 #include <flux/Yason.h> // DEBUG
-#include "Markup.h"
+#include "Document.h"
 #include "Registry.h"
 
 using namespace fluxdoc;
@@ -24,9 +24,7 @@ int main(int argc, char **argv)
 		Ref<Config> options = Config::read(argc, argv, prototype);
 		for (int i = 0; i < options->arguments()->size(); ++i) {
 			String path = options->arguments()->at(i);
-			String text = File::open(path)->map();
-			Ref<FragmentList> fragments = markup()->parse(text, path);
-			for (int i = 0; i < fragments->size(); ++i) ferr() << Yason::stringify(fragments->at(i));
+			Ref<Document> document = Document::load(path);
 		}
 	}
 	catch (HelpError &) {

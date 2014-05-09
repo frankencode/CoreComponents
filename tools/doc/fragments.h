@@ -1,6 +1,16 @@
+/*
+ * Copyright (C) 2014 Frank Mertens.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version
+ * 2 of the License, or (at your option) any later version.
+ */
+
 #ifndef FLUXDOC_FRAGMENTS_H
 #define FLUXDOC_FRAGMENTS_H
 
+#include <flux/File.h>
 #include "Fragment.h"
 
 namespace fluxdoc
@@ -8,7 +18,7 @@ namespace fluxdoc
 
 using namespace flux;
 
-class Markup;
+class MarkupSyntax;
 
 class TextFragment: public Fragment
 {
@@ -16,7 +26,7 @@ public:
 	inline String text() const { return text_; }
 
 protected:
-	friend class Markup;
+	friend class MarkupSyntax;
 
 	TextFragment(String className)
 		: Fragment(className)
@@ -27,7 +37,7 @@ protected:
 		insert("text", "");
 	}
 
-	virtual void realize(Token *)
+	virtual void realize(const ByteArray *text, Token *)
 	{
 		text_ = value("text");
 	}
@@ -75,7 +85,7 @@ protected:
 		return create();
 	}
 
-	virtual void realize(Token *)
+	virtual void realize(const ByteArray *text, Token *)
 	{
 		name_ = value("name");
 		email_ = value("email");
@@ -125,7 +135,7 @@ public:
 	inline int depth() const { return depth_; }
 
 protected:
-	friend class Markup;
+	friend class MarkupSyntax;
 
 	Item(String className = "Item")
 		: TextFragment(className)
@@ -142,9 +152,9 @@ protected:
 		return create();
 	}
 
-	virtual void realize(Token *objectToken)
+	virtual void realize(const ByteArray *text, Token *objectToken)
 	{
-		TextFragment::realize(objectToken);
+		TextFragment::realize(text, objectToken);
 		depth_ = value("depth");
 	}
 
@@ -169,11 +179,20 @@ protected:
 		insert("title", "");
 	}
 
-	virtual void realize(Token *objectToken)
+	virtual void realize(const ByteArray *text, Token *objectToken)
 	{
-		TextFragment::realize(objectToken);
+		TextFragment::realize(text, objectToken);
 		path_ = value("path");
 		title_ = value("title");
+		if (path_ != "") {
+			try {
+				File::open(path_);
+			}
+			catch (SystemError &ex) {
+				int offset = valueToken(text, objectToken, "path")->i1();
+				throw SemanticError(ex.message(), text, offset);
+			}
+		}
 	}
 
 	String path_;
