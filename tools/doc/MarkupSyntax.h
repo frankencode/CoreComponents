@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUXDOC_MARKUP_H
-#define FLUXDOC_MARKUP_H
+#ifndef FLUXDOC_MARKUPSYNTAX_H
+#define FLUXDOC_MARKUPSYNTAX_H
 
 #include <flux/SyntaxDefinition.h>
 #include <flux/exceptions.h>
@@ -20,17 +20,14 @@ namespace fluxdoc
 
 using namespace flux;
 
-typedef YasonObject Fragment;
-typedef List< Ref<Fragment> > FragmentList;
-
-class Markup: public SyntaxDefinition, public Singleton<Markup>
+class MarkupSyntax: public SyntaxDefinition, public Singleton<MarkupSyntax>
 {
 public:
 	Ref<FragmentList> parse(ByteArray *text, String resource = "") const;
 
 private:
-	friend class Singleton<Markup>;
-	Markup();
+	friend class Singleton<MarkupSyntax>;
+	MarkupSyntax();
 	Ref<FragmentList> readPart(ByteArray *text, Token *partToken) const;
 	String readLines(ByteArray *text, Token *lineToken) const;
 	String readChunks(ByteArray *text, Token *chunkToken) const;
@@ -45,8 +42,8 @@ private:
 	int item_;
 };
 
-inline Markup *markup() { return Markup::instance(); }
+inline MarkupSyntax *markupSyntax() { return MarkupSyntax::instance(); }
 
 } // namespace fluxdoc
 
-#endif // FLUXDOC_MARKUP_H
+#endif // FLUXDOC_MARKUPSYNTAX_H

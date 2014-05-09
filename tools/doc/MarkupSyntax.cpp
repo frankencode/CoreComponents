@@ -7,18 +7,18 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/stdio.h> // DEBUG
+// #include <flux/stdio.h> // DEBUG
+// #include <flux/DebugTokenFactory.h> // DEBUG
 #include <flux/assert.h>
 #include <flux/YasonSyntax.h>
-#include <flux/DebugTokenFactory.h>
 #include "MarkupProtocol.h"
 #include "fragments.h"
-#include "Markup.h"
+#include "MarkupSyntax.h"
 
 namespace fluxdoc
 {
 
-Markup::Markup()
+MarkupSyntax::MarkupSyntax()
 {
 	SYNTAX("markup");
 
@@ -191,7 +191,7 @@ Markup::Markup()
 					)
 				)
 			),
-			EXPECT("",
+			EXPECT("Unrecognised symbol",
 				EOI()
 			)
 		)
@@ -201,10 +201,9 @@ Markup::Markup()
 	LINK();
 }
 
-Ref<FragmentList> Markup::parse(ByteArray *text, String resource) const
+Ref<FragmentList> MarkupSyntax::parse(ByteArray *text, String resource) const
 {
-	Ref<DebugTokenFactory> tokenFactory = DebugTokenFactory::create();
-	Ref<SyntaxState> state = match(text, 0, tokenFactory);
+	Ref<SyntaxState> state = match(text, 0/*, DebugTokenFactory::create()*/);
 	if (!state->valid()) throw SyntaxError(text, state, resource);
 
 	// cast<DebugToken>(state->rootToken())->printTo(err(), text);
@@ -220,7 +219,7 @@ Ref<FragmentList> Markup::parse(ByteArray *text, String resource) const
 	return fragments;
 }
 
-Ref<FragmentList> Markup::readPart(ByteArray *text, Token *partToken) const
+Ref<FragmentList> MarkupSyntax::readPart(ByteArray *text, Token *partToken) const
 {
 	Ref<FragmentList> fragments = FragmentList::create();
 
@@ -239,13 +238,13 @@ Ref<FragmentList> Markup::readPart(ByteArray *text, Token *partToken) const
 		else if (token->rule() == paragraph_) {
 			Ref<Paragraph> paragraph = Paragraph::create();
 			paragraph->insert("text", readLines(text, token->firstChild()));
-			paragraph->realize(token);
+			paragraph->realize(text, token);
 			fragment = paragraph;
 		}
 		else if (token->rule() == heading_) {
 			Ref<Heading> heading = Heading::create();
 			heading->insert("text", text->copy(token->firstChild()));
-			heading->realize(token);
+			heading->realize(text, token);
 			fragment = heading;
 		}
 		else if (token->rule() == item_) {
@@ -257,7 +256,7 @@ Ref<FragmentList> Markup::readPart(ByteArray *text, Token *partToken) const
 			Ref<Item> item = Item::create();
 			item->insert("depth", normalizedDepth);
 			item->insert("text", readLines(text, gapToken->nextSibling()));
-			item->realize(token);
+			item->realize(text, token);
 			fragment = item;
 		}
 		if (token->rule() != item_) {
@@ -270,7 +269,7 @@ Ref<FragmentList> Markup::readPart(ByteArray *text, Token *partToken) const
 	return fragments;
 }
 
-String Markup::readLines(ByteArray *text, Token *lineToken) const
+String MarkupSyntax::readLines(ByteArray *text, Token *lineToken) const
 {
 	Ref<StringList> lines = StringList::create();
 	for (; lineToken; lineToken = lineToken->nextSibling())
@@ -278,7 +277,7 @@ String Markup::readLines(ByteArray *text, Token *lineToken) const
 	return lines->join(" ")->simplifyInsitu(" \t");
 }
 
-String Markup::readChunks(ByteArray *text, Token *chunkToken) const
+String MarkupSyntax::readChunks(ByteArray *text, Token *chunkToken) const
 {
 	Ref<StringList> chunks = StringList::create();
 	for (; chunkToken; chunkToken = chunkToken->nextSibling())
