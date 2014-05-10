@@ -24,7 +24,7 @@ Ref<Config> Config::read(String path, ConfigProtocol *protocol)
 {
 	Ref<Config> config;
 	try {
-		config = Yason::parse(File::open(path)->map(), protocol);
+		config = yason::parse(File::open(path)->map(), protocol);
 		config->path_ = path;
 	}
 	catch (SystemError &ex) {
@@ -66,11 +66,11 @@ Ref<Config> Config::read(int argc, char **argv, Config *config)
 
 		if (valueText != "") {
 			try {
-				value = Yason::parse(valueText);
+				value = yason::parse(valueText);
 			}
 			catch (TextError &) {
 				valueText = "\"" + valueText + "\"";
-				value = Yason::parse(valueText);
+				value = yason::parse(valueText);
 			}
 		}
 

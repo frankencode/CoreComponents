@@ -12,7 +12,7 @@
 
 #include "SyntaxDefinition.h"
 #include "Singleton.h"
-#include "Yason.h"
+#include "yason.h"
 
 namespace flux
 {

@@ -10,7 +10,7 @@
 #ifndef FLUXMAKE_BUILDPARAMETERS_H
 #define FLUXMAKE_BUILDPARAMETERS_H
 
-#include <flux/Yason.h>
+#include <flux/yason.h>
 
 namespace fluxmake
 {

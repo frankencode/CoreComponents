@@ -10,7 +10,7 @@
 #ifndef FLUXNODE_LOGPROTOTYPE_H
 #define FLUXNODE_LOGPROTOTYPE_H
 
-#include <flux/Yason.h>
+#include <flux/yason.h>
 #include <flux/Date.h>
 
 namespace fluxnode

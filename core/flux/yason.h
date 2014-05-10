@@ -77,17 +77,19 @@ public:
 	}
 
 	template<class Prototype>
-	void add() {
-		Ref<YasonObject> prototype = Prototype::create();
-		prototype->define();
-		insert(prototype->className(), prototype);
+	Prototype *define(String className) {
+		Ref<Prototype> prototype = Prototype::create(className);
+		cast<YasonObject>(prototype)->define();
+		insert(className, prototype);
+		return prototype;
 	}
 
 	template<class Prototype>
-	void add(String className) {
-		Ref<YasonObject> prototype = Prototype::create(className);
-		prototype->define();
-		insert(className, prototype);
+	Prototype *define() {
+		Ref<Prototype> prototype = Prototype::create();
+		cast<YasonObject>(prototype)->define();
+		insert(prototype->className(), prototype);
+		return prototype;
 	}
 
 protected:
@@ -98,12 +100,10 @@ protected:
 	}
 };
 
-class Yason
-{
-public:
-	static Variant parse(const ByteArray *text, YasonProtocol *protocol = 0);
-	static String stringify(Variant value);
-};
+namespace yason {
+	Variant parse(const ByteArray *text, YasonProtocol *protocol = 0);
+	String stringify(Variant value);
+}
 
 } // namespace flux
 

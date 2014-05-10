@@ -18,23 +18,18 @@ namespace flux
 
 String DebugError::message() const
 {
-	return Format() << String(source_)->fileName() << ":" << line_ << ": " << reason_;
+	return Format() << reason_ << " (" << String(source_)->fileName() << ":" << line_ << ")";
 }
 
-char *systemError(int errorCode)
+String systemError(int errorCode)
 {
+	String buf(1024);  // HACK, save bet
+	const char *unknown = "Unknown error";
+	memcpy(buf->chars(), unknown, strlen(unknown) + 1);
 #ifdef __USE_GNU
-	const char *unknown = "Unknown error";
-	const int bufSize = 1024; // HACK, save bet
-	char buf[bufSize];
-	memcpy(buf, unknown, strlen(unknown) + 1);
-	return strdup(strerror_r(errorCode, buf, bufSize));
+	return strerror_r(errorCode, buf->chars(), buf->size());
 #else
-	const char *unknown = "Unknown error";
-	const int bufSize = 1024;
-	char *buf = new char[bufSize];
-	memcpy(buf, unknown, strlen(unknown) + 1);
-	/*int ret = */strerror_r(errorCode, buf, bufSize);
+	/*int ret = */strerror_r(errorCode, buf->chars(), buf->size());
 	return buf;
 #endif
 }
@@ -50,7 +45,7 @@ String SystemResourceError::message() const
 
 String SystemDebugError::message() const
 {
-	return Format() << String(source_)->fileName() << ":" << line_ << ": " << systemError(errorCode_);
+	return Format() << systemError(errorCode_) << " (" << String(source_)->fileName() << ":" << line_ << ")";
 }
 
 Interrupt::Interrupt()

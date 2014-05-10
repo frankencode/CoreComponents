@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/Yason.h>
+#include <flux/yason.h>
 #include <flux/Format.h>
 #include <flux/File.h>
 #include <flux/FileStatus.h>
@@ -38,7 +38,7 @@ DependencyCache::DependencyCache(BuildPlan *plan)
 
 	Ref<YasonObject> dependencyCache;
 	try {
-		dependencyCache = Yason::parse(File::load(cachePath_));
+		dependencyCache = yason::parse(File::load(cachePath_));
 	}
 	catch (TextError &)
 	{}

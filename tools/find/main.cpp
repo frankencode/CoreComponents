@@ -29,9 +29,107 @@ String replaceMatches(ByteArray *text, Matches *matches, ByteArray *replacement)
 
 int main(int argc, char **argv)
 {
-	Ref<Config> config;
+	String toolName = String(argv[0])->fileName();
+
 	try {
-		config = Config::read(argc, argv);
+		Ref<Config> config = Config::read(argc, argv);
+
+		Pattern pathPattern;
+		Pattern namePattern;
+		Pattern typePattern;
+		int maxDepth = config->value("depth", -1);
+		Pattern textPattern;
+		bool displayOption = config->value("display", false);
+		bool replaceOption = false;
+		String replacement;
+
+		String h;
+		if (config->lookup("path", &h)) pathPattern = h;
+		if (config->lookup("name", &h)) namePattern = h;
+		if (config->lookup("type", &h)) typePattern = h;
+		if (config->lookup("text", &h)) textPattern = h;
+		if (config->lookup("word", &h)) textPattern = String("(!<:[a..z]|[A..Z]|_)" + h + "(!>:[a..z]|[A..Z]|_)");
+
+		if (config->lookup("replace", &h)) {
+			replaceOption = true;
+			replacement = h;
+		}
+		if (config->lookup("paste", &h)) {
+			replaceOption = true;
+			replacement = File::open(h)->map();
+		}
+
+		StringList *dirPaths = config->arguments();
+		if (dirPaths->size() == 0) dirPaths->append(".");
+
+		for (int i = 0; i < dirPaths->size(); ++i) {
+			String dirPath = dirPaths->at(i)->canonicalPath();
+			Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
+			dirWalker->setMaxDepth(maxDepth);
+			String path;
+			while (dirWalker->read(&path)) {
+				if (pathPattern) {
+					if (!pathPattern->match(path)->valid()) continue;
+				}
+				if (namePattern) {
+					if (!namePattern->match(path->fileName())->valid()) continue;
+				}
+				if (typePattern) {
+					int type = FileStatus::read(path, false)->type();
+					bool shortMode = (typePattern->matchLength() == 1);
+					String typeString;
+					if (type == File::Regular)          typeString = shortMode ? "r" : "regular file";
+					else if (type == File::Directory)   typeString = shortMode ? "d" : "directory";
+					else if (type == File::Symlink)     typeString = shortMode ? "l" : "symlink";
+					else if (type == File::CharDevice)  typeString = shortMode ? "c" : "character device";
+					else if (type == File::BlockDevice) typeString = shortMode ? "b" : "block device";
+					else if (type == File::Fifo)        typeString = shortMode ? "f" : "fifo";
+					else if (type == File::Socket)      typeString = shortMode ? "s" : "socket";
+					if (!typePattern->find(typeString)->valid()) continue;
+				}
+				if (textPattern) {
+					if (FileStatus::read(path)->type() != File::Regular)
+						continue;
+					Ref<File> file = File::tryOpen(path, File::ReadOnly);
+					if (!file) {
+						ferr("Failed to open %%\n") << path;
+						continue;
+					}
+					Ref<Matches> matches = Matches::create();
+					String text = file->map();
+					int ln = 1;
+					for (int i = 0; i < text->size();) {
+						Ref<Token> token = textPattern->find(text, i)->rootToken();
+						if (!token) break;
+						for (;i < token->i0(); ++i)
+							if (text->at(i) == '\n') ++ln;
+						matches->append(new Match(ln, token->i0(), token->i1()));
+						for (;i < token->i1(); ++i)
+							if (text->at(i) == '\n') ++ln;
+						if (token->i0() == token->i1()) ++i;
+					}
+					if (replaceOption && matches->size() > 0) {
+						file = File::tryOpen(path, File::ReadWrite);
+						if (!file) {
+							ferr("Failed to write %%\n") << path;
+							continue;
+						}
+						text = replaceMatches(text, matches, replacement);
+						file->truncate(0);
+						file->write(text);
+					}
+					for (int i = 0; i < matches->size(); ++i) {
+						Match *match = matches->at(i);
+						if (displayOption)
+							displayMatch(path, text, match);
+						else
+							fout("%%:%%:%%..%%\n") << path << match->ln_ << match->i0_ << match->i1_;
+					}
+					continue;
+				}
+				fout() << path << nl;
+			}
+		}
 	}
 	catch (HelpError &) {
 		fout(
@@ -55,106 +153,12 @@ int main(int argc, char **argv)
 			"  -display  display match in context\n"
 			"  -replace  replace matches by given text\n"
 			"  -paste  paste replacements from file\n"
-		) << String(argv[0])->fileName();
-
+		) << toolName;
 		return 1;
 	}
-
-	Pattern pathPattern;
-	Pattern namePattern;
-	Pattern typePattern;
-	int maxDepth = config->value("depth", -1);
-	Pattern textPattern;
-	bool displayOption = config->value("display", false);
-	bool replaceOption = false;
-	String replacement;
-
-	String h;
-	if (config->lookup("path", &h)) pathPattern = h;
-	if (config->lookup("name", &h)) namePattern = h;
-	if (config->lookup("type", &h)) typePattern = h;
-	if (config->lookup("text", &h)) textPattern = h;
-	if (config->lookup("word", &h)) textPattern = String("(!<:[a..z]|[A..Z]|_)" + h + "(!>:[a..z]|[A..Z]|_)");
-
-	if (config->lookup("replace", &h)) {
-		replaceOption = true;
-		replacement = h;
-	}
-	if (config->lookup("paste", &h)) {
-		replaceOption = true;
-		replacement = File::open(h)->map();
-	}
-
-	StringList *dirPaths = config->arguments();
-	if (dirPaths->size() == 0) dirPaths->append(".");
-
-	for (int i = 0; i < dirPaths->size(); ++i) {
-		String dirPath = dirPaths->at(i)->canonicalPath();
-		Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
-		dirWalker->setMaxDepth(maxDepth);
-		String path;
-		while (dirWalker->read(&path)) {
-			if (pathPattern) {
-				if (!pathPattern->match(path)->valid()) continue;
-			}
-			if (namePattern) {
-				if (!namePattern->match(path->fileName())->valid()) continue;
-			}
-			if (typePattern) {
-				int type = FileStatus::read(path, false)->type();
-				bool shortMode = (typePattern->matchLength() == 1);
-				String typeString;
-				if (type == File::Regular)          typeString = shortMode ? "r" : "regular file";
-				else if (type == File::Directory)   typeString = shortMode ? "d" : "directory";
-				else if (type == File::Symlink)     typeString = shortMode ? "l" : "symlink";
-				else if (type == File::CharDevice)  typeString = shortMode ? "c" : "character device";
-				else if (type == File::BlockDevice) typeString = shortMode ? "b" : "block device";
-				else if (type == File::Fifo)        typeString = shortMode ? "f" : "fifo";
-				else if (type == File::Socket)      typeString = shortMode ? "s" : "socket";
-				if (!typePattern->find(typeString)->valid()) continue;
-			}
-			if (textPattern) {
-				if (FileStatus::read(path)->type() != File::Regular)
-					continue;
-				Ref<File> file = File::tryOpen(path, File::ReadOnly);
-				if (!file) {
-					ferr("Failed to open %%\n") << path;
-					continue;
-				}
-				Ref<Matches> matches = Matches::create();
-				String text = file->map();
-				int ln = 1;
-				for (int i = 0; i < text->size();) {
-					Ref<Token> token = textPattern->find(text, i)->rootToken();
-					if (!token) break;
-					for (;i < token->i0(); ++i)
-						if (text->at(i) == '\n') ++ln;
-					matches->append(new Match(ln, token->i0(), token->i1()));
-					for (;i < token->i1(); ++i)
-						if (text->at(i) == '\n') ++ln;
-					if (token->i0() == token->i1()) ++i;
-				}
-				if (replaceOption && matches->size() > 0) {
-					file = File::tryOpen(path, File::ReadWrite);
-					if (!file) {
-						ferr("Failed to write %%\n") << path;
-						continue;
-					}
-					text = replaceMatches(text, matches, replacement);
-					file->truncate(0);
-					file->write(text);
-				}
-				for (int i = 0; i < matches->size(); ++i) {
-					Match *match = matches->at(i);
-					if (displayOption)
-						displayMatch(path, text, match);
-					else
-						fout("%%:%%:%%..%%\n") << path << match->ln_ << match->i0_ << match->i1_;
-				}
-				continue;
-			}
-			fout() << path << nl;
-		}
+	catch (Exception &ex) {
+		ferr() << toolName << ": " << ex.message() << nl;
+		return 1;
 	}
 
 	return 0;

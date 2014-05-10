@@ -21,14 +21,13 @@ inline void free(void *p) { delete[](char *)p; }
 
 inline void memclr(void *buf, size_t bufSize) { memset(buf, 0, bufSize); }
 
-template<class T>
+/*template<class T>
 inline int strlen(const T *s)
 {
-	int len = 0;
-	if (s)
-		while (*(s + len) != 0) ++len;
-	return len;
-}
+	int i = 0;
+	if (s) while (s[i]) ++i;
+	return i;
+}*/
 
 template<class T, class S>
 inline void strcpy(T *t, const S *s, int n = -1)

@@ -10,7 +10,7 @@
 #ifndef FLUXDOC_MARKUPPROTOCOL_H
 #define FLUXDOC_MARKUPPROTOCOL_H
 
-#include <flux/Yason.h>
+#include <flux/yason.h>
 #include <flux/Singleton.h>
 
 namespace fluxdoc
