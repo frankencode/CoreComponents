@@ -8,7 +8,7 @@
  */
 
 #include <flux/stdio.h> // DEBUG
-#include <flux/Yason.h> // DEBUG
+#include <flux/yason.h> // DEBUG
 #include "MarkupSyntax.h"
 #include "Document.h"
 
@@ -19,7 +19,7 @@ Ref<Document> Document::load(String path)
 {
 	String text = File::open(path)->map();
 	Ref<FragmentList> fragments = markupSyntax()->parse(text, path);
-	for (int i = 0; i < fragments->size(); ++i) ferr() << Yason::stringify(fragments->at(i));
+	for (int i = 0; i < fragments->size(); ++i) ferr() << yason::stringify(fragments->at(i));
 	return new Document(fragments);
 }
 

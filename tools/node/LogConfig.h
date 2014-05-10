@@ -10,7 +10,7 @@
 #ifndef FLUXNODE_LOGCONFIG_H
 #define FLUXNODE_LOGCONFIG_H
 
-#include <flux/Yason.h>
+#include <flux/yason.h>
 
 namespace fluxnode
 {

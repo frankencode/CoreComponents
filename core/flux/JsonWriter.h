@@ -10,7 +10,7 @@
 #ifndef FLUX_JSONWRITER_H
 #define FLUX_JSONWRITER_H
 
-#include "Yason.h"
+#include "yason.h"
 
 namespace flux
 {

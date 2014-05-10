@@ -10,7 +10,7 @@
 #ifndef FLUXDOC_FRAGMENT_H
 #define FLUXDOC_FRAGMENT_H
 
-#include <flux/Yason.h>
+#include <flux/yason.h>
 
 namespace fluxdoc
 {

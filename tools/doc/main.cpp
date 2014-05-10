@@ -9,7 +9,6 @@
 
 #include <flux/stdio.h>
 #include <flux/Config.h>
-#include <flux/Yason.h> // DEBUG
 #include "Document.h"
 #include "Registry.h"
 
@@ -38,7 +37,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	catch (Exception &ex) {
-		ferr() << toolName << ": " << ex.what() << nl;
+		ferr() << toolName << ": " << ex.message() << nl;
 		return 1;
 	}
 

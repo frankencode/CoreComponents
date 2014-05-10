@@ -11,15 +11,7 @@ int main()
 		Mutex::create()->release();
 		check(false);
 	}
-	catch (Exception &ex) {
-		fout() << ex.what() << nl;
-	}
-
-	try {
-		String path = "test123.abc";
-		if (!File::tryOpen(path)) FLUX_SYSTEM_RESOURCE_ERROR(errno, path);
-	}
-	catch (Exception &ex) {
+	catch (std::exception &ex) {
 		fout() << ex.what() << nl;
 	}
 
@@ -28,7 +20,7 @@ int main()
 		if (!File::tryOpen(path)) FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 	catch (Exception &ex) {
-		fout() << ex.what() << nl;
+		fout() << ex << nl;
 	}
 
 	try {
@@ -36,7 +28,7 @@ int main()
 		return 1;
 	}
 	catch (Exception &ex) {
-		fout() << ex.what() << nl;
+		fout() << ex << nl;
 	}
 
 	return 0;

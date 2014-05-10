@@ -1,32 +1,33 @@
+#include "Generator.h"
 #include "Registry.h"
 
 namespace fluxdoc
 {
 
 Registry::Registry()
-	: outputFormatByName_(OutputFormatByName::create())
+	: generatorByName_(GeneratorByName::create())
 {}
 
-void Registry::registerOutputFormat(OutputFormat *format)
+void Registry::registerGenerator(Generator *generator)
 {
-	outputFormatByName_->insert(format->name(), format);
+	generatorByName_->insert(generator->name(), generator);
 }
 
-OutputFormat* Registry::outputFormatByName(String name) const
+Generator* Registry::generatorByName(String name) const
 {
-	Ref<OutputFormat> format;
-	outputFormatByName_->lookup(name, &format);
-	return format;
+	Ref<Generator> generator;
+	generatorByName_->lookup(name, &generator);
+	return generator;
 }
 
-OutputFormat* Registry::outputFormatByIndex(int index) const
+Generator* Registry::generatorByIndex(int index) const
 {
-	return outputFormatByName_->valueAt(index);
+	return generatorByName_->valueAt(index);
 }
 
-int Registry::outputFormatCount() const
+int Registry::generatorCount() const
 {
-	return outputFormatByName_->size();
+	return generatorByName_->size();
 }
 
 } // namespace fluxdoc

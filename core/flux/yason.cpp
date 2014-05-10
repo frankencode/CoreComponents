@@ -10,7 +10,7 @@
 #include "Format.h"
 #include "YasonSyntax.h"
 #include "YasonWriter.h"
-#include "Yason.h"
+#include "yason.h"
 
 namespace flux
 {
@@ -22,7 +22,7 @@ Variant YasonObject::toVariant() const
 
 String YasonObject::toString() const
 {
-	return Yason::stringify(toVariant());
+	return yason::stringify(toVariant());
 }
 
 YasonObjectList *YasonObject::children() const
@@ -41,16 +41,21 @@ Token *YasonObject::valueToken(const ByteArray *text, Token *objectToken, const 
 	return yasonSyntax()->valueToken(text, objectToken, memberName);
 }
 
-Variant Yason::parse(const ByteArray *text, YasonProtocol *protocol)
+namespace yason
+{
+
+Variant parse(const ByteArray *text, YasonProtocol *protocol)
 {
 	return yasonSyntax()->parse(text, protocol);
 }
 
-String Yason::stringify(Variant value)
+String stringify(Variant value)
 {
 	Format format;
 	YasonWriter::create(format)->write(value);
 	return format;
 }
+
+} // namespace yason
 
 } // namespace flux

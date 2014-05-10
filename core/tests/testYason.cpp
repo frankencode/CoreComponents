@@ -1,6 +1,6 @@
 #include <flux/stdio.h>
 #include <flux/check.h>
-#include <flux/Yason.h>
+#include <flux/yason.h>
 
 using namespace flux;
 
@@ -98,12 +98,12 @@ int main() {
 		"}";
 
 	try {
-		Ref<YasonObject> object = Yason::parse(text);
+		Ref<YasonObject> object = yason::parse(text);
 		testData(object);
 
 		String text2 = object->toString();
 		fout() << text2;
-		Ref<YasonObject> object2 = Yason::parse(text2);
+		Ref<YasonObject> object2 = yason::parse(text2);
 		testData(object2);
 	}
 	catch (TextError &ex) {

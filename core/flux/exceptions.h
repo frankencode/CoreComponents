@@ -21,10 +21,16 @@ class Exception: public std::exception
 {
 public:
 	~Exception() throw() {}
-	const char *what() const throw() { return message(); }
+	const char *what() const throw() {
+		static String h;
+		h = message();
+		return h;
+	}
 
 	virtual String message() const = 0;
 };
+
+inline String str(const Exception &ex) { return ex.message(); }
 
 class UsageError: public Exception
 {
@@ -95,7 +101,7 @@ public:
 
 private:
 	String resource_;
-	String source_;
+	const char *source_;
 	int line_;
 };
 
@@ -103,7 +109,9 @@ class SystemDebugError: public SystemError
 {
 public:
 	SystemDebugError(int errorCode, const char *source, int line)
-		: SystemError(errorCode)
+		: SystemError(errorCode),
+		  source_(source),
+		  line_(line)
 	{}
 	~SystemDebugError() throw() {}
 

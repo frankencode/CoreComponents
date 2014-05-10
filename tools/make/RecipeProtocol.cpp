@@ -53,7 +53,7 @@ protected:
 			"MacOSX", "Solaris", "Mach", "HPUX"
 		};
 		for (int i = 0, n = sizeof(paramClasses) / sizeof(paramClasses[0]); i < n; ++i)
-			protocol->add<BuildParametersPrototype>(paramClasses[i]);
+			protocol->define<BuildParametersPrototype>(paramClasses[i]);
 		return protocol;
 	}
 
@@ -121,7 +121,7 @@ protected:
 	static Ref<YasonProtocol> createProtocol(YasonProtocol *protocol) {
 		Ref<YasonProtocol> newProtocol;
 		if (!protocol) protocol = newProtocol = YasonProtocol::create();
-		protocol->add<SystemPrerequisitePrototype>();
+		protocol->define<SystemPrerequisitePrototype>();
 		return protocol;
 	}
 
@@ -144,7 +144,7 @@ public:
 protected:
 	static Ref<YasonProtocol> createProtocol() {
 		Ref<YasonProtocol> protocol = YasonProtocol::create();
-		protocol->add<SpecificBuildParametersPrototype>("Usage");
+		protocol->define<SpecificBuildParametersPrototype>("Usage");
 		return protocol;
 	}
 
@@ -202,11 +202,11 @@ protected:
 
 RecipeProtocol::RecipeProtocol()
 {
-	add<ApplicationPrototype>();
-	add<LibraryPrototype>();
-	add<ToolsPrototype>();
-	add<TestsPrototype>();
-	add<PackagePrototype>();
+	define<ApplicationPrototype>();
+	define<LibraryPrototype>();
+	define<ToolsPrototype>();
+	define<TestsPrototype>();
+	define<PackagePrototype>();
 }
 
 } // namespace fluxmake
