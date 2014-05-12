@@ -194,7 +194,9 @@ PatternSyntax::PatternSyntax()
 				REF("Identifier"),
 				CHAR(':'),
 				REF("Choice"),
-				CHAR(')')
+				EXPECT("Expected closing ')'",
+					CHAR(')')
+				)
 			)
 		);
 
@@ -203,7 +205,9 @@ PatternSyntax::PatternSyntax()
 			GLUE(
 				STRING("(&"),
 				REF("Identifier"),
-				STRING(";)")
+				EXPECT("Expected closing ')'",
+					CHAR(')')
+				)
 			)
 		);
 
@@ -213,7 +217,9 @@ PatternSyntax::PatternSyntax()
 				CHAR('('),
 				NOT(RANGE("<>!@&")),
 				REF("Choice"),
-				CHAR(')')
+				EXPECT("Expected closing ')'",
+					CHAR(')')
+				)
 			)
 		);
 

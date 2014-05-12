@@ -12,6 +12,7 @@
 
 #include <new>
 #include "String.h"
+#include "Map.h"
 
 namespace flux
 {
@@ -19,6 +20,7 @@ namespace flux
 class Variant;
 
 typedef List<Variant> VariantList;
+typedef Map<String, Variant> VariantMap;
 
 /** A Variant can represent different types.
   * The type of a Variant is defined implicitly at construction or assignment.

@@ -8,7 +8,7 @@
  */
 
 #include <flux/stdio.h>
-#include <flux/Config.h>
+#include <flux/Arguments.h>
 #include "Document.h"
 #include "Registry.h"
 
@@ -18,11 +18,12 @@ int main(int argc, char **argv)
 {
 	String toolName = String(argv[0])->fileName();
 	try {
-		Ref<Config> options = Config::read(argc, argv, YasonObject::create());
-		for (int i = 0; i < options->arguments()->size(); ++i) {
+		Ref<Arguments> arguments = Arguments::parse(argc, argv);
+		arguments->validate(YasonObject::create());
+		for (int i = 0; i < arguments->items()->size(); ++i) {
 			// String recipePath = options->arguments()->at(i) + "/Recipe";
 			// File::open(recipePath);
-			Ref<Document> document = Document::load(options->arguments()->at(i));
+			Ref<Document> document = Document::load(arguments->items()->at(i));
 		}
 	}
 	catch (HelpError &) {

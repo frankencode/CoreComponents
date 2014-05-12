@@ -16,7 +16,7 @@ namespace flux
 
 String str(const Variant &x)
 {
-	if (type(x) == Variant::UndefType) return "undef";
+	if (type(x) == Variant::UndefType) return "";
 	else if (type(x) == Variant::BoolType) return str(bool(x));
 	else if (type(x) == Variant::IntType) return str(int(x));
 	else if (type(x) == Variant::FloatType) return str(float(x));

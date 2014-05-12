@@ -168,14 +168,14 @@ class SyntaxError: public TextError
 {
 public:
 	SyntaxError(String text, SyntaxState *state = 0, String resource = "");
-	~SyntaxError() throw() {}
+	~SyntaxError() throw();
 
 	inline SyntaxState *state() const { return state_; }
 
 	virtual String message() const;
 
 private:
-	SyntaxState *state_;
+	Ref<SyntaxState> state_;
 };
 
 class SemanticError: public TextError
