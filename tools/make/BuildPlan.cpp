@@ -9,7 +9,8 @@
 
 #include <flux/stdio.h>
 #include <flux/Glob.h>
-#include <flux/Config.h>
+#include <flux/Arguments.h>
+#include <flux/yason.h>
 #include "DependencyCache.h"
 #include "GnuToolChain.h"
 #include "JobScheduler.h"
@@ -47,15 +48,19 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	  buildMap_(BuildMap::create()),
 	  FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
 {
-	recipe_ = Config::read(argc, argv);
-	if (recipe_->arguments()->size() > 0) {
-		if (recipe_->arguments()->size() > 1)
+	Ref<Arguments> arguments = Arguments::parse(argc, argv);
+	StringList *items = arguments->items();
+
+	if (items->size() > 0) {
+		if (items->size() > 1)
 			throw UsageError("Handling multiple source directories at once is not supported");
-		projectPath_ = recipe_->arguments()->at(0)->canonicalPath();
+		projectPath_ = items->at(0)->canonicalPath();
 	}
 
-	recipe_ = Config::read(projectPath_ + "/Recipe", recipeProtocol());
-	recipe_ = Config::read(argc, argv, recipe_);
+	recipe_ = yason::parse(File::open(recipePath())->map(), recipeProtocol());
+	arguments->validate(recipe_);
+	arguments->override(recipe_);
+
 	readRecipe();
 
 	toolChain_ = GnuToolChain::create(compiler());
@@ -71,7 +76,7 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 	  buildMap_(parentPlan->buildMap_),
 	  FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
 {
-	recipe_ = Config::read(projectPath_ + "/Recipe", recipeProtocol());
+	recipe_ = yason::parse(File::open(recipePath())->map(), recipeProtocol());
 	readRecipe(parentPlan);
 	buildMap_->insert(projectPath_, this);
 }

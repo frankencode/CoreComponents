@@ -10,7 +10,6 @@
 #ifndef FLUXMAKE_TOOLCHAIN_H
 #define FLUXMAKE_TOOLCHAIN_H
 
-#include <flux/Config.h>
 #include "Job.h"
 #include "Module.h"
 
