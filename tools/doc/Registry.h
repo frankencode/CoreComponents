@@ -2,7 +2,7 @@
 #define FLUXDOC_REGISTRY_H
 
 #include <flux/Singleton.h>
-#include <flux/Map.h>
+#include <flux/yason.h>
 
 namespace fluxdoc
 {
@@ -18,6 +18,8 @@ public:
 	Generator* generatorByIndex(int index) const;
 	int generatorCount() const;
 
+	YasonProtocol *recipeProtocol() const;
+
 private:
 	friend class Singleton<Registry>;
 	friend class Generator;
@@ -27,6 +29,8 @@ private:
 
 	typedef Map< String, Ref<Generator> > GeneratorByName;
 	Ref<GeneratorByName> generatorByName_;
+
+	Ref<YasonProtocol> recipeProtocol_;
 };
 
 inline Registry *registry() { return Registry::instance(); }

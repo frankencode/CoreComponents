@@ -31,6 +31,19 @@ YasonObjectList *YasonObject::children() const
 	return children_;
 }
 
+void YasonObject::autocomplete(YasonObject *prototype)
+{
+	if (!prototype) return;
+
+	if (prototype->size() != size()) {
+		for (int i = 0; i < prototype->size(); ++i) {
+			String name = prototype->keyAt(i);
+			if (size() <= i || keyAt(i) != name)
+				insert(name, prototype->valueAt(i));
+		}
+	}
+}
+
 Token *YasonObject::nameToken(const ByteArray *text, Token *objectToken, const String &memberName)
 {
 	return yasonSyntax()->nameToken(text, objectToken, memberName);

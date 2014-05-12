@@ -410,15 +410,7 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, Ya
 		token = token->nextSibling();
 	}
 
-	if (prototype) {
-		if (object->size() != prototype->size()) {
-			for (int i = 0; i < prototype->size(); ++i) {
-				String name = prototype->keyAt(i);
-				if (object->size() <= i || object->keyAt(i) != name)
-					object->insert(name, prototype->valueAt(i));
-			}
-		}
-	}
+	object->autocomplete(prototype);
 
 	object->realize(text, objectToken);
 

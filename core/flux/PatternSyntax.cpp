@@ -190,7 +190,7 @@ PatternSyntax::PatternSyntax()
 	capture_ =
 		DEFINE("Capture",
 			GLUE(
-				STRING("(&"),
+				STRING("(@"),
 				REF("Identifier"),
 				CHAR(':'),
 				REF("Choice"),
@@ -211,7 +211,7 @@ PatternSyntax::PatternSyntax()
 		DEFINE("Group",
 			GLUE(
 				CHAR('('),
-				NOT(RANGE("<>!&")),
+				NOT(RANGE("<>!@&")),
 				REF("Choice"),
 				CHAR(')')
 			)

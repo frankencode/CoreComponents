@@ -23,16 +23,8 @@ Config::Config(String className)
 Ref<Config> Config::read(String path, ConfigProtocol *protocol)
 {
 	Ref<Config> config;
-	try {
-		config = yason::parse(File::open(path)->map(), protocol);
-		config->path_ = path;
-	}
-	catch (SystemError &ex) {
-		throw ConfigError(Format("Failed to open configuration file\n%%") << ex.what());
-	}
-	catch (TextError &ex) {
-		throw ConfigError(Format("Error in configuration file\n%%:%%") << path << ex.what());
-	}
+	config = yason::parse(File::open(path)->map(), protocol);
+	config->path_ = path;
 	if (protocol) config->prototype_ = protocol->value(config->className());
 	return config;
 }
@@ -43,7 +35,7 @@ Ref<Config> Config::read(int argc, char **argv, Config *config)
 	if (!config)
 		config = newConfig = new Config;
 
-	Pattern flag("{1..2:-}(&name:[^-]{[^=]}){0..1:=(&value:{1..:#})}");
+	Pattern flag("{1..2:-}(@name:[^-]{[^=]}){0..1:=(@value:{1..:#})}");
 
 	for (int i = 1; i < argc; ++i)
 	{
@@ -58,7 +50,7 @@ Ref<Config> Config::read(int argc, char **argv, Config *config)
 
 		Ref<SyntaxState> state = flag->match(s);
 		if (!state->valid())
-			throw ConfigError(Format("Illegal option syntax: \"%%\"") << s);
+			throw UsageError(Format("Illegal option syntax: \"%%\"") << s);
 
 		String name = s->copy(state->capture("name"));
 		String valueText = s->copy(state->capture("value"));
@@ -77,9 +69,9 @@ Ref<Config> Config::read(int argc, char **argv, Config *config)
 		if (config->prototype_) {
 			Variant defaultValue;
 			if (!config->prototype_->lookup(name, &defaultValue))
-				throw ConfigError(Format("No such option: \"-%%\"") << name);
+				throw UsageError(Format("No such option: \"-%%\"") << name);
 			if (type(value) != type(defaultValue)) {
-				throw ConfigError(
+				throw UsageError(
 					Format("Option \"-%%\" expects type %%") << name << Variant::typeName(type(defaultValue), itemType(defaultValue))
 				);
 			}
