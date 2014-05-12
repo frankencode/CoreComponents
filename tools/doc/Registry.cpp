@@ -5,12 +5,14 @@ namespace fluxdoc
 {
 
 Registry::Registry()
-	: generatorByName_(GeneratorByName::create())
+	: generatorByName_(GeneratorByName::create()),
+	  recipeProtocol_(YasonProtocol::create())
 {}
 
 void Registry::registerGenerator(Generator *generator)
 {
 	generatorByName_->insert(generator->name(), generator);
+	recipeProtocol_->define(generator->prototype());
 }
 
 Generator* Registry::generatorByName(String name) const

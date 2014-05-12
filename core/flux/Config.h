@@ -16,15 +16,6 @@
 namespace flux
 {
 
-class ConfigError: public UsageError
-{
-public:
-	ConfigError(String message)
-		: UsageError(message)
-	{}
-	~ConfigError() throw() {}
-};
-
 class ConfigProtocol;
 
 class Config: public YasonObject

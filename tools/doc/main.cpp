@@ -18,21 +18,18 @@ int main(int argc, char **argv)
 {
 	String toolName = String(argv[0])->fileName();
 	try {
-		Ref<YasonObject> prototype = YasonObject::create();
-		prototype->insert("format", "html");
-		Ref<Config> options = Config::read(argc, argv, prototype);
+		Ref<Config> options = Config::read(argc, argv, YasonObject::create());
 		for (int i = 0; i < options->arguments()->size(); ++i) {
-			String path = options->arguments()->at(i);
-			Ref<Document> document = Document::load(path);
+			// String recipePath = options->arguments()->at(i) + "/Recipe";
+			// File::open(recipePath);
+			Ref<Document> document = Document::load(options->arguments()->at(i));
 		}
 	}
 	catch (HelpError &) {
 		fout(
-			"Usage: %% [OPTION]... [FILE]...\n"
-			"Generate rich text from YML source files.\n"
+			"Usage: %% [OPTION]... [DIR]\n"
+			"Generate documentation from source DIR.\n"
 			"\n"
-			"Options:\n"
-			"-format\toutput format (\"html\" by default)\n"
 		) << toolName;
 		return 1;
 	}

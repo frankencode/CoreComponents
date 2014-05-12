@@ -24,6 +24,7 @@ class YasonObject;
 typedef List< Ref<YasonObject> > YasonObjectList;
 
 class YasonProtocol;
+class Arguments;
 
 class YasonObject: public Map<String, Variant>
 {
@@ -46,19 +47,23 @@ public:
 protected:
 	friend class YasonSyntax;
 	friend class YasonProtocol;
+	friend class Arguments;
 
 	YasonObject(const String &className = "", YasonProtocol *protocol = 0)
 		: className_(className),
 		  protocol_(protocol)
 	{}
 
-	virtual void define() {}
-
 	virtual Ref<YasonObject> produce() {
 		return YasonObject::create(className());
 	}
 
-	virtual void realize(const ByteArray *text, Token *objectToken) {}
+	virtual void define() {}
+
+	virtual void realize() {}
+	virtual void realize(const ByteArray *text, Token *objectToken) { realize(); }
+
+	void autocomplete(YasonObject *prototype);
 
 	static Token *nameToken(const ByteArray *text, Token *objectToken, const String &memberName);
 	static Token *valueToken(const ByteArray *text, Token *objectToken, const String &memberName);
@@ -88,6 +93,12 @@ public:
 	Prototype *define() {
 		Ref<Prototype> prototype = Prototype::create();
 		cast<YasonObject>(prototype)->define();
+		insert(prototype->className(), prototype);
+		return prototype;
+	}
+
+	YasonObject *define(YasonObject *prototype) {
+		prototype->define();
 		insert(prototype->className(), prototype);
 		return prototype;
 	}
