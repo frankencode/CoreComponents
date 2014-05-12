@@ -27,7 +27,7 @@
 
 namespace flux {
 class FileStatus;
-class Config;
+class YasonObject;
 } // namespace flux
 
 namespace fluxmake
@@ -69,8 +69,9 @@ public:
 	inline ToolChain *toolChain() const { return toolChain_; }
 
 	inline String projectPath() const { return projectPath_; }
+	inline String recipePath() const { return projectPath_ + "/Recipe"; }
 	inline String modulePath() const { return modulePath_; }
-	inline Config *recipe() const { return recipe_; }
+	inline YasonObject *recipe() const { return recipe_; }
 
 	inline int options() const { return options_; }
 	inline int concurrency() const { return concurrency_; }
@@ -124,7 +125,7 @@ private:
 
 	String projectPath_;
 	String modulePath_;
-	Ref<Config> recipe_;
+	Ref<YasonObject> recipe_;
 
 	int options_;
 	int concurrency_;

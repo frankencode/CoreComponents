@@ -99,11 +99,11 @@ bool CompileLinkStage::run()
 				break;
 			}
 		}
-		Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->recipe()->path());
+		Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->recipePath());
 		if (recipeStatus->exists()) {
 			if (recipeStatus->lastModified() > productTime) dirty = true;
 			for (int i = 0; i < plan()->prerequisites()->size(); ++i) {
-				Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->prerequisites()->at(i)->recipe()->path());
+				Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->prerequisites()->at(i)->recipePath());
 				if (recipeStatus->lastModified() > productTime) {
 					dirty = true;
 					break;
