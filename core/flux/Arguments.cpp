@@ -8,7 +8,7 @@
  */
 
 #include "yason.h"
-#include "Pattern.h"
+#include "Format.h"
 #include "Arguments.h"
 
 namespace flux
@@ -20,41 +20,22 @@ Ref<Arguments> Arguments::parse(int argc, char **argv)
 }
 
 Arguments::Arguments(int argc, char **argv)
-	: options_(StringList::create()),
+	: options_(VariantMap::create()),
 	  items_(StringList::create())
 {
 	execPath_ = argv[0];
+
 	for (int i = 1; i < argc; ++i)
 	{
 		String s = argv[i];
-		if (s->at(0) != '-') {
+		if (s->at(0) != '-' && !s->contains('=')) {
 			items_->append(s);
 			continue;
 		}
 
-		if (s == "-h" || s == "-help" || s == "--help" || s == "-?")
-			throw HelpError();
-
-		options_->append(s);
-	}
-}
-
-Ref<YasonObject> Arguments::read(YasonObject *prototype) const
-{
-	Ref<YasonObject> object = prototype->produce();
-
-	Pattern flag("{1..2:-}(@name:[^-]{[^=]}){0..1:=(@value:{1..:#})}");
-
-	for (int i = 0; i < options_->size(); ++i)
-	{
-		String s = options_->at(i);
-
-		Ref<SyntaxState> state = flag->match(s);
-		if (!state->valid())
-			throw UsageError(Format("Illegal option syntax: \"%%\"") << s);
-
-		String name = s->copy(state->capture("name"));
-		String valueText = s->copy(state->capture("value"));
+		Ref<StringList> parts = s->trimInsitu("-")->split("=");
+		String name = parts->pop(0);
+		String valueText = parts->join("=");
 		Variant value = true;
 
 		if (valueText != "") {
@@ -72,24 +53,39 @@ Ref<YasonObject> Arguments::read(YasonObject *prototype) const
 			}
 		}
 
-		if (prototype) {
-			Variant defaultValue;
-			if (!prototype->lookup(name, &defaultValue))
-				throw UsageError(Format("No such option: \"-%%\"") << name);
-			if (type(value) != type(defaultValue)) {
-				throw UsageError(
-					Format("Option \"-%%\" expects type %%") << name << Variant::typeName(type(defaultValue), itemType(defaultValue))
-				);
-			}
-		}
-
-		object->establish(name, value);
+		options_->establish(name, value);
 	}
 
-	object->autocomplete(prototype);
-	object->realize(0, 0);
+	if (options_->contains("h") || options_->contains("help") || options_->contains("?"))
+		throw HelpError();
+}
 
-	return object;
+void Arguments::validate(VariantMap *prototype) const
+{
+	for (int i = 0; i < options_->size(); ++i)
+	{
+		String name = options_->keyAt(i);
+		Variant value = options_->valueAt(i);
+
+		Variant defaultValue;
+		if (!prototype->lookup(name, &defaultValue))
+			throw UsageError(Format("No such option: \"%%\"") << name);
+		if (defaultValue != Variant() && type(value) != type(defaultValue)) {
+			throw UsageError(
+				Format("Option \"%%\" expects type %%") << name << Variant::typeName(type(defaultValue), itemType(defaultValue))
+			);
+		}
+	}
+}
+
+void Arguments::override(VariantMap *config) const
+{
+	for (int i = 0; i < options_->size(); ++i)
+	{
+		String name = options_->keyAt(i);
+		Variant value = options_->valueAt(i);
+		config->establish(name, value);
+	}
 }
 
 } // namespace flux

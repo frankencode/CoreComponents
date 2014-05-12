@@ -8,7 +8,7 @@
  */
 
 #include <flux/stdio.h>
-#include <flux/Config.h>
+#include <flux/Arguments.h>
 #include <flux/Pattern.h>
 #include <flux/DirWalker.h>
 #include <flux/File.h>
@@ -32,38 +32,53 @@ int main(int argc, char **argv)
 	String toolName = String(argv[0])->fileName();
 
 	try {
-		Ref<Config> config = Config::read(argc, argv);
+		Ref<Arguments> arguments = Arguments::parse(argc, argv);
+		{
+			Ref<VariantMap> prototype = VariantMap::create();
+			prototype->insert("path", "");
+			prototype->insert("name", "");
+			prototype->insert("type", "");
+			prototype->insert("depth", -1);
+			prototype->insert("text", "");
+			prototype->insert("word", "");
+			prototype->insert("display", false);
+			prototype->insert("replace", "");
+			prototype->insert("paste", "");
+			arguments->validate(prototype);
+		}
+
+		Ref<VariantMap> options = arguments->options();
+		Ref<StringList> items = arguments->items();
 
 		Pattern pathPattern;
 		Pattern namePattern;
 		Pattern typePattern;
-		int maxDepth = config->value("depth", -1);
+		int maxDepth = options->value("depth", -1);
 		Pattern textPattern;
-		bool displayOption = config->value("display", false);
+		bool displayOption = options->value("display", false);
 		bool replaceOption = false;
 		String replacement;
 
 		String h;
-		if (config->lookup("path", &h)) pathPattern = h;
-		if (config->lookup("name", &h)) namePattern = h;
-		if (config->lookup("type", &h)) typePattern = h;
-		if (config->lookup("text", &h)) textPattern = h;
-		if (config->lookup("word", &h)) textPattern = String("(!<:[a..z]|[A..Z]|_)" + h + "(!>:[a..z]|[A..Z]|_)");
+		if (options->lookup("path", &h)) pathPattern = h;
+		if (options->lookup("name", &h)) namePattern = h;
+		if (options->lookup("type", &h)) typePattern = h;
+		if (options->lookup("text", &h)) textPattern = h;
+		if (options->lookup("word", &h)) textPattern = String("(!<:[a..z]|[A..Z]|_)" + h + "(!>:[a..z]|[A..Z]|_)");
 
-		if (config->lookup("replace", &h)) {
+		if (options->lookup("replace", &h)) {
 			replaceOption = true;
 			replacement = h;
 		}
-		if (config->lookup("paste", &h)) {
+		if (options->lookup("paste", &h)) {
 			replaceOption = true;
 			replacement = File::open(h)->map();
 		}
 
-		StringList *dirPaths = config->arguments();
-		if (dirPaths->size() == 0) dirPaths->append(".");
+		if (items->size() == 0) items->append(".");
 
-		for (int i = 0; i < dirPaths->size(); ++i) {
-			String dirPath = dirPaths->at(i)->canonicalPath();
+		for (int i = 0; i < items->size(); ++i) {
+			String dirPath = items->at(i)->canonicalPath();
 			Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
 			dirWalker->setMaxDepth(maxDepth);
 			String path;

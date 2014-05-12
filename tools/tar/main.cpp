@@ -86,9 +86,9 @@ int main(int argc, char **argv)
 				"Unpack or list contents of archive files.\n"
 				"\n"
 				"Options:\n"
-				"-list\tlist contents\n"
-				"-status\tlist archived file status\n"
-				"-verbose\tverbose output\n"
+				"  -list     list contents\n"
+				"  -status   list archived file status\n"
+				"  -verbose  verbose output\n"
 			) << toolName;
 		}
 		else {
@@ -97,8 +97,8 @@ int main(int argc, char **argv)
 				"Pack an archive file.\n"
 				"\n"
 				"Options:\n"
-				"-output\tarchive file to create\n"
-				"-verbose\tverbose output\n"
+				"  -output   archive file to create\n"
+				"  -verbose  verbose output\n"
 			) << toolName;
 		}
 		return 1;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,10 +26,8 @@ typedef List< Ref<YasonObject> > YasonObjectList;
 class YasonProtocol;
 class Arguments;
 
-class YasonObject: public Map<String, Variant>
+class YasonObject: public VariantMap
 {
-	typedef Map<String, Variant> Super;
-
 public:
 	inline static Ref<YasonObject> create(const String &className = "", YasonProtocol *protocol = 0) {
 		return new YasonObject(className, protocol);
@@ -60,8 +58,7 @@ protected:
 
 	virtual void define() {}
 
-	virtual void realize() {}
-	virtual void realize(const ByteArray *text, Token *objectToken) { realize(); }
+	virtual void realize(const ByteArray *text, Token *objectToken) {}
 
 	void autocomplete(YasonObject *prototype);
 

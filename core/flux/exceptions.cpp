@@ -86,6 +86,9 @@ SyntaxError::SyntaxError(String text, SyntaxState *state, String resource)
 	  state_(state)
 {}
 
+SyntaxError::~SyntaxError() throw()
+{}
+
 String SyntaxError::message() const
 {
 	Format format;
