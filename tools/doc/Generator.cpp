@@ -13,7 +13,7 @@
 namespace fluxdoc
 {
 
-Generator::Generator(String name, YasonObject *prototype)
+Generator::Generator(String name, Design *prototype)
 	: name_(name),
 	  prototype_(prototype)
 {

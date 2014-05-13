@@ -7,28 +7,26 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "Design.h"
-#include "WebsiteGenerator.h"
+#ifndef FLUXDOC_DESIGN_H
+#define FLUXDOC_DESIGN_H
+
+#include <flux/yason.h>
 
 namespace fluxdoc
 {
 
-class WebsiteDesign: public Design
-{
-public:
-	static Ref<WebsiteDesign> create() { return new WebsiteDesign; }
+using namespace flux;
 
-private:
-	WebsiteDesign()
-		: Design("Website")
-	{}
+class Design: public YasonObject
+{
+protected:
+	Design(String className)
+		: YasonObject(className)
+	{
+		insert("source", "");
+	}
 };
 
-WebsiteGenerator::WebsiteGenerator()
-	: Generator("Website", WebsiteDesign::create())
-{}
-
-void WebsiteGenerator::run(Design *design)
-{}
-
 } // namespace fluxdoc
+
+#endif // FLUXDOC_DESIGN_H

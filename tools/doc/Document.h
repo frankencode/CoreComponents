@@ -25,6 +25,7 @@ class Document: public Object
 {
 public:
 	static Ref<Document> load(String path);
+	static Ref<Document> parse(String text, String resource = "");
 	static Ref<Document> create(FragmentList *fragments);
 
 	inline FragmentList *fragments() const;

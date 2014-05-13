@@ -17,8 +17,12 @@ namespace fluxdoc
 
 Ref<Document> Document::load(String path)
 {
-	String text = File::open(path)->map();
-	Ref<FragmentList> fragments = markupSyntax()->parse(text, path);
+	return Document::parse(File::open(path)->map(), path);
+}
+
+Ref<Document> Document::parse(String text, String resource)
+{
+	Ref<FragmentList> fragments = markupSyntax()->parse(text, resource);
 	for (int i = 0; i < fragments->size(); ++i) ferr() << yason::stringify(fragments->at(i));
 	return new Document(fragments);
 }

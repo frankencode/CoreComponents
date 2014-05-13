@@ -1,3 +1,12 @@
+/*
+ * Copyright (C) 2014 Frank Mertens.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version
+ * 2 of the License, or (at your option) any later version.
+ */
+
 #include "Generator.h"
 #include "Registry.h"
 
@@ -6,13 +15,13 @@ namespace fluxdoc
 
 Registry::Registry()
 	: generatorByName_(GeneratorByName::create()),
-	  recipeProtocol_(YasonProtocol::create())
+	  designProtocol_(YasonProtocol::create())
 {}
 
 void Registry::registerGenerator(Generator *generator)
 {
 	generatorByName_->insert(generator->name(), generator);
-	recipeProtocol_->define(generator->prototype());
+	designProtocol_->define(generator->prototype());
 }
 
 Generator* Registry::generatorByName(String name) const
