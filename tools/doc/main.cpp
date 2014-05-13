@@ -10,7 +10,9 @@
 #include <flux/stdio.h>
 #include <flux/Arguments.h>
 #include "Document.h"
+#include "Design.h"
 #include "Registry.h"
+#include "Generator.h"
 
 using namespace fluxdoc;
 
@@ -19,18 +21,37 @@ int main(int argc, char **argv)
 	String toolName = String(argv[0])->fileName();
 	try {
 		Ref<Arguments> arguments = Arguments::parse(argc, argv);
-		arguments->validate(YasonObject::create());
-		for (int i = 0; i < arguments->items()->size(); ++i) {
-			// String recipePath = options->arguments()->at(i) + "/Recipe";
-			// File::open(recipePath);
-			Ref<Document> document = Document::load(arguments->items()->at(i));
+		Ref<VariantMap> options = arguments->options();
+		Ref<StringList> items = arguments->items();
+
+		String defaultSourcePath = str(options->value("source"));
+		Ref<Document> defaultDocument;
+		if (defaultSourcePath != "") defaultDocument = Document::load(defaultSourcePath);
+
+		for (int i = 0; i < items->size(); ++i) {
+			String designPath = items->at(i);
+			Ref<Design> design = yason::parse(File::open(designPath)->map(), registry()->designProtocol());
+			arguments->validate(design);
+			arguments->override(design);
+
+			Ref<Document> document = defaultDocument;
+			String sourcePath = design->value("source", "");
+			if (defaultSourcePath != sourcePath && sourcePath != "") {
+				document = Document::load(sourcePath);
+			}
+			if (!document) document = Document::parse("");
+
+			Generator *generator = registry()->generatorByName(design->className());
+			generator->run(design);
 		}
 	}
 	catch (HelpError &) {
 		fout(
-			"Usage: %% [OPTION]... [DIR]\n"
-			"Generate documentation from source DIR.\n"
+			"Usage: %% [OPTION]... [FILE]...\n"
+			"Produce documentation using different design FILEs.\n"
 			"\n"
+			"Options:\n"
+			"  -source  source file\n"
 		) << toolName;
 		return 1;
 	}

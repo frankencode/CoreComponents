@@ -21,7 +21,7 @@ class WebsiteGeneratorRegistration;
 class WebsiteGenerator: public Generator
 {
 public:
-	virtual void run();
+	virtual void run(Design *design);
 
 private:
 	friend class WebsiteGeneratorRegistration;

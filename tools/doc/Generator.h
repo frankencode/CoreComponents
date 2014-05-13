@@ -10,7 +10,7 @@
 #ifndef FLUXDOC_GENERATOR_H
 #define FLUXDOC_GENERATOR_H
 
-#include <flux/yason.h>
+#include "Design.h"
 
 namespace fluxdoc
 {
@@ -21,15 +21,15 @@ class Generator: public Object
 {
 public:
 	inline String name() const { return name_; }
-	inline YasonObject *prototype() const { return prototype_; }
+	inline Design *prototype() const { return prototype_; }
 
-	virtual void run() = 0;
+	virtual void run(Design *design) = 0;
 
 protected:
-	Generator(String name, YasonObject *prototype);
+	Generator(String name, Design *prototype);
 
 	String name_;
-	Ref<YasonObject> prototype_;
+	Ref<Design> prototype_;
 };
 
 } // namespace fluxdoc
