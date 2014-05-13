@@ -40,6 +40,8 @@ public:
 	inline bool hasChildren() const { return children_; }
 	YasonObjectList *children() const;
 
+	Ref<YasonObject> clone();
+
 	inline YasonProtocol *protocol() const { return protocol_; }
 
 protected:
@@ -60,7 +62,7 @@ protected:
 
 	virtual void realize(const ByteArray *text, Token *objectToken) {}
 
-	void autocomplete(YasonObject *prototype);
+	void autocomplete(const YasonObject *prototype);
 
 	static Token *nameToken(const ByteArray *text, Token *objectToken, const String &memberName);
 	static Token *valueToken(const ByteArray *text, Token *objectToken, const String &memberName);

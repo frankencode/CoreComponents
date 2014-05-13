@@ -8,8 +8,9 @@
  */
 
 #include <flux/stdio.h>
+#include <flux/exceptions.h>
 #include <flux/Format.h>
-#include <flux/Config.h>
+#include <flux/Arguments.h>
 #include <flux/File.h>
 #include <flux/TarReader.h>
 #include <flux/ArReader.h>
@@ -26,23 +27,28 @@ int main(int argc, char **argv)
 	bool tarMode = toolName->contains("tar");
 	bool unpackMode = toolName->contains("un");
 	try {
-		Ref<YasonObject> prototype = YasonObject::create();
-		if (unpackMode) {
-			prototype->insert("list", false);
-			prototype->insert("status", false);
+		Ref<Arguments> arguments = Arguments::parse(argc, argv);
+		{
+			Ref<VariantMap> prototype = VariantMap::create();
+			if (unpackMode) {
+				prototype->insert("list", false);
+				prototype->insert("status", false);
+			}
+			else {
+				prototype->insert("output", "");
+			}
+			prototype->insert("verbose", false);
+			arguments->validate(prototype);
 		}
-		else {
-			prototype->insert("output", "");
-		}
-		prototype->insert("verbose", false);
 
-		Ref<Config> options = Config::read(argc, argv, prototype);
+		Ref<VariantMap> options = arguments->options();
+		Ref<StringList> items = arguments->items();
 
 		if (unpackMode) {
-			if (options->arguments()->size() == 0) options->arguments()->append(String());
+			if (items->size() == 0) items->append(String());
 
-			for (int i = 0; i < options->arguments()->size(); ++i) {
-				String path = options->arguments()->at(i);
+			for (int i = 0; i < items->size(); ++i) {
+				String path = items->at(i);
 
 				Ref<Stream> source;
 				if (path != "") source = File::open(path);
@@ -73,10 +79,8 @@ int main(int argc, char **argv)
 			if (tarMode) archive = TarWriter::open(sink);
 			else archive = ArWriter::open(sink);
 
-			for (int i = 0; i < options->arguments()->size(); ++i) {
-				String path = options->arguments()->at(i);
-				fluxtar::pack(path, archive, options->value("verbose"));
-			}
+			for (int i = 0; i < items->size(); ++i)
+				fluxtar::pack(items->at(i), archive, options->value("verbose"));
 		}
 	}
 	catch (HelpError &) {
@@ -108,7 +112,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	catch (Exception &ex) {
-		ferr() << toolName << ": " << ex.what() << nl;
+		ferr() << toolName << ": " << ex.message() << nl;
 		return 1;
 	}
 

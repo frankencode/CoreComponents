@@ -76,7 +76,7 @@ void NodeMaster::runNode(int argc, char **argv)
 		runNode();
 	}
 	catch (Exception &ex) {
-		FLUXNODE_ERROR() << ex.what() << nl;
+		FLUXNODE_ERROR() << ex.message() << nl;
 		throw;
 	}
 	#else
