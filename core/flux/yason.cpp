@@ -31,7 +31,19 @@ YasonObjectList *YasonObject::children() const
 	return children_;
 }
 
-void YasonObject::autocomplete(YasonObject *prototype)
+Ref<YasonObject> YasonObject::clone()
+{
+	Ref<YasonObject> object = produce();
+	object->autocomplete(this);
+	if (hasChildren()) {
+		for (int i = 0; i < children()->size(); ++i) {
+			object->children()->append(children()->at(i)->clone());
+		}
+	}
+	return object;
+}
+
+void YasonObject::autocomplete(const YasonObject *prototype)
 {
 	if (!prototype) return;
 

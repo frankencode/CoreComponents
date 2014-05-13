@@ -8,7 +8,8 @@
  */
 
 #include <flux/stdio.h>
-#include <flux/Config.h>
+#include <flux/exceptions.h>
+#include <flux/Arguments.h>
 #include <flux/File.h>
 #include <flux/Sha1.h>
 #include <flux/Md5.h>
@@ -20,9 +21,12 @@ int main(int argc, char **argv)
 {
 	String toolName = String(argv[0])->fileName();
 	try {
-		Ref<Config> options = Config::read(argc, argv, YasonObject::create());
-		for (int i = 0; i < options->arguments()->size(); ++i) {
-			String path = options->arguments()->at(i);
+		Ref<Arguments> arguments = Arguments::parse(argc, argv);
+		arguments->validate(VariantMap::create());
+
+		StringList *items = arguments->items();
+		for (int i = 0; i < items->size(); ++i) {
+			String path = items->at(i);
 			Ref<HashSum> hashSum;
 			if (toolName->contains("sha1")) hashSum = Sha1::create();
 			else hashSum = Md5::create();
@@ -38,7 +42,7 @@ int main(int argc, char **argv)
 		) << toolName;
 	}
 	catch (Exception &ex) {
-		ferr() << toolName << ": " << ex.what() << nl;
+		ferr() << toolName << ": " << ex.message() << nl;
 		return 1;
 	}
 	return 0;

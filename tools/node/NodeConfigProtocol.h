@@ -11,14 +11,14 @@
 #define FLUXNODE_NODECONFIGPROTOCOL_H
 
 #include <flux/Singleton.h>
-#include <flux/Config.h>
+#include <flux/yason.h>
 
 namespace fluxnode
 {
 
 using namespace flux;
 
-class NodeConfigProtocol: public ConfigProtocol, public Singleton<NodeConfigProtocol>
+class NodeConfigProtocol: public YasonProtocol, public Singleton<NodeConfigProtocol>
 {
 public:
 	void registerService(YasonObject *configPrototype);

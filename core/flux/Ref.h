@@ -56,14 +56,14 @@ public:
 
 	template<class T2>
 	inline Ref<T> &operator<<(T2 x) {
-		FLUX_ASSERT2(a_, "Null reference shifted left");
+		FLUX_ASSERT2(a_, "Null reference on shift left");
 		*a_ << x;
 		return *this;
 	}
 
 	template<class T2>
 	inline Ref<T> &operator>>(T2 &x) {
-		FLUX_ASSERT2(a_, "Null reference shifted right");
+		FLUX_ASSERT2(a_, "Null reference on shift right");
 		*a_ >> x;
 		return *this;
 	}

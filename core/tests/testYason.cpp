@@ -107,7 +107,7 @@ int main() {
 		testData(object2);
 	}
 	catch (TextError &ex) {
-		ferr() << ex.what() << nl;
+		ferr() << ex.message() << nl;
 		check(false);
 	}
 

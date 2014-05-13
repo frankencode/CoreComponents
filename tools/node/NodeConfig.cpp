@@ -7,7 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/Config.h>
+#include <flux/Arguments.h>
+#include <flux/File.h>
 #include "NodeConfigProtocol.h"
 #include "ServiceRegistry.h"
 #include "ErrorLog.h"
@@ -21,18 +22,27 @@ NodeConfig::NodeConfig()
 
 void NodeConfig::load(int argc, char **argv)
 {
+	Ref<Arguments> arguments = Arguments::parse(argc, argv);
+	Ref<StringList> items = arguments->items();
+
 	YasonObject *nodePrototype = configProtocol()->value("Node");
-	Ref<Config> config = Config::read(argc, argv, nodePrototype);
-	if (config->arguments()->size() > 0) {
-		if (config->arguments()->size() > 1)
+	arguments->validate(nodePrototype);
+
+	Ref<YasonObject> config;
+
+	if (items->size() > 0) {
+		if (items->size() > 1)
 			throw UsageError("Loading multiple config files at once is not supported");
-		String path = config->arguments()->at(0);
-		config = Config::read(path, configProtocol());
-		config = Config::read(argc, argv, config);
+
+		String path = items->at(0);
+		config = yason::parse(File::open(path)->map(), configProtocol());
 	}
 
-	String address = config->value("address", "localhost");
-	int port = config->value("port", 8080);
+	if (!config) config = nodePrototype->clone();
+	arguments->override(config);
+
+	String address = config->value("address");
+	int port = config->value("port");
 	String protocol = config->value("protocol");
 
 	int family = AF_UNSPEC;

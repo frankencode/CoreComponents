@@ -21,13 +21,15 @@ class Exception: public std::exception
 {
 public:
 	~Exception() throw() {}
+
+	virtual String message() const = 0;
+
+private:
 	const char *what() const throw() {
 		static String h;
 		h = message();
 		return h;
 	}
-
-	virtual String message() const = 0;
 };
 
 inline String str(const Exception &ex) { return ex.message(); }

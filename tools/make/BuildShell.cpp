@@ -90,7 +90,7 @@ bool BuildShell::install(String sourcePath, String destPath)
 		sink->write(source->map());
 	}
 	catch (SystemError &ex) {
-		fout("%%\n") << ex.what();
+		fout("%%\n") << ex.message();
 		return false;
 	}
 
@@ -109,7 +109,7 @@ bool BuildShell::unlink(String path)
 			File::unlink(path);
 		}
 		catch (SystemError &ex) {
-			fout("%%\n") << ex.what();
+			fout("%%\n") << ex.message();
 			return false;
 		}
 	}
