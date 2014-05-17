@@ -15,57 +15,6 @@
 namespace flux
 {
 
-Variant YasonObject::toVariant() const
-{
-	return Ref<YasonObject>(const_cast<YasonObject *>(this));
-}
-
-String YasonObject::toString() const
-{
-	return yason::stringify(toVariant());
-}
-
-YasonObjectList *YasonObject::children() const
-{
-	if (!children_) children_ = YasonObjectList::create();
-	return children_;
-}
-
-Ref<YasonObject> YasonObject::clone()
-{
-	Ref<YasonObject> object = produce();
-	object->autocomplete(this);
-	if (hasChildren()) {
-		for (int i = 0; i < children()->size(); ++i) {
-			object->children()->append(children()->at(i)->clone());
-		}
-	}
-	return object;
-}
-
-void YasonObject::autocomplete(const YasonObject *prototype)
-{
-	if (!prototype) return;
-
-	if (prototype->size() != size()) {
-		for (int i = 0; i < prototype->size(); ++i) {
-			String name = prototype->keyAt(i);
-			if (size() <= i || keyAt(i) != name)
-				insert(name, prototype->valueAt(i));
-		}
-	}
-}
-
-Token *YasonObject::nameToken(const ByteArray *text, Token *objectToken, const String &memberName)
-{
-	return yasonSyntax()->nameToken(text, objectToken, memberName);
-}
-
-Token *YasonObject::valueToken(const ByteArray *text, Token *objectToken, const String &memberName)
-{
-	return yasonSyntax()->valueToken(text, objectToken, memberName);
-}
-
 namespace yason
 {
 

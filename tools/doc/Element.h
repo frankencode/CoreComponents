@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUXDOC_FRAGMENT_H
-#define FLUXDOC_FRAGMENT_H
+#ifndef FLUXDOC_ELEMENT_H
+#define FLUXDOC_ELEMENT_H
 
 #include <flux/yason.h>
 
@@ -17,9 +17,9 @@ namespace fluxdoc
 
 using namespace flux;
 
-typedef YasonObject Fragment;
-typedef List< Ref<Fragment> > FragmentList;
+typedef YasonObject Element;
+typedef List< Ref<Element> > ElementList;
 
 } // namespace fluxdoc
 
-#endif // FLUXDOC_FRAGMENT_H
+#endif // FLUXDOC_ELEMENT_H

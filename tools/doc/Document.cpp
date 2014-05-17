@@ -22,9 +22,9 @@ Ref<Document> Document::load(String path, Document *parent)
 
 Ref<Document> Document::parse(String text, String path, Document *parent)
 {
-	Ref<FragmentList> fragments = markupSyntax()->parse(text, path);
-	for (int i = 0; i < fragments->size(); ++i) ferr() << yason::stringify(fragments->at(i)) << nl; // DEBUG
-	return new Document(fragments, path, parent);
+	Ref<ElementList> elements = markupSyntax()->parse(text, path);
+	for (int i = 0; i < elements->size(); ++i) ferr() << yason::stringify(elements->at(i)) << nl; // DEBUG
+	return new Document(elements, path, parent);
 }
 
 int Document::depth() const
@@ -34,25 +34,25 @@ int Document::depth() const
 	return n;
 }
 
-Document::Document(FragmentList *fragments, String path, Document *parent)
+Document::Document(ElementList *elements, String path, Document *parent)
 	: path_(path),
-	  fragments_(fragments),
-	  title_(Title::create()),
+	  elements_(elements),
+	  title_(TitleElement::create()),
 	  authors_(AuthorList::create()),
 	  parent_(parent),
 	  parts_(DocumentList::create())
 {
-	for (int i = 0; i < fragments->size(); ++i) {
-		Fragment *fragment = fragments->at(i);
-		String className = fragment->className();
+	for (int i = 0; i < elements->size(); ++i) {
+		Element *element = elements->at(i);
+		String className = element->className();
 		if (className == "Title") {
-			title_ = fragment;
+			title_ = element;
 		}
 		else if (className == "Author") {
-			authors_->append(fragment);
+			authors_->append(element);
 		}
 		else if (className == "Part") {
-			Part *part = cast<Part>(fragment);
+			PartElement *part = cast<PartElement>(element);
 			Ref<Document> document = load(part->path(), this);
 			parts_->append(document);
 		}

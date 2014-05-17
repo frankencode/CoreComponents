@@ -12,7 +12,7 @@
 #include <flux/assert.h>
 #include <flux/YasonSyntax.h>
 #include "MarkupProtocol.h"
-#include "fragments.h"
+#include "elements.h"
 #include "MarkupSyntax.h"
 
 namespace fluxdoc
@@ -113,17 +113,6 @@ MarkupSyntax::MarkupSyntax()
 		)
 	);
 
-	DEFINE("Heading", &heading_,
-		GLUE(
-			INLINE("Gap"),
-			CHAR('!'),
-			INLINE("Gap"),
-			NOT(RANGE("!*@")),
-			REF("Line"),
-			INLINE("LineEnd")
-		)
-	);
-
 	DEFINE("ItemText",
 		REPEAT(1,
 			GLUE(
@@ -208,7 +197,6 @@ MarkupSyntax::MarkupSyntax()
 					CHOICE(
 						REF("Object"),
 						REF("List"),
-						REF("Heading"),
 						REF("Paragraph"),
 						GLUE(
 							INLINE("Gap"),
@@ -227,75 +215,69 @@ MarkupSyntax::MarkupSyntax()
 	LINK();
 }
 
-Ref<FragmentList> MarkupSyntax::parse(ByteArray *text, String resource) const
+Ref<ElementList> MarkupSyntax::parse(ByteArray *text, String resource) const
 {
 	Ref<SyntaxState> state = match(text, 0, DebugTokenFactory::create());
 	if (!state->valid()) throw SyntaxError(text, state, resource);
 
 	cast<DebugToken>(state->rootToken())->printTo(err(), text);
 
-	Ref<FragmentList> fragments;
+	Ref<ElementList> elements;
 	try {
-		fragments = readPart(text, state->rootToken());
+		elements = readPart(text, state->rootToken());
 	}
 	catch (SemanticError &error) {
 		error.setResource(resource);
 		throw error;
 	}
-	return fragments;
+	return elements;
 }
 
-Ref<FragmentList> MarkupSyntax::readPart(ByteArray *text, Token *partToken) const
+Ref<ElementList> MarkupSyntax::readPart(ByteArray *text, Token *partToken) const
 {
-	Ref<FragmentList> fragments = FragmentList::create();
+	Ref<ElementList> elements = ElementList::create();
 
 	for (
 		Token *token = partToken->firstChild();
 		token;
 		token = token->nextSibling())
 	{
-		Ref<YasonObject> fragment;
+		Ref<YasonObject> element;
 		if (token->rule() == object_) {
-			fragment = yasonSyntax()->readObject(text, token->firstChild(), markupProtocol());
+			element = yasonSyntax()->readObject(text, token->firstChild(), markupProtocol());
 		}
 		else if (token->rule() == paragraph_) {
 			String s = readLines(text, token->firstChild());
 			if (s == "") continue;
-			Ref<Paragraph> paragraph = Paragraph::create();
+			Ref<ParagraphElement> paragraph = ParagraphElement::create();
 			paragraph->insert("text", s);
 			paragraph->realize(text, token);
-			fragment = paragraph;
-		}
-		else if (token->rule() == heading_) {
-			Ref<Heading> heading = Heading::create();
-			heading->insert("text", text->copy(token->firstChild()));
-			heading->realize(text, token);
-			fragment = heading;
+			element = paragraph;
 		}
 		else if (token->rule() == list_) {
-			fragment = readList(text, token);
+			element = readList(text, token);
 		}
-		FLUX_ASSERT(fragment);
-		if (fragment) fragments->append(fragment);
+		FLUX_ASSERT(element);
+		if (element) elements->append(element);
 	}
 
-	return fragments;
+	return elements;
 }
 
-Ref<Fragment> MarkupSyntax::readList(ByteArray *text, Token *listToken) const
+Ref<Element> MarkupSyntax::readList(ByteArray *text, Token *listToken) const
 {
-	Ref<ListFragment> listFragment = ListFragment::create();
+	Ref<ListElement> listElement = ListElement::create();
 	for (Token *token = listToken->firstChild(); token; token = token->nextSibling())
-		listFragment->children()->append(readItem(text, token));
-	listFragment->realize(text, listToken);
-	return listFragment;
+		listElement->children()->append(readItem(text, token));
+	listElement->realize(text, listToken);
+	return listElement;
 }
 
-Ref<Fragment> MarkupSyntax::readItem(ByteArray *text, Token *itemToken) const
+Ref<Element> MarkupSyntax::readItem(ByteArray *text, Token *itemToken) const
 {
+	Ref<ItemElement> item = ItemElement::create();
 	Token *token = itemToken->firstChild();
-	Ref<Item> item = Item::create();
-	item->insert("text", readLines(text, token));
+	item->insert("text", readLines(text, token->firstChild()));
 	token = token->nextSibling();
 	if (token)
 		item->children()->append(readList(text, token));
