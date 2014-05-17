@@ -43,25 +43,27 @@ int InvokeNode::matchNext(ByteArray *text, int i, Token *parentToken, State *sta
 	if (coverage()) {
 		i = coverage()->matchNext(text, i, parentToken, state);
 		rollBack(parentToken, lastChildSaved);
+		if (i == -1) return i;
 	}
-
-	if (i == -1) return i;
 
 	Ref<SyntaxState> childState = LinkNode::rule()->scope()->createState(state->tokenFactory_);
 	i = RefNode::matchNext(ByteRange(text, i0, coverage() ? i : text->size()), 0, parentToken, childState);
-	if (i0 != 0) {
-		i += i0;
-		for (
-			Token *token = lastChildSaved ? lastChildSaved : parentToken->firstChild();
-			token;
-			token = token->nextSibling()
-		)
-			shiftTree(token, i0);
-	}
 
 	if (childState->hint_) {
 		state->hint_ = childState->hint_;
 		state->hintOffset_ = childState->hintOffset_ + i0;
+	}
+
+	if (i == -1) return i;
+
+	if (i0 != 0) {
+		i += i0;
+		for (
+			Token *token = lastChildSaved ? lastChildSaved->nextSibling() : parentToken->firstChild();
+			token;
+			token = token->nextSibling()
+		)
+			shiftTree(token, i0);
 	}
 
 	return i;

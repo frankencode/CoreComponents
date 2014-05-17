@@ -26,17 +26,17 @@
 namespace flux
 {
 
-Ref<File> File::open(String path, int openFlags)
+Ref<File> File::open(String path, int flags, int mode)
 {
-	int fd = ::open(path, openFlags);
+	int fd = ::open(path, flags, mode);
 	if (fd == -1) FLUX_SYSTEM_ERROR(errno, path);
-	return new File(path, openFlags, fd);
+	return new File(path, flags, fd);
 }
 
-Ref<File> File::tryOpen(String path, int openFlags)
+Ref<File> File::tryOpen(String path, int flags, int mode)
 {
-	int fd = ::open(path, openFlags);
-	if (fd != -1) return new File(path, openFlags, fd);
+	int fd = ::open(path, flags, mode);
+	if (fd != -1) return new File(path, flags, fd);
 	return 0;
 }
 

@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-// #include <flux/stdio.h> // DEBUG
-// #include <flux/DebugTokenFactory.h> // DEBUG
+#include <flux/stdio.h> // DEBUG
+#include <flux/DebugTokenFactory.h> // DEBUG
 #include <flux/assert.h>
 #include <flux/YasonSyntax.h>
 #include "MarkupProtocol.h"
@@ -124,18 +124,44 @@ MarkupSyntax::MarkupSyntax()
 		)
 	);
 
+	DEFINE("ItemText",
+		REPEAT(1,
+			GLUE(
+				INLINE("Gap"),
+				NOT(RANGE("!*@")),
+				REF("Line"),
+				INLINE("LineEnd")
+			)
+		)
+	);
+
 	DEFINE("Item", &item_,
 		GLUE(
-			REF("Gap"),
+			REPLAY("indent"),
 			CHAR('*'),
-			REPEAT(1,
+			REF("ItemText"),
+			REPEAT(0, 1,
 				GLUE(
-					INLINE("Gap"),
-					NOT(RANGE("!*@")),
-					REF("Line"),
-					INLINE("LineEnd")
+					AHEAD(
+						GLUE(
+							REPLAY("indent"),
+							LENGTH(1, INLINE("Gap"))
+						)
+					),
+					INVOKE("List")
 				)
 			)
+		)
+	);
+
+	DEFINE("List", &list_,
+		GLUE(
+			AHEAD(
+				CAPTURE("indent",
+					INLINE("Gap")
+				)
+			),
+			REPEAT(1, REF("Item"))
 		)
 	);
 
@@ -181,7 +207,7 @@ MarkupSyntax::MarkupSyntax()
 					NOT(EOI()),
 					CHOICE(
 						REF("Object"),
-						REF("Item"),
+						REF("List"),
 						REF("Heading"),
 						REF("Paragraph"),
 						GLUE(
@@ -203,10 +229,10 @@ MarkupSyntax::MarkupSyntax()
 
 Ref<FragmentList> MarkupSyntax::parse(ByteArray *text, String resource) const
 {
-	Ref<SyntaxState> state = match(text, 0/*, DebugTokenFactory::create()*/);
+	Ref<SyntaxState> state = match(text, 0, DebugTokenFactory::create());
 	if (!state->valid()) throw SyntaxError(text, state, resource);
 
-	// cast<DebugToken>(state->rootToken())->printTo(err(), text);
+	cast<DebugToken>(state->rootToken())->printTo(err(), text);
 
 	Ref<FragmentList> fragments;
 	try {
@@ -223,9 +249,6 @@ Ref<FragmentList> MarkupSyntax::readPart(ByteArray *text, Token *partToken) cons
 {
 	Ref<FragmentList> fragments = FragmentList::create();
 
-	int realDepth = 0;
-	int normalizedDepth = 0;
-
 	for (
 		Token *token = partToken->firstChild();
 		token;
@@ -236,8 +259,10 @@ Ref<FragmentList> MarkupSyntax::readPart(ByteArray *text, Token *partToken) cons
 			fragment = yasonSyntax()->readObject(text, token->firstChild(), markupProtocol());
 		}
 		else if (token->rule() == paragraph_) {
+			String s = readLines(text, token->firstChild());
+			if (s == "") continue;
 			Ref<Paragraph> paragraph = Paragraph::create();
-			paragraph->insert("text", readLines(text, token->firstChild()));
+			paragraph->insert("text", s);
 			paragraph->realize(text, token);
 			fragment = paragraph;
 		}
@@ -247,26 +272,35 @@ Ref<FragmentList> MarkupSyntax::readPart(ByteArray *text, Token *partToken) cons
 			heading->realize(text, token);
 			fragment = heading;
 		}
-		else if (token->rule() == item_) {
-			Token *gapToken = token->firstChild();
-			int gapSize = gapToken->size();
-			normalizedDepth += (realDepth < gapSize) - (gapSize < realDepth);
-			realDepth = gapSize;
-
-			Ref<Item> item = Item::create();
-			item->insert("depth", normalizedDepth);
-			item->insert("text", readLines(text, gapToken->nextSibling()));
-			item->realize(text, token);
-			fragment = item;
-		}
-		if (token->rule() != item_) {
-			realDepth = normalizedDepth = 0;
+		else if (token->rule() == list_) {
+			fragment = readList(text, token);
 		}
 		FLUX_ASSERT(fragment);
 		if (fragment) fragments->append(fragment);
 	}
 
 	return fragments;
+}
+
+Ref<Fragment> MarkupSyntax::readList(ByteArray *text, Token *listToken) const
+{
+	Ref<ListFragment> listFragment = ListFragment::create();
+	for (Token *token = listToken->firstChild(); token; token = token->nextSibling())
+		listFragment->children()->append(readItem(text, token));
+	listFragment->realize(text, listToken);
+	return listFragment;
+}
+
+Ref<Fragment> MarkupSyntax::readItem(ByteArray *text, Token *itemToken) const
+{
+	Token *token = itemToken->firstChild();
+	Ref<Item> item = Item::create();
+	item->insert("text", readLines(text, token));
+	token = token->nextSibling();
+	if (token)
+		item->children()->append(readList(text, token));
+	item->realize(text, itemToken);
+	return item;
 }
 
 String MarkupSyntax::readLines(ByteArray *text, Token *lineToken) const

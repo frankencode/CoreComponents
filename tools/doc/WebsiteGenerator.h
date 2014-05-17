@@ -18,14 +18,24 @@ namespace fluxdoc
 
 class WebsiteGeneratorRegistration;
 
+class WebsiteWriter;
+
 class WebsiteGenerator: public Generator
 {
 public:
-	virtual void run(Design *design);
+	virtual void run(Design *design, Document *document);
 
 private:
 	friend class WebsiteGeneratorRegistration;
 	WebsiteGenerator();
+
+	template<class Writer>
+	void define() {
+		writerMap_->insert(Writer::className(), Writer::create());
+	}
+
+	typedef Map< String, Ref<WebsiteWriter> > WriterMap;
+	Ref<WriterMap> writerMap_;
 };
 
 class WebsiteGeneratorRegistration: public Object

@@ -41,12 +41,12 @@ NodeConfigProtocol::NodeConfigProtocol()
 	: nodeProtocol_(YasonProtocol::create())
 {
 	Ref<NodePrototype> nodePrototype = NodePrototype::create(nodeProtocol_);
-	insert(nodePrototype->className(), nodePrototype);
+	define(nodePrototype);
 }
 
 void NodeConfigProtocol::registerService(YasonObject *configPrototype)
 {
-	nodeProtocol_->insert(configPrototype->className(), configPrototype);
+	nodeProtocol_->define(configPrototype);
 }
 
 } // namespace fluxnode

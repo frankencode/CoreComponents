@@ -15,27 +15,31 @@
 namespace fluxdoc
 {
 
-Ref<Document> Document::load(String path)
+Ref<Document> Document::load(String path, Document *parent)
 {
-	return Document::parse(File::open(path)->map(), path);
+	return Document::parse(File::open(path)->map(), path, parent);
 }
 
-Ref<Document> Document::parse(String text, String resource)
+Ref<Document> Document::parse(String text, String path, Document *parent)
 {
-	Ref<FragmentList> fragments = markupSyntax()->parse(text, resource);
-	for (int i = 0; i < fragments->size(); ++i) ferr() << yason::stringify(fragments->at(i));
-	return new Document(fragments);
+	Ref<FragmentList> fragments = markupSyntax()->parse(text, path);
+	for (int i = 0; i < fragments->size(); ++i) ferr() << yason::stringify(fragments->at(i)) << nl; // DEBUG
+	return new Document(fragments, path, parent);
 }
 
-Ref<Document> Document::create(FragmentList *fragments)
+int Document::depth() const
 {
-	return new Document(fragments);
+	int n = 0;
+	for (Document *d = parent_; d; d = d->parent_) ++n;
+	return n;
 }
 
-Document::Document(FragmentList *fragments)
-	: fragments_(fragments),
+Document::Document(FragmentList *fragments, String path, Document *parent)
+	: path_(path),
+	  fragments_(fragments),
 	  title_(Title::create()),
 	  authors_(AuthorList::create()),
+	  parent_(parent),
 	  parts_(DocumentList::create())
 {
 	for (int i = 0; i < fragments->size(); ++i) {
@@ -49,7 +53,7 @@ Document::Document(FragmentList *fragments)
 		}
 		else if (className == "Part") {
 			Part *part = cast<Part>(fragment);
-			Ref<Document> document = load(part->path());
+			Ref<Document> document = load(part->path(), this);
 			parts_->append(document);
 		}
 	}

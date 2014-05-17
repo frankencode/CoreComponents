@@ -25,21 +25,19 @@ class TextFragment: public Fragment
 public:
 	inline String text() const { return text_; }
 
-protected:
-	friend class MarkupSyntax;
+	virtual void realize(const ByteArray *, Token *)
+	{
+		text_ = value("text");
+	}
 
-	TextFragment(String className)
-		: Fragment(className)
+protected:
+	TextFragment(String className, YasonProtocol *protocol = 0)
+		: Fragment(className, protocol)
 	{}
 
 	virtual void define()
 	{
 		insert("text", "");
-	}
-
-	virtual void realize(const ByteArray *text, Token *)
-	{
-		text_ = value("text");
 	}
 
 	String text_;
@@ -69,6 +67,12 @@ public:
 	String name() const { return name_; }
 	String email() const { return email_; }
 
+	virtual void realize(const ByteArray *text, Token *)
+	{
+		name_ = value("name");
+		email_ = value("email");
+	}
+
 protected:
 	Author(String className = "Author")
 		: Fragment(className)
@@ -83,12 +87,6 @@ protected:
 	virtual Ref<YasonObject> produce()
 	{
 		return create();
-	}
-
-	virtual void realize(const ByteArray *text, Token *)
-	{
-		name_ = value("name");
-		email_ = value("email");
 	}
 
 	String name_;
@@ -127,38 +125,72 @@ protected:
 	}
 };
 
+class ListFragment;
+class Item;
+
+class ItemProtocol: public YasonProtocol
+{
+public:
+	static Ref<ItemProtocol> create() { return new ItemProtocol; }
+
+private:
+	ItemProtocol() {}
+
+	virtual int maxCount() const { return 1; }
+
+	virtual YasonObject *lookup(String className)
+	{
+		if (className == "List") return listPrototype();
+		return 0;
+	}
+
+	inline YasonObject *listPrototype()
+	{
+		if (!listPrototype_) listPrototype_ = createPrototype<ListFragment>();
+		return listPrototype_;
+	}
+
+	Ref<YasonObject> listPrototype_;
+};
+
 class Item: public TextFragment
 {
 public:
 	static Ref<Item> create() { return new Item; }
 
-	inline int depth() const { return depth_; }
+protected:
+	Item(String className = "Item")
+		: TextFragment(className, ItemProtocol::create())
+	{}
+
+	virtual Ref<YasonObject> produce()
+	{
+		return create();
+	}
+};
+
+class ListFragment: public Fragment
+{
+public:
+	static Ref<ListFragment> create() { return new ListFragment; }
+
+	virtual void realize(const ByteArray *, Token *)
+	{}
 
 protected:
-	friend class MarkupSyntax;
-
-	Item(String className = "Item")
-		: TextFragment(className)
+	ListFragment(String className = "List")
+		: Fragment(className, YasonProtocol::create())
 	{}
 
 	virtual void define()
 	{
-		TextFragment::define();
-		insert("depth", 1);
+		protocol()->define<fluxdoc::Item>();
 	}
 
 	virtual Ref<YasonObject> produce()
 	{
 		return create();
 	}
-
-	virtual void realize(const ByteArray *text, Token *objectToken)
-	{
-		TextFragment::realize(text, objectToken);
-		depth_ = value("depth");
-	}
-
-	int depth_;
 };
 
 class PathFragment: public TextFragment

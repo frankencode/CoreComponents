@@ -11,6 +11,7 @@
 #define FLUXDOC_GENERATOR_H
 
 #include "Design.h"
+#include "Document.h"
 
 namespace fluxdoc
 {
@@ -23,7 +24,7 @@ public:
 	inline String name() const { return name_; }
 	inline Design *prototype() const { return prototype_; }
 
-	virtual void run(Design *design) = 0;
+	virtual void run(Design *design, Document *document) = 0;
 
 protected:
 	Generator(String name, Design *prototype);
