@@ -7,11 +7,11 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUXDOC_FRAGMENTS_H
-#define FLUXDOC_FRAGMENTS_H
+#ifndef FLUXDOC_ELEMENTS_H
+#define FLUXDOC_ELEMENTS_H
 
 #include <flux/File.h>
-#include "Fragment.h"
+#include "Element.h"
 
 namespace fluxdoc
 {
@@ -20,7 +20,7 @@ using namespace flux;
 
 class MarkupSyntax;
 
-class TextFragment: public Fragment
+class TextElement: public Element
 {
 public:
 	inline String text() const { return text_; }
@@ -31,8 +31,8 @@ public:
 	}
 
 protected:
-	TextFragment(String className, YasonProtocol *protocol = 0)
-		: Fragment(className, protocol)
+	TextElement(String className, YasonProtocol *protocol = 0)
+		: Element(className, protocol)
 	{}
 
 	virtual void define()
@@ -43,14 +43,14 @@ protected:
 	String text_;
 };
 
-class Title: public TextFragment
+class TitleElement: public TextElement
 {
 public:
-	static Ref<Title> create() { return new Title; }
+	static Ref<TitleElement> create() { return new TitleElement; }
 
 protected:
-	Title(String className = "Title")
-		: TextFragment(className)
+	TitleElement(String className = "Title")
+		: TextElement(className)
 	{}
 
 	virtual Ref<YasonObject> produce()
@@ -59,10 +59,10 @@ protected:
 	}
 };
 
-class Author: public Fragment
+class AuthorElement: public Element
 {
 public:
-	static Ref<Author> create() { return new Author; }
+	static Ref<AuthorElement> create() { return new AuthorElement; }
 
 	String name() const { return name_; }
 	String email() const { return email_; }
@@ -74,8 +74,8 @@ public:
 	}
 
 protected:
-	Author(String className = "Author")
-		: Fragment(className)
+	AuthorElement(String className = "Author")
+		: Element(className)
 	{}
 
 	virtual void define()
@@ -93,14 +93,14 @@ protected:
 	String email_;
 };
 
-class Heading: public TextFragment
+class ParagraphElement: public TextElement
 {
 public:
-	static Ref<Heading> create() { return new Heading; }
+	static Ref<ParagraphElement> create() { return new ParagraphElement; }
 
 protected:
-	Heading(String className = "Heading")
-		: TextFragment(className)
+	ParagraphElement(String className = "Paragraph")
+		: TextElement(className)
 	{}
 
 	virtual Ref<YasonObject> produce()
@@ -109,24 +109,7 @@ protected:
 	}
 };
 
-class Paragraph: public TextFragment
-{
-public:
-	static Ref<Paragraph> create() { return new Paragraph; }
-
-protected:
-	Paragraph(String className = "Paragraph")
-		: TextFragment(className)
-	{}
-
-	virtual Ref<YasonObject> produce()
-	{
-		return create();
-	}
-};
-
-class ListFragment;
-class Item;
+class ListElement;
 
 class ItemProtocol: public YasonProtocol
 {
@@ -146,21 +129,21 @@ private:
 
 	inline YasonObject *listPrototype()
 	{
-		if (!listPrototype_) listPrototype_ = createPrototype<ListFragment>();
+		if (!listPrototype_) listPrototype_ = createPrototype<ListElement>();
 		return listPrototype_;
 	}
 
 	Ref<YasonObject> listPrototype_;
 };
 
-class Item: public TextFragment
+class ItemElement: public TextElement
 {
 public:
-	static Ref<Item> create() { return new Item; }
+	static Ref<ItemElement> create() { return new ItemElement; }
 
 protected:
-	Item(String className = "Item")
-		: TextFragment(className, ItemProtocol::create())
+	ItemElement(String className = "Item")
+		: TextElement(className, ItemProtocol::create())
 	{}
 
 	virtual Ref<YasonObject> produce()
@@ -169,22 +152,22 @@ protected:
 	}
 };
 
-class ListFragment: public Fragment
+class ListElement: public Element
 {
 public:
-	static Ref<ListFragment> create() { return new ListFragment; }
+	static Ref<ListElement> create() { return new ListElement; }
 
 	virtual void realize(const ByteArray *, Token *)
 	{}
 
 protected:
-	ListFragment(String className = "List")
-		: Fragment(className, YasonProtocol::create())
+	ListElement(String className = "List")
+		: Element(className, YasonProtocol::create())
 	{}
 
 	virtual void define()
 	{
-		protocol()->define<fluxdoc::Item>();
+		protocol()->define<ItemElement>();
 	}
 
 	virtual Ref<YasonObject> produce()
@@ -193,27 +176,27 @@ protected:
 	}
 };
 
-class PathFragment: public TextFragment
+class PathElement: public TextElement
 {
 public:
 	inline String path() const { return path_; }
 	inline String title() const { return title_; }
 
 protected:
-	PathFragment(String className)
-		: TextFragment(className)
+	PathElement(String className)
+		: TextElement(className)
 	{}
 
 	virtual void define()
 	{
-		TextFragment::define();
+		TextElement::define();
 		insert("path", "");
 		insert("title", "");
 	}
 
 	virtual void realize(const ByteArray *text, Token *objectToken)
 	{
-		TextFragment::realize(text, objectToken);
+		TextElement::realize(text, objectToken);
 		path_ = value("path");
 		title_ = value("title");
 		if (path_ != "") {
@@ -231,14 +214,14 @@ protected:
 	String title_;
 };
 
-class Part: public PathFragment
+class PartElement: public PathElement
 {
 public:
-	static Ref<Part> create() { return new Part; }
+	static Ref<PartElement> create() { return new PartElement; }
 
 protected:
-	Part(String className = "Part")
-		: PathFragment(className)
+	PartElement(String className = "Part")
+		: PathElement(className)
 	{}
 
 	virtual Ref<YasonObject> produce()
@@ -247,14 +230,14 @@ protected:
 	}
 };
 
-class Image: public PathFragment
+class ImageElement: public PathElement
 {
 public:
-	static Ref<Image> create() { return new Image; }
+	static Ref<ImageElement> create() { return new ImageElement; }
 
 protected:
-	Image(String className = "Image")
-		: PathFragment(className)
+	ImageElement(String className = "Image")
+		: PathElement(className)
 	{}
 
 	virtual Ref<YasonObject> produce()
@@ -263,14 +246,14 @@ protected:
 	}
 };
 
-class Code: public PathFragment
+class CodeElement: public PathElement
 {
 public:
-	static Ref<Code> create() { return new Code; }
+	static Ref<CodeElement> create() { return new CodeElement; }
 
 protected:
-	Code(String className = "Code")
-		: PathFragment(className)
+	CodeElement(String className = "Code")
+		: PathElement(className)
 	{}
 
 	virtual Ref<YasonObject> produce()
@@ -281,4 +264,4 @@ protected:
 
 } // namespace fluxdoc
 
-#endif // FLUXDOC_FRAGMENTS_H
+#endif // FLUXDOC_ELEMENTS_H

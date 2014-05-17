@@ -13,7 +13,7 @@
 #include <flux/SyntaxDefinition.h>
 #include <flux/exceptions.h>
 #include <flux/Singleton.h>
-#include "Fragment.h"
+#include "Element.h"
 
 namespace fluxdoc
 {
@@ -23,14 +23,14 @@ using namespace flux;
 class MarkupSyntax: public SyntaxDefinition, public Singleton<MarkupSyntax>
 {
 public:
-	Ref<FragmentList> parse(ByteArray *text, String resource = "") const;
+	Ref<ElementList> parse(ByteArray *text, String resource = "") const;
 
 private:
 	friend class Singleton<MarkupSyntax>;
 	MarkupSyntax();
-	Ref<FragmentList> readPart(ByteArray *text, Token *partToken) const;
-	Ref<Fragment> readList(ByteArray *text, Token *listToken) const;
-	Ref<Fragment> readItem(ByteArray *text, Token *itemToken) const;
+	Ref<ElementList> readPart(ByteArray *text, Token *partToken) const;
+	Ref<Element> readList(ByteArray *text, Token *listToken) const;
+	Ref<Element> readItem(ByteArray *text, Token *itemToken) const;
 	String readLines(ByteArray *text, Token *lineToken) const;
 	String readChunks(ByteArray *text, Token *chunkToken) const;
 

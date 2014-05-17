@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -95,7 +95,7 @@ void YasonWriter::writeObject(Variant value, int depth)
 		return;
 	}
 	format_ << "{\n";
-	writeIndent(depth + 1);
+	writeIndent(depth + 1); // FIXME: having an "IndentStream" would be nice
 	for (int i = 0; i < object->size(); ++i) {
 		String memberName = object->keyAt(i);
 		Variant memberValue = object->valueAt(i);
@@ -107,19 +107,18 @@ void YasonWriter::writeObject(Variant value, int depth)
 		format_ << "\n";
 		if (i < object->size() - 1)
 			writeIndent(depth + 1);
-		else
-			writeIndent(depth);
 	}
 	if (object->hasChildren()) {
+		if (object->size() > 0) writeIndent(depth + 1);
 		YasonObjectList *children = object->children();
 		for (int i = 0; i < children->size(); ++i) {
-			writeIndent(depth + 1);
 			writeObject(children->at(i), depth + 1);
 			format_ << "\n";
+			if (i < children->size() -1)
+				writeIndent(depth + 1);
 		}
-		if (children->size() > 0)
-			writeIndent(depth);
 	}
+	writeIndent(depth);
 	format_ << "}";
 }
 

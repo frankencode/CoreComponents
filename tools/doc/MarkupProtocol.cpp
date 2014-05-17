@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "fragments.h"
+#include "elements.h"
 #include "MarkupProtocol.h"
 
 namespace fluxdoc
@@ -15,15 +15,14 @@ namespace fluxdoc
 
 MarkupProtocol::MarkupProtocol()
 {
-	define<Title>();
-	define<Author>();
-	define<Heading>();
-	define<Paragraph>();
-	define<ListFragment>();
+	define<TitleElement>();
+	define<AuthorElement>();
+	define<ParagraphElement>();
+	define<ListElement>();
 
-	define<Part>();
-	define<Image>();
-	define<Code>();
+	define<PartElement>();
+	define<ImageElement>();
+	define<CodeElement>();
 }
 
 } // namespace fluxdoc
