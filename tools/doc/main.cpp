@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 			if (!document) document = Document::parse("");
 
 			Generator *generator = registry()->generatorByName(design->className());
-			generator->run(design);
+			generator->run(design, document);
 		}
 	}
 	catch (HelpError &) {

@@ -24,7 +24,7 @@ void DebugToken::printTo(Stream *stream, ByteArray *text, int depth, int default
 		Format format(stream);
 		format << indent;
 		if (scope() != defaultScope) format << scopeName() << "::";
-		format << ruleName() << "=" << "\"" << text->copy(this)->escape() << "\"" << nl;
+		format << ruleName() << "=" << "\"" << text->copy(this)->escape() << "\" (" << i0() << ":" << i1() - i0() << ")" << nl;
 	}
 
 	for (Token *token = firstChild(); token; token = token->nextSibling())

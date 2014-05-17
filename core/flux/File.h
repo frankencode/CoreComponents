@@ -44,7 +44,9 @@ public:
 		ReadOnly  = O_RDONLY,
 		WriteOnly = O_WRONLY,
 		ReadWrite = O_RDWR,
-		Append    = O_APPEND
+		Append    = O_APPEND,
+		Create    = O_CREAT,
+		Truncate  = O_TRUNC
 	};
 
 	enum AccessFlags {
@@ -78,8 +80,8 @@ public:
 		StandardError  = 2
 	};
 
-	static Ref<File> open(String path, int openFlags = ReadOnly);
-	static Ref<File> tryOpen(String path, int openFlags = ReadOnly);
+	static Ref<File> open(String path, int flags = ReadOnly, int mode = 0644);
+	static Ref<File> tryOpen(String path, int flags = ReadOnly, int mode = 0644);
 	static Ref<File> open(int fd, int openFlags);
 	static Ref<File> temp(int openFlags = ReadWrite);
 

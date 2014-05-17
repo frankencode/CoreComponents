@@ -29,8 +29,11 @@ private:
 	friend class Singleton<MarkupSyntax>;
 	MarkupSyntax();
 	Ref<FragmentList> readPart(ByteArray *text, Token *partToken) const;
+	Ref<Fragment> readList(ByteArray *text, Token *listToken) const;
+	Ref<Fragment> readItem(ByteArray *text, Token *itemToken) const;
 	String readLines(ByteArray *text, Token *lineToken) const;
 	String readChunks(ByteArray *text, Token *chunkToken) const;
+
 
 	int escapedChar_;
 	int comment_;
@@ -40,6 +43,7 @@ private:
 	int paragraph_;
 	int heading_;
 	int item_;
+	int list_;
 };
 
 inline MarkupSyntax *markupSyntax() { return MarkupSyntax::instance(); }

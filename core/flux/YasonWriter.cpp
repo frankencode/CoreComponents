@@ -90,7 +90,7 @@ void YasonWriter::writeObject(Variant value, int depth)
 		format_ << object->className();
 		format_ << " ";
 	}
-	if (object->size() == 0) {
+	if (object->size() == 0 && !object->hasChildren()) {
 		format_ << "{}";
 		return;
 	}

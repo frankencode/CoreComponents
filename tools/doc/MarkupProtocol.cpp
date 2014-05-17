@@ -19,7 +19,7 @@ MarkupProtocol::MarkupProtocol()
 	define<Author>();
 	define<Heading>();
 	define<Paragraph>();
-	define<fluxdoc::Item>();
+	define<ListFragment>();
 
 	define<Part>();
 	define<Image>();

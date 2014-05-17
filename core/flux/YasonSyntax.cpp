@@ -404,6 +404,14 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, Ya
 		else {
 			YasonProtocol *prototypeProtocol = 0;
 			if (prototype) prototypeProtocol = prototype->protocol();
+			if (prototypeProtocol) {
+				if (object->children()->size() >= prototypeProtocol->maxCount()) {
+					throw SemanticError(
+						Format("Maximum number of children (%%) exceeded") << prototypeProtocol->maxCount(),
+						text, token->i0()
+					);
+				}
+			}
 			Ref<YasonObject> child = readObject(text, token, prototypeProtocol);
 			object->children()->append(child);
 		}

@@ -25,7 +25,7 @@ void NodeConfig::load(int argc, char **argv)
 	Ref<Arguments> arguments = Arguments::parse(argc, argv);
 	Ref<StringList> items = arguments->items();
 
-	YasonObject *nodePrototype = configProtocol()->value("Node");
+	YasonObject *nodePrototype = configProtocol()->lookup("Node");
 	arguments->validate(nodePrototype);
 
 	Ref<YasonObject> config;
