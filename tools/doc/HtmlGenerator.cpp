@@ -71,6 +71,20 @@ public:
 	}
 };
 
+class CodeWriter: public HtmlWriter {
+public:
+	static Ref<CodeWriter> create() { return new CodeWriter; }
+	static const char *className() { return "Code"; }
+	virtual void write(Format &sink, Element *element) {
+		CodeElement *code = cast<CodeElement>(element);
+		String text = code->text();
+		if (code->path() != "") text = File::open(code->path())->map();
+		sink << "<pre>" << nl;
+		sink << text;
+		sink << "</pre>" << nl;
+	}
+};
+
 } // namespace html
 
 HtmlGenerator::HtmlGenerator()
@@ -81,6 +95,7 @@ HtmlGenerator::HtmlGenerator()
 
 	define<ParagraphWriter>();
 	define<ListWriter>();
+	define<CodeWriter>();
 }
 
 void HtmlGenerator::run(Design *design, Document *document)
