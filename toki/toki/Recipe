@@ -1,5 +1,5 @@
 Library {
-	name: fluxcrypto
+	name: fluxtoki
 	version: 0.1.0
 	header: *.h
 	source: *.cpp

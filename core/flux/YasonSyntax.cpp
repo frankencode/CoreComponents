@@ -8,8 +8,8 @@
  */
 
 #include "Format.h"
-#include "FloatLiteral.h"
-#include "IntegerLiteral.h"
+#include "FloatSyntax.h"
+#include "IntegerSyntax.h"
 #include "YasonSyntax.h"
 
 namespace flux
@@ -19,8 +19,8 @@ YasonSyntax::YasonSyntax()
 {
 	SYNTAX("yason");
 
-	IMPORT(floatLiteral(), "float");
-	IMPORT(integerLiteral(), "int");
+	IMPORT(floatSyntax(), "float");
+	IMPORT(integerSyntax(), "int");
 
 	DEFINE("CommentLine",
 		GLUE(
@@ -81,100 +81,94 @@ YasonSyntax::YasonSyntax()
 		)
 	);
 
-	item_ =
-		DEFINE("Item",
-			REPEAT(1,
-				GLUE(
-					NOT(
-						GLUE(
-							INLINE("Noise"),
-							RANGE(",]")
-						)
-					),
-					EXCEPT(",;{}:\"\n\r")
-				)
-			)
-		);
-
-	line_ =
-		DEFINE("Line",
+	DEFINE("Item", &item_,
+		REPEAT(1,
 			GLUE(
-				NOT(RANGE("[{")),
-				LENGTH(1,
-					FIND(
-						AHEAD(
-							GLUE(
-								REPEAT(
-									CHOICE(
-										RANGE(" \t\r}"),
-										INLINE("CommentLine"),
-										INLINE("CommentText")
-									)
-								),
+				NOT(
+					GLUE(
+						INLINE("Noise"),
+						RANGE(",]")
+					)
+				),
+				EXCEPT(",;{}:\"\n\r")
+			)
+		)
+	);
+
+	DEFINE("Line", &line_,
+		GLUE(
+			NOT(RANGE("[{")),
+			LENGTH(1,
+				FIND(
+					AHEAD(
+						GLUE(
+							REPEAT(
 								CHOICE(
-									AHEAD(CHAR('\n')),
-									EOI()
+									RANGE(" \t\r}"),
+									INLINE("CommentLine"),
+									INLINE("CommentText")
 								)
+							),
+							CHOICE(
+								AHEAD(CHAR('\n')),
+								EOI()
 							)
 						)
 					)
 				)
 			)
-		);
+		)
+	);
 
-	string_ =
-		DEFINE("String",
+	DEFINE("String", &string_,
+		GLUE(
+			CHAR('"'),
+			REPEAT(
+				CHOICE(
+					INLINE("EscapedChar"),
+					EXCEPT("\"\n")
+				)
+			),
+			EXPECT("missing closing '\"'",
+				CHAR('"')
+			)
+		)
+	);
+
+	DEFINE("Document", &document_,
+		FIND(AHEAD(REPLAY("eod")))
+	);
+
+	DEFINE("Text", &text_,
+		CHOICE(
 			GLUE(
-				CHAR('"'),
+				REF("String"),
 				REPEAT(
-					CHOICE(
-						INLINE("EscapedChar"),
-						EXCEPT("\"\n")
+					GLUE(
+						INLINE("Noise"),
+						REF("String")
 					)
-				),
-				EXPECT("missing closing '\"'",
-					CHAR('"')
 				)
+			),
+			GLUE(
+				STRING("<<"),
+				CAPTURE("eod", INLINE("Identifier")),
+				REPEAT(RANGE(" \t")),
+				REPEAT(0, 1, INLINE("CommentLine")),
+				CHAR('\n'),
+				REF("Document"),
+				REPLAY("eod")
+			),
+			CONTEXT("List",
+				REF("Item"),
+				REF("Line")
 			)
-		);
+		)
+	);
 
-	document_ =
-		DEFINE("Document",
-			FIND(AHEAD(REPLAY("eod")))
-		);
-
-	text_ =
-		DEFINE("Text",
-			CHOICE(
-				GLUE(
-					REF("String"),
-					REPEAT(
-						GLUE(
-							INLINE("Noise"),
-							REF("String")
-						)
-					)
-				),
-				GLUE(
-					STRING("<<"),
-					CAPTURE("eod", INLINE("Identifier")),
-					REPEAT(RANGE(" \t")),
-					REPEAT(0, 1, INLINE("CommentLine")),
-					CHAR('\n'),
-					REF("Document"),
-					REPLAY("eod")
-				),
-				CONTEXT("List",
-					REF("Item"),
-					REF("Line")
-				)
-			)
-		);
-
-	boolean_ =
-		DEFINE("Boolean",
-			KEYWORD("true false")
-		);
+	DEFINE("Boolean", &boolean_,
+		KEYWORD("true false")
+	);
 
 	true_ = keywordByName("true");
 	false_ = keywordByName("false");
@@ -190,24 +184,22 @@ YasonSyntax::YasonSyntax()
 		)
 	);
 
-	name_ =
-		DEFINE("Name",
-			CHOICE(
-				GLUE(
-					NOT(RANGE('0', '9')),
-					INLINE("Identifier")
-				),
-				INLINE("String")
-			)
-		);
-
-	className_ =
-		DEFINE("Class",
+	DEFINE("Name", &name_,
+		CHOICE(
 			GLUE(
-				AHEAD(RANGE('A', 'Z')),
+				NOT(RANGE('0', '9')),
 				INLINE("Identifier")
-			)
-		);
+			),
+			INLINE("String")
+		)
+	);
+
+	DEFINE("Class", &className_,
+		GLUE(
+			AHEAD(RANGE('A', 'Z')),
+			INLINE("Identifier")
+		)
+	);
 
 	DEFINE("Member",
 		CHOICE(
@@ -226,73 +218,71 @@ YasonSyntax::YasonSyntax()
 		)
 	);
 
-	object_ =
-		DEFINE("Object",
-			GLUE(
-				REPEAT(0, 1,
-					GLUE(
-						REF("Class"),
-						INLINE("Noise")
-					)
-				),
-				CHAR('{'),
-				INLINE("Noise"),
-				REPEAT(0, 1,
-					GLUE(
-						INLINE("Member"),
-						REPEAT(
-							GLUE(
-								LENGTH(1,
-									GLUE(
-										INLINE("Noise"),
-										REPEAT(0, 1,
-											GLUE(
-												RANGE(",;"),
-												INLINE("Noise")
-											)
+	DEFINE("Object", &object_,
+		GLUE(
+			REPEAT(0, 1,
+				GLUE(
+					REF("Class"),
+					INLINE("Noise")
+				)
+			),
+			CHAR('{'),
+			INLINE("Noise"),
+			REPEAT(0, 1,
+				GLUE(
+					INLINE("Member"),
+					REPEAT(
+						GLUE(
+							LENGTH(1,
+								GLUE(
+									INLINE("Noise"),
+									REPEAT(0, 1,
+										GLUE(
+											RANGE(",;"),
+											INLINE("Noise")
 										)
 									)
-								),
-								INLINE("Member")
-							)
+								)
+							),
+							INLINE("Member")
 						)
 					)
-				),
-				EXPECT("missing closing '}'",
-					GLUE(
-						INLINE("Noise"),
-						CHAR('}')
-					)
+				)
+			),
+			EXPECT("missing closing '}'",
+				GLUE(
+					INLINE("Noise"),
+					CHAR('}')
 				)
 			)
-		);
+		)
+	);
 
-	list_ =
-		DEFINE("List",
-			GLUE(
-				CHAR('['),
-				INLINE("Noise"),
-				REPEAT(0, 1,
-					GLUE(
-						INLINE("Value"),
-						REPEAT(
-							GLUE(
-								INLINE("Noise"),
-								RANGE(",;"),
-								INLINE("Noise"),
-								INLINE("Value")
-							)
+	DEFINE("List", &list_,
+		GLUE(
+			CHAR('['),
+			INLINE("Noise"),
+			REPEAT(0, 1,
+				GLUE(
+					INLINE("Value"),
+					REPEAT(
+						GLUE(
+							INLINE("Noise"),
+							RANGE(",;"),
+							INLINE("Noise"),
+							INLINE("Value")
 						)
 					)
-				),
-				EXPECT("missing closing ']'",
-					GLUE(
-						INLINE("Noise"),
-						CHAR(']')
-					)
+				)
+			),
+			EXPECT("missing closing ']'",
+				GLUE(
+					INLINE("Noise"),
+					CHAR(']')
 				)
 			)
-		);
+		)
+	);
 
 	DEFINE("Value",
 		CHOICE(
@@ -305,14 +295,13 @@ YasonSyntax::YasonSyntax()
 		)
 	);
 
-	message_ =
-		DEFINE("Message",
-			GLUE(
-				INLINE("Noise"),
-				INLINE("Value"),
-				INLINE("Noise")
-			)
-		);
+	DEFINE("Message", &message_,
+		GLUE(
+			INLINE("Noise"),
+			INLINE("Value"),
+			INLINE("Noise")
+		)
+	);
 
 	ENTRY("Message");
 	LINK();
@@ -403,7 +392,7 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, Ya
 		}
 		else {
 			YasonProtocol *prototypeProtocol = 0;
-			if (prototype) prototypeProtocol = prototype->protocol();
+			if (prototype) prototypeProtocol = prototype->protocol_;
 			if (prototypeProtocol) {
 				if (object->children()->size() >= prototypeProtocol->maxCount()) {
 					throw SemanticError(
@@ -419,6 +408,25 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, Ya
 	}
 
 	object->autocomplete(prototype);
+
+	if (protocol) {
+		if (protocol->minCount() > 0) {
+			if (!object->hasChildren() || object->children()->size() < protocol->minCount()) {
+				if (protocol->prototypes_->size() == 1 && protocol->minCount() == 1) {
+					throw SemanticError(
+						Format("Object of type %% needs at least one child of type %%") << object->className() << protocol->prototypes_->at(0)->value()->className(),
+						text, objectToken->i0()
+					);
+				}
+				else {
+					throw SemanticError(
+						Format("Object of type %% needs at least %% children") << object->className() << protocol->minCount(),
+						text, objectToken->i0()
+					);
+				}
+			}
+		}
+	}
 
 	object->realize(text, objectToken);
 
@@ -454,20 +462,20 @@ Variant YasonSyntax::readValue(const ByteArray *text, Token *token, int expected
 	Variant value;
 	bool typeError = false;
 
-	if (token->scope() == floatLiteral()->id())
+	if (token->scope() == floatSyntax()->id())
 	{
 		if ( expectedType == Variant::UndefType ||
 		     expectedType == Variant::FloatType ||
 		     expectedItemType == Variant::FloatType )
 		{
 			float64_t x;
-			floatLiteral()->read(&x, text, token);
+			floatSyntax()->read(&x, text, token);
 			value = x;
 		}
 		else
 			typeError = true;
 	}
-	else if (token->scope() == integerLiteral()->id())
+	else if (token->scope() == integerSyntax()->id())
 	{
 		if ( expectedType == Variant::UndefType ||
 		     expectedType == Variant::FloatType ||
@@ -476,7 +484,7 @@ Variant YasonSyntax::readValue(const ByteArray *text, Token *token, int expected
 		     expectedItemType == Variant::IntType )
 		{
 			uint64_t x; int s;
-			integerLiteral()->read(&x, &s, text, token);
+			integerSyntax()->read(&x, &s, text, token);
 			value = int(x) * s;
 			if (expectedType == Variant::FloatType)
 				value = Variant::real(value);
@@ -489,7 +497,17 @@ Variant YasonSyntax::readValue(const ByteArray *text, Token *token, int expected
 		if ( expectedType == Variant::UndefType ||
 		     expectedType == Variant::StringType ||
 		     expectedItemType == Variant::StringType )
+		{
 			value = readText(text, token);
+		}
+		else if ( expectedType == Variant::ColorType ||
+		          expectedItemType == Variant::ColorType )
+		{
+			String s = readText(text, token);
+			bool ok = false;
+			value = Color::parse(s, &ok);
+			if (!ok) typeError = true;
+		}
 		else
 			typeError = true;
 	}

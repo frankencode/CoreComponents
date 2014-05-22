@@ -7,12 +7,12 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "IntegerLiteral.h"
+#include "IntegerSyntax.h"
 
 namespace flux
 {
 
-IntegerLiteral::IntegerLiteral()
+IntegerSyntax::IntegerSyntax()
 {
 	SYNTAX("int");
 
@@ -73,7 +73,7 @@ IntegerLiteral::IntegerLiteral()
 	LINK();
 }
 
-void IntegerLiteral::read(uint64_t *value, int *sign, const ByteArray *text, Token *token) const
+void IntegerSyntax::read(uint64_t *value, int *sign, const ByteArray *text, Token *token) const
 {
 	*sign = 1;
 	*value = 0;
@@ -128,7 +128,7 @@ void IntegerLiteral::read(uint64_t *value, int *sign, const ByteArray *text, Tok
 	}
 }
 
-Ref<Token> IntegerLiteral::read(uint64_t *value, int *sign, const ByteArray *text, int i) const
+Ref<Token> IntegerSyntax::read(uint64_t *value, int *sign, const ByteArray *text, int i) const
 {
 	Ref<Token> token = match(text, i)->rootToken();
 	if (token)

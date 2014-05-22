@@ -10,6 +10,7 @@
 #ifndef FLUX_YASONOBJECT_H
 #define FLUX_YASONOBJECT_H
 
+#include "SpinLock.h"
 #include "Token.h"
 #include "Variant.h"
 
@@ -33,11 +34,12 @@ public:
 	String toString() const;
 
 	inline bool hasChildren() const { return children_; }
-	YasonObjectList *children() const;
+	YasonObjectList *children();
 
 	Ref<YasonObject> clone();
 
-	inline YasonProtocol *protocol() const { return protocol_; }
+	inline bool hasProtocol() const { return protocol_; }
+	YasonProtocol *protocol();
 
 protected:
 	friend class YasonSyntax;
@@ -52,18 +54,20 @@ protected:
 		return YasonObject::create(className());
 	}
 
+	inline void className(String newName) { className_ = newName; }
 	virtual void define() {}
 
-	virtual void realize(const ByteArray *text, Token *objectToken) {}
+	virtual void autocomplete(const YasonObject *prototype);
 
-	void autocomplete(const YasonObject *prototype);
+	virtual void realize(const ByteArray *text, Token *objectToken) {}
 
 	static Token *nameToken(const ByteArray *text, Token *objectToken, const String &memberName);
 	static Token *valueToken(const ByteArray *text, Token *objectToken, const String &memberName);
 
 private:
 	String className_;
-	mutable Ref<YasonObjectList> children_;
+	SpinLock mutex_;
+	Ref<YasonObjectList> children_;
 	Ref<YasonProtocol> protocol_;
 };
 

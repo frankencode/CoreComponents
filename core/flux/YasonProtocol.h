@@ -55,7 +55,10 @@ public:
 		return prototype;
 	}
 
-	virtual int maxCount() const { return flux::intMax; }
+	int minCount() const { return minCount_; }
+	int maxCount() const { return maxCount_; }
+	void minCount(int newCount) { minCount_ = newCount; }
+	void maxCount(int newCount) { maxCount_ = newCount; }
 
 	inline bool lookup(const String &className, YasonObject **prototype) {
 		*prototype = lookup(className);
@@ -64,6 +67,11 @@ public:
 
 protected:
 	friend class YasonSyntax;
+
+	YasonProtocol()
+		: minCount_(0),
+		  maxCount_(flux::intMax)
+	{}
 
 	virtual Ref<YasonObject> produce(YasonObject *prototype) {
 		return prototype->produce();
@@ -76,6 +84,8 @@ private:
 		return prototypes_;
 	}
 	Ref<Prototypes> prototypes_;
+	int minCount_;
+	int maxCount_;
 };
 
 } // namespace flux

@@ -8,13 +8,15 @@
  */
 
 #include "String.h"
-#include "FormatSpecifier.h"
+#include "FormatSyntax.h"
 
 namespace flux
 {
 
-FormatSpecifier::FormatSpecifier()
+FormatSyntax::FormatSyntax()
 {
+	SYNTAX("format");
+
 	width_ = DEFINE("Width", REPEAT(1, 2, RANGE('0', '9')));
 	integerWidth_ = DEFINE("IntegerWidth", REPEAT(1, 2, RANGE('0', '9')));
 	fractionWidth_ = DEFINE("FractionWidth", REPEAT(1, 2, RANGE('0', '9')));
@@ -39,8 +41,8 @@ FormatSpecifier::FormatSpecifier()
 		)
 	);
 
-	format_ =
-		DEFINE("Format",
+	specifier_ =
+		DEFINE("Specifier",
 			GLUE(
 				CHAR('%'),
 				REPEAT(0, 5,
@@ -69,11 +71,11 @@ FormatSpecifier::FormatSpecifier()
 			)
 		);
 
-	ENTRY("Format");
+	ENTRY("Specifier");
 	LINK();
 }
 
-bool FormatSpecifier::find(ByteArray *text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank)
+bool FormatSyntax::find(ByteArray *text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank)
 {
 	Ref<Token> rootToken = SyntaxDefinition::find(text, *i0)->rootToken();
 

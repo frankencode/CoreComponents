@@ -11,6 +11,7 @@
 #define FLUX_VARIANT_H
 
 #include <new>
+#include "Color.h"
 #include "String.h"
 #include "Map.h"
 
@@ -39,10 +40,12 @@ public:
 		IntType    = 1,
 		BoolType   = 2 | IntType,
 		FloatType  = 4,
-		ObjectType = 8,
-		StringType = 16 | ObjectType,
-		ListType   = 32 | ObjectType,
-		AnyType    = 63
+		ColorType  = 8,
+		ObjectType = 16,
+		StringType = 32 | ObjectType,
+		ListType   = 64 | ObjectType,
+		MapType    = 128 | ObjectType,
+		AnyType    = 255
 	};
 
 	static const char *typeName(int type, int itemType = UndefType);
@@ -52,6 +55,7 @@ public:
 	Variant(bool value):   type_(BoolType),  itemType_(UndefType), int_(value)   {}
 	Variant(float value):  type_(FloatType), itemType_(UndefType), float_(value) {}
 	Variant(double value): type_(FloatType), itemType_(UndefType), float_(value) {}
+	Variant(Color value):  type_(ColorType), itemType_(UndefType)                { word_ = value.word_; }
 
 	Variant(const char *value):    type_(StringType), itemType_(UndefType) { initRef(String(value)); }
 	Variant(Ref<ByteArray> value): type_(StringType), itemType_(UndefType) { initRef(value); }
@@ -62,8 +66,10 @@ public:
 	Variant(const Ref< List<int> > &value):   type_(ListType), itemType_(IntType)    { initRef(value); }
 	Variant(const Ref< List<bool> > &value):  type_(ListType), itemType_(BoolType)   { initRef(value); }
 	Variant(const Ref< List<float> > &value): type_(ListType), itemType_(FloatType)  { initRef(value); }
+	Variant(const Ref< List<Color> > &value): type_(ListType), itemType_(ColorType)  { initRef(value); }
 	Variant(const Ref<StringList> &value):    type_(ListType), itemType_(StringType) { initRef(value); }
 	Variant(const Ref<VariantList> &value):   type_(ListType), itemType_(AnyType)    { initRef(value); }
+	Variant(const Ref<VariantMap> &value):    type_(ListType), itemType_(AnyType)    { initRef(value); }
 
 	Variant(const Variant &b): type_(UndefType), itemType_(UndefType) { *this = b; }
 
@@ -73,6 +79,7 @@ public:
 	inline const Variant &operator=(int value)           { type_ = IntType;  int_ = value; return *this; }
 	inline const Variant &operator=(float value)         { type_ = FloatType; float_ = value; return *this; }
 	inline const Variant &operator=(double value)        { type_ = FloatType; float_ = value; return *this; }
+	inline const Variant &operator=(Color value)         { type_ = ColorType; word_ = value.word_; return *this; }
 	inline const Variant &operator=(const char *value)   { return *this = Variant(value); }
 	inline const Variant &operator=(const String &value) { return *this = Variant(value); }
 	template<class T>
@@ -104,6 +111,10 @@ public:
 		FLUX_ASSERT2(type_ & FloatType, illegalConversion());
 		return float_;
 	}
+	inline operator Color() const {
+		if (!type_) return Color();
+		return Color::cast(word_);
+	}
 	inline operator String() const {
 		if (!type_) return String();
 		FLUX_ASSERT2(type_ & StringType, illegalConversion());
@@ -125,6 +136,8 @@ public:
 			equal = (int_ == b.int_);
 		else if ((type_ & FloatType) && (b.type_ & FloatType))
 			equal = (float_ == b.float_);
+		else if ((type_ & ColorType) && (b.type_ & ColorType))
+			equal = (word_ == b.word_);
 		else if ((type_ == StringType) && (b.type_ == StringType))
 			equal = (String(*this) == String(b));
 		else if ((type_ == ObjectType) && (b.type_ == ObjectType))
@@ -157,6 +170,7 @@ public:
 	inline bool operator>=(const Variant &b) const { return (b < *this) || (*this == b); }
 
 private:
+	friend String str(const Variant &x);
 	friend int type(const Variant &value);
 	friend int itemType(const Variant &value);
 
@@ -182,9 +196,12 @@ private:
 	union {
 		int int_;
 		float float_;
+		uint32_t word_;
 		mutable char dummy_[sizeof(Ref<Object>)];
 	};
 };
+
+String str(const Variant &x);
 
 inline int type(const Variant &value) { return value.type_; }
 inline int itemType(const Variant &value) { return value.itemType_; }

@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_INTEGERLITERAL_H
-#define FLUX_INTEGERLITERAL_H
+#ifndef FLUX_INTEGERSYNTAX_H
+#define FLUX_INTEGERSYNTAX_H
 
 #include "SyntaxDefinition.h"
 #include "Singleton.h"
@@ -16,16 +16,16 @@
 namespace flux
 {
 
-class IntegerLiteral: public SyntaxDefinition, public Singleton<IntegerLiteral>
+class IntegerSyntax: public SyntaxDefinition, public Singleton<IntegerSyntax>
 {
 public:
 	void read(uint64_t *value, int *sign, const ByteArray *text, Token *token) const;
 	Ref<Token> read(uint64_t *value, int *sign, const ByteArray *text, int i = -1) const;
 
 protected:
-	friend class Singleton<IntegerLiteral>;
+	friend class Singleton<IntegerSyntax>;
 
-	IntegerLiteral();
+	IntegerSyntax();
 
 	int sign_;
 	int binNumber_;
@@ -35,8 +35,8 @@ protected:
 	int literal_;
 };
 
-inline IntegerLiteral *integerLiteral() { return IntegerLiteral::instance(); }
+inline IntegerSyntax *integerSyntax() { return IntegerSyntax::instance(); }
 
 } // namespace flux
 
-#endif // FLUX_INTEGERLITERAL_H
+#endif // FLUX_INTEGERSYNTAX_H

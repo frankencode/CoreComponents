@@ -8,8 +8,8 @@
  */
 
 #include "List.h"
-#include "IntegerLiteral.h"
-#include "FloatLiteral.h"
+#include "IntegerSyntax.h"
+#include "FloatSyntax.h"
 #include "Unicode.h"
 #include "Utf8Source.h"
 #include "Utf8Sink.h"
@@ -300,7 +300,7 @@ int ByteArray::toInt(bool *ok) const
 	if (!ok) ok = &h;
 	uint64_t value = 0;
 	int sign = 0;
-	if (integerLiteral()->read(&value, &sign, this, -1))
+	if (integerSyntax()->read(&value, &sign, this, -1))
 		 *ok = (value <= uint64_t(intMax));
 	else
 		*ok = false;
@@ -318,7 +318,7 @@ int64_t ByteArray::toInt64(bool *ok) const
 	if (!ok) ok = &h;
 	uint64_t value = 0;
 	int sign = 0;
-	if (integerLiteral()->read(&value, &sign, this, -1))
+	if (integerSyntax()->read(&value, &sign, this, -1))
 		*ok = ((value & (uint64_t(1) << 63)) != 0);
 	else
 		*ok = false;
@@ -331,7 +331,7 @@ uint64_t ByteArray::toUInt64(bool *ok) const
 	if (!ok) ok = &h;
 	uint64_t value = 0;
 	int sign = 0;
-	if (integerLiteral()->read(&value, &sign, this, -1))
+	if (integerSyntax()->read(&value, &sign, this, -1))
 		*ok = (sign == 1);
 	else
 		*ok = false;
@@ -343,7 +343,7 @@ float64_t ByteArray::toFloat64(bool *ok) const
 	bool h;
 	if (!ok) ok = &h;
 	float64_t value = 0.;
-	*ok = floatLiteral()->read(&value, this, -1);
+	*ok = floatSyntax()->read(&value, this, -1);
 	return value;
 }
 

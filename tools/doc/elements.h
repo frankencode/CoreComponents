@@ -117,9 +117,7 @@ public:
 	static Ref<ItemProtocol> create() { return new ItemProtocol; }
 
 private:
-	ItemProtocol() {}
-
-	virtual int maxCount() const { return 1; }
+	ItemProtocol() { maxCount(1); }
 
 	virtual YasonObject *lookup(String className)
 	{
