@@ -8,12 +8,12 @@
  */
 
 #include <math.h> // pow
-#include "FloatLiteral.h"
+#include "FloatSyntax.h"
 
 namespace flux
 {
 
-FloatLiteral::FloatLiteral()
+FloatSyntax::FloatSyntax()
 {
 	SYNTAX("float");
 
@@ -63,7 +63,7 @@ FloatLiteral::FloatLiteral()
 	LINK();
 }
 
-void FloatLiteral::read(float64_t *value, const ByteArray *text, Token *token) const
+void FloatSyntax::read(float64_t *value, const ByteArray *text, Token *token) const
 {
 	token = token->firstChild();
 
@@ -132,7 +132,7 @@ void FloatLiteral::read(float64_t *value, const ByteArray *text, Token *token) c
 	}
 }
 
-Ref<Token> FloatLiteral::read(float64_t *value, const ByteArray *text, int i) const
+Ref<Token> FloatSyntax::read(float64_t *value, const ByteArray *text, int i) const
 {
 	Ref<Token> token = match(text, i)->rootToken();
 	if (token) read(value, text, token);

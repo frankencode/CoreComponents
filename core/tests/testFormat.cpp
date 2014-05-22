@@ -51,5 +51,11 @@ int main()
 		check(String("0" + oct(123))->toInt() == 123);
 		check(String("0b" + bin(123))->toInt() == 123);
 	}
+	{
+		fout() << "Testing formatting colors..." << nl;
+		Color c = Color::parse("teal");
+		fout() << c << nl;
+		check(str(c) == "#008080");
+	}
 	return 0;
 }

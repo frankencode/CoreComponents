@@ -85,7 +85,6 @@ inline String str(char ch) { return String(&ch, 1); }
 inline String str(bool x) { return x ? "true" : "false"; }
 
 String str(void *x);
-String str(const Variant &x);
 
 template<class T>
 inline String str(const Ref<T> &x) { return x->toString(); }

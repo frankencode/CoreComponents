@@ -23,16 +23,28 @@ String YasonObject::toString() const
 	return yason::stringify(toVariant());
 }
 
-YasonObjectList *YasonObject::children() const
+YasonObjectList *YasonObject::children()
 {
-	if (!children_) children_ = YasonObjectList::create();
+	if (!children_) {
+		Guard<SpinLock> guard(&mutex_);
+		if (!children_) children_ = YasonObjectList::create();
+	}
 	return children_;
+}
+
+YasonProtocol *YasonObject::protocol()
+{
+	if (!protocol_) {
+		Guard<SpinLock> guard(&mutex_);
+		if (!protocol_) protocol_ = YasonProtocol::create();
+	}
+	return protocol_;
 }
 
 Ref<YasonObject> YasonObject::clone()
 {
 	Ref<YasonObject> object = produce();
-	object->autocomplete(this);
+	object->YasonObject::autocomplete(this);
 	if (hasChildren()) {
 		for (int i = 0; i < children()->size(); ++i) {
 			object->children()->append(children()->at(i)->clone());

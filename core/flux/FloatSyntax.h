@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_FLOATLITERAL_H
-#define FLUX_FLOATLITERAL_H
+#ifndef FLUX_FLOATSYNTAX_H
+#define FLUX_FLOATSYNTAX_H
 
 #include "SyntaxDefinition.h"
 #include "Singleton.h"
@@ -16,7 +16,7 @@
 namespace flux
 {
 
-class FloatLiteral: public SyntaxDefinition, public Singleton<FloatLiteral>
+class FloatSyntax: public SyntaxDefinition, public Singleton<FloatSyntax>
 {
 public:
 	void read(float64_t *value, const ByteArray *text, Token *token) const;
@@ -25,9 +25,9 @@ public:
 	inline int literal() const { return literal_; }
 
 private:
-	friend class Singleton<FloatLiteral>;
+	friend class Singleton<FloatSyntax>;
 
-	FloatLiteral();
+	FloatSyntax();
 
 	int sign_;
 	int integerPart_;
@@ -39,8 +39,8 @@ private:
 	int literal_;
 };
 
-inline FloatLiteral *floatLiteral() { return FloatLiteral::instance(); }
+inline FloatSyntax *floatSyntax() { return FloatSyntax::instance(); }
 
 } // namespace flux
 
-#endif // FLUX_FLOATLITERAL_H
+#endif // FLUX_FLOATSYNTAX_H

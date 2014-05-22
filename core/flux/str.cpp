@@ -14,16 +14,6 @@
 namespace flux
 {
 
-String str(const Variant &x)
-{
-	if (type(x) == Variant::UndefType) return "";
-	else if (type(x) == Variant::BoolType) return str(bool(x));
-	else if (type(x) == Variant::IntType) return str(int(x));
-	else if (type(x) == Variant::FloatType) return str(float(x));
-	else if (type(x) == Variant::StringType) return String(x);
-	/*else if (type(x) == Variant::ObjectType)*/ return str((void *)cast<Object>(x));
-}
-
 String fnum(float64_t x, int precision, int base, int screen)
 {
 	Ref< Stack<int> > digits = Stack<int>::create(screen < 128 ? 128 : 2 * screen /*save bet*/);

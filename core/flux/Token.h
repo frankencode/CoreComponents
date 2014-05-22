@@ -49,7 +49,6 @@ public:
 	inline int size() const { return i1_ - i0_; }
 
 	bool glow(TokenScreen *screen);
-	// static void meld(Token *root0, Token *root1);
 
 	Token *at(int i) const;
 
@@ -69,8 +68,6 @@ private:
 	}
 
 	inline void setKeyword(int value) { keyword_ = value; }
-
-	bool burn(int b0, int b1);
 
 	int scope_;
 	int rule_;
