@@ -124,6 +124,7 @@ NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, 
 NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12, child13, child14); }
 NODE SyntaxDefinition::GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14, NODE child15) { return def_->GLUE(child0, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12, child13, child14, child15); }
 
+NODE SyntaxDefinition::HINT(const char *text, NODE entry)  { return def_->HINT(text, entry); }
 NODE SyntaxDefinition::EXPECT(const char *text, NODE entry)  { return def_->EXPECT(text, entry); }
 
 int SyntaxDefinition::DEFINE(const char *ruleName, NODE entry) { return def_->DEFINE(ruleName, entry); }

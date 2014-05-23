@@ -463,24 +463,24 @@ private:
 	inline GlueNode *glueNode() const { return cast<GlueNode>(DebugNode::entry()); }
 };
 
-class ExpectDebugNode: public DebugNode {
+class HintDebugNode: public DebugNode {
 public:
-	ExpectDebugNode(Debugger *debugger, Node *newNode)
+	HintDebugNode(Debugger *debugger, Node *newNode)
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char *declType() const { return "EXPECT"; }
+	virtual const char *declType() const { return hintNode()->strict() ? "EXPECT" : "HINT"; }
 
 	virtual void printAttributes(String indent) {
-		ExpectNode *node = expectNode();
+		HintNode *node = hintNode();
 		fout("\"%%\",\n") << node->message();
 		printBranch(node->entry(), indent);
 		fout() << "\n" << DebugNode::superIndent(indent);
 	}
 
 private:
-	typedef syntax::ExpectNode ExpectNode;
-	inline ExpectNode *expectNode() const { return cast<ExpectNode>(DebugNode::entry()); }
+	typedef syntax::HintNode HintNode;
+	inline HintNode *hintNode() const { return cast<HintNode>(DebugNode::entry()); }
 };
 
 class RefDebugNode: public DebugNode {
@@ -696,7 +696,7 @@ Debugger::Debugger(String indent)
 	factoryByNodeType_->insert("Behind",         new DebugNodeFactory<BehindDebugNode>         (this));
 	factoryByNodeType_->insert("Choice",         new DebugNodeFactory<ChoiceDebugNode>         (this));
 	factoryByNodeType_->insert("Glue",           new DebugNodeFactory<GlueDebugNode>           (this));
-	factoryByNodeType_->insert("Expect",         new DebugNodeFactory<ExpectDebugNode>         (this));
+	factoryByNodeType_->insert("Hint",           new DebugNodeFactory<HintDebugNode>           (this));
 	factoryByNodeType_->insert("Ref",            new DebugNodeFactory<RefDebugNode>            (this));
 	factoryByNodeType_->insert("Inline",         new DebugNodeFactory<InlineDebugNode>         (this));
 	factoryByNodeType_->insert("Invoke",         new DebugNodeFactory<InvokeDebugNode>         (this));
