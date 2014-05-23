@@ -44,7 +44,7 @@ YasonSyntax::YasonSyntax()
 					)
 				)
 			),
-			EXPECT("missing closing '*/'",
+			HINT("missing closing '*/'",
 				STRING("*/")
 			)
 		)

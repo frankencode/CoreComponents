@@ -737,11 +737,12 @@ public:
 	}
 };
 
-class ExpectNode: public Node
+class HintNode: public Node
 {
 public:
-	ExpectNode(const char *message, Node *entry)
-		: message_(message)
+	HintNode(const char *message, Node *entry, bool strict = false)
+		: message_(message),
+		  strict_(strict)
 	{
 		appendChild(entry);
 	}
@@ -752,7 +753,7 @@ public:
 		if (h == -1 && !state->finalize_) {
 			state->hint_ = message_;
 			state->hintOffset_ = i;
-			state->finalize_ = true;
+			if (strict_) state->finalize_ = true;
 		}
 		return h;
 	}
@@ -761,9 +762,11 @@ public:
 
 	inline Node *entry() const { return Node::firstChild(); }
 	inline const char *message() const { return message_; }
+	inline bool strict() const { return strict_; }
 
 private:
 	const char *message_;
+	bool strict_;
 };
 
 typedef int (*CallBack) (Object *self, ByteArray *text, int i, State *state);
@@ -1109,7 +1112,6 @@ public:
 		  numKeywords_(0),
 		  ruleByName_(RuleByName::create()),
 		  keywordByName_(KeywordByName::create()),
-		  hasHints_(false),
 		  numFlags_(0),
 		  numCaptures_(0),
 		  flagIdByName_(StateIdByName::create()),
@@ -1192,9 +1194,11 @@ public:
 
 	#include "SyntaxSugar.h"
 
+	inline NODE HINT(const char *text, NODE entry) {
+		return debug(new HintNode(text, entry, false), "Hint");
+	}
 	inline NODE EXPECT(const char *text, NODE entry) {
-		hasHints_ = true;
-		return debug(new ExpectNode(text, entry), "Expect");
+		return debug(new HintNode(text, entry, true), "Hint");
 	}
 
 	inline int DEFINE(const char *ruleName, NODE entry) {
@@ -1362,7 +1366,6 @@ private:
 	Ref<LinkNode> unresolvedLinkHead_;
 	Ref<PreviousNode> unresolvedKeywordHead_;
 	Ref<DefinitionNode> unresolvedNext_;
-	bool hasHints_;
 
 	inline int touchFlag(const char *name)
 	{

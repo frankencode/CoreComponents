@@ -123,6 +123,7 @@ public:
 	NODE GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14);
 	NODE GLUE(NODE child0, NODE child1, NODE child2, NODE child3, NODE child4, NODE child5, NODE child6, NODE child7, NODE child8, NODE child9, NODE child10, NODE child11, NODE child12, NODE child13, NODE child14, NODE child15);
 
+	NODE HINT(const char *text, NODE entry);
 	NODE EXPECT(const char *text, NODE entry);
 
 	int DEFINE(const char *ruleName, NODE entry = 0);

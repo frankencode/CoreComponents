@@ -28,7 +28,7 @@ class SetNode;
 class IfNode;
 class CaptureNode;
 class ReplayNode;
-class ExpectNode;
+class HintNode;
 class ChoiceNode;
 class GlueNode;
 
@@ -59,7 +59,7 @@ private:
 	friend class syntax::IfNode;
 	friend class syntax::CaptureNode;
 	friend class syntax::ReplayNode;
-	friend class syntax::ExpectNode;
+	friend class syntax::HintNode;
 	friend class syntax::ChoiceNode;
 	friend class syntax::GlueNode;
 
