@@ -223,22 +223,30 @@ void BuildPlan::readPrerequisites()
 	}
 }
 
+
+Ref<StringList> BuildPlan::globSources(StringList *pattern) const
+{
+	Ref<StringList> sources = StringList::create();
+	for (int i = 0; i < pattern->size(); ++i) {
+		Ref<Glob> glob = Glob::open(sourcePath(pattern->at(i)));
+		for (String path; glob->read(&path);)
+			sources->append(path);
+	}
+	sources = sources->sort();
+	return sources;
+}
+
 void BuildPlan::globSources()
 {
 	if (sources_) return;
 
 	if ((options_ & Tests) && !(options_ & BuildTests)) return;
 
-	sources_ = StringList::create();
-	if (recipe_->contains("source")) {
-		StringList *sourcePatterns = cast<StringList>(recipe_->value("source"));
-		for (int i = 0; i < sourcePatterns->size(); ++i) {
-			Ref<Glob> glob = Glob::open(sourcePath(sourcePatterns->at(i)));
-			for (String path; glob->read(&path);)
-				sources_->append(path);
-		}
-	}
-	sources_ = sources_->sort();
+	if (recipe_->contains("source"))
+		sources_ = globSources(cast<StringList>(recipe_->value("source")));
+	else
+		sources_ = StringList::create();
+
 	sourcePrefix_ = buildMap_->commonPrefix('/');
 	if (sourcePrefix_ == "") sourcePrefix_ = projectPath_;
 	else sourcePrefix_ = sourcePrefix_->canonicalPath();
@@ -251,6 +259,11 @@ void BuildPlan::globSources()
 			break;
 		}
 	}
+
+	if (recipe_->contains("bundle"))
+		bundle_ = globSources(cast<StringList>(recipe_->value("bundle")));
+	else
+		bundle_ = StringList::create();
 
 	for (int i = 0; i < prerequisites_->size(); ++i)
 		prerequisites_->at(i)->globSources();

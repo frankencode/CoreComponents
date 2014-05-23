@@ -7,38 +7,39 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUXTOKI_PALETTE_H
-#define FLUXTOKI_PALETTE_H
+#ifndef FLUXTOKI_THEME_H
+#define FLUXTOKI_THEME_H
 
 #include <flux/YasonObject.h>
-#include <flux/SyntaxDefinition.h>
-#include "Style.h"
+#include "Palette.h"
 
 namespace fluxtoki
 {
 
 using namespace flux;
 
-class Palette: public YasonObject
+class Theme: public YasonObject
 {
 public:
-	inline String language() const { return language_; }
-	inline int scope() const { return scope_; }
-	inline Style *styleByRule(int rule) { return styleByRule_->value(rule); }
+	inline String name() const { return name_; }
 
-private:
-	Palette();
+protected:
+	Theme();
 
 	virtual void define();
 	virtual void realize(const ByteArray *text, Token *objectToken);
 
-	String language_;
-	int scope_;
+	inline void addPalette(Palette* palette) {
+		paletteByScopeId_->insert(palette->scope(), palette);
+	}
 
-	typedef Map<int, Ref<Style> > StyleByRule;
-	Ref<StyleByRule> styleByRule_;
+private:
+	String name_;
+
+	typedef Map<int, Ref<Palette> > PaletteByScopeId;
+	Ref<PaletteByScopeId> paletteByScopeId_;
 };
 
 } // namespace fluxtoki
 
-#endif // FLUXTOKI_PALETTE_H
+#endif // FLUXTOKI_THEME_H

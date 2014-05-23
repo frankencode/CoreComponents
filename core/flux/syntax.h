@@ -1304,11 +1304,11 @@ public:
 		return node;
 	}
 
-	inline int keywordByName(const char *keyword) const
+	inline int keywordByName(const char *name) const
 	{
 		int tokenType = -1;
-		if (!keywordByName_->lookup(keyword, &tokenType))
-			FLUX_DEBUG_ERROR(Format("Undefined keyword '%%'") <<  keyword);
+		if (!keywordByName_->lookup(name, &tokenType))
+			FLUX_DEBUG_ERROR(Format("Undefined keyword '%%'") <<  name);
 		return tokenType;
 	}
 

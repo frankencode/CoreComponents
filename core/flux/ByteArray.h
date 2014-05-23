@@ -106,6 +106,8 @@ public:
 		return copy(range->i0(), range->i1());
 	}
 
+	Ref<ByteArray> paste(int i0, int i1, String text) const;
+
 	inline Ref<ByteArray> head(int n) const { return copy(0, n); }
 	inline Ref<ByteArray> tail(int n) const { return copy(size_ - n, size_); }
 
@@ -203,7 +205,7 @@ public:
 	Ref<ByteArray> baseName() const;
 	Ref<ByteArray> suffix() const;
 	Ref<ByteArray> reducePath() const;
-	Ref<ByteArray> expandPath(String component) const;
+	Ref<ByteArray> expandPath(String relativePath) const;
 	Ref<ByteArray> canonicalPath() const;
 
 	bool equalsCaseInsensitive(ByteArray *b) const;
@@ -252,17 +254,9 @@ int ByteArray::scanInt(T *x, int base, int i0, int i1) const
 	*x = T();
 	bool minus = false;
 	if (T(-1) < T() && i < i1) {
-		if (at(i) == '-') {
-			minus = true;
-			++i;
-		}
-		else if (at(i) == '+') {
-			minus = false;
-			++i;
-		}
+		minus = (at(i) == '-');
+		i += (at(i) == '-' || at(i) == '+');
 	}
-	else minus = false;
-
 	while (i < i1) {
 		char ch = at(i);
 		int z = -1;
@@ -274,6 +268,7 @@ int ByteArray::scanInt(T *x, int base, int i0, int i1) const
 		*x += z;
 		++i;
 	}
+	if (minus) *x = -*x;
 	return i;
 }
 

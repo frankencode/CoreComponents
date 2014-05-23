@@ -53,6 +53,8 @@ protected:
 	static String queryMachine(String compiler);
 	static String machineCommand(String compiler);
 
+	static String bundlePrefix(BuildPlan *plan);
+
 	static void appendCompileOptions(Format args, BuildPlan *plan);
 	static void appendLinkOptions(Format args, BuildPlan *plan);
 

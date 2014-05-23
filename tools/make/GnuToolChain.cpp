@@ -183,14 +183,21 @@ bool GnuToolChain::install(BuildPlan *plan)
 
 	if (!plan->shell()->install(product, installPath)) return false;
 
-	{
+	if ((options & BuildPlan::Library) && !plan->linkStatic()) {
 		CwdGuard guard(installPrefix);
+		createLibrarySymlinks(plan, product);
+	}
 
-		if ((options & BuildPlan::Library) && !plan->linkStatic())
-			createLibrarySymlinks(plan, product);
+	if (options & BuildPlan::Application && plan->alias()->size() > 0) {
+		CwdGuard guard(installPrefix);
+		createAliasSymlinks(plan, product);
+	}
 
-		if (options & BuildPlan::Application)
-			createAliasSymlinks(plan, product);
+	if (plan->bundle()->size() > 0) {
+		for (int i = 0; i < plan->bundle()->size(); ++i) {
+			String relativePath = plan->bundle()->at(i);
+			plan->shell()->install(relativePath, bundlePrefix(plan)->expandPath(relativePath));
+		}
 	}
 
 	return true;
@@ -216,14 +223,14 @@ bool GnuToolChain::uninstall(BuildPlan *plan)
 		return false;
 	}
 
-	{
+	if ((options & BuildPlan::Library) && !plan->linkStatic()) {
 		CwdGuard guard(installPrefix);
+		cleanLibrarySymlinks(plan, product);
+	}
 
-		if ((options & BuildPlan::Library) && !plan->linkStatic())
-			cleanLibrarySymlinks(plan, product);
-
-		if (options & BuildPlan::Application)
-			cleanAliasSymlinks(plan, product);
+	if (options & BuildPlan::Application && plan->alias()->size() > 0) {
+		CwdGuard guard(installPrefix);
+		cleanAliasSymlinks(plan, product);
 	}
 
 	return false;
@@ -252,6 +259,16 @@ void GnuToolChain::clean(BuildPlan *plan)
 		cleanAliasSymlinks(plan, product);
 }
 
+String GnuToolChain::bundlePrefix(BuildPlan *plan)
+{
+	String name;
+	if (plan->options() & BuildPlan::Library)
+		name = "lib" + plan->name();
+	else
+		name = plan->name();
+	return plan->installPath("share") + "/" + name;
+}
+
 void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan)
 {
 	if (plan->options() & BuildPlan::Debug) args << "-g";
@@ -261,6 +278,8 @@ void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan)
 	if (plan->options() & BuildPlan::Library) args << "-fPIC";
 	else args << "-fPIE";
 	args << "-Wall" << "-pthread" << "-pipe";
+	if (plan->bundle()->size() > 0)
+		args << "-DFLUXMAKE_BUNDLE_PREFIX=" + bundlePrefix(plan);
 	if (plan->customCompileFlags()) {
 		for (int i = 0; i < plan->customCompileFlags()->size(); ++i)
 			args << plan->customCompileFlags()->at(i);

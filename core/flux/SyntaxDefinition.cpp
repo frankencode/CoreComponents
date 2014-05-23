@@ -26,7 +26,8 @@ const char *SyntaxDefinition::name() const { return def_->name(); }
 SyntaxDebugFactory *SyntaxDefinition::debugFactory() const { return def_->debugFactory(); }
 SyntaxNode *SyntaxDefinition::debug(SyntaxNode *newNode, const char *nodeType) { return def_->debug(newNode, nodeType); }
 
-int SyntaxDefinition::keywordByName(const char *keyword) { return def_->keywordByName(keyword); }
+int SyntaxDefinition::ruleByName(const char *name) const { return def_->ruleByName(name)->id(); }
+int SyntaxDefinition::keywordByName(const char *name) const { return def_->keywordByName(name); }
 
 Ref<SyntaxState> SyntaxDefinition::find(const ByteArray *text, int i, TokenFactory *tokenFactory) const
 {
