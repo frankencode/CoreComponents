@@ -127,6 +127,15 @@ void ByteArray::clear(char zero)
 	memset(data_, zero, size_);
 }
 
+Ref<ByteArray> ByteArray::paste(int i0, int i1, String text) const
+{
+	Ref<StringList> parts = StringList::create();
+	parts->append(copy(0, i0));
+	parts->append(text);
+	parts->append(copy(i1, size_));
+	return parts->join();
+}
+
 int ByteArray::find(const char *pattern, int i) const
 {
 	if (!has(i)) return size_;
@@ -824,9 +833,9 @@ Ref<ByteArray> ByteArray::reducePath() const
 	return resultPath;
 }
 
-Ref<ByteArray> ByteArray::expandPath(String component) const
+Ref<ByteArray> ByteArray::expandPath(String relativePath) const
 {
-	return String(Format() << String(this) << "/" << component);
+	return String(Format() << String(this) << "/" << relativePath);
 }
 
 Ref<ByteArray> ByteArray::canonicalPath() const

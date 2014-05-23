@@ -83,10 +83,7 @@ bool BuildShell::install(String sourcePath, String destPath)
 		if (destDirMissing) Dir::establish(destDirPath);
 		Ref<File> source = File::open(sourcePath);
 		Ref<FileStatus> sourceStatus = FileStatus::read(sourcePath);
-		if (File::exists(destPath)) File::unlink(destPath);
-		File::create(destPath, sourceStatus->mode());
-		Ref<File> sink = File::open(destPath, File::WriteOnly);
-		sink->truncate(0);
+		Ref<File> sink = File::open(destPath, File::WriteOnly|File::Create|File::Truncate, sourceStatus->mode());
 		sink->write(source->map());
 	}
 	catch (SystemError &ex) {

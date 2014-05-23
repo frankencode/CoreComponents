@@ -81,6 +81,7 @@ public:
 	inline String version() const { return version_; }
 
 	inline StringList *sources() const { return sources_; }
+	inline StringList *bundle() const { return bundle_; }
 	inline ModuleList *modules() const { return modules_; }
 	inline bool containsCPlusPlus() const { return containsCPlusPlus_; }
 
@@ -118,6 +119,7 @@ private:
 	void readRecipe(BuildPlan *parentPlan = 0);
 
 	void readPrerequisites();
+	Ref<StringList> globSources(StringList *pattern) const;
 	void globSources();
 	void initModules();
 
@@ -135,6 +137,7 @@ private:
 	String version_;
 
 	Ref<StringList> sources_;
+	Ref<StringList> bundle_;
 	Ref<ModuleList> modules_;
 	bool containsCPlusPlus_;
 

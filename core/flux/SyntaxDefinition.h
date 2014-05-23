@@ -37,7 +37,8 @@ public:
 	SyntaxDebugFactory *debugFactory() const;
 	SyntaxNode *debug(SyntaxNode *newNode, const char *nodeType);
 
-	int keywordByName(const char *keyword);
+	int ruleByName(const char *name) const;
+	int keywordByName(const char *name) const;
 
 	Ref<SyntaxState> find(const ByteArray *text, int i = 0, TokenFactory *tokenFactory = 0) const;
 	Ref<SyntaxState> match(const ByteArray *text, int i = -1, TokenFactory *tokenFactory = 0) const;

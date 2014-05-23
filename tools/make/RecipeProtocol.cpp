@@ -131,6 +131,7 @@ protected:
 		insert("name", "");
 		insert("alias", StringList::create());
 		insert("source", StringList::create());
+		insert("bundle", StringList::create());
 	}
 };
 
@@ -151,7 +152,7 @@ protected:
 	LibraryPrototype(const String &className)
 		: ApplicationPrototype(className, createProtocol())
 	{
-		insert("version", "0.0.1");
+		insert("version", "0.1.0");
 		insert("header", StringList::create());
 	}
 };
