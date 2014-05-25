@@ -7,24 +7,22 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "Theme.h"
+#include <flux/Singleton.h>
+#include "YasonSyntax.h"
 
 namespace fluxtoki
 {
 
-Theme::Theme()
-	: paletteByScope_(PaletteByScope::create())
-{}
-
-void Theme::define()
+class YasonSyntax: public flux::YasonSyntax
 {
-	className("Theme");
-	protocol()->define<Palette>();
-}
+protected:
+	friend class flux::Singleton<YasonSyntax>;
 
-void Theme::realize(const ByteArray *text, Token *objectToken)
-{
+	YasonSyntax()
+		: flux::YasonSyntax(GenerateComments|GenerateEscapedChars)
+	{}
+};
 
-}
+flux::YasonSyntax *yasonSyntax() { return flux::Singleton<fluxtoki::YasonSyntax>::instance(); }
 
 } // namespace fluxtoki

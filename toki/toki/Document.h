@@ -52,10 +52,10 @@ public:
 protected:
 	Document(String text, String path);
 
-	typedef List< Ref<Span> > Spans;
-
-	String text_;
 	String path_;
+	String text_;
+	typedef List< Ref<Span> > Spans;
+	Ref<Spans> spans_;
 };
 
 } // namespace fluxtoki

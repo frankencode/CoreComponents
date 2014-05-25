@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "Singleton.h"
 #include "IntegerSyntax.h"
 
 namespace flux
@@ -135,5 +136,7 @@ Ref<Token> IntegerSyntax::read(uint64_t *value, int *sign, const ByteArray *text
 		read(value, sign, text, token);
 	return token;
 }
+
+IntegerSyntax *integerSyntax() { return Singleton<IntegerSyntax>::instance(); }
 
 } // namespace flux

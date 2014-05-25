@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "Singleton.h"
 #include "Format.h"
 #include "FloatSyntax.h"
 #include "IntegerSyntax.h"
@@ -15,14 +16,14 @@
 namespace flux
 {
 
-YasonSyntax::YasonSyntax()
+YasonSyntax::YasonSyntax(int options)
 {
 	SYNTAX("yason");
 
 	IMPORT(floatSyntax(), "float");
 	IMPORT(integerSyntax(), "int");
 
-	DEFINE("CommentLine",
+	DEFINE_OPTIONAL("CommentLine", options & GenerateComments,
 		GLUE(
 			STRING("//"),
 			CHOICE(
@@ -32,12 +33,12 @@ YasonSyntax::YasonSyntax()
 		)
 	);
 
-	DEFINE("CommentText",
+	DEFINE_OPTIONAL("CommentText", options & GenerateComments,
 		GLUE(
 			STRING("/*"),
 			REPEAT(
 				CHOICE(
-					INLINE("CommentText"),
+					REF("CommentText"),
 					GLUE(
 						NOT(STRING("*/")),
 						ANY()
@@ -50,17 +51,17 @@ YasonSyntax::YasonSyntax()
 		)
 	);
 
-	DEFINE("Noise",
+	DEFINE_VOID("Noise",
 		REPEAT(
 			CHOICE(
 				RANGE(" \t\n\r"),
-				INLINE("CommentLine"),
-				INLINE("CommentText")
+				REF("CommentLine"),
+				REF("CommentText")
 			)
 		)
 	);
 
-	DEFINE("EscapedChar",
+	DEFINE_OPTIONAL("EscapedChar", options & GenerateEscapedChars,
 		GLUE(
 			CHAR('\\'),
 			EXPECT("illegal escape sequence",
@@ -125,7 +126,7 @@ YasonSyntax::YasonSyntax()
 			CHAR('"'),
 			REPEAT(
 				CHOICE(
-					INLINE("EscapedChar"),
+					REF("EscapedChar"),
 					EXCEPT("\"\n")
 				)
 			),
@@ -154,7 +155,7 @@ YasonSyntax::YasonSyntax()
 				STRING("<<"),
 				CAPTURE("eod", INLINE("Identifier")),
 				REPEAT(RANGE(" \t")),
-				REPEAT(0, 1, INLINE("CommentLine")),
+				REPEAT(0, 1, REF("CommentLine")),
 				CHAR('\n'),
 				REF("Document"),
 				REPLAY("eod")
@@ -307,7 +308,7 @@ YasonSyntax::YasonSyntax()
 	LINK();
 }
 
-Variant YasonSyntax::parse(const ByteArray *text, YasonProtocol *protocol)
+Variant YasonSyntax::parse(const ByteArray *text, YasonProtocol *protocol) const
 {
 	Ref<SyntaxState> state = match(text);
 	if (!state->valid()) throw SyntaxError(text, state);
@@ -316,7 +317,7 @@ Variant YasonSyntax::parse(const ByteArray *text, YasonProtocol *protocol)
 	return readValue(text, valueToken);
 }
 
-Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, YasonProtocol *protocol, YasonObject *prototype)
+Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, YasonProtocol *protocol, YasonObject *prototype) const
 {
 	if (token->rule() != object_)
 		throw SemanticError("Expected an object value", text, token->i0());
@@ -433,7 +434,7 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, Ya
 	return object;
 }
 
-Token *YasonSyntax::nameToken(const ByteArray *text, Token *objectToken, const String &memberName)
+Token *YasonSyntax::nameToken(const ByteArray *text, Token *objectToken, const String &memberName) const
 {
 	for (Token *token = objectToken->firstChild(); token; token = token->nextSibling()) {
 		if (token->rule() == name_) {
@@ -444,20 +445,20 @@ Token *YasonSyntax::nameToken(const ByteArray *text, Token *objectToken, const S
 	return 0;
 }
 
-Token *YasonSyntax::valueToken(const ByteArray *text, Token *objectToken, const String &memberName)
+Token *YasonSyntax::valueToken(const ByteArray *text, Token *objectToken, const String &memberName) const
 {
 	Token *token = nameToken(text, objectToken, memberName);
 	if (token) return token->nextSibling();
 	return 0;
 }
 
-String YasonSyntax::readName(const ByteArray *text, Token *token)
+String YasonSyntax::readName(const ByteArray *text, Token *token) const
 {
 	bool stripQuotation = (text->at(token->i0()) == '"');
 	return text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
 }
 
-Variant YasonSyntax::readValue(const ByteArray *text, Token *token, int expectedType, int expectedItemType)
+Variant YasonSyntax::readValue(const ByteArray *text, Token *token, int expectedType, int expectedItemType) const
 {
 	Variant value;
 	bool typeError = false;
@@ -576,7 +577,7 @@ Variant YasonSyntax::readValue(const ByteArray *text, Token *token, int expected
 	return value;
 }
 
-Variant YasonSyntax::readList(const ByteArray *text, Token *token, int expectedItemType)
+Variant YasonSyntax::readList(const ByteArray *text, Token *token, int expectedItemType) const
 {
 	Variant list;
 	if (expectedItemType == Variant::IntType)
@@ -592,7 +593,7 @@ Variant YasonSyntax::readList(const ByteArray *text, Token *token, int expectedI
 	return list;
 }
 
-String YasonSyntax::readText(const ByteArray *text, Token *token)
+String YasonSyntax::readText(const ByteArray *text, Token *token) const
 {
 	token = token->firstChild();
 
@@ -613,5 +614,7 @@ String YasonSyntax::readText(const ByteArray *text, Token *token)
 
 	return s;
 }
+
+YasonSyntax *yasonSyntax() { return Singleton<YasonSyntax>::instance(); }
 
 } // namespace flux

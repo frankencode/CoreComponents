@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "Singleton.h"
 #include "PrefixTree.h"
 #include "ColorNames.h"
 
@@ -187,7 +188,9 @@ ColorNames::ColorNames()
 
 bool ColorNames::lookup(const char *name, Color *color) const
 {
-	return colorByName_->lookup(name, color);
+	return colorByName_->lookup(name, color, /*caseSensitive =*/false);
 }
+
+const ColorNames *colorNames() { return Singleton<ColorNames>::instance(); }
 
 } // namespace flux

@@ -128,6 +128,9 @@ NODE SyntaxDefinition::HINT(const char *text, NODE entry)  { return def_->HINT(t
 NODE SyntaxDefinition::EXPECT(const char *text, NODE entry)  { return def_->EXPECT(text, entry); }
 
 int SyntaxDefinition::DEFINE(const char *ruleName, NODE entry) { return def_->DEFINE(ruleName, entry); }
+void SyntaxDefinition::DEFINE_VOID(const char *ruleName, NODE entry) { def_->DEFINE(ruleName, entry, false); }
+int SyntaxDefinition::DEFINE_OPTIONAL(const char *ruleName, bool generate, NODE entry) { return def_->DEFINE(ruleName, entry, generate); }
+
 void SyntaxDefinition::ENTRY(const char *ruleName) { def_->ENTRY(ruleName); }
 NODE SyntaxDefinition::REF(const char *ruleName) { return def_->REF(ruleName); }
 NODE SyntaxDefinition::INLINE(const char *ruleName) { return def_->INLINE(ruleName); }

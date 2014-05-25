@@ -28,7 +28,7 @@ void Palette::define()
 void Palette::realize(const ByteArray *text, Token *objectToken)
 {
 	language_ = value("language");
-	if (language_ == "default") {
+	if (language_ == "") {
 		// default palette, TODO
 		/*
 		default::Text,

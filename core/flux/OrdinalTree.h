@@ -48,7 +48,7 @@ public:
 	Item item_;
 };
 
-class Index
+/*class Index
 {
 public:
 	Index(int i): i_(i), tree_(0) {}
@@ -70,7 +70,7 @@ private:
 	int i_, cachedIndex_;
 	void *tree_, *cachedNode_;
 	uint64_t revision_;
-};
+};*/
 
 template<class NodeType>
 class OrdinalTree: public AvlTree<NodeType>

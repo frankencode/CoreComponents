@@ -7,24 +7,16 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "Theme.h"
+#ifndef FLUXTOKI_YASONSYNTAX_H
+#define FLUXTOKI_YASONSYNTAX_H
+
+#include <flux/YasonSyntax.h>
 
 namespace fluxtoki
 {
 
-Theme::Theme()
-	: paletteByScope_(PaletteByScope::create())
-{}
-
-void Theme::define()
-{
-	className("Theme");
-	protocol()->define<Palette>();
-}
-
-void Theme::realize(const ByteArray *text, Token *objectToken)
-{
-
-}
+flux::YasonSyntax *yasonSyntax();
 
 } // namespace fluxtoki
+
+#endif // FLUXTOKI_YASONSYNTAX_H

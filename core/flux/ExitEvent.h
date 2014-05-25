@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -10,14 +10,15 @@
 #ifndef FLUX_EXITEVENT_H
 #define FLUX_EXITEVENT_H
 
-#include "Singleton.h"
 #include "Event.h"
 #include "Process.h"
 
 namespace flux
 {
 
-class ExitEvent: public Event, public Singleton<ExitEvent>
+template<class SubClass> class Singleton;
+
+class ExitEvent: public Event
 {
 protected:
 	friend class Singleton<ExitEvent>;
@@ -28,7 +29,7 @@ protected:
 	pid_t pid_;
 };
 
-inline ExitEvent *exitEvent() { return ExitEvent::instance(); }
+ExitEvent *exitEvent();
 
 } // namespace flux
 

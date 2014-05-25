@@ -98,7 +98,7 @@ Color Color::parse(const char *s, bool *ok)
 		return Color();
 	}
 	Color c;
-	if (ColorNames::instance()->lookup(s, &c)) {
+	if (colorNames()->lookup(s, &c)) {
 		*ok = true;
 		return c;
 	}

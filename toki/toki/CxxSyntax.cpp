@@ -7,24 +7,31 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "Theme.h"
+#include "CxxSyntax.h"
 
 namespace fluxtoki
 {
 
-Theme::Theme()
-	: paletteByScope_(PaletteByScope::create())
-{}
-
-void Theme::define()
+CxxSyntax::CxxSyntax()
 {
-	className("Theme");
-	protocol()->define<Palette>();
+	SYNTAX("cxx");
+
+	DEFINE("BlockComment",
+		GLUE(
+			STRING("/*"),
+			FIND(STRING("*/"))
+		)
+	);
+
+	DEFINE("LineComment",
+		GLUE(
+			STRING("//"),
+			FIND(AHEAD(CHAR('\n')))
+		)
+	);
+
+
 }
 
-void Theme::realize(const ByteArray *text, Token *objectToken)
-{
-
-}
 
 } // namespace fluxtoki
