@@ -126,10 +126,17 @@ public:
 	NODE HINT(const char *text, NODE entry);
 	NODE EXPECT(const char *text, NODE entry);
 
-	int DEFINE(const char *ruleName, NODE entry = 0);
+	int DEFINE(const char *ruleName, NODE entry);
+	void DEFINE_VOID(const char *ruleName, NODE entry);
+	int DEFINE_OPTIONAL(const char *ruleName, bool generate, NODE entry);
+
 	inline void DEFINE(const char *ruleName, int *ruleId, NODE entry) {
 		*ruleId = DEFINE(ruleName, entry);
 	}
+	inline void DEFINE_OPTIONAL(const char *ruleName, int *ruleId, bool generate, NODE entry) {
+		*ruleId = DEFINE_OPTIONAL(ruleName, generate, entry);
+	}
+
 	void ENTRY(const char *ruleName);
 	NODE REF(const char *ruleName);
 	NODE INLINE(const char *ruleName);

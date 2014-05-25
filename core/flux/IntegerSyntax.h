@@ -11,12 +11,11 @@
 #define FLUX_INTEGERSYNTAX_H
 
 #include "SyntaxDefinition.h"
-#include "Singleton.h"
 
 namespace flux
 {
 
-class IntegerSyntax: public SyntaxDefinition, public Singleton<IntegerSyntax>
+class IntegerSyntax: public SyntaxDefinition
 {
 public:
 	void read(uint64_t *value, int *sign, const ByteArray *text, Token *token) const;
@@ -35,7 +34,7 @@ protected:
 	int literal_;
 };
 
-inline IntegerSyntax *integerSyntax() { return IntegerSyntax::instance(); }
+IntegerSyntax *integerSyntax();
 
 } // namespace flux
 

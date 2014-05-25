@@ -910,10 +910,11 @@ class DefinitionNode;
 class RuleNode: public Node
 {
 public:
-	RuleNode(DefinitionNode *scope, const char *name, int id, Node *entry)
+	RuleNode(DefinitionNode *scope, const char *name, int id, Node *entry, bool generate = true)
 		: scope_(scope),
 		  name_(name),
 		  id_(id),
+		  generate_(generate),
 		  used_(false),
 		  numberOfRefs_(-1)
 	{
@@ -937,16 +938,16 @@ public:
 	inline const char *name() const { return name_; }
 	inline int id() const { return id_; }
 	inline Node *entry() const { return Node::firstChild(); }
+	inline bool generate() const { return generate_; }
 
 	inline bool used() const { return used_; }
 	inline void markUsed() { used_ = true; }
 
 protected:
-	friend class InlineNode;
-
 	DefinitionNode *scope_;
 	const char *name_;
 	int id_;
+	bool generate_;
 	bool used_;
 	int numberOfRefs_;
 };
@@ -980,8 +981,9 @@ protected:
 class RefNode: public LinkNode
 {
 public:
-	RefNode(const char *ruleName = 0)
-		: LinkNode(ruleName)
+	RefNode(const char *ruleName = 0, bool generate = true)
+		: LinkNode(ruleName),
+		  generate_(generate)
 	{}
 
 	RefNode(RuleNode *rule)
@@ -990,25 +992,16 @@ public:
 
 	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
-		return LinkNode::rule_->matchNext(text, i, parentToken, state);
+		RuleNode *rule = LinkNode::rule_;
+		return (generate_ && rule->generate()) ?
+			rule_->matchNext(text, i, parentToken, state) :
+			rule_->entry()->matchNext(text, i, parentToken, state);
 	}
-};
 
-class InlineNode: public LinkNode
-{
-public:
-	InlineNode(const char *ruleName)
-		: LinkNode(ruleName)
-	{}
+	inline bool generate() const { return generate_; }
 
-	InlineNode(RuleNode *rule)
-		: LinkNode(rule)
-	{}
-
-	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
-	{
-		return LinkNode::rule_->entry()->matchNext(text, i, parentToken, state);
-	}
+private:
+	bool generate_;
 };
 
 class InvokeNode: public RefNode
@@ -1201,8 +1194,8 @@ public:
 		return debug(new HintNode(text, entry, true), "Hint");
 	}
 
-	inline int DEFINE(const char *ruleName, NODE entry) {
-		Ref<RuleNode> ruleNode = new RuleNode(this, ruleName, numRules_++, entry);
+	inline int DEFINE(const char *ruleName, NODE entry, bool generate = true) {
+		Ref<RuleNode> ruleNode = new RuleNode(this, ruleName, numRules_++, entry, generate);
 		addRule(ruleNode);
 		return ruleNode->id();
 	}
@@ -1217,10 +1210,10 @@ public:
 		return debug(link, "Ref");
 	}
 	inline NODE INLINE(const char *ruleName) {
-		Ref<InlineNode> link = new InlineNode(ruleName);
+		Ref<RefNode> link = new RefNode(ruleName, false);
 		link->unresolvedNext_ = unresolvedLinkHead_;
 		unresolvedLinkHead_ = link;
-		return debug(link, "Inline");
+		return debug(link, "Ref");
 	}
 	inline NODE INVOKE(const char *ruleName, NODE coverage = 0) {
 		Ref<RefNode> link = new InvokeNode(ruleName, coverage);

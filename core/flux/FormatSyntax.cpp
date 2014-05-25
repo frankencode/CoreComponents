@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -8,6 +8,7 @@
  */
 
 #include "String.h"
+#include "Singleton.h"
 #include "FormatSyntax.h"
 
 namespace flux
@@ -128,5 +129,7 @@ bool FormatSyntax::find(ByteArray *text, int *i0, int *i1, int *w, int *wi, int 
 
 	return rootToken;
 }
+
+FormatSyntax *formatSyntax() { return Singleton<FormatSyntax>::instance(); }
 
 } // namespace flux

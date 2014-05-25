@@ -489,35 +489,15 @@ public:
 		: DebugNode(debugger, newNode)
 	{}
 
-	virtual const char *declType() const { return (inlineNode()) ? "INLINE" : "REF"; }
+	virtual const char *declType() const { return refNode()->generate() ? "REF" : "INLINE"; }
 
 	virtual void printAttributes(String indent) {
-		fout("\"%%\"") << linkNode()->ruleName();
+		fout("\"%%\"") << refNode()->ruleName();
 	}
 
 private:
-	typedef syntax::LinkNode LinkNode;
-	inline LinkNode *linkNode() const { return cast<LinkNode>(DebugNode::entry()); }
-
-	typedef syntax::InlineNode InlineNode;
-	inline InlineNode *inlineNode() const { return cast<InlineNode>(DebugNode::entry()); }
-};
-
-class InlineDebugNode: public DebugNode {
-public:
-	InlineDebugNode(Debugger *debugger, Node *newNode)
-		: DebugNode(debugger, newNode)
-	{}
-
-	virtual const char *declType() const { return "INLINE"; }
-
-	virtual void printAttributes(String indent) {
-		fout("\"%%\"") << inlineNode()->ruleName();
-	}
-
-private:
-	typedef syntax::InlineNode InlineNode;
-	inline InlineNode *inlineNode() const { return cast<InlineNode>(DebugNode::entry()); }
+	typedef syntax::RefNode RefNode;
+	inline RefNode *refNode() const { return cast<RefNode>(DebugNode::entry()); }
 };
 
 class InvokeDebugNode: public DebugNode {
@@ -698,7 +678,6 @@ Debugger::Debugger(String indent)
 	factoryByNodeType_->insert("Glue",           new DebugNodeFactory<GlueDebugNode>           (this));
 	factoryByNodeType_->insert("Hint",           new DebugNodeFactory<HintDebugNode>           (this));
 	factoryByNodeType_->insert("Ref",            new DebugNodeFactory<RefDebugNode>            (this));
-	factoryByNodeType_->insert("Inline",         new DebugNodeFactory<InlineDebugNode>         (this));
 	factoryByNodeType_->insert("Invoke",         new DebugNodeFactory<InvokeDebugNode>         (this));
 	factoryByNodeType_->insert("Previous",       new DebugNodeFactory<PreviousDebugNode>       (this));
 	factoryByNodeType_->insert("Context",        new DebugNodeFactory<ContextDebugNode>        (this));

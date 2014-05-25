@@ -1,0 +1,38 @@
+Palette {
+	Style {
+		name: CommentLine
+		ink: DarkGray
+	}
+	Style {
+		name: CommentText
+		ink: DarkGray
+	}
+	Style {
+		name: Name
+		ink: DarkRed
+	}
+	Style {
+		name: ClassName
+		ink: DarkBlue
+	}
+	Style {
+		name: Boolean
+		bold: true
+	}
+	Style {
+		name: int::Literal
+		ink: Blue
+	}
+	Style {
+		name: float::Literal
+		ink: Magenta
+	}
+	Style {
+		name: Text
+		ink: DarkGreen
+	}
+	Style {
+		name: EscapedChar
+		ink: DarkYellow
+	}
+}

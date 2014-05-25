@@ -11,12 +11,13 @@
 #define FLUX_URISYNTAX_H
 
 #include "SyntaxDefinition.h"
-#include "Singleton.h"
 
 namespace flux
 {
 
-class UriSyntax: public SyntaxDefinition, public Singleton<UriSyntax>
+template<class SubClass> class Singleton;
+
+class UriSyntax: public SyntaxDefinition
 {
 public:
 	inline int userInfo() const { return userInfo_; }
@@ -47,7 +48,7 @@ protected:
 	int uri_;
 };
 
-inline UriSyntax *uriSyntax() { return UriSyntax::instance(); }
+UriSyntax *uriSyntax();
 
 } // namespace flux
 

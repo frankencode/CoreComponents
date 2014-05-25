@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,13 +11,14 @@
 #define FLUX_FORMATSYNTAX_H
 
 #include "SyntaxDefinition.h"
-#include "Singleton.h"
 #include "ByteArray.h"
 
 namespace flux
 {
 
-class FormatSyntax: public SyntaxDefinition, public Singleton<FormatSyntax>
+template<class SubClass> class Singleton;
+
+class FormatSyntax: public SyntaxDefinition
 {
 public:
 	bool find(ByteArray *text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank);
@@ -36,7 +37,7 @@ protected:
 	int specifier_;
 };
 
-inline FormatSyntax *formatSyntax() { return FormatSyntax::instance(); }
+FormatSyntax *formatSyntax();
 
 } // namespace flux
 

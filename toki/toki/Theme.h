@@ -29,15 +29,11 @@ protected:
 	virtual void define();
 	virtual void realize(const ByteArray *text, Token *objectToken);
 
-	inline void addPalette(Palette* palette) {
-		paletteByScopeId_->insert(palette->scope(), palette);
-	}
-
 private:
 	String name_;
 
-	typedef Map<int, Ref<Palette> > PaletteByScopeId;
-	Ref<PaletteByScopeId> paletteByScopeId_;
+	typedef Map<int, Ref<Palette> > PaletteByScope;
+	Ref<PaletteByScope> paletteByScope_;
 };
 
 } // namespace fluxtoki

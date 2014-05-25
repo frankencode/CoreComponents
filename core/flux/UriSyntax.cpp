@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "Singleton.h"
 #include "InetAddressSyntax.h"
 #include "UriSyntax.h"
 
@@ -218,5 +219,7 @@ UriSyntax::UriSyntax(SyntaxDebugFactory *debugFactory)
 	ENTRY("Uri");
 	LINK();
 }
+
+UriSyntax *uriSyntax() { return Singleton<UriSyntax>::instance(); }
 
 } // namespace flux

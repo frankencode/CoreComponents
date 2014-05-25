@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,12 +11,13 @@
 #define FLUX_FLOATSYNTAX_H
 
 #include "SyntaxDefinition.h"
-#include "Singleton.h"
 
 namespace flux
 {
 
-class FloatSyntax: public SyntaxDefinition, public Singleton<FloatSyntax>
+template<class SubClass> class Singleton;
+
+class FloatSyntax: public SyntaxDefinition
 {
 public:
 	void read(float64_t *value, const ByteArray *text, Token *token) const;
@@ -39,7 +40,7 @@ private:
 	int literal_;
 };
 
-inline FloatSyntax *floatSyntax() { return FloatSyntax::instance(); }
+FloatSyntax *floatSyntax();
 
 } // namespace flux
 

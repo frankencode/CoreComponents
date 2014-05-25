@@ -1,0 +1,35 @@
+Palette {
+	Style {
+		name: Text
+		ink: Black
+		paper: White
+	}
+	Style {
+		name: CurrentLine
+		paper: GhostWhite
+	}
+	Style {
+		name: Cursor
+		ink: Black
+	}
+	Style {
+		name: Selection
+		ink: White
+		paper: DodgerBlue
+	}
+	Style {
+		name: Match
+		paper: Yellow
+		bold: true
+	}
+	Style {
+		name: LineNumber
+		ink: Gray
+		background: #F0F0F0
+	}
+	Style {
+		name: CurrentLineNumber
+		ink: Black
+		background: #E8E8F0
+	}
+}

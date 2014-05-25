@@ -8,6 +8,7 @@
  */
 
 #include "YasonSyntax.h"
+#include "Guard.h"
 #include "YasonObject.h"
 
 namespace flux

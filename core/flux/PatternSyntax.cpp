@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "Singleton.h"
 #ifndef NDEBUG
 #include "SyntaxDebugger.h"
 #endif
@@ -248,7 +249,7 @@ PatternSyntax::PatternSyntax()
 	LINK();
 }
 
-void PatternSyntax::compile(ByteArray *text, SyntaxDefinition *definition)
+void PatternSyntax::compile(const ByteArray *text, SyntaxDefinition *definition) const
 {
 	Ref<SyntaxState> state = match(text);
 	if (!state->valid()) throw SyntaxError(text, state);
@@ -260,7 +261,7 @@ void PatternSyntax::compile(ByteArray *text, SyntaxDefinition *definition)
 	definition->LINK();
 }
 
-NODE PatternSyntax::compileChoice(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileChoice(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
 	if (token->countChildren() == 1)
 		return compileSequence(text, token->firstChild(), definition);
@@ -270,7 +271,7 @@ NODE PatternSyntax::compileChoice(ByteArray *text, Token *token, SyntaxDefinitio
 	return definition->debug(node, "Choice");
 }
 
-NODE PatternSyntax::compileSequence(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileSequence(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
 	NODE node = new syntax::GlueNode;
 	for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
@@ -297,40 +298,40 @@ NODE PatternSyntax::compileSequence(ByteArray *text, Token *token, SyntaxDefinit
 	return definition->debug(node, "Glue");
 }
 
-NODE PatternSyntax::compileAhead(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileAhead(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
 	return (text->at(token->i0() + 1) == '>') ?
 		definition->AHEAD(compileChoice(text, token->firstChild(), definition)) :
 		definition->NOT(compileChoice(text, token->firstChild(), definition));
 }
 
-NODE PatternSyntax::compileBehind(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileBehind(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
 	return (text->at(token->i0() + 1) == '<') ?
 		definition->BEHIND(compileChoice(text, token->firstChild(), definition)) :
 		definition->NOT_BEHIND(compileChoice(text, token->firstChild(), definition));
 }
 
-NODE PatternSyntax::compileCapture(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileCapture(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
 	String name = text->copy(token->firstChild());
 	return definition->CAPTURE(name, compileChoice(text, token->lastChild(), definition));
 }
 
-NODE PatternSyntax::compileReference(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileReference(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
 	String name = text->copy(token->firstChild());
 	return definition->REPLAY(name);
 }
 
-char PatternSyntax::readChar(ByteArray *text, Token *token)
+char PatternSyntax::readChar(const ByteArray *text, Token *token) const
 {
 	return (token->i1() - token->i0() > 1) ?
 		text->copy(token)->unescapeInsitu()->at(0) :
 		text->at(token->i0());
 }
 
-String PatternSyntax::readString(ByteArray *text, Token *token)
+String PatternSyntax::readString(const ByteArray *text, Token *token) const
 {
 	String s(token->countChildren());
 	int i = 0;
@@ -339,7 +340,7 @@ String PatternSyntax::readString(ByteArray *text, Token *token)
 	return s;
 }
 
-NODE PatternSyntax::compileRangeMinMax(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileRangeMinMax(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
 	int n = token->countChildren();
 	bool invert = (text->at(token->i0() + 1) == '^');
@@ -360,7 +361,7 @@ NODE PatternSyntax::compileRangeMinMax(ByteArray *text, Token *token, SyntaxDefi
 	return definition->ANY();
 }
 
-NODE PatternSyntax::compileRangeExplicit(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileRangeExplicit(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
 	Token *child = token->firstChild();
 	bool invert = (text->at(token->i0() + 1) == '^');
@@ -373,7 +374,7 @@ NODE PatternSyntax::compileRangeExplicit(ByteArray *text, Token *token, SyntaxDe
 	return invert ? definition->EXCEPT(s) : definition->RANGE(s);
 }
 
-NODE PatternSyntax::compileRepeat(ByteArray *text, Token *token, SyntaxDefinition *definition)
+NODE PatternSyntax::compileRepeat(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
 	Token *child = token->firstChild(), *min = 0, *max = 0;
 	while (child) {
@@ -391,5 +392,7 @@ NODE PatternSyntax::compileRepeat(ByteArray *text, Token *token, SyntaxDefinitio
 		return definition->REPEAT(minRepeat, maxRepeat, node);
 	return definition->GREEDY_REPEAT(minRepeat, maxRepeat, node);
 }
+
+PatternSyntax *patternExpression() { return Singleton<PatternSyntax>::instance(); }
 
 } // namespace flux

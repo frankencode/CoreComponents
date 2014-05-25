@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,13 +11,14 @@
 #define FLUX_PATTERNSYNTAX_H
 
 #include "String.h"
-#include "Singleton.h"
 #include "SyntaxDefinition.h"
 
 namespace flux
 {
 
-class PatternSyntax: public SyntaxDefinition, public Singleton<PatternSyntax>
+template<class SubClass> class Singleton;
+
+class PatternSyntax: public SyntaxDefinition
 {
 protected:
 	friend class Singleton<PatternSyntax>;
@@ -25,18 +26,18 @@ protected:
 
 	PatternSyntax();
 
-	void compile(ByteArray *text, SyntaxDefinition *definition);
-	NODE compileChoice(ByteArray *text, Token *token, SyntaxDefinition *definition);
-	NODE compileSequence(ByteArray *text, Token *token, SyntaxDefinition *definition);
-	NODE compileAhead(ByteArray *text, Token *token, SyntaxDefinition *definition);
-	NODE compileBehind(ByteArray *text, Token *token, SyntaxDefinition *definition);
-	NODE compileCapture(ByteArray *text, Token *token, SyntaxDefinition *definition);
-	NODE compileReference(ByteArray *text, Token *token, SyntaxDefinition *definition);
-	char readChar(ByteArray *text, Token *token);
-	String readString(ByteArray *text, Token *token);
-	NODE compileRangeMinMax(ByteArray *text, Token *token, SyntaxDefinition *definition);
-	NODE compileRangeExplicit(ByteArray *text, Token *token, SyntaxDefinition *definition);
-	NODE compileRepeat(ByteArray *text, Token *token, SyntaxDefinition *definition);
+	void compile(const ByteArray *text, SyntaxDefinition *definition) const;
+	NODE compileChoice(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
+	NODE compileSequence(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
+	NODE compileAhead(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
+	NODE compileBehind(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
+	NODE compileCapture(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
+	NODE compileReference(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
+	char readChar(const ByteArray *text, Token *token) const;
+	String readString(const ByteArray *text, Token *token) const;
+	NODE compileRangeMinMax(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
+	NODE compileRangeExplicit(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
+	NODE compileRepeat(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
 
 	int gap_;
 	int any_;
@@ -60,7 +61,7 @@ protected:
 	int pattern_;
 };
 
-inline PatternSyntax *patternExpression() { return PatternSyntax::instance(); }
+PatternSyntax *patternExpression();
 
 } // namespace flux
 

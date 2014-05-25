@@ -25,7 +25,7 @@ class SyntaxDefinition;
 class File;
 class ThreadFactory;
 
-template<class T> class Singleton;
+template<class SubClass> class Singleton;
 
 class ByteArray: public Object
 {

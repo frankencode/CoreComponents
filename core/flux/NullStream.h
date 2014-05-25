@@ -10,24 +10,25 @@
 #ifndef FLUX_NULLSTREAM_H
 #define FLUX_NULLSTREAM_H
 
-#include "Singleton.h"
 #include "Stream.h"
 
 namespace flux
 {
 
-class NullStream: public Stream, public Singleton<NullStream>
+template<class SubClass> class Singleton;
+
+class NullStream: public Stream
 {
 public:
 	virtual int read(ByteArray *buf);
 	virtual void write(const ByteArray *buf);
 
 private:
-	NullStream();
 	friend class Singleton<NullStream>;
+	NullStream();
 };
 
-inline Stream *nullStream() { return NullStream::instance(); }
+Stream *nullStream();
 
 } // namespace flux
 

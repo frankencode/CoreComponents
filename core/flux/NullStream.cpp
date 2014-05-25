@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "Singleton.h"
 #include "NullStream.h"
 
 namespace flux
@@ -24,5 +25,7 @@ int NullStream::read(ByteArray *buf)
 
 void NullStream::write(const ByteArray *buf)
 {}
+
+Stream *nullStream() { return Singleton<NullStream>::instance(); }
 
 } // namespace flux

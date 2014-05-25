@@ -10,7 +10,6 @@
 #ifndef FLUX_COLORNAMES_H
 #define FLUX_COLORNAMES_H
 
-#include "Singleton.h"
 #include "Color.h"
 
 namespace flux
@@ -18,7 +17,9 @@ namespace flux
 
 template<class Char, class Value> class PrefixTree;
 
-class ColorNames: public Object, public Singleton<ColorNames>
+template<class SubClass> class Singleton;
+
+class ColorNames: public Object
 {
 public:
 	bool lookup(const char *name, Color *color) const;
@@ -31,6 +32,8 @@ private:
 	typedef PrefixTree<char, Color> ColorByName;
 	Ref<ColorByName> colorByName_;
 };
+
+const ColorNames *colorNames();
 
 } // namespace flux
 

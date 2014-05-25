@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -8,6 +8,7 @@
  */
 
 #include <math.h> // pow
+#include "Singleton.h"
 #include "FloatSyntax.h"
 
 namespace flux
@@ -138,5 +139,7 @@ Ref<Token> FloatSyntax::read(float64_t *value, const ByteArray *text, int i) con
 	if (token) read(value, text, token);
 	return token;
 }
+
+FloatSyntax *floatSyntax() { return Singleton<FloatSyntax>::instance(); }
 
 } // namespace flux

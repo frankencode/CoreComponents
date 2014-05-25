@@ -10,13 +10,12 @@
 #ifndef FLUX_INETADDRESSSYNTAX_H
 #define FLUX_INETADDRESSSYNTAX_H
 
-#include "Singleton.h"
 #include "SyntaxDefinition.h"
 
 namespace flux
 {
 
-class InetAddressSyntax: public SyntaxDefinition, public Singleton<InetAddressSyntax>
+class InetAddressSyntax: public SyntaxDefinition
 {
 public:
 	inline int inet4Address() const { return inet4Address_; }
@@ -33,7 +32,7 @@ protected:
 	int inetAddress_;
 };
 
-inline InetAddressSyntax *inetAddressSyntax() { return InetAddressSyntax::instance(); }
+InetAddressSyntax *inetAddressSyntax();
 
 } // namespace flux
 

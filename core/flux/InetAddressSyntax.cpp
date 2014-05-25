@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "Singleton.h"
 #include "InetAddressSyntax.h"
 
 namespace flux
@@ -71,5 +72,7 @@ InetAddressSyntax::InetAddressSyntax(SyntaxDebugFactory *debugFactory)
 	ENTRY("InetAddress");
 	LINK();
 }
+
+InetAddressSyntax *inetAddressSyntax() { return Singleton<InetAddressSyntax>::instance(); }
 
 } // namespace flux
