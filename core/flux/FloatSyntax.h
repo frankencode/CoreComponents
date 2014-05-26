@@ -40,7 +40,7 @@ private:
 	int literal_;
 };
 
-FloatSyntax *floatSyntax();
+const FloatSyntax *floatSyntax();
 
 } // namespace flux
 

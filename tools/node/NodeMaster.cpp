@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/Singleton.h>
 #include <flux/IoMonitor.h>
 #include <flux/Thread.h>
 #include <flux/Process.h>
@@ -28,7 +29,7 @@ namespace fluxnode
 NodeMaster::NodeMaster()
 {}
 
-int NodeMaster::run(int argc, char **argv)
+int NodeMaster::run(int argc, char **argv) const
 {
 	SystemLog::open(String(argv[0])->fileName(), 0, LOG_DAEMON);
 
@@ -62,7 +63,7 @@ int NodeMaster::run(int argc, char **argv)
 	return 0;
 }
 
-void NodeMaster::runNode(int argc, char **argv)
+void NodeMaster::runNode(int argc, char **argv) const
 {
 	nodeConfig()->load(argc, argv);
 
@@ -84,7 +85,7 @@ void NodeMaster::runNode(int argc, char **argv)
 	#endif
 }
 
-void NodeMaster::runNode()
+void NodeMaster::runNode() const
 {
 	FLUXNODE_NOTICE() << "Starting (pid = " << Process::currentId() << ")" << nl;
 
@@ -177,5 +178,7 @@ void NodeMaster::runNode()
 		throw ex;
 	}
 }
+
+const NodeMaster* nodeMaster() { return Singleton<NodeMaster>::instance(); }
 
 } // namespace fluxnode

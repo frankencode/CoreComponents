@@ -11,13 +11,14 @@
 #define FLUXNODE_SERVICEREGISTRY_H
 
 #include <flux/Map.h>
-#include <flux/Singleton.h>
 #include "ServiceDefinition.h"
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxnode
 {
 
-class ServiceRegistry: public Object, public Singleton<ServiceRegistry>
+class ServiceRegistry: public Object
 {
 public:
 	void registerService(ServiceDefinition *service);
@@ -32,7 +33,7 @@ private:
 	Ref<ServiceByName> serviceByName_;
 };
 
-inline ServiceRegistry *serviceRegistry() { return ServiceRegistry::instance(); }
+ServiceRegistry *serviceRegistry();
 
 } // namespace fluxnode
 

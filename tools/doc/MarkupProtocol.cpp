@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/Singleton.h>
 #include "elements.h"
 #include "MarkupProtocol.h"
 
@@ -24,5 +25,7 @@ MarkupProtocol::MarkupProtocol()
 	define<ImageElement>();
 	define<CodeElement>();
 }
+
+const MarkupProtocol *markupProtocol() { return Singleton<MarkupProtocol>::instance(); }
 
 } // namespace fluxdoc

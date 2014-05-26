@@ -20,7 +20,7 @@ namespace flux
 namespace yason
 {
 
-Variant parse(const ByteArray *text, YasonProtocol *protocol = 0);
+Variant parse(const ByteArray *text, const YasonProtocol *protocol = 0);
 String stringify(Variant value);
 
 } // namespace yason

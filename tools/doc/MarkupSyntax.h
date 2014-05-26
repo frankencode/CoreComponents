@@ -12,15 +12,16 @@
 
 #include <flux/SyntaxDefinition.h>
 #include <flux/exceptions.h>
-#include <flux/Singleton.h>
 #include "Element.h"
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxdoc
 {
 
 using namespace flux;
 
-class MarkupSyntax: public SyntaxDefinition, public Singleton<MarkupSyntax>
+class MarkupSyntax: public SyntaxDefinition
 {
 public:
 	Ref<ElementList> parse(ByteArray *text, String resource = "") const;
@@ -46,7 +47,7 @@ private:
 	int list_;
 };
 
-inline MarkupSyntax *markupSyntax() { return MarkupSyntax::instance(); }
+const MarkupSyntax *markupSyntax();
 
 } // namespace fluxdoc
 

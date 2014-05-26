@@ -11,21 +11,22 @@
 #define FLUXDOC_MARKUPPROTOCOL_H
 
 #include <flux/yason.h>
-#include <flux/Singleton.h>
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxdoc
 {
 
 using namespace flux;
 
-class MarkupProtocol: public YasonProtocol, public Singleton<MarkupProtocol>
+class MarkupProtocol: public YasonProtocol
 {
 private:
 	friend class Singleton<MarkupProtocol>;
 	MarkupProtocol();
 };
 
-inline MarkupProtocol *markupProtocol() { return MarkupProtocol::instance(); }
+const MarkupProtocol *markupProtocol();
 
 } // namespace fluxdoc
 

@@ -8,6 +8,7 @@
  */
 
 #include <flux/Guard.h>
+#include <flux/Singleton.h>
 #include <flux/File.h>
 #include <flux/System.h>
 #include "Log.h"
@@ -85,5 +86,7 @@ void LogMaster::run()
 			logs->at(i)->open();
 	}
 }
+
+LogMaster *logMaster() { return Singleton<LogMaster>::instance(); }
 
 } // namespace fluxnode

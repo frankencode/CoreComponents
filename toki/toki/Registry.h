@@ -10,17 +10,18 @@
 #ifndef FLUXTOKI_REGISTRY_H
 #define FLUXTOKI_REGISTRY_H
 
-#include <flux/Singleton.h>
 #include <flux/SyntaxDefinition.h>
 #include "Language.h"
 #include "Theme.h"
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxtoki
 {
 
 using namespace flux;
 
-class Registry: public Object, public Singleton<Registry>
+class Registry: public Object
 {
 public:
 	bool lookupLanguageByName(String name, Language **language) const;
@@ -44,7 +45,7 @@ private:
 	Ref<ThemeByName> themeByName_;
 };
 
-inline Registry *registry() { return Registry::instance(); }
+Registry *registry();
 
 } // namespace fluxtoki
 

@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/Singleton.h>
 #include <flux/SyntaxDefinition.h>
 #include <flux/stdio.h>
 #include "NoticeParser.h"
@@ -197,9 +198,9 @@ Ref<Notice> NoticeParser::readNotice(Header *header) const
 	return noticeSyntax_->readNotice(header);
 }
 
-NoticeParser *noticeParser()
+const NoticeParser *noticeParser()
 {
-	return NoticeParser::instance();
+	return Singleton<NoticeParser>::instance();
 }
 
 } // namespace fluxclaim

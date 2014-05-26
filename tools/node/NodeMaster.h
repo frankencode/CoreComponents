@@ -11,27 +11,28 @@
 #define FLUXNODE_NODEMASTER_H
 
 #include <flux/Object.h>
-#include <flux/Singleton.h>
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxnode
 {
 
 using namespace flux;
 
-class NodeMaster: public Object, public Singleton<NodeMaster>
+class NodeMaster: public Object
 {
 public:
-	int run(int argc, char **argv);
+	int run(int argc, char **argv) const;
 
 private:
 	friend class Singleton<NodeMaster>;
 
 	NodeMaster();
-	void runNode(int argc, char **argv);
-	void runNode();
+	void runNode(int argc, char **argv) const;
+	void runNode() const;
 };
 
-inline NodeMaster* nodeMaster() { return NodeMaster::instance(); }
+const NodeMaster* nodeMaster();
 
 } // namespace fluxnode
 

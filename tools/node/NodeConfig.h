@@ -13,16 +13,17 @@
 #include <flux/SocketAddress.h>
 #include <flux/String.h>
 #include <flux/Map.h>
-#include <flux/Singleton.h>
 #include "ServiceDefinition.h"
 #include "LogConfig.h"
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxnode
 {
 
 using namespace flux;
 
-class NodeConfig: public Object, public Singleton<NodeConfig>
+class NodeConfig: public Object
 {
 public:
 	void load(int argc, char **argv);
@@ -55,7 +56,7 @@ private:
 	Ref<ServiceInstances> serviceInstances_;
 };
 
-inline NodeConfig *nodeConfig() { return NodeConfig::instance(); }
+NodeConfig *nodeConfig();
 
 } // namespace fluxnode
 

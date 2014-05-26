@@ -76,7 +76,7 @@ FormatSyntax::FormatSyntax()
 	LINK();
 }
 
-bool FormatSyntax::find(ByteArray *text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank)
+bool FormatSyntax::find(const ByteArray *text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank) const
 {
 	Ref<Token> rootToken = SyntaxDefinition::find(text, *i0)->rootToken();
 
@@ -130,6 +130,6 @@ bool FormatSyntax::find(ByteArray *text, int *i0, int *i1, int *w, int *wi, int 
 	return rootToken;
 }
 
-FormatSyntax *formatSyntax() { return Singleton<FormatSyntax>::instance(); }
+const FormatSyntax *formatSyntax() { return Singleton<FormatSyntax>::instance(); }
 
 } // namespace flux

@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/Singleton.h>
 #include "RecipeProtocol.h"
 
 namespace fluxmake
@@ -209,5 +210,7 @@ RecipeProtocol::RecipeProtocol()
 	define<TestsPrototype>();
 	define<PackagePrototype>();
 }
+
+const RecipeProtocol *recipeProtocol() { return Singleton<RecipeProtocol>::instance(); }
 
 } // namespace fluxmake

@@ -9,6 +9,7 @@
 
 #include <flux/Arguments.h>
 #include <flux/File.h>
+#include <flux/Singleton.h>
 #include "NodeConfigProtocol.h"
 #include "ServiceRegistry.h"
 #include "ErrorLog.h"
@@ -69,5 +70,7 @@ void NodeConfig::load(int argc, char **argv)
 		}
 	}
 }
+
+NodeConfig *nodeConfig() { return Singleton<NodeConfig>::instance(); }
 
 } // namespace fluxnode

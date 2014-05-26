@@ -18,7 +18,7 @@ namespace fluxclaim
 ShHeaderScannerInitializer::ShHeaderScannerInitializer()
 {
 	if (count_++ == 0)
-		Registry::instance()->registerHeaderScanner(new ShHeaderScanner);
+		registry()->registerHeaderScanner(new ShHeaderScanner);
 }
 
 int ShHeaderScannerInitializer::count_ = 0;

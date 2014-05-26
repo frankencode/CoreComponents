@@ -1126,7 +1126,7 @@ public:
 		name_ = name;
 	}
 
-	inline void IMPORT(DefinitionNode *definition, const char *name = 0) {
+	inline void IMPORT(const DefinitionNode *definition, const char *name = 0) {
 		if (!name) name = definition->name();
 		if (!name)
 			FLUX_DEBUG_ERROR("Cannot import anonymous syntax definition");
@@ -1282,9 +1282,9 @@ public:
 
 	const DefinitionNode *resolveScope(const char *&name) const;
 
-	inline DefinitionNode *scopeByName(const char *name) const
+	inline const DefinitionNode *scopeByName(const char *name) const
 	{
-		Ref<DefinitionNode> definition;
+		Ref<const DefinitionNode> definition;
 		const DefinitionNode *scope = resolveScope(name);
 		if (!scope->scopeByName_->lookup(name, &definition))
 			FLUX_DEBUG_ERROR(Format("Undefined definition '%%'") << name);
@@ -1339,7 +1339,7 @@ private:
 	const char *name_;
 	bool caseSensitive_;
 
-	typedef PrefixTree<char, Ref<DefinitionNode> > ScopeByName;
+	typedef PrefixTree<char, Ref<const DefinitionNode> > ScopeByName;
 	Ref<ScopeByName> scopeByName_;
 
 	typedef PrefixTree<char, Ref<RuleNode> > RuleByName;

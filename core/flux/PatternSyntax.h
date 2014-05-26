@@ -61,7 +61,7 @@ protected:
 	int pattern_;
 };
 
-PatternSyntax *patternExpression();
+const PatternSyntax *patternExpression();
 
 } // namespace flux
 

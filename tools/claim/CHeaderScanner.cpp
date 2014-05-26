@@ -19,7 +19,7 @@ namespace fluxclaim
 CHeaderScannerInitializer::CHeaderScannerInitializer()
 {
 	if (count_++ == 0)
-		Registry::instance()->registerHeaderScanner(new CHeaderScanner);
+		registry()->registerHeaderScanner(new CHeaderScanner);
 }
 
 int CHeaderScannerInitializer::count_ = 0;

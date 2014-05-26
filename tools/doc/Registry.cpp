@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/Singleton.h>
 #include "Generator.h"
 #include "Registry.h"
 
@@ -40,5 +41,7 @@ int Registry::generatorCount() const
 {
 	return generatorByName_->size();
 }
+
+Registry *registry() { return Singleton<Registry>::instance(); }
 
 } // namespace fluxdoc
