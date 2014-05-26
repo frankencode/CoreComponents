@@ -49,9 +49,9 @@ public:
 		return prototype;
 	}
 
-	virtual YasonObject *lookup(String className) {
+	virtual YasonObject *lookup(String className) const {
 		YasonObject *prototype = 0;
-		prototypes()->lookup(className, &prototype);
+		if (prototypes_) prototypes_->lookup(className, &prototype);
 		return prototype;
 	}
 
@@ -60,7 +60,7 @@ public:
 	void minCount(int newCount) { minCount_ = newCount; }
 	void maxCount(int newCount) { maxCount_ = newCount; }
 
-	inline bool lookup(const String &className, YasonObject **prototype) {
+	inline bool lookup(const String &className, YasonObject **prototype) const {
 		*prototype = lookup(className);
 		return *prototype;
 	}
@@ -73,7 +73,7 @@ protected:
 		  maxCount_(flux::intMax)
 	{}
 
-	virtual Ref<YasonObject> produce(YasonObject *prototype) {
+	virtual Ref<YasonObject> produce(YasonObject *prototype) const {
 		return prototype->produce();
 	}
 

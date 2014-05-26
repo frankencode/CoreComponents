@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/Singleton.h>
 #include "LogPrototype.h"
 #include "NodeConfigProtocol.h"
 
@@ -48,5 +49,7 @@ void NodeConfigProtocol::registerService(YasonObject *configPrototype)
 {
 	nodeProtocol_->define(configPrototype);
 }
+
+NodeConfigProtocol *configProtocol() { return Singleton<NodeConfigProtocol>::instance(); }
 
 } // namespace fluxnode

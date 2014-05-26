@@ -140,6 +140,6 @@ Ref<Token> FloatSyntax::read(float64_t *value, const ByteArray *text, int i) con
 	return token;
 }
 
-FloatSyntax *floatSyntax() { return Singleton<FloatSyntax>::instance(); }
+const FloatSyntax *floatSyntax() { return Singleton<FloatSyntax>::instance(); }
 
 } // namespace flux

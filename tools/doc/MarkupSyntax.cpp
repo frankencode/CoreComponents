@@ -10,6 +10,7 @@
 #include <flux/stdio.h> // DEBUG
 #include <flux/DebugTokenFactory.h> // DEBUG
 #include <flux/assert.h>
+#include <flux/Singleton.h>
 #include <flux/YasonSyntax.h>
 #include "MarkupProtocol.h"
 #include "elements.h"
@@ -300,5 +301,7 @@ String MarkupSyntax::readChunks(ByteArray *text, Token *chunkToken) const
 		chunks->append(text->copy(chunkToken));
 	return chunks->join();
 }
+
+const MarkupSyntax *markupSyntax() { return Singleton<MarkupSyntax>::instance(); }
 
 } // namespace fluxdoc

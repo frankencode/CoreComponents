@@ -10,16 +10,17 @@
 #ifndef FLUXCLAIM_REGISTRY_H
 #define FLUXCLAIM_REGISTRY_H
 
-#include <flux/Singleton.h>
 #include <flux/List.h>
 #include "HeaderScanner.h"
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxclaim
 {
 
 using namespace flux;
 
-class Registry: public Singleton<Registry>, public Object
+class Registry: public Object
 {
 public:
 	const HeaderScannerList *headerScanners() const;
@@ -32,7 +33,7 @@ private:
 	Ref<HeaderScannerList> headerScanners_;
 };
 
-inline Registry *registry() { return Registry::instance(); }
+Registry *registry();
 
 } // namespace fluxclaim
 

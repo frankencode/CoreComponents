@@ -11,12 +11,13 @@
 #define FLUXNODE_LOGMASTER_H
 
 #include <flux/Thread.h>
-#include <flux/Singleton.h>
 #include <flux/Mutex.h>
 #include <flux/Channel.h>
 #include <flux/Timer.h>
 #include <flux/Map.h>
 #include <flux/Set.h>
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxnode
 {
@@ -25,7 +26,7 @@ using namespace flux;
 
 class Log;
 
-class LogMaster: public Thread, public Singleton<LogMaster>
+class LogMaster: public Thread
 {
 public:
 	void registerLog(Log *log);
@@ -50,7 +51,7 @@ private:
 	Ref<Rotate> rotate_;
 };
 
-inline LogMaster *logMaster() { return LogMaster::instance(); }
+LogMaster *logMaster();
 
 } // namespace fluxnode
 

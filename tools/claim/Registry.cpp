@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/Singleton.h>
 #include "Registry.h"
 
 namespace fluxclaim
@@ -25,5 +26,7 @@ void Registry::registerHeaderScanner(HeaderScanner *scanner)
 {
 	headerScanners_->append(scanner);
 }
+
+Registry *registry() { return Singleton<Registry>::instance(); }
 
 } // namespace fluxclaim

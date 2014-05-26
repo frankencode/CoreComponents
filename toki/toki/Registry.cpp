@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/Singleton.h>
 #include "Registry.h"
 
 namespace fluxtoki
@@ -46,5 +47,7 @@ void Registry::registerTheme(Theme *theme)
 {
 	themeByName_->insert(theme->name(), theme);
 }
+
+Registry *registry() { return Singleton<Registry>::instance(); }
 
 } // namespace fluxtoki

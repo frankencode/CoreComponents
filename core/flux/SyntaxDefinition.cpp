@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -47,7 +47,7 @@ int SyntaxDefinition::matchLength() const
 typedef syntax::NODE NODE;
 
 void SyntaxDefinition::SYNTAX(const char *name) { def_->SYNTAX(name); }
-void SyntaxDefinition::IMPORT(SyntaxDefinition *definition, const char *name) { def_->IMPORT(definition->def_, name); }
+void SyntaxDefinition::IMPORT(const SyntaxDefinition *definition, const char *name) { def_->IMPORT(definition->def_, name); }
 void SyntaxDefinition::OPTION(const char *name, bool value) { def_->OPTION(name, value); }
 
 NODE SyntaxDefinition::CHAR(char ch) { return def_->CHAR(ch); }

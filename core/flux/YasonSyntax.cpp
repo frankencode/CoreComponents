@@ -308,7 +308,7 @@ YasonSyntax::YasonSyntax(int options)
 	LINK();
 }
 
-Variant YasonSyntax::parse(const ByteArray *text, YasonProtocol *protocol) const
+Variant YasonSyntax::parse(const ByteArray *text, const YasonProtocol *protocol) const
 {
 	Ref<SyntaxState> state = match(text);
 	if (!state->valid()) throw SyntaxError(text, state);
@@ -317,7 +317,7 @@ Variant YasonSyntax::parse(const ByteArray *text, YasonProtocol *protocol) const
 	return readValue(text, valueToken);
 }
 
-Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, YasonProtocol *protocol, YasonObject *prototype) const
+Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, const YasonProtocol *protocol, YasonObject *prototype) const
 {
 	if (token->rule() != object_)
 		throw SemanticError("Expected an object value", text, token->i0());
@@ -615,6 +615,6 @@ String YasonSyntax::readText(const ByteArray *text, Token *token) const
 	return s;
 }
 
-YasonSyntax *yasonSyntax() { return Singleton<YasonSyntax>::instance(); }
+const YasonSyntax *yasonSyntax() { return Singleton<YasonSyntax>::instance(); }
 
 } // namespace flux

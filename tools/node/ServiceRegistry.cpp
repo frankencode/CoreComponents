@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/Singleton.h>
 #include "NodeConfigProtocol.h"
 #include "ServiceRegistry.h"
 
@@ -27,5 +28,7 @@ ServiceDefinition *ServiceRegistry::serviceByName(String name) const
 {
 	return serviceByName_->value(name);
 }
+
+ServiceRegistry *serviceRegistry() { return Singleton<ServiceRegistry>::instance(); }
 
 } // namespace fluxnode

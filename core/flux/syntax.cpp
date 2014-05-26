@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -147,7 +147,7 @@ const DefinitionNode *DefinitionNode::resolveScope(const char *&name) const
 		if (!ch) break;
 		k = (ch == ':') ? k + 1 : 0;
 		if (k == 2) {
-			Ref<DefinitionNode> childScope;
+			Ref<const DefinitionNode> childScope;
 			if (!scope->scopeByName_->lookup(p0, p - p0 - k, &childScope))
 				FLUX_DEBUG_ERROR(Format("Undefined scope '%%'") << name);
 			scope = childScope;

@@ -22,8 +22,8 @@ class Singleton;
 class YasonSyntax: public SyntaxDefinition
 {
 public:
-	Variant parse(const ByteArray *text, YasonProtocol *protocol = 0) const;
-	Ref<YasonObject> readObject(const ByteArray *text, Token *token, YasonProtocol *protocol = 0, YasonObject *prototype = 0) const;
+	Variant parse(const ByteArray *text, const YasonProtocol *protocol = 0) const;
+	Ref<YasonObject> readObject(const ByteArray *text, Token *token, const YasonProtocol *protocol = 0, YasonObject *prototype = 0) const;
 
 	Token *nameToken(const ByteArray *text, Token *objectToken, const String &memberName) const;
 	Token *valueToken(const ByteArray *text, Token *objectToken, const String &memberName) const;
@@ -72,7 +72,7 @@ Ref< List<T> > YasonSyntax::parseTypedList(const ByteArray *text, Token *token, 
 	return list;
 }
 
-YasonSyntax *yasonSyntax();
+const YasonSyntax *yasonSyntax();
 
 } // namespace flux
 

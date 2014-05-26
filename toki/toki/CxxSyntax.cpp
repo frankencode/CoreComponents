@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/Singleton.h>
 #include "CxxSyntax.h"
 
 namespace fluxtoki
@@ -30,8 +31,9 @@ CxxSyntax::CxxSyntax()
 		)
 	);
 
-
+	// TODO
 }
 
+const CxxSyntax *cxxSyntax() { return Singleton<CxxSyntax>::instance(); }
 
 } // namespace fluxtoki

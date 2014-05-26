@@ -11,14 +11,15 @@
 #define FLUXTOKI_CXXSYNTAX_H
 
 #include <flux/SyntaxDefinition.h>
-#include <flux/Singleton.h>
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxtoki
 {
 
 using namespace flux;
 
-class CxxSyntax: public SyntaxDefinition, public Singleton<CxxSyntax>
+class CxxSyntax: public SyntaxDefinition
 {
 public:
 protected:
@@ -26,7 +27,7 @@ protected:
 	CxxSyntax();
 };
 
-inline CxxSyntax *cxxSyntax() { return CxxSyntax::instance(); }
+const CxxSyntax *cxxSyntax();
 
 } // namespace fluxtoki
 

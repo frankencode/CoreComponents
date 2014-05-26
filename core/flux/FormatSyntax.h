@@ -21,7 +21,7 @@ template<class SubClass> class Singleton;
 class FormatSyntax: public SyntaxDefinition
 {
 public:
-	bool find(ByteArray *text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank);
+	bool find(const ByteArray *text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank) const;
 
 protected:
 	friend class Singleton<FormatSyntax>;
@@ -37,7 +37,7 @@ protected:
 	int specifier_;
 };
 
-FormatSyntax *formatSyntax();
+const FormatSyntax *formatSyntax();
 
 } // namespace flux
 

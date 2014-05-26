@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -73,6 +73,6 @@ InetAddressSyntax::InetAddressSyntax(SyntaxDebugFactory *debugFactory)
 	LINK();
 }
 
-InetAddressSyntax *inetAddressSyntax() { return Singleton<InetAddressSyntax>::instance(); }
+const InetAddressSyntax *inetAddressSyntax() { return Singleton<InetAddressSyntax>::instance(); }
 
 } // namespace flux

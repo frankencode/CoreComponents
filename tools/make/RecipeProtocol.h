@@ -11,21 +11,22 @@
 #define FLUXMAKE_RECIPEPROTOCOL_H
 
 #include <flux/yason.h>
-#include <flux/Singleton.h>
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxmake
 {
 
 using namespace flux;
 
-class RecipeProtocol: public YasonProtocol, public Singleton<RecipeProtocol>
+class RecipeProtocol: public YasonProtocol
 {
 protected:
 	friend class Singleton<RecipeProtocol>;
 	RecipeProtocol();
 };
 
-inline RecipeProtocol *recipeProtocol() { return RecipeProtocol::instance(); }
+const RecipeProtocol *recipeProtocol();
 
 } // namespace fluxmake
 

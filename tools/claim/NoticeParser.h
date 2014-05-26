@@ -10,8 +10,9 @@
 #ifndef FLUXCLAIM_NOTICEPARSER_H
 #define FLUXCLAIM_NOTICEPARSER_H
 
-#include <flux/Singleton.h>
 #include "Notice.h"
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxclaim
 {
@@ -20,7 +21,7 @@ using namespace flux;
 
 class NoticeSyntax;
 
-class NoticeParser: public Object, public Singleton<NoticeParser>
+class NoticeParser: public Object
 {
 public:
 	Ref<Notice> readNotice(Header *header) const;
@@ -32,7 +33,7 @@ private:
 	Ref<NoticeSyntax> noticeSyntax_;
 };
 
-NoticeParser *noticeParser();
+const NoticeParser *noticeParser();
 
 } // namespace fluxclaim
 

@@ -10,17 +10,18 @@
 #ifndef FLUXNODE_MEDIATYPEDATABASE_H
 #define FLUXNODE_MEDIATYPEDATABASE_H
 
-#include <flux/Singleton.h>
 #include <flux/String.h>
 #include <flux/PrefixTree.h>
 #include <flux/Map.h>
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxnode
 {
 
 using namespace flux;
 
-class MediaTypeDatabase: public Object, public Singleton<MediaTypeDatabase>
+class MediaTypeDatabase: public Object
 {
 public:
 	String lookup(String path, String content) const;
@@ -33,7 +34,7 @@ private:
 	Ref< PrefixTree<char, String> > mediaTypeByContentPrefix_;
 };
 
-inline MediaTypeDatabase *mediaTypeDatabase() { return MediaTypeDatabase::instance(); }
+const MediaTypeDatabase *mediaTypeDatabase();
 
 } // namespace fluxnode
 

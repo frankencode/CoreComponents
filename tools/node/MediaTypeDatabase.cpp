@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/Singleton.h>
 #include "MediaTypeDatabase.h"
 
 namespace fluxnode
@@ -45,5 +46,7 @@ String MediaTypeDatabase::lookup(String path, String content) const
 	mediaTypeByContentPrefix_->lookup(content, &value, false);
 	return value;
 }
+
+const MediaTypeDatabase *mediaTypeDatabase() { return Singleton<MediaTypeDatabase>::instance(); }
 
 } // namespace fluxnode

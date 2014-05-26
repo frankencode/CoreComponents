@@ -10,15 +10,16 @@
 #ifndef FLUXNODE_NODECONFIGPROTOCOL_H
 #define FLUXNODE_NODECONFIGPROTOCOL_H
 
-#include <flux/Singleton.h>
 #include <flux/yason.h>
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxnode
 {
 
 using namespace flux;
 
-class NodeConfigProtocol: public YasonProtocol, public Singleton<NodeConfigProtocol>
+class NodeConfigProtocol: public YasonProtocol
 {
 public:
 	void registerService(YasonObject *configPrototype);
@@ -29,7 +30,7 @@ private:
 	Ref<YasonProtocol> nodeProtocol_;
 };
 
-inline NodeConfigProtocol *configProtocol() { return NodeConfigProtocol::instance(); }
+NodeConfigProtocol *configProtocol();
 
 } // namespace fluxnode
 

@@ -46,7 +46,7 @@ public:
 	int matchLength() const;
 
 	void SYNTAX(const char *name);
-	void IMPORT(SyntaxDefinition *definition, const char *name = 0);
+	void IMPORT(const SyntaxDefinition *definition, const char *name = 0);
 	void OPTION(const char *name, bool value);
 
 	NODE CHAR(char ch);

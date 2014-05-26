@@ -10,8 +10,9 @@
 #ifndef FLUXDOC_REGISTRY_H
 #define FLUXDOC_REGISTRY_H
 
-#include <flux/Singleton.h>
 #include <flux/yason.h>
+
+namespace flux { template<class> class Singleton; }
 
 namespace fluxdoc
 {
@@ -20,7 +21,7 @@ using namespace flux;
 
 class Generator;
 
-class Registry: public Object, public Singleton<Registry>
+class Registry: public Object
 {
 public:
 	Generator* generatorByName(String name) const;
@@ -42,7 +43,7 @@ private:
 	Ref<YasonProtocol> designProtocol_;
 };
 
-inline Registry *registry() { return Registry::instance(); }
+Registry *registry();
 
 } // namespace fluxdoc
 
