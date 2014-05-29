@@ -447,6 +447,66 @@ private:
 	int maxRepeat_;
 };
 
+class FilterNode: public Node
+{
+public:
+	FilterNode(Node *filter, char blank, Node *entry)
+		: blank_(blank)
+	{
+		appendChild(filter);
+		appendChild(entry);
+	}
+
+	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+	{
+		Ref<ByteArray> filteredText = text;
+
+		Token *lastChildSaved = parentToken->lastChild();
+
+		int h = filter()->matchNext(text, i, parentToken, state);
+
+		Ref<Token> filterToken = lastChildSaved ? lastChildSaved->nextSibling() : parentToken->firstChild();
+		rollBack(parentToken, lastChildSaved);
+
+		if (h != -1) {
+			Ref<ByteArray> filteredText = text->copy();
+			for (Token *token = filterToken; token; token = token->nextSibling())
+				ByteRange(filteredText, token->i0(), token->i1())->clear(blank_);
+
+			i = entry()->matchNext(filteredText, i, parentToken, state);
+			if (i != -1) {
+				for (
+					Token *ta = lastChildSaved ? lastChildSaved->nextSibling() : parentToken->firstChild();
+					ta && filterToken;
+					ta = ta->nextSibling()
+				) {
+					if (ta->i1() <= filterToken->i0()) {
+						Token *tb = ta->nextSibling();
+						bool found = !tb;
+						if (tb) found = filterToken->i1() <= tb->i0();
+						if (found) {
+							parentToken->insertChild(filterToken, ta);
+							filterToken = filterToken->nextSibling();
+						}
+					}
+				}
+			}
+			else {
+				rollBack(parentToken, lastChildSaved);
+			}
+		}
+
+		return i;
+	}
+
+	inline Node *filter() const { return Node::firstChild(); }
+	inline char blank() const { return blank_; }
+	inline Node *entry() const { return Node::lastChild(); }
+
+private:
+	char blank_;
+};
+
 class LengthNode: public Node
 {
 public:
@@ -650,11 +710,9 @@ public:
 		int h = -1;
 		Node *node = Node::firstChild();
 		while ((node) && (h == -1)) {
-			if (state) {
-				if (state->finalize_) {
-					h = -1;
-					break;
-				}
+			if (state->finalize_) {
+				h = -1;
+				break;
 			}
 			h = node->matchNext(text, i, parentToken, state);
 			if (h == -1)
@@ -699,11 +757,9 @@ public:
 
 		Node *node = Node::firstChild();
 		while ((node) && (i != -1)) {
-			if (state) {
-				if (state->finalize_) {
-					i = -1;
-					break;
-				}
+			if (state->finalize_) {
+				i = -1;
+				break;
 			}
 			i = node->matchNext(text, i, parentToken, state);
 			node = node->nextSibling();
@@ -1169,6 +1225,8 @@ public:
 	inline NODE GREEDY_REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new GreedyRepeatNode(minRepeat, maxRepeat, entry), "GreedyRepeat"); }
 	inline NODE GREEDY_REPEAT(int minRepeat, NODE entry) { return GREEDY_REPEAT(minRepeat, intMax, entry); }
 	inline NODE GREEDY_REPEAT(NODE entry) { return GREEDY_REPEAT(0, intMax, entry); }
+
+	inline NODE FILTER(NODE filter, char blank, NODE entry) { return debug(new FilterNode(filter, blank, entry), "Filter"); }
 
 	inline NODE LENGTH(int minLength, int maxLength, NODE entry) { return debug(new LengthNode(minLength, maxLength, entry), "Length"); }
 	inline NODE LENGTH(int minLength, NODE entry) { return LENGTH(minLength, intMax, entry); }

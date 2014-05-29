@@ -77,6 +77,8 @@ NODE SyntaxDefinition::GREEDY_REPEAT(int minRepeat, int maxRepeat, NODE entry) {
 NODE SyntaxDefinition::GREEDY_REPEAT(int minRepeat, NODE entry) { return def_->GREEDY_REPEAT(minRepeat, entry); }
 NODE SyntaxDefinition::GREEDY_REPEAT(NODE entry) { return def_->GREEDY_REPEAT(entry); }
 
+NODE SyntaxDefinition::FILTER(NODE filter, char blank, NODE entry) { return def_->FILTER(filter, blank, entry); }
+
 NODE SyntaxDefinition::LENGTH(int minLength, int maxLength, NODE entry) { return def_->LENGTH(minLength, maxLength, entry); }
 NODE SyntaxDefinition::LENGTH(int minLength, NODE entry) { return def_->LENGTH(minLength, entry); }
 NODE SyntaxDefinition::BOI() { return def_->BOI(); }
