@@ -304,6 +304,30 @@ private:
 	inline GreedyRepeatNode *repeatNode() const { return cast<GreedyRepeatNode>(DebugNode::entry()); }
 };
 
+class FilterDebugNode: public DebugNode {
+public:
+	FilterDebugNode(Debugger *debugger, Node *newNode)
+		: DebugNode(debugger, newNode)
+	{}
+
+	virtual const char *declType() const { return "FILTER"; }
+
+	virtual void printAttributes(String indent) {
+		FilterNode *node = filterNode();
+		fout() << "\n";
+		printBranch(node->filter(), indent);
+		fout(",");
+		printCharAttr(node->blank());
+		fout(",\n");
+		printBranch(node->entry(), indent);
+		fout() << "\n" << DebugNode::superIndent(indent);
+	}
+
+private:
+	typedef syntax::FilterNode FilterNode;
+	inline FilterNode *filterNode() const { return cast<FilterNode>(DebugNode::entry()); }
+};
+
 class LengthDebugNode: public DebugNode {
 public:
 	LengthDebugNode(Debugger *debugger, Node *newNode)

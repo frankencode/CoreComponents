@@ -76,6 +76,8 @@ public:
 	NODE GREEDY_REPEAT(int minRepeat, NODE entry);
 	NODE GREEDY_REPEAT(NODE entry);
 
+	NODE FILTER(NODE filter, char blank, NODE entry);
+
 	NODE LENGTH(int minLength, int maxLength, NODE entry);
 	NODE LENGTH(int minLength, NODE entry);
 	NODE BOI();
