@@ -46,7 +46,7 @@ const Pattern &Pattern::operator=(const String &text)
 #endif
 		)
 	);
-	patternExpression()->compile(text_, *this);
+	patternSyntax()->compile(text_, *this);
 	return *this;
 }
 

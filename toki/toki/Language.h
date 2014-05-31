@@ -10,7 +10,7 @@
 #ifndef FLUXTOKI_LANGUAGE_H
 #define FLUXTOKI_LANGUAGE_H
 
-#include <flux/String.h>
+#include <flux/Pattern.h>
 #include <flux/SyntaxDefinition.h>
 
 namespace fluxtoki
@@ -21,19 +21,29 @@ using namespace flux;
 class Language: public Object
 {
 public:
-	virtual bool detect(String path, String content) const = 0;
-
 	inline String name() const { return name_; }
-	inline SyntaxDefinition *syntax() const { return syntax_; }
+	inline Pattern pathPattern() const { return pathPattern_; }
+	inline const SyntaxDefinition *highlightingSyntax() const { return highlightingSyntax_; }
+	inline const SyntaxDefinition *discoverySyntax() const { return discoverySyntax_; }
+	inline const SyntaxDefinition *foldingSyntax() const { return foldingSyntax_; }
 
 protected:
-	Language(SyntaxDefinition *syntax)
-		: name_(syntax->name()),
-		  syntax_(syntax)
-	{}
+	Language(
+		String name,
+		Pattern pathPattern,
+		const SyntaxDefinition *highlightingSyntax,
+		const SyntaxDefinition *discoverySyntax = 0,
+		const SyntaxDefinition *foldingSyntax = 0
+	);
+
+private:
+	Language();
 
 	String name_;
-	Ref<SyntaxDefinition> syntax_;
+	Pattern pathPattern_;
+	Ref<const SyntaxDefinition> highlightingSyntax_;
+	Ref<const SyntaxDefinition> discoverySyntax_;
+	Ref<const SyntaxDefinition> foldingSyntax_;
 };
 
 } // namespace fluxtoki
