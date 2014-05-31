@@ -28,13 +28,30 @@ Theme *Registry::theme(int i) const { return themeByName_->valueAt(i); }
 
 bool Registry::detectLanguage(String path, String content, Language **language) const
 {
+	typedef List<Language *> Candidates;
+	Ref<Candidates> candidates = Candidates::create();
+
 	for (int i = 0; i < languageByName_->size(); ++i) {
 		Language *candidate = languageByName_->valueAt(i);
-		if (candidate->detect(path, content)) {
-			*language = candidate;
-			return true;
+		if (candidate->pathPattern()->match(path)->valid())
+			candidates->append(candidate);
+	}
+
+	if (candidates->size() == 1) {
+		*language = candidates->at(0);
+		return true;
+	}
+
+	for (int i = 0; i < candidates->size(); ++i) {
+		Language *candidate = candidates->at(i);
+		if (candidate->discoverySyntax()) {
+			if (candidate->discoverySyntax()->match(content)->valid()) {
+				*language = candidate;
+				return true;
+			}
 		}
 	}
+
 	return false;
 }
 

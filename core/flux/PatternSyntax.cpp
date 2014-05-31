@@ -393,6 +393,6 @@ NODE PatternSyntax::compileRepeat(const ByteArray *text, Token *token, SyntaxDef
 	return definition->GREEDY_REPEAT(minRepeat, maxRepeat, node);
 }
 
-const PatternSyntax *patternExpression() { return Singleton<PatternSyntax>::instance(); }
+const PatternSyntax *patternSyntax() { return Singleton<PatternSyntax>::instance(); }
 
 } // namespace flux

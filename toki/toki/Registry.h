@@ -11,6 +11,7 @@
 #define FLUXTOKI_REGISTRY_H
 
 #include <flux/SyntaxDefinition.h>
+#include <flux/Map.h>
 #include "Language.h"
 #include "Theme.h"
 
@@ -20,6 +21,17 @@ namespace fluxtoki
 {
 
 using namespace flux;
+
+template<class Asset>
+class Registration
+{
+public:
+	Registration() {
+		static bool firstTime = true;
+		if (firstTime) new Asset;
+		firstTime = false;
+	}
+};
 
 class Registry: public Object
 {
@@ -32,6 +44,7 @@ public:
 
 private:
 	friend class Singleton<Registry>;
+	friend class Language;
 
 	Registry();
 

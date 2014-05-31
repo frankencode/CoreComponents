@@ -1345,7 +1345,7 @@ public:
 		Ref<const DefinitionNode> definition;
 		const DefinitionNode *scope = resolveScope(name);
 		if (!scope->scopeByName_->lookup(name, &definition))
-			FLUX_DEBUG_ERROR(Format("Undefined definition '%%'") << name);
+			FLUX_DEBUG_ERROR(Format("Undefined scope '%%'") << name);
 		return definition;
 	}
 

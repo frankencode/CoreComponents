@@ -24,8 +24,7 @@ namespace syntax {
 class TokenFactory;
 class Token;
 
-class TokenScreen: public virtual Object
-{
+class TokenScreen {
 public:
 	virtual bool project(Token *token, int i0, int i1) = 0;
 };

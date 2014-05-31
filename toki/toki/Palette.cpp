@@ -7,55 +7,72 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/yason.h>
+#include <flux/exceptions.h>
+#include "PaletteLoader.h"
 #include "Registry.h"
 #include "Palette.h"
 
 namespace fluxtoki
 {
 
-Palette::Palette()
-	: styleByRule_(StyleByRule::create())
+Ref<Palette> Palette::load(String path)
+{
+	Ref<Palette> palette = paletteLoader()->load(path);
+	palette->name_ = path->fileName();
+	return palette;
+}
+
+Palette::Palette():
+	defaultStyleByRule_(StyleByRule::create()),
+	styleByRule_(StyleByRule::create())
 {}
+
+int Palette::defaultRuleByName(String name)
+{
+	if (name == "Text") return Text;
+	if (name == "CurrentLine") return CurrentLine;
+	if (name == "Cursor") return Cursor;
+	if (name == "Match") return Match;
+	if (name == "LineNumber") return LineNumber;
+	if (name == "CurrentLineNumber") return CurrentLineNumber;
+	return Undefined;
+}
+
+Ref<YasonObject> Palette::produce()
+{
+	return new Palette;
+}
 
 void Palette::define()
 {
 	className("Palette");
-	insert("language", "");
 	protocol()->minCount(1);
 	protocol()->define<Style>();
 }
 
 void Palette::realize(const ByteArray *text, Token *objectToken)
 {
-	language_ = value("language");
-	if (language_ == "") {
-		// default palette, TODO
-		/*
-		default::Text,
-		default::CurrentLine,
-		default::Cursor,
-		default::Selection,
-		default::Match,
-		default::LineNumber,
-		default::CurrentLineNumber
-		*/
+	if (name_ == "default") {
+		for (int i = 0; i < children()->size(); ++i) {
+			Style *style = cast<Style>(children()->at(i));
+			int rule = defaultRuleByName(style->name());
+			if (rule == Undefined)
+				FLUX_DEBUG_ERROR(Format("Undefined default style '%%'") << style->name());
+			defaultStyleByRule_->establish(rule, style);
+		}
 		return;
 	}
+
 	Language *language = 0;
-	if (!registry()->lookupLanguageByName(language_, &language)) {
-		// TODO
-		return;
+	if (!registry()->lookupLanguageByName(name_, &language)) {
+		FLUX_DEBUG_ERROR(Format("Undefined language '%%'") << name_);
 	}
-	SyntaxDefinition *scope = language->syntax();
-	scope_ = scope->id();
+	const SyntaxDefinition *syntax = language->highlightingSyntax();
+	scope_ = syntax->id();
 	for (int i = 0; i < children()->size(); ++i) {
 		Style *style = cast<Style>(children()->at(i));
-		int rule;
-		/* TODO
-		if (!scope->lookupRuleIdByName(style->name(), &ruleId)) {
-			// TODO
-		}
-		*/
+		int rule = syntax->ruleByName(style->name());
 		styleByRule_->insert(rule, style);
 	}
 }
