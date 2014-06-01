@@ -452,6 +452,17 @@ Token *YasonSyntax::valueToken(const ByteArray *text, Token *objectToken, const 
 	return 0;
 }
 
+Token *YasonSyntax::childToken(Token *objectToken, int childIndex) const
+{
+	for (Token *token = objectToken->firstChild(); token; token = token->nextSibling()) {
+		if (token->rule() == object_) {
+			if (childIndex == 0) return token;
+			--childIndex;
+		}
+	}
+	return 0;
+}
+
 String YasonSyntax::readName(const ByteArray *text, Token *token) const
 {
 	bool stripQuotation = (text->at(token->i0()) == '"');

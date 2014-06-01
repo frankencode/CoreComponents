@@ -18,6 +18,8 @@ namespace fluxtoki
 
 using namespace flux;
 
+class Palette;
+
 class Style: public YasonObject
 {
 public:

@@ -27,6 +27,7 @@ public:
 
 	Token *nameToken(const ByteArray *text, Token *objectToken, const String &memberName) const;
 	Token *valueToken(const ByteArray *text, Token *objectToken, const String &memberName) const;
+	Token *childToken(Token *objectToken, int childIndex) const;
 
 protected:
 	friend class Singleton<YasonSyntax>;
