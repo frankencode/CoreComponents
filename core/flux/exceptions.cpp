@@ -11,6 +11,7 @@
 #include "Format.h"
 #include "Thread.h"
 #include "SyntaxState.h"
+#include "ResourceContextStack.h"
 #include "exceptions.h"
 
 namespace flux
@@ -80,6 +81,12 @@ const char *Interrupt::signalName() const
 	}
 	return "SIG???";
 }
+
+TextError::TextError(String text, int offset, String resource)
+	: text_(text),
+	  offset_(offset),
+	  resource_(resource != "" ? resource : resourceContextStack()->top())
+{}
 
 SyntaxError::SyntaxError(String text, SyntaxState *state, String resource)
 	: TextError(text, state ? state->hintOffset() : -1, resource),

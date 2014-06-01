@@ -77,4 +77,9 @@ Token *YasonObject::valueToken(const ByteArray *text, Token *objectToken, const 
 	return yasonSyntax()->valueToken(text, objectToken, memberName);
 }
 
+Token *YasonObject::childToken(Token *objectToken, int childIndex)
+{
+	return yasonSyntax()->childToken(objectToken, childIndex);
+}
+
 } // namespace flux

@@ -152,11 +152,7 @@ public:
 	void setResource(String resource) { resource_ = resource; }
 
 protected:
-	TextError(String text, int offset, String resource = "")
-		: text_(text),
-		  offset_(offset),
-		  resource_(resource)
-	{}
+	TextError(String text, int offset, String resource = "");
 	~TextError() throw() {}
 
 	String text_;
@@ -183,7 +179,7 @@ private:
 class SemanticError: public TextError
 {
 public:
-	SemanticError(String reason, String text, int offset = -1, String resource = "")
+	SemanticError(String reason, String text = "", int offset = -1, String resource = "")
 		: TextError(text, offset, resource),
 		  reason_(reason)
 	{}

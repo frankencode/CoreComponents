@@ -8,7 +8,8 @@
  */
 
 #include <flux/yason.h>
-#include <flux/exceptions.h>
+#include <flux/ResourceContextStack.h>
+#include <flux/Format.h>
 #include "PaletteLoader.h"
 #include "Registry.h"
 #include "Palette.h"
@@ -19,7 +20,6 @@ namespace fluxtoki
 Ref<Palette> Palette::load(String path)
 {
 	Ref<Palette> palette = paletteLoader()->load(path);
-	palette->name_ = path->fileName();
 	return palette;
 }
 
@@ -53,27 +53,41 @@ void Palette::define()
 
 void Palette::realize(const ByteArray *text, Token *objectToken)
 {
+	name_ = resourceContextStack()->top()->fileName();
 	if (name_ == "default") {
 		for (int i = 0; i < children()->size(); ++i) {
 			Style *style = cast<Style>(children()->at(i));
 			int rule = defaultRuleByName(style->name());
-			if (rule == Undefined)
-				FLUX_DEBUG_ERROR(Format("Undefined default style '%%'") << style->name());
+			if (rule == Undefined) {
+				Token *token = childToken(objectToken, i);
+				token = valueToken(text, token, "name");
+				throw SemanticError(
+					Format("Undefined default style '%%'") << style->name(),
+					text, token->i1()
+				);
+			}
 			defaultStyleByRule_->establish(rule, style);
 		}
 		return;
 	}
 
 	Language *language = 0;
-	if (!registry()->lookupLanguageByName(name_, &language)) {
-		FLUX_DEBUG_ERROR(Format("Undefined language '%%'") << name_);
-	}
+	if (!registry()->lookupLanguageByName(name_, &language))
+		throw SemanticError(Format("Undefined language '%%'") << name_);
+
 	const SyntaxDefinition *syntax = language->highlightingSyntax();
 	scope_ = syntax->id();
 	for (int i = 0; i < children()->size(); ++i) {
 		Style *style = cast<Style>(children()->at(i));
-		int rule = syntax->ruleByName(style->name());
-		styleByRule_->insert(rule, style);
+		try {
+			int rule = syntax->ruleByName(style->name());
+			styleByRule_->insert(rule, style);
+		}
+		catch (DebugError &ex) {
+			Token *token = childToken(objectToken, i);
+			token = valueToken(text, token, "name");
+			throw SemanticError(ex.message(), text, token->i1());
+		}
 	}
 }
 

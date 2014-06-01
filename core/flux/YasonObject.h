@@ -63,6 +63,7 @@ protected:
 
 	static Token *nameToken(const ByteArray *text, Token *objectToken, const String &memberName);
 	static Token *valueToken(const ByteArray *text, Token *objectToken, const String &memberName);
+	static Token *childToken(Token *objectToken, int childIndex);
 
 private:
 	String className_;
