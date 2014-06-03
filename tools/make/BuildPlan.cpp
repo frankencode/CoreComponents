@@ -10,6 +10,7 @@
 #include <flux/stdio.h>
 #include <flux/Glob.h>
 #include <flux/Arguments.h>
+#include <flux/ResourceContext.h>
 #include <flux/yason.h>
 #include "DependencyCache.h"
 #include "GnuToolChain.h"
@@ -57,6 +58,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 		projectPath_ = items->at(0)->canonicalPath();
 	}
 
+	ResourceContext context(recipePath());
 	recipe_ = yason::parse(File::open(recipePath())->map(), recipeProtocol());
 	arguments->validate(recipe_);
 	arguments->override(recipe_);
