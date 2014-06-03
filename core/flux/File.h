@@ -119,7 +119,7 @@ public:
 
 	static String createUnique(String path, int mode = 0644, char placeHolder = 'X');
 	static void establish(String path, int fileMode = 0644, int dirMode = 0755);
-	static String lookup(String fileName, StringList *dirs = 0, int accessFlags = Executable);
+	static String lookup(String fileName, StringList *dirs = 0, int accessFlags = Executable); // FIXME: rename to locate
 
 	static Ref<FileStatus> status(String path);
 	static Ref<FileStatus> unresolvedStatus(String path);

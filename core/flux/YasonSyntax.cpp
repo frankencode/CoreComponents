@@ -195,7 +195,7 @@ YasonSyntax::YasonSyntax(int options)
 		)
 	);
 
-	DEFINE("Class", &className_,
+	DEFINE("ClassName", &className_,
 		GLUE(
 			AHEAD(RANGE('A', 'Z')),
 			INLINE("Identifier")
@@ -223,7 +223,7 @@ YasonSyntax::YasonSyntax(int options)
 		GLUE(
 			REPEAT(0, 1,
 				GLUE(
-					REF("Class"),
+					REF("ClassName"),
 					INLINE("Noise")
 				)
 			),
@@ -410,20 +410,23 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, co
 
 	object->autocomplete(prototype);
 
-	if (protocol) {
-		if (protocol->minCount() > 0) {
-			if (!object->hasChildren() || object->children()->size() < protocol->minCount()) {
-				if (protocol->prototypes_->size() == 1 && protocol->minCount() == 1) {
-					throw SemanticError(
-						Format("Object of type %% needs at least one child of type %%") << object->className() << protocol->prototypes_->at(0)->value()->className(),
-						text, objectToken->i0()
-					);
-				}
-				else {
-					throw SemanticError(
-						Format("Object of type %% needs at least %% children") << object->className() << protocol->minCount(),
-						text, objectToken->i0()
-					);
+	if (prototype) {
+		YasonProtocol *prototypeProtocol = prototype->protocol_;
+		if (prototypeProtocol) {
+			if (prototypeProtocol->minCount() > 0) {
+				if (!object->hasChildren() || object->children()->size() < prototypeProtocol->minCount()) {
+					if (prototypeProtocol->prototypes_->size() == 1 && prototypeProtocol->minCount() == 1) {
+						throw SemanticError(
+							Format("Object of type %% needs at least one child of type %%") << object->className() << prototypeProtocol->prototypes_->at(0)->value()->className(),
+							text, objectToken->i0()
+						);
+					}
+					else {
+						throw SemanticError(
+							Format("Object of type %% needs at least %% children") << object->className() << prototypeProtocol->minCount(),
+							text, objectToken->i0()
+						);
+					}
 				}
 			}
 		}

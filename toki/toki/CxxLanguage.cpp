@@ -15,7 +15,7 @@ namespace fluxtoki
 
 CxxLanguage::CxxLanguage():
 	Language(
-		"C++",
+		"cxx",
 		Pattern("*.((h|c){0..1:(pp|xx|++|h|c)}|(m|mm))"),
 		cxxSyntax()
 	)

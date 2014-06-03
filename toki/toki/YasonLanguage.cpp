@@ -15,7 +15,7 @@ namespace fluxtoki
 
 YasonLanguage::YasonLanguage():
 	Language(
-		"YASON",
+		"yason",
 		Pattern("(*.yason)|Recipe"),
 		fluxtoki::yasonSyntax()
 	)

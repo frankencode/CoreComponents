@@ -25,11 +25,11 @@ Palette {
 	Style {
 		name: LineNumber
 		ink: Gray
-		background: #F0F0F0
+		paper: #F0F0F0
 	}
 	Style {
 		name: CurrentLineNumber
 		ink: Black
-		background: #E8E8F0
+		paper: #E8E8F0
 	}
 }

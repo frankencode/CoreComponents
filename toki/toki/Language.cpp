@@ -14,13 +14,14 @@ namespace fluxtoki
 {
 
 Language::Language(
-	String name,
+	String displayName,
 	Pattern pathPattern,
 	const SyntaxDefinition *highlightingSyntax,
 	const SyntaxDefinition *discoverySyntax,
 	const SyntaxDefinition *foldingSyntax
 )
-	: name_(name),
+	: displayName_(displayName),
+	  name_(highlightingSyntax->name()),
 	  pathPattern_(pathPattern),
 	  highlightingSyntax_(highlightingSyntax),
 	  discoverySyntax_(discoverySyntax),

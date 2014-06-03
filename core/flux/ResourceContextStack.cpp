@@ -25,6 +25,7 @@ void ResourceContextStack::push(String resource)
 
 String ResourceContextStack::pop()
 {
+	if (queue_->size() == 0) return String();
 	return queue_->popBack();
 }
 

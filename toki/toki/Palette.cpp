@@ -33,6 +33,7 @@ int Palette::defaultRuleByName(String name)
 	if (name == "Text") return Text;
 	if (name == "CurrentLine") return CurrentLine;
 	if (name == "Cursor") return Cursor;
+	if (name == "Selection") return Selection;
 	if (name == "Match") return Match;
 	if (name == "LineNumber") return LineNumber;
 	if (name == "CurrentLineNumber") return CurrentLineNumber;

@@ -23,6 +23,8 @@ class Palette;
 class Style: public YasonObject
 {
 public:
+	static Ref<Style> create() { return new Style; }
+
 	inline String name() const { return name_; }
 	inline Color ink() const { return ink_; }
 	inline Color paper() const { return paper_; }
@@ -31,6 +33,8 @@ public:
 	inline bool italic() const { return italic_; }
 
 private:
+	Style() {}
+	virtual Ref<YasonObject> produce();
 	virtual void define();
 	virtual void realize(const ByteArray *text, Token *objectToken);
 
