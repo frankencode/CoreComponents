@@ -33,6 +33,6 @@ Palette {
 	}
 	Style {
 		name: EscapedChar
-		ink: DarkYellow
+		ink: Olive
 	}
 }

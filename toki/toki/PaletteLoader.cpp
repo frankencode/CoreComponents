@@ -19,6 +19,8 @@ PaletteLoader::PaletteLoader():
 	protocol_(YasonProtocol::create())
 {
 	protocol_->define<Palette>();
+	protocol_->minCount(1);
+	protocol_->maxCount(1);
 }
 
 Ref<Palette> PaletteLoader::load(String path) const

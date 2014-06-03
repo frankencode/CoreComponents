@@ -22,6 +22,7 @@ using namespace flux;
 class Palette: public YasonObject
 {
 public:
+	static Ref<Palette> create() { return new Palette; }
 	static Ref<Palette> load(String path);
 
 	inline String name() const { return name_; }

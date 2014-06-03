@@ -14,17 +14,13 @@ namespace fluxtoki
 {
 
 Registry::Registry()
-	: languageByName_(LanguageByName::create()),
-	  themeByName_(ThemeByName::create())
+	: languageByName_(LanguageByName::create())
 {}
 
 bool Registry::lookupLanguageByName(String name, Language **language) const
 {
 	return languageByName_->lookup(name, language);
 }
-
-int Registry::themeCount() const { return themeByName_->size(); }
-Theme *Registry::theme(int i) const { return themeByName_->valueAt(i); }
 
 bool Registry::detectLanguage(String path, String content, Language **language) const
 {
@@ -58,11 +54,6 @@ bool Registry::detectLanguage(String path, String content, Language **language) 
 void Registry::registerLanguage(Language *language)
 {
 	languageByName_->insert(language->name(), language);
-}
-
-void Registry::registerTheme(Theme *theme)
-{
-	themeByName_->insert(theme->name(), theme);
 }
 
 Registry *registry() { return Singleton<Registry>::instance(); }

@@ -21,6 +21,7 @@ using namespace flux;
 class Language: public Object
 {
 public:
+	inline String displayName() const { return displayName_; }
 	inline String name() const { return name_; }
 	inline Pattern pathPattern() const { return pathPattern_; }
 	inline const SyntaxDefinition *highlightingSyntax() const { return highlightingSyntax_; }
@@ -29,7 +30,7 @@ public:
 
 protected:
 	Language(
-		String name,
+		String displayName,
 		Pattern pathPattern,
 		const SyntaxDefinition *highlightingSyntax,
 		const SyntaxDefinition *discoverySyntax = 0,
@@ -39,6 +40,7 @@ protected:
 private:
 	Language();
 
+	String displayName_;
 	String name_;
 	Pattern pathPattern_;
 	Ref<const SyntaxDefinition> highlightingSyntax_;

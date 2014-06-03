@@ -10,7 +10,6 @@
 #ifndef FLUXTOKI_THEME_H
 #define FLUXTOKI_THEME_H
 
-#include <flux/YasonObject.h>
 #include "Palette.h"
 
 namespace fluxtoki
@@ -18,18 +17,17 @@ namespace fluxtoki
 
 using namespace flux;
 
-class Theme: public YasonObject
+class Theme: public Object
 {
 public:
+	static Ref<Theme> load(String path);
+	inline String path() const { return path_; }
 	inline String name() const { return name_; }
 
-protected:
-	Theme();
-
-	virtual void define();
-	virtual void realize(const ByteArray *text, Token *objectToken);
-
 private:
+	Theme(String path);
+
+	String path_;
 	String name_;
 
 	typedef Map<int, Ref<Palette> > PaletteByScope;

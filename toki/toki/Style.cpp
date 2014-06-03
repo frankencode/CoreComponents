@@ -12,8 +12,14 @@
 namespace fluxtoki
 {
 
+Ref<YasonObject> Style::produce()
+{
+	return Style::create();
+}
+
 void Style::define()
 {
+	className("Style");
 	insert("name", "");
 	insert("ink", Color());
 	insert("paper", Color());
