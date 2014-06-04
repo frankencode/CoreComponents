@@ -1,51 +1,51 @@
 Palette {
 	Style {
-		name: CommentLine
+		rule: CommentLine
 		ink: DarkGray
 	}
 	Style {
-		name: CommentText
+		rule: CommentText
 		ink: DarkGray
 	}
 	Style {
-		name: Preprocessing
+		rule: Preprocessing
 		ink: DarkGreen
 	}
 	Style {
-		name: Text
+		rule: Text
 		ink: Red
 	}
 	Style {
-		name: EscapedChar
+		rule: EscapedChar
 		ink: Magenta
 	}
 	Style {
-		name: ObjcText
+		rule: ObjcText
 		ink: DarkGreen
 	}
 	Style {
-		name: ObjcEscapedChar
+		rule: ObjcEscapedChar
 		ink: Olive
 	}
 	Style {
-		name: Keyword
+		rule: Keyword
 		bold: true
 	}
 	Style {
-		name: ObjcKeyword
+		rule: ObjcKeyword
 		ink: Blue
 		bold: true
 	}
 	Style {
-		name: Integer
+		rule: Integer
 		ink: Blue
 	}
 	Style {
-		name: Float
+		rule: Float
 		ink: DarkMagenta
 	}
 	Style {
-		name: Char
+		rule: Char
 		ink: Magenta
 	}
 }
