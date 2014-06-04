@@ -54,16 +54,16 @@ void Palette::define()
 
 void Palette::realize(const ByteArray *text, Token *objectToken)
 {
-	name_ = resourceContextStack()->top()->fileName();
-	if (name_ == "default") {
+	scopeName_ = resourceContextStack()->top()->fileName();
+	if (scopeName_ == "default") {
 		for (int i = 0; i < children()->size(); ++i) {
 			Style *style = cast<Style>(children()->at(i));
-			int rule = defaultRuleByName(style->name());
+			int rule = defaultRuleByName(style->ruleName());
 			if (rule == Undefined) {
 				Token *token = childToken(objectToken, i);
 				token = valueToken(text, token, "name");
 				throw SemanticError(
-					Format("Undefined default style '%%'") << style->name(),
+					Format("Undefined default style '%%'") << style->ruleName(),
 					text, token->i1()
 				);
 			}
@@ -73,15 +73,15 @@ void Palette::realize(const ByteArray *text, Token *objectToken)
 	}
 
 	Language *language = 0;
-	if (!registry()->lookupLanguageByName(name_, &language))
-		throw SemanticError(Format("Undefined language '%%'") << name_);
+	if (!registry()->lookupLanguageByName(scopeName_, &language))
+		throw SemanticError(Format("Undefined language '%%'") << scopeName_);
 
 	const SyntaxDefinition *syntax = language->highlightingSyntax();
 	scope_ = syntax->id();
 	for (int i = 0; i < children()->size(); ++i) {
 		Style *style = cast<Style>(children()->at(i));
 		try {
-			int rule = syntax->ruleByName(style->name());
+			int rule = syntax->ruleByName(style->ruleName());
 			styleByRule_->insert(rule, style);
 		}
 		catch (DebugError &ex) {

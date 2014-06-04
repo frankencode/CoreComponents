@@ -25,7 +25,7 @@ public:
 	static Ref<Palette> create() { return new Palette; }
 	static Ref<Palette> load(String path);
 
-	inline String name() const { return name_; }
+	inline String scopeName() const { return scopeName_; }
 	inline int scope() const { return scope_; }
 
 	enum DefaultRule {
@@ -42,6 +42,9 @@ public:
 	inline Style *defaultStyleByRule(int defaultRule) { return defaultStyleByRule_->value(defaultRule); }
 	inline Style *styleByRule(int rule) { return styleByRule_->value(rule); }
 
+	inline int styleCount() const { return styleByRule_->size(); }
+	inline const Style *styleAt(int i) const { return styleByRule_->valueAt(i); }
+
 private:
 	Palette();
 
@@ -51,7 +54,7 @@ private:
 	virtual void define();
 	virtual void realize(const ByteArray *text, Token *objectToken);
 
-	String name_;
+	String scopeName_;
 	int scope_;
 
 	typedef Map<int, Ref<Style> > StyleByRule;

@@ -25,10 +25,9 @@ class Style: public YasonObject
 public:
 	static Ref<Style> create() { return new Style; }
 
-	inline String name() const { return name_; }
+	inline String ruleName() const { return ruleName_; }
 	inline Color ink() const { return ink_; }
 	inline Color paper() const { return paper_; }
-	inline Ref<StringList> font() const { return font_; }
 	inline bool bold() const { return bold_; }
 	inline bool italic() const { return italic_; }
 
@@ -38,10 +37,9 @@ private:
 	virtual void define();
 	virtual void realize(const ByteArray *text, Token *objectToken);
 
-	String name_;
+	String ruleName_;
 	Color ink_;
 	Color paper_;
-	Ref<StringList> font_;
 	bool bold_;
 	bool italic_;
 };

@@ -1,34 +1,34 @@
 Palette {
 	Style {
-		name: Text
+		rule: Text
 		ink: Black
 		paper: White
 	}
 	Style {
-		name: CurrentLine
+		rule: CurrentLine
 		paper: GhostWhite
 	}
 	Style {
-		name: Cursor
+		rule: Cursor
 		ink: Black
 	}
 	Style {
-		name: Selection
+		rule: Selection
 		ink: White
 		paper: DodgerBlue
 	}
 	Style {
-		name: Match
+		rule: Match
 		paper: Yellow
 		bold: true
 	}
 	Style {
-		name: LineNumber
+		rule: LineNumber
 		ink: Gray
 		paper: #F0F0F0
 	}
 	Style {
-		name: CurrentLineNumber
+		rule: CurrentLineNumber
 		ink: Black
 		paper: #E8E8F0
 	}

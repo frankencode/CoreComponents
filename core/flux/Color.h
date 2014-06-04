@@ -38,6 +38,7 @@ public:
 	inline uint8_t &a() { return rgba_[3]; }
 
 	inline bool operator==(const Color &b) const { return word_ == b.word_; }
+	inline bool operator!=(const Color &b) const { return word_ != b.word_; }
 
 protected:
 	friend class Variant;

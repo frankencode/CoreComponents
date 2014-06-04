@@ -20,20 +20,18 @@ Ref<YasonObject> Style::produce()
 void Style::define()
 {
 	className("Style");
-	insert("name", "");
+	insert("rule", "");
 	insert("ink", Color());
 	insert("paper", Color());
-	insert("font", StringList::create());
 	insert("bold", false);
 	insert("italic", false);
 }
 
 void Style::realize(const ByteArray *text, Token *objectToken)
 {
-	name_ = value("name");
+	ruleName_ = value("rule");
 	ink_ = value("color");
 	paper_ = value("paper");
-	font_ = value("font");
 	bold_ = value("bold");
 	italic_ = value("italic");
 }

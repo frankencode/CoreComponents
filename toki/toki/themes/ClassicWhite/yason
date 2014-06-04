@@ -1,38 +1,38 @@
 Palette {
 	Style {
-		name: CommentLine
+		rule: CommentLine
 		ink: DarkGray
 	}
 	Style {
-		name: CommentText
+		rule: CommentText
 		ink: DarkGray
 	}
 	Style {
-		name: Name
+		rule: Name
 		ink: DarkRed
 	}
 	Style {
-		name: ClassName
+		rule: ClassName
 		ink: DarkBlue
 	}
 	Style {
-		name: Boolean
+		rule: Boolean
 		bold: true
 	}
 	Style {
-		name: int::Literal
+		rule: int::Literal
 		ink: Blue
 	}
 	Style {
-		name: float::Literal
+		rule: float::Literal
 		ink: Magenta
 	}
 	Style {
-		name: Text
+		rule: Text
 		ink: DarkGreen
 	}
 	Style {
-		name: EscapedChar
+		rule: EscapedChar
 		ink: Olive
 	}
 }

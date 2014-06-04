@@ -24,6 +24,13 @@ public:
 	inline String path() const { return path_; }
 	inline String name() const { return name_; }
 
+	inline bool lookupPaletteByScope(int scope, Palette **palette) const {
+		return paletteByScope_->lookup(scope, palette);
+	}
+
+	inline int paletteCount() const { return paletteByScope_->size(); }
+	inline const Palette *paletteAt(int i) const { return paletteByScope_->valueAt(i); }
+
 private:
 	Theme(String path);
 
