@@ -47,7 +47,7 @@ public:
 	inline int index() const { return i0_; }
 	inline int size() const { return i1_ - i0_; }
 
-	bool glow(TokenScreen *screen);
+	bool project(TokenScreen *screen);
 
 	Token *at(int i) const;
 

@@ -30,7 +30,7 @@ void Style::define()
 void Style::realize(const ByteArray *text, Token *objectToken)
 {
 	ruleName_ = value("rule");
-	ink_ = value("color");
+	ink_ = value("ink");
 	paper_ = value("paper");
 	bold_ = value("bold");
 	italic_ = value("italic");

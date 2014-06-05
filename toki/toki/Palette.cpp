@@ -81,8 +81,8 @@ void Palette::realize(const ByteArray *text, Token *objectToken)
 	for (int i = 0; i < children()->size(); ++i) {
 		Style *style = cast<Style>(children()->at(i));
 		try {
-			int rule = syntax->ruleByName(style->ruleName());
-			styleByRule_->insert(rule, style);
+			style->rule_ = syntax->ruleByName(style->ruleName());
+			styleByRule_->insert(style->rule_, style);
 		}
 		catch (DebugError &ex) {
 			Token *token = childToken(objectToken, i);

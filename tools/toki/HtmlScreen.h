@@ -7,29 +7,31 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUXTOKI_HTMLWRITER_H
-#define FLUXTOKI_HTMLWRITER_H
+#ifndef FLUXTOKI_HTMLSCREEN_H
+#define FLUXTOKI_HTMLSCREEN_H
 
 #include <flux/Token.h>
-#include <flux/Stream.h>
-#include "Theme.h"
+#include <flux/Format.h>
 
 namespace fluxtoki
 {
 
 using namespace flux;
 
-class HtmlWriter: public Object
+class HtmlScreen: public TokenScreen, public Object
 {
 public:
-	static Ref<HtmlWriter> create(Theme *theme) { return new HtmlWriter(theme); }
-	void writeCss();
+	static Ref<HtmlScreen> create(String text, Stream *sink = 0) { return new HtmlScreen(text, sink); }
+
+	virtual bool project(Token *token, int i0, int i1);
 
 private:
-	HtmlWriter(Theme *theme);
-	Ref<Theme> theme_;
+	HtmlScreen(String text, Stream *sink);
+
+	String text_;
+	Format format_;
 };
 
 } // namespace fluxtoki
 
-#endif // FLUXTOKI_HTMLWRITER_H
+#endif // FLUXTOKI_HTMLSCREEN_H

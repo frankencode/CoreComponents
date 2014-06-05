@@ -86,12 +86,12 @@ void BuildParameters::readSpecific(BuildParameters *specific)
 	if (specific->optimize() != "") optimize_ = specific->optimize();
 	if (specific->linkStatic()) linkStatic_ = true;
 
-	includePaths_->append(specific->includePaths());
-	libraryPaths_->append(specific->libraryPaths());
-	libraries_->append(specific->libraries());
+	includePaths_->appendList(specific->includePaths());
+	libraryPaths_->appendList(specific->libraryPaths());
+	libraries_->appendList(specific->libraries());
 
-	customCompileFlags_->append(specific->customCompileFlags());
-	customLinkFlags_->append(specific->customLinkFlags());
+	customCompileFlags_->appendList(specific->customCompileFlags());
+	customLinkFlags_->appendList(specific->customLinkFlags());
 }
 
 } // namespace fluxmake
