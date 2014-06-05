@@ -54,9 +54,9 @@ bool ConfigureStage::run()
 			if (includePath != "") plan()->includePaths()->append(includePath);
 			if (libraryPath != "") plan()->libraryPaths()->append(libraryPath);
 
-			plan()->customCompileFlags()->append(prerequisite->customCompileFlags());
-			plan()->customLinkFlags()->append(prerequisite->customLinkFlags());
-			plan()->libraries()->append(prerequisite->libraries());
+			plan()->customCompileFlags()->appendList(prerequisite->customCompileFlags());
+			plan()->customLinkFlags()->appendList(prerequisite->customLinkFlags());
+			plan()->libraries()->appendList(prerequisite->libraries());
 		}
 	}
 

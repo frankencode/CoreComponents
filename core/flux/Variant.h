@@ -50,12 +50,12 @@ public:
 
 	static const char *typeName(int type, int itemType = UndefType);
 
-	Variant():             type_(UndefType), itemType_(UndefType)                {}
-	Variant(int value):    type_(IntType),   itemType_(UndefType), int_(value)   {}
-	Variant(bool value):   type_(BoolType),  itemType_(UndefType), int_(value)   {}
-	Variant(float value):  type_(FloatType), itemType_(UndefType), float_(value) {}
-	Variant(double value): type_(FloatType), itemType_(UndefType), float_(value) {}
-	Variant(Color value):  type_(ColorType), itemType_(UndefType)                { word_ = value.word_; }
+	Variant():             type_(UndefType), itemType_(UndefType)                     {}
+	Variant(int value):    type_(IntType),   itemType_(UndefType), int_(value)        {}
+	Variant(bool value):   type_(BoolType),  itemType_(UndefType), int_(value)        {}
+	Variant(float value):  type_(FloatType), itemType_(UndefType), float_(value)      {}
+	Variant(double value): type_(FloatType), itemType_(UndefType), float_(value)      {}
+	Variant(Color value):  type_(ColorType), itemType_(UndefType), word_(value.word_) {}
 
 	Variant(const char *value):    type_(StringType), itemType_(UndefType) { initRef(String(value)); }
 	Variant(Ref<ByteArray> value): type_(StringType), itemType_(UndefType) { initRef(value); }
@@ -194,9 +194,9 @@ private:
 	char type_;
 	char itemType_;
 	union {
-		int int_;
-		float float_;
+		int32_t int_;
 		uint32_t word_;
+		float32_t float_;
 		mutable char dummy_[sizeof(Ref<Object>)];
 	};
 };

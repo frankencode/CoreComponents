@@ -13,7 +13,7 @@
 namespace flux
 {
 
-bool Token::glow(TokenScreen *screen)
+bool Token::project(TokenScreen *screen)
 {
 	int i = i0_;
 
@@ -24,7 +24,7 @@ bool Token::glow(TokenScreen *screen)
 				return false;
 			i = child->i0_;
 		}
-		if (!child->glow(screen))
+		if (!child->project(screen))
 			return false;
 		i = child->i1_;
 		child = child->nextSibling();

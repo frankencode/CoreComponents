@@ -7,7 +7,6 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <stdio.h> // DEBUG
 #include <flux/Bundle.h>
 #include <flux/Dir.h>
 #include <flux/Format.h>
@@ -46,6 +45,24 @@ Theme::Theme(String path)
 		Ref<Palette> palette = Palette::load(path + "/" + name);
 		paletteByScope_->insert(palette->scope(), palette);
 	}
+}
+
+Ref<StringList> themeList(String path)
+{
+	Ref<StringList> list = StringList::create();
+	if (path == "") {
+		path = FLUX_BUNDLE_LOOKUP("themes");
+		list->appendList(themeList("themes"));
+	}
+	if (path != "" && Dir::exists(path)) {
+		Ref<Dir> dir = Dir::open(path);
+		String name;
+		while (dir->read(&name)) {
+			if (name == "." || name == "..") continue;
+			list->append(path + "/" + name);
+		}
+	}
+	return list;
 }
 
 } // namespace fluxtoki

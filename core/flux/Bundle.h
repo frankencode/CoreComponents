@@ -18,7 +18,7 @@ namespace flux
 #define FLUX_QUOTE(name) #name
 
 #define FLUX_BUNDLE_LOOKUP(relPath) \
-	File::lookup(relPath, StringList::create() << FLUX_QUOTE(FLUXMAKE_BUNDLE_PREFIX) << String(__FILE__)->reducePath() , File::Exists)
+	File::lookup(relPath, StringList::create() << FLUX_QUOTE(FLUXMAKE_BUNDLE_PREFIX) << String(__FILE__)->reducePath(), File::Exists)
 
 } // namespace flux
 

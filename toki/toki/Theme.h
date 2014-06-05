@@ -41,6 +41,8 @@ private:
 	Ref<PaletteByScope> paletteByScope_;
 };
 
+Ref<StringList> themeList(String path = "");
+
 } // namespace fluxtoki
 
 #endif // FLUXTOKI_THEME_H

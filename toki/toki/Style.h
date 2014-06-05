@@ -26,18 +26,22 @@ public:
 	static Ref<Style> create() { return new Style; }
 
 	inline String ruleName() const { return ruleName_; }
+	inline int rule() const { return rule_; }
 	inline Color ink() const { return ink_; }
 	inline Color paper() const { return paper_; }
 	inline bool bold() const { return bold_; }
 	inline bool italic() const { return italic_; }
 
 private:
+	friend class Palette;
+
 	Style() {}
 	virtual Ref<YasonObject> produce();
 	virtual void define();
 	virtual void realize(const ByteArray *text, Token *objectToken);
 
 	String ruleName_;
+	int rule_;
 	Color ink_;
 	Color paper_;
 	bool bold_;
