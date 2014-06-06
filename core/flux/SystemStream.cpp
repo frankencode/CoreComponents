@@ -14,7 +14,7 @@
 #include <unistd.h> // read, write, select
 #include <fcntl.h> // fcntl
 #include <math.h> // modf
-#include "exceptions.h"
+#include "errors.h"
 #include "SystemStream.h"
 
 namespace flux

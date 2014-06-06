@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 		) << toolName;
 		return 1;
 	}
-	catch (Exception &ex) {
+	catch (Error &ex) {
 		ferr() << toolName << ": " << ex.message() << nl;
 		return 1;
 	}

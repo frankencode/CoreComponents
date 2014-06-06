@@ -8,7 +8,7 @@
  */
 
 #include <flux/File.h>
-#include "exceptions.h"
+#include "errors.h"
 #include "DirectoryInstance.h"
 
 namespace fluxnode

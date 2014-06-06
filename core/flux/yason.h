@@ -10,7 +10,7 @@
 #ifndef FLUX_YASON_H
 #define FLUX_YASON_H
 
-#include "exceptions.h"
+#include "errors.h"
 #include "YasonObject.h"
 #include "YasonProtocol.h"
 

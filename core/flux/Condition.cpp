@@ -9,7 +9,7 @@
 
 #include <pthread.h>
 #include <math.h>
-#include "exceptions.h"
+#include "errors.h"
 #include "Condition.h"
 
 namespace flux

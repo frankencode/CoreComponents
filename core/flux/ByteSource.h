@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -10,12 +10,11 @@
 #ifndef FLUX_BYTESOURCE_H
 #define FLUX_BYTESOURCE_H
 
+#include "errors.h"
 #include "Stream.h"
 
 namespace flux
 {
-
-class ByteSourceUnexpectedEndOfInput {};
 
 class ByteSource: public Object
 {
@@ -103,12 +102,12 @@ inline bool ByteSource::hasMore()
 inline uint8_t ByteSource::readUInt8()
 {
 	if (i_ == n_) {
-		if (!stream_) throw ByteSourceUnexpectedEndOfInput();
+		if (!stream_) throw UnexpectedEndOfInputError();
 
 		n_ = stream_->read(buf_);
 		i_ = 0;
 
-		if (n_ == 0) throw ByteSourceUnexpectedEndOfInput();
+		if (n_ == 0) throw UnexpectedEndOfInputError();
 	}
 
 	return buf_->at(i_++);

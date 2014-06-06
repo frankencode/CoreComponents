@@ -23,7 +23,7 @@
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #include <crt_externs.h> // _NSGetEnviron
 #endif
-#include "exceptions.h"
+#include "errors.h"
 #include "Format.h"
 #include "Thread.h"
 #include "ProcessFactory.h"

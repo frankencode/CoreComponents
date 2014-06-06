@@ -11,7 +11,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdio.h> // rename
-#include "exceptions.h"
+#include "errors.h"
 #include "ExitEvent.h"
 #include "ThreadExitEvent.h"
 #include "Guard.h"

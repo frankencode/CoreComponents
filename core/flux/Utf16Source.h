@@ -11,11 +11,10 @@
 #define FLUX_UTF16SOURCE_H
 
 #include "ByteSource.h"
+#include "utf16.h"
 
 namespace flux
 {
-
-class Utf16DecodeError {};
 
 /** \brief UTF-16 decoder
   *
@@ -47,10 +46,10 @@ public:
 			*ch = w;
 			if ((0xD800 <= *ch) && (*ch < 0xDC00)) {
 				uint16_t w = byteSource_->readUInt16();
-				if (!((0xDC00 <= w) && (w < 0xE000))) throw Utf16DecodeError();
+				if (!((0xDC00 <= w) && (w < 0xE000))) throw utf16::DecodeError();
 				*ch = 0x10000 + (((*ch - 0xD800) << 10) | (w - 0xDC00));
 			}
-			else if (0x10FFFF < *ch) throw Utf16DecodeError();
+			else if (0x10FFFF < *ch) throw utf16::DecodeError();
 		}
 		return more;
 	}

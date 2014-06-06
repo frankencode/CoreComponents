@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/exceptions.h>
+#include <flux/errors.h>
 #include "Log.h"
 #include "LogConfig.h"
 

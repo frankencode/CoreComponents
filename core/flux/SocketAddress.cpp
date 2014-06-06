@@ -14,7 +14,7 @@
 #include <errno.h>
 #include "strings.h"
 #include "Format.h"
-#include "exceptions.h"
+#include "errors.h"
 #include "SystemStream.h"
 #include "SocketAddress.h"
 

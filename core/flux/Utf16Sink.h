@@ -11,14 +11,10 @@
 #define FLUX_UTF16SINK_H
 
 #include "ByteSink.h"
+#include "utf16.h"
 
 namespace flux
 {
-
-class Utf16EncodeError {};
-class Utf16EncodeSurrogatePairError: public Utf16EncodeError {};
-class Utf16EncodeByteOrderMarkError: public Utf16EncodeError {};
-class Utf16EncodeIllegalCodePointError: public Utf16EncodeError {};
 
 class Utf16Sink: public Object
 {
@@ -37,20 +33,16 @@ public:
 	inline void write(uchar_t ch)
 	{
 		if (ch < 0x10000) {
-			if ((0xD800 <= ch) && (ch <= 0xDFFF)) throw Utf16EncodeSurrogatePairError();
-			else if ((ch == 0xFEFF) || (ch == 0xFFFE)) throw Utf16EncodeByteOrderMarkError();
+			if ((0xD800 <= ch) && (ch <= 0xDFFF)) throw utf16::EncodeSurrogatePairError();
+			else if ((ch == 0xFEFF) || (ch == 0xFFFE)) throw utf16::EncodeByteOrderMarkError();
 			byteSink_->writeUInt16(ch);
 		}
 		else {
-			if (0x10FFFF < ch) throw Utf16EncodeIllegalCodePointError();
+			if (0x10FFFF < ch) throw utf16::EncodeLargeCodePointError();
 			ch -= 0x10000;
 			byteSink_->writeUInt16((ch >> 10) + 0xD800);
 			byteSink_->writeUInt16((ch & 0x3FF) + 0xDC00);
 		}
-	}
-
-	inline static int encodedSize(uchar_t ch) {
-		return 2 * (1 + (0xFFFF < ch));
 	}
 
 	inline ByteSink *byteSink() const { return byteSink_; }

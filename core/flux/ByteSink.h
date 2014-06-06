@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -10,12 +10,11 @@
 #ifndef FLUX_BYTESINK_H
 #define FLUX_BYTESINK_H
 
+#include "errors.h"
 #include "Stream.h"
 
 namespace flux
 {
-
-class ByteSinkBufferOverflow {};
 
 class ByteSink: public Object
 {
@@ -75,7 +74,7 @@ private:
 
 inline void ByteSink::flush()
 {
-	if (!stream_) throw ByteSinkBufferOverflow();
+	if (!stream_) throw BufferOverflow();
 
 	stream_->write(ByteRange(buf_, 0, i_));
 	i_ = 0;

@@ -8,7 +8,7 @@
  */
 
 #include <flux/stdio.h>
-#include <flux/exceptions.h>
+#include <flux/errors.h>
 #include <flux/Arguments.h>
 #include <flux/File.h>
 #include <flux/Sha1.h>
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 			"Computes %% sums of files.\n"
 		) << toolName << (toolName->contains("sha1") ? "SHA1" : "MD5");
 	}
-	catch (Exception &ex) {
+	catch (Error &ex) {
 		ferr() << toolName << ": " << ex.message() << nl;
 		return 1;
 	}

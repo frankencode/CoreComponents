@@ -10,7 +10,7 @@
 #include <flux/TimeoutLimiter.h>
 #include <flux/TransferLimiter.h>
 #include <flux/System.h>
-#include "exceptions.h"
+#include "errors.h"
 #include "RequestStream.h"
 
 namespace fluxnode

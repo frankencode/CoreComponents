@@ -11,7 +11,7 @@
 #define FLUX_PATTERN_H
 
 #include "String.h"
-#include "exceptions.h"
+#include "errors.h"
 #ifndef NDEBUG
 #include "SyntaxDebugger.h"
 #endif

@@ -16,7 +16,7 @@
 #include <termios.h> // tcgetattr, tcsetattr
 #include "Format.h"
 #include "File.h"
-#include "exceptions.h"
+#include "errors.h"
 #include "ProcessFactory.h"
 
 namespace flux
