@@ -142,7 +142,7 @@ int main(int argc, char **argv)
 
 		return 1;
 	}
-	catch (Error &ex) {
+	catch (Exception &ex) {
 		ferr() << toolName << ": " << ex.message() << nl;
 		return 1;
 	}

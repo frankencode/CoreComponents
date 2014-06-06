@@ -11,11 +11,10 @@
 #define FLUX_SYSTEMSTREAM_H
 
 #include "Stream.h"
+#include "Exception.h"
 
 namespace flux
 {
-
-class ConnectionResetByPeer {};
 
 class SystemStream: public Stream
 {
@@ -38,7 +37,6 @@ public:
 	virtual void write(const ByteArray *data);
 	virtual void write(const StringList *parts);
 
-	// inline void write(const ByteRange& range) { write(*range); }
 	inline void write(Ref<ByteArray> data) { write(data.get()); }
 	inline void write(String s) { write(s.get()); }
 	inline void write(const char *s) { write(String(s)); }
@@ -50,6 +48,14 @@ protected:
 
 	int fd_;
 	bool iov_;
+};
+
+class ConnectionResetByPeer: public Exception
+{
+public:
+	~ConnectionResetByPeer() throw() {}
+
+	virtual String message() const { return "Connection reset by peer"; }
 };
 
 } // namespace flux

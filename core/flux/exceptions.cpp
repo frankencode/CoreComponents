@@ -12,7 +12,7 @@
 #include "Thread.h"
 #include "SyntaxState.h"
 #include "ResourceContextStack.h"
-#include "errors.h"
+#include "exceptions.h"
 
 namespace flux
 {
@@ -127,11 +127,6 @@ String SemanticError::message() const
 String Interrupt::message() const
 {
 	return Format() << "Caught signal " << signalName();
-}
-
-String Timeout::message() const
-{
-	return "Operation timed out";
 }
 
 String ProcessError::message() const

@@ -11,7 +11,7 @@
 #define FLUX_THREADLOCALREF_H
 
 #include <pthread.h>
-#include "errors.h"
+#include "exceptions.h"
 
 namespace flux
 {

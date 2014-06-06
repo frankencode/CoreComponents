@@ -11,7 +11,7 @@
 #include <errno.h>
 #include <math.h>
 #include "File.h"
-#include "errors.h"
+#include "exceptions.h"
 #include "FileStatus.h"
 
 namespace flux

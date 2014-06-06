@@ -10,7 +10,7 @@
 #include <flux/Bundle.h>
 #include <flux/Dir.h>
 #include <flux/Format.h>
-#include <flux/errors.h>
+#include <flux/exceptions.h>
 #include "Theme.h"
 
 namespace fluxtoki

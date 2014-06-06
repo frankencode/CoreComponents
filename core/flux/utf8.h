@@ -10,7 +10,7 @@
 #ifndef FLUX_UTF8_H
 #define FLUX_UTF8_H
 
-#include "errors.h"
+#include "exceptions.h"
 
 namespace flux
 {

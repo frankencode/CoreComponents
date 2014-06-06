@@ -11,11 +11,10 @@
 #define FLUX_TIMEOUTLIMITER_H
 
 #include "Stream.h"
+#include "Exception.h"
 
 namespace flux
 {
-
-class TimeoutExceeded {};
 
 class TimeoutLimiter: public Stream
 {
@@ -35,6 +34,14 @@ private:
 
 	Ref<Stream> stream_;
 	double timeout_;
+};
+
+class TimeoutExceeded: public Exception
+{
+public:
+	~TimeoutExceeded() throw() {}
+
+	virtual String message() const { return "Timeout exceeded"; }
 };
 
 } // namespace flux

@@ -10,7 +10,7 @@
 #ifndef FLUX_BYTESINK_H
 #define FLUX_BYTESINK_H
 
-#include "errors.h"
+#include "exceptions.h"
 #include "Stream.h"
 
 namespace flux

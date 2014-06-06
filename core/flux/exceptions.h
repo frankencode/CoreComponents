@@ -7,34 +7,16 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_ERRORS_H
-#define FLUX_ERRORS_H
+#ifndef FLUX_EXCEPTIONS_H
+#define FLUX_EXCEPTIONS_H
 
 #include <errno.h>
-#include <exception>
-#include "String.h"
+#include "Exception.h"
 
 namespace flux
 {
 
-class Error: public std::exception
-{
-public:
-	~Error() throw() {}
-
-	virtual String message() const = 0;
-
-private:
-	const char *what() const throw() {
-		static String h;
-		h = message();
-		return h;
-	}
-};
-
-inline String str(const Error &ex) { return ex.message(); }
-
-class UsageError: public Error
+class UsageError: public Exception
 {
 public:
 	UsageError(String message): message_(message) {}
@@ -46,7 +28,7 @@ private:
 	String message_;
 };
 
-class HelpError: public Error
+class HelpError: public Exception
 {
 public:
 	~HelpError() throw() {}
@@ -54,13 +36,13 @@ public:
 	virtual String message() const { return "No help, yet ..."; }
 };
 
-class EncodingError: public Error
+class EncodingError: public Exception
 {
 public:
 	~EncodingError() throw() {}
 };
 
-class UnexpectedEndOfInputError: public Error
+class UnexpectedEndOfInputError: public Exception
 {
 public:
 	~UnexpectedEndOfInputError() throw() {}
@@ -68,7 +50,7 @@ public:
 	virtual String message() const { return "Unexpected end of input"; }
 };
 
-class BufferOverflow: public Error
+class BufferOverflow: public Exception
 {
 public:
 	~BufferOverflow() throw() {}
@@ -76,7 +58,7 @@ public:
 	virtual String message() const { return "Buffer overflow"; }
 };
 
-class DebugError: public Error
+class DebugError: public Exception
 {
 public:
 	DebugError(String reason, const char *source, int line)
@@ -94,7 +76,7 @@ private:
 	int line_;
 };
 
-class SystemError: public Error
+class SystemError: public Exception
 {
 public:
 	SystemError(int errorCode): errorCode_(errorCode) {}
@@ -164,7 +146,7 @@ private:
 		else FLUX_SYSTEM_DEBUG_ERROR(errorCode); \
 	}
 
-class TextError: public Error
+class TextError: public Exception
 {
 public:
 	inline String text() const { return text_; }
@@ -215,7 +197,7 @@ private:
 	String reason_;
 };
 
-class Interrupt: public Error
+class Interrupt: public Exception
 {
 public:
 	Interrupt();
@@ -230,15 +212,15 @@ private:
 	int signal_;
 };
 
-class Timeout: public Error
+class Timeout: public Exception
 {
 public:
 	~Timeout() throw() {}
 
-	virtual String message() const;
+	virtual String message() const { return "Operation timed out"; }
 };
 
-class ProcessError: public Error
+class ProcessError: public Exception
 {
 public:
 	ProcessError(int status, String command)
@@ -259,4 +241,4 @@ private:
 
 } // namespace flux
 
-#endif // FLUX_ERRORS_H
+#endif // FLUX_EXCEPTIONS_H

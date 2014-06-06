@@ -11,13 +11,10 @@
 #define FLUX_TRANSFERLIMITER_H
 
 #include "Stream.h"
+#include "Exception.h"
 
 namespace flux
 {
-
-class TransferLimitExceeded {};
-class ReadLimitExceeded: public TransferLimitExceeded {};
-class WriteLimitExceeded: public TransferLimitExceeded {};
 
 class TransferLimiter: public Stream
 {
@@ -43,6 +40,28 @@ private:
 	size_t writeLimit_;
 	size_t totalRead_;
 	size_t totalWritten_;
+};
+
+class TransferLimitExceeded: public Exception
+{
+public:
+	~TransferLimitExceeded() throw() {}
+};
+
+class ReadLimitExceeded: public TransferLimitExceeded
+{
+public:
+	~ReadLimitExceeded() throw() {}
+
+	virtual String message() const { return "Read transfer limit exceeded"; }
+};
+
+class WriteLimitExceeded: public TransferLimitExceeded
+{
+public:
+	~WriteLimitExceeded() throw() {}
+
+	virtual String message() const { return "Write transfer limit exceeded"; }
 };
 
 } // namespace flux

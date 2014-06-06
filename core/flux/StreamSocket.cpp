@@ -11,7 +11,7 @@
 #include <fcntl.h> // fcntl
 #include <errno.h> // errno
 #include <math.h> // modf
-#include "errors.h"
+#include "exceptions.h"
 #include "StreamSocket.h"
 
 namespace flux
