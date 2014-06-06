@@ -15,7 +15,6 @@
 #include "Utf8Sink.h"
 #include "Utf16Source.h"
 #include "Utf16Sink.h"
-#include "Base64.h"
 #include "Format.h"
 #include "Process.h"
 #include "File.h"
@@ -423,6 +422,7 @@ ByteArray *ByteArray::unescapeInsitu()
 	if (!contains('\\')) return this;
 	int j = 0;
 	uint32_t hs = 0; // high surrogate, saved
+	Ref<ByteArray> ec; // buffer for encoded character
 	for (int i = 0, n = size_; i < n;) {
 		char ch = data_[i++];
 		if ((ch == '\\') && (i < n)) {
@@ -447,10 +447,10 @@ ByteArray *ByteArray::unescapeInsitu()
 						x += 0x10000;
 						hs = 0;
 					}
-					Ref<ByteArray> ec = ByteArray::create(4);
+					if (!ec) ec = ByteArray::create(4);
 					Ref<Utf8Sink> sink = Utf8Sink::open(ec);
 					sink->write(x);
-					int el = Utf8Sink::encodedSize(x);
+					int el = utf8::encodedSize(x);
 					for (int k = 0; k < el; ++k)
 						data_[j++] = ec->at(k);
 				}
@@ -646,7 +646,7 @@ Ref<ByteArray> ByteArray::fromUtf16(ByteArray *utf16, int endian)
 		int n = 0;
 		Ref<Utf16Source> source = Utf16Source::open(utf16, endian);
 		for (uchar_t ch; source->read(&ch);)
-			n += Utf8Sink::encodedSize(ch);
+			n += utf8::encodedSize(ch);
 		out = ByteArray::create(n);
 	}
 
@@ -699,7 +699,7 @@ Ref<ByteArray> ByteArray::toUtf16(int endian)
 	{
 		int n = 0;
 		for (int i = 0; i < chars->size(); ++i)
-			n += Utf16Sink::encodedSize(chars->at(i));
+			n += utf16::encodedSize(chars->at(i));
 		out = ByteArray::create(n + 2);
 		out->at(n) = 0;
 		out->at(n + 1) = 0;

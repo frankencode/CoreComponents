@@ -1,7 +1,7 @@
 #include <flux/stdio.h>
 #include <flux/check.h>
 #include <flux/Mutex.h>
-#include <flux/exceptions.h>
+#include <flux/errors.h>
 
 using namespace flux;
 
@@ -19,7 +19,7 @@ int main()
 		String path = "testabc.123";
 		if (!File::tryOpen(path)) FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
-	catch (Exception &ex) {
+	catch (Error &ex) {
 		fout() << ex << nl;
 	}
 
@@ -27,7 +27,7 @@ int main()
 		File::open("non-existing");
 		return 1;
 	}
-	catch (Exception &ex) {
+	catch (Error &ex) {
 		fout() << ex << nl;
 	}
 

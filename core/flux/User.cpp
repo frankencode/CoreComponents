@@ -8,7 +8,7 @@
  */
 
 #include <unistd.h> // sysconf
-#include "exceptions.h"
+#include "errors.h"
 #include "User.h"
 
 namespace flux

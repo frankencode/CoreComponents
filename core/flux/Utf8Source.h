@@ -11,11 +11,10 @@
 #define FLUX_UTF8SOURCE_H
 
 #include "ByteSource.h"
+#include "utf8.h"
 
 namespace flux
 {
-
-class Utf8DecodeError {};
 
 class Utf8Source: public Object
 {
@@ -93,7 +92,7 @@ inline uchar_t Utf8Source::readMultiByte(uchar_t ch)
 		}
 	}
 
-	if (n < 0) throw Utf8DecodeError();
+	if (n < 0) throw utf8::DecodeError();
 
 	return ch;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Frank Mertens.
+ * Copyright (C) 2007-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -8,12 +8,15 @@
  */
 
 #include "ByteSink.h"
-#include "Base64.h"
+#include "base64.h"
 
 namespace flux
 {
 
-String Base64::encode(const String &source)
+namespace base64
+{
+
+String encode(const String &source)
 {
 	const char *alphabet =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -51,9 +54,9 @@ String Base64::encode(const String &source)
 	return sink;
 }
 
-String Base64::decode(const String &source)
+String decode(const String &source)
 {
-	if (source->size() % 4 != 0) throw Base64IllegalInputSize4();
+	if (source->size() % 4 != 0) throw base64::IllegalInputSize4Error();
 
 	const int m = source->size();
 	int p = 0;
@@ -65,7 +68,7 @@ String Base64::decode(const String &source)
 		}
 	}
 
-	if (!((0 <= p) && (p <= 2))) throw Base64IllegalPadding();
+	if (!((0 <= p) && (p <= 2))) throw base64::IllegalPaddingError();
 
 	int n = 3 * (m / 4) - p;
 	String sink(n);
@@ -81,7 +84,7 @@ String Base64::decode(const String &source)
 			else if (ch == '+') ch = 62;
 			else if (ch == '/') ch = 63;
 			else if (ch == '=') ch = 0;
-			else throw Base64IllegalCharacter();
+			else throw base64::IllegalCharacterError();
 			bits |= ch;
 			bits <<= 6;
 		}
@@ -98,4 +101,6 @@ String Base64::decode(const String &source)
 	return sink;
 }
 
-}
+} // namespace base64
+
+} // namespace flux

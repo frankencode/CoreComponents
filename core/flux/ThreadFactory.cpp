@@ -9,7 +9,7 @@
 
 #include <sys/mman.h>
 #include "System.h"
-#include "exceptions.h"
+#include "errors.h"
 #include "ThreadFactory.h"
 
 namespace flux

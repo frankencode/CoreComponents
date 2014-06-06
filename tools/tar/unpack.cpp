@@ -14,7 +14,7 @@
 #include <flux/Process.h>
 #include <flux/User.h>
 #include <flux/Group.h>
-#include <flux/exceptions.h>
+#include <flux/errors.h>
 #include "unpack.h"
 
 namespace fluxtar

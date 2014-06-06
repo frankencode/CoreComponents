@@ -12,7 +12,7 @@
 #include "Thread.h"
 #include "SyntaxState.h"
 #include "ResourceContextStack.h"
-#include "exceptions.h"
+#include "errors.h"
 
 namespace flux
 {

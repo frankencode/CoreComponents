@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_EXCEPTIONS_H
-#define FLUX_EXCEPTIONS_H
+#ifndef FLUX_ERRORS_H
+#define FLUX_ERRORS_H
 
 #include <errno.h>
 #include <exception>
@@ -17,10 +17,10 @@
 namespace flux
 {
 
-class Exception: public std::exception
+class Error: public std::exception
 {
 public:
-	~Exception() throw() {}
+	~Error() throw() {}
 
 	virtual String message() const = 0;
 
@@ -32,9 +32,9 @@ private:
 	}
 };
 
-inline String str(const Exception &ex) { return ex.message(); }
+inline String str(const Error &ex) { return ex.message(); }
 
-class UsageError: public Exception
+class UsageError: public Error
 {
 public:
 	UsageError(String message): message_(message) {}
@@ -46,7 +46,7 @@ private:
 	String message_;
 };
 
-class HelpError: public Exception
+class HelpError: public Error
 {
 public:
 	~HelpError() throw() {}
@@ -54,7 +54,29 @@ public:
 	virtual String message() const { return "No help, yet ..."; }
 };
 
-class DebugError: public Exception
+class EncodingError: public Error
+{
+public:
+	~EncodingError() throw() {}
+};
+
+class UnexpectedEndOfInputError: public Error
+{
+public:
+	~UnexpectedEndOfInputError() throw() {}
+
+	virtual String message() const { return "Unexpected end of input"; }
+};
+
+class BufferOverflow: public Error
+{
+public:
+	~BufferOverflow() throw() {}
+
+	virtual String message() const { return "Buffer overflow"; }
+};
+
+class DebugError: public Error
 {
 public:
 	DebugError(String reason, const char *source, int line)
@@ -72,7 +94,7 @@ private:
 	int line_;
 };
 
-class SystemError: public Exception
+class SystemError: public Error
 {
 public:
 	SystemError(int errorCode): errorCode_(errorCode) {}
@@ -142,7 +164,7 @@ private:
 		else FLUX_SYSTEM_DEBUG_ERROR(errorCode); \
 	}
 
-class TextError: public Exception
+class TextError: public Error
 {
 public:
 	inline String text() const { return text_; }
@@ -193,7 +215,7 @@ private:
 	String reason_;
 };
 
-class Interrupt: public Exception
+class Interrupt: public Error
 {
 public:
 	Interrupt();
@@ -208,7 +230,7 @@ private:
 	int signal_;
 };
 
-class Timeout: public Exception
+class Timeout: public Error
 {
 public:
 	~Timeout() throw() {}
@@ -216,7 +238,7 @@ public:
 	virtual String message() const;
 };
 
-class ProcessError: public Exception
+class ProcessError: public Error
 {
 public:
 	ProcessError(int status, String command)
@@ -237,4 +259,4 @@ private:
 
 } // namespace flux
 
-#endif // FLUX_EXCEPTIONS_H
+#endif // FLUX_ERRORS_H

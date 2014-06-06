@@ -20,7 +20,7 @@
 #include "strings.h" // memclr
 #include "User.h"
 #endif
-#include "exceptions.h"
+#include "errors.h"
 #include "ProcessStatus.h"
 
 namespace flux
