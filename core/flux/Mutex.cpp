@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "errors.h"
+#include "exceptions.h"
 #include "Mutex.h"
 
 namespace flux

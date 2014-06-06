@@ -10,7 +10,7 @@
 #include <sys/stat.h> // mkdir
 #include "File.h"
 #include "FileStatus.h"
-#include "errors.h"
+#include "exceptions.h"
 #include "Dir.h"
 
 namespace flux

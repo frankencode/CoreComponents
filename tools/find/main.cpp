@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 		if (options->lookup("name", &h)) namePattern = h;
 		if (options->lookup("type", &h)) typePattern = h;
 		if (options->lookup("text", &h)) textPattern = h;
-		if (options->lookup("word", &h)) textPattern = String("(!<:[a..z]|[A..Z]|_)" + h + "(!>:[a..z]|[A..Z]|_)");
+		if (options->lookup("word", &h)) textPattern = String("(!<:[a..z]|[A..Z]|[0..9]|_)" + h + "(!>:[a..z]|[A..Z]|[0..9]|_)");
 
 		if (options->lookup("replace", &h)) {
 			replaceOption = true;
@@ -171,7 +171,7 @@ int main(int argc, char **argv)
 		) << toolName;
 		return 1;
 	}
-	catch (Error &ex) {
+	catch (Exception &ex) {
 		ferr() << toolName << ": " << ex.message() << nl;
 		return 1;
 	}

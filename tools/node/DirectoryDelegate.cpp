@@ -10,7 +10,7 @@
 #include <flux/File.h>
 #include <flux/Dir.h>
 #include "utils.h"
-#include "errors.h"
+#include "exceptions.h"
 #include "ServiceWorker.h"
 #include "ErrorLog.h"
 #include "DirectoryInstance.h"

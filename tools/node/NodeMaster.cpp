@@ -12,7 +12,7 @@
 #include <flux/Thread.h>
 #include <flux/Process.h>
 #include <flux/User.h>
-#include "errors.h"
+#include "exceptions.h"
 #include "ErrorLog.h"
 #include "AccessLog.h"
 #include "SystemLog.h"
@@ -76,7 +76,7 @@ void NodeMaster::runNode(int argc, char **argv) const
 	try {
 		runNode();
 	}
-	catch (Error &ex) {
+	catch (Exception &ex) {
 		FLUXNODE_ERROR() << ex.message() << nl;
 		throw;
 	}

@@ -11,7 +11,7 @@
 #define FLUXDOC_MARKUPSYNTAX_H
 
 #include <flux/SyntaxDefinition.h>
-#include <flux/errors.h>
+#include <flux/exceptions.h>
 #include "Element.h"
 
 namespace flux { template<class> class Singleton; }

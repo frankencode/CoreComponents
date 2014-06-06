@@ -8,7 +8,7 @@
  */
 
 #include <flux/stdio.h>
-#include <flux/errors.h>
+#include <flux/exceptions.h>
 #include <flux/Format.h>
 #include <flux/Arguments.h>
 #include <flux/File.h>
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 		ferr() << toolName << ": Broken archive: " << ex.reason() << " (file offset 0x" << hex(ex.offset()) << ")" << nl;
 		return 1;
 	}
-	catch (Error &ex) {
+	catch (Exception &ex) {
 		ferr() << toolName << ": " << ex.message() << nl;
 		return 1;
 	}

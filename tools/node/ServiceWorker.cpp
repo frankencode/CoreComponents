@@ -11,7 +11,7 @@
 #include <flux/RefGuard.h>
 #include <flux/System.h>
 #include <flux/TimeoutLimiter.h>
-#include "errors.h"
+#include "exceptions.h"
 #include "ErrorLog.h"
 #include "AccessLog.h"
 #include "VisitLog.h"
@@ -112,7 +112,7 @@ void ServiceWorker::run()
 				}
 			}
 		}
-		catch (ProtocolError &ex) {
+		catch (ProtocolException &ex) {
 			Format("HTTP/1.1 %% %%\r\n\r\n", client_->stream()) << ex.statusCode() << " " << ex.message();
 			logDelivery(client_, ex.statusCode());
 		}
@@ -125,7 +125,7 @@ void ServiceWorker::run()
 		{}
 		catch (CloseRequest &)
 		{}
-		catch (Error &ex) {
+		catch (Exception &ex) {
 			FLUXNODE_ERROR() << ex.message() << nl;
 			// Format("HTTP/1.1 500 Internal Server Error: %%\r\n\r\n", client_->stream()) << ex.message();
 			// logDelivery(client_, 500);

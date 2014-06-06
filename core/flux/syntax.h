@@ -14,7 +14,7 @@
 #include "PrefixTree.h"
 #include "SyntaxNode.h"
 #include "SyntaxDebugFactory.h"
-#include "errors.h"
+#include "exceptions.h"
 #include "Format.h"
 
 namespace flux

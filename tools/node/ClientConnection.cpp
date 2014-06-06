@@ -13,7 +13,7 @@
 #include <flux/System.h>
 #include <flux/StreamTap.h>
 #include <flux/LineBuffer.h>
-#include "errors.h"
+#include "exceptions.h"
 #include "ErrorLog.h"
 #include "TapBuffer.h"
 #include "RequestStream.h"

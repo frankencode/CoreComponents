@@ -29,7 +29,7 @@
 #include "File.h"
 #include "LineSource.h"
 #endif
-#include "errors.h"
+#include "exceptions.h"
 #include "NetworkInterface.h"
 
 namespace flux
