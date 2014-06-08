@@ -32,6 +32,10 @@ Palette {
 		bold: true
 	}
 	Style {
+		rule: TypeKeyword
+		ink: DarkRed
+	}
+	Style {
 		rule: ObjcKeyword
 		ink: Blue
 		bold: true

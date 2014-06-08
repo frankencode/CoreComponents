@@ -129,9 +129,4 @@ String Interrupt::message() const
 	return Format() << "Caught signal " << signalName();
 }
 
-String ProcessError::message() const
-{
-	return Format() << "Process unsuccessful: %% (status = %%)" << command_ << status_;
-}
-
 } // namespace flux

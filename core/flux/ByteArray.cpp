@@ -135,6 +135,16 @@ Ref<ByteArray> ByteArray::paste(int i0, int i1, String text) const
 	return parts->join();
 }
 
+int ByteArray::count(const char *set)
+{
+	int n = 0;
+	for (const char *p = data_; *p; ++p) {
+		for (const char *s = set; *s; ++s)
+			n += (*p == *s);
+	}
+	return n;
+}
+
 int ByteArray::find(const char *pattern, int i) const
 {
 	if (!has(i)) return size_;

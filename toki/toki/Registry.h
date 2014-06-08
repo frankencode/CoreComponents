@@ -37,7 +37,10 @@ class Registry: public Object
 {
 public:
 	bool lookupLanguageByName(String name, Language **language) const;
-	bool detectLanguage(String path, String content, Language** language) const;
+	bool detectLanguage(String path, String text, Language** language) const;
+
+	inline int languageCount() const { return languageByName_->size(); }
+	inline const Language *languageAt(int i) const { return languageByName_->valueAt(i); }
 
 private:
 	friend class Singleton<Registry>;

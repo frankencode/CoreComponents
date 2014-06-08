@@ -22,7 +22,7 @@ bool Registry::lookupLanguageByName(String name, Language **language) const
 	return languageByName_->lookup(name, language);
 }
 
-bool Registry::detectLanguage(String path, String content, Language **language) const
+bool Registry::detectLanguage(String path, String text, Language **language) const
 {
 	typedef List<Language *> Candidates;
 	Ref<Candidates> candidates = Candidates::create();
@@ -41,7 +41,7 @@ bool Registry::detectLanguage(String path, String content, Language **language) 
 	for (int i = 0; i < candidates->size(); ++i) {
 		Language *candidate = candidates->at(i);
 		if (candidate->discoverySyntax()) {
-			if (candidate->discoverySyntax()->match(content)->valid()) {
+			if (candidate->discoverySyntax()->match(text)->valid()) {
 				*language = candidate;
 				return true;
 			}

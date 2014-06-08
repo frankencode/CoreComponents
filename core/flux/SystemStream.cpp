@@ -11,7 +11,7 @@
 #include <sys/uio.h> // readv
 #include <errno.h>
 #include <string.h>
-#include <unistd.h> // read, write, select
+#include <unistd.h> // read, write, select, sysconf
 #include <fcntl.h> // fcntl
 #include <math.h> // modf
 #include "exceptions.h"
@@ -22,7 +22,8 @@ namespace flux
 
 SystemStream::SystemStream(int fd, bool iov)
 	: fd_(fd),
-	  iov_(iov)
+	  iov_(iov),
+	  iovMax_(0)
 {}
 
 SystemStream::~SystemStream()
@@ -34,7 +35,7 @@ SystemStream::~SystemStream()
 
 int SystemStream::fd() const { return fd_; }
 
-bool SystemStream::isTeletype() const
+bool SystemStream::isatty() const
 {
 	return ::isatty(fd_);
 }
@@ -139,12 +140,18 @@ void SystemStream::write(const StringList *parts)
 		iov->at(i).iov_base = part->bytes();
 		iov->at(i).iov_len = part->size();
 	}
-	ssize_t ret = ::writev(fd_, iov->data(), iov->size());
-	if (ret == -1) {
-		if (errno == EINTR) throw Interrupt();
-		if (errno == EWOULDBLOCK) throw Timeout();
-		if (errno == ECONNRESET) throw ConnectionResetByPeer();
-		FLUX_SYSTEM_DEBUG_ERROR(errno);
+	if (iovMax_ == 0) iovMax_ = sysconf(_SC_IOV_MAX);
+	for (int i = 0; i < iov->size();) {
+		int n = iov->size() - i;
+		if (n > iovMax_) n = iovMax_;
+		ssize_t ret = ::writev(fd_, iov->constData() + i, n);
+		if (ret == -1) {
+			if (errno == EINTR) throw Interrupt();
+			if (errno == EWOULDBLOCK) throw Timeout();
+			if (errno == ECONNRESET) throw ConnectionResetByPeer();
+			FLUX_SYSTEM_DEBUG_ERROR(errno);
+		}
+		i += n;
 	}
 }
 

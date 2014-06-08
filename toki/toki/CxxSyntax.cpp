@@ -248,6 +248,13 @@ CxxSyntax::CxxSyntax()
 					REPEAT(1, RANGE(" \t")),
 					REF("CommentText"),
 					REF("CommentLine"),
+					GLUE(
+						CHOICE(
+							CHAR('\n'),
+							BOI()
+						),
+						REF("Preprocessing")
+					),
 					REF("Text"),
 					REF("ObjcText"),
 					REF("Punctuator"),
