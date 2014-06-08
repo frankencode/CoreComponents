@@ -12,6 +12,7 @@
 
 #include <sys/types.h> // pid_t
 #include <signal.h> // SIGTERM, etc.
+#include "Exception.h"
 #include "String.h"
 #include "Map.h"
 #include "SystemStream.h"
@@ -142,6 +143,25 @@ private:
 	Ref<LineSource> lineErr_;
 
 	pid_t processId_;
+	String command_;
+};
+
+class ProcessError: public Exception
+{
+public:
+	ProcessError(int status, String command)
+		: status_(status),
+		  command_(command)
+	{}
+	~ProcessError() throw() {}
+
+	inline int status() const { return status_; }
+	inline String command() const { return command_; }
+
+	virtual String message() const;
+
+private:
+	int status_;
 	String command_;
 };
 

@@ -375,4 +375,9 @@ bool Process::isDaemonized()
 	return ::getsid(0) == ::getpgid(0) && ::isatty(0) != 1;
 }
 
+String ProcessError::message() const
+{
+	return Format() << "Process unsuccessful: %% (status = %%)" << command_ << status_;
+}
+
 } // namespace flux

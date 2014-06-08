@@ -25,7 +25,7 @@ public:
 	~SystemStream();
 
 	int fd() const;
-	bool isTeletype() const;
+	bool isatty() const;
 
 	bool isOpen() const;
 	void close();
@@ -48,6 +48,7 @@ protected:
 
 	int fd_;
 	bool iov_;
+	int iovMax_;
 };
 
 class ConnectionResetByPeer: public Exception

@@ -19,10 +19,16 @@ HtmlScreen::HtmlScreen(String text, Stream *sink)
 
 bool HtmlScreen::project(Token *token, int i0, int i1)
 {
-	format_
-		<< "<span class=\"toki_" << token->scope() << "_" << token->rule() << "\">"
-		<< text_->copy(i0, i1)
-		<< "</span>";
+	String s = text_->copy(i0, i1);
+	if (s->contains('<')) s = s->replace("<", "&lt;");
+	if (s->contains('>')) s = s->replace(">", "&gt;");
+	bool whitespace = s->count(" \t\n\r") == s->size();
+	if (!whitespace)
+		format_ << "<span class=\"toki_" << hex(unsigned(token->scope())) << "_" << hex(token->rule()) << "\">";
+	format_ << s;
+	if (!whitespace)
+		format_ << "</span>";
+	if (format_->size() > 128) format_ << flush;
 	return true;
 }
 

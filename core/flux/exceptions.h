@@ -220,25 +220,6 @@ public:
 	virtual String message() const { return "Operation timed out"; }
 };
 
-class ProcessError: public Exception
-{
-public:
-	ProcessError(int status, String command)
-		: status_(status),
-		  command_(command)
-	{}
-	~ProcessError() throw() {}
-
-	inline int status() const { return status_; }
-	inline String command() const { return command_; }
-
-	virtual String message() const;
-
-private:
-	int status_;
-	String command_;
-};
-
 } // namespace flux
 
 #endif // FLUX_EXCEPTIONS_H

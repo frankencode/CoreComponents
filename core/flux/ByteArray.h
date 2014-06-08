@@ -124,9 +124,10 @@ public:
 	inline bool contains(char ch) const { return find(ch) < size_; }
 	inline int count(char ch) const {
 		int n = 0;
-		for (char *p = data_; *p; ++p) n += (*p == ch);
+		for (const char *p = data_; *p; ++p) n += (*p == ch);
 		return n;
 	}
+	int count(const char *set);
 
 	inline int replace(char oldItem, char newItem) {
 		int n = 0;
