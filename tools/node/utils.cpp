@@ -72,11 +72,11 @@ Ref<Date> scanDate(String text, bool *ok)
 	// e.g.: Tue, 10 Sep 2013 11:01:10 GMT
 	Ref<StringList> parts = text->split(' ');
 	if (ok) *ok = false;
-	if (parts->size() != 6) return 0;
+	if (parts->count() != 6) return 0;
 	int day = 0;
 	{
 		String s = parts->at(1);
-		for (int i = 0; i < s->size(); ++i) {
+		for (int i = 0; i < s->count(); ++i) {
 			char ch = s->at(i);
 			day *= 10;
 			if ('0' <= ch && ch <= '9') day += ch - '0';
@@ -97,7 +97,7 @@ Ref<Date> scanDate(String text, bool *ok)
 	int year = 0;
 	{
 		String s = parts->at(3);
-		for (int i = 0; i < s->size(); ++i) {
+		for (int i = 0; i < s->count(); ++i) {
 			char ch = s->at(i);
 			year *= 10;
 			if ('0' <= ch && ch <= '9') year += ch - '0';
@@ -108,7 +108,7 @@ Ref<Date> scanDate(String text, bool *ok)
 	{
 		String s = parts->at(4);
 		int *p = &hour;
-		for (int i = 0; i < s->size(); ++i) {
+		for (int i = 0; i < s->count(); ++i) {
 			char ch = s->at(i);
 			if (ch == ':') {
 				if (p == &hour) p = &minutes;

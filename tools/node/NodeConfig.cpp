@@ -31,8 +31,8 @@ void NodeConfig::load(int argc, char **argv)
 
 	Ref<YasonObject> config;
 
-	if (items->size() > 0) {
-		if (items->size() > 1)
+	if (items->count() > 0) {
+		if (items->count() > 1)
 			throw UsageError("Loading multiple config files at once is not supported");
 
 		String path = items->at(0);
@@ -51,7 +51,7 @@ void NodeConfig::load(int argc, char **argv)
 	else if (protocol->downcase() == "ipv4") family = AF_INET;
 
 	address_ = SocketAddress::resolve(address, "http", family, SOCK_STREAM);
-	for (int i = 0; i < address_->size(); ++i)
+	for (int i = 0; i < address_->count(); ++i)
 		address_->at(i)->setPort(port);
 
 	user_ = config->value("user");
@@ -63,7 +63,7 @@ void NodeConfig::load(int argc, char **argv)
 
 	serviceInstances_ = ServiceInstances::create();
 	if (config->hasChildren()) {
-		for (int i = 0; i < config->children()->size(); ++i) {
+		for (int i = 0; i < config->children()->count(); ++i) {
 			YasonObject *child = config->children()->at(i);
 			ServiceDefinition *service = serviceRegistry()->serviceByName(child->className());
 			serviceInstances_->append(service->createInstance(child));

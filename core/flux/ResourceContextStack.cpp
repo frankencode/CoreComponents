@@ -25,13 +25,13 @@ void ResourceContextStack::push(String resource)
 
 String ResourceContextStack::pop()
 {
-	if (queue_->size() == 0) return String();
+	if (queue_->count() == 0) return String();
 	return queue_->popBack();
 }
 
 String ResourceContextStack::top() const
 {
-	return queue_->size() > 0 ? queue_->back() : String();
+	return queue_->count() > 0 ? queue_->back() : String();
 }
 
 ResourceContextStack *resourceContextStack()

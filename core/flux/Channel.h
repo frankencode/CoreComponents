@@ -43,7 +43,7 @@ public:
 	T popBack(T *item = 0)
 	{
 		Guard<Mutex> guard(mutex_);
-		while (queue_->size() == 0)
+		while (queue_->count() == 0)
 			notEmpty_->wait(mutex_);
 		return queue_->popBack(item);
 	}
@@ -51,7 +51,7 @@ public:
 	T popFront(T *item = 0)
 	{
 		Guard<Mutex> guard(mutex_);
-		while (queue_->size() == 0)
+		while (queue_->count() == 0)
 			notEmpty_->wait(mutex_);
 		return queue_->popFront(item);
 	}
@@ -59,7 +59,7 @@ public:
 	bool popBackBefore(double timeout, T *item)
 	{
 		Guard<Mutex> guard(mutex_);
-		while (queue_->size() == 0) {
+		while (queue_->count() == 0) {
 			if (!notEmpty_->waitUntil(timeout, mutex_))
 				return false;
 		}
@@ -70,7 +70,7 @@ public:
 	bool popFrontBefore(double timeout, T *item)
 	{
 		Guard<Mutex> guard(mutex_);
-		while (queue_->size() == 0) {
+		while (queue_->count() == 0) {
 			if (!notEmpty_->waitUntil(timeout, mutex_))
 				return false;
 		}
@@ -83,12 +83,12 @@ public:
 
 	inline bool popBefore(double timeout, T *item = 0) { return popFrontBefore(timeout, item); }
 
-	inline int size() const { Guard<Mutex> guard(mutex_); return queue_->size(); }
+	inline int count() const { Guard<Mutex> guard(mutex_); return queue_->count(); }
 
 	T waitNext(T *item = 0)
 	{
 		Guard<Mutex> guard(mutex_);
-		while (queue_->size() == 0)
+		while (queue_->count() == 0)
 			notEmpty_->wait(mutex_);
 		T h = queue_->front();
 		if (item) *item = h;

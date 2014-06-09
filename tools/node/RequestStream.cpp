@@ -68,7 +68,7 @@ void RequestStream::nextChunk()
 	nextLine();
 	String line = readAll();
 	bytesLeft_ = 0;
-	for (int i = 0; i < line->size(); ++i) {
+	for (int i = 0; i < line->count(); ++i) {
 		char ch = line->at(i);
 		if (ch == '\r' || ch == '\n') continue;
 		bytesLeft_ *= 16;
@@ -100,11 +100,11 @@ int RequestStream::read(ByteArray *buf)
 	if (eoi_) return 0;
 	if (bytesLeft_ == 0) return 0;
 	if (pending_) {
-		*buf = *ByteRange(pending_, pendingIndex_, pending_->size());
-		int h = pending_->size() - pendingIndex_;
-		if (buf->size() < h) {
-			pendingIndex_ += buf->size();
-			return buf->size();
+		*buf = *ByteRange(pending_, pendingIndex_, pending_->count());
+		int h = pending_->count() - pendingIndex_;
+		if (buf->count() < h) {
+			pendingIndex_ += buf->count();
+			return buf->count();
 		}
 		pending_ = 0;
 		return h;

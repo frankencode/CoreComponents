@@ -42,7 +42,7 @@ bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 	ByteArray *data = data_;
 	ArchiveEntry *entry = *nextEntry;
 
-	if (source_->readAll(data) < data->size()) return false;
+	if (source_->readAll(data) < data->count()) return false;
 
 	if (data->byteAt(58) != 0x60 || data->byteAt(59) != 0x0a)
 		throw BrokenArchive(i_ + 58, "Expected ar header magic (0x50, 0x0a)");
@@ -54,7 +54,7 @@ bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 	data->scanInt(&entry->mode_,           8, 40, 48);
 	data->scanInt(&entry->size_,          10, 48, 58);
 
-	i_ += data->size();
+	i_ += data->count();
 	entry->offset_ = i_;
 
 	return true;

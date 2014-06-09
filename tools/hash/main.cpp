@@ -25,9 +25,9 @@ int main(int argc, char **argv)
 		arguments->validate(VariantMap::create());
 
 		StringList *items = arguments->items();
-		if (items->size() == 0) items->append("");
+		if (items->count() == 0) items->append("");
 
-		for (int i = 0; i < items->size(); ++i) {
+		for (int i = 0; i < items->count(); ++i) {
 			String path = items->at(i);
 			Ref<HashSum> hashSum;
 			if (toolName->contains("sha1")) hashSum = Sha1::create();

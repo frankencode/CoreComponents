@@ -70,18 +70,18 @@ void JsonWriter::writeObject(Variant value, int depth)
 		format_ << object->className();
 		format_ << " ";
 	}
-	if (object->size() == 0) {
+	if (object->count() == 0) {
 		format_ << "{}";
 		return;
 	}
 	format_ << "{\n";
 	writeIndent(depth + 1);
-	for (int i = 0; i < object->size(); ++i) {
+	for (int i = 0; i < object->count(); ++i) {
 		String memberName = object->keyAt(i);
 		Variant memberValue = object->valueAt(i);
 		format_ << "\"" << memberName << "\": ";
 		writeValue(memberValue, depth + 1);
-		if (i < object->size() - 1) {
+		if (i < object->count() - 1) {
 			format_ << ",\n";
 			writeIndent(depth + 1);
 		}
@@ -102,14 +102,14 @@ template<class T>
 void JsonWriter::writeTypedList(Variant value, int depth)
 {
 	List<T> *list = cast< List<T> >(value);
-	if (list->size() == 0) {
+	if (list->count() == 0) {
 		format_ << "[]";
 		return;
 	}
 	format_ << "[ ";
-	for (int i = 0; i < list->size(); ++i) {
+	for (int i = 0; i < list->count(); ++i) {
 		writeValue(list->at(i), depth);
-		if (i < list->size() - 1)
+		if (i < list->count() - 1)
 			format_ << ", ";
 	}
 	format_ << " ]";

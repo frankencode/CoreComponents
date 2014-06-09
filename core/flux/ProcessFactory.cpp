@@ -93,13 +93,13 @@ Ref<Process> ProcessFactory::produce()
 		// prepare the argument list
 
 		StringList *arguments = arguments_;
-		if (arguments) if (arguments->size() == 0) arguments = 0;
+		if (arguments) if (arguments->count() == 0) arguments = 0;
 
-		int argc = arguments ? arguments->size() : 1;
+		int argc = arguments ? arguments->count() : 1;
 		argv = new char*[argc + 1];
 
 		if (arguments) {
-			for (int i = 0; i < arguments->size(); ++i)
+			for (int i = 0; i < arguments->count(); ++i)
 				argv[i] = strdup(arguments->at(i)->chars());
 		}
 		else {
@@ -112,7 +112,7 @@ Ref<Process> ProcessFactory::produce()
 		envp = 0;
 
 		if (envMap_) {
-			int n = envMap_->size();
+			int n = envMap_->count();
 			envp = new char*[n + 1];
 			for (int i = 0; i < n; ++i)
 				envp[i] = strdup(String(Format() << envMap_->keyAt(i) <<  "=" << envMap_->valueAt(i))->chars());

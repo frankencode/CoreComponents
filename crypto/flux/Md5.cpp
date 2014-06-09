@@ -25,16 +25,16 @@ Md5::Md5()
 	  a_(0x67452301), b_(0xEFCDAB89),
 	  c_(0x98BADCFE), d_(0x10325476)
 {
-	FLUX_ASSERT((aux_->size() % 64) == 0);
+	FLUX_ASSERT((aux_->count() % 64) == 0);
 }
 
 void Md5::feed(const ByteArray *data)
 {
 	const uint8_t *src = data->bytes();
-	int srcLeft = data->size();
+	int srcLeft = data->count();
 	while (srcLeft > 0) {
-		while ((auxFill_ < aux_->size()) && (srcLeft > 0)) {
-			int n = aux_->size() - auxFill_;
+		while ((auxFill_ < aux_->count()) && (srcLeft > 0)) {
+			int n = aux_->count() - auxFill_;
 			if (n > srcLeft) n = srcLeft;
 			memcpy(aux_->bytes() + auxFill_, src, n);
 			src += n;

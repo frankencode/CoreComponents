@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 			Ref<StringList> paths;
 			if (themeOption == "") paths = fluxtoki::themeList();
 			else paths = StringList::create() << themeOption;
-			for (int i = 0; i < paths->size(); ++i) {
+			for (int i = 0; i < paths->count(); ++i) {
 				Ref<Theme> theme = Theme::load(paths->at(i));
 				Ref<File> file = File::open(cssPath(theme->name()), File::Create|File::Truncate|File::WriteOnly);
 				Format format(file);
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 				throw UsageError(Format("Language \"%%\" is not supported") << languageOption);
 		}
 
-		if (items->size() == 0) {
+		if (items->count() == 0) {
 			Language *language = defaultLanguage;
 			if (!language)
 				throw UsageError("Please specify language (use -language option)");
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 		}
 		else {
 			bool verbose = out()->isatty();
-			for (int i = 0; i < items->size(); ++i) {
+			for (int i = 0; i < items->count(); ++i) {
 				String path = items->at(i);
 				String text = File::open(path)->map();
 				Language *language = defaultLanguage;

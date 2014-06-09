@@ -55,7 +55,7 @@ public:
 
 	void clear(char zero = '\0');
 
-	inline int size() const { return size_; }
+	inline int count() const { return size_; }
 
 	inline int first() const { return 0; }
 	inline int last() const { return size_ - 1; }

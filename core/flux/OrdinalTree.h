@@ -48,30 +48,6 @@ public:
 	Item item_;
 };
 
-/*class Index
-{
-public:
-	Index(int i): i_(i), tree_(0) {}
-	inline operator int() const { return i_; }
-	inline Index &operator=(int b) { i_ = b; return *this; }
-
-	inline Index &operator+=(int b) { i_ += b; return *this; }
-	inline Index &operator-=(int b) { i_ -= b; return *this; }
-	inline Index &operator*=(int b) { i_ *= b; return *this; }
-	inline Index &operator/=(int b) { i_ /= b; return *this; }
-	inline Index &operator++() { ++i_; return *this; }
-	inline Index &operator--() { --i_; return *this; }
-	inline Index operator++(int) { Index h = *this; ++i_; return h; }
-	inline Index operator--(int) { Index h = *this; --i_; return h; }
-
-private:
-	template<class> friend class OrdinalTree;
-
-	int i_, cachedIndex_;
-	void *tree_, *cachedNode_;
-	uint64_t revision_;
-};*/
-
 template<class NodeType>
 class OrdinalTree: public AvlTree<NodeType>
 {

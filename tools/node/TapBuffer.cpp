@@ -33,7 +33,7 @@ void TapBuffer::write(const ByteArray *buf)
 {
 	Ref<StringList> parts;
 	int i = 0, i0 = 0;
-	for (int n = buf->size(); i < n; ++i) {
+	for (int n = buf->count(); i < n; ++i) {
 		uint8_t ch = buf->byteAt(i);
 		if (ch <= 31 || 127 <= ch) {
 			if (!parts) parts = StringList::create();
@@ -47,8 +47,8 @@ void TapBuffer::write(const ByteArray *buf)
 			else {
 				String s = "\\xXX";
 				const char *hex = "0123456789ABCDEF";
-				s->at(s->size() - 2) = hex[ch / 16];
-				s->at(s->size() - 1) = hex[ch % 16];
+				s->at(s->count() - 2) = hex[ch / 16];
+				s->at(s->count() - 1) = hex[ch % 16];
 				parts->append(s);
 			}
 		}

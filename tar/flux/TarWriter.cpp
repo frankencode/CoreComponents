@@ -49,8 +49,8 @@ void TarWriter::writeFile(String path, FileStatus *status)
 	if (status->type() != File::Regular) contentSize = 0;
 
 	if (status->type() == File::Directory) {
-		if (path->size() > 0) {
-			if (path->at(path->size() - 1) != '/') path = path + "/";
+		if (path->count() > 0) {
+			if (path->at(path->count() - 1) != '/') path = path + "/";
 		}
 	}
 
@@ -69,7 +69,7 @@ void TarWriter::writeFile(String path, FileStatus *status)
 	headerFields->append(oct(status->groupId(), 7));
 	headerFields->append(zero_);
 	if (status == longPathStatus_ || status == longLinkStatus_)
-		headerFields->append(oct(path->size() + 1, 11));
+		headerFields->append(oct(path->count() + 1, 11));
 	else
 		headerFields->append(oct(contentSize, 11));
 	headerFields->append(zero_);
@@ -123,22 +123,22 @@ void TarWriter::writeFile(String path, FileStatus *status)
 	headerFields->append(zero_);
 
 	if (status != longPathStatus_ && status != longLinkStatus_) {
-		if (path->size() > pathField->size()) writeFile(path, longPathStatus_);
-		if (linkTarget->size() > linkField->size()) writeFile(linkTarget, longLinkStatus_);
+		if (path->count() > pathField->count()) writeFile(path, longPathStatus_);
+		if (linkTarget->count() > linkField->count()) writeFile(linkTarget, longLinkStatus_);
 	}
 
 	String header = headerFields->join();
-	FLUX_ASSERT(header->size() == 329);
+	FLUX_ASSERT(header->count() == 329);
 	unsigned checksum = tarHeaderSum(header);
 	*checksumField = *oct(checksum, 6);
 	header = headerFields->join();
 	sink_->write(header);
-	writePadding(header->size());
+	writePadding(header->count());
 
 	if (status == longPathStatus_ || status == longLinkStatus_) {
 		sink_->write(path);
 		sink_->write(zero_);
-		writePadding(path->size() + 1);
+		writePadding(path->count() + 1);
 	}
 	else if (contentSize > 0) {
 		File::open(path)->transfer(contentSize, sink_);

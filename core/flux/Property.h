@@ -52,9 +52,9 @@ public:
 	inline static Ref<Signal> create() { return new Signal; }
 
 	void emit(Value value) {
-		for (int i = 0; i < callbacks()->size(); ++i) {
+		for (int i = 0; i < callbacks()->count(); ++i) {
 			CallbackList *list = callbacks()->valueAt(i);
-			for (int j = 0; j < list->size(); ++j)
+			for (int j = 0; j < list->count(); ++j)
 				list->at(j)->invoke(value);
 		}
 	}

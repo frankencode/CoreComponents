@@ -34,7 +34,7 @@ public:
 		return walker_.getChar();
 	}
 
-	inline int size() const {
+	inline int count() const {
 		if (n_ == -1) {
 			if (!walker_.valid()) {
 				walker_ = Utf8Walker(walker_.data());
@@ -49,7 +49,7 @@ public:
 
 	Ref<ByteArray> copy(int i0, int i1) const;
 	inline Ref<ByteArray> head(int n) const { return copy(0, n); }
-	inline Ref<ByteArray> tail(int n) const { return copy(size() - n, n); }
+	inline Ref<ByteArray> tail(int n) const { return copy(count() - n, n); }
 
 	inline const char *byte(int i) const {
 		walkTo(i);
@@ -65,9 +65,6 @@ public:
 		while (walker_.pos() > pos) { --walker_; --i_; }
 		return i_;
 	}
-
-	// int find(int i, const char *pattern) const;
-	// Ref<StringList> split(const char *pattern) const;
 
 private:
 	Unicode(ByteArray *data)

@@ -19,7 +19,7 @@ int main()
 		<< "34 AA 97 3C D4 C4 DA A4 F6 1E EB 2B DB AD 27 31 65 34 01 6F"
     	<< "DE A3 56 A2 CD DD 90 C7 A7 EC ED C5 EB B5 63 93 4F 46 04 52";
 
-	for (int i = 0; i < tests->size(); ++i) {
+	for (int i = 0; i < tests->count(); ++i) {
 		Ref<Sha1> hash = Sha1::create();
 		for (int j = 0; j < repeatCount[i]; ++j) hash->feed(tests->at(i));
 		String requiredSum = results->at(i)->replace(" ", "")->downcase();

@@ -77,7 +77,7 @@ String File::name() const
 {
 	const char sep = '/';
 
-	int n = path_->size();
+	int n = path_->count();
 	int i = n - 1;
 	while (i >= 0) {
 		if (path_->at(i) == sep) {
@@ -211,8 +211,8 @@ String File::map() const
 void File::unmap(ByteArray *s)
 {
 	int pageSize = System::pageSize();
-	size_t mapSize = s->size();
-	if (s->size() % pageSize > 0) mapSize += pageSize - s->size() % pageSize;
+	size_t mapSize = s->count();
+	if (s->count() % pageSize > 0) mapSize += pageSize - s->count() % pageSize;
 	else mapSize += pageSize;
 	::munmap((void *)s->bytes(), mapSize);
 }
@@ -284,11 +284,11 @@ String File::readlink(String path)
 {
 	String buf = String(128);
 	while (true) {
-		ssize_t numBytes = ::readlink(path, buf, buf->size());
+		ssize_t numBytes = ::readlink(path, buf, buf->count());
 		if (numBytes == -1)
 			return String();
-		if (numBytes <= buf->size()) {
-			if (numBytes < buf->size())
+		if (numBytes <= buf->count()) {
+			if (numBytes < buf->count())
 				buf = String(buf->chars(), numBytes);
 			break;
 		}
@@ -315,7 +315,7 @@ String File::createUnique(String path, int mode, char placeHolder)
 	Ref<Random> random = Random::open();
 	while (true) {
 		String candidate = path->copy();
-		for (int i = 0, n = candidate->size(); i < n; ++i) {
+		for (int i = 0, n = candidate->count(); i < n; ++i) {
 			if (candidate->at(i) == placeHolder) {
 				char r = random->get(0, 61);
 				if ((0 <= r) && (r <= 9))
@@ -356,7 +356,7 @@ String File::lookup(String fileName, StringList *dirs, int accessFlags)
 		dirs = h;
 	}
 	String path;
-	for (int i = 0; i < dirs->size(); ++i) {
+	for (int i = 0; i < dirs->count(); ++i) {
 		String candidate = Format() << dirs->at(i) << "/" << fileName;
 		if (access(candidate, accessFlags)) {
 			path = candidate;

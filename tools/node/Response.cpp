@@ -64,7 +64,7 @@ void Response::writeHeader()
 
 	Format header(client_->stream());
 	header << "HTTP/1.1 " << statusCode_ << " " << reasonPhrase_ << "\r\n";
-	for (int i = 0; i < size(); ++i)
+	for (int i = 0; i < count(); ++i)
 		header << keyAt(i) << ":" << valueAt(i) << "\r\n";
 	header << "\r\n";
 

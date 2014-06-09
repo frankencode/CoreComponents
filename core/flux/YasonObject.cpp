@@ -47,7 +47,7 @@ Ref<YasonObject> YasonObject::clone()
 	Ref<YasonObject> object = produce();
 	object->YasonObject::autocomplete(this);
 	if (hasChildren()) {
-		for (int i = 0; i < children()->size(); ++i) {
+		for (int i = 0; i < children()->count(); ++i) {
 			object->children()->append(children()->at(i)->clone());
 		}
 	}
@@ -58,10 +58,10 @@ void YasonObject::autocomplete(const YasonObject *prototype)
 {
 	if (!prototype) return;
 
-	if (prototype->size() != size()) {
-		for (int i = 0; i < prototype->size(); ++i) {
+	if (prototype->count() != count()) {
+		for (int i = 0; i < prototype->count(); ++i) {
 			String name = prototype->keyAt(i);
-			if (size() <= i || keyAt(i) != name)
+			if (count() <= i || keyAt(i) != name)
 				insert(name, prototype->valueAt(i));
 		}
 	}

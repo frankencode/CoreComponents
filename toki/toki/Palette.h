@@ -42,7 +42,7 @@ public:
 	inline Style *defaultStyleByRule(int defaultRule) { return defaultStyleByRule_->value(defaultRule); }
 	inline Style *styleByRule(int rule) { return styleByRule_->value(rule); }
 
-	inline int styleCount() const { return styleByRule_->size(); }
+	inline int styleCount() const { return styleByRule_->count(); }
 	inline const Style *styleAt(int i) const { return styleByRule_->valueAt(i); }
 
 private:

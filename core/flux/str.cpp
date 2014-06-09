@@ -72,7 +72,7 @@ String fnum(float64_t x, int precision, int base, int screen)
 			}
 		}
 
-		while (digits->size() < precision) {
+		while (digits->count() < precision) {
 			int d = int(m / q);
 			digits->push(d);
 			m -= d * q;
@@ -81,7 +81,7 @@ String fnum(float64_t x, int precision, int base, int screen)
 
 		int ns = 0; // number of significiant digits
 		{
-			for (int i = 0; i < digits->size(); ++i)
+			for (int i = 0; i < digits->count(); ++i)
 				if (digits->bottom(i) != 0)
 					ns = i + 1;
 		}
@@ -110,7 +110,7 @@ String fnum(float64_t x, int precision, int base, int screen)
 			text->at(i++) = '.';
 			for (int l = 0; l < wf; ++l)
 			{
-				if (digits->size() <= k)
+				if (digits->count() <= k)
 					text->at(i++) = '0';
 				else
 					text->at(i++) = fig[digits->bottom(k++)];
@@ -136,12 +136,12 @@ String fixed(float64_t x, int nf)
 	double fp = modf(x, &ip);
 	String sip = inum(int64_t(ip));
 	if (nf <= 0) return sip;
-	String s = String(sip->size() + 1 + nf, '.');
+	String s = String(sip->count() + 1 + nf, '.');
 	*s = *sip;
 	if (fp < 0) fp = -fp;
 	for (int i = 0; i < nf; ++i) fp *= 10;
 	fp = round(fp);
-	*ByteRange(s, sip->size() + 1, s->size()) = *right(inum(uint64_t(fp)), nf, '0');
+	*ByteRange(s, sip->count() + 1, s->count()) = *right(inum(uint64_t(fp)), nf, '0');
 	return s;
 }
 
@@ -162,14 +162,14 @@ String str(void *x)
 
 String left(const String &s, int w, char blank)
 {
-	if (s->size() > w) return s;
-	else return s + String(w - s->size(), blank);
+	if (s->count() > w) return s;
+	else return s + String(w - s->count(), blank);
 }
 
 String right(const String &s, int w, char blank)
 {
-	if (s->size() > w) return s;
-	else return String(w - s->size(), blank) + s;
+	if (s->count() > w) return s;
+	else return String(w - s->count(), blank) + s;
 }
 
 } // namespace flux

@@ -58,7 +58,7 @@ void testData(YasonObject *object)
 			"******\n"
 		)
 	);
-	check(object->children()->size() == 2);
+	check(object->children()->count() == 2);
 	check(String(object->children()->at(0)->value("name")) == "Jane");
 	check(String(object->children()->at(1)->value("name")) == "John");
 }

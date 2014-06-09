@@ -96,7 +96,7 @@ int SystemStream::read(ByteArray *data)
 {
 	ssize_t ret = 0;
 	while (true) {
-		ret = ::read(fd_, data->bytes(), data->size());
+		ret = ::read(fd_, data->bytes(), data->count());
 		if (ret == -1) {
 			if (errno == EINTR) throw Interrupt();
 			if (errno == EWOULDBLOCK) throw Timeout();
@@ -112,7 +112,7 @@ void SystemStream::write(const ByteArray *data)
 {
 	const unsigned char *p = data->bytes();
 
-	for (int n = data->size(); n > 0;)
+	for (int n = data->count(); n > 0;)
 	{
 		ssize_t ret = ::write(fd_, p, n);
 		if (ret == -1) {
@@ -132,17 +132,17 @@ void SystemStream::write(const StringList *parts)
 		write(parts->join());
 		return;
 	}
-	int n = parts->size();
+	int n = parts->count();
 	if (n <= 0) return;
 	Ref< Array<struct iovec> > iov = Array<struct iovec>::create(n);
 	for (int i = 0; i < n; ++i) {
 		ByteArray *part = parts->at(i);
 		iov->at(i).iov_base = part->bytes();
-		iov->at(i).iov_len = part->size();
+		iov->at(i).iov_len = part->count();
 	}
 	if (iovMax_ == 0) iovMax_ = sysconf(_SC_IOV_MAX);
-	for (int i = 0; i < iov->size();) {
-		int n = iov->size() - i;
+	for (int i = 0; i < iov->count();) {
+		int n = iov->count() - i;
 		if (n > iovMax_) n = iovMax_;
 		ssize_t ret = ::writev(fd_, iov->constData() + i, n);
 		if (ret == -1) {

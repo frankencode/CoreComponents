@@ -82,13 +82,13 @@ inline void ByteSink::flush()
 
 inline void ByteSink::write(ByteArray *bytes)
 {
-	for (int i = 0, n = bytes->size(); i < n; ++i)
+	for (int i = 0, n = bytes->count(); i < n; ++i)
 		write(bytes->at(i));
 }
 
 inline void ByteSink::writeUInt8(uint8_t x)
 {
-	if (i_ == buf_->size()) flush();
+	if (i_ == buf_->count()) flush();
 	buf_->at(i_++) = x;
 }
 

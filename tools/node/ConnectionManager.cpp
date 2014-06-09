@@ -31,16 +31,16 @@ ConnectionManager::ConnectionManager(int serviceWindow)
 
 void ConnectionManager::cycle()
 {
-	for (int i = 0, n = closedConnections_->size(); i < n; ++i) {
+	for (int i = 0, n = closedConnections_->count(); i < n; ++i) {
 		Ref<Visit> visit = closedConnections_->pop();
 		visits_->append(visit);
 	}
 
-	if (visits_->size() > 0)
+	if (visits_->count() > 0)
 	{
 		double t1 = System::now() - serviceWindow_;
 
-		while (visits_->size() > 0)
+		while (visits_->count() > 0)
 		{
 			if (visits_->at(0)->departureTime() >= t1) break;
 

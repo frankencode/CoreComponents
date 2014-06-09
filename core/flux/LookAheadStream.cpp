@@ -42,7 +42,7 @@ int LookAheadStream::read(ByteArray *data)
 	}
 
 	if (i_ < m_) {
-		int i1 = i_ + data->size();
+		int i1 = i_ + data->count();
 		if (i1 > m_) i1 = m_;
 		*data = *ByteRange(window_, i_, i1);
 		int n = i1 - i_;
@@ -52,7 +52,7 @@ int LookAheadStream::read(ByteArray *data)
 
 	if (done_) return source_->read(data);
 
-	int r = data->size();
+	int r = data->count();
 	if (m_ + r > w_) r = w_ - m_;
 	int n = source_->read(ByteRange(data, 0, r));
 	if (n == 0) return 0;

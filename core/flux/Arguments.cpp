@@ -62,7 +62,7 @@ Arguments::Arguments(int argc, char **argv)
 
 void Arguments::validate(VariantMap *prototype) const
 {
-	for (int i = 0; i < options_->size(); ++i)
+	for (int i = 0; i < options_->count(); ++i)
 	{
 		String name = options_->keyAt(i);
 		Variant value = options_->valueAt(i);
@@ -80,7 +80,7 @@ void Arguments::validate(VariantMap *prototype) const
 
 void Arguments::override(VariantMap *config) const
 {
-	for (int i = 0; i < options_->size(); ++i)
+	for (int i = 0; i < options_->count(); ++i)
 	{
 		String name = options_->keyAt(i);
 		Variant value = options_->valueAt(i);

@@ -40,17 +40,17 @@ int TransferLimiter::read(ByteArray *buf)
 
 void TransferLimiter::write(const ByteArray *buf)
 {
-	if (writeLimit_ > 0 && totalWritten_ + buf->size() > writeLimit_)
+	if (writeLimit_ > 0 && totalWritten_ + buf->count() > writeLimit_)
 		throw WriteLimitExceeded();
 	write(buf);
-	totalWritten_ += buf->size();
+	totalWritten_ += buf->count();
 }
 
 void TransferLimiter::write(const StringList *parts)
 {
 	size_t h = 0;
-	for (int i = 0, n = parts->size(); i < n; ++i)
-		h += parts->at(i)->size();
+	for (int i = 0, n = parts->count(); i < n; ++i)
+		h += parts->at(i)->count();
 	if (totalWritten_ + h > writeLimit_) throw WriteLimitExceeded();
 	write(parts);
 	totalWritten_ += h;

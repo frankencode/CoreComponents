@@ -37,8 +37,8 @@ public:
 		}
 	}
 
-	inline int maxSize() const { return size_; }
-	inline int size() const { return fill_; }
+	inline int maxCount() const { return size_; }
+	inline int count() const { return fill_; }
 
 	inline bool has(int i) const { return (0 <= i) && (i < fill_); }
 	inline T &at(int i) const { return bottom(i); }

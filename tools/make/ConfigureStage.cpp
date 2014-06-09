@@ -21,19 +21,19 @@ bool ConfigureStage::run()
 	if (complete_) return success_;
 	complete_ = true;
 
-	for (int i = 0; i < plan()->prerequisites()->size(); ++i) {
+	for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
 		if (!plan()->prerequisites()->at(i)->configureStage()->run())
 			return success_ = false;
 	}
 
 	if (!plan()->systemPrerequisitesByName()) return success_ = true;
 
-	for (int i = 0; i < plan()->systemPrerequisitesByName()->size(); ++i)
+	for (int i = 0; i < plan()->systemPrerequisitesByName()->count(); ++i)
 	{
 		String name = plan()->systemPrerequisitesByName()->keyAt(i);
 		SystemPrerequisiteList *prerequisiteList = plan()->systemPrerequisitesByName()->valueAt(i);
 
-		for (int j = 0; j < prerequisiteList->size(); ++j)
+		for (int j = 0; j < prerequisiteList->count(); ++j)
 		{
 			SystemPrerequisite *prerequisite = prerequisiteList->at(j);
 			String includePath;
@@ -65,27 +65,27 @@ bool ConfigureStage::run()
 
 bool ConfigureStage::findIncludePath(SystemPrerequisite *prerequisite, String *includePath)
 {
-	for (int i = 0; i < prerequisite->includePaths()->size(); ++i) {
+	for (int i = 0; i < prerequisite->includePaths()->count(); ++i) {
 		String path = prerequisite->includePaths()->at(i);
 		if (!path->isAbsolutePath()) path = "/usr/include/" + path;
 		if (!Dir::exists(path)) continue;
 		int j = 0;
-		for (; j < prerequisite->testIncludes()->size(); ++j) {
+		for (; j < prerequisite->testIncludes()->count(); ++j) {
 			String checkPath = path + "/" + prerequisite->testIncludes()->at(j);
 			if (!File::exists(checkPath)) break;
 		}
-		if (j == prerequisite->testIncludes()->size()) {
+		if (j == prerequisite->testIncludes()->count()) {
 			*includePath = path;
 			return true;
 		}
 	}
 	*includePath = "";
-	return prerequisite->includePaths()->size() == 0;
+	return prerequisite->includePaths()->count() == 0;
 }
 
 bool ConfigureStage::findLibraryPath(SystemPrerequisite *prerequisite, String *libraryPath)
 {
-	for (int i = 0; i < prerequisite->libraryPaths()->size(); ++i) {
+	for (int i = 0; i < prerequisite->libraryPaths()->count(); ++i) {
 		String path = prerequisite->libraryPaths()->at(i);
 		if (!Dir::exists(path)) continue;
 		if (plan()->toolChain()->linkTest(plan(), path, prerequisite->testLibraries())) {
@@ -94,7 +94,7 @@ bool ConfigureStage::findLibraryPath(SystemPrerequisite *prerequisite, String *l
 		}
 	}
 	*libraryPath = "";
-	return prerequisite->libraryPaths()->size() == 0;
+	return prerequisite->libraryPaths()->count() == 0;
 }
 
 } // namespace fluxmake

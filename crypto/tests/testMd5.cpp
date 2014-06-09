@@ -23,7 +23,7 @@ int main()
 		<< "d174ab98d277d9f5a5611c2c9f419d9f"
 		<< "57edf4a22be3c955ac49da2e2107b67a";
 
-	for (int i = 0; i < tests->size(); ++i) {
+	for (int i = 0; i < tests->count(); ++i) {
 		String requiredSum = results->at(i);
 		String sum = md5(tests->at(i))->hex();
 		fout("MD5 of \"%%\":") << tests->at(i) << nl;

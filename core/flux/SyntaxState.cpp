@@ -25,8 +25,8 @@ SyntaxState::SyntaxState(const DefinitionNode *definition, int numFlags, int num
 	  finalize_(false)
 {
 	if (!tokenFactory_) tokenFactory_ = new TokenFactory;
-	for (int i = 0; i < flags_->size(); ++i) flags_->at(i) =  false;
-	for (int i = 0; i < captures_->size(); ++i) captures_->at(i) = Range::create();
+	for (int i = 0; i < flags_->count(); ++i) flags_->at(i) =  false;
+	for (int i = 0; i < captures_->count(); ++i) captures_->at(i) = Range::create();
 }
 
 Token *SyntaxState::produceToken(int scope, int rule, const char *scopeName, const char *ruleName)

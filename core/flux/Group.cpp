@@ -22,7 +22,7 @@ Group::Group(gid_t id)
 	struct group space;
 	memclr(&space, sizeof(struct group));
 	struct group *entry = 0;
-	int ret = ::getgrgid_r(id, &space, buf->chars(), buf->size(), &entry);
+	int ret = ::getgrgid_r(id, &space, buf->chars(), buf->count(), &entry);
 	if ((!entry) && ret == 0) ret = ENOENT;
 	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 	load(entry);
@@ -36,7 +36,7 @@ Group::Group(const char *name)
 	struct group space;
 	memclr(&space, sizeof(struct group));
 	struct group *entry = 0;
-	int ret = ::getgrnam_r(name, &space, buf->chars(), buf->size(), &entry);
+	int ret = ::getgrnam_r(name, &space, buf->chars(), buf->count(), &entry);
 	if ((!entry) && ret == 0) ret = ENOENT;
 	if (ret != 0) FLUX_SYSTEM_RESOURCE_ERROR(ret, name);
 	load(entry);

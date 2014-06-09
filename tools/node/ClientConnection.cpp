@@ -91,7 +91,7 @@ Ref<Request> ClientConnection::scanRequest()
 			request->method_ = line->copy(i0, i1);
 			i0 = i1 + 1; i1 = line->find(' ', i0);
 			request->target_ = line->copy(i0, i1);
-			request->version_ = line->copy(i1 + 1, line->size());
+			request->version_ = line->copy(i1 + 1, line->count());
 		}
 
 		if (request->version_ != "HTTP/1.1") throw UnsupportedVersion();
@@ -114,9 +114,9 @@ Ref<Request> ClientConnection::scanRequest()
 				multiValue = 0;
 			}
 			int i = line->find(':');
-			if (i == line->size()) throw BadRequest();
+			if (i == line->count()) throw BadRequest();
 			name = line->copy(0, i)->trimInsitu();
-			value = line->copy(i + 1, line->size())->trimInsitu();
+			value = line->copy(i + 1, line->count())->trimInsitu();
 			request->establish(name, value);
 		}
 		if (multiValue)

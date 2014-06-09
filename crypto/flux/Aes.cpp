@@ -242,10 +242,10 @@ inline uint8_t rCon(int i)
 
 Ref<ByteArray> keyExpansion(ByteArray *key, int Nr)
 {
-	if (Nr <= 0) Nr = numRounds(key->size() / 4);
+	if (Nr <= 0) Nr = numRounds(key->count() / 4);
 	Ref<ByteArray> w = ByteArray::create(Ns * (Nr + 1));
 
-	const int Nk = key->size() / 4;
+	const int Nk = key->count() / 4;
 	int i = 0;
 
 	for (; i < Nk; ++i) {
@@ -258,7 +258,7 @@ Ref<ByteArray> keyExpansion(ByteArray *key, int Nr)
 			);
 	}
 
-	for (; i < w->size() / 4; ++i) {
+	for (; i < w->count() / 4; ++i) {
 		uint32_t h = w->wordAt(i - 1);
 		if (i % Nk == 0)
 			h = subWord(rotWord(h)) ^ rCon(i / Nk);
@@ -276,18 +276,18 @@ using namespace aes;
 
 Aes::Aes(ByteArray *key)
 	: BlockCipher(16),
-	  Nk_(key->size() / 4),
+	  Nk_(key->count() / 4),
 	  Nr_(numRounds(Nk_)),
 	  s_(ByteArray::create(Ns)),
 	  w_(keyExpansion(key, Nr_))
 {
-	FLUX_ASSERT(key && (key->size() == 16 || key->size() == 24 || key->size() == 32));
+	FLUX_ASSERT(key && (key->count() == 16 || key->count() == 24 || key->count() == 32));
 }
 
 void Aes::encode(ByteArray *p, ByteArray *c)
 {
-	FLUX_ASSERT(p && p->size() == Ns);
-	FLUX_ASSERT(c && c->size() == Ns);
+	FLUX_ASSERT(p && p->count() == Ns);
+	FLUX_ASSERT(c && c->count() == Ns);
 
 	*s_ = *p;
 
@@ -309,8 +309,8 @@ void Aes::encode(ByteArray *p, ByteArray *c)
 
 void Aes::decode(ByteArray *c, ByteArray *p)
 {
-	FLUX_ASSERT(c && c->size() == Ns);
-	FLUX_ASSERT(p && p->size() == Ns);
+	FLUX_ASSERT(c && c->count() == Ns);
+	FLUX_ASSERT(p && p->count() == Ns);
 
 	*s_ = *c;
 

@@ -58,7 +58,7 @@ private:
 		  buf_(buf),
 		  endian_(endian),
 		  i_(0),
-		  n_(stream_ ? 0 : buf->size())
+		  n_(stream_ ? 0 : buf->count())
 	{
 		if (!buf_) buf_ = ByteArray::allocate(0x4000);
 	}
@@ -79,7 +79,7 @@ inline bool ByteSource::read(uint8_t *x)
 
 inline void ByteSource::read(ByteArray *bytes)
 {
-	for (int i = 0, n = bytes->size(); i < n; ++i)
+	for (int i = 0, n = bytes->count(); i < n; ++i)
 		bytes->at(i) = readUInt8();
 }
 

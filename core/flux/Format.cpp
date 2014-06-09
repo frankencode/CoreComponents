@@ -29,8 +29,8 @@ Format::Format(String pattern, Stream *stream)
 		int i1 = pattern->find("%%", i0);
 		if (i0 < i1)
 			get()->append(pattern->copy(i0, i1));
-		if (i1 == pattern->size()) break;
-		int j = get()->size() + n;
+		if (i1 == pattern->count()) break;
+		int j = get()->count() + n;
 		if (!placeHolder_) placeHolder_ = Queue<int>::create();
 		placeHolder_->push(j);
 		++n;
@@ -53,7 +53,7 @@ Format::~Format()
 void Format::flush()
 {
 	if (isNull_) return;
-	if (stream_ && get()->size() > 0) {
+	if (stream_ && get()->count() > 0) {
 		stream_->write(get());
 		get()->clear();
 	}
@@ -78,9 +78,9 @@ Format &Format::operator=(const Format &b)
 Format &Format::operator<<(const String &s)
 {
 	if (isNull_) return *this;
-	int j = get()->size();
+	int j = get()->count();
 	if (placeHolder_) {
-		if (placeHolder_->size() > 0)
+		if (placeHolder_->count() > 0)
 			j = placeHolder_->pop();
 	}
 	get()->insert(j, s);

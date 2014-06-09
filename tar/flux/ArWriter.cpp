@@ -69,7 +69,7 @@ void ArWriter::writeFile(String path)
 	headerFields->append(magic);
 
 	String header = headerFields->join();
-	FLUX_ASSERT(header->size() == 60);
+	FLUX_ASSERT(header->count() == 60);
 	sink_->write(header);
 	file->transfer(contentSize, sink_);
 

@@ -37,7 +37,7 @@ String MediaTypeDatabase::lookup(String path, String content) const
 {
 	String value;
 	if (path != "") {
-		String suffix = path->copy(path->find('.'), path->size());
+		String suffix = path->copy(path->find('.'), path->count());
 		if (suffix != "") {
 			if (mediaTypeByPathSuffix_->lookup(suffix, &value, false))
 				return value;

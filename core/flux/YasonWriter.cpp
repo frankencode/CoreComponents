@@ -65,7 +65,7 @@ void YasonWriter::writeList(Variant value, int depth)
 
 bool YasonWriter::isIdentifier(String name) const
 {
-	for (int i = 0, n = name->size(); i < n; ++i) {
+	for (int i = 0, n = name->count(); i < n; ++i) {
 		char ch = name->at(i);
 		if (!(
 			(('a' <= ch) && (ch <= 'z')) ||
@@ -90,13 +90,13 @@ void YasonWriter::writeObject(Variant value, int depth)
 		format_ << object->className();
 		format_ << " ";
 	}
-	if (object->size() == 0 && !object->hasChildren()) {
+	if (object->count() == 0 && !object->hasChildren()) {
 		format_ << "{}";
 		return;
 	}
 	format_ << "{\n";
 	writeIndent(depth + 1); // FIXME: having an "IndentStream" would be nice
-	for (int i = 0; i < object->size(); ++i) {
+	for (int i = 0; i < object->count(); ++i) {
 		String memberName = object->keyAt(i);
 		Variant memberValue = object->valueAt(i);
 		if (isIdentifier(memberName))
@@ -105,16 +105,16 @@ void YasonWriter::writeObject(Variant value, int depth)
 			format_ << "\"" << memberName << "\": ";
 		writeValue(memberValue, depth + 1);
 		format_ << "\n";
-		if (i < object->size() - 1)
+		if (i < object->count() - 1)
 			writeIndent(depth + 1);
 	}
 	if (object->hasChildren()) {
-		if (object->size() > 0) writeIndent(depth + 1);
+		if (object->count() > 0) writeIndent(depth + 1);
 		YasonObjectList *children = object->children();
-		for (int i = 0; i < children->size(); ++i) {
+		for (int i = 0; i < children->count(); ++i) {
 			writeObject(children->at(i), depth + 1);
 			format_ << "\n";
-			if (i < children->size() -1)
+			if (i < children->count() -1)
 				writeIndent(depth + 1);
 		}
 	}
@@ -131,14 +131,14 @@ template<class T>
 void YasonWriter::writeTypedList(Variant value, int depth)
 {
 	List<T> *list = cast< List<T> >(value);
-	if (list->size() == 0) {
+	if (list->count() == 0) {
 		format_ << "[]";
 		return;
 	}
 	format_ << "[ ";
-	for (int i = 0; i < list->size(); ++i) {
+	for (int i = 0; i < list->count(); ++i) {
 		writeValue(list->at(i), depth);
-		if (i < list->size() - 1)
+		if (i < list->count() - 1)
 			format_ << ", ";
 	}
 	format_ << " ]";

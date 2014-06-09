@@ -24,7 +24,7 @@ public:
 		{
 			Format echo = chunk();
 			echo << request->method() << " " << request->target() << " " << request->version() << "\r\n";
-			for (int i = 0; i < request->size(); ++i)
+			for (int i = 0; i < request->count(); ++i)
 				echo << request->keyAt(i) << ": " << request->valueAt(i) << "\r\n";
 			echo << "\r\n";
 		}

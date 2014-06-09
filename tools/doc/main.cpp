@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 		Ref<Document> defaultDocument;
 		if (defaultSourcePath != "") defaultDocument = Document::load(defaultSourcePath);
 
-		for (int i = 0; i < items->size(); ++i) {
+		for (int i = 0; i < items->count(); ++i) {
 			String designPath = items->at(i);
 			Ref<Design> design = yason::parse(File::open(designPath)->map(), registry()->designProtocol());
 			arguments->validate(design);

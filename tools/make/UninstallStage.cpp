@@ -20,7 +20,7 @@ bool UninstallStage::run()
 
 	if (plan()->options() & BuildPlan::Tests) return success_ = true;
 
-	for (int i = 0; i < plan()->prerequisites()->size(); ++i) {
+	for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
 		if (!plan()->prerequisites()->at(i)->uninstallStage()->run())
 			return success_ = false;
 	}
@@ -28,7 +28,7 @@ bool UninstallStage::run()
 	if (plan()->options() & BuildPlan::Package) return success_ = true;
 
 	if (plan()->options() & BuildPlan::Tools) {
-		for (int i = 0; i < plan()->modules()->size(); ++i) {
+		for (int i = 0; i < plan()->modules()->count(); ++i) {
 			if (!toolChain()->uninstall(plan(), plan()->modules()->at(i)))
 				return success_ = false;
 		}

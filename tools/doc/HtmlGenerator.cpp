@@ -56,9 +56,9 @@ public:
 	virtual void write(Format &sink, Element *element) {
 		ListElement *list = cast<ListElement>(element);
 		if (!list->hasChildren()) return;
-		if (list->children()->size() == 0) return;
+		if (list->children()->count() == 0) return;
 		sink << "<ul>" << nl;
-		for (int i = 0; i < list->children()->size(); ++i) {
+		for (int i = 0; i < list->children()->count(); ++i) {
 			ItemElement *item = cast<ItemElement>(list->children()->at(i));
 			sink << "<li>" << item->text();
 			if (item->hasChildren()) {
@@ -123,7 +123,7 @@ void HtmlGenerator::run(Design *design, Document *document)
 	sink << "</header>" << nl;
 
 	ElementList *elements = document->elements();
-	for (int i = 0; i < elements->size(); ++i) {
+	for (int i = 0; i < elements->count(); ++i) {
 		Element *element = elements->at(i);
 		Ref<HtmlWriter> writer;
 		if (!writerMap_->lookup(element->className(), &writer)) continue;

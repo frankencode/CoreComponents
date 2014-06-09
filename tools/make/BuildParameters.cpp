@@ -32,7 +32,7 @@ void BuildParameters::read(YasonObject *object, BuildPlan *plan)
 	if (!customLinkFlags_) customLinkFlags_ = StringList::create();
 
 	if (object->hasChildren()) {
-		for (int i = 0; i < object->children()->size(); ++i) {
+		for (int i = 0; i < object->children()->count(); ++i) {
 			YasonObject *child = object->children()->at(i);
 			if (child->className() == "Debug") {
 				if (plan->options() && BuildPlan::Debug) readSpecific(child);

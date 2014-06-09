@@ -43,7 +43,7 @@ void testEmailValidation()
 		<< false
 		<< true;
 
-	for (int i = 0; i < address->size(); ++i) {
+	for (int i = 0; i < address->count(); ++i) {
 		bool valid = pattern->match(address->at(i))->valid();
 		fout() << i << ": \"" << address->at(i) << "\": " << valid << nl;
 		check(valid == result->at(i));
@@ -78,7 +78,7 @@ void testGlobbing()
 		<< true
 		<< true;
 
-	for (int i = 0; i < path->size(); ++i) {
+	for (int i = 0; i < path->count(); ++i) {
 		bool valid = pattern->match(path->at(i))->valid();
 		fout() << i << ": \"" << path->at(i) << "\": " << valid << nl;
 		check(valid == result->at(i));

@@ -42,7 +42,7 @@ public:
 	inline T pop(T *item) { return popFront(item); }
 	inline T pop() { return popFront(); }
 
-	inline int size() const { return size_; }
+	inline int count() const { return size_; }
 	inline T front() { return readQueue()->front(); }
 
 private:
@@ -66,14 +66,14 @@ private:
 	inline Ref< Queue<T> > outputQueue()
 	{
 		--size_;
-		typename QueueByPriority::Item pair = queueByPriority_->at(queueByPriority_->size() - 1);
-		if (pair->value()->size() == 1) queueByPriority_->remove(pair->key());
+		typename QueueByPriority::Item pair = queueByPriority_->at(queueByPriority_->count() - 1);
+		if (pair->value()->count() == 1) queueByPriority_->remove(pair->key());
 		return pair->value();
 	}
 
 	inline Queue<T> *readQueue() const
 	{
-		return queueByPriority_->valueAt(queueByPriority_->size() - 1);
+		return queueByPriority_->valueAt(queueByPriority_->count() - 1);
 	}
 
 	typedef Map<int, Ref< Queue<T> > > QueueByPriority;
