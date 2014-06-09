@@ -11,7 +11,7 @@ int main()
 
 	list = list->sort();
 
-	for (int i = 0; i < list->size(); ++i)
+	for (int i = 0; i < list->count(); ++i)
 		fout() << list->at(i) << nl;
 
 	return 0;

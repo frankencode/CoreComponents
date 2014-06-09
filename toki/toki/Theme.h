@@ -28,7 +28,7 @@ public:
 		return paletteByScope_->lookup(scope, palette);
 	}
 
-	inline int paletteCount() const { return paletteByScope_->size(); }
+	inline int paletteCount() const { return paletteByScope_->count(); }
 	inline const Palette *paletteAt(int i) const { return paletteByScope_->valueAt(i); }
 
 private:

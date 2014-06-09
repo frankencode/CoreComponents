@@ -35,7 +35,7 @@ WorkerPool::WorkerPool(ServiceInstance *serviceInstance, ClosedConnections *clos
 
 	Ref<ThreadFactory> threadFactory = ThreadFactory::create();
 
-	for (int i = 0; i < serviceWorkers_->size(); ++i) {
+	for (int i = 0; i < serviceWorkers_->count(); ++i) {
 		Ref<ServiceWorker> worker = ServiceWorker::create(serviceInstance_, closedConnections_);
 		serviceWorkers_->at(i) = worker;
 		threadFactory->start(worker);
@@ -49,21 +49,21 @@ WorkerPool::~WorkerPool()
 
 void WorkerPool::dispatch(ClientConnection *client)
 {
-	for (int i = 0; i < serviceWorkers_->size(); ++i) {
+	for (int i = 0; i < serviceWorkers_->count(); ++i) {
 		ServiceWorker *worker = serviceWorkers_->at(i);
-		if (worker->pendingConnections()->size() == 0) {
+		if (worker->pendingConnections()->count() == 0) {
 			worker->pendingConnections()->push(client, client->priority());
 			return;
 		}
 	}
 
 	ServiceWorker *workerCandidate = serviceWorkers_->at(0);
-	int minPending = workerCandidate->pendingConnections()->size();
-	for (int i = 1; i < serviceWorkers_->size(); ++i) {
+	int minPending = workerCandidate->pendingConnections()->count();
+	for (int i = 1; i < serviceWorkers_->count(); ++i) {
 		ServiceWorker *worker = serviceWorkers_->at(i);
-		if (worker->pendingConnections()->size() < minPending) {
+		if (worker->pendingConnections()->count() < minPending) {
 			workerCandidate = worker;
-			minPending = worker->pendingConnections()->size();
+			minPending = worker->pendingConnections()->count();
 		}
 	}
 

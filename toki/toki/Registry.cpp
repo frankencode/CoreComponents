@@ -27,18 +27,18 @@ bool Registry::detectLanguage(String path, String text, Language **language) con
 	typedef List<Language *> Candidates;
 	Ref<Candidates> candidates = Candidates::create();
 
-	for (int i = 0; i < languageByName_->size(); ++i) {
+	for (int i = 0; i < languageByName_->count(); ++i) {
 		Language *candidate = languageByName_->valueAt(i);
 		if (candidate->pathPattern()->match(path)->valid())
 			candidates->append(candidate);
 	}
 
-	if (candidates->size() == 1) {
+	if (candidates->count() == 1) {
 		*language = candidates->at(0);
 		return true;
 	}
 
-	for (int i = 0; i < candidates->size(); ++i) {
+	for (int i = 0; i < candidates->count(); ++i) {
 		Language *candidate = candidates->at(i);
 		if (candidate->discoverySyntax()) {
 			if (candidate->discoverySyntax()->match(text)->valid()) {

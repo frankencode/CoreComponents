@@ -59,12 +59,12 @@ Sha1::Sha1()
 
 void Sha1::feed(const ByteArray *data)
 {
-	for (int i = 0; i < data->size(); ++i) {
+	for (int i = 0; i < data->count(); ++i) {
 		uint8_t b = data->byteAt(i);
 		m_->byteAt(j_++) = b;
 		if (j_ == 64) consume();
 	}
-	l_ += uint64_t(data->size()) * 8;
+	l_ += uint64_t(data->count()) * 8;
 }
 
 Ref<ByteArray> Sha1::finish()

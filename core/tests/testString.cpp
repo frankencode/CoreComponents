@@ -9,13 +9,13 @@ int main()
 	{
 		String s = "Übertragung";
 		fout("s = \"%%\"\n") << s;
-		fout("Unicode::open(s)->count() = %%\n") << Unicode::open(s)->size();
-		fout("s->size() = %%\n") << s->size();
+		fout("Unicode::open(s)->count() = %%\n") << Unicode::open(s)->count();
+		fout("s->size() = %%\n") << s->count();
 		fout("s->copy() = \"%%\"\n") << s->copy();
 
 		Ref<StringList> parts = s->split("a");
 		fout("s.split(\"a\") = [\n");
-		for (int i = 0; i < parts->size(); ++i)
+		for (int i = 0; i < parts->count(); ++i)
 			fout("  \"%%\"\n") << parts->at(i);
 		fout("]\n");
 	}
@@ -25,7 +25,7 @@ int main()
 		fout("s->find(\"/\") = %%\n") << s->find("/");
 		Ref<StringList> parts = s->split("/");
 		fout("s.split(\"/\") = [\n");
-		for (int i = 0; i < parts->size(); ++i)
+		for (int i = 0; i < parts->count(); ++i)
 			fout("  \"%%\"\n") << parts->at(i);
 		fout("]\n");
 	}

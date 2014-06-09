@@ -19,7 +19,7 @@ bool CleanStage::run()
 	if (complete_) return success_;
 	complete_ = true;
 
-	for (int i = 0; i < plan()->prerequisites()->size(); ++i) {
+	for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
 		if (!plan()->prerequisites()->at(i)->cleanStage()->run())
 			return success_ = false;
 	}

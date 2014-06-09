@@ -132,7 +132,7 @@ bool GnuToolChain::link(BuildPlan *plan)
 
 	args << "-o" << linkName(plan);
 
-	for (int i = 0; i < modules->size(); ++i)
+	for (int i = 0; i < modules->count(); ++i)
 		args << modules->at(i)->modulePath();
 
 	appendLinkOptions(args, plan);
@@ -159,7 +159,7 @@ bool GnuToolChain::linkTest(BuildPlan *plan, String linkPath, StringList *linkTe
 	src->close();
 	Format args;
 	args << compiler() << src->path() << "-L" + linkPath;
-	for (int i = 0; i < linkTest->size(); ++i) args << "-l" + linkTest->at(i);
+	for (int i = 0; i < linkTest->count(); ++i) args << "-l" + linkTest->at(i);
 	args << "-o" + src->path() + "_";
 
 	String command = args->join(" ");
@@ -188,13 +188,13 @@ bool GnuToolChain::install(BuildPlan *plan)
 		createLibrarySymlinks(plan, product);
 	}
 
-	if (options & BuildPlan::Application && plan->alias()->size() > 0) {
+	if (options & BuildPlan::Application && plan->alias()->count() > 0) {
 		CwdGuard guard(installPrefix);
 		createAliasSymlinks(plan, product);
 	}
 
-	if (plan->bundle()->size() > 0) {
-		for (int i = 0; i < plan->bundle()->size(); ++i) {
+	if (plan->bundle()->count() > 0) {
+		for (int i = 0; i < plan->bundle()->count(); ++i) {
 			String relativePath = plan->bundle()->at(i);
 			plan->shell()->install(relativePath, bundlePrefix(plan)->expandPath(relativePath));
 		}
@@ -228,7 +228,7 @@ bool GnuToolChain::uninstall(BuildPlan *plan)
 		cleanLibrarySymlinks(plan, product);
 	}
 
-	if (options & BuildPlan::Application && plan->alias()->size() > 0) {
+	if (options & BuildPlan::Application && plan->alias()->count() > 0) {
 		CwdGuard guard(installPrefix);
 		cleanAliasSymlinks(plan, product);
 	}
@@ -243,7 +243,7 @@ bool GnuToolChain::uninstall(BuildPlan *plan, Module *module)
 
 void GnuToolChain::clean(BuildPlan *plan)
 {
-	for (int i = 0; i < plan->modules()->size(); ++i) {
+	for (int i = 0; i < plan->modules()->count(); ++i) {
 		plan->shell()->unlink(plan->modules()->at(i)->modulePath());
 		if (plan->options() & BuildPlan::Tools)
 			plan->shell()->unlink(plan->modules()->at(i)->toolName());
@@ -278,37 +278,37 @@ void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan)
 	if (plan->options() & BuildPlan::Library) args << "-fPIC";
 	else args << "-fPIE";
 	args << "-Wall" << "-pthread" << "-pipe";
-	if (plan->bundle()->size() > 0)
+	if (plan->bundle()->count() > 0)
 		args << "-DFLUXMAKE_BUNDLE_PREFIX=" + bundlePrefix(plan);
 	if (plan->customCompileFlags()) {
-		for (int i = 0; i < plan->customCompileFlags()->size(); ++i)
+		for (int i = 0; i < plan->customCompileFlags()->count(); ++i)
 			args << plan->customCompileFlags()->at(i);
 	}
-	for (int i = 0; i < plan->includePaths()->size(); ++i)
+	for (int i = 0; i < plan->includePaths()->count(); ++i)
 		args << "-I" + plan->includePaths()->at(i);
 }
 
 void GnuToolChain::appendLinkOptions(Format args, BuildPlan *plan)
 {
 	if (plan->customLinkFlags()) {
-		for (int i = 0; i < plan->customLinkFlags()->size(); ++i)
+		for (int i = 0; i < plan->customLinkFlags()->count(); ++i)
 			args << plan->customLinkFlags()->at(i);
 	}
 
 	StringList *libraryPaths = plan->libraryPaths();
 	StringList *libraries = plan->libraries();
 
-	for (int i = 0; i < libraryPaths->size(); ++i)
+	for (int i = 0; i < libraryPaths->count(); ++i)
 		args << "-L" + libraryPaths->at(i);
 
-	for (int i = 0; i < libraries->size(); ++i)
+	for (int i = 0; i < libraries->count(); ++i)
 		args << "-l" + libraries->at(i);
 
 	if (plan->containsCPlusPlus()) args << "-lstdc++";
 
-	if (libraryPaths->size() > 0) {
+	if (libraryPaths->count() > 0) {
 		Ref<StringList> rpaths = StringList::create();
-		for (int i = 0; i < libraryPaths->size(); ++i)
+		for (int i = 0; i < libraryPaths->count(); ++i)
 			*rpaths << "-rpath=" + libraryPaths->at(i)->absolutePath();
 		args << "-Wl,--enable-new-dtags," + rpaths->join(",");
 	}
@@ -334,13 +334,13 @@ void GnuToolChain::createAliasSymlinks(BuildPlan *plan, String appName)
 {
 	cleanAliasSymlinks(plan, appName);
 
-	for (int i = 0; i < plan->alias()->size(); ++i)
+	for (int i = 0; i < plan->alias()->count(); ++i)
 		plan->shell()->symlink(appName, plan->alias()->at(i));
 }
 
 void GnuToolChain::cleanAliasSymlinks(BuildPlan *plan, String appName)
 {
-	for (int i = 0; i < plan->alias()->size(); ++i)
+	for (int i = 0; i < plan->alias()->count(); ++i)
 		plan->shell()->unlink(plan->alias()->at(i));
 }
 

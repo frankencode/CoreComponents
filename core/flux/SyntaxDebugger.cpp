@@ -51,7 +51,7 @@ static void printString(char *s, int size) {
 }
 
 static void printString(const ByteArray &s) {
-	printString(s.chars(), s.size());
+	printString(s.chars(), s.count());
 }
 
 static void printCharAttr(char ch) {
@@ -87,7 +87,7 @@ void DebugNode::printBranch(Node *node, String indent) {
 }
 
 String DebugNode::superIndent(String indent) const {
-	return (indent != "") ? indent->copy(0, indent->size() - debugger_->indent_->size()) : indent;
+	return (indent != "") ? indent->copy(0, indent->count() - debugger_->indent_->count()) : indent;
 }
 
 String DebugNode::subIndent(String indent) const {
@@ -729,7 +729,7 @@ void Debugger::printDefinition(bool omitUnusedRules)
 		ruleById->insert(rule->id(), rule);
 	}
 
-	for (int i = 0; i < ruleById->size(); ++i) {
+	for (int i = 0; i < ruleById->count(); ++i) {
 		RuleNode *rule = ruleById->valueAt(i);
 		if (omitUnusedRules && !rule->used()) continue;
 		fout("DEFINE(\"%%\",\n") << rule->name();

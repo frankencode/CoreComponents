@@ -28,7 +28,7 @@ void Stream::write(const ByteArray *data)
 
 void Stream::write(const StringList *parts)
 {
-	for (int i = 0, n = parts->size(); i < n; ++i)
+	for (int i = 0, n = parts->count(); i < n; ++i)
 		write(parts->at(i));
 }
 
@@ -51,7 +51,7 @@ off_t Stream::transfer(off_t count, Stream *sink, ByteArray *buf)
 		if (count > 0) {
 			count -= n;
 			if (count == 0) break;
-			if (count < buf->size()) buf->truncate(count);
+			if (count < buf->count()) buf->truncate(count);
 		}
 	}
 
@@ -60,7 +60,7 @@ off_t Stream::transfer(off_t count, Stream *sink, ByteArray *buf)
 
 int Stream::readAll(ByteArray *data)
 {
-	const int w = data->size();
+	const int w = data->count();
 	int m = 0;
 	while (m < w) {
 		int n = read(ByteRange(data, m, w));

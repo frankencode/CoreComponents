@@ -75,9 +75,9 @@ int main(int argc, char **argv)
 			replacement = File::open(h)->map();
 		}
 
-		if (items->size() == 0) items->append(".");
+		if (items->count() == 0) items->append(".");
 
-		for (int i = 0; i < items->size(); ++i) {
+		for (int i = 0; i < items->count(); ++i) {
 			String dirPath = items->at(i)->canonicalPath();
 			Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
 			dirWalker->setMaxDepth(maxDepth);
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 					Ref<Matches> matches = Matches::create();
 					String text = file->map();
 					int ln = 1;
-					for (int i = 0; i < text->size();) {
+					for (int i = 0; i < text->count();) {
 						Ref<Token> token = textPattern->find(text, i)->rootToken();
 						if (!token) break;
 						for (;i < token->i0(); ++i)
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 							if (text->at(i) == '\n') ++ln;
 						if (token->i0() == token->i1()) ++i;
 					}
-					if (replaceOption && matches->size() > 0) {
+					if (replaceOption && matches->count() > 0) {
 						file = File::tryOpen(path, File::ReadWrite);
 						if (!file) {
 							ferr("Failed to write %%\n") << path;
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
 						file->truncate(0);
 						file->write(text);
 					}
-					for (int i = 0; i < matches->size(); ++i) {
+					for (int i = 0; i < matches->count(); ++i) {
 						Match *match = matches->at(i);
 						if (displayOption)
 							displayMatch(path, text, match);
@@ -199,7 +199,7 @@ void displayMatch(ByteArray *path, ByteArray *text, Match *match)
 	if (multiline) fout() << nl;
 
 	for (int j1 = j0; j0 < i1; j0 = j1) {
-		for (;j1 < text->size(); ++j1)
+		for (;j1 < text->count(); ++j1)
 			if (text->at(j1) == '\n') break;
 		Format line;
 		line << ln << ": ";
@@ -222,17 +222,17 @@ String replaceMatches(ByteArray *text, Matches *matches, ByteArray *replacement)
 	int fi0 = 0; // begin of fragment
 	int si = 0, sl = 0; // index and line shift
 	int nr = replacement->count('\n');
-	for (int i = 0; i < matches->size(); ++i) {
+	for (int i = 0; i < matches->count(); ++i) {
 		Match *match = matches->at(i);
 		fragments->append(text->copy(fi0, match->i0_));
 		fi0 = match->i1_;
 		int i0s = match->i0_ + si;
-		si += replacement->size() - (match->i1_ - match->i0_);
+		si += replacement->count() - (match->i1_ - match->i0_);
 		sl += nr - text->copy(match->i0_, match->i1_)->count('\n');
 		match->i0_ = i0s;
-		match->i1_ = i0s + replacement->size();
+		match->i1_ = i0s + replacement->count();
 		match->ln_ += sl;
 	}
-	fragments->append(text->copy(fi0, text->size()));
+	fragments->append(text->copy(fi0, text->count()));
 	return fragments->join(replacement);
 }

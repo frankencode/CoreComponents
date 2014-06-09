@@ -55,7 +55,7 @@ void LogMaster::unregisterLog(Log *log)
 	if (timerByPath_->lookup(log->path(), &timer)) {
 		Ref<Logs> logs = timer->tick();
 		logs->remove(log);
-		if (logs->size() == 0) timerByPath_->remove(log->path());
+		if (logs->count() == 0) timerByPath_->remove(log->path());
 	}
 }
 
@@ -80,9 +80,9 @@ void LogMaster::run()
 	Ref<Logs> logs;
 	while (rotate_->pop(&logs)) {
 		Guard<Mutex> guard(mutex_);
-		if (logs->size() == 0) continue;
+		if (logs->count() == 0) continue;
 		rotate(logs->at(0));
-		for (int i = 0; i < logs->size(); ++i)
+		for (int i = 0; i < logs->count(); ++i)
 			logs->at(i)->open();
 	}
 }

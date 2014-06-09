@@ -90,7 +90,7 @@ void NodeMaster::runNode() const
 	FLUXNODE_NOTICE() << "Starting (pid = " << Process::currentId() << ")" << nl;
 
 	Ref<DispatchInstance> dispatchInstance;
-	for (int i = 0; i < nodeConfig()->serviceInstances()->size(); ++i) {
+	for (int i = 0; i < nodeConfig()->serviceInstances()->count(); ++i) {
 		if (nodeConfig()->serviceInstances()->at(i)->serviceName() == "Dispatch") {
 			dispatchInstance = nodeConfig()->serviceInstances()->at(i);
 			nodeConfig()->serviceInstances()->pop(i);
@@ -104,7 +104,7 @@ void NodeMaster::runNode() const
 		dispatchInstance = dispatchService->createInstance(config);
 	}
 
-	if (nodeConfig()->serviceInstances()->size() == 0)
+	if (nodeConfig()->serviceInstances()->count() == 0)
 	{
 		FLUXNODE_WARNING() << "No service configured, falling back to Echo service" << nl;
 
@@ -116,9 +116,9 @@ void NodeMaster::runNode() const
 	}
 
 	typedef List< Ref<StreamSocket> > ListeningSockets;
-	Ref<ListeningSockets> listeningSockets = ListeningSockets::create(nodeConfig()->address()->size());
+	Ref<ListeningSockets> listeningSockets = ListeningSockets::create(nodeConfig()->address()->count());
 
-	for (int i = 0; i < nodeConfig()->address()->size(); ++i) {
+	for (int i = 0; i < nodeConfig()->address()->count(); ++i) {
 		SocketAddress *address = nodeConfig()->address()->at(i);
 		FLUXNODE_NOTICE() << "Start listening at " << address << nl;
 		Ref<StreamSocket> socket = StreamSocket::listen(address);
@@ -134,8 +134,8 @@ void NodeMaster::runNode() const
 
 	Ref<ConnectionManager> connectionManager = ConnectionManager::create(nodeConfig()->serviceWindow());
 
-	dispatchInstance->workerPools_ = WorkerPools::create(nodeConfig()->serviceInstances()->size());
-	for (int i = 0; i < nodeConfig()->serviceInstances()->size(); ++i)
+	dispatchInstance->workerPools_ = WorkerPools::create(nodeConfig()->serviceInstances()->count());
+	for (int i = 0; i < nodeConfig()->serviceInstances()->count(); ++i)
 		dispatchInstance->workerPools_->at(i) = WorkerPool::create(nodeConfig()->serviceInstances()->at(i), connectionManager->closedConnections());
 
 	Ref<WorkerPool> dispatchPool = WorkerPool::create(dispatchInstance, connectionManager->closedConnections());
@@ -147,11 +147,11 @@ void NodeMaster::runNode() const
 		Ref<IoMonitor> ioMonitor = IoMonitor::create();
 		while (true) {
 			ioMonitor->readyAccept()->clear();
-			for (int i = 0; i < listeningSockets->size(); ++i)
+			for (int i = 0; i < listeningSockets->count(); ++i)
 				ioMonitor->readyAccept()->insert(listeningSockets->at(i));
 			int n = ioMonitor->wait(1);
 			if (n > 0) {
-				for (int i = 0; i < listeningSockets->size(); ++i) {
+				for (int i = 0; i < listeningSockets->count(); ++i) {
 					StreamSocket *socket = listeningSockets->at(i);
 					if (ioMonitor->readyAccept()->contains(socket)) {
 						Ref<StreamSocket> clientSocket = socket->accept();

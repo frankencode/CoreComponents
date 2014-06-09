@@ -39,7 +39,7 @@ public:
 	bool lookupLanguageByName(String name, Language **language) const;
 	bool detectLanguage(String path, String text, Language** language) const;
 
-	inline int languageCount() const { return languageByName_->size(); }
+	inline int languageCount() const { return languageByName_->count(); }
 	inline const Language *languageAt(int i) const { return languageByName_->valueAt(i); }
 
 private:

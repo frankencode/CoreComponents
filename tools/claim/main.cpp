@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 			focus = "coverage";
 		}
 
-		if (items->size() == 0) items->append(".");
+		if (items->count() == 0) items->append(".");
 
 		Ref<Report> report = Report::create(items, works);
 
@@ -53,35 +53,35 @@ int main(int argc, char **argv)
 			if (focus == "coverage") {
 				CoverageByDigest *coverageByDigest = report->coverageByDigest();
 				StatementByDigest *statementByDigest = report->statementByDigest();
-				for (int i = 0; i < coverageByDigest->size(); ++i) {
+				for (int i = 0; i < coverageByDigest->count(); ++i) {
 					Coverage *coverage = coverageByDigest->valueAt(i);
 					String digest = coverageByDigest->keyAt(i);
 					String statement = statementByDigest->value(digest);
 					fout() << "Statement (" << i + 1 << "):" << nl;
 					fout() << "\"\"\"" << statement << "\"\"\"" << nl;
-					for (int j = 0; j < coverage->size(); ++j)
+					for (int j = 0; j < coverage->count(); ++j)
 						fout() << "  " << coverage->keyAt(j) << nl;
 					fout() << nl;
 				}
 			}
 			else if (focus == "exposure") {
 				Exposure *exposure = report->exposure();
-				for (int i = 0; i < exposure->size(); ++i)
+				for (int i = 0; i < exposure->count(); ++i)
 					fout() << exposure->at(i) << nl;
-				if (exposure->size() > 0) return 1;
+				if (exposure->count() > 0) return 1;
 			}
 			else if (focus == "holder") {
 				CoverageByHolder *coverageByHolder = report->coverageByHolder();
-				for (int i = 0; i < coverageByHolder->size(); ++i) {
+				for (int i = 0; i < coverageByHolder->count(); ++i) {
 					Coverage *coverage = coverageByHolder->valueAt(i);
 					String holder = coverageByHolder->keyAt(i);
 					fout() << "Copyright " << holder << ":" << nl;
-					for (int j = 0; j < coverage->size(); ++j) {
+					for (int j = 0; j < coverage->count(); ++j) {
 						Notice *notice = coverage->valueAt(j);
 						Format line(out());
 						line << coverage->keyAt(j) << " (";
 						CopyrightList *copyrights = notice->copyrights();
-						for (int k = 0; k < copyrights->size(); ++k) {
+						for (int k = 0; k < copyrights->count(); ++k) {
 							Copyright *copyright = copyrights->at(k);
 							if (copyright->holder() == holder) {
 								if (copyright->yearStart() < copyright->yearEnd())
@@ -100,16 +100,16 @@ int main(int argc, char **argv)
 		if (stripOption) {
 			Coverage *coverage = report->coverageByHolder()->value(holder);
 			if (!coverage) return 0;
-			for (int i = 0; i < coverage->size(); ++i) {
+			for (int i = 0; i < coverage->count(); ++i) {
 				String path = coverage->keyAt(i);
 				Notice *notice = coverage->valueAt(i);
 				CopyrightList *copyrights = notice->copyrights();
-				for (int j = 0; j < copyrights->size(); ++j)
+				for (int j = 0; j < copyrights->count(); ++j)
 					if (copyrights->at(j)->holder() != holder) continue;
 				Token *token = notice->header()->token();
 				Ref<File> file = File::open(path, File::ReadWrite);
 				String text = file->map();
-				String newText = Format() << text->copy(0, token->i0()) << text->copy(token->i1(), text->size());
+				String newText = Format() << text->copy(0, token->i0()) << text->copy(token->i1(), text->count());
 				file->seek(0);
 				file->truncate(0);
 				file->write(newText);
@@ -118,7 +118,7 @@ int main(int argc, char **argv)
 		if (insertOption) {
 			String header = File::open(headerPath)->map();
 			Exposure *exposure = report->exposure();
-			for (int i = 0; i < exposure->size(); ++i) {
+			for (int i = 0; i < exposure->count(); ++i) {
 				String path = exposure->at(i);
 				Ref<File> file = File::open(path, File::ReadWrite);
 				String newText = Format() << header << file->map();

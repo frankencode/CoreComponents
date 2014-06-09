@@ -34,8 +34,8 @@ void DirectoryDelegate::process(Request *request)
 {
 	String path = directoryInstance_->path() + "/" + request->target();
 	path = path->canonicalPath();
-	String prefix = path->head(directoryInstance_->path()->size());
-	if (path->head(directoryInstance_->path()->size()) != directoryInstance_->path()) throw Forbidden();
+	String prefix = path->head(directoryInstance_->path()->count());
+	if (path->head(directoryInstance_->path()->count()) != directoryInstance_->path()) throw Forbidden();
 
 	Ref<FileStatus> fileStatus = FileStatus::read(path);
 	if (!fileStatus->exists()) throw NotFound();
@@ -95,8 +95,8 @@ void DirectoryDelegate::listDirectory(Request *request, String path)
 		"<body>\n";
 
 	String prefix = request->target()->canonicalPath();
-	if (prefix->size() > 0) {
-		if (prefix->at(prefix->size() - 1) != '/')
+	if (prefix->count() > 0) {
+		if (prefix->at(prefix->count() - 1) != '/')
 			prefix += "/";
 	}
 
@@ -114,7 +114,7 @@ void DirectoryDelegate::deliverFile(String path)
 	String content = File::open(path)->map();
 	String mediaType = mediaTypeDatabase()->lookup(path, content);
 	if (mediaType != "") header("Content-Type", mediaType);
-	begin(content->size());
+	begin(content->count());
 	write(content);
 	end();
 }

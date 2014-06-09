@@ -29,17 +29,17 @@ ChunkedSink::~ChunkedSink()
 
 void ChunkedSink::write(const ByteArray *buf)
 {
-	Format(stream_) << hex(buf->size()) << "\r\n" << buf << "\r\n";
+	Format(stream_) << hex(buf->count()) << "\r\n" << buf << "\r\n";
 }
 
 void ChunkedSink::write(const StringList *parts)
 {
 	Format chunk(stream_);
 	int total = 0;
-	for (int i = 0; i < parts->size(); ++i)
-		total += parts->at(i)->size();
+	for (int i = 0; i < parts->count(); ++i)
+		total += parts->at(i)->count();
 	chunk << hex(total) << "\r\n";
-	for (int i = 0; i < parts->size(); ++i)
+	for (int i = 0; i < parts->count(); ++i)
 		chunk << parts->at(i);
 	chunk << "\r\n";
 }

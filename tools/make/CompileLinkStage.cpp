@@ -25,7 +25,7 @@ bool CompileLinkStage::run()
 	if ( (plan()->options() & BuildPlan::Tests) &&
 	     !(plan()->options() & BuildPlan::BuildTests) ) return success_ = true;
 
-	for (int i = 0; i < plan()->prerequisites()->size(); ++i)
+	for (int i = 0; i < plan()->prerequisites()->count(); ++i)
 		if (!plan()->prerequisites()->at(i)->compileLinkStage()->run()) return success_ = false;
 
 	if (plan()->options() & BuildPlan::Package) return success_ = true;
@@ -33,7 +33,7 @@ bool CompileLinkStage::run()
 	Ref<JobScheduler> compileScheduler;
 	Ref<JobScheduler> linkScheduler;
 
-	for (int i = 0; i < plan()->modules()->size(); ++i) {
+	for (int i = 0; i < plan()->modules()->count(); ++i) {
 		Module *module = plan()->modules()->at(i);
 		bool dirty = module->dirty();
 		if (plan()->options() & BuildPlan::Tools)
@@ -91,7 +91,7 @@ bool CompileLinkStage::run()
 	if (productStatus->exists() && *plan()->sources() == *plan()->analyseStage()->previousSources()) {
 		double productTime = productStatus->lastModified();
 		bool dirty = false;
-		for (int i = 0; i < plan()->modules()->size(); ++i) {
+		for (int i = 0; i < plan()->modules()->count(); ++i) {
 			Module *module = plan()->modules()->at(i);
 			Ref<FileStatus> moduleStatus = shell()->fileStatus(module->modulePath());
 			if (moduleStatus->lastModified() > productTime) {
@@ -102,7 +102,7 @@ bool CompileLinkStage::run()
 		Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->recipePath());
 		if (recipeStatus->exists()) {
 			if (recipeStatus->lastModified() > productTime) dirty = true;
-			for (int i = 0; i < plan()->prerequisites()->size(); ++i) {
+			for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
 				Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->prerequisites()->at(i)->recipePath());
 				if (recipeStatus->lastModified() > productTime) {
 					dirty = true;

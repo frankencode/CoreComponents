@@ -23,7 +23,7 @@ String encode(const String &source)
 		"abcdefghijklmnopqrstuvwxyz"
 		"0123456789+/";
 
-	const int n = source->size();
+	const int n = source->count();
 	int i = 0;
 
 	const int m = 4 * (n / 3 + (n % 3 != 0));
@@ -56,9 +56,9 @@ String encode(const String &source)
 
 String decode(const String &source)
 {
-	if (source->size() % 4 != 0) throw base64::IllegalInputSize4Error();
+	if (source->count() % 4 != 0) throw base64::IllegalInputSize4Error();
 
-	const int m = source->size();
+	const int m = source->count();
 	int p = 0;
 	while (m - p > 0) {
 		++p;

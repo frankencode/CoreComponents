@@ -46,7 +46,7 @@ void HashMeter::write(const ByteArray *data)
 
 void HashMeter::write(const StringList *parts)
 {
-	for (int i = 0, n = parts->size(); i < n; ++i)
+	for (int i = 0, n = parts->count(); i < n; ++i)
 		hashSum_->feed(parts->at(i));
 	if (stream_) stream_->write(parts);
 }

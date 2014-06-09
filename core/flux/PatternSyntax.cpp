@@ -254,7 +254,7 @@ void PatternSyntax::compile(const ByteArray *text, SyntaxDefinition *definition)
 	Ref<SyntaxState> state = match(text);
 	if (!state->valid()) throw SyntaxError(text, state);
 	NODE entry;
-	if (text->size() == 0) entry = definition->PASS();
+	if (text->count() == 0) entry = definition->PASS();
 	else entry = compileChoice(text, state->rootToken()->firstChild(), definition);
 	definition->DEFINE("Expression", entry);
 	definition->ENTRY("Expression");

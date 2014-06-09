@@ -45,7 +45,7 @@ inline uint32_t crc32(const char *s) {
 
 inline uint32_t crc32(ByteArray *buf) {
 	Crc32 crc;
-	crc.feed(buf->bytes(), buf->size());
+	crc.feed(buf->bytes(), buf->count());
 	return crc.sum();
 }
 

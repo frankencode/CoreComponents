@@ -51,12 +51,12 @@ SocketAddress::SocketAddress(int family, String address, int port)
 	}
 	else if (family == AF_LOCAL) {
 		localAddress_.sun_family = AF_LOCAL;
-		if (unsigned(address->size()) + 1 > sizeof(localAddress_.sun_path))
+		if (unsigned(address->count()) + 1 > sizeof(localAddress_.sun_path))
 			FLUX_DEBUG_ERROR("Socket path exceeds maximum length");
 		if ((address == "") || (address == "*"))
 			localAddress_.sun_path[0] = 0;
 		else
-			memcpy(localAddress_.sun_path, address->chars(), address->size() + 1);
+			memcpy(localAddress_.sun_path, address->chars(), address->count() + 1);
 	}
 	else
 		FLUX_DEBUG_ERROR("Unsupported address family");
@@ -206,7 +206,7 @@ Ref<SocketAddressList> SocketAddress::resolve(String hostName, String serviceNam
 	if (head)
 		freeaddrinfo(head);
 
-	if (list->size() == 0)
+	if (list->count() == 0)
 		FLUX_DEBUG_ERROR("Failed to resolve host name");
 
 	return list;

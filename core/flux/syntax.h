@@ -173,7 +173,7 @@ public:
 	{
 		if (text->has(i)) {
 			char ch = text->at(i++);
-			int k = 0, len = s_->size();
+			int k = 0, len = s_->count();
 			while (k < len) {
 				if (s_->at(k) == ch) break;
 				++k;
@@ -210,7 +210,7 @@ public:
 	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
 		if (text->has(i)) {
-			int k = 0, len = s_->size();
+			int k = 0, len = s_->count();
 			while ((k < len) && (text->has(i))) {
 				char ch = text->at(i++);
 				if (!caseSensitive_)
@@ -227,7 +227,7 @@ public:
 		return i;
 	}
 
-	inline int matchLength() const { return s_->size(); }
+	inline int matchLength() const { return s_->count(); }
 
 	inline const ByteArray &s() const { return *s_; }
 

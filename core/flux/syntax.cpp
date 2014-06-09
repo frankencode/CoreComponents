@@ -47,7 +47,7 @@ int InvokeNode::matchNext(ByteArray *text, int i, Token *parentToken, State *sta
 	}
 
 	Ref<SyntaxState> childState = LinkNode::rule()->scope()->createState(state->tokenFactory_);
-	i = RefNode::matchNext(ByteRange(text, i0, coverage() ? i : text->size()), 0, parentToken, childState);
+	i = RefNode::matchNext(ByteRange(text, i0, coverage() ? i : text->count()), 0, parentToken, childState);
 
 	if (childState->hint_) {
 		state->hint_ = childState->hint_;
@@ -132,7 +132,7 @@ Ref<State> DefinitionNode::match(ByteArray *text, int i, TokenFactory *tokenFact
 	Ref<State> state = createState(tokenFactory);
 	int h = i < 0 ? 0 : i;
 	h = matchNext(text, h, 0, state);
-	if ( (h == -1) || (i < 0 && h < text->size()) ) state->rootToken_ = 0;
+	if ( (h == -1) || (i < 0 && h < text->count()) ) state->rootToken_ = 0;
 	return state;
 }
 

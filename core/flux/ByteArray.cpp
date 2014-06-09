@@ -181,21 +181,21 @@ bool ByteArray::contains(String pattern) const
 Ref<ByteArray> ByteArray::join(const StringList *parts, const char *sep)
 {
 	int sepSize = strlen(sep);
-	if (parts->size() == 0) {
+	if (parts->count() == 0) {
 		return Singleton<ByteArray>::instance();
 	}
 	else {
 		int size = 0;
-		for (int i = 0; i < parts->size(); ++i)
-			size += parts->at(i)->size();
-		size += (parts->size() - 1) * sepSize;
+		for (int i = 0; i < parts->count(); ++i)
+			size += parts->at(i)->count();
+		size += (parts->count() - 1) * sepSize;
 		Ref<ByteArray> result = ByteArray::create(size);
 		char *p = result->data_;
-		for (int i = 0; i < parts->size(); ++i) {
+		for (int i = 0; i < parts->count(); ++i) {
 			ByteArray *part = parts->at(i);
 			memcpy(p, part->data_, part->size_);
 			p += part->size_;
-			if (i + 1 < parts->size()) {
+			if (i + 1 < parts->count()) {
 				memcpy(p, sep, sepSize);
 				p += sepSize;
 			}
@@ -414,8 +414,8 @@ Ref<ByteArray> ByteArray::escape() const
 			else {
 				String s = "\\u00XX";
 				const char *hex = "0123456789ABCDEF";
-				s->at(s->size() - 2) = hex[ch / 16];
-				s->at(s->size() - 1) = hex[ch % 16];
+				s->at(s->count() - 2) = hex[ch / 16];
+				s->at(s->count() - 1) = hex[ch % 16];
 				parts->append(s);
 			}
 		}
@@ -554,9 +554,9 @@ Ref<ByteArray> ByteArray::normalize(bool nameCase) const
 			data_[i] = 32;
 	}
 	Ref<StringList> parts = split(" ");
-	for (int i = 0; i < parts->size(); ++i) {
+	for (int i = 0; i < parts->count(); ++i) {
 		String s = parts->at(i);
-		if (s->size() == 0) {
+		if (s->count() == 0) {
 			parts->remove(i);
 		}
 		else {
@@ -610,9 +610,9 @@ bool ByteArray::offsetToLinePos(int offset, int *line, int *pos) const
 		valid = false;
 		offset = 0;
 	}
-	if (size() <= offset) {
+	if (count() <= offset) {
 		valid = false;
-		offset = size();
+		offset = count();
 	}
 	int y = 1, x = 0;
 	for (int i = 0; i < offset; ++i) {
@@ -649,7 +649,7 @@ bool ByteArray::linePosToOffset(int line, int pos, int *offset) const
 
 Ref<ByteArray> ByteArray::fromUtf16(ByteArray *utf16, int endian)
 {
-	if (utf16->size() == 0) return ByteArray::create();
+	if (utf16->count() == 0) return ByteArray::create();
 
 	Ref<ByteArray> out;
 	{
@@ -680,7 +680,7 @@ bool ByteArray::toUtf16(void *buf, int *size)
 	uint16_t *buf2 = reinterpret_cast<uint16_t*>(buf);
 	int j = 0, n = *size / 2;
 	Ref<Unicode> chars = Unicode::open(this);
-	for (int i = 0; i < chars->size(); ++i) {
+	for (int i = 0; i < chars->count(); ++i) {
 		uchar_t ch = chars->at(i);
 		if (ch < 0x10000) {
 			if (j < n) buf2[j] = ch;
@@ -708,15 +708,15 @@ Ref<ByteArray> ByteArray::toUtf16(int endian)
 	Ref<Unicode> chars = Unicode::open(this);
 	{
 		int n = 0;
-		for (int i = 0; i < chars->size(); ++i)
+		for (int i = 0; i < chars->count(); ++i)
 			n += utf16::encodedSize(chars->at(i));
 		out = ByteArray::create(n + 2);
 		out->at(n) = 0;
 		out->at(n + 1) = 0;
 	}
-	if (out->size() > 0) {
+	if (out->count() > 0) {
 		Ref<Utf16Sink> sink = Utf16Sink::open(out, endian);
-		for (int i = 0; i < chars->size(); ++i)
+		for (int i = 0; i < chars->count(); ++i)
 			sink->write(chars->at(i));
 	}
 	return out;
@@ -756,7 +756,7 @@ bool ByteArray::isRelativePath() const
 
 bool ByteArray::isAbsolutePath() const
 {
-	return (size() > 0) ? (at(0) == '/') : false;
+	return (count() > 0) ? (at(0) == '/') : false;
 }
 
 Ref<ByteArray> ByteArray::absolutePathRelativeTo(String currentDir) const
@@ -769,13 +769,13 @@ Ref<ByteArray> ByteArray::absolutePathRelativeTo(String currentDir) const
 
 	int upCount = 0;
 
-	for (int i = 0; i < parts->size(); ++i)
+	for (int i = 0; i < parts->count(); ++i)
 	{
 		String c = parts->at(i);
 		if (c == ".")
 		{}
 		else if (c == "..") {
-			if (absoluteParts->size() > 0)
+			if (absoluteParts->count() > 0)
 				absoluteParts->popBack();
 			else
 				++upCount;
@@ -786,7 +786,7 @@ Ref<ByteArray> ByteArray::absolutePathRelativeTo(String currentDir) const
 	}
 
 	String prefix;
-	if (currentDir->size() > 0)
+	if (currentDir->count() > 0)
 		prefix = currentDir->copy();
 	else
 		prefix = Process::cwd();
@@ -812,28 +812,28 @@ Ref<ByteArray> ByteArray::fileName() const
 {
 	String name;
 	Ref<StringList> parts = split("/");
-	if (parts->size() > 0)
-		name = parts->at(parts->size() - 1);
+	if (parts->count() > 0)
+		name = parts->at(parts->count() - 1);
 	return name;
 }
 
 Ref<ByteArray> ByteArray::baseName() const
 {
 	Ref<StringList> parts = fileName()->split(".");
-	parts->pop(parts->size() - 1);
+	parts->pop(parts->count() - 1);
 	return parts->join(".");
 }
 
 Ref<ByteArray>  ByteArray::suffix() const
 {
 	Ref<StringList> parts = fileName()->split(".");
-	return parts->at(parts->size() - 1);
+	return parts->at(parts->count() - 1);
 }
 
 Ref<ByteArray> ByteArray::reducePath() const
 {
 	Ref<StringList> parts = split("/");
-	while (parts->size() > 0) {
+	while (parts->count() > 0) {
 		String component = parts->popBack();
 		if (component != "") break;
 	}
@@ -852,12 +852,12 @@ Ref<ByteArray> ByteArray::canonicalPath() const
 {
 	Ref<StringList> parts = split("/");
 	Ref<StringList> result = StringList::create();
-	for (int i = 0; i < parts->size(); ++i) {
+	for (int i = 0; i < parts->count(); ++i) {
 		String part = parts->at(i);
 		if ((part == "") && (i > 0)) continue;
-		if ((part == "") && (i == parts->size() - 1)) continue;
+		if ((part == "") && (i == parts->count() - 1)) continue;
 		if ((part == ".") && (i > 0)) continue;
-		if ((part == "..") && (result->size() > 0)) {
+		if ((part == "..") && (result->count() > 0)) {
 			result->popBack();
 			continue;
 		}

@@ -20,7 +20,7 @@ bool TestRunStage::run()
 	if (complete_) return success_;
 	complete_ = true;
 
-	for (int i = 0; i < plan()->prerequisites()->size(); ++i) {
+	for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
 		TestRunStage *stage = plan()->prerequisites()->at(i)->testRunStage();
 		if (!stage->run()) {
 			status_ = stage->status();
@@ -32,7 +32,7 @@ bool TestRunStage::run()
 
 	Ref<JobScheduler> scheduler = createScheduler();
 
-	for (int i = 0; i < plan()->modules()->size(); ++i) {
+	for (int i = 0; i < plan()->modules()->count(); ++i) {
 		Module *module = plan()->modules()->at(i);
 		scheduler->schedule(toolChain()->createTestJob(plan(), module));
 	}

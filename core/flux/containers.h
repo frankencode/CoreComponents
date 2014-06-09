@@ -22,10 +22,10 @@ template<class C>
 bool compare(const C &a, const C &b)
 {
 	typedef typename C::Item T;
-	int n = a.size() > b.size() ? a.size() : b.size();
+	int n = a.count() > b.count() ? a.count() : b.count();
 	for (int i = 0; i < n; ++i) {
-		T x = (i < a.size()) ? a.at(i) : T();
-		T y = (i < b.size()) ? b.at(i) : T();
+		T x = (i < a.count()) ? a.at(i) : T();
+		T y = (i < b.count()) ? b.at(i) : T();
 		if (x < y) return -1;
 		if (y < x) return 1;
 	}

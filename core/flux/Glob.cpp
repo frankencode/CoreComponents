@@ -51,7 +51,7 @@ bool Glob::read(String *path)
 		if ((name == "..") && (pattern_ != "..")) continue;
 		if (pattern_->match(name)->valid()) {
 			String node = dir_->path(name);
-			if (remainder_->size() == 0) {
+			if (remainder_->count() == 0) {
 				*path = node;
 				return true;
 			}

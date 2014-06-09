@@ -56,7 +56,7 @@ void Palette::realize(const ByteArray *text, Token *objectToken)
 {
 	scopeName_ = resourceContextStack()->top()->fileName();
 	if (scopeName_ == "default") {
-		for (int i = 0; i < children()->size(); ++i) {
+		for (int i = 0; i < children()->count(); ++i) {
 			Style *style = cast<Style>(children()->at(i));
 			int rule = defaultRuleByName(style->ruleName());
 			if (rule == Undefined) {
@@ -78,7 +78,7 @@ void Palette::realize(const ByteArray *text, Token *objectToken)
 
 	const SyntaxDefinition *syntax = language->highlightingSyntax();
 	scope_ = syntax->id();
-	for (int i = 0; i < children()->size(); ++i) {
+	for (int i = 0; i < children()->count(); ++i) {
 		Style *style = cast<Style>(children()->at(i));
 		try {
 			style->rule_ = syntax->ruleByName(style->ruleName());

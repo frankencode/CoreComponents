@@ -84,7 +84,7 @@ void Dir::establish(String path, int mode)
 		missingDirs->pushFront(path);
 		path = path->reducePath();
 	}
-	while (missingDirs->size() > 0)
+	while (missingDirs->count() > 0)
 		Dir::create(missingDirs->popFront(), mode);
 }
 

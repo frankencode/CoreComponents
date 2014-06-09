@@ -41,7 +41,7 @@ Theme::Theme(String path)
 	String name;
 	while (dir->read(&name)) {
 		if (name == "." || name == "..") continue;
-		if (!(name->size() > 0 && ('a' <= name->at(0) && name->at(0) <= 'z'))) continue;
+		if (!(name->count() > 0 && ('a' <= name->at(0) && name->at(0) <= 'z'))) continue;
 		Ref<Palette> palette = Palette::load(path + "/" + name);
 		paletteByScope_->insert(palette->scope(), palette);
 	}

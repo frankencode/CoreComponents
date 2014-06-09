@@ -40,7 +40,7 @@ int LineBuffer::read(ByteArray *buf)
 
 void LineBuffer::write(const ByteArray *buf)
 {
-	int i = 0, n = buf->size();
+	int i = 0, n = buf->count();
 	while (i < n) {
 		int i0 = i;
 		i = buf->find('\n', i);
@@ -61,7 +61,7 @@ void LineBuffer::write(const ByteArray *buf)
 
 void LineBuffer::write(const StringList *parts)
 {
-	for (int i = 0, n = parts->size(); i < n; ++i)
+	for (int i = 0, n = parts->count(); i < n; ++i)
 		write(parts->at(i));
 }
 

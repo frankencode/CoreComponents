@@ -403,7 +403,7 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, co
 			YasonProtocol *prototypeProtocol = 0;
 			if (prototype) prototypeProtocol = prototype->protocol_;
 			if (prototypeProtocol) {
-				if (object->children()->size() >= prototypeProtocol->maxCount()) {
+				if (object->children()->count() >= prototypeProtocol->maxCount()) {
 					throw SemanticError(
 						Format("Maximum number of children (%%) exceeded") << prototypeProtocol->maxCount(),
 						text, token->i0()
@@ -422,8 +422,8 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, co
 		YasonProtocol *prototypeProtocol = prototype->protocol_;
 		if (prototypeProtocol) {
 			if (prototypeProtocol->minCount() > 0) {
-				if (!object->hasChildren() || object->children()->size() < prototypeProtocol->minCount()) {
-					if (prototypeProtocol->prototypes_->size() == 1 && prototypeProtocol->minCount() == 1) {
+				if (!object->hasChildren() || object->children()->count() < prototypeProtocol->minCount()) {
+					if (prototypeProtocol->prototypes_->count() == 1 && prototypeProtocol->minCount() == 1) {
 						throw SemanticError(
 							Format("Object of type %% needs at least one child of type %%") << object->className() << prototypeProtocol->prototypes_->at(0)->value()->className(),
 							text, objectToken->i0()
@@ -630,7 +630,7 @@ String YasonSyntax::readText(const ByteArray *text, Token *token) const
 			l->append(text->copy(token->i0() + 1, token->i1() - 1));
 			token = token->nextSibling();
 		}
-		s = (l->size() == 1) ? l->at(0) : l->join();
+		s = (l->count() == 1) ? l->at(0) : l->join();
 		s->unescapeInsitu();
 	}
 

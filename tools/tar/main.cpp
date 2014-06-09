@@ -45,9 +45,9 @@ int main(int argc, char **argv)
 		Ref<StringList> items = arguments->items();
 
 		if (unpackMode) {
-			if (items->size() == 0) items->append(String());
+			if (items->count() == 0) items->append(String());
 
-			for (int i = 0; i < items->size(); ++i) {
+			for (int i = 0; i < items->count(); ++i) {
 				String path = items->at(i);
 
 				Ref<Stream> source;
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 			if (tarMode) archive = TarWriter::open(sink);
 			else archive = ArWriter::open(sink);
 
-			for (int i = 0; i < items->size(); ++i)
+			for (int i = 0; i < items->count(); ++i)
 				fluxtar::pack(items->at(i), archive, options->value("verbose"));
 		}
 	}

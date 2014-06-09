@@ -39,7 +39,7 @@ Generator* Registry::generatorByIndex(int index) const
 
 int Registry::generatorCount() const
 {
-	return generatorByName_->size();
+	return generatorByName_->count();
 }
 
 Registry *registry() { return Singleton<Registry>::instance(); }

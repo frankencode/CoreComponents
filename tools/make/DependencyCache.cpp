@@ -45,7 +45,7 @@ DependencyCache::DependencyCache(BuildPlan *plan)
 	if (!dependencyCache) return;
 	if (dependencyCache->className() != "DependencyCache") return;
 
-	for (int i = 0; i < dependencyCache->size(); ++i)
+	for (int i = 0; i < dependencyCache->count(); ++i)
 	{
 		YasonObject::Item item = dependencyCache->at(i);
 
@@ -62,7 +62,7 @@ DependencyCache::DependencyCache(BuildPlan *plan)
 		bool dirty = false;
 
 		Ref<FileStatus> objectStatus = buildPlan_->shell()->fileStatus(modulePath);
-		for (int i = 0; i < dependencyPaths->size(); ++i) {
+		for (int i = 0; i < dependencyPaths->count(); ++i) {
 			Ref<FileStatus> sourceStatus = buildPlan_->shell()->fileStatus(dependencyPaths->at(i));
 			if (!sourceStatus->exists()) {
 				dirty = true;
@@ -97,7 +97,7 @@ DependencyCache::~DependencyCache()
 	Format text;
 	String indent(4, ' ');
 	text << "DependencyCache {\n";
-	for (int i = 0; i < cache_->size(); ++i) {
+	for (int i = 0; i < cache_->count(); ++i) {
 		Cache::Item item = cache_->at(i);
 		String sourcePath = item->key();
 		Module *module = item->value();
@@ -106,7 +106,7 @@ DependencyCache::~DependencyCache()
 			<< indent << indent << "analyseCommand: \"" << module->analyseCommand() << "\"\n"
 			<< indent << indent << "modulePath: \"" << module->modulePath() << "\"\n"
 			<< indent << indent << "dependencyPaths: [\n";
-		for (int i = 0, n = module->dependencyPaths()->size(); i < n; ++i) {
+		for (int i = 0, n = module->dependencyPaths()->count(); i < n; ++i) {
 			text << indent << indent << indent << "\"" << module->dependencyPaths()->at(i);
 			if (i != n - 1)
 				text << "\",\n";

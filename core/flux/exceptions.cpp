@@ -28,9 +28,9 @@ String systemError(int errorCode)
 	const char *unknown = "Unknown error";
 	memcpy(buf->chars(), unknown, strlen(unknown) + 1);
 #ifdef __USE_GNU
-	return strerror_r(errorCode, buf->chars(), buf->size());
+	return strerror_r(errorCode, buf->chars(), buf->count());
 #else
-	/*int ret = */strerror_r(errorCode, buf->chars(), buf->size());
+	/*int ret = */strerror_r(errorCode, buf->chars(), buf->count());
 	return buf;
 #endif
 }

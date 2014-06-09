@@ -23,7 +23,7 @@ Ref<Document> Document::load(String path, Document *parent)
 Ref<Document> Document::parse(String text, String path, Document *parent)
 {
 	Ref<ElementList> elements = markupSyntax()->parse(text, path);
-	for (int i = 0; i < elements->size(); ++i) ferr() << yason::stringify(elements->at(i)) << nl; // DEBUG
+	for (int i = 0; i < elements->count(); ++i) ferr() << yason::stringify(elements->at(i)) << nl; // DEBUG
 	return new Document(elements, path, parent);
 }
 
@@ -42,7 +42,7 @@ Document::Document(ElementList *elements, String path, Document *parent)
 	  parent_(parent),
 	  parts_(DocumentList::create())
 {
-	for (int i = 0; i < elements->size(); ++i) {
+	for (int i = 0; i < elements->count(); ++i) {
 		Element *element = elements->at(i);
 		String className = element->className();
 		if (className == "Title") {

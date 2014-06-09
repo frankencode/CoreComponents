@@ -25,10 +25,10 @@ public:
 	inline static Ref<Map> create() { return new Map(); }
 	inline static Ref<Map> clone(Map *a) { return new Map(a); }
 
-	inline int size() const { return tree_.weight(); }
+	inline int count() const { return tree_.weight(); }
 
 	inline bool has(int index) const {
-		return 0 <= index && index < size();
+		return 0 <= index && index < count();
 	}
 	inline const Item &at(int index) const {
 		Node *node = 0;
@@ -144,7 +144,7 @@ public:
 
 	inline void pop(Item *item)
 	{
-		FLUX_ASSERT(size() > 0);
+		FLUX_ASSERT(count() > 0);
 		Node *k = tree_.min();
 		*item = k->item_;
 		tree_.remove(k);

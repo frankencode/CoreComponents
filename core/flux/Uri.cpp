@@ -109,7 +109,7 @@ String Uri::encode(String s)
 	const char *reserved = ":/?#[]@!$&'()*+,;=";
 	Ref<StringList> l = StringList::create();
 	int j = 0;
-	for (int i = 0, n = s->size(); i < n; ++i) {
+	for (int i = 0, n = s->count(); i < n; ++i) {
 		char ch = s->at(i);
 		for (const char *r = reserved; *r; ++r) {
 			if (ch == *r) {
@@ -125,8 +125,8 @@ String Uri::encode(String s)
 		}
 	}
 	if (j == 0) return s;
-	if (j < s->size())
-		l->append(s->copy(j, s->size()));
+	if (j < s->count())
+		l->append(s->copy(j, s->count()));
 	return l->join();
 }
 
@@ -135,7 +135,7 @@ String Uri::decode(String s)
 	s->downcaseInsitu();
 
 	int j = 0;
-	for (int i = 0, n = s->size(); i < n; ++i, ++j) {
+	for (int i = 0, n = s->count(); i < n; ++i, ++j) {
 		char ch = s->at(i);
 		if ((ch == '%') && (i + 2 < n)) {
 			unsigned char x = 0;

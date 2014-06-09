@@ -22,7 +22,7 @@ void DispatchDelegate::process(Request *request)
 {
 	FLUXNODE_DEBUG() << "Dispatching request, host = \"" << request->host() << "\", target = \"" << request->target() << "\"..." << nl;
 	WorkerPools *workerPools = dispatchInstance_->workerPools();
-	for (int i = 0; i < workerPools->size(); ++i) {
+	for (int i = 0; i < workerPools->count(); ++i) {
 		WorkerPool *workerPool = workerPools->at(i);
 		ServiceInstance *serviceInstance = workerPool->serviceInstance();
 		if (

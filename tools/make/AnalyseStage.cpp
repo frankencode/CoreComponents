@@ -24,7 +24,7 @@ bool AnalyseStage::run()
 	if ( (plan()->options() & BuildPlan::Tests) &&
 	     !(plan()->options() & BuildPlan::BuildTests) ) return success_ = true;
 
-	for (int i = 0; i < plan()->prerequisites()->size(); ++i)
+	for (int i = 0; i < plan()->prerequisites()->count(); ++i)
 		if (!plan()->prerequisites()->at(i)->analyseStage()->run()) return success_ = false;
 
 	if (plan()->options() & BuildPlan::Package) return success_ = true;
@@ -36,7 +36,7 @@ bool AnalyseStage::run()
 	Ref<DependencyCache> dependencyCache = DependencyCache::create(plan());
 	previousSources_ = dependencyCache->previousSources();
 
-	for (int i = 0; i < plan()->sources()->size(); ++i) {
+	for (int i = 0; i < plan()->sources()->count(); ++i) {
 		Ref<Module> module;
 		if (dependencyCache->lookup(plan()->sources()->at(i), &module)) {
 			plan()->modules()->append(module);

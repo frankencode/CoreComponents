@@ -23,13 +23,13 @@ bool HtmlScreen::project(Token *token, int i0, int i1)
 	if (s->contains('<')) s = s->replace("<", "&lt;");
 	if (s->contains('>')) s = s->replace(">", "&gt;");
 	if (s->contains('\t')) s = s->replace("\t", "    ");
-	bool whitespace = s->count(" \t\n\r") == s->size();
+	bool whitespace = s->count(" \t\n\r") == s->count();
 	if (!whitespace)
 		format_ << "<span class=\"toki_" << hex(unsigned(token->scope())) << "_" << hex(token->rule()) << "\">";
 	format_ << s;
 	if (!whitespace)
 		format_ << "</span>";
-	if (format_->size() > 128) format_ << flush;
+	if (format_->count() > 128) format_ << flush;
 	return true;
 }
 

@@ -52,8 +52,8 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	Ref<Arguments> arguments = Arguments::parse(argc, argv);
 	StringList *items = arguments->items();
 
-	if (items->size() > 0) {
-		if (items->size() > 1)
+	if (items->count() > 0) {
+		if (items->count() > 1)
 			throw UsageError("Handling multiple source directories at once is not supported");
 		projectPath_ = items->at(0)->canonicalPath();
 	}
@@ -120,7 +120,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 	BuildParameters::read(recipe_, this);
 
 	if (recipe_->hasChildren()) {
-		for (int i = 0; i < recipe_->children()->size(); ++i) {
+		for (int i = 0; i < recipe_->children()->count(); ++i) {
 			YasonObject *object = recipe_->children()->at(i);
 			if (object->className() == "SystemPrerequisite") {
 				Ref<SystemPrerequisite> p = SystemPrerequisite::read(object, this);
@@ -203,7 +203,7 @@ void BuildPlan::readPrerequisites()
 
 	StringList *prerequisitePaths = cast<StringList>(recipe_->value("use"));
 
-	for (int i = 0; i < prerequisitePaths->size(); ++i)
+	for (int i = 0; i < prerequisitePaths->count(); ++i)
 	{
 		String path = prerequisitePaths->at(i);
 		if (path->isRelativePath()) path = projectPath_ + "/" + path;
@@ -229,7 +229,7 @@ void BuildPlan::readPrerequisites()
 Ref<StringList> BuildPlan::globSources(StringList *pattern) const
 {
 	Ref<StringList> sources = StringList::create();
-	for (int i = 0; i < pattern->size(); ++i) {
+	for (int i = 0; i < pattern->count(); ++i) {
 		Ref<Glob> glob = Glob::open(sourcePath(pattern->at(i)));
 		for (String path; glob->read(&path);)
 			sources->append(path);
@@ -254,7 +254,7 @@ void BuildPlan::globSources()
 	else sourcePrefix_ = sourcePrefix_->canonicalPath();
 
 	containsCPlusPlus_ = false;
-	for (int i = 0; i < sources_->size(); ++i) {
+	for (int i = 0; i < sources_->count(); ++i) {
 		String suffix = sources_->at(i)->suffix();
 		if (suffix == "cpp" || suffix == "cc" || suffix == "cxx" || suffix == "mm") {
 			containsCPlusPlus_ = true;
@@ -267,7 +267,7 @@ void BuildPlan::globSources()
 	else
 		bundle_ = StringList::create();
 
-	for (int i = 0; i < prerequisites_->size(); ++i)
+	for (int i = 0; i < prerequisites_->count(); ++i)
 		prerequisites_->at(i)->globSources();
 }
 
@@ -303,7 +303,7 @@ void BuildPlan::initModules()
 		f << toolChain_->machine();
 	modulePath_ = f->join("-");
 
-	for (int i = 0; i < prerequisites_->size(); ++i)
+	for (int i = 0; i < prerequisites_->count(); ++i)
 		prerequisites_->at(i)->initModules();
 }
 

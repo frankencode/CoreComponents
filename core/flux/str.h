@@ -42,7 +42,7 @@ String inum(T x, int base = 10, int n = -1)
 	if (n > 0 && m < n) m = n;
 	String s(m, '0');
 	if (sign) s->at(0) = '-';
-	for (int i = s->size() - 1; x > 0 && s->has(i); x /= base, --i) {
+	for (int i = s->count() - 1; x > 0 && s->has(i); x /= base, --i) {
 		const char *fig =
 			"0123456789"
 			"abcdefghijklmnopqrstuvwxyz"

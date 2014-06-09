@@ -23,7 +23,7 @@ Ref<TarReader> TarReader::open(Stream *source)
 bool TarReader::testFormat(Stream *source)
 {
 	Ref<ByteArray> data = ByteArray::create(512);
-	if (source->readAll(data) < data->size()) return false;
+	if (source->readAll(data) < data->count()) return false;
 	String magic;
 	data->scanString(&magic, "", 257, 263);
 	return magic == "ustar " || magic == "ustar";
@@ -42,11 +42,11 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 	ByteArray *data = data_;
 	ArchiveEntry *entry = *nextEntry;
 
-	if (source_->readAll(data) < data->size()) return false;
-	i_ += data->size();
+	if (source_->readAll(data) < data->count()) return false;
+	i_ += data->count();
 
 	bool eoi = true;
-	for (int i = 0; i < data->size(); ++i) {
+	for (int i = 0; i < data->count(); ++i) {
 		if (data->byteAt(i) != 0) {
 			eoi = false;
 			break;
@@ -75,25 +75,25 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 
 		probesum = tarHeaderSum(data);
 		if (checksum != probesum)
-			throw BrokenArchive(i_ - data->size(), Format("Checksum mismatch (%% != %%), path = \"%%\"") << oct(checksum, 6) << oct(probesum, 6) << entry->path());
+			throw BrokenArchive(i_ - data->count(), Format("Checksum mismatch (%% != %%), path = \"%%\"") << oct(checksum, 6) << oct(probesum, 6) << entry->path());
 
 		if (gnuMagic) {
 			while ((entry->type_ == 'K' || entry->type_ == 'L') /*&& entry->path_ == "././@LongLink"*/) {
 				data->scanInt(&entry->size_, 8, 124, 136);
 				String longPath = source_->readAll(entry->size_);
-				if (longPath->size() < entry->size_)
+				if (longPath->count() < entry->size_)
 					throw BrokenArchive(i_, "Expected GNU @LongLink data");
 				i_ += entry->size_;
 				if (entry->size() % 512 != 0) {
 					i_ += source_->skip(512 - entry->size() % 512);
 				}
-				if (longPath->byteAt(longPath->size() - 1) == 0)
-					longPath->truncate(longPath->size() - 1);
+				if (longPath->byteAt(longPath->count() - 1) == 0)
+					longPath->truncate(longPath->count() - 1);
 				if (entry->type_ == 'K') entry->linkPath_ = longPath;
 				else if (entry->type_ == 'L') entry->path_ = longPath;
-				if (source_->readAll(data) < data->size())
+				if (source_->readAll(data) < data->count())
 					throw BrokenArchive(i_, "Expected GNU @LongLink header");
-				i_ += data->size();
+				i_ += data->count();
 				entry->type_ = data->at(156);
 				readAgain = true;
 			}
@@ -116,8 +116,8 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 	data->scanInt(&entry->size_,         8, 124, 136);
 	data->scanInt(&entry->lastModified_, 8, 136, 148);
 
-	if (entry->type() == 0 && entry->path()->size() > 0) {
-		if (entry->path()->at(entry->path()->size() - 1) == '/')
+	if (entry->type() == 0 && entry->path()->count() > 0) {
+		if (entry->path()->at(entry->path()->count() - 1) == '/')
 			entry->type_ = ArchiveEntry::Directory;
 	}
 

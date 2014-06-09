@@ -71,7 +71,7 @@ Ref<Thread> ThreadFactory::produce()
 void ThreadFactory::start(Thread *thread)
 {
 	thread->stack_ = allocateStack();
-	int ret = pthread_attr_setstack(&attr_, thread->stack_->bytes() + guardSize_, thread->stack_->size() - 2 * guardSize_);
+	int ret = pthread_attr_setstack(&attr_, thread->stack_->bytes() + guardSize_, thread->stack_->count() - 2 * guardSize_);
 	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 	ret = pthread_create(&thread->tid_, &attr_, &bootstrap, static_cast<void *>(thread));
 	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
@@ -91,7 +91,7 @@ Ref<ByteArray> ThreadFactory::allocateStack() const
 
 void ThreadFactory::freeStack(ByteArray *stack)
 {
-	if (::munmap(stack->bytes(), stack->size()) == -1)
+	if (::munmap(stack->bytes(), stack->count()) == -1)
 		FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 

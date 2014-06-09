@@ -27,10 +27,10 @@ public:
 	inline static Ref<List> create(int n) { return new List(n); }
 	inline static Ref<List> clone(List *a) { return new List(*a); }
 
-	inline int size() const { return tree_.weight(); }
+	inline int count() const { return tree_.weight(); }
 
 	inline bool has(int index) const {
-		return 0 <= index && index < size();
+		return 0 <= index && index < count();
 	}
 	inline Item &at(int index) const {
 		Node *node = 0;
@@ -40,7 +40,7 @@ public:
 	}
 
 	inline Item& first() const { return at(0); }
-	inline Item& last() const { return at(size() - 1); }
+	inline Item& last() const { return at(count() - 1); }
 
 	inline List &push(int index, const Item &item) {
 		tree_.push(index, item);
@@ -58,23 +58,23 @@ public:
 		return item;
 	}
 
-	inline void push(const Item &item) { push(size(), item); }
+	inline void push(const Item &item) { push(count(), item); }
 	inline void pop(Item *item) { pop(0, item); }
 	inline Item pop() { Item item; pop(&item); return item; }
 
-	inline void append(const Item &item) { push(size(), item); }
-	inline void appendList(const List *b) { if (b) for (int i = 0; i < b->size(); ++i) append(b->at(i)); }
+	inline void append(const Item &item) { push(count(), item); }
+	inline void appendList(const List *b) { if (b) for (int i = 0; i < b->count(); ++i) append(b->at(i)); }
 	inline void insert(int index, const Item &item) { push(index, item); }
 	inline void remove(int index, Item &item) { pop(index, &item); }
 	inline void remove(int index) { pop(index); }
 	inline void pushFront(const Item &item) { push(0, item); }
-	inline void pushBack(const Item &item) { push(size(), item); }
+	inline void pushBack(const Item &item) { push(count(), item); }
 	inline Item popFront() { return pop(0); }
-	inline Item popBack() { return pop(size() - 1); }
+	inline Item popBack() { return pop(count() - 1); }
 
 	int find(const Item &item, int index = 0) const
 	{
-		while (index < size()) {
+		while (index < count()) {
 			if (at(index) == item) break;
 			++index;
 		}
@@ -84,7 +84,7 @@ public:
 	{
 		int index = 0;
 		int numReplaced = 0;
-		while (index < size()) {
+		while (index < count()) {
 			if (at(index) == oldItem)
 				set(index, newItem);
 			++index;
@@ -92,15 +92,15 @@ public:
 		}
 		return numReplaced;
 	}
-	inline bool contains(const Item &item) const { return find(item) < size(); }
+	inline bool contains(const Item &item) const { return find(item) < count(); }
 	inline Item join(const Item &sep = Item()) const { return Item::join(this, sep); }
 
 	Ref<List> sort(int order = SortOrder::Ascending, bool unique = false) const
 	{
-		if (size() == 0)
+		if (count() == 0)
 			return List::create();
-		Ref< Heap<Item> > heap = Heap<Item>::create(size(), order);
-		for (int i = 0; i < size(); ++i)
+		Ref< Heap<Item> > heap = Heap<Item>::create(count(), order);
+		for (int i = 0; i < count(); ++i)
 			heap->push(at(i));
 		Ref<List> result;
 		if (unique) {
@@ -117,8 +117,8 @@ public:
 			}
 		}
 		else {
-			result = List::create(size());
-			for (int i = 0, n = result->size(); i < n; ++i)
+			result = List::create(count());
+			for (int i = 0, n = result->count(); i < n; ++i)
 				result->at(i) = heap->pop();
 		}
 		return result;
@@ -126,8 +126,8 @@ public:
 
 	Ref<List> reverse() const
 	{
-		Ref<List> result = List::create(size());
-		for (int i = 0, n = size(); i < n; ++i)
+		Ref<List> result = List::create(count());
+		for (int i = 0, n = count(); i < n; ++i)
 			result->at(i) = at(n - i - 1);
 		return result;
 	}
@@ -136,8 +136,8 @@ public:
 
 	template<class T2>
 	Ref< List<T2> > toList() const {
-		Ref< List<T2 > > result = List<T2>::create(size());
-		for (int i = 0; i < size(); ++i)
+		Ref< List<T2 > > result = List<T2>::create(count());
+		for (int i = 0; i < count(); ++i)
 			result->at(i) = at(i);
 		return result;
 	}

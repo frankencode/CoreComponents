@@ -80,8 +80,8 @@ inline Ref<StringList> operator+(const String &a, const String &b) {
 }
 inline Ref<StringList> operator+(Ref<StringList> &a, const String &b) { a->append(b); return a; }
 
-inline bool operator==(const String &a, const String &b) { return a->size() == b->size() && strcmp(a->chars(), b->chars()) == 0; }
-inline bool operator!=(const String &a, const String &b) { return a->size() != b->size() || strcmp(a->chars(), b->chars()) != 0; }
+inline bool operator==(const String &a, const String &b) { return a->count() == b->count() && strcmp(a->chars(), b->chars()) == 0; }
+inline bool operator!=(const String &a, const String &b) { return a->count() != b->count() || strcmp(a->chars(), b->chars()) != 0; }
 inline bool operator< (const String &a, const String &b) { return strcmp(a->chars(), b->chars()) <  0; }
 inline bool operator> (const String &a, const String &b) { return strcmp(a->chars(), b->chars()) >  0; }
 inline bool operator<=(const String &a, const String &b) { return strcmp(a->chars(), b->chars()) <= 0; }

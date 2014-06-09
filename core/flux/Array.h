@@ -77,7 +77,7 @@ public:
 			size_ = newSize;
 	}
 
-	inline int size() const { return size_; }
+	inline int count() const { return size_; }
 
 	inline int first() const { return 0; }
 	inline int last() const { return size_ - 1; }
@@ -147,7 +147,7 @@ public:
 		return n;
 	}
 
-	inline int find(Array *pattern, int i) const { return find(i, pattern->data(), pattern->size()); }
+	inline int find(Array *pattern, int i) const { return find(i, pattern->data(), pattern->count()); }
 	inline int find(const T *pattern, int patternSize, int i) const {
 		if (patternSize == 0) return size_;
 		for (int j = i, k = 0; j < size_;) {
@@ -161,7 +161,7 @@ public:
 		return size_;
 	}
 
-	inline int contains(Array *pattern) { return contains(pattern->data(), pattern->size()); }
+	inline int contains(Array *pattern) { return contains(pattern->data(), pattern->count()); }
 	inline int contains(const T *pattern, int patternSize) { return find(0, pattern, patternSize) != size_; }
 
 protected:

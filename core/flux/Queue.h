@@ -123,7 +123,7 @@ public:
 	inline T pop(T *item) { return popFront(item); }
 	inline T pop() { return popFront(); }
 
-	inline int size() const { return length_; }
+	inline int count() const { return length_; }
 
 	inline T front() const { return head_->item_; }
 	inline T back() const { return tail_->item_; }

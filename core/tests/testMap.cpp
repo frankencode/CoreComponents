@@ -33,7 +33,7 @@ int main()
 		const int testCount = sizeof(test) / sizeof(test[0]);
 		for (int i = 0; i < testCount; ++i)
 			names->insert(test[i][0], test[i][1]);
-		for (int i = 0; i < names->size(); ++i)
+		for (int i = 0; i < names->count(); ++i)
 			fout("%% %%\n") << names->keyAt(i) << names->valueAt(i);
 		for (int i = 0; i < testCount; ++i)
 			check(names->value(test[i][0]) == test[i][1]);
@@ -43,7 +43,7 @@ int main()
 		Ref< Map<int, int> > map = Map<int, int>::create();
 		for (int i = 0; i < 20; ++i)
 			map->insert(fib(i), i);
-		for (int i = 0; i < map->size(); ++i)
+		for (int i = 0; i < map->count(); ++i)
 			fout("map->at(%%) = %% (%%)\n") << i << map->at(i)->key() << map->at(i)->value();
 		const int a = 20, b = 120;
 		fout("In range [%%..%%]:\n") << a << b;

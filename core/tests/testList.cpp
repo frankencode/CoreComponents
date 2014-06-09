@@ -8,9 +8,9 @@ using namespace flux;
 template<class T>
 void print(Ref< List<T> > list) {
 	fout("[");
-	for (int i = 0; i < list->size(); ++i) {
+	for (int i = 0; i < list->count(); ++i) {
 		fout() << list->at(i);
-		if (i + 1 < list->size()) fout(", ");
+		if (i + 1 < list->count()) fout(", ");
 	}
 	fout("]\n");
 }
@@ -34,7 +34,7 @@ int main()
 		for (int i = 0; i < 10; ++i)
 			list->append(i);
 		print(list);
-		for (int i = 0; i < list->size(); ++i)
+		for (int i = 0; i < list->count(); ++i)
 			if (list->at(i) % 2 != 0) list->remove(i);
 		print(list);
 		for (int i = 0; i < 10; ++i) {
@@ -51,12 +51,12 @@ int main()
 		print(list);
 		Ref<IntList> list2 = list->sort();
 		print(list2);
-		check(list2->size() == list->size());
-		for (int i = 0; i < list2->size() - 1; ++i)
+		check(list2->count() == list->count());
+		for (int i = 0; i < list2->count() - 1; ++i)
 			check(list2->at(i) <= list2->at(i + 1));
 		Ref<IntList> list3 = list->unique();
 		print(list3);
-		for (int i = 0; i < list3->size() - 1; ++i)
+		for (int i = 0; i < list3->count() - 1; ++i)
 			check(list3->at(i) < list3->at(i + 1));
 	}
 	{
@@ -74,7 +74,7 @@ int main()
 		fout("Preallocation...\n");
 		Ref<IntList> a = IntList::create(11);
 		print(a);
-		check(a->size() == 11);
+		check(a->count() == 11);
 	}
 	return 0;
 }

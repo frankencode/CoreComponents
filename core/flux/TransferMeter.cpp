@@ -37,14 +37,14 @@ int TransferMeter::read(ByteArray *buf)
 void TransferMeter::write(const ByteArray *buf)
 {
 	stream_->write(buf);
-	totalWritten_ += buf->size();
+	totalWritten_ += buf->count();
 }
 
 void TransferMeter::write(const StringList *parts)
 {
 	stream_->write(parts);
-	for (int i = 0, n = parts->size(); i < n; ++i)
-		totalWritten_ += parts->at(i)->size();
+	for (int i = 0, n = parts->count(); i < n; ++i)
+		totalWritten_ += parts->at(i)->count();
 }
 
 } // namespace flux
