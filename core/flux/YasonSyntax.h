@@ -54,6 +54,8 @@ protected:
 	int boolean_;
 	int true_;
 	int false_;
+	int integer_;
+	int float_;
 	int name_;
 	int className_;
 	int object_;

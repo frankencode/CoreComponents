@@ -20,12 +20,12 @@ Palette {
 		bold: true
 	}
 	Style {
-		rule: int::Literal
+		rule: Integer
 		ink: Blue
 	}
 	Style {
-		rule: float::Literal
-		ink: Magenta
+		rule: Float
+		ink: DarkMagenta
 	}
 	Style {
 		rule: Text
