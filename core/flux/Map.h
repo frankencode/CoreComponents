@@ -16,8 +16,8 @@
 namespace flux
 {
 
-template<class Key, class Value, class Mixin = None>
-class Map: public Object, public Mixin
+template<class Key, class Value>
+class Map: public Object
 {
 public:
 	typedef Pair<Key,Value> Item;
