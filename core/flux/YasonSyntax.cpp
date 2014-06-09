@@ -174,6 +174,14 @@ YasonSyntax::YasonSyntax(int options)
 	true_ = keywordByName("true");
 	false_ = keywordByName("false");
 
+	DEFINE("Integer", &integer_,
+		INLINE("int::Literal")
+	);
+
+	DEFINE("Float", &float_,
+		INLINE("float::Literal")
+	);
+
 	DEFINE("Identifier",
 		REPEAT(1,
 			CHOICE(
@@ -287,8 +295,8 @@ YasonSyntax::YasonSyntax(int options)
 
 	DEFINE("Value",
 		CHOICE(
-			REF("int::Literal"),
-			REF("float::Literal"),
+			REF("Integer"),
+			REF("Float"),
 			REF("Object"),
 			REF("List"),
 			REF("Boolean"),
@@ -477,7 +485,7 @@ Variant YasonSyntax::readValue(const ByteArray *text, Token *token, int expected
 	Variant value;
 	bool typeError = false;
 
-	if (token->scope() == floatSyntax()->id())
+	if (token->rule() == float_)
 	{
 		if ( expectedType == Variant::UndefType ||
 		     expectedType == Variant::FloatType ||
@@ -490,7 +498,7 @@ Variant YasonSyntax::readValue(const ByteArray *text, Token *token, int expected
 		else
 			typeError = true;
 	}
-	else if (token->scope() == integerSyntax()->id())
+	else if (token->rule() == integer_)
 	{
 		if ( expectedType == Variant::UndefType ||
 		     expectedType == Variant::FloatType ||
