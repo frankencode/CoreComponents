@@ -10,10 +10,10 @@
 #ifndef FLUX_ORDINALTREE_H
 #define FLUX_ORDINALTREE_H
 
-#include "AvlTree.h"
-#include "Array.h"
-#include "ExclusiveAccess.h"
 #include "assert.h"
+#include "ExclusiveAccess.h"
+#include "Array.h"
+#include "BinaryTree.h"
 
 namespace flux
 {
@@ -42,7 +42,7 @@ public:
 };
 
 template<class NodeType>
-class OrdinalTree: public AvlTree<NodeType>
+class OrdinalTree: public BinaryTree<NodeType>
 {
 public:
 	typedef NodeType Node;
@@ -110,7 +110,7 @@ OrdinalTree<Node>::OrdinalTree(int n)
 				v->at(i) = k;
 			}
 			else {
-				AvlTree<Node>::touched(v->at((i - 1) >> 1), 0, i & 1, false);
+				AvlBalance::restore(v->at((i - 1) >> 1), 0, i & 1, false);
 			}
 		}
 	}
@@ -125,7 +125,7 @@ OrdinalTree<Node>::OrdinalTree(int n)
 
 	/*FLUX_ASSERT(BinaryTree<Node>::testStructure(this->root_));
 	FLUX_ASSERT(BinaryTree<Node>::testIteration(this->root_));
-	FLUX_ASSERT(AvlTree<Node>::testBalance(this->:root_));
+	FLUX_ASSERT(AvlBalance::testBalance(this->root_));
 	FLUX_ASSERT(OrdinalTree<Node>::testWeight(this->root_));*/
 }
 
@@ -305,8 +305,6 @@ inline void OrdinalTree<Node>::touched(BinaryNode *kp, BinaryNode *kc, bool left
 		k->weight_ += delta;
 		k = k->parent_;
 	}
-
-	AvlTree<Node>::touched(kp, kc, left, attached);
 
 	cachedNode_ = 0;
 }

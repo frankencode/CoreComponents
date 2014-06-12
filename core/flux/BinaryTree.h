@@ -10,30 +10,14 @@
 #ifndef FLUX_BINARYTREE_H
 #define FLUX_BINARYTREE_H
 
+#include "BinaryNode.h"
+#include "AvlBalance.h"
+
 namespace flux
 {
 
-class BinaryNode
-{
-public:
-	BinaryNode()
-		: weight_(1),
-		  balance_(0)
-	{}
-	BinaryNode(const BinaryNode &kb)
-		: weight_(kb.weight_),
-		  balance_(kb.balance_)
-	{}
-
-	BinaryNode *left_;
-	BinaryNode *right_;
-	BinaryNode *parent_;
-	int weight_;
-	int balance_;
-};
-
 template<class NodeType>
-class BinaryTree
+class BinaryTree: public AvlBalance
 {
 public:
 	typedef NodeType Node;
@@ -104,6 +88,7 @@ inline void BinaryTree<Node>::attach(BinaryNode *kp, BinaryNode *k, bool left)
 		k->right_ = 0;
 	}
 	touched(kp, k, left, true);
+	AvlBalance::restore(kp, k, left, true);
 }
 
 /** Detaches the leaf or list node k from the tree.
@@ -126,6 +111,7 @@ inline BinaryNode *BinaryTree<Node>::detach(BinaryNode *k)
 		root_ = 0;
 	}
 	touched(kp, k, left, false);
+	AvlBalance::restore(kp, k, left, false);
 	return k;
 }
 
