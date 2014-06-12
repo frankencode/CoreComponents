@@ -23,7 +23,7 @@ public:
 	typedef Pair<Key,Value> Item;
 
 	inline static Ref<Map> create() { return new Map(); }
-	inline static Ref<Map> clone(Map *a) { return new Map(a); }
+	inline static Ref<Map> clone(Map *a) { return new Map(*a); }
 
 	inline int count() const { return tree_.weight(); }
 
@@ -145,7 +145,7 @@ public:
 	inline void pop(Item *item)
 	{
 		FLUX_ASSERT(count() > 0);
-		Node *k = tree_.min();
+		Node *k = static_cast<Node *>(tree_.min());
 		*item = k->item_;
 		tree_.remove(k);
 	}

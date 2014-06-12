@@ -19,32 +19,25 @@ namespace flux
 {
 
 template<class ItemType>
-class OrdinalNode
+class OrdinalNode: public BinaryNode
 {
 public:
 	typedef ItemType Item;
 
 	OrdinalNode()
-		: weight_(1),
-		  balance_(0),
-		  item_(Item())
+		: item_(Item())
 	{}
 	OrdinalNode(const Item &item)
-		: weight_(1),
-		  balance_(0),
-		  item_(item)
+		: item_(item)
 	{}
-	OrdinalNode(const OrdinalNode &b)
-		: weight_(b.weight_),
-		  balance_(b.balance_),
-		  item_(b.item_)
+	OrdinalNode(const OrdinalNode &kb)
+		: BinaryNode(kb),
+		  item_(kb.item_)
 	{}
 
-	OrdinalNode *left_;
-	OrdinalNode *right_;
-	OrdinalNode *parent_;
-	int weight_;
-	int balance_;
+	inline OrdinalNode *left() const { return static_cast<OrdinalNode *>(left_); };
+	inline OrdinalNode *right() const { return static_cast<OrdinalNode *>(right_); }
+	inline OrdinalNode *parent() const { return static_cast<OrdinalNode *>(parent_); }
 	Item item_;
 };
 
@@ -61,8 +54,6 @@ public:
 	OrdinalTree(const OrdinalTree &b);
 	const OrdinalTree &operator=(const OrdinalTree &b);
 
-	inline int weight() const { return weight(this->root_); }
-
 	bool lookupByIndex(int index, Node **node = 0) const;
 
 	template<class Pattern>
@@ -75,15 +66,11 @@ public:
 	void pop(int index, Item *item);
 
 protected:
-	void touched(Node *kp, Node *kc, bool left, bool attached);
-	void rotated(Node *k1, bool left);
+	void touched(BinaryNode *kp, BinaryNode *kc, bool left, bool attached);
+	void rotated(BinaryNode *k1, bool left);
 	void cleared();
-	static void establishWeight(Node *k);
-	inline static int weight(Node *k) { return (k) ? k->weight_ : 0; }
 
-#ifndef NDEBUG
-	static bool testWeight(Node *k);
-#endif
+	inline Node *root() const { return static_cast<Node *>(this->root_); }
 
 	mutable ExclusiveSection cacheExclusive_;
 	mutable Node *cachedNode_;
@@ -130,7 +117,7 @@ OrdinalTree<Node>::OrdinalTree(int n)
 
 	for (int i = n - 1; i > 0; --i) {
 		Node *k = v->at(i);
-		Node *kp = k->parent_;
+		Node *kp = k->parent();
 		kp->weight_ += k->weight_;
 	}
 
@@ -160,7 +147,7 @@ const OrdinalTree<Node> &OrdinalTree<Node>::operator=(const OrdinalTree &b)
 template<class Node>
 bool OrdinalTree<Node>::lookupByIndex(int i, Node **node) const
 {
-	FLUX_ASSERT((0 <= i) && (i < weight()));
+	FLUX_ASSERT((0 <= i) && (i < this->weight()));
 
 	ExclusiveAccess cacheAccess(&cacheExclusive_);
 	if (cacheAccess) {
@@ -188,13 +175,13 @@ bool OrdinalTree<Node>::lookupByIndex(int i, Node **node) const
 	Node *k = this->root_;
 	int j0 = 0;
 	while (k) {
-		int j = j0 + weight(k->left_);
+		int j = j0 + this->weight(k->left_);
 		if (i < j) {
-			k = k->left_;
+			k = k->left();
 		}
 		else if (j < i) {
 			j0 = j + 1;
-			k = k->right_;
+			k = k->right();
 		}
 		else // i == j
 			break;
@@ -213,20 +200,20 @@ template<class Node>
 template<class Pattern>
 Node *OrdinalTree<Node>::find(const Pattern &pattern, bool *found, bool *below, int *index) const
 {
-	Node *k = this->root_;
+	Node *k = root();
 	Node *k2 = 0;
 	if (found) *found = false;
 	int j0 = 0, j = -1;
 	if (k) {
 		while (true) {
 			k2 = k;
-			j = j0 + weight(k->left_);
+			j = j0 + BinaryTree<Node>::weight(k->left_);
 			if (pattern < k->item_) {
 				if (!k->left_) {
 					if (below) *below = true;
 					break;
 				}
-				k = k->left_;
+				k = k->left();
 			}
 			else if (k->item_ < pattern) {
 				if (!k->right_) {
@@ -234,7 +221,7 @@ Node *OrdinalTree<Node>::find(const Pattern &pattern, bool *found, bool *below, 
 					break;
 				}
 				j0 = j + 1;
-				k = k->right_;
+				k = k->right();
 			}
 			else { // item == k->data()
 				if (found) *found = true;
@@ -272,7 +259,7 @@ template<class Node>
 void OrdinalTree<Node>::push(int index, const Item &item)
 {
 	Node *kn = new Node(item);
-	if (index == weight()) {
+	if (index == this->weight()) {
 		Node *kp = 0;
 		if (cachedNode_) {
 			if (cachedIndex_ == index)
@@ -310,10 +297,10 @@ void OrdinalTree<Node>::pop(int index, Item *item)
 }
 
 template<class Node>
-inline void OrdinalTree<Node>::touched(Node *kp, Node *kc, bool left, bool attached)
+inline void OrdinalTree<Node>::touched(BinaryNode *kp, BinaryNode *kc, bool left, bool attached)
 {
 	int delta = attached ? 1 : -1;
-	Node *k = kp;
+	BinaryNode *k = kp;
 	while (k) {
 		k->weight_ += delta;
 		k = k->parent_;
@@ -325,10 +312,10 @@ inline void OrdinalTree<Node>::touched(Node *kp, Node *kc, bool left, bool attac
 }
 
 template<class Node>
-inline void OrdinalTree<Node>::rotated(Node *k1, bool left)
+inline void OrdinalTree<Node>::rotated(BinaryNode *k1, bool left)
 {
-	establishWeight(k1);
-	establishWeight(k1->parent_);
+	this->establishWeight(k1);
+	this->establishWeight(k1->parent_);
 }
 
 template<class Node>
@@ -336,23 +323,6 @@ void OrdinalTree<Node>::cleared()
 {
 	cachedNode_ = 0;
 }
-
-template<class Node>
-inline void OrdinalTree<Node>::establishWeight(Node *k)
-{
-	k->weight_ = weight(k->left_) + weight(k->right_) + 1;
-}
-
-#ifndef NDEBUG
-template<class Node>
-bool OrdinalTree<Node>::testWeight(Node *k)
-{
-	if (!k) return true;
-	return
-		(weight(k->left_) + weight(k->right_) + 1 == k->weight_) &&
-		testWeight(k->left_) && testWeight(k->right_);
-}
-#endif // ndef NDEBUG
 
 } // namespace flux
 

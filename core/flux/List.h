@@ -85,10 +85,11 @@ public:
 		int index = 0;
 		int numReplaced = 0;
 		while (index < count()) {
-			if (at(index) == oldItem)
-				set(index, newItem);
+			if (at(index) == oldItem) {
+				at(index) = newItem;
+				++numReplaced;
+			}
 			++index;
-			++numReplaced;
 		}
 		return numReplaced;
 	}
