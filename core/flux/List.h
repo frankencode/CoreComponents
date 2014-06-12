@@ -179,6 +179,6 @@ bool operator<=(const List<T> &a, const List<T> &b) { return container::compare(
 template<class T>
 bool operator>=(const List<T> &a, const List<T> &b) { return container::compare(a, b) >= 0; }
 
-} // namespace ft
+} // namespace flux
 
 #endif // FLUX_LIST_H
