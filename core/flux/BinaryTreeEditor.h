@@ -24,7 +24,19 @@ public:
 
 	void attach(BinaryNode *kp, BinaryNode *kn, bool left);
 	BinaryNode *detach(BinaryNode *k);
-	void replaceNode(BinaryNode *ki, BinaryNode *kl);
+	void replaceNode(BinaryNode *ki, BinaryNode *kl); // FIXME: rename to "replace"
+	BinaryNode *removeNode(BinaryNode *k); // FIXME: rename to unlink
+
+	void attachBefore(BinaryNode *kb, BinaryNode *kn);
+	void attachAfter(BinaryNode *ka, BinaryNode *kn);
+
+	static BinaryNode *min(BinaryNode *k);
+	static BinaryNode *max(BinaryNode *k);
+	static BinaryNode *pred(BinaryNode *k);
+	static BinaryNode *succ(BinaryNode *k);
+
+	inline static int weight(BinaryNode *k) { return (k) ? k->weight_ : 0; }
+	inline static void establishWeight(BinaryNode *k) { k->weight_ = weight(k->left_) + weight(k->right_) + 1; }
 };
 
 } // namespace flux

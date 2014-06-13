@@ -70,7 +70,7 @@ protected:
 	void rotated(BinaryNode *k1, bool left);
 	void cleared();
 
-	inline Node *root() const { return static_cast<Node *>(this->root_); }
+	inline Node *root() const { return static_cast<Node *>(BinaryTree<Node>::root_); }
 
 	mutable ExclusiveSection cacheExclusive_;
 	mutable Node *cachedNode_;
@@ -121,7 +121,7 @@ OrdinalTree<Node>::OrdinalTree(int n)
 		kp->weight_ += k->weight_;
 	}
 
-	this->root_ = v->at(0);
+	BinaryTree<Node>::root_ = v->at(0);
 
 	/*FLUX_ASSERT(BinaryTree<Node>::testStructure(this->root_));
 	FLUX_ASSERT(BinaryTree<Node>::testIteration(this->root_));
@@ -133,21 +133,21 @@ template<class Node>
 OrdinalTree<Node>::OrdinalTree(const OrdinalTree &b)
 	: cachedNode_(0)
 {
-	this->root_ = BinaryTree<Node>::clone(b.root_);
+	BinaryTree<Node>::root_ = BinaryTree<Node>::clone(b.root_);
 }
 
 template<class Node>
 const OrdinalTree<Node> &OrdinalTree<Node>::operator=(const OrdinalTree &b)
 {
-	this->clear();
-	this->root_ = BinaryTree<Node>::clone(b.root_);
+	BinaryTree<Node>::clear();
+	BinaryTree<Node>::root_ = BinaryTree<Node>::clone(b.root_);
 	return *this;
 }
 
 template<class Node>
 bool OrdinalTree<Node>::lookupByIndex(int i, Node **node) const
 {
-	FLUX_ASSERT((0 <= i) && (i < this->weight()));
+	FLUX_ASSERT((0 <= i) && (i < BinaryTree<Node>::weight()));
 
 	ExclusiveAccess cacheAccess(&cacheExclusive_);
 	if (cacheAccess) {
@@ -155,7 +155,7 @@ bool OrdinalTree<Node>::lookupByIndex(int i, Node **node) const
 			const int d = i - cachedIndex_;
 			if (d == 1) {
 				++cachedIndex_;
-				cachedNode_ = this->succ(cachedNode_);
+				cachedNode_ = static_cast<Node *>(BinaryTreeEditor::succ(cachedNode_));
 				if ((cachedNode_) && (node)) *node = cachedNode_;
 				return cachedNode_;
 			}
@@ -165,17 +165,17 @@ bool OrdinalTree<Node>::lookupByIndex(int i, Node **node) const
 			}
 			else if (d == -1) {
 				--cachedIndex_;
-				cachedNode_ = this->pred(cachedNode_);
+				cachedNode_ = static_cast<Node *>(BinaryTreeEditor::pred(cachedNode_));
 				if ((cachedNode_) && (node)) *node = cachedNode_;
 				return cachedNode_;
 			}
 		}
 	}
 
-	Node *k = this->root_;
+	Node *k = BinaryTree<Node>::root_;
 	int j0 = 0;
 	while (k) {
-		int j = j0 + this->weight(k->left_);
+		int j = j0 + BinaryTreeEditor::weight(k->left_);
 		if (i < j) {
 			k = k->left();
 		}
@@ -207,7 +207,7 @@ Node *OrdinalTree<Node>::find(const Pattern &pattern, bool *found, bool *below, 
 	if (k) {
 		while (true) {
 			k2 = k;
-			j = j0 + BinaryTree<Node>::weight(k->left_);
+			j = j0 + BinaryTreeEditor::weight(k->left_);
 			if (pattern < k->item_) {
 				if (!k->left_) {
 					if (below) *below = true;
@@ -238,7 +238,7 @@ inline int OrdinalTree<Node>::first(const Item &a) const
 {
 	bool found = false, below = true;
 	int index = 0;
-	if (!this->root_) return 0;
+	if (!BinaryTree<Node>::root_) return 0;
 	find(a, &found, &below, &index);
 	if (found) return index;
 	return below ? index : index + 1;
@@ -249,7 +249,7 @@ inline int OrdinalTree<Node>::last(const Item &b) const
 {
 	bool found = false, below = true;
 	int index = 0;
-	if (!this->root_) return 0;
+	if (!BinaryTree<Node>::root_) return 0;
 	find(b, &found, &below, &index);
 	if (found) return index;
 	return below ? index - 1 : index;
@@ -259,20 +259,20 @@ template<class Node>
 void OrdinalTree<Node>::push(int index, const Item &item)
 {
 	Node *kn = new Node(item);
-	if (index == this->weight()) {
+	if (index == BinaryTree<Node>::weight()) {
 		Node *kp = 0;
 		if (cachedNode_) {
 			if (cachedIndex_ == index)
 				kp = cachedNode_;
 		}
-		if (!kp) kp = this->max();
-		this->attach(kp, kn, false);
+		if (!kp) kp = static_cast<Node *>(BinaryTree<Node>::max());
+		BinaryTreeEditor::attach(kp, kn, false);
 	}
 	else {
 		Node *ka = 0;
 		if (!lookupByIndex(index, &ka))
 			FLUX_ASSERT(false);
-		this->attachBefore(ka, kn);
+		BinaryTreeEditor::attachBefore(ka, kn);
 	}
 
 	cachedNode_ = kn;
@@ -286,10 +286,10 @@ void OrdinalTree<Node>::pop(int index, Item *item)
 	if (!lookupByIndex(index, &ko))
 		FLUX_ASSERT(false);
 	*item = ko->item_;
-	Node *k = this->pred(ko);
+	Node *k = static_cast<Node *>(BinaryTreeEditor::pred(ko));
 	if (k) --index;
-	else k = this->succ(ko);
-	this->remove(ko);
+	else k = static_cast<Node *>(BinaryTreeEditor::succ(ko));
+	BinaryTree<Node>::remove(ko);
 	if (k) {
 		cachedNode_ = k;
 		cachedIndex_ = index;
@@ -314,8 +314,8 @@ inline void OrdinalTree<Node>::changed(BinaryNode *kp, BinaryNode *kc, bool left
 template<class Node>
 inline void OrdinalTree<Node>::rotated(BinaryNode *k1, bool left)
 {
-	this->establishWeight(k1);
-	this->establishWeight(k1->parent_);
+	BinaryTreeEditor::establishWeight(k1);
+	BinaryTreeEditor::establishWeight(k1->parent_);
 }
 
 template<class Node>

@@ -85,4 +85,83 @@ void BinaryTreeEditor::replaceNode(BinaryNode *ki, BinaryNode *kl)
 		ki->right_->parent_ = kl;
 }
 
+/** Remove the node k from the tree.
+  */
+BinaryNode *BinaryTreeEditor::removeNode(BinaryNode *k)
+{
+	if (k->left_)
+		replaceNode(k, detach(max(k->left_)));
+	else if (k->right_)
+		replaceNode(k, detach(min(k->right_)));
+	else
+		detach(k);
+	return k;
+}
+
+void BinaryTreeEditor::attachBefore(BinaryNode *kb, BinaryNode *kn)
+{
+	if (!kb)
+		BinaryTreeEditor::attach(kb, kn, true);
+	else if (kb->left_)
+		BinaryTreeEditor::attach(max(kb->left_), kn, false);
+	else
+		BinaryTreeEditor::attach(kb, kn, true);
+}
+
+void BinaryTreeEditor::attachAfter(BinaryNode *ka, BinaryNode *kn)
+{
+	if (!ka)
+		BinaryTreeEditor::attach(ka, kn, true);
+	else if (ka->right_)
+		BinaryTreeEditor::attach(min(ka->right_), kn, true);
+	else
+		BinaryTreeEditor::attach(ka, kn, false);
+}
+
+BinaryNode *BinaryTreeEditor::pred(BinaryNode *k)
+{
+	if (k->left_)
+		return max(k->left_);
+	BinaryNode *kp = k->parent_;
+	while (kp) {
+		if (k == kp->right_) break;
+		k = kp;
+		kp = kp->parent_;
+	}
+	return kp;
+}
+
+BinaryNode *BinaryTreeEditor::succ(BinaryNode *k)
+{
+	if (k->right_)
+		return min(k->right_);
+	BinaryNode *kp = k->parent_;
+	while (kp) {
+		if (k == kp->left_) break;
+		k = kp;
+		kp = kp->parent_;
+	}
+	return kp;
+}
+
+BinaryNode *BinaryTreeEditor::min(BinaryNode *k)
+{
+	BinaryNode *k2 = k;
+	while (k) {
+		k2 = k;
+		k = k->left_;
+	}
+	return k2;
+}
+
+BinaryNode *BinaryTreeEditor::max(BinaryNode *k)
+{
+	BinaryNode *k2 = k;
+	while (k) {
+		k2 = k;
+		k = k->right_;
+	}
+	return k2;
+}
+
 } // namespace flux
