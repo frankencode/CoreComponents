@@ -12,23 +12,19 @@
 
 #include "BinaryNode.h"
 #include "AvlBalance.h"
+#include "BinaryTreeEditor.h"
 
 namespace flux
 {
 
 template<class NodeType>
-class BinaryTree: public AvlBalance
+class BinaryTree: public AvlBalance, public BinaryTreeEditor
 {
 public:
 	typedef NodeType Node;
 
 	BinaryTree(): root_(0) {}
 	virtual ~BinaryTree() { clear(); }
-
-	void attach(BinaryNode *kp, BinaryNode *kn, bool left);
-	BinaryNode *detach(BinaryNode *k);
-	void replaceNode(BinaryNode *ki, BinaryNode *kl);
-	void rotate(BinaryNode *k1, bool left);
 
 	inline Node *min() const { return min(root_); }
 	inline Node *max() const { return max(root_); }
@@ -53,8 +49,8 @@ public:
 	static void establishWeight(BinaryNode *k);
 
 protected:
-	inline virtual void touched(BinaryNode *kp, BinaryNode *kc, bool left, bool attached) {}
-	inline virtual void rotated(BinaryNode *k1, bool left) {}
+	inline void setRoot(BinaryNode *k) { root_ = static_cast<Node *>(k); }
+
 	inline virtual void cleared() {}
 
 #ifndef NDEBUG
@@ -66,131 +62,6 @@ protected:
 
 	Node *root_;
 };
-
-/** Attaches the new leaf node k under kp as the left or right child.
-  */
-template<class Node>
-inline void BinaryTree<Node>::attach(BinaryNode *kp, BinaryNode *k, bool left)
-{
-	if (kp) {
-		if (left)
-			kp->left_ = k;
-		else
-			kp->right_ = k;
-		k->parent_ = kp;
-		k->left_ = 0;
-		k->right_ = 0;
-	}
-	else {
-		root_ = static_cast<Node *>(k);
-		k->parent_ = 0;
-		k->left_ = 0;
-		k->right_ = 0;
-	}
-	touched(kp, k, left, true);
-	AvlBalance::restore(kp, k, left, true);
-}
-
-/** Detaches the leaf or list node k from the tree.
-  */
-template<class Node>
-inline BinaryNode *BinaryTree<Node>::detach(BinaryNode *k)
-{
-	BinaryNode *kp = k->parent_;
-	bool left = false;
-	if (kp) {
-		BinaryNode *kc = (k->left_ != 0) ? k->left_ : k->right_;
-		left = (kp->left_ == k);
-		if (left)
-			kp->left_ = kc;
-		else
-			kp->right_ = kc;
-		if (kc != 0) kc->parent_ = kp;
-	}
-	else {
-		root_ = 0;
-	}
-	touched(kp, k, left, false);
-	AvlBalance::restore(kp, k, left, false);
-	return k;
-}
-
-/** Put the leaf node kl into the place of inner node ki
-  */
-template<class Node>
-void BinaryTree<Node>::replaceNode(BinaryNode *ki, BinaryNode *kl)
-{
-	kl->balance_ = ki->balance_;
-	kl->weight_ = ki->weight_;
-
-	// establish links to neighbors
-	kl->parent_ = ki->parent_;
-	kl->left_ = ki->left_;
-	kl->right_ = ki->right_;
-
-	// establish links from neighbors
-	BinaryNode *kp = ki->parent_;
-	if (kp) {
-		if (kp->left_ == ki)
-			kp->left_ = kl;
-		else
-			kp->right_ = kl;
-	}
-	else
-		root_ = static_cast<Node *>(kl);
-	if (ki->left_)
-		ki->left_->parent_ = kl;
-	if (ki->right_)
-		ki->right_->parent_ = kl;
-}
-
-/** Perform an equivalent tree transformation.
-  *
-  * Rotate left:
-  *
-  *    k1      =>      k2
-  *   /  \            /  \
-  *  a    k2         k1   c
-  *      /  \       /  \
-  *     b    c     a    b
-  *
-  * Rotate right:
-  *
-  *      k1    =>    k2
-  *     /  \        /  \
-  *    k2   c      a    k1
-  *   /  \             /  \
-  *  a    b           b    c
-  */
-template<class Node>
-void BinaryTree<Node>::rotate(BinaryNode *k1, bool left)
-{
-	BinaryNode *k2 = left ? k1->right_ : k1->left_;
-	if (k1->parent_) {
-		if (k1->parent_->left_ == k1)
-			k1->parent_->left_ = k2;
-		else
-			k1->parent_->right_ = k2;
-	}
-	else {
-		root_ = static_cast<Node *>(k2);
-	}
-	k2->parent_ = k1->parent_;
-	k1->parent_ = k2;
-	if (left) {
-		k1->right_ = k2->left_;
-		if (k2->left_)
-			k2->left_->parent_ = k1;
-		k2->left_ = k1;
-	}
-	else {
-		k1->left_ = k2->right_;
-		if (k2->right_)
-			k2->right_->parent_ = k1;
-		k2->right_ = k1;
-	}
-	rotated(k1, left);
-}
 
 template<class Node>
 inline Node *BinaryTree<Node>::min(Node *k)
@@ -266,22 +137,22 @@ template<class Node>
 void BinaryTree<Node>::attachBefore(BinaryNode *kb, BinaryNode *kn)
 {
 	if (!kb)
-		attach(kb, kn, true);
+		BinaryTreeEditor::attach(kb, kn, true);
 	else if (kb->left_)
-		attach(max(static_cast<Node *>(kb->left_)), kn, false);
+		BinaryTreeEditor::attach(max(static_cast<Node *>(kb->left_)), kn, false);
 	else
-		attach(kb, kn, true);
+		BinaryTreeEditor::attach(kb, kn, true);
 }
 
 template<class Node>
 void BinaryTree<Node>::attachAfter(BinaryNode *ka, BinaryNode *kn)
 {
 	if (!ka)
-		attach(ka, kn, true);
+		BinaryTreeEditor::attach(ka, kn, true);
 	else if (ka->right_)
-		attach(min(static_cast<Node *>(ka->right_)), kn, true);
+		BinaryTreeEditor::attach(min(static_cast<Node *>(ka->right_)), kn, true);
 	else
-		attach(ka, kn, false);
+		BinaryTreeEditor::attach(ka, kn, false);
 }
 
 template<class Node>
@@ -330,11 +201,11 @@ template<class Node>
 void BinaryTree<Node>::remove(Node *k)
 {
 	if (k->left_)
-		replaceNode(k, detach(max(k->left())));
+		BinaryTreeEditor::replaceNode(k, detach(max(k->left())));
 	else if (k->right_)
-		replaceNode(k, detach(min(k->right())));
+		BinaryTreeEditor::replaceNode(k, detach(min(k->right())));
 	else
-		detach(k);
+		BinaryTreeEditor::detach(k);
 	delete k;
 }
 
