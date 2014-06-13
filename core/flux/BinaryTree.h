@@ -26,27 +26,16 @@ public:
 	BinaryTree(): root_(0) {}
 	virtual ~BinaryTree() { clear(); }
 
-	inline Node *min() const { return min(root_); }
-	inline Node *max() const { return max(root_); }
-	static Node *min(Node *k);
-	static Node *max(Node *k);
-	static Node *pred(Node *k);
-	static Node *succ(Node *k);
-	static Node *pred(Node *k, int delta);
-	static Node *succ(Node *k, int delta);
+	inline Node *min() const { return static_cast<Node *>(BinaryTreeEditor::min(root_)); }
+	inline Node *max() const { return static_cast<Node *>(BinaryTreeEditor::max(root_)); }
 
-	void attachBefore(BinaryNode *kb, BinaryNode *kn);
-	void attachAfter(BinaryNode *ka, BinaryNode *kn);
+	inline void remove(Node *k) { return delete static_cast<Node *>(BinaryTreeEditor::removeNode(k)); }
 
 	static Node *clone(Node *k);
 	static void clear(Node *k);
 	void clear();
 
-	void remove(Node *k);
-
-	inline int weight() const { return weight(root_); }
-	inline static int weight(BinaryNode *k) { return (k) ? k->weight_ : 0; }
-	static void establishWeight(BinaryNode *k);
+	inline int weight() const { return BinaryTreeEditor::weight(root_); }
 
 protected:
 	inline void setRoot(BinaryNode *k) { root_ = static_cast<Node *>(k); }
@@ -56,104 +45,12 @@ protected:
 #ifndef NDEBUG
 	static bool testStructure(BinaryNode *k);
 	static bool testWeight(BinaryNode *k);
-	static bool testIteration(Node *k);
+	// static bool testIteration(Node *k);
 	// static bool testOrder(Node *k);
 #endif
 
 	Node *root_;
 };
-
-template<class Node>
-inline Node *BinaryTree<Node>::min(Node *k)
-{
-	Node *k2 = k;
-	while (k) {
-		k2 = k;
-		k = k->left();
-	}
-	return k2;
-}
-
-template<class Node>
-inline Node *BinaryTree<Node>::max(Node *k)
-{
-	Node *k2 = k;
-	while (k) {
-		k2 = k;
-		k = k->right();
-	}
-	return k2;
-}
-
-template<class Node>
-Node *BinaryTree<Node>::pred(Node *k)
-{
-	if (k->left_)
-		return max(k->left());
-	Node *kp = k->parent();
-	while (kp) {
-		if (k == kp->right()) break;
-		k = kp;
-		kp = kp->parent();
-	}
-	return kp;
-}
-
-template<class Node>
-Node *BinaryTree<Node>::succ(Node *k)
-{
-	if (k->right_)
-		return min(k->right());
-	Node *kp = k->parent();
-	while (kp) {
-		if (k == kp->left()) break;
-		k = kp;
-		kp = kp->parent();
-	}
-	return kp;
-}
-
-template<class Node>
-inline Node *BinaryTree<Node>::pred(Node *k, int delta)
-{
-	while ((delta > 0) && (k)) {
-		k = pred(k);
-		--delta;
-	}
-	return k;
-}
-
-template<class Node>
-inline Node *BinaryTree<Node>::succ(Node *k, int delta)
-{
-	while ((delta > 0) && (k)) {
-		k = succ(k);
-		--delta;
-	}
-	return k;
-}
-
-template<class Node>
-void BinaryTree<Node>::attachBefore(BinaryNode *kb, BinaryNode *kn)
-{
-	if (!kb)
-		BinaryTreeEditor::attach(kb, kn, true);
-	else if (kb->left_)
-		BinaryTreeEditor::attach(max(static_cast<Node *>(kb->left_)), kn, false);
-	else
-		BinaryTreeEditor::attach(kb, kn, true);
-}
-
-template<class Node>
-void BinaryTree<Node>::attachAfter(BinaryNode *ka, BinaryNode *kn)
-{
-	if (!ka)
-		BinaryTreeEditor::attach(ka, kn, true);
-	else if (ka->right_)
-		BinaryTreeEditor::attach(min(static_cast<Node *>(ka->right_)), kn, true);
-	else
-		BinaryTreeEditor::attach(ka, kn, false);
-}
 
 template<class Node>
 Node *BinaryTree<Node>::clone(Node *k)
@@ -195,26 +92,6 @@ void BinaryTree<Node>::clear(Node *k)
 	delete k;
 }
 
-/** Remove the node k from the tree.
-  */
-template<class Node>
-void BinaryTree<Node>::remove(Node *k)
-{
-	if (k->left_)
-		BinaryTreeEditor::replaceNode(k, detach(max(k->left())));
-	else if (k->right_)
-		BinaryTreeEditor::replaceNode(k, detach(min(k->right())));
-	else
-		BinaryTreeEditor::detach(k);
-	delete k;
-}
-
-template<class Node>
-inline void BinaryTree<Node>::establishWeight(BinaryNode *k)
-{
-	k->weight_ = weight(k->left_) + weight(k->right_) + 1;
-}
-
 #ifndef NDEBUG
 
 template<class Node>
@@ -237,7 +114,7 @@ bool BinaryTree<Node>::testWeight(BinaryNode *k)
 		testWeight(k->left_) && testWeight(k->right_);
 }
 
-template<class Node>
+/*template<class Node>
 bool BinaryTree<Node>::testIteration(Node *k)
 {
 	if (k == 0) return true;
@@ -255,7 +132,7 @@ bool BinaryTree<Node>::testIteration(Node *k)
 	return testIteration(k->left_) && testIteration(k->right_);
 }
 
-/*template<class Node>
+template<class Node>
 bool BinaryTree<Node>::testOrder(Node *k)
 {
 	if (!k) return true;
