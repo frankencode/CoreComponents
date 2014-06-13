@@ -66,7 +66,7 @@ public:
 	void pop(int index, Item *item);
 
 protected:
-	void touched(BinaryNode *kp, BinaryNode *kc, bool left, bool attached);
+	void changed(BinaryNode *kp, BinaryNode *kc, bool left, bool attached);
 	void rotated(BinaryNode *k1, bool left);
 	void cleared();
 
@@ -125,7 +125,7 @@ OrdinalTree<Node>::OrdinalTree(int n)
 
 	/*FLUX_ASSERT(BinaryTree<Node>::testStructure(this->root_));
 	FLUX_ASSERT(BinaryTree<Node>::testIteration(this->root_));
-	FLUX_ASSERT(AvlBalance::testBalance(this->root_));
+	FLUX_ASSERT(Balance::testBalance(this->root_));
 	FLUX_ASSERT(OrdinalTree<Node>::testWeight(this->root_));*/
 }
 
@@ -297,7 +297,7 @@ void OrdinalTree<Node>::pop(int index, Item *item)
 }
 
 template<class Node>
-inline void OrdinalTree<Node>::touched(BinaryNode *kp, BinaryNode *kc, bool left, bool attached)
+inline void OrdinalTree<Node>::changed(BinaryNode *kp, BinaryNode *kc, bool left, bool attached)
 {
 	int delta = attached ? 1 : -1;
 	BinaryNode *k = kp;
@@ -305,6 +305,8 @@ inline void OrdinalTree<Node>::touched(BinaryNode *kp, BinaryNode *kc, bool left
 		k->weight_ += delta;
 		k = k->parent_;
 	}
+
+	AvlBalance::restore(kp, kc, left, attached);
 
 	cachedNode_ = 0;
 }

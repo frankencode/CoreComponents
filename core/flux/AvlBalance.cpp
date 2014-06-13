@@ -71,6 +71,53 @@ BinaryNode *AvlBalance::rebalance(BinaryNode *k1)
 	return k1->parent_;
 }
 
+/** Perform an equivalent tree transformation.
+  *
+  * Rotate left:
+  *
+  *    k1      =>      k2
+  *   /  \            /  \
+  *  a    k2         k1   c
+  *      /  \       /  \
+  *     b    c     a    b
+  *
+  * Rotate right:
+  *
+  *      k1    =>    k2
+  *     /  \        /  \
+  *    k2   c      a    k1
+  *   /  \             /  \
+  *  a    b           b    c
+  */
+void AvlBalance::rotate(BinaryNode *k1, bool left)
+{
+	BinaryNode *k2 = left ? k1->right_ : k1->left_;
+	if (k1->parent_) {
+		if (k1->parent_->left_ == k1)
+			k1->parent_->left_ = k2;
+		else
+			k1->parent_->right_ = k2;
+	}
+	else {
+		setRoot(k2);
+	}
+	k2->parent_ = k1->parent_;
+	k1->parent_ = k2;
+	if (left) {
+		k1->right_ = k2->left_;
+		if (k2->left_)
+			k2->left_->parent_ = k1;
+		k2->left_ = k1;
+	}
+	else {
+		k1->left_ = k2->right_;
+		if (k2->right_)
+			k2->right_->parent_ = k1;
+		k2->right_ = k1;
+	}
+	rotated(k1, left);
+}
+
 #ifndef NDEBUG
 
 int AvlBalance::height(BinaryNode *k)
