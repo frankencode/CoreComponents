@@ -7,14 +7,14 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "BinaryTreeEditor.h"
+#include "BinaryTree.h"
 
 namespace flux
 {
 
 /** Attaches the new leaf node k under kp as the left or right child.
   */
-void BinaryTreeEditor::attach(BinaryNode *kp, BinaryNode *k, bool left)
+void BinaryTree::attach(BinaryNode *kp, BinaryNode *k, bool left)
 {
 	if (kp) {
 		if (left)
@@ -36,7 +36,7 @@ void BinaryTreeEditor::attach(BinaryNode *kp, BinaryNode *k, bool left)
 
 /** Detaches the leaf or list node k from the tree.
   */
-BinaryNode *BinaryTreeEditor::detach(BinaryNode *k)
+BinaryNode *BinaryTree::detach(BinaryNode *k)
 {
 	BinaryNode *kp = k->parent_;
 	bool left = false;
@@ -58,7 +58,7 @@ BinaryNode *BinaryTreeEditor::detach(BinaryNode *k)
 
 /** Put the leaf node kl into the place of inner node ki
   */
-void BinaryTreeEditor::replaceNode(BinaryNode *ki, BinaryNode *kl)
+void BinaryTree::replace(BinaryNode *ki, BinaryNode *kl)
 {
 	kl->balance_ = ki->balance_;
 	kl->weight_ = ki->weight_;
@@ -87,38 +87,38 @@ void BinaryTreeEditor::replaceNode(BinaryNode *ki, BinaryNode *kl)
 
 /** Remove the node k from the tree.
   */
-BinaryNode *BinaryTreeEditor::removeNode(BinaryNode *k)
+BinaryNode *BinaryTree::unlink(BinaryNode *k)
 {
 	if (k->left_)
-		replaceNode(k, detach(max(k->left_)));
+		replace(k, detach(max(k->left_)));
 	else if (k->right_)
-		replaceNode(k, detach(min(k->right_)));
+		replace(k, detach(min(k->right_)));
 	else
 		detach(k);
 	return k;
 }
 
-void BinaryTreeEditor::attachBefore(BinaryNode *kb, BinaryNode *kn)
+void BinaryTree::attachBefore(BinaryNode *kb, BinaryNode *kn)
 {
 	if (!kb)
-		BinaryTreeEditor::attach(kb, kn, true);
+		BinaryTree::attach(kb, kn, true);
 	else if (kb->left_)
-		BinaryTreeEditor::attach(max(kb->left_), kn, false);
+		BinaryTree::attach(max(kb->left_), kn, false);
 	else
-		BinaryTreeEditor::attach(kb, kn, true);
+		BinaryTree::attach(kb, kn, true);
 }
 
-void BinaryTreeEditor::attachAfter(BinaryNode *ka, BinaryNode *kn)
+void BinaryTree::attachAfter(BinaryNode *ka, BinaryNode *kn)
 {
 	if (!ka)
-		BinaryTreeEditor::attach(ka, kn, true);
+		BinaryTree::attach(ka, kn, true);
 	else if (ka->right_)
-		BinaryTreeEditor::attach(min(ka->right_), kn, true);
+		BinaryTree::attach(min(ka->right_), kn, true);
 	else
-		BinaryTreeEditor::attach(ka, kn, false);
+		BinaryTree::attach(ka, kn, false);
 }
 
-BinaryNode *BinaryTreeEditor::pred(BinaryNode *k)
+BinaryNode *BinaryTree::pred(BinaryNode *k)
 {
 	if (k->left_)
 		return max(k->left_);
@@ -131,7 +131,7 @@ BinaryNode *BinaryTreeEditor::pred(BinaryNode *k)
 	return kp;
 }
 
-BinaryNode *BinaryTreeEditor::succ(BinaryNode *k)
+BinaryNode *BinaryTree::succ(BinaryNode *k)
 {
 	if (k->right_)
 		return min(k->right_);
@@ -144,7 +144,7 @@ BinaryNode *BinaryTreeEditor::succ(BinaryNode *k)
 	return kp;
 }
 
-BinaryNode *BinaryTreeEditor::min(BinaryNode *k)
+BinaryNode *BinaryTree::min(BinaryNode *k)
 {
 	BinaryNode *k2 = k;
 	while (k) {
@@ -154,7 +154,7 @@ BinaryNode *BinaryTreeEditor::min(BinaryNode *k)
 	return k2;
 }
 
-BinaryNode *BinaryTreeEditor::max(BinaryNode *k)
+BinaryNode *BinaryTree::max(BinaryNode *k)
 {
 	BinaryNode *k2 = k;
 	while (k) {
