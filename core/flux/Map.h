@@ -133,13 +133,7 @@ public:
 
 	inline void push(const Item &item)
 	{
-		bool found = false;
-		bool below = true;
-		Node *k = tree_.find(item, &found, &below);
-		if (found)
-			k->item_ = item;
-		else
-			tree_.attach(k, new Node(item), below);
+		establish(item.key(), item.value());
 	}
 
 	inline void pop(Item *item)
