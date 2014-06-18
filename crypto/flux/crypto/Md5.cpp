@@ -10,8 +10,8 @@
 #include <string.h> // FIXME
 #include "Md5.h"
 
-namespace flux
-{
+namespace flux {
+namespace crypto {
 
 Ref<Md5> Md5::create()
 {
@@ -218,10 +218,11 @@ void Md5::consume()
 	auxFill_ = 0;
 }
 
-Ref<ByteArray> md5(ByteArray *data)
+Ref<ByteArray> md5(const ByteArray *data)
 {
 	Ref<Md5> h = Md5::create();
 	h->feed(data);
 	return h->finish();
 }
-} // namespace flux
+
+}} // namespace flux::crypto

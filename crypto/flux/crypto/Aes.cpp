@@ -10,6 +10,7 @@
 #include "Aes.h"
 
 namespace flux {
+namespace crypto {
 
 namespace aes {
 
@@ -330,4 +331,4 @@ void Aes::decode(ByteArray *c, ByteArray *p)
 	*p = *s_;
 }
 
-} // namespace flux
+}} // namespace flux::crypto

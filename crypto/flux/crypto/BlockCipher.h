@@ -7,13 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_BLOCKCIPHER_H
-#define FLUX_BLOCKCIPHER_H
+#ifndef FLUXCRYPTO_BLOCKCIPHER_H
+#define FLUXCRYPTO_BLOCKCIPHER_H
 
 #include <flux/ByteArray.h>
 
-namespace flux
-{
+namespace flux {
+namespace crypto {
 
 class BlockCipher: public Object
 {
@@ -30,6 +30,6 @@ private:
 	int blockSize_;
 };
 
-} // namespace flux
+}} // namespace flux::crypto
 
-#endif // FLUX_BLOCKCIPHER_H
+#endif // FLUXCRYPTO_BLOCKCIPHER_H

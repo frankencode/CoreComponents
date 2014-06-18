@@ -1,7 +1,8 @@
 #include <flux/stdio.h>
-#include <flux/Md5.h>
+#include <flux/crypto/Md5.h>
 
 using namespace flux;
+using namespace flux::crypto;
 
 int main()
 {

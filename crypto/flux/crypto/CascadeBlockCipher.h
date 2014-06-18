@@ -7,13 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_CASCADEBLOCKCIPHER_H
-#define FLUX_CASCADEBLOCKCIPHER_H
+#ifndef FLUXCRYPTO_CASCADEBLOCKCIPHER_H
+#define FLUXCRYPTO_CASCADEBLOCKCIPHER_H
 
 #include "BlockCipher.h"
 
-namespace flux
-{
+namespace flux {
+namespace crypto {
 
 class CascadeBlockCipher: public BlockCipher
 {
@@ -28,6 +28,6 @@ private:
 	Ref<ByteArray> s_;
 };
 
-} // namespace flux
+}} // namespace flux::crypto
 
-#endif // FLUX_CASCADEBLOCKCIPHER_H
+#endif // FLUXCRYPTO_CASCADEBLOCKCIPHER_H

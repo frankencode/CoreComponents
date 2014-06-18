@@ -8,7 +8,7 @@
  */
 
 #include <flux/yason.h>
-#include <flux/ResourceContextStack.h>
+#include <flux/ResourceContext.h>
 #include <flux/Format.h>
 #include "PaletteLoader.h"
 #include "Registry.h"

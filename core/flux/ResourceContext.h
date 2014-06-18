@@ -15,12 +15,25 @@
 namespace flux
 {
 
-class ResourceContext
+template<class> class ThreadLocalSingleton;
+template<class> class Queue;
+
+class ResourceContext: public Object
 {
 public:
-	ResourceContext(String resource);
-	~ResourceContext();
+	void push(String resource);
+	String pop();
+
+	String top() const;
+
+private:
+	friend class ThreadLocalSingleton<ResourceContext>;
+	ResourceContext();
+
+	Ref< Queue<String> > queue_;
 };
+
+ResourceContext *resourceContextStack();
 
 } // namespace flux
 

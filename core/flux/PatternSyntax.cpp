@@ -159,7 +159,8 @@ PatternSyntax::PatternSyntax()
 			GLUE(
 				STRING("("),
 				REPEAT(0, 1, CHAR('!')),
-				STRING(">:"),
+				CHAR('>'),
+				REPEAT(0, 1, CHAR(':')),
 				REF("Choice"),
 				CHAR(')')
 			)
@@ -170,7 +171,8 @@ PatternSyntax::PatternSyntax()
 			GLUE(
 				STRING("("),
 				REPEAT(0, 1, CHAR('!')),
-				STRING("<:"),
+				CHAR('<'),
+				REPEAT(0, 1, CHAR(':')),
 				REF("Choice"),
 				CHAR(')')
 			)

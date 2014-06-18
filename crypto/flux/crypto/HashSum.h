@@ -7,13 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_HASHSUM_H
-#define FLUX_HASHSUM_H
+#ifndef FLUXCRYPTO_HASHSUM_H
+#define FLUXCRYPTO_HASHSUM_H
 
 #include <flux/ByteArray.h>
 
-namespace flux
-{
+namespace flux {
+namespace crypto {
 
 class HashSum: public Object
 {
@@ -22,6 +22,6 @@ public:
 	virtual Ref<ByteArray> finish() = 0;
 };
 
-} // namespace flux
+}} // namespace flux::crypto
 
-#endif // FLUX_HASHSUM_H
+#endif // FLUXCRYPTO_HASHSUM_H

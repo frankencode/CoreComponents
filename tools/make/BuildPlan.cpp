@@ -9,8 +9,9 @@
 
 #include <flux/stdio.h>
 #include <flux/Glob.h>
+#include <flux/Dir.h>
 #include <flux/Arguments.h>
-#include <flux/ResourceContext.h>
+#include <flux/ResourceGuard.h>
 #include <flux/yason.h>
 #include "DependencyCache.h"
 #include "GnuToolChain.h"
@@ -58,7 +59,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 		projectPath_ = items->at(0)->canonicalPath();
 	}
 
-	ResourceContext context(recipePath());
+	ResourceGuard context(recipePath());
 	recipe_ = yason::parse(File::open(recipePath())->map(), recipeProtocol());
 	arguments->validate(recipe_);
 	arguments->override(recipe_);
@@ -212,6 +213,8 @@ void BuildPlan::readPrerequisites()
 
 		if (plan->options() & Library) {
 			path = path->reducePath();
+			while (Dir::count(path) == 1)
+				path = path->reducePath();
 			if (!includePaths_->contains(path))
 				includePaths_->append(path);
 			if (!libraryPaths_->contains("."))

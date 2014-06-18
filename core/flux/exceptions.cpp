@@ -11,7 +11,7 @@
 #include "Format.h"
 #include "Thread.h"
 #include "SyntaxState.h"
-#include "ResourceContextStack.h"
+#include "ResourceContext.h"
 #include "exceptions.h"
 
 namespace flux

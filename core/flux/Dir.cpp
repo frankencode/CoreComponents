@@ -70,6 +70,18 @@ bool Dir::exists(String path)
 	return File::exists(path) && (File::status(path)->type() == File::Directory);
 }
 
+int Dir::count(String path)
+{
+	Ref<Dir> dir = tryOpen(path);
+	if (!dir) return 0;
+	int n = 0;
+	for (String name; dir->read(&name);) {
+		if (name != "." && name != "..")
+			++n;
+	}
+	return n;
+}
+
 void Dir::create(String path, int mode)
 {
 	if (::mkdir(path, mode) == -1)

@@ -7,13 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_SHA1_H
-#define FLUX_SHA1_H
+#ifndef FLUXCRYPTO_SHA1_H
+#define FLUXCRYPTO_SHA1_H
 
 #include "HashSum.h"
 
-namespace flux
-{
+namespace flux {
+namespace crypto {
 
 class Sha1: public HashSum
 {
@@ -36,8 +36,8 @@ private:
 	uint64_t l_;
 };
 
-Ref<ByteArray> sha1(ByteArray *data);
+Ref<ByteArray> sha1(const ByteArray *data);
 
-} // namespace flux
+}} // namespace flux::crypto
 
-#endif // FLUX_SHA1_H
+#endif // FLUXCRYPTO_SHA1_H

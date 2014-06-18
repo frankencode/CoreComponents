@@ -7,20 +7,36 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "ResourceContextStack.h"
+#include "ThreadLocalSingleton.h"
+#include "Queue.h"
 #include "ResourceContext.h"
 
 namespace flux
 {
 
-ResourceContext::ResourceContext(String resource)
+ResourceContext::ResourceContext()
+	: queue_(Queue<String>::create())
+{}
+
+void ResourceContext::push(String resource)
 {
-	resourceContextStack()->push(resource);
+	queue_->pushBack(resource);
 }
 
-ResourceContext::~ResourceContext()
+String ResourceContext::pop()
 {
-	resourceContextStack()->pop();
+	if (queue_->count() == 0) return String();
+	return queue_->popBack();
+}
+
+String ResourceContext::top() const
+{
+	return queue_->count() > 0 ? queue_->back() : String();
+}
+
+ResourceContext *resourceContextStack()
+{
+	return ThreadLocalSingleton<ResourceContext>::instance();
 }
 
 } // namespace flux

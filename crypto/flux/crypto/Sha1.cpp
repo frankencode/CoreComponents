@@ -9,11 +9,10 @@
 
 #include "Sha1.h"
 
-namespace flux
-{
+namespace flux {
+namespace crypto {
 
-namespace _sha1
-{
+namespace _sha1 {
 
 inline uint32_t rol(uint32_t x, int n)
 {
@@ -128,11 +127,11 @@ void Sha1::consume()
 	h[4] += e;
 }
 
-Ref<ByteArray> sha1(ByteArray *data)
+Ref<ByteArray> sha1(const ByteArray *data)
 {
 	Ref<Sha1> h = Sha1::create();
 	h->feed(data);
 	return h->finish();
 }
 
-} // namespace flux
+}} // namespace flux::crypto

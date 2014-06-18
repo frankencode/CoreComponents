@@ -7,14 +7,14 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_HASHMETER_H
-#define FLUX_HASHMETER_H
+#ifndef FLUXCRYPTO_HASHMETER_H
+#define FLUXCRYPTO_HASHMETER_H
 
 #include <flux/Stream.h>
 #include "HashSum.h"
 
-namespace flux
-{
+namespace flux {
+namespace crypto {
 
 class HashMeter: public Stream
 {
@@ -36,6 +36,6 @@ private:
 	Ref<Stream> stream_;
 };
 
-} // namespace flux
+}} // namespace flux::crypto
 
-#endif // FLUX_HASHMETER_H
+#endif // FLUXCRYPTO_HASHMETER_H

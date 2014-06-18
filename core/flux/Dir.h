@@ -30,6 +30,7 @@ public:
 
 	static bool access(String path, int flags);
 	static bool exists(String path);
+	static int count(String path);
 	static void create(String path, int mode = 0755);
 	static void establish(String path, int mode = 0755);
 	static void unlink(String path);

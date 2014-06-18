@@ -9,7 +9,7 @@
 
 #include <flux/Singleton.h>
 #include <flux/File.h>
-#include <flux/ResourceContext.h>
+#include <flux/ResourceGuard.h>
 #include "PaletteLoader.h"
 
 namespace fluxtoki
@@ -25,7 +25,7 @@ PaletteLoader::PaletteLoader():
 
 Ref<Palette> PaletteLoader::load(String path) const
 {
-	ResourceContext context(path);
+	ResourceGuard context(path);
 	String text = File::open(path)->map();
 	return yason::parse(text, protocol_);
 }
