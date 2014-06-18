@@ -1,13 +1,15 @@
 #include <flux/stdio.h>
-#include <flux/Aes.h>
+#include <flux/crypto/Aes.h>
 
 namespace flux {
+namespace crypto {
 namespace aes {
 Ref<ByteArray> keyExpansion(ByteArray *k, int Nr);
-}}
+}}}
 
 using namespace flux;
-using namespace flux::aes;
+using namespace flux::crypto;
+using namespace flux::crypto::aes;
 
 void printKeySchedule(ByteArray *w)
 {

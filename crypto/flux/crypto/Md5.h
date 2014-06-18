@@ -7,13 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_MD5_H
-#define FLUX_MD5_H
+#ifndef FLUXCRYPTO_MD5_H
+#define FLUXCRYPTO_MD5_H
 
 #include "HashSum.h"
 
-namespace flux
-{
+namespace flux {
+namespace crypto {
 
 class Md5: public HashSum
 {
@@ -35,8 +35,8 @@ private:
 	uint32_t a_, b_, c_, d_;
 };
 
-Ref<ByteArray> md5(ByteArray *data);
+Ref<ByteArray> md5(const ByteArray *data);
 
-} // namespace flux
+}} // namespace flux::crypto
 
-#endif // FLUX_MD5_H
+#endif // FLUXCRYPTO_MD5_H

@@ -9,8 +9,8 @@
 
 #include "HashMeter.h"
 
-namespace flux
-{
+namespace flux {
+namespace crypto {
 
 Ref<HashMeter> HashMeter::open(HashSum *hashSum, Stream *stream )
 {
@@ -56,4 +56,4 @@ Ref<ByteArray> HashMeter::finish()
 	return hashSum_->finish();
 }
 
-} // namespace flux
+}} // namespace flux::crypto

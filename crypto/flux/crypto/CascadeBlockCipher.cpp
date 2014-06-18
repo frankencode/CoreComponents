@@ -9,8 +9,8 @@
 
 #include "CascadeBlockCipher.h"
 
-namespace flux
-{
+namespace flux {
+namespace crypto {
 
 CascadeBlockCipher::CascadeBlockCipher(BlockCipher *cipher, ByteArray *iv)
 	: BlockCipher(cipher->blockSize()),
@@ -32,4 +32,4 @@ void CascadeBlockCipher::decode(ByteArray *c, ByteArray *p)
 	*s_ = *c;
 }
 
-} // namespaec flux
+}} // namespace flux::crypto

@@ -11,11 +11,12 @@
 #include <flux/exceptions.h>
 #include <flux/Arguments.h>
 #include <flux/File.h>
-#include <flux/Sha1.h>
-#include <flux/Md5.h>
-#include <flux/HashMeter.h>
+#include <flux/crypto/Sha1.h>
+#include <flux/crypto/Md5.h>
+#include <flux/crypto/HashMeter.h>
 
 using namespace flux;
+using namespace flux::crypto;
 
 int main(int argc, char **argv)
 {

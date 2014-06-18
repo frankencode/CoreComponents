@@ -7,13 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_AES_H
-#define FLUX_AES_H
+#ifndef FLUXCRYPTO_AES_H
+#define FLUXCRYPTO_AES_H
 
 #include "BlockCipher.h"
 
-namespace flux
-{
+namespace flux {
+namespace crypto {
 
 class Aes: public BlockCipher
 {
@@ -30,6 +30,6 @@ private:
 	Ref<ByteArray> w_;
 };
 
-} // namespace flux
+}} // namespace flux::crypto
 
-#endif // FLUX_AES_H
+#endif // FLUXCRYPTO_AES_H

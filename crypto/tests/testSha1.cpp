@@ -1,7 +1,8 @@
 #include <flux/stdio.h>
-#include <flux/Sha1.h>
+#include <flux/crypto/Sha1.h>
 
 using namespace flux;
+using namespace flux::crypto;
 
 int main()
 {

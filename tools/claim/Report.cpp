@@ -9,7 +9,7 @@
 
 #include <flux/DirWalker.h>
 #include <flux/File.h>
-#include <flux/Sha1.h>
+#include <flux/crypto/Sha1.h>
 #include "Registry.h"
 #include "NoticeParser.h"
 #include "Report.h"
@@ -52,7 +52,7 @@ Report::Report(StringList *dirPaths, Pattern works)
 			if (notice) {
 				coverage_->insert(path, notice);
 				{
-					String digest = sha1(notice->statement());
+					String digest = flux::crypto::sha1(notice->statement());
 					Ref<Coverage> coverage;
 					if (!coverageByDigest_->lookup(digest, &coverage)) {
 						coverageByDigest_->insert(digest, coverage = Coverage::create());

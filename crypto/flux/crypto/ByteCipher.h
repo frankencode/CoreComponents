@@ -7,14 +7,14 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_BYTECIPHER_H
-#define FLUX_BYTECIPHER_H
+#ifndef FLUXCRYPTO_BYTECIPHER_H
+#define FLUXCRYPTO_BYTECIPHER_H
 
 #include <stdint.h>
 #include <flux/Object.h>
 
-namespace flux
-{
+namespace flux {
+namespace crypto {
 
 class ByteCipher: public Object
 {
@@ -23,6 +23,6 @@ public:
 	virtual uint8_t decode(uint8_t c) = 0;
 };
 
-} // namespace flux
+}} // namespace flux::crypto
 
-#endif // FLUX_BYTECIPHER_H
+#endif // FLUXCRYPTO_BYTECIPHER_H
