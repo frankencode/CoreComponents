@@ -1,8 +1,9 @@
 #include <flux/stdio.h>
 #include <flux/check.h>
-#include <flux/yason.h>
+#include <flux/yason/yason.h>
 
 using namespace flux;
+using namespace yason;
 
 void testData(YasonObject *object)
 {

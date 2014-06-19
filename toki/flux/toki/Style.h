@@ -10,11 +10,13 @@
 #ifndef FLUXTOKI_STYLE_H
 #define FLUXTOKI_STYLE_H
 
-#include <flux/yason.h>
 #include <flux/Color.h>
+#include <flux/yason/yason.h>
 
 namespace flux {
 namespace toki {
+
+using namespace yason;
 
 class Palette;
 

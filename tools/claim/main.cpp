@@ -8,10 +8,11 @@
  */
 
 #include <flux/stdio.h>
-#include <flux/Arguments.h>
+#include <flux/yason/Arguments.h>
 #include "Report.h"
 
 using namespace flux;
+using namespace flux::yason;
 using namespace fluxclaim;
 
 int main(int argc, char **argv)

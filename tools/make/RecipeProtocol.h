@@ -10,7 +10,7 @@
 #ifndef FLUXMAKE_RECIPEPROTOCOL_H
 #define FLUXMAKE_RECIPEPROTOCOL_H
 
-#include <flux/yason.h>
+#include <flux/yason/yason.h>
 
 namespace flux { template<class> class Singleton; }
 
@@ -18,6 +18,7 @@ namespace fluxmake
 {
 
 using namespace flux;
+using namespace flux::yason;
 
 class RecipeProtocol: public YasonProtocol
 {

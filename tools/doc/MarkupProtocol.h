@@ -10,7 +10,7 @@
 #ifndef FLUXDOC_MARKUPPROTOCOL_H
 #define FLUXDOC_MARKUPPROTOCOL_H
 
-#include <flux/yason.h>
+#include <flux/yason/yason.h>
 
 namespace flux { template<class> class Singleton; }
 
@@ -18,6 +18,7 @@ namespace fluxdoc
 {
 
 using namespace flux;
+using namespace flux::yason;
 
 class MarkupProtocol: public YasonProtocol
 {

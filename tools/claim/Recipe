@@ -1,5 +1,5 @@
 Application {
 	name: fluxclaim
 	source: *.cpp
-	use: [ ../../core/flux, ../../crypto/flux/crypto ]
+	use: [ ../../core/flux, ../../yason/flux/yason, ../../crypto/flux/crypto ]
 }

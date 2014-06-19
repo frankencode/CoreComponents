@@ -7,10 +7,10 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/yason.h>
 #include <flux/Format.h>
 #include <flux/File.h>
 #include <flux/FileStatus.h>
+#include <flux/yason/yason.h>
 #include "BuildPlan.h"
 #include "DependencyCache.h"
 

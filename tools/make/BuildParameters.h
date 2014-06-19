@@ -10,12 +10,13 @@
 #ifndef FLUXMAKE_BUILDPARAMETERS_H
 #define FLUXMAKE_BUILDPARAMETERS_H
 
-#include <flux/yason.h>
+#include <flux/yason/yason.h>
 
 namespace fluxmake
 {
 
 using namespace flux;
+using namespace flux::yason;
 
 class BuildPlan;
 

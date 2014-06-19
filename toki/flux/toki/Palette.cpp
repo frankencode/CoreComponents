@@ -7,7 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/yason.h>
+#include <flux/yason/yason.h>
 #include <flux/ResourceContext.h>
 #include <flux/Format.h>
 #include "PaletteLoader.h"

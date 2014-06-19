@@ -1,5 +1,5 @@
 Application {
 	name: fluxfind
 	source: *.cpp
-	use: ../../core/flux
+	use: [ ../../core/flux, ../../yason/flux/yason ]
 }

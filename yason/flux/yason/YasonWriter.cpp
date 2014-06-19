@@ -7,11 +7,11 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "Format.h"
+#include <flux/Format.h>
 #include "YasonWriter.h"
 
-namespace flux
-{
+namespace flux {
+namespace yason {
 
 Ref<YasonWriter> YasonWriter::create(Format format, String indent) { return new YasonWriter(format, indent); }
 
@@ -144,4 +144,4 @@ void YasonWriter::writeTypedList(Variant value, int depth)
 	format_ << " ]";
 }
 
-} // namespace flux
+}} // namespace flux::yason

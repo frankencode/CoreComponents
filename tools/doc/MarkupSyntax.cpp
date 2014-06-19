@@ -11,13 +11,15 @@
 #include <flux/DebugTokenFactory.h> // DEBUG
 #include <flux/assert.h>
 #include <flux/Singleton.h>
-#include <flux/YasonSyntax.h>
+#include <flux/yason/YasonSyntax.h>
 #include "MarkupProtocol.h"
 #include "elements.h"
 #include "MarkupSyntax.h"
 
 namespace fluxdoc
 {
+
+using namespace flux::yason;
 
 MarkupSyntax::MarkupSyntax()
 {

@@ -7,9 +7,9 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/Arguments.h>
 #include <flux/File.h>
 #include <flux/Singleton.h>
+#include <flux/yason/Arguments.h>
 #include "NodeConfigProtocol.h"
 #include "ServiceRegistry.h"
 #include "ErrorLog.h"
@@ -17,6 +17,8 @@
 
 namespace fluxnode
 {
+
+using namespace flux::yason;
 
 NodeConfig::NodeConfig()
 {}

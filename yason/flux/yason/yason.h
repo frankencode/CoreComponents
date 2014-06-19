@@ -7,24 +7,19 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_YASON_H
-#define FLUX_YASON_H
+#ifndef FLUXYASON_YASON_H
+#define FLUXYASON_YASON_H
 
-#include "exceptions.h"
+#include <flux/exceptions.h>
 #include "YasonObject.h"
 #include "YasonProtocol.h"
 
-namespace flux
-{
-
-namespace yason
-{
+namespace flux {
+namespace yason {
 
 Variant parse(const ByteArray *text, const YasonProtocol *protocol = 0);
 String stringify(Variant value);
 
-} // namespace yason
+}} // namespace flux::yason
 
-} // namespace flux
-
-#endif // FLUX_YASON_H
+#endif // FLUXYASON_YASON_H

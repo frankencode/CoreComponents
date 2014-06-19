@@ -7,13 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_JSONWRITER_H
-#define FLUX_JSONWRITER_H
+#ifndef FLUXYASON_JSONWRITER_H
+#define FLUXYASON_JSONWRITER_H
 
-#include "yason.h"
+#include "yason.h" // FIXME, to unspecific
 
-namespace flux
-{
+namespace flux {
+namespace yason {
 
 class JsonWriter: public Object
 {
@@ -35,6 +35,6 @@ protected:
 	String indent_;
 };
 
-} // namespace flux
+}} // namespace flux::yason
 
-#endif // FLUX_JSONWRITER_H
+#endif // FLUXYASON_JSONWRITER_H

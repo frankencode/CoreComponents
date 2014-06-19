@@ -2,5 +2,5 @@ Application {
 	name: fluxsha1
 	alias: fluxmd5
 	source: *.cpp
-	use: [ ../../core/flux, ../../crypto/flux/crypto ]
+	use: [ ../../core/flux, ../../yason/flux/yason, ../../crypto/flux/crypto ]
 }

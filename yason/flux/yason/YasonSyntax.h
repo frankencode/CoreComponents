@@ -7,17 +7,17 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_YASONPARSER_H
-#define FLUX_YASONPARSER_H
+#ifndef FLUXYASON_YASONSYNTAX_H
+#define FLUXYASON_YASONSYNTAX_H
 
-#include "SyntaxDefinition.h"
+#include <flux/SyntaxDefinition.h>
 #include "yason.h"
 
-namespace flux
-{
+namespace flux {
 
-template<class SubClass>
-class Singleton;
+template<class> class Singleton;
+
+namespace yason {
 
 class YasonSyntax: public SyntaxDefinition
 {
@@ -77,6 +77,6 @@ Ref< List<T> > YasonSyntax::parseTypedList(const ByteArray *text, Token *token, 
 
 const YasonSyntax *yasonSyntax();
 
-} // namespace flux
+}} // namespace flux::yason
 
-#endif // FLUX_YASONPARSER_H
+#endif // FLUXYASON_YASONSYNTAX_H

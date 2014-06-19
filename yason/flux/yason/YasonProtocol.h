@@ -7,13 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_YASONPROTOCOL_H
-#define FLUX_YASONPROTOCOL_H
+#ifndef FLUXYASON_YASONPROTOCOL_H
+#define FLUXYASON_YASONPROTOCOL_H
 
 #include "YasonObject.h"
 
-namespace flux
-{
+namespace flux {
+namespace yason {
 
 class YasonProtocol: public Object
 {
@@ -88,6 +88,6 @@ private:
 	int maxCount_;
 };
 
-} // namespace flux
+}} // namespace flux::yason
 
-#endif // FLUX_YASONPROTOCOL_H
+#endif // FLUXYASON_YASONPROTOCOL_H

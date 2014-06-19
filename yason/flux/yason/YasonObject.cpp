@@ -7,12 +7,12 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/Guard.h>
 #include "YasonSyntax.h"
-#include "Guard.h"
 #include "YasonObject.h"
 
-namespace flux
-{
+namespace flux {
+namespace yason {
 
 Variant YasonObject::toVariant() const
 {
@@ -82,4 +82,4 @@ Token *YasonObject::childToken(Token *objectToken, int childIndex)
 	return yasonSyntax()->childToken(objectToken, childIndex);
 }
 
-} // namespace flux
+}} // namespace flux::yason

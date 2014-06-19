@@ -13,16 +13,16 @@
 namespace flux {
 namespace toki {
 
-class YasonSyntax: public flux::YasonSyntax
+class YasonSyntax: public flux::yason::YasonSyntax
 {
 protected:
 	friend class flux::Singleton<YasonSyntax>;
 
 	YasonSyntax()
-		: flux::YasonSyntax(GenerateComments|GenerateEscapedChars)
+		: flux::yason::YasonSyntax(GenerateComments|GenerateEscapedChars)
 	{}
 };
 
-flux::YasonSyntax *yasonSyntax() { return flux::Singleton<flux::toki::YasonSyntax>::instance(); }
+flux::yason::YasonSyntax *yasonSyntax() { return flux::Singleton<flux::toki::YasonSyntax>::instance(); }
 
 }} // namespace flux::toki

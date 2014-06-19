@@ -8,7 +8,7 @@
  */
 
 #include <flux/stdio.h> // DEBUG
-#include <flux/yason.h> // DEBUG
+#include <flux/yason/yason.h> // DEBUG
 #include "MarkupSyntax.h"
 #include "Document.h"
 
