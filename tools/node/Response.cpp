@@ -9,7 +9,7 @@
 
 #include <flux/System.h>
 #include <flux/Date.h>
-#include <flux/TransferMeter.h>
+#include <flux/stream/TransferMeter.h>
 #include "utils.h"
 #include "NodeConfig.h"
 #include "ClientConnection.h"
@@ -18,6 +18,8 @@
 
 namespace fluxnode
 {
+
+using namespace flux::stream;
 
 Ref<Response> Response::create(ClientConnection *client)
 {

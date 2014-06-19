@@ -7,12 +7,11 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/TransferLimiter.h>
-#include <flux/TimeoutLimiter.h>
-#include <flux/LineSource.h>
 #include <flux/System.h>
-#include <flux/StreamTap.h>
-#include <flux/LineBuffer.h>
+#include <flux/LineSource.h>
+#include <flux/stream/TransferLimiter.h>
+#include <flux/stream/StreamTap.h>
+#include <flux/stream/LineBuffer.h>
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "TapBuffer.h"
@@ -21,6 +20,8 @@
 
 namespace fluxnode
 {
+
+using namespace flux::stream;
 
 Ref<ClientConnection> ClientConnection::create(StreamSocket *socket, SocketAddress *address)
 {

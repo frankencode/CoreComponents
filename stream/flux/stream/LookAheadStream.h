@@ -7,13 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_LOOKAHEADSTREAM_H
-#define FLUX_LOOKAHEADSTREAM_H
+#ifndef FLUXSTREAM_LOOKAHEADSTREAM_H
+#define FLUXSTREAM_LOOKAHEADSTREAM_H
 
-#include "Stream.h"
+#include <flux/Stream.h>
 
-namespace flux
-{
+namespace flux {
+namespace stream {
 
 class LookAheadStream: public Stream
 {
@@ -38,6 +38,6 @@ private:
 	bool done_;
 };
 
-} // namespace flux
+}} // namespace flux::stream
 
-#endif // FLUX_LOOKAHEADSTREAM_H
+#endif // FLUXSTREAM_LOOKAHEADSTREAM_H

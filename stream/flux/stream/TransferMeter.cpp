@@ -9,8 +9,8 @@
 
 #include "TransferMeter.h"
 
-namespace flux
-{
+namespace flux {
+namespace stream {
 
 Ref<TransferMeter> TransferMeter::open(Stream *stream) {
 	return new TransferMeter(stream);
@@ -47,4 +47,4 @@ void TransferMeter::write(const StringList *parts)
 		totalWritten_ += parts->at(i)->count();
 }
 
-} // namespace flux
+}} // namespace flux::stream

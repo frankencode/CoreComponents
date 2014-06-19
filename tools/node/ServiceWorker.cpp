@@ -10,7 +10,7 @@
 #include <flux/Format.h>
 #include <flux/RefGuard.h>
 #include <flux/System.h>
-#include <flux/TimeoutLimiter.h>
+#include <flux/stream/TimeoutLimiter.h>
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "AccessLog.h"
@@ -23,6 +23,8 @@
 
 namespace fluxnode
 {
+
+using namespace flux::stream;
 
 Ref<ServiceWorker> ServiceWorker::create(ServiceInstance *serviceInstance, ClosedConnections *closedConnections)
 {

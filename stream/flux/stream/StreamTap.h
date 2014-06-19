@@ -7,13 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_STREAMTAP_H
-#define FLUX_STREAMTAP_H
+#ifndef FLUXSTREAM_STREAMTAP_H
+#define FLUXSTREAM_STREAMTAP_H
 
-#include "Stream.h"
+#include <flux/Stream.h>
 
-namespace flux
-{
+namespace flux {
+namespace stream {
 
 class StreamTap: public Stream
 {
@@ -33,6 +33,6 @@ private:
 	Ref<Stream> stream_, inputTap_, outputTap_;
 };
 
-} // namespace flux
+}} // namespace flux::stream
 
-#endif // FLUX_STREAMTAP_H
+#endif // FLUXSTREAM_STREAMTAP_H

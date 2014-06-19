@@ -7,12 +7,14 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/LineBuffer.h>
+#include <flux/stream/LineBuffer.h>
 #include "SystemLogStream.h"
 #include "SystemLog.h"
 
 namespace fluxnode
 {
+
+using namespace flux::stream;
 
 SystemLog::SystemLog()
 	: emergencyStream_(LineBuffer::open(SystemLogStream::open(LOG_EMERG))),

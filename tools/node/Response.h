@@ -14,12 +14,16 @@
 #include <flux/Map.h>
 #include <flux/Stream.h>
 
-namespace flux { class TransferMeter; }
+namespace flux {
+namespace stream {
+class TransferMeter;
+}}
 
 namespace fluxnode
 {
 
 using namespace flux;
+using namespace flux::stream;
 
 class ClientConnection;
 class ServiceWorker;

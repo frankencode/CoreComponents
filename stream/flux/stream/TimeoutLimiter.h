@@ -7,14 +7,14 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_TIMEOUTLIMITER_H
-#define FLUX_TIMEOUTLIMITER_H
+#ifndef FLUXSTREAM_TIMEOUTLIMITER_H
+#define FLUXSTREAM_TIMEOUTLIMITER_H
 
-#include "Stream.h"
-#include "Exception.h"
+#include <flux/Stream.h>
+#include <flux/Exception.h>
 
-namespace flux
-{
+namespace flux {
+namespace stream {
 
 class TimeoutLimiter: public Stream
 {
@@ -44,6 +44,6 @@ public:
 	virtual String message() const { return "Timeout exceeded"; }
 };
 
-} // namespace flux
+}} // namespace flux::stream
 
-#endif // FLUX_TIMEOUTLIMITER_H
+#endif // FLUXSTREAM_TIMEOUTLIMITER_H
