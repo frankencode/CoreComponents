@@ -7,15 +7,16 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_TAPBUFFER_H
-#define FLUX_TAPBUFFER_H
+#ifndef FLUXNODE_TAPBUFFER_H
+#define FLUXNODE_TAPBUFFER_H
 
-#include <flux/LineBuffer.h>
+#include <flux/stream/LineBuffer.h>
 
 namespace fluxnode
 {
 
 using namespace flux;
+using namespace flux::stream;
 
 class TapBuffer: public LineBuffer
 {
@@ -34,4 +35,4 @@ private:
 
 } // namespace fluxnode
 
-#endif // FLUX_TAPBUFFER_H
+#endif // FLUXNODE_TAPBUFFER_H

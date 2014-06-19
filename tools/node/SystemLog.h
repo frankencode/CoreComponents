@@ -10,9 +10,9 @@
 #ifndef FLUXNODE_SYSTEMLOG_H
 #define FLUXNODE_SYSTEMLOG_H
 
+#include <syslog.h>
 #include <flux/Stream.h>
 #include <flux/ThreadLocalSingleton.h>
-#include <syslog.h>
 
 namespace fluxnode
 {

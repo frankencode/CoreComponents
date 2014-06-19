@@ -9,8 +9,8 @@
 
 #include "TransferLimiter.h"
 
-namespace flux
-{
+namespace flux {
+namespace stream {
 
 Ref<TransferLimiter> TransferLimiter::open(Stream *stream, size_t readLimit, size_t writeLimit) {
 	return new TransferLimiter(stream, readLimit, writeLimit);
@@ -56,4 +56,4 @@ void TransferLimiter::write(const StringList *parts)
 	totalWritten_ += h;
 }
 
-} // namespace flux
+}} // namespace flux::stream

@@ -9,8 +9,8 @@
 
 #include "LookAheadStream.h"
 
-namespace flux
-{
+namespace flux {
+namespace stream {
 
 Ref<LookAheadStream> LookAheadStream::open(Stream *source, int windowSize)
 {
@@ -79,4 +79,4 @@ void LookAheadStream::done()
 	done_ = true;
 }
 
-} // namespace flux
+}} // namespace flux::stream

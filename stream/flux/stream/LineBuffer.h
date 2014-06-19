@@ -7,36 +7,37 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_TRANSFERMETER_H
-#define FLUX_TRANSFERMETER_H
+#ifndef FLUXSTREAM_LINEBUFFER_H
+#define FLUXSTREAM_LINEBUFFER_H
 
-#include "Stream.h"
+#include <flux/Stream.h>
 
-namespace flux
-{
+namespace flux {
+namespace stream {
 
-class TransferMeter: public Stream
+class LineBuffer: public Stream
 {
 public:
-	static Ref<TransferMeter> open(Stream *stream);
+	static Ref<LineBuffer> open(Stream *stream, String prefix = "");
 
 	inline Stream *stream() const { return stream_; }
-	inline size_t totalRead() const { return totalRead_; }
-	inline size_t totalWritten() const { return totalWritten_; }
+	virtual String prefix() const;
 
 	virtual bool readyRead(double interval) const;
 	virtual int read(ByteArray *buf);
+
 	virtual void write(const ByteArray *buf);
 	virtual void write(const StringList *parts);
 
-private:
-	TransferMeter(Stream *stream);
+protected:
+	LineBuffer(Stream *stream, String prefix = "");
 
+private:
 	Ref<Stream> stream_;
-	size_t totalRead_;
-	size_t totalWritten_;
+	String prefix_;
+	Ref<StringList> backlog_;
 };
 
-} // namespace flux
+}} // namespace flux::stream
 
-#endif // FLUX_TRANSFERMETER_H
+#endif // FLUXSTREAM_LINEBUFFER_H

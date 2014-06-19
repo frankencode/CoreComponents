@@ -7,14 +7,16 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/TimeoutLimiter.h>
-#include <flux/TransferLimiter.h>
 #include <flux/System.h>
+#include <flux/stream/TimeoutLimiter.h>
+#include <flux/stream/TransferLimiter.h>
 #include "exceptions.h"
 #include "RequestStream.h"
 
 namespace fluxnode
 {
+
+using namespace flux::stream;
 
 Ref<RequestStream> RequestStream::open(Stream *stream)
 {

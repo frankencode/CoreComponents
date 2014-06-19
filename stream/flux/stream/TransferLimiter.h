@@ -7,14 +7,14 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_TRANSFERLIMITER_H
-#define FLUX_TRANSFERLIMITER_H
+#ifndef FLUXSTREAM_TRANSFERLIMITER_H
+#define FLUXSTREAM_TRANSFERLIMITER_H
 
-#include "Stream.h"
-#include "Exception.h"
+#include <flux/Stream.h>
+#include <flux/Exception.h>
 
-namespace flux
-{
+namespace flux {
+namespace stream {
 
 class TransferLimiter: public Stream
 {
@@ -64,6 +64,6 @@ public:
 	virtual String message() const { return "Write transfer limit exceeded"; }
 };
 
-} // namespace flux
+}} // namespace flux::stream
 
-#endif // FLUX_TRANSFERLIMITER_H
+#endif // FLUXSTREAM_TRANSFERLIMITER_H

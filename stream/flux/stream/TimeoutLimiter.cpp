@@ -7,11 +7,11 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "System.h"
+#include <flux/System.h>
 #include "TimeoutLimiter.h"
 
-namespace flux
-{
+namespace flux {
+namespace stream {
 
 Ref<TimeoutLimiter> TimeoutLimiter::open(Stream *stream, double timeout)
 {
@@ -46,4 +46,4 @@ void TimeoutLimiter::write(const StringList *parts)
 	stream_->write(parts);
 }
 
-} // namespace flux
+}} // namespace flux::stream

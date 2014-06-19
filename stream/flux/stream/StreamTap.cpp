@@ -9,8 +9,8 @@
 
 #include "StreamTap.h"
 
-namespace flux
-{
+namespace flux {
+namespace stream {
 
 Ref<StreamTap> StreamTap::open(Stream *stream, Stream *inputTap, Stream *outputTap)
 {
@@ -47,4 +47,4 @@ void StreamTap::write(const StringList *parts)
 	stream_->write(parts);
 }
 
-} // namespace flux
+}} // namespace flux::stream

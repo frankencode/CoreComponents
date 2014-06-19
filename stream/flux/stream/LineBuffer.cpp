@@ -9,8 +9,8 @@
 
 #include "LineBuffer.h"
 
-namespace flux
-{
+namespace flux {
+namespace stream {
 
 Ref<LineBuffer> LineBuffer::open(Stream *stream, String prefix)
 {
@@ -65,4 +65,4 @@ void LineBuffer::write(const StringList *parts)
 		write(parts->at(i));
 }
 
-} // namespace flux
+}} // namespace flux::stream
