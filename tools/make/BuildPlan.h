@@ -69,7 +69,8 @@ public:
 	inline ToolChain *toolChain() const { return toolChain_; }
 
 	inline String projectPath() const { return projectPath_; }
-	inline String recipePath() const { return projectPath_ + "/Recipe"; }
+	inline String recipePath() const { return recipePath(projectPath_); }
+	inline static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
 	inline String modulePath() const { return modulePath_; }
 	inline YasonObject *recipe() const { return recipe_; }
 

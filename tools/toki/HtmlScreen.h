@@ -13,9 +13,6 @@
 #include <flux/Token.h>
 #include <flux/Format.h>
 
-namespace fluxtoki
-{
-
 using namespace flux;
 
 class HtmlScreen: public TokenScreen, public Object
@@ -31,7 +28,5 @@ private:
 	String text_;
 	Format format_;
 };
-
-} // namespace fluxtoki
 
 #endif // FLUXTOKI_HTMLSCREEN_H

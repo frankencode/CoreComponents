@@ -7,15 +7,14 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/String.h>
-#include <flux/tar/ArchiveWriter.h>
+#include "ArchiveReader.h"
 
-namespace fluxtar
+namespace flux {
+namespace tar {
+
+void ArchiveReader::skipData(ArchiveEntry *entry)
 {
+	readData(entry);
+}
 
-using namespace flux;
-using namespace flux::tar;
-
-void pack(String path, ArchiveWriter *archive, bool verbose);
-
-} // namespace fluxtar
+}} // namespace flux::tar

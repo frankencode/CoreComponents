@@ -209,6 +209,8 @@ void BuildPlan::readPrerequisites()
 		String path = prerequisitePaths->at(i);
 		if (path->isRelativePath()) path = projectPath_ + "/" + path;
 		path = path->canonicalPath();
+		if (!File::exists(recipePath(path)))
+			throw UsageError(Format() << recipePath() << ": Failed to locate prerequisite " << prerequisitePaths->at(i));
 		Ref<BuildPlan> plan = BuildPlan::create(path);
 
 		if (plan->options() & Library) {

@@ -1,0 +1,8 @@
+Library {
+	name: fluxtoki
+	version: 0.1.0
+	header: *.h
+	source: *.cpp
+	bundle: themes/*
+	use: ../../../core/flux
+}

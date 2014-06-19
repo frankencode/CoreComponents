@@ -1,3 +1,3 @@
 Package {
-	use: [ toki, tests ]
+	use: [ flux/toki, tests ]
 }

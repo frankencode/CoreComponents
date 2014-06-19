@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Frank Mertens.
+ * Copyright (C) 2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -7,15 +7,18 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/String.h>
-#include <flux/tar/ArchiveWriter.h>
+#include "CxxSyntax.h"
+#include "CxxLanguage.h"
 
-namespace fluxtar
-{
+namespace flux {
+namespace toki {
 
-using namespace flux;
-using namespace flux::tar;
+CxxLanguage::CxxLanguage():
+	Language(
+		"cxx",
+		Pattern("*.((h|c){0..1:(pp|xx|++|h|c)}|(m|mm))"),
+		cxxSyntax()
+	)
+{}
 
-void pack(String path, ArchiveWriter *archive, bool verbose);
-
-} // namespace fluxtar
+}} // namespace flux::toki
