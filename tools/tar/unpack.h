@@ -10,12 +10,13 @@
 #ifndef FLUXTAR_UNPACK_H
 #define FLUXTAR_UNPACK_H
 
-#include <flux/ArchiveReader.h>
+#include <flux/tar/ArchiveReader.h>
 
 namespace fluxtar
 {
 
 using namespace flux;
+using namespace flux::tar;
 
 void list(ArchiveReader *archive);
 void status(ArchiveReader *archive);

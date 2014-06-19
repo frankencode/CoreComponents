@@ -10,13 +10,13 @@
 #include <flux/stdio.h>
 #include <flux/Arguments.h>
 #include <flux/File.h>
-#include <toki/Theme.h>
-#include <toki/Language.h>
-#include <toki/Registry.h>
+#include <flux/toki/Theme.h>
+#include <flux/toki/Language.h>
+#include <flux/toki/Registry.h>
 #include "HtmlScreen.h"
 
 using namespace flux;
-using namespace fluxtoki;
+using namespace flux::toki;
 
 String cssPath(String themeName)
 {
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 
 		if (cssOption) {
 			Ref<StringList> paths;
-			if (themeOption == "") paths = fluxtoki::themeList();
+			if (themeOption == "") paths = flux::toki::themeList();
 			else paths = StringList::create() << themeOption;
 			for (int i = 0; i < paths->count(); ++i) {
 				Ref<Theme> theme = Theme::load(paths->at(i));

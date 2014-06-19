@@ -7,15 +7,20 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#ifndef FLUXTAR_ARCHIVEWRITER_H
+#define FLUXTAR_ARCHIVEWRITER_H
+
 #include <flux/String.h>
-#include <flux/tar/ArchiveWriter.h>
 
-namespace fluxtar
+namespace flux {
+namespace tar {
+
+class ArchiveWriter: public Object
 {
+public:
+	virtual void writeFile(String path) = 0;
+};
 
-using namespace flux;
-using namespace flux::tar;
+}} // namespace flux::tar
 
-void pack(String path, ArchiveWriter *archive, bool verbose);
-
-} // namespace fluxtar
+#endif // FLUXTAR_ARCHIVEWRITER_H

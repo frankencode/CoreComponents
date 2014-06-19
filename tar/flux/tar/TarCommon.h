@@ -7,15 +7,16 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/String.h>
-#include <flux/tar/ArchiveWriter.h>
+#ifndef FLUXTAR_TARCOMMON_H
+#define FLUXTAR_TARCOMMON_H
 
-namespace fluxtar
-{
+#include <flux/ByteArray.h>
 
-using namespace flux;
-using namespace flux::tar;
+namespace flux {
+namespace tar {
 
-void pack(String path, ArchiveWriter *archive, bool verbose);
+unsigned tarHeaderSum(ByteArray *data);
 
-} // namespace fluxtar
+}} // namespace flux::tar
+
+#endif // FLUXTAR_TARCOMMON_H

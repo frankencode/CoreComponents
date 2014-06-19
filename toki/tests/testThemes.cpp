@@ -1,7 +1,8 @@
 #include <flux/stdio.h>
-#include <toki/Theme.h>
+#include <flux/toki/Theme.h>
 
-using namespace fluxtoki;
+using namespace flux;
+using namespace flux::toki;
 
 int main()
 {

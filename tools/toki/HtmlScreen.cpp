@@ -9,9 +9,6 @@
 
 #include "HtmlScreen.h"
 
-namespace fluxtoki
-{
-
 HtmlScreen::HtmlScreen(String text, Stream *sink)
 	: text_(text),
 	  format_(sink)
@@ -32,5 +29,3 @@ bool HtmlScreen::project(Token *token, int i0, int i1)
 	if (format_->count() > 128) format_ << flush;
 	return true;
 }
-
-} // namespace fluxtoki
