@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include <flux/SocketAddress.h>
 #include <flux/System.h>
+#include <flux/net/SocketAddress.h>
 #include "Visit.h"
 
 namespace fluxnode

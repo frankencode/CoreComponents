@@ -1,3 +1,5 @@
-Package {
-	use: core
+Tools {
+	source: *.cpp
+	use: ../core/flux
+	// prefix: /usr/lib/flux/examples // FIXME
 }

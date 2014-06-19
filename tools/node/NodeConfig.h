@@ -10,9 +10,9 @@
 #ifndef FLUXNODE_NODECONFIG_H
 #define FLUXNODE_NODECONFIG_H
 
-#include <flux/SocketAddress.h>
-#include <flux/String.h>
 #include <flux/Map.h>
+#include <flux/String.h>
+#include <flux/net/SocketAddress.h>
 #include "ServiceDefinition.h"
 #include "LogConfig.h"
 
@@ -22,6 +22,7 @@ namespace fluxnode
 {
 
 using namespace flux;
+using namespace flux::net;
 
 class NodeConfig: public Object
 {

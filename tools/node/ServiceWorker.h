@@ -13,14 +13,15 @@
 #include <flux/Thread.h>
 #include <flux/Channel.h>
 #include <flux/PriorityQueue.h>
-#include <flux/StreamSocket.h>
 #include <flux/Map.h>
+#include <flux/net/StreamSocket.h>
 #include "ClientConnection.h"
 
 namespace fluxnode
 {
 
 using namespace flux;
+using namespace flux::net;
 
 class ServiceWorker;
 
