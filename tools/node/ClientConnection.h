@@ -10,7 +10,7 @@
 #ifndef FLUXNODE_CLIENTCONNECTION_H
 #define FLUXNODE_CLIENTCONNECTION_H
 
-#include <flux/StreamSocket.h>
+#include <flux/net/StreamSocket.h>
 #include "Visit.h"
 #include "Request.h"
 
@@ -18,6 +18,7 @@ namespace fluxnode
 {
 
 using namespace flux;
+using namespace flux::net;
 
 class ServiceWorker;
 class RequestStream;

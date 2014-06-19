@@ -12,12 +12,16 @@
 
 #include <flux/Object.h>
 
-namespace flux { class SocketAddress; }
+namespace flux {
+namespace net {
+	class SocketAddress;
+}}
 
 namespace fluxnode
 {
 
 using namespace flux;
+using namespace flux::net;
 
 class ConnectionManager;
 
