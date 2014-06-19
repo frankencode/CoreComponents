@@ -10,12 +10,13 @@
 #ifndef FLUXDOC_ELEMENT_H
 #define FLUXDOC_ELEMENT_H
 
-#include <flux/yason.h>
+#include <flux/yason/yason.h>
 
 namespace fluxdoc
 {
 
 using namespace flux;
+using namespace flux::yason;
 
 typedef YasonObject Element;
 typedef List< Ref<Element> > ElementList;

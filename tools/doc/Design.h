@@ -10,12 +10,13 @@
 #ifndef FLUXDOC_DESIGN_H
 #define FLUXDOC_DESIGN_H
 
-#include <flux/yason.h>
+#include <flux/yason/yason.h>
 
 namespace fluxdoc
 {
 
 using namespace flux;
+using namespace flux::yason;
 
 class Design: public YasonObject
 {

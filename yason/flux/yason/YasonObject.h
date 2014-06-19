@@ -7,15 +7,15 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_YASONOBJECT_H
-#define FLUX_YASONOBJECT_H
+#ifndef FLUXYASON_YASONOBJECT_H
+#define FLUXYASON_YASONOBJECT_H
 
-#include "SpinLock.h"
-#include "Token.h"
-#include "Variant.h"
+#include <flux/SpinLock.h>
+#include <flux/Token.h>
+#include <flux/Variant.h>
 
-namespace flux
-{
+namespace flux {
+namespace yason {
 
 class YasonProtocol;
 
@@ -72,6 +72,6 @@ private:
 	Ref<YasonProtocol> protocol_;
 };
 
-} // namespace flux
+}} // namespace flux::yason
 
-#endif // FLUX_YASONOBJECT_H
+#endif // FLUXYASON_YASONOBJECT_H

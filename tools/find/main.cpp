@@ -8,12 +8,12 @@
  */
 
 #include <flux/stdio.h>
-#include <flux/Arguments.h>
 #include <flux/Pattern.h>
 #include <flux/DirWalker.h>
-#include <flux/File.h>
+#include <flux/yason/Arguments.h>
 
 using namespace flux;
+using namespace flux::yason;
 
 class Match: public Object {
 public:

@@ -7,24 +7,12 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUXNODE_ACCESSLOG_H
-#define FLUXNODE_ACCESSLOG_H
-
-#include "Log.h"
-
-namespace flux { template<class> class ThreadLocalSingleton; }
+#include <flux/ThreadLocalSingleton.h>
+#include "ErrorLog.h"
 
 namespace fluxnode
 {
 
-class AccessLog: public Log
-{
-private:
-	friend class ThreadLocalSingleton<AccessLog>;
-};
-
-AccessLog *accessLog();
+ErrorLog *errorLog() { return ThreadLocalSingleton<ErrorLog>::instance(); }
 
 } // namespace fluxnode
-
-#endif // FLUXNODE_ACCESSLOG_H

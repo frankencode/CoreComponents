@@ -7,14 +7,14 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "Singleton.h"
-#include "Format.h"
-#include "FloatSyntax.h"
-#include "IntegerSyntax.h"
+#include <flux/Singleton.h>
+#include <flux/Format.h>
+#include <flux/FloatSyntax.h>
+#include <flux/IntegerSyntax.h>
 #include "YasonSyntax.h"
 
-namespace flux
-{
+namespace flux {
+namespace yason {
 
 YasonSyntax::YasonSyntax(int options)
 {
@@ -639,4 +639,4 @@ String YasonSyntax::readText(const ByteArray *text, Token *token) const
 
 const YasonSyntax *yasonSyntax() { return Singleton<YasonSyntax>::instance(); }
 
-} // namespace flux
+}} // namespace flux::yason

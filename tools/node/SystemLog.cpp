@@ -7,6 +7,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/ThreadLocalSingleton.h>
 #include <flux/stream/LineBuffer.h>
 #include "SystemLogStream.h"
 #include "SystemLog.h"
@@ -31,5 +32,7 @@ void SystemLog::open(String identifier, int option, int facility)
 {
 	openlog(identifier, option, facility);
 }
+
+SystemLog *systemLog() { return ThreadLocalSingleton<SystemLog>::instance(); }
 
 } // namespace fluxnode

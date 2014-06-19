@@ -8,7 +8,7 @@
  */
 
 #include <flux/stdio.h>
-#include <flux/Arguments.h>
+#include <flux/yason/Arguments.h>
 #include "Document.h"
 #include "Design.h"
 #include "Registry.h"

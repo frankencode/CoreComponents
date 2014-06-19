@@ -15,13 +15,15 @@
 
 namespace flux {
 class File;
+namespace yason {
 class YasonObject;
-} // namespace flux
+}}
 
 namespace fluxmake
 {
 
 using namespace flux;
+using namespace flux::yason;
 
 class Module;
 class BuildPlan;

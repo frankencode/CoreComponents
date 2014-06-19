@@ -10,12 +10,12 @@
 #ifndef FLUXTOKI_YASONSYNTAX_H
 #define FLUXTOKI_YASONSYNTAX_H
 
-#include <flux/YasonSyntax.h>
+#include <flux/yason/YasonSyntax.h>
 
 namespace flux {
 namespace toki {
 
-flux::YasonSyntax *yasonSyntax();
+flux::yason::YasonSyntax *yasonSyntax();
 
 }} // namespace flux::toki
 

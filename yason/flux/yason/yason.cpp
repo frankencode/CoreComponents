@@ -7,16 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#include "Format.h"
+#include <flux/Format.h>
 #include "YasonSyntax.h"
 #include "YasonWriter.h"
 #include "yason.h"
 
-namespace flux
-{
-
-namespace yason
-{
+namespace flux {
+namespace yason {
 
 Variant parse(const ByteArray *text, const YasonProtocol *protocol)
 {
@@ -30,6 +27,4 @@ String stringify(Variant value)
 	return format;
 }
 
-} // namespace yason
-
-} // namespace flux
+}} // namespace flux::yason

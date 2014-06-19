@@ -7,12 +7,12 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include <flux/Format.h>
 #include "yason.h"
-#include "Format.h"
 #include "Arguments.h"
 
-namespace flux
-{
+namespace flux {
+namespace yason {
 
 Ref<Arguments> Arguments::parse(int argc, char **argv)
 {
@@ -88,4 +88,4 @@ void Arguments::override(VariantMap *config) const
 	}
 }
 
-} // namespace flux
+}} // namespace flux::yason

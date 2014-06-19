@@ -10,8 +10,8 @@
 #ifndef FLUXNODE_SERVICEDEFINITION_H
 #define FLUXNODE_SERVICEDEFINITION_H
 
-#include <flux/yason.h>
 #include <flux/Pattern.h>
+#include <flux/yason/yason.h>
 #include "ServiceDelegate.h"
 #include "ServiceInstance.h"
 
@@ -19,6 +19,7 @@ namespace fluxnode
 {
 
 using namespace flux;
+using namespace flux::yason;
 
 class ServicePrototype: public YasonObject
 {

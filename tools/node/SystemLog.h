@@ -12,14 +12,15 @@
 
 #include <syslog.h>
 #include <flux/Stream.h>
-#include <flux/ThreadLocalSingleton.h>
+
+namespace flux { template<class> class ThreadLocalSingleton; }
 
 namespace fluxnode
 {
 
 using namespace flux;
 
-class SystemLog: public Object, public ThreadLocalSingleton<SystemLog>
+class SystemLog: public Object
 {
 public:
 	static void open(String identifier, int option, int facility);
@@ -47,7 +48,7 @@ private:
 	Ref<Stream> debugStream_;
 };
 
-inline SystemLog *systemLog() { return SystemLog::instance(); }
+SystemLog *systemLog();
 
 } // namespace fluxnode
 

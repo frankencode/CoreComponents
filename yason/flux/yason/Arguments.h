@@ -7,13 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_ARGUMENTS_H
-#define FLUX_ARGUMENTS_H
+#ifndef FLUXYASON_ARGUMENTS_H
+#define FLUXYASON_ARGUMENTS_H
 
-#include "Variant.h"
+#include <flux/Variant.h>
 
-namespace flux
-{
+namespace flux {
+namespace yason {
 
 class Arguments: public Object
 {
@@ -35,6 +35,6 @@ private:
 	String execPath_;
 };
 
-} // namespace flux
+}} // namespace flux::yason
 
-#endif // FLUX_ARGUMENTS_H
+#endif // FLUXYASON_ARGUMENTS_H

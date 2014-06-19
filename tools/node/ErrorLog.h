@@ -10,21 +10,22 @@
 #ifndef FLUXNODE_ERRORLOG_H
 #define FLUXNODE_ERRORLOG_H
 
-#include <flux/ThreadLocalSingleton.h>
 #include <flux/Format.h>
 #include <flux/str.h>
 #include "Log.h"
 
+namespace flux { template<class> class ThreadLocalSingleton; }
+
 namespace fluxnode
 {
 
-class ErrorLog: public Log, public ThreadLocalSingleton<ErrorLog>
+class ErrorLog: public Log
 {
 private:
 	friend class ThreadLocalSingleton<ErrorLog>;
 };
 
-inline ErrorLog *errorLog() { return ErrorLog::instance(); }
+ErrorLog *errorLog();
 
 inline Format error()   { return Format(errorLog()->errorStream()); }
 inline Format warning() { return Format(errorLog()->warningStream()); }

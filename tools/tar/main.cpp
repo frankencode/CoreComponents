@@ -10,8 +10,8 @@
 #include <flux/stdio.h>
 #include <flux/exceptions.h>
 #include <flux/Format.h>
-#include <flux/Arguments.h>
 #include <flux/File.h>
+#include <flux/yason/Arguments.h>
 #include <flux/tar/TarReader.h>
 #include <flux/tar/ArReader.h>
 #include <flux/tar/TarWriter.h>
@@ -20,6 +20,7 @@
 #include "unpack.h"
 
 using namespace flux;
+using namespace flux::yason;
 using namespace flux::tar;
 
 int main(int argc, char **argv)

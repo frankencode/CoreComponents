@@ -10,9 +10,9 @@
 #include <flux/stdio.h>
 #include <flux/Glob.h>
 #include <flux/Dir.h>
-#include <flux/Arguments.h>
 #include <flux/ResourceGuard.h>
-#include <flux/yason.h>
+#include <flux/yason/yason.h>
+#include <flux/yason/Arguments.h>
 #include "DependencyCache.h"
 #include "GnuToolChain.h"
 #include "JobScheduler.h"

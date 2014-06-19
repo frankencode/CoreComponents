@@ -27,13 +27,15 @@
 
 namespace flux {
 class FileStatus;
+namespace yason {
 class YasonObject;
-} // namespace flux
+}}
 
 namespace fluxmake
 {
 
 using namespace flux;
+using namespace flux::yason;
 
 class BuildPlan;
 typedef List< Ref<BuildPlan> > BuildPlanList;
