@@ -1,4 +1,0 @@
-Tests {
-	source: *.cpp
-	use: [ ../../core/flux, ../flux/yason ]
-}

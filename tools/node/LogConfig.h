@@ -10,13 +10,12 @@
 #ifndef FLUXNODE_LOGCONFIG_H
 #define FLUXNODE_LOGCONFIG_H
 
-#include <flux/yason/yason.h>
+#include <flux/YasonObject.h>
 
 namespace fluxnode
 {
 
 using namespace flux;
-using namespace flux::yason;
 
 class LogConfig: public Object
 {

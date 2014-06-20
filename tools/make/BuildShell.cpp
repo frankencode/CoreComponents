@@ -8,6 +8,7 @@
  */
 
 #include <flux/stdio.h>
+#include <flux/exceptions.h>
 #include <flux/Process.h>
 #include <flux/FileStatus.h>
 #include <flux/File.h>

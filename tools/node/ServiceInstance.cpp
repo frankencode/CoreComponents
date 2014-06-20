@@ -1,4 +1,4 @@
-#include <flux/yason/yason.h>
+#include <flux/YasonObject.h>
 #include "LogConfig.h"
 #include "ServiceInstance.h"
 

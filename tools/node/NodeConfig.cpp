@@ -9,7 +9,7 @@
 
 #include <flux/File.h>
 #include <flux/Singleton.h>
-#include <flux/yason/Arguments.h>
+#include <flux/Arguments.h>
 #include "NodeConfigProtocol.h"
 #include "ServiceRegistry.h"
 #include "ErrorLog.h"
@@ -17,8 +17,6 @@
 
 namespace fluxnode
 {
-
-using namespace flux::yason;
 
 NodeConfig::NodeConfig()
 {}

@@ -1,5 +1,5 @@
 Application {
 	name: fluxnode
 	source: *.cpp
-	use: [ ../../core/flux, ../../yason/flux/yason, ../../net/flux/net, ../../stream/flux/stream ]
+	use: [ ../../core/flux, ../../net/flux/net, ../../stream/flux/stream ]
 }

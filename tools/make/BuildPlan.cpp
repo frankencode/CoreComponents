@@ -11,8 +11,8 @@
 #include <flux/Glob.h>
 #include <flux/Dir.h>
 #include <flux/ResourceGuard.h>
-#include <flux/yason/yason.h>
-#include <flux/yason/Arguments.h>
+#include <flux/yason.h>
+#include <flux/Arguments.h>
 #include "DependencyCache.h"
 #include "GnuToolChain.h"
 #include "JobScheduler.h"
@@ -210,7 +210,7 @@ void BuildPlan::readPrerequisites()
 		if (path->isRelativePath()) path = projectPath_ + "/" + path;
 		path = path->canonicalPath();
 		if (!File::exists(recipePath(path)))
-			throw UsageError(Format() << recipePath() << ": Failed to locate prerequisite " << prerequisitePaths->at(i));
+			throw UsageError(Format() << recipePath() << ": Failed to locate prerequisite \"" << prerequisitePaths->at(i) << "\"");
 		Ref<BuildPlan> plan = BuildPlan::create(path);
 
 		if (plan->options() & Library) {

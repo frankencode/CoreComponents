@@ -1,0 +1,6 @@
+Application {
+	name: fluxtar
+	alias: [ fluxuntar, fluxar, fluxunar ]
+	source: *.cpp
+	use: [ ../../../core/flux, ../../tar/flux/tar ]
+}

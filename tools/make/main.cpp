@@ -8,6 +8,7 @@
  */
 
 #include <flux/stdio.h>
+#include <flux/exceptions.h>
 #include "BuildPlan.h"
 
 using namespace fluxmake;

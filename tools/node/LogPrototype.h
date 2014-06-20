@@ -11,13 +11,12 @@
 #define FLUXNODE_LOGPROTOTYPE_H
 
 #include <flux/Date.h>
-#include <flux/yason/yason.h>
+#include <flux/YasonObject.h>
 
 namespace fluxnode
 {
 
 using namespace flux;
-using namespace flux::yason;
 
 class LogPrototype: public YasonObject
 {
