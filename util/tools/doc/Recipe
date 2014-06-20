@@ -1,0 +1,5 @@
+Application {
+	name: fluxdoc
+	source: *.cpp
+	use: ../../../core/flux
+}

@@ -1,5 +1,0 @@
-Application {
-	name: fluxtoki
-	source: *.cpp
-	use: [ ../../core/flux, ../../yason/flux/yason, ../../toki/flux/toki ]
-}

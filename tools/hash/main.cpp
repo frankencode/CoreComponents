@@ -9,13 +9,12 @@
 
 #include <flux/stdio.h>
 #include <flux/exceptions.h>
-#include <flux/yason/Arguments.h>
+#include <flux/Arguments.h>
 #include <flux/crypto/Sha1.h>
 #include <flux/crypto/Md5.h>
 #include <flux/crypto/HashMeter.h>
 
 using namespace flux;
-using namespace flux::yason;
 using namespace flux::crypto;
 
 int main(int argc, char **argv)

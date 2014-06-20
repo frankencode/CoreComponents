@@ -1,5 +1,0 @@
-Application {
-	name: fluxdoc
-	source: *.cpp
-	use: [ ../../core/flux, ../../yason/flux/yason ]
-}

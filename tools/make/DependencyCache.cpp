@@ -10,7 +10,7 @@
 #include <flux/Format.h>
 #include <flux/File.h>
 #include <flux/FileStatus.h>
-#include <flux/yason/yason.h>
+#include <flux/yason.h>
 #include "BuildPlan.h"
 #include "DependencyCache.h"
 

@@ -14,16 +14,12 @@
 #include <flux/List.h>
 #include "LogConfig.h"
 
-namespace flux {
-namespace yason {
-class YasonObject;
-}}
+namespace flux { class YasonObject; }
 
 namespace fluxnode
 {
 
 using namespace flux;
-using namespace flux::yason;
 
 class ServiceDelegate;
 class ServiceWorker;

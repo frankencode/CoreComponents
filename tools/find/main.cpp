@@ -10,10 +10,9 @@
 #include <flux/stdio.h>
 #include <flux/Pattern.h>
 #include <flux/DirWalker.h>
-#include <flux/yason/Arguments.h>
+#include <flux/Arguments.h>
 
 using namespace flux;
-using namespace flux::yason;
 
 class Match: public Object {
 public:
