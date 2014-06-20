@@ -81,7 +81,7 @@ bool YasonWriter::isIdentifier(String name) const
 
 void YasonWriter::writeObject(Variant value, int depth)
 {
-	Ref<YasonObject> object = cast<YasonObject>(value);
+	Ref<MetaObject> object = cast<MetaObject>(value);
 	if (!object) {
 		format_ << "null";
 		return;
@@ -110,7 +110,7 @@ void YasonWriter::writeObject(Variant value, int depth)
 	}
 	if (object->hasChildren()) {
 		if (object->count() > 0) writeIndent(depth + 1);
-		YasonObjectList *children = object->children();
+		MetaObjectList *children = object->children();
 		for (int i = 0; i < children->count(); ++i) {
 			writeObject(children->at(i), depth + 1);
 			format_ << "\n";

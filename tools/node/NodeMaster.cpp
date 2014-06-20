@@ -100,7 +100,7 @@ void NodeMaster::runNode() const
 
 	if (!dispatchInstance) {
 		ServiceDefinition *dispatchService = serviceRegistry()->serviceByName("Dispatch");
-		YasonObject *config = dispatchService->configPrototype();
+		MetaObject *config = dispatchService->configPrototype();
 		dispatchInstance = dispatchService->createInstance(config);
 	}
 
@@ -109,7 +109,7 @@ void NodeMaster::runNode() const
 		FLUXNODE_WARNING() << "No service configured, falling back to Echo service" << nl;
 
 		ServiceDefinition *echoService = serviceRegistry()->serviceByName("Echo");
-		YasonObject *config = echoService->configPrototype();
+		MetaObject *config = echoService->configPrototype();
 		config->establish("host", "*");
 		Ref<ServiceInstance> echoInstance = echoService->createInstance(config);
 		nodeConfig()->serviceInstances()->append(echoInstance);

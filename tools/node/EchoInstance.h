@@ -15,7 +15,7 @@ namespace fluxnode
 class EchoInstance: public ServiceInstance
 {
 public:
-	static Ref<EchoInstance> create(YasonObject *config) {
+	static Ref<EchoInstance> create(MetaObject *config) {
 		return new EchoInstance(config);
 	}
 
@@ -24,7 +24,7 @@ public:
 	}
 
 private:
-	EchoInstance(YasonObject *config)
+	EchoInstance(MetaObject *config)
 		: ServiceInstance(config)
 	{}
 };

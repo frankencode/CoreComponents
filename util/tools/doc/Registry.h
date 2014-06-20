@@ -10,7 +10,7 @@
 #ifndef FLUXDOC_REGISTRY_H
 #define FLUXDOC_REGISTRY_H
 
-#include <flux/YasonProtocol.h>
+#include <flux/MetaProtocol.h>
 
 namespace flux { template<class> class Singleton; }
 
@@ -28,7 +28,7 @@ public:
 	Generator* generatorByIndex(int index) const;
 	int generatorCount() const;
 
-	inline YasonProtocol *designProtocol() const { return designProtocol_; }
+	inline MetaProtocol *designProtocol() const { return designProtocol_; }
 
 private:
 	friend class Singleton<Registry>;
@@ -40,7 +40,7 @@ private:
 	typedef Map< String, Ref<Generator> > GeneratorByName;
 	Ref<GeneratorByName> generatorByName_;
 
-	Ref<YasonProtocol> designProtocol_;
+	Ref<MetaProtocol> designProtocol_;
 };
 
 Registry *registry();

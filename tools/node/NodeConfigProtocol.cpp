@@ -14,17 +14,17 @@
 namespace fluxnode
 {
 
-class NodePrototype: public YasonObject
+class NodePrototype: public MetaObject
 {
 public:
-	static Ref<NodePrototype> create(YasonProtocol *protocol = 0, String className = "Node")
+	static Ref<NodePrototype> create(MetaProtocol *protocol = 0, String className = "Node")
 	{
 		return new NodePrototype(className, protocol);
 	}
 
 protected:
-	NodePrototype(String className, YasonProtocol *protocol)
-		: YasonObject(className, protocol)
+	NodePrototype(String className, MetaProtocol *protocol)
+		: MetaObject(className, protocol)
 	{
 		insert("address", "localhost");
 		insert("port", 8080);
@@ -39,13 +39,13 @@ protected:
 };
 
 NodeConfigProtocol::NodeConfigProtocol()
-	: nodeProtocol_(YasonProtocol::create())
+	: nodeProtocol_(MetaProtocol::create())
 {
 	Ref<NodePrototype> nodePrototype = NodePrototype::create(nodeProtocol_);
 	define(nodePrototype);
 }
 
-void NodeConfigProtocol::registerService(YasonObject *configPrototype)
+void NodeConfigProtocol::registerService(MetaObject *configPrototype)
 {
 	nodeProtocol_->define(configPrototype);
 }

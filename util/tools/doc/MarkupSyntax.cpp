@@ -243,7 +243,7 @@ Ref<ElementList> MarkupSyntax::readPart(ByteArray *text, Token *partToken) const
 		token;
 		token = token->nextSibling())
 	{
-		Ref<YasonObject> element;
+		Ref<MetaObject> element;
 		if (token->rule() == object_) {
 			element = yasonSyntax()->readObject(text, token->firstChild(), markupProtocol());
 		}

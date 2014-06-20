@@ -13,7 +13,7 @@
 namespace fluxmake
 {
 
-class BuildParametersPrototype: public YasonObject
+class BuildParametersPrototype: public MetaObject
 {
 public:
 	static Ref<BuildParametersPrototype> create(const String &className) {
@@ -21,8 +21,8 @@ public:
 	}
 
 protected:
-	BuildParametersPrototype(const String &className, YasonProtocol *protocol = 0)
-		: YasonObject(className, protocol)
+	BuildParametersPrototype(const String &className, MetaProtocol *protocol = 0)
+		: MetaObject(className, protocol)
 	{
 		insert("compiler", "");
 		insert("optimize", "");
@@ -45,9 +45,9 @@ public:
 	}
 
 protected:
-	static Ref<YasonProtocol> createProtocol(YasonProtocol *protocol) {
-		Ref<YasonProtocol> newProtocol;
-		if (!protocol) protocol = newProtocol = YasonProtocol::create();
+	static Ref<MetaProtocol> createProtocol(MetaProtocol *protocol) {
+		Ref<MetaProtocol> newProtocol;
+		if (!protocol) protocol = newProtocol = MetaProtocol::create();
 		const char *paramClasses[] = {
 			"Debug", "Release",
 			"Linux", "OpenBSD", "FreeBSD", "NetBSD", "DragonFly",
@@ -58,7 +58,7 @@ protected:
 		return protocol;
 	}
 
-	SpecificBuildParametersPrototype(const String &className, YasonProtocol *protocol = 0)
+	SpecificBuildParametersPrototype(const String &className, MetaProtocol *protocol = 0)
 		: BuildParametersPrototype(className, createProtocol(protocol))
 	{}
 };
@@ -66,7 +66,7 @@ protected:
 class BuildOptionsPrototype: public SpecificBuildParametersPrototype
 {
 protected:
-	BuildOptionsPrototype(const String &className, YasonProtocol *protocol = 0)
+	BuildOptionsPrototype(const String &className, MetaProtocol *protocol = 0)
 		: SpecificBuildParametersPrototype(className, protocol)
 	{
 		insert("use", StringList::create());
@@ -93,7 +93,7 @@ protected:
 class SystemPrerequisitePrototype: public SpecificBuildParametersPrototype
 {
 public:
-	static Ref<YasonObject> create() {
+	static Ref<MetaObject> create() {
 		return new SystemPrerequisitePrototype("SystemPrerequisite");
 	}
 
@@ -114,19 +114,19 @@ protected:
 class ApplicationPrototype: public BuildOptionsPrototype
 {
 public:
-	static Ref<YasonObject> create() {
+	static Ref<MetaObject> create() {
 		return new ApplicationPrototype("Application");
 	}
 
 protected:
-	static Ref<YasonProtocol> createProtocol(YasonProtocol *protocol) {
-		Ref<YasonProtocol> newProtocol;
-		if (!protocol) protocol = newProtocol = YasonProtocol::create();
+	static Ref<MetaProtocol> createProtocol(MetaProtocol *protocol) {
+		Ref<MetaProtocol> newProtocol;
+		if (!protocol) protocol = newProtocol = MetaProtocol::create();
 		protocol->define<SystemPrerequisitePrototype>();
 		return protocol;
 	}
 
-	ApplicationPrototype(const String &className, YasonProtocol *protocol = 0)
+	ApplicationPrototype(const String &className, MetaProtocol *protocol = 0)
 		: BuildOptionsPrototype(className, createProtocol(protocol))
 	{
 		insert("name", "");
@@ -139,13 +139,13 @@ protected:
 class LibraryPrototype: public ApplicationPrototype
 {
 public:
-	static Ref<YasonObject> create(const String &className = "Library") {
+	static Ref<MetaObject> create(const String &className = "Library") {
 		return new LibraryPrototype(className);
 	}
 
 protected:
-	static Ref<YasonProtocol> createProtocol() {
-		Ref<YasonProtocol> protocol = YasonProtocol::create();
+	static Ref<MetaProtocol> createProtocol() {
+		Ref<MetaProtocol> protocol = MetaProtocol::create();
 		protocol->define<SpecificBuildParametersPrototype>("Usage");
 		return protocol;
 	}
@@ -161,7 +161,7 @@ protected:
 class ToolsPrototype: public ApplicationPrototype
 {
 public:
-	static Ref<YasonObject> create(const String &className = "Tools") {
+	static Ref<MetaObject> create(const String &className = "Tools") {
 		return new ToolsPrototype(className);
 	}
 
@@ -176,7 +176,7 @@ protected:
 class TestsPrototype: public ToolsPrototype
 {
 public:
-	static Ref<YasonObject> create(const String &className = "Tests") {
+	static Ref<MetaObject> create(const String &className = "Tests") {
 		return new TestsPrototype(className);
 	}
 
@@ -192,7 +192,7 @@ protected:
 class PackagePrototype: public BuildOptionsPrototype
 {
 public:
-	static Ref<YasonObject> create(const String &className = "Package") {
+	static Ref<MetaObject> create(const String &className = "Package") {
 		return new PackagePrototype(className);
 	}
 

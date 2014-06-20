@@ -10,7 +10,7 @@
 #ifndef FLUXNODE_NODECONFIGPROTOCOL_H
 #define FLUXNODE_NODECONFIGPROTOCOL_H
 
-#include <flux/YasonProtocol.h>
+#include <flux/MetaProtocol.h>
 
 namespace flux { template<class> class Singleton; }
 
@@ -19,15 +19,15 @@ namespace fluxnode
 
 using namespace flux;
 
-class NodeConfigProtocol: public YasonProtocol
+class NodeConfigProtocol: public MetaProtocol
 {
 public:
-	void registerService(YasonObject *configPrototype);
+	void registerService(MetaObject *configPrototype);
 
 private:
 	friend class Singleton<NodeConfigProtocol>;
 	NodeConfigProtocol();
-	Ref<YasonProtocol> nodeProtocol_;
+	Ref<MetaProtocol> nodeProtocol_;
 };
 
 NodeConfigProtocol *configProtocol();

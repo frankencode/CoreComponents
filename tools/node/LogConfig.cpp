@@ -32,7 +32,7 @@ Ref<LogConfig> LogConfig::loadDefault()
 	return new LogConfig();
 }
 
-Ref<LogConfig> LogConfig::load(YasonObject *config)
+Ref<LogConfig> LogConfig::load(MetaObject *config)
 {
 	return new LogConfig(config);
 }
@@ -43,7 +43,7 @@ LogConfig::LogConfig()
 	  rotationInterval_(days(1))
 {}
 
-LogConfig::LogConfig(YasonObject *config)
+LogConfig::LogConfig(MetaObject *config)
 	: path_(config->value("path")),
 	  level_(decodeLogLevel(config->value("level", ""))),
 	  retentionPeriod_(config->value("retention")),

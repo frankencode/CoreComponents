@@ -21,7 +21,7 @@ class NodeMaster;
 class DispatchInstance: public ServiceInstance
 {
 public:
-	static Ref<DispatchInstance> create(YasonObject *config);
+	static Ref<DispatchInstance> create(MetaObject *config);
 	virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const;
 
 	inline WorkerPools *workerPools() const { return workerPools_; }
@@ -29,7 +29,7 @@ public:
 private:
 	friend class NodeMaster;
 
-	DispatchInstance(YasonObject *config);
+	DispatchInstance(MetaObject *config);
 
 	Ref<WorkerPools> workerPools_;
 };

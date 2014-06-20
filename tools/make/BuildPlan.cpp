@@ -122,7 +122,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
 	if (recipe_->hasChildren()) {
 		for (int i = 0; i < recipe_->children()->count(); ++i) {
-			YasonObject *object = recipe_->children()->at(i);
+			MetaObject *object = recipe_->children()->at(i);
 			if (object->className() == "SystemPrerequisite") {
 				Ref<SystemPrerequisite> p = SystemPrerequisite::read(object, this);
 				Ref<SystemPrerequisiteList> l;

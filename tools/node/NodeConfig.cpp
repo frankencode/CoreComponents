@@ -26,10 +26,10 @@ void NodeConfig::load(int argc, char **argv)
 	Ref<Arguments> arguments = Arguments::parse(argc, argv);
 	Ref<StringList> items = arguments->items();
 
-	YasonObject *nodePrototype = configProtocol()->lookup("Node");
+	MetaObject *nodePrototype = configProtocol()->lookup("Node");
 	arguments->validate(nodePrototype);
 
-	Ref<YasonObject> config;
+	Ref<MetaObject> config;
 
 	if (items->count() > 0) {
 		if (items->count() > 1)
@@ -58,13 +58,13 @@ void NodeConfig::load(int argc, char **argv)
 	version_ = config->value("version");
 	daemon_ = config->value("daemon");
 	serviceWindow_ = config->value("service_window");
-	errorLogConfig_ = LogConfig::load(cast<YasonObject>(config->value("error_log")));
-	accessLogConfig_ = LogConfig::load(cast<YasonObject>(config->value("access_log")));
+	errorLogConfig_ = LogConfig::load(cast<MetaObject>(config->value("error_log")));
+	accessLogConfig_ = LogConfig::load(cast<MetaObject>(config->value("access_log")));
 
 	serviceInstances_ = ServiceInstances::create();
 	if (config->hasChildren()) {
 		for (int i = 0; i < config->children()->count(); ++i) {
-			YasonObject *child = config->children()->at(i);
+			MetaObject *child = config->children()->at(i);
 			ServiceDefinition *service = serviceRegistry()->serviceByName(child->className());
 			serviceInstances_->append(service->createInstance(child));
 		}

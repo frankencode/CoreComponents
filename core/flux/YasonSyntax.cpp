@@ -316,7 +316,7 @@ YasonSyntax::YasonSyntax(int options)
 	LINK();
 }
 
-Variant YasonSyntax::parse(const ByteArray *text, const YasonProtocol *protocol) const
+Variant YasonSyntax::parse(const ByteArray *text, const MetaProtocol *protocol) const
 {
 	Ref<SyntaxState> state = match(text);
 	if (!state->valid()) throw SyntaxError(text, state);
@@ -325,7 +325,7 @@ Variant YasonSyntax::parse(const ByteArray *text, const YasonProtocol *protocol)
 	return readValue(text, valueToken);
 }
 
-Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, const YasonProtocol *protocol, YasonObject *prototype) const
+Ref<MetaObject> YasonSyntax::readObject(const ByteArray *text, Token *token, const MetaProtocol *protocol, MetaObject *prototype) const
 {
 	if (token->rule() != object_)
 		throw SemanticError("Expected an object value", text, token->i0());
@@ -348,7 +348,7 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, co
 	else if (prototype) {
 		if (className != prototype->className()) {
 			throw SemanticError(
-				Format("Expected an object of class \"%%\"") << prototype->className_,
+				Format("Expected an object of class \"%%\"") << prototype->className(),
 				text, token->i1()
 			);
 		}
@@ -357,19 +357,19 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, co
 	if (token->rule() == className_)
 		token = token->nextSibling();
 
-	Ref<YasonObject> object;
+	Ref<MetaObject> object;
 	if (prototype) {
 		if (protocol) object = protocol->produce(prototype);
 		else object = prototype->produce();
 	}
-	else object = YasonObject::create(className);
+	else object = MetaObject::create(className);
 
 	while (token) {
 		if (token->rule() == name_) {
 			String name = readName(text, token);
 
 			Variant defaultValue;
-			YasonObject *memberPrototype = 0;
+			MetaObject *memberPrototype = 0;
 			if (prototype) {
 				if (!prototype->lookup(name, &defaultValue))
 					throw SemanticError(
@@ -377,7 +377,7 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, co
 						text, token->i1()
 					);
 				if (type(defaultValue) == Variant::ObjectType)
-					memberPrototype = cast<YasonObject>(defaultValue);
+					memberPrototype = cast<MetaObject>(defaultValue);
 			}
 
 			token = token->nextSibling();
@@ -400,8 +400,8 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, co
 			object->insert(name, value);
 		}
 		else {
-			YasonProtocol *prototypeProtocol = 0;
-			if (prototype) prototypeProtocol = prototype->protocol_;
+			MetaProtocol *prototypeProtocol = 0;
+			if (prototype) prototypeProtocol = prototype->protocol();
 			if (prototypeProtocol) {
 				if (object->children()->count() >= prototypeProtocol->maxCount()) {
 					throw SemanticError(
@@ -410,7 +410,7 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, co
 					);
 				}
 			}
-			Ref<YasonObject> child = readObject(text, token, prototypeProtocol);
+			Ref<MetaObject> child = readObject(text, token, prototypeProtocol);
 			object->children()->append(child);
 		}
 		token = token->nextSibling();
@@ -419,7 +419,7 @@ Ref<YasonObject> YasonSyntax::readObject(const ByteArray *text, Token *token, co
 	object->autocomplete(prototype);
 
 	if (prototype) {
-		YasonProtocol *prototypeProtocol = prototype->protocol_;
+		MetaProtocol *prototypeProtocol = prototype->protocol();
 		if (prototypeProtocol) {
 			if (prototypeProtocol->minCount() > 0) {
 				if (!object->hasChildren() || object->children()->count() < prototypeProtocol->minCount()) {

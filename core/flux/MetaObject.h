@@ -7,8 +7,8 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUX_YASONOBJECT_H
-#define FLUX_YASONOBJECT_H
+#ifndef FLUX_METAOBJECT_H
+#define FLUX_METAOBJECT_H
 
 #include "SpinLock.h"
 #include "Token.h"
@@ -17,16 +17,16 @@
 namespace flux
 {
 
-class YasonProtocol;
+class MetaProtocol;
 
-class YasonObject;
-typedef List< Ref<YasonObject> > YasonObjectList;
+class MetaObject;
+typedef List< Ref<MetaObject> > MetaObjectList;
 
-class YasonObject: public VariantMap
+class MetaObject: public VariantMap
 {
 public:
-	inline static Ref<YasonObject> create(const String &className = "", YasonProtocol *protocol = 0) {
-		return new YasonObject(className, protocol);
+	inline static Ref<MetaObject> create(const String &className = "", MetaProtocol *protocol = 0) {
+		return new MetaObject(className, protocol);
 	}
 
 	inline String className() const { return className_; }
@@ -34,29 +34,29 @@ public:
 	String toString() const;
 
 	inline bool hasChildren() const { return children_; }
-	YasonObjectList *children();
+	MetaObjectList *children();
 
-	Ref<YasonObject> clone();
+	Ref<MetaObject> clone();
 
 	inline bool hasProtocol() const { return protocol_; }
-	YasonProtocol *protocol();
+	MetaProtocol *protocol();
+
+	virtual Ref<MetaObject> produce() {
+		return MetaObject::create(className());
+	}
+
+	virtual void autocomplete(const MetaObject *prototype);
+
+	virtual void realize(const ByteArray *text, Token *objectToken) {}
 
 protected:
-	friend class YasonSyntax;
-	friend class YasonProtocol;
+	// friend class YasonSyntax;
+	friend class MetaProtocol;
 
-	YasonObject(const String &className = "", YasonProtocol *protocol = 0);
-
-	virtual Ref<YasonObject> produce() {
-		return YasonObject::create(className());
-	}
+	MetaObject(const String &className = "", MetaProtocol *protocol = 0);
 
 	inline void className(String newName) { className_ = newName; }
 	virtual void define() {}
-
-	virtual void autocomplete(const YasonObject *prototype);
-
-	virtual void realize(const ByteArray *text, Token *objectToken) {}
 
 	static Token *nameToken(const ByteArray *text, Token *objectToken, const String &memberName);
 	static Token *valueToken(const ByteArray *text, Token *objectToken, const String &memberName);
@@ -65,10 +65,10 @@ protected:
 private:
 	String className_;
 	SpinLock mutex_;
-	Ref<YasonObjectList> children_;
-	Ref<YasonProtocol> protocol_;
+	Ref<MetaObjectList> children_;
+	Ref<MetaProtocol> protocol_;
 };
 
 } // namespace flux
 
-#endif // FLUX_YASONOBJECT_H
+#endif // FLUX_METAOBJECT_H

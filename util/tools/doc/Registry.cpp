@@ -16,7 +16,7 @@ namespace fluxdoc
 
 Registry::Registry()
 	: generatorByName_(GeneratorByName::create()),
-	  designProtocol_(YasonProtocol::create())
+	  designProtocol_(MetaProtocol::create())
 {}
 
 void Registry::registerGenerator(Generator *generator)

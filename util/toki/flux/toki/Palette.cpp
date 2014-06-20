@@ -39,7 +39,7 @@ int Palette::defaultRuleByName(String name)
 	return Undefined;
 }
 
-Ref<YasonObject> Palette::produce()
+Ref<MetaObject> Palette::produce()
 {
 	return new Palette;
 }

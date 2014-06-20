@@ -10,7 +10,7 @@
 #ifndef FLUXMAKE_RECIPEPROTOCOL_H
 #define FLUXMAKE_RECIPEPROTOCOL_H
 
-#include <flux/YasonProtocol.h>
+#include <flux/MetaProtocol.h>
 
 namespace flux { template<class> class Singleton; }
 
@@ -19,7 +19,7 @@ namespace fluxmake
 
 using namespace flux;
 
-class RecipeProtocol: public YasonProtocol
+class RecipeProtocol: public MetaProtocol
 {
 protected:
 	friend class Singleton<RecipeProtocol>;

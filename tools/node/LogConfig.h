@@ -10,7 +10,7 @@
 #ifndef FLUXNODE_LOGCONFIG_H
 #define FLUXNODE_LOGCONFIG_H
 
-#include <flux/YasonObject.h>
+#include <flux/MetaObject.h>
 
 namespace fluxnode
 {
@@ -21,7 +21,7 @@ class LogConfig: public Object
 {
 public:
 	static Ref<LogConfig> loadDefault();
-	static Ref<LogConfig> load(YasonObject *config);
+	static Ref<LogConfig> load(MetaObject *config);
 
 	inline String path() const { return path_; }
 	inline int level() const { return level_; }
@@ -30,7 +30,7 @@ public:
 
 private:
 	LogConfig();
-	LogConfig(YasonObject *config);
+	LogConfig(MetaObject *config);
 
 	String path_;
 	int level_;

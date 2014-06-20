@@ -20,13 +20,13 @@ namespace fluxnode
 
 using namespace flux;
 
-class ServicePrototype: public YasonObject
+class ServicePrototype: public MetaObject
 {
 public:
-	static Ref<ServicePrototype> create(String className, YasonProtocol *protocol = 0);
+	static Ref<ServicePrototype> create(String className, MetaProtocol *protocol = 0);
 
 protected:
-	ServicePrototype(String className, YasonProtocol *protocol);
+	ServicePrototype(String className, MetaProtocol *protocol);
 };
 
 class ServiceWorker;
@@ -35,7 +35,7 @@ class ServiceDefinition: public Object
 {
 public:
 	virtual ServicePrototype *configPrototype() const = 0;
-	virtual Ref<ServiceInstance> createInstance(YasonObject *config) const = 0;
+	virtual Ref<ServiceInstance> createInstance(MetaObject *config) const = 0;
 };
 
 } // namespace fluxnode

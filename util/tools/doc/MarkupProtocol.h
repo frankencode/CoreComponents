@@ -10,7 +10,7 @@
 #ifndef FLUXDOC_MARKUPPROTOCOL_H
 #define FLUXDOC_MARKUPPROTOCOL_H
 
-#include <flux/YasonProtocol.h>
+#include <flux/MetaProtocol.h>
 
 namespace flux { template<class> class Singleton; }
 
@@ -19,7 +19,7 @@ namespace fluxdoc
 
 using namespace flux;
 
-class MarkupProtocol: public YasonProtocol
+class MarkupProtocol: public MetaProtocol
 {
 private:
 	friend class Singleton<MarkupProtocol>;

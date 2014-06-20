@@ -10,7 +10,7 @@
 #ifndef FLUXMAKE_BUILDPARAMETERS_H
 #define FLUXMAKE_BUILDPARAMETERS_H
 
-#include <flux/YasonObject.h>
+#include <flux/MetaObject.h>
 
 namespace fluxmake
 {
@@ -23,8 +23,8 @@ class BuildParameters: public Object
 {
 public:
 	inline static Ref<BuildParameters> create() { return new BuildParameters; }
-	void read(YasonObject *object, BuildPlan *plan = 0);
-	void readSpecific(YasonObject *object);
+	void read(MetaObject *object, BuildPlan *plan = 0);
+	void readSpecific(MetaObject *object);
 	void readSpecific(BuildParameters *specific);
 
 	inline String compiler() const { return compiler_; }

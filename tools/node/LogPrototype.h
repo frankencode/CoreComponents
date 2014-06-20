@@ -11,21 +11,21 @@
 #define FLUXNODE_LOGPROTOTYPE_H
 
 #include <flux/Date.h>
-#include <flux/YasonObject.h>
+#include <flux/MetaObject.h>
 
 namespace fluxnode
 {
 
 using namespace flux;
 
-class LogPrototype: public YasonObject
+class LogPrototype: public MetaObject
 {
 public:
 	static Ref<LogPrototype> create() { return new LogPrototype; }
 
 private:
 	LogPrototype()
-		: YasonObject("Log")
+		: MetaObject("Log")
 	{
 		insert("path", "");
 		insert("level", "");

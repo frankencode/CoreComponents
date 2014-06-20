@@ -13,7 +13,7 @@
 namespace fluxnode
 {
 
-Ref<DispatchInstance> DispatchInstance::create(YasonObject *config) {
+Ref<DispatchInstance> DispatchInstance::create(MetaObject *config) {
 	return new DispatchInstance(config);
 }
 
@@ -21,7 +21,7 @@ Ref<ServiceDelegate> DispatchInstance::createDelegate(ServiceWorker *worker) con
 	return DispatchDelegate::create(worker);
 }
 
-DispatchInstance::DispatchInstance(YasonObject *config)
+DispatchInstance::DispatchInstance(MetaObject *config)
 	: ServiceInstance(config)
 {}
 

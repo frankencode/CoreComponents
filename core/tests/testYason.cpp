@@ -4,7 +4,7 @@
 
 using namespace flux;
 
-void testData(YasonObject *object)
+void testData(MetaObject *object)
 {
 	check(object->className() == "Person");
 	check(
@@ -26,12 +26,12 @@ void testData(YasonObject *object)
 	check(String(hobbies->at(1)) == "Mountain Biking");
 	check(String(hobbies->at(2)) == "Poetry");
 
-	YasonObject *picture = cast<YasonObject>(object->value("picture"));
+	MetaObject *picture = cast<MetaObject>(object->value("picture"));
 	check(String(picture->value("uri")) == "http://www.hans-mustermann.de/photo.jpg");
 	check(int(picture->value("width")) == 400);
 	check(int(picture->value("height")) == 300);
 
-	YasonObject *home = cast<YasonObject>(object->value("home"));
+	MetaObject *home = cast<MetaObject>(object->value("home"));
 	check(float(home->value("latitude")) == float(12.34));
 	check(float(home->value("longitude")) == float(123.4));
 
@@ -98,12 +98,12 @@ int main() {
 		"}";
 
 	try {
-		Ref<YasonObject> object = yason::parse(text);
+		Ref<MetaObject> object = yason::parse(text);
 		testData(object);
 
 		String text2 = object->toString();
 		fout() << text2;
-		Ref<YasonObject> object2 = yason::parse(text2);
+		Ref<MetaObject> object2 = yason::parse(text2);
 		testData(object2);
 	}
 	catch (TextError &ex) {

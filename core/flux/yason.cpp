@@ -15,7 +15,7 @@
 namespace flux {
 namespace yason {
 
-Variant parse(const ByteArray *text, const YasonProtocol *protocol)
+Variant parse(const ByteArray *text, const MetaProtocol *protocol)
 {
 	return yasonSyntax()->parse(text, protocol);
 }

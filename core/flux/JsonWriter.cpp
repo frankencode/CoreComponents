@@ -65,7 +65,7 @@ void JsonWriter::writeList(Variant value, int depth)
 
 void JsonWriter::writeObject(Variant value, int depth)
 {
-	Ref<YasonObject> object = cast<YasonObject>(value);
+	Ref<MetaObject> object = cast<MetaObject>(value);
 	if (object->className() != "") {
 		format_ << object->className();
 		format_ << " ";

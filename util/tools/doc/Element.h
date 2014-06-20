@@ -17,7 +17,7 @@ namespace fluxdoc
 
 using namespace flux;
 
-typedef YasonObject Element;
+typedef MetaObject Element;
 typedef List< Ref<Element> > ElementList;
 
 } // namespace fluxdoc

@@ -16,7 +16,7 @@ namespace flux {
 namespace toki {
 
 PaletteLoader::PaletteLoader():
-	protocol_(YasonProtocol::create())
+	protocol_(MetaProtocol::create())
 {
 	protocol_->define<Palette>();
 	protocol_->minCount(1);
