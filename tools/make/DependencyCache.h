@@ -15,7 +15,7 @@
 
 namespace flux {
 class File;
-class YasonObject;
+class MetaObject;
 }
 
 namespace fluxmake

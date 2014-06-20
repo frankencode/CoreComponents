@@ -18,7 +18,7 @@ namespace toki {
 
 class Palette;
 
-class Style: public YasonObject
+class Style: public MetaObject
 {
 public:
 	static Ref<Style> create() { return new Style; }
@@ -34,7 +34,7 @@ private:
 	friend class Palette;
 
 	Style() {}
-	virtual Ref<YasonObject> produce();
+	virtual Ref<MetaObject> produce();
 	virtual void define();
 	virtual void realize(const ByteArray *text, Token *objectToken);
 

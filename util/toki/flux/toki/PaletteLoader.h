@@ -27,7 +27,7 @@ private:
 	friend class Singleton<PaletteLoader>;
 	PaletteLoader();
 
-	Ref<YasonProtocol> protocol_;
+	Ref<MetaProtocol> protocol_;
 };
 
 const PaletteLoader *paletteLoader();

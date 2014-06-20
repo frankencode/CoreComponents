@@ -12,7 +12,7 @@
 namespace flux {
 namespace toki {
 
-Ref<YasonObject> Style::produce()
+Ref<MetaObject> Style::produce()
 {
 	return Style::create();
 }

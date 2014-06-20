@@ -10,7 +10,7 @@
 #ifndef FLUX_YASONWRITER_H
 #define FLUX_YASONWRITER_H
 
-#include "YasonObject.h"
+#include "MetaObject.h"
 
 namespace flux
 {

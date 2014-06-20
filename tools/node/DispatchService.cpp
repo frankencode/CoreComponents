@@ -23,7 +23,7 @@ public:
 	}
 
 	virtual ServicePrototype *configPrototype() const { return configPrototype_; }
-	virtual Ref<ServiceInstance> createInstance(YasonObject *config) const { return DispatchInstance::create(config); }
+	virtual Ref<ServiceInstance> createInstance(MetaObject *config) const { return DispatchInstance::create(config); }
 
 private:
 	DispatchService()

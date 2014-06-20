@@ -10,18 +10,18 @@
 #ifndef FLUXDOC_DESIGN_H
 #define FLUXDOC_DESIGN_H
 
-#include <flux/YasonObject.h>
+#include <flux/MetaObject.h>
 
 namespace fluxdoc
 {
 
 using namespace flux;
 
-class Design: public YasonObject
+class Design: public MetaObject
 {
 protected:
 	Design(String className)
-		: YasonObject(className)
+		: MetaObject(className)
 	{
 		insert("source", "");
 	}

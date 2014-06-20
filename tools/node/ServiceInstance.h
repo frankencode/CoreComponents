@@ -14,7 +14,7 @@
 #include <flux/List.h>
 #include "LogConfig.h"
 
-namespace flux { class YasonObject; }
+namespace flux { class MetaObject; }
 
 namespace fluxnode
 {
@@ -41,7 +41,7 @@ public:
 	inline LogConfig *visitLogConfig() const { return visitLogConfig_; }
 
 protected:
-	ServiceInstance(YasonObject *config);
+	ServiceInstance(MetaObject *config);
 
 	String serviceName_;
 

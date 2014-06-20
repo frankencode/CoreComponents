@@ -11,13 +11,13 @@
 #define FLUX_YASON_H
 
 #include "exceptions.h"
-#include "YasonObject.h"
-#include "YasonProtocol.h"
+#include "MetaObject.h"
+#include "MetaProtocol.h"
 
 namespace flux {
 namespace yason {
 
-Variant parse(const ByteArray *text, const YasonProtocol *protocol = 0);
+Variant parse(const ByteArray *text, const MetaProtocol *protocol = 0);
 String stringify(Variant value);
 
 }} // namespace flux::yason

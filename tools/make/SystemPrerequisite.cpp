@@ -13,12 +13,12 @@
 namespace fluxmake
 {
 
-Ref<SystemPrerequisite> SystemPrerequisite::read(YasonObject *object, BuildPlan *plan)
+Ref<SystemPrerequisite> SystemPrerequisite::read(MetaObject *object, BuildPlan *plan)
 {
 	return new SystemPrerequisite(object, plan);
 }
 
-SystemPrerequisite::SystemPrerequisite(YasonObject *object, BuildPlan *plan)
+SystemPrerequisite::SystemPrerequisite(MetaObject *object, BuildPlan *plan)
 	: name_(object->value("name")),
 	  value_(object->value("value")),
 	  description_(object->value("description")),

@@ -9,49 +9,49 @@
 
 #include "Guard.h"
 #include "YasonSyntax.h"
-#include "YasonProtocol.h"
-#include "YasonObject.h"
+#include "MetaProtocol.h"
+#include "MetaObject.h"
 
 namespace flux
 {
 
-YasonObject::YasonObject(const String &className, YasonProtocol *protocol)
+MetaObject::MetaObject(const String &className, MetaProtocol *protocol)
 	: className_(className),
 	  protocol_(protocol)
 {}
 
-Variant YasonObject::toVariant() const
+Variant MetaObject::toVariant() const
 {
-	return Ref<YasonObject>(const_cast<YasonObject *>(this));
+	return Ref<MetaObject>(const_cast<MetaObject *>(this));
 }
 
-String YasonObject::toString() const
+String MetaObject::toString() const
 {
 	return yason::stringify(toVariant());
 }
 
-YasonObjectList *YasonObject::children()
+MetaObjectList *MetaObject::children()
 {
 	if (!children_) {
 		Guard<SpinLock> guard(&mutex_);
-		if (!children_) children_ = YasonObjectList::create();
+		if (!children_) children_ = MetaObjectList::create();
 	}
 	return children_;
 }
 
-YasonProtocol *YasonObject::protocol()
+MetaProtocol *MetaObject::protocol()
 {
 	if (!protocol_) {
 		Guard<SpinLock> guard(&mutex_);
-		if (!protocol_) protocol_ = YasonProtocol::create();
+		if (!protocol_) protocol_ = MetaProtocol::create();
 	}
 	return protocol_;
 }
 
-Ref<YasonObject> YasonObject::clone()
+Ref<MetaObject> MetaObject::clone()
 {
-	Ref<YasonObject> object = produce();
-	object->YasonObject::autocomplete(this);
+	Ref<MetaObject> object = produce();
+	object->MetaObject::autocomplete(this);
 	if (hasChildren()) {
 		for (int i = 0; i < children()->count(); ++i) {
 			object->children()->append(children()->at(i)->clone());
@@ -60,7 +60,7 @@ Ref<YasonObject> YasonObject::clone()
 	return object;
 }
 
-void YasonObject::autocomplete(const YasonObject *prototype)
+void MetaObject::autocomplete(const MetaObject *prototype)
 {
 	if (!prototype) return;
 
@@ -73,17 +73,17 @@ void YasonObject::autocomplete(const YasonObject *prototype)
 	}
 }
 
-Token *YasonObject::nameToken(const ByteArray *text, Token *objectToken, const String &memberName)
+Token *MetaObject::nameToken(const ByteArray *text, Token *objectToken, const String &memberName)
 {
 	return yasonSyntax()->nameToken(text, objectToken, memberName);
 }
 
-Token *YasonObject::valueToken(const ByteArray *text, Token *objectToken, const String &memberName)
+Token *MetaObject::valueToken(const ByteArray *text, Token *objectToken, const String &memberName)
 {
 	return yasonSyntax()->valueToken(text, objectToken, memberName);
 }
 
-Token *YasonObject::childToken(Token *objectToken, int childIndex)
+Token *MetaObject::childToken(Token *objectToken, int childIndex)
 {
 	return yasonSyntax()->childToken(objectToken, childIndex);
 }

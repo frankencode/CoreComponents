@@ -24,7 +24,7 @@ private:
 		: Design("Html")
 	{}
 
-	virtual Ref<YasonObject> produce() {
+	virtual Ref<MetaObject> produce() {
 		return create();
 	}
 };

@@ -36,7 +36,7 @@ DependencyCache::DependencyCache(BuildPlan *plan)
 	File::establish(cachePath_);
 	double cacheTime = File::status(cachePath_)->lastModified();
 
-	Ref<YasonObject> dependencyCache;
+	Ref<MetaObject> dependencyCache;
 	try {
 		dependencyCache = yason::parse(File::load(cachePath_));
 	}
@@ -47,13 +47,13 @@ DependencyCache::DependencyCache(BuildPlan *plan)
 
 	for (int i = 0; i < dependencyCache->count(); ++i)
 	{
-		YasonObject::Item item = dependencyCache->at(i);
+		MetaObject::Item item = dependencyCache->at(i);
 
 		previousSources_->append(item->key());
 
 		if (!plan->sources()->contains(item->key())) continue;
 
-		YasonObject *yason = cast<YasonObject>(item->value());
+		MetaObject *yason = cast<MetaObject>(item->value());
 		String command = yason->value("analyseCommand");
 		String modulePath = yason->value("modulePath");
 		Ref<StringList> dependencyPaths = cast<VariantList>(yason->value("dependencyPaths"))->toList<String>();

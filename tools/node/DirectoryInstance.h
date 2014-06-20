@@ -19,14 +19,14 @@ namespace fluxnode
 class DirectoryInstance: public ServiceInstance
 {
 public:
-	static Ref<DirectoryInstance> create(YasonObject *config);
+	static Ref<DirectoryInstance> create(MetaObject *config);
 
 	virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const;
 
 	inline String path() const { return path_; }
 
 private:
-	DirectoryInstance(YasonObject *config);
+	DirectoryInstance(MetaObject *config);
 	String path_;
 };
 

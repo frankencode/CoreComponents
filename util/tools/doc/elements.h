@@ -31,7 +31,7 @@ public:
 	}
 
 protected:
-	TextElement(String className, YasonProtocol *protocol = 0)
+	TextElement(String className, MetaProtocol *protocol = 0)
 		: Element(className, protocol)
 	{}
 
@@ -53,7 +53,7 @@ protected:
 		: TextElement(className)
 	{}
 
-	virtual Ref<YasonObject> produce()
+	virtual Ref<MetaObject> produce()
 	{
 		return create();
 	}
@@ -84,7 +84,7 @@ protected:
 		insert("email", "");
 	}
 
-	virtual Ref<YasonObject> produce()
+	virtual Ref<MetaObject> produce()
 	{
 		return create();
 	}
@@ -103,7 +103,7 @@ protected:
 		: TextElement(className)
 	{}
 
-	virtual Ref<YasonObject> produce()
+	virtual Ref<MetaObject> produce()
 	{
 		return create();
 	}
@@ -111,7 +111,7 @@ protected:
 
 class ListElement;
 
-class ItemProtocol: public YasonProtocol
+class ItemProtocol: public MetaProtocol
 {
 public:
 	static Ref<ItemProtocol> create() { return new ItemProtocol; }
@@ -119,19 +119,19 @@ public:
 private:
 	ItemProtocol() { maxCount(1); }
 
-	virtual YasonObject *lookup(String className)
+	virtual MetaObject *lookup(String className)
 	{
 		if (className == "List") return listPrototype();
 		return 0;
 	}
 
-	inline YasonObject *listPrototype()
+	inline MetaObject *listPrototype()
 	{
 		if (!listPrototype_) listPrototype_ = createPrototype<ListElement>();
 		return listPrototype_;
 	}
 
-	Ref<YasonObject> listPrototype_;
+	Ref<MetaObject> listPrototype_;
 };
 
 class ItemElement: public TextElement
@@ -144,7 +144,7 @@ protected:
 		: TextElement(className, ItemProtocol::create())
 	{}
 
-	virtual Ref<YasonObject> produce()
+	virtual Ref<MetaObject> produce()
 	{
 		return create();
 	}
@@ -160,7 +160,7 @@ public:
 
 protected:
 	ListElement(String className = "List")
-		: Element(className, YasonProtocol::create())
+		: Element(className, MetaProtocol::create())
 	{}
 
 	virtual void define()
@@ -168,7 +168,7 @@ protected:
 		protocol()->define<ItemElement>();
 	}
 
-	virtual Ref<YasonObject> produce()
+	virtual Ref<MetaObject> produce()
 	{
 		return create();
 	}
@@ -222,7 +222,7 @@ protected:
 		: PathElement(className)
 	{}
 
-	virtual Ref<YasonObject> produce()
+	virtual Ref<MetaObject> produce()
 	{
 		return create();
 	}
@@ -238,7 +238,7 @@ protected:
 		: PathElement(className)
 	{}
 
-	virtual Ref<YasonObject> produce()
+	virtual Ref<MetaObject> produce()
 	{
 		return create();
 	}
@@ -254,7 +254,7 @@ protected:
 		: PathElement(className)
 	{}
 
-	virtual Ref<YasonObject> produce()
+	virtual Ref<MetaObject> produce()
 	{
 		return create();
 	}

@@ -13,7 +13,7 @@
 namespace fluxmake
 {
 
-void BuildParameters::read(YasonObject *object, BuildPlan *plan)
+void BuildParameters::read(MetaObject *object, BuildPlan *plan)
 {
 	compiler_ = object->value("compiler");
 	optimize_ = object->value("optimize");
@@ -33,7 +33,7 @@ void BuildParameters::read(YasonObject *object, BuildPlan *plan)
 
 	if (object->hasChildren()) {
 		for (int i = 0; i < object->children()->count(); ++i) {
-			YasonObject *child = object->children()->at(i);
+			MetaObject *child = object->children()->at(i);
 			if (child->className() == "Debug") {
 				if (plan->options() && BuildPlan::Debug) readSpecific(child);
 			}
@@ -73,7 +73,7 @@ void BuildParameters::read(YasonObject *object, BuildPlan *plan)
 	}
 }
 
-void BuildParameters::readSpecific(YasonObject *object)
+void BuildParameters::readSpecific(MetaObject *object)
 {
 	Ref<BuildParameters> specific = BuildParameters::create();
 	specific->read(object);

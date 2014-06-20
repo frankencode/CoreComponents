@@ -22,7 +22,7 @@ class BuildPlan;
 class SystemPrerequisite: public BuildParameters
 {
 public:
-	static Ref<SystemPrerequisite> read(YasonObject *object, BuildPlan *plan);
+	static Ref<SystemPrerequisite> read(MetaObject *object, BuildPlan *plan);
 
 	inline String name() const { return name_; }
 	inline String value() const { return value_; }
@@ -33,7 +33,7 @@ public:
 	inline StringList *testLibraries() const { return testLibraries_; }
 
 private:
-	SystemPrerequisite(YasonObject *object, BuildPlan *plan);
+	SystemPrerequisite(MetaObject *object, BuildPlan *plan);
 
 	String name_;
 	String value_;

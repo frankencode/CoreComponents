@@ -27,7 +27,7 @@
 
 namespace flux {
 class FileStatus;
-class YasonObject;
+class MetaObject;
 }
 
 namespace fluxmake
@@ -72,7 +72,7 @@ public:
 	inline String recipePath() const { return recipePath(projectPath_); }
 	inline static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
 	inline String modulePath() const { return modulePath_; }
-	inline YasonObject *recipe() const { return recipe_; }
+	inline MetaObject *recipe() const { return recipe_; }
 
 	inline int options() const { return options_; }
 	inline int concurrency() const { return concurrency_; }
@@ -128,7 +128,7 @@ private:
 
 	String projectPath_;
 	String modulePath_;
-	Ref<YasonObject> recipe_;
+	Ref<MetaObject> recipe_;
 
 	int options_;
 	int concurrency_;

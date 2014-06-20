@@ -14,12 +14,12 @@
 namespace fluxnode
 {
 
-Ref<DirectoryInstance> DirectoryInstance::create(YasonObject *config)
+Ref<DirectoryInstance> DirectoryInstance::create(MetaObject *config)
 {
 	return new DirectoryInstance(config);
 }
 
-DirectoryInstance::DirectoryInstance(YasonObject *config)
+DirectoryInstance::DirectoryInstance(MetaObject *config)
 	: ServiceInstance(config),
 	  path_(config->value("path"))
 {

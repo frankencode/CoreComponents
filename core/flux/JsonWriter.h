@@ -10,7 +10,7 @@
 #ifndef FLUX_JSONWRITER_H
 #define FLUX_JSONWRITER_H
 
-#include "YasonObject.h"
+#include "MetaObject.h"
 
 namespace flux {
 

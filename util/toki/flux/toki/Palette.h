@@ -11,7 +11,7 @@
 #define FLUXTOKI_PALETTE_H
 
 #include <flux/SyntaxDefinition.h>
-#include <flux/YasonObject.h>
+#include <flux/MetaObject.h>
 #include "Style.h"
 
 namespace flux {
@@ -19,7 +19,7 @@ namespace toki {
 
 using namespace yason;
 
-class Palette: public YasonObject
+class Palette: public MetaObject
 {
 public:
 	static Ref<Palette> create() { return new Palette; }
@@ -50,7 +50,7 @@ private:
 
 	static int defaultRuleByName(String name);
 
-	virtual Ref<YasonObject> produce();
+	virtual Ref<MetaObject> produce();
 	virtual void define();
 	virtual void realize(const ByteArray *text, Token *objectToken);
 

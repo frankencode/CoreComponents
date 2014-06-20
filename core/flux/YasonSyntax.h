@@ -21,8 +21,8 @@ template<class> class Singleton;
 class YasonSyntax: public SyntaxDefinition
 {
 public:
-	Variant parse(const ByteArray *text, const YasonProtocol *protocol = 0) const;
-	Ref<YasonObject> readObject(const ByteArray *text, Token *token, const YasonProtocol *protocol = 0, YasonObject *prototype = 0) const;
+	Variant parse(const ByteArray *text, const MetaProtocol *protocol = 0) const;
+	Ref<MetaObject> readObject(const ByteArray *text, Token *token, const MetaProtocol *protocol = 0, MetaObject *prototype = 0) const;
 
 	Token *nameToken(const ByteArray *text, Token *objectToken, const String &memberName) const;
 	Token *valueToken(const ByteArray *text, Token *objectToken, const String &memberName) const;

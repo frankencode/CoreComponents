@@ -13,13 +13,13 @@
 namespace fluxnode
 {
 
-Ref<ServicePrototype> ServicePrototype::create(String className, YasonProtocol *protocol)
+Ref<ServicePrototype> ServicePrototype::create(String className, MetaProtocol *protocol)
 {
 	return new ServicePrototype(className, protocol);
 }
 
-ServicePrototype::ServicePrototype(String className, YasonProtocol *protocol)
-	: YasonObject(className, protocol)
+ServicePrototype::ServicePrototype(String className, MetaProtocol *protocol)
+	: MetaObject(className, protocol)
 {
 	insert("concurrency", 64);
 	insert("connection_timeout", 5.);
