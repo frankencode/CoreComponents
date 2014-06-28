@@ -28,6 +28,8 @@ public:
 	inline String scopeName() const { return scopeName_; }
 	inline int scope() const { return scope_; }
 
+	static int defaultScope();
+
 	enum DefaultRule {
 		Text,
 		CurrentLine,
@@ -39,7 +41,6 @@ public:
 		Undefined = -1
 	};
 
-	inline Style *defaultStyleByRule(int defaultRule) { return defaultStyleByRule_->value(defaultRule); }
 	inline Style *styleByRule(int rule) { return styleByRule_->value(rule); }
 
 	inline int styleCount() const { return styleByRule_->count(); }
@@ -58,7 +59,6 @@ private:
 	int scope_;
 
 	typedef Map<int, Ref<Style> > StyleByRule;
-	Ref<StyleByRule> defaultStyleByRule_;
 	Ref<StyleByRule> styleByRule_;
 };
 

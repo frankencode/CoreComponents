@@ -29,6 +29,8 @@ public:
 	inline int paletteCount() const { return paletteByScope_->count(); }
 	inline const Palette *paletteAt(int i) const { return paletteByScope_->valueAt(i); }
 
+	inline const Palette *defaultPalette() const { return defaultPalette_; }
+
 private:
 	Theme(String path);
 
@@ -37,6 +39,7 @@ private:
 
 	typedef Map<int, Ref<Palette> > PaletteByScope;
 	Ref<PaletteByScope> paletteByScope_;
+	Ref<Palette> defaultPalette_;
 };
 
 Ref<StringList> themeList(String path = "");

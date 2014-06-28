@@ -30,14 +30,14 @@ XmlSyntax::XmlSyntax()
 			CHOICE(
 				RANGE('a', 'z'),
 				RANGE('A', 'Z'),
-				RAMGE(":_"),
+				RANGE(":_"),
 				GREATER(0x7F)
 			),
 			REPEAT(
 				CHOICE(
 					RANGE('a', 'z'),
 					RANGE('A', 'Z'),
-					RAMGE(":_-."),
+					RANGE(":_-."),
 					RANGE('0', '9'),
 					GREATER(0x7F)
 				)
@@ -68,7 +68,7 @@ XmlSyntax::XmlSyntax()
 						)
 					)
 				)
-			)
+			),
 			CHAR(';')
 		)
 	);
@@ -137,23 +137,21 @@ XmlSyntax::XmlSyntax()
 	DEFINE("XmlVersion",
 		GLUE(
 			STRING("1."),
-			REPEAT(1, RANGE('0', '9')),
+			REPEAT(1, RANGE('0', '9'))
 		)
 	);
 
 	DEFINE("XmlEncoding",
-		GLUE(
-			CHOICE(
-				STRING("UTF-8"),
-				STRING("utf-8"),
-				GLUE(
-					CHOICE(
-						STRING("ISO"),
-						STRING("iso")
-					),
-					STRING("-8859-"),
-					RANGE('1', '9')
-				)
+		CHOICE(
+			STRING("UTF-8"),
+			STRING("utf-8"),
+			GLUE(
+				CHOICE(
+					STRING("ISO"),
+					STRING("iso")
+				),
+				STRING("-8859-"),
+				RANGE('1', '9')
 			)
 		)
 	);
@@ -222,10 +220,10 @@ XmlSyntax::XmlSyntax()
 			REPEAT(
 				GLUE(
 					INLINE("Gap"),
-					REF("Attribute"),
+					REF("Attribute")
 				)
 			),
-			INLINE("Space")
+			INLINE("Space"),
 			CHOICE(
 				STRING("/>"),
 				GLUE(
@@ -250,9 +248,9 @@ XmlSyntax::XmlSyntax()
 						REF("Reference"),
 						REF("CharDataSection"),
 						REF("ProcessingInstruction"),
-						INLINE("Comment"),
-						REPEAT(0, 1, REF("CharData"))
-					)
+						INLINE("Comment")
+					),
+					REPEAT(0, 1, REF("CharData"))
 				)
 			)
 		)

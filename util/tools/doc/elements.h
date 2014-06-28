@@ -249,15 +249,31 @@ class CodeElement: public PathElement
 public:
 	static Ref<CodeElement> create() { return new CodeElement; }
 
+	inline String language() const { return language_; }
+
+	virtual void realize(const ByteArray *text, Token *objectToken)
+	{
+		PathElement::realize(text, objectToken);
+		language_ = value("language");
+	}
+
 protected:
 	CodeElement(String className = "Code")
 		: PathElement(className)
 	{}
 
+	virtual void define()
+	{
+		PathElement::define();
+		insert("language", "");
+	}
+
 	virtual Ref<MetaObject> produce()
 	{
 		return create();
 	}
+
+	String language_;
 };
 
 } // namespace fluxdoc
