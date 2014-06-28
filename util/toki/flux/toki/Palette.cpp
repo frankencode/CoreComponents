@@ -23,9 +23,13 @@ Ref<Palette> Palette::load(String path)
 }
 
 Palette::Palette():
-	defaultStyleByRule_(StyleByRule::create()),
 	styleByRule_(StyleByRule::create())
 {}
+
+int Palette::defaultScope()
+{
+	return SyntaxDefinition::scope("default");
+}
 
 int Palette::defaultRuleByName(String name)
 {
@@ -55,10 +59,11 @@ void Palette::realize(const ByteArray *text, Token *objectToken)
 {
 	scopeName_ = resourceContextStack()->top()->fileName();
 	if (scopeName_ == "default") {
+		scope_ = SyntaxDefinition::scope(scopeName_);
 		for (int i = 0; i < children()->count(); ++i) {
 			Style *style = cast<Style>(children()->at(i));
-			int rule = defaultRuleByName(style->ruleName());
-			if (rule == Undefined) {
+			style->rule_ = defaultRuleByName(style->ruleName());
+			if (style->rule_ == Undefined) {
 				Token *token = childToken(objectToken, i);
 				token = valueToken(text, token, "name");
 				throw SemanticError(
@@ -66,7 +71,7 @@ void Palette::realize(const ByteArray *text, Token *objectToken)
 					text, token->i1()
 				);
 			}
-			defaultStyleByRule_->establish(rule, style);
+			styleByRule_->establish(style->rule_, style);
 		}
 		return;
 	}

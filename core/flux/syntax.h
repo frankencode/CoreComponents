@@ -1153,7 +1153,7 @@ class DefinitionNode: public RefNode
 public:
 	DefinitionNode(DebugFactory *debugFactory = 0)
 		: debugFactory_(debugFactory),
-		  id_(Crc32().sum()),
+		  id_(scope()),
 		  name_(0),
 		  caseSensitive_(true),
 		  scopeByName_(ScopeByName::create()),
@@ -1169,6 +1169,8 @@ public:
 		if (debugFactory_)
 			debugFactory_->definition_ = this;
 	}
+
+	inline static int scope(const char *name = 0) { return crc32(name); }
 
 	inline DebugFactory *debugFactory() const { return debugFactory_; }
 

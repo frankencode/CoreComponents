@@ -12,21 +12,32 @@
 
 #include <flux/Token.h>
 #include <flux/Format.h>
+#include "Theme.h"
 
-using namespace flux;
+namespace flux {
+namespace toki {
 
-class HtmlScreen: public TokenScreen, public Object
+class Theme;
+
+class HtmlScreen: public Object, public TokenScreen
 {
 public:
 	static Ref<HtmlScreen> create(String text, Stream *sink = 0) { return new HtmlScreen(text, sink); }
 
 	virtual bool project(Token *token, int i0, int i1);
 
+	static void writeCss(Theme *theme, Stream *sink = 0);
+
 private:
 	HtmlScreen(String text, Stream *sink);
+	~HtmlScreen();
+
+	void writeLineNumbers();
 
 	String text_;
 	Format format_;
 };
+
+}} // namespace flux::toki
 
 #endif // FLUXTOKI_HTMLSCREEN_H

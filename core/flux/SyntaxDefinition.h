@@ -31,6 +31,8 @@ public:
 
 	~SyntaxDefinition();
 
+	static int scope(const char *name = 0);
+
 	int id() const;
 	const char *name() const;
 

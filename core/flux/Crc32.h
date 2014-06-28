@@ -33,19 +33,19 @@ private:
 
 inline uint32_t crc32(const void *buf, int bufSize) {
 	Crc32 crc;
-	crc.feed(buf, bufSize);
+	if (buf) crc.feed(buf, bufSize);
 	return crc.sum();
 }
 
 inline uint32_t crc32(const char *s) {
 	Crc32 crc;
-	crc.feed(s, strlen(s));
+	if (s) crc.feed(s, strlen(s));
 	return crc.sum();
 }
 
 inline uint32_t crc32(ByteArray *buf) {
 	Crc32 crc;
-	crc.feed(buf->bytes(), buf->count());
+	if (buf) crc.feed(buf->bytes(), buf->count());
 	return crc.sum();
 }
 

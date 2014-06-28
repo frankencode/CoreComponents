@@ -26,8 +26,8 @@ Color Color::parse(const char *s, bool *ok)
 		struct H {
 			static inline int dehex(char ch, bool *ok) {
 				if ('0' <= ch && ch <= '9') return ch - '0';
-				else if ('a' <= ch && ch <= 'f') return ch - 'a';
-				else if ('A' <= ch && ch <= 'F') return ch - 'A';
+				else if ('a' <= ch && ch <= 'f') return ch - 'a' + 10;
+				else if ('A' <= ch && ch <= 'F') return ch - 'A' + 10;
 				*ok = false;
 				return -1;
 			}
@@ -45,9 +45,9 @@ Color Color::parse(const char *s, bool *ok)
 			int bl = H::dehex(s[6], ok);
 			if (!*ok) return Color();
 			return Color(
-				(rh << 8) | rl,
-				(gh << 8) | gl,
-				(bh << 8) | bl
+				(rh << 4) | rl,
+				(gh << 4) | gl,
+				(bh << 4) | bl
 			);
 		}
 		else if (n == 9) { // #RRGGBBAA
@@ -62,10 +62,10 @@ Color Color::parse(const char *s, bool *ok)
 			int al = H::dehex(s[8], ok);
 			if (!*ok) return Color();
 			return Color(
-				(rh << 8) | rl,
-				(gh << 8) | gl,
-				(bh << 8) | bl,
-				(ah << 8) | al
+				(rh << 4) | rl,
+				(gh << 4) | gl,
+				(bh << 4) | bl,
+				(ah << 4) | al
 			);
 		}
 		else if (n == 4) { // #RGB
@@ -75,9 +75,9 @@ Color Color::parse(const char *s, bool *ok)
 			int bh = H::dehex(s[3], ok);
 			if (!*ok) return Color();
 			return Color(
-				(rh << 8) | rh,
-				(gh << 8) | gh,
-				(bh << 8) | bh
+				(rh << 4) | rh,
+				(gh << 4) | gh,
+				(bh << 4) | bh
 			);
 		}
 		else if (n == 5) { // #RGBA
@@ -88,10 +88,10 @@ Color Color::parse(const char *s, bool *ok)
 			int ah = H::dehex(s[4], ok);
 			if (!*ok) return Color();
 			return Color(
-				(rh << 8) | rh,
-				(gh << 8) | gh,
-				(bh << 8) | bh,
-				(ah << 8) | ah
+				(rh << 4) | rh,
+				(gh << 4) | gh,
+				(bh << 4) | bh,
+				(ah << 4) | ah
 			);
 		}
 		*ok = false;

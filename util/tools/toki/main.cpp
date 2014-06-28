@@ -12,7 +12,7 @@
 #include <flux/toki/Theme.h>
 #include <flux/toki/Language.h>
 #include <flux/toki/Registry.h>
-#include "HtmlScreen.h"
+#include <flux/toki/HtmlScreen.h>
 
 using namespace flux;
 using namespace flux::toki;
@@ -29,6 +29,7 @@ int main(int argc, char **argv)
 		Ref<Arguments> arguments = Arguments::parse(argc, argv);
 		{
 			Ref<VariantMap> prototype = VariantMap::create();
+			prototype->insert("verbose", out()->isatty());
 			prototype->insert("css", false);
 			prototype->insert("theme", "");
 			prototype->insert("language", "");
@@ -38,6 +39,7 @@ int main(int argc, char **argv)
 
 		VariantMap *options = arguments->options();
 		StringList *items = arguments->items();
+		bool verbose = options->value("verbose");
 		bool cssOption = options->value("css");
 		String themeOption = options->value("theme");
 		String languageOption = options->value("language");
@@ -50,25 +52,13 @@ int main(int argc, char **argv)
 
 		if (cssOption) {
 			Ref<StringList> paths;
-			if (themeOption == "") paths = flux::toki::themeList();
+			if (themeOption == "") paths = themeList();
 			else paths = StringList::create() << themeOption;
 			for (int i = 0; i < paths->count(); ++i) {
 				Ref<Theme> theme = Theme::load(paths->at(i));
 				Ref<File> file = File::open(cssPath(theme->name()), File::Create|File::Truncate|File::WriteOnly);
-				Format format(file);
-				for (int i = 0; i < theme->paletteCount(); ++i) {
-					const Palette *palette = theme->paletteAt(i);
-					for (int j = 0; j < palette->styleCount(); ++j) {
-						const Style *style = palette->styleAt(j);
-						format << ".toki_" << hex(unsigned(palette->scope())) << "_" << hex(unsigned(style->rule())) << " { ";
-						if (style->ink() != Color()) format << "color: " << style->ink() << "; ";
-						if (style->paper() != Color()) format << "background-color: " << style->paper() << "; ";
-						if (style->bold()) format << "font-weight: bold; ";
-						if (style->italic()) format << "font-style: italic; ";
-						format << "} /* " << palette->scopeName() << "::" << style->ruleName() << " */";
-						format << nl;
-					}
-				}
+				if (verbose) fout() << file->path() << nl;
+				HtmlScreen::writeCss(theme, file);
 			}
 		}
 
@@ -89,7 +79,6 @@ int main(int argc, char **argv)
 			state->rootToken()->project(HtmlScreen::create(text, out()));
 		}
 		else {
-			bool verbose = out()->isatty();
 			for (int i = 0; i < items->count(); ++i) {
 				String path = items->at(i);
 				String text = File::open(path)->map();
@@ -111,11 +100,9 @@ int main(int argc, char **argv)
 					"<meta charset=\"UTF-8\">\n"
 					"<link rel=\"stylesheet\" href=\"" << cssPath(themeOption) << "\" type=\"text/css\">"
 					"</head>\n"
-					"<body>\n"
-					"<pre>\n";
+					"<body>\n";
 				state->rootToken()->project(HtmlScreen::create(text, htmlFile));
 				Format(htmlFile) <<
-					"</pre>\n"
 					"</body>\n"
 					"</html>\n";
 			}
@@ -132,6 +119,7 @@ int main(int argc, char **argv)
 			"without header or body.\n"
 			"\n"
 			"Options:\n"
+			"  -verbose         verbose output\n"
 			"  -css             generate/update style sheets\n"
 			"  -language        specify source code language\n"
 			"  -theme           color theme\n"

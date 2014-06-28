@@ -1,0 +1,83 @@
+/*
+ * Copyright (C) 2014 Frank Mertens.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version
+ * 2 of the License, or (at your option) any later version.
+ */
+
+#include <flux/str.h>
+#include "HtmlScreen.h"
+
+namespace flux {
+namespace toki {
+
+HtmlScreen::HtmlScreen(String text, Stream *sink)
+	: text_(text),
+	  format_(sink)
+{
+	writeLineNumbers();
+	format_ << "<div class=\"sourceCodeCell\">\n";
+	format_ << "<pre class=\"toki_" << hex(unsigned(Palette::defaultScope())) << "_" << hex(int(Palette::Text)) << "\">\n";
+}
+
+HtmlScreen::~HtmlScreen()
+{
+	format_ << "</pre>\n";
+	format_ << "</div>\n";
+}
+
+void HtmlScreen::writeLineNumbers()
+{
+	format_ << "<div class=\"lineNumbersCell\">\n";
+	format_ << "<pre class=\"toki_" << hex(unsigned(Palette::defaultScope())) << "_" << hex(int(Palette::LineNumber)) << "\">\n";
+	int n = text_->count('\n') + 1;
+	if (text_->count() > 0) n -= (text_->at(text_->count() - 1) == '\n');
+	int w = dec(n)->count();
+	for (int i = 1; i <= n; ++i) format_ << " " << right(dec(i), w) << " " << "\n";
+	format_ << "</pre>\n";
+	format_ << "</div>\n";
+}
+
+bool HtmlScreen::project(Token *token, int i0, int i1)
+{
+	String s = text_->copy(i0, i1);
+	if (s->contains('<')) s = s->replace("<", "&lt;");
+	if (s->contains('>')) s = s->replace(">", "&gt;");
+	if (s->contains('\t')) s = s->replace("\t", "    ");
+	bool whitespace = s->count(" \t\n\r") == s->count();
+	if (!whitespace)
+		format_ << "<span class=\"toki_" << hex(unsigned(token->scope())) << "_" << hex(token->rule()) << "\">";
+	format_ << s;
+	if (!whitespace)
+		format_ << "</span>";
+	if (format_->count() > 128) format_ << flush;
+	return true;
+}
+
+void HtmlScreen::writeCss(Theme *theme, Stream *sink)
+{
+	Format format(sink);
+	int defaultScope = Palette::defaultScope();
+	for (int i = 0; i < theme->paletteCount(); ++i) {
+		const Palette *palette = theme->paletteAt(i);
+		for (int j = 0; j < palette->styleCount(); ++j) {
+			const Style *style = palette->styleAt(j);
+			format << ".toki_" << hex(unsigned(palette->scope())) << "_" << hex(unsigned(style->rule())) << " { ";
+			if (style->ink() != Color()) format << "color: " << style->ink() << "; ";
+			if (style->paper() != Color()) format << "background-color: " << style->paper() << "; ";
+			if (style->bold()) format << "font-weight: bold; ";
+			if (style->italic()) format << "font-style: italic; ";
+			if (palette->scope() == defaultScope) {
+				if (style->rule() == Palette::Text) format << "margin: 0; padding: 0; margin-left: 0.3em; padding-top: 0.2em; padding-bottom: 0.2em; ";
+				if (style->rule() == Palette::LineNumber) format << "margin: 0; padding: 0; padding-top: 0.2em; padding-bottom: 0.2em; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; cursor: default; ";
+			}
+			format << "} /* " << palette->scopeName() << "::" << style->ruleName() << " */\n";
+		}
+	}
+	format << ".lineNumbersCell { display: table-cell; margin: 0; padding: 0; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; cursor: default; }\n";
+	format << ".sourceCodeCell { display: table-cell; margin: 0; padding: 0; }\n";
+}
+
+}} // namespace flux::toki

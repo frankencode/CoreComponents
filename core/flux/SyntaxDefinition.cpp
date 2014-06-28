@@ -20,6 +20,8 @@ SyntaxDefinition::SyntaxDefinition(SyntaxDebugFactory *debugFactory)
 SyntaxDefinition::~SyntaxDefinition()
 {}
 
+int SyntaxDefinition::scope(const char *name) { return syntax::DefinitionNode::scope(name); }
+
 int SyntaxDefinition::id() const { return def_->id(); }
 const char *SyntaxDefinition::name() const { return def_->name(); }
 
