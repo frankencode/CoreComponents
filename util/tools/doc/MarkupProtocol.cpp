@@ -11,8 +11,8 @@
 #include "elements.h"
 #include "MarkupProtocol.h"
 
-namespace fluxdoc
-{
+namespace flux {
+namespace doc {
 
 MarkupProtocol::MarkupProtocol()
 {
@@ -28,4 +28,4 @@ MarkupProtocol::MarkupProtocol()
 
 const MarkupProtocol *markupProtocol() { return Singleton<MarkupProtocol>::instance(); }
 
-} // namespace fluxdoc
+}} // namespace flux::doc

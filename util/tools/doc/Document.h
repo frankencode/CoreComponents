@@ -12,10 +12,8 @@
 
 #include "elements.h"
 
-namespace fluxdoc
-{
-
-using namespace flux;
+namespace flux {
+namespace doc {
 
 class Document;
 typedef List< Ref<Document> > DocumentList;
@@ -50,6 +48,6 @@ private:
 	Ref<DocumentList> parts_;
 };
 
-} // namespace fluxdoc
+}} // namespace flux::doc
 
 #endif // FLUXDOC_DOCUMENT_H

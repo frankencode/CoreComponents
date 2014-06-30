@@ -8,11 +8,12 @@
  */
 
 #include <flux/Format.h>
+#include <flux/File.h>
 #include "Design.h"
 #include "HtmlGenerator.h"
 
-namespace fluxdoc
-{
+namespace flux {
+namespace doc {
 
 class HtmlDesign: public Design
 {
@@ -135,4 +136,4 @@ void HtmlGenerator::run(Design *design, Document *document)
 		<< "</html>" << nl;
 }
 
-} // namespace fluxdoc
+}} // namespace flux::doc

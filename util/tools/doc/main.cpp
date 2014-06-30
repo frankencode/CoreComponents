@@ -14,7 +14,8 @@
 #include "Registry.h"
 #include "Generator.h"
 
-using namespace fluxdoc;
+using namespace flux;
+using namespace flux::doc;
 
 int main(int argc, char **argv)
 {

@@ -13,10 +13,8 @@
 #include "Design.h"
 #include "Document.h"
 
-namespace fluxdoc
-{
-
-using namespace flux;
+namespace flux {
+namespace doc {
 
 class Generator: public Object
 {
@@ -33,6 +31,6 @@ protected:
 	Ref<Design> prototype_;
 };
 
-} // namespace fluxdoc
+}} // namespace flux::doc
 
 #endif // FLUXDOC_GENERATOR_H

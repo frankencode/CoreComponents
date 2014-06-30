@@ -7,26 +7,25 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUXDOC_MARKUPPROTOCOL_H
-#define FLUXDOC_MARKUPPROTOCOL_H
-
-#include <flux/MetaProtocol.h>
+#include "PathElement.h"
 
 namespace flux {
-
-template<class> class Singleton;
-
 namespace doc {
 
-class MarkupProtocol: public MetaProtocol
+class ImageElement: public PathElement
 {
-private:
-	friend class Singleton<MarkupProtocol>;
-	MarkupProtocol();
+public:
+	static Ref<ImageElement> create() { return new ImageElement; }
+
+protected:
+	ImageElement(String className = "Image")
+		: PathElement(className)
+	{}
+
+	virtual Ref<MetaObject> produce()
+	{
+		return create();
+	}
 };
 
-const MarkupProtocol *markupProtocol();
-
 }} // namespace flux::doc
-
-#endif // FLUXDOC_MARKUPPROTOCOL_H

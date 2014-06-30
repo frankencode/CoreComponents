@@ -14,12 +14,18 @@ namespace flux {
 namespace toki {
 
 Registry::Registry()
-	: languageByName_(LanguageByName::create())
+	: languageByName_(LanguageByName::create()),
+	  languageByDisplayName_(LanguageByDisplayName::create())
 {}
 
 bool Registry::lookupLanguageByName(String name, Language **language) const
 {
 	return languageByName_->lookup(name, language);
+}
+
+bool Registry::lookupLanguageByDisplayName(String name, Language **language) const
+{
+	return languageByDisplayName_->lookup(name->downcase(), language);
 }
 
 bool Registry::detectLanguage(String path, String text, Language **language) const
@@ -54,6 +60,7 @@ bool Registry::detectLanguage(String path, String text, Language **language) con
 void Registry::registerLanguage(Language *language)
 {
 	languageByName_->insert(language->name(), language);
+	languageByDisplayName_->insert(language->displayName()->downcase(), language);
 }
 
 Registry *registry() { return Singleton<Registry>::instance(); }

@@ -14,12 +14,11 @@
 #include <flux/exceptions.h>
 #include "Element.h"
 
-namespace flux { template<class> class Singleton; }
+namespace flux {
 
-namespace fluxdoc
-{
+template<class> class Singleton;
 
-using namespace flux;
+namespace doc {
 
 class MarkupSyntax: public SyntaxDefinition
 {
@@ -49,6 +48,6 @@ private:
 
 const MarkupSyntax *markupSyntax();
 
-} // namespace fluxdoc
+}} // namespace flux::doc
 
 #endif // FLUXDOC_MARKUPSYNTAX_H
