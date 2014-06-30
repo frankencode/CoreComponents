@@ -12,8 +12,8 @@
 #include "MarkupSyntax.h"
 #include "Document.h"
 
-namespace fluxdoc
-{
+namespace flux {
+namespace doc {
 
 Ref<Document> Document::load(String path, Document *parent)
 {
@@ -59,4 +59,4 @@ Document::Document(ElementList *elements, String path, Document *parent)
 	}
 }
 
-} // namespace fluxdoc
+}} // namespace flux::doc

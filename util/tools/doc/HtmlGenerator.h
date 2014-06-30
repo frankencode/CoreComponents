@@ -13,8 +13,8 @@
 #include <flux/Singleton.h>
 #include "Generator.h"
 
-namespace fluxdoc
-{
+namespace flux {
+namespace doc {
 
 class HtmlGeneratorRegistration;
 
@@ -51,6 +51,6 @@ private:
 
 namespace { HtmlGeneratorRegistration registration; }
 
-} // namespace fluxdoc
+}} // namespace flux::doc
 
 #endif // FLUXDOC_HTMLGENERATOR_H

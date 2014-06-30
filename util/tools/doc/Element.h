@@ -12,14 +12,12 @@
 
 #include <flux/yason.h>
 
-namespace fluxdoc
-{
-
-using namespace flux;
+namespace flux {
+namespace doc {
 
 typedef MetaObject Element;
 typedef List< Ref<Element> > ElementList;
 
-} // namespace fluxdoc
+}} // namespace flux::doc
 
 #endif // FLUXDOC_ELEMENT_H

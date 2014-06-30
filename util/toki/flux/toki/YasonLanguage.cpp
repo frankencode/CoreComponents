@@ -15,7 +15,7 @@ namespace toki {
 
 YasonLanguage::YasonLanguage():
 	Language(
-		"yason",
+		"Yason",
 		Pattern("(*.(yason|json))|Recipe"),
 		flux::toki::yasonSyntax()
 	)

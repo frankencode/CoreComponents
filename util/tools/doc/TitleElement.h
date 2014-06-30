@@ -7,24 +7,30 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUXDOC_DESIGN_H
-#define FLUXDOC_DESIGN_H
+#ifndef FLUXDOC_TITLETELEMENT_H
+#define FLUXDOC_TITLETELEMENT_H
 
-#include <flux/MetaObject.h>
+#include "TextElement.h"
 
 namespace flux {
 namespace doc {
 
-class Design: public MetaObject
+class TitleElement: public TextElement
 {
+public:
+	static Ref<TitleElement> create() { return new TitleElement; }
+
 protected:
-	Design(String className)
-		: MetaObject(className)
+	TitleElement(String className = "Title")
+		: TextElement(className)
+	{}
+
+	virtual Ref<MetaObject> produce()
 	{
-		insert("source", "");
+		return TitleElement::create();
 	}
 };
 
 }} // namespace flux::doc
 
-#endif // FLUXDOC_DESIGN_H
+#endif // FLUXDOC_TITLETELEMENT_H

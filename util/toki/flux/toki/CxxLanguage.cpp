@@ -15,7 +15,7 @@ namespace toki {
 
 CxxLanguage::CxxLanguage():
 	Language(
-		"cxx",
+		"C++",
 		Pattern("*.((h|c){0..1:(pp|xx|++|h|c)}|(m|mm))"),
 		cxxSyntax()
 	)

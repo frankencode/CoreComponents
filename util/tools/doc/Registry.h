@@ -12,12 +12,11 @@
 
 #include <flux/MetaProtocol.h>
 
-namespace flux { template<class> class Singleton; }
+namespace flux {
 
-namespace fluxdoc
-{
+template<class> class Singleton;
 
-using namespace flux;
+namespace doc {
 
 class Generator;
 
@@ -45,6 +44,6 @@ private:
 
 Registry *registry();
 
-} // namespace fluxdoc
+}} // namespace flux::doc
 
 #endif // FLUXDOC_REGISTRY_H

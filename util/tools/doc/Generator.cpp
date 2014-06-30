@@ -10,8 +10,8 @@
 #include "Registry.h"
 #include "Generator.h"
 
-namespace fluxdoc
-{
+namespace flux {
+namespace doc {
 
 Generator::Generator(String name, Design *prototype)
 	: name_(name),
@@ -20,4 +20,4 @@ Generator::Generator(String name, Design *prototype)
 	registry()->registerGenerator(this);
 }
 
-} // namespace fluxdoc
+}} // namespace flux::doc

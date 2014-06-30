@@ -11,8 +11,8 @@
 #include "Generator.h"
 #include "Registry.h"
 
-namespace fluxdoc
-{
+namespace flux {
+namespace doc {
 
 Registry::Registry()
 	: generatorByName_(GeneratorByName::create()),
@@ -44,4 +44,4 @@ int Registry::generatorCount() const
 
 Registry *registry() { return Singleton<Registry>::instance(); }
 
-} // namespace fluxdoc
+}} // namespace flux::doc

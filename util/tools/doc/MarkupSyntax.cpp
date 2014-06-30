@@ -16,8 +16,8 @@
 #include "elements.h"
 #include "MarkupSyntax.h"
 
-namespace fluxdoc
-{
+namespace flux {
+namespace doc {
 
 MarkupSyntax::MarkupSyntax()
 {
@@ -304,4 +304,4 @@ String MarkupSyntax::readChunks(ByteArray *text, Token *chunkToken) const
 
 const MarkupSyntax *markupSyntax() { return Singleton<MarkupSyntax>::instance(); }
 
-} // namespace fluxdoc
+}} // namespace flux::doc
