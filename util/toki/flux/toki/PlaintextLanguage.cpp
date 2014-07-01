@@ -7,18 +7,26 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "Registry.h"
 #include "PlaintextSyntax.h"
-#include "PlaintextLanguage.h"
 
 namespace flux {
 namespace toki {
 
-PlaintextLanguage::PlaintextLanguage():
-	Language(
-		"Plaintext",
-		Pattern("*.txt"),
-		plaintextSyntax()
-	)
-{}
+class PlaintextLanguage: public Language
+{
+private:
+	friend class Registration<PlaintextLanguage>;
+
+	PlaintextLanguage():
+		Language(
+			"Plaintext",
+			Pattern("*.txt"),
+			plaintextSyntax()
+		)
+	{}
+};
+
+namespace { Registration<PlaintextLanguage> registration; }
 
 }} // namespace flux::toki

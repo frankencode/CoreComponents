@@ -7,18 +7,26 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "Registry.h"
 #include "CxxSyntax.h"
-#include "CxxLanguage.h"
 
 namespace flux {
 namespace toki {
 
-CxxLanguage::CxxLanguage():
-	Language(
-		"C++",
-		Pattern("*.((h|c){0..1:(pp|xx|++|h|c)}|(m|mm))"),
-		cxxSyntax()
-	)
-{}
+class CxxLanguage: public Language
+{
+private:
+	friend class Registration<CxxLanguage>;
+
+	CxxLanguage():
+		Language(
+			"C++",
+			Pattern("*.((h|c){0..1:(pp|xx|++|h|c)}|(m|mm))"),
+			cxxSyntax()
+		)
+	{}
+};
+
+namespace { Registration<CxxLanguage> registration; }
 
 }} // namespace flux::toki
