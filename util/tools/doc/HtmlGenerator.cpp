@@ -9,6 +9,7 @@
 
 #include <flux/Format.h>
 #include <flux/File.h>
+#include <flux/toki/HtmlScreen.h>
 #include "Design.h"
 #include "HtmlGenerator.h"
 
@@ -78,11 +79,13 @@ public:
 	static const char *className() { return "Code"; }
 	virtual void write(Format &sink, Element *element) {
 		CodeElement *code = cast<CodeElement>(element);
+		toki::Language *language = code->language();
+		if (!language) return; // FIXME: use plaintext language
 		String text = code->text();
 		if (code->path() != "") text = File::open(code->path())->map();
-		sink << "<pre>" << nl;
-		sink << text;
-		sink << "</pre>" << nl;
+		Ref<SyntaxState> state = language->highlightingSyntax()->match(text, 0); // FIXME: force language definitions to match fully
+		if (!state->valid()) return; // FIXME: fallback to plaintext language
+		state->rootToken()->project(toki::HtmlScreen::create(text, sink));
 	}
 };
 

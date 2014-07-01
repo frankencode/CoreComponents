@@ -15,6 +15,13 @@
 namespace flux {
 namespace toki {
 
+class CxxSyntax: public SyntaxDefinition
+{
+protected:
+	friend class Singleton<CxxSyntax>;
+	CxxSyntax();
+};
+
 CxxSyntax::CxxSyntax()
 {
 	SYNTAX("cxx");
@@ -243,30 +250,30 @@ CxxSyntax::CxxSyntax()
 
 	DEFINE("Code",
 		REPEAT(
-			FIND(
-				CHOICE(
-					REPEAT(1, RANGE(" \t")),
-					REF("CommentText"),
-					REF("CommentLine"),
-					GLUE(
-						CHOICE(
-							CHAR('\n'),
-							BOI()
-						),
-						REF("Preprocessing")
+			CHOICE(
+				REPEAT(1, RANGE(" \t")),
+				REF("CommentText"),
+				REF("CommentLine"),
+				GLUE(
+					CHOICE(
+						CHAR('\n'),
+						BOI()
 					),
-					REF("Text"),
-					REF("ObjcText"),
-					REF("Punctuator"),
-					REF("Keyword"),
-					REF("TypeKeyword"),
-					REF("QtKeyword"),
-					REF("ObjcKeyword"),
-					REF("Identifier"),
-					REF("Float"),
-					REF("Integer"),
-					REF("Char")
-				)
+					REF("Preprocessing")
+				),
+				CHAR('\n'),
+				REF("Text"),
+				REF("ObjcText"),
+				REF("Punctuator"),
+				REF("Keyword"),
+				REF("TypeKeyword"),
+				REF("QtKeyword"),
+				REF("ObjcKeyword"),
+				REF("Identifier"),
+				REF("Float"),
+				REF("Integer"),
+				REF("Char"),
+				ANY()
 			)
 		)
 	);
@@ -275,6 +282,6 @@ CxxSyntax::CxxSyntax()
 	LINK();
 }
 
-const CxxSyntax *cxxSyntax() { return Singleton<CxxSyntax>::instance(); }
+const SyntaxDefinition *cxxSyntax() { return Singleton<CxxSyntax>::instance(); }
 
 }} // namespace flux::toki

@@ -7,16 +7,16 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUXTOKI_CXXSYNTAX_H
-#define FLUXTOKI_CXXSYNTAX_H
+#ifndef FLUXTOKI_PLAINTEXTSYNTAX_H
+#define FLUXTOKI_PLAINTEXTSYNTAX_H
 
 #include <flux/SyntaxDefinition.h>
 
 namespace flux {
 namespace toki {
 
-const SyntaxDefinition *cxxSyntax();
+const SyntaxDefinition *plaintextSyntax();
 
 }} // namespace flux::toki
 
-#endif // FLUXTOKI_CXXSYNTAX_H
+#endif // FLUXTOKI_PLAINTEXTSYNTAX_H
