@@ -7,18 +7,26 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+#include "Registry.h"
 #include "YasonSyntax.h"
-#include "YasonLanguage.h"
 
 namespace flux {
 namespace toki {
 
-YasonLanguage::YasonLanguage():
-	Language(
-		"Yason",
-		Pattern("(*.(yason|json))|Recipe"),
-		flux::toki::yasonSyntax()
-	)
-{}
+class YasonLanguage: public Language
+{
+private:
+	friend class Registration<YasonLanguage>;
 
-}} // flux::toki
+	YasonLanguage():
+		Language(
+			"Yason",
+			Pattern("(*.(yason|json))|Recipe"),
+			flux::toki::yasonSyntax()
+		)
+	{}
+};
+
+namespace { Registration<YasonLanguage> registration; }
+
+}} // namespace flux::toki
