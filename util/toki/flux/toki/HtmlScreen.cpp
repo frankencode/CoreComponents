@@ -13,31 +13,31 @@
 namespace flux {
 namespace toki {
 
-HtmlScreen::HtmlScreen(String text, Stream *sink)
+HtmlScreen::HtmlScreen(String text, Format sink)
 	: text_(text),
-	  format_(sink)
+	  sink_(sink)
 {
 	writeLineNumbers();
-	format_ << "<div class=\"sourceCodeCell\">\n";
-	format_ << "<pre class=\"toki_" << hex(unsigned(Palette::defaultScope())) << "_" << hex(int(Palette::Text)) << "\">\n";
+	sink_ << "<div class=\"sourceCodeCell\">\n";
+	sink_ << "<pre class=\"toki_" << hex(unsigned(Palette::defaultScope())) << "_" << hex(int(Palette::Text)) << "\">\n";
 }
 
 HtmlScreen::~HtmlScreen()
 {
-	format_ << "</pre>\n";
-	format_ << "</div>\n";
+	sink_ << "</pre>\n";
+	sink_ << "</div>\n";
 }
 
 void HtmlScreen::writeLineNumbers()
 {
-	format_ << "<div class=\"lineNumbersCell\">\n";
-	format_ << "<pre class=\"toki_" << hex(unsigned(Palette::defaultScope())) << "_" << hex(int(Palette::LineNumber)) << "\">\n";
+	sink_ << "<div class=\"lineNumbersCell\">\n";
+	sink_ << "<pre class=\"toki_" << hex(unsigned(Palette::defaultScope())) << "_" << hex(int(Palette::LineNumber)) << "\">\n";
 	int n = text_->count('\n') + 1;
 	if (text_->count() > 0) n -= (text_->at(text_->count() - 1) == '\n');
 	int w = dec(n)->count();
-	for (int i = 1; i <= n; ++i) format_ << " " << right(dec(i), w) << " " << "\n";
-	format_ << "</pre>\n";
-	format_ << "</div>\n";
+	for (int i = 1; i <= n; ++i) sink_ << " " << right(dec(i), w) << " " << "\n";
+	sink_ << "</pre>\n";
+	sink_ << "</div>\n";
 }
 
 bool HtmlScreen::project(Token *token, int i0, int i1)
@@ -48,11 +48,10 @@ bool HtmlScreen::project(Token *token, int i0, int i1)
 	if (s->contains('\t')) s = s->replace("\t", "    ");
 	bool whitespace = s->count(" \t\n\r") == s->count();
 	if (!whitespace)
-		format_ << "<span class=\"toki_" << hex(unsigned(token->scope())) << "_" << hex(token->rule()) << "\">";
-	format_ << s;
+		sink_ << "<span class=\"toki_" << hex(unsigned(token->scope())) << "_" << hex(token->rule()) << "\">";
+	sink_ << s;
 	if (!whitespace)
-		format_ << "</span>";
-	if (format_->count() > 128) format_ << flush;
+		sink_ << "</span>";
 	return true;
 }
 

@@ -45,8 +45,10 @@ int main(int argc, char **argv)
 		String languageOption = options->value("language");
 
 		if (options->value("list-languages")) {
-			for (int i = 0; i < registry()->languageCount(); ++i)
-				fout() << registry()->languageAt(i)->name() << nl;
+			for (int i = 0; i < registry()->languageCount(); ++i) {
+				Language *language = registry()->languageAt(i);
+				fout() << language->name() << ": \"" << language->displayName() << "\"" << nl;
+			}
 			return 0;
 		}
 
@@ -82,18 +84,29 @@ int main(int argc, char **argv)
 			for (int i = 0; i < items->count(); ++i) {
 				String path = items->at(i);
 				String text = File::open(path)->map();
+
 				Language *language = defaultLanguage;
 				if (!language) {
 					if (!registry()->detectLanguage(path, text, &language))
 						throw UsageError(Format("%%: Failed to detect language (use -language option)") << path);
 				}
-				Ref<SyntaxState> state = language->highlightingSyntax()->match(text, 0);
-				if (!state->valid()) throw SyntaxError(text, state, path);
+				Ref<SyntaxState> state;
+				while (true) {
+					state = language->highlightingSyntax()->match(text);
+					if (!state->valid()) {
+						ferr() << SyntaxError(text, state, path) << nl;
+						registry()->lookupLanguageByName("plaintext", &language);
+						continue;
+					}
+					break;
+				}
+
 				if (themeOption == "") themeOption = "ClassicWhite";
 				String htmlPath = path->fileName()->replace(".", "_") + ".html";
 				if (verbose) fout() << htmlPath << nl;
 				Ref<File> htmlFile = File::open(htmlPath, File::Create|File::Truncate|File::WriteOnly);
-				Format(htmlFile) <<
+				Format sink(htmlFile);
+				sink <<
 					"<!DOCTYPE HTML>\n"
 					"<html>\n"
 					"<head>\n"
@@ -101,8 +114,8 @@ int main(int argc, char **argv)
 					"<link rel=\"stylesheet\" href=\"" << cssPath(themeOption) << "\" type=\"text/css\">"
 					"</head>\n"
 					"<body>\n";
-				state->rootToken()->project(HtmlScreen::create(text, htmlFile));
-				Format(htmlFile) <<
+				state->rootToken()->project(HtmlScreen::create(text, sink));
+				sink <<
 					"</body>\n"
 					"</html>\n";
 			}

@@ -36,11 +36,10 @@ class Registry: public Object
 {
 public:
 	bool lookupLanguageByName(String name, Language **language) const;
-	bool lookupLanguageByDisplayName(String name, Language **language) const;
 	bool detectLanguage(String path, String text, Language **language) const;
 
 	inline int languageCount() const { return languageByName_->count(); }
-	inline const Language *languageAt(int i) const { return languageByName_->valueAt(i); }
+	inline Language *languageAt(int i) const { return languageByName_->valueAt(i); }
 
 private:
 	friend class Singleton<Registry>;
@@ -51,9 +50,7 @@ private:
 	void registerLanguage(Language *language);
 
 	typedef Map< String, Ref<Language> > LanguageByName;
-	typedef Map< String, Ref<Language> > LanguageByDisplayName;
 	Ref<LanguageByName> languageByName_;
-	Ref<LanguageByDisplayName> languageByDisplayName_;
 };
 
 Registry *registry();

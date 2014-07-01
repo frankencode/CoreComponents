@@ -7,16 +7,18 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-#ifndef FLUXTOKI_CXXSYNTAX_H
-#define FLUXTOKI_CXXSYNTAX_H
-
-#include <flux/SyntaxDefinition.h>
+#include "PlaintextSyntax.h"
+#include "PlaintextLanguage.h"
 
 namespace flux {
 namespace toki {
 
-const SyntaxDefinition *cxxSyntax();
+PlaintextLanguage::PlaintextLanguage():
+	Language(
+		"Plaintext",
+		Pattern("*.txt"),
+		plaintextSyntax()
+	)
+{}
 
 }} // namespace flux::toki
-
-#endif // FLUXTOKI_CXXSYNTAX_H

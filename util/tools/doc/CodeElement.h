@@ -10,6 +10,7 @@
 #ifndef FLUXDOC_CODEELEMENT_H
 #define FLUXDOC_CODEELEMENT_H
 
+#include <flux/toki/Language.h>
 #include "PathElement.h"
 
 namespace flux {
@@ -20,7 +21,7 @@ class CodeElement: public PathElement
 public:
 	static Ref<CodeElement> create() { return new CodeElement; }
 
-	inline String language() const { return language_; }
+	inline toki::Language *language() const { return language_; }
 
 	virtual void realize(const ByteArray *text, Token *objectToken);
 
@@ -30,7 +31,7 @@ protected:
 	virtual void define();
 	virtual Ref<MetaObject> produce();
 
-	String language_;
+	Ref<toki::Language> language_;
 };
 
 }} // namespace flux::doc
