@@ -10,26 +10,11 @@
 #include <flux/Format.h>
 #include <flux/File.h>
 #include <flux/toki/HtmlScreen.h>
-#include "Design.h"
+#include "HtmlDesign.h"
 #include "HtmlGenerator.h"
 
 namespace flux {
 namespace doc {
-
-class HtmlDesign: public Design
-{
-public:
-	static Ref<HtmlDesign> create() { return new HtmlDesign; }
-
-private:
-	HtmlDesign()
-		: Design("Html")
-	{}
-
-	virtual Ref<MetaObject> produce() {
-		return create();
-	}
-};
 
 class HtmlWriter: public Object {
 public:
@@ -43,10 +28,13 @@ class ParagraphWriter: public HtmlWriter {
 public:
 	static Ref<ParagraphWriter> create() { return new ParagraphWriter; }
 	static const char *className() { return "Paragraph"; }
-	virtual void write(Format &sink, Element *element) {
+
+	virtual void write(Format &sink, Element *element)
+	{
 		ParagraphElement *paragraph = cast<ParagraphElement>(element);
 		sink << "<p>" << paragraph->text() << "</p>" << nl;
 	}
+
 private:
 	ParagraphWriter() {}
 };
@@ -55,7 +43,9 @@ class ListWriter: public HtmlWriter {
 public:
 	static Ref<ListWriter> create() { return new ListWriter; }
 	static const char *className() { return "List"; }
-	virtual void write(Format &sink, Element *element) {
+
+	virtual void write(Format &sink, Element *element)
+	{
 		ListElement *list = cast<ListElement>(element);
 		if (!list->hasChildren()) return;
 		if (list->children()->count() == 0) return;
@@ -77,14 +67,14 @@ class CodeWriter: public HtmlWriter {
 public:
 	static Ref<CodeWriter> create() { return new CodeWriter; }
 	static const char *className() { return "Code"; }
-	virtual void write(Format &sink, Element *element) {
+
+	virtual void write(Format &sink, Element *element)
+	{
 		CodeElement *code = cast<CodeElement>(element);
 		toki::Language *language = code->language();
-		if (!language) return; // FIXME: use plaintext language
 		String text = code->text();
 		if (code->path() != "") text = File::open(code->path())->map();
-		Ref<SyntaxState> state = language->highlightingSyntax()->match(text, 0); // FIXME: force language definitions to match fully
-		if (!state->valid()) return; // FIXME: fallback to plaintext language
+		Ref<SyntaxState> state = language->highlightingSyntax()->match(text);
 		state->rootToken()->project(toki::HtmlScreen::create(text, sink));
 	}
 };
@@ -104,8 +94,20 @@ HtmlGenerator::HtmlGenerator()
 
 void HtmlGenerator::run(Design *design, Document *document)
 {
+	Ref<HtmlDesign> htmlDesign = design;
+	ElementList *elements = document->elements();
+
 	String path = document->path()->fileName()->baseName() + ".html";
 	Ref<File> file = File::open(path, File::WriteOnly|File::Truncate|File::Create);
+
+	bool needTokiTheme = false;
+	for (int i = 0; i < elements->count(); ++i) {
+		if (elements->at(i)->className() == "Code") { needTokiTheme = true; break; }
+	}
+	if (needTokiTheme) {
+		Ref<File> file = File::open(htmlDesign->tokiTheme()->name() + ".css", File::Create|File::Truncate|File::WriteOnly);
+		toki::HtmlScreen::writeCss(htmlDesign->tokiTheme(), file);
+	}
 
 	Format sink(file);
 	sink
@@ -113,7 +115,12 @@ void HtmlGenerator::run(Design *design, Document *document)
 		<< "<html>" << nl
 		// FIXME << "<html lang=\"" << document->locale() << "\">"
 		<< "<head>" << nl
-		<< "<meta charset=\"UTF-8\">" << nl
+		<< "<meta charset=\"UTF-8\">" << nl;
+
+	if (needTokiTheme)
+		sink << "<link rel=\"stylesheet\" href=\"" << htmlDesign->tokiTheme()->name() << ".css\" type=\"text/css\">" << nl;
+
+	sink
 		<< "<title>" << document->title()->text() << "</title>" << nl
 		<< "</head>" << nl
 		<< "<body>" << nl;
@@ -126,7 +133,6 @@ void HtmlGenerator::run(Design *design, Document *document)
 	}
 	sink << "</header>" << nl;
 
-	ElementList *elements = document->elements();
 	for (int i = 0; i < elements->count(); ++i) {
 		Element *element = elements->at(i);
 		Ref<HtmlWriter> writer;

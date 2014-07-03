@@ -25,19 +25,19 @@ public:
 private:
 	ItemProtocol() { maxCount(1); }
 
-	virtual MetaObject *lookup(String className)
+	virtual MetaObject *lookup(String className) const
 	{
 		if (className == "List") return listPrototype();
 		return 0;
 	}
 
-	inline MetaObject *listPrototype()
+	inline MetaObject *listPrototype() const
 	{
 		if (!listPrototype_) listPrototype_ = createPrototype<ListElement>();
 		return listPrototype_;
 	}
 
-	Ref<MetaObject> listPrototype_;
+	mutable Ref<MetaObject> listPrototype_;
 };
 
 class ItemElement: public TextElement

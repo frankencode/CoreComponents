@@ -9,6 +9,7 @@
 
 #include <flux/stdio.h> // DEBUG
 #include <flux/yason.h> // DEBUG
+#include <flux/ResourceGuard.h>
 #include "MarkupSyntax.h"
 #include "Document.h"
 
@@ -22,6 +23,7 @@ Ref<Document> Document::load(String path, Document *parent)
 
 Ref<Document> Document::parse(String text, String path, Document *parent)
 {
+	ResourceGuard guard(path);
 	Ref<ElementList> elements = markupSyntax()->parse(text, path);
 	for (int i = 0; i < elements->count(); ++i) ferr() << yason::stringify(elements->at(i)) << nl; // DEBUG
 	return new Document(elements, path, parent);

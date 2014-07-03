@@ -35,6 +35,7 @@ void CodeElement::realize(const ByteArray *text, Token *objectToken)
 		}
 		else {
 			int n = toki::registry()->languageCount();
+			name = name->downcase();
 			for (int i = 0; i < n; ++i) {
 				toki::Language *candidate = toki::registry()->languageAt(i);
 				if (candidate->displayName()->downcase() == name) {
@@ -44,9 +45,14 @@ void CodeElement::realize(const ByteArray *text, Token *objectToken)
 			}
 			if (!language_) {
 				int offset = valueToken(text, objectToken, "language")->i1();
-				ferr() << SemanticError(Format("Unknown language \"%%\"") << name, text, offset) << nl;
+				ferr() << SemanticError(Format("Unknown language \"%%\", falling back to \"plaintext\"") << name, text, offset) << nl;
 			}
 		}
+	}
+	if (!language_) {
+		toki::Language *language = 0;
+		toki::registry()->lookupLanguageByName("plaintext", &language);
+		language_ = language;
 	}
 }
 

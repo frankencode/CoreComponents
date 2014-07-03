@@ -9,6 +9,7 @@
 
 #include <flux/stdio.h>
 #include <flux/Arguments.h>
+#include <flux/ResourceGuard.h>
 #include "Document.h"
 #include "Design.h"
 #include "Registry.h"
@@ -19,7 +20,6 @@ using namespace flux::doc;
 
 int main(int argc, char **argv)
 {
-	String toolName = String(argv[0])->fileName();
 	try {
 		Ref<Arguments> arguments = Arguments::parse(argc, argv);
 		Ref<VariantMap> options = arguments->options();
@@ -29,9 +29,14 @@ int main(int argc, char **argv)
 		Ref<Document> defaultDocument;
 		if (defaultSourcePath != "") defaultDocument = Document::load(defaultSourcePath);
 
+
 		for (int i = 0; i < items->count(); ++i) {
 			String designPath = items->at(i);
-			Ref<Design> design = yason::parse(File::open(designPath)->map(), registry()->designProtocol());
+			Ref<Design> design;
+			{
+				ResourceGuard guard(designPath);
+				design = yason::parse(File::open(designPath)->map(), registry()->designProtocol());
+			}
 			arguments->validate(design);
 			arguments->override(design);
 
@@ -53,11 +58,11 @@ int main(int argc, char **argv)
 			"\n"
 			"Options:\n"
 			"  -source  source file\n"
-		) << toolName;
+		) << String(argv[0])->fileName();
 		return 1;
 	}
 	catch (Exception &ex) {
-		ferr() << toolName << ": " << ex.message() << nl;
+		ferr() << ex.message() << nl;
 		return 1;
 	}
 
