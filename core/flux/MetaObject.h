@@ -50,7 +50,6 @@ public:
 	virtual void realize(const ByteArray *text, Token *objectToken) {}
 
 protected:
-	// friend class YasonSyntax;
 	friend class MetaProtocol;
 
 	MetaObject(const String &className = "", MetaProtocol *protocol = 0);

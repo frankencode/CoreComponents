@@ -453,14 +453,14 @@ Token *YasonSyntax::nameToken(const ByteArray *text, Token *objectToken, const S
 				return token;
 		}
 	}
-	return 0;
+	return objectToken;
 }
 
 Token *YasonSyntax::valueToken(const ByteArray *text, Token *objectToken, const String &memberName) const
 {
 	Token *token = nameToken(text, objectToken, memberName);
-	if (token) return token->nextSibling();
-	return 0;
+	if (token != objectToken) return token->nextSibling();
+	return objectToken;
 }
 
 Token *YasonSyntax::childToken(Token *objectToken, int childIndex) const
