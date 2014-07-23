@@ -377,7 +377,7 @@ bool Process::isDaemonized()
 
 String ProcessError::message() const
 {
-	return Format() << "Process unsuccessful: %% (status = %%)" << command_ << status_;
+	return Format("Process unsuccessful: %% (status = %%)") << command_ << status_;
 }
 
 } // namespace flux

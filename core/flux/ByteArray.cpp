@@ -307,6 +307,11 @@ Ref<ByteArray> ByteArray::replace(const char *pattern, const char *replacement) 
 	return join(split(pattern), replacement);
 }
 
+Ref<ByteArray> ByteArray::replace(const char *pattern, String replacement) const
+{
+	return replace(pattern, replacement->chars());
+}
+
 Ref<ByteArray> ByteArray::replace(String pattern, String replacement) const
 {
 	return replace(pattern->chars(), replacement->chars());
