@@ -154,6 +154,7 @@ public:
 
 	ByteArray *replaceInsitu(const char *pattern, const char *replacement);
 	Ref<ByteArray> replace(const char *pattern, const char *replacement) const;
+	Ref<ByteArray> replace(const char *pattern, String replacement) const;
 	Ref<ByteArray> replace(String pattern, String replacement) const;
 
 	int toInt(bool *ok = 0) const;

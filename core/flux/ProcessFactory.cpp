@@ -28,7 +28,15 @@ ProcessFactory::ProcessFactory(int type)
 	  fileCreationMask_(-1)
 {}
 
-void ProcessFactory::setExecPath(String path) { execPath_ = path; }
+void ProcessFactory::setExecPath(String path)
+{
+	if (path->contains('~')) {
+		String home = Process::env("HOME");
+		if (home != "") path = path->replace("~", home);
+	}
+	execPath_ = path;
+}
+
 void ProcessFactory::setArguments(StringList *list) { arguments_ = list; }
 void ProcessFactory::setEnvMap(EnvMap *map) { envMap_ = map; }
 void ProcessFactory::setWorkingDirectory(String path) { workingDirectory_ = path; }
