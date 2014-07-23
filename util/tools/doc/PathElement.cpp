@@ -31,7 +31,7 @@ void PathElement::realize(const ByteArray *text, Token *objectToken)
 	title_ = value("title");
 	if (path_ != "") {
 		try {
-			File::open(path_);
+			text_ = File::open(path_)->map();
 		}
 		catch (SystemError &ex) {
 			int offset = valueToken(text, objectToken, "path")->i1();

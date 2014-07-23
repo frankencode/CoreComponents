@@ -21,7 +21,7 @@ protected:
 	Design(String className)
 		: MetaObject(className)
 	{
-		insert("source", "");
+		insert("source", ""); // FIXME
 	}
 };
 
