@@ -22,6 +22,7 @@ public:
 	static Ref<CodeElement> create() { return new CodeElement; }
 
 	inline toki::Language *language() const { return language_; }
+	inline SyntaxState *state() const { return state_; }
 
 	virtual void realize(const ByteArray *text, Token *objectToken);
 
@@ -32,6 +33,7 @@ protected:
 	virtual Ref<MetaObject> produce();
 
 	Ref<toki::Language> language_;
+	Ref<SyntaxState> state_;
 };
 
 }} // namespace flux::doc

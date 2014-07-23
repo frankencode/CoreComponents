@@ -71,11 +71,11 @@ public:
 	virtual void write(Format &sink, Element *element)
 	{
 		CodeElement *code = cast<CodeElement>(element);
-		toki::Language *language = code->language();
-		String text = code->text();
-		if (code->path() != "") text = File::open(code->path())->map();
-		Ref<SyntaxState> state = language->highlightingSyntax()->match(text);
-		state->rootToken()->project(toki::HtmlScreen::create(text, sink));
+		sink << "<figure class=\"code\">" << nl;
+		if (code->title() != "")
+			sink << "<figcaption>" << code->title() << "</figcaption>" << nl;
+		code->state()->rootToken()->project(toki::HtmlScreen::create(code->text(), sink));
+		sink << "</figure>" << nl;
 	}
 };
 
@@ -97,8 +97,22 @@ void HtmlGenerator::run(Design *design, Document *document)
 	Ref<HtmlDesign> htmlDesign = design;
 	ElementList *elements = document->elements();
 
-	String path = document->path()->fileName()->baseName() + ".html";
+	String baseName = document->path()->fileName()->baseName();
+	String path = baseName + ".html";
 	Ref<File> file = File::open(path, File::WriteOnly|File::Truncate|File::Create);
+
+	{
+		Ref<File> file = File::open(baseName + ".css", File::Create|File::Truncate|File::WriteOnly);
+		Format sink(file);
+		sink <<
+			"body {\n"
+			"  margin: 1em auto;\n"
+			"  width: 600px;\n"
+			"  line-height: 1.5;\n"
+			"  font-size: 16px;\n"
+			"  font-family: sans-serif;\n"
+			"}\n";
+	}
 
 	bool needTokiTheme = false;
 	for (int i = 0; i < elements->count(); ++i) {
@@ -116,6 +130,8 @@ void HtmlGenerator::run(Design *design, Document *document)
 		// FIXME << "<html lang=\"" << document->locale() << "\">"
 		<< "<head>" << nl
 		<< "<meta charset=\"UTF-8\">" << nl;
+
+	sink << "<link rel=\"stylesheet\" href=\"" << baseName + ".css" << "\" type=\"text/css\">" << nl;
 
 	if (needTokiTheme)
 		sink << "<link rel=\"stylesheet\" href=\"" << htmlDesign->tokiTheme()->name() << ".css\" type=\"text/css\">" << nl;
