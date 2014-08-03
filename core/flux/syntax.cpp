@@ -165,7 +165,7 @@ int DefinitionNode::syntaxError(ByteArray *text, int index, State *state) const
 	return -1;
 }
 
-int DefinitionNode::errorCallBack(Object *self, ByteArray *text, int index, State *state)
+int DefinitionNode::errorCallBack(Object *self, ByteArray *text, int index, Token *parentToken, State *state)
 {
 	DefinitionNode *definition = cast<DefinitionNode>(self);
 	return definition->syntaxError(text, index, state);

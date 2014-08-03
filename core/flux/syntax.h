@@ -825,7 +825,7 @@ private:
 	bool strict_;
 };
 
-typedef int (*CallBack) (Object *self, ByteArray *text, int i, State *state);
+typedef int (*CallBack) (Object *self, ByteArray *text, int i, Token *parentToken, State *state);
 
 class CallNode: public Node
 {
@@ -837,7 +837,7 @@ public:
 
 	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
-		return callBack_(self_, text, i, state);
+		return callBack_(self_, text, i, parentToken, state);
 	}
 
 	inline CallBack callBack() const { return callBack_; }
@@ -1300,7 +1300,7 @@ public:
 		return debug(link, "Context");
 	}
 
-	typedef int (*CallBack) (Object *self, ByteArray *text, int i, State *state);
+	typedef int (*CallBack) (Object *self, ByteArray *text, int i, Token *parentToken, State *state);
 
 	inline NODE CALL(CallBack callBack, Object *self = 0) {
 		if (!self) self = this;
@@ -1444,7 +1444,7 @@ private:
 	Ref<StateIdByName> flagIdByName_;
 	Ref<StateIdByName> captureIdByName_;
 
-	static int errorCallBack(Object *self, ByteArray *text, int index, State *state);
+	static int errorCallBack(Object *self, ByteArray *text, int index, Token *parentToken, State *state);
 };
 
 } // namespace syntax

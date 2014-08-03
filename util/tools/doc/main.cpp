@@ -29,7 +29,6 @@ int main(int argc, char **argv)
 		Ref<Document> defaultDocument;
 		if (defaultSourcePath != "") defaultDocument = Document::load(defaultSourcePath);
 
-
 		for (int i = 0; i < items->count(); ++i) {
 			String designPath = items->at(i);
 			Ref<Design> design;
@@ -54,7 +53,7 @@ int main(int argc, char **argv)
 	catch (HelpError &) {
 		fout(
 			"Usage: %% [OPTION]... [FILE]...\n"
-			"Produce documentation using different design FILEs.\n"
+			"Produce documentation using one or more design FILEs.\n"
 			"\n"
 			"Options:\n"
 			"  -source  source file\n"
