@@ -843,8 +843,8 @@ Ref<ByteArray> ByteArray::reducePath() const
 		if (component != "") break;
 	}
 	String resultPath = parts->join("/");
-	if ((resultPath == "") && isAbsolutePath())
-		resultPath = "/";
+	if (resultPath == "")
+	    resultPath = isAbsolutePath() ? "/" : ".";
 	return resultPath;
 }
 
@@ -859,12 +859,14 @@ Ref<ByteArray> ByteArray::canonicalPath() const
 	Ref<StringList> result = StringList::create();
 	for (int i = 0; i < parts->count(); ++i) {
 		String part = parts->at(i);
-		if ((part == "") && (i > 0)) continue;
-		if ((part == "") && (i == parts->count() - 1)) continue;
-		if ((part == ".") && (i > 0)) continue;
-		if ((part == "..") && (result->count() > 0)) {
-			result->popBack();
-			continue;
+		if (part == "" && i > 0) continue;
+		if (part == "" && i == parts->count() - 1) continue;
+		if (part == "." && parts->count() > 1) continue;
+		if (part == ".." && result->count() > 0) {
+			if (result->at(result->count() - 1) != "..") {
+				result->popBack();
+				continue;
+			}
 		}
 		result->append(part);
 	}

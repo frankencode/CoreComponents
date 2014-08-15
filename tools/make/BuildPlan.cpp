@@ -30,7 +30,7 @@ Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
 Ref<BuildPlan> BuildPlan::create(String projectPath)
 {
 	BuildPlan *plan = 0;
-	if (buildMap_->lookup(projectPath, &plan)) return plan;
+	if (buildMap_->lookup(String(projectPath->absolutePath()), &plan)) return plan;
 	return new BuildPlan(projectPath, this);
 }
 
@@ -69,7 +69,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	toolChain_ = GnuToolChain::create(compiler());
 	if (optimize_ == "") optimize_ = toolChain_->defaultOptimization(this);
 
-	buildMap_->insert(projectPath_, this);
+	buildMap_->insert(String(projectPath_->absolutePath()), this);
 }
 
 BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
@@ -81,7 +81,7 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 {
 	recipe_ = yason::parse(File::open(recipePath())->map(), recipeProtocol());
 	readRecipe(parentPlan);
-	buildMap_->insert(projectPath_, this);
+	buildMap_->insert(String(projectPath_->absolutePath()), this);
 }
 
 void BuildPlan::readRecipe(BuildPlan *parentPlan)
@@ -230,7 +230,6 @@ void BuildPlan::readPrerequisites()
 	}
 }
 
-
 Ref<StringList> BuildPlan::globSources(StringList *pattern) const
 {
 	Ref<StringList> sources = StringList::create();
@@ -290,7 +289,7 @@ void BuildPlan::initModules()
 		Format h;
 		String path = projectPath_->absolutePath();
 		String topLevel = sourcePrefix_->absolutePath();
-		while (path != topLevel) {
+		while (path != topLevel && path != "/") {
 			h << path->fileName();
 			path = path->reducePath();
 		}
