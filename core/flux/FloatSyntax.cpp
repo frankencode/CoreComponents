@@ -29,8 +29,6 @@ FloatSyntax::FloatSyntax()
 	literal_ =
 		DEFINE("Literal",
 			CHOICE(
-				REF("NaN"),
-				REF("Infinite"),
 				GLUE(
 					REPEAT(0, 1, REF("Sign")),
 					CHOICE(
@@ -56,6 +54,14 @@ FloatSyntax::FloatSyntax()
 						)
 					),
 					NOT(RANGE(".eE"))
+				),
+				GLUE(
+					CHOICE(
+						REF("NaN"),
+						REF("Infinite")
+					),
+					NOT(RANGE('a', 'z')),
+					NOT(RANGE('A', 'Z'))
 				)
 			)
 		);
