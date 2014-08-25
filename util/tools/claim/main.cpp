@@ -22,9 +22,13 @@ int main(int argc, char **argv)
 		Ref<Arguments> arguments = Arguments::parse(argc, argv);
 		{
 			Ref<VariantMap> prototype = VariantMap::create();
-			prototype->insert("report", "");
-			prototype->insert("strip", "");
-			prototype->insert("insert", "");
+			prototype->insert("report", true);
+			prototype->insert("strip", false);
+			prototype->insert("insert", false);
+			prototype->insert("replace", false);
+			prototype->insert("focus", "coverage");
+			prototype->insert("holder", "");
+			prototype->insert("statement", "");
 			prototype->insert("works", "");
 			arguments->validate(prototype);
 		}
@@ -32,18 +36,15 @@ int main(int argc, char **argv)
 		Ref<VariantMap> options = arguments->options();
 		Ref<StringList> items = arguments->items();
 
-		String focus;
-		String holder;
-		String headerPath;
-		bool reportOption = options->lookup("report", &focus);
-		bool stripOption = options->lookup("strip", &holder);
-		bool insertOption = options->lookup("insert", &headerPath);
-		Pattern works = options->value("works", "*.*");
+		bool reportOption = options->value("report");
+		bool stripOption = options->value("strip");
+		bool insertOption = options->value("insert");
+		bool replaceOption = optios->value("replace");
 
-		if (!(reportOption || stripOption || insertOption)) {
-			reportOption = true;
-			focus = "coverage";
-		}
+		String focus = options->value("focus");
+		String holder = options->value("holder");
+		String statementPath = options->value("statement");
+		Pattern works = options->value("works", "*.*");
 
 		if (items->count() == 0) items->append(".");
 
@@ -97,6 +98,7 @@ int main(int argc, char **argv)
 				}
 			}
 		}
+
 		if (stripOption) {
 			Coverage *coverage = report->coverageByHolder()->value(holder);
 			if (!coverage) return 0;
@@ -115,8 +117,9 @@ int main(int argc, char **argv)
 				file->write(newText);
 			}
 		}
+
 		if (insertOption) {
-			String header = File::open(headerPath)->map();
+		/*	String header = File::open(headerPath)->map();
 			Exposure *exposure = report->exposure();
 			for (int i = 0; i < exposure->count(); ++i) {
 				String path = exposure->at(i);
@@ -125,7 +128,11 @@ int main(int argc, char **argv)
 				file->seek(0);
 				file->truncate(0);
 				file->write(newText);
-			}
+			}  // FIXME*/
+		}
+
+		if (updateOption) {
+			// ... TODO
 		}
 	}
 	catch (HelpError &) {
@@ -134,10 +141,14 @@ int main(int argc, char **argv)
 			"Find and update copyright statements.\n"
 			"\n"
 			"Options:\n"
-			"  -report=[STRING]  report on 'coverage', 'exposure' or 'holder'\n"
-			"  -strip=[STRING]   remove all copyright headers of given copyright holder\n"
-			"  -insert=[FILE]    insert missing copyright headers from file\n"
-			"  -works=[PATTERN]  file name pattern of copyright protected works\n"
+			"  -report            generate report with given focus (see -focus)\n"
+			"  -strip             remove all copyright headers of giving copyright holder (see -holder)\n"
+			"  -insert            insert missing copyright headers (see -holder and -statement)\n"
+			"  -replace           replace existing copyright statements for given holder (see -holder and -statement)\n"
+			"  -focus=[STRING]    'coverage', 'exposure' or 'holder'\n"
+			"  -holder=[STRING]   exact name of the license holder\n"
+			"  -statement=[FILE]  file containing copyright statement\n"
+			"  -works=[PATTERN]   file name pattern of copyright protected works (*.* by default)\n"
 		) << toolName;
 
 		return 1;
