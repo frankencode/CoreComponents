@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Frank Mertens.
+ * Copyright (C) 2013-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,8 +15,7 @@
 #include <flux/Set.h>
 #include "Notice.h"
 
-namespace fluxclaim
-{
+namespace fluxclaim {
 
 using namespace flux;
 
@@ -29,20 +28,22 @@ typedef Map<String, String> StatementByDigest;
 class Report: public Object
 {
 public:
-	static Ref<Report> create(StringList *dirPaths, Pattern works);
+	static Ref<Report> create(StringList *dirPaths, Pattern works, int worksMinLines);
 
-	inline StringList *dirPaths() { return dirPaths_; }
-	inline Pattern works() { return works_; }
-	inline Coverage *coverage() { return coverage_; }
-	inline Exposure *exposure() { return exposure_; }
-	inline CoverageByDigest *coverageByDigest() { return coverageByDigest_; }
-	inline CoverageByHolder *coverageByHolder() { return coverageByHolder_; }
-	inline StatementByDigest *statementByDigest() { return statementByDigest_; }
+	inline StringList *dirPaths() const { return dirPaths_; }
+	inline Pattern works() const { return works_; }
+	inline int worksMinLines() const { return worksMinLines_; }
+	inline Coverage *coverage() const { return coverage_; }
+	inline Exposure *exposure() const { return exposure_; }
+	inline CoverageByDigest *coverageByDigest() const { return coverageByDigest_; }
+	inline CoverageByHolder *coverageByHolder() const { return coverageByHolder_; }
+	inline StatementByDigest *statementByDigest() const { return statementByDigest_; }
 
 private:
-	Report(StringList *dirPaths, Pattern works);
+	Report(StringList *dirPaths, Pattern works, int worksMinLines);
 	Ref<StringList> dirPaths_;
 	Pattern works_;
+	int worksMinLines_;
 	Ref<Coverage> coverage_;
 	Ref<Exposure> exposure_;
 	Ref<CoverageByDigest> coverageByDigest_;

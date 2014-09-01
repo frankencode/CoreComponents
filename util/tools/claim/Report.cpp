@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Frank Mertens.
+ * Copyright (C) 2013-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -14,17 +14,17 @@
 #include "NoticeParser.h"
 #include "Report.h"
 
-namespace fluxclaim
-{
+namespace fluxclaim {
 
-Ref<Report> Report::create(StringList *dirPaths, Pattern works)
+Ref<Report> Report::create(StringList *dirPaths, Pattern works, int worksMinLines)
 {
-	return new Report(dirPaths, works);
+	return new Report(dirPaths, works, worksMinLines);
 }
 
-Report::Report(StringList *dirPaths, Pattern works)
+Report::Report(StringList *dirPaths, Pattern works, int worksMinLines)
 	: dirPaths_(dirPaths),
 	  works_(works),
+	  worksMinLines_(worksMinLines),
 	  coverage_(Coverage::create()),
 	  exposure_(Exposure::create()),
 	  coverageByDigest_(CoverageByDigest::create()),
@@ -40,9 +40,8 @@ Report::Report(StringList *dirPaths, Pattern works)
 			if (!works->match(path->fileName())->valid()) continue;
 			Ref<Notice> notice;
 			{
-				const HeaderScannerList *headerScanners = registry()->headerScanners();
-				for (int j = 0; j < headerScanners->count(); ++j) {
-					Ref<Header> header = headerScanners->at(j)->scanHeader(path);
+				for (int j = 0; j < registry()->headerStyleCount(); ++j) {
+					Ref<Header> header = registry()->headerStyleAt(j)->scan(path);
 					if (header) {
 						notice = noticeParser()->readNotice(header);
 						if (notice) break;
@@ -72,7 +71,18 @@ Report::Report(StringList *dirPaths, Pattern works)
 				}
 			}
 			else {
-				exposure_->insert(path);
+				bool omit = false;
+				if (worksMinLines > 1) {
+					String text = File::open(path)->map();
+					int i = -1, n = 1;
+					for (; n < worksMinLines; ++n) {
+						i = text->find('\n', i + 1);
+						if (i == text->count()) break;
+					}
+					omit = (n < worksMinLines);
+				}
+				if (!omit)
+					exposure_->insert(path);
 			}
 		}
 	}

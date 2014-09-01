@@ -21,7 +21,7 @@ private:
 
 	ShLanguage():
 		Language(
-			"Plaintext",
+			"Sh",
 			Pattern("*.sh"),
 			shSyntax(),
 			ScriptDiscoverySyntax::create("sh")

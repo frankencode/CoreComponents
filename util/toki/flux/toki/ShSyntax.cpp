@@ -22,6 +22,8 @@ protected:
 
 ShSyntax::ShSyntax()
 {
+	SYNTAX("sh");
+
 	DEFINE("Comment",
 		GLUE(
 			CHAR('#'),
