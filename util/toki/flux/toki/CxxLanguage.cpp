@@ -8,6 +8,7 @@
  */
 
 #include "Registry.h"
+#include "CppDiscoverySyntax.h"
 #include "CxxSyntax.h"
 
 namespace flux {
@@ -22,7 +23,8 @@ private:
 		Language(
 			"C++",
 			Pattern("*.((h|c){0..1:(pp|xx|++|h|c)}|(m|mm))"),
-			cxxSyntax()
+			cxxSyntax(),
+			cppDiscoverySyntax()
 		)
 	{}
 };
