@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Frank Mertens.
+ * Copyright (C) 2013-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -10,36 +10,34 @@
 #ifndef FLUXCLAIM_NOTICE_H
 #define FLUXCLAIM_NOTICE_H
 
-#include <flux/String.h>
-#include "Header.h"
 #include "Copyright.h"
+#include "Header.h"
 
-namespace fluxclaim
-{
+namespace fluxclaim {
 
 using namespace flux;
 
 class Notice: public Object
 {
 public:
-	inline static Ref<Notice> create(Header *header, CopyrightList *copyrights, String text) {
-		return new Notice(header, copyrights, text);
+	inline static Ref<Notice> create(CopyrightList *copyrights, String statement, Header *header = 0) {
+		return new Notice(copyrights, statement, header);
 	}
 
-	inline Header *header() const { return header_; }
 	inline CopyrightList *copyrights() const { return copyrights_; }
 	inline String statement() const { return statement_; }
+	inline Header *header() const { return header_; }
 
 private:
-	Notice(Header *header, CopyrightList *copyrights, String statement)
-		: header_(header),
-		  copyrights_(copyrights),
-		  statement_(statement)
+	Notice(CopyrightList *copyrights, String statement, Header *header = 0)
+		: copyrights_(copyrights),
+		  statement_(statement->trim()),
+		  header_(header)
 	{}
 
-	Ref<Header> header_;
 	Ref<CopyrightList> copyrights_;
 	String statement_;
+	Ref<Header> header_;
 };
 
 } // namespace fluxclaim

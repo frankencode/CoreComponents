@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Frank Mertens.
+ * Copyright (C) 2013-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -8,23 +8,36 @@
  */
 
 #include <flux/Singleton.h>
+#include <flux/toki/Registry.h>
 #include "Registry.h"
 
-namespace fluxclaim
-{
+namespace fluxclaim {
 
-Registry::Registry()
-	: headerScanners_(HeaderScannerList::create())
+Registry::Registry():
+	  headerStyleByLanguage_(HeaderStyleByLanguage::create())
 {}
 
-const HeaderScannerList *Registry::headerScanners() const
+const HeaderStyle *Registry::headerStyleByLanguage(String language) const
 {
-	return headerScanners_;
+	return headerStyleByLanguage_->value(language);
 }
 
-void Registry::registerHeaderScanner(HeaderScanner *scanner)
+bool Registry::detectHeaderStyle(String path, String text, HeaderStyle **style) const
 {
-	headerScanners_->append(scanner);
+	toki::Language *language = 0;
+	if (toki::registry()->detectLanguage(path, text, &language)) {
+		Ref<HeaderStyle> value;
+		if (headerStyleByLanguage_->lookup(language->name(), &value)) {
+			*style = value;
+			return true;
+		}
+	}
+	return false;
+}
+
+void Registry::registerHeaderStyle(HeaderStyle *style)
+{
+	headerStyleByLanguage_->insert(style->language(), style);
 }
 
 Registry *registry() { return Singleton<Registry>::instance(); }

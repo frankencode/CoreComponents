@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Frank Mertens.
+ * Copyright (C) 2013-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -14,8 +14,7 @@
 
 namespace flux { template<class> class Singleton; }
 
-namespace fluxclaim
-{
+namespace fluxclaim {
 
 using namespace flux;
 

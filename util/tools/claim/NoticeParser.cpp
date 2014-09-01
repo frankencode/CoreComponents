@@ -159,7 +159,7 @@ Ref<Notice> NoticeSyntax::readNotice(Header *header) const
 	}
 	FLUX_ASSERT(token->rule() == statement_);
 	String statement = message->copy(token);
-	return Notice::create(header, copyrights, statement);
+	return Notice::create(copyrights, statement, header);
 }
 
 Ref<Copyright> NoticeSyntax::readCopyright(Token *token, String message) const
