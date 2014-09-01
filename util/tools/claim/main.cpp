@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Frank Mertens.
+ * Copyright (C) 2013-2014 Frank Mertens.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -9,7 +9,9 @@
 
 #include <flux/stdio.h>
 #include <flux/Arguments.h>
+#include <flux/Date.h>
 #include "Report.h"
+#include "Registry.h"
 
 using namespace flux;
 using namespace fluxclaim;
@@ -20,35 +22,46 @@ int main(int argc, char **argv)
 
 	try {
 		Ref<Arguments> arguments = Arguments::parse(argc, argv);
+
+		Ref<VariantMap> options = VariantMap::create();
 		{
-			Ref<VariantMap> prototype = VariantMap::create();
-			prototype->insert("report", true);
-			prototype->insert("strip", false);
-			prototype->insert("insert", false);
-			prototype->insert("replace", false);
-			prototype->insert("focus", "coverage");
-			prototype->insert("holder", "");
-			prototype->insert("statement", "");
-			prototype->insert("works", "");
-			arguments->validate(prototype);
+			int year = Date::now()->year();
+			options->insert("report", true);
+			options->insert("strip", false);
+			options->insert("insert", false);
+			options->insert("focus", "coverage");
+			options->insert("holder", "");
+			options->insert("year-start", year);
+			options->insert("year-end", year);
+			options->insert("statement", "");
+			options->insert("statement-path", "");
+			options->insert("works", "*");
+			options->insert("works-min-lines", 10);
+			arguments->validate(options);
+			arguments->override(options);
 		}
 
-		Ref<VariantMap> options = arguments->options();
 		Ref<StringList> items = arguments->items();
 
 		bool reportOption = options->value("report");
 		bool stripOption = options->value("strip");
 		bool insertOption = options->value("insert");
-		bool replaceOption = optios->value("replace");
+		bool replaceOption = options->value("replace");
 
 		String focus = options->value("focus");
 		String holder = options->value("holder");
-		String statementPath = options->value("statement");
-		Pattern works = options->value("works", "*.*");
+		int yearStart = options->value("year-start");
+		int yearEnd = options->value("year-end");
+		String statement = options->value("statement");
+		String statementPath = options->value("statement-path");
+		Pattern works = options->value("works");
+		int worksMinLines = options->value("works-min-lines");
+
+		if (statementPath != "") statement = File::open(statementPath)->map();
 
 		if (items->count() == 0) items->append(".");
 
-		Ref<Report> report = Report::create(items, works);
+		Ref<Report> report = Report::create(items, works, worksMinLines);
 
 		if (reportOption) {
 			if (focus == "coverage") {
@@ -119,20 +132,22 @@ int main(int argc, char **argv)
 		}
 
 		if (insertOption) {
-		/*	String header = File::open(headerPath)->map();
 			Exposure *exposure = report->exposure();
+			Ref<CopyrightList> copyrights = CopyrightList::create();
+			copyrights->append(Copyright::create(holder, yearStart, yearEnd));
+			Ref<Notice> notice = Notice::create(copyrights, statement);
 			for (int i = 0; i < exposure->count(); ++i) {
 				String path = exposure->at(i);
 				Ref<File> file = File::open(path, File::ReadWrite);
-				String newText = Format() << header << file->map();
-				file->seek(0);
-				file->truncate(0);
-				file->write(newText);
-			}  // FIXME*/
-		}
-
-		if (updateOption) {
-			// ... TODO
+				String text = file->map();
+				HeaderStyle *style = 0;
+				if (registry()->detectHeaderStyle(path, text, &style)) {
+					text = text->trimLeading() + style->str(notice);
+					file->seek(0);
+					file->truncate(0);
+					file->write(text);
+				}
+			}
 		}
 	}
 	catch (HelpError &) {
@@ -141,14 +156,17 @@ int main(int argc, char **argv)
 			"Find and update copyright statements.\n"
 			"\n"
 			"Options:\n"
-			"  -report            generate report with given focus (see -focus)\n"
-			"  -strip             remove all copyright headers of giving copyright holder (see -holder)\n"
-			"  -insert            insert missing copyright headers (see -holder and -statement)\n"
-			"  -replace           replace existing copyright statements for given holder (see -holder and -statement)\n"
-			"  -focus=[STRING]    'coverage', 'exposure' or 'holder'\n"
-			"  -holder=[STRING]   exact name of the license holder\n"
-			"  -statement=[FILE]  file containing copyright statement\n"
-			"  -works=[PATTERN]   file name pattern of copyright protected works (*.* by default)\n"
+			"  -report                 generate report with given focus (see -focus)\n"
+			"  -strip                  remove all copyright headers of giving copyright holder (see -holder)\n"
+			"  -insert                 insert missing copyright headers (see -holder, -year-start, -statement-file)\n"
+			"  -focus=[STRING]         'coverage', 'exposure' or 'holder'\n"
+			"  -holder=[STRING]        exact name of the license holder\n"
+			"  -year-start=[INT]       first year of creation\n"
+			"  -year-end=[INT]         last year of creation\n"
+			"  -statement=[STRING]     copyright statement\n"
+			"  -statement-file=[FILE]  file containing copyright statement\n"
+			"  -works=[PATTERN]        file name pattern of copyright protected works ('*' by default)\n"
+			"  -works-min-lines=[INT]  minimum number of lines of copyright protected works (10 by default)\n"
 		) << toolName;
 
 		return 1;

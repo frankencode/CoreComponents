@@ -370,13 +370,13 @@ float64_t ByteArray::toFloat64(bool *ok) const
 	return value;
 }
 
-int ByteArray::scanString(String *x, const char *term, int i0, int i1) const
+int ByteArray::scanString(String *x, const char *termination, int i0, int i1) const
 {
 	if (i1 < 0 || i1 > size_) i1 = size_;
 	if (i0 > i1) i0 = i1;
 	int i = i0;
 	for (; i < i1; ++i) {
-		const char *p = term;
+		const char *p = termination;
 		if (!at(i)) break;
 		for(; *p; ++p) {
 			if (at(i) == *p) break;
@@ -516,18 +516,19 @@ ByteArray *ByteArray::truncate(int newSize)
 	return this;
 }
 
-ByteArray *ByteArray::trimInsitu(const char *space)
+ByteArray *ByteArray::trimInsitu(const char *leadingSpace, const char *trailingSpace)
 {
+	if (!trailingSpace) trailingSpace = leadingSpace;
 	int i0 = 0, i1 = size_;
 	while (i0 < i1) {
-		const char *p = space;
+		const char *p = leadingSpace;
 		for (; *p; ++p)
 			if (data_[i0] == *p) break;
 		if (!*p) break;
 		++i0;
 	}
 	while (i0 < i1) {
-		const char *p = space;
+		const char *p = trailingSpace;
 		for (; *p; ++p)
 			if (data_[i1 - 1] == *p) break;
 		if (!*p) break;

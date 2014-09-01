@@ -163,7 +163,7 @@ public:
 	uint64_t toUInt64(bool *ok = 0) const;
 	float64_t toFloat64(bool *ok = 0) const;
 
-	int scanString(String *x, const char *term = " \t\n", int i0 = 0, int i1 = -1) const;
+	int scanString(String *x, const char *termination = " \t\n", int i0 = 0, int i1 = -1) const;
 
 	template<class T>
 	int scanInt(T *x, int base = 10, int i0 = 0, int i1 = -1) const;
@@ -179,8 +179,10 @@ public:
 
 	ByteArray *truncate(int newSize);
 
-	inline Ref<ByteArray> trim(const char *space = " \t\n\r") const { return copy()->trimInsitu(space); }
-	ByteArray *trimInsitu(const char *space = " \t\n\r");
+	inline Ref<ByteArray> trim(const char *leadingSpace = " \t\n\r", const char *trailingSpace = 0) const { return copy()->trimInsitu(leadingSpace, trailingSpace); }
+	inline Ref<ByteArray> trimLeading(const char *space = " \t\n\r") const { return copy()->trimInsitu(space, ""); }
+	inline Ref<ByteArray> trimTrailing(const char *space = " \t\n\r") const { return copy()->trimInsitu("", space); }
+	ByteArray *trimInsitu(const char *leadingSpace = " \t\n\r", const char *trailingSpace = 0);
 	inline Ref<ByteArray> simplify(const char *space = " \t\n\r") const { return copy()->simplifyInsitu(); }
 	ByteArray *simplifyInsitu(const char *space = " \t\n\r");
 	Ref<ByteArray> normalize(bool nameCase = true) const;
