@@ -26,6 +26,7 @@ public:
 
 	virtual Ref<Header> scan(String path) const = 0;
 	virtual String str(Notice *notice) const = 0;
+	virtual int magicCount(String text) const { return 0; }
 
 protected:
 	static String trimHeader(String text, const char *space);

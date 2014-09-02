@@ -20,6 +20,18 @@ class ShHeaderSyntax: public SyntaxDefinition
 public:
 	ShHeaderSyntax()
 	{
+		SYNTAX("sh-header");
+
+		DEFINE("Magic",
+			GLUE(
+				REPEAT(RANGE(" \t")),
+				STRING("#!"),
+				FIND(
+					CHAR('\n')
+				)
+			)
+		);
+
 		DEFINE("Header",
 			GLUE(
 				REPEAT(1,
@@ -37,21 +49,26 @@ public:
 
 		DEFINE("Script",
 			GLUE(
-				REPEAT(0, 1,
-					GLUE(
-						REPEAT(RANGE(" \t")),
-						STRING("#!"),
-						FIND(
-							CHAR('\n')
-						)
-					)
-				),
+				REPEAT(0, 1, INLINE("Magic")),
 				REF("Header")
 			)
 		);
 
 		ENTRY("Script");
 
+		LINK();
+	}
+};
+
+class ShMagicSyntax: public SyntaxDefinition
+{
+public:
+	ShMagicSyntax()
+	{
+		SYNTAX("sh-magic");
+		IMPORT(Singleton<ShHeaderSyntax>::instance());
+		DEFINE("Magic", INLINE("sh-header::Magic"));
+		ENTRY("Magic");
 		LINK();
 	}
 };
@@ -80,15 +97,23 @@ String ShHeaderStyle::str(Notice *notice) const
 		format << " # Copyright (C) ";
 		if (c->yearStart() == c->yearEnd()) format << c->yearStart();
 		else format << c->yearStart() << "-" << c->yearEnd();
-		format << " " << c->holder() << "\n";
+		format << " " << c->holder() << ".\n";
 	}
 	format <<
 		" #\n"
 		" # " << notice->statement()->replace("\n", "\n # ") << "\n";
 	format <<
+		" #\n"
 		" ##\n"
 		"\n";
 	return format;
+}
+
+int ShHeaderStyle::magicCount(String text) const
+{
+	Ref<Token> token = Singleton<ShMagicSyntax>::instance()->match(text, 0)->rootToken();
+	if (!token) return 0;
+	return token->i1();
 }
 
 } // namespace fluxclaim

@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 		Ref<VariantMap> options = VariantMap::create();
 		{
 			int year = Date::now()->year();
-			options->insert("report", true);
+			options->insert("report", false);
 			options->insert("strip", false);
 			options->insert("insert", false);
 			options->insert("focus", "coverage");
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 			options->insert("year-start", year);
 			options->insert("year-end", year);
 			options->insert("statement", "");
-			options->insert("statement-path", "");
+			options->insert("statement-file", "");
 			options->insert("works", "*");
 			options->insert("works-min-lines", 10);
 			arguments->validate(options);
@@ -46,14 +46,14 @@ int main(int argc, char **argv)
 		bool reportOption = options->value("report");
 		bool stripOption = options->value("strip");
 		bool insertOption = options->value("insert");
-		bool replaceOption = options->value("replace");
+		if (!(stripOption || insertOption)) reportOption = true;
 
 		String focus = options->value("focus");
 		String holder = options->value("holder");
 		int yearStart = options->value("year-start");
 		int yearEnd = options->value("year-end");
 		String statement = options->value("statement");
-		String statementPath = options->value("statement-path");
+		String statementPath = options->value("statement-file");
 		Pattern works = options->value("works");
 		int worksMinLines = options->value("works-min-lines");
 
@@ -142,7 +142,13 @@ int main(int argc, char **argv)
 				String text = file->map();
 				HeaderStyle *style = 0;
 				if (registry()->detectHeaderStyle(path, text, &style)) {
-					text = text->trimLeading() + style->str(notice);
+					int magicCount = style->magicCount(text);
+					String magic;
+					if (magicCount > 0) {
+						magic = text->copy(0, magicCount);
+						text = text->copy(magicCount, text->count());
+					}
+					text = magic + style->str(notice) + text->trimLeading();
 					file->seek(0);
 					file->truncate(0);
 					file->write(text);
