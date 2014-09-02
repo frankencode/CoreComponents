@@ -21,6 +21,7 @@ class ShHeaderStyle: public HeaderStyle
 public:
 	virtual Ref<Header> scan(String path) const;
 	virtual String str(Notice *notice) const;
+	virtual int magicCount(String text) const;
 
 private:
 	friend class Registration<ShHeaderStyle>;

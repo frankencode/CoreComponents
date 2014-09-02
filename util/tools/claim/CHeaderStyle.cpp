@@ -65,7 +65,7 @@ String CHeaderStyle::str(Notice *notice) const
 		format << " * Copyright (C) ";
 		if (c->yearStart() == c->yearEnd()) format << c->yearStart();
 		else format << c->yearStart() << "-" << c->yearEnd();
-		format << " " << c->holder() << "\n";
+		format << " " << c->holder() << ".\n";
 	}
 	format <<
 		" *\n"
