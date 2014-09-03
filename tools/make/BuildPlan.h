@@ -118,6 +118,7 @@ private:
 
 	void readRecipe(BuildPlan *parentPlan = 0);
 
+	void use(BuildPlan *plan);
 	void readPrerequisites();
 	Ref<StringList> globSources(StringList *pattern) const;
 	void globSources();

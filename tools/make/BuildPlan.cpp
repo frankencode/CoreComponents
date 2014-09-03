@@ -193,6 +193,27 @@ String BuildPlan::installPath(String relativeInstallPath) const
 	return installPrefix_ + "/" + relativeInstallPath;
 }
 
+void BuildPlan::use(BuildPlan *plan)
+{
+	if (plan->options() & Library) {
+		String path = plan->projectPath();
+		path = path->reducePath();
+		while (Dir::count(path) == 1)
+			path = path->reducePath();
+		if (!includePaths_->contains(path))
+			includePaths_->append(path);
+		if (!libraryPaths_->contains("."))
+			libraryPaths_->append(".");
+		libraries_->append(plan->name());
+
+		if (plan->usage()) BuildParameters::readSpecific(plan->usage());
+	}
+	else if (plan->options() & Package) {
+		for (int i = 0; i < plan->prerequisites()->count(); ++i)
+			use(plan->prerequisites()->at(i));
+	}
+}
+
 void BuildPlan::readPrerequisites()
 {
 	if (prerequisites_) return;
@@ -211,20 +232,8 @@ void BuildPlan::readPrerequisites()
 		if (!File::exists(recipePath(path)))
 			throw UsageError(Format() << recipePath() << ": Failed to locate prerequisite \"" << prerequisitePaths->at(i) << "\"");
 		Ref<BuildPlan> plan = BuildPlan::create(path);
-
-		if (plan->options() & Library) {
-			path = path->reducePath();
-			while (Dir::count(path) == 1)
-				path = path->reducePath();
-			if (!includePaths_->contains(path))
-				includePaths_->append(path);
-			if (!libraryPaths_->contains("."))
-				libraryPaths_->append(".");
-			libraries_->append(plan->name());
-
-			if (plan->usage()) BuildParameters::readSpecific(plan->usage());
-		}
 		plan->readPrerequisites();
+		use(plan);
 		prerequisites_->append(plan);
 	}
 }
