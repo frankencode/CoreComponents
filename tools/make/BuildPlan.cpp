@@ -55,8 +55,10 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	if (items->count() > 0) {
 		if (items->count() > 1)
 			throw UsageError("Handling multiple source directories at once is not supported");
-		projectPath_ = items->at(0)->canonicalPath();
+		projectPath_ = items->at(0);
 	}
+
+	projectPath_ = projectPath_->absolutePath()->canonicalPath();
 
 	ResourceGuard context(recipePath());
 	recipe_ = yason::parse(File::open(recipePath())->map(), recipeProtocol());
@@ -68,7 +70,7 @@ BuildPlan::BuildPlan(int argc, char **argv)
 	toolChain_ = GnuToolChain::create(compiler());
 	if (optimize_ == "") optimize_ = toolChain_->defaultOptimization(this);
 
-	buildMap_->insert(String(projectPath_->absolutePath()), this);
+	buildMap_->insert(projectPath_, this);
 }
 
 BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
@@ -78,9 +80,9 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
 	  buildMap_(parentPlan->buildMap_),
 	  FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
 {
-	recipe_ = yason::parse(File::open(recipePath())->map(), recipeProtocol());
+	recipe_ = yason::parse(File::open(recipePath(projectPath_))->map(), recipeProtocol());
 	readRecipe(parentPlan);
-	buildMap_->insert(String(projectPath_->absolutePath()), this);
+	buildMap_->insert(projectPath_, this);
 }
 
 void BuildPlan::readRecipe(BuildPlan *parentPlan)
@@ -212,6 +214,24 @@ void BuildPlan::use(BuildPlan *plan)
 		for (int i = 0; i < plan->prerequisites()->count(); ++i)
 			use(plan->prerequisites()->at(i));
 	}
+	// else if FIXME: warn/error when using Application or Tools
+}
+
+String BuildPlan::findPrerequisite(String prerequisitePath) const
+{
+	if (prerequisitePath->isAbsolutePath()) {
+		if (File::exists(recipePath(prerequisitePath))) return prerequisitePath;
+		return String();
+	}
+	for (String path = projectPath_; path != "/"; path = path->reducePath()) {
+		String candidatePath = path + "/" + prerequisitePath;
+		if (File::exists(recipePath(candidatePath))) {
+			candidatePath = candidatePath->canonicalPath();
+			if (candidatePath == projectPath_) continue;
+			return candidatePath;
+		}
+	}
+	return String();
 }
 
 void BuildPlan::readPrerequisites()
@@ -224,12 +244,9 @@ void BuildPlan::readPrerequisites()
 
 	StringList *prerequisitePaths = cast<StringList>(recipe_->value("use"));
 
-	for (int i = 0; i < prerequisitePaths->count(); ++i)
-	{
-		String path = prerequisitePaths->at(i);
-		if (path->isRelativePath()) path = projectPath_ + "/" + path;
-		path = path->canonicalPath();
-		if (!File::exists(recipePath(path)))
+	for (int i = 0; i < prerequisitePaths->count(); ++i) {
+		String path = findPrerequisite(prerequisitePaths->at(i));
+		if (path == "")
 			throw UsageError(Format() << recipePath() << ": Failed to locate prerequisite \"" << prerequisitePaths->at(i) << "\"");
 		Ref<BuildPlan> plan = BuildPlan::create(path);
 		plan->readPrerequisites();

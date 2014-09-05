@@ -1,4 +1,4 @@
 Tests {
 	source: *.cpp
-	use: [ ../../core/flux, ../flux/net ]
+	use: [ core, net ]
 }

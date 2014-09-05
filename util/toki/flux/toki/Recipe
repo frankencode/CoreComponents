@@ -4,5 +4,5 @@ Library {
 	header: *.h
 	source: *.cpp
 	bundle: themes/*
-	use: ../../../../core/flux
+	use: core
 }

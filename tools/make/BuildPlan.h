@@ -119,7 +119,9 @@ private:
 	void readRecipe(BuildPlan *parentPlan = 0);
 
 	void use(BuildPlan *plan);
+	String findPrerequisite(String prerequisitePath) const;
 	void readPrerequisites();
+
 	Ref<StringList> globSources(StringList *pattern) const;
 	void globSources();
 	void initModules();
