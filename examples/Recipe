@@ -1,5 +1,5 @@
 Tools {
 	source: *.cpp
-	use: ../core/flux
+	use: core
 	// prefix: /usr/lib/flux/examples // FIXME
 }

@@ -1,4 +1,5 @@
-Tests {
+Application {
+	name: fluxlight
 	source: *.cpp
 	use: [ core, toki ]
 }

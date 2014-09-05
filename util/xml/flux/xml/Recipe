@@ -3,5 +3,5 @@ Library {
 	version: 0.1.0
 	header: *.h
 	source: *.cpp
-	use: ../../../../core/flux
+	use: core
 }

@@ -1,0 +1,5 @@
+Application {
+	name: fluxabnfcc
+	source: *.cpp
+	use: [ core, abnf ]
+}
