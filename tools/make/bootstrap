@@ -2,294 +2,100 @@
 SOURCE=$1
 MACHINE=$(gcc -dumpmachine)
 mkdir -p .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_stream_flux_stream-0.1.0-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_crypto_flux_crypto-0.1.0-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_util_abnf_flux_abnf-0.1.0-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_util_tar_flux_tar-0.1.0-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_util_xml_flux_xml-0.1.0-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_util_tools_abnf-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_util_tools_claim-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_util_tools_doc-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_util_tools_tar-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_util_tools_toki-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_tools_find-release-O2-$MACHINE
 mkdir -p .modules-fluxkit_tools_make-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_tools_node-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_tools_hash-release-O2-$MACHINE
-mkdir -p .modules-fluxkit_examples-release-O2-$MACHINE
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/AvlBalance.o $SOURCE/core/flux/AvlBalance.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Crc32.o $SOURCE/core/flux/Crc32.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Date.o $SOURCE/core/flux/Date.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/BinaryTree.o $SOURCE/core/flux/BinaryTree.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ByteArray.o $SOURCE/core/flux/ByteArray.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/AvlBalance.o $SOURCE/core/flux/AvlBalance.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Color.o $SOURCE/core/flux/Color.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Arguments.o $SOURCE/core/flux/Arguments.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Condition.o $SOURCE/core/flux/Condition.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Crc32.o $SOURCE/core/flux/Crc32.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Arguments.o $SOURCE/core/flux/Arguments.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Date.o $SOURCE/core/flux/Date.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ByteArray.o $SOURCE/core/flux/ByteArray.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ColorNames.o $SOURCE/core/flux/ColorNames.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/DebugToken.o $SOURCE/core/flux/DebugToken.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ExitEvent.o $SOURCE/core/flux/ExitEvent.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Dir.o $SOURCE/core/flux/Dir.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FileLock.o $SOURCE/core/flux/FileLock.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/DirWalker.o $SOURCE/core/flux/DirWalker.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Event.o $SOURCE/core/flux/Event.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/DebugToken.o $SOURCE/core/flux/DebugToken.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/DirWalker.o $SOURCE/core/flux/DirWalker.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Dir.o $SOURCE/core/flux/Dir.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ExitEvent.o $SOURCE/core/flux/ExitEvent.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FileLock.o $SOURCE/core/flux/FileLock.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FileStatus.o $SOURCE/core/flux/FileStatus.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/File.o $SOURCE/core/flux/File.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Format.o $SOURCE/core/flux/Format.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FloatSyntax.o $SOURCE/core/flux/FloatSyntax.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Glob.o $SOURCE/core/flux/Glob.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FormatSyntax.o $SOURCE/core/flux/FormatSyntax.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/GlobalCoreMutex.o $SOURCE/core/flux/GlobalCoreMutex.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/IntegerSyntax.o $SOURCE/core/flux/IntegerSyntax.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/IoMonitor.o $SOURCE/core/flux/IoMonitor.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/LineSource.o $SOURCE/core/flux/LineSource.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FormatSyntax.o $SOURCE/core/flux/FormatSyntax.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FloatSyntax.o $SOURCE/core/flux/FloatSyntax.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Format.o $SOURCE/core/flux/Format.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Group.o $SOURCE/core/flux/Group.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/List.o $SOURCE/core/flux/List.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/File.o $SOURCE/core/flux/File.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/JsonWriter.o $SOURCE/core/flux/JsonWriter.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Mutex.o $SOURCE/core/flux/Mutex.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/LineSource.o $SOURCE/core/flux/LineSource.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Map.o $SOURCE/core/flux/Map.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/IntegerSyntax.o $SOURCE/core/flux/IntegerSyntax.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/List.o $SOURCE/core/flux/List.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/IoMonitor.o $SOURCE/core/flux/IoMonitor.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Memory.o $SOURCE/core/flux/Memory.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/MetaObject.o $SOURCE/core/flux/MetaObject.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Process.o $SOURCE/core/flux/Process.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Mutex.o $SOURCE/core/flux/Mutex.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/NullStream.o $SOURCE/core/flux/NullStream.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Pattern.o $SOURCE/core/flux/Pattern.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/PatternSyntax.o $SOURCE/core/flux/PatternSyntax.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/MetaObject.o $SOURCE/core/flux/MetaObject.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Random.o $SOURCE/core/flux/Random.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ProcessStatus.o $SOURCE/core/flux/ProcessStatus.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/PatternSyntax.o $SOURCE/core/flux/PatternSyntax.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ResourceGuard.o $SOURCE/core/flux/ResourceGuard.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Process.o $SOURCE/core/flux/Process.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Semaphore.o $SOURCE/core/flux/Semaphore.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Pattern.o $SOURCE/core/flux/Pattern.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ProcessFactory.o $SOURCE/core/flux/ProcessFactory.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ResourceContext.o $SOURCE/core/flux/ResourceContext.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Semaphore.o $SOURCE/core/flux/Semaphore.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SignalSet.o $SOURCE/core/flux/SignalSet.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SpinLock.o $SOURCE/core/flux/SpinLock.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Stream.o $SOURCE/core/flux/Stream.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/String.o $SOURCE/core/flux/String.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/System.o $SOURCE/core/flux/System.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxDebugFactory.o $SOURCE/core/flux/SyntaxDebugFactory.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxDebugger.o $SOURCE/core/flux/SyntaxDebugger.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SystemStream.o $SOURCE/core/flux/SystemStream.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxDefinition.o $SOURCE/core/flux/SyntaxDefinition.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SpinLock.o $SOURCE/core/flux/SpinLock.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxState.o $SOURCE/core/flux/SyntaxState.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/System.o $SOURCE/core/flux/System.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxDefinition.o $SOURCE/core/flux/SyntaxDefinition.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/String.o $SOURCE/core/flux/String.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxDebugFactory.o $SOURCE/core/flux/SyntaxDebugFactory.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SystemStream.o $SOURCE/core/flux/SystemStream.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Thread.o $SOURCE/core/flux/Thread.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ThreadFactory.o $SOURCE/core/flux/ThreadFactory.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Unicode.o $SOURCE/core/flux/Unicode.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/User.o $SOURCE/core/flux/User.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Variant.o $SOURCE/core/flux/Variant.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/check.o $SOURCE/core/flux/check.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ThreadExitEvent.o $SOURCE/core/flux/ThreadExitEvent.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Unicode.o $SOURCE/core/flux/Unicode.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxDebugger.o $SOURCE/core/flux/SyntaxDebugger.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/assert.o $SOURCE/core/flux/assert.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/YasonSyntax.o $SOURCE/core/flux/YasonSyntax.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/exceptions.o $SOURCE/core/flux/exceptions.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/new.o $SOURCE/core/flux/new.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/strings.o $SOURCE/core/flux/strings.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/str.o $SOURCE/core/flux/str.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/stdio.o $SOURCE/core/flux/stdio.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/YasonWriter.o $SOURCE/core/flux/YasonWriter.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/syntax.o $SOURCE/core/flux/syntax.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Token.o $SOURCE/core/flux/Token.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Variant.o $SOURCE/core/flux/Variant.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/User.o $SOURCE/core/flux/User.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/YasonSyntax.o $SOURCE/core/flux/YasonSyntax.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ThreadFactory.o $SOURCE/core/flux/ThreadFactory.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/YasonWriter.o $SOURCE/core/flux/YasonWriter.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/check.o $SOURCE/core/flux/check.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/str.o $SOURCE/core/flux/str.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/exceptions.o $SOURCE/core/flux/exceptions.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/strings.o $SOURCE/core/flux/strings.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/new.o $SOURCE/core/flux/new.cpp
 gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/yason.o $SOURCE/core/flux/yason.cpp
-gcc -shared -pthread -Wl,-soname,libfluxcore.so.0 -o libfluxcore.so.0.1.0 .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/AvlBalance.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Crc32.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Date.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/BinaryTree.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ByteArray.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Color.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Arguments.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Condition.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ColorNames.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/DebugToken.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ExitEvent.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Dir.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FileLock.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/DirWalker.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Event.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FileStatus.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/File.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Format.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FloatSyntax.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Glob.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FormatSyntax.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/GlobalCoreMutex.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/IntegerSyntax.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/IoMonitor.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/LineSource.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Group.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/List.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/JsonWriter.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Mutex.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Map.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Memory.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/MetaObject.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Process.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/NullStream.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Pattern.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/PatternSyntax.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Random.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ProcessStatus.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ResourceGuard.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ProcessFactory.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ResourceContext.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Semaphore.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SignalSet.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SpinLock.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Stream.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/String.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/System.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxDebugFactory.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxDebugger.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SystemStream.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxDefinition.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxState.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Thread.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ThreadFactory.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Unicode.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/User.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Variant.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/check.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ThreadExitEvent.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/assert.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/YasonSyntax.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/exceptions.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/new.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/strings.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/str.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/stdio.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/YasonWriter.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/syntax.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Token.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/yason.o -lrt -lstdc++
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/syntax.o $SOURCE/core/flux/syntax.cpp
+gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -c -o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/stdio.o $SOURCE/core/flux/stdio.cpp
+gcc -shared -pthread -Wl,-soname,libfluxcore.so.0 -o libfluxcore.so.0.1.0 .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/BinaryTree.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/AvlBalance.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Color.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Condition.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Crc32.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Arguments.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Date.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ByteArray.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ColorNames.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Event.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/DebugToken.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/DirWalker.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Dir.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ExitEvent.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FileLock.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FileStatus.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Glob.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/GlobalCoreMutex.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FormatSyntax.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/FloatSyntax.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Format.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Group.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/File.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/JsonWriter.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/LineSource.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Map.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/IntegerSyntax.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/List.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/IoMonitor.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Memory.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Mutex.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/NullStream.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/MetaObject.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Random.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ProcessStatus.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/PatternSyntax.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ResourceGuard.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Process.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Semaphore.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Pattern.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ProcessFactory.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ResourceContext.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SignalSet.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Stream.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SpinLock.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxState.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/System.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxDefinition.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/String.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxDebugFactory.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SystemStream.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Thread.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ThreadExitEvent.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Unicode.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/SyntaxDebugger.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/assert.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Token.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/Variant.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/User.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/YasonSyntax.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/ThreadFactory.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/YasonWriter.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/check.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/str.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/exceptions.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/strings.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/new.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/yason.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/syntax.o .modules-fluxkit_core_flux-0.1.0-release-O2-$MACHINE/stdio.o -lrt -lstdc++
 rm -f libfluxcore.so.0.1
 rm -f libfluxcore.so.0
 rm -f libfluxcore.so
 ln -sf libfluxcore.so.0.1.0 libfluxcore.so.0.1
 ln -sf libfluxcore.so.0.1.0 libfluxcore.so.0
 ln -sf libfluxcore.so.0.1.0 libfluxcore.so
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/base64.o $SOURCE/net/flux/net/base64.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/UriSyntax.o $SOURCE/net/flux/net/UriSyntax.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/SocketAddress.o $SOURCE/net/flux/net/SocketAddress.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/InetAddressSyntax.o $SOURCE/net/flux/net/InetAddressSyntax.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/NetworkInterface.o $SOURCE/net/flux/net/NetworkInterface.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/StreamSocket.o $SOURCE/net/flux/net/StreamSocket.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/Uri.o $SOURCE/net/flux/net/Uri.cpp
-gcc -shared -pthread -Wl,-soname,libfluxnet.so.0 -o libfluxnet.so.0.1.0 .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/base64.o .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/UriSyntax.o .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/SocketAddress.o .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/InetAddressSyntax.o .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/NetworkInterface.o .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/StreamSocket.o .modules-fluxkit_net_flux_net-0.1.0-release-O2-$MACHINE/Uri.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-rm -f libfluxnet.so.0.1
-rm -f libfluxnet.so.0
-rm -f libfluxnet.so
-ln -sf libfluxnet.so.0.1.0 libfluxnet.so.0.1
-ln -sf libfluxnet.so.0.1.0 libfluxnet.so.0
-ln -sf libfluxnet.so.0.1.0 libfluxnet.so
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_stream_flux_stream-0.1.0-release-O2-$MACHINE/LineBuffer.o $SOURCE/stream/flux/stream/LineBuffer.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_stream_flux_stream-0.1.0-release-O2-$MACHINE/LookAheadStream.o $SOURCE/stream/flux/stream/LookAheadStream.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_stream_flux_stream-0.1.0-release-O2-$MACHINE/TransferMeter.o $SOURCE/stream/flux/stream/TransferMeter.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_stream_flux_stream-0.1.0-release-O2-$MACHINE/TimeoutLimiter.o $SOURCE/stream/flux/stream/TimeoutLimiter.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_stream_flux_stream-0.1.0-release-O2-$MACHINE/StreamTap.o $SOURCE/stream/flux/stream/StreamTap.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_stream_flux_stream-0.1.0-release-O2-$MACHINE/TransferLimiter.o $SOURCE/stream/flux/stream/TransferLimiter.cpp
-gcc -shared -pthread -Wl,-soname,libfluxstream.so.0 -o libfluxstream.so.0.1.0 .modules-fluxkit_stream_flux_stream-0.1.0-release-O2-$MACHINE/LineBuffer.o .modules-fluxkit_stream_flux_stream-0.1.0-release-O2-$MACHINE/LookAheadStream.o .modules-fluxkit_stream_flux_stream-0.1.0-release-O2-$MACHINE/TransferMeter.o .modules-fluxkit_stream_flux_stream-0.1.0-release-O2-$MACHINE/TimeoutLimiter.o .modules-fluxkit_stream_flux_stream-0.1.0-release-O2-$MACHINE/StreamTap.o .modules-fluxkit_stream_flux_stream-0.1.0-release-O2-$MACHINE/TransferLimiter.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-rm -f libfluxstream.so.0.1
-rm -f libfluxstream.so.0
-rm -f libfluxstream.so
-ln -sf libfluxstream.so.0.1.0 libfluxstream.so.0.1
-ln -sf libfluxstream.so.0.1.0 libfluxstream.so.0
-ln -sf libfluxstream.so.0.1.0 libfluxstream.so
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_crypto_flux_crypto-0.1.0-release-O2-$MACHINE/Aes.o $SOURCE/crypto/flux/crypto/Aes.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_crypto_flux_crypto-0.1.0-release-O2-$MACHINE/CascadeBlockCipher.o $SOURCE/crypto/flux/crypto/CascadeBlockCipher.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_crypto_flux_crypto-0.1.0-release-O2-$MACHINE/Sha1.o $SOURCE/crypto/flux/crypto/Sha1.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_crypto_flux_crypto-0.1.0-release-O2-$MACHINE/HashMeter.o $SOURCE/crypto/flux/crypto/HashMeter.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_crypto_flux_crypto-0.1.0-release-O2-$MACHINE/Md5.o $SOURCE/crypto/flux/crypto/Md5.cpp
-gcc -shared -pthread -Wl,-soname,libfluxcrypto.so.0 -o libfluxcrypto.so.0.1.0 .modules-fluxkit_crypto_flux_crypto-0.1.0-release-O2-$MACHINE/Aes.o .modules-fluxkit_crypto_flux_crypto-0.1.0-release-O2-$MACHINE/CascadeBlockCipher.o .modules-fluxkit_crypto_flux_crypto-0.1.0-release-O2-$MACHINE/Sha1.o .modules-fluxkit_crypto_flux_crypto-0.1.0-release-O2-$MACHINE/HashMeter.o .modules-fluxkit_crypto_flux_crypto-0.1.0-release-O2-$MACHINE/Md5.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-rm -f libfluxcrypto.so.0.1
-rm -f libfluxcrypto.so.0
-rm -f libfluxcrypto.so
-ln -sf libfluxcrypto.so.0.1.0 libfluxcrypto.so.0.1
-ln -sf libfluxcrypto.so.0.1.0 libfluxcrypto.so.0
-ln -sf libfluxcrypto.so.0.1.0 libfluxcrypto.so
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_util_abnf_flux_abnf-0.1.0-release-O2-$MACHINE/AbnfSyntaxDefinition.o $SOURCE/util/abnf/flux/abnf/AbnfSyntaxDefinition.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_util_abnf_flux_abnf-0.1.0-release-O2-$MACHINE/AbnfSyntax.o $SOURCE/util/abnf/flux/abnf/AbnfSyntax.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_util_abnf_flux_abnf-0.1.0-release-O2-$MACHINE/AbnfCompiler.o $SOURCE/util/abnf/flux/abnf/AbnfCompiler.cpp
-gcc -shared -pthread -Wl,-soname,libfluxabnf.so.0 -o libfluxabnf.so.0.1.0 .modules-fluxkit_util_abnf_flux_abnf-0.1.0-release-O2-$MACHINE/AbnfSyntaxDefinition.o .modules-fluxkit_util_abnf_flux_abnf-0.1.0-release-O2-$MACHINE/AbnfSyntax.o .modules-fluxkit_util_abnf_flux_abnf-0.1.0-release-O2-$MACHINE/AbnfCompiler.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-rm -f libfluxabnf.so.0.1
-rm -f libfluxabnf.so.0
-rm -f libfluxabnf.so
-ln -sf libfluxabnf.so.0.1.0 libfluxabnf.so.0.1
-ln -sf libfluxabnf.so.0.1.0 libfluxabnf.so.0
-ln -sf libfluxabnf.so.0.1.0 libfluxabnf.so
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_util_tar_flux_tar-0.1.0-release-O2-$MACHINE/ArchiveReader.o $SOURCE/util/tar/flux/tar/ArchiveReader.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_util_tar_flux_tar-0.1.0-release-O2-$MACHINE/TarCommon.o $SOURCE/util/tar/flux/tar/TarCommon.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_util_tar_flux_tar-0.1.0-release-O2-$MACHINE/TarReader.o $SOURCE/util/tar/flux/tar/TarReader.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_util_tar_flux_tar-0.1.0-release-O2-$MACHINE/TarWriter.o $SOURCE/util/tar/flux/tar/TarWriter.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_util_tar_flux_tar-0.1.0-release-O2-$MACHINE/ArReader.o $SOURCE/util/tar/flux/tar/ArReader.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_util_tar_flux_tar-0.1.0-release-O2-$MACHINE/ArWriter.o $SOURCE/util/tar/flux/tar/ArWriter.cpp
-gcc -shared -pthread -Wl,-soname,libfluxtar.so.0 -o libfluxtar.so.0.1.0 .modules-fluxkit_util_tar_flux_tar-0.1.0-release-O2-$MACHINE/ArchiveReader.o .modules-fluxkit_util_tar_flux_tar-0.1.0-release-O2-$MACHINE/TarCommon.o .modules-fluxkit_util_tar_flux_tar-0.1.0-release-O2-$MACHINE/TarReader.o .modules-fluxkit_util_tar_flux_tar-0.1.0-release-O2-$MACHINE/TarWriter.o .modules-fluxkit_util_tar_flux_tar-0.1.0-release-O2-$MACHINE/ArReader.o .modules-fluxkit_util_tar_flux_tar-0.1.0-release-O2-$MACHINE/ArWriter.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-rm -f libfluxtar.so.0.1
-rm -f libfluxtar.so.0
-rm -f libfluxtar.so
-ln -sf libfluxtar.so.0.1.0 libfluxtar.so.0.1
-ln -sf libfluxtar.so.0.1.0 libfluxtar.so.0
-ln -sf libfluxtar.so.0.1.0 libfluxtar.so
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/CxxLanguage.o $SOURCE/util/toki/flux/toki/CxxLanguage.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/CppDiscoverySyntax.o $SOURCE/util/toki/flux/toki/CppDiscoverySyntax.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/HtmlScreen.o $SOURCE/util/toki/flux/toki/HtmlScreen.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/Language.o $SOURCE/util/toki/flux/toki/Language.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/CxxSyntax.o $SOURCE/util/toki/flux/toki/CxxSyntax.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/Palette.o $SOURCE/util/toki/flux/toki/Palette.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/Document.o $SOURCE/util/toki/flux/toki/Document.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/PaletteLoader.o $SOURCE/util/toki/flux/toki/PaletteLoader.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/ScriptDiscoverySyntax.o $SOURCE/util/toki/flux/toki/ScriptDiscoverySyntax.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/PlaintextLanguage.o $SOURCE/util/toki/flux/toki/PlaintextLanguage.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/Registry.o $SOURCE/util/toki/flux/toki/Registry.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/ShLanguage.o $SOURCE/util/toki/flux/toki/ShLanguage.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/ShSyntax.o $SOURCE/util/toki/flux/toki/ShSyntax.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/PlaintextSyntax.o $SOURCE/util/toki/flux/toki/PlaintextSyntax.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/YasonLanguage.o $SOURCE/util/toki/flux/toki/YasonLanguage.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/YasonSyntax.o $SOURCE/util/toki/flux/toki/YasonSyntax.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/Style.o $SOURCE/util/toki/flux/toki/Style.cpp
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -DFLUXMAKE_BUNDLE_PREFIX=/usr/share/libfluxtoki -I$SOURCE/core -c -o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/Theme.o $SOURCE/util/toki/flux/toki/Theme.cpp
-gcc -shared -pthread -Wl,-soname,libfluxtoki.so.0 -o libfluxtoki.so.0.1.0 .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/CxxLanguage.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/CppDiscoverySyntax.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/HtmlScreen.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/Language.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/CxxSyntax.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/Palette.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/Document.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/PaletteLoader.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/ScriptDiscoverySyntax.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/PlaintextLanguage.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/Registry.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/ShLanguage.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/ShSyntax.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/PlaintextSyntax.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/YasonLanguage.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/YasonSyntax.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/Style.o .modules-fluxkit_util_toki_flux_toki-0.1.0-release-O2-$MACHINE/Theme.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-rm -f libfluxtoki.so.0.1
-rm -f libfluxtoki.so.0
-rm -f libfluxtoki.so
-ln -sf libfluxtoki.so.0.1.0 libfluxtoki.so.0.1
-ln -sf libfluxtoki.so.0.1.0 libfluxtoki.so.0
-ln -sf libfluxtoki.so.0.1.0 libfluxtoki.so
-gcc -DNDEBUG -O2 -fPIC -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_util_xml_flux_xml-0.1.0-release-O2-$MACHINE/XmlSyntax.o $SOURCE/util/xml/flux/xml/XmlSyntax.cpp
-gcc -shared -pthread -Wl,-soname,libfluxxml.so.0 -o libfluxxml.so.0.1.0 .modules-fluxkit_util_xml_flux_xml-0.1.0-release-O2-$MACHINE/XmlSyntax.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-rm -f libfluxxml.so.0.1
-rm -f libfluxxml.so.0
-rm -f libfluxxml.so
-ln -sf libfluxxml.so.0.1.0 libfluxxml.so.0.1
-ln -sf libfluxxml.so.0.1.0 libfluxxml.so.0
-ln -sf libfluxxml.so.0.1.0 libfluxxml.so
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/abnf -c -o .modules-fluxkit_util_tools_abnf-release-O2-$MACHINE/main.o $SOURCE/util/tools/abnf/main.cpp
-gcc -pthread -o fluxabnf .modules-fluxkit_util_tools_abnf-release-O2-$MACHINE/main.o -L. -lfluxcore -lfluxabnf -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/crypto -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/Report.o $SOURCE/util/tools/claim/Report.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/crypto -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/main.o $SOURCE/util/tools/claim/main.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/crypto -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/CHeaderStyle.o $SOURCE/util/tools/claim/CHeaderStyle.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/crypto -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/HeaderStyle.o $SOURCE/util/tools/claim/HeaderStyle.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/crypto -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/Registry.o $SOURCE/util/tools/claim/Registry.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/crypto -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/NoticeParser.o $SOURCE/util/tools/claim/NoticeParser.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/crypto -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/ShHeaderStyle.o $SOURCE/util/tools/claim/ShHeaderStyle.cpp
-gcc -pthread -o fluxclaim .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/Report.o .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/main.o .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/CHeaderStyle.o .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/HeaderStyle.o .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/Registry.o .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/NoticeParser.o .modules-fluxkit_util_tools_claim-release-O2-$MACHINE/ShHeaderStyle.o -L. -lfluxcore -lfluxcrypto -lfluxtoki -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/Generator.o $SOURCE/util/tools/doc/Generator.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/CodeElement.o $SOURCE/util/tools/doc/CodeElement.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/HtmlGenerator.o $SOURCE/util/tools/doc/HtmlGenerator.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/MarkupProtocol.o $SOURCE/util/tools/doc/MarkupProtocol.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/MarkupSyntax.o $SOURCE/util/tools/doc/MarkupSyntax.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/PathElement.o $SOURCE/util/tools/doc/PathElement.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/HtmlDesign.o $SOURCE/util/tools/doc/HtmlDesign.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/Document.o $SOURCE/util/tools/doc/Document.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/Registry.o $SOURCE/util/tools/doc/Registry.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/main.o $SOURCE/util/tools/doc/main.cpp
-gcc -pthread -o fluxdoc .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/Generator.o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/CodeElement.o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/HtmlGenerator.o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/MarkupProtocol.o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/MarkupSyntax.o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/PathElement.o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/HtmlDesign.o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/Document.o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/Registry.o .modules-fluxkit_util_tools_doc-release-O2-$MACHINE/main.o -L. -lfluxcore -lfluxtoki -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/tar -c -o .modules-fluxkit_util_tools_tar-release-O2-$MACHINE/pack.o $SOURCE/util/tools/tar/pack.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/tar -c -o .modules-fluxkit_util_tools_tar-release-O2-$MACHINE/main.o $SOURCE/util/tools/tar/main.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/tar -c -o .modules-fluxkit_util_tools_tar-release-O2-$MACHINE/unpack.o $SOURCE/util/tools/tar/unpack.cpp
-gcc -pthread -o fluxtar .modules-fluxkit_util_tools_tar-release-O2-$MACHINE/pack.o .modules-fluxkit_util_tools_tar-release-O2-$MACHINE/main.o .modules-fluxkit_util_tools_tar-release-O2-$MACHINE/unpack.o -L. -lfluxcore -lfluxtar -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-rm -f fluxuntar
-rm -f fluxar
-rm -f fluxunar
-ln -sf fluxtar fluxuntar
-ln -sf fluxtar fluxar
-ln -sf fluxtar fluxunar
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/util/toki -c -o .modules-fluxkit_util_tools_toki-release-O2-$MACHINE/main.o $SOURCE/util/tools/toki/main.cpp
-gcc -pthread -o fluxtoki .modules-fluxkit_util_tools_toki-release-O2-$MACHINE/main.o -L. -lfluxcore -lfluxtoki -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_find-release-O2-$MACHINE/main.o $SOURCE/tools/find/main.cpp
-gcc -pthread -o fluxfind .modules-fluxkit_tools_find-release-O2-$MACHINE/main.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/CleanStage.o $SOURCE/tools/make/CleanStage.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildParameters.o $SOURCE/tools/make/BuildParameters.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/ConfigureStage.o $SOURCE/tools/make/ConfigureStage.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/AnalyseStage.o $SOURCE/tools/make/AnalyseStage.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildShell.o $SOURCE/tools/make/BuildShell.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildStage.o $SOURCE/tools/make/BuildStage.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/CompileLinkStage.o $SOURCE/tools/make/CompileLinkStage.cpp
 gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildPlan.o $SOURCE/tools/make/BuildPlan.cpp
+gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildParameters.o $SOURCE/tools/make/BuildParameters.cpp
+gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/CleanStage.o $SOURCE/tools/make/CleanStage.cpp
+gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildStage.o $SOURCE/tools/make/BuildStage.cpp
+gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/AnalyseStage.o $SOURCE/tools/make/AnalyseStage.cpp
+gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/CompileLinkStage.o $SOURCE/tools/make/CompileLinkStage.cpp
 gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/JobScheduler.o $SOURCE/tools/make/JobScheduler.cpp
+gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildShell.o $SOURCE/tools/make/BuildShell.cpp
 gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/InstallStage.o $SOURCE/tools/make/InstallStage.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/SystemPrerequisite.o $SOURCE/tools/make/SystemPrerequisite.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/DependencyCache.o $SOURCE/tools/make/DependencyCache.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/GnuToolChain.o $SOURCE/tools/make/GnuToolChain.cpp
 gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/JobServer.o $SOURCE/tools/make/JobServer.cpp
+gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/DependencyCache.o $SOURCE/tools/make/DependencyCache.cpp
+gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/ConfigureStage.o $SOURCE/tools/make/ConfigureStage.cpp
 gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/RecipeProtocol.o $SOURCE/tools/make/RecipeProtocol.cpp
+gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/GnuToolChain.o $SOURCE/tools/make/GnuToolChain.cpp
+gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/SystemPrerequisite.o $SOURCE/tools/make/SystemPrerequisite.cpp
 gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/UninstallStage.o $SOURCE/tools/make/UninstallStage.cpp
 gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/TestRunStage.o $SOURCE/tools/make/TestRunStage.cpp
 gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_tools_make-release-O2-$MACHINE/main.o $SOURCE/tools/make/main.cpp
-gcc -pthread -o fluxmake .modules-fluxkit_tools_make-release-O2-$MACHINE/CleanStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildParameters.o .modules-fluxkit_tools_make-release-O2-$MACHINE/ConfigureStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/AnalyseStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildShell.o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/CompileLinkStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildPlan.o .modules-fluxkit_tools_make-release-O2-$MACHINE/JobScheduler.o .modules-fluxkit_tools_make-release-O2-$MACHINE/InstallStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/SystemPrerequisite.o .modules-fluxkit_tools_make-release-O2-$MACHINE/DependencyCache.o .modules-fluxkit_tools_make-release-O2-$MACHINE/GnuToolChain.o .modules-fluxkit_tools_make-release-O2-$MACHINE/JobServer.o .modules-fluxkit_tools_make-release-O2-$MACHINE/RecipeProtocol.o .modules-fluxkit_tools_make-release-O2-$MACHINE/UninstallStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/TestRunStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/main.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/DirectoryService.o $SOURCE/tools/node/DirectoryService.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/ChunkedSink.o $SOURCE/tools/node/ChunkedSink.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/AccessLog.o $SOURCE/tools/node/AccessLog.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/ClientConnection.o $SOURCE/tools/node/ClientConnection.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/DirectoryInstance.o $SOURCE/tools/node/DirectoryInstance.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/DirectoryDelegate.o $SOURCE/tools/node/DirectoryDelegate.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/ConnectionManager.o $SOURCE/tools/node/ConnectionManager.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/DispatchDelegate.o $SOURCE/tools/node/DispatchDelegate.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/ErrorLog.o $SOURCE/tools/node/ErrorLog.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/DispatchInstance.o $SOURCE/tools/node/DispatchInstance.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/DispatchService.o $SOURCE/tools/node/DispatchService.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/EchoService.o $SOURCE/tools/node/EchoService.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/Log.o $SOURCE/tools/node/Log.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/MediaTypeDatabase.o $SOURCE/tools/node/MediaTypeDatabase.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/RequestStream.o $SOURCE/tools/node/RequestStream.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/NodeConfigProtocol.o $SOURCE/tools/node/NodeConfigProtocol.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/NodeMaster.o $SOURCE/tools/node/NodeMaster.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/LogMaster.o $SOURCE/tools/node/LogMaster.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/LogConfig.o $SOURCE/tools/node/LogConfig.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/NodeConfig.o $SOURCE/tools/node/NodeConfig.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/ServiceInstance.o $SOURCE/tools/node/ServiceInstance.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/Response.o $SOURCE/tools/node/Response.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/ServiceDefinition.o $SOURCE/tools/node/ServiceDefinition.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/ServiceRegistry.o $SOURCE/tools/node/ServiceRegistry.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/ServiceDelegate.o $SOURCE/tools/node/ServiceDelegate.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/SystemLogStream.o $SOURCE/tools/node/SystemLogStream.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/SystemLog.o $SOURCE/tools/node/SystemLog.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/Visit.o $SOURCE/tools/node/Visit.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/ServiceWorker.o $SOURCE/tools/node/ServiceWorker.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/main.o $SOURCE/tools/node/main.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/utils.o $SOURCE/tools/node/utils.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/WorkerPool.o $SOURCE/tools/node/WorkerPool.cpp
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/net -I$SOURCE/stream -c -o .modules-fluxkit_tools_node-release-O2-$MACHINE/TapBuffer.o $SOURCE/tools/node/TapBuffer.cpp
-gcc -pthread -o fluxnode .modules-fluxkit_tools_node-release-O2-$MACHINE/DirectoryService.o .modules-fluxkit_tools_node-release-O2-$MACHINE/ChunkedSink.o .modules-fluxkit_tools_node-release-O2-$MACHINE/AccessLog.o .modules-fluxkit_tools_node-release-O2-$MACHINE/ClientConnection.o .modules-fluxkit_tools_node-release-O2-$MACHINE/DirectoryInstance.o .modules-fluxkit_tools_node-release-O2-$MACHINE/DirectoryDelegate.o .modules-fluxkit_tools_node-release-O2-$MACHINE/ConnectionManager.o .modules-fluxkit_tools_node-release-O2-$MACHINE/DispatchDelegate.o .modules-fluxkit_tools_node-release-O2-$MACHINE/ErrorLog.o .modules-fluxkit_tools_node-release-O2-$MACHINE/DispatchInstance.o .modules-fluxkit_tools_node-release-O2-$MACHINE/DispatchService.o .modules-fluxkit_tools_node-release-O2-$MACHINE/EchoService.o .modules-fluxkit_tools_node-release-O2-$MACHINE/Log.o .modules-fluxkit_tools_node-release-O2-$MACHINE/MediaTypeDatabase.o .modules-fluxkit_tools_node-release-O2-$MACHINE/RequestStream.o .modules-fluxkit_tools_node-release-O2-$MACHINE/NodeConfigProtocol.o .modules-fluxkit_tools_node-release-O2-$MACHINE/NodeMaster.o .modules-fluxkit_tools_node-release-O2-$MACHINE/LogMaster.o .modules-fluxkit_tools_node-release-O2-$MACHINE/LogConfig.o .modules-fluxkit_tools_node-release-O2-$MACHINE/NodeConfig.o .modules-fluxkit_tools_node-release-O2-$MACHINE/ServiceInstance.o .modules-fluxkit_tools_node-release-O2-$MACHINE/Response.o .modules-fluxkit_tools_node-release-O2-$MACHINE/ServiceDefinition.o .modules-fluxkit_tools_node-release-O2-$MACHINE/ServiceRegistry.o .modules-fluxkit_tools_node-release-O2-$MACHINE/ServiceDelegate.o .modules-fluxkit_tools_node-release-O2-$MACHINE/SystemLogStream.o .modules-fluxkit_tools_node-release-O2-$MACHINE/SystemLog.o .modules-fluxkit_tools_node-release-O2-$MACHINE/Visit.o .modules-fluxkit_tools_node-release-O2-$MACHINE/ServiceWorker.o .modules-fluxkit_tools_node-release-O2-$MACHINE/main.o .modules-fluxkit_tools_node-release-O2-$MACHINE/utils.o .modules-fluxkit_tools_node-release-O2-$MACHINE/WorkerPool.o .modules-fluxkit_tools_node-release-O2-$MACHINE/TapBuffer.o -L. -lfluxcore -lfluxnet -lfluxstream -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -I$SOURCE/crypto -c -o .modules-fluxkit_tools_hash-release-O2-$MACHINE/main.o $SOURCE/tools/hash/main.cpp
-gcc -pthread -o fluxsha1 .modules-fluxkit_tools_hash-release-O2-$MACHINE/main.o -L. -lfluxcore -lfluxcrypto -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-rm -f fluxmd5
-ln -sf fluxsha1 fluxmd5
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_examples-release-O2-$MACHINE/ls.o $SOURCE/examples/ls.cpp
-gcc -pthread -o ls .modules-fluxkit_examples-release-O2-$MACHINE/ls.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_examples-release-O2-$MACHINE/signals.o $SOURCE/examples/signals.cpp
-gcc -pthread -o signals .modules-fluxkit_examples-release-O2-$MACHINE/signals.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_examples-release-O2-$MACHINE/whoami.o $SOURCE/examples/whoami.cpp
-gcc -pthread -o whoami .modules-fluxkit_examples-release-O2-$MACHINE/whoami.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_examples-release-O2-$MACHINE/cat.o $SOURCE/examples/cat.cpp
-gcc -pthread -o cat .modules-fluxkit_examples-release-O2-$MACHINE/cat.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
-gcc -DNDEBUG -O2 -fPIE -Wall -pthread -pipe -I$SOURCE/core -c -o .modules-fluxkit_examples-release-O2-$MACHINE/sort.o $SOURCE/examples/sort.cpp
-gcc -pthread -o sort .modules-fluxkit_examples-release-O2-$MACHINE/sort.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
+gcc -pthread -o fluxmake .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildPlan.o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildParameters.o .modules-fluxkit_tools_make-release-O2-$MACHINE/CleanStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/AnalyseStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/CompileLinkStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/JobScheduler.o .modules-fluxkit_tools_make-release-O2-$MACHINE/BuildShell.o .modules-fluxkit_tools_make-release-O2-$MACHINE/InstallStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/JobServer.o .modules-fluxkit_tools_make-release-O2-$MACHINE/DependencyCache.o .modules-fluxkit_tools_make-release-O2-$MACHINE/ConfigureStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/RecipeProtocol.o .modules-fluxkit_tools_make-release-O2-$MACHINE/GnuToolChain.o .modules-fluxkit_tools_make-release-O2-$MACHINE/SystemPrerequisite.o .modules-fluxkit_tools_make-release-O2-$MACHINE/UninstallStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/TestRunStage.o .modules-fluxkit_tools_make-release-O2-$MACHINE/main.o -L. -lfluxcore -lstdc++ -Wl,--enable-new-dtags,-rpath=$PWD
