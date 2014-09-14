@@ -18,6 +18,7 @@ namespace fluxmake
 
 Ref<GnuToolChain> GnuToolChain::create(String compiler)
 {
+	if (compiler == "") compiler = Process::env("CC");
 	if (compiler == "") compiler = "gcc";
 	return new GnuToolChain(compiler);
 }

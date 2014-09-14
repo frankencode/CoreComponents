@@ -1,7 +1,6 @@
 Library {
 	name: fluxstream
 	version: 0.1.0
-	header: *.h
 	source: *.cpp
 	use: core
 }
