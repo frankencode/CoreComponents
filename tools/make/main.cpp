@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 			"  -verbose         verbose output\n"
 			"  -optimize        optimization level / strategy (0, 1, 2, 3, s, g)\n"
 			"  -prefix          installation prefix (default: /usr)\n"
-			"  -install         install headers and binaries\n"
+			"  -install         install applications, libraries and bundled files\n"
 			"  -uninstall       delete installed files\n"
 			"  -test            build all tests\n"
 			"  -test-run        run all tests\n"

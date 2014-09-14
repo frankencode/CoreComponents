@@ -153,7 +153,6 @@ protected:
 		: ApplicationPrototype(className, createProtocol())
 	{
 		insert("version", "0.1.0");
-		insert("header", StringList::create());
 	}
 };
 
