@@ -201,7 +201,7 @@ void BuildPlan::use(BuildPlan *plan)
 		String path = plan->projectPath();
 		String defaultIncludePath = path->expandPath("include");
 		if (Dir::exists(defaultIncludePath)) {
-			if (!includePaths_->contains(path))
+			if (!includePaths_->contains(defaultIncludePath))
 				includePaths_->append(defaultIncludePath);
 		}
 		else if (!includePaths_->contains(path)) {
