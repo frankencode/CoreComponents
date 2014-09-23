@@ -1,3 +1,3 @@
 Package {
-	use: [ flux/crypto, tests ]
+	use: [ src, tests ]
 }

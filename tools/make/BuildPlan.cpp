@@ -199,15 +199,14 @@ void BuildPlan::use(BuildPlan *plan)
 {
 	if (plan->options() & Library) {
 		String path = plan->projectPath();
-		if (!includePaths_->contains(path))
-			includePaths_->append(path);
-		{
-			path = path->reducePath();
-			while (Dir::count(path) == 1)
-				path = path->reducePath();
+		String defaultIncludePath = path->expandPath("include");
+		if (Dir::exists(defaultIncludePath)) {
 			if (!includePaths_->contains(path))
-				includePaths_->append(path);
-		} // FIXME: obsolete HACK
+				includePaths_->append(defaultIncludePath);
+		}
+		else if (!includePaths_->contains(path)) {
+			includePaths_->append(path);
+		}
 		if (!libraryPaths_->contains("."))
 			libraryPaths_->append(".");
 		libraries_->append(plan->name());
