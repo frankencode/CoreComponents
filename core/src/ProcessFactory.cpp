@@ -50,9 +50,9 @@ void ProcessFactory::setFileCreationMask(int mask) { fileCreationMask_ = mask; }
 
 void ProcessFactory::setCommand(String command)
 {
-	command_ = command;
+	command_ = command->simplify()->trimInsitu();
 
-	Ref<StringList> args = command->split(' ');
+	Ref<StringList> args = command_->split(' ');
 	setArguments(args);
 	String name = args->at(0);
 

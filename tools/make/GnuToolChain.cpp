@@ -6,6 +6,7 @@
  *
  */
 
+#include <flux/stdio.h> // DEBUG
 #include <flux/Pattern.h>
 #include <flux/File.h>
 #include <flux/Process.h>
@@ -20,6 +21,7 @@ Ref<GnuToolChain> GnuToolChain::create(String compiler)
 {
 	if (compiler == "") compiler = Process::env("CC");
 	if (compiler == "") compiler = "gcc";
+	ferr() << "GnuToolChain::create(): compiler = \"" << compiler << "\"" << nl;
 	return new GnuToolChain(compiler);
 }
 
