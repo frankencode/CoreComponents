@@ -199,11 +199,15 @@ void BuildPlan::use(BuildPlan *plan)
 {
 	if (plan->options() & Library) {
 		String path = plan->projectPath();
-		path = path->reducePath();
-		while (Dir::count(path) == 1)
-			path = path->reducePath();
 		if (!includePaths_->contains(path))
 			includePaths_->append(path);
+		{
+			path = path->reducePath();
+			while (Dir::count(path) == 1)
+				path = path->reducePath();
+			if (!includePaths_->contains(path))
+				includePaths_->append(path);
+		} // FIXME: obsolete HACK
 		if (!libraryPaths_->contains("."))
 			libraryPaths_->append(".");
 		libraries_->append(plan->name());
