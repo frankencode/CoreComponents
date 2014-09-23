@@ -1,3 +1,3 @@
 Package {
-	use: [ core, net, stream, crypto, util, tools ]
+	use: [ core, net, stream, crypto, util, tools, examples ]
 }
