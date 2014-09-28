@@ -28,6 +28,8 @@ class NodeConfig: public Object
 public:
 	void load(int argc, char **argv);
 
+	inline String directoryPath() const { return directoryPath_; }
+
 	inline SocketAddressList *address() const { return address_; }
 	inline String user() const { return user_; }
 	inline String version() const { return version_; }
@@ -43,6 +45,8 @@ private:
 	friend class Singleton<NodeConfig>;
 
 	NodeConfig();
+
+	String directoryPath_;
 
 	Ref<SocketAddressList> address_;
 	String user_;

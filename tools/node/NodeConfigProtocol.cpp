@@ -7,6 +7,7 @@
  */
 
 #include <flux/Singleton.h>
+#include <flux/Process.h>
 #include "LogPrototype.h"
 #include "NodeConfigProtocol.h"
 
@@ -26,7 +27,7 @@ protected:
 		: MetaObject(className, protocol)
 	{
 		insert("address", "localhost");
-		insert("port", 8080);
+		insert("port", Process::isSuperUser() ? 80 : 8080);
 		insert("protocol", "");
 		insert("user", "");
 		insert("version", "Fnode/0.1.2");

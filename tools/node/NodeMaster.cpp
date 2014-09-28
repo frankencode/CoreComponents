@@ -103,6 +103,15 @@ void NodeMaster::runNode() const
 		dispatchInstance = dispatchService->createInstance(config);
 	}
 
+	if (nodeConfig()->directoryPath() != "") {
+		ServiceDefinition *directoryService = serviceRegistry()->serviceByName("Directory");
+		MetaObject *config = directoryService->configPrototype();
+		config->establish("host", "*");
+		config->establish("path", nodeConfig()->directoryPath());
+		Ref<ServiceInstance> directoryInstance = directoryService->createInstance(config);
+		nodeConfig()->serviceInstances()->append(directoryInstance);
+	}
+
 	if (nodeConfig()->serviceInstances()->count() == 0)
 	{
 		FLUXNODE_WARNING() << "No service configured, falling back to Echo service" << nl;
