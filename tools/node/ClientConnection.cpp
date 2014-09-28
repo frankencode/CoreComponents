@@ -94,7 +94,13 @@ Ref<Request> ClientConnection::scanRequest()
 			request->version_ = line->copy(i1 + 1, line->count());
 		}
 
-		if (request->version_ != "HTTP/1.1") throw UnsupportedVersion();
+		{
+			int majorVersion = 1, minorVersion = 1;
+			int i = request->version_->find('/');
+			i = request->version_->scanInt(&majorVersion, i + 1);
+			request->version_->scanInt(&minorVersion, i + 1);
+			if (majorVersion > 1) throw UnsupportedVersion();
+		}
 
 		String name, value;
 		Ref<StringList> multiValue;
