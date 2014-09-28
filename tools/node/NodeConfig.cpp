@@ -7,6 +7,7 @@
  */
 
 #include <flux/File.h>
+#include <flux/Dir.h>
 #include <flux/Singleton.h>
 #include <flux/Arguments.h>
 #include "NodeConfigProtocol.h"
@@ -32,10 +33,15 @@ void NodeConfig::load(int argc, char **argv)
 
 	if (items->count() > 0) {
 		if (items->count() > 1)
-			throw UsageError("Loading multiple config files at once is not supported");
+			throw UsageError("Handling multiple input arguments at once is not supported");
 
 		String path = items->at(0);
-		config = yason::parse(File::open(path)->map(), configProtocol());
+		if (Dir::exists(path)) {
+			directoryPath_ = path;
+		}
+		else {
+			config = yason::parse(File::open(path)->map(), configProtocol());
+		}
 	}
 
 	if (!config) config = nodePrototype->clone();

@@ -84,53 +84,56 @@ void ServiceWorker::run()
 		Ref<Visit> visit;
 
 		try {
-			if (serviceInstance_->connectionTimeout() > 0) {
-				FLUXNODE_DEBUG() << "Establishing connection timeout of " << serviceInstance_->connectionTimeout() << "s..." << nl;
-				client_->setupTimeout(serviceInstance_->connectionTimeout());
-			}
-			while (client_) {
-				FLUXNODE_DEBUG() << "Reading request..." << nl;
-				Ref<Request> request = client_->readRequest();
-				{
-					RefGuard<Response> guard(&response_);
-					response_ = Response::create(client_);
-					// response_->insert("Keep-Alive", Format("timeout=%%, max=100000") << serviceInstance()->connectionTimeout());
-					serviceDelegate_->process(request);
-					response_->end();
-					if (response_->delivered()) {
-						visit = client_->visit();
-						logDelivery(client_, response_->statusCode(), response_->bytesWritten());
-						if (!client_->isPayloadConsumed())
+			try {
+				if (serviceInstance_->connectionTimeout() > 0) {
+					FLUXNODE_DEBUG() << "Establishing connection timeout of " << serviceInstance_->connectionTimeout() << "s..." << nl;
+					client_->setupTimeout(serviceInstance_->connectionTimeout());
+				}
+				while (client_) {
+					FLUXNODE_DEBUG() << "Reading request..." << nl;
+					Ref<Request> request = client_->readRequest();
+					{
+						RefGuard<Response> guard(&response_);
+						response_ = Response::create(client_);
+						// response_->insert("Keep-Alive", Format("timeout=%%, max=100000") << serviceInstance()->connectionTimeout());
+						serviceDelegate_->process(request);
+						response_->end();
+						if (response_->delivered()) {
+							visit = client_->visit();
+							logDelivery(client_, response_->statusCode(), response_->bytesWritten());
+							if (!client_->isPayloadConsumed())
+								close();
+						}
+						else {
+							close();
+						}
+					}
+					if (client_) {
+						if (client_ && request->value("Connection")->equalsCaseInsensitive("close"))
 							close();
 					}
-					else {
-						close();
-					}
-				}
-				if (client_) {
-					if (client_ && request->value("Connection")->equalsCaseInsensitive("close"))
-						close();
 				}
 			}
-		}
-		catch (ProtocolException &ex) {
-			Format("HTTP/1.1 %% %%\r\n\r\n", client_->stream()) << ex.statusCode() << " " << ex.message();
-			logDelivery(client_, ex.statusCode());
-		}
-		catch (TimeoutExceeded &) {
-			FLUXNODE_DEBUG() << "Connection timed out (" << client_->address() << ")" << nl;
-			Format("HTTP/1.1 408 Request Timeout\r\n\r\n", client_->stream());
-			logDelivery(client_, 408);
+			catch (ProtocolException &ex) {
+				Format("HTTP/1.1 %% %%\r\n\r\n", client_->stream()) << ex.statusCode() << " " << ex.message();
+				logDelivery(client_, ex.statusCode());
+			}
+			catch (TimeoutExceeded &) {
+				FLUXNODE_DEBUG() << "Connection timed out (" << client_->address() << ")" << nl;
+				Format("HTTP/1.1 408 Request Timeout\r\n\r\n", client_->stream());
+				logDelivery(client_, 408);
+			}
+			catch (Exception &ex) {
+				FLUXNODE_ERROR() << ex.message() << nl;
+				// Format("HTTP/1.1 500 Internal Server Error: %%\r\n\r\n", client_->stream()) << ex.message();
+				// logDelivery(client_, 500);
+			}
+			catch (CloseRequest &)
+			{}
 		}
 		catch (ConnectionResetByPeer &)
 		{}
-		catch (CloseRequest &)
-		{}
-		catch (Exception &ex) {
-			FLUXNODE_ERROR() << ex.message() << nl;
-			// Format("HTTP/1.1 500 Internal Server Error: %%\r\n\r\n", client_->stream()) << ex.message();
-			// logDelivery(client_, 500);
-		}
+
 		close();
 
 		if (visit) {
