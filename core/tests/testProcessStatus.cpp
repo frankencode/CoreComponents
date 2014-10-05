@@ -20,9 +20,7 @@ int main(int argc, char **argv)
 	fout("status.parentProcessId() = %%\n") << status.parentProcessId();
 	fout("status.processGroupId() = %%\n") << status.processGroupId();
 	fout("status.foregroundProcessGroupId() = %%\n") << status.foregroundProcessGroupId();
-	// fout("status.terminalName() = \"%%\"\n") << status.terminalName();
 	fout("status.loginName() = \"%%\"\n") << status.loginName();
 	fout("status.commandName() = \"%%\"\n") << status.commandName();
-	fout("status.processStatus() = %%\n") << status.processStatus();
 	return 0;
 }

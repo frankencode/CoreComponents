@@ -81,9 +81,9 @@ Ref<ByteArray> ThreadFactory::allocateStack() const
 	#ifndef MAP_ANONYMOUS
 	#define MAP_ANONYMOUS MAP_ANON
 	#endif
-	void *protection = ::mmap(0, stackSize_, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	void *protection = ::mmap(0, stackSize_, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 	if (protection == MAP_FAILED) FLUX_SYSTEM_DEBUG_ERROR(errno);
-	void *stack = ::mmap((char *)protection + guardSize_, stackSize_ - 2 * guardSize_, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	void *stack = ::mmap((char *)protection + guardSize_, stackSize_ - 2 * guardSize_, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 	if (stack == MAP_FAILED) FLUX_SYSTEM_DEBUG_ERROR(errno);
 	return new ByteArray((char *)protection, stackSize_, ByteArray::Stack|ByteArray::Terminated);
 }

@@ -53,15 +53,9 @@ int System::pageSize()
 
 double System::now()
 {
-#if _POSIX_TIMERS > 0
-	struct timespec ts;
-	::clock_gettime(CLOCK_REALTIME, &ts);
-	return double(ts.tv_sec) + double(ts.tv_nsec) / 1e9;
-#else
 	struct timeval tv;
 	::gettimeofday(&tv, 0);
-	return double(tv.tv_sec) + double(tv.tv_usec) / 1e6);
-#endif
+	return double(tv.tv_sec) + double(tv.tv_usec) / 1e6;
 }
 
 } // namespace flux

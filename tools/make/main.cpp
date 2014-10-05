@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 		) << toolName;
 	}
 	catch (Exception &ex) {
-		ferr() << toolName << ": !" << ex.message() << nl;
+		ferr() << toolName << ": " << ex.message() << nl;
 		return 1;
 	}
 	return exitCode;

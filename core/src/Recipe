@@ -1,6 +1,5 @@
 Library {
 	name: fluxcore
-	version: 0.1.0
+	version: 0.1.1
 	source: *.cpp
-	link: rt
-}	// Usage { compile-flags: -std=c++11 }
+}

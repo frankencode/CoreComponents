@@ -22,6 +22,9 @@ template<>
 struct Sign<unsigned char> { inline static int get(unsigned char) { return 0; } };
 
 template<>
+struct Sign<unsigned short> { inline static int get(unsigned short) { return 0; } };
+
+template<>
 struct Sign<unsigned int> { inline static int get(unsigned int) { return 0; } };
 
 template<>
