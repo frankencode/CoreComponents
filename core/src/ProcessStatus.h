@@ -24,20 +24,16 @@ public:
 	pid_t parentProcessId() const;
 	gid_t processGroupId() const;
 	gid_t foregroundProcessGroupId() const;
-	// String terminalName() const;
 	String loginName() const;
 	String commandName() const;
-	char processStatus() const;
 
 private:
 	pid_t processId_;
 	pid_t parentProcessId_;
 	gid_t processGroupId_;
 	gid_t foregroundProcessGroupId_;
-	// String terminalName_;
 	String loginName_;
 	String commandName_;
-	char processStatus_;
 };
 
 } // namespace flux

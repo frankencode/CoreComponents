@@ -25,7 +25,7 @@ TapBuffer::TapBuffer(Stream *stream, String prefix)
 
 String TapBuffer::prefix() const
 {
-	return "(" + inum(thread()->id(), 62) + ") " + prefix_;
+	return "(" + inum(uint64_t(thread()->id()), 62) + ") " + prefix_;
 }
 
 void TapBuffer::write(const ByteArray *buf)
