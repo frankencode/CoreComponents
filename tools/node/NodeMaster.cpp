@@ -25,63 +25,53 @@
 namespace fluxnode
 {
 
-NodeMaster::NodeMaster()
-{}
+NodeMaster* nodeMaster() { return Singleton<NodeMaster>::instance(); }
 
-int NodeMaster::run(int argc, char **argv) const
+int NodeMaster::run(int argc, char **argv)
 {
 	SystemLog::open(String(argv[0])->fileName(), 0, LOG_DAEMON);
-
-	Process::enableInterrupt(SIGINT);
-	Process::enableInterrupt(SIGTERM);
-	Process::enableInterrupt(SIGHUP);
-	Thread::blockSignals(SignalSet::createFull());
-	{
-		Ref<SignalSet> signalSet = SignalSet::createEmpty();
-		signalSet->insert(SIGINT);
-		signalSet->insert(SIGTERM);
-		signalSet->insert(SIGHUP);
-		Thread::unblockSignals(signalSet);
-	}
-
-	while (true) {
-		try {
-			runNode(argc, argv);
-		}
-		catch (Interrupt &ex) {
-			if (ex.signal() == SIGINT || ex.signal() == SIGTERM || ex.signal() == SIGHUP) break;
-			return ex.signal() + 128;
-		}
-		#ifdef NDEBUG
-		catch (SystemError &ex) {
-			return 1;
-		}
-		#endif
-	}
-
-	return 0;
-}
-
-void NodeMaster::runNode(int argc, char **argv) const
-{
 	nodeConfig()->load(argc, argv);
 
 	if (nodeConfig()->daemon() && !Process::isDaemonized())
 		Process::daemonize();
 
+	Process::enableInterrupt(SIGINT);
+	Process::enableInterrupt(SIGTERM);
+	Process::enableInterrupt(SIGHUP);
+	Thread::blockSignals(SignalSet::createFull());
+
+	nodeMaster()->start();
+	nodeMaster()->wait();
+	return nodeMaster()->exitCode_;
+}
+
+NodeMaster::NodeMaster():
+	exitCode_(0)
+{}
+
+void NodeMaster::run()
+{
 	errorLog()->open(nodeConfig()->errorLogConfig());
 
-	#ifdef NDEBUG
-	try {
-		runNode();
+	Ref<SignalSet> signalSet = SignalSet::createEmpty();
+	signalSet->insert(SIGINT);
+	signalSet->insert(SIGTERM);
+	signalSet->insert(SIGHUP);
+	Thread::unblockSignals(signalSet);
+
+	while (true) {
+		try {
+			runNode();
+		}
+		catch (Interrupt &ex) {
+			if (ex.signal() == SIGINT || ex.signal() == SIGTERM || ex.signal() == SIGHUP) break;
+			exitCode_ = ex.signal() + 128;
+		}
+		catch (Exception &ex) {
+			FLUXNODE_ERROR() << ex.message() << nl;
+			exitCode_ = 1;
+		}
 	}
-	catch (Exception &ex) {
-		FLUXNODE_ERROR() << ex.message() << nl;
-		throw;
-	}
-	#else
-	runNode();
-	#endif
 }
 
 void NodeMaster::runNode() const
@@ -186,7 +176,5 @@ void NodeMaster::runNode() const
 		throw ex;
 	}
 }
-
-const NodeMaster* nodeMaster() { return Singleton<NodeMaster>::instance(); }
 
 } // namespace fluxnode

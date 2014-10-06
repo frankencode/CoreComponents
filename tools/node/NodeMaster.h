@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_NODEMASTER_H
 #define FLUXNODE_NODEMASTER_H
 
-#include <flux/Object.h>
+#include <flux/Thread.h>
 
 namespace flux { template<class> class Singleton; }
 
@@ -18,20 +18,23 @@ namespace fluxnode
 
 using namespace flux;
 
-class NodeMaster: public Object
+class NodeMaster: public Thread
 {
 public:
-	int run(int argc, char **argv) const;
+	static int run(int argc, char **argv);
 
 private:
 	friend class Singleton<NodeMaster>;
 
 	NodeMaster();
-	void runNode(int argc, char **argv) const;
+
+	virtual void run();
 	void runNode() const;
+
+	int exitCode_;
 };
 
-const NodeMaster* nodeMaster();
+// NodeMaster* nodeMaster();
 
 } // namespace fluxnode
 
