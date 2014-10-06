@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 	String toolName = String(argv[0])->fileName();
 	int exitCode = 0;
 	try {
-		exitCode = nodeMaster()->run(argc, argv);
+		exitCode = NodeMaster::run(argc, argv);
 	}
 	catch (HelpError &) {
 		fout(
