@@ -6,80 +6,71 @@
  *
  */
 
-#include <sys/time.h>
-#include <math.h> // modf
+#include "stdio.h" // DEBUG
+#include "assert.h"
 #include "exceptions.h"
 #include "IoMonitor.h"
 
-namespace flux
-{
+namespace flux {
 
-IoSet *IoMonitor::readyRead()
+Ref<IoMonitor> IoMonitor::create(int maxCount) { return new IoMonitor(maxCount); }
+
+IoMonitor::IoMonitor(int maxCount):
+	fds_(Fds::create(maxCount)),
+	events_(Events::create())
+{}
+
+IoEvent *IoMonitor::addEvent(SystemStream *stream, int activity)
 {
-	if (!readyRead_) readyRead_ = IoSet::create();
-	return readyRead_;
+	FLUX_ASSERT(events_->count() < fds_->count());
+	Ref<IoEvent> event = IoEvent::create(events_->count(), stream, activity);
+	events_->insert(event->index_, event);
+	PollFd *p = &fds_->at(event->index_);
+	p->fd = stream->fd();
+	p->events = activity;
+	return event;
 }
 
-IoSet *IoMonitor::readyWrite()
+void IoMonitor::removeEvent(IoEvent *event)
 {
-	if (!readyWrite_) readyWrite_ = IoSet::create();
-	return readyWrite_;
+	int i = event->index_;
+	int n = events_->count();
+
+	if (i != n - 1) {
+		IoEvent *h = events_->value(n - 1);
+		h->index_ = i;
+		events_->establish(i, h);
+		fds_->at(i) = fds_->at(n - 1);
+	}
+
+	events_->remove(n - 1);
 }
 
-IoSet *IoMonitor::readyExcept()
+Ref<IoActivity> IoMonitor::wait(double timeout)
 {
-	if (!readyExcept_) readyExcept_ = IoSet::create();
-	return readyExcept_;
-}
-
-void IoMonitor::reset()
-{
-	if (readyRead_) readyRead_->clear();
-	if (readyWrite_) readyWrite_->clear();
-	if (readyExcept_) readyExcept_->clear();
-}
-
-int IoMonitor::wait(double interval)
-{
-	int sz = 0;
-	fd_set *rr = 0, *rw = 0, *re = 0;
-	if (readyRead_) {
-		if (readyRead_->bitSize() > 0) {
-			rr = readyRead_->bitSet();
-			sz = readyRead_->bitSize();
-		}
-	}
-	if (readyWrite_) {
-		if (readyWrite_->bitSize() > 0) {
-			rw = readyWrite_->bitSet();
-			if (readyWrite_->bitSize() > sz)
-				sz = readyWrite_->bitSize();
-		}
-	}
-	if (readyExcept_) {
-		if (readyExcept_->bitSize() > 0) {
-			re = readyExcept_->bitSet();
-			if (readyExcept_->bitSize() > sz)
-				sz = readyExcept_->bitSize();
-		}
-	}
-
-	timeval *tv = 0;
-	timeval h;
-	if (interval >= 0) {
-		tv = &h;
-		double sec = 0;
-		tv->tv_usec = modf(interval, &sec) * 1e6;
-		tv->tv_sec = sec;
-	}
-
-	int ret = ::select(sz, rr, rw, re, tv);
-	if (ret == -1) {
+	PollFd *fds = 0;
+	if (events_->count() > 0) fds = fds_->data();
+	int n = ::poll(fds, events_->count(), timeout * 1000);
+	if (n < 0) {
 		if (errno == EINTR) throw Interrupt();
 		FLUX_SYSTEM_DEBUG_ERROR(errno);
 	}
 
-	return ret;
+	FLUX_ASSERT(n <= events_->count());
+
+	Ref<IoActivity> activity = IoActivity::create(n);
+	int j = 0;
+	for (int i = 0; i < events_->count(); ++i) {
+		if (fds_->at(i).revents != 0) {
+			FLUX_ASSERT(j < n);
+			activity->at(j) = events_->value(i);
+			++j;
+		}
+	}
+
+	FLUX_ASSERT(j == n);
+
+	return activity;
 }
 
 } // namespace flux

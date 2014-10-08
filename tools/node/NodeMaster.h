@@ -34,8 +34,6 @@ private:
 	int exitCode_;
 };
 
-// NodeMaster* nodeMaster();
-
 } // namespace fluxnode
 
 #endif // FLUXNODE_NODEMASTER_H
