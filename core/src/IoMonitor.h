@@ -9,30 +9,64 @@
 #ifndef FLUX_IOMONITOR_H
 #define FLUX_IOMONITOR_H
 
-#include "IoSet.h"
+#include <poll.h>
+#include "SystemStream.h"
+#include "Array.h"
+#include "Map.h"
 
-namespace flux
+namespace flux {
+
+class IoEvent: public Object
 {
+public:
+	enum Activity {
+		ReadyRead = POLLIN,
+		ReadyWrite = POLLOUT,
+		ReadyAccept = ReadyRead
+	};
+
+	inline SystemStream *stream() const { return stream_; }
+	inline int activity() const { return activity_; }
+
+private:
+	friend class IoMonitor;
+
+	inline static Ref<IoEvent> create(int index, SystemStream *stream, int activity) {
+		return new IoEvent(index, stream, activity);
+	}
+
+	IoEvent(int index, SystemStream *stream, int activity):
+		index_(index),
+		stream_(stream),
+		activity_(activity)
+	{}
+
+	int index_;
+	Ref<SystemStream> stream_;
+	int activity_;
+};
+
+typedef Array<IoEvent *> IoActivity;
 
 class IoMonitor: public Object
 {
 public:
-	inline static Ref<IoMonitor> create() { return new IoMonitor; }
+	static Ref<IoMonitor> create(int maxCount = 0);
 
-	IoSet *readyRead();
-	IoSet *readyWrite();
-	IoSet *readyExcept();
+	IoEvent *addEvent(SystemStream *stream, int activity);
+	void removeEvent(IoEvent *event);
 
-	inline IoSet *readyAccept() { return readyRead(); }
+	Ref<IoActivity> wait(double timeout);
 
-	int wait(double interval = -1);
-	void reset();
+private:
+	typedef struct pollfd PollFd;
+	typedef Array<PollFd> Fds;
+	typedef Map<int, Ref<IoEvent> > Events;
 
-protected:
-	IoMonitor() {}
-	Ref<IoSet> readyRead_;
-	Ref<IoSet> readyWrite_;
-	Ref<IoSet> readyExcept_;
+	IoMonitor(int maxCount);
+
+	Ref<Fds> fds_;
+	Ref<Events> events_;
 };
 
 } // namespace flux

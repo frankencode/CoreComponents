@@ -140,29 +140,27 @@ void NodeMaster::runNode() const
 
 	FLUXNODE_NOTICE() << "Up and running (pid = " << Process::currentId() << ")" << nl;
 
+	Ref<IoMonitor> ioMonitor = IoMonitor::create(listeningSockets->count());
+	for (int i = 0; i < listeningSockets->count(); ++i)
+		ioMonitor->addEvent(listeningSockets->at(i), IoEvent::ReadyAccept);
+
 	try {
 		FLUXNODE_DEBUG() << "Accepting connections" << nl;
-		Ref<IoMonitor> ioMonitor = IoMonitor::create();
 		while (true) {
-			ioMonitor->readyAccept()->clear();
-			for (int i = 0; i < listeningSockets->count(); ++i)
-				ioMonitor->readyAccept()->insert(listeningSockets->at(i));
-			int n = ioMonitor->wait(1);
-			if (n > 0) {
-				for (int i = 0; i < listeningSockets->count(); ++i) {
-					StreamSocket *socket = listeningSockets->at(i);
-					if (ioMonitor->readyAccept()->contains(socket)) {
-						Ref<StreamSocket> clientSocket = socket->accept();
-						Ref<SocketAddress> clientAddress = SocketAddress::create();
-						if (!clientSocket->getPeerAddress(clientAddress)) {
-							FLUXNODE_DEBUG() << "Failed to get peer address" << nl;
-							continue;
-						}
-						Ref<ClientConnection> client = ClientConnection::create(clientSocket, clientAddress);
-						connectionManager->prioritize(client);
-						FLUXNODE_DEBUG() << "Accepted connection from " << client->address() << " with priority " << client->priority() << nl;
-						dispatchPool->dispatch(client);
+			Ref<IoActivity> activity = ioMonitor->wait(1);
+			if (activity->count() > 0) {
+				for (int i = 0; i < activity->count(); ++i) {
+					StreamSocket *socket = cast<StreamSocket>(activity->at(i)->stream());
+					Ref<StreamSocket> clientSocket = socket->accept();
+					Ref<SocketAddress> clientAddress = SocketAddress::create();
+					if (!clientSocket->getPeerAddress(clientAddress)) {
+						FLUXNODE_DEBUG() << "Failed to get peer address" << nl;
+						continue;
 					}
+					Ref<ClientConnection> client = ClientConnection::create(clientSocket, clientAddress);
+					connectionManager->prioritize(client);
+					FLUXNODE_DEBUG() << "Accepted connection from " << client->address() << " with priority " << client->priority() << nl;
+					dispatchPool->dispatch(client);
 				}
 			}
 			connectionManager->cycle();
