@@ -6,7 +6,6 @@
  *
  */
 
-#include "stdio.h" // DEBUG
 #include "assert.h"
 #include "exceptions.h"
 #include "IoMonitor.h"
