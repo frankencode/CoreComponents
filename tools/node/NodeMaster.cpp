@@ -7,10 +7,10 @@
  */
 
 #include <flux/Singleton.h>
-#include <flux/IoMonitor.h>
-#include <flux/Thread.h>
 #include <flux/Process.h>
 #include <flux/User.h>
+#include <flux/IoMonitor.h>
+#include <flux/SignalMaster.h>
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "AccessLog.h"
@@ -35,29 +35,21 @@ int NodeMaster::run(int argc, char **argv)
 	if (nodeConfig()->daemon() && !Process::isDaemonized())
 		Process::daemonize();
 
-	Process::enableInterrupt(SIGINT);
-	Process::enableInterrupt(SIGTERM);
-	Process::enableInterrupt(SIGHUP);
 	Thread::blockSignals(SignalSet::createFull());
-
+	nodeMaster()->signalMaster_->start();
 	nodeMaster()->start();
 	nodeMaster()->wait();
 	return nodeMaster()->exitCode_;
 }
 
 NodeMaster::NodeMaster():
+	signalMaster_(SignalMaster::create()),
 	exitCode_(0)
 {}
 
 void NodeMaster::run()
 {
 	errorLog()->open(nodeConfig()->errorLogConfig());
-
-	Ref<SignalSet> signalSet = SignalSet::createEmpty();
-	signalSet->insert(SIGINT);
-	signalSet->insert(SIGTERM);
-	signalSet->insert(SIGHUP);
-	Thread::unblockSignals(signalSet);
 
 	while (true) {
 		try {
@@ -144,34 +136,36 @@ void NodeMaster::runNode() const
 	for (int i = 0; i < listeningSockets->count(); ++i)
 		ioMonitor->addEvent(listeningSockets->at(i), IoEvent::ReadyAccept);
 
-	try {
-		FLUXNODE_DEBUG() << "Accepting connections" << nl;
-		while (true) {
-			Ref<IoActivity> activity = ioMonitor->wait(1);
-			if (activity->count() > 0) {
-				for (int i = 0; i < activity->count(); ++i) {
-					StreamSocket *socket = cast<StreamSocket>(activity->at(i)->stream());
-					Ref<StreamSocket> clientSocket = socket->accept();
-					Ref<SocketAddress> clientAddress = SocketAddress::create();
-					if (!clientSocket->getPeerAddress(clientAddress)) {
-						FLUXNODE_DEBUG() << "Failed to get peer address" << nl;
-						continue;
-					}
-					Ref<ClientConnection> client = ClientConnection::create(clientSocket, clientAddress);
-					connectionManager->prioritize(client);
-					FLUXNODE_DEBUG() << "Accepted connection from " << client->address() << " with priority " << client->priority() << nl;
-					dispatchPool->dispatch(client);
+	FLUXNODE_DEBUG() << "Accepting connections" << nl;
+
+	while (true) {
+		Ref<IoActivity> activity = ioMonitor->wait(1);
+		if (activity->count() > 0) {
+			for (int i = 0; i < activity->count(); ++i) {
+				StreamSocket *socket = cast<StreamSocket>(activity->at(i)->stream());
+				Ref<StreamSocket> clientSocket = socket->accept();
+				Ref<SocketAddress> clientAddress = SocketAddress::create();
+				if (!clientSocket->getPeerAddress(clientAddress)) {
+					FLUXNODE_DEBUG() << "Failed to get peer address" << nl;
+					continue;
 				}
+				Ref<ClientConnection> client = ClientConnection::create(clientSocket, clientAddress);
+				connectionManager->prioritize(client);
+				FLUXNODE_DEBUG() << "Accepted connection from " << client->address() << " with priority " << client->priority() << nl;
+				dispatchPool->dispatch(client);
 			}
-			connectionManager->cycle();
 		}
-	}
-	catch (Interrupt &ex) {
-		FLUXNODE_NOTICE() << "Received " << ex.signalName() << ", shutting down" << nl;
-		dispatchInstance->workerPools_ = 0;
-		dispatchPool = 0;
-		FLUXNODE_NOTICE() << "Shutdown complete" << nl;
-		throw ex;
+
+		connectionManager->cycle();
+
+		if (signalMaster_->receivedSignals()->count() > 0) {
+			int signal = signalMaster_->receivedSignals()->popFront();
+			FLUXNODE_NOTICE() << "Received " << signalName(signal) << ", shutting down" << nl;
+			dispatchInstance->workerPools_ = 0;
+			dispatchPool = 0;
+			FLUXNODE_NOTICE() << "Shutdown complete" << nl;
+			throw Interrupt(signal);
+		}
 	}
 }
 
