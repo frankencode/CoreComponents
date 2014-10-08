@@ -48,39 +48,6 @@ String SystemDebugError::message() const
 	return Format() << systemError(errorCode_) << " (" << String(source_)->fileName() << ":" << line_ << ")";
 }
 
-Interrupt::Interrupt()
-{
-	__sync_synchronize();
-	signal_ = Thread::self()->lastSignal_;
-}
-
-const char *Interrupt::signalName() const
-{
-	switch (signal_) {
-		case SIGHUP:  return "SIGHUP";
-		case SIGINT:  return "SIGINT";
-		case SIGQUIT: return "SIGQUIT";
-		case SIGILL:  return "SIGILL";
-		case SIGABRT: return "SIGABRT";
-		case SIGFPE:  return "SIGFPE";
-		case SIGKILL: return "SIGKILL";
-		case SIGSEGV: return "SIGSEGV";
-		case SIGPIPE: return "SIGPIPE";
-		case SIGALRM: return "SIGALRM";
-		case SIGTERM: return "SIGTERM";
-		case SIGUSR1: return "SIGUSR1";
-		case SIGUSR2: return "SIGUSR2";
-		case SIGCHLD: return "SIGCHLD";
-		case SIGCONT: return "SIGCONT";
-		case SIGSTOP: return "SIGSTOP";
-		case SIGTSTP: return "SIGTSTP";
-		case SIGTTIN: return "SIGTTIN";
-		case SIGTTOU: return "SIGTTOU";
-		case SIGBUS:  return "SIGBUS";
-	}
-	return "SIG???";
-}
-
 TextError::TextError(String text, int offset, String resource)
 	: text_(text),
 	  offset_(offset),
@@ -121,6 +88,39 @@ String SemanticError::message() const
 	}
 	format << reason_;
 	return format;
+}
+
+Interrupt::Interrupt()
+{
+	__sync_synchronize();
+	signal_ = Thread::self()->lastSignal_;
+}
+
+const char *Interrupt::signalName() const
+{
+	switch (signal_) {
+		case SIGHUP:  return "SIGHUP";
+		case SIGINT:  return "SIGINT";
+		case SIGQUIT: return "SIGQUIT";
+		case SIGILL:  return "SIGILL";
+		case SIGABRT: return "SIGABRT";
+		case SIGFPE:  return "SIGFPE";
+		case SIGKILL: return "SIGKILL";
+		case SIGSEGV: return "SIGSEGV";
+		case SIGPIPE: return "SIGPIPE";
+		case SIGALRM: return "SIGALRM";
+		case SIGTERM: return "SIGTERM";
+		case SIGUSR1: return "SIGUSR1";
+		case SIGUSR2: return "SIGUSR2";
+		case SIGCHLD: return "SIGCHLD";
+		case SIGCONT: return "SIGCONT";
+		case SIGSTOP: return "SIGSTOP";
+		case SIGTSTP: return "SIGTSTP";
+		case SIGTTIN: return "SIGTTIN";
+		case SIGTTOU: return "SIGTTOU";
+		case SIGBUS:  return "SIGBUS";
+	}
+	return "SIG???";
 }
 
 String Interrupt::message() const
