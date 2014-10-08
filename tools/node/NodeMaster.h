@@ -11,10 +11,12 @@
 
 #include <flux/Thread.h>
 
-namespace flux { template<class> class Singleton; }
+namespace flux {
+	template<class> class Singleton;
+	class SignalMaster;
+}
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 
@@ -31,6 +33,7 @@ private:
 	virtual void run();
 	void runNode() const;
 
+	Ref<SignalMaster> signalMaster_;
 	int exitCode_;
 };
 

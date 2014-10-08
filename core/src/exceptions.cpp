@@ -90,15 +90,9 @@ String SemanticError::message() const
 	return format;
 }
 
-Interrupt::Interrupt()
+const char *signalName(int signal)
 {
-	__sync_synchronize();
-	signal_ = Thread::self()->lastSignal_;
-}
-
-const char *Interrupt::signalName() const
-{
-	switch (signal_) {
+	switch (signal) {
 		case SIGHUP:  return "SIGHUP";
 		case SIGINT:  return "SIGINT";
 		case SIGQUIT: return "SIGQUIT";
@@ -121,6 +115,21 @@ const char *Interrupt::signalName() const
 		case SIGBUS:  return "SIGBUS";
 	}
 	return "SIG???";
+}
+
+Interrupt::Interrupt()
+{
+	__sync_synchronize();
+	signal_ = Thread::self()->lastSignal_;
+}
+
+Interrupt::Interrupt(int signal)
+	: signal_(signal)
+{}
+
+const char *Interrupt::signalName() const
+{
+	return flux::signalName(signal_);
 }
 
 String Interrupt::message() const
