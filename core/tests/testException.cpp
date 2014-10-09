@@ -15,6 +15,7 @@ using namespace flux;
 
 int main()
 {
+	#ifndef NDEBUG
 	try {
 		Mutex::create()->release();
 		check(false);
@@ -22,6 +23,7 @@ int main()
 	catch (std::exception &ex) {
 		fout() << ex.what() << nl;
 	}
+	#endif
 
 	try {
 		String path = "testabc.123";
