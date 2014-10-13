@@ -90,8 +90,8 @@ NODE DefinitionNode::KEYWORD(const char *keywords)
 			if ((ch == ' ') || (ch == '\t') || (ch == '\0')) break;
 			++len;
 		}
-		int keyword = numKeywords_;
-		numKeywords_ += keywordByName_->insert(pos, len, keyword, &keyword);
+		int keyword = keywordCount_;
+		keywordCount_ += keywordByName_->insert(pos, len, keyword, &keyword);
 		map->insert(pos, len, keyword);
 		pos += len;
 	}

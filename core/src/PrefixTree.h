@@ -249,12 +249,21 @@ protected:
 	bool lookupFiltered(const Char2 *key, int keyLen, Value *value = 0) const
 	{
 		Node *node = const_cast<Node *>(this);
+		if (keyLen == 0) {
+			if (node->defined_) {
+				*value = node->value_;
+				return true;
+			}
+			return false;
+		}
 		while ((node) && (keyLen > 0)) {
 			node = node->step<Filter>(*key);
-			if (node)
-				if (node->defined_)
+			if (node) {
+				if (node->defined_) {
 					if (value)
 						*value = node->value_;
+				}
+			}
 			++key;
 			--keyLen;
 		}

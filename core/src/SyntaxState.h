@@ -47,6 +47,8 @@ public:
 	bool flag(const char *name) const;
 	Range *capture(const char *name) const;
 
+	bool lookupCapture(const char *name, Ref<Range> *range) const;
+
 	inline const char *hint() const { return hint_; }
 	inline int hintOffset() const { return hintOffset_; }
 

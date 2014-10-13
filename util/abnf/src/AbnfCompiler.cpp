@@ -237,7 +237,7 @@ AbnfCompiler::NODE AbnfCompiler::compileNumVal(ByteArray *text, Token *numVal, S
 AbnfCompiler::NODE AbnfCompiler::compileCharVal(ByteArray *text, Token *charVal, SyntaxDefinition *definition)
 {
 	return
-		(charVal->size() - 2 > 1) ?
+		(charVal->i1() - charVal->i0() - 2 > 1) ?
 			definition->STRING(text->copy(charVal->i0() + 1, charVal->i1() - 1)->chars()) :
 			definition->CHAR(text->at(charVal->i0() + 1));
 }

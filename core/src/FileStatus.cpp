@@ -20,7 +20,7 @@ FileStatus::FileStatus(int fd)
 	: fd_(fd)
 {
 	if (fd == -1) {
-		memclr(static_cast<StructStat*>(this), sizeof(StructStat));
+		memclr(static_cast<StructStat *>(this), sizeof(StructStat));
 		exists_ = false;
 		return;
 	}

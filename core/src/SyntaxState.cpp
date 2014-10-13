@@ -41,7 +41,7 @@ bool SyntaxState::flag(const char *name) const
 	int flagId = scope->flagIdByName(name);
 	if (scope == definition_) return flags_->at(flagId);
 	Ref<SyntaxState> state;
-	if (!stateByScope_->lookup(scope, &state)) return false;
+	if (!stateByScope_->lookup(scope, &state)) return false; // FIXME: should throw debug error
 	return state->flags_->at(flagId);
 }
 
@@ -51,8 +51,24 @@ Range *SyntaxState::capture(const char *name) const
 	int captureId = scope->captureIdByName(name);
 	if (scope == definition_) return captures_->at(captureId);
 	Ref<SyntaxState> state;
-	if (!stateByScope_->lookup(scope, &state)) return 0;
+	if (!stateByScope_->lookup(scope, &state)) return 0; // FIXME: should throw debug error
 	return state->captures_->at(captureId);
+}
+
+bool SyntaxState::lookupCapture(const char *name, Ref<Range> *range) const
+{
+	const DefinitionNode *scope = definition_->resolveScope(name);
+	int captureId = -1;
+	if (!scope->lookupCaptureIdByName(name, &captureId)) return false;
+	FLUX_ASSERT(captureId != -1);
+	if (scope == definition_) {
+		*range = captures_->at(captureId);
+		return true;
+	}
+	Ref<SyntaxState> state;
+	if (!stateByScope_->lookup(scope, &state)) return false;
+	*range = state->captures_->at(captureId);
+	return true;
 }
 
 SyntaxState *SyntaxState::stateByScope(const DefinitionNode *scope)

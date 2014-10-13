@@ -26,21 +26,20 @@ PatternSyntax::PatternSyntax()
 
 	any_ = DEFINE("Any", CHAR('#'));
 	gap_ = DEFINE("Gap", CHAR('*'));
-	boi_ = DEFINE("Boi", CHAR('^'));
-	eoi_ = DEFINE("Eoi", CHAR('$'));
+	boi_ = DEFINE("Boi", GLUE(BOI(), CHAR('^')));
+	eoi_ = DEFINE("Eoi", GLUE(CHAR('^'), EOI()));
 
 	char_ =
 		DEFINE("Char",
 			CHOICE(
-				EXCEPT("#*\\[](){}|^$"),
+				EXCEPT("#*\\[](){}|^:"),
 				GLUE(
 					CHAR('\\'),
-					EXPECT("illegal escape sequence",
+					EXPECT("Invalid escape sequence",
 						CHOICE(
 							RANGE(
-								"#*\\[](){}|^$"
+								"#*\\[](){}|^:"
 								"nstrf"
-								"\"/"
 							),
 							GLUE(
 								CHAR('x'),
@@ -90,7 +89,9 @@ PatternSyntax::PatternSyntax()
 					),
 					STRING("..")
 				),
-				CHAR(']')
+				EXPECT("Expected closing ']'",
+					CHAR(']')
+				)
 			)
 		);
 
@@ -100,9 +101,23 @@ PatternSyntax::PatternSyntax()
 				CHAR('['),
 				REPEAT(0, 1, CHAR('^')),
 				REPEAT(1, REF("Char")),
-				CHAR(']')
+				EXPECT("Expected closing ']'",
+					CHAR(']')
+				)
 			)
 		);
+
+	DEFINE("Range",
+		GLUE(
+			AHEAD(CHAR('[')),
+			EXPECT("Expected range definition",
+				CHOICE(
+					REF("RangeMinMax"),
+					REF("RangeExplicit")
+				)
+			)
+		)
+	);
 
 	DEFINE("Number",
 		REPEAT(1, 20,
@@ -117,17 +132,23 @@ PatternSyntax::PatternSyntax()
 		DEFINE("Repeat",
 			GLUE(
 				CHAR('{'),
-				REPEAT(0, 1, RANGE("?~")),
+				REPEAT(0, 1, RANGE("<~>")),
 				REPEAT(0, 1,
 					GLUE(
 						REPEAT(0, 1, REF("MinRepeat")),
 						STRING(".."),
 						REPEAT(0, 1, REF("MaxRepeat")),
-						CHAR(':')
+						EXPECT("Expected ':' after repeat counts",
+							CHAR(':')
+						)
 					)
 				),
-				REF("Choice"),
-				CHAR('}')
+				EXPECT("Expected repeat expression",
+					REF("Choice")
+				),
+				EXPECT("Expected closing '}'",
+					CHAR('}')
+				)
 			)
 		);
 
@@ -140,15 +161,26 @@ PatternSyntax::PatternSyntax()
 					REF("Char"),
 					REF("Any"),
 					REF("Gap"),
-					REF("RangeMinMax"),
-					REF("RangeExplicit"),
+					INLINE("Range"),
 					REF("Boi"),
 					REF("Eoi"),
-					REF("Capture"),
-					REF("Replay"),
+					REF("Group"),
 					REF("Behind"),
 					REF("Ahead"),
-					REF("Group")
+					REF("Capture"),
+					REF("Replay")
+				)
+			)
+		);
+
+	group_ =
+		DEFINE("Group",
+			GLUE(
+				CHAR('('),
+				NOT(AHEAD(CHAR('?'))),
+				REF("Choice"),
+				EXPECT("Expected closing ')'",
+					CHAR(')')
 				)
 			)
 		);
@@ -156,30 +188,36 @@ PatternSyntax::PatternSyntax()
 	ahead_ =
 		DEFINE("Ahead",
 			GLUE(
-				STRING("("),
+				STRING("(?>"),
 				REPEAT(0, 1, CHAR('!')),
-				CHAR('>'),
 				REPEAT(0, 1, CHAR(':')),
-				REF("Choice"),
-				CHAR(')')
+				EXPECT("Expected ahead expression",
+					REF("Choice")
+				),
+				EXPECT("Expected closing ')'",
+					CHAR(')')
+				)
 			)
 		);
 
 	behind_ =
 		DEFINE("Behind",
 			GLUE(
-				STRING("("),
+				STRING("(?<"),
 				REPEAT(0, 1, CHAR('!')),
-				CHAR('<'),
 				REPEAT(0, 1, CHAR(':')),
-				REF("Choice"),
-				CHAR(')')
+				EXPECT("Expected behind expression",
+					REF("Choice")
+				),
+				EXPECT("Expected closing ')'",
+					CHAR(')')
+				)
 			)
 		);
 
 	identifier_ =
-		DEFINE("Identifier",
-			REPEAT(1,
+		DEFINE("CaptureIdentifier",
+			REPEAT(
 				CHOICE(
 					RANGE('a', 'z'),
 					RANGE('A', 'Z'),
@@ -192,10 +230,12 @@ PatternSyntax::PatternSyntax()
 	capture_ =
 		DEFINE("Capture",
 			GLUE(
-				STRING("(@"),
-				REF("Identifier"),
-				CHAR(':'),
-				REF("Choice"),
+				STRING("(?@"),
+				REF("CaptureIdentifier"),
+				REPEAT(0, 1, CHAR(':')),
+				EXPECT("Expected capture expression",
+					REF("Choice")
+				),
 				EXPECT("Expected closing ')'",
 					CHAR(')')
 				)
@@ -205,20 +245,8 @@ PatternSyntax::PatternSyntax()
 	replay_ =
 		DEFINE("Replay",
 			GLUE(
-				STRING("(&"),
-				REF("Identifier"),
-				EXPECT("Expected closing ')'",
-					CHAR(')')
-				)
-			)
-		);
-
-	group_ =
-		DEFINE("Group",
-			GLUE(
-				CHAR('('),
-				NOT(RANGE("<>!@&")),
-				REF("Choice"),
+				STRING("(?="),
+				REF("CaptureIdentifier"),
 				EXPECT("Expected closing ')'",
 					CHAR(')')
 				)
@@ -301,14 +329,14 @@ NODE PatternSyntax::compileSequence(const ByteArray *text, Token *token, SyntaxD
 
 NODE PatternSyntax::compileAhead(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
-	return (text->at(token->i0() + 1) == '>') ?
+	return (text->at(token->i0() + 3) != '!') ?
 		definition->AHEAD(compileChoice(text, token->firstChild(), definition)) :
 		definition->NOT(compileChoice(text, token->firstChild(), definition));
 }
 
 NODE PatternSyntax::compileBehind(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
-	return (text->at(token->i0() + 1) == '<') ?
+	return (text->at(token->i0() + 3) != '!') ?
 		definition->BEHIND(compileChoice(text, token->firstChild(), definition)) :
 		definition->NOT_BEHIND(compileChoice(text, token->firstChild(), definition));
 }
@@ -387,10 +415,11 @@ NODE PatternSyntax::compileRepeat(const ByteArray *text, Token *token, SyntaxDef
 	int maxRepeat = max ? text->copy(max)->toInt() : intMax;
 	char modifier = text->at(token->i0() + 1);
 	NODE node = compileChoice(text, token->lastChild(), definition);
-	if (modifier == '?')
+	if (modifier == '<')
 		return definition->LAZY_REPEAT(minRepeat, node);
 	else if (modifier == '~')
 		return definition->REPEAT(minRepeat, maxRepeat, node);
+	// else if (modifier == '>');
 	return definition->GREEDY_REPEAT(minRepeat, maxRepeat, node);
 }
 

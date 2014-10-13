@@ -43,8 +43,6 @@ public:
 
 	inline int i0() const { return i0_; }
 	inline int i1() const { return i1_; }
-	inline int index() const { return i0_; }
-	inline int size() const { return i1_ - i0_; }
 
 	bool project(TokenScreen *screen);
 
