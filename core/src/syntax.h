@@ -308,7 +308,11 @@ public:
 	}
 
 	inline int matchLength() const {
-		return (minRepeat_ == maxRepeat_) ? minRepeat_ * entry()->matchLength() : -1;
+		if (minRepeat_ == maxRepeat_) {
+			int n = entry()->matchLength();
+			if (n > 0) return minRepeat_ * n;
+		}
+		return -1;
 	}
 
 	inline int minRepeat() const { return minRepeat_; }
@@ -434,7 +438,11 @@ public:
 	}
 
 	inline int matchLength() const {
-		return (minRepeat_ == maxRepeat_) ? minRepeat_ * entry()->matchLength() : -1;
+		if (minRepeat_ == maxRepeat_) {
+			int n = entry()->matchLength();
+			if (n > 0) return minRepeat_ * n;
+		}
+		return -1;
 	}
 
 	inline int minRepeat() const { return minRepeat_; }
@@ -670,6 +678,8 @@ public:
 
 	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 	{
+		if (length_ <= 0) return -1;
+
 		Token *lastChildSaved = 0;
 		if (parentToken) lastChildSaved = parentToken->lastChild();
 
@@ -1156,12 +1166,12 @@ public:
 		  name_(0),
 		  caseSensitive_(true),
 		  scopeByName_(ScopeByName::create()),
-		  numRules_(0),
-		  numKeywords_(0),
+		  ruleCount_(0),
+		  keywordCount_(0),
 		  ruleByName_(RuleByName::create()),
 		  keywordByName_(KeywordByName::create()),
-		  numFlags_(0),
-		  numCaptures_(0),
+		  flagCount_(0),
+		  captureCount_(0),
 		  flagIdByName_(StateIdByName::create()),
 		  captureIdByName_(StateIdByName::create())
 	{
@@ -1254,7 +1264,7 @@ public:
 	}
 
 	inline int DEFINE(const char *ruleName, NODE entry, bool generate = true) {
-		Ref<RuleNode> ruleNode = new RuleNode(this, ruleName, numRules_++, entry, generate);
+		Ref<RuleNode> ruleNode = new RuleNode(this, ruleName, ruleCount_++, entry, generate);
 		addRule(ruleNode);
 		return ruleNode->id();
 	}
@@ -1330,10 +1340,8 @@ public:
 
 	//-- execution interface
 
-	inline int numRules() const { return numRules_; }
-
 	inline State *createState(TokenFactory *tokenFactory = 0) const {
-		return new State(this, numFlags_, numCaptures_, tokenFactory);
+		return new State(this, flagCount_, captureCount_, tokenFactory);
 	}
 
 	Ref<State> find(ByteArray *text, int i, TokenFactory *tokenFactory = 0) const;
@@ -1384,6 +1392,10 @@ public:
 		return captureId;
 	}
 
+	inline bool lookupCaptureIdByName(const char *name, int *captureId) const {
+		return captureIdByName_->lookup(name, captureId);
+	}
+
 	virtual int syntaxError(ByteArray *text, int index, State *state) const;
 
 	inline Node *debug(Node *newNode, const char *nodeType) {
@@ -1404,8 +1416,8 @@ private:
 	typedef PrefixTree<char, Ref<RuleNode> > RuleByName;
 	typedef PrefixTree<char, int> KeywordByName;
 
-	int numRules_;
-	int numKeywords_;
+	int ruleCount_;
+	int keywordCount_;
 	Ref<RuleByName> ruleByName_;
 	Ref<KeywordByName> keywordByName_;
 
@@ -1423,7 +1435,7 @@ private:
 	{
 		int id = -1;
 		if (!flagIdByName_->lookup(name, &id))
-			flagIdByName_->insert(name, id = numFlags_++);
+			flagIdByName_->insert(name, id = flagCount_++);
 		return id;
 	}
 
@@ -1431,12 +1443,12 @@ private:
 	{
 		int id = -1;
 		if (!captureIdByName_->lookup(name, &id))
-			captureIdByName_->insert(name, id = numCaptures_++);
+			captureIdByName_->insert(name, id = captureCount_++);
 		return id;
 	}
 
-	int numFlags_;
-	int numCaptures_;
+	int flagCount_;
+	int captureCount_;
 
 	typedef PrefixTree<char, int> StateIdByName;
 

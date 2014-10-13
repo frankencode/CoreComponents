@@ -15,14 +15,35 @@ using namespace flux;
 
 class Match: public Object {
 public:
-	Match(int ln, int i0, int i1): ln_(ln), i0_(i0), i1_(i1) {}
-	int ln_, i0_, i1_;
+	inline static Ref<Match> create(int ln, int i0, int i1) {
+		return new Match(ln, i0, i1);
+	}
+
+	inline int ln() const { return ln_; }
+	inline int i0() const { return i0_; }
+	inline int i1() const { return i1_; }
+
+	inline void moveTo(int ln, int i0, int i1) {
+		ln_ = ln;
+		i0_ = i0;
+		i1_ = i1;
+	}
+
+private:
+	Match(int ln, int i0, int i1):
+		ln_(ln),
+		i0_(i0),
+		i1_(i1)
+	{}
+	int ln_;
+	int i0_;
+	int i1_;
 };
 
 typedef List< Ref<Match> > Matches;
 
+Ref<Matches> findMatches(ByteArray *text, SyntaxDefinition *textPattern);
 void displayMatch(ByteArray *path, ByteArray *text, Match *match);
-
 String replaceMatches(ByteArray *text, Matches *matches, ByteArray *replacement);
 
 int main(int argc, char **argv)
@@ -31,46 +52,42 @@ int main(int argc, char **argv)
 
 	try {
 		Ref<Arguments> arguments = Arguments::parse(argc, argv);
-		{
-			Ref<VariantMap> prototype = VariantMap::create();
-			prototype->insert("path", "");
-			prototype->insert("name", "");
-			prototype->insert("type", "");
-			prototype->insert("depth", -1);
-			prototype->insert("text", "");
-			prototype->insert("word", "");
-			prototype->insert("display", false);
-			prototype->insert("replace", "");
-			prototype->insert("paste", "");
-			arguments->validate(prototype);
-		}
 
-		Ref<VariantMap> options = arguments->options();
+		Ref<VariantMap> options = VariantMap::create();
+		options->insert("path", "");
+		options->insert("name", "");
+		options->insert("type", "");
+		options->insert("depth", -1);
+		options->insert("hidden", false);
+		options->insert("text", "");
+		options->insert("word", "");
+		options->insert("ranges", false);
+		options->insert("replace", "");
+		options->insert("paste", "");
+		arguments->validate(options);
+		arguments->override(options);
+
 		Ref<StringList> items = arguments->items();
 
-		Pattern pathPattern;
-		Pattern namePattern;
-		Pattern typePattern;
-		int maxDepth = options->value("depth", -1);
-		Pattern textPattern;
-		bool displayOption = options->value("display", false);
+		Pattern pathPattern = options->value("path");
+		Pattern namePattern = options->value("name");
+		Pattern typePattern = options->value("type");
+		int maxDepth = options->value("depth");
+		bool ignoreHidden = !options->value("hidden");
+
+		Pattern textPattern = options->value("text");
+		if (String(options->value("word")) != "")
+			textPattern = String(Format() << "(?<!:[a..z]|[A..Z]|[0..9]|_)" << options->value("word") << "(?>!:[a..z]|[A..Z]|[0..9]|_)");
+
+		bool rangesOption = options->value("ranges");
 		bool replaceOption = false;
 		String replacement;
-
-		String h;
-		if (options->lookup("path", &h)) pathPattern = h;
-		if (options->lookup("name", &h)) namePattern = h;
-		if (options->lookup("type", &h)) typePattern = h;
-		if (options->lookup("text", &h)) textPattern = h;
-		if (options->lookup("word", &h)) textPattern = String("(!<[a..z]|[A..Z]|[0..9]|_)" + h + "(!>[a..z]|[A..Z]|[0..9]|_)");
-
-		if (options->lookup("replace", &h)) {
+		if (arguments->options()->lookup("replace", &replacement))
 			replaceOption = true;
-			replacement = h;
-		}
-		if (options->lookup("paste", &h)) {
+		if (String(options->value("paste")) != "") {
+			// if (replaceOption == true) // FIXME
 			replaceOption = true;
-			replacement = File::open(h)->map();
+			replacement = File::open(options->value("paste"))->map();
 		}
 
 		if (items->count() == 0) items->append(".");
@@ -79,6 +96,7 @@ int main(int argc, char **argv)
 			String dirPath = items->at(i)->canonicalPath();
 			Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
 			dirWalker->setMaxDepth(maxDepth);
+			dirWalker->setIgnoreHidden(ignoreHidden);
 			String path;
 			while (dirWalker->read(&path)) {
 				if (pathPattern) {
@@ -103,40 +121,22 @@ int main(int argc, char **argv)
 				if (textPattern) {
 					if (FileStatus::read(path)->type() != File::Regular)
 						continue;
-					Ref<File> file = File::tryOpen(path, File::ReadOnly);
-					if (!file) {
-						ferr("Failed to open %%\n") << path;
-						continue;
-					}
-					Ref<Matches> matches = Matches::create();
-					String text = file->map();
-					int ln = 1;
-					for (int i = 0; i < text->count();) {
-						Ref<Token> token = textPattern->find(text, i)->rootToken();
-						if (!token) break;
-						for (;i < token->i0(); ++i)
-							if (text->at(i) == '\n') ++ln;
-						matches->append(new Match(ln, token->i0(), token->i1()));
-						for (;i < token->i1(); ++i)
-							if (text->at(i) == '\n') ++ln;
-						if (token->i0() == token->i1()) ++i;
-					}
+
+					String text = File::open(path)->map();
+					Ref<Matches> matches = findMatches(text, textPattern);
+
 					if (replaceOption && matches->count() > 0) {
-						file = File::tryOpen(path, File::ReadWrite);
-						if (!file) {
-							ferr("Failed to write %%\n") << path;
-							continue;
-						}
+						Ref<File> file = File::open(path, File::ReadWrite);
 						text = replaceMatches(text, matches, replacement);
 						file->truncate(0);
 						file->write(text);
 					}
 					for (int i = 0; i < matches->count(); ++i) {
 						Match *match = matches->at(i);
-						if (displayOption)
-							displayMatch(path, text, match);
+						if (rangesOption)
+							fout("%%:%%:%%..%%\n") << path << match->ln() << match->i0() << match->i1();
 						else
-							fout("%%:%%:%%..%%\n") << path << match->ln_ << match->i0_ << match->i1_;
+							displayMatch(path, text, match);
 					}
 					continue;
 				}
@@ -150,22 +150,23 @@ int main(int argc, char **argv)
 			"Find (and replace) recursively descending into each [DIR]\n"
 			"\n"
 			"Options:\n"
-			"  -path  file path pattern\n"
-			"  -name  file name pattern\n"
-			"  -type  file type pattern\n"
-			"           r .. regular file\n"
-			"           d .. directory\n"
-			"           l .. symbolic link\n"
-			"           c .. character device\n"
-			"           b .. block device\n"
-			"           f .. fifo\n"
-			"           s .. socket\n"
-			"  -depth  maximum depth of recursive directory search\n"
-			"  -text  text search pattern\n"
-			"  -word  word search pattern\n"
-			"  -display  display match in context\n"
+			"  -path     file path pattern\n"
+			"  -name     file name pattern\n"
+			"  -type     file type pattern\n"
+			"              r .. regular file\n"
+			"              d .. directory\n"
+			"              l .. symbolic link\n"
+			"              c .. character device\n"
+			"              b .. block device\n"
+			"              f .. fifo\n"
+			"              s .. socket\n"
+			"  -depth    maximum depth of recursive directory search\n"
+			"  -hidden   also search hidden files and directories\n"
+			"  -text     text search pattern\n"
+			"  -word     word search pattern\n"
+			"  -ranges   show line and byte range for each match\n"
 			"  -replace  replace matches by given text\n"
-			"  -paste  paste replacements from file\n"
+			"  -paste    paste replacements from file\n"
 		) << toolName;
 		return 1;
 	}
@@ -177,11 +178,35 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+Ref<Matches> findMatches(ByteArray *text, SyntaxDefinition *textPattern)
+{
+	Ref<Matches> matches = Matches::create();
+	int ln = 1;
+	for (int i = 0; i < text->count();) {
+		Ref<SyntaxState> state = textPattern->find(text, i);
+		if (!state->valid()) break;
+		int i0 = state->i0();
+		int i1 = state->i1();
+		Ref<Range> capture;
+		if (state->lookupCapture("", &capture)) {
+			i0 = capture->i0();
+			i1 = capture->i1();
+		}
+		for (;i < i0; ++i)
+			if (text->at(i) == '\n') ++ln;
+		matches->append(Match::create(ln, i0, i1));
+		for (;i < i1; ++i)
+			if (text->at(i) == '\n') ++ln;
+		if (i0 == i1) ++i;
+	}
+	return matches;
+}
+
 void displayMatch(ByteArray *path, ByteArray *text, Match *match)
 {
-	int ln = match->ln_;
-	int i0 = match->i0_;
-	int i1 = match->i1_;
+	int ln = match->ln();
+	int i0 = match->i0();
+	int i1 = match->i1();
 
 	int j0 = i0;
 	for (;j0 > 0; --j0)
@@ -222,14 +247,12 @@ String replaceMatches(ByteArray *text, Matches *matches, ByteArray *replacement)
 	int nr = replacement->count('\n');
 	for (int i = 0; i < matches->count(); ++i) {
 		Match *match = matches->at(i);
-		fragments->append(text->copy(fi0, match->i0_));
-		fi0 = match->i1_;
-		int i0s = match->i0_ + si;
-		si += replacement->count() - (match->i1_ - match->i0_);
-		sl += nr - text->copy(match->i0_, match->i1_)->count('\n');
-		match->i0_ = i0s;
-		match->i1_ = i0s + replacement->count();
-		match->ln_ += sl;
+		fragments->append(text->copy(fi0, match->i0()));
+		fi0 = match->i1();
+		int i0s = match->i0() + si;
+		si += replacement->count() - (match->i1() - match->i0());
+		sl += nr - text->copy(match->i0(), match->i1())->count('\n');
+		match->moveTo(match->ln() + sl, i0s, i0s + replacement->count());
 	}
 	fragments->append(text->copy(fi0, text->count()));
 	return fragments->join(replacement);

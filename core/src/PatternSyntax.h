@@ -50,12 +50,12 @@ protected:
 	int maxRepeat_;
 	int repeat_;
 	int sequence_;
+	int group_;
 	int ahead_;
 	int behind_;
 	int identifier_;
 	int capture_;
 	int replay_;
-	int group_;
 	int choice_;
 	int pattern_;
 };

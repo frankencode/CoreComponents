@@ -130,13 +130,11 @@ public:
 	inline int i0() const { return i0_; }
 	inline int i1() const { return i1_; }
 
-	inline void setRange(int i0, int i1) {
+	inline void assign(int i0, int i1) {
 		i0_ = i0;
 		i1_ = i1;
 	}
 
-	inline int index() const { return i0_; }
-	inline int length() const { return i1_ - i0_; }
 	inline bool valid() const { return i0_ <= i1_; }
 
 protected:

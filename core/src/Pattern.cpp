@@ -37,15 +37,17 @@ const Pattern &Pattern::operator=(const char *text)
 
 const Pattern &Pattern::operator=(const String &text)
 {
-	text_ = text;
-	set(
-		SyntaxDefinition::create(
-#ifndef NDEBUG
-			SyntaxDebugger::create()
-#endif
-		)
-	);
-	patternSyntax()->compile(text_, *this);
+	if (text_ != text) {
+		text_ = text;
+		set(
+			SyntaxDefinition::create(
+				#ifndef NDEBUG
+				SyntaxDebugger::create()
+				#endif
+			)
+		);
+		patternSyntax()->compile(text_, *this);
+	}
 	return *this;
 }
 

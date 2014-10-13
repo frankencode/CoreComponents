@@ -82,7 +82,7 @@ void IntegerSyntax::read(uint64_t *value, int *sign, const ByteArray *text, Toke
 
 	if (token->rule() == sign_)
 	{
-		if (text->at(token->index()) == '-')
+		if (text->at(token->i0()) == '-')
 			*sign = -1;
 		token = token->nextSibling();
 	}

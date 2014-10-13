@@ -15,13 +15,13 @@ using namespace flux;
 void testEmailValidation()
 {
 	Pattern pattern =
-		"(!>:[.-])"
-		"{1..:(!>:..|--)([a..z]|[A..Z]|[0..9]|[.-])}"
-		"(!<:[.-])"
+		"(?>!:[.-])"
+		"{1..:(?>!:..|--)([a..z]|[A..Z]|[0..9]|[.-])}"
+		"(?<!:[.-])"
 		"@"
-		"(!>:[.-])"
-		"{1..:(!>:..|--)([a..z]|[A..Z]|[0..9]|[.-])}"
-		"(!<:[.-])";
+		"(?>!:[.-])"
+		"{1..:(?>!:..|--)([a..z]|[A..Z]|[0..9]|[.-])}"
+		"(?<!:[.-])";
 
 	#ifndef NDEBUG
 	SyntaxDebugger *debugger = cast<SyntaxDebugger>(pattern->debugFactory());

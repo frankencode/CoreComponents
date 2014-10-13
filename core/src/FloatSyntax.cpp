@@ -82,7 +82,7 @@ void FloatSyntax::read(float64_t *value, const ByteArray *text, Token *token) co
 		float64_t one, zero;
 		one = 1.; zero = 0.;
 
-		if (text->at(token->index()) == '-')
+		if (text->at(token->i0()) == '-')
 			*value = -one / zero;
 		else
 			*value = one / zero;
@@ -98,7 +98,7 @@ void FloatSyntax::read(float64_t *value, const ByteArray *text, Token *token) co
 		{
 			if (token->rule() == sign_)
 			{
-				if (text->at(token->index()) == '-')
+				if (text->at(token->i0()) == '-')
 					sign = -1;
 			}
 			else if (token->rule() == integerPart_)
@@ -117,7 +117,7 @@ void FloatSyntax::read(float64_t *value, const ByteArray *text, Token *token) co
 			}
 			else if (token->rule() == exponentSign_)
 			{
-				if (text->at(token->index()) == '-')
+				if (text->at(token->i0()) == '-')
 					epSign = -1;
 			}
 			else if (token->rule() == exponent_)
