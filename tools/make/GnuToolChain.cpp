@@ -68,7 +68,7 @@ Ref<Job> GnuToolChain::createAnalyseJob(BuildPlan *plan, String source)
 
 Ref<Module> GnuToolChain::finishAnalyseJob(BuildPlan *plan, Job *job)
 {
-	Ref<StringList> parts = job->outputText()->split(Pattern("{1..:[\:\\\\\n\r ]}"));
+	Ref<StringList> parts = job->outputText()->split(Pattern("{1..:[\\:\\\\\n\r ]}"));
 	return Module::create(job->command(), plan->modulePath(parts->pop(0)), parts, true);
 }
 
