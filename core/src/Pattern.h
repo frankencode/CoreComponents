@@ -25,6 +25,7 @@ public:
 	Pattern();
 	Pattern(const char *text);
 	Pattern(const String &text);
+	Pattern(const Ref<ByteArray> &text);
 	Pattern(const Variant &Variant);
 
 	const Pattern &operator=(const char *text);

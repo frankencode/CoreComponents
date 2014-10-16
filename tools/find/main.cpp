@@ -64,6 +64,7 @@ int main(int argc, char **argv)
 		options->insert("ranges", false);
 		options->insert("replace", "");
 		options->insert("paste", "");
+		options->insert("erase", false);
 		arguments->validate(options);
 		arguments->override(options);
 
@@ -75,7 +76,7 @@ int main(int argc, char **argv)
 		int maxDepth = options->value("depth");
 		bool ignoreHidden = !options->value("hidden");
 
-		Pattern textPattern = options->value("text");
+		Pattern textPattern = String(options->value("text"))->unescape();
 		if (String(options->value("word")) != "")
 			textPattern = String(Format() << "(?<!:[a..z]|[A..Z]|[0..9]|_)" << options->value("word") << "(?>!:[a..z]|[A..Z]|[0..9]|_)");
 
@@ -85,9 +86,14 @@ int main(int argc, char **argv)
 		if (arguments->options()->lookup("replace", &replacement))
 			replaceOption = true;
 		if (String(options->value("paste")) != "") {
-			// if (replaceOption == true) // FIXME
+			// if (replaceOption == true) // FIXME: multiple conflicting replacement options
 			replaceOption = true;
 			replacement = File::open(options->value("paste"))->map();
+		}
+		if (options->value("erase")) {
+			// if (replaceOption == true) // FIXME: multiple conflicting replacement options
+			replaceOption = true;
+			replacement = "";
 		}
 
 		if (items->count() == 0) items->append(".");
@@ -166,7 +172,8 @@ int main(int argc, char **argv)
 			"  -word     word search pattern\n"
 			"  -ranges   show line and byte range for each match\n"
 			"  -replace  replace matches by given text\n"
-			"  -paste    paste replacements from file\n"
+			"  -paste    paste replacement from file\n"
+			"  -erase    replace matches by empty string\n"
 		) << toolName;
 		return 1;
 	}
