@@ -6,9 +6,9 @@
  *
  */
 
-#include "Dir.h"
-#include "Pattern.h"
-#include "Glob.h"
+#include "Dir"
+#include "Pattern"
+#include "Glob"
 
 namespace flux
 {

@@ -6,7 +6,7 @@
  *
  */
 
-#include "strings.h"
+#include "strings"
 
 namespace flux
 {

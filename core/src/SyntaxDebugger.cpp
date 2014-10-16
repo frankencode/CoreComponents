@@ -6,8 +6,8 @@
  *
  */
 
-#include "stdio.h"
-#include "SyntaxDebugger.h"
+#include "stdio"
+#include "SyntaxDebugger"
 
 namespace flux
 {

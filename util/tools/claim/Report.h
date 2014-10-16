@@ -9,9 +9,9 @@
 #ifndef FLUXCLAIM_REPORT_H
 #define FLUXCLAIM_REPORT_H
 
-#include <flux/Pattern.h>
-#include <flux/Map.h>
-#include <flux/Set.h>
+#include <flux/Pattern>
+#include <flux/Map>
+#include <flux/Set>
 #include "Notice.h"
 
 namespace fluxclaim {

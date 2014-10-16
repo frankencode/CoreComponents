@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/File.h>
-#include "Document.h"
+#include <flux/File>
+#include "Document"
 
 namespace flux {
 namespace toki {

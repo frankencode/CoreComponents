@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/check.h>
-#include <flux/Random.h>
-#include <flux/List.h>
+#include <flux/stdio>
+#include <flux/check>
+#include <flux/Random>
+#include <flux/List>
 
 using namespace flux;
 

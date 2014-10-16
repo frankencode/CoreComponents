@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/File.h>
-#include <flux/Dir.h>
+#include <flux/File>
+#include <flux/Dir>
 #include "utils.h"
 #include "exceptions.h"
 #include "ServiceWorker.h"

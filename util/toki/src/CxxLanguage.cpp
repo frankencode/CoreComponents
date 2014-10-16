@@ -6,9 +6,9 @@
  *
  */
 
-#include "Registry.h"
-#include "CppDiscoverySyntax.h"
-#include "CxxSyntax.h"
+#include "Registry"
+#include "CppDiscoverySyntax"
+#include "CxxSyntax"
 
 namespace flux {
 namespace toki {

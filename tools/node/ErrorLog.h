@@ -9,8 +9,8 @@
 #ifndef FLUXNODE_ERRORLOG_H
 #define FLUXNODE_ERRORLOG_H
 
-#include <flux/Format.h>
-#include <flux/str.h>
+#include <flux/Format>
+#include <flux/str>
 #include "Log.h"
 
 namespace flux { template<class> class ThreadLocalSingleton; }

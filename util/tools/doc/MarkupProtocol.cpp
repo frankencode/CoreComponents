@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/Singleton.h>
+#include <flux/Singleton>
 #include "elements.h"
 #include "MarkupProtocol.h"
 

@@ -6,7 +6,7 @@
  *
  */
 
-#include "ScriptDiscoverySyntax.h"
+#include "ScriptDiscoverySyntax"
 
 namespace flux {
 namespace toki {

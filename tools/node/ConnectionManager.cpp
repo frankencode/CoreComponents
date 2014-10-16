@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/System.h>
+#include <flux/System>
 #include "ErrorLog.h"
 #include "ClientConnection.h"
 #include "ConnectionManager.h"

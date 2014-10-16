@@ -9,8 +9,8 @@
 #ifndef FLUXCLAIM_COPYRIGHT_H
 #define FLUXCLAIM_COPYRIGHT_H
 
-#include <flux/String.h>
-#include <flux/List.h>
+#include <flux/String>
+#include <flux/List>
 
 namespace fluxclaim {
 

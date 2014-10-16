@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/Format.h>
-#include <flux/File.h>
-#include <flux/toki/HtmlScreen.h>
+#include <flux/Format>
+#include <flux/File>
+#include <flux/toki/HtmlScreen>
 #include "HtmlDesign.h"
 #include "HtmlGenerator.h"
 

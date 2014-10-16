@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/System.h>
-#include "TimeoutLimiter.h"
+#include <flux/System>
+#include "TimeoutLimiter"
 
 namespace flux {
 namespace stream {

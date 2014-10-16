@@ -6,7 +6,7 @@
  *
  */
 
-#include "ArchiveReader.h"
+#include "ArchiveReader"
 
 namespace flux {
 namespace tar {

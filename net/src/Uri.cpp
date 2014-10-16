@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/exceptions.h>
-#include <flux/Format.h>
-#include "UriSyntax.h"
-#include "Uri.h"
+#include <flux/exceptions>
+#include <flux/Format>
+#include "UriSyntax"
+#include "Uri"
 
 namespace flux {
 namespace net {

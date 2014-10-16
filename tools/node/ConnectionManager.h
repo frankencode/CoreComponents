@@ -9,9 +9,9 @@
 #ifndef FLUXNODE_CONNECTIONMANAGER_H
 #define FLUXNODE_CONNECTIONMANAGER_H
 
-#include <flux/types.h>
-#include <flux/List.h>
-#include <flux/Map.h>
+#include <flux/types>
+#include <flux/List>
+#include <flux/Map>
 #include "ServiceWorker.h"
 #include "Visit.h"
 

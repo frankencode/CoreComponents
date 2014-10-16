@@ -16,17 +16,17 @@
 #include <errno.h> // errno
 #include <string.h> // strcmp
 #ifdef __linux
-#include "File.h" // to read /proc
+#include "File" // to read /proc
 #endif
 #ifdef __MACH__
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #include <crt_externs.h> // _NSGetEnviron
 #endif
-#include "exceptions.h"
-#include "Format.h"
-#include "Thread.h"
-#include "ProcessFactory.h"
-#include "Process.h"
+#include "exceptions"
+#include "Format"
+#include "Thread"
+#include "ProcessFactory"
+#include "Process"
 
 #ifndef __MACH__
 extern "C" char **environ;

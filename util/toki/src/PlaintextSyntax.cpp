@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/Singleton.h>
-#include "PlaintextSyntax.h"
+#include <flux/Singleton>
+#include "PlaintextSyntax"
 
 namespace flux {
 namespace toki {

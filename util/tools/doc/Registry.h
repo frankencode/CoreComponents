@@ -9,7 +9,7 @@
 #ifndef FLUXDOC_REGISTRY_H
 #define FLUXDOC_REGISTRY_H
 
-#include <flux/MetaProtocol.h>
+#include <flux/MetaProtocol>
 
 namespace flux {
 

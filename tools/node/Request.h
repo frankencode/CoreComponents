@@ -9,9 +9,9 @@
 #ifndef FLUXNODE_REQUEST_H
 #define FLUXNODE_REQUEST_H
 
-#include <flux/String.h>
-#include <flux/Map.h>
-#include <flux/Stream.h>
+#include <flux/String>
+#include <flux/Map>
+#include <flux/Stream>
 
 namespace fluxnode
 {

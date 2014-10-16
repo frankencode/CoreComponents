@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/net/SocketAddress.h>
+#include <flux/stdio>
+#include <flux/net/SocketAddress>
 
 using namespace flux;
 using namespace flux::net;

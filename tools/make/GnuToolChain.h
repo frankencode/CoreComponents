@@ -9,7 +9,7 @@
 #ifndef FLUXMAKE_GNUTOOLCHAIN_H
 #define FLUXMAKE_GNUTOOLCHAIN_H
 
-#include <flux/Format.h>
+#include <flux/Format>
 #include "ToolChain.h"
 
 namespace fluxmake

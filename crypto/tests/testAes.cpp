@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/crypto/Aes.h>
+#include <flux/stdio>
+#include <flux/crypto/Aes>
 
 namespace flux {
 namespace crypto {

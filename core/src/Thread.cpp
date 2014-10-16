@@ -6,11 +6,11 @@
  *
  */
 
-#include "strings.h"
-#include "Condition.h"
-#include "ThreadFactory.h"
-#include "System.h"
-#include "Thread.h"
+#include "strings"
+#include "Condition"
+#include "ThreadFactory"
+#include "System"
+#include "Thread"
 
 namespace flux
 {

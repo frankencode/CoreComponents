@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/ThreadLocalSingleton.h>
+#include <flux/ThreadLocalSingleton>
 #include "AccessLog.h"
 
 namespace fluxnode

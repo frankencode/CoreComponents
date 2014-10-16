@@ -6,14 +6,14 @@
  *
  */
 
-#include "Singleton.h"
+#include "Singleton"
 #ifndef NDEBUG
-#include "SyntaxDebugger.h"
+#include "SyntaxDebugger"
 #endif
-#include "syntax.h"
-#include "Format.h"
-#include "Pattern.h"
-#include "PatternSyntax.h"
+#include "syntax"
+#include "Format"
+#include "Pattern"
+#include "PatternSyntax"
 
 namespace flux
 {

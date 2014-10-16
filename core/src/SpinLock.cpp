@@ -7,7 +7,7 @@
  */
 
 #include <pthread.h>
-#include "SpinLock.h"
+#include "SpinLock"
 
 namespace flux
 {

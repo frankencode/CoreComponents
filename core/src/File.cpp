@@ -10,17 +10,17 @@
 #include <errno.h>
 #include <string.h>
 #include <stdio.h> // rename
-#include "exceptions.h"
-#include "ExitEvent.h"
-#include "ThreadExitEvent.h"
-#include "Guard.h"
-#include "Mutex.h"
-#include "Random.h"
-#include "Format.h"
-#include "Dir.h"
-#include "Process.h"
-#include "System.h"
-#include "File.h"
+#include "exceptions"
+#include "ExitEvent"
+#include "ThreadExitEvent"
+#include "Guard"
+#include "Mutex"
+#include "Random"
+#include "Format"
+#include "Dir"
+#include "Process"
+#include "System"
+#include "File"
 
 namespace flux
 {

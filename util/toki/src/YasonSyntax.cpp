@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/Singleton.h>
-#include "YasonSyntax.h"
+#include <flux/Singleton>
+#include "YasonSyntax"
 
 namespace flux {
 namespace toki {

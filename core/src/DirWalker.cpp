@@ -6,9 +6,9 @@
  *
  */
 
-#include "Dir.h"
-#include "File.h"
-#include "DirWalker.h"
+#include "Dir"
+#include "File"
+#include "DirWalker"
 
 namespace flux
 {

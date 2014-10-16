@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_VISIT_H
 #define FLUXNODE_VISIT_H
 
-#include <flux/Object.h>
+#include <flux/Object>
 
 namespace flux {
 namespace net {

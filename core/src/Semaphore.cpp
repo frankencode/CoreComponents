@@ -6,7 +6,7 @@
  *
  */
 
-#include "Semaphore.h"
+#include "Semaphore"
 
 namespace flux
 {

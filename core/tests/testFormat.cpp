@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/check.h>
+#include <flux/stdio>
+#include <flux/check>
 
 using namespace flux;
 

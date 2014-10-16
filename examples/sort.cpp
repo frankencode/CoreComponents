@@ -1,5 +1,5 @@
-#include <flux/stdio.h>
-#include <flux/Heap.h>
+#include <flux/stdio>
+#include <flux/Heap>
 
 using namespace flux;
 

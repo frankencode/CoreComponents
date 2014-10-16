@@ -6,9 +6,9 @@
  *
  */
 
-#include "ThreadLocalSingleton.h"
-#include "Queue.h"
-#include "ResourceContext.h"
+#include "ThreadLocalSingleton"
+#include "Queue"
+#include "ResourceContext"
 
 namespace flux
 {

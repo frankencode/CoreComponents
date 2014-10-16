@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/Singleton.h>
-#include <flux/Process.h>
+#include <flux/Singleton>
+#include <flux/Process>
 #include "LogPrototype.h"
 #include "NodeConfigProtocol.h"
 

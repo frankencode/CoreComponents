@@ -6,7 +6,7 @@
  *
  */
 
-#include "GlobalCoreMutex.h"
+#include "GlobalCoreMutex"
 
 namespace flux
 {

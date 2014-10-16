@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/MetaObject.h>
+#include <flux/MetaObject>
 #include "LogConfig.h"
 #include "ServiceInstance.h"
 

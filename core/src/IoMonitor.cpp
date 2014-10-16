@@ -6,9 +6,9 @@
  *
  */
 
-#include "assert.h"
-#include "exceptions.h"
-#include "IoMonitor.h"
+#include "assert"
+#include "exceptions"
+#include "IoMonitor"
 
 namespace flux {
 

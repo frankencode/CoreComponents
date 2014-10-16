@@ -6,7 +6,7 @@
  *
  */
 
-#include "Style.h"
+#include "Style"
 
 namespace flux {
 namespace toki {

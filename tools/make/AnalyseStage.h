@@ -9,7 +9,7 @@
 #ifndef FLUXMAKE_ANALYSESTAGE_H
 #define FLUXMAKE_ANALYSESTAGE_H
 
-#include <flux/String.h>
+#include <flux/String>
 #include "BuildStage.h"
 
 namespace fluxmake

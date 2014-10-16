@@ -9,9 +9,9 @@
 #ifndef FLUXNODE_LOG_H
 #define FLUXNODE_LOG_H
 
-#include <flux/Date.h>
-#include <flux/Stream.h>
-#include <flux/Mutex.h>
+#include <flux/Date>
+#include <flux/Stream>
+#include <flux/Mutex>
 #include "LogConfig.h"
 
 namespace fluxnode

@@ -6,7 +6,7 @@
  *
  */
 
-#include "BinaryTree.h"
+#include "BinaryTree"
 
 namespace flux
 {

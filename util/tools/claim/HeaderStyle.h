@@ -9,8 +9,8 @@
 #ifndef FLUXCLAIM_HEADERSTYLE_H
 #define FLUXCLAIM_HEADERSTYLE_H
 
-#include <flux/Registration.h>
-#include <flux/List.h>
+#include <flux/Registration>
+#include <flux/List>
 #include "Header.h"
 #include "Notice.h"
 

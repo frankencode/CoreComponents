@@ -6,8 +6,8 @@
  *
  */
 
-#include "Singleton.h"
-#include "ExitEvent.h"
+#include "Singleton"
+#include "ExitEvent"
 
 namespace flux
 {

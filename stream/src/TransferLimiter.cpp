@@ -6,7 +6,7 @@
  *
  */
 
-#include "TransferLimiter.h"
+#include "TransferLimiter"
 
 namespace flux {
 namespace stream {

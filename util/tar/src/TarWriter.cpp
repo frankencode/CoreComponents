@@ -6,12 +6,12 @@
  *
  */
 
-#include <flux/str.h>
-#include <flux/File.h>
-#include <flux/User.h>
-#include <flux/Group.h>
-#include "TarCommon.h"
-#include "TarWriter.h"
+#include <flux/str>
+#include <flux/File>
+#include <flux/User>
+#include <flux/Group>
+#include "TarCommon"
+#include "TarWriter"
 
 namespace flux {
 namespace tar {

@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/check.h>
-#include <flux/net/Uri.h>
+#include <flux/stdio>
+#include <flux/check>
+#include <flux/net/Uri>
 
 using namespace flux;
 using namespace flux::net;

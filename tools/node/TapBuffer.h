@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_TAPBUFFER_H
 #define FLUXNODE_TAPBUFFER_H
 
-#include <flux/stream/LineBuffer.h>
+#include <flux/stream/LineBuffer>
 
 namespace fluxnode
 {

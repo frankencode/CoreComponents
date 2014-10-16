@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/Singleton.h>
-#include <flux/toki/Registry.h>
+#include <flux/Singleton>
+#include <flux/toki/Registry>
 #include "Registry.h"
 
 namespace fluxclaim {

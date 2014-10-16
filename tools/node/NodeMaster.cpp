@@ -6,11 +6,11 @@
  *
  */
 
-#include <flux/Singleton.h>
-#include <flux/Process.h>
-#include <flux/User.h>
-#include <flux/IoMonitor.h>
-#include <flux/SignalMaster.h>
+#include <flux/Singleton>
+#include <flux/Process>
+#include <flux/User>
+#include <flux/IoMonitor>
+#include <flux/SignalMaster>
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "AccessLog.h"

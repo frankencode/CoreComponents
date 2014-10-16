@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/Format.h>
-#include <flux/RefGuard.h>
-#include <flux/System.h>
-#include <flux/stream/TimeoutLimiter.h>
+#include <flux/Format>
+#include <flux/RefGuard>
+#include <flux/System>
+#include <flux/stream/TimeoutLimiter>
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "AccessLog.h"

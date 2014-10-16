@@ -9,9 +9,9 @@
 #ifndef FLUXNODE_NODECONFIG_H
 #define FLUXNODE_NODECONFIG_H
 
-#include <flux/Map.h>
-#include <flux/String.h>
-#include <flux/net/SocketAddress.h>
+#include <flux/Map>
+#include <flux/String>
+#include <flux/net/SocketAddress>
 #include "ServiceDefinition.h"
 #include "LogConfig.h"
 

@@ -6,11 +6,11 @@
  *
  */
 
-#include "Singleton.h"
-#include "Format.h"
-#include "FloatSyntax.h"
-#include "IntegerSyntax.h"
-#include "YasonSyntax.h"
+#include "Singleton"
+#include "Format"
+#include "FloatSyntax"
+#include "IntegerSyntax"
+#include "YasonSyntax"
 
 namespace flux
 {

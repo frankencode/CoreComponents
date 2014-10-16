@@ -6,8 +6,8 @@
  *
  */
 
-#include "PatternSyntax.h"
-#include "Pattern.h"
+#include "PatternSyntax"
+#include "Pattern"
 
 namespace flux
 {

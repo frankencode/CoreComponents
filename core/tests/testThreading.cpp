@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/Semaphore.h>
-#include <flux/System.h>
-#include <flux/ThreadFactory.h>
+#include <flux/stdio>
+#include <flux/Semaphore>
+#include <flux/System>
+#include <flux/ThreadFactory>
 #include <pthread.h>
 
 using namespace flux;

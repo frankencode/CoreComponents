@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_VISITLOG_H
 #define FLUXNODE_VISITLOG_H
 
-#include <flux/ThreadLocalSingleton.h>
+#include <flux/ThreadLocalSingleton>
 #include "Log.h"
 
 namespace fluxnode

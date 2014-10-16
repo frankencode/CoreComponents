@@ -10,7 +10,7 @@
 #define FLUXNODE_SYSTEMLOGSTREAM_H
 
 #include <syslog.h>
-#include <flux/Stream.h>
+#include <flux/Stream>
 
 namespace fluxnode
 {

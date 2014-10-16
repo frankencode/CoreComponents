@@ -10,10 +10,10 @@
 #include <unistd.h>
 #include <assert.h>
 #include <new>
-#include "check.h"
-#include "types.h"
-#include "Mutex.h"
-#include "Memory.h"
+#include "check"
+#include "types"
+#include "Mutex"
+#include "Memory"
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON

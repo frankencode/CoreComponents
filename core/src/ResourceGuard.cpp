@@ -6,8 +6,8 @@
  *
  */
 
-#include "ResourceContext.h"
-#include "ResourceGuard.h"
+#include "ResourceContext"
+#include "ResourceGuard"
 
 namespace flux
 {

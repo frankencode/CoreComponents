@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/check.h>
-#include <flux/yason.h>
+#include <flux/stdio>
+#include <flux/check>
+#include <flux/yason>
 
 using namespace flux;
 

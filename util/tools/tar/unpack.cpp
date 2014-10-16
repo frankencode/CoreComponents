@@ -6,14 +6,14 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/Date.h>
-#include <flux/File.h>
-#include <flux/Dir.h>
-#include <flux/Process.h>
-#include <flux/User.h>
-#include <flux/Group.h>
-#include <flux/exceptions.h>
+#include <flux/stdio>
+#include <flux/Date>
+#include <flux/File>
+#include <flux/Dir>
+#include <flux/Process>
+#include <flux/User>
+#include <flux/Group>
+#include <flux/exceptions>
 #include "unpack.h"
 
 namespace fluxtar

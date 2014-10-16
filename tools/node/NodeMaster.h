@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_NODEMASTER_H
 #define FLUXNODE_NODEMASTER_H
 
-#include <flux/Thread.h>
+#include <flux/Thread>
 
 namespace flux {
 	template<class> class Singleton;

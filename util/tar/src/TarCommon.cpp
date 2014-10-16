@@ -6,7 +6,7 @@
  *
  */
 
-#include "TarCommon.h"
+#include "TarCommon"
 
 namespace flux {
 namespace tar {

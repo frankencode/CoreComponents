@@ -6,9 +6,9 @@
  *
  */
 
-#include "Format.h"
-#include "yason.h"
-#include "Arguments.h"
+#include "Format"
+#include "yason"
+#include "Arguments"
 
 namespace flux
 {

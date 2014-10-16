@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_CHUNKEDSINK_H
 #define FLUXNODE_CHUNKEDSINK_H
 
-#include <flux/Stream.h>
+#include <flux/Stream>
 
 namespace fluxnode
 {

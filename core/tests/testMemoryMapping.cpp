@@ -6,12 +6,12 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/check.h>
-#include <flux/ProcessFactory.h>
-#include <flux/FileLock.h>
-#include <flux/Guard.h>
-#include <flux/Thread.h>
+#include <flux/stdio>
+#include <flux/check>
+#include <flux/ProcessFactory>
+#include <flux/FileLock>
+#include <flux/Guard>
+#include <flux/Thread>
 
 using namespace flux;
 

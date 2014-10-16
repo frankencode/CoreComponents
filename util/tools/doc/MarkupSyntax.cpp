@@ -6,11 +6,11 @@
  *
  */
 
-#include <flux/stdio.h> // DEBUG
-#include <flux/DebugTokenFactory.h> // DEBUG
-#include <flux/assert.h>
-#include <flux/Singleton.h>
-#include <flux/YasonSyntax.h>
+#include <flux/stdio> // DEBUG
+#include <flux/DebugTokenFactory> // DEBUG
+#include <flux/assert>
+#include <flux/Singleton>
+#include <flux/YasonSyntax>
 #include "MarkupProtocol.h"
 #include "elements.h"
 #include "MarkupSyntax.h"

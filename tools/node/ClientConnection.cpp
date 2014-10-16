@@ -6,11 +6,11 @@
  *
  */
 
-#include <flux/System.h>
-#include <flux/LineSource.h>
-#include <flux/stream/TransferLimiter.h>
-#include <flux/stream/StreamTap.h>
-#include <flux/stream/LineBuffer.h>
+#include <flux/System>
+#include <flux/LineSource>
+#include <flux/stream/TransferLimiter>
+#include <flux/stream/StreamTap>
+#include <flux/stream/LineBuffer>
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "TapBuffer.h"

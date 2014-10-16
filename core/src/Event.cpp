@@ -6,8 +6,8 @@
  *
  */
 
-#include "Guard.h"
-#include "Event.h"
+#include "Guard"
+#include "Event"
 
 namespace flux
 {

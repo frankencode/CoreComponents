@@ -9,12 +9,12 @@
 #ifndef FLUXNODE_LOGMASTER_H
 #define FLUXNODE_LOGMASTER_H
 
-#include <flux/Thread.h>
-#include <flux/Mutex.h>
-#include <flux/Channel.h>
-#include <flux/Timer.h>
-#include <flux/Map.h>
-#include <flux/Set.h>
+#include <flux/Thread>
+#include <flux/Mutex>
+#include <flux/Channel>
+#include <flux/Timer>
+#include <flux/Map>
+#include <flux/Set>
 
 namespace flux { template<class> class Singleton; }
 

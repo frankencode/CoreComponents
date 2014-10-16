@@ -6,11 +6,11 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/check.h>
-#include <flux/SyntaxDebugger.h>
-#include <flux/SyntaxDefinition.h>
-#include <flux/System.h>
+#include <flux/stdio>
+#include <flux/check>
+#include <flux/SyntaxDebugger>
+#include <flux/SyntaxDefinition>
+#include <flux/System>
 
 using namespace flux;
 

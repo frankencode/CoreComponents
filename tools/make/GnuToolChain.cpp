@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/Pattern.h>
-#include <flux/File.h>
-#include <flux/Process.h>
-#include <flux/ProcessFactory.h>
+#include <flux/Pattern>
+#include <flux/File>
+#include <flux/Process>
+#include <flux/ProcessFactory>
 #include "BuildPlan.h"
 #include "GnuToolChain.h"
 

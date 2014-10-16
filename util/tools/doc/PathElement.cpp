@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/File.h>
+#include <flux/File>
 #include "PathElement.h"
 
 namespace flux {

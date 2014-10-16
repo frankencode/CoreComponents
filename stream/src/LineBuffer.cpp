@@ -6,7 +6,7 @@
  *
  */
 
-#include "LineBuffer.h"
+#include "LineBuffer"
 
 namespace flux {
 namespace stream {

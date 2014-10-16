@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/File.h>
-#include <flux/Dir.h>
-#include <flux/Singleton.h>
-#include <flux/Arguments.h>
+#include <flux/File>
+#include <flux/Dir>
+#include <flux/Singleton>
+#include <flux/Arguments>
 #include "NodeConfigProtocol.h"
 #include "ServiceRegistry.h"
 #include "ErrorLog.h"

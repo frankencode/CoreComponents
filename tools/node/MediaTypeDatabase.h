@@ -9,9 +9,9 @@
 #ifndef FLUXNODE_MEDIATYPEDATABASE_H
 #define FLUXNODE_MEDIATYPEDATABASE_H
 
-#include <flux/String.h>
-#include <flux/PrefixTree.h>
-#include <flux/Map.h>
+#include <flux/String>
+#include <flux/PrefixTree>
+#include <flux/Map>
 
 namespace flux { template<class> class Singleton; }
 

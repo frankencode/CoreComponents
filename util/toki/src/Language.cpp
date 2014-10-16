@@ -6,8 +6,8 @@
  *
  */
 
-#include "Registry.h"
-#include "Language.h"
+#include "Registry"
+#include "Language"
 
 namespace flux {
 namespace toki {

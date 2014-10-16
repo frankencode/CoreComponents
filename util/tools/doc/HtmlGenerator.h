@@ -9,7 +9,7 @@
 #ifndef FLUXDOC_HTMLGENERATOR_H
 #define FLUXDOC_HTMLGENERATOR_H
 
-#include <flux/Singleton.h>
+#include <flux/Singleton>
 #include "Generator.h"
 
 namespace flux {

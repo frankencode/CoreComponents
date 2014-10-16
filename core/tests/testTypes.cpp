@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/SpinLock.h>
-#include <flux/Mutex.h>
-#include <flux/Token.h>
+#include <flux/stdio>
+#include <flux/SpinLock>
+#include <flux/Mutex>
+#include <flux/Token>
 
 using namespace flux;
 

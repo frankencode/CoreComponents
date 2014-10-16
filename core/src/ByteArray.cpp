@@ -6,20 +6,20 @@
  *
  */
 
-#include "List.h"
-#include "IntegerSyntax.h"
-#include "FloatSyntax.h"
-#include "Unicode.h"
-#include "Utf8Source.h"
-#include "Utf8Sink.h"
-#include "Utf16Source.h"
-#include "Utf16Sink.h"
-#include "Format.h"
-#include "Process.h"
-#include "File.h"
-#include "ThreadFactory.h"
-#include "Singleton.h"
-#include "ByteArray.h"
+#include "List"
+#include "IntegerSyntax"
+#include "FloatSyntax"
+#include "Unicode"
+#include "Utf8Source"
+#include "Utf8Sink"
+#include "Utf16Source"
+#include "Utf16Sink"
+#include "Format"
+#include "Process"
+#include "File"
+#include "ThreadFactory"
+#include "Singleton"
+#include "ByteArray"
 
 namespace flux
 {

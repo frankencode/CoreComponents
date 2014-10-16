@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/Format.h>
+#include <flux/Format>
 #include "ChunkedSink.h"
 
 namespace fluxnode

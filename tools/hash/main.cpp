@@ -6,12 +6,12 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/exceptions.h>
-#include <flux/Arguments.h>
-#include <flux/crypto/Sha1.h>
-#include <flux/crypto/Md5.h>
-#include <flux/crypto/HashMeter.h>
+#include <flux/stdio>
+#include <flux/exceptions>
+#include <flux/Arguments>
+#include <flux/crypto/Sha1>
+#include <flux/crypto/Md5>
+#include <flux/crypto/HashMeter>
 
 using namespace flux;
 using namespace flux::crypto;

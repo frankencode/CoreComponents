@@ -6,8 +6,8 @@
  *
  */
 
-#include "types.h"
-#include "Stream.h"
+#include "types"
+#include "Stream"
 
 namespace flux
 {

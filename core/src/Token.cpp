@@ -6,8 +6,8 @@
  *
  */
 
-#include "Memory.h"
-#include "Token.h"
+#include "Memory"
+#include "Token"
 
 namespace flux
 {

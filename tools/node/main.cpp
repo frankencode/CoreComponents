@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/exceptions.h>
+#include <flux/stdio>
+#include <flux/exceptions>
 #include "NodeMaster.h"
 
 using namespace fluxnode;

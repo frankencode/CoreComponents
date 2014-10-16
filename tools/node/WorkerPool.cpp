@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/ThreadFactory.h>
+#include <flux/ThreadFactory>
 #include "ErrorLog.h"
 #include "NodeConfig.h"
 #include "ServiceInstance.h"

@@ -6,7 +6,7 @@
  *
  */
 
-#include "AbnfSyntax.h"
+#include "AbnfSyntax"
 
 namespace flux {
 namespace abnf {

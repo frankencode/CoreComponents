@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/Singleton.h>
-#include "XmlSyntax.h"
+#include <flux/Singleton>
+#include "XmlSyntax"
 
 namespace flux {
 namespace xml {

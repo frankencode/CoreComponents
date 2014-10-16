@@ -9,8 +9,8 @@
 #ifndef FLUXDOC_MARKUPSYNTAX_H
 #define FLUXDOC_MARKUPSYNTAX_H
 
-#include <flux/SyntaxDefinition.h>
-#include <flux/exceptions.h>
+#include <flux/SyntaxDefinition>
+#include <flux/exceptions>
 #include "Element.h"
 
 namespace flux {

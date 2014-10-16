@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/DirWalker.h>
+#include <flux/stdio>
+#include <flux/DirWalker>
 #include "pack.h"
 
 namespace fluxtar

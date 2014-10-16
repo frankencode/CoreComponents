@@ -7,11 +7,11 @@
  */
 
 #include <string.h> // strerror_r
-#include "Format.h"
-#include "Thread.h"
-#include "SyntaxState.h"
-#include "ResourceContext.h"
-#include "exceptions.h"
+#include "Format"
+#include "Thread"
+#include "SyntaxState"
+#include "ResourceContext"
+#include "exceptions"
 
 namespace flux
 {

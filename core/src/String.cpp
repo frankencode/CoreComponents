@@ -6,10 +6,10 @@
  *
  */
 
-#include "Format.h"
-#include "Variant.h"
-#include "Singleton.h"
-#include "String.h"
+#include "Format"
+#include "Variant"
+#include "Singleton"
+#include "String"
 
 namespace flux
 {

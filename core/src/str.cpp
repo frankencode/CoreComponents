@@ -6,9 +6,9 @@
  *
  */
 
-#include "Stack.h"
-#include "rounding.h"
-#include "str.h"
+#include "Stack"
+#include "rounding"
+#include "str"
 
 namespace flux
 {

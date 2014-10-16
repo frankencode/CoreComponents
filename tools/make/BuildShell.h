@@ -9,7 +9,7 @@
 #ifndef FLUXMAKE_BUILDSHELL_H
 #define FLUXMAKE_BUILDSHELL_H
 
-#include <flux/String.h>
+#include <flux/String>
 
 namespace flux { class FileStatus; }
 

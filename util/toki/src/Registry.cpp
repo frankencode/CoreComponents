@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/Singleton.h>
-#include "Registry.h"
+#include <flux/Singleton>
+#include "Registry"
 
 namespace flux {
 namespace toki {
