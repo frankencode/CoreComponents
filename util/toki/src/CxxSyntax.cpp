@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/Singleton.h>
-#include <flux/IntegerSyntax.h>
-#include <flux/FloatSyntax.h>
-#include "CxxSyntax.h"
+#include <flux/Singleton>
+#include <flux/IntegerSyntax>
+#include <flux/FloatSyntax>
+#include "CxxSyntax"
 
 namespace flux {
 namespace toki {

@@ -7,7 +7,7 @@
  */
 
 #include <signal.h>
-#include "check.h"
+#include "check"
 
 namespace flux
 {

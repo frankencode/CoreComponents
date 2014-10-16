@@ -9,7 +9,7 @@
 #ifndef FLUXTAR_UNPACK_H
 #define FLUXTAR_UNPACK_H
 
-#include <flux/tar/ArchiveReader.h>
+#include <flux/tar/ArchiveReader>
 
 namespace fluxtar
 {

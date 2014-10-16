@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/str.h>
+#include <flux/str>
 #include "SystemPrerequisite.h"
 
 namespace fluxmake

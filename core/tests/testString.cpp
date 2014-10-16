@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/String.h>
-#include <flux/Unicode.h>
+#include <flux/stdio>
+#include <flux/String>
+#include <flux/Unicode>
 
 using namespace flux;
 

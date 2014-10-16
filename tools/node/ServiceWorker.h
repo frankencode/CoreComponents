@@ -9,11 +9,11 @@
 #ifndef FLUXNODE_SERVICEWORKER_H
 #define FLUXNODE_SERVICEWORKER_H
 
-#include <flux/Thread.h>
-#include <flux/Channel.h>
-#include <flux/PriorityQueue.h>
-#include <flux/Map.h>
-#include <flux/net/StreamSocket.h>
+#include <flux/Thread>
+#include <flux/Channel>
+#include <flux/PriorityQueue>
+#include <flux/Map>
+#include <flux/net/StreamSocket>
 #include "ClientConnection.h"
 
 namespace fluxnode

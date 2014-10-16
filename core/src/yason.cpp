@@ -6,10 +6,10 @@
  *
  */
 
-#include "Format.h"
-#include "YasonSyntax.h"
-#include "YasonWriter.h"
-#include "yason.h"
+#include "Format"
+#include "YasonSyntax"
+#include "YasonWriter"
+#include "yason"
 
 namespace flux {
 namespace yason {

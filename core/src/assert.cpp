@@ -6,8 +6,8 @@
  *
  */
 
-#include "exceptions.h"
-#include "assert.h"
+#include "exceptions"
+#include "assert"
 
 namespace flux
 {

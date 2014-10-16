@@ -6,10 +6,10 @@
  *
  */
 
-#include "Guard.h"
-#include "YasonSyntax.h"
-#include "MetaProtocol.h"
-#include "MetaObject.h"
+#include "Guard"
+#include "YasonSyntax"
+#include "MetaProtocol"
+#include "MetaObject"
 
 namespace flux
 {

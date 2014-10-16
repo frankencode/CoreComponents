@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/Thread.h>
-#include <flux/str.h>
+#include <flux/Thread>
+#include <flux/str>
 #include "TapBuffer.h"
 
 namespace fluxnode

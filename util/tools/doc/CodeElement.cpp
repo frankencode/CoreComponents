@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/toki/Registry.h>
+#include <flux/stdio>
+#include <flux/toki/Registry>
 #include "CodeElement.h"
 
 namespace flux {

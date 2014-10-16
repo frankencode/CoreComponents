@@ -9,8 +9,8 @@
 #ifndef FLUXNODE_SERVICEINSTANCE_H
 #define FLUXNODE_SERVICEINSTANCE_H
 
-#include <flux/Pattern.h>
-#include <flux/List.h>
+#include <flux/Pattern>
+#include <flux/List>
 #include "LogConfig.h"
 
 namespace flux { class MetaObject; }

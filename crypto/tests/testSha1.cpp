@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/crypto/Sha1.h>
+#include <flux/stdio>
+#include <flux/crypto/Sha1>
 
 using namespace flux;
 using namespace flux::crypto;

@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/check.h>
-#include <flux/Mutex.h>
-#include <flux/exceptions.h>
+#include <flux/stdio>
+#include <flux/check>
+#include <flux/Mutex>
+#include <flux/exceptions>
 
 using namespace flux;
 

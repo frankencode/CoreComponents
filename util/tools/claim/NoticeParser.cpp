@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/Singleton.h>
-#include <flux/SyntaxDefinition.h>
-#include <flux/stdio.h>
+#include <flux/Singleton>
+#include <flux/SyntaxDefinition>
+#include <flux/stdio>
 #include "NoticeParser.h"
 
 namespace fluxclaim

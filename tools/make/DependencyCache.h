@@ -9,8 +9,8 @@
 #ifndef FLUXMAKE_DEPENDENCYCACHE_H
 #define FLUXMAKE_DEPENDENCYCACHE_H
 
-#include <flux/String.h>
-#include <flux/Map.h>
+#include <flux/String>
+#include <flux/Map>
 
 namespace flux {
 class File;

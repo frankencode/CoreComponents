@@ -6,8 +6,8 @@
  *
  */
 
-#include "Format.h"
-#include "DebugToken.h"
+#include "Format"
+#include "DebugToken"
 
 namespace flux
 {

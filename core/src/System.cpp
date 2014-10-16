@@ -16,7 +16,7 @@
 #endif
 #include <sys/time.h>
 #include <time.h>
-#include "System.h"
+#include "System"
 
 namespace flux
 {

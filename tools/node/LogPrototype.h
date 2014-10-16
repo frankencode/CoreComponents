@@ -9,8 +9,8 @@
 #ifndef FLUXNODE_LOGPROTOTYPE_H
 #define FLUXNODE_LOGPROTOTYPE_H
 
-#include <flux/Date.h>
-#include <flux/MetaObject.h>
+#include <flux/Date>
+#include <flux/MetaObject>
 
 namespace fluxnode
 {

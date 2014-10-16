@@ -6,8 +6,8 @@
  *
  */
 
-#include "System.h"
-#include "Random.h"
+#include "System"
+#include "Random"
 
 namespace flux
 {

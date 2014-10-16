@@ -6,8 +6,8 @@
  *
  */
 
-#include "strings.h"
-#include "Crc32.h"
+#include "strings"
+#include "Crc32"
 
 namespace flux
 {

@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/assert.h>
-#include <flux/SyntaxDebugger.h>
-#include "AbnfSyntax.h"
-#include "AbnfCompiler.h"
+#include <flux/assert>
+#include <flux/SyntaxDebugger>
+#include "AbnfSyntax"
+#include "AbnfCompiler"
 
 namespace flux {
 namespace abnf {

@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_LOGCONFIG_H
 #define FLUXNODE_LOGCONFIG_H
 
-#include <flux/MetaObject.h>
+#include <flux/MetaObject>
 
 namespace fluxnode
 {

@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/stdio.h>
+#include <flux/stdio>
 
 using namespace flux;
 

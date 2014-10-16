@@ -10,8 +10,8 @@
 #include <fcntl.h> // fcntl
 #include <errno.h> // errno
 #include <math.h> // modf
-#include <flux/exceptions.h>
-#include "StreamSocket.h"
+#include <flux/exceptions>
+#include "StreamSocket"
 
 namespace flux {
 namespace net {

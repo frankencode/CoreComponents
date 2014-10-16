@@ -6,8 +6,8 @@
  *
  */
 
-#include "Singleton.h"
-#include "NullStream.h"
+#include "Singleton"
+#include "NullStream"
 
 namespace flux
 {

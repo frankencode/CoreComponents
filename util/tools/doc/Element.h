@@ -9,7 +9,7 @@
 #ifndef FLUXDOC_ELEMENT_H
 #define FLUXDOC_ELEMENT_H
 
-#include <flux/yason.h>
+#include <flux/yason>
 
 namespace flux {
 namespace doc {

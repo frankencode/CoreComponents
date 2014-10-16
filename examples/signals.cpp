@@ -1,6 +1,6 @@
-#include <flux/stdio.h>
-#include <flux/Thread.h>
-#include <flux/Process.h>
+#include <flux/stdio>
+#include <flux/Thread>
+#include <flux/Process>
 
 using namespace flux;
 

@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/SyntaxDefinition.h>
-#include <flux/Singleton.h>
-#include <flux/File.h>
-#include <flux/Format.h>
+#include <flux/SyntaxDefinition>
+#include <flux/Singleton>
+#include <flux/File>
+#include <flux/Format>
 #include "ShHeaderStyle.h"
 
 namespace fluxclaim {

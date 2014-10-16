@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/crypto/Md5.h>
+#include <flux/stdio>
+#include <flux/crypto/Md5>
 
 using namespace flux;
 using namespace flux::crypto;

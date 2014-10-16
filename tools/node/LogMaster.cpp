@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/Guard.h>
-#include <flux/Singleton.h>
-#include <flux/File.h>
-#include <flux/System.h>
+#include <flux/Guard>
+#include <flux/Singleton>
+#include <flux/File>
+#include <flux/System>
 #include "Log.h"
 #include "NodeConfig.h"
 #include "LogMaster.h"

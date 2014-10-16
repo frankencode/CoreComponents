@@ -8,9 +8,9 @@
 
 #include <stdint.h>
 #include <time.h>
-#include "System.h"
-#include "Format.h"
-#include "Date.h"
+#include "System"
+#include "Format"
+#include "Date"
 
 namespace flux
 {

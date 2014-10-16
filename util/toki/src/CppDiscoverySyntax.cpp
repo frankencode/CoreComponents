@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/Singleton.h>
-#include "CxxSyntax.h"
-#include "CppDiscoverySyntax.h"
+#include <flux/Singleton>
+#include "CxxSyntax"
+#include "CppDiscoverySyntax"
 
 namespace flux {
 namespace toki {

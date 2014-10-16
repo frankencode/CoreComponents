@@ -6,12 +6,12 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/Glob.h>
-#include <flux/Dir.h>
-#include <flux/ResourceGuard.h>
-#include <flux/yason.h>
-#include <flux/Arguments.h>
+#include <flux/stdio>
+#include <flux/Glob>
+#include <flux/Dir>
+#include <flux/ResourceGuard>
+#include <flux/yason>
+#include <flux/Arguments>
 #include "DependencyCache.h"
 #include "GnuToolChain.h"
 #include "JobScheduler.h"

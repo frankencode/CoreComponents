@@ -9,8 +9,8 @@
 #ifndef FLUXMAKE_BUILDPLAN_H
 #define FLUXMAKE_BUILDPLAN_H
 
-#include <flux/PrefixTree.h>
-#include <flux/Map.h>
+#include <flux/PrefixTree>
+#include <flux/Map>
 #include "Module.h"
 #include "BuildParameters.h"
 #include "BuildShell.h"

@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/System.h>
-#include <flux/stream/TimeoutLimiter.h>
-#include <flux/stream/TransferLimiter.h>
+#include <flux/System>
+#include <flux/stream/TimeoutLimiter>
+#include <flux/stream/TransferLimiter>
 #include "exceptions.h"
 #include "RequestStream.h"
 

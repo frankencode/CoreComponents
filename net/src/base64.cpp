@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/ByteSink.h>
-#include "base64.h"
+#include <flux/ByteSink>
+#include "base64"
 
 namespace flux {
 namespace net {

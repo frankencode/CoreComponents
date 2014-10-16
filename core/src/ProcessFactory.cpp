@@ -13,10 +13,10 @@
 #include <fcntl.h> // open
 #include <stdlib.h> // exit, posix_openpt, grantpt, unlockpt
 #include <termios.h> // tcgetattr, tcsetattr
-#include "Format.h"
-#include "File.h"
-#include "exceptions.h"
-#include "ProcessFactory.h"
+#include "Format"
+#include "File"
+#include "exceptions"
+#include "ProcessFactory"
 
 namespace flux
 {

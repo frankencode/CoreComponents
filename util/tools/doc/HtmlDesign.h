@@ -9,7 +9,7 @@
 #ifndef FLUXDOC_HTMLDESIGN_H
 #define FLUXDOC_HTMLDESIGN_H
 
-#include <flux/toki/Theme.h>
+#include <flux/toki/Theme>
 #include "Design.h"
 
 namespace flux {

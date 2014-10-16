@@ -9,9 +9,9 @@
 #ifndef FLUXNODE_RESPONSE_H
 #define FLUXNODE_RESPONSE_H
 
-#include <flux/String.h>
-#include <flux/Map.h>
-#include <flux/Stream.h>
+#include <flux/String>
+#include <flux/Map>
+#include <flux/Stream>
 
 namespace flux {
 namespace stream {

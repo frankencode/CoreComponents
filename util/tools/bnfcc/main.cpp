@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/SyntaxDebugger.h>
-#include <flux/abnf/AbnfCompiler.h>
+#include <flux/stdio>
+#include <flux/SyntaxDebugger>
+#include <flux/abnf/AbnfCompiler>
 
 using namespace flux;
 using namespace flux::abnf;

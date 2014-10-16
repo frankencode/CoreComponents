@@ -6,10 +6,10 @@
  *
  */
 
-#include "syntax.h"
-#include "SyntaxDefinition.h"
-#include "TokenFactory.h"
-#include "SyntaxState.h"
+#include "syntax"
+#include "SyntaxDefinition"
+#include "TokenFactory"
+#include "SyntaxState"
 
 namespace flux
 {

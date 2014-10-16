@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/toki/Theme.h>
+#include <flux/toki/Theme>
 #include "HtmlDesign.h"
 
 namespace flux {

@@ -6,8 +6,8 @@
  *
  */
 
-#include "syntax.h"
-#include "SyntaxDefinition.h"
+#include "syntax"
+#include "SyntaxDefinition"
 
 namespace flux
 {

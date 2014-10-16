@@ -6,8 +6,8 @@
  *
  */
 
-#include "exceptions.h"
-#include "Mutex.h"
+#include "exceptions"
+#include "Mutex"
 
 namespace flux
 {

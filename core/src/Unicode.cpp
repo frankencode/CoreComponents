@@ -6,8 +6,8 @@
  *
  */
 
-#include "ByteArray.h"
-#include "Unicode.h"
+#include "ByteArray"
+#include "Unicode"
 
 namespace flux
 {

@@ -6,8 +6,8 @@
  *
  */
 
-#include "Singleton.h"
-#include "IntegerSyntax.h"
+#include "Singleton"
+#include "IntegerSyntax"
 
 namespace flux
 {

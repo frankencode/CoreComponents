@@ -6,7 +6,7 @@
  *
  */
 
-#include "ThreadExitEvent.h"
+#include "ThreadExitEvent"
 
 namespace flux
 {

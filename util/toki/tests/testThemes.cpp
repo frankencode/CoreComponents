@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/toki/Theme.h>
+#include <flux/stdio>
+#include <flux/toki/Theme>
 
 using namespace flux;
 using namespace flux::toki;

@@ -9,8 +9,8 @@
 #ifndef FLUXMAKE_JOBSERVER_H
 #define FLUXMAKE_JOBSERVER_H
 
-#include <flux/Thread.h>
-#include <flux/Channel.h>
+#include <flux/Thread>
+#include <flux/Channel>
 #include "Job.h"
 
 namespace fluxmake

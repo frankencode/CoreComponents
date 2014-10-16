@@ -9,7 +9,7 @@
 #ifndef FLUXDOC_MARKUPPROTOCOL_H
 #define FLUXDOC_MARKUPPROTOCOL_H
 
-#include <flux/MetaProtocol.h>
+#include <flux/MetaProtocol>
 
 namespace flux {
 

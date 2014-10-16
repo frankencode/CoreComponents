@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/System.h>
-#include <flux/Date.h>
-#include <flux/stream/TransferMeter.h>
+#include <flux/System>
+#include <flux/Date>
+#include <flux/stream/TransferMeter>
 #include "utils.h"
 #include "NodeConfig.h"
 #include "ClientConnection.h"

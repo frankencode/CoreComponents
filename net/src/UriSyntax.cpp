@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/Singleton.h>
-#include "InetAddressSyntax.h"
-#include "UriSyntax.h"
+#include <flux/Singleton>
+#include "InetAddressSyntax"
+#include "UriSyntax"
 
 namespace flux {
 namespace net {

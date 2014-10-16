@@ -9,8 +9,8 @@
 #ifndef FLUXMAKE_JOB_H
 #define FLUXMAKE_JOB_H
 
-#include <flux/String.h>
-#include <flux/Channel.h>
+#include <flux/String>
+#include <flux/Channel>
 
 namespace fluxmake
 {

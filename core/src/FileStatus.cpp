@@ -9,9 +9,9 @@
 #include <sys/time.h> // futimes, utimes
 #include <errno.h>
 #include <math.h>
-#include "File.h"
-#include "exceptions.h"
-#include "FileStatus.h"
+#include "File"
+#include "exceptions"
+#include "FileStatus"
 
 namespace flux
 {

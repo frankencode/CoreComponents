@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/exceptions.h>
+#include <flux/exceptions>
 #include "Log.h"
 #include "LogConfig.h"
 

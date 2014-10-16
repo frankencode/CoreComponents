@@ -6,12 +6,12 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/exceptions.h>
-#include <flux/Process.h>
-#include <flux/FileStatus.h>
-#include <flux/File.h>
-#include <flux/Dir.h>
+#include <flux/stdio>
+#include <flux/exceptions>
+#include <flux/Process>
+#include <flux/FileStatus>
+#include <flux/File>
+#include <flux/Dir>
 #include "BuildPlan.h"
 #include "BuildShell.h"
 

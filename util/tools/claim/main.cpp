@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/Arguments.h>
-#include <flux/Date.h>
+#include <flux/stdio>
+#include <flux/Arguments>
+#include <flux/Date>
 #include "Report.h"
 #include "Registry.h"
 

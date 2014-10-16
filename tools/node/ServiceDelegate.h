@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_SERVICEDELEGATE_H
 #define FLUXNODE_SERVICEDELEGATE_H
 
-#include <flux/Format.h>
+#include <flux/Format>
 #include "Request.h"
 
 namespace fluxnode

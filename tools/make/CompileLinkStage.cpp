@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/FileStatus.h>
+#include <flux/stdio>
+#include <flux/FileStatus>
 #include "JobScheduler.h"
 #include "BuildShell.h"
 #include "BuildPlan.h"

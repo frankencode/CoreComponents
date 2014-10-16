@@ -6,8 +6,8 @@
  *
  */
 
-#include "Registry.h"
-#include "YasonSyntax.h"
+#include "Registry"
+#include "YasonSyntax"
 
 namespace flux {
 namespace toki {

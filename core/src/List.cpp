@@ -6,8 +6,8 @@
  *
  */
 
-#include "Variant.h"
-#include "List.h"
+#include "Variant"
+#include "List"
 
 namespace flux
 {

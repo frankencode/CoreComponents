@@ -6,8 +6,8 @@
  *
  */
 
-#include "ThreadLocalSingleton.h"
-#include "stdio.h"
+#include "ThreadLocalSingleton"
+#include "stdio"
 
 namespace flux
 {

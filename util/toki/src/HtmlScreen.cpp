@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/str.h>
-#include "HtmlScreen.h"
+#include <flux/str>
+#include "HtmlScreen"
 
 namespace flux {
 namespace toki {

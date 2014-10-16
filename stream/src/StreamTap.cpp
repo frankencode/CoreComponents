@@ -6,7 +6,7 @@
  *
  */
 
-#include "StreamTap.h"
+#include "StreamTap"
 
 namespace flux {
 namespace stream {

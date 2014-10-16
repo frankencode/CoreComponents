@@ -11,11 +11,11 @@
 #include <unistd.h> // gethostname
 #include <netdb.h> // getaddrinfo, freeaddrinfo, getnameinfo
 #include <errno.h>
-#include <flux/strings.h>
-#include <flux/Format.h>
-#include <flux/exceptions.h>
-#include <flux/SystemStream.h>
-#include "SocketAddress.h"
+#include <flux/strings>
+#include <flux/Format>
+#include <flux/exceptions>
+#include <flux/SystemStream>
+#include "SocketAddress"
 
 namespace flux {
 

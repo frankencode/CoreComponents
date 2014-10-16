@@ -9,7 +9,7 @@
 #ifndef FLUXMAKE_BUILDPARAMETERS_H
 #define FLUXMAKE_BUILDPARAMETERS_H
 
-#include <flux/MetaObject.h>
+#include <flux/MetaObject>
 
 namespace fluxmake
 {

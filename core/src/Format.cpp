@@ -6,10 +6,10 @@
  *
  */
 
-#include "stdio.h"
-#include "Queue.h"
-#include "NullStream.h"
-#include "Format.h"
+#include "stdio"
+#include "Queue"
+#include "NullStream"
+#include "Format"
 
 namespace flux
 {

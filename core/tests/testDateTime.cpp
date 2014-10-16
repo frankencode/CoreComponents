@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/check.h>
-#include <flux/System.h>
-#include <flux/Date.h>
+#include <flux/stdio>
+#include <flux/check>
+#include <flux/System>
+#include <flux/Date>
 
 using namespace flux;
 

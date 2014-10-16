@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/Singleton.h>
-#include "InetAddressSyntax.h"
+#include <flux/Singleton>
+#include "InetAddressSyntax"
 
 namespace flux {
 namespace net {

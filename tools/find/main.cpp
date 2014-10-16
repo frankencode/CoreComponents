@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/Pattern.h>
-#include <flux/DirWalker.h>
-#include <flux/Arguments.h>
+#include <flux/stdio>
+#include <flux/Pattern>
+#include <flux/DirWalker>
+#include <flux/Arguments>
 
 using namespace flux;
 

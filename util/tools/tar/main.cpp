@@ -6,14 +6,14 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/exceptions.h>
-#include <flux/Format.h>
-#include <flux/Arguments.h>
-#include <flux/tar/TarReader.h>
-#include <flux/tar/ArReader.h>
-#include <flux/tar/TarWriter.h>
-#include <flux/tar/ArWriter.h>
+#include <flux/stdio>
+#include <flux/exceptions>
+#include <flux/Format>
+#include <flux/Arguments>
+#include <flux/tar/TarReader>
+#include <flux/tar/ArReader>
+#include <flux/tar/TarWriter>
+#include <flux/tar/ArWriter>
 #include "pack.h"
 #include "unpack.h"
 

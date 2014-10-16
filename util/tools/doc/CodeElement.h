@@ -9,7 +9,7 @@
 #ifndef FLUXDOC_CODEELEMENT_H
 #define FLUXDOC_CODEELEMENT_H
 
-#include <flux/toki/Language.h>
+#include <flux/toki/Language>
 #include "PathElement.h"
 
 namespace flux {

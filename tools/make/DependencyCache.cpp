@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/Format.h>
-#include <flux/File.h>
-#include <flux/FileStatus.h>
-#include <flux/yason.h>
+#include <flux/Format>
+#include <flux/File>
+#include <flux/FileStatus>
+#include <flux/yason>
 #include "BuildPlan.h"
 #include "DependencyCache.h"
 

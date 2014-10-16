@@ -6,9 +6,9 @@
  *
  */
 
-#include "Singleton.h"
-#include "PrefixTree.h"
-#include "ColorNames.h"
+#include "Singleton"
+#include "PrefixTree"
+#include "ColorNames"
 
 namespace flux
 {

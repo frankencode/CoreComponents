@@ -6,7 +6,7 @@
  *
  */
 
-#include "LineSource.h"
+#include "LineSource"
 
 namespace flux
 {

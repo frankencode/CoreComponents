@@ -7,8 +7,8 @@
  */
 
 #include <math.h> // pow
-#include "Singleton.h"
-#include "FloatSyntax.h"
+#include "Singleton"
+#include "FloatSyntax"
 
 namespace flux
 {

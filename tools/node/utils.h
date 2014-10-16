@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_UTILS_H
 #define FLUXNODE_UTILS_H
 
-#include <flux/Date.h>
+#include <flux/Date>
 
 namespace fluxnode
 {

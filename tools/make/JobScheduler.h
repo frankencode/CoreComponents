@@ -9,7 +9,7 @@
 #ifndef FLUXMAKE_JOBSCHEDULER_H
 #define FLUXMAKE_JOBSCHEDULER_H
 
-#include <flux/Thread.h>
+#include <flux/Thread>
 #include "Job.h"
 
 namespace fluxmake

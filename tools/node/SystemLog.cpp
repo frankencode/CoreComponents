@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/ThreadLocalSingleton.h>
-#include <flux/stream/LineBuffer.h>
+#include <flux/ThreadLocalSingleton>
+#include <flux/stream/LineBuffer>
 #include "SystemLogStream.h"
 #include "SystemLog.h"
 

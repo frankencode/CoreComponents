@@ -6,9 +6,9 @@
  *
  */
 
-#include "String.h"
-#include "Singleton.h"
-#include "FormatSyntax.h"
+#include "String"
+#include "Singleton"
+#include "FormatSyntax"
 
 namespace flux
 {

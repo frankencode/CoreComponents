@@ -6,12 +6,12 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/check.h>
-#include <flux/System.h>
-#include <flux/Map.h>
+#include <flux/stdio>
+#include <flux/check>
+#include <flux/System>
+#include <flux/Map>
 #if 0
-#include <flux/Random.h>
+#include <flux/Random>
 #include <map>
 #endif
 

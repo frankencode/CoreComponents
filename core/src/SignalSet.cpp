@@ -6,7 +6,7 @@
  *
  */
 
-#include "SignalSet.h"
+#include "SignalSet"
 
 namespace flux
 {

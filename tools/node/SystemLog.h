@@ -10,7 +10,7 @@
 #define FLUXNODE_SYSTEMLOG_H
 
 #include <syslog.h>
-#include <flux/Stream.h>
+#include <flux/Stream>
 
 namespace flux { template<class> class ThreadLocalSingleton; }
 

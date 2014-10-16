@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/stdio.h>
+#include <flux/stdio>
 #include "DependencyCache.h"
 #include "BuildPlan.h"
 #include "JobScheduler.h"

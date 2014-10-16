@@ -6,7 +6,7 @@
  *
  */
 
-#include "LookAheadStream.h"
+#include "LookAheadStream"
 
 namespace flux {
 namespace stream {

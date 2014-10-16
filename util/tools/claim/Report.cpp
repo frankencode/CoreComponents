@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/DirWalker.h>
-#include <flux/File.h>
-#include <flux/crypto/Sha1.h>
+#include <flux/DirWalker>
+#include <flux/File>
+#include <flux/crypto/Sha1>
 #include "Registry.h"
 #include "NoticeParser.h"
 #include "Report.h"

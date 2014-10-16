@@ -8,8 +8,8 @@
 
 #include <pthread.h>
 #include <math.h>
-#include "exceptions.h"
-#include "Condition.h"
+#include "exceptions"
+#include "Condition"
 
 namespace flux
 {

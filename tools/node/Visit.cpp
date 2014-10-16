@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/System.h>
-#include <flux/net/SocketAddress.h>
+#include <flux/System>
+#include <flux/net/SocketAddress>
 #include "Visit.h"
 
 namespace fluxnode

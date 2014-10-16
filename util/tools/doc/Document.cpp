@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/stdio.h> // DEBUG
-#include <flux/yason.h> // DEBUG
-#include <flux/ResourceGuard.h>
+#include <flux/stdio> // DEBUG
+#include <flux/yason> // DEBUG
+#include <flux/ResourceGuard>
 #include "MarkupSyntax.h"
 #include "Document.h"
 

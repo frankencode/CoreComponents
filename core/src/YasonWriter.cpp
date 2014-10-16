@@ -6,8 +6,8 @@
  *
  */
 
-#include "Format.h"
-#include "YasonWriter.h"
+#include "Format"
+#include "YasonWriter"
 
 namespace flux
 {

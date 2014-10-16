@@ -9,7 +9,7 @@
 #ifndef FLUXCLAIM_REGISTRY_H
 #define FLUXCLAIM_REGISTRY_H
 
-#include <flux/Map.h>
+#include <flux/Map>
 #include "HeaderStyle.h"
 
 namespace flux { template<class> class Singleton; }

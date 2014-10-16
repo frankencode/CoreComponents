@@ -6,9 +6,9 @@
  *
  */
 
-#include "ColorNames.h"
-#include "Format.h"
-#include "Color.h"
+#include "ColorNames"
+#include "Format"
+#include "Color"
 
 namespace flux
 {

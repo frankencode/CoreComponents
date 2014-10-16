@@ -6,12 +6,12 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/Arguments.h>
-#include <flux/toki/Theme.h>
-#include <flux/toki/Language.h>
-#include <flux/toki/Registry.h>
-#include <flux/toki/HtmlScreen.h>
+#include <flux/stdio>
+#include <flux/Arguments>
+#include <flux/toki/Theme>
+#include <flux/toki/Language>
+#include <flux/toki/Registry>
+#include <flux/toki/HtmlScreen>
 
 using namespace flux;
 using namespace flux::toki;

@@ -6,11 +6,11 @@
  *
  */
 
-#include <flux/ResourceContext.h>
-#include <flux/Format.h>
-#include "PaletteLoader.h"
-#include "Registry.h"
-#include "Palette.h"
+#include <flux/ResourceContext>
+#include <flux/Format>
+#include "PaletteLoader"
+#include "Registry"
+#include "Palette"
 
 namespace flux {
 namespace toki {

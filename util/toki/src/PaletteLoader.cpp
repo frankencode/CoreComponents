@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/Singleton.h>
-#include <flux/File.h>
-#include <flux/ResourceGuard.h>
-#include "PaletteLoader.h"
+#include <flux/Singleton>
+#include <flux/File>
+#include <flux/ResourceGuard>
+#include "PaletteLoader"
 
 namespace flux {
 namespace toki {

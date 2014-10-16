@@ -6,11 +6,11 @@
  *
  */
 
-#include <flux/Bundle.h>
-#include <flux/Dir.h>
-#include <flux/Format.h>
-#include <flux/exceptions.h>
-#include "Theme.h"
+#include <flux/Bundle>
+#include <flux/Dir>
+#include <flux/Format>
+#include <flux/exceptions>
+#include "Theme"
 
 namespace flux {
 namespace toki {

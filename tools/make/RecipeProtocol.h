@@ -9,7 +9,7 @@
 #ifndef FLUXMAKE_RECIPEPROTOCOL_H
 #define FLUXMAKE_RECIPEPROTOCOL_H
 
-#include <flux/MetaProtocol.h>
+#include <flux/MetaProtocol>
 
 namespace flux { template<class> class Singleton; }
 

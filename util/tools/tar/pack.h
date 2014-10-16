@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/String.h>
-#include <flux/tar/ArchiveWriter.h>
+#include <flux/String>
+#include <flux/tar/ArchiveWriter>
 
 namespace fluxtar
 {

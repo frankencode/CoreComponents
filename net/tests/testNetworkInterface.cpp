@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/net/NetworkInterface.h>
+#include <flux/stdio>
+#include <flux/net/NetworkInterface>
 
 using namespace flux;
 using namespace flux::net;

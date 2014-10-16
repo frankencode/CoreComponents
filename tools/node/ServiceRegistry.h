@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_SERVICEREGISTRY_H
 #define FLUXNODE_SERVICEREGISTRY_H
 
-#include <flux/Map.h>
+#include <flux/Map>
 #include "ServiceDefinition.h"
 
 namespace flux { template<class> class Singleton; }

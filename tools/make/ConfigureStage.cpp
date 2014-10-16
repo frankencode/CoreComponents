@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/Dir.h>
-#include <flux/File.h>
+#include <flux/stdio>
+#include <flux/Dir>
+#include <flux/File>
 #include "BuildPlan.h"
 #include "ConfigureStage.h"
 

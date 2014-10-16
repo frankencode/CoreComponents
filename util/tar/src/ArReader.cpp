@@ -6,8 +6,8 @@
  *
  */
 
-#include <flux/File.h>
-#include "ArReader.h"
+#include <flux/File>
+#include "ArReader"
 
 namespace flux {
 namespace tar {

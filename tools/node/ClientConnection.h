@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_CLIENTCONNECTION_H
 #define FLUXNODE_CLIENTCONNECTION_H
 
-#include <flux/net/StreamSocket.h>
+#include <flux/net/StreamSocket>
 #include "Visit.h"
 #include "Request.h"
 

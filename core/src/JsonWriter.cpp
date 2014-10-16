@@ -6,8 +6,8 @@
  *
  */
 
-#include "Format.h"
-#include "JsonWriter.h"
+#include "Format"
+#include "JsonWriter"
 
 namespace flux
 {

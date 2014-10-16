@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_REQUESTSTREAM_H
 #define FLUXNODE_REQUESTSTREAM_H
 
-#include <flux/Stream.h>
+#include <flux/Stream>
 #include "Request.h"
 
 namespace fluxnode

@@ -9,7 +9,7 @@
 #ifndef FLUXMAKE_MODULE_H
 #define FLUXMAKE_MODULE_H
 
-#include <flux/String.h>
+#include <flux/String>
 
 namespace fluxmake
 {

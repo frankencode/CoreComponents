@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/stdio.h>
-#include <flux/Arguments.h>
-#include <flux/ResourceGuard.h>
+#include <flux/stdio>
+#include <flux/Arguments>
+#include <flux/ResourceGuard>
 #include "Document.h"
 #include "Design.h"
 #include "Registry.h"

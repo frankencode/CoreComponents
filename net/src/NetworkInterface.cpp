@@ -25,11 +25,11 @@
 
 #include <unistd.h> // getpid
 #ifdef __linux
-#include <flux/File.h>
-#include <flux/LineSource.h>
+#include <flux/File>
+#include <flux/LineSource>
 #endif
-#include <flux/exceptions.h>
-#include "NetworkInterface.h"
+#include <flux/exceptions>
+#include "NetworkInterface"
 
 namespace flux {
 namespace net {

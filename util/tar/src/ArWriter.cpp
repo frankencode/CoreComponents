@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/str.h>
-#include <flux/File.h>
-#include "ArWriter.h"
+#include <flux/str>
+#include <flux/File>
+#include "ArWriter"
 
 namespace flux {
 namespace tar {

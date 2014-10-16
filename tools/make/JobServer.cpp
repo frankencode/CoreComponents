@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/ProcessFactory.h>
+#include <flux/ProcessFactory>
 #include "JobServer.h"
 
 namespace fluxmake

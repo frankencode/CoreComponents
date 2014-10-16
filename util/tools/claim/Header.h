@@ -9,8 +9,8 @@
 #ifndef FLUXCLAIM_HEADER_H
 #define FLUXCLAIM_HEADER_H
 
-#include <flux/Token.h>
-#include <flux/String.h>
+#include <flux/Token>
+#include <flux/String>
 
 namespace fluxclaim {
 

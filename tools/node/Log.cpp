@@ -6,11 +6,11 @@
  *
  */
 
-#include <flux/Process.h>
-#include <flux/NullStream.h>
-#include <flux/Mutex.h>
-#include <flux/Guard.h>
-#include <flux/stdio.h>
+#include <flux/Process>
+#include <flux/NullStream>
+#include <flux/Mutex>
+#include <flux/Guard>
+#include <flux/stdio>
 #include "LogMaster.h"
 #include "SystemLog.h"
 #include "Log.h"

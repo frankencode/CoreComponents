@@ -6,7 +6,7 @@
  *
  */
 
-#include "TransferMeter.h"
+#include "TransferMeter"
 
 namespace flux {
 namespace stream {

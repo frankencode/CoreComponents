@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_EXCEPTIONS_H
 #define FLUXNODE_EXCEPTIONS_H
 
-#include <flux/String.h>
+#include <flux/String>
 
 namespace fluxnode
 {

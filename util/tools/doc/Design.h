@@ -9,7 +9,7 @@
 #ifndef FLUXDOC_DESIGN_H
 #define FLUXDOC_DESIGN_H
 
-#include <flux/MetaObject.h>
+#include <flux/MetaObject>
 
 namespace flux {
 namespace doc {

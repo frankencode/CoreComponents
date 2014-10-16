@@ -6,7 +6,7 @@
  *
  */
 
-#include <flux/System.h>
+#include <flux/System>
 #include "JobServer.h"
 #include "JobScheduler.h"
 
