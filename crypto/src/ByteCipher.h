@@ -18,8 +18,8 @@ namespace crypto {
 class ByteCipher: public Object
 {
 public:
-	virtual uint8_t encode(uint8_t p) = 0;
-	virtual uint8_t decode(uint8_t c) = 0;
+    virtual uint8_t encode(uint8_t p) = 0;
+    virtual uint8_t decode(uint8_t c) = 0;
 };
 
 }} // namespace flux::crypto

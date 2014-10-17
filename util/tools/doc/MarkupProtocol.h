@@ -20,8 +20,8 @@ namespace doc {
 class MarkupProtocol: public MetaProtocol
 {
 private:
-	friend class Singleton<MarkupProtocol>;
-	MarkupProtocol();
+    friend class Singleton<MarkupProtocol>;
+    MarkupProtocol();
 };
 
 const MarkupProtocol *markupProtocol();

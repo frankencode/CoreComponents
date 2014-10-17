@@ -40,128 +40,128 @@ typedef List< Ref<BuildPlan> > BuildPlanList;
 class BuildPlan: public BuildParameters
 {
 public:
-	enum Option {
-		Application   = 1 << 0,
-		Library       = 1 << 1,
-		Tools         = 1 << 2,
-		Tests         = 1 << 3,
-		Package       = 1 << 4,
-		Debug         = 1 << 5,
-		Release       = 1 << 6,
-		Simulate      = 1 << 7,
-		Blindfold     = 1 << 8,
-		Bootstrap     = 1 << 9,
-		BuildTests    = 1 << 10,
-		Verbose       = 1 << 11,
-		Unspecified   = -1,
-		GlobalOptions = Debug|
-		                Release|
-		                Simulate|
-		                Blindfold|
-		                Bootstrap|
-		                BuildTests|
-		                Verbose
-	};
+    enum Option {
+        Application   = 1 << 0,
+        Library       = 1 << 1,
+        Tools         = 1 << 2,
+        Tests         = 1 << 3,
+        Package       = 1 << 4,
+        Debug         = 1 << 5,
+        Release       = 1 << 6,
+        Simulate      = 1 << 7,
+        Blindfold     = 1 << 8,
+        Bootstrap     = 1 << 9,
+        BuildTests    = 1 << 10,
+        Verbose       = 1 << 11,
+        Unspecified   = -1,
+        GlobalOptions = Debug|
+                        Release|
+                        Simulate|
+                        Blindfold|
+                        Bootstrap|
+                        BuildTests|
+                        Verbose
+    };
 
-	static Ref<BuildPlan> create(int argc, char **argv);
+    static Ref<BuildPlan> create(int argc, char **argv);
 
-	inline ToolChain *toolChain() const { return toolChain_; }
+    inline ToolChain *toolChain() const { return toolChain_; }
 
-	inline String projectPath() const { return projectPath_; }
-	inline String recipePath() const { return recipePath(projectPath_); }
-	inline static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
-	inline String modulePath() const { return modulePath_; }
-	inline MetaObject *recipe() const { return recipe_; }
+    inline String projectPath() const { return projectPath_; }
+    inline String recipePath() const { return recipePath(projectPath_); }
+    inline static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
+    inline String modulePath() const { return modulePath_; }
+    inline MetaObject *recipe() const { return recipe_; }
 
-	inline int options() const { return options_; }
-	inline int concurrency() const { return concurrency_; }
+    inline int options() const { return options_; }
+    inline int concurrency() const { return concurrency_; }
 
-	inline String name() const { return name_; }
-	inline StringList *alias() const { return alias_; }
-	inline String version() const { return version_; }
+    inline String name() const { return name_; }
+    inline StringList *alias() const { return alias_; }
+    inline String version() const { return version_; }
 
-	inline StringList *sources() const { return sources_; }
-	inline StringList *bundle() const { return bundle_; }
-	inline ModuleList *modules() const { return modules_; }
-	inline bool containsCPlusPlus() const { return containsCPlusPlus_; }
+    inline StringList *sources() const { return sources_; }
+    inline StringList *bundle() const { return bundle_; }
+    inline ModuleList *modules() const { return modules_; }
+    inline bool containsCPlusPlus() const { return containsCPlusPlus_; }
 
-	inline BuildPlanList *prerequisites() const { return prerequisites_; }
-	inline SystemPrerequisitesByName *systemPrerequisitesByName() const { return systemPrerequisitesByName_; }
+    inline BuildPlanList *prerequisites() const { return prerequisites_; }
+    inline SystemPrerequisitesByName *systemPrerequisitesByName() const { return systemPrerequisitesByName_; }
 
-	inline BuildParameters *usage() const { return usage_; }
+    inline BuildParameters *usage() const { return usage_; }
 
-	int run();
+    int run();
 
-	inline String sourcePrefix() const { return sourcePrefix_; }
+    inline String sourcePrefix() const { return sourcePrefix_; }
 
-	String sourcePath(String source) const;
-	String modulePath(String object) const;
-	String installPath(String relativeInstallPath) const;
+    String sourcePath(String source) const;
+    String modulePath(String object) const;
+    String installPath(String relativeInstallPath) const;
 
-	inline BuildShell *shell() { return &shell_; }
+    inline BuildShell *shell() { return &shell_; }
 
-	inline ConfigureStage *configureStage() { return &configureStage_; }
-	inline AnalyseStage *analyseStage() { return &analyseStage_; }
-	inline CompileLinkStage *compileLinkStage() { return &compileLinkStage_; }
-	inline TestRunStage *testRunStage() { return &testRunStage_; }
-	inline InstallStage *installStage() { return &installStage_; }
-	inline UninstallStage *uninstallStage() { return &uninstallStage_; }
-	inline CleanStage *cleanStage() { return &cleanStage_; }
+    inline ConfigureStage *configureStage() { return &configureStage_; }
+    inline AnalyseStage *analyseStage() { return &analyseStage_; }
+    inline CompileLinkStage *compileLinkStage() { return &compileLinkStage_; }
+    inline TestRunStage *testRunStage() { return &testRunStage_; }
+    inline InstallStage *installStage() { return &installStage_; }
+    inline UninstallStage *uninstallStage() { return &uninstallStage_; }
+    inline CleanStage *cleanStage() { return &cleanStage_; }
 
 private:
-	Ref<BuildPlan> create(String projectPath);
+    Ref<BuildPlan> create(String projectPath);
 
-	typedef PrefixTree<char, BuildPlan *> BuildMap;
+    typedef PrefixTree<char, BuildPlan *> BuildMap;
 
-	BuildPlan(int argc, char **argv);
-	BuildPlan(String projectPath, BuildPlan *parentPlan);
+    BuildPlan(int argc, char **argv);
+    BuildPlan(String projectPath, BuildPlan *parentPlan);
 
-	void readRecipe(BuildPlan *parentPlan = 0);
+    void readRecipe(BuildPlan *parentPlan = 0);
 
-	void use(BuildPlan *plan);
-	String findPrerequisite(String prerequisitePath) const;
-	void readPrerequisites();
+    void use(BuildPlan *plan);
+    String findPrerequisite(String prerequisitePath) const;
+    void readPrerequisites();
 
-	Ref<StringList> globSources(StringList *pattern) const;
-	void globSources();
-	void initModules();
+    Ref<StringList> globSources(StringList *pattern) const;
+    void globSources();
+    void initModules();
 
-	Ref<ToolChain> toolChain_;
+    Ref<ToolChain> toolChain_;
 
-	String projectPath_;
-	String modulePath_;
-	Ref<MetaObject> recipe_;
+    String projectPath_;
+    String modulePath_;
+    Ref<MetaObject> recipe_;
 
-	int options_;
-	int concurrency_;
+    int options_;
+    int concurrency_;
 
-	String name_;
-	Ref<StringList> alias_;
-	String version_;
+    String name_;
+    Ref<StringList> alias_;
+    String version_;
 
-	Ref<StringList> sources_;
-	Ref<StringList> bundle_;
-	Ref<ModuleList> modules_;
-	bool containsCPlusPlus_;
+    Ref<StringList> sources_;
+    Ref<StringList> bundle_;
+    Ref<ModuleList> modules_;
+    bool containsCPlusPlus_;
 
-	Ref<SystemPrerequisitesByName> systemPrerequisitesByName_;
-	Ref<BuildPlanList> prerequisites_;
+    Ref<SystemPrerequisitesByName> systemPrerequisitesByName_;
+    Ref<BuildPlanList> prerequisites_;
 
-	Ref<BuildParameters> usage_;
+    Ref<BuildParameters> usage_;
 
-	Ref<BuildMap> buildMap_;
-	String sourcePrefix_;
-	String installPrefix_;
+    Ref<BuildMap> buildMap_;
+    String sourcePrefix_;
+    String installPrefix_;
 
-	BuildShell shell_;
+    BuildShell shell_;
 
-	ConfigureStage configureStage_;
-	AnalyseStage analyseStage_;
-	CompileLinkStage compileLinkStage_;
-	TestRunStage testRunStage_;
-	InstallStage installStage_;
-	UninstallStage uninstallStage_;
-	CleanStage cleanStage_;
+    ConfigureStage configureStage_;
+    AnalyseStage analyseStage_;
+    CompileLinkStage compileLinkStage_;
+    TestRunStage testRunStage_;
+    InstallStage installStage_;
+    UninstallStage uninstallStage_;
+    CleanStage cleanStage_;
 };
 
 } // namespace fluxmake

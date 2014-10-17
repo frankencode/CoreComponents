@@ -13,12 +13,12 @@ namespace flux {
 
 ResourceGuard::ResourceGuard(String resource)
 {
-	resourceContextStack()->push(resource);
+    resourceContextStack()->push(resource);
 }
 
 ResourceGuard::~ResourceGuard()
 {
-	resourceContextStack()->pop();
+    resourceContextStack()->pop();
 }
 
 } // namespace flux

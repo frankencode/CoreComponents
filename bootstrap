@@ -1,15 +1,15 @@
 #!/bin/sh
 
 if [ $# -ne 0 ]; then
-	echo "Usage: path/to/flux/bootstrap"
-	echo
-	echo "Bootstraps the build system (fluxmake)."
-	exit 1
+    echo "Usage: path/to/flux/bootstrap"
+    echo
+    echo "Bootstraps the build system (fluxmake)."
+    exit 1
 fi
 
 if [ -f $PWD/Recipe ]; then
-	echo "I'd like to be called out-of-source."
-	exit 1
+    echo "I'd like to be called out-of-source."
+    exit 1
 fi
 
 $(dirname $0)/tools/make/bootstrap $(dirname $0)

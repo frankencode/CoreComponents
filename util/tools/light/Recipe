@@ -1,5 +1,5 @@
 Application {
-	name: fluxlight
-	source: *.cpp
-	use: [ core, toki ]
+    name: fluxlight
+    source: *.cpp
+    use: [ core, toki ]
 }

@@ -18,33 +18,33 @@ namespace flux {
 class Crc32
 {
 public:
-	Crc32(uint32_t seed = ~uint32_t(0))
-		: crc_(seed)
-	{}
+    Crc32(uint32_t seed = ~uint32_t(0))
+        : crc_(seed)
+    {}
 
-	void feed(const void *buf, int bufFill);
-	inline uint32_t sum() const { return crc_; }
+    void feed(const void *buf, int bufFill);
+    inline uint32_t sum() const { return crc_; }
 
 private:
-	uint32_t crc_;
+    uint32_t crc_;
 };
 
 inline uint32_t crc32(const void *buf, int bufSize) {
-	Crc32 crc;
-	if (buf) crc.feed(buf, bufSize);
-	return crc.sum();
+    Crc32 crc;
+    if (buf) crc.feed(buf, bufSize);
+    return crc.sum();
 }
 
 inline uint32_t crc32(const char *s) {
-	Crc32 crc;
-	if (s) crc.feed(s, strlen(s));
-	return crc.sum();
+    Crc32 crc;
+    if (s) crc.feed(s, strlen(s));
+    return crc.sum();
 }
 
 inline uint32_t crc32(ByteArray *buf) {
-	Crc32 crc;
-	if (buf) crc.feed(buf->bytes(), buf->count());
-	return crc.sum();
+    Crc32 crc;
+    if (buf) crc.feed(buf->bytes(), buf->count());
+    return crc.sum();
 }
 
 } // namespace flux

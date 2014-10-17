@@ -18,15 +18,15 @@ using namespace flux;
 class ShHeaderStyle: public HeaderStyle
 {
 public:
-	virtual Ref<Header> scan(String path) const;
-	virtual String str(Notice *notice) const;
-	virtual int magicCount(String text) const;
+    virtual Ref<Header> scan(String path) const;
+    virtual String str(Notice *notice) const;
+    virtual int magicCount(String text) const;
 
 private:
-	friend class Registration<ShHeaderStyle>;
+    friend class Registration<ShHeaderStyle>;
 
-	ShHeaderStyle();
-	Ref<SyntaxDefinition> headerSyntax_;
+    ShHeaderStyle();
+    Ref<SyntaxDefinition> headerSyntax_;
 };
 
 namespace { Registration<ShHeaderStyle> registration; }

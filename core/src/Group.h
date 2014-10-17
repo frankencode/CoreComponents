@@ -21,28 +21,28 @@ namespace flux {
 class Group: public Object
 {
 public:
-	inline static Ref<Group> lookup(gid_t id) {
-		return new Group(id);
-	}
-	inline static Ref<Group> lookup(const char *name) {
-		return new Group(name);
-	}
+    inline static Ref<Group> lookup(gid_t id) {
+        return new Group(id);
+    }
+    inline static Ref<Group> lookup(const char *name) {
+        return new Group(name);
+    }
 
-	inline bool exists() const { return exists_; }
+    inline bool exists() const { return exists_; }
 
-	inline gid_t id() const { return id_; }
-	inline String name() const { return name_; }
-	inline StringList *members() const { return members_; }
+    inline gid_t id() const { return id_; }
+    inline String name() const { return name_; }
+    inline StringList *members() const { return members_; }
 
 private:
-	Group(gid_t id);
-	Group(const char *name);
+    Group(gid_t id);
+    Group(const char *name);
 
-	void load(struct group *entry);
-	bool exists_;
-	gid_t id_;
-	String name_;
-	Ref<StringList> members_;
+    void load(struct group *entry);
+    bool exists_;
+    gid_t id_;
+    String name_;
+    Ref<StringList> members_;
 };
 
 } // namespace flux

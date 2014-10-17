@@ -14,6 +14,6 @@ using namespace flux::toki;
 
 int main()
 {
-	Ref<Theme> theme = Theme::load("ClassicWhite");
-	return 0;
+    Ref<Theme> theme = Theme::load("ClassicWhite");
+    return 0;
 }

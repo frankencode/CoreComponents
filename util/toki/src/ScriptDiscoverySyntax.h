@@ -17,10 +17,10 @@ namespace toki {
 class ScriptDiscoverySyntax: public SyntaxDefinition
 {
 public:
-	static Ref<ScriptDiscoverySyntax> create(const char *suffix);
+    static Ref<ScriptDiscoverySyntax> create(const char *suffix);
 
 protected:
-	ScriptDiscoverySyntax(const char *suffix);
+    ScriptDiscoverySyntax(const char *suffix);
 };
 
 }} // namespace flux::toki

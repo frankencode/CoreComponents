@@ -17,16 +17,16 @@ namespace crypto {
 class BlockCipher: public Object
 {
 public:
-	inline int blockSize() const { return blockSize_; }
+    inline int blockSize() const { return blockSize_; }
 
-	virtual void encode(ByteArray *c, ByteArray *p) = 0;
-	virtual void decode(ByteArray *c, ByteArray *p) = 0;
+    virtual void encode(ByteArray *c, ByteArray *p) = 0;
+    virtual void decode(ByteArray *c, ByteArray *p) = 0;
 
 protected:
-	BlockCipher(int blockSize): blockSize_(blockSize) {}
+    BlockCipher(int blockSize): blockSize_(blockSize) {}
 
 private:
-	int blockSize_;
+    int blockSize_;
 };
 
 }} // namespace flux::crypto

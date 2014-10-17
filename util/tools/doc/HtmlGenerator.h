@@ -22,30 +22,30 @@ class HtmlWriter;
 class HtmlGenerator: public Generator
 {
 public:
-	virtual void run(Design *design, Document *document);
+    virtual void run(Design *design, Document *document);
 
 private:
-	friend class HtmlGeneratorRegistration;
-	HtmlGenerator();
+    friend class HtmlGeneratorRegistration;
+    HtmlGenerator();
 
-	template<class Writer>
-	void define() {
-		writerMap_->insert(Writer::className(), Writer::create());
-	}
+    template<class Writer>
+    void define() {
+        writerMap_->insert(Writer::className(), Writer::create());
+    }
 
-	typedef Map< String, Ref<HtmlWriter> > WriterMap;
-	Ref<WriterMap> writerMap_;
+    typedef Map< String, Ref<HtmlWriter> > WriterMap;
+    Ref<WriterMap> writerMap_;
 };
 
 class HtmlGeneratorRegistration: public Object
 {
 public:
-	HtmlGeneratorRegistration() {
-		if (firstTime())
-			new HtmlGenerator;
-	}
+    HtmlGeneratorRegistration() {
+        if (firstTime())
+            new HtmlGenerator;
+    }
 private:
-	static bool firstTime() { static int count = 0; return count++ == 0; }
+    static bool firstTime() { static int count = 0; return count++ == 0; }
 };
 
 namespace { HtmlGeneratorRegistration registration; }

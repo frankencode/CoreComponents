@@ -14,16 +14,16 @@ int GlobalCoreMutexInitializer::count_ = 0;
 
 GlobalCoreMutexInitializer::GlobalCoreMutexInitializer()
 {
-	if (count_ == 0) {
-		++count_;
-		GlobalCoreMutex::instance();
-	}
+    if (count_ == 0) {
+        ++count_;
+        GlobalCoreMutex::instance();
+    }
 }
 
 GlobalCoreMutex *GlobalCoreMutex::instance()
 {
-	static GlobalCoreMutex instance_;
-	return &instance_;
+    static GlobalCoreMutex instance_;
+    return &instance_;
 }
 
 } // namespace flux

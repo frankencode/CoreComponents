@@ -13,37 +13,37 @@ namespace stream {
 
 Ref<StreamTap> StreamTap::open(Stream *stream, Stream *inputTap, Stream *outputTap)
 {
-	return new StreamTap(stream, inputTap, outputTap);
+    return new StreamTap(stream, inputTap, outputTap);
 }
 
 StreamTap::StreamTap(Stream *stream, Stream *inputTap, Stream *outputTap)
-	: stream_(stream),
-	  inputTap_(inputTap),
-	  outputTap_(outputTap)
+    : stream_(stream),
+      inputTap_(inputTap),
+      outputTap_(outputTap)
 {}
 
 bool StreamTap::readyRead(double interval) const
 {
-	return stream_->readyRead(interval);
+    return stream_->readyRead(interval);
 }
 
 int StreamTap::read(ByteArray *buf)
 {
-	int n = stream_->read(buf);
-	inputTap_->write(ByteRange(buf, 0, n));
-	return n;
+    int n = stream_->read(buf);
+    inputTap_->write(ByteRange(buf, 0, n));
+    return n;
 }
 
 void StreamTap::write(const ByteArray *buf)
 {
-	outputTap_->write(buf);
-	stream_->write(buf);
+    outputTap_->write(buf);
+    stream_->write(buf);
 }
 
 void StreamTap::write(const StringList *parts)
 {
-	outputTap_->write(parts);
-	stream_->write(parts);
+    outputTap_->write(parts);
+    stream_->write(parts);
 }
 
 }} // namespace flux::stream

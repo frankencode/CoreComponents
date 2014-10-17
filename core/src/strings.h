@@ -22,33 +22,33 @@ inline void memclr(void *buf, size_t bufSize) { memset(buf, 0, bufSize); }
 /*template<class T>
 inline int strlen(const T *s)
 {
-	int i = 0;
-	if (s) while (s[i]) ++i;
-	return i;
+    int i = 0;
+    if (s) while (s[i]) ++i;
+    return i;
 }*/
 
 template<class T, class S>
 inline void strcpy(T *t, const S *s, int n = -1)
 {
-	if (n == -1) n = len(s);
-	for (int i = 0; i < n; ++i) t[i] = s[i];
+    if (n == -1) n = len(s);
+    for (int i = 0; i < n; ++i) t[i] = s[i];
 }
 
 inline int strcasecmp(const char *a, const char *b)
 {
-	int ret = 0;
-	char ca, cb;
-	while ((ca = *a) && (cb = *b) && (!ret)) {
-		ca = downcase(ca);
-		cb = downcase(cb);
-		if (ca < cb) ret = -1;
-		else if (cb < ca) ret = 1;
-		++a;
-		++b;
-	}
-	if (!ret)
-		ret = (*b == 0) - (*a == 0);
-	return ret;
+    int ret = 0;
+    char ca, cb;
+    while ((ca = *a) && (cb = *b) && (!ret)) {
+        ca = downcase(ca);
+        cb = downcase(cb);
+        if (ca < cb) ret = -1;
+        else if (cb < ca) ret = 1;
+        ++a;
+        ++b;
+    }
+    if (!ret)
+        ret = (*b == 0) - (*a == 0);
+    return ret;
 }
 
 char *strdup(const char *s);

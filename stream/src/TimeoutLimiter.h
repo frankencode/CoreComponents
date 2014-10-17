@@ -18,29 +18,29 @@ namespace stream {
 class TimeoutLimiter: public Stream
 {
 public:
-	static Ref<TimeoutLimiter> open(Stream *stream, double timeout = 0);
+    static Ref<TimeoutLimiter> open(Stream *stream, double timeout = 0);
 
-	inline Stream *stream() const { return stream_; }
-	inline double timeout() const { return timeout_; }
+    inline Stream *stream() const { return stream_; }
+    inline double timeout() const { return timeout_; }
 
-	virtual bool readyRead(double interval) const;
-	virtual int read(ByteArray *buf);
-	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts);
+    virtual bool readyRead(double interval) const;
+    virtual int read(ByteArray *buf);
+    virtual void write(const ByteArray *buf);
+    virtual void write(const StringList *parts);
 
 private:
-	TimeoutLimiter(Stream *stream, double timeout);
+    TimeoutLimiter(Stream *stream, double timeout);
 
-	Ref<Stream> stream_;
-	double timeout_;
+    Ref<Stream> stream_;
+    double timeout_;
 };
 
 class TimeoutExceeded: public Exception
 {
 public:
-	~TimeoutExceeded() throw() {}
+    ~TimeoutExceeded() throw() {}
 
-	virtual String message() const { return "Timeout exceeded"; }
+    virtual String message() const { return "Timeout exceeded"; }
 };
 
 }} // namespace flux::stream

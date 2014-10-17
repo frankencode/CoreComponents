@@ -18,7 +18,7 @@ namespace fluxnode
 class VisitLog: public Log, public ThreadLocalSingleton<VisitLog>
 {
 private:
-	friend class ThreadLocalSingleton<VisitLog>;
+    friend class ThreadLocalSingleton<VisitLog>;
 };
 
 inline VisitLog *visitLog() { return VisitLog::instance(); }

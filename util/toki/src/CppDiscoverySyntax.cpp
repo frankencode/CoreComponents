@@ -16,32 +16,32 @@ namespace toki {
 class CppDiscoverySyntax: public SyntaxDefinition
 {
 private:
-	friend class Singleton<CppDiscoverySyntax>;
-	CppDiscoverySyntax();
+    friend class Singleton<CppDiscoverySyntax>;
+    CppDiscoverySyntax();
 };
 
 CppDiscoverySyntax::CppDiscoverySyntax()
 {
-	SYNTAX("cpp_discovery");
-	IMPORT(cxxSyntax(), "cxx");
+    SYNTAX("cpp_discovery");
+    IMPORT(cxxSyntax(), "cxx");
 
-	DEFINE("Header",
-		GLUE(
-			REPEAT(
-				CHOICE(
-					REPEAT(1, RANGE(" \n\t\r")),
-					INLINE("cxx::CommentText"),
-					INLINE("cxx::CommentLine")
-				)
-			),
-			CHAR('#'),
-			RANGE(" \t"),
-			KEYWORD("ifndef include")
-		)
-	);
+    DEFINE("Header",
+        GLUE(
+            REPEAT(
+                CHOICE(
+                    REPEAT(1, RANGE(" \n\t\r")),
+                    INLINE("cxx::CommentText"),
+                    INLINE("cxx::CommentLine")
+                )
+            ),
+            CHAR('#'),
+            RANGE(" \t"),
+            KEYWORD("ifndef include")
+        )
+    );
 
-	ENTRY("Header");
-	LINK();
+    ENTRY("Header");
+    LINK();
 }
 
 const SyntaxDefinition *cppDiscoverySyntax() { return Singleton<CppDiscoverySyntax>::instance(); }

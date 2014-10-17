@@ -22,13 +22,13 @@ class NoticeSyntax;
 class NoticeParser: public Object
 {
 public:
-	Ref<Notice> readNotice(Header *header) const;
+    Ref<Notice> readNotice(Header *header) const;
 
 private:
-	friend class Singleton<NoticeParser>;
+    friend class Singleton<NoticeParser>;
 
-	NoticeParser();
-	Ref<NoticeSyntax> noticeSyntax_;
+    NoticeParser();
+    Ref<NoticeSyntax> noticeSyntax_;
 };
 
 const NoticeParser *noticeParser();

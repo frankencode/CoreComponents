@@ -16,21 +16,21 @@ namespace flux {
 class ExclusiveAccess
 {
 public:
-	inline ExclusiveAccess(ExclusiveSection *section)
-		: section_(section),
-		  access_(section->acquire())
-	{}
+    inline ExclusiveAccess(ExclusiveSection *section)
+        : section_(section),
+          access_(section->acquire())
+    {}
 
-	inline ~ExclusiveAccess()
-	{
-		section_->release();
-	}
+    inline ~ExclusiveAccess()
+    {
+        section_->release();
+    }
 
-	inline operator bool() const { return access_; }
+    inline operator bool() const { return access_; }
 
 private:
-	ExclusiveSection *section_;
-	const bool access_;
+    ExclusiveSection *section_;
+    const bool access_;
 };
 
 } // namespace flux

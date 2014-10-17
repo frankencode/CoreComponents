@@ -17,8 +17,8 @@ namespace fluxmake
 class UninstallStage: public BuildStage
 {
 public:
-	UninstallStage(BuildPlan *plan): BuildStage(plan) {}
-	bool run();
+    UninstallStage(BuildPlan *plan): BuildStage(plan) {}
+    bool run();
 };
 
 } // namespace fluxmake

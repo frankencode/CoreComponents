@@ -18,12 +18,12 @@ namespace fluxmake
 class AnalyseStage: public BuildStage
 {
 public:
-	AnalyseStage(BuildPlan *plan): BuildStage(plan) {}
-	bool run();
-	inline StringList *previousSources() const { return previousSources_; }
+    AnalyseStage(BuildPlan *plan): BuildStage(plan) {}
+    bool run();
+    inline StringList *previousSources() const { return previousSources_; }
 
 private:
-	Ref<StringList> previousSources_;
+    Ref<StringList> previousSources_;
 };
 
 } // namespace fluxmake

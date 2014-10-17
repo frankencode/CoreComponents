@@ -13,10 +13,10 @@ namespace flux {
 namespace doc {
 
 Generator::Generator(String name, Design *prototype)
-	: name_(name),
-	  prototype_(prototype)
+    : name_(name),
+      prototype_(prototype)
 {
-	registry()->registerGenerator(this);
+    registry()->registerGenerator(this);
 }
 
 }} // namespace flux::doc

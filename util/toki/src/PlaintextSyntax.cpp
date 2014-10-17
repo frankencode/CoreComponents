@@ -15,27 +15,27 @@ namespace toki {
 class PlaintextSyntax: public SyntaxDefinition
 {
 protected:
-	friend class Singleton<PlaintextSyntax>;
-	PlaintextSyntax();
+    friend class Singleton<PlaintextSyntax>;
+    PlaintextSyntax();
 };
 
 PlaintextSyntax::PlaintextSyntax()
 {
-	SYNTAX("plaintext");
+    SYNTAX("plaintext");
 
-	DEFINE("Plaintext",
-		REPEAT(
-			ANY()
-		)
-	);
+    DEFINE("Plaintext",
+        REPEAT(
+            ANY()
+        )
+    );
 
-	ENTRY("Plaintext");
-	LINK();
+    ENTRY("Plaintext");
+    LINK();
 }
 
 const SyntaxDefinition *plaintextSyntax()
 {
-	return Singleton<PlaintextSyntax>::instance();
+    return Singleton<PlaintextSyntax>::instance();
 }
 
 }} // namespace flux::toki

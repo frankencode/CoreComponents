@@ -19,22 +19,22 @@ using namespace flux;
 class LogConfig: public Object
 {
 public:
-	static Ref<LogConfig> loadDefault();
-	static Ref<LogConfig> load(MetaObject *config);
+    static Ref<LogConfig> loadDefault();
+    static Ref<LogConfig> load(MetaObject *config);
 
-	inline String path() const { return path_; }
-	inline int level() const { return level_; }
-	inline double retentionPeriod() const { return retentionPeriod_; }
-	inline double rotationInterval() const { return rotationInterval_; }
+    inline String path() const { return path_; }
+    inline int level() const { return level_; }
+    inline double retentionPeriod() const { return retentionPeriod_; }
+    inline double rotationInterval() const { return rotationInterval_; }
 
 private:
-	LogConfig();
-	LogConfig(MetaObject *config);
+    LogConfig();
+    LogConfig(MetaObject *config);
 
-	String path_;
-	int level_;
-	double retentionPeriod_;
-	double rotationInterval_;
+    String path_;
+    int level_;
+    double retentionPeriod_;
+    double rotationInterval_;
 };
 
 } // namespace fluxnode

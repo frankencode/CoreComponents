@@ -23,14 +23,14 @@ using namespace flux;
 class MediaTypeDatabase: public Object
 {
 public:
-	String lookup(String path, String content) const;
+    String lookup(String path, String content) const;
 
 private:
-	friend class Singleton<MediaTypeDatabase>;
-	MediaTypeDatabase();
+    friend class Singleton<MediaTypeDatabase>;
+    MediaTypeDatabase();
 
-	Ref< PrefixTree<char, String> > mediaTypeByPathSuffix_;
-	Ref< PrefixTree<char, String> > mediaTypeByContentPrefix_;
+    Ref< PrefixTree<char, String> > mediaTypeByPathSuffix_;
+    Ref< PrefixTree<char, String> > mediaTypeByContentPrefix_;
 };
 
 const MediaTypeDatabase *mediaTypeDatabase();

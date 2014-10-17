@@ -1,6 +1,6 @@
 Library {
-	name: fluxabnf
-	version: 0.1.0
-	source: *.cpp
-	use: core
+    name: fluxabnf
+    version: 0.1.0
+    source: *.cpp
+    use: core
 }

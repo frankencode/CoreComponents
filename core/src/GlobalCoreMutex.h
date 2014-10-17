@@ -20,9 +20,9 @@ class GlobalCoreMutex;
 class GlobalCoreMutexInitializer
 {
 public:
-	GlobalCoreMutexInitializer();
+    GlobalCoreMutexInitializer();
 private:
-	static int count_;
+    static int count_;
 };
 
 namespace { GlobalCoreMutexInitializer globalCoreMutexInitializer; }
@@ -30,10 +30,10 @@ namespace { GlobalCoreMutexInitializer globalCoreMutexInitializer; }
 class GlobalCoreMutex: public SpinLock
 {
 public:
-	static GlobalCoreMutex *instance();
+    static GlobalCoreMutex *instance();
 
 private:
-	GlobalCoreMutex() {}
+    GlobalCoreMutex() {}
 };
 
 inline GlobalCoreMutex *globalCoreMutex() { return GlobalCoreMutex::instance(); }

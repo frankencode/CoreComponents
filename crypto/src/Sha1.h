@@ -17,22 +17,22 @@ namespace crypto {
 class Sha1: public HashSum
 {
 public:
-	enum { Size = 20 };
+    enum { Size = 20 };
 
-	static Ref<Sha1> create();
+    static Ref<Sha1> create();
 
-	virtual void feed(const ByteArray *data);
-	virtual Ref<ByteArray> finish();
+    virtual void feed(const ByteArray *data);
+    virtual Ref<ByteArray> finish();
 
 private:
-	Sha1();
-	void consume();
+    Sha1();
+    void consume();
 
-	Ref<ByteArray> h_;
-	Ref<ByteArray> m_;
-	Ref<ByteArray> w_;
-	int j_;
-	uint64_t l_;
+    Ref<ByteArray> h_;
+    Ref<ByteArray> m_;
+    Ref<ByteArray> w_;
+    int j_;
+    uint64_t l_;
 };
 
 Ref<ByteArray> sha1(const ByteArray *data);

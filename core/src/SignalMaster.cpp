@@ -13,31 +13,31 @@ namespace flux {
 
 Ref<SignalMaster> SignalMaster::create(SignalSet *listenSet, SignalSet *terminationSet)
 {
-	return new SignalMaster(listenSet, terminationSet);
+    return new SignalMaster(listenSet, terminationSet);
 }
 
 SignalMaster::SignalMaster(SignalSet *listenSet, SignalSet *terminationSet):
-	listenSet_(listenSet),
-	terminationSet_(terminationSet),
-	receivedSignals_(SignalChannel::create())
+    listenSet_(listenSet),
+    terminationSet_(terminationSet),
+    receivedSignals_(SignalChannel::create())
 {
-	if (!listenSet_) listenSet_ = SignalSet::createFull();
-	if (!terminationSet_) {
-		terminationSet_ = SignalSet::createEmpty();
-		terminationSet_->insert(SIGINT);
-		terminationSet_->insert(SIGTERM);
-	}
+    if (!listenSet_) listenSet_ = SignalSet::createFull();
+    if (!terminationSet_) {
+        terminationSet_ = SignalSet::createEmpty();
+        terminationSet_->insert(SIGINT);
+        terminationSet_->insert(SIGTERM);
+    }
 }
 
 void SignalMaster::run()
 {
-	int signal = 0;
-	while (true) {
-		int error = ::sigwait(listenSet_->rawSet(), &signal);
-		if (error != 0) FLUX_SYSTEM_DEBUG_ERROR(error);
-		receivedSignals_->pushBack(signal);
-		if (terminationSet_->contains(signal)) break;
-	}
+    int signal = 0;
+    while (true) {
+        int error = ::sigwait(listenSet_->rawSet(), &signal);
+        if (error != 0) FLUX_SYSTEM_DEBUG_ERROR(error);
+        receivedSignals_->pushBack(signal);
+        if (terminationSet_->contains(signal)) break;
+    }
 }
 
 } // namespace flux

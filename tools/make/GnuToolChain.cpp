@@ -18,330 +18,330 @@ namespace fluxmake
 
 Ref<GnuToolChain> GnuToolChain::create(String compiler)
 {
-	if (compiler == "") compiler = Process::env("CC");
-	if (compiler == "") compiler = "gcc";
-	return new GnuToolChain(compiler);
+    if (compiler == "") compiler = Process::env("CC");
+    if (compiler == "") compiler = "gcc";
+    return new GnuToolChain(compiler);
 }
 
 GnuToolChain::GnuToolChain(String compiler)
-	: ToolChain(compiler, queryMachine(compiler))
+    : ToolChain(compiler, queryMachine(compiler))
 {}
 
 String GnuToolChain::queryMachine(String compiler)
 {
-	String machine = Process::start(machineCommand(compiler), Process::ForwardOutput)->readAll();
-	machine->trimInsitu();
-	machine->replaceInsitu("-pc-", "-"); // workaround for clang/bash
-	return machine;
+    String machine = Process::start(machineCommand(compiler), Process::ForwardOutput)->readAll();
+    machine->trimInsitu();
+    machine->replaceInsitu("-pc-", "-"); // workaround for clang/bash
+    return machine;
 }
 
 String GnuToolChain::machineCommand(String compiler)
 {
-	return compiler + " -dumpmachine";
+    return compiler + " -dumpmachine";
 }
 
 String GnuToolChain::machineCommand() const
 {
-	return machineCommand(compiler());
+    return machineCommand(compiler());
 }
 
 String GnuToolChain::defaultOptimization(BuildPlan *plan) const
 {
-	/*if ((plan->options() & BuildPlan::Debug) && (plan->options() & BuildPlan::Release)) return "g";*/
-	if (plan->options() & BuildPlan::Release) return "2";
-	else return "";
+    /*if ((plan->options() & BuildPlan::Debug) && (plan->options() & BuildPlan::Release)) return "g";*/
+    if (plan->options() & BuildPlan::Release) return "2";
+    else return "";
 }
 
 String GnuToolChain::analyseCommand(BuildPlan *plan, String source) const
 {
-	Format args;
-	args << compiler();
-	appendCompileOptions(args, plan);
-	args << "-MM" << source;
-	return args->join(" ");
+    Format args;
+    args << compiler();
+    appendCompileOptions(args, plan);
+    args << "-MM" << source;
+    return args->join(" ");
 }
 
 Ref<Job> GnuToolChain::createAnalyseJob(BuildPlan *plan, String source)
 {
-	return Job::create(analyseCommand(plan, source));
+    return Job::create(analyseCommand(plan, source));
 }
 
 Ref<Module> GnuToolChain::finishAnalyseJob(BuildPlan *plan, Job *job)
 {
-	Ref<StringList> parts = job->outputText()->split(Pattern("{1..:[\\:\\\\\n\r ]}"));
-	return Module::create(job->command(), plan->modulePath(parts->pop(0)), parts, true);
+    Ref<StringList> parts = job->outputText()->split(Pattern("{1..:[\\:\\\\\n\r ]}"));
+    return Module::create(job->command(), plan->modulePath(parts->pop(0)), parts, true);
 }
 
 Ref<Job> GnuToolChain::createCompileJob(BuildPlan *plan, Module *module)
 {
-	Format args;
-	args << compiler();
-	appendCompileOptions(args, plan);
-	args << "-c" << "-o" << module->modulePath();
-	args << module->sourcePath();
-	String command = args->join(" ");
-	return Job::create(command);
+    Format args;
+    args << compiler();
+    appendCompileOptions(args, plan);
+    args << "-c" << "-o" << module->modulePath();
+    args << module->sourcePath();
+    String command = args->join(" ");
+    return Job::create(command);
 }
 
 Ref<Job> GnuToolChain::createLinkJob(BuildPlan *plan, Module *module)
 {
-	Format args;
-	args << compiler();
-	if (plan->linkStatic()) args << "-static";
-	args << "-pthread";
-	args << "-o" << module->toolName();
-	args << module->modulePath();
-	appendLinkOptions(args, plan);
-	String command = args->join(" ");
-	return Job::create(command);
+    Format args;
+    args << compiler();
+    if (plan->linkStatic()) args << "-static";
+    args << "-pthread";
+    args << "-o" << module->toolName();
+    args << module->modulePath();
+    appendLinkOptions(args, plan);
+    String command = args->join(" ");
+    return Job::create(command);
 }
 
 Ref<Job> GnuToolChain::createTestJob(BuildPlan *plan, Module *module)
 {
-	return Job::create(module->toolName());
+    return Job::create(module->toolName());
 }
 
 String GnuToolChain::linkName(BuildPlan *plan) const
 {
-	String name;
-	if (plan->options() & BuildPlan::Library)
-		name = "lib" + plan->name() + ".so." + plan->version();
-	else
-		name = plan->name();
-	return name;
+    String name;
+    if (plan->options() & BuildPlan::Library)
+        name = "lib" + plan->name() + ".so." + plan->version();
+    else
+        name = plan->name();
+    return name;
 }
 
 bool GnuToolChain::link(BuildPlan *plan)
 {
-	String name = plan->name();
-	String version = plan->version();
-	int options = plan->options();
-	ModuleList *modules = plan->modules();
+    String name = plan->name();
+    String version = plan->version();
+    int options = plan->options();
+    ModuleList *modules = plan->modules();
 
-	Format args;
+    Format args;
 
-	args << compiler();
-	if (plan->linkStatic()) args << "-static";
-	if ((options & BuildPlan::Library) && !plan->linkStatic()) args << "-shared";
-	args << "-pthread";
+    args << compiler();
+    if (plan->linkStatic()) args << "-static";
+    if ((options & BuildPlan::Library) && !plan->linkStatic()) args << "-shared";
+    args << "-pthread";
 
-	if (options & BuildPlan::Library) {
-		Ref<StringList> versions = version->split(".");
-		args << "-Wl,-soname,lib" + name + ".so." + versions->at(0);
-	}
+    if (options & BuildPlan::Library) {
+        Ref<StringList> versions = version->split(".");
+        args << "-Wl,-soname,lib" + name + ".so." + versions->at(0);
+    }
 
-	args << "-o" << linkName(plan);
+    args << "-o" << linkName(plan);
 
-	for (int i = 0; i < modules->count(); ++i)
-		args << modules->at(i)->modulePath();
+    for (int i = 0; i < modules->count(); ++i)
+        args << modules->at(i)->modulePath();
 
-	appendLinkOptions(args, plan);
+    appendLinkOptions(args, plan);
 
-	String command = args->join(" ");
+    String command = args->join(" ");
 
-	if (!plan->shell()->run(command))
-		return false;
+    if (!plan->shell()->run(command))
+        return false;
 
-	if ((options & BuildPlan::Library) && !plan->linkStatic())
-		createLibrarySymlinks(plan, linkName(plan));
+    if ((options & BuildPlan::Library) && !plan->linkStatic())
+        createLibrarySymlinks(plan, linkName(plan));
 
-	if (options & BuildPlan::Application)
-		createAliasSymlinks(plan, linkName(plan));
+    if (options & BuildPlan::Application)
+        createAliasSymlinks(plan, linkName(plan));
 
-	return true;
+    return true;
 }
 
 bool GnuToolChain::linkTest(BuildPlan *plan, String linkPath, StringList *linkTest) const
 {
-	Ref<File> src = File::temp();
-	src->unlinkWhenDone();
-	src->write("int main() { return 0; }\n");
-	src->close();
-	Format args;
-	args << compiler() << src->path() << "-L" + linkPath;
-	for (int i = 0; i < linkTest->count(); ++i) args << "-l" + linkTest->at(i);
-	args << "-o" + src->path() + "_";
+    Ref<File> src = File::temp();
+    src->unlinkWhenDone();
+    src->write("int main() { return 0; }\n");
+    src->close();
+    Format args;
+    args << compiler() << src->path() << "-L" + linkPath;
+    for (int i = 0; i < linkTest->count(); ++i) args << "-l" + linkTest->at(i);
+    args << "-o" + src->path() + "_";
 
-	String command = args->join(" ");
-	return plan->shell()->run(command);
+    String command = args->join(" ");
+    return plan->shell()->run(command);
 }
 
 class CwdGuard {
 public:
-	CwdGuard(String dirPath): cwdSaved_(Process::cwd()) { Process::cd(dirPath); }
-	~CwdGuard() { Process::cd(cwdSaved_); }
+    CwdGuard(String dirPath): cwdSaved_(Process::cwd()) { Process::cd(dirPath); }
+    ~CwdGuard() { Process::cd(cwdSaved_); }
 private:
-	String cwdSaved_;
+    String cwdSaved_;
 };
 
 bool GnuToolChain::install(BuildPlan *plan)
 {
-	int options = plan->options();
-	String product = linkName(plan);
-	String installPrefix = plan->installPath((options & BuildPlan::Library) ? "lib" : "bin");
-	String installPath = installPrefix->expandPath(product);
+    int options = plan->options();
+    String product = linkName(plan);
+    String installPrefix = plan->installPath((options & BuildPlan::Library) ? "lib" : "bin");
+    String installPath = installPrefix->expandPath(product);
 
-	if (!plan->shell()->install(product, installPath)) return false;
+    if (!plan->shell()->install(product, installPath)) return false;
 
-	if ((options & BuildPlan::Library) && !plan->linkStatic()) {
-		CwdGuard guard(installPrefix);
-		createLibrarySymlinks(plan, product);
-	}
+    if ((options & BuildPlan::Library) && !plan->linkStatic()) {
+        CwdGuard guard(installPrefix);
+        createLibrarySymlinks(plan, product);
+    }
 
-	if (options & BuildPlan::Application && plan->alias()->count() > 0) {
-		CwdGuard guard(installPrefix);
-		createAliasSymlinks(plan, product);
-	}
+    if (options & BuildPlan::Application && plan->alias()->count() > 0) {
+        CwdGuard guard(installPrefix);
+        createAliasSymlinks(plan, product);
+    }
 
-	if (plan->bundle()->count() > 0) {
-		for (int i = 0; i < plan->bundle()->count(); ++i) {
-			String relativePath = plan->bundle()->at(i);
-			plan->shell()->install(relativePath, bundlePrefix(plan)->expandPath(relativePath));
-		}
-	}
+    if (plan->bundle()->count() > 0) {
+        for (int i = 0; i < plan->bundle()->count(); ++i) {
+            String relativePath = plan->bundle()->at(i);
+            plan->shell()->install(relativePath, bundlePrefix(plan)->expandPath(relativePath));
+        }
+    }
 
-	return true;
+    return true;
 }
 
 bool GnuToolChain::install(BuildPlan *plan, Module *module)
 {
-	String product = module->toolName();
-	return plan->shell()->install(product, plan->installPath("bin/" + product));
+    String product = module->toolName();
+    return plan->shell()->install(product, plan->installPath("bin/" + product));
 }
 
 bool GnuToolChain::uninstall(BuildPlan *plan)
 {
-	int options = plan->options();
-	String product = linkName(plan);
-	String installPrefix = plan->installPath((options & BuildPlan::Library) ? "lib" : "bin");
-	String installPath = installPrefix->expandPath(product);
+    int options = plan->options();
+    String product = linkName(plan);
+    String installPrefix = plan->installPath((options & BuildPlan::Library) ? "lib" : "bin");
+    String installPath = installPrefix->expandPath(product);
 
-	try {
-		plan->shell()->unlink(installPath);
-	}
-	catch (SystemError &) {
-		return false;
-	}
+    try {
+        plan->shell()->unlink(installPath);
+    }
+    catch (SystemError &) {
+        return false;
+    }
 
-	if ((options & BuildPlan::Library) && !plan->linkStatic()) {
-		CwdGuard guard(installPrefix);
-		cleanLibrarySymlinks(plan, product);
-	}
+    if ((options & BuildPlan::Library) && !plan->linkStatic()) {
+        CwdGuard guard(installPrefix);
+        cleanLibrarySymlinks(plan, product);
+    }
 
-	if (options & BuildPlan::Application && plan->alias()->count() > 0) {
-		CwdGuard guard(installPrefix);
-		cleanAliasSymlinks(plan, product);
-	}
+    if (options & BuildPlan::Application && plan->alias()->count() > 0) {
+        CwdGuard guard(installPrefix);
+        cleanAliasSymlinks(plan, product);
+    }
 
-	return false;
+    return false;
 }
 
 bool GnuToolChain::uninstall(BuildPlan *plan, Module *module)
 {
-	return plan->shell()->unlink(plan->installPath("bin/" + module->toolName()));
+    return plan->shell()->unlink(plan->installPath("bin/" + module->toolName()));
 }
 
 void GnuToolChain::clean(BuildPlan *plan)
 {
-	for (int i = 0; i < plan->modules()->count(); ++i) {
-		plan->shell()->unlink(plan->modules()->at(i)->modulePath());
-		if (plan->options() & BuildPlan::Tools)
-			plan->shell()->unlink(plan->modules()->at(i)->toolName());
-	}
+    for (int i = 0; i < plan->modules()->count(); ++i) {
+        plan->shell()->unlink(plan->modules()->at(i)->modulePath());
+        if (plan->options() & BuildPlan::Tools)
+            plan->shell()->unlink(plan->modules()->at(i)->toolName());
+    }
 
-	String product = linkName(plan);
-	plan->shell()->unlink(product);
+    String product = linkName(plan);
+    plan->shell()->unlink(product);
 
-	if ((plan->options() & BuildPlan::Library) && !plan->linkStatic())
-		cleanLibrarySymlinks(plan, product);
+    if ((plan->options() & BuildPlan::Library) && !plan->linkStatic())
+        cleanLibrarySymlinks(plan, product);
 
-	if (plan->options() & BuildPlan::Application)
-		cleanAliasSymlinks(plan, product);
+    if (plan->options() & BuildPlan::Application)
+        cleanAliasSymlinks(plan, product);
 }
 
 String GnuToolChain::bundlePrefix(BuildPlan *plan)
 {
-	String name;
-	if (plan->options() & BuildPlan::Library)
-		name = "lib" + plan->name();
-	else
-		name = plan->name();
-	return plan->installPath("share") + "/" + name;
+    String name;
+    if (plan->options() & BuildPlan::Library)
+        name = "lib" + plan->name();
+    else
+        name = plan->name();
+    return plan->installPath("share") + "/" + name;
 }
 
 void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan)
 {
-	if (plan->options() & BuildPlan::Debug) args << "-g";
-	if (plan->options() & BuildPlan::Release) args << "-DNDEBUG";
-	if (plan->optimize() != "") args << "-O" + plan->optimize();
-	if (plan->linkStatic()) args << "-static";
-	if (plan->options() & BuildPlan::Library) args << "-fPIC";
-	else args << "-fPIE";
-	args << "-Wall" << "-pthread" << "-pipe";
-	if (plan->bundle()->count() > 0)
-		args << "-DFLUXMAKE_BUNDLE_PREFIX=" + bundlePrefix(plan);
-	if (plan->customCompileFlags()) {
-		for (int i = 0; i < plan->customCompileFlags()->count(); ++i)
-			args << plan->customCompileFlags()->at(i);
-	}
-	for (int i = 0; i < plan->includePaths()->count(); ++i)
-		args << "-I" + plan->includePaths()->at(i);
+    if (plan->options() & BuildPlan::Debug) args << "-g";
+    if (plan->options() & BuildPlan::Release) args << "-DNDEBUG";
+    if (plan->optimize() != "") args << "-O" + plan->optimize();
+    if (plan->linkStatic()) args << "-static";
+    if (plan->options() & BuildPlan::Library) args << "-fPIC";
+    else args << "-fPIE";
+    args << "-Wall" << "-pthread" << "-pipe";
+    if (plan->bundle()->count() > 0)
+        args << "-DFLUXMAKE_BUNDLE_PREFIX=" + bundlePrefix(plan);
+    if (plan->customCompileFlags()) {
+        for (int i = 0; i < plan->customCompileFlags()->count(); ++i)
+            args << plan->customCompileFlags()->at(i);
+    }
+    for (int i = 0; i < plan->includePaths()->count(); ++i)
+        args << "-I" + plan->includePaths()->at(i);
 }
 
 void GnuToolChain::appendLinkOptions(Format args, BuildPlan *plan)
 {
-	if (plan->customLinkFlags()) {
-		for (int i = 0; i < plan->customLinkFlags()->count(); ++i)
-			args << plan->customLinkFlags()->at(i);
-	}
+    if (plan->customLinkFlags()) {
+        for (int i = 0; i < plan->customLinkFlags()->count(); ++i)
+            args << plan->customLinkFlags()->at(i);
+    }
 
-	StringList *libraryPaths = plan->libraryPaths();
-	StringList *libraries = plan->libraries();
+    StringList *libraryPaths = plan->libraryPaths();
+    StringList *libraries = plan->libraries();
 
-	for (int i = 0; i < libraryPaths->count(); ++i)
-		args << "-L" + libraryPaths->at(i);
+    for (int i = 0; i < libraryPaths->count(); ++i)
+        args << "-L" + libraryPaths->at(i);
 
-	for (int i = 0; i < libraries->count(); ++i)
-		args << "-l" + libraries->at(i);
+    for (int i = 0; i < libraries->count(); ++i)
+        args << "-l" + libraries->at(i);
 
-	if (plan->containsCPlusPlus()) args << "-lstdc++";
+    if (plan->containsCPlusPlus()) args << "-lstdc++";
 
-	if (libraryPaths->count() > 0) {
-		Ref<StringList> rpaths = StringList::create();
-		for (int i = 0; i < libraryPaths->count(); ++i)
-			*rpaths << "-rpath=" + libraryPaths->at(i)->absolutePath();
-		args << "-Wl,--enable-new-dtags," + rpaths->join(",");
-	}
+    if (libraryPaths->count() > 0) {
+        Ref<StringList> rpaths = StringList::create();
+        for (int i = 0; i < libraryPaths->count(); ++i)
+            *rpaths << "-rpath=" + libraryPaths->at(i)->absolutePath();
+        args << "-Wl,--enable-new-dtags," + rpaths->join(",");
+    }
 }
 
 void GnuToolChain::createLibrarySymlinks(BuildPlan *plan, String libName)
 {
-	cleanLibrarySymlinks(plan, libName);
+    cleanLibrarySymlinks(plan, libName);
 
-	Ref<StringList> parts = libName->split('.');
-	while (parts->popBack() != "so")
-		plan->shell()->symlink(libName, parts->join("."));
+    Ref<StringList> parts = libName->split('.');
+    while (parts->popBack() != "so")
+        plan->shell()->symlink(libName, parts->join("."));
 }
 
 void GnuToolChain::cleanLibrarySymlinks(BuildPlan *plan, String libName)
 {
-	Ref<StringList> parts = libName->split('.');
-	while (parts->popBack() != "so")
-		plan->shell()->unlink(parts->join("."));
+    Ref<StringList> parts = libName->split('.');
+    while (parts->popBack() != "so")
+        plan->shell()->unlink(parts->join("."));
 }
 
 void GnuToolChain::createAliasSymlinks(BuildPlan *plan, String appName)
 {
-	cleanAliasSymlinks(plan, appName);
+    cleanAliasSymlinks(plan, appName);
 
-	for (int i = 0; i < plan->alias()->count(); ++i)
-		plan->shell()->symlink(appName, plan->alias()->at(i));
+    for (int i = 0; i < plan->alias()->count(); ++i)
+        plan->shell()->symlink(appName, plan->alias()->at(i));
 }
 
 void GnuToolChain::cleanAliasSymlinks(BuildPlan *plan, String appName)
 {
-	for (int i = 0; i < plan->alias()->count(); ++i)
-		plan->shell()->unlink(plan->alias()->at(i));
+    for (int i = 0; i < plan->alias()->count(); ++i)
+        plan->shell()->unlink(plan->alias()->at(i));
 }
 
 } // namespace fluxmake

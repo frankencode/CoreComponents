@@ -15,15 +15,15 @@ namespace toki {
 class PlaintextLanguage: public Language
 {
 private:
-	friend class Registration<PlaintextLanguage>;
+    friend class Registration<PlaintextLanguage>;
 
-	PlaintextLanguage():
-		Language(
-			"Plaintext",
-			Pattern("*.txt"),
-			plaintextSyntax()
-		)
-	{}
+    PlaintextLanguage():
+        Language(
+            "Plaintext",
+            Pattern("*.txt"),
+            plaintextSyntax()
+        )
+    {}
 };
 
 namespace { Registration<PlaintextLanguage> registration; }

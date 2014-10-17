@@ -23,45 +23,45 @@ typedef struct stat StructStat;
 class FileStatus: public StructStat, public Object
 {
 public:
-	inline static Ref<FileStatus> read(int fd = -1) { return new FileStatus(fd); }
-	inline static Ref<FileStatus> read(SystemStream *stream) { return read(stream->fd()); }
-	inline static Ref<FileStatus> read(String path, bool resolve = true) { return new FileStatus(path, resolve); }
+    inline static Ref<FileStatus> read(int fd = -1) { return new FileStatus(fd); }
+    inline static Ref<FileStatus> read(SystemStream *stream) { return read(stream->fd()); }
+    inline static Ref<FileStatus> read(String path, bool resolve = true) { return new FileStatus(path, resolve); }
 
-	inline String path() const { return path_; }
+    inline String path() const { return path_; }
 
-	inline int type() const  { return st_mode & S_IFMT; }
-	inline int mode() const { return st_mode & (~S_IFMT); }
+    inline int type() const  { return st_mode & S_IFMT; }
+    inline int mode() const { return st_mode & (~S_IFMT); }
 
-	inline off_t size() const { return st_size; }
-	inline off_t sizeOfBlock() const { return st_blksize; }
-	inline off_t sizeInBlocks() const { return st_blocks; }
+    inline off_t size() const { return st_size; }
+    inline off_t sizeOfBlock() const { return st_blksize; }
+    inline off_t sizeInBlocks() const { return st_blocks; }
 
-	inline uid_t ownerId() const { return st_uid; }
-	inline gid_t groupId() const { return st_gid; }
+    inline uid_t ownerId() const { return st_uid; }
+    inline gid_t groupId() const { return st_gid; }
 
-	inline double lastAccess() const { return st_atime; }
-	inline double lastModified() const { return st_mtime; }
-	inline double lastChanged() const { return st_ctime; }
-	void setTimes(double lastAccess, double lastModified);
+    inline double lastAccess() const { return st_atime; }
+    inline double lastModified() const { return st_mtime; }
+    inline double lastChanged() const { return st_ctime; }
+    void setTimes(double lastAccess, double lastModified);
 
-	inline dev_t storageId() const { return st_dev; }
-	inline ino_t inodeNumber() const { return st_ino; }
-	inline nlink_t numberOfHardLinks() const { return st_nlink; }
+    inline dev_t storageId() const { return st_dev; }
+    inline ino_t inodeNumber() const { return st_ino; }
+    inline nlink_t numberOfHardLinks() const { return st_nlink; }
 
-	inline dev_t deviceId() const { return st_rdev; }
+    inline dev_t deviceId() const { return st_rdev; }
 
-	inline bool exists() const { return exists_; }
+    inline bool exists() const { return exists_; }
 
 private:
-	FileStatus(int fd);
-	FileStatus(String path, bool resolve = true);
+    FileStatus(int fd);
+    FileStatus(String path, bool resolve = true);
 
-	bool update();
+    bool update();
 
-	int fd_;
-	String path_;
-	bool exists_;
-	bool resolve_;
+    int fd_;
+    String path_;
+    bool exists_;
+    bool resolve_;
 };
 
 } // namespace flux

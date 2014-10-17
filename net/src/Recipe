@@ -1,6 +1,6 @@
 Library {
-	name: fluxnet
-	version: 0.1.0
-	source: *.cpp
-	use: core
+    name: fluxnet
+    version: 0.1.0
+    source: *.cpp
+    use: core
 }

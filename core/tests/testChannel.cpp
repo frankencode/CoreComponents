@@ -22,82 +22,82 @@ typedef List<int> IntList;
 class Consumer: public Thread
 {
 public:
-	static Ref<Consumer> create(int id, MyChannel *channel, int amount) { return new Consumer(id, channel, amount); }
-	inline Ref<IntList> list() const { return list_; }
+    static Ref<Consumer> create(int id, MyChannel *channel, int amount) { return new Consumer(id, channel, amount); }
+    inline Ref<IntList> list() const { return list_; }
 
 private:
-	Consumer(int id, MyChannel *channel, int amount)
-		: id_(id),
-		  channel_(channel),
-		  amount_(amount),
-		  list_(IntList::create())
-	{}
+    Consumer(int id, MyChannel *channel, int amount)
+        : id_(id),
+          channel_(channel),
+          amount_(amount),
+          list_(IntList::create())
+    {}
 
-	void run()
-	{
-		while (amount_ > 0) {
-			int x = channel_->pop();
-			fout("consumer %%: consuming %%\n") << id_ << x;
-			list_->append(x);
-			--amount_;
-		}
-	}
+    void run()
+    {
+        while (amount_ > 0) {
+            int x = channel_->pop();
+            fout("consumer %%: consuming %%\n") << id_ << x;
+            list_->append(x);
+            --amount_;
+        }
+    }
 
-	int id_;
-	Ref<MyChannel> channel_;
-	int amount_;
-	Ref<IntList> list_;
+    int id_;
+    Ref<MyChannel> channel_;
+    int amount_;
+    Ref<IntList> list_;
 };
 
 class Producer: public Thread
 {
 public:
-	static Ref<Producer> create(int id, MyChannel *channel, int amount) { return new Producer(id, channel, amount); }
-	inline Ref<IntList> list() const { return list_; }
+    static Ref<Producer> create(int id, MyChannel *channel, int amount) { return new Producer(id, channel, amount); }
+    inline Ref<IntList> list() const { return list_; }
 
 private:
-	Producer(int id, MyChannel *channel, int amount)
-		: id_(id),
-		  channel_(channel),
-		  amount_(amount),
-		  random_(Random::open(amount)),
-		  list_(IntList::create())
-	{}
+    Producer(int id, MyChannel *channel, int amount)
+        : id_(id),
+          channel_(channel),
+          amount_(amount),
+          random_(Random::open(amount)),
+          list_(IntList::create())
+    {}
 
-	void run()
-	{
-		while (amount_ > 0) {
-			int x = random_->get();
-			fout("producer %%: producing %%\n") << id_ << x;
-			list_->append(x);
-			channel_->push(x);
-			--amount_;
-		}
-	}
+    void run()
+    {
+        while (amount_ > 0) {
+            int x = random_->get();
+            fout("producer %%: producing %%\n") << id_ << x;
+            list_->append(x);
+            channel_->push(x);
+            --amount_;
+        }
+    }
 
-	int id_;
-	Ref<MyChannel> channel_;
-	int amount_;
-	Ref<Random> random_;
-	Ref<IntList> list_;
+    int id_;
+    Ref<MyChannel> channel_;
+    int amount_;
+    Ref<Random> random_;
+    Ref<IntList> list_;
 };
 
 int main()
 {
-	Ref<MyChannel> channel = MyChannel::create();
-	Ref<Producer> p = Producer::create(1, channel, 8);
-	Ref<Consumer> c = Consumer::create(1, channel, 8);
+    Ref<MyChannel> channel = MyChannel::create();
+    Ref<Producer> p = Producer::create(1, channel, 8);
+    Ref<Consumer> c = Consumer::create(1, channel, 8);
 
-	double dt = System::now();
-	c->start();
-	p->start();
-	c->wait();
-	p->wait();
-	dt = System::now() - dt;
+    double dt = System::now();
+    c->start();
+    p->start();
+    c->wait();
+    p->wait();
+    dt = System::now() - dt;
 
-	fout("\ndt = %% us\n\n") << int(dt * 1e6);
+    fout("\ndt = %% us\n\n") << int(dt * 1e6);
 
-	check(*p->list() == *c->list());
+    check(*p->list() == *c->list());
 
-	return 0;
+    return 0;
 }

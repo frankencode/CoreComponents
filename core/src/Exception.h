@@ -17,16 +17,16 @@ namespace flux {
 class Exception: public std::exception
 {
 public:
-	~Exception() throw() {}
+    ~Exception() throw() {}
 
-	virtual String message() const = 0;
+    virtual String message() const = 0;
 
 private:
-	const char *what() const throw() {
-		static String h;
-		h = message();
-		return h;
-	}
+    const char *what() const throw() {
+        static String h;
+        h = message();
+        return h;
+    }
 };
 
 inline String str(const Exception &ex) { return ex.message(); }

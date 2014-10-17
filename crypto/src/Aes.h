@@ -17,16 +17,16 @@ namespace crypto {
 class Aes: public BlockCipher
 {
 public:
-	inline static Ref<Aes> create(ByteArray *key) { return new Aes(key); }
+    inline static Ref<Aes> create(ByteArray *key) { return new Aes(key); }
 
-	void encode(ByteArray *p, ByteArray *c);
-	void decode(ByteArray *c, ByteArray *p);
+    void encode(ByteArray *p, ByteArray *c);
+    void decode(ByteArray *c, ByteArray *p);
 
 private:
-	Aes(ByteArray *key);
-	const int Nk_, Nr_;
-	Ref<ByteArray> s_;
-	Ref<ByteArray> w_;
+    Aes(ByteArray *key);
+    const int Nk_, Nr_;
+    Ref<ByteArray> s_;
+    Ref<ByteArray> w_;
 };
 
 }} // namespace flux::crypto

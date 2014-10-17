@@ -25,23 +25,23 @@ class ClientConnection;
 class ConnectionManager: public Object
 {
 public:
-	static Ref<ConnectionManager> create(int serviceWindow = 30);
+    static Ref<ConnectionManager> create(int serviceWindow = 30);
 
-	inline ClosedConnections *closedConnections() const { return closedConnections_; }
+    inline ClosedConnections *closedConnections() const { return closedConnections_; }
 
-	void cycle();
-	void prioritize(ClientConnection *client);
+    void cycle();
+    void prioritize(ClientConnection *client);
 
 private:
-	ConnectionManager(int serviceWindow);
+    ConnectionManager(int serviceWindow);
 
-	typedef Map<uint64_t, int> ConnectionCounts;
-	typedef List< Ref<Visit> > Visits;
+    typedef Map<uint64_t, int> ConnectionCounts;
+    typedef List< Ref<Visit> > Visits;
 
-	Ref<ClosedConnections> closedConnections_;
-	Ref<ConnectionCounts> connectionCounts_;
-	Ref<Visits> visits_;
-	int serviceWindow_;
+    Ref<ClosedConnections> closedConnections_;
+    Ref<ConnectionCounts> connectionCounts_;
+    Ref<Visits> visits_;
+    int serviceWindow_;
 };
 
 } // namespace fluxnode

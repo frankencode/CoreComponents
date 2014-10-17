@@ -1,7 +1,7 @@
 Library {
-	name: fluxtoki
-	version: 0.1.0
-	source: *.cpp
-	bundle: themes/*
-	use: core
+    name: fluxtoki
+    version: 0.1.0
+    source: *.cpp
+    bundle: themes/*
+    use: core
 }

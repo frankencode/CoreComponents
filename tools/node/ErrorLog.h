@@ -21,7 +21,7 @@ namespace fluxnode
 class ErrorLog: public Log
 {
 private:
-	friend class ThreadLocalSingleton<ErrorLog>;
+    friend class ThreadLocalSingleton<ErrorLog>;
 };
 
 ErrorLog *errorLog();
@@ -33,7 +33,7 @@ inline Format info()    { return Format(errorLog()->infoStream()); }
 inline Format debug()   { return Format(errorLog()->debugStream()); }
 
 #define FLUXNODE_LOG(sink) \
-	sink() << "(" << inum(uint64_t(thread()->id()), 62) << ") " << String(__FILE__)->baseName() << ": "
+    sink() << "(" << inum(uint64_t(thread()->id()), 62) << ") " << String(__FILE__)->baseName() << ": "
 
 #define FLUXNODE_ERROR()   FLUXNODE_LOG(error)
 #define FLUXNODE_WARNING() FLUXNODE_LOG(warning)

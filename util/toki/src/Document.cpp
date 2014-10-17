@@ -14,18 +14,18 @@ namespace toki {
 
 Ref<Document> Document::load(String path)
 {
-	return Document::create(File::open(path)->map(), path);
+    return Document::create(File::open(path)->map(), path);
 }
 
 void Document::save()
 {
-	File::save(path_, text_);
+    File::save(path_, text_);
 }
 
 Document::Document(String text, String path)
-	: path_(path),
-	  text_(text),
-	  spans_(Spans::create())
+    : path_(path),
+      text_(text),
+      spans_(Spans::create())
 {}
 
 }} // namespace flux::toki

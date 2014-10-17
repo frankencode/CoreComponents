@@ -18,15 +18,15 @@ namespace fluxnode
 class DirectoryInstance: public ServiceInstance
 {
 public:
-	static Ref<DirectoryInstance> create(MetaObject *config);
+    static Ref<DirectoryInstance> create(MetaObject *config);
 
-	virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const;
+    virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const;
 
-	inline String path() const { return path_; }
+    inline String path() const { return path_; }
 
 private:
-	DirectoryInstance(MetaObject *config);
-	String path_;
+    DirectoryInstance(MetaObject *config);
+    String path_;
 };
 
 } // namespace fluxnode

@@ -18,16 +18,16 @@ namespace doc {
 class Generator: public Object
 {
 public:
-	inline String name() const { return name_; }
-	inline Design *prototype() const { return prototype_; }
+    inline String name() const { return name_; }
+    inline Design *prototype() const { return prototype_; }
 
-	virtual void run(Design *design, Document *document) = 0;
+    virtual void run(Design *design, Document *document) = 0;
 
 protected:
-	Generator(String name, Design *prototype);
+    Generator(String name, Design *prototype);
 
-	String name_;
-	Ref<Design> prototype_;
+    String name_;
+    Ref<Design> prototype_;
 };
 
 }} // namespace flux::doc

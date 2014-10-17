@@ -20,15 +20,15 @@ using namespace flux;
 class SystemLogStream: public Stream
 {
 public:
-	static Ref<SystemLogStream> open(int priority);
+    static Ref<SystemLogStream> open(int priority);
 
-	virtual int read(ByteArray *buf);
-	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts);
+    virtual int read(ByteArray *buf);
+    virtual void write(const ByteArray *buf);
+    virtual void write(const StringList *parts);
 
 private:
-	SystemLogStream(int priority);
-	int priority_;
+    SystemLogStream(int priority);
+    int priority_;
 };
 
 } // namespace fluxnode

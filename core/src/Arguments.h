@@ -16,21 +16,21 @@ namespace flux {
 class Arguments: public Object
 {
 public:
-	static Ref<Arguments> parse(int argc, char **argv);
-	void validate(VariantMap *prototype) const;
-	void override(VariantMap *config) const;
+    static Ref<Arguments> parse(int argc, char **argv);
+    void validate(VariantMap *prototype) const;
+    void override(VariantMap *config) const;
 
-	inline VariantMap *options() const { return options_; }
-	inline StringList *items() const { return items_; }
-	inline String execPath() const { return execPath_; }
-	inline String toolName() const { return execPath_->fileName(); }
+    inline VariantMap *options() const { return options_; }
+    inline StringList *items() const { return items_; }
+    inline String execPath() const { return execPath_; }
+    inline String toolName() const { return execPath_->fileName(); }
 
 private:
-	Arguments(int argc, char **argv);
+    Arguments(int argc, char **argv);
 
-	Ref<VariantMap> options_;
-	Ref<StringList> items_;
-	String execPath_;
+    Ref<VariantMap> options_;
+    Ref<StringList> items_;
+    String execPath_;
 };
 
 } // namespace flux

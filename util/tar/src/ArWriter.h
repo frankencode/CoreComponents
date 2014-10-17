@@ -18,15 +18,15 @@ namespace tar {
 class ArWriter: public ArchiveWriter
 {
 public:
-	static Ref<ArWriter> open(Stream *sink);
+    static Ref<ArWriter> open(Stream *sink);
 
-	void writeFile(String path);
+    void writeFile(String path);
 
 private:
-	ArWriter(Stream *sink);
+    ArWriter(Stream *sink);
 
-	Ref<Stream> sink_;
-	bool firstTime_;
+    Ref<Stream> sink_;
+    bool firstTime_;
 };
 
 }} // namespace flux::tar

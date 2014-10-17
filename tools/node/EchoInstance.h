@@ -14,18 +14,18 @@ namespace fluxnode
 class EchoInstance: public ServiceInstance
 {
 public:
-	static Ref<EchoInstance> create(MetaObject *config) {
-		return new EchoInstance(config);
-	}
+    static Ref<EchoInstance> create(MetaObject *config) {
+        return new EchoInstance(config);
+    }
 
-	virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const {
-		return EchoDelegate::create(worker);
-	}
+    virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const {
+        return EchoDelegate::create(worker);
+    }
 
 private:
-	EchoInstance(MetaObject *config)
-		: ServiceInstance(config)
-	{}
+    EchoInstance(MetaObject *config)
+        : ServiceInstance(config)
+    {}
 };
 
 } // namespace fluxnode

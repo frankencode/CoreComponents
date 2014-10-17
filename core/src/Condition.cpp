@@ -15,14 +15,14 @@ namespace flux {
 
 Condition::Condition()
 {
-	int ret = pthread_cond_init(&cond_, 0);
-	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
+    int ret = pthread_cond_init(&cond_, 0);
+    if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 Condition::~Condition()
 {
-	int ret = pthread_cond_destroy(&cond_);
-	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
+    int ret = pthread_cond_destroy(&cond_);
+    if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 /** Enter wait state and atomically unlock provided mutex.
@@ -34,12 +34,12 @@ Condition::~Condition()
   */
 void Condition::wait(Mutex *mutex)
 {
-	int ret = -1;
-	while (true) {
-		ret = pthread_cond_wait(&cond_, &mutex->Mutex::mutex_);
-		if (ret != EINTR) break;
-	}
-	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
+    int ret = -1;
+    while (true) {
+        ret = pthread_cond_wait(&cond_, &mutex->Mutex::mutex_);
+        if (ret != EINTR) break;
+    }
+    if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 /** Same as wait(), but also wakeup if system time reaches 'timeout'.
@@ -48,23 +48,23 @@ void Condition::wait(Mutex *mutex)
   */
 bool Condition::waitUntil(double timeout, Mutex *mutex)
 {
-	bool success = true;
-	struct timespec ts;
-	double sec = 0;
-	ts.tv_nsec = modf(timeout, &sec) * 1e9;
-	ts.tv_sec = sec;
-	int ret = -1;
-	while (true) {
-		ret = pthread_cond_timedwait(&cond_, &mutex->Mutex::mutex_, &ts);
-		if (ret != EINTR) break;
-	}
-	if (ret != 0) {
-		if (ret == ETIMEDOUT)
-			success = false;
-		else
-			FLUX_SYSTEM_DEBUG_ERROR(ret);
-	}
-	return success;
+    bool success = true;
+    struct timespec ts;
+    double sec = 0;
+    ts.tv_nsec = modf(timeout, &sec) * 1e9;
+    ts.tv_sec = sec;
+    int ret = -1;
+    while (true) {
+        ret = pthread_cond_timedwait(&cond_, &mutex->Mutex::mutex_, &ts);
+        if (ret != EINTR) break;
+    }
+    if (ret != 0) {
+        if (ret == ETIMEDOUT)
+            success = false;
+        else
+            FLUX_SYSTEM_DEBUG_ERROR(ret);
+    }
+    return success;
 }
 
 /** Wakeup at least one waiting thread.
@@ -72,16 +72,16 @@ bool Condition::waitUntil(double timeout, Mutex *mutex)
   */
 void Condition::signal()
 {
-	int ret = pthread_cond_signal(&cond_);
-	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
+    int ret = pthread_cond_signal(&cond_);
+    if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 /** Wakeup all waiting threads.
   */
 void Condition::broadcast()
 {
-	int ret = pthread_cond_broadcast(&cond_);
-	if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
+    int ret = pthread_cond_broadcast(&cond_);
+    if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 } // namespace flux

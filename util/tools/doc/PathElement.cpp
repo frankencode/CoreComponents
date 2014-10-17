@@ -13,30 +13,30 @@ namespace flux {
 namespace doc {
 
 PathElement::PathElement(String className)
-	: TextElement(className)
+    : TextElement(className)
 {}
 
 void PathElement::define()
 {
-	TextElement::define();
-	insert("path", "");
-	insert("title", "");
+    TextElement::define();
+    insert("path", "");
+    insert("title", "");
 }
 
 void PathElement::realize(const ByteArray *text, Token *objectToken)
 {
-	TextElement::realize(text, objectToken);
-	path_ = value("path");
-	title_ = value("title");
-	if (path_ != "") {
-		try {
-			text_ = File::open(path_)->map();
-		}
-		catch (SystemError &ex) {
-			int offset = valueToken(text, objectToken, "path")->i1();
-			throw SemanticError(ex.message(), text, offset);
-		}
-	}
+    TextElement::realize(text, objectToken);
+    path_ = value("path");
+    title_ = value("title");
+    if (path_ != "") {
+        try {
+            text_ = File::open(path_)->map();
+        }
+        catch (SystemError &ex) {
+            int offset = valueToken(text, objectToken, "path")->i1();
+            throw SemanticError(ex.message(), text, offset);
+        }
+    }
 }
 
 }} // namespace flux::doc

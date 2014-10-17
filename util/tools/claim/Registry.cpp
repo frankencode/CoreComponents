@@ -13,30 +13,30 @@
 namespace fluxclaim {
 
 Registry::Registry():
-	  headerStyleByLanguage_(HeaderStyleByLanguage::create())
+      headerStyleByLanguage_(HeaderStyleByLanguage::create())
 {}
 
 const HeaderStyle *Registry::headerStyleByLanguage(String language) const
 {
-	return headerStyleByLanguage_->value(language);
+    return headerStyleByLanguage_->value(language);
 }
 
 bool Registry::detectHeaderStyle(String path, String text, HeaderStyle **style) const
 {
-	toki::Language *language = 0;
-	if (toki::registry()->detectLanguage(path, text, &language)) {
-		Ref<HeaderStyle> value;
-		if (headerStyleByLanguage_->lookup(language->name(), &value)) {
-			*style = value;
-			return true;
-		}
-	}
-	return false;
+    toki::Language *language = 0;
+    if (toki::registry()->detectLanguage(path, text, &language)) {
+        Ref<HeaderStyle> value;
+        if (headerStyleByLanguage_->lookup(language->name(), &value)) {
+            *style = value;
+            return true;
+        }
+    }
+    return false;
 }
 
 void Registry::registerHeaderStyle(HeaderStyle *style)
 {
-	headerStyleByLanguage_->insert(style->language(), style);
+    headerStyleByLanguage_->insert(style->language(), style);
 }
 
 Registry *registry() { return Singleton<Registry>::instance(); }

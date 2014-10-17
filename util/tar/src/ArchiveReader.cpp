@@ -13,7 +13,7 @@ namespace tar {
 
 void ArchiveReader::skipData(ArchiveEntry *entry)
 {
-	readData(entry);
+    readData(entry);
 }
 
 }} // namespace flux::tar

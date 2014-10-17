@@ -28,26 +28,26 @@ class Log;
 class LogMaster: public Thread
 {
 public:
-	void registerLog(Log *log);
-	void unregisterLog(Log *log);
+    void registerLog(Log *log);
+    void unregisterLog(Log *log);
 
 private:
-	friend class Singleton<LogMaster>;
+    friend class Singleton<LogMaster>;
 
-	LogMaster();
-	~LogMaster();
-	void rotate(Log *log);
-	virtual void run();
+    LogMaster();
+    ~LogMaster();
+    void rotate(Log *log);
+    virtual void run();
 
-	Ref<Mutex> mutex_;
+    Ref<Mutex> mutex_;
 
-	typedef Set<Log *> Logs;
-	typedef Timer< Ref<Logs> > RotateTimer;
-	typedef Map<String, Ref<RotateTimer> > TimerByPath;
-	Ref<TimerByPath> timerByPath_;
+    typedef Set<Log *> Logs;
+    typedef Timer< Ref<Logs> > RotateTimer;
+    typedef Map<String, Ref<RotateTimer> > TimerByPath;
+    Ref<TimerByPath> timerByPath_;
 
-	typedef Channel< Ref<Logs> > Rotate;
-	Ref<Rotate> rotate_;
+    typedef Channel< Ref<Logs> > Rotate;
+    Ref<Rotate> rotate_;
 };
 
 LogMaster *logMaster();

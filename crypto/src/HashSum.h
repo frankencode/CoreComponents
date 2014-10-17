@@ -17,8 +17,8 @@ namespace crypto {
 class HashSum: public Object
 {
 public:
-	virtual void feed(const ByteArray *data) = 0;
-	virtual Ref<ByteArray> finish() = 0;
+    virtual void feed(const ByteArray *data) = 0;
+    virtual Ref<ByteArray> finish() = 0;
 };
 
 }} // namespace flux::crypto

@@ -17,38 +17,38 @@ namespace flux {
 class ThreadFactory: public Object
 {
 public:
-	inline static Ref<ThreadFactory> create(Ref< Clonable<Thread> > prototype = 0) {
-		return new ThreadFactory(prototype);
-	}
-	~ThreadFactory();
+    inline static Ref<ThreadFactory> create(Ref< Clonable<Thread> > prototype = 0) {
+        return new ThreadFactory(prototype);
+    }
+    ~ThreadFactory();
 
-	int stackSize() const;
-	void setStackSize(int value);
+    int stackSize() const;
+    void setStackSize(int value);
 
-	int guardSize() const;
+    int guardSize() const;
 
-	int detachState() const;
-	void setDetachState(int value);
+    int detachState() const;
+    void setDetachState(int value);
 
-	pthread_attr_t *attr();
+    pthread_attr_t *attr();
 
-	Ref<Thread> produce();
-	void start(Thread *thread);
+    Ref<Thread> produce();
+    void start(Thread *thread);
 
 protected:
-	ThreadFactory(Ref< Clonable<Thread> > prototype = 0);
+    ThreadFactory(Ref< Clonable<Thread> > prototype = 0);
 
 private:
-	friend class ByteArray;
+    friend class ByteArray;
 
-	Ref<ByteArray> allocateStack() const;
-	static void freeStack(ByteArray *stack);
-	static void *bootstrap(void *self);
+    Ref<ByteArray> allocateStack() const;
+    static void freeStack(ByteArray *stack);
+    static void *bootstrap(void *self);
 
-	Ref< Clonable<Thread> > prototype_;
-	pthread_attr_t attr_;
-	int stackSize_;
-	int guardSize_;
+    Ref< Clonable<Thread> > prototype_;
+    pthread_attr_t attr_;
+    int stackSize_;
+    int guardSize_;
 };
 
 } // namespace flux

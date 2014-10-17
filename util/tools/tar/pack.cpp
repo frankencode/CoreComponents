@@ -15,18 +15,18 @@ namespace fluxtar
 
 void pack(String path, ArchiveWriter *archive, bool verbose)
 {
-	if (verbose) ferr() << path << nl;
-	archive->writeFile(path);
+    if (verbose) ferr() << path << nl;
+    archive->writeFile(path);
 
-	Ref<DirWalker> walker = DirWalker::tryOpen(path);
-	if (!walker) return;
+    Ref<DirWalker> walker = DirWalker::tryOpen(path);
+    if (!walker) return;
 
-	walker->setFollowSymlink(true);
-	String sourcePath;
-	while (walker->read(&sourcePath)) {
-		if (verbose) ferr() << sourcePath << nl;
-		archive->writeFile(sourcePath);
-	}
+    walker->setFollowSymlink(true);
+    String sourcePath;
+    while (walker->read(&sourcePath)) {
+        if (verbose) ferr() << sourcePath << nl;
+        archive->writeFile(sourcePath);
+    }
 }
 
 } // namespace fluxtar

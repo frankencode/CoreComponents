@@ -6,6 +6,6 @@ using namespace flux;
 
 int main()
 {
-	fout() << User::lookup(Process::effectiveUserId())->loginName() << nl;
-	return 0;
+    fout() << User::lookup(Process::effectiveUserId())->loginName() << nl;
+    return 0;
 }

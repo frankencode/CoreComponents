@@ -16,23 +16,23 @@ namespace flux {
 class Memory: public Object, public ThreadLocalSingleton<Memory>
 {
 public:
-	static void *allocate(size_t size);
-	static void free(void *data);
+    static void *allocate(size_t size);
+    static void free(void *data);
 
-	static size_t pageSize();
+    static size_t pageSize();
 
-	void *operator new(size_t size);
-	void operator delete(void *data, size_t size);
+    void *operator new(size_t size);
+    void operator delete(void *data, size_t size);
 
 private:
-	friend class ThreadLocalSingleton<Memory>;
+    friend class ThreadLocalSingleton<Memory>;
 
-	Memory();
+    Memory();
 
-	class BucketHeader;
+    class BucketHeader;
 
-	size_t pageSize_;
-	BucketHeader *bucket_;
+    size_t pageSize_;
+    BucketHeader *bucket_;
 };
 
 inline Memory *memory() { return Memory::instance(); }

@@ -19,15 +19,15 @@ using namespace flux;
 class ChunkedSink: public Stream
 {
 public:
-	static Ref<ChunkedSink> open(Stream *stream);
+    static Ref<ChunkedSink> open(Stream *stream);
 
-	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts);
+    virtual void write(const ByteArray *buf);
+    virtual void write(const StringList *parts);
 
 private:
-	ChunkedSink(Stream *client);
-	~ChunkedSink();
-	Ref<Stream> stream_;
+    ChunkedSink(Stream *client);
+    ~ChunkedSink();
+    Ref<Stream> stream_;
 };
 
 } // namespace fluxnode

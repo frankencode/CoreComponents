@@ -1,38 +1,38 @@
 Palette {
-	Style {
-		rule: CommentLine
-		ink: DarkGray
-	}
-	Style {
-		rule: CommentText
-		ink: DarkGray
-	}
-	Style {
-		rule: Name
-		ink: DarkRed
-	}
-	Style {
-		rule: ClassName
-		ink: DarkBlue
-	}
-	Style {
-		rule: Boolean
-		bold: true
-	}
-	Style {
-		rule: Integer
-		ink: Blue
-	}
-	Style {
-		rule: Float
-		ink: DarkMagenta
-	}
-	Style {
-		rule: Text
-		ink: DarkGreen
-	}
-	Style {
-		rule: EscapedChar
-		ink: Olive
-	}
+    Style {
+        rule: CommentLine
+        ink: DarkGray
+    }
+    Style {
+        rule: CommentText
+        ink: DarkGray
+    }
+    Style {
+        rule: Name
+        ink: DarkRed
+    }
+    Style {
+        rule: ClassName
+        ink: DarkBlue
+    }
+    Style {
+        rule: Boolean
+        bold: true
+    }
+    Style {
+        rule: Integer
+        ink: Blue
+    }
+    Style {
+        rule: Float
+        ink: DarkMagenta
+    }
+    Style {
+        rule: Text
+        ink: DarkGreen
+    }
+    Style {
+        rule: EscapedChar
+        ink: Olive
+    }
 }

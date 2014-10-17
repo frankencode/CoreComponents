@@ -17,19 +17,19 @@ namespace stream {
 class StreamTap: public Stream
 {
 public:
-	static Ref<StreamTap> open(Stream *stream, Stream *inputTap, Stream *outputTap);
+    static Ref<StreamTap> open(Stream *stream, Stream *inputTap, Stream *outputTap);
 
-	inline Stream *stream() const { return stream_; }
+    inline Stream *stream() const { return stream_; }
 
-	virtual bool readyRead(double interval) const;
-	virtual int read(ByteArray *buf);
-	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts);
+    virtual bool readyRead(double interval) const;
+    virtual int read(ByteArray *buf);
+    virtual void write(const ByteArray *buf);
+    virtual void write(const StringList *parts);
 
 private:
-	StreamTap(Stream *stream, Stream *inputTap, Stream *outputTap);
+    StreamTap(Stream *stream, Stream *inputTap, Stream *outputTap);
 
-	Ref<Stream> stream_, inputTap_, outputTap_;
+    Ref<Stream> stream_, inputTap_, outputTap_;
 };
 
 }} // namespace flux::stream

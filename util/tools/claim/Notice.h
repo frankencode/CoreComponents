@@ -19,24 +19,24 @@ using namespace flux;
 class Notice: public Object
 {
 public:
-	inline static Ref<Notice> create(CopyrightList *copyrights, String statement, Header *header = 0) {
-		return new Notice(copyrights, statement, header);
-	}
+    inline static Ref<Notice> create(CopyrightList *copyrights, String statement, Header *header = 0) {
+        return new Notice(copyrights, statement, header);
+    }
 
-	inline CopyrightList *copyrights() const { return copyrights_; }
-	inline String statement() const { return statement_; }
-	inline Header *header() const { return header_; }
+    inline CopyrightList *copyrights() const { return copyrights_; }
+    inline String statement() const { return statement_; }
+    inline Header *header() const { return header_; }
 
 private:
-	Notice(CopyrightList *copyrights, String statement, Header *header = 0)
-		: copyrights_(copyrights),
-		  statement_(statement->trim()),
-		  header_(header)
-	{}
+    Notice(CopyrightList *copyrights, String statement, Header *header = 0)
+        : copyrights_(copyrights),
+          statement_(statement->trim()),
+          header_(header)
+    {}
 
-	Ref<CopyrightList> copyrights_;
-	String statement_;
-	Ref<Header> header_;
+    Ref<CopyrightList> copyrights_;
+    String statement_;
+    Ref<Header> header_;
 };
 
 } // namespace fluxclaim

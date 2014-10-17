@@ -18,19 +18,19 @@ class Dir;
 class Glob: public Source<String>
 {
 public:
-	inline static Ref<Glob> open(String expression) { return new Glob(expression); }
+    inline static Ref<Glob> open(String expression) { return new Glob(expression); }
 
-	bool read(String *path);
+    bool read(String *path);
 
 private:
-	Glob(String expression);
-	Glob(String path, StringList *remainder);
-	void init(String path);
+    Glob(String expression);
+    Glob(String path, StringList *remainder);
+    void init(String path);
 
-	Ref<Dir> dir_;
-	Pattern pattern_;
-	Ref<StringList> remainder_;
-	Ref<Glob> child_;
+    Ref<Dir> dir_;
+    Pattern pattern_;
+    Ref<StringList> remainder_;
+    Ref<Glob> child_;
 };
 
 } // namespace flux

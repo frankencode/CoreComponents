@@ -20,17 +20,17 @@ using namespace flux;
 class LogPrototype: public MetaObject
 {
 public:
-	static Ref<LogPrototype> create() { return new LogPrototype; }
+    static Ref<LogPrototype> create() { return new LogPrototype; }
 
 private:
-	LogPrototype()
-		: MetaObject("Log")
-	{
-		insert("path", "");
-		insert("level", "");
-		insert("retention", days(30));
-		insert("rotation", days(1));
-	}
+    LogPrototype()
+        : MetaObject("Log")
+    {
+        insert("path", "");
+        insert("level", "");
+        insert("retention", days(30));
+        insert("rotation", days(1));
+    }
 };
 
 } // namespace fluxnode

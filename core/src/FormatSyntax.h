@@ -19,20 +19,20 @@ template<class SubClass> class Singleton;
 class FormatSyntax: public SyntaxDefinition
 {
 public:
-	bool find(const ByteArray *text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank) const;
+    bool find(const ByteArray *text, int *i0, int *i1, int *w, int *wi, int *wf, int *base, bool *exp, char *blank) const;
 
 protected:
-	friend class Singleton<FormatSyntax>;
+    friend class Singleton<FormatSyntax>;
 
-	FormatSyntax();
+    FormatSyntax();
 
-	int width_;
-	int integerWidth_;
-	int fractionWidth_;
-	int base_;
-	int exp_;
-	int blank_;
-	int specifier_;
+    int width_;
+    int integerWidth_;
+    int fractionWidth_;
+    int base_;
+    int exp_;
+    int blank_;
+    int specifier_;
 };
 
 const FormatSyntax *formatSyntax();

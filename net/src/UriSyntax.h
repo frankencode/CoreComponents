@@ -20,32 +20,32 @@ namespace net {
 class UriSyntax: public SyntaxDefinition
 {
 public:
-	inline int userInfo() const { return userInfo_; }
-	inline int host() const { return host_; }
-	inline int port() const { return port_; }
+    inline int userInfo() const { return userInfo_; }
+    inline int host() const { return host_; }
+    inline int port() const { return port_; }
 
-	inline int scheme() const { return scheme_; }
-	inline int authority() const { return authority_; }
-	inline int path() const { return path_; }
-	inline int query() const { return query_; }
-	inline int fragment() const { return fragment_; }
+    inline int scheme() const { return scheme_; }
+    inline int authority() const { return authority_; }
+    inline int path() const { return path_; }
+    inline int query() const { return query_; }
+    inline int fragment() const { return fragment_; }
 
-	inline int uri() const { return uri_; }
+    inline int uri() const { return uri_; }
 
 protected:
-	friend class Singleton<UriSyntax>;
+    friend class Singleton<UriSyntax>;
 
-	UriSyntax(SyntaxDebugFactory *debugFactory = 0);
+    UriSyntax(SyntaxDebugFactory *debugFactory = 0);
 
-	int userInfo_;
-	int host_;
-	int port_;
-	int scheme_;
-	int authority_;
-	int path_;
-	int query_;
-	int fragment_;
-	int uri_;
+    int userInfo_;
+    int host_;
+    int port_;
+    int scheme_;
+    int authority_;
+    int path_;
+    int query_;
+    int fragment_;
+    int uri_;
 };
 
 UriSyntax *uriSyntax();

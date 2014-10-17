@@ -21,12 +21,12 @@ using namespace flux;
 class NodeConfigProtocol: public MetaProtocol
 {
 public:
-	void registerService(MetaObject *configPrototype);
+    void registerService(MetaObject *configPrototype);
 
 private:
-	friend class Singleton<NodeConfigProtocol>;
-	NodeConfigProtocol();
-	Ref<MetaProtocol> nodeProtocol_;
+    friend class Singleton<NodeConfigProtocol>;
+    NodeConfigProtocol();
+    Ref<MetaProtocol> nodeProtocol_;
 };
 
 NodeConfigProtocol *configProtocol();

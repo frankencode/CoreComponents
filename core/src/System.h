@@ -14,9 +14,9 @@ namespace flux {
 class System
 {
 public:
-	static int concurrency();
-	static int pageSize();
-	static double now();
+    static int concurrency();
+    static int pageSize();
+    static double now();
 };
 
 } // namespace flux

@@ -19,26 +19,26 @@ namespace flux {
 class Dir: public Source<String>
 {
 public:
-	inline static Ref<Dir> open(String path) { return new Dir(path); }
-	static Ref<Dir> tryOpen(String path);
+    inline static Ref<Dir> open(String path) { return new Dir(path); }
+    static Ref<Dir> tryOpen(String path);
 
-	String path() const;
-	String path(String name) const;
-	bool read(String *name);
+    String path() const;
+    String path(String name) const;
+    bool read(String *name);
 
-	static bool access(String path, int flags);
-	static bool exists(String path);
-	static int count(String path);
-	static void create(String path, int mode = 0755);
-	static void establish(String path, int mode = 0755);
-	static void unlink(String path);
+    static bool access(String path, int flags);
+    static bool exists(String path);
+    static int count(String path);
+    static void create(String path, int mode = 0755);
+    static void establish(String path, int mode = 0755);
+    static void unlink(String path);
 
 protected:
-	Dir(String path, DIR *dir = 0);
-	~Dir();
+    Dir(String path, DIR *dir = 0);
+    ~Dir();
 
-	String path_;
-	DIR *dir_;
+    String path_;
+    DIR *dir_;
 };
 
 } // namespace flux

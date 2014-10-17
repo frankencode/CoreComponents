@@ -13,32 +13,32 @@ namespace fluxmake
 {
 
 JobServer::JobServer(JobChannel *requestChannel, JobChannel *replyChannel)
-	: requestChannel_(requestChannel),
-	  replyChannel_(replyChannel)
+    : requestChannel_(requestChannel),
+      replyChannel_(replyChannel)
 {
-	Thread::start();
+    Thread::start();
 }
 
 JobServer::~JobServer()
 {
-	requestChannel_->pushFront(0);
-	wait();
+    requestChannel_->pushFront(0);
+    wait();
 }
 
 void JobServer::run()
 {
-	Ref<ProcessFactory> factory = ProcessFactory::create();
-	factory->setIoPolicy(Process::CloseInput|Process::ForwardOutput|Process::ErrorToOutput);
+    Ref<ProcessFactory> factory = ProcessFactory::create();
+    factory->setIoPolicy(Process::CloseInput|Process::ForwardOutput|Process::ErrorToOutput);
 
-	while (true) {
-		Ref<Job> job = requestChannel_->popFront();
-		if (!job) break;
-		factory->setCommand(job->command_);
-		Ref<Process> process = factory->produce();
-		job->outputText_ = process->out()->readAll();
-		job->status_ = process->wait();
-		replyChannel_->pushBack(job);
-	}
+    while (true) {
+        Ref<Job> job = requestChannel_->popFront();
+        if (!job) break;
+        factory->setCommand(job->command_);
+        Ref<Process> process = factory->produce();
+        job->outputText_ = process->out()->readAll();
+        job->status_ = process->wait();
+        replyChannel_->pushBack(job);
+    }
 }
 
 } // namespace fluxmake

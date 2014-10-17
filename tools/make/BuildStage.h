@@ -20,21 +20,21 @@ class JobScheduler;
 class BuildStage
 {
 public:
-	inline bool complete() const { return complete_; }
-	inline bool success() const { return success_; }
-	inline int status() const { return status_; }
+    inline bool complete() const { return complete_; }
+    inline bool success() const { return success_; }
+    inline int status() const { return status_; }
 
 protected:
-	BuildStage(BuildPlan *plan);
+    BuildStage(BuildPlan *plan);
 
-	inline BuildPlan *plan() const { return plan_; }
-	BuildShell *shell() const;
-	ToolChain *toolChain() const;
-	Ref<JobScheduler> createScheduler() const;
+    inline BuildPlan *plan() const { return plan_; }
+    BuildShell *shell() const;
+    ToolChain *toolChain() const;
+    Ref<JobScheduler> createScheduler() const;
 
-	BuildPlan *plan_;
-	bool complete_, success_;
-	int status_;
+    BuildPlan *plan_;
+    bool complete_, success_;
+    int status_;
 };
 
 } // namespace fluxmake

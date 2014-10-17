@@ -17,8 +17,8 @@ namespace fluxmake
 class CleanStage: public BuildStage
 {
 public:
-	CleanStage(BuildPlan *plan): BuildStage(plan) {}
-	bool run();
+    CleanStage(BuildPlan *plan): BuildStage(plan) {}
+    bool run();
 };
 
 } // namespace fluxmake

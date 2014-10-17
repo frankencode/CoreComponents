@@ -15,11 +15,11 @@ template<class Asset>
 class Registration
 {
 public:
-	Registration() {
-		static bool firstTime = true;
-		if (firstTime) new Asset;
-		firstTime = false;
-	}
+    Registration() {
+        static bool firstTime = true;
+        if (firstTime) new Asset;
+        firstTime = false;
+    }
 };
 
 } // namespace flux

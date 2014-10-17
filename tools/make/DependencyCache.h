@@ -28,25 +28,25 @@ class BuildPlan;
 class DependencyCache: public Object
 {
 public:
-	static Ref<DependencyCache> create(BuildPlan *plan);
-	~DependencyCache();
+    static Ref<DependencyCache> create(BuildPlan *plan);
+    ~DependencyCache();
 
-	static String cachePath(BuildPlan *plan);
+    static String cachePath(BuildPlan *plan);
 
-	StringList *previousSources() const;
+    StringList *previousSources() const;
 
-	bool lookup(String source, Ref<Module> *module);
-	void insert(String source, Module *module);
+    bool lookup(String source, Ref<Module> *module);
+    void insert(String source, Module *module);
 
 private:
-	DependencyCache(BuildPlan *plan);
+    DependencyCache(BuildPlan *plan);
 
-	Ref<BuildPlan> buildPlan_;
-	String cachePath_;
-	typedef Map< String, Ref<Module> > Cache;
-	Ref<Cache> cache_;
+    Ref<BuildPlan> buildPlan_;
+    String cachePath_;
+    typedef Map< String, Ref<Module> > Cache;
+    Ref<Cache> cache_;
 
-	Ref<StringList> previousSources_;
+    Ref<StringList> previousSources_;
 };
 
 } // namespace fluxmake

@@ -14,17 +14,17 @@ namespace doc {
 class ImageElement: public PathElement
 {
 public:
-	static Ref<ImageElement> create() { return new ImageElement; }
+    static Ref<ImageElement> create() { return new ImageElement; }
 
 protected:
-	ImageElement(String className = "Image")
-		: PathElement(className)
-	{}
+    ImageElement(String className = "Image")
+        : PathElement(className)
+    {}
 
-	virtual Ref<MetaObject> produce()
-	{
-		return create();
-	}
+    virtual Ref<MetaObject> produce()
+    {
+        return create();
+    }
 };
 
 }} // namespace flux::doc

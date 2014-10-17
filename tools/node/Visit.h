@@ -13,7 +13,7 @@
 
 namespace flux {
 namespace net {
-	class SocketAddress;
+    class SocketAddress;
 }}
 
 namespace fluxnode
@@ -27,28 +27,28 @@ class ConnectionManager;
 class Visit: public Object
 {
 public:
-	static Ref<Visit> create(SocketAddress *remoteAddress);
+    static Ref<Visit> create(SocketAddress *remoteAddress);
 
-	inline SocketAddress *remoteAddress() const { return remoteAddress_; }
-	inline int priority() const { return priority_; }
+    inline SocketAddress *remoteAddress() const { return remoteAddress_; }
+    inline int priority() const { return priority_; }
 
-	inline uint64_t originAddress() const { return originAddress_; }
-	inline double arrivalTime() const { return arrivalTime_; }
-	inline double departureTime() const { return departureTime_; }
+    inline uint64_t originAddress() const { return originAddress_; }
+    inline double arrivalTime() const { return arrivalTime_; }
+    inline double departureTime() const { return departureTime_; }
 
-	void updateDepartureTime();
+    void updateDepartureTime();
 
 private:
-	friend class ConnectionManager;
+    friend class ConnectionManager;
 
-	Visit(SocketAddress *remoteAddress);
-	inline void setPriority(int newPriority) { priority_ = newPriority; }
+    Visit(SocketAddress *remoteAddress);
+    inline void setPriority(int newPriority) { priority_ = newPriority; }
 
-	Ref<SocketAddress> remoteAddress_;
-	int priority_;
-	uint64_t originAddress_;
-	double arrivalTime_;
-	double departureTime_;
+    Ref<SocketAddress> remoteAddress_;
+    int priority_;
+    uint64_t originAddress_;
+    double arrivalTime_;
+    double departureTime_;
 };
 
 } // namespace fluxnode

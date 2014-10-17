@@ -23,23 +23,23 @@ class BuildPlan;
 class BuildShell
 {
 public:
-	BuildShell(BuildPlan *plan);
-	inline BuildPlan *plan() const { return plan_; }
+    BuildShell(BuildPlan *plan);
+    inline BuildPlan *plan() const { return plan_; }
 
-	String beautify(String command);
-	bool run(String command);
+    String beautify(String command);
+    bool run(String command);
 
-	Ref<FileStatus> fileStatus(String path);
+    Ref<FileStatus> fileStatus(String path);
 
-	void mkdir(String path);
-	void rmdir(String path);
-	void symlink(String path, String newPath);
+    void mkdir(String path);
+    void rmdir(String path);
+    void symlink(String path, String newPath);
 
-	bool install(String sourcePath, String destPath);
-	bool unlink(String path);
+    bool install(String sourcePath, String destPath);
+    bool unlink(String path);
 
 private:
-	BuildPlan *plan_;
+    BuildPlan *plan_;
 };
 
 } // namespace fluxmake

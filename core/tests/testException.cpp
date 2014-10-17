@@ -15,31 +15,31 @@ using namespace flux;
 
 int main()
 {
-	#ifndef NDEBUG
-	try {
-		Mutex::create()->release();
-		check(false);
-	}
-	catch (std::exception &ex) {
-		fout() << ex.what() << nl;
-	}
-	#endif
+    #ifndef NDEBUG
+    try {
+        Mutex::create()->release();
+        check(false);
+    }
+    catch (std::exception &ex) {
+        fout() << ex.what() << nl;
+    }
+    #endif
 
-	try {
-		String path = "testabc.123";
-		if (!File::tryOpen(path)) FLUX_SYSTEM_DEBUG_ERROR(errno);
-	}
-	catch (Exception &ex) {
-		fout() << ex << nl;
-	}
+    try {
+        String path = "testabc.123";
+        if (!File::tryOpen(path)) FLUX_SYSTEM_DEBUG_ERROR(errno);
+    }
+    catch (Exception &ex) {
+        fout() << ex << nl;
+    }
 
-	try {
-		File::open("non-existing");
-		return 1;
-	}
-	catch (Exception &ex) {
-		fout() << ex << nl;
-	}
+    try {
+        File::open("non-existing");
+        return 1;
+    }
+    catch (Exception &ex) {
+        fout() << ex << nl;
+    }
 
-	return 0;
+    return 0;
 }

@@ -15,14 +15,14 @@ namespace doc {
 
 MarkupProtocol::MarkupProtocol()
 {
-	define<TitleElement>();
-	define<AuthorElement>();
-	define<ParagraphElement>();
-	define<ListElement>();
+    define<TitleElement>();
+    define<AuthorElement>();
+    define<ParagraphElement>();
+    define<ListElement>();
 
-	define<PartElement>();
-	define<ImageElement>();
-	define<CodeElement>();
+    define<PartElement>();
+    define<ImageElement>();
+    define<CodeElement>();
 }
 
 const MarkupProtocol *markupProtocol() { return Singleton<MarkupProtocol>::instance(); }

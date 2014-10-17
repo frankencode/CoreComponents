@@ -19,7 +19,7 @@ namespace fluxnode
 class AccessLog: public Log
 {
 private:
-	friend class ThreadLocalSingleton<AccessLog>;
+    friend class ThreadLocalSingleton<AccessLog>;
 };
 
 AccessLog *accessLog();

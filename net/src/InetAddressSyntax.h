@@ -20,18 +20,18 @@ namespace net {
 class InetAddressSyntax: public SyntaxDefinition
 {
 public:
-	inline int inet4Address() const { return inet4Address_; }
-	inline int inet6Address() const { return inet6Address_; }
-	inline int inetAddress() const { return inetAddress_; }
+    inline int inet4Address() const { return inet4Address_; }
+    inline int inet6Address() const { return inet6Address_; }
+    inline int inetAddress() const { return inetAddress_; }
 
 protected:
-	friend class Singleton<InetAddressSyntax>;
+    friend class Singleton<InetAddressSyntax>;
 
-	InetAddressSyntax(SyntaxDebugFactory *debugFactory = 0);
+    InetAddressSyntax(SyntaxDebugFactory *debugFactory = 0);
 
-	int inet4Address_;
-	int inet6Address_;
-	int inetAddress_;
+    int inet4Address_;
+    int inet6Address_;
+    int inetAddress_;
 };
 
 const InetAddressSyntax *inetAddressSyntax();

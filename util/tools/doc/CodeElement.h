@@ -18,21 +18,21 @@ namespace doc {
 class CodeElement: public PathElement
 {
 public:
-	static Ref<CodeElement> create() { return new CodeElement; }
+    static Ref<CodeElement> create() { return new CodeElement; }
 
-	inline toki::Language *language() const { return language_; }
-	inline SyntaxState *state() const { return state_; }
+    inline toki::Language *language() const { return language_; }
+    inline SyntaxState *state() const { return state_; }
 
-	virtual void realize(const ByteArray *text, Token *objectToken);
+    virtual void realize(const ByteArray *text, Token *objectToken);
 
 protected:
-	CodeElement(String className = "Code");
+    CodeElement(String className = "Code");
 
-	virtual void define();
-	virtual Ref<MetaObject> produce();
+    virtual void define();
+    virtual Ref<MetaObject> produce();
 
-	Ref<toki::Language> language_;
-	Ref<SyntaxState> state_;
+    Ref<toki::Language> language_;
+    Ref<SyntaxState> state_;
 };
 
 }} // namespace flux::doc

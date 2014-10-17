@@ -17,25 +17,25 @@ namespace flux {
 class Semaphore: public Object
 {
 public:
-	inline static Ref<Semaphore> create(int value = 0) {
-		return new Semaphore(value);
-	}
+    inline static Ref<Semaphore> create(int value = 0) {
+        return new Semaphore(value);
+    }
 
-	void acquire(int amount = 1);
-	void release(int amount = 1);
+    void acquire(int amount = 1);
+    void release(int amount = 1);
 
-	int acquireAll(int minAmount = 1);
-	int releaseOnDemand(int maxAmount = intMax);
+    int acquireAll(int minAmount = 1);
+    int releaseOnDemand(int maxAmount = intMax);
 
-	bool tryAcquire(int amount = 1);
-	bool acquireBefore(double timeout, int amount = 1);
+    bool tryAcquire(int amount = 1);
+    bool acquireBefore(double timeout, int amount = 1);
 
 private:
-	Semaphore(int value);
+    Semaphore(int value);
 
-	Ref<Mutex> mutex_;
-	Ref<Condition> notEmpty_;
-	int supply_, demand_;
+    Ref<Mutex> mutex_;
+    Ref<Condition> notEmpty_;
+    int supply_, demand_;
 };
 
 } // namespace flux

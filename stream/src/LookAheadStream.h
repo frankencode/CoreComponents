@@ -17,24 +17,24 @@ namespace stream {
 class LookAheadStream: public Stream
 {
 public:
-	static Ref<LookAheadStream> open(Stream *source, int windowSize);
+    static Ref<LookAheadStream> open(Stream *source, int windowSize);
 
-	virtual bool readyRead(double interval) const;
-	virtual int read(ByteArray *data);
-	virtual off_t transfer(off_t count = -1, Stream *sink = 0, ByteArray *buf = 0);
+    virtual bool readyRead(double interval) const;
+    virtual int read(ByteArray *data);
+    virtual off_t transfer(off_t count = -1, Stream *sink = 0, ByteArray *buf = 0);
 
-	void replay();
-	void done();
+    void replay();
+    void done();
 
 private:
-	LookAheadStream(Stream *source, int windowSize);
+    LookAheadStream(Stream *source, int windowSize);
 
-	Ref<Stream> source_;
-	Ref<ByteArray> window_;
-	const int w_; // window size
-	int m_; // window fill
-	int i_; // read offset
-	bool done_;
+    Ref<Stream> source_;
+    Ref<ByteArray> window_;
+    const int w_; // window size
+    int m_; // window fill
+    int i_; // read offset
+    bool done_;
 };
 
 }} // namespace flux::stream
