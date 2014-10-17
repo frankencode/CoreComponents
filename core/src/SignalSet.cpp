@@ -6,10 +6,9 @@
  *
  */
 
-#include "SignalSet"
+#include <flux/SignalSet>
 
-namespace flux
-{
+namespace flux {
 
 SignalSet::SignalSet(int preset) { if (preset == Empty) sigemptyset(&rawSet_); else sigfillset(&rawSet_); }
 void SignalSet::insert(int signal) { sigaddset(&rawSet_, signal); }

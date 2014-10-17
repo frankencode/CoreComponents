@@ -13,13 +13,12 @@
 #include <fcntl.h> // open
 #include <stdlib.h> // exit, posix_openpt, grantpt, unlockpt
 #include <termios.h> // tcgetattr, tcsetattr
-#include "Format"
-#include "File"
-#include "exceptions"
-#include "ProcessFactory"
+#include <flux/Format>
+#include <flux/File>
+#include <flux/exceptions>
+#include <flux/ProcessFactory>
 
-namespace flux
-{
+namespace flux {
 
 ProcessFactory::ProcessFactory(int type)
 	: type_(type),

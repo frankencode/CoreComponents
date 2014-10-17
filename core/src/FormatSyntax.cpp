@@ -6,12 +6,11 @@
  *
  */
 
-#include "String"
-#include "Singleton"
-#include "FormatSyntax"
+#include <flux/String>
+#include <flux/Singleton>
+#include <flux/FormatSyntax>
 
-namespace flux
-{
+namespace flux {
 
 FormatSyntax::FormatSyntax()
 {

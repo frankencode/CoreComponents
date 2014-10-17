@@ -6,8 +6,8 @@
  *
  */
 
-#include "Registry"
-#include "Language"
+#include <flux/toki/Registry>
+#include <flux/toki/Language>
 
 namespace flux {
 namespace toki {

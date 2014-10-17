@@ -6,14 +6,13 @@
  *
  */
 
-#include "Singleton"
-#include "Format"
-#include "FloatSyntax"
-#include "IntegerSyntax"
-#include "YasonSyntax"
+#include <flux/Singleton>
+#include <flux/Format>
+#include <flux/FloatSyntax>
+#include <flux/IntegerSyntax>
+#include <flux/YasonSyntax>
 
-namespace flux
-{
+namespace flux {
 
 YasonSyntax::YasonSyntax(int options)
 {

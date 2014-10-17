@@ -6,11 +6,10 @@
  *
  */
 
-#include "types"
-#include "Stream"
+#include <flux/types>
+#include <flux/Stream>
 
-namespace flux
-{
+namespace flux {
 
 bool Stream::readyRead(double interval) const
 {

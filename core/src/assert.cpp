@@ -6,11 +6,10 @@
  *
  */
 
-#include "exceptions"
-#include "assert"
+#include <flux/exceptions>
+#include <flux/assert>
 
-namespace flux
-{
+namespace flux {
 
 void throwDebugError(const char *reason, const char *source, int line)
 {

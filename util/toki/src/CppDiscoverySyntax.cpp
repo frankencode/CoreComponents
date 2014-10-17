@@ -7,8 +7,8 @@
  */
 
 #include <flux/Singleton>
-#include "CxxSyntax"
-#include "CppDiscoverySyntax"
+#include <flux/toki/CxxSyntax>
+#include <flux/toki/CppDiscoverySyntax>
 
 namespace flux {
 namespace toki {

@@ -6,10 +6,9 @@
  *
  */
 
-#include "strings"
+#include <flux/strings>
 
-namespace flux
-{
+namespace flux {
 
 char *strdup(const char *s)
 {

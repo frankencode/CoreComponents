@@ -7,13 +7,12 @@
  */
 
 #include <sys/stat.h> // mkdir
-#include "File"
-#include "FileStatus"
-#include "exceptions"
-#include "Dir"
+#include <flux/File>
+#include <flux/FileStatus>
+#include <flux/exceptions>
+#include <flux/Dir>
 
-namespace flux
-{
+namespace flux {
 
 Ref<Dir> Dir::tryOpen(String path)
 {

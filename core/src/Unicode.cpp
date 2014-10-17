@@ -6,11 +6,10 @@
  *
  */
 
-#include "ByteArray"
-#include "Unicode"
+#include <flux/ByteArray>
+#include <flux/Unicode>
 
-namespace flux
-{
+namespace flux {
 
 Ref<ByteArray> Unicode::copy(int i0, int i1) const
 {

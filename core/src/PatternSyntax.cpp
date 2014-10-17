@@ -6,17 +6,16 @@
  *
  */
 
-#include "Singleton"
+#include <flux/Singleton>
 #ifndef NDEBUG
-#include "SyntaxDebugger"
+#include <flux/SyntaxDebugger>
 #endif
-#include "syntax"
-#include "Format"
-#include "Pattern"
-#include "PatternSyntax"
+#include <flux/syntax>
+#include <flux/Format>
+#include <flux/Pattern>
+#include <flux/PatternSyntax>
 
-namespace flux
-{
+namespace flux {
 
 typedef syntax::NODE NODE;
 

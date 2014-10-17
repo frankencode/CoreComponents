@@ -13,11 +13,10 @@
 #include <unistd.h> // read, write, select, sysconf
 #include <fcntl.h> // fcntl
 #include <math.h> // modf
-#include "exceptions"
-#include "SystemStream"
+#include <flux/exceptions>
+#include <flux/SystemStream>
 
-namespace flux
-{
+namespace flux {
 
 SystemStream::SystemStream(int fd, bool iov)
 	: fd_(fd),

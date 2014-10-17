@@ -6,11 +6,10 @@
  *
  */
 
-#include "Format"
-#include "DebugToken"
+#include <flux/Format>
+#include <flux/DebugToken>
 
-namespace flux
-{
+namespace flux {
 
 void DebugToken::printTo(Stream *stream, ByteArray *text, int depth, int defaultScope)
 {

@@ -9,7 +9,7 @@
 #include <flux/Singleton>
 #include <flux/IntegerSyntax>
 #include <flux/FloatSyntax>
-#include "CxxSyntax"
+#include <flux/toki/CxxSyntax>
 
 namespace flux {
 namespace toki {

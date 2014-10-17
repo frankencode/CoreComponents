@@ -8,11 +8,10 @@
 
 #include <pthread.h>
 #include <math.h>
-#include "exceptions"
-#include "Condition"
+#include <flux/exceptions>
+#include <flux/Condition>
 
-namespace flux
-{
+namespace flux {
 
 Condition::Condition()
 {

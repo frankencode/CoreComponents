@@ -6,10 +6,9 @@
  *
  */
 
-#include "LineSource"
+#include <flux/LineSource>
 
-namespace flux
-{
+namespace flux {
 
 Ref<LineSource> LineSource::open(ByteArray *buf) {
 	return new LineSource(0, buf);

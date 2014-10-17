@@ -10,20 +10,19 @@
 #include <errno.h>
 #include <string.h>
 #include <stdio.h> // rename
-#include "exceptions"
-#include "ExitEvent"
-#include "ThreadExitEvent"
-#include "Guard"
-#include "Mutex"
-#include "Random"
-#include "Format"
-#include "Dir"
-#include "Process"
-#include "System"
-#include "File"
+#include <flux/exceptions>
+#include <flux/ExitEvent>
+#include <flux/ThreadExitEvent>
+#include <flux/Guard>
+#include <flux/Mutex>
+#include <flux/Random>
+#include <flux/Format>
+#include <flux/Dir>
+#include <flux/Process>
+#include <flux/System>
+#include <flux/File>
 
-namespace flux
-{
+namespace flux {
 
 Ref<File> File::open(String path, int flags, int mode)
 {

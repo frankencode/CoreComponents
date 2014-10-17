@@ -6,11 +6,10 @@
  *
  */
 
-#include "Format"
-#include "JsonWriter"
+#include <flux/Format>
+#include <flux/JsonWriter>
 
-namespace flux
-{
+namespace flux {
 
 Ref<JsonWriter> JsonWriter::create(Format format, String indent) { return new JsonWriter(format, indent); }
 

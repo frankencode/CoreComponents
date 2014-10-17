@@ -6,11 +6,10 @@
  *
  */
 
-#include "PatternSyntax"
-#include "Pattern"
+#include <flux/PatternSyntax>
+#include <flux/Pattern>
 
-namespace flux
-{
+namespace flux {
 
 Pattern::Pattern() {}
 Pattern::Pattern(const char *text) { *this = String(text); }

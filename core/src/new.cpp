@@ -7,9 +7,9 @@
  */
 
 #include <new>
-#include "valgrind"
-#include "check"
-#include "Memory"
+#include "valgrind.h"
+#include <flux/check>
+#include <flux/Memory>
 
 #ifdef NDEBUG
 #define FLUX_MEMORY_REDZONE_SIZE 0

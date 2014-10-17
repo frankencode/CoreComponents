@@ -7,7 +7,7 @@
  */
 
 #include <signal.h>
-#include "SignalMaster"
+#include <flux/SignalMaster>
 
 namespace flux {
 

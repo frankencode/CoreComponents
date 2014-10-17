@@ -6,10 +6,9 @@
  *
  */
 
-#include "GlobalCoreMutex"
+#include <flux/GlobalCoreMutex>
 
-namespace flux
-{
+namespace flux {
 
 int GlobalCoreMutexInitializer::count_ = 0;
 

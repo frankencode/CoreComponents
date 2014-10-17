@@ -7,7 +7,7 @@
  */
 
 #include <flux/Singleton>
-#include "XmlSyntax"
+#include <flux/xml/XmlSyntax>
 
 namespace flux {
 namespace xml {

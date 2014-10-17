@@ -16,24 +16,23 @@
 #include <errno.h> // errno
 #include <string.h> // strcmp
 #ifdef __linux
-#include "File" // to read /proc
+#include <flux/File> // to read /proc
 #endif
 #ifdef __MACH__
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #include <crt_externs.h> // _NSGetEnviron
 #endif
-#include "exceptions"
-#include "Format"
-#include "Thread"
-#include "ProcessFactory"
-#include "Process"
+#include <flux/exceptions>
+#include <flux/Format>
+#include <flux/Thread>
+#include <flux/ProcessFactory>
+#include <flux/Process>
 
 #ifndef __MACH__
 extern "C" char **environ;
 #endif
 
-namespace flux
-{
+namespace flux {
 
 Ref<Process> Process::start(String command, int ioPolicy)
 {

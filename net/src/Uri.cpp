@@ -8,8 +8,8 @@
 
 #include <flux/exceptions>
 #include <flux/Format>
-#include "UriSyntax"
-#include "Uri"
+#include <flux/net/UriSyntax>
+#include <flux/net/Uri>
 
 namespace flux {
 namespace net {

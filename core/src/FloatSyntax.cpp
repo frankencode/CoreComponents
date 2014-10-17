@@ -7,11 +7,10 @@
  */
 
 #include <math.h> // pow
-#include "Singleton"
-#include "FloatSyntax"
+#include <flux/Singleton>
+#include <flux/FloatSyntax>
 
-namespace flux
-{
+namespace flux {
 
 FloatSyntax::FloatSyntax()
 {

@@ -7,7 +7,7 @@
  */
 
 #include <flux/Singleton>
-#include "YasonSyntax"
+#include <flux/toki/YasonSyntax>
 
 namespace flux {
 namespace toki {

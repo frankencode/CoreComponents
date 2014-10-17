@@ -6,11 +6,10 @@
  *
  */
 
-#include "Variant"
-#include "Map"
+#include <flux/Variant>
+#include <flux/Map>
 
-namespace flux
-{
+namespace flux {
 
 template class Map<String, String>;
 template class Map<String, Variant>;

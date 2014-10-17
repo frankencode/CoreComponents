@@ -8,9 +8,9 @@
 
 #include <flux/ResourceContext>
 #include <flux/Format>
-#include "PaletteLoader"
-#include "Registry"
-#include "Palette"
+#include <flux/toki/PaletteLoader>
+#include <flux/toki/Registry>
+#include <flux/toki/Palette>
 
 namespace flux {
 namespace toki {

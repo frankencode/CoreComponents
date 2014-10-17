@@ -6,7 +6,7 @@
  *
  */
 
-#include "LookAheadStream"
+#include <flux/stream/LookAheadStream>
 
 namespace flux {
 namespace stream {

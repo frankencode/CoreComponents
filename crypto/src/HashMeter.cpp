@@ -6,7 +6,7 @@
  *
  */
 
-#include "HashMeter"
+#include <flux/crypto/HashMeter>
 
 namespace flux {
 namespace crypto {

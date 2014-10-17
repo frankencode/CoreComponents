@@ -15,7 +15,7 @@
 #include <flux/Format>
 #include <flux/exceptions>
 #include <flux/SystemStream>
-#include "SocketAddress"
+#include <flux/net/SocketAddress>
 
 namespace flux {
 

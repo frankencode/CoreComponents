@@ -6,7 +6,7 @@
  *
  */
 
-#include "ArchiveReader"
+#include <flux/tar/ArchiveReader>
 
 namespace flux {
 namespace tar {

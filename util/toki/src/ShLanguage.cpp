@@ -6,9 +6,9 @@
  *
  */
 
-#include "Registry"
-#include "ShSyntax"
-#include "ScriptDiscoverySyntax"
+#include <flux/toki/Registry>
+#include <flux/toki/ShSyntax>
+#include <flux/toki/ScriptDiscoverySyntax>
 
 namespace flux {
 namespace toki {

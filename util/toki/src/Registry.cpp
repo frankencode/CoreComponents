@@ -7,7 +7,7 @@
  */
 
 #include <flux/Singleton>
-#include "Registry"
+#include <flux/toki/Registry>
 
 namespace flux {
 namespace toki {

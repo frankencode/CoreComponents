@@ -7,7 +7,7 @@
  */
 
 #include <flux/Singleton>
-#include "InetAddressSyntax"
+#include <flux/net/InetAddressSyntax>
 
 namespace flux {
 namespace net {

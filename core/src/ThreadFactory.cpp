@@ -7,12 +7,11 @@
  */
 
 #include <sys/mman.h>
-#include "System"
-#include "exceptions"
-#include "ThreadFactory"
+#include <flux/System>
+#include <flux/exceptions>
+#include <flux/ThreadFactory>
 
-namespace flux
-{
+namespace flux {
 
 ThreadFactory::ThreadFactory(Ref< Clonable<Thread> > prototype)
 	: prototype_(prototype),

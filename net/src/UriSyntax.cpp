@@ -7,8 +7,8 @@
  */
 
 #include <flux/Singleton>
-#include "InetAddressSyntax"
-#include "UriSyntax"
+#include <flux/net/InetAddressSyntax>
+#include <flux/net/UriSyntax>
 
 namespace flux {
 namespace net {

@@ -11,7 +11,7 @@
 #include <errno.h> // errno
 #include <math.h> // modf
 #include <flux/exceptions>
-#include "StreamSocket"
+#include <flux/net/StreamSocket>
 
 namespace flux {
 namespace net {

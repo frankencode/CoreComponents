@@ -6,7 +6,7 @@
  *
  */
 
-#include "ScriptDiscoverySyntax"
+#include <flux/toki/ScriptDiscoverySyntax>
 
 namespace flux {
 namespace toki {

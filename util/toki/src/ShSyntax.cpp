@@ -7,7 +7,7 @@
  */
 
 #include <flux/Singleton>
-#include "ShSyntax"
+#include <flux/toki/ShSyntax>
 
 namespace flux {
 namespace toki {

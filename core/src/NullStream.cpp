@@ -6,11 +6,10 @@
  *
  */
 
-#include "Singleton"
-#include "NullStream"
+#include <flux/Singleton>
+#include <flux/NullStream>
 
-namespace flux
-{
+namespace flux {
 
 NullStream::NullStream()
 {}

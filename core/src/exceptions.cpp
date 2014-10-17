@@ -7,14 +7,13 @@
  */
 
 #include <string.h> // strerror_r
-#include "Format"
-#include "Thread"
-#include "SyntaxState"
-#include "ResourceContext"
-#include "exceptions"
+#include <flux/Format>
+#include <flux/Thread>
+#include <flux/SyntaxState>
+#include <flux/ResourceContext>
+#include <flux/exceptions>
 
-namespace flux
-{
+namespace flux {
 
 String DebugError::message() const
 {

@@ -6,11 +6,10 @@
  *
  */
 
-#include "Singleton"
-#include "ExitEvent"
+#include <flux/Singleton>
+#include <flux/ExitEvent>
 
-namespace flux
-{
+namespace flux {
 
 ExitEvent::ExitEvent()
 	: pid_(Process::currentId())

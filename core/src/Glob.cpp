@@ -6,12 +6,11 @@
  *
  */
 
-#include "Dir"
-#include "Pattern"
-#include "Glob"
+#include <flux/Dir>
+#include <flux/Pattern>
+#include <flux/Glob>
 
-namespace flux
-{
+namespace flux {
 
 Glob::Glob(String expression)
 	: remainder_(expression->split('/'))

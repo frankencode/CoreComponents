@@ -6,11 +6,10 @@
  *
  */
 
-#include "str"
-#include "Variant"
+#include <flux/str>
+#include <flux/Variant>
 
-namespace flux
-{
+namespace flux {
 
 const char *Variant::typeName(int type, int itemType)
 {

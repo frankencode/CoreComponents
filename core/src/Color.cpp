@@ -6,12 +6,11 @@
  *
  */
 
-#include "ColorNames"
-#include "Format"
-#include "Color"
+#include <flux/ColorNames>
+#include <flux/Format>
+#include <flux/Color>
 
-namespace flux
-{
+namespace flux {
 
 Color Color::parse(const char *s, bool *ok)
 {

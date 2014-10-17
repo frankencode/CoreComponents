@@ -6,8 +6,8 @@
  *
  */
 
-#include "Registry"
-#include "YasonSyntax"
+#include <flux/toki/Registry>
+#include <flux/toki/YasonSyntax>
 
 namespace flux {
 namespace toki {

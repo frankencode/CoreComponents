@@ -10,8 +10,8 @@
 #include <flux/File>
 #include <flux/User>
 #include <flux/Group>
-#include "TarCommon"
-#include "TarWriter"
+#include <flux/tar/TarCommon>
+#include <flux/tar/TarWriter>
 
 namespace flux {
 namespace tar {

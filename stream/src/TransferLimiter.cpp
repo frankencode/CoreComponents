@@ -6,7 +6,7 @@
  *
  */
 
-#include "TransferLimiter"
+#include <flux/stream/TransferLimiter>
 
 namespace flux {
 namespace stream {

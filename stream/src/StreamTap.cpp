@@ -6,7 +6,7 @@
  *
  */
 
-#include "StreamTap"
+#include <flux/stream/StreamTap>
 
 namespace flux {
 namespace stream {

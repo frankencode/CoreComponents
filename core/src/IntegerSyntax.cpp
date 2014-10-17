@@ -6,11 +6,10 @@
  *
  */
 
-#include "Singleton"
-#include "IntegerSyntax"
+#include <flux/Singleton>
+#include <flux/IntegerSyntax>
 
-namespace flux
-{
+namespace flux {
 
 IntegerSyntax::IntegerSyntax()
 {

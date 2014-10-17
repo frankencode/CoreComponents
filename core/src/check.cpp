@@ -7,10 +7,9 @@
  */
 
 #include <signal.h>
-#include "check"
+#include <flux/check>
 
-namespace flux
-{
+namespace flux {
 
 void abort()
 {

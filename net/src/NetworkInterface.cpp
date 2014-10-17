@@ -29,7 +29,7 @@
 #include <flux/LineSource>
 #endif
 #include <flux/exceptions>
-#include "NetworkInterface"
+#include <flux/net/NetworkInterface>
 
 namespace flux {
 namespace net {

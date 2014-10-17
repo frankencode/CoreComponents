@@ -7,7 +7,7 @@
  */
 
 #include <flux/File>
-#include "Document"
+#include <flux/toki/Document>
 
 namespace flux {
 namespace toki {

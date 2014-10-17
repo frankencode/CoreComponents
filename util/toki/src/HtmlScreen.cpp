@@ -7,7 +7,7 @@
  */
 
 #include <flux/str>
-#include "HtmlScreen"
+#include <flux/toki/HtmlScreen>
 
 namespace flux {
 namespace toki {

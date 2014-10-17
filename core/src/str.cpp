@@ -6,12 +6,11 @@
  *
  */
 
-#include "Stack"
-#include "rounding"
-#include "str"
+#include <flux/Stack>
+#include <flux/rounding>
+#include <flux/str>
 
-namespace flux
-{
+namespace flux {
 
 String fnum(float64_t x, int precision, int base, int screen)
 {

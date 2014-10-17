@@ -6,7 +6,7 @@
  *
  */
 
-#include "Style"
+#include <flux/toki/Style>
 
 namespace flux {
 namespace toki {

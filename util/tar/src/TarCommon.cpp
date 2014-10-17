@@ -6,7 +6,7 @@
  *
  */
 
-#include "TarCommon"
+#include <flux/tar/TarCommon>
 
 namespace flux {
 namespace tar {

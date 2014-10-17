@@ -6,7 +6,7 @@
  *
  */
 
-#include "LineBuffer"
+#include <flux/stream/LineBuffer>
 
 namespace flux {
 namespace stream {

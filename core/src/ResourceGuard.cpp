@@ -6,11 +6,10 @@
  *
  */
 
-#include "ResourceContext"
-#include "ResourceGuard"
+#include <flux/ResourceContext>
+#include <flux/ResourceGuard>
 
-namespace flux
-{
+namespace flux {
 
 ResourceGuard::ResourceGuard(String resource)
 {

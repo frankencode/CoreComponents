@@ -7,7 +7,7 @@
  */
 
 #include <flux/File>
-#include "ArReader"
+#include <flux/tar/ArReader>
 
 namespace flux {
 namespace tar {

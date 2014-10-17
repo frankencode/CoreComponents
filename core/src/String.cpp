@@ -6,13 +6,12 @@
  *
  */
 
-#include "Format"
-#include "Variant"
-#include "Singleton"
-#include "String"
+#include <flux/Format>
+#include <flux/Variant>
+#include <flux/Singleton>
+#include <flux/String>
 
-namespace flux
-{
+namespace flux {
 
 String::String(): Super(Singleton<ByteArray>::instance()) {}
 

@@ -6,10 +6,9 @@
  *
  */
 
-#include "Semaphore"
+#include <flux/Semaphore>
 
-namespace flux
-{
+namespace flux {
 
 Semaphore::Semaphore(int value)
 	: mutex_(Mutex::create()),
