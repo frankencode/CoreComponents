@@ -10,8 +10,7 @@
 #include "ServiceDefinition.h"
 #include "DirectoryInstance.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 class DirectoryService: public ServiceDefinition
 {

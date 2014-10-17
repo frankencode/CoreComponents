@@ -9,8 +9,7 @@
 #include "BuildPlan.h"
 #include "InstallStage.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 bool InstallStage::run()
 {

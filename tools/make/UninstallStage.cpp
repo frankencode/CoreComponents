@@ -9,8 +9,7 @@
 #include "BuildPlan.h"
 #include "UninstallStage.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 bool UninstallStage::run()
 {

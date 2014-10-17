@@ -13,8 +13,7 @@
 #include "ConnectionManager.h"
 #include "WorkerPool.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 Ref<WorkerPool> WorkerPool::create(ServiceInstance *serviceInstance, ClosedConnections *closedConnections)
 {

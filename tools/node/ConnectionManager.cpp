@@ -11,8 +11,7 @@
 #include "ClientConnection.h"
 #include "ConnectionManager.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 Ref<ConnectionManager> ConnectionManager::create(int serviceWindow)
 {

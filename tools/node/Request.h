@@ -13,8 +13,7 @@
 #include <flux/Map>
 #include <flux/Stream>
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 

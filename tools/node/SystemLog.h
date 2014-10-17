@@ -14,8 +14,7 @@
 
 namespace flux { template<class> class ThreadLocalSingleton; }
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 

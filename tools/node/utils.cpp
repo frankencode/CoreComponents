@@ -10,8 +10,7 @@
 #include <flux/Format>
 #include "utils.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 const char *reasonPhraseByStatusCode(int statusCode)
 {

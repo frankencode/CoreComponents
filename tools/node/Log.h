@@ -14,8 +14,7 @@
 #include <flux/Mutex>
 #include "LogConfig.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 

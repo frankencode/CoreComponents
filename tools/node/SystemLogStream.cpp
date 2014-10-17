@@ -8,8 +8,7 @@
 
 #include "SystemLogStream.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 Ref<SystemLogStream> SystemLogStream::open(int priority)
 {

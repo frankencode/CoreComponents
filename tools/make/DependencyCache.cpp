@@ -13,8 +13,7 @@
 #include "BuildPlan.h"
 #include "DependencyCache.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 Ref<DependencyCache> DependencyCache::create(BuildPlan *plan)
 {

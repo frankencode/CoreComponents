@@ -14,8 +14,7 @@
 #include "NodeConfig.h"
 #include "LogMaster.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 LogMaster::LogMaster()
     : mutex_(Mutex::create()),

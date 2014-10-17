@@ -14,8 +14,7 @@
 
 namespace flux { template<class> class Singleton; }
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 class ServiceRegistry: public Object
 {

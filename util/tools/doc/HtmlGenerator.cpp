@@ -20,8 +20,7 @@ public:
     virtual void write(Format &sink, Element *element) = 0;
 };
 
-namespace html
-{
+namespace html {
 
 class ParagraphWriter: public HtmlWriter {
 public:

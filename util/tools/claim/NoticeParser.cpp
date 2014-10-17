@@ -11,8 +11,7 @@
 #include <flux/stdio>
 #include "NoticeParser.h"
 
-namespace fluxclaim
-{
+namespace fluxclaim {
 
 class NoticeSyntax: public SyntaxDefinition
 {

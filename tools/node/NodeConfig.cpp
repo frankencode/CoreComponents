@@ -15,8 +15,7 @@
 #include "ErrorLog.h"
 #include "NodeConfig.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 NodeConfig::NodeConfig()
 {}

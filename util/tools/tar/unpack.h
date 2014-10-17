@@ -11,8 +11,7 @@
 
 #include <flux/tar/ArchiveReader>
 
-namespace fluxtar
-{
+namespace fluxtar {
 
 using namespace flux;
 using namespace flux::tar;

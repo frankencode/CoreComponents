@@ -9,8 +9,7 @@
 #include <flux/ThreadLocalSingleton>
 #include "AccessLog.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 AccessLog *accessLog() { return ThreadLocalSingleton<AccessLog>::instance(); }
 

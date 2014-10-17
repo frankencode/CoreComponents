@@ -10,8 +10,7 @@
 #include <flux/str>
 #include "TapBuffer.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 Ref<TapBuffer> TapBuffer::open(Stream *stream, String prefix)
 {

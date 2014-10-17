@@ -11,8 +11,7 @@
 
 namespace flux {
 
-namespace syntax
-{
+namespace syntax {
 
 static void printChar(char ch) {
     if (ch < ' '/*32*/) {

@@ -12,8 +12,7 @@
 #include <flux/Stream>
 #include "Request.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 

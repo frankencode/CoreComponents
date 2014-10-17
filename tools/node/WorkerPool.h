@@ -11,8 +11,7 @@
 
 #include "ServiceWorker.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 class WorkerPool: public Object
 {

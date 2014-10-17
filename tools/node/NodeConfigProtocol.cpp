@@ -11,8 +11,7 @@
 #include "LogPrototype.h"
 #include "NodeConfigProtocol.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 class NodePrototype: public MetaObject
 {

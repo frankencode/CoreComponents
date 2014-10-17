@@ -12,8 +12,7 @@
 #include "JobScheduler.h"
 #include "AnalyseStage.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 bool AnalyseStage::run()
 {

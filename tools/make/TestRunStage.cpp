@@ -11,8 +11,7 @@
 #include "JobScheduler.h"
 #include "TestRunStage.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 bool TestRunStage::run()
 {

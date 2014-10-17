@@ -13,8 +13,7 @@
 
 namespace flux { class FileStatus; }
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 using namespace flux;
 

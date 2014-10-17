@@ -16,8 +16,7 @@ namespace net {
     class SocketAddress;
 }}
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 using namespace flux::net;

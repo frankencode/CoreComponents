@@ -13,8 +13,7 @@
 
 namespace flux { template<class> class Singleton; }
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 

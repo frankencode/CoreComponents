@@ -11,8 +11,7 @@
 #include "WorkerPool.h"
 #include "DispatchInstance.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 class DispatchService: public ServiceDefinition
 {

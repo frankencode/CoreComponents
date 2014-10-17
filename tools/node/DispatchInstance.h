@@ -12,8 +12,7 @@
 #include "ServiceInstance.h"
 #include "WorkerPool.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 class NodeMaster;
 

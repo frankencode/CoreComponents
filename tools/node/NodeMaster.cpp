@@ -22,8 +22,7 @@
 #include "ConnectionManager.h"
 #include "NodeMaster.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 NodeMaster* nodeMaster() { return Singleton<NodeMaster>::instance(); }
 

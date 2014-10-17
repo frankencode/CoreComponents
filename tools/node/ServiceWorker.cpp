@@ -20,8 +20,7 @@
 #include "Response.h"
 #include "ServiceWorker.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux::stream;
 

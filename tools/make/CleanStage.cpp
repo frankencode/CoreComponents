@@ -10,8 +10,7 @@
 #include "DependencyCache.h"
 #include "CleanStage.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 bool CleanStage::run()
 {

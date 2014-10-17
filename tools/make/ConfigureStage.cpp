@@ -12,8 +12,7 @@
 #include "BuildPlan.h"
 #include "ConfigureStage.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 bool ConfigureStage::run()
 {

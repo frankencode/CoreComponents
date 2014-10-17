@@ -10,8 +10,7 @@
 #include "BuildPlan.h"
 #include "BuildStage.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 BuildStage::BuildStage(BuildPlan *plan)
     : plan_(plan),

@@ -9,8 +9,7 @@
 #include <flux/Singleton>
 #include "MediaTypeDatabase.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 MediaTypeDatabase::MediaTypeDatabase()
     : mediaTypeByPathSuffix_(PrefixTree<char, String>::create()),

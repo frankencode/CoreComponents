@@ -10,8 +10,7 @@
 #include <flux/net/SocketAddress>
 #include "Visit.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 Ref<Visit> Visit::create(SocketAddress *remoteAddress)
 {

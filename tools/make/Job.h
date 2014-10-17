@@ -12,8 +12,7 @@
 #include <flux/String>
 #include <flux/Channel>
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 using namespace flux;
 

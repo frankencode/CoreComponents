@@ -12,8 +12,7 @@
 #include "exceptions.h"
 #include "RequestStream.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux::stream;
 

@@ -18,8 +18,7 @@ namespace stream {
 class TransferMeter;
 }}
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 using namespace flux::stream;

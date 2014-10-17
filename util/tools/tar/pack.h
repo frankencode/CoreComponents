@@ -9,8 +9,7 @@
 #include <flux/String>
 #include <flux/tar/ArchiveWriter>
 
-namespace fluxtar
-{
+namespace fluxtar {
 
 using namespace flux;
 using namespace flux::tar;

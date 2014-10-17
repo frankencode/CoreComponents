@@ -16,8 +16,7 @@
 #include <flux/exceptions>
 #include "unpack.h"
 
-namespace fluxtar
-{
+namespace fluxtar {
 
 void list(ArchiveReader *archive)
 {

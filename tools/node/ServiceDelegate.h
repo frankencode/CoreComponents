@@ -12,8 +12,7 @@
 #include <flux/Format>
 #include "Request.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 class ServiceWorker;
 class ServiceInstance;

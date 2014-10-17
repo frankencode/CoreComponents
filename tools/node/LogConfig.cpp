@@ -10,8 +10,7 @@
 #include "Log.h"
 #include "LogConfig.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 int decodeLogLevel(String levelName)
 {

@@ -9,8 +9,7 @@
 #include "LogPrototype.h"
 #include "ServiceDefinition.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 Ref<ServicePrototype> ServicePrototype::create(String className, MetaProtocol *protocol)
 {

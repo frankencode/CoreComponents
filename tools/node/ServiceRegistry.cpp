@@ -10,8 +10,7 @@
 #include "NodeConfigProtocol.h"
 #include "ServiceRegistry.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 ServiceRegistry::ServiceRegistry()
     : serviceByName_(ServiceByName::create())

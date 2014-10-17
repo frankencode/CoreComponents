@@ -12,8 +12,7 @@
 #include "ServiceInstance.h"
 #include "DirectoryDelegate.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 class DirectoryInstance: public ServiceInstance
 {

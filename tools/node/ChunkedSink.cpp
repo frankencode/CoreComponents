@@ -9,8 +9,7 @@
 #include <flux/Format>
 #include "ChunkedSink.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 Ref<ChunkedSink> ChunkedSink::open(Stream *stream)
 {

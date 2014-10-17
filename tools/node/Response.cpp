@@ -15,8 +15,7 @@
 #include "ChunkedSink.h"
 #include "Response.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux::stream;
 

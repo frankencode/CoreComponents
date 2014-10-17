@@ -15,8 +15,7 @@
 
 namespace flux { class MetaObject; }
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 

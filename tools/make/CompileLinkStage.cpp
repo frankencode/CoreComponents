@@ -13,8 +13,7 @@
 #include "BuildPlan.h"
 #include "CompileLinkStage.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 bool CompileLinkStage::run()
 {

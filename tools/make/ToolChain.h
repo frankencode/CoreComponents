@@ -12,8 +12,7 @@
 #include "Job.h"
 #include "Module.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 using namespace flux;
 
