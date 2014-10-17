@@ -121,6 +121,12 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
 	BuildParameters::read(recipe_, this);
 
+	String defaultIncludePath = projectPath_->expandPath("include");
+	if (Dir::exists(defaultIncludePath)) {
+		if (!includePaths_->contains(defaultIncludePath))
+			includePaths_->append(defaultIncludePath);
+	}
+
 	if (recipe_->hasChildren()) {
 		for (int i = 0; i < recipe_->children()->count(); ++i) {
 			MetaObject *object = recipe_->children()->at(i);
