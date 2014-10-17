@@ -17,21 +17,21 @@ namespace fluxnode
 class WorkerPool: public Object
 {
 public:
-	static Ref<WorkerPool> create(ServiceInstance *serviceInstance, ClosedConnections *closedConnections);
+    static Ref<WorkerPool> create(ServiceInstance *serviceInstance, ClosedConnections *closedConnections);
 
-	inline ServiceInstance *serviceInstance() const { return serviceInstance_; }
+    inline ServiceInstance *serviceInstance() const { return serviceInstance_; }
 
-	void dispatch(ClientConnection *client);
+    void dispatch(ClientConnection *client);
 
 private:
-	WorkerPool(ServiceInstance *serviceInstance, ClosedConnections *closedConnections);
-	~WorkerPool();
+    WorkerPool(ServiceInstance *serviceInstance, ClosedConnections *closedConnections);
+    ~WorkerPool();
 
-	typedef Array< Ref<ServiceWorker> > ServiceWorkers;
+    typedef Array< Ref<ServiceWorker> > ServiceWorkers;
 
-	Ref<ClosedConnections> closedConnections_;
-	Ref<ServiceInstance> serviceInstance_;
-	Ref<ServiceWorkers> serviceWorkers_;
+    Ref<ClosedConnections> closedConnections_;
+    Ref<ServiceInstance> serviceInstance_;
+    Ref<ServiceWorkers> serviceWorkers_;
 };
 
 typedef Array< Ref<WorkerPool> > WorkerPools;

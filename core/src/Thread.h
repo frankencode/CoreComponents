@@ -23,36 +23,36 @@ class Interrupt;
 class Thread: public Object
 {
 public:
-	static Thread *self();
+    static Thread *self();
 
-	void start(int stackSize = -1);
-	void wait();
-	void kill(int signal);
-	bool stillAlive() const;
+    void start(int stackSize = -1);
+    void wait();
+    void kill(int signal);
+    bool stillAlive() const;
 
-	static void sleep(double duration);
-	static void sleepUntil(double timeout);
+    static void sleep(double duration);
+    static void sleepUntil(double timeout);
 
-	static void blockSignals(SignalSet *set);
-	static void unblockSignals(SignalSet *set);
+    static void blockSignals(SignalSet *set);
+    static void unblockSignals(SignalSet *set);
 
-	pthread_t id() const { return tid_; }
+    pthread_t id() const { return tid_; }
 
 protected:
-	Thread(): lastSignal_(0) {}
+    Thread(): lastSignal_(0) {}
 
-	virtual void run();
-	virtual void handleSignal(int signal);
+    virtual void run();
+    virtual void handleSignal(int signal);
 
 private:
-	friend class ThreadFactory;
-	friend class Interrupt;
-	friend class Process;
+    friend class ThreadFactory;
+    friend class Interrupt;
+    friend class Process;
 
-	static ThreadLocalRef<Thread> self_;
-	Ref<ByteArray> stack_;
-	pthread_t tid_;
-	int lastSignal_;
+    static ThreadLocalRef<Thread> self_;
+    Ref<ByteArray> stack_;
+    pthread_t tid_;
+    int lastSignal_;
 };
 
 inline Thread *thread() { return Thread::self(); }

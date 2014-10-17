@@ -23,37 +23,37 @@ template<class SubClass>
 class CoreSingleton
 {
 public:
-	static SubClass *instance()
-	{
-		SpinLock &mutex = localStatic<SpinLock, SubClass>();
-		Guard<SpinLock> guard(&mutex);
-		Ref<SubClass> &instance_ = localStatic< Ref<SubClass>, CoreSingleton<SubClass> >();
-		if (!instance_)
-			instance_ = Singleton<SubClass>::create();
-		return instance_;
-	}
+    static SubClass *instance()
+    {
+        SpinLock &mutex = localStatic<SpinLock, SubClass>();
+        Guard<SpinLock> guard(&mutex);
+        Ref<SubClass> &instance_ = localStatic< Ref<SubClass>, CoreSingleton<SubClass> >();
+        if (!instance_)
+            instance_ = Singleton<SubClass>::create();
+        return instance_;
+    }
 };
 
 template<class SubClass>
 class CoreSingletonWrapper: public Object
 {
 public:
-	CoreSingletonWrapper()
-		: instance_(CoreSingleton<SubClass>::instance())
-	{}
-	Ref<SubClass> instance_;
+    CoreSingletonWrapper()
+        : instance_(CoreSingleton<SubClass>::instance())
+    {}
+    Ref<SubClass> instance_;
 };
 
 template<class SubClass>
 class Singleton: public ThreadLocalSingleton< CoreSingletonWrapper<SubClass> >
 {
 public:
-	inline static SubClass *instance() {
-		return ThreadLocalSingleton< CoreSingletonWrapper<SubClass> >::instance()->instance_;
-	}
+    inline static SubClass *instance() {
+        return ThreadLocalSingleton< CoreSingletonWrapper<SubClass> >::instance()->instance_;
+    }
 private:
-	friend class CoreSingleton<SubClass>;
-	inline static SubClass *create() { return new SubClass; }
+    friend class CoreSingleton<SubClass>;
+    inline static SubClass *create() { return new SubClass; }
 };
 
 } // namespace flux

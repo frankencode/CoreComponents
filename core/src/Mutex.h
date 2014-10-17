@@ -20,17 +20,17 @@ class ScopeGuard;
 class Mutex: public Object, public NonCopyable
 {
 public:
-	inline static Ref<Mutex> create() { return new Mutex; }
-	~Mutex();
+    inline static Ref<Mutex> create() { return new Mutex; }
+    ~Mutex();
 
-	bool tryAcquire();
-	void acquire();
-	void release();
+    bool tryAcquire();
+    void acquire();
+    void release();
 
 protected:
-	friend class Condition;
-	Mutex();
-	pthread_mutex_t mutex_;
+    friend class Condition;
+    Mutex();
+    pthread_mutex_t mutex_;
 };
 
 } // namespace flux

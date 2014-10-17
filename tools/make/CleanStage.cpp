@@ -15,21 +15,21 @@ namespace fluxmake
 
 bool CleanStage::run()
 {
-	if (complete_) return success_;
-	complete_ = true;
+    if (complete_) return success_;
+    complete_ = true;
 
-	for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
-		if (!plan()->prerequisites()->at(i)->cleanStage()->run())
-			return success_ = false;
-	}
+    for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
+        if (!plan()->prerequisites()->at(i)->cleanStage()->run())
+            return success_ = false;
+    }
 
-	if (plan()->options() & BuildPlan::Package) return success_ = true;
+    if (plan()->options() & BuildPlan::Package) return success_ = true;
 
-	toolChain()->clean(plan());
-	shell()->unlink(DependencyCache::cachePath(plan()));
-	shell()->rmdir(plan()->modulePath());
+    toolChain()->clean(plan());
+    shell()->unlink(DependencyCache::cachePath(plan()));
+    shell()->rmdir(plan()->modulePath());
 
-	return success_ = true;
+    return success_ = true;
 }
 
 } // namespace fluxmake

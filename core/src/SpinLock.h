@@ -14,15 +14,15 @@ namespace flux {
 class SpinLock
 {
 public:
-	SpinLock();
-	~SpinLock();
-	bool tryAcquire();
-	void acquire();
-	void release();
+    SpinLock();
+    ~SpinLock();
+    bool tryAcquire();
+    void acquire();
+    void release();
 
 private:
-	void yield();
-	volatile char flag_;
+    void yield();
+    volatile char flag_;
 };
 
 #ifdef NDEBUG

@@ -18,24 +18,24 @@ template<class SubClass> class Singleton;
 class FloatSyntax: public SyntaxDefinition
 {
 public:
-	void read(float64_t *value, const ByteArray *text, Token *token) const;
-	Ref<Token> read(float64_t *value, const ByteArray *text, int i = -1) const;
+    void read(float64_t *value, const ByteArray *text, Token *token) const;
+    Ref<Token> read(float64_t *value, const ByteArray *text, int i = -1) const;
 
-	inline int literal() const { return literal_; }
+    inline int literal() const { return literal_; }
 
 private:
-	friend class Singleton<FloatSyntax>;
+    friend class Singleton<FloatSyntax>;
 
-	FloatSyntax();
+    FloatSyntax();
 
-	int sign_;
-	int integerPart_;
-	int fractionPart_;
-	int exponentSign_;
-	int exponent_;
-	int nan_;
-	int infinite_;
-	int literal_;
+    int sign_;
+    int integerPart_;
+    int fractionPart_;
+    int exponentSign_;
+    int exponent_;
+    int nan_;
+    int infinite_;
+    int literal_;
 };
 
 const FloatSyntax *floatSyntax();

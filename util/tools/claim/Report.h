@@ -27,27 +27,27 @@ typedef Map<String, String> StatementByDigest;
 class Report: public Object
 {
 public:
-	static Ref<Report> create(StringList *dirPaths, Pattern works, int worksMinLines);
+    static Ref<Report> create(StringList *dirPaths, Pattern works, int worksMinLines);
 
-	inline StringList *dirPaths() const { return dirPaths_; }
-	inline Pattern works() const { return works_; }
-	inline int worksMinLines() const { return worksMinLines_; }
-	inline Coverage *coverage() const { return coverage_; }
-	inline Exposure *exposure() const { return exposure_; }
-	inline CoverageByDigest *coverageByDigest() const { return coverageByDigest_; }
-	inline CoverageByHolder *coverageByHolder() const { return coverageByHolder_; }
-	inline StatementByDigest *statementByDigest() const { return statementByDigest_; }
+    inline StringList *dirPaths() const { return dirPaths_; }
+    inline Pattern works() const { return works_; }
+    inline int worksMinLines() const { return worksMinLines_; }
+    inline Coverage *coverage() const { return coverage_; }
+    inline Exposure *exposure() const { return exposure_; }
+    inline CoverageByDigest *coverageByDigest() const { return coverageByDigest_; }
+    inline CoverageByHolder *coverageByHolder() const { return coverageByHolder_; }
+    inline StatementByDigest *statementByDigest() const { return statementByDigest_; }
 
 private:
-	Report(StringList *dirPaths, Pattern works, int worksMinLines);
-	Ref<StringList> dirPaths_;
-	Pattern works_;
-	int worksMinLines_;
-	Ref<Coverage> coverage_;
-	Ref<Exposure> exposure_;
-	Ref<CoverageByDigest> coverageByDigest_;
-	Ref<CoverageByHolder> coverageByHolder_;
-	Ref<StatementByDigest> statementByDigest_;
+    Report(StringList *dirPaths, Pattern works, int worksMinLines);
+    Ref<StringList> dirPaths_;
+    Pattern works_;
+    int worksMinLines_;
+    Ref<Coverage> coverage_;
+    Ref<Exposure> exposure_;
+    Ref<CoverageByDigest> coverageByDigest_;
+    Ref<CoverageByHolder> coverageByHolder_;
+    Ref<StatementByDigest> statementByDigest_;
 };
 
 } // namespace fluxclaim

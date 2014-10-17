@@ -21,30 +21,30 @@ using namespace flux;
 class Request: public Map<String, String>
 {
 public:
-	inline String method() const { return method_; }
-	inline String target() const { return target_; }
-	inline String version() const { return version_; }
-	inline String host() const { return host_; }
+    inline String method() const { return method_; }
+    inline String target() const { return target_; }
+    inline String version() const { return version_; }
+    inline String host() const { return host_; }
 
-	inline String line() const { return line_; }
-	inline double time() const { return time_; }
+    inline String line() const { return line_; }
+    inline double time() const { return time_; }
 
-	inline Stream *payload() const { return payload_; }
+    inline Stream *payload() const { return payload_; }
 
 private:
-	friend class ClientConnection;
-	inline static Ref<Request> create() { return new Request; }
-	Request() {}
+    friend class ClientConnection;
+    inline static Ref<Request> create() { return new Request; }
+    Request() {}
 
-	String method_;
-	String target_;
-	String version_;
-	String host_;
+    String method_;
+    String target_;
+    String version_;
+    String host_;
 
-	String line_;
-	double time_;
+    String line_;
+    double time_;
 
-	Ref<Stream> payload_;
+    Ref<Stream> payload_;
 };
 
 } // namespace fluxnode

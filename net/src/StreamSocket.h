@@ -18,29 +18,29 @@ namespace net {
 class StreamSocket: public SystemStream
 {
 public:
-	static Ref<StreamSocket> listen(SocketAddress *address);
-	static Ref<StreamSocket> connect(SocketAddress *address);
+    static Ref<StreamSocket> listen(SocketAddress *address);
+    static Ref<StreamSocket> connect(SocketAddress *address);
 
-	SocketAddress *address() const;
-	bool getPeerAddress(SocketAddress *address);
+    SocketAddress *address() const;
+    bool getPeerAddress(SocketAddress *address);
 
-	bool readyAccept(double interval);
-	Ref<StreamSocket> accept();
-	bool established(double interval);
-	void shutdown(int how = SHUT_RDWR);
+    bool readyAccept(double interval);
+    Ref<StreamSocket> accept();
+    bool established(double interval);
+    void shutdown(int how = SHUT_RDWR);
 
-	void setRecvTimeout(double interval);
-	void setSendTimeout(double interval);
+    void setRecvTimeout(double interval);
+    void setSendTimeout(double interval);
 
 protected:
-	StreamSocket(SocketAddress *address);
-	StreamSocket(SocketAddress *address, int fdc);
-	void bind();
-	void listen(int backlog = 8);
-	void connect();
+    StreamSocket(SocketAddress *address);
+    StreamSocket(SocketAddress *address, int fdc);
+    void bind();
+    void listen(int backlog = 8);
+    void connect();
 
-	Ref<SocketAddress> address_;
-	bool connected_;
+    Ref<SocketAddress> address_;
+    bool connected_;
 };
 
 }} // namespace flux::net

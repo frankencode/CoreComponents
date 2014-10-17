@@ -17,7 +17,7 @@ namespace tar {
 class ArchiveWriter: public Object
 {
 public:
-	virtual void writeFile(String path) = 0;
+    virtual void writeFile(String path) = 0;
 };
 
 }} // namespace flux::tar

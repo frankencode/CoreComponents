@@ -20,15 +20,15 @@ template<class SubClass> class Singleton;
 class ColorNames: public Object
 {
 public:
-	bool lookup(const char *name, Color *color) const;
+    bool lookup(const char *name, Color *color) const;
 
 private:
-	friend class Singleton<ColorNames>;
+    friend class Singleton<ColorNames>;
 
-	ColorNames();
+    ColorNames();
 
-	typedef PrefixTree<char, Color> ColorByName;
-	Ref<ColorByName> colorByName_;
+    typedef PrefixTree<char, Color> ColorByName;
+    Ref<ColorByName> colorByName_;
 };
 
 const ColorNames *colorNames();

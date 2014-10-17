@@ -17,17 +17,17 @@ namespace doc {
 class ParagraphElement: public TextElement
 {
 public:
-	static Ref<ParagraphElement> create() { return new ParagraphElement; }
+    static Ref<ParagraphElement> create() { return new ParagraphElement; }
 
 protected:
-	ParagraphElement(String className = "Paragraph")
-		: TextElement(className)
-	{}
+    ParagraphElement(String className = "Paragraph")
+        : TextElement(className)
+    {}
 
-	virtual Ref<MetaObject> produce()
-	{
-		return create();
-	}
+    virtual Ref<MetaObject> produce()
+    {
+        return create();
+    }
 };
 
 }} // namespace flux::doc

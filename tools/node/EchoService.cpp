@@ -16,31 +16,31 @@ namespace fluxnode
 class EchoService: public ServiceDefinition
 {
 public:
-	static Ref<EchoService> create() {
-		return new EchoService;
-	}
+    static Ref<EchoService> create() {
+        return new EchoService;
+    }
 
-	virtual ServicePrototype *configPrototype() const { return configPrototype_; }
-	virtual Ref<ServiceInstance> createInstance(MetaObject *config) const { return EchoInstance::create(config); }
+    virtual ServicePrototype *configPrototype() const { return configPrototype_; }
+    virtual Ref<ServiceInstance> createInstance(MetaObject *config) const { return EchoInstance::create(config); }
 
 private:
-	EchoService()
-		: configPrototype_(ServicePrototype::create("Echo"))
-	{}
+    EchoService()
+        : configPrototype_(ServicePrototype::create("Echo"))
+    {}
 
-	Ref<ServicePrototype> configPrototype_;
+    Ref<ServicePrototype> configPrototype_;
 };
 
 class EchoAnnouncer {
 public:
-	EchoAnnouncer()
-	{
-		static bool done = false;
-		if (done) return;
-		Ref<EchoService> echoService = EchoService::create();
-		serviceRegistry()->registerService(echoService);
-		done = true;
-	}
+    EchoAnnouncer()
+    {
+        static bool done = false;
+        if (done) return;
+        Ref<EchoService> echoService = EchoService::create();
+        serviceRegistry()->registerService(echoService);
+        done = true;
+    }
 };
 
 namespace { EchoAnnouncer announcer; }

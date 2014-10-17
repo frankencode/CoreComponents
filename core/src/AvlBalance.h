@@ -16,20 +16,20 @@ namespace flux {
 class AvlBalance
 {
 protected:
-	virtual void setRoot(BinaryNode *k) = 0;
+    virtual void setRoot(BinaryNode *k) = 0;
 
-	inline virtual void rotated(BinaryNode *k1, bool left) {}
+    inline virtual void rotated(BinaryNode *k1, bool left) {}
 
-	void restore(BinaryNode *kp, BinaryNode*, bool left, bool attached);
+    void restore(BinaryNode *kp, BinaryNode*, bool left, bool attached);
 
 private:
-	BinaryNode *rebalance(BinaryNode *k1);
-	void rotate(BinaryNode *k1, bool left);
+    BinaryNode *rebalance(BinaryNode *k1);
+    void rotate(BinaryNode *k1, bool left);
 
 public:
 #ifndef NDEBUG
-	static int height(BinaryNode *k);
-	static bool testBalance(BinaryNode *k);
+    static int height(BinaryNode *k);
+    static bool testBalance(BinaryNode *k);
 #endif
 };
 

@@ -13,15 +13,15 @@ namespace fluxnode
 {
 
 Ref<DispatchInstance> DispatchInstance::create(MetaObject *config) {
-	return new DispatchInstance(config);
+    return new DispatchInstance(config);
 }
 
 Ref<ServiceDelegate> DispatchInstance::createDelegate(ServiceWorker *worker) const {
-	return DispatchDelegate::create(worker);
+    return DispatchDelegate::create(worker);
 }
 
 DispatchInstance::DispatchInstance(MetaObject *config)
-	: ServiceInstance(config)
+    : ServiceInstance(config)
 {}
 
 } // namespace fluxnode

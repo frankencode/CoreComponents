@@ -12,7 +12,7 @@
 namespace flux {
 
 SyntaxDefinition::SyntaxDefinition(SyntaxDebugFactory *debugFactory)
-	: def_(new syntax::DefinitionNode(debugFactory))
+    : def_(new syntax::DefinitionNode(debugFactory))
 {}
 
 SyntaxDefinition::~SyntaxDefinition()
@@ -31,17 +31,17 @@ int SyntaxDefinition::keywordByName(const char *name) const { return def_->keywo
 
 Ref<SyntaxState> SyntaxDefinition::find(const ByteArray *text, int i, TokenFactory *tokenFactory) const
 {
-	return def_->find(const_cast<ByteArray *>(text), i, tokenFactory);
+    return def_->find(const_cast<ByteArray *>(text), i, tokenFactory);
 }
 
 Ref<SyntaxState> SyntaxDefinition::match(const ByteArray *text, int i, TokenFactory *tokenFactory) const
 {
-	return def_->match(const_cast<ByteArray *>(text), i, tokenFactory);
+    return def_->match(const_cast<ByteArray *>(text), i, tokenFactory);
 }
 
 int SyntaxDefinition::matchLength() const
 {
-	return def_->matchLength();
+    return def_->matchLength();
 }
 
 typedef syntax::NODE NODE;

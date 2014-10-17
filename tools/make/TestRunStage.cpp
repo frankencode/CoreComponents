@@ -16,36 +16,36 @@ namespace fluxmake
 
 bool TestRunStage::run()
 {
-	if (complete_) return success_;
-	complete_ = true;
+    if (complete_) return success_;
+    complete_ = true;
 
-	for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
-		TestRunStage *stage = plan()->prerequisites()->at(i)->testRunStage();
-		if (!stage->run()) {
-			status_ = stage->status();
-			return success_ = false;
-		}
-	}
+    for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
+        TestRunStage *stage = plan()->prerequisites()->at(i)->testRunStage();
+        if (!stage->run()) {
+            status_ = stage->status();
+            return success_ = false;
+        }
+    }
 
-	if (!(plan()->options() & BuildPlan::Tests)) return success_ = true;
+    if (!(plan()->options() & BuildPlan::Tests)) return success_ = true;
 
-	Ref<JobScheduler> scheduler = createScheduler();
+    Ref<JobScheduler> scheduler = createScheduler();
 
-	for (int i = 0; i < plan()->modules()->count(); ++i) {
-		Module *module = plan()->modules()->at(i);
-		scheduler->schedule(toolChain()->createTestJob(plan(), module));
-	}
+    for (int i = 0; i < plan()->modules()->count(); ++i) {
+        Module *module = plan()->modules()->at(i);
+        scheduler->schedule(toolChain()->createTestJob(plan(), module));
+    }
 
-	for (Ref<Job> job; scheduler->collect(&job);) {
-		fout() << job->command() << nl;
-		ferr() << job->outputText();
-		if (job->status() != 0) {
-			status_ = job->status();
-			return success_ = false;
-		}
-	}
+    for (Ref<Job> job; scheduler->collect(&job);) {
+        fout() << job->command() << nl;
+        ferr() << job->outputText();
+        if (job->status() != 0) {
+            status_ = job->status();
+            return success_ = false;
+        }
+    }
 
-	return success_ = true;
+    return success_ = true;
 }
 
 } // namespace fluxmake

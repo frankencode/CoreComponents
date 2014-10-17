@@ -1,12 +1,12 @@
 Library {
-	name: fluxtar
-	version: 0.1.0
-	source: *.cpp
-	use: core
-	/*SystemPrerequisite {
-		name: zlib
-		optional: true
-		link: z
-		compile-flags: -DFLUX_ZLIB
-	}*/
+    name: fluxtar
+    version: 0.1.0
+    source: *.cpp
+    use: core
+    /*SystemPrerequisite {
+        name: zlib
+        optional: true
+        link: z
+        compile-flags: -DFLUX_ZLIB
+    }*/
 }

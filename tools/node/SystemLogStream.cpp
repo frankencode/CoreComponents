@@ -13,26 +13,26 @@ namespace fluxnode
 
 Ref<SystemLogStream> SystemLogStream::open(int priority)
 {
-	return new SystemLogStream(priority);
+    return new SystemLogStream(priority);
 }
 
 SystemLogStream::SystemLogStream(int priority)
-	: priority_(priority)
+    : priority_(priority)
 {}
 
 int SystemLogStream::read(ByteArray *buf)
 {
-	return 0;
+    return 0;
 }
 
 void SystemLogStream::write(const ByteArray *buf)
 {
-	syslog(priority_, "%s", buf->chars());
+    syslog(priority_, "%s", buf->chars());
 }
 
 void SystemLogStream::write(const StringList *parts)
 {
-	write(parts->join());
+    write(parts->join());
 }
 
 } // namespace fluxnode

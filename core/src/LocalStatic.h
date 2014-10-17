@@ -20,12 +20,12 @@ template<class T, class Scope = None>
 class LocalStatic
 {
 public:
-	static T &instance()
-	{
-		Guard<SpinLock> guard(globalCoreMutex());
-		static T instance_;
-		return instance_;
-	}
+    static T &instance()
+    {
+        Guard<SpinLock> guard(globalCoreMutex());
+        static T instance_;
+        return instance_;
+    }
 };
 
 template<class T, class Scope>

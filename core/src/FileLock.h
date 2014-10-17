@@ -23,20 +23,20 @@ typedef struct flock FLockStruct;
 class FileLock: public FLockStruct, public Object
 {
 public:
-	enum Type { ReadLock = F_RDLCK, WriteLock = F_WRLCK };
+    enum Type { ReadLock = F_RDLCK, WriteLock = F_WRLCK };
 
-	static Ref<FileLock> create(File *file, int type, off_t start = 0, off_t length = 0) {
-		return new FileLock(file, type, start, length);
-	}
+    static Ref<FileLock> create(File *file, int type, off_t start = 0, off_t length = 0) {
+        return new FileLock(file, type, start, length);
+    }
 
-	bool tryAcquire();
-	void acquire();
-	void release();
+    bool tryAcquire();
+    void acquire();
+    void release();
 
 private:
-	FileLock(File *file, int type, off_t start = 0, off_t length = 0);
+    FileLock(File *file, int type, off_t start = 0, off_t length = 0);
 
-	int fd_;
+    int fd_;
 };
 
 } // namespace flux

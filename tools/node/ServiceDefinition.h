@@ -22,10 +22,10 @@ using namespace flux;
 class ServicePrototype: public MetaObject
 {
 public:
-	static Ref<ServicePrototype> create(String className, MetaProtocol *protocol = 0);
+    static Ref<ServicePrototype> create(String className, MetaProtocol *protocol = 0);
 
 protected:
-	ServicePrototype(String className, MetaProtocol *protocol);
+    ServicePrototype(String className, MetaProtocol *protocol);
 };
 
 class ServiceWorker;
@@ -33,8 +33,8 @@ class ServiceWorker;
 class ServiceDefinition: public Object
 {
 public:
-	virtual ServicePrototype *configPrototype() const = 0;
-	virtual Ref<ServiceInstance> createInstance(MetaObject *config) const = 0;
+    virtual ServicePrototype *configPrototype() const = 0;
+    virtual Ref<ServiceInstance> createInstance(MetaObject *config) const = 0;
 };
 
 } // namespace fluxnode

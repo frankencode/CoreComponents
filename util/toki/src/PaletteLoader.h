@@ -20,13 +20,13 @@ namespace toki {
 class PaletteLoader: public Object
 {
 public:
-	Ref<Palette> load(String path) const;
+    Ref<Palette> load(String path) const;
 
 private:
-	friend class Singleton<PaletteLoader>;
-	PaletteLoader();
+    friend class Singleton<PaletteLoader>;
+    PaletteLoader();
 
-	Ref<MetaProtocol> protocol_;
+    Ref<MetaProtocol> protocol_;
 };
 
 const PaletteLoader *paletteLoader();

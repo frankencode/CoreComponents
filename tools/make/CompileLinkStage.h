@@ -17,8 +17,8 @@ namespace fluxmake
 class CompileLinkStage: public BuildStage
 {
 public:
-	CompileLinkStage(BuildPlan *plan): BuildStage(plan) {}
-	bool run();
+    CompileLinkStage(BuildPlan *plan): BuildStage(plan) {}
+    bool run();
 };
 
 } // namespace fluxmake

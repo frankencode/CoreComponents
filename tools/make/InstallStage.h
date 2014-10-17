@@ -17,8 +17,8 @@ namespace fluxmake
 class InstallStage: public BuildStage
 {
 public:
-	InstallStage(BuildPlan *plan): BuildStage(plan) {}
-	bool run();
+    InstallStage(BuildPlan *plan): BuildStage(plan) {}
+    bool run();
 };
 
 } // namespace fluxmake

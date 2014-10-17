@@ -20,14 +20,14 @@ class DispatchInstance;
 class DispatchDelegate: public ServiceDelegate
 {
 public:
-	static Ref<DispatchDelegate> create(ServiceWorker *worker);
+    static Ref<DispatchDelegate> create(ServiceWorker *worker);
 
-	virtual void process(Request *request);
+    virtual void process(Request *request);
 
 private:
-	DispatchDelegate(ServiceWorker *worker);
+    DispatchDelegate(ServiceWorker *worker);
 
-	Ref<DispatchInstance> dispatchInstance_;
+    Ref<DispatchInstance> dispatchInstance_;
 };
 
 } // namespace fluxnode

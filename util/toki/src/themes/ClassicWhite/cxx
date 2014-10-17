@@ -1,55 +1,55 @@
 Palette {
-	Style {
-		rule: CommentLine
-		ink: DarkGray
-	}
-	Style {
-		rule: CommentText
-		ink: DarkGray
-	}
-	Style {
-		rule: Preprocessing
-		ink: DarkGreen
-	}
-	Style {
-		rule: Text
-		ink: Red
-	}
-	Style {
-		rule: EscapedChar
-		ink: Magenta
-	}
-	Style {
-		rule: ObjcText
-		ink: DarkGreen
-	}
-	Style {
-		rule: ObjcEscapedChar
-		ink: Olive
-	}
-	Style {
-		rule: Keyword
-		bold: true
-	}
-	Style {
-		rule: TypeKeyword
-		ink: DarkRed
-	}
-	Style {
-		rule: ObjcKeyword
-		ink: Blue
-		bold: true
-	}
-	Style {
-		rule: Integer
-		ink: Blue
-	}
-	Style {
-		rule: Float
-		ink: DarkMagenta
-	}
-	Style {
-		rule: Char
-		ink: Magenta
-	}
+    Style {
+        rule: CommentLine
+        ink: DarkGray
+    }
+    Style {
+        rule: CommentText
+        ink: DarkGray
+    }
+    Style {
+        rule: Preprocessing
+        ink: DarkGreen
+    }
+    Style {
+        rule: Text
+        ink: Red
+    }
+    Style {
+        rule: EscapedChar
+        ink: Magenta
+    }
+    Style {
+        rule: ObjcText
+        ink: DarkGreen
+    }
+    Style {
+        rule: ObjcEscapedChar
+        ink: Olive
+    }
+    Style {
+        rule: Keyword
+        bold: true
+    }
+    Style {
+        rule: TypeKeyword
+        ink: DarkRed
+    }
+    Style {
+        rule: ObjcKeyword
+        ink: Blue
+        bold: true
+    }
+    Style {
+        rule: Integer
+        ink: Blue
+    }
+    Style {
+        rule: Float
+        ink: DarkMagenta
+    }
+    Style {
+        rule: Char
+        ink: Magenta
+    }
 }

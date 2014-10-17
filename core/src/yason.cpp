@@ -16,14 +16,14 @@ namespace yason {
 
 Variant parse(const ByteArray *text, const MetaProtocol *protocol)
 {
-	return yasonSyntax()->parse(text, protocol);
+    return yasonSyntax()->parse(text, protocol);
 }
 
 String stringify(Variant value)
 {
-	Format format;
-	YasonWriter::create(format)->write(value);
-	return format;
+    Format format;
+    YasonWriter::create(format)->write(value);
+    return format;
 }
 
 }} // namespace flux::yason

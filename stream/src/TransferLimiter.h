@@ -18,49 +18,49 @@ namespace stream {
 class TransferLimiter: public Stream
 {
 public:
-	static Ref<TransferLimiter> open(Stream *stream, size_t readLimit, size_t writeLimit = 0);
+    static Ref<TransferLimiter> open(Stream *stream, size_t readLimit, size_t writeLimit = 0);
 
-	inline Stream *stream() const { return stream_; }
-	inline size_t readLimit() const { return readLimit_; }
-	inline size_t writeLimit() const { return writeLimit_; }
-	inline size_t totalRead() const { return totalRead_; }
-	inline size_t totalWritten() const { return totalWritten_; }
+    inline Stream *stream() const { return stream_; }
+    inline size_t readLimit() const { return readLimit_; }
+    inline size_t writeLimit() const { return writeLimit_; }
+    inline size_t totalRead() const { return totalRead_; }
+    inline size_t totalWritten() const { return totalWritten_; }
 
-	virtual bool readyRead(double interval) const;
-	virtual int read(ByteArray *buf);
-	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts);
+    virtual bool readyRead(double interval) const;
+    virtual int read(ByteArray *buf);
+    virtual void write(const ByteArray *buf);
+    virtual void write(const StringList *parts);
 
 private:
-	TransferLimiter(Stream *stream, size_t readLimit, size_t writeLimit);
+    TransferLimiter(Stream *stream, size_t readLimit, size_t writeLimit);
 
-	Ref<Stream> stream_;
-	size_t readLimit_;
-	size_t writeLimit_;
-	size_t totalRead_;
-	size_t totalWritten_;
+    Ref<Stream> stream_;
+    size_t readLimit_;
+    size_t writeLimit_;
+    size_t totalRead_;
+    size_t totalWritten_;
 };
 
 class TransferLimitExceeded: public Exception
 {
 public:
-	~TransferLimitExceeded() throw() {}
+    ~TransferLimitExceeded() throw() {}
 };
 
 class ReadLimitExceeded: public TransferLimitExceeded
 {
 public:
-	~ReadLimitExceeded() throw() {}
+    ~ReadLimitExceeded() throw() {}
 
-	virtual String message() const { return "Read transfer limit exceeded"; }
+    virtual String message() const { return "Read transfer limit exceeded"; }
 };
 
 class WriteLimitExceeded: public TransferLimitExceeded
 {
 public:
-	~WriteLimitExceeded() throw() {}
+    ~WriteLimitExceeded() throw() {}
 
-	virtual String message() const { return "Write transfer limit exceeded"; }
+    virtual String message() const { return "Write transfer limit exceeded"; }
 };
 
 }} // namespace flux::stream

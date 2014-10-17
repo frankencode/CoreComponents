@@ -17,10 +17,10 @@ template<class T>
 class RefGuard
 {
 public:
-	RefGuard(Ref<T> *ref): ref_(ref) {}
-	~RefGuard() { *ref_ = 0; }
+    RefGuard(Ref<T> *ref): ref_(ref) {}
+    ~RefGuard() { *ref_ = 0; }
 private:
-	Ref<T> *ref_;
+    Ref<T> *ref_;
 };
 
 } // namespace flux

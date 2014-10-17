@@ -16,14 +16,14 @@ namespace flux {
 String::String(): Super(Singleton<ByteArray>::instance()) {}
 
 String::String(const Variant &b)
-	: Super(cast<ByteArray>(b))
+    : Super(cast<ByteArray>(b))
 {
-	if (!Super::get()) Super::set(Singleton<ByteArray>::instance());
+    if (!Super::get()) Super::set(Singleton<ByteArray>::instance());
 }
 
 String::String(const Format &b)
 {
-	*this = *ByteArray::join(b);
+    *this = *ByteArray::join(b);
 }
 
 String::String(Ref<StringList> parts) { *this = join(parts); }

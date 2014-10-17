@@ -19,12 +19,12 @@ template<class SubClass> class Singleton;
 class ExitEvent: public Event
 {
 protected:
-	friend class Singleton<ExitEvent>;
+    friend class Singleton<ExitEvent>;
 
-	ExitEvent();
-	~ExitEvent();
+    ExitEvent();
+    ~ExitEvent();
 
-	pid_t pid_;
+    pid_t pid_;
 };
 
 ExitEvent *exitEvent();

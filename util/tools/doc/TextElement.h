@@ -17,24 +17,24 @@ namespace doc {
 class TextElement: public Element
 {
 public:
-	inline String text() const { return text_; }
+    inline String text() const { return text_; }
 
-	virtual void realize(const ByteArray *, Token *)
-	{
-		text_ = value("text");
-	}
+    virtual void realize(const ByteArray *, Token *)
+    {
+        text_ = value("text");
+    }
 
 protected:
-	TextElement(String className, MetaProtocol *protocol = 0)
-		: Element(className, protocol)
-	{}
+    TextElement(String className, MetaProtocol *protocol = 0)
+        : Element(className, protocol)
+    {}
 
-	virtual void define()
-	{
-		insert("text", "");
-	}
+    virtual void define()
+    {
+        insert("text", "");
+    }
 
-	String text_;
+    String text_;
 };
 
 }} // namespace flux::doc

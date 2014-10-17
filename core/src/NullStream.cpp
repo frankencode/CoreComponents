@@ -16,9 +16,9 @@ NullStream::NullStream()
 
 int NullStream::read(ByteArray *buf)
 {
-	if (buf->count() == 0) buf->resize(0xFFF);
-	else buf->clear();
-	return buf->count();
+    if (buf->count() == 0) buf->resize(0xFFF);
+    else buf->clear();
+    return buf->count();
 }
 
 void NullStream::write(const ByteArray *buf)

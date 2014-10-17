@@ -17,27 +17,27 @@ namespace flux {
 class LineSource: public Source<String>
 {
 public:
-	static Ref<LineSource> open(ByteArray *buf);
-	static Ref<LineSource> open(Stream *stream, ByteArray *buf = 0);
+    static Ref<LineSource> open(ByteArray *buf);
+    static Ref<LineSource> open(Stream *stream, ByteArray *buf = 0);
 
-	inline Stream *stream() const { return stream_; }
-	inline ByteArray *buf() const { return buf_; }
+    inline Stream *stream() const { return stream_; }
+    inline ByteArray *buf() const { return buf_; }
 
-	bool read(String *line);
-	String readLine();
+    bool read(String *line);
+    String readLine();
 
-	String pendingData() const;
+    String pendingData() const;
 
 private:
-	LineSource(Stream *stream, ByteArray *buf);
+    LineSource(Stream *stream, ByteArray *buf);
 
-	int findEol(ByteArray *buf, int n, int i) const;
-	int skipEol(ByteArray *buf, int n, int i) const;
+    int findEol(ByteArray *buf, int n, int i) const;
+    int skipEol(ByteArray *buf, int n, int i) const;
 
-	Ref<Stream> stream_;
-	String buf_;
-	bool eoi_;
-	int i_, n_;
+    Ref<Stream> stream_;
+    String buf_;
+    bool eoi_;
+    int i_, n_;
 };
 
 } // namespace flux

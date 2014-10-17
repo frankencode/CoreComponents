@@ -14,62 +14,62 @@ namespace net {
 
 InetAddressSyntax::InetAddressSyntax(SyntaxDebugFactory *debugFactory)
 {
-	DEFINE("DecimalOctet",
-		REPEAT(0, 3, RANGE('0', '9'))
-	);
+    DEFINE("DecimalOctet",
+        REPEAT(0, 3, RANGE('0', '9'))
+    );
 
-	DEFINE("HexWord",
-		REPEAT(1, 4,
-			CHOICE(
-				RANGE('0', '9'),
-				RANGE('a', 'f'),
-				RANGE('A', 'F')
-			)
-		)
-	);
+    DEFINE("HexWord",
+        REPEAT(1, 4,
+            CHOICE(
+                RANGE('0', '9'),
+                RANGE('a', 'f'),
+                RANGE('A', 'F')
+            )
+        )
+    );
 
-	inet4Address_ =
-		DEFINE("Inet4Address",
-			GLUE(
-				INLINE("DecimalOctet"),
-				CHAR('.'),
-				INLINE("DecimalOctet"),
-				CHAR('.'),
-				INLINE("DecimalOctet"),
-				CHAR('.'),
-				INLINE("DecimalOctet")
-			)
-		);
+    inet4Address_ =
+        DEFINE("Inet4Address",
+            GLUE(
+                INLINE("DecimalOctet"),
+                CHAR('.'),
+                INLINE("DecimalOctet"),
+                CHAR('.'),
+                INLINE("DecimalOctet"),
+                CHAR('.'),
+                INLINE("DecimalOctet")
+            )
+        );
 
-	inet6Address_ =
-		DEFINE("Inet6Address",
-			GLUE(
-				REPEAT(1, 7,
-					GLUE(
-						CHOICE(
-							INLINE("HexWord"),
-							CHAR(':')
-						),
-						CHAR(':')
-					)
-				),
-				CHOICE(
-					REF("Inet4Address"),
-					INLINE("HexWord")
-				)
-			)
-		);
+    inet6Address_ =
+        DEFINE("Inet6Address",
+            GLUE(
+                REPEAT(1, 7,
+                    GLUE(
+                        CHOICE(
+                            INLINE("HexWord"),
+                            CHAR(':')
+                        ),
+                        CHAR(':')
+                    )
+                ),
+                CHOICE(
+                    REF("Inet4Address"),
+                    INLINE("HexWord")
+                )
+            )
+        );
 
-	inetAddress_ =
-		DEFINE("InetAddress",
-			CHOICE(
-				REF("Inet4Address"),
-				REF("Inet6Address")
-			)
-		);
+    inetAddress_ =
+        DEFINE("InetAddress",
+            CHOICE(
+                REF("Inet4Address"),
+                REF("Inet6Address")
+            )
+        );
 
-	ENTRY("InetAddress");
-	LINK();
+    ENTRY("InetAddress");
+    LINK();
 }
 
 const InetAddressSyntax *inetAddressSyntax() { return Singleton<InetAddressSyntax>::instance(); }

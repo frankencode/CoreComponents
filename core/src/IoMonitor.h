@@ -19,31 +19,31 @@ namespace flux {
 class IoEvent: public Object
 {
 public:
-	enum Activity {
-		ReadyRead = POLLIN,
-		ReadyWrite = POLLOUT,
-		ReadyAccept = ReadyRead
-	};
+    enum Activity {
+        ReadyRead = POLLIN,
+        ReadyWrite = POLLOUT,
+        ReadyAccept = ReadyRead
+    };
 
-	inline SystemStream *stream() const { return stream_; }
-	inline int activity() const { return activity_; }
+    inline SystemStream *stream() const { return stream_; }
+    inline int activity() const { return activity_; }
 
 private:
-	friend class IoMonitor;
+    friend class IoMonitor;
 
-	inline static Ref<IoEvent> create(int index, SystemStream *stream, int activity) {
-		return new IoEvent(index, stream, activity);
-	}
+    inline static Ref<IoEvent> create(int index, SystemStream *stream, int activity) {
+        return new IoEvent(index, stream, activity);
+    }
 
-	IoEvent(int index, SystemStream *stream, int activity):
-		index_(index),
-		stream_(stream),
-		activity_(activity)
-	{}
+    IoEvent(int index, SystemStream *stream, int activity):
+        index_(index),
+        stream_(stream),
+        activity_(activity)
+    {}
 
-	int index_;
-	Ref<SystemStream> stream_;
-	int activity_;
+    int index_;
+    Ref<SystemStream> stream_;
+    int activity_;
 };
 
 typedef Array<IoEvent *> IoActivity;
@@ -51,22 +51,22 @@ typedef Array<IoEvent *> IoActivity;
 class IoMonitor: public Object
 {
 public:
-	static Ref<IoMonitor> create(int maxCount = 0);
+    static Ref<IoMonitor> create(int maxCount = 0);
 
-	IoEvent *addEvent(SystemStream *stream, int activity);
-	void removeEvent(IoEvent *event);
+    IoEvent *addEvent(SystemStream *stream, int activity);
+    void removeEvent(IoEvent *event);
 
-	Ref<IoActivity> wait(double timeout);
+    Ref<IoActivity> wait(double timeout);
 
 private:
-	typedef struct pollfd PollFd;
-	typedef Array<PollFd> Fds;
-	typedef Map<int, Ref<IoEvent> > Events;
+    typedef struct pollfd PollFd;
+    typedef Array<PollFd> Fds;
+    typedef Map<int, Ref<IoEvent> > Events;
 
-	IoMonitor(int maxCount);
+    IoMonitor(int maxCount);
 
-	Ref<Fds> fds_;
-	Ref<Events> events_;
+    Ref<Fds> fds_;
+    Ref<Events> events_;
 };
 
 } // namespace flux

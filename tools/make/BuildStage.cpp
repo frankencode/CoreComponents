@@ -14,10 +14,10 @@ namespace fluxmake
 {
 
 BuildStage::BuildStage(BuildPlan *plan)
-	: plan_(plan),
-	  complete_(false),
-	  success_(true),
-	  status_(0)
+    : plan_(plan),
+      complete_(false),
+      success_(true),
+      status_(0)
 {}
 
 BuildShell *BuildStage::shell() const { return plan_->shell(); }

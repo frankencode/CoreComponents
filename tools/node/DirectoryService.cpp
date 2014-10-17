@@ -16,32 +16,32 @@ namespace fluxnode
 class DirectoryService: public ServiceDefinition
 {
 public:
-	static Ref<DirectoryService> create() {
-		return new DirectoryService;
-	}
+    static Ref<DirectoryService> create() {
+        return new DirectoryService;
+    }
 
-	virtual ServicePrototype *configPrototype() const { return configPrototype_; }
-	virtual Ref<ServiceInstance> createInstance(MetaObject *config) const { return DirectoryInstance::create(config); }
+    virtual ServicePrototype *configPrototype() const { return configPrototype_; }
+    virtual Ref<ServiceInstance> createInstance(MetaObject *config) const { return DirectoryInstance::create(config); }
 
 private:
-	DirectoryService()
-		: configPrototype_(ServicePrototype::create("Directory"))
-	{
-		configPrototype_->insert("path", "");
-	}
+    DirectoryService()
+        : configPrototype_(ServicePrototype::create("Directory"))
+    {
+        configPrototype_->insert("path", "");
+    }
 
-	Ref<ServicePrototype> configPrototype_;
+    Ref<ServicePrototype> configPrototype_;
 };
 
 class DirectoryAnnouncer {
 public:
-	DirectoryAnnouncer() {
-		static bool done = false;
-		if (done) return;
-		Ref<DirectoryService> directoryService = DirectoryService::create();
-		serviceRegistry()->registerService(directoryService);
-		done = true;
-	}
+    DirectoryAnnouncer() {
+        static bool done = false;
+        if (done) return;
+        Ref<DirectoryService> directoryService = DirectoryService::create();
+        serviceRegistry()->registerService(directoryService);
+        done = true;
+    }
 };
 
 namespace { DirectoryAnnouncer announcer; }

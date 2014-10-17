@@ -17,17 +17,17 @@ namespace doc {
 class PathElement: public TextElement
 {
 public:
-	inline String path() const { return path_; }
-	inline String title() const { return title_; }
+    inline String path() const { return path_; }
+    inline String title() const { return title_; }
 
 protected:
-	PathElement(String className);
+    PathElement(String className);
 
-	virtual void define();
-	virtual void realize(const ByteArray *text, Token *objectToken);
+    virtual void define();
+    virtual void realize(const ByteArray *text, Token *objectToken);
 
-	String path_;
-	String title_;
+    String path_;
+    String title_;
 };
 
 }} // namespace flux::doc

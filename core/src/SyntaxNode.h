@@ -22,23 +22,23 @@ namespace syntax
 class Node: public Tree<Node>
 {
 public:
-	inline static void rollBack(Token *parentToken, Token *lastChildSaved) {
-		if (parentToken) {
-			while (parentToken->lastChild() != lastChildSaved)
-				parentToken->lastChild()->unlink();
-		}
-	}
+    inline static void rollBack(Token *parentToken, Token *lastChildSaved) {
+        if (parentToken) {
+            while (parentToken->lastChild() != lastChildSaved)
+                parentToken->lastChild()->unlink();
+        }
+    }
 
-	virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const = 0;
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const = 0;
 
-	virtual Node *succ(Node *node) const { return null<Node>(); }
-	virtual int matchLength() const { return -1; }
+    virtual Node *succ(Node *node) const { return null<Node>(); }
+    virtual int matchLength() const { return -1; }
 
-	inline Node *succ() const {
-		return parent() ? parent()->succ(Node::self()) : null<Node>();
-	}
+    inline Node *succ() const {
+        return parent() ? parent()->succ(Node::self()) : null<Node>();
+    }
 
-	inline Node *self() const { return const_cast<Node *>(this); }
+    inline Node *self() const { return const_cast<Node *>(this); }
 };
 
 typedef Ref<Node> NODE;

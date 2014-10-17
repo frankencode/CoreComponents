@@ -20,32 +20,32 @@ using namespace flux;
 class RequestStream: public Stream
 {
 public:
-	static Ref<RequestStream> open(Stream *stream);
+    static Ref<RequestStream> open(Stream *stream);
 
-	void setupTimeout(double interval);
-	bool isPayloadConsumed() const;
+    void setupTimeout(double interval);
+    bool isPayloadConsumed() const;
 
-	void nextHeader();
-	void nextPayload(int64_t length);
-	void nextLine();
-	void nextChunk();
+    void nextHeader();
+    void nextPayload(int64_t length);
+    void nextLine();
+    void nextChunk();
 
-	virtual bool readyRead(double interval) const;
-	virtual int read(ByteArray *buf);
+    virtual bool readyRead(double interval) const;
+    virtual int read(ByteArray *buf);
 
-	virtual void write(const ByteArray *buf);
-	virtual void write(const StringList *parts);
+    virtual void write(const ByteArray *buf);
+    virtual void write(const StringList *parts);
 
 private:
-	RequestStream(Stream *stream);
+    RequestStream(Stream *stream);
 
-	Ref<Stream> stream_;
-	Ref<ByteArray> pending_;
-	int pendingIndex_;
-	int64_t bytesLeft_;
-	int nlCount_, nlMax_;
-	bool eoi_;
-	bool chunked_;
+    Ref<Stream> stream_;
+    Ref<ByteArray> pending_;
+    int pendingIndex_;
+    int64_t bytesLeft_;
+    int nlCount_, nlMax_;
+    bool eoi_;
+    bool chunked_;
 };
 
 } // namespace fluxnode

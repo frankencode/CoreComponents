@@ -17,16 +17,16 @@ class SyntaxState;
 
 class TokenFactory: public Object
 {
-	friend class SyntaxState;
+    friend class SyntaxState;
 
 public:
-	inline static Ref<TokenFactory> create() { return new TokenFactory; }
+    inline static Ref<TokenFactory> create() { return new TokenFactory; }
 
 protected:
-	TokenFactory() {}
-	virtual Token *produce(int scope, int rule, const char *scopeName, const char *ruleName) {
-		return new Token(scope, rule);
-	}
+    TokenFactory() {}
+    virtual Token *produce(int scope, int rule, const char *scopeName, const char *ruleName) {
+        return new Token(scope, rule);
+    }
 };
 
 } // namespace flux

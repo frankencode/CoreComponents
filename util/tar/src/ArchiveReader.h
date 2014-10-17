@@ -17,16 +17,16 @@ namespace tar {
 
 class BrokenArchive {
 public:
-	BrokenArchive(off_t offset, String reason)
-		: offset_(offset), reason_(reason)
-	{}
+    BrokenArchive(off_t offset, String reason)
+        : offset_(offset), reason_(reason)
+    {}
 
-	inline off_t offset() const { return offset_; }
-	inline String reason() const { return reason_; }
+    inline off_t offset() const { return offset_; }
+    inline String reason() const { return reason_; }
 
 private:
-	off_t offset_;
-	String reason_;
+    off_t offset_;
+    String reason_;
 };
 
 class UnsupportedArchiveFormat {};
@@ -34,9 +34,9 @@ class UnsupportedArchiveFormat {};
 class ArchiveReader: public Object
 {
 public:
-	virtual bool readHeader(Ref<ArchiveEntry> *entry) = 0;
-	virtual void readData(ArchiveEntry *entry, Stream *sink = 0) = 0;
-	void skipData(ArchiveEntry *entry);
+    virtual bool readHeader(Ref<ArchiveEntry> *entry) = 0;
+    virtual void readData(ArchiveEntry *entry, Stream *sink = 0) = 0;
+    void skipData(ArchiveEntry *entry);
 };
 
 }} // namespace flux::tar

@@ -20,34 +20,34 @@ String decode(const String &source);
 
 class DecodeError {
 public:
-	~DecodeError() throw() {}
+    ~DecodeError() throw() {}
 };
 
 class IllegalInputSize4Error: public DecodeError {
 public:
-	~IllegalInputSize4Error() throw() {}
+    ~IllegalInputSize4Error() throw() {}
 
-	virtual String message() const {
-		return "Base-64 error: input size need to be a multiple of 4 bytes";
-	}
+    virtual String message() const {
+        return "Base-64 error: input size need to be a multiple of 4 bytes";
+    }
 };
 
 class IllegalPaddingError: public DecodeError {
 public:
-	~IllegalPaddingError() throw() {}
+    ~IllegalPaddingError() throw() {}
 
-	virtual String message() const {
-		return "Base-64 error: unsupported padding";
-	}
+    virtual String message() const {
+        return "Base-64 error: unsupported padding";
+    }
 };
 
 class IllegalCharacterError: public DecodeError {
 public:
-	~IllegalCharacterError() throw() {}
+    ~IllegalCharacterError() throw() {}
 
-	virtual String message() const {
-		return "Base-64 error: illegal symbol";
-	}
+    virtual String message() const {
+        return "Base-64 error: illegal symbol";
+    }
 };
 
 }}} // namespace flux::net::base64

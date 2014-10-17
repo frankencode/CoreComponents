@@ -21,8 +21,8 @@ using namespace flux;
 class RecipeProtocol: public MetaProtocol
 {
 protected:
-	friend class Singleton<RecipeProtocol>;
-	RecipeProtocol();
+    friend class Singleton<RecipeProtocol>;
+    RecipeProtocol();
 };
 
 const RecipeProtocol *recipeProtocol();

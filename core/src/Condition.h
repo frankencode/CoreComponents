@@ -16,17 +16,17 @@ namespace flux {
 class Condition: public Object
 {
 public:
-	inline static Ref<Condition> create() { return new Condition; }
-	~Condition();
-	void wait(Mutex *mutex);
-	bool waitUntil(double timeout, Mutex *mutex);
-	void signal();
-	void broadcast();
+    inline static Ref<Condition> create() { return new Condition; }
+    ~Condition();
+    void wait(Mutex *mutex);
+    bool waitUntil(double timeout, Mutex *mutex);
+    void signal();
+    void broadcast();
 
 private:
-	Condition();
+    Condition();
 
-	pthread_cond_t cond_;
+    pthread_cond_t cond_;
 };
 
 } // namespace flux

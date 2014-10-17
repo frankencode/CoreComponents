@@ -19,26 +19,26 @@ class Thread;
 class SignalSet: public Object
 {
 public:
-	inline static Ref<SignalSet> createEmpty() {
-		return new SignalSet(Empty);
-	}
-	inline static Ref<SignalSet> createFull() {
-		return new SignalSet(Full);
-	}
+    inline static Ref<SignalSet> createEmpty() {
+        return new SignalSet(Empty);
+    }
+    inline static Ref<SignalSet> createFull() {
+        return new SignalSet(Full);
+    }
 
-	void insert(int signal);
-	void remove(int signal);
+    void insert(int signal);
+    void remove(int signal);
 
-	bool contains(int signal) const;
+    bool contains(int signal) const;
 
-	inline sigset_t *rawSet() { return &rawSet_; }
+    inline sigset_t *rawSet() { return &rawSet_; }
 
 private:
-	friend class Thread;
+    friend class Thread;
 
-	enum { Empty, Full };
-	SignalSet(int preset);
-	sigset_t rawSet_;
+    enum { Empty, Full };
+    SignalSet(int preset);
+    sigset_t rawSet_;
 };
 
 } // namespace flux

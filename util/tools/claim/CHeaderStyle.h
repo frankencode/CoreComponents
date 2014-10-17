@@ -18,14 +18,14 @@ using namespace flux;
 class CHeaderStyle: public HeaderStyle
 {
 public:
-	virtual Ref<Header> scan(String path) const;
-	virtual String str(Notice *notice) const;
+    virtual Ref<Header> scan(String path) const;
+    virtual String str(Notice *notice) const;
 
 private:
-	friend class Registration<CHeaderStyle>;
+    friend class Registration<CHeaderStyle>;
 
-	CHeaderStyle();
-	Ref<SyntaxDefinition> headerSyntax_;
+    CHeaderStyle();
+    Ref<SyntaxDefinition> headerSyntax_;
 };
 
 namespace { Registration<CHeaderStyle> registration; }

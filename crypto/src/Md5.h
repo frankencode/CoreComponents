@@ -17,21 +17,21 @@ namespace crypto {
 class Md5: public HashSum
 {
 public:
-	enum { Size = 16 };
+    enum { Size = 16 };
 
-	static Ref<Md5> create();
+    static Ref<Md5> create();
 
-	virtual void feed(const ByteArray *data);
-	virtual Ref<ByteArray> finish();
+    virtual void feed(const ByteArray *data);
+    virtual Ref<ByteArray> finish();
 
 private:
-	Md5();
-	void consume();
+    Md5();
+    void consume();
 
-	Ref<ByteArray> aux_;
-	int auxFill_;
-	uint64_t bytesFeed_;
-	uint32_t a_, b_, c_, d_;
+    Ref<ByteArray> aux_;
+    int auxFill_;
+    uint64_t bytesFeed_;
+    uint32_t a_, b_, c_, d_;
 };
 
 Ref<ByteArray> md5(const ByteArray *data);

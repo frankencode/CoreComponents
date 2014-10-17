@@ -17,11 +17,11 @@ namespace doc {
 class Design: public MetaObject
 {
 protected:
-	Design(String className)
-		: MetaObject(className)
-	{
-		insert("source", ""); // FIXME
-	}
+    Design(String className)
+        : MetaObject(className)
+    {
+        insert("source", ""); // FIXME
+    }
 };
 
 }} // namespace flux::doc

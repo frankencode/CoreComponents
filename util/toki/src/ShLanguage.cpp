@@ -16,16 +16,16 @@ namespace toki {
 class ShLanguage: public Language
 {
 private:
-	friend class Registration<ShLanguage>;
+    friend class Registration<ShLanguage>;
 
-	ShLanguage():
-		Language(
-			"Sh",
-			Pattern("*.sh"),
-			shSyntax(),
-			ScriptDiscoverySyntax::create("sh")
-		)
-	{}
+    ShLanguage():
+        Language(
+            "Sh",
+            Pattern("*.sh"),
+            shSyntax(),
+            ScriptDiscoverySyntax::create("sh")
+        )
+    {}
 };
 
 namespace { Registration<ShLanguage> registration; }

@@ -18,12 +18,12 @@ template<class SubClass> class Singleton;
 class NullStream: public Stream
 {
 public:
-	virtual int read(ByteArray *buf);
-	virtual void write(const ByteArray *buf);
+    virtual int read(ByteArray *buf);
+    virtual void write(const ByteArray *buf);
 
 private:
-	friend class Singleton<NullStream>;
-	NullStream();
+    friend class Singleton<NullStream>;
+    NullStream();
 };
 
 Stream *nullStream();

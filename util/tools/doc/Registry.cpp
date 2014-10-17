@@ -14,31 +14,31 @@ namespace flux {
 namespace doc {
 
 Registry::Registry()
-	: generatorByName_(GeneratorByName::create()),
-	  designProtocol_(MetaProtocol::create())
+    : generatorByName_(GeneratorByName::create()),
+      designProtocol_(MetaProtocol::create())
 {}
 
 void Registry::registerGenerator(Generator *generator)
 {
-	generatorByName_->insert(generator->name(), generator);
-	designProtocol_->define(generator->prototype());
+    generatorByName_->insert(generator->name(), generator);
+    designProtocol_->define(generator->prototype());
 }
 
 Generator* Registry::generatorByName(String name) const
 {
-	Ref<Generator> generator;
-	generatorByName_->lookup(name, &generator);
-	return generator;
+    Ref<Generator> generator;
+    generatorByName_->lookup(name, &generator);
+    return generator;
 }
 
 Generator* Registry::generatorByIndex(int index) const
 {
-	return generatorByName_->valueAt(index);
+    return generatorByName_->valueAt(index);
 }
 
 int Registry::generatorCount() const
 {
-	return generatorByName_->count();
+    return generatorByName_->count();
 }
 
 Registry *registry() { return Singleton<Registry>::instance(); }

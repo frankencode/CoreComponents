@@ -12,16 +12,16 @@
 namespace flux {
 
 Random::Random(int seed)
-	: x_(seed)
+    : x_(seed)
 {
-	if (seed < 0) {
-		while (x_ <= 1)
-			x_ = int(System::now() * 1e9);
-	}
-	else {
-		x_ = seed + 2;
-		if (x_ <= 1) x_ += 2; // overflow check
-	}
+    if (seed < 0) {
+        while (x_ <= 1)
+            x_ = int(System::now() * 1e9);
+    }
+    else {
+        x_ = seed + 2;
+        if (x_ <= 1) x_ += 2; // overflow check
+    }
 }
 
 } // namespace flux

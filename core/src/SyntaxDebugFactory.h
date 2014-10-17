@@ -21,14 +21,14 @@ class DefinitionNode;
 class DebugFactory: public Object
 {
 public:
-	virtual Node *produce(Node *newNode, const char *nodeType) = 0;
+    virtual Node *produce(Node *newNode, const char *nodeType) = 0;
 
 protected:
-	DefinitionNode *definition() const;
+    DefinitionNode *definition() const;
 
 private:
-	friend class DefinitionNode;
-	DefinitionNode *definition_;
+    friend class DefinitionNode;
+    DefinitionNode *definition_;
 };
 
 } // namespace syntax

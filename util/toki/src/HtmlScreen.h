@@ -21,20 +21,20 @@ class Theme;
 class HtmlScreen: public Object, public TokenScreen
 {
 public:
-	static Ref<HtmlScreen> create(String text, Format sink = Format()) { return new HtmlScreen(text, sink); }
+    static Ref<HtmlScreen> create(String text, Format sink = Format()) { return new HtmlScreen(text, sink); }
 
-	virtual bool project(Token *token, int i0, int i1);
+    virtual bool project(Token *token, int i0, int i1);
 
-	static void writeCss(Theme *theme, Stream *sink = 0);
+    static void writeCss(Theme *theme, Stream *sink = 0);
 
 private:
-	HtmlScreen(String text, Format sink);
-	~HtmlScreen();
+    HtmlScreen(String text, Format sink);
+    ~HtmlScreen();
 
-	void writeLineNumbers();
+    void writeLineNumbers();
 
-	String text_;
-	Format sink_;
+    String text_;
+    Format sink_;
 };
 
 }} // namespace flux::toki

@@ -15,10 +15,10 @@ template<class Mutex>
 class Guard
 {
 public:
-	Guard(Mutex *mutex): mutex_(mutex) { mutex_->acquire(); }
-	~Guard() { mutex_->release(); }
+    Guard(Mutex *mutex): mutex_(mutex) { mutex_->acquire(); }
+    ~Guard() { mutex_->release(); }
 private:
-	Mutex *mutex_;
+    Mutex *mutex_;
 };
 
 } // namespace flux

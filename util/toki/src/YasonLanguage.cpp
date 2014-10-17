@@ -15,15 +15,15 @@ namespace toki {
 class YasonLanguage: public Language
 {
 private:
-	friend class Registration<YasonLanguage>;
+    friend class Registration<YasonLanguage>;
 
-	YasonLanguage():
-		Language(
-			"Yason",
-			Pattern("(*.(yason|json))|Recipe"),
-			flux::toki::yasonSyntax()
-		)
-	{}
+    YasonLanguage():
+        Language(
+            "Yason",
+            Pattern("(*.(yason|json))|Recipe"),
+            flux::toki::yasonSyntax()
+        )
+    {}
 };
 
 namespace { Registration<YasonLanguage> registration; }

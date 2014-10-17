@@ -13,21 +13,21 @@ namespace toki {
 
 Ref<ScriptDiscoverySyntax> ScriptDiscoverySyntax::create(const char *suffix)
 {
-	return new ScriptDiscoverySyntax(suffix);
+    return new ScriptDiscoverySyntax(suffix);
 }
 
 ScriptDiscoverySyntax::ScriptDiscoverySyntax(const char *suffix)
 {
-	DEFINE("FirstLine",
-		GLUE(
-			STRING("#!"),
-			LAZY_REPEAT(OTHER('\n')),
-			STRING(suffix)
-		)
-	);
+    DEFINE("FirstLine",
+        GLUE(
+            STRING("#!"),
+            LAZY_REPEAT(OTHER('\n')),
+            STRING(suffix)
+        )
+    );
 
-	ENTRY("FirstLine");
-	LINK();
+    ENTRY("FirstLine");
+    LINK();
 }
 
 }} // namespace flux::toki

@@ -15,37 +15,37 @@ namespace toki {
 class ShSyntax: public SyntaxDefinition
 {
 protected:
-	friend class Singleton<ShSyntax>;
-	ShSyntax();
+    friend class Singleton<ShSyntax>;
+    ShSyntax();
 };
 
 ShSyntax::ShSyntax()
 {
-	SYNTAX("sh");
+    SYNTAX("sh");
 
-	DEFINE("Comment",
-		GLUE(
-			CHAR('#'),
-			FIND(
-				CHOICE(
-					CHAR('\n'),
-					EOI()
-				)
-			)
-		)
-	);
+    DEFINE("Comment",
+        GLUE(
+            CHAR('#'),
+            FIND(
+                CHOICE(
+                    CHAR('\n'),
+                    EOI()
+                )
+            )
+        )
+    );
 
-	DEFINE("Source",
-		REPEAT(
-			CHOICE(
-				REF("Comment"),
-				ANY()
-			)
-		)
-	);
+    DEFINE("Source",
+        REPEAT(
+            CHOICE(
+                REF("Comment"),
+                ANY()
+            )
+        )
+    );
 
-	ENTRY("Source");
-	LINK();
+    ENTRY("Source");
+    LINK();
 }
 
 const SyntaxDefinition *shSyntax() { return Singleton<ShSyntax>::instance(); }

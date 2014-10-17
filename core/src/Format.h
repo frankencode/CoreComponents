@@ -26,47 +26,47 @@ template<class T> class Queue;
 class Format: public Ref<StringList>
 {
 public:
-	typedef Ref<StringList> Super;
+    typedef Ref<StringList> Super;
 
-	Format(String pattern, Stream *stream = 0);
-	Format(Stream *stream = 0);
-	~Format();
+    Format(String pattern, Stream *stream = 0);
+    Format(Stream *stream = 0);
+    ~Format();
 
-	Format(const Format &b);
-	Format &operator=(const Format &b);
+    Format(const Format &b);
+    Format &operator=(const Format &b);
 
-	Format &operator<<(const String &s);
+    Format &operator<<(const String &s);
 
-	Format &operator<<(const FormatSignal &s);
+    Format &operator<<(const FormatSignal &s);
 
-	inline Format &operator<<(const ByteArray *s) {
-		if (isNull_) return *this;
-		return *this << String(s);
-	}
+    inline Format &operator<<(const ByteArray *s) {
+        if (isNull_) return *this;
+        return *this << String(s);
+    }
 
-	template<class T>
-	inline Format &operator<<(const T &x) {
-		if (isNull_) return *this;
-		return *this << str(x);
-	}
+    template<class T>
+    inline Format &operator<<(const T &x) {
+        if (isNull_) return *this;
+        return *this << str(x);
+    }
 
-	inline Format &operator<<(const Ref<StringList> &x) {
-		if (isNull_) return *this;
-		return *this << x->join("");
-	}
+    inline Format &operator<<(const Ref<StringList> &x) {
+        if (isNull_) return *this;
+        return *this << x->join("");
+    }
 
 private:
-	void flush();
+    void flush();
 
-	Ref<Stream> stream_;
-	bool isNull_;
-	Ref< Queue<int> > placeHolder_;
+    Ref<Stream> stream_;
+    bool isNull_;
+    Ref< Queue<int> > placeHolder_;
 };
 
 class NullFormat {
 public:
-	template<class T>
-	inline const NullFormat &operator<<(T) const { return *this; }
+    template<class T>
+    inline const NullFormat &operator<<(T) const { return *this; }
 };
 
 } // namespace flux

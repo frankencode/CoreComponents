@@ -20,13 +20,13 @@ template<class SubClass>
 class ThreadLocalSingleton
 {
 public:
-	static SubClass *instance()
-	{
-		ThreadLocalRef<SubClass> &instance_ = localStatic< ThreadLocalRef<SubClass>, ThreadLocalSingleton<SubClass> >();
-		if (!instance_)
-			instance_ = new SubClass;
-		return instance_;
-	}
+    static SubClass *instance()
+    {
+        ThreadLocalRef<SubClass> &instance_ = localStatic< ThreadLocalRef<SubClass>, ThreadLocalSingleton<SubClass> >();
+        if (!instance_)
+            instance_ = new SubClass;
+        return instance_;
+    }
 };
 
 } // namespace flux

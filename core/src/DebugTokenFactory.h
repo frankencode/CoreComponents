@@ -17,14 +17,14 @@ namespace flux {
 class DebugTokenFactory: public TokenFactory
 {
 public:
-	inline static Ref<DebugTokenFactory> create() { return new DebugTokenFactory; }
+    inline static Ref<DebugTokenFactory> create() { return new DebugTokenFactory; }
 
 protected:
-	DebugTokenFactory() {}
+    DebugTokenFactory() {}
 
-	virtual Token *produce(int scope, int rule, const char *scopeName, const char *ruleName) {
-		return new DebugToken(scope, rule, scopeName, ruleName);
-	}
+    virtual Token *produce(int scope, int rule, const char *scopeName, const char *ruleName) {
+        return new DebugToken(scope, rule, scopeName, ruleName);
+    }
 };
 
 } // namespace flux

@@ -24,28 +24,28 @@ namespace flux {
 class Object
 {
 public:
-	Object(): refCount_(0) {}
+    Object(): refCount_(0) {}
 
-	virtual ~Object() {
-		FLUX_ASSERT2(refCount_ == 0, "Deleting object, which is still in use");
-	}
+    virtual ~Object() {
+        FLUX_ASSERT2(refCount_ == 0, "Deleting object, which is still in use");
+    }
 
-	inline int refCount() const { return refCount_; }
+    inline int refCount() const { return refCount_; }
 
-	inline void incRefCount() const {
-		__sync_add_and_fetch(&refCount_, 1);
-	}
+    inline void incRefCount() const {
+        __sync_add_and_fetch(&refCount_, 1);
+    }
 
-	inline void decRefCount() const {
-		if (__sync_sub_and_fetch(&refCount_, 1) == 0)
-			delete this;
-	}
+    inline void decRefCount() const {
+        if (__sync_sub_and_fetch(&refCount_, 1) == 0)
+            delete this;
+    }
 
 private:
-	Object(const Object &);
-	const Object &operator=(const Object &);
+    Object(const Object &);
+    const Object &operator=(const Object &);
 
-	mutable volatile int refCount_;
+    mutable volatile int refCount_;
 };
 
 } // namespace flux

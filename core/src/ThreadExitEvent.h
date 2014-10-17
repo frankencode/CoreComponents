@@ -18,12 +18,12 @@ namespace flux {
 class ThreadExitEvent: public Event, public ThreadLocalSingleton<ThreadExitEvent>
 {
 private:
-	friend class ThreadLocalSingleton<ThreadExitEvent>;
+    friend class ThreadLocalSingleton<ThreadExitEvent>;
 
-	ThreadExitEvent();
-	~ThreadExitEvent();
+    ThreadExitEvent();
+    ~ThreadExitEvent();
 
-	pid_t pid_;
+    pid_t pid_;
 };
 
 inline ThreadExitEvent *threadExitEvent() { return ThreadExitEvent::instance(); }

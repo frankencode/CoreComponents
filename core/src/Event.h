@@ -17,23 +17,23 @@ namespace flux {
 class Event: public Action
 {
 public:
-	inline static Ref<Event> create() {
-		return new Event;
-	}
+    inline static Ref<Event> create() {
+        return new Event;
+    }
 
-	void pushBack(Action *handler);
-	void pushFront(Action *handler);
-	void remove(Action *handler);
+    void pushBack(Action *handler);
+    void pushFront(Action *handler);
+    void remove(Action *handler);
 
-	virtual void run();
+    virtual void run();
 
 protected:
-	Event();
+    Event();
 
 private:
-	SpinLock mutex_;
-	typedef List< Ref<Action> > Handlers;
-	Ref<Handlers> handlers_;
+    SpinLock mutex_;
+    typedef List< Ref<Action> > Handlers;
+    Ref<Handlers> handlers_;
 };
 
 } // namespace flux

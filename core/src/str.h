@@ -35,22 +35,22 @@ struct Sign<unsigned long long> { inline static int get(unsigned long long) { re
 template<class T>
 String inum(T x, int base = 10, int n = -1)
 {
-	int sign = Sign<T>::get(x);
-	if (sign) x = -x;
-	int m = (x == 0);
-	for (T y = x; y > 0; y /= base) ++m;
-	if (sign) ++m;
-	if (n > 0 && m < n) m = n;
-	String s(m, '0');
-	if (sign) s->at(0) = '-';
-	for (int i = s->count() - 1; x > 0 && s->has(i); x /= base, --i) {
-		const char *fig =
-			"0123456789"
-			"abcdefghijklmnopqrstuvwxyz"
-			"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		s->at(i) = fig[x % base];
-	}
-	return s;
+    int sign = Sign<T>::get(x);
+    if (sign) x = -x;
+    int m = (x == 0);
+    for (T y = x; y > 0; y /= base) ++m;
+    if (sign) ++m;
+    if (n > 0 && m < n) m = n;
+    String s(m, '0');
+    if (sign) s->at(0) = '-';
+    for (int i = s->count() - 1; x > 0 && s->has(i); x /= base, --i) {
+        const char *fig =
+            "0123456789"
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        s->at(i) = fig[x % base];
+    }
+    return s;
 }
 
 String fnum(float64_t x, int precision = 16, int base = 10, int screen = 6);

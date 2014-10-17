@@ -19,16 +19,16 @@ template<class> class Queue;
 class ResourceContext: public Object
 {
 public:
-	void push(String resource);
-	String pop();
+    void push(String resource);
+    String pop();
 
-	String top() const;
+    String top() const;
 
 private:
-	friend class ThreadLocalSingleton<ResourceContext>;
-	ResourceContext();
+    friend class ThreadLocalSingleton<ResourceContext>;
+    ResourceContext();
 
-	Ref< Queue<String> > queue_;
+    Ref< Queue<String> > queue_;
 };
 
 ResourceContext *resourceContextStack();

@@ -20,16 +20,16 @@ using namespace flux::stream;
 class TapBuffer: public LineBuffer
 {
 public:
-	static Ref<TapBuffer> open(Stream *stream, String prefix);
+    static Ref<TapBuffer> open(Stream *stream, String prefix);
 
-	virtual String prefix() const;
+    virtual String prefix() const;
 
-	void write(const ByteArray *buf);
+    void write(const ByteArray *buf);
 
 private:
-	TapBuffer(Stream *stream, String prefix);
+    TapBuffer(Stream *stream, String prefix);
 
-	String prefix_;
+    String prefix_;
 };
 
 } // namespace fluxnode

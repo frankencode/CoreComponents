@@ -16,8 +16,8 @@ namespace flux {
 class ResourceGuard
 {
 public:
-	ResourceGuard(String resource);
-	~ResourceGuard();
+    ResourceGuard(String resource);
+    ~ResourceGuard();
 };
 
 } // namespace flux

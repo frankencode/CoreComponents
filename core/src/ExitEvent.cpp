@@ -12,12 +12,12 @@
 namespace flux {
 
 ExitEvent::ExitEvent()
-	: pid_(Process::currentId())
+    : pid_(Process::currentId())
 {}
 
 ExitEvent::~ExitEvent()
 {
-	if (Process::currentId() == pid_) run();
+    if (Process::currentId() == pid_) run();
 }
 
 ExitEvent *exitEvent() { return Singleton<ExitEvent>::instance(); }

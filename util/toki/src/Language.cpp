@@ -13,20 +13,20 @@ namespace flux {
 namespace toki {
 
 Language::Language(
-	String displayName,
-	Pattern pathPattern,
-	const SyntaxDefinition *highlightingSyntax,
-	const SyntaxDefinition *discoverySyntax,
-	const SyntaxDefinition *foldingSyntax
+    String displayName,
+    Pattern pathPattern,
+    const SyntaxDefinition *highlightingSyntax,
+    const SyntaxDefinition *discoverySyntax,
+    const SyntaxDefinition *foldingSyntax
 )
-	: displayName_(displayName),
-	  name_(highlightingSyntax->name()),
-	  pathPattern_(pathPattern),
-	  highlightingSyntax_(highlightingSyntax),
-	  discoverySyntax_(discoverySyntax),
-	  foldingSyntax_(foldingSyntax)
+    : displayName_(displayName),
+      name_(highlightingSyntax->name()),
+      pathPattern_(pathPattern),
+      highlightingSyntax_(highlightingSyntax),
+      discoverySyntax_(discoverySyntax),
+      foldingSyntax_(foldingSyntax)
 {
-	registry()->registerLanguage(this);
+    registry()->registerLanguage(this);
 }
 
 }} // namespace flux::toki

@@ -20,8 +20,8 @@ namespace xml {
 class XmlSyntax: public SyntaxDefinition
 {
 protected:
-	friend class Singleton<XmlSyntax>;
-	XmlSyntax();
+    friend class Singleton<XmlSyntax>;
+    XmlSyntax();
 };
 
 XmlSyntax *xmlSyntax();

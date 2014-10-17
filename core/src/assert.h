@@ -15,14 +15,14 @@ void throwDebugError(const char *reason, const char *source, int line);
 
 #ifndef NDEBUG
 #define FLUX_ASSERT(condition) \
-	if (!(condition)) throwDebugError(#condition, __FILE__, __LINE__);
+    if (!(condition)) throwDebugError(#condition, __FILE__, __LINE__);
 #else
 #define FLUX_ASSERT(condition) ;
 #endif
 
 #ifndef NDEBUG
 #define FLUX_ASSERT2(condition, reason) \
-	if (!(condition)) throwDebugError(reason, __FILE__, __LINE__);
+    if (!(condition)) throwDebugError(reason, __FILE__, __LINE__);
 #else
 #define FLUX_ASSERT2(condition, reason);
 #endif

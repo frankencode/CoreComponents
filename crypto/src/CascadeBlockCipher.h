@@ -17,14 +17,14 @@ namespace crypto {
 class CascadeBlockCipher: public BlockCipher
 {
 public:
-	CascadeBlockCipher(BlockCipher *cipher, ByteArray *iv);
+    CascadeBlockCipher(BlockCipher *cipher, ByteArray *iv);
 
-	void encode(ByteArray *c, ByteArray *p);
-	void decode(ByteArray *p, ByteArray *c);
+    void encode(ByteArray *c, ByteArray *p);
+    void decode(ByteArray *p, ByteArray *c);
 
 private:
-	Ref<BlockCipher> cipher_;
-	Ref<ByteArray> s_;
+    Ref<BlockCipher> cipher_;
+    Ref<ByteArray> s_;
 };
 
 }} // namespace flux::crypto

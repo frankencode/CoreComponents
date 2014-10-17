@@ -21,21 +21,21 @@ namespace flux {
 class Pattern: public Ref<SyntaxDefinition>
 {
 public:
-	Pattern();
-	Pattern(const char *text);
-	Pattern(const String &text);
-	Pattern(const Ref<ByteArray> &text);
-	Pattern(const Variant &Variant);
+    Pattern();
+    Pattern(const char *text);
+    Pattern(const String &text);
+    Pattern(const Ref<ByteArray> &text);
+    Pattern(const Variant &Variant);
 
-	const Pattern &operator=(const char *text);
-	const Pattern &operator=(const String &text);
-	const Pattern &operator=(const Variant &text);
+    const Pattern &operator=(const char *text);
+    const Pattern &operator=(const String &text);
+    const Pattern &operator=(const Variant &text);
 
-	inline operator String() const { return text_; }
+    inline operator String() const { return text_; }
 
 private:
-	friend String str(const Pattern &pattern);
-	String text_;
+    friend String str(const Pattern &pattern);
+    String text_;
 };
 
 inline String str(const Pattern &pattern) { return pattern.text_; }

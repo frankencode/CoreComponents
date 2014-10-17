@@ -17,10 +17,10 @@ namespace abnf {
 class AbnfSyntaxDefinition: public SyntaxDefinition
 {
 public:
-	static Ref<AbnfSyntaxDefinition> create(SyntaxDebugFactory *debugFactory = 0);
+    static Ref<AbnfSyntaxDefinition> create(SyntaxDebugFactory *debugFactory = 0);
 
 protected:
-	AbnfSyntaxDefinition(SyntaxDebugFactory *debugFactory = 0);
+    AbnfSyntaxDefinition(SyntaxDebugFactory *debugFactory = 0);
 };
 
 }} // namespace flux::abnf

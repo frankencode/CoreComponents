@@ -23,47 +23,47 @@ typedef List< Ref<MetaObject> > MetaObjectList;
 class MetaObject: public VariantMap
 {
 public:
-	inline static Ref<MetaObject> create(const String &className = "", MetaProtocol *protocol = 0) {
-		return new MetaObject(className, protocol);
-	}
+    inline static Ref<MetaObject> create(const String &className = "", MetaProtocol *protocol = 0) {
+        return new MetaObject(className, protocol);
+    }
 
-	inline String className() const { return className_; }
-	Variant toVariant() const;
-	String toString() const;
+    inline String className() const { return className_; }
+    Variant toVariant() const;
+    String toString() const;
 
-	inline bool hasChildren() const { return children_; }
-	MetaObjectList *children();
+    inline bool hasChildren() const { return children_; }
+    MetaObjectList *children();
 
-	Ref<MetaObject> clone();
+    Ref<MetaObject> clone();
 
-	inline bool hasProtocol() const { return protocol_; }
-	MetaProtocol *protocol();
+    inline bool hasProtocol() const { return protocol_; }
+    MetaProtocol *protocol();
 
-	virtual Ref<MetaObject> produce() {
-		return MetaObject::create(className());
-	}
+    virtual Ref<MetaObject> produce() {
+        return MetaObject::create(className());
+    }
 
-	virtual void autocomplete(const MetaObject *prototype);
+    virtual void autocomplete(const MetaObject *prototype);
 
-	virtual void realize(const ByteArray *text, Token *objectToken) {}
+    virtual void realize(const ByteArray *text, Token *objectToken) {}
 
 protected:
-	friend class MetaProtocol;
+    friend class MetaProtocol;
 
-	MetaObject(const String &className = "", MetaProtocol *protocol = 0);
+    MetaObject(const String &className = "", MetaProtocol *protocol = 0);
 
-	inline void className(String newName) { className_ = newName; }
-	virtual void define() {}
+    inline void className(String newName) { className_ = newName; }
+    virtual void define() {}
 
-	static Token *nameToken(const ByteArray *text, Token *objectToken, const String &memberName);
-	static Token *valueToken(const ByteArray *text, Token *objectToken, const String &memberName);
-	static Token *childToken(Token *objectToken, int childIndex);
+    static Token *nameToken(const ByteArray *text, Token *objectToken, const String &memberName);
+    static Token *valueToken(const ByteArray *text, Token *objectToken, const String &memberName);
+    static Token *childToken(Token *objectToken, int childIndex);
 
 private:
-	String className_;
-	SpinLock mutex_;
-	Ref<MetaObjectList> children_;
-	Ref<MetaProtocol> protocol_;
+    String className_;
+    SpinLock mutex_;
+    Ref<MetaObjectList> children_;
+    Ref<MetaProtocol> protocol_;
 };
 
 } // namespace flux

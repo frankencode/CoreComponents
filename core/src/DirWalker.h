@@ -18,32 +18,32 @@ class Dir;
 class DirWalker: public Source<String>
 {
 public:
-	static Ref<DirWalker> open(String path);
-	static Ref<DirWalker> tryOpen(String path);
+    static Ref<DirWalker> open(String path);
+    static Ref<DirWalker> tryOpen(String path);
 
-	inline int maxDepth() const { return maxDepth_; }
-	inline void setMaxDepth(int depth) { maxDepth_ = depth; }
+    inline int maxDepth() const { return maxDepth_; }
+    inline void setMaxDepth(int depth) { maxDepth_ = depth; }
 
-	inline bool ignoreHidden() const { return ignoreHidden_; }
-	inline void setIgnoreHidden(bool on) { ignoreHidden_ = on; }
+    inline bool ignoreHidden() const { return ignoreHidden_; }
+    inline void setIgnoreHidden(bool on) { ignoreHidden_ = on; }
 
-	inline bool followSymlink() const { return followSymlink_; }
-	inline void setFollowSymlink(bool on) { followSymlink_ = on; }
+    inline bool followSymlink() const { return followSymlink_; }
+    inline void setFollowSymlink(bool on) { followSymlink_ = on; }
 
-	inline bool deleteOrder() const { return deleteOrder_; }
-	inline void setDeleteOrder(bool on) { deleteOrder_ = on; }
+    inline bool deleteOrder() const { return deleteOrder_; }
+    inline void setDeleteOrder(bool on) { deleteOrder_ = on; }
 
-	bool read(String *path);
+    bool read(String *path);
 
 private:
-	DirWalker(String path, Dir *dir = 0);
-	int maxDepth_;
-	bool ignoreHidden_;
-	bool followSymlink_;
-	bool deleteOrder_;
-	int depth_;
-	Ref<Dir> dir_;
-	Ref<DirWalker> child_;
+    DirWalker(String path, Dir *dir = 0);
+    int maxDepth_;
+    bool ignoreHidden_;
+    bool followSymlink_;
+    bool deleteOrder_;
+    int depth_;
+    Ref<Dir> dir_;
+    Ref<DirWalker> child_;
 };
 
 } // namespace flux

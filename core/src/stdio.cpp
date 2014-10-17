@@ -14,30 +14,30 @@ namespace flux {
 class StdIo: public Object, public ThreadLocalSingleton<StdIo>
 {
 public:
-	inline File *in() {
-		if (!in_) in_ = File::open(File::StandardInput, File::ReadOnly);
-		return in_;
-	}
+    inline File *in() {
+        if (!in_) in_ = File::open(File::StandardInput, File::ReadOnly);
+        return in_;
+    }
 
-	inline File *out() {
-		if (!out_) out_ = File::open(File::StandardOutput, File::WriteOnly);
-		return out_;
-	}
+    inline File *out() {
+        if (!out_) out_ = File::open(File::StandardOutput, File::WriteOnly);
+        return out_;
+    }
 
-	inline File *err() {
-		if (!err_) err_ = File::open(File::StandardError, File::WriteOnly);
-		return err_;
-	}
+    inline File *err() {
+        if (!err_) err_ = File::open(File::StandardError, File::WriteOnly);
+        return err_;
+    }
 
-	inline LineSource *lineInput() {
-		if (!lineInput_) lineInput_ = LineSource::open(in());
-		return lineInput_;
-	}
+    inline LineSource *lineInput() {
+        if (!lineInput_) lineInput_ = LineSource::open(in());
+        return lineInput_;
+    }
 
-	Ref<File> in_;
-	Ref<File> out_;
-	Ref<File> err_;
-	Ref<LineSource> lineInput_;
+    Ref<File> in_;
+    Ref<File> out_;
+    Ref<File> err_;
+    Ref<LineSource> lineInput_;
 };
 
 File *in() { return StdIo::instance()->in(); }

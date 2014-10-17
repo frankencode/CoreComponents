@@ -21,22 +21,22 @@ using namespace flux;
 class Registry: public Object
 {
 public:
-	inline int headerStyleCount() const { return headerStyleByLanguage_->count(); }
-	HeaderStyle *headerStyleAt(int i) const { return headerStyleByLanguage_->valueAt(i); }
+    inline int headerStyleCount() const { return headerStyleByLanguage_->count(); }
+    HeaderStyle *headerStyleAt(int i) const { return headerStyleByLanguage_->valueAt(i); }
 
-	const HeaderStyle *headerStyleByLanguage(String language) const;
-	bool detectHeaderStyle(String path, String text, HeaderStyle **style) const;
+    const HeaderStyle *headerStyleByLanguage(String language) const;
+    bool detectHeaderStyle(String path, String text, HeaderStyle **style) const;
 
 private:
-	friend class Singleton<Registry>;
-	friend class HeaderStyle;
+    friend class Singleton<Registry>;
+    friend class HeaderStyle;
 
-	Registry();
+    Registry();
 
-	void registerHeaderStyle(HeaderStyle *style);
+    void registerHeaderStyle(HeaderStyle *style);
 
-	typedef Map< String, Ref<HeaderStyle> > HeaderStyleByLanguage;
-	Ref<HeaderStyleByLanguage> headerStyleByLanguage_;
+    typedef Map< String, Ref<HeaderStyle> > HeaderStyleByLanguage;
+    Ref<HeaderStyleByLanguage> headerStyleByLanguage_;
 };
 
 Registry *registry();

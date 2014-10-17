@@ -22,25 +22,25 @@ class ClientConnection;
 class ServiceDelegate: public Object
 {
 public:
-	virtual void process(Request *request) = 0;
+    virtual void process(Request *request) = 0;
 
 protected:
-	ServiceDelegate(ServiceWorker *worker);
+    ServiceDelegate(ServiceWorker *worker);
 
-	ServiceInstance *serviceInstance() const;
-	ClientConnection *client() const;
+    ServiceInstance *serviceInstance() const;
+    ClientConnection *client() const;
 
-	void status(int statusCode, String reasonPhrase = "");
-	void header(String name, String value);
-	void begin(ssize_t contentLength = -1);
-	void write(String bytes);
-	Format chunk(String pattern);
-	Format chunk();
-	void end();
-	void close();
+    void status(int statusCode, String reasonPhrase = "");
+    void header(String name, String value);
+    void begin(ssize_t contentLength = -1);
+    void write(String bytes);
+    Format chunk(String pattern);
+    Format chunk();
+    void end();
+    void close();
 
 private:
-	ServiceWorker *worker_;
+    ServiceWorker *worker_;
 };
 
 } // namespace fluxnode

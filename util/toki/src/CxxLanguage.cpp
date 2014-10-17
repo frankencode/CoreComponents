@@ -16,16 +16,16 @@ namespace toki {
 class CxxLanguage: public Language
 {
 private:
-	friend class Registration<CxxLanguage>;
+    friend class Registration<CxxLanguage>;
 
-	CxxLanguage():
-		Language(
-			"C++",
-			Pattern("*.((h|c){0..1:(pp|xx|++|h|c)}|(m|mm))"),
-			cxxSyntax(),
-			cppDiscoverySyntax()
-		)
-	{}
+    CxxLanguage():
+        Language(
+            "C++",
+            Pattern("*.((h|c){0..1:(pp|xx|++|h|c)}|(m|mm))"),
+            cxxSyntax(),
+            cppDiscoverySyntax()
+        )
+    {}
 };
 
 namespace { Registration<CxxLanguage> registration; }

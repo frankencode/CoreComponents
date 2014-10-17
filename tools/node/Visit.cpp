@@ -15,20 +15,20 @@ namespace fluxnode
 
 Ref<Visit> Visit::create(SocketAddress *remoteAddress)
 {
-	return new Visit(remoteAddress);
+    return new Visit(remoteAddress);
 }
 
 Visit::Visit(SocketAddress *remoteAddress)
-	: remoteAddress_(remoteAddress),
-	  priority_(0),
-	  originAddress_(remoteAddress->networkPrefix()),
-	  arrivalTime_(System::now()),
-	  departureTime_(arrivalTime_)
+    : remoteAddress_(remoteAddress),
+      priority_(0),
+      originAddress_(remoteAddress->networkPrefix()),
+      arrivalTime_(System::now()),
+      departureTime_(arrivalTime_)
 {}
 
 void Visit::updateDepartureTime()
 {
-	departureTime_ = System::now();
+    departureTime_ = System::now();
 }
 
 } // namespace fluxnode

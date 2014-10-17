@@ -20,17 +20,17 @@ class NodeMaster;
 class DispatchInstance: public ServiceInstance
 {
 public:
-	static Ref<DispatchInstance> create(MetaObject *config);
-	virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const;
+    static Ref<DispatchInstance> create(MetaObject *config);
+    virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const;
 
-	inline WorkerPools *workerPools() const { return workerPools_; }
+    inline WorkerPools *workerPools() const { return workerPools_; }
 
 private:
-	friend class NodeMaster;
+    friend class NodeMaster;
 
-	DispatchInstance(MetaObject *config);
+    DispatchInstance(MetaObject *config);
 
-	Ref<WorkerPools> workerPools_;
+    Ref<WorkerPools> workerPools_;
 };
 
 } // namespace fluxnode

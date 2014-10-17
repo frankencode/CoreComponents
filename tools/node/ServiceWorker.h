@@ -34,32 +34,32 @@ class Response;
 class ServiceWorker: public Thread
 {
 public:
-	static Ref<ServiceWorker> create(ServiceInstance *serviceInstance, ClosedConnections *closedConnections);
+    static Ref<ServiceWorker> create(ServiceInstance *serviceInstance, ClosedConnections *closedConnections);
 
-	inline ServiceInstance *serviceInstance() const { return serviceInstance_; }
+    inline ServiceInstance *serviceInstance() const { return serviceInstance_; }
 
-	inline PendingConnections *pendingConnections() const { return pendingConnections_; }
-	inline ClientConnection *client() const { return client_; }
+    inline PendingConnections *pendingConnections() const { return pendingConnections_; }
+    inline ClientConnection *client() const { return client_; }
 
-	Response *response() const;
-	void close();
+    Response *response() const;
+    void close();
 
 private:
-	ServiceWorker(ServiceInstance *serviceInstance, ClosedConnections *closedConnections);
-	~ServiceWorker();
+    ServiceWorker(ServiceInstance *serviceInstance, ClosedConnections *closedConnections);
+    ~ServiceWorker();
 
-	static void logDelivery(ClientConnection *client, int statusCode, size_t bytesWritten = 0);
-	static void logVisit(Visit *visit);
-	virtual void run();
+    static void logDelivery(ClientConnection *client, int statusCode, size_t bytesWritten = 0);
+    static void logVisit(Visit *visit);
+    virtual void run();
 
-	Ref<ServiceInstance> serviceInstance_;
-	Ref<ServiceDelegate> serviceDelegate_;
+    Ref<ServiceInstance> serviceInstance_;
+    Ref<ServiceDelegate> serviceDelegate_;
 
-	Ref<PendingConnections> pendingConnections_;
-	Ref<ClosedConnections> closedConnections_;
+    Ref<PendingConnections> pendingConnections_;
+    Ref<ClosedConnections> closedConnections_;
 
-	Ref<ClientConnection> client_;
-	Ref<Response> response_;
+    Ref<ClientConnection> client_;
+    Ref<Response> response_;
 };
 
 } // namespace fluxnode

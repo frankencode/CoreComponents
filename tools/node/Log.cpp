@@ -19,54 +19,54 @@ namespace fluxnode
 {
 
 Log::Log()
-	: logMaster_(logMaster()),
-	  mutex_(Mutex::create()),
-	  config_(LogConfig::loadDefault())
+    : logMaster_(logMaster()),
+      mutex_(Mutex::create()),
+      config_(LogConfig::loadDefault())
 {}
 
 Log::~Log()
 {
-	logMaster_->unregisterLog(this);
+    logMaster_->unregisterLog(this);
 }
 
 void Log::open(LogConfig *config)
 {
-	config_ = config;
-	logMaster_->registerLog(this);
-	open();
+    config_ = config;
+    logMaster_->registerLog(this);
+    open();
 }
 
 void Log::open()
 {
-	Guard<Mutex> guard(mutex_);
+    Guard<Mutex> guard(mutex_);
 
-	if (path() != "") {
-		errorStream_   =
-		warningStream_ =
-		noticeStream_  =
-		infoStream_    =
-		debugStream_   = File::open(path(), File::WriteOnly|File::Append);
-	}
-	else if (Process::isDaemonized()) {
-		errorStream_   = systemLog()->errorStream();
-		warningStream_ = systemLog()->warningStream();
-		noticeStream_  = systemLog()->noticeStream();
-		infoStream_    = systemLog()->infoStream();
-		debugStream_   = systemLog()->debugStream();
-	}
-	else {
-		errorStream_   =
-		warningStream_ =
-		noticeStream_  =
-		infoStream_    =
-		debugStream_   = err();
-	}
+    if (path() != "") {
+        errorStream_   =
+        warningStream_ =
+        noticeStream_  =
+        infoStream_    =
+        debugStream_   = File::open(path(), File::WriteOnly|File::Append);
+    }
+    else if (Process::isDaemonized()) {
+        errorStream_   = systemLog()->errorStream();
+        warningStream_ = systemLog()->warningStream();
+        noticeStream_  = systemLog()->noticeStream();
+        infoStream_    = systemLog()->infoStream();
+        debugStream_   = systemLog()->debugStream();
+    }
+    else {
+        errorStream_   =
+        warningStream_ =
+        noticeStream_  =
+        infoStream_    =
+        debugStream_   = err();
+    }
 
-	if (level() < ErrorLogLevel)   errorStream_   = nullStream();
-	if (level() < WarningLogLevel) warningStream_ = nullStream();
-	if (level() < NoticeLogLevel)  noticeStream_  = nullStream();
-	if (level() < InfoLogLevel)    infoStream_    = nullStream();
-	if (level() < DebugLogLevel)   debugStream_   = nullStream();
+    if (level() < ErrorLogLevel)   errorStream_   = nullStream();
+    if (level() < WarningLogLevel) warningStream_ = nullStream();
+    if (level() < NoticeLogLevel)  noticeStream_  = nullStream();
+    if (level() < InfoLogLevel)    infoStream_    = nullStream();
+    if (level() < DebugLogLevel)   debugStream_   = nullStream();
 }
 
 Stream *Log::errorStream()   const { Guard<Mutex> guard(mutex_); return errorStream_; }

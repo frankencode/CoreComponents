@@ -12,8 +12,8 @@
 #include <flux/Thread>
 
 namespace flux {
-	template<class> class Singleton;
-	class SignalMaster;
+    template<class> class Singleton;
+    class SignalMaster;
 }
 
 namespace fluxnode {
@@ -23,18 +23,18 @@ using namespace flux;
 class NodeMaster: public Thread
 {
 public:
-	static int run(int argc, char **argv);
+    static int run(int argc, char **argv);
 
 private:
-	friend class Singleton<NodeMaster>;
+    friend class Singleton<NodeMaster>;
 
-	NodeMaster();
+    NodeMaster();
 
-	virtual void run();
-	void runNode() const;
+    virtual void run();
+    void runNode() const;
 
-	Ref<SignalMaster> signalMaster_;
-	int exitCode_;
+    Ref<SignalMaster> signalMaster_;
+    int exitCode_;
 };
 
 } // namespace fluxnode

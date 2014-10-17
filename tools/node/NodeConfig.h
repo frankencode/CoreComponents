@@ -26,38 +26,38 @@ using namespace flux::net;
 class NodeConfig: public Object
 {
 public:
-	void load(int argc, char **argv);
+    void load(int argc, char **argv);
 
-	inline String directoryPath() const { return directoryPath_; }
+    inline String directoryPath() const { return directoryPath_; }
 
-	inline SocketAddressList *address() const { return address_; }
-	inline String user() const { return user_; }
-	inline String version() const { return version_; }
-	inline bool daemon() const { return daemon_; }
-	inline int serviceWindow() const { return serviceWindow_; }
+    inline SocketAddressList *address() const { return address_; }
+    inline String user() const { return user_; }
+    inline String version() const { return version_; }
+    inline bool daemon() const { return daemon_; }
+    inline int serviceWindow() const { return serviceWindow_; }
 
-	inline LogConfig *errorLogConfig() const { return errorLogConfig_; }
-	inline LogConfig *accessLogConfig() const { return accessLogConfig_; }
+    inline LogConfig *errorLogConfig() const { return errorLogConfig_; }
+    inline LogConfig *accessLogConfig() const { return accessLogConfig_; }
 
-	inline ServiceInstances *serviceInstances() const { return serviceInstances_; }
+    inline ServiceInstances *serviceInstances() const { return serviceInstances_; }
 
 private:
-	friend class Singleton<NodeConfig>;
+    friend class Singleton<NodeConfig>;
 
-	NodeConfig();
+    NodeConfig();
 
-	String directoryPath_;
+    String directoryPath_;
 
-	Ref<SocketAddressList> address_;
-	String user_;
-	String version_;
-	bool daemon_;
-	int serviceWindow_;
+    Ref<SocketAddressList> address_;
+    String user_;
+    String version_;
+    bool daemon_;
+    int serviceWindow_;
 
-	Ref<LogConfig> errorLogConfig_;
-	Ref<LogConfig> accessLogConfig_;
+    Ref<LogConfig> errorLogConfig_;
+    Ref<LogConfig> accessLogConfig_;
 
-	Ref<ServiceInstances> serviceInstances_;
+    Ref<ServiceInstances> serviceInstances_;
 };
 
 NodeConfig *nodeConfig();

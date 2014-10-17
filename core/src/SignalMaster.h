@@ -20,16 +20,16 @@ typedef Channel<int> SignalChannel;
 class SignalMaster: public Thread
 {
 public:
-	static Ref<SignalMaster> create(SignalSet *listenSet = 0, SignalSet *terminationSet = 0);
-	inline SignalChannel *receivedSignals() const { return receivedSignals_; }
+    static Ref<SignalMaster> create(SignalSet *listenSet = 0, SignalSet *terminationSet = 0);
+    inline SignalChannel *receivedSignals() const { return receivedSignals_; }
 
 private:
-	SignalMaster(SignalSet *listenSet, SignalSet *terminationSet);
-	virtual void run();
+    SignalMaster(SignalSet *listenSet, SignalSet *terminationSet);
+    virtual void run();
 
-	Ref<SignalSet> listenSet_;
-	Ref<SignalSet> terminationSet_;
-	Ref<SignalChannel> receivedSignals_;
+    Ref<SignalSet> listenSet_;
+    Ref<SignalSet> terminationSet_;
+    Ref<SignalChannel> receivedSignals_;
 };
 
 } // namespace flux

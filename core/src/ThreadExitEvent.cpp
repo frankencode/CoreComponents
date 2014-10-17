@@ -11,12 +11,12 @@
 namespace flux {
 
 ThreadExitEvent::ThreadExitEvent()
-	: pid_(Process::currentId())
+    : pid_(Process::currentId())
 {}
 
 ThreadExitEvent::~ThreadExitEvent()
 {
-	if (Process::currentId() == pid_) run();
+    if (Process::currentId() == pid_) run();
 }
 
 } // namespace flux

@@ -13,30 +13,30 @@ namespace flux {
 namespace doc {
 
 HtmlDesign::HtmlDesign()
-	: Design("Html")
+    : Design("Html")
 {}
 
 void HtmlDesign::realize(const ByteArray *text, Token *objectToken)
 {
-	Design::realize(text, objectToken);
-	String themePath = value("toki-theme");
-	try {
-		tokiTheme_ = toki::Theme::load(themePath);
-	}
-	catch (Exception &ex) {
-		throw SemanticError(ex.message(), text, valueToken(text, objectToken, "toki-theme")->i1());
-	}
+    Design::realize(text, objectToken);
+    String themePath = value("toki-theme");
+    try {
+        tokiTheme_ = toki::Theme::load(themePath);
+    }
+    catch (Exception &ex) {
+        throw SemanticError(ex.message(), text, valueToken(text, objectToken, "toki-theme")->i1());
+    }
 }
 
 void HtmlDesign::define()
 {
-	Design::define();
-	insert("toki-theme", "ClassicWhite");
+    Design::define();
+    insert("toki-theme", "ClassicWhite");
 }
 
 Ref<MetaObject> HtmlDesign::produce()
 {
-	return HtmlDesign::create();
+    return HtmlDesign::create();
 }
 
 }} // namespace flux::doc
