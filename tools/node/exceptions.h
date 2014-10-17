@@ -11,8 +11,7 @@
 
 #include <flux/String>
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 

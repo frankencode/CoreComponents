@@ -9,8 +9,7 @@
 #include <flux/Singleton>
 #include "RecipeProtocol.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 class BuildParametersPrototype: public MetaObject
 {

@@ -13,8 +13,7 @@
 
 namespace flux { template<class> class ThreadLocalSingleton; }
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 class AccessLog: public Log
 {

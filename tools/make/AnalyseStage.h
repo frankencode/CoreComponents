@@ -12,8 +12,7 @@
 #include <flux/String>
 #include "BuildStage.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 class AnalyseStage: public BuildStage
 {

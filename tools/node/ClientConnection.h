@@ -13,8 +13,7 @@
 #include "Visit.h"
 #include "Request.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 using namespace flux::net;

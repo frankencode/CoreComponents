@@ -11,8 +11,7 @@
 
 #include <flux/String>
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 using namespace flux;
 

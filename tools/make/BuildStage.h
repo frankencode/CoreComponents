@@ -9,8 +9,7 @@
 #ifndef FLUXMAKE_BUILDSTAGE_H
 #define FLUXMAKE_BUILDSTAGE_H
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 class BuildPlan;
 class BuildShell;

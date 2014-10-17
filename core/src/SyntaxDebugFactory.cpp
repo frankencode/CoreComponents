@@ -11,8 +11,7 @@
 
 namespace flux {
 
-namespace syntax
-{
+namespace syntax {
 
 DefinitionNode *DebugFactory::definition() const { return definition_; }
 

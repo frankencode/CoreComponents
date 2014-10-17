@@ -10,8 +10,7 @@
 #include "ServiceDefinition.h"
 #include "EchoInstance.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 class EchoService: public ServiceDefinition
 {

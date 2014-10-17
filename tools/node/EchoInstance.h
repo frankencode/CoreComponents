@@ -8,8 +8,7 @@
 
 #include "EchoDelegate.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 class EchoInstance: public ServiceInstance
 {

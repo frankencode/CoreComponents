@@ -17,8 +17,7 @@ class File;
 class MetaObject;
 }
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 using namespace flux;
 

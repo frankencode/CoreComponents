@@ -13,8 +13,7 @@
 #include "BuildPlan.h"
 #include "GnuToolChain.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 Ref<GnuToolChain> GnuToolChain::create(String compiler)
 {

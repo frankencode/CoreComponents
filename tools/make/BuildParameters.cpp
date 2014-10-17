@@ -9,8 +9,7 @@
 #include "BuildPlan.h"
 #include "BuildParameters.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 void BuildParameters::read(MetaObject *object, BuildPlan *plan)
 {

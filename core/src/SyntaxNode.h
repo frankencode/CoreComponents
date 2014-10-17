@@ -16,8 +16,7 @@
 
 namespace flux {
 
-namespace syntax
-{
+namespace syntax {
 
 class Node: public Tree<Node>
 {

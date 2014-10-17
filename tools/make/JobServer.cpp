@@ -9,8 +9,7 @@
 #include <flux/ProcessFactory>
 #include "JobServer.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 JobServer::JobServer(JobChannel *requestChannel, JobChannel *replyChannel)
     : requestChannel_(requestChannel),

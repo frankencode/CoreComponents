@@ -12,8 +12,7 @@
 #include <flux/Format>
 #include "ToolChain.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 using namespace flux;
 

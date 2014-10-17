@@ -12,8 +12,7 @@
 #include <flux/Date>
 #include <flux/MetaObject>
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 

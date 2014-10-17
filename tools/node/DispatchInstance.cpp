@@ -9,8 +9,7 @@
 #include "DispatchDelegate.h"
 #include "DispatchInstance.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 Ref<DispatchInstance> DispatchInstance::create(MetaObject *config) {
     return new DispatchInstance(config);

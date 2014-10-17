@@ -10,8 +10,7 @@
 #include "LogConfig.h"
 #include "ServiceInstance.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 ServiceInstance::ServiceInstance(MetaObject *config)
     : serviceName_(config->className()),

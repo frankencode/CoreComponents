@@ -13,8 +13,7 @@
 
 namespace flux {
 
-namespace container
-{
+namespace container {
 
 template<class C>
 bool compare(const C &a, const C &b)

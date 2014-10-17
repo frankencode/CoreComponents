@@ -12,8 +12,7 @@
 #include <flux/ThreadLocalSingleton>
 #include "Log.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 class VisitLog: public Log, public ThreadLocalSingleton<VisitLog>
 {

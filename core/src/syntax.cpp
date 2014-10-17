@@ -11,8 +11,7 @@
 
 namespace flux {
 
-namespace syntax
-{
+namespace syntax {
 
 int RuleNode::matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
 {

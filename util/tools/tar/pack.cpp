@@ -10,8 +10,7 @@
 #include <flux/DirWalker>
 #include "pack.h"
 
-namespace fluxtar
-{
+namespace fluxtar {
 
 void pack(String path, ArchiveWriter *archive, bool verbose)
 {

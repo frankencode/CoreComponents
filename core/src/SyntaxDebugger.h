@@ -15,8 +15,7 @@
 
 namespace flux {
 
-namespace syntax
-{
+namespace syntax {
 
 class DebugNode: public Node {
 public:

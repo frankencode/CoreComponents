@@ -11,8 +11,7 @@
 #include "SystemLogStream.h"
 #include "SystemLog.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux::stream;
 

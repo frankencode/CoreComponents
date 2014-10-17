@@ -17,8 +17,7 @@
 #include "RequestStream.h"
 #include "ClientConnection.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux::stream;
 

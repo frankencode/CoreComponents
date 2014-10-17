@@ -9,8 +9,7 @@
 #include <flux/ThreadLocalSingleton>
 #include "ErrorLog.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 ErrorLog *errorLog() { return ThreadLocalSingleton<ErrorLog>::instance(); }
 

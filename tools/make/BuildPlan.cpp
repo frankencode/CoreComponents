@@ -18,8 +18,7 @@
 #include "RecipeProtocol.h"
 #include "BuildPlan.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
 {

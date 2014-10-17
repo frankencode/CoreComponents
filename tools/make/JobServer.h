@@ -13,8 +13,7 @@
 #include <flux/Channel>
 #include "Job.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 class JobServer: public Thread
 {

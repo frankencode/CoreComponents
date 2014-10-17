@@ -10,8 +10,7 @@
 #include "DispatchInstance.h"
 #include "DispatchDelegate.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 Ref<DispatchDelegate> DispatchDelegate::create(ServiceWorker *worker) {
     return new DispatchDelegate(worker);

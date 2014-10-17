@@ -11,8 +11,7 @@
 
 #include "BuildParameters.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 using namespace flux;
 

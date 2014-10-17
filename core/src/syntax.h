@@ -18,8 +18,7 @@
 
 namespace flux {
 
-namespace syntax
-{
+namespace syntax {
 
 class Debugger;
 

@@ -16,8 +16,7 @@
 #include "MediaTypeDatabase.h"
 #include "DirectoryDelegate.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 Ref<DirectoryDelegate> DirectoryDelegate::create(ServiceWorker *worker)
 {

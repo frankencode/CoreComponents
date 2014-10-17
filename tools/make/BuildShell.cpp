@@ -15,8 +15,7 @@
 #include "BuildPlan.h"
 #include "BuildShell.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 BuildShell::BuildShell(BuildPlan *plan)
     : plan_(plan)

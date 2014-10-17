@@ -12,8 +12,7 @@
 #include <flux/Thread>
 #include "Job.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 using namespace flux;
 

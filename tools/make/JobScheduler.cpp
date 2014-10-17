@@ -10,8 +10,7 @@
 #include "JobServer.h"
 #include "JobScheduler.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 Ref<JobScheduler> JobScheduler::create(int concurrency)
 {

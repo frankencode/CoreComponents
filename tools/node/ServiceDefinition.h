@@ -14,8 +14,7 @@
 #include "ServiceDelegate.h"
 #include "ServiceInstance.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 

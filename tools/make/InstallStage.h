@@ -11,8 +11,7 @@
 
 #include "BuildStage.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 class InstallStage: public BuildStage
 {

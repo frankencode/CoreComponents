@@ -15,8 +15,7 @@
 #include "ServiceWorker.h"
 #include "Visit.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 

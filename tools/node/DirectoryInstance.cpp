@@ -10,8 +10,7 @@
 #include "exceptions.h"
 #include "DirectoryInstance.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 Ref<DirectoryInstance> DirectoryInstance::create(MetaObject *config)
 {

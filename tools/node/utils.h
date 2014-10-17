@@ -11,8 +11,7 @@
 
 #include <flux/Date>
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 

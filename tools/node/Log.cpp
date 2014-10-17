@@ -15,8 +15,7 @@
 #include "SystemLog.h"
 #include "Log.h"
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 Log::Log()
     : logMaster_(logMaster()),

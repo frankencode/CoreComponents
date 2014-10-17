@@ -12,8 +12,7 @@
 #include <syslog.h>
 #include <flux/Stream>
 
-namespace fluxnode
-{
+namespace fluxnode {
 
 using namespace flux;
 

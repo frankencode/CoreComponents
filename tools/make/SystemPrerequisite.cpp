@@ -9,8 +9,7 @@
 #include <flux/str>
 #include "SystemPrerequisite.h"
 
-namespace fluxmake
-{
+namespace fluxmake {
 
 Ref<SystemPrerequisite> SystemPrerequisite::read(MetaObject *object, BuildPlan *plan)
 {
