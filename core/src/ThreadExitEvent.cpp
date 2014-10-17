@@ -6,10 +6,9 @@
  *
  */
 
-#include "ThreadExitEvent"
+#include <flux/ThreadExitEvent>
 
-namespace flux
-{
+namespace flux {
 
 ThreadExitEvent::ThreadExitEvent()
 	: pid_(Process::currentId())

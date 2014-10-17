@@ -9,7 +9,7 @@
 #include <flux/Singleton>
 #include <flux/File>
 #include <flux/ResourceGuard>
-#include "PaletteLoader"
+#include <flux/toki/PaletteLoader>
 
 namespace flux {
 namespace toki {

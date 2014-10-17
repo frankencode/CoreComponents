@@ -6,11 +6,10 @@
  *
  */
 
-#include "exceptions"
-#include "Mutex"
+#include <flux/exceptions>
+#include <flux/Mutex>
 
-namespace flux
-{
+namespace flux {
 
 Mutex::Mutex()
 {

@@ -6,13 +6,12 @@
  *
  */
 
-#include "Guard"
-#include "YasonSyntax"
-#include "MetaProtocol"
-#include "MetaObject"
+#include <flux/Guard>
+#include <flux/YasonSyntax>
+#include <flux/MetaProtocol>
+#include <flux/MetaObject>
 
-namespace flux
-{
+namespace flux {
 
 MetaObject::MetaObject(const String &className, MetaProtocol *protocol)
 	: className_(className),

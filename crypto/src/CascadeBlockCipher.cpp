@@ -6,7 +6,7 @@
  *
  */
 
-#include "CascadeBlockCipher"
+#include <flux/crypto/CascadeBlockCipher>
 
 namespace flux {
 namespace crypto {

@@ -6,12 +6,11 @@
  *
  */
 
-#include "ThreadLocalSingleton"
-#include "Queue"
-#include "ResourceContext"
+#include <flux/ThreadLocalSingleton>
+#include <flux/Queue>
+#include <flux/ResourceContext>
 
-namespace flux
-{
+namespace flux {
 
 ResourceContext::ResourceContext()
 	: queue_(Queue<String>::create())

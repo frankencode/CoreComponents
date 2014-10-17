@@ -8,8 +8,8 @@
 
 #include <flux/File>
 #include <flux/Format>
-#include "TarCommon"
-#include "TarReader"
+#include <flux/tar/TarCommon>
+#include <flux/tar/TarReader>
 
 namespace flux {
 namespace tar {

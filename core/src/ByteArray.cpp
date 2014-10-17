@@ -6,23 +6,22 @@
  *
  */
 
-#include "List"
-#include "IntegerSyntax"
-#include "FloatSyntax"
-#include "Unicode"
-#include "Utf8Source"
-#include "Utf8Sink"
-#include "Utf16Source"
-#include "Utf16Sink"
-#include "Format"
-#include "Process"
-#include "File"
-#include "ThreadFactory"
-#include "Singleton"
-#include "ByteArray"
+#include <flux/List>
+#include <flux/IntegerSyntax>
+#include <flux/FloatSyntax>
+#include <flux/Unicode>
+#include <flux/Utf8Source>
+#include <flux/Utf8Sink>
+#include <flux/Utf16Source>
+#include <flux/Utf16Sink>
+#include <flux/Format>
+#include <flux/Process>
+#include <flux/File>
+#include <flux/ThreadFactory>
+#include <flux/Singleton>
+#include <flux/ByteArray>
 
-namespace flux
-{
+namespace flux {
 
 ByteArray::ByteArray(const char *data, int size, int flags)
 	: size_(0),

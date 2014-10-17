@@ -6,12 +6,11 @@
  *
  */
 
-#include "Format"
-#include "yason"
-#include "Arguments"
+#include <flux/Format>
+#include <flux/yason>
+#include <flux/Arguments>
 
-namespace flux
-{
+namespace flux {
 
 Ref<Arguments> Arguments::parse(int argc, char **argv)
 {

@@ -9,12 +9,11 @@
 #include <sys/time.h> // futimes, utimes
 #include <errno.h>
 #include <math.h>
-#include "File"
-#include "exceptions"
-#include "FileStatus"
+#include <flux/File>
+#include <flux/exceptions>
+#include <flux/FileStatus>
 
-namespace flux
-{
+namespace flux {
 
 FileStatus::FileStatus(int fd)
 	: fd_(fd)

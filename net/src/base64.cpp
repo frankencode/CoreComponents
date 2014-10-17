@@ -7,7 +7,7 @@
  */
 
 #include <flux/ByteSink>
-#include "base64"
+#include <flux/net/base64>
 
 namespace flux {
 namespace net {

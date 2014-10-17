@@ -6,11 +6,10 @@
  *
  */
 
-#include "syntax"
-#include "SyntaxDefinition"
+#include <flux/syntax>
+#include <flux/SyntaxDefinition>
 
-namespace flux
-{
+namespace flux {
 
 SyntaxDefinition::SyntaxDefinition(SyntaxDebugFactory *debugFactory)
 	: def_(new syntax::DefinitionNode(debugFactory))

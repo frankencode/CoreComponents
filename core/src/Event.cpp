@@ -6,11 +6,10 @@
  *
  */
 
-#include "Guard"
-#include "Event"
+#include <flux/Guard>
+#include <flux/Event>
 
-namespace flux
-{
+namespace flux {
 
 Event::Event()
 	: handlers_(Handlers::create())

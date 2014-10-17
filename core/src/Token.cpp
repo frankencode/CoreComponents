@@ -6,11 +6,10 @@
  *
  */
 
-#include "Memory"
-#include "Token"
+#include <flux/Memory>
+#include <flux/Token>
 
-namespace flux
-{
+namespace flux {
 
 bool Token::project(TokenScreen *screen)
 {

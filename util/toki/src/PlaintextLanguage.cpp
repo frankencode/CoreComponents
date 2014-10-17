@@ -6,8 +6,8 @@
  *
  */
 
-#include "Registry"
-#include "PlaintextSyntax"
+#include <flux/toki/Registry>
+#include <flux/toki/PlaintextSyntax>
 
 namespace flux {
 namespace toki {

@@ -10,17 +10,16 @@
 #include <unistd.h>
 #include <assert.h>
 #include <new>
-#include "check"
-#include "types"
-#include "Mutex"
-#include "Memory"
+#include <flux/check>
+#include <flux/types>
+#include <flux/Mutex>
+#include <flux/Memory>
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
-namespace flux
-{
+namespace flux {
 
 #define FLUX_MEM_GRANULARITY 16
 #define FLUX_MEM_ALIGN(x) ((x) / FLUX_MEM_GRANULARITY + ((x) % FLUX_MEM_GRANULARITY > 0)) * FLUX_MEM_GRANULARITY

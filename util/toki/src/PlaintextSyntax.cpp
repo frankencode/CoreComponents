@@ -7,7 +7,7 @@
  */
 
 #include <flux/Singleton>
-#include "PlaintextSyntax"
+#include <flux/toki/PlaintextSyntax>
 
 namespace flux {
 namespace toki {

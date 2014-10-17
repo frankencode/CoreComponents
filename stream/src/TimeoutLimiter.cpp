@@ -7,7 +7,7 @@
  */
 
 #include <flux/System>
-#include "TimeoutLimiter"
+#include <flux/stream/TimeoutLimiter>
 
 namespace flux {
 namespace stream {

@@ -8,7 +8,7 @@
 
 #include <flux/str>
 #include <flux/File>
-#include "ArWriter"
+#include <flux/tar/ArWriter>
 
 namespace flux {
 namespace tar {

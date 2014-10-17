@@ -8,8 +8,9 @@
 
 #include <flux/assert>
 #include <flux/SyntaxDebugger>
-#include "AbnfSyntax"
-#include "AbnfCompiler"
+#include <flux/abnf/AbnfSyntax>
+#include "StringTrap.h"
+#include <flux/abnf/AbnfCompiler>
 
 namespace flux {
 namespace abnf {
@@ -32,6 +33,11 @@ Ref<AbnfCompiler::SyntaxDefinition> AbnfCompiler::compile(ByteArray *text, Synta
 	definition->LINK();
 
 	return definition;
+}
+
+const char *AbnfCompiler::str(ByteArray *text, Token *token)
+{
+	return trap_->capture(text, token->i0(), token->i1());
 }
 
 SyntaxNode *AbnfCompiler::ignoreDebug(SyntaxNode *node)

@@ -8,12 +8,11 @@
 
 #include <stdint.h>
 #include <time.h>
-#include "System"
-#include "Format"
-#include "Date"
+#include <flux/System>
+#include <flux/Format>
+#include <flux/Date>
 
-namespace flux
-{
+namespace flux {
 
 /* Every 4th year is a leap year excluding every last year in the
  * 100 year cycle (century) but not the last year in a 400 year cycle.

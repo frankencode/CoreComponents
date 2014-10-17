@@ -6,7 +6,7 @@
  *
  */
 
-#include "Sha1"
+#include <flux/crypto/Sha1>
 
 namespace flux {
 namespace crypto {

@@ -6,10 +6,9 @@
  *
  */
 
-#include "BinaryTree"
+#include <flux/BinaryTree>
 
-namespace flux
-{
+namespace flux {
 
 /** Attaches the new leaf node k under kp as the left or right child.
   */

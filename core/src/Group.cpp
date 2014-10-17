@@ -7,11 +7,10 @@
  */
 
 #include <unistd.h> // sysconf
-#include "exceptions"
-#include "Group"
+#include <flux/exceptions>
+#include <flux/Group>
 
-namespace flux
-{
+namespace flux {
 
 Group::Group(gid_t id)
 {

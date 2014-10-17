@@ -6,12 +6,11 @@
  *
  */
 
-#include "Dir"
-#include "File"
-#include "DirWalker"
+#include <flux/Dir>
+#include <flux/File>
+#include <flux/DirWalker>
 
-namespace flux
-{
+namespace flux {
 
 Ref<DirWalker> DirWalker::open(String path)
 {

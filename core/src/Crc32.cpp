@@ -6,11 +6,10 @@
  *
  */
 
-#include "strings"
-#include "Crc32"
+#include <flux/strings>
+#include <flux/Crc32>
 
-namespace flux
-{
+namespace flux {
 
 static const uint32_t crcTable[] = {
 	0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,

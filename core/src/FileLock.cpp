@@ -7,11 +7,10 @@
  */
 
 #include <errno.h>
-#include "exceptions"
-#include "FileLock"
+#include <flux/exceptions>
+#include <flux/FileLock>
 
-namespace flux
-{
+namespace flux {
 
 FileLock::FileLock(File *file, int type, off_t start, off_t length)
 	: fd_(file->fd())

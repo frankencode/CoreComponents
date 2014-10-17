@@ -6,12 +6,11 @@
  *
  */
 
-#include "Singleton"
-#include "PrefixTree"
-#include "ColorNames"
+#include <flux/Singleton>
+#include <flux/PrefixTree>
+#include <flux/ColorNames>
 
-namespace flux
-{
+namespace flux {
 
 struct PaletteEntry {
 	const char *name;

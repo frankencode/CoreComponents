@@ -10,7 +10,7 @@
 #include <flux/Dir>
 #include <flux/Format>
 #include <flux/exceptions>
-#include "Theme"
+#include <flux/toki/Theme>
 
 namespace flux {
 namespace toki {

@@ -6,11 +6,10 @@
  *
  */
 
-#include "SyntaxDebugFactory"
-#include "syntax"
+#include <flux/SyntaxDebugFactory>
+#include <flux/syntax>
 
-namespace flux
-{
+namespace flux {
 
 namespace syntax
 {

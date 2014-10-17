@@ -7,7 +7,7 @@
  */
 
 #include <string.h> // FIXME
-#include "Md5"
+#include <flux/crypto/Md5>
 
 namespace flux {
 namespace crypto {

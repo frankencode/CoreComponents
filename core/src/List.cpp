@@ -6,11 +6,10 @@
  *
  */
 
-#include "Variant"
-#include "List"
+#include <flux/Variant>
+#include <flux/List>
 
-namespace flux
-{
+namespace flux {
 
 template class List<String>;
 

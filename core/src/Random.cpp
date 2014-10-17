@@ -6,11 +6,10 @@
  *
  */
 
-#include "System"
-#include "Random"
+#include <flux/System>
+#include <flux/Random>
 
-namespace flux
-{
+namespace flux {
 
 Random::Random(int seed)
 	: x_(seed)

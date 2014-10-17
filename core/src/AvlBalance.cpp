@@ -6,10 +6,9 @@
  *
  */
 
-#include "AvlBalance"
+#include <flux/AvlBalance>
 
-namespace flux
-{
+namespace flux {
 
 void AvlBalance::restore(BinaryNode *kp, BinaryNode*, bool left, bool attached)
 {

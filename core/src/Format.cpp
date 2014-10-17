@@ -6,13 +6,12 @@
  *
  */
 
-#include "stdio"
-#include "Queue"
-#include "NullStream"
-#include "Format"
+#include <flux/stdio>
+#include <flux/Queue>
+#include <flux/NullStream>
+#include <flux/Format>
 
-namespace flux
-{
+namespace flux {
 
 FormatSignal nl;
 FormatSignal flush;

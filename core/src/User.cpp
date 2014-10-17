@@ -7,11 +7,10 @@
  */
 
 #include <unistd.h> // sysconf
-#include "exceptions"
-#include "User"
+#include <flux/exceptions>
+#include <flux/User>
 
-namespace flux
-{
+namespace flux {
 
 User::User(uid_t id)
 {

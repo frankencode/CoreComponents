@@ -6,14 +6,13 @@
  *
  */
 
-#include "strings"
-#include "Condition"
-#include "ThreadFactory"
-#include "System"
-#include "Thread"
+#include <flux/strings>
+#include <flux/Condition>
+#include <flux/ThreadFactory>
+#include <flux/System>
+#include <flux/Thread>
 
-namespace flux
-{
+namespace flux {
 
 ThreadLocalRef<Thread> Thread::self_;
 

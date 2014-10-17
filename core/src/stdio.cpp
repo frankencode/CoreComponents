@@ -6,11 +6,10 @@
  *
  */
 
-#include "ThreadLocalSingleton"
-#include "stdio"
+#include <flux/ThreadLocalSingleton>
+#include <flux/stdio>
 
-namespace flux
-{
+namespace flux {
 
 class StdIo: public Object, public ThreadLocalSingleton<StdIo>
 {

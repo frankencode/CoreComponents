@@ -6,13 +6,12 @@
  *
  */
 
-#include "syntax"
-#include "SyntaxDefinition"
-#include "TokenFactory"
-#include "SyntaxState"
+#include <flux/syntax>
+#include <flux/SyntaxDefinition>
+#include <flux/TokenFactory>
+#include <flux/SyntaxState>
 
-namespace flux
-{
+namespace flux {
 
 SyntaxState::SyntaxState(const DefinitionNode *definition, int numFlags, int numCaptures, TokenFactory *tokenFactory)
 	: definition_(definition),

@@ -16,10 +16,9 @@
 #endif
 #include <sys/time.h>
 #include <time.h>
-#include "System"
+#include <flux/System>
 
-namespace flux
-{
+namespace flux {
 
 int System::concurrency()
 {

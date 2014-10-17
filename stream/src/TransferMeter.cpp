@@ -6,7 +6,7 @@
  *
  */
 
-#include "TransferMeter"
+#include <flux/stream/TransferMeter>
 
 namespace flux {
 namespace stream {
