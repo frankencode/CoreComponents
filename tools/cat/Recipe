@@ -1,0 +1,5 @@
+Application {
+    name: fluxcat
+    source: *.cpp
+    use: core
+}

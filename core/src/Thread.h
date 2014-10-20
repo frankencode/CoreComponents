@@ -18,7 +18,6 @@
 namespace flux {
 
 class ThreadFactory;
-class Interrupt;
 
 class Thread: public Object
 {
@@ -46,7 +45,6 @@ protected:
 
 private:
     friend class ThreadFactory;
-    friend class Interrupt;
     friend class Process;
 
     static ThreadLocalRef<Thread> self_;

@@ -33,14 +33,8 @@ bool FileLock::tryAcquire()
 
 void FileLock::acquire()
 {
-    while (true) {
-        if (::fcntl(fd_, F_SETLKW, static_cast<FLockStruct*>(this)) == -1) {
-            if (errno == EINTR) throw Interrupt();
-            FLUX_SYSTEM_DEBUG_ERROR(errno);
-        }
-        else
-            break;
-    }
+    if (::fcntl(fd_, F_SETLKW, static_cast<FLockStruct*>(this)) == -1)
+        FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 void FileLock::release()

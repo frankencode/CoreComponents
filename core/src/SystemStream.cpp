@@ -61,10 +61,7 @@ bool SystemStream::readyRead(double interval) const
         to->tv_sec = sec;
     }
     int ret = ::select(fd_ + 1, &set, 0, 0, to);
-    if (ret == -1) {
-        if (errno == EINTR) throw Interrupt();
-        FLUX_SYSTEM_DEBUG_ERROR(errno);
-    }
+    if (ret == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
     return (ret > 0);
 }
 
@@ -83,10 +80,7 @@ bool SystemStream::readyReadOrWrite(double interval) const
         to->tv_sec = sec;
     }
     int ret = ::select(fd_ + 1, &rset, &wset, 0, to);
-    if (ret == -1) {
-        if (errno == EINTR) throw Interrupt();
-        FLUX_SYSTEM_DEBUG_ERROR(errno);
-    }
+    if (ret == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
     return (ret > 0);
 }
 
@@ -96,7 +90,6 @@ int SystemStream::read(ByteArray *data)
     while (true) {
         ret = ::read(fd_, data->bytes(), data->count());
         if (ret == -1) {
-            if (errno == EINTR) throw Interrupt();
             if (errno == EWOULDBLOCK) throw Timeout();
             if (errno == ECONNRESET) throw ConnectionResetByPeer();
             FLUX_SYSTEM_DEBUG_ERROR(errno);
@@ -114,7 +107,6 @@ void SystemStream::write(const ByteArray *data)
     {
         ssize_t ret = ::write(fd_, p, n);
         if (ret == -1) {
-            if (errno == EINTR) throw Interrupt();
             if (errno == EWOULDBLOCK) throw Timeout();
             if (errno == ECONNRESET) throw ConnectionResetByPeer();
             FLUX_SYSTEM_DEBUG_ERROR(errno);
@@ -144,7 +136,6 @@ void SystemStream::write(const StringList *parts)
         if (n > iovMax_) n = iovMax_;
         ssize_t ret = ::writev(fd_, iov->constData() + i, n);
         if (ret == -1) {
-            if (errno == EINTR) throw Interrupt();
             if (errno == EWOULDBLOCK) throw Timeout();
             if (errno == ECONNRESET) throw ConnectionResetByPeer();
             FLUX_SYSTEM_DEBUG_ERROR(errno);

@@ -1,0 +1,5 @@
+Application {
+    name: fluxwhoami
+    source: *.cpp
+    use: core
+}

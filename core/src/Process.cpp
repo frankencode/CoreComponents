@@ -118,16 +118,13 @@ bool Process::isRunning() const
 }
 
 /*! wait for until child process terminates
-  * Throws Interrupt exception, if the calling process received a signal while waiting.
   * \ret exit status of child
   */
 int Process::wait()
 {
     int status = 0;
-    if (::waitpid(processId_, &status, 0) == -1) {
-        if (errno == EINTR) throw Interrupt();
+    if (::waitpid(processId_, &status, 0) == -1)
         FLUX_SYSTEM_DEBUG_ERROR(errno);
-    }
     if (WIFEXITED(status))
         status = WEXITSTATUS(status);
     else if (WIFSIGNALED(status))
@@ -299,32 +296,6 @@ void Process::forwardSignal(int signal)
 {
     Thread::self()->lastSignal_ = signal;
     Thread::self()->handleSignal(signal);
-}
-
-void Process::enableInterrupt(int signal, bool on)
-{
-    if (on) {
-        Thread::self();
-
-        struct sigaction action;
-        memclr(&action, sizeof(action));
-        sigset_t mask;
-        sigfillset(&mask);
-        action.sa_handler = forwardSignal;
-        action.sa_mask = mask;
-        if (::sigaction(signal, &action, 0/*oldact*/) == -1)
-            FLUX_SYSTEM_DEBUG_ERROR(errno);
-    }
-    else {
-        struct sigaction action;
-        memclr(&action, sizeof(action));
-        sigset_t mask;
-        sigfillset(&mask);
-        action.sa_handler = SIG_DFL;
-        action.sa_mask = mask;
-        if (::sigaction(signal, &action, 0/*oldact*/) == -1)
-            FLUX_SYSTEM_DEBUG_ERROR(errno);
-    }
 }
 
 void Process::sleep(double duration)

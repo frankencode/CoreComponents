@@ -7,8 +7,8 @@
  */
 
 #include <string.h> // strerror_r
+#include <signal.h>
 #include <flux/Format>
-#include <flux/Thread>
 #include <flux/SyntaxState>
 #include <flux/ResourceContext>
 #include <flux/exceptions>
@@ -116,11 +116,6 @@ const char *signalName(int signal)
     return "SIG???";
 }
 
-Interrupt::Interrupt()
-{
-    __sync_synchronize();
-    signal_ = Thread::self()->lastSignal_;
-}
 
 Interrupt::Interrupt(int signal)
     : signal_(signal)

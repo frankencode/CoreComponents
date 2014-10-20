@@ -200,7 +200,6 @@ const char *signalName(int signal);
 class Interrupt: public Exception
 {
 public:
-    Interrupt();
     Interrupt(int signal);
     ~Interrupt() throw() {}
 

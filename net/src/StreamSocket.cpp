@@ -81,10 +81,7 @@ Ref<StreamSocket> StreamSocket::accept()
     Ref<SocketAddress> clientAddress = SocketAddress::create(address_->family());
     socklen_t len = clientAddress->addrLen();
     int fdc = ::accept(fd_, clientAddress->addr(), &len);
-    if (fdc < 0) {
-        if (errno == EINTR) throw Interrupt();
-        FLUX_SYSTEM_DEBUG_ERROR(errno);
-    }
+    if (fdc < 0) FLUX_SYSTEM_DEBUG_ERROR(errno);
     return new StreamSocket(clientAddress, fdc);
 }
 
