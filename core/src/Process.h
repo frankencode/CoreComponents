@@ -104,8 +104,6 @@ public:
     static void raise(int signal);
     static int alarm(int seconds);
 
-    static void enableInterrupt(int signal, bool on = true);
-
     static void sleep(double duration);
     static void exit(int exitCode);
 
