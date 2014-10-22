@@ -89,31 +89,32 @@ String SemanticError::message() const
     return format;
 }
 
-const char *signalName(int signal)
+String signalName(int signal)
 {
     switch (signal) {
-        case SIGHUP:  return "SIGHUP";
-        case SIGINT:  return "SIGINT";
-        case SIGQUIT: return "SIGQUIT";
-        case SIGILL:  return "SIGILL";
-        case SIGABRT: return "SIGABRT";
-        case SIGFPE:  return "SIGFPE";
-        case SIGKILL: return "SIGKILL";
-        case SIGSEGV: return "SIGSEGV";
-        case SIGPIPE: return "SIGPIPE";
-        case SIGALRM: return "SIGALRM";
-        case SIGTERM: return "SIGTERM";
-        case SIGUSR1: return "SIGUSR1";
-        case SIGUSR2: return "SIGUSR2";
-        case SIGCHLD: return "SIGCHLD";
-        case SIGCONT: return "SIGCONT";
-        case SIGSTOP: return "SIGSTOP";
-        case SIGTSTP: return "SIGTSTP";
-        case SIGTTIN: return "SIGTTIN";
-        case SIGTTOU: return "SIGTTOU";
-        case SIGBUS:  return "SIGBUS";
+        case SIGHUP:   return "SIGHUP";
+        case SIGINT:   return "SIGINT";
+        case SIGQUIT:  return "SIGQUIT";
+        case SIGILL:   return "SIGILL";
+        case SIGABRT:  return "SIGABRT";
+        case SIGFPE:   return "SIGFPE";
+        case SIGKILL:  return "SIGKILL";
+        case SIGSEGV:  return "SIGSEGV";
+        case SIGPIPE:  return "SIGPIPE";
+        case SIGALRM:  return "SIGALRM";
+        case SIGTERM:  return "SIGTERM";
+        case SIGUSR1:  return "SIGUSR1";
+        case SIGUSR2:  return "SIGUSR2";
+        case SIGCHLD:  return "SIGCHLD";
+        case SIGCONT:  return "SIGCONT";
+        case SIGSTOP:  return "SIGSTOP";
+        case SIGTSTP:  return "SIGTSTP";
+        case SIGTTIN:  return "SIGTTIN";
+        case SIGTTOU:  return "SIGTTOU";
+        case SIGBUS:   return "SIGBUS";
+        case SIGWINCH: return "SIGWINCH";
     }
-    return "SIG???";
+    return str(signal);
 }
 
 
@@ -121,7 +122,7 @@ Interrupt::Interrupt(int signal)
     : signal_(signal)
 {}
 
-const char *Interrupt::signalName() const
+String Interrupt::signalName() const
 {
     return flux::signalName(signal_);
 }
