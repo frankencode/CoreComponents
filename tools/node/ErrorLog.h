@@ -10,6 +10,7 @@
 #define FLUXNODE_ERRORLOG_H
 
 #include <flux/Format>
+#include <flux/Thread>
 #include <flux/str>
 #include "Log.h"
 
