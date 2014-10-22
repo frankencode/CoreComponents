@@ -35,17 +35,17 @@ Ref<LogConfig> LogConfig::load(MetaObject *config)
     return new LogConfig(config);
 }
 
-LogConfig::LogConfig()
-    : level_(DefaultLogLevel),
-      retentionPeriod_(days(30)),
-      rotationInterval_(days(1))
+LogConfig::LogConfig():
+    level_(DefaultLogLevel),
+    retentionPeriod_(days(30)),
+    rotationInterval_(days(1))
 {}
 
-LogConfig::LogConfig(MetaObject *config)
-    : path_(config->value("path")),
-      level_(decodeLogLevel(config->value("level", ""))),
-      retentionPeriod_(config->value("retention")),
-      rotationInterval_(config->value("rotation"))
+LogConfig::LogConfig(MetaObject *config):
+    path_(config->value("path")),
+    level_(decodeLogLevel(config->value("level", ""))),
+    retentionPeriod_(config->value("retention")),
+    rotationInterval_(config->value("rotation"))
 {}
 
 } // namespace fluxnode

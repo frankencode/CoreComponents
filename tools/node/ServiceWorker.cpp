@@ -31,10 +31,10 @@ Ref<ServiceWorker> ServiceWorker::create(ServiceInstance *serviceInstance, Close
     return worker;
 }
 
-ServiceWorker::ServiceWorker(ServiceInstance *serviceInstance, ClosedConnections *closedConnections)
-    : serviceInstance_(serviceInstance),
-      pendingConnections_(PendingConnections::create()),
-      closedConnections_(closedConnections)
+ServiceWorker::ServiceWorker(ServiceInstance *serviceInstance, ClosedConnections *closedConnections):
+    serviceInstance_(serviceInstance),
+    pendingConnections_(PendingConnections::create()),
+    closedConnections_(closedConnections)
 {}
 
 ServiceWorker::~ServiceWorker()

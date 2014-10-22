@@ -20,9 +20,9 @@ class CloseRequest {};
 class ProtocolException
 {
 public:
-    ProtocolException(int statusCode, String message)
-        : statusCode_(statusCode),
-          message_(message)
+    ProtocolException(int statusCode, String message):
+        statusCode_(statusCode),
+        message_(message)
     {}
 
     inline int statusCode() const { return statusCode_; }

@@ -16,8 +16,8 @@ Ref<ServicePrototype> ServicePrototype::create(String className, MetaProtocol *p
     return new ServicePrototype(className, protocol);
 }
 
-ServicePrototype::ServicePrototype(String className, MetaProtocol *protocol)
-    : MetaObject(className, protocol)
+ServicePrototype::ServicePrototype(String className, MetaProtocol *protocol):
+    MetaObject(className, protocol)
 {
     insert("concurrency", 64);
     insert("connection_timeout", 5.);

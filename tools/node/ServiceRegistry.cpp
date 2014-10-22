@@ -12,8 +12,8 @@
 
 namespace fluxnode {
 
-ServiceRegistry::ServiceRegistry()
-    : serviceByName_(ServiceByName::create())
+ServiceRegistry::ServiceRegistry():
+    serviceByName_(ServiceByName::create())
 {}
 
 void ServiceRegistry::registerService(ServiceDefinition *service)

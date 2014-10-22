@@ -11,9 +11,9 @@
 
 namespace fluxnode {
 
-MediaTypeDatabase::MediaTypeDatabase()
-    : mediaTypeByPathSuffix_(PrefixTree<char, String>::create()),
-      mediaTypeByContentPrefix_(PrefixTree<char, String>::create())
+MediaTypeDatabase::MediaTypeDatabase():
+    mediaTypeByPathSuffix_(PrefixTree<char, String>::create()),
+    mediaTypeByContentPrefix_(PrefixTree<char, String>::create())
 {
     mediaTypeByPathSuffix_->insert("xhtml", "application/xhtml+xml");
     mediaTypeByPathSuffix_->insert("css", "text/css");

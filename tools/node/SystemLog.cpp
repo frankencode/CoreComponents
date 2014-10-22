@@ -15,15 +15,15 @@ namespace fluxnode {
 
 using namespace flux::stream;
 
-SystemLog::SystemLog()
-    : emergencyStream_(LineBuffer::open(SystemLogStream::open(LOG_EMERG))),
-      alertStream_    (LineBuffer::open(SystemLogStream::open(LOG_ALERT))),
-      criticalStream_ (LineBuffer::open(SystemLogStream::open(LOG_CRIT))),
-      errorStream_    (LineBuffer::open(SystemLogStream::open(LOG_ERR))),
-      warningStream_  (LineBuffer::open(SystemLogStream::open(LOG_WARNING))),
-      noticeStream_   (LineBuffer::open(SystemLogStream::open(LOG_NOTICE))),
-      infoStream_     (LineBuffer::open(SystemLogStream::open(LOG_INFO))),
-      debugStream_    (LineBuffer::open(SystemLogStream::open(LOG_DEBUG)))
+SystemLog::SystemLog():
+    emergencyStream_(LineBuffer::open(SystemLogStream::open(LOG_EMERG))),
+    alertStream_    (LineBuffer::open(SystemLogStream::open(LOG_ALERT))),
+    criticalStream_ (LineBuffer::open(SystemLogStream::open(LOG_CRIT))),
+    errorStream_    (LineBuffer::open(SystemLogStream::open(LOG_ERR))),
+    warningStream_  (LineBuffer::open(SystemLogStream::open(LOG_WARNING))),
+    noticeStream_   (LineBuffer::open(SystemLogStream::open(LOG_NOTICE))),
+    infoStream_     (LineBuffer::open(SystemLogStream::open(LOG_INFO))),
+    debugStream_    (LineBuffer::open(SystemLogStream::open(LOG_DEBUG)))
 {}
 
 void SystemLog::open(String identifier, int option, int facility)

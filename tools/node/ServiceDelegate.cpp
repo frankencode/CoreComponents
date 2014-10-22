@@ -12,8 +12,8 @@
 
 namespace fluxnode {
 
-ServiceDelegate::ServiceDelegate(ServiceWorker *worker)
-    : worker_(worker)
+ServiceDelegate::ServiceDelegate(ServiceWorker *worker):
+    worker_(worker)
 {}
 
 ServiceInstance *ServiceDelegate::serviceInstance() const

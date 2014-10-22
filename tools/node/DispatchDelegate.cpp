@@ -37,8 +37,8 @@ void DispatchDelegate::process(Request *request)
     FLUXNODE_WARNING() << "Failed to dispatch request from " << client()->address() << ": host = \"" << request->host() << "\", target = \"" << request->target() << "\"" << nl;
 }
 
-DispatchDelegate::DispatchDelegate(ServiceWorker *worker)
-    : ServiceDelegate(worker)
+DispatchDelegate::DispatchDelegate(ServiceWorker *worker):
+    ServiceDelegate(worker)
 {
     dispatchInstance_ = worker->serviceInstance();
 }
