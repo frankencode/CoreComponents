@@ -91,14 +91,21 @@ Ref<Request> ClientConnection::scanRequest()
             i0 = i1 + 1; i1 = line->find(' ', i0);
             request->target_ = line->copy(i0, i1);
             request->version_ = line->copy(i1 + 1, line->count());
-        }
+            request->majorVersion_ = 1;
+            request->minorVersion_ = 0;
 
-        {
-            int majorVersion = 1, minorVersion = 1;
-            int i = request->version_->find('/');
-            i = request->version_->scanInt(&majorVersion, i + 1);
-            request->version_->scanInt(&minorVersion, i + 1);
-            if (majorVersion > 1) throw UnsupportedVersion();
+            Ref<StringList> parts = request->version_->split('/');
+            if (parts->count() >= 2) {
+                parts->at(0)->downcaseInsitu();
+                if (parts->at(0) != "http") throw UnsupportedVersion();
+                parts = parts->at(1)->split('.');
+                if (parts->count() >= 2) {
+                    request->majorVersion_ = parts->at(0)->toInt();
+                    request->minorVersion_ = parts->at(1)->toInt();
+                }
+            }
+
+            if (request->majorVersion_ > 1) throw UnsupportedVersion();
         }
 
         String name, value;

@@ -23,6 +23,8 @@ public:
     inline String method() const { return method_; }
     inline String target() const { return target_; }
     inline String version() const { return version_; }
+    inline int majorVersion() const { return majorVersion_; }
+    inline int minorVersion() const { return minorVersion_; }
     inline String host() const { return host_; }
 
     inline String line() const { return line_; }
@@ -38,6 +40,8 @@ private:
     String method_;
     String target_;
     String version_;
+    int majorVersion_;
+    int minorVersion_;
     String host_;
 
     String line_;

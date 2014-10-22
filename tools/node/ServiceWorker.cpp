@@ -108,7 +108,8 @@ void ServiceWorker::run()
                         }
                     }
                     if (client_) {
-                        if (client_ && request->value("Connection")->equalsCaseInsensitive("close"))
+                        if ( request->value("Connection")->equalsCaseInsensitive("close") ||
+                             (request->majorVersion() == 1 && request->minorVersion() == 0) )
                             close();
                     }
                 }
