@@ -23,10 +23,11 @@ public:
     virtual Ref<ServiceInstance> createInstance(MetaObject *config) const { return DirectoryInstance::create(config); }
 
 private:
-    DirectoryService()
-        : configPrototype_(ServicePrototype::create("Directory"))
+    DirectoryService():
+        configPrototype_(ServicePrototype::create("Directory"))
     {
         configPrototype_->insert("path", "");
+        configPrototype_->insert("show-hidden", false);
     }
 
     Ref<ServicePrototype> configPrototype_;
