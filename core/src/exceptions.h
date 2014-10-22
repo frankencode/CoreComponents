@@ -195,7 +195,7 @@ private:
     String reason_;
 };
 
-const char *signalName(int signal);
+String signalName(int signal);
 
 class Interrupt: public Exception
 {
@@ -204,7 +204,7 @@ public:
     ~Interrupt() throw() {}
 
     inline int signal() const { return signal_; }
-    const char *signalName() const;
+    String signalName() const;
 
     virtual String message() const;
 
