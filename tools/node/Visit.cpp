@@ -17,12 +17,12 @@ Ref<Visit> Visit::create(SocketAddress *remoteAddress)
     return new Visit(remoteAddress);
 }
 
-Visit::Visit(SocketAddress *remoteAddress)
-    : remoteAddress_(remoteAddress),
-      priority_(0),
-      originAddress_(remoteAddress->networkPrefix()),
-      arrivalTime_(System::now()),
-      departureTime_(arrivalTime_)
+Visit::Visit(SocketAddress *remoteAddress):
+    remoteAddress_(remoteAddress),
+    priority_(0),
+    originAddress_(remoteAddress->networkPrefix()),
+    arrivalTime_(System::now()),
+    departureTime_(arrivalTime_)
 {}
 
 void Visit::updateDepartureTime()

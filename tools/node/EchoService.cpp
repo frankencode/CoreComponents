@@ -23,8 +23,8 @@ public:
     virtual Ref<ServiceInstance> createInstance(MetaObject *config) const { return EchoInstance::create(config); }
 
 private:
-    EchoService()
-        : configPrototype_(ServicePrototype::create("Echo"))
+    EchoService():
+        configPrototype_(ServicePrototype::create("Echo"))
     {}
 
     Ref<ServicePrototype> configPrototype_;

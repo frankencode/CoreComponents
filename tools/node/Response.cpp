@@ -24,13 +24,13 @@ Ref<Response> Response::create(ClientConnection *client)
     return new Response(client);
 }
 
-Response::Response(ClientConnection *client)
-    : client_(client),
-      headerWritten_(false),
-      statusCode_(200),
-      contentLength_(-1),
-      bytesWritten_(0),
-      reasonPhrase_("OK")
+Response::Response(ClientConnection *client):
+    client_(client),
+    headerWritten_(false),
+    statusCode_(200),
+    contentLength_(-1),
+    bytesWritten_(0),
+    reasonPhrase_("OK")
 {}
 
 void Response::status(int statusCode, String reasonPhrase)

@@ -20,10 +20,10 @@ Ref<WorkerPool> WorkerPool::create(ServiceInstance *serviceInstance, ClosedConne
     return new WorkerPool(serviceInstance, closedConnections);
 }
 
-WorkerPool::WorkerPool(ServiceInstance *serviceInstance, ClosedConnections *closedConnections)
-    : closedConnections_(closedConnections),
-      serviceInstance_(serviceInstance),
-      serviceWorkers_(ServiceWorkers::create(serviceInstance->concurrency()))
+WorkerPool::WorkerPool(ServiceInstance *serviceInstance, ClosedConnections *closedConnections):
+    closedConnections_(closedConnections),
+    serviceInstance_(serviceInstance),
+    serviceWorkers_(ServiceWorkers::create(serviceInstance->concurrency()))
 {
     FLUXNODE_NOTICE()
         << "Creating worker pool for " << serviceInstance->serviceName() << " service" << nl

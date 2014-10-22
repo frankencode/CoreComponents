@@ -16,10 +16,10 @@
 
 namespace fluxnode {
 
-LogMaster::LogMaster()
-    : mutex_(Mutex::create()),
-      timerByPath_(TimerByPath::create()),
-      rotate_(Rotate::create())
+LogMaster::LogMaster():
+    mutex_(Mutex::create()),
+    timerByPath_(TimerByPath::create()),
+    rotate_(Rotate::create())
 {
     start();
 }

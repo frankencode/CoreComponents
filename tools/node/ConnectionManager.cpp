@@ -18,11 +18,11 @@ Ref<ConnectionManager> ConnectionManager::create(int serviceWindow)
     return new ConnectionManager(serviceWindow);
 }
 
-ConnectionManager::ConnectionManager(int serviceWindow)
-    : closedConnections_(ClosedConnections::create()),
-      connectionCounts_(ConnectionCounts::create()),
-      visits_(Visits::create()),
-      serviceWindow_(serviceWindow)
+ConnectionManager::ConnectionManager(int serviceWindow):
+    closedConnections_(ClosedConnections::create()),
+    connectionCounts_(ConnectionCounts::create()),
+    visits_(Visits::create()),
+    serviceWindow_(serviceWindow)
 {
     FLUXNODE_NOTICE() << "Service window of " << serviceWindow << "s will be used to prioritize connections" << nl;
 }

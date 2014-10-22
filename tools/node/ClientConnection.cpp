@@ -26,11 +26,11 @@ Ref<ClientConnection> ClientConnection::create(StreamSocket *socket, SocketAddre
     return new ClientConnection(socket, address);
 }
 
-ClientConnection::ClientConnection(StreamSocket *socket, SocketAddress *address)
-    : requestStream_(RequestStream::open(socket)),
-      stream_(requestStream_),
-      address_(address),
-      visit_(Visit::create(address_))
+ClientConnection::ClientConnection(StreamSocket *socket, SocketAddress *address):
+    requestStream_(RequestStream::open(socket)),
+    stream_(requestStream_),
+    address_(address),
+    visit_(Visit::create(address_))
 {
     if (errorLog()->level() >= DebugLogLevel) {
         Ref<Stream> requestBuffer = TapBuffer::open(errorLog()->debugStream(), address_->networkAddress() + " > ");

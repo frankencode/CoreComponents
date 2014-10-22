@@ -22,8 +22,8 @@ public:
     }
 
 protected:
-    NodePrototype(String className, MetaProtocol *protocol)
-        : MetaObject(className, protocol)
+    NodePrototype(String className, MetaProtocol *protocol):
+        MetaObject(className, protocol)
     {
         insert("address", "localhost");
         insert("port", Process::isSuperUser() ? 80 : 8080);
@@ -37,8 +37,8 @@ protected:
     }
 };
 
-NodeConfigProtocol::NodeConfigProtocol()
-    : nodeProtocol_(MetaProtocol::create())
+NodeConfigProtocol::NodeConfigProtocol():
+    nodeProtocol_(MetaProtocol::create())
 {
     Ref<NodePrototype> nodePrototype = NodePrototype::create(nodeProtocol_);
     define(nodePrototype);

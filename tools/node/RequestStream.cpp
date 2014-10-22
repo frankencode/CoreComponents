@@ -21,12 +21,12 @@ Ref<RequestStream> RequestStream::open(Stream *stream)
     return new RequestStream(stream);
 }
 
-RequestStream::RequestStream(Stream *stream)
-    : stream_(stream),
-      bytesLeft_(-1),
-      nlCount_(0),
-      eoi_(false),
-      chunked_(false)
+RequestStream::RequestStream(Stream *stream):
+    stream_(stream),
+    bytesLeft_(-1),
+    nlCount_(0),
+    eoi_(false),
+    chunked_(false)
 {}
 
 void RequestStream::setupTimeout(double interval)

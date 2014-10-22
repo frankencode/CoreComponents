@@ -17,9 +17,9 @@ Ref<TapBuffer> TapBuffer::open(Stream *stream, String prefix)
     return new TapBuffer(stream, prefix);
 }
 
-TapBuffer::TapBuffer(Stream *stream, String prefix)
-    : LineBuffer(stream),
-      prefix_(prefix)
+TapBuffer::TapBuffer(Stream *stream, String prefix):
+    LineBuffer(stream),
+    prefix_(prefix)
 {}
 
 String TapBuffer::prefix() const

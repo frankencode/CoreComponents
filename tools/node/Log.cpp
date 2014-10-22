@@ -17,10 +17,10 @@
 
 namespace fluxnode {
 
-Log::Log()
-    : logMaster_(logMaster()),
-      mutex_(Mutex::create()),
-      config_(LogConfig::loadDefault())
+Log::Log():
+    logMaster_(logMaster()),
+    mutex_(Mutex::create()),
+    config_(LogConfig::loadDefault())
 {}
 
 Log::~Log()

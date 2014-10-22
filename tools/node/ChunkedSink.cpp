@@ -16,8 +16,8 @@ Ref<ChunkedSink> ChunkedSink::open(Stream *stream)
     return new ChunkedSink(stream);
 }
 
-ChunkedSink::ChunkedSink(Stream *stream)
-    : stream_(stream)
+ChunkedSink::ChunkedSink(Stream *stream):
+    stream_(stream)
 {}
 
 ChunkedSink::~ChunkedSink()

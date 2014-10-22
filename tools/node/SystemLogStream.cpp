@@ -15,8 +15,8 @@ Ref<SystemLogStream> SystemLogStream::open(int priority)
     return new SystemLogStream(priority);
 }
 
-SystemLogStream::SystemLogStream(int priority)
-    : priority_(priority)
+SystemLogStream::SystemLogStream(int priority):
+    priority_(priority)
 {}
 
 int SystemLogStream::read(ByteArray *buf)

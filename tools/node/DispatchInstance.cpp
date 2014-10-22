@@ -19,8 +19,8 @@ Ref<ServiceDelegate> DispatchInstance::createDelegate(ServiceWorker *worker) con
     return DispatchDelegate::create(worker);
 }
 
-DispatchInstance::DispatchInstance(MetaObject *config)
-    : ServiceInstance(config)
+DispatchInstance::DispatchInstance(MetaObject *config):
+    ServiceInstance(config)
 {}
 
 } // namespace fluxnode
