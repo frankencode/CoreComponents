@@ -22,10 +22,12 @@ public:
     virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const;
 
     inline String path() const { return path_; }
+    inline bool showHidden() const { return showHidden_; }
 
 private:
     DirectoryInstance(MetaObject *config);
     String path_;
+    bool showHidden_;
 };
 
 } // namespace fluxnode

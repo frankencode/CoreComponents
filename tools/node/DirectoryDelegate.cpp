@@ -23,9 +23,9 @@ Ref<DirectoryDelegate> DirectoryDelegate::create(ServiceWorker *worker)
     return new DirectoryDelegate(worker);
 }
 
-DirectoryDelegate::DirectoryDelegate(ServiceWorker *worker)
-    : ServiceDelegate(worker),
-      directoryInstance_(worker->serviceInstance())
+DirectoryDelegate::DirectoryDelegate(ServiceWorker *worker):
+    ServiceDelegate(worker),
+    directoryInstance_(worker->serviceInstance())
 {}
 
 void DirectoryDelegate::process(Request *request)
@@ -98,9 +98,18 @@ void DirectoryDelegate::listDirectory(Request *request, String path)
             prefix += "/";
     }
 
-    String name;
-    while (dir->read(&name))
+    Ref<StringList> entries = StringList::create();
+    for (String name; dir->read(&name);) {
+        if (name == "." || name == "..") continue;
+        if ((!directoryInstance_->showHidden()) && name->at(0) == '.') continue;
+        entries->append(name);
+    }
+    entries = entries->sort();
+
+    for (int i = 0; i < entries->count(); ++i) {
+        String name = entries->at(i);
         chunk() << "<a class=\"file\" href=\"" << prefix << name << "\">" << name << "</a>\n";
+    }
 
     chunk() <<
         "</body>\n"
