@@ -1,4 +1,4 @@
-fluxkit: Frank's lightweight POSIX components
+*fluxkit:* Frank's lightweight POSIX components
 ==============================================
 
 A C++ Developers Swiss-Army Knife
