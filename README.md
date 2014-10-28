@@ -32,7 +32,7 @@ Prequisites:
  * POSIX compatible shell (e.g.: ksh, bash)
 
 First download the latest stable version from github:
-```bash
+```
 mkdir -p ~/src
 cd ~/src
 curl -L https://github.com/frankencode/fluxkit/archive/v0.2.0.tar.gz | tar xzv
@@ -40,19 +40,19 @@ ln -s ../fluxkit-0.2.0 fluxkit
 ```
 
 Thereafter bootstrap the build system:
-```bash
+```
 mkdir -p ~/build/fluxkit_debug
 cd ~/build/fluxkit_debug
 ~/src/fluxkit-0.2.0/bootstrap
 ```
 
 Finally, build the entire toolkit:
-```bash
+```
 ./fluxmake -debug ~/src/fluxkit
 ```
 
 Optionally add the build directory to your environment:
-```bash
+```
 export PATH=$PWD:$PATH
 echo "export PATH=$PWD:\$PATH" >> ~/.profile
 ```
