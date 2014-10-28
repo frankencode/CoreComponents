@@ -58,10 +58,13 @@ void NodeMaster::run()
             if (ex.signal() == SIGINT || ex.signal() == SIGTERM || ex.signal() == SIGHUP) break;
             exitCode_ = ex.signal() + 128;
         }
+        #ifdef NDEBUG
         catch (Exception &ex) {
             FLUXNODE_ERROR() << ex.message() << nl;
             exitCode_ = 1;
+            break;
         }
+        #endif
     }
 }
 
