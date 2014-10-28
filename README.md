@@ -5,8 +5,8 @@ A C++ Developers Swiss-Army Knife
 ---------------------------------
 
 **fluxkit** provides a small set of libraries and tools for Unix system programming.
-The entire toolkit is fully self-contained without any external depedencies other than gcc and
-a standard C++ runtime.
+The entire toolkit is fully self-contained without any external depedencies other than a gcc
+compatible compiler and a standard C++ runtime.
 
 Features
 --------
