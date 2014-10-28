@@ -28,7 +28,7 @@ Installation
 ------------
 
 Prequisites:
- * gcc or compatible compiler
+ * gcc or compatible compiler (e.g.: gcc, clang/llvm, suncc)
  * POSIX compatible shell (e.g.: ksh, bash)
 
 First download the latest stable version from github:
