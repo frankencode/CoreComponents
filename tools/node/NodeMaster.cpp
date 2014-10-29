@@ -162,7 +162,7 @@ void NodeMaster::runNode() const
 
         if (signalMaster_->receivedSignals()->count() > 0) {
             int signal = signalMaster_->receivedSignals()->popFront();
-            if (signal == SIGWINCH) continue;
+            if (signal == SIGWINCH || signal == SIGPIPE) continue;
             FLUXNODE_NOTICE() << "Received " << signalName(signal) << ", shutting down" << nl;
             dispatchInstance->workerPools_ = 0;
             dispatchPool = 0;
