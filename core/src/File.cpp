@@ -191,10 +191,10 @@ String File::map() const
         if (p == MAP_FAILED)
             FLUX_SYSTEM_ERROR(errno, path_);
     }
-    /*#ifdef MADV_SEQUENTIAL
+    #ifdef MADV_SEQUENTIAL
     if (::madvise(p, mapSize, MADV_SEQUENTIAL) == -1)
         FLUX_SYSTEM_DEBUG_ERROR(errno);
-    #endif*/
+    #endif
     return String(
         Ref<ByteArray>(
             new ByteArray(

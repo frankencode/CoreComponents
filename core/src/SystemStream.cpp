@@ -109,6 +109,7 @@ void SystemStream::write(const ByteArray *data)
         if (ret == -1) {
             if (errno == EWOULDBLOCK) throw Timeout();
             if (errno == ECONNRESET) throw ConnectionResetByPeer();
+            if (errno == EPIPE) throw ConnectionResetByPeer(); // FIXME: inprecise
             FLUX_SYSTEM_DEBUG_ERROR(errno);
         }
         p += ret;
@@ -138,6 +139,7 @@ void SystemStream::write(const StringList *parts)
         if (ret == -1) {
             if (errno == EWOULDBLOCK) throw Timeout();
             if (errno == ECONNRESET) throw ConnectionResetByPeer();
+            if (errno == EPIPE) throw ConnectionResetByPeer(); // FIXME: inprecise
             FLUX_SYSTEM_DEBUG_ERROR(errno);
         }
         i += n;
