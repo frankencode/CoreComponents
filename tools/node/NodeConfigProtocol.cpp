@@ -25,7 +25,7 @@ protected:
     NodePrototype(String className, MetaProtocol *protocol):
         MetaObject(className, protocol)
     {
-        insert("address", "localhost");
+        insert("address", "*");
         insert("port", Process::isSuperUser() ? 80 : 8080);
         insert("protocol", "");
         insert("user", "");
