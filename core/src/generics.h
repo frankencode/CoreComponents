@@ -14,7 +14,9 @@
 
 namespace flux {
 
-/** Wrapper class to allow taking reference to classes not inherited
+/** \brief Reference manually allocated objects
+  *
+  * Wrapper class to allow taking reference to classes not inherited
   * from flux::Object. Beware that it is impossible to reference
   * the same alien object by two different alien wrappers.
   */
@@ -46,12 +48,16 @@ private:
     DelFunc delFunc_;
 };
 
+/*! \brief Objects which can perform an action
+ */
 class Action: public virtual Object
 {
 public:
     virtual void run() = 0;
 };
 
+/*! \brief Objects which can be cloned
+ */
 template<class T>
 class Clonable: public T
 {
@@ -59,14 +65,8 @@ public:
     virtual Ref<T> clone() const = 0;
 };
 
-template<class T>
-class Return: public T
-{
-public:
-    Return(const T &b): T(b) {}
-    inline operator T() { return *this; }
-};
-
+/*! \brief Generic data source
+ */
 template<class T>
 class Source: public virtual Object
 {
@@ -74,19 +74,13 @@ public:
     virtual bool read(T *item) = 0;
 };
 
+/*! \brief Generic data sink
+ */
 template<class T>
 class Sink: public virtual Object
 {
 public:
     virtual void write(T item) = 0;
-};
-
-template<class Item, class Index = int>
-class Sequence: public virtual Object
-{
-public:
-    virtual bool has(Index i) const = 0;
-    virtual Item get(Index i) const = 0;
 };
 
 #ifdef major
@@ -96,6 +90,8 @@ public:
 #undef minor
 #endif
 
+/*! \brief Software version tuple
+ */
 class Version
 {
 public:
@@ -121,6 +117,9 @@ private:
     uint16_t patch_;
 };
 
+/*! \brief Integer range
+ * \sa Token
+ */
 class Range: public Object
 {
 public:
@@ -142,6 +141,9 @@ protected:
     int i0_, i1_;
 };
 
+/*! \brief Key value pair
+ * \sa Map
+ */
 template<class Key, class Value>
 class Pair
 {

@@ -37,7 +37,7 @@ inline double days(double n) { return n * SecondsPerDay; }
 
 typedef struct tm StructTm;
 
-/** \brief broken-down time
+/** \brief Broken-down time
   * \see Time
   */
 class Date: public StructTm, public Object

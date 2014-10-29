@@ -23,6 +23,9 @@ extern FormatSignal flush;
 class Stream;
 template<class T> class Queue;
 
+/*! \brief Text formatting helper
+ * \sa stdio
+ */
 class Format: public Ref<StringList>
 {
 public:

@@ -19,6 +19,8 @@
 
 namespace flux {
 
+/*! \brief Ordinary and special file I/O
+ */
 class File: public SystemStream
 {
 public:

@@ -16,6 +16,8 @@
 
 namespace flux {
 
+/*! \brief Inter-thread communication channel
+ */
 template<class T, template<class> class QueueType = Queue>
 class Channel: public Object
 {

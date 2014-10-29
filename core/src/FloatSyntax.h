@@ -15,6 +15,9 @@ namespace flux {
 
 template<class SubClass> class Singleton;
 
+/*! \brief Syntax of a floating point literal
+ * \sa IntegerSyntax
+ */
 class FloatSyntax: public SyntaxDefinition
 {
 public:

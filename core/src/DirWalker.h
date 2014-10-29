@@ -15,6 +15,9 @@ namespace flux {
 
 class Dir;
 
+/*! \brief Recursive directory tree walker
+ * \sa Dir
+ */
 class DirWalker: public Source<String>
 {
 public:

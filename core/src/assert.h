@@ -9,6 +9,10 @@
 #ifndef FLUX_ASSERT_H
 #define FLUX_ASSERT_H
 
+/*! \file assert
+ *  \brief Assertion macros (debug mode)
+ */
+
 namespace flux {
 
 void throwDebugError(const char *reason, const char *source, int line);

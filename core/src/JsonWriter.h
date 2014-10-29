@@ -13,6 +13,9 @@
 
 namespace flux {
 
+/*! \brief Generate JSON representation of a Variant tree
+ * \sa yason, YasonWriter
+ */
 class JsonWriter: public Object
 {
 public:
