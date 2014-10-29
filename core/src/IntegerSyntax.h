@@ -13,6 +13,9 @@
 
 namespace flux {
 
+/*! \brief Syntax of an integer literal
+ * \sa FloatSyntax
+ */
 class IntegerSyntax: public SyntaxDefinition
 {
 public:

@@ -9,6 +9,9 @@
 #ifndef FLUX_EXCEPTIONS_H
 #define FLUX_EXCEPTIONS_H
 
+/*! \file exceptions
+ * \brief Common exception classes
+ */
 #include <errno.h>
 #include <flux/Exception>
 

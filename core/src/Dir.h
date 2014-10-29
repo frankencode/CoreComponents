@@ -16,6 +16,9 @@
 
 namespace flux {
 
+/*! \brief File directories
+ * \sa DirWalker
+ */
 class Dir: public Source<String>
 {
 public:

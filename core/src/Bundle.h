@@ -11,6 +11,10 @@
 
 #include <flux/File>
 
+/*! \file Bundle.h
+ * \brief Lookup files in installation directories
+ */
+
 namespace flux {
 
 #define FLUX_QUOTE(name) #name

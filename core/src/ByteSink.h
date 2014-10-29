@@ -14,6 +14,9 @@
 
 namespace flux {
 
+/*! \brief Byte encoding sink
+ * \sa ByteSource
+ */
 class ByteSink: public Object
 {
 public:

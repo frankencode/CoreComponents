@@ -15,6 +15,9 @@ namespace flux {
 
 class Dir;
 
+/*! \brief Collect file names matching a pattern
+ * \sa DirWalker
+ */
 class Glob: public Source<String>
 {
 public:

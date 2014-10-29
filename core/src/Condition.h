@@ -13,6 +13,9 @@
 
 namespace flux {
 
+/*! \brief Wait condition
+ * \sa Channel
+ */
 class Condition: public Object
 {
 public:

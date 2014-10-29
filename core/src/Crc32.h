@@ -15,6 +15,8 @@
 
 namespace flux {
 
+/*! \brief CRC-32 check sum generator
+ */
 class Crc32
 {
 public:
