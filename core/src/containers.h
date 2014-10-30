@@ -9,9 +9,9 @@
 #ifndef FLUX_CONTAINERS_H
 #define FLUX_CONTAINERS_H
 
-/*! \file containers
- * \brief Generics for container implementation
- */
+/** \file containers
+  * \brief Generics for container implementation
+  */
 
 #include <flux/generics>
 

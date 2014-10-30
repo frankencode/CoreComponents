@@ -16,6 +16,9 @@ namespace flux {
 template<class> class ThreadLocalSingleton;
 template<class> class Queue;
 
+/** \brief Cascaded resource context for error reporting
+  * \see ResourceGuard
+  */
 class ResourceContext: public Object
 {
 public:

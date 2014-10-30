@@ -13,6 +13,8 @@
 
 namespace flux {
 
+/** \brief Duck-typed object protocol
+  */
 class MetaProtocol: public Object
 {
 public:

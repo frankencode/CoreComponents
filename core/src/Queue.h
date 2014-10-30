@@ -27,6 +27,8 @@ public:
     QueueNode *prev_;
 };
 
+/** \brief Waiting queue data container
+  */
 template<class T>
 class Queue: public Object
 {

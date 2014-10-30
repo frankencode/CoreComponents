@@ -14,7 +14,7 @@
 
 namespace flux {
 
-/** \brief UTF-16 decoder
+/** \brief Unicode UTF-16 decoding data source
   *
   * A Byte-Order-Mark (BOM) at the start of the stream automatically sets
   * endianess. The decoder is designed to be as strict as possible. It checks

@@ -9,6 +9,10 @@
 #ifndef FLUX_STDIO_H
 #define FLUX_STDIO_H
 
+/** \file stdio
+  * \brief Standard input/output streams
+  */
+
 #include <flux/File>
 #include <flux/Format>
 #include <flux/LineSource>
@@ -19,7 +23,10 @@ File *in();
 File *out();
 File *err();
 
+/** \brief Formatted standard output
+  */
 inline Format fout(String pattern = "") { return Format(pattern, out()); }
+
 inline Format ferr(String pattern = "") { return Format(pattern, err()); }
 
 LineSource *lineInput();

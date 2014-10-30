@@ -9,9 +9,9 @@
 #ifndef FLUX_ASSERT_H
 #define FLUX_ASSERT_H
 
-/*! \file assert
- *  \brief Assertion macros (debug mode)
- */
+/** \file assert
+  *  \brief Assertion macros (debug mode)
+  */
 
 namespace flux {
 

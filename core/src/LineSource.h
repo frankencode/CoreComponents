@@ -14,6 +14,8 @@
 
 namespace flux {
 
+/** \brief Line input buffer
+  */
 class LineSource: public Source<String>
 {
 public:

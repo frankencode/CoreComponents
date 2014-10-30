@@ -18,6 +18,8 @@ namespace flux {
 
 class SystemStream;
 
+/** \brief Child process creation factory
+  */
 class ProcessFactory: public Object
 {
 public:
