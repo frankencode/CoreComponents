@@ -13,6 +13,8 @@
 
 namespace flux {
 
+/** \brief Dynamic heap allocator
+  */
 class Memory: public Object, public ThreadLocalSingleton<Memory>
 {
 public:

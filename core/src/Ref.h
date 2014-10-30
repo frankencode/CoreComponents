@@ -13,7 +13,7 @@
 
 namespace flux {
 
-/** \brief ownership pointer
+/** \brief Object ownership reference handle
   */
 template<class T>
 class Ref

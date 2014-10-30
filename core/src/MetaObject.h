@@ -20,6 +20,8 @@ class MetaProtocol;
 class MetaObject;
 typedef List< Ref<MetaObject> > MetaObjectList;
 
+/** \brief Duck-typed object
+  */
 class MetaObject: public VariantMap
 {
 public:

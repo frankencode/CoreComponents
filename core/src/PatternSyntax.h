@@ -16,6 +16,8 @@ namespace flux {
 
 template<class SubClass> class Singleton;
 
+/** \brief Syntax of a regular expression text pattern
+  */
 class PatternSyntax: public SyntaxDefinition
 {
 protected:

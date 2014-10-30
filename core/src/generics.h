@@ -48,16 +48,16 @@ private:
     DelFunc delFunc_;
 };
 
-/*! \brief Objects which can perform an action
- */
+/** \brief Objects which can perform an action
+  */
 class Action: public virtual Object
 {
 public:
     virtual void run() = 0;
 };
 
-/*! \brief Objects which can be cloned
- */
+/** \brief Objects which can be cloned
+  */
 template<class T>
 class Clonable: public T
 {
@@ -65,8 +65,8 @@ public:
     virtual Ref<T> clone() const = 0;
 };
 
-/*! \brief Generic data source
- */
+/** \brief Generic data source
+  */
 template<class T>
 class Source: public virtual Object
 {
@@ -74,8 +74,8 @@ public:
     virtual bool read(T *item) = 0;
 };
 
-/*! \brief Generic data sink
- */
+/** \brief Generic data sink
+  */
 template<class T>
 class Sink: public virtual Object
 {
@@ -90,8 +90,8 @@ public:
 #undef minor
 #endif
 
-/*! \brief Software version tuple
- */
+/** \brief Software version tuple
+  */
 class Version
 {
 public:
@@ -117,9 +117,8 @@ private:
     uint16_t patch_;
 };
 
-/*! \brief Integer range
- * \sa Token
- */
+/** \brief Integer range
+  */
 class Range: public Object
 {
 public:
@@ -141,9 +140,9 @@ protected:
     int i0_, i1_;
 };
 
-/*! \brief Key value pair
- * \sa Map
- */
+/** \brief Key value pair
+  * \see Map
+  */
 template<class Key, class Value>
 class Pair
 {

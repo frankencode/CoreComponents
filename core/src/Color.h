@@ -15,8 +15,8 @@ namespace flux {
 
 class Variant;
 
-/*! \brief RGB color tuple
- */
+/** \brief RGB color tuple
+  */
 class Color
 {
 public:

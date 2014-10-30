@@ -14,6 +14,8 @@
 
 namespace flux {
 
+/** \brief Seemless access to Unicode characters of an UTF-8 encoded string
+  */
 class Unicode: public Object
 {
 public:

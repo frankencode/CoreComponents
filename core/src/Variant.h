@@ -21,7 +21,9 @@ class Variant;
 typedef List<Variant> VariantList;
 typedef Map<String, Variant> VariantMap;
 
-/** A Variant can represent different types.
+/** \brief Duck-typed value
+  *
+  * A Variant can represent different types.
   * The type of a Variant is defined implicitly at construction or assignment.
   * Variants automatically cast to bool, int, float if the Variant type is compatible
   * with the target type requested by an expression.

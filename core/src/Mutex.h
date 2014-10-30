@@ -17,6 +17,8 @@ namespace flux {
 class Condition;
 class ScopeGuard;
 
+/** \brief Thread synchronization primitive: mutual exclusive access
+  */
 class Mutex: public Object, public NonCopyable
 {
 public:

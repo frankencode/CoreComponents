@@ -15,6 +15,8 @@ namespace flux {
 
 template<class SubClass> class Singleton;
 
+/** \brief Zero storage information dump
+  */
 class NullStream: public Stream
 {
 public:

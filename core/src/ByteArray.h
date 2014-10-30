@@ -25,9 +25,9 @@ class ThreadFactory;
 
 template<class SubClass> class Singleton;
 
-/*! \brief Binary memory vector
- * \sa String, File::map
- */
+/** \brief Binary memory vector
+  * \see String, File::map
+  */
 class ByteArray: public Object
 {
 public:

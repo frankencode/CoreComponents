@@ -9,6 +9,10 @@
 #ifndef FLUX_ROUNDING_H
 #define FLUX_ROUNDING_H
 
+/** \file rounding
+  * \brief Mathematical rounding helper functions
+  */
+
 #include <math.h>
 
 namespace flux {

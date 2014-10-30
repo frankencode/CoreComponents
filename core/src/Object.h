@@ -13,7 +13,7 @@
 
 namespace flux {
 
-/** \brief reference counting and secure destruction
+/** \brief Reference counting and secure destruction
   *
   * Base class for all classes T, whose instances can be referred to by Ref<T>.
   * Enforces a consistent allocation schema by surpressing two things:

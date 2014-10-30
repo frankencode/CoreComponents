@@ -16,8 +16,8 @@
 
 namespace flux {
 
-/*! \brief I/O event
- */
+/** \brief I/O event
+  */
 class IoEvent: public Object
 {
 public:
@@ -50,8 +50,8 @@ private:
 
 typedef Array<IoEvent *> IoActivity;
 
-/*! \brief Manage and wait for I/O events
- */
+/** \brief Register and wait for I/O events
+  */
 class IoMonitor: public Object
 {
 public:

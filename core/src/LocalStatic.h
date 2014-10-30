@@ -14,7 +14,10 @@
 
 namespace flux {
 
-/** Initialize a local static variable in a thread-safe manner
+/** \brief Thread-safe initialization of a local static variable
+  *
+  * Thread-safe initialization of local static variable is needed for
+  * older compilers.
   */
 template<class T, class Scope = None>
 class LocalStatic
