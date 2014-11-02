@@ -17,6 +17,8 @@ template<class SubClass> class Singleton;
 
 namespace net {
 
+/** \brief Syntax of an internet address (IPv4 or IPv6)
+  */
 class InetAddressSyntax: public SyntaxDefinition
 {
 public:

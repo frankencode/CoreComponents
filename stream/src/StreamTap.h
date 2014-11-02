@@ -14,6 +14,8 @@
 namespace flux {
 namespace stream {
 
+/** \brief Bi-directional traffic redirection and duplication
+  */
 class StreamTap: public Stream
 {
 public:

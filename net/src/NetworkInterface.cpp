@@ -34,22 +34,6 @@
 namespace flux {
 namespace net {
 
-NetworkInterface::NetworkInterface()
-    : index_(-1),
-      type_(0),
-      flags_(0),
-      hardwareAddress_(0),
-      mtu_(0)
-{}
-
-String NetworkInterface::name() const { return name_; }
-int NetworkInterface::index() const { return index_; }
-unsigned NetworkInterface::type() const { return type_; }
-unsigned NetworkInterface::flags() const { return flags_; }
-uint64_t NetworkInterface::hardwareAddress() const { return hardwareAddress_; }
-uint32_t NetworkInterface::mtu() const { return mtu_; }
-SocketAddressList *NetworkInterface::addressList() const { return addressList_; }
-
 #ifdef __linux
 Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 {

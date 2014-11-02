@@ -11,6 +11,8 @@
 
 namespace flux {
 
+/** \brief Query system properties
+  */
 class System
 {
 public:

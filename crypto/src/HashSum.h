@@ -14,6 +14,9 @@
 namespace flux {
 namespace crypto {
 
+/** \brief Hash sum interface
+  * \see HashMeter
+  */
 class HashSum: public Object
 {
 public:

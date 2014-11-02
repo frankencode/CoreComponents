@@ -28,6 +28,8 @@ class SocketAddress;
 
 typedef List< Ref<SocketAddress> > SocketAddressList;
 
+/** \brief Socket address
+  */
 class SocketAddress: public Object
 {
 public:
@@ -35,9 +37,8 @@ public:
         return new SocketAddress;
     }
 
-    /** Initialize object with protocol family and numerical address.
-      * Providing the wildcard address "*" allows to specify an address for
-      * a TCP server, which will listen on all interfaces of the serving host.
+    /** Create a socket address by given protocol family and numerical address.
+      * Use the wildcard "*" to address all interfaces of the local host system.
       *
       * \param family protocol family (AF_UNSPEC, AF_INET, AF_INET6 or AF_LOCAL)
       * \param address numerical host address, wildcard ("*") or file path

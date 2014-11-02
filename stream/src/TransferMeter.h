@@ -14,6 +14,8 @@
 namespace flux {
 namespace stream {
 
+/** \brief Transfer measuring stream
+  */
 class TransferMeter: public Stream
 {
 public:

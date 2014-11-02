@@ -13,6 +13,8 @@
 
 namespace flux {
 
+/** \brief Abstract data stream
+  */
 class Stream: public Object
 {
 public:

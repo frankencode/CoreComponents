@@ -14,6 +14,8 @@
 
 namespace flux {
 
+/** \brief Thread synchronization primitive: limited resources
+  */
 class Semaphore: public Object
 {
 public:

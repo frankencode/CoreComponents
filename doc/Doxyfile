@@ -140,7 +140,10 @@ FULL_PATH_NAMES        = YES
 # relative paths, which will be relative from the directory where doxygen is 
 # started.
 
-STRIP_FROM_PATH        = 
+STRIP_FROM_PATH        = /home/frank/src/fluxkit/core/src/include \
+                         /home/frank/src/fluxkit/crypto/src/include \
+                         /home/frank/src/fluxkit/stream/src/include \
+                         /home/frank/src/fluxkit/net/src/include
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of 
 # the path mentioned in the documentation of a class, which tells 
@@ -519,7 +522,7 @@ SORT_GROUP_NAMES       = NO
 # Note: This option applies only to the class list, not to the 
 # alphabetical list.
 
-SORT_BY_SCOPE_NAME     = NO
+SORT_BY_SCOPE_NAME     = YES
 
 # If the STRICT_PROTO_MATCHING option is enabled and doxygen fails to 
 # do proper type resolution of all parameters of a function it will reject a 
@@ -676,7 +679,10 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = ../core/src/include
+INPUT                  = ../core/src/include \
+                         ../crypto/src/include \
+                         ../stream/src/include \
+                         ../net/src/include
 
 # This tag can be used to specify the character encoding of the source files 
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is 

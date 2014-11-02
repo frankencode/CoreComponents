@@ -14,6 +14,8 @@
 namespace flux {
 namespace crypto {
 
+/** \brief Message Digest 5: a one-way hash function
+  */
 class Md5: public HashSum
 {
 public:

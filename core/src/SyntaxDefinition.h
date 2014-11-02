@@ -18,6 +18,9 @@ namespace flux {
 
 namespace syntax { class DefinitionNode; }
 
+/** \brief Low-level syntax definition
+  * \see Pattern
+  */
 class SyntaxDefinition: public Object
 {
 public:
