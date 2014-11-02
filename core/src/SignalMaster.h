@@ -17,6 +17,9 @@ namespace flux {
 
 typedef Channel<int> SignalChannel;
 
+/** \brief Signal handling thread in a mulithreaded application
+  * \see SignalSet
+  */
 class SignalMaster: public Thread
 {
 public:

@@ -9,6 +9,10 @@
 #ifndef FLUX_BUNDLE_H
 #define FLUX_BUNDLE_H
 
+/** \file Bundle.h
+  * \brief Lookup files in installation directories
+  */
+
 #include <flux/File>
 
 namespace flux {

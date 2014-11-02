@@ -15,6 +15,8 @@
 namespace flux {
 namespace net {
 
+/** \brief Connection oriented byte-sequential communication channel
+  */
 class StreamSocket: public SystemStream
 {
 public:

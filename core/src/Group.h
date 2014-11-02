@@ -15,7 +15,7 @@
 
 namespace flux {
 
-/** \brief system group information
+/** \brief System group information
   * \see User
   */
 class Group: public Object

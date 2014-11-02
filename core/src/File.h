@@ -19,6 +19,9 @@
 
 namespace flux {
 
+/** \brief Read, write, create and unlink regular files, symlinks, etc.
+  * \see FileStatus, Dir
+  */
 class File: public SystemStream
 {
 public:

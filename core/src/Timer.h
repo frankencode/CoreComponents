@@ -15,6 +15,9 @@
 
 namespace flux {
 
+/** \brief Signal generator for inter-thread communication
+  * \see Channel
+  */
 template<class T>
 class Timer: public Thread
 {

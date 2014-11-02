@@ -9,6 +9,10 @@
 #ifndef FLUX_STDIO_H
 #define FLUX_STDIO_H
 
+/** \file stdio
+  * \brief Standard input/output streams
+  */
+
 #include <flux/File>
 #include <flux/Format>
 #include <flux/LineSource>

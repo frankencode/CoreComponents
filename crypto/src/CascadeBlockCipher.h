@@ -14,6 +14,8 @@
 namespace flux {
 namespace crypto {
 
+/** \brief Cascade block cipher
+  */
 class CascadeBlockCipher: public BlockCipher
 {
 public:

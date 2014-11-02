@@ -13,6 +13,8 @@
 
 namespace flux {
 
+/** \brief Generic tree structure
+  */
 template<class Node>
 class Tree: public Object
 {

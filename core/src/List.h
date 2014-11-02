@@ -15,6 +15,8 @@
 
 namespace flux {
 
+/** \brief List data container
+  */
 template<class T>
 class List: public Object
 {
@@ -37,8 +39,8 @@ public:
         return node->item_;
     }
 
-    inline Item& first() const { return at(0); }
-    inline Item& last() const { return at(count() - 1); }
+    inline Item &first() const { return at(0); }
+    inline Item &last() const { return at(count() - 1); }
 
     inline List &push(int index, const Item &item) {
         tree_.push(index, item);

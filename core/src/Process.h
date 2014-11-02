@@ -23,8 +23,12 @@ class ProcessFactory;
 
 typedef Map<String, String> EnvMap;
 
+/** \brief Child process control
+  */
 class Process: public Stream
 {
+    // FIXME: split up into Process, CurrentProcess
+    // FIXME: add function to set/get process-wide signal mask
 public:
     static Ref<Process> start(String command, int ioPolicy = 0);
     static Ref<Process> start(String command, ProcessFactory *factory);
@@ -142,6 +146,8 @@ private:
     String command_;
 };
 
+/** \brief Child process error
+  */
 class ProcessError: public Exception
 {
 public:

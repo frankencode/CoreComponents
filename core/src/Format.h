@@ -23,6 +23,8 @@ extern FormatSignal flush;
 class Stream;
 template<class T> class Queue;
 
+/** \brief Text formatting helper
+  */
 class Format: public Ref<StringList>
 {
 public:
@@ -63,6 +65,8 @@ private:
     Ref< Queue<int> > placeHolder_;
 };
 
+/** \brief Zero storage formatting output sink
+  */
 class NullFormat {
 public:
     template<class T>

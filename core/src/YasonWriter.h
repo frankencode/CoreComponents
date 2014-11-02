@@ -13,6 +13,9 @@
 
 namespace flux {
 
+/** \brief Generate YSON representation of a meta object tree
+  * \see JsonWriter
+  */
 class YasonWriter: public Object
 {
 public:

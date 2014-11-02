@@ -14,6 +14,9 @@
 
 namespace flux {
 
+/** \brief Typeded memory vector
+  * \see List, ByteArray
+  */
 template<class T>
 class Array: public Object
 {

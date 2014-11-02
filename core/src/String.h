@@ -18,6 +18,9 @@ namespace flux {
 class Format;
 class Variant;
 
+/** \brief String convenience type: make references to ByteArray behave
+  *        like fundamental types
+  */
 class String: public Ref<ByteArray>
 {
 public:

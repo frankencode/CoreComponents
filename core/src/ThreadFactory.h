@@ -14,6 +14,9 @@
 
 namespace flux {
 
+/** \brief Child thread factory
+  * \see ProcessFactory
+  */
 class ThreadFactory: public Object
 {
 public:

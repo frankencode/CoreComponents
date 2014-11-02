@@ -18,6 +18,9 @@
 
 namespace flux {
 
+/** \brief Regular expression text pattern
+  * \see SyntaxDefinition
+  */
 class Pattern: public Ref<SyntaxDefinition>
 {
 public:

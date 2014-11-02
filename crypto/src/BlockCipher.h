@@ -14,6 +14,8 @@
 namespace flux {
 namespace crypto {
 
+/** \brief Cryptographic block cipher
+  */
 class BlockCipher: public Object
 {
 public:

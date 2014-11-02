@@ -22,6 +22,8 @@ class NetworkInterface;
 
 typedef List< Ref<NetworkInterface> > NetworkInterfaceList;
 
+/** \brief Query network interface configuration: addresses, flags, etc.
+  */
 class NetworkInterface: public Object
 {
 public:
@@ -48,22 +50,29 @@ public:
         PointToPoint = IFF_POINTOPOINT
     };
 
+    static Ref<NetworkInterfaceList> queryAll(int family = AF_INET6);
+
+    String name() const { return name_; }
+    int index() const { return index_; }
+    unsigned type() const { return type_; }
+    unsigned flags() const { return flags_; }
+    uint64_t hardwareAddress() const { return hardwareAddress_; }
+    uint32_t mtu() const { return mtu_; }
+    SocketAddressList *addressList() const { return addressList_; }
+
+private:
     inline static Ref<NetworkInterface> create() {
         return new NetworkInterface;
     }
 
-    String name() const;
-    int index() const;
-    unsigned type() const;
-    unsigned flags() const;
-    uint64_t hardwareAddress() const;
-    uint32_t mtu() const;
-    SocketAddressList *addressList() const;
+    NetworkInterface()
+        : index_(-1),
+          type_(0),
+          flags_(0),
+          hardwareAddress_(0),
+          mtu_(0)
+    {}
 
-    static Ref<NetworkInterfaceList> queryAll(int family = AF_INET6);
-
-private:
-    NetworkInterface();
     #ifdef __linux
     static bool getLink(NetworkInterfaceList *list, int index = -1);
     static Ref<NetworkInterfaceList> queryAllIoctl(int family);

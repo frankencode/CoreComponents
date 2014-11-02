@@ -14,6 +14,8 @@
 
 namespace flux {
 
+/** \brief Unicode UTF-16 encoding data sink
+  */
 class Utf16Sink: public Object
 {
 public:

@@ -14,6 +14,9 @@
 
 namespace flux {
 
+/** \brief Priority based multi-queue
+  * \see Queue, Channel
+  */
 template<class T>
 class PriorityQueue: public Object
 {
