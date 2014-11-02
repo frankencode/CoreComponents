@@ -13,6 +13,8 @@
 
 namespace flux {
 
+/** \brief Inter-process communication primitive: pair of local sockets
+  */
 class SocketPair: public Object
 {
 public:

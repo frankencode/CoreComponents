@@ -17,7 +17,7 @@ namespace flux {
 
 typedef struct flock FLockStruct;
 
-/** \brief advisory file locks
+/** \brief Advisory file locks
   * \see Guard
   */
 class FileLock: public FLockStruct, public Object

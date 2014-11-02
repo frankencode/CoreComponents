@@ -11,6 +11,9 @@
 
 namespace flux {
 
+/** \brief Mutex guard
+  * \see FileLock, Mutex
+  */
 template<class Mutex>
 class Guard
 {

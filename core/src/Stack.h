@@ -13,6 +13,8 @@
 
 namespace flux {
 
+/** \brief Fixed-size stack date container
+  */
 template<class T>
 class Stack: public Object
 {

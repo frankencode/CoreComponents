@@ -15,6 +15,9 @@
 namespace flux {
 namespace crypto {
 
+/** \brief Hash sum computing stream
+  * \see flux::stream::TransferMeter
+  */
 class HashMeter: public Stream
 {
 public:

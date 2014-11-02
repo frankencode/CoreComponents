@@ -14,6 +14,8 @@
 namespace flux {
 namespace crypto {
 
+/** \brief Rijndael Block Cipher according to the AES (FIPS-197)
+  */
 class Aes: public BlockCipher
 {
 public:

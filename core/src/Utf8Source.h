@@ -14,6 +14,8 @@
 
 namespace flux {
 
+/** \brief Unicode UTF-8 decoding data source
+  */
 class Utf8Source: public Object
 {
 public:

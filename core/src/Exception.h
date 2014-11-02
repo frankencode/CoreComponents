@@ -14,6 +14,9 @@
 
 namespace flux {
 
+/** \brief Root class of the exception class hierarchy
+  * \see exceptions
+  */
 class Exception: public std::exception
 {
 public:

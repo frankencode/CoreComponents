@@ -9,6 +9,10 @@
 #ifndef FLUX_STR_H
 #define FLUX_STR_H
 
+/** \file str
+  * \brief Output formatting helper functions
+  */
+
 #include <flux/String>
 #include <flux/Variant>
 

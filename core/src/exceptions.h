@@ -9,11 +9,16 @@
 #ifndef FLUX_EXCEPTIONS_H
 #define FLUX_EXCEPTIONS_H
 
+/** \file exceptions
+  * \brief Common exception classes
+  */
 #include <errno.h>
 #include <flux/Exception>
 
 namespace flux {
 
+/** \brief User input ambiguous, report back to user and provide guidance
+  */
 class UsageError: public Exception
 {
 public:
@@ -26,6 +31,8 @@ private:
     String message_;
 };
 
+/** \brief User requested help
+  */
 class HelpError: public Exception
 {
 public:
@@ -34,12 +41,16 @@ public:
     virtual String message() const { return "No help, yet ..."; }
 };
 
+/** \brief Some encoded data is mailformed
+  */
 class EncodingError: public Exception
 {
 public:
     ~EncodingError() throw() {}
 };
 
+/** \brief End of input reached although more data is needed
+  */
 class UnexpectedEndOfInputError: public Exception
 {
 public:
@@ -48,6 +59,8 @@ public:
     virtual String message() const { return "Unexpected end of input"; }
 };
 
+/** \brief Some buffer size is exceeded
+  */
 class BufferOverflow: public Exception
 {
 public:
@@ -56,6 +69,9 @@ public:
     virtual String message() const { return "Buffer overflow"; }
 };
 
+
+/** \brief Debugging hint on internal system malfunction
+  */
 class DebugError: public Exception
 {
 public:
@@ -74,6 +90,8 @@ private:
     int line_;
 };
 
+/** \brief System call failed
+  */
 class SystemError: public Exception
 {
 public:
@@ -86,6 +104,8 @@ protected:
     int errorCode_;
 };
 
+/** \brief System call failed to perform an action on a named resource (e.g. a file)
+  */
 class SystemResourceError: public SystemError
 {
 public:
@@ -109,6 +129,8 @@ private:
     int line_;
 };
 
+/** \brief Debugging hint on system call failure
+  */
 class SystemDebugError: public SystemError
 {
 public:
@@ -144,6 +166,8 @@ private:
         else FLUX_SYSTEM_DEBUG_ERROR(errorCode); \
     }
 
+/** \brief General error related to a text (progam text, config file, etc.)
+  */
 class TextError: public Exception
 {
 public:
@@ -164,6 +188,8 @@ protected:
 
 class SyntaxState;
 
+/** \brief Syntax error
+  */
 class SyntaxError: public TextError
 {
 public:
@@ -178,6 +204,8 @@ private:
     Ref<SyntaxState> state_;
 };
 
+/** \brief Semantic error
+  */
 class SemanticError: public TextError
 {
 public:
@@ -197,6 +225,8 @@ private:
 
 String signalName(int signal);
 
+/** \brief Signal received
+  */
 class Interrupt: public Exception
 {
 public:
@@ -212,6 +242,8 @@ private:
     int signal_;
 };
 
+/** \brief Operation timed out
+  */
 class Timeout: public Exception
 {
 public:

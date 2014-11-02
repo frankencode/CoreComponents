@@ -15,6 +15,8 @@
 namespace flux {
 namespace net {
 
+/** \brief Uniform Resource Indicator
+  */
 class Uri: public Object
 {
 public:

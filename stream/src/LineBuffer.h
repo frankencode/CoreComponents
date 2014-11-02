@@ -14,6 +14,8 @@
 namespace flux {
 namespace stream {
 
+/** \brief Line output buffer
+  */
 class LineBuffer: public Stream
 {
 public:

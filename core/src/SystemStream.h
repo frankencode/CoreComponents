@@ -14,6 +14,9 @@
 
 namespace flux {
 
+/** \brief System streams: files, character devices, stream sockets, etc.
+  * \see File, SocketPair
+  */
 class SystemStream: public Stream
 {
 public:

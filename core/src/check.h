@@ -9,6 +9,11 @@
 #ifndef FLUX_CHECK_H
 #define FLUX_CHECK_H
 
+/** \file check
+  * \brief Check for fatal conditions
+  * \see assert
+  */
+
 namespace flux {
 
 void abort();

@@ -20,6 +20,8 @@ class File;
 
 typedef struct stat StructStat;
 
+/** \brief File attributes: ownership, file times, file size, etc.
+  */
 class FileStatus: public StructStat, public Object
 {
 public:

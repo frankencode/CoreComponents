@@ -14,6 +14,8 @@
 namespace flux {
 namespace stream {
 
+/** \brief Look-a-head stream buffer
+  */
 class LookAheadStream: public Stream
 {
 public:

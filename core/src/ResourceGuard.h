@@ -13,6 +13,9 @@
 
 namespace flux {
 
+/** \brief Resource context guard
+  * \see ResourceContext
+  */
 class ResourceGuard
 {
 public:

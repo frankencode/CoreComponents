@@ -13,8 +13,9 @@
 
 namespace flux {
 
-/** Random number generator as described by Lewis et al/1969
-  * for the System/360. The generator is reentrant.
+/** \brief Pseudo-random number generator
+  *
+  * Simple and fast pseudo-random number generator.
   */
 class Random: public Object
 {

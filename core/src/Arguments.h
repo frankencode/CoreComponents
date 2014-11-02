@@ -13,6 +13,8 @@
 
 namespace flux {
 
+/** \brief Command line arguments parser
+  */
 class Arguments: public Object
 {
 public:
