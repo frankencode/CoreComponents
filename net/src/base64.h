@@ -9,6 +9,10 @@
 #ifndef FLUXNET_BASE64_H
 #define FLUXNET_BASE64_H
 
+/** \file base64
+  * \brief Standard Base64 codec
+  */
+
 #include <flux/String>
 
 namespace flux {
@@ -18,6 +22,8 @@ namespace base64 {
 String encode(const String &source);
 String decode(const String &source);
 
+/** \brief Base64 decoding failed: broken input
+  */
 class DecodeError {
 public:
     ~DecodeError() throw() {}

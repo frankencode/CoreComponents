@@ -23,10 +23,7 @@ File *in();
 File *out();
 File *err();
 
-/** \brief Formatted standard output
-  */
 inline Format fout(String pattern = "") { return Format(pattern, out()); }
-
 inline Format ferr(String pattern = "") { return Format(pattern, err()); }
 
 LineSource *lineInput();

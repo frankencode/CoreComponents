@@ -14,6 +14,8 @@
 namespace flux {
 namespace crypto {
 
+/** \brief Secure Hash 1: a one-way hash function
+  */
 class Sha1: public HashSum
 {
 public:

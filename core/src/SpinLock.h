@@ -11,6 +11,8 @@
 
 namespace flux {
 
+/** \brief Thread synchronization primitive: spinning lock
+  */
 class SpinLock
 {
 public:

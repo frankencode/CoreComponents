@@ -14,6 +14,8 @@
 
 namespace flux {
 
+/** \brief Set data countainer
+  */
 template<class T>
 class Set: public Object
 {

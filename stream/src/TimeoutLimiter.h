@@ -15,6 +15,9 @@
 namespace flux {
 namespace stream {
 
+/** \brief I/O timeout enforcing stream
+  * \see flux::IoMonitor
+  */
 class TimeoutLimiter: public Stream
 {
 public:
@@ -35,6 +38,8 @@ private:
     double timeout_;
 };
 
+/** \brief Exception thrown when an I/O timeout is exceeded
+  */
 class TimeoutExceeded: public Exception
 {
 public:

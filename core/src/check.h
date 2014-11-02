@@ -10,7 +10,7 @@
 #define FLUX_CHECK_H
 
 /** \file check
-  * \brief Checking for fatal conditions
+  * \brief Check for fatal conditions
   * \see assert
   */
 

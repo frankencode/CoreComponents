@@ -15,6 +15,8 @@
 namespace flux {
 namespace stream {
 
+/** \brief Traffic limiting stream
+  */
 class TransferLimiter: public Stream
 {
 public:
@@ -41,12 +43,16 @@ private:
     size_t totalWritten_;
 };
 
+/** \brief General transfer limit exceeded exception
+  */
 class TransferLimitExceeded: public Exception
 {
 public:
     ~TransferLimitExceeded() throw() {}
 };
 
+/** \brief Exception thrown when a read limit is exceeded
+  */
 class ReadLimitExceeded: public TransferLimitExceeded
 {
 public:
@@ -55,6 +61,8 @@ public:
     virtual String message() const { return "Read transfer limit exceeded"; }
 };
 
+/** \brief Exception thrown when a write limit is exceeded
+  */
 class WriteLimitExceeded: public TransferLimitExceeded
 {
 public:

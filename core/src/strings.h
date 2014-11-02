@@ -9,6 +9,10 @@
 #ifndef FLUX_STRINGS_H
 #define FLUX_STRINGS_H
 
+/** \brief Low-level C-string helper functions
+  * \file strings
+  */
+
 #include <string.h> // memset, memcpy, strcmp
 #include <flux/types>
 

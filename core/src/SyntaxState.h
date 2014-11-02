@@ -34,6 +34,9 @@ class GlueNode;
 class SyntaxDefinition;
 class TokenFactory;
 
+/** \brief Syntax match state
+  * \see SyntaxDefinition, Pattern
+  */
 class SyntaxState: public Object
 {
 public:

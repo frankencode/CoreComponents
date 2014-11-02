@@ -17,6 +17,8 @@ template<class SubClass> class Singleton;
 
 namespace net {
 
+/** \brief Syntax of an URI
+  */
 class UriSyntax: public SyntaxDefinition
 {
 public:

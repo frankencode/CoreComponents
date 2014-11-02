@@ -16,6 +16,9 @@ namespace flux {
 
 class Thread;
 
+/** \brief Signal set
+  * \see Thread
+  */
 class SignalSet: public Object
 {
 public:

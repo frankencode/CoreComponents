@@ -15,6 +15,7 @@
 namespace flux {
 
 /** \brief Map data container
+  * \see Set, List
   */
 template<class Key, class Value>
 class Map: public Object

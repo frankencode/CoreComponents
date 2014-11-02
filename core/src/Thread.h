@@ -19,6 +19,9 @@ namespace flux {
 
 class ThreadFactory;
 
+/** \brief Thread creation, signalling, termination
+  * \see Process
+  */
 class Thread: public Object
 {
 public:
