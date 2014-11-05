@@ -17,10 +17,11 @@
 
 namespace flux {
 
-#define FLUX_QUOTE(name) #name
+#define FLUX_XSTR(s) FLUX_STR(s)
+#define FLUX_STR(s) #s
 
 #define FLUX_BUNDLE_LOOKUP(relPath) \
-    File::lookup(relPath, StringList::create() << FLUX_QUOTE(FLUXMAKE_BUNDLE_PREFIX) << String(__FILE__)->reducePath(), File::Exists)
+    flux::File::lookup(relPath, flux::StringList::create() << FLUX_XSTR(FLUXMAKE_BUNDLE_PREFIX) << flux::String(__FILE__)->reducePath(), flux::File::Exists)
 
 } // namespace flux
 

@@ -10,6 +10,7 @@
 #include <flux/File>
 #include <flux/Process>
 #include <flux/ProcessFactory>
+#include <flux/stdio> // DEBUG
 #include "BuildPlan.h"
 #include "GnuToolChain.h"
 
@@ -150,15 +151,41 @@ bool GnuToolChain::link(BuildPlan *plan)
     return true;
 }
 
-bool GnuToolChain::linkTest(BuildPlan *plan, String linkPath, StringList *linkTest) const
+bool GnuToolChain::includeTest(BuildPlan *plan, String includePath, StringList *testIncludes) const
 {
-    Ref<File> src = File::temp();
+    if (testIncludes->count() == 0) return true;
+
+    String srcPath = File::createUnique("/tmp/XXXXXXXX.cpp");
+    Ref<File> src = File::open(srcPath, File::WriteOnly);
+    src->unlinkWhenDone();
+    {
+        Format format;
+        for (int i = 0; i < testIncludes->count(); ++i)
+            format << "#include <" << testIncludes->at(i) << ">" << nl;
+        format << "int main() { return 0; }" << nl;
+        src->write(format->join());
+    }
+    src->close();
+    Format args;
+    args << compiler() << src->path() << "-I" + includePath;
+    args << "-o" + src->path() + "_";
+
+    String command = args->join(" ");
+    return plan->shell()->run(command);
+}
+
+bool GnuToolChain::linkTest(BuildPlan *plan, String linkPath, StringList *testLibraries) const
+{
+    if (testLibraries->count() == 0) return true;
+
+    String srcPath = File::createUnique("/tmp/XXXXXXXX.cpp");
+    Ref<File> src = File::open(srcPath, File::WriteOnly);
     src->unlinkWhenDone();
     src->write("int main() { return 0; }\n");
     src->close();
     Format args;
     args << compiler() << src->path() << "-L" + linkPath;
-    for (int i = 0; i < linkTest->count(); ++i) args << "-l" + linkTest->at(i);
+    for (int i = 0; i < testLibraries->count(); ++i) args << "-l" + testLibraries->at(i);
     args << "-o" + src->path() + "_";
 
     String command = args->join(" ");
@@ -194,8 +221,9 @@ bool GnuToolChain::install(BuildPlan *plan)
 
     if (plan->bundle()->count() > 0) {
         for (int i = 0; i < plan->bundle()->count(); ++i) {
-            String relativePath = plan->bundle()->at(i);
-            plan->shell()->install(relativePath, bundlePrefix(plan)->expandPath(relativePath));
+            String path = plan->bundle()->at(i);
+            String relativePath = path->replace(plan->projectPath(), String()); // FIXME
+            plan->shell()->install(path, bundlePrefix(plan)->expandPath(relativePath));
         }
     }
 

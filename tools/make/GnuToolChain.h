@@ -35,7 +35,9 @@ public:
 
     virtual String linkName(BuildPlan *plan) const;
     virtual bool link(BuildPlan *plan);
-    virtual bool linkTest(BuildPlan *plan, String linkPath, StringList *linkTest) const;
+
+    virtual bool includeTest(BuildPlan *plan, String includePath, StringList *testIncludes) const;
+    virtual bool linkTest(BuildPlan *plan, String linkPath, StringList *testLibraries) const;
 
     virtual bool install(BuildPlan *plan);
     virtual bool install(BuildPlan *plan, Module *module);
