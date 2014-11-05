@@ -28,10 +28,12 @@ void *operator new[](std::size_t size) throw (std::bad_alloc) {
     return data;
 }
 void operator delete(void *data) throw() {
+    if (!data) return;
     flux::Memory::free((void *)((char *)data - FLUX_MEMORY_REDZONE_SIZE));
     VALGRIND_FREELIKE_BLOCK(data, FLUX_MEMORY_REDZONE_SIZE);
 }
 void operator delete[](void *data) throw() {
+    if (!data) return;
     flux::Memory::free((void *)((char *)data - FLUX_MEMORY_REDZONE_SIZE));
     VALGRIND_FREELIKE_BLOCK(data, FLUX_MEMORY_REDZONE_SIZE);
 }
