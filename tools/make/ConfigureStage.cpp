@@ -65,14 +65,7 @@ bool ConfigureStage::findIncludePath(SystemPrerequisite *prerequisite, String *i
 {
     for (int i = 0; i < prerequisite->includePaths()->count(); ++i) {
         String path = prerequisite->includePaths()->at(i);
-        if (!path->isAbsolutePath()) path = "/usr/include/" + path;
-        if (!Dir::exists(path)) continue;
-        int j = 0;
-        for (; j < prerequisite->testIncludes()->count(); ++j) {
-            String checkPath = path + "/" + prerequisite->testIncludes()->at(j);
-            if (!File::exists(checkPath)) break;
-        }
-        if (j == prerequisite->testIncludes()->count()) {
+        if (plan()->toolChain()->includeTest(plan(), path, prerequisite->testIncludes())) {
             *includePath = path;
             return true;
         }
@@ -85,7 +78,6 @@ bool ConfigureStage::findLibraryPath(SystemPrerequisite *prerequisite, String *l
 {
     for (int i = 0; i < prerequisite->libraryPaths()->count(); ++i) {
         String path = prerequisite->libraryPaths()->at(i);
-        if (!Dir::exists(path)) continue;
         if (plan()->toolChain()->linkTest(plan(), path, prerequisite->testLibraries())) {
             *libraryPath = path;
             return true;
