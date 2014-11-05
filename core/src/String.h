@@ -12,6 +12,10 @@
 #include <flux/strings>
 #include <flux/ByteArray>
 #include <flux/List>
+#ifdef QT_CORE_LIB
+#include <QString>
+#include <QUrl>
+#endif
 
 namespace flux {
 
@@ -68,6 +72,16 @@ public:
 
     inline operator char *() const { return Super::get()->chars(); }
     inline ByteArray &operator *() const { return *Super::get(); }
+
+#ifdef QT_CORE_LIB
+    inline operator QString() const {
+        return QString::fromUtf8(Super::get()->chars(), Super::get()->count());
+    }
+
+    inline operator QUrl() const {
+        return QUrl::fromLocalFile(QString::fromUtf8(Super::get()->chars(), Super::get()->count()));
+    }
+#endif
 
 private:
     friend class ByteArray;
