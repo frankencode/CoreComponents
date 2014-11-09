@@ -293,7 +293,7 @@ NODE PatternSyntax::compileChoice(const ByteArray *text, Token *token, SyntaxDef
 {
     if (token->countChildren() == 1)
         return compileSequence(text, token->firstChild(), definition);
-    NODE node = new syntax::ChoiceNode;
+    NODE node = new syntax::LazyChoiceNode;
     for (Token *child = token->firstChild(); child; child = child->nextSibling())
         node->appendChild(compileSequence(text, child, definition));
     return definition->debug(node, "Choice");

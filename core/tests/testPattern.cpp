@@ -95,9 +95,17 @@ void testGlobbing()
     fout() << nl;
 }
 
+void testLazyChoice()
+{
+    Pattern pattern = "(Hans|HansPeter)Glück";
+    check(pattern->match(String("HansPeterGlück"))->valid());
+    check(pattern->match(String("HansGlück"))->valid());
+}
+
 int main()
 {
     testEmailValidation();
     testGlobbing();
+    testLazyChoice();
     return 0;
 }
