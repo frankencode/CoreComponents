@@ -177,10 +177,18 @@ int main(int argc, char **argv)
         ) << toolName;
         return 1;
     }
+    catch (SystemResourceError &ex) {
+        ferr() << toolName << ": " << ex << nl;
+    }
+    catch (SyntaxError &ex) {
+        ferr() << toolName << ": " << ex << nl;
+    }
+    #ifdef NDEBUG
     catch (Exception &ex) {
-        ferr() << toolName << ": " << ex.message() << nl;
+        ferr() << toolName << ": " << ex << nl;
         return 1;
     }
+    #endif
 
     return 0;
 }
