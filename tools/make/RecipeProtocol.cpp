@@ -19,8 +19,8 @@ public:
     }
 
 protected:
-    BuildParametersPrototype(const String &className, MetaProtocol *protocol = 0)
-        : MetaObject(className, protocol)
+    BuildParametersPrototype(const String &className, MetaProtocol *protocol = 0):
+        MetaObject(className, protocol)
     {
         insert("compiler", "");
         insert("optimize", "");
@@ -56,16 +56,16 @@ protected:
         return protocol;
     }
 
-    SpecificBuildParametersPrototype(const String &className, MetaProtocol *protocol = 0)
-        : BuildParametersPrototype(className, createProtocol(protocol))
+    SpecificBuildParametersPrototype(const String &className, MetaProtocol *protocol = 0):
+        BuildParametersPrototype(className, createProtocol(protocol))
     {}
 };
 
 class BuildOptionsPrototype: public SpecificBuildParametersPrototype
 {
 protected:
-    BuildOptionsPrototype(const String &className, MetaProtocol *protocol = 0)
-        : SpecificBuildParametersPrototype(className, protocol)
+    BuildOptionsPrototype(const String &className, MetaProtocol *protocol = 0):
+        SpecificBuildParametersPrototype(className, protocol)
     {
         insert("use", StringList::create());
         insert("prefix", "/usr");
@@ -96,8 +96,8 @@ public:
     }
 
 protected:
-    SystemPrerequisitePrototype(const String &className)
-        : SpecificBuildParametersPrototype(className)
+    SystemPrerequisitePrototype(const String &className):
+        SpecificBuildParametersPrototype(className)
     {
         insert("name", "");
         insert("value", "");
@@ -124,8 +124,8 @@ protected:
         return protocol;
     }
 
-    ApplicationPrototype(const String &className, MetaProtocol *protocol = 0)
-        : BuildOptionsPrototype(className, createProtocol(protocol))
+    ApplicationPrototype(const String &className, MetaProtocol *protocol = 0):
+        BuildOptionsPrototype(className, createProtocol(protocol))
     {
         insert("name", "");
         insert("alias", StringList::create());
@@ -148,8 +148,8 @@ protected:
         return protocol;
     }
 
-    LibraryPrototype(const String &className)
-        : ApplicationPrototype(className, createProtocol())
+    LibraryPrototype(const String &className):
+        ApplicationPrototype(className, createProtocol())
     {
         insert("version", "0.1.0");
     }
@@ -163,8 +163,8 @@ public:
     }
 
 protected:
-    ToolsPrototype(const String &className)
-        : ApplicationPrototype(className)
+    ToolsPrototype(const String &className):
+        ApplicationPrototype(className)
     {
         remove("name");
     }
@@ -178,8 +178,8 @@ public:
     }
 
 protected:
-    TestsPrototype(const String &className)
-        : ToolsPrototype(className)
+    TestsPrototype(const String &className):
+        ToolsPrototype(className)
     {
         remove("prefix");
         remove("install");
@@ -194,8 +194,8 @@ public:
     }
 
 protected:
-    PackagePrototype(const String &className)
-        : BuildOptionsPrototype(className)
+    PackagePrototype(const String &className):
+        BuildOptionsPrototype(className)
     {}
 };
 
