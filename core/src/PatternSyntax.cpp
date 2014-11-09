@@ -176,7 +176,7 @@ PatternSyntax::PatternSyntax()
         DEFINE("Group",
             GLUE(
                 CHAR('('),
-                NOT(AHEAD(CHAR('?'))),
+                NOT(CHAR('?')),
                 REF("Choice"),
                 EXPECT("Expected closing ')'",
                     CHAR(')')
@@ -230,10 +230,16 @@ PatternSyntax::PatternSyntax()
         DEFINE("Capture",
             GLUE(
                 STRING("(?@"),
-                REF("CaptureIdentifier"),
-                REPEAT(0, 1, CHAR(':')),
+                REPEAT(0, 1,
+                    GLUE(
+                        REF("CaptureIdentifier"),
+                        CHAR(':')
+                    )
+                ),
                 EXPECT("Expected capture expression",
-                    REF("Choice")
+                    LENGTH(1,
+                        REF("Choice")
+                    )
                 ),
                 EXPECT("Expected closing ')'",
                     CHAR(')')
@@ -342,7 +348,9 @@ NODE PatternSyntax::compileBehind(const ByteArray *text, Token *token, SyntaxDef
 
 NODE PatternSyntax::compileCapture(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
-    String name = text->copy(token->firstChild());
+    String name;
+    if (token->firstChild() != token->lastChild())
+        name = text->copy(token->firstChild());
     return definition->CAPTURE(name, compileChoice(text, token->lastChild(), definition));
 }
 
