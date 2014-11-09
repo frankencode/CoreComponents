@@ -754,6 +754,49 @@ public:
     inline Node *lastChoice() const { return Node::lastChild(); }
 };
 
+class LazyChoiceNode: public ChoiceNode
+{
+public:
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    {
+        Token *lastChildSaved = 0;
+        if (parentToken) lastChildSaved = parentToken->lastChild();
+
+        int h = -1;
+        Node *node = Node::firstChild();
+        while ((node) && (h == -1)) {
+            if (state->finalize_) {
+                h = -1;
+                break;
+            }
+            h = node->matchNext(text, i, parentToken, state);
+            if (h != -1) {
+                int j = h;
+                Node *succ = Node::succ();
+                if (succ) {
+                    Token *lastChildSaved2 = 0;
+                    if (parentToken) lastChildSaved2 = parentToken->lastChild();
+                    while (succ) {
+                        j = succ->matchNext(text, j, parentToken, state);
+                        if (j == -1) break;
+                        succ = succ->succ();
+                    }
+                    rollBack(parentToken, lastChildSaved2);
+                }
+                if (j != -1) return h;
+                h = -1;
+            }
+            rollBack(parentToken, lastChildSaved);
+            node = node->nextSibling();
+        }
+
+        if (h == -1)
+            rollBack(parentToken, lastChildSaved);
+
+        return h;
+    }
+};
+
 class GlueNode: public Node
 {
 public:

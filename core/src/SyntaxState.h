@@ -27,6 +27,7 @@ class CaptureNode;
 class ReplayNode;
 class HintNode;
 class ChoiceNode;
+class LazyChoiceNode;
 class GlueNode;
 
 } // namespace syntax
@@ -63,6 +64,7 @@ private:
     friend class syntax::ReplayNode;
     friend class syntax::HintNode;
     friend class syntax::ChoiceNode;
+    friend class syntax::LazyChoiceNode;
     friend class syntax::GlueNode;
 
     typedef syntax::DefinitionNode DefinitionNode;
