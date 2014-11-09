@@ -823,7 +823,9 @@ Ref<ByteArray> ByteArray::fileName() const
 
 Ref<ByteArray> ByteArray::baseName() const
 {
-    Ref<StringList> parts = fileName()->split(".");
+    String name = fileName();
+    if (!name->contains('.')) return name;
+    Ref<StringList> parts = name->split(".");
     parts->pop(parts->count() - 1);
     return parts->join(".");
 }
