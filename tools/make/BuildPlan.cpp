@@ -160,8 +160,6 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 int BuildPlan::run()
 {
     readPrerequisites();
-    globSources();
-    initModules();
 
     if (options_ & Bootstrap) {
         fout(
@@ -171,8 +169,12 @@ int BuildPlan::run()
         ) << toolChain_->machineCommand();
     }
 
-    if (!configureStage()->run()) return 1;
     if (!preparationStage()->run()) return 1;
+
+    globSources();
+    initModules();
+
+    if (!configureStage()->run()) return 1;
     if (!analyseStage()->run()) return 1;
 
     if (recipe_->value("clean")) return !cleanStage()->run();

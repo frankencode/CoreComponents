@@ -68,7 +68,7 @@ bool PreparationStage::run()
         if (plan()->options() & BuildPlan::Verbose || job->status() != 0)
             fout() << "# " << shell()->beautify(job->command()) << nl;
         if (job->status() != 0) {
-            ferr() << "# " << job->outputText();
+            ferr() << job->outputText();
             status_ = job->status();
             return success_ = false;
         }
