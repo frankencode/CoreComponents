@@ -35,6 +35,7 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 #define FLUXMAKE_BUILDPLAN_COMPONENTS_INIT \
     shell_(this), \
     configureStage_(this), \
+    preparationStage_(this), \
     analyseStage_(this), \
     compileLinkStage_(this), \
     testRunStage_(this), \
@@ -138,6 +139,10 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
                     systemPrerequisitesByName_->insert(p->name(), l = SystemPrerequisiteList::create());
                 l->append(p);
             }
+            else if (object->className() == "Predicate") {
+                if (!predicates_) predicates_ = PredicateList::create();
+                predicates_->append(Predicate::read(object));
+            }
             else if (object->className() == "Usage") {
                 usage_ = BuildParameters::create();
                 usage_->read(object, this);
@@ -167,6 +172,7 @@ int BuildPlan::run()
     }
 
     if (!configureStage()->run()) return 1;
+    if (!preparationStage()->run()) return 1;
     if (!analyseStage()->run()) return 1;
 
     if (recipe_->value("clean")) return !cleanStage()->run();
@@ -198,6 +204,18 @@ String BuildPlan::modulePath(String object) const
 String BuildPlan::installPath(String relativeInstallPath) const
 {
     return installPrefix_ + "/" + relativeInstallPath;
+}
+
+Ref<StringList> BuildPlan::globSources(StringList *pattern) const
+{
+    Ref<StringList> sources = StringList::create();
+    for (int i = 0; i < pattern->count(); ++i) {
+        Ref<Glob> glob = Glob::open(sourcePath(pattern->at(i)));
+        for (String path; glob->read(&path);)
+            sources->append(path);
+    }
+    sources = sources->sort();
+    return sources;
 }
 
 void BuildPlan::use(BuildPlan *plan)
@@ -261,18 +279,6 @@ void BuildPlan::readPrerequisites()
         use(plan);
         prerequisites_->append(plan);
     }
-}
-
-Ref<StringList> BuildPlan::globSources(StringList *pattern) const
-{
-    Ref<StringList> sources = StringList::create();
-    for (int i = 0; i < pattern->count(); ++i) {
-        Ref<Glob> glob = Glob::open(sourcePath(pattern->at(i)));
-        for (String path; glob->read(&path);)
-            sources->append(path);
-    }
-    sources = sources->sort();
-    return sources;
 }
 
 void BuildPlan::globSources()

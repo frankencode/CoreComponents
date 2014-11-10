@@ -109,6 +109,23 @@ protected:
     }
 };
 
+class PredicatePrototype: public MetaObject
+{
+public:
+    static Ref<MetaObject> create() {
+        return new PredicatePrototype("Predicate");
+    }
+
+protected:
+    PredicatePrototype(const String &className):
+        MetaObject(className)
+    {
+        insert("source", StringList::create());
+        insert("target", "");
+        insert("command", "");
+    }
+};
+
 class ApplicationPrototype: public BuildOptionsPrototype
 {
 public:
@@ -121,6 +138,7 @@ protected:
         Ref<MetaProtocol> newProtocol;
         if (!protocol) protocol = newProtocol = MetaProtocol::create();
         protocol->define<SystemPrerequisitePrototype>();
+        protocol->define<PredicatePrototype>();
         return protocol;
     }
 

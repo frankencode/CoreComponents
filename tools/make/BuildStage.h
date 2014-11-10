@@ -11,6 +11,8 @@
 
 namespace fluxmake {
 
+using namespace flux;
+
 class BuildPlan;
 class BuildShell;
 class ToolChain;

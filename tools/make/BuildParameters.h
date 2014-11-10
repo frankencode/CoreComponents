@@ -10,6 +10,7 @@
 #define FLUXMAKE_BUILDPARAMETERS_H
 
 #include <flux/MetaObject>
+#include <flux/MetaProtocol>
 
 namespace fluxmake {
 
