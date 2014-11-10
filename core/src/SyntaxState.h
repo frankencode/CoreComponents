@@ -47,7 +47,7 @@ public:
     inline int i1() const { return rootToken_ ? rootToken_->i1() : -1; }
 
     bool flag(const char *name) const;
-    Range *capture(const char *name) const;
+    Range *capture(const char *name = "") const;
 
     bool lookupCapture(const char *name, Ref<Range> *range) const;
 

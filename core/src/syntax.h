@@ -976,6 +976,11 @@ public:
         return i;
     }
 
+    virtual Node *succ(Node *node) const
+    {
+        return Node::parent() ? Node::parent()->succ(Node::self()) : null<Node>();
+    }
+
     inline DefinitionNode *scope() const { return scope_; }
     inline int captureId() const { return captureId_; }
     inline Node *coverage() const { return Node::firstChild(); }
