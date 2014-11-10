@@ -15,8 +15,10 @@
 #include "BuildParameters.h"
 #include "BuildShell.h"
 #include "ToolChain.h"
+#include "Predicate.h"
 #include "SystemPrerequisite.h"
 #include "ConfigureStage.h"
+#include "PreparationStage.h"
 #include "AnalyseStage.h"
 #include "CompileLinkStage.h"
 #include "TestRunStage.h"
@@ -84,6 +86,7 @@ public:
     inline ModuleList *modules() const { return modules_; }
     inline bool containsCPlusPlus() const { return containsCPlusPlus_; }
 
+    inline PredicateList *predicates() const { return predicates_; }
     inline BuildPlanList *prerequisites() const { return prerequisites_; }
     inline SystemPrerequisitesByName *systemPrerequisitesByName() const { return systemPrerequisitesByName_; }
 
@@ -97,9 +100,12 @@ public:
     String modulePath(String object) const;
     String installPath(String relativeInstallPath) const;
 
+    Ref<StringList> globSources(StringList *pattern) const;
+
     inline BuildShell *shell() { return &shell_; }
 
     inline ConfigureStage *configureStage() { return &configureStage_; }
+    inline PreparationStage *preparationStage() { return &preparationStage_; }
     inline AnalyseStage *analyseStage() { return &analyseStage_; }
     inline CompileLinkStage *compileLinkStage() { return &compileLinkStage_; }
     inline TestRunStage *testRunStage() { return &testRunStage_; }
@@ -121,7 +127,6 @@ private:
     String findPrerequisite(String prerequisitePath) const;
     void readPrerequisites();
 
-    Ref<StringList> globSources(StringList *pattern) const;
     void globSources();
     void initModules();
 
@@ -143,6 +148,7 @@ private:
     Ref<ModuleList> modules_;
     bool containsCPlusPlus_;
 
+    Ref<PredicateList> predicates_;
     Ref<SystemPrerequisitesByName> systemPrerequisitesByName_;
     Ref<BuildPlanList> prerequisites_;
 
@@ -155,6 +161,7 @@ private:
     BuildShell shell_;
 
     ConfigureStage configureStage_;
+    PreparationStage preparationStage_;
     AnalyseStage analyseStage_;
     CompileLinkStage compileLinkStage_;
     TestRunStage testRunStage_;
