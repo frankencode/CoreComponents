@@ -76,7 +76,6 @@ protected:
         insert("simulate", false);
         insert("blindfold", false);
         insert("bootstrap", false);
-        insert("install", false);
         insert("test", false);
         insert("test-run", false);
         insert("clean", false);
@@ -84,6 +83,7 @@ protected:
         insert("uninstall", false);
 
         insert("verbose", false);
+        insert("configure", false);
         insert("concurrency", -1);
     }
 };

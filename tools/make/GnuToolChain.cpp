@@ -167,11 +167,16 @@ bool GnuToolChain::includeTest(BuildPlan *plan, String includePath, StringList *
     }
     src->close();
     Format args;
-    args << compiler() << src->path() << "-I" + includePath;
+    args << compiler();
+    appendCompileOptions(args, plan);
+    args << src->path() << "-I" + includePath;
     args << "-o" + src->path() + "_";
+    appendLinkOptions(args, plan);
 
     String command = args->join(" ");
-    return plan->shell()->run(command);
+    if (plan->options() & BuildPlan::Verbose)
+        fout() << "# " << command << nl;
+    return Process::start(command)->wait() == 0;
 }
 
 bool GnuToolChain::linkTest(BuildPlan *plan, String linkPath, StringList *testLibraries) const
@@ -189,7 +194,9 @@ bool GnuToolChain::linkTest(BuildPlan *plan, String linkPath, StringList *testLi
     args << "-o" + src->path() + "_";
 
     String command = args->join(" ");
-    return plan->shell()->run(command);
+    if (plan->options() & BuildPlan::Verbose)
+        fout() << "# " << command << nl;
+    return Process::start(command)->wait() == 0;
 }
 
 class CwdGuard {

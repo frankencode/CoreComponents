@@ -29,6 +29,7 @@ int main(int argc, char **argv)
             "  -release         release mode (NDEBUG defined)\n"
             "  -static          build static libraries\n"
             "  -verbose         verbose output\n"
+            "  -configure       run include and link tests\n"
             "  -optimize        optimization level / strategy (0, 1, 2, 3, s, g)\n"
             "  -prefix          installation prefix (default: /usr)\n"
             "  -install         install applications, libraries and bundled files\n"
