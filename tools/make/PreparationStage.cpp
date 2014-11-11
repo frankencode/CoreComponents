@@ -29,6 +29,21 @@ bool PreparationStage::run()
 
     for (int i = 0; i < plan()->predicates()->count(); ++i) {
         Predicate *predicate = plan()->predicates()->at(i);
+        if (predicate->source()->count() == 0) {
+            String targetPath = plan()->sourcePath(predicate->target()->replace("%", ""));
+            if (!FileStatus::read(targetPath)->exists()) {
+                String command = predicate->command();
+                command = command->replace("$<", "");
+                command = command->replace("$@", targetPath);
+                command = command->replace("$SOURCE", "");
+                command = command->replace("$TARGET", targetPath);
+                if (!scheduler) {
+                    scheduler = createScheduler();
+                    scheduler->start();
+                }
+                scheduler->schedule(Job::create(command));
+            }
+        }
         for (int j = 0; j < predicate->source()->count(); ++j) {
             String sourceExpression =
                 plan()->sourcePath(
@@ -65,8 +80,7 @@ bool PreparationStage::run()
     if (!scheduler) return success_ = true;
 
     for (Ref<Job> job; scheduler->collect(&job);) {
-        if (plan()->options() & BuildPlan::Verbose || job->status() != 0)
-            fout() << "# " << shell()->beautify(job->command()) << nl;
+        fout() << shell()->beautify(job->command()) << nl;
         if (job->status() != 0) {
             ferr() << job->outputText();
             status_ = job->status();
