@@ -130,6 +130,10 @@ inline bool operator> (const String &a, char *b) { return strcmp(a->chars(), b) 
 inline bool operator<=(const String &a, char *b) { return strcmp(a->chars(), b) <= 0; }
 inline bool operator>=(const String &a, char *b) { return strcmp(a->chars(), b) >= 0; }
 
+#ifdef QT_CORE_LIB
+inline QDebug &operator<<(QDebug &debug, const String &s) { return debug << s->chars(); }
+#endif
+
 } // namespace flux
 
 #endif // FLUX_STRING_H
