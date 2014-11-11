@@ -95,7 +95,7 @@ bool BuildShell::install(String sourcePath, String destPath)
 
 bool BuildShell::unlink(String path)
 {
-    if (File::unresolvedStatus(path)->exists()) {
+    if ((plan()->options() & BuildPlan::Blindfold) || fileStatus(path)->exists()) {
         if (plan()->options() & BuildPlan::Simulate) {
             fout("rm -f %%\n") << path;
             return true;
