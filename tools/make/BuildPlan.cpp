@@ -109,6 +109,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     if (recipe_->value("test-run"))  options_ |= BuildTests;
     if (recipe_->value("clean"))     options_ |= BuildTests;
     if (recipe_->value("verbose"))   options_ |= Verbose;
+    if (recipe_->value("configure")) options_ |= Configure;
 
     concurrency_ = recipe_->value("concurrency");
 
@@ -175,6 +176,8 @@ int BuildPlan::run()
     initModules();
 
     if (!configureStage()->run()) return 1;
+    if (options_ & Configure) return 0;
+
     if (!analyseStage()->run()) return 1;
 
     if (recipe_->value("clean")) return !cleanStage()->run();

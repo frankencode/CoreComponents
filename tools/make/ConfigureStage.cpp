@@ -41,6 +41,8 @@ bool ConfigureStage::run()
                     return success_ = false;
                 }
             }
+            if ((plan()->options() & BuildPlan::Configure) && includePath != "")
+                ferr() << "Include path for " << name << ": " << includePath << nl;
             String libraryPath;
             if (!findLibraryPath(prerequisite, &libraryPath)) {
                 if (!prerequisite->optional()) {
@@ -48,6 +50,8 @@ bool ConfigureStage::run()
                     return success_ = false;
                 }
             }
+            if ((plan()->options() & BuildPlan::Configure) && libraryPath != "")
+                ferr() << "Library path for " << name << ": " << libraryPath << nl;
 
             if (includePath != "") plan()->includePaths()->append(includePath);
             if (libraryPath != "") plan()->libraryPaths()->append(libraryPath);
@@ -63,6 +67,10 @@ bool ConfigureStage::run()
 
 bool ConfigureStage::findIncludePath(SystemPrerequisite *prerequisite, String *includePath)
 {
+    if (prerequisite->includePaths()->count() == 1 && !(plan()->options() & BuildPlan::Configure)) {
+        *includePath = prerequisite->includePaths()->at(0);
+        return true;
+    }
     for (int i = 0; i < prerequisite->includePaths()->count(); ++i) {
         String path = prerequisite->includePaths()->at(i);
         if (plan()->toolChain()->includeTest(plan(), path, prerequisite->testIncludes())) {

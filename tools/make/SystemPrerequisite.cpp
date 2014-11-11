@@ -24,10 +24,10 @@ SystemPrerequisite::SystemPrerequisite(MetaObject *object, BuildPlan *plan)
       testIncludes_(object->value("include-test")),
       testLibraries_(object->value("link-test"))
 {
+    BuildParameters::read(object, plan);
     if (name_ == "" && libraries_->count() == 1)
         name_ = libraries_->at(0);
     if (name_ == "") name_ = hex(uint64_t(this));
-    BuildParameters::read(object, plan);
 }
 
 } // namespace fluxmake
