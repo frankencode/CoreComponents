@@ -11,7 +11,7 @@
 
 namespace flux {
 
-Pattern::Pattern() {}
+Pattern::Pattern() { *this = String(); }
 Pattern::Pattern(const char *text) { *this = String(text); }
 Pattern::Pattern(const String &text) { *this = text; }
 Pattern::Pattern(const Ref<ByteArray> &text) { *this = String(text); }
@@ -24,7 +24,7 @@ const Pattern &Pattern::operator=(const char *text)
 
 const Pattern &Pattern::operator=(const String &text)
 {
-    if (text_ != text) {
+    if (text_ != text || !get()) {
         text_ = text;
         set(
             SyntaxDefinition::create(

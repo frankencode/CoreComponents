@@ -102,10 +102,29 @@ void testLazyChoice()
     check(pattern->match(String("HansGlück"))->valid());
 }
 
+void testUriDispatch()
+{
+    Ref<StringList> services = StringList::create()
+        << "glibc.*"
+        << "fluxkit.*"
+        << "books.*"
+        << "test.*"
+        << "*httpecho*";
+
+    for (int i = 0; i < services->count(); ++i)
+        fout() << services->at(i) << ": " << Pattern(services->at(i))->match(String("fluxkit.cyblogic.com"))->valid() << nl;
+}
+
+void testEmpty()
+{
+    fout() << Pattern(0)->match(String("Something"))->valid() << nl;
+}
+
 int main()
 {
     testEmailValidation();
     testGlobbing();
     testLazyChoice();
+    testUriDispatch();
     return 0;
 }
