@@ -105,13 +105,13 @@ int main(int argc, char **argv)
             dirWalker->setIgnoreHidden(ignoreHidden);
             String path;
             while (dirWalker->read(&path)) {
-                if (pathPattern) {
+                if (pathPattern != "") {
                     if (!pathPattern->match(path)->valid()) continue;
                 }
-                if (namePattern) {
+                if (namePattern != "") {
                     if (!namePattern->match(path->fileName())->valid()) continue;
                 }
-                if (typePattern) {
+                if (typePattern != "") {
                     int type = FileStatus::read(path, false)->type();
                     bool shortMode = (typePattern->matchLength() == 1);
                     String typeString;
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
                     else if (type == File::Socket)      typeString = shortMode ? "s" : "socket";
                     if (!typePattern->find(typeString)->valid()) continue;
                 }
-                if (textPattern) {
+                if (textPattern != "") {
                     if (FileStatus::read(path)->type() != File::Regular)
                         continue;
 
