@@ -32,9 +32,11 @@ int main(int argc, char **argv)
             "  -daemon    start as a daemon\n"
         ) << toolName;
     }
+    #ifdef NDEBUG
     catch (Exception &ex) {
         ferr() << toolName << ": " << ex.message() << nl;
         exitCode = 7;
     }
+    #endif
     return exitCode;
 }

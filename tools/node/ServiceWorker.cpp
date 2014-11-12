@@ -123,11 +123,13 @@ void ServiceWorker::run()
                 Format("HTTP/1.1 408 Request Timeout\r\n\r\n", client_->stream());
                 logDelivery(client_, 408);
             }
+            #ifdef NDEBUG
             catch (Exception &ex) {
                 FLUXNODE_ERROR() << ex.message() << nl;
                 // Format("HTTP/1.1 500 Internal Server Error: %%\r\n\r\n", client_->stream()) << ex.message();
                 // logDelivery(client_, 500);
             }
+            #endif
             catch (CloseRequest &)
             {}
         }
