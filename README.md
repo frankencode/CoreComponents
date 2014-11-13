@@ -1,12 +1,14 @@
-*fluxkit:* Frank's lightweight POSIX components
-===============================================
+*fluxkit:* Frank's lightweight portable components
+==================================================
 
 A C++ Developers Swiss-Army Knife
 ---------------------------------
 
 **_fluxkit_** provides a small set of libraries and tools for Unix system programming.
 The entire toolkit is fully self-contained without any external depedencies other than a gcc
-compatible compiler and a standard C++ runtime.
+compatible compiler and a standard C++ runtime. Development happens mostly on Linux and
+OpenBSD, but design goal is to support any modern operating system which implements the
+core POSIX API. We try to achieve the most the least number of code lines!
 
 Features
 --------
@@ -35,15 +37,15 @@ First download the latest stable version from github:
 ```
 mkdir -p ~/src
 cd ~/src
-curl -L https://github.com/frankencode/fluxkit/archive/v0.2.0.tar.gz | tar xzv
-ln -s ../fluxkit-0.2.0 fluxkit
+curl -L https://github.com/frankencode/fluxkit/archive/v0.2.2.tar.gz | tar xzv
+ln -s ../fluxkit-0.2.2 fluxkit
 ```
 
 Thereafter bootstrap the build system:
 ```
 mkdir -p ~/build/fluxkit_debug
 cd ~/build/fluxkit_debug
-~/src/fluxkit-0.2.0/bootstrap
+~/src/fluxkit-0.2.2/bootstrap
 ```
 
 Finally, build the entire toolkit:
