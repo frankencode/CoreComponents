@@ -1,14 +1,14 @@
 *fluxkit:* Frank's lightweight portable components
 ==================================================
 
-A C++ Developers Swiss-Army Knife
----------------------------------
+A C++ Developer's Swiss-Army Knife
+----------------------------------
 
 **_fluxkit_** provides a small set of libraries and tools for Unix system programming.
 The entire toolkit is fully self-contained without any external depedencies other than a gcc
 compatible compiler and a standard C++ runtime. Development happens mostly on Linux and
 OpenBSD, but design goal is to support any modern operating system which implements the
-core POSIX API. We try to achieve the most the least number of code lines!
+core POSIX API.
 
 Features
 --------
@@ -22,8 +22,8 @@ Features
  * batteries included:
    * easy to use build system (fluxmake)
    * built-in webserver (fluxnode)
-     * inspired by nodejs
      * compatible and fast (HTTP 1.1, memory mapped I/O)
+     * easy to extend
    * powerful text search and replace (fluxfind)
 
 Installation
