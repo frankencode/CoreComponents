@@ -314,6 +314,8 @@ void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan)
     args << "-Wall" << "-pthread" << "-pipe";
     if (plan->bundle()->count() > 0)
         args << "-DFLUXMAKE_BUNDLE_PREFIX=" + bundlePrefix(plan);
+    if (plan->name() != "")
+        args << "-DFLUXMAKE_BUNDLE_VERSION=" + plan->version();
     if (plan->customCompileFlags()) {
         for (int i = 0; i < plan->customCompileFlags()->count(); ++i)
             args << plan->customCompileFlags()->at(i);

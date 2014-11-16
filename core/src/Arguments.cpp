@@ -56,6 +56,10 @@ Arguments::Arguments(int argc, char **argv)
 
     if (options_->contains("h") || options_->contains("help") || options_->contains("?"))
         throw HelpError();
+
+    // FIXME
+    // if (options_->contains("v") || options_->contains("version"))
+    //  throw VersionError();
 }
 
 void Arguments::validate(VariantMap *prototype) const

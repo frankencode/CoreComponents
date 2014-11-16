@@ -1,6 +1,5 @@
 Library {
     name: fluxtoki
-    version: 0.2.2
     source: *.cpp
     bundle: themes/*
     use: core

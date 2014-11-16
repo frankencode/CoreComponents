@@ -284,6 +284,32 @@ void BuildPlan::readPrerequisites()
         use(plan);
         prerequisites_->append(plan);
     }
+
+    findVersion();
+}
+
+void BuildPlan::findVersion()
+{
+    String useVersion = recipe_->value("use-version");
+    if (useVersion != "") {
+        String path = findPrerequisite(useVersion);
+        if (path == "")
+            throw UsageError(Format() << recipePath() << ": Failed to locate prerequisite \"" << useVersion << "\"");
+        Ref<BuildPlan> plan = BuildPlan::create(path);
+        if (plan->version_ == "")
+            throw UsageError(Format() << recipePath() << ": Failed to retrieve version from \"" << useVersion << "\"");
+        version_ = plan->version_;
+    }
+    else if (version_ == "") {
+        String path = findPrerequisite("..");
+        if (path != "") {
+            Ref<BuildPlan> plan = BuildPlan::create(path);
+            if (plan->version_ == "") plan->findVersion();
+            if (plan->version_ != "") version_ = plan->version_;
+        }
+    }
+    if (version_ == "")
+        version_ = "0.1.0";
 }
 
 void BuildPlan::globSources()

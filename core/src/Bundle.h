@@ -23,6 +23,8 @@ namespace flux {
 #define FLUX_BUNDLE_LOOKUP(relPath) \
     flux::File::lookup(relPath, flux::StringList::create() << FLUX_XSTR(FLUXMAKE_BUNDLE_PREFIX) << flux::String(__FILE__)->reducePath(), flux::File::Exists)
 
+#define FLUX_BUNDLE_VERSION FLUX_XSTR(FLUXMAKE_TARGET_VERSION)
+
 } // namespace flux
 
 #endif // FLUX_BUNDLE_H

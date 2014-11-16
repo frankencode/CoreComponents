@@ -149,6 +149,8 @@ protected:
         insert("alias", StringList::create());
         insert("source", StringList::create());
         insert("bundle", StringList::create());
+        insert("version", "");
+        insert("use-version", "");
     }
 };
 
@@ -168,9 +170,7 @@ protected:
 
     LibraryPrototype(const String &className):
         ApplicationPrototype(className, createProtocol())
-    {
-        insert("version", "0.1.0");
-    }
+    {}
 };
 
 class ToolsPrototype: public ApplicationPrototype
@@ -214,7 +214,10 @@ public:
 protected:
     PackagePrototype(const String &className):
         BuildOptionsPrototype(className)
-    {}
+    {
+        insert("version", "");
+        insert("use-version", "");
+    }
 };
 
 RecipeProtocol::RecipeProtocol()
