@@ -128,6 +128,7 @@ private:
     void use(BuildPlan *plan);
     String findPrerequisite(String prerequisitePath) const;
     void readPrerequisites();
+    void findVersion();
 
     void globSources();
     void initModules();

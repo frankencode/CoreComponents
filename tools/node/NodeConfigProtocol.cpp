@@ -8,6 +8,7 @@
 
 #include <flux/Singleton>
 #include <flux/Process>
+#include <flux/Bundle>
 #include "LogPrototype.h"
 #include "NodeConfigProtocol.h"
 
@@ -29,7 +30,7 @@ protected:
         insert("port", Process::isSuperUser() ? 80 : 8080);
         insert("protocol", "");
         insert("user", "");
-        insert("version", "fluxnode/0.2.0");
+        insert("version", "fluxnode/" FLUX_BUNDLE_VERSION);
         insert("daemon", false);
         insert("service_window", 30);
         insert("error_log", LogPrototype::create());
