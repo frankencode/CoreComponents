@@ -25,18 +25,24 @@ public:
 
     inline StringList *source() const { return source_; }
     inline String target() const { return target_; }
-    inline String command() const { return command_; }
+    inline String create() const { return create_; }
+    inline String update() const { return update_; }
+    inline String remove() const { return remove_; }
 
 private:
     Predicate(MetaObject *object):
         source_(object->value("source")),
         target_(object->value("target")),
-        command_(object->value("command"))
+        create_(object->value("create")),
+        update_(object->value("update")),
+        remove_(object->value("remove"))
     {}
 
     Ref<StringList> source_;
     String target_;
-    String command_;
+    String create_;
+    String update_;
+    String remove_;
 };
 
 typedef List< Ref<Predicate> > PredicateList;

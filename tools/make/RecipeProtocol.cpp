@@ -122,7 +122,9 @@ protected:
     {
         insert("source", StringList::create());
         insert("target", "");
-        insert("command", "");
+        insert("create", "");
+        insert("update", "");
+        insert("remove", "");
     }
 };
 

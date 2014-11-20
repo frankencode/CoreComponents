@@ -27,16 +27,14 @@ bool PreparationStage::run()
 
     Ref<JobScheduler> scheduler;
 
-    for (int i = 0; i < plan()->predicates()->count(); ++i) {
+    for (int i = 0; i < plan()->predicates()->count(); ++i)
+    {
         Predicate *predicate = plan()->predicates()->at(i);
+
         if (predicate->source()->count() == 0) {
             String targetPath = plan()->sourcePath(predicate->target()->replace("%", ""));
             if (!FileStatus::read(targetPath)->exists()) {
-                String command = predicate->command();
-                command = command->replace("$<", "");
-                command = command->replace("$@", targetPath);
-                command = command->replace("$SOURCE", "");
-                command = command->replace("$TARGET", targetPath);
+                String command = expand(predicate->create(), "", targetPath);
                 if (!scheduler) {
                     scheduler = createScheduler();
                     scheduler->start();
@@ -44,6 +42,7 @@ bool PreparationStage::run()
                 scheduler->schedule(Job::create(command));
             }
         }
+
         for (int j = 0; j < predicate->source()->count(); ++j) {
             String sourceExpression =
                 plan()->sourcePath(
@@ -52,7 +51,7 @@ bool PreparationStage::run()
             Pattern sourcePattern = sourceExpression;
             Ref<Glob> glob = Glob::open(sourceExpression);
             for (String sourcePath; glob->read(&sourcePath);) {
-                String name = sourcePath->baseName();
+                String name;
                 if (predicate->source()->at(j)->contains('%')) {
                     Ref<SyntaxState> state = sourcePattern->match(sourcePath);
                     name = sourcePath->copy(state->capture());
@@ -60,13 +59,50 @@ bool PreparationStage::run()
                 else {
                     name = sourcePath->baseName();
                 }
-                String targetPath = plan()->sourcePath(predicate->target()->replace("%", name));
+                String targetPath =
+                    plan()->sourcePath(
+                        predicate->target()->replace("%", name)
+                    );
                 if (FileStatus::read(targetPath)->lastModified() < FileStatus::read(sourcePath)->lastModified()) {
-                    String command = predicate->command();
-                    command = command->replace("$<", sourcePath);
-                    command = command->replace("$@", targetPath);
-                    command = command->replace("$SOURCE", sourcePath);
-                    command = command->replace("$TARGET", targetPath);
+                    String command = expand(predicate->update(), sourcePath, targetPath);
+                    if (!scheduler) {
+                        scheduler = createScheduler();
+                        scheduler->start();
+                    }
+                    scheduler->schedule(Job::create(command));
+                }
+            }
+        }
+
+        if (predicate->remove() != "") {
+            String targetExpression =
+                plan()->sourcePath(
+                    predicate->target()->replace("%", "(?@*)")
+                );
+            Pattern targetPattern = targetExpression;
+            Ref<Glob> glob = Glob::open(targetExpression);
+            for (String targetPath; glob->read(&targetPath);) {
+                String name;
+                if (predicate->target()->contains('%')) {
+                    Ref<SyntaxState> state = targetPattern->match(targetPath);
+                    name = targetPath->copy(state->capture());
+                }
+                else {
+                    name = targetPath->baseName();
+                }
+                bool sourceFound = false;
+                for (int j = 0; j < predicate->source()->count(); ++j) {
+                    String sourcePath =
+                        plan()->sourcePath(
+                            predicate->source()->at(j)->replace("%", name)
+                        );
+                    if (FileStatus::read(sourcePath)->exists()) {
+                        sourceFound = true;
+                        break;
+                    }
+                }
+                if (!sourceFound) {
+                    String command = expand(predicate->remove(), "", targetPath);
                     if (!scheduler) {
                         scheduler = createScheduler();
                         scheduler->start();
@@ -89,6 +125,15 @@ bool PreparationStage::run()
     }
 
     return success_ = true;
+}
+
+String PreparationStage::expand(String command, String sourcePath, String targetPath)
+{
+    return command
+        ->replace("$<", sourcePath)
+        ->replace("$@", targetPath)
+        ->replace("$SOURCE", sourcePath)
+        ->replace("$TARGET", targetPath);
 }
 
 } // namespace fluxmake
