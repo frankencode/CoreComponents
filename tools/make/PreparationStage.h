@@ -18,6 +18,9 @@ class PreparationStage: public BuildStage
 public:
     PreparationStage(BuildPlan *plan): BuildStage(plan) {}
     bool run();
+
+private:
+    static String expand(String command, String sourcePath, String targetPath);
 };
 
 } // namespace fluxmake
