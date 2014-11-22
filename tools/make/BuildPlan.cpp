@@ -12,6 +12,7 @@
 #include <flux/ResourceGuard>
 #include <flux/yason>
 #include <flux/Arguments>
+#include "BuildMap.h"
 #include "DependencyCache.h"
 #include "GnuToolChain.h"
 #include "JobScheduler.h"
@@ -27,8 +28,8 @@ Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
 
 Ref<BuildPlan> BuildPlan::create(String projectPath)
 {
-    BuildPlan *plan = 0;
-    if (buildMap_->lookup(String(projectPath->absolutePath()), &plan)) return plan;
+    Ref<BuildPlan> plan;
+    if (buildMap()->lookup(String(projectPath->absolutePath()), &plan)) return plan;
     return new BuildPlan(projectPath, this);
 }
 
@@ -46,7 +47,6 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 BuildPlan::BuildPlan(int argc, char **argv)
     : projectPath_("."),
       concurrency_(-1),
-      buildMap_(BuildMap::create()),
       FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
 {
     Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -70,19 +70,18 @@ BuildPlan::BuildPlan(int argc, char **argv)
     toolChain_ = GnuToolChain::create(compiler());
     if (optimize_ == "") optimize_ = toolChain_->defaultOptimization(this);
 
-    buildMap_->insert(projectPath_, this);
+    buildMap()->insert(projectPath_, this);
 }
 
 BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
     : toolChain_(parentPlan->toolChain_),
       projectPath_(projectPath),
       concurrency_(parentPlan->concurrency_),
-      buildMap_(parentPlan->buildMap_),
       FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
 {
     recipe_ = yason::parse(File::open(recipePath(projectPath_))->map(), recipeProtocol());
     readRecipe(parentPlan);
-    buildMap_->insert(projectPath_, this);
+    buildMap()->insert(projectPath_, this);
 }
 
 void BuildPlan::readRecipe(BuildPlan *parentPlan)
@@ -323,7 +322,7 @@ void BuildPlan::globSources()
     else
         sources_ = StringList::create();
 
-    sourcePrefix_ = buildMap_->commonPrefix('/');
+    sourcePrefix_ = buildMap()->commonPrefix();
     if (sourcePrefix_ == "") sourcePrefix_ = projectPath_;
     else sourcePrefix_ = sourcePrefix_->canonicalPath();
 
