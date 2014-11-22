@@ -118,8 +118,6 @@ public:
 private:
     Ref<BuildPlan> create(String projectPath);
 
-    typedef PrefixTree<char, BuildPlan *> BuildMap;
-
     BuildPlan(int argc, char **argv);
     BuildPlan(String projectPath, BuildPlan *parentPlan);
 
@@ -157,7 +155,6 @@ private:
 
     Ref<BuildParameters> usage_;
 
-    Ref<BuildMap> buildMap_;
     String sourcePrefix_;
     String installPrefix_;
 
