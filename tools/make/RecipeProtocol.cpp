@@ -78,6 +78,7 @@ protected:
         insert("bootstrap", false);
         insert("test", false);
         insert("test-run", false);
+        insert("test-cascade", false);
         insert("clean", false);
         insert("install", false);
         insert("uninstall", false);
