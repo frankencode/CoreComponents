@@ -18,8 +18,17 @@ bool TestRunStage::run()
     if (complete_) return success_;
     complete_ = true;
 
+    bool cascade = plan()->recipe()->value("test-cascade");
+
     for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
-        TestRunStage *stage = plan()->prerequisites()->at(i)->testRunStage();
+        BuildPlan *prequisite = plan()->prerequisites()->at(i);
+        if (!cascade) {
+            String prefix = prequisite->projectPath()->copy(0, plan()->projectPath()->count());
+            if (prefix != plan()->projectPath())
+                continue;
+        }
+
+        TestRunStage *stage = prequisite->testRunStage();
         if (!stage->run()) {
             status_ = stage->status();
             return success_ = false;
