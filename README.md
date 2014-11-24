@@ -37,15 +37,15 @@ First download the latest stable version from github:
 ```
 mkdir -p ~/src
 cd ~/src
-curl -L https://github.com/frankencode/fluxkit/archive/v0.2.2.tar.gz | tar xzv
-ln -s ../fluxkit-0.2.2 fluxkit
+curl -L https://github.com/frankencode/fluxkit/archive/v0.2.3.tar.gz | tar xzv
+ln -s ../fluxkit-0.2.3 fluxkit
 ```
 
 Thereafter bootstrap the build system:
 ```
 mkdir -p ~/build/fluxkit_debug
 cd ~/build/fluxkit_debug
-~/src/fluxkit-0.2.2/bootstrap
+~/src/fluxkit/bootstrap
 ```
 
 Finally, build the entire toolkit:
