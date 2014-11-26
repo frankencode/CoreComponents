@@ -37,8 +37,8 @@ First download the latest stable version from github:
 ```
 mkdir -p ~/src
 cd ~/src
-curl -L https://github.com/frankencode/fluxkit/archive/v0.2.3.tar.gz | tar xzv
-ln -s ../fluxkit-0.2.3 fluxkit
+curl -L https://github.com/frankencode/fluxkit/archive/v0.2.4.tar.gz | tar xzv
+ln -s ../fluxkit-0.2.4 fluxkit
 ```
 
 Thereafter bootstrap the build system:
