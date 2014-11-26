@@ -27,7 +27,7 @@ protected:
         insert("static", false);
 
         insert("include-path", Ref<StringList>());
-        insert("link-path", Ref<StringList>());
+        insert("library-path", Ref<StringList>());
         insert("link", Ref<StringList>());
 
         insert("compile-flags", Ref<StringList>());
@@ -105,6 +105,8 @@ protected:
         insert("description", "");
         insert("optional", false);
 
+        insert("include-path-configure", "");
+        insert("library-path-configure", "");
         insert("include-test", StringList::create());
         insert("link-test", StringList::create());
     }

@@ -9,6 +9,8 @@
 #include <flux/stdio>
 #include <flux/Dir>
 #include <flux/File>
+#include <flux/Process>
+#include <flux/ProcessFactory>
 #include "BuildPlan.h"
 #include "ConfigureStage.h"
 
@@ -35,21 +37,47 @@ bool ConfigureStage::run()
         {
             SystemPrerequisite *prerequisite = prerequisiteList->at(j);
             String includePath;
-            if (!findIncludePath(prerequisite, &includePath)) {
+            if (prerequisite->includePathConfigure() != "") {
+                Ref<ProcessFactory> factory = ProcessFactory::create(Process::GroupLeader);
+                String shell = Process::env("SHELL");
+                factory->setExecPath(shell);
+                factory->setArguments(
+                    StringList::create()
+                        << shell
+                        << "-c"
+                        << prerequisite->includePathConfigure()
+                );
+                factory->setIoPolicy(Process::ForwardOutput);
+                includePath = factory->produce()->readAll()->trim();
+            }
+            else if (!findIncludePath(prerequisite, &includePath)) {
                 if (!prerequisite->optional()) {
                     ferr() << "Missing system prerequisite \"" << prerequisite->name() << "\": Include path not found" << nl;
                     return success_ = false;
                 }
             }
-            if ((plan()->options() & BuildPlan::Configure) && includePath != "")
-                ferr() << "Include path for " << name << ": " << includePath << nl;
             String libraryPath;
-            if (!findLibraryPath(prerequisite, &libraryPath)) {
+            if (prerequisite->libraryPathConfigure() != "") {
+                Ref<ProcessFactory> factory = ProcessFactory::create(Process::GroupLeader);
+                String shell = Process::env("SHELL");
+                factory->setExecPath(shell);
+                factory->setArguments(
+                    StringList::create()
+                        << shell
+                        << "-c"
+                        << prerequisite->includePathConfigure()
+                );
+                factory->setIoPolicy(Process::ForwardOutput);
+                libraryPath = factory->produce()->readAll()->trim();
+            }
+            else if (!findLibraryPath(prerequisite, &libraryPath)) {
                 if (!prerequisite->optional()) {
                     ferr() << "Missing system prerequisite \"" << prerequisite->name() << "\": Library path not found" << nl;
                     return success_ = false;
                 }
             }
+            if ((plan()->options() & BuildPlan::Configure) && includePath != "")
+                ferr() << "Include path for " << name << ": " << includePath << nl;
             if ((plan()->options() & BuildPlan::Configure) && libraryPath != "")
                 ferr() << "Library path for " << name << ": " << libraryPath << nl;
 
@@ -67,7 +95,7 @@ bool ConfigureStage::run()
 
 bool ConfigureStage::findIncludePath(SystemPrerequisite *prerequisite, String *includePath)
 {
-    if (prerequisite->includePaths()->count() == 1 && !(plan()->options() & BuildPlan::Configure)) {
+    if (prerequisite->includePaths()->count() == 1) {
         *includePath = prerequisite->includePaths()->at(0);
         return true;
     }
