@@ -18,7 +18,7 @@ void BuildParameters::read(MetaObject *object, BuildPlan *plan)
     linkStatic_ = object->value("static");
 
     includePaths_ = cast<StringList>(object->value("include-path"));
-    libraryPaths_ = cast<StringList>(object->value("link-path"));
+    libraryPaths_ = cast<StringList>(object->value("library-path"));
     libraries_ = cast<StringList>(object->value("link"));
     if (!includePaths_) includePaths_ = StringList::create();
     if (!libraryPaths_) libraryPaths_ = StringList::create();

@@ -27,6 +27,9 @@ public:
     inline String description() const { return description_; }
     inline bool optional() const { return optional_; }
 
+    inline String includePathConfigure() const { return includePathConfigure_; }
+    inline String libraryPathConfigure() const { return libraryPathConfigure_; }
+
     inline StringList *testIncludes() const { return testIncludes_; }
     inline StringList *testLibraries() const { return testLibraries_; }
 
@@ -37,6 +40,9 @@ private:
     String value_;
     String description_;
     bool optional_;
+
+    String includePathConfigure_;
+    String libraryPathConfigure_;
 
     Ref<StringList> testIncludes_;
     Ref<StringList> testLibraries_;

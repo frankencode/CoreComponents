@@ -16,13 +16,15 @@ Ref<SystemPrerequisite> SystemPrerequisite::read(MetaObject *object, BuildPlan *
     return new SystemPrerequisite(object, plan);
 }
 
-SystemPrerequisite::SystemPrerequisite(MetaObject *object, BuildPlan *plan)
-    : name_(object->value("name")),
-      value_(object->value("value")),
-      description_(object->value("description")),
-      optional_(object->value("optional")),
-      testIncludes_(object->value("include-test")),
-      testLibraries_(object->value("link-test"))
+SystemPrerequisite::SystemPrerequisite(MetaObject *object, BuildPlan *plan):
+    name_(object->value("name")),
+    value_(object->value("value")),
+    description_(object->value("description")),
+    optional_(object->value("optional")),
+    includePathConfigure_(object->value("include-path-configure")),
+    libraryPathConfigure_(object->value("library-path-configure")),
+    testIncludes_(object->value("include-test")),
+    testLibraries_(object->value("link-test"))
 {
     BuildParameters::read(object, plan);
     if (name_ == "" && libraries_->count() == 1)

@@ -6,11 +6,11 @@
  *
  */
 
+#include <flux/stdio>
 #include <flux/Pattern>
 #include <flux/File>
 #include <flux/Process>
 #include <flux/ProcessFactory>
-#include <flux/stdio> // DEBUG
 #include "BuildPlan.h"
 #include "GnuToolChain.h"
 
@@ -23,8 +23,8 @@ Ref<GnuToolChain> GnuToolChain::create(String compiler)
     return new GnuToolChain(compiler);
 }
 
-GnuToolChain::GnuToolChain(String compiler)
-    : ToolChain(compiler, queryMachine(compiler))
+GnuToolChain::GnuToolChain(String compiler):
+    ToolChain(compiler, queryMachine(compiler))
 {}
 
 String GnuToolChain::queryMachine(String compiler)
@@ -179,7 +179,7 @@ bool GnuToolChain::includeTest(BuildPlan *plan, String includePath, StringList *
     return Process::start(command)->wait() == 0;
 }
 
-bool GnuToolChain::linkTest(BuildPlan *plan, String linkPath, StringList *testLibraries) const
+bool GnuToolChain::linkTest(BuildPlan *plan, String libraryPath, StringList *testLibraries) const
 {
     if (testLibraries->count() == 0) return true;
 
@@ -189,7 +189,7 @@ bool GnuToolChain::linkTest(BuildPlan *plan, String linkPath, StringList *testLi
     src->write("int main() { return 0; }\n");
     src->close();
     Format args;
-    args << compiler() << src->path() << "-L" + linkPath;
+    args << compiler() << src->path() << "-L" + libraryPath;
     for (int i = 0; i < testLibraries->count(); ++i) args << "-l" + testLibraries->at(i);
     args << "-o" + src->path() + "_";
 
