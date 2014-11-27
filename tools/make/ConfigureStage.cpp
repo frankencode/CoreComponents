@@ -65,7 +65,7 @@ bool ConfigureStage::run()
                     StringList::create()
                         << shell
                         << "-c"
-                        << prerequisite->includePathConfigure()
+                        << prerequisite->libraryPathConfigure()
                 );
                 factory->setIoPolicy(Process::ForwardOutput);
                 libraryPath = factory->produce()->readAll()->trim();
