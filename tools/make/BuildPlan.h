@@ -97,6 +97,7 @@ public:
     int run();
 
     inline String sourcePrefix() const { return sourcePrefix_; }
+    inline String installPrefix() const { return installPrefix_; }
 
     String sourcePath(String source) const;
     String modulePath(String object) const;
