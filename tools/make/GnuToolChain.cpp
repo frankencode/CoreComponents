@@ -342,8 +342,10 @@ void GnuToolChain::appendLinkOptions(Format args, BuildPlan *plan)
 
     if (plan->containsCPlusPlus()) args << "-lstdc++";
 
-    if (libraryPaths->count() > 0) {
+    if (libraryPaths->count() > 0 || plan->installPrefix() != "/usr") {
         Ref<StringList> rpaths = StringList::create();
+        if (plan->installPrefix() != "/usr")
+            *rpaths << "-rpath=" + plan->installPath("lib");
         for (int i = 0; i < libraryPaths->count(); ++i)
             *rpaths << "-rpath=" + libraryPaths->at(i)->absolutePath();
         args << "-Wl,--enable-new-dtags," + rpaths->join(",");
