@@ -49,6 +49,7 @@ public:
     inline void writeFloat32(float32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
     inline void writeFloat64(float64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
 
+    inline int bytesCached() const { return i_; }
     void flush();
 
     inline Stream *stream() const { return stream_; }
