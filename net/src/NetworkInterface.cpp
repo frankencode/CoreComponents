@@ -34,12 +34,20 @@
 namespace flux {
 namespace net {
 
+NetworkInterface::NetworkInterface():
+    index_(-1),
+    type_(0),
+    flags_(0),
+    hardwareAddress_(0),
+    mtu_(0),
+    addressList_(SocketAddressList::create())
+{}
+
 #ifdef __linux
 Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 {
     Ref<NetworkInterfaceList> list = NetworkInterfaceList::create();
-    // getLink(list);
-    for (int i = 1; getLink(list, i); ++i);
+    getLink(list);
 
     int families[2];
     families[0] = ((family == AF_UNSPEC) || (family == AF_INET6)) ? AF_INET6 : -1;
@@ -129,7 +137,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                     int attrFill = NLMSG_PAYLOAD(msg, sizeof(struct ifaddrmsg));
 
                     Ref<SocketAddress> label;
-                    NetworkInterface *interface = 0;
+                    Ref<NetworkInterface> interface = 0;
 
                     for (int i = 0; i < list->count(); ++i) {
                         if (unsigned(list->at(i)->index_) == data->ifa_index) {
@@ -139,10 +147,10 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                     }
 
                     if (!interface) {
-                        if (!getLink(list, data->ifa_index)) continue;
+                        if (!getLink(list, data->ifa_index))
+                            continue;
                         interface = list->at(list->count() - 1);
                     }
-
 
                     for (;RTA_OK(attr, attrFill); attr = RTA_NEXT(attr, attrFill))
                     {
@@ -183,7 +191,6 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                                     label = SocketAddressEntry::create(&addr4);
                                 else if (data->ifa_family == AF_INET6)
                                     label = SocketAddress::create(&addr6);
-                                if (!interface->addressList_) interface->addressList_ = SocketAddressList::create();
                                 interface->addressList_->append(label);
                             }
                             if ((label) && (data->ifa_family == AF_INET)) {
@@ -213,9 +220,9 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
     return list;
 }
 
-bool NetworkInterface::getLink(NetworkInterfaceList *list, int index)
+Ref<NetworkInterface> NetworkInterface::getLink(NetworkInterfaceList *list, int index)
 {
-    bool foundSomething = false;
+    Ref<NetworkInterface> firstFound = 0;
 
     {
         int fd = ::socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
@@ -296,13 +303,11 @@ bool NetworkInterface::getLink(NetworkInterfaceList *list, int index)
                     int attrFill = NLMSG_PAYLOAD(msg, sizeof(struct ifinfomsg));
 
                     Ref<NetworkInterface> interface = NetworkInterface::create();
-                    foundSomething = true;
-                    list->append(interface);
                     interface->index_ = data->ifi_index;
-                    interface->type_ = data->ifi_type;
+                    interface->type_  = data->ifi_type;
                     interface->flags_ = data->ifi_flags;
 
-                    for (;RTA_OK(attr,attrFill); attr = RTA_NEXT(attr, attrFill))
+                    for (;RTA_OK(attr, attrFill); attr = RTA_NEXT(attr, attrFill))
                     {
                         unsigned attrType = attr->rta_type;
                         unsigned attrLen = RTA_PAYLOAD(attr);
@@ -319,7 +324,7 @@ bool NetworkInterface::getLink(NetworkInterfaceList *list, int index)
                             if (attrType == IFLA_ADDRESS)
                                 interface->hardwareAddress_= h;
                             //else if (attrType == IFLA_BROADCAST)
-                            //    interface->broadcastAddress_ = h;
+                            //  interface->broadcastAddress_ = h;
                         }
                         else if (attrType == IFLA_IFNAME) {
                             interface->name_ = (char *)RTA_DATA(attr);
@@ -329,15 +334,21 @@ bool NetworkInterface::getLink(NetworkInterfaceList *list, int index)
                                 interface->mtu_ = *(uint32_t *)RTA_DATA(attr);
                         }
                     }
+
+                    if (!firstFound) firstFound = interface;
+                    if (list) list->append(interface);
+                    else break;
                 }
             }
 
             flux::free(buf);
         }
+
         if (::close(fd) == -1)
             FLUX_SYSTEM_DEBUG_ERROR(errno);
     }
-    return foundSomething;
+
+    return firstFound;
 }
 
 Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
@@ -419,7 +430,6 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
                         label = SocketAddressEntry::create(addr4);
                     else if (addr->sa_family == AF_INET6)
                         label = SocketAddress::create(addr6);
-                    if (!interface->addressList_) interface->addressList_ = SocketAddressList::create();
                     interface->addressList_->append(label);
 
                     if ((label) && (addr->sa_family == AF_INET)) {
@@ -541,7 +551,6 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                             label = SocketAddressEntry::create((struct sockaddr_in *)addr);
                         else if (addr->sa_family == AF_INET6)
                             label = SocketAddress::create((struct sockaddr_in6 *)addr);
-                        if (!interface->addressList_) interface->addressList_ = SocketAddressList::create();
                         interface->addressList_->append(label);
                     }
                     if (addr->sa_family == AF_INET) {

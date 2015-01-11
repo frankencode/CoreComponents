@@ -18,6 +18,7 @@
 namespace flux {
 namespace net {
 
+class RouteInfo;
 class NetworkInterface;
 
 typedef List< Ref<NetworkInterface> > NetworkInterfaceList;
@@ -65,16 +66,12 @@ private:
         return new NetworkInterface;
     }
 
-    NetworkInterface()
-        : index_(-1),
-          type_(0),
-          flags_(0),
-          hardwareAddress_(0),
-          mtu_(0)
-    {}
+    NetworkInterface();
 
     #ifdef __linux
-    static bool getLink(NetworkInterfaceList *list, int index = -1);
+    friend class RouteInfo;
+    static Ref<NetworkInterface> getLink(NetworkInterfaceList *list = 0, int index = -1);
+    inline static Ref<NetworkInterface> getLink(int index) { return getLink(0, index); }
     static Ref<NetworkInterfaceList> queryAllIoctl(int family);
     #endif
 
