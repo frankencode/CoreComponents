@@ -113,8 +113,8 @@ Ref<RouteInfoList> RouteInfo::queryTable()
 
                 Ref<RouteInfo> info = RouteInfo::create();
                 list->append(info);
-                info->destinationLength_ = data->rtm_dst_len;
-                info->sourceLength_ = data->rtm_src_len;
+                info->sourceMask_ = data->rtm_src_len;
+                info->destinationMask_ = data->rtm_dst_len;
 
                 for (;RTA_OK(attr, attrFill); attr = RTA_NEXT(attr, attrFill))
                 {

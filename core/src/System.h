@@ -9,6 +9,8 @@
 #ifndef FLUX_SYSTEM_H
 #define FLUX_SYSTEM_H
 
+#include <flux/String>
+
 namespace flux {
 
 /** \brief Query system properties
@@ -19,6 +21,9 @@ public:
     static int concurrency();
     static int pageSize();
     static double now();
+
+    static String hostName();
+    static void setHostName(const String &newName);
 };
 
 } // namespace flux

@@ -95,7 +95,7 @@ template<class T>
 inline String str(const Ref<T> &x) { return x->toString(); }
 
 template<class T>
-inline String str(const T *x) { return x->toString(); }
+inline String str(const T *x) { return x ? x->toString() : String("null"); }
 
 inline String str(unsigned char x) { return dec(x); }
 inline String str(unsigned short x) { return dec(x); }

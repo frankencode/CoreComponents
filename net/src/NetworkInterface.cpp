@@ -188,7 +188,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                             }
                             if (attrType == IFA_ADDRESS) {
                                 if (data->ifa_family == AF_INET)
-                                    label = SocketAddressEntry::create(&addr4);
+                                    label = SocketAddressEntry::create(&addr4, data->ifa_prefixlen);
                                 else if (data->ifa_family == AF_INET6)
                                     label = SocketAddress::create(&addr6);
                                 interface->addressList_->append(label);
@@ -554,13 +554,16 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                         interface->addressList_->append(label);
                     }
                     if (addr->sa_family == AF_INET) {
-
                         SocketAddressEntry *entry = cast<SocketAddressEntry>(label);
-                        /*/if (i == RTAX_NETMASK) {
-                                label->netmask_ = netmask;
+                        if (i == RTAX_NETMASK) {
+                            uint32 x = addr->sin_addr.s_addr;
+                            uint32 y = ~(uint32_t)0;
+                            int m = 32;
+                            for(; m > 0; --m, y <<= 1)
+                                if (x == y) break;
+                            entry->prefixLength_ = m;
                         }
-                        else*/
-                        if (i == RTAX_BRD) {
+                        else if (i == RTAX_BRD) {
                             if (addr->sa_family == AF_INET)
                                 entry->broadcastAddress_ = SocketAddress::create((struct sockaddr_in *)addr);
                         }

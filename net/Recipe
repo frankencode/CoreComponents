@@ -1,3 +1,3 @@
 Package {
-    use: [ src, tests ]
+    use: [ src, tools, tests ]
 }

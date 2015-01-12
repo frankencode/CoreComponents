@@ -16,6 +16,7 @@
 #endif
 #include <sys/time.h>
 #include <time.h>
+#include <flux/exceptions>
 #include <flux/System>
 
 namespace flux {
@@ -55,6 +56,28 @@ double System::now()
     struct timeval tv;
     ::gettimeofday(&tv, 0);
     return double(tv.tv_sec) + double(tv.tv_usec) / 1e6;
+}
+
+/** Return the name of this host.
+  */
+String System::hostName()
+{
+    const int bufSize = 1024;
+    char buf[bufSize + 1];
+    String name;
+    if (::gethostname(buf, bufSize) == -1)
+        FLUX_SYSTEM_DEBUG_ERROR(errno);
+    buf[bufSize] = 0;
+    name = buf;
+    return name;
+}
+
+/** Set the name of this host.
+  */
+void System::setHostName(const String &newName)
+{
+    if (::sethostname(newName->chars(), newName->count()) == -1)
+        FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 } // namespace flux

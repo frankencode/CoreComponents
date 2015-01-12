@@ -63,10 +63,11 @@ SocketAddress::SocketAddress(int family, String address, int port)
     else
         FLUX_DEBUG_ERROR("Unsupported address family");
 
-    if (family != AF_LOCAL)
+    if (family != AF_LOCAL) {
         if ((address != "") && ((address != "*")))
             if (inet_pton(family, address, addr) != 1)
                 FLUX_DEBUG_ERROR("Broken address string");
+    }
 }
 
 SocketAddress::SocketAddress(struct sockaddr_in *addr)
@@ -262,18 +263,6 @@ String SocketAddress::lookupServiceName() const
     return String(serviceName);
 }
 
-String SocketAddress::hostName()
-{
-    const int bufSize = 1024;
-    char buf[bufSize + 1];
-    String name;
-    if (gethostname(buf, bufSize) != -1) {
-        buf[bufSize] = 0;
-        name = buf;
-    }
-    return name;
-}
-
 uint64_t SocketAddress::networkPrefix() const
 {
     uint64_t prefix = 0;
@@ -288,6 +277,27 @@ uint64_t SocketAddress::networkPrefix() const
         }
     }
     return prefix;
+}
+
+bool SocketAddress::equals(SocketAddress *b) const
+{
+    if (family() != b->family()) return false;
+
+    if (family() == AF_INET) {
+        return inet4Address_.sin_addr.s_addr == b->inet4Address_.sin_addr.s_addr;
+    }
+    else if (family() == AF_INET6) {
+        uint8_t const *x = inet6Address_.sin6_addr.s6_addr;
+        uint8_t const *y = b->inet6Address_.sin6_addr.s6_addr;
+        for (int i = 0; i < 8; ++i) {
+            if (x[i] != y[i]) return false;
+        }
+    }
+    else if (family() == AF_LOCAL) {
+        return strcmp(localAddress_.sun_path, b->localAddress_.sun_path) == 0;
+    }
+
+    return false;
 }
 
 struct sockaddr *SocketAddress::addr() { return &addr_; }

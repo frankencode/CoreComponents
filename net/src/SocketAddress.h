@@ -93,16 +93,18 @@ public:
       */
     String lookupServiceName() const;
 
-    /** Returns the name of this host.
-      *   On a properly configured server the host name returned should be a fully
-      * qualified domain name.
-      */
-    static String hostName();
-
     /** Returns the network prefix of an IPv6 address (the first 64 bits).
       * For IPv4 addresses the entire address is returned.
       */
     uint64_t networkPrefix() const;
+
+    /** See if this address equals address b
+      */
+    bool equals(SocketAddress *b) const;
+
+    /** Size of the address in bits
+      */
+    inline int length() const { return 8 * addrLen(); }
 
     struct sockaddr *addr();
     const struct sockaddr *addr() const;
