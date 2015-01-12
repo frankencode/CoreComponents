@@ -7,6 +7,7 @@
  */
 
 #include <flux/stdio>
+#include <flux/System>
 #include <flux/net/SocketAddress>
 
 using namespace flux;
@@ -40,10 +41,12 @@ String protocolToString(int protocol)
 
 int main(int argc, char **argv)
 {
-    String hostName = SocketAddress::hostName();
+    String hostName;
 
     if (argc == 2)
         hostName = argv[1];
+    else
+        hostName = System::hostName();
 
     fout("hostName = \"%%\"\n") << hostName;
 

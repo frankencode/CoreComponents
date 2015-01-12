@@ -36,26 +36,28 @@ int main()
         if (addressList) {
             for (int k = 0; k < addressList->count(); ++k) {
                 SocketAddress *address = addressList->at(k);
-                fout() << "  Addr:   " << address << " (0x" << hex(address->networkPrefix()) << ")";
-                SocketAddressEntry *addressEntry = cast<SocketAddressEntry>(address);
-                if (addressEntry) {
+                fout() << "  Addr:   " << address;
+                SocketAddressEntry *entry = cast<SocketAddressEntry>(address);
+                if (entry) {
                     bool comma = false;
                     bool delim = true;
-                    if (addressEntry->localAddress()) {
+                    if (entry->networkMask() > 0)
+                        fout() << "/" << entry->networkMask();
+                    if (entry->localAddress()) {
                         if (delim) { fout() << " --"; delim = false; }
-                        fout() << " Local: " << addressEntry->localAddress();
+                        fout() << " Local: " << entry->localAddress();
                         comma = true;
                     }
-                    if (addressEntry->broadcastAddress()) {
+                    if (entry->broadcastAddress()) {
                         if (delim) { fout() << " --"; delim = false; }
                         if (comma) fout() << ",";
-                        fout() << " Bcast: " << addressEntry->broadcastAddress();
+                        fout() << " Bcast: " << entry->broadcastAddress();
                         comma = true;
                     }
-                    if (addressEntry->anycastAddress()) {
+                    if (entry->anycastAddress()) {
                         if (delim) { fout() << " --"; delim = false; }
                         if (comma) fout() << ",";
-                        fout() << " Acast: " << addressEntry->anycastAddress();
+                        fout() << " Acast: " << entry->anycastAddress();
                     }
                 }
                 fout() << nl;
