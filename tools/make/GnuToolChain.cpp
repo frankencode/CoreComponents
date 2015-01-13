@@ -96,11 +96,6 @@ Ref<Job> GnuToolChain::createLinkJob(BuildPlan *plan, Module *module)
     return Job::create(command);
 }
 
-Ref<Job> GnuToolChain::createTestJob(BuildPlan *plan, Module *module)
-{
-    return Job::create(module->toolName());
-}
-
 String GnuToolChain::linkName(BuildPlan *plan) const
 {
     String name;

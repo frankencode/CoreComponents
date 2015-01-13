@@ -35,22 +35,29 @@ bool TestRunStage::run()
         }
     }
 
-    if (!(plan()->options() & BuildPlan::Tests)) return success_ = true;
+    if (!(plan()->options() & BuildPlan::Test)) return success_ = true;
 
-    Ref<JobScheduler> scheduler = createScheduler();
 
-    for (int i = 0; i < plan()->modules()->count(); ++i) {
-        Module *module = plan()->modules()->at(i);
-        scheduler->schedule(toolChain()->createTestJob(plan(), module));
-    }
+    if (plan()->options() & BuildPlan::Tools) {
+        Ref<JobScheduler> scheduler = createScheduler();
 
-    for (Ref<Job> job; scheduler->collect(&job);) {
-        fout() << job->command() << nl;
-        ferr() << job->outputText();
-        if (job->status() != 0) {
-            status_ = job->status();
-            return success_ = false;
+        for (int i = 0; i < plan()->modules()->count(); ++i) {
+            Module *module = plan()->modules()->at(i);
+            scheduler->schedule(Job::create(module->toolName()));
         }
+
+        for (Ref<Job> job; scheduler->collect(&job);) {
+            fout() << job->command() << nl;
+            ferr() << job->outputText();
+            if (job->status() != 0) {
+                status_ = job->status();
+                return success_ = false;
+            }
+        }
+    }
+    else {
+        if (!plan()->shell()->run(toolChain()->linkName(plan())))
+            return success_ = false;
     }
 
     return success_ = true;

@@ -159,6 +159,22 @@ protected:
     }
 };
 
+class TestPrototype: public ApplicationPrototype
+{
+public:
+    static Ref<MetaObject> create() {
+        return new TestPrototype("Test");
+    }
+
+protected:
+    TestPrototype(const String &className):
+        ApplicationPrototype(className)
+    {
+        remove("prefix");
+        remove("install");
+    }
+};
+
 class LibraryPrototype: public ApplicationPrototype
 {
 public:
@@ -193,7 +209,7 @@ protected:
     }
 };
 
-class TestsPrototype: public ToolsPrototype
+class TestsPrototype: public TestPrototype
 {
 public:
     static Ref<MetaObject> create(const String &className = "Tests") {
@@ -202,10 +218,9 @@ public:
 
 protected:
     TestsPrototype(const String &className):
-        ToolsPrototype(className)
+        TestPrototype(className)
     {
-        remove("prefix");
-        remove("install");
+        remove("name");
     }
 };
 
@@ -228,6 +243,7 @@ protected:
 RecipeProtocol::RecipeProtocol()
 {
     define<ApplicationPrototype>();
+    define<TestPrototype>();
     define<LibraryPrototype>();
     define<ToolsPrototype>();
     define<TestsPrototype>();

@@ -94,9 +94,10 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     options_ = 0;
 
     if (recipe_->className() == "Application")  options_ |= Application;
+    else if (recipe_->className() == "Test")    options_ |= Application | Test;
     else if (recipe_->className() == "Library") options_ |= Library;
     else if (recipe_->className() == "Tools")   options_ |= Tools;
-    else if (recipe_->className() == "Tests")   options_ |= Tools | Tests;
+    else if (recipe_->className() == "Tests")   options_ |= Tools | Test;
     else if (recipe_->className() == "Package") options_ |= Package;
 
     if (recipe_->value("debug"))     options_ |= Debug;
@@ -270,7 +271,7 @@ void BuildPlan::readPrerequisites()
 
     prerequisites_ = BuildPlanList::create();
 
-    if ((options_ & Tests) && !(options_ & BuildTests)) return;
+    if ((options_ & Test) && !(options_ & BuildTests)) return;
 
     StringList *prerequisitePaths = cast<StringList>(recipe_->value("use"));
 
@@ -315,7 +316,7 @@ void BuildPlan::globSources()
 {
     if (sources_) return;
 
-    if ((options_ & Tests) && !(options_ & BuildTests)) return;
+    if ((options_ & Test) && !(options_ & BuildTests)) return;
 
     if (recipe_->contains("source"))
         sources_ = globSources(cast<StringList>(recipe_->value("source")));
@@ -348,7 +349,7 @@ void BuildPlan::initModules()
 {
     if (modules_) return;
 
-    if ((options_ & Tests) && !(options_ & BuildTests)) return;
+    if ((options_ & Test) && !(options_ & BuildTests)) return;
 
     modules_ = ModuleList::create();
 
