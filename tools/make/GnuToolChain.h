@@ -31,7 +31,6 @@ public:
 
     virtual Ref<Job> createCompileJob(BuildPlan *plan, Module *module);
     virtual Ref<Job> createLinkJob(BuildPlan *plan, Module *module);
-    virtual Ref<Job> createTestJob(BuildPlan *plan, Module *module);
 
     virtual String linkName(BuildPlan *plan) const;
     virtual bool link(BuildPlan *plan);

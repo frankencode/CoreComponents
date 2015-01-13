@@ -45,7 +45,7 @@ public:
         Application   = 1 << 0,
         Library       = 1 << 1,
         Tools         = 1 << 2,
-        Tests         = 1 << 3,
+        Test          = 1 << 3,
         Package       = 1 << 4,
         Debug         = 1 << 5,
         Release       = 1 << 6,

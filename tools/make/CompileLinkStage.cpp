@@ -20,7 +20,7 @@ bool CompileLinkStage::run()
     if (complete_) return success_;
     complete_ = true;
 
-    if ( (plan()->options() & BuildPlan::Tests) &&
+    if ( (plan()->options() & BuildPlan::Test) &&
          !(plan()->options() & BuildPlan::BuildTests) ) return success_ = true;
 
     for (int i = 0; i < plan()->prerequisites()->count(); ++i)
