@@ -71,11 +71,13 @@ BuildPlan::BuildPlan(int argc, char **argv)
     if (optimize_ == "") optimize_ = toolChain_->defaultOptimization(this);
 
     buildMap()->insert(projectPath_, this);
+    testScope_ = projectPath_;
 }
 
 BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
     : toolChain_(parentPlan->toolChain_),
       projectPath_(projectPath),
+      testScope_(parentPlan->testScope_),
       concurrency_(parentPlan->concurrency_),
       FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
 {

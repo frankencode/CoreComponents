@@ -20,11 +20,22 @@ bool CompileLinkStage::run()
     if (complete_) return success_;
     complete_ = true;
 
-    if ( (plan()->options() & BuildPlan::Test) &&
-         !(plan()->options() & BuildPlan::BuildTests) ) return success_ = true;
+    if (plan()->options() & BuildPlan::Test) {
+        if (!(plan()->options() & BuildPlan::BuildTests))
+            return success_ = true;
+        bool cascade = plan()->recipe()->value("test-cascade");
+        if (!cascade) {
+            String prefix = plan()->projectPath()->copy(0, plan()->testScope()->count());
+            if (prefix != plan()->testScope())
+                return success_ = true;
+        }
+    }
 
-    for (int i = 0; i < plan()->prerequisites()->count(); ++i)
-        if (!plan()->prerequisites()->at(i)->compileLinkStage()->run()) return success_ = false;
+    for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
+        BuildPlan *prerequisite = plan()->prerequisites()->at(i);
+        if (!prerequisite->compileLinkStage()->run())
+            return success_ = false;
+    }
 
     if (plan()->options() & BuildPlan::Package) return success_ = true;
 

@@ -71,6 +71,7 @@ public:
     inline ToolChain *toolChain() const { return toolChain_; }
 
     inline String projectPath() const { return projectPath_; }
+    inline String testScope() const { return testScope_; }
     inline String recipePath() const { return recipePath(projectPath_); }
     inline static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
     inline String modulePath() const { return modulePath_; }
@@ -135,6 +136,7 @@ private:
     Ref<ToolChain> toolChain_;
 
     String projectPath_;
+    String testScope_;
     String modulePath_;
     Ref<MetaObject> recipe_;
 
