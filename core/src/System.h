@@ -14,6 +14,7 @@
 namespace flux {
 
 /** \brief Query system properties
+  * \see KernelInfo
   */
 class System
 {
