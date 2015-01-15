@@ -33,6 +33,8 @@ protected:
     ToolChain *toolChain() const;
     Ref<JobScheduler> createScheduler() const;
 
+    bool outOfScope() const;
+
     BuildPlan *plan_;
     bool complete_, success_;
     int status_;

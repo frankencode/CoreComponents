@@ -20,6 +20,8 @@ bool PreparationStage::run()
     if (complete_) return success_;
     complete_ = true;
 
+    if (outOfScope()) return success_ = true;
+
     for (int i = 0; i < plan()->prerequisites()->count(); ++i)
         if (!plan()->prerequisites()->at(i)->preparationStage()->run()) return success_ = false;
 

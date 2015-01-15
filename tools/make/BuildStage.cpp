@@ -23,4 +23,20 @@ BuildShell *BuildStage::shell() const { return plan_->shell(); }
 ToolChain *BuildStage::toolChain() const { return plan_->toolChain(); }
 Ref<JobScheduler> BuildStage::createScheduler() const { return JobScheduler::create(plan_->concurrency()); }
 
+bool BuildStage::outOfScope() const
+{
+    if (plan()->options() & BuildPlan::Test) {
+        if (!(plan()->options() & BuildPlan::BuildTests))
+            return true;
+        bool cascade = plan()->recipe()->value("test-cascade");
+        if (!cascade) {
+            String prefix = plan()->projectPath()->copy(0, plan()->testScope()->count());
+            if (prefix != plan()->testScope())
+                return true;
+        }
+    }
+
+    return false;
+}
+
 } // namespace fluxmake
