@@ -196,7 +196,7 @@ public:
     SyntaxError(String text, SyntaxState *state = 0, String resource = "");
     ~SyntaxError() throw();
 
-    inline SyntaxState *state() const { return state_; }
+    inline const SyntaxState *state() const { return state_; }
 
     virtual String message() const;
 

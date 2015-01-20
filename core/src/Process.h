@@ -124,7 +124,7 @@ protected:
         SystemStream *rawOutput,
         SystemStream *rawError,
         pid_t processId,
-        String command
+        String command // FIXME: StringList *arguments
     );
 
     ~Process();

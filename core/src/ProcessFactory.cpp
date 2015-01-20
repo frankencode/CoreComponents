@@ -47,6 +47,8 @@ void ProcessFactory::setErr(SystemStream *stream) { err_ = stream; }
 void ProcessFactory::setSignalMask(SignalSet *mask) { signalMask_ = mask; }
 void ProcessFactory::setFileCreationMask(int mask) { fileCreationMask_ = mask; }
 
+String ProcessFactory::command() const { return arguments_->join(" "); }
+
 void ProcessFactory::setCommand(String command)
 {
     command_ = command->simplify()->trimInsitu();
