@@ -28,6 +28,8 @@ public:
         return new ProcessFactory(type);
     }
 
+    inline String execPath() const { return execPath_; }
+
     void setExecPath(String path);
     void setArguments(StringList *list);
     void setEnvMap(EnvMap *map);
@@ -41,6 +43,7 @@ public:
     void setSignalMask(SignalSet *mask);
     void setFileCreationMask(int mask);
 
+    String command() const;
     void setCommand(String command);
 
     Ref<Process> produce();
