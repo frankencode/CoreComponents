@@ -172,7 +172,10 @@ int BuildPlan::run()
         ) << toolChain_->machineCommand();
     }
 
-    if (!preparationStage()->run()) return 1;
+    if (!recipe_->value("clean")) {
+        if (!preparationStage()->run())
+            return 1;
+    }
 
     globSources();
     initModules();
