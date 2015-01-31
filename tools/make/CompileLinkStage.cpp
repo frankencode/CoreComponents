@@ -20,6 +20,11 @@ bool CompileLinkStage::run()
     if (complete_) return success_;
     complete_ = true;
 
+    if (plan()->options() & BuildPlan::Test) {
+        if (!(plan()->options() & BuildPlan::BuildTests))
+            return success_ = true;
+    }
+
     if (outOfScope()) return success_ = true;
 
     for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
