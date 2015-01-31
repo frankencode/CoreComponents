@@ -18,12 +18,7 @@ bool TestRunStage::run()
     if (complete_) return success_;
     complete_ = true;
 
-    bool cascade = plan()->recipe()->value("test-cascade");
-    if (!cascade) {
-        String prefix = plan()->projectPath()->copy(0, plan()->testScope()->count());
-        if (prefix != plan()->testScope())
-            return success_ = true;
-    }
+    if (outOfScope()) return success_ = true;
 
     for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
         BuildPlan *prerequisite = plan()->prerequisites()->at(i);

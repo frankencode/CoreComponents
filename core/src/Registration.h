@@ -11,6 +11,8 @@
 
 namespace flux {
 
+/** \brief object registration during library initialization
+  */
 template<class Asset>
 class Registration
 {
