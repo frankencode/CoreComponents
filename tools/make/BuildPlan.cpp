@@ -92,6 +92,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     alias_ = recipe_->value("alias");
     version_ = recipe_->value("version");
     installPrefix_ = recipe_->value("prefix");
+    testArgs_ = recipe_->value("test-args");
 
     options_ = 0;
 
@@ -120,6 +121,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
         options_ |= parentPlan->options() & GlobalOptions;
         concurrency_ = parentPlan->concurrency_;
         installPrefix_ = parentPlan->installPrefix_;
+        testArgs_ = parentPlan->testArgs_;
     }
 
     BuildParameters::read(recipe_, this);
