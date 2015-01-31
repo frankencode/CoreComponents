@@ -31,13 +31,14 @@ bool TestRunStage::run()
 
     if (!(plan()->options() & BuildPlan::Test)) return success_ = true;
 
-
     if (plan()->options() & BuildPlan::Tools) {
         Ref<JobScheduler> scheduler = createScheduler();
 
         for (int i = 0; i < plan()->modules()->count(); ++i) {
             Module *module = plan()->modules()->at(i);
-            scheduler->schedule(Job::create(module->toolName()));
+            String command = module->toolName();
+            if (plan()->testArgs() != "") command += " " + plan()->testArgs();
+            scheduler->schedule(Job::create(command));
         }
 
         for (Ref<Job> job; scheduler->collect(&job);) {
@@ -50,7 +51,9 @@ bool TestRunStage::run()
         }
     }
     else {
-        if (!plan()->shell()->run(toolChain()->linkName(plan())))
+        String command = toolChain()->linkName(plan());
+        if (plan()->testArgs() != "") command += " " + plan()->testArgs();
+        if (!plan()->shell()->run(command))
             return success_ = false;
     }
 

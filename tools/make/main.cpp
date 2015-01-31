@@ -36,6 +36,7 @@ int main(int argc, char **argv)
             "  -uninstall       delete installed files\n"
             "  -test            build all tests\n"
             "  -test-run        run all tests\n"
+            "  -test-args       list of arguments to pass to all tests\n"
             "  -compile-flags   custom compile flags\n"
             "  -link-flags      custom link flags\n"
             "  -compiler        select compiler\n"

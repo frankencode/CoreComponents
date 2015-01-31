@@ -99,6 +99,7 @@ public:
 
     inline String sourcePrefix() const { return sourcePrefix_; }
     inline String installPrefix() const { return installPrefix_; }
+    inline String testArgs() const { return testArgs_; }
 
     String sourcePath(String source) const;
     String modulePath(String object) const;
@@ -160,6 +161,7 @@ private:
 
     String sourcePrefix_;
     String installPrefix_;
+    String testArgs_;
 
     BuildShell shell_;
 
