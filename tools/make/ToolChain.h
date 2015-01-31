@@ -49,9 +49,9 @@ public:
     virtual void clean(BuildPlan *plan) = 0;
 
 protected:
-    ToolChain(String compiler, String machine)
-        : compiler_(compiler),
-          machine_(machine)
+    ToolChain(String compiler, String machine):
+        compiler_(compiler),
+        machine_(machine)
     {}
 
 private:

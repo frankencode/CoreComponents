@@ -44,10 +44,10 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
     uninstallStage_(this), \
     cleanStage_(this)
 
-BuildPlan::BuildPlan(int argc, char **argv)
-    : projectPath_("."),
-      concurrency_(-1),
-      FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
+BuildPlan::BuildPlan(int argc, char **argv):
+    projectPath_("."),
+    concurrency_(-1),
+    FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
 {
     Ref<Arguments> arguments = Arguments::parse(argc, argv);
     StringList *items = arguments->items();
@@ -74,12 +74,12 @@ BuildPlan::BuildPlan(int argc, char **argv)
     scope_ = projectPath_;
 }
 
-BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan)
-    : toolChain_(parentPlan->toolChain_),
-      projectPath_(projectPath),
-      scope_(parentPlan->scope_),
-      concurrency_(parentPlan->concurrency_),
-      FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
+BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan):
+    toolChain_(parentPlan->toolChain_),
+    projectPath_(projectPath),
+    scope_(parentPlan->scope_),
+    concurrency_(parentPlan->concurrency_),
+    FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
 {
     recipe_ = yason::parse(File::open(recipePath(projectPath_))->map(), recipeProtocol());
     readRecipe(parentPlan);
