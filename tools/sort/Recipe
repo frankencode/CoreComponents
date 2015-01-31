@@ -1,5 +1,0 @@
-Application {
-    name: fluxsort
-    source: *.cpp
-    use: core
-}

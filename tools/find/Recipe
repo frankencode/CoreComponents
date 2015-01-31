@@ -1,5 +1,0 @@
-Application {
-    name: fluxfind
-    source: *.cpp
-    use: core
-}

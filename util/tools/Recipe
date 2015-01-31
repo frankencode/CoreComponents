@@ -1,3 +1,0 @@
-Package {
-    use: [ bnfcc, claim, tar, light ]
-}

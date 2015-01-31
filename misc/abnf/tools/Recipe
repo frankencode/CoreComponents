@@ -1,5 +1,4 @@
-Application {
-    name: fluxabnfcc
+Tools {
     source: *.cpp
     use: [ core, abnf ]
 }
