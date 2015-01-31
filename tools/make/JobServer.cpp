@@ -11,9 +11,9 @@
 
 namespace fluxmake {
 
-JobServer::JobServer(JobChannel *requestChannel, JobChannel *replyChannel)
-    : requestChannel_(requestChannel),
-      replyChannel_(replyChannel)
+JobServer::JobServer(JobChannel *requestChannel, JobChannel *replyChannel):
+    requestChannel_(requestChannel),
+    replyChannel_(replyChannel)
 {
     Thread::start();
 }
