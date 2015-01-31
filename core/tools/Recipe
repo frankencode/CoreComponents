@@ -1,5 +1,4 @@
-Application {
-    name: fluxcat
+Tools {
     source: *.cpp
     use: core
 }

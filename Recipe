@@ -1,4 +1,4 @@
 Package {
-    use: [ core, net, stream, crypto, util, tools ]
-    version: 0.2.5
+    use: [ core, net, stream, crypto, toki, tools, misc ]
+    version: 0.2.6
 }
