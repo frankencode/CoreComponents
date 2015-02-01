@@ -103,16 +103,17 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     else if (recipe_->className() == "Tests")   options_ |= Tools | Test;
     else if (recipe_->className() == "Package") options_ |= Package;
 
-    if (recipe_->value("debug"))     options_ |= Debug;
-    if (recipe_->value("release"))   options_ |= Release;
-    if (recipe_->value("simulate"))  options_ |= Simulate;
-    if (recipe_->value("blindfold")) options_ |= Blindfold;
-    if (recipe_->value("bootstrap")) options_ |= Bootstrap | Simulate | Blindfold;
-    if (recipe_->value("test"))      options_ |= BuildTests;
-    if (recipe_->value("test-run"))  options_ |= BuildTests;
-    if (recipe_->value("clean"))     options_ |= BuildTests;
-    if (recipe_->value("verbose"))   options_ |= Verbose;
-    if (recipe_->value("configure")) options_ |= Configure;
+    if (recipe_->value("debug"))       options_ |= Debug;
+    if (recipe_->value("release"))     options_ |= Release;
+    if (recipe_->value("simulate"))    options_ |= Simulate;
+    if (recipe_->value("blindfold"))   options_ |= Blindfold;
+    if (recipe_->value("bootstrap"))   options_ |= Bootstrap | Simulate | Blindfold;
+    if (recipe_->value("test"))        options_ |= BuildTests;
+    if (recipe_->value("test-run"))    options_ |= BuildTests;
+    if (recipe_->value("test-report")) options_ |= BuildTests;
+    if (recipe_->value("clean"))       options_ |= BuildTests;
+    if (recipe_->value("verbose"))     options_ |= Verbose;
+    if (recipe_->value("configure"))   options_ |= Configure;
 
     concurrency_ = recipe_->value("concurrency");
 
@@ -192,7 +193,7 @@ int BuildPlan::run()
 
     if (!compileLinkStage()->run()) return 1;
 
-    if (recipe_->value("test-run")) {
+    if (recipe_->value("test-run") || recipe_->value("test-report")) {
         if (!testRunStage()->run())
             return testRunStage()->status();
     }
