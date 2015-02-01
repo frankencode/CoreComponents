@@ -16,6 +16,7 @@ namespace flux {
 namespace net {
 
 /** \brief Connection oriented byte-sequential communication channel
+  * \see ConnectionMonitor
   */
 class StreamSocket: public SystemStream
 {
@@ -26,9 +27,7 @@ public:
     SocketAddress *address() const;
     bool getPeerAddress(SocketAddress *address);
 
-    bool readyAccept(double interval);
     Ref<StreamSocket> accept();
-    bool established(double interval);
     void shutdown(int how = SHUT_RDWR);
 
     void setRecvTimeout(double interval);

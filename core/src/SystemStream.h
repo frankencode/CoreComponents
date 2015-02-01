@@ -32,7 +32,6 @@ public:
     void close();
 
     bool readyRead(double interval) const;
-    bool readyReadOrWrite(double interval) const;
 
     virtual int read(ByteArray *data);
     virtual void write(const ByteArray *data);
