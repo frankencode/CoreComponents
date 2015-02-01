@@ -71,11 +71,6 @@ void StreamSocket::listen(int backlog)
         FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
-bool StreamSocket::readyAccept(double interval)
-{
-    return readyRead(interval);
-}
-
 Ref<StreamSocket> StreamSocket::accept()
 {
     Ref<SocketAddress> clientAddress = SocketAddress::create(address_->family());
@@ -110,29 +105,6 @@ void StreamSocket::connect()
         if (::fcntl(fd_, F_SETFL, flags) == -1)
             FLUX_SYSTEM_DEBUG_ERROR(errno);
     }
-}
-
-bool StreamSocket::established(double interval)
-{
-    if (!connected_)
-    {
-        if (readyReadOrWrite(interval))
-        {
-            int error = 0;
-            socklen_t len = sizeof(error);
-            if (::getsockopt(fd_, SOL_SOCKET, SO_ERROR, &error, &len) == -1)
-                FLUX_SYSTEM_DEBUG_ERROR(errno);
-
-            if (error != 0) {
-                errno = error;
-                FLUX_SYSTEM_DEBUG_ERROR(errno);
-            }
-
-            connected_ = true;
-        }
-    }
-
-    return connected_;
 }
 
 void StreamSocket::shutdown(int how)

@@ -65,25 +65,6 @@ bool SystemStream::readyRead(double interval) const
     return (ret > 0);
 }
 
-bool SystemStream::readyReadOrWrite(double interval) const
-{
-    fd_set rset, wset;
-    FD_ZERO(&rset);
-    FD_SET(fd_, &rset);
-    wset = rset;
-    struct timeval tv, *to = 0;
-    if (interval != inf) {
-        if (interval < 0) interval = 0;
-        to = &tv;
-        double sec = 0;
-        to->tv_usec = modf(interval, &sec) * 1e6;
-        to->tv_sec = sec;
-    }
-    int ret = ::select(fd_ + 1, &rset, &wset, 0, to);
-    if (ret == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
-    return (ret > 0);
-}
-
 int SystemStream::read(ByteArray *data)
 {
     ssize_t ret = 0;
