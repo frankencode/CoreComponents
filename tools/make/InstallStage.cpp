@@ -16,6 +16,7 @@ bool InstallStage::run()
     if (complete_) return success_;
     complete_ = true;
 
+    if (outOfScope()) return success_ = true;
     if (plan()->options() & BuildPlan::Test) return success_ = true;
 
     for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
