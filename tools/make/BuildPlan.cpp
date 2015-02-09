@@ -60,8 +60,9 @@ BuildPlan::BuildPlan(int argc, char **argv):
 
     projectPath_ = projectPath_->absolutePath()->canonicalPath();
 
-    ResourceGuard context(recipePath());
-    recipe_ = yason::parse(File::open(recipePath())->map(), recipeProtocol());
+    String path = recipePath();
+    ResourceGuard context(path);
+    recipe_ = yason::parse(File::open(path)->map(), recipeProtocol());
     arguments->validate(recipe_);
     arguments->override(recipe_);
 
@@ -81,7 +82,9 @@ BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan):
     concurrency_(parentPlan->concurrency_),
     FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
 {
-    recipe_ = yason::parse(File::open(recipePath(projectPath_))->map(), recipeProtocol());
+    String path = recipePath();
+    ResourceGuard context(path);
+    recipe_ = yason::parse(File::open(path)->map(), recipeProtocol());
     readRecipe(parentPlan);
     buildMap()->insert(projectPath_, this);
 }
