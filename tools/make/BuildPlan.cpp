@@ -29,7 +29,7 @@ Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
 Ref<BuildPlan> BuildPlan::create(String projectPath)
 {
     Ref<BuildPlan> plan;
-    if (buildMap()->lookup(String(projectPath->absolutePath()), &plan)) return plan;
+    if (buildMap()->lookupPlan(String(projectPath->absolutePath()), &plan)) return plan;
     return new BuildPlan(projectPath, this);
 }
 
@@ -59,10 +59,10 @@ BuildPlan::BuildPlan(int argc, char **argv):
     }
 
     projectPath_ = projectPath_->absolutePath()->canonicalPath();
+    recipePath_ = recipePath(projectPath_);
 
-    String path = recipePath();
-    ResourceGuard context(path);
-    recipe_ = yason::parse(File::open(path)->map(), recipeProtocol());
+    ResourceGuard context(recipePath_);
+    recipe_ = yason::parse(File::open(recipePath_)->map(), recipeProtocol());
     arguments->validate(recipe_);
     arguments->override(recipe_);
 
@@ -71,22 +71,22 @@ BuildPlan::BuildPlan(int argc, char **argv):
     toolChain_ = GnuToolChain::create(compiler());
     if (optimize_ == "") optimize_ = toolChain_->defaultOptimization(this);
 
-    buildMap()->insert(projectPath_, this);
+    buildMap()->insertPlan(projectPath_, this);
     scope_ = projectPath_;
 }
 
 BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan):
     toolChain_(parentPlan->toolChain_),
     projectPath_(projectPath),
+    recipePath_(recipePath(projectPath)),
     scope_(parentPlan->scope_),
     concurrency_(parentPlan->concurrency_),
     FLUXMAKE_BUILDPLAN_COMPONENTS_INIT
 {
-    String path = recipePath();
-    ResourceGuard context(path);
-    recipe_ = yason::parse(File::open(path)->map(), recipeProtocol());
+    ResourceGuard context(recipePath_);
+    recipe_ = yason::parse(File::open(recipePath_)->map(), recipeProtocol());
     readRecipe(parentPlan);
-    buildMap()->insert(projectPath_, this);
+    buildMap()->insertPlan(projectPath_, this);
 }
 
 void BuildPlan::readRecipe(BuildPlan *parentPlan)
@@ -105,6 +105,8 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     else if (recipe_->className() == "Tools")   options_ |= Tools;
     else if (recipe_->className() == "Tests")   options_ |= Tools | Test;
     else if (recipe_->className() == "Package") options_ |= Package;
+
+    checkDuplicateTargetNames();
 
     if (recipe_->value("debug"))       options_ |= Debug;
     if (recipe_->value("release"))     options_ |= Release;
@@ -163,6 +165,26 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     if (parentPlan) {
         optimize_ = parentPlan->optimize();
         linkStatic_ = parentPlan->linkStatic();
+    }
+}
+
+void BuildPlan::checkDuplicateTargetNames()
+{
+    if (name_ == "") return;
+
+    String otherRecipePath;
+    bool ok = false;
+    if (options_ & Library)
+        ok = buildMap()->registerLibrary(name_, recipePath_, &otherRecipePath);
+    else if (options_ & Application)
+        ok = buildMap()->registerApplication(name_, recipePath_, &otherRecipePath);
+    if (!ok) {
+        throw UsageError(
+            Format("Duplicate target name '%%' in\n  %%\n  and\n  %%")
+            << name_
+            << otherRecipePath
+            << recipePath_
+        );
     }
 }
 

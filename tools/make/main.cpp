@@ -47,6 +47,10 @@ int main(int argc, char **argv)
             "  -bootstrap       write bootstrap script\n"
         ) << toolName;
     }
+    catch (UsageError &ex) {
+        ferr() << toolName << ": " << ex.message() << nl;
+        return 1;
+    }
     #ifdef NDEBUG
     catch (Exception &ex) {
         ferr() << toolName << ": " << ex.message() << nl;
