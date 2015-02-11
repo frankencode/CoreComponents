@@ -71,9 +71,9 @@ public:
     inline ToolChain *toolChain() const { return toolChain_; }
 
     inline String projectPath() const { return projectPath_; }
-    inline String scope() const { return scope_; }
-    inline String recipePath() const { return recipePath(projectPath_); }
     inline static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
+    inline String recipePath() const { return recipePath_; }
+    inline String scope() const { return scope_; }
     inline String modulePath() const { return modulePath_; }
     inline MetaObject *recipe() const { return recipe_; }
 
@@ -125,6 +125,7 @@ private:
     BuildPlan(String projectPath, BuildPlan *parentPlan);
 
     void readRecipe(BuildPlan *parentPlan = 0);
+    void checkDuplicateTargetNames();
 
     void use(BuildPlan *plan);
     String findPrerequisite(String prerequisitePath) const;
@@ -137,6 +138,7 @@ private:
     Ref<ToolChain> toolChain_;
 
     String projectPath_;
+    String recipePath_;
     String scope_;
     String modulePath_;
     Ref<MetaObject> recipe_;

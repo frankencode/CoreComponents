@@ -22,18 +22,28 @@ using namespace flux;
 
 class BuildPlan;
 
+/** \brief keep track of build plans and target names
+  */
 class BuildMap: public Object
 {
 public:
-    void insert(String path, BuildPlan *plan);
-    bool lookup(String path, Ref<BuildPlan> *plan) const;
+    void insertPlan(String path, BuildPlan *plan);
+    bool lookupPlan(String path, Ref<BuildPlan> *plan) const;
     String commonPrefix() const;
+
+    bool registerLibrary(String name, String recipePath, String *exitingRecipePath);
+    bool registerApplication(String name, String recipePath, String *existingRecipePath);
 
 private:
     friend class Singleton<BuildMap>;
     BuildMap();
+
     typedef PrefixTree<char, Ref<BuildPlan> > BuildPlanByPath;
     Ref<BuildPlanByPath> buildPlanByPath_;
+
+    typedef PrefixTree<char, String> RecipePathByTargetName;
+    Ref<RecipePathByTargetName> libraries_;
+    Ref<RecipePathByTargetName> applications_;
 };
 
 BuildMap *buildMap();

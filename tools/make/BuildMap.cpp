@@ -13,15 +13,17 @@
 namespace fluxmake {
 
 BuildMap::BuildMap():
-    buildPlanByPath_(BuildPlanByPath::create())
+    buildPlanByPath_(BuildPlanByPath::create()),
+    libraries_(RecipePathByTargetName::create()),
+    applications_(RecipePathByTargetName::create())
 {}
 
-void BuildMap::insert(String path, BuildPlan *plan)
+void BuildMap::insertPlan(String path, BuildPlan *plan)
 {
     buildPlanByPath_->insert(path, plan);
 }
 
-bool BuildMap::lookup(String path, Ref<BuildPlan> *plan) const
+bool BuildMap::lookupPlan(String path, Ref<BuildPlan> *plan) const
 {
     return buildPlanByPath_->lookup(path, plan);
 }
@@ -29,6 +31,16 @@ bool BuildMap::lookup(String path, Ref<BuildPlan> *plan) const
 String BuildMap::commonPrefix() const
 {
     return buildPlanByPath_->commonPrefix('/');
+}
+
+bool BuildMap::registerLibrary(String name, String recipePath, String *existingRecipePath)
+{
+    return libraries_->insert(name, recipePath, existingRecipePath);
+}
+
+bool BuildMap::registerApplication(String name, String recipePath, String *existingRecipePath)
+{
+    return applications_->insert(name, recipePath, existingRecipePath);
 }
 
 BuildMap *buildMap() { return Singleton<BuildMap>::instance(); }
