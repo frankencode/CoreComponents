@@ -38,7 +38,7 @@ void LogMaster::registerLog(Log *log)
     if (!timerByPath_->lookup(log->path(), &timer)) {
         Ref<Logs> logs = Logs::create();
         logs->insert(log);
-        timer = RotateTimer::start(log->rotationInterval(), rotate_, logs);
+        timer = RotateTimer::start(System::now() + log->rotationInterval(), log->rotationInterval(), rotate_, logs);
     }
     else {
         timer->tick()->insert(log);
