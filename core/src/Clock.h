@@ -29,18 +29,18 @@ class Clock: public Thread
 public:
     typedef Channel<double> BeatChannel;
 
-    inline static Ref<Clock> start(double startTime, double interval = 1, BeatChannel *beat = 0) {
-        return new Clock(startTime, interval, beat);
+    inline static Ref<Clock> start(double startTime, double interval = 1, BeatChannel *beatChannel = 0) {
+        return new Clock(startTime, interval, beatChannel);
     }
 
     static double nextIntervalStart(double startTime, double interval);
 
     inline double interval() const { return interval_; }
     inline double startTime() const { return startTime_; }
-    inline BeatChannel *beat() const { return beat_; }
+    inline BeatChannel *beatChannel() const { return beatChannel_; }
 
 private:
-    Clock(double interval, double startTime, BeatChannel *beat);
+    Clock(double interval, double startTime, BeatChannel *beatChannel);
     ~Clock();
 
     virtual void run();
@@ -49,7 +49,7 @@ private:
 
     double interval_;
     double startTime_;
-    Ref<BeatChannel> beat_;
+    Ref<BeatChannel> beatChannel_;
     Ref<ShutdownChannel> shutdown_;
 };
 
