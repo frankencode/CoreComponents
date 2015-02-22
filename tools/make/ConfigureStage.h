@@ -20,6 +20,7 @@ public:
     bool run();
 
 private:
+    String configureShell(String shellCommand) const;
     bool findIncludePath(SystemPrerequisite *prerequisite, String *includePath);
     bool findLibraryPath(SystemPrerequisite *prerequisite, String *libraryPath);
 };

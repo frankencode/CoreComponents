@@ -12,6 +12,7 @@
 #include <flux/Process>
 #include <flux/ProcessFactory>
 #include "BuildPlan.h"
+#include "ConfigureCache.h"
 #include "ConfigureStage.h"
 
 namespace fluxmake {
@@ -38,17 +39,7 @@ bool ConfigureStage::run()
             SystemPrerequisite *prerequisite = prerequisiteList->at(j);
             String includePath;
             if (prerequisite->includePathConfigure() != "") {
-                Ref<ProcessFactory> factory = ProcessFactory::create(Process::GroupLeader);
-                String shell = Process::env("SHELL");
-                factory->setExecPath(shell);
-                factory->setArguments(
-                    StringList::create()
-                        << shell
-                        << "-c"
-                        << prerequisite->includePathConfigure()
-                );
-                factory->setIoPolicy(Process::ForwardOutput);
-                includePath = factory->produce()->readAll()->trim();
+                includePath = configureShell(prerequisite->includePathConfigure());
             }
             else if (!findIncludePath(prerequisite, &includePath)) {
                 if (!prerequisite->optional()) {
@@ -58,17 +49,7 @@ bool ConfigureStage::run()
             }
             String libraryPath;
             if (prerequisite->libraryPathConfigure() != "") {
-                Ref<ProcessFactory> factory = ProcessFactory::create(Process::GroupLeader);
-                String shell = Process::env("SHELL");
-                factory->setExecPath(shell);
-                factory->setArguments(
-                    StringList::create()
-                        << shell
-                        << "-c"
-                        << prerequisite->libraryPathConfigure()
-                );
-                factory->setIoPolicy(Process::ForwardOutput);
-                libraryPath = factory->produce()->readAll()->trim();
+                libraryPath = configureShell(prerequisite->libraryPathConfigure());
             }
             else if (!findLibraryPath(prerequisite, &libraryPath)) {
                 if (!prerequisite->optional()) {
@@ -91,6 +72,36 @@ bool ConfigureStage::run()
     }
 
     return success_ = true;
+}
+
+String ConfigureStage::configureShell(String shellCommand) const
+{
+    Ref<ProcessFactory> factory = ProcessFactory::create(Process::GroupLeader);
+    String shell = Process::env("SHELL");
+    factory->setExecPath(shell);
+    factory->setArguments(
+        StringList::create()
+            << shell
+            << "-c"
+            << shellCommand
+    );
+    factory->setIoPolicy(Process::ForwardOutput);
+
+    String text;
+    if (configureCache()->lookup(shellCommand, &text))
+        return text;
+
+    Ref<Process> process = factory->produce();
+    text = process->readAll()->trim();
+    int status = process->wait();
+    if (status != 0) {
+        ferr() << "Configure command failed with status = " << status << " (\"" << shellCommand << "\")" << nl;
+        return "";
+    }
+
+    configureCache()->insert(shellCommand, text);
+
+    return text;
 }
 
 bool ConfigureStage::findIncludePath(SystemPrerequisite *prerequisite, String *includePath)
