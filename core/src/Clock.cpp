@@ -12,13 +12,13 @@ double Clock::nextIntervalStart(double startTime, double interval)
     return startTime + interval - fmod(startTime, interval);
 }
 
-Clock::Clock(double interval, double startTime, BeatChannel *beat):
+Clock::Clock(double interval, double startTime, BeatChannel *beatChannel):
     interval_(interval),
     startTime_(startTime),
-    beat_(beat),
+    beatChannel_(beatChannel),
     shutdown_(ShutdownChannel::create())
 {
-    if (!beat_) beat_ = BeatChannel::create();
+    if (!beatChannel_) beatChannel_ = BeatChannel::create();
 }
 
 Clock::~Clock()
@@ -31,7 +31,7 @@ void Clock::run()
 {
     double timeout = startTime_;
     while (!shutdown_->popBefore(timeout)) {
-        beat_->push(timeout);
+        beatChannel_->push(timeout);
         timeout += interval_;
     }
 }
