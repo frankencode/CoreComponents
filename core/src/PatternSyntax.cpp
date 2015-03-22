@@ -326,8 +326,10 @@ NODE PatternSyntax::compileSequence(const ByteArray *text, Token *token, SyntaxD
     }
     if (node->firstChild() == node->lastChild()) {
         NODE child = node->firstChild();
-        child->unlink();
-        return child;
+        if (child) {
+            child->unlink();
+            return child;
+        }
     }
     return definition->debug(node, "Glue");
 }
