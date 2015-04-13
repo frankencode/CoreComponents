@@ -6,8 +6,8 @@
  *
  */
 
-#ifndef FLUX_NETWORKSTATE_H
-#define FLUX_NETWORKSTATE_H
+#ifndef FLUXNET_NETWORKSTATE_H
+#define FLUXNET_NETWORKSTATE_H
 
 #include <flux/net/NetworkInterface>
 
@@ -49,4 +49,4 @@ private:
 
 }} // namespace flux::net
 
-#endif // FLUX_NETWORKSTATE_H
+#endif // FLUXNET_NETWORKSTATE_H

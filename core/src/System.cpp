@@ -58,7 +58,7 @@ double System::now()
     return double(tv.tv_sec) + double(tv.tv_usec) / 1e6;
 }
 
-/** Return the name of this host.
+/** Return the name of this host
   */
 String System::hostName()
 {
@@ -72,7 +72,7 @@ String System::hostName()
     return name;
 }
 
-/** Set the name of this host.
+/** Set the name of this host
   */
 void System::setHostName(const String &newName)
 {
