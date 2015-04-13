@@ -552,20 +552,21 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                         else if (addr->sa_family == AF_INET6)
                             label = SocketAddress::create((struct sockaddr_in6 *)addr);
                         interface->addressList_->append(label);
-                    }
-                    if (addr->sa_family == AF_INET) {
-                        SocketAddressEntry *entry = cast<SocketAddressEntry>(label);
-                        if (i == RTAX_NETMASK) {
-                            uint32 x = addr->sin_addr.s_addr;
-                            uint32 y = ~(uint32_t)0;
-                            int m = 32;
-                            for(; m > 0; --m, y <<= 1)
-                                if (x == y) break;
-                            entry->prefixLength_ = m;
-                        }
-                        else if (i == RTAX_BRD) {
-                            if (addr->sa_family == AF_INET)
-                                entry->broadcastAddress_ = SocketAddress::create((struct sockaddr_in *)addr);
+                        
+                        if (addr->sa_family == AF_INET) {
+                            SocketAddressEntry *entry = cast<SocketAddressEntry>(label);
+                            if (i == RTAX_NETMASK) {
+                                uint32_t x = ((struct sockaddr_in *)addr)->sin_addr.s_addr;
+                                uint32_t y = ~(uint32_t)0;
+                                int m = 32;
+                                for(; m > 0; --m, y <<= 1)
+                                    if (x == y) break;
+                                entry->networkMask_ = m;
+                            }
+                            else if (i == RTAX_BRD) {
+                                if (addr->sa_family == AF_INET)
+                                    entry->broadcastAddress_ = SocketAddress::create((struct sockaddr_in *)addr);
+                            }
                         }
                     }
                     attr += len;
