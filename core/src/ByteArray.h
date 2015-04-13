@@ -130,7 +130,7 @@ public:
     }
     int count(const char *set);
 
-    inline int replace(char oldItem, char newItem) {
+    inline int replaceInsitu(char oldItem, char newItem) {
         int n = 0;
         for (int i = 0; i < size_; ++i) {
             if (data_[i] == oldItem) {
@@ -140,6 +140,8 @@ public:
         }
         return n;
     }
+    inline int replace(char oldItem, char newItem) { return replaceInsitu(oldItem, newItem); } // FIXME: obsolete
+    // inline Ref<ByteArray> replace(char oldItem, char newItem);
 
     int find(const char *pattern, int i = 0) const;
     int find(String pattern, int i = 0) const;
