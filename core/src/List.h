@@ -80,18 +80,13 @@ public:
         }
         return index;
     }
-    int replace(const Item &oldItem, const Item &newItem)
+    List *replaceInsitu(const Item &oldItem, const Item &newItem)
     {
-        int index = 0;
-        int numReplaced = 0;
-        while (index < count()) {
-            if (at(index) == oldItem) {
-                at(index) = newItem;
-                ++numReplaced;
-            }
-            ++index;
+        for (int i = 0; i < count(); ++i) {
+            if (at(i) == oldItem)
+                at(i) = newItem;
         }
-        return numReplaced;
+        return this;
     }
     inline bool contains(const Item &item) const { return find(item) < count(); }
     inline Item join(const Item &sep = Item()) const { return Item::join(this, sep); }

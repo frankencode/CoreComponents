@@ -137,15 +137,12 @@ public:
 
     inline bool contains(const T &item) const { return find(item) < size_; }
 
-    inline int replace(const T &oldItem, const T &newItem) {
-        int n = 0;
+    inline Array *replaceInsitu(const T &oldItem, const T &newItem) {
         for (int i = 0; i < size_; ++i) {
-            if (data_[i] == oldItem) {
+            if (data_[i] == oldItem)
                 data_[i] = newItem;
-                ++n;
-            }
         }
-        return n;
+        return this;
     }
 
     inline int find(Array *pattern, int i) const { return find(i, pattern->data(), pattern->count()); }
