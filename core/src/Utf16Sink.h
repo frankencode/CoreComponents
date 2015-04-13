@@ -19,7 +19,7 @@ namespace flux {
 class Utf16Sink: public Object
 {
 public:
-    inline static Ref<Utf16Sink> open(Stream *stream, ByteArray *buf, int endian = BigEndian) {
+    inline static Ref<Utf16Sink> open(Stream *stream, ByteArray *buf = 0, int endian = BigEndian) {
         return new Utf16Sink(stream, buf, endian);
     }
     inline static Ref<Utf16Sink> open(ByteArray *buf, int endian = BigEndian) {

@@ -24,7 +24,7 @@ namespace flux {
 class Utf16Source: public Object
 {
 public:
-    inline static Ref<Utf16Source> open(Stream *stream, ByteArray *buf, int endian = BigEndian) {
+    inline static Ref<Utf16Source> open(Stream *stream, ByteArray *buf = 0, int endian = BigEndian) {
         return new Utf16Source(stream, buf, endian);
     }
     inline static Ref<Utf16Source> open(ByteArray *buf, int endian = BigEndian) {
