@@ -45,7 +45,7 @@ bool HtmlScreen::project(Token *token, int i0, int i1)
     if (s->contains('<')) s = s->replace("<", "&lt;");
     if (s->contains('>')) s = s->replace(">", "&gt;");
     if (s->contains('\t')) s = s->replace("\t", "    ");
-    bool whitespace = s->count(" \t\n\r") == s->count();
+    bool whitespace = s->countCharsIn(" \t\n\r") == s->count();
     if (!whitespace)
         sink_ << "<span class=\"toki_" << hex(unsigned(token->scope())) << "_" << hex(token->rule()) << "\">";
     sink_ << s;

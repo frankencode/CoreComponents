@@ -191,7 +191,7 @@ Ref<RouteInfoList> RouteInfo::queryTable()
 
 Ref<RouteInfoList> RouteInfo::queryTable()
 {
-    #warning "RouteInfo is not supported for non-Linux systems"
+    #warning "RouteInfo is currently not supported for non-Linux systems"
     return RouteInfoList::create();
 }
 

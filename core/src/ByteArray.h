@@ -112,8 +112,7 @@ public:
     inline Ref<ByteArray> head(int n) const { return copy(0, n); }
     inline Ref<ByteArray> tail(int n) const { return copy(size_ - n, size_); }
 
-    inline int find(char ch) const { return find(ch, 0); }
-    inline int find(char ch, int i) const {
+    inline int find(char ch, int i = 0) const {
         if (i < 0) i = 0;
         while (i < size_) {
             if (data_[i] == ch) break;
@@ -125,10 +124,11 @@ public:
     inline bool contains(char ch) const { return find(ch) < size_; }
     inline int count(char ch) const {
         int n = 0;
-        for (const char *p = data_; *p; ++p) n += (*p == ch);
+        for (int i = 0; i < size_; ++i)
+            n += (data_[i] == ch);
         return n;
     }
-    int count(const char *set);
+    int countCharsIn(const char *set);
 
     inline ByteArray *replaceInsitu(char oldItem, char newItem) {
         for (int i = 0; i < size_; ++i) {
