@@ -133,7 +133,7 @@ Ref<ByteArray> ByteArray::paste(int i0, int i1, String text) const
     return parts->join();
 }
 
-int ByteArray::count(const char *set)
+int ByteArray::countCharsIn(const char *set)
 {
     int n = 0;
     for (const char *p = data_; *p; ++p) {
@@ -218,8 +218,13 @@ Ref<ByteArray> ByteArray::join(const StringList *parts, String sep)
 
 Ref<StringList> ByteArray::split(char sep) const
 {
-    char sep2[2] = { sep, '\0' };
-    return split(sep2);
+    Ref<StringList> parts = StringList::create();
+    for (int i = 0; i < size_;) {
+        int j = find(sep, i);
+        parts->append(copy(i, j));
+        i = j + 1;
+    }
+    return parts;
 }
 
 Ref<StringList> ByteArray::split(const char *sep) const
