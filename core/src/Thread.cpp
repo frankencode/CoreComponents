@@ -70,13 +70,15 @@ void Thread::sleepUntil(double timeout)
 
 void Thread::blockSignals(SignalSet *set)
 {
-    int ret = pthread_sigmask(SIG_BLOCK, set->rawSet(), 0/*oset*/);
+    Singleton<SignalSet>::instance();
+    int ret = pthread_sigmask(SIG_BLOCK, set->rawSet(), 0/*oldset*/);
     if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
 void Thread::unblockSignals(SignalSet *set)
 {
-    int ret = pthread_sigmask(SIG_UNBLOCK, set->rawSet(), 0/*oset*/);
+    Singleton<SignalSet>::instance();
+    int ret = pthread_sigmask(SIG_UNBLOCK, set->rawSet(), 0/*oldset*/);
     if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 

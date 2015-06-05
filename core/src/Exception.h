@@ -26,8 +26,7 @@ public:
 
 private:
     const char *what() const throw() {
-        static String h;
-        h = message();
+        static String h = message();
         return h;
     }
 };
