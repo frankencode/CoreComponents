@@ -38,6 +38,7 @@ Ref<Process> Process::start(String command, int ioPolicy)
 {
     Ref<ProcessFactory> factory = ProcessFactory::create();
     factory->setIoPolicy(ioPolicy);
+    factory->setSignalMask(defaultSignalMask());
     return start(command, factory);
 }
 
@@ -290,6 +291,11 @@ int Process::alarm(int seconds)
     int ret = ::alarm(seconds);
     if (ret == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
     return ret;
+}
+
+SignalSet *Process::defaultSignalMask()
+{
+    return Singleton<SignalSet>::instance();
 }
 
 void Process::forwardSignal(int signal)

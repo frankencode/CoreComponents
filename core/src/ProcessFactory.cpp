@@ -20,10 +20,10 @@
 
 namespace flux {
 
-ProcessFactory::ProcessFactory(int type)
-    : type_(type),
-      ioPolicy_(0),
-      fileCreationMask_(-1)
+ProcessFactory::ProcessFactory(int type):
+    type_(type),
+    ioPolicy_(0),
+    fileCreationMask_(-1)
 {}
 
 void ProcessFactory::setExecPath(String path)

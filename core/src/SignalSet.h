@@ -10,7 +10,7 @@
 #define FLUX_SIGNALSET_H
 
 #include <signal.h>
-#include <flux/Object>
+#include <flux/Singleton>
 
 namespace flux {
 
@@ -38,9 +38,15 @@ public:
 
 private:
     friend class Thread;
+    friend class Singleton<SignalSet>;
 
-    enum { Empty, Full };
-    SignalSet(int preset);
+    inline static Ref<SignalSet> create() {
+        return new SignalSet;
+    }
+
+    enum { Empty, Full, Query };
+
+    SignalSet(int preset = Query);
     sigset_t rawSet_;
 };
 

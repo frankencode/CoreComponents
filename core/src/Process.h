@@ -10,8 +10,8 @@
 #define FLUX_PROCESS_H
 
 #include <sys/types.h> // pid_t
-#include <signal.h> // SIGTERM, etc.
 #include <flux/Exception>
+#include <flux/SignalSet>
 #include <flux/String>
 #include <flux/Map>
 #include <flux/SystemStream>
@@ -107,6 +107,7 @@ public:
     static void killGroup(pid_t processGroupId, int signal, bool *permissionDenied = 0);
     static void raise(int signal);
     static int alarm(int seconds);
+    static SignalSet *defaultSignalMask();
 
     static void sleep(double duration);
     static void exit(int exitCode);
