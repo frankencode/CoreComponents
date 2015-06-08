@@ -293,6 +293,9 @@ int Process::alarm(int seconds)
     return ret;
 }
 
+/** Returns the default signal mask of this process before any modifications
+  * by Thread::blockSignals() or Thread::unblockSignals()
+  */
 SignalSet *Process::defaultSignalMask()
 {
     return Singleton<SignalSet>::instance();
