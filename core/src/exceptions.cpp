@@ -69,7 +69,7 @@ String SyntaxError::message() const
         int line = 0, pos = 0;
         text_->offsetToLinePos(state_->hintOffset(), &line, &pos);
         if (resource_ != "") format << resource_ << ":";
-        if (!text_->contains('\n')) format << "\'" << text_ << "\':";
+        if (!text_->contains('\n') && text_->trim()->count() > 0) format << "\'" << text_ << "\':";
         format << line << ":" << pos << ": ";
     }
     format << error;
