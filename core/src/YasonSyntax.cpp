@@ -305,7 +305,9 @@ YasonSyntax::YasonSyntax(int options)
     DEFINE("Message", &message_,
         GLUE(
             INLINE("Noise"),
-            INLINE("Value"),
+            EXPECT("expected YASON expression",
+                INLINE("Value")
+            ),
             INLINE("Noise")
         )
     );
