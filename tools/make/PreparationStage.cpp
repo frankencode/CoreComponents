@@ -32,11 +32,10 @@ bool PreparationStage::run()
 
     if (!plan()->predicates()) return success_ = true;
 
-    Ref<JobScheduler> scheduler;
-
     for (int i = 0; i < plan()->predicates()->count(); ++i)
     {
         Predicate *predicate = plan()->predicates()->at(i);
+        Ref<JobScheduler> scheduler;
 
         if (predicate->source()->count() == 0) {
             String targetPath = plan()->sourcePath(predicate->target()->replace("%", ""));
@@ -118,16 +117,16 @@ bool PreparationStage::run()
                 }
             }
         }
-    }
 
-    if (!scheduler) return success_ = true;
-
-    for (Ref<Job> job; scheduler->collect(&job);) {
-        fout() << shell()->beautify(job->command()) << nl;
-        if (job->status() != 0) {
-            ferr() << job->outputText();
-            status_ = job->status();
-            return success_ = false;
+        if (scheduler) {
+            for (Ref<Job> job; scheduler->collect(&job);) {
+                fout() << shell()->beautify(job->command()) << nl;
+                if (job->status() != 0) {
+                    ferr() << job->outputText();
+                    status_ = job->status();
+                    return success_ = false;
+                }
+            }
         }
     }
 
