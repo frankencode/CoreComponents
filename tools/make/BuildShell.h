@@ -19,7 +19,7 @@ using namespace flux;
 
 class BuildPlan;
 
-class BuildShell
+class BuildShell // FIXME: should inherit from Object
 {
 public:
     BuildShell(BuildPlan *plan);
@@ -36,6 +36,8 @@ public:
 
     bool install(String sourcePath, String destPath);
     bool unlink(String path);
+
+    void cd(String path);
 
 private:
     BuildPlan *plan_;

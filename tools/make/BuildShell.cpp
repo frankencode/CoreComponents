@@ -112,4 +112,11 @@ bool BuildShell::unlink(String path)
     return true;
 }
 
+void BuildShell::cd(String path)
+{
+    fout("cd %%\n") << path;
+    if (plan()->options() & BuildPlan::Simulate) return;
+    try { Process::cd(path); } catch (SystemError &) { /*FIXME*/ }
+}
+
 } // namespace fluxmake

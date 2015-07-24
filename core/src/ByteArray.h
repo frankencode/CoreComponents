@@ -83,6 +83,17 @@ public:
         return words_[j];
     }
 
+    template<class T>
+    inline bool hasItem(int j) const {
+        return has(j * sizeof(T));
+    }
+
+    template<class T>
+    inline T &item(int j = 0) const {
+        FLUX_ASSERT(has(j * sizeof(T)) && has((j + 1) * sizeof(T) -1));
+        return reinterpret_cast<T *>(data_)[j];
+    }
+
     inline char *chars() const {
         FLUX_ASSERT2(flags_ & Terminated, "ByteArray is not terminated by zero and therefore cannot safely be converted to a C string");
         return chars_;
@@ -111,6 +122,16 @@ public:
 
     inline Ref<ByteArray> head(int n) const { return copy(0, n); }
     inline Ref<ByteArray> tail(int n) const { return copy(size_ - n, size_); }
+
+    inline bool startsWith(char ch) const {
+        if (size_ == 0) return false;
+        return data_[0] == ch;
+    }
+
+    inline bool endsWith(char ch) const {
+        if (size_ == 0) return false;
+        return data_[size_ - 1] == ch;
+    }
 
     inline int find(char ch, int i = 0) const {
         if (i < 0) i = 0;

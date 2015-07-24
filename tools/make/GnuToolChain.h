@@ -10,6 +10,7 @@
 #define FLUXMAKE_GNUTOOLCHAIN_H
 
 #include <flux/Format>
+#include <flux/Pattern>
 #include "ToolChain.h"
 
 namespace fluxmake {
@@ -38,6 +39,8 @@ public:
     virtual bool includeTest(BuildPlan *plan, String includePath, StringList *testIncludes) const;
     virtual bool linkTest(BuildPlan *plan, String libraryPath, StringList *testLibraries) const;
 
+    virtual bool testHeaderPath(BuildPlan *plan, String headerPath) const;
+
     virtual bool install(BuildPlan *plan);
     virtual bool install(BuildPlan *plan, Module *module);
     virtual bool uninstall(BuildPlan *plan);
@@ -62,6 +65,9 @@ protected:
 
     static void createAliasSymlinks(BuildPlan *plan, String appName);
     static void cleanAliasSymlinks(BuildPlan *plan, String appName);
+
+private:
+    Pattern dependencySplitPattern_;
 };
 
 } // namespace fluxmake

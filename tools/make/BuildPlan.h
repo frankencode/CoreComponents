@@ -98,6 +98,7 @@ public:
     int run();
 
     inline String sourcePrefix() const { return sourcePrefix_; }
+    inline String installRoot() const { return installRoot_; }
     inline String installPrefix() const { return installPrefix_; }
     inline String testArgs() const { return testArgs_; }
 
@@ -162,6 +163,7 @@ private:
     Ref<BuildParameters> usage_;
 
     String sourcePrefix_;
+    String installRoot_;
     String installPrefix_;
     String testArgs_;
 

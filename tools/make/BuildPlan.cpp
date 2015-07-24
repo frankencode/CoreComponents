@@ -94,6 +94,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     name_ = recipe_->value("name");
     alias_ = recipe_->value("alias");
     version_ = recipe_->value("version");
+    installRoot_ = recipe_->value("root");
     installPrefix_ = recipe_->value("prefix");
     testArgs_ = recipe_->value("test-args");
 
@@ -126,6 +127,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
         options_ &= ~GlobalOptions;
         options_ |= parentPlan->options() & GlobalOptions;
         concurrency_ = parentPlan->concurrency_;
+        installRoot_ = parentPlan->installRoot_;
         installPrefix_ = parentPlan->installPrefix_;
         testArgs_ = parentPlan->testArgs_;
     }
@@ -231,17 +233,17 @@ int BuildPlan::run()
 String BuildPlan::sourcePath(String source) const
 {
     if (projectPath_ == ".") return source;
-    return projectPath_ + "/" + source;
+    return projectPath_->expandPath(source);
 }
 
 String BuildPlan::modulePath(String object) const
 {
-    return modulePath_ + "/" + object;
+    return modulePath_->expandPath(object);
 }
 
 String BuildPlan::installPath(String relativeInstallPath) const
 {
-    return installPrefix_ + "/" + relativeInstallPath;
+    return installRoot_->expandPath(installPrefix_)->expandPath(relativeInstallPath);
 }
 
 Ref<StringList> BuildPlan::globSources(StringList *pattern) const
