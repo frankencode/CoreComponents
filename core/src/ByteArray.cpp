@@ -856,7 +856,8 @@ Ref<ByteArray> ByteArray::reducePath() const
 
 Ref<ByteArray> ByteArray::expandPath(String relativePath) const
 {
-    return String(Format() << String(this) << "/" << relativePath);
+    const char *sep = (endsWith('/') || relativePath->startsWith('/')) ? "" : "/";
+    return String(Format() << String(this) << sep << relativePath);
 }
 
 Ref<ByteArray> ByteArray::canonicalPath() const

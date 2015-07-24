@@ -68,6 +68,7 @@ protected:
         SpecificBuildParametersPrototype(className, protocol)
     {
         insert("use", StringList::create());
+        insert("root", "/");
         insert("prefix", "/usr");
 
         insert("debug", false);
