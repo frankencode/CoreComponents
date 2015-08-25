@@ -43,6 +43,8 @@ public:
 
     void closeOnExec();
 
+    int ioctl(int request, void *arg);
+
 protected:
     SystemStream(int fd, bool iov = true);
 

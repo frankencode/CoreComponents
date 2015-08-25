@@ -7,6 +7,7 @@
  */
 
 #include <sys/types.h>
+#include <sys/ioctl.h> // ioctl
 #include <sys/uio.h> // readv
 #include <errno.h>
 #include <string.h>
@@ -131,6 +132,14 @@ void SystemStream::closeOnExec()
 {
     if (::fcntl(fd_, F_SETFD, FD_CLOEXEC) == -1)
         FLUX_SYSTEM_DEBUG_ERROR(errno);
+}
+
+int SystemStream::ioctl(int request, void *arg)
+{
+    int value = ::ioctl(fd_, request, arg);
+    if (value == -1)
+        FLUX_SYSTEM_DEBUG_ERROR(errno);
+    return value;
 }
 
 } // namespace flux
