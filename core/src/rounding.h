@@ -65,6 +65,16 @@ inline T bound(T min, T x, T max) {
     return x;
 }
 
+/** round x down to the next multiple of a whole number g
+  */
+template<class G, class X>
+X roundDownToNext(G g, X x) { return x - x % g; }
+
+/** round x up to the next multiple of a whole number g
+  */
+template<class G, class X>
+X roundUpToNext(G g, X x) { return x - x % g + g; }
+
 } // namespace flux
 
 #endif // FLUX_ROUNDING_H
