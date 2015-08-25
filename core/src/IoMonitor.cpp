@@ -19,14 +19,14 @@ IoMonitor::IoMonitor(int maxCount):
     events_(Events::create())
 {}
 
-IoEvent *IoMonitor::addEvent(SystemStream *stream, int activity)
+IoEvent *IoMonitor::addEvent(SystemStream *stream, int type)
 {
     FLUX_ASSERT(events_->count() < fds_->count());
-    Ref<IoEvent> event = IoEvent::create(events_->count(), stream, activity);
+    Ref<IoEvent> event = IoEvent::create(events_->count(), stream, type);
     events_->insert(event->index_, event);
     PollFd *p = &fds_->at(event->index_);
     p->fd = stream->fd();
-    p->events = activity;
+    p->events = type;
     return event;
 }
 
@@ -49,7 +49,7 @@ Ref<IoActivity> IoMonitor::wait(double timeout)
 {
     PollFd *fds = 0;
     if (events_->count() > 0) fds = fds_->data();
-    int n = ::poll(fds, events_->count(), timeout * 1000);
+    int n = ::poll(fds, events_->count(), timeout < 0 ? -1 : timeout * 1000);
     if (n < 0) FLUX_SYSTEM_DEBUG_ERROR(errno);
 
     FLUX_ASSERT(n <= events_->count());
