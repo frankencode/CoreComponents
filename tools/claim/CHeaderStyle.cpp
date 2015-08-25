@@ -64,11 +64,17 @@ String CHeaderStyle::str(Notice *notice) const
         format << " * Copyright (C) ";
         if (c->yearStart() == c->yearEnd()) format << c->yearStart();
         else format << c->yearStart() << "-" << c->yearEnd();
-        format << " " << c->holder() << ".\n";
+        format << " " << c->holder() << ".";
+        if (i != copyrights->count() - 1) format << "\n";
     }
-    format <<
-        " *\n"
-        " * " << notice->statement()->replace("\n", "\n * ") << "\n";
+    /*if (copyrights->count() == 1 && !notice->statement()->contains('\n')) {
+        format << "  " << notice->statement() << ".\n";
+    }
+    else {*/
+        format << "\n"
+            " *\n"
+            " * " << notice->statement()->replace("\n", "\n * ") << "\n";
+    //}
     format <<
         " *\n"
         " */\n"
