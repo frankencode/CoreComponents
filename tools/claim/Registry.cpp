@@ -24,6 +24,7 @@ const HeaderStyle *Registry::headerStyleByLanguage(String language) const
 bool Registry::detectHeaderStyle(String path, String text, HeaderStyle **style) const
 {
     toki::Language *language = 0;
+    if (path->suffix() == "qml") path = path->replace(".qml", ".cpp"); // workaround HACK
     if (toki::registry()->detectLanguage(path, text, &language)) {
         Ref<HeaderStyle> value;
         if (headerStyleByLanguage_->lookup(language->name(), &value)) {
