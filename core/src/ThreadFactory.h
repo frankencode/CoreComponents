@@ -14,6 +14,8 @@
 
 namespace flux {
 
+class CallStack;
+
 /** \brief Child thread factory
   * \see ProcessFactory
   */
@@ -42,7 +44,7 @@ protected:
     ThreadFactory(Ref< Clonable<Thread> > prototype = 0);
 
 private:
-    friend class ByteArray;
+    friend class CallStack;
 
     Ref<ByteArray> allocateStack() const;
     static void freeStack(ByteArray *stack);

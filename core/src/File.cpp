@@ -161,6 +161,15 @@ off_t File::transfer(off_t count, Stream *sink, ByteArray *buf)
     return Stream::transfer(count, sink, buf);
 }
 
+class MappedByteArray: public ByteArray
+{
+private:
+    friend class File;
+    MappedByteArray(char *data, int size):
+        ByteArray(data, size, ByteArray::Mapped, File::unmap)
+    {}
+};
+
 String File::map() const
 {
     off_t fileEnd = ::lseek(fd_, 0, SEEK_END);
@@ -197,10 +206,9 @@ String File::map() const
     #endif
     return String(
         Ref<ByteArray>(
-            new ByteArray(
+            new MappedByteArray(
                 reinterpret_cast<char *>(p),
-                fileSize,
-                ByteArray::Mapped | ByteArray::Terminated | (((protection & PROT_READ) != 0) * ByteArray::Readonly)
+                fileSize
             )
         )
     );

@@ -16,17 +16,15 @@
 #include <flux/Utf16Sink>
 #include <flux/Format>
 #include <flux/Process>
-#include <flux/File>
-#include <flux/ThreadFactory>
-#include <flux/Singleton>
 #include <flux/ByteArray>
 
 namespace flux {
 
-ByteArray::ByteArray(const char *data, int size, int flags)
+ByteArray::ByteArray(const char *data, int size, int flags, Destroy destroy)
     : size_(0),
       data_(const_cast<char *>("")),
-      flags_(Wrapped|Terminated)
+      flags_(Wrapped|Terminated),
+      destroy_(destroy)
       #ifndef NDEBUG
       , rangeCount_(0)
       #endif
@@ -51,7 +49,8 @@ ByteArray::ByteArray(const char *data, int size, int flags)
 ByteArray::ByteArray(const ByteArray &b)
     : size_(0),
       data_(const_cast<char *>("")),
-      flags_(Wrapped|Terminated)
+      flags_(Wrapped|Terminated),
+      destroy_(0)
       #ifndef NDEBUG
       , rangeCount_(0)
       #endif
@@ -70,19 +69,18 @@ ByteArray::~ByteArray()
     destroy();
 }
 
+void ByteArray::doNothing(ByteArray *)
+{}
+
 void ByteArray::destroy()
 {
-    if (flags_ & Wrapped) ;
-    else if (flags_ & Mapped) File::unmap(this);
-    else if (flags_ & Stack) ThreadFactory::freeStack(this);
+    if (destroy_) destroy_(this);
+    else if (flags_ & Wrapped) ;
     else delete[] data_;
 }
 
 void ByteArray::resize(int newSize)
 {
-    if (size_ == 0 && newSize > 0) {
-        FLUX_ASSERT(this != Singleton<ByteArray>::instance());
-    }
     if (newSize <= size_) {
         truncate(newSize);
         return;
@@ -178,29 +176,27 @@ bool ByteArray::contains(String pattern) const
 
 Ref<ByteArray> ByteArray::join(const StringList *parts, const char *sep)
 {
+    if (parts->count() == 0)
+        return ByteArray::create();
+
     int sepSize = strlen(sep);
-    if (parts->count() == 0) {
-        return Singleton<ByteArray>::instance();
-    }
-    else {
-        int size = 0;
-        for (int i = 0; i < parts->count(); ++i)
-            size += parts->at(i)->count();
-        size += (parts->count() - 1) * sepSize;
-        Ref<ByteArray> result = ByteArray::create(size);
-        char *p = result->data_;
-        for (int i = 0; i < parts->count(); ++i) {
-            ByteArray *part = parts->at(i);
-            memcpy(p, part->data_, part->size_);
-            p += part->size_;
-            if (i + 1 < parts->count()) {
-                memcpy(p, sep, sepSize);
-                p += sepSize;
-            }
+    int size = 0;
+    for (int i = 0; i < parts->count(); ++i)
+        size += parts->at(i)->count();
+    size += (parts->count() - 1) * sepSize;
+    Ref<ByteArray> result = ByteArray::create(size);
+    char *p = result->data_;
+    for (int i = 0; i < parts->count(); ++i) {
+        ByteArray *part = parts->at(i);
+        memcpy(p, part->data_, part->size_);
+        p += part->size_;
+        if (i + 1 < parts->count()) {
+            memcpy(p, sep, sepSize);
+            p += sepSize;
         }
-        FLUX_ASSERT(p == result->data_ + result->size_);
-        return result;
     }
+    FLUX_ASSERT(p == result->data_ + result->size_);
+    return result;
 }
 
 Ref<ByteArray> ByteArray::join(const StringList *parts, char sep)

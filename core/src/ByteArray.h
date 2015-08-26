@@ -234,15 +234,24 @@ public:
     bool equalsCaseInsensitive(ByteArray *b) const;
     bool equalsCaseInsensitive(const char *b) const;
 
-private:
+protected:
     friend class Singleton<ByteArray>;
-    friend class File;
-    friend class ThreadFactory;
     friend class ByteRange;
 
-    ByteArray(const char *data = 0, int size = -1, int flags = Terminated);
+    enum Flags {
+        Unterminated = 0,
+        Terminated   = 1,
+        Readonly     = 2,
+        Wrapped      = 4,
+        Mapped       = 8,
+        Stack        = 16
+    };
+    typedef void (*Destroy)(ByteArray *array);
+    ByteArray(const char *data = 0, int size = -1, int flags = Terminated, Destroy destroy = 0);
     ByteArray(const ByteArray &b);
 
+private:
+    static void doNothing(ByteArray *);
     void destroy();
 
     int size_;
@@ -253,15 +262,9 @@ private:
         uint32_t *words_;
     };
 
-    enum Flags {
-        Unterminated = 0,
-        Terminated   = 1,
-        Readonly     = 2,
-        Wrapped      = 4,
-        Mapped       = 8,
-        Stack        = 16
-    };
     int flags_;
+
+    Destroy destroy_;
 
     #ifndef NDEBUG
     int rangeCount_;
@@ -315,6 +318,7 @@ public:
         size_ = i1 - i0;
         data_ = array->data_ + i0;
         flags_ = ByteArray::Wrapped;
+        destroy_ = ByteRange::doNothing;
         #ifndef NDEBUG
         rangeCount_ = array->rangeCount_;
         #endif
@@ -328,6 +332,8 @@ public:
 private:
     ByteRange(const ByteRange&);
     ByteRange &operator=(const ByteRange &b);
+
+    static void doNothing(ByteArray *array) {}
 
     ByteArray *array_;
 };

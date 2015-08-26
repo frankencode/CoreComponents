@@ -75,6 +75,14 @@ void ThreadFactory::start(Thread *thread)
     if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
+class CallStack: public ByteArray
+{
+public:
+    CallStack(char *data, int size):
+        ByteArray(data, size, ByteArray::Mapped, ThreadFactory::freeStack)
+    {}
+};
+
 Ref<ByteArray> ThreadFactory::allocateStack() const
 {
     #ifndef MAP_ANONYMOUS
@@ -84,7 +92,7 @@ Ref<ByteArray> ThreadFactory::allocateStack() const
     if (protection == MAP_FAILED) FLUX_SYSTEM_DEBUG_ERROR(errno);
     void *stack = ::mmap((char *)protection + guardSize_, stackSize_ - 2 * guardSize_, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
     if (stack == MAP_FAILED) FLUX_SYSTEM_DEBUG_ERROR(errno);
-    return new ByteArray((char *)protection, stackSize_, ByteArray::Stack|ByteArray::Terminated);
+    return new CallStack((char *)protection, stackSize_);
 }
 
 void ThreadFactory::freeStack(ByteArray *stack)
