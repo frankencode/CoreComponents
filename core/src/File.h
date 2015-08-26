@@ -19,6 +19,8 @@
 
 namespace flux {
 
+class MappedByteArray;
+
 /** \brief Read, write, create and unlink regular files, symlinks, etc.
   * \see FileStatus, Dir
   */
@@ -129,7 +131,7 @@ public:
     static void save(String path, String text);
 
 private:
-    friend class ByteArray;
+    friend class MappedByteArray;
 
     static int translateOpenFlags(int openFlags);
 
