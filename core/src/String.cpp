@@ -8,17 +8,16 @@
 
 #include <flux/Format>
 #include <flux/Variant>
-#include <flux/Singleton>
 #include <flux/String>
 
 namespace flux {
 
-String::String(): Super(Singleton<ByteArray>::instance()) {}
+String::String(): Super(ByteArray::create()) {}
 
 String::String(const Variant &b)
     : Super(cast<ByteArray>(b))
 {
-    if (!Super::get()) Super::set(Singleton<ByteArray>::instance());
+    if (!Super::get()) Super::set(ByteArray::create());
 }
 
 String::String(const Format &b)

@@ -116,7 +116,7 @@ void File::truncate(off_t length)
 
 class UnlinkFile: public Action {
 public:
-    UnlinkFile(String path): path_(path->absolutePath()) {}
+    UnlinkFile(String path): path_(path->absolutePathRelativeTo(Process::cwd())) {}
     void run() { try { unlink(path_); } catch(...) {} }
 private:
     String path_;
@@ -166,7 +166,7 @@ class MappedByteArray: public ByteArray
 private:
     friend class File;
     MappedByteArray(char *data, int size):
-        ByteArray(data, size, ByteArray::Mapped, File::unmap)
+        ByteArray(data, size, File::unmap)
     {}
 };
 

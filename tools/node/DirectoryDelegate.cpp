@@ -135,7 +135,7 @@ void DirectoryDelegate::streamFile(String path)
     while (true) {
         int n = file->read(buf);
         if (n == 0) break;
-        write(ByteRange(buf, 0, n));
+        write(buf->select(0, n));
     }
 }
 

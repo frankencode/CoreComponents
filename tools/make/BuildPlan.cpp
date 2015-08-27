@@ -7,6 +7,7 @@
  */
 
 #include <flux/stdio>
+#include <flux/Process>
 #include <flux/Glob>
 #include <flux/Dir>
 #include <flux/ResourceGuard>
@@ -29,7 +30,7 @@ Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
 Ref<BuildPlan> BuildPlan::create(String projectPath)
 {
     Ref<BuildPlan> plan;
-    if (buildMap()->lookupPlan(String(projectPath->absolutePath()), &plan)) return plan;
+    if (buildMap()->lookupPlan(String(projectPath->absolutePathRelativeTo(Process::cwd())), &plan)) return plan;
     return new BuildPlan(projectPath, this);
 }
 
@@ -58,7 +59,7 @@ BuildPlan::BuildPlan(int argc, char **argv):
         projectPath_ = items->at(0);
     }
 
-    projectPath_ = projectPath_->absolutePath()->canonicalPath();
+    projectPath_ = projectPath_->absolutePathRelativeTo(Process::cwd())->canonicalPath();
     recipePath_ = recipePath(projectPath_);
 
     ResourceGuard context(recipePath_);
@@ -364,7 +365,7 @@ void BuildPlan::globSources()
 
     containsCPlusPlus_ = false;
     for (int i = 0; i < sources_->count(); ++i) {
-        String suffix = sources_->at(i)->suffix();
+        String suffix = sources_->at(i)->fileSuffix();
         if (suffix == "cpp" || suffix == "cc" || suffix == "cxx" || suffix == "mm") {
             containsCPlusPlus_ = true;
             break;
@@ -392,8 +393,8 @@ void BuildPlan::initModules()
     f << ".modules";
     {
         Format h;
-        String path = projectPath_->absolutePath();
-        String topLevel = sourcePrefix_->absolutePath();
+        String path = projectPath_->absolutePathRelativeTo(Process::cwd());
+        String topLevel = sourcePrefix_->absolutePathRelativeTo(Process::cwd());
         while (path != topLevel && path != "/") {
             h << path->fileName();
             path = path->reducePath();

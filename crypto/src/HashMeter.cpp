@@ -31,7 +31,7 @@ int HashMeter::read(ByteArray *data)
 {
     if (stream_) {
         int n = stream_->read(data);
-        hashSum_->feed(ByteRange(data, 0, n));
+        hashSum_->feed(data->select(0, n));
         return n;
     }
     return 0;
