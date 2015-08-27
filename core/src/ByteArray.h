@@ -53,6 +53,10 @@ public:
     inline int last() const { return size_ - 1; }
 
     inline bool has(int i) const {
+        if (parent_) {
+            int i0 = data_ - parent_->data_;
+            return parent_->has(i - i0);
+        }
         return (0 <= i) && (i < size_);
     }
 
