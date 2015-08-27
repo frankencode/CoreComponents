@@ -476,7 +476,7 @@ public:
         if (h != -1) {
             Ref<ByteArray> filteredText = text->copy();
             for (Token *token = filterToken; token; token = token->nextSibling())
-                ByteRange(filteredText, token->i0(), token->i1())->clear(blank_);
+                filteredText->select(token->i0(), token->i1())->clear(blank_);
 
             i = entry()->matchNext(filteredText, i, parentToken, state);
             if (i != -1) {

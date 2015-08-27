@@ -358,7 +358,7 @@ void GnuToolChain::appendLinkOptions(Format args, BuildPlan *plan)
         if (plan->installPrefix() != "/usr")
             *rpaths << "-rpath=" + plan->installPrefix()->expandPath("lib");
         for (int i = 0; i < libraryPaths->count(); ++i)
-            *rpaths << "-rpath=" + libraryPaths->at(i)->absolutePath();
+            *rpaths << "-rpath=" + libraryPaths->at(i)->absolutePathRelativeTo(Process::cwd());
         args << "-Wl,--enable-new-dtags," + rpaths->join(",");
     }
 }

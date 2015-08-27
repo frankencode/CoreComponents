@@ -78,7 +78,7 @@ inline void ByteSink::flush()
 {
     if (!stream_) throw BufferOverflow();
 
-    stream_->write(ByteRange(buf_, 0, i_));
+    stream_->write(buf_->select(0, i_));
     i_ = 0;
 }
 

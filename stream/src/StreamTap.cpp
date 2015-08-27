@@ -30,7 +30,7 @@ bool StreamTap::readyRead(double interval) const
 int StreamTap::read(ByteArray *buf)
 {
     int n = stream_->read(buf);
-    inputTap_->write(ByteRange(buf, 0, n));
+    inputTap_->write(buf->select(0, n));
     return n;
 }
 

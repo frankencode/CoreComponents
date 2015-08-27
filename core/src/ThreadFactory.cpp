@@ -79,7 +79,7 @@ class CallStack: public ByteArray
 {
 public:
     CallStack(char *data, int size):
-        ByteArray(data, size, ByteArray::Mapped, ThreadFactory::freeStack)
+        ByteArray(data, size, ThreadFactory::freeStack)
     {}
 };
 

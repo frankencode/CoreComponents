@@ -139,7 +139,7 @@ String fixed(float64_t x, int nf)
     if (fp < 0) fp = -fp;
     for (int i = 0; i < nf; ++i) fp *= 10;
     fp = round(fp);
-    *ByteRange(s, sip->count() + 1, s->count()) = *right(inum(uint64_t(fp)), nf, '0');
+    *(s->select(sip->count() + 1, s->count())) = *right(inum(uint64_t(fp)), nf, '0');
     return s;
 }
 

@@ -15,50 +15,119 @@
 #include <flux/Utf16Source>
 #include <flux/Utf16Sink>
 #include <flux/Format>
-#include <flux/Process>
 #include <flux/ByteArray>
 
 namespace flux {
 
-ByteArray::ByteArray(const char *data, int size, int flags, Destroy destroy)
-    : size_(0),
-      data_(const_cast<char *>("")),
-      flags_(Wrapped|Terminated),
-      destroy_(destroy)
-      #ifndef NDEBUG
-      , rangeCount_(0)
-      #endif
+Ref<ByteArray> ByteArray::create(int size)
 {
-    if (size < 0 && data) size = strlen(data);
+    if (size <= 0) return new ByteArray();
+    char *data = new char[size + 1];
+    return new ByteArray(data, size);
+}
+
+Ref<ByteArray> ByteArray::create(int size, char zero)
+{
+    return create(size)->clear(zero);
+}
+
+Ref<ByteArray> ByteArray::allocate(int size)
+{
+    if (size <= 0) return new ByteArray();
+    char *data = new char[size];
+    return new ByteArray(data, size);
+}
+
+Ref<ByteArray> ByteArray::copy(const char *data, int size)
+{
+    if (!data) return new ByteArray();
+    if (size < 0) size = strlen(data);
+    if (size <= 0) return new ByteArray();
+    char *newData = new char[size + 1];
+    newData[size] = 0;
+    memcpy(newData, data, size);
+    return new ByteArray(newData, size);
+}
+
+Ref<ByteArray> ByteArray::join(const StringList *parts, const char *sep)
+{
+    if (parts->count() == 0)
+        return ByteArray::create();
+
+    int sepSize = strlen(sep);
+    int size = 0;
+    for (int i = 0; i < parts->count(); ++i)
+        size += parts->at(i)->count();
+    size += (parts->count() - 1) * sepSize;
+    Ref<ByteArray> result = ByteArray::create(size);
+    char *p = result->data_;
+    for (int i = 0; i < parts->count(); ++i) {
+        ByteArray *part = parts->at(i);
+        memcpy(p, part->data_, part->size_);
+        p += part->size_;
+        if (i + 1 < parts->count()) {
+            memcpy(p, sep, sepSize);
+            p += sepSize;
+        }
+    }
+    FLUX_ASSERT(p == result->data_ + result->size_);
+    return result;
+}
+
+Ref<ByteArray> ByteArray::join(const StringList *parts, char sep)
+{
+    char h[2];
+    h[0] = sep;
+    h[1] = 0;
+    return join(parts, h);
+}
+
+Ref<ByteArray> ByteArray::join(const StringList *parts, String sep)
+{
+    return join(parts, sep->chars());
+}
+
+ByteArray::ByteArray():
+    size_(0),
+    data_(const_cast<char *>("")),
+    destroy_(doNothing)
+{}
+
+ByteArray::ByteArray(const char *data, int size, Destroy destroy):
+    size_(0),
+    data_(const_cast<char *>("")),
+    destroy_(doNothing)
+{
+    if (!data) return;
+    if (size < 0) size = strlen(data);
     if (size > 0) {
-        if (flags & (Wrapped|Mapped|Stack)) {
-            size_ = size;
-            data_ = const_cast<char *>(data);
-            flags_ = flags;
-        }
-        else {
-            size_ = size;
-            data_ = new char[size + ((flags & Terminated) != 0)];
-            flags_ = flags;
-            if (data) memcpy(data_, data, size);
-            if (flags & Terminated) data_[size] = 0;
-        }
+        size_ = size;
+        data_ = const_cast<char *>(data);
+        destroy_ = destroy;
     }
 }
 
-ByteArray::ByteArray(const ByteArray &b)
-    : size_(0),
-      data_(const_cast<char *>("")),
-      flags_(Wrapped|Terminated),
-      destroy_(0)
-      #ifndef NDEBUG
-      , rangeCount_(0)
-      #endif
+ByteArray::ByteArray(ByteArray *parent, int i0, int i1):
+    destroy_(doNothing),
+    parent_(parent)
+{
+    if (i0 < 0) i0 = 0;
+    else if (i0 > parent->size_) i0 = parent_->size_;
+    if (i1 < i0) i1 = i0;
+    else if (i1 > parent->size_) i1 = parent_->size_;
+    size_ = i1 - i0;
+    data_ = parent_->data_ + i0;
+}
+
+ByteArray::ByteArray(const ByteArray &b):
+    size_(0),
+    data_(const_cast<char *>("")),
+    destroy_(doNothing)
 {
     if (b.size_ > 0) {
         size_ = b.size_;
         data_ = new char[b.size_ + 1];
-        flags_ = Terminated;
+        destroy_ = 0;
         memcpy(data_, b.data_, b.size_);
         data_[size_] = 0;
     }
@@ -75,17 +144,30 @@ void ByteArray::doNothing(ByteArray *)
 void ByteArray::destroy()
 {
     if (destroy_) destroy_(this);
-    else if (flags_ & Wrapped) ;
     else delete[] data_;
 }
 
-void ByteArray::resize(int newSize)
+Ref<ByteArray> ByteArray::clear(char zero)
 {
-    if (newSize <= size_) {
-        truncate(newSize);
-        return;
+    memset(data_, zero, size_);
+    return this;
+}
+
+ByteArray *ByteArray::truncate(int newSize)
+{
+    if (newSize < size_) {
+        if (newSize < 0) newSize = 0;
+        if (newSize > size_) newSize = size_;
+        size_ = newSize;
+        data_[size_] = 0;
     }
-    FLUX_ASSERT2(rangeCount_ == 0, "Cannot resize a ByteArray with a ByteRange in effect");
+    return this;
+}
+
+ByteArray *ByteArray::resize(int newSize)
+{
+    if (newSize <= size_) return truncate(newSize);
+
     if (newSize > 0) {
         char *newData = new char[newSize + 1];
         memcpy(newData, data_, size_);
@@ -93,13 +175,15 @@ void ByteArray::resize(int newSize)
         destroy();
         size_ = newSize;
         data_ = newData;
-        flags_ = Terminated;
+        destroy_ = 0;
     }
     else {
         size_ = 0;
         data_ = const_cast<char *>("");
-        flags_ = Wrapped|Terminated;
+        destroy_ = doNothing;
     }
+
+    return this;
 }
 
 ByteArray &ByteArray::operator=(const ByteArray &b)
@@ -117,9 +201,18 @@ ByteArray &ByteArray::operator^=(const ByteArray &b)
     return *this;
 }
 
-void ByteArray::clear(char zero)
+Ref<ByteArray> ByteArray::copy(int i0, int i1) const
 {
-    memset(data_, zero, size_);
+    if (i0 < 0) i0 = 0;
+    if (i0 > size_) i0 = size_;
+    if (i1 < 0) i1 = 0;
+    if (i1 > size_) i1 = size_;
+    int newSize = i1 - i0;
+    if (newSize <= 0) return create();
+    char *newData = new char[newSize + 1];
+    memcpy(newData, data_ + i0, newSize);
+    newData[newSize] = 0;
+    return new ByteArray(newData, newSize);
 }
 
 Ref<ByteArray> ByteArray::paste(int i0, int i1, String text) const
@@ -172,44 +265,6 @@ int ByteArray::find(SyntaxDefinition *pattern, int i) const
 bool ByteArray::contains(String pattern) const
 {
     return contains(pattern->chars());
-}
-
-Ref<ByteArray> ByteArray::join(const StringList *parts, const char *sep)
-{
-    if (parts->count() == 0)
-        return ByteArray::create();
-
-    int sepSize = strlen(sep);
-    int size = 0;
-    for (int i = 0; i < parts->count(); ++i)
-        size += parts->at(i)->count();
-    size += (parts->count() - 1) * sepSize;
-    Ref<ByteArray> result = ByteArray::create(size);
-    char *p = result->data_;
-    for (int i = 0; i < parts->count(); ++i) {
-        ByteArray *part = parts->at(i);
-        memcpy(p, part->data_, part->size_);
-        p += part->size_;
-        if (i + 1 < parts->count()) {
-            memcpy(p, sep, sepSize);
-            p += sepSize;
-        }
-    }
-    FLUX_ASSERT(p == result->data_ + result->size_);
-    return result;
-}
-
-Ref<ByteArray> ByteArray::join(const StringList *parts, char sep)
-{
-    char h[2];
-    h[0] = sep;
-    h[1] = 0;
-    return join(parts, h);
-}
-
-Ref<ByteArray> ByteArray::join(const StringList *parts, String sep)
-{
-    return join(parts, sep->chars());
 }
 
 Ref<StringList> ByteArray::split(char sep) const
@@ -503,18 +558,6 @@ ByteArray *ByteArray::unescapeInsitu()
     return truncate(j);
 }
 
-ByteArray *ByteArray::truncate(int newSize)
-{
-    FLUX_ASSERT2(rangeCount_ == 0, "Cannot truncate a ByteArray with a ByteRange in effect");
-    if (newSize < size_) {
-        if (newSize < 0) newSize = 0;
-        if (newSize > size_) newSize = size_;
-        size_ = newSize;
-        data_[size_] = 0;
-    }
-    return this;
-}
-
 ByteArray *ByteArray::trimInsitu(const char *leadingSpace, const char *trailingSpace)
 {
     if (!trailingSpace) trailingSpace = leadingSpace;
@@ -790,11 +833,7 @@ Ref<ByteArray> ByteArray::absolutePathRelativeTo(String currentDir) const
         }
     }
 
-    String prefix;
-    if (currentDir->count() > 0)
-        prefix = currentDir->copy();
-    else
-        prefix = Process::cwd();
+    String prefix = currentDir->copy();
 
     while (upCount > 0) {
         prefix = prefix->reducePath();
@@ -804,13 +843,6 @@ Ref<ByteArray> ByteArray::absolutePathRelativeTo(String currentDir) const
     absoluteParts->pushFront(prefix);
 
     return absoluteParts->join("/");
-}
-
-Ref<ByteArray> ByteArray::absolutePath() const
-{
-    if (isAbsolutePath())
-        return const_cast<ByteArray *>(this);
-    return absolutePathRelativeTo(String());
 }
 
 Ref<ByteArray> ByteArray::fileName() const
@@ -831,7 +863,7 @@ Ref<ByteArray> ByteArray::baseName() const
     return parts->join(".");
 }
 
-Ref<ByteArray>  ByteArray::suffix() const
+Ref<ByteArray>  ByteArray::fileSuffix() const
 {
     Ref<StringList> parts = fileName()->split(".");
     return parts->at(parts->count() - 1);
@@ -891,11 +923,6 @@ bool ByteArray::equalsCaseInsensitive(const char *b) const
     for (int i = 0; i < size_; ++i)
         if (flux::downcase(chars_[i]) != flux::downcase(b[i])) return false;
     return true;
-}
-
-ByteRange::operator String() const
-{
-    return array_;
 }
 
 } // namespace flux

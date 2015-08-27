@@ -44,7 +44,7 @@ int InvokeNode::matchNext(ByteArray *text, int i, Token *parentToken, State *sta
     }
 
     Ref<SyntaxState> childState = LinkNode::rule()->scope()->createState(state->tokenFactory_);
-    i = RefNode::matchNext(ByteRange(text, i0, coverage() ? i : text->count()), 0, parentToken, childState);
+    i = RefNode::matchNext(text->select(i0, coverage() ? i : text->count()), 0, parentToken, childState);
 
     if (childState->hint_) {
         state->hint_ = childState->hint_;

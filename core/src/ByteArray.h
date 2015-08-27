@@ -20,9 +20,6 @@ typedef List<String> StringList;
 
 class SyntaxDefinition;
 
-class File;
-class ThreadFactory;
-
 template<class SubClass> class Singleton;
 
 /** \brief Binary memory vector
@@ -33,15 +30,10 @@ class ByteArray: public Object
 public:
     typedef char Item;
 
-    inline static Ref<ByteArray> create(int size = 0) { return new ByteArray(0, size, Terminated); }
-    inline static Ref<ByteArray> create(int size, char zero) {
-        Ref<ByteArray> newArray = new ByteArray(0, size, Terminated);
-        newArray->clear(zero);
-        return newArray;
-    }
-    inline static Ref<ByteArray> copy(const char *data, int size = -1) { return new ByteArray(data, size, Terminated); }
-
-    inline static Ref<ByteArray> allocate(int size) { return new ByteArray(0, size, Unterminated); }
+    static Ref<ByteArray> create(int size = 0);
+    static Ref<ByteArray> create(int size, char zero);
+    static Ref<ByteArray> allocate(int size);
+    static Ref<ByteArray> copy(const char *data, int size = -1);
 
     static Ref<ByteArray> join(const StringList *parts, const char *sep = "");
     static Ref<ByteArray> join(const StringList *parts, char sep);
@@ -49,15 +41,14 @@ public:
 
     ~ByteArray();
 
-    void resize(int newSize);
+    Ref<ByteArray> clear(char zero = '\0');
+    ByteArray *truncate(int newSize);
+    ByteArray *resize(int newSize);
 
     ByteArray &operator=(const ByteArray &b);
     ByteArray &operator^=(const ByteArray &b);
 
-    void clear(char zero = '\0');
-
     inline int count() const { return size_; }
-
     inline int first() const { return 0; }
     inline int last() const { return size_ - 1; }
 
@@ -95,7 +86,7 @@ public:
     }
 
     inline char *chars() const {
-        FLUX_ASSERT2(flags_ & Terminated, "ByteArray is not terminated by zero and therefore cannot safely be converted to a C string");
+        // FLUX_ASSERT2(flags_ & Terminated, "ByteArray is not terminated by zero and therefore cannot safely be converted to a C string");
         return chars_;
     }
     inline uint8_t *bytes() const { return bytes_; }
@@ -103,14 +94,7 @@ public:
     inline operator char*() const { return chars(); }
 
     inline Ref<ByteArray> copy() const { return new ByteArray(*this); }
-
-    inline Ref<ByteArray> copy(int i0, int i1) const {
-        if (i0 < 0) i0 = 0;
-        if (i0 > size_) i0 = size_;
-        if (i1 < 0) i1 = 0;
-        if (i1 > size_) i1 = size_;
-        return (i0 < i1) ? new ByteArray(data_ + i0, i1 - i0) : new ByteArray();
-    }
+    inline Ref<ByteArray> select(int i0, int i1) { return new ByteArray(this, i0, i1); }
 
     template<class Range>
     inline Ref<ByteArray> copy(Range *range) const {
@@ -118,6 +102,7 @@ public:
         return copy(range->i0(), range->i1());
     }
 
+    Ref<ByteArray> copy(int i0, int i1) const;
     Ref<ByteArray> paste(int i0, int i1, String text) const;
 
     inline Ref<ByteArray> head(int n) const { return copy(0, n); }
@@ -196,8 +181,6 @@ public:
     inline Ref<ByteArray> unescape() const { return copy()->unescapeInsitu(); }
     ByteArray *unescapeInsitu();
 
-    ByteArray *truncate(int newSize);
-
     inline Ref<ByteArray> trim(const char *leadingSpace = " \t\n\r", const char *trailingSpace = 0) const { return copy()->trimInsitu(leadingSpace, trailingSpace); }
     inline Ref<ByteArray> trimLeading(const char *space = " \t\n\r") const { return copy()->trimInsitu(space, ""); }
     inline Ref<ByteArray> trimTrailing(const char *space = " \t\n\r") const { return copy()->trimInsitu("", space); }
@@ -223,10 +206,9 @@ public:
     bool isAbsolutePath() const;
 
     Ref<ByteArray> absolutePathRelativeTo(String currentDir) const;
-    Ref<ByteArray> absolutePath() const;
     Ref<ByteArray> fileName() const;
     Ref<ByteArray> baseName() const;
-    Ref<ByteArray> suffix() const;
+    Ref<ByteArray> fileSuffix() const;
     Ref<ByteArray> reducePath() const;
     Ref<ByteArray> expandPath(String relativePath) const;
     Ref<ByteArray> canonicalPath() const;
@@ -235,19 +217,11 @@ public:
     bool equalsCaseInsensitive(const char *b) const;
 
 protected:
-    friend class Singleton<ByteArray>;
-    friend class ByteRange;
-
-    enum Flags {
-        Unterminated = 0,
-        Terminated   = 1,
-        Readonly     = 2,
-        Wrapped      = 4,
-        Mapped       = 8,
-        Stack        = 16
-    };
     typedef void (*Destroy)(ByteArray *array);
-    ByteArray(const char *data = 0, int size = -1, int flags = Terminated, Destroy destroy = 0);
+
+    ByteArray();
+    ByteArray(const char *data, int size = -1, Destroy destroy = 0);
+    ByteArray(ByteArray *parent, int i0, int i1);
     ByteArray(const ByteArray &b);
 
 private:
@@ -262,13 +236,8 @@ private:
         uint32_t *words_;
     };
 
-    int flags_;
-
     Destroy destroy_;
-
-    #ifndef NDEBUG
-    int rangeCount_;
-    #endif
+    Ref<ByteArray> parent_;
 };
 
 template<class T>
@@ -304,39 +273,6 @@ inline bool operator< (const ByteArray &a, const ByteArray &b) { return containe
 inline bool operator> (const ByteArray &a, const ByteArray &b) { return container::compare(a, b) >  0; }
 inline bool operator<=(const ByteArray &a, const ByteArray &b) { return container::compare(a, b) <= 0; }
 inline bool operator>=(const ByteArray &a, const ByteArray &b) { return container::compare(a, b) >= 0; }
-
-class ByteRange: public ByteArray
-{
-public:
-    ByteRange(ByteArray *array, int i0, int i1)
-        : array_(array)
-    {
-        if (i0 < 0) i0 = 0;
-        else if (i0 > array->size_) i0 = array->size_;
-        if (i1 < i0) i1 = i0;
-        else if (i1 > array->size_) i1 = array->size_;
-        size_ = i1 - i0;
-        data_ = array->data_ + i0;
-        flags_ = ByteArray::Wrapped;
-        destroy_ = ByteRange::doNothing;
-        #ifndef NDEBUG
-        rangeCount_ = array->rangeCount_;
-        #endif
-    }
-
-    inline operator ByteArray *() { return this; }
-    inline ByteArray &operator*() { return *this; }
-    inline ByteArray *operator->() { return this; }
-    operator String() const;
-
-private:
-    ByteRange(const ByteRange&);
-    ByteRange &operator=(const ByteRange &b);
-
-    static void doNothing(ByteArray *array) {}
-
-    ByteArray *array_;
-};
 
 } // namespace flux
 

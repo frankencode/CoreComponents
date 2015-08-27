@@ -100,7 +100,7 @@ int RequestStream::read(ByteArray *buf)
     if (eoi_) return 0;
     if (bytesLeft_ == 0) return 0;
     if (pending_) {
-        *buf = *ByteRange(pending_, pendingIndex_, pending_->count());
+        *buf = *(pending_->select(pendingIndex_, pending_->count()));
         int h = pending_->count() - pendingIndex_;
         if (buf->count() < h) {
             pendingIndex_ += buf->count();

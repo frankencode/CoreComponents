@@ -44,7 +44,7 @@ off_t Stream::transfer(off_t count, Stream *sink, ByteArray *buf)
     while (true) {
         int n = read(buf);
         if (n == 0) break;
-        if (sink) sink->write(ByteRange(buf, 0, n));
+        if (sink) sink->write(buf->select(0, n));
         total += n;
         if (count > 0) {
             count -= n;
@@ -61,7 +61,7 @@ int Stream::readAll(ByteArray *data)
     const int w = data->count();
     int m = 0;
     while (m < w) {
-        int n = read(ByteRange(data, m, w));
+        int n = read(data->select(m, w));
         if (n == 0) break;
         m += n;
     }
