@@ -31,7 +31,7 @@ public:
 
     String();
     explicit String(int size): Super(ByteArray::create(size)) {}
-    String(int size, char zero): Super(ByteArray::create(size, zero)) {
+    String(int size, char zero): Super(ByteArray::create(size)->clear(zero)) {
         FLUX_ASSERT(0 <= zero);
     }
     String(const Ref<ByteArray> &b): Super(b) {}

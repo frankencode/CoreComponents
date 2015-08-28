@@ -26,16 +26,20 @@ Ref<ByteArray> ByteArray::create(int size)
     return new ByteArray(data, size);
 }
 
-Ref<ByteArray> ByteArray::create(int size, char zero)
+class RawByteArray: public ByteArray
 {
-    return create(size)->clear(zero);
-}
+public:
+    RawByteArray(char *data, int size):
+        ByteArray(data, size)
+    {}
+    bool isZeroTerminated() const { return false; }
+};
 
 Ref<ByteArray> ByteArray::allocate(int size)
 {
     if (size <= 0) return new ByteArray();
     char *data = new char[size];
-    return new ByteArray(data, size);
+    return new RawByteArray(data, size);
 }
 
 Ref<ByteArray> ByteArray::copy(const char *data, int size)
@@ -147,7 +151,7 @@ void ByteArray::destroy()
     else delete[] data_;
 }
 
-Ref<ByteArray> ByteArray::clear(char zero)
+ByteArray *ByteArray::clear(char zero)
 {
     memset(data_, zero, size_);
     return this;
