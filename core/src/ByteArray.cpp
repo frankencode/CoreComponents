@@ -6,15 +6,15 @@
  *
  */
 
+#include <math.h>
 #include <flux/List>
-#include <flux/IntegerSyntax>
-#include <flux/FloatSyntax>
 #include <flux/Unicode>
 #include <flux/Utf8Source>
 #include <flux/Utf8Sink>
 #include <flux/Utf16Source>
 #include <flux/Utf16Sink>
 #include <flux/Format>
+#include <flux/SyntaxDefinition>
 #include <flux/ByteArray>
 
 namespace flux {
@@ -260,12 +260,6 @@ int ByteArray::find(String pattern, int i) const
     return find(pattern->chars(), i);
 }
 
-int ByteArray::find(SyntaxDefinition *pattern, int i) const
-{
-    Ref<SyntaxState> state = pattern->find(this, i);
-    return state->valid() ? state->i0() : size_;
-}
-
 bool ByteArray::contains(String pattern) const
 {
     return contains(pattern->chars());
@@ -373,59 +367,6 @@ Ref<ByteArray> ByteArray::replace(const char *pattern, String replacement) const
 Ref<ByteArray> ByteArray::replace(String pattern, String replacement) const
 {
     return replace(pattern->chars(), replacement->chars());
-}
-
-int ByteArray::toInt(bool *ok) const
-{
-    bool h;
-    if (!ok) ok = &h;
-    uint64_t value = 0;
-    int sign = 0;
-    if (integerSyntax()->read(&value, &sign, this, -1))
-         *ok = (value <= uint64_t(intMax));
-    else
-        *ok = false;
-    return sign * int(value);
-}
-
-double ByteArray::toFloat(bool *ok) const
-{
-    return toFloat64(ok);
-}
-
-int64_t ByteArray::toInt64(bool *ok) const
-{
-    bool h;
-    if (!ok) ok = &h;
-    uint64_t value = 0;
-    int sign = 0;
-    if (integerSyntax()->read(&value, &sign, this, -1))
-        *ok = ((value & (uint64_t(1) << 63)) != 0);
-    else
-        *ok = false;
-    return sign * value;
-}
-
-uint64_t ByteArray::toUInt64(bool *ok) const
-{
-    bool h;
-    if (!ok) ok = &h;
-    uint64_t value = 0;
-    int sign = 0;
-    if (integerSyntax()->read(&value, &sign, this, -1))
-        *ok = (sign == 1);
-    else
-        *ok = false;
-    return value;
-}
-
-float64_t ByteArray::toFloat64(bool *ok) const
-{
-    bool h;
-    if (!ok) ok = &h;
-    float64_t value = 0.;
-    *ok = floatSyntax()->read(&value, this, -1);
-    return value;
 }
 
 int ByteArray::scanString(String *x, const char *termination, int i0, int i1) const
@@ -928,5 +869,7 @@ bool ByteArray::equalsCaseInsensitive(const char *b) const
         if (flux::downcase(chars_[i]) != flux::downcase(b[i])) return false;
     return true;
 }
+
+double ByteArray::pow(double x, double y) { return ::pow(x, y); }
 
 } // namespace flux

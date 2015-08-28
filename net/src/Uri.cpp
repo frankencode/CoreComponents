@@ -54,7 +54,7 @@ void Uri::readUri(ByteArray *text, Token *rootToken)
                 else if (child->rule() == uriSyntax()->host())
                     host_ = decode(text->copy(child->i0(), child->i1()));
                 else if (child->rule() == uriSyntax()->port())
-                    port_ = decode(text->copy(child->i0(), child->i1()))->toInt();
+                    port_ = decode(text->copy(child->i0(), child->i1()))->toNumber<int>();
                 child = child->nextSibling();
             }
         }

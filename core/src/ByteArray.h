@@ -151,7 +151,6 @@ public:
 
     int find(const char *pattern, int i = 0) const;
     int find(String pattern, int i = 0) const;
-    int find(SyntaxDefinition *pattern, int i = 0) const;
 
     inline bool contains(const char *pattern) const { return find(pattern) != size_; }
     bool contains(String pattern) const;
@@ -166,16 +165,19 @@ public:
     Ref<ByteArray> replace(const char *pattern, String replacement) const;
     Ref<ByteArray> replace(String pattern, String replacement) const;
 
-    int toInt(bool *ok = 0) const;
-    double toFloat(bool *ok = 0) const;
-    int64_t toInt64(bool *ok = 0) const;
-    uint64_t toUInt64(bool *ok = 0) const;
-    float64_t toFloat64(bool *ok = 0) const;
-
     int scanString(String *x, const char *termination = " \t\n", int i0 = 0, int i1 = -1) const;
 
     template<class T>
-    int scanInt(T *x, int base = 10, int i0 = 0, int i1 = -1) const;
+    int scanNumber(T *value, int base = 10, int i0 = 0, int i1 = -1) const;
+
+    template<class T>
+    inline T toNumber(bool *ok = 0) const {
+        bool h = false;
+        if (!ok) ok = &h;
+        T value = T();
+        *ok = (scanNumber(&value) == size_);
+        return value;
+    }
 
     inline Ref<ByteArray> downcase() const { return copy()->downcaseInsitu(); }
     inline Ref<ByteArray> upcase() const { return copy()->upcaseInsitu(); }
@@ -233,6 +235,8 @@ private:
     static void doNothing(ByteArray *);
     void destroy();
 
+    static double pow(double x, double y);
+
     int size_;
     union {
         char *data_;
@@ -246,29 +250,76 @@ private:
 };
 
 template<class T>
-int ByteArray::scanInt(T *x, int base, int i0, int i1) const
+int ByteArray::scanNumber(T *value, int base, int i0, int i1) const
 {
     int i = i0;
     if (i1 < 0) i1 = size_;
     if (i > i1) i = i1;
-    *x = T();
-    bool minus = false;
+    int sign = 1;
     if (T(-1) < T() && i < i1) {
-        minus = (at(i) == '-');
+        if (at(i) == '-') sign = -1;
         i += (at(i) == '-' || at(i) == '+');
     }
+    bool isFloating = (T(1)/T(3) > 0);
+    if (isFloating && i + 2 < i1) {
+        if (at(i) == 'n' && at(i + 1) == 'a' && at(i + 2) == 'n') {
+            *value = flux::nan;
+            return i + 3;
+        }
+        else if (at(i) == 'i' && at(i + 1) == 'n' && at(i + 2) == 'f') {
+            *value = sign * flux::inf;
+            return i + 3;
+        }
+    }
+    if (i < i1) {
+        if (at(i) == '0') {
+            if (i + 1 < i1) {
+                char ch = at(i + 1);
+                if (ch == 'x') { base = 16; i += 2; }
+                else if (ch == 'b') { base = 2; i += 2; }
+                else if ('0' <= ch && ch <= '7') { base = 8; i += 1; }
+            }
+        }
+    }
+    T x = 0;
     while (i < i1) {
         char ch = at(i);
         int z = -1;
         if ('0' <= ch && ch <= '9') z = ch - '0';
-        else if ('a' <= ch && ch <= 'z') z = ch - 'a';
-        else if ('A' <= ch && ch <= 'Z') z = ch - 'A';
+        else if ('a' <= ch && ch <= 'z') z = 10 + ch - 'a';
+        else if ('A' <= ch && ch <= 'Z') z = 10 + ch - 'A';
         if (z < 0 || base <= z) break;
-        *x *= base;
-        *x += z;
+        T y = x;
+        x = x * base + sign * z;
+        if (!isFloating) {
+            if (sign > 0 ? x < y : y < x)
+                break;
+        }
         ++i;
     }
-    if (minus) *x = -*x;
+    if (isFloating && i < i1) {
+        if (at(i) == '.') {
+            ++i;
+            for (T h = T(sign) / T(base); i < i1; ++i) {
+                char ch = at(i);
+                int z = -1;
+                if ('0' <= ch && ch <= '9') z = ch - '0';
+                else if ('a' <= ch && ch <= 'z') z = 10 + ch - 'a';
+                else if ('A' <= ch && ch <= 'Z') z = 10 + ch - 'A';
+                if (z < 0 || base <= z) break;
+                x += h * z;
+                h /= base;
+            }
+        }
+        if (i + 1 < i1) {
+            if (at(i) == 'E' || at(i) == 'e') {
+                int ep = 0;
+                i = scanNumber(&ep, base, i + 1, i1);
+                x *= pow(T(base), T(ep));
+            }
+        }
+    }
+    *value = x;
     return i;
 }
 

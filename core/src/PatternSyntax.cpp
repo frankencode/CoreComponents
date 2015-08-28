@@ -420,8 +420,8 @@ NODE PatternSyntax::compileRepeat(const ByteArray *text, Token *token, SyntaxDef
         else if (child->rule() == maxRepeat_) max = child;
         child = child->nextSibling();
     }
-    int minRepeat = min ? text->copy(min)->toInt() : 0;
-    int maxRepeat = max ? text->copy(max)->toInt() : intMax;
+    int minRepeat = min ? text->copy(min)->toNumber<int>() : 0;
+    int maxRepeat = max ? text->copy(max)->toNumber<int>() : intMax;
     char modifier = text->at(token->i0() + 1);
     NODE node = compileChoice(text, token->lastChild(), definition);
     if (modifier == '<')
