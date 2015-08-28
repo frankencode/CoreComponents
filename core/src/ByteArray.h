@@ -31,7 +31,6 @@ public:
     typedef char Item;
 
     static Ref<ByteArray> create(int size = 0);
-    static Ref<ByteArray> create(int size, char zero);
     static Ref<ByteArray> allocate(int size);
     static Ref<ByteArray> copy(const char *data, int size = -1);
 
@@ -41,7 +40,9 @@ public:
 
     ~ByteArray();
 
-    Ref<ByteArray> clear(char zero = '\0');
+    virtual bool isZeroTerminated() const { return true; }
+
+    ByteArray *clear(char zero = '\0');
     ByteArray *truncate(int newSize);
     ByteArray *resize(int newSize);
 
@@ -90,7 +91,7 @@ public:
     }
 
     inline char *chars() const {
-        // FLUX_ASSERT2(flags_ & Terminated, "ByteArray is not terminated by zero and therefore cannot safely be converted to a C string");
+        FLUX_ASSERT2(isZeroTerminated(), "ByteArray is not terminated by zero and therefore cannot safely be converted to a C string");
         return chars_;
     }
     inline uint8_t *bytes() const { return bytes_; }
