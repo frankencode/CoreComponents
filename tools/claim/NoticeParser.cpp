@@ -165,12 +165,12 @@ Ref<Copyright> NoticeSyntax::readCopyright(Token *token, String message) const
     FLUX_ASSERT(token->rule() == copyright_);
     token = token->firstChild();
     FLUX_ASSERT(token->rule() == yearStart_);
-    int yearStart = message->copy(token)->toInt();
+    int yearStart = message->copy(token)->toNumber<int>();
     int yearEnd = yearStart;
     token = token->nextSibling();
     FLUX_ASSERT(token);
     if (token->rule() == yearEnd_) {
-        yearEnd = message->copy(token)->toInt();
+        yearEnd = message->copy(token)->toNumber<int>();
         token = token->nextSibling();
     }
     FLUX_ASSERT(token);

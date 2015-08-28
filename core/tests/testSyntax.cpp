@@ -77,7 +77,7 @@ public:
     double eval(String text)
     {
         Ref<Token> rootToken = match(text)->rootToken();
-        double value = nan;
+        double value = flux::nan;
 
         if (rootToken) {
             text_ = text;

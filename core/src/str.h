@@ -57,8 +57,8 @@ String inum(T x, int base = 10, int n = -1)
     return s;
 }
 
-String fnum(float64_t x, int precision = 16, int base = 10, int screen = 6, char decimalPoint = '.');
-String fixed(float64_t x, int nf, char decimalPoint = '.');
+String fnum(float64_t x, int precision = 16, int base = 10, int screen = 6);
+String fixed(float64_t x, int nf);
 
 template<class T>
 inline String dec(T x, int n = -1) { return inum(x, 10, n); }
@@ -72,11 +72,11 @@ inline String oct(T x, int n = -1) { return inum(x, 8, n); }
 template<class T>
 inline String bin(T x, int n = -1) { return inum(x, 2, n); }
 
-inline String sci(float32_t x, int p = 8, char decimalPoint = '.') { return fnum(x, p, 10, 0, decimalPoint); }
-inline String sci(float64_t x, int p = 17, char decimalPoint = '.') { return fnum(x, p, 10, 0, decimalPoint); }
+inline String sci(float32_t x, int p = 8) { return fnum(x, p, 10, 0); }
+inline String sci(float64_t x, int p = 17) { return fnum(x, p, 10, 0); }
 
-inline String dec(float32_t x, int p = 8, char decimalPoint = '.') { return fnum(x, p, 10, 6, decimalPoint); }
-inline String dec(float64_t x, int p = 17, char decimalPoint = '.') { return fnum(x, p, 10, 6, decimalPoint); }
+inline String dec(float32_t x, int p = 8) { return fnum(x, p, 10, 6); }
+inline String dec(float64_t x, int p = 17) { return fnum(x, p, 10, 6); }
 
 String dec(const Variant &x, int n = -1);
 

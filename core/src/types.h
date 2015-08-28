@@ -55,8 +55,8 @@ inline B union_cast(A a)
     return morph.b;
 }
 
-const double nan = union_cast<double>(uint64_t(0xFFF8) << 48);
-const double inf = union_cast<double>(uint64_t(0x7FF) << 52);
+const float64_t nan = union_cast<float64_t>(uint64_t(0xFFF8) << 48);
+const float64_t inf = union_cast<float64_t>(uint64_t(0x7FF) << 52);
 
 const unsigned unsignedMax = unsigned(-1);
 const int intMax = unsignedMax >> 1;

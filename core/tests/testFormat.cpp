@@ -17,7 +17,7 @@ int main()
         fout() << "Testing floating point numerals..." << nl;
 
         const double test[] = {
-            3.3, 1., 0.1, 1.1, 0., 1.234e10, 1e-308, nan, inf,
+            3.3, 1., 0.1, 1.1, 0., 1.234e10, 1e-308, flux::nan, flux::inf,
             -1./3., -0.55, 0.49, 15, -1.5, 1.1111111111,
             1.1111111111111111111111111111111,
             1e-16
@@ -26,10 +26,10 @@ int main()
         for (int i = 0, n = sizeof(test) / sizeof(test[0]); i < n; ++i) {
             double x = test[i];
             bool ok = true;
-            fout() << x << " => " << String(Format() << x)->toFloat64(&ok) << " (" << ok << ")" << nl;
-            fout() << (String(Format() << x)->toFloat64() - x) << nl;
-            uint64_t a = union_cast<uint64_t>(x);
-            uint64_t b = union_cast<uint64_t>(String(Format() << x)->toFloat64());
+            fout() << x << " => " << String(Format() << x)->toNumber<float64_t>(&ok) << " (" << ok << ")" << nl;
+            fout() << (String(Format() << x)->toNumber<float64_t>() - x) << nl;
+            uint64_t a = union_cast<float64_t>(x);
+            uint64_t b = union_cast<float64_t>(String(Format() << x)->toNumber<float64_t>());
             fout() << "0x" << hex(a) << nl;
             fout() << "0x" << hex(b) << nl;
             fout() << oct(1, 3) << nl;
@@ -54,10 +54,10 @@ int main()
     {
         fout() << "Testing hexadecimal, octal and binary numerals..." << nl;
         fout("%% = 0x%% = 0%% = 0b%%\n") << 123 << hex(123) << oct(123) << bin(123);
-        check(String(dec(123))->toInt() == 123);
-        check(String("0x" + hex(123))->toInt() == 123);
-        check(String("0" + oct(123))->toInt() == 123);
-        check(String("0b" + bin(123))->toInt() == 123);
+        check(String(dec(123))->toNumber<int>() == 123);
+        check(String("0x" + hex(123))->toNumber<int>() == 123);
+        check(String("0" + oct(123))->toNumber<int>() == 123);
+        check(String("0b" + bin(123))->toNumber<int>() == 123);
     }
     {
         fout() << "Testing formatting colors..." << nl;

@@ -100,8 +100,8 @@ Ref<Request> ClientConnection::scanRequest()
                 if (parts->at(0) != "http") throw UnsupportedVersion();
                 parts = parts->at(1)->split('.');
                 if (parts->count() >= 2) {
-                    request->majorVersion_ = parts->at(0)->toInt();
-                    request->minorVersion_ = parts->at(1)->toInt();
+                    request->majorVersion_ = parts->at(0)->toNumber<int>();
+                    request->minorVersion_ = parts->at(1)->toNumber<int>();
                 }
             }
 
@@ -150,7 +150,7 @@ Ref<Request> ClientConnection::scanRequest()
         String h;
         if (request->lookup("Content-Length", &h)) {
             bool ok = true;
-            length = h->toInt64(&ok);
+            length = h->toNumber<int64_t>(&ok);
             if (!ok || length < 0) throw BadRequest();
         }
         requestStream_->nextPayload(length);

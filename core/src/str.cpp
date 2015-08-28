@@ -12,7 +12,7 @@
 
 namespace flux {
 
-String fnum(float64_t x, int precision, int base, int screen, char decimalPoint)
+String fnum(float64_t x, int precision, int base, int screen)
 {
     Ref< Stack<int> > digits = Stack<int>::create(screen < 128 ? 128 : 2 * screen /*save bet*/);
 
@@ -105,7 +105,7 @@ String fnum(float64_t x, int precision, int base, int screen, char decimalPoint)
 
         if (wf != 0)
         {
-            text->at(i++) = decimalPoint;
+            text->at(i++) = '.';
             for (int l = 0; l < wf; ++l)
             {
                 if (digits->count() <= k)
@@ -128,13 +128,13 @@ String fnum(float64_t x, int precision, int base, int screen, char decimalPoint)
     return text;
 }
 
-String fixed(float64_t x, int nf, char decimalPoint)
+String fixed(float64_t x, int nf)
 {
     double ip;
     double fp = modf(x, &ip);
     String sip = inum(int64_t(ip));
     if (nf <= 0) return sip;
-    String s = String(sip->count() + 1 + nf, decimalPoint);
+    String s = String(sip->count() + 1 + nf, '.');
     *s = *sip;
     if (fp < 0) fp = -fp;
     for (int i = 0; i < nf; ++i) fp *= 10;
