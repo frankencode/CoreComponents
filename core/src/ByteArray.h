@@ -18,9 +18,32 @@ class String;
 template<class T> class List;
 typedef List<String> StringList;
 
-class SyntaxDefinition;
+class SyntaxDefinition; // FIXME
 
-template<class SubClass> class Singleton;
+class ByteArray;
+
+template<>
+class RefGetSetPolicy<ByteArray>
+{
+public:
+    RefGetSetPolicy(): a_(0) {}
+    ~RefGetSetPolicy() { set((ByteArray *)0); }
+
+    inline ByteArray *get() const { return a_; }
+
+    inline void set(const char *b);
+    inline void set(ByteArray *b);
+
+    template<class T2>
+    inline void set(T2 *b) {
+        set(cast<ByteArray>(b));
+    }
+
+protected:
+    ByteArray *a_;
+};
+
+typedef Ref<ByteArray> NewString;
 
 /** \brief Binary memory vector
   * \see String, File::map
@@ -157,7 +180,7 @@ public:
 
     Ref<StringList> split(char sep) const;
     Ref<StringList> split(const char *sep) const;
-    Ref<StringList> split(SyntaxDefinition *pattern) const;
+    Ref<StringList> split(SyntaxDefinition *pattern) const; // FIXME
     Ref<StringList> breakUp(int chunkSize) const;
 
     ByteArray *replaceInsitu(const char *pattern, const char *replacement);
@@ -329,6 +352,55 @@ inline bool operator< (const ByteArray &a, const ByteArray &b) { return containe
 inline bool operator> (const ByteArray &a, const ByteArray &b) { return container::compare(a, b) >  0; }
 inline bool operator<=(const ByteArray &a, const ByteArray &b) { return container::compare(a, b) <= 0; }
 inline bool operator>=(const ByteArray &a, const ByteArray &b) { return container::compare(a, b) >= 0; }
+
+inline void RefGetSetPolicy<ByteArray>::set(ByteArray *b)
+{
+    if (a_ != b) {
+        if (b) b->incRefCount();
+        if (a_) a_->decRefCount();
+        a_ = b;
+    }
+}
+
+inline void RefGetSetPolicy<ByteArray>::set(const char *b)
+{
+    set(ByteArray::copy(b).get());
+}
+
+inline bool operator==(const NewString &a, const NewString &b) { return a->count() == b->count() && strcmp(a->chars(), b->chars()) == 0; }
+inline bool operator!=(const NewString &a, const NewString &b) { return a->count() != b->count() || strcmp(a->chars(), b->chars()) != 0; }
+inline bool operator< (const NewString &a, const NewString &b) { return strcmp(a->chars(), b->chars()) <  0; }
+inline bool operator> (const NewString &a, const NewString &b) { return strcmp(a->chars(), b->chars()) >  0; }
+inline bool operator<=(const NewString &a, const NewString &b) { return strcmp(a->chars(), b->chars()) <= 0; }
+inline bool operator>=(const NewString &a, const NewString &b) { return strcmp(a->chars(), b->chars()) >= 0; }
+
+inline bool operator==(const char *a, const NewString &b) { return strcmp(a, b->chars()) == 0; }
+inline bool operator!=(const char *a, const NewString &b) { return strcmp(a, b->chars()) != 0; }
+inline bool operator< (const char *a, const NewString &b) { return strcmp(a, b->chars()) <  0; }
+inline bool operator> (const char *a, const NewString &b) { return strcmp(a, b->chars()) >  0; }
+inline bool operator<=(const char *a, const NewString &b) { return strcmp(a, b->chars()) <= 0; }
+inline bool operator>=(const char *a, const NewString &b) { return strcmp(a, b->chars()) >= 0; }
+
+inline bool operator==(char *a, const NewString &b) { return strcmp(a, b->chars()) == 0; }
+inline bool operator!=(char *a, const NewString &b) { return strcmp(a, b->chars()) != 0; }
+inline bool operator< (char *a, const NewString &b) { return strcmp(a, b->chars()) <  0; }
+inline bool operator> (char *a, const NewString &b) { return strcmp(a, b->chars()) >  0; }
+inline bool operator<=(char *a, const NewString &b) { return strcmp(a, b->chars()) <= 0; }
+inline bool operator>=(char *a, const NewString &b) { return strcmp(a, b->chars()) >= 0; }
+
+inline bool operator==(const NewString &a, const char *b) { return strcmp(a->chars(), b) == 0; }
+inline bool operator!=(const NewString &a, const char *b) { return strcmp(a->chars(), b) != 0; }
+inline bool operator< (const NewString &a, const char *b) { return strcmp(a->chars(), b) <  0; }
+inline bool operator> (const NewString &a, const char *b) { return strcmp(a->chars(), b) >  0; }
+inline bool operator<=(const NewString &a, const char *b) { return strcmp(a->chars(), b) <= 0; }
+inline bool operator>=(const NewString &a, const char *b) { return strcmp(a->chars(), b) >= 0; }
+
+inline bool operator==(const NewString &a, char *b) { return strcmp(a->chars(), b) == 0; }
+inline bool operator!=(const NewString &a, char *b) { return strcmp(a->chars(), b) != 0; }
+inline bool operator< (const NewString &a, char *b) { return strcmp(a->chars(), b) <  0; }
+inline bool operator> (const NewString &a, char *b) { return strcmp(a->chars(), b) >  0; }
+inline bool operator<=(const NewString &a, char *b) { return strcmp(a->chars(), b) <= 0; }
+inline bool operator>=(const NewString &a, char *b) { return strcmp(a->chars(), b) >= 0; }
 
 } // namespace flux
 
