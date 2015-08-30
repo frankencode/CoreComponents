@@ -17,7 +17,7 @@ int main()
     Variant x = 1;
     Variant y = "2.";
     Variant z = true;
-    Variant a = NewString("abc");
+    Variant a = String("abc");
 
     check(!(x < y));
     check(!(x == y));

@@ -9,7 +9,7 @@
 #ifndef FLUXTOKI_LANGUAGE_H
 #define FLUXTOKI_LANGUAGE_H
 
-#include <flux/Pattern>
+#include <flux/RegExp>
 #include <flux/SyntaxDefinition>
 
 namespace flux {
@@ -20,7 +20,7 @@ class Language: public Object
 public:
     inline String displayName() const { return displayName_; }
     inline String name() const { return name_; }
-    inline Pattern pathPattern() const { return pathPattern_; }
+    inline RegExp pathPattern() const { return pathPattern_; }
     inline const SyntaxDefinition *highlightingSyntax() const { return highlightingSyntax_; }
     inline const SyntaxDefinition *discoverySyntax() const { return discoverySyntax_; }
     inline const SyntaxDefinition *foldingSyntax() const { return foldingSyntax_; }
@@ -28,7 +28,7 @@ public:
 protected:
     Language(
         String displayName,
-        Pattern pathPattern,
+        RegExp pathPattern,
         const SyntaxDefinition *highlightingSyntax,
         const SyntaxDefinition *discoverySyntax = 0,
         const SyntaxDefinition *foldingSyntax = 0
@@ -39,7 +39,7 @@ private:
 
     String displayName_;
     String name_;
-    Pattern pathPattern_;
+    RegExp pathPattern_;
     Ref<const SyntaxDefinition> highlightingSyntax_;
     Ref<const SyntaxDefinition> discoverySyntax_;
     Ref<const SyntaxDefinition> foldingSyntax_;

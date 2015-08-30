@@ -7,7 +7,7 @@
  */
 
 #include <flux/Dir>
-#include <flux/Pattern>
+#include <flux/RegExp>
 #include <flux/Glob>
 
 namespace flux {

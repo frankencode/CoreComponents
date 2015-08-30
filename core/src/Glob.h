@@ -9,13 +9,13 @@
 #ifndef FLUX_GLOB_H
 #define FLUX_GLOB_H
 
-#include <flux/Pattern>
+#include <flux/RegExp>
 
 namespace flux {
 
 class Dir;
 
-/** \brief Collect file names matching a pattern
+/** \brief Collect file names matching a globbing pattern
   * \see DirWalker
   */
 class Glob: public Source<String>
@@ -31,7 +31,7 @@ private:
     void init(String path);
 
     Ref<Dir> dir_;
-    Pattern pattern_;
+    RegExp pattern_;
     Ref<StringList> remainder_;
     Ref<Glob> child_;
 };

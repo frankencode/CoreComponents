@@ -20,7 +20,7 @@ private:
     YasonLanguage():
         Language(
             "Yason",
-            Pattern("(*.(yason|json))|Recipe"),
+            RegExp("(*.(yason|json))|Recipe"),
             flux::toki::yasonSyntax()
         )
     {}

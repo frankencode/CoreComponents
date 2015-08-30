@@ -15,12 +15,12 @@
 
 namespace fluxclaim {
 
-Ref<Report> Report::create(StringList *dirPaths, Pattern works, int worksMinLines)
+Ref<Report> Report::create(StringList *dirPaths, RegExp works, int worksMinLines)
 {
     return new Report(dirPaths, works, worksMinLines);
 }
 
-Report::Report(StringList *dirPaths, Pattern works, int worksMinLines)
+Report::Report(StringList *dirPaths, RegExp works, int worksMinLines)
     : dirPaths_(dirPaths),
       works_(works),
       worksMinLines_(worksMinLines),

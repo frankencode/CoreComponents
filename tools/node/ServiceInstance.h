@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_SERVICEINSTANCE_H
 #define FLUXNODE_SERVICEINSTANCE_H
 
-#include <flux/Pattern>
+#include <flux/RegExp>
 #include <flux/List>
 #include "LogConfig.h"
 
@@ -31,8 +31,8 @@ public:
 
     inline int concurrency() const { return concurrency_; }
     inline double connectionTimeout() const { return connectionTimeout_; }
-    inline Pattern host() const { return host_; }
-    inline Pattern uri() const { return uri_; }
+    inline RegExp host() const { return host_; }
+    inline RegExp uri() const { return uri_; }
 
     inline LogConfig *errorLogConfig() const { return errorLogConfig_; }
     inline LogConfig *accessLogConfig() const { return accessLogConfig_; }
@@ -45,8 +45,8 @@ protected:
 
     int concurrency_;
     double connectionTimeout_;
-    Pattern host_;
-    Pattern uri_;
+    RegExp host_;
+    RegExp uri_;
 
     Ref<LogConfig> errorLogConfig_;
     Ref<LogConfig> accessLogConfig_;

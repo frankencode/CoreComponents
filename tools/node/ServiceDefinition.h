@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_SERVICEDEFINITION_H
 #define FLUXNODE_SERVICEDEFINITION_H
 
-#include <flux/Pattern>
+#include <flux/RegExp>
 #include <flux/yason>
 #include "ServiceDelegate.h"
 #include "ServiceInstance.h"

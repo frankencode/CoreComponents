@@ -12,14 +12,14 @@
 #endif
 #include <flux/syntax>
 #include <flux/Format>
-#include <flux/Pattern>
-#include <flux/PatternSyntax>
+#include <flux/RegExp>
+#include <flux/RegExpSyntax>
 
 namespace flux {
 
 typedef syntax::NODE NODE;
 
-PatternSyntax::PatternSyntax()
+RegExpSyntax::RegExpSyntax()
 {
     SYNTAX("pattern");
 
@@ -272,18 +272,18 @@ PatternSyntax::PatternSyntax()
         );
 
     pattern_ =
-        DEFINE("Pattern",
+        DEFINE("RegExp",
             GLUE(
                 REF("Choice"),
                 EOI()
             )
         );
 
-    ENTRY("Pattern");
+    ENTRY("RegExp");
     LINK();
 }
 
-void PatternSyntax::compile(const ByteArray *text, SyntaxDefinition *definition) const
+void RegExpSyntax::compile(const ByteArray *text, SyntaxDefinition *definition) const
 {
     Ref<SyntaxState> state = match(text);
     if (!state->valid()) throw SyntaxError(text, state);
@@ -295,7 +295,7 @@ void PatternSyntax::compile(const ByteArray *text, SyntaxDefinition *definition)
     definition->LINK();
 }
 
-NODE PatternSyntax::compileChoice(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileChoice(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
     if (token->countChildren() == 1)
         return compileSequence(text, token->firstChild(), definition);
@@ -305,7 +305,7 @@ NODE PatternSyntax::compileChoice(const ByteArray *text, Token *token, SyntaxDef
     return definition->debug(node, "Choice");
 }
 
-NODE PatternSyntax::compileSequence(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileSequence(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
     NODE node = new syntax::GlueNode;
     for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
@@ -334,21 +334,21 @@ NODE PatternSyntax::compileSequence(const ByteArray *text, Token *token, SyntaxD
     return definition->debug(node, "Glue");
 }
 
-NODE PatternSyntax::compileAhead(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileAhead(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
     return (text->at(token->i0() + 3) != '!') ?
         definition->AHEAD(compileChoice(text, token->firstChild(), definition)) :
         definition->NOT(compileChoice(text, token->firstChild(), definition));
 }
 
-NODE PatternSyntax::compileBehind(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileBehind(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
     return (text->at(token->i0() + 3) != '!') ?
         definition->BEHIND(compileChoice(text, token->firstChild(), definition)) :
         definition->NOT_BEHIND(compileChoice(text, token->firstChild(), definition));
 }
 
-NODE PatternSyntax::compileCapture(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileCapture(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
     String name;
     if (token->firstChild() != token->lastChild())
@@ -356,20 +356,20 @@ NODE PatternSyntax::compileCapture(const ByteArray *text, Token *token, SyntaxDe
     return definition->CAPTURE(name, compileChoice(text, token->lastChild(), definition));
 }
 
-NODE PatternSyntax::compileReference(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileReference(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
     String name = text->copy(token->firstChild());
     return definition->REPLAY(name);
 }
 
-char PatternSyntax::readChar(const ByteArray *text, Token *token) const
+char RegExpSyntax::readChar(const ByteArray *text, Token *token) const
 {
     return (token->i1() - token->i0() > 1) ?
         text->copy(token)->unescapeInsitu()->at(0) :
         text->at(token->i0());
 }
 
-String PatternSyntax::readString(const ByteArray *text, Token *token) const
+String RegExpSyntax::readString(const ByteArray *text, Token *token) const
 {
     String s(token->countChildren());
     int i = 0;
@@ -378,7 +378,7 @@ String PatternSyntax::readString(const ByteArray *text, Token *token) const
     return s;
 }
 
-NODE PatternSyntax::compileRangeMinMax(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileRangeMinMax(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
     int n = token->countChildren();
     bool invert = (text->at(token->i0() + 1) == '^');
@@ -399,7 +399,7 @@ NODE PatternSyntax::compileRangeMinMax(const ByteArray *text, Token *token, Synt
     return definition->ANY();
 }
 
-NODE PatternSyntax::compileRangeExplicit(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileRangeExplicit(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
     Token *child = token->firstChild();
     bool invert = (text->at(token->i0() + 1) == '^');
@@ -412,7 +412,7 @@ NODE PatternSyntax::compileRangeExplicit(const ByteArray *text, Token *token, Sy
     return invert ? definition->EXCEPT(s) : definition->RANGE(s);
 }
 
-NODE PatternSyntax::compileRepeat(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileRepeat(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
     Token *child = token->firstChild(), *min = 0, *max = 0;
     while (child) {
@@ -432,6 +432,6 @@ NODE PatternSyntax::compileRepeat(const ByteArray *text, Token *token, SyntaxDef
     return definition->GREEDY_REPEAT(minRepeat, maxRepeat, node);
 }
 
-const PatternSyntax *patternSyntax() { return Singleton<PatternSyntax>::instance(); }
+const RegExpSyntax *regExpSyntax() { return Singleton<RegExpSyntax>::instance(); }
 
 } // namespace flux
