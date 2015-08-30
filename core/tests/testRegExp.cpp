@@ -8,13 +8,13 @@
 
 #include <flux/stdio>
 #include <flux/check>
-#include <flux/Pattern>
+#include <flux/RegExp>
 
 using namespace flux;
 
 void testEmailValidation()
 {
-    Pattern pattern =
+    RegExp pattern =
         "(?>!:[.-])"
         "{1..:(?>!:..|--)([a..z]|[A..Z]|[0..9]|[.-])}"
         "(?<!:[.-])"
@@ -62,7 +62,7 @@ void testEmailValidation()
 
 void testGlobbing()
 {
-    Pattern pattern = "*.(c|h){..2:[^.]}";
+    RegExp pattern = "*.(c|h){..2:[^.]}";
 
     Ref<StringList> path = StringList::create()
         << "/home/hans/glück.hh"
@@ -97,7 +97,7 @@ void testGlobbing()
 
 void testLazyChoice()
 {
-    Pattern pattern = "(Hans|HansPeter)Glück";
+    RegExp pattern = "(Hans|HansPeter)Glück";
     check(pattern->match(String("HansPeterGlück"))->valid());
     check(pattern->match(String("HansGlück"))->valid());
 }
@@ -112,12 +112,12 @@ void testUriDispatch()
         << "*httpecho*";
 
     for (int i = 0; i < services->count(); ++i)
-        fout() << services->at(i) << ": " << Pattern(services->at(i))->match(String("fluxkit.cyblogic.com"))->valid() << nl;
+        fout() << services->at(i) << ": " << RegExp(services->at(i))->match(String("fluxkit.cyblogic.com"))->valid() << nl;
 }
 
 void testEmpty()
 {
-    fout() << Pattern(0)->match(String("Something"))->valid() << nl;
+    fout() << RegExp(0)->match(String("Something"))->valid() << nl;
 }
 
 int main()

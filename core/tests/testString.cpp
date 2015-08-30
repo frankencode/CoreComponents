@@ -16,7 +16,7 @@ using namespace flux;
 int main()
 {
     {
-        NewString s = "Übertragung";
+        String s = "Übertragung";
         check(s != "123");
         check("X" < s);
 
@@ -32,7 +32,7 @@ int main()
         fout("]\n");
     }
     {
-        NewString s = "bin/testPath";
+        String s = "bin/testPath";
         // fout("s = \"%%\"\n") << s;
         fout("s->find(\"/\") = %%\n") << s->find("/");
         Ref<StringList> parts = s->split("/");
@@ -42,14 +42,14 @@ int main()
         fout("]\n");
     }
     {
-        NewString s = "Hallo!, \n\\u041F\\u0440\\u0438\\u0432\\u0435\\u0442!, \\ud834\\udd22, Hello!";
+        String s = "Hallo!, \n\\u041F\\u0440\\u0438\\u0432\\u0435\\u0442!, \\ud834\\udd22, Hello!";
         fout("s = \"%%\"\n") << s;
-        NewString se = s->unescape();
+        String se = s->unescape();
         fout("Unicode::open(se)->at(17) = 0x%%\n") << hex(Unicode::open(se)->at(17), 2);
         fout("se = \"%%\"\n") << se;
     }
     {
-        NewString s = "..Привет, Привет!";
+        String s = "..Привет, Привет!";
         s->replaceInsitu("Привет", "Hallo");
         fout("s = \"%%\"\n") << s;
     }

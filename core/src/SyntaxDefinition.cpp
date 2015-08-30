@@ -39,6 +39,23 @@ Ref<SyntaxState> SyntaxDefinition::match(const ByteArray *text, int i, TokenFact
     return def_->match(const_cast<ByteArray *>(text), i, tokenFactory);
 }
 
+Ref<StringList> SyntaxDefinition::split(const ByteArray *text) const
+{
+    Ref<StringList> parts = StringList::create();
+    for (int i = 0; i < text->count();) {
+        Ref<SyntaxState> state = find(text, i);
+        if (state->valid()) {
+            parts->append(text->copy(i, state->i0()));
+            i = state->i1();
+        }
+        else {
+            parts->append(text->copy(i, text->count()));
+            break;
+        }
+    }
+    return parts;
+}
+
 int SyntaxDefinition::matchLength() const
 {
     return def_->matchLength();

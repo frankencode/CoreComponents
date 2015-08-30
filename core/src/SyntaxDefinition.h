@@ -45,6 +45,7 @@ public:
 
     Ref<SyntaxState> find(const ByteArray *text, int i = 0, TokenFactory *tokenFactory = 0) const;
     Ref<SyntaxState> match(const ByteArray *text, int i = -1, TokenFactory *tokenFactory = 0) const;
+    Ref<StringList> split(const ByteArray *text) const;
 
     int matchLength() const;
 

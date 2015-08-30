@@ -7,7 +7,7 @@
  */
 
 #include <flux/stdio>
-#include <flux/Pattern>
+#include <flux/RegExp>
 #include <flux/File>
 #include <flux/Process>
 #include <flux/ProcessFactory>
@@ -70,7 +70,7 @@ Ref<Job> GnuToolChain::createAnalyseJob(BuildPlan *plan, String source)
 
 Ref<Module> GnuToolChain::finishAnalyseJob(BuildPlan *plan, Job *job)
 {
-    Ref<StringList> parts = job->outputText()->split(dependencySplitPattern_);
+    Ref<StringList> parts = dependencySplitPattern_->split(job->outputText());
     return Module::create(job->command(), plan->modulePath(parts->pop(0)), parts, true);
 }
 

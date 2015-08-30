@@ -54,7 +54,7 @@ bool PreparationStage::run()
                 plan()->sourcePath(
                     predicate->source()->at(j)->replace("%", "(?@*)")
                 );
-            Pattern sourcePattern = sourceExpression;
+            RegExp sourcePattern = sourceExpression;
             Ref<Glob> glob = Glob::open(sourceExpression);
             for (String sourcePath; glob->read(&sourcePath);) {
                 String name;
@@ -85,7 +85,7 @@ bool PreparationStage::run()
                 plan()->sourcePath(
                     predicate->target()->replace("%", "(?@*)")
                 );
-            Pattern targetPattern = targetExpression;
+            RegExp targetPattern = targetExpression;
             Ref<Glob> glob = Glob::open(targetExpression);
             for (String targetPath; glob->read(&targetPath);) {
                 String name;

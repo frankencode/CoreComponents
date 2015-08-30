@@ -7,7 +7,7 @@
  */
 
 #include <flux/stdio>
-#include <flux/Pattern>
+#include <flux/RegExp>
 #include <flux/DirWalker>
 #include <flux/Arguments>
 
@@ -70,13 +70,13 @@ int main(int argc, char **argv)
 
         Ref<StringList> items = arguments->items();
 
-        Pattern pathPattern = options->value("path");
-        Pattern namePattern = options->value("name");
-        Pattern typePattern = options->value("type");
+        RegExp pathPattern = options->value("path");
+        RegExp namePattern = options->value("name");
+        RegExp typePattern = options->value("type");
         int maxDepth = options->value("depth");
         bool ignoreHidden = !options->value("hidden");
 
-        Pattern textPattern = String(options->value("text"))->unescape();
+        RegExp textPattern = String(options->value("text"))->unescape();
         if (String(options->value("word")) != "")
             textPattern = String(Format() << "(?<!:[a..z]|[A..Z]|[0..9]|_)" << options->value("word") << "(?>!:[a..z]|[A..Z]|[0..9]|_)");
 

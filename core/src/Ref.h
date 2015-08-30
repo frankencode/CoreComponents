@@ -13,32 +13,6 @@
 
 namespace flux {
 
-template<class T>
-class RefGetSetPolicy
-{
-public:
-    RefGetSetPolicy(): a_(0) {}
-    ~RefGetSetPolicy() { set(0); }
-
-    inline T *get() const { return a_; }
-
-    inline void set(T *b) {
-        if (a_ != b) {
-            if (b) b->incRefCount();
-            if (a_) a_->decRefCount();
-            a_ = b;
-        }
-    }
-
-    template<class T2>
-    inline void set(T2 *b) {
-        set(cast<T>(b));
-    }
-
-protected:
-    T *a_;
-};
-
 /** \brief Object references
   *
   * The Ref template class implements object references that behave similiar to object
@@ -75,51 +49,59 @@ protected:
   * \see Singleton
   */
 template<class T>
-class Ref: public RefGetSetPolicy<T>
+class Ref
 {
 public:
-    Ref() {}
+    Ref(): a_(0) {}
+    ~Ref() { set(0); }
 
-    Ref(T *b) { this->set(b); }
-    Ref(const Ref &b) { this->set(b.a_); }
+    Ref(T *b): a_(0) { set(b); }
+    Ref(const Ref &b): a_(0) { set(b.a_); }
 
-    template<class T2> Ref(T2 *b) { this->set(b); }
-    template<class T2> Ref(const Ref<T2> &b) { this->set(b.get()); }
+    template<class T2> Ref(T2 *b): a_(0) { set(cast<T>(b)); }
+    template<class T2> Ref(const Ref<T2> &b): a_(0) { set(cast<T>(b.get())); }
 
-    inline const Ref &operator=(T *b) { this->set(b); return *this; }
-    inline const Ref &operator=(const Ref &b) { this->set(b.get()); return *this; }
-    inline operator T *() const { return this->get(); }
+    inline const Ref &operator=(T *b) { set(b); return *this; }
+    inline const Ref &operator=(const Ref &b) { set(b.a_); return *this; }
+    inline operator T *() const { return a_; }
 
-    template<class T2> inline const Ref &operator=(T2 *b) { this->set(b); return *this; }
-    template<class T2> inline const Ref &operator=(const Ref<T2> &b) { this->set(b.get()); return *this; }
+    template<class T2> inline const Ref &operator=(T2 *b) { set(cast<T>(b)); return *this; }
+    template<class T2> inline const Ref &operator=(const Ref<T2> &b) { set(cast<T>(b.get())); return *this; }
 
-    inline bool operator<(const Ref &b) const { return this->get() < b.get(); }
+    inline bool operator<(const Ref &b) const { return a_ < b.a_; }
 
     inline T *operator->() const {
-        FLUX_ASSERT2(this->get(), "Null reference accessed");
-        return this->get();
+        FLUX_ASSERT2(a_, "Null reference accessed");
+        return a_;
+    }
+
+    inline T *get() const { return a_; }
+
+    inline void set(T *b) {
+        if (a_ != b) {
+            if (b) b->incRefCount();
+            if (a_) a_->decRefCount();
+            a_ = b;
+        }
     }
 
     template<class T2>
     inline Ref<T> &operator<<(T2 x) {
-        FLUX_ASSERT2(this->get(), "Null reference on shift left");
-        *this->get() << x;
+        FLUX_ASSERT2(a_, "Null reference on shift left");
+        *a_ << x;
         return *this;
     }
 
     template<class T2>
     inline Ref<T> &operator>>(T2 &x) {
-        FLUX_ASSERT2(this->get(), "Null reference on shift right");
-        *this->get() >> x;
+        FLUX_ASSERT2(a_, "Null reference on shift right");
+        *a_ >> x;
         return *this;
     }
+
+private:
+    T *a_;
 };
-
-template<class T>
-inline bool operator==(const Ref<T> &a, const Ref<T> &b) { return a.get() == b.get(); }
-
-template<class T>
-inline bool operator!=(const Ref<T> &a, const Ref<T> &b) { return a.get() != b.get(); }
 
 template<class U, class T>
 inline U *cast(const Ref<T>& p) { return cast<U>(p.get()); }

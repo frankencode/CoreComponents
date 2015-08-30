@@ -10,7 +10,7 @@
 #define FLUXMAKE_GNUTOOLCHAIN_H
 
 #include <flux/Format>
-#include <flux/Pattern>
+#include <flux/RegExp>
 #include "ToolChain.h"
 
 namespace fluxmake {
@@ -67,7 +67,7 @@ protected:
     static void cleanAliasSymlinks(BuildPlan *plan, String appName);
 
 private:
-    Pattern dependencySplitPattern_;
+    RegExp dependencySplitPattern_;
 };
 
 } // namespace fluxmake

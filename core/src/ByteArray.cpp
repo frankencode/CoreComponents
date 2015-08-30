@@ -14,7 +14,6 @@
 #include <flux/Utf16Source>
 #include <flux/Utf16Sink>
 #include <flux/Format>
-#include <flux/SyntaxDefinition>
 #include <flux/ByteArray>
 
 namespace flux {
@@ -291,23 +290,6 @@ Ref<StringList> ByteArray::split(const char *sep) const
         parts->append(copy(i0, size_));
     else
         parts->append(String());
-    return parts;
-}
-
-Ref<StringList> ByteArray::split(SyntaxDefinition *pattern) const
-{
-    Ref<StringList> parts = StringList::create();
-    for (int i = 0; i < size_;) {
-        Ref<SyntaxState> state = pattern->find(this, i);
-        if (state->valid()) {
-            parts->append(copy(i, state->i0()));
-            i = state->i1();
-        }
-        else {
-            parts->append(copy(i, size_));
-            break;
-        }
-    }
     return parts;
 }
 

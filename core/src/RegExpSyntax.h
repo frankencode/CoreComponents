@@ -6,8 +6,8 @@
  *
  */
 
-#ifndef FLUX_PATTERNSYNTAX_H
-#define FLUX_PATTERNSYNTAX_H
+#ifndef FLUX_REGEXPSYNTAX_H
+#define FLUX_REGEXPSYNTAX_H
 
 #include <flux/String>
 #include <flux/SyntaxDefinition>
@@ -18,13 +18,13 @@ template<class SubClass> class Singleton;
 
 /** \brief Syntax of a regular expression text pattern
   */
-class PatternSyntax: public SyntaxDefinition
+class RegExpSyntax: public SyntaxDefinition
 {
 protected:
-    friend class Singleton<PatternSyntax>;
-    friend class Pattern;
+    friend class Singleton<RegExpSyntax>;
+    friend class RegExp;
 
-    PatternSyntax();
+    RegExpSyntax();
 
     void compile(const ByteArray *text, SyntaxDefinition *definition) const;
     NODE compileChoice(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
@@ -61,8 +61,8 @@ protected:
     int pattern_;
 };
 
-const PatternSyntax *patternSyntax();
+const RegExpSyntax *regExpSyntax();
 
 } // namespace flux
 
-#endif // FLUX_PATTERNSYNTAX_H
+#endif // FLUX_REGEXPSYNTAX_H
