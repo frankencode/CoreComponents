@@ -215,7 +215,7 @@ bool GnuToolChain::testHeaderPath(BuildPlan *plan, String headerPath) const
     if (plan->options() & BuildPlan::Verbose)
         fout() << "# " << command << nl;
 
-    return Process::start(command, Process::ForwardOutput) == 0;
+    return Process::start(command, Process::ForwardOutput)->wait() == 0;
 }
 
 bool GnuToolChain::install(BuildPlan *plan)

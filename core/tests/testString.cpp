@@ -7,6 +7,7 @@
  */
 
 #include <flux/stdio>
+#include <flux/check>
 #include <flux/String>
 #include <flux/Unicode>
 
@@ -15,7 +16,10 @@ using namespace flux;
 int main()
 {
     {
-        String s = "Übertragung";
+        NewString s = "Übertragung";
+        check(s != "123");
+        check("X" < s);
+
         fout("s = \"%%\"\n") << s;
         fout("Unicode::open(s)->count() = %%\n") << Unicode::open(s)->count();
         fout("s->size() = %%\n") << s->count();
@@ -28,7 +32,7 @@ int main()
         fout("]\n");
     }
     {
-        String s = "bin/testPath";
+        NewString s = "bin/testPath";
         // fout("s = \"%%\"\n") << s;
         fout("s->find(\"/\") = %%\n") << s->find("/");
         Ref<StringList> parts = s->split("/");
@@ -38,14 +42,14 @@ int main()
         fout("]\n");
     }
     {
-        String s = "Hallo!, \n\\u041F\\u0440\\u0438\\u0432\\u0435\\u0442!, \\ud834\\udd22, Hello!";
+        NewString s = "Hallo!, \n\\u041F\\u0440\\u0438\\u0432\\u0435\\u0442!, \\ud834\\udd22, Hello!";
         fout("s = \"%%\"\n") << s;
-        String se = s->unescape();
+        NewString se = s->unescape();
         fout("Unicode::open(se)->at(17) = 0x%%\n") << hex(Unicode::open(se)->at(17), 2);
         fout("se = \"%%\"\n") << se;
     }
     {
-        String s = "..Привет, Привет!";
+        NewString s = "..Привет, Привет!";
         s->replaceInsitu("Привет", "Hallo");
         fout("s = \"%%\"\n") << s;
     }
