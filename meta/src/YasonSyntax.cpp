@@ -10,7 +10,7 @@
 #include <flux/Format>
 #include <flux/FloatSyntax>
 #include <flux/IntegerSyntax>
-#include <flux/YasonSyntax>
+#include <flux/meta/YasonSyntax>
 
 namespace flux {
 

@@ -9,7 +9,7 @@
 #ifndef FLUXMAKE_PREDICATE_H
 #define FLUXMAKE_PREDICATE_H
 
-#include <flux/MetaObject>
+#include <flux/meta/MetaObject>
 #include <flux/List>
 
 namespace fluxmake {

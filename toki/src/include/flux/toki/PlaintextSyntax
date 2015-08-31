@@ -1,1 +1,1 @@
-../../../PlaintextSyntax.h
+#include "../../../PlaintextSyntax.h"

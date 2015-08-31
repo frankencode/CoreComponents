@@ -9,7 +9,7 @@
 #ifndef FLUXTOKI_YASONSYNTAX_H
 #define FLUXTOKI_YASONSYNTAX_H
 
-#include <flux/YasonSyntax>
+#include <flux/meta/YasonSyntax>
 
 namespace flux {
 namespace toki {

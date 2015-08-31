@@ -7,9 +7,9 @@
  */
 
 #include <flux/Format>
-#include <flux/YasonSyntax>
-#include <flux/YasonWriter>
-#include <flux/yason>
+#include <flux/meta/YasonSyntax>
+#include <flux/meta/YasonWriter>
+#include <flux/meta/yason>
 
 namespace flux {
 namespace yason {

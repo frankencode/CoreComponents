@@ -1,4 +1,4 @@
 Tools {
     source: *.cpp
-    use: [ core, toki ]
+    use: [ core, meta, toki ]
 }

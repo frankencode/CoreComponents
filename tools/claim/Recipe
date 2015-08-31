@@ -1,5 +1,5 @@
 Application {
     name: fluxclaim
     source: *.cpp
-    use: [ core, crypto, toki ]
+    use: [ core, meta, crypto, toki ]
 }

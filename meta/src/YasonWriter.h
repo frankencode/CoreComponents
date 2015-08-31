@@ -6,26 +6,27 @@
  *
  */
 
-#ifndef FLUX_JSONWRITER_H
-#define FLUX_JSONWRITER_H
+#ifndef FLUXMETA_YASONWRITER_H
+#define FLUXMETA_YASONWRITER_H
 
-#include <flux/MetaObject>
+#include <flux/meta/MetaObject>
 
 namespace flux {
 
-/** \brief Generate JSON representation of a meta object tree
-  * \see yason, YasonWriter
+/** \brief Generate YSON representation of a meta object tree
+  * \see JsonWriter
   */
-class JsonWriter: public Object
+class YasonWriter: public Object
 {
 public:
-    static Ref<JsonWriter> create(Format format = Format(), String indent = "  ");
+    static Ref<YasonWriter> create(Format format = Format(), String indent = "  ");
     void write(Variant value);
 
 protected:
-    JsonWriter(Format format, String indent);
+    YasonWriter(Format format, String indent);
     void writeValue(Variant value, int depth);
     void writeList(Variant value, int depth);
+    bool isIdentifier(String name) const;
     void writeObject(Variant value, int depth);
     void writeIndent(int depth);
 
@@ -38,4 +39,4 @@ protected:
 
 } // namespace flux
 
-#endif // FLUX_JSONWRITER_H
+#endif // FLUXMETA_YASONWRITER_H

@@ -9,7 +9,7 @@
 #ifndef FLUXNODE_NODECONFIGPROTOCOL_H
 #define FLUXNODE_NODECONFIGPROTOCOL_H
 
-#include <flux/MetaProtocol>
+#include <flux/meta/MetaProtocol>
 
 namespace flux { template<class> class Singleton; }
 

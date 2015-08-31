@@ -6,12 +6,12 @@
  *
  */
 
-#ifndef FLUX_YASON_H
-#define FLUX_YASON_H
+#ifndef FLUXMETA_YASON_H
+#define FLUXMETA_YASON_H
 
 #include <flux/exceptions>
-#include <flux/MetaObject>
-#include <flux/MetaProtocol>
+#include <flux/meta/MetaObject>
+#include <flux/meta/MetaProtocol>
 
 namespace flux {
 namespace yason {
@@ -21,4 +21,4 @@ String stringify(Variant value);
 
 }} // namespace flux::yason
 
-#endif // FLUX_YASON_H
+#endif // FLUXMETA_YASON_H

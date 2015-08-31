@@ -10,7 +10,7 @@
 #define FLUXNODE_LOGPROTOTYPE_H
 
 #include <flux/Date>
-#include <flux/MetaObject>
+#include <flux/meta/MetaObject>
 
 namespace fluxnode {
 

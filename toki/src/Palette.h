@@ -10,7 +10,7 @@
 #define FLUXTOKI_PALETTE_H
 
 #include <flux/SyntaxDefinition>
-#include <flux/MetaObject>
+#include <flux/meta/MetaObject>
 #include <flux/toki/Style>
 
 namespace flux {
