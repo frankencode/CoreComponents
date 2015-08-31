@@ -1,1 +1,1 @@
-../../../HashSum.h
+#include "../../../HashSum.h"

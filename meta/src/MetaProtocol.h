@@ -6,10 +6,10 @@
  *
  */
 
-#ifndef FLUX_METAPROTOCOL_H
-#define FLUX_METAPROTOCOL_H
+#ifndef FLUXMETA_METAPROTOCOL_H
+#define FLUXMETA_METAPROTOCOL_H
 
-#include <flux/MetaObject>
+#include <flux/meta/MetaObject>
 
 namespace flux {
 
@@ -90,4 +90,4 @@ private:
 
 } // namespace flux
 
-#endif // FLUX_METAPROTOCOL_H
+#endif // FLUXMETA_METAPROTOCOL_H

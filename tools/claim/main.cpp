@@ -7,7 +7,7 @@
  */
 
 #include <flux/stdio>
-#include <flux/Arguments>
+#include <flux/meta/Arguments>
 #include <flux/Date>
 #include "Report.h"
 #include "Registry.h"

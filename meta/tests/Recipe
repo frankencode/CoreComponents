@@ -1,5 +1,4 @@
-Application {
-    name: fluxmake
+Tests {
     source: *.cpp
     use: [ core, meta ]
 }

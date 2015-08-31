@@ -8,7 +8,7 @@
 
 #include <flux/stdio>
 #include <flux/check>
-#include <flux/yason>
+#include <flux/meta/yason>
 
 using namespace flux;
 

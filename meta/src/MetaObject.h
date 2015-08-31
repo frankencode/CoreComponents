@@ -6,8 +6,8 @@
  *
  */
 
-#ifndef FLUX_METAOBJECT_H
-#define FLUX_METAOBJECT_H
+#ifndef FLUXMETA_METAOBJECT_H
+#define FLUXMETA_METAOBJECT_H
 
 #include <flux/SpinLock>
 #include <flux/Token>
@@ -70,4 +70,4 @@ private:
 
 } // namespace flux
 
-#endif // FLUX_METAOBJECT_H
+#endif // FLUXMETA_METAOBJECT_H

@@ -7,9 +7,9 @@
  */
 
 #include <flux/Guard>
-#include <flux/YasonSyntax>
-#include <flux/MetaProtocol>
-#include <flux/MetaObject>
+#include <flux/meta/YasonSyntax>
+#include <flux/meta/MetaProtocol>
+#include <flux/meta/MetaObject>
 
 namespace flux {
 

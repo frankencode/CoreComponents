@@ -1,1 +1,1 @@
-../../../HashMeter.h
+#include "../../../HashMeter.h"

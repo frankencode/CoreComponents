@@ -6,8 +6,8 @@
  *
  */
 
-#ifndef FLUX_ARGUMENTS_H
-#define FLUX_ARGUMENTS_H
+#ifndef FLUXMETA_ARGUMENTS_H
+#define FLUXMETA_ARGUMENTS_H
 
 #include <flux/Variant>
 
@@ -37,4 +37,4 @@ private:
 
 } // namespace flux
 
-#endif // FLUX_ARGUMENTS_H
+#endif // FLUXMETA_ARGUMENTS_H

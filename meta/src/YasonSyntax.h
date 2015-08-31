@@ -6,11 +6,11 @@
  *
  */
 
-#ifndef FLUX_YASONSYNTAX_H
-#define FLUX_YASONSYNTAX_H
+#ifndef FLUXMETA_YASONSYNTAX_H
+#define FLUXMETA_YASONSYNTAX_H
 
 #include <flux/SyntaxDefinition>
-#include <flux/yason>
+#include <flux/meta/yason>
 
 namespace flux {
 
@@ -76,4 +76,4 @@ const YasonSyntax *yasonSyntax();
 
 } // namespace flux
 
-#endif // FLUX_YASONSYNTAX_H
+#endif // FLUXMETA_YASONSYNTAX_H

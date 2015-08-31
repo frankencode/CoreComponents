@@ -8,7 +8,7 @@
 
 #include <flux/stdio>
 #include <flux/exceptions>
-#include <flux/Arguments>
+#include <flux/meta/Arguments>
 #include <flux/crypto/Sha1>
 #include <flux/crypto/Md5>
 #include <flux/crypto/HashMeter>

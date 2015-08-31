@@ -10,7 +10,7 @@
 #define FLUXTOKI_STYLE_H
 
 #include <flux/Color>
-#include <flux/yason>
+#include <flux/meta/yason>
 
 namespace flux {
 namespace toki {

@@ -9,7 +9,7 @@
 #include <flux/Format>
 #include <flux/File>
 #include <flux/FileStatus>
-#include <flux/yason>
+#include <flux/meta/yason>
 #include "BuildPlan.h"
 #include "DependencyCache.h"
 
