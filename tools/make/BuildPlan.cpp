@@ -8,9 +8,9 @@
 
 #include <flux/stdio>
 #include <flux/Process>
-#include <flux/Glob>
 #include <flux/Dir>
 #include <flux/ResourceGuard>
+#include <flux/syntax/Glob>
 #include <flux/meta/yason>
 #include <flux/meta/Arguments>
 #include "BuildMap.h"

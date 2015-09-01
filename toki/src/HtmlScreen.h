@@ -9,8 +9,8 @@
 #ifndef FLUXTOKI_HTMLSCREEN_H
 #define FLUXTOKI_HTMLSCREEN_H
 
-#include <flux/Token>
 #include <flux/Format>
+#include <flux/syntax/Token>
 #include <flux/toki/Theme>
 
 namespace flux {

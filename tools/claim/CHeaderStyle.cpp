@@ -6,10 +6,10 @@
  *
  */
 
-#include <flux/SyntaxDefinition>
 #include <flux/Singleton>
 #include <flux/File>
 #include <flux/Format>
+#include <flux/syntax/SyntaxDefinition>
 #include "CHeaderStyle.h"
 
 namespace fluxclaim {

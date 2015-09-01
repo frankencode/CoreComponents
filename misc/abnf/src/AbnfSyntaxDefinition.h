@@ -9,7 +9,7 @@
 #ifndef FLUXABNF_ABNFSYNTAXDEFINITION_H
 #define FLUXABNF_ABNFSYNTAXDEFINITION_H
 
-#include <flux/SyntaxDefinition>
+#include <flux/syntax/SyntaxDefinition>
 
 namespace flux {
 namespace abnf {

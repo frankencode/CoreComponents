@@ -186,24 +186,6 @@ protected:
     String resource_;
 };
 
-class SyntaxState;
-
-/** \brief Syntax error
-  */
-class SyntaxError: public TextError
-{
-public:
-    SyntaxError(String text, SyntaxState *state = 0, String resource = "");
-    ~SyntaxError() throw();
-
-    inline const SyntaxState *state() const { return state_; }
-
-    virtual String message() const;
-
-private:
-    Ref<SyntaxState> state_;
-};
-
 /** \brief Semantic error
   */
 class SemanticError: public TextError

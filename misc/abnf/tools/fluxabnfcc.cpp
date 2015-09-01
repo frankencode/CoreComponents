@@ -7,7 +7,7 @@
  */
 
 #include <flux/stdio>
-#include <flux/SyntaxDebugger>
+#include <flux/syntax/SyntaxDebugger>
 #include <flux/abnf/AbnfCompiler>
 
 using namespace flux;

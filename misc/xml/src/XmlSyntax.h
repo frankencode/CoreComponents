@@ -9,7 +9,7 @@
 #ifndef FLUXXML_XMLSYNTAX_H
 #define FLUXXML_XMLSYNTAX_H
 
-#include <flux/SyntaxDefinition>
+#include <flux/syntax/SyntaxDefinition>
 
 namespace flux {
 

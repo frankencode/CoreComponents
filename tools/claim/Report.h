@@ -9,9 +9,9 @@
 #ifndef FLUXCLAIM_REPORT_H
 #define FLUXCLAIM_REPORT_H
 
-#include <flux/RegExp>
 #include <flux/Map>
 #include <flux/Set>
+#include <flux/syntax/RegExp>
 #include "Notice.h"
 
 namespace fluxclaim {

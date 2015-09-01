@@ -9,7 +9,7 @@
 #ifndef FLUXABNF_ABNFCOMPILER_H
 #define FLUXABNF_ABNFCOMPILER_H
 
-#include <flux/SyntaxDebugger>
+#include <flux/syntax/SyntaxDebugger>
 #include <flux/abnf/AbnfSyntax>
 
 namespace flux {

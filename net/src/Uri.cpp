@@ -6,7 +6,6 @@
  *
  */
 
-#include <flux/exceptions>
 #include <flux/Format>
 #include <flux/net/UriSyntax>
 #include <flux/net/Uri>

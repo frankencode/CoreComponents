@@ -1,5 +1,5 @@
 Library {
     name: fluxnet
     source: *.cpp
-    use: core
+    use: [ core, syntax ]
 }

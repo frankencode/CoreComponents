@@ -9,8 +9,8 @@
 #ifndef FLUXTOKI_LANGUAGE_H
 #define FLUXTOKI_LANGUAGE_H
 
-#include <flux/RegExp>
-#include <flux/SyntaxDefinition>
+#include <flux/syntax/RegExp>
+#include <flux/syntax/SyntaxDefinition>
 
 namespace flux {
 namespace toki {

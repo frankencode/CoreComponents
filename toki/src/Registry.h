@@ -9,9 +9,9 @@
 #ifndef FLUXTOKI_REGISTRY_H
 #define FLUXTOKI_REGISTRY_H
 
-#include <flux/SyntaxDefinition>
 #include <flux/Registration>
 #include <flux/Map>
+#include <flux/syntax/SyntaxDefinition>
 #include <flux/toki/Language>
 #include <flux/toki/Theme>
 

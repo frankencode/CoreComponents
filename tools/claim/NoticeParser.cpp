@@ -7,7 +7,7 @@
  */
 
 #include <flux/Singleton>
-#include <flux/SyntaxDefinition>
+#include <flux/syntax/SyntaxDefinition>
 #include <flux/stdio>
 #include "NoticeParser.h"
 

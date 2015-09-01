@@ -9,7 +9,6 @@
 #include <string.h> // strerror_r
 #include <signal.h>
 #include <flux/Format>
-#include <flux/SyntaxState>
 #include <flux/ResourceContext>
 #include <flux/exceptions>
 
@@ -52,30 +51,6 @@ TextError::TextError(String text, int offset, String resource)
       offset_(offset),
       resource_(resource != "" ? resource : resourceContextStack()->top())
 {}
-
-SyntaxError::SyntaxError(String text, SyntaxState *state, String resource)
-    : TextError(text, state ? state->hintOffset() : -1, resource),
-      state_(state)
-{}
-
-SyntaxError::~SyntaxError() throw()
-{}
-
-String SyntaxError::message() const
-{
-    Format format;
-    const char *error = "Syntax error";
-    if (state_) if (state_->hint()) {
-        int line = 0, pos = 0;
-        text_->offsetToLinePos(state_->hintOffset(), &line, &pos);
-        if (resource_ != "") format << resource_ << ":";
-        if (!text_->contains('\n') && text_->trim()->count() > 0) format << "\'" << text_ << "\':";
-        format << line << ":" << pos << ": ";
-    }
-    format << error;
-    if (state_) if (state_->hint()) format << ": " << state_->hint();
-    return format;
-}
 
 String SemanticError::message() const
 {
