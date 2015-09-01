@@ -7,8 +7,6 @@
  */
 
 #include <stdint.h>
-#include <time.h>
-#include <flux/System>
 #include <flux/Format>
 #include <flux/Date>
 
@@ -55,15 +53,27 @@ inline int daysInMonth(int i, int y)
     return days[i] + (i == 1) * leapYear(y);
 }
 
-Date::Date()
-    : time_(flux::nan)
-{
-    tm_isdst = 0;
-    tm_gmtoff = 0;
-}
+Date::Date():
+    offset_(0),
+    time_(flux::nan)
+{}
 
-Date::Date(double time, int offset)
-    : time_(time)
+Date::Date(const Date &b):
+    year_(b.year_),
+    month_(b.month_),
+    day_(b.day_),
+    weekDay_(b.weekDay_),
+    yearDay_(b.yearDay_),
+    hour_(b.hour_),
+    minutes_(b.minutes_),
+    seconds_(b.seconds_),
+    offset_(b.offset_),
+    time_(b.time_)
+{}
+
+Date::Date(double time, int offset):
+    offset_(offset),
+    time_(time)
 {
     const int C1   = 365;
     const int C4   =  4 * C1 + 1;
@@ -75,10 +85,10 @@ Date::Date(double time, int offset)
     int n = t / 86400;
     if (n < 0) n = 0;
 
-    tm_hour = (t / 3600) % 24;
-    tm_min = (t / 60) % 60;
-    tm_sec = t % 60;
-    tm_wday = (n + 6) % 7;
+    hour_ = (t / 3600) % 24;
+    minutes_ = (t / 60) % 60;
+    seconds_ = t % 60;
+    weekDay_ = (n + 6) % 7;
 
     int y = 400 * (n / C400);
     n = n % C400;
@@ -104,23 +114,28 @@ Date::Date(double time, int offset)
         ++y;
     }
 
-    tm_year = y - 1900;
-    tm_yday = n;
+    year_ = y;
+    yearDay_ = n;
 
-    tm_mon = 0;
+    month_ = 0;
     while (true) {
-        int h = daysInMonth(tm_mon, y);
+        int h = daysInMonth(month_, y);
         if (n < h) break;
-        ++tm_mon;
+        ++month_;
         n -= h;
     }
-    tm_mday = n + 1;
-
-    tm_isdst = 0;
-    tm_gmtoff = offset;
+    ++month_;
+    day_ = n + 1;
 }
 
-Date::Date(int year, int month, int day, int hour, int minutes, int seconds, int offset)
+Date::Date(int year, int month, int day, int hour, int minutes, int seconds, int offset):
+    year_(year),
+    month_(month),
+    day_(day),
+    hour_(hour),
+    minutes_(minutes),
+    seconds_(seconds),
+    offset_(offset)
 {
     if (year < 1) year = 1;
     if (month > 12) month = 12;
@@ -143,55 +158,16 @@ Date::Date(int year, int month, int day, int hour, int minutes, int seconds, int
     for (int i = 0; i < month; ++i)
         t += daysInMonth(i, year);
     t += day;
-    tm_yday = t;
+    yearDay_ = t;
     t += (31 * 7 + 30 * 4 + 28) * (year - 1970);
     if (year >= 1970)
         t += leaps(1970, year);
     else
         t -= leaps(1970, year - 1);
-    tm_wday = (719528 + t + 6) % 7;
+    weekDay_ = (719528 + t + 6) % 7;
     t *= 86400;
     t += 3600 * hour + 60 * minutes + seconds;
     time_ = t;
-
-    tm_mday = day + 1;
-    tm_mon = month;
-    tm_year = year - 1900;
-    tm_hour = hour;
-    tm_min = minutes;
-    tm_sec = seconds;
-
-    tm_isdst = -1;
-    tm_gmtoff = offset;
-}
-
-Ref<Date> Date::now()
-{
-    return Date::create(System::now());
-}
-
-Ref<Date> Date::localTime()
-{
-    return localTime(System::now());
-}
-
-Ref<Date> Date::localTime(double time)
-{
-    Ref<Date> d = Date::create();
-    d->time_ = time;
-    time_t tt = d->time_;
-    localtime_r(&tt, d);
-    return d;
-}
-
-Ref<Date> Date::copy() const
-{
-    Ref<Date> newDate = Date::create();
-    const struct tm *tm1 = this;
-    struct tm *tm2 = newDate;
-    *tm2 = *tm1;
-    newDate->time_ = time_;
-    return newDate;
 }
 
 double Date::time() const
@@ -205,21 +181,21 @@ String Date::toString() const
     //! \todo local time Formatting
 
     String tz = "Z";
-    int offset = tm_gmtoff / 60;
+    int offset = offset_ / 60;
     if (offset > 0)
         tz = Format() << "+" << dec(offset / 60, 2) << dec(offset % 60, 2);
     else if (offset < 0)
         tz = Format() << "-" << dec((-offset) / 60, 2) << dec((-offset) % 60, 2);
 
     return Format()
-        << dec(tm_year + 1900, 4) << "-" << dec(tm_mon + 1, 2) << "-" << dec(tm_mday, 2)
-        << "T" << dec(tm_hour, 2) << dec(tm_min, 2) << dec(tm_sec, 2) << tz;
+        << dec(year_, 4) << "-" << dec(month_, 2) << "-" << dec(day_, 2)
+        << "T" << dec(hour_, 2) << dec(minutes_, 2) << dec(seconds_, 2) << tz;
 }
 
 String Date::monthName() const
 {
     const char *names[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-    int i = tm_mon;
+    int i = month_ - 1;
     if (i < 0) i = 0;
     else if (i > 11) i = 11;
     return names[i];
@@ -228,7 +204,7 @@ String Date::monthName() const
 String Date::dayName() const
 {
     const char *names[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-    int i = tm_wday;
+    int i = weekDay_;
     if (i < 0) i = 0;
     else if (i > 6) i = 6;
     return names[i];

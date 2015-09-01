@@ -9,6 +9,7 @@
 #include <flux/stdio>
 #include <flux/meta/Arguments>
 #include <flux/Date>
+#include <flux/System>
 #include "Report.h"
 #include "Registry.h"
 
@@ -24,7 +25,7 @@ int main(int argc, char **argv)
 
         Ref<VariantMap> options = VariantMap::create();
         {
-            int year = Date::now()->year();
+            int year = Date::create(System::now())->year();
             options->insert("report", false);
             options->insert("strip", false);
             options->insert("insert", false);

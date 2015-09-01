@@ -47,7 +47,7 @@ void Response::header(String name, String value)
 
 void Response::writeHeader()
 {
-    String now = formatDate(Date::now());
+    String now = formatDate(Date::create(System::now()));
     insert("Server", nodeConfig()->version());
     insert("Date", now);
     // insert("Connection", "keep-alive");
