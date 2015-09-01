@@ -1,5 +1,5 @@
 Library {
     name: fluxmeta
     source: *.cpp
-    use: core
+    use: [ core, syntax ]
 }

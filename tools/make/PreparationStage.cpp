@@ -6,9 +6,9 @@
  *
  */
 
-#include <flux/Glob>
-#include <flux/FileStatus>
 #include <flux/stdio>
+#include <flux/FileStatus>
+#include <flux/syntax/Glob>
 #include "BuildPlan.h"
 #include "JobScheduler.h"
 #include "PreparationStage.h"

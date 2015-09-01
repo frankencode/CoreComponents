@@ -9,7 +9,7 @@
 #ifndef FLUXNET_INETADDRESSSYNTAX_H
 #define FLUXNET_INETADDRESSSYNTAX_H
 
-#include <flux/SyntaxDefinition>
+#include <flux/syntax/SyntaxDefinition>
 
 namespace flux {
 

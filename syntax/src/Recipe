@@ -1,0 +1,5 @@
+Library {
+    name: fluxsyntax
+    source: *.cpp
+    use: core
+}

@@ -10,8 +10,8 @@
 #define FLUXMETA_METAOBJECT_H
 
 #include <flux/SpinLock>
-#include <flux/Token>
 #include <flux/Variant>
+#include <flux/syntax/Token>
 
 namespace flux {
 

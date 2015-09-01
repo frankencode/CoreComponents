@@ -7,8 +7,8 @@
  */
 
 #include <flux/Singleton>
-#include <flux/IntegerSyntax>
-#include <flux/FloatSyntax>
+#include <flux/syntax/IntegerSyntax>
+#include <flux/syntax/FloatSyntax>
 #include <flux/toki/CxxSyntax>
 
 namespace flux {

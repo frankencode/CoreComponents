@@ -1,5 +1,5 @@
 Library {
     name: fluxxml
     source: *.cpp
-    use: core
+    use: [ core, syntax ]
 }

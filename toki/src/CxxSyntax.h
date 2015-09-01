@@ -9,7 +9,7 @@
 #ifndef FLUXTOKI_CXXSYNTAX_H
 #define FLUXTOKI_CXXSYNTAX_H
 
-#include <flux/SyntaxDefinition>
+#include <flux/syntax/SyntaxDefinition>
 
 namespace flux {
 namespace toki {

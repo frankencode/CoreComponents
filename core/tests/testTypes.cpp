@@ -9,7 +9,6 @@
 #include <flux/stdio>
 #include <flux/SpinLock>
 #include <flux/Mutex>
-#include <flux/Token>
 
 using namespace flux;
 
@@ -65,7 +64,6 @@ int main()
     fout("sizeof(String) = %%\n") << sizeof(String);
     fout("sizeof(Format) = %%\n") << sizeof(Format);
     fout("sizeof(Variant) = %%\n") << sizeof(Variant);
-    fout("sizeof(Token) = %%\n") << sizeof(Token);
 
     fout("sizeof(time_t) = %%\n") << sizeof(time_t);
     fout("sizeof(size_t) = %%\n") << sizeof(size_t);

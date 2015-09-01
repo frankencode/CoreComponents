@@ -9,7 +9,8 @@
 #ifndef FLUXNET_URI_H
 #define FLUXNET_URI_H
 
-#include <flux/Token>
+#include <flux/syntax/exceptions>
+#include <flux/syntax/Token>
 #include <flux/String>
 
 namespace flux {

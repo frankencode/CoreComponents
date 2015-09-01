@@ -10,7 +10,7 @@
 #define FLUXMAKE_GNUTOOLCHAIN_H
 
 #include <flux/Format>
-#include <flux/RegExp>
+#include <flux/syntax/RegExp>
 #include "ToolChain.h"
 
 namespace fluxmake {

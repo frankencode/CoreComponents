@@ -9,7 +9,7 @@
 #ifndef FLUXMETA_YASONSYNTAX_H
 #define FLUXMETA_YASONSYNTAX_H
 
-#include <flux/SyntaxDefinition>
+#include <flux/syntax/SyntaxDefinition>
 #include <flux/meta/yason>
 
 namespace flux {

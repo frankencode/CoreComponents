@@ -1,1 +1,1 @@
-../../../NetworkInterface.h
+#include "../../../NetworkInterface.h"

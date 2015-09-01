@@ -9,7 +9,7 @@
 #ifndef FLUXTOKI_PALETTE_H
 #define FLUXTOKI_PALETTE_H
 
-#include <flux/SyntaxDefinition>
+#include <flux/syntax/SyntaxDefinition>
 #include <flux/meta/MetaObject>
 #include <flux/toki/Style>
 

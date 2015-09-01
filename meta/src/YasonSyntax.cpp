@@ -8,8 +8,8 @@
 
 #include <flux/Singleton>
 #include <flux/Format>
-#include <flux/FloatSyntax>
-#include <flux/IntegerSyntax>
+#include <flux/syntax/FloatSyntax>
+#include <flux/syntax/IntegerSyntax>
 #include <flux/meta/YasonSyntax>
 
 namespace flux {

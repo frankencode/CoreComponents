@@ -7,10 +7,10 @@
  */
 
 #include <flux/stdio>
-#include <flux/RegExp>
 #include <flux/File>
 #include <flux/Process>
 #include <flux/ProcessFactory>
+#include <flux/syntax/RegExp>
 #include "BuildPlan.h"
 #include "CwdGuard.h"
 #include "GnuToolChain.h"

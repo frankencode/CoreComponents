@@ -9,7 +9,7 @@
 #ifndef FLUXNET_URISYNTAX_H
 #define FLUXNET_URISYNTAX_H
 
-#include <flux/SyntaxDefinition>
+#include <flux/syntax/SyntaxDefinition>
 
 namespace flux {
 

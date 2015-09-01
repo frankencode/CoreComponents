@@ -1,4 +1,4 @@
 Tools {
     source: *.cpp
-    use: [ core, abnf ]
+    use: [ core, syntax, abnf ]
 }

@@ -9,7 +9,7 @@
 #ifndef FLUXMETA_YASON_H
 #define FLUXMETA_YASON_H
 
-#include <flux/exceptions>
+#include <flux/syntax/exceptions>
 #include <flux/meta/MetaObject>
 #include <flux/meta/MetaProtocol>
 

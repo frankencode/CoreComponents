@@ -7,7 +7,7 @@
  */
 
 #include <flux/assert>
-#include <flux/SyntaxDebugger>
+#include <flux/syntax/SyntaxDebugger>
 #include <flux/abnf/AbnfSyntax>
 #include "StringTrap.h"
 #include <flux/abnf/AbnfCompiler>
