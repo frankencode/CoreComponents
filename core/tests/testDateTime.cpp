@@ -28,10 +28,8 @@ int main()
     {
         fout() << "Basic date formatting..." << nl;
 
-        Ref<Date> n = Date::now(), l = Date::localTime(n->time());
-        fout() << n << ", " << l << nl;
-
         double t = System::now();
+        fout() << t << nl;
         Ref<Date> d1 = Date::create(Date::create(t)->time());
         Ref<Date> d2 = Date::create(t);
 
@@ -50,7 +48,7 @@ int main()
         fout() << "month: " << date->month() << nl;
         fout() << "day: " << date->day() << nl;
 
-        check(date->year() == 1970 && date->month() == 1 && date->day() == 1 && date->valid());
+        check(date->year() == 1970 && date->month() == 1 && date->day() == 1 && date->isValid());
     }
 
     {

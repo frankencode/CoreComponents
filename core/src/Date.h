@@ -9,10 +9,6 @@
 #ifndef FLUX_DATE_H
 #define FLUX_DATE_H
 
-#ifndef _BSD_SOURCE
-#define _BSD_SOURCE
-#endif
-#include <time.h>
 #include <flux/String>
 
 namespace flux {
@@ -35,12 +31,9 @@ enum {
 inline double hours(double n) { return n * SecondsPerHour; }
 inline double days(double n) { return n * SecondsPerDay; }
 
-typedef struct tm StructTm;
-
-/** \brief Broken-down time
-  * \see Time
+/** \brief Gregorian calendar dates
   */
-class Date: public StructTm, public Object
+class Date: public Object
 {
 public:
     inline static Ref<Date> create() {
@@ -53,23 +46,19 @@ public:
         return new Date(year, month, day, hour, minutes, seconds, offset);
     }
 
-    static Ref<Date> now();
-    static Ref<Date> localTime();
-    static Ref<Date> localTime(double time);
+    inline Ref<Date> copy() const { return new Date(*this); }
 
-    Ref<Date> copy() const;
+    inline bool isValid() const { return time_ != flux::nan;}
 
-    inline bool valid() const { return time_ != flux::nan;}
-
-    inline int year() const { return tm_year + 1900; }
-    inline int month() const { return tm_mon + 1; }
-    inline int day() const { return tm_mday; }
-    inline int weekday() const { return tm_wday; }
-    inline int yearday() const { return tm_yday; }
-    inline int hour() const { return tm_hour; }
-    inline int minutes() const { return tm_min; }
-    inline int seconds() const { return tm_sec; }
-    inline int offset() const { return tm_gmtoff; }
+    inline int year() const { return year_; }
+    inline int month() const { return month_; }
+    inline int day() const { return day_; }
+    inline int weekDay() const { return weekDay_; }
+    inline int yearDay() const { return yearDay_; }
+    inline int hour() const { return hour_; }
+    inline int minutes() const { return minutes_; }
+    inline int seconds() const { return seconds_; }
+    inline int offset() const { return offset_; }
 
     double time() const;
     String toString() const;
@@ -79,8 +68,19 @@ public:
 
 private:
     Date();
+    Date(const Date &b);
     Date(double time, int offset);
     Date(int year, int month, int day, int hour, int minutes, int seconds, int offset);
+
+    int year_;
+    int month_;
+    int day_;
+    int weekDay_;
+    int yearDay_;
+    int hour_;
+    int minutes_;
+    int seconds_;
+    int offset_;
 
     double time_;
 };
