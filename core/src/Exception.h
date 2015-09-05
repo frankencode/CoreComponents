@@ -9,7 +9,6 @@
 #ifndef FLUX_EXCEPTION_H
 #define FLUX_EXCEPTION_H
 
-#include <exception>
 #include <flux/String>
 
 namespace flux {
@@ -17,18 +16,12 @@ namespace flux {
 /** \brief Root class of the exception class hierarchy
   * \see exceptions
   */
-class Exception: public std::exception
+class Exception
 {
 public:
     ~Exception() throw() {}
 
     virtual String message() const = 0;
-
-private:
-    const char *what() const throw() {
-        static String h = message();
-        return h;
-    }
 };
 
 inline String str(const Exception &ex) { return ex.message(); }
