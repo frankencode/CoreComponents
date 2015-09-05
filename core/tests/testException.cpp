@@ -20,8 +20,8 @@ int main()
         Mutex::create()->release();
         check(false);
     }
-    catch (std::exception &ex) {
-        fout() << ex.what() << nl;
+    catch (Exception &ex) {
+        fout() << ex << nl;
     }
     #endif
 
