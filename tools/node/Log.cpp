@@ -58,7 +58,7 @@ void Log::open()
         warningStream_ =
         noticeStream_  =
         infoStream_    =
-        debugStream_   = err();
+        debugStream_   = stdErr();
     }
 
     if (level() < ErrorLogLevel)   errorStream_   = nullStream();

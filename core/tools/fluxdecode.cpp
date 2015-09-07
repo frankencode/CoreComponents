@@ -8,7 +8,7 @@ using namespace flux;
 void decode(Stream *in)
 {
     Ref<Utf16Source> source = Utf16Source::open(in);
-    Ref<Utf8Sink> sink = Utf8Sink::open(out());
+    Ref<Utf8Sink> sink = Utf8Sink::open(stdOut());
     for (uchar_t ch = 0; source->read(&ch);) {
         if (ch == '\r') continue;
         sink->write(ch);
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
             decode(File::open(argv[i]));
     }
     else {
-        decode(in());
+        decode(stdIn());
     }
     return 0;
 }

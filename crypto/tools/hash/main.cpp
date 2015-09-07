@@ -34,7 +34,7 @@ int main(int argc, char **argv)
             Ref<HashMeter> hashMeter = HashMeter::open(hashSum);
             Ref<File> source;
             if (path != "") source = File::open(path);
-            else { source = flux::in(); path = "-"; }
+            else { source = flux::stdIn(); path = "-"; }
             source->transferAll(hashMeter);
             fout() << hashMeter->finish()->hex() << "\t" << path << nl;
         }

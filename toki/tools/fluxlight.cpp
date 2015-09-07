@@ -28,7 +28,7 @@ int main(int argc, char **argv)
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
         {
             Ref<VariantMap> prototype = VariantMap::create();
-            prototype->insert("verbose", out()->isatty());
+            prototype->insert("verbose", stdOut()->isatty());
             prototype->insert("css", false);
             prototype->insert("theme", "");
             prototype->insert("language", "");
@@ -73,11 +73,11 @@ int main(int argc, char **argv)
             Language *language = defaultLanguage;
             if (!language)
                 throw UsageError("Please specify language (use -language option)");
-            String text = in()->readAll();
+            String text = stdIn()->readAll();
             Ref<SyntaxState> state = language->highlightingSyntax()->match(text, 0);
             ferr() << language->highlightingSyntax()->name() << "," << state->i0() << "," << state->i1() << nl;
             if (!state->valid()) throw SyntaxError(text, state, "<standard input>");
-            state->rootToken()->project(HtmlScreen::create(text, out()));
+            state->rootToken()->project(HtmlScreen::create(text, stdOut()));
         }
         else {
             for (int i = 0; i < items->count(); ++i) {
