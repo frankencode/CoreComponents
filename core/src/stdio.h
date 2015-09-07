@@ -19,12 +19,12 @@
 
 namespace flux {
 
-File *in();
-File *out();
-File *err();
+File *stdIn();
+File *stdOut();
+File *stdErr();
 
-inline Format fout(String pattern = "") { return Format(pattern, out()); }
-inline Format ferr(String pattern = "") { return Format(pattern, err()); }
+inline Format fout(String pattern = "") { return Format(pattern, stdOut()); }
+inline Format ferr(String pattern = "") { return Format(pattern, stdErr()); }
 
 LineSource *lineInput();
 

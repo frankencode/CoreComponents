@@ -30,19 +30,19 @@ bool StreamTap::readyRead(double interval) const
 int StreamTap::read(ByteArray *buf)
 {
     int n = stream_->read(buf);
-    inputTap_->write(buf->select(0, n));
+    if (inputTap_) inputTap_->write(buf->select(0, n));
     return n;
 }
 
 void StreamTap::write(const ByteArray *buf)
 {
-    outputTap_->write(buf);
+    if (outputTap_) outputTap_->write(buf);
     stream_->write(buf);
 }
 
 void StreamTap::write(const StringList *parts)
 {
-    outputTap_->write(parts);
+    if (outputTap_) outputTap_->write(parts);
     stream_->write(parts);
 }
 

@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 
                 Ref<Stream> source;
                 if (path != "") source = File::open(path);
-                else source = in();
+                else source = stdIn();
 
                 Ref<ArchiveReader> archive;
                 if (tarMode) archive = TarReader::open(source);
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
                 sink = File::open(sinkPath, File::WriteOnly);
             }
             else {
-                sink = out();
+                sink = stdOut();
             }
 
             Ref<ArchiveWriter> archive;

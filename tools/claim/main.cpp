@@ -92,7 +92,7 @@ int main(int argc, char **argv)
                     fout() << "Copyright " << holder << ":" << nl;
                     for (int j = 0; j < coverage->count(); ++j) {
                         Notice *notice = coverage->valueAt(j);
-                        Format line(out());
+                        Format line(stdOut());
                         line << coverage->keyAt(j) << " (";
                         CopyrightList *copyrights = notice->copyrights();
                         for (int k = 0; k < copyrights->count(); ++k) {
