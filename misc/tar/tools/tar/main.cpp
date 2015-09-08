@@ -7,6 +7,7 @@
  */
 
 #include <flux/stdio>
+#include <flux/File>
 #include <flux/exceptions>
 #include <flux/Format>
 #include <flux/meta/Arguments>

@@ -8,6 +8,7 @@
 
 #include <flux/stdio>
 #include <flux/check>
+#include <flux/File>
 #include <flux/User>
 #include <flux/Group>
 

@@ -1,4 +1,5 @@
 #include <flux/stdio>
+#include <flux/LineSource>
 #include <flux/Heap>
 
 using namespace flux;
@@ -6,7 +7,8 @@ using namespace flux;
 int main()
 {
     Ref<StringList> list = StringList::create();
-    for (String item; lineInput()->read(&item);)
+    Ref<LineSource> source = LineSource::open(stdIn());
+    for (String item; source->read(&item);)
         list->append(item);
 
     list = list->sort();

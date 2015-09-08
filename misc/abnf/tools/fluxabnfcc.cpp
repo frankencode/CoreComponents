@@ -7,6 +7,7 @@
  */
 
 #include <flux/stdio>
+#include <flux/File>
 #include <flux/syntax/SyntaxDebugger>
 #include <flux/abnf/AbnfCompiler>
 

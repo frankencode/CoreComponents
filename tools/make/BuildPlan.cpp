@@ -8,6 +8,7 @@
 
 #include <flux/stdio>
 #include <flux/Process>
+#include <flux/File>
 #include <flux/Dir>
 #include <flux/ResourceGuard>
 #include <flux/syntax/Glob>

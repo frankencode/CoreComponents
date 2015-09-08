@@ -89,8 +89,9 @@ int echo(int argc, char **argv)
     ferr("Process::env(\"Hello\") = \"%%\"\n") << Process::env("Hello");
     ferr("commandLine = \"%%\"\n") << commandLine->join(" ");
 
+    Ref<LineSource> source = LineSource::open(stdIn());
     while (true) {
-        String line = lineInput()->readLine();
+        String line = source->readLine();
         if ((line == "") || (line == "exit"))
             break;
         fout() << line << nl;
