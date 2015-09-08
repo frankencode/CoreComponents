@@ -8,6 +8,7 @@
 
 #include <flux/stdio>
 #include <flux/check>
+#include <flux/File>
 #include <flux/Mutex>
 #include <flux/exceptions>
 

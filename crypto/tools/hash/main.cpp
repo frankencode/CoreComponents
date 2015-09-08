@@ -7,6 +7,7 @@
  */
 
 #include <flux/stdio>
+#include <flux/File>
 #include <flux/exceptions>
 #include <flux/meta/Arguments>
 #include <flux/crypto/Sha1>

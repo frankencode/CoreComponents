@@ -162,7 +162,7 @@ bool GnuToolChain::includeTest(BuildPlan *plan, String includePath, StringList *
         format << "int main() { return 0; }" << nl;
         src->write(format->join());
     }
-    src->close();
+    src = 0;
     Format args;
     args << compiler();
     appendCompileOptions(args, plan);

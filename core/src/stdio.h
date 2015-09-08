@@ -13,20 +13,21 @@
   * \brief Standard input/output streams
   */
 
-#include <flux/File>
+#include <flux/SystemStream>
 #include <flux/Format>
-#include <flux/LineSource>
 
 namespace flux {
 
-File *stdIn();
-File *stdOut();
-File *stdErr();
+SystemStream *stdIn();
+SystemStream *stdOut();
+SystemStream *stdErr();
+
+void setStdInt(SystemStream *newIn);
+void setStdOut(SystemStream *newOut);
+void setStdErr(SystemStream *newErr);
 
 inline Format fout(String pattern = "") { return Format(pattern, stdOut()); }
 inline Format ferr(String pattern = "") { return Format(pattern, stdErr()); }
-
-LineSource *lineInput();
 
 } // namespace flux
 

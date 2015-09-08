@@ -7,6 +7,7 @@
  */
 
 #include <flux/ThreadLocalSingleton>
+#include <flux/File>
 #include <flux/stdio>
 
 namespace flux {
@@ -14,36 +15,49 @@ namespace flux {
 class StdIo: public Object, public ThreadLocalSingleton<StdIo>
 {
 public:
-    inline File *stdIn() {
+    inline SystemStream *stdIn() {
         if (!stdIn_) stdIn_ = File::open(File::StandardInput, File::ReadOnly);
         return stdIn_;
     }
 
-    inline File *stdOut() {
+    inline SystemStream *stdOut() {
         if (!stdOut_) stdOut_ = File::open(File::StandardOutput, File::WriteOnly);
         return stdOut_;
     }
 
-    inline File *stdErr() {
+    inline SystemStream *stdErr() {
         if (!stdErr_) stdErr_ = File::open(File::StandardError, File::WriteOnly);
         return stdErr_;
     }
 
-    inline LineSource *lineInput() {
-        if (!lineInput_) lineInput_ = LineSource::open(stdIn());
-        return lineInput_;
-    }
-
-    Ref<File> stdIn_;
-    Ref<File> stdOut_;
-    Ref<File> stdErr_;
-    Ref<LineSource> lineInput_;
+    Ref<SystemStream> stdIn_;
+    Ref<SystemStream> stdOut_;
+    Ref<SystemStream> stdErr_;
 };
 
-File *stdIn() { return StdIo::instance()->stdIn(); }
-File *stdOut() { return StdIo::instance()->stdOut(); }
-File *stdErr() { return StdIo::instance()->stdErr(); }
+SystemStream *stdIn() { return StdIo::instance()->stdIn(); }
+SystemStream *stdOut() { return StdIo::instance()->stdOut(); }
+SystemStream *stdErr() { return StdIo::instance()->stdErr(); }
 
-LineSource *lineInput() { return StdIo::instance()->lineInput(); }
+void setStdInt(SystemStream *newIn)
+{
+    if (::dup2(newIn->fd(), File::StandardInput) == -1)
+        FLUX_SYSTEM_DEBUG_ERROR(errno);
+    StdIo::instance()->stdIn_ = newIn;
+}
+
+void setStdOut(SystemStream *newOut)
+{
+    if (::dup2(newOut->fd(), File::StandardOutput) == -1)
+        FLUX_SYSTEM_DEBUG_ERROR(errno);
+    StdIo::instance()->stdOut_ = newOut;
+}
+
+void setStdErr(SystemStream *newErr)
+{
+    if (::dup2(newErr->fd(), File::StandardError) == -1)
+        FLUX_SYSTEM_DEBUG_ERROR(errno);
+    StdIo::instance()->stdErr_ = newErr;
+}
 
 } // namespace flux

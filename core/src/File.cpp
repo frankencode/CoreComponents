@@ -50,7 +50,9 @@ Ref<File> File::temp(int openFlags)
         << Process::execPath()->fileName()
         << Process::currentId()
     );
-    return open(path, openFlags);
+    Ref<File> newFile = open(path, openFlags);
+    newFile->unlinkWhenDone();
+    return newFile;
 }
 
 File::File(String path, int openFlags, int fd)

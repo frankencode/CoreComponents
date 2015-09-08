@@ -7,6 +7,7 @@
  */
 
 #include <flux/Process>
+#include <flux/File>
 #include <flux/NullStream>
 #include <flux/Mutex>
 #include <flux/Guard>
