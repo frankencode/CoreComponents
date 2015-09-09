@@ -11,9 +11,6 @@
 #include <string.h>
 #include <stdio.h> // rename
 #include <flux/exceptions>
-#include <flux/ExitEvent>
-#include <flux/ThreadExitEvent>
-#include <flux/Guard>
 #include <flux/Mutex>
 #include <flux/Random>
 #include <flux/Format>
@@ -38,11 +35,6 @@ Ref<File> File::tryOpen(String path, int flags, int mode)
     return 0;
 }
 
-Ref<File> File::open(int fd, int openFlags)
-{
-    return new File("", openFlags, fd);
-}
-
 Ref<File> File::temp(int openFlags)
 {
     String path = createUnique(
@@ -50,23 +42,14 @@ Ref<File> File::temp(int openFlags)
         << Process::execPath()->fileName()
         << Process::currentId()
     );
-    Ref<File> newFile = open(path, openFlags);
-    newFile->unlinkWhenDone();
-    return newFile;
+    return open(path, openFlags);
 }
 
 File::File(String path, int openFlags, int fd)
     : SystemStream(fd, (fd >= 0) ? (!::isatty(fd)) : true),
       path_(path),
-      openFlags_(openFlags),
-      unlinkWhenDone_(false)
+      openFlags_(openFlags)
 {}
-
-File::~File()
-{
-    if (unlinkWhenDone_)
-        try { unlink(path_); } catch(...) {}
-}
 
 String File::path() const
 {
@@ -106,37 +89,8 @@ Ref<FileStatus> File::status() const
 
 void File::truncate(off_t length)
 {
-    if (isOpen()) {
-        if (::ftruncate(fd_, length) == -1)
-            FLUX_SYSTEM_ERROR(errno, path_);
-    }
-    else {
-        if (::truncate(path_, length) == -1)
-            FLUX_SYSTEM_ERROR(errno, path_);
-    }
-}
-
-class UnlinkFile: public Action {
-public:
-    UnlinkFile(String path): path_(path->absolutePathRelativeTo(Process::cwd())) {}
-    void run() { try { unlink(path_); } catch(...) {} }
-private:
-    String path_;
-};
-
-void File::unlinkOnExit()
-{
-    exitEvent()->pushBack(new UnlinkFile(path_));
-}
-
-void File::unlinkOnThreadExit()
-{
-    threadExitEvent()->pushBack(new UnlinkFile(path_));
-}
-
-void File::unlinkWhenDone()
-{
-    unlinkWhenDone_ = true;
+    if (::ftruncate(fd_, length) == -1)
+        FLUX_SYSTEM_ERROR(errno, path_);
 }
 
 off_t File::seek(off_t distance, int method)
@@ -396,6 +350,18 @@ void File::save(String path, String text)
     Ref<File> file = open(path, File::WriteOnly);
     file->truncate(0);
     file->write(text);
+}
+
+FileUnlinkGuard::FileUnlinkGuard(String path):
+    path_(path)
+{
+    if (path_->isRelativePath())
+        path_ = path_->absolutePathRelativeTo(Process::cwd());
+}
+
+FileUnlinkGuard::~FileUnlinkGuard()
+{
+    try { File::unlink(path_); } catch (...) {}
 }
 
 } // namespace flux

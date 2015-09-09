@@ -153,21 +153,22 @@ bool GnuToolChain::includeTest(BuildPlan *plan, String includePath, StringList *
     if (testIncludes->count() == 0) return true;
 
     String srcPath = File::createUnique("/tmp/XXXXXXXX.cpp");
-    Ref<File> src = File::open(srcPath, File::WriteOnly);
-    src->unlinkWhenDone();
+    FileUnlinkGuard unlinkGuard(srcPath);
     {
-        Format format;
-        for (int i = 0; i < testIncludes->count(); ++i)
-            format << "#include <" << testIncludes->at(i) << ">" << nl;
-        format << "int main() { return 0; }" << nl;
-        src->write(format->join());
+        Ref<File> src = File::open(srcPath, File::WriteOnly);
+        {
+            Format format;
+            for (int i = 0; i < testIncludes->count(); ++i)
+                format << "#include <" << testIncludes->at(i) << ">" << nl;
+            format << "int main() { return 0; }" << nl;
+            src->write(format->join());
+        }
     }
-    src->close();
     Format args;
     args << compiler();
     appendCompileOptions(args, plan);
-    args << src->path() << "-I" + includePath;
-    args << "-o" + src->path() + "_";
+    args << srcPath << "-I" + includePath;
+    args << "-o" + srcPath + "_";
     appendLinkOptions(args, plan);
 
     String command = args->join(" ");
@@ -181,14 +182,15 @@ bool GnuToolChain::linkTest(BuildPlan *plan, String libraryPath, StringList *tes
     if (testLibraries->count() == 0) return true;
 
     String srcPath = File::createUnique("/tmp/XXXXXXXX.cpp");
-    Ref<File> src = File::open(srcPath, File::WriteOnly);
-    src->unlinkWhenDone();
-    src->write("int main() { return 0; }\n");
-    src->close();
+    FileUnlinkGuard unlinkGuard(srcPath);
+    {
+        Ref<File> src = File::open(srcPath, File::WriteOnly);
+        src->write("int main() { return 0; }\n");
+    }
     Format args;
-    args << compiler() << src->path() << "-L" + libraryPath;
+    args << compiler() << srcPath << "-L" + libraryPath;
     for (int i = 0; i < testLibraries->count(); ++i) args << "-l" + testLibraries->at(i);
-    args << "-o" + src->path() + "_";
+    args << "-o" + srcPath + "_";
 
     String command = args->join(" ");
     if (plan->options() & BuildPlan::Verbose)
@@ -199,18 +201,17 @@ bool GnuToolChain::linkTest(BuildPlan *plan, String libraryPath, StringList *tes
 bool GnuToolChain::testHeaderPath(BuildPlan *plan, String headerPath) const
 {
     String srcPath = File::createUnique("/tmp/XXXXXXXX.cpp");
-    Ref<File> src = File::open(srcPath, File::WriteOnly);
-    src->unlinkWhenDone();
+    FileUnlinkGuard unlinkGuard(srcPath);
     {
+        Ref<File> src = File::open(srcPath, File::WriteOnly);
         Format format;
         format << "#include <" << headerPath << ">\n";
         format << "int main() { return 0; }\n";
         src->write(format->join());
     }
-    src->close();
 
     Format args;
-    args << compiler() << "-M";
+    args << compiler() << srcPath << "-M";
     String command = args->join(" ");
     if (plan->options() & BuildPlan::Verbose)
         fout() << "# " << command << nl;

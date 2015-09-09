@@ -28,9 +28,6 @@ public:
     int fd() const;
     bool isatty() const;
 
-    bool isOpen() const;
-    void close();
-
     bool readyRead(double interval) const;
 
     virtual int read(ByteArray *data);
@@ -44,6 +41,8 @@ public:
     void closeOnExec();
 
     int ioctl(int request, void *arg);
+
+    void duplicateTo(SystemStream *other);
 
 protected:
     SystemStream(int fd, bool iov = true);

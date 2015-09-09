@@ -85,7 +85,6 @@ public:
 
     static Ref<File> open(String path, int flags = ReadOnly, int mode = 0644);
     static Ref<File> tryOpen(String path, int flags = ReadOnly, int mode = 0644);
-    static Ref<File> open(int fd, int openFlags);
     static Ref<File> temp(int openFlags = ReadWrite);
 
     String path() const;
@@ -95,10 +94,6 @@ public:
     int openFlags() const;
 
     void truncate(off_t length);
-    void unlinkOnExit();
-    void unlinkOnThreadExit();
-    void unlinkWhenDone();
-
     off_t seek(off_t distance, int method = SeekBegin);
     bool seekable() const;
 
@@ -136,13 +131,19 @@ private:
     static int translateOpenFlags(int openFlags);
 
     File(String path, int openFlags, int fd);
-    ~File();
 
     static void unmap(ByteArray *s);
 
     String path_;
     int openFlags_;
-    bool unlinkWhenDone_;
+};
+
+class FileUnlinkGuard: public Object {
+public:
+    FileUnlinkGuard(String path);
+    ~FileUnlinkGuard();
+private:
+    String path_;
 };
 
 } // namespace flux

@@ -27,9 +27,8 @@ SystemStream::SystemStream(int fd, bool iov)
 
 SystemStream::~SystemStream()
 {
-    if (isOpen())
-        if (fd_ >= 3) // because of StandardStreams concurrency
-            close();
+    if (::close(fd_) == -1)
+        FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 int SystemStream::fd() const { return fd_; }
@@ -37,15 +36,6 @@ int SystemStream::fd() const { return fd_; }
 bool SystemStream::isatty() const
 {
     return ::isatty(fd_);
-}
-
-bool SystemStream::isOpen() const { return fd_ != -1; }
-
-void SystemStream::close()
-{
-    if (::close(fd_) == -1)
-        FLUX_SYSTEM_DEBUG_ERROR(errno);
-    fd_ = -1;
 }
 
 bool SystemStream::readyRead(double interval) const
@@ -140,6 +130,12 @@ int SystemStream::ioctl(int request, void *arg)
     if (value == -1)
         FLUX_SYSTEM_DEBUG_ERROR(errno);
     return value;
+}
+
+void SystemStream::duplicateTo(SystemStream *other)
+{
+    if (::dup2(fd_, other->fd_) == -1)
+        FLUX_SYSTEM_DEBUG_ERROR(errno);
 }
 
 } // namespace flux
