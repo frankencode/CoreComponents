@@ -42,6 +42,8 @@ private:
 int main()
 {
     Ref<File> file = File::temp();
+    FileUnlinkGuard unlinkGuard(file->path());
+
     fout("(parent) file->path() = \"%%\"\n") << file->path();
 
     fout("(parent) acquiring write lock... \n");

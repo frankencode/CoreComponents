@@ -22,10 +22,6 @@ SystemStream *stdIn();
 SystemStream *stdOut();
 SystemStream *stdErr();
 
-void setStdInt(SystemStream *newIn);
-void setStdOut(SystemStream *newOut);
-void setStdErr(SystemStream *newErr);
-
 inline Format fout(String pattern = "") { return Format(pattern, stdOut()); }
 inline Format ferr(String pattern = "") { return Format(pattern, stdErr()); }
 
