@@ -23,6 +23,7 @@ public:
     inline static Ref<SystemStream> create(int fd) {
         return new SystemStream(fd);
     }
+    static Ref<SystemStream> duplicate(SystemStream *other);
     ~SystemStream();
 
     int fd() const;
