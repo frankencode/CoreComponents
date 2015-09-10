@@ -8,26 +8,22 @@
 
 #include <flux/stdio>
 #include <flux/check>
+#include <flux/testing/TestSuite>
 #include <flux/System>
 #include <flux/Date>
 
 using namespace flux;
+using namespace flux::testing;
 
 namespace flux {
     bool leapYear(int y);
 }
 
-int main()
+class BasicDateFormatting: public TestCase
 {
-    if (false) {
-        fout() << "Compute linear day number of 1st Jan 1970..." << nl;
-        int n = 0;
-        for (int y = 1969; y >= 0; --y) n += 365 + leapYear(y);
-        fout() << n << nl;
-    }
+public:
+    void run()
     {
-        fout() << "Basic date formatting..." << nl;
-
         double t = System::now();
         fout() << t << nl;
         Ref<Date> d1 = Date::create(Date::create(t)->time());
@@ -36,24 +32,33 @@ int main()
         fout() << d1->dayName() << ", " << d1 << nl;
         fout() << d2->dayName() << ", " << d2 << nl;
 
-        check(str(d1) == str(d2));
+        FLUX_VERIFY(str(d1) == str(d2));
     }
+};
 
+class BeginOfEpoch: public TestCase
+{
+public:
+    void run()
     {
-        fout() << "Begin of Epoch..." << nl;
-
         Ref<Date> date = Date::create(0);
         fout() << date << nl;
         fout() << "year: " << date->year() << nl;
         fout() << "month: " << date->month() << nl;
         fout() << "day: " << date->day() << nl;
 
-        check(date->year() == 1970 && date->month() == 1 && date->day() == 1 && date->isValid());
+        FLUX_VERIFY(date->isValid());
+        FLUX_VERIFY(date->year() == 1970);
+        FLUX_VERIFY(date->month() == 1);
+        FLUX_VERIFY(date->day() == 1);
     }
+};
 
+class CalendarDates: public TestCase
+{
+public:
+    void run()
     {
-        fout() << "Handling broken down times..." << nl;
-
         struct TestDate { int day; int month; int year; int hour; int minutes; int seconds; };
         TestDate tests[] = {
             {  1,  1, 2250,  0,  0,  0 },
@@ -74,31 +79,49 @@ int main()
             Ref<Date> date1 = Date::create(date0->time());
             fout() << int64_t(date0->time()) << nl;
             fout() << "  " << date0->dayName() << ", " << date0 << " == " << date1->dayName() << ", " << date1 << nl;
-            check(date0->time() == date1->time());
-            check(date0->toString() == date1->toString());
+            FLUX_VERIFY(date0->time() == date1->time());
+            FLUX_VERIFY(date0->toString() == date1->toString());
         }
+    }
+};
 
-        if (false) {
-            double t = Date::create(9999, 12, 31)->time();
-            while (true) {
-                Ref<Date> d1 = Date::create(t);
-                Ref<Date> d2 = Date::create(d1->year(), d1->month() + 1, d1->day());
-                fout() << "t = " << int64_t(t) << "  " << d1 << nl;
-                if (d1->year() != d2->year() || d1->month() != d2->month() || d1->day() != d2->day()) {
-                    fout() << d1 << " != " << d2 << nl;
-                    check(false);
-                }
-                if (d1->time() != d2->time()) {
-                    fout() << d1 << " != " << d2 << nl;
-                    fout() << "  " << int64_t(d1->time()) << " != " << int64_t(d2->time()) << nl;
-                    fout() << "  " << int64_t(d1->time()) - int64_t(d2->time()) << nl;
-                    check(false);
-                }
-                if (d1->year() == 1 && d1->month() == 1 && d1->day() == 1) break;
-                t -= 86400;
+int main(int argc, char **argv)
+{
+    FLUX_TESTSUITE_ADD(BasicDateFormatting);
+    FLUX_TESTSUITE_ADD(BeginOfEpoch);
+    FLUX_TESTSUITE_ADD(CalendarDates);
+
+    return testSuite()->run(argc, argv);
+}
+
+#if 0
+    if (false) {
+        fout() << "Compute linear day number of 1st Jan 1970..." << nl;
+        int n = 0;
+        for (int y = 1969; y >= 0; --y) n += 365 + leapYear(y);
+        fout() << n << nl;
+    }
+    if (false) {
+        double t = Date::create(9999, 12, 31)->time();
+        while (true) {
+            Ref<Date> d1 = Date::create(t);
+            Ref<Date> d2 = Date::create(d1->year(), d1->month() + 1, d1->day());
+            fout() << "t = " << int64_t(t) << "  " << d1 << nl;
+            if (d1->year() != d2->year() || d1->month() != d2->month() || d1->day() != d2->day()) {
+                fout() << d1 << " != " << d2 << nl;
+                check(false);
             }
+            if (d1->time() != d2->time()) {
+                fout() << d1 << " != " << d2 << nl;
+                fout() << "  " << int64_t(d1->time()) << " != " << int64_t(d2->time()) << nl;
+                fout() << "  " << int64_t(d1->time()) - int64_t(d2->time()) << nl;
+                check(false);
+            }
+            if (d1->year() == 1 && d1->month() == 1 && d1->day() == 1) break;
+            t -= 86400;
         }
     }
 
     return 0;
 }
+#endif

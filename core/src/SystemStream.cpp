@@ -19,10 +19,17 @@
 
 namespace flux {
 
-SystemStream::SystemStream(int fd, bool iov)
-    : fd_(fd),
-      iov_(iov),
-      iovMax_(0)
+Ref<SystemStream> SystemStream::duplicate(SystemStream *other)
+{
+    int fd = ::dup(other->fd_);
+    if (fd == -1) FLUX_SYSTEM_DEBUG_ERROR(errno);
+    return new SystemStream(fd);
+}
+
+SystemStream::SystemStream(int fd, bool iov):
+    fd_(fd),
+    iov_(iov),
+    iovMax_(0)
 {}
 
 SystemStream::~SystemStream()

@@ -26,5 +26,4 @@ SystemStream *stdIn() { return StdIo<File::StandardInput>::instance()->stream_; 
 SystemStream *stdOut() { return StdIo<File::StandardOutput>::instance()->stream_; }
 SystemStream *stdErr() { return StdIo<File::StandardError>::instance()->stream_; }
 
-
 } // namespace flux

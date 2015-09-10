@@ -1,4 +1,4 @@
 Package {
-    use: [ core, syntax, meta, net, stream, crypto, toki, tools, misc ]
+    use: [ core, testing, syntax, meta, net, stream, crypto, toki, tools, misc ]
     version: 0.3.0
 }
