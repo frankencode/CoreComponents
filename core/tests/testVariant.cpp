@@ -6,29 +6,38 @@
  *
  */
 
+#include <flux/testing/TestSuite>
 #include <flux/stdio>
-#include <flux/check>
 #include <flux/Variant>
 
 using namespace flux;
+using namespace flux::testing;
 
-int main()
+class Comparisms: public TestCase
 {
-    Variant x = 1;
-    Variant y = "2.";
-    Variant z = true;
-    Variant a = String("abc");
+    void run()
+    {
+        Variant x = 1;
+        Variant y = "2.";
+        Variant z = true;
+        Variant a = String("abc");
 
-    check(!(x < y));
-    check(!(x == y));
-    check(!(x < z));
-    check(x == z);
-    check(y < a);
-    check(y != a);
-    check(!(Variant() < x));
-    check(!(x == Variant()));
-    check(!(Variant() < Variant()));
-    check(Variant() == Variant());
+        FLUX_VERIFY(!(x < y));
+        FLUX_VERIFY(!(x == y));
+        FLUX_VERIFY(!(x < z));
+        FLUX_VERIFY(x == z);
+        FLUX_VERIFY(y < a);
+        FLUX_VERIFY(y != a);
+        FLUX_VERIFY(!(Variant() < x));
+        FLUX_VERIFY(!(x == Variant()));
+        FLUX_VERIFY(!(Variant() < Variant()));
+        FLUX_VERIFY(Variant() == Variant());
+    }
+};
 
-    return 0;
+int main(int argc, char **argv)
+{
+    FLUX_TESTSUITE_ADD(Comparisms);
+
+    return testSuite()->run(argc, argv);
 }

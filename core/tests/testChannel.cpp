@@ -6,8 +6,8 @@
  *
  */
 
+#include <flux/testing/TestSuite>
 #include <flux/stdio>
-#include <flux/check>
 #include <flux/Thread>
 #include <flux/Channel>
 #include <flux/List>
@@ -15,6 +15,7 @@
 #include <flux/System>
 
 using namespace flux;
+using namespace flux::testing;
 
 typedef Channel<int> MyChannel;
 typedef List<int> IntList;
@@ -82,22 +83,30 @@ private:
     Ref<IntList> list_;
 };
 
-int main()
+class ConsumerProducer: public TestCase
 {
-    Ref<MyChannel> channel = MyChannel::create();
-    Ref<Producer> p = Producer::create(1, channel, 8);
-    Ref<Consumer> c = Consumer::create(1, channel, 8);
+    void run()
+    {
+        Ref<MyChannel> channel = MyChannel::create();
+        Ref<Producer> p = Producer::create(1, channel, 8);
+        Ref<Consumer> c = Consumer::create(1, channel, 8);
 
-    double dt = System::now();
-    c->start();
-    p->start();
-    c->wait();
-    p->wait();
-    dt = System::now() - dt;
+        double dt = System::now();
+        c->start();
+        p->start();
+        c->wait();
+        p->wait();
+        dt = System::now() - dt;
 
-    fout("\ndt = %% us\n\n") << int(dt * 1e6);
+        fout("\ndt = %% us\n\n") << int(dt * 1e6);
 
-    check(*p->list() == *c->list());
+        FLUX_VERIFY(*p->list() == *c->list());
+    }
+};
 
-    return 0;
+int main(int argc, char **argv)
+{
+    FLUX_TESTSUITE_ADD(ConsumerProducer);
+
+    return testSuite()->run(argc, argv);
 }

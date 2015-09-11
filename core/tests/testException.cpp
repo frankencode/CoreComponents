@@ -6,41 +6,58 @@
  *
  */
 
+#include <flux/testing/TestSuite>
 #include <flux/stdio>
-#include <flux/check>
 #include <flux/File>
 #include <flux/Mutex>
 #include <flux/exceptions>
 
 using namespace flux;
+using namespace flux::testing;
 
-int main()
+class ThreadingExceptions: public TestCase
+{
+    void run()
+    {
+        try {
+            Mutex::create()->release();
+            FLUX_VERIFY(false);
+        }
+        catch (Exception &ex) {
+            fout() << ex << nl;
+        }
+    }
+};
+
+class FileExceptions: public TestCase
+{
+    void run()
+    {
+        try {
+            String path = "testabc.123";
+            if (!File::tryOpen(path)) FLUX_SYSTEM_DEBUG_ERROR(errno);
+            FLUX_VERIFY(false);
+        }
+        catch (Exception &ex) {
+            fout() << ex << nl;
+        }
+
+        try {
+            File::open("non-existing");
+            FLUX_VERIFY(false);
+        }
+        catch (Exception &ex) {
+            fout() << ex << nl;
+        }
+    }
+};
+
+int main(int argc, char **argv)
 {
     #ifndef NDEBUG
-    try {
-        Mutex::create()->release();
-        check(false);
-    }
-    catch (Exception &ex) {
-        fout() << ex << nl;
-    }
+    FLUX_TESTSUITE_ADD(ThreadingExceptions);
     #endif
+    FLUX_TESTSUITE_ADD(FileExceptions);
 
-    try {
-        String path = "testabc.123";
-        if (!File::tryOpen(path)) FLUX_SYSTEM_DEBUG_ERROR(errno);
-    }
-    catch (Exception &ex) {
-        fout() << ex << nl;
-    }
-
-    try {
-        File::open("non-existing");
-        return 1;
-    }
-    catch (Exception &ex) {
-        fout() << ex << nl;
-    }
-
-    return 0;
+    return testSuite()->run(argc, argv);
 }

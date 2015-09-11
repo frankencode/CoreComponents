@@ -6,14 +6,15 @@
  *
  */
 
+#include <flux/testing/TestSuite>
 #include <flux/stdio>
-#include <flux/check>
 #include <flux/ProcessFactory>
 #include <flux/FileLock>
 #include <flux/Guard>
 #include <flux/Thread>
 
 using namespace flux;
+using namespace flux::testing;
 
 class CloneFactory: public ProcessFactory
 {
@@ -39,34 +40,42 @@ private:
     String path_;
 };
 
-int main()
+class WorkerClone: public TestCase
 {
-    Ref<File> file = File::temp();
-    FileUnlinkGuard unlinkGuard(file->path());
+    void run()
+    {
+        Ref<File> file = File::temp();
+        FileUnlinkGuard unlinkGuard(file->path());
 
-    fout("(parent) file->path() = \"%%\"\n") << file->path();
+        fout("(parent) file->path() = \"%%\"\n") << file->path();
 
-    fout("(parent) acquiring write lock... \n");
-    Ref<FileLock> lock = FileLock::create(file, FileLock::WriteLock);
-    lock->acquire();
+        fout("(parent) acquiring write lock... \n");
+        Ref<FileLock> lock = FileLock::create(file, FileLock::WriteLock);
+        lock->acquire();
 
-    fout("(parent) writing message... \n");
-    file->write("Hello, clone!");
+        fout("(parent) writing message... \n");
+        file->write("Hello, clone!");
 
-    fout("(parent) cloning myself... \n");
-    Ref<ProcessFactory> factory = CloneFactory::create(file->path());
-    Ref<Process> fork = factory->produce();
+        fout("(parent) cloning myself... \n");
+        Ref<ProcessFactory> factory = CloneFactory::create(file->path());
+        Ref<Process> fork = factory->produce();
 
-    fout("(parent) sleeping 2 ms... \n");
-    Thread::sleep(0.002);
+        fout("(parent) sleeping 2 ms... \n");
+        Thread::sleep(0.002);
 
-    fout("(parent) releasing write lock... \n");
-    lock->release();
+        fout("(parent) releasing write lock... \n");
+        lock->release();
 
-    int ret = fork->wait();
-    fout("(parent) clone terminated, ret = %%\n") << ret;
+        int ret = fork->wait();
+        fout("(parent) clone terminated, ret = %%\n") << ret;
 
-    check(ret == 7);
+        FLUX_VERIFY(ret == 7);
+    }
+};
 
-    return 0;
+int main(int argc, char **argv)
+{
+    FLUX_TESTSUITE_ADD(WorkerClone);
+
+    return testSuite()->run(argc, argv);
 }

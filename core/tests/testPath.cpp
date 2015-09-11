@@ -6,30 +6,42 @@
  *
  */
 
+#include <flux/testing/TestSuite>
 #include <flux/stdio>
 #include <flux/Process>
 
 using namespace flux;
+using namespace flux::testing;
+
+class PathManipulation: public TestCase
+{
+    void run()
+    {
+        String execPath = testSuite()->argv()[0];
+        fout("argv[0] = \"%%\"\n") << execPath;
+        fout("String(argv[0])->fileName() = \"%%\"\n") << execPath->fileName();
+        fout("String(argv[0])->isAbsolutePath() = %%\n") << execPath->isAbsolutePath();
+        fout("String(argv[0])->absolutePathRelativeTo(\"%%\") = \"%%\"\n") << Process::cwd() << execPath->absolutePathRelativeTo(Process::cwd());
+        {
+            String path = execPath->absolutePathRelativeTo(Process::cwd());
+            while (path != "/") {
+                path = path->reducePath();
+                fout("path1->reduce() = \"%%\"\n") << path;
+            }
+        }
+        {
+            String path = execPath;
+            while (path->contains('/')) {
+                path = path->reducePath();
+                fout("path2->reduce() = \"%%\"\n") << path;
+            }
+        }
+    }
+};
 
 int main(int argc, char **argv)
 {
-    fout("argv[0] = \"%%\"\n") << argv[0];
-    fout("String(argv[0])->fileName() = \"%%\"\n") << String(argv[0])->fileName();
-    fout("String(argv[0])->isAbsolutePath() = %%\n") << String(argv[0])->isAbsolutePath();
-    fout("String(argv[0])->absolutePathRelativeTo(\"%%\") = \"%%\"\n") << Process::cwd() << String(argv[0])->absolutePathRelativeTo(Process::cwd());
-    {
-        String path = String(argv[0])->absolutePathRelativeTo(Process::cwd());
-        while (path != "/") {
-            path = path->reducePath();
-            fout("path1->reduce() = \"%%\"\n") << path;
-        }
-    }
-    {
-        String path = argv[0];
-        while (path->contains('/')) {
-            path = path->reducePath();
-            fout("path2->reduce() = \"%%\"\n") << path;
-        }
-    }
-    return 0;
+    FLUX_TESTSUITE_ADD(PathManipulation);
+
+    return testSuite()->run(argc, argv);
 }

@@ -6,16 +6,16 @@
  *
  */
 
+#include <flux/testing/TestSuite>
 #include <flux/stdio>
-#include <flux/check>
 
 using namespace flux;
+using namespace flux::testing;
 
-int main()
+class FloatingPointLiterals: public TestCase
 {
+    void run()
     {
-        fout() << "Testing floating point numerals..." << nl;
-
         const double test[] = {
             3.3, 1., 0.1, 1.1, 0., 1.234e10, 1e-308, flux::nan, flux::inf,
             -1./3., -0.55, 0.49, 15, -1.5, 1.1111111111,
@@ -34,36 +34,57 @@ int main()
             fout() << "0x" << hex(b) << nl;
             fout() << oct(1, 3) << nl;
             fout() << nl;
-            check(a == b);
+            FLUX_VERIFY(a == b);
         }
 
         fout() << fixed(1.23, 3) << nl;
         fout() << fixed(-10.01, 4) << nl;
         fout() << fixed(0.01, 2) << nl;
-        check(fixed(1.23, 3) == "1.230");
-        check(fixed(-10.01, 4) == "-10.0100");
-        check(fixed(0.01, 2) == "0.01");
+        FLUX_VERIFY(fixed(1.23, 3) == "1.230");
+        FLUX_VERIFY(fixed(-10.01, 4) == "-10.0100");
+        FLUX_VERIFY(fixed(0.01, 2) == "0.01");
     }
+};
+
+class PrintingVariants: public TestCase
+{
+    void run()
     {
-        fout() << "Testing variants..." << nl;
         Variant a = 1, b = true, c = "abc", d = 3.2;
         String s = Format() << a << ", " << b << ", " << c << ", " << dec(d);
         fout() << s << nl;
-        check(s == "1, true, abc, 3.2");
+        FLUX_VERIFY(s == "1, true, abc, 3.2");
     }
+};
+
+class IntegerLiterals: public TestCase
+{
+    void run()
     {
-        fout() << "Testing hexadecimal, octal and binary numerals..." << nl;
         fout("%% = 0x%% = 0%% = 0b%%\n") << 123 << hex(123) << oct(123) << bin(123);
-        check(String(dec(123))->toNumber<int>() == 123);
-        check(String("0x" + hex(123))->toNumber<int>() == 123);
-        check(String("0" + oct(123))->toNumber<int>() == 123);
-        check(String("0b" + bin(123))->toNumber<int>() == 123);
+        FLUX_VERIFY(String(dec(123))->toNumber<int>() == 123);
+        FLUX_VERIFY(String("0x" + hex(123))->toNumber<int>() == 123);
+        FLUX_VERIFY(String("0" + oct(123))->toNumber<int>() == 123);
+        FLUX_VERIFY(String("0b" + bin(123))->toNumber<int>() == 123);
     }
+};
+
+class ColorLiterals: public TestCase
+{
+    void run()
     {
-        fout() << "Testing formatting colors..." << nl;
         Color c = Color::parse("teal");
         fout() << c << nl;
-        check(str(c) == "#008080");
+        FLUX_VERIFY(str(c) == "#008080");
     }
-    return 0;
+};
+
+int main(int argc, char **argv)
+{
+    FLUX_TESTSUITE_ADD(FloatingPointLiterals);
+    FLUX_TESTSUITE_ADD(PrintingVariants);
+    FLUX_TESTSUITE_ADD(IntegerLiterals);
+    FLUX_TESTSUITE_ADD(ColorLiterals);
+
+    return testSuite()->run(argc, argv);
 }
