@@ -6,11 +6,12 @@
  *
  */
 
+#include <flux/testing/TestSuite>
 #include <flux/stdio>
-#include <flux/check>
 #include <flux/Property>
 
 using namespace flux;
+using namespace flux::testing;
 
 int changedNotices = 0;
 
@@ -24,8 +25,8 @@ public:
     Property<int> y;
 
 protected:
-    Shape()
-        : x(0), y(0)
+    Shape():
+        x(0), y(0)
     {
         name->valueChanged()->connect(this, &Shape::onNameChanged);
     }
@@ -40,8 +41,12 @@ private:
 class Observer: public Object
 {
 public:
-    Observer(Shape *shape)
-        : shape_(shape)
+    static Ref<Observer> create(Shape *shape) { return new Observer(shape); }
+
+private:
+    Observer(Shape *shape):
+        shape_(shape),
+        hey_(false)
     {
         shape_->x->valueChanged()->connect(this, &Observer::onXChanged);
         shape_->y->valueChanged()->connect(this, &Observer::onYChanged);
@@ -50,11 +55,11 @@ public:
     {
         shape_->x->valueChanged()->disconnect(this);
         shape_->y->valueChanged()->disconnect(this);
+            // FIXME: automic disconnects on property destruction?
     }
 
-private:
     void onXChanged(int value) {
-        fout("x = %%\n") << value;
+        fout("x = %% (%%)\n") << value << hey_;
         ++changedNotices;
     }
     void onYChanged(int value) {
@@ -63,19 +68,28 @@ private:
     }
 
     Ref<Shape> shape_;
+    bool hey_;
 };
 
-int main()
+class ChangedNotices: public TestCase
 {
-    Ref<Shape> shape = Shape::create();
+    void run()
     {
-        Observer observer(shape);
+        Ref<Shape> shape = Shape::create();
+        Ref<Observer> observer = Observer::create(shape);
         shape->name = "circle1";
         shape->x = 7;
         shape->y = 93;
         shape->y = 93;
+        observer = 0;
+        shape->x = 8;
+        FLUX_VERIFY(changedNotices == 3);
     }
-    shape->x = 8;
-    check(changedNotices == 3);
-    return 0;
+};
+
+int main(int argc, char **argv)
+{
+    FLUX_TESTSUITE_ADD(ChangedNotices);
+
+    return testSuite()->run(argc, argv);
 }

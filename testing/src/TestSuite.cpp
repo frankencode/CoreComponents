@@ -21,7 +21,9 @@ namespace testing {
 TestSuite::TestSuite():
     testCases_(TestCases::create()),
     testCaseFailureCount_(0),
-    totalFailureCount_(0)
+    totalFailureCount_(0),
+    argc_(0),
+    argv_(0)
 {}
 
 TestSuite::~TestSuite()
@@ -42,6 +44,8 @@ int TestSuite::run(int argc, char **argv)
     name_ = String(argv[0])->baseName();
     totalFailureCount_ = 0;
     testCaseFailureCount_ = 0;
+    argc_ = argc;
+    argv_ = argv;
 
     report_ = XmlTestReport::create(stdOut());
     report_->beginTestSuite(this);

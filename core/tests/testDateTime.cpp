@@ -6,22 +6,16 @@
  *
  */
 
-#include <flux/stdio>
-#include <flux/check>
 #include <flux/testing/TestSuite>
+#include <flux/stdio>
 #include <flux/System>
 #include <flux/Date>
 
 using namespace flux;
 using namespace flux::testing;
 
-namespace flux {
-    bool leapYear(int y);
-}
-
 class BasicDateFormatting: public TestCase
 {
-public:
     void run()
     {
         double t = System::now();
@@ -38,7 +32,6 @@ public:
 
 class BeginOfEpoch: public TestCase
 {
-public:
     void run()
     {
         Ref<Date> date = Date::create(0);
@@ -56,7 +49,6 @@ public:
 
 class CalendarDates: public TestCase
 {
-public:
     void run()
     {
         struct TestDate { int day; int month; int year; int hour; int minutes; int seconds; };
@@ -95,33 +87,34 @@ int main(int argc, char **argv)
 }
 
 #if 0
-    if (false) {
-        fout() << "Compute linear day number of 1st Jan 1970..." << nl;
-        int n = 0;
-        for (int y = 1969; y >= 0; --y) n += 365 + leapYear(y);
-        fout() << n << nl;
-    }
-    if (false) {
-        double t = Date::create(9999, 12, 31)->time();
-        while (true) {
-            Ref<Date> d1 = Date::create(t);
-            Ref<Date> d2 = Date::create(d1->year(), d1->month() + 1, d1->day());
-            fout() << "t = " << int64_t(t) << "  " << d1 << nl;
-            if (d1->year() != d2->year() || d1->month() != d2->month() || d1->day() != d2->day()) {
-                fout() << d1 << " != " << d2 << nl;
-                check(false);
-            }
-            if (d1->time() != d2->time()) {
-                fout() << d1 << " != " << d2 << nl;
-                fout() << "  " << int64_t(d1->time()) << " != " << int64_t(d2->time()) << nl;
-                fout() << "  " << int64_t(d1->time()) - int64_t(d2->time()) << nl;
-                check(false);
-            }
-            if (d1->year() == 1 && d1->month() == 1 && d1->day() == 1) break;
-            t -= 86400;
-        }
-    }
+namespace flux {
+    bool leapYear(int y);
+}
 
-    return 0;
+if (false) {
+    fout() << "Compute linear day number of 1st Jan 1970..." << nl;
+    int n = 0;
+    for (int y = 1969; y >= 0; --y) n += 365 + leapYear(y);
+    fout() << n << nl;
+}
+if (false) {
+    double t = Date::create(9999, 12, 31)->time();
+    while (true) {
+        Ref<Date> d1 = Date::create(t);
+        Ref<Date> d2 = Date::create(d1->year(), d1->month() + 1, d1->day());
+        fout() << "t = " << int64_t(t) << "  " << d1 << nl;
+        if (d1->year() != d2->year() || d1->month() != d2->month() || d1->day() != d2->day()) {
+            fout() << d1 << " != " << d2 << nl;
+            check(false);
+        }
+        if (d1->time() != d2->time()) {
+            fout() << d1 << " != " << d2 << nl;
+            fout() << "  " << int64_t(d1->time()) << " != " << int64_t(d2->time()) << nl;
+            fout() << "  " << int64_t(d1->time()) - int64_t(d2->time()) << nl;
+            check(false);
+        }
+        if (d1->year() == 1 && d1->month() == 1 && d1->day() == 1) break;
+        t -= 86400;
+    }
 }
 #endif

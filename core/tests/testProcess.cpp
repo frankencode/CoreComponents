@@ -6,14 +6,13 @@
  *
  */
 
+#include <flux/testing/TestSuite>
 #include <flux/stdio>
-#include <flux/check>
 #include <flux/ProcessFactory>
 #include <flux/User>
 
 using namespace flux;
-
-int echo(int argc, char **argv);
+using namespace flux::testing;
 
 class TestFactory: public ProcessFactory
 {
@@ -26,59 +25,6 @@ public:
         return 7;
     }
 };
-
-int main(int argc, char **argv)
-{
-    if (argc == 2)
-        return echo(argc, argv);
-
-    {
-        fout("(1) Worker clone\n\n");
-
-        Ref<ProcessFactory> factory = TestFactory::create();
-        Ref<Process> worker = factory->produce();
-        int ret = worker->wait();
-        fout("ret = %%\n") << ret;
-        fout("\n");
-
-        check(ret == 7);
-    }
-
-    {
-        fout("(2) I/O Redirection, passing of arguments and environment variables\n\n");
-
-        Ref<ProcessFactory> factory = ProcessFactory::create();
-        factory->setExecPath(argv[0]);
-        factory->setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
-        factory->setArguments(StringList::create() << argv[0] << "--echo 123");
-        factory->setEnvMap(Process::envMap() << EnvMap::Item("Hello", "World!"));
-
-        Ref<Process> process = factory->produce();
-
-        fout("Created child process with pid = %%\n") << process->id();
-
-        process->in()->write("Hello, echo!\nexit\n");
-        fout() << "\"" << process->out()->readAll() << "\"" << nl;
-
-        fout("Waiting for child process to finish...\n");
-
-        int ret = process->wait();
-        fout("ret = %%\n") << ret;
-        fout("\n");
-
-        check(ret == 13);
-    }
-
-    {
-        fout("(3) Current process\n\n");
-        fout("Process::cwd() = %%\n") << Process::cwd();
-        fout("Process::execPath() = %%\n") << Process::execPath();
-        fout("Process::isSuperUser() = %%\n") << Process::isSuperUser();
-        fout("\n");
-    }
-
-    return 0;
-}
 
 int echo(int argc, char **argv)
 {
@@ -98,4 +44,70 @@ int echo(int argc, char **argv)
     }
 
     return 13;
+}
+
+class WorkerClone: public TestCase
+{
+    void run()
+    {
+        Ref<ProcessFactory> factory = TestFactory::create();
+        Ref<Process> worker = factory->produce();
+        int ret = worker->wait();
+        fout("ret = %%\n") << ret;
+        fout("\n");
+
+        FLUX_VERIFY(ret == 7);
+    }
+};
+
+class HelloEcho: public TestCase
+{
+    void run()
+    {
+        String execPath = testSuite()->argv()[0];
+
+        Ref<ProcessFactory> factory = ProcessFactory::create();
+        factory->setExecPath(execPath);
+        factory->setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
+        factory->setArguments(StringList::create() << execPath << "--echo 123");
+        factory->setEnvMap(Process::envMap() << EnvMap::Item("Hello", "World!"));
+
+        Ref<Process> process = factory->produce();
+
+        fout("Created child process with pid = %%\n") << process->id();
+
+        process->in()->write("Hello, echo!\nexit\n");
+        fout() << "\"" << process->out()->readAll() << "\"" << nl;
+
+        fout("Waiting for child process to finish...\n");
+
+        int ret = process->wait();
+        fout("ret = %%\n") << ret;
+        fout("\n");
+
+        FLUX_VERIFY(ret == 13);
+    }
+};
+
+class CurrentProcess: public TestCase
+{
+    void run()
+    {
+        fout("Process::cwd() = %%\n") << Process::cwd();
+        fout("Process::execPath() = %%\n") << Process::execPath();
+        fout("Process::isSuperUser() = %%\n") << Process::isSuperUser();
+    }
+};
+
+
+int main(int argc, char **argv)
+{
+    if (argc == 2)
+        return echo(argc, argv);
+
+    FLUX_TESTSUITE_ADD(WorkerClone);
+    FLUX_TESTSUITE_ADD(HelloEcho);
+    FLUX_TESTSUITE_ADD(CurrentProcess);
+
+    return testSuite()->run(argc, argv);
 }

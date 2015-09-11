@@ -23,9 +23,11 @@ class TestSuite: public Object
 {
 public:
     String name() const { return name_; }
-    int testCaseCount() const { return testCases_->count(); }
-    int testCaseFailureCount() const { return testCaseFailureCount_; }
-    int totalFailureCount() const { return totalFailureCount_; }
+    inline int testCaseCount() const { return testCases_->count(); }
+    inline int testCaseFailureCount() const { return testCaseFailureCount_; }
+    inline int totalFailureCount() const { return totalFailureCount_; }
+    inline int argc() const { return argc_; }
+    inline char **argv() const { return argv_; }
 
     template<class T>
     void add(String name, bool skip = false) { testCases_->append(TestCase::create<T>(name, skip)); }
@@ -50,6 +52,8 @@ private:
     Ref<TestCase> currentTestCase_;
     int testCaseFailureCount_;
     int totalFailureCount_;
+    int argc_;
+    char **argv_;
 };
 
 #define FLUX_TESTSUITE_ADD(CustomTestCase) \
