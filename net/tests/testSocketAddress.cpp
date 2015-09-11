@@ -6,11 +6,13 @@
  *
  */
 
+#include <flux/testing/TestSuite>
 #include <flux/stdio>
 #include <flux/System>
 #include <flux/net/SocketAddress>
 
 using namespace flux;
+using namespace flux::testing;
 using namespace flux::net;
 
 String familyToString(int family)
@@ -39,36 +41,39 @@ String protocolToString(int protocol)
     return s;
 }
 
-int main(int argc, char **argv)
+class ResolveHostName: public TestCase
 {
-    String hostName;
-
-    if (argc == 2)
-        hostName = argv[1];
-    else
-        hostName = System::hostName();
-
-    fout("hostName = \"%%\"\n") << hostName;
-
-    String canonicalName;
-    Ref<SocketAddressList> list = SocketAddress::resolve(hostName, "http", AF_UNSPEC, SOCK_STREAM, &canonicalName);
-
-    fout("canonicalName = \"%%\"\n") << canonicalName;
-
-    for (int i = 0; i < list->count(); ++i)
+    void run()
     {
-        SocketAddress *address = list->at(i);
-        bool failed;
+        String hostName = System::hostName();
 
-        fout("%% : %% : %% : %% : %% : %% : %%\n")
-            << familyToString(address->family())
-            << address->toString()
-            << address->port()
-            << socketTypeToString(address->socketType())
-            << protocolToString(address->protocol())
-            << address->lookupHostName(&failed)
-            << address->lookupServiceName();
+        fout("hostName = \"%%\"\n") << hostName;
+
+        String canonicalName;
+        Ref<SocketAddressList> list = SocketAddress::resolve(hostName, "http", AF_UNSPEC, SOCK_STREAM, &canonicalName);
+
+        fout("canonicalName = \"%%\"\n") << canonicalName;
+
+        for (int i = 0; i < list->count(); ++i)
+        {
+            SocketAddress *address = list->at(i);
+            bool failed;
+
+            fout("%% : %% : %% : %% : %% : %% : %%\n")
+                << familyToString(address->family())
+                << address->toString()
+                << address->port()
+                << socketTypeToString(address->socketType())
+                << protocolToString(address->protocol())
+                << address->lookupHostName(&failed)
+                << address->lookupServiceName();
+        }
     }
+};
 
-    return 0;
+int main(int argc, char** argv)
+{
+    FLUX_TESTSUITE_ADD(ResolveHostName);
+
+    return testSuite()->run(argc, argv);
 }

@@ -6,14 +6,24 @@
  *
  */
 
+#include <flux/testing/TestSuite>
 #include <flux/stdio>
 #include <flux/toki/Theme>
 
 using namespace flux;
+using namespace flux::testing;
 using namespace flux::toki;
 
-int main()
+class ThemeLoading: public TestCase
 {
-    Ref<Theme> theme = Theme::load("ClassicWhite");
-    return 0;
+    void run() {
+        Theme::load("ClassicWhite");
+    }
+};
+
+int main(int argc, char** argv)
+{
+    FLUX_TESTSUITE_ADD(ThemeLoading);
+
+    return testSuite()->run(argc, argv);
 }

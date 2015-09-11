@@ -6,13 +6,14 @@
  *
  */
 
+#include <flux/testing/TestSuite>
 #include <flux/stdio>
-#include <flux/check>
 #include <flux/System>
 #include <flux/syntax/SyntaxDebugger>
 #include <flux/syntax/SyntaxDefinition>
 
 using namespace flux;
+using namespace flux::testing;
 
 class Expression: public SyntaxDefinition
 {
@@ -166,28 +167,36 @@ private:
     String text_;
 };
 
-int main()
+class Calculator: public TestCase
 {
-    Ref<SyntaxDebugger> debugger =
-    #ifdef NDEBUG
-        0;
-    #else
-        SyntaxDebugger::create();
-    #endif
-    Ref<Expression> expression = new Expression(debugger);
+    void run()
+    {
+        Ref<SyntaxDebugger> debugger =
+        #ifdef NDEBUG
+            0;
+        #else
+            SyntaxDebugger::create();
+        #endif
+        Ref<Expression> expression = new Expression(debugger);
 
-    double dt = System::now();
+        double dt = System::now();
 
-    double result = expression->eval("(-12+34)*(56-78)");
+        double result = expression->eval("(-12+34)*(56-78)");
 
-    dt = System::now() - dt;
-    fout("took %% us\n") << int(dt * 1e6);
-    fout("evaluates to %%\n") << result;
+        dt = System::now() - dt;
+        fout("took %% us\n") << int(dt * 1e6);
+        fout("evaluates to %%\n") << result;
 
-    check(result == -484);
+        FLUX_VERIFY(result == -484);
 
-    if (debugger)
-        debugger->printDefinition();
+        if (debugger)
+            debugger->printDefinition();
+    }
+};
 
-    return 0;
+int main(int argc, char** argv)
+{
+    FLUX_TESTSUITE_ADD(Calculator);
+
+    return testSuite()->run(argc, argv);
 }
