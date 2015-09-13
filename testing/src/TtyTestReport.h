@@ -6,18 +6,18 @@
  *
  */
 
-#ifndef FLUXTESTING_XMLTESTREPORT_H
-#define FLUXTESTING_XMLTESTREPORT_H
+#ifndef FLUXTESTING_TTYTESTREPORT_H
+#define FLUXTESTING_TTYTESTREPORT_H
 
 #include <flux/testing/TestReport>
 
 namespace flux {
 namespace testing {
 
-class XmlTestReport: public TestReport
+class TtyTestReport: public TestReport
 {
 public:
-    inline static Ref<XmlTestReport> create(Stream *stream) { return new XmlTestReport(stream); }
+    inline static Ref<TtyTestReport> create() { return new TtyTestReport; }
 
     virtual bool captureOutput() const;
 
@@ -30,11 +30,9 @@ public:
     virtual void endTestSuite(TestSuite *testSuite);
 
 protected:
-    XmlTestReport(Stream *stream);
-
-    Ref<Stream> stream_;
+    TtyTestReport();
 };
 
 }} // namespace flux::testing
 
-#endif // FLUXTESTING_XMLTESTREPORT_H
+#endif // FLUXTESTING_TTYTESTREPORT_H

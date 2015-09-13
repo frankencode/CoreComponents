@@ -17,6 +17,11 @@ XmlTestReport::XmlTestReport(Stream *stream):
     stream_(stream)
 {}
 
+bool XmlTestReport::captureOutput() const
+{
+    return true;
+}
+
 void XmlTestReport::beginTestSuite(TestSuite *testSuite)
 {
     Format("<testsuite name=\"%%\" tests=\"%%\">\n", stream_) << testSuite->name() << testSuite->testCaseCount();
@@ -33,11 +38,6 @@ void XmlTestReport::verify(TestCase *testCase, bool condition, String message, S
         Format("<failure message=\"%%\">%%:%%</failure>\n", stream_) << message << codePath << codeLine;
 }
 
-void XmlTestReport::skip(TestCase *testCase)
-{
-    Format("<skipped/>\n", stream_);
-}
-
 void XmlTestReport::error(TestCase *testCase, String type, String message)
 {
     Format("<error type=\"%%\" message=\"%%\"></error>\n", stream_) << type << message;
@@ -45,10 +45,26 @@ void XmlTestReport::error(TestCase *testCase, String type, String message)
 
 void XmlTestReport::endTestCase(TestCase *testCase, String outText, String errText)
 {
+    if (testCase->skip()) {
+        Format("<skipped/>\n", stream_);
+    }
+    else {
+        Format(stream_)
+            << "<system-out>" << outText << "</system-out>\n"
+            << "<system-err>" << errText << "</system-err>\n";
+    }
     Format(stream_)
-        << "<system-out>" << outText << "</system-out>\n"
-        << "<system-err>" << errText << "</system-err>\n"
         << "</testcase>\n";
+}
+
+void XmlTestReport::skipTestCase(TestCase *testCase)
+{
+    Format(
+        "<testcase name=\"%%\">\n"
+        "<skipped/>\n"
+        "</testcase>\n",
+        stream_
+    ) << testCase->name();
 }
 
 void XmlTestReport::endTestSuite(TestSuite *testSuite)

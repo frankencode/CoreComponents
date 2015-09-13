@@ -105,13 +105,13 @@ if (false) {
         fout() << "t = " << int64_t(t) << "  " << d1 << nl;
         if (d1->year() != d2->year() || d1->month() != d2->month() || d1->day() != d2->day()) {
             fout() << d1 << " != " << d2 << nl;
-            check(false);
+            FLUX_VERIFY(false);
         }
         if (d1->time() != d2->time()) {
             fout() << d1 << " != " << d2 << nl;
             fout() << "  " << int64_t(d1->time()) << " != " << int64_t(d2->time()) << nl;
             fout() << "  " << int64_t(d1->time()) - int64_t(d2->time()) << nl;
-            check(false);
+            FLUX_VERIFY(false);
         }
         if (d1->year() == 1 && d1->month() == 1 && d1->day() == 1) break;
         t -= 86400;

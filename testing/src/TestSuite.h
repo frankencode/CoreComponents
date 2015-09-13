@@ -22,15 +22,16 @@ class TestReport;
 class TestSuite: public Object
 {
 public:
-    String name() const { return name_; }
+    inline String name() const { return name_; }
+    inline String execPath() const { return execPath_; }
+
     inline int testCaseCount() const { return testCases_->count(); }
     inline int testCaseFailureCount() const { return testCaseFailureCount_; }
+    inline int testCaseSkipCount() const { return testCaseSkipCount_; }
     inline int totalFailureCount() const { return totalFailureCount_; }
-    inline int argc() const { return argc_; }
-    inline char **argv() const { return argv_; }
 
     template<class T>
-    void add(String name, bool skip = false) { testCases_->append(TestCase::create<T>(name, skip)); }
+    inline void add(String name, bool skip = false) { testCases_->append(TestCase::create<T>(name, skip)); }
 
     bool verify(bool condition, String description, String conditionText, String codePath, int codeLine);
 
@@ -43,7 +44,10 @@ protected:
     ~TestSuite();
 
 private:
+    bool init(int argc, char **argv);
+
     String name_;
+    String execPath_;
     Ref<TestReport> report_;
 
     typedef List< Ref<TestCase> > TestCases;
@@ -51,10 +55,11 @@ private:
 
     Ref<TestCase> currentTestCase_;
     int testCaseFailureCount_;
+    int testCaseSkipCount_;
     int totalFailureCount_;
-    int argc_;
-    char **argv_;
 };
+
+TestSuite *testSuite();
 
 #define FLUX_TESTSUITE_ADD(CustomTestCase) \
     testSuite()->add<CustomTestCase>(#CustomTestCase, false)
@@ -67,8 +72,6 @@ private:
 
 #define FLUX_VERIFY2(condition, description) \
     testSuite()->verify(condition, description, #condition, __FILE__, __LINE__)
-
-TestSuite *testSuite();
 
 }} // namespace flux::testing
 

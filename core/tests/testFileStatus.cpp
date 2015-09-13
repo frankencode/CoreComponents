@@ -19,7 +19,7 @@ class ProgramAccess: public TestCase
 {
     void run()
     {
-        String path = testSuite()->argv()[0];
+        String path = testSuite()->execPath();
         fout("path = \"%%\"\n") << path;
         fout("File::exists(\"%%\") = %%\n") << path << File::exists(path);
         fout("File::access(\"%%\", File::Read) = %%\n") << path << File::access(path, File::Readable);
@@ -33,7 +33,7 @@ class ProgramStatus: public TestCase
 {
     void run()
     {
-        String path = testSuite()->argv()[0];
+        String path = testSuite()->execPath();
         Ref<FileStatus> status = File::status(path);
         fout("status->type() = %%\n") << oct(status->type());
         fout("status->mode() = %%\n") << oct(status->mode());
