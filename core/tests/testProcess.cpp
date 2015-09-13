@@ -64,7 +64,7 @@ class HelloEcho: public TestCase
 {
     void run()
     {
-        String execPath = testSuite()->argv()[0];
+        String execPath = testSuite()->execPath();
 
         Ref<ProcessFactory> factory = ProcessFactory::create();
         factory->setExecPath(execPath);

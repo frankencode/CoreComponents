@@ -71,8 +71,8 @@ bool TestRunStage::runTests(bool report)
     }
 
     for (Ref<Job> job; scheduler->collect(&job);) {
-        fout() << job->command() << nl;
-        ferr() << job->outputText();
+        // fout() << job->command() << nl;
+        fout() << job->outputText();
         if (job->status() != 0) {
             ++testFailed_;
             if (!report) {

@@ -17,7 +17,7 @@ class PathManipulation: public TestCase
 {
     void run()
     {
-        String execPath = testSuite()->argv()[0];
+        String execPath = testSuite()->execPath();
         fout("argv[0] = \"%%\"\n") << execPath;
         fout("String(argv[0])->fileName() = \"%%\"\n") << execPath->fileName();
         fout("String(argv[0])->isAbsolutePath() = %%\n") << execPath->isAbsolutePath();
