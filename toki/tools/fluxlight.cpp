@@ -8,7 +8,7 @@
 
 #include <flux/stdio>
 #include <flux/File>
-#include <flux/meta/Arguments>
+#include <flux/Arguments>
 #include <flux/toki/Theme>
 #include <flux/toki/Language>
 #include <flux/toki/Registry>

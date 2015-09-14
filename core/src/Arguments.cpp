@@ -6,9 +6,9 @@
  *
  */
 
+#include <flux/exceptions>
 #include <flux/Format>
-#include <flux/meta/yason>
-#include <flux/meta/Arguments>
+#include <flux/Arguments>
 
 namespace flux {
 
@@ -17,9 +17,9 @@ Ref<Arguments> Arguments::parse(int argc, char **argv)
     return new Arguments(argc, argv);
 }
 
-Arguments::Arguments(int argc, char **argv)
-    : options_(VariantMap::create()),
-      items_(StringList::create())
+Arguments::Arguments(int argc, char **argv):
+    options_(VariantMap::create()),
+    items_(StringList::create())
 {
     execPath_ = argv[0];
 
@@ -35,21 +35,7 @@ Arguments::Arguments(int argc, char **argv)
         String name = parts->pop(0);
         String valueText = parts->join("=");
         Variant value = true;
-
-        if (valueText != "") {
-            try {
-                value = yason::parse(valueText);
-            }
-            catch (TextError &) {
-                valueText = "\"" + valueText + "\"";
-                try {
-                    value = yason::parse(valueText);
-                }
-                catch (TextError &) {
-                    throw UsageError(Format("Illegal option syntax: \"%%\"") << s);
-                }
-            }
-        }
+        if (valueText != "") value = Variant::read(valueText);
 
         options_->establish(name, value);
     }

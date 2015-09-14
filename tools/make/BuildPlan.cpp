@@ -11,9 +11,9 @@
 #include <flux/File>
 #include <flux/Dir>
 #include <flux/ResourceGuard>
+#include <flux/Arguments>
 #include <flux/syntax/Glob>
 #include <flux/meta/yason>
-#include <flux/meta/Arguments>
 #include "BuildMap.h"
 #include "DependencyCache.h"
 #include "GnuToolChain.h"

@@ -9,7 +9,7 @@
 #include <flux/File>
 #include <flux/Dir>
 #include <flux/Singleton>
-#include <flux/meta/Arguments>
+#include <flux/Arguments>
 #include "NodeConfigProtocol.h"
 #include "ServiceRegistry.h"
 #include "ErrorLog.h"

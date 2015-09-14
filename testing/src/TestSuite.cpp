@@ -7,13 +7,15 @@
  */
 
 #include <typeinfo>
+#include <cxxabi.h> // __cxa_demangle
+#include <stdlib.h> // free(3)
 #include <flux/Exception>
 #include <flux/Singleton>
 #include <flux/stdio>
 #include <flux/File>
-// #include <flux/meta/Arguments>
+#include <flux/Arguments>
 #include <flux/testing/XmlTestReport>
-#include <flux/testing/TtyTestReport>
+#include <flux/testing/TxtTestReport>
 #include <flux/testing/TestCase>
 #include <flux/testing/TestSuite>
 
@@ -32,15 +34,13 @@ TestSuite::~TestSuite()
 
 bool TestSuite::init(int argc, char **argv)
 {
-    // using namespace flux::meta;
-
     testCaseFailureCount_ = 0;
     testCaseSkipCount_ = 0;
     totalFailureCount_ = 0;
     execPath_ = argv[0];
     name_ = execPath_->baseName();
 
-    /*try {
+    try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
 
         Ref<VariantMap> options = VariantMap::create();
@@ -48,14 +48,11 @@ bool TestSuite::init(int argc, char **argv)
         arguments->validate(options);
         arguments->override(options);
 
-        execPath_ = arguments->execPath();
-        name_ = execPath_->baseName();
-
         Ref<StringList> items = arguments->items();
 
         String reportType = options->value("report");
         if (reportType == "txt")
-            report_ = TtyTestReport::create();
+            report_ = TxtTestReport::create();
         else if (reportType == "xml")
             report_ = XmlTestReport::create(stdOut());
         else {
@@ -72,20 +69,7 @@ bool TestSuite::init(int argc, char **argv)
             "  -report=txt  select output format (\"xml\" or \"txt\")\n"
         );
         return false;
-    }*/
-
-    String reportType = "txt";
-    for (int i = 0; i < argc; ++i) {
-        String s = argv[i];
-        if (s->contains("xml")) {
-            reportType="xml";
-            break;
-        }
     }
-    if (reportType == "txt")
-        report_ = TtyTestReport::create();
-    else
-        report_ = XmlTestReport::create(stdOut());
 
     return true;
 }
@@ -138,8 +122,15 @@ int TestSuite::run(int argc, char **argv)
             testCase->run();
         }
         catch (Exception &ex) {
+            String typeName = typeid(ex).name();
+            {
+                int status = 0;
+                char *buf = abi::__cxa_demangle(typeName, 0, 0, &status);
+                if (status == 0) typeName = buf;
+                ::free(buf);
+            }
             testCase->caughtException_ = true;
-            report_->error(testCase, typeid(ex).name(), ex.message());
+            report_->error(testCase, typeName, ex.message());
         }
         catch (...) {
             testCase->caughtException_ = true;

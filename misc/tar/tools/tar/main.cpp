@@ -10,7 +10,7 @@
 #include <flux/File>
 #include <flux/exceptions>
 #include <flux/Format>
-#include <flux/meta/Arguments>
+#include <flux/Arguments>
 #include <flux/tar/TarReader>
 #include <flux/tar/ArReader>
 #include <flux/tar/TarWriter>
