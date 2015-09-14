@@ -9,7 +9,7 @@
 #include <flux/stdio>
 #include <flux/File>
 #include <flux/exceptions>
-#include <flux/meta/Arguments>
+#include <flux/Arguments>
 #include <flux/crypto/Sha1>
 #include <flux/crypto/Md5>
 #include <flux/crypto/HashMeter>

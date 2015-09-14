@@ -54,7 +54,6 @@ class WorkerClone: public TestCase
         Ref<Process> worker = factory->produce();
         int ret = worker->wait();
         fout("ret = %%\n") << ret;
-        fout("\n");
 
         FLUX_VERIFY(ret == 7);
     }
@@ -69,7 +68,7 @@ class HelloEcho: public TestCase
         Ref<ProcessFactory> factory = ProcessFactory::create();
         factory->setExecPath(execPath);
         factory->setIoPolicy(Process::ForwardInput | Process::ForwardOutput);
-        factory->setArguments(StringList::create() << execPath << "--echo 123");
+        factory->setArguments(StringList::create() << "echo" << "123");
         factory->setEnvMap(Process::envMap() << EnvMap::Item("Hello", "World!"));
 
         Ref<Process> process = factory->produce();
@@ -83,7 +82,6 @@ class HelloEcho: public TestCase
 
         int ret = process->wait();
         fout("ret = %%\n") << ret;
-        fout("\n");
 
         FLUX_VERIFY(ret == 13);
     }
@@ -102,7 +100,7 @@ class CurrentProcess: public TestCase
 
 int main(int argc, char **argv)
 {
-    if (argc == 2)
+    if (String(argv[0]) == "echo")
         return echo(argc, argv);
 
     FLUX_TESTSUITE_ADD(WorkerClone);

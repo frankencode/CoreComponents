@@ -49,6 +49,7 @@ public:
     };
 
     static const char *typeName(int type, int itemType = UndefType);
+    static Variant read(String s);
 
     Variant():             type_(UndefType), itemType_(UndefType)                     {}
     Variant(int value):    type_(IntType),   itemType_(UndefType), int_(value)        {}

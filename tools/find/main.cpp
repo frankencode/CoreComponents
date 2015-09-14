@@ -9,7 +9,7 @@
 #include <flux/stdio>
 #include <flux/RegExp>
 #include <flux/DirWalker>
-#include <flux/meta/Arguments>
+#include <flux/Arguments>
 
 using namespace flux;
 
