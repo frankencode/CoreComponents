@@ -9,8 +9,10 @@
 #ifndef FLUX_PROPERTY_H
 #define FLUX_PROPERTY_H
 
+#include <flux/Object>
 #include <flux/Format>
 #include <flux/Map>
+#include <flux/Set>
 
 namespace flux {
 
@@ -26,62 +28,81 @@ class Slot: public Callback<Value>
 public:
     typedef void (Recipient::* Method)(Value);
 
-    Slot()
-        : recipient_(0),
-          method_(0)
+    Slot():
+        recipient_(0),
+        method_(0)
     {}
 
-    Slot(Recipient *recipient, Method method)
-        : recipient_(recipient),
-          method_(method)
+    Slot(Recipient *recipient, Method method):
+        recipient_(recipient),
+        method_(method)
     {}
 
-    void invoke(Value value) { (recipient_->*method_)(value); }
+    inline void invoke(Value value) { (recipient_->*method_)(value); }
 
 private:
     Recipient *recipient_;
     Method method_;
 };
 
+class Receptor;
+
+class ConnectionEndPoint: public Object
+{
+protected:
+    friend class Receptor;
+
+    virtual void disconnect(Receptor *recipient) = 0;
+    inline void reverseConnect(ConnectionEndPoint *signal, Receptor *recipient);
+    inline void reverseDisconnect(ConnectionEndPoint *signal, Receptor *recipient);
+};
+
 template<class Value>
-class Signal: public Object
+class Signal: public ConnectionEndPoint
 {
 public:
     inline static Ref<Signal> create() { return new Signal; }
 
-    void emit(Value value) {
-        for (int i = 0; i < callbacks()->count(); ++i) {
-            CallbackList *list = callbacks()->valueAt(i);
+    template<class Recipient>
+    void connect(Recipient *recipient, void (Recipient::* method)(Value))
+    {
+        if (!callbacks_)
+            callbacks_ = CallbackListByRecipient::create();
+
+        Ref<CallbackList> list;
+        if (!callbacks_->lookup(recipient, &list)) {
+            list = CallbackList::create();
+            callbacks_->insert(recipient, list);
+        }
+
+        list->append(new Slot<Recipient, Value>(recipient, method));
+        reverseConnect(this, recipient);
+    }
+
+    void disconnect(Receptor *recipient)
+    {
+        if (!callbacks_) return;
+
+        if (callbacks_->remove(recipient));
+        reverseDisconnect(this, recipient);
+    }
+
+    void emit(Value value)
+    {
+        if (!callbacks_) return;
+
+        for (int i = 0; i < callbacks_->count(); ++i) {
+            CallbackList *list = callbacks_->valueAt(i);
             for (int j = 0; j < list->count(); ++j)
                 list->at(j)->invoke(value);
         }
     }
 
-    template<class Recipient>
-    void connect(Recipient *recipient, void (Recipient::* method)(Value)) {
-        Ref<CallbackList> list;
-        if (!callbacks()->lookup(recipient, &list)) {
-            list = CallbackList::create();
-            callbacks()->insert(recipient, list);
-        }
-        list->append(new Slot<Recipient, Value>(recipient, method));
-    }
-
-    void disconnect(void *recipient) {
-        callbacks()->remove(recipient);
-    }
-
 private:
-    friend class Connection;
     typedef List< Ref< Callback<Value> > > CallbackList;
-    typedef Map<void*, Ref<CallbackList> > CallbackListByRecipient;
+    typedef Map< Receptor *, Ref<CallbackList> > CallbackListByRecipient;
 
     Signal() {}
-
-    inline CallbackListByRecipient *callbacks() {
-        if (!callbacks_) callbacks_ = CallbackListByRecipient::create();
-        return callbacks_;
-    }
 
     Ref<CallbackListByRecipient> callbacks_;
 };
@@ -93,7 +114,6 @@ public:
     Property() {}
     Property(const T &b): value_(b) {}
 
-    inline operator const T&() const { return value_; }
     inline Property &operator=(const T &b) {
         if (b != value_) {
             value_ = b;
@@ -103,21 +123,46 @@ public:
         return *this;
     }
 
-    Signal<T> *valueChanged() {
+    inline operator const T&() const { return value_; }
+
+    inline Signal<T> *valueChanged() {
         if (!valueChanged_) valueChanged_ = Signal<T>::create();
         return valueChanged_;
     }
 
-    inline String toString() const { return Format() << value_; }
-    inline operator String() const { return toString(); }
-
-    Property *operator->() { return this; }
-    const Property *operator->() const { return this; }
+    inline Property *operator->() { return this; }
+    inline const Property *operator->() const { return this; }
 
 private:
     Ref< Signal<T> > valueChanged_;
     T value_;
 };
+
+class Receptor
+{
+protected:
+    Receptor():
+        signals_(Signals::create())
+    {}
+
+    ~Receptor() {
+        for (int i = 0; i < signals_->count(); ++i)
+            signals_->at(i)->disconnect(this);
+    }
+
+private:
+    friend class ConnectionEndPoint;
+
+    typedef Set< Ref<ConnectionEndPoint> > Signals;
+    Ref<Signals> signals_;
+};
+
+inline void ConnectionEndPoint::reverseConnect(ConnectionEndPoint *signal, Receptor *recipient) {
+    recipient->signals_->insert(signal);
+}
+inline void ConnectionEndPoint::reverseDisconnect(ConnectionEndPoint *signal, Receptor *recipient) {
+    recipient->signals_->remove(signal);
+}
 
 } // namespace flux
 

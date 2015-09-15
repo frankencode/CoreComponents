@@ -15,7 +15,7 @@ using namespace flux::testing;
 
 int changedNotices = 0;
 
-class Shape: public Object
+class Shape: public Object, public Receptor
 {
 public:
     static Ref<Shape> create() { return new Shape; }
@@ -28,7 +28,11 @@ protected:
     Shape():
         x(0), y(0)
     {
+        fout() << "Shape::Shape()" << nl;
         name->valueChanged()->connect(this, &Shape::onNameChanged);
+    }
+    ~Shape() {
+        fout() << "Shape::~Shape()" << nl;
     }
 
 private:
@@ -38,7 +42,7 @@ private:
     }
 };
 
-class Observer: public Object
+class Observer: public Object, public Receptor
 {
 public:
     static Ref<Observer> create(Shape *shape) { return new Observer(shape); }
@@ -48,14 +52,13 @@ private:
         shape_(shape),
         hey_(false)
     {
-        shape_->x->valueChanged()->connect(this, &Observer::onXChanged);
-        shape_->y->valueChanged()->connect(this, &Observer::onYChanged);
+        fout() << "Observer::Observer()" << nl;
+        shape->x->valueChanged()->connect(this, &Observer::onXChanged);
+        shape->y->valueChanged()->connect(this, &Observer::onYChanged);
     }
     ~Observer()
     {
-        shape_->x->valueChanged()->disconnect(this);
-        shape_->y->valueChanged()->disconnect(this);
-            // FIXME: automic disconnects on property destruction?
+        fout() << "Observer::~Observer()" << nl;
     }
 
     void onXChanged(int value) {
