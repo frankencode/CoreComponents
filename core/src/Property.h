@@ -45,16 +45,16 @@ private:
     Method method_;
 };
 
-class Receptor;
+class Recipient;
 
 class ConnectionEndPoint: public Object
 {
 protected:
-    friend class Receptor;
+    friend class Recipient;
 
-    virtual void disconnect(Receptor *recipient) = 0;
-    inline void reverseConnect(ConnectionEndPoint *signal, Receptor *recipient);
-    inline void reverseDisconnect(ConnectionEndPoint *signal, Receptor *recipient);
+    virtual void disconnect(Recipient *recipient) = 0;
+    inline void reverseConnect(ConnectionEndPoint *signal, Recipient *recipient);
+    inline void reverseDisconnect(ConnectionEndPoint *signal, Recipient *recipient);
 };
 
 template<class Value>
@@ -79,7 +79,7 @@ public:
         reverseConnect(this, recipient);
     }
 
-    void disconnect(Receptor *recipient)
+    void disconnect(Recipient *recipient)
     {
         if (!callbacks_) return;
 
@@ -100,7 +100,7 @@ public:
 
 private:
     typedef List< Ref< Callback<Value> > > CallbackList;
-    typedef Map< Receptor *, Ref<CallbackList> > CallbackListByRecipient;
+    typedef Map< Recipient *, Ref<CallbackList> > CallbackListByRecipient;
 
     Signal() {}
 
@@ -138,14 +138,14 @@ private:
     T value_;
 };
 
-class Receptor
+class Recipient
 {
 protected:
-    Receptor():
+    Recipient():
         signals_(Signals::create())
     {}
 
-    ~Receptor() {
+    ~Recipient() {
         for (int i = 0; i < signals_->count(); ++i)
             signals_->at(i)->disconnect(this);
     }
@@ -157,10 +157,10 @@ private:
     Ref<Signals> signals_;
 };
 
-inline void ConnectionEndPoint::reverseConnect(ConnectionEndPoint *signal, Receptor *recipient) {
+inline void ConnectionEndPoint::reverseConnect(ConnectionEndPoint *signal, Recipient *recipient) {
     recipient->signals_->insert(signal);
 }
-inline void ConnectionEndPoint::reverseDisconnect(ConnectionEndPoint *signal, Receptor *recipient) {
+inline void ConnectionEndPoint::reverseDisconnect(ConnectionEndPoint *signal, Recipient *recipient) {
     recipient->signals_->remove(signal);
 }
 

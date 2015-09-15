@@ -15,7 +15,7 @@ using namespace flux::testing;
 
 int changedNotices = 0;
 
-class Shape: public Object, public Receptor
+class Shape: public Object, public Recipient
 {
 public:
     static Ref<Shape> create() { return new Shape; }
@@ -42,7 +42,7 @@ private:
     }
 };
 
-class Observer: public Object, public Receptor
+class Observer: public Object, public Recipient
 {
 public:
     static Ref<Observer> create(Shape *shape) { return new Observer(shape); }
