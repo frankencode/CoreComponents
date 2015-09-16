@@ -1,1 +1,1 @@
-../../LocalConnection.h
+#include "../../LocalConnection.h"

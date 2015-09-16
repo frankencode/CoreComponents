@@ -1,1 +1,1 @@
-../../BinaryNode.h
+#include "../../BinaryNode.h"

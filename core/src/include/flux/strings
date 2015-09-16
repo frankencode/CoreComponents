@@ -1,1 +1,1 @@
-../../strings.h
+#include "../../strings.h"

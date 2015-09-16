@@ -12,7 +12,7 @@
 #include <flux/Queue>
 #include <flux/Mutex>
 #include <flux/Guard>
-#include <flux/Condition>
+#include <flux/WaitCondition>
 
 namespace flux {
 
@@ -100,13 +100,13 @@ protected:
     Channel()
         : queue_(QueueType<T>::create()),
           mutex_(Mutex::create()),
-          notEmpty_(Condition::create())
+          notEmpty_(WaitCondition::create())
     {}
 
 private:
     Ref< QueueType<T> > queue_;
     Ref<Mutex> mutex_;
-    Ref<Condition> notEmpty_;
+    Ref<WaitCondition> notEmpty_;
 };
 
 } // namespace flux

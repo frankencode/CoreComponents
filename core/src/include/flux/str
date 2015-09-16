@@ -1,1 +1,1 @@
-../../str.h
+#include "../../str.h"
