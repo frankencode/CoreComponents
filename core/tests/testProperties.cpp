@@ -8,7 +8,7 @@
 
 #include <flux/testing/TestSuite>
 #include <flux/stdio>
-#include <flux/Property>
+#include <flux/properties>
 
 using namespace flux;
 using namespace flux::testing;
@@ -25,9 +25,7 @@ public:
     Property<int> y;
 
 protected:
-    Shape():
-        x(0), y(0)
-    {
+    Shape(): x(0), y(0) {
         fout() << "Shape::Shape()" << nl;
         name->valueChanged()->connect(this, &Shape::onNameChanged);
     }
@@ -48,30 +46,24 @@ public:
     static Ref<Observer> create(Shape *shape) { return new Observer(shape); }
 
 private:
-    Observer(Shape *shape):
-        shape_(shape),
-        hey_(false)
-    {
+    Observer(Shape *shape) {
         fout() << "Observer::Observer()" << nl;
         shape->x->valueChanged()->connect(this, &Observer::onXChanged);
         shape->y->valueChanged()->connect(this, &Observer::onYChanged);
     }
-    ~Observer()
-    {
+
+    ~Observer() {
         fout() << "Observer::~Observer()" << nl;
     }
 
     void onXChanged(int value) {
-        fout("x = %% (%%)\n") << value << hey_;
+        fout("x = %%\n") << value;
         ++changedNotices;
     }
     void onYChanged(int value) {
         fout("y = %%\n") << value;
         ++changedNotices;
     }
-
-    Ref<Shape> shape_;
-    bool hey_;
 };
 
 class ChangedNotices: public TestCase
