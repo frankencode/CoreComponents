@@ -6,7 +6,6 @@
  *
  */
 
-#include <flux/stdio>
 #include <flux/Queue>
 #include <flux/NullStream>
 #include <flux/Format>
@@ -16,9 +15,9 @@ namespace flux {
 FormatSignal nl;
 FormatSignal flush;
 
-Format::Format(String pattern, Stream *stream)
-    : stream_(stream),
-      isNull_(stream && nullStream() ? stream == nullStream() : false)
+Format::Format(String pattern, Stream *stream):
+    stream_(stream),
+    isNull_(stream && nullStream() ? stream == nullStream() : false)
 {
     if (isNull_) return;
     set(StringList::create());
@@ -36,9 +35,9 @@ Format::Format(String pattern, Stream *stream)
     }
 }
 
-Format::Format(Stream *stream)
-    : stream_(stream),
-      isNull_(stream && nullStream() ? stream == nullStream() : false)
+Format::Format(Stream *stream):
+    stream_(stream),
+    isNull_(stream && nullStream() ? stream == nullStream() : false)
 {
     set(StringList::create());
 }

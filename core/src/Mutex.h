@@ -14,7 +14,7 @@
 
 namespace flux {
 
-class Condition;
+class WaitCondition;
 class ScopeGuard;
 
 /** \brief Thread synchronization primitive: mutual exclusive access
@@ -30,7 +30,7 @@ public:
     void release();
 
 protected:
-    friend class Condition;
+    friend class WaitCondition;
     Mutex();
     pthread_mutex_t mutex_;
 };

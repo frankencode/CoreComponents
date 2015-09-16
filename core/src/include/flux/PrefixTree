@@ -1,1 +1,1 @@
-../../PrefixTree.h
+#include "../../PrefixTree.h"

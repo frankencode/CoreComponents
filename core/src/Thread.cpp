@@ -7,7 +7,7 @@
  */
 
 #include <flux/strings>
-#include <flux/Condition>
+#include <flux/WaitCondition>
 #include <flux/ThreadFactory>
 #include <flux/System>
 #include <flux/Thread>
@@ -62,7 +62,7 @@ void Thread::sleep(double duration)
 void Thread::sleepUntil(double timeout)
 {
     Ref<Mutex> mutex = Mutex::create();
-    Ref<Condition> condition = Condition::create();
+    Ref<WaitCondition> condition = WaitCondition::create();
     mutex->acquire();
     condition->waitUntil(timeout, mutex);
     mutex->release();

@@ -6,8 +6,8 @@
  *
  */
 
-#ifndef FLUX_CONDITION_H
-#define FLUX_CONDITION_H
+#ifndef FLUX_WAITCONDITION_H
+#define FLUX_WAITCONDITION_H
 
 #include <flux/Mutex>
 
@@ -16,22 +16,22 @@ namespace flux {
 /** \brief Wait condition
   * \see Channel
   */
-class Condition: public Object
+class WaitCondition: public Object
 {
 public:
-    inline static Ref<Condition> create() { return new Condition; }
-    ~Condition();
+    inline static Ref<WaitCondition> create() { return new WaitCondition; }
+    ~WaitCondition();
     void wait(Mutex *mutex);
     bool waitUntil(double timeout, Mutex *mutex);
     void signal();
     void broadcast();
 
 private:
-    Condition();
+    WaitCondition();
 
     pthread_cond_t cond_;
 };
 
 } // namespace flux
 
-#endif // FLUX_CONDITION_H
+#endif // FLUX_WAITCONDITION_H

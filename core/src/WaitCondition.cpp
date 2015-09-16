@@ -9,17 +9,17 @@
 #include <pthread.h>
 #include <math.h>
 #include <flux/exceptions>
-#include <flux/Condition>
+#include <flux/WaitCondition>
 
 namespace flux {
 
-Condition::Condition()
+WaitCondition::WaitCondition()
 {
     int ret = pthread_cond_init(&cond_, 0);
     if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
 }
 
-Condition::~Condition()
+WaitCondition::~WaitCondition()
 {
     int ret = pthread_cond_destroy(&cond_);
     if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
@@ -32,7 +32,7 @@ Condition::~Condition()
   * Note that the first thread scheduled by the OS may invalidate
   * the condition again.
   */
-void Condition::wait(Mutex *mutex)
+void WaitCondition::wait(Mutex *mutex)
 {
     int ret = -1;
     while (true) {
@@ -46,7 +46,7 @@ void Condition::wait(Mutex *mutex)
   * (see also: now()). Returns true if the condition was signalled
   * before 'timeout', else returns false.
   */
-bool Condition::waitUntil(double timeout, Mutex *mutex)
+bool WaitCondition::waitUntil(double timeout, Mutex *mutex)
 {
     bool success = true;
     struct timespec ts;
@@ -70,7 +70,7 @@ bool Condition::waitUntil(double timeout, Mutex *mutex)
 /** Wakeup at least one waiting thread.
   * (A system might wakeup as many threads as CPU's are idle.)
   */
-void Condition::signal()
+void WaitCondition::signal()
 {
     int ret = pthread_cond_signal(&cond_);
     if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
@@ -78,7 +78,7 @@ void Condition::signal()
 
 /** Wakeup all waiting threads.
   */
-void Condition::broadcast()
+void WaitCondition::broadcast()
 {
     int ret = pthread_cond_broadcast(&cond_);
     if (ret != 0) FLUX_SYSTEM_DEBUG_ERROR(ret);
