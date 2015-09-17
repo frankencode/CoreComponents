@@ -10,10 +10,9 @@
 #include <flux/syntax/syntax>
 
 namespace flux {
-
 namespace syntax {
 
-int RuleNode::matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+int RuleNode::matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
 {
     Ref<Token> token = state->produceToken(scope_->id(), id_, scope_->name(), name_);
     if (parentToken)
@@ -32,7 +31,7 @@ int RuleNode::matchNext(ByteArray *text, int i, Token *parentToken, State *state
     return i;
 }
 
-int InvokeNode::matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+int InvokeNode::matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
 {
     int i0 = i;
     Token *lastChildSaved = parentToken->lastChild();
@@ -112,9 +111,9 @@ void DefinitionNode::LINK()
     LinkNode::rule_ = ruleByName(LinkNode::ruleName_);
 }
 
-Ref<State> DefinitionNode::find(ByteArray *text, int i, TokenFactory *tokenFactory) const
+Ref<SyntaxState> DefinitionNode::find(ByteArray *text, int i, TokenFactory *tokenFactory) const
 {
-    Ref<State> state = createState(tokenFactory);
+    Ref<SyntaxState> state = createState(tokenFactory);
     while (text->has(i)) {
         int h = matchNext(text, i, 0, state);
         if (h == -1) state->rootToken_ = 0;
@@ -124,9 +123,9 @@ Ref<State> DefinitionNode::find(ByteArray *text, int i, TokenFactory *tokenFacto
     return state;
 }
 
-Ref<State> DefinitionNode::match(ByteArray *text, int i, TokenFactory *tokenFactory) const
+Ref<SyntaxState> DefinitionNode::match(ByteArray *text, int i, TokenFactory *tokenFactory) const
 {
-    Ref<State> state = createState(tokenFactory);
+    Ref<SyntaxState> state = createState(tokenFactory);
     int h = i < 0 ? 0 : i;
     h = matchNext(text, h, 0, state);
     if ( (h == -1) || (i < 0 && h < text->count()) ) state->rootToken_ = 0;
@@ -156,18 +155,16 @@ const DefinitionNode *DefinitionNode::resolveScope(const char *&name) const
     return scope;
 }
 
-int DefinitionNode::syntaxError(ByteArray *text, int index, State *state) const
+int DefinitionNode::syntaxError(ByteArray *text, int index, SyntaxState *state) const
 {
     FLUX_DEBUG_ERROR("Unhandled syntax error");
     return -1;
 }
 
-int DefinitionNode::errorCallBack(Object *self, ByteArray *text, int index, Token *parentToken, State *state)
+int DefinitionNode::errorCallBack(Object *self, ByteArray *text, int index, Token *parentToken, SyntaxState *state)
 {
     DefinitionNode *definition = cast<DefinitionNode>(self);
     return definition->syntaxError(text, index, state);
 }
 
-} // namespace syntax
-
-} // namespace flux
+}} // namespace flux::syntax

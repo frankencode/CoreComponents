@@ -11,6 +11,7 @@
 #include <flux/syntax/RegExp>
 
 using namespace flux;
+using namespace flux::syntax;
 using namespace flux::testing;
 
 class EmailValidation: public TestCase

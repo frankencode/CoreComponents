@@ -10,6 +10,7 @@
 #include <flux/syntax/Token>
 
 namespace flux {
+namespace syntax {
 
 bool Token::project(TokenScreen *screen)
 {
@@ -49,4 +50,4 @@ Token *Token::at(int i) const
     return token;
 }
 
-} // namespace flux
+}} // namespace flux::syntax

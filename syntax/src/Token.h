@@ -12,12 +12,11 @@
 #include <flux/Tree>
 
 namespace flux {
-
 namespace syntax {
-    class RuleNode;
-    class InvokeNode;
-    class KeywordNode;
-}
+
+class RuleNode;
+class InvokeNode;
+class KeywordNode;
 
 class TokenFactory;
 class Token;
@@ -76,6 +75,6 @@ private:
     int i1_;
 };
 
-} // namespace flux
+}} // namespace flux::syntax
 
 #endif // FLUXSYNTAX_TOKEN_H

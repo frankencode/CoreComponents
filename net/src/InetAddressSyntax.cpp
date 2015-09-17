@@ -12,7 +12,10 @@
 namespace flux {
 namespace net {
 
-InetAddressSyntax::InetAddressSyntax(SyntaxDebugFactory *debugFactory)
+using namespace flux::syntax;
+
+InetAddressSyntax::InetAddressSyntax(SyntaxDebugFactory *debugFactory):
+    SyntaxDefinition(debugFactory)
 {
     DEFINE("DecimalOctet",
         REPEAT(0, 3, RANGE('0', '9'))

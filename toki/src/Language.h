@@ -15,6 +15,8 @@
 namespace flux {
 namespace toki {
 
+using namespace flux::syntax;
+
 class Language: public Object
 {
 public:

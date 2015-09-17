@@ -11,9 +11,10 @@
 #include <flux/syntax/Glob>
 
 namespace flux {
+namespace syntax {
 
-Glob::Glob(String expression)
-    : remainder_(expression->split('/'))
+Glob::Glob(String expression):
+    remainder_(expression->split('/'))
 {
     if (expression->head(1) == "/") {
         remainder_->pop(0);
@@ -24,8 +25,8 @@ Glob::Glob(String expression)
     }
 }
 
-Glob::Glob(String path, StringList *remainder)
-    : remainder_(StringList::clone(remainder))
+Glob::Glob(String path, StringList *remainder):
+    remainder_(StringList::clone(remainder))
 {
     init(path);
 }
@@ -62,4 +63,4 @@ bool Glob::read(String *path)
     return false;
 }
 
-} // namespace flux
+}} // namespace flux::syntax

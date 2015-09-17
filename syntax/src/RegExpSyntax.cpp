@@ -16,8 +16,7 @@
 #include <flux/syntax/RegExpSyntax>
 
 namespace flux {
-
-typedef syntax::NODE NODE;
+namespace syntax {
 
 RegExpSyntax::RegExpSyntax()
 {
@@ -299,7 +298,7 @@ NODE RegExpSyntax::compileChoice(const ByteArray *text, Token *token, SyntaxDefi
 {
     if (token->countChildren() == 1)
         return compileSequence(text, token->firstChild(), definition);
-    NODE node = new syntax::LazyChoiceNode;
+    NODE node = new LazyChoiceNode;
     for (Token *child = token->firstChild(); child; child = child->nextSibling())
         node->appendChild(compileSequence(text, child, definition));
     return definition->debug(node, "Choice");
@@ -307,7 +306,7 @@ NODE RegExpSyntax::compileChoice(const ByteArray *text, Token *token, SyntaxDefi
 
 NODE RegExpSyntax::compileSequence(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
 {
-    NODE node = new syntax::GlueNode;
+    NODE node = new GlueNode;
     for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
         if (child->rule() == string_) node->appendChild(definition->STRING(readString(text, child)));
         else if (child->rule() == char_) node->appendChild(definition->CHAR(readChar(text, child)));
@@ -434,4 +433,4 @@ NODE RegExpSyntax::compileRepeat(const ByteArray *text, Token *token, SyntaxDefi
 
 const RegExpSyntax *regExpSyntax() { return Singleton<RegExpSyntax>::instance(); }
 
-} // namespace flux
+}} // namespace flux::syntax

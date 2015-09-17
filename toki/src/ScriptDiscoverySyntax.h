@@ -14,6 +14,8 @@
 namespace flux {
 namespace toki {
 
+using namespace flux::syntax;
+
 class ScriptDiscoverySyntax: public SyntaxDefinition
 {
 public:

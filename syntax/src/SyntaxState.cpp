@@ -12,15 +12,16 @@
 #include <flux/syntax/SyntaxState>
 
 namespace flux {
+namespace syntax {
 
-SyntaxState::SyntaxState(const DefinitionNode *definition, int numFlags, int numCaptures, TokenFactory *tokenFactory)
-    : definition_(definition),
-      flags_(Flags::create(numFlags)),
-      captures_(Captures::create(numCaptures)),
-      tokenFactory_(tokenFactory),
-      hint_(0),
-      hintOffset_(-1),
-      finalize_(false)
+SyntaxState::SyntaxState(const DefinitionNode *definition, int numFlags, int numCaptures, TokenFactory *tokenFactory):
+    definition_(definition),
+    flags_(Flags::create(numFlags)),
+    captures_(Captures::create(numCaptures)),
+    tokenFactory_(tokenFactory),
+    hint_(0),
+    hintOffset_(-1),
+    finalize_(false)
 {
     if (!tokenFactory_) tokenFactory_ = new TokenFactory;
     for (int i = 0; i < flags_->count(); ++i) flags_->at(i) =  false;
@@ -82,4 +83,4 @@ SyntaxState *SyntaxState::stateByScope(const DefinitionNode *scope)
     return state;
 }
 
-} // namespace flux
+}} // namespace flux::syntax

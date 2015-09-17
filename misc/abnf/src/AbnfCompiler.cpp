@@ -84,7 +84,7 @@ void AbnfCompiler::compileEntry(ByteArray *text, Token *ruleList, SyntaxDefiniti
     definition->ENTRY(str(text, ruleName));
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileAlternation(ByteArray *text, Token *alternation, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileAlternation(ByteArray *text, Token *alternation, SyntaxDefinition *definition)
 {
     FLUX_ASSERT(alternation->rule() == AbnfSyntax::alternation_);
     if (alternation->firstChild() == alternation->lastChild())
@@ -98,7 +98,7 @@ AbnfCompiler::NODE AbnfCompiler::compileAlternation(ByteArray *text, Token *alte
     return optimizeChoice(node, definition);
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileConcatenation(ByteArray *text, Token *concatenation, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileConcatenation(ByteArray *text, Token *concatenation, SyntaxDefinition *definition)
 {
     FLUX_ASSERT(concatenation->rule() == AbnfSyntax::concatenation_);
     if (concatenation->firstChild() == concatenation->lastChild())
@@ -112,7 +112,7 @@ AbnfCompiler::NODE AbnfCompiler::compileConcatenation(ByteArray *text, Token *co
     return node;
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileRepetition(ByteArray *text, Token *repetition, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileRepetition(ByteArray *text, Token *repetition, SyntaxDefinition *definition)
 {
     NODE node = 0;
     Token *token = repetition->firstChild();
@@ -148,7 +148,7 @@ AbnfCompiler::NODE AbnfCompiler::compileRepetition(ByteArray *text, Token *repet
     return node;
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileOption(ByteArray *text, Token *option, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileOption(ByteArray *text, Token *option, SyntaxDefinition *definition)
 {
     FLUX_ASSERT(option->rule() == AbnfSyntax::option_);
     Token *alternation = option->firstChild();
@@ -156,7 +156,7 @@ AbnfCompiler::NODE AbnfCompiler::compileOption(ByteArray *text, Token *option, S
     return definition->REPEAT(0, 1, compileAlternation(text, alternation, definition));
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileElement(ByteArray *text, Token *element, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileElement(ByteArray *text, Token *element, SyntaxDefinition *definition)
 {
     NODE node = 0;
     FLUX_ASSERT(element->rule() == AbnfSyntax::element_);
@@ -182,7 +182,7 @@ AbnfCompiler::NODE AbnfCompiler::compileElement(ByteArray *text, Token *element,
     return node;
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileNumVal(ByteArray *text, Token *numVal, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileNumVal(ByteArray *text, Token *numVal, SyntaxDefinition *definition)
 {
     NODE node = 0;
 
@@ -240,7 +240,7 @@ AbnfCompiler::NODE AbnfCompiler::compileNumVal(ByteArray *text, Token *numVal, S
     return node;
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileCharVal(ByteArray *text, Token *charVal, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileCharVal(ByteArray *text, Token *charVal, SyntaxDefinition *definition)
 {
     return
         (charVal->i1() - charVal->i0() - 2 > 1) ?
@@ -248,12 +248,12 @@ AbnfCompiler::NODE AbnfCompiler::compileCharVal(ByteArray *text, Token *charVal,
             definition->CHAR(text->at(charVal->i0() + 1));
 }
 
-AbnfCompiler::NODE AbnfCompiler::compileProseVal(ByteArray *text, Token *proseVal, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileProseVal(ByteArray *text, Token *proseVal, SyntaxDefinition *definition)
 {
     return compileCharVal(text, proseVal, definition);
 }
 
-AbnfCompiler::NODE AbnfCompiler::optimizeChoice(SyntaxNode *node, SyntaxDefinition *definition)
+NODE AbnfCompiler::optimizeChoice(SyntaxNode *node, SyntaxDefinition *definition)
 {
     NODE optimizedChoice = node;
 

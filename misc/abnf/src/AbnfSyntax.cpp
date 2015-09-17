@@ -213,7 +213,7 @@ AbnfSyntax::AbnfSyntax()
     LINK();
 }
 
-AbnfSyntax::NODE AbnfSyntax::defineValue(const char *digitRule)
+NODE AbnfSyntax::defineValue(const char *digitRule)
 {
     return
         GLUE(

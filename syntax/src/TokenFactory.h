@@ -12,6 +12,7 @@
 #include <flux/syntax/Token>
 
 namespace flux {
+namespace syntax {
 
 class SyntaxState;
 
@@ -29,6 +30,6 @@ protected:
     }
 };
 
-} // namespace flux
+}} // namespace flux::syntax
 
 #endif // FLUXSYNTAX_TOKENFACTORY_H

@@ -6,15 +6,16 @@
  *
  */
 
-#ifndef FLUX_REGEXPSYNTAX_H
-#define FLUX_REGEXPSYNTAX_H
+#ifndef FLUXSYNTAX_REGEXPSYNTAX_H
+#define FLUXSYNTAX_REGEXPSYNTAX_H
 
 #include <flux/String>
 #include <flux/syntax/SyntaxDefinition>
 
-namespace flux {
+namespace flux { template<class> class Singleton; }
 
-template<class SubClass> class Singleton;
+namespace flux {
+namespace syntax {
 
 /** \brief Syntax of a regular expression text pattern
   */
@@ -63,6 +64,6 @@ protected:
 
 const RegExpSyntax *regExpSyntax();
 
-} // namespace flux
+}} // namespace flux::syntax
 
-#endif // FLUX_REGEXPSYNTAX_H
+#endif // FLUXSYNTAX_REGEXPSYNTAX_H

@@ -10,6 +10,7 @@
 #include <flux/syntax/IntegerSyntax>
 
 namespace flux {
+namespace syntax {
 
 IntegerSyntax::IntegerSyntax()
 {
@@ -137,4 +138,4 @@ Ref<Token> IntegerSyntax::read(uint64_t *value, int *sign, const ByteArray *text
 
 const IntegerSyntax *integerSyntax() { return Singleton<IntegerSyntax>::instance(); }
 
-} // namespace flux
+}} // namespace flux::syntax

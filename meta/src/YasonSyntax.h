@@ -16,6 +16,8 @@ namespace flux {
 
 template<class> class Singleton;
 
+using namespace flux::syntax;
+
 class YasonSyntax: public SyntaxDefinition
 {
 public:

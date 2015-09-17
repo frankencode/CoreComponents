@@ -16,6 +16,7 @@
 namespace fluxmake {
 
 using namespace flux;
+using namespace flux::syntax;
 
 class GnuToolChain: public ToolChain
 {

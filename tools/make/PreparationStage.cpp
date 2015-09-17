@@ -15,6 +15,8 @@
 
 namespace fluxmake {
 
+using namespace flux::syntax;
+
 bool PreparationStage::run()
 {
     if (complete_) return success_;

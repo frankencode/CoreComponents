@@ -6,8 +6,8 @@
  *
  */
 
-#ifndef FLUX_SYNTAXDEBUGGER_H
-#define FLUX_SYNTAXDEBUGGER_H
+#ifndef FLUXSYNTAX_SYNTAXDEBUGGER_H
+#define FLUXSYNTAX_SYNTAXDEBUGGER_H
 
 #include <flux/String>
 #include <flux/Map>
@@ -16,14 +16,14 @@
 namespace flux {
 namespace syntax {
 
-class DebugNode: public Node {
+class SyntaxDebugNode: public SyntaxNode {
 public:
     virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const {
         return entry()->matchNext(text, i, parentToken, state);
     }
 
-    virtual Node *succ(Node *node) const {
-        return Node::parent() ? Node::parent()->succ(Node::self()) : null<Node>();
+    virtual SyntaxNode *succ(SyntaxNode *node) const {
+        return SyntaxNode::parent() ? SyntaxNode::parent()->succ(SyntaxNode::self()) : null<SyntaxNode>();
     }
 
     virtual int matchLength() const {
@@ -35,31 +35,31 @@ public:
 
     virtual void printNext(String indent = "");
 
-    inline Node *entry() const { return Node::firstChild(); }
+    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
 
 protected:
-    DebugNode(Debugger *debugger, Node *newNode)
+    SyntaxDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
         : debugger_(debugger)
     {
         appendChild(newNode);
     }
 
-    void printBranch(Node *node, String indent);
+    void printBranch(SyntaxNode *node, String indent);
 
     String superIndent(String indent) const;
     String subIndent(String indent) const;
 
-    Debugger *debugger_;
+    SyntaxDebugger *debugger_;
 };
 
-class Debugger: public DebugFactory
+class SyntaxDebugger: public SyntaxDebugFactory
 {
 public:
-    inline static Ref<Debugger> create(String indent = "\t") {
-        return new Debugger(indent);
+    inline static Ref<SyntaxDebugger> create(String indent = "\t") {
+        return new SyntaxDebugger(indent);
     }
 
-    virtual Node *produce(Node *newNode, const char *nodeType);
+    virtual SyntaxNode *produce(SyntaxNode *newNode, const char *nodeType);
     void printDefinition(bool omitUnusedRules = false);
 
     typedef DefinitionNode::StateIdByName StateIdByName;
@@ -71,28 +71,28 @@ public:
 
 private:
     friend class DefinitionNode;
-    friend class DebugNode;
+    friend class SyntaxDebugNode;
 
-    Debugger(String indent);
+    SyntaxDebugger(String indent);
 
     static void determineRulesInUse(RuleNode *rule);
 
     class NodeFactory: public Object {
     public:
-        virtual Node *produce(Node *newNode) = 0;
+        virtual SyntaxNode *produce(SyntaxNode *newNode) = 0;
     };
 
     template<class DebugNodeType>
     class DebugNodeFactory: public NodeFactory {
     public:
-        DebugNodeFactory(Debugger *debugger)
+        DebugNodeFactory(SyntaxDebugger *debugger)
             : debugger_(debugger)
         {}
-        virtual Node *produce(Node *newNode) {
+        virtual SyntaxNode *produce(SyntaxNode *newNode) {
             return new DebugNodeType(debugger_, newNode);
         }
     private:
-        Debugger *debugger_;
+        SyntaxDebugger *debugger_;
     };
 
     typedef PrefixTree< char, Ref<NodeFactory> > FactoryByNodeType;
@@ -104,11 +104,6 @@ private:
     Ref<StateNameById> captureNameById_;
 };
 
-} // namespace syntax
+}} // namespace flux::syntax
 
-typedef syntax::DebugNode SyntaxDebugNode;
-typedef syntax::Debugger SyntaxDebugger;
-
-} // namespace flux
-
-#endif // FLUX_SYNTAXDEBUGGER_H
+#endif // FLUXSYNTAX_SYNTAXDEBUGGER_H

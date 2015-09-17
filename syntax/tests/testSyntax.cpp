@@ -13,6 +13,7 @@
 #include <flux/syntax/SyntaxDefinition>
 
 using namespace flux;
+using namespace flux::syntax;
 using namespace flux::testing;
 
 class Expression: public SyntaxDefinition

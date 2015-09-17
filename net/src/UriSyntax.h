@@ -11,15 +11,14 @@
 
 #include <flux/syntax/SyntaxDefinition>
 
+namespace flux { template<class> class Singleton; }
+
 namespace flux {
-
-template<class SubClass> class Singleton;
-
 namespace net {
 
 /** \brief Syntax of an URI
   */
-class UriSyntax: public SyntaxDefinition
+class UriSyntax: public syntax::SyntaxDefinition
 {
 public:
     inline int userInfo() const { return userInfo_; }
@@ -37,7 +36,7 @@ public:
 protected:
     friend class Singleton<UriSyntax>;
 
-    UriSyntax(SyntaxDebugFactory *debugFactory = 0);
+    UriSyntax(syntax::SyntaxDebugFactory *debugFactory = 0);
 
     int userInfo_;
     int host_;

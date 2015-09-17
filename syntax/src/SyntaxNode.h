@@ -17,7 +17,7 @@
 namespace flux {
 namespace syntax {
 
-class Node: public Tree<Node>
+class SyntaxNode: public Tree<SyntaxNode>
 {
 public:
     inline static void rollBack(Token *parentToken, Token *lastChildSaved) {
@@ -27,24 +27,20 @@ public:
         }
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const = 0;
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const = 0;
 
-    virtual Node *succ(Node *node) const { return null<Node>(); }
+    virtual SyntaxNode *succ(SyntaxNode *node) const { return null<SyntaxNode>(); }
     virtual int matchLength() const { return -1; }
 
-    inline Node *succ() const {
-        return parent() ? parent()->succ(Node::self()) : null<Node>();
+    inline SyntaxNode *succ() const {
+        return parent() ? parent()->succ(SyntaxNode::self()) : null<SyntaxNode>();
     }
 
-    inline Node *self() const { return const_cast<Node *>(this); }
+    inline SyntaxNode *self() const { return const_cast<SyntaxNode *>(this); }
 };
 
-typedef Ref<Node> NODE;
+typedef Ref<SyntaxNode> NODE;
 
-} // namespace syntax
-
-typedef syntax::Node SyntaxNode;
-
-} // namespace flux
+}} // namespace flux::syntax
 
 #endif // FLUXSYNTAX_SYNTAXNODE_H

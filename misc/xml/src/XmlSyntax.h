@@ -11,11 +11,12 @@
 
 #include <flux/syntax/SyntaxDefinition>
 
+namespace flux { template<class> class Singleton; }
+
 namespace flux {
-
-template<class> class Singleton;
-
 namespace xml {
+
+using namespace flux::syntax;
 
 class XmlSyntax: public SyntaxDefinition
 {

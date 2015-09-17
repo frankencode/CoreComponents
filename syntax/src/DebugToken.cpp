@@ -10,6 +10,7 @@
 #include <flux/syntax/DebugToken>
 
 namespace flux {
+namespace syntax {
 
 void DebugToken::printTo(Stream *stream, ByteArray *text, int depth, int defaultScope)
 {
@@ -31,4 +32,4 @@ void DebugToken::printTo(Stream *stream, ByteArray *text, int depth, int default
     // Format(stream) << indent << "]" << nl;
 }
 
-} // namespace flux
+}} // namespace flux::syntax

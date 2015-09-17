@@ -12,6 +12,7 @@
 #include <flux/exceptions>
 
 namespace flux {
+namespace syntax {
 
 class SyntaxState;
 
@@ -31,6 +32,6 @@ private:
     Ref<SyntaxState> state_;
 };
 
-} // namespace flux
+}} // namespace flux::syntax
 
 #endif // FLUXSYNTAX_EXCEPTIONS_H
