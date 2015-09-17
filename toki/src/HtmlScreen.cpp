@@ -8,13 +8,14 @@
 
 #include <flux/str>
 #include <flux/toki/HtmlScreen>
+#include <flux/toki/Theme>
 
 namespace flux {
 namespace toki {
 
-HtmlScreen::HtmlScreen(String text, Format sink)
-    : text_(text),
-      sink_(sink)
+HtmlScreen::HtmlScreen(String text, Format sink):
+    text_(text),
+    sink_(sink)
 {
     writeLineNumbers();
     sink_ << "<div class=\"sourceCodeCell\">\n";

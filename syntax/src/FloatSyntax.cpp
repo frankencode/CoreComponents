@@ -11,6 +11,7 @@
 #include <flux/syntax/FloatSyntax>
 
 namespace flux {
+namespace syntax {
 
 FloatSyntax::FloatSyntax()
 {
@@ -146,4 +147,4 @@ Ref<Token> FloatSyntax::read(float64_t *value, const ByteArray *text, int i) con
 
 const FloatSyntax *floatSyntax() { return Singleton<FloatSyntax>::instance(); }
 
-} // namespace flux
+}} // namespace flux::syntax

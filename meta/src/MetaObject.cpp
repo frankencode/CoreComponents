@@ -7,6 +7,7 @@
  */
 
 #include <flux/Guard>
+#include <flux/syntax/Token>
 #include <flux/meta/YasonSyntax>
 #include <flux/meta/MetaProtocol>
 #include <flux/meta/MetaObject>

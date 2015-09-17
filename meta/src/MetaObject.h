@@ -11,11 +11,13 @@
 
 #include <flux/SpinLock>
 #include <flux/Variant>
-#include <flux/syntax/Token>
 
 namespace flux {
 
 class MetaProtocol;
+
+namespace syntax { class Token; }
+using flux::syntax::Token;
 
 class MetaObject;
 typedef List< Ref<MetaObject> > MetaObjectList;

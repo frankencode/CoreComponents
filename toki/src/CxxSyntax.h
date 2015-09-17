@@ -14,6 +14,8 @@
 namespace flux {
 namespace toki {
 
+using namespace flux::syntax;
+
 const SyntaxDefinition *cxxSyntax();
 
 }} // namespace flux::toki

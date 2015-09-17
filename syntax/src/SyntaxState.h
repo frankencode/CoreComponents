@@ -29,8 +29,6 @@ class ChoiceNode;
 class LazyChoiceNode;
 class GlueNode;
 
-} // namespace syntax
-
 class SyntaxDefinition;
 class TokenFactory;
 
@@ -54,17 +52,17 @@ public:
     inline int hintOffset() const { return hintOffset_; }
 
 private:
-    friend class syntax::DefinitionNode;
-    friend class syntax::RuleNode;
-    friend class syntax::InvokeNode;
-    friend class syntax::SetNode;
-    friend class syntax::IfNode;
-    friend class syntax::CaptureNode;
-    friend class syntax::ReplayNode;
-    friend class syntax::HintNode;
-    friend class syntax::ChoiceNode;
-    friend class syntax::LazyChoiceNode;
-    friend class syntax::GlueNode;
+    friend class DefinitionNode;
+    friend class RuleNode;
+    friend class InvokeNode;
+    friend class SetNode;
+    friend class IfNode;
+    friend class CaptureNode;
+    friend class ReplayNode;
+    friend class HintNode;
+    friend class ChoiceNode;
+    friend class LazyChoiceNode;
+    friend class GlueNode;
 
     typedef syntax::DefinitionNode DefinitionNode;
 
@@ -109,8 +107,6 @@ private:
     bool finalize_;
 };
 
-namespace syntax { typedef SyntaxState State; }
-
-} // namespace flux
+}} // namespace flux::syntax
 
 #endif // FLUXSYNTAX_SYNTAXSTATE_H

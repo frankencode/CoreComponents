@@ -15,6 +15,7 @@
 namespace fluxclaim {
 
 using namespace flux;
+using namespace flux::syntax;
 
 class Header: public Object
 {

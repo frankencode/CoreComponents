@@ -13,18 +13,20 @@
 namespace flux {
 namespace net {
 
-Uri::Uri()
-    : port_(-1)
+using namespace flux::syntax;
+
+Uri::Uri():
+    port_(-1)
 {}
 
-Uri::Uri(const char *text)
-    : port_(-1)
+Uri::Uri(const char *text):
+    port_(-1)
 {
     readUri(String(text));
 }
 
-Uri::Uri(ByteArray *text, Token *rootToken)
-    : port_(-1)
+Uri::Uri(ByteArray *text, Token *rootToken):
+    port_(-1)
 {
     readUri(text, rootToken);
 }

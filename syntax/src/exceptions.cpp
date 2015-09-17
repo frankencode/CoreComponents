@@ -11,10 +11,11 @@
 #include <flux/syntax/exceptions>
 
 namespace flux {
+namespace syntax {
 
-SyntaxError::SyntaxError(String text, SyntaxState *state, String resource)
-    : TextError(text, state ? state->hintOffset() : -1, resource),
-      state_(state)
+SyntaxError::SyntaxError(String text, SyntaxState *state, String resource):
+    TextError(text, state ? state->hintOffset() : -1, resource),
+    state_(state)
 {}
 
 SyntaxError::~SyntaxError() throw()
@@ -36,4 +37,4 @@ String SyntaxError::message() const
     return format;
 }
 
-} // namespace flux
+}} // namespace flux

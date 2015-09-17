@@ -13,8 +13,10 @@
 namespace flux {
 namespace net {
 
-UriSyntax::UriSyntax(SyntaxDebugFactory *debugFactory)
-    : SyntaxDefinition(debugFactory)
+using namespace flux::syntax;
+
+UriSyntax::UriSyntax(SyntaxDebugFactory *debugFactory):
+    SyntaxDefinition(debugFactory)
 {
     SYNTAX("uri");
     IMPORT(inetAddressSyntax(), "inet");

@@ -15,8 +15,9 @@
 #include <flux/syntax/SyntaxState>
 
 namespace flux {
+namespace syntax {
 
-namespace syntax { class DefinitionNode; }
+class DefinitionNode;
 
 /** \brief Low-level syntax definition
   * \see Pattern
@@ -24,8 +25,6 @@ namespace syntax { class DefinitionNode; }
 class SyntaxDefinition: public Object
 {
 public:
-    typedef syntax::NODE NODE;
-
     inline static Ref<SyntaxDefinition> create(SyntaxDebugFactory *debugFactory = 0) {
         return new SyntaxDefinition(debugFactory);
     }
@@ -177,11 +176,9 @@ protected:
 private:
     SyntaxDefinition(const SyntaxDefinition &);
 
-    Ref<syntax::DefinitionNode> def_;
+    Ref<DefinitionNode> def_;
 };
 
-namespace syntax { typedef SyntaxDefinition Definition; }
-
-} // namespace flux
+}} // namespace flux::syntax
 
 #endif // FLUXSYNTAX_SYNTAXDEFINITION_H

@@ -10,7 +10,6 @@
 #include <flux/syntax/SyntaxDebugger>
 
 namespace flux {
-
 namespace syntax {
 
 static void printChar(char ch) {
@@ -65,16 +64,16 @@ static void printStringAttr(const ByteArray &s) {
     fout() << "\"";
 }
 
-void DebugNode::printNext(String indent)
+void SyntaxDebugNode::printNext(String indent)
 {
     fout() << indent << declType() << "(";
     printAttributes(Format() << indent << debugger_->indent_);
     fout() << ")";
 }
 
-void DebugNode::printBranch(Node *node, String indent) {
+void SyntaxDebugNode::printBranch(SyntaxNode *node, String indent) {
     if (node) {
-        DebugNode *debugNode = cast<DebugNode>(node);
+        SyntaxDebugNode *debugNode = cast<SyntaxDebugNode>(node);
         if (debugNode) debugNode->printNext(indent);
         else fout() << indent;
     }
@@ -83,18 +82,18 @@ void DebugNode::printBranch(Node *node, String indent) {
     }
 }
 
-String DebugNode::superIndent(String indent) const {
+String SyntaxDebugNode::superIndent(String indent) const {
     return (indent != "") ? indent->copy(0, indent->count() - debugger_->indent_->count()) : indent;
 }
 
-String DebugNode::subIndent(String indent) const {
-    return Format() << indent << DebugNode::debugger_->indent_;
+String SyntaxDebugNode::subIndent(String indent) const {
+    return Format() << indent << SyntaxDebugNode::debugger_->indent_;
 }
 
-class CharDebugNode: public DebugNode {
+class CharDebugNode: public SyntaxDebugNode {
 public:
-    CharDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    CharDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return charNode()->invert() ? "OTHER" : "CHAR"; }
@@ -104,14 +103,13 @@ public:
     }
 
 private:
-    typedef syntax::CharNode CharNode;
-    inline CharNode *charNode() const { return cast<CharNode>(DebugNode::entry()); }
+    inline CharNode *charNode() const { return cast<CharNode>(SyntaxDebugNode::entry()); }
 };
 
-class GreaterDebugNode: public DebugNode {
+class GreaterDebugNode: public SyntaxDebugNode {
 public:
-    GreaterDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    GreaterDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return greaterNode()->invert() ? "BELOW" : "GREATER"; }
@@ -121,14 +119,13 @@ public:
     }
 
 private:
-    typedef syntax::GreaterNode GreaterNode;
-    inline GreaterNode *greaterNode() const { return cast<GreaterNode>(DebugNode::entry()); }
+    inline GreaterNode *greaterNode() const { return cast<GreaterNode>(SyntaxDebugNode::entry()); }
 };
 
-class GreaterOrEqualDebugNode: public DebugNode {
+class GreaterOrEqualDebugNode: public SyntaxDebugNode {
 public:
-    GreaterOrEqualDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    GreaterOrEqualDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return greaterOrEqualNode()->invert() ? "BELOW_OR_EQUAL" : "GREATER_OR_EQUAL"; }
@@ -138,23 +135,22 @@ public:
     }
 
 private:
-    typedef syntax::GreaterOrEqualNode GreaterOrEqualNode;
-    inline GreaterOrEqualNode *greaterOrEqualNode() const { return cast<GreaterOrEqualNode>(DebugNode::entry()); }
+    inline GreaterOrEqualNode *greaterOrEqualNode() const { return cast<GreaterOrEqualNode>(SyntaxDebugNode::entry()); }
 };
 
-class AnyDebugNode: public DebugNode {
+class AnyDebugNode: public SyntaxDebugNode {
 public:
-    AnyDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    AnyDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "ANY"; }
 };
 
-class RangeMinMaxDebugNode: public DebugNode {
+class RangeMinMaxDebugNode: public SyntaxDebugNode {
 public:
-    RangeMinMaxDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    RangeMinMaxDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return rangeMinMaxNode()->invert() ? "EXCEPT" : "RANGE"; }
@@ -167,14 +163,13 @@ public:
     }
 
 private:
-    typedef syntax::RangeMinMaxNode RangeMinMaxNode;
-    inline RangeMinMaxNode *rangeMinMaxNode() const { return cast<RangeMinMaxNode>(DebugNode::entry()); }
+    inline RangeMinMaxNode *rangeMinMaxNode() const { return cast<RangeMinMaxNode>(SyntaxDebugNode::entry()); }
 };
 
-class RangeExplicitDebugNode: public DebugNode {
+class RangeExplicitDebugNode: public SyntaxDebugNode {
 public:
-    RangeExplicitDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    RangeExplicitDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return rangeExplicitNode()->invert() ? "EXCEPT" : "RANGE"; }
@@ -184,14 +179,13 @@ public:
     }
 
 private:
-    typedef syntax::RangeExplicitNode RangeExplicitNode;
-    inline RangeExplicitNode *rangeExplicitNode() const { return cast<RangeExplicitNode>(DebugNode::entry()); }
+    inline RangeExplicitNode *rangeExplicitNode() const { return cast<RangeExplicitNode>(SyntaxDebugNode::entry()); }
 };
 
-class StringDebugNode: public DebugNode {
+class StringDebugNode: public SyntaxDebugNode {
 public:
-    StringDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    StringDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "STRING"; }
@@ -201,14 +195,13 @@ public:
     }
 
 private:
-    typedef syntax::StringNode StringNode;
-    inline StringNode *stringNode() const { return cast<StringNode>(DebugNode::entry()); }
+    inline StringNode *stringNode() const { return cast<StringNode>(SyntaxDebugNode::entry()); }
 };
 
-class KeywordDebugNode: public DebugNode {
+class KeywordDebugNode: public SyntaxDebugNode {
 public:
-    KeywordDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    KeywordDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "KEYWORD"; }
@@ -222,19 +215,17 @@ public:
             if (index != map->last())
                 fout(" ");
         }
-        fout("\"\n") << DebugNode::superIndent(indent);
+        fout("\"\n") << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::KeywordNode KeywordNode;
-    typedef syntax::KeywordMap KeywordMap;
-    inline KeywordNode *keywordNode() const { return cast<KeywordNode>(DebugNode::entry()); }
+    inline KeywordNode *keywordNode() const { return cast<KeywordNode>(SyntaxDebugNode::entry()); }
 };
 
-class RepeatDebugNode: public DebugNode {
+class RepeatDebugNode: public SyntaxDebugNode {
 public:
-    RepeatDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    RepeatDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "REPEAT"; }
@@ -247,18 +238,17 @@ public:
             fout("%%,") << node->minRepeat();
         fout() << "\n";
         printBranch(node->entry(), indent);
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::RepeatNode RepeatNode;
-    inline RepeatNode *repeatNode() const { return cast<RepeatNode>(DebugNode::entry()); }
+    inline RepeatNode *repeatNode() const { return cast<RepeatNode>(SyntaxDebugNode::entry()); }
 };
 
-class LazyRepeatDebugNode: public DebugNode {
+class LazyRepeatDebugNode: public SyntaxDebugNode {
 public:
-    LazyRepeatDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    LazyRepeatDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "LAZY_REPEAT"; }
@@ -269,18 +259,17 @@ public:
             fout("%%,") << node->minRepeat();
         fout() << "\n";
         printBranch(node->entry(), indent);
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::LazyRepeatNode LazyRepeatNode;
-    inline LazyRepeatNode *repeatNode() const { return cast<LazyRepeatNode>(DebugNode::entry()); }
+    inline LazyRepeatNode *repeatNode() const { return cast<LazyRepeatNode>(SyntaxDebugNode::entry()); }
 };
 
-class GreedyRepeatDebugNode: public DebugNode {
+class GreedyRepeatDebugNode: public SyntaxDebugNode {
 public:
-    GreedyRepeatDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    GreedyRepeatDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "GREEDY_REPEAT"; }
@@ -293,18 +282,17 @@ public:
             fout("%%,") << node->minRepeat();
         fout() << "\n";
         printBranch(node->entry(), indent);
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::GreedyRepeatNode GreedyRepeatNode;
-    inline GreedyRepeatNode *repeatNode() const { return cast<GreedyRepeatNode>(DebugNode::entry()); }
+    inline GreedyRepeatNode *repeatNode() const { return cast<GreedyRepeatNode>(SyntaxDebugNode::entry()); }
 };
 
-class FilterDebugNode: public DebugNode {
+class FilterDebugNode: public SyntaxDebugNode {
 public:
-    FilterDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    FilterDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "FILTER"; }
@@ -317,18 +305,17 @@ public:
         printCharAttr(node->blank());
         fout(",\n");
         printBranch(node->entry(), indent);
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::FilterNode FilterNode;
-    inline FilterNode *filterNode() const { return cast<FilterNode>(DebugNode::entry()); }
+    inline FilterNode *filterNode() const { return cast<FilterNode>(SyntaxDebugNode::entry()); }
 };
 
-class LengthDebugNode: public DebugNode {
+class LengthDebugNode: public SyntaxDebugNode {
 public:
-    LengthDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    LengthDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "LENGTH"; }
@@ -340,49 +327,47 @@ public:
         else
             fout("%%,\n") << node->minLength();
         printBranch(node->entry(), indent);
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::LengthNode LengthNode;
-    inline LengthNode *lengthNode() const { return cast<LengthNode>(DebugNode::entry()); }
+    inline LengthNode *lengthNode() const { return cast<LengthNode>(SyntaxDebugNode::entry()); }
 };
 
-class BoiDebugNode: public DebugNode {
+class BoiDebugNode: public SyntaxDebugNode {
 public:
-    BoiDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    BoiDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "BOI"; }
 };
 
-class EoiDebugNode: public DebugNode {
+class EoiDebugNode: public SyntaxDebugNode {
 public:
-    EoiDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    EoiDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "EOI"; }
 };
 
-class PassDebugNode: public DebugNode {
+class PassDebugNode: public SyntaxDebugNode {
 public:
-    PassDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    PassDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return passNode()->invert() ? "FAIL" : "PASS"; }
 
 private:
-    typedef syntax::PassNode PassNode;
-    inline PassNode *passNode() const { return cast<PassNode>(DebugNode::entry()); }
+    inline PassNode *passNode() const { return cast<PassNode>(SyntaxDebugNode::entry()); }
 };
 
-class FindDebugNode: public DebugNode {
+class FindDebugNode: public SyntaxDebugNode {
 public:
-    FindDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    FindDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "FIND"; }
@@ -390,18 +375,17 @@ public:
     virtual void printAttributes(String indent) {
         fout() << "\n";
         printBranch(findNode()->entry(), indent);
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::FindNode FindNode;
-    inline FindNode *findNode() const { return cast<FindNode>(DebugNode::entry()); }
+    inline FindNode *findNode() const { return cast<FindNode>(SyntaxDebugNode::entry()); }
 };
 
-class AheadDebugNode: public DebugNode {
+class AheadDebugNode: public SyntaxDebugNode {
 public:
-    AheadDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    AheadDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return aheadNode()->invert() ? "NOT" : "AHEAD"; }
@@ -409,18 +393,17 @@ public:
     virtual void printAttributes(String indent) {
         fout() << "\n";
         printBranch(aheadNode()->entry(), indent);
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::AheadNode AheadNode;
-    inline AheadNode *aheadNode() const { return cast<AheadNode>(DebugNode::entry()); }
+    inline AheadNode *aheadNode() const { return cast<AheadNode>(SyntaxDebugNode::entry()); }
 };
 
-class BehindDebugNode: public DebugNode {
+class BehindDebugNode: public SyntaxDebugNode {
 public:
-    BehindDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    BehindDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return behindNode()->invert() ? "NOT_BEHIND" : "BEHIND"; }
@@ -428,66 +411,63 @@ public:
     virtual void printAttributes(String indent) {
         fout() << "\n";
         printBranch(behindNode()->entry(), indent);
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::BehindNode BehindNode;
-    inline BehindNode *behindNode() const { return cast<BehindNode>(DebugNode::entry()); }
+    inline BehindNode *behindNode() const { return cast<BehindNode>(SyntaxDebugNode::entry()); }
 };
 
-class ChoiceDebugNode: public DebugNode {
+class ChoiceDebugNode: public SyntaxDebugNode {
 public:
-    ChoiceDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    ChoiceDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "CHOICE"; }
 
     virtual void printAttributes(String indent) {
         fout() << "\n";
-        Node *node = choiceNode()->firstChoice();
+        SyntaxNode *node = choiceNode()->firstChoice();
         while (node) {
             printBranch(node, indent);
             node = node->nextSibling();
             if (node) fout() << ",\n";
         }
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::ChoiceNode ChoiceNode;
-    inline ChoiceNode *choiceNode() const { return cast<ChoiceNode>(DebugNode::entry()); }
+    inline ChoiceNode *choiceNode() const { return cast<ChoiceNode>(SyntaxDebugNode::entry()); }
 };
 
-class GlueDebugNode: public DebugNode {
+class GlueDebugNode: public SyntaxDebugNode {
 public:
-    GlueDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    GlueDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "GLUE"; }
 
     virtual void printAttributes(String indent) {
         fout() << "\n";
-        Node *node = glueNode()->firstChild();
+        SyntaxNode *node = glueNode()->firstChild();
         while (node) {
             printBranch(node, indent);
             node = node->nextSibling();
             if (node) fout() << ",\n";
         }
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::GlueNode GlueNode;
-    inline GlueNode *glueNode() const { return cast<GlueNode>(DebugNode::entry()); }
+    inline GlueNode *glueNode() const { return cast<GlueNode>(SyntaxDebugNode::entry()); }
 };
 
-class HintDebugNode: public DebugNode {
+class HintDebugNode: public SyntaxDebugNode {
 public:
-    HintDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    HintDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return hintNode()->strict() ? "EXPECT" : "HINT"; }
@@ -496,18 +476,17 @@ public:
         HintNode *node = hintNode();
         fout("\"%%\",\n") << node->message();
         printBranch(node->entry(), indent);
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::HintNode HintNode;
-    inline HintNode *hintNode() const { return cast<HintNode>(DebugNode::entry()); }
+    inline HintNode *hintNode() const { return cast<HintNode>(SyntaxDebugNode::entry()); }
 };
 
-class RefDebugNode: public DebugNode {
+class RefDebugNode: public SyntaxDebugNode {
 public:
-    RefDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    RefDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return refNode()->generate() ? "REF" : "INLINE"; }
@@ -517,14 +496,13 @@ public:
     }
 
 private:
-    typedef syntax::RefNode RefNode;
-    inline RefNode *refNode() const { return cast<RefNode>(DebugNode::entry()); }
+    inline RefNode *refNode() const { return cast<RefNode>(SyntaxDebugNode::entry()); }
 };
 
-class InvokeDebugNode: public DebugNode {
+class InvokeDebugNode: public SyntaxDebugNode {
 public:
-    InvokeDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    InvokeDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "INVOKE"; }
@@ -534,14 +512,13 @@ public:
     }
 
 private:
-    typedef syntax::InvokeNode InvokeNode;
-    inline InvokeNode *invokeNode() const { return cast<InvokeNode>(DebugNode::entry()); }
+    inline InvokeNode *invokeNode() const { return cast<InvokeNode>(SyntaxDebugNode::entry()); }
 };
 
-class PreviousDebugNode: public DebugNode {
+class PreviousDebugNode: public SyntaxDebugNode {
 public:
-    PreviousDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    PreviousDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "PREVIOUS"; }
@@ -554,14 +531,13 @@ public:
     }
 
 private:
-    typedef syntax::PreviousNode PreviousNode;
-    inline PreviousNode *previousNode() const { return cast<PreviousNode>(DebugNode::entry()); }
+    inline PreviousNode *previousNode() const { return cast<PreviousNode>(SyntaxDebugNode::entry()); }
 };
 
-class ContextDebugNode: public DebugNode {
+class ContextDebugNode: public SyntaxDebugNode {
 public:
-    ContextDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    ContextDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "CONTEXT"; }
@@ -572,18 +548,17 @@ public:
         printBranch(node->inContext(), indent);
         fout() << ",\n";
         printBranch(node->outOfContext(), indent);
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::ContextNode ContextNode;
-    inline ContextNode *contextNode() const { return cast<ContextNode>(DebugNode::entry()); }
+    inline ContextNode *contextNode() const { return cast<ContextNode>(SyntaxDebugNode::entry()); }
 };
 
-class CallDebugNode: public DebugNode {
+class CallDebugNode: public SyntaxDebugNode {
 public:
-    CallDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    CallDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "CALL"; }
@@ -593,87 +568,82 @@ public:
     }
 
 private:
-    typedef syntax::CallNode CallNode;
-    inline CallNode *callNode() const { return cast<CallNode>(DebugNode::entry()); }
+    inline CallNode *callNode() const { return cast<CallNode>(SyntaxDebugNode::entry()); }
 };
 
-class SetDebugNode: public DebugNode {
+class SetDebugNode: public SyntaxDebugNode {
 public:
-    SetDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    SetDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "SET"; }
 
     virtual void printAttributes(String indent) {
         SetNode *node = setNode();
-        fout("\"%%\", %%") << DebugNode::debugger_->flagNameById()->value(node->flagId()) << node->value();
+        fout("\"%%\", %%") << SyntaxDebugNode::debugger_->flagNameById()->value(node->flagId()) << node->value();
     }
 
 private:
-    typedef syntax::SetNode SetNode;
-    inline SetNode *setNode() const { return cast<SetNode>(DebugNode::entry()); }
+    inline SetNode *setNode() const { return cast<SetNode>(SyntaxDebugNode::entry()); }
 };
 
-class IfDebugNode: public DebugNode {
+class IfDebugNode: public SyntaxDebugNode {
 public:
-    IfDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    IfDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "IF"; }
 
     virtual void printAttributes(String indent) {
         IfNode *node = ifNode();
-        fout("\"%%\",\n") << DebugNode::debugger_->flagNameById()->value(node->flagId());
+        fout("\"%%\",\n") << SyntaxDebugNode::debugger_->flagNameById()->value(node->flagId());
         printBranch(node->trueBranch(), indent);
         fout() << ",\n";
         printBranch(node->falseBranch(), indent);
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::IfNode IfNode;
-    inline IfNode *ifNode() const { return cast<IfNode>(DebugNode::entry()); }
+    inline IfNode *ifNode() const { return cast<IfNode>(SyntaxDebugNode::entry()); }
 };
 
-class CaptureDebugNode: public DebugNode {
+class CaptureDebugNode: public SyntaxDebugNode {
 public:
-    CaptureDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    CaptureDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "CAPTURE"; }
 
     virtual void printAttributes(String indent) {
         CaptureNode *node = captureNode();
-        fout("\"%%\",\n") << DebugNode::debugger_->captureNameById()->value(node->captureId());
+        fout("\"%%\",\n") << SyntaxDebugNode::debugger_->captureNameById()->value(node->captureId());
         printBranch(node->coverage(), indent);
-        fout() << "\n" << DebugNode::superIndent(indent);
+        fout() << "\n" << SyntaxDebugNode::superIndent(indent);
     }
 
 private:
-    typedef syntax::CaptureNode CaptureNode;
-    inline CaptureNode *captureNode() const { return cast<CaptureNode>(DebugNode::entry()); }
+    inline CaptureNode *captureNode() const { return cast<CaptureNode>(SyntaxDebugNode::entry()); }
 };
 
-class ReplayDebugNode: public DebugNode {
+class ReplayDebugNode: public SyntaxDebugNode {
 public:
-    ReplayDebugNode(Debugger *debugger, Node *newNode)
-        : DebugNode(debugger, newNode)
+    ReplayDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
+        : SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "REPLAY"; }
 
     virtual void printAttributes(String indent) {
-        fout("\"%%\"") << DebugNode::debugger_->captureNameById()->value(replayNode()->captureId());
+        fout("\"%%\"") << SyntaxDebugNode::debugger_->captureNameById()->value(replayNode()->captureId());
     }
 private:
-    typedef syntax::ReplayNode ReplayNode;
-    inline ReplayNode *replayNode() const { return cast<ReplayNode>(DebugNode::entry()); }
+    inline ReplayNode *replayNode() const { return cast<ReplayNode>(SyntaxDebugNode::entry()); }
 };
 
-Debugger::Debugger(String indent)
+SyntaxDebugger::SyntaxDebugger(String indent)
     : factoryByNodeType_(FactoryByNodeType::create()),
       indent_(indent)
 {
@@ -709,14 +679,13 @@ Debugger::Debugger(String indent)
     factoryByNodeType_->insert("Replay",         new DebugNodeFactory<ReplayDebugNode>         (this));
 }
 
-void Debugger::printDefinition(bool omitUnusedRules)
+void SyntaxDebugger::printDefinition(bool omitUnusedRules)
 {
     if (omitUnusedRules)
-        determineRulesInUse(DebugFactory::definition()->rule());
+        determineRulesInUse(SyntaxDebugFactory::definition()->rule());
 
     typedef DefinitionNode::RuleByName RuleByName;
-    typedef syntax::RuleNode RuleNode;
-    RuleByName *ruleByName = DebugFactory::definition()->ruleByName_;
+    RuleByName *ruleByName = SyntaxDebugFactory::definition()->ruleByName_;
 
     typedef Map<int, RuleNode *> RuleById;
     Ref<RuleById> ruleById = RuleById::create();
@@ -731,7 +700,7 @@ void Debugger::printDefinition(bool omitUnusedRules)
         if (omitUnusedRules && !rule->used()) continue;
         fout("DEFINE(\"%%\",\n") << rule->name();
         if (rule->entry()) {
-            DebugNode *debugNode = cast<DebugNode>(rule->entry());
+            SyntaxDebugNode *debugNode = cast<SyntaxDebugNode>(rule->entry());
             if (debugNode) debugNode->printNext(indent_);
         }
         else {
@@ -740,16 +709,16 @@ void Debugger::printDefinition(bool omitUnusedRules)
         fout() << "\n);\n\n";
     }
 
-    fout("ENTRY(\"%%\");\n") << DebugFactory::definition()->ruleName_;
+    fout("ENTRY(\"%%\");\n") << SyntaxDebugFactory::definition()->ruleName_;
 }
 
-Node *Debugger::produce(Node *newNode, const char *nodeType)
+SyntaxNode *SyntaxDebugger::produce(SyntaxNode *newNode, const char *nodeType)
 {
     Ref<NodeFactory> factory;
     return factoryByNodeType_->lookup(nodeType, &factory) ? factory->produce(newNode) : newNode;
 }
 
-Ref<Debugger::StateNameById> Debugger::newReverseMap(StateIdByName *stateIdByName)
+Ref<SyntaxDebugger::StateNameById> SyntaxDebugger::newReverseMap(StateIdByName *stateIdByName)
 {
     Ref<StateNameById> stateNameById = StateNameById::create();
     for (StateIdByName::Index i = stateIdByName->first(); stateIdByName->has(i); ++i) {
@@ -760,23 +729,23 @@ Ref<Debugger::StateNameById> Debugger::newReverseMap(StateIdByName *stateIdByNam
     return stateNameById;
 }
 
-Debugger::StateNameById *Debugger::flagNameById() {
+SyntaxDebugger::StateNameById *SyntaxDebugger::flagNameById() {
     if (!flagNameById_)
         flagNameById_ = newReverseMap(this->definition()->flagIdByName_);
     return flagNameById_;
 }
 
-Debugger::StateNameById *Debugger::captureNameById() {
+SyntaxDebugger::StateNameById *SyntaxDebugger::captureNameById() {
     if (!captureNameById_)
         captureNameById_ = newReverseMap(this->definition()->captureIdByName_);
     return captureNameById_;
 }
 
-void Debugger::determineRulesInUse(RuleNode *rule)
+void SyntaxDebugger::determineRulesInUse(RuleNode *rule)
 {
     if (!rule->used()) {
         rule->markUsed();
-        Node *node = rule->entry()->first();
+        SyntaxNode *node = rule->entry()->first();
         while (node) {
             LinkNode *link = cast<LinkNode>(node);
             if (link)
@@ -786,6 +755,4 @@ void Debugger::determineRulesInUse(RuleNode *rule)
     }
 }
 
-} // namespace syntax
-
-} // namespace flux
+}} // namespace flux::syntax

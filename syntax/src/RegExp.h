@@ -17,6 +17,7 @@
 #include <flux/syntax/SyntaxDefinition>
 
 namespace flux {
+namespace syntax {
 
 /** \brief Regular expression pattern
   * \see SyntaxDefinition
@@ -44,6 +45,6 @@ private:
 
 inline String str(const RegExp &pattern) { return pattern.text_; }
 
-} // namespace flux
+}} // namespace flux::syntax
 
 #endif // FLUXSYNTAX_REGEXP_H

@@ -16,10 +16,10 @@ namespace syntax {
 
 class DefinitionNode;
 
-class DebugFactory: public Object
+class SyntaxDebugFactory: public Object
 {
 public:
-    virtual Node *produce(Node *newNode, const char *nodeType) = 0;
+    virtual SyntaxNode *produce(SyntaxNode *newNode, const char *nodeType) = 0;
 
 protected:
     DefinitionNode *definition() const;
@@ -29,10 +29,6 @@ private:
     DefinitionNode *definition_;
 };
 
-} // namespace syntax
-
-typedef syntax::DebugFactory SyntaxDebugFactory;
-
-} // namespace flux
+}} // namespace flux::syntax
 
 #endif // FLUXSYNTAX_SYNTAXDEBUGFACTORY_H

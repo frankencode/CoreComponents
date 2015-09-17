@@ -17,12 +17,11 @@
 #include <flux/syntax/SyntaxDebugFactory>
 
 namespace flux {
-
 namespace syntax {
 
-class Debugger;
+class SyntaxDebugger;
 
-class CharNode: public Node
+class CharNode: public SyntaxNode
 {
 public:
     CharNode(char ch, int invert)
@@ -30,7 +29,7 @@ public:
           invert_(invert)
     {}
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         if (text->has(i)) {
             char ch = text->at(i++);
@@ -53,7 +52,7 @@ private:
     int invert_;
 };
 
-class GreaterNode: public Node
+class GreaterNode: public SyntaxNode
 {
 public:
     GreaterNode(char ch, int invert)
@@ -61,7 +60,7 @@ public:
           invert_(invert)
     {}
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         if (text->has(i)) {
             char ch = text->at(i++);
@@ -85,7 +84,7 @@ private:
 };
 
 
-class GreaterOrEqualNode: public Node
+class GreaterOrEqualNode: public SyntaxNode
 {
 public:
     GreaterOrEqualNode(char ch, int invert)
@@ -93,7 +92,7 @@ public:
           invert_(invert)
     {}
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         if (text->has(i)) {
             char ch = text->at(i++);
@@ -116,16 +115,16 @@ private:
     int invert_;
 };
 
-class AnyNode: public Node
+class AnyNode: public SyntaxNode
 {
 public:
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         return text->has(i) ? i + 1 : -1;
     }
 };
 
-class RangeMinMaxNode: public Node
+class RangeMinMaxNode: public SyntaxNode
 {
 public:
     RangeMinMaxNode(char a, char b, int invert)
@@ -134,7 +133,7 @@ public:
           invert_(invert)
     {}
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         if (text->has(i)) {
             char ch = text->at(i++);
@@ -158,7 +157,7 @@ private:
     int invert_;
 };
 
-class RangeExplicitNode: public Node
+class RangeExplicitNode: public SyntaxNode
 {
 public:
     RangeExplicitNode(const char *s, int invert)
@@ -166,7 +165,7 @@ public:
           invert_(invert)
     {}
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         if (text->has(i)) {
             char ch = text->at(i++);
@@ -194,7 +193,7 @@ private:
     int invert_;
 };
 
-class StringNode: public Node
+class StringNode: public SyntaxNode
 {
 public:
     StringNode(const char *s, bool caseSensitive)
@@ -204,7 +203,7 @@ public:
         if (!caseSensitive) s_->downcaseInsitu();
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         if (text->has(i)) {
             int k = 0, len = s_->count();
@@ -235,7 +234,7 @@ private:
 
 typedef PrefixTree<char, int> KeywordMap;
 
-class KeywordNode: public Node
+class KeywordNode: public SyntaxNode
 {
 public:
     KeywordNode(KeywordMap *map, bool caseSensitive)
@@ -243,7 +242,7 @@ public:
           caseSensitive_(caseSensitive)
     {}
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         if (text->has(i)) {
             int h = 0;
@@ -269,17 +268,17 @@ private:
     bool caseSensitive_;
 };
 
-class RepeatNode: public Node
+class RepeatNode: public SyntaxNode
 {
 public:
-    RepeatNode(int minRepeat, int maxRepeat, Node *entry)
+    RepeatNode(int minRepeat, int maxRepeat, SyntaxNode *entry)
         : minRepeat_(minRepeat),
           maxRepeat_(maxRepeat)
     {
         appendChild(entry);
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -315,23 +314,23 @@ public:
 
     inline int minRepeat() const { return minRepeat_; }
     inline int maxRepeat() const { return maxRepeat_; }
-    inline Node *entry() const { return Node::firstChild(); }
+    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
 
 private:
     int minRepeat_;
     int maxRepeat_;
 };
 
-class LazyRepeatNode: public Node
+class LazyRepeatNode: public SyntaxNode
 {
 public:
-    LazyRepeatNode(int minRepeat, Node *entry)
+    LazyRepeatNode(int minRepeat, SyntaxNode *entry)
         : minRepeat_(minRepeat)
     {
         appendChild(entry);
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -343,7 +342,7 @@ public:
         {
             if (minRepeat_ <= repeatCount) {
                 int j = h;
-                Node *succ = Node::succ();
+                SyntaxNode *succ = SyntaxNode::succ();
                 if (succ) {
                     Token *lastChildSaved2 = 0;
                     if (parentToken) lastChildSaved2 = parentToken->lastChild();
@@ -367,23 +366,23 @@ public:
     inline int matchLength() const { return -1; }
 
     inline int minRepeat() const { return minRepeat_; }
-    inline Node *entry() const { return Node::firstChild(); }
+    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
 
 private:
     int minRepeat_;
 };
 
-class GreedyRepeatNode: public Node
+class GreedyRepeatNode: public SyntaxNode
 {
 public:
-    GreedyRepeatNode(int minRepeat, int maxRepeat, Node *entry)
+    GreedyRepeatNode(int minRepeat, int maxRepeat, SyntaxNode *entry)
         : minRepeat_(minRepeat),
           maxRepeat_(maxRepeat)
     {
         appendChild(entry);
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         Token *lastChildSaved = 0, *lastChildSaved2 = 0;
         if (parentToken) {
@@ -401,7 +400,7 @@ public:
             if (h != -1) {
                 ++repeatCount;
                 if (minRepeat_ <= repeatCount) {
-                    Node *succ = Node::succ();
+                    SyntaxNode *succ = SyntaxNode::succ();
                     if (succ) {
                         Token *lastChildSaved3 = 0;
                         if (parentToken) lastChildSaved3 = parentToken->lastChild();
@@ -445,24 +444,24 @@ public:
 
     inline int minRepeat() const { return minRepeat_; }
     inline int maxRepeat() const { return maxRepeat_; }
-    inline Node *entry() const { return Node::firstChild(); }
+    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
 
 private:
     int minRepeat_;
     int maxRepeat_;
 };
 
-class FilterNode: public Node
+class FilterNode: public SyntaxNode
 {
 public:
-    FilterNode(Node *filter, char blank, Node *entry)
+    FilterNode(SyntaxNode *filter, char blank, SyntaxNode *entry)
         : blank_(blank)
     {
         appendChild(filter);
         appendChild(entry);
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         Ref<ByteArray> filteredText = text;
 
@@ -504,25 +503,25 @@ public:
         return i;
     }
 
-    inline Node *filter() const { return Node::firstChild(); }
+    inline SyntaxNode *filter() const { return SyntaxNode::firstChild(); }
     inline char blank() const { return blank_; }
-    inline Node *entry() const { return Node::lastChild(); }
+    inline SyntaxNode *entry() const { return SyntaxNode::lastChild(); }
 
 private:
     char blank_;
 };
 
-class LengthNode: public Node
+class LengthNode: public SyntaxNode
 {
 public:
-    LengthNode(int minLength, int maxLength, Node *entry)
+    LengthNode(int minLength, int maxLength, SyntaxNode *entry)
         : minLength_(minLength),
           maxLength_(maxLength)
     {
         appendChild(entry);
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -544,27 +543,27 @@ public:
 
     inline int minLength() const { return minLength_; }
     inline int maxLength() const { return maxLength_; }
-    inline Node *entry() const { return Node::firstChild(); }
+    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
 
 private:
     int minLength_;
     int maxLength_;
 };
 
-class BoiNode: public Node
+class BoiNode: public SyntaxNode
 {
 public:
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         return (i == 0) ? i : -1;
     }
     inline int matchLength() const { return 0; }
 };
 
-class EoiNode: public Node
+class EoiNode: public SyntaxNode
 {
 public:
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         bool eoi = (!text->has(i)) && ((i == 0) || (text->has(i - 1)));
         return eoi ? i : -1;
@@ -572,14 +571,14 @@ public:
     inline int matchLength() const { return 0; }
 };
 
-class PassNode: public Node
+class PassNode: public SyntaxNode
 {
 public:
     PassNode(int invert)
         : invert_(invert)
     {}
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         return invert_ ? -1 : i;
     }
@@ -592,15 +591,15 @@ private:
     int invert_;
 };
 
-class FindNode: public Node
+class FindNode: public SyntaxNode
 {
 public:
-    FindNode(Node *entry)
+    FindNode(SyntaxNode *entry)
     {
         appendChild(entry);
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -626,19 +625,19 @@ public:
 
     inline int matchLength() const { return 0; }
 
-    inline Node *entry() const { return Node::firstChild(); }
+    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
 };
 
-class AheadNode: public Node
+class AheadNode: public SyntaxNode
 {
 public:
-    AheadNode(Node *entry, int invert)
+    AheadNode(SyntaxNode *entry, int invert)
         : invert_(invert)
     {
         appendChild(entry);
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -657,24 +656,24 @@ public:
 
     inline int matchLength() const { return 0; }
 
-    inline Node *entry() const { return Node::firstChild(); }
+    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
     inline int invert() const { return invert_; }
 
 private:
     int invert_;
 };
 
-class BehindNode: public Node
+class BehindNode: public SyntaxNode
 {
 public:
-    BehindNode(Node *entry, int invert)
+    BehindNode(SyntaxNode *entry, int invert)
         : invert_(invert),
           length_(entry->matchLength())
     {
         appendChild(entry);
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         if (length_ <= 0) return -1;
 
@@ -697,7 +696,7 @@ public:
 
     inline int matchLength() const { return 0; }
 
-    inline Node *entry() const { return Node::firstChild(); }
+    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
     inline int invert() const { return invert_; }
     inline int size() const { return length_; }
 
@@ -706,16 +705,16 @@ private:
     int length_;
 };
 
-class ChoiceNode: public Node
+class ChoiceNode: public SyntaxNode
 {
 public:
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
 
         int h = -1;
-        Node *node = Node::firstChild();
+        SyntaxNode *node = SyntaxNode::firstChild();
         while ((node) && (h == -1)) {
             if (state->finalize_) {
                 h = -1;
@@ -733,15 +732,15 @@ public:
         return h;
     }
 
-    virtual Node *succ(Node *node) const
+    virtual SyntaxNode *succ(SyntaxNode *node) const
     {
-        return Node::parent() ? Node::parent()->succ(Node::self()) : null<Node>();
+        return SyntaxNode::parent() ? SyntaxNode::parent()->succ(SyntaxNode::self()) : null<SyntaxNode>();
     }
 
     virtual int matchLength() const
     {
         int len = -1;
-        for (Node *node = Node::firstChild(); node; node = Node::nextSibling()) {
+        for (SyntaxNode *node = SyntaxNode::firstChild(); node; node = SyntaxNode::nextSibling()) {
             int len2 = node->matchLength();
             if ((len != -1) && (len2 != len))
                 return -1;
@@ -750,20 +749,20 @@ public:
         return len;
     }
 
-    inline Node *firstChoice() const { return Node::firstChild(); }
-    inline Node *lastChoice() const { return Node::lastChild(); }
+    inline SyntaxNode *firstChoice() const { return SyntaxNode::firstChild(); }
+    inline SyntaxNode *lastChoice() const { return SyntaxNode::lastChild(); }
 };
 
 class LazyChoiceNode: public ChoiceNode
 {
 public:
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
 
         int h = -1;
-        Node *node = Node::firstChild();
+        SyntaxNode *node = SyntaxNode::firstChild();
         while ((node) && (h == -1)) {
             if (state->finalize_) {
                 h = -1;
@@ -772,7 +771,7 @@ public:
             h = node->matchNext(text, i, parentToken, state);
             if (h != -1) {
                 int j = h;
-                Node *succ = Node::succ();
+                SyntaxNode *succ = SyntaxNode::succ();
                 if (succ) {
                     Token *lastChildSaved2 = 0;
                     if (parentToken) lastChildSaved2 = parentToken->lastChild();
@@ -797,15 +796,15 @@ public:
     }
 };
 
-class GlueNode: public Node
+class GlueNode: public SyntaxNode
 {
 public:
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
 
-        Node *node = Node::firstChild();
+        SyntaxNode *node = SyntaxNode::firstChild();
         while ((node) && (i != -1)) {
             if (state->finalize_) {
                 i = -1;
@@ -821,17 +820,17 @@ public:
         return i;
     }
 
-    virtual Node *succ(Node *node) const
+    virtual SyntaxNode *succ(SyntaxNode *node) const
     {
-        Node *succ = node->nextSibling();
-        if ((!succ) && (Node::parent())) succ = Node::parent()->succ(Node::self());
+        SyntaxNode *succ = node->nextSibling();
+        if ((!succ) && (SyntaxNode::parent())) succ = SyntaxNode::parent()->succ(SyntaxNode::self());
         return succ;
     }
 
     virtual int matchLength() const
     {
         int len = 0;
-        for (Node *node = Node::firstChild(); node; node = node->nextSibling()) {
+        for (SyntaxNode *node = SyntaxNode::firstChild(); node; node = node->nextSibling()) {
             int len2 = node->matchLength();
             if (len2 == -1) {
                 len = -1;
@@ -843,17 +842,17 @@ public:
     }
 };
 
-class HintNode: public Node
+class HintNode: public SyntaxNode
 {
 public:
-    HintNode(const char *message, Node *entry, bool strict = false)
+    HintNode(const char *message, SyntaxNode *entry, bool strict = false)
         : message_(message),
           strict_(strict)
     {
         appendChild(entry);
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         int h = entry()->matchNext(text, i, parentToken, state);
         if (h == -1 && !state->finalize_) {
@@ -866,7 +865,7 @@ public:
 
     inline int matchLength() const { return 0; }
 
-    inline Node *entry() const { return Node::firstChild(); }
+    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
     inline const char *message() const { return message_; }
     inline bool strict() const { return strict_; }
 
@@ -875,9 +874,9 @@ private:
     bool strict_;
 };
 
-typedef int (*CallBack) (Object *self, ByteArray *text, int i, Token *parentToken, State *state);
+typedef int (*CallBack) (Object *self, ByteArray *text, int i, Token *parentToken, SyntaxState *state);
 
-class CallNode: public Node
+class CallNode: public SyntaxNode
 {
 public:
     CallNode(CallBack callBack, Object *self)
@@ -885,7 +884,7 @@ public:
           self_(self)
     {}
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         return callBack_(self_, text, i, parentToken, state);
     }
@@ -897,7 +896,7 @@ private:
     Object *self_;
 };
 
-class SetNode: public Node
+class SetNode: public SyntaxNode
 {
 public:
     SetNode(DefinitionNode *scope, int flagId, bool value)
@@ -906,7 +905,7 @@ public:
           value_(value)
     {}
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         state->setFlag(scope_, flagId_, value_);
         return i;
@@ -922,10 +921,10 @@ private:
     bool value_;
 };
 
-class IfNode: public Node
+class IfNode: public SyntaxNode
 {
 public:
-    IfNode(DefinitionNode *scope, int flagId, Node *trueBranch, Node *falseBranch)
+    IfNode(DefinitionNode *scope, int flagId, SyntaxNode *trueBranch, SyntaxNode *falseBranch)
         : scope_(scope),
           flagId_(flagId)
     {
@@ -933,7 +932,7 @@ public:
         appendChild(falseBranch);
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         return state->flag(scope_, flagId_) ?
             trueBranch()->matchNext(text, i, parentToken, state) :
@@ -942,25 +941,25 @@ public:
 
     inline DefinitionNode *scope() const { return scope_; }
     inline int flagId() const { return flagId_; }
-    inline Node *trueBranch() const { return Node::firstChild(); }
-    inline Node *falseBranch() const { return Node::lastChild(); }
+    inline SyntaxNode *trueBranch() const { return SyntaxNode::firstChild(); }
+    inline SyntaxNode *falseBranch() const { return SyntaxNode::lastChild(); }
 
 private:
     DefinitionNode *scope_;
     int flagId_;
 };
 
-class CaptureNode: public Node
+class CaptureNode: public SyntaxNode
 {
 public:
-    CaptureNode(DefinitionNode *scope, int captureId, Node *coverage)
+    CaptureNode(DefinitionNode *scope, int captureId, SyntaxNode *coverage)
         : scope_(scope),
           captureId_(captureId)
     {
         appendChild(coverage);
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -976,21 +975,21 @@ public:
         return i;
     }
 
-    virtual Node *succ(Node *node) const
+    virtual SyntaxNode *succ(SyntaxNode *node) const
     {
-        return Node::parent() ? Node::parent()->succ(Node::self()) : null<Node>();
+        return SyntaxNode::parent() ? SyntaxNode::parent()->succ(SyntaxNode::self()) : null<SyntaxNode>();
     }
 
     inline DefinitionNode *scope() const { return scope_; }
     inline int captureId() const { return captureId_; }
-    inline Node *coverage() const { return Node::firstChild(); }
+    inline SyntaxNode *coverage() const { return SyntaxNode::firstChild(); }
 
 private:
     DefinitionNode *scope_;
     int captureId_;
 };
 
-class ReplayNode: public Node
+class ReplayNode: public SyntaxNode
 {
 public:
     ReplayNode(DefinitionNode *scope, int captureId)
@@ -998,7 +997,7 @@ public:
           captureId_(captureId)
     {}
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         Range *range = state->capture(scope_, captureId_);
         for (int j = range->i0(); (j < range->i1()) && text->has(i) && text->has(j); ++i, ++j) {
@@ -1018,10 +1017,10 @@ private:
 class RefNode;
 class DefinitionNode;
 
-class RuleNode: public Node
+class RuleNode: public SyntaxNode
 {
 public:
-    RuleNode(DefinitionNode *scope, const char *name, int id, Node *entry, bool generate = true)
+    RuleNode(DefinitionNode *scope, const char *name, int id, SyntaxNode *entry, bool generate = true)
         : scope_(scope),
           name_(name),
           id_(id),
@@ -1032,14 +1031,14 @@ public:
         appendChild(entry);
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const;
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const;
 
     inline int matchLength() const { return entry()->matchLength(); }
 
     int numberOfRefs() {
         if (numberOfRefs_ == -1) {
             numberOfRefs_ = 0;
-            for (Node *node = Node::first(); node; node = node->next())
+            for (SyntaxNode *node = SyntaxNode::first(); node; node = node->next())
                 if (cast<RefNode>(node)) ++numberOfRefs_;
         }
         return numberOfRefs_;
@@ -1048,7 +1047,7 @@ public:
     inline DefinitionNode *scope() const { return scope_; }
     inline const char *name() const { return name_; }
     inline int id() const { return id_; }
-    inline Node *entry() const { return Node::firstChild(); }
+    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
     inline bool generate() const { return generate_; }
 
     inline bool used() const { return used_; }
@@ -1063,7 +1062,7 @@ protected:
     int numberOfRefs_;
 };
 
-class LinkNode: public Node
+class LinkNode: public SyntaxNode
 {
 public:
     LinkNode(const char *ruleName)
@@ -1082,7 +1081,7 @@ public:
 
 protected:
     friend class DefinitionNode;
-    friend class Debugger;
+    friend class SyntaxDebugger;
 
     const char *ruleName_;
     RuleNode *rule_;
@@ -1101,7 +1100,7 @@ public:
         : LinkNode(rule)
     {}
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         RuleNode *rule = LinkNode::rule_;
         return (generate_ && rule->generate()) ?
@@ -1118,15 +1117,15 @@ private:
 class InvokeNode: public RefNode
 {
 public:
-    InvokeNode(const char *ruleName, Node *coverage = 0)
+    InvokeNode(const char *ruleName, SyntaxNode *coverage = 0)
         : RefNode(ruleName)
     {
         if (coverage) appendChild(coverage);
     }
 
-    virtual int matchNext(ByteArray *media, int i, Token *parentToken, State *state) const;
+    virtual int matchNext(ByteArray *media, int i, Token *parentToken, SyntaxState *state) const;
 
-    inline Node *coverage() const { return Node::firstChild(); }
+    inline SyntaxNode *coverage() const { return SyntaxNode::firstChild(); }
 
 private:
     static void shiftTree(Token *root, int delta);
@@ -1141,7 +1140,7 @@ public:
           keyword_(-1)
     {}
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         int h = -1;
         if (parentToken) {
@@ -1167,21 +1166,21 @@ protected:
 class ContextNode: public LinkNode
 {
 public:
-    ContextNode(const char *ruleName, Node *inContext, Node *outOfContext)
+    ContextNode(const char *ruleName, SyntaxNode *inContext, SyntaxNode *outOfContext)
         : LinkNode(ruleName)
     {
         appendChild(inContext);
         appendChild(outOfContext);
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, State *state) const
+    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
     {
         int h = -1;
 
         if (parentToken) {
             Token *contextToken = parentToken->parent();
             if (contextToken) {
-                Node *entry = (contextToken->rule() == LinkNode::rule_->id()) ? inContext() : outOfContext();
+                SyntaxNode *entry = (contextToken->rule() == LinkNode::rule_->id()) ? inContext() : outOfContext();
                 if (entry) {
                     Token *lastChildSaved = 0;
                     if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -1197,16 +1196,16 @@ public:
         return h;
     }
 
-    inline Node *inContext() const { return Node::firstChild(); }
-    inline Node *outOfContext() const { return Node::lastChild(); }
+    inline SyntaxNode *inContext() const { return SyntaxNode::firstChild(); }
+    inline SyntaxNode *outOfContext() const { return SyntaxNode::lastChild(); }
 };
 
-class DebugFactory;
+class SyntaxDebugFactory;
 
 class DefinitionNode: public RefNode
 {
 public:
-    DefinitionNode(DebugFactory *debugFactory = 0)
+    DefinitionNode(SyntaxDebugFactory *debugFactory = 0)
         : debugFactory_(debugFactory),
           id_(scope()),
           name_(0),
@@ -1227,7 +1226,7 @@ public:
 
     inline static int scope(const char *name = 0) { return crc32(name); }
 
-    inline DebugFactory *debugFactory() const { return debugFactory_; }
+    inline SyntaxDebugFactory *debugFactory() const { return debugFactory_; }
 
     inline int id() const { return id_; }
     inline const char *name() const { return name_; }
@@ -1246,7 +1245,7 @@ public:
         scopeByName_->insert(name, definition);
     }
 
-    typedef Ref<Node> NODE;
+    typedef Ref<SyntaxNode> NODE;
     typedef Ref<RuleNode> RULE;
 
     inline void OPTION(const char *name, bool value) {
@@ -1355,7 +1354,7 @@ public:
         return debug(link, "Context");
     }
 
-    typedef int (*CallBack) (Object *self, ByteArray *text, int i, Token *parentToken, State *state);
+    typedef int (*CallBack) (Object *self, ByteArray *text, int i, Token *parentToken, SyntaxState *state);
 
     inline NODE CALL(CallBack callBack, Object *self = 0) {
         if (!self) self = this;
@@ -1386,12 +1385,12 @@ public:
 
     //-- execution interface
 
-    inline State *createState(TokenFactory *tokenFactory = 0) const {
-        return new State(this, flagCount_, captureCount_, tokenFactory);
+    inline SyntaxState *createState(TokenFactory *tokenFactory = 0) const {
+        return new SyntaxState(this, flagCount_, captureCount_, tokenFactory);
     }
 
-    Ref<State> find(ByteArray *text, int i, TokenFactory *tokenFactory = 0) const;
-    Ref<State> match(ByteArray *text, int i = -1, TokenFactory *tokenFactory = 0) const;
+    Ref<SyntaxState> find(ByteArray *text, int i, TokenFactory *tokenFactory = 0) const;
+    Ref<SyntaxState> match(ByteArray *text, int i = -1, TokenFactory *tokenFactory = 0) const;
 
     const DefinitionNode *resolveScope(const char *&name) const;
 
@@ -1442,15 +1441,15 @@ public:
         return captureIdByName_->lookup(name, captureId);
     }
 
-    virtual int syntaxError(ByteArray *text, int index, State *state) const;
+    virtual int syntaxError(ByteArray *text, int index, SyntaxState *state) const;
 
-    inline Node *debug(Node *newNode, const char *nodeType) {
+    inline SyntaxNode *debug(SyntaxNode *newNode, const char *nodeType) {
         return debugFactory_ ? debugFactory_->produce(newNode, nodeType) : newNode;
     }
 
 private:
-    friend class Debugger;
-    Ref<DebugFactory> debugFactory_;
+    friend class SyntaxDebugger;
+    Ref<SyntaxDebugFactory> debugFactory_;
 
     int id_;
     const char *name_;
@@ -1501,13 +1500,9 @@ private:
     Ref<StateIdByName> flagIdByName_;
     Ref<StateIdByName> captureIdByName_;
 
-    static int errorCallBack(Object *self, ByteArray *text, int index, Token *parentToken, State *state);
+    static int errorCallBack(Object *self, ByteArray *text, int index, Token *parentToken, SyntaxState *state);
 };
 
-} // namespace syntax
-
-typedef syntax::DefinitionNode SyntaxDefinitionNode;
-
-} // namespace flux
+}} // namespace flux::syntax
 
 #endif // FLUXSYNTAX_SYNTAX_H

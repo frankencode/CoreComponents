@@ -11,15 +11,14 @@
 
 #include <flux/syntax/SyntaxDefinition>
 
+namespace flux { template<class> class Singleton; }
+
 namespace flux {
-
-template<class SubClass> class Singleton;
-
 namespace net {
 
 /** \brief Syntax of an internet address (IPv4 or IPv6)
   */
-class InetAddressSyntax: public SyntaxDefinition
+class InetAddressSyntax: public syntax::SyntaxDefinition
 {
 public:
     inline int inet4Address() const { return inet4Address_; }
@@ -29,7 +28,7 @@ public:
 protected:
     friend class Singleton<InetAddressSyntax>;
 
-    InetAddressSyntax(SyntaxDebugFactory *debugFactory = 0);
+    InetAddressSyntax(syntax::SyntaxDebugFactory *debugFactory = 0);
 
     int inet4Address_;
     int inet6Address_;

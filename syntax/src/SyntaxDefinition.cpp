@@ -10,9 +10,10 @@
 #include <flux/syntax/SyntaxDefinition>
 
 namespace flux {
+namespace syntax {
 
-SyntaxDefinition::SyntaxDefinition(SyntaxDebugFactory *debugFactory)
-    : def_(new syntax::DefinitionNode(debugFactory))
+SyntaxDefinition::SyntaxDefinition(SyntaxDebugFactory *debugFactory):
+    def_(new syntax::DefinitionNode(debugFactory))
 {}
 
 SyntaxDefinition::~SyntaxDefinition()
@@ -175,4 +176,4 @@ NODE SyntaxDefinition::IF(const char *name, NODE trueBranch, NODE falseBranch) {
 NODE SyntaxDefinition::CAPTURE(const char *name, NODE coverage) { return def_->CAPTURE(name, coverage); }
 NODE SyntaxDefinition::REPLAY(const char *name) { return def_->REPLAY(name); }
 
-} // namespace flux
+}} // namespace flux::syntax

@@ -15,6 +15,8 @@
 namespace flux {
 namespace abnf {
 
+using namespace flux::syntax;
+
 class StringTrap;
 
 class AbnfCompiler: public AbnfSyntax

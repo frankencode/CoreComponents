@@ -10,6 +10,7 @@
 #include <flux/syntax/RegExp>
 
 namespace flux {
+namespace syntax {
 
 RegExp::RegExp() { *this = String(); }
 RegExp::RegExp(const char *text) { *this = String(text); }
@@ -43,4 +44,4 @@ const RegExp &RegExp::operator=(const Variant &text)
     return *this = String(text);
 }
 
-} // namespace flux
+}} // namespace flux::syntax

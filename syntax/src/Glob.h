@@ -11,9 +11,10 @@
 
 #include <flux/syntax/RegExp>
 
-namespace flux {
+namespace flux { class Dir; }
 
-class Dir;
+namespace flux {
+namespace syntax {
 
 /** \brief Collect file names matching a globbing pattern
   * \see DirWalker
@@ -36,6 +37,6 @@ private:
     Ref<Glob> child_;
 };
 
-} // namespace flux
+}} // namespace flux::syntax
 
 #endif // FLUXSYNTAX_GLOB_H

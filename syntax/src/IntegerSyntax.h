@@ -11,7 +11,10 @@
 
 #include <flux/syntax/SyntaxDefinition>
 
+namespace flux { template<class> class Singleton; }
+
 namespace flux {
+namespace syntax {
 
 /** \brief Syntax of an integer literal
   * \see FloatSyntax
@@ -37,6 +40,6 @@ protected:
 
 const IntegerSyntax *integerSyntax();
 
-} // namespace flux
+}} // namespace flux::syntax
 
 #endif // FLUXSYNTAX_INTEGERSYNTAX_H

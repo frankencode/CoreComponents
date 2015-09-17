@@ -14,6 +14,8 @@
 namespace flux {
 namespace abnf {
 
+using namespace flux::syntax;
+
 class AbnfSyntaxDefinition: public SyntaxDefinition
 {
 public:

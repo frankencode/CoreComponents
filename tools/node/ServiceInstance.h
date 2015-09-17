@@ -18,6 +18,7 @@ namespace flux { class MetaObject; }
 namespace fluxnode {
 
 using namespace flux;
+using namespace flux::syntax;
 
 class ServiceDelegate;
 class ServiceWorker;

@@ -13,6 +13,7 @@
 #include <flux/syntax/DebugToken>
 
 namespace flux {
+namespace syntax {
 
 class DebugTokenFactory: public TokenFactory
 {
@@ -27,6 +28,6 @@ protected:
     }
 };
 
-} // namespace flux
+}} // namespace flux::syntax
 
-#endif // FLUX_DEBUGTOKENFACTORY_H
+#endif // FLUXSYNTAX_DEBUGTOKENFACTORY_H

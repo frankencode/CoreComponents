@@ -11,10 +11,11 @@
 
 #include <flux/Format>
 #include <flux/syntax/Token>
-#include <flux/toki/Theme>
 
 namespace flux {
 namespace toki {
+
+using namespace flux::syntax;
 
 class Theme;
 
