@@ -12,6 +12,7 @@
 #include <flux/meta/MetaObject>
 
 namespace flux {
+namespace meta {
 
 /** \brief Generate JSON representation of a meta object tree
   * \see yason, YasonWriter
@@ -36,6 +37,6 @@ protected:
     String indent_;
 };
 
-} // namespace flux
+}} // namespace flux::meta
 
 #endif // FLUXMETA_JSONWRITER_H

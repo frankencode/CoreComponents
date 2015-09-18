@@ -14,7 +14,7 @@
 namespace flux {
 namespace toki {
 
-flux::YasonSyntax *yasonSyntax();
+flux::meta::YasonSyntax *yasonSyntax();
 
 }} // namespace flux::toki
 

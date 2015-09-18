@@ -13,6 +13,7 @@
 #include <flux/meta/YasonSyntax>
 
 namespace flux {
+namespace meta {
 
 YasonSyntax::YasonSyntax(int options)
 {
@@ -639,4 +640,4 @@ String YasonSyntax::readText(const ByteArray *text, Token *token) const
 
 const YasonSyntax *yasonSyntax() { return Singleton<YasonSyntax>::instance(); }
 
-} // namespace flux
+}} // namespace flux::meta

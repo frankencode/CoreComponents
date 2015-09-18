@@ -16,6 +16,8 @@
 namespace flux {
 namespace yason {
 
+using namespace flux::meta;
+
 Variant parse(const ByteArray *text, const MetaProtocol *protocol = 0);
 String stringify(Variant value);
 

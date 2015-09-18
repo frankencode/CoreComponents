@@ -10,12 +10,13 @@
 #include <flux/meta/JsonWriter>
 
 namespace flux {
+namespace meta {
 
 Ref<JsonWriter> JsonWriter::create(Format format, String indent) { return new JsonWriter(format, indent); }
 
-JsonWriter::JsonWriter(Format format, String indent)
-    : format_(format),
-      indent_(indent)
+JsonWriter::JsonWriter(Format format, String indent):
+    format_(format),
+    indent_(indent)
 {}
 
 void JsonWriter::write(Variant value)
@@ -113,4 +114,4 @@ void JsonWriter::writeTypedList(Variant value, int depth)
     format_ << " ]";
 }
 
-} // namespace flux
+}} // namespace flux::meta

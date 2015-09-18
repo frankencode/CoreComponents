@@ -12,10 +12,8 @@
 #include <flux/String>
 #include <flux/Map>
 
-namespace flux {
-class File;
-class MetaObject;
-}
+namespace flux { class File; }
+namespace flux { namespace meta { class MetaObject; }}
 
 namespace fluxmake {
 

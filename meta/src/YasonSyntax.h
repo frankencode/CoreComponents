@@ -12,9 +12,10 @@
 #include <flux/syntax/SyntaxDefinition>
 #include <flux/meta/yason>
 
-namespace flux {
+namespace flux { template<class> class Singleton; }
 
-template<class> class Singleton;
+namespace flux {
+namespace meta {
 
 using namespace flux::syntax;
 
@@ -76,6 +77,6 @@ Ref< List<T> > YasonSyntax::parseTypedList(const ByteArray *text, Token *token, 
 
 const YasonSyntax *yasonSyntax();
 
-} // namespace flux
+}} // namespace flux::meta
 
 #endif // FLUXMETA_YASONSYNTAX_H

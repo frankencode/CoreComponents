@@ -26,14 +26,13 @@
 #include "UninstallStage.h"
 #include "CleanStage.h"
 
-namespace flux {
-class FileStatus;
-class MetaObject;
-}
+namespace flux { class FileStatus; }
+namespace flux { namespace meta { class MetaObject; }}
 
 namespace fluxmake {
 
 using namespace flux;
+using namespace flux::meta;
 
 class BuildPlan;
 typedef List< Ref<BuildPlan> > BuildPlanList;

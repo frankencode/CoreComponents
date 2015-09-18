@@ -12,12 +12,14 @@
 #include <flux/SpinLock>
 #include <flux/Variant>
 
+namespace flux { namespace syntax { class Token; } }
+
 namespace flux {
+namespace meta {
+
+using namespace flux::syntax;
 
 class MetaProtocol;
-
-namespace syntax { class Token; }
-using flux::syntax::Token;
 
 class MetaObject;
 typedef List< Ref<MetaObject> > MetaObjectList;
@@ -70,6 +72,6 @@ private:
     Ref<MetaProtocol> protocol_;
 };
 
-} // namespace flux
+}} // namespace flux::meta
 
 #endif // FLUXMETA_METAOBJECT_H

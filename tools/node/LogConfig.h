@@ -14,6 +14,7 @@
 namespace fluxnode {
 
 using namespace flux;
+using namespace flux::meta;
 
 class LogConfig: public Object
 {

@@ -11,6 +11,7 @@
 #include <flux/meta/yason>
 
 using namespace flux;
+using namespace flux::meta;
 using namespace flux::testing;
 
 class ObjectSerialization: public TestCase

@@ -16,6 +16,7 @@ namespace flux { template<class> class Singleton; }
 namespace fluxmake {
 
 using namespace flux;
+using namespace flux::meta;
 
 class RecipeProtocol: public MetaProtocol
 {
