@@ -16,6 +16,7 @@ namespace flux { template<class> class Singleton; }
 namespace fluxnode {
 
 using namespace flux;
+using namespace flux::meta;
 
 class NodeConfigProtocol: public MetaProtocol
 {

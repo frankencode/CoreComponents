@@ -15,6 +15,7 @@
 namespace fluxnode {
 
 using namespace flux;
+using namespace flux::meta;
 
 class LogPrototype: public MetaObject
 {

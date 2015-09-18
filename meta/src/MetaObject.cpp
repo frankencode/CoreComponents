@@ -13,6 +13,7 @@
 #include <flux/meta/MetaObject>
 
 namespace flux {
+namespace meta {
 
 MetaObject::MetaObject(const String &className, MetaProtocol *protocol)
     : className_(className),
@@ -87,4 +88,4 @@ Token *MetaObject::childToken(Token *objectToken, int childIndex)
     return yasonSyntax()->childToken(objectToken, childIndex);
 }
 
-} // namespace flux
+}} // namespace flux::meta

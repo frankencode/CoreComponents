@@ -12,6 +12,7 @@
 #include <flux/meta/MetaObject>
 
 namespace flux {
+namespace meta {
 
 /** \brief Duck-typed object protocol
   */
@@ -68,9 +69,9 @@ public:
 protected:
     friend class YasonSyntax;
 
-    MetaProtocol()
-        : minCount_(0),
-          maxCount_(flux::intMax)
+    MetaProtocol():
+        minCount_(0),
+        maxCount_(flux::intMax)
     {}
 
     virtual Ref<MetaObject> produce(MetaObject *prototype) const {
@@ -88,6 +89,6 @@ private:
     int maxCount_;
 };
 
-} // namespace flux
+}} // namespace flux::meta
 
 #endif // FLUXMETA_METAPROTOCOL_H

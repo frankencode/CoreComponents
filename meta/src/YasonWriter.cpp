@@ -10,12 +10,13 @@
 #include <flux/meta/YasonWriter>
 
 namespace flux {
+namespace meta {
 
 Ref<YasonWriter> YasonWriter::create(Format format, String indent) { return new YasonWriter(format, indent); }
 
-YasonWriter::YasonWriter(Format format, String indent)
-    : format_(format),
-      indent_(indent)
+YasonWriter::YasonWriter(Format format, String indent):
+    format_(format),
+    indent_(indent)
 {}
 
 void YasonWriter::write(Variant value)
@@ -142,4 +143,4 @@ void YasonWriter::writeTypedList(Variant value, int depth)
     format_ << " ]";
 }
 
-} // namespace flux
+}} // namespace flux::meta

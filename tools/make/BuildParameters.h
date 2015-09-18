@@ -15,6 +15,7 @@
 namespace fluxmake {
 
 using namespace flux;
+using namespace flux::meta;
 
 class BuildPlan;
 

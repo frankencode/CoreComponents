@@ -15,6 +15,8 @@
 namespace flux {
 namespace toki {
 
+using namespace flux::meta;
+
 class Palette;
 
 class Style: public MetaObject

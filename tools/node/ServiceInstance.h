@@ -13,7 +13,7 @@
 #include <flux/syntax/RegExp>
 #include "LogConfig.h"
 
-namespace flux { class MetaObject; }
+namespace flux { namespace meta { class MetaObject; } }
 
 namespace fluxnode {
 
