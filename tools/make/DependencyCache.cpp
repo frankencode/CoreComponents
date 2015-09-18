@@ -25,11 +25,11 @@ String DependencyCache::cachePath(BuildPlan *plan)
     return plan->modulePath("DependencyCache");
 }
 
-DependencyCache::DependencyCache(BuildPlan *plan)
-    : buildPlan_(plan),
-      cachePath_(cachePath(plan)),
-      cache_(Cache::create()),
-      previousSources_(StringList::create())
+DependencyCache::DependencyCache(BuildPlan *plan):
+    buildPlan_(plan),
+    cachePath_(cachePath(plan)),
+    cache_(Cache::create()),
+    previousSources_(StringList::create())
 {
     File::establish(cachePath_);
     double cacheTime = File::status(cachePath_)->lastModified();
@@ -60,7 +60,10 @@ DependencyCache::DependencyCache(BuildPlan *plan)
         bool dirty = false;
 
         Ref<FileStatus> objectStatus = buildPlan_->shell()->fileStatus(modulePath);
-        for (int i = 0; i < dependencyPaths->count(); ++i) {
+        double objectTime = objectStatus->lastModified();
+
+        for (int i = 0; i < dependencyPaths->count(); ++i)
+        {
             Ref<FileStatus> sourceStatus = buildPlan_->shell()->fileStatus(dependencyPaths->at(i));
             if (!sourceStatus->exists()) {
                 dirty = true;
@@ -71,13 +74,13 @@ DependencyCache::DependencyCache(BuildPlan *plan)
                 dirty = true;
                 break;
             }
-             if (objectStatus->exists()) {
-                 if (sourceTime > objectStatus->lastModified()) {
-                     dirty = true;
-                     break;
-                 }
-             }
-         }
+            if (objectStatus->exists()) {
+                if (sourceTime > objectTime /*|| cacheItemTime > objectTime*/) {
+                    dirty = true;
+                    break;
+                }
+            }
+        }
 
         if (dirty) continue;
 

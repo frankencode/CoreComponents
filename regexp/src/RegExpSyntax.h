@@ -15,7 +15,9 @@
 namespace flux { template<class> class Singleton; }
 
 namespace flux {
-namespace syntax {
+namespace regexp {
+
+using namespace flux::syntax;
 
 /** \brief Syntax of a regular expression text pattern
   */
@@ -64,6 +66,6 @@ protected:
 
 const RegExpSyntax *regExpSyntax();
 
-}} // namespace flux::syntax
+}} // namespace flux::regexp
 
 #endif // FLUXSYNTAX_REGEXPSYNTAX_H

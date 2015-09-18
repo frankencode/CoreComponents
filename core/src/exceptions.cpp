@@ -49,7 +49,7 @@ String SystemDebugError::message() const
 TextError::TextError(String text, int offset, String resource)
     : text_(text),
       offset_(offset),
-      resource_(resource != "" ? resource : resourceContextStack()->top())
+      resource_(resource != "" ? resource : resourceContext()->top())
 {}
 
 String SemanticError::message() const

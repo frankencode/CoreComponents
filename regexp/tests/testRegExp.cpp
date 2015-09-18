@@ -8,10 +8,10 @@
 
 #include <flux/testing/TestSuite>
 #include <flux/stdio>
-#include <flux/syntax/RegExp>
+#include <flux/regexp/RegExp>
 
 using namespace flux;
-using namespace flux::syntax;
+using namespace flux::regexp;
 using namespace flux::testing;
 
 class EmailValidation: public TestCase

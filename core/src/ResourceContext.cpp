@@ -32,7 +32,7 @@ String ResourceContext::top() const
     return queue_->count() > 0 ? queue_->back() : String();
 }
 
-ResourceContext *resourceContextStack()
+ResourceContext *resourceContext()
 {
     return ThreadLocalSingleton<ResourceContext>::instance();
 }

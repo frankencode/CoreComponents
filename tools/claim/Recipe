@@ -1,5 +1,5 @@
 Application {
     name: fluxclaim
     source: *.cpp
-    use: [ core, syntax, meta, crypto, toki ]
+    use: [ core, syntax, regexp, meta, crypto, toki ]
 }

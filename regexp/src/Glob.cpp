@@ -7,11 +7,11 @@
  */
 
 #include <flux/Dir>
-#include <flux/syntax/RegExp>
-#include <flux/syntax/Glob>
+#include <flux/regexp/RegExp>
+#include <flux/regexp/Glob>
 
 namespace flux {
-namespace syntax {
+namespace regexp {
 
 Glob::Glob(String expression):
     remainder_(expression->split('/'))
@@ -63,4 +63,4 @@ bool Glob::read(String *path)
     return false;
 }
 
-}} // namespace flux::syntax
+}} // namespace flux::regexp

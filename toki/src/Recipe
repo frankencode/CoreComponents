@@ -2,5 +2,5 @@ Library {
     name: fluxtoki
     source: *.cpp
     bundle: themes/*
-    use: [ core, syntax, meta ]
+    use: [ core, syntax, regexp, meta ]
 }

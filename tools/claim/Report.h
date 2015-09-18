@@ -11,12 +11,13 @@
 
 #include <flux/Map>
 #include <flux/Set>
-#include <flux/syntax/RegExp>
+#include <flux/regexp/RegExp>
 #include "Notice.h"
 
 namespace fluxclaim {
 
 using namespace flux;
+using namespace flux::regexp;
 
 typedef Map<String, Ref<Notice> > Coverage;
 typedef Set<String> Exposure;
