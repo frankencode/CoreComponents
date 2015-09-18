@@ -30,11 +30,11 @@ public:
     inline bool dirty() const { return dirty_; }
 
 private:
-    Module(String analyseCommand, String modulePath, StringList *dependencyPaths, bool dirty)
-        : analyseCommand_(analyseCommand),
-          modulePath_(modulePath),
-          dependencyPaths_(dependencyPaths),
-          dirty_(dirty)
+    Module(String analyseCommand, String modulePath, StringList *dependencyPaths, bool dirty):
+        analyseCommand_(analyseCommand),
+        modulePath_(modulePath),
+        dependencyPaths_(dependencyPaths),
+        dirty_(dirty)
     {}
 
     String analyseCommand_;

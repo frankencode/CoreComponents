@@ -8,14 +8,14 @@
 
 #include <flux/stdio>
 #include <flux/FileStatus>
-#include <flux/syntax/Glob>
+#include <flux/regexp/Glob>
 #include "BuildPlan.h"
 #include "JobScheduler.h"
 #include "PreparationStage.h"
 
 namespace fluxmake {
 
-using namespace flux::syntax;
+using namespace flux::regexp;
 
 bool PreparationStage::run()
 {

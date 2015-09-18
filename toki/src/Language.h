@@ -9,13 +9,14 @@
 #ifndef FLUXTOKI_LANGUAGE_H
 #define FLUXTOKI_LANGUAGE_H
 
-#include <flux/syntax/RegExp>
 #include <flux/syntax/SyntaxDefinition>
+#include <flux/regexp/RegExp>
 
 namespace flux {
 namespace toki {
 
 using namespace flux::syntax;
+using namespace flux::regexp;
 
 class Language: public Object
 {

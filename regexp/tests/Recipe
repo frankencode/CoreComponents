@@ -1,0 +1,4 @@
+Tests {
+    source: *.cpp
+    use: [ core, testing, syntax, regexp ]
+}

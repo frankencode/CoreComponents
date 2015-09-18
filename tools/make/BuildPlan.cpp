@@ -12,7 +12,7 @@
 #include <flux/Dir>
 #include <flux/ResourceGuard>
 #include <flux/Arguments>
-#include <flux/syntax/Glob>
+#include <flux/regexp/Glob>
 #include <flux/meta/yason>
 #include "BuildMap.h"
 #include "DependencyCache.h"

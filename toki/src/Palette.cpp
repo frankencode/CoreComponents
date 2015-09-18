@@ -56,7 +56,7 @@ void Palette::define()
 
 void Palette::realize(const ByteArray *text, Token *objectToken)
 {
-    scopeName_ = resourceContextStack()->top()->fileName();
+    scopeName_ = resourceContext()->top()->fileName();
     if (scopeName_ == "default") {
         scope_ = SyntaxDefinition::scope(scopeName_);
         for (int i = 0; i < children()->count(); ++i) {

@@ -10,7 +10,7 @@
 #define FLUXNODE_SERVICEINSTANCE_H
 
 #include <flux/List>
-#include <flux/syntax/RegExp>
+#include <flux/regexp/RegExp>
 #include "LogConfig.h"
 
 namespace flux { namespace meta { class MetaObject; } }
@@ -18,7 +18,7 @@ namespace flux { namespace meta { class MetaObject; } }
 namespace fluxnode {
 
 using namespace flux;
-using namespace flux::syntax;
+using namespace flux::regexp;
 
 class ServiceDelegate;
 class ServiceWorker;

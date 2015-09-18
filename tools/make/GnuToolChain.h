@@ -10,13 +10,13 @@
 #define FLUXMAKE_GNUTOOLCHAIN_H
 
 #include <flux/Format>
-#include <flux/syntax/RegExp>
+#include <flux/regexp/RegExp>
 #include "ToolChain.h"
 
 namespace fluxmake {
 
 using namespace flux;
-using namespace flux::syntax;
+using namespace flux::regexp;
 
 class GnuToolChain: public ToolChain
 {

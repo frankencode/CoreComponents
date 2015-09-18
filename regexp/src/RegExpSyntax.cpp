@@ -12,11 +12,11 @@
 #include <flux/syntax/SyntaxDebugger>
 #endif
 #include <flux/syntax/syntax>
-#include <flux/syntax/RegExp>
-#include <flux/syntax/RegExpSyntax>
+#include <flux/regexp/RegExp>
+#include <flux/regexp/RegExpSyntax>
 
 namespace flux {
-namespace syntax {
+namespace regexp {
 
 RegExpSyntax::RegExpSyntax()
 {
@@ -433,4 +433,4 @@ NODE RegExpSyntax::compileRepeat(const ByteArray *text, Token *token, SyntaxDefi
 
 const RegExpSyntax *regExpSyntax() { return Singleton<RegExpSyntax>::instance(); }
 
-}} // namespace flux::syntax
+}} // namespace flux::regexp

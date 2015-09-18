@@ -34,7 +34,7 @@ private:
     Ref< Queue<String> > queue_;
 };
 
-ResourceContext *resourceContextStack();
+ResourceContext *resourceContext();
 
 } // namespace flux
 
