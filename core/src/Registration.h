@@ -24,6 +24,8 @@ public:
     }
 };
 
+#define FLUX_REGISTRATION(Type) namespace { Registration<Type> registrationOf ## Type; }
+
 } // namespace flux
 
 #endif // FLUX_REGISTRATION_H

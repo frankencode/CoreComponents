@@ -8,7 +8,7 @@
 
 #include <flux/testing/TestSuite>
 #include <flux/stdio>
-#include <flux/properties>
+#include <flux/Property>
 
 using namespace flux;
 using namespace flux::testing;

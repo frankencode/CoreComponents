@@ -25,24 +25,25 @@ Ref<DirWalker> DirWalker::tryOpen(String path)
     return walker;
 }
 
-DirWalker::DirWalker(String path, Dir *dir)
-    : maxDepth_(-1),
-      ignoreHidden_(false),
-      followSymlink_(false),
-      deleteOrder_(false),
-      depth_(0),
-      dir_(dir)
+DirWalker::DirWalker(String path, Dir *dir):
+    maxDepth_(-1),
+    ignoreHidden_(false),
+    followSymlink_(false),
+    deleteOrder_(false),
+    depth_(0),
+    dir_(dir)
 {
     if (!dir_) dir_ = Dir::open(path);
 }
 
-bool DirWalker::read(String *path)
+bool DirWalker::read(String *path, bool *isDir)
 {
     if (child_) {
-        if (child_->read(path))
+        if (child_->read(path, isDir))
             return true;
         if (deleteOrder_) {
             *path = child_->dir_->path();
+            if (isDir) *isDir = true;
             child_ = 0;
             return true;
         }
@@ -54,6 +55,7 @@ bool DirWalker::read(String *path)
         if (ignoreHidden_) if (name->at(0) == '.') continue;
         String h = dir_->path(name);
         child_ = tryOpen(h);
+        bool d = child_;
         if (child_) {
             if (depth_ != maxDepth_) {
                 if (!followSymlink_ && File::readlink(h) != "") {
@@ -65,7 +67,7 @@ bool DirWalker::read(String *path)
                     child_->deleteOrder_ = deleteOrder_;
                     child_->depth_ = depth_ + 1;
                     if (deleteOrder_)
-                        return read(path);
+                        return read(path, isDir);
                 }
             }
             else {
@@ -73,6 +75,7 @@ bool DirWalker::read(String *path)
             }
         }
         *path = h;
+        if (isDir) *isDir = d;
         return true;
     }
     return false;

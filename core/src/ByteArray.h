@@ -119,6 +119,9 @@ public:
         return data_[size_ - 1] == ch;
     }
 
+    bool startsWith(const char *s) const;
+    bool endsWith(const char *s) const;
+
     inline int find(char ch, int i = 0) const {
         if (i < 0) i = 0;
         while (i < size_) {

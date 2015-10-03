@@ -36,7 +36,8 @@ public:
     inline bool deleteOrder() const { return deleteOrder_; }
     inline void setDeleteOrder(bool on) { deleteOrder_ = on; }
 
-    bool read(String *path);
+    bool read(String *path, bool *isDir);
+    bool read(String *path) { return read(path, 0); }
 
 private:
     DirWalker(String path, Dir *dir = 0);
