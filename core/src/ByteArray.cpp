@@ -237,6 +237,26 @@ int ByteArray::countCharsIn(const char *set)
     return n;
 }
 
+bool ByteArray::startsWith(const char *s) const
+{
+    for (int i = 0; i < size_; ++i) {
+        if (chars_[i] != s[i])
+            return false;
+    }
+    return true;
+}
+
+bool ByteArray::endsWith(const char *s) const
+{
+    int n = strlen(s);
+    if (n > size_) return false;
+    for (int i = size_ - n, j = 0; i < size_; ++i, ++j) {
+        if (chars_[i] != s[j])
+            return false;
+    }
+    return true;
+}
+
 int ByteArray::find(const char *pattern, int i) const
 {
     if (!has(i)) return size_;

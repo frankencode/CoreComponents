@@ -131,8 +131,8 @@ public:
 private:
     typedef QueueNode<T> Node;
 
-    Queue()
-        : head_(0), tail_(0), length_(0)
+    Queue():
+        head_(0), tail_(0), length_(0)
     {}
 
     Node *head_;

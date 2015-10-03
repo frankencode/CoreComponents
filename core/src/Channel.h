@@ -97,10 +97,10 @@ public:
     }
 
 protected:
-    Channel()
-        : queue_(QueueType<T>::create()),
-          mutex_(Mutex::create()),
-          notEmpty_(WaitCondition::create())
+    Channel():
+        queue_(QueueType<T>::create()),
+        mutex_(Mutex::create()),
+        notEmpty_(WaitCondition::create())
     {}
 
 private:

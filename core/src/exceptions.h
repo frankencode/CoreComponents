@@ -75,10 +75,10 @@ public:
 class DebugError: public Exception
 {
 public:
-    DebugError(String reason, const char *source, int line)
-        : reason_(reason),
-          source_(source),
-          line_(line)
+    DebugError(String reason, const char *source, int line):
+        reason_(reason),
+        source_(source),
+        line_(line)
     {}
     ~DebugError() throw() {}
 
@@ -109,11 +109,11 @@ protected:
 class SystemResourceError: public SystemError
 {
 public:
-    SystemResourceError(int errorCode, String resource, const char *source, int line)
-        : SystemError(errorCode),
-          resource_(resource),
-          source_(source),
-          line_(line)
+    SystemResourceError(int errorCode, String resource, const char *source, int line):
+        SystemError(errorCode),
+        resource_(resource),
+        source_(source),
+        line_(line)
     {}
     ~SystemResourceError() throw() {}
 
@@ -134,10 +134,10 @@ private:
 class SystemDebugError: public SystemError
 {
 public:
-    SystemDebugError(int errorCode, const char *source, int line)
-        : SystemError(errorCode),
-          source_(source),
-          line_(line)
+    SystemDebugError(int errorCode, const char *source, int line):
+        SystemError(errorCode),
+        source_(source),
+        line_(line)
     {}
     ~SystemDebugError() throw() {}
 
@@ -191,9 +191,9 @@ protected:
 class SemanticError: public TextError
 {
 public:
-    SemanticError(String reason, String text = "", int offset = -1, String resource = "")
-        : TextError(text, offset, resource),
-          reason_(reason)
+    SemanticError(String reason, String text = "", int offset = -1, String resource = ""):
+        TextError(text, offset, resource),
+        reason_(reason)
     {}
     ~SemanticError() throw() {}
 

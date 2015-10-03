@@ -56,11 +56,11 @@ void Format::flush()
     }
 }
 
-Format::Format(const Format &b)
-    : Super(b.get()),
-      stream_(b.stream_),
-      isNull_(b.isNull_),
-      placeHolder_(b.placeHolder_)
+Format::Format(const Format &b):
+    Super(b.get()),
+    stream_(b.stream_),
+    isNull_(b.isNull_),
+    placeHolder_(b.placeHolder_)
 {}
 
 Format &Format::operator=(const Format &b)
