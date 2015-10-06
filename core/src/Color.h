@@ -24,7 +24,7 @@ public:
 
     Color(): word_(0) {}
 
-    Color(int r, int g, int b, int a = 0xff)
+    Color(int r, int g, int b, int a = 0xFF)
     {
         rgba_[0] = r;
         rgba_[1] = g;
@@ -32,10 +32,10 @@ public:
         rgba_[3] = a;
     }
 
-    inline uint8_t &r() { return rgba_[0]; }
-    inline uint8_t &g() { return rgba_[1]; }
-    inline uint8_t &b() { return rgba_[2]; }
-    inline uint8_t &a() { return rgba_[3]; }
+    inline static uint8_t &red(Color &c) { return c.rgba_[0]; }
+    inline static uint8_t &green(Color &c) { return c.rgba_[1]; }
+    inline static uint8_t &blue(Color &c) { return c.rgba_[2]; }
+    inline static uint8_t &alpha(Color &c) { return c.rgba_[3]; }
 
     inline bool operator==(const Color &b) const { return word_ == b.word_; }
     inline bool operator!=(const Color &b) const { return word_ != b.word_; }

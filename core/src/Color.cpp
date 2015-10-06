@@ -107,8 +107,8 @@ Color Color::parse(const char *s, bool *ok)
 String str(Color c)
 {
     Format f;
-    f << "#" << hex(c.r(), 2) << hex(c.g(), 2) << hex(c.b(), 2);
-    if (c.a() != 0xff) f << hex(c.a(), 2);
+    f << "#" << hex(Color::red(c), 2) << hex(Color::green(c), 2) << hex(Color::blue(c), 2);
+    if (Color::alpha(c) != 0xff) f << hex(Color::alpha(c), 2);
     return f;
 }
 
