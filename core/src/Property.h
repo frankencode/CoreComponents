@@ -9,7 +9,7 @@
 #ifndef FLUX_PROPERTY_H
 #define FLUX_PROPERTY_H
 
-#include <flux/Trigger>
+#include <flux/Event>
 
 namespace flux {
 
@@ -24,15 +24,15 @@ public:
         if (b != value_) {
             value_ = b;
             if (valueChanged_)
-                valueChanged_->emit(value_);
+                valueChanged_->notify(value_);
         }
         return *this;
     }
 
     inline operator const T&() const { return value_; }
 
-    inline Trigger<T> *valueChanged() {
-        if (!valueChanged_) valueChanged_ = Trigger<T>::create();
+    inline Event<T> *valueChanged() {
+        if (!valueChanged_) valueChanged_ = Event<T>::create();
         return valueChanged_;
     }
 
@@ -40,7 +40,7 @@ public:
     inline const Property *operator->() const { return this; }
 
 private:
-    Ref< Trigger<T> > valueChanged_;
+    Ref< Event<T> > valueChanged_;
     T value_;
 };
 

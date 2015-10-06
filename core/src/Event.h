@@ -1,5 +1,5 @@
-#ifndef FLUX_TRIGGER_H
-#define FLUX_TRIGGER_H
+#ifndef FLUX_EVENT_H
+#define FLUX_EVENT_H
 
 #include <flux/Object>
 #include <flux/Map>
@@ -50,10 +50,10 @@ protected:
 };
 
 template<class Value>
-class Trigger: public ConnectionEndPoint
+class Event: public ConnectionEndPoint
 {
 public:
-    inline static Ref<Trigger> create() { return new Trigger; }
+    inline static Ref<Event> create() { return new Event; }
 
     template<class Recipient>
     void connect(Recipient *recipient, void (Recipient::* method)(Value))
@@ -79,7 +79,7 @@ public:
         reverseDisconnect(this, recipient);
     }
 
-    void emit(Value value)
+    void notify(Value value)
     {
         if (!callbacks_) return;
 
@@ -94,7 +94,7 @@ private:
     typedef List< Ref< Callback<Value> > > CallbackList;
     typedef Map< Recipient *, Ref<CallbackList> > CallbackListByRecipient;
 
-    Trigger() {}
+    Event() {}
 
     Ref<CallbackListByRecipient> callbacks_;
 };
@@ -127,4 +127,4 @@ inline void ConnectionEndPoint::reverseDisconnect(ConnectionEndPoint *signal, Re
 
 } // namespace flux
 
-#endif // FLUX_TRIGGER_H
+#endif // FLUX_EVENT_H
