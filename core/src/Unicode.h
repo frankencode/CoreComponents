@@ -68,10 +68,10 @@ public:
     }
 
 private:
-    Unicode(ByteArray *data)
-        : data_(data),
-          walker_(data->chars()),
-          i_(0), n_(-1)
+    Unicode(ByteArray *data):
+        data_(data),
+        walker_(data->chars()),
+        i_(0), n_(-1)
     {}
 
     inline void walkTo(int i) const {
