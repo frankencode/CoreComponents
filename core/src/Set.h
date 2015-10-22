@@ -73,6 +73,13 @@ public:
         return found;
     }
 
+    inline bool removeAt(int index) {
+        Node *node = 0;
+        if (!tree_.lookupByIndex(index, &node)) return false;
+        tree_.remove(node);
+        return true;
+    }
+
     inline bool contains(const Item &item)
     {
         bool found = false;
