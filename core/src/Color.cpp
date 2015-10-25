@@ -6,6 +6,7 @@
  *
  */
 
+#include <flux/stdio> // DEBUG
 #include <flux/ColorNames>
 #include <flux/Format>
 #include <flux/Color>
@@ -104,12 +105,46 @@ Color Color::parse(const char *s, bool *ok)
     return Color();
 }
 
+/** alpha blend color a over b
+  */
+Color Color::blend(Color a, Color b)
+{
+    uint32_t o_a = Color::alpha(a);
+    if (o_a == 0xFF) return a;
+
+    o_a += (o_a == 0xFF);
+    uint32_t n_a = 0x100 - o_a;
+
+    uint32_t o_b = Color::alpha(b);
+    if (o_b == 0xFF) {
+        for (int i = FirstComponentIndex; i <= LastComponentIndex; ++i)
+            b.bytes_[i] = (o_a * a.bytes_[i] + n_a * b.bytes_[i]) >> 8;
+    }
+    else {
+        o_b += (o_b >= 0xFF);
+        o_a <<= 8;
+        n_a *= o_b;
+        uint32_t h = o_a + n_a;
+        if ((Color::alpha(b) = h >> 8) > 0) {
+            for (int i = FirstComponentIndex; i <= LastComponentIndex; ++i)
+                b.bytes_[i] = (o_a * a.bytes_[i] + n_a * b.bytes_[i]) / h;
+        }
+        else {
+            b.word_ = 0;
+        }
+    }
+
+    return b;
+}
+
 String str(Color c)
 {
-    Format f;
-    f << "#" << hex(Color::red(c), 2) << hex(Color::green(c), 2) << hex(Color::blue(c), 2);
-    if (Color::alpha(c) != 0xff) f << hex(Color::alpha(c), 2);
-    return f;
+    return Format()
+        << "#"
+        << hex(Color::red(c), 2)
+        << hex(Color::green(c), 2)
+        << hex(Color::blue(c), 2)
+        << hex(Color::alpha(c), 2);
 }
 
 } // namespace flux
