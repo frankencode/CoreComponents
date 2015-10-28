@@ -84,6 +84,9 @@ class GrayShadesOnGlass: public TestCase
 
 int main(int argc, char **argv)
 {
+    // for (int x = 0; x < 256; ++x)
+    //    fout("%%, %%\n") << x << 256 * x / 255 + (x % 255 > 127);
+
     FLUX_TESTSUITE_ADD(GrayShadesOnPaper);
     FLUX_TESTSUITE_ADD(GrayShadesOnGlass);
 
