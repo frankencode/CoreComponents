@@ -86,8 +86,8 @@ public:
         return *this;
     }
 
-    inline T popFront() { T item; popFront(item); return item; }
-    inline T popBack() { T item; popBack(item); return item; }
+    inline T popFront() { T item; popFront(&item); return item; }
+    inline T popBack() { T item; popBack(&item); return item; }
 
     inline T& back(int i = 0) const
     {
