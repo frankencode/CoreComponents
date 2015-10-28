@@ -15,8 +15,8 @@
 
 namespace flux {
 
-FileStatus::FileStatus(int fd)
-    : fd_(fd)
+FileStatus::FileStatus(int fd):
+    fd_(fd)
 {
     if (fd == -1) {
         memclr(static_cast<StructStat *>(this), sizeof(StructStat));
@@ -26,10 +26,10 @@ FileStatus::FileStatus(int fd)
     exists_ = update();
 }
 
-FileStatus::FileStatus(String path, bool resolve)
-    : fd_(-1),
-      path_(path),
-      resolve_(resolve)
+FileStatus::FileStatus(String path, bool resolve):
+    fd_(-1),
+    path_(path),
+    resolve_(resolve)
 {
     exists_ = update();
 }

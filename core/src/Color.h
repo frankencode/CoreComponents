@@ -51,7 +51,12 @@ public:
     }
 
     static Color parse(const char *s, bool *ok = 0);
-    static Color transparent() { return Color(0, 0, 0, 0); }
+    inline static Color transparent() { return Color(0, 0, 0, 0); }
+    inline static Color black() { return Color(0, 0, 0); }
+    inline static Color white() { return Color(0xFF, 0xFF, 0xFF); }
+    inline static Color red() { return Color(0xFF, 0, 0); }
+    inline static Color green() { return Color(0, 0xFF, 0); }
+    inline static Color blue() { return Color(0, 0, 0xFF); }
 
     inline bool isValid() const { return !(bytes_[AlphaIndex] == 0 && (bytes_[BlueIndex] != 0 || bytes_[GreenIndex] != 0 || bytes_[RedIndex] != 0)); }
 
