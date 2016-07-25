@@ -1,33 +1,29 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_THREAD_H
-#define FLUX_THREAD_H
+#pragma once
 
 #include <pthread.h>
 #include <signal.h>
-#include <flux/SignalSet>
-#include <flux/ThreadLocalRef>
-#include <flux/String>
+#include <cc/SignalSet>
+#include <cc/String>
 
-namespace flux {
+namespace cc {
 
-class ThreadFactory;
-
-/** \brief Thread creation, signalling, termination
-  * \see Process
+/** \brief %Thread creation, signalling, termination
+  * \see SubProcess
   */
 class Thread: public Object
 {
 public:
     static Thread *self();
 
-    void start(int stackSize = -1);
+    void start();
     void wait();
     void kill(int signal);
     bool stillAlive() const;
@@ -41,23 +37,25 @@ public:
     pthread_t id() const { return tid_; }
 
 protected:
-    Thread(): lastSignal_(0) {}
+    Thread():
+        stackSize_(1 << 16),
+        lastSignal_(0)
+    {}
+
+    void setStackSize(int stackSize) { stackSize_ = stackSize; }
 
     virtual void run();
-    virtual void handleSignal(int signal);
 
 private:
-    friend class ThreadFactory;
-    friend class Process;
+    static Ref<ByteArray> allocateStack(int stackSize, int guardSize);
 
-    static ThreadLocalRef<Thread> self_;
+    static void *bootstrap(void *self);
+
+    static thread_local Ref<Thread> self_;
+    int stackSize_;
     Ref<ByteArray> stack_;
     pthread_t tid_;
     int lastSignal_;
 };
 
-inline Thread *thread() { return Thread::self(); }
-
-} // namespace flux
-
-#endif // FLUX_THREAD_H
+} // namespace cc

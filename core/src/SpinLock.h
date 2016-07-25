@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_SPINLOCK_H
-#define FLUX_SPINLOCK_H
+#pragma once
 
-namespace flux {
+namespace cc {
 
-/** \brief Thread synchronization primitive: spinning lock
+/** \brief %Thread synchronization primitive: spinning lock
   */
 class SpinLock
 {
@@ -35,6 +34,4 @@ inline void SpinLock::acquire() { while (!__sync_bool_compare_and_swap(&flag_, 0
 inline void SpinLock::release() { flag_ = 0; }
 #endif // def NDEBUG
 
-} // namespace flux
-
-#endif // FLUX_SPINLOCK_H
+} // namespace cc

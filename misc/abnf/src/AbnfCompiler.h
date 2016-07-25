@@ -1,21 +1,20 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXABNF_ABNFCOMPILER_H
-#define FLUXABNF_ABNFCOMPILER_H
+#pragma once
 
-#include <flux/syntax/SyntaxDebugger>
-#include <flux/abnf/AbnfSyntax>
+#include <cc/syntax/SyntaxDebugger>
+#include <cc/abnf/AbnfSyntax>
 
-namespace flux {
+namespace cc {
 namespace abnf {
 
-using namespace flux::syntax;
+using namespace cc::syntax;
 
 class StringTrap;
 
@@ -48,6 +47,5 @@ private:
     void deepOptimizeChoice(SyntaxNode *node, SyntaxNode *fin, int numChars, SyntaxDefinition *definition);
 };
 
-}} // namespace flux::abnf
+}} // namespace cc::abnf
 
-#endif // FLUXABNF_ABNFCOMPILER_H

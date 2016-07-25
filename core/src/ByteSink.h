@@ -1,97 +1,148 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_BYTESINK_H
-#define FLUX_BYTESINK_H
+#pragma once
 
-#include <flux/exceptions>
-#include <flux/Stream>
+#include <cc/exceptions>
+#include <cc/Stream>
 
-namespace flux {
+namespace cc {
 
-/** \brief Byte encoding sink
-  * \see ByteSource
+/** \class ByteSink ByteSink.h cc/ByteSink
+  * \brief Byte encoding sink
+  * \see ByteSource, CaptureSink
   */
 class ByteSink: public Object
 {
 public:
-    inline static Ref<ByteSink> open(Stream *stream, ByteArray *buf, int endian = LittleEndian) {
-        return new ByteSink(stream, buf, endian);
-    }
-    inline static Ref<ByteSink> open(ByteArray *buf, int endian = LittleEndian) {
-        return new ByteSink(0, buf, endian);
-    }
-    ~ByteSink()
-    {
-        if (stream_ &&  i_ > 0) flush();
+    /** Open a new ByteSink
+      * \param sink datra sink to write bytes to
+      * \param buffer output buffer to use
+      * \param endian endianess for writing multi-byte words
+      * \return new object instance
+      */
+    inline static Ref<ByteSink> open(Stream *sink, ByteArray *buffer, Endian endian = LittleEndian) {
+        return new ByteSink(sink, buffer, endian);
     }
 
-    inline void write(uint8_t x) { writeUInt8(x); }
+    /** Open a new ByteSink
+      * \param sink sink to write bytes to
+      * \param endian endianess for writing multi-byte words
+      * \return new object instance
+      */
+    inline static Ref<ByteSink> open(Stream *sink, Endian endian = LittleEndian) {
+        return new ByteSink(sink, 0, endian);
+    }
+
+    /** Open a new ByteSink
+      * \param buffer output buffer to use
+      * \param endian endianess for writing multi-byte words
+      * \return new object instance
+      */
+    inline static Ref<ByteSink> open(ByteArray *buffer, Endian endian = LittleEndian) {
+        return new ByteSink(0, buffer, endian);
+    }
+
+    /// write a single character
     inline void write(char ch) { writeUInt8((uint8_t)ch); }
 
-    void write(ByteArray *bytes);
+    /// write a string of bytes
+    void write(String s);
 
+    /// Write a single byte
     void writeUInt8(uint8_t x);
+
+    /// Write a 2-byte word
     void writeUInt16(uint16_t x);
+
+    /// Write a 4-byte word
     void writeUInt32(uint32_t x);
+
+    /// Write an 8-byte word
     void writeUInt64(uint64_t x);
 
+    /// Write a signed byte
     inline void writeInt8(int8_t x) { writeUInt8(union_cast<uint8_t>(x)); }
+
+    /// Write a signed 2-byte word
     inline void writeInt16(int16_t x) { writeUInt16(union_cast<uint16_t>(x)); }
+
+    /// Write a signed 4-byte word
     inline void writeInt32(int32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
+
+    /// Write a signed 8-byte word
     inline void writeInt64(int64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
 
+    /// Write a simple precision floating point number
     inline void writeFloat32(float32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
+
+    /// Write a double precision floating point number
     inline void writeFloat64(float64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
 
-    inline int bytesCached() const { return i_; }
+    /// Flush the output buffer and write cached bytes to the output sink
     void flush();
 
-    inline Stream *stream() const { return stream_; }
-    inline ByteArray *buffer() const { return buf_; }
+    /// The output sink
+    inline Stream *sink() const { return sink_; }
 
-    inline int endian() const { return endian_; }
-    inline void setEndian(int endian) { endian_ = endian; }
+    /// The output buffer
+    inline ByteArray *buffer() const { return buffer_; }
+
+    /// Current endianess for encoding multi-byte words
+    inline Endian endian() const { return endian_; }
+
+    /// Switch endianess
+    inline void setEndian(Endian endian) { endian_ = endian; }
+
+    /// Total number of bytes written
+    inline off_t currentOffset() const { return i0_ + i_; }
 
 private:
-    ByteSink(Stream *stream, ByteArray *buf, int endian)
-        : stream_(stream),
-          buf_(buf),
-          endian_(endian),
-          i_(0)
+    ByteSink(Stream *sink, ByteArray *buffer, Endian endian):
+        sink_(sink),
+        buffer_(buffer),
+        endian_(endian),
+        i0_(0), i_(0)
     {
-        if (!buf_) buf_ = ByteArray::allocate(0x4000);
+        if (!buffer_) buffer_ = ByteArray::allocate(0x1000);
     }
 
-    Ref<Stream> stream_;
-    Ref<ByteArray> buf_;
-    int endian_;
+    ~ByteSink()
+    {
+        if (sink_ &&  i_ > 0) flush();
+    }
+
+    Ref<Stream> sink_;
+    Ref<ByteArray> buffer_;
+    Endian endian_;
+    off_t i0_;
     int i_;
 };
 
 inline void ByteSink::flush()
 {
-    if (!stream_) throw BufferOverflow();
+    if (!sink_) throw BufferOverflow();
 
-    stream_->write(buf_->select(0, i_));
+    sink_->write(buffer_->select(0, i_));
+    i0_ += i_;
     i_ = 0;
 }
 
-inline void ByteSink::write(ByteArray *bytes)
+inline void ByteSink::write(String s)
 {
-    for (int i = 0, n = bytes->count(); i < n; ++i)
-        write(bytes->at(i));
+    for (int i = 0, n = s->count(); i < n; ++i)
+        write(s->at(i));
 }
 
 inline void ByteSink::writeUInt8(uint8_t x)
 {
-    if (i_ == buf_->count()) flush();
-    buf_->at(i_++) = x;
+    if (i_ == buffer_->count()) flush();
+    buffer_->at(i_++) = x;
 }
 
 inline void ByteSink::writeUInt16(uint16_t x)
@@ -138,6 +189,4 @@ inline void ByteSink::writeUInt64(uint64_t x)
     }
 }
 
-} // namespace flux
-
-#endif // FLUX_BYTESINK_H
+} // namespace cc

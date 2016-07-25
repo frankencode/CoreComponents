@@ -1,42 +1,103 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_DIR_H
-#define FLUX_DIR_H
+#pragma once
 
 #include <sys/types.h> // mode_t
 #include <dirent.h> // DIR, opendir, closedir, readdir_r
-#include <flux/generics>
-#include <flux/String>
+#include <cc/generics>
+#include <cc/String>
 
-namespace flux {
+namespace cc {
 
-/** \brief Read, create and unlink directory files
-  * \see DirWalker
+/** \class Dir Dir.h cc/Dir
+  * \brief Work with directory files
+  * \see File, CleanupGuard, DirWalker
   */
 class Dir: public Source<String>
 {
 public:
-    inline static Ref<Dir> open(String path) { return new Dir(path); }
+    /** Open an existing directory
+      * \param path directory file path
+      * \return new object instance
+      */
+    static Ref<Dir> open(String path) { return new Dir(path); }
+
+    /** Open an existing directory, if exists
+      * \param path directory file path
+      * \return new object instance or null if directory does not exists
+      */
     static Ref<Dir> tryOpen(String path);
 
+    /** Open a new tempory directory
+      * \return new object instance
+      */
+    static Ref<Dir> openTemp();
+
+    /// Return the directory's file path
     String path() const;
-    String path(String name) const;
-    bool read(String *name);
 
+    /** Read next directory entry
+      * \param name return name of next entry
+      * \return false if no more entries, else true
+      */
+    bool read(String *name) override;
+
+    /** Check access permissions
+      * \param path directory file path
+      * \param flags a combination of cc::AccessFlags
+      * \return true if the calling process has needed credentials
+      */
     static bool access(String path, int flags);
-    static bool exists(String path);
-    static int count(String path);
-    static void create(String path, int mode = 0755);
-    static void establish(String path, int mode = 0755);
-    static void unlink(String path);
 
-protected:
+    /** Check if directory exists
+      * \param path directory file path
+      * \return true if a directory exists under given path
+      */
+    static bool exists(String path);
+
+    /** Count number of files in directory
+      * \param path directory file path
+      * \return 0 if there is no such directory, otherwise number of files
+      */
+    static int count(String path);
+
+    /** Create a new directory
+      * \param path directory file path
+      * \param mode a combination of cc::ModeFlags
+      */
+    static void create(String path, int mode = 0755);
+
+    /** Establish a new directory path
+      * \param path directory file path
+      */
+    static void establish(String path, int mode = 0755);
+
+    /** Remove directory
+      * \param path directory file path
+      */
+    static void remove(String path);
+
+    /** Create a uniquely named directory
+      * \param path directory file path pattern
+      * \param mode a combination of cc::ModeFlags
+      * \param placeHolder place holder character in path to replace with random characters
+      * \return name of the newly created directory
+      */
+    static String createUnique(String path, int mode = 0755, char placeHolder = 'X');
+
+    /** \brief Cleanup directory recursively
+      * \param path directory file path
+      * Cleans up the given directory path recursively deleting all containing files and directories in the process.
+      */
+    static void cleanup(String path);
+
+private:
     Dir(String path, DIR *dir = 0);
     ~Dir();
 
@@ -44,6 +105,4 @@ protected:
     DIR *dir_;
 };
 
-} // namespace flux
-
-#endif // FLUX_DIR_H
+} // namespace cc

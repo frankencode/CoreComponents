@@ -1,35 +1,32 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_NULLSTREAM_H
-#define FLUX_NULLSTREAM_H
+#pragma once
 
-#include <flux/Stream>
+#include <cc/Stream>
 
-namespace flux {
+namespace cc {
 
-template<class SubClass> class Singleton;
+template<class T> class Singleton;
 
 /** \brief Zero storage information dump
   */
 class NullStream: public Stream
 {
 public:
-    virtual int read(ByteArray *buf);
-    virtual void write(const ByteArray *buf);
+    static NullStream *instance();
+
+    int read(ByteArray *data) override;
+    void write(const ByteArray *data) override;
 
 private:
     friend class Singleton<NullStream>;
-    NullStream();
+    NullStream() {}
 };
 
-Stream *nullStream();
-
-} // namespace flux
-
-#endif // FLUX_NULLSTREAM_H
+} // namespace cc

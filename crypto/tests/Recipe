@@ -1,4 +1,4 @@
 Tests {
-    source: *.cpp
+    source: *.cc
     use: [ core, testing, crypto ]
 }

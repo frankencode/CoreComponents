@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_UTF8SINK_H
-#define FLUX_UTF8SINK_H
+#pragma once
 
-#include <flux/ByteSink>
-#include <flux/utf8>
+#include <cc/ByteSink>
+#include <cc/utf8>
 
-namespace flux {
+namespace cc {
 
-/** \brief Unicode UTF-8 encoding data sink
+/** \brief %Unicode UTF-8 encoding data sink
   */
 class Utf8Sink: public Object
 {
@@ -32,8 +31,8 @@ public:
     inline ByteSink *byteSink() const { return byteSink_; }
 
 private:
-    Utf8Sink(Stream *stream, ByteArray* buf)
-        : byteSink_(ByteSink::open(stream, buf))
+    Utf8Sink(Stream *stream, ByteArray* buf):
+        byteSink_(ByteSink::open(stream, buf))
     {}
 
     Ref<ByteSink> byteSink_;
@@ -67,6 +66,4 @@ inline void Utf8Sink::write(uchar_t ch)
     }
 }
 
-} // namespace flux
-
-#endif // FLUX_UTF8SINK_H
+} // namespace cc

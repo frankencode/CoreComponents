@@ -1,19 +1,18 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXCLAIM_CHEADERSTYLE_H
-#define FLUXCLAIM_CHEADERSTYLE_H
+#pragma once
 
 #include "HeaderStyle.h"
 
-namespace fluxclaim {
+namespace ccclaim {
 
-using namespace flux;
+using namespace cc;
 
 class CHeaderStyle: public HeaderStyle
 {
@@ -30,6 +29,5 @@ private:
 
 namespace { Registration<CHeaderStyle> registration; }
 
-} // namespace fluxclaim
+} // namespace ccclaim
 
-#endif // FLUXCLAIM_CHEADERSTYLE_H

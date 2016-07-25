@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXSYNTAX_SYNTAXDEBUGFACTORY_H
-#define FLUXSYNTAX_SYNTAXDEBUGFACTORY_H
+#pragma once
 
-#include <flux/syntax/SyntaxNode>
+#include <cc/syntax/SyntaxNode>
 
-namespace flux {
+namespace cc {
 namespace syntax {
 
 class DefinitionNode;
@@ -29,6 +28,5 @@ private:
     DefinitionNode *definition_;
 };
 
-}} // namespace flux::syntax
+}} // namespace cc::syntax
 
-#endif // FLUXSYNTAX_SYNTAXDEBUGFACTORY_H

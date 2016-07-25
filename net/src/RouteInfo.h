@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_ROUTEINFO_H
-#define FLUX_ROUTEINFO_H
+#pragma once
 
-#include <flux/net/SocketAddress>
+#include <cc/net/SocketAddress>
 
-namespace flux {
+namespace cc {
 namespace net {
 
 class RouteInfo;
@@ -49,6 +48,5 @@ private:
     int priority_;
 };
 
-}} // namespace flux::net
+}} // namespace cc::net
 
-#endif // FLUX_ROUTEINFO_H

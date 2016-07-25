@@ -1,22 +1,21 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_SYSTEMLOG_H
-#define FLUXNODE_SYSTEMLOG_H
+#pragma once
 
 #include <syslog.h>
-#include <flux/Stream>
+#include <cc/Stream>
 
-namespace flux { template<class> class ThreadLocalSingleton; }
+namespace cc { template<class> class ThreadLocalSingleton; }
 
-namespace fluxnode {
+namespace ccnode {
 
-using namespace flux;
+using namespace cc;
 
 class SystemLog: public Object
 {
@@ -48,6 +47,5 @@ private:
 
 SystemLog *systemLog();
 
-} // namespace fluxnode
+} // namespace ccnode
 
-#endif // FLUXNODE_SYSTEMLOG_H

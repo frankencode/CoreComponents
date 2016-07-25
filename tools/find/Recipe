@@ -1,5 +1,5 @@
 Application {
-    name: fluxfind
-    source: *.cpp
-    use: core
+    name: ccfind
+    source: *.cc
+    use: [ core, syntax, regexp ]
 }

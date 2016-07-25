@@ -1,23 +1,22 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_GENERICS_H
-#define FLUX_GENERICS_H
+#pragma once
 
-#include <flux/Object>
-#include <flux/Ref>
+#include <cc/Object>
+#include <cc/Ref>
 
-namespace flux {
+namespace cc {
 
 /** \brief Reference manually allocated objects
   *
   * Wrapper class to allow taking reference to classes not inherited
-  * from flux::Object. Beware that it is impossible to reference
+  * from cc::Object. Beware that it is impossible to reference
   * the same alien object by two different alien wrappers.
   */
 template<class T>
@@ -156,6 +155,5 @@ private:
 template<class Key, class Value>
 inline Pair<Key, Value> pair(const Key &key, const Value &value) { return Pair<Key, Value>(key, value); }
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_GENERICS_H

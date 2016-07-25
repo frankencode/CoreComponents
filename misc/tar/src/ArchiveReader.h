@@ -1,24 +1,23 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTAR_ARCHIVEREADER_H
-#define FLUXTAR_ARCHIVEREADER_H
+#pragma once
 
-#include <flux/Stream>
-#include <flux/tar/ArchiveEntry>
+#include <cc/Stream>
+#include <cc/tar/ArchiveEntry>
 
-namespace flux {
+namespace cc {
 namespace tar {
 
 class BrokenArchive {
 public:
-    BrokenArchive(off_t offset, String reason)
-        : offset_(offset), reason_(reason)
+    BrokenArchive(off_t offset, String reason):
+        offset_(offset), reason_(reason)
     {}
 
     inline off_t offset() const { return offset_; }
@@ -39,6 +38,4 @@ public:
     void skipData(ArchiveEntry *entry);
 };
 
-}} // namespace flux::tar
-
-#endif // FLUXTAR_ARCHIVEREADER_H
+}} // namespace cc::tar

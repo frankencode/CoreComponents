@@ -1,0 +1,108 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classcc_1_1Object.html" title="Reference counting and secure destruction. " alt="" coords="5,1652,88,1679"/>
+<area shape="rect" id="node2" href="$classcc_1_1Action.html" title="Objects which can perform an action. " alt="" coords="195,5,276,32"/>
+<area shape="rect" id="node3" href="$classcc_1_1Alien.html" title="Reference manually allocated objects. " alt="" coords="183,56,288,83"/>
+<area shape="rect" id="node4" href="$classcc_1_1Arguments.html" title="Command line arguments parser. " alt="" coords="182,107,289,133"/>
+<area shape="rect" id="node5" href="$classcc_1_1Array.html" title="Typeded memory vector. " alt="" coords="182,157,289,184"/>
+<area shape="rect" id="node6" href="$classcc_1_1ByteArray.html" title="A chunk of memory as a series of bytes (aka String) " alt="" coords="184,208,287,235"/>
+<area shape="rect" id="node7" href="$classcc_1_1ByteSink.html" title="Byte encoding sink. " alt="" coords="187,259,284,285"/>
+<area shape="rect" id="node8" href="$classcc_1_1ByteSource.html" title="Byte decoding sink. " alt="" coords="179,309,291,336"/>
+<area shape="rect" id="node9" href="$classcc_1_1Channel.html" title="Inter&#45;thread communication channel. " alt="" coords="136,360,335,387"/>
+<area shape="rect" id="node10" href="$classcc_1_1CircularBuffer.html" title="fixed size queue " alt="" coords="157,411,313,437"/>
+<area shape="rect" id="node11" href="$classcc_1_1CleanupGuard.html" title="Cleanup a directory at the end of the current scope. " alt="" coords="172,461,299,488"/>
+<area shape="rect" id="node12" href="$classcc_1_1ColorNames.html" title="Lookup table for SVG standard color names. " alt="" coords="177,512,294,539"/>
+<area shape="rect" id="node13" href="$classcc_1_1crypto_1_1BlockCipher.html" title="Cryptographic block cipher. " alt="" coords="156,563,315,589"/>
+<area shape="rect" id="node16" href="$classcc_1_1Date.html" title="Gregorian calendar dates. " alt="" coords="199,613,271,640"/>
+<area shape="rect" id="node17" href="$classcc_1_1FileLock.html" title="Advisory file locks. " alt="" coords="189,664,282,691"/>
+<area shape="rect" id="node18" href="$classcc_1_1FileStatus.html" title="Read File attributes. " alt="" coords="184,715,287,741"/>
+<area shape="rect" id="node19" href="$classcc_1_1Group.html" title="System group information. " alt="" coords="196,765,275,792"/>
+<area shape="rect" id="node20" href="$classcc_1_1IoEvent.html" title="I/O event. " alt="" coords="191,816,280,843"/>
+<area shape="rect" id="node21" href="$classcc_1_1IoMonitor.html" title="Register and wait for I/O events. " alt="" coords="186,867,285,893"/>
+<area shape="rect" id="node22" href="$classcc_1_1List.html" title="List data container " alt="" coords="187,917,284,944"/>
+<area shape="rect" id="node23" href="$classcc_1_1Map.html" title="Map data container " alt="" coords="157,968,314,995"/>
+<area shape="rect" id="node25" href="$classcc_1_1meta_1_1JsonWriter.html" title="Generate JSON representation of a meta object tree. " alt="" coords="163,1019,307,1045"/>
+<area shape="rect" id="node26" href="$classcc_1_1meta_1_1MetaProtocol.html" title="Duck&#45;typed object protocol. " alt="" coords="156,1069,315,1096"/>
+<area shape="rect" id="node27" href="$classcc_1_1meta_1_1YasonWriter.html" title="Generate YSON representation of a meta object tree. " alt="" coords="159,1120,312,1147"/>
+<area shape="rect" id="node28" href="$classcc_1_1Mutex.html" title="Thread synchronization primitive: mutual exclusive access " alt="" coords="195,1171,275,1197"/>
+<area shape="rect" id="node29" href="$classcc_1_1net_1_1NetworkInterface.html" title="Query network interface configuration: addresses, flags, etc. " alt="" coords="150,1221,321,1248"/>
+<area shape="rect" id="node30" href="$classcc_1_1net_1_1NetworkState.html" title="convenience class to query the current network configuration state " alt="" coords="160,1272,311,1299"/>
+<area shape="rect" id="node31" href="$classcc_1_1net_1_1SocketAddress.html" title="Socket address. " alt="" coords="156,1323,315,1349"/>
+<area shape="rect" id="node32" href="$classcc_1_1net_1_1Uri.html" title="Uniform Resource Indicator. " alt="" coords="192,1373,279,1400"/>
+<area shape="rect" id="node33" href="$classcc_1_1PriorityQueue.html" title="Priority based multi&#45;queue. " alt="" coords="158,1424,313,1451"/>
+<area shape="rect" id="node34" href="$classcc_1_1Queue.html" title="Waiting queue data container. " alt="" coords="178,1475,293,1501"/>
+<area shape="rect" id="node35" href="$classcc_1_1Random.html" title="Pseudo&#45;random number generator. " alt="" coords="189,1525,282,1552"/>
+<area shape="rect" id="node36" href="$classcc_1_1Range.html" title="Integer range. " alt="" coords="194,1576,277,1603"/>
+<area shape="rect" id="node37" href="$classcc_1_1ResourceContext.html" title="Cascaded resource context for error reporting. " alt="" coords="162,1627,309,1653"/>
+<area shape="rect" id="node38" href="$classcc_1_1Semaphore.html" title="waiting for a limited resource " alt="" coords="180,1677,291,1704"/>
+<area shape="rect" id="node39" href="$classcc_1_1Set.html" title="Set data countainer " alt="" coords="187,1728,283,1755"/>
+<area shape="rect" id="node40" href="$classcc_1_1SignalSet.html" title="Signal set. " alt="" coords="185,1779,285,1805"/>
+<area shape="rect" id="node41" href="$classcc_1_1Sink.html" title="Generic data sink. " alt="" coords="184,1829,287,1856"/>
+<area shape="rect" id="node42" href="$classcc_1_1Source.html" title="Generic data source. " alt="" coords="177,1880,294,1907"/>
+<area shape="rect" id="node43" href="$classcc_1_1Stack.html" title="Fixed&#45;size stack data container. " alt="" coords="180,1931,291,1957"/>
+<area shape="rect" id="node44" href="$classcc_1_1Stream.html" title="Abstract data stream. " alt="" coords="192,1981,279,2008"/>
+<area shape="rect" id="node68" href="$classcc_1_1SubProcess_1_1Params.html" title="Sub&#45;process creation parameters. " alt="" coords="151,2032,319,2059"/>
+<area shape="rect" id="node69" href="$classcc_1_1SubProcess_1_1Worker.html" title="Sub&#45;process worker delegate. " alt="" coords="153,2083,318,2109"/>
+<area shape="rect" id="node70" href="$classcc_1_1syntax_1_1SyntaxDefinition.html" title="Low&#45;level syntax definition. " alt="" coords="142,2133,329,2160"/>
+<area shape="rect" id="node76" href="$classcc_1_1syntax_1_1SyntaxState.html" title="Syntax match state. " alt="" coords="154,2184,317,2211"/>
+<area shape="rect" id="node77" href="$classcc_1_1Thread.html" title="Thread creation, signalling, termination " alt="" coords="193,2235,277,2261"/>
+<area shape="rect" id="node81" href="$classcc_1_1Tree.html" title="Generic tree structure. " alt="" coords="173,2285,298,2312"/>
+<area shape="rect" id="node82" href="$classcc_1_1Unicode.html" title="Seemless access to Unicode characters of an UTF&#45;8 encoded string. " alt="" coords="189,2336,281,2363"/>
+<area shape="rect" id="node83" href="$classcc_1_1UnlinkGuard.html" title="Automatically unlink a file at the end of the current scope. " alt="" coords="177,2387,293,2413"/>
+<area shape="rect" id="node84" href="$classcc_1_1User.html" title="System user information " alt="" coords="199,2437,271,2464"/>
+<area shape="rect" id="node85" href="$classcc_1_1Utf16Sink.html" title="Unicode UTF&#45;16 encoding data sink " alt="" coords="184,2488,287,2515"/>
+<area shape="rect" id="node86" href="$classcc_1_1Utf16Source.html" title="Unicode UTF&#45;16 decoding data source " alt="" coords="177,2539,294,2565"/>
+<area shape="rect" id="node87" href="$classcc_1_1Utf8Sink.html" title="Unicode UTF&#45;8 encoding data sink " alt="" coords="188,2589,283,2616"/>
+<area shape="rect" id="node88" href="$classcc_1_1Utf8Source.html" title="Unicode UTF&#45;8 decoding data source " alt="" coords="180,2640,291,2667"/>
+<area shape="rect" id="node89" href="$classcc_1_1WaitCondition.html" title="Wait condition. " alt="" coords="172,2691,299,2717"/>
+<area shape="rect" id="node90" href="$classccbuild_1_1BuildMap.html" title="keep track of build plans and target names " alt="" coords="173,2741,298,2768"/>
+<area shape="rect" id="node91" href="$classcc_1_1Channel.html" title="cc::Channel\&lt; bool \&gt;" alt="" coords="165,2792,305,2819"/>
+<area shape="rect" id="node92" href="$classcc_1_1Channel.html" title="cc::Channel\&lt; T \&gt;" alt="" coords="173,2843,297,2869"/>
+<area shape="rect" id="node93" href="$classcc_1_1List.html" title="cc::List\&lt; StoragePolicy\l\&lt; T \&gt;::StorageType \&gt;" alt="" coords="156,2894,315,2935"/>
+<area shape="rect" id="node94" href="$classcc_1_1Map.html" title="cc::Map\&lt; String, String \&gt;" alt="" coords="151,2960,320,2987"/>
+<area shape="rect" id="node95" href="$classcc_1_1Queue.html" title="cc::Queue\&lt; bool \&gt;" alt="" coords="170,3011,301,3037"/>
+<area shape="rect" id="node96" href="$classcc_1_1Queue.html" title="cc::Queue\&lt; cc::Ref\l\&lt; ByteArray \&gt; \&gt;" alt="" coords="167,3062,304,3103"/>
+<area shape="rect" id="node97" href="$classcc_1_1Queue.html" title="cc::Queue\&lt; int \&gt;" alt="" coords="175,3128,295,3155"/>
+<area shape="rect" id="node98" href="$classcc_1_1Source.html" title="cc::Source\&lt; String \&gt;" alt="" coords="164,3179,307,3205"/>
+<area shape="rect" id="node103" href="$classcc_1_1Tree.html" title="cc::Tree\&lt; PrefixTree\l\&lt; Char, Value \&gt; \&gt;" alt="" coords="164,3230,307,3271"/>
+<area shape="rect" id="node104" href="$classcc_1_1Tree.html" title="cc::Tree\&lt; SyntaxNode \&gt;" alt="" coords="152,3296,319,3323"/>
+<area shape="rect" id="node105" href="$classcc_1_1Tree.html" title="cc::Tree\&lt; Token \&gt;" alt="" coords="170,3347,301,3373"/>
+<area shape="rect" id="node14" href="$classcc_1_1crypto_1_1AesCipher.html" title="Rijndael Block Cipher according to the AES (FIPS&#45;197) &#160;rename to AesCipher. " alt="" coords="407,537,557,564"/>
+<area shape="rect" id="node15" href="$classcc_1_1crypto_1_1BlockCascade.html" title="CBC frontend. " alt="" coords="395,588,569,615"/>
+<area shape="rect" id="node24" href="$classcc_1_1meta_1_1MetaObject.html" title="Duck&#45;typed object. " alt="" coords="408,968,556,995"/>
+<area shape="rect" id="node45" href="$classcc_1_1CaptureSink.html" title="Capture output in memory. " alt="" coords="424,1424,540,1451"/>
+<area shape="rect" id="node46" href="$classcc_1_1crypto_1_1HashMeter.html" title="Hash sum computing stream. " alt="" coords="406,1475,558,1501"/>
+<area shape="rect" id="node47" href="$classcc_1_1crypto_1_1PseudoPad.html" title="pseudo random byte source " alt="" coords="405,1525,559,1552"/>
+<area shape="rect" id="node48" href="$classcc_1_1crypto_1_1RandomSource.html" title="pseudo random number source " alt="" coords="393,1576,571,1603"/>
+<area shape="rect" id="node49" href="$classcc_1_1HashSum.html" title="Hash sum interface. " alt="" coords="431,1627,533,1653"/>
+<area shape="rect" id="node54" href="$classcc_1_1HexDump.html" title="Hexdumping data sink. " alt="" coords="431,1677,533,1704"/>
+<area shape="rect" id="node55" href="$classcc_1_1NullStream.html" title="Zero storage information dump. " alt="" coords="427,1728,537,1755"/>
+<area shape="rect" id="node56" href="$classcc_1_1RandomSource.html" title="Random data source " alt="" coords="415,1779,549,1805"/>
+<area shape="rect" id="node57" href="$classcc_1_1ReplaySource.html" title="Feed in data from an in&#45;memory buffer. " alt="" coords="419,1829,545,1856"/>
+<area shape="rect" id="node58" href="$classcc_1_1stream_1_1LineBuffer.html" title="Line output buffer. " alt="" coords="407,1880,557,1907"/>
+<area shape="rect" id="node59" href="$classcc_1_1stream_1_1LookAheadStream.html" title="Look&#45;a&#45;head stream buffer. " alt="" coords="383,1931,581,1957"/>
+<area shape="rect" id="node60" href="$classcc_1_1stream_1_1StreamTap.html" title="Bi&#45;directional traffic redirection and duplication. " alt="" coords="404,1981,560,2008"/>
+<area shape="rect" id="node61" href="$classcc_1_1stream_1_1TransferLimiter.html" title="Traffic limiting stream. " alt="" coords="393,2032,571,2059"/>
+<area shape="rect" id="node62" href="$classcc_1_1stream_1_1TransferMeter.html" title="Transfer measuring stream. " alt="" coords="395,2083,569,2109"/>
+<area shape="rect" id="node63" href="$classcc_1_1SystemStream.html" title="Base class for all system streams. " alt="" coords="417,2133,547,2160"/>
+<area shape="rect" id="node50" href="$classcc_1_1Crc16.html" title="CRC&#45;16 check sum generator, according to RFC 1171. " alt="" coords="674,1551,753,1577"/>
+<area shape="rect" id="node51" href="$classcc_1_1Crc32.html" title="CRC&#45;32 check sum generator. " alt="" coords="674,1601,753,1628"/>
+<area shape="rect" id="node52" href="$classcc_1_1crypto_1_1Md5.html" title="Message Digest 5: a one&#45;way hash function. " alt="" coords="657,1652,770,1679"/>
+<area shape="rect" id="node53" href="$classcc_1_1crypto_1_1Sha1.html" title="Secure Hash 1: a one&#45;way hash function. " alt="" coords="654,1703,773,1729"/>
+<area shape="rect" id="node64" href="$classcc_1_1File.html" title="Handle files. " alt="" coords="681,2057,746,2084"/>
+<area shape="rect" id="node65" href="$classcc_1_1net_1_1DatagramSocket.html" title="datagram socket " alt="" coords="629,2108,797,2135"/>
+<area shape="rect" id="node66" href="$classcc_1_1net_1_1StreamSocket.html" title="Connection oriented byte&#45;sequential communication channel. " alt="" coords="637,2159,790,2185"/>
+<area shape="rect" id="node67" href="$classcc_1_1SubProcess.html" title="Spawned child process. " alt="" coords="656,2209,771,2236"/>
+<area shape="rect" id="node71" href="$classcc_1_1net_1_1InetAddressSyntax.html" title="Syntax of an internet address (IPv4 or IPv6) " alt="" coords="391,2184,573,2211"/>
+<area shape="rect" id="node72" href="$classcc_1_1net_1_1UriSyntax.html" title="Syntax of an URI. " alt="" coords="418,2235,546,2261"/>
+<area shape="rect" id="node73" href="$classcc_1_1regexp_1_1RegExpSyntax.html" title="Syntax of a regular expression text pattern. " alt="" coords="393,2285,571,2312"/>
+<area shape="rect" id="node74" href="$classcc_1_1syntax_1_1FloatSyntax.html" title="Syntax of a floating point literal. " alt="" coords="401,2336,563,2363"/>
+<area shape="rect" id="node75" href="$classcc_1_1syntax_1_1IntegerSyntax.html" title="Syntax of an integer literal. " alt="" coords="396,2387,568,2413"/>
+<area shape="rect" id="node78" href="$classcc_1_1Clock.html" title="Clock generator thread " alt="" coords="443,2437,521,2464"/>
+<area shape="rect" id="node79" href="$classcc_1_1SignalMaster.html" title="Signal handling thread in a mulithreaded application. " alt="" coords="422,2488,542,2515"/>
+<area shape="rect" id="node80" href="$classcc_1_1Timer.html" title="interval timer thread " alt="" coords="427,2539,537,2565"/>
+<area shape="rect" id="node99" href="$classcc_1_1Dir.html" title="Work with directory files. " alt="" coords="451,3103,513,3129"/>
+<area shape="rect" id="node100" href="$classcc_1_1DirWalker.html" title="Recursive directory tree walker. " alt="" coords="431,3153,533,3180"/>
+<area shape="rect" id="node101" href="$classcc_1_1LineSource.html" title="Line input buffer. " alt="" coords="427,3204,537,3231"/>
+<area shape="rect" id="node102" href="$classcc_1_1regexp_1_1Glob.html" title="Collect file names matching a globbing pattern. " alt="" coords="423,3255,541,3281"/>
+<area shape="rect" id="node106" href="$classcc_1_1syntax_1_1Token.html" title="Token tree. " alt="" coords="419,3347,545,3373"/>
+</map>

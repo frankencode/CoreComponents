@@ -1,37 +1,37 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_FILESTATUS_H
-#define FLUX_FILESTATUS_H
+#pragma once
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <flux/String>
-#include <flux/SystemStream>
+#include <cc/files>
+#include <cc/String>
+#include <cc/SystemStream>
 
-namespace flux {
+namespace cc {
 
 class File;
 
 typedef struct stat StructStat;
 
-/** \brief File attributes: ownership, file times, file size, etc.
+/** \brief Read %File attributes
+  * \see File
   */
 class FileStatus: public StructStat, public Object
 {
 public:
-    inline static Ref<FileStatus> read(int fd = -1) { return new FileStatus(fd); }
-    inline static Ref<FileStatus> read(SystemStream *stream) { return read(stream->fd()); }
-    inline static Ref<FileStatus> read(String path, bool resolve = true) { return new FileStatus(path, resolve); }
+    inline static Ref<FileStatus> read(String path = "", bool resolve = true) { return new FileStatus(path, resolve); }
+    inline static Ref<FileStatus> readUnresolved(String path) { return new FileStatus(path, false); }
 
     inline String path() const { return path_; }
 
-    inline int type() const  { return st_mode & S_IFMT; }
+    inline FileType type() const  { return FileType(st_mode & S_IFMT); }
     inline int mode() const { return st_mode & (~S_IFMT); }
 
     inline off_t size() const { return st_size; }
@@ -55,17 +55,13 @@ public:
     inline bool exists() const { return exists_; }
 
 private:
-    FileStatus(int fd);
     FileStatus(String path, bool resolve = true);
 
     bool update();
 
-    int fd_;
     String path_;
     bool exists_;
     bool resolve_;
 };
 
-} // namespace flux
-
-#endif // FLUX_FILESTATUS_H
+} // namespace cc

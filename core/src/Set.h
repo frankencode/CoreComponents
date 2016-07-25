@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_SET_H
-#define FLUX_SET_H
+#pragma once
 
-#include <flux/containers>
-#include <flux/OrdinalTree>
+#include <cc/containers>
+#include <cc/OrdinalTree>
 
-namespace flux {
+namespace cc {
 
-/** \brief Set data countainer
+/** \brief %Set data countainer
   */
 template<class T>
 class Set: public Object
@@ -33,7 +32,7 @@ public:
     inline const Item &at(int index) const {
         Node *node = 0;
         if (!tree_.lookupByIndex(index, &node))
-            FLUX_ASSERT(false);
+            CC_ASSERT(false);
         return node->item_;
     }
 
@@ -100,7 +99,7 @@ public:
 
     inline void pop(Item *item)
     {
-        FLUX_ASSERT(count() > 0);
+        CC_ASSERT(count() > 0);
         Node *k = tree_.min();
         *item = k->item_;
         tree_.remove(k);
@@ -126,6 +125,4 @@ private:
     Item nullItem_;
 };
 
-} // namespace flux
-
-#endif // FLUX_SET_HP
+} // namespace cc

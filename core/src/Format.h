@@ -1,19 +1,18 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_FORMAT_H
-#define FLUX_FORMAT_H
+#pragma once
 
-#include <flux/String>
-#include <flux/Variant>
-#include <flux/str>
+#include <cc/String>
+#include <cc/Variant>
+#include <cc/str>
 
-namespace flux {
+namespace cc {
 
 class FormatSignal {};
 
@@ -35,10 +34,9 @@ public:
     ~Format();
 
     Format(const Format &b);
+
     Format &operator=(const Format &b);
-
     Format &operator<<(const String &s);
-
     Format &operator<<(const FormatSignal &s);
 
     inline Format &operator<<(const ByteArray *s) {
@@ -73,6 +71,4 @@ public:
     inline const NullFormat &operator<<(T) const { return *this; }
 };
 
-} // namespace flux
-
-#endif // FLUX_FORMAT_H
+} // namespace cc

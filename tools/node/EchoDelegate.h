@@ -1,14 +1,14 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
 #include "ServiceDelegate.h"
 
-namespace fluxnode {
+namespace ccnode {
 
 class EchoDelegate: public ServiceDelegate
 {
@@ -17,27 +17,27 @@ public:
         return new EchoDelegate(worker);
     }
 
-    virtual void process(Request *request)
+    virtual void process(HttpRequest *request)
     {
         {
-            Format echo = chunk();
-            echo << request->method() << " " << request->target() << " " << request->version() << "\r\n";
+            Format echo = response()->chunk();
+            echo << request->method() << " " << request->uri() << " " << request->version() << "\r\n";
             for (int i = 0; i < request->count(); ++i)
                 echo << request->keyAt(i) << ": " << request->valueAt(i) << "\r\n";
             echo << "\r\n";
         }
-        Ref<ByteArray> buf = ByteArray::create(0x3FFF);
+        Ref<ByteArray> buf = ByteArray::allocate(0x4000);
         while (true) {
             int n = request->payload()->read(buf);
             if (n == 0) break;
-            write(buf->select(0, n));
+            response()->write(buf->select(0, n));
         }
     }
 
 private:
-    EchoDelegate(ServiceWorker *worker)
-        : ServiceDelegate(worker)
+    EchoDelegate(ServiceWorker *worker):
+        ServiceDelegate(worker)
     {}
 };
 
-} // namespace fluxnode
+} // namespace ccnode

@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_COLOR_H
-#define FLUX_COLOR_H
+#pragma once
 
-#include <flux/String>
+#include <cc/String>
 
-namespace flux {
+namespace cc {
 
 class Variant;
 
@@ -29,14 +28,16 @@ public:
         LastComponentIndex = RedIndex
     };
 
-    Color() {
+    Color()
+    {
         bytes_[AlphaIndex] = 0x00;
         bytes_[BlueIndex]  = 0xFF;
         bytes_[GreenIndex] = 0xFF;
         bytes_[RedIndex]   = 0xFF;
     }
 
-    Color(const char *s) {
+    Color(const char *s)
+    {
         bool ok = false;
         *this = parse(s, &ok);
         if (!ok) *this = Color();
@@ -85,6 +86,4 @@ protected:
 
 String str(Color c);
 
-} // namespace flux
-
-#endif // FLUX_COLOR_H
+} // namespace cc

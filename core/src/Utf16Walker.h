@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_UTF16WALKER_H
-#define FLUX_UTF16WALKER_H
+#pragma once
 
-#include <flux/types>
+#include <cc/types>
 
-namespace flux {
+namespace cc {
 
 /** \brief Iterating UTF-16 encoded strings
   *
@@ -33,10 +32,10 @@ namespace flux {
 class Utf16Walker
 {
 public:
-    Utf16Walker(const uint16_t *data = 0, const uint16_t *pos = 0, int endian = localEndian())
-        : s_(data),
-          p_(pos),
-          endian_(endian)
+    Utf16Walker(const uint16_t *data = 0, const uint16_t *pos = 0, int endian = localEndian()):
+        s_(data),
+        p_(pos),
+        endian_(endian)
     {
         if (!p_) p_ = (s_) ? s_ : beforeBegin();
         if (readWord(*p_) == 0xFFFE) {
@@ -47,10 +46,10 @@ public:
         }
     }
 
-    Utf16Walker(const Utf16Walker &b)
-        : s_(b.s_),
-          p_(b.p_),
-          endian_(b.endian_)
+    Utf16Walker(const Utf16Walker &b):
+        s_(b.s_),
+        p_(b.p_),
+        endian_(b.endian_)
     {}
 
     // prefix increment
@@ -183,6 +182,4 @@ private:
     int endian_;
 };
 
-} // namespace flux
-
-#endif // FLUX_UTF16WALKER_H
+} // namespace cc

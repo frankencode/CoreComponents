@@ -1,19 +1,18 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTOKI_PALETTE_H
-#define FLUXTOKI_PALETTE_H
+#pragma once
 
-#include <flux/syntax/SyntaxDefinition>
-#include <flux/meta/MetaObject>
-#include <flux/toki/Style>
+#include <cc/syntax/SyntaxDefinition>
+#include <cc/meta/MetaObject>
+#include <cc/toki/Style>
 
-namespace flux {
+namespace cc {
 namespace toki {
 
 using namespace yason;
@@ -61,6 +60,5 @@ private:
     Ref<StyleByRule> styleByRule_;
 };
 
-}} // namespace flux::toki
+}} // namespace cc::toki
 
-#endif // FLUXTOKI_PALETTE_H

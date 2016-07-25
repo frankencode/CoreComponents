@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_SINGLETON_H
-#define FLUX_SINGLETON_H
+#pragma once
 
-#include <flux/Object>
-#include <flux/Ref>
-#include <flux/LocalStatic>
-#include <flux/ThreadLocalSingleton>
+#include <cc/Object>
+#include <cc/Ref>
+#include <cc/LocalStatic>
+#include <cc/ThreadLocalSingleton>
 
-namespace flux {
+namespace cc {
 
 template<class SubClass>
 class Singleton;
@@ -38,8 +37,8 @@ template<class SubClass>
 class CoreSingletonWrapper: public Object
 {
 public:
-    CoreSingletonWrapper()
-        : instance_(CoreSingleton<SubClass>::instance())
+    CoreSingletonWrapper():
+        instance_(CoreSingleton<SubClass>::instance())
     {}
     Ref<SubClass> instance_;
 };
@@ -58,6 +57,4 @@ private:
     inline static SubClass *create() { return new SubClass; }
 };
 
-} // namespace flux
-
-#endif // FLUX_SINGLETON_H
+} // namespace cc

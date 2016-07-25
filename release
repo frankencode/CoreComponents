@@ -1,0 +1,40 @@
+#! /bin/bash
+
+if test $# -ne 1; then
+    echo "Usage: $TOOL <version>"
+    echo "Create a new source release package"
+    exit 1
+fi
+
+set -o pipefail
+set -o errexit
+
+VERSION=$1
+SOURCE=$(realpath $(dirname $0))
+PACKAGE=$(basename $SOURCE)
+TOOL=$(basename $0)
+
+echo "Check Recipe version..."
+if ! cat $SOURCE/Recipe|grep $VERSION; then
+    echo "Version mismatch, update Recipe!"
+    exit 1
+fi
+
+echo "Update bootstrap file..."
+rm -rf /tmp/cc_bootstrap
+mkdir -p /tmp/cc_bootstrap
+pushd /tmp/cc_bootstrap
+ccbuild -bootstrap -release $SOURCE/tools/build > $SOURCE/tools/build/bootstrap
+popd
+
+echo "Create source tarball..."
+pushd $SOURCE/..
+rm -rf $PACKAGE-$VERSION
+cp -a $PACKAGE $PACKAGE-$VERSION
+rm $PACKAGE-$VERSION/.fslckout || true
+rm $PACKAGE-$VERSION/*.fossil || true
+rm $PACKAGE-$VERSION/doc/.make_docs.swp || true
+tar -cv $PACKAGE-$VERSION | gzip --best > $PACKAGE-$VERSION.tar.gz
+printf "md5\t$(ccmd5 $PACKAGE-$VERSION.tar.gz)\n" > $PACKAGE-$VERSION.hash
+printf "sha1\t$(ccsha1 $PACKAGE-$VERSION.tar.gz)\n" >> $PACKAGE-$VERSION.hash
+popd

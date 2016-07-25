@@ -1,5 +1,5 @@
 Library {
-    name: fluxabnf
-    source: *.cpp
+    name: ccabnf
+    source: *.cc
     use: [ core, syntax ]
 }

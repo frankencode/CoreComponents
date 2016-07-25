@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_UNICODE_H
-#define FLUX_UNICODE_H
+#pragma once
 
-#include <flux/ByteArray>
-#include <flux/Utf8Walker>
+#include <cc/ByteArray>
+#include <cc/Utf8Walker>
 
-namespace flux {
+namespace cc {
 
-/** \brief Seemless access to Unicode characters of an UTF-8 encoded string
+/** \brief Seemless access to %Unicode characters of an UTF-8 encoded string
   * \see String
   */
 class Unicode: public Object
@@ -48,14 +47,18 @@ public:
         return n_;
     }
 
+    inline int offset() const {
+        return walker_.pos() - walker_.data();
+    }
+
     Ref<ByteArray> copy(int i0, int i1) const;
     inline Ref<ByteArray> head(int n) const { return copy(0, n); }
     inline Ref<ByteArray> tail(int n) const { return copy(count() - n, n); }
 
-    inline const char *byte(int i) const {
+    /*inline const char *byte(int i) const {
         walkTo(i);
         return walker_.pos();
-    }
+    }*/
 
     inline int index(const char *pos) const {
         if (!walker_.valid()) {
@@ -88,6 +91,4 @@ private:
     mutable int i_, n_;
 };
 
-} // namespace flux
-
-#endif // FLUX_UNICODE_H
+} // namespace cc

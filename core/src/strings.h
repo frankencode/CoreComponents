@@ -1,22 +1,21 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_STRINGS_H
-#define FLUX_STRINGS_H
+#pragma once
 
 /** \brief Low-level C-string helper functions
   * \file strings
   */
 
 #include <string.h> // memset, memcpy, strcmp
-#include <flux/types>
+#include <cc/types>
 
-namespace flux {
+namespace cc {
 
 inline void *malloc(size_t size) { return (void* )new char[size]; }
 inline void free(void *p) { delete[](char *)p; }
@@ -61,6 +60,5 @@ char *strcat(const char *s0, const char *s1 = 0, const char *s2 = 0, const char 
 char *intToStr(int value);
 int strToInt(const char *s, int i0 = 0, int i1 = intMax, int base = 10);
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_STRINGS_H

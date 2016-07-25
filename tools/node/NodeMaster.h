@@ -1,24 +1,23 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_NODEMASTER_H
-#define FLUXNODE_NODEMASTER_H
+#pragma once
 
-#include <flux/Thread>
+#include <cc/Thread>
 
-namespace flux {
+namespace cc {
     template<class> class Singleton;
     class SignalMaster;
 }
 
-namespace fluxnode {
+namespace ccnode {
 
-using namespace flux;
+using namespace cc;
 
 class NodeMaster: public Thread
 {
@@ -37,6 +36,5 @@ private:
     int exitCode_;
 };
 
-} // namespace fluxnode
+} // namespace ccnode
 
-#endif // FLUXNODE_NODEMASTER_H

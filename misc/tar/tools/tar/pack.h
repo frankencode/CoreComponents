@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#include <flux/String>
-#include <flux/tar/ArchiveWriter>
+#include <cc/String>
+#include <cc/tar/ArchiveWriter>
 
-namespace fluxtar {
+namespace cctar {
 
-using namespace flux;
-using namespace flux::tar;
+using namespace cc;
+using namespace cc::tar;
 
 void pack(String path, ArchiveWriter *archive, bool verbose);
 
-} // namespace fluxtar
+} // namespace cctar

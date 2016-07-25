@@ -1,19 +1,18 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_REF_H
-#define FLUX_REF_H
+#pragma once
 
-#include <flux/types>
+#include <cc/types>
 
-namespace flux {
+namespace cc {
 
-/** \brief Object references
+/** \brief %Object references
   *
   * The Ref template class implements object references that behave similiar to object
   * references in higher level languages, like for instance Java. The references can
@@ -45,6 +44,10 @@ namespace flux {
   * never hold a reference to the same object at the same time (shared nothing architecture).
   * If nevertheless objects need to be shared amoung threads at the same time (for instance a singleton)
   * make sure those objects are immutable and cannot be modified accidentally after construction.
+  *   The only copy automatism the Ref template class implements is preemptive copy on assignment of a
+  * const pointer (const T *). In this case a T::copy(const T *) is called to create a copy of the
+  * of the object before assignment. This copying is needed because each Ref<T> allows modification
+  * of the referenced object.
   *
   * \see Singleton
   */
@@ -53,25 +56,39 @@ class Ref
 {
 public:
     Ref(): a_(0) {}
-    ~Ref() { set(0); }
-
-    Ref(T *b): a_(0) { set(b); }
+    Ref(Ref &&b): a_(b.a_) { b.a_ = 0; }
     Ref(const Ref &b): a_(0) { set(b.a_); }
-
-    template<class T2> Ref(T2 *b): a_(0) { set(cast<T>(b)); }
     template<class T2> Ref(const Ref<T2> &b): a_(0) { set(cast<T>(b.get())); }
 
-    inline const Ref &operator=(T *b) { set(b); return *this; }
+    Ref(T *b): a_(0) { set(b); }
+    template<class T2> Ref(T2 *b): a_(0) { set(cast<T>(b)); }
+    template<class T2> Ref(const T2 *b): a_(0) { set(T::copy(cast<const T>(b))); }
+
+    ~Ref() { set(0); }
+
+    inline const Ref &operator=(Ref &&b) { set(0); a_ = b.a_; b.a_ = 0; return *this; }
     inline const Ref &operator=(const Ref &b) { set(b.a_); return *this; }
+    inline const Ref &operator=(T *b) { set(b); return *this; }
     inline operator T *() const { return a_; }
 
     template<class T2> inline const Ref &operator=(T2 *b) { set(cast<T>(b)); return *this; }
+    template<class T2> inline const Ref &operator=(const T2 *b) { set(T::copy(cast<const T>(b))); return *this; }
     template<class T2> inline const Ref &operator=(const Ref<T2> &b) { set(cast<T>(b.get())); return *this; }
 
     inline bool operator<(const Ref &b) const { return a_ < b.a_; }
 
-    inline T *operator->() const {
-        FLUX_ASSERT2(a_, "Null reference accessed");
+    inline T &operator*() {
+        CC_ASSERT2(a_, "Null reference accessed");
+        return *a_;
+    }
+
+    inline T *operator->() {
+        CC_ASSERT2(a_, "Null reference accessed");
+        return a_;
+    }
+
+    inline const T *operator->() const {
+        CC_ASSERT2(a_, "Null reference accessed");
         return a_;
     }
 
@@ -85,16 +102,19 @@ public:
         }
     }
 
+    /// helper method to support implicit deep copies of object lists
+    inline static Ref copy(const Ref &b) { return T::copy(b.a_); }
+
     template<class T2>
     inline Ref<T> &operator<<(T2 x) {
-        FLUX_ASSERT2(a_, "Null reference on shift left");
+        CC_ASSERT2(a_, "Null reference on shift left");
         *a_ << x;
         return *this;
     }
 
     template<class T2>
     inline Ref<T> &operator>>(T2 &x) {
-        FLUX_ASSERT2(a_, "Null reference on shift right");
+        CC_ASSERT2(a_, "Null reference on shift right");
         *a_ >> x;
         return *this;
     }
@@ -106,6 +126,4 @@ private:
 template<class U, class T>
 inline U *cast(const Ref<T>& p) { return cast<U>(p.get()); }
 
-} // namespace flux
-
-#endif // FLUX_REF_H
+} // namespace cc

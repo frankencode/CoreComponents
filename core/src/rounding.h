@@ -1,13 +1,12 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_ROUNDING_H
-#define FLUX_ROUNDING_H
+#pragma once
 
 /** \file rounding
   * \brief Mathematical rounding helper functions
@@ -15,7 +14,7 @@
 
 #include <math.h>
 
-namespace flux {
+namespace cc {
 
 inline double roundToZero(double x)
 {
@@ -73,8 +72,6 @@ X roundDownToNext(G g, X x) { return x - x % g; }
 /** round x up to the next multiple of a whole number g
   */
 template<class G, class X>
-X roundUpToNext(G g, X x) { return x - x % g + g; }
+X roundUpToNext(G g, X x) { return x - x % g + (x % g != 0 ? g : 0); }
 
-} // namespace flux
-
-#endif // FLUX_ROUNDING_H
+} // namespace cc

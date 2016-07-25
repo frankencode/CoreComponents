@@ -1,61 +1,62 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_SERVICEINSTANCE_H
-#define FLUXNODE_SERVICEINSTANCE_H
+#pragma once
 
-#include <flux/List>
-#include <flux/regexp/RegExp>
+#include <cc/List>
+#include <cc/regexp/RegExp>
 #include "LogConfig.h"
 
-namespace flux { namespace meta { class MetaObject; } }
+namespace cc { namespace meta { class MetaObject; } }
 
-namespace fluxnode {
+namespace ccnode {
 
-using namespace flux;
-using namespace flux::regexp;
+using namespace cc;
+using namespace cc::regexp;
 
 class ServiceDelegate;
 class ServiceWorker;
+class SecurityConfig;
+class SecurityMaster;
 
 class ServiceInstance: public Object
 {
 public:
     virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const = 0;
 
-    inline String serviceName() const { return serviceName_; }
+    String serviceName() const { return serviceName_; }
 
-    inline int concurrency() const { return concurrency_; }
-    inline double connectionTimeout() const { return connectionTimeout_; }
-    inline RegExp host() const { return host_; }
-    inline RegExp uri() const { return uri_; }
+    int requestLimit() const { return requestLimit_; }
+    int requestPayloadLimit() const { return requestPayloadLimit_; }
+    RegExp host() const { return host_; }
+    RegExp uri() const { return uri_; }
 
-    inline LogConfig *errorLogConfig() const { return errorLogConfig_; }
-    inline LogConfig *accessLogConfig() const { return accessLogConfig_; }
-    inline LogConfig *visitLogConfig() const { return visitLogConfig_; }
+    SecurityConfig *security() const { return security_; }
+
+    LogConfig *errorLogConfig() const { return errorLogConfig_; }
+    LogConfig *accessLogConfig() const { return accessLogConfig_; }
 
 protected:
     ServiceInstance(MetaObject *config);
+    ~ServiceInstance();
 
     String serviceName_;
 
-    int concurrency_;
-    double connectionTimeout_;
+    int requestLimit_;
+    int requestPayloadLimit_;
     RegExp host_;
     RegExp uri_;
 
+    Ref<SecurityConfig> security_;
     Ref<LogConfig> errorLogConfig_;
     Ref<LogConfig> accessLogConfig_;
-    Ref<LogConfig> visitLogConfig_;
 };
 
 typedef List< Ref<ServiceInstance> > ServiceInstances;
 
-} // namespace fluxnode
-
-#endif // FLUXNODE_SERVICEINSTANCE_H
+} // namespace ccnode

@@ -1,13 +1,12 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_TYPES_H
-#define FLUX_TYPES_H
+#pragma once
 
 /** \file types
   * \brief Low-level types and type conversions
@@ -15,21 +14,21 @@
 
 #include <sys/types.h> // ssize_t, etc.
 #include <stdint.h> // (u)int8_t .. (u)int64_t
-#include <flux/assert>
+#include <cc/assert>
 
 typedef float float32_t;
 typedef double float64_t;
 
-namespace flux {
+namespace cc {
 
 enum Endian { LittleEndian = 1, BigEndian = 0 };
 
-inline int localEndian() {
+inline Endian localEndian() {
     const unsigned y = 1;
-    return *((uint8_t *)&y);
+    return Endian(*((uint8_t *)&y));
 }
 
-// swap endianess, if local endian is unequal channel endian
+//! swap endianess, if local endian is unequal channel endian
 template<class UInt>
 inline UInt endianGate(UInt x, const int channelEndian = BigEndian)
 {
@@ -49,7 +48,7 @@ template<class B, class A>
 inline B union_cast(A a)
 {
     union Bimorph { A a; B b; };
-    FLUX_ASSERT(sizeof(A) == sizeof(B));
+    CC_ASSERT(sizeof(A) == sizeof(B));
     Bimorph morph;
     morph.a = a;
     return morph.b;
@@ -84,7 +83,7 @@ template<> class IsAtomic<const float64_t> { public: enum { value = 1 }; };
 template<> class IsAtomic<const bool> { public: enum { value = 1 }; };
 template<class T> class IsAtomic<const T*> { public: enum { value = 1 }; };
 
-#define FLUX_IS_ATOMIC(T) (IsAtomic<const T>::value == 1)
+#define CC_IS_ATOMIC(T) (IsAtomic<const T>::value == 1)
 
 struct None {};
 
@@ -135,7 +134,19 @@ public:
     inline static U *cast(T *p) { return static_cast<U*>(p); }
 };
 
-#define FLUX_CAST_FROM_TO(T, U, p) CastHelper<T, U, ConversionFromTo<T*, U*>::Exists>::cast(p)
+template<class T>
+class CastHelper<T, T, 1> {
+public:
+    inline static T *cast(T *p) { return p; }
+};
+
+template<class T>
+class CastHelper<const T, T, 1> {
+public:
+    inline static T *cast(T *p) { return p; }
+};
+
+#define CC_CAST_FROM_TO(T, U, p) CastHelper<T, U, ConversionFromTo<T*, U*>::Exists>::cast(p)
 
 template<class U, class T>
 inline U *cast(T *p) { return CastHelper<T, U, ConversionFromTo<T*, U*>::Exists>::cast(p); }
@@ -183,13 +194,13 @@ public:
 template<class T>
 class ToLower {
 public:
-    inline static T map(const T &x) { return flux::downcase(x); }
+    inline static T map(const T &x) { return cc::downcase(x); }
 };
 
 template<class T>
 class ToUpper {
 public:
-    inline static T map(const T &x) { return flux::upcase(x); }
+    inline static T map(const T &x) { return cc::upcase(x); }
 };
 
 template<class T>
@@ -212,6 +223,4 @@ protected:
     const NonCopyable &operator=(const NonCopyable &b);
 };
 
-} // namespace flux
-
-#endif // FLUX_TYPES_H
+} // namespace cc

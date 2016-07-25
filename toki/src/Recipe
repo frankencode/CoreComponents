@@ -1,6 +1,6 @@
 Library {
-    name: fluxtoki
-    source: *.cpp
+    name: cctoki
+    source: *.cc
     bundle: themes/*
     use: [ core, syntax, regexp, meta ]
 }

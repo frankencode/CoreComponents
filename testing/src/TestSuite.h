@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTESTING_TESTSUITE_H
-#define FLUXTESTING_TESTSUITE_H
+#pragma once
 
-#include <flux/String>
-#include <flux/testing/TestCase>
+#include <cc/String>
+#include <cc/testing/TestCase>
 
-namespace flux { template<class> class Singleton; }
+namespace cc { template<class> class Singleton; }
 
-namespace flux {
+namespace cc {
 namespace testing {
 
 class TestReport;
@@ -22,6 +21,8 @@ class TestReport;
 class TestSuite: public Object
 {
 public:
+    static TestSuite *instance();
+
     inline String name() const { return name_; }
     inline String execPath() const { return execPath_; }
 
@@ -59,20 +60,16 @@ private:
     int totalFailureCount_;
 };
 
-TestSuite *testSuite();
+#define CC_TESTSUITE_ADD(CustomTestCase) \
+    TestSuite::instance()->add<CustomTestCase>(#CustomTestCase, false)
 
-#define FLUX_TESTSUITE_ADD(CustomTestCase) \
-    testSuite()->add<CustomTestCase>(#CustomTestCase, false)
+#define CC_TESTSUITE_SKIP(CustomTestCase) \
+    TestSuite::instance()->add<CustomTestCase>(#CustomTestCase, true)
 
-#define FLUX_TESTSUITE_SKIP(CustomTestCase) \
-    testSuite()->add<CustomTestCase>(#CustomTestCase, true)
+#define CC_VERIFY(condition) \
+    TestSuite::instance()->verify(condition, "", #condition, __FILE__, __LINE__)
 
-#define FLUX_VERIFY(condition) \
-    testSuite()->verify(condition, "", #condition, __FILE__, __LINE__)
+#define CC_VERIFY2(condition, description) \
+    TestSuite::instance()->verify(condition, description, #condition, __FILE__, __LINE__)
 
-#define FLUX_VERIFY2(condition, description) \
-    testSuite()->verify(condition, description, #condition, __FILE__, __LINE__)
-
-}} // namespace flux::testing
-
-#endif // FLUXTESTING_TESTSUITE_H
+}} // namespace cc::testing

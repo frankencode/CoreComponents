@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_CHANNEL_H
-#define FLUX_CHANNEL_H
+#pragma once
 
-#include <flux/Queue>
-#include <flux/Mutex>
-#include <flux/Guard>
-#include <flux/WaitCondition>
+#include <cc/Queue>
+#include <cc/Mutex>
+#include <cc/Guard>
+#include <cc/WaitCondition>
 
-namespace flux {
+namespace cc {
 
 /** \brief Inter-thread communication channel
   * \see Queue, PriorityQueue
@@ -86,16 +85,6 @@ public:
 
     inline int count() const { Guard<Mutex> guard(mutex_); return queue_->count(); }
 
-    T waitNext(T *item = 0)
-    {
-        Guard<Mutex> guard(mutex_);
-        while (queue_->count() == 0)
-            notEmpty_->wait(mutex_);
-        T h = queue_->front();
-        if (item) *item = h;
-        return h;
-    }
-
 protected:
     Channel():
         queue_(QueueType<T>::create()),
@@ -109,6 +98,4 @@ private:
     Ref<WaitCondition> notEmpty_;
 };
 
-} // namespace flux
-
-#endif // FLUX_CHANNEL_H
+} // namespace cc

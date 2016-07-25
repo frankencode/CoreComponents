@@ -1,12 +1,19 @@
-#ifndef FLUX_EVENT_H
-#define FLUX_EVENT_H
+/*
+ * Copyright (C) 2007-2016 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
 
-#include <flux/Object>
-#include <flux/Map>
-#include <flux/Set>
-#include <flux/List>
+#pragma once
 
-namespace flux {
+#include <cc/Object>
+#include <cc/Map>
+#include <cc/Set>
+#include <cc/List>
+
+namespace cc {
 
 template<class Value>
 class Callback: public Object {
@@ -55,6 +62,10 @@ class Event: public ConnectionEndPoint
 public:
     inline static Ref<Event> create() { return new Event; }
 
+    ~Event() {
+        disconnectAll();
+    }
+
     template<class Recipient>
     void connect(Recipient *recipient, void (Recipient::* method)(Value))
     {
@@ -77,6 +88,16 @@ public:
 
         if (callbacks_->remove(recipient));
         reverseDisconnect(this, recipient);
+    }
+
+    void disconnectAll()
+    {
+        if (!callbacks_) return;
+
+        for (int i = 0; i < callbacks_->count(); ++i)
+            reverseDisconnect(this, callbacks_->keyAt(i));
+
+        callbacks_ = 0;
     }
 
     void notify(Value value)
@@ -103,28 +124,26 @@ class Recipient
 {
 protected:
     Recipient():
-        triggers_(Triggers::create())
+        events_(Events::create())
     {}
 
     ~Recipient() {
-        for (int i = 0; i < triggers_->count(); ++i)
-            triggers_->at(i)->disconnect(this);
+        while (events_->count() > 0)
+            events_->at(0)->disconnect(this);
     }
 
 private:
     friend class ConnectionEndPoint;
 
-    typedef Set< Ref<ConnectionEndPoint> > Triggers;
-    Ref<Triggers> triggers_;
+    typedef Set<ConnectionEndPoint *> Events;
+    Ref<Events> events_;
 };
 
-inline void ConnectionEndPoint::reverseConnect(ConnectionEndPoint *signal, Recipient *recipient) {
-    recipient->triggers_->insert(signal);
+inline void ConnectionEndPoint::reverseConnect(ConnectionEndPoint *event, Recipient *recipient) {
+    recipient->events_->insert(event);
 }
-inline void ConnectionEndPoint::reverseDisconnect(ConnectionEndPoint *signal, Recipient *recipient) {
-    recipient->triggers_->remove(signal);
+inline void ConnectionEndPoint::reverseDisconnect(ConnectionEndPoint *event, Recipient *recipient) {
+    recipient->events_->remove(event);
 }
 
-} // namespace flux
-
-#endif // FLUX_EVENT_H
+} // namespace cc

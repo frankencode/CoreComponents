@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXCLAIM_NOTICE_H
-#define FLUXCLAIM_NOTICE_H
+#pragma once
 
 #include "Copyright.h"
 #include "Header.h"
 
-namespace fluxclaim {
+namespace ccclaim {
 
-using namespace flux;
+using namespace cc;
 
 class Notice: public Object
 {
@@ -39,6 +38,5 @@ private:
     Ref<Header> header_;
 };
 
-} // namespace fluxclaim
+} // namespace ccclaim
 
-#endif // FLUXCLAIM_NOTICE_H

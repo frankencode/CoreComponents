@@ -1,25 +1,23 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTAR_UNPACK_H
-#define FLUXTAR_UNPACK_H
+#pragma once
 
-#include <flux/tar/ArchiveReader>
+#include <cc/tar/ArchiveReader>
 
-namespace fluxtar {
+namespace cctar {
 
-using namespace flux;
-using namespace flux::tar;
+using namespace cc;
+using namespace cc::tar;
 
 void list(ArchiveReader *archive);
 void status(ArchiveReader *archive);
 void unpack(ArchiveReader *archive, bool verbose);
 
-} // namespace fluxtar
+} // namespace cctar
 
-#endif // FLUXTAR_UNPACK_H

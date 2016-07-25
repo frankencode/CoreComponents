@@ -1,18 +1,17 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_SIGNALSET_H
-#define FLUX_SIGNALSET_H
+#pragma once
 
 #include <signal.h>
-#include <flux/Singleton>
+#include <cc/Singleton>
 
-namespace flux {
+namespace cc {
 
 class Thread;
 
@@ -50,6 +49,5 @@ private:
     sigset_t rawSet_;
 };
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_SIGNALSET_H

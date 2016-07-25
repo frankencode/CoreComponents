@@ -1,0 +1,11 @@
+Application {
+    name: ccaes
+    alias: ccunaes
+    source: *.cc
+    use: [ core, crypto ]
+    SystemPrerequisite {
+        name: readline
+        include-test: readline/readline.h
+        link: readline
+    }
+}

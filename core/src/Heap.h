@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_HEAP_H
-#define FLUX_HEAP_H
+#pragma once
 
-#include <flux/containers>
+#include <cc/containers>
 
-namespace flux {
+namespace cc {
 
 template<class T, template<class> class Order = Ascending>
 class GenericHeap: public Object, public Order<T>
@@ -33,7 +32,7 @@ public:
 
     inline void push(const T &item)
     {
-        FLUX_ASSERT(fill_ < size_);
+        CC_ASSERT(fill_ < size_);
         buf_[fill_] = item;
         ++fill_;
         passUpLast();
@@ -41,7 +40,7 @@ public:
 
     inline void pop(T *item)
     {
-        FLUX_ASSERT(fill_ > 0);
+        CC_ASSERT(fill_ > 0);
         *item = buf_[0];
         --fill_;
         buf_[0] = buf_[fill_];
@@ -54,7 +53,7 @@ public:
         return item;
     }
 
-    inline T top() { FLUX_ASSERT(!isEmpty()); return buf_[0]; }
+    inline T top() { CC_ASSERT(!isEmpty()); return buf_[0]; }
 
     inline void clear() { fill_ = 0; }
 
@@ -193,6 +192,5 @@ private:
     MaxHeap(T *buf, int size): GenericHeap<T, Descending>(buf, size) {}
 };
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_HEAP_H

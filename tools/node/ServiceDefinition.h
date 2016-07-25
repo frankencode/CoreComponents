@@ -1,22 +1,20 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_SERVICEDEFINITION_H
-#define FLUXNODE_SERVICEDEFINITION_H
+#pragma once
 
-// #include <flux/regexp/RegExp>
-#include <flux/meta/yason>
+#include <cc/meta/yason>
 #include "ServiceDelegate.h"
 #include "ServiceInstance.h"
 
-namespace fluxnode {
+namespace ccnode {
 
-using namespace flux;
+using namespace cc;
 
 class ServicePrototype: public MetaObject
 {
@@ -36,6 +34,4 @@ public:
     virtual Ref<ServiceInstance> createInstance(MetaObject *config) const = 0;
 };
 
-} // namespace fluxnode
-
-#endif // FLUXNODE_SERVICEDEFINITION_H
+} // namespace ccnode

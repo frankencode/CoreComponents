@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXCRYPTO_SHA1_H
-#define FLUXCRYPTO_SHA1_H
+#pragma once
 
-#include <flux/crypto/HashSum>
+#include <cc/HashSum>
 
-namespace flux {
+namespace cc {
 namespace crypto {
 
 /** \brief Secure Hash 1: a one-way hash function
@@ -23,7 +22,7 @@ public:
 
     static Ref<Sha1> create();
 
-    virtual void feed(const ByteArray *data);
+    virtual void write(const ByteArray *data);
     virtual Ref<ByteArray> finish();
 
 private:
@@ -39,6 +38,4 @@ private:
 
 Ref<ByteArray> sha1(const ByteArray *data);
 
-}} // namespace flux::crypto
-
-#endif // FLUXCRYPTO_SHA1_H
+}} // namespace cc::crypto

@@ -1,5 +1,5 @@
 Library {
-    name: fluxtesting
-    source: *.cpp
+    name: cctesting
+    source: *.cc
     use: core
 }

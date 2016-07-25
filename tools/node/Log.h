@@ -1,24 +1,21 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_LOG_H
-#define FLUXNODE_LOG_H
+#pragma once
 
-#include <flux/Date>
-#include <flux/Stream>
-#include <flux/Mutex>
+#include <cc/Date>
+#include <cc/Stream>
+#include <cc/Mutex>
 #include "LogConfig.h"
 
-namespace fluxnode {
+namespace ccnode {
 
-using namespace flux;
-
-class LogMaster;
+using namespace cc;
 
 enum LogLevel {
     SilentLogLevel  = 0,
@@ -56,7 +53,6 @@ protected:
     ~Log();
 
 private:
-    Ref<LogMaster> logMaster_;
     Ref<Mutex> mutex_;
     Ref<LogConfig> config_;
     Ref<Stream> errorStream_;
@@ -66,6 +62,4 @@ private:
     Ref<Stream> debugStream_;
 };
 
-} // namespace fluxnode
-
-#endif // FLUXNODE_LOG_H
+} // namespace ccnode

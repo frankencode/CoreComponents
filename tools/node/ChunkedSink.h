@@ -1,27 +1,26 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_CHUNKEDSINK_H
-#define FLUXNODE_CHUNKEDSINK_H
+#pragma once
 
-#include <flux/Stream>
+#include <cc/Stream>
 
-namespace fluxnode {
+namespace ccnode {
 
-using namespace flux;
+using namespace cc;
 
 class ChunkedSink: public Stream
 {
 public:
     static Ref<ChunkedSink> open(Stream *stream);
 
-    virtual void write(const ByteArray *buf);
-    virtual void write(const StringList *parts);
+    void write(const ByteArray *data) override;
+    void write(const StringList *parts) override;
 
 private:
     ChunkedSink(Stream *client);
@@ -29,6 +28,4 @@ private:
     Ref<Stream> stream_;
 };
 
-} // namespace fluxnode
-
-#endif // FLUXNODE_CHUNKEDSINK_H
+} // namespace ccnode

@@ -1,21 +1,20 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXCLAIM_HEADER_H
-#define FLUXCLAIM_HEADER_H
+#pragma once
 
-#include <flux/String>
-#include <flux/syntax/Token>
+#include <cc/String>
+#include <cc/syntax/Token>
 
-namespace fluxclaim {
+namespace ccclaim {
 
-using namespace flux;
-using namespace flux::syntax;
+using namespace cc;
+using namespace cc::syntax;
 
 class Header: public Object
 {
@@ -43,6 +42,5 @@ private:
     String message_;
 };
 
-} // namespace fluxclaim
+} // namespace ccclaim
 
-#endif // FLUXCLAIM_HEADER_H

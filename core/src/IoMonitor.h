@@ -1,66 +1,62 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_IOMONITOR_H
-#define FLUX_IOMONITOR_H
+#pragma once
 
-#include <poll.h>
-#include <flux/SystemStream>
-#include <flux/Array>
-#include <flux/Map>
+#include <cc/Array>
+#include <cc/Map>
+#include <cc/IoTarget>
+#include <cc/SystemIo>
 
-namespace flux {
+namespace cc {
 
 /** \brief I/O event
   */
 class IoEvent: public Object
 {
 public:
-    enum Type {
-        ReadyRead = POLLIN,
-        ReadyWrite = POLLOUT,
-        ReadyAccept = ReadyRead
-    };
-
-    inline SystemStream *stream() const { return stream_; }
     inline int type() const { return type_; }
+    inline int ready() const { return ready_; }
+    inline IoTarget *target() const { return target_; } // FIXME: media
 
 private:
     friend class IoMonitor;
 
-    inline static Ref<IoEvent> create(int index, SystemStream *stream, int type) {
-        return new IoEvent(index, stream, type);
+    inline static Ref<IoEvent> create(int index, int type, IoTarget *target) {
+        return new IoEvent(index, type, target);
     }
 
-    IoEvent(int index, SystemStream *stream, int type):
+    IoEvent(int index, int type, IoTarget *target):
         index_(index),
-        stream_(stream),
-        type_(type)
+        type_(type),
+        ready_(0),
+        target_(target)
     {}
 
     int index_;
-    Ref<SystemStream> stream_;
     int type_;
+    int ready_;
+    IoTarget *target_;
 };
 
-typedef Array<IoEvent *> IoActivity;
+typedef Array<const IoEvent *> IoActivity;
 
 /** \brief Register and wait for I/O events
   */
-class IoMonitor: public Object
+class IoMonitor: public Object // FIXME: IoWatcher
 {
 public:
     static Ref<IoMonitor> create(int maxCount = 0);
 
-    IoEvent *addEvent(SystemStream *stream, int type);
-    void removeEvent(IoEvent *event);
+    const IoEvent *addEvent(int type, IoTarget *target); // FIXME: "watch"
+    void removeEvent(const IoEvent *event); // FIXME: "unwatch"
 
-    Ref<IoActivity> wait(double timeout);
+    Ref<IoActivity> poll(int interval_ms = -1); // FIXME: "wait", "timeout_ms" (vs. time!-)
 
 private:
     typedef struct pollfd PollFd;
@@ -73,6 +69,4 @@ private:
     Ref<Events> events_;
 };
 
-} // namespace flux
-
-#endif // FLUX_IOMONITOR_H
+} // namespace cc

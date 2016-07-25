@@ -1,4 +1,3 @@
-Tools {
-    source: *.cpp
-    use: [ core, net ]
+Package {
+    use: [ ip, tap ]
 }

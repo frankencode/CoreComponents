@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTESTING_TESTREPORT_H
-#define FLUXTESTING_TESTREPORT_H
+#pragma once
 
-#include <flux/testing/TestSuite>
+#include <cc/testing/TestSuite>
 
-namespace flux {
+namespace cc {
 namespace testing {
 
 class TestReport: public Object
@@ -28,6 +27,5 @@ public:
     virtual void endTestSuite(TestSuite *testSuite) = 0;
 };
 
-}} // namespace flux::testing
+}} // namespace cc::testing
 
-#endif // FLUXTESTING_TESTREPORT_H

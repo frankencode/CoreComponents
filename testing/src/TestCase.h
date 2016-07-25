@@ -1,18 +1,17 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTESTING_TESTCASE_H
-#define FLUXTESTING_TESTCASE_H
+#pragma once
 
-#include <flux/Object>
-#include <flux/String>
+#include <cc/Object>
+#include <cc/String>
 
-namespace flux {
+namespace cc {
 namespace testing {
 
 class TestSuite;
@@ -56,6 +55,5 @@ private:
     bool caughtException_;
 };
 
-}} // namespace flux::testing
+}} // namespace cc::testing
 
-#endif // FLUXTESTING_TESTCASE_H

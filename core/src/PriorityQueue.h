@@ -1,18 +1,17 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_PRIORITYQUEUE_H
-#define FLUX_PRIORITYQUEUE_H
+#pragma once
 
-#include <flux/Map>
-#include <flux/Queue>
+#include <cc/Map>
+#include <cc/Queue>
 
-namespace flux {
+namespace cc {
 
 /** \brief Priority based multi-queue
   * \see Queue, Channel
@@ -30,7 +29,7 @@ public:
 
     inline T popFront(T *item)
     {
-        FLUX_ASSERT(size_ > 0);
+        CC_ASSERT(size_ > 0);
         return outputQueue()->popFront(item);
     }
 
@@ -47,9 +46,9 @@ public:
     inline T front() { return readQueue()->front(); }
 
 private:
-    PriorityQueue()
-        : queueByPriority_(QueueByPriority::create()),
-          size_(0)
+    PriorityQueue():
+        queueByPriority_(QueueByPriority::create()),
+        size_(0)
     {}
 
     inline Queue<T> *inputQueue(int priority)
@@ -83,6 +82,4 @@ private:
     int size_;
 };
 
-} // namespace flux
-
-#endif // FLUX_PRIORITYQUEUE_H
+} // namespace cc

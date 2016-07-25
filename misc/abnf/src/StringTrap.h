@@ -1,19 +1,18 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXKIT_STRINGTRAP_H
-#define FLUXKIT_STRINGTRAP_H
+#pragma once
 
 #include <string.h>
-#include <flux/assert>
-#include <flux/String>
+#include <cc/assert>
+#include <cc/String>
 
-namespace flux {
+namespace cc {
 namespace abnf {
 
 class StringTrap: public Object // FIXME: can easily be replaced by Queue<String>
@@ -28,9 +27,9 @@ public:
     }
 
     inline const char *capture(ByteArray *s, int i0, int i1) const {
-        FLUX_ASSERT((0 <= i0) && (i0 < s->count()));
-        FLUX_ASSERT((0 <= i1) && (i1 <= s->count()));
-        FLUX_ASSERT(i0 <= i1);
+        CC_ASSERT((0 <= i0) && (i0 < s->count()));
+        CC_ASSERT((0 <= i1) && (i1 <= s->count()));
+        CC_ASSERT(i0 <= i1);
         return capture(s->chars() + i0, i1 - i0);
     }
 
@@ -54,6 +53,5 @@ private:
     mutable Node *tail_;
 };
 
-}} // namespace flux::abnf
+}} // namespace cc::abnf
 
-#endif // FLUXKIT_STRINGTRAP_H

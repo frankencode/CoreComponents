@@ -1,28 +1,27 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_UTF16SINK_H
-#define FLUX_UTF16SINK_H
+#pragma once
 
-#include <flux/ByteSink>
-#include <flux/utf16>
+#include <cc/ByteSink>
+#include <cc/utf16>
 
-namespace flux {
+namespace cc {
 
-/** \brief Unicode UTF-16 encoding data sink
+/** \brief %Unicode UTF-16 encoding data sink
   */
 class Utf16Sink: public Object
 {
 public:
-    inline static Ref<Utf16Sink> open(Stream *stream, ByteArray *buf = 0, int endian = BigEndian) {
+    inline static Ref<Utf16Sink> open(Stream *stream, ByteArray *buf = 0, Endian endian = BigEndian) {
         return new Utf16Sink(stream, buf, endian);
     }
-    inline static Ref<Utf16Sink> open(ByteArray *buf, int endian = BigEndian) {
+    inline static Ref<Utf16Sink> open(ByteArray *buf, Endian endian = BigEndian) {
         return new Utf16Sink(0, buf, endian);
     }
 
@@ -48,13 +47,11 @@ public:
     inline ByteSink *byteSink() const { return byteSink_; }
 
 private:
-    Utf16Sink(Stream *stream, ByteArray* buf, int endian)
-        : byteSink_(ByteSink::open(stream, buf, endian))
+    Utf16Sink(Stream *stream, ByteArray* buf, Endian endian):
+        byteSink_(ByteSink::open(stream, buf, endian))
     {}
 
     Ref<ByteSink> byteSink_;
 };
 
-} // namespace flux
-
-#endif // FLUX_UTF16SINK_H
+} // namespace cc

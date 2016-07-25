@@ -1,128 +1,202 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_FILE_H
-#define FLUX_FILE_H
+#pragma once
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <flux/String>
-#include <flux/SystemStream>
-#include <flux/FileStatus>
+#include <cc/files>
+#include <cc/String>
+#include <cc/SystemStream>
+#include <cc/FileStatus>
 
-namespace flux {
+namespace cc {
 
 class MappedByteArray;
 
-/** \brief Read, write, create and unlink regular files, symlinks, etc.
-  * \see FileStatus, Dir
+/** \class File File.h cc/File
+  * \brief Handle files
+  * \see FileStatus, UnlinkGuard, Dir, SubProcess
   */
 class File: public SystemStream
 {
 public:
-    enum Type {
-        Regular      = S_IFREG,
-        Directory    = S_IFDIR,
-        CharDevice   = S_IFCHR,
-        BlockDevice  = S_IFBLK,
-        Fifo         = S_IFIFO,
-        Symlink      = S_IFLNK,
-        Socket       = S_IFSOCK,
-    };
-
-    enum Flags {
-        SetUserId  = S_ISUID,
-        SetGroupId = S_ISGID,
-        StickyBit  = S_ISVTX
-    };
-
+    /// %File open flags
     enum OpenFlags {
-        ReadOnly  = O_RDONLY,
-        WriteOnly = O_WRONLY,
-        ReadWrite = O_RDWR,
-        Append    = O_APPEND,
-        Create    = O_CREAT,
-        Truncate  = O_TRUNC
+        ReadOnly  = O_RDONLY, ///< Open for reading, only
+        WriteOnly = O_WRONLY, ///< Open for writing, only
+        ReadWrite = O_RDWR,   ///< Open for reading and writing
+        Append    = O_APPEND, ///< Append any write to the end of file
+        Create    = O_CREAT,  ///< Create file if not exists
+        Truncate  = O_TRUNC   ///< Truncate file to size zero
     };
 
-    enum AccessFlags {
-        Readable    = R_OK,
-        Writeable   = W_OK,
-        Executable  = X_OK,
-        Exists      = F_OK
-    };
-
-    enum ModeFlags {
-        UserRead   = 0400,
-        UserWrite  = 0200,
-        UserExec   = 0100,
-        GroupRead  = 0040,
-        GroupWrite = 0020,
-        GroupExec  = 0010,
-        OtherRead  = 0004,
-        OtherWrite = 0002,
-        OtherExec  = 0001
-    };
-
+    /// Seek method
     enum SeekMethod {
-        SeekBegin   = SEEK_SET,
-        SeekCurrent = SEEK_CUR,
-        SeekEnd     = SEEK_END
+        SeekBegin   = SEEK_SET, ///< Seek from the beginning of the file
+        SeekCurrent = SEEK_CUR, ///< Seek relative to the current file offset
+        SeekEnd     = SEEK_END  ///< Seek relative to the end of file
     };
 
-    enum StandardStreams {
-        StandardInput  = 0,
-        StandardOutput = 1,
-        StandardError  = 2
-    };
-
+    /** Open a file
+      * \param path file path
+      * \param flags file open flags, a combintation of File::OpenFlags
+      * \param mode file permissions for new file, a combination of cc::ModeFlags
+      * \return new object instance
+      */
     static Ref<File> open(String path, int flags = ReadOnly, int mode = 0644);
+
+    /** Try to open a file
+      * \param path file path
+      * \param flags file open flags, a combintation of File::OpenFlags
+      * \param mode file permissions for new file, a combination of cc::ModeFlags
+      * \return new object instance or null reference if opening the file wasn't successful
+      */
     static Ref<File> tryOpen(String path, int flags = ReadOnly, int mode = 0644);
-    static Ref<File> temp(int openFlags = ReadWrite);
 
+    /** Open a temporary file
+      * \param flags file open flags, a combintation of File::OpenFlags
+      * \return new object instance
+      * \see UnlinkGuard, File::createUnique()
+      */
+    static Ref<File> openTemp(int flags = ReadWrite);
+
+    /// %File path this file was opened from
     String path() const;
-    String name() const;
-    Ref<FileStatus> status() const;
 
+    /// %File open flags this file was opened with
     int openFlags() const;
 
+    /** Truncate or extend file
+      * \param length new file length
+      */
     void truncate(off_t length);
-    off_t seek(off_t distance, int method = SeekBegin);
+
+    /** Set/get file offset
+      * \param distance relative distance to move the file offset
+      * \param method from which point to apply the seek distance
+      * \return new file offset
+      */
+    off_t seek(off_t distance, SeekMethod method = SeekBegin);
+
+    /// Query if this file is seakable (e.g. character device aren't)
     bool seekable() const;
 
-    virtual off_t transfer(off_t count = -1, Stream *sink = 0, ByteArray *buf = 0);
+    virtual off_t transferSpanTo(off_t count = -1, Stream *sink = 0, ByteArray *buf = 0) override;
 
+    /// %Map the entire file into memory and return the file mapping as String
     String map() const;
 
+    /// Synchronise the files's state with the underlying storage device
     void sync();
+
+    /// Same as sync() but synchronize the file's contents, only
     void dataSync();
 
+    /** Test file access permissions
+      * \param path file path to test
+      * \param flags a combination of cc::AccessFlags
+      * \return true if accessible
+      */
     static bool access(String path, int flags);
-    static bool exists(String path);
+
+    /** Check if a file exists
+      * \param path file path
+      * \return true if file exists
+      */
+    static bool exists(String path) { return (path != "") && access(path, FileOk); }
+
+    /** Create a new file
+      * \param path file path
+      * \param mode file permissions for new file, a combination of cc::ModeFlags
+      */
     static void create(String path, int mode = 0644);
+
+    /** Change ownership of the file
+      * \param path file path
+      * \param ownerId user id of new owner
+      * \param groupId one of the new owner's group ids
+      * \see User, Group
+      */
     static void chown(String path, uid_t ownerId, gid_t groupId);
+
+    /** Rename file
+      * \param path old file path
+      * \param newPath new file path
+      */
     static void rename(String path, String newPath);
+
+    /** Create a new directory entry for this file
+      * \param path file path
+      * \param newPath file path to new directory entry
+      * \see FileStatus::numberOfHardLinks()
+      */
     static void link(String path, String newPath);
+
+    /** Delete a directory entry associated with a non-directory file
+      * \param path file path
+      * \see UnlinkGuard, Dir::remove()
+      */
     static void unlink(String path);
-    static void symlink(String path, String newPath);
+
+    /** Create a symbolic link special file
+      * \param targetPath file path to link to
+      * \param newPath file path of new symbolic link special file
+      */
+    static void symlink(String targetPath, String newPath);
+
+    /** Read a contents of a symbolic link special file
+      * \param path file path
+      * \return symbolic link target path
+      */
     static String readlink(String path);
+
+    /** Fully resolve a symbolic link chain
+      * \return final target path
+      */
     static String resolve(String path);
 
+    /** Create a uniquely named file
+      * \param path file path
+      * \param mode file permissions for new file, a combination of cc::ModeFlags
+      * \param placeHolder place holder character in path to replace with random characters
+      * \return name of the newly created file
+      * \see File::openTemp()
+      */
     static String createUnique(String path, int mode = 0644, char placeHolder = 'X');
+
+    /** Create a new file and all parent directories as needed
+      * \param path file path of new file
+      * \param fileMode file permissions for new file, a combination of cc::ModeFlags
+      * \param dirMode directory permissions for the on-demand created parent directories
+      */
     static void establish(String path, int fileMode = 0644, int dirMode = 0755);
-    static String lookup(String fileName, StringList *dirs = 0, int accessFlags = Executable); // FIXME: rename to locate
 
-    static Ref<FileStatus> status(String path);
-    static Ref<FileStatus> unresolvedStatus(String path);
+    /** Search for a file in a list of directories
+      * \param fileName name of the file (or relative path)
+      * \param dirs list of directories
+      * \param accessFlags a combination of cc::AccessFlags
+      * \return file path if found else empty string
+      */
+    static String locate(String fileName, const StringList *dirs, int accessFlags = FileOk);
 
+    /** Load contents of a file
+      * \param path file path
+      * \return contents of file
+      */
     static String load(String path);
+
+    /** Replace contents of a file
+      * \param path file path
+      * \param text new file'a contents
+      */
     static void save(String path, String text);
 
 private:
@@ -138,14 +212,4 @@ private:
     int openFlags_;
 };
 
-class FileUnlinkGuard: public Object {
-public:
-    FileUnlinkGuard(String path);
-    ~FileUnlinkGuard();
-private:
-    String path_;
-};
-
-} // namespace flux
-
-#endif // FLUX_FILE_H
+} // namespace cc

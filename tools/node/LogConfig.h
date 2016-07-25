@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_LOGCONFIG_H
-#define FLUXNODE_LOGCONFIG_H
+#pragma once
 
-#include <flux/meta/MetaObject>
+#include <cc/meta/MetaObject>
 
-namespace fluxnode {
+namespace ccnode {
 
-using namespace flux;
-using namespace flux::meta;
+using namespace cc;
+using namespace cc::meta;
 
 class LogConfig: public Object
 {
@@ -37,6 +36,5 @@ private:
     double rotationInterval_;
 };
 
-} // namespace fluxnode
+} // namespace ccnode
 
-#endif // FLUXNODE_LOGCONFIG_H

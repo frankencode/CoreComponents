@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_STACK_H
-#define FLUX_STACK_H
+#pragma once
 
-#include <flux/containers>
+#include <cc/containers>
 
-namespace flux {
+namespace cc {
 
 /** \brief Fixed-size stack data container
   */
@@ -45,11 +44,11 @@ public:
     inline T get(int i) const { return bottom(i); }
 
     inline void push(const T &item) {
-        FLUX_ASSERT(fill_ < size_);
+        CC_ASSERT(fill_ < size_);
         buf_[fill_++] = item;
     }
     inline void pop(T *item) {
-        FLUX_ASSERT(fill_ > 0);
+        CC_ASSERT(fill_ > 0);
         *item = buf_[--fill_];
     }
     inline T pop() {
@@ -59,7 +58,7 @@ public:
     }
 
     inline Stack &popMore(int n) {
-        FLUX_ASSERT(fill_ >= n);
+        CC_ASSERT(fill_ >= n);
         fill_ -= n;
         return *this;
     }
@@ -67,12 +66,12 @@ public:
     inline void clear() { fill_ = 0; }
 
     inline T &top(int i = 0) const {
-        FLUX_ASSERT(i < fill_);
+        CC_ASSERT(i < fill_);
         return buf_[fill_-i-1];
     }
 
     inline T &bottom(int i = 0) const {
-        FLUX_ASSERT(i < fill_);
+        CC_ASSERT(i < fill_);
         return buf_[i];
     }
 
@@ -100,6 +99,5 @@ private:
     T *buf_;
 };
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_STACK_H

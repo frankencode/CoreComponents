@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_DIRECTORYINSTANCE_H
-#define FLUXNODE_DIRECTORYINSTANCE_H
+#pragma once
 
 #include "ServiceInstance.h"
 #include "DirectoryDelegate.h"
 
-namespace fluxnode {
+namespace ccnode {
 
-class DirectoryInstance: public ServiceInstance
+class DirectoryInstance: public virtual ServiceInstance
 {
 public:
     static Ref<DirectoryInstance> create(MetaObject *config);
@@ -24,12 +23,10 @@ public:
     inline String path() const { return path_; }
     inline bool showHidden() const { return showHidden_; }
 
-private:
+protected:
     DirectoryInstance(MetaObject *config);
     String path_;
     bool showHidden_;
 };
 
-} // namespace fluxnode
-
-#endif // FLUXNODE_DIRECTORYINSTANCE_H
+} // namespace ccnode

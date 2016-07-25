@@ -1,22 +1,21 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTOKI_LANGUAGE_H
-#define FLUXTOKI_LANGUAGE_H
+#pragma once
 
-#include <flux/syntax/SyntaxDefinition>
-#include <flux/regexp/RegExp>
+#include <cc/syntax/SyntaxDefinition>
+#include <cc/regexp/RegExp>
 
-namespace flux {
+namespace cc {
 namespace toki {
 
-using namespace flux::syntax;
-using namespace flux::regexp;
+using namespace cc::syntax;
+using namespace cc::regexp;
 
 class Language: public Object
 {
@@ -48,6 +47,5 @@ private:
     Ref<const SyntaxDefinition> foldingSyntax_;
 };
 
-}} // namespace flux::toki
+}} // namespace cc::toki
 
-#endif // FLUXTOKI_LANGUAGE_H

@@ -1,5 +1,5 @@
 Application {
-    name: fluxclaim
-    source: *.cpp
+    name: ccclaim
+    source: *.cc
     use: [ core, syntax, regexp, meta, crypto, toki ]
 }

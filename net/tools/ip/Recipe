@@ -1,0 +1,5 @@
+Application {
+    name: ccip
+    source: *.cc
+    use: [ core, net ]
+}

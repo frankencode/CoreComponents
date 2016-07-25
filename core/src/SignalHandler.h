@@ -1,28 +1,25 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_SIGNALHANDLER_H
-#define FLUX_SIGNALHANDLER_H
+#pragma once
 
-#include <flux/SignalSet>
+#include <cc/SignalSet>
 
-namespace flux {
+namespace cc {
 
 class SignalHandler
 {
 protected:
     SignalHandler(SignalSet *listenSet = 0);
-    int waitForSignal() const;
+    int waitForSignal();
 
 private:
     Ref<SignalSet> listenSet_;
 };
 
-} // namespace flux
-
-#endif // FLUX_SIGNALHANDLER_H
+} // namespace cc

@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_UTF8SOURCE_H
-#define FLUX_UTF8SOURCE_H
+#pragma once
 
-#include <flux/ByteSource>
-#include <flux/utf8>
+#include <cc/ByteSource>
+#include <cc/utf8>
 
-namespace flux {
+namespace cc {
 
-/** \brief Unicode UTF-8 decoding data source
+/** \brief %Unicode UTF-8 decoding data source
   */
 class Utf8Source: public Object
 {
@@ -40,8 +39,8 @@ public:
     inline ByteSource *byteSource() const { return byteSource_; }
 
 private:
-    Utf8Source(Stream *stream, ByteArray *buf)
-        : byteSource_(ByteSource::open(stream, buf))
+    Utf8Source(Stream *stream, ByteArray *buf):
+        byteSource_(ByteSource::open(stream, buf))
     {}
 
     uchar_t readMultiByte(uchar_t ch);
@@ -97,6 +96,4 @@ inline uchar_t Utf8Source::readMultiByte(uchar_t ch)
     return ch;
 }
 
-} // namespace flux
-
-#endif // FLUX_UTF8SOURCE_H
+} // namespace cc

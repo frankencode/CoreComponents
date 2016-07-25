@@ -1,18 +1,17 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_LOCALSTATIC_H
-#define FLUX_LOCALSTATIC_H
+#pragma once
 
-#include <flux/GlobalCoreMutex>
-#include <flux/Guard>
+#include <cc/GlobalCoreMutex>
+#include <cc/Guard>
 
-namespace flux {
+namespace cc {
 
 /** \brief Thread-safe initialization of a local static variable
   *
@@ -25,7 +24,7 @@ class LocalStatic
 public:
     static T &instance()
     {
-        Guard<SpinLock> guard(globalCoreMutex());
+        Guard<SpinLock> guard(GlobalCoreMutex::instance());
         static T instance_;
         return instance_;
     }
@@ -37,6 +36,4 @@ inline T &localStatic() { return LocalStatic<T, Scope>::instance(); }
 template<class T>
 inline T &localStatic() { return LocalStatic<T, None>::instance(); }
 
-} // namespace flux
-
-#endif // FLUX_LOCALSTATIC_H
+} // namespace cc

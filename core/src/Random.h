@@ -1,48 +1,61 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_RANDOM_H
-#define FLUX_RANDOM_H
+#pragma once
 
-#include <flux/generics>
+#include <cc/Object>
 
-namespace flux {
+namespace cc {
 
-/** \brief Pseudo-random number generator
+/** \class Random Random.h cc/Random
+  * \brief Pseudo-random number generator
   *
-  * Simple and fast pseudo-random number generator.
+  * The Random class provides a simple and fast pseudo-random number generator.
+  * The generated numbers lay in the range min() to max(). The series will repeat
+  * after period() numbers. Any choosen seed value will yield the same period.
+  *
+  * \see RandomSource
   */
 class Random: public Object
 {
 public:
+    /** Create a new random number generator.
+      * \param seed seed number
+      * \return new object instance
+      */
     inline static Ref<Random> open(int seed = -1) {
         return new Random(seed);
     }
 
+    /// Minimum random number
+    inline int min() const { return 0; }
+
+    /// Maximum random number
     inline int max() const { return m_ - 1; }
+
+    /// Number of random numbers until the series repeats itself
     inline int period() const { return m_ - 1; }
 
+    /// Get another random number in the range min() to max()
     inline int get() {
         x_ = (16807 * x_) % m_; /* 7^5 == 16807 */
         return x_;
     }
 
-    /** Return a random number in range [a, b].
+    /** Get another random number in the range a to b
+      * \param a minimum random number
+      * \param b maximum random number
+      * \return next random number
       */
     inline int get(int a, int b) {
-        FLUX_ASSERT(b <= m_ - 1);
-        FLUX_ASSERT(a <= b);
+        CC_ASSERT(b <= m_ - 1);
+        CC_ASSERT(a <= b);
         return (uint64_t(get()) * (b - a)) / (m_ - 1) + a;
-    }
-
-    inline bool read(int *x) {
-        *x = get();
-        return true;
     }
 
 private:
@@ -52,6 +65,4 @@ private:
     unsigned x_;
 };
 
-} // namespace flux
-
-#endif // FLUX_RANDOM_H
+} // namespace cc

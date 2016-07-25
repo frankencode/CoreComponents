@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_GUARD_H
-#define FLUX_GUARD_H
+#pragma once
 
-namespace flux {
+namespace cc {
 
-/** \brief Mutex guard
+/** \brief %Mutex guard
   * \see FileLock, Mutex
   */
 template<class Mutex>
@@ -24,6 +23,4 @@ private:
     Mutex *mutex_;
 };
 
-} // namespace flux
-
-#endif // FLUX_GUARD_H
+} // namespace cc

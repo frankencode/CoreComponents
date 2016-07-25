@@ -1,0 +1,8 @@
+<map id="cc::SystemStream" name="cc::SystemStream">
+<area shape="rect" id="node4" href="$classcc_1_1File.html" title="Handle files. " alt="" coords="5,229,71,256"/>
+<area shape="rect" id="node5" href="$classcc_1_1net_1_1DatagramSocket.html" title="datagram socket " alt="" coords="95,229,263,256"/>
+<area shape="rect" id="node6" href="$classcc_1_1net_1_1StreamSocket.html" title="Connection oriented byte&#45;sequential communication channel. " alt="" coords="288,229,441,256"/>
+<area shape="rect" id="node7" href="$classcc_1_1SubProcess.html" title="Spawned child process. " alt="" coords="466,229,581,256"/>
+<area shape="rect" id="node2" href="$classcc_1_1Stream.html" title="Abstract data stream. " alt="" coords="228,80,315,107"/>
+<area shape="rect" id="node3" href="$classcc_1_1Object.html" title="Reference counting and secure destruction. " alt="" coords="230,5,313,32"/>
+</map>

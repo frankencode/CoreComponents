@@ -1,21 +1,20 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNET_BASE64_H
-#define FLUXNET_BASE64_H
+#pragma once
 
 /** \file base64
   * \brief Standard Base64 codec
   */
 
-#include <flux/String>
+#include <cc/String>
 
-namespace flux {
+namespace cc {
 namespace net {
 namespace base64 {
 
@@ -56,6 +55,5 @@ public:
     }
 };
 
-}}} // namespace flux::net::base64
+}}} // namespace cc::net::base64
 
-#endif // FLUXNET_BASE64_H

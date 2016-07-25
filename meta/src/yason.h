@@ -1,26 +1,24 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXMETA_YASON_H
-#define FLUXMETA_YASON_H
+#pragma once
 
-#include <flux/syntax/exceptions>
-#include <flux/meta/MetaObject>
-#include <flux/meta/MetaProtocol>
+#include <cc/syntax/exceptions>
+#include <cc/meta/MetaObject>
+#include <cc/meta/MetaProtocol>
 
-namespace flux {
+namespace cc {
 namespace yason {
 
-using namespace flux::meta;
+using namespace cc::meta;
 
 Variant parse(const ByteArray *text, const MetaProtocol *protocol = 0);
 String stringify(Variant value);
 
-}} // namespace flux::yason
+}} // namespace cc::yason
 
-#endif // FLUXMETA_YASON_H

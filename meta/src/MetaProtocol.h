@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXMETA_METAPROTOCOL_H
-#define FLUXMETA_METAPROTOCOL_H
+#pragma once
 
-#include <flux/meta/MetaObject>
+#include <cc/meta/MetaObject>
 
-namespace flux {
+namespace cc {
 namespace meta {
 
 /** \brief Duck-typed object protocol
@@ -71,7 +70,7 @@ protected:
 
     MetaProtocol():
         minCount_(0),
-        maxCount_(flux::intMax)
+        maxCount_(cc::intMax)
     {}
 
     virtual Ref<MetaObject> produce(MetaObject *prototype) const {
@@ -89,6 +88,5 @@ private:
     int maxCount_;
 };
 
-}} // namespace flux::meta
+}} // namespace cc::meta
 
-#endif // FLUXMETA_METAPROTOCOL_H

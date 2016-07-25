@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXSTREAM_LINEBUFFER_H
-#define FLUXSTREAM_LINEBUFFER_H
+#pragma once
 
-#include <flux/Stream>
+#include <cc/Stream>
 
-namespace flux {
+namespace cc {
 namespace stream {
 
 /** \brief Line output buffer
@@ -24,11 +23,11 @@ public:
     inline Stream *stream() const { return stream_; }
     virtual String prefix() const;
 
-    virtual bool readyRead(double interval) const;
-    virtual int read(ByteArray *buf);
+    int read(ByteArray *data) override;
+    void write(const ByteArray *data) override;
+    void write(const StringList *parts) override;
 
-    virtual void write(const ByteArray *buf);
-    virtual void write(const StringList *parts);
+    int flush();
 
 protected:
     LineBuffer(Stream *stream, String prefix = "");
@@ -39,6 +38,4 @@ private:
     Ref<StringList> backlog_;
 };
 
-}} // namespace flux::stream
-
-#endif // FLUXSTREAM_LINEBUFFER_H
+}} // namespace cc::stream

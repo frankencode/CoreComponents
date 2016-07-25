@@ -1,18 +1,17 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXSTREAM_TRANSFERLIMITER_H
-#define FLUXSTREAM_TRANSFERLIMITER_H
+#pragma once
 
-#include <flux/Stream>
-#include <flux/Exception>
+#include <cc/Stream>
+#include <cc/Exception>
 
-namespace flux {
+namespace cc {
 namespace stream {
 
 /** \brief Traffic limiting stream
@@ -28,10 +27,9 @@ public:
     inline size_t totalRead() const { return totalRead_; }
     inline size_t totalWritten() const { return totalWritten_; }
 
-    virtual bool readyRead(double interval) const;
-    virtual int read(ByteArray *buf);
-    virtual void write(const ByteArray *buf);
-    virtual void write(const StringList *parts);
+    virtual int read(ByteArray *data) override;
+    virtual void write(const ByteArray *data) override;
+    virtual void write(const StringList *parts) override;
 
 private:
     TransferLimiter(Stream *stream, size_t readLimit, size_t writeLimit);
@@ -71,6 +69,4 @@ public:
     virtual String message() const { return "Write transfer limit exceeded"; }
 };
 
-}} // namespace flux::stream
-
-#endif // FLUXSTREAM_TRANSFERLIMITER_H
+}} // namespace cc::stream

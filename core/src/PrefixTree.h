@@ -1,22 +1,21 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_PREFIXTREE_H
-#define FLUX_PREFIXTREE_H
+#pragma once
 
-#include <flux/types>
-#include <flux/strings>
-#include <flux/Tree>
-#include <flux/Array>
-#include <flux/ByteArray>
-#include <flux/PrefixTreeWalker>
+#include <cc/types>
+#include <cc/strings>
+#include <cc/Tree>
+#include <cc/Array>
+#include <cc/ByteArray>
+#include <cc/PrefixTreeWalker>
 
-namespace flux {
+namespace cc {
 
 template<class Char, class Value>
 class PrefixTree;
@@ -115,7 +114,7 @@ public:
 
     Ref<Key> key(Index index) const
     {
-        FLUX_ASSERT(has(index));
+        CC_ASSERT(has(index));
         int size = 0;
         {
             Node *node = index.node_;
@@ -142,7 +141,7 @@ public:
     }
 
     inline Value value(Index index) const {
-        FLUX_ASSERT(has(index));
+        CC_ASSERT(has(index));
         return index.node_->value_;
     }
 
@@ -331,6 +330,5 @@ protected:
     Value value_;
 };
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_PREFIXTREE_H

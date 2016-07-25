@@ -1,18 +1,17 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_LINESOURCE_H
-#define FLUX_LINESOURCE_H
+#pragma once
 
-#include <flux/String>
-#include <flux/Stream>
+#include <cc/String>
+#include <cc/Stream>
 
-namespace flux {
+namespace cc {
 
 /** \brief Line input buffer
   */
@@ -42,6 +41,4 @@ private:
     int i_, n_;
 };
 
-} // namespace flux
-
-#endif // FLUX_LINESOURCE_H
+} // namespace cc

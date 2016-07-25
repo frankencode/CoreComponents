@@ -1,0 +1,45 @@
+<map id="/home/fme/src/cc/core/src/include/cc/str" name="/home/fme/src/cc/core/src/include/cc/str">
+<area shape="rect" id="node2" href="$str_8h_source.html" title="../../str.h" alt="" coords="580,95,652,121"/>
+<area shape="rect" id="node3" href="$String_source.html" title="cc/String" alt="" coords="780,468,855,495"/>
+<area shape="rect" id="node40" href="$Variant_source.html" title="cc/Variant" alt="" coords="637,169,718,196"/>
+<area shape="rect" id="node4" href="$ByteArray_8h_source.html" title="../../ByteArray.h" alt="" coords="760,543,875,569"/>
+<area shape="rect" id="node5" href="$containers_source.html" title="cc/containers" alt="" coords="605,1065,705,1092"/>
+<area shape="rect" id="node19" href="$strings.html" title="Low&#45;level C&#45;string helper functions. " alt="" coords="766,1065,845,1092"/>
+<area shape="rect" id="node22" href="$List_source.html" title="cc/List" alt="" coords="700,617,761,644"/>
+<area shape="rect" id="node6" href="$containers_8h_source.html" title="../../containers.h" alt="" coords="596,1140,713,1167"/>
+<area shape="rect" id="node7" href="$generics_source.html" title="cc/generics" alt="" coords="610,1215,699,1241"/>
+<area shape="rect" id="node8" href="$generics_8h_source.html" title="../../generics.h" alt="" coords="605,1289,712,1316"/>
+<area shape="rect" id="node9" href="$Object_source.html" title="cc/Object" alt="" coords="619,1364,698,1391"/>
+<area shape="rect" id="node11" href="$Ref_source.html" title="cc/Ref" alt="" coords="713,1513,775,1540"/>
+<area shape="rect" id="node10" href="$Object_8h_source.html" title="../../Object.h" alt="" coords="611,1439,706,1465"/>
+<area shape="rect" id="node12" href="$Ref_8h_source.html" title="../../Ref.h" alt="" coords="707,1588,786,1615"/>
+<area shape="rect" id="node13" href="$types.html" title="Low&#45;level types and type conversions. " alt="" coords="728,1663,800,1689"/>
+<area shape="rect" id="node14" href="$types_8h_source.html" title="../../types.h" alt="" coords="719,1737,809,1764"/>
+<area shape="rect" id="node17" href="$assert.html" title="Assertion macros (debug mode) " alt="" coords="285,1812,361,1839"/>
+<area shape="rect" id="node18" href="$assert_8h_source.html" title="../../assert.h" alt="" coords="276,1887,369,1913"/>
+<area shape="rect" id="node20" href="$strings_8h_source.html" title="../../strings.h" alt="" coords="757,1140,853,1167"/>
+<area shape="rect" id="node23" href="$List_8h_source.html" title="../../List.h" alt="" coords="673,692,751,719"/>
+<area shape="rect" id="node24" href="$OrdinalTree_source.html" title="cc/OrdinalTree" alt="" coords="525,767,632,793"/>
+<area shape="rect" id="node38" href="$Heap_source.html" title="cc/Heap" alt="" coords="707,767,778,793"/>
+<area shape="rect" id="node25" href="$OrdinalTree_8h_source.html" title="../../OrdinalTree.h" alt="" coords="278,841,402,868"/>
+<area shape="rect" id="node26" href="$AvlBalance_source.html" title="cc/AvlBalance" alt="" coords="61,916,168,943"/>
+<area shape="rect" id="node30" href="$BinaryTree_source.html" title="cc/BinaryTree" alt="" coords="203,916,306,943"/>
+<area shape="rect" id="node32" href="$ExclusiveAccess_source.html" title="cc/ExclusiveAccess" alt="" coords="339,916,480,943"/>
+<area shape="rect" id="node36" href="$Array_source.html" title="cc/Array" alt="" coords="697,916,767,943"/>
+<area shape="rect" id="node27" href="$AvlBalance_8h_source.html" title="../../AvlBalance.h" alt="" coords="43,991,165,1017"/>
+<area shape="rect" id="node28" href="$BinaryNode_source.html" title="cc/BinaryNode" alt="" coords="122,1065,230,1092"/>
+<area shape="rect" id="node29" href="$BinaryNode_8h_source.html" title="../../BinaryNode.h" alt="" coords="113,1140,239,1167"/>
+<area shape="rect" id="node31" href="$BinaryTree_8h_source.html" title="../../BinaryTree.h" alt="" coords="189,991,309,1017"/>
+<area shape="rect" id="node33" href="$ExclusiveAccess_8h_source.html" title="../../ExclusiveAccess.h" alt="" coords="334,991,493,1017"/>
+<area shape="rect" id="node34" href="$ExclusiveSection_source.html" title="cc/ExclusiveSection" alt="" coords="343,1065,484,1092"/>
+<area shape="rect" id="node35" href="$ExclusiveSection_8h_source.html" title="../../ExclusiveSection.h" alt="" coords="334,1140,493,1167"/>
+<area shape="rect" id="node37" href="$Array_8h_source.html" title="../../Array.h" alt="" coords="692,991,780,1017"/>
+<area shape="rect" id="node39" href="$Heap_8h_source.html" title="../../Heap.h" alt="" coords="667,841,755,868"/>
+<area shape="rect" id="node41" href="$Variant_8h_source.html" title="../../Variant.h" alt="" coords="672,244,771,271"/>
+<area shape="rect" id="node43" href="$Color_source.html" title="cc/Color" alt="" coords="645,319,715,345"/>
+<area shape="rect" id="node45" href="$Version_source.html" title="cc/Version" alt="" coords="866,319,950,345"/>
+<area shape="rect" id="node47" href="$Map_source.html" title="cc/Map" alt="" coords="561,468,626,495"/>
+<area shape="rect" id="node44" href="$Color_8h_source.html" title="../../Color.h" alt="" coords="672,393,760,420"/>
+<area shape="rect" id="node46" href="$Version_8h_source.html" title="../../Version.h" alt="" coords="861,393,963,420"/>
+<area shape="rect" id="node48" href="$Map_8h_source.html" title="../../Map.h" alt="" coords="537,692,620,719"/>
+</map>

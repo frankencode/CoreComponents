@@ -1,33 +1,30 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXCRYPTO_HASHMETER_H
-#define FLUXCRYPTO_HASHMETER_H
+#pragma once
 
-#include <flux/Stream>
-#include <flux/crypto/HashSum>
+#include <cc/Stream>
+#include <cc/HashSum>
 
-namespace flux {
+namespace cc {
 namespace crypto {
 
 /** \brief Hash sum computing stream
-  * \see flux::stream::TransferMeter
+  * \see cc::stream::TransferMeter
   */
 class HashMeter: public Stream
 {
 public:
     static Ref<HashMeter> open(HashSum *hashSum, Stream *stream = 0);
 
-    virtual bool readyRead(double interval) const;
-    virtual int read(ByteArray *data);
-
-    virtual void write(const ByteArray *data);
-    virtual void write(const StringList *parts);
+    int read(ByteArray *data) override;
+    void write(const ByteArray *data) override;
+    void write(const StringList *parts) override;
 
     Ref<ByteArray> finish();
 
@@ -38,6 +35,4 @@ private:
     Ref<Stream> stream_;
 };
 
-}} // namespace flux::crypto
-
-#endif // FLUXCRYPTO_HASHMETER_H
+}} // namespace cc::crypto

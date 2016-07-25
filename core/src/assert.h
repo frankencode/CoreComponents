@@ -1,36 +1,43 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_ASSERT_H
-#define FLUX_ASSERT_H
+#pragma once
 
 /** \file assert
-  *  \brief Assertion macros (debug mode)
+  * \brief Assertion macros (debug mode)
   */
 
-namespace flux {
+namespace cc {
 
 void throwDebugError(const char *reason, const char *source, int line);
 
 #ifndef NDEBUG
-#define FLUX_ASSERT(condition) \
+#define CC_ASSERT(condition) \
     if (!(condition)) throwDebugError(#condition, __FILE__, __LINE__);
 #else
-#define FLUX_ASSERT(condition) ;
+#define CC_ASSERT(condition) ;
 #endif
 
 #ifndef NDEBUG
-#define FLUX_ASSERT2(condition, reason) \
+#define CC_ASSERT2(condition, reason) \
     if (!(condition)) throwDebugError(reason, __FILE__, __LINE__);
 #else
-#define FLUX_ASSERT2(condition, reason);
+#define CC_ASSERT2(condition, reason);
 #endif
 
-} // namespace flux
+template<bool b>
+struct StaticAssert {};
 
-#endif // FLUX_ASSERT_H
+template<>
+struct StaticAssert<true> {
+    static void yes() {}
+};
+
+#define CC_STATIC_ASSERT(condition) StaticAssert<condition>::yes();
+
+} // namespace cc

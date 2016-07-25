@@ -1,20 +1,22 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNET_URI_H
-#define FLUXNET_URI_H
+#pragma once
 
-#include <flux/syntax/exceptions>
-#include <flux/syntax/Token>
-#include <flux/String>
+#include <arpa/inet.h>
+#include <cc/exceptions>
+#include <cc/syntax/Token>
+#include <cc/String>
 
-namespace flux {
+namespace cc {
 namespace net {
+
+using syntax::Token;
 
 /** \brief Uniform Resource Indicator
   */
@@ -24,10 +26,7 @@ public:
     inline static Ref<Uri> create() {
         return new Uri;
     }
-    inline static Ref<Uri> create(const char *text) {
-        return new Uri(text);
-    }
-    inline static Ref<Uri> create(ByteArray *text, syntax::Token *rootToken = 0) {
+    inline static Ref<Uri> parse(String text, Token *rootToken = 0) {
         return new Uri(text, rootToken);
     }
 
@@ -38,6 +37,11 @@ public:
     inline void setUserInfo(String value) { userInfo_ = value; }
 
     inline String host() const { return host_; }
+    inline bool hostIsNumeric() const { return hostIsNumeric_; }
+    inline int family() const {
+        if (!hostIsNumeric_) return AF_UNSPEC;
+        return host_->contains(':') ? AF_INET6 : AF_INET;
+    }
     inline void setHost(String value) { host_ = value; }
 
     inline int port() const { return port_; }
@@ -56,22 +60,31 @@ public:
 
 private:
     Uri();
-    Uri(const char *text);
-    Uri(ByteArray *text, syntax::Token *rootToken = 0);
+    Uri(ByteArray *text, Token *rootToken = 0);
 
-    void readUri(ByteArray *text, syntax::Token *rootToken = 0);
+    void readUri(ByteArray *text, Token *rootToken = 0);
     static String encode(String s);
     static String decode(String s);
 
     String scheme_;
     String userInfo_;
     String host_;
+    bool hostIsNumeric_;
     int port_;
     String path_;
     String query_;
     String fragment_;
 };
 
-}} // namespace flux::net
+class UriSyntaxError: public UsageError
+{
+public:
+    UriSyntaxError(String text): text_(text) {}
+    String text() const { return text_; }
+    virtual String message() const;
 
-#endif // FLUXNET_URI_H
+private:
+    String text_;
+};
+
+}} // namespace cc::net

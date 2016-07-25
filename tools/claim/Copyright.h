@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXCLAIM_COPYRIGHT_H
-#define FLUXCLAIM_COPYRIGHT_H
+#pragma once
 
-#include <flux/String>
-#include <flux/List>
+#include <cc/String>
+#include <cc/List>
 
-namespace fluxclaim {
+namespace ccclaim {
 
-using namespace flux;
+using namespace cc;
 
 class Copyright: public Object
 {
@@ -41,6 +40,5 @@ private:
 
 typedef List< Ref<Copyright> > CopyrightList;
 
-} // namespace fluxclaim
+} // namespace ccclaim
 
-#endif // FLUXCLAIM_COPYRIGHT_H

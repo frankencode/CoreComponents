@@ -1,25 +1,24 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXREGEXP_REGEXP_H
-#define FLUXREGEXP_REGEXP_H
+#pragma once
 
-#include <flux/String>
-#include <flux/syntax/exceptions>
+#include <cc/String>
+#include <cc/syntax/exceptions>
 #ifndef NDEBUG
-#include <flux/syntax/SyntaxDebugger>
+#include <cc/syntax/SyntaxDebugger>
 #endif
-#include <flux/syntax/SyntaxDefinition>
+#include <cc/syntax/SyntaxDefinition>
 
-namespace flux {
+namespace cc {
 namespace regexp {
 
-using namespace flux::syntax;
+using namespace cc::syntax;
 
 /** \brief Regular expression pattern
   * \see SyntaxDefinition
@@ -31,7 +30,6 @@ public:
 
     RegExp(const char *text);
     RegExp(const String &text);
-    RegExp(const Ref<ByteArray> &text);
     RegExp(const Variant &Variant);
 
     const RegExp &operator=(const char *text);
@@ -47,6 +45,4 @@ private:
 
 inline String str(const RegExp &pattern) { return pattern.text_; }
 
-}} // namespace flux::regexp
-
-#endif // FLUXREGEXP_REGEXP_H
+}} // namespace cc::regexp
