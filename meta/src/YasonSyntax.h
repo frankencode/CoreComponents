@@ -1,27 +1,28 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXMETA_YASONSYNTAX_H
-#define FLUXMETA_YASONSYNTAX_H
+#pragma once
 
-#include <flux/syntax/SyntaxDefinition>
-#include <flux/meta/yason>
+#include <cc/syntax/SyntaxDefinition>
+#include <cc/meta/yason>
 
-namespace flux { template<class> class Singleton; }
+namespace cc { template<class> class Singleton; }
 
-namespace flux {
+namespace cc {
 namespace meta {
 
-using namespace flux::syntax;
+using namespace cc::syntax;
 
 class YasonSyntax: public SyntaxDefinition
 {
 public:
+    static const YasonSyntax *instance();
+
     Variant parse(const ByteArray *text, const MetaProtocol *protocol = 0) const;
     Ref<MetaObject> readObject(const ByteArray *text, Token *token, const MetaProtocol *protocol = 0, MetaObject *prototype = 0) const;
 
@@ -56,6 +57,8 @@ protected:
     int false_;
     int integer_;
     int float_;
+    int color_;
+    int version_;
     int name_;
     int className_;
     int object_;
@@ -75,8 +78,4 @@ Ref< List<T> > YasonSyntax::parseTypedList(const ByteArray *text, Token *token, 
     return list;
 }
 
-const YasonSyntax *yasonSyntax();
-
-}} // namespace flux::meta
-
-#endif // FLUXMETA_YASONSYNTAX_H
+}} // namespace cc::meta

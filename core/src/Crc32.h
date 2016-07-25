@@ -1,31 +1,35 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_CRC32_H
-#define FLUX_CRC32_H
+#pragma once
 
-#include <flux/types>
-#include <flux/strings>
-#include <flux/ByteArray>
+#include <cc/types>
+#include <cc/strings>
+#include <cc/HashSum>
 
-namespace flux {
+namespace cc {
 
 /** \brief CRC-32 check sum generator
   */
-class Crc32
+class Crc32: public HashSum
 {
 public:
-    Crc32(uint32_t seed = ~uint32_t(0))
-        : crc_(seed)
+    enum { Size = 4 };
+
+    Crc32(uint32_t seed = ~uint32_t(0)):
+        crc_(seed)
     {}
 
     void feed(const void *buf, int bufFill);
     inline uint32_t sum() const { return crc_; }
+
+    void write(const ByteArray *data);
+    Ref<ByteArray> finish();
 
 private:
     uint32_t crc_;
@@ -43,12 +47,10 @@ inline uint32_t crc32(const char *s) {
     return crc.sum();
 }
 
-inline uint32_t crc32(ByteArray *buf) {
+inline uint32_t crc32(String s) {
     Crc32 crc;
-    if (buf) crc.feed(buf->bytes(), buf->count());
+    if (s) crc.feed(s->bytes(), s->count());
     return crc.sum();
 }
 
-} // namespace flux
-
-#endif // FLUX_CRC32_H
+} // namespace cc

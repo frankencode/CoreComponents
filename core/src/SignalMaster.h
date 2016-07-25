@@ -1,19 +1,18 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_SIGNALMASTER_H
-#define FLUX_SIGNALMASTER_H
+#pragma once
 
-#include <flux/Thread>
-#include <flux/Channel>
-#include <flux/SignalSet>
+#include <cc/Thread>
+#include <cc/Channel>
+#include <cc/SignalSet>
 
-namespace flux {
+namespace cc {
 
 typedef Channel<int> SignalChannel;
 
@@ -35,6 +34,5 @@ private:
     Ref<SignalChannel> receivedSignals_;
 };
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_SIGNALMASTER_H

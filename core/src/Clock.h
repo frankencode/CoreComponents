@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_CLOCK_H
-#define FLUX_CLOCK_H
+#pragma once
 
-#include <flux/Thread>
-#include <flux/Channel>
+#include <cc/Thread>
+#include <cc/Channel>
 
-namespace flux {
+namespace cc {
 
-/** \brief Clock generator thread
+/** \brief %Clock generator thread
   *
   * A Clock is a thread that writes time beats into a channel in a fixed time interval.
   * The time interval may not be hit exactly for each tick, but the overall time scale
@@ -53,6 +52,4 @@ private:
     Ref<ShutdownChannel> shutdown_;
 };
 
-} // namespace flux
-
-#endif // FLUX_CLOCK_H
+} // namespace cc

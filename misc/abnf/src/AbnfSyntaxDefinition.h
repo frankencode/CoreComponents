@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXABNF_ABNFSYNTAXDEFINITION_H
-#define FLUXABNF_ABNFSYNTAXDEFINITION_H
+#pragma once
 
-#include <flux/syntax/SyntaxDefinition>
+#include <cc/syntax/SyntaxDefinition>
 
-namespace flux {
+namespace cc {
 namespace abnf {
 
-using namespace flux::syntax;
+using namespace cc::syntax;
 
 class AbnfSyntaxDefinition: public SyntaxDefinition
 {
@@ -25,6 +24,5 @@ protected:
     AbnfSyntaxDefinition(SyntaxDebugFactory *debugFactory = 0);
 };
 
-}} // namespace flux::abnf
+}} // namespace cc::abnf
 
-#endif // FLUXABNF_ABNFSYNTAXDEFINITION_H

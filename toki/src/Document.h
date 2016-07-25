@@ -1,18 +1,17 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTOKI_DOCUMENT_H
-#define FLUXTOKI_DOCUMENT_H
+#pragma once
 
-#include <flux/String>
-#include <flux/toki/Style>
+#include <cc/String>
+#include <cc/toki/Style>
 
-namespace flux {
+namespace cc {
 namespace toki {
 
 class Span: public Range
@@ -55,6 +54,5 @@ protected:
     Ref<Spans> spans_;
 };
 
-}} // namespace flux::toki
+}} // namespace cc::toki
 
-#endif // FLUXTOKI_DOCUMENT_H

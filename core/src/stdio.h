@@ -1,30 +1,27 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_STDIO_H
-#define FLUX_STDIO_H
+#pragma once
 
 /** \file stdio
   * \brief Standard input/output streams
   */
 
-#include <flux/SystemStream>
-#include <flux/Format>
+#include <cc/SystemStream>
+#include <cc/Format>
 
-namespace flux {
+namespace cc {
 
 SystemStream *stdIn();
 SystemStream *stdOut();
 SystemStream *stdErr();
 
-inline Format fout(String pattern = "") { return Format(pattern, stdOut()); }
-inline Format ferr(String pattern = "") { return Format(pattern, stdErr()); }
+Format fout(String pattern = "");
+Format ferr(String pattern = "");
 
-} // namespace flux
-
-#endif // FLUX_STDIO_H
+} // namespace cc

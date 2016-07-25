@@ -1,5 +1,0 @@
-Application {
-    name: fluxmake
-    source: *.cpp
-    use: [ core, syntax, regexp, meta ]
-}

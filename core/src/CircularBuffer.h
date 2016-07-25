@@ -1,18 +1,17 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_CIRCULARBUFFER_H
-#define FLUX_CIRCULARBUFFER_H
+#pragma once
 
-#include <flux/assert>
-#include <flux/Array>
+#include <cc/assert>
+#include <cc/Array>
 
-namespace flux {
+namespace cc {
 
 /** \brief fixed size queue
   */
@@ -48,7 +47,7 @@ public:
 
     inline CircularBuffer& pushBack(const T& item)
     {
-        FLUX_ASSERT(fill_ != size_);
+        CC_ASSERT(fill_ != size_);
         ++head_;
         if (head_ >= size_) head_ = 0;
         ++fill_;
@@ -58,7 +57,7 @@ public:
 
     inline CircularBuffer& popFront(T* item)
     {
-        FLUX_ASSERT(fill_ > 0);
+        CC_ASSERT(fill_ > 0);
         ++tail_;
         if (tail_ >= size_) tail_ = 0;
         --fill_;
@@ -68,7 +67,7 @@ public:
 
     inline CircularBuffer& pushFront(const T& item)
     {
-        FLUX_ASSERT(fill_ < size_);
+        CC_ASSERT(fill_ < size_);
         buf_->at(tail_) = item;
         --tail_;
         if (tail_ < 0) tail_ = size_ - 1;
@@ -78,7 +77,7 @@ public:
 
     inline CircularBuffer& popBack(T* item)
     {
-        FLUX_ASSERT(fill_ > 0);
+        CC_ASSERT(fill_ > 0);
         *item = buf_->at(head_);
         --head_;
         if (head_ < 0) head_ = size_ - 1;
@@ -91,7 +90,7 @@ public:
 
     inline T& back(int i = 0) const
     {
-        FLUX_ASSERT((0 <= i) && (i < fill_));
+        CC_ASSERT((0 <= i) && (i < fill_));
         i = -i;
         i += head_;
         if (i < 0) i += size_;
@@ -100,7 +99,7 @@ public:
 
     inline T& front(int i = 0) const
     {
-        FLUX_ASSERT((0 <= i) && (i < fill_));
+        CC_ASSERT((0 <= i) && (i < fill_));
         i += tail_ + 1;
         if (i >= size_) i -= size_;
         return buf_->at(i);
@@ -125,6 +124,4 @@ private:
     Ref< Array<T> > buf_;
 };
 
-} // namespace flux
-
-#endif // FLUX_CIRCULARBUFFER_H
+} // namespace cc

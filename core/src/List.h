@@ -1,21 +1,20 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_LIST_H
-#define FLUX_LIST_H
+#pragma once
 
-#include <flux/containers>
-#include <flux/OrdinalTree>
-#include <flux/Heap>
+#include <cc/containers>
+#include <cc/OrdinalTree>
+#include <cc/Heap>
 
-namespace flux {
+namespace cc {
 
-/** \brief List data container
+/** \brief %List data container
   */
 template<class T>
 class List: public Object
@@ -23,9 +22,26 @@ class List: public Object
 public:
     typedef T Item;
 
+    /*! create a new empty list
+      */
     inline static Ref<List> create() { return new List; }
+
+    /*! create a new list a populate it with n default items
+      */
     inline static Ref<List> create(int n) { return new List(n); }
-    inline static Ref<List> clone(List *a) { return new List(*a); }
+
+    /*! create a deep copy of another list
+      */
+    static Ref<List> copy(const List *other)
+    {
+        Ref<List> newList = List::create(other->count());
+        for (int i = 0; i < newList->count(); ++i) newList->at(i) = T::copy(other->at(i));
+        return newList;
+    }
+
+    /*! create a shallow copy of another list
+      */
+    inline static Ref<List> clone(const List *other) { return new List(*other); }
 
     inline int count() const { return tree_.weight(); }
 
@@ -35,7 +51,7 @@ public:
     inline Item &at(int index) const {
         Node *node = 0;
         if (!tree_.lookupByIndex(index, &node))
-            FLUX_ASSERT(false);
+            CC_ASSERT(false);
         return node->item_;
     }
 
@@ -175,6 +191,4 @@ bool operator<=(const List<T> &a, const List<T> &b) { return container::compare(
 template<class T>
 bool operator>=(const List<T> &a, const List<T> &b) { return container::compare(a, b) >= 0; }
 
-} // namespace flux
-
-#endif // FLUX_LIST_H
+} // namespace cc

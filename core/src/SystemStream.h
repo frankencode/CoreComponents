@@ -1,66 +1,121 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_SYSTEMSTREAM_H
-#define FLUX_SYSTEMSTREAM_H
+#pragma once
 
-#include <flux/Stream>
-#include <flux/Exception>
+#include <cc/Stream>
+#include <cc/Exception>
+#include <cc/SystemIo>
+#include <cc/IoTarget>
+#include <sys/socket.h> // SHUT_RD, etc.
 
-namespace flux {
+namespace cc {
 
-/** \brief System streams: files, character devices, stream sockets, etc.
-  * \see File, SocketPair
+/** \class SystemStream SystemStream.h cc/SystemStream
+  * \brief Base class for all system streams
   */
-class SystemStream: public Stream
+class SystemStream: public Stream, public IoTarget
 {
 public:
-    inline static Ref<SystemStream> create(int fd) {
+    /** Create a new SystemStream object
+      * \param fd file descriptor
+      * \return new object instance
+      */
+    static Ref<SystemStream> create(int fd) {
         return new SystemStream(fd);
     }
-    static Ref<SystemStream> duplicate(SystemStream *other);
-    ~SystemStream();
 
+    /** Duplicate a system stream
+      * \param other the system stream to duplicate
+      * \return new object instance
+      * The duplicate() method invokes ::dup(2) under its hood and creates a
+      * corresponding new SystemStream instance for the newly created file descriptor.
+      * \see duplicateTo()
+      */
+    static Ref<SystemStream> duplicate(SystemStream *other);
+
+    /// The underlying file descriptor
     int fd() const;
+
+    /** Return true if this is a TTY (i.e. a terminal device).
+      *
+      * This method is useful to distinguish between interactive from non-interactive
+      * invocation.
+      * ~~~~~~~~~~~~~
+      * if (stdIn()->isatty()) fout() << "Hello, Jane!" << nl;
+      * else; // continue silently
+      * ~~~~~~~~~~~~~
+      */
     bool isatty() const;
 
-    bool readyRead(double interval) const;
+    virtual int read(ByteArray *data) override;
+    virtual void write(const ByteArray *data) override;
+    virtual void write(const StringList *parts) override;
 
-    virtual int read(ByteArray *data);
-    virtual void write(const ByteArray *data);
-    virtual void write(const StringList *parts);
+    /// Convenience wrapper
+    inline void write(const String &data) { write(data.get()); }
 
-    inline void write(Ref<ByteArray> data) { write(data.get()); }
-    inline void write(String s) { write(s.get()); }
-    inline void write(const char *s) { write(String(s)); }
+    /// Convenience wrapper
+    inline void write(const char *data) { write(String(data)); }
 
-    void closeOnExec();
+    /// Convenience wrapper
+    void write(const Format &data);
 
-    int ioctl(int request, void *arg);
+    /** Wait for a system I/O event
+      * \param events combination of SystemIo::WaitEvent flags
+      * \param interval_ms the interval to wait at max (-1 for infinite)
+      * \return true if one of the indicated events occured, false on timeout
+      */
+    bool poll(int events, int interval_ms = -1);
 
+    /// Full duplex connection shutdown
+    enum ShutdownType {
+        ReadShutdown = SHUT_RD,  ///< Partially shutdown the communication channel for reading
+        WriteShutdown = SHUT_WR, ///< Partially shutdown the communication channel for writing
+        FullShutdown = SHUT_RDWR ///< Fully shutdown the communication channel
+    };
+
+    /** Shutdown a full duplex communication channel
+      * \param type shutdown for reading (ReadShutdown), writing (WriteShutdown) or both (FullShutdown)
+      */
+    void shutdown(ShutdownType type = FullShutdown);
+
+    /// Currently set I/O scatter limit
+    int scatterLimit() const { return scatterLimit_; }
+
+    /** %Set the I/O scatter limit
+      *
+      * Scatter writes via write(const StringList *) and write(const Format &) will be merge into a single block
+      * if the total size of the scatter list is below the scatter limit.
+      */
+    void setScatterLimit(int newLimit) { scatterLimit_ = newLimit; }
+
+    /** Duplicate this file stream
+      * \param other the other system stream to take over
+      *
+      * The duplicate() method invokes ::dup2(2) under its hood and thereby
+      * duplicates this file stream onto the other file stream.
+      *
+      * This for instance allows to set a file as standard input:
+      * ~~~~~~~~~~~~~
+      * auto inSaved = stdIn()->duplicate();
+      * File::open("binary.dat")->duplicateTo(stdIn());
+      * ~~~~~~~~~~~~~
+      * \see duplicate()
+      */
     void duplicateTo(SystemStream *other);
 
 protected:
-    SystemStream(int fd, bool iov = true);
+    SystemStream(int fd = -1);
+    ~SystemStream();
 
     int fd_;
-    bool iov_;
-    int iovMax_;
+    int scatterLimit_;
 };
 
-class ConnectionResetByPeer: public Exception
-{
-public:
-    ~ConnectionResetByPeer() throw() {}
-
-    virtual String message() const { return "Connection reset by peer"; }
-};
-
-} // namespace flux
-
-#endif // FLUX_SYSTEMSTREAM_H
+} // namespace cc

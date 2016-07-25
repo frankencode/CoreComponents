@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXSYNTAX_TOKENFACTORY_H
-#define FLUXSYNTAX_TOKENFACTORY_H
+#pragma once
 
-#include <flux/syntax/Token>
+#include <cc/syntax/Token>
 
-namespace flux {
+namespace cc {
 namespace syntax {
 
 class SyntaxState;
@@ -30,6 +29,5 @@ protected:
     }
 };
 
-}} // namespace flux::syntax
+}} // namespace cc::syntax
 
-#endif // FLUXSYNTAX_TOKENFACTORY_H

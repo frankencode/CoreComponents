@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXMETA_JSONWRITER_H
-#define FLUXMETA_JSONWRITER_H
+#pragma once
 
-#include <flux/meta/MetaObject>
+#include <cc/meta/MetaObject>
 
-namespace flux {
+namespace cc {
 namespace meta {
 
 /** \brief Generate JSON representation of a meta object tree
@@ -37,6 +36,5 @@ protected:
     String indent_;
 };
 
-}} // namespace flux::meta
+}} // namespace cc::meta
 
-#endif // FLUXMETA_JSONWRITER_H

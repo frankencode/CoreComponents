@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_PROPERTY_H
-#define FLUX_PROPERTY_H
+#pragma once
 
-#include <flux/Event>
+#include <cc/Event>
 
-namespace flux {
+namespace cc {
 
 template<class T>
 class Property
@@ -44,6 +43,5 @@ private:
     T value_;
 };
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_PROPERTY_H

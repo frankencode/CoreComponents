@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXSTREAM_LOOKAHEADSTREAM_H
-#define FLUXSTREAM_LOOKAHEADSTREAM_H
+#pragma once
 
-#include <flux/Stream>
+#include <cc/Stream>
 
-namespace flux {
+namespace cc {
 namespace stream {
 
 /** \brief Look-a-head stream buffer
@@ -21,9 +20,8 @@ class LookAheadStream: public Stream
 public:
     static Ref<LookAheadStream> open(Stream *source, int windowSize);
 
-    virtual bool readyRead(double interval) const;
-    virtual int read(ByteArray *data);
-    virtual off_t transfer(off_t count = -1, Stream *sink = 0, ByteArray *buf = 0);
+    int read(ByteArray *data) override;
+    off_t transferSpanTo(off_t count = -1, Stream *sink = 0, ByteArray *buf = 0) override;
 
     void replay();
     void done();
@@ -39,6 +37,4 @@ private:
     bool done_;
 };
 
-}} // namespace flux::stream
-
-#endif // FLUXSTREAM_LOOKAHEADSTREAM_H
+}} // namespace cc::stream

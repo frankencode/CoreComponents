@@ -1,23 +1,22 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_MEDIATYPEDATABASE_H
-#define FLUXNODE_MEDIATYPEDATABASE_H
+#pragma once
 
-#include <flux/String>
-#include <flux/PrefixTree>
-#include <flux/Map>
+#include <cc/String>
+#include <cc/PrefixTree>
+#include <cc/Map>
 
-namespace flux { template<class> class Singleton; }
+namespace cc { template<class> class Singleton; }
 
-namespace fluxnode {
+namespace ccnode {
 
-using namespace flux;
+using namespace cc;
 
 class MediaTypeDatabase: public Object
 {
@@ -34,6 +33,5 @@ private:
 
 const MediaTypeDatabase *mediaTypeDatabase();
 
-} // namespace fluxnode
+} // namespace ccnode
 
-#endif // FLUXNODE_MEDIATYPEDATABASE_H

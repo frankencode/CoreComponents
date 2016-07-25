@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_RESOURCECONTEXT_H
-#define FLUX_RESOURCECONTEXT_H
+#pragma once
 
-#include <flux/String>
+#include <cc/String>
 
-namespace flux {
+namespace cc {
 
 template<class> class ThreadLocalSingleton;
 template<class> class Queue;
@@ -22,6 +21,8 @@ template<class> class Queue;
 class ResourceContext: public Object
 {
 public:
+    static ResourceContext *instance();
+
     void push(String resource);
     String pop();
 
@@ -34,8 +35,4 @@ private:
     Ref< Queue<String> > queue_;
 };
 
-ResourceContext *resourceContext();
-
-} // namespace flux
-
-#endif // FLUX_RESOURCECONTEXT_H
+} // namespace cc

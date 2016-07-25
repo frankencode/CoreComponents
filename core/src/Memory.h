@@ -1,35 +1,29 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_MEMORY_H
-#define FLUX_MEMORY_H
+#pragma once
 
-#include <flux/ThreadLocalSingleton>
+#include <sys/types.h>
 
-namespace flux {
+namespace cc {
 
-/** \brief Dynamic heap allocator
+/** \brief memory allocator
   */
-class Memory: public Object, public ThreadLocalSingleton<Memory>
+class Memory
 {
 public:
-    static void *allocate(size_t size);
-    static void free(void *data);
-
-    static size_t pageSize();
-
-    void *operator new(size_t size);
-    void operator delete(void *data, size_t size);
+    static void *allocate(size_t size) throw();
+    static void free(void *data) throw();
 
 private:
-    friend class ThreadLocalSingleton<Memory>;
-
     Memory();
+
+    static Memory *instance() throw();
 
     class BucketHeader;
 
@@ -37,8 +31,4 @@ private:
     BucketHeader *bucket_;
 };
 
-inline Memory *memory() { return Memory::instance(); }
-
-} // namespace flux
-
-#endif // FLUX_MEMORY_H
+} // namespace cc

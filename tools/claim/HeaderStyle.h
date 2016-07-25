@@ -1,22 +1,21 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXCLAIM_HEADERSTYLE_H
-#define FLUXCLAIM_HEADERSTYLE_H
+#pragma once
 
-#include <flux/Registration>
-#include <flux/List>
+#include <cc/Registration>
+#include <cc/List>
 #include "Header.h"
 #include "Notice.h"
 
-namespace fluxclaim {
+namespace ccclaim {
 
-using namespace flux;
+using namespace cc;
 
 class HeaderStyle: public Object
 {
@@ -38,6 +37,5 @@ protected:
 
 typedef List< Ref<HeaderStyle> > HeaderStyleList;
 
-} // namespace fluxclaim
+} // namespace ccclaim
 
-#endif // FLUXCLAIM_HEADERSTYLE_H

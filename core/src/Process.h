@@ -1,87 +1,40 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_PROCESS_H
-#define FLUX_PROCESS_H
+#pragma once
 
 #include <sys/types.h> // pid_t
-#include <flux/Exception>
-#include <flux/SignalSet>
-#include <flux/String>
-#include <flux/Map>
-#include <flux/SystemStream>
-#include <flux/LineSource>
+#include <cc/SignalSet>
+#include <cc/String>
+#include <cc/Map>
+#include <cc/SystemStream>
+#include <cc/LineSource>
 
-namespace flux {
-
-class ProcessFactory;
+namespace cc {
 
 typedef Map<String, String> EnvMap;
 
-/** \brief Child process control
+/** \class Process Process.h cc/Process
+  * \brief %Process status and control
   */
-class Process: public Stream
+class Process
 {
-    // FIXME: split up into Process, CurrentProcess
-    // FIXME: add function to set/get process-wide signal mask
 public:
-    static Ref<Process> start(String command, int ioPolicy = 0);
-    static Ref<Process> start(String command, ProcessFactory *factory);
-
-    // -- child process control interface
-
-    enum Type {
-        GroupMember,
-        GroupLeader,
-        SessionLeader
-    };
-
-    enum IoPolicy {
-        ForwardInput = 1,
-        ForwardOutput = 2,
-        ForwardError = 4,
-        ForwardByPseudoTerminal = 8,
-        CloseInput = 16,
-        CloseOutput = 32,
-        CloseError = 64,
-        ErrorToOutput = 128,
-        ForwardAll = ForwardInput|ForwardOutput|ForwardError,
-        CloseAll = CloseInput|CloseOutput|CloseError
-    };
-
-    int type() const;
-    int ioPolicy() const;
-
-    SystemStream *in() const;
-    SystemStream *out() const;
-    SystemStream *err() const;
-
-    LineSource *lineOut();
-    LineSource *lineErr();
-
-    pid_t id() const;
-
-    void kill(int signal = SIGTERM, bool *permissionDenied = 0);
-    bool isRunning() const;
-
-    int wait();
-
-    // -- stream interface
-
-    virtual bool readyRead(double interval) const;
-    virtual int read(ByteArray *data);
-    virtual void write(const ByteArray *data);
-
-    // -- query / modify the current process status
-
+    /** Change the current working directory of this process
+      * \param path new directory path to enter
+      */
     static void cd(String path);
+
+    /// Current working directory of this process
     static String cwd();
-    static String execPath();
+
+    /// Actual pathname of the executed command
+    static String exePath();
 
     static mode_t setFileCreationMask(mode_t mask);
 
@@ -92,6 +45,7 @@ public:
     static bool isSuperUser();
     static void setUserId(uid_t uid);
     static void setEffectiveUserId(uid_t uid);
+    static void setPersona(uid_t uid, gid_t gid);
 
     static String env(String key);
     static void setEnv(String key, String value);
@@ -105,69 +59,24 @@ public:
 
     static void kill(pid_t processId, int signal, bool *permissionDenied = 0);
     static void killGroup(pid_t processGroupId, int signal, bool *permissionDenied = 0);
+
     static void raise(int signal);
-    static int alarm(int seconds);
+
+    /** Returns the default signal mask of this process before any modifications
+      * by Thread::blockSignals() or Thread::unblockSignals()
+      */
     static SignalSet *defaultSignalMask();
 
-    static void sleep(double duration);
+    /** terminate this process
+      * \param exitCode exit code (0..255)
+      */
     static void exit(int exitCode);
 
+    /// Daemonize this process
     static void daemonize();
+
+    /// Returns true if this process is daemonized
     static bool isDaemonized();
-
-protected:
-    friend class ProcessFactory;
-
-    Process(
-        int type,
-        int ioPolicy,
-        SystemStream *rawInput,
-        SystemStream *rawOutput,
-        SystemStream *rawError,
-        pid_t processId,
-        String command // FIXME: StringList *arguments
-    );
-
-    ~Process();
-
-private:
-    static void forwardSignal(int signal);
-
-    int type_;
-    int ioPolicy_;
-
-    Ref<SystemStream> in_;
-    Ref<SystemStream> out_;
-    Ref<SystemStream> err_;
-
-    Ref<LineSource> lineOut_;
-    Ref<LineSource> lineErr_;
-
-    pid_t processId_;
-    String command_;
 };
 
-/** \brief Child process error
-  */
-class ProcessError: public Exception
-{
-public:
-    ProcessError(int status, String command)
-        : status_(status),
-          command_(command)
-    {}
-    ~ProcessError() throw() {}
-
-    inline int status() const { return status_; }
-    inline String command() const { return command_; }
-
-    virtual String message() const;
-
-private:
-    int status_;
-    String command_;
-};
-
-} // namespace flux
-
-#endif // FLUX_PROCESS_H
+} // namespace cc

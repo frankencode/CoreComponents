@@ -1,19 +1,18 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_EXCEPTIONS_H
-#define FLUXNODE_EXCEPTIONS_H
+#pragma once
 
-#include <flux/String>
+#include <cc/String>
 
-namespace fluxnode {
+namespace ccnode {
 
-using namespace flux;
+using namespace cc;
 
 class CloseRequest {};
 
@@ -51,6 +50,26 @@ public:
     NotFound(): ProtocolException(404, "Not Found") {}
 };
 
+class RequestTimeout: public ProtocolException
+{
+public:
+    enum { StatusCode = 408 };
+    RequestTimeout(): ProtocolException(StatusCode, "Request Timeout") {}
+};
+
+class PayloadTooLarge: public ProtocolException
+{
+public:
+    enum { StatusCode = 413 };
+    PayloadTooLarge(): ProtocolException(StatusCode, "Payload Too Large") {}
+};
+
+class InternalServerError: public ProtocolException
+{
+public:
+    InternalServerError(): ProtocolException(500, "Internal Server Error") {}
+};
+
 class UnsupportedVersion: public ProtocolException
 {
 public:
@@ -63,6 +82,4 @@ public:
     NotImplemented(): ProtocolException(501, "Not implemented") {}
 };
 
-} // namespace fluxnode
-
-#endif // FLUXNODE_EXCEPTIONS_H
+} // namespace ccnode

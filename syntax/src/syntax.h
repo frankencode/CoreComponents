@@ -1,22 +1,21 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXSYNTAX_SYNTAX_H
-#define FLUXSYNTAX_SYNTAX_H
+#pragma once
 
-#include <flux/Crc32>
-#include <flux/PrefixTree>
-#include <flux/exceptions>
-#include <flux/Format>
-#include <flux/syntax/SyntaxNode>
-#include <flux/syntax/SyntaxDebugFactory>
+#include <cc/Crc32>
+#include <cc/PrefixTree>
+#include <cc/exceptions>
+#include <cc/Format>
+#include <cc/syntax/SyntaxNode>
+#include <cc/syntax/SyntaxDebugFactory>
 
-namespace flux {
+namespace cc {
 namespace syntax {
 
 class SyntaxDebugger;
@@ -289,7 +288,7 @@ public:
         {
             h = entry()->matchNext(text, h, parentToken, state);
             if (h == i)
-                FLUX_DEBUG_ERROR("Repeated empty match, bailing out");
+                CC_DEBUG_ERROR("Repeated empty match, bailing out");
             if (h != -1) {
                 i = h;
                 ++repeatCount;
@@ -396,7 +395,7 @@ public:
         {
             h = entry()->matchNext(text, h, parentToken, state);
             if (h == i)
-                FLUX_DEBUG_ERROR("Repeated empty match, bailing out");
+                CC_DEBUG_ERROR("Repeated empty match, bailing out");
             if (h != -1) {
                 ++repeatCount;
                 if (minRepeat_ <= repeatCount) {
@@ -1241,7 +1240,7 @@ public:
     inline void IMPORT(const DefinitionNode *definition, const char *name = 0) {
         if (!name) name = definition->name();
         if (!name)
-            FLUX_DEBUG_ERROR("Cannot import anonymous syntax definition");
+            CC_DEBUG_ERROR("Cannot import anonymous syntax definition");
         scopeByName_->insert(name, definition);
     }
 
@@ -1252,7 +1251,7 @@ public:
         if (strcasecmp(name, "caseSensitive") == 0)
             caseSensitive_ = value;
         else
-            FLUX_DEBUG_ERROR(Format("Unknown option '%%'") << name);
+            CC_DEBUG_ERROR(Format("Unknown option '%%'") << name);
     }
 
     inline NODE CHAR(char ch) { return debug(new CharNode(ch, 0), "Char"); }
@@ -1399,7 +1398,7 @@ public:
         Ref<const DefinitionNode> definition;
         const DefinitionNode *scope = resolveScope(name);
         if (!scope->scopeByName_->lookup(name, &definition))
-            FLUX_DEBUG_ERROR(Format("Undefined scope '%%'") << name);
+            CC_DEBUG_ERROR(Format("Undefined scope '%%'") << name);
         return definition;
     }
 
@@ -1407,9 +1406,9 @@ public:
     {
         const DefinitionNode *scope = resolveScope(name);
         Ref<RuleNode> node;
-        FLUX_ASSERT(scope);
+        CC_ASSERT(scope);
         if (!scope->ruleByName_->lookup(name, &node))
-            FLUX_DEBUG_ERROR(Format("Undefined rule '%%'") << name);
+            CC_DEBUG_ERROR(Format("Undefined rule '%%'") << name);
         return node;
     }
 
@@ -1417,7 +1416,7 @@ public:
     {
         int tokenType = -1;
         if (!keywordByName_->lookup(name, &tokenType))
-            FLUX_DEBUG_ERROR(Format("Undefined keyword '%%'") <<  name);
+            CC_DEBUG_ERROR(Format("Undefined keyword '%%'") <<  name);
         return tokenType;
     }
 
@@ -1425,7 +1424,7 @@ public:
     {
         int flagId = -1;
         if (!flagIdByName_->lookup(name, &flagId))
-            FLUX_DEBUG_ERROR(Format("Undefined state flag '%%'") << name);
+            CC_DEBUG_ERROR(Format("Undefined state flag '%%'") << name);
         return flagId;
     }
 
@@ -1433,7 +1432,7 @@ public:
     {
         int captureId = -1;
         if (!captureIdByName_->lookup(name, &captureId))
-            FLUX_DEBUG_ERROR(Format("Undefined capture '%%'") << name);
+            CC_DEBUG_ERROR(Format("Undefined capture '%%'") << name);
         return captureId;
     }
 
@@ -1469,7 +1468,7 @@ private:
     void addRule(RuleNode *rule)
     {
         if (!ruleByName_->insert(rule->name(), rule))
-            FLUX_DEBUG_ERROR(Format("Redefinition of rule '%%'") << rule->name());
+            CC_DEBUG_ERROR(Format("Redefinition of rule '%%'") << rule->name());
     }
 
     Ref<LinkNode> unresolvedLinkHead_;
@@ -1503,6 +1502,5 @@ private:
     static int errorCallBack(Object *self, ByteArray *text, int index, Token *parentToken, SyntaxState *state);
 };
 
-}} // namespace flux::syntax
+}} // namespace cc::syntax
 
-#endif // FLUXSYNTAX_SYNTAX_H

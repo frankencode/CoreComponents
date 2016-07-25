@@ -1,19 +1,18 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXREGEXP_GLOB_H
-#define FLUXREGEXP_GLOB_H
+#pragma once
 
-#include <flux/regexp/RegExp>
+#include <cc/regexp/RegExp>
 
-namespace flux { class Dir; }
+namespace cc { class Dir; }
 
-namespace flux {
+namespace cc {
 namespace regexp {
 
 /** \brief Collect file names matching a globbing pattern
@@ -37,6 +36,5 @@ private:
     Ref<Glob> child_;
 };
 
-}} // namespace flux::regexp
+}} // namespace cc::regexp
 
-#endif // FLUXREGEXP_GLOB_H

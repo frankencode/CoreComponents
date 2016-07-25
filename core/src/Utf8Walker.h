@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_UTF8WALKER_H
-#define FLUX_UTF8WALKER_H
+#pragma once
 
-#include <flux/types>
+#include <cc/types>
 
-namespace flux {
+namespace cc {
 
 /** \brief Iterating UTF-8 encoded strings
   *
@@ -37,16 +36,16 @@ public:
     // Initialize new walker
     // \arg data byte string
     // \arg pos position in string
-    Utf8Walker(const char *data = 0, const char *pos = 0)
-        : s_(reinterpret_cast<const uint8_t*>(data)),
-          p_(reinterpret_cast<const uint8_t*>(pos))
+    Utf8Walker(const char *data = 0, const char *pos = 0):
+        s_(reinterpret_cast<const uint8_t*>(data)),
+        p_(reinterpret_cast<const uint8_t*>(pos))
     {
         if (!p_) p_ = (s_) ? s_ : beforeBegin();
     }
 
-    Utf8Walker(const Utf8Walker &b)
-        : s_(b.s_),
-          p_(b.p_)
+    Utf8Walker(const Utf8Walker &b):
+        s_(b.s_),
+        p_(b.p_)
     {}
 
     // prefix increment
@@ -178,6 +177,4 @@ private:
     const uint8_t *p_; // position in byte array
 };
 
-} // namespace flux
-
-#endif // FLUX_UTF8WALKER_H
+} // namespace cc

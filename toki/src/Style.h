@@ -1,21 +1,20 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTOKI_STYLE_H
-#define FLUXTOKI_STYLE_H
+#pragma once
 
-#include <flux/Color>
-#include <flux/meta/yason>
+#include <cc/Color>
+#include <cc/meta/yason>
 
-namespace flux {
+namespace cc {
 namespace toki {
 
-using namespace flux::meta;
+using namespace cc::meta;
 
 class Palette;
 
@@ -47,6 +46,5 @@ private:
     bool italic_;
 };
 
-}} // namespace flux::toki
+}} // namespace cc::toki
 
-#endif // FLUXTOKI_STYLE_H

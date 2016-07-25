@@ -1,28 +1,27 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_EXCEPTIONS_H
-#define FLUX_EXCEPTIONS_H
+#pragma once
 
 /** \file exceptions
   * \brief Common exception classes
   */
 #include <errno.h>
-#include <flux/Exception>
+#include <cc/Exception>
 
-namespace flux {
+namespace cc {
 
-/** \brief User input ambiguous, report back to user and provide guidance
+/** \brief %User input ambiguous, report back to user and provide guidance
   */
 class UsageError: public Exception
 {
 public:
-    UsageError(String message): message_(message) {}
+    UsageError(String message = String()): message_(message) {}
     ~UsageError() throw() {}
 
     virtual String message() const { return message_; }
@@ -31,7 +30,7 @@ private:
     String message_;
 };
 
-/** \brief User requested help
+/** \brief %User requested help
   */
 class HelpError: public Exception
 {
@@ -69,7 +68,6 @@ public:
     virtual String message() const { return "Buffer overflow"; }
 };
 
-
 /** \brief Debugging hint on internal system malfunction
   */
 class DebugError: public Exception
@@ -90,7 +88,9 @@ private:
     int line_;
 };
 
-/** \brief System call failed
+String systemError(int errorCode);
+
+/** \brief %System call failed
   */
 class SystemError: public Exception
 {
@@ -104,7 +104,7 @@ protected:
     int errorCode_;
 };
 
-/** \brief System call failed to perform an action on a named resource (e.g. a file)
+/** \brief %System call failed to perform an action on a named resource (e.g. a file)
   */
 class SystemResourceError: public SystemError
 {
@@ -151,19 +151,19 @@ private:
     int line_;
 };
 
-#define FLUX_DEBUG_ERROR(reason) \
+#define CC_DEBUG_ERROR(reason) \
     throw DebugError(reason, __FILE__, __LINE__)
 
-#define FLUX_SYSTEM_RESOURCE_ERROR(errorCode, resource) \
+#define CC_SYSTEM_RESOURCE_ERROR(errorCode, resource) \
     throw SystemResourceError(errorCode, resource, __FILE__, __LINE__)
 
-#define FLUX_SYSTEM_DEBUG_ERROR(errorCode) \
+#define CC_SYSTEM_DEBUG_ERROR(errorCode) \
     throw SystemDebugError(errorCode, __FILE__, __LINE__)
 
-#define FLUX_SYSTEM_ERROR(errorCode, resource) \
+#define CC_SYSTEM_ERROR(errorCode, resource) \
     { \
-        if (resource != "") FLUX_SYSTEM_RESOURCE_ERROR(errorCode, resource); \
-        else FLUX_SYSTEM_DEBUG_ERROR(errorCode); \
+        if (resource != "") CC_SYSTEM_RESOURCE_ERROR(errorCode, resource); \
+        else CC_SYSTEM_DEBUG_ERROR(errorCode); \
     }
 
 /** \brief General error related to a text (progam text, config file, etc.)
@@ -230,10 +230,43 @@ class Timeout: public Exception
 {
 public:
     ~Timeout() throw() {}
-
-    virtual String message() const { return "Operation timed out"; }
+    virtual String message() const;
 };
 
-} // namespace flux
+/** \brief Other end of a communication channel was closed (pipe or socket)
+  */
+class ConnectionResetByPeer: public Exception
+{
+public:
+    ~ConnectionResetByPeer() throw() {}
+    virtual String message() const;
+};
 
-#endif // FLUX_EXCEPTIONS_H
+/** \brief Insufficient permission to perform operation
+  */
+class PermissionError: public UsageError
+{
+public:
+    ~PermissionError() throw() {}
+    virtual String message() const;
+};
+
+/** \brief Command not found error
+  */
+class CommandNotFound: public UsageError
+{
+public:
+    CommandNotFound(String command = ""):
+        command_(command)
+    {}
+    ~CommandNotFound() throw() {}
+
+    String command() const { return command_; }
+
+    virtual String message() const;
+
+private:
+    String command_;
+};
+
+} // namespace cc

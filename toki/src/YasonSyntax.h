@@ -1,21 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTOKI_YASONSYNTAX_H
-#define FLUXTOKI_YASONSYNTAX_H
+#pragma once
 
-#include <flux/meta/YasonSyntax>
+#include <cc/meta/YasonSyntax>
 
-namespace flux {
+namespace cc {
 namespace toki {
 
-flux::meta::YasonSyntax *yasonSyntax();
+cc::meta::YasonSyntax *yasonSyntax();
 
-}} // namespace flux::toki
+}} // namespace cc::toki
 
-#endif // FLUXTOKI_YASONSYNTAX_H

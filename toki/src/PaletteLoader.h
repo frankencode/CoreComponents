@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTOKI_PALETTELOADER_H
-#define FLUXTOKI_PALETTELOADER_H
+#pragma once
 
-#include <flux/toki/Palette>
+#include <cc/toki/Palette>
 
-namespace flux {
+namespace cc {
 
 template<class> class Singleton;
 
@@ -31,6 +30,5 @@ private:
 
 const PaletteLoader *paletteLoader();
 
-}} // namespace flux::toki
+}} // namespace cc::toki
 
-#endif // FLUXTOKI_PALETTELOADER_H

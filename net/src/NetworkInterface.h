@@ -1,21 +1,20 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNET_NETWORKINTERFACE_H
-#define FLUXNET_NETWORKINTERFACE_H
+#pragma once
 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <net/if.h> // IFF_UP, etc.
-#include <flux/net/SocketAddress>
-#include <flux/net/SocketAddressEntry>
+#include <cc/net/SocketAddress>
+#include <cc/net/SocketAddressEntry>
 
-namespace flux {
+namespace cc {
 namespace net {
 
 class RouteInfo;
@@ -59,7 +58,7 @@ public:
     unsigned flags() const { return flags_; }
     uint64_t hardwareAddress() const { return hardwareAddress_; }
     uint32_t mtu() const { return mtu_; }
-    SocketAddressList *addressList() const { return addressList_; }
+    const SocketAddressList *addressList() const { return addressList_; }
 
 private:
     inline static Ref<NetworkInterface> create() {
@@ -84,6 +83,4 @@ private:
     Ref<SocketAddressList> addressList_;
 };
 
-}} // namespace flux::net
-
-#endif // FLUXNET_NETWORKINTERFACE_H
+}} // namespace cc::net

@@ -1,0 +1,4 @@
+<map id="cc::syntax::SyntaxError" name="cc::syntax::SyntaxError">
+<area shape="rect" id="node2" href="$classcc_1_1TextError.html" title="General error related to a text (progam text, config file, etc.) " alt="" coords="36,80,135,107"/>
+<area shape="rect" id="node3" href="$classcc_1_1Exception.html" title="Root class of the exception class hierarchy. " alt="" coords="34,5,137,32"/>
+</map>

@@ -1,20 +1,17 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_THREADLOCALSINGLETON_H
-#define FLUX_THREADLOCALSINGLETON_H
+#pragma once
 
-#include <flux/Object>
-#include <flux/Ref>
-#include <flux/ThreadLocalRef>
-#include <flux/LocalStatic>
+#include <cc/Object>
+#include <cc/Ref>
 
-namespace flux {
+namespace cc {
 
 template<class SubClass>
 class ThreadLocalSingleton
@@ -22,13 +19,9 @@ class ThreadLocalSingleton
 public:
     static SubClass *instance()
     {
-        ThreadLocalRef<SubClass> &instance_ = localStatic< ThreadLocalRef<SubClass>, ThreadLocalSingleton<SubClass> >();
-        if (!instance_)
-            instance_ = new SubClass;
+        static thread_local Ref<SubClass> instance_(new SubClass);
         return instance_;
     }
 };
 
-} // namespace flux
-
-#endif // FLUX_THREADLOCALSINGLETON_H
+} // namespace cc

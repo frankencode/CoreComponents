@@ -1,15 +1,14 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_PREFIXTREEWALKER_H
-#define FLUX_PREFIXTREEWALKER_H
+#pragma once
 
-namespace flux {
+namespace cc {
 
 template<class Char, class Value>
 class PrefixTree;
@@ -22,7 +21,7 @@ public:
 
     // prefix increment / decrement
     inline PrefixTreeWalker &operator++() {
-        FLUX_ASSERT(valid());
+        CC_ASSERT(valid());
         while (node_) {
             node_ = node_->next();
             if (node_)
@@ -75,6 +74,5 @@ private:
     Node *node_;
 };
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_PREFIXTREEWALKER_H

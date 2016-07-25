@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_UTF16SOURCE_H
-#define FLUX_UTF16SOURCE_H
+#pragma once
 
-#include <flux/ByteSource>
-#include <flux/utf16>
+#include <cc/ByteSource>
+#include <cc/utf16>
 
-namespace flux {
+namespace cc {
 
-/** \brief Unicode UTF-16 decoding data source
+/** \brief %Unicode UTF-16 decoding data source
   *
   * A Byte-Order-Mark (BOM) at the start of the stream automatically sets
   * endianess. The decoder is designed to be as strict as possible. It checks
@@ -24,10 +23,10 @@ namespace flux {
 class Utf16Source: public Object
 {
 public:
-    inline static Ref<Utf16Source> open(Stream *stream, ByteArray *buf = 0, int endian = BigEndian) {
+    inline static Ref<Utf16Source> open(Stream *stream, ByteArray *buf = 0, Endian endian = BigEndian) {
         return new Utf16Source(stream, buf, endian);
     }
-    inline static Ref<Utf16Source> open(ByteArray *buf, int endian = BigEndian) {
+    inline static Ref<Utf16Source> open(ByteArray *buf, Endian endian = BigEndian) {
         return new Utf16Source(0, buf, endian);
     }
 
@@ -55,15 +54,13 @@ public:
     inline ByteSource *byteSource() const { return byteSource_; }
 
 private:
-    Utf16Source(Stream *stream, ByteArray *buf, int endian)
-        : byteSource_(ByteSource::open(stream, buf, endian)),
-          firstTime_(true)
+    Utf16Source(Stream *stream, ByteArray *buf, Endian endian):
+        byteSource_(ByteSource::open(stream, buf, endian)),
+        firstTime_(true)
     {}
 
     Ref<ByteSource> byteSource_;
     bool firstTime_;
 };
 
-} // namespace flux
-
-#endif // FLUX_UTF16SOURCE_H
+} // namespace cc

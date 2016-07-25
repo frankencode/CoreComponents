@@ -1,21 +1,20 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_LOGPROTOTYPE_H
-#define FLUXNODE_LOGPROTOTYPE_H
+#pragma once
 
-#include <flux/Date>
-#include <flux/meta/MetaObject>
+#include <cc/Date>
+#include <cc/meta/MetaObject>
 
-namespace fluxnode {
+namespace ccnode {
 
-using namespace flux;
-using namespace flux::meta;
+using namespace cc;
+using namespace cc::meta;
 
 class LogPrototype: public MetaObject
 {
@@ -23,16 +22,14 @@ public:
     static Ref<LogPrototype> create() { return new LogPrototype; }
 
 private:
-    LogPrototype()
-        : MetaObject("Log")
+    LogPrototype():
+        MetaObject("Log")
     {
-        insert("path", "");
-        insert("level", "");
-        insert("retention", days(30));
-        insert("rotation", days(1));
+        establish("path", "");
+        establish("level", "");
+        establish("retention", days(30));
+        establish("rotation", days(1));
     }
 };
 
-} // namespace fluxnode
-
-#endif // FLUXNODE_LOGPROTOTYPE_H
+} // namespace ccnode

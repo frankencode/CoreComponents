@@ -1,21 +1,20 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTOKI_REGISTRY_H
-#define FLUXTOKI_REGISTRY_H
+#pragma once
 
-#include <flux/Registration>
-#include <flux/Map>
-#include <flux/syntax/SyntaxDefinition>
-#include <flux/toki/Language>
-#include <flux/toki/Theme>
+#include <cc/Registration>
+#include <cc/Map>
+#include <cc/syntax/SyntaxDefinition>
+#include <cc/toki/Language>
+#include <cc/toki/Theme>
 
-namespace flux {
+namespace cc {
 
 template<class> class Singleton;
 
@@ -44,6 +43,5 @@ private:
 
 Registry *registry();
 
-}} // namespace flux::toki
+}} // namespace cc::toki
 
-#endif // FLUXTOKI_REGISTRY_H

@@ -1,19 +1,18 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXSYNTAX_INTEGERSYNTAX_H
-#define FLUXSYNTAX_INTEGERSYNTAX_H
+#pragma once
 
-#include <flux/syntax/SyntaxDefinition>
+#include <cc/syntax/SyntaxDefinition>
 
-namespace flux { template<class> class Singleton; }
+namespace cc { template<class> class Singleton; }
 
-namespace flux {
+namespace cc {
 namespace syntax {
 
 /** \brief Syntax of an integer literal
@@ -22,6 +21,8 @@ namespace syntax {
 class IntegerSyntax: public SyntaxDefinition
 {
 public:
+    static const IntegerSyntax *instance();
+
     void read(uint64_t *value, int *sign, const ByteArray *text, Token *token) const;
     Ref<Token> read(uint64_t *value, int *sign, const ByteArray *text, int i = -1) const;
 
@@ -38,8 +39,4 @@ protected:
     int literal_;
 };
 
-const IntegerSyntax *integerSyntax();
-
-}} // namespace flux::syntax
-
-#endif // FLUXSYNTAX_INTEGERSYNTAX_H
+}} // namespace cc::syntax

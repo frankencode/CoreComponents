@@ -1,23 +1,23 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_MUTEX_H
-#define FLUX_MUTEX_H
+#pragma once
 
 #include <pthread.h>
-#include <flux/generics>
+#include <cc/generics>
 
-namespace flux {
+namespace cc {
 
 class WaitCondition;
 class ScopeGuard;
 
-/** \brief Thread synchronization primitive: mutual exclusive access
+/** \brief %Thread synchronization primitive: mutual exclusive access
+  * \see Guard
   */
 class Mutex: public Object, public NonCopyable
 {
@@ -35,6 +35,4 @@ protected:
     pthread_mutex_t mutex_;
 };
 
-} // namespace flux
-
-#endif // FLUX_MUTEX_H
+} // namespace cc

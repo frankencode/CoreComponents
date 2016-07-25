@@ -1,5 +1,12 @@
 Application {
-    name: fluxnode
-    source: *.cpp
+    name: ccnode
+    source: *.cc
     use: [ core, syntax, regexp, meta, net, stream ]
+    SystemPrerequisite {
+        name: GnuTLS
+        version-min: 3.3.5
+        version-configure: pkg-config --modversion gnutls
+        compile-flags-configure: pkg-config --cflags gnutls
+        link-flags-configure: pkg-config --libs gnutls
+    }
 }

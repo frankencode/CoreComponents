@@ -1,19 +1,18 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_FILELOCK_H
-#define FLUX_FILELOCK_H
+#pragma once
 
 #include <unistd.h>
 #include <fcntl.h>
-#include <flux/File>
+#include <cc/File>
 
-namespace flux {
+namespace cc {
 
 typedef struct flock FLockStruct;
 
@@ -39,6 +38,5 @@ private:
     int fd_;
 };
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_FILELOCK_H

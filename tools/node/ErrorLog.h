@@ -1,22 +1,21 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_ERRORLOG_H
-#define FLUXNODE_ERRORLOG_H
+#pragma once
 
-#include <flux/Format>
-#include <flux/Thread>
-#include <flux/str>
+#include <cc/Format>
+#include <cc/Thread>
+#include <cc/str>
 #include "Log.h"
 
-namespace flux { template<class> class ThreadLocalSingleton; }
+namespace cc { template<class> class ThreadLocalSingleton; }
 
-namespace fluxnode {
+namespace ccnode {
 
 class ErrorLog: public Log
 {
@@ -32,19 +31,17 @@ inline Format notice()  { return Format(errorLog()->noticeStream()); }
 inline Format info()    { return Format(errorLog()->infoStream()); }
 inline Format debug()   { return Format(errorLog()->debugStream()); }
 
-#define FLUXNODE_LOG(sink) \
-    sink() << "(" << inum(uint64_t(thread()->id()), 62) << ") " << String(__FILE__)->baseName() << ": "
+#define CCNODE_LOG(sink) \
+    sink() << "(" << inum(uint64_t(Thread::self()->id()), 62) << ") " << String(__FILE__)->baseName() << ": "
 
-#define FLUXNODE_ERROR()   FLUXNODE_LOG(error)
-#define FLUXNODE_WARNING() FLUXNODE_LOG(warning)
-#define FLUXNODE_NOTICE()  FLUXNODE_LOG(notice)
-#define FLUXNODE_INFO()    FLUXNODE_LOG(info)
+#define CCNODE_ERROR()   CCNODE_LOG(error)
+#define CCNODE_WARNING() CCNODE_LOG(warning)
+#define CCNODE_NOTICE()  CCNODE_LOG(notice)
+#define CCNODE_INFO()    CCNODE_LOG(info)
 #ifndef NDEBUG
-#define FLUXNODE_DEBUG()   FLUXNODE_LOG(debug)
+#define CCNODE_DEBUG()   CCNODE_LOG(debug)
 #else
-#define FLUXNODE_DEBUG()   NullFormat()
+#define CCNODE_DEBUG()   NullFormat()
 #endif
 
-} // namespace fluxnode
-
-#endif // FLUXNODE_ERRORLOG_H
+} // namespace ccnode

@@ -1,21 +1,20 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_USER_H
-#define FLUX_USER_H
+#pragma once
 
 #include <sys/types.h>
 #include <pwd.h>
-#include <flux/String>
+#include <cc/String>
 
-namespace flux {
+namespace cc {
 
-/** \brief System user information
+/** \brief %System user information
   * \see Group
   */
 class User: public Object
@@ -24,7 +23,7 @@ public:
     inline static Ref<User> lookup(uid_t id) {
         return new User(id);
     }
-    inline static Ref<User> lookup(const char *name) {
+    inline static Ref<User> lookup(String name) {
         return new User(name);
     }
 
@@ -40,7 +39,7 @@ public:
 
 private:
     User(uid_t id);
-    User(const char *name);
+    User(String name);
 
     void load(struct passwd *entry);
     bool exists_;
@@ -52,6 +51,4 @@ private:
     String shell_;
 };
 
-} // namespace flux
-
-#endif // FLUX_USER_H
+} // namespace cc

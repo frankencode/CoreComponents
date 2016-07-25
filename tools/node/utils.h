@@ -1,24 +1,22 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_UTILS_H
-#define FLUXNODE_UTILS_H
+#pragma once
 
-#include <flux/Date>
+#include <cc/Date>
 
-namespace fluxnode {
+namespace ccnode {
 
-using namespace flux;
+using namespace cc;
 
 const char *reasonPhraseByStatusCode(int statusCode);
 String formatDate(Date *date);
 Ref<Date> scanDate(String text, bool *ok = 0);
 
-} // namespace fluxnode
+} // namespace ccnode
 
-#endif // FLUXNODE_UTILS_H

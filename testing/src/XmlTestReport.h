@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTESTING_XMLTESTREPORT_H
-#define FLUXTESTING_XMLTESTREPORT_H
+#pragma once
 
-#include <flux/testing/TestReport>
+#include <cc/testing/TestReport>
 
-namespace flux {
+namespace cc {
 namespace testing {
 
 class XmlTestReport: public TestReport
@@ -32,9 +31,10 @@ public:
 protected:
     XmlTestReport(Stream *stream);
 
+private:
+    static String xmlEscape(String text);
+
     Ref<Stream> stream_;
 };
 
-}} // namespace flux::testing
-
-#endif // FLUXTESTING_XMLTESTREPORT_H
+}} // namespace cc::testing

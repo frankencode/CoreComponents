@@ -1,19 +1,18 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNET_INETADDRESSSYNTAX_H
-#define FLUXNET_INETADDRESSSYNTAX_H
+#pragma once
 
-#include <flux/syntax/SyntaxDefinition>
+#include <cc/syntax/SyntaxDefinition>
 
-namespace flux { template<class> class Singleton; }
+namespace cc { template<class> class Singleton; }
 
-namespace flux {
+namespace cc {
 namespace net {
 
 /** \brief Syntax of an internet address (IPv4 or IPv6)
@@ -21,6 +20,8 @@ namespace net {
 class InetAddressSyntax: public syntax::SyntaxDefinition
 {
 public:
+    static const InetAddressSyntax *instance();
+
     inline int inet4Address() const { return inet4Address_; }
     inline int inet6Address() const { return inet6Address_; }
     inline int inetAddress() const { return inetAddress_; }
@@ -35,8 +36,4 @@ protected:
     int inetAddress_;
 };
 
-const InetAddressSyntax *inetAddressSyntax();
-
-}} // namespace flux::net
-
-#endif // FLUXNET_INETADDRESSSYNTAX_H
+}} // namespace cc::net

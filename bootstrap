@@ -1,9 +1,9 @@
 #!/bin/sh
 
 if [ $# -ne 0 ]; then
-    echo "Usage: path/to/flux/bootstrap"
+    echo "Usage: path/to/cc/bootstrap"
     echo
-    echo "Bootstraps the build system (fluxmake)."
+    echo "Bootstraps the build system (ccbuild)."
     exit 1
 fi
 
@@ -12,4 +12,4 @@ if [ -f $PWD/Recipe ]; then
     exit 1
 fi
 
-$(dirname $0)/tools/make/bootstrap $(dirname $0)
+$(dirname $0)/tools/build/bootstrap $(dirname $0)

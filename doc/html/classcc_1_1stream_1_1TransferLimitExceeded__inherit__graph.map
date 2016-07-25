@@ -1,0 +1,5 @@
+<map id="cc::stream::TransferLimitExceeded" name="cc::stream::TransferLimitExceeded">
+<area shape="rect" id="node3" href="$classcc_1_1stream_1_1ReadLimitExceeded.html" title="Exception thrown when a read limit is exceeded. " alt="" coords="5,169,215,196"/>
+<area shape="rect" id="node4" href="$classcc_1_1stream_1_1WriteLimitExceeded.html" title="Exception thrown when a write limit is exceeded. " alt="" coords="239,169,448,196"/>
+<area shape="rect" id="node2" href="$classcc_1_1Exception.html" title="Root class of the exception class hierarchy. " alt="" coords="175,5,277,32"/>
+</map>

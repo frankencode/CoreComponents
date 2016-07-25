@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXTOKI_SCRIPTDISCOVERYSYNTAX_H
-#define FLUXTOKI_SCRIPTDISCOVERYSYNTAX_H
+#pragma once
 
-#include <flux/syntax/SyntaxDefinition>
+#include <cc/syntax/SyntaxDefinition>
 
-namespace flux {
+namespace cc {
 namespace toki {
 
-using namespace flux::syntax;
+using namespace cc::syntax;
 
 class ScriptDiscoverySyntax: public SyntaxDefinition
 {
@@ -25,6 +24,5 @@ protected:
     ScriptDiscoverySyntax(const char *suffix);
 };
 
-}} // namespace flux::toki
+}} // namespace cc::toki
 
-#endif // FLUXTOKI_SCRIPTDISCOVERYSYNTAX_H

@@ -1,19 +1,18 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNET_URISYNTAX_H
-#define FLUXNET_URISYNTAX_H
+#pragma once
 
-#include <flux/syntax/SyntaxDefinition>
+#include <cc/syntax/SyntaxDefinition>
 
-namespace flux { template<class> class Singleton; }
+namespace cc { template<class> class Singleton; }
 
-namespace flux {
+namespace cc {
 namespace net {
 
 /** \brief Syntax of an URI
@@ -21,6 +20,8 @@ namespace net {
 class UriSyntax: public syntax::SyntaxDefinition
 {
 public:
+    static const UriSyntax *instance();
+
     inline int userInfo() const { return userInfo_; }
     inline int host() const { return host_; }
     inline int port() const { return port_; }
@@ -49,8 +50,4 @@ protected:
     int uri_;
 };
 
-UriSyntax *uriSyntax();
-
-}} // namespace flux::net
-
-#endif // FLUXNET_URISYNTAX_H
+}} // namespace cc::net

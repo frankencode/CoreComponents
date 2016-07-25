@@ -1,24 +1,21 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_CHECK_H
-#define FLUX_CHECK_H
+#pragma once
 
 /** \file check
   * \brief Check for fatal conditions
   * \see assert
   */
 
-namespace flux {
+namespace cc {
 
 void abort();
 inline void check(bool condition) { if (!(condition)) abort(); }
 
-} // namespace flux
-
-#endif // FLUX_CHECK_H
+} // namespace cc

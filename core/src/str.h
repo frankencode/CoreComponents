@@ -1,22 +1,21 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_STR_H
-#define FLUX_STR_H
+#pragma once
 
 /** \file str
   * \brief Output formatting helper functions
   */
 
-#include <flux/String>
-#include <flux/Variant>
+#include <cc/String>
+#include <cc/Variant>
 
-namespace flux {
+namespace cc {
 
 template<class T>
 struct Sign { inline static int get(T x) { return x < 0; } };
@@ -50,8 +49,8 @@ String inum(T x, int base = 10, int n = -1)
     for (int i = s->count() - 1; x > 0 && s->has(i); x /= base, --i) {
         const char *fig =
             "0123456789"
-            "abcdefghijklmnopqrstuvwxyz"
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
         s->at(i) = fig[x % base];
     }
     return s;
@@ -81,7 +80,6 @@ inline String dec(float64_t x, int p = 17) { return fnum(x, p, 10, 6); }
 String dec(const Variant &x, int n = -1);
 
 inline String str(const String &s) { return s; }
-inline String str(const Ref<ByteArray> &s) { return String(s); }
 inline String str(ByteArray *s) { return String(s); }
 inline String str(const char *s) { return String(s); }
 inline String str(char *s) { return String(s); }
@@ -109,9 +107,20 @@ inline String str(long long x) { return dec(x); }
 inline String str(float x) { return dec(x); }
 inline String str(double x) { return dec(x); }
 
+/** left Align a string to the left
+  * \param s input string
+  * \param w width of display field
+  * \param blank fill character
+  * \return left aligned string
+  */
 String left(const String &s, int w, char blank = ' ');
+
+/** right Align a string to the right
+  * \param s input string
+  * \param w width of display field
+  * \param blank fill character
+  * \return right aligned string
+  */
 String right(const String &s, int w, char blank = ' ');
 
-} // namespace flux
-
-#endif // FLUX_STR_H
+} // namespace cc

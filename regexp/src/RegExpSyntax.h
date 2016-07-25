@@ -1,28 +1,30 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXSYNTAX_REGEXPSYNTAX_H
-#define FLUXSYNTAX_REGEXPSYNTAX_H
+#pragma once
 
-#include <flux/String>
-#include <flux/syntax/SyntaxDefinition>
+#include <cc/String>
+#include <cc/syntax/SyntaxDefinition>
 
-namespace flux { template<class> class Singleton; }
+namespace cc { template<class> class Singleton; }
 
-namespace flux {
+namespace cc {
 namespace regexp {
 
-using namespace flux::syntax;
+using namespace cc::syntax;
 
 /** \brief Syntax of a regular expression text pattern
   */
 class RegExpSyntax: public SyntaxDefinition
 {
+public:
+    static const RegExpSyntax *instance();
+
 protected:
     friend class Singleton<RegExpSyntax>;
     friend class RegExp;
@@ -64,8 +66,4 @@ protected:
     int pattern_;
 };
 
-const RegExpSyntax *regExpSyntax();
-
-}} // namespace flux::regexp
-
-#endif // FLUXSYNTAX_REGEXPSYNTAX_H
+}} // namespace cc::regexp

@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_WAITCONDITION_H
-#define FLUX_WAITCONDITION_H
+#pragma once
 
-#include <flux/Mutex>
+#include <cc/Mutex>
 
-namespace flux {
+namespace cc {
 
 /** \brief Wait condition
   * \see Channel
@@ -32,6 +31,5 @@ private:
     pthread_cond_t cond_;
 };
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_WAITCONDITION_H

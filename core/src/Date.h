@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_DATE_H
-#define FLUX_DATE_H
+#pragma once
 
-#include <flux/String>
+#include <cc/String>
 
-namespace flux {
+namespace cc {
 
 enum Weekday {
     Sun = 0,
@@ -48,7 +47,7 @@ public:
 
     inline Ref<Date> copy() const { return new Date(*this); }
 
-    inline bool isValid() const { return time_ != flux::nan;}
+    inline bool isValid() const { return time_ != cc::nan;}
 
     inline int year() const { return year_; }
     inline int month() const { return month_; }
@@ -85,6 +84,5 @@ private:
     double time_;
 };
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_DATE_H

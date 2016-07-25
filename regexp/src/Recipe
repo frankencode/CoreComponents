@@ -1,5 +1,5 @@
 Library {
-    name: fluxregexp
-    source: *.cpp
+    name: ccregexp
+    source: *.cc
     use: [ core, syntax ]
 }

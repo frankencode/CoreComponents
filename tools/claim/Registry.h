@@ -1,22 +1,21 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXCLAIM_REGISTRY_H
-#define FLUXCLAIM_REGISTRY_H
+#pragma once
 
-#include <flux/Map>
+#include <cc/Map>
 #include "HeaderStyle.h"
 
-namespace flux { template<class> class Singleton; }
+namespace cc { template<class> class Singleton; }
 
-namespace fluxclaim {
+namespace ccclaim {
 
-using namespace flux;
+using namespace cc;
 
 class Registry: public Object
 {
@@ -41,6 +40,5 @@ private:
 
 Registry *registry();
 
-} // namespace fluxclaim
+} // namespace ccclaim
 
-#endif // FLUXCLAIM_REGISTRY_H

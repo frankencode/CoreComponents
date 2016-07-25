@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXSYNTAX_SYNTAXNODE_H
-#define FLUXSYNTAX_SYNTAXNODE_H
+#pragma once
 
-#include <flux/Tree>
-#include <flux/ByteArray>
-#include <flux/syntax/SyntaxState>
-#include <flux/syntax/Token>
+#include <cc/Tree>
+#include <cc/ByteArray>
+#include <cc/syntax/SyntaxState>
+#include <cc/syntax/Token>
 
-namespace flux {
+namespace cc {
 namespace syntax {
 
 class SyntaxNode: public Tree<SyntaxNode>
@@ -41,6 +40,5 @@ public:
 
 typedef Ref<SyntaxNode> NODE;
 
-}} // namespace flux::syntax
+}} // namespace cc::syntax
 
-#endif // FLUXSYNTAX_SYNTAXNODE_H

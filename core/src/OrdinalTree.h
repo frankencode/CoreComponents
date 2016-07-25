@@ -1,21 +1,20 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_ORDINALTREE_H
-#define FLUX_ORDINALTREE_H
+#pragma once
 
-#include <flux/assert>
-#include <flux/AvlBalance>
-#include <flux/BinaryTree>
-#include <flux/ExclusiveAccess>
-#include <flux/Array>
+#include <cc/assert>
+#include <cc/AvlBalance>
+#include <cc/BinaryTree>
+#include <cc/ExclusiveAccess>
+#include <cc/Array>
 
-namespace flux {
+namespace cc {
 
 template<class ItemType>
 class OrdinalNode: public BinaryNode
@@ -136,10 +135,10 @@ OrdinalTree<Node>::OrdinalTree(int n)
 
     root_ = v->at(0);
 
-    /*FLUX_ASSERT(testStructure(this->root_));
-    FLUX_ASSERT(testIteration(this->root_));
-    FLUX_ASSERT(Balance::testBalance(this->root_));
-    FLUX_ASSERT(OrdinalTree<Node>::testWeight(this->root_));*/
+    /*CC_ASSERT(testStructure(this->root_));
+    CC_ASSERT(testIteration(this->root_));
+    CC_ASSERT(Balance::testBalance(this->root_));
+    CC_ASSERT(OrdinalTree<Node>::testWeight(this->root_));*/
 }
 
 template<class Node>
@@ -160,7 +159,7 @@ const OrdinalTree<Node> &OrdinalTree<Node>::operator=(const OrdinalTree &b)
 template<class Node>
 bool OrdinalTree<Node>::lookupByIndex(int i, Node **node) const
 {
-    FLUX_ASSERT((0 <= i) && (i < weight()));
+    CC_ASSERT((0 <= i) && (i < weight()));
 
     ExclusiveAccess cacheAccess(&cacheExclusive_);
     if (cacheAccess) {
@@ -284,7 +283,7 @@ void OrdinalTree<Node>::push(int index, const Item &item)
     else {
         Node *ka = 0;
         if (!lookupByIndex(index, &ka))
-            FLUX_ASSERT(false);
+            CC_ASSERT(false);
         BinaryTree::attachBefore(ka, kn);
     }
 
@@ -297,7 +296,7 @@ void OrdinalTree<Node>::pop(int index, Item *item)
 {
     Node *ko = 0;
     if (!lookupByIndex(index, &ko))
-        FLUX_ASSERT(false);
+        CC_ASSERT(false);
     *item = ko->item_;
     Node *k = static_cast<Node *>(BinaryTree::pred(ko));
     if (k) --index;
@@ -428,6 +427,5 @@ bool OrdinalTree<Node>::testOrder(Node *k)
 
 #endif // ndef NDEBUG
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_ORDINALTREE_H

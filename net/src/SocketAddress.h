@@ -1,13 +1,12 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNET_SOCKETADDRESS_H
-#define FLUXNET_SOCKETADDRESS_H
+#pragma once
 
 #include <arpa/inet.h>
 #include <netinet/in.h> // sockaddr_in, etc.
@@ -15,12 +14,14 @@
 #include <sys/socket.h> // connect
 #include <sys/un.h> // sockaddr_un
 
-#include <flux/String>
-#include <flux/List>
+#include <cc/exceptions>
+#include <cc/String>
+#include <cc/List>
 
-namespace flux {
+namespace cc {
 
 class SystemStream;
+template<class> class Singleton;
 
 namespace net {
 
@@ -28,7 +29,19 @@ class SocketAddress;
 
 typedef List< Ref<SocketAddress> > SocketAddressList;
 
-/** \brief Socket address
+class LocationSyntaxError: public UsageError
+{
+public:
+    LocationSyntaxError(String message): UsageError(message) {}
+};
+
+class HostNameResolutionError: public UsageError
+{
+public:
+    HostNameResolutionError(String message): UsageError(message) {}
+};
+
+/*! \brief Socket address
   */
 class SocketAddress: public Object
 {
@@ -37,7 +50,7 @@ public:
         return new SocketAddress;
     }
 
-    /** Create a socket address by given protocol family and numerical address.
+    /*! Create a socket address by given protocol family and numerical address.
       * Use the wildcard "*" to address all interfaces of the local host system.
       *
       * \param family protocol family (AF_UNSPEC, AF_INET, AF_INET6 or AF_LOCAL)
@@ -58,6 +71,10 @@ public:
         return new SocketAddress(info);
     }
 
+    static Ref<SocketAddress> read(String location);
+
+    inline static Ref<SocketAddress> copy(const SocketAddress *other) { return new SocketAddress(other); }
+
     int family() const;
     int socketType() const;
     int protocol() const;
@@ -70,7 +87,7 @@ public:
     int scope() const;
     void setScope(int scope);
 
-    /** Query the complete connection information for given host name, service name and
+    /*! Query the complete connection information for given host name, service name and
       * protocol family. The call blocks until the local resolver has resolved the
       * host name. This may take several seconds.
       *   Depending on supported protocol stacks and service availability in
@@ -83,26 +100,26 @@ public:
       */
     static Ref<SocketAddressList> resolve(String hostName, String serviceName = String(), int family = AF_UNSPEC, int socketType = 0, String *canonicalName = 0);
 
-    /** Lookup the host name of given address. Usually a reverse DNS
+    /*! Lookup the host name of given address. Usually a reverse DNS
       * lookup will be issued, which may take several seconds.
       */
     String lookupHostName(bool *failed = 0) const;
 
-    /** Lookup the service name. In most setups the service name will be looked up
+    /*! Lookup the service name. In most setups the service name will be looked up
       * in a local file (/etc/services) and therefore the call returns immediately.
       */
     String lookupServiceName() const;
 
-    /** Returns the network prefix of an IPv6 address (the first 64 bits).
+    /*! Returns the network prefix of an IPv6 address (the first 64 bits).
       * For IPv4 addresses the entire address is returned.
       */
     uint64_t networkPrefix() const;
 
-    /** See if this address equals address b
+    /*! See if this address equals address b
       */
-    bool equals(SocketAddress *b) const;
+    bool equals(const SocketAddress *b) const;
 
-    /** Size of the address in bits
+    /*! Size of the address in bits
       */
     inline int length() const { return 8 * addrLen(); }
 
@@ -111,11 +128,14 @@ public:
     int addrLen() const;
 
 protected:
+    friend class Singleton<SocketAddress>;
+
     SocketAddress();
     SocketAddress(int family, String address, int port);
     SocketAddress(struct sockaddr_in *addr);
     SocketAddress(struct sockaddr_in6 *addr);
     SocketAddress(addrinfo *info);
+    SocketAddress(const SocketAddress *other);
 
     union {
         struct sockaddr addr_;
@@ -128,6 +148,4 @@ protected:
     int protocol_;
 };
 
-}} // namespace flux::net
-
-#endif // FLUXNET_SOCKETADDRESS_H
+}} // namespace cc::net

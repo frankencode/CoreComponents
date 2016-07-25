@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXCRYPTO_MD5_H
-#define FLUXCRYPTO_MD5_H
+#pragma once
 
-#include <flux/crypto/HashSum>
+#include <cc/HashSum>
 
-namespace flux {
+namespace cc {
 namespace crypto {
 
 /** \brief Message Digest 5: a one-way hash function
@@ -23,7 +22,7 @@ public:
 
     static Ref<Md5> create();
 
-    virtual void feed(const ByteArray *data);
+    virtual void write(const ByteArray *data);
     virtual Ref<ByteArray> finish();
 
 private:
@@ -38,6 +37,4 @@ private:
 
 Ref<ByteArray> md5(const ByteArray *data);
 
-}} // namespace flux::crypto
-
-#endif // FLUXCRYPTO_MD5_H
+}} // namespace cc::crypto

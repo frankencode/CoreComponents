@@ -1,19 +1,18 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXSYNTAX_SYNTAXDEBUGGER_H
-#define FLUXSYNTAX_SYNTAXDEBUGGER_H
+#pragma once
 
-#include <flux/String>
-#include <flux/Map>
-#include <flux/syntax/syntax>
+#include <cc/String>
+#include <cc/Map>
+#include <cc/syntax/syntax>
 
-namespace flux {
+namespace cc {
 namespace syntax {
 
 class SyntaxDebugNode: public SyntaxNode {
@@ -38,8 +37,8 @@ public:
     inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
 
 protected:
-    SyntaxDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : debugger_(debugger)
+    SyntaxDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        debugger_(debugger)
     {
         appendChild(newNode);
     }
@@ -104,6 +103,4 @@ private:
     Ref<StateNameById> captureNameById_;
 };
 
-}} // namespace flux::syntax
-
-#endif // FLUXSYNTAX_SYNTAXDEBUGGER_H
+}} // namespace cc::syntax

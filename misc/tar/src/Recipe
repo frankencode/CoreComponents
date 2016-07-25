@@ -1,11 +1,11 @@
 Library {
-    name: fluxtar
-    source: *.cpp
+    name: cctar
+    source: *.cc
     use: [ core ]
     /*SystemPrerequisite {
         name: zlib
         optional: true
         link: z
-        compile-flags: -DFLUX_ZLIB
+        compile-flags: -DCC_ZLIB
     }*/
 }

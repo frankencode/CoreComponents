@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_BINARYTREE_H
-#define FLUX_BINARYTREE_H
+#pragma once
 
-#include <flux/BinaryNode>
+#include <cc/BinaryNode>
 
-namespace flux {
+namespace cc {
 
 class BinaryTree
 {
@@ -37,6 +36,4 @@ public:
     inline static void establishWeight(BinaryNode *k) { k->weight_ = weight(k->left_) + weight(k->right_) + 1; }
 };
 
-} // namespace flux
-
-#endif // FLUX_BINARYTREE_H
+} // namespace cc

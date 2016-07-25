@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_TAPBUFFER_H
-#define FLUXNODE_TAPBUFFER_H
+#pragma once
 
-#include <flux/stream/LineBuffer>
+#include <cc/stream/LineBuffer>
 
-namespace fluxnode {
+namespace ccnode {
 
-using namespace flux;
-using namespace flux::stream;
+using namespace cc;
+using namespace cc::stream;
 
 class TapBuffer: public LineBuffer
 {
@@ -31,6 +30,5 @@ private:
     String prefix_;
 };
 
-} // namespace fluxnode
+} // namespace ccnode
 
-#endif // FLUXNODE_TAPBUFFER_H

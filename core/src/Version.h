@@ -1,22 +1,42 @@
-#ifndef FLUX_VERSION_H
-#define FLUX_VERSION_H
+/*
+ * Copyright (C) 2007-2016 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
 
 #include <stdint.h>
+#include <cc/String>
 
-namespace flux {
+namespace cc {
+
+class Variant;
 
 /** \brief Software version tuple
   */
 class Version
 {
 public:
-    Version(int major = 0, int minor = 0, int patch = 0)
-        : major_(major), minor_(minor), patch_(patch)
+    Version():
+        major_(0), minor_(0), patch_(0)
     {}
 
-    inline int major() const { return major_; }
-    inline int minor() const { return minor_; }
-    inline int patch() const { return patch_; }
+    Version(int major, int minor, int patch = 0):
+        major_(major), minor_(minor), patch_(patch)
+    {}
+
+    Version(const char* s);
+    Version(const String &s);
+    Version(const Variant &v);
+
+    inline static bool isValid(Version v) { return major(v) > 0 || minor(v) > 0; }
+
+    inline static int major(Version v) { return v.major_; }
+    inline static int minor(Version v) { return v.minor_; }
+    inline static int patch(Version v) { return v.patch_; }
 
     inline bool operator< (const Version &b) { return n() <  b.n(); }
     inline bool operator<=(const Version &b) { return n() <= b.n(); }
@@ -28,15 +48,24 @@ public:
     inline Version *operator->() { return this; }
     inline const Version *operator->() const { return this; }
 
-    inline operator bool() const { return major_ >= 0 && minor >= 1 && patch >= 0; }
+    inline operator String() const;
 
 private:
-    inline uint32_t n() const { return (uint32_t(major_) << 24) || (uint32_t(minor_) << 16) || uint32_t(patch_); }
+    friend class Variant;
+
+    void read(String s);
+
+    static Version cast(uint32_t x) { return Version(x >> 24, (x >> 16) & 0xFF, x & 0xFFFF); }
+
+    inline uint32_t n() const { return (uint32_t(major_) << 24) | (uint32_t(minor_) << 16) | uint32_t(patch_); }
+
     uint8_t major_;
     uint8_t minor_;
     uint16_t patch_;
 };
 
-} // namespace flux
+String str(Version v);
 
-#endif // FLUX_VERSION_H
+inline Version::operator String() const { return str(*this); }
+
+} // namespace cc

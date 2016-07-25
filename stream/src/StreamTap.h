@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXSTREAM_STREAMTAP_H
-#define FLUXSTREAM_STREAMTAP_H
+#pragma once
 
-#include <flux/Stream>
+#include <cc/Stream>
 
-namespace flux {
+namespace cc {
 namespace stream {
 
 /** \brief Bi-directional traffic redirection and duplication
@@ -23,10 +22,9 @@ public:
 
     inline Stream *stream() const { return stream_; }
 
-    virtual bool readyRead(double interval) const;
-    virtual int read(ByteArray *buf);
-    virtual void write(const ByteArray *buf);
-    virtual void write(const StringList *parts);
+    int read(ByteArray *data) override;
+    void write(const ByteArray *data) override;
+    void write(const StringList *parts) override;
 
 private:
     StreamTap(Stream *stream, Stream *inputTap, Stream *outputTap);
@@ -34,6 +32,4 @@ private:
     Ref<Stream> stream_, inputTap_, outputTap_;
 };
 
-}} // namespace flux::stream
-
-#endif // FLUXSTREAM_STREAMTAP_H
+}} // namespace cc::stream

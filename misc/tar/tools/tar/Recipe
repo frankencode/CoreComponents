@@ -1,6 +1,6 @@
 Application {
-    name: fluxtar
-    alias: [ fluxuntar, fluxar, fluxunar ]
-    source: *.cpp
+    name: cctar
+    alias: [ ccuntar, ccar, ccunar ]
+    source: *.cc
     use: [ core, tar ]
 }

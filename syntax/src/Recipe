@@ -1,5 +1,5 @@
 Library {
-    name: fluxsyntax
-    source: *.cpp
+    name: ccsyntax
+    source: *.cc
     use: core
 }

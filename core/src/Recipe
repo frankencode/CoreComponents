@@ -1,4 +1,7 @@
 Library {
-    name: fluxcore
-    source: *.cpp
+    name: cccore
+    source: *.cc
+    Usage {
+        compile-flags: -std=c++11
+    }
 }

@@ -1,20 +1,19 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXSYNTAX_SYNTAXSTATE_H
-#define FLUXSYNTAX_SYNTAXSTATE_H
+#pragma once
 
-#include <flux/generics>
-#include <flux/Array>
-#include <flux/Map>
-#include <flux/syntax/Token>
+#include <cc/generics>
+#include <cc/Array>
+#include <cc/Map>
+#include <cc/syntax/Token>
 
-namespace flux {
+namespace cc {
 namespace syntax {
 
 class DefinitionNode;
@@ -107,6 +106,5 @@ private:
     bool finalize_;
 };
 
-}} // namespace flux::syntax
+}} // namespace cc::syntax
 
-#endif // FLUXSYNTAX_SYNTAXSTATE_H

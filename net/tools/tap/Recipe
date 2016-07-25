@@ -1,0 +1,5 @@
+Application {
+    name: cctap
+    source: *.cc
+    use: [ core, net ]
+}

@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXABNF_ABNFSYNTAX_H
-#define FLUXABNF_ABNFSYNTAX_H
+#pragma once
 
-#include <flux/abnf/AbnfSyntaxDefinition>
+#include <cc/abnf/AbnfSyntaxDefinition>
 
-namespace flux {
+namespace cc {
 namespace abnf {
 
 class AbnfSyntax: public AbnfSyntaxDefinition
@@ -36,6 +35,5 @@ protected:
     int rulelist_;
 };
 
-}} // namespace flux::abnf
+}} // namespace cc::abnf
 
-#endif // FLUXABNF_ABNFSYNTAX_H

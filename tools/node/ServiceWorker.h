@@ -1,54 +1,51 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNODE_SERVICEWORKER_H
-#define FLUXNODE_SERVICEWORKER_H
+#pragma once
 
-#include <flux/Thread>
-#include <flux/Channel>
-#include <flux/PriorityQueue>
-#include <flux/Map>
-#include <flux/net/StreamSocket>
-#include "ClientConnection.h"
+#include <cc/Thread>
+#include <cc/Channel>
+#include <cc/PriorityQueue>
+#include <cc/Map>
+#include <cc/net/StreamSocket>
+#include "HttpClientConnection.h"
 
-namespace fluxnode {
+namespace ccnode {
 
-using namespace flux;
-using namespace flux::net;
+using namespace cc;
+using namespace cc::net;
 
 class ServiceWorker;
 
-typedef Channel< Ref<ClientConnection>, PriorityQueue > PendingConnections;
-typedef Channel< Ref<Visit> > ClosedConnections;
+typedef Channel< Ref<HttpClientConnection>, PriorityQueue > PendingConnections;
+typedef Channel< Ref<ConnectionInfo> > ClosedConnections;
 
 class ServiceInstance;
 class ServiceDelegate;
-class Response;
+class HttpResponse;
 
 class ServiceWorker: public Thread
 {
 public:
-    static Ref<ServiceWorker> create(ServiceInstance *serviceInstance, ClosedConnections *closedConnections);
+    static Ref<ServiceWorker> create(PendingConnections *pendingConnections, ClosedConnections *closedConnections);
 
     inline ServiceInstance *serviceInstance() const { return serviceInstance_; }
+    inline HttpClientConnection *client() const { return client_; }
 
-    inline PendingConnections *pendingConnections() const { return pendingConnections_; }
-    inline ClientConnection *client() const { return client_; }
-
-    Response *response() const;
-    void close();
+    HttpResponse *response() const;
+    void autoSecureForwardings();
+    void closeConnection();
 
 private:
-    ServiceWorker(ServiceInstance *serviceInstance, ClosedConnections *closedConnections);
+    ServiceWorker(PendingConnections *pendingConnections, ClosedConnections *closedConnections);
     ~ServiceWorker();
 
-    static void logDelivery(ClientConnection *client, int statusCode, size_t bytesWritten = 0);
-    static void logVisit(Visit *visit);
+    static void logDelivery(HttpClientConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "");
     virtual void run();
 
     Ref<ServiceInstance> serviceInstance_;
@@ -57,10 +54,8 @@ private:
     Ref<PendingConnections> pendingConnections_;
     Ref<ClosedConnections> closedConnections_;
 
-    Ref<ClientConnection> client_;
-    Ref<Response> response_;
+    Ref<HttpClientConnection> client_;
+    Ref<HttpResponse> response_;
 };
 
-} // namespace fluxnode
-
-#endif // FLUXNODE_SERVICEWORKER_H
+} // namespace ccnode

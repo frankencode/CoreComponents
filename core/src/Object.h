@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_OBJECT_H
-#define FLUX_OBJECT_H
+#pragma once
 
-#include <flux/Ref>
+#include <cc/Ref>
 
-namespace flux {
+namespace cc {
 
 /** \brief Reference counting and secure destruction
   *
@@ -27,7 +26,7 @@ public:
     Object(): refCount_(0) {}
 
     virtual ~Object() {
-        FLUX_ASSERT2(refCount_ == 0, "Deleting object, which is still in use");
+        CC_ASSERT2(refCount_ == 0, "Deleting object, which is still in use");
     }
 
     inline int refCount() const { return refCount_; }
@@ -48,6 +47,5 @@ private:
     mutable volatile int refCount_;
 };
 
-} // namespace flux
+} // namespace cc
 
-#endif // FLUX_OBJECT_H

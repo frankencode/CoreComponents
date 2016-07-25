@@ -1,5 +1,5 @@
 Library {
-    name: fluxstream
-    source: *.cpp
+    name: ccstream
+    source: *.cc
     use: core
 }

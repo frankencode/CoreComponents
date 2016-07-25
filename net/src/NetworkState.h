@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUXNET_NETWORKSTATE_H
-#define FLUXNET_NETWORKSTATE_H
+#pragma once
 
-#include <flux/net/NetworkInterface>
+#include <cc/net/NetworkInterface>
 
-namespace flux {
+namespace cc {
 namespace net {
 
 /** \brief convenience class to query the current network configuration state
@@ -23,7 +22,7 @@ public:
 
     inline String interfaceName() const { return interfaceName_; }
 
-    inline NetworkInterface *interface() const { return interface_; }
+    inline const NetworkInterface *interface() const { return interface_; }
 
     /** size of the network mask (IPv4 only)
       */
@@ -31,11 +30,11 @@ public:
 
     /** configured address
       */
-    inline SocketAddress *address() const { return address_; }
+    inline const SocketAddress *address() const { return address_; }
 
     /** configured gateway
       */
-    inline SocketAddress *gateway() const { return gateway_; }
+    inline const SocketAddress *gateway() const { return gateway_; }
 
 private:
     NetworkState(String interface);
@@ -47,6 +46,4 @@ private:
     Ref<SocketAddress> gateway_;
 };
 
-}} // namespace flux::net
-
-#endif // FLUXNET_NETWORKSTATE_H
+}} // namespace cc::net

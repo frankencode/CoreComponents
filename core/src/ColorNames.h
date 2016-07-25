@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_COLORNAMES_H
-#define FLUX_COLORNAMES_H
+#pragma once
 
-#include <flux/Color>
+#include <cc/Color>
 
-namespace flux {
+namespace cc {
 
 template<class Char, class Value> class PrefixTree;
 
@@ -22,6 +21,8 @@ template<class SubClass> class Singleton;
 class ColorNames: public Object
 {
 public:
+    static const ColorNames *instance();
+
     bool lookup(const char *name, Color *color) const;
 
 private:
@@ -33,8 +34,4 @@ private:
     Ref<ColorByName> colorByName_;
 };
 
-const ColorNames *colorNames();
-
-} // namespace flux
-
-#endif // FLUX_COLORNAMES_H
+} // namespace cc

@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_ARRAY_H
-#define FLUX_ARRAY_H
+#pragma once
 
-#include <flux/strings>
-#include <flux/containers>
+#include <cc/strings>
+#include <cc/containers>
 
-namespace flux {
+namespace cc {
 
-/** \brief Typeded memory vector
+/** \class Array Array.h cc/Array
+  * \brief Typeded memory vector
   * \see List, ByteArray
   */
 template<class T>
@@ -87,31 +87,32 @@ public:
         return (0 <= i) && (i < size_);
     }
 
-    inline T *pointerAt(int i) const {
-        FLUX_ASSERT(has(i));
-        return data_ + i;
+    inline const T &at(int i) const {
+        CC_ASSERT(has(i));
+        return data_[i];
     }
-
-    inline T &at(int i) const {
-        FLUX_ASSERT(has(i));
+    inline T &at(int i) {
+        CC_ASSERT(has(i));
         return data_[i];
     }
 
-    inline T *data() const { return data_; }
-    inline const T *constData() const { return data_; }
-    inline operator T*() const { return data_; }
+    inline const T *data() const { return data_; }
+    inline T *data() { return data_; }
+
+    inline operator const T*() const { return data_; }
+    inline operator T*() { return data_; }
 
     inline void read(int i, T *data, int size) {
         if (size == 0) return;
-        FLUX_ASSERT(has(i));
-        FLUX_ASSERT(has(i + size - 1));
+        CC_ASSERT(has(i));
+        CC_ASSERT(has(i + size - 1));
         memcpy(data, data_ + i, size * sizeof(T));
     }
 
     inline void write(int i, const T *data, int size) {
         if (size == 0) return;
-        FLUX_ASSERT(has(i));
-        FLUX_ASSERT(has(i + size - 1));
+        CC_ASSERT(has(i));
+        CC_ASSERT(has(i + size - 1));
         memcpy(data_ + i, data, size * sizeof(T));
     }
 
@@ -128,7 +129,7 @@ public:
     inline Ref<Array> head(int n) const { return copy(0, n); }
     inline Ref<Array> tail(int n) const { return copy(size_ - n, size_); }
 
-    inline int find(const T &item) const { return find(0, item); }
+    inline int find(const T &item) const { return find(item, 0); }
     inline int find(const T &item, int i) const {
         while (i < size_)
             if (data_[i++] == item) return i - 1;
@@ -163,9 +164,9 @@ public:
     inline int contains(const T *pattern, int patternSize) { return find(0, pattern, patternSize) != size_; }
 
 protected:
-    Array(int size = 0)
-        : size_(0),
-          data_(0)
+    Array(int size = 0):
+        size_(0),
+        data_(0)
     {
         if (size > 0) {
             size_ = size;
@@ -173,9 +174,9 @@ protected:
         }
     }
 
-    Array(int size, T zero)
-        : size_(0),
-          data_(0)
+    Array(int size, T zero):
+        size_(0),
+        data_(0)
     {
         if (size > 0) {
             size_ = size;
@@ -184,9 +185,9 @@ protected:
         }
     }
 
-    Array(const T *data, int size)
-        : size_(0),
-          data_(0)
+    Array(const T *data, int size):
+        size_(0),
+        data_(0)
     {
         if (size > 0) {
             size_ = size;
@@ -195,9 +196,9 @@ protected:
         }
     }
 
-    Array(const Array &b)
-        : size_(0),
-          data_(0)
+    Array(const Array &b):
+        size_(0),
+        data_(0)
     {
         if (b.size_ > 0) {
             size_ = b.size_;
@@ -228,6 +229,4 @@ bool operator<=(const Array<T> &a, const Array<T> &b) { return container::compar
 template<class T>
 bool operator>=(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) >= 0; }
 
-} // namespace flux
-
-#endif // FLUX_ARRAY_H
+} // namespace cc

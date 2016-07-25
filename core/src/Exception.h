@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_EXCEPTION_H
-#define FLUX_EXCEPTION_H
+#pragma once
 
-#include <flux/String>
+#include <cc/String>
 
-namespace flux {
+namespace cc {
 
 /** \brief Root class of the exception class hierarchy
   * \see exceptions
@@ -26,6 +25,4 @@ public:
 
 inline String str(const Exception &ex) { return ex.message(); }
 
-} // namespace flux
-
-#endif // FLUX_EXCEPTION_H
+} // namespace cc

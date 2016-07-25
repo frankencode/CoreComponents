@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2007-2015 Frank Mertens.
+ * Copyright (C) 2007-2016 Frank Mertens.
  *
- * Use of this source is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
  *
  */
 
-#ifndef FLUX_VARIANT_H
-#define FLUX_VARIANT_H
+#pragma once
 
 #include <new>
-#include <flux/Color>
-#include <flux/String>
-#include <flux/Map>
+#include <cc/Color>
+#include <cc/Version>
+#include <cc/String>
+#include <cc/Map>
 
-namespace flux {
+namespace cc {
 
 class Variant;
 
@@ -36,41 +36,43 @@ public:
     typedef float real;
 
     enum Type {
-        UndefType  = 0,
-        IntType    = 1,
-        BoolType   = 2 | IntType,
-        FloatType  = 4,
-        ColorType  = 8,
-        ObjectType = 16,
-        StringType = 32 | ObjectType,
-        ListType   = 64 | ObjectType,
-        MapType    = 128 | ObjectType,
-        AnyType    = 255
+        UndefType   = 0,
+        IntType     = 1,
+        BoolType    = 2 | IntType,
+        FloatType   = 4,
+        ColorType   = 8,
+        VersionType = 16,
+        ObjectType  = 32,
+        StringType  = 64 | ObjectType,
+        ListType    = 128 | ObjectType,
+        MapType     = 256 | ObjectType,
+        AnyType     = 511
     };
 
     static const char *typeName(int type, int itemType = UndefType);
     static Variant read(String s);
 
-    Variant():             type_(UndefType), itemType_(UndefType)                     {}
-    Variant(int value):    type_(IntType),   itemType_(UndefType), int_(value)        {}
-    Variant(bool value):   type_(BoolType),  itemType_(UndefType), int_(value)        {}
-    Variant(float value):  type_(FloatType), itemType_(UndefType), float_(value)      {}
-    Variant(double value): type_(FloatType), itemType_(UndefType), float_(value)      {}
-    Variant(Color value):  type_(ColorType), itemType_(UndefType), word_(value.word_) {}
+    Variant():              type_(UndefType),   itemType_(UndefType)                     {}
+    Variant(int value):     type_(IntType),     itemType_(UndefType), int_(value)        {}
+    Variant(bool value):    type_(BoolType),    itemType_(UndefType), int_(value)        {}
+    Variant(float value):   type_(FloatType),   itemType_(UndefType), float_(value)      {}
+    Variant(double value):  type_(FloatType),   itemType_(UndefType), float_(value)      {}
+    Variant(Color value):   type_(ColorType),   itemType_(UndefType), word_(value.word_) {}
+    Variant(Version value): type_(VersionType), itemType_(UndefType), word_(value.n())   {}
 
-    Variant(const char *value):    type_(StringType), itemType_(UndefType) { initRef(String(value)); }
-    Variant(Ref<ByteArray> value): type_(StringType), itemType_(UndefType) { initRef(value); }
-    Variant(String value):         type_(StringType), itemType_(UndefType) { initRef(value); }
+    Variant(const char *value):   type_(StringType), itemType_(UndefType) { initRef(String(value).get()); }
+    Variant(const String &value): type_(StringType), itemType_(UndefType) { initRef(value.get()); }
     template<class T>
-    Variant(const Ref<T> &value): type_(ObjectType), itemType_(UndefType) { initRef(value); }
+    Variant(const Ref<T> &value): type_(ObjectType), itemType_(UndefType) { initRef(value.get()); }
 
-    Variant(const Ref< List<int> > &value):   type_(ListType), itemType_(IntType)    { initRef(value); }
-    Variant(const Ref< List<bool> > &value):  type_(ListType), itemType_(BoolType)   { initRef(value); }
-    Variant(const Ref< List<float> > &value): type_(ListType), itemType_(FloatType)  { initRef(value); }
-    Variant(const Ref< List<Color> > &value): type_(ListType), itemType_(ColorType)  { initRef(value); }
-    Variant(const Ref<StringList> &value):    type_(ListType), itemType_(StringType) { initRef(value); }
-    Variant(const Ref<VariantList> &value):   type_(ListType), itemType_(AnyType)    { initRef(value); }
-    Variant(const Ref<VariantMap> &value):    type_(ListType), itemType_(AnyType)    { initRef(value); }
+    Variant(const Ref< List<int> > &value):     type_(ListType), itemType_(IntType)     { initRef(value); }
+    Variant(const Ref< List<bool> > &value):    type_(ListType), itemType_(BoolType)    { initRef(value); }
+    Variant(const Ref< List<float> > &value):   type_(ListType), itemType_(FloatType)   { initRef(value); }
+    Variant(const Ref< List<Color> > &value):   type_(ListType), itemType_(ColorType)   { initRef(value); }
+    Variant(const Ref< List<Version> > &value): type_(ListType), itemType_(VersionType) { initRef(value); }
+    Variant(const Ref<StringList> &value):      type_(ListType), itemType_(StringType)  { initRef(value); }
+    Variant(const Ref<VariantList> &value):     type_(ListType), itemType_(AnyType)     { initRef(value); }
+    Variant(const Ref<VariantMap> &value):      type_(ListType), itemType_(AnyType)     { initRef(value); }
 
     Variant(const Variant &b): type_(UndefType), itemType_(UndefType) { *this = b; }
 
@@ -81,6 +83,7 @@ public:
     inline const Variant &operator=(float value)         { type_ = FloatType; float_ = value; return *this; }
     inline const Variant &operator=(double value)        { type_ = FloatType; float_ = value; return *this; }
     inline const Variant &operator=(Color value)         { type_ = ColorType; word_ = value.word_; return *this; }
+    inline const Variant &operator=(Version value)       { type_ = VersionType; word_ = value.n(); return *this; }
     inline const Variant &operator=(const char *value)   { return *this = Variant(value); }
     inline const Variant &operator=(const String &value) { return *this = Variant(value); }
     template<class T>
@@ -99,71 +102,54 @@ public:
 
     inline operator bool() const {
         if (!type_) return bool();
-        FLUX_ASSERT2(type_ & IntType, illegalConversion());
+        CC_ASSERT2(type_ & IntType, illegalConversion());
         return int_;
     }
     inline operator int() const {
         if (!type_) return int();
-        FLUX_ASSERT2(type_ & IntType, illegalConversion());
+        CC_ASSERT2(type_ & IntType, illegalConversion());
         return int_;
     }
     inline operator float() const {
         if (!type_) return float();
-        FLUX_ASSERT2(type_ & FloatType, illegalConversion());
+        if (type_ & IntType) return int_;
+        CC_ASSERT2(type_ & FloatType, illegalConversion());
         return float_;
     }
     inline operator Color() const {
         if (!type_) return Color();
+        CC_ASSERT2(type_ & ColorType, illegalConversion());
         return Color::cast(word_);
     }
-    inline operator String() const {
-        if (!type_) return String();
-        FLUX_ASSERT2(type_ & StringType, illegalConversion());
-        return Ref<ByteArray>(ref());
+    inline operator Version() const {
+        return toVersion(*this);
     }
+    inline operator String() const {
+        return toString(*this);
+    }
+
+    inline static Version toVersion(const Variant &value) {
+        if (!value.type_) return Version();
+        CC_ASSERT2(value.type_ & VersionType, illegalConversion());
+        return Version::cast(value.word_);
+    }
+
+    inline static String toString(const Variant &value) {
+        if (!value.type_) return String();
+        CC_ASSERT2(value.type_ & StringType, illegalConversion());
+        return cast<ByteArray>(value.ref().get());
+    }
+
 
     template<class T>
     inline operator Ref<T>() const {
         if (!type_) return Ref<T>();
-        FLUX_ASSERT2(type_ & ObjectType, illegalConversion());
+        CC_ASSERT2(type_ & ObjectType, illegalConversion());
         return cast<T>(ref().get());
     }
 
-    bool operator==(const Variant &b) const
-    {
-        bool equal = false;
-
-        if ((type_ & IntType) && (b.type_ & IntType))
-            equal = (int_ == b.int_);
-        else if ((type_ & FloatType) && (b.type_ & FloatType))
-            equal = (float_ == b.float_);
-        else if ((type_ & ColorType) && (b.type_ & ColorType))
-            equal = (word_ == b.word_);
-        else if ((type_ == StringType) && (b.type_ == StringType))
-            equal = (String(*this) == String(b));
-        else if ((type_ == ObjectType) && (b.type_ == ObjectType))
-            equal = (ref().get() == b.ref().get());
-        else
-            equal = ((type_ == UndefType) && (b.type_ == UndefType));
-
-        return equal;
-    }
-
-    bool operator<(const Variant &b) const
-    {
-        bool below = false;
-
-        if ((type_ & IntType) && (b.type_ & IntType))
-            below = (int_ < b.int_);
-        else if ((type_ & FloatType) && (b.type_ & FloatType))
-            below = (float_ < b.float_);
-        else if ((type_ == StringType) && (b.type_ == StringType))
-            below = (String(*this) < String(b));
-        else if ((type_ == ObjectType) && (b.type_ == ObjectType))
-            below = (ref().get() < b.ref().get());
-
-        return below;
-    }
+    bool operator==(const Variant &b) const;
+    bool operator<(const Variant &b) const;
 
     inline bool operator>(const Variant &b) const  { return b < *this; }
     inline bool operator!=(const Variant &b) const { return !(*this == b); }
@@ -192,8 +178,9 @@ private:
     inline Ref<Object> &ref() const {
         return *union_cast< Ref<Object> *>(dummy_);
     }
-    char type_;
-    char itemType_;
+
+    unsigned short type_;
+    unsigned short itemType_;
     union {
         int32_t int_;
         uint32_t word_;
@@ -210,6 +197,4 @@ inline int itemType(const Variant &value) { return value.itemType_; }
 template<class U>
 inline U *cast(const Variant &value) { return type(value) & Variant::ObjectType ? cast<U>(value.ref()) : null<U>(); }
 
-} // namespace flux
-
-#endif // FLUX_VARIANT_H
+} // namespace cc
