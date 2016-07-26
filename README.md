@@ -20,11 +20,11 @@ Features
  * fast compile times
  * transparent API: full access to low-level system primitives
  * batteries included:
-   * easy to use build system (fluxmake)
-   * built-in webserver (fluxnode)
+   * easy to use build system (ccbuild)
+   * built-in webserver (ccnode)
      * compatible and fast (HTTP 1.1, memory mapped I/O)
      * easy to extend
-   * powerful text search and replace (fluxfind)
+   * powerful text search and replace (ccfind)
 
 Installation
 ------------
