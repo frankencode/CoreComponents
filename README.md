@@ -4,7 +4,7 @@ CoreComponents
 A C++ Developer's Swiss-Army Knife
 ----------------------------------
 
-**CoreComponents** provides a small set of libraries and tools for Unix system programming.
+CoreComponents provides a small set of libraries and tools for Unix system programming.
 The entire toolkit is fully self-contained without any external dependencies other than a gcc
 compatible compiler and the standard C++ runtime (C++ 2011). Development happens mostly on Linux and
 OpenBSD, but design goal is to support any modern operating system which implements the
