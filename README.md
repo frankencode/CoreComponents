@@ -1,5 +1,5 @@
-*CoreComponents
-===============
+CoreComponents
+==============
 
 A C++ Developer's Swiss-Army Knife
 ----------------------------------
