@@ -20,7 +20,8 @@ class File;
 
 typedef struct stat StructStat;
 
-/** \brief Read %File attributes
+/** \class FileStatus FileStatus.h cc/FileStatus
+  * \brief Read %File attributes
   * \see File
   */
 class FileStatus: public StructStat, public Object
@@ -34,9 +35,14 @@ public:
     inline FileType type() const  { return FileType(st_mode & S_IFMT); }
     inline int mode() const { return st_mode & (~S_IFMT); }
 
+    /// file size in number of bytes
     inline off_t size() const { return st_size; }
-    inline off_t sizeOfBlock() const { return st_blksize; }
+
+    /// file size in number of blocks
     inline off_t sizeInBlocks() const { return st_blocks; }
+
+    /// block size
+    inline off_t sizeOfBlock() const { return st_blksize; }
 
     inline uid_t ownerId() const { return st_uid; }
     inline gid_t groupId() const { return st_gid; }

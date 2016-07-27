@@ -14,7 +14,8 @@
 
 namespace cc {
 
-/** \brief %List data container
+/** \class List List.h cc/List
+  * \brief %List data container
   */
 template<class T>
 class List: public Object

@@ -21,7 +21,8 @@ class Variant;
 typedef List<Variant> VariantList;
 typedef Map<String, Variant> VariantMap;
 
-/** \brief Duck-typed value
+/** \class Variant Variant.h cc/Variant
+  * \brief Duck-typed value
   *
   * A Variant can represent different types.
   * The type of a Variant is defined implicitly at construction or assignment.

@@ -16,7 +16,8 @@ namespace cc {
 
 typedef Channel<int> SignalChannel;
 
-/** \brief Signal handling thread in a mulithreaded application
+/** \class SignalMaster SignalMaster.h cc/SignalMaster
+  * \brief Signal handling thread in a mulithreaded application
   * \see SignalSet
   */
 class SignalMaster: public Thread
@@ -35,4 +36,3 @@ private:
 };
 
 } // namespace cc
-

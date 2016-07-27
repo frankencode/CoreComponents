@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \brief Wait condition
+/** \class WaitCondition WaitCondition.h cc/WaitCondition
+  * \brief Wait condition
   * \see Channel
   */
 class WaitCondition: public Object
@@ -32,4 +33,3 @@ private:
 };
 
 } // namespace cc
-

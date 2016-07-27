@@ -14,6 +14,8 @@ namespace cc {
 
 class KernelInfoData;
 
+/** \class KernelInfo KernelInfo.h cc/KernelInfo
+  */
 class KernelInfo: public Object
 {
 public:

@@ -13,13 +13,15 @@ namespace cc {
 template<class Char, class Value>
 class PrefixTree;
 
+/** \class PrefixTreeWalker PrefixTreeWalker.h cc/PrefixTreeWalker
+  */
 template<class Char, class Value>
 class PrefixTreeWalker
 {
 public:
     PrefixTreeWalker() {}
 
-    // prefix increment / decrement
+    /// prefix increment / decrement
     inline PrefixTreeWalker &operator++() {
         CC_ASSERT(valid());
         while (node_) {
@@ -42,7 +44,7 @@ public:
         return *this;
     }
 
-    // postfix increment / decrement
+    /// postfix increment / decrement
     inline PrefixTreeWalker operator++(int) {
         PrefixTreeWalker it = *this;
         ++(*this);
@@ -65,8 +67,8 @@ private:
     friend class PrefixTree<Char, Value>;
     typedef PrefixTree<Char, Value> Node;
 
-    PrefixTreeWalker(Node *node)
-        : node_(node)
+    PrefixTreeWalker(Node *node):
+        node_(node)
     {}
 
     inline bool valid() const { return node_; }
@@ -75,4 +77,3 @@ private:
 };
 
 } // namespace cc
-

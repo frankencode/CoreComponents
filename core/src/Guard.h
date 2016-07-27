@@ -10,15 +10,23 @@
 
 namespace cc {
 
-/** \brief %Mutex guard
+/** \class Guard Guard.h cc/Guard
+  * \brief %Mutex guard
   * \see FileLock, Mutex
   */
 template<class Mutex>
 class Guard
 {
 public:
+    /** Lowlevel constructor: acquire mutex
+      * \param mutex Mutex to hold
+      */
     Guard(Mutex *mutex): mutex_(mutex) { mutex_->acquire(); }
+
+    /** Lowlevel destructor: release mutex
+      */
     ~Guard() { mutex_->release(); }
+
 private:
     Mutex *mutex_;
 };

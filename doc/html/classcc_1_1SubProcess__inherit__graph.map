@@ -1,5 +1,0 @@
-<map id="cc::SubProcess" name="cc::SubProcess">
-<area shape="rect" id="node2" href="$classcc_1_1SystemStream.html" title="Base class for all system streams. " alt="" coords="5,155,136,181"/>
-<area shape="rect" id="node3" href="$classcc_1_1Stream.html" title="Abstract data stream. " alt="" coords="27,80,114,107"/>
-<area shape="rect" id="node4" href="$classcc_1_1Object.html" title="Reference counting and secure destruction. " alt="" coords="29,5,112,32"/>
-</map>

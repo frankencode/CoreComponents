@@ -16,7 +16,8 @@ namespace cc {
 class WaitCondition;
 class ScopeGuard;
 
-/** \brief %Thread synchronization primitive: mutual exclusive access
+/** \class Mutex Mutex.h cc/Mutex
+  * \brief %Thread synchronization primitive: mutual exclusive access
   * \see Guard
   */
 class Mutex: public Object, public NonCopyable

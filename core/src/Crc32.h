@@ -14,7 +14,8 @@
 
 namespace cc {
 
-/** \brief CRC-32 check sum generator
+/** \class Crc32 Crc32.h cc/Crc32
+  * \brief CRC-32 check sum generator
   */
 class Crc32: public HashSum
 {

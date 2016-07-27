@@ -13,7 +13,8 @@
 
 namespace cc {
 
-/** \brief waiting for a limited resource
+/** \class Semaphore Semaphore.h cc/Semaphore
+  * \brief waiting for a limited resource
   */
 class Semaphore: public Object
 {

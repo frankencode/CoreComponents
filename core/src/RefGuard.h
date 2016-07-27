@@ -12,6 +12,8 @@
 
 namespace cc {
 
+/** \class RefGuard RefGuard.h cc/RefGuard
+  */
 template<class T>
 class RefGuard
 {
@@ -23,4 +25,3 @@ private:
 };
 
 } // namespace cc
-

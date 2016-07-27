@@ -14,7 +14,8 @@
 
 namespace cc {
 
-/** \brief CRC-16 check sum generator, according to RFC 1171
+/** \class Crc16 Crc16.h cc/Crc16
+  * \brief CRC-16 check sum generator, according to RFC 1171
   */
 class Crc16: public HashSum
 {

@@ -12,6 +12,9 @@
 
 namespace cc {
 
+/** \class MemoryStream MemoryStream.h cc/MemoryStream
+  * \see ReplaySource, CaptureSink
+  */
 class MemoryStream: public Stream
 {
 public:

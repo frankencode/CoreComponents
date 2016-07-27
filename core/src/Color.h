@@ -14,7 +14,8 @@ namespace cc {
 
 class Variant;
 
-/** \brief RGB color tuple
+/** \class Color Color.h cc/Color
+  * \brief RGB color tuple
   */
 class Color
 {

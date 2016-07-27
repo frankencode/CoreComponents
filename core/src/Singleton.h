@@ -43,7 +43,8 @@ public:
     Ref<SubClass> instance_;
 };
 
-/** \brief Thread-safe process-wide singletons
+/** \class Singleton Singleton.h cc/Singleton
+  * \brief Thread-safe process-wide singletons
   */
 template<class SubClass>
 class Singleton: public ThreadLocalSingleton< CoreSingletonWrapper<SubClass> >

@@ -13,7 +13,8 @@
 
 namespace cc {
 
-/** \brief %Map data container
+/** \class Map Map.h cc/Map
+  * \brief %Map data container
   * \see Set, List
   */
 template<class Key, class Value>

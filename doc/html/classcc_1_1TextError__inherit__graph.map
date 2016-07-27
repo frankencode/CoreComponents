@@ -1,5 +1,0 @@
-<map id="cc::TextError" name="cc::TextError">
-<area shape="rect" id="node3" href="$classcc_1_1SemanticError.html" title="Semantic error. " alt="" coords="5,155,132,181"/>
-<area shape="rect" id="node4" href="$classcc_1_1syntax_1_1SyntaxError.html" title="Syntax error. " alt="" coords="157,155,317,181"/>
-<area shape="rect" id="node2" href="$classcc_1_1Exception.html" title="Root class of the exception class hierarchy. " alt="" coords="101,5,204,32"/>
-</map>

@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \brief Hash sum interface
+/** \class HashSum HashSum.h cc/HashSum
+  * \brief Hash sum interface
   */
 class HashSum: public Stream
 {

@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \brief Iterating UTF-16 encoded strings
+/** \class Utf16Walker Utf16Walker.h cc/Utf16Walker
+  * \brief Iterating UTF-16 encoded strings
   *
   * The Utf16Walker allows iterating Unicode characters over any zero terminated word sequence.
   * The walker will always halt at the string boundaries. If stepping over the String boundary

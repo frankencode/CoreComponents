@@ -1,5 +1,0 @@
-<map id="cc::net::DatagramSocket" name="cc::net::DatagramSocket">
-<area shape="rect" id="node2" href="$classcc_1_1SystemStream.html" title="Base class for all system streams. " alt="" coords="24,155,155,181"/>
-<area shape="rect" id="node3" href="$classcc_1_1Stream.html" title="Abstract data stream. " alt="" coords="46,80,133,107"/>
-<area shape="rect" id="node4" href="$classcc_1_1Object.html" title="Reference counting and secure destruction. " alt="" coords="48,5,131,32"/>
-</map>

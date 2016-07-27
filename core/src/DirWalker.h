@@ -14,7 +14,8 @@ namespace cc {
 
 class Dir;
 
-/** \brief Recursive directory tree walker
+/** \class DirWalker DirWalker.h cc/DirWalker
+  * \brief Recursive directory tree walker
   * \see Dir
   */
 class DirWalker: public Source<String>

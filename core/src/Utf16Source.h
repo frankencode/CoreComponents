@@ -13,7 +13,8 @@
 
 namespace cc {
 
-/** \brief %Unicode UTF-16 decoding data source
+/** \class Utf16Source Utf16Source.h cc/Utf16Source
+  * \brief %Unicode UTF-16 decoding data source
   *
   * A Byte-Order-Mark (BOM) at the start of the stream automatically sets
   * endianess. The decoder is designed to be as strict as possible. It checks

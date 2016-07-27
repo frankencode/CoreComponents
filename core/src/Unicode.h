@@ -13,7 +13,8 @@
 
 namespace cc {
 
-/** \brief Seemless access to %Unicode characters of an UTF-8 encoded string
+/** \class Unicode Unicode.h cc/Unicode
+  * \brief Seemless access to %Unicode characters of an UTF-8 encoded string
   * \see String
   */
 class Unicode: public Object

@@ -14,7 +14,8 @@
 
 namespace cc {
 
-/** \brief %System user information
+/** \class User User.h cc/User
+  * \brief Query information about system users
   * \see Group
   */
 class User: public Object

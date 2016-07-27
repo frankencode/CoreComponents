@@ -34,6 +34,7 @@ cp -a $PACKAGE $PACKAGE-$VERSION
 rm $PACKAGE-$VERSION/.fslckout || true
 rm $PACKAGE-$VERSION/*.fossil || true
 rm $PACKAGE-$VERSION/doc/.make_docs.swp || true
+rm -rf $PACKAGE-$VERSION/doc/html || true
 tar -cv $PACKAGE-$VERSION | gzip --best > $PACKAGE-$VERSION.tar.gz
 printf "md5\t$(ccmd5 $PACKAGE-$VERSION.tar.gz)\n" > $PACKAGE-$VERSION.hash
 printf "sha1\t$(ccsha1 $PACKAGE-$VERSION.tar.gz)\n" >> $PACKAGE-$VERSION.hash

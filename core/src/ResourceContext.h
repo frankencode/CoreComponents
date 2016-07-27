@@ -15,7 +15,8 @@ namespace cc {
 template<class> class ThreadLocalSingleton;
 template<class> class Queue;
 
-/** \brief Cascaded resource context for error reporting
+/** \class ResourceContext ResourceContext.h cc/ResourceContext
+  * \brief Cascaded resource context for error reporting
   * \see ResourceGuard
   */
 class ResourceContext: public Object

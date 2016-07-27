@@ -22,7 +22,8 @@ extern FormatSignal flush;
 class Stream;
 template<class T> class Queue;
 
-/** \brief Text formatting helper
+/** \class Format Format.h cc/Format
+  * \brief Text formatting helper
   */
 class Format: public Ref<StringList>
 {

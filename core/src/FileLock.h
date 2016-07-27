@@ -16,7 +16,8 @@ namespace cc {
 
 typedef struct flock FLockStruct;
 
-/** \brief Advisory file locks
+/** \class FileLock FileLock.h cc/FileLock
+  * \brief Advisory file locks
   * \see Guard
   */
 class FileLock: public FLockStruct, public Object
@@ -39,4 +40,3 @@ private:
 };
 
 } // namespace cc
-

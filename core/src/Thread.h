@@ -15,7 +15,8 @@
 
 namespace cc {
 
-/** \brief %Thread creation, signalling, termination
+/** \class Thread Thread.h cc/Thread
+  * \brief %Thread creation, signalling, termination
   * \see SubProcess
   */
 class Thread: public Object

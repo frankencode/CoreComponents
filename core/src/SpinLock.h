@@ -10,7 +10,8 @@
 
 namespace cc {
 
-/** \brief %Thread synchronization primitive: spinning lock
+/** \class SpinLock SpinLock.h cc/SpinLock
+  * \brief %Thread synchronization primitive: spinning lock
   */
 class SpinLock
 {

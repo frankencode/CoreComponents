@@ -1,5 +1,0 @@
-<map id="cc::crypto::Sha1" name="cc::crypto::Sha1">
-<area shape="rect" id="node2" href="$classcc_1_1HashSum.html" title="Hash sum interface. " alt="" coords="13,155,116,181"/>
-<area shape="rect" id="node3" href="$classcc_1_1Stream.html" title="Abstract data stream. " alt="" coords="21,80,108,107"/>
-<area shape="rect" id="node4" href="$classcc_1_1Object.html" title="Reference counting and secure destruction. " alt="" coords="23,5,106,32"/>
-</map>

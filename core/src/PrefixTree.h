@@ -26,6 +26,8 @@ class PrefixTreeKeyByCharType { public: typedef Array<Char> Key; };
 template<>
 class PrefixTreeKeyByCharType<char> { public: typedef ByteArray Key; };
 
+/** \class PrefixTree PrefixTree.h cc/PrefixTree
+  */
 template<class Char, class Value>
 class PrefixTree: public Tree< PrefixTree<Char, Value> >
 {
@@ -331,4 +333,3 @@ protected:
 };
 
 } // namespace cc
-

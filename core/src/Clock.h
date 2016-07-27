@@ -13,7 +13,8 @@
 
 namespace cc {
 
-/** \brief %Clock generator thread
+/** \class Clock Clock.h cc/Clock
+  * \brief %Clock generator thread
   *
   * A Clock is a thread that writes time beats into a channel in a fixed time interval.
   * The time interval may not be hit exactly for each tick, but the overall time scale

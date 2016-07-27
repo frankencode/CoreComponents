@@ -15,7 +15,8 @@
 
 namespace cc {
 
-/** \brief Inter-thread communication channel
+/** \class Channel Channel.h cc/Channel
+  * \brief Inter-thread communication channel
   * \see Queue, PriorityQueue
   */
 template<class T, template<class> class QueueType = Queue>

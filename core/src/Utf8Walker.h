@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \brief Iterating UTF-8 encoded strings
+/** \class Utf8Walker Utf8Walker.h cc/Utf8Walker
+  * \brief Iterating UTF-8 encoded strings
   *
   * The Utf8Walker allows iterating Unicode characters over any zero terminated byte sequence.
   * The walker will always halt at the string boundaries. If stepping over the string boundary
@@ -33,9 +34,10 @@ namespace cc {
 class Utf8Walker
 {
 public:
-    // Initialize new walker
-    // \arg data byte string
-    // \arg pos position in string
+    /** Initialize new walker
+      * \param data byte string
+      * \param pos position in string
+      */
     Utf8Walker(const char *data = 0, const char *pos = 0):
         s_(reinterpret_cast<const uint8_t*>(data)),
         p_(reinterpret_cast<const uint8_t*>(pos))
@@ -48,7 +50,7 @@ public:
         p_(b.p_)
     {}
 
-    // prefix increment
+    /// prefix increment
     inline Utf8Walker &operator++() {
         uint8_t ch = *p_;
         if (ch) {
@@ -62,7 +64,7 @@ public:
         return *this;
     }
 
-    // prefix decrement
+    /// prefix decrement
     inline Utf8Walker &operator--() {
         bool canStepBack = (s_ < p_);
         // if at zero character figure out if before begin or at end or empty string
@@ -77,14 +79,14 @@ public:
         return *this;
     }
 
-    // postfix increment
+    /// postfix increment
     inline Utf8Walker operator++(int) {
         Utf8Walker it = *this;
         ++(*this);
         return it;
     }
 
-    // postfix decrement
+    /// postfix decrement
     inline Utf8Walker operator--(int) {
         Utf8Walker it = *this;
         --(*this);
@@ -115,7 +117,7 @@ public:
         return it -= delta;
     }
 
-    // decode unicode point
+    /// decode unicode point
     inline uint32_t getChar() const {
         // merging extra bytes by incrementally reducing the code prefix of the first byte
         // prefix bits => extra bytes: (110)2 => 1 eb, (1110)2 => 2 eb, (11110)2 => 3 eb
@@ -141,7 +143,7 @@ public:
     inline bool operator==(const Utf8Walker &b) const { return (p_ == b.p_) && (s_ == b.s_); }
     inline bool operator!=(const Utf8Walker &b) const { return (p_ != b.p_) || (s_ != b.s_); }
 
-    // distance in number of characters
+    /// distance in number of characters
     inline int operator-(const Utf8Walker &b) const {
         int n = 0;
         if (s_ == b.s_) {
@@ -158,7 +160,7 @@ public:
         return n;
     }
 
-    // byte position in string
+    /// byte position in string
     inline operator int() const { return p_ - s_; }
 
     static int length(const char *s) {

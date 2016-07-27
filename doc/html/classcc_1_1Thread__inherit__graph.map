@@ -1,6 +1,0 @@
-<map id="cc::Thread" name="cc::Thread">
-<area shape="rect" id="node3" href="$classcc_1_1Clock.html" title="Clock generator thread " alt="" coords="5,155,84,181"/>
-<area shape="rect" id="node4" href="$classcc_1_1SignalMaster.html" title="Signal handling thread in a mulithreaded application. " alt="" coords="109,155,229,181"/>
-<area shape="rect" id="node5" href="$classcc_1_1Timer.html" title="interval timer thread " alt="" coords="253,155,362,181"/>
-<area shape="rect" id="node2" href="$classcc_1_1Object.html" title="Reference counting and secure destruction. " alt="" coords="127,5,210,32"/>
-</map>
