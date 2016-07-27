@@ -33,6 +33,7 @@ rm -rf $PACKAGE-$VERSION
 cp -a $PACKAGE $PACKAGE-$VERSION
 rm $PACKAGE-$VERSION/.fslckout || true
 rm $PACKAGE-$VERSION/*.fossil || true
+rm -rf $PACKAGE-$VERSION/.git || true
 rm $PACKAGE-$VERSION/doc/.make_docs.swp || true
 rm -rf $PACKAGE-$VERSION/doc/html || true
 tar -cv $PACKAGE-$VERSION | gzip --best > $PACKAGE-$VERSION.tar.gz
