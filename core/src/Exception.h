@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \brief Root class of the exception class hierarchy
+/** \class Exception Exception.h cc/Exception
+  * \brief Root class of the exception class hierarchy
   * \see exceptions
   */
 class Exception

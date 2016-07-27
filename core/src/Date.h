@@ -30,7 +30,8 @@ enum {
 inline double hours(double n) { return n * SecondsPerHour; }
 inline double days(double n) { return n * SecondsPerDay; }
 
-/** \brief Gregorian calendar dates
+/** \class Date Date.h cc/Date
+  * \brief Gregorian calendar dates
   */
 class Date: public Object
 {
@@ -85,4 +86,3 @@ private:
 };
 
 } // namespace cc
-

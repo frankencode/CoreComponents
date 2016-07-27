@@ -13,7 +13,8 @@
 
 namespace cc {
 
-/** \brief %Unicode UTF-16 encoding data sink
+/** \class Utf16Sink Utf16Sink.h cc/Utf16Sink
+  * \brief %Unicode UTF-16 encoding data sink
   */
 class Utf16Sink: public Object
 {

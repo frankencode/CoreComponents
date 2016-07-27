@@ -15,7 +15,8 @@ namespace cc {
 
 class Thread;
 
-/** \brief Signal set
+/** \class SignalSet SignalSet.h cc/SignalSet
+  * \brief Signal set
   * \see Thread
   */
 class SignalSet: public Object
@@ -50,4 +51,3 @@ private:
 };
 
 } // namespace cc
-

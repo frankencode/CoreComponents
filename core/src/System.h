@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \brief Query/update system information
+/** \class System System.h cc/System
+  * \brief System information
   * \see KernelInfo
   */
 class System

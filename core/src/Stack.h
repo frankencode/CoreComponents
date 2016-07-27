@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \brief Fixed-size stack data container
+/** \class Stack Stack.h cc/Stack
+  * \brief Fixed-size stack data container
   */
 template<class T>
 class Stack: public Object
@@ -79,18 +80,18 @@ public:
     inline operator T*() const { return buf_; }
 
 private:
-    Stack(int size)
-        : fill_(0),
-          size_(size),
-          bufOwner_(true),
-          buf_(new T[size])
+    Stack(int size):
+        fill_(0),
+        size_(size),
+        bufOwner_(true),
+        buf_(new T[size])
     {}
 
-    Stack(T *buf, int size)
-        : fill_(0),
-          size_(size),
-          bufOwner_(false),
-          buf_(buf)
+    Stack(T *buf, int size):
+        fill_(0),
+        size_(size),
+        bufOwner_(false),
+        buf_(buf)
     {}
 
     int fill_;
@@ -100,4 +101,3 @@ private:
 };
 
 } // namespace cc
-

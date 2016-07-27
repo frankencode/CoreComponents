@@ -1,5 +1,0 @@
-<map id="cc::SystemError" name="cc::SystemError">
-<area shape="rect" id="node3" href="$classcc_1_1SystemDebugError.html" title="Debugging hint on system call failure. " alt="" coords="5,155,160,181"/>
-<area shape="rect" id="node4" href="$classcc_1_1SystemResourceError.html" title="System call failed to perform an action on a named resource (e.g. " alt="" coords="184,155,357,181"/>
-<area shape="rect" id="node2" href="$classcc_1_1Exception.html" title="Root class of the exception class hierarchy. " alt="" coords="125,5,227,32"/>
-</map>

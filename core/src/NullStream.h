@@ -14,7 +14,8 @@ namespace cc {
 
 template<class T> class Singleton;
 
-/** \brief Zero storage information dump
+/** \class NullStream NullStream.h cc/NullStream
+  * \brief Zero storage information dump
   */
 class NullStream: public Stream
 {

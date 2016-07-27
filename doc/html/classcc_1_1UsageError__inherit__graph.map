@@ -1,5 +1,0 @@
-<map id="cc::UsageError" name="cc::UsageError">
-<area shape="rect" id="node3" href="$classcc_1_1CommandNotFound.html" title="Command not found error. " alt="" coords="5,155,167,181"/>
-<area shape="rect" id="node4" href="$classcc_1_1PermissionError.html" title="Insufficient permission to perform operation. " alt="" coords="191,155,328,181"/>
-<area shape="rect" id="node2" href="$classcc_1_1Exception.html" title="Root class of the exception class hierarchy. " alt="" coords="121,5,224,32"/>
-</map>

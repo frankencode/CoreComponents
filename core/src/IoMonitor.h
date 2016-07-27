@@ -15,7 +15,8 @@
 
 namespace cc {
 
-/** \brief I/O event
+/** \class IoEvent IoMonitor.h cc/IoMonitor.cc
+  * \brief I/O event
   */
 class IoEvent: public Object
 {
@@ -46,7 +47,8 @@ private:
 
 typedef Array<const IoEvent *> IoActivity;
 
-/** \brief Register and wait for I/O events
+/** \class IoMonitor IoMonitor.h cc/IoMonitor.cc
+  * \brief Register and wait for I/O events
   */
 class IoMonitor: public Object // FIXME: IoWatcher
 {

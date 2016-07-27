@@ -1,8 +1,8 @@
-CoreComponents
+CoreComponents                           {#mainpage}
 ==============
 
-A C++ Developer's Swiss-Army Knife
-----------------------------------
+About
+-----
 
 CoreComponents provides a small set of libraries and tools for Unix system programming.
 The entire toolkit is fully self-contained without any external dependencies other than a gcc
@@ -37,7 +37,7 @@ First download the latest stable version from github:
 ```
 mkdir -p ~/src
 cd ~/src
-curl -L https://corecomponents.io/cc-0.7.0.tar.gz | tar xzv
+curl -L https://www.corecomponents.io/download/cc-0.7.0.tar.gz | tar xzv
 ln -s ../cc-0.7.0 cc
 ```
 

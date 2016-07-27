@@ -13,7 +13,8 @@
 
 namespace cc {
 
-/** \brief %Set data countainer
+/** \class Set Set.h cc/Set
+  * \brief %Set data countainer
   */
 template<class T>
 class Set: public Object

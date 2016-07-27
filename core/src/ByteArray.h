@@ -95,29 +95,75 @@ private:
     ByteArray *a_;
 };
 
-/** \brief A chunk of memory as a series of bytes (aka String)
+/** \class ByteArray ByteArray.h cc/ByteArray
+  * \brief A chunk of memory as a series of bytes (aka String)
   */
 class ByteArray: public Object
 {
 public:
     typedef char Item;
 
+    /** Create a new byte array of exactly N bytes, without zero-termination
+      * \param size number of bytes (N)
+      * \return new object instance
+      * \see isZeroTerminated()
+      */
     static String allocate(int size);
 
+    /** Create a new byte array of N bytes plus one byte for zero termination
+      * \param size number of bytes (N)
+      * \return new object instance
+      * \see isZeroTerminated()
+      */
     static String create(int size = 0);
+
+    /** Create a copy of a C string
+      * \param data pointer to C string
+      * \param size number of bytes (if known, else pass -1)
+      * \return new object instance
+      * \see isZeroTerminated()
+      */
     static String copy(const char *data, int size = -1);
+
+    /** Create a copy of another byte array
+      * \param b the original byte array
+      * \return new object instance
+      */
     inline static String copy(const ByteArray *b) { return b ? b->copy() : String(); }
 
+    /** Join a list of strings
+      * \param parts the individual parts to join together
+      * \param sep the separator to put between individual parts
+      * \param sepSize the size of the separator (if kwown, else pass -1)
+      * \return new object instance
+      */
     static String join(const StringList *parts, const char *sep = "", int sepSize = -1);
+
+    /** Join a list of strings
+      * \param parts the individual parts to join together
+      * \param sep the separator to put between individual parts
+      * \return new object instance
+      */
     static String join(const StringList *parts, char sep);
+
+    /** Join a list of strings
+      * \param parts the individual parts to join together
+      * \param sep the separator to put between individual parts
+      * \return new object instance
+      */
     static String join(const StringList *parts, const String &sep);
 
+    /** Concatenate two strings
+      * \param a the left string
+      * \param b the right string
+      * \return new object instance
+      */
     static String cat(const String &a, const String &b);
 
+    /// Return the default empty byte array
     static ByteArray *empty();
 
-    ~ByteArray();
-
+    /// Returns true if this byte array is zero terminated
     virtual bool isZeroTerminated() const { return true; }
 
     String clear(char zero = '\0');
@@ -340,6 +386,9 @@ protected:
     ByteArray(const char *data, int size = -1, Destroy destroy = 0);
     ByteArray(const ByteArray *parent, int i0, int i1);
     ByteArray(const ByteArray &b);
+
+    /// Lowlevel destructor
+    ~ByteArray();
 
 private:
     static void doNothing(ByteArray *);

@@ -40,7 +40,7 @@ public:
     inline VariantMap *options() const { return options_; }
 
     /// Command line item arguments
-    inline StringList *items() const { return items_; }
+    inline /*FIXME: const*/ StringList *items() const { return items_; }
 
     /** Execution path
       * \see Process::exePath()

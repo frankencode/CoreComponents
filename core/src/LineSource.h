@@ -13,7 +13,8 @@
 
 namespace cc {
 
-/** \brief Line input buffer
+/** \class LineSource LineSource.h cc/LineSource
+  * \brief Line input buffer
   */
 class LineSource: public Source<String>
 {

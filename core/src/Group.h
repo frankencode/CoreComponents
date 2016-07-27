@@ -16,7 +16,8 @@ namespace cc {
 
 class User;
 
-/** \brief %System group information
+/** \class Group Group.h cc/Group
+  * \brief %System group information
   * \see User
   */
 class Group: public Object

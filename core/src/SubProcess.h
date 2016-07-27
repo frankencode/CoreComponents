@@ -17,7 +17,8 @@
 
 namespace cc {
 
-/** \brief Spawned child process
+/** \class SubProcess SubProcess.h cc/SubProcess
+  * \brief Spawned child process
   */
 class SubProcess: public SystemStream
 {

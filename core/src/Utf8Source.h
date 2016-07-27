@@ -13,7 +13,8 @@
 
 namespace cc {
 
-/** \brief %Unicode UTF-8 decoding data source
+/** \class Utf8Source Utf8Source.h cc/Utf8Source
+  * \brief %Unicode UTF-8 decoding data source
   */
 class Utf8Source: public Object
 {

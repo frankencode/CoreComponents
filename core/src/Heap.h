@@ -131,6 +131,8 @@ protected:
     T *buf_;    // memory buffer used for storing elements
 };
 
+/** \class Heap Heap.h cc/Heap
+  */
 template<class T>
 class Heap: public GenericHeap<T, FlexibleSortOrder>
 {
@@ -193,4 +195,3 @@ private:
 };
 
 } // namespace cc
-

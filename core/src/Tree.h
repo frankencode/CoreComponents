@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \brief Generic tree structure
+/** \class Tree Tree.h cc/Tree
+  * \brief Generic tree structure
   */
 template<class Node>
 class Tree: public Object
@@ -223,4 +224,3 @@ int Tree<Node>::countSiblings() const
 }
 
 } // namespace cc
-

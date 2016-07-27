@@ -12,6 +12,8 @@
 
 namespace cc {
 
+/** \class Property Property.h cc/Property
+  */
 template<class T>
 class Property
 {
@@ -44,4 +46,3 @@ private:
 };
 
 } // namespace cc
-

@@ -10,7 +10,8 @@
 
 namespace cc {
 
-/** \brief object registration during library initialization
+/** \class Registration Registration.h cc/Registration
+  * \brief Object registration during library initialization
   */
 template<class Asset>
 class Registration
@@ -26,4 +27,3 @@ public:
 #define CC_REGISTRATION(Type) namespace { Registration<Type> registrationOf ## Type; }
 
 } // namespace cc
-

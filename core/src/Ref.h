@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \brief %Object references
+/** \class Ref Ref.h cc/Object
+  * \brief %Object references
   *
   * The Ref template class implements object references that behave similiar to object
   * references in higher level languages, like for instance Java. The references can

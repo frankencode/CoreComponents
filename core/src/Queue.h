@@ -26,7 +26,8 @@ public:
     QueueNode *prev_;
 };
 
-/** \brief Waiting queue data container
+/** \class Queue Queue.h cc/Queue
+  * \brief Waiting queue data container
   */
 template<class T>
 class Queue: public Object
@@ -140,4 +141,3 @@ private:
 };
 
 } // namespace cc
-

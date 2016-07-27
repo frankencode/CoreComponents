@@ -10,6 +10,8 @@
 
 namespace cc {
 
+/** \class IoTarget IoTarget.h cc/IoTarget
+  */
 class IoTarget
 {
 public:

@@ -13,6 +13,8 @@
 
 namespace cc {
 
+/** \class ThreadLocalSingleton ThreadLocalSingleton.h cc/ThreadLocalSingleton
+  */
 template<class SubClass>
 class ThreadLocalSingleton
 {

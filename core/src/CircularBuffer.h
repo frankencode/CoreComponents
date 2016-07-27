@@ -13,7 +13,8 @@
 
 namespace cc {
 
-/** \brief fixed size queue
+/** \class CircularBuffer CircularBuffer.h cc/CircularBuffer
+  * \brief fixed size queue
   */
 template<class T>
 class CircularBuffer: public Object
