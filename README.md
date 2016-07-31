@@ -1,5 +1,8 @@
-CoreComponents                           <!--- {#mainpage} --->
+CoreComponents
 ==============
+
+{#mainpage}
+
 
 About
 -----
