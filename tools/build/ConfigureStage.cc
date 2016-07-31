@@ -103,8 +103,6 @@ bool ConfigureStage::run()
             plan()->libraryPaths()->appendList(libraryPaths);
             plan()->customCompileFlags()->appendList(compileFlags);
             plan()->customLinkFlags()->appendList(linkFlags);
-            plan()->customCompileFlags()->appendList(prerequisite->customCompileFlags());
-            plan()->customLinkFlags()->appendList(prerequisite->customLinkFlags());
             plan()->libraries()->appendList(prerequisite->libraries());
         }
     }

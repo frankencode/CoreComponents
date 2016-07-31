@@ -70,6 +70,7 @@ public:
     inline ToolChain *toolChain() const { return toolChain_; }
 
     inline String projectPath() const { return projectPath_; }
+    inline bool isSystemSource() const { return projectPath_->beginsWith(systemSourcePath_); }
     inline static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
     inline String recipePath() const { return recipePath_; }
     inline String scope() const { return scope_; }

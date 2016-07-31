@@ -194,13 +194,12 @@ void ByteArray::destroy()
     else delete[] data_;
 }
 
-String ByteArray::clear(char zero)
+void ByteArray::clear(char zero)
 {
     memset(data_, zero, size_);
-    return this;
 }
 
-String ByteArray::truncate(int newSize)
+void ByteArray::truncate(int newSize)
 {
     if (newSize < size_) {
         if (newSize < 0) newSize = 0;
@@ -208,7 +207,6 @@ String ByteArray::truncate(int newSize)
         size_ = newSize;
         data_[size_] = 0;
     }
-    return this;
 }
 
 ByteArray &ByteArray::operator=(const ByteArray &b)
@@ -542,7 +540,8 @@ String ByteArray::unescapeInsitu()
             ++j;
         }
     }
-    return truncate(j);
+    truncate(j);
+    return this;
 }
 
 String ByteArray::trimInsitu(const char *leadingSpace, const char *trailingSpace)
@@ -564,7 +563,8 @@ String ByteArray::trimInsitu(const char *leadingSpace, const char *trailingSpace
         --i1;
     }
     if (i0 > 0 && i0 < i1) memmove(data_, data_ + i0, i1 - i0);
-    return truncate(i1 - i0);
+    truncate(i1 - i0);
+    return this;
 }
 
 String ByteArray::simplifyInsitu(const char *space)

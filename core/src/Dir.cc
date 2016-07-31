@@ -53,13 +53,6 @@ Dir::~Dir()
 
 String Dir::path() const { return path_; }
 
-/*String Dir::path(String name) const
-{
-    if (path_ == ".") return name;
-    if (path_ == "/") return "/" + name;
-    return path_ + "/" + name;
-}*/
-
 bool Dir::read(String *name)
 {
     struct dirent buf;

@@ -90,8 +90,8 @@ protected:
         insert("verbose", false);
         insert("configure", false);
         insert("select", StringList::create());
-        insert("concurrency", -1);
-        insert("test-run-concurrency", -1);
+        insert("jobs", -1);
+        insert("test-run-jobs", -1);
     }
 };
 
