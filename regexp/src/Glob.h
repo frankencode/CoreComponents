@@ -21,8 +21,16 @@ namespace regexp {
 class Glob: public Source<String>
 {
 public:
+    /** Create a new globbing source
+      * \param expression globbing expression to use for path matching
+      * \return new object instance
+      */
     inline static Ref<Glob> open(String expression) { return new Glob(expression); }
 
+    /** Get the next matched path
+      * \param path returns the next path
+      * \return true if another mathing path could be read
+      */
     bool read(String *path);
 
 private:
@@ -37,4 +45,3 @@ private:
 };
 
 }} // namespace cc::regexp
-

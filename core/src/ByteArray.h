@@ -81,13 +81,8 @@ public:
     static Ref<ByteArray> join(const StringList *parts, String sep = "");
 
 #ifdef QT_CORE_LIB
-    inline operator QString() const {
-        return QString::fromUtf8(get()->chars(), get()->count());
-    }
-
-    inline operator QUrl() const {
-        return QUrl::fromLocalFile(QString::fromUtf8(get()->chars(), get()->count()));
-    }
+    inline operator QString() const;
+    inline operator QUrl() const;
 #endif
 
 private:
@@ -96,7 +91,7 @@ private:
 };
 
 /** \class ByteArray ByteArray.h cc/ByteArray
-  * \brief A chunk of memory as a series of bytes (aka String)
+  * \brief A chunk of memory as a series of bytes
   */
 class ByteArray: public Object
 {
@@ -166,15 +161,29 @@ public:
     /// Returns true if this byte array is zero terminated
     virtual bool isZeroTerminated() const { return true; }
 
-    String clear(char zero = '\0');
-    String truncate(int newSize);
+    /** Clear all bytes
+      * \param zero blank character to use
+      */
+    void clear(char zero = '\0');
 
-    ByteArray &operator=(const ByteArray &b);
-    ByteArray &operator^=(const ByteArray &b);
+    /** Shrink in size
+      * \param newSize new size
+      */
+    void truncate(int newSize);
 
+    /** Write contents (move bytes)
+      * \param b source to copy
+      */
+    ByteArray &operator=(const ByteArray &b); // FIXME: rename write
+
+    /** Xor over another byte array
+      * \param b source to xor over
+      * \return low-level reference
+      */
+    ByteArray &operator^=(const ByteArray &b); // FIXME: rename xorOver
+
+    /// size in number of bytes
     inline int count() const { return size_; }
-    inline int first() const { return 0; }
-    inline int last() const { return size_ - 1; }
 
     inline bool has(int i) const {
         return (0 <= i) && (i < size_);
@@ -604,5 +613,17 @@ inline void Ref<ByteArray>::set(ByteArray *b)
         a_ = b;
     }
 }
+
+#ifdef QT_CORE_LIB
+inline Ref<ByteArray>::operator QString() const
+{
+    return QString::fromUtf8(get()->chars(), get()->count());
+}
+
+inline Ref<ByteArray>::operator QUrl() const
+{
+    return QUrl::fromLocalFile(QString::fromUtf8(get()->chars(), get()->count()));
+}
+#endif
 
 } // namespace cc

@@ -33,10 +33,10 @@ void BuildParameters::read(MetaObject *object, BuildPlan *plan)
         for (int i = 0; i < object->children()->count(); ++i) {
             MetaObject *child = object->children()->at(i);
             if (child->className() == "Debug") {
-                if (plan->options() && BuildPlan::Debug) readSpecific(child);
+                if (plan->options() & BuildPlan::Debug) readSpecific(child);
             }
             else if (child->className() == "Release") {
-                if (plan->options() && BuildPlan::Release) readSpecific(child);
+                if (plan->options() & BuildPlan::Release) readSpecific(child);
             }
             else {
                 #ifdef __linux

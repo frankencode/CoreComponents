@@ -10,6 +10,7 @@
 #include <cc/Process>
 #include <cc/File>
 #include <cc/Dir>
+#include <cc/DirWalker>
 #include <cc/ResourceGuard>
 #include <cc/Arguments>
 #include <cc/regexp/Glob>
@@ -141,8 +142,8 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     if (recipe_->value("verbose"))     options_ |= Verbose;
     if (recipe_->value("configure"))   options_ |= Configure;
 
-    concurrency_ = recipe_->value("concurrency");
-    testRunConcurrency_ = recipe_->value("test-run-concurrency");
+    concurrency_ = recipe_->value("jobs");
+    testRunConcurrency_ = recipe_->value("test-run-jobs");
 
     if (parentPlan) {
         options_ &= ~GlobalOptions;
@@ -278,8 +279,17 @@ Ref<StringList> BuildPlan::globSources(StringList *pattern) const
     Ref<StringList> sources = StringList::create();
     for (int i = 0; i < pattern->count(); ++i) {
         Ref<Glob> glob = Glob::open(sourcePath(pattern->at(i)));
-        for (String path; glob->read(&path);)
-            sources->append(path);
+        for (String path; glob->read(&path);) {
+            Ref<DirWalker> walker = DirWalker::tryOpen(path);
+            if (walker) {
+                bool isDir = false;
+                for (String path; walker->read(&path, &isDir);) {
+                    if (!isDir) sources->append(path);
+                }
+            }
+            else
+                sources->append(path);
+        }
     }
     sources = sources->sort();
     return sources;

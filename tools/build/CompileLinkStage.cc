@@ -21,6 +21,7 @@ bool CompileLinkStage::run()
     complete_ = true;
 
     if (!plan()->goForBuild()) return success_ = true;
+    if (plan()->isSystemSource()) return success_ = true;
 
     if (plan()->options() & BuildPlan::Test) {
         if (!(plan()->options() & BuildPlan::BuildTests))

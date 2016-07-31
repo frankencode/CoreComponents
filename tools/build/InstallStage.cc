@@ -17,6 +17,7 @@ bool InstallStage::run()
     complete_ = true;
 
     if (!plan()->goForBuild()) return success_ = true;
+    if (plan()->isSystemSource()) return success_ = true;
 
     if (outOfScope()) return success_ = true;
     if (plan()->options() & BuildPlan::Test) return success_ = true;
