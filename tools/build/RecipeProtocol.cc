@@ -99,7 +99,7 @@ class SystemPrerequisitePrototype: public SpecificBuildParametersPrototype
 {
 public:
     static Ref<MetaObject> create() {
-        return new SystemPrerequisitePrototype("SystemPrerequisite");
+        return new SystemPrerequisitePrototype("Dependency");
     }
 
 protected:

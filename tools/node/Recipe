@@ -2,7 +2,7 @@ Application {
     name: ccnode
     source: *.cc
     use: [ core, syntax, regexp, meta, net, stream ]
-    SystemPrerequisite {
+    Dependency {
         name: GnuTLS
         version-min: 3.3.5
         version-configure: pkg-config --modversion gnutls

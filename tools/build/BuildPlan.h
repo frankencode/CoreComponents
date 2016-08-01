@@ -70,7 +70,8 @@ public:
     inline ToolChain *toolChain() const { return toolChain_; }
 
     inline String projectPath() const { return projectPath_; }
-    inline bool isSystemSource() const { return projectPath_->beginsWith(systemSourcePath_); }
+    inline String systemSourcePath() const { return toolChain_->systemRoot()->expandPath("/usr/src"); }
+    inline bool isSystemSource() const { return projectPath_->beginsWith(systemSourcePath()); }
     inline static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
     inline String recipePath() const { return recipePath_; }
     inline String scope() const { return scope_; }
@@ -124,8 +125,6 @@ public:
 private:
     Ref<BuildPlan> create(String projectPath);
 
-    static String getSystemSourcePath();
-
     BuildPlan(int argc, char **argv);
     BuildPlan(String projectPath, BuildPlan *parentPlan);
 
@@ -143,7 +142,6 @@ private:
 
     Ref<ToolChain> toolChain_;
 
-    String systemSourcePath_;
     String projectPath_;
     String recipePath_;
     String scope_;

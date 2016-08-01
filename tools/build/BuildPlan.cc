@@ -47,17 +47,7 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
     uninstallStage_(this), \
     cleanStage_(this)
 
-String BuildPlan::getSystemSourcePath()
-{
-    String path = Process::env("CCBUILD_SYSTEM_SOURCE");
-    if (path != "") return path;
-    path = Process::exePath()->reducePath()->expandPath("../src")->canonicalPath();
-    if (!Dir::exists(path)) path = "/usr/src";
-    return path;
-}
-
 BuildPlan::BuildPlan(int argc, char **argv):
-    systemSourcePath_(getSystemSourcePath()),
     projectPath_("."),
     concurrency_(-1),
     disabled_(false),
@@ -91,7 +81,6 @@ BuildPlan::BuildPlan(int argc, char **argv):
 
 BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan):
     toolChain_(parentPlan->toolChain_),
-    systemSourcePath_(parentPlan->systemSourcePath_),
     projectPath_(projectPath),
     recipePath_(recipePath(projectPath)),
     scope_(parentPlan->scope_),
@@ -170,7 +159,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     if (recipe_->hasChildren()) {
         for (int i = 0; i < recipe_->children()->count(); ++i) {
             MetaObject *object = recipe_->children()->at(i);
-            if (object->className() == "SystemPrerequisite") {
+            if (object->className() == "Dependency") {
                 Ref<SystemPrerequisite> p = SystemPrerequisite::read(object, this);
                 Ref<SystemPrerequisiteList> l;
                 if (!systemPrerequisitesByName_)
@@ -324,7 +313,7 @@ String BuildPlan::findPrerequisite(String prerequisitePath) const
         return String();
     }
     {
-        String candidatePath = systemSourcePath_->expandPath(prerequisitePath);
+        String candidatePath = systemSourcePath()->expandPath(prerequisitePath);
         if (File::exists(recipePath(candidatePath))) return candidatePath;
     }
     for (String path = projectPath_; path != "/"; path = path->reducePath()) {
