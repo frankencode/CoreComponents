@@ -42,10 +42,10 @@ Variant Variant::read(String s)
 {
     if (s->contains('.') || s->contains('e') || s->contains('E')) {
         double value = 0;
-        if (s->scan(&value) == s->count()) return Variant(value);
+        if (s->scanNumber(&value) == s->count()) return Variant(value);
     }
     int value = 0;
-    if (s->scan(&value) == s->count()) return Variant(value);
+    if (s->scanNumber(&value) == s->count()) return Variant(value);
     if (s == "true" || s == "on") return Variant(true);
     if (s == "false" || s == "off") return Variant(false);
     return Variant(s);

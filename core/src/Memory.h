@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class Memory Memory.h cc/Memory
-  * \brief memory allocator
+  * \brief %Memory allocator
   */
 class Memory
 {

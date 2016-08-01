@@ -368,9 +368,12 @@ NODE RegExpSyntax::compileReference(const ByteArray *text, Token *token, SyntaxD
 
 char RegExpSyntax::readChar(const ByteArray *text, Token *token) const
 {
-    return (token->i1() - token->i0() > 1) ?
-        text->copyRange(token)->unescapeInsitu()->at(0) :
-        text->at(token->i0());
+    if (token->i1() - token->i0() > 1) {
+        String h = text->copyRange(token);
+        h->unescapeInsitu();
+        return h->at(0);
+    }
+    return text->at(token->i0());
 }
 
 String RegExpSyntax::readString(const ByteArray *text, Token *token) const

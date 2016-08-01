@@ -61,7 +61,7 @@ class SimpleWorkerTest: public TestCase
             String line;
             while (source->read(&line)) {
                 if (line == "" || line == "exit") break;
-                auto parts = line->simplify()->trimInsitu()->split(' ');
+                auto parts = line->simplify()->trim()->split(' ');
                 int sum = 0;
                 for (int i = 0; i < parts->count(); ++i)
                     sum += parts->at(i)->toNumber<int>();

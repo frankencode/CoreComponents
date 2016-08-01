@@ -67,7 +67,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
         gnuMagic   = (magic == "ustar ");
 
         unsigned checksum, probesum;
-        data->scan(&checksum, 8, 148, 156);
+        data->scanNumber(&checksum, 8, 148, 156);
         entry->type_ = data->at(156);
         if (entry->path_ == "")     data->scanString(&entry->path_,     "", 0,   100);
         if (entry->linkPath_ == "") data->scanString(&entry->linkPath_, "", 157, 257);
@@ -78,7 +78,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 
         if (gnuMagic) {
             while ((entry->type_ == 'K' || entry->type_ == 'L') /*&& entry->path_ == "././@LongLink"*/) {
-                data->scan(&entry->size_, 8, 124, 136);
+                data->scanNumber(&entry->size_, 8, 124, 136);
                 String longPath = source_->readSpan(entry->size_);
                 if (longPath->count() < entry->size_)
                     throw BrokenArchive(i_, "Expected GNU @LongLink data");
@@ -109,11 +109,11 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
         }
     }
 
-    data->scan(&entry->mode_,         8, 100, 108);
-    data->scan(&entry->userId_,       8, 108, 116);
-    data->scan(&entry->groupId_,      8, 116, 124);
-    data->scan(&entry->size_,         8, 124, 136);
-    data->scan(&entry->lastModified_, 8, 136, 148);
+    data->scanNumber(&entry->mode_,         8, 100, 108);
+    data->scanNumber(&entry->userId_,       8, 108, 116);
+    data->scanNumber(&entry->groupId_,      8, 116, 124);
+    data->scanNumber(&entry->size_,         8, 124, 136);
+    data->scanNumber(&entry->lastModified_, 8, 136, 148);
 
     if (entry->type() == 0 && entry->path()->count() > 0) {
         if (entry->path()->at(entry->path()->count() - 1) == '/')
