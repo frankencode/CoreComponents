@@ -65,7 +65,8 @@ void HttpConnection::readMessage(HttpMessage *message)
                     multiValue = StringList::create();
                     multiValue->append(value);
                 }
-                multiValue->append(line->trimInsitu());
+                line->trimInsitu();
+                multiValue->append(line);
                 continue;
             }
             if (multiValue) {
@@ -74,8 +75,10 @@ void HttpConnection::readMessage(HttpMessage *message)
             }
             int i = line->find(':');
             if (i == line->count()) throw BadRequest();
-            name = line->copy(0, i)->trimInsitu();
-            value = line->copy(i + 1, line->count())->trimInsitu();
+            name = line->copy(0, i);
+            value = line->copy(i + 1, line->count());
+            name->trimInsitu();
+            value->trimInsitu();
             if (value != "")
                 message->establish(name, value);
         }

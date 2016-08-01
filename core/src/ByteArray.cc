@@ -42,9 +42,6 @@ private:
     {}
 };
 
-/** allocate a non-zero terminated string
-  * \see isZeroTerminated()
-  */
 String ByteArray::allocate(int size)
 {
     if (size <= 0) return new ByteArray();
@@ -52,8 +49,6 @@ String ByteArray::allocate(int size)
     return new Chunk(data, size);
 }
 
-/** create a zero-terminated string of given length
-  */
 String ByteArray::create(int size)
 {
     if (size <= 0) return new ByteArray();
@@ -61,8 +56,6 @@ String ByteArray::create(int size)
     return new ByteArray(data, size);
 }
 
-/** create a copy of a C-String
-  */
 String ByteArray::copy(const char *data, int size)
 {
     if (!data) return new ByteArray();
@@ -291,14 +284,14 @@ bool ByteArray::endsWith(const char *s, int n) const
     return true;
 }
 
-int ByteArray::find(const char *pattern, int i) const
+int ByteArray::find(const char *s, int i) const
 {
     if (!has(i)) return size_;
-    if (!pattern[0]) return size_;
+    if (!s[0]) return size_;
     for (int j = i, k = 0; j < size_;) {
-        if (data_[j++] == pattern[k]) {
+        if (data_[j++] == s[k]) {
             ++k;
-            if (!pattern[k])
+            if (!s[k])
                 return j - k;
         }
         else {
@@ -308,14 +301,14 @@ int ByteArray::find(const char *pattern, int i) const
     return size_;
 }
 
-int ByteArray::find(const String &pattern, int i) const
+int ByteArray::find(const String &s, int i) const
 {
-    return find(pattern->chars(), i);
+    return find(s->chars(), i);
 }
 
-bool ByteArray::contains(const String &pattern) const
+bool ByteArray::contains(const String &s) const
 {
-    return contains(pattern->chars());
+    return contains(s->chars());
 }
 
 Ref<StringList> ByteArray::split(char sep) const
@@ -364,7 +357,7 @@ Ref<StringList> ByteArray::breakUp(int chunkSize) const
     return parts;
 }
 
-String ByteArray::replaceInsitu(const char *pattern, const char *replacement)
+void ByteArray::replaceInsitu(const char *pattern, const char *replacement)
 {
     int patternLength = strlen(pattern);
     int replacementLength = strlen(replacement);
@@ -391,22 +384,21 @@ String ByteArray::replaceInsitu(const char *pattern, const char *replacement)
         }
         truncate(j);
     }
-    return this;
 }
 
-String ByteArray::replace(const char *pattern, const char *replacement) const
+String ByteArray::replace(const char *s, const char *r) const
 {
-    return join(split(pattern), replacement);
+    return join(split(s), r);
 }
 
-String ByteArray::replace(const char *pattern, const String &replacement) const
+String ByteArray::replace(const char *s, const String &r) const
 {
-    return replace(pattern, replacement->chars());
+    return replace(s, r->chars());
 }
 
-String ByteArray::replace(const String &pattern, const String &replacement) const
+String ByteArray::replace(const String &s, const String &r) const
 {
-    return replace(pattern->chars(), replacement->chars());
+    return replace(s->chars(), r->chars());
 }
 
 int ByteArray::scanString(String *x, const char *termination, int i0, int i1) const
@@ -426,18 +418,16 @@ int ByteArray::scanString(String *x, const char *termination, int i0, int i1) co
     return i;
 }
 
-String ByteArray::downcaseInsitu()
+void ByteArray::downcaseInsitu()
 {
     for (int i = 0; i < size_; ++i)
         chars_[i] = cc::downcase(chars_[i]);
-    return this;
 }
 
-String ByteArray::upcaseInsitu()
+void ByteArray::upcaseInsitu()
 {
     for (int i = 0; i < size_; ++i)
         data_[i] = cc::upcase(data_[i]);
-    return this;
 }
 
 String ByteArray::escape() const
@@ -471,9 +461,9 @@ String ByteArray::escape() const
     return parts->join();
 }
 
-String ByteArray::unescapeInsitu()
+void ByteArray::unescapeInsitu()
 {
-    if (!contains('\\')) return this;
+    if (!contains('\\')) return;
     int j = 0;
     uint32_t hs = 0; // high surrogate, saved
     String ec; // buffer for encoded character
@@ -541,10 +531,9 @@ String ByteArray::unescapeInsitu()
         }
     }
     truncate(j);
-    return this;
 }
 
-String ByteArray::trimInsitu(const char *leadingSpace, const char *trailingSpace)
+void ByteArray::trimInsitu(const char *leadingSpace, const char *trailingSpace)
 {
     if (!trailingSpace) trailingSpace = leadingSpace;
     int i0 = 0, i1 = size_;
@@ -564,10 +553,9 @@ String ByteArray::trimInsitu(const char *leadingSpace, const char *trailingSpace
     }
     if (i0 > 0 && i0 < i1) memmove(data_, data_ + i0, i1 - i0);
     truncate(i1 - i0);
-    return this;
 }
 
-String ByteArray::simplifyInsitu(const char *space)
+void ByteArray::simplifyInsitu(const char *space)
 {
     int j = 0;
     for (int i = 0, s = 0; i < size_; ++i) {
@@ -579,7 +567,7 @@ String ByteArray::simplifyInsitu(const char *space)
         j += (s < 2);
     }
     truncate(j);
-    return trimInsitu(space);
+    trimInsitu(space);
 }
 
 String ByteArray::normalize(bool nameCase) const
@@ -596,7 +584,7 @@ String ByteArray::normalize(bool nameCase) const
         }
         else {
             if (nameCase) {
-                s = s->downcase();
+                s = s->toLower();
                 s->at(0) = cc::upcase(s->at(0));
                 parts->at(i) = s;
             }
@@ -606,7 +594,7 @@ String ByteArray::normalize(bool nameCase) const
     return join(parts, " ");
 }
 
-String ByteArray::stripTags() const
+String ByteArray::xmlSanitize() const
 {
     Ref<StringList> parts = StringList::create();
     int i = 0, j = 0;
@@ -632,12 +620,6 @@ String ByteArray::stripTags() const
     return join(parts);
 }
 
-/** \brief %Map a byte offset to editor coordinates.
-  * \param offset byte offset
-  * \param line n-th line starting with 1
-  * \param pos position on line starting with 0 (in bytes)
-  * \return true if offset is within valid range
-  */
 bool ByteArray::offsetToLinePos(int offset, int *line, int *pos) const
 {
     bool valid = true;
@@ -664,12 +646,6 @@ bool ByteArray::offsetToLinePos(int offset, int *line, int *pos) const
     return valid;
 }
 
-/** %Map editor coordinates to a byte offset
-  * \param line n-th line starting with 1
-  * \param pos position on line starting with 1 (in bytes)
-  * \param offset byte offset
-  * \return true if successful
-  */
 bool ByteArray::linePosToOffset(int line, int pos, int *offset) const
 {
     if (line <= 0) return false;
@@ -680,6 +656,12 @@ bool ByteArray::linePosToOffset(int line, int pos, int *offset) const
         return false;
     if (offset) *offset = i + pos;
     return true;
+}
+
+void ByteArray::checkUtf8() const
+{
+    Ref<Utf8Source> source = Utf8Source::open(const_cast<ByteArray *>(this));
+    for (uchar_t ch = 0; source->read(&ch););
 }
 
 String ByteArray::fromUtf16(const String &utf16, Endian endian)
@@ -703,13 +685,6 @@ String ByteArray::fromUtf16(const String &utf16, Endian endian)
     return out;
 }
 
-/** Convert this string to UTF-16 efficiently (local endian).
-  * Returns true if the given buffer was suitable to hold the encoded string.
-  * The number of bytes required to fully represent the string in UTF-16 is
-  * returned with the 'size' argument. Passing a zero for 'size' allows to
-  * determine the required buffer size. No zero termination is written or
-  * or accounted for.
-  */
 bool ByteArray::toUtf16(void *buf, int *size)
 {
     uint16_t *buf2 = reinterpret_cast<uint16_t*>(buf);
@@ -737,7 +712,7 @@ bool ByteArray::toUtf16(void *buf, int *size)
     return (j <= n);
 }
 
-String ByteArray::toUtf16(Endian endian)
+String ByteArray::toUtf16(Endian endian) const
 {
     String out;
     Ref<Unicode> chars = Unicode::open(this);
@@ -755,12 +730,6 @@ String ByteArray::toUtf16(Endian endian)
             sink->write(chars->at(i));
     }
     return out;
-}
-
-void ByteArray::checkUtf8() const
-{
-    Ref<Utf8Source> source = Utf8Source::open(const_cast<ByteArray *>(this));
-    for (uchar_t ch = 0; source->read(&ch););
 }
 
 String ByteArray::toHex() const
@@ -922,12 +891,12 @@ bool ByteArray::equalsCaseInsensitive(const char *b) const
 double ByteArray::pow(double x, double y) { return ::pow(x, y); }
 
 template<>
-int ByteArray::scan<int>(int *value, int base, int i0, int i1) const;
+int ByteArray::scanNumber<int>(int *value, int base, int i0, int i1) const;
 
 template<>
-int ByteArray::scan<unsigned>(unsigned *value, int base, int i0, int i1) const;
+int ByteArray::scanNumber<unsigned>(unsigned *value, int base, int i0, int i1) const;
 
 template<>
-int ByteArray::scan<double>(double *value, int base, int i0, int i1) const;
+int ByteArray::scanNumber<double>(double *value, int base, int i0, int i1) const;
 
 } // namespace cc

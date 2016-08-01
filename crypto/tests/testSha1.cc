@@ -36,7 +36,7 @@ public:
         for (int i = 0; i < tests->count(); ++i) {
             Ref<Sha1> hash = Sha1::create();
             for (int j = 0; j < repeatCount[i]; ++j) hash->write(tests->at(i));
-            String requiredSum = results->at(i)->replace(" ", "")->downcase();
+            String requiredSum = results->at(i)->replace(" ", "")->toLower();
             String sum = hash->finish()->toHex();
             fout("SHA-1 of \"%%\" repeated %% time(s):") << tests->at(i) << repeatCount[i] << nl;
             fout() << "  " << requiredSum << " (required)" << nl;

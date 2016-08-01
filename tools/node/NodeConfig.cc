@@ -61,8 +61,8 @@ void NodeConfig::load(int argc, char **argv)
     String protocol = config->value("protocol-family");
 
     int family = AF_UNSPEC;
-    if (protocol->downcase() == "ipv6") family = AF_INET6;
-    else if (protocol->downcase() == "ipv4") family = AF_INET;
+    if (protocol->toLower() == "ipv6") family = AF_INET6;
+    else if (protocol->toLower() == "ipv4") family = AF_INET;
 
     address_ = SocketAddressList::create();
     if (address != "" && address != "*") {

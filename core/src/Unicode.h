@@ -20,7 +20,7 @@ namespace cc {
 class Unicode: public Object
 {
 public:
-    inline static Ref<Unicode> open(ByteArray *data)
+    inline static Ref<Unicode> open(const ByteArray *data)
     {
         return new Unicode(data);
     }
@@ -56,11 +56,6 @@ public:
     inline Ref<ByteArray> head(int n) const { return copy(0, n); }
     inline Ref<ByteArray> tail(int n) const { return copy(count() - n, n); }
 
-    /*inline const char *byte(int i) const {
-        walkTo(i);
-        return walker_.pos();
-    }*/
-
     inline int index(const char *pos) const {
         if (!walker_.valid()) {
             walker_ = Utf8Walker(walker_.data());
@@ -72,7 +67,7 @@ public:
     }
 
 private:
-    Unicode(ByteArray *data):
+    Unicode(const ByteArray *data):
         data_(data),
         walker_(data->chars()),
         i_(0), n_(-1)
@@ -87,7 +82,7 @@ private:
         while (i_ > i) { --walker_; --i_; }
     }
 
-    Ref<ByteArray> data_;
+    Ref<const ByteArray> data_;
     mutable Utf8Walker walker_;
     mutable int i_, n_;
 };

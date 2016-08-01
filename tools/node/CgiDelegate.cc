@@ -318,7 +318,9 @@ String CgiDelegate::urlDecode(HttpRequest *request, ByteArray *payload)
 
 String CgiDelegate::wrapHttp(String header)
 {
-    return str("HTTP_") + header->upcase()->replaceInsitu('-','_');
+    String h = header->toUpper();
+    h->replaceInsitu('-','_');
+    return str("HTTP_") + h;
 }
 
 } // namespace ccnode

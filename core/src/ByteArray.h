@@ -91,13 +91,11 @@ private:
 };
 
 /** \class ByteArray ByteArray.h cc/ByteArray
-  * \brief A chunk of memory as a series of bytes
+  * \brief A chunk of memory
   */
 class ByteArray: public Object
 {
 public:
-    typedef char Item;
-
     /** Create a new byte array of exactly N bytes, without zero-termination
       * \param size number of bytes (N)
       * \return new object instance
@@ -180,104 +178,234 @@ public:
       * \param b source to xor over
       * \return low-level reference
       */
-    ByteArray &operator^=(const ByteArray &b); // FIXME: rename xorOver
+    ByteArray &operator^=(const ByteArray &b); // FIXME: rename writeXor
 
-    /// size in number of bytes
+    /// Size in number of bytes
     inline int count() const { return size_; }
 
+    /** Check if index is within range
+      * \param i byte index
+      * \return true if i is a valid index
+      */
     inline bool has(int i) const {
         return (0 <= i) && (i < size_);
     }
 
+    /** Access character at index i
+      * \param i byte index
+      * \return low-level reference
+      */
     inline char &at(int i) {
         CC_ASSERT(has(i));
         return data_[i];
     }
+
+    /** Access character at index i (readonly)
+      * \param i byte index
+      * \return low-level reference
+      */
     inline const char &at(int i) const {
         CC_ASSERT(has(i));
         return data_[i];
     }
 
+    /** Access byte at index i
+      * \param i byte index
+      * \return low-level reference
+      */
     inline uint8_t &byteAt(int i) {
         CC_ASSERT(has(i));
         return bytes_[i];
     }
+
+    /** Access byte at index i (readonly)
+      * \param i byte index
+      * \return low-level reference
+      */
     inline const uint8_t &byteAt(int i) const {
         CC_ASSERT(has(i));
         return bytes_[i];
     }
 
+    /** Access 4-byte word at index j
+      * \param j word index
+      * \return low-level reference
+      */
     inline uint32_t &wordAt(int j) {
         CC_ASSERT(has(j * 4) && has(j * 4 + 3));
         return words_[j];
     }
+
+    /** Access 4-byte word at index j (readonly)
+      * \param j word index
+      * \return low-level reference
+      */
     inline const uint32_t &wordAt(int j) const {
         CC_ASSERT(has(j * 4) && has(j * 4 + 3));
         return words_[j];
     }
 
+    /** Check if index is within range
+      * \param j item index
+      * \return true if j is a valid index
+      */
     template<class T>
     inline bool hasItem(int j) const {
         return has(j * sizeof(T));
     }
 
+    /** Access item at index j
+      * \param j item index
+      * \return low-level reference
+      */
     template<class T>
-    inline T &item(int j = 0) const {
+    inline T &item(int j = 0) {
         CC_ASSERT(has(j * sizeof(T)) && has((j + 1) * sizeof(T) -1));
         return reinterpret_cast<T *>(data_)[j];
     }
 
-    inline char *chars() {
-        CC_ASSERT2(isZeroTerminated(), "ByteArray is not terminated by zero and therefore cannot safely be converted to a C string");
-        return chars_;
+    /** Access item at index j (readonly)
+      * \param j item index
+      * \return low-level reference
+      */
+    template<class T>
+    inline const T &item(int j = 0) const {
+        CC_ASSERT(has(j * sizeof(T)) && has((j + 1) * sizeof(T) -1));
+        return reinterpret_cast<T *>(data_)[j];
     }
+
+    /// Return the internal C string representation (readonly)
     inline const char *chars() const {
         CC_ASSERT2(isZeroTerminated(), "ByteArray is not terminated by zero and therefore cannot safely be converted to a C string");
         return chars_;
     }
 
+    /// Return the internal C string representation
+    inline char *chars() {
+        CC_ASSERT2(isZeroTerminated(), "ByteArray is not terminated by zero and therefore cannot safely be converted to a C string");
+        return chars_;
+    }
+
+    /// Return byte pointer to the internal memory buffer (readonly)
     inline const uint8_t *bytes() const { return bytes_; }
+
+    /// Return byte pointer to the internal memory buffer
     inline uint8_t *bytes() { return bytes_; }
 
+    /// Return word pointer to the internal memory buffer (readonly)
     inline const uint32_t *words() const { return words_; }
+
+    /// Return word pointer to the internal memory buffer
     inline uint32_t *words() { return words_; }
 
+    /// Cast to low-level C string (readonly)
     inline operator const char*() const { return chars(); }
+
+    /// Cast to low-level C string
     inline operator char*() { return chars(); }
 
+    /// Create a deep copy of this string
     inline String copy() const { return new ByteArray(*this); }
 
+    /** Check if a range is valid
+      * \param i0 begin of range (index of first selected byte)
+      * \param i1 end of range (index behind the last selected byte)
+      * \return true if range is valid
+      */
     inline bool canSelect(int i0, int i1) const { return i0 <= i1 && 0 <= i0 && i1 <= size_; }
+
+    /** Create a selection (reference to a byte range)
+      * \param i0 begin of range (index of first selected byte)
+      * \param i1 end of range (index behind the last selected byte)
+      * \return the selection
+      */
     inline String select(int i0, int i1) const { return new ByteArray(this, i0, i1); }
 
+    /** Copy a range
+      * \param range the range to select (range must contain i0() and i1() getters)
+      * \return copied range as a string
+      */
     template<class Range>
     inline String copyRange(const Range *range) const {
         if (!range) return new ByteArray();
         return copy(range->i0(), range->i1());
     }
 
+    /** Copy a range
+      * \param i0 begin of range (index of first selected character)
+      * \param i1 end of range (index behind the last selected character)
+      * \return copied range as a string
+      */
     String copy(int i0, int i1) const;
+
+    /** Paste into a range
+      * \param i0 begin of range (index of first selected byte)
+      * \param i1 end of range (index behind the last selected byte)
+      * \return new string with range [i0; i1[ replaced by text
+      */
     String paste(int i0, int i1, const String &text) const;
 
+    /** Copy the head of this string
+      * \param n size of the head
+      * \return copied string
+      */
     inline String head(int n) const { return copy(0, n); }
+
+    /** Copy the tail of this string
+      * \param n size of the tail
+      * \return copied string
+      */
     inline String tail(int n) const { return copy(size_ - n, size_); }
 
+    /** Check if this string starts with a certain character
+      * \param ch character value to test for
+      * \return true if this string starts with character ch
+      */
     inline bool beginsWith(char ch) const {
         if (size_ == 0) return false;
         return data_[0] == ch;
     }
 
+    /** Check if this string ends with a certain character
+      * \param ch character value to test for
+      * \return true if this string ends with character ch
+      */
     inline bool endsWith(char ch) const {
         if (size_ == 0) return false;
         return data_[size_ - 1] == ch;
     }
 
+    /** Check if this string begins with a certain prefix
+      * \param s prefix to test for
+      * \return true if this string begins with prefix s
+      */
     bool beginsWith(const String &s) const;
+
+    /** Check if this string begins with a certain prefix
+      * \param s prefix to test for
+      * \param n size of the prefix
+      * \return true if this string begins with prefix s
+      */
     bool beginsWith(const char *s, int n = -1) const;
 
+    /** Check if this string ends with a certain suffix
+      * \param s suffix to test for
+      * \return true if this string ends with suffix s
+      */
     bool endsWith(const String &s) const;
+
+    /** Check if this string ends with a certain suffix
+      * \param s suffix to test for
+      * \param n size of the suffix
+      * \return true if this string ends with suffix s
+      */
     bool endsWith(const char *s, int n = -1) const;
 
+    /** Find first occurence of a character value
+      * \param ch character value to search for
+      * \param i start search from this index
+      * \return index of first occurence of character ch or count() if not found
+      */
     inline int find(char ch, int i = 0) const {
         if (i < 0) i = 0;
         while (i < size_) {
@@ -287,98 +415,289 @@ public:
         return i;
     }
 
+    /** Check if this string contains a certain character value
+      * \param ch character value to search for
+      * \return true if this string contains character ch
+      */
     inline bool contains(char ch) const { return find(ch) < size_; }
+
+    /** Count the number of occurrences of a certain character value
+      * \param ch character value to search for
+      * \return number of occurrences of character value ch
+      */
     inline int count(char ch) const {
         int n = 0;
         for (int i = 0; i < size_; ++i)
             n += (data_[i] == ch);
         return n;
     }
+
+    /** Count number of occurrences of characters from a set of characters
+      * \param set set of characters
+      * \return number of occurrences of characters from the set
+      */
     int countCharsIn(const char *set);
 
-    int find(const char *pattern, int i = 0) const;
-    int find(const String &pattern, int i = 0) const;
+    /** Find a substring
+      * \param s substring to search for
+      * \param i start search from this index
+      * \return index of first occurence of s or count() if not found
+      */
+    int find(const char *s, int i = 0) const;
 
-    inline bool contains(const char *pattern) const { return find(pattern) != size_; }
-    bool contains(const String &pattern) const;
+    /// \copydoc find(const char *, int) const
+    int find(const String &s, int i = 0) const;
 
+    /** Check if this string contains a certain substring
+      * \param s substring to search for
+      * \return true if this string contains s
+      */
+    inline bool contains(const char *s) const { return find(s) != size_; }
+
+    /// \copydoc contains(const char *) const
+    bool contains(const String &s) const;
+
+    /** Split into pieces
+      * \param sep split marker to search for
+      * \return list of the different pieces without split markers
+      */
     Ref<StringList> split(char sep) const;
+
+    /// \copydoc split(char) const
     Ref<StringList> split(const char *sep) const;
+
+    /** Break up into equal sized chunks
+      * \param chunkSize size of the individual chunks
+      * \return list of breakup chunks
+      */
     Ref<StringList> breakUp(int chunkSize) const;
 
-    inline String replaceInsitu(char oldItem, char newItem) {
+    /** Replace individual character values
+      * \param oldChar old character value to search for
+      * \param newChar replacement value to insert
+      */
+    inline void replaceInsitu(char oldChar, char newChar) {
         for (int i = 0; i < size_; ++i) {
-            if (data_[i] == oldItem)
-                data_[i] = newItem;
+            if (data_[i] == oldChar)
+                data_[i] = newChar;
         }
-        return this;
     }
 
-    String replaceInsitu(const char *pattern, const char *replacement);
-    String replace(const char *pattern, const char *replacement) const;
-    String replace(const char *pattern, const String &replacement) const;
-    String replace(const String &pattern, const String &replacement) const;
+    /** Replace any occurrence of a certain substring by a replacement string
+      * \param s substring to search for
+      * \param r replacement string
+      */
+    void replaceInsitu(const char *s, const char *r);
 
+    /** Replace any occurrence of a certain substring by a replacement string
+      * \param s substring to search for
+      * \param r replacement string
+      * \return resulting string
+      */
+    String replace(const char *s, const char *r) const;
+
+    /// \copydoc replace(const char *, const char *) const
+    String replace(const char *s, const String &r) const;
+
+    /// \copydoc replace(const char *, const char *) const
+    String replace(const String &s, const String &r) const;
+
+    /** Scan a substring up to a lexical termination
+      * \param x return the substring
+      * \param termination lexical termination set
+      * \param i0 begin of range to scan
+      * \param i1 end of range to scan
+      * \return scan position behind the scanned string
+      */
     int scanString(String *x, const char *termination = " \t\n", int i0 = 0, int i1 = -1) const;
 
+    /** Scan a number literal
+      * \param value returns the value of the scanned number
+      * \param base number base to use
+      * \param i0 begin of range to scan
+      * \param i1 end of range to scan
+      * \return scan position behind the scanned string
+      */
     template<class T>
-    int scan(T *value, int base = 10, int i0 = 0, int i1 = -1) const;
+    int scanNumber(T *value, int base = 10, int i0 = 0, int i1 = -1) const;
 
+    /** Convert to a numerical value
+      * \param ok return true if conversion was successful
+      * \return numerical value
+      */
     template<class T>
     inline T toNumber(bool *ok = 0) const
     {
         bool h = false;
         if (!ok) ok = &h;
         T value = T();
-        *ok = (scan(&value) == size_);
+        *ok = (scanNumber(&value) == size_);
         return value;
     }
 
-    inline String toLower() const { return copy()->downcaseInsitu(); }
-    inline String toUpper() const { return copy()->upcaseInsitu(); }
-    inline String downcase() const { return copy()->downcaseInsitu(); } // FIXME: obsolete
-    inline String upcase() const { return copy()->upcaseInsitu(); } // FIXME: obsolete
-    String downcaseInsitu();
-    String upcaseInsitu();
+    /** Convert all upper-case ASCII characters to lower-case ASCII characters
+      * \return conversion result
+      */
+    inline String toLower() const { String h = copy(); h->downcaseInsitu(); return h; }
 
+    /** Convert all lower-case ASCII characters to upper-case ASCII characters
+      * \return conversion result
+      */
+    inline String toUpper() const { String h = copy(); h->upcaseInsitu(); return h; }
+
+    /// \copybrief toLower() const
+    void downcaseInsitu();
+
+    /// \copybrief toUpper() const
+    void upcaseInsitu();
+
+    /** Replace all non-printable and non-ASCII characters by escape sequences
+      * \return escaped string
+      */
     String escape() const;
-    inline String unescape() const { return copy()->unescapeInsitu(); }
-    String unescapeInsitu();
 
-    inline String trim(const char *leadingSpace = " \t\n\r", const char *trailingSpace = 0) const { return copy()->trimInsitu(leadingSpace, trailingSpace); }
-    inline String trimLeading(const char *space = " \t\n\r") const { return copy()->trimInsitu(space, ""); }
-    inline String trimTrailing(const char *space = " \t\n\r") const { return copy()->trimInsitu("", space); }
-    String trimInsitu(const char *leadingSpace = " \t\n\r", const char *trailingSpace = 0);
-    inline String simplify(const char *space = " \t\n\r") const { return copy()->simplifyInsitu(); }
-    String simplifyInsitu(const char *space = " \t\n\r");
+    /** Replace all escape sequences by their character value
+      * \return unescaped string
+      */
+    inline String unescape() const { String h = copy(); h->unescapeInsitu(); return h; }
+
+    /// \copybrief unescape() const
+    void unescapeInsitu();
+
+    /** Remove leading and trailing whitespace
+      * \param leadingSpace set of characters to detect as leading whitespace
+      * \param trailingSpace set of characters to detect as trailing whitespace
+      * \return trimmed string
+      */
+    inline String trim(const char *leadingSpace = " \t\n\r", const char *trailingSpace = 0) const { String h = copy(); h->trimInsitu(leadingSpace, trailingSpace); return h; }
+
+    /** Remove leading whitespace
+      * \param space set of characters to detect as whitespace
+      * \return trimmed string
+      */
+    inline String trimLeading(const char *space = " \t\n\r") const { String h = copy(); h->trimInsitu(space, ""); return h; }
+
+    /** Remove trailing whitespace
+      * \param space set of characters to detect as whitespace
+      * \return trimmed string
+      */
+    inline String trimTrailing(const char *space = " \t\n\r") const { String h = copy(); h->trimInsitu("", space); return h; }
+
+    /** \copybrief trim(const char *, const char *) const
+      */
+    void trimInsitu(const char *leadingSpace = " \t\n\r", const char *trailingSpace = 0);
+
+    /** Replace multi character whitespaces by single character whitespaces
+      * \return simplified string
+      */
+    inline String simplify(const char *space = " \t\n\r") const { String h = copy(); h->simplifyInsitu(); return h; }
+
+    /// \copybrief simplify(const char *) const
+    void simplifyInsitu(const char *space = " \t\n\r");
+
+    /** Common user input normalization
+      * \param nameCase make sure the first character is upper case
+      * \return normalized string
+      */
     String normalize(bool nameCase = true) const;
-    String stripTags() const;
 
+    /** Remove all XML/HTML tags and entities
+      * \return santized string
+      */
+    String xmlSanitize() const;
+
+    /** \brief %Map a byte offset to editor coordinates.
+      * \param offset byte offset
+      * \param line n-th line starting with 1
+      * \param pos position on line starting with 0 (in bytes)
+      * \return true if offset is within valid range
+      */
     bool offsetToLinePos(int offset, int *line = 0, int *pos = 0) const;
+
+   /** %Map editor coordinates to a byte offset
+     * \param line n-th line starting with 1
+     * \param pos position on line starting with 1 (in bytes)
+     * \param offset byte offset
+     * \return true if successful
+     */
     bool linePosToOffset(int line, int pos, int *offset = 0) const;
 
+    /** Check if this string is UTF-8 encoded
+      * \exception EncodingError this string is not UTF-8 encoded
+      */
     void checkUtf8() const;
 
+    /** Create an UTF-8 encoded string from an UTF-16 encoded string
+      * \param utf16 UTF-16 encoded string
+      * \param endian endianess of the UTF-16 encoded string
+      * \return UTF-8 encoded string
+      */
     static String fromUtf16(const String &utf16, Endian endian = localEndian());
+
+   /** Convert to a UTF-16 encoded string (local endian).
+     * \param buf destination buffer
+     * \param size pass capacity of destination buffer
+     * \return true if the given buffer was suitable to hold the encoded string
+     *
+     * The number of bytes required to fully represent the string in UTF-16 is
+     * returned with the 'size' argument. Passing a zero for 'size' allows to
+     * determine the required buffer size. No zero termination is written or
+     * or accounted for.
+     */
     bool toUtf16(void *buf, int *size);
-    String toUtf16(Endian endian = localEndian());
+
+    /** \copybrief toUtf16(void *, int *)
+      * \param endian endianess of the UTF-16 encoded string
+      * \return UTF-16 encoded string
+      */
+    String toUtf16(Endian endian = localEndian()) const;
 
     /// Convert to a series of hexadecimal characters
     String toHex() const;
 
+    /// Check if this string equals "/"
     bool isRootPath() const;
+
+    /// Check if this string represents a relative path
     bool isRelativePath() const;
+
+    /// Check if this string represents an absolute path
     bool isAbsolutePath() const;
 
+    /** Convert to an absolute
+      * \param currentDir absolute path to the current directory
+      * \return absolute path
+      */
     String absolutePathRelativeTo(const String &currentDir) const;
+
+    /// Return the filename component
     String fileName() const;
+
+    /// Return the filename component without file type suffix
     String baseName() const;
+
+    /// Return the file type suffix
     String fileSuffix() const;
+
+    /// Remove the last component from this path
     String reducePath() const;
+
+    /** Add components to this path
+      * \param relativePath relative path to add
+      * \return resulting path
+      */
     String expandPath(const String &relativePath) const;
+
+    /// Remove redundant or ambigous path components
     String canonicalPath() const;
 
+    /** Compare with another string (case-insensitive)
+      * \param b other string
+      * \return true if equals
+      */
     bool equalsCaseInsensitive(const String &b) const;
+
+    /// \copydoc equalsCaseInsensitive(const String &) const
     bool equalsCaseInsensitive(const char *b) const;
 
 protected:
@@ -418,7 +737,7 @@ private:
 };
 
 template<class T>
-int ByteArray::scan(T *value, int base, int i0, int i1) const
+int ByteArray::scanNumber(T *value, int base, int i0, int i1) const
 {
     int i = i0;
     if (i1 < 0) i1 = size_;
@@ -482,7 +801,7 @@ int ByteArray::scan(T *value, int base, int i0, int i1) const
         if (i + 1 < i1) {
             if (at(i) == 'E' || at(i) == 'e') {
                 int ep = 0;
-                i = scan(&ep, base, i + 1, i1);
+                i = scanNumber(&ep, base, i + 1, i1);
                 x *= pow(T(base), T(ep));
             }
         }

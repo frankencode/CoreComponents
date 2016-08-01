@@ -31,7 +31,8 @@ Arguments::Arguments(int argc, char **argv):
             continue;
         }
 
-        Ref<StringList> parts = s->trimInsitu("-")->split("=");
+        s->trimInsitu("-");
+        Ref<StringList> parts = s->split("=");
         String name = parts->pop(0);
         String valueText = parts->join("=");
         Variant value = true;
