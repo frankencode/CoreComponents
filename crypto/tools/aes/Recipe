@@ -3,7 +3,7 @@ Application {
     alias: ccunaes
     source: *.cc
     use: [ core, crypto ]
-    SystemPrerequisite {
+    Dependency {
         name: readline
         include-test: readline/readline.h
         link: readline

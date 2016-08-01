@@ -2,7 +2,7 @@ Library {
     name: cctar
     source: *.cc
     use: [ core ]
-    /*SystemPrerequisite {
+    /*Dependency {
         name: zlib
         optional: true
         link: z

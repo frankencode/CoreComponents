@@ -26,7 +26,7 @@ Ref<GnuToolChain> GnuToolChain::create(String compiler)
 }
 
 GnuToolChain::GnuToolChain(String compiler):
-    ToolChain(compiler, queryMachine(compiler)),
+    ToolChain(compiler, queryMachine(compiler), querySystemRoot(compiler)),
     dependencySplitPattern_("{1..:[\\:\\\\\n\r ]}"),
     rpathOverride_(Process::env("CCBUILD_RPATH_OVERRIDE"))
 {}
@@ -47,6 +47,13 @@ String GnuToolChain::machineCommand(String compiler)
 String GnuToolChain::machineCommand() const
 {
     return machineCommand(compiler());
+}
+
+String GnuToolChain::querySystemRoot(String compiler)
+{
+    String systemRoot = SubProcess::open(compiler + " -print-sysroot", stdErr())->readAll();
+    systemRoot->trimInsitu();
+    return systemRoot;
 }
 
 String GnuToolChain::defaultOptimization(BuildPlan *plan) const
