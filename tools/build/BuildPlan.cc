@@ -446,18 +446,13 @@ void BuildPlan::initModules()
         Format h;
         String path = projectPath_->absolutePathRelativeTo(Process::cwd());
         String topLevel = sourcePrefix_->absolutePathRelativeTo(Process::cwd());
-        while (path != topLevel && path != "/") {
+        while (path != topLevel && path != "/" && path != toolChain_->systemRoot()) {
             h << path->fileName();
             path = path->reducePath();
         }
         h << topLevel->fileName();
         f << h->reverse()->join("_");
     }
-    if (Version::isValid(version_)) f << version_;
-    if (linkStatic_) f << "static";
-    if (options_ & Debug) f << "debug";
-    if (options_ & Release) f << "release";
-    if (optimize_ != "") f << "O" + optimize_;
     if (options_ & Bootstrap)
         f << "$MACHINE";
     else
