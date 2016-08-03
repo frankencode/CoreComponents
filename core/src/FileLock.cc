@@ -12,11 +12,11 @@
 
 namespace cc {
 
-FileLock::FileLock(File *file, int type, off_t start, off_t length)
-    : fd_(file->fd())
+FileLock::FileLock(File *file, Type type, off_t start, off_t length):
+    fd_(file->fd())
 {
     memclr(static_cast<FLockStruct *>(this), sizeof(FLockStruct));
-    FLockStruct::l_type = type;
+    FLockStruct::l_type = int(type);
     FLockStruct::l_start = start;
     FLockStruct::l_len = length;
     FLockStruct::l_whence = SEEK_SET;

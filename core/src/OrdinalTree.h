@@ -324,7 +324,7 @@ inline void OrdinalTree<Node>::changed(BinaryNode *kp, BinaryNode *kc, bool left
 }
 
 template<class Node>
-inline void OrdinalTree<Node>::rotated(BinaryNode *k1, bool left)
+inline void OrdinalTree<Node>::rotated(BinaryNode *k1, bool /*left*/)
 {
     BinaryTree::establishWeight(k1);
     BinaryTree::establishWeight(k1->parent_);
@@ -428,4 +428,3 @@ bool OrdinalTree<Node>::testOrder(Node *k)
 #endif // ndef NDEBUG
 
 } // namespace cc
-
