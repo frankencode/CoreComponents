@@ -23,18 +23,36 @@ typedef struct flock FLockStruct;
 class FileLock: public FLockStruct, public Object
 {
 public:
-    enum Type { ReadLock = F_RDLCK, WriteLock = F_WRLCK };
+    /// Type of file lock
+    enum Type {
+        ReadLock = F_RDLCK, ///< lock for reading
+        WriteLock = F_WRLCK ///< lock for writing
+    };
 
-    static Ref<FileLock> create(File *file, int type, off_t start = 0, off_t length = 0) {
+    /** Create a new advisory file lock
+      * \param file file to apply the lock on
+      * \param type type of lock
+      * \param start start offset of the locked area
+      * \param length length of the locked area
+      * \return new object instance
+      */
+    static Ref<FileLock> create(File *file, Type type, off_t start = 0, off_t length = 0) {
         return new FileLock(file, type, start, length);
     }
 
+    /** Try to acquire the file lock
+      * \return true if lock could be successfully acquired, otherwise false
+      */
     bool tryAcquire();
+
+    /// Wait and acquire lock
     void acquire();
+
+    /// Release lock
     void release();
 
 private:
-    FileLock(File *file, int type, off_t start = 0, off_t length = 0);
+    FileLock(File *file, Type type, off_t start = 0, off_t length = 0);
 
     int fd_;
 };
