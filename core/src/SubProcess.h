@@ -25,9 +25,9 @@ class SubProcess: public SystemStream
 public:
     /// Type of process
     enum Type {
-        GroupMember,  ///< let child process join current process group
-        GroupLeader,  ///< place child process into new group
-        SessionLeader ///< place child process into new session
+        GroupMember,  ///< make sub-process join the current process group
+        GroupLeader,  ///< create a new process group and make sub-process the group leader
+        SessionLeader ///< create a new session and initial process group and make sub-process the session leader
     };
 
     /// I/O forwarding policy
@@ -38,7 +38,7 @@ public:
     };
 
     typedef Map<String, String> EnvMap; ///< environment map type
-    typedef Map<int, Ref<SystemStream> > Overloads; ///< I/O overload map type
+    typedef Map<int, Ref<SystemStream> > Overloads; ///< I/O overloads map type
 
     /** \brief Sub-process worker delegate
       */
@@ -58,15 +58,68 @@ public:
           */
         static Ref<Params> create() { return new Params(); }
 
+        /** Set the type of the new sub-process
+          * \param type process hierarchy type
+          * \return pointer to this object
+          */
         Params *setType(Type type) { type_ = type; return this; }
+
+        /** Set the command to execute
+          * \param command path to executable and command line parameters
+          * \return pointer to this object
+          */
         Params *setCommand(String command) { command_ = command; return this; }
+
+        /** Set I/O forwarding method
+          * \param forwarding I/O forwarding method
+          * \return pointer to this object
+          */
         Params *setForwarding(Forwarding forwarding) { forwarding_ = forwarding; return this; }
+
+        /** Define which entries in the file descriptor table to overload
+          * \param overloads overloading map
+          * \return pointer to this object
+          * \see cc::StdOutFd, cc::StdErrFd, cc::StdInFd
+          */
         Params *setOverloads(Overloads *overloads) { overloads_ = overloads; return this; }
+
+        /** Set command line arguments
+          * \param args argument list, first entry is the executable name
+          * \return pointer to this object
+          */
         Params *setArgs(StringList *args) { args_ = args; return this; }
+
+        /** Set environment map
+          * \param envMap the environmap to use for the new sub-process (or zero pointer to inherit the parents environment map)
+          * \return pointer to this object
+          */
         Params *setEnvMap(EnvMap *envMap) { envMap_ = envMap; return this; }
+
+        /** Set working directory
+          * \param workDir initial working directory
+          * \return pointer to this object
+          */
         Params *setWorkDir(String workDir) { workDir_ = workDir; return this; }
+
+        /** Set file creation mask
+          * \param userMask new file creation mask
+          * \return pointer to this object
+          */
         Params *setUserMask(int userMask) { userMask_ = userMask; return this; }
+
+        /** Set the signal mask for the new sub-process
+          * \param signalMask signal mask to setup
+          * \return pointer to this object
+          *
+          * If no signal mask is specified (or a null pointer is passed) the signal mask is reset
+          * to all unblock for the new sub-process.
+          */
         Params *setSignalMask(SignalSet *signalMask) { signalMask_ = signalMask; return this; }
+
+        /** Set worker object (in case no command/args is specified)
+          * \param worker worker to start in sub-process (Worker::run() is invoked)
+          * \return pointer to this object
+          */
         Params *setWorker(Worker *worker) { worker_ = worker; return this; }
 
     private:

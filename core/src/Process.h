@@ -36,7 +36,7 @@ public:
     /// Actual pathname of the executed command
     static String exePath();
 
-    static mode_t setFileCreationMask(mode_t mask);
+    static mode_t setUserMask(mode_t mask);
 
     static uid_t realUserId();
     static gid_t realGroupId();

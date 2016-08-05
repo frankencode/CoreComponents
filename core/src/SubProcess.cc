@@ -171,6 +171,8 @@ Ref<SubProcess> SubProcess::open(Params *params)
 
         if (params->signalMask_)
             ::sigprocmask(SIG_SETMASK, params->signalMask_->rawSet(), 0);
+        else
+            ::sigprocmask(SIG_SETMASK, SignalSet::createEmpty()->rawSet(), 0);
 
         if (execPath != "") {
             ::execve(execPath, argv, envp ? envp : ::environ);
