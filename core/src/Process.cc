@@ -83,7 +83,7 @@ String Process::exePath()
     return path;
 }
 
-mode_t Process::setFileCreationMask(mode_t mask) { return ::umask(mask); }
+mode_t Process::setUserMask(mode_t mask) { return ::umask(mask); }
 
 uid_t Process::realUserId() { return ::getuid(); }
 gid_t Process::realGroupId() { return ::getgid(); }
