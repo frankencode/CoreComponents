@@ -19,16 +19,20 @@
 #include <cc/net/SocketAddress>
 
 namespace cc {
-
-// template class List< Ref<net::SocketAddress> >; // FIXME
-
 namespace net {
+
+Ref<SocketAddress> SocketAddress::createBroadcast(int port)
+{
+    Ref<SocketAddress> address = new SocketAddress;
+    address->inet4Address_.sin_family = AF_INET;
+    address->inet4Address_.sin_port = htons(port);
+    address->inet4Address_.sin_addr.s_addr = htonl(INADDR_BROADCAST);
+    return address;
+}
 
 Ref<SocketAddress> SocketAddress::read(String location)
 {
     Ref<SocketAddress> address;
-
-
     Ref<Uri> uri;
 
     try {
@@ -51,6 +55,12 @@ Ref<SocketAddress> SocketAddress::read(String location)
     }
 
     return address;
+}
+
+Ref<SocketAddress> SocketAddress::copy(const SocketAddress *other)
+{
+    if (!other) return Ref<SocketAddress>();
+    return new SocketAddress(other);
 }
 
 SocketAddress::SocketAddress():

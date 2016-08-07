@@ -14,7 +14,7 @@
 namespace cc {
 namespace net {
 
-/*! \brief an earlier datagram could not be delivered
+/** \brief an earlier datagram could not be delivered
   *
   * \see DatagramSocket::recvFrom()
   */
@@ -28,29 +28,37 @@ public:
     virtual String message() const;
 };
 
-/*! \brief datagram socket
+/** \brief datagram socket
   */
 class DatagramSocket: public SystemStream
 {
 public:
-    /*! create a new datagram socket to communicate with one or more peers
+    /** create a new datagram socket to communicate with one or more peers
       * \address address to bind to the socket
       */
     static Ref<DatagramSocket> open(const SocketAddress *address);
 
-    /*! create a local datagram socket connection
+    /** create a local datagram socket connection
       */
     static void connect(Ref<DatagramSocket> *first, Ref<DatagramSocket> *second);
 
-    /*! set the incoming socket buffer size
+    /** Enabled/disable sending broadcasts on this socket
+      * \param on if true enable broadcasting
+      * \see SocketAddress::createBroadcast()
+      */
+    void allowBroadcasting(bool on);
+
+    /** set the incoming socket buffer size
+      * \param newSize new incoming buffer size in bytes
       */
     void setRecvBufferSize(int newSize);
 
-    /*! set the outgoing socket buffer size
+    /** set the outgoing socket buffer size
+      * \param newSize new outgoing buffer size in bytes
       */
     void setSendBufferSize(int newSize);
 
-    /*! receive a datagram
+    /** receive a datagram
       * \arg peerAddress peer address from which the datagram originates from
       * \arg buffer data buffer to hold the datagram received
       * \ret number of bytes received
@@ -58,7 +66,7 @@ public:
       */
     virtual int recvFrom(Ref<SocketAddress> *peerAddress, ByteArray *buffer);
 
-    /*! send a datagram
+    /** send a datagram
       * \arg peerAddress destination host address
       * \arg message the message to send
       * \ret number of bytes send
@@ -66,7 +74,7 @@ public:
       */
     virtual int sendTo(const SocketAddress *peerAddress, const ByteArray *message);
 
-    /*! restrict communication to a single source
+    /** restrict communication to a single source
       * \arg address unicast or multicast address to receive datagrams from
       */
     void connect(const SocketAddress *peerAddress);

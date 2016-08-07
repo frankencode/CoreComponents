@@ -89,7 +89,7 @@ int LineSource::findEol(ByteArray *buf, int n, int i) const
 {
     for (; i < n; ++i) {
         char ch = buf->at(i);
-        if (ch == '\n' || ch == '\r')
+        if (ch == '\n' || ch == '\r' || ch == '\0')
             break;
     }
     return i;
@@ -99,6 +99,7 @@ int LineSource::skipEol(ByteArray *buf, int n, int i) const
 {
     if (i < n) if (buf->at(i) == '\r') ++i;
     if (i < n) if (buf->at(i) == '\n') ++i;
+    if (i < n) if (buf->at(i) == '\0') ++i;
     return i;
 }
 

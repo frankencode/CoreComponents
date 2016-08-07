@@ -56,10 +56,16 @@ public:
       * \param family protocol family (AF_UNSPEC, AF_INET, AF_INET6 or AF_LOCAL)
       * \param address numerical host address, wildcard ("*") or file path
       * \param port service port
+      * \return new object instance
       */
     inline static Ref<SocketAddress> create(int family, String address = String(), int port = 0) {
         return new SocketAddress(family, address, port);
     }
+
+    /*! Create an IPv4 broadcast address
+      * \return new object instance
+     */
+    static Ref<SocketAddress> createBroadcast(int port);
 
     inline static Ref<SocketAddress> create(struct sockaddr_in *addr) {
         return new SocketAddress(addr);
@@ -73,7 +79,7 @@ public:
 
     static Ref<SocketAddress> read(String location);
 
-    inline static Ref<SocketAddress> copy(const SocketAddress *other) { return new SocketAddress(other); }
+    static Ref<SocketAddress> copy(const SocketAddress *other);
 
     int family() const;
     int socketType() const;
