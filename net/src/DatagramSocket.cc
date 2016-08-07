@@ -60,6 +60,13 @@ DatagramSocket::DatagramSocket(const SocketAddress *address):
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
+void DatagramSocket::allowBroadcasting(bool on)
+{
+    int value = on;
+    if (::setsockopt(fd_, SOL_SOCKET, SO_BROADCAST, &value, sizeof(value)) == -1)
+        CC_SYSTEM_DEBUG_ERROR(errno);
+}
+
 void DatagramSocket::setRecvBufferSize(int newSize)
 {
     if (::setsockopt(fd_, SOL_SOCKET, SO_RCVBUF, &newSize, sizeof(newSize)) == -1)
