@@ -386,6 +386,13 @@ void ByteArray::replaceInsitu(const char *pattern, const char *replacement)
     }
 }
 
+String ByteArray::replace(char s, char r)
+{
+    String b = copy();
+    b->replaceInsitu(s, r);
+    return b;
+}
+
 String ByteArray::replace(const char *s, const char *r) const
 {
     return join(split(s), r);

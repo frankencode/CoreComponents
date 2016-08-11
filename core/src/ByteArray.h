@@ -489,6 +489,13 @@ public:
       */
     void replaceInsitu(const char *s, const char *r);
 
+    /** Replace individual character values
+      * \param oldChar old character value to search for
+      * \param newChar replacement value to insert
+      * \return resulting string
+      */
+    String replace(char s, char r);
+
     /** Replace any occurrence of a certain substring by a replacement string
       * \param s substring to search for
       * \param r replacement string

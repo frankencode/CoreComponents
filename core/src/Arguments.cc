@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/exceptions>
 #include <cc/Format>
 #include <cc/Arguments>
 

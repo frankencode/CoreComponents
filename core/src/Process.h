@@ -57,7 +57,7 @@ public:
     static pid_t currentId();
     static pid_t parentId();
 
-    static void kill(pid_t processId, int signal, bool *permissionDenied = 0);
+    static void kill(pid_t processId, int signal = SIGTERM, bool *permissionDenied = 0);
     static void killGroup(pid_t processGroupId, int signal, bool *permissionDenied = 0);
 
     static void raise(int signal);
