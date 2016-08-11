@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/Variant>
+#include <cc/exceptions>
 
 namespace cc {
 
