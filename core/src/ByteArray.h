@@ -42,6 +42,7 @@ public:
     Ref(ByteArray *b): a_(0) { set(b); }
 
     Ref(const char *other, int size = -1);
+    // explicit Ref(char ch);
     explicit Ref(int size, char zero = '\0');
 
     Ref(const Ref<StringList> &parts);
@@ -494,7 +495,7 @@ public:
       * \param newChar replacement value to insert
       * \return resulting string
       */
-    String replace(char s, char r);
+    String replaceEach(char s, char r) const;
 
     /** Replace any occurrence of a certain substring by a replacement string
       * \param s substring to search for
@@ -879,6 +880,13 @@ inline Ref<ByteArray>::Ref(const char *other, int size):
 {
     set(ByteArray::copy(other, size));
 }
+
+/*inline Ref<ByteArray>::Ref(char ch):
+    a_(0)
+{
+    set(ByteArray::create(1));
+    a_->at(0) = ch;
+}*/
 
 inline Ref<ByteArray>::Ref(int size, char zero):
     a_(0)
