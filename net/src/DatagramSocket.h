@@ -34,7 +34,7 @@ class DatagramSocket: public SystemStream
 {
 public:
     /** create a new datagram socket to communicate with one or more peers
-      * \address address to bind to the socket
+      * \address local address to bind to the socket
       */
     static Ref<DatagramSocket> open(const SocketAddress *address);
 

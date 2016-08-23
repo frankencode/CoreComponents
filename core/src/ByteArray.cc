@@ -386,7 +386,7 @@ void ByteArray::replaceInsitu(const char *pattern, const char *replacement)
     }
 }
 
-String ByteArray::replace(char s, char r)
+String ByteArray::replaceEach(char s, char r) const
 {
     String b = copy();
     b->replaceInsitu(s, r);
