@@ -47,6 +47,30 @@ void SpinLock::release()
 }
 #endif // ndef NDEBUG
 
+#ifdef NDEBUG
+SpinLock::SpinLock():
+    flag_(0)
+{}
+
+SpinLock::~SpinLock()
+{}
+
+bool SpinLock::tryAcquire()
+{
+    return __sync_bool_compare_and_swap(&flag_, 0, 1);
+}
+
+void SpinLock::acquire()
+{
+    while (!__sync_bool_compare_and_swap(&flag_, 0, 1)) yield();
+}
+
+void SpinLock::release()
+{
+    flag_ = 0;
+}
+#endif // def NDEBUG
+
 void SpinLock::yield()
 {
     pthread_yield();
