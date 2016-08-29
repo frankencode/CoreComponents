@@ -25,14 +25,14 @@ BlockCascade::BlockCascade(BlockCipher *cipher, ByteArray *iv):
     if (iv) *s_ = *iv;
 }
 
-void BlockCascade::encode(ByteArray *p, ByteArray *c)
+void BlockCascade::encode(const ByteArray *p, ByteArray *c)
 {
     *s_ ^= *p;
     cipher_->encode(s_, c);
     *s_ = *c;
 }
 
-void BlockCascade::decode(ByteArray *c, ByteArray *p)
+void BlockCascade::decode(const ByteArray *c, ByteArray *p)
 {
     cipher_->decode(c, p);
     *p ^= *s_;

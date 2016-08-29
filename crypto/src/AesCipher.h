@@ -14,7 +14,6 @@ namespace cc {
 namespace crypto {
 
 /** \brief Rijndael Block Cipher according to the AES (FIPS-197)
-  * \FIXME rename to AesCipher
   */
 class AesCipher: public BlockCipher
 {
@@ -23,8 +22,8 @@ public:
 
     inline static Ref<AesCipher> create(const ByteArray *key) { return new AesCipher(key); }
 
-    void encode(ByteArray *p, ByteArray *c);
-    void decode(ByteArray *c, ByteArray *p);
+    void encode(const ByteArray *p, ByteArray *c);
+    void decode(const ByteArray *c, ByteArray *p);
 
 private:
     AesCipher(const ByteArray *key);
