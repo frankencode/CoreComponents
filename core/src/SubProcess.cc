@@ -84,7 +84,7 @@ Ref<SubProcess> SubProcess::open(Params *params)
         if (fd[Slave] == -1) CC_SYSTEM_DEBUG_ERROR(errno);
     }
 
-    {   // make sure SIHCHLD is blocked
+    {   // make sure SIHCHLD is blocked (for single-threaded applications)
         sigset_t mask;
         sigemptyset(&mask);
         sigaddset(&mask, SIGCHLD);

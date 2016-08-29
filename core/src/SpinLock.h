@@ -27,12 +27,4 @@ private:
     volatile char flag_;
 };
 
-#ifdef NDEBUG
-inline SpinLock::SpinLock(): flag_(0) {}
-inline SpinLock::~SpinLock() {}
-inline bool SpinLock::tryAcquire() { return __sync_bool_compare_and_swap(&flag_, 0, 1); }
-inline void SpinLock::acquire() { while (!__sync_bool_compare_and_swap(&flag_, 0, 1)) yield(); }
-inline void SpinLock::release() { flag_ = 0; }
-#endif // def NDEBUG
-
 } // namespace cc
