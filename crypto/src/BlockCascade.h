@@ -22,8 +22,8 @@ class BlockCascade: public BlockCipher
 public:
     static Ref<BlockCascade> create(BlockCipher *cipher, ByteArray *iv = 0);
 
-    void encode(ByteArray *c, ByteArray *p);
-    void decode(ByteArray *p, ByteArray *c);
+    void encode(const ByteArray *c, ByteArray *p);
+    void decode(const ByteArray *p, ByteArray *c);
 
 private:
     BlockCascade(BlockCipher *cipher, ByteArray *iv);

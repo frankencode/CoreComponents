@@ -20,8 +20,8 @@ class BlockCipher: public Object
 public:
     inline int blockSize() const { return blockSize_; }
 
-    virtual void encode(/*FIXME: const*/ByteArray *c, ByteArray *p) = 0;
-    virtual void decode(/*FIXME: const*/ByteArray *c, ByteArray *p) = 0;
+    virtual void encode(const ByteArray *c, ByteArray *p) = 0;
+    virtual void decode(const ByteArray *c, ByteArray *p) = 0;
 
 protected:
     BlockCipher(int blockSize): blockSize_(blockSize) {}

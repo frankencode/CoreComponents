@@ -284,7 +284,7 @@ AesCipher::AesCipher(const ByteArray *key):
     CC_ASSERT(key && (key->count() == 16 || key->count() == 24 || key->count() == 32));
 }
 
-void AesCipher::encode(ByteArray *p, ByteArray *c)
+void AesCipher::encode(const ByteArray *p, ByteArray *c)
 {
     CC_ASSERT(p && p->count() == Ns);
     CC_ASSERT(c && c->count() == Ns);
@@ -307,7 +307,7 @@ void AesCipher::encode(ByteArray *p, ByteArray *c)
     *c = *s_;
 }
 
-void AesCipher::decode(ByteArray *c, ByteArray *p)
+void AesCipher::decode(const ByteArray *c, ByteArray *p)
 {
     CC_ASSERT(c && c->count() == Ns);
     CC_ASSERT(p && p->count() == Ns);
