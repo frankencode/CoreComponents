@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/stdio>
 #include <cc/SubProcess>
 #include "JobServer.h"
 
@@ -29,9 +30,15 @@ void JobServer::run()
     while (true) {
         Ref<Job> job = requestChannel_->popFront();
         if (!job) break;
-        Ref<SubProcess> sub = SubProcess::open(job->command_);
-        job->outputText_ = sub->readAll();
-        job->status_ = sub->wait();
+        try {
+            Ref<SubProcess> sub = SubProcess::open(job->command_);
+            job->outputText_ = sub->readAll();
+            job->status_ = sub->wait();
+        }
+        catch (Exception &ex) {
+            ferr() << ex << nl;
+            job->status_ = -1;
+        }
         replyChannel_->pushBack(job);
     }
 }
