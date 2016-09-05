@@ -598,7 +598,7 @@ public:
     /** Replace multi character whitespaces by single character whitespaces
       * \return simplified string
       */
-    inline String simplify(const char *space = " \t\n\r") const { String h = copy(); h->simplifyInsitu(); return h; }
+    inline String simplify(const char *space = " \t\n\r") const { String h = copy(); h->simplifyInsitu(space); return h; }
 
     /// \copybrief simplify(const char *) const
     void simplifyInsitu(const char *space = " \t\n\r");
