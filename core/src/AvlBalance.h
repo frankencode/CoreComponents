@@ -17,7 +17,7 @@ class AvlBalance
 protected:
     virtual void setRoot(BinaryNode *k) = 0;
 
-    inline virtual void rotated(BinaryNode *k1, bool left) {}
+    inline virtual void rotated(BinaryNode */*k1*/, bool /*left*/) {}
 
     void restore(BinaryNode *kp, BinaryNode*, bool left, bool attached);
 
