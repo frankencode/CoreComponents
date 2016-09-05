@@ -17,7 +17,7 @@ class BinaryTree
 public:
     virtual void setRoot(BinaryNode *k) = 0;
 
-    inline virtual void changed(BinaryNode *kp, BinaryNode *kc/*<= FIXME: redundant*/, bool left, bool attached) {}
+    inline virtual void changed(BinaryNode */*kp*/, BinaryNode */*kc*/, bool /*left*/, bool /*attached*/) {}
 
     void attach(BinaryNode *kp, BinaryNode *kn, bool left);
     BinaryNode *detach(BinaryNode *k);
