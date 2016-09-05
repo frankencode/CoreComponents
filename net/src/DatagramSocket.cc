@@ -83,7 +83,9 @@ int DatagramSocket::recvFrom(Ref<SocketAddress> *peerAddress, ByteArray *buffer)
 {
     *peerAddress = SocketAddress::create(addressFamily_);
     socklen_t len = (*peerAddress)->addrLen();
-    int ret = ::recvfrom(fd_, buffer->bytes(), buffer->count(), 0, (*peerAddress)->addr(), &len);
+    int ret = -1;
+    do ret = ::recvfrom(fd_, buffer->bytes(), buffer->count(), 0, (*peerAddress)->addr(), &len);
+    while (ret == -1 && errno == EINTR);
     if (ret == -1) {
         if (errno == EHOSTUNREACH) throw HostUnreachable();
         CC_SYSTEM_DEBUG_ERROR(errno);
@@ -93,7 +95,9 @@ int DatagramSocket::recvFrom(Ref<SocketAddress> *peerAddress, ByteArray *buffer)
 
 int DatagramSocket::sendTo(const SocketAddress *peerAddress, const ByteArray *message)
 {
-    int ret = ::sendto(fd_, message->bytes(), message->count(), 0, peerAddress->addr(), peerAddress->addrLen());
+    int ret = -1;
+    do ret = ::sendto(fd_, message->bytes(), message->count(), 0, peerAddress->addr(), peerAddress->addrLen());
+    while (ret == -1 && errno == EINTR);
     if (ret == -1) {
         if (errno == EHOSTUNREACH) throw HostUnreachable();
         CC_SYSTEM_DEBUG_ERROR(errno);
@@ -103,8 +107,10 @@ int DatagramSocket::sendTo(const SocketAddress *peerAddress, const ByteArray *me
 
 void DatagramSocket::connect(const SocketAddress *peerAddress)
 {
-    if (::connect(fd_, peerAddress->addr(), peerAddress->addrLen()) == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
+    int ret = -1;
+    do ret = ::connect(fd_, peerAddress->addr(), peerAddress->addrLen());
+    while (ret == -1 && errno == EINTR);
+    if (ret == -1) CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
 }} // namespace cc::net
