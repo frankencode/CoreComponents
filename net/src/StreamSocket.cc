@@ -117,7 +117,9 @@ void StreamSocket::connect()
             CC_SYSTEM_DEBUG_ERROR(errno);
     }
 
-    int ret = ::connect(fd_, address_->addr(), address_->addrLen());
+    int ret = -1;
+    do ret = ::connect(fd_, address_->addr(), address_->addrLen());
+    while (ret == -1 && errno == EINTR);
 
     if (ret == -1) {
         if (errno != EINPROGRESS)

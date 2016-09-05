@@ -37,7 +37,9 @@ bool SystemIo::poll(int fd, int events, int timeout_ms)
 
 ssize_t SystemIo::read(int fd, void *buf, size_t count)
 {
-    ssize_t ret = ::read(fd, buf, count);
+    ssize_t ret = -1;
+    do ret = ::read(fd, buf, count);
+    while (ret == -1 && errno == EINTR);
     SystemIo::checkErrors(ret);
     return ret;
 }
@@ -48,7 +50,9 @@ void SystemIo::write(int fd, const void *buf, size_t count)
 
     for (ssize_t n = count; n > 0;)
     {
-        ssize_t ret = ::write(fd, p, n);
+        ssize_t ret = -1;
+        do ret = ::write(fd, p, n);
+        while (ret == -1 && errno == EINTR);
         SystemIo::checkErrors(ret);
         p += ret;
         n -= ret;
@@ -61,7 +65,9 @@ void SystemIo::writev(int fd, const struct iovec *iov, int iovcnt)
     for (int i = 0; i < iovcnt;) {
         int m = iovcnt - i;
         if (m > iovMax) m = iovMax;
-        ssize_t ret = ::writev(fd, iov + i, m);
+        ssize_t ret = -1;
+        do ret = ::writev(fd, iov + i, m);
+        while (ret == -1 && errno == EINTR);
         SystemIo::checkErrors(ret);
         i += m;
     }
