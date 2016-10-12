@@ -10,11 +10,11 @@
 
 #include <pthread.h>
 #include <cc/generics>
+#include <cc/Guard>
 
 namespace cc {
 
 class WaitCondition;
-class ScopeGuard;
 
 /** \class Mutex Mutex.h cc/Mutex
   * \brief %Thread synchronization primitive: mutual exclusive access
