@@ -112,4 +112,9 @@ void SystemStream::duplicateTo(SystemStream *other)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
+int SystemStream::ioctl(int request, void *arg)
+{
+    return SystemIo::ioctl(fd_, request, arg);
+}
+
 } // namespace cc

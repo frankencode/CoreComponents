@@ -64,6 +64,7 @@ public:
 
     const Ref &operator=(const char *b);
 
+    Ref &operator+=(char b);
     Ref &operator+=(const char *b);
     Ref &operator+=(const String &b);
     Ref &operator+=(const Ref<StringList> &b);
@@ -927,6 +928,7 @@ inline Ref<StringList> operator+(Ref<StringList> &a, const String &b) { return a
 inline Ref<StringList> operator+(const String &a, const char *b) { return a + String(b); }
 inline Ref<StringList> operator+(const char *a, const String& b) { return String(a) + b; }
 
+inline Ref<ByteArray> &Ref<ByteArray>::operator+=(char b) { String s(1); s->at(0) = b; set(ByteArray::cat(*this, s)); return *this; }
 inline Ref<ByteArray> &Ref<ByteArray>::operator+=(const char *b) { set(ByteArray::cat(*this, String(b))); return *this; }
 inline Ref<ByteArray> &Ref<ByteArray>::operator+=(const String &b) { set(ByteArray::cat(*this, b)); return *this; }
 inline Ref<ByteArray> &Ref<ByteArray>::operator+=(const Ref<StringList> &b) { set(String(*this + b)); return *this; }

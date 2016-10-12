@@ -110,6 +110,13 @@ public:
       */
     void duplicateTo(SystemStream *other);
 
+    /** Issue device control requests
+      * \param request device control request
+      * \param arg input/ouput argument
+      * \return can be a value returned by the request, otherwise 0
+      */
+    int ioctl(int request, void *arg);
+
 protected:
     SystemStream(int fd = -1);
     ~SystemStream();

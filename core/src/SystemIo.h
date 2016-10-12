@@ -32,7 +32,7 @@ public:
 
     inline int iovMax() const { return iovMax_; }
 
-    int ioctl(int fd, int request, void *arg);
+    static int ioctl(int fd, int request, void *arg);
 
 protected:
     friend class Singleton<SystemIo>;
