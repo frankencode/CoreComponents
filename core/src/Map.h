@@ -168,4 +168,45 @@ protected:
     mutable Item nullItem_;
 };
 
+#if __cplusplus >= 201103L
+
+template<class Key, class Value>
+class ConstMapIterator {
+public:
+    ConstMapIterator(const Map<Key, Value> *m, int i):
+        m_(m),
+        i_(i)
+    {}
+
+    inline const typename Map<Key, Value>::Item *operator*() const { return &m_->at(i_); }
+    inline ConstMapIterator &operator++() { ++i_; return *this; }
+
+private:
+    template<class Key2, class Value2>
+    friend bool operator!=(const ConstMapIterator<Key2, Value2> &a, const ConstMapIterator<Key2, Value2> &b);
+
+    const Map<Key, Value> *m_;
+    int i_;
+};
+
+template<class Key, class Value>
+inline bool operator!=(const ConstMapIterator<Key, Value> &a, const ConstMapIterator<Key, Value> &b)
+{
+    return a.i_ != b.i_;
+}
+
+template<class Key, class Value>
+inline ConstMapIterator<Key, Value> begin(Map<Key, Value> *m) { return ConstMapIterator<Key, Value>(m, 0); }
+
+template<class Key, class Value>
+inline ConstMapIterator<Key, Value> end(Map<Key, Value> *m) { return ConstMapIterator<Key, Value>(m, m->count()); }
+
+template<class Key, class Value>
+inline ConstMapIterator<Key, Value> begin(Ref< Map<Key, Value> > &m) { return ConstMapIterator<Key, Value>(m, 0); }
+
+template<class Key, class Value>
+inline ConstMapIterator<Key, Value> end(Ref< Map<Key, Value> > &m) { return ConstMapIterator<Key, Value>(m, m->count()); }
+
+#endif // __cplusplus >= 201103L
+
 } // namespace cc

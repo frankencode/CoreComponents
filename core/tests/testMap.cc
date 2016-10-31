@@ -67,10 +67,23 @@ class RangeSelection: public TestCase
     }
 };
 
+class SyntaxSugar: public TestCase
+{
+    void run()
+    {
+        Ref< Map<int, int> > map = Map<int, int>::create();
+        for (int i = 0; i < 20; ++i)
+            map->insert(fib(i), i);
+        for (auto x: map)
+            fout("%% => %%") << x->key() << x->value() << nl;
+    }
+};
+
 int main(int argc, char **argv)
 {
     CC_TESTSUITE_ADD(InsertionIteration);
     CC_TESTSUITE_ADD(RangeSelection);
+    CC_TESTSUITE_ADD(SyntaxSugar);
 
     return TestSuite::instance()->run(argc, argv);
 }
