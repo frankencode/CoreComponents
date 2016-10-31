@@ -72,7 +72,7 @@ class SyntaxSugar: public TestCase
     void printMap(const Map<int> *map)
     {
         for (auto x: map)
-            fout("%%: %% => %%") << x->index() << x->key() << x->value() << nl;
+            fout("%% => %%") << x->key() << x->value() << nl;
     }
 
     void run()

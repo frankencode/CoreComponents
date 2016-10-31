@@ -20,6 +20,8 @@ namespace cc {
 class Unicode: public Object
 {
 public:
+    typedef uchar_t Item;
+
     inline static Ref<Unicode> open(const ByteArray *data)
     {
         return new Unicode(data);
@@ -85,6 +87,23 @@ private:
     Ref<const ByteArray> data_;
     mutable Utf8Walker walker_;
     mutable int i_, n_;
+};
+
+template<>
+class Iterator<Unicode> {
+public:
+    Iterator(Unicode *c, int i):
+        c_(c),
+        i_(i)
+    {}
+
+    inline uchar_t operator*() const { return c_->at(i_); }
+    inline Iterator &operator++() { ++i_; return *this; }
+    inline bool operator!=(const Iterator &b) const { return i_ != b.i_; }
+
+private:
+    Unicode *c_;
+    int i_;
 };
 
 } // namespace cc

@@ -21,7 +21,7 @@ template<class Key, class Value = Key>
 class Map: public Object
 {
 public:
-    typedef Pair<Key,Value> Item;
+    typedef Pair<Key, Value> Item;
 
     inline static Ref<Map> create() { return new Map(); }
     inline static Ref<Map> clone(Map *a) { return new Map(*a); }

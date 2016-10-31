@@ -58,8 +58,7 @@ class SimpleWorkerTest: public TestCase
 
         virtual int run() {
             auto source = LineSource::open(stdIn());
-            String line;
-            while (source->read(&line)) {
+            for (String line; source->read(&line);) {
                 if (line == "" || line == "exit") break;
                 auto parts = line->simplify()->trim()->split(' ');
                 int sum = 0;
