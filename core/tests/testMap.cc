@@ -29,7 +29,7 @@ class InsertionIteration: public TestCase
 {
     void run()
     {
-        typedef Map<String, String> StringMap;
+        typedef Map<String> StringMap;
         Ref<StringMap> names = StringMap::create();
         String test[6][2] = {
             { "Joe", "Doe" },
@@ -69,7 +69,7 @@ class RangeSelection: public TestCase
 
 class SyntaxSugar: public TestCase
 {
-    void printMap(const Map<int, int> *map)
+    void printMap(const Map<int> *map)
     {
         for (auto x: map)
             fout("%%: %% => %%") << x->index() << x->key() << x->value() << nl;
@@ -77,7 +77,7 @@ class SyntaxSugar: public TestCase
 
     void run()
     {
-        Ref< Map<int, int> > map = Map<int, int>::create();
+        Ref< Map<int> > map = Map<int>::create();
         for (int i = 0; i < 20; ++i)
             map->insert(i, i);
         for (auto x: map)
