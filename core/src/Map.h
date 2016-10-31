@@ -39,7 +39,8 @@ public:
     }
 
     inline const Key &keyAt(int index) const { return at(index).key(); }
-    inline Value &valueAt(int index) const { return const_cast<Item &>(at(index)).value(); }
+    inline const Value &valueAt(int index) const { return const_cast<Item &>(at(index)).value(); }
+    inline Value &valueAt(int index) { return const_cast<Item &>(at(index)).value(); }
 
     /** Return the index of the first item greater or equal _a_
       */
@@ -178,7 +179,12 @@ public:
         i_(i)
     {}
 
-    inline const typename Map<Key, Value>::Item *operator*() const { return &m_->at(i_); }
+    inline const ConstMapIterator *operator*() const { return this; }
+
+    inline const Key &key() const { return m_->keyAt(i_); }
+    inline const Value &value() const { return m_->valueAt(i_); }
+    inline int index() const { return i_; }
+
     inline ConstMapIterator &operator++() { ++i_; return *this; }
 
 private:
@@ -196,16 +202,59 @@ inline bool operator!=(const ConstMapIterator<Key, Value> &a, const ConstMapIter
 }
 
 template<class Key, class Value>
-inline ConstMapIterator<Key, Value> begin(Map<Key, Value> *m) { return ConstMapIterator<Key, Value>(m, 0); }
+inline ConstMapIterator<Key, Value> begin(const Map<Key, Value> *m) { return ConstMapIterator<Key, Value>(m, 0); }
 
 template<class Key, class Value>
-inline ConstMapIterator<Key, Value> end(Map<Key, Value> *m) { return ConstMapIterator<Key, Value>(m, m->count()); }
+inline ConstMapIterator<Key, Value> end(const Map<Key, Value> *m) { return ConstMapIterator<Key, Value>(m, m->count()); }
 
 template<class Key, class Value>
-inline ConstMapIterator<Key, Value> begin(Ref< Map<Key, Value> > &m) { return ConstMapIterator<Key, Value>(m, 0); }
+inline ConstMapIterator<Key, Value> begin(Ref< const Map<Key, Value> > &m) { return ConstMapIterator<Key, Value>(m, 0); }
 
 template<class Key, class Value>
-inline ConstMapIterator<Key, Value> end(Ref< Map<Key, Value> > &m) { return ConstMapIterator<Key, Value>(m, m->count()); }
+inline ConstMapIterator<Key, Value> end(Ref< const Map<Key, Value> > &m) { return ConstMapIterator<Key, Value>(m, m->count()); }
+
+template<class Key, class Value>
+class MapIterator {
+public:
+    MapIterator(Map<Key, Value> *m, int i):
+        m_(m),
+        i_(i)
+    {}
+
+    inline MapIterator *operator*() { return this; }
+
+    inline const Key &key() const { return m_->keyAt(i_); }
+    inline const Value &value() const { return m_->valueAt(i_); }
+    inline Value &value() { return m_->valueAt(i_); }
+    inline int index() const { return i_; }
+
+    inline MapIterator &operator++() { ++i_; return *this; }
+
+private:
+    template<class Key2, class Value2>
+    friend bool operator!=(const MapIterator<Key2, Value2> &a, const MapIterator<Key2, Value2> &b);
+
+    Map<Key, Value> *m_;
+    int i_;
+};
+
+template<class Key, class Value>
+inline bool operator!=(const MapIterator<Key, Value> &a, const MapIterator<Key, Value> &b)
+{
+    return a.i_ != b.i_;
+}
+
+template<class Key, class Value>
+inline MapIterator<Key, Value> begin(Map<Key, Value> *m) { return MapIterator<Key, Value>(m, 0); }
+
+template<class Key, class Value>
+inline MapIterator<Key, Value> end(Map<Key, Value> *m) { return MapIterator<Key, Value>(m, m->count()); }
+
+template<class Key, class Value>
+inline MapIterator<Key, Value> begin(Ref< Map<Key, Value> > &m) { return MapIterator<Key, Value>(m, 0); }
+
+template<class Key, class Value>
+inline MapIterator<Key, Value> end(Ref< Map<Key, Value> > &m) { return MapIterator<Key, Value>(m, m->count()); }
 
 #endif // __cplusplus >= 201103L
 

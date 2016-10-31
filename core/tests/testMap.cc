@@ -69,13 +69,20 @@ class RangeSelection: public TestCase
 
 class SyntaxSugar: public TestCase
 {
+    void printMap(const Map<int, int> *map)
+    {
+        for (auto x: map)
+            fout("%%: %% => %%") << x->index() << x->key() << x->value() << nl;
+    }
+
     void run()
     {
         Ref< Map<int, int> > map = Map<int, int>::create();
         for (int i = 0; i < 20; ++i)
-            map->insert(fib(i), i);
+            map->insert(i, i);
         for (auto x: map)
-            fout("%% => %%") << x->key() << x->value() << nl;
+            x->value() = fib(x->key());
+        printMap(map);
     }
 };
 
