@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/generics>
+#include <cc/Iterator>
 
 namespace cc {
 
@@ -59,4 +60,3 @@ private:
 };
 
 } // namespace cc
-

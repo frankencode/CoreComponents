@@ -80,12 +80,28 @@ class FindSplitReplace: public TestCase
     }
 };
 
+class SyntaxSugar: public TestCase
+{
+    void run()
+    {
+        {
+            String s = "123";
+            for (auto ch: s) fout() << ch << nl;
+        }
+        {
+            String s = "Привет!";
+            for (auto ch: Unicode::open(s)) fout() << ch << nl;
+        }
+    }
+};
+
 int main(int argc, char **argv)
 {
     CC_TESTSUITE_ADD(ConstructionComparism);
     CC_TESTSUITE_ADD(CountCopySplitJoin);
     CC_TESTSUITE_ADD(UnicodeEscapes);
     CC_TESTSUITE_ADD(FindSplitReplace);
+    CC_TESTSUITE_ADD(SyntaxSugar);
 
     return TestSuite::instance()->run(argc, argv);
 }

@@ -98,6 +98,8 @@ private:
 class ByteArray: public Object
 {
 public:
+    typedef char Item;
+
     /** Create a new byte array of exactly N bytes, without zero-termination
       * \param size number of bytes (N)
       * \return new object instance

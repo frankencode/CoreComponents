@@ -122,12 +122,12 @@ public:
     Pair()
     {}
 
-    Pair(const Key &key)
-        : key_(key), value_(Value())
+    Pair(const Key &key):
+        key_(key), value_(Value())
     {}
 
-    Pair(const Key &key, const Value &value)
-        : key_(key), value_(value)
+    Pair(const Key &key, const Value &value):
+        key_(key), value_(value)
     {}
 
     inline bool operator<(const Pair &b) const { return key_ <  b.key_; }
@@ -156,4 +156,3 @@ template<class Key, class Value>
 inline Pair<Key, Value> pair(const Key &key, const Value &value) { return Pair<Key, Value>(key, value); }
 
 } // namespace cc
-
