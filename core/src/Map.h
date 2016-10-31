@@ -17,7 +17,7 @@ namespace cc {
   * \brief %Map data container
   * \see Set, List
   */
-template<class Key, class Value>
+template<class Key, class Value = Key>
 class Map: public Object
 {
 public:
