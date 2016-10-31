@@ -98,6 +98,21 @@ class Preallocation: public TestCase
     }
 };
 
+class SyntaxSugar: public TestCase
+{
+    void printList(const IntList *l) {
+        for (auto x: l)
+            fout() << x << nl;
+    }
+
+    void run() {
+        Ref<IntList> l = IntList::create() << 1 << 2 << 3;
+        for (auto x: l)
+            fout() << x << nl;
+        printList(l);
+    }
+};
+
 int main(int argc, char **argv)
 {
     CC_TESTSUITE_ADD(InsertionIteration);
@@ -105,6 +120,7 @@ int main(int argc, char **argv)
     CC_TESTSUITE_ADD(Sorting);
     CC_TESTSUITE_ADD(Cloning);
     CC_TESTSUITE_ADD(Preallocation);
+    CC_TESTSUITE_ADD(SyntaxSugar);
 
     return TestSuite::instance()->run(argc, argv);
 }
