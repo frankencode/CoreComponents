@@ -28,6 +28,17 @@ Ref<SystemStream> SystemStream::duplicate(SystemStream *other)
     return new SystemStream(fd);
 }
 
+void SystemStream::connect(Ref<SystemStream> *first, Ref<SystemStream> *second)
+{
+    int fd[2];
+    fd[0] = 0;
+    fd[1] = 0;
+    if (::socketpair(AF_LOCAL, SOCK_STREAM, 0, fd) == -1)
+        CC_SYSTEM_DEBUG_ERROR(errno);
+    *first = new SystemStream(fd[0]);
+    *second = new SystemStream(fd[1]);
+}
+
 SystemStream::SystemStream(int fd):
     fd_(fd),
     scatterLimit_(1<<14)
