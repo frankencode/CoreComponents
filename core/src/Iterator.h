@@ -8,8 +8,6 @@
 
 #pragma once
 
-#if __cplusplus >= 201103L
-
 namespace cc {
 
 template<class Container>
@@ -42,5 +40,3 @@ template<class Container>
 inline Iterator<Container> end(Ref<Container> &c) { return Iterator<Container>(c, c->count()); }
 
 } // namespace cc
-
-#endif // __cplusplus >= 201103L

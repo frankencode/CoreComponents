@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/regexp/RegExp>
+#include <cc/Source>
 
 namespace cc { class Dir; }
 
@@ -43,5 +44,7 @@ private:
     Ref<StringList> remainder_;
     Ref<Glob> child_;
 };
+
+CC_DEFINE_SOURCE_BEGIN_END(Glob);
 
 }} // namespace cc::regexp

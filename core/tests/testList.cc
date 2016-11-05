@@ -106,7 +106,7 @@ class SyntaxSugar: public TestCase
     }
 
     void run() {
-        Ref<IntList> l = IntList::create() << 1 << 2 << 3;
+        auto l = IntList::create() << 1 << 2 << 3;
         for (auto x: l)
             fout() << x << nl;
         printList(l);

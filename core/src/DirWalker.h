@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/Source>
 #include <cc/String>
 
 namespace cc {
@@ -49,5 +50,7 @@ private:
     Ref<Dir> dir_;
     Ref<DirWalker> child_;
 };
+
+CC_DEFINE_SOURCE_BEGIN_END(DirWalker);
 
 } // namespace cc
