@@ -84,6 +84,7 @@ inline String str(ByteArray *s) { return String(s); }
 inline String str(const char *s) { return String(s); }
 inline String str(char *s) { return String(s); }
 inline String str(char ch) { return String(&ch, 1); }
+String str(uchar_t ch);
 
 inline String str(bool x) { return x ? "true" : "false"; }
 
