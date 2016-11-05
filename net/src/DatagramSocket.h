@@ -14,7 +14,8 @@
 namespace cc {
 namespace net {
 
-/** \brief an earlier datagram could not be delivered
+/** \class HostUnreachable DatagramSocket.h cc/net/DatagramSocket
+  * \brief An earlier datagram could not be delivered
   *
   * \see DatagramSocket::recvFrom()
   */
@@ -28,7 +29,8 @@ public:
     virtual String message() const;
 };
 
-/** \brief datagram socket
+/** \class DatagramSocket DatagramSocket.h cc/net/DatagramSocket
+  * \brief Datagram socket
   */
 class DatagramSocket: public SystemStream
 {
@@ -38,7 +40,9 @@ public:
       */
     static Ref<DatagramSocket> open(const SocketAddress *address);
 
-    /** create a local datagram socket connection
+    /** Create a pair of connected local datagram sockets
+      * \param first return the first socket
+      * \param second return the second socket
       */
     static void connect(Ref<DatagramSocket> *first, Ref<DatagramSocket> *second);
 
@@ -48,34 +52,34 @@ public:
       */
     void allowBroadcasting(bool on);
 
-    /** set the incoming socket buffer size
+    /** Set the incoming socket buffer size
       * \param newSize new incoming buffer size in bytes
       */
     void setRecvBufferSize(int newSize);
 
-    /** set the outgoing socket buffer size
+    /** Set the outgoing socket buffer size
       * \param newSize new outgoing buffer size in bytes
       */
     void setSendBufferSize(int newSize);
 
-    /** receive a datagram
-      * \arg peerAddress peer address from which the datagram originates from
-      * \arg buffer data buffer to hold the datagram received
-      * \ret number of bytes received
+    /** Receive a datagram
+      * \param peerAddress peer address from which the datagram originates from
+      * \param buffer data buffer to hold the datagram received
+      * \return number of bytes received
       * This method throws HostUnreachable if an ICMP error from an earlier sendTo() is received.
       */
     virtual int recvFrom(Ref<SocketAddress> *peerAddress, ByteArray *buffer);
 
-    /** send a datagram
-      * \arg peerAddress destination host address
-      * \arg message the message to send
-      * \ret number of bytes send
+    /** Send a datagram
+      * \param peerAddress destination host address
+      * \param message the message to send
+      * \return number of bytes send
       * \see ByteArray::select()
       */
     virtual int sendTo(const SocketAddress *peerAddress, const ByteArray *message);
 
-    /** restrict communication to a single source
-      * \arg address unicast or multicast address to receive datagrams from
+    /** Restrict communication to a single source
+      * \param address unicast or multicast address to receive datagrams from
       */
     void connect(const SocketAddress *peerAddress);
 

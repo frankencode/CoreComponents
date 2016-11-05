@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/Source>
 #include <cc/Stream>
 
 namespace cc {
@@ -41,5 +41,7 @@ private:
     bool eoi_;
     int i_, n_;
 };
+
+CC_DEFINE_SOURCE_BEGIN_END(LineSource);
 
 } // namespace cc

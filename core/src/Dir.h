@@ -10,7 +10,7 @@
 
 #include <sys/types.h> // mode_t
 #include <dirent.h> // DIR, opendir, closedir, readdir_r
-#include <cc/generics>
+#include <cc/Source>
 #include <cc/String>
 
 namespace cc {
@@ -91,7 +91,7 @@ public:
       */
     static String createUnique(String path, int mode = 0755, char placeHolder = 'X');
 
-    /** \brief Cleanup directory recursively
+    /** Cleanup directory recursively
       * \param path directory file path
       * Cleans up the given directory path recursively deleting all containing files and directories in the process.
       */
@@ -104,5 +104,7 @@ private:
     String path_;
     DIR *dir_;
 };
+
+CC_DEFINE_SOURCE_BEGIN_END(Dir);
 
 } // namespace cc

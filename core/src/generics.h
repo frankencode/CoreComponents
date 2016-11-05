@@ -64,24 +64,6 @@ public:
     virtual Ref<T> clone() const = 0;
 };
 
-/** \brief Generic data source
-  */
-template<class T>
-class Source: public virtual Object
-{
-public:
-    virtual bool read(T *item) = 0;
-};
-
-/** \brief Generic data sink
-  */
-template<class T>
-class Sink: public virtual Object
-{
-public:
-    virtual void write(T item) = 0;
-};
-
 #ifdef major
 #undef major
 #endif
