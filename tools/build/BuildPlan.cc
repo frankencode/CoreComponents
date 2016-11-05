@@ -54,7 +54,7 @@ BuildPlan::BuildPlan(int argc, char **argv):
     CCBUILD_BUILDPLAN_COMPONENTS_INIT
 {
     Ref<Arguments> arguments = Arguments::parse(argc, argv);
-    StringList *items = arguments->items();
+    const StringList *items = arguments->items();
 
     if (items->count() > 0) {
         if (items->count() > 1)

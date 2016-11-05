@@ -38,7 +38,7 @@ int main(int argc, char **argv)
         }
 
         VariantMap *options = arguments->options();
-        StringList *items = arguments->items();
+        const StringList *items = arguments->items();
         bool verbose = options->value("verbose");
         bool cssOption = options->value("css");
         String themeOption = options->value("theme");

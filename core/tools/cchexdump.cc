@@ -14,7 +14,7 @@ int main(int argc, char **argv)
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
         arguments->validate(VariantMap::create());
 
-        StringList *items = arguments->items();
+        Ref<StringList> items = arguments->items();
         if (items->count() == 0) items->append("");
 
         for (int i = 0; i < items->count(); ++i)
