@@ -154,7 +154,7 @@ inline U *cast(T *p) { return CastHelper<T, U, ConversionFromTo<T*, U*>::Exists>
 template<class T>
 inline T *null() { return reinterpret_cast<T *>(0); }
 
-typedef uint32_t uchar_t;
+typedef char32_t uchar_t;
 
 template<class Char>
 inline Char downcase(Char ch) {

@@ -8,6 +8,7 @@
 
 #include <cc/Stack>
 #include <cc/rounding>
+#include <cc/Utf8Sink>
 #include <cc/str>
 
 namespace cc {
@@ -148,6 +149,15 @@ String dec(const Variant &x, int n)
     return (type(x) == Variant::FloatType) ?
         dec(float(x), n > 0 ? n : 7) :
         dec(int(x), n);
+}
+
+String str(uchar_t ch)
+{
+    String s(4);
+    Ref<Utf8Sink> sink = Utf8Sink::open(s);
+    sink->write(ch);
+    s->truncate(sink->byteSink()->currentOffset());
+    return s;
 }
 
 String str(void *x)
