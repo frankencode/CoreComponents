@@ -22,15 +22,16 @@ public:
     /** \brief Read command line arguments and separate options from items
       * \param argc arguments count
       * \param argv argument values
+      * \param options validate/return command line options
       * \return new Arguments instance
       */
-    static Ref<Arguments> parse(int argc, char **argv);
+    static Ref<Arguments> parse(int argc, char **argv, VariantMap *options = 0);
 
     /** Check validity of command line arguments according to a prototype configuration
       * \param prototype prototype configuration
       * \exception UsageError if a non-existing option or an optino of invalid type is encountered
       */
-    void validate(VariantMap *prototype);
+    void validate(const VariantMap *prototype);
 
     /** Override a configuration object with command line options
       * \param config configuration map
@@ -41,7 +42,7 @@ public:
     inline VariantMap *options() const { return options_; }
 
     /// Command line item arguments
-    inline /*FIXME: const*/ StringList *items() const { return items_; }
+    inline const StringList *items() const { return items_; }
 
     /** Execution path
       * \see Process::exePath()
@@ -49,7 +50,7 @@ public:
     inline String execPath() const { return execPath_; }
 
 private:
-    Arguments(int argc, char **argv);
+    Arguments(int argc, char **argv, VariantMap *options);
 
     Ref<VariantMap> options_;
     Ref<StringList> items_;

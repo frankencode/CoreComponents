@@ -11,12 +11,12 @@
 
 namespace cc {
 
-Ref<Arguments> Arguments::parse(int argc, char **argv)
+Ref<Arguments> Arguments::parse(int argc, char **argv, VariantMap *options)
 {
-    return new Arguments(argc, argv);
+    return new Arguments(argc, argv, options);
 }
 
-Arguments::Arguments(int argc, char **argv):
+Arguments::Arguments(int argc, char **argv, VariantMap *options):
     options_(VariantMap::create()),
     items_(StringList::create())
 {
@@ -46,9 +46,14 @@ Arguments::Arguments(int argc, char **argv):
     // FIXME
     // if (options_->contains("v") || options_->contains("version"))
     //  throw VersionError();
+
+    if (options) {
+        validate(options);
+        override(options);
+    }
 }
 
-void Arguments::validate(VariantMap *prototype)
+void Arguments::validate(const VariantMap *prototype)
 {
     for (int i = 0; i < options_->count(); ++i)
     {
