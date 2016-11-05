@@ -30,6 +30,12 @@ public:
         return new SystemStream(fd);
     }
 
+    /** Create a pair of connected local sockets
+      * \param first return the first socket
+      * \param second return the second socket
+      */
+    static void connect(Ref<SystemStream> *first, Ref<SystemStream> *second);
+
     /** Duplicate a system stream
       * \param other the system stream to duplicate
       * \return new object instance
