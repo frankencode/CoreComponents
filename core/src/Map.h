@@ -21,16 +21,32 @@ template<class Key, class Value = Key>
 class Map: public Object
 {
 public:
+    /// Item type
     typedef Pair<Key, Value> Item;
 
+    /** Create a new map
+      * \return new object instance
+      */
     inline static Ref<Map> create() { return new Map(); }
+
+    /** Create a shallow copy of another map
+      * \param other another map
+      * \return new object instance
+      */
     inline static Ref<Map> clone(Map *a) { return new Map(*a); }
 
+    /// Number of key-value pairs stored in this map
     inline int count() const { return tree_.weight(); }
 
+    /// Check if an index is valid
     inline bool has(int index) const {
         return 0 <= index && index < count();
     }
+
+    /** Return a reference to an item
+      * \param index map index
+      * \return reference to the item
+      */
     inline const Item &at(int index) const {
         Node *node = 0;
         if (!tree_.lookupByIndex(index, &node))
@@ -38,8 +54,23 @@ public:
         return node->item_;
     }
 
+    /** Return a reference to a key at a certain index
+      * \param index map index
+      * \return reference to the key
+      */
     inline const Key &keyAt(int index) const { return at(index).key(); }
+
+    /** Return a reference to a value at a certain index (readonly)
+      * \param index map index
+      * \return reference to the value
+      */
     inline const Value &valueAt(int index) const { return const_cast<Item &>(at(index)).value(); }
+
+
+    /** Return a reference to a value at a certain index
+      * \param index map index
+      * \return reference to the value
+      */
     inline Value &valueAt(int index) { return const_cast<Item &>(at(index)).value(); }
 
     /** Return the index of the first item greater or equal _a_
@@ -70,6 +101,11 @@ public:
         return !found;
     }
 
+    /** Remove a key-value mapping
+      * \param key key value
+      * \param index return index this key occupied
+      * \return true if a matching key-value pair was found and removed
+      */
     inline bool remove(const Key &key, int *index = 0)
     {
         bool found;
@@ -79,6 +115,10 @@ public:
         return found;
     }
 
+    /** Remove a key-value mapping at given index
+      * \param index map index
+      * \return true if a matching key-value pair was found and removed
+      */
     inline bool removeAt(int index) {
         Node *node = 0;
         if (!tree_.lookupByIndex(index, &node)) return false;
@@ -87,6 +127,8 @@ public:
     }
 
     /** Insert or overwrite a key-value mapping.
+      * \param key key value
+      * \param value item value
       */
     inline void establish(const Key &key, const Value &value) {
         int index = 0;
@@ -133,11 +175,17 @@ public:
       */
     inline bool contains(const Key &key) const { return lookup<Value>(key); }
 
+    /** Establish a new key-value mapping
+      * \param item new key-value pair to establish
+      */
     inline void push(const Item &item)
     {
         establish(item.key(), item.value());
     }
 
+    /** Remove first key-value mapping
+      * \param item return key-value pair
+      */
     inline void pop(Item *item)
     {
         CC_ASSERT(count() > 0);
@@ -146,14 +194,19 @@ public:
         tree_.remove(k);
     }
 
+    /** Remove first key-value mapping
+      * \return key-value pair
+      */
     inline Item pop() {
         Item item;
         pop(&item);
         return item;
     }
 
+    /// Reset this map to an empty map
     inline void clear() { tree_.clear(); }
 
+    /// \copydoc push(const Item &item)
     inline void operator<<(const Item &item) { push(item); }
 
 protected:
