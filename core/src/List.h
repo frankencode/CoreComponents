@@ -35,7 +35,7 @@ public:
     inline static Ref<List> create(int n) { return new List(n); }
 
     /** Create a deep copy of another list
-      * \param other the other list
+      * \param other another list
       * \return new object instance
       */
     static Ref<List> copy(const List *other)
@@ -46,7 +46,7 @@ public:
     }
 
     /** Create a shallow copy of another list
-      * \param other the other list
+      * \param other another list
       * \return new object instance
       */
     inline static Ref<List> clone(const List *other) { return new List(*other); }
