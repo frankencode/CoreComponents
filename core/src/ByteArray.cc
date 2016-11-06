@@ -187,7 +187,7 @@ void ByteArray::destroy()
     else delete[] data_;
 }
 
-void ByteArray::clear(char zero)
+void ByteArray::fill(char zero)
 {
     memset(data_, zero, size_);
 }
@@ -202,19 +202,11 @@ void ByteArray::truncate(int newSize)
     }
 }
 
-ByteArray &ByteArray::operator=(const ByteArray &b)
+void ByteArray::writeXor(const ByteArray *b)
 {
-    int n = (size_ < b.size_) ? size_ : b.size_;
-    memcpy(data_, b.data_, n);
-    return *this;
-}
-
-ByteArray &ByteArray::operator^=(const ByteArray &b)
-{
-    int n = (size_ < b.size_) ? size_ : b.size_;
+    int n = (size_ < b->size_) ? size_ : b->size_;
     for (int i = 0; i < n; ++i)
-        bytes_[i] ^= b.bytes_[i];
-    return *this;
+        bytes_[i] ^= b->bytes_[i];
 }
 
 String ByteArray::copy(int i0, int i1) const
@@ -362,7 +354,7 @@ void ByteArray::replaceInsitu(const char *pattern, const char *replacement)
     int patternLength = strlen(pattern);
     int replacementLength = strlen(replacement);
     if (patternLength < replacementLength) {
-        *this = *replace(pattern, replacement);
+        write(replace(pattern, replacement));
     }
     else if (patternLength > 0) {
         int i = 0, j = 0, k = 0, n = size_;

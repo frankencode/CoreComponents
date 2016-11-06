@@ -36,7 +36,7 @@ int CipherSource::read(ByteArray *data)
 
         while (m_ < n_b) {
             if (pending_) {
-                *buffer_->select(m_, buffer_->count() - m_) = *pending_;
+                buffer_->select(m_, buffer_->count() - m_)->write(pending_);
                 m_ += pending_->count();
                 pending_ = 0;
             }
@@ -62,14 +62,14 @@ int CipherSource::read(ByteArray *data)
         for (int i = 0; i + n_b <= m_; i += n_b) {
             Ref<ByteArray> s = buffer_->select(i, i + n_b);
             cipher_->decode(s, block_);
-            *s = *block_;
+            s->write(block_);
         }
 
         j_= 0;
     }
 
     Ref<ByteArray> avail = buffer_->select(j_, m_);
-    *data = *avail;
+    data->write(avail);
     if (data->count() < avail->count()) {
         j_ += data->count();
         return data->count();

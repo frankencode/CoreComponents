@@ -26,8 +26,8 @@ RandomSource::RandomSource(const ByteArray *salt)
     Ref<ByteArray> iv = ByteArray::allocate(AesCipher::BlockSize);
 
     if (salt) {
-        *key = *salt;
-        iv->clear();
+        key->write(salt);
+        iv->fill(0);
     }
     else {
         Ref<Stream> random = File::open("/dev/urandom");

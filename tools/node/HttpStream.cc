@@ -89,7 +89,7 @@ int HttpStream::read(ByteArray *data)
 
     int n = 0;
     if (pending_) {
-        *data = *(pending_->select(pendingIndex_, pending_->count()));
+        data->write(pending_->select(pendingIndex_, pending_->count()));
         int h = pending_->count() - pendingIndex_;
         if (data->count() < h) {
             pendingIndex_ += data->count();

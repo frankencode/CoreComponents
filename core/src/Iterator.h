@@ -34,9 +34,9 @@ template<class Container>
 inline Iterator<Container> end(Container *c) { return Iterator<Container>(c, c->count()); }
 
 template<class Container>
-inline Iterator<Container> begin(Ref<Container> &c) { return Iterator<Container>(c, 0); }
+inline Iterator<Container> begin(const Ref<Container> &c) { return Iterator<Container>(c, 0); }
 
 template<class Container>
-inline Iterator<Container> end(Ref<Container> &c) { return Iterator<Container>(c, c->count()); }
+inline Iterator<Container> end(const Ref<Container> &c) { return Iterator<Container>(c, c->count()); }
 
 } // namespace cc

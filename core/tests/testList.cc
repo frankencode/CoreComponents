@@ -105,11 +105,11 @@ class SyntaxSugar: public TestCase
             fout() << x << nl;
     }
 
+public:
     void run() {
-        auto l = IntList::create() << 1 << 2 << 3;
-        for (auto x: l)
+        for (auto x: IntList::create() << 1 << 2 << 3)
             fout() << x << nl;
-        printList(l);
+        printList(IntList::create() << 1 << 2 << 3);
     }
 };
 

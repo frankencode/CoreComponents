@@ -18,7 +18,7 @@ NullStream *NullStream::instance()
 
 int NullStream::read(ByteArray *data)
 {
-    data->clear();
+    data->fill(0);
     return data->count();
 }
 

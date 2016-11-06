@@ -25,7 +25,7 @@ int MemoryStream::read(ByteArray *data)
     if (i_ == buffer_->count()) return 0;
     const int n =
         (i_ + data->count() <= buffer_->count()) ? data->count() : buffer_->count() - i_;
-    *data = *buffer_->select(i_, i_ + n);
+    data->write(buffer_->select(i_, i_ + n));
     i_ += n;
     return n;
 }
@@ -35,7 +35,7 @@ void MemoryStream::write(const ByteArray *data)
     if (i_ == buffer_->count()) return;
     const int n =
         (i_ + data->count() <= buffer_->count()) ? data->count() : buffer_->count() - i_;
-    *buffer_->select(i_, i_ + n) = *data;
+    buffer_->select(i_, i_ + n)->write(data);
     i_ += n;
 }
 

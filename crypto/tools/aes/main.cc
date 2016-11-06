@@ -26,8 +26,8 @@ using namespace ccaes;
 String normalizePassword(String password)
 {
     Ref<ByteArray> s = ByteArray::create(16);
-    s->clear(' ');
-    *s = *password;
+    s->fill(' ');
+    s->write(password);
     return s;
 }
 
