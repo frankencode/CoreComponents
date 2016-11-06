@@ -166,7 +166,7 @@ public:
     /** Clear all bytes
       * \param zero blank character to use
       */
-    void clear(char zero = '\0');
+    void fill(char zero);
 
     /** Shrink in size
       * \param newSize new size
@@ -174,15 +174,17 @@ public:
     void truncate(int newSize);
 
     /** Write contents (move bytes)
-      * \param b source to copy
+      * \param b source to copy data from
       */
-    ByteArray &operator=(const ByteArray &b); // FIXME: rename write
+    void write(const ByteArray *b) {
+        int n = (size_ < b->size_) ? size_ : b->size_;
+        memcpy(data_, b->data_, n);
+    }
 
     /** Xor over another byte array
       * \param b source to xor over
-      * \return low-level reference
       */
-    ByteArray &operator^=(const ByteArray &b); // FIXME: rename writeXor
+    void writeXor(const ByteArray *b);
 
     /// Size in number of bytes
     inline int count() const { return size_; }
@@ -895,7 +897,7 @@ inline Ref<ByteArray>::Ref(int size, char zero):
     a_(0)
 {
     Ref<ByteArray> b = ByteArray::create(size);
-    b->clear(zero);
+    b->fill(zero);
     set(b);
 }
 

@@ -107,14 +107,14 @@ public:
     inline static Ref copy(const Ref &b) { return T::copy(b.a_); }
 
     template<class T2>
-    inline Ref<T> &operator<<(T2 x) {
+    inline Ref<T> operator<<(T2 x) {
         CC_ASSERT2(a_, "Null reference on shift left");
         *a_ << x;
         return *this;
     }
 
     template<class T2>
-    inline Ref<T> &operator>>(T2 &x) {
+    inline Ref<T> operator>>(T2 &x) {
         CC_ASSERT2(a_, "Null reference on shift right");
         *a_ >> x;
         return *this;

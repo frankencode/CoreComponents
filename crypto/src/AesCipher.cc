@@ -289,7 +289,7 @@ void AesCipher::encode(const ByteArray *p, ByteArray *c)
     CC_ASSERT(p && p->count() == Ns);
     CC_ASSERT(c && c->count() == Ns);
 
-    *s_ = *p;
+    s_->write(p);
 
     addRoundKey(s_, w_, 0);
 
@@ -304,7 +304,7 @@ void AesCipher::encode(const ByteArray *p, ByteArray *c)
     shiftRows(s_);
     addRoundKey(s_, w_, Nr_);
 
-    *c = *s_;
+    c->write(s_);
 }
 
 void AesCipher::decode(const ByteArray *c, ByteArray *p)
@@ -312,7 +312,7 @@ void AesCipher::decode(const ByteArray *c, ByteArray *p)
     CC_ASSERT(c && c->count() == Ns);
     CC_ASSERT(p && p->count() == Ns);
 
-    *s_ = *c;
+    s_->write(c);
 
     addRoundKey(s_, w_, Nr_);
 
@@ -327,7 +327,7 @@ void AesCipher::decode(const ByteArray *c, ByteArray *p)
     invSubBytes(s_);
     addRoundKey(s_, w_, 0);
 
-    *p = *s_;
+    p->write(s_);
 }
 
 }} // namespace cc::crypto

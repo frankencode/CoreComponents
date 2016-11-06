@@ -22,7 +22,7 @@ PseudoPad::PseudoPad(BlockCipher *cipher):
     c_(ByteArray::allocate(cipher->blockSize())),
     i_(c_->count())
 {
-    p_->clear(0);
+    p_->fill(0);
 }
 
 void PseudoPad::increment(ByteArray *bigWord)

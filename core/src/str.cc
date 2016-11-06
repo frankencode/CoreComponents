@@ -136,11 +136,11 @@ String fixed(float64_t x, int nf)
     String sip = inum(int64_t(ip));
     if (nf <= 0) return sip;
     String s = String(sip->count() + 1 + nf, '.');
-    *s = *sip;
+    s->write(sip);
     if (fp < 0) fp = -fp;
     for (int i = 0; i < nf; ++i) fp *= 10;
     fp = round(fp);
-    *(s->select(sip->count() + 1, s->count())) = *right(inum(uint64_t(fp)), nf, '0');
+    s->select(sip->count() + 1, s->count())->write(right(inum(uint64_t(fp)), nf, '0'));
     return s;
 }
 

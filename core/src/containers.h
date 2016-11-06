@@ -31,30 +31,27 @@ bool compare(const C &a, const C &b)
 
 } // namespace container
 
+enum SortOrder { Desc = 0, Asc = 1, Descending = Desc, Ascending = Asc };
+
 template<class T>
-class Ascending {
+class AscendingSortOrder {
 public:
     static inline bool below(const T &a, const T &b) { return a < b; }
 };
 
 template<class T>
-class Descending {
+class DescendingSortOrder {
 public:
     static inline bool below(const T &a, const T &b) { return b < a; }
 };
 
-class SortOrder {
-public:
-    enum { Desc = 0, Asc = 1, Descending = Desc, Ascending = Asc };
-};
-
 template<class T>
-class FlexibleSortOrder: public SortOrder {
+class FlexibleSortOrder {
 public:
-    FlexibleSortOrder(int order = Asc): asc_(order == Asc) {}
+    FlexibleSortOrder(SortOrder order = Asc): asc_(order == Asc) {}
     inline bool below(const T &a, const T &b) { return (a < b) == asc_; }
 protected:
-    void setSortOrder(int order) { asc_ = (order == Asc); }
+    void setSortOrder(SortOrder order) { asc_ = (order == Asc); }
 private:
     bool asc_;
 };

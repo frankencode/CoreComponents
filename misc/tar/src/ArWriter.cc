@@ -39,27 +39,27 @@ void ArWriter::writeFile(String path)
     Ref<StringList> headerFields = StringList::create();
 
     String pathField(16, ' ');
-    *pathField = *path;
+    pathField->write(path);
     headerFields->append(pathField);
 
     String lastModifiedField(12, ' ');
-    *lastModifiedField = *dec(status->st_mtime);
+    lastModifiedField->write(dec(status->st_mtime));
     headerFields->append(lastModifiedField);
 
     String userIdField(6, ' ');
-    *userIdField = *dec(status->ownerId());
+    userIdField->write(dec(status->ownerId()));
     headerFields->append(userIdField);
 
     String groupIdField(6, ' ');
-    *groupIdField = *dec(status->groupId());
+    groupIdField->write(dec(status->groupId()));
     headerFields->append(groupIdField);
 
     String modeField(8, ' ');
-    *modeField = *oct(status->mode());
+    modeField->write(oct(status->mode()));
     headerFields->append(modeField);
 
     String sizeField(10, ' ');
-    *sizeField = *dec(status->size());
+    sizeField->write(dec(status->size()));
     headerFields->append(sizeField);
 
     String magic(2);

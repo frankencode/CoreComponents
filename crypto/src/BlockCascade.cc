@@ -21,22 +21,22 @@ BlockCascade::BlockCascade(BlockCipher *cipher, ByteArray *iv):
     cipher_(cipher),
     s_(ByteArray::allocate(cipher->blockSize()))
 {
-    s_->clear();
-    if (iv) *s_ = *iv;
+    s_->fill(0);
+    if (iv) s_->write(iv);
 }
 
 void BlockCascade::encode(const ByteArray *p, ByteArray *c)
 {
-    *s_ ^= *p;
+    s_->writeXor(p);
     cipher_->encode(s_, c);
-    *s_ = *c;
+    s_->write(c);
 }
 
 void BlockCascade::decode(const ByteArray *c, ByteArray *p)
 {
     cipher_->decode(c, p);
-    *p ^= *s_;
-    *s_ = *c;
+    p->writeXor(s_);
+    s_->write(c);
 }
 
 }} // namespace cc::crypto

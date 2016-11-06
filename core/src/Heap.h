@@ -12,7 +12,7 @@
 
 namespace cc {
 
-template<class T, template<class> class Order = Ascending>
+template<class T, template<class> class Order = AscendingSortOrder>
 class GenericHeap: public Object, public Order<T>
 {
 public:
@@ -137,12 +137,10 @@ template<class T>
 class Heap: public GenericHeap<T, FlexibleSortOrder>
 {
 public:
-    typedef GenericHeap<T, FlexibleSortOrder> Super;
-
-    inline static Ref<Heap> create(int size, int order = SortOrder::Ascending) {
+    inline static Ref<Heap> create(int size, SortOrder order = Ascending) {
         return new Heap(size, order);
     }
-    inline static Ref<Heap> create(T *buf, int size, int order = SortOrder::Ascending) {
+    inline static Ref<Heap> create(T *buf, int size, SortOrder order = Ascending) {
         return new Heap(buf, size, order);
     }
 
@@ -152,20 +150,22 @@ public:
     }
 
 private:
-    Heap(int size, int order)
-        : GenericHeap<T, FlexibleSortOrder>(size)
+    typedef GenericHeap<T, FlexibleSortOrder> Super;
+
+    Heap(int size, SortOrder order):
+        GenericHeap<T, FlexibleSortOrder>(size)
     {
         Super::setSortOrder(order);
     }
-    Heap(T *buf, int size, int order)
-        : GenericHeap<T, FlexibleSortOrder>(buf, size)
+    Heap(T *buf, int size, int order):
+        GenericHeap<T, FlexibleSortOrder>(buf, size)
     {
         Super::setSortOrder(order);
     }
 };
 
 template<class T>
-class MinHeap: public GenericHeap<T, Ascending>
+class MinHeap: public GenericHeap<T, AscendingSortOrder>
 {
 public:
     inline static Ref<MinHeap> create(int size) {
@@ -175,12 +175,12 @@ public:
         return new MinHeap(buf, size);
     }
 private:
-    MinHeap(int size): GenericHeap<T, Ascending>(size) {}
-    MinHeap(T *buf, int size): GenericHeap<T, Ascending>(buf, size) {}
+    MinHeap(int size): GenericHeap<T, AscendingSortOrder>(size) {}
+    MinHeap(T *buf, int size): GenericHeap<T, AscendingSortOrder>(buf, size) {}
 };
 
 template<class T>
-class MaxHeap: public GenericHeap<T, Descending>
+class MaxHeap: public GenericHeap<T, DescendingSortOrder>
 {
 public:
     inline static Ref<MaxHeap> create(int size) {
@@ -190,8 +190,8 @@ public:
         return new MaxHeap(buf, size);
     }
 private:
-    MaxHeap(int size): GenericHeap<T, Descending>(size) {}
-    MaxHeap(T *buf, int size): GenericHeap<T, Descending>(buf, size) {}
+    MaxHeap(int size): GenericHeap<T, DescendingSortOrder>(size) {}
+    MaxHeap(T *buf, int size): GenericHeap<T, DescendingSortOrder>(buf, size) {}
 };
 
 } // namespace cc
