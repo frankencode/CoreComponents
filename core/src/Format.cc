@@ -52,7 +52,7 @@ void Format::flush()
     if (isNull_) return;
     if (stream_ && get()->count() > 0) {
         stream_->write(get());
-        get()->clear();
+        get()->deplete();
     }
 }
 

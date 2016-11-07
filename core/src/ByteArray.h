@@ -458,7 +458,11 @@ public:
       * \param s substring to search for
       * \return true if this string contains s
       */
-    inline bool contains(const char *s) const { return find(s) != size_; }
+    inline bool contains(const char *s) const
+    {
+        if (!s[0]) return true;
+        return find(s) != size_;
+    }
 
     /// \copydoc contains(const char *) const
     bool contains(const String &s) const;

@@ -22,8 +22,8 @@ enum AccessFlags {
 
 /// %File permission flags
 enum ModeFlags {
-    SetUserId  = S_ISUID, ///< Set effective user to file owner on execution
-    SetGroupId = S_ISGID, ///< Set effective group to file owner on execution
+    SetUserId  = S_ISUID, ///< %Set effective user to file owner on execution
+    SetGroupId = S_ISGID, ///< %Set effective group to file owner on execution
     StickyBit  = S_ISVTX,  ///< Allow to read and write, but not delete files when applied to a directory
     UserRead   = 0400, ///< Readable by owner
     UserWrite  = 0200, ///< Writable by owner

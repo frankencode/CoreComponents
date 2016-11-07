@@ -151,8 +151,8 @@ void NodeMaster::runNode() const
         Ref<IoActivity> activity = ioMonitor->poll(1000);
         if (activity->count() > 0) {
             for (int i = 0; i < activity->count(); ++i) {
-                HttpSocket *socket = cast<HttpSocket>(activity->at(i)->target());
                 try {
+                    HttpSocket *socket = cast<HttpSocket>(activity->at(i)->target());
                     Ref<HttpSocket> clientSocket = socket->accept();
                     Ref<HttpClientConnection> client = HttpClientConnection::open(clientSocket);
                     if (connectionManager->accept(client)) {

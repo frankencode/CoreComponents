@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class MemoryStream MemoryStream.h cc/MemoryStream
+  * \brief Read data from a memory buffer
   * \see ReplaySource, CaptureSink
   */
 class MemoryStream: public Stream

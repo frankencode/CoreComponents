@@ -20,16 +20,32 @@ template<class T>
 class Set: public Object
 {
 public:
+    /// Item type
     typedef T Item;
 
+    /** Create a new set
+      * \return new object instance
+      */
     inline static Ref<Set> create() { return new Set; }
-    inline static Ref<Set> clone(Set *a) { return new Set(a); }
 
+    /** Create a shallow copy of another set
+      * \param other another set
+      * \return new object instance
+      */
+    inline static Ref<Set> replicate(const Set *a) { return new Set(a); }
+
+    /// Number of items
     inline int count() const { return tree_.weight(); }
 
+    /// Check if an index is valid
     inline bool has(int index) const {
         return 0 <= index && index < count();
     }
+
+    /** Return a reference to an item
+      * \param index set index
+      * \return reference to the item
+      */
     inline const Item &at(int index) const {
         Node *node = 0;
         if (!tree_.lookupByIndex(index, &node))
@@ -39,15 +55,15 @@ public:
 
     /** Return the index of the first item greater or equal _a_
       */
-    inline int first(const Item &a) const { return tree_.first(a); }
+    inline int from(const Item &a) const { return tree_.first(a); }
 
     /** Return the index of the first item lower or equal _b_
       */
-    inline int last(const Item &b) const { return tree_.last(b); }
+    inline int to(const Item &b) const { return tree_.last(b); }
 
     /** Insert a new item if no item with the same value exists already.
       * If currentItem is non-null the item with the same value is returned.
-      * The function returns true if the new item was inserted successfully.
+      * \return true if the new item was inserted successfully
       */
     inline bool insert(const Item &item, Item *currentItem = 0, int *index = 0)
     {
@@ -64,6 +80,11 @@ public:
         return !found;
     }
 
+    /** Remove an item from the set
+      * \param item item value
+      * \param index returns the index of the item that has been removed
+      * \return true if the matching item was found and removed
+      */
     inline bool remove(const Item &item, int *index = 0)
     {
         bool found;
@@ -73,6 +94,10 @@ public:
         return found;
     }
 
+    /** Remove an item at a given index
+      * \param index set index
+      * \return true if the matching item was found and removed
+      */
     inline bool removeAt(int index) {
         Node *node = 0;
         if (!tree_.lookupByIndex(index, &node)) return false;
@@ -80,6 +105,10 @@ public:
         return true;
     }
 
+    /** Check if the set contains a given item
+      * \param item item value
+      * \return true if the set contains the given item
+      */
     inline bool contains(const Item &item)
     {
         bool found = false;
@@ -87,6 +116,9 @@ public:
         return found;
     }
 
+    /** Add a new item to the set
+      * \param item new item value
+      */
     inline void push(const Item &item)
     {
         bool found = false;
@@ -98,6 +130,9 @@ public:
             tree_.attach(k, new Node(item), below);
     }
 
+    /** Remove first item from the set
+      * \param item return the item's value
+      */
     inline void pop(Item *item)
     {
         CC_ASSERT(count() > 0);
@@ -106,13 +141,17 @@ public:
         tree_.remove(k);
     }
 
+    /** Remove first item from the set
+      * \return the item's value
+      */
     inline Item pop() {
         Item item;
         pop(&item);
         return item;
     }
 
-    inline void clear() { tree_.clear(); }
+    /// Reset this set to an empty set
+    inline void deplete() { tree_.clear(); }
 
 private:
     typedef OrdinalTree< OrdinalNode<Item> > Tree;

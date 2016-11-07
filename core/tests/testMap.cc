@@ -61,9 +61,9 @@ class RangeSelection: public TestCase
         const int a = 20, b = 120;
         fout("In range [%%..%%]:\n") << a << b;
         int n = 0;
-        for (int i = map->first(a), j = map->last(b); i <= j; ++i, ++n)
+        for (int i = map->from(a), j = map->to(b); i <= j; ++i, ++n)
             fout("map->at(%%) = %% (%%)\n") << i << map->at(i)->key() << map->at(i)->value();
-        CC_VERIFY(n == 4 && map->first(a) == 7 && map->last(b) == 10);
+        CC_VERIFY(n == 4 && map->from(a) == 7 && map->to(b) == 10);
     }
 };
 
