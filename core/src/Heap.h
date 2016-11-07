@@ -111,18 +111,18 @@ public:
     }
 
 protected:
-    GenericHeap(int size)
-        : fill_(0),
-          size_(size),
-          bufOwner_(true),
-          buf_(new T[size])
+    GenericHeap(int size):
+        fill_(0),
+        size_(size),
+        bufOwner_(true),
+        buf_(new T[size])
     {}
 
-    GenericHeap(T *buf, int size)
-        : fill_(0),
-          size_(size),
-          bufOwner_(false),
-          buf_(buf)
+    GenericHeap(T *buf, int size):
+        fill_(0),
+        size_(size),
+        bufOwner_(false),
+        buf_(buf)
     {}
 
     int fill_;    // current number of elements

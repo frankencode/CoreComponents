@@ -17,16 +17,24 @@ namespace cc {
 
 /** \class Channel Channel.h cc/Channel
   * \brief Inter-thread communication channel
-  * \see Queue, PriorityQueue
+  * \tparam T item type
+  * \tparam QueueType type of queue data structure to use (e.g. PriorityQueue)
   */
 template<class T, template<class> class QueueType = Queue>
 class Channel: public Object
 {
 public:
+    /** Create a new channel
+      * \return new object instance
+      */
     static Ref<Channel> create() {
         return new Channel;
     }
 
+    /** Add a new item to the end of the queue
+      * \param item item value
+      * \param priority item priority
+      */
     void pushBack(const T &item, int priority = 0)
     {
         Guard<Mutex> guard(mutex_);
@@ -34,6 +42,10 @@ public:
         notEmpty_->signal();
     }
 
+    /** Add a new item to the head of the queue
+      * \param item item value
+      * \param priority item priority
+      */
     void pushFront(const T &item, int priority = 0)
     {
         Guard<Mutex> guard(mutex_);
@@ -41,6 +53,10 @@ public:
         notEmpty_->signal();
     }
 
+    /** Remove an item from the end of the queue
+      * \param item optionally return the item value
+      * \return item value
+      */
     T popBack(T *item = 0)
     {
         Guard<Mutex> guard(mutex_);
@@ -49,6 +65,10 @@ public:
         return queue_->popBack(item);
     }
 
+    /** Remove an item from the head of the queue
+      * \param item optionally return the item value
+      * \return item value
+      */
     T popFront(T *item = 0)
     {
         Guard<Mutex> guard(mutex_);
@@ -57,6 +77,11 @@ public:
         return queue_->popFront(item);
     }
 
+    /** Remove an item from the end of the queue before a certain timeout
+      * \param timeout absolute timeout (e.g. System::now() + 10)
+      * \param item optionally return the item value
+      * \return true if an item was available before reaching the timeout, otherwise false
+      */
     bool popBackBefore(double timeout, T *item)
     {
         Guard<Mutex> guard(mutex_);
@@ -68,6 +93,11 @@ public:
         return true;
     }
 
+    /** Remove an item from the head of the queue before a certain timeout
+      * \param timeout absolute timeout (e.g. System::now() + 10)
+      * \param item optionally return the item value
+      * \return true if an item was available before reaching the timeout, otherwise false
+      */
     bool popFrontBefore(double timeout, T *item)
     {
         Guard<Mutex> guard(mutex_);
@@ -79,11 +109,16 @@ public:
         return true;
     }
 
+    /// \copydoc pushBack()
     inline void push(const T &item, int priority = 0) { return pushBack(item, priority); }
+
+    /// \copydoc popFront()
     inline T pop(T *item = 0) { return popFront(item); }
 
+    /// \copydoc popFrontBefore()
     inline bool popBefore(double timeout, T *item = 0) { return popFrontBefore(timeout, item); }
 
+    /// Return number of queued items
     inline int count() const { Guard<Mutex> guard(mutex_); return queue_->count(); }
 
 protected:

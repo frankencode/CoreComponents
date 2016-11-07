@@ -45,7 +45,7 @@ void HttpConnection::readMessage(HttpMessage *message)
 {
     httpStream_->nextHeader();
 
-    message->clear();
+    message->deplete();
     message->payload_ = stream_;
 
     try {

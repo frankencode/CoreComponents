@@ -49,7 +49,7 @@ public:
       * \param other another list
       * \return new object instance
       */
-    inline static Ref<List> clone(const List *other) { return new List(*other); }
+    inline static Ref<List> replicate(const List *other) { return new List(*other); }
 
     /// Return the number of items stored in this list
     inline int count() const { return tree_.weight(); }
@@ -97,7 +97,7 @@ public:
     }
 
     /// Reset this list to an empty list
-    inline void clear() { tree_.clear(); }
+    inline void deplete() { tree_.clear(); }
 
     /** Remove an item from a certain position
       * \param index list index

@@ -33,7 +33,7 @@ public:
       * \param other another map
       * \return new object instance
       */
-    inline static Ref<Map> clone(Map *a) { return new Map(*a); }
+    inline static Ref<Map> replicate(const Map *a) { return new Map(*a); }
 
     /// Number of key-value pairs stored in this map
     inline int count() const { return tree_.weight(); }
@@ -75,11 +75,11 @@ public:
 
     /** Return the index of the first item greater or equal _a_
       */
-    inline int first(const Key &a) const { return tree_.first(a); }
+    inline int from(const Key &a) const { return tree_.first(a); }
 
     /** Return the index of the first item lower or equal _b_
       */
-    inline int last(const Key &b) const { return tree_.last(b); }
+    inline int to(const Key &b) const { return tree_.last(b); }
 
     /** Insert a key-value mapping if no key-value mapping with the same key exists already.
       * If currentValue is non-null the current value the giving key maps to is returned.
@@ -103,7 +103,7 @@ public:
 
     /** Remove a key-value mapping
       * \param key key value
-      * \param index return index this key occupied
+      * \param index return index the key-value mapping occupied
       * \return true if a matching key-value pair was found and removed
       */
     inline bool remove(const Key &key, int *index = 0)
@@ -115,7 +115,7 @@ public:
         return found;
     }
 
-    /** Remove a key-value mapping at given index
+    /** Remove a key-value mapping at a given index
       * \param index map index
       * \return true if a matching key-value pair was found and removed
       */
@@ -171,7 +171,9 @@ public:
         return found;
     }
 
-    /** Convenience wrapper to lookup()
+    /** Check if the map contains a given key
+      * \param key key value
+      * \return true if the map contains the given key
       */
     inline bool contains(const Key &key) const { return lookup<Value>(key); }
 
@@ -204,7 +206,7 @@ public:
     }
 
     /// Reset this map to an empty map
-    inline void clear() { tree_.clear(); }
+    inline void deplete() { tree_.clear(); }
 
     /// \copydoc push(const Item &item)
     inline void operator<<(const Item &item) { push(item); }

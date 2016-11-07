@@ -11,7 +11,7 @@
 namespace cc {
 
 /** \class Registration Registration.h cc/Registration
-  * \brief Object registration during library initialization
+  * \brief %Object registration during library initialization
   */
 template<class Asset>
 class Registration

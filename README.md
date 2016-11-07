@@ -6,24 +6,22 @@ About
 
 CoreComponents provides a small set of libraries and tools for Unix system programming.
 The entire toolkit is fully self-contained without any external dependencies other than a gcc
-compatible compiler and the standard C++ runtime (C++ 2011). Development happens mostly on Linux and
+compatible compiler and the standard C++ runtime (C++11). Development happens mostly on Linux and
 OpenBSD, but design goal is to support any modern operating system which implements the
 core POSIX API.
 
 Features
 --------
 
- * fully garbage collected
- * highlevel data countainers, without iterators
+ * fully incrementally garbage collected
+ * highlevel/safe-to-use data countainers
  * powerful string processing and pattern matching
- * designed for mulithreading from ground up
+ * designed for muli-threading from ground up
  * fast compile times
  * transparent API: full access to low-level system primitives
  * batteries included:
    * easy to use build system (ccbuild)
-   * built-in webserver (ccnode)
-     * compatible and fast (HTTP 1.1, memory mapped I/O)
-     * easy to extend
+   * built-in web server (ccnode)
    * powerful text search and replace (ccfind)
 
 Installation
@@ -37,8 +35,8 @@ First download the latest stable version from github:
 ```
 mkdir -p ~/src
 cd ~/src
-curl -L https://www.corecomponents.io/download/cc-0.7.3.tar.gz | tar xzv
-ln -s ../cc-0.7.3 cc
+curl -L https://www.corecomponents.io/download/cc-0.8.0.tar.gz | tar xzv
+ln -s ../cc-0.8.0 cc
 ```
 
 Thereafter bootstrap the build system:
