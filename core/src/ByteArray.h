@@ -60,7 +60,7 @@ public:
     inline const Ref &operator=(const Ref<StringList> &b) { set(String(b)); return *this; }
     inline const Ref &operator=(const Variant &b) { set(String(b)); return *this; }
     inline const Ref &operator=(const Format &b) { set(String(b)); return *this; }
-    inline const Ref &operator=(const int &null) { CC_ASSERT(null == 0); set(0); return *this; }
+    inline const Ref &operator=(const int &null) { CC_ASSERT(null == 0); (void)null; set(0); return *this; }
 
     const Ref &operator=(const char *b);
 
