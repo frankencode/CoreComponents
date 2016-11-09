@@ -36,6 +36,12 @@ public:
       */
     static void connect(Ref<SystemStream> *first, Ref<SystemStream> *second);
 
+    /** Duplicate an existing file descriptor
+      * \param fd file descriptor
+      * \return new object instance
+      */
+    static Ref<SystemStream> duplicate(int fd);
+
     /** Duplicate a system stream
       * \param other the system stream to duplicate
       * \return new object instance

@@ -21,11 +21,16 @@
 
 namespace cc {
 
+Ref<SystemStream> SystemStream::duplicate(int fd)
+{
+    int fd2 = ::dup(fd);
+    if (fd == -1) CC_SYSTEM_DEBUG_ERROR(errno);
+    return new SystemStream(fd2);
+}
+
 Ref<SystemStream> SystemStream::duplicate(SystemStream *other)
 {
-    int fd = ::dup(other->fd_);
-    if (fd == -1) CC_SYSTEM_DEBUG_ERROR(errno);
-    return new SystemStream(fd);
+    return duplicate(other->fd_);
 }
 
 void SystemStream::connect(Ref<SystemStream> *first, Ref<SystemStream> *second)
