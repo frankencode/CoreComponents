@@ -57,8 +57,11 @@ HttpSocket::~HttpSocket()
 {
     if (mode_ & Secure)
     {
-        if (mode_ & Open)
-            gnuTlsCheckSuccess(gnutls_bye(session_, GNUTLS_SHUT_WR));
+        if (mode_ & Open) {
+            int ret = gnutls_bye(session_, GNUTLS_SHUT_WR));
+            if (ret != GNUTLS_E_SUCCESS)
+                CCNODE_ERROR() << peerAddress << ": " << gnutls_strerror(ret) << nl;
+        }
 
         if (mode_ & Connected)
             gnutls_deinit(session_);
