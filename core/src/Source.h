@@ -15,12 +15,18 @@
 namespace cc {
 
 /** \brief Generic data source
+  * \tparam T item type
   */
 template<class T>
 class Source: public Object
 {
 public:
     typedef T Item;
+
+    /** Read an item from the source
+      * \param item return next item if not end of input
+      * \return true if not end of input, false otherwise
+      */
     virtual bool read(T *item) = 0;
 };
 
