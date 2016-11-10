@@ -60,7 +60,7 @@ HttpSocket::~HttpSocket()
         if (mode_ & Open) {
             int ret = gnutls_bye(session_, GNUTLS_SHUT_WR);
             if (ret != GNUTLS_E_SUCCESS)
-                CCNODE_ERROR() << peerAddress << ": " << gnutls_strerror(ret) << nl;
+                CCNODE_ERROR() << gnutls_strerror(ret) << nl;
         }
 
         if (mode_ & Connected)
