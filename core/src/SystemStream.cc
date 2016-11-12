@@ -52,8 +52,11 @@ SystemStream::SystemStream(int fd):
 SystemStream::~SystemStream()
 {
     if (fd_ >= 0) {
-        if (::close(fd_) == -1)
+        if (::close(fd_) == -1) {
+            #ifndef NDEBUG
             CC_SYSTEM_DEBUG_ERROR(errno);
+            #endif
+        }
     }
 }
 
