@@ -19,7 +19,7 @@ class Guard
 {
 public:
     /** Lowlevel constructor: acquire mutex
-      * \param mutex Mutex to hold
+      * \param mutex mutex to hold
       */
     Guard(Mutex *mutex): mutex_(mutex) { mutex_->acquire(); }
 

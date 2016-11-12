@@ -55,7 +55,7 @@ public:
 
     inline T top() { CC_ASSERT(!isEmpty()); return buf_[0]; }
 
-    inline void clear() { fill_ = 0; }
+    inline void clear() { fill_ = 0; } // FIXME: deplete
 
     inline static int parent(int i) { return (i - 1) / 2; }
     inline static int leftChild(int i) { return 2 * i + 1; }

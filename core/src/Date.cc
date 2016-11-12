@@ -22,7 +22,7 @@ inline bool leapYear(int y)
 
 /** Number of leap years between x and y (excluding x, y).
   */
-int leaps(int x, int y)
+static int leaps(int x, int y)
 {
     if (x > y) {
         int h = x;
@@ -55,7 +55,7 @@ inline int daysInMonth(int i, int y)
 
 Date::Date():
     offset_(0),
-    time_(cc::nan)
+    time_(cc::nan())
 {}
 
 Date::Date(const Date &b):

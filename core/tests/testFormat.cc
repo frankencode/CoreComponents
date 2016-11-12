@@ -17,7 +17,7 @@ class FloatingPointLiterals: public TestCase
     void run()
     {
         const double test[] = {
-            3.3, 1., 0.1, 1.1, 0., 1.234e10, 1e-308, cc::nan, cc::inf,
+            3.3, 1., 0.1, 1.1, 0., 1.234e10, 1e-308, cc::nan(), cc::inf(),
             -1./3., -0.55, 0.49, 15, -1.5, 1.1111111111,
             1.1111111111111111111111111111111,
             1e-16

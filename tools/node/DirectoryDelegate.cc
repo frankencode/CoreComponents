@@ -67,7 +67,7 @@ void DirectoryDelegate::process(HttpRequest *request)
         }
     }
 
-    response()->setHeader("Last-Modified", formatDate(Date::create(fileStatus->lastModified())));
+    response()->setHeader("Last-Modified", formatDate(Date::breakdown(fileStatus->lastModified())));
 
     if (fileStatus->type() == DirectoryType) {
         String indexPath, indexName;

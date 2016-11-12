@@ -56,7 +56,7 @@ void HttpResponse::setHeader(Header *header)
 
 void HttpResponse::writeHeader()
 {
-    String now = formatDate(Date::create(System::now()));
+    String now = formatDate(Date::breakdown(System::now()));
     {
         String nodeVersion = nodeConfig()->version();
         if (nodeVersion != "")

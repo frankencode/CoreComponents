@@ -79,7 +79,7 @@ public:
     double eval(String text)
     {
         Ref<Token> rootToken = match(text)->rootToken();
-        double value = cc::nan;
+        double value = cc::nan();
 
         if (rootToken) {
             text_ = text;
@@ -92,7 +92,7 @@ public:
 private:
     double eval(Token *token)
     {
-        double value = nan;
+        double value = cc::nan();
 
         if (token->rule() == sum_)
         {

@@ -53,7 +53,7 @@ void ServiceWorker::logDelivery(HttpClientConnection *client, int statusCode, si
 
     Format(stream)
         << client->address()->networkAddress() << " "
-        << Date::create(requestTime)->toString() << " "
+        << Date::breakdown(requestTime)->toString() << " "
         << "\"" << requestHost << "\" "
         << "\"" << requestLine << "\" "
         << statusCode << " " << bytesWritten << " "

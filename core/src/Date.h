@@ -36,35 +36,59 @@ inline double days(double n) { return n * SecondsPerDay; }
 class Date: public Object
 {
 public:
+    /** Create an invalid date
+      * \return new object instance
+      */
     inline static Ref<Date> create() {
         return new Date;
     }
-    inline static Ref<Date> create(double time, int offset = 0) {
+
+    /** Breakdown an Unix timestamp into a precise calendar date
+      * \param time \copydoc time()
+      * \param offset \copydoc offset()
+      * \return new object instance
+      */
+    inline static Ref<Date> breakdown(double time, int offset = 0) {
         return new Date(time, offset);
     }
-    inline static Ref<Date> create(int year, int month, int day, int hour = 0, int minutes = 0, int seconds = 0, int offset = 0) {
+
+    /** Compose a precise calendar date from its components
+      * \param year \copydoc year()
+      * \param month \copydoc month()
+      * \param day \copydoc day()
+      * \param hour \copydoc hour()
+      * \param minutes \copydoc minutes()
+      * \param seconds \copydoc seconds()
+      * \param offset \copydoc offset()
+      * \return new object instance
+      */
+    inline static Ref<Date> compose(int year, int month, int day, int hour = 0, int minutes = 0, int seconds = 0, int offset = 0) {
         return new Date(year, month, day, hour, minutes, seconds, offset);
     }
 
-    inline Ref<Date> copy() const { return new Date(*this); }
+    /** Create a copy of another date object
+      * \return new object instance
+      */
+    inline static Ref<Date> copy(const Date *other) { return new Date(*other); }
 
-    inline bool isValid() const { return time_ != cc::nan;}
+    /// false for Date::create(), true otherwise
+    inline bool isValid() const { return time_ != cc::nan();}
 
-    inline int year() const { return year_; }
-    inline int month() const { return month_; }
-    inline int day() const { return day_; }
-    inline int weekDay() const { return weekDay_; }
-    inline int yearDay() const { return yearDay_; }
-    inline int hour() const { return hour_; }
-    inline int minutes() const { return minutes_; }
-    inline int seconds() const { return seconds_; }
-    inline int offset() const { return offset_; }
+    inline int year() const { return year_; } ///< year number since introduction of the calender (1, 2,..., 2020, etc.)
+    inline int month() const { return month_; } ///< month number (1..12)
+    inline int day() const { return day_; } ///< day of month (1..31)
+    inline int weekDay() const { return weekDay_; } ///< day of the week (0..6)
+    inline int yearDay() const { return yearDay_; } ///< day of the year (1..365)
+    inline int hour() const { return hour_; } ///< current hour of the day (0..23)
+    inline int minutes() const { return minutes_; } ///< current minutes (0..60)
+    inline int seconds() const { return seconds_; } ///< current seconds (0..60)
+    inline int offset() const { return offset_; } ///< timezone offset in hours
 
-    double time() const;
-    String toString() const;
+    double time() const; ///< seconds since 1st Jan 1970 00:00:00
+    String toString() const; ///< convert this date object into a string representation
 
-    String monthName() const;
-    String dayName() const;
+    String monthName() const; ///< name of the month ("Jan", "Feb", ..., "Dec")
+    String dayName() const; ///< name of the weekday ("Sun", "Mon", ..., "Sat")
 
 private:
     Date();
