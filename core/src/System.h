@@ -19,12 +19,12 @@ namespace cc {
 class System
 {
 public:
-    static int concurrency();
-    static int pageSize();
-    static double now();
+    static int concurrency(); ///< number of threads of the system
+    static int pageSize(); ///< memory page size
+    static double now(); ///< current system time
 
-    static String hostName();
-    static void setHostName(String newName);
+    static String hostName(); ///< system host name
+    static void setHostName(String newName); ///< set system host name
 };
 
 } // namespace cc

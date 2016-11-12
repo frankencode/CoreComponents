@@ -121,7 +121,7 @@ Ref<Date> scanDate(String text, bool *ok)
         }
     }
     if (ok) *ok = true;
-    return Date::create(year, month, day, hour, minutes, seconds);
+    return Date::compose(year, month, day, hour, minutes, seconds);
 }
 
 } // namespace ccnode

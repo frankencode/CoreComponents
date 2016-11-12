@@ -767,11 +767,11 @@ int ByteArray::scanNumber(T *value, int base, int i0, int i1) const
     bool isFloating = (T(1)/T(3) > 0);
     if (isFloating && i + 2 < i1) {
         if (at(i) == 'n' && at(i + 1) == 'a' && at(i + 2) == 'n') {
-            *value = cc::nan;
+            *value = cc::nan();
             return i + 3;
         }
         else if (at(i) == 'i' && at(i + 1) == 'n' && at(i + 2) == 'f') {
-            *value = sign * cc::inf;
+            *value = sign * cc::inf();
             return i + 3;
         }
     }

@@ -14,13 +14,15 @@
 
 namespace cc {
 
-/** \brief Generic data source
+/** \class Source Source.h cc/Source
+  * \brief Generic data source
   * \tparam T item type
   */
 template<class T>
 class Source: public Object
 {
 public:
+    /// Item type
     typedef T Item;
 
     /** Read an item from the source

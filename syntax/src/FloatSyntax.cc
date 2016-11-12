@@ -80,7 +80,7 @@ void FloatSyntax::read(float64_t *value, const ByteArray *text, Token *token) co
 
     if (token->rule() == nan_)
     {
-        *value = nan;
+        *value = cc::nan();
     }
     else if (token->rule() == infinite_)
     {

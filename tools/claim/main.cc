@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 
         Ref<VariantMap> options = VariantMap::create();
         {
-            int year = Date::create(System::now())->year();
+            int year = Date::breakdown(System::now())->year();
             options->insert("report", false);
             options->insert("strip", false);
             options->insert("insert", false);
