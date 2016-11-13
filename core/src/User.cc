@@ -40,7 +40,7 @@ User::User(String name)
 void User::load(struct passwd *entry)
 {
     if (entry) {
-        exists_ = true;
+        isValid_ = true;
         id_ = entry->pw_uid;
         groupId_ = entry->pw_gid;
         loginName_ = entry->pw_name;
@@ -56,7 +56,7 @@ void User::load(struct passwd *entry)
         shell_ = entry->pw_shell;
     }
     else {
-        exists_ = false;
+        isValid_ = false;
         id_ = 0;
         groupId_ = 0;
     }

@@ -116,8 +116,8 @@ void NodeMaster::runNode() const
         if (groupName == "") groupName = userName;
         Ref<User> user = User::lookup(userName);
         Ref<Group> group = Group::lookup(groupName);
-        if (!user->exists()) throw UsageError("No such user: \"" + userName + "\"");
-        if (!group->exists()) throw UsageError("No such group: \"" + groupName + "\"");
+        if (!user->isValid()) throw UsageError("No such user: \"" + userName + "\"");
+        if (!group->isValid()) throw UsageError("No such group: \"" + groupName + "\"");
         CCNODE_NOTICE() << "Dropping process persona to user:group " << userName << ":" << groupName << " (uid:gid = " << user->id() << ":" << group->id() << ")" << nl;
         Process::setPersona(user->id(), group->id());
     }
