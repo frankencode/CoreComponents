@@ -47,7 +47,7 @@ bool Group::checkMembership(User *user) const
 void Group::load(struct group *entry)
 {
     if (entry) {
-        exists_ = true;
+        isValid_ = true;
         id_ = entry->gr_gid;
         name_ = entry->gr_name;
         otherMembers_ = StringList::create();
@@ -58,7 +58,7 @@ void Group::load(struct group *entry)
         }
     }
     else {
-        exists_ = false;
+        isValid_ = false;
         id_ = 0;
     }
 }
