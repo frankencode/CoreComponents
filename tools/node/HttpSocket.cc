@@ -283,9 +283,17 @@ void HttpSocket::gnuTlsCheckError(int ret, const SocketAddress *peerAddress)
 
 ssize_t HttpSocket::gnuTlsPull(gnutls_transport_ptr_t ctx, void *data, size_t size)
 {
-    HttpSocket *socket = (HttpSocket *)ctx;
-    socket->waitInput();
-    return SystemIo::read(socket->fd(), data, size);
+    ssize_t n = -1;
+    try {
+        HttpSocket *socket = (HttpSocket *)ctx;
+        socket->waitInput();
+        n = SystemIo::read(socket->fd(), data, size);
+    }
+    catch (Exception &ex) {
+        CCNODE_ERROR() << ex << nl;
+    }
+
+    return n;
 }
 
 ssize_t HttpSocket::gnuTlsPushVec(gnutls_transport_ptr_t ctx, const giovec_t *iov, int iovcnt)
@@ -295,7 +303,13 @@ ssize_t HttpSocket::gnuTlsPushVec(gnutls_transport_ptr_t ctx, const giovec_t *io
     CC_STATIC_ASSERT(sizeof(struct iovec) == sizeof(giovec_t));
 
     HttpSocket *socket = (HttpSocket *)ctx;
-    SystemIo::writev(socket->fd(), (const struct iovec *)iov, iovcnt);
+    try {
+        SystemIo::writev(socket->fd(), (const struct iovec *)iov, iovcnt);
+    }
+    catch (Exception &ex) {
+        CCNODE_ERROR() << ex << nl;
+        return -1;
+    }
 
     ssize_t total = 0;
     for (int i = 0; i < iovcnt; ++i)
