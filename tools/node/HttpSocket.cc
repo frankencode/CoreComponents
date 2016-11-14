@@ -128,6 +128,9 @@ public:
                 }
             }
         }
+        catch (ProtocolException &ex) {
+            CCNODE_ERROR() << peerAddress_ << ": " << ex.message() << nl;
+        }
         catch (Exception &ex) {
             CCNODE_ERROR() << peerAddress_ << ": " << ex << nl;
         }
