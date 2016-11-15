@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/Exception>
 
 namespace ccnode {
 
@@ -16,7 +16,7 @@ using namespace cc;
 
 class CloseRequest {};
 
-class ProtocolException
+class ProtocolException: public Exception
 {
 public:
     ProtocolException(int statusCode, String message):
@@ -80,6 +80,13 @@ class NotImplemented: public ProtocolException
 {
 public:
     NotImplemented(): ProtocolException(501, "Not implemented") {}
+};
+
+class TlsError: public Exception
+{
+public:
+    TlsError() {}
+    String message() const;
 };
 
 } // namespace ccnode

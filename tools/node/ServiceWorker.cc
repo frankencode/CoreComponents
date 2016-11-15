@@ -36,7 +36,7 @@ ServiceWorker::ServiceWorker(PendingConnections *pendingConnections, ClosedConne
 ServiceWorker::~ServiceWorker()
 {
     pendingConnections_->push(Ref<HttpClientConnection>());
-    wait();
+    Thread::wait();
 }
 
 void ServiceWorker::logDelivery(HttpClientConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage)
@@ -86,18 +86,6 @@ void ServiceWorker::run()
                         RefGuard<HttpResponse> guard(&response_);
                         response_ = HttpResponse::create(client_);
 
-                        /*if (requestCount == serviceInstance_->requestLimit()) {
-                            response_->setHeader("Connection", "close");
-                        }
-                        else if (requestCount == 1) { FIXME: obsolete
-                            response_->setHeader(
-                                "Keep-Alive",
-                                Format("timeout=%%, max=%%")
-                                    << int(nodeConfig()->connectionTimeout())
-                                    << serviceInstance_->requestLimit()
-                            );
-                        }*/
-
                         serviceDelegate_->process(request);
                         response_->endTransmission();
                         if (response_->delivered()) {
@@ -119,6 +107,8 @@ void ServiceWorker::run()
                     try {
                         Format("HTTP/1.1 %% %%\r\n\r\n", client_->stream()) << ex.statusCode() << " " << ex.message();
                     }
+                    catch(Exception &)
+                    {}
                     catch(...)
                     {}
                     logDelivery(client_, ex.statusCode());
@@ -135,8 +125,6 @@ void ServiceWorker::run()
             serviceDelegate_ = 0;
             serviceInstance_ = 0;
         }
-        catch (ProtocolException &ex)
-        {}
         catch (ConnectionResetByPeer &)
         {}
         catch (Exception &ex) {
