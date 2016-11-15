@@ -128,9 +128,6 @@ public:
                 }
             }
         }
-        catch (ProtocolException &ex) {
-            CCNODE_ERROR() << peerAddress_ << ": " << ex.message() << nl;
-        }
         catch (Exception &ex) {
             CCNODE_ERROR() << peerAddress_ << ": " << ex << nl;
         }
@@ -276,7 +273,7 @@ bool HttpSocket::gnuTlsCheckSuccess(int ret, const SocketAddress *peerAddress)
 {
     if (ret != GNUTLS_E_SUCCESS) {
         CCNODE_ERROR() << peerAddress << ": " << gnutls_strerror(ret) << nl;
-        throw InternalServerError();
+        throw TlsError();
     }
     return true;
 }
@@ -285,7 +282,7 @@ void HttpSocket::gnuTlsCheckError(int ret, const SocketAddress *peerAddress)
 {
     if (ret < 0) {
         CCNODE_ERROR() << peerAddress << ": " << gnutls_strerror(ret) << nl;
-        throw InternalServerError();
+        throw TlsError();
     }
 }
 

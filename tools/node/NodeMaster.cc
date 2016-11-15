@@ -163,11 +163,8 @@ void NodeMaster::runNode() const
                         CCNODE_DEBUG() << "Rejected connection from " << client->address() << nl;
                     }
                 }
-                catch (ProtocolException &ex) {
-                    CCNODE_DEBUG() << ex.message() << nl;
-                }
                 catch (Exception &ex) {
-                    CCNODE_DEBUG() << ex.message() << nl;
+                    CCNODE_DEBUG() << ex << nl;
                 }
             }
         }
