@@ -6,10 +6,20 @@
  *
  */
 
+#include <gnutls/gnutls.h>
+#include <cc/Format>
 #include "exceptions.h"
 
 namespace ccnode {
 
-String TlsError::message() const { return "TLS error"; }
+TlsError::TlsError(int errorCode, const SocketAddress *peerAddress):
+    errorCode_(errorCode),
+    peerAddress_(peerAddress)
+{}
+
+String TlsError::message() const
+{
+    return Format() << peerAddress_ << ": " << gnutls_strerror(errorCode_);
+}
 
 } // namespace ccnode
