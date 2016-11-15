@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <exception>
 #include <cc/String>
 
 namespace cc {
@@ -16,12 +17,14 @@ namespace cc {
   * \brief Root class of the exception class hierarchy
   * \see exceptions
   */
-class Exception
+class Exception: public std::exception
 {
 public:
     ~Exception() throw() {}
 
     virtual String message() const = 0;
+
+    virtual const char* what() const throw();
 };
 
 inline String str(const Exception &ex) { return ex.message(); }
