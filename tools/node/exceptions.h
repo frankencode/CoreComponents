@@ -9,10 +9,12 @@
 #pragma once
 
 #include <cc/Exception>
+#include <cc/net/SocketAddress>
 
 namespace ccnode {
 
 using namespace cc;
+using namespace cc::net;
 
 class CloseRequest {};
 
@@ -85,8 +87,12 @@ public:
 class TlsError: public Exception
 {
 public:
-    TlsError() {}
+    TlsError(int errorCode, const SocketAddress *peerAddress);
     String message() const;
+
+private:
+    int errorCode_;
+    Ref<const SocketAddress> peerAddress_;
 };
 
 } // namespace ccnode

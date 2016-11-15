@@ -271,19 +271,13 @@ void HttpSocket::gnuTlsCheckError(int ret)
 
 bool HttpSocket::gnuTlsCheckSuccess(int ret, const SocketAddress *peerAddress)
 {
-    if (ret != GNUTLS_E_SUCCESS) {
-        CCNODE_ERROR() << peerAddress << ": " << gnutls_strerror(ret) << nl;
-        throw TlsError();
-    }
+    if (ret != GNUTLS_E_SUCCESS) throw TlsError(ret, peerAddress);
     return true;
 }
 
 void HttpSocket::gnuTlsCheckError(int ret, const SocketAddress *peerAddress)
 {
-    if (ret < 0) {
-        CCNODE_ERROR() << peerAddress << ": " << gnutls_strerror(ret) << nl;
-        throw TlsError();
-    }
+    if (ret < 0) throw TlsError(ret, peerAddress);
 }
 
 ssize_t HttpSocket::gnuTlsPull(gnutls_transport_ptr_t ctx, void *data, size_t size)
