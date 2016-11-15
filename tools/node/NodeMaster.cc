@@ -164,7 +164,7 @@ void NodeMaster::runNode() const
                     }
                 }
                 catch (Exception &ex) {
-                    CCNODE_DEBUG() << ex << nl;
+                    CCNODE_ERROR() << ex << nl;
                 }
             }
         }
