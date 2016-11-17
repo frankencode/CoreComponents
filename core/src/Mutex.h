@@ -23,16 +23,29 @@ class WaitCondition;
 class Mutex: public Object, public NonCopyable
 {
 public:
+    /** \brief Create a new mutex
+      * \return new object instance
+      */
     inline static Ref<Mutex> create() { return new Mutex; }
-    ~Mutex();
 
+    /** Try to lock this mutex
+      * \return true if this mutex was not already locked, false otherwise
+      */
     bool tryAcquire();
+
+    /// Lock this mutex
     void acquire();
+
+    /// Release this mutex
     void release();
 
 protected:
     friend class WaitCondition;
+
     Mutex();
+    ~Mutex();
+
+private:
     pthread_mutex_t mutex_;
 };
 
