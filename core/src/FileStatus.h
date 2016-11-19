@@ -21,6 +21,7 @@ class File;
 typedef struct stat StructStat;
 
 /** \class FileStatus FileStatus.h cc/FileStatus
+  * \ingroup file_system
   * \brief Read %File attributes
   * \see File
   */

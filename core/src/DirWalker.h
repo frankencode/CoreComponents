@@ -16,6 +16,7 @@ namespace cc {
 class Dir;
 
 /** \class DirWalker DirWalker.h cc/DirWalker
+  * \ingroup file_system
   * \brief Recursive directory tree traversal
   * \see Dir
   */

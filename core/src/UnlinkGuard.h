@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class UnlinkGuard UnlinkGuard.h cc/UnlinkGuard
+  * \ingroup file_system
   * \brief Automatically unlink a file at the end of the current scope
   */
 class UnlinkGuard: public Object {

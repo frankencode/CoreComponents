@@ -16,6 +16,7 @@
 namespace cc {
 
 /** \class Dir Dir.h cc/Dir
+  * \ingroup file_system
   * \brief Work with directory files
   * \see File, CleanupGuard, DirWalker
   */

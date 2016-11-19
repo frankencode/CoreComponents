@@ -35,7 +35,7 @@ public:
 class DatagramSocket: public SystemStream
 {
 public:
-    /** create a new datagram socket to communicate with one or more peers
+    /** Create a new datagram socket to communicate with one or more peers
       * \address local address to bind to the socket
       */
     static Ref<DatagramSocket> open(const SocketAddress *address);
@@ -52,12 +52,12 @@ public:
       */
     void allowBroadcasting(bool on);
 
-    /** Set the incoming socket buffer size
+    /** %Set the incoming socket buffer size
       * \param newSize new incoming buffer size in bytes
       */
     void setRecvBufferSize(int newSize);
 
-    /** Set the outgoing socket buffer size
+    /** %Set the outgoing socket buffer size
       * \param newSize new outgoing buffer size in bytes
       */
     void setSendBufferSize(int newSize);

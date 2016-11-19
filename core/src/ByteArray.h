@@ -22,13 +22,15 @@ class ByteArray;
 class Variant;
 class Format;
 
-/** A String is simply an alias of Ref<ByteArray>
+/** A string is a reference to a ByteArray
+  * \ingroup unicode
   */
 typedef Ref<ByteArray> String;
 
 typedef List<String> StringList;
 
-/** \brief Specialization of Ref<T>
+/** \class Ref<ByteArray> ByteArray.h cc/ByteArray
+  * \brief Specialization of Ref<T>
   */
 template<>
 class Ref<ByteArray>
@@ -98,6 +100,7 @@ private:
 class ByteArray: public Object
 {
 public:
+    /// Item type for iteration
     typedef char Item;
 
     /** Create a new byte array of exactly N bytes, without zero-termination

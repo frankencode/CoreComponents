@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class Utf16Source Utf16Source.h cc/Utf16Source
+  * \ingroup unicode
   * \brief %Unicode UTF-16 decoding data source
   *
   * A Byte-Order-Mark (BOM) at the start of the stream automatically sets

@@ -22,6 +22,7 @@ namespace cc {
 class MappedByteArray;
 
 /** \class File File.h cc/File
+  * \ingroup file_system
   * \brief Handle files
   * \see FileStatus, UnlinkGuard, Dir, SubProcess
   */

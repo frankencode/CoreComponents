@@ -1,3 +1,12 @@
 /** \namespace cc
   * \brief Core system primitives
   */
+
+/** \defgroup threading Multi-threading
+  */
+
+/** \defgroup file_system File system access
+  */
+
+/** \defgroup unicode Unicode support
+  */
