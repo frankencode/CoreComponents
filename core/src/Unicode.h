@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class Unicode Unicode.h cc/Unicode
+  * \ingroup unicode
   * \brief Seemless access to %Unicode characters of an UTF-8 encoded string
   * \see String
   */

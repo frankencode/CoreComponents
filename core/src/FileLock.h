@@ -17,6 +17,7 @@ namespace cc {
 typedef struct flock FLockStruct;
 
 /** \class FileLock FileLock.h cc/FileLock
+  * \ingroup file_system
   * \brief Advisory file locks
   * \see Guard
   */

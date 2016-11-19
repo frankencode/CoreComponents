@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class Utf8Walker Utf8Walker.h cc/Utf8Walker
+  * \ingroup unicode
   * \brief Iterating UTF-8 encoded strings
   *
   * The Utf8Walker allows iterating Unicode characters over any zero terminated byte sequence.
