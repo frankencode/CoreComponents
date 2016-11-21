@@ -20,17 +20,37 @@ namespace cc {
 class Utf16Sink: public Object
 {
 public:
-    inline static Ref<Utf16Sink> open(Stream *stream, ByteArray *buf = 0, Endian endian = BigEndian) {
-        return new Utf16Sink(stream, buf, endian);
-    }
-    inline static Ref<Utf16Sink> open(ByteArray *buf, Endian endian = BigEndian) {
-        return new Utf16Sink(0, buf, endian);
+    /** Open a new UTF-16 encoding data sink
+      * \param stream underlying data stream
+      * \param buffer output buffer (optional)
+      * \param endian endianess of the 16 bit words transmitted
+      * \return new object instance
+      */
+    inline static Ref<Utf16Sink> open(Stream *stream, ByteArray *buffer = 0, Endian endian = BigEndian) {
+        return new Utf16Sink(stream, buffer, endian);
     }
 
+    /** Open a new UTF-16 encoding data sink
+      * \param buffer output buffer
+      * \param endian endianess of the 16 bit words transmitted
+      * \return new object instance
+      */
+    inline static Ref<Utf16Sink> open(ByteArray *buffer, Endian endian = BigEndian) {
+        return new Utf16Sink(0, buffer, endian);
+    }
+
+    /** Write the optional Byte-Order-Mark (BOM).
+      * The Byte-Order-Mark is a 16 bit word at the beginning of the transmission.
+      * It signifies the endianess used for UTF-16 encoding. The value of the BOM
+      * is 0xFEFF.
+      */
     inline void writeByteOrderMark() {
         byteSink_->writeUInt16(0xFEFF);
     }
 
+    /** Write an %Unicode character
+      * \param ch %Unicode character
+      */
     inline void write(uchar_t ch)
     {
         if (ch < 0x10000) {
@@ -46,11 +66,12 @@ public:
         }
     }
 
+    /// Underlying byte sink used for UTF-16 encoding
     inline ByteSink *byteSink() const { return byteSink_; }
 
 private:
-    Utf16Sink(Stream *stream, ByteArray* buf, Endian endian):
-        byteSink_(ByteSink::open(stream, buf, endian))
+    Utf16Sink(Stream *stream, ByteArray* buffer, Endian endian):
+        byteSink_(ByteSink::open(stream, buffer, endian))
     {}
 
     Ref<ByteSink> byteSink_;

@@ -27,8 +27,7 @@ int main(int argc, char **argv)
         Ref<StringList> items = arguments->items();
         if (items->count() == 0) items->append("");
 
-        for (int i = 0; i < items->count(); ++i) {
-            String path = items->at(i);
+        for (String path: items) {
             Ref<HashSum> hashSum;
             if (toolName->contains("sha1")) hashSum = Sha1::create();
             else hashSum = Md5::create();

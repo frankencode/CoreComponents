@@ -20,21 +20,34 @@ namespace cc {
 class Utf8Sink: public Object
 {
 public:
-    inline static Ref<Utf8Sink> open(Stream *stream, ByteArray* buf = 0) {
-        return new Utf8Sink(stream, buf);
+    /** Open a new UTF-8 encoding data sink
+      * \param stream underlying data stream
+      * \param buffer output buffer (optional)
+      * \return new object instance
+      */
+    inline static Ref<Utf8Sink> open(Stream *stream, ByteArray* buffer = 0) {
+        return new Utf8Sink(stream, buffer);
     }
 
-    inline static Ref<Utf8Sink> open(ByteArray* buf) {
-        return new Utf8Sink(0, buf);
+    /** Open a new UTF-8 encoding data sink
+      * \param buffer output buffer
+      * \return new object instance
+      */
+    inline static Ref<Utf8Sink> open(ByteArray* buffer) {
+        return new Utf8Sink(0, buffer);
     }
 
+    /** Write an %Unicode character
+      * \param ch %Unicode character
+      */
     void write(uchar_t ch);
 
+    /// Underlying byte sink used for UTF-8 encoding
     inline ByteSink *byteSink() const { return byteSink_; }
 
 private:
-    Utf8Sink(Stream *stream, ByteArray* buf):
-        byteSink_(ByteSink::open(stream, buf))
+    Utf8Sink(Stream *stream, ByteArray* buffer):
+        byteSink_(ByteSink::open(stream, buffer))
     {}
 
     Ref<ByteSink> byteSink_;

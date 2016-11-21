@@ -19,7 +19,7 @@ FileStatus::FileStatus(String path, bool resolve):
     path_(path),
     resolve_(resolve)
 {
-    exists_ = update();
+    isValid_ = update();
 }
 
 void FileStatus::setTimes(double lastAccess, double lastModified)
@@ -39,16 +39,16 @@ bool FileStatus::update()
     StructStat *buf = static_cast<StructStat *>(this);
     memclr(buf, sizeof(StructStat));
     if (path_ == "")
-        return exists_ = false;
+        return isValid_ = false;
     int ret = resolve_ ? ::stat(path_, buf) : ::lstat(path_, buf);
     if (ret == -1) {
         if ((errno == ENOENT) || (errno == ENOTDIR)) {
-            exists_ = false;
+            isValid_ = false;
             return false;
         }
         CC_SYSTEM_ERROR(errno, path_);
     }
-    exists_ = true;
+    isValid_ = true;
     return true;
 }
 

@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class Set Set.h cc/Set
+  * \ingroup container
   * \brief %Set data countainer
   */
 template<class T>

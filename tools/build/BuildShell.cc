@@ -42,13 +42,13 @@ bool BuildShell::run(String command)
 
 Ref<FileStatus> BuildShell::fileStatus(String path)
 {
-    if (plan()->options() & BuildPlan::Blindfold) return FileStatus::read();
+    if (plan()->options() & BuildPlan::Blindfold) return FileStatus::create();
     return FileStatus::read(path);
 }
 
 void BuildShell::mkdir(String path)
 {
-    if (!fileStatus(path)->exists())
+    if (!fileStatus(path)->isValid())
         fout("mkdir -p %%\n") << path;
     if (plan()->options() & BuildPlan::Simulate) return;
     Dir::establish(path);
@@ -56,7 +56,7 @@ void BuildShell::mkdir(String path)
 
 void BuildShell::rmdir(String path)
 {
-    bool exists = fileStatus(path)->exists();
+    bool exists = fileStatus(path)->isValid();
     if (exists) fout("rmdir %%\n") << path;
     if (plan()->options() & BuildPlan::Simulate) return;
     if (exists) try { Dir::remove(path); } catch (SystemError &) { /*FIXME, directory might not be empty */ }
@@ -73,7 +73,7 @@ void BuildShell::symlink(String path, String newPath)
 bool BuildShell::install(String sourcePath, String destPath)
 {
     String destDirPath = destPath->reducePath();
-    bool destDirMissing = destDirPath != "" && !fileStatus(destDirPath)->exists();
+    bool destDirMissing = destDirPath != "" && !fileStatus(destDirPath)->isValid();
     if (destDirMissing) fout("install -d %%\n") << destDirPath;
 
     fout("install %% %%\n") << sourcePath << destPath;
@@ -97,7 +97,7 @@ bool BuildShell::install(String sourcePath, String destPath)
 
 bool BuildShell::unlink(String path)
 {
-    if ((plan()->options() & BuildPlan::Blindfold) || fileStatus(path)->exists()) {
+    if ((plan()->options() & BuildPlan::Blindfold) || fileStatus(path)->isValid()) {
         if (plan()->options() & BuildPlan::Simulate) {
             fout("rm -f %%\n") << path;
             return true;

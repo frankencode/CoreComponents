@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class Map Map.h cc/Map
+  * \ingroup container
   * \brief %Map data container
   * \see Set, List
   */

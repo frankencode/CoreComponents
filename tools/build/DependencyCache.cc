@@ -65,7 +65,7 @@ DependencyCache::DependencyCache(BuildPlan *plan):
         for (int i = 0; i < dependencyPaths->count(); ++i)
         {
             Ref<FileStatus> sourceStatus = buildPlan_->shell()->fileStatus(dependencyPaths->at(i));
-            if (!sourceStatus->exists()) {
+            if (!sourceStatus->isValid()) {
                 dirty = true;
                 break;
             }
@@ -74,7 +74,7 @@ DependencyCache::DependencyCache(BuildPlan *plan):
                 dirty = true;
                 break;
             }
-            if (objectStatus->exists()) {
+            if (objectStatus->isValid()) {
                 if (sourceTime > objectTime /*|| cacheItemTime > objectTime*/) {
                     dirty = true;
                     break;
@@ -88,7 +88,7 @@ DependencyCache::DependencyCache(BuildPlan *plan):
 
         cache_->insert(
             item->key(),
-            Module::create(command, modulePath, dependencyPaths, !objectStatus->exists())
+            Module::create(command, modulePath, dependencyPaths, !objectStatus->isValid())
         );
     }
 }

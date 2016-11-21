@@ -21,12 +21,12 @@ Ref<TarWriter> TarWriter::open(Stream *sink)
     return new TarWriter(sink);
 }
 
-TarWriter::TarWriter(Stream *sink)
-    : sink_(sink),
-      zero_(String("\0", 1)),
-      hardLinks_(HardLinks::create()),
-      longPathStatus_(FileStatus::read()),
-      longLinkStatus_(FileStatus::read())
+TarWriter::TarWriter(Stream *sink):
+    sink_(sink),
+    zero_(String("\0", 1)),
+    hardLinks_(HardLinks::create()),
+    longPathStatus_(FileStatus::create()),
+    longLinkStatus_(FileStatus::create())
 {}
 
 TarWriter::~TarWriter()

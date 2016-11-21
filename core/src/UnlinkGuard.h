@@ -18,7 +18,7 @@ namespace cc {
   */
 class UnlinkGuard: public Object {
 public:
-    /** \brief Create an UnlinkGuard
+    /** \brief Create an unlink guard
       * \param path file path
       * \return new object instance
       */
@@ -26,8 +26,6 @@ public:
 
     /** \brief Low-level constructor
       * \param path file path
-      *
-      * The public constructor allows to post an UnlinkGuard statically into a scope.
       */
     UnlinkGuard(String path);
 
