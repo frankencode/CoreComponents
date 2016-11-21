@@ -54,9 +54,7 @@ public:
         notEmpty_->signal();
     }
 
-    /** Remove an item from the end of the queue
-      * \param item optionally return the item value
-      * \return item value
+    /** \copydoc Queue::popBack(T *)
       */
     T popBack(T *item = 0)
     {
@@ -66,9 +64,7 @@ public:
         return queue_->popBack(item);
     }
 
-    /** Remove an item from the head of the queue
-      * \param item optionally return the item value
-      * \return item value
+    /** \copydoc Queue::popFront(T *)
       */
     T popFront(T *item = 0)
     {

@@ -41,7 +41,7 @@ bool PreparationStage::run()
 
         if (predicate->source()->count() == 0) {
             String targetPath = plan()->sourcePath(predicate->target()->replace("%", ""));
-            if (!FileStatus::read(targetPath)->exists()) {
+            if (!FileStatus::read(targetPath)->isValid()) {
                 String command = expand(predicate->create(), "", targetPath);
                 if (!scheduler) {
                     scheduler = createScheduler();
@@ -104,7 +104,7 @@ bool PreparationStage::run()
                         plan()->sourcePath(
                             predicate->source()->at(j)->replace("%", name)
                         );
-                    if (FileStatus::read(sourcePath)->exists()) {
+                    if (FileStatus::read(sourcePath)->isValid()) {
                         sourceFound = true;
                         break;
                     }

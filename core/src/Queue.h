@@ -27,28 +27,26 @@ public:
 };
 
 /** \class Queue Queue.h cc/Queue
+  * \ingroup container
   * \brief Waiting queue data container
   */
 template<class T>
 class Queue: public Object
 {
 public:
+    /// Item type
     typedef T Item;
 
+    /** Create a new queue
+      * \return new object instance
+      */
     inline static Ref<Queue> create() {
         return new Queue;
     }
 
-    ~Queue()
-    {
-        Node *node = head_;
-        while (node) {
-            Node *next = node->next_;
-            delete node;
-            node = next;
-        }
-    }
-
+    /** Add a new item to the end of the queue
+      * \param item item value
+      */
     void pushBack(const T &item, int = 0)
     {
         Node *node = new Node(item);
@@ -64,6 +62,9 @@ public:
         ++length_;
     }
 
+    /** Add a new item to the head of the queue
+      * \param item item value
+      */
     void pushFront(const T &item, int = 0)
     {
         Node *node = new Node(item);
@@ -79,6 +80,10 @@ public:
         ++length_;
     }
 
+    /** Remove an item from the end of the queue
+      * \param item optionally return the item value
+      * \return item value
+      */
     T popBack(T *item)
     {
         CC_ASSERT(length_ > 0);
@@ -94,6 +99,10 @@ public:
         return *item;
     }
 
+    /** Remove an item from the head of the queue
+      * \param item optionally return the item value
+      * \return item value
+      */
     T popFront(T *item)
     {
         CC_ASSERT(length_ > 0);
@@ -109,23 +118,38 @@ public:
         return *item;
     }
 
+    /** Remove the last item from the queue
+      * \return item value
+      */
     inline T popBack() {
         T item;
         return popBack(&item);
     }
 
+    /** Remove the first item from the queue
+      * \return item value
+      */
     inline T popFront() {
         T item;
         return popFront(&item);
     }
 
+    /// \copydoc pushBack()
     inline void push(const T &item, int = 0) { pushBack(item); }
+
+    /// \copydoc popFront(T *)
     inline T pop(T *item) { return popFront(item); }
+
+    /// \copydoc popFront()
     inline T pop() { return popFront(); }
 
+    /// Return number of queued items
     inline int count() const { return length_; }
 
+    /// Return the first item in the queue
     inline T front() const { return head_->item_; }
+
+    /// Return the last item in the queue
     inline T back() const { return tail_->item_; }
 
 private:
@@ -134,6 +158,16 @@ private:
     Queue():
         head_(0), tail_(0), length_(0)
     {}
+
+    ~Queue()
+    {
+        Node *node = head_;
+        while (node) {
+            Node *next = node->next_;
+            delete node;
+            node = next;
+        }
+    }
 
     Node *head_;
     Node *tail_;

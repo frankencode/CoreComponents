@@ -21,7 +21,12 @@ typedef double float64_t;
 
 namespace cc {
 
-enum Endian { LittleEndian = 1, BigEndian = 0 };
+/** Byte order, also known as "Endianess"
+  */
+enum Endian {
+    LittleEndian = 1, ///< Low order byte precedes the high order byte
+    BigEndian = 0 ///< High order byte precedes the low order byte
+};
 
 inline Endian localEndian() {
     const unsigned y = 1;
@@ -154,6 +159,9 @@ inline U *cast(T *p) { return CastHelper<T, U, ConversionFromTo<T*, U*>::Exists>
 template<class T>
 inline T *null() { return reinterpret_cast<T *>(0); }
 
+/** %Unicode character type (stores an %Unicode code point)
+  * \ingroup unicode
+  */
 typedef char32_t uchar_t;
 
 template<class Char>

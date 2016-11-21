@@ -42,7 +42,7 @@ void DirectoryDelegate::process(HttpRequest *request)
 
     if (scriptHandler_) {
         if (
-            (!fileStatus->exists()) ||
+            (!fileStatus->isValid()) ||
             ((fileStatus->mode() & AnyExec) && (fileStatus->type() != DirectoryType))
         ) {
             if (scriptHandler_->process(request, fileStatus, directoryInstance_->path()))
@@ -50,7 +50,7 @@ void DirectoryDelegate::process(HttpRequest *request)
         }
     }
 
-    if (!fileStatus->exists()) throw NotFound();
+    if (!fileStatus->isValid()) throw NotFound();
 
     {
         String h;

@@ -15,6 +15,7 @@
 namespace cc {
 
 /** \class List List.h cc/List
+  * \ingroup container
   * \brief %List data container
   */
 template<class T>

@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \class Utf8Walker Utf8Walker.h cc/Utf8Walker
+/** \internal
+  * \class Utf8Walker Utf8Walker.h cc/Utf8Walker
   * \ingroup unicode
   * \brief Iterating UTF-8 encoded strings
   *

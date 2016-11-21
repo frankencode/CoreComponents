@@ -45,7 +45,7 @@ bool CompileLinkStage::run()
         Module *module = plan()->modules()->at(i);
         bool dirty = module->dirty();
         if (plan()->options() & BuildPlan::Tools)
-            dirty = dirty || !shell()->fileStatus(module->toolName())->exists();
+            dirty = dirty || !shell()->fileStatus(module->toolName())->isValid();
         if (dirty) {
             Ref<Job> job = toolChain()->createCompileJob(plan(), module);
             Ref<Job> linkJob;
@@ -96,7 +96,7 @@ bool CompileLinkStage::run()
         return success_ = true;
 
     Ref<FileStatus> productStatus = shell()->fileStatus(toolChain()->linkName(plan()));
-    if (productStatus->exists() && *plan()->sources() == *plan()->analyseStage()->previousSources()) {
+    if (productStatus->isValid() && *plan()->sources() == *plan()->analyseStage()->previousSources()) {
         double productTime = productStatus->lastModified();
         bool dirty = false;
         for (int i = 0; i < plan()->modules()->count(); ++i) {
@@ -108,7 +108,7 @@ bool CompileLinkStage::run()
             }
         }
         Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->recipePath());
-        if (recipeStatus->exists()) {
+        if (recipeStatus->isValid()) {
             if (recipeStatus->lastModified() > productTime) dirty = true;
             for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
                 Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->prerequisites()->at(i)->recipePath());

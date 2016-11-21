@@ -25,13 +25,29 @@ namespace cc {
 class Utf16Source: public Object
 {
 public:
-    inline static Ref<Utf16Source> open(Stream *stream, ByteArray *buf = 0, Endian endian = BigEndian) {
-        return new Utf16Source(stream, buf, endian);
-    }
-    inline static Ref<Utf16Source> open(ByteArray *buf, Endian endian = BigEndian) {
-        return new Utf16Source(0, buf, endian);
+    /** Open a new UTF-16 decoding data source
+      * \param stream underlying data stream
+      * \param buffer input buffer (optional)
+      * \param endian endianess of the 16 bit words transmitted
+      * \return new object instance
+      */
+    inline static Ref<Utf16Source> open(Stream *stream, ByteArray *buffer = 0, Endian endian = BigEndian) {
+        return new Utf16Source(stream, buffer, endian);
     }
 
+    /** Open a new UTF-16 decoding data source
+      * \param buffer input buffer
+      * \param endian endianess of the 16 bit words transmitted
+      * \return new object instance
+      */
+    inline static Ref<Utf16Source> open(ByteArray *buffer, Endian endian = BigEndian) {
+        return new Utf16Source(0, buffer, endian);
+    }
+
+    /** Read the next %Unicode character
+      * \param ch returns the %Unicode character read if any
+      * \return true if not end of information, false otherwise
+      */
     inline bool read(uchar_t *ch)
     {
         bool more = byteSource_->hasMore();
@@ -53,11 +69,12 @@ public:
         return more;
     }
 
+    /// Underlying byte source used for UTF-16 decoding
     inline ByteSource *byteSource() const { return byteSource_; }
 
 private:
-    Utf16Source(Stream *stream, ByteArray *buf, Endian endian):
-        byteSource_(ByteSource::open(stream, buf, endian)),
+    Utf16Source(Stream *stream, ByteArray *buffer, Endian endian):
+        byteSource_(ByteSource::open(stream, buffer, endian)),
         firstTime_(true)
     {}
 

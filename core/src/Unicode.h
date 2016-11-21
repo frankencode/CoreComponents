@@ -15,29 +15,37 @@ namespace cc {
 
 /** \class Unicode Unicode.h cc/Unicode
   * \ingroup unicode
-  * \brief Seemless access to %Unicode characters of an UTF-8 encoded string
+  * \brief Seemlessly access the %Unicode characters of an UTF-8 encoded byte array
   * \see String
   */
 class Unicode: public Object
 {
 public:
+    /// Item type for iteration
     typedef uchar_t Item;
 
+    /** Create a new %Unicode farcade for a given byte array
+      * \param data UTF-8 encoded byte array
+      * \return new object instance
+      */
     inline static Ref<Unicode> open(const ByteArray *data)
     {
         return new Unicode(data);
     }
 
+    /// Check if a given %Unicode character index i is valid
     inline bool has(int i) const {
         walkTo(i);
         return walker_.valid();
     }
 
+    /// Decode the i-th %Unicode character from the underlying byte array.
     inline uchar_t at(int i) const {
         walkTo(i);
         return walker_.getChar();
     }
 
+    /// Return the number of %Unicode characters
     inline int count() const {
         if (n_ == -1) {
             if (!walker_.valid()) {
@@ -51,23 +59,23 @@ public:
         return n_;
     }
 
+    /// Current byte offset in the underlying byte array
     inline int offset() const {
         return walker_.pos() - walker_.data();
     }
 
+    /** Copy a range of %Unicode characters
+      * \param i0 first %Unicode character index
+      * \param i1 behind last %Unicode character index
+      * \return UTF-8 encoded characters
+      */
     Ref<ByteArray> copy(int i0, int i1) const;
-    inline Ref<ByteArray> head(int n) const { return copy(0, n); }
-    inline Ref<ByteArray> tail(int n) const { return copy(count() - n, n); }
 
-    inline int index(const char *pos) const {
-        if (!walker_.valid()) {
-            walker_ = Utf8Walker(walker_.data());
-            i_ = 0;
-        }
-        while (walker_.pos() < pos) { ++walker_; ++i_; }
-        while (walker_.pos() > pos) { --walker_; --i_; }
-        return i_;
-    }
+    /// Copy the first n %Unicode characters
+    inline Ref<ByteArray> head(int n) const { return copy(0, n); }
+
+    /// Copy the trailing n %Unicode characters
+    inline Ref<ByteArray> tail(int n) const { return copy(count() - n, n); }
 
 private:
     Unicode(const ByteArray *data):

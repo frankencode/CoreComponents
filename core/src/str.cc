@@ -54,7 +54,7 @@ String fnum(float64_t x, int precision, int base, int screen)
             --eba;
         }
 
-        digits->clear();
+        digits->deplete();
 
         int ni = 1; // number of digits of integral part
         if ((-screen <= eba) && (eba <= screen))

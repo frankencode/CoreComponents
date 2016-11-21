@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class Array Array.h cc/Array
+  * \ingroup container
   * \brief Typeded memory vector
   * \see List, ByteArray
   */
@@ -84,7 +85,7 @@ public:
         return (0 <= i) && (i < size_);
     }
 
-    /** Access character at index i
+    /** Access character at index i (readonly)
       * \param i byte index
       * \return low-level reference
       */
@@ -93,7 +94,7 @@ public:
         return data_[i];
     }
 
-    /** Access character at index i (readonly)
+    /** Access character at index i
       * \param i byte index
       * \return low-level reference
       */
