@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class CleanupGuard CleanupGuard.h cc/CleanupGuard
+  * \ingroup file_system
   * \brief Cleanup a directory at the end of the current scope
   * \see UnlinkGuard, Dir::cleanup()
   */

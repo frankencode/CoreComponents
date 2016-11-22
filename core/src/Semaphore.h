@@ -14,7 +14,7 @@
 namespace cc {
 
 /** \class Semaphore Semaphore.h cc/Semaphore
-  * \ingroup threading
+  * \ingroup concurrency
   * \brief Waiting for a limited resource
   */
 class Semaphore: public Object

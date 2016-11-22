@@ -15,6 +15,7 @@ namespace cc {
 class Random;
 
 /** \class RandomSource RandomSource.h cc/RandomSource
+  * \ingroup misc
   * \brief %Random data source
   * \see Random
   */

@@ -16,7 +16,7 @@
 namespace cc {
 
 /** \class Thread Thread.h cc/Thread
-  * \ingroup threading
+  * \ingroup concurrency
   * \brief %Thread creation, signalling, termination
   * \see Channel, SubProcess
   */

@@ -17,6 +17,7 @@
 namespace cc {
 
 /** \class SystemStream SystemStream.h cc/SystemStream
+  * \ingroup binary_io
   * \brief Base class for all system streams
   */
 class SystemStream: public Stream, public IoTarget

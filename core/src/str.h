@@ -35,6 +35,10 @@ struct Sign<unsigned long> { inline static int get(unsigned long) { return 0; } 
 template<>
 struct Sign<unsigned long long> { inline static int get(unsigned long long) { return 0; } };
 
+/** \addtogroup human_io
+  * \{
+  */
+
 template<class T>
 String inum(T x, int base = 10, int n = -1)
 {
@@ -123,5 +127,8 @@ String left(const String &s, int w, char blank = ' ');
   * \return right aligned string
   */
 String right(const String &s, int w, char blank = ' ');
+
+/** \}
+  */
 
 } // namespace cc

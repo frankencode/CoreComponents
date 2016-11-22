@@ -15,6 +15,7 @@ namespace cc {
 class KernelInfoData;
 
 /** \class KernelInfo KernelInfo.h cc/KernelInfo
+  * \ingroup sysinfo
   * \brief Query information about the operating system kernel
   * \see System
   */

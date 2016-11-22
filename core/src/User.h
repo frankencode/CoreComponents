@@ -15,6 +15,7 @@
 namespace cc {
 
 /** \class User User.h cc/User
+  * \ingroup sysinfo
   * \brief Query information about system users
   * \see Group
   */

@@ -2,14 +2,38 @@
   * \brief Core system primitives
   */
 
-/** \defgroup threading Multi-threading
+/** \defgroup mman Memory management
+  * Object life-time, reference counting and garbage collection
   */
 
-/** \defgroup file_system File system access
+/** \defgroup container Data structures
+  * Static and dynamic data structures for in-memory data modelling
   */
 
-/** \defgroup unicode Unicode support
+/** \defgroup binary_io Binary I/O
+  * Binary data streams
   */
 
-/** \defgroup container Container
+/** \defgroup human_io Human readable I/O
+  * Text formatting and line buffering
+  */
+
+/** \defgroup file_system File system
+  * Access to file system primitives
+  */
+
+/** \defgroup sysinfo System information
+  * User, groups and other system information
+  */
+
+/** \defgroup concurrency Parallel programming
+  * Multi-threading, multi-processing and synchronization
+  */
+
+/** \defgroup unicode Unicode and strings
+  * Unicode encoding and string representation
+  */
+
+/** \defgroup misc Miscellaneous
+  * Utility classes and helper functions
   */

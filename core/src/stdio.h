@@ -17,14 +17,28 @@
 
 namespace cc {
 
+/** \addtogroup binary_io
+  * \{
+  */
+
 SystemStream *stdIn(); ///< Standard input stream
 SystemStream *stdOut(); ///< Standard output stream
 SystemStream *stdErr(); ///< Standard error stream
+
+/** \}
+  */
+
+/** \addtogroup human_io
+  * \{
+  */
 
 /// Helper method to format a standard output text
 Format fout(String pattern = "");
 
 /// Helper method to format a standard error text
 Format ferr(String pattern = "");
+
+/** \}
+  */
 
 } // namespace cc

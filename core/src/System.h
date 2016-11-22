@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class System System.h cc/System
+  * \ingroup sysinfo
   * \brief %System information
   * \see KernelInfo
   */
