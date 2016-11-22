@@ -23,6 +23,7 @@ class Stream;
 template<class T> class Queue;
 
 /** \class Format Format.h cc/Format
+  * \ingroup human_io
   * \brief Text formatting helper
   */
 class Format: public Ref<StringList>

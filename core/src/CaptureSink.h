@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class CaptureSink CaptureSink.h cc/CaptureSink
+  * \ingroup binary_io
   * \brief Capture output in memory
   * \see ReplaySource, ByteSink
   */

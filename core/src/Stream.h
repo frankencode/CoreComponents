@@ -15,6 +15,7 @@ namespace cc {
 class Format;
 
 /** \class Stream Stream.h cc/Stream
+  * \ingroup binary_io
   * \brief Abstract data stream
   */
 class Stream: public Object

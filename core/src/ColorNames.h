@@ -17,6 +17,7 @@ template<class Char, class Value> class PrefixTree;
 template<class SubClass> class Singleton;
 
 /** \class ColorNames ColorNames.h cc/ColorNames
+  * \ingroup misc
   * \brief Lookup table for SVG standard color names
   */
 class ColorNames: public Object

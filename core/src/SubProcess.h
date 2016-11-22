@@ -18,6 +18,7 @@
 namespace cc {
 
 /** \class SubProcess SubProcess.h cc/SubProcess
+  * \ingroup concurrency
   * \brief Spawned child process
   */
 class SubProcess: public SystemStream

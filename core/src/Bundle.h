@@ -8,10 +8,6 @@
 
 #pragma once
 
-/** \file Bundle.h
-  * \brief Lookup files in installation directories
-  */
-
 #include <cc/String>
 
 #define CC_XSTR(s) CC_STR(s)
@@ -28,6 +24,10 @@ namespace cc {
 template<class>
 class Singleton;
 
+/** \class Bundle Bundle.h cc/Bundle
+  * \ingroup sysinfo
+  * \brief Lookup files in installation directories
+  */
 class Bundle: public Object
 {
 public:

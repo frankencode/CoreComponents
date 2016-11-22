@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class Random Random.h cc/Random
+  * \ingroup misc
   * \brief Pseudo-random number generator
   *
   * The Random class provides a simple and fast pseudo-random number generator.

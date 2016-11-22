@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class Ref Ref.h cc/Object
+  * \ingroup mman
   * \brief %Object references
   *
   * The Ref template class implements object references that behave similiar to object

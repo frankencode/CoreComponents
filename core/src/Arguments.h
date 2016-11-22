@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class Arguments Arguments.h cc/Arguments
+  * \ingroup misc
   * \brief Command line arguments parser
   */
 class Arguments: public Object

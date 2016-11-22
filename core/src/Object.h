@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class Object Object.h cc/Object
+  * \ingroup mman
   * \brief Reference counting and secure destruction
   *
   * Base class for all classes T, whose instances can be referred to by Ref<T>.

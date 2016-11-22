@@ -20,14 +20,14 @@ class KeywordNode;
 class TokenFactory;
 class Token;
 
-/** \brief Token tree projection target
+/** \brief %Token tree projection target
   */
 class TokenScreen {
 public:
     virtual bool project(Token *token, int i0, int i1) = 0;
 };
 
-/** \brief Token tree
+/** \brief %Token tree
   * \see SyntaxState
   */
 class Token: public Tree<Token>
@@ -75,4 +75,3 @@ private:
 };
 
 }} // namespace cc::syntax
-

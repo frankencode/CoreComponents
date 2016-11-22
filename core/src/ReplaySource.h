@@ -5,6 +5,7 @@
 namespace cc {
 
 /** \class ReplaySource ReplaySource.h cc/ReplaySource
+  * \ingroup binary_io
   * \brief Feed in data from an in-memory buffer
   * \see CaptureSink, ByteSource
   */

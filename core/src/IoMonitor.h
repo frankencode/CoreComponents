@@ -16,6 +16,7 @@
 namespace cc {
 
 /** \class IoEvent IoMonitor.h cc/IoMonitor.cc
+  * \ingroup concurrency
   * \brief I/O event
   */
 class IoEvent: public Object

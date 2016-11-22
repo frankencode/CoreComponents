@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class ThreadLocalSingleton ThreadLocalSingleton.h cc/ThreadLocalSingleton
+  * \ingroup concurrency
   */
 template<class SubClass>
 class ThreadLocalSingleton

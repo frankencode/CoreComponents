@@ -16,6 +16,7 @@ namespace cc {
 class Variant;
 
 /** \class Version Version.h cc/Version
+  * \ingroup misc
   * \brief Software version tuple
   */
 class Version

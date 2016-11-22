@@ -16,7 +16,7 @@
 namespace cc {
 
 /** \class Channel Channel.h cc/Channel
-  * \ingroup threading
+  * \ingroup concurrency
   * \brief Inter-thread communication channel
   * \tparam T item type
   * \tparam QueueType type of queue data structure to use (e.g. PriorityQueue)

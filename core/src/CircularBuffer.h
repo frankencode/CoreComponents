@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class CircularBuffer CircularBuffer.h cc/CircularBuffer
+  * \ingroup container
   * \brief fixed size queue
   */
 template<class T>

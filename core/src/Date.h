@@ -27,10 +27,11 @@ enum {
     SecondsPerDay  = 24 * SecondsPerHour
 };
 
-inline double hours(double n) { return n * SecondsPerHour; }
-inline double days(double n) { return n * SecondsPerDay; }
+inline double hours(double n) { return n * SecondsPerHour; } ///< translate hours to seconds
+inline double days(double n) { return n * SecondsPerDay; } ///< translate days to seconds
 
 /** \class Date Date.h cc/Date
+  * \ingroup misc
   * \brief Gregorian calendar dates
   */
 class Date: public Object
@@ -47,6 +48,7 @@ public:
       * \param time \copydoc time()
       * \param offset \copydoc offset()
       * \return new object instance
+      * \see System::now()
       */
     inline static Ref<Date> breakdown(double time, int offset = 0) {
         return new Date(time, offset);

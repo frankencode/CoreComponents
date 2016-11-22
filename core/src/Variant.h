@@ -22,6 +22,7 @@ typedef List<Variant> VariantList;
 typedef Map<String, Variant> VariantMap;
 
 /** \class Variant Variant.h cc/Variant
+  * \ingroup misc
   * \brief Duck-typed value
   *
   * A Variant can represent different types.

@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class WaitCondition WaitCondition.h cc/WaitCondition
-  * \ingroup threading
+  * \ingroup concurrency
   * \brief Wait condition
   * \see Channel
   */
