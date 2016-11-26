@@ -152,14 +152,8 @@ public:
     /// Return the last item in the queue
     inline T back() const { return tail_->item_; }
 
-private:
-    typedef QueueNode<T> Node;
-
-    Queue():
-        head_(0), tail_(0), length_(0)
-    {}
-
-    ~Queue()
+    /// Reset the stack to an empty state
+    void deplete()
     {
         Node *node = head_;
         while (node) {
@@ -167,6 +161,23 @@ private:
             delete node;
             node = next;
         }
+        head_ = 0;
+        tail_ = 0;
+        length_ = 0;
+    }
+
+private:
+    typedef QueueNode<T> Node;
+
+    Queue():
+        head_(0),
+        tail_(0),
+        length_(0)
+    {}
+
+    ~Queue()
+    {
+        deplete();
     }
 
     Node *head_;
