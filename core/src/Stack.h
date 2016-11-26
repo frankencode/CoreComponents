@@ -24,14 +24,14 @@ public:
     typedef T Item;
 
     /** Create a new stack
-      * \param capacity max number of items
+      * \param capacity max number of items storable in the stack
       * \return new object instance
       */
     inline static Ref<Stack> create(int capacity) {
         return new Stack(capacity);
     }
 
-    /// Maximum number of items
+    /// Maximum number of items storable in the stack
     inline int capacity() const { return size_; }
 
     /// Current number of items stored in the stack
@@ -43,7 +43,7 @@ public:
       */
     inline bool has(int i) const { return (0 <= i) && (i < fill_); }
 
-    /** Access item at index i
+    /** Access item at index i (readonly)
       * \param i item index
       * \return low-level reference
       */
