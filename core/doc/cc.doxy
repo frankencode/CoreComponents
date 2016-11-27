@@ -2,7 +2,7 @@
   * \brief Core system primitives
   */
 
-/** \defgroup mman Memory management
+/** \defgroup mman Object lifecycle
   * Object life-time, reference counting and garbage collection
   */
 

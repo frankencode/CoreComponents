@@ -552,7 +552,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                         else if (addr->sa_family == AF_INET6)
                             label = SocketAddress::create((struct sockaddr_in6 *)addr);
                         interface->addressList_->append(label);
-                        
+
                         if (addr->sa_family == AF_INET) {
                             SocketAddressEntry *entry = cast<SocketAddressEntry>(label);
                             if (i == RTAX_NETMASK) {

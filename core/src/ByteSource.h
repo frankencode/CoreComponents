@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class ByteSource ByteSource.h cc/ByteSource
+  * \ingroup binary_io
   * \brief Byte decoding sink
   * \see ByteSink, ReplaySource
   */

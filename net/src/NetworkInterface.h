@@ -50,8 +50,10 @@ public:
         PointToPoint = IFF_POINTOPOINT
     };
 
+    // static Ref<NetworkInterface> query(String name, int family = AF_INET6); // FIXME
     static Ref<NetworkInterfaceList> queryAll(int family = AF_INET6);
 
+    bool isValid() const { return name_ != ""; }
     String name() const { return name_; }
     int index() const { return index_; }
     unsigned type() const { return type_; }

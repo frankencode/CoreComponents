@@ -21,6 +21,7 @@ typedef Map<String, String> EnvMap;
 
 /** \class Process Process.h cc/Process
   * \brief %Process status and control
+  * \see SubProcess
   */
 class Process
 {

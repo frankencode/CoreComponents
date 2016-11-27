@@ -8,8 +8,9 @@
 
 #pragma once
 
-/** \file str
+/** \file str.h
   * \brief Output formatting helper functions
+  * \headerfile str.h <cc/str>
   */
 
 #include <cc/String>
@@ -39,6 +40,13 @@ struct Sign<unsigned long long> { inline static int get(unsigned long long) { re
   * \{
   */
 
+/** Convert an integer value to string
+  * \tparam T integer type
+  * \param x integer value
+  * \param base number base (2..62)
+  * \param n maximum number of digits
+  * \return human-readable string
+  */
 template<class T>
 String inum(T x, int base = 10, int n = -1)
 {
@@ -112,7 +120,7 @@ inline String str(long long x) { return dec(x); }
 inline String str(float x) { return dec(x); }
 inline String str(double x) { return dec(x); }
 
-/** left Align a string to the left
+/** Align a string to the left
   * \param s input string
   * \param w width of display field
   * \param blank fill character
@@ -120,7 +128,7 @@ inline String str(double x) { return dec(x); }
   */
 String left(const String &s, int w, char blank = ' ');
 
-/** right Align a string to the right
+/** Align a string to the right
   * \param s input string
   * \param w width of display field
   * \param blank fill character

@@ -44,13 +44,16 @@ public:
 };
 
 /** \class Singleton Singleton.h cc/Singleton
-  * \brief Thread-safe process-wide singletons
+  * \ingroup mman concurrency
+  * \brief Process-wide singletons
   *
-  * The following shows how to implement a thread-safe singleton using the Singleton<T> template class.
-  * Returning const pointers to the singleton instance isn't a must but a good policy in multi-threaded applications.
+  * The following shows how to implement a singleton using the Singleton<T> template.
+  * Returning const pointers to the singleton instance is a good policy in multi-threaded applications.
   *
   * %Singleton declaration (example):
   * ~~~~~~~~~~~~~
+  * template<class> class Singleton;
+  *
   * class Settings: public Object
   * {
   * public:
@@ -73,6 +76,8 @@ template<class SubClass>
 class Singleton: public ThreadLocalSingleton< CoreSingletonWrapper<SubClass> >
 {
 public:
+    /** Return pointer to the singleton instance creating it on-demand if it does not exist yet
+      */
     inline static SubClass *instance() {
         return ThreadLocalSingleton< CoreSingletonWrapper<SubClass> >::instance()->instance_;
     }
