@@ -15,8 +15,7 @@
 
 namespace cc {
 
-/** \class IoEvent IoMonitor.h cc/IoMonitor.cc
-  * \ingroup concurrency
+/** \class IoEvent IoMonitor.h cc/IoMonitor
   * \brief I/O event
   */
 class IoEvent: public Object
@@ -48,7 +47,8 @@ private:
 
 typedef Array<const IoEvent *> IoActivity;
 
-/** \class IoMonitor IoMonitor.h cc/IoMonitor.cc
+/** \class IoMonitor IoMonitor.h cc/IoMonitor
+  * \ingroup concurrency
   * \brief Register and wait for I/O events
   */
 class IoMonitor: public Object // FIXME: IoWatcher

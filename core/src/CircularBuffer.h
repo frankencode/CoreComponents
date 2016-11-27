@@ -54,7 +54,7 @@ public:
     /** Insert a new item at the end of the circular buffer
       * \param item item value
       */
-    void pushBack(const T& item, int = 0)
+    inline void pushBack(const T& item, int = 0)
     {
         CC_ASSERT(fill_ != size_);
         ++head_;
@@ -66,7 +66,7 @@ public:
     /** Add a new item to the head of the queue
       * \param item item value
       */
-    void pushFront(const T& item, int = 0)
+    inline void pushFront(const T& item, int = 0)
     {
         CC_ASSERT(fill_ < size_);
         buf_->at(tail_) = item;
@@ -79,7 +79,7 @@ public:
       * \param item optionally return the item value
       * \return item value
       */
-    T popFront(T* item)
+    inline T popFront(T* item)
     {
         CC_ASSERT(fill_ > 0);
         ++tail_;
@@ -92,7 +92,7 @@ public:
       * \param item optionally return the item value
       * \return item value
       */
-    T popBack(T* item)
+    inline T popBack(T* item)
     {
         CC_ASSERT(fill_ > 0);
         *item = buf_->at(head_);

@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class ByteSink ByteSink.h cc/ByteSink
+  * \ingroup binary_io
   * \brief Byte encoding sink
   * \see ByteSource, CaptureSink
   */

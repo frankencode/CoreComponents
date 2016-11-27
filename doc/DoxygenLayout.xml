@@ -10,8 +10,8 @@
       <tab type="classmembers" visible="yes" title="" intro=""/>
     </tab> -->
     <tab type="pages" visible="yes" title="" intro=""/>
-    <tab type="namespacelist" visible="yes" title="API Documentation" intro=""/>
     <tab type="modules" visible="yes" title="Development Topics" intro="Classes grouped by development topic"/>
+    <tab type="namespacelist" visible="yes" title="Namespaces" intro=""/>
     <!-- <tab type="namespaces" visible="yes" title="">
       <tab type="namespacemembers" visible="yes" title="" intro=""/>
     </tab>-->

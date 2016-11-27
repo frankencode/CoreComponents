@@ -14,12 +14,39 @@
 namespace cc {
 
 /** \class ThreadLocalSingleton ThreadLocalSingleton.h cc/ThreadLocalSingleton
-  * \ingroup concurrency
+  * \ingroup mman concurrency
+  * \brief %Thread-local singletons
+  *
+  * The following shows how to implement a thread-local singleton using the ThreadLocalSingleton<T> template.
+  *
+  * %ThreadLocalSingleton declaration (example):
+  * ~~~~~~~~~~~~~
+  * template<class> class ThreadLocalSingleton;
+  *
+  * class Settings: public Object
+  * {
+  * public:
+  *     static const Settings *instance();
+  * private:
+  *     friend class ThreadLocalSingleton<Settings>;
+  *     Settings();
+  * };
+  * ~~~~~~~~~~~~~
+  *
+  * %Singleton implementation (example):
+  * ~~~~~~~~~~~~~
+  * #include <cc/ThreadLocalSingleton>
+  * ...
+  * const Settings *Settings::instance() { return ThreadLocalSingleton<Settings>::instance() }
+  * Settings::Settings() {}
+  * ~~~~~~~~~~~~~
   */
 template<class SubClass>
 class ThreadLocalSingleton
 {
 public:
+    /** Return pointer to the singleton instance creating it on-demand if it does not exist yet
+      */
     static SubClass *instance()
     {
         static thread_local Ref<SubClass> instance_(new SubClass);
