@@ -21,45 +21,63 @@ namespace cc {
 class IoEvent: public Object
 {
 public:
-    inline int type() const { return type_; }
-    inline int ready() const { return ready_; }
-    inline IoTarget *target() const { return target_; } // FIXME: media
+    inline IoReady type() const { return type_; } ///< type of I/O event
+    inline IoReady ready() const { return ready_; } ///< tells if ready for reading or writing when the event occured
+    inline IoTarget *target() const { return target_; } ///< I/O target
 
 private:
     friend class IoMonitor;
 
-    inline static Ref<IoEvent> create(int index, int type, IoTarget *target) {
+    inline static Ref<IoEvent> create(int index, IoReady type, IoTarget *target) {
         return new IoEvent(index, type, target);
     }
 
-    IoEvent(int index, int type, IoTarget *target):
+    IoEvent(int index, IoReady type, IoTarget *target):
         index_(index),
         type_(type),
-        ready_(0),
+        ready_(IoReadyUndefined),
         target_(target)
     {}
 
     int index_;
-    int type_;
-    int ready_;
+    IoReady type_;
+    IoReady ready_;
     IoTarget *target_;
 };
 
+/// I/O activity vector
 typedef Array<const IoEvent *> IoActivity;
 
 /** \class IoMonitor IoMonitor.h cc/IoMonitor
   * \ingroup concurrency
   * \brief Register and wait for I/O events
   */
-class IoMonitor: public Object // FIXME: IoWatcher
+class IoMonitor: public Object
 {
 public:
+    /** Create a new I/O monitor
+      * \param maxCount maximum number of I/O events
+      * \return new object instance
+      */
     static Ref<IoMonitor> create(int maxCount = 0);
 
-    const IoEvent *addEvent(int type, IoTarget *target); // FIXME: "watch"
-    void removeEvent(const IoEvent *event); // FIXME: "unwatch"
+    /** Add a new I/O event to the watch list
+      * \param type I/O event type
+      * \param target I/O event target
+      * \return pointer to newly added I/O event
+      */
+    const IoEvent *addEvent(IoReady type, IoTarget *target);
 
-    Ref<IoActivity> poll(int interval_ms = -1); // FIXME: "wait", "timeout_ms" (vs. time!-)
+    /** Remove an I/O event from the watch list
+      * \param event pointer to I/O event
+      */
+    void removeEvent(const IoEvent *event);
+
+    /** Wait for I/O events
+      * \param timeout_ms timeout in milliseconds (or infinite if < 0)
+      * \return list of I/O events that occured before timed out
+      */
+    Ref<IoActivity> wait(int timeout_ms = -1);
 
 private:
     typedef struct pollfd PollFd;

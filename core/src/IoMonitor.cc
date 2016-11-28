@@ -19,7 +19,7 @@ IoMonitor::IoMonitor(int maxCount):
     events_(Events::create())
 {}
 
-const IoEvent *IoMonitor::addEvent(int type, IoTarget *target)
+const IoEvent *IoMonitor::addEvent(IoReady type, IoTarget *target)
 {
     CC_ASSERT(events_->count() < fds_->count());
     Ref<IoEvent> event = IoEvent::create(events_->count(), type, target);
@@ -45,11 +45,11 @@ void IoMonitor::removeEvent(const IoEvent *event)
     events_->remove(n - 1);
 }
 
-Ref<IoActivity> IoMonitor::poll(int interval_ms)
+Ref<IoActivity> IoMonitor::wait(int timeout_ms)
 {
     PollFd *fds = 0;
     if (events_->count() > 0) fds = fds_->data();
-    int n = ::poll(fds, events_->count(), interval_ms < 0 ? -1 : interval_ms);
+    int n = ::poll(fds, events_->count(), timeout_ms < 0 ? -1 : timeout_ms);
     if (n < 0) CC_SYSTEM_DEBUG_ERROR(errno);
 
     CC_ASSERT(n <= events_->count());
@@ -60,7 +60,7 @@ Ref<IoActivity> IoMonitor::poll(int interval_ms)
         if (fds_->at(i).revents != 0) {
             CC_ASSERT(j < n);
             IoEvent *event = events_->value(i);
-            event->ready_ = fds_->at(i).revents;
+            event->ready_ = static_cast<IoReady>(fds_->at(i).revents & (POLLIN|POLLOUT));
             activity->at(j) = event;
             ++j;
         }

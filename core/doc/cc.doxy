@@ -14,7 +14,7 @@
   * Binary data streams
   */
 
-/** \defgroup human_io Human readable I/O
+/** \defgroup human_io Formatted I/O
   * Text formatting and line buffering
   */
 

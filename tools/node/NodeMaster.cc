@@ -143,12 +143,12 @@ void NodeMaster::runNode() const
 
     Ref<IoMonitor> ioMonitor = IoMonitor::create(listeningSockets->count());
     for (int i = 0; i < listeningSockets->count(); ++i)
-        ioMonitor->addEvent(SystemIo::ReadyAccept, listeningSockets->at(i));
+        ioMonitor->addEvent(IoReadyAccept, listeningSockets->at(i));
 
     CCNODE_DEBUG() << "Accepting connections" << nl;
 
     while (true) {
-        Ref<IoActivity> activity = ioMonitor->poll(1000);
+        Ref<IoActivity> activity = ioMonitor->wait(1000);
         if (activity->count() > 0) {
             for (int i = 0; i < activity->count(); ++i) {
                 try {
