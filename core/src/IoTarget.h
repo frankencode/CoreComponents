@@ -11,6 +11,7 @@
 namespace cc {
 
 /** \class IoTarget IoTarget.h cc/IoTarget
+  * \brief I/O event target
   */
 class IoTarget
 {

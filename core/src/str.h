@@ -45,7 +45,7 @@ struct Sign<unsigned long long> { inline static int get(unsigned long long) { re
   * \param x integer value
   * \param base number base (2..62)
   * \param n maximum number of digits
-  * \return human-readable string
+  * \return string representation of x
   */
 template<class T>
 String inum(T x, int base = 10, int n = -1)
@@ -68,7 +68,15 @@ String inum(T x, int base = 10, int n = -1)
     return s;
 }
 
+/** Convert a floating point number to string
+  * \param x floating point value
+  * \param precision number of significiant digits
+  * \param base number base (2..62)
+  * \param screen number of displayable characters
+  * \return string representation of x
+  */
 String fnum(float64_t x, int precision = 16, int base = 10, int screen = 6);
+
 String fixed(float64_t x, int nf);
 
 template<class T>

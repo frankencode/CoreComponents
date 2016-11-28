@@ -59,14 +59,14 @@ int main(int argc, char **argv)
                 << "~~~~~" << nl;
 
             Ref<IoMonitor> monitor = IoMonitor::create(2);
-            monitor->addEvent(SystemIo::ReadyRead, serverSocket);
-            monitor->addEvent(SystemIo::ReadyRead, clientSocket);
+            monitor->addEvent(IoReadyRead, serverSocket);
+            monitor->addEvent(IoReadyRead, clientSocket);
 
             Ref<ByteArray> data = ByteArray::allocate(0x10000);
             bool serverClosed = false;
             bool clientClosed = false;
             while (!(serverClosed || clientClosed)) {
-                Ref<IoActivity> activity = monitor->poll();
+                Ref<IoActivity> activity = monitor->wait();
                 for (int i = 0; i < activity->count(); ++i) {
                     const IoEvent *event = activity->at(i);
                     Ref<StreamSocket> socket = event->target();

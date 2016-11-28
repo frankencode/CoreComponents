@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \class Memory Memory.h cc/Memory
+/** \internal
+  * \class Memory Memory.h cc/Memory
   * \ingroup mman
   * \brief %Memory allocator
   */

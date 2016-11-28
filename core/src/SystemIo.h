@@ -16,14 +16,18 @@ namespace cc {
 
 template<class> class Singleton;
 
+/** I/O event type
+  */
+enum IoReady {
+    IoReadyUndefined = 0, ///< undefined
+    IoReadyRead = POLLIN, ///< ready for reading
+    IoReadyWrite = POLLOUT, ///< ready for writing
+    IoReadyReadOrWrite = POLLIN|POLLOUT, ///< ready for reading or writing
+    IoReadyAccept = POLLIN ///< ready for accepting a connection
+};
+
 class SystemIo: public Object {
 public:
-    enum WaitEvent {
-        ReadyRead = POLLIN,
-        ReadyWrite = POLLOUT,
-        ReadyAccept = ReadyRead
-    };
-
     static bool poll(int fd, int events, int interval_ms = -1);
 
     static ssize_t read(int fd, void *buf, size_t count);

@@ -255,7 +255,7 @@ void HttpSocket::waitInput()
     double d = te_ - System::now();
     if (d <= 0) throw RequestTimeout();
 
-    if (!SystemIo::poll(fd_, SystemIo::ReadyRead, d * 1000))
+    if (!SystemIo::poll(fd_, IoReadyRead, d * 1000))
         throw RequestTimeout();
 }
 
