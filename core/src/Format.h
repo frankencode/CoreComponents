@@ -23,14 +23,12 @@ class Stream;
 template<class T> class Queue;
 
 /** \class Format Format.h cc/Format
-  * \ingroup human_io
+  * \ingroup formatted_io
   * \brief Text formatting helper
   */
 class Format: public Ref<StringList>
 {
 public:
-    typedef Ref<StringList> Super;
-
     Format(String pattern, Stream *stream = 0);
     Format(Stream *stream = 0);
     ~Format();
@@ -58,6 +56,8 @@ public:
     }
 
 private:
+    typedef Ref<StringList> Super;
+
     void flush();
 
     Ref<Stream> stream_;

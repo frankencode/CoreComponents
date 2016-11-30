@@ -49,7 +49,7 @@ public:
     ~TransferLimitExceeded() throw() {}
 };
 
-/** \brief Exception thrown when a read limit is exceeded
+/** \brief %Exception thrown when a read limit is exceeded
   */
 class ReadLimitExceeded: public TransferLimitExceeded
 {
@@ -59,7 +59,7 @@ public:
     virtual String message() const { return "Read transfer limit exceeded"; }
 };
 
-/** \brief Exception thrown when a write limit is exceeded
+/** \brief %Exception thrown when a write limit is exceeded
   */
 class WriteLimitExceeded: public TransferLimitExceeded
 {

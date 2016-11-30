@@ -28,7 +28,7 @@ SystemStream *stdErr(); ///< Standard error stream
 /** \}
   */
 
-/** \addtogroup human_io
+/** \addtogroup formatted_io
   * \{
   */
 

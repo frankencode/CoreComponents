@@ -14,7 +14,7 @@ namespace cc {
 
 /** \class RefGuard RefGuard.h cc/RefGuard
   * \ingroup mman
-  * \brief Guard against object destruction
+  * \brief %Guard against object destruction
   */
 template<class T>
 class RefGuard
