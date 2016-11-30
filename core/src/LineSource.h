@@ -14,7 +14,7 @@
 namespace cc {
 
 /** \class LineSource LineSource.h cc/LineSource
-  * \ingroup human_io
+  * \ingroup formatted_io
   * \brief Line input buffer
   */
 class LineSource: public Source<String>

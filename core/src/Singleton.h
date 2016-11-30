@@ -44,7 +44,7 @@ public:
 };
 
 /** \class Singleton Singleton.h cc/Singleton
-  * \ingroup mman concurrency
+  * \ingroup mman
   * \brief Process-wide singletons
   *
   * The following shows how to implement a singleton using the Singleton<T> template.

@@ -15,7 +15,7 @@ namespace cc {
 
 String fnum(float64_t x, int precision, int base, int screen)
 {
-    Ref< Stack<int> > digits = Stack<int>::create(screen < 128 ? 128 : 2 * screen /*save bet*/);
+    Ref< Stack<int> > digits = Stack<int>::create(2 * screen < 128 ? 128 : 2 * screen /*save bet*/);
 
     uint64_t xi = union_cast<uint64_t>(x);
     uint64_t f = (xi << 12) >> 12; // fraction
