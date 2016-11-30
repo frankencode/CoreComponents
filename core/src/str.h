@@ -147,8 +147,14 @@ String dec(const Variant &x, int n = -1);
 /// Convenience wrapper
 inline String str(const String &s) { return s; }
 
-/// Convenience a byte array to a string
+/// Convenience wrapper
+inline String str(const Ref<StringList> &x) { return x->join(); }
+
+/// Convenience wrapper
 inline String str(ByteArray *s) { return String(s); }
+
+/// Convenience wrapper
+inline String str(const ByteArray *s) { return String(s); }
 
 /// Convert a C-string to a string
 inline String str(const char *s) { return String(s); }
