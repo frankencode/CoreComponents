@@ -40,6 +40,8 @@ bool CompileLinkStage::run()
 
     Ref<JobScheduler> compileScheduler;
     Ref<JobScheduler> linkScheduler;
+    Ref<StringList> compileList;
+    Ref<StringList> linkList;
 
     for (int i = 0; i < plan()->modules()->count(); ++i) {
         Module *module = plan()->modules()->at(i);
@@ -51,9 +53,12 @@ bool CompileLinkStage::run()
             Ref<Job> linkJob;
             if (plan()->options() & BuildPlan::Tools) linkJob = toolChain()->createLinkJob(plan(), module);
             if (plan()->options() & BuildPlan::Simulate) {
-                fout() << shell()->beautify(job->command()) << nl;
-                if (linkJob)
-                    fout() << shell()->beautify(linkJob->command()) << nl;
+                if (!compileList) compileList = StringList::create();
+                compileList << shell()->beautify(job->command());
+                if (linkJob) {
+                    if (!linkList) linkList = StringList::create();
+                    linkList << shell()->beautify(linkJob->command());
+                }
             }
             else {
                 if (!compileScheduler) {
@@ -67,6 +72,18 @@ bool CompileLinkStage::run()
                 }
             }
         }
+    }
+
+    if (compileList) {
+        for (String command: compileList)
+            fout() << command << ((plan()->concurrency() == 1) ? "\n" : " &\n");
+        fout() << "wait" << nl;
+    }
+
+    if (linkList) {
+        for (String command: linkList)
+            fout() << command << ((plan()->concurrency() == 1) ? "\n" : " &\n");
+        fout() << "wait" << nl;
     }
 
     if (compileScheduler) {
