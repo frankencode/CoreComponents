@@ -58,8 +58,6 @@ double System::now()
     return double(tv.tv_sec) + double(tv.tv_usec) / 1e6;
 }
 
-/** Return the name of this host
-  */
 String System::hostName()
 {
     const int bufSize = 1024;
@@ -72,8 +70,6 @@ String System::hostName()
     return name;
 }
 
-/** Set the name of this host
-  */
 void System::setHostName(String newName)
 {
     if (::sethostname(newName->chars(), newName->count()) == -1)

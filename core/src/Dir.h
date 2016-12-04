@@ -76,6 +76,7 @@ public:
 
     /** Establish a new directory path
       * \param path directory file path
+      * \param mode a combination of cc::ModeFlags
       */
     static void establish(String path, int mode = 0755);
 

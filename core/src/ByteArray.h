@@ -350,6 +350,7 @@ public:
     /** Paste into a range
       * \param i0 begin of range (index of first selected byte)
       * \param i1 end of range (index behind the last selected byte)
+      * \param text text that will replace the giving range
       * \return new string with range [i0; i1[ replaced by text
       */
     String paste(int i0, int i1, const String &text) const;
@@ -497,17 +498,17 @@ public:
     }
 
     /** Replace any occurrence of a certain substring by a replacement string
-      * \param s substring to search for
-      * \param r replacement string
+      * \param oldChar substring to search for
+      * \param newChar replacement string
       */
-    void replaceInsitu(const char *s, const char *r);
+    void replaceInsitu(const char *oldChar, const char *newChar);
 
     /** Replace individual character values
       * \param oldChar old character value to search for
       * \param newChar replacement value to insert
       * \return resulting string
       */
-    String replaceEach(char s, char r) const;
+    String replaceEach(char oldChar, char newChar) const;
 
     /** Replace any occurrence of a certain substring by a replacement string
       * \param s substring to search for

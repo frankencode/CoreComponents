@@ -33,7 +33,7 @@ public:
       * \param other another set
       * \return new object instance
       */
-    inline static Ref<Set> replicate(const Set *a) { return new Set(a); }
+    inline static Ref<Set> replicate(const Set *other) { return new Set(other); }
 
     /// Number of items
     inline int count() const { return tree_.weight(); }

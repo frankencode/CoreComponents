@@ -149,9 +149,9 @@ public:
       * \param index start position for the search
       * \return position the item value was found in or count() if item value could not be found
       */
-    inline int find(const T &item, int i = 0) const {
-        while (i < size_)
-            if (data_[i++] == item) return i - 1;
+    inline int find(const T &item, int index = 0) const {
+        while (index < size_)
+            if (data_[index++] == item) return index - 1;
         return size_;
     }
 

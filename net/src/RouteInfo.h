@@ -17,6 +17,9 @@ class RouteInfo;
 
 typedef List< Ref<RouteInfo> > RouteInfoList;
 
+/** \class RouteInfo RouteInfo.h cc/net/RouteInfo
+  * \brief Routing table access
+  */
 class RouteInfo: public Object
 {
 public:
@@ -49,4 +52,3 @@ private:
 };
 
 }} // namespace cc::net
-

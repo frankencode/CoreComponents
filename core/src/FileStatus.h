@@ -80,8 +80,8 @@ public:
     inline double lastChanged() const { return st_ctime; }
 
     /** %Set the file times
-      * \lastAccess time when file was last accessed
-      * \lastModified time when file was last modified
+      * \param lastAccess time when file was last accessed
+      * \param lastModified time when file was last modified
       */
     void setTimes(double lastAccess, double lastModified);
 

@@ -8,10 +8,6 @@
 
 #pragma once
 
-/** \file stdio
-  * \brief Standard input/output streams
-  */
-
 #include <cc/SystemStream>
 #include <cc/Format>
 

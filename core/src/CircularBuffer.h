@@ -112,10 +112,10 @@ public:
       */
     inline T popFront() { T item; return popFront(&item); }
 
-    /// \copydoc pushBack(const T &)
+    /// \copydoc pushBack(const T &, int)
     inline void push(const T &item) { pushBack(item); }
 
-    /// \copydoc popFront(T *item)
+    /// \copydoc popFront(T *)
     inline T pop(T* item) { return popFront(item); }
 
     /// \copydoc popFront()

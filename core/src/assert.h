@@ -8,10 +8,6 @@
 
 #pragma once
 
-/** \file assert
-  * \brief Assertion macros (debug mode)
-  */
-
 namespace cc {
 
 void throwDebugError(const char *reason, const char *source, int line);

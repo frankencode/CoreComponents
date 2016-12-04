@@ -13,7 +13,8 @@
 namespace cc {
 namespace net {
 
-/** \brief convenience class to query the current network configuration state
+/** \class NetworkState NetworkState.h cc/net/NetworkState
+  * \brief convenience class to query the current network configuration state
   */
 class NetworkState: public Object
 {
