@@ -8,10 +8,6 @@
 
 #pragma once
 
-/** \brief Low-level C-string helper functions
-  * \file strings
-  */
-
 #include <string.h> // memset, memcpy, strcmp
 #include <cc/types>
 
@@ -61,4 +57,3 @@ char *intToStr(int value);
 int strToInt(const char *s, int i0 = 0, int i1 = intMax, int base = 10);
 
 } // namespace cc
-

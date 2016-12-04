@@ -18,7 +18,7 @@ class QueryNetworkInterfaces: public TestCase
 {
     void run()
     {
-        Ref<NetworkInterfaceList> interfaces = NetworkInterface::queryAll(AF_UNSPEC);
+        Ref<NetworkInterfaceList> interfaces = NetworkInterface::queryAll();
         for (int i = 0; i < interfaces->count(); ++i) {
             NetworkInterface *interface = interfaces->at(i);
             if (i != 0) fout() << nl;

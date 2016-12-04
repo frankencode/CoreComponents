@@ -15,7 +15,9 @@ namespace cc { template<class> class Singleton; }
 namespace cc {
 namespace net {
 
-/** \brief Syntax of an internet address (IPv4 or IPv6)
+/** \internal
+  * \class InetAddressSyntax InetAddressSyntax.h cc/net/InetAddressSyntax
+  * \brief Syntax of an internet address (IPv4 or IPv6)
   */
 class InetAddressSyntax: public syntax::SyntaxDefinition
 {

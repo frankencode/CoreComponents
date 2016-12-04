@@ -8,11 +8,6 @@
 
 #pragma once
 
-/** \file check
-  * \brief Check for fatal conditions
-  * \see assert
-  */
-
 namespace cc {
 
 void abort();

@@ -22,7 +22,8 @@ class NetworkInterface;
 
 typedef List< Ref<NetworkInterface> > NetworkInterfaceList;
 
-/** \brief Query network interface configuration: addresses, flags, etc.
+/** \class NetworkInterface NetworkInterface.h cc/net/NetworkInterface
+  * \brief Query network interface configuration: addresses, flags, etc.
   */
 class NetworkInterface: public Object
 {
@@ -50,8 +51,9 @@ public:
         PointToPoint = IFF_POINTOPOINT
     };
 
-    // static Ref<NetworkInterface> query(String name, int family = AF_INET6); // FIXME
-    static Ref<NetworkInterfaceList> queryAll(int family = AF_INET6);
+    static Ref<NetworkInterface> create();
+    static Ref<NetworkInterface> query(String name, int family = AF_UNSPEC);
+    static Ref<NetworkInterfaceList> queryAll(int family = AF_UNSPEC);
 
     bool isValid() const { return name_ != ""; }
     String name() const { return name_; }
@@ -63,10 +65,6 @@ public:
     const SocketAddressList *addressList() const { return addressList_; }
 
 private:
-    inline static Ref<NetworkInterface> create() {
-        return new NetworkInterface;
-    }
-
     NetworkInterface();
 
     #ifdef __linux

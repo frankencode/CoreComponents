@@ -15,7 +15,9 @@ namespace cc { template<class> class Singleton; }
 namespace cc {
 namespace net {
 
-/** \brief Syntax of an URI
+/** \internal
+  * \class UriSyntax UriSyntax.h cc/net/UriSyntax
+  * \brief Syntax of an URI
   */
 class UriSyntax: public syntax::SyntaxDefinition
 {

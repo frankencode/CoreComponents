@@ -8,9 +8,6 @@
 
 #pragma once
 
-/** \file exceptions
-  * \brief Common exception classes
-  */
 #include <errno.h>
 #include <cc/Exception>
 

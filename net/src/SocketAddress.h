@@ -41,7 +41,8 @@ public:
     HostNameResolutionError(String message): UsageError(message) {}
 };
 
-/*! \brief Socket address
+/*! \class SocketAddress SocketAddress.h cc/net/SocketAddress
+  * \brief Socket address
   */
 class SocketAddress: public Object
 {

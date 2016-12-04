@@ -18,7 +18,8 @@ namespace net {
 
 using syntax::Token;
 
-/** \brief Uniform Resource Indicator
+/** \class Uri Uri.h cc/net/Uri
+  * \brief Uniform Resource Indicator
   */
 class Uri: public Object
 {

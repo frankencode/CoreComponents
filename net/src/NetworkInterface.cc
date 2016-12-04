@@ -34,14 +34,21 @@
 namespace cc {
 namespace net {
 
-NetworkInterface::NetworkInterface():
-    index_(-1),
-    type_(0),
-    flags_(0),
-    hardwareAddress_(0),
-    mtu_(0),
-    addressList_(SocketAddressList::create())
-{}
+Ref<NetworkInterface> NetworkInterface::create()
+{
+    return new NetworkInterface;
+}
+
+Ref<NetworkInterface> NetworkInterface::query(String name, int family)
+{
+    Ref<NetworkInterfaceList> list = queryAll(family);
+    for (auto interface: list) {
+        if (interface->name() == name)
+            return interface;
+    }
+
+    return NetworkInterface::create();
+}
 
 #ifdef __linux
 Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
@@ -219,6 +226,15 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 
     return list;
 }
+
+NetworkInterface::NetworkInterface():
+    index_(-1),
+    type_(0),
+    flags_(0),
+    hardwareAddress_(0),
+    mtu_(0),
+    addressList_(SocketAddressList::create())
+{}
 
 Ref<NetworkInterface> NetworkInterface::getLink(NetworkInterfaceList *list, int index)
 {

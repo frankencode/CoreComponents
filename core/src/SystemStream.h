@@ -16,7 +16,7 @@
 
 namespace cc {
 
-/** \class SystemStream SystemStream.h cc/SystemStream
+/** \class SystemStream SystemStream.h <cc/SystemStream>
   * \ingroup binary_io
   * \brief Base class for all system streams
   */
@@ -46,8 +46,8 @@ public:
     /** Duplicate a system stream
       * \param other the system stream to duplicate
       * \return new object instance
-      * The duplicate() method invokes ::dup(2) under its hood and creates a
-      * corresponding new SystemStream instance for the newly created file descriptor.
+      * The duplicate() method duplicates an entry in the file descriptor table and creates a
+      * corresponding SystemStream instance for the newly created file descriptor.
       * \see duplicateTo()
       */
     static Ref<SystemStream> duplicate(SystemStream *other);
@@ -111,8 +111,7 @@ public:
     /** Duplicate this file stream
       * \param other the other system stream to take over
       *
-      * The duplicate() method invokes ::dup2(2) under its hood and thereby
-      * duplicates this file stream onto the other file stream.
+      * The duplicate() method duplicates an entry in the file descriptor table.
       *
       * This for instance allows to set a file as standard input:
       * ~~~~~~~~~~~~~

@@ -8,10 +8,6 @@
 
 #pragma once
 
-/** \file base64
-  * \brief Standard Base64 codec
-  */
-
 #include <cc/String>
 
 namespace cc {
@@ -56,4 +52,3 @@ public:
 };
 
 }}} // namespace cc::net::base64
-

@@ -8,10 +8,6 @@
 
 #pragma once
 
-/** \file types
-  * \brief Low-level types and type conversions
-  */
-
 #include <sys/types.h> // ssize_t, etc.
 #include <stdint.h> // (u)int8_t .. (u)int64_t
 #include <cc/assert>

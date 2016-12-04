@@ -15,6 +15,9 @@ namespace net {
 
 class NetworkInterface;
 
+/** \class SocketAddressEntry SocketAddressEntry.h cc/net/SocketAddressEntry
+  * \brief Name resolution list entry
+  */
 class SocketAddressEntry: public SocketAddress
 {
 public:
@@ -50,4 +53,3 @@ private:
 };
 
 }} // namespace cc::net
-

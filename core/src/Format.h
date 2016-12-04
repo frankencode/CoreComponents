@@ -21,7 +21,7 @@ template<class T> class Queue;
   * \{
   */
 
-/** \class FormattingSignal Format.h <cc/Format>
+/** \class FormatSignal Format.h <cc/Format>
   * \brief Type for formatting signals
   */
 class FormatSignal {};

@@ -34,7 +34,7 @@ public:
       * \param other another map
       * \return new object instance
       */
-    inline static Ref<Map> replicate(const Map *a) { return new Map(*a); }
+    inline static Ref<Map> replicate(const Map *other) { return new Map(*other); }
 
     /// Number of key-value pairs stored in this map
     inline int count() const { return tree_.weight(); }

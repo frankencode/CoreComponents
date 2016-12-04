@@ -14,7 +14,8 @@
 namespace cc {
 namespace net {
 
-/** \brief Connection oriented byte-sequential communication channel
+/** \class StreamSocket StreamSocket.h cc/net/StreamSocket
+  * \brief Connection oriented byte-sequential communication channel
   */
 class StreamSocket: public SystemStream
 {

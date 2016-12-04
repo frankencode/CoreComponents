@@ -8,10 +8,6 @@
 
 #pragma once
 
-/** \file rounding
-  * \brief Mathematical rounding helper functions
-  */
-
 #include <math.h>
 
 namespace cc {

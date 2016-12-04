@@ -36,7 +36,7 @@ class DatagramSocket: public SystemStream
 {
 public:
     /** Create a new datagram socket to communicate with one or more peers
-      * \address local address to bind to the socket
+      * \param address local address to bind to the socket
       */
     static Ref<DatagramSocket> open(const SocketAddress *address);
 
@@ -79,7 +79,7 @@ public:
     virtual int sendTo(const SocketAddress *peerAddress, const ByteArray *message);
 
     /** Restrict communication to a single source
-      * \param address unicast or multicast address to receive datagrams from
+      * \param peerAddress unicast or multicast address to receive datagrams from
       */
     void connect(const SocketAddress *peerAddress);
 
