@@ -13,7 +13,8 @@
 namespace cc {
 namespace meta {
 
-/** \brief Duck-typed object protocol
+/** \class MetaProtocol MetaProtocol.h cc/meta/MetaProtocol
+  * \brief Duck-typed object protocol
   */
 class MetaProtocol: public Object
 {
@@ -89,4 +90,3 @@ private:
 };
 
 }} // namespace cc::meta
-

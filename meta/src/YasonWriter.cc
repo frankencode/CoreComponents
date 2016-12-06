@@ -6,16 +6,18 @@
  *
  */
 
-#include <cc/Format>
 #include <cc/meta/YasonWriter>
 
 namespace cc {
 namespace meta {
 
-Ref<YasonWriter> YasonWriter::create(Format format, String indent) { return new YasonWriter(format, indent); }
+Ref<YasonWriter> YasonWriter::create(Stream *sink, String indent)
+{
+    return new YasonWriter(sink, indent);
+}
 
-YasonWriter::YasonWriter(Format format, String indent):
-    format_(format),
+YasonWriter::YasonWriter(Stream *sink, String indent):
+    format_(sink),
     indent_(indent)
 {}
 
