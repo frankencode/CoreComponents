@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/CaptureSink>
 #include <cc/meta/YasonSyntax>
 #include <cc/meta/YasonWriter>
 #include <cc/meta/yason>
@@ -21,9 +21,9 @@ Variant parse(const ByteArray *text, const MetaProtocol *protocol)
 
 String stringify(Variant value)
 {
-    Format format;
-    YasonWriter::create(format)->write(value);
-    return format;
+    Ref<CaptureSink> sink = CaptureSink::open();
+    YasonWriter::create(sink)->write(value);
+    return sink->collect();
 }
 
 }} // namespace cc::yason

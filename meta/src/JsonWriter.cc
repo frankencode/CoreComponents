@@ -6,16 +6,18 @@
  *
  */
 
-#include <cc/Format>
 #include <cc/meta/JsonWriter>
 
 namespace cc {
 namespace meta {
 
-Ref<JsonWriter> JsonWriter::create(Format format, String indent) { return new JsonWriter(format, indent); }
+Ref<JsonWriter> JsonWriter::create(Stream *sink, String indent)
+{
+    return new JsonWriter(sink, indent);
+}
 
-JsonWriter::JsonWriter(Format format, String indent):
-    format_(format),
+JsonWriter::JsonWriter(Stream *sink, String indent):
+    format_(sink),
     indent_(indent)
 {}
 

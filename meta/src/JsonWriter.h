@@ -8,22 +8,33 @@
 
 #pragma once
 
+#include <cc/Format>
 #include <cc/meta/MetaObject>
 
 namespace cc {
 namespace meta {
 
-/** \brief Generate JSON representation of a meta object tree
+/** \class JsonWriter JsonWriter.h cc/meta/JsonWriter
+  * \brief Generate JSON representation of a meta object tree
   * \see yason, YasonWriter
   */
 class JsonWriter: public Object
 {
 public:
-    static Ref<JsonWriter> create(Format format = Format(), String indent = "  ");
+    /** Create a new JSON writer
+      * \param sink data stream to write the formatted output to
+      * \param indent whitespace to use for each indentation step
+      * \return new object instance
+      */
+    static Ref<JsonWriter> create(Stream *sink, String indent = "  ");
+
+    /** Convert a meta value into JSON notation
+      * \param value meta-value
+      */
     void write(Variant value);
 
-protected:
-    JsonWriter(Format format, String indent);
+private:
+    JsonWriter(Stream *sink, String indent);
     void writeValue(Variant value, int depth);
     void writeList(Variant value, int depth);
     void writeObject(Variant value, int depth);
@@ -37,4 +48,3 @@ protected:
 };
 
 }} // namespace cc::meta
-
