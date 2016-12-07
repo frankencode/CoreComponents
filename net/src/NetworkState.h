@@ -14,27 +14,29 @@ namespace cc {
 namespace net {
 
 /** \class NetworkState NetworkState.h cc/net/NetworkState
-  * \brief convenience class to query the current network configuration state
+  * \brief Simplified network configuration state
   */
 class NetworkState: public Object
 {
 public:
+    /** Query the current network configuration state
+      * \return new object instance
+      */
     static Ref<NetworkState> query(String interfaceName = "");
 
+    /// name of the network interface
     inline String interfaceName() const { return interfaceName_; }
 
+    /// network interface
     inline const NetworkInterface *interface() const { return interface_; }
 
-    /** size of the network mask (IPv4 only)
-      */
+    /// size of the network mask (IPv4 only)
     inline int networkMask() const { return networkMask_; }
 
-    /** configured address
-      */
+    /// configured address
     inline const SocketAddress *address() const { return address_; }
 
-    /** configured gateway
-      */
+    /// configured gateway
     inline const SocketAddress *gateway() const { return gateway_; }
 
 private:
