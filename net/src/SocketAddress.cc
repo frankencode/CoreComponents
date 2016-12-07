@@ -66,7 +66,9 @@ Ref<SocketAddress> SocketAddress::copy(const SocketAddress *other)
 SocketAddress::SocketAddress():
     socketType_(0),
     protocol_(0)
-{}
+{
+    addr_.sa_family = AF_UNSPEC;
+}
 
 SocketAddress::SocketAddress(int family, String address, int port):
     socketType_(0),
@@ -100,7 +102,10 @@ SocketAddress::SocketAddress(int family, String address, int port):
         else
             memcpy(localAddress_.sun_path, address->chars(), address->count() + 1);
     }
-    else if (family != AF_UNSPEC)
+    else if (family == AF_UNSPEC) {
+        addr_.sa_family = AF_UNSPEC;
+    }
+    else
         CC_DEBUG_ERROR("Unsupported address family");
 
     if (family != AF_LOCAL) {
@@ -140,6 +145,11 @@ SocketAddress::SocketAddress(const SocketAddress *other):
     protocol_(other->protocol_)
 {
     ::memcpy(addr(), other->addr(), other->addrLen());
+}
+
+bool SocketAddress::isValid() const
+{
+    return family() != AF_UNSPEC;
 }
 
 int SocketAddress::family() const { return addr_.sa_family; }
