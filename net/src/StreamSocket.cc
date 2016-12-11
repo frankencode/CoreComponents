@@ -17,16 +17,16 @@
 namespace cc {
 namespace net {
 
-Ref<StreamSocket> StreamSocket::listen(const SocketAddress *address, int backlog)
+Ref<StreamSocket> StreamSocket::listen(const SocketAddress *localAddress, int backlog)
 {
-    Ref<StreamSocket> socket = new StreamSocket(address);
+    Ref<StreamSocket> socket = new StreamSocket(localAddress);
     socket->listen(backlog);
     return socket;
 }
 
-Ref<StreamSocket> StreamSocket::connect(const SocketAddress *address)
+Ref<StreamSocket> StreamSocket::connect(const SocketAddress *peerAddress)
 {
-    Ref<StreamSocket> socket = new StreamSocket(address);
+    Ref<StreamSocket> socket = new StreamSocket(peerAddress);
     socket->connect();
     return socket;
 }
@@ -132,11 +132,6 @@ void StreamSocket::connect()
         if (::fcntl(fd_, F_SETFL, flags) == -1)
             CC_SYSTEM_DEBUG_ERROR(errno);
     }
-}
-
-void StreamSocket::shutdown(int how)
-{
-    ::shutdown(fd_, how);
 }
 
 void StreamSocket::setRecvTimeout(double interval)
