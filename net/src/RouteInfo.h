@@ -23,19 +23,40 @@ typedef List< Ref<RouteInfo> > RouteInfoList;
 class RouteInfo: public Object
 {
 public:
+    /** Query the contents of the routing table
+      * \return list of routing table entries
+      */
     static Ref<RouteInfoList> queryTable();
 
+    /// Size of the source address in bits
     inline int sourceMask() const { return sourceMask_; }
+
+    /// Size of the destination address in bits
     inline int destinationMask() const { return destinationMask_; }
-    inline SocketAddress *source() const { return source_; }
-    inline SocketAddress *destination() const { return destination_; }
-    inline SocketAddress *gateway() const { return gateway_; }
+
+    /// %Source network address
+    inline SocketAddress *source() const { return source_; } // FIXME: should never be zero
+
+    /// Destination network address
+    inline SocketAddress *destination() const { return destination_; } // FIXME: should never be zero
+
+    /// Address of gateway to reach destination
+    inline SocketAddress *gateway() const { return gateway_; } // FIXME: should never be zero
+
+    /// Name of the network interface the packet arrives on the system
     inline String inputInterface() const { return inputInterface_; }
+
+    /// Name of the network interface the packet leaves leaves the system
     inline String outputInterface() const { return outputInterface_; }
+
+    /// Cost to take the route
     inline int metric() const { return metric_; }
+
+    /// Priority of the route
     inline int priority() const { return priority_; }
 
     // String toString() const; // TODO
+
 private:
     inline static Ref<RouteInfo> create() { return new RouteInfo; }
     RouteInfo() {}
