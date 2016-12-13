@@ -6,6 +6,10 @@
  *
  */
 
+#ifdef CC_MEM_DISABLE
+
+#else
+
 #include <new>
 #include "valgrind.h"
 #include <cc/Memory>
@@ -53,3 +57,5 @@ void operator delete(void *data, const std::nothrow_t &) throw() {
 void operator delete[](void *data, const std::nothrow_t &) throw() {
     try { operator delete[](data); } catch(...) {}
 }
+
+#endif // ndef CC_MEM_DISABLE
