@@ -17,10 +17,12 @@ namespace net {
 using namespace cc::syntax;
 
 Uri::Uri():
+    hostIsNumeric_(false),
     port_(-1)
 {}
 
 Uri::Uri(ByteArray *text, Token *rootToken):
+    hostIsNumeric_(false),
     port_(-1)
 {
     readUri(text, rootToken);
