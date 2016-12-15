@@ -105,8 +105,6 @@ Color Color::parse(const char *s, bool *ok)
     return Color();
 }
 
-/** alpha blend color a over b
-  */
 Color Color::blend(Color a, Color b)
 {
     uint32_t o_a = Color::alpha(a);
