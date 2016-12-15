@@ -24,8 +24,7 @@ NetworkState::NetworkState(String interfaceName):
     const SocketAddress *candidateAddress = 0;
 
     Ref<RouteInfoList> routingTable = RouteInfo::queryTable();
-    for (int i = 0; i < routingTable->count(); ++i) {
-        RouteInfo *entry = routingTable->at(i);
+    for (const RouteInfo *entry: routingTable) {
         if (entry->source() || entry->destination()) continue;
         if (interfaceName_ != "" && entry->outputInterface() != interfaceName_) continue;
         interfaceName_ = entry->outputInterface();
@@ -33,28 +32,19 @@ NetworkState::NetworkState(String interfaceName):
         break;
     }
 
-    Ref<NetworkInterfaceList> interfaceList = NetworkInterface::queryAll(AF_UNSPEC);
-    for (int i = 0; i < interfaceList->count(); ++i) {
-        NetworkInterface *candidate = interfaceList->at(i);
-        if (candidate->name() == interfaceName_) {
-            interface_ = candidate;
-            const SocketAddressList *addressList = interface_->addressList();
-            if (!gateway_) {
-                for (int j = 0; j < addressList->count(); ++j) {
-                    const SocketAddress *address = addressList->at(j);
-                    if (address->family() != AF_INET) continue;
-                    candidateAddress = address;
-                    break;
-                }
-            }
-            if (!candidateAddress) {
-                for (int j = 0; j < addressList->count(); ++j) {
-                    const SocketAddress *address = addressList->at(j);
-                    if (gateway_ && address->family() != gateway_->family()) continue;
-                    candidateAddress = address;
-                    break;
-                }
-            }
+    interface_ = NetworkInterface::query(interfaceName_, AF_UNSPEC);
+    if (!gateway_) {
+        for (const SocketAddress *address: interface_->addressList()) {
+            if (address->family() != AF_INET) continue;
+            candidateAddress = address;
+            break;
+        }
+    }
+    if (!candidateAddress) {
+        for (const SocketAddress *address: interface_->addressList()) {
+            if (gateway_ && address->family() != gateway_->family()) continue;
+            candidateAddress = address;
+            break;
         }
     }
 
