@@ -329,16 +329,8 @@ Ref<NetworkInterface> NetworkInterface::getLink(NetworkInterfaceList *list, int 
                         unsigned attrLen = RTA_PAYLOAD(attr);
 
                         if ((attrType == IFLA_ADDRESS) || (attrType == IFLA_BROADCAST)) {
-                            // strange fact: hardware address always stored in little endian
-                            unsigned char *value = (unsigned char *)RTA_DATA(attr);
-                            uint64_t h = 0;
-                            for (unsigned i = 0; i < attrLen; ++i) {
-                                h <<= 8;
-                                h |= value[i];
-                            }
-
                             if (attrType == IFLA_ADDRESS)
-                                interface->hardwareAddress_= h;
+                                interface->hardwareAddress_= ByteArray::copy((const char *)RTA_DATA(attr), attrLen);
                             //else if (attrType == IFLA_BROADCAST)
                             //  interface->broadcastAddress_ = h;
                         }
@@ -391,9 +383,9 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
 
                 if (::ioctl(fd, SIOCGIFHWADDR, &ifr) == -1)
                     CC_SYSTEM_DEBUG_ERROR(errno);
-                interface->hardwareAddress_ = 0;
-                for (int i = 0, n = 6; i < n; ++i) // quick HACK, 6 is just a safe bet
-                    interface->hardwareAddress_ = (interface->hardwareAddress_ << 8) | ((unsigned char *)ifr.ifr_hwaddr.sa_data)[i];
+
+                interface->hardwareAddress_ = ByteArray::copy((const char *)ifr.ifr_hwaddr.sa_data, 6); // quick HACK, 6 is just a safe bet
+
                 if (::ioctl(fd, SIOCGIFFLAGS, &ifr) == -1)
                     CC_SYSTEM_DEBUG_ERROR(errno);
                 interface->flags_ = ifr.ifr_flags;
@@ -537,16 +529,8 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                     interface->type_ = addr->sdl_type;
                     if (addr->sdl_nlen > 0)
                         interface->name_ = String(addr->sdl_data, addr->sdl_nlen);
-                    if (addr->sdl_alen > 0) {
-                        // strange fact: hardware address always stored in little endian
-                        unsigned char *value = (unsigned char *)addr->sdl_data + addr->sdl_nlen;
-                        uint64_t h = 0;
-                        for (int i = 0, n = addr->sdl_alen; i < n; ++i) {
-                            h <<= 8;
-                            h |= value[i];
-                        }
-                        interface->hardwareAddress_ = h;
-                    }
+                    if (addr->sdl_alen > 0)
+                        interface->hardwareAddress_ = ByteArray::copy(addr->sdl_data, addr->sdl_nlen);
                 }
             }
         }

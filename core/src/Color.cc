@@ -115,7 +115,7 @@ Color Color::blend(Color a, Color b)
 
     uint32_t o_b = Color::alpha(b);
     if (o_b == 0xFF) {
-        for (int i = FirstComponentIndex; i <= LastComponentIndex; ++i)
+        for (int i = FirstChannel; i <= LastChannel; ++i)
             b.bytes_[i] = (o_a * a.bytes_[i] + n_a * b.bytes_[i]) >> 8;
     }
     else {
@@ -124,7 +124,7 @@ Color Color::blend(Color a, Color b)
         n_a *= o_b;
         uint32_t h = o_a + n_a;
         if ((Color::alpha(b) = h >> 8) > 0) {
-            for (int i = FirstComponentIndex; i <= LastComponentIndex; ++i)
+            for (int i = FirstChannel; i <= LastChannel; ++i)
                 b.bytes_[i] = (o_a * a.bytes_[i] + n_a * b.bytes_[i]) / h;
         }
         else {

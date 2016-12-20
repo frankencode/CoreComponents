@@ -22,14 +22,14 @@ class Variant;
 class Color
 {
 public:
-    /// Color channels
+    /// %Color channels
     enum {
         AlphaChannel = 0,           ///< Index of alpha channel
         BlueChannel  = 1,           ///< Index of blue channel
         GreenChannel = 2,           ///< Index of green channel
         RedChannel   = 3,           ///< Index of red channel
         FirstChannel = BlueChannel, ///< Index of first channel
-        LastCChannel = RedChannel   ///< Index of last channel
+        LastChannel = RedChannel   ///< Index of last channel
     };
 
     /// Default constructor
