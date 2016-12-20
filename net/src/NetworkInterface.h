@@ -88,7 +88,7 @@ public:
     unsigned flags() const { return flags_; }
 
     /// Hardware address
-    uint64_t hardwareAddress() const { return hardwareAddress_; }
+    const ByteArray *hardwareAddress() const { return hardwareAddress_; }
 
     /// Message transfer unit (MTU)
     uint32_t mtu() const { return mtu_; }
@@ -110,7 +110,7 @@ private:
     int index_;
     unsigned type_;
     unsigned flags_;
-    uint64_t hardwareAddress_;
+    Ref<const ByteArray> hardwareAddress_;
     uint32_t mtu_;
     Ref<SocketAddressList> addressList_;
 };

@@ -119,9 +119,15 @@ private:
 class UriSyntaxError: public UsageError
 {
 public:
+    /** Low-level constructor
+      * \param text \copydoc text()
+      */
     UriSyntaxError(String text): text_(text) {}
+
+    /// the text that failed to parse as an URI
     String text() const { return text_; }
-    virtual String message() const;
+
+    virtual String message() const override;
 
 private:
     String text_;

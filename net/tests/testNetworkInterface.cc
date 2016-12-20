@@ -34,7 +34,7 @@ class QueryNetworkInterfaces: public TestCase
             if (flags & NetworkInterface::Loopback) fout() << " loop";
             if (flags & NetworkInterface::PointToPoint) fout() << " p2p";
             fout() << nl;
-            fout() << "  HwAddr: " << hex(interface->hardwareAddress(), 12)->breakUp(2)->join("-") << nl;
+            fout() << "  HwAddr: " << interface->hardwareAddress()->toHex()->breakUp(2)->join("-") << nl;
             fout() << "  MTU:    " << interface->mtu() << nl;
             const SocketAddressList *addressList = interface->addressList();
             if (addressList) {

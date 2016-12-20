@@ -16,18 +16,28 @@ namespace net {
 class NetworkInterface;
 
 /** \class SocketAddressEntry SocketAddressEntry.h cc/net/SocketAddressEntry
-  * \brief Name resolution list entry
+  * \brief IPv4 address information associated with a network interface
   */
 class SocketAddressEntry: public SocketAddress
 {
 public:
-    SocketAddress *address() const { return const_cast<SocketAddressEntry *>(this); }
+    /// network address associated with this interface
+    const SocketAddress *address() const { return const_cast<SocketAddressEntry *>(this); }
 
+    /// size of the subnet mask
     int networkMask() const { return networkMask_; }
-    SocketAddress *localAddress() const { return localAddress_; }
-    SocketAddress *broadcastAddress() const { return broadcastAddress_; }
-    SocketAddress *destinationAddress() const { return broadcastAddress_; }
-    SocketAddress *anycastAddress() const { return anycastAddress_; }
+
+    /// local address
+    const SocketAddress *localAddress() const { return localAddress_; }
+
+    /// broadcast address
+    const SocketAddress *broadcastAddress() const { return broadcastAddress_; }
+
+    /// destination address in cases this is a point-to-point link
+    const SocketAddress *destinationAddress() const { return broadcastAddress_; }
+
+    /// anycast address
+    const SocketAddress *anycastAddress() const { return anycastAddress_; }
 
 private:
     friend class NetworkInterface;
@@ -47,9 +57,9 @@ private:
     SocketAddressEntry(struct sockaddr_in6 *addr): SocketAddress(addr), networkMask_(0) {}
 
     int networkMask_;
-    Ref<SocketAddress> localAddress_;
-    Ref<SocketAddress> broadcastAddress_;
-    Ref<SocketAddress> anycastAddress_;
+    Ref<const SocketAddress> localAddress_;
+    Ref<const SocketAddress> broadcastAddress_;
+    Ref<const SocketAddress> anycastAddress_;
 };
 
 }} // namespace cc::net
