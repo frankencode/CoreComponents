@@ -20,9 +20,6 @@
 
 namespace cc {
 
-#define CC_MEM_PAGE_PREALLOC 16 //!< number of pages to preallocate
-#define CC_MEM_GRANULARITY 16 //!< system memory granularity, e.g. XMMS movdqa requires 16
-
 #define CC_MEM_ALIGN(x) ((x) / CC_MEM_GRANULARITY + ((x) % CC_MEM_GRANULARITY > 0)) * CC_MEM_GRANULARITY
 
 #ifndef NDEBUG
@@ -59,6 +56,42 @@ public:
     uint16_t objectCount_;
     bool open_;
 };
+
+Memory::PageHeap::PageHeap():
+    MinHeap<void *>(buf_, CC_MEM_PAGE_HEAP)
+{}
+
+void Memory::PageHeap::pushPage(void *page, size_t pageSize)
+{
+    if (isFull()) {
+        // reduce heap to half its size in the process and unmap pages as sequential chunks
+        void *chunk = pop();
+        size_t size = pageSize;
+        while (count() > CC_MEM_PAGE_HEAP / 2) {
+            void *chunk2 = pop();
+            if ((char *)chunk2 - (char *)chunk == ssize_t(size)) {
+                size += pageSize;
+            }
+            else {
+                #ifndef NDEBUG
+                int ret =
+                #endif
+                ::munmap(chunk, size);
+                CC_MEM_ASSERT(ret == 0);
+                chunk = chunk2;
+                size = pageSize;
+            }
+        }
+        if (size > 0) {
+            #ifndef NDEBUG
+            int ret =
+            #endif
+            ::munmap(chunk, size);
+            CC_MEM_ASSERT(ret == 0);
+        }
+    }
+    push(page);
+}
 
 Memory *Memory::instance() throw()
 {
@@ -100,11 +133,7 @@ void *Memory::allocate(size_t size) throw()
                 bucket->release();
                 if (dispose) {
                     bucket->~BucketHeader();
-                    #ifndef NDEBUG
-                    int ret =
-                    #endif
-                    ::munmap((void *)bucket, pageSize);
-                    CC_MEM_ASSERT(ret == 0);
+                    allocator->pageHeap_.pushPage((void *)bucket, pageSize);
                 }
             }
         }
@@ -153,11 +182,7 @@ void Memory::free(void *data) throw()
         bucket->release();
         if (dispose) {
             bucket->~BucketHeader();
-            #ifndef NDEBUG
-            int ret =
-            #endif
-            ::munmap((void *)((char *)data - offset), pageSize);
-            CC_MEM_ASSERT(ret == 0);
+            allocator->pageHeap_.pushPage((void *)bucket, pageSize);
         }
     }
     else if (offset == 0) {

@@ -9,6 +9,23 @@
 #pragma once
 
 #include <sys/types.h>
+#include <cc/MinHeap>
+
+#ifndef MALLOC_ALIGNMENT
+#define MALLOC_ALIGNMENT (2 * sizeof(size_t))
+#endif
+
+#ifndef CC_MEM_GRANULARITY
+#define CC_MEM_GRANULARITY MALLOC_ALIGNMENT //!< system memory granularity, e.g. XMMS movdqa requires 16
+#endif
+
+#ifndef CC_MEM_PAGE_PREALLOC
+#define CC_MEM_PAGE_PREALLOC 16 //!< number of pages to preallocate
+#endif
+
+#ifndef CC_MEM_PAGE_HEAP
+#define CC_MEM_PAGE_HEAP (2 * CC_MEM_PAGE_PREALLOC - 1)  //!< number of freed pages to cache at maximum
+#endif
 
 namespace cc {
 
@@ -30,8 +47,19 @@ private:
 
     class BucketHeader;
 
+    class PageHeap: private MinHeap<void *>
+    {
+    public:
+        PageHeap();
+        void pushPage(void *page, size_t pageSize);
+
+    private:
+        void *buf_[CC_MEM_PAGE_HEAP];
+    };
+
     size_t pageSize_;
     BucketHeader *bucket_;
+    PageHeap pageHeap_;
 };
 
 } // namespace cc

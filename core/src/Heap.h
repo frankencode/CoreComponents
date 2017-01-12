@@ -55,8 +55,32 @@ public:
 
     inline T top() { CC_ASSERT(!isEmpty()); return buf_[0]; }
 
-    inline void clear() { fill_ = 0; } // FIXME: deplete
+    inline void deplete() { fill_ = 0; }
 
+    inline int count() const { return fill_; }
+
+    inline T get(int i) const
+    {
+        if (0 <= i && i < size_) return buf_[i];
+        return T();
+    }
+
+protected:
+    GenericHeap(int size):
+        fill_(0),
+        size_(size),
+        bufOwner_(true),
+        buf_(new T[size])
+    {}
+
+    GenericHeap(T *buf, int size):
+        fill_(0),
+        size_(size),
+        bufOwner_(false),
+        buf_(buf)
+    {}
+
+private:
     inline static int parent(int i) { return (i - 1) / 2; }
     inline static int leftChild(int i) { return 2 * i + 1; }
     inline static int rightChild(int i) { return 2 * i + 2; }
@@ -110,21 +134,6 @@ public:
         }
     }
 
-protected:
-    GenericHeap(int size):
-        fill_(0),
-        size_(size),
-        bufOwner_(true),
-        buf_(new T[size])
-    {}
-
-    GenericHeap(T *buf, int size):
-        fill_(0),
-        size_(size),
-        bufOwner_(false),
-        buf_(buf)
-    {}
-
     int fill_;    // current number of elements
     int size_;    // maximal number of elements
     bool bufOwner_;
@@ -132,6 +141,8 @@ protected:
 };
 
 /** \class Heap Heap.h cc/Heap
+  * \ingroup container
+  * \brief %Heap data container
   */
 template<class T>
 class Heap: public GenericHeap<T, FlexibleSortOrder>
@@ -174,7 +185,8 @@ public:
     inline static Ref<MinHeap> create(T *buf, int size) {
         return new MinHeap(buf, size);
     }
-private:
+
+protected:
     MinHeap(int size): GenericHeap<T, AscendingSortOrder>(size) {}
     MinHeap(T *buf, int size): GenericHeap<T, AscendingSortOrder>(buf, size) {}
 };
@@ -189,7 +201,8 @@ public:
     inline static Ref<MaxHeap> create(T *buf, int size) {
         return new MaxHeap(buf, size);
     }
-private:
+
+protected:
     MaxHeap(int size): GenericHeap<T, DescendingSortOrder>(size) {}
     MaxHeap(T *buf, int size): GenericHeap<T, DescendingSortOrder>(buf, size) {}
 };
