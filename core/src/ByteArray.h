@@ -566,6 +566,12 @@ public:
       */
     inline String toUpper() const { String h = copy(); h->upcaseInsitu(); return h; }
 
+    /// \copydoc toLower()
+    inline String downcase() const { return toLower(); }
+
+    /// \copydoc toUpper()
+    inline String upcase() const { return toUpper(); }
+
     /// \copybrief toLower() const
     void downcaseInsitu();
 
