@@ -71,9 +71,27 @@ class ResolveHostName: public TestCase
     }
 };
 
+class ReadLocation: public TestCase
+{
+    void run()
+    {
+        auto samples = StringList::create()
+            << "192.168.0.1"
+            << "128.0.0.1:8080"
+            << "::"
+            << "[::]:8080";
+        for (String s: samples) {
+            auto address = SocketAddress::read(s);
+            fout("\"%%\" == \"%%\"") << s << address << nl;
+            CC_ASSERT(s == address->toString());
+        }
+    }
+};
+
 int main(int argc, char** argv)
 {
     CC_TESTSUITE_ADD(ResolveHostName);
+    CC_TESTSUITE_ADD(ReadLocation);
 
     return TestSuite::instance()->run(argc, argv);
 }
