@@ -212,11 +212,12 @@ String SocketAddress::networkAddress() const
 
 String SocketAddress::toString() const
 {
-    Format s(networkAddress());
-    if (addr_.sa_family != AF_LOCAL) {
-        if (port() != 0)
-            s << ":" << port();
-    }
+    if (family() == AF_LOCAL || port() == 0 || port() == 0xFFFF) return networkAddress();
+    Format s;
+    if (family() == AF_INET)
+        s << networkAddress() << ":" << port();
+    else if (family() == AF_INET6)
+        s << "[" << networkAddress() << "]:" << port();
     return s;
 }
 

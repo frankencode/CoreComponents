@@ -61,9 +61,11 @@ InetAddressSyntax::InetAddressSyntax(SyntaxDebugFactory *debugFactory):
                         CHAR(':')
                     )
                 ),
-                CHOICE(
-                    REF("Inet4Address"),
-                    INLINE("HexWord")
+                REPEAT(0, 1,
+                    CHOICE(
+                        REF("Inet4Address"),
+                        INLINE("HexWord")
+                    )
                 )
             )
         );
