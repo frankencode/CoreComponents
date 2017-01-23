@@ -149,23 +149,21 @@ void NodeMaster::runNode() const
 
     while (true) {
         Ref<IoActivity> activity = ioMonitor->wait(1000);
-        if (activity->count() > 0) {
-            for (int i = 0; i < activity->count(); ++i) {
-                try {
-                    HttpSocket *socket = cast<HttpSocket>(activity->at(i)->target());
-                    Ref<HttpSocket> clientSocket = socket->accept();
-                    Ref<HttpClientConnection> client = HttpClientConnection::open(clientSocket);
-                    if (connectionManager->accept(client)) {
-                        CCNODE_DEBUG() << "Accepted connection from " << client->address() << " with priority " << client->priority() << nl;
-                        pendingConnections->pushBack(client, client->priority());
-                    }
-                    else {
-                        CCNODE_DEBUG() << "Rejected connection from " << client->address() << nl;
-                    }
+        for (const IoEvent *event: activity) {
+            try {
+                HttpSocket *socket = Object::cast<HttpSocket *>(event->target());
+                Ref<HttpSocket> clientSocket = socket->accept();
+                Ref<HttpClientConnection> client = HttpClientConnection::open(clientSocket);
+                if (connectionManager->accept(client)) {
+                    CCNODE_DEBUG() << "Accepted connection from " << client->address() << " with priority " << client->priority() << nl;
+                    pendingConnections->pushBack(client, client->priority());
                 }
-                catch (Exception &ex) {
-                    CCNODE_ERROR() << ex << nl;
+                else {
+                    CCNODE_DEBUG() << "Rejected connection from " << client->address() << nl;
                 }
+            }
+            catch (Exception &ex) {
+                CCNODE_ERROR() << ex << nl;
             }
         }
 

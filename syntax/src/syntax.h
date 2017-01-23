@@ -733,7 +733,7 @@ public:
 
     virtual SyntaxNode *succ(SyntaxNode *node) const
     {
-        return SyntaxNode::parent() ? SyntaxNode::parent()->succ(SyntaxNode::self()) : null<SyntaxNode>();
+        return SyntaxNode::parent() ? SyntaxNode::parent()->succ(SyntaxNode::self()) : nullptr;
     }
 
     virtual int matchLength() const
@@ -976,7 +976,7 @@ public:
 
     virtual SyntaxNode *succ(SyntaxNode *node) const
     {
-        return SyntaxNode::parent() ? SyntaxNode::parent()->succ(SyntaxNode::self()) : null<SyntaxNode>();
+        return SyntaxNode::parent() ? SyntaxNode::parent()->succ(SyntaxNode::self()) : nullptr;
     }
 
     inline DefinitionNode *scope() const { return scope_; }
@@ -1038,7 +1038,7 @@ public:
         if (numberOfRefs_ == -1) {
             numberOfRefs_ = 0;
             for (SyntaxNode *node = SyntaxNode::first(); node; node = node->next())
-                if (cast<RefNode>(node)) ++numberOfRefs_;
+                if (Object::cast<RefNode *>(node)) ++numberOfRefs_;
         }
         return numberOfRefs_;
     }

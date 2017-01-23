@@ -48,7 +48,7 @@ NetworkState::NetworkState(String interfaceName):
         }
     }
 
-    const SocketAddressEntry *entry = cast<const SocketAddressEntry>(candidateAddress);
+    const SocketAddressEntry *entry = Object::cast<const SocketAddressEntry *>(candidateAddress);
     if (entry) networkMask_ = entry->networkMask();
     address_ = candidateAddress;
 }

@@ -42,6 +42,18 @@ public:
             delete this;
     }
 
+    template<class U, class T>
+    inline static U cast(T p) {
+        typedef typename CC_DEREF(T) V;
+        typedef typename CC_DEREF(U) W;
+        return CastHelper<V, W, ConversionFromTo<T, U>::Exists>::cast(p);
+    }
+
+    template<class U, class T>
+    inline static U cast(const Ref<T>& p) {
+        return Object::cast<U>(p.get());
+    }
+
 private:
     Object(const Object &);
     const Object &operator=(const Object &);

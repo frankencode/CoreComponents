@@ -29,38 +29,38 @@ void YasonWriter::write(Variant value)
 
 void YasonWriter::writeValue(Variant value, int depth)
 {
-    if ( type(value) == Variant::IntType ||
-         type(value) == Variant::BoolType ||
-         type(value) == Variant::FloatType ||
-         type(value) == Variant::ColorType ||
-         type(value) == Variant::VersionType )
+    if ( Variant::type(value) == Variant::IntType ||
+         Variant::type(value) == Variant::BoolType ||
+         Variant::type(value) == Variant::FloatType ||
+         Variant::type(value) == Variant::ColorType ||
+         Variant::type(value) == Variant::VersionType )
     {
         format_ << value;
     }
-    else if (type(value) == Variant::StringType) {
+    else if (Variant::type(value) == Variant::StringType) {
         String s = value;
         if (s->contains("\""))
             s = s->replace("\"", "\\\"");
         s = s->escape();
         format_ << "\"" << s << "\"";
     }
-    else if (type(value) == Variant::ListType) {
+    else if (Variant::type(value) == Variant::ListType) {
         writeList(value, depth);
     }
-    else if (type(value) == Variant::ObjectType) {
+    else if (Variant::type(value) == Variant::ObjectType) {
         writeObject(value, depth);
     }
 }
 
 void YasonWriter::writeList(Variant value, int depth)
 {
-    if (itemType(value) == Variant::IntType)
+    if (Variant::itemType(value) == Variant::IntType)
         writeTypedList<int>(value, depth);
-    else if (itemType(value) == Variant::BoolType)
+    else if (Variant::itemType(value) == Variant::BoolType)
         writeTypedList<bool>(value, depth);
-    else if (itemType(value) == Variant::FloatType)
+    else if (Variant::itemType(value) == Variant::FloatType)
         writeTypedList<float>(value, depth);
-    else if (itemType(value) == Variant::StringType)
+    else if (Variant::itemType(value) == Variant::StringType)
         writeTypedList<String>(value, depth);
     else
         writeTypedList<Variant>(value, depth);
@@ -84,7 +84,7 @@ bool YasonWriter::isIdentifier(String name) const
 
 void YasonWriter::writeObject(Variant value, int depth)
 {
-    Ref<MetaObject> object = cast<MetaObject>(value);
+    Ref<MetaObject> object = Variant::cast<MetaObject *>(value);
     if (!object) {
         format_ << "null";
         return;
@@ -133,7 +133,7 @@ void YasonWriter::writeIndent(int depth)
 template<class T>
 void YasonWriter::writeTypedList(Variant value, int depth)
 {
-    List<T> *list = cast< List<T> >(value);
+    List<T> *list = Variant::cast<List<T> *>(value);
     if (list->count() == 0) {
         format_ << "[]";
         return;

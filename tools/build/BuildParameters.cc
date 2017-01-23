@@ -17,15 +17,15 @@ void BuildParameters::read(MetaObject *object, BuildPlan *plan)
     optimize_ = object->value("optimize");
     linkStatic_ = object->value("static");
 
-    includePaths_ = cast<StringList>(object->value("include-paths"));
-    libraryPaths_ = cast<StringList>(object->value("library-paths"));
-    libraries_ = cast<StringList>(object->value("link"));
+    includePaths_ = Variant::cast<StringList *>(object->value("include-paths"));
+    libraryPaths_ = Variant::cast<StringList *>(object->value("library-paths"));
+    libraries_ = Variant::cast<StringList *>(object->value("link"));
     if (!includePaths_) includePaths_ = StringList::create();
     if (!libraryPaths_) libraryPaths_ = StringList::create();
     if (!libraries_) libraries_ = StringList::create();
 
-    customCompileFlags_ = cast<StringList>(object->value("compile-flags"));
-    customLinkFlags_ = cast<StringList>(object->value("link-flags"));
+    customCompileFlags_ = Variant::cast<StringList *>(object->value("compile-flags"));
+    customLinkFlags_ = Variant::cast<StringList *>(object->value("link-flags"));
     if (!customCompileFlags_) customCompileFlags_ = StringList::create();
     if (!customLinkFlags_) customLinkFlags_ = StringList::create();
 

@@ -27,7 +27,7 @@ void DebugToken::printTo(Stream *stream, ByteArray *text, int depth, int default
     }
 
     for (Token *token = firstChild(); token; token = token->nextSibling())
-        cast<DebugToken>(token)->printTo(stream, text, depth + 1, defaultScope);
+        Object::cast<DebugToken *>(token)->printTo(stream, text, depth + 1, defaultScope);
 
     // Format(stream) << indent << "]" << nl;
 }

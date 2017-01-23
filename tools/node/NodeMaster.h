@@ -29,7 +29,7 @@ private:
 
     NodeMaster();
 
-    virtual void run();
+    virtual void run() final;
     void runNode() const;
 
     Ref<SignalMaster> signalMaster_;
@@ -37,4 +37,3 @@ private:
 };
 
 } // namespace ccnode
-

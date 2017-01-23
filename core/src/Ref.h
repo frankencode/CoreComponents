@@ -122,10 +122,10 @@ public:
     }
 
 private:
+    template<class U, class V>
+    inline static U *cast(V *p) { return CastHelper<V, U, ConversionFromTo<V*, U*>::Exists>::cast(p); }
+
     T *a_;
 };
-
-template<class U, class T>
-inline U *cast(const Ref<T>& p) { return cast<U>(p.get()); }
 
 } // namespace cc

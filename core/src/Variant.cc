@@ -64,7 +64,7 @@ bool Variant::operator==(const Variant &b) const
     else if ((type_ & VersionType) && (b.type_ & VersionType))
         equal = (word_ == b.word_);
     else if ((type_ == StringType) && (b.type_ == StringType))
-        equal = String(cast<ByteArray>(ref().get())) == String(cast<ByteArray>(b.ref().get()));
+        equal = (String(Variant::cast<ByteArray *>(*this)) == String(Variant::cast<ByteArray *>(b)));
     else if ((type_ == ObjectType) && (b.type_ == ObjectType))
         equal = (ref().get() == b.ref().get());
     else
@@ -84,7 +84,7 @@ bool Variant::operator<(const Variant &b) const
     else if ((type_ & VersionType) && (b.type_ & VersionType))
         below = (Version::cast(word_) < Version::cast(b.word_));
     else if ((type_ == StringType) && (b.type_ == StringType))
-        below = String(cast<ByteArray>(ref().get())) < String(cast<ByteArray>(b.ref().get()));
+        below = String(Variant::cast<ByteArray *>(*this)) < String(Variant::cast<ByteArray *>(b));
     else if ((type_ == ObjectType) && (b.type_ == ObjectType))
         below = (ref().get() < b.ref().get());
 
@@ -93,14 +93,14 @@ bool Variant::operator<(const Variant &b) const
 
 String str(const Variant &x)
 {
-    if (type(x) == Variant::UndefType) return "";
-    else if (type(x) == Variant::BoolType) return str(bool(x));
-    else if (type(x) == Variant::IntType) return str(int(x));
-    else if (type(x) == Variant::FloatType) return str(float(x));
-    else if (type(x) == Variant::ColorType) return str(Color(x));
-    else if (type(x) == Variant::VersionType) return str(Version(x));
-    else if (type(x) == Variant::StringType) return cast<ByteArray>(x.ref());
-    /*else if (type(x) == Variant::ObjectType)*/ return str((void *)cast<Object>(x));
+    if (Variant::type(x) == Variant::UndefType) return "";
+    else if (Variant::type(x) == Variant::BoolType) return str(bool(x));
+    else if (Variant::type(x) == Variant::IntType) return str(int(x));
+    else if (Variant::type(x) == Variant::FloatType) return str(float(x));
+    else if (Variant::type(x) == Variant::ColorType) return str(Color(x));
+    else if (Variant::type(x) == Variant::VersionType) return str(Version(x));
+    else if (Variant::type(x) == Variant::StringType) return Variant::cast<ByteArray *>(x);
+    /*else if (type(x) == Variant::ObjectType)*/ return str((void *)Variant::cast<Object *>(x));
 }
 
 } // namespace cc

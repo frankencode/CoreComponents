@@ -29,36 +29,36 @@ void JsonWriter::write(Variant value)
 
 void JsonWriter::writeValue(Variant value, int depth)
 {
-    if ( type(value) == Variant::IntType ||
-         type(value) == Variant::BoolType ||
-         type(value) == Variant::FloatType )
+    if ( Variant::type(value) == Variant::IntType ||
+         Variant::type(value) == Variant::BoolType ||
+         Variant::type(value) == Variant::FloatType )
     {
         format_ << value;
     }
-    else if (type(value) == Variant::StringType) {
+    else if (Variant::type(value) == Variant::StringType) {
         String s = value;
         if (s->contains("\""))
             s = s->replace("\"", "\\\"");
         s = s->escape();
         format_ << "\"" << s << "\"";
     }
-    else if (type(value) == Variant::ListType) {
+    else if (Variant::type(value) == Variant::ListType) {
         writeList(value, depth);
     }
-    else if (type(value) == Variant::ObjectType) {
+    else if (Variant::type(value) == Variant::ObjectType) {
         writeObject(value, depth);
     }
 }
 
 void JsonWriter::writeList(Variant value, int depth)
 {
-    if (itemType(value) == Variant::IntType)
+    if (Variant::itemType(value) == Variant::IntType)
         writeTypedList<int>(value, depth);
-    else if (itemType(value) == Variant::BoolType)
+    else if (Variant::itemType(value) == Variant::BoolType)
         writeTypedList<bool>(value, depth);
-    else if (itemType(value) == Variant::FloatType)
+    else if (Variant::itemType(value) == Variant::FloatType)
         writeTypedList<float>(value, depth);
-    else if (itemType(value) == Variant::StringType)
+    else if (Variant::itemType(value) == Variant::StringType)
         writeTypedList<String>(value, depth);
     else
         writeTypedList<Variant>(value, depth);
@@ -66,7 +66,7 @@ void JsonWriter::writeList(Variant value, int depth)
 
 void JsonWriter::writeObject(Variant value, int depth)
 {
-    Ref<MetaObject> object = cast<MetaObject>(value);
+    Ref<MetaObject> object = Variant::cast<MetaObject *>(value);
     if (object->className() != "") {
         format_ << object->className();
         format_ << " ";
@@ -102,7 +102,7 @@ void JsonWriter::writeIndent(int depth)
 template<class T>
 void JsonWriter::writeTypedList(Variant value, int depth)
 {
-    List<T> *list = cast< List<T> >(value);
+    List<T> *list = Variant::cast< List<T> *>(value);
     if (list->count() == 0) {
         format_ << "[]";
         return;

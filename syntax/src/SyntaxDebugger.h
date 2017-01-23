@@ -22,7 +22,7 @@ public:
     }
 
     virtual SyntaxNode *succ(SyntaxNode *node) const {
-        return SyntaxNode::parent() ? SyntaxNode::parent()->succ(SyntaxNode::self()) : null<SyntaxNode>();
+        return SyntaxNode::parent() ? SyntaxNode::parent()->succ(SyntaxNode::self()) : nullptr;
     }
 
     virtual int matchLength() const {

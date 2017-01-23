@@ -64,8 +64,8 @@ void Arguments::validate(const VariantMap *prototype)
         if (!prototype->lookup(name, &defaultValue))
             throw UsageError(Format("No such option: \"%%\"") << name);
         if (defaultValue == Variant()) continue;
-        int valueType = type(value);
-        int defaultType = type(defaultValue);
+        int valueType = Variant::type(value);
+        int defaultType = Variant::type(defaultValue);
         if (valueType != defaultType) {
             if (valueType == Variant::IntType && defaultType == Variant::BoolType) {
                 int intValue = value;
@@ -80,7 +80,7 @@ void Arguments::validate(const VariantMap *prototype)
             }
             else {
                 throw UsageError(
-                    Format("Option \"%%\" expects type %%") << name << Variant::typeName(type(defaultValue), itemType(defaultValue))
+                    Format("Option \"%%\" expects type %%") << name << Variant::typeName(Variant::type(defaultValue), Variant::itemType(defaultValue))
                 );
             }
         }

@@ -86,6 +86,16 @@ template<class T> class IsAtomic<const T*> { public: enum { value = 1 }; };
 
 #define CC_IS_ATOMIC(T) (IsAtomic<const T>::value == 1)
 
+template<class T> class IsPointer { public: enum { value = 0 }; };
+template<class T> class IsPointer<T *> { public: enum { value = 1 }; };
+
+#define CC_IS_POINTER(T) (IsPointer<T>::value == 1)
+
+template<class T> class DerefPointerType { public: typedef T DerefType; };
+template<class T> class DerefPointerType<T *> { public: typedef T DerefType; };
+
+#define CC_DEREF(T) DerefPointerType<T>::DerefType
+
 struct None {};
 
 // taken from Andrei Alexandrescu's book "Modern C++ Design"
@@ -148,12 +158,6 @@ public:
 };
 
 #define CC_CAST_FROM_TO(T, U, p) CastHelper<T, U, ConversionFromTo<T*, U*>::Exists>::cast(p)
-
-template<class U, class T>
-inline U *cast(T *p) { return CastHelper<T, U, ConversionFromTo<T*, U*>::Exists>::cast(p); }
-
-template<class T>
-inline T *null() { return reinterpret_cast<T *>(0); }
 
 /** %Unicode character type (stores an %Unicode code point)
   * \ingroup unicode
