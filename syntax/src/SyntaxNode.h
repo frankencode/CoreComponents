@@ -28,11 +28,11 @@ public:
 
     virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const = 0;
 
-    virtual SyntaxNode *succ(SyntaxNode *node) const { return null<SyntaxNode>(); }
+    virtual SyntaxNode *succ(SyntaxNode *node) const { return nullptr; }
     virtual int matchLength() const { return -1; }
 
     inline SyntaxNode *succ() const {
-        return parent() ? parent()->succ(SyntaxNode::self()) : null<SyntaxNode>();
+        return parent() ? parent()->succ(SyntaxNode::self()) : nullptr;
     }
 
     inline SyntaxNode *self() const { return const_cast<SyntaxNode *>(this); }
@@ -41,4 +41,3 @@ public:
 typedef Ref<SyntaxNode> NODE;
 
 }} // namespace cc::syntax
-

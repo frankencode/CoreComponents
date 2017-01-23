@@ -201,7 +201,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                                 interface->addressList_->append(label);
                             }
                             if ((label) && (data->ifa_family == AF_INET)) {
-                                SocketAddressEntry *entry = cast<SocketAddressEntry>(label.get());
+                                SocketAddressEntry *entry = Object::cast<SocketAddressEntry *>(label.get());
                                 if (attrType == IFA_LOCAL)
                                     entry->localAddress_ = address;
                                 else if (attrType == IFA_BROADCAST)
@@ -441,7 +441,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
                     interface->addressList_->append(label);
 
                     if ((label) && (addr->sa_family == AF_INET)) {
-                        SocketAddressEntry *entry = cast<SocketAddressEntry>(label.get());
+                        SocketAddressEntry *entry = Object::cast<SocketAddressEntry *>(label.get());
                         if (interface->flags_ & IFF_BROADCAST) {
                             struct ifreq ifr2 = *ifr;
                             if (::ioctl(fd, SIOCGIFBRDADDR, &ifr2) == -1)

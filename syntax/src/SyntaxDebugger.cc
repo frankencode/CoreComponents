@@ -73,7 +73,7 @@ void SyntaxDebugNode::printNext(String indent)
 
 void SyntaxDebugNode::printBranch(SyntaxNode *node, String indent) {
     if (node) {
-        SyntaxDebugNode *debugNode = cast<SyntaxDebugNode>(node);
+        SyntaxDebugNode *debugNode = Object::cast<SyntaxDebugNode *>(node);
         if (debugNode) debugNode->printNext(indent);
         else fout() << indent;
     }
@@ -103,7 +103,7 @@ public:
     }
 
 private:
-    inline CharNode *charNode() const { return cast<CharNode>(SyntaxDebugNode::entry()); }
+    inline CharNode *charNode() const { return Object::cast<CharNode *>(SyntaxDebugNode::entry()); }
 };
 
 class GreaterDebugNode: public SyntaxDebugNode {
@@ -119,7 +119,7 @@ public:
     }
 
 private:
-    inline GreaterNode *greaterNode() const { return cast<GreaterNode>(SyntaxDebugNode::entry()); }
+    inline GreaterNode *greaterNode() const { return Object::cast<GreaterNode *>(SyntaxDebugNode::entry()); }
 };
 
 class GreaterOrEqualDebugNode: public SyntaxDebugNode {
@@ -135,7 +135,7 @@ public:
     }
 
 private:
-    inline GreaterOrEqualNode *greaterOrEqualNode() const { return cast<GreaterOrEqualNode>(SyntaxDebugNode::entry()); }
+    inline GreaterOrEqualNode *greaterOrEqualNode() const { return Object::cast<GreaterOrEqualNode *>(SyntaxDebugNode::entry()); }
 };
 
 class AnyDebugNode: public SyntaxDebugNode {
@@ -163,7 +163,7 @@ public:
     }
 
 private:
-    inline RangeMinMaxNode *rangeMinMaxNode() const { return cast<RangeMinMaxNode>(SyntaxDebugNode::entry()); }
+    inline RangeMinMaxNode *rangeMinMaxNode() const { return Object::cast<RangeMinMaxNode *>(SyntaxDebugNode::entry()); }
 };
 
 class RangeExplicitDebugNode: public SyntaxDebugNode {
@@ -179,7 +179,7 @@ public:
     }
 
 private:
-    inline RangeExplicitNode *rangeExplicitNode() const { return cast<RangeExplicitNode>(SyntaxDebugNode::entry()); }
+    inline RangeExplicitNode *rangeExplicitNode() const { return Object::cast<RangeExplicitNode *>(SyntaxDebugNode::entry()); }
 };
 
 class StringDebugNode: public SyntaxDebugNode {
@@ -195,7 +195,7 @@ public:
     }
 
 private:
-    inline StringNode *stringNode() const { return cast<StringNode>(SyntaxDebugNode::entry()); }
+    inline StringNode *stringNode() const { return Object::cast<StringNode *>(SyntaxDebugNode::entry()); }
 };
 
 class KeywordDebugNode: public SyntaxDebugNode {
@@ -219,7 +219,7 @@ public:
     }
 
 private:
-    inline KeywordNode *keywordNode() const { return cast<KeywordNode>(SyntaxDebugNode::entry()); }
+    inline KeywordNode *keywordNode() const { return Object::cast<KeywordNode *>(SyntaxDebugNode::entry()); }
 };
 
 class RepeatDebugNode: public SyntaxDebugNode {
@@ -242,7 +242,7 @@ public:
     }
 
 private:
-    inline RepeatNode *repeatNode() const { return cast<RepeatNode>(SyntaxDebugNode::entry()); }
+    inline RepeatNode *repeatNode() const { return Object::cast<RepeatNode *>(SyntaxDebugNode::entry()); }
 };
 
 class LazyRepeatDebugNode: public SyntaxDebugNode {
@@ -263,7 +263,7 @@ public:
     }
 
 private:
-    inline LazyRepeatNode *repeatNode() const { return cast<LazyRepeatNode>(SyntaxDebugNode::entry()); }
+    inline LazyRepeatNode *repeatNode() const { return Object::cast<LazyRepeatNode *>(SyntaxDebugNode::entry()); }
 };
 
 class GreedyRepeatDebugNode: public SyntaxDebugNode {
@@ -286,7 +286,7 @@ public:
     }
 
 private:
-    inline GreedyRepeatNode *repeatNode() const { return cast<GreedyRepeatNode>(SyntaxDebugNode::entry()); }
+    inline GreedyRepeatNode *repeatNode() const { return Object::cast<GreedyRepeatNode *>(SyntaxDebugNode::entry()); }
 };
 
 class FilterDebugNode: public SyntaxDebugNode {
@@ -309,7 +309,7 @@ public:
     }
 
 private:
-    inline FilterNode *filterNode() const { return cast<FilterNode>(SyntaxDebugNode::entry()); }
+    inline FilterNode *filterNode() const { return Object::cast<FilterNode *>(SyntaxDebugNode::entry()); }
 };
 
 class LengthDebugNode: public SyntaxDebugNode {
@@ -331,7 +331,7 @@ public:
     }
 
 private:
-    inline LengthNode *lengthNode() const { return cast<LengthNode>(SyntaxDebugNode::entry()); }
+    inline LengthNode *lengthNode() const { return Object::cast<LengthNode *>(SyntaxDebugNode::entry()); }
 };
 
 class BoiDebugNode: public SyntaxDebugNode {
@@ -361,7 +361,7 @@ public:
     virtual const char *declType() const { return passNode()->invert() ? "FAIL" : "PASS"; }
 
 private:
-    inline PassNode *passNode() const { return cast<PassNode>(SyntaxDebugNode::entry()); }
+    inline PassNode *passNode() const { return Object::cast<PassNode *>(SyntaxDebugNode::entry()); }
 };
 
 class FindDebugNode: public SyntaxDebugNode {
@@ -379,7 +379,7 @@ public:
     }
 
 private:
-    inline FindNode *findNode() const { return cast<FindNode>(SyntaxDebugNode::entry()); }
+    inline FindNode *findNode() const { return Object::cast<FindNode *>(SyntaxDebugNode::entry()); }
 };
 
 class AheadDebugNode: public SyntaxDebugNode {
@@ -397,7 +397,7 @@ public:
     }
 
 private:
-    inline AheadNode *aheadNode() const { return cast<AheadNode>(SyntaxDebugNode::entry()); }
+    inline AheadNode *aheadNode() const { return Object::cast<AheadNode *>(SyntaxDebugNode::entry()); }
 };
 
 class BehindDebugNode: public SyntaxDebugNode {
@@ -415,7 +415,7 @@ public:
     }
 
 private:
-    inline BehindNode *behindNode() const { return cast<BehindNode>(SyntaxDebugNode::entry()); }
+    inline BehindNode *behindNode() const { return Object::cast<BehindNode *>(SyntaxDebugNode::entry()); }
 };
 
 class ChoiceDebugNode: public SyntaxDebugNode {
@@ -438,7 +438,7 @@ public:
     }
 
 private:
-    inline ChoiceNode *choiceNode() const { return cast<ChoiceNode>(SyntaxDebugNode::entry()); }
+    inline ChoiceNode *choiceNode() const { return Object::cast<ChoiceNode *>(SyntaxDebugNode::entry()); }
 };
 
 class GlueDebugNode: public SyntaxDebugNode {
@@ -461,7 +461,7 @@ public:
     }
 
 private:
-    inline GlueNode *glueNode() const { return cast<GlueNode>(SyntaxDebugNode::entry()); }
+    inline GlueNode *glueNode() const { return Object::cast<GlueNode *>(SyntaxDebugNode::entry()); }
 };
 
 class HintDebugNode: public SyntaxDebugNode {
@@ -480,7 +480,7 @@ public:
     }
 
 private:
-    inline HintNode *hintNode() const { return cast<HintNode>(SyntaxDebugNode::entry()); }
+    inline HintNode *hintNode() const { return Object::cast<HintNode *>(SyntaxDebugNode::entry()); }
 };
 
 class RefDebugNode: public SyntaxDebugNode {
@@ -496,7 +496,7 @@ public:
     }
 
 private:
-    inline RefNode *refNode() const { return cast<RefNode>(SyntaxDebugNode::entry()); }
+    inline RefNode *refNode() const { return Object::cast<RefNode *>(SyntaxDebugNode::entry()); }
 };
 
 class InvokeDebugNode: public SyntaxDebugNode {
@@ -512,7 +512,7 @@ public:
     }
 
 private:
-    inline InvokeNode *invokeNode() const { return cast<InvokeNode>(SyntaxDebugNode::entry()); }
+    inline InvokeNode *invokeNode() const { return Object::cast<InvokeNode *>(SyntaxDebugNode::entry()); }
 };
 
 class PreviousDebugNode: public SyntaxDebugNode {
@@ -531,7 +531,7 @@ public:
     }
 
 private:
-    inline PreviousNode *previousNode() const { return cast<PreviousNode>(SyntaxDebugNode::entry()); }
+    inline PreviousNode *previousNode() const { return Object::cast<PreviousNode *>(SyntaxDebugNode::entry()); }
 };
 
 class ContextDebugNode: public SyntaxDebugNode {
@@ -552,7 +552,7 @@ public:
     }
 
 private:
-    inline ContextNode *contextNode() const { return cast<ContextNode>(SyntaxDebugNode::entry()); }
+    inline ContextNode *contextNode() const { return Object::cast<ContextNode *>(SyntaxDebugNode::entry()); }
 };
 
 class CallDebugNode: public SyntaxDebugNode {
@@ -568,7 +568,7 @@ public:
     }
 
 private:
-    inline CallNode *callNode() const { return cast<CallNode>(SyntaxDebugNode::entry()); }
+    inline CallNode *callNode() const { return Object::cast<CallNode *>(SyntaxDebugNode::entry()); }
 };
 
 class SetDebugNode: public SyntaxDebugNode {
@@ -585,7 +585,7 @@ public:
     }
 
 private:
-    inline SetNode *setNode() const { return cast<SetNode>(SyntaxDebugNode::entry()); }
+    inline SetNode *setNode() const { return Object::cast<SetNode *>(SyntaxDebugNode::entry()); }
 };
 
 class IfDebugNode: public SyntaxDebugNode {
@@ -606,7 +606,7 @@ public:
     }
 
 private:
-    inline IfNode *ifNode() const { return cast<IfNode>(SyntaxDebugNode::entry()); }
+    inline IfNode *ifNode() const { return Object::cast<IfNode *>(SyntaxDebugNode::entry()); }
 };
 
 class CaptureDebugNode: public SyntaxDebugNode {
@@ -625,7 +625,7 @@ public:
     }
 
 private:
-    inline CaptureNode *captureNode() const { return cast<CaptureNode>(SyntaxDebugNode::entry()); }
+    inline CaptureNode *captureNode() const { return Object::cast<CaptureNode *>(SyntaxDebugNode::entry()); }
 };
 
 class ReplayDebugNode: public SyntaxDebugNode {
@@ -640,7 +640,7 @@ public:
         fout("\"%%\"") << SyntaxDebugNode::debugger_->captureNameById()->value(replayNode()->captureId());
     }
 private:
-    inline ReplayNode *replayNode() const { return cast<ReplayNode>(SyntaxDebugNode::entry()); }
+    inline ReplayNode *replayNode() const { return Object::cast<ReplayNode *>(SyntaxDebugNode::entry()); }
 };
 
 SyntaxDebugger::SyntaxDebugger(String indent)
@@ -700,7 +700,7 @@ void SyntaxDebugger::printDefinition(bool omitUnusedRules)
         if (omitUnusedRules && !rule->used()) continue;
         fout("DEFINE(\"%%\",\n") << rule->name();
         if (rule->entry()) {
-            SyntaxDebugNode *debugNode = cast<SyntaxDebugNode>(rule->entry());
+            SyntaxDebugNode *debugNode = Object::cast<SyntaxDebugNode *>(rule->entry());
             if (debugNode) debugNode->printNext(indent_);
         }
         else {
@@ -747,7 +747,7 @@ void SyntaxDebugger::determineRulesInUse(RuleNode *rule)
         rule->markUsed();
         SyntaxNode *node = rule->entry()->first();
         while (node) {
-            LinkNode *link = cast<LinkNode>(node);
+            LinkNode *link = Object::cast<LinkNode *>(node);
             if (link)
                 determineRulesInUse(link->rule());
             node = node->next();

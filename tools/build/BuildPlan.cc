@@ -329,8 +329,8 @@ String BuildPlan::findPrerequisite(String prerequisitePath) const
 
 String BuildPlan::resolveChoices()
 {
-    StringList *choices = cast<StringList>(recipe_->value("choice"));
-    StringList *selection = cast<StringList>(recipe_->value("select"));
+    StringList *choices = Variant::cast<StringList *>(recipe_->value("choice"));
+    StringList *selection = Variant::cast<StringList *>(recipe_->value("select"));
     String choicesConfigure = recipe_->value("choice-configure");
     if (choicesConfigure != "") {
         if (choicesConfigure->isRelativePath())
@@ -363,7 +363,7 @@ void BuildPlan::readPrerequisites()
 
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
-    StringList *prerequisitePaths = cast<StringList>(recipe_->value("use"));
+    StringList *prerequisitePaths = Variant::cast<StringList *>(recipe_->value("use"));
 
     String choice = resolveChoices();
     if (choice != "") {
@@ -406,7 +406,7 @@ void BuildPlan::globSources()
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
     if (recipe_->contains("source"))
-        sources_ = globSources(cast<StringList>(recipe_->value("source")));
+        sources_ = globSources(Variant::cast<StringList *>(recipe_->value("source")));
     else
         sources_ = StringList::create();
 
@@ -424,7 +424,7 @@ void BuildPlan::globSources()
     }
 
     if (recipe_->contains("bundle"))
-        bundle_ = globSources(cast<StringList>(recipe_->value("bundle")));
+        bundle_ = globSources(Variant::cast<StringList *>(recipe_->value("bundle")));
     else
         bundle_ = StringList::create();
 

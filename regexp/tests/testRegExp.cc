@@ -28,7 +28,7 @@ class EmailValidation: public TestCase
             "(?<!:[.-])";
 
         #ifndef NDEBUG
-        SyntaxDebugger *debugger = cast<SyntaxDebugger>(pattern->debugFactory());
+        SyntaxDebugger *debugger = Object::cast<SyntaxDebugger *>(pattern->debugFactory());
         debugger->printDefinition();
         fout() << nl;
         #endif
@@ -80,7 +80,7 @@ class Globbing: public TestCase
             << "stdio.h";
 
         #ifndef NDEBUG
-        SyntaxDebugger *debugger = cast<SyntaxDebugger>(pattern->debugFactory());
+        SyntaxDebugger *debugger = Object::cast<SyntaxDebugger *>(pattern->debugFactory());
         debugger->printDefinition();
         fout() << nl;
         #endif

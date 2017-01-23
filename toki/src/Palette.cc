@@ -60,7 +60,7 @@ void Palette::realize(const ByteArray *text, Token *objectToken)
     if (scopeName_ == "default") {
         scope_ = SyntaxDefinition::scope(scopeName_);
         for (int i = 0; i < children()->count(); ++i) {
-            Style *style = cast<Style>(children()->at(i));
+            Style *style = Object::cast<Style *>(children()->at(i));
             style->rule_ = defaultRuleByName(style->ruleName());
             if (style->rule_ == Undefined) {
                 Token *token = childToken(objectToken, i);
@@ -82,7 +82,7 @@ void Palette::realize(const ByteArray *text, Token *objectToken)
     const SyntaxDefinition *syntax = language->highlightingSyntax();
     scope_ = syntax->id();
     for (int i = 0; i < children()->count(); ++i) {
-        Style *style = cast<Style>(children()->at(i));
+        Style *style = Object::cast<Style *>(children()->at(i));
         try {
             style->rule_ = syntax->ruleByName(style->ruleName());
             styleByRule_->insert(style->rule_, style);

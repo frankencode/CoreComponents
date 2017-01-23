@@ -33,22 +33,22 @@ class ObjectSerialization: public TestCase
         CC_VERIFY(String(object->value("name")) == "Hans Mustermann");
         CC_VERIFY(int(object->value("age")) == 17);
 
-        VariantList *hobbies = cast<VariantList>(object->value("hobbies"));
+        VariantList *hobbies = Variant::cast<VariantList *>(object->value("hobbies"));
         CC_VERIFY(String(hobbies->at(0)) == "Sky Diving");
         CC_VERIFY(String(hobbies->at(1)) == "Mountain Biking");
         CC_VERIFY(String(hobbies->at(2)) == "Poetry");
 
-        MetaObject *picture = cast<MetaObject>(object->value("picture"));
-        ferr() << "type(object->value(\"picture\")) = " << type(object->value("picture")) << nl;
+        MetaObject *picture = Variant::cast<MetaObject *>(object->value("picture"));
+        ferr() << "Variant::type(object->value(\"picture\")) = " << Variant::type(object->value("picture")) << nl;
         CC_VERIFY(String(picture->value("uri")) == "http://www.hans-mustermann.de/photo.jpg");
         CC_VERIFY(int(picture->value("width")) == 400);
         CC_VERIFY(int(picture->value("height")) == 300);
 
-        MetaObject *home = cast<MetaObject>(object->value("home"));
+        MetaObject *home = Variant::cast<MetaObject *>(object->value("home"));
         CC_VERIFY(float(home->value("latitude")) == float(12.34));
         CC_VERIFY(float(home->value("longitude")) == float(123.4));
 
-        VariantList *numbers = cast<VariantList>(object->value("favouriteNumbers"));
+        VariantList *numbers = Variant::cast<VariantList *>(object->value("favouriteNumbers"));
         CC_VERIFY(int(numbers->at(0)) == 2);
         CC_VERIFY(int(numbers->at(1)) == 5);
         CC_VERIFY(int(numbers->at(2)) == 7);

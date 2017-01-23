@@ -50,13 +50,8 @@ void NodeConfig::load(int argc, char **argv)
 
     String address = config->value("address");
 
-    typedef List<int> PortList;
-    Ref<PortList> ports = PortList::create();
-    {
-        PortList *l = cast<PortList>(config->value("port"));
-        for (int i = 0; i < l->count(); ++i)
-            ports->append(int(l->at(i)));
-    }
+    auto ports = List<int>::create();
+    for (int p: Variant::cast<List<int> *>(config->value("port"))) ports->append(p);
 
     String protocol = config->value("protocol-family");
 
@@ -67,38 +62,29 @@ void NodeConfig::load(int argc, char **argv)
     address_ = SocketAddressList::create();
     if (address != "" && address != "*") {
         Ref<SocketAddressList> l = SocketAddress::resolve(address, "http", family, SOCK_STREAM);
-
-        for (int i = 0; i < l->count(); ++i) {
-            for (int j = 0; j < ports->count(); ++j) {
-                Ref<SocketAddress> a = SocketAddress::copy(l->at(i));
-                a->setPort(ports->at(j));
+        for (SocketAddress *a: l) {
+            for (int p: ports) {
+                a->setPort(p);
                 address_->append(a);
             }
         }
     }
     else {
-        if (family == AF_UNSPEC) {
-            for (int j = 0; j < ports->count(); ++j) {
-                address_->append(SocketAddress::create(AF_INET, "*", ports->at(j)));
-                address_->append(SocketAddress::create(AF_INET6, "*", ports->at(j)));
+        for (int p: ports) {
+            if (family == AF_UNSPEC) {
+                address_->append(SocketAddress::create(AF_INET, "*", p));
+                address_->append(SocketAddress::create(AF_INET6, "*", p));
             }
-        }
-        else {
-            for (int j = 0; j < ports->count(); ++j) {
-                address_->append(SocketAddress::create(family, "*", ports->at(j)));
-            }
+            else
+                address_->append(SocketAddress::create(family, "*", p));
         }
     }
 
     securePort_ = 443;
-    {
-        SocketAddressList *l = address_;
-        for (int i = 0; i < l->count(); ++i) {
-            SocketAddress *a = l->at(i);
-            if (a->port() % 80 != 0) {
-                securePort_ = a->port();
-                break;
-            }
+    for (SocketAddress *a: address_) {
+        if (a->port() % 80 != 0) {
+            securePort_ = a->port();
+            break;
         }
     }
 
@@ -111,14 +97,13 @@ void NodeConfig::load(int argc, char **argv)
     connectionLimit_ = config->value("connection-limit");
     connectionTimeout_ = config->value("connection-timeout");
 
-    securityConfig_ = SecurityConfig::load(cast<MetaObject>(config->value("security")));
-    errorLogConfig_ = LogConfig::load(cast<MetaObject>(config->value("error-log")));
-    accessLogConfig_ = LogConfig::load(cast<MetaObject>(config->value("access-log")));
+    securityConfig_ = SecurityConfig::load(Variant::cast<MetaObject *>(config->value("security")));
+    errorLogConfig_ = LogConfig::load(Variant::cast<MetaObject *>(config->value("error-log")));
+    accessLogConfig_ = LogConfig::load(Variant::cast<MetaObject *>(config->value("access-log")));
 
     serviceInstances_ = ServiceInstances::create();
     if (config->hasChildren()) {
-        for (int i = 0; i < config->children()->count(); ++i) {
-            MetaObject *child = config->children()->at(i);
+        for (MetaObject *child: config->children()) {
             ServiceDefinition *service = serviceRegistry()->serviceByName(child->className());
             serviceInstances_->append(service->createInstance(child));
         }
@@ -129,10 +114,8 @@ ServiceInstance *NodeConfig::selectService(String host, String uri) const
 {
     ServiceInstance *serviceInstance = 0;
 
-    for (int i = 0; i < serviceInstances_->count(); ++i)
+    for (ServiceInstance *candidate: serviceInstances_)
     {
-        ServiceInstance *candidate = serviceInstances_->at(i);
-
         if (
             candidate->host()->match(host)->valid() ||
             (uri != "" && candidate->uri()->match(uri)->valid())

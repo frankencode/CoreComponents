@@ -20,7 +20,7 @@ ServiceInstance::ServiceInstance(MetaObject *config):
     requestPayloadLimit_(config->value("request-payload-limit")),
     host_(String(config->value("host"))),
     uri_(String(config->value("uri"))),
-    security_(SecurityConfig::load(cast<MetaObject>(config->value("security"))))
+    security_(SecurityConfig::load(Variant::cast<MetaObject *>(config->value("security"))))
 {}
 
 ServiceInstance::~ServiceInstance()

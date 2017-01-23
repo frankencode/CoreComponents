@@ -8,11 +8,13 @@
 
 #pragma once
 
+#include <sys/types.h>
+#include <sys/poll.h> // POLLIN, POLLOUT, etc.
+#include <sys/socket.h> // SHUT_RD, etc.
 #include <cc/Stream>
 #include <cc/Exception>
 #include <cc/SystemIo>
 #include <cc/IoTarget>
-#include <sys/socket.h> // SHUT_RD, etc.
 
 namespace cc {
 

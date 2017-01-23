@@ -41,7 +41,7 @@ class QueryNetworkInterfaces: public TestCase
                 for (int k = 0; k < addressList->count(); ++k) {
                     const SocketAddress *address = addressList->at(k);
                     fout() << "  Addr:   " << address;
-                    const SocketAddressEntry *entry = cast<const SocketAddressEntry>(address);
+                    const SocketAddressEntry *entry = Object::cast<const SocketAddressEntry *>(address);
                     if (entry) {
                         bool comma = false;
                         bool delim = true;

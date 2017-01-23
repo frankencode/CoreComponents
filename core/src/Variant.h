@@ -51,6 +51,8 @@ public:
         AnyType     = 511
     };
 
+    inline static int type(const Variant &value) { return value.type_; }
+    inline static int itemType(const Variant &value) { return value.itemType_; }
     static const char *typeName(int type, int itemType = UndefType);
     static Variant read(String s);
 
@@ -139,7 +141,7 @@ public:
     inline static String toString(const Variant &value) {
         if (!value.type_) return String();
         CC_ASSERT2(value.type_ & StringType, illegalConversion());
-        return cast<ByteArray>(value.ref().get());
+        return Variant::cast<ByteArray *>(value);
     }
 
 
@@ -147,7 +149,7 @@ public:
     inline operator Ref<T>() const {
         if (!type_) return Ref<T>();
         CC_ASSERT2(type_ & ObjectType, illegalConversion());
-        return cast<T>(ref().get());
+        return Variant::cast<T *>(*this);
     }
 
     bool operator==(const Variant &b) const;
@@ -157,6 +159,24 @@ public:
     inline bool operator!=(const Variant &b) const { return !(*this == b); }
     inline bool operator<=(const Variant &b) const { return (*this < b) || (*this == b); }
     inline bool operator>=(const Variant &b) const { return (b < *this) || (*this == b); }
+
+private:
+    template<class T, bool IsPointer> class VariantCast {};
+    template<class T> class VariantCast<T, true> {
+        public: inline static T cast(const Variant &value) {
+            typedef typename CC_DEREF(T) U;
+            return type(value) & Variant::ObjectType ? Object::cast<U *>(value.ref().get()) : nullptr;
+        }
+    };
+    template<class T> class VariantCast<T, false> {
+        public: inline static T cast(const Variant &value) {
+            return T(value);
+        }
+    };
+
+public:
+    template <class T>
+    inline static T cast(const Variant &value) { return VariantCast<T, CC_IS_POINTER(T)>::cast(value); }
 
 private:
     friend String str(const Variant &x);
@@ -192,11 +212,5 @@ private:
 };
 
 String str(const Variant &x);
-
-inline int type(const Variant &value) { return value.type_; }
-inline int itemType(const Variant &value) { return value.itemType_; }
-
-template<class U>
-inline U *cast(const Variant &value) { return type(value) & Variant::ObjectType ? cast<U>(value.ref()) : null<U>(); }
 
 } // namespace cc

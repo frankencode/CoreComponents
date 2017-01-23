@@ -54,7 +54,7 @@ public:
     int countSiblings() const;
 
 private:
-    inline Node *me() const { return cast<Node>(const_cast<Tree<Node> *>(this)); }
+    inline Node *me() const { return Object::cast<Node *>(const_cast<Tree<Node> *>(this)); }
 
     Node *parent_;
     Ref<Node> firstChild_;

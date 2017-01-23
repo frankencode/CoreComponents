@@ -163,7 +163,7 @@ int DefinitionNode::syntaxError(ByteArray *text, int index, SyntaxState *state) 
 
 int DefinitionNode::errorCallBack(Object *self, ByteArray *text, int index, Token *parentToken, SyntaxState *state)
 {
-    DefinitionNode *definition = cast<DefinitionNode>(self);
+    DefinitionNode *definition = Object::cast<DefinitionNode *>(self);
     return definition->syntaxError(text, index, state);
 }
 

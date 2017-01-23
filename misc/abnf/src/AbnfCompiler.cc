@@ -42,7 +42,7 @@ const char *AbnfCompiler::str(ByteArray *text, Token *token)
 
 SyntaxNode *AbnfCompiler::ignoreDebug(SyntaxNode *node)
 {
-    SyntaxDebugNode *debugNode = cast<SyntaxDebugNode>(node);
+    SyntaxDebugNode *debugNode = Object::cast<SyntaxDebugNode *>(node);
     return (debugNode) ? debugNode->entry() : node;
 }
 
@@ -262,7 +262,7 @@ NODE AbnfCompiler::optimizeChoice(SyntaxNode *node, SyntaxDefinition *definition
     {
         SyntaxNode *child = ignoreDebug(node)->firstChild();
         while ((child) && isRangeExplicit) {
-            isRangeExplicit = cast<syntax::CharNode>(ignoreDebug(child));
+            isRangeExplicit = Object::cast<syntax::CharNode *>(ignoreDebug(child));
             child = child->nextSibling();
             ++numChars;
         }
@@ -273,7 +273,7 @@ NODE AbnfCompiler::optimizeChoice(SyntaxNode *node, SyntaxDefinition *definition
         int i = 0;
         SyntaxNode *child = ignoreDebug(node)->firstChild();
         while (child) {
-            Ref<syntax::CharNode> charNode = cast<syntax::CharNode>(ignoreDebug(child));
+            Ref<syntax::CharNode> charNode = Object::cast<syntax::CharNode *>(ignoreDebug(child));
             s->at(i) = charNode->ch();
             ++i;
             child = child->nextSibling();
@@ -293,7 +293,7 @@ void AbnfCompiler::deepOptimizeChoice(SyntaxNode *node, SyntaxDefinition *defini
     int numChars = 0;
     SyntaxNode *child = ignoreDebug(node)->firstChild();
     while (child) {
-        if (cast<syntax::CharNode>(ignoreDebug(child)))
+        if (Object::cast<syntax::CharNode *>(ignoreDebug(child)))
             ++numChars;
         else
             deepOptimizeChoice(node, child, numChars, definition);
@@ -309,7 +309,7 @@ void AbnfCompiler::deepOptimizeChoice(SyntaxNode *node, SyntaxNode *fin, int num
         int i = numChars - 1;
         while (i >= 0) {
             SyntaxNode *charNode = (fin) ? fin->previousSibling() : ignoreDebug(node)->lastChild();
-            s->at(i) = cast<syntax::CharNode>(ignoreDebug(charNode))->ch();
+            s->at(i) = Object::cast<syntax::CharNode *>(ignoreDebug(charNode))->ch();
             charNode->unlink();
             --i;
         }
