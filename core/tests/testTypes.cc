@@ -99,6 +99,17 @@ class TestSizes: public TestCase
     }
 };
 
+/*class TestCasts: public TestCase
+{
+    class A: public Object { public: static Ref<A> create() { return new A; }; private: A() {}; }
+    class B: public Object { public: static Ref<B> create() { return new B; }; private: B() {}; }
+
+    void run() {
+        auto a = A::create();
+        Object::cast<B *>(a);
+    }
+};*/
+
 int main(int argc, char **argv)
 {
     CC_TESTSUITE_ADD(TestFloat754);

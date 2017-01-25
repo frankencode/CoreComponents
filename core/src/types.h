@@ -121,12 +121,10 @@ public:
     enum { Exists = 1, SameType = 1 };
 };
 
-template<class T, class U, int ConversionPossible = 0>
-class DynamicCastHelper {};
-
-template<class T, class U>
-class DynamicCastHelper<T, U, 1> {
+template<class T, class U, int ConversionPossible>
+class DynamicCastHelper {
 public:
+    static_assert(ConversionPossible, "Impossible type conversion requested");
     inline static U *cast(T *p) { return dynamic_cast<U*>(p); }
 };
 
