@@ -12,14 +12,14 @@
 #include "ConnectionInfo.h"
 #include "HttpRequest.h"
 #include "ServiceInstance.h"
-#include "HttpSocket.h"
+#include "HttpClientSocket.h"
 
 namespace ccnode {
 
 class HttpClientConnection: public HttpConnection
 {
 public:
-    static Ref<HttpClientConnection> open(HttpSocket *socket);
+    static Ref<HttpClientConnection> open(HttpClientSocket *socket);
 
     inline const SocketAddress *address() const { return socket_->address(); }
 
@@ -34,13 +34,13 @@ public:
     inline int priority() const { return connectionInfo_->priority(); }
 
 private:
-    HttpClientConnection(HttpSocket *socket);
+    HttpClientConnection(HttpClientSocket *socket);
 
     Ref<HttpRequest> scanRequest();
     virtual void readFirstLine(LineSource *source, HttpMessage *message);
     virtual void onHeaderReceived(HttpMessage *message);
 
-    Ref<HttpSocket> socket_;
+    Ref<HttpClientSocket> socket_;
     Ref<HttpRequest> request_, pendingRequest_;
     Ref<ConnectionInfo> connectionInfo_;
 };

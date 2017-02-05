@@ -63,6 +63,9 @@ protected:
     StreamSocket(const SocketAddress *address);
     void listen(int backlog = 1024);
     int accept(SocketAddress *clientAddress);
+    inline static int accept(StreamSocket *listeningSocket, SocketAddress *clientAddress) {
+        return listeningSocket->accept(clientAddress);
+    }
     void connect();
 
     Ref<SocketAddress> address_;

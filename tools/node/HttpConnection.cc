@@ -11,7 +11,6 @@
 #include <cc/stream/StreamTap>
 #include <cc/stream/LineBuffer>
 #include "exceptions.h"
-#include "ErrorLog.h"
 #include "TapBuffer.h"
 #include "HttpStream.h"
 #include "HttpConnection.h"
@@ -29,10 +28,10 @@ HttpConnection::HttpConnection(Stream *stream):
 HttpConnection::~HttpConnection()
 {}
 
-void HttpConnection::setupTransferLog(String label)
+void HttpConnection::setupTransferLog(Stream *debugStream, String label)
 {
-    Ref<Stream> inputBuffer = TapBuffer::open(errorLog()->debugStream(), label + " >> ");
-    Ref<Stream> outputBuffer = TapBuffer::open(errorLog()->debugStream(), label + " << ");
+    Ref<Stream> inputBuffer = TapBuffer::open(debugStream, label + " >> ");
+    Ref<Stream> outputBuffer = TapBuffer::open(debugStream, label + " << ");
     stream_ = StreamTap::open(stream_, inputBuffer, outputBuffer);
 }
 

@@ -17,18 +17,18 @@ namespace ccnode {
 
 using namespace cc;
 
-Ref<HttpClientConnection> HttpClientConnection::open(HttpSocket *socket)
+Ref<HttpClientConnection> HttpClientConnection::open(HttpClientSocket *socket)
 {
     return new HttpClientConnection(socket);
 }
 
-HttpClientConnection::HttpClientConnection(HttpSocket *socket):
+HttpClientConnection::HttpClientConnection(HttpClientSocket *socket):
     HttpConnection(socket),
     socket_(socket),
     connectionInfo_(ConnectionInfo::create(socket->address()))
 {
     if (errorLog()->level() >= DebugLogLevel)
-        setupTransferLog(socket->address()->toString());
+        setupTransferLog(errorLog()->debugStream(), socket->address()->toString());
 }
 
 ServiceInstance *HttpClientConnection::handshake()
