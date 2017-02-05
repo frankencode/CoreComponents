@@ -16,7 +16,7 @@ namespace ccnode {
 using namespace cc;
 using namespace cc::meta;
 
-class HttpSocket;
+class HttpClientSocket;
 
 class SecurityConfig: public Object
 {
@@ -30,7 +30,7 @@ public:
     double sessionResumptionKeyRefresh() { return sessionResumptionKeyRefresh_; }
 
 private:
-    friend class HttpSocket;
+    friend class HttpClientSocket;
     friend class ClientHelloContext;
 
     SecurityConfig(MetaObject *config);

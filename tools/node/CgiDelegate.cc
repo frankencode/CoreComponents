@@ -81,7 +81,7 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
 
         cgiServer = CgiServerConnection::open(StreamSocket::connect(address));
         if (errorLog()->level() >= DebugLogLevel)
-            cgiServer->setupTransferLog(address->toString());
+            cgiServer->setupTransferLog(errorLog()->debugStream(), address->toString());
 
         String headerText = compileHeader(request, payload);
         cgiServer->stream()->write(
@@ -109,7 +109,7 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
 
         cgiServer = CgiServerConnection::open(sub);
         if (errorLog()->level() >= DebugLogLevel)
-            cgiServer->setupTransferLog(scriptPath->baseName());
+            cgiServer->setupTransferLog(errorLog()->debugStream(), scriptPath->baseName());
 
         if (payload->count() > 0)
             cgiServer->stream()->write(payload);

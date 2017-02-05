@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/net/StreamSocket>
+#include <cc/Stream>
 #include "HttpMessage.h"
 
 namespace cc { class LineSource; }
@@ -16,9 +16,7 @@ namespace cc { class LineSource; }
 namespace ccnode {
 
 using namespace cc;
-using namespace cc::net;
 
-class ServiceWorker;
 class HttpStream;
 
 class HttpConnection: public Object
@@ -26,7 +24,7 @@ class HttpConnection: public Object
 public:
     inline Stream *stream() const { return stream_; }
 
-    void setupTransferLog(String label);
+    void setupTransferLog(Stream *debugStream, String label);
 
     bool isPayloadConsumed() const;
 

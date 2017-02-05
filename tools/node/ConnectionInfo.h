@@ -20,8 +20,6 @@ namespace ccnode {
 using namespace cc;
 using namespace cc::net;
 
-class ConnectionManager;
-
 class ConnectionInfo: public Object
 {
 public:
@@ -29,6 +27,7 @@ public:
 
     inline const SocketAddress *remoteAddress() const { return remoteAddress_; }
     inline int priority() const { return priority_; }
+    inline void setPriority(int newPriority) { priority_ = newPriority; }
 
     inline uint64_t originAddress() const { return originAddress_; }
     inline double arrivalTime() const { return arrivalTime_; }
@@ -37,10 +36,7 @@ public:
     void updateDepartureTime();
 
 private:
-    friend class ConnectionManager;
-
     ConnectionInfo(const SocketAddress *remoteAddress);
-    inline void setPriority(int newPriority) { priority_ = newPriority; }
 
     Ref<const SocketAddress> remoteAddress_;
     int priority_;

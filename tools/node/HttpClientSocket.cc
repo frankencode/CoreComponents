@@ -18,42 +18,30 @@
 #include "NodeConfig.h"
 #include "SecurityConfig.h"
 #include "SecurityMaster.h"
-#include "HttpSocket.h"
+#include "HttpClientSocket.h"
 
 namespace ccnode {
 
-Ref<HttpSocket> HttpSocket::listen(const SocketAddress *address, int backlog)
+Ref<HttpClientSocket> HttpClientSocket::accept(StreamSocket *listeningSocket)
 {
-    Ref<HttpSocket> socket =
-        new HttpSocket(
-            address,
-            (address->port() % 80 == 0) ? Plaintext : Secure
+    Ref<HttpClientSocket> client =
+        new HttpClientSocket(
+            SocketAddress::create(listeningSocket->address()->family()),
+            (listeningSocket->address()->port() % 80 == 0) ? Plaintext : Secure
         );
-
-    socket->StreamSocket::listen(backlog);
-
-    return socket;
-}
-
-Ref<HttpSocket> HttpSocket::accept()
-{
-    CC_ASSERT(!(mode_ & Connected));
-
-    Ref<HttpSocket> client = new HttpSocket(SocketAddress::create(address_->family()), mode_);
-    client->fd_ = StreamSocket::accept(client->address_);
+    client->fd_ = StreamSocket::accept(listeningSocket, client->address_);
     client->connected_ = true;
-    client->mode_ |= Connected | ((mode_ & Plaintext) ? Open : 0);
+    client->mode_ |= Connected | ((client->mode_ & Plaintext) ? Open : 0);
     client->sessionInit();
-
     return client;
 }
 
-HttpSocket::HttpSocket(const SocketAddress *address, int mode):
+HttpClientSocket::HttpClientSocket(const SocketAddress *address, int mode):
     StreamSocket(address),
     mode_(mode)
 {}
 
-HttpSocket::~HttpSocket()
+HttpClientSocket::~HttpClientSocket()
 {
     if (mode_ & Secure)
     {
@@ -68,7 +56,7 @@ HttpSocket::~HttpSocket()
     }
 }
 
-void HttpSocket::sessionInit()
+void HttpClientSocket::sessionInit()
 {
     CC_ASSERT(mode_ & Connected);
 
@@ -121,9 +109,9 @@ public:
                     serviceInstance_ = nodeConfig()->selectService(serverName_);
                     if (serviceInstance_) {
                         if (serviceInstance_->security()->hasCredentials())
-                            HttpSocket::gnuTlsCheckSuccess(gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, serviceInstance_->security()->cred_), peerAddress_);
+                            HttpClientSocket::gnuTlsCheckSuccess(gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, serviceInstance_->security()->cred_), peerAddress_);
                         if (serviceInstance_->security()->hasCiphers())
-                            HttpSocket::gnuTlsCheckSuccess(gnutls_priority_set(session, serviceInstance_->security()->prio_), peerAddress_);
+                            HttpClientSocket::gnuTlsCheckSuccess(gnutls_priority_set(session, serviceInstance_->security()->prio_), peerAddress_);
                     }
                 }
             }
@@ -153,13 +141,13 @@ private:
     ServiceInstance *serviceInstance_;
 };
 
-int HttpSocket::onClientHello(gnutls_session_t session)
+int HttpClientSocket::onClientHello(gnutls_session_t session)
 {
     ClientHelloContext::instance()->selectService(session);
     return 0;
 }
 
-ServiceInstance *HttpSocket::handshake()
+ServiceInstance *HttpClientSocket::handshake()
 {
     CC_ASSERT(mode_ & Connected);
 
@@ -196,7 +184,7 @@ ServiceInstance *HttpSocket::handshake()
     return serviceInstance;
 }
 
-void HttpSocket::upgradeToSecureTransport()
+void HttpClientSocket::upgradeToSecureTransport()
 {
     CC_ASSERT(mode_ & Connected);
     CC_ASSERT(mode_ & Plaintext);
@@ -206,7 +194,7 @@ void HttpSocket::upgradeToSecureTransport()
     sessionInit();
 }
 
-int HttpSocket::read(ByteArray *data)
+int HttpClientSocket::read(ByteArray *data)
 {
     if (data->count() == 0) return 0;
 
@@ -222,7 +210,7 @@ int HttpSocket::read(ByteArray *data)
     return ret;
 }
 
-void HttpSocket::write(const ByteArray *data)
+void HttpClientSocket::write(const ByteArray *data)
 {
     if (data->count() == 0) return;
 
@@ -242,7 +230,7 @@ void HttpSocket::write(const ByteArray *data)
     }
 }
 
-void HttpSocket::write(const StringList *parts)
+void HttpClientSocket::write(const StringList *parts)
 {
     if (mode_ & Plaintext)
         StreamSocket::write(parts);
@@ -250,7 +238,7 @@ void HttpSocket::write(const StringList *parts)
         write(parts->join());
 }
 
-void HttpSocket::waitInput()
+void HttpClientSocket::waitInput()
 {
     double d = te_ - System::now();
     if (d <= 0) throw RequestTimeout();
@@ -259,32 +247,32 @@ void HttpSocket::waitInput()
         throw RequestTimeout();
 }
 
-bool HttpSocket::gnuTlsCheckSuccess(int ret)
+bool HttpClientSocket::gnuTlsCheckSuccess(int ret)
 {
     return gnuTlsCheckSuccess(ret, address());
 }
 
-void HttpSocket::gnuTlsCheckError(int ret)
+void HttpClientSocket::gnuTlsCheckError(int ret)
 {
     gnuTlsCheckError(ret, address());
 }
 
-bool HttpSocket::gnuTlsCheckSuccess(int ret, const SocketAddress *peerAddress)
+bool HttpClientSocket::gnuTlsCheckSuccess(int ret, const SocketAddress *peerAddress)
 {
     if (ret != GNUTLS_E_SUCCESS) throw TlsError(ret, peerAddress);
     return true;
 }
 
-void HttpSocket::gnuTlsCheckError(int ret, const SocketAddress *peerAddress)
+void HttpClientSocket::gnuTlsCheckError(int ret, const SocketAddress *peerAddress)
 {
     if (ret < 0) throw TlsError(ret, peerAddress);
 }
 
-ssize_t HttpSocket::gnuTlsPull(gnutls_transport_ptr_t ctx, void *data, size_t size)
+ssize_t HttpClientSocket::gnuTlsPull(gnutls_transport_ptr_t ctx, void *data, size_t size)
 {
     ssize_t n = -1;
     try {
-        HttpSocket *socket = (HttpSocket *)ctx;
+        HttpClientSocket *socket = (HttpClientSocket *)ctx;
         socket->waitInput();
         n = SystemIo::read(socket->fd(), data, size);
     }
@@ -295,13 +283,13 @@ ssize_t HttpSocket::gnuTlsPull(gnutls_transport_ptr_t ctx, void *data, size_t si
     return n;
 }
 
-ssize_t HttpSocket::gnuTlsPushVec(gnutls_transport_ptr_t ctx, const giovec_t *iov, int iovcnt)
+ssize_t HttpClientSocket::gnuTlsPushVec(gnutls_transport_ptr_t ctx, const giovec_t *iov, int iovcnt)
 {
     CC_STATIC_ASSERT(offsetof(struct iovec, iov_base) == offsetof(giovec_t, iov_base));
     CC_STATIC_ASSERT(offsetof(struct iovec, iov_len) == offsetof(giovec_t, iov_len));
     CC_STATIC_ASSERT(sizeof(struct iovec) == sizeof(giovec_t));
 
-    HttpSocket *socket = (HttpSocket *)ctx;
+    HttpClientSocket *socket = (HttpClientSocket *)ctx;
     try {
         SystemIo::writev(socket->fd(), (const struct iovec *)iov, iovcnt);
     }

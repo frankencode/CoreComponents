@@ -19,7 +19,7 @@
 #include "NodeConfig.h"
 #include "ServiceRegistry.h"
 #include "ConnectionManager.h"
-#include "HttpSocket.h"
+#include "HttpClientSocket.h"
 #include "SecurityMaster.h"
 #include "NodeMaster.h"
 
@@ -101,13 +101,12 @@ void NodeMaster::runNode() const
         nodeConfig()->serviceInstances()->append(echoInstance);
     }
 
-    typedef List< Ref<HttpSocket> > ListeningSockets;
-    Ref<ListeningSockets> listeningSockets = ListeningSockets::create(nodeConfig()->address()->count());
+    typedef List< Ref<StreamSocket> > ListeningSockets;
+    Ref<ListeningSockets> listeningSockets = ListeningSockets::create();
 
-    for (int i = 0; i < nodeConfig()->address()->count(); ++i) {
-        SocketAddress *address = nodeConfig()->address()->at(i);
+    for (SocketAddress *address: nodeConfig()->address()) {
         CCNODE_NOTICE() << "Start listening at " << address << nl;
-        listeningSockets->at(i) = HttpSocket::listen(address);
+        listeningSockets->append(StreamSocket::listen(address));
     }
 
     if (nodeConfig()->user() != "") {
@@ -142,8 +141,8 @@ void NodeMaster::runNode() const
     CCNODE_NOTICE() << "Up and running (pid = " << Process::currentId() << ")" << nl;
 
     Ref<IoMonitor> ioMonitor = IoMonitor::create(listeningSockets->count());
-    for (int i = 0; i < listeningSockets->count(); ++i)
-        ioMonitor->addEvent(IoReadyAccept, listeningSockets->at(i));
+    for (StreamSocket *socket: listeningSockets)
+        ioMonitor->addEvent(IoReadyAccept, socket);
 
     CCNODE_DEBUG() << "Accepting connections" << nl;
 
@@ -151,8 +150,8 @@ void NodeMaster::runNode() const
         Ref<IoActivity> activity = ioMonitor->wait(1000);
         for (const IoEvent *event: activity) {
             try {
-                HttpSocket *socket = Object::cast<HttpSocket *>(event->target());
-                Ref<HttpSocket> clientSocket = socket->accept();
+                StreamSocket *listeningSocket = Object::cast<StreamSocket *>(event->target());
+                Ref<HttpClientSocket> clientSocket = HttpClientSocket::accept(listeningSocket);
                 Ref<HttpClientConnection> client = HttpClientConnection::open(clientSocket);
                 if (connectionManager->accept(client)) {
                     CCNODE_DEBUG() << "Accepted connection from " << client->address() << " with priority " << client->priority() << nl;
