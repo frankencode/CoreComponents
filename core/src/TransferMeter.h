@@ -11,7 +11,6 @@
 #include <cc/Stream>
 
 namespace cc {
-namespace stream {
 
 /** \brief Transfer measuring stream
   */
@@ -36,4 +35,4 @@ private:
     size_t totalWritten_;
 };
 
-}} // namespace cc::stream
+} // namespace cc

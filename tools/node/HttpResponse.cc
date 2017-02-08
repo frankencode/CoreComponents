@@ -8,7 +8,7 @@
 
 #include <cc/System>
 #include <cc/Date>
-#include <cc/stream/TransferMeter>
+#include <cc/TransferMeter>
 #include "utils.h"
 #include "NodeConfig.h"
 #include "HttpClientConnection.h"
@@ -16,8 +16,6 @@
 #include "HttpResponse.h"
 
 namespace ccnode {
-
-using namespace cc::stream;
 
 Ref<HttpResponse> HttpResponse::create(HttpClientConnection *client)
 {

@@ -7,17 +7,15 @@
  */
 
 #include <cc/LineSource>
-#include <cc/stream/TransferLimiter>
-#include <cc/stream/StreamTap>
-#include <cc/stream/LineBuffer>
+#include <cc/TransferLimiter>
+#include <cc/StreamTap>
+#include <cc/LineBuffer>
 #include "exceptions.h"
 #include "TapBuffer.h"
 #include "HttpStream.h"
 #include "HttpConnection.h"
 
 namespace ccnode {
-
-using namespace cc::stream;
 
 HttpConnection::HttpConnection(Stream *stream):
     httpStream_(HttpStream::open(stream)),

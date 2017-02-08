@@ -6,10 +6,9 @@
  *
  */
 
-#include <cc/stream/StreamTap>
+#include <cc/StreamTap>
 
 namespace cc {
-namespace stream {
 
 Ref<StreamTap> StreamTap::open(Stream *stream, Stream *inputTap, Stream *outputTap)
 {
@@ -41,4 +40,4 @@ void StreamTap::write(const StringList *parts)
     stream_->write(parts);
 }
 
-}} // namespace cc::stream
+} // namespace cc

@@ -6,10 +6,9 @@
  *
  */
 
-#include <cc/stream/LineBuffer>
+#include <cc/LineBuffer>
 
 namespace cc {
-namespace stream {
 
 Ref<LineBuffer> LineBuffer::open(Stream *stream, String prefix)
 {
@@ -68,4 +67,4 @@ int LineBuffer::flush()
     return line->count();
 }
 
-}} // namespace cc::stream
+} // namespace cc

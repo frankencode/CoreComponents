@@ -1,7 +1,7 @@
 Application {
     name: ccnode
     source: *.cc
-    use: [ core, syntax, regexp, meta, net, stream ]
+    use: [ core, syntax, regexp, meta, net ]
     Dependency {
         name: GnuTLS
         version-min: 3.3.5

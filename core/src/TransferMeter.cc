@@ -6,19 +6,19 @@
  *
  */
 
-#include <cc/stream/TransferMeter>
+#include <cc/TransferMeter>
 
 namespace cc {
-namespace stream {
 
-Ref<TransferMeter> TransferMeter::open(Stream *stream) {
+Ref<TransferMeter> TransferMeter::open(Stream *stream)
+{
     return new TransferMeter(stream);
 }
 
-TransferMeter::TransferMeter(Stream *stream)
-    : stream_(stream),
-      totalRead_(0),
-      totalWritten_(0)
+TransferMeter::TransferMeter(Stream *stream):
+    stream_(stream),
+    totalRead_(0),
+    totalWritten_(0)
 {}
 
 int TransferMeter::read(ByteArray *buf)
@@ -41,4 +41,4 @@ void TransferMeter::write(const StringList *parts)
         totalWritten_ += parts->at(i)->count();
 }
 
-}} // namespace cc::stream
+} // namespace cc

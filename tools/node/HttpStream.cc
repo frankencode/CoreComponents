@@ -7,13 +7,11 @@
  */
 
 #include <cc/System>
-#include <cc/stream/TransferLimiter>
+#include <cc/TransferLimiter>
 #include "exceptions.h"
 #include "HttpStream.h"
 
 namespace ccnode {
-
-using namespace cc::stream;
 
 Ref<HttpStream> HttpStream::open(Stream *stream)
 {

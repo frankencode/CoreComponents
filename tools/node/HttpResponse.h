@@ -12,15 +12,11 @@
 #include <cc/Map>
 #include <cc/Stream>
 
-namespace cc {
-namespace stream {
-class TransferMeter;
-}}
+namespace cc { class TransferMeter; }
 
 namespace ccnode {
 
 using namespace cc;
-using namespace cc::stream;
 
 class HttpClientConnection;
 class ServiceWorker;
