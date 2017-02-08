@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/stream/TransferLimiter>
+#include <cc/TransferLimiter>
 
 namespace cc {
-namespace stream {
 
-Ref<TransferLimiter> TransferLimiter::open(Stream *stream, size_t readLimit, size_t writeLimit) {
+Ref<TransferLimiter> TransferLimiter::open(Stream *stream, size_t readLimit, size_t writeLimit)
+{
     return new TransferLimiter(stream, readLimit, writeLimit);
 }
 
@@ -50,4 +50,4 @@ void TransferLimiter::write(const StringList *parts)
     totalWritten_ += h;
 }
 
-}} // namespace cc::stream
+} // namespace cc

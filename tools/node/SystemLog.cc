@@ -7,13 +7,11 @@
  */
 
 #include <cc/ThreadLocalSingleton>
-#include <cc/stream/LineBuffer>
+#include <cc/LineBuffer>
 #include "SystemLogStream.h"
 #include "SystemLog.h"
 
 namespace ccnode {
-
-using namespace cc::stream;
 
 SystemLog::SystemLog():
     emergencyStream_(LineBuffer::open(SystemLogStream::open(LOG_EMERG))),

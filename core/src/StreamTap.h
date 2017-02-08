@@ -11,31 +11,24 @@
 #include <cc/Stream>
 
 namespace cc {
-namespace stream {
 
-/** \brief Line output buffer
+/** \brief Bi-directional traffic redirection and duplication
   */
-class LineBuffer: public Stream
+class StreamTap: public Stream
 {
 public:
-    static Ref<LineBuffer> open(Stream *stream, String prefix = "");
+    static Ref<StreamTap> open(Stream *stream, Stream *inputTap, Stream *outputTap);
 
     inline Stream *stream() const { return stream_; }
-    virtual String prefix() const;
 
     int read(ByteArray *data) override;
     void write(const ByteArray *data) override;
     void write(const StringList *parts) override;
 
-    int flush();
-
-protected:
-    LineBuffer(Stream *stream, String prefix = "");
-
 private:
-    Ref<Stream> stream_;
-    String prefix_;
-    Ref<StringList> backlog_;
+    StreamTap(Stream *stream, Stream *inputTap, Stream *outputTap);
+
+    Ref<Stream> stream_, inputTap_, outputTap_;
 };
 
-}} // namespace cc::stream
+} // namespace cc

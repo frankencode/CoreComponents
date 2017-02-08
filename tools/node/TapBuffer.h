@@ -8,12 +8,11 @@
 
 #pragma once
 
-#include <cc/stream/LineBuffer>
+#include <cc/LineBuffer>
 
 namespace ccnode {
 
 using namespace cc;
-using namespace cc::stream;
 
 class TapBuffer: public LineBuffer
 {
@@ -31,4 +30,3 @@ private:
 };
 
 } // namespace ccnode
-

@@ -12,7 +12,6 @@
 #include <cc/Exception>
 
 namespace cc {
-namespace stream {
 
 /** \brief Traffic limiting stream
   */
@@ -69,4 +68,4 @@ public:
     virtual String message() const { return "Write transfer limit exceeded"; }
 };
 
-}} // namespace cc::stream
+} // namespace cc

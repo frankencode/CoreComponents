@@ -21,8 +21,6 @@
 
 namespace ccnode {
 
-using namespace cc::stream;
-
 Ref<ServiceWorker> ServiceWorker::create(PendingConnections *pendingConnections, ClosedConnections *closedConnections)
 {
     return new ServiceWorker(pendingConnections, closedConnections);

@@ -10,8 +10,8 @@
 #include <cc/Format>
 #include <cc/File>
 #include <cc/SubProcess>
+#include <cc/StreamTap>
 #include <cc/net/StreamSocket>
-#include <cc/stream/StreamTap>
 #include "exceptions.h"
 #include "ErrorLog.h"
 #include "TapBuffer.h"
