@@ -28,6 +28,7 @@ public:
     ~DependencyCache();
 
     static String cachePath(BuildPlan *plan);
+    double cacheTime() const { return cacheTime_; }
 
     StringList *previousSources() const;
 
@@ -39,6 +40,7 @@ private:
 
     Ref<BuildPlan> buildPlan_;
     String cachePath_;
+    double cacheTime_;
     typedef Map< String, Ref<Module> > Cache;
     Ref<Cache> cache_;
 

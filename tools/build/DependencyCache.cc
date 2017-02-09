@@ -28,11 +28,12 @@ String DependencyCache::cachePath(BuildPlan *plan)
 DependencyCache::DependencyCache(BuildPlan *plan):
     buildPlan_(plan),
     cachePath_(cachePath(plan)),
+    cacheTime_(-1),
     cache_(Cache::create()),
     previousSources_(StringList::create())
 {
     File::establish(cachePath_);
-    double cacheTime = FileStatus::read(cachePath_)->lastModified();
+    cacheTime_ = FileStatus::read(cachePath_)->lastModified();
 
     Ref<MetaObject> dependencyCache;
     try {
@@ -70,7 +71,7 @@ DependencyCache::DependencyCache(BuildPlan *plan):
                 break;
             }
             double sourceTime = sourceStatus->lastModified();
-            if (sourceTime > cacheTime) {
+            if (sourceTime > cacheTime_) {
                 dirty = true;
                 break;
             }

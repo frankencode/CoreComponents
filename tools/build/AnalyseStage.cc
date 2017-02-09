@@ -35,6 +35,7 @@ bool AnalyseStage::run()
 
     Ref<DependencyCache> dependencyCache = DependencyCache::create(plan());
     previousSources_ = dependencyCache->previousSources();
+    cacheTime_ = dependencyCache->cacheTime();
 
     for (int i = 0; i < plan()->sources()->count(); ++i) {
         Ref<Module> module;
