@@ -115,7 +115,7 @@ bool CompileLinkStage::run()
     Ref<FileStatus> productStatus = shell()->fileStatus(toolChain()->linkName(plan()));
     if (
         productStatus->isValid() &&
-        productStatus->lastModified() >= plan()->analyseStage()->cacheTime() &&
+        // productStatus->lastModified() >= plan()->analyseStage()->cacheTime() &&
         *plan()->sources() == *plan()->analyseStage()->previousSources()
     ) {
         double productTime = productStatus->lastModified();
