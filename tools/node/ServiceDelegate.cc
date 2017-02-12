@@ -6,7 +6,7 @@
  *
  */
 
-#include "HttpResponse.h"
+#include "HttpResponseGenerator.h"
 #include "ServiceWorker.h"
 #include "ServiceDelegate.h"
 
@@ -26,7 +26,7 @@ HttpClientConnection *ServiceDelegate::client() const
     return worker_->client();
 }
 
-HttpResponse *ServiceDelegate::response() const
+HttpResponseGenerator *ServiceDelegate::response() const
 {
     return worker_->response();
 }
