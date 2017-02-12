@@ -27,7 +27,7 @@ typedef Channel< Ref<ConnectionInfo> > ClosedConnections;
 
 class ServiceInstance;
 class ServiceDelegate;
-class HttpResponse;
+class HttpResponseGenerator;
 
 class ServiceWorker: public Thread
 {
@@ -37,7 +37,7 @@ public:
     inline ServiceInstance *serviceInstance() const { return serviceInstance_; }
     inline HttpClientConnection *client() const { return client_; }
 
-    HttpResponse *response() const;
+    HttpResponseGenerator *response() const;
     void autoSecureForwardings();
     void closeConnection();
 
@@ -55,7 +55,7 @@ private:
     Ref<ClosedConnections> closedConnections_;
 
     Ref<HttpClientConnection> client_;
-    Ref<HttpResponse> response_;
+    Ref<HttpResponseGenerator> response_;
 };
 
 } // namespace ccnode

@@ -10,7 +10,7 @@
 
 #include <cc/Format>
 #include "HttpRequest.h"
-#include "HttpResponse.h"
+#include "HttpResponseGenerator.h"
 
 namespace ccnode {
 
@@ -29,7 +29,7 @@ protected:
     ServiceInstance *serviceInstance() const;
     HttpClientConnection *client() const;
 
-    HttpResponse *response() const;
+    HttpResponseGenerator *response() const;
 
     void autoSecureForwardings();
 

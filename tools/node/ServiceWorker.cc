@@ -16,7 +16,7 @@
 #include "NodeConfig.h"
 #include "ServiceDefinition.h"
 #include "ServiceDelegate.h"
-#include "HttpResponse.h"
+#include "HttpResponseGenerator.h"
 #include "ServiceWorker.h"
 
 namespace ccnode {
@@ -81,8 +81,9 @@ void ServiceWorker::run()
                     Ref<HttpRequest> request = client_->readRequest();
                     ++requestCount;
                     {
-                        RefGuard<HttpResponse> guard(&response_);
-                        response_ = HttpResponse::create(client_);
+                        RefGuard<HttpResponseGenerator> guard(&response_);
+                        response_ = HttpResponseGenerator::create(client_);
+                        response_->setNodeVersion(nodeConfig()->version());
 
                         serviceDelegate_->process(request);
                         response_->endTransmission();
@@ -131,7 +132,7 @@ void ServiceWorker::run()
     }
 }
 
-HttpResponse *ServiceWorker::response() const
+HttpResponseGenerator *ServiceWorker::response() const
 {
     return response_;
 }
@@ -139,7 +140,7 @@ HttpResponse *ServiceWorker::response() const
 void ServiceWorker::autoSecureForwardings()
 {
     if (response()->statusCode() == 302) {
-        HttpResponse::Header *header = response()->header_;
+        HttpResponseGenerator::Header *header = response()->header();
         if (
             nodeConfig()->security()->hasCredentials() ||
             serviceInstance_->security()->hasCredentials()
