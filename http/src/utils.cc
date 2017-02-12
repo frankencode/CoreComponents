@@ -8,9 +8,10 @@
 
 #include <cc/Date>
 #include <cc/Format>
-#include "utils.h"
+#include <cc/http/utils>
 
-namespace ccnode {
+namespace cc {
+namespace http {
 
 const char *reasonPhraseByStatusCode(int statusCode)
 {
@@ -124,4 +125,4 @@ Ref<Date> scanDate(String text, bool *ok)
     return Date::compose(year, month, day, hour, minutes, seconds);
 }
 
-} // namespace ccnode
+}} // namespace cc::http

@@ -8,11 +8,12 @@
 
 #pragma once
 
-#include "HttpMessage.h"
+#include <cc/http/HttpMessage>
 
 namespace ccnode {
 
 using namespace cc;
+using namespace cc::http;
 
 class HttpClientConnection;
 

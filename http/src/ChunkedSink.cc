@@ -7,9 +7,10 @@
  */
 
 #include <cc/Format>
-#include "ChunkedSink.h"
+#include <cc/http/ChunkedSink>
 
-namespace ccnode {
+namespace cc {
+namespace http {
 
 Ref<ChunkedSink> ChunkedSink::open(Stream *stream)
 {
@@ -42,4 +43,4 @@ void ChunkedSink::write(const StringList *parts)
     chunk << "\r\n";
 }
 
-} // namespace ccnode
+}} // namespace cc::http

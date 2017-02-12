@@ -10,12 +10,13 @@
 #include <cc/TransferLimiter>
 #include <cc/StreamTap>
 #include <cc/LineBuffer>
-#include "exceptions.h"
-#include "TapBuffer.h"
-#include "HttpStream.h"
-#include "HttpConnection.h"
+#include <cc/http/exceptions>
+#include <cc/http/TapBuffer>
+#include <cc/http/HttpStream>
+#include <cc/http/HttpConnection>
 
-namespace ccnode {
+namespace cc {
+namespace http {
 
 HttpConnection::HttpConnection(Stream *stream):
     httpStream_(HttpStream::open(stream)),
@@ -103,4 +104,4 @@ void HttpConnection::readMessage(HttpMessage *message)
     }
 }
 
-} // namespace ccnode
+}} // namespace cc::http

@@ -9,13 +9,12 @@
 #pragma once
 
 #include <cc/Stream>
-#include "HttpMessage.h"
+#include <cc/http/HttpMessage>
 
 namespace cc { class LineSource; }
 
-namespace ccnode {
-
-using namespace cc;
+namespace cc {
+namespace http {
 
 class HttpStream;
 
@@ -41,4 +40,4 @@ protected:
     Ref<ByteArray> lineBuffer_;
 };
 
-} // namespace ccnode
+}} // namespace cc::http

@@ -12,7 +12,7 @@
 #include <cc/Group>
 #include <cc/IoMonitor>
 #include <cc/SignalMaster>
-#include "exceptions.h"
+#include <cc/http/exceptions>
 #include "ErrorLog.h"
 #include "AccessLog.h"
 #include "SystemLog.h"
@@ -24,6 +24,8 @@
 #include "NodeMaster.h"
 
 namespace ccnode {
+
+using namespace cc::http;
 
 NodeMaster* nodeMaster() { return Singleton<NodeMaster>::instance(); }
 

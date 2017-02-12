@@ -9,11 +9,13 @@
 #include <cc/stdio>
 #include <cc/net/Uri>
 #include <cc/net/SocketAddress>
-#include "exceptions.h"
+#include <cc/http/exceptions>
 #include "ErrorLog.h"
 #include "CgiInstance.h"
 
 namespace ccnode {
+
+using namespace cc::http;
 
 Ref<CgiInstance> CgiInstance::create(MetaObject *config)
 {

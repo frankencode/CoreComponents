@@ -7,7 +7,7 @@
  */
 
 #include <cc/File>
-#include "exceptions.h"
+#include <cc/exceptions>
 #include "DirectoryInstance.h"
 
 namespace ccnode {

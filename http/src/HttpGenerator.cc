@@ -8,11 +8,12 @@
 
 #include <cc/Format>
 #include <cc/TransferMeter>
-#include "HttpConnection.h"
-#include "ChunkedSink.h"
-#include "HttpGenerator.h"
+#include <cc/http/HttpConnection>
+#include <cc/http/ChunkedSink>
+#include <cc/http/HttpGenerator>
 
-namespace ccnode {
+namespace cc {
+namespace http {
 
 HttpGenerator::HttpGenerator(HttpConnection *peer):
     peer_(peer),
@@ -92,4 +93,4 @@ void HttpGenerator::endTransmission()
     }
 }
 
-} // namespace ccnode
+}} // namespace cc::http

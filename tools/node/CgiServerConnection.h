@@ -8,18 +8,19 @@
 
 #pragma once
 
-#include "HttpConnection.h"
+#include <cc/http/HttpConnection>
 
 namespace ccnode {
 
-typedef HttpMessage CgiResponse;
+using namespace cc;
+using namespace cc::http;
 
 class CgiServerConnection: public HttpConnection
 {
 public:
     static Ref<CgiServerConnection> open(Stream *stream);
 
-    Ref<CgiResponse> readResponse();
+    Ref<HttpMessage> readResponse();
 
 private:
     CgiServerConnection(Stream *stream);

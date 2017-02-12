@@ -10,9 +10,8 @@
 
 #include <cc/Stream>
 
-namespace ccnode {
-
-using namespace cc;
+namespace cc {
+namespace http {
 
 class ChunkedSink: public Stream
 {
@@ -25,7 +24,8 @@ public:
 private:
     ChunkedSink(Stream *client);
     ~ChunkedSink();
+
     Ref<Stream> stream_;
 };
 
-} // namespace ccnode
+}} // namespace cc::http

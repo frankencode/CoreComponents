@@ -8,9 +8,10 @@
 
 #include <gnutls/gnutls.h>
 #include <cc/Format>
-#include "exceptions.h"
+#include <cc/http/exceptions>
 
-namespace ccnode {
+namespace cc {
+namespace http {
 
 TlsError::TlsError(int errorCode, const SocketAddress *peerAddress):
     errorCode_(errorCode),
@@ -22,4 +23,4 @@ String TlsError::message() const
     return Format() << peerAddress_ << ": " << gnutls_strerror(errorCode_);
 }
 
-} // namespace ccnode
+}} // namespace cc::http

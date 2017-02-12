@@ -9,11 +9,9 @@
 #pragma once
 
 #include <cc/Stream>
-#include "HttpRequest.h"
 
-namespace ccnode {
-
-using namespace cc;
+namespace cc {
+namespace http {
 
 class HttpStream: public Stream
 {
@@ -43,4 +41,4 @@ private:
     bool chunked_;
 };
 
-} // namespace ccnode
+}} // namespace cc::http

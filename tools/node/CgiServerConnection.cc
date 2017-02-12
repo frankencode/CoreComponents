@@ -19,9 +19,9 @@ CgiServerConnection::CgiServerConnection(Stream *stream):
     HttpConnection(stream)
 {}
 
-Ref<CgiResponse> CgiServerConnection::readResponse()
+Ref<HttpMessage> CgiServerConnection::readResponse()
 {
-    Ref<CgiResponse> response = CgiResponse::create();
+    Ref<HttpMessage> response = HttpMessage::create();
     readMessage(response);
     return response;
 }

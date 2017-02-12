@@ -8,8 +8,8 @@
 
 #include <cc/File>
 #include <cc/Dir>
-#include "utils.h"
-#include "exceptions.h"
+#include <cc/http/utils>
+#include <cc/http/exceptions>
 #include "ServiceWorker.h"
 #include "ErrorLog.h"
 #include "DirectoryInstance.h"
@@ -17,6 +17,8 @@
 #include "DirectoryDelegate.h"
 
 namespace ccnode {
+
+using namespace cc::http;
 
 Ref<DirectoryDelegate> DirectoryDelegate::create(ServiceWorker *worker, ScriptHandler *scriptHandler)
 {

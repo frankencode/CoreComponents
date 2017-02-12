@@ -13,7 +13,7 @@
 #include <cc/ThreadLocalSingleton>
 #include <cc/System>
 #include <cc/NullStream>
-#include "exceptions.h"
+#include <cc/http/exceptions>
 #include "ErrorLog.h"
 #include "NodeConfig.h"
 #include "SecurityConfig.h"

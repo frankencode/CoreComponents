@@ -10,9 +10,8 @@
 
 #include <cc/LineBuffer>
 
-namespace ccnode {
-
-using namespace cc;
+namespace cc {
+namespace http {
 
 class TapBuffer: public LineBuffer
 {
@@ -29,4 +28,4 @@ private:
     String prefix_;
 };
 
-} // namespace ccnode
+}} // namespace cc::http
