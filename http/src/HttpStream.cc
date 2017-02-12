@@ -8,10 +8,11 @@
 
 #include <cc/System>
 #include <cc/TransferLimiter>
-#include "exceptions.h"
-#include "HttpStream.h"
+#include <cc/http/exceptions>
+#include <cc/http/HttpStream>
 
-namespace ccnode {
+namespace cc {
+namespace http {
 
 Ref<HttpStream> HttpStream::open(Stream *stream)
 {
@@ -143,4 +144,4 @@ void HttpStream::write(const StringList *parts)
     stream_->write(parts);
 }
 
-} // namespace ccnode
+}} // namespace cc::http

@@ -8,9 +8,10 @@
 
 #include <cc/Thread>
 #include <cc/str>
-#include "TapBuffer.h"
+#include <cc/http/TapBuffer>
 
-namespace ccnode {
+namespace cc {
+namespace http {
 
 Ref<TapBuffer> TapBuffer::open(Stream *stream, String prefix)
 {
@@ -60,4 +61,4 @@ void TapBuffer::write(const ByteArray *buf)
         LineBuffer::write(buf);
 }
 
-} // namespace ccnode
+}} // namespace cc::http

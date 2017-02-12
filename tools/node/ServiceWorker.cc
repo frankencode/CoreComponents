@@ -10,7 +10,7 @@
 #include <cc/RefGuard>
 #include <cc/System>
 #include <cc/net/Uri>
-#include "exceptions.h"
+#include <cc/http/exceptions>
 #include "ErrorLog.h"
 #include "AccessLog.h"
 #include "NodeConfig.h"
@@ -20,6 +20,8 @@
 #include "ServiceWorker.h"
 
 namespace ccnode {
+
+using namespace cc::http;
 
 Ref<ServiceWorker> ServiceWorker::create(PendingConnections *pendingConnections, ClosedConnections *closedConnections)
 {

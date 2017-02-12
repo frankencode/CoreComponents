@@ -10,11 +10,13 @@
 #include <cc/System>
 #include <cc/Date>
 #include <cc/TransferMeter>
-#include "utils.h"
-#include "HttpConnection.h"
+#include <cc/http/utils>
+#include <cc/http/HttpConnection>
 #include "HttpResponseGenerator.h"
 
 namespace ccnode {
+
+using namespace cc::http;
 
 Ref<HttpResponseGenerator> HttpResponseGenerator::create(HttpConnection *peer)
 {

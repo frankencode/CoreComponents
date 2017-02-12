@@ -12,9 +12,8 @@
 #include <cc/Map>
 #include <cc/Stream>
 
-namespace ccnode {
-
-using namespace cc;
+namespace cc {
+namespace http {
 
 class HttpConnection;
 
@@ -31,4 +30,4 @@ protected:
     Ref<Stream> payload_;
 };
 
-} // namespace ccnode
+}} // namespace cc::http

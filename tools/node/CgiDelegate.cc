@@ -12,9 +12,9 @@
 #include <cc/SubProcess>
 #include <cc/StreamTap>
 #include <cc/net/StreamSocket>
-#include "exceptions.h"
+#include <cc/http/exceptions>
+#include <cc/http/TapBuffer>
 #include "ErrorLog.h"
-#include "TapBuffer.h"
 #include "NodeConfig.h"
 #include "MediaTypeDatabase.h"
 #include "ServiceWorker.h"
@@ -22,6 +22,8 @@
 #include "CgiInstance.h"
 
 namespace ccnode {
+
+using namespace cc::http;
 
 Ref<CgiDelegate> CgiDelegate::create(ServiceWorker *worker)
 {
@@ -119,7 +121,7 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
     else
         throw InternalServerError();
 
-    Ref<CgiResponse> cgiResponse = cgiServer->readResponse();
+    Ref<HttpMessage> cgiResponse = cgiServer->readResponse();
 
     int statusCode = -1;
     String reasonPhrase;

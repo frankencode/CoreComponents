@@ -8,13 +8,15 @@
 
 #pragma once
 
-#include "HttpConnection.h"
+#include <cc/http/HttpConnection>
 #include "ConnectionInfo.h"
 #include "HttpRequest.h"
 #include "ServiceInstance.h"
 #include "HttpClientSocket.h"
 
 namespace ccnode {
+
+using namespace cc::http;
 
 class HttpClientConnection: public HttpConnection
 {

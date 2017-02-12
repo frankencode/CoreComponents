@@ -11,9 +11,9 @@
 #include <cc/Exception>
 #include <cc/net/SocketAddress>
 
-namespace ccnode {
+namespace cc {
+namespace http {
 
-using namespace cc;
 using namespace cc::net;
 
 class CloseRequest {};
@@ -95,4 +95,4 @@ private:
     Ref<const SocketAddress> peerAddress_;
 };
 
-} // namespace ccnode
+}} // namespace cc::http

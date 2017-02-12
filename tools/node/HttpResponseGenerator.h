@@ -8,9 +8,12 @@
 
 #pragma once
 
-#include "HttpGenerator.h"
+#include <cc/http/HttpGenerator>
 
 namespace ccnode {
+
+using namespace cc;
+using namespace cc::http;
 
 class ServiceWorker;
 

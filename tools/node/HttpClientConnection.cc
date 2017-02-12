@@ -8,7 +8,7 @@
 
 #include <cc/System>
 #include <cc/LineSource>
-#include "exceptions.h"
+#include <cc/http/exceptions>
 #include "ErrorLog.h"
 #include "NodeConfig.h"
 #include "HttpClientConnection.h"
@@ -16,6 +16,7 @@
 namespace ccnode {
 
 using namespace cc;
+using namespace cc::http;
 
 Ref<HttpClientConnection> HttpClientConnection::open(HttpClientSocket *socket)
 {

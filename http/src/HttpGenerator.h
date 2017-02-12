@@ -14,9 +14,8 @@
 
 namespace cc { class TransferMeter; }
 
-namespace ccnode {
-
-using namespace cc;
+namespace cc {
+namespace http {
 
 class HttpConnection;
 
@@ -49,4 +48,4 @@ protected:
     size_t bytesWritten_;
 };
 
-} // namespace ccnode
+}} // namespace cc::http
