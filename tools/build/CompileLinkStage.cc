@@ -7,6 +7,7 @@
  */
 
 #include <cc/stdio>
+#include <cc/File>
 #include <cc/FileStatus>
 #include "JobScheduler.h"
 #include "BuildShell.h"
@@ -112,37 +113,48 @@ bool CompileLinkStage::run()
     if (plan()->options() & BuildPlan::Tools)
         return success_ = true;
 
-    Ref<FileStatus> productStatus = shell()->fileStatus(toolChain()->linkName(plan()));
-    if (
-        productStatus->isValid() &&
-        // productStatus->lastModified() >= plan()->analyseStage()->cacheTime() &&
-        *plan()->sources() == *plan()->analyseStage()->previousSources()
-    ) {
-        double productTime = productStatus->lastModified();
-        bool dirty = false;
-        for (int i = 0; i < plan()->modules()->count(); ++i) {
-            Module *module = plan()->modules()->at(i);
-            Ref<FileStatus> moduleStatus = shell()->fileStatus(module->modulePath());
-            if (moduleStatus->lastModified() > productTime) {
-                dirty = true;
-                break;
-            }
-        }
-        Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->recipePath());
-        if (recipeStatus->isValid()) {
-            if (recipeStatus->lastModified() > productTime) dirty = true;
-            for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
-                Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->prerequisites()->at(i)->recipePath());
-                if (recipeStatus->lastModified() > productTime) {
+    String previousLinkCommandPath = plan()->modulePath("LinkCommand");
+    String previousLinkCommand = File::load(previousLinkCommandPath);
+    String newLinkCommand = toolChain()->linkCommand(plan());
+
+    if (newLinkCommand == previousLinkCommand)
+    {
+        Ref<FileStatus> productStatus = shell()->fileStatus(toolChain()->linkName(plan()));
+        if (
+            productStatus->isValid() &&
+            *plan()->sources() == *plan()->analyseStage()->previousSources()
+        ) {
+            double productTime = productStatus->lastModified();
+            bool dirty = false;
+            for (int i = 0; i < plan()->modules()->count(); ++i) {
+                Module *module = plan()->modules()->at(i);
+                Ref<FileStatus> moduleStatus = shell()->fileStatus(module->modulePath());
+                if (moduleStatus->lastModified() > productTime) {
                     dirty = true;
                     break;
                 }
             }
+            Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->recipePath());
+            if (recipeStatus->isValid()) {
+                if (recipeStatus->lastModified() > productTime) dirty = true;
+                for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
+                    Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->prerequisites()->at(i)->recipePath());
+                    if (recipeStatus->lastModified() > productTime) {
+                        dirty = true;
+                        break;
+                    }
+                }
+            }
+            if (!dirty) return success_ = true;
         }
-        if (!dirty) return success_ = true;
     }
 
-    return success_ = toolChain()->link(plan());
+    success_ = toolChain()->link(plan());
+
+    if (success_)
+        File::save(previousLinkCommandPath, newLinkCommand);
+
+    return success_;
 }
 
 } // namespace ccbuild

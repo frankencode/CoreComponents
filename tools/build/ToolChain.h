@@ -36,6 +36,7 @@ public:
     virtual Ref<Job> createLinkJob(BuildPlan *plan, Module *module) = 0;
 
     virtual String linkName(BuildPlan *plan) const = 0;
+    virtual String linkCommand(BuildPlan *plan) const = 0;
     virtual bool link(BuildPlan *plan) = 0;
 
     virtual bool testInclude(BuildPlan *plan, StringList *headers) const = 0;

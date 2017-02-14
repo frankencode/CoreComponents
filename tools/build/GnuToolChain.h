@@ -34,6 +34,7 @@ public:
     virtual Ref<Job> createLinkJob(BuildPlan *plan, Module *module);
 
     virtual String linkName(BuildPlan *plan) const;
+    virtual String linkCommand(BuildPlan *plan) const;
     virtual bool link(BuildPlan *plan);
 
     virtual bool testInclude(BuildPlan *plan, StringList *headers) const;
@@ -57,7 +58,7 @@ protected:
     static String bundlePrefix(BuildPlan *plan);
 
     static void appendCompileOptions(Format args, BuildPlan *plan);
-    void appendLinkOptions(Format args, BuildPlan *plan);
+    void appendLinkOptions(Format args, BuildPlan *plan) const;
 
     static void createLibrarySymlinks(BuildPlan *plan, String libName);
     static void cleanLibrarySymlinks(BuildPlan *plan, String libName);

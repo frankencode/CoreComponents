@@ -299,9 +299,7 @@ String File::load(String path)
 void File::save(String path, String text)
 {
     establish(path);
-    Ref<File> file = open(path, File::WriteOnly);
-    file->truncate(0);
-    file->write(text);
+    open(path, File::WriteOnly|File::Truncate)->write(text);
 }
 
 } // namespace cc
