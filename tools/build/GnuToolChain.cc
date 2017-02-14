@@ -117,7 +117,7 @@ String GnuToolChain::linkName(BuildPlan *plan) const
     return name;
 }
 
-bool GnuToolChain::link(BuildPlan *plan)
+String GnuToolChain::linkCommand(BuildPlan *plan) const
 {
     String name = plan->name();
     Version version = plan->version();
@@ -139,12 +139,20 @@ bool GnuToolChain::link(BuildPlan *plan)
 
     args << "-o" << linkName(plan);
 
+    Ref<StringList> modulePaths = StringList::create();
     for (int i = 0; i < modules->count(); ++i)
-        args << modules->at(i)->modulePath();
+        modulePaths << modules->at(i)->modulePath();
+    args->appendList(modulePaths->sort());
 
     appendLinkOptions(args, plan);
 
-    String command = args->join(" ");
+    return args->join(" ");
+}
+
+bool GnuToolChain::link(BuildPlan *plan)
+{
+    int options = plan->options();
+    String command = linkCommand(plan);
 
     if (!plan->shell()->run(command))
         return false;
@@ -321,7 +329,7 @@ void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan)
         args << "-I" + plan->includePaths()->at(i);
 }
 
-void GnuToolChain::appendLinkOptions(Format args, BuildPlan *plan)
+void GnuToolChain::appendLinkOptions(Format args, BuildPlan *plan) const
 {
     if (plan->customLinkFlags()) {
         for (int i = 0; i < plan->customLinkFlags()->count(); ++i)
