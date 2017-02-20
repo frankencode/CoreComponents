@@ -87,7 +87,7 @@ public:
 class TlsError: public Exception
 {
 public:
-    TlsError(int errorCode, const SocketAddress *peerAddress);
+    TlsError(int errorCode, const SocketAddress *peerAddress = 0);
     String message() const;
 
 private:

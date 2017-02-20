@@ -20,7 +20,10 @@ TlsError::TlsError(int errorCode, const SocketAddress *peerAddress):
 
 String TlsError::message() const
 {
-    return Format() << peerAddress_ << ": " << gnutls_strerror(errorCode_);
+    const char *s = gnutls_strerror(errorCode_);
+    if (peerAddress_)
+        return Format() << peerAddress_ << ": " << s;
+    return s;
 }
 
 }} // namespace cc::http
