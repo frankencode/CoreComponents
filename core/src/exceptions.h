@@ -97,6 +97,8 @@ public:
 
     inline int errorCode() const { return errorCode_; }
 
+    virtual String message() const;
+
 protected:
     int errorCode_;
 };

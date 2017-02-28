@@ -11,11 +11,6 @@
 namespace cc {
 namespace net {
 
-String HostUnreachable::message() const
-{
-    return "Remote host unreachable or service not available";
-}
-
 Ref<DatagramSocket> DatagramSocket::open(const SocketAddress *address)
 {
     return new DatagramSocket(address);

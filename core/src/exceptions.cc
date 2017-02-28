@@ -32,6 +32,11 @@ String systemError(int errorCode)
 #endif
 }
 
+String SystemError::message() const
+{
+    return systemError(errorCode_);
+}
+
 String SystemResourceError::message() const
 {
     return Format() << systemError(errorCode_) << ": \"" << resource_ << "\""
