@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/SystemStream>
+#include <cc/exceptions>
 #include <cc/net/SocketAddress>
 
 namespace cc {

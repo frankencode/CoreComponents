@@ -9,25 +9,11 @@
 #pragma once
 
 #include <cc/SystemStream>
+#include <cc/net/exceptions>
 #include <cc/net/SocketAddress>
 
 namespace cc {
 namespace net {
-
-/** \class HostUnreachable DatagramSocket.h cc/net/DatagramSocket
-  * \brief An earlier datagram could not be delivered
-  *
-  * \see DatagramSocket::recvFrom()
-  */
-class HostUnreachable: public Exception
-{
-public:
-    ~HostUnreachable() throw() {}
-
-    /*! readable error message
-      */
-    virtual String message() const;
-};
 
 /** \class DatagramSocket DatagramSocket.h cc/net/DatagramSocket
   * \brief Datagram socket
@@ -66,7 +52,7 @@ public:
       * \param peerAddress peer address from which the datagram originates from
       * \param buffer data buffer to hold the datagram received
       * \return number of bytes received
-      * This method throws HostUnreachable if an ICMP error from an earlier sendTo() is received.
+      * \exception HostUnreachable an ICMP error from an earlier sendTo() has been received
       */
     virtual int recvFrom(Ref<SocketAddress> *peerAddress, ByteArray *buffer);
 
@@ -74,6 +60,7 @@ public:
       * \param peerAddress destination host address
       * \param message the message to send
       * \return number of bytes send
+      * \exception HostUnreachable an ICMP error from an earlier sendTo() has been received
       * \see ByteArray::select()
       */
     virtual int sendTo(const SocketAddress *peerAddress, const ByteArray *message);
