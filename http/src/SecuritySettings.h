@@ -15,9 +15,8 @@ namespace http {
 
 class SecuritySettings: public Object {
 public:
-    static Ref<SecuritySettings> create() {
-        return new SecuritySettings;
-    }
+    static Ref<SecuritySettings> create();
+    static Ref<SecuritySettings> createDefault();
 
     String certPath() const { return certPath_; }
     String keyPath() const { return keyPath_; }
@@ -25,6 +24,8 @@ public:
 
     String trustFilePath() const { return trustFilePath_; }
     void setTrustFilePath(String trustFilePath);
+
+    void setSystemTrust();
 
     String ciphers() const { return ciphers_; }
     void setCiphers(String ciphers);

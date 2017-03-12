@@ -12,6 +12,18 @@
 namespace cc {
 namespace http {
 
+Ref<SecuritySettings> SecuritySettings::create()
+{
+    return new SecuritySettings;
+}
+
+Ref<SecuritySettings> SecuritySettings::createDefault()
+{
+    Ref<SecuritySettings> settings = new SecuritySettings;
+    settings->setSystemTrust();
+    return settings;
+}
+
 SecuritySettings::SecuritySettings():
     cred_(0),
     prio_(0)
@@ -38,6 +50,13 @@ void SecuritySettings::setTrustFilePath(String trustFilePath)
     trustFilePath_ = trustFilePath;
     int ret = gnutls_certificate_set_x509_trust_file(cred_, trustFilePath_, GNUTLS_X509_FMT_PEM);
     if (ret != GNUTLS_E_SUCCESS) throw TlsError(ret);
+}
+
+void SecuritySettings::setSystemTrust()
+{
+    if (trustFilePath_ != "") trustFilePath_ = "";
+    int ret = gnutls_certificate_set_x509_system_trust(cred_);
+    if (ret < 0) throw TlsError(ret);
 }
 
 void SecuritySettings::setCiphers(String ciphers)
