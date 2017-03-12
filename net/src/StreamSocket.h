@@ -28,11 +28,21 @@ public:
       */
     static Ref<StreamSocket> listen(const SocketAddress *localAddress, int backlog = 1024);
 
-    /** Connect to a remote host
+    /** \brief Connect to a server
       * \param peerAddress address of remote host
       * \return new object instance
+      * \see cc::IoMonitor, socketErrorCode()
+      *
+      * For non-local connections the connection is only initiated.
+      * You can wait for the connection being fully established by waiting for the socket becoming writeable.
+      * When the socket is writeable and socketErrorCode() returns 0 the connection is established successfully.
       */
     static Ref<StreamSocket> connect(const SocketAddress *peerAddress);
+
+    /** Returns the socket error status code
+      * \see cc::systemError()
+      */
+    int socketErrorCode() const;
 
     /** Create a pair of connected local sockets
       * \param first return the first socket
