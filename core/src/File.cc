@@ -49,6 +49,15 @@ File::File(String path, int openFlags, int fd):
     openFlags_(openFlags)
 {}
 
+int File::openFlags(String shellMode)
+{
+    int flags = 0;
+    if (shellMode == "<") flags = File::ReadOnly;
+    else if (shellMode == ">") flags = File::WriteOnly | File::Create | File::Truncate;
+    else if (shellMode == ">>") flags = File::WriteOnly | File::Create | File::Append;
+    return flags;
+}
+
 String File::path() const
 {
     return path_;
