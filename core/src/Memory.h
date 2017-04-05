@@ -42,6 +42,7 @@ public:
 
 private:
     Memory();
+    ~Memory();
 
     static Memory *instance() throw();
 
@@ -51,6 +52,7 @@ private:
     {
     public:
         PageHeap();
+        void reduceTo(int maxFill, size_t pageSize);
         void pushPage(void *page, size_t pageSize);
 
     private:
