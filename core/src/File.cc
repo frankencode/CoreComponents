@@ -49,12 +49,12 @@ File::File(String path, int openFlags, int fd):
     openFlags_(openFlags)
 {}
 
-int File::openFlags(String shellMode)
+int File::openFlags(const char *shellMode)
 {
     int flags = 0;
-    if (shellMode == "<") flags = File::ReadOnly;
-    else if (shellMode == ">") flags = File::WriteOnly | File::Create | File::Truncate;
-    else if (shellMode == ">>") flags = File::WriteOnly | File::Create | File::Append;
+    if (strcmp(shellMode, "<") == 0) flags = File::ReadOnly;
+    else if (strcmp(shellMode, ">") == 0) flags = File::WriteOnly | File::Create | File::Truncate;
+    else if (strcmp(shellMode, ">>") == 0) flags = File::WriteOnly | File::Create | File::Append;
     return flags;
 }
 

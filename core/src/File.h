@@ -68,7 +68,7 @@ public:
       * \param mode file permissions for new file, a combination of cc::ModeFlags
       * \return new object instance
       */
-    inline static Ref<File> open(String shellMode, String path, int mode)
+    inline static Ref<File> open(const char *shellMode, String path, int mode)
     {
         return open(path, openFlags(shellMode), mode);
     }
@@ -79,7 +79,7 @@ public:
       * \param mode file permissions for new file, a combination of cc::ModeFlags
       * \return new object instance or null reference if opening the file wasn't successful
       */
-    inline static Ref<File> tryOpen(String shellMode, String path, int mode = 0644)
+    inline static Ref<File> tryOpen(const char *shellMode, String path, int mode = 0644)
     {
         return tryOpen(path, openFlags(shellMode), mode);
     }
@@ -229,7 +229,7 @@ private:
 
     File(String path, int openFlags, int fd);
 
-    static int openFlags(String shellMode);
+    static int openFlags(const char *shellMode);
     static void unmap(ByteArray *s);
 
     String path_;
