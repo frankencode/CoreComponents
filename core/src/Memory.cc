@@ -43,6 +43,10 @@ namespace cc {
 #define MAP_POPULATE 0
 #endif
 
+#ifndef MAP_NORESERVE
+#define MAP_NORESERVE 0
+#endif
+
 class Memory::BucketHeader
 {
 public:
@@ -61,35 +65,40 @@ Memory::PageHeap::PageHeap():
     MinHeap<void *>(buf_, CC_MEM_PAGE_HEAP)
 {}
 
-void Memory::PageHeap::pushPage(void *page, size_t pageSize)
+void Memory::PageHeap::reduceTo(int maxFill, size_t pageSize)
 {
-    if (isFull()) {
-        // reduce heap to half its size in the process and unmap pages as sequential chunks
-        void *chunk = pop();
-        size_t size = pageSize;
-        while (count() > CC_MEM_PAGE_HEAP / 2) {
-            void *chunk2 = pop();
-            if ((char *)chunk2 - (char *)chunk == ssize_t(size)) {
-                size += pageSize;
-            }
-            else {
-                #ifndef NDEBUG
-                int ret =
-                #endif
-                ::munmap(chunk, size);
-                CC_MEM_ASSERT(ret == 0);
-                chunk = chunk2;
-                size = pageSize;
-            }
+    if (count() <= maxFill) return;
+
+    // reduce heap to maxFill and in the process unmap pages as sequential chunks
+    void *chunk = pop();
+    size_t size = pageSize;
+    while (count() > maxFill) {
+        void *chunk2 = pop();
+        if ((char *)chunk2 - (char *)chunk == ssize_t(size)) {
+            size += pageSize;
         }
-        if (size > 0) {
+        else {
             #ifndef NDEBUG
             int ret =
             #endif
             ::munmap(chunk, size);
             CC_MEM_ASSERT(ret == 0);
+            chunk = chunk2;
+            size = pageSize;
         }
     }
+    if (size > 0) {
+        #ifndef NDEBUG
+        int ret =
+        #endif
+        ::munmap(chunk, size);
+        CC_MEM_ASSERT(ret == 0);
+    }
+}
+
+void Memory::PageHeap::pushPage(void *page, size_t pageSize)
+{
+    if (isFull()) reduceTo(CC_MEM_PAGE_HEAP / 2, pageSize);
     push(page);
 }
 
@@ -103,6 +112,11 @@ Memory::Memory():
     pageSize_(::sysconf(_SC_PAGE_SIZE)),
     bucket_(0)
 {}
+
+Memory::~Memory()
+{
+    pageHeap_.reduceTo(0, pageSize_);
+}
 
 void *Memory::allocate(size_t size) throw()
 {
@@ -140,7 +154,7 @@ void *Memory::allocate(size_t size) throw()
 
         void *pageStart = 0;
         if (preallocCount > 0) pageStart = (char *)bucket + pageSize;
-        else pageStart = ::mmap(0, pageSize * CC_MEM_PAGE_PREALLOC, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_POPULATE, -1, 0);
+        else pageStart = ::mmap(0, pageSize * CC_MEM_PAGE_PREALLOC, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
         CC_MEM_ASSERT(pageStart != MAP_FAILED);
         bucket = new(pageStart)BucketHeader;
         CC_MEM_ASSERT((char*)bucket == (char*)pageStart);
@@ -153,7 +167,7 @@ void *Memory::allocate(size_t size) throw()
     }
 
     if (size <= pageSize) {
-        void *pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_POPULATE, -1, 0);
+        void *pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
         CC_MEM_ASSERT(pageStart != MAP_FAILED);
         return pageStart;
     }
