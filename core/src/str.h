@@ -85,7 +85,7 @@ String fixed(float64_t x, int nf);
 
 /** Convert an integer to a decimal string
   * \param x integer value
-  * \param n maximum number of digits
+  * \param n number of digits
   * \return string representation of x
   */
 template<class T>
@@ -93,7 +93,7 @@ inline String dec(T x, int n = -1) { return inum(x, 10, n); }
 
 /** Convert an integer to a hexadecimal string
   * \param x integer value
-  * \param n maximum number of digits
+  * \param n number of digits
   * \return string representation of x
   */
 template<class T>
@@ -101,7 +101,7 @@ inline String hex(T x, int n = -1) { return inum(x, 16, n); }
 
 /** Convert an integer to an octal string
   * \param x integer value
-  * \param n maximum number of digits
+  * \param n number of digits
   * \return string representation of x
   */
 template<class T>
@@ -109,7 +109,7 @@ inline String oct(T x, int n = -1) { return inum(x, 8, n); }
 
 /** Convert an integer to a binary string
   * \param x integer value
-  * \param n maximum number of digits
+  * \param n number of digits
   * \return string representation of x
   */
 template<class T>
