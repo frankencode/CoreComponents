@@ -47,7 +47,7 @@ void HexDump::flush()
         if (j < i_) {
             uint8_t &ch = buffer_->byteAt(j);
             f << hex(ch, 2);
-            if (ch < 0x20 || 0x80 <= ch) ch = '.';
+            if (ch < 0x20 || 0x7F <= ch) ch = '.';
         }
         else f << "  ";
         f << (((j + 1) % 8 == 0) ? "  " : " ");
