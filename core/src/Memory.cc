@@ -174,7 +174,7 @@ void *Memory::allocate(size_t size) throw()
 
     size += sizeof(uint32_t);
     uint32_t pageCount = size / pageSize + ((size % pageSize) > 0);
-    void *pageStart = ::mmap(0, pageCount * pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE/*|MAP_POPULATE*/, -1, 0);
+    void *pageStart = ::mmap(0, pageCount * pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE/*|MAP_POPULATE*/, -1, 0);
     CC_MEM_ASSERT(pageStart != MAP_FAILED);
     *(uint32_t *)pageStart = pageCount;
     return (void *)((uint32_t *)pageStart + 1);
