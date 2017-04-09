@@ -16,6 +16,9 @@
 #endif
 #include <errno.h>
 #include <new>
+#ifdef CC_MEM_ACCOUNTING
+#include <cc/MemoryAccounting>
+#endif
 #include <cc/Memory>
 
 namespace cc {
@@ -65,7 +68,11 @@ Memory::PageHeap::PageHeap():
     MinHeap<void *>(buf_, CC_MEM_PAGE_HEAP)
 {}
 
-void Memory::PageHeap::reduceTo(int maxFill, size_t pageSize)
+void Memory::PageHeap::reduceTo(int maxFill, size_t pageSize
+#ifdef CC_MEM_ACCOUNTING
+    , bool accounting
+#endif
+)
 {
     if (count() <= maxFill) return;
 
@@ -83,6 +90,9 @@ void Memory::PageHeap::reduceTo(int maxFill, size_t pageSize)
             #endif
             ::munmap(chunk, size);
             CC_MEM_ASSERT(ret == 0);
+            #ifdef CC_MEM_ACCOUNTING
+            if (accounting) MemoryAccounting::instance()->registerFree(size);
+            #endif
             chunk = chunk2;
             size = pageSize;
         }
@@ -93,12 +103,24 @@ void Memory::PageHeap::reduceTo(int maxFill, size_t pageSize)
         #endif
         ::munmap(chunk, size);
         CC_MEM_ASSERT(ret == 0);
+        #ifdef CC_MEM_ACCOUNTING
+        if (accounting) MemoryAccounting::instance()->registerFree(size);
+        #endif
     }
 }
 
-void Memory::PageHeap::pushPage(void *page, size_t pageSize)
+void Memory::PageHeap::pushPage(void *page, size_t pageSize
+#ifdef CC_MEM_ACCOUNTING
+    , bool accounting
+#endif
+)
 {
-    if (isFull()) reduceTo(CC_MEM_PAGE_HEAP / 2, pageSize);
+    if (isFull())
+        reduceTo(CC_MEM_PAGE_HEAP / 2, pageSize
+        #ifdef CC_MEM_ACCOUNTING
+            , accounting
+        #endif
+        );
     push(page);
 }
 
@@ -111,11 +133,41 @@ Memory *Memory::instance() throw()
 Memory::Memory():
     pageSize_(::sysconf(_SC_PAGE_SIZE)),
     bucket_(0)
+    #ifdef CC_MEM_ACCOUNTING
+    , accounting_(MemoryAccounting::instance()->isEnabled())
+    #endif
 {}
 
 Memory::~Memory()
 {
-    pageHeap_.reduceTo(0, pageSize_);
+    pageHeap_.reduceTo(0, pageSize_
+        #ifdef CC_MEM_ACCOUNTING
+        , accounting_
+        #endif
+    );
+
+    if (bucket_) {
+        if (bucket_->preallocCount_ > 0) {
+            #ifndef NDEBUG
+            int ret =
+            #endif
+            ::munmap((void*)((char *)bucket_ + pageSize_), bucket_->preallocCount_ * pageSize_);
+            CC_MEM_ASSERT(ret == 0);
+            #ifdef CC_MEM_ACCOUNTING
+            if (accounting_) MemoryAccounting::instance()->registerFree(bucket_->preallocCount_ * pageSize_);
+            #endif
+        }
+        if (bucket_->objectCount_ == 0) {
+            #ifndef NDEBUG
+            int ret =
+            #endif
+            ::munmap((void*)bucket_, pageSize_);
+            CC_MEM_ASSERT(ret == 0);
+            #ifdef CC_MEM_ACCOUNTING
+            if (accounting_) MemoryAccounting::instance()->registerFree(pageSize_);
+            #endif
+        }
+    }
 }
 
 void *Memory::allocate(size_t size) throw()
@@ -147,15 +199,26 @@ void *Memory::allocate(size_t size) throw()
                 bucket->release();
                 if (dispose) {
                     bucket->~BucketHeader();
-                    allocator->pageHeap_.pushPage((void *)bucket, pageSize);
+                    allocator->pageHeap_.pushPage((void *)bucket, pageSize
+                    #ifdef CC_MEM_ACCOUNTING
+                        , allocator->accounting_
+                    #endif
+                    );
                 }
             }
         }
 
         void *pageStart = 0;
-        if (preallocCount > 0) pageStart = (char *)bucket + pageSize;
-        else pageStart = ::mmap(0, pageSize * CC_MEM_PAGE_PREALLOC, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
-        CC_MEM_ASSERT(pageStart != MAP_FAILED);
+        if (preallocCount > 0) {
+            pageStart = (char *)bucket + pageSize;
+        }
+        else {
+            pageStart = ::mmap(0, pageSize * CC_MEM_PAGE_PREALLOC, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
+            CC_MEM_ASSERT(pageStart != MAP_FAILED);
+            #ifdef CC_MEM_ACCOUNTING
+            if (allocator->accounting_) MemoryAccounting::instance()->registerAlloc(pageSize * CC_MEM_PAGE_PREALLOC);
+            #endif
+        }
         bucket = new(pageStart)BucketHeader;
         CC_MEM_ASSERT((char*)bucket == (char*)pageStart);
         bucket->preallocCount_ = (preallocCount > 0) ? preallocCount - 1 : CC_MEM_PAGE_PREALLOC - 1;
@@ -169,6 +232,9 @@ void *Memory::allocate(size_t size) throw()
     if (size <= pageSize) {
         void *pageStart = ::mmap(0, pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
         CC_MEM_ASSERT(pageStart != MAP_FAILED);
+        #ifdef CC_MEM_ACCOUNTING
+        if (allocator->accounting_) MemoryAccounting::instance()->registerAlloc(pageSize);
+        #endif
         return pageStart;
     }
 
@@ -176,6 +242,9 @@ void *Memory::allocate(size_t size) throw()
     uint32_t pageCount = size / pageSize + ((size % pageSize) > 0);
     void *pageStart = ::mmap(0, pageCount * pageSize, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE/*|MAP_POPULATE*/, -1, 0);
     CC_MEM_ASSERT(pageStart != MAP_FAILED);
+    #ifdef CC_MEM_ACCOUNTING
+    if (allocator->accounting_) MemoryAccounting::instance()->registerAlloc(pageCount * pageSize);
+    #endif
     *(uint32_t *)pageStart = pageCount;
     return (void *)((uint32_t *)pageStart + 1);
 }
@@ -196,7 +265,11 @@ void Memory::free(void *data) throw()
         bucket->release();
         if (dispose) {
             bucket->~BucketHeader();
-            allocator->pageHeap_.pushPage((void *)bucket, pageSize);
+            allocator->pageHeap_.pushPage((void *)bucket, pageSize
+            #ifdef CC_MEM_ACCOUNTING
+                , allocator->accounting_
+            #endif
+            );
         }
     }
     else if (offset == 0) {
@@ -205,6 +278,9 @@ void Memory::free(void *data) throw()
         #endif
         ::munmap(data, pageSize);
         CC_MEM_ASSERT(ret == 0);
+        #ifdef CC_MEM_ACCOUNTING
+        if (allocator->accounting_) MemoryAccounting::instance()->registerFree(pageSize);
+        #endif
     }
     else if (offset == sizeof(uint32_t)) {
         void *pageStart = (void *)((char *)data - sizeof(uint32_t));
@@ -214,6 +290,9 @@ void Memory::free(void *data) throw()
         #endif
         ::munmap(pageStart, pageCount * pageSize);
         CC_MEM_ASSERT(ret == 0);
+        #ifdef CC_MEM_ACCOUNTING
+        if (allocator->accounting_) MemoryAccounting::instance()->registerFree(pageCount * pageSize);
+        #endif
     }
 }
 
