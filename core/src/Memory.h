@@ -27,6 +27,8 @@
 #define CC_MEM_PAGE_HEAP (2 * CC_MEM_PAGE_PREALLOC - 1)  //!< number of freed pages to cache at maximum
 #endif
 
+// #define CC_MEM_ACCOUNTING 1
+
 namespace cc {
 
 /** \internal
@@ -52,8 +54,16 @@ private:
     {
     public:
         PageHeap();
-        void reduceTo(int maxFill, size_t pageSize);
-        void pushPage(void *page, size_t pageSize);
+        void reduceTo(int maxFill, size_t pageSize
+        #ifdef CC_MEM_ACCOUNTING
+            , bool accounting
+        #endif
+        );
+        void pushPage(void *page, size_t pageSize
+        #ifdef CC_MEM_ACCOUNTING
+            , bool accounting
+        #endif
+        );
 
     private:
         void *buf_[CC_MEM_PAGE_HEAP];
@@ -62,6 +72,9 @@ private:
     size_t pageSize_;
     BucketHeader *bucket_;
     PageHeap pageHeap_;
+    #ifdef CC_MEM_ACCOUNTING
+    bool accounting_;
+    #endif
 };
 
 } // namespace cc
