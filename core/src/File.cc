@@ -112,7 +112,7 @@ String File::map() const
     void *p = 0;
     if (fileSize % pageSize > 0) {
         mapSize += pageSize - fileSize % pageSize;
-        p = ::mmap(0, fileSize, protection, MAP_PRIVATE, fd_, 0);
+        p = ::mmap(0, fileSize, protection, MAP_PRIVATE | MAP_NORESERVE, fd_, 0);
         if (p == MAP_FAILED)
             CC_SYSTEM_ERROR(errno, path_);
     }
@@ -121,10 +121,10 @@ String File::map() const
         #define MAP_ANONYMOUS MAP_ANON
         #endif
         mapSize += pageSize;
-        p = ::mmap(0, mapSize, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+        p = ::mmap(0, mapSize, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE, -1, 0);
         if (p == MAP_FAILED)
             CC_SYSTEM_DEBUG_ERROR(errno);
-        p = ::mmap(p, fileSize, protection, MAP_PRIVATE | MAP_FIXED, fd_, 0);
+        p = ::mmap(p, fileSize, protection, MAP_PRIVATE | MAP_FIXED | MAP_NORESERVE, fd_, 0);
         if (p == MAP_FAILED)
             CC_SYSTEM_ERROR(errno, path_);
     }
