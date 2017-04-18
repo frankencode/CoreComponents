@@ -121,7 +121,7 @@ String File::map() const
     void *p = 0;
     if (fileSize % pageSize > 0) {
         mapSize += pageSize - fileSize % pageSize;
-        p = ::mmap(0, fileSize, protection, MAP_PRIVATE, fd_, 0);
+        p = ::mmap(0, fileSize, protection, MAP_PRIVATE | MAP_NORESERVE, fd_, 0);
         if (p == MAP_FAILED)
             CC_SYSTEM_ERROR(errno, path_);
     }
@@ -129,11 +129,14 @@ String File::map() const
         #ifndef MAP_ANONYMOUS
         #define MAP_ANONYMOUS MAP_ANON
         #endif
+	#ifndef MAP_NORESERVE
+	#define MAP_NORESERVE 0
+	#endif
         mapSize += pageSize;
-        p = ::mmap(0, mapSize, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+        p = ::mmap(0, mapSize, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE, -1, 0);
         if (p == MAP_FAILED)
             CC_SYSTEM_DEBUG_ERROR(errno);
-        p = ::mmap(p, fileSize, protection, MAP_PRIVATE | MAP_FIXED, fd_, 0);
+        p = ::mmap(p, fileSize, protection, MAP_PRIVATE | MAP_FIXED | MAP_NORESERVE, fd_, 0);
         if (p == MAP_FAILED)
             CC_SYSTEM_ERROR(errno, path_);
     }
@@ -308,7 +311,9 @@ String File::load(String path)
 void File::save(String path, String text)
 {
     establish(path);
-    open(path, File::WriteOnly|File::Truncate)->write(text);
+    Ref<File> file = open(path, File::WriteOnly);
+    file->truncate(0);
+    file->write(text);
 }
 
 } // namespace cc
