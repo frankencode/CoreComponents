@@ -134,9 +134,8 @@ void NodeMaster::runNode() const
 
     typedef Array< Ref<ServiceWorker> > WorkerPool;
     Ref<WorkerPool> workerPool = WorkerPool::create(nodeConfig()->concurrency());
-    for (int i = 0; i < workerPool->count(); ++i) {
-        Ref<ServiceWorker> worker = ServiceWorker::create(pendingConnections, closedConnections);
-        workerPool->at(i) = worker;
+    for (Ref<ServiceWorker> &worker: workerPool) {
+        worker = ServiceWorker::create(pendingConnections, closedConnections);
         worker->start();
     }
 

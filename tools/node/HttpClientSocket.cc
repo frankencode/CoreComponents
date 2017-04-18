@@ -7,7 +7,6 @@
  */
 
 #include <stddef.h>
-#include <poll.h>
 #include <unistd.h>
 #include <cc/assert>
 #include <cc/ThreadLocalSingleton>
@@ -27,18 +26,17 @@ Ref<HttpClientSocket> HttpClientSocket::accept(StreamSocket *listeningSocket)
     Ref<HttpClientSocket> client =
         new HttpClientSocket(
             SocketAddress::create(listeningSocket->address()->family()),
-            (listeningSocket->address()->port() % 80 == 0) ? Plaintext : Secure
+            (listeningSocket->address()->port() % 80 == 0) ? 0 : Secure
         );
     client->fd_ = StreamSocket::accept(listeningSocket, client->address_);
     client->connected_ = true;
-    client->mode_ |= Connected | ((client->mode_ & Plaintext) ? Open : 0);
-    client->sessionInit();
+    client->mode_ |= Connected | ((client->mode_ & Secure) ? 0 : Open);
+    client->initSession();
     return client;
 }
 
 HttpClientSocket::HttpClientSocket(const SocketAddress *address, int mode):
-    StreamSocket(address),
-    mode_(mode)
+    HttpSocket(address, mode)
 {}
 
 HttpClientSocket::~HttpClientSocket()
@@ -56,14 +54,14 @@ HttpClientSocket::~HttpClientSocket()
     }
 }
 
-void HttpClientSocket::sessionInit()
+void HttpClientSocket::initSession()
 {
     CC_ASSERT(mode_ & Connected);
 
     t0_ = System::now();
     te_ = t0_ + nodeConfig()->connectionTimeout();
 
-    if (mode_ & Plaintext) return;
+    if (!(mode_ & Secure)) return;
 
     CC_ASSERT(!(mode_ & Open));
 
@@ -75,9 +73,7 @@ void HttpClientSocket::sessionInit()
     else
         gnuTlsCheckSuccess(gnutls_set_default_priority(session_));
     gnutls_handshake_set_post_client_hello_function(session_, onClientHello);
-    gnutls_transport_set_ptr(session_, this);
-    gnutls_transport_set_pull_function(session_, gnuTlsPull);
-    gnutls_transport_set_vec_push_function(session_, gnuTlsPushVec);
+    HttpSocket::initTransport();
 
     SecurityMaster::instance()->prepareSessionResumption(session_);
 }
@@ -151,7 +147,7 @@ ServiceInstance *HttpClientSocket::handshake()
 {
     CC_ASSERT(mode_ & Connected);
 
-    if (mode_ & Plaintext) return 0;
+    if (!(mode_ & Secure)) return 0;
 
     CC_ASSERT(!(mode_ & Open));
 
@@ -187,19 +183,19 @@ ServiceInstance *HttpClientSocket::handshake()
 void HttpClientSocket::upgradeToSecureTransport()
 {
     CC_ASSERT(mode_ & Connected);
-    CC_ASSERT(mode_ & Plaintext);
+    CC_ASSERT(!(mode_ & Secure));
 
-    mode_ = mode_ & ~(Open|Plaintext);
+    mode_ = mode_ & ~Open;
     mode_ |= Secure;
-    sessionInit();
+    initSession();
 }
 
 int HttpClientSocket::read(ByteArray *data)
 {
     if (data->count() == 0) return 0;
 
-    if (mode_ & Plaintext) {
-        waitInput();
+    if (!(mode_ & Secure)) {
+        if (!waitInput()) throw RequestTimeout();
         return StreamSocket::read(data);
     }
 
@@ -214,7 +210,7 @@ void HttpClientSocket::write(const ByteArray *data)
 {
     if (data->count() == 0) return;
 
-    if (mode_ & Plaintext) {
+    if (!(mode_ & Secure)) {
         StreamSocket::write(data);
         return;
     }
@@ -232,76 +228,22 @@ void HttpClientSocket::write(const ByteArray *data)
 
 void HttpClientSocket::write(const StringList *parts)
 {
-    if (mode_ & Plaintext)
-        StreamSocket::write(parts);
-    else
+    if (mode_ & Secure)
         write(parts->join());
+    else
+        StreamSocket::write(parts);
 }
 
-void HttpClientSocket::waitInput()
+bool HttpClientSocket::waitInput()
 {
     double d = te_ - System::now();
     if (d <= 0) throw RequestTimeout();
-
-    if (!SystemIo::poll(fd_, IoReadyRead, d * 1000))
-        throw RequestTimeout();
+    return poll(IoReadyRead, d * 1000);
 }
 
-bool HttpClientSocket::gnuTlsCheckSuccess(int ret)
+void HttpClientSocket::ioException(Exception &ex) const
 {
-    return gnuTlsCheckSuccess(ret, address());
-}
-
-void HttpClientSocket::gnuTlsCheckError(int ret)
-{
-    gnuTlsCheckError(ret, address());
-}
-
-bool HttpClientSocket::gnuTlsCheckSuccess(int ret, const SocketAddress *peerAddress)
-{
-    if (ret != GNUTLS_E_SUCCESS) throw TlsError(ret, peerAddress);
-    return true;
-}
-
-void HttpClientSocket::gnuTlsCheckError(int ret, const SocketAddress *peerAddress)
-{
-    if (ret < 0) throw TlsError(ret, peerAddress);
-}
-
-ssize_t HttpClientSocket::gnuTlsPull(gnutls_transport_ptr_t ctx, void *data, size_t size)
-{
-    ssize_t n = -1;
-    try {
-        HttpClientSocket *socket = (HttpClientSocket *)ctx;
-        socket->waitInput();
-        n = SystemIo::read(socket->fd(), data, size);
-    }
-    catch (Exception &ex) {
-        CCNODE_ERROR() << ex << nl;
-    }
-
-    return n;
-}
-
-ssize_t HttpClientSocket::gnuTlsPushVec(gnutls_transport_ptr_t ctx, const giovec_t *iov, int iovcnt)
-{
-    CC_STATIC_ASSERT(offsetof(struct iovec, iov_base) == offsetof(giovec_t, iov_base));
-    CC_STATIC_ASSERT(offsetof(struct iovec, iov_len) == offsetof(giovec_t, iov_len));
-    CC_STATIC_ASSERT(sizeof(struct iovec) == sizeof(giovec_t));
-
-    HttpClientSocket *socket = (HttpClientSocket *)ctx;
-    try {
-        SystemIo::writev(socket->fd(), (const struct iovec *)iov, iovcnt);
-    }
-    catch (Exception &ex) {
-        CCNODE_ERROR() << ex << nl;
-        return -1;
-    }
-
-    ssize_t total = 0;
-    for (int i = 0; i < iovcnt; ++i)
-        total += iov[i].iov_len;
-    return total;
+    CCNODE_ERROR() << "!" << ex << nl;
 }
 
 } // namespace ccnode
