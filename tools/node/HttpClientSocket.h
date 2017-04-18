@@ -8,8 +8,7 @@
 
 #pragma once
 
-#include <gnutls/gnutls.h>
-#include <cc/net/StreamSocket>
+#include <cc/http/HttpSocket>
 #include "ServiceInstance.h"
 
 namespace ccnode {
@@ -19,7 +18,7 @@ using namespace cc::net;
 
 class ClientHelloContext;
 
-class HttpClientSocket: public StreamSocket
+class HttpClientSocket: public HttpSocket
 {
 public:
     static Ref<HttpClientSocket> accept(StreamSocket *listeningSocket);
@@ -35,29 +34,15 @@ public:
 private:
     friend class ClientHelloContext;
 
-    enum Mode {
-        Plaintext = 1,
-        Secure    = 2,
-        Connected = 4,
-        Open      = 8
-    };
-
     HttpClientSocket(const SocketAddress *address, int mode);
     ~HttpClientSocket();
 
     static int onClientHello(gnutls_session_t session);
-    void sessionInit();
-    void waitInput();
+    void initSession();
 
-    bool gnuTlsCheckSuccess(int ret);
-    void gnuTlsCheckError(int ret);
-    static bool gnuTlsCheckSuccess(int ret, const SocketAddress *peerAddress);
-    static void gnuTlsCheckError(int ret, const SocketAddress *peerAddress);
-    static ssize_t gnuTlsPull(gnutls_transport_ptr_t ctx, void *data, size_t size);
-    static ssize_t gnuTlsPushVec(gnutls_transport_ptr_t ctx, const giovec_t *iov, int iovcnt);
+    virtual bool waitInput() override;
+    virtual void ioException(Exception &ex) const override;
 
-    int mode_;
-    gnutls_session_t session_;
     double t0_;
     double te_;
 };
