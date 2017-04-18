@@ -27,7 +27,9 @@ bool SystemIo::poll(int fd, int events, int timeout_ms)
     fds.events = events;
 
     if (timeout_ms < 0) timeout_ms = -1;
-    int ret = ::poll(&fds, 1, timeout_ms);
+    int ret = -1;
+    do ret = ::poll(&fds, 1, timeout_ms);
+    while (ret == -1 && errno == EINTR);
     if (ret == -1) CC_SYSTEM_DEBUG_ERROR(errno);
     CC_ASSERT(ret == 0 || ret == 1);
     CC_ASSERT(timeout_ms != -1 || ret == 1);

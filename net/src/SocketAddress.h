@@ -85,7 +85,6 @@ public:
         return new SocketAddress(addr);
     }
 
-
     /** Create a socket address from a low-level address resolution result
       * \return new object instance
       */

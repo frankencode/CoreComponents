@@ -2,6 +2,6 @@ Library {
     name: cccore
     source: *.cc
     Usage {
-        compile-flags: -std=c++11
+        compile-flags: [ -std=c++11 ] // , -DCC_MEM_ACCOUNTING
     }
 }
