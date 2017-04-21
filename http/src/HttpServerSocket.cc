@@ -71,6 +71,8 @@ void HttpServerSocket::handshake()
 
 bool HttpServerSocket::waitInput()
 {
+    if (te_ < t0_) return true;
+
     double d = te_ - System::now();
     if (d <= 0) throw RequestTimeout();
     return poll(IoReadyRead, d * 1000);
