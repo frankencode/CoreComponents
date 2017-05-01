@@ -9,14 +9,15 @@
 #include <gnutls/gnutls.h>
 #include <cc/assert>
 #include <cc/System>
+#include <cc/IoMonitor>
 #include <cc/http/HttpServerSocket>
 
 namespace cc {
 namespace http {
 
-Ref<HttpServerSocket> HttpServerSocket::connect(const SocketAddress *serverAddress, String serverName, SecuritySettings *security, double timeout)
+Ref<HttpServerSocket> HttpServerSocket::create(const SocketAddress *serverAddress, String serverName, SecuritySettings *security)
 {
-    Ref<HttpServerSocket> socket = new HttpServerSocket(serverAddress, serverName, security, timeout);
+    Ref<HttpServerSocket> socket = new HttpServerSocket(serverAddress, serverName, security);
     socket->connect();
     socket->initSession();
     socket->handshake();
@@ -24,23 +25,33 @@ Ref<HttpServerSocket> HttpServerSocket::connect(const SocketAddress *serverAddre
     return socket;
 }
 
-HttpServerSocket::HttpServerSocket(const SocketAddress *serverAddress, String serverName, SecuritySettings *security, double timeout):
+HttpServerSocket::HttpServerSocket(const SocketAddress *serverAddress, String serverName, SecuritySettings *security):
     HttpSocket(serverAddress, (serverAddress->port() % 80 == 0) ? 0 : Secure),
     serverName_(serverName),
     security_(security),
-    t0_(System::now()),
-    te_(t0_ + timeout)
+    ioMonitor_(IoMonitor::create(2)),
+    readyRead_(0)
 {
     if ((mode_ & Secure) && !security_)
         security_ = SecuritySettings::createDefault();
+
+    StreamSocket::connect(&controlMaster_, &controlSlave_);
+    ioMonitor_->addEvent(IoReadyRead, controlSlave_);
 }
 
-void HttpServerSocket::connect()
+bool HttpServerSocket::connect()
 {
-    connect(address());
-    int timeout_ms = (te_ < t0_) ? -1 : int((te_ - t0_) * 1000);
-    if (!poll(IoReadyWrite, timeout_ms)) throw RequestTimeout();
-    mode_ |= Connected;
+    StreamSocket::connect(address());
+    const IoEvent *connectionEstablished = ioMonitor_->addEvent(IoReadyWrite, this);
+    if (ioMonitor_->waitFor(connectionEstablished)) mode_ |= Connected;
+    ioMonitor_->removeEvent(connectionEstablished);
+    if (mode_ & Connected) readyRead_ = ioMonitor_->addEvent(IoReadyRead, this);
+    return mode_ & Connected;
+}
+
+void HttpServerSocket::shutdown()
+{
+    controlMaster_ = 0;
 }
 
 void HttpServerSocket::initSession()
@@ -71,11 +82,7 @@ void HttpServerSocket::handshake()
 
 bool HttpServerSocket::waitInput()
 {
-    if (te_ < t0_) return true;
-
-    double d = te_ - System::now();
-    if (d <= 0) throw RequestTimeout();
-    return poll(IoReadyRead, d * 1000);
+    return ioMonitor_->waitFor(readyRead_);
 }
 
 void HttpServerSocket::ioException(Exception &ex) const
