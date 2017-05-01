@@ -12,6 +12,11 @@
 #include <cc/http/SecuritySettings>
 
 namespace cc {
+    class IoMonitor;
+    class IoEvent;
+}
+
+namespace cc {
 namespace http {
 
 using namespace cc::net;
@@ -19,11 +24,14 @@ using namespace cc::net;
 class HttpServerSocket: public HttpSocket
 {
 public:
-    static Ref<HttpServerSocket> connect(const SocketAddress *serverAddress, String serverName = "", SecuritySettings *security = 0, double timeout = -1);
+    static Ref<HttpServerSocket> create(const SocketAddress *serverAddress, String serverName = "", SecuritySettings *security = 0);
+
+    bool connect();
+    void shutdown();
 
 private:
-    HttpServerSocket(const SocketAddress *serverAddress, String serverName, SecuritySettings *security, double timeout);
-    void connect();
+    HttpServerSocket(const SocketAddress *serverAddress, String serverName, SecuritySettings *security);
+
     void initSession();
     void handshake();
 
@@ -32,8 +40,9 @@ private:
 
     String serverName_;
     Ref<SecuritySettings> security_;
-    double t0_;
-    double te_;
+    Ref<StreamSocket> controlMaster_, controlSlave_;
+    Ref<IoMonitor> ioMonitor_;
+    const IoEvent *readyRead_;
 };
 
 }} // namespace cc::http

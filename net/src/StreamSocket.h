@@ -48,7 +48,7 @@ public:
       * \param first return the first socket
       * \param second return the second socket
       */
-    static void connect(Ref<StreamSocket> *first, Ref<StreamSocket> *second);
+    static void connect(Ref<StreamSocket> *first, Ref<StreamSocket> *second); /// FIXME: rename to createPair
 
     /** Accept a connection request
       * \return new object instance

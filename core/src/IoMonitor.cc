@@ -71,4 +71,17 @@ Ref<IoActivity> IoMonitor::wait(int timeout_ms)
     return activity;
 }
 
+bool IoMonitor::waitFor(const IoEvent *event, int timeout_ms)
+{
+    PollFd *fds = 0;
+    if (events_->count() > 0) fds = fds_->data();
+    int n = ::poll(fds, events_->count(), timeout_ms < 0 ? -1 : timeout_ms);
+    if (n < 0) CC_SYSTEM_DEBUG_ERROR(errno);
+    for (int i = 0; i < events_->count(); ++i) {
+        if (events_->valueAt(i) == event)
+            return fds_->at(i).revents != 0;
+    }
+    return false;
+}
+
 } // namespace cc

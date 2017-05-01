@@ -79,6 +79,13 @@ public:
       */
     Ref<IoActivity> wait(int timeout_ms = -1);
 
+    /** Wait for a specific I/O event
+      * \param event I/O event to wait for
+      * \param timeout_ms timeout in milliseconds (or infinite if < 0)
+      * \return true if the given I/O event occured before timeout, false if timed out or a different I/O event occured
+      */
+    bool waitFor(const IoEvent *event, int timeout_ms = -1);
+
 private:
     typedef struct pollfd PollFd;
     typedef Array<PollFd> Fds;
