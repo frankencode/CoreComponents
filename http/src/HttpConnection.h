@@ -18,6 +18,8 @@ namespace http {
 
 class HttpStream;
 
+/** \brief logical HTTP connection end
+  */
 class HttpConnection: public Object
 {
 public:

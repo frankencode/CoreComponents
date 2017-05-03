@@ -13,7 +13,7 @@
 #include <cc/PriorityQueue>
 #include <cc/Map>
 #include <cc/net/StreamSocket>
-#include "HttpClientConnection.h"
+#include "HttpServerConnection.h"
 
 namespace ccnode {
 
@@ -22,7 +22,7 @@ using namespace cc::net;
 
 class ServiceWorker;
 
-typedef Channel< Ref<HttpClientConnection>, PriorityQueue > PendingConnections;
+typedef Channel< Ref<HttpServerConnection>, PriorityQueue > PendingConnections;
 typedef Channel< Ref<ConnectionInfo> > ClosedConnections;
 
 class ServiceInstance;
@@ -35,7 +35,7 @@ public:
     static Ref<ServiceWorker> create(PendingConnections *pendingConnections, ClosedConnections *closedConnections);
 
     inline ServiceInstance *serviceInstance() const { return serviceInstance_; }
-    inline HttpClientConnection *client() const { return client_; }
+    inline HttpServerConnection *client() const { return client_; }
 
     HttpResponseGenerator *response() const;
     void autoSecureForwardings();
@@ -45,7 +45,7 @@ private:
     ServiceWorker(PendingConnections *pendingConnections, ClosedConnections *closedConnections);
     ~ServiceWorker();
 
-    static void logDelivery(HttpClientConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "");
+    static void logDelivery(HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "");
     virtual void run();
 
     Ref<ServiceInstance> serviceInstance_;
@@ -54,7 +54,7 @@ private:
     Ref<PendingConnections> pendingConnections_;
     Ref<ClosedConnections> closedConnections_;
 
-    Ref<HttpClientConnection> client_;
+    Ref<HttpServerConnection> client_;
     Ref<HttpResponseGenerator> response_;
 };
 

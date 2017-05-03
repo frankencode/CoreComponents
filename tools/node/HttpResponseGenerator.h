@@ -28,15 +28,15 @@ public:
 private:
     friend class ServiceWorker;
 
-    HttpResponseGenerator(HttpConnection *peer);
+    HttpResponseGenerator(HttpConnection *client);
 
     inline Header *header() const { return header_; }
     inline int statusCode() const { return statusCode_; }
     inline bool delivered() const { return headerWritten_; }
     size_t bytesWritten() const;
 
-    void polishHeader() override;
-    void writeFirstLine(Format &sink) override;
+    virtual void polishHeader() override;
+    virtual void writeFirstLine(Format &sink) override;
 
     int statusCode_;
     String reasonPhrase_;

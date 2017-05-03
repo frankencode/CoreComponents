@@ -15,7 +15,7 @@ namespace ccnode {
 using namespace cc;
 using namespace cc::http;
 
-class HttpClientConnection;
+class HttpServerConnection;
 
 class HttpRequest: public HttpMessage
 {
@@ -32,7 +32,7 @@ public:
     inline double time() const { return time_; }
 
 private:
-    friend class HttpClientConnection;
+    friend class HttpServerConnection;
     inline static Ref<HttpRequest> create() { return new HttpRequest; }
     HttpRequest() {}
 

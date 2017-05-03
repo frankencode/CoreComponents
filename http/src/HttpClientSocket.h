@@ -21,16 +21,18 @@ namespace http {
 
 using namespace cc::net;
 
-class HttpServerSocket: public HttpSocket
+/** \brief HTTP client-side socket with seemless TLS encryption
+  */
+class HttpClientSocket: public HttpSocket
 {
 public:
-    static Ref<HttpServerSocket> create(const SocketAddress *serverAddress, String serverName = "", SecuritySettings *security = 0);
+    static Ref<HttpClientSocket> create(const SocketAddress *serverAddress, String serverName = "", SecuritySettings *security = 0);
 
     bool connect();
     void shutdown();
 
 private:
-    HttpServerSocket(const SocketAddress *serverAddress, String serverName, SecuritySettings *security);
+    HttpClientSocket(const SocketAddress *serverAddress, String serverName, SecuritySettings *security);
 
     void initSession();
     void handshake();

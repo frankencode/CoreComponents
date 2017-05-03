@@ -17,14 +17,14 @@
 #include "NodeConfig.h"
 #include "SecurityConfig.h"
 #include "SecurityMaster.h"
-#include "HttpClientSocket.h"
+#include "HttpServerSocket.h"
 
 namespace ccnode {
 
-Ref<HttpClientSocket> HttpClientSocket::accept(StreamSocket *listeningSocket)
+Ref<HttpServerSocket> HttpServerSocket::accept(StreamSocket *listeningSocket)
 {
-    Ref<HttpClientSocket> client =
-        new HttpClientSocket(
+    Ref<HttpServerSocket> client =
+        new HttpServerSocket(
             SocketAddress::create(listeningSocket->address()->family()),
             (listeningSocket->address()->port() % 80 == 0) ? 0 : Secure
         );
@@ -35,11 +35,11 @@ Ref<HttpClientSocket> HttpClientSocket::accept(StreamSocket *listeningSocket)
     return client;
 }
 
-HttpClientSocket::HttpClientSocket(const SocketAddress *address, int mode):
+HttpServerSocket::HttpServerSocket(const SocketAddress *address, int mode):
     HttpSocket(address, mode)
 {}
 
-HttpClientSocket::~HttpClientSocket()
+HttpServerSocket::~HttpServerSocket()
 {
     if (mode_ & Secure)
     {
@@ -54,7 +54,7 @@ HttpClientSocket::~HttpClientSocket()
     }
 }
 
-void HttpClientSocket::initSession()
+void HttpServerSocket::initSession()
 {
     CC_ASSERT(mode_ & Connected);
 
@@ -105,9 +105,9 @@ public:
                     serviceInstance_ = nodeConfig()->selectService(serverName_);
                     if (serviceInstance_) {
                         if (serviceInstance_->security()->hasCredentials())
-                            HttpClientSocket::gnuTlsCheckSuccess(gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, serviceInstance_->security()->cred_), peerAddress_);
+                            HttpServerSocket::gnuTlsCheckSuccess(gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, serviceInstance_->security()->cred_), peerAddress_);
                         if (serviceInstance_->security()->hasCiphers())
-                            HttpClientSocket::gnuTlsCheckSuccess(gnutls_priority_set(session, serviceInstance_->security()->prio_), peerAddress_);
+                            HttpServerSocket::gnuTlsCheckSuccess(gnutls_priority_set(session, serviceInstance_->security()->prio_), peerAddress_);
                     }
                 }
             }
@@ -137,13 +137,13 @@ private:
     ServiceInstance *serviceInstance_;
 };
 
-int HttpClientSocket::onClientHello(gnutls_session_t session)
+int HttpServerSocket::onClientHello(gnutls_session_t session)
 {
     ClientHelloContext::instance()->selectService(session);
     return 0;
 }
 
-ServiceInstance *HttpClientSocket::handshake()
+ServiceInstance *HttpServerSocket::handshake()
 {
     CC_ASSERT(mode_ & Connected);
 
@@ -180,7 +180,7 @@ ServiceInstance *HttpClientSocket::handshake()
     return serviceInstance;
 }
 
-void HttpClientSocket::upgradeToSecureTransport()
+void HttpServerSocket::upgradeToSecureTransport()
 {
     CC_ASSERT(mode_ & Connected);
     CC_ASSERT(!(mode_ & Secure));
@@ -190,7 +190,7 @@ void HttpClientSocket::upgradeToSecureTransport()
     initSession();
 }
 
-int HttpClientSocket::read(ByteArray *data)
+int HttpServerSocket::read(ByteArray *data)
 {
     if (data->count() == 0) return 0;
 
@@ -206,7 +206,7 @@ int HttpClientSocket::read(ByteArray *data)
     return ret;
 }
 
-void HttpClientSocket::write(const ByteArray *data)
+void HttpServerSocket::write(const ByteArray *data)
 {
     if (data->count() == 0) return;
 
@@ -226,7 +226,7 @@ void HttpClientSocket::write(const ByteArray *data)
     }
 }
 
-void HttpClientSocket::write(const StringList *parts)
+void HttpServerSocket::write(const StringList *parts)
 {
     if (mode_ & Secure)
         write(parts->join());
@@ -234,14 +234,14 @@ void HttpClientSocket::write(const StringList *parts)
         StreamSocket::write(parts);
 }
 
-bool HttpClientSocket::waitInput()
+bool HttpServerSocket::waitInput()
 {
     double d = te_ - System::now();
     if (d <= 0) throw RequestTimeout();
     return poll(IoReadyRead, d * 1000);
 }
 
-void HttpClientSocket::ioException(Exception &ex) const
+void HttpServerSocket::ioException(Exception &ex) const
 {
     CCNODE_ERROR() << "!" << ex << nl;
 }

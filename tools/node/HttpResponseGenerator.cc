@@ -18,13 +18,13 @@ namespace ccnode {
 
 using namespace cc::http;
 
-Ref<HttpResponseGenerator> HttpResponseGenerator::create(HttpConnection *peer)
+Ref<HttpResponseGenerator> HttpResponseGenerator::create(HttpConnection *client)
 {
-    return new HttpResponseGenerator(peer);
+    return new HttpResponseGenerator(client);
 }
 
-HttpResponseGenerator::HttpResponseGenerator(HttpConnection *peer):
-    HttpGenerator(peer),
+HttpResponseGenerator::HttpResponseGenerator(HttpConnection *client):
+    HttpGenerator(client),
     statusCode_(200),
     reasonPhrase_("OK")
 {}

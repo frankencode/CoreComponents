@@ -18,10 +18,10 @@ using namespace cc::net;
 
 class ClientHelloContext;
 
-class HttpClientSocket: public HttpSocket
+class HttpServerSocket: public HttpSocket
 {
 public:
-    static Ref<HttpClientSocket> accept(StreamSocket *listeningSocket);
+    static Ref<HttpServerSocket> accept(StreamSocket *listeningSocket);
     ServiceInstance *handshake();
 
     bool isSecure() const { return mode_ & Secure; }
@@ -34,8 +34,8 @@ public:
 private:
     friend class ClientHelloContext;
 
-    HttpClientSocket(const SocketAddress *address, int mode);
-    ~HttpClientSocket();
+    HttpServerSocket(const SocketAddress *address, int mode);
+    ~HttpServerSocket();
 
     static int onClientHello(gnutls_session_t session);
     void initSession();

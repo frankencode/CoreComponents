@@ -19,6 +19,8 @@ namespace http {
 
 class HttpConnection;
 
+/** \brief HTTP message generator
+  */
 class HttpGenerator: public Object
 {
 public:
@@ -33,6 +35,7 @@ public:
 
 protected:
     HttpGenerator(HttpConnection *peer);
+    ~HttpGenerator();
 
     virtual void polishHeader() = 0;
     virtual void writeFirstLine(Format &sink) = 0;
