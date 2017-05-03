@@ -10,14 +10,14 @@
 #include <cc/assert>
 #include <cc/System>
 #include <cc/IoMonitor>
-#include <cc/http/HttpServerSocket>
+#include <cc/http/HttpClientSocket>
 
 namespace cc {
 namespace http {
 
-Ref<HttpServerSocket> HttpServerSocket::create(const SocketAddress *serverAddress, String serverName, SecuritySettings *security)
+Ref<HttpClientSocket> HttpClientSocket::create(const SocketAddress *serverAddress, String serverName, SecuritySettings *security)
 {
-    Ref<HttpServerSocket> socket = new HttpServerSocket(serverAddress, serverName, security);
+    Ref<HttpClientSocket> socket = new HttpClientSocket(serverAddress, serverName, security);
     socket->connect();
     socket->initSession();
     socket->handshake();
@@ -25,7 +25,7 @@ Ref<HttpServerSocket> HttpServerSocket::create(const SocketAddress *serverAddres
     return socket;
 }
 
-HttpServerSocket::HttpServerSocket(const SocketAddress *serverAddress, String serverName, SecuritySettings *security):
+HttpClientSocket::HttpClientSocket(const SocketAddress *serverAddress, String serverName, SecuritySettings *security):
     HttpSocket(serverAddress, (serverAddress->port() % 80 == 0) ? 0 : Secure),
     serverName_(serverName),
     security_(security),
@@ -39,7 +39,7 @@ HttpServerSocket::HttpServerSocket(const SocketAddress *serverAddress, String se
     ioMonitor_->addEvent(IoReadyRead, controlSlave_);
 }
 
-bool HttpServerSocket::connect()
+bool HttpClientSocket::connect()
 {
     StreamSocket::connect(address());
     const IoEvent *connectionEstablished = ioMonitor_->addEvent(IoReadyWrite, this);
@@ -49,12 +49,12 @@ bool HttpServerSocket::connect()
     return mode_ & Connected;
 }
 
-void HttpServerSocket::shutdown()
+void HttpClientSocket::shutdown()
 {
     controlMaster_ = 0;
 }
 
-void HttpServerSocket::initSession()
+void HttpClientSocket::initSession()
 {
     if (!(mode_ & Secure)) return;
 
@@ -64,7 +64,7 @@ void HttpServerSocket::initSession()
     initTransport();
 }
 
-void HttpServerSocket::handshake()
+void HttpClientSocket::handshake()
 {
     if (!(mode_ & Secure)) return;
 
@@ -80,12 +80,12 @@ void HttpServerSocket::handshake()
     mode_ |= Open;
 }
 
-bool HttpServerSocket::waitInput()
+bool HttpClientSocket::waitInput()
 {
     return ioMonitor_->waitFor(readyRead_);
 }
 
-void HttpServerSocket::ioException(Exception &ex) const
+void HttpClientSocket::ioException(Exception &ex) const
 {
     // TODO: need a HttpConnectionHandler
 }

@@ -21,7 +21,7 @@ ServiceInstance *ServiceDelegate::serviceInstance() const
     return worker_->serviceInstance();
 }
 
-HttpClientConnection *ServiceDelegate::client() const
+HttpServerConnection *ServiceDelegate::client() const
 {
     return worker_->client();
 }

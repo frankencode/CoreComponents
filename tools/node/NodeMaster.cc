@@ -19,7 +19,7 @@
 #include "NodeConfig.h"
 #include "ServiceRegistry.h"
 #include "ConnectionManager.h"
-#include "HttpClientSocket.h"
+#include "HttpServerSocket.h"
 #include "SecurityMaster.h"
 #include "NodeMaster.h"
 
@@ -152,8 +152,8 @@ void NodeMaster::runNode() const
         for (const IoEvent *event: activity) {
             try {
                 StreamSocket *listeningSocket = Object::cast<StreamSocket *>(event->target());
-                Ref<HttpClientSocket> clientSocket = HttpClientSocket::accept(listeningSocket);
-                Ref<HttpClientConnection> client = HttpClientConnection::open(clientSocket);
+                Ref<HttpServerSocket> clientSocket = HttpServerSocket::accept(listeningSocket);
+                Ref<HttpServerConnection> client = HttpServerConnection::open(clientSocket);
                 if (connectionManager->accept(client)) {
                     CCNODE_DEBUG() << "Accepted connection from " << client->address() << " with priority " << client->priority() << nl;
                     pendingConnections->pushBack(client, client->priority());

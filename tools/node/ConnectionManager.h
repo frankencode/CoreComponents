@@ -18,7 +18,7 @@ namespace ccnode {
 
 using namespace cc;
 
-class HttpClientConnection;
+class HttpServerConnection;
 
 class ConnectionManager: public Object
 {
@@ -28,7 +28,7 @@ public:
     inline ClosedConnections *closedConnections() const { return closedConnections_; }
 
     void cycle();
-    bool accept(HttpClientConnection *client);
+    bool accept(HttpServerConnection *client);
 
 private:
     ConnectionManager();

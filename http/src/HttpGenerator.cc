@@ -23,6 +23,9 @@ HttpGenerator::HttpGenerator(HttpConnection *peer):
     bytesWritten_(0)
 {}
 
+HttpGenerator::~HttpGenerator()
+{}
+
 void HttpGenerator::setHeader(String name, String value)
 {
     header_->establish(name, value);

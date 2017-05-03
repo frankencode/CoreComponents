@@ -9,7 +9,7 @@
 #include <cc/System>
 #include "NodeConfig.h"
 #include "ErrorLog.h"
-#include "HttpClientConnection.h"
+#include "HttpServerConnection.h"
 #include "ConnectionManager.h"
 
 namespace ccnode {
@@ -62,7 +62,7 @@ void ConnectionManager::cycle()
     }
 }
 
-bool ConnectionManager::accept(HttpClientConnection *client)
+bool ConnectionManager::accept(HttpServerConnection *client)
 {
     uint64_t origin = client->address()->networkPrefix();
     int count = 0;

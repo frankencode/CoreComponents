@@ -11,19 +11,19 @@
 #include <cc/http/exceptions>
 #include "ErrorLog.h"
 #include "NodeConfig.h"
-#include "HttpClientConnection.h"
+#include "HttpServerConnection.h"
 
 namespace ccnode {
 
 using namespace cc;
 using namespace cc::http;
 
-Ref<HttpClientConnection> HttpClientConnection::open(HttpClientSocket *socket)
+Ref<HttpServerConnection> HttpServerConnection::open(HttpServerSocket *socket)
 {
-    return new HttpClientConnection(socket);
+    return new HttpServerConnection(socket);
 }
 
-HttpClientConnection::HttpClientConnection(HttpClientSocket *socket):
+HttpServerConnection::HttpServerConnection(HttpServerSocket *socket):
     HttpConnection(socket),
     socket_(socket),
     connectionInfo_(ConnectionInfo::create(socket->address()))
@@ -32,7 +32,7 @@ HttpClientConnection::HttpClientConnection(HttpClientSocket *socket):
         setupTransferLog(errorLog()->debugStream(), socket->address()->toString());
 }
 
-ServiceInstance *HttpClientConnection::handshake()
+ServiceInstance *HttpServerConnection::handshake()
 {
     ServiceInstance *serviceInstance = 0;
 
@@ -52,12 +52,12 @@ ServiceInstance *HttpClientConnection::handshake()
     return serviceInstance;
 }
 
-bool HttpClientConnection::isSecure() const
+bool HttpServerConnection::isSecure() const
 {
     return socket_->isSecure();
 }
 
-Ref<HttpRequest> HttpClientConnection::readRequest()
+Ref<HttpRequest> HttpServerConnection::readRequest()
 {
     if (pendingRequest_) {
         Ref<HttpRequest> h = pendingRequest_;
@@ -70,12 +70,12 @@ Ref<HttpRequest> HttpClientConnection::readRequest()
     return request_;
 }
 
-void HttpClientConnection::putBack(HttpRequest *request)
+void HttpServerConnection::putBack(HttpRequest *request)
 {
     pendingRequest_ = request;
 }
 
-void HttpClientConnection::readFirstLine(LineSource *source, HttpMessage *message)
+void HttpServerConnection::readFirstLine(LineSource *source, HttpMessage *message)
 {
     Ref<HttpRequest> request = message;
 
@@ -107,7 +107,7 @@ void HttpClientConnection::readFirstLine(LineSource *source, HttpMessage *messag
     if (request->majorVersion_ > 1) throw UnsupportedVersion();
 }
 
-void HttpClientConnection::onHeaderReceived(HttpMessage *message)
+void HttpServerConnection::onHeaderReceived(HttpMessage *message)
 {
     Ref<HttpRequest> request = message;
     request->host_ = request->value("Host");

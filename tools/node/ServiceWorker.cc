@@ -35,11 +35,11 @@ ServiceWorker::ServiceWorker(PendingConnections *pendingConnections, ClosedConne
 
 ServiceWorker::~ServiceWorker()
 {
-    pendingConnections_->push(Ref<HttpClientConnection>());
+    pendingConnections_->push(Ref<HttpServerConnection>());
     Thread::wait();
 }
 
-void ServiceWorker::logDelivery(HttpClientConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage)
+void ServiceWorker::logDelivery(HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage)
 {
     Stream *stream = accessLog()->noticeStream();
     if (400 <= statusCode && statusCode <= 499) stream = accessLog()->debugStream();
