@@ -8,6 +8,9 @@
 
 #include <pthread.h>
 #include <math.h>
+#ifndef NDEBUG
+#include <cc/check>
+#endif
 #include <cc/exceptions>
 #include <cc/WaitCondition>
 
@@ -21,8 +24,13 @@ WaitCondition::WaitCondition()
 
 WaitCondition::~WaitCondition()
 {
-    int ret = pthread_cond_destroy(&cond_);
-    if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
+    #ifndef NDEBUG
+    int ret =
+    #endif
+    pthread_cond_destroy(&cond_);
+    #ifndef NDEBUG
+    check(ret == 0);
+    #endif
 }
 
 /** Enter wait state and atomically unlock provided mutex.

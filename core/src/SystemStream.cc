@@ -14,6 +14,9 @@
 #include <unistd.h> // read, write, select, sysconf
 #include <fcntl.h> // fcntl
 #include <math.h> // modf
+#ifndef NDEBUG
+#include <cc/check>
+#endif
 #include <cc/exceptions>
 #include <cc/SystemIo>
 #include <cc/Format>
@@ -52,11 +55,13 @@ SystemStream::SystemStream(int fd):
 SystemStream::~SystemStream()
 {
     if (fd_ >= 0) {
-        if (::close(fd_) == -1) {
-            #ifndef NDEBUG
-            CC_SYSTEM_DEBUG_ERROR(errno);
-            #endif
-        }
+        #ifndef NDEBUG
+        int ret =
+        #endif
+        ::close(fd_);
+        #ifndef NDEBUG
+        check(ret != -1);
+        #endif
     }
 }
 
