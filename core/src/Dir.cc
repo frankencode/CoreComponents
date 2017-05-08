@@ -7,6 +7,9 @@
  */
 
 #include <sys/stat.h> // mkdir
+#ifndef NDEBUG
+#include <cc/check>
+#endif
 #include <cc/exceptions>
 #include <cc/stdio> // DEBUG
 #include <cc/File>
@@ -47,8 +50,13 @@ Dir::Dir(String path, DIR *dir):
 
 Dir::~Dir()
 {
-    if (::closedir(dir_) == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
+    #ifndef NDEBUG
+    int ret =
+    #endif
+    ::closedir(dir_);
+    #ifndef NDEBUG
+    check(ret != -1);
+    #endif
 }
 
 String Dir::path() const { return path_; }

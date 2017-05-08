@@ -6,6 +6,9 @@
  *
  */
 
+#ifndef NDEBUG
+#include <cc/check>
+#endif
 #include <cc/exceptions>
 #include <cc/Mutex>
 
@@ -33,8 +36,13 @@ Mutex::Mutex()
 
 Mutex::~Mutex()
 {
-    int ret = pthread_mutex_destroy(&mutex_);
-    if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
+    #ifndef NDEBUG
+    int ret =
+    #endif
+    pthread_mutex_destroy(&mutex_);
+    #ifndef NDEBUG
+    check(ret == 0);
+    #endif
 }
 
 bool Mutex::tryAcquire()
