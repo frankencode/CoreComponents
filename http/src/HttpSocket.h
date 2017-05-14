@@ -17,6 +17,8 @@ namespace http {
 
 using namespace cc::net;
 
+/** \brief Common HTTP socket with seemless TLS encryption
+  */
 class HttpSocket: public StreamSocket
 {
 protected:
