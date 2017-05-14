@@ -20,6 +20,12 @@ class HttpClientConnection: public HttpConnection
 public:
     static Ref<HttpClientConnection> open(HttpClientSocket *socket);
 
+    inline const SocketAddress *address() const { return socket_->address(); }
+
+    bool isSecure() const;
+
+    Ref<HttpResponse> readResponse();
+
 private:
     HttpClientConnection(HttpClientSocket *socket);
 

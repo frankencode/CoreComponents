@@ -17,6 +17,18 @@ HttpClientConnection::HttpClientConnection(HttpClientSocket *socket):
     socket_(socket)
 {}
 
+bool HttpClientConnection::isSecure() const
+{
+    return socket_->isSecure();
+}
+
+Ref<HttpResponse> HttpClientConnection::readResponse()
+{
+    Ref<HttpResponse> response = HttpResponse::create();
+    readMessage(response);
+    return response;
+}
+
 void HttpClientConnection::readFirstLine(LineSource *source, HttpMessage *message)
 {
     String line;

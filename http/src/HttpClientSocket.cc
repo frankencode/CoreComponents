@@ -17,12 +17,7 @@ namespace http {
 
 Ref<HttpClientSocket> HttpClientSocket::create(const SocketAddress *serverAddress, String serverName, SecuritySettings *security)
 {
-    Ref<HttpClientSocket> socket = new HttpClientSocket(serverAddress, serverName, security);
-    socket->connect();
-    socket->initSession();
-    socket->handshake();
-
-    return socket;
+    return new HttpClientSocket(serverAddress, serverName, security);
 }
 
 HttpClientSocket::HttpClientSocket(const SocketAddress *serverAddress, String serverName, SecuritySettings *security):
@@ -45,7 +40,11 @@ bool HttpClientSocket::connect()
     const IoEvent *connectionEstablished = ioMonitor_->addEvent(IoReadyWrite, this);
     if (ioMonitor_->waitFor(connectionEstablished)) mode_ |= Connected;
     ioMonitor_->removeEvent(connectionEstablished);
-    if (mode_ & Connected) readyRead_ = ioMonitor_->addEvent(IoReadyRead, this);
+    if (mode_ & Connected) {
+        readyRead_ = ioMonitor_->addEvent(IoReadyRead, this);
+        initSession();
+        handshake();
+    }
     return mode_ & Connected;
 }
 
