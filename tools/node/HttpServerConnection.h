@@ -41,8 +41,8 @@ private:
     HttpServerConnection(HttpServerSocket *socket);
 
     Ref<HttpRequest> scanRequest();
-    virtual void readFirstLine(LineSource *source, HttpMessage *message);
-    virtual void onHeaderReceived(HttpMessage *message);
+    virtual void readFirstLine(LineSource *source, HttpMessage *message) override;
+    virtual void onHeaderReceived(HttpMessage *message) override;
 
     Ref<HttpServerSocket> socket_;
     Ref<HttpRequest> request_, pendingRequest_;

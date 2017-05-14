@@ -77,10 +77,10 @@ void HttpServerConnection::putBack(HttpRequest *request)
 
 void HttpServerConnection::readFirstLine(LineSource *source, HttpMessage *message)
 {
-    Ref<HttpRequest> request = message;
-
     String line;
     if (!source->read(&line)) throw CloseRequest();
+
+    HttpRequest *request = Object::cast<HttpRequest *>(message);
     request->line_ = line;
 
     if (line->count(' ') != 2) throw BadRequest();
@@ -95,8 +95,8 @@ void HttpServerConnection::readFirstLine(LineSource *source, HttpMessage *messag
 
     Ref<StringList> parts = request->version_->split('/');
     if (parts->count() >= 2) {
-        parts->at(0)->downcaseInsitu();
-        if (parts->at(0) != "http") throw UnsupportedVersion();
+        parts->at(0)->upcaseInsitu();
+        if (parts->at(0) != "HTTP") throw UnsupportedVersion();
         parts = parts->at(1)->split('.');
         if (parts->count() >= 2) {
             request->majorVersion_ = parts->at(0)->toNumber<int>();

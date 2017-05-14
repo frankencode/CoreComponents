@@ -10,6 +10,7 @@
 
 #include <cc/http/HttpConnection>
 #include <cc/http/HttpClientSocket>
+#include <cc/http/HttpResponse>
 
 namespace cc {
 namespace http {
@@ -22,8 +23,7 @@ public:
 private:
     HttpClientConnection(HttpClientSocket *socket);
 
-    virtual void readFirstLine(LineSource *source, HttpMessage *message) {}
-    virtual void onHeaderReceived(HttpMessage *message) {}
+    virtual void readFirstLine(LineSource *source, HttpMessage *message) override;
 
     Ref<HttpClientSocket> socket_;
 };
