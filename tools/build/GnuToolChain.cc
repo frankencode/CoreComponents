@@ -20,8 +20,8 @@ namespace ccbuild {
 
 Ref<GnuToolChain> GnuToolChain::create(String compiler)
 {
-    if (compiler == "") compiler = Process::env("CC");
-    if (compiler == "") compiler = "gcc";
+    if (compiler == "") compiler = Process::env("CXX");
+    if (compiler == "") compiler = "g++";
     return new GnuToolChain(compiler);
 }
 
@@ -350,7 +350,7 @@ void GnuToolChain::appendLinkOptions(Format args, BuildPlan *plan) const
     for (int i = 0; i < libraries->count(); ++i)
         args << "-l" + libraries->at(i);
 
-    if (plan->containsCPlusPlus()) args << "-lstdc++";
+    // if (plan->containsCPlusPlus()) args << "-lstdc++";
 
     Ref<StringList> rpaths = StringList::create();
     if (rpathOverride_ != "")
