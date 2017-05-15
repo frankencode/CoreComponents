@@ -34,6 +34,11 @@ HttpClientSocket::HttpClientSocket(const SocketAddress *serverAddress, String se
     ioMonitor_->addEvent(IoReadyRead, controlSlave_);
 }
 
+bool HttpClientSocket::isSecure() const
+{
+    return mode_ & Secure;
+}
+
 bool HttpClientSocket::connect()
 {
     StreamSocket::connect(address());

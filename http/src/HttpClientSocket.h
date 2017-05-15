@@ -28,6 +28,7 @@ class HttpClientSocket: public HttpSocket
 public:
     static Ref<HttpClientSocket> create(const SocketAddress *serverAddress, String serverName = "", SecuritySettings *security = 0);
 
+    bool isSecure() const;
     bool connect();
     void shutdown();
 
