@@ -36,7 +36,8 @@ public:
         ReadWrite = O_RDWR,   ///< Open for reading and writing
         Append    = O_APPEND, ///< Append any write to the end of file
         Create    = O_CREAT,  ///< Create file if not exists
-        Truncate  = O_TRUNC   ///< Truncate file to size zero
+        Truncate  = O_TRUNC,  ///< Truncate file to size zero
+        Virgin    = O_EXCL    ///< Fail to open if file exists already
     };
 
     /// Seek method

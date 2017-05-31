@@ -27,10 +27,6 @@ public:
     bool isSecure() const { return mode_ & Secure; }
     void upgradeToSecureTransport();
 
-    int read(ByteArray *data) override;
-    void write(const ByteArray *data) override;
-    void write(const StringList *parts) override;
-
 private:
     friend class ClientHelloContext;
 

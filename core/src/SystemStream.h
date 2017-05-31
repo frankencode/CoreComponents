@@ -86,7 +86,7 @@ public:
       * \param interval_ms the interval to wait at max (-1 for infinite)
       * \return true if one of the indicated events occured, false on timeout
       */
-    bool poll(int events, int interval_ms = -1); // FIXME: rename to wait
+    bool waitFor(int events, int interval_ms = -1);
 
     /// Full duplex connection shutdown
     enum ShutdownType {
