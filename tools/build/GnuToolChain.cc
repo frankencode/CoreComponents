@@ -20,16 +20,53 @@ namespace ccbuild {
 
 Ref<GnuToolChain> GnuToolChain::create(String compiler)
 {
-    if (compiler == "") compiler = Process::env("CXX");
-    if (compiler == "") compiler = "g++";
     return new GnuToolChain(compiler);
 }
 
 GnuToolChain::GnuToolChain(String compiler):
-    ToolChain(compiler, queryMachine(compiler), querySystemRoot(compiler)),
     dependencySplitPattern_("{1..:[\\:\\\\\n\r ]}"),
     rpathOverride_(Process::env("CCBUILD_RPATH_OVERRIDE"))
+{
+    if (compiler != "") {
+        ccPath_ = compiler;
+        cxxPath_ = compiler;
+    }
+    else {
+        ccPath_ = Process::env("CC");
+        cxxPath_ = Process::env("CXX");
+    }
+
+    if (ccPath_ == "") ccPath_ = "gcc";
+    if (cxxPath_ == "") cxxPath_ = "g++";
+
+    machine_ = queryMachine(ccPath_);
+    systemRoot_ = querySystemRoot(ccPath_);
+}
+
+GnuToolChain::~GnuToolChain()
 {}
+
+String GnuToolChain::compiler(String source) const
+{
+    return (
+        source->endsWith(".cc")  ||
+        source->endsWith(".cxx") ||
+        source->endsWith(".cpp") ||
+        source->endsWith(".c++") ||
+        source->endsWith(".mm")  ||
+        source->endsWith(".M")   ||
+        source->endsWith(".C")   ||
+        source->endsWith(".cp")  ||
+        source->endsWith(".CPP")
+    ) ?
+    cxxPath_ :
+    ccPath_;
+}
+
+String GnuToolChain::compiler(BuildPlan *plan) const
+{
+    return plan->containsCPlusPlus() ? cxxPath_ : ccPath_;
+}
 
 String GnuToolChain::queryMachine(String compiler)
 {
@@ -66,7 +103,7 @@ String GnuToolChain::defaultOptimization(BuildPlan *plan) const
 String GnuToolChain::analyseCommand(BuildPlan *plan, String source) const
 {
     Format args;
-    args << compiler();
+    args << compiler(source);
     appendCompileOptions(args, plan);
     args << "-MM" << source;
     return args->join(" ");
@@ -86,7 +123,7 @@ Ref<Module> GnuToolChain::finishAnalyseJob(BuildPlan *plan, Job *job)
 Ref<Job> GnuToolChain::createCompileJob(BuildPlan *plan, Module *module)
 {
     Format args;
-    args << compiler();
+    args << compiler(module->sourcePath());
     appendCompileOptions(args, plan);
     args << "-c" << "-o" << module->modulePath();
     args << module->sourcePath();
@@ -97,7 +134,7 @@ Ref<Job> GnuToolChain::createCompileJob(BuildPlan *plan, Module *module)
 Ref<Job> GnuToolChain::createLinkJob(BuildPlan *plan, Module *module)
 {
     Format args;
-    args << compiler();
+    args << compiler(module->sourcePath());
     if (plan->linkStatic()) args << "-static";
     args << "-pthread";
     args << "-o" << module->toolName();
@@ -126,7 +163,7 @@ String GnuToolChain::linkCommand(BuildPlan *plan) const
 
     Format args;
 
-    args << compiler();
+    args << compiler(plan);
     if (plan->linkStatic()) args << "-static";
     if ((options & BuildPlan::Library) && !plan->linkStatic()) args << "-shared";
     args << "-pthread";
@@ -350,7 +387,7 @@ void GnuToolChain::appendLinkOptions(Format args, BuildPlan *plan) const
     for (int i = 0; i < libraries->count(); ++i)
         args << "-l" + libraries->at(i);
 
-    // if (plan->containsCPlusPlus()) args << "-lstdc++";
+    if (plan->containsCPlusPlus() && !cxxPath_->contains("++")) args << "-lstdc++";
 
     Ref<StringList> rpaths = StringList::create();
     if (rpathOverride_ != "")

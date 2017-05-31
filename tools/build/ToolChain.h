@@ -21,10 +21,11 @@ class DependencyCache;
 class ToolChain: public Object
 {
 public:
-    inline String compiler() const { return compiler_; }
-    inline String machine() const { return machine_; }
-    inline String systemRoot() const { return systemRoot_; }
+    virtual String machine() const = 0;
+    virtual String systemRoot() const = 0;
 
+    virtual String compiler(String source = "") const = 0;
+    virtual String compiler(BuildPlan *plan) const = 0;
     virtual String machineCommand() const = 0;
     virtual String defaultOptimization(BuildPlan *plan) const = 0;
 
@@ -47,18 +48,6 @@ public:
     virtual bool uninstall(BuildPlan *plan, Module *module) = 0;
 
     virtual void clean(BuildPlan *plan) = 0;
-
-protected:
-    ToolChain(String compiler, String machine, String systemRoot):
-        compiler_(compiler),
-        machine_(machine),
-        systemRoot_(systemRoot)
-    {}
-
-private:
-    String compiler_;
-    String machine_;
-    String systemRoot_;
 };
 
 } // namespace ccbuild

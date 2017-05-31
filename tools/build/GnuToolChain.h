@@ -22,32 +22,38 @@ class GnuToolChain: public ToolChain
 public:
     static Ref<GnuToolChain> create(String compiler);
 
-    virtual String machineCommand() const;
+    virtual String machine() const override { return machine_; }
+    virtual String systemRoot() const override { return systemRoot_; }
+    virtual String compiler(String source = "") const override;
+    virtual String compiler(BuildPlan *plan) const override;
+    virtual String machineCommand() const override;
 
-    virtual String defaultOptimization(BuildPlan *plan) const;
+    virtual String defaultOptimization(BuildPlan *plan) const override;
 
-    virtual String analyseCommand(BuildPlan *plan, String source) const;
-    virtual Ref<Job> createAnalyseJob(BuildPlan *plan, String source);
-    virtual Ref<Module> finishAnalyseJob(BuildPlan *plan, Job *job);
+    virtual String analyseCommand(BuildPlan *plan, String source) const override;
+    virtual Ref<Job> createAnalyseJob(BuildPlan *plan, String source) override;
+    virtual Ref<Module> finishAnalyseJob(BuildPlan *plan, Job *job) override;
 
-    virtual Ref<Job> createCompileJob(BuildPlan *plan, Module *module);
-    virtual Ref<Job> createLinkJob(BuildPlan *plan, Module *module);
+    virtual Ref<Job> createCompileJob(BuildPlan *plan, Module *module) override;
+    virtual Ref<Job> createLinkJob(BuildPlan *plan, Module *module) override;
 
-    virtual String linkName(BuildPlan *plan) const;
-    virtual String linkCommand(BuildPlan *plan) const;
-    virtual bool link(BuildPlan *plan);
+    virtual String linkName(BuildPlan *plan) const override;
+    virtual String linkCommand(BuildPlan *plan) const override;
+    virtual bool link(BuildPlan *plan) override;
 
-    virtual bool testInclude(BuildPlan *plan, StringList *headers) const;
+    virtual bool testInclude(BuildPlan *plan, StringList *headers) const override;
 
-    virtual bool install(BuildPlan *plan);
-    virtual bool install(BuildPlan *plan, Module *module);
-    virtual bool uninstall(BuildPlan *plan);
-    virtual bool uninstall(BuildPlan *plan, Module *module);
+    virtual bool install(BuildPlan *plan) override;
+    virtual bool install(BuildPlan *plan, Module *module) override;
+    virtual bool uninstall(BuildPlan *plan) override;
+    virtual bool uninstall(BuildPlan *plan, Module *module) override;
 
-    virtual void clean(BuildPlan *plan);
+    virtual void clean(BuildPlan *plan) override;
 
 protected:
     GnuToolChain(String compiler);
+    virtual ~GnuToolChain();
+
     void clangColorWorkaround(String compiler);
 
     static String queryMachine(String compiler);
@@ -67,6 +73,10 @@ protected:
     static void cleanAliasSymlinks(BuildPlan *plan, String appName);
 
 private:
+    String ccPath_;
+    String cxxPath_;
+    String machine_;
+    String systemRoot_;
     RegExp dependencySplitPattern_;
     String rpathOverride_;
 };
