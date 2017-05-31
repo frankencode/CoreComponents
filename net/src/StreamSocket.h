@@ -9,7 +9,6 @@
 #pragma once
 
 #include <cc/SystemStream>
-#include <cc/exceptions>
 #include <cc/net/SocketAddress>
 
 namespace cc {
@@ -28,27 +27,17 @@ public:
       */
     static Ref<StreamSocket> listen(const SocketAddress *localAddress, int backlog = 1024);
 
-    /** \brief Connect to a server
+    /** Connect to a remote host
       * \param peerAddress address of remote host
       * \return new object instance
-      * \see cc::IoMonitor, socketErrorCode()
-      *
-      * For non-local connections the connection is only initiated.
-      * You can wait for the connection being fully established by waiting for the socket becoming writeable.
-      * When the socket is writeable and socketErrorCode() returns 0 the connection is established successfully.
       */
     static Ref<StreamSocket> connect(const SocketAddress *peerAddress);
-
-    /** Returns the socket error status code
-      * \see cc::systemError()
-      */
-    int socketErrorCode() const;
 
     /** Create a pair of connected local sockets
       * \param first return the first socket
       * \param second return the second socket
       */
-    static void connect(Ref<StreamSocket> *first, Ref<StreamSocket> *second); /// FIXME: rename to createPair
+    static void connect(Ref<StreamSocket> *first, Ref<StreamSocket> *second);
 
     /** Accept a connection request
       * \return new object instance
@@ -72,11 +61,14 @@ public:
 protected:
     StreamSocket(int fd);
     StreamSocket(const SocketAddress *address);
+
     void listen(int backlog = 1024);
     int accept(SocketAddress *clientAddress);
+
     inline static int accept(StreamSocket *listeningSocket, SocketAddress *clientAddress) {
         return listeningSocket->accept(clientAddress);
     }
+
     void connect();
 
     Ref<SocketAddress> address_;

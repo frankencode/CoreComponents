@@ -21,6 +21,11 @@ using namespace cc::net;
   */
 class HttpSocket: public StreamSocket
 {
+public:
+    int read(ByteArray *data) override;
+    void write(const ByteArray *data) override;
+    void write(const StringList *parts) override;
+
 protected:
     enum Mode {
         Secure    = 1,

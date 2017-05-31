@@ -190,55 +190,11 @@ void HttpServerSocket::upgradeToSecureTransport()
     initSession();
 }
 
-int HttpServerSocket::read(ByteArray *data)
-{
-    if (data->count() == 0) return 0;
-
-    if (!(mode_ & Secure)) {
-        if (!waitInput()) throw RequestTimeout();
-        return StreamSocket::read(data);
-    }
-
-    int ret = gnutls_record_recv(session_, data->bytes(), data->count());
-    gnuTlsCheckError(ret);
-    CC_ASSERT(ret >= 0);
-
-    return ret;
-}
-
-void HttpServerSocket::write(const ByteArray *data)
-{
-    if (data->count() == 0) return;
-
-    if (!(mode_ & Secure)) {
-        StreamSocket::write(data);
-        return;
-    }
-
-    String pending = data;
-    while (true) {
-        int ret = gnutls_record_send(session_, pending->bytes(), pending->count());
-        if (ret == pending->count()) break;
-        gnuTlsCheckError(ret);
-        CC_ASSERT(ret > 0);
-        if (ret < pending->count())
-            pending = pending->select(ret, pending->count());
-    }
-}
-
-void HttpServerSocket::write(const StringList *parts)
-{
-    if (mode_ & Secure)
-        write(parts->join());
-    else
-        StreamSocket::write(parts);
-}
-
 bool HttpServerSocket::waitInput()
 {
     double d = te_ - System::now();
     if (d <= 0) throw RequestTimeout();
-    return poll(IoReadyRead, d * 1000);
+    return waitFor(IoReadyRead, d * 1000);
 }
 
 void HttpServerSocket::ioException(Exception &ex) const

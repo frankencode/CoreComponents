@@ -119,7 +119,7 @@ void SystemStream::write(const Format &data)
     write(data.get());
 }
 
-bool SystemStream::poll(int events, int interval_ms)
+bool SystemStream::waitFor(int events, int interval_ms)
 {
     return SystemIo::poll(fd_, events, interval_ms);
 }

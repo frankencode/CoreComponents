@@ -31,14 +31,6 @@ Ref<StreamSocket> StreamSocket::connect(const SocketAddress *peerAddress)
     return socket;
 }
 
-int StreamSocket::socketErrorCode() const
-{
-    int errorCode = 0;
-    socklen_t size = sizeof(errorCode);
-    getsockopt(fd_, SOL_SOCKET, SO_ERROR, &errorCode, &size);
-    return errorCode;
-}
-
 void StreamSocket::connect(Ref<StreamSocket> *first, Ref<StreamSocket> *second)
 {
     int fd[2];
@@ -109,26 +101,6 @@ int StreamSocket::accept(SocketAddress *clientAddress)
     return fdc;
 }
 
-void StreamSocket::setRecvTimeout(double interval)
-{
-    struct timeval tval;
-    double sec = 0;
-    tval.tv_usec = modf(interval, &sec) * 1e6;
-    tval.tv_sec = sec;
-    if (::setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, &tval, sizeof(tval)) == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
-}
-
-void StreamSocket::setSendTimeout(double interval)
-{
-    struct timeval tval;
-    double sec = 0;
-    tval.tv_usec = modf(interval, &sec) * 1e6;
-    tval.tv_sec = sec;
-    if (::setsockopt(fd_, SOL_SOCKET, SO_SNDTIMEO, &tval, sizeof(tval)) == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
-}
-
 void StreamSocket::connect()
 {
     fd_ = ::socket(address_->family(), SOCK_STREAM, 0);
@@ -160,6 +132,26 @@ void StreamSocket::connect()
         if (::fcntl(fd_, F_SETFL, flags) == -1)
             CC_SYSTEM_DEBUG_ERROR(errno);
     }
+}
+
+void StreamSocket::setRecvTimeout(double interval)
+{
+    struct timeval tval;
+    double sec = 0;
+    tval.tv_usec = modf(interval, &sec) * 1e6;
+    tval.tv_sec = sec;
+    if (::setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, &tval, sizeof(tval)) == -1)
+        CC_SYSTEM_DEBUG_ERROR(errno);
+}
+
+void StreamSocket::setSendTimeout(double interval)
+{
+    struct timeval tval;
+    double sec = 0;
+    tval.tv_usec = modf(interval, &sec) * 1e6;
+    tval.tv_sec = sec;
+    if (::setsockopt(fd_, SOL_SOCKET, SO_SNDTIMEO, &tval, sizeof(tval)) == -1)
+        CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
 }} // namespace cc::net
