@@ -43,6 +43,7 @@ void Uri::readUri(ByteArray *text, Token *rootToken)
     while (token) {
         if (token->rule() == UriSyntax::instance()->scheme()) {
             scheme_ = decode(text->copy(token->i0(), token->i1()));
+            scheme_->downcaseInsitu();
         }
         else if (token->rule() == UriSyntax::instance()->authority()) {
             Token *child = token->firstChild();
@@ -131,8 +132,6 @@ String Uri::encode(String s)
 
 String Uri::decode(String s)
 {
-    s->downcaseInsitu();
-
     int j = 0;
     for (int i = 0, n = s->count(); i < n; ++i, ++j) {
         char ch = s->at(i);
