@@ -84,7 +84,7 @@ public:
       * \param timeout_ms timeout in milliseconds (or infinite if < 0)
       * \return true if the given I/O event occured before timeout, false if timed out or a different I/O event occured
       */
-    bool waitFor(const IoEvent *event, int timeout_ms = -1);
+    bool waitFor(const IoEvent *event, int timeout_ms = -1, const IoEvent **other = 0);
 
 private:
     typedef struct pollfd PollFd;
