@@ -284,16 +284,10 @@ public:
     }
 
     /// Return the internal C string representation (readonly)
-    inline const char *chars() const {
-        CC_ASSERT2(isZeroTerminated(), "ByteArray is not terminated by zero and therefore cannot safely be converted to a C string");
-        return chars_;
-    }
+    inline const char *chars() const { return chars_; }
 
     /// Return the internal C string representation
-    inline char *chars() {
-        CC_ASSERT2(isZeroTerminated(), "ByteArray is not terminated by zero and therefore cannot safely be converted to a C string");
-        return chars_;
-    }
+    inline char *chars() { return chars_; }
 
     /// Return byte pointer to the internal memory buffer (readonly)
     inline const uint8_t *bytes() const { return bytes_; }
