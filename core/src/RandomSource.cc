@@ -11,8 +11,8 @@
 
 namespace cc {
 
-RandomSource::RandomSource():
-    random_(Random::open())
+RandomSource::RandomSource(int seed):
+    random_(Random::open(seed))
 {}
 
 int RandomSource::read(ByteArray *data)

@@ -27,7 +27,7 @@ public:
     static Thread *self();
 
     /// Start thread execution
-    void start();
+    Thread *start();
 
     /// Wait for termination
     void wait();

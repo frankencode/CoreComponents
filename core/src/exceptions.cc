@@ -123,6 +123,15 @@ String ConnectionResetByPeer::message() const
     return "Connection reset by peer";
 }
 
+TransferError::TransferError(String details):
+    details_(details)
+{}
+
+String TransferError::message() const
+{
+    return String("Data transfer failed: ") + details_;
+}
+
 String PermissionError::message() const
 {
     return "Insufficient permission to perform operation";

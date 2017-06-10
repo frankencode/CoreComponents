@@ -241,6 +241,18 @@ public:
     virtual String message() const;
 };
 
+class TransferError: public Exception
+{
+public:
+    TransferError(String details);
+    ~TransferError() throw() {}
+
+    virtual String message() const;
+
+private:
+    String details_;
+};
+
 /** \brief Insufficient permission to perform operation
   */
 class PermissionError: public UsageError

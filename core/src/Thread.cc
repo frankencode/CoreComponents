@@ -63,7 +63,7 @@ void *Thread::bootstrap(void *self)
     return (void *)thread;
 }
 
-void Thread::start()
+Thread *Thread::start()
 {
     pthread_attr_t attr;
     {
@@ -81,6 +81,8 @@ void Thread::start()
 
     int ret = pthread_create(&tid_, &attr, &bootstrap, static_cast<void *>(this));
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
+
+    return this;
 }
 
 void Thread::wait()

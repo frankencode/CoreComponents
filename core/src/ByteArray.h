@@ -324,6 +324,12 @@ public:
       */
     inline String select(int i0, int i1) const { return new ByteArray(this, i0, i1); }
 
+
+    /** Return the underlying unselected string
+      * \return original string
+      */
+    inline String unselect() const { return parent_; }
+
     /** Copy a range
       * \param range the range to select (range must contain i0() and i1() getters)
       * \return copied range as a string
@@ -711,6 +717,9 @@ public:
 
     /// Remove redundant or ambigous path components
     String canonicalPath() const;
+
+    /// Compare for identity with b
+    bool equals(const String &b) const { return String(this) == b; }
 
     /** Compare with another string (case-insensitive)
       * \param b other string
