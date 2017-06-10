@@ -53,6 +53,7 @@ public:
       * \param sink target stream (or null for dump mode)
       * \param buffer auxiliary transfer buffer
       * \return number of bytes transferred
+      * \see Transfer
       */
     virtual off_t transferSpanTo(off_t count, Stream *sink, ByteArray *buffer = 0);
 

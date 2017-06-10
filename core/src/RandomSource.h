@@ -22,12 +22,13 @@ class Random;
 class RandomSource: public Stream
 {
 public:
-    static Ref<RandomSource> open() { return new RandomSource; }
+    static Ref<RandomSource> open(int seed = -1) { return new RandomSource(seed); }
     virtual int read(ByteArray *data) override;
 
-private:
-    RandomSource();
+protected:
+    RandomSource(int seed);
 
+private:
     Ref<Random> random_;
 };
 

@@ -40,7 +40,7 @@ public:
     /** Create a new queue
       * \return new object instance
       */
-    inline static Ref<Queue> create() {
+    inline static Ref<Queue> create(int = 0) {
         return new Queue;
     }
 

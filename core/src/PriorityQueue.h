@@ -21,7 +21,7 @@ template<class T>
 class PriorityQueue: public Object
 {
 public:
-    inline static Ref<PriorityQueue> create() { return new PriorityQueue; }
+    inline static Ref<PriorityQueue> create(int) { return new PriorityQueue; }
 
     inline void pushBack(const T &item, int priority = 0)
     {

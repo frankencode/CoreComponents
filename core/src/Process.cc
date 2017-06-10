@@ -21,6 +21,7 @@
 #else
 #include <cc/File> // to read /proc
 #endif
+#include <cc/stdio>
 #include <cc/exceptions>
 #include <cc/Format>
 #include <cc/Thread>

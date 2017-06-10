@@ -26,10 +26,11 @@ class Channel: public Object
 {
 public:
     /** Create a new channel
+      * \param capacity maximum number of items
       * \return new object instance
       */
-    static Ref<Channel> create() {
-        return new Channel;
+    static Ref<Channel> create(int capacity = 0) {
+        return new Channel(capacity);
     }
 
     /** Add a new item to the end of the queue
@@ -119,8 +120,8 @@ public:
     inline int count() const { Guard<Mutex> guard(mutex_); return queue_->count(); }
 
 protected:
-    Channel():
-        queue_(QueueType<T>::create()),
+    Channel(int capacity):
+        queue_(QueueType<T>::create(capacity)),
         mutex_(Mutex::create()),
         notEmpty_(WaitCondition::create())
     {}

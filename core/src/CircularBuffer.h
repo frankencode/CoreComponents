@@ -30,7 +30,7 @@ public:
       */
     inline static Ref<CircularBuffer> create(int capacity)
     {
-        return new CircularBuffer(size);
+        return new CircularBuffer(capacity);
     }
 
     /// Maximum number of items storable in the circular buffer
