@@ -35,13 +35,17 @@ public:
         return randomSource_->readSpan(n, data);
     }
 
+    int transmissionSize() const { return transmissionSize_; }
+
 private:
     TestSource(int transmissionSize):
+        transmissionSize_(transmissionSize),
         transmissionLeft_(transmissionSize),
         randomSource_(RandomSource::open()),
         random_(Random::open())
     {}
 
+    int transmissionSize_;
     int transmissionLeft_;
     Ref<RandomSource> randomSource_;
     Ref<Random> random_;
@@ -55,27 +59,30 @@ public:
     virtual void write(const ByteArray *data) override
     {
         fout() << "Received " << data->count() << " bytes" << nl;
+        bytesTransferred_ += data->count();
         CC_VERIFY(data->equals(randomSource_->readSpan(data->count())));
     }
 
+    int bytesTransferred() const { return bytesTransferred_; }
+
 private:
     TestSink():
-        randomSource_(RandomSource::open()),
-        firstTime_(true)
+        bytesTransferred_(0),
+        randomSource_(RandomSource::open())
     {}
 
+    int bytesTransferred_;
     Ref<RandomSource> randomSource_;
-    bool firstTime_;
 };
 
 class SimpleRandomTransmission: public TestCase
 {
     void run()
     {
-        Transfer::start(
-            TestSource::open(),
-            TestSink::open()
-        )->waitComplete();
+        Ref<TestSource> source = TestSource::open();
+        Ref<TestSink> sink = TestSink::open();
+        Transfer::start(source, sink)->waitComplete();
+        CC_VERIFY(source->transmissionSize() == sink->bytesTransferred());
     }
 };
 
