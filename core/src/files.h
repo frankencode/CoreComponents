@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 
 namespace cc {
@@ -46,6 +47,24 @@ enum FileType {
     NamedPipeType   = S_IFIFO, ///< Named pipe
     SymlinkType     = S_IFLNK, ///< Symbolic link
     SocketType      = S_IFSOCK, ///< Named local socket
+};
+
+/// %File open flags
+enum OpenFlags {
+    OpenReadOnly  = O_RDONLY, ///< Open for reading, only
+    OpenWriteOnly = O_WRONLY, ///< Open for writing, only
+    OpenReadWrite = O_RDWR,   ///< Open for reading and writing
+    OpenAppend    = O_APPEND, ///< Append any write to the end of file
+    OpenCreate    = O_CREAT,  ///< Create file if not exists
+    OpenTruncate  = O_TRUNC,  ///< Truncate file to size zero
+    OpenVirgin    = O_EXCL    ///< Fail to open if file exists already
+};
+
+/// Seek method
+enum SeekMethod {
+    SeekBegin   = SEEK_SET, ///< Seek from the beginning of the file
+    SeekCurrent = SEEK_CUR, ///< Seek relative to the current file offset
+    SeekEnd     = SEEK_END  ///< Seek relative to the end of file
 };
 
 } // namespace cc

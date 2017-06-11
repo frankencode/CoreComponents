@@ -29,7 +29,7 @@ class MappedByteArray;
 class File: public SystemStream
 {
 public:
-    /// %File open flags
+    /// %File open flags (FIXME: obsolete)
     enum OpenFlags {
         ReadOnly  = O_RDONLY, ///< Open for reading, only
         WriteOnly = O_WRONLY, ///< Open for writing, only
@@ -40,17 +40,10 @@ public:
         Virgin    = O_EXCL    ///< Fail to open if file exists already
     };
 
-    /// Seek method
-    enum SeekMethod {
-        SeekBegin   = SEEK_SET, ///< Seek from the beginning of the file
-        SeekCurrent = SEEK_CUR, ///< Seek relative to the current file offset
-        SeekEnd     = SEEK_END  ///< Seek relative to the end of file
-    };
-
     /** Open a file
       * \param path file path
-      * \param flags file open flags, a combintation of File::OpenFlags
-      * \param mode file permissions for new file, a combination of cc::ModeFlags
+      * \param flags file open flags, a combintation of OpenFlags
+      * \param mode file permissions for new file, a combination of ModeFlags
       * \return new object instance
       */
     static Ref<File> open(String path, int flags = ReadOnly, int mode = 0644);
@@ -112,6 +105,9 @@ public:
 
     /// Query if this file is seakable (e.g. character device aren't)
     bool seekable() const;
+
+    /// Current file offset
+    off_t fileOffset() { return seek(0, SeekBegin); }
 
     virtual off_t transferSpanTo(off_t count = -1, Stream *sink = 0, ByteArray *buf = 0) override;
 
