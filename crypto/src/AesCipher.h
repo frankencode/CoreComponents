@@ -13,7 +13,8 @@
 namespace cc {
 namespace crypto {
 
-/** \brief Rijndael Block Cipher according to the AES (FIPS-197)
+/** \class AesCipher AesCipher.h cc/crypto/AesCipher
+  * \brief Rijndael Block Cipher according to the AES (FIPS-197)
   */
 class AesCipher: public BlockCipher
 {

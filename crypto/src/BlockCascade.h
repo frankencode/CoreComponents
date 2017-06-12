@@ -13,7 +13,8 @@
 namespace cc {
 namespace crypto {
 
-/** \brief CBC frontend
+/** \class BlockCascade BlockCascade.h cc/crypto/BlockCascade
+  * \brief CBC frontend
   *
   * The BlockCascade allows to run any block cipher in CBC mode.
   */

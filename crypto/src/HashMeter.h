@@ -14,7 +14,8 @@
 namespace cc {
 namespace crypto {
 
-/** \brief Hash sum computing stream
+/** \class HashMeter HashMeter.h cc/crypto/HashMeter
+  * \brief Hash sum computing output stream
   * \see cc::stream::TransferMeter
   */
 class HashMeter: public Stream

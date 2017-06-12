@@ -13,7 +13,8 @@
 namespace cc {
 namespace crypto {
 
-/** \brief Message Digest 5: a one-way hash function
+/** \class Md5 Md5.h cc/crypto/Md5
+  * \brief Message Digest 5: a one-way hash function
   */
 class Md5: public HashSum
 {

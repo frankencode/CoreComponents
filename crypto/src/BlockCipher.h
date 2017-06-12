@@ -13,7 +13,8 @@
 namespace cc {
 namespace crypto {
 
-/** \brief Cryptographic block cipher
+/** \class BlockCipher BlockCipher.h cc/crypto/BlockCipher
+  * \brief Cryptographic block cipher
   */
 class BlockCipher: public Object
 {

@@ -13,7 +13,8 @@
 namespace cc {
 namespace crypto {
 
-/** \brief Secure Hash 1: a one-way hash function
+/** \class Sha1 Sha1.h cc/crypto/Sha1
+  * \brief Secure Hash 1: a one-way hash function
   */
 class Sha1: public HashSum
 {

@@ -14,6 +14,9 @@
 namespace cc {
 namespace crypto {
 
+/** \class CipherSink CipherSink.h cc/crypto/CipherSink
+  * \brief Enciphering output stream
+  */
 class CipherSink: public Stream
 {
 public:
