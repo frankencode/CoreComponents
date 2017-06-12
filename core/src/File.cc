@@ -81,7 +81,7 @@ off_t File::seek(off_t distance, SeekMethod method)
     return ret;
 }
 
-bool File::seekable() const
+bool File::isSeekable() const
 {
     return ::lseek(fd_, 0, SEEK_CUR) != -1;
 }

@@ -27,6 +27,8 @@ public:
     bool ok() const { return ok_; }
     String errorMessage() const { return errorMessage_; }
 
+    off_t totalRead() const { Guard<Mutex> guard(mutex_); return totalRead_; }
+
     void stop() { freeQueue_->pushFront(Ref<ByteArray>()); }
 
 private:
@@ -34,6 +36,8 @@ private:
         freeQueue_(freeQueue),
         writeQueue_(writeQueue),
         source_(source),
+        mutex_(Mutex::create()),
+        totalRead_(0),
         ok_(true)
     {}
 
@@ -44,6 +48,10 @@ private:
             while (freeQueue_->popFront(&buffer)) {
                 int n = source_->read(buffer);
                 if (n == 0) break;
+                {
+                    Guard<Mutex> guard(mutex_);
+                    totalRead_ += n;
+                }
                 writeQueue_->pushBack(buffer->select(0, n));
             }
             writeQueue_->pushBack(Ref<ByteArray>());
@@ -60,6 +68,8 @@ private:
     Ref<TransferBufferQueue> freeQueue_;
     Ref<TransferBufferQueue> writeQueue_;
     Ref<Stream> source_;
+    Ref<Mutex> mutex_;
+    off_t totalRead_;
     bool ok_;
     String errorMessage_;
 };
@@ -75,6 +85,8 @@ public:
     bool ok() const { return ok_; }
     String errorMessage() const { return errorMessage_; }
 
+    off_t totalWritten() const { Guard<Mutex> guard(mutex_); return totalWritten_; }
+
     void stop() { writeQueue_->pushFront(Ref<ByteArray>()); }
 
 private:
@@ -82,6 +94,8 @@ private:
         writeQueue_(writeQueue),
         freeQueue_(freeQueue),
         sink_(sink),
+        mutex_(Mutex::create()),
+        totalWritten_(0),
         ok_(true)
     {}
 
@@ -91,6 +105,10 @@ private:
             Ref<ByteArray> buffer;
             while (writeQueue_->popFront(&buffer)) {
                 sink_->write(buffer);
+                {
+                    Guard<Mutex> guard(mutex_);
+                    totalWritten_ += buffer->count();
+                }
                 freeQueue_->pushBack(buffer->unselect());
             }
         }
@@ -106,6 +124,8 @@ private:
     Ref<TransferBufferQueue> writeQueue_;
     Ref<TransferBufferQueue> freeQueue_;
     Ref<Stream> sink_;
+    Ref<Mutex> mutex_;
+    off_t totalWritten_;
     bool ok_;
     String errorMessage_;
 };
@@ -125,6 +145,16 @@ Transfer::Transfer(Stream *source, Stream *sink, int bufferSize, int bufferCount
 
     inputWorker_ = TransferInputWorker::start(freeQueue, writeQueue, source);
     outputWorker_ = TransferOutputWorker::start(writeQueue, freeQueue, sink);
+}
+
+off_t Transfer::totalRead() const
+{
+    return inputWorker_->totalRead();
+}
+
+off_t Transfer::totalWritten() const
+{
+    return outputWorker_->totalWritten();
 }
 
 void Transfer::stop()

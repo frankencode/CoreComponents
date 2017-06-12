@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \brief Transfer measuring stream
+  * \see Transfer
   */
 class TransferMeter: public Stream
 {
@@ -20,19 +21,20 @@ public:
     static Ref<TransferMeter> open(Stream *stream);
 
     inline Stream *stream() const { return stream_; }
-    inline size_t totalRead() const { return totalRead_; }
-    inline size_t totalWritten() const { return totalWritten_; }
+    inline off_t totalRead() const { return totalRead_; }
+    inline off_t totalWritten() const { return totalWritten_; }
 
-    virtual int read(ByteArray *buf);
-    virtual void write(const ByteArray *buf);
-    virtual void write(const StringList *parts);
+    virtual int read(ByteArray *buf) override;
+    virtual void write(const ByteArray *buf) override;
+    virtual void write(const StringList *parts) override;
 
-private:
+protected:
     TransferMeter(Stream *stream);
 
+private:
     Ref<Stream> stream_;
-    size_t totalRead_;
-    size_t totalWritten_;
+    off_t totalRead_;
+    off_t totalWritten_;
 };
 
 } // namespace cc
