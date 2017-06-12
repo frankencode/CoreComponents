@@ -35,8 +35,13 @@ public:
       */
     static Ref<Transfer> start(Stream *source, Stream *sink, int bufferSize = 0x8000, int bufferCount = 10);
 
-    /** Stop the data transfer
-      */
+    /// Return the total number of bytes read up until this point (thread-safe)
+    off_t totalRead() const;
+
+    /// Return the total number of bytes written up until this point (thread-safe)
+    off_t totalWritten() const;
+
+    /// Stop the data transfer
     void stop();
 
     /** Wait for completion of the data transfer

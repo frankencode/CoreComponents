@@ -103,8 +103,11 @@ public:
       */
     off_t seek(off_t distance, SeekMethod method = SeekBegin);
 
-    /// Query if this file is seakable (e.g. character device aren't)
-    bool seekable() const;
+    /// Query if this file is seekable (e.g. character devices aren't seekable)
+    bool seekable() const { return isSeekable(); } // FIXME: obsolete
+
+    /// Query if this file is seekable (e.g. character devices aren't seekable)
+    bool isSeekable() const;
 
     /// Current file offset
     off_t fileOffset() { return seek(0, SeekBegin); }
