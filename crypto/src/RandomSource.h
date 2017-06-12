@@ -13,7 +13,8 @@
 namespace cc {
 namespace crypto {
 
-/** \brief pseudo random number source
+/** \class RandomSource RandomSource.h cc/crypto/RandomSource
+  * \brief Pseudo random number source
   */
 class RandomSource: public Stream
 {

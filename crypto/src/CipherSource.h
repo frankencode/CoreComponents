@@ -14,6 +14,9 @@
 namespace cc {
 namespace crypto {
 
+/** \class CipherSource CipherSource.h cc/crypto/CipherSource
+  * \brief Deciphering input stream
+  */
 class CipherSource: public Stream
 {
 public:
