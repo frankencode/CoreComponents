@@ -353,8 +353,7 @@ void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan)
         /*if (plan->options() & BuildPlan::Library) args << "-fPIC";
         else*/ args << "-fPIC";
     }
-    args << "-Wall" << "-pthread" << "-pipe";
-    if (sizeof(void *) <= 4) args << "-D_FILE_OFFSET_BITS=64";
+    args << "-Wall" << "-pthread" << "-pipe" << "-D_FILE_OFFSET_BITS=64";
     if (plan->bundle()->count() > 0)
         args << "-DCCBUILD_BUNDLE_PREFIX=" + bundlePrefix(plan);
     if (plan->name() != "")
