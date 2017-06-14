@@ -165,8 +165,8 @@ void DirectoryDelegate::streamFile(String path)
     ssize_t size = -1;
     if (file->seekable()) {
         head = file->readSpan(64);
-        size = file->seek(0, File::SeekEnd);
-        file->seek(0, File::SeekBegin);
+        size = file->seek(0, SeekEnd);
+        file->seek(0, SeekBegin);
     }
     String mediaType = mediaTypeDatabase()->lookup(path, head);
     if (mediaType != "") response()->setHeader("Content-Type", mediaType);
