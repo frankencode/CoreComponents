@@ -13,7 +13,8 @@
 
 namespace cc {
 
-/** \brief %User input ambiguous, report back to user and provide guidance
+/** \class UsageError exceptions.h cc/exceptions
+  * \brief %User input ambiguous, report back to user and provide guidance
   */
 class UsageError: public Exception
 {
@@ -27,7 +28,8 @@ private:
     String message_;
 };
 
-/** \brief %User requested help
+/** \class HelpError exceptions.h cc/exceptions
+  * \brief %User requested help
   */
 class HelpError: public Exception
 {
@@ -37,7 +39,8 @@ public:
     virtual String message() const { return "No help, yet ..."; }
 };
 
-/** \brief Some encoded data is mailformed
+/** \class EncodingError exceptions.h cc/exceptions
+  * \brief Some encoded data is mailformed
   */
 class EncodingError: public Exception
 {
@@ -45,7 +48,8 @@ public:
     ~EncodingError() throw() {}
 };
 
-/** \brief End of input reached although more data is needed
+/** \class UnexpectedEndOfInputError exceptions.h cc/exceptions
+  * \brief End of input reached although more data is needed
   */
 class UnexpectedEndOfInputError: public Exception
 {
@@ -55,7 +59,8 @@ public:
     virtual String message() const { return "Unexpected end of input"; }
 };
 
-/** \brief Some buffer size is exceeded
+/** \class BufferOverflow exceptions.h cc/exceptions
+  * \brief Some buffer size is exceeded
   */
 class BufferOverflow: public Exception
 {
@@ -65,7 +70,8 @@ public:
     virtual String message() const { return "Buffer overflow"; }
 };
 
-/** \brief Debugging hint on internal system malfunction
+/** \class DebugError exceptions.h cc/exceptions
+  * \brief Debugging hint on internal system malfunction
   */
 class DebugError: public Exception
 {
@@ -87,7 +93,8 @@ private:
 
 String systemError(int errorCode);
 
-/** \brief %System call failed
+/** \class SystemError exceptions.h cc/exceptions
+  * \brief %System call failed
   */
 class SystemError: public Exception
 {
@@ -103,7 +110,8 @@ protected:
     int errorCode_;
 };
 
-/** \brief %System call failed to perform an action on a named resource (e.g. a file)
+/** \class SystemResourceError exceptions.h cc/exceptions
+  * \brief %System call failed to perform an action on a named resource (e.g. a file)
   */
 class SystemResourceError: public SystemError
 {
@@ -128,7 +136,8 @@ private:
     int line_;
 };
 
-/** \brief Debugging hint on system call failure
+/** \class SystemDebugError exceptions.h cc/exceptions
+  * \brief Debugging hint on system call failure
   */
 class SystemDebugError: public SystemError
 {
@@ -165,7 +174,8 @@ private:
         else CC_SYSTEM_DEBUG_ERROR(errorCode); \
     }
 
-/** \brief General error related to a text (progam text, config file, etc.)
+/** \class TextError exceptions.h cc/exceptions
+  * \brief General error related to a text (progam text, config file, etc.)
   */
 class TextError: public Exception
 {
@@ -185,7 +195,8 @@ protected:
     String resource_;
 };
 
-/** \brief Semantic error
+/** \class SemanticError exceptions.h cc/exceptions
+  * \brief Semantic error
   */
 class SemanticError: public TextError
 {
@@ -206,7 +217,8 @@ private:
 
 String signalName(int signal);
 
-/** \brief Signal received
+/** \class Interrupt exceptions.h cc/exceptions
+  * \brief Signal received
   */
 class Interrupt: public Exception
 {
@@ -223,7 +235,8 @@ private:
     int signal_;
 };
 
-/** \brief Operation timed out
+/** \class Timeout exceptions.h cc/exceptions
+  * \brief Operation timed out
   */
 class Timeout: public Exception
 {
@@ -232,7 +245,8 @@ public:
     virtual String message() const;
 };
 
-/** \brief Other end of a communication channel was closed (pipe or socket)
+/** \class ConnectionResetByPeer exceptions.h cc/exceptions
+  * \brief Other end of a communication channel was closed (pipe or socket)
   */
 class ConnectionResetByPeer: public Exception
 {
@@ -241,6 +255,10 @@ public:
     virtual String message() const;
 };
 
+/** \class TransferError exceptions.h cc/exceptions
+  * \brief A data transfer operation failed
+  * \see Transfer
+  */
 class TransferError: public Exception
 {
 public:
@@ -253,7 +271,8 @@ private:
     String details_;
 };
 
-/** \brief Insufficient permission to perform operation
+/** \class PermissionError exceptions.h cc/exceptions
+  * \brief Insufficient permission to perform operation
   */
 class PermissionError: public UsageError
 {
@@ -262,7 +281,8 @@ public:
     virtual String message() const;
 };
 
-/** \brief Command not found error
+/** \class CommandNotFound exceptions.h cc/exceptions
+  * \brief Command not found error
   */
 class CommandNotFound: public UsageError
 {
