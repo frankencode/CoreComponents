@@ -19,9 +19,13 @@ namespace crypto {
 class BlockCipher: public Object
 {
 public:
+    /// Block size in bytes
     inline int blockSize() const { return blockSize_; }
 
-    virtual void encode(const ByteArray *c, ByteArray *p) = 0;
+    /// Encipher a plaintext p into a ciphertext c
+    virtual void encode(const ByteArray *p, ByteArray *c) = 0;
+
+    /// Decipher a ciphertext c into a plaintext p
     virtual void decode(const ByteArray *c, ByteArray *p) = 0;
 
 protected:

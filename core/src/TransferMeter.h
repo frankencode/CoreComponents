@@ -12,7 +12,7 @@
 
 namespace cc {
 
-/** \brief Transfer measuring stream
+/** \brief %Transfer measuring stream
   * \see Transfer
   */
 class TransferMeter: public Stream
