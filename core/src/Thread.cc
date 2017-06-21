@@ -71,13 +71,17 @@ Thread *Thread::start()
         if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
     }
 
-    if (stackSize_ > 0)
-    {
+    if (stackSize_ > 0) {
+        int ret = pthread_attr_setstacksize(&attr, stackSize_);
+        if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
+    }
+
+    /*{ // setting a custom stack became disfunctional with some glibc versions
         const int guardSize = System::pageSize();
         stack_ = allocateStack(stackSize_, guardSize);
         int ret = pthread_attr_setstack(&attr, stack_->bytes() + guardSize, stack_->count() - 2 * guardSize);
         if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
-    }
+    }*/
 
     int ret = pthread_create(&tid_, &attr, &bootstrap, static_cast<void *>(this));
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
