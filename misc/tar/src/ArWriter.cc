@@ -34,7 +34,7 @@ void ArWriter::writeFile(String path)
     Ref<FileStatus> status = FileStatus::read(path);
 
     off_t contentSize = status->size();
-    if (status->type() != RegularFileType) contentSize = 0;
+    if (status->type() != FileType::Regular) contentSize = 0;
 
     Ref<StringList> headerFields = StringList::create();
 

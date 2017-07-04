@@ -45,7 +45,7 @@ void DirectoryDelegate::process(HttpRequest *request)
     if (scriptHandler_) {
         if (
             (!fileStatus->isValid()) ||
-            ((fileStatus->mode() & AnyExec) && (fileStatus->type() != DirectoryType))
+            ((fileStatus->mode() & AnyExec) && (fileStatus->type() != FileType::Directory))
         ) {
             if (scriptHandler_->process(request, fileStatus, directoryInstance_->path()))
                 return;
@@ -71,7 +71,7 @@ void DirectoryDelegate::process(HttpRequest *request)
 
     response()->setHeader("Last-Modified", formatDate(Date::breakdown(fileStatus->lastModified())));
 
-    if (fileStatus->type() == DirectoryType) {
+    if (fileStatus->type() == FileType::Directory) {
         String indexPath, indexName;
         const char *candidateNames[] = { "index.html", "index.htm" };
         for (int i = 0, n = sizeof(candidateNames) / sizeof(candidateNames[0]); i < n; ++i) {
@@ -100,7 +100,7 @@ void DirectoryDelegate::process(HttpRequest *request)
         }
         else listDirectory(request, path);
     }
-    else if (fileStatus->type() == RegularFileType && fileStatus->size() < 0x10000) {
+    else if (fileStatus->type() == FileType::Regular && fileStatus->size() < 0x10000) {
         deliverFile(path);
     }
     else {

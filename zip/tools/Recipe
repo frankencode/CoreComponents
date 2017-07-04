@@ -1,0 +1,4 @@
+Tools {
+    source: *.cc
+    use: [ core, zip ]
+}

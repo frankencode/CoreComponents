@@ -10,8 +10,7 @@
 
 #include <sys/types.h> // mode_t
 #include <dirent.h> // DIR, opendir, closedir, readdir_r
-#include <cc/Source>
-#include <cc/String>
+#include <cc/Folder>
 
 namespace cc {
 
@@ -20,7 +19,7 @@ namespace cc {
   * \brief Work with directory files
   * \see File, CleanupGuard, DirWalker
   */
-class Dir: public Source<String>
+class Dir: public Folder
 {
 public:
     /** Open an existing directory
@@ -49,9 +48,15 @@ public:
       */
     bool read(String *name) override;
 
+    /** Open a file from this directory
+      * \param path file path of the file to open
+      * \return new content stream
+      */
+    Ref<Stream> openFile(String path) override;
+
     /** Check access permissions
       * \param path directory file path
-      * \param flags a combination of cc::AccessFlags
+      * \param flags a combination of cc::Access
       * \return true if the calling process has needed credentials
       */
     static bool access(String path, int flags);
@@ -70,13 +75,13 @@ public:
 
     /** Create a new directory
       * \param path directory file path
-      * \param mode a combination of cc::ModeFlags
+      * \param mode a combination of cc::Mode
       */
     static void create(String path, int mode = 0755);
 
     /** Establish a new directory path
       * \param path directory file path
-      * \param mode a combination of cc::ModeFlags
+      * \param mode a combination of cc::Mode
       */
     static void establish(String path, int mode = 0755);
 
@@ -87,7 +92,7 @@ public:
 
     /** Create a uniquely named directory
       * \param path directory file path pattern
-      * \param mode a combination of cc::ModeFlags
+      * \param mode a combination of cc::Mode
       * \param placeHolder place holder character in path to replace with random characters
       * \return name of the newly created directory
       */

@@ -14,6 +14,7 @@
 #include <cc/Utf16Source>
 #include <cc/Utf16Sink>
 #include <cc/Format>
+#include <cc/HexDump>
 #include <cc/ByteArray>
 
 namespace cc {
@@ -745,6 +746,16 @@ String ByteArray::toHex() const
         else s2->data_[j++] = (d1 - 10) + 'a';
     }
     return s2;
+}
+
+String ByteArray::hexDump() const
+{
+    return cc::hexDump(this);
+}
+
+String ByteArray::indent(String prefix) const
+{
+    return prefix + trimTrailing()->split('\n')->join("\n" + prefix);
 }
 
 bool ByteArray::isRootPath() const

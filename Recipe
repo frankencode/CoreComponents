@@ -1,4 +1,4 @@
 Package {
-    use: [ core, testing, syntax, meta, regexp, net, http, crypto, plugin, toki, tools, misc ]
-    version: 0.10.3
+    use: [ core, testing, syntax, meta, regexp, net, http, crypto, zip, plugin, toki, tools, misc ]
+    version: 0.11.0
 }

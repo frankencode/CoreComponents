@@ -35,7 +35,7 @@ Report::Report(StringList *dirPaths, RegExp works, int worksMinLines):
         Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
         dirWalker->setIgnoreHidden(true);
         for (String path; dirWalker->read(&path);) {
-            if (FileStatus::read(path)->type() != RegularFileType) continue;
+            if (FileStatus::read(path)->type() != FileType::Regular) continue;
             if (!works->match(path->fileName())->valid()) continue;
             Ref<Notice> notice;
             {

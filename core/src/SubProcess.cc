@@ -50,10 +50,10 @@ Ref<SubProcess> SubProcess::open(Params *params)
 
     if (execPath != "") {
         if (execPath->contains('/')) {
-            if (!File::access(execPath, ExecuteOk)) throw CommandNotFound(execPath);
+            if (!File::access(execPath, Access::Execute)) throw CommandNotFound(execPath);
         }
         else {
-            String path = File::locate(execPath, Process::env("PATH")->split(':'), ExecuteOk);
+            String path = File::locate(execPath, Process::env("PATH")->split(':'), Access::Execute);
             if (path == "") throw CommandNotFound(execPath);
             execPath = path;
         }
@@ -216,7 +216,7 @@ Ref<SubProcess> SubProcess::open(String command, SystemStream *stdErr)
     Ref<Overloads> overloads;
     if (stdErr) {
         overloads = Overloads::create();
-        overloads->establish(StdErrFd, stdErr);
+        overloads->establish(StandardErrorFd, stdErr);
         params->setOverloads(overloads);
     }
     return open(params);
@@ -228,7 +228,7 @@ Ref<SubProcess> SubProcess::open(SubProcess::Worker *worker, SystemStream *stdEr
     Ref<Overloads> overloads;
     if (stdErr) {
         overloads = Overloads::create();
-        overloads->establish(StdErrFd, stdErr);
+        overloads->establish(StandardErrorFd, stdErr);
         params->setOverloads(overloads);
     }
     return open(params);

@@ -22,7 +22,7 @@ public:
     UsageError(String message = String()): message_(message) {}
     ~UsageError() throw() {}
 
-    virtual String message() const { return message_; }
+    virtual String message() const override { return message_; }
 
 private:
     String message_;
@@ -36,7 +36,7 @@ class HelpError: public Exception
 public:
     ~HelpError() throw() {}
 
-    virtual String message() const { return "No help, yet ..."; }
+    virtual String message() const override { return "No help, yet ..."; }
 };
 
 /** \class EncodingError exceptions.h cc/exceptions
@@ -56,7 +56,7 @@ class UnexpectedEndOfInputError: public Exception
 public:
     ~UnexpectedEndOfInputError() throw() {}
 
-    virtual String message() const { return "Unexpected end of input"; }
+    virtual String message() const override { return "Unexpected end of input"; }
 };
 
 /** \class BufferOverflow exceptions.h cc/exceptions
@@ -67,7 +67,7 @@ class BufferOverflow: public Exception
 public:
     ~BufferOverflow() throw() {}
 
-    virtual String message() const { return "Buffer overflow"; }
+    virtual String message() const override { return "Buffer overflow"; }
 };
 
 /** \class DebugError exceptions.h cc/exceptions
@@ -83,7 +83,7 @@ public:
     {}
     ~DebugError() throw() {}
 
-    virtual String message() const;
+    virtual String message() const override;
 
 private:
     String reason_;
@@ -104,7 +104,7 @@ public:
 
     inline int errorCode() const { return errorCode_; }
 
-    virtual String message() const;
+    virtual String message() const override;
 
 protected:
     int errorCode_;
@@ -128,7 +128,7 @@ public:
     inline const char *source() const { return source_; }
     inline int line() const { return line_; }
 
-    virtual String message() const;
+    virtual String message() const override;
 
 private:
     String resource_;
@@ -152,7 +152,7 @@ public:
     inline const char *source() const { return source_; }
     inline int line() const { return line_; }
 
-    virtual String message() const;
+    virtual String message() const override;
 
 private:
     const char *source_;
@@ -209,7 +209,7 @@ public:
 
     inline String reason() const { return reason_; }
 
-    virtual String message() const;
+    virtual String message() const override;
 
 private:
     String reason_;
@@ -229,7 +229,7 @@ public:
     inline int signal() const { return signal_; }
     String signalName() const;
 
-    virtual String message() const;
+    virtual String message() const override;
 
 private:
     int signal_;
@@ -252,7 +252,7 @@ class ConnectionResetByPeer: public Exception
 {
 public:
     ~ConnectionResetByPeer() throw() {}
-    virtual String message() const;
+    virtual String message() const override;
 };
 
 /** \class TransferError exceptions.h cc/exceptions
@@ -265,7 +265,7 @@ public:
     TransferError(String details);
     ~TransferError() throw() {}
 
-    virtual String message() const;
+    virtual String message() const override;
 
 private:
     String details_;
@@ -278,7 +278,7 @@ class PermissionError: public UsageError
 {
 public:
     ~PermissionError() throw() {}
-    virtual String message() const;
+    virtual String message() const override;
 };
 
 /** \class CommandNotFound exceptions.h cc/exceptions
@@ -294,7 +294,7 @@ public:
 
     String command() const { return command_; }
 
-    virtual String message() const;
+    virtual String message() const override;
 
 private:
     String command_;

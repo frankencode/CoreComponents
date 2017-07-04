@@ -30,7 +30,7 @@ class File: public SystemStream
 {
 public:
     /// %File open flags (FIXME: obsolete)
-    enum OpenFlags {
+    enum OpenFlag {
         ReadOnly  = O_RDONLY, ///< Open for reading, only
         WriteOnly = O_WRONLY, ///< Open for writing, only
         ReadWrite = O_RDWR,   ///< Open for reading and writing
@@ -42,16 +42,16 @@ public:
 
     /** Open a file
       * \param path file path
-      * \param flags file open flags, a combintation of OpenFlags
-      * \param mode file permissions for new file, a combination of ModeFlags
+      * \param flags file open flags, a combintation of cc::OpenFlag
+      * \param mode file permissions for new file, a combination of cc::Mode
       * \return new object instance
       */
     static Ref<File> open(String path, int flags = ReadOnly, int mode = 0644);
 
     /** Try to open a file
       * \param path file path
-      * \param flags file open flags, a combintation of File::OpenFlags
-      * \param mode file permissions for new file, a combination of cc::ModeFlags
+      * \param flags file open flags, a combintation of cc::OpenFlag
+      * \param mode file permissions for new file, a combination of cc::Mode
       * \return new object instance or null reference if opening the file wasn't successful
       */
     static Ref<File> tryOpen(String path, int flags = ReadOnly, int mode = 0644);
@@ -59,7 +59,7 @@ public:
     /** Open a file (convenience wrapper)
       * \param shellMode shell mode: "<", ">" or ">>"
       * \param path file path
-      * \param mode file permissions for new file, a combination of cc::ModeFlags
+      * \param mode file permissions for new file, a combination of cc::Mode
       * \return new object instance
       */
     inline static Ref<File> open(const char *shellMode, String path, int mode)
@@ -70,7 +70,7 @@ public:
     /** Try to open a file (convenience wrapper)
       * \param path file path
       * \param shellMode shell mode: "<", ">" or ">>"
-      * \param mode file permissions for new file, a combination of cc::ModeFlags
+      * \param mode file permissions for new file, a combination of cc::Mode
       * \return new object instance or null reference if opening the file wasn't successful
       */
     inline static Ref<File> tryOpen(const char *shellMode, String path, int mode = 0644)
@@ -79,7 +79,7 @@ public:
     }
 
     /** Open a temporary file
-      * \param flags file open flags, a combintation of File::OpenFlags
+      * \param flags file open flags, a combintation of cc::OpenFlag
       * \return new object instance
       * \see UnlinkGuard, File::createUnique()
       */
@@ -125,7 +125,7 @@ public:
 
     /** Test file access permissions
       * \param path file path to test
-      * \param flags a combination of cc::AccessFlags
+      * \param flags a combination of cc::Access
       * \return true if accessible
       */
     static bool access(String path, int flags);
@@ -134,11 +134,11 @@ public:
       * \param path file path
       * \return true if file exists
       */
-    static bool exists(String path) { return (path != "") && access(path, FileOk); }
+    static bool exists(String path) { return (path != "") && access(path, Access::Exists); }
 
     /** Create a new file
       * \param path file path
-      * \param mode file permissions for new file, a combination of cc::ModeFlags
+      * \param mode file permissions for new file, a combination of cc::Mode
       */
     static void create(String path, int mode = 0644);
 
@@ -188,7 +188,7 @@ public:
 
     /** Create a uniquely named file
       * \param path file path
-      * \param mode file permissions for new file, a combination of cc::ModeFlags
+      * \param mode file permissions for new file, a combination of cc::Mode
       * \param placeHolder place holder character in path to replace with random characters
       * \return name of the newly created file
       * \see File::openTemp()
@@ -197,7 +197,7 @@ public:
 
     /** Create a new file and all parent directories as needed
       * \param path file path of new file
-      * \param fileMode file permissions for new file, a combination of cc::ModeFlags
+      * \param fileMode file permissions for new file, a combination of cc::Mode
       * \param dirMode directory permissions for the on-demand created parent directories
       */
     static void establish(String path, int fileMode = 0644, int dirMode = 0755);
@@ -205,10 +205,10 @@ public:
     /** Search for a file in a list of directories
       * \param fileName name of the file (or relative path)
       * \param dirs list of directories
-      * \param accessFlags a combination of cc::AccessFlags
+      * \param accessFlags a combination of cc::Access
       * \return file path if found else empty string
       */
-    static String locate(String fileName, const StringList *dirs, int accessFlags = FileOk);
+    static String locate(String fileName, const StringList *dirs, int accessFlags = Access::Exists);
 
     /** Load contents of a file
       * \param path file path
