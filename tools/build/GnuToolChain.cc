@@ -209,7 +209,7 @@ bool GnuToolChain::testInclude(BuildPlan *plan, StringList *headers) const
     UnlinkGuard srcUnlinkGuard(srcPath);
     UnlinkGuard objUnlinkGuard(srcPath->baseName() + ".o");
     {
-        Ref<File> src = File::open(srcPath, File::WriteOnly);
+        Ref<File> src = File::open(srcPath, OpenMode::WriteOnly);
         Format format;
         for (int i = 0; i < headers->count(); ++i)
             format << "#include <" << headers->at(i) << ">\n";
@@ -231,7 +231,7 @@ bool GnuToolChain::testInclude(BuildPlan *plan, StringList *headers) const
         params->setCommand(command);
         Ref<SubProcess::Overloads> overloads = SubProcess::Overloads::create();
         {
-            Ref<File> devNull = File::open("/dev/null", File::WriteOnly);
+            Ref<File> devNull = File::open("/dev/null", OpenMode::WriteOnly);
             overloads->insert(StandardOutputFd, devNull);
             if (!(plan->options() & BuildPlan::Verbose))
                 overloads->insert(StandardErrorFd, devNull);

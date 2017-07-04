@@ -29,57 +29,46 @@ class MappedByteArray;
 class File: public SystemStream
 {
 public:
-    /// %File open flags (FIXME: obsolete)
-    enum OpenFlag {
-        ReadOnly  = O_RDONLY, ///< Open for reading, only
-        WriteOnly = O_WRONLY, ///< Open for writing, only
-        ReadWrite = O_RDWR,   ///< Open for reading and writing
-        Append    = O_APPEND, ///< Append any write to the end of file
-        Create    = O_CREAT,  ///< Create file if not exists
-        Truncate  = O_TRUNC,  ///< Truncate file to size zero
-        Virgin    = O_EXCL    ///< Fail to open if file exists already
-    };
-
     /** Open a file
       * \param path file path
-      * \param flags file open flags, a combintation of cc::OpenFlag
-      * \param mode file permissions for new file, a combination of cc::Mode
+      * \param openMode file open flags, a combintation of cc::OpenMode
+      * \param fileMode file permissions for new file, a combination of cc::FileMode
       * \return new object instance
       */
-    static Ref<File> open(String path, int flags = ReadOnly, int mode = 0644);
+    static Ref<File> open(String path, int openMode = OpenMode::ReadOnly, int fileMode = 0644);
 
     /** Try to open a file
       * \param path file path
-      * \param flags file open flags, a combintation of cc::OpenFlag
-      * \param mode file permissions for new file, a combination of cc::Mode
+      * \param flags file open flags, a combintation of cc::OpenMode
+      * \param mode file permissions for new file, a combination of cc::FileMode
       * \return new object instance or null reference if opening the file wasn't successful
       */
-    static Ref<File> tryOpen(String path, int flags = ReadOnly, int mode = 0644);
+    static Ref<File> tryOpen(String path, int openMode = OpenMode::ReadOnly, int fileMode = 0644);
 
     /** Open a file (convenience wrapper)
-      * \param shellMode shell mode: "<", ">" or ">>"
+      * \param shellMode shell mode: "<", ">", ">>", "<>", ">*", ">>*", "<>*"
       * \param path file path
-      * \param mode file permissions for new file, a combination of cc::Mode
+      * \param fileMode file permissions for new file, a combination of cc::FileMode
       * \return new object instance
       */
-    inline static Ref<File> open(const char *shellMode, String path, int mode)
+    inline static Ref<File> open(const char *shellMode, String path, int fileMode)
     {
-        return open(path, openFlags(shellMode), mode);
+        return open(path, openMode(shellMode), fileMode);
     }
 
     /** Try to open a file (convenience wrapper)
       * \param path file path
-      * \param shellMode shell mode: "<", ">" or ">>"
-      * \param mode file permissions for new file, a combination of cc::Mode
+      * \param shellMode shell mode: "<", ">", ">>", "<>", ">*", ">>*", "<>*"
+      * \param mode file permissions for new file, a combination of cc::FileMode
       * \return new object instance or null reference if opening the file wasn't successful
       */
-    inline static Ref<File> tryOpen(const char *shellMode, String path, int mode = 0644)
+    inline static Ref<File> tryOpen(const char *shellMode, String path, int fileMode = 0644)
     {
-        return tryOpen(path, openFlags(shellMode), mode);
+        return tryOpen(path, openMode(shellMode), fileMode);
     }
 
     /** Open a temporary file
-      * \param flags file open flags, a combintation of cc::OpenFlag
+      * \param flags file open flags, a combintation of cc::OpenMode
       * \return new object instance
       * \see UnlinkGuard, File::createUnique()
       */
@@ -88,8 +77,8 @@ public:
     /// %File path this file was opened from
     String path() const;
 
-    /// %File open flags this file was opened with
-    int openFlags() const;
+    /// %File open mode this file was opened with
+    int openMode() const;
 
     /** Truncate or extend file
       * \param length new file length
@@ -138,7 +127,7 @@ public:
 
     /** Create a new file
       * \param path file path
-      * \param mode file permissions for new file, a combination of cc::Mode
+      * \param mode file permissions for new file, a combination of cc::FileMode
       */
     static void create(String path, int mode = 0644);
 
@@ -188,7 +177,7 @@ public:
 
     /** Create a uniquely named file
       * \param path file path
-      * \param mode file permissions for new file, a combination of cc::Mode
+      * \param mode file permissions for new file, a combination of cc::FileMode
       * \param placeHolder place holder character in path to replace with random characters
       * \return name of the newly created file
       * \see File::openTemp()
@@ -197,7 +186,7 @@ public:
 
     /** Create a new file and all parent directories as needed
       * \param path file path of new file
-      * \param fileMode file permissions for new file, a combination of cc::Mode
+      * \param fileMode file permissions for new file, a combination of cc::FileMode
       * \param dirMode directory permissions for the on-demand created parent directories
       */
     static void establish(String path, int fileMode = 0644, int dirMode = 0755);
@@ -225,15 +214,15 @@ public:
 private:
     friend class MappedByteArray;
 
-    static int translateOpenFlags(int openFlags);
+    static int translateOpenFlags(int openMode);
 
-    File(String path, int openFlags, int fd);
+    File(String path, int openMode, int fd);
 
-    static int openFlags(const char *shellMode);
+    static int openMode(const char *shellMode);
     static void unmap(ByteArray *s);
 
     String path_;
-    int openFlags_;
+    int openMode_;
 };
 
 } // namespace cc

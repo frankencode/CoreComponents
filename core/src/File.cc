@@ -20,41 +20,45 @@
 
 namespace cc {
 
-Ref<File> File::open(String path, int flags, int mode)
+Ref<File> File::open(String path, int openMode, int fileMode)
 {
-    int fd = ::open(path, flags, mode);
+    int fd = ::open(path, openMode, fileMode);
     if (fd == -1) CC_SYSTEM_ERROR(errno, path);
-    return new File(path, flags, fd);
+    return new File(path, openMode, fd);
 }
 
-Ref<File> File::tryOpen(String path, int flags, int mode)
+Ref<File> File::tryOpen(String path, int openMode, int fileMode)
 {
-    int fd = ::open(path, flags, mode);
-    if (fd != -1) return new File(path, flags, fd);
+    int fd = ::open(path, openMode, fileMode);
+    if (fd != -1) return new File(path, openMode, fd);
     return 0;
 }
 
-Ref<File> File::openTemp(int openFlags)
+Ref<File> File::openTemp(int openMode)
 {
     String path = createUnique(
         Format("/tmp/%%_XXXXXXXX")
             << Process::exePath()->fileName()
     );
-    return open(path, openFlags);
+    return open(path, openMode);
 }
 
-File::File(String path, int openFlags, int fd):
+File::File(String path, int openMode, int fd):
     SystemStream(fd),
     path_(path),
-    openFlags_(openFlags)
+    openMode_(openMode)
 {}
 
-int File::openFlags(const char *shellMode)
+int File::openMode(const char *shellMode)
 {
     int flags = 0;
-    if (strcmp(shellMode, "<") == 0) flags = File::ReadOnly;
-    else if (strcmp(shellMode, ">") == 0) flags = File::WriteOnly | File::Create | File::Truncate;
-    else if (strcmp(shellMode, ">>") == 0) flags = File::WriteOnly | File::Create | File::Append;
+    if (strcmp(shellMode, "<") == 0) flags = OpenMode::ReadOnly;
+    else if (strcmp(shellMode, ">") == 0) flags = OpenMode::WriteOnly | OpenMode::Create | OpenMode::Truncate;
+    else if (strcmp(shellMode, ">>") == 0) flags = OpenMode::WriteOnly | OpenMode::Create | OpenMode::Append;
+    else if (strcmp(shellMode, ">*") == 0) flags = OpenMode::WriteOnly | OpenMode::Create | OpenMode::Truncate | OpenMode::Virgin;
+    else if (strcmp(shellMode, ">>*") == 0) flags = OpenMode::WriteOnly | OpenMode::Create | OpenMode::Append | OpenMode::Virgin;
+    else if (strcmp(shellMode, "<>") == 0) flags = OpenMode::ReadWrite | OpenMode::Create;
+    else if (strcmp(shellMode, "<>*") == 0) flags = OpenMode::ReadWrite | OpenMode::Create | OpenMode::Virgin;
     return flags;
 }
 
@@ -63,9 +67,9 @@ String File::path() const
     return path_;
 }
 
-int File::openFlags() const
+int File::openMode() const
 {
-    return openFlags_;
+    return openMode_;
 }
 
 void File::truncate(off_t length)
@@ -117,7 +121,7 @@ String File::map() const
     if (fileSize >= size_t(intMax)) fileSize = intMax;
     int pageSize = System::pageSize();
     size_t mapSize = fileSize;
-    int protection = PROT_READ | (PROT_WRITE * (openFlags_ & (O_WRONLY|O_RDWR)));
+    int protection = PROT_READ | (PROT_WRITE * (openMode_ & (O_WRONLY|O_RDWR)));
     void *p = 0;
     if (fileSize % pageSize > 0) {
         mapSize += pageSize - fileSize % pageSize;
@@ -311,9 +315,9 @@ String File::load(String path)
 void File::save(String path, String text)
 {
     establish(path);
-    Ref<File> file = open(path, File::WriteOnly);
+    Ref<File> file = open(path, OpenMode::WriteOnly);
     file->truncate(0);
     file->write(text);
 }
 
-} // namespace cc
+} // namespace

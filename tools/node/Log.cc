@@ -40,7 +40,7 @@ void Log::open()
         warningStream_ =
         noticeStream_  =
         infoStream_    =
-        debugStream_   = File::open(path(), File::WriteOnly|File::Append|File::Create);
+        debugStream_   = File::open(path(), OpenMode::WriteOnly|OpenMode::Append|OpenMode::Create);
     }
     else if (Process::isDaemonized()) {
         errorStream_   = systemLog()->errorStream();

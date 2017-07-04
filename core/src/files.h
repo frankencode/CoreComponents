@@ -22,7 +22,7 @@ enum Access {
 };
 
 /// %File permission flags
-enum Mode {
+enum FileMode {
     SetUserId  = S_ISUID, ///< %Set effective user to file owner on execution
     SetGroupId = S_ISGID, ///< %Set effective group to file owner on execution
     StickyBit  = S_ISVTX,  ///< Allow to read and write, but not delete files when applied to a directory

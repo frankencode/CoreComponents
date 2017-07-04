@@ -33,7 +33,7 @@ class FileLockAndMap: public TestCase
         int run() override
         {
             fout("(clone) waiting for read access\n");
-            Ref<File> file = File::open(path_, File::ReadOnly);
+            Ref<File> file = File::open(path_, OpenMode::ReadOnly);
             Ref<FileLock> lock = FileLock::create(file, FileLock::ReadLock);
             Guard<FileLock> guard(lock);
             fout("(clone) granted read access\n");
