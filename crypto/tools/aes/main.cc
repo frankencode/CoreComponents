@@ -79,7 +79,7 @@ int main(int argc, char **argv)
                 if (viewMode)
                     sink = stdOut();
                 else
-                    sink = File::open(outPath, File::Create|File::Truncate|File::WriteOnly);
+                    sink = File::open(outPath, OpenMode::Create|OpenMode::Truncate|OpenMode::WriteOnly);
                 sink->write(encipheredContentKey);
 
                 Ref<CipherSink> cipherSink = CipherSink::open(cipher, sink, random);
@@ -152,7 +152,7 @@ int main(int argc, char **argv)
                         ferr() << origName << ": file exists, skipping" << nl;
                         continue;
                     }
-                    sink = File::open(origName, File::Create|File::Truncate|File::WriteOnly);
+                    sink = File::open(origName, OpenMode::Create|OpenMode::Truncate|OpenMode::WriteOnly);
                 }
                 cipherSource->transferSpanTo(origSize, sink);
             }
