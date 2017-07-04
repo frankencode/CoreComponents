@@ -50,7 +50,7 @@ enum FileType {
 };
 
 /// %File open flags
-enum OpenFlag {
+enum OpenMode {
     ReadOnly  = O_RDONLY, ///< Open for reading, only
     WriteOnly = O_WRONLY, ///< Open for writing, only
     ReadWrite = O_RDWR,   ///< Open for reading and writing
