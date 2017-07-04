@@ -232,9 +232,9 @@ bool GnuToolChain::testInclude(BuildPlan *plan, StringList *headers) const
         Ref<SubProcess::Overloads> overloads = SubProcess::Overloads::create();
         {
             Ref<File> devNull = File::open("/dev/null", File::WriteOnly);
-            overloads->insert(StdOutFd, devNull);
+            overloads->insert(StandardOutputFd, devNull);
             if (!(plan->options() & BuildPlan::Verbose))
-                overloads->insert(StdErrFd, devNull);
+                overloads->insert(StandardErrorFd, devNull);
         }
         sub = SubProcess::open(params);
     }

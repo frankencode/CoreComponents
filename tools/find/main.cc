@@ -118,17 +118,17 @@ int main(int argc, char **argv)
                     int type = FileStatus::read(path, false)->type();
                     bool shortMode = (typePattern->matchLength() == 1);
                     String typeString;
-                    if (type == RegularFileType)      typeString = shortMode ? "r" : "regular file";
-                    else if (type == DirectoryType)   typeString = shortMode ? "d" : "directory";
-                    else if (type == SymlinkType)     typeString = shortMode ? "l" : "symlink";
-                    else if (type == CharDeviceType)  typeString = shortMode ? "c" : "character device";
-                    else if (type == BlockDeviceType) typeString = shortMode ? "b" : "block device";
-                    else if (type == NamedPipeType)   typeString = shortMode ? "f" : "fifo";
-                    else if (type == SocketType)      typeString = shortMode ? "s" : "socket";
+                    if (type == FileType::Regular)          typeString = shortMode ? "r" : "regular file";
+                    else if (type == FileType::Directory)   typeString = shortMode ? "d" : "directory";
+                    else if (type == FileType::Symlink)     typeString = shortMode ? "l" : "symlink";
+                    else if (type == FileType::CharDevice)  typeString = shortMode ? "c" : "character device";
+                    else if (type == FileType::BlockDevice) typeString = shortMode ? "b" : "block device";
+                    else if (type == FileType::Fifo)        typeString = shortMode ? "f" : "fifo";
+                    else if (type == FileType::Socket)      typeString = shortMode ? "s" : "socket";
                     if (!typePattern->find(typeString)->valid()) continue;
                 }
                 if (textPattern != "") {
-                    if (FileStatus::read(path)->type() != RegularFileType)
+                    if (FileStatus::read(path)->type() != FileType::Regular)
                         continue;
 
                     String text = File::open(path)->map();

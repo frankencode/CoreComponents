@@ -73,14 +73,20 @@ bool Dir::read(String *name)
     return result;
 }
 
+Ref<Stream> Dir::openFile(String path)
+{
+    if (path->isRelativePath()) path = path_->expandPath(path);
+    return File::open(path);
+}
+
 bool Dir::access(String path, int flags)
 {
-    return ::access(path, flags) && (FileStatus::read(path)->type() == DirectoryType);
+    return ::access(path, flags) && (FileStatus::read(path)->type() == FileType::Directory);
 }
 
 bool Dir::exists(String path)
 {
-    return File::exists(path) && (FileStatus::read(path)->type() == DirectoryType);
+    return File::exists(path) && (FileStatus::read(path)->type() == FileType::Directory);
 }
 
 int Dir::count(String path)

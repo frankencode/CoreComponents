@@ -45,9 +45,9 @@ void TarWriter::writeFile(String path, FileStatus *status)
     Ref<StringList> headerFields = StringList::create();
 
     off_t contentSize = status->size();
-    if (status->type() != RegularFileType) contentSize = 0;
+    if (status->type() != FileType::Regular) contentSize = 0;
 
-    if (status->type() == DirectoryType) {
+    if (status->type() == FileType::Directory) {
         if (path->count() > 0) {
             if (path->at(path->count() - 1) != '/') path = path + "/";
         }
@@ -80,21 +80,21 @@ void TarWriter::writeFile(String path, FileStatus *status)
     headerFields->append(String("\0 ", 2));
 
     String typeField, linkTarget;
-    if (status == longLinkStatus_ )                 typeField = "K";
-    else if (status == longPathStatus_)             typeField = "L";
+    if (status == longLinkStatus_ )                       typeField = "K";
+    else if (status == longPathStatus_)                   typeField = "L";
     else {
-             if (status->type() == RegularFileType) ;
-        else if (status->type() == DirectoryType)   typeField = "5";
-        else if (status->type() == SymlinkType)     typeField = "2";
-        else if (status->type() == CharDeviceType)  typeField = "3";
-        else if (status->type() == BlockDeviceType) typeField = "4";
-        else if (status->type() == NamedPipeType)   typeField = "6";
+             if (status->type() == FileType::Regular);
+        else if (status->type() == FileType::Directory)   typeField = "5";
+        else if (status->type() == FileType::Symlink)     typeField = "2";
+        else if (status->type() == FileType::CharDevice)  typeField = "3";
+        else if (status->type() == FileType::BlockDevice) typeField = "4";
+        else if (status->type() == FileType::Fifo)        typeField = "6";
         if (status->numberOfHardLinks() > 1) {
             FileId fid(status);
             if (hardLinks_->lookup(fid, &linkTarget)) typeField = "1";
             else hardLinks_->insert(fid, path);
         }
-        else if (status->type() == SymlinkType) {
+        else if (status->type() == FileType::Symlink) {
             linkTarget = File::readlink(path);
         }
         if (typeField == "")                          typeField = "0";

@@ -30,7 +30,7 @@ DirectoryInstance::DirectoryInstance(MetaObject *config):
             Format("DirectoryInstance: Directory path \"%%\" does not exist") << path_
         );
     }
-    if (FileStatus::read(path_)->type() != DirectoryType) {
+    if (FileStatus::read(path_)->type() != FileType::Directory) {
         throw UsageError(
             Format("DirectoryInstance: Path \"%%\" does not point to a directory") << path_
         );

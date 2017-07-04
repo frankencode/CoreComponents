@@ -679,8 +679,18 @@ public:
       */
     String toUtf16(Endian endian = localEndian()) const;
 
-    /// Convert to a series of hexadecimal characters
+    /** Convert to a series of hexadecimal characters
+      * \see hexDump
+      */
     String toHex() const;
+
+    /** Convert to a hexadecimal dump
+      * \see HexDump
+      */
+    String hexDump() const;
+
+    /// Add a prefix to each line of the text
+    String indent(String prefix) const;
 
     /// Check if this string equals "/"
     bool isRootPath() const;
