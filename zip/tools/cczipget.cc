@@ -11,7 +11,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    Ref<ZipArchive> archive = ZipArchive::open(argv[1]);
-    archive->openFile(argv[2])->transferTo(standardOutput());
+    ZipArchive::open(argv[1])->openFile(argv[2])->transferTo(standardOutput());
+
     return 0;
 }

@@ -723,7 +723,9 @@ public:
       * \param relativePath relative path to add
       * \return resulting path
       */
-    String expandPath(const String &relativePath) const;
+    String extendPath(const String &relativePath) const;
+
+    String expandPath(const String &relativePath) const { return extendPath(relativePath); } /// FIXME: obsolete
 
     /// Remove redundant or ambigous path components
     String canonicalPath() const;

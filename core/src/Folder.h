@@ -23,4 +23,6 @@ public:
     virtual Ref<Stream> openFile(String name) = 0;
 };
 
+CC_DEFINE_SOURCE_BEGIN_END(Folder);
+
 } // namespace cc
