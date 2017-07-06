@@ -848,7 +848,7 @@ String ByteArray::reducePath() const
     return resultPath;
 }
 
-String ByteArray::expandPath(const String &relativePath) const
+String ByteArray::extendPath(const String &relativePath) const
 {
     if (count() == 0) return relativePath->copy();
     if (relativePath->count() == 0) return copy();
