@@ -154,6 +154,14 @@ public:
     /// Reset this set to an empty set
     inline void deplete() { tree_.clear(); }
 
+    /** STL-style iterator declarations
+      * @{
+      */
+    typedef ConstIterator<Set> const_iterator;
+    const_iterator begin() const { return const_iterator(this, 0); }
+    const_iterator end() const { return const_iterator(this, count()); }
+    /** @} */
+
 private:
     typedef OrdinalTree< OrdinalNode<Item> > Tree;
     typedef typename Tree::Node Node;

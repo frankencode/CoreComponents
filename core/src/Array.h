@@ -207,6 +207,14 @@ public:
     /// Check if this array contains a certain pattern
     inline bool contains(const T *pattern, int patternSize) { return find(0, pattern, patternSize) != size_; }
 
+    /** STL-style iterator declarations
+      * @{
+      */
+    typedef Iterator<Array> iterator;
+    iterator begin() { return iterator(this, 0); }
+    iterator end() { return iterator(this, count()); }
+    /** @} */
+
 private:
     Array(int size):
         size_(0),

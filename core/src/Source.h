@@ -19,7 +19,7 @@ namespace cc {
   * \tparam T item type
   */
 template<class T>
-class Source: public virtual Object
+class Source: public Object
 {
 public:
     /// Item type

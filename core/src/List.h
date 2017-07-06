@@ -281,6 +281,17 @@ public:
     /// \copydoc pop()
     inline void operator>>(T* item) { pop(item); }
 
+    /** STL-style iterator declarations
+      * @{
+      */
+    typedef Iterator<List> iterator;
+    typedef ConstIterator<List> const_iterator;
+    iterator begin() { return iterator(this, 0); }
+    iterator end() { return iterator(this, count()); }
+    const_iterator begin() const { return const_iterator(this, 0); }
+    const_iterator end() const { return const_iterator(this, count()); }
+    /** @} */
+
 private:
     typedef OrdinalTree< OrdinalNode<Item> > Tree;
     typedef typename Tree::Node Node;
