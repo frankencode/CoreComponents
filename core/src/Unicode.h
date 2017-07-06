@@ -8,10 +8,27 @@
 
 #pragma once
 
+#include <cc/containers>
 #include <cc/ByteArray>
 #include <cc/Utf8Walker>
 
 namespace cc {
+
+class Unicode;
+
+template<>
+class ConstIterator<Unicode> {
+public:
+    ConstIterator(Unicode *c, int i);
+
+    inline uchar_t operator*() const;
+    inline ConstIterator &operator++();
+    inline bool operator!=(const ConstIterator &b) const;
+
+private:
+    Unicode *c_;
+    int i_;
+};
 
 /** \class Unicode Unicode.h cc/Unicode
   * \ingroup unicode
@@ -77,6 +94,15 @@ public:
     /// Copy the trailing n %Unicode characters
     inline Ref<ByteArray> tail(int n) const { return copy(count() - n, n); }
 
+    /** STL-style iterator declarations
+      * @{
+      */
+    typedef ConstIterator<Unicode> const_iterator;
+    typedef const_iterator iterator;
+    const_iterator begin() { return const_iterator(this, 0); }
+    const_iterator end() { return const_iterator(this, count()); }
+    /** @} */
+
 private:
     Unicode(const ByteArray *data):
         data_(data),
@@ -98,21 +124,13 @@ private:
     mutable int i_, n_;
 };
 
-template<>
-class Iterator<Unicode> {
-public:
-    Iterator(Unicode *c, int i):
-        c_(c),
-        i_(i)
-    {}
+inline ConstIterator<Unicode>::ConstIterator(Unicode *c, int i):
+    c_(c),
+    i_(i)
+{}
 
-    inline uchar_t operator*() const { return c_->at(i_); }
-    inline Iterator &operator++() { ++i_; return *this; }
-    inline bool operator!=(const Iterator &b) const { return i_ != b.i_; }
-
-private:
-    Unicode *c_;
-    int i_;
-};
+inline uchar_t ConstIterator<Unicode>::operator*() const { return c_->at(i_); }
+inline ConstIterator<Unicode> &ConstIterator<Unicode>::operator++() { ++i_; return *this; }
+inline bool ConstIterator<Unicode>::operator!=(const ConstIterator<Unicode> &b) const { return i_ != b.i_; }
 
 } // namespace cc

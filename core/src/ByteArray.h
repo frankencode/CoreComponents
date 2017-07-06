@@ -742,6 +742,14 @@ public:
     /// \copydoc equalsCaseInsensitive(const String &) const
     bool equalsCaseInsensitive(const char *b) const;
 
+    /** STL-style iterator declarations
+      * @{
+      */
+    typedef Iterator<ByteArray> iterator;
+    iterator begin() { return iterator(this, 0); }
+    iterator end() { return iterator(this, count()); }
+    /** @} */
+
 protected:
     friend class Ref<ByteArray>;
 

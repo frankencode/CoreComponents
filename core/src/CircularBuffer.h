@@ -49,7 +49,7 @@ public:
       * \param i item index
       * \return low-level reference
       */
-    inline const T& at(int i) const { return front(i); }
+    inline T at(int i) const { return front(i); }
 
     /** Insert a new item at the end of the circular buffer
       * \param item item value
