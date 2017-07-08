@@ -10,7 +10,7 @@
 
 #include <cc/Object>
 #include <cc/Ref>
-#include <cc/SourceIterator>
+#include <cc/iterators>
 
 namespace cc {
 
@@ -30,6 +30,17 @@ public:
       * \return true if not end of input, false otherwise
       */
     virtual bool read(T *item) = 0;
+
+    /** STL-style iterator declarations
+      * @{
+      */
+    typedef cc::SourceIterator<Source> iterator;
+    typedef iterator const_iterator;
+    iterator begin() { return iterator(this); }
+    iterator end() { return iterator(); }
+    const_iterator begin() const { return const_iterator(this); }
+    const_iterator end() const { return const_iterator(); }
+    /** @} */
 };
 
 } // namespace cc

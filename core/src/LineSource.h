@@ -65,6 +65,4 @@ private:
     int i_, n_;
 };
 
-CC_DEFINE_SOURCE_BEGIN_END(LineSource);
-
 } // namespace cc

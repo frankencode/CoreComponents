@@ -77,6 +77,22 @@ private:
     int i_;
 };
 
+template<class Source>
+class SourceIterator
+{
+public:
+    SourceIterator(Source *s = 0): s_(s) { getNext(); }
+
+    inline const typename Source::Item &operator*() const { return x_; }
+    inline SourceIterator &operator++() { getNext(); return *this; }
+    inline bool operator!=(const SourceIterator &b) const { return s_ != b.s_; }
+
+private:
+    inline void getNext() { if (s_) { if (!s_->read(&x_)) s_ = 0; } }
+    Source *s_;
+    typename Source::Item x_;
+};
+
 template<class Container>
 inline typename Container::const_iterator begin(const Container *c) { return c->begin(); }
 

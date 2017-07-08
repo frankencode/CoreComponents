@@ -45,6 +45,4 @@ private:
     Ref<Glob> child_;
 };
 
-CC_DEFINE_SOURCE_BEGIN_END(Glob);
-
 }} // namespace cc::regexp
