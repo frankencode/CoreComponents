@@ -8,27 +8,20 @@
 
 #pragma once
 
+#include <iterator>
+
 namespace cc {
 
 template<class Container>
-class Iterator {
-public:
-    Iterator(Container *c, int i):
-        c_(c),
-        i_(i)
-    {}
-
-    inline typename Container::Item &operator*() const { return c_->at(i_); }
-    inline Iterator &operator++() { ++i_; return *this; }
-    inline bool operator!=(const Iterator &b) const { return i_ != b.i_; }
-
-private:
-    Container *c_;
-    int i_;
-};
-
-template<class Container>
-class ConstIterator {
+class ConstIterator:
+    public std::iterator<
+        /*iterator_category*/ std::bidirectional_iterator_tag,
+        /*value_type*/        typename Container::Item,
+        /*difference_type*/   int,
+        /*pointer*/           void,
+        /*reference*/         typename Container::Item
+    >
+{
 public:
     ConstIterator(const Container *c, int i):
         c_(c),
@@ -37,10 +30,50 @@ public:
 
     inline typename Container::Item operator*() const { return c_->at(i_); }
     inline ConstIterator &operator++() { ++i_; return *this; }
+    inline ConstIterator &operator--() { --i_; return *this; }
+    inline ConstIterator operator+(int delta) { return ConstIterator(c_, i_ + delta); }
+    inline ConstIterator operator-(int delta) { return ConstIterator(c_, i_ - delta); }
+    inline int operator-(const ConstIterator &b) const { return i_ - b.i_; }
+    inline int operator<(const ConstIterator &b) const { return i_ < b.i_; }
+    inline bool operator==(const ConstIterator &b) const { return i_ == b.i_; }
     inline bool operator!=(const ConstIterator &b) const { return i_ != b.i_; }
 
 private:
     const Container *c_;
+    int i_;
+};
+
+template<class Container>
+class Iterator:
+    public std::iterator<
+        /*iterator_category*/ std::bidirectional_iterator_tag,
+        /*value_type*/        typename Container::Item,
+        /*difference_type*/   int,
+        /*pointer*/           typename Container::Item *,
+        /*reference*/         typename Container::Item &
+    >
+{
+public:
+    Iterator(Container *c, int i):
+        c_(c),
+        i_(i)
+    {}
+
+    inline typename Container::Item &operator*() const { return c_->at(i_); }
+    inline typename Container::Item *operator->() const { return &c_->at(i_); }
+    inline Iterator &operator++() { ++i_; return *this; }
+    inline Iterator &operator--() { --i_; return *this; }
+    inline Iterator operator+(int delta) { return Iterator(c_, i_ + delta); }
+    inline Iterator operator-(int delta) { return Iterator(c_, i_ - delta); }
+    inline int operator-(const Iterator &b) const { return i_ - b.i_; }
+    inline int operator<(const Iterator &b) const { return i_ < b.i_; }
+    inline bool operator==(const Iterator &b) const { return i_ == b.i_; }
+    inline bool operator!=(const Iterator &b) const { return i_ != b.i_; }
+
+    operator ConstIterator<Container>() const { return ConstIterator<Container>(c_, i_); }
+
+private:
+    Container *c_;
     int i_;
 };
 
