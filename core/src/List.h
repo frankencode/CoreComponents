@@ -284,8 +284,8 @@ public:
     /** STL-style iterator declarations
       * @{
       */
-    typedef Iterator<List> iterator;
-    typedef ConstIterator<List> const_iterator;
+    typedef cc::Iterator<List> iterator;
+    typedef cc::ConstIterator<List> const_iterator;
     iterator begin() { return iterator(this, 0); }
     iterator end() { return iterator(this, count()); }
     const_iterator begin() const { return const_iterator(this, 0); }
