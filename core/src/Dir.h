@@ -112,6 +112,4 @@ private:
     DIR *dir_;
 };
 
-CC_DEFINE_SOURCE_BEGIN_END(Dir);
-
 } // namespace cc

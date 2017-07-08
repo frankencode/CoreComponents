@@ -50,6 +50,4 @@ private:
     uint64_t index_;
 };
 
-CC_DEFINE_SOURCE_BEGIN_END(ZipArchive);
-
 }} // namespace cc::zip

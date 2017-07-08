@@ -83,6 +83,4 @@ private:
     Ref<DirWalker> child_;
 };
 
-CC_DEFINE_SOURCE_BEGIN_END(DirWalker);
-
 } // namespace cc
