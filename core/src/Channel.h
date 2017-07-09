@@ -119,6 +119,18 @@ public:
     /// Return number of queued items
     inline int count() const { Guard<Mutex> guard(mutex_); return queue_->count(); }
 
+    /** Connect with another channel
+      * \param other other channel to connect to
+      * \return pointer to the newly shared connecting channel
+      */
+    Channel *connect(Channel *other)
+    {
+        other->queue_ = queue_;
+        other->notEmpty_ = notEmpty_;
+        other->mutex_ = mutex_;
+        return this;
+    }
+
 protected:
     Channel(int capacity):
         queue_(QueueType<T>::create(capacity)),
