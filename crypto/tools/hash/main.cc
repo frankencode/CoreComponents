@@ -32,12 +32,11 @@ int main(int argc, char **argv)
             Ref<HashSink> hashSink;
             if (toolName->contains("sha1")) hashSink = Sha1Sink::open();
             else hashSink = Md5Sink::open();
-            Ref<HashMeter> hashMeter = HashMeter::open(hashSink);
             Ref<Stream> source;
             if (path != "") source = File::open(path);
             else { source = cc::stdIn(); path = "-"; }
-            Transfer::start(source, hashMeter)->waitComplete();
-            fout() << hashMeter->finish()->toHex() << "\t" << path << nl;
+            source->transferTo(hashSink);
+            fout() << hashSink->finish()->toHex() << "\t" << path << nl;
         }
     }
     catch (HelpError &) {
