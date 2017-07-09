@@ -14,14 +14,17 @@ namespace cc {
 namespace crypto {
 
 /** \class RandomSource RandomSource.h cc/crypto/RandomSource
-  * \brief Pseudo random number source
+  * \brief Pseudo random number source of the system
   */
 class RandomSource: public Stream
 {
 public:
+    /** Open a new random number source
+      * \return new object instance
+      */
     static Ref<RandomSource> open(const ByteArray *salt = 0);
 
-    virtual int read(ByteArray *data);
+    virtual int read(ByteArray *data) override;
 
 private:
     RandomSource(const ByteArray *salt);

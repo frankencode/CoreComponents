@@ -13,6 +13,9 @@
 namespace cc {
 namespace zip {
 
+/** \class ZipError exceptions.h cc/zip/exceptions
+  * \brief Something went wrong processing a ZIP archive
+  */
 class ZipError: public Exception
 {
 public:

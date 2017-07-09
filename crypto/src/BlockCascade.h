@@ -21,10 +21,15 @@ namespace crypto {
 class BlockCascade: public BlockCipher
 {
 public:
+    /** Create a new CBC mode block cipher
+      * \param cipher the underlying block cipher
+      * \param iv initialization vector
+      * \return new object instance
+      */
     static Ref<BlockCascade> create(BlockCipher *cipher, ByteArray *iv = 0);
 
-    void encode(const ByteArray *c, ByteArray *p);
-    void decode(const ByteArray *p, ByteArray *c);
+    void encode(const ByteArray *c, ByteArray *p) override;
+    void decode(const ByteArray *p, ByteArray *c) override;
 
 private:
     BlockCascade(BlockCipher *cipher, ByteArray *iv);

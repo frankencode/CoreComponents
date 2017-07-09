@@ -20,9 +20,14 @@ namespace crypto {
 class CipherSink: public Stream
 {
 public:
+    /** Open a new enciphering output stream
+      * \param cipher block cipher to use for enciphering the plaintext
+      * \param sink output sink to write the ciphertext to
+      * \return new object instance
+      */
     static Ref<CipherSink> open(BlockCipher *cipher, Stream *sink, Stream *pad = 0);
 
-    virtual void write(const ByteArray *data);
+    virtual void write(const ByteArray *data) override;
 
 private:
     CipherSink(BlockCipher *cipher, Stream *sink, Stream *pad);

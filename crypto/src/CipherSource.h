@@ -20,9 +20,14 @@ namespace crypto {
 class CipherSource: public Stream
 {
 public:
+    /** Open a new deciphering input stream
+      * \param cipher cipher to use for deciphering the ciphertext
+      * \param source source to read the ciphertext from
+      * \return new object instance
+      */
     static Ref<CipherSource> open(BlockCipher *cipher, Stream *source);
 
-    virtual int read(ByteArray *data);
+    virtual int read(ByteArray *data) override;
 
 private:
     CipherSource(BlockCipher *cipher, Stream *source);

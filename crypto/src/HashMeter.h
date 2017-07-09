@@ -15,24 +15,30 @@ namespace cc {
 namespace crypto {
 
 /** \class HashMeter HashMeter.h cc/crypto/HashMeter
-  * \brief Hash sum computing output stream
+  * \brief Hash sum computing stream meter
   * \see cc::stream::TransferMeter
   */
 class HashMeter: public Stream
 {
 public:
-    static Ref<HashMeter> open(HashSink *hashSum, Stream *stream = 0);
+    /** Open a new hash sum computing output stream
+      * \param hashSink hashing sink to use (e.g. Sha1Sink)
+      * \param stream input or output stream to meter
+      * \return new object instance
+      */
+    static Ref<HashMeter> open(HashSink *hashSink, Stream *stream = 0);
 
     int read(ByteArray *data) override;
     void write(const ByteArray *data) override;
     void write(const StringList *parts) override;
 
+    /// Finsh hash sum computation and return the resulting hash sum
     Ref<ByteArray> finish();
 
 private:
-    HashMeter(HashSink *hashSum, Stream *stream);
+    HashMeter(HashSink *hashSink, Stream *stream);
 
-    Ref<HashSink> hashSum_;
+    Ref<HashSink> hashSink_;
     Ref<Stream> stream_;
 };
 

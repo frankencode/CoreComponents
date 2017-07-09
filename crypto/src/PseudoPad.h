@@ -22,8 +22,12 @@ namespace crypto {
 class PseudoPad: public Stream
 {
 public:
-    static Ref<PseudoPad> create(BlockCipher *cipher);
-    virtual int read(ByteArray *data);
+    /** Open a new pseudo random number byte source
+      * \return new object instance
+      */
+    static Ref<PseudoPad> open(BlockCipher *cipher);
+
+    virtual int read(ByteArray *data) override;
 
 private:
     PseudoPad(BlockCipher *cipher);

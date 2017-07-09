@@ -19,12 +19,18 @@ namespace crypto {
 class AesCipher: public BlockCipher
 {
 public:
-    enum { BlockSize = 16 };
+    enum {
+        BlockSize = 16 ///< block size of the cipher in bytes
+    };
 
+    /** Create a new AES block cipher
+      * \param key 128 or 256 bit key (16 or 32 bytes)
+      * \return new object instance
+      */
     inline static Ref<AesCipher> create(const ByteArray *key) { return new AesCipher(key); }
 
-    void encode(const ByteArray *p, ByteArray *c);
-    void decode(const ByteArray *c, ByteArray *p);
+    void encode(const ByteArray *p, ByteArray *c) override;
+    void decode(const ByteArray *c, ByteArray *p) override;
 
 private:
     AesCipher(const ByteArray *key);

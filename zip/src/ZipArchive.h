@@ -17,6 +17,9 @@ typedef struct zip zip_t;
 namespace cc {
 namespace zip {
 
+/** \class ZipArchive ZipArchive.h cc/zip/ZipArchive
+  * \brief Read the contents of ZIP archives
+  */
 class ZipArchive: public Folder
 {
 public:

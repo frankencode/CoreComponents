@@ -19,12 +19,17 @@ namespace crypto {
 class Md5Sink: public HashSink
 {
 public:
-    enum { Size = 16 };
+    enum {
+        Size = 16 ///< size of the hash sum in bytes
+    };
 
+    /** Open a new MD5 sum computing hash sink
+      * \return new object instance
+      */
     static Ref<Md5Sink> open();
 
-    virtual void write(const ByteArray *data);
-    virtual Ref<ByteArray> finish();
+    virtual void write(const ByteArray *data) override;
+    virtual Ref<ByteArray> finish() override;
 
 private:
     Md5Sink();
