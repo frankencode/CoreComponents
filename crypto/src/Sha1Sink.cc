@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/crypto/Sha1>
+#include <cc/crypto/Sha1Sink>
 
 namespace cc {
 namespace crypto {
@@ -36,17 +36,17 @@ inline uint32_t f(int t, uint32_t b, uint32_t c, uint32_t d)
 
 } // namespace _sha1
 
-Ref<Sha1> Sha1::create()
+Ref<Sha1Sink> Sha1Sink::open()
 {
-    return new Sha1;
+    return new Sha1Sink;
 }
 
-Sha1::Sha1()
-    : h_(ByteArray::create(20)),
-      m_(ByteArray::create(64)),
-      w_(ByteArray::create(320)),
-      j_(0),
-      l_(0)
+Sha1Sink::Sha1Sink():
+    h_(ByteArray::create(20)),
+    m_(ByteArray::create(64)),
+    w_(ByteArray::create(320)),
+    j_(0),
+    l_(0)
 {
     h_->wordAt(0) = 0x67452301;
     h_->wordAt(1) = 0xEFCDAB89;
@@ -55,7 +55,7 @@ Sha1::Sha1()
     h_->wordAt(4) = 0xC3D2E1F0;
 }
 
-void Sha1::write(const ByteArray *data)
+void Sha1Sink::write(const ByteArray *data)
 {
     for (int i = 0; i < data->count(); ++i) {
         uint8_t b = data->byteAt(i);
@@ -65,7 +65,7 @@ void Sha1::write(const ByteArray *data)
     l_ += uint64_t(data->count()) * 8;
 }
 
-Ref<ByteArray> Sha1::finish()
+Ref<ByteArray> Sha1Sink::finish()
 {
     m_->byteAt(j_++) = 0x80;
     if (j_ == 64) consume();
@@ -89,7 +89,7 @@ Ref<ByteArray> Sha1::finish()
     return h_;
 }
 
-void Sha1::consume()
+void Sha1Sink::consume()
 {
     j_ = 0;
 
@@ -128,7 +128,7 @@ void Sha1::consume()
 
 Ref<ByteArray> sha1(const ByteArray *data)
 {
-    Ref<Sha1> h = Sha1::create();
+    Ref<Sha1Sink> h = Sha1Sink::open();
     h->write(data);
     return h->finish();
 }

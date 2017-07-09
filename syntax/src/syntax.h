@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Crc32>
+#include <cc/Crc32Sink>
 #include <cc/PrefixTree>
 #include <cc/exceptions>
 #include <cc/Format>

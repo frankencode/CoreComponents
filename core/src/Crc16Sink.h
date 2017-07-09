@@ -10,19 +10,23 @@
 
 #include <cc/types>
 #include <cc/strings>
-#include <cc/HashSum>
+#include <cc/HashSink>
 
 namespace cc {
 
-/** \class Crc16 Crc16.h cc/Crc16
+/** \class Crc16Sink Crc16Sink.h cc/Crc16Sink
   * \brief CRC-16 check sum generator, according to RFC 1171
   */
-class Crc16: public HashSum
+class Crc16Sink: public HashSink
 {
 public:
     enum { Size = 2 };
 
-    Crc16(uint16_t seed = ~uint16_t(0)):
+    static uint16_t defaultSeed() { return ~uint16_t(0); }
+
+    static Ref<Crc16Sink> open(uint16_t seed = defaultSeed()) { return new Crc16Sink(seed); }
+
+    Crc16Sink(uint16_t seed = defaultSeed()):
         crc_(seed)
     {}
 
@@ -37,19 +41,19 @@ private:
 };
 
 inline uint16_t crc16(const void *buf, int bufSize) {
-    Crc16 crc;
+    Crc16Sink crc;
     if (buf) crc.feed(buf, bufSize);
     return crc.sum();
 }
 
 inline uint16_t crc16(const char *s) {
-    Crc16 crc;
+    Crc16Sink crc;
     if (s) crc.feed(s, strlen(s));
     return crc.sum();
 }
 
 inline uint16_t crc16(String s) {
-    Crc16 crc;
+    Crc16Sink crc;
     if (s) crc.feed(s->bytes(), s->count());
     return crc.sum();
 }

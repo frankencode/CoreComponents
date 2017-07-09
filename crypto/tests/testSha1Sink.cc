@@ -8,7 +8,7 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
-#include <cc/crypto/Sha1>
+#include <cc/crypto/Sha1Sink>
 
 using namespace cc;
 using namespace cc::testing;
@@ -34,10 +34,10 @@ public:
             << "DE A3 56 A2 CD DD 90 C7 A7 EC ED C5 EB B5 63 93 4F 46 04 52";
 
         for (int i = 0; i < tests->count(); ++i) {
-            Ref<Sha1> hash = Sha1::create();
-            for (int j = 0; j < repeatCount[i]; ++j) hash->write(tests->at(i));
+            Ref<Sha1Sink> hashSink = Sha1Sink::open();
+            for (int j = 0; j < repeatCount[i]; ++j) hashSink->write(tests->at(i));
             String requiredSum = results->at(i)->replace(" ", "")->toLower();
-            String sum = hash->finish()->toHex();
+            String sum = hashSink->finish()->toHex();
             fout("SHA-1 of \"%%\" repeated %% time(s):") << tests->at(i) << repeatCount[i] << nl;
             fout() << "  " << requiredSum << " (required)" << nl;
             fout() << "  " << sum << " (delivered)" << nl;

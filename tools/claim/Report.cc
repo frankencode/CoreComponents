@@ -8,7 +8,7 @@
 
 #include <cc/DirWalker>
 #include <cc/File>
-#include <cc/crypto/Sha1>
+#include <cc/crypto/Sha1Sink>
 #include "Registry.h"
 #include "NoticeParser.h"
 #include "Report.h"

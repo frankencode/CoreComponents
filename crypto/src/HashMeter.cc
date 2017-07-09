@@ -11,12 +11,12 @@
 namespace cc {
 namespace crypto {
 
-Ref<HashMeter> HashMeter::open(HashSum *hashSum, Stream *stream )
+Ref<HashMeter> HashMeter::open(HashSink *hashSum, Stream *stream )
 {
     return new HashMeter(hashSum, stream);
 }
 
-HashMeter::HashMeter(HashSum *hashSum, Stream *stream):
+HashMeter::HashMeter(HashSink *hashSum, Stream *stream):
     hashSum_(hashSum),
     stream_(stream)
 {}
