@@ -18,6 +18,9 @@ namespace zip {
 
 class ZipArchive;
 
+/** \class ZipFile ZipFile.h cc/zip/ZipFile
+  * \brief Read a file contained in a ZIP archive
+  */
 class ZipFile: public Stream
 {
 public:

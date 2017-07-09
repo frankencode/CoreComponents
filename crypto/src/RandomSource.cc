@@ -36,7 +36,7 @@ RandomSource::RandomSource(const ByteArray *salt)
     }
 
     source_ =
-        PseudoPad::create(
+        PseudoPad::open(
             BlockCascade::create(
                 AesCipher::create(key),
                 iv

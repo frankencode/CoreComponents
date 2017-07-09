@@ -21,9 +21,9 @@ SystemStream *stdIn(); ///< Standard input stream
 SystemStream *stdOut(); ///< Standard output stream
 SystemStream *stdErr(); ///< Standard error stream
 
-inline SystemStream *standardInput() { return stdIn(); }
-inline SystemStream *standardOutput() { return stdOut(); }
-inline SystemStream *standardError() { return stdErr(); }
+inline SystemStream *standardInput() { return stdIn(); } ///< Standard input stream
+inline SystemStream *standardOutput() { return stdOut(); } ///< Standard input stream
+inline SystemStream *standardError() { return stdErr(); } ///< Standard input stream
 
 /** \}
   */

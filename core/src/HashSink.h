@@ -18,6 +18,7 @@ namespace cc {
 class HashSink: public Stream
 {
 public:
+    /// Finish hash sum computation and return the result
     virtual Ref<ByteArray> finish() = 0;
 };
 

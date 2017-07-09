@@ -11,7 +11,7 @@
 namespace cc {
 namespace crypto {
 
-Ref<PseudoPad> PseudoPad::create(BlockCipher *cipher)
+Ref<PseudoPad> PseudoPad::open(BlockCipher *cipher)
 {
     return new PseudoPad(cipher);
 }
