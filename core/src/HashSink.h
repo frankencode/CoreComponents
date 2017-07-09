@@ -12,10 +12,10 @@
 
 namespace cc {
 
-/** \class HashSum HashSum.h cc/HashSum
-  * \brief Hash sum interface
+/** \class HashSink HashSink.h cc/HashSink
+  * \brief Hashsum computing sink
   */
-class HashSum: public Stream
+class HashSink: public Stream
 {
 public:
     virtual Ref<ByteArray> finish() = 0;

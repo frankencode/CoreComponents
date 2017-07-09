@@ -8,35 +8,34 @@
 
 #pragma once
 
-#include <cc/HashSum>
+#include <cc/HashSink>
 
 namespace cc {
 namespace crypto {
 
-/** \class Sha1 Sha1.h cc/crypto/Sha1
-  * \brief Secure Hash 1: a one-way hash function
+/** \class Md5Sink Md5Sink.h cc/crypto/Md5Sink
+  * \brief Message Digest 5: a one-way hash function
   */
-class Sha1: public HashSum
+class Md5Sink: public HashSink
 {
 public:
-    enum { Size = 20 };
+    enum { Size = 16 };
 
-    static Ref<Sha1> create();
+    static Ref<Md5Sink> open();
 
     virtual void write(const ByteArray *data);
     virtual Ref<ByteArray> finish();
 
 private:
-    Sha1();
+    Md5Sink();
     void consume();
 
-    Ref<ByteArray> h_;
-    Ref<ByteArray> m_;
-    Ref<ByteArray> w_;
-    int j_;
-    uint64_t l_;
+    Ref<ByteArray> aux_;
+    int auxFill_;
+    uint64_t bytesFeed_;
+    uint32_t a_, b_, c_, d_;
 };
 
-Ref<ByteArray> sha1(const ByteArray *data);
+Ref<ByteArray> md5(const ByteArray *data);
 
 }} // namespace cc::crypto

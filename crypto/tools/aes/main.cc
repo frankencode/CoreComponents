@@ -12,7 +12,7 @@
 #include <cc/File>
 #include <cc/ByteSink>
 #include <cc/ByteSource>
-#include <cc/Crc32>
+#include <cc/Crc32Sink>
 #include <cc/crypto/AesCipher>
 #include <cc/crypto/BlockCascade>
 #include <cc/crypto/CipherSink>

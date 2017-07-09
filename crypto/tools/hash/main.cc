@@ -7,11 +7,12 @@
  */
 
 #include <cc/stdio>
-#include <cc/File>
 #include <cc/exceptions>
 #include <cc/Arguments>
-#include <cc/crypto/Sha1>
-#include <cc/crypto/Md5>
+#include <cc/File>
+#include <cc/Transfer>
+#include <cc/crypto/Sha1Sink>
+#include <cc/crypto/Md5Sink>
 #include <cc/crypto/HashMeter>
 
 using namespace cc;
@@ -28,14 +29,14 @@ int main(int argc, char **argv)
         if (items->count() == 0) items->append("");
 
         for (String path: items) {
-            Ref<HashSum> hashSum;
-            if (toolName->contains("sha1")) hashSum = Sha1::create();
-            else hashSum = Md5::create();
-            Ref<HashMeter> hashMeter = HashMeter::open(hashSum);
+            Ref<HashSink> hashSink;
+            if (toolName->contains("sha1")) hashSink = Sha1Sink::open();
+            else hashSink = Md5Sink::open();
+            Ref<HashMeter> hashMeter = HashMeter::open(hashSink);
             Ref<Stream> source;
             if (path != "") source = File::open(path);
             else { source = cc::stdIn(); path = "-"; }
-            source->transferTo(hashMeter);
+            Transfer::start(source, hashMeter)->waitComplete();
             fout() << hashMeter->finish()->toHex() << "\t" << path << nl;
         }
     }

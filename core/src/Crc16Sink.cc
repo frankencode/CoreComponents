@@ -6,7 +6,7 @@
  *
  */
 
-#include "Crc16.h"
+#include <cc/Crc16Sink>
 
 namespace cc {
 
@@ -45,7 +45,7 @@ static uint16_t crcTable[256] = { // ISO 3309
     0x7BC7, 0x6A4E, 0x58D5, 0x495C, 0x3DE3, 0x2C6A, 0x1EF1, 0x0F78
 };
 
-void Crc16::feed(const void *buf, int bufFill)
+void Crc16Sink::feed(const void *buf, int bufFill)
 {
     const uint8_t *data = reinterpret_cast<const uint8_t*>(buf);
     for (int i = 0; i < bufFill; ++i) {
@@ -54,12 +54,12 @@ void Crc16::feed(const void *buf, int bufFill)
     }
 }
 
-void Crc16::write(const ByteArray *data)
+void Crc16Sink::write(const ByteArray *data)
 {
     feed(data->bytes(), data->count());
 }
 
-Ref<ByteArray> Crc16::finish()
+Ref<ByteArray> Crc16Sink::finish()
 {
     Ref<ByteArray> sum = ByteArray::create(Size);
     sum->at(0) = (crc_ >> 8) & 0xFF;

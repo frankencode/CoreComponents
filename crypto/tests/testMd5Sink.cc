@@ -8,7 +8,7 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
-#include <cc/crypto/Md5>
+#include <cc/crypto/Md5Sink>
 
 using namespace cc;
 using namespace cc::testing;

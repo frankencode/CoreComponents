@@ -6,28 +6,28 @@
  *
  */
 
-#include <string.h> // FIXME
-#include <cc/crypto/Md5>
+// #include <string.h> // FIXME
+#include <cc/crypto/Md5Sink>
 
 namespace cc {
 namespace crypto {
 
-Ref<Md5> Md5::create()
+Ref<Md5Sink> Md5Sink::open()
 {
-    return new Md5;
+    return new Md5Sink;
 }
 
-Md5::Md5()
-    : aux_(ByteArray::create(0x4000 + 64)),
-      auxFill_(0),
-      bytesFeed_(0),
-      a_(0x67452301), b_(0xEFCDAB89),
-      c_(0x98BADCFE), d_(0x10325476)
+Md5Sink::Md5Sink():
+    aux_(ByteArray::create(0x4000 + 64)),
+    auxFill_(0),
+    bytesFeed_(0),
+    a_(0x67452301), b_(0xEFCDAB89),
+    c_(0x98BADCFE), d_(0x10325476)
 {
     CC_ASSERT((aux_->count() % 64) == 0);
 }
 
-void Md5::write(const ByteArray *data)
+void Md5Sink::write(const ByteArray *data)
 {
     const uint8_t *src = data->bytes();
     int srcLeft = data->count();
@@ -46,7 +46,7 @@ void Md5::write(const ByteArray *data)
     }
 }
 
-Ref<ByteArray> Md5::finish()
+Ref<ByteArray> Md5Sink::finish()
 {
     /** manually feed the padding and message size
       */
@@ -60,7 +60,7 @@ Ref<ByteArray> Md5::finish()
 
     /** serialize the message digest
       */
-    Ref<ByteArray> h = ByteArray::create(Md5::Size);
+    Ref<ByteArray> h = ByteArray::create(Md5Sink::Size);
     int k = 0;
     for (int i = 0; i < 4; ++i) h->at(k++) = a_ >> (8 * i);
     for (int i = 0; i < 4; ++i) h->at(k++) = b_ >> (8 * i);
@@ -172,7 +172,7 @@ inline static void r4(const uint32_t *x, uint32_t &a, uint32_t b, uint32_t c, ui
     a = b + rol32(a + l(b, c, d) + x[k] + t, s);
 }
 
-void Md5::consume()
+void Md5Sink::consume()
 {
     uint32_t *m = aux_->words();
     for (int i = 0, nc = auxFill_ / 64; i < nc; ++i) {
@@ -219,7 +219,7 @@ void Md5::consume()
 
 Ref<ByteArray> md5(const ByteArray *data)
 {
-    Ref<Md5> h = Md5::create();
+    Ref<Md5Sink> h = Md5Sink::open();
     h->write(data);
     return h->finish();
 }

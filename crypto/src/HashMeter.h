@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Stream>
-#include <cc/HashSum>
+#include <cc/HashSink>
 
 namespace cc {
 namespace crypto {
@@ -21,7 +21,7 @@ namespace crypto {
 class HashMeter: public Stream
 {
 public:
-    static Ref<HashMeter> open(HashSum *hashSum, Stream *stream = 0);
+    static Ref<HashMeter> open(HashSink *hashSum, Stream *stream = 0);
 
     int read(ByteArray *data) override;
     void write(const ByteArray *data) override;
@@ -30,9 +30,9 @@ public:
     Ref<ByteArray> finish();
 
 private:
-    HashMeter(HashSum *hashSum, Stream *stream);
+    HashMeter(HashSink *hashSum, Stream *stream);
 
-    Ref<HashSum> hashSum_;
+    Ref<HashSink> hashSum_;
     Ref<Stream> stream_;
 };
 
