@@ -16,6 +16,10 @@
 #include <QUrl>
 #endif
 
+/// translate a macro expression into a C string
+#define CC_XSTR(x) CC_STR(x)
+#define CC_STR(x) #x
+
 namespace cc {
 
 class ByteArray;
@@ -684,6 +688,16 @@ public:
       */
     String toHex() const;
 
+    #if 0
+    /** Convert to a series of hexadecimal characters
+      * \param byteSeparator separator put between individual bytes
+      * \see hexDump
+      */
+    String toHex(String byteSeparator) const {
+        return toHex()->breakUp(2)->join(byteSeparator);
+    }
+    #endif
+
     /** Convert to a hexadecimal dump
       * \see HexDump
       */
@@ -730,8 +744,27 @@ public:
     /// Remove redundant or ambigous path components
     String canonicalPath() const;
 
-    /// Compare for identity with b
-    bool equals(const String &b) const { return String(this) == b; }
+    /** Byte-vise comparisms operators
+      * @{
+      */
+    bool equals(const String &b) const { return size_ == b->size_ && strncmp(chars_, b->chars_, size_) == 0; }
+    bool differs(const String &b) const { return size_ != b->size_ || strncmp(chars_, b->chars_, size_) != 0; }
+    bool below(const String &b) const {
+        int m = size_ < b->size_ ? size_ : b->size_;
+        int ret = strncmp(chars_, b->chars_, m);
+        if (ret == 0) return size_ < b->size_;
+        return ret < 0;
+    }
+    bool belowOrEqual(const String &b) const {
+        int m = size_ < b->size_ ? size_ : b->size_;
+        int ret = strncmp(chars_, b->chars_, m);
+        if (ret == 0) return size_ <= b->size_;
+        return ret < 0;
+    }
+    inline bool greater(const String &b) const { return b->below(this); }
+    inline bool greaterOrEqual(const String &b) const { return b->belowOrEqual(this); }
+    /** @}
+      */
 
     /** Compare with another string (case-insensitive)
       * \param b other string
@@ -860,22 +893,12 @@ int ByteArray::scanNumber(T *value, int base, int i0, int i1) const
     return i;
 }
 
-inline bool operator==(const String &a, const String &b) { return a->size_ == b->size_ && strncmp(a->chars_, b->chars_, a->size_) == 0; }
-inline bool operator!=(const String &a, const String &b) { return a->size_ != b->size_ || strncmp(a->chars_, b->chars_, a->size_) != 0; }
-inline bool operator< (const String &a, const String &b) {
-    int m = a->size_ < b->size_ ? a->size_ : b->size_;
-    int ret = strncmp(a->chars_, b->chars_, m);
-    if (ret == 0) return a->size_ < b->size_;
-    return ret < 0;
-}
-inline bool operator> (const String &a, const String &b) { return b < a; }
-inline bool operator<=(const String &a, const String &b) {
-    int m = a->size_ < b->size_ ? a->size_ : b->size_;
-    int ret = strncmp(a->chars_, b->chars_, m);
-    if (ret == 0) return a->size_ <= b->size_;
-    return ret < 0;
-}
-inline bool operator>=(const String &a, const String &b) { return b <= a; }
+inline bool operator==(const String &a, const String &b) { return a->equals(b); }
+inline bool operator!=(const String &a, const String &b) { return a->differs(b); }
+inline bool operator< (const String &a, const String &b) { return a->below(b); }
+inline bool operator> (const String &a, const String &b) { return b->below(a); }
+inline bool operator<=(const String &a, const String &b) { return a->belowOrEqual(b); }
+inline bool operator>=(const String &a, const String &b) { return b->belowOrEqual(a); }
 
 inline bool operator==(const char *a, const String &b) { return strcmp(a, b->chars()) == 0; }
 inline bool operator!=(const char *a, const String &b) { return strcmp(a, b->chars()) != 0; }

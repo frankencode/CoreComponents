@@ -27,6 +27,6 @@ public:
     virtual const char* what() const throw();
 };
 
-inline String str(const Exception &ex) { return ex.message(); }
+inline String str(const Exception &ex) { return ex.message(); } // FIXME: superseeded by toString() method when moving to heap objects
 
 } // namespace cc
