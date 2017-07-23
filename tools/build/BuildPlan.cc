@@ -8,6 +8,7 @@
 
 #include <cc/stdio>
 #include <cc/Process>
+#include <cc/Crc32Sink>
 #include <cc/File>
 #include <cc/Dir>
 #include <cc/DirWalker>
@@ -442,21 +443,24 @@ void BuildPlan::initModules()
 
     Format f;
     f << ".modules";
+    String absoulteProjectPath = projectPath_->absolutePathRelativeTo(Process::cwd());
     {
         Format h;
-        String path = projectPath_->absolutePathRelativeTo(Process::cwd());
         String topLevel = sourcePrefix_->absolutePathRelativeTo(Process::cwd());
-        while (path != topLevel && path != "/" && path != toolChain_->systemRoot()) {
+        for (
+            String path = absoulteProjectPath;
+            path != topLevel && path != "/" && path != toolChain_->systemRoot();
+            path = path->reducePath()
+        )
             h << path->fileName();
-            path = path->reducePath();
-        }
         h << topLevel->fileName();
-        f << h->reverse()->join("_");
+        f << hex(crc32(h->reverse()->join("/")), 8);
     }
     if (options_ & Bootstrap)
         f << "$MACHINE";
     else
         f << toolChain_->machine();
+    f << absoulteProjectPath->reducePath()->fileName() + "_" + absoulteProjectPath->fileName();
     modulePath_ = f->join("-");
 
     for (int i = 0; i < prerequisites_->count(); ++i)

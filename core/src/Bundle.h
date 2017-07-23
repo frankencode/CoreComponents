@@ -10,9 +10,6 @@
 
 #include <cc/String>
 
-#define CC_XSTR(s) CC_STR(s)
-#define CC_STR(s) #s
-
 /// Lookup a path of a bundled ressource
 #define CC_BUNDLE_LOOKUP(relPath) cc::Bundle::lookup(relPath, cc::StringList::create() << cc::Bundle::prefix(CC_XSTR(CCBUILD_BUNDLE_PREFIX)) << cc::Bundle::exePrefix() << cc::String(__FILE__)->reducePath())
 
