@@ -745,12 +745,9 @@ void SyntaxDebugger::determineRulesInUse(RuleNode *rule)
 {
     if (!rule->used()) {
         rule->markUsed();
-        SyntaxNode *node = rule->entry()->first();
-        while (node) {
+        for (SyntaxNode *node: rule->entry()->inOrder()) {
             LinkNode *link = Object::cast<LinkNode *>(node);
-            if (link)
-                determineRulesInUse(link->rule());
-            node = node->next();
+            if (link) determineRulesInUse(link->rule());
         }
     }
 }
