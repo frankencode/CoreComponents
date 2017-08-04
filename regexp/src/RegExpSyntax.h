@@ -18,7 +18,8 @@ namespace regexp {
 
 using namespace cc::syntax;
 
-/** \brief Syntax of a regular expression text pattern
+/** \class RegExpSyntax RegExpSyntax.h cc/regexp/RegExpSyntax
+  * \brief Syntax of a regular expression text pattern
   */
 class RegExpSyntax: public SyntaxDefinition
 {

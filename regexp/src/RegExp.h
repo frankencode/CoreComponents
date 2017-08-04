@@ -20,7 +20,8 @@ namespace regexp {
 
 using namespace cc::syntax;
 
-/** \brief Regular expression pattern
+/** \class RegExp RegExp.h cc/regexp/RegExp
+  * \brief Regular expression pattern
   * \see SyntaxDefinition
   */
 class RegExp: public Ref<SyntaxDefinition>
