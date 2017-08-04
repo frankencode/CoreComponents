@@ -16,7 +16,8 @@ namespace cc { class Dir; }
 namespace cc {
 namespace regexp {
 
-/** \brief Collect file names matching a globbing pattern
+/** \class Glob Glob.h cc/regexp/Glob
+  * \brief Collect file names matching a globbing pattern
   * \see DirWalker
   */
 class Glob: public Source<String>
