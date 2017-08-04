@@ -15,10 +15,13 @@
 namespace cc {
 namespace meta {
 
-MetaObject::MetaObject(const String &className, MetaProtocol *protocol)
-    : className_(className),
-      protocol_(protocol)
-{}
+MetaObject::MetaObject(const String &className, MetaProtocol *protocol):
+    className_(className),
+    protocol_(protocol),
+    children_(MetaObjectList::create())
+{
+    if (!protocol_) protocol_ = MetaProtocol::create();
+}
 
 Variant MetaObject::toVariant() const
 {
@@ -30,31 +33,15 @@ String MetaObject::toString() const
     return yason::stringify(toVariant());
 }
 
-MetaObjectList *MetaObject::children()
-{
-    if (!children_) {
-        Guard<SpinLock> guard(&mutex_);
-        if (!children_) children_ = MetaObjectList::create();
-    }
-    return children_;
-}
-
-MetaProtocol *MetaObject::protocol()
-{
-    if (!protocol_) {
-        Guard<SpinLock> guard(&mutex_);
-        if (!protocol_) protocol_ = MetaProtocol::create();
-    }
-    return protocol_;
-}
+bool MetaObject::hasProtocol() const { return protocol_->isDefined(); }
 
 Ref<MetaObject> MetaObject::clone()
 {
     Ref<MetaObject> object = produce();
     object->MetaObject::autocomplete(this);
     if (hasChildren()) {
-        for (int i = 0; i < children()->count(); ++i) {
-            object->children()->append(children()->at(i)->clone());
+        for (int i = 0; i < children_->count(); ++i) {
+            object->children_->append(children()->at(i)->clone());
         }
     }
     return object;

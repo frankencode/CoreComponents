@@ -158,8 +158,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     }
 
     if (recipe_->hasChildren()) {
-        for (int i = 0; i < recipe_->children()->count(); ++i) {
-            MetaObject *object = recipe_->children()->at(i);
+        for (const MetaObject *object: recipe_->children()) {
             if (object->className() == "Dependency") {
                 Ref<SystemPrerequisite> p = SystemPrerequisite::read(object, this);
                 Ref<SystemPrerequisiteList> l;
@@ -167,6 +166,8 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
                     systemPrerequisitesByName_ = SystemPrerequisitesByName::create();
                 if (!systemPrerequisitesByName_->lookup(p->name(), &l))
                     systemPrerequisitesByName_->insert(p->name(), l = SystemPrerequisiteList::create());
+                else
+                    throw UsageError(Format("%%: Ambiguous system dependency '%%'") << recipePath_ << p->name());
                 l->append(p);
             }
             else if (object->className() == "Predicate") {

@@ -445,7 +445,7 @@ Ref<MetaObject> YasonSyntax::readObject(const ByteArray *text, Token *token, con
             object->insert(name, value);
         }
         else {
-            MetaProtocol *prototypeProtocol = 0;
+            const MetaProtocol *prototypeProtocol = 0;
             if (prototype) prototypeProtocol = prototype->protocol();
             if (prototypeProtocol) {
                 if (object->children()->count() >= prototypeProtocol->maxCount()) {
@@ -464,7 +464,7 @@ Ref<MetaObject> YasonSyntax::readObject(const ByteArray *text, Token *token, con
     object->autocomplete(prototype);
 
     if (prototype) {
-        MetaProtocol *prototypeProtocol = prototype->protocol();
+        const MetaProtocol *prototypeProtocol = prototype->protocol();
         if (prototypeProtocol) {
             if (prototypeProtocol->minCount() > 0) {
                 if (!object->hasChildren() || object->children()->count() < prototypeProtocol->minCount()) {

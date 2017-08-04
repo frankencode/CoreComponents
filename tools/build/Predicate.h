@@ -18,7 +18,7 @@ using namespace cc;
 class Predicate: public MetaObject
 {
 public:
-    inline static Ref<Predicate> read(MetaObject *object) {
+    inline static Ref<Predicate> read(const MetaObject *object) {
         return new Predicate(object);
     }
 
@@ -29,7 +29,7 @@ public:
     inline String remove() const { return remove_; }
 
 private:
-    Predicate(MetaObject *object):
+    Predicate(const MetaObject *object):
         source_(object->value("source")),
         target_(object->value("target")),
         create_(object->value("create")),
