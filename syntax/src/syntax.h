@@ -1037,7 +1037,7 @@ public:
     int numberOfRefs() {
         if (numberOfRefs_ == -1) {
             numberOfRefs_ = 0;
-            for (SyntaxNode *node = SyntaxNode::first(); node; node = node->next())
+            for (SyntaxNode *node: SyntaxNode::inOrder())
                 if (Object::cast<RefNode *>(node)) ++numberOfRefs_;
         }
         return numberOfRefs_;
