@@ -22,8 +22,8 @@ class BuildParameters: public Object
 {
 public:
     inline static Ref<BuildParameters> create() { return new BuildParameters; }
-    void read(MetaObject *object, BuildPlan *plan = 0);
-    void readSpecific(MetaObject *object);
+    void read(const MetaObject *object, BuildPlan *plan = 0);
+    void readSpecific(const MetaObject *object);
     void readSpecific(BuildParameters *specific);
 
     inline String compiler() const { return compiler_; }

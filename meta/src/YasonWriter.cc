@@ -113,7 +113,7 @@ void YasonWriter::writeObject(Variant value, int depth)
     }
     if (object->hasChildren()) {
         if (object->count() > 0) writeIndent(depth + 1);
-        MetaObjectList *children = object->children();
+        const MetaObjectList *children = object->children();
         for (int i = 0; i < children->count(); ++i) {
             writeObject(children->at(i), depth + 1);
             format_ << "\n";
