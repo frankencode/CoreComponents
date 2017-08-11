@@ -22,6 +22,8 @@ public:
     inline static Ref<MetaProtocol> create() {
         return new MetaProtocol;
     }
+    
+    bool isDefined() const { return prototypes_->count() > 0; }
 
     template<class Prototype>
     Prototype *define(const String &className) {
@@ -39,7 +41,7 @@ public:
 
     MetaObject *define(MetaObject *prototype) {
         prototype->define();
-        prototypes()->insert(prototype->className(), prototype);
+        prototypes_->insert(prototype->className(), prototype);
         return prototype;
     }
 
@@ -70,6 +72,7 @@ protected:
     friend class YasonSyntax;
 
     MetaProtocol():
+        prototypes_(Prototypes::create()),
         minCount_(0),
         maxCount_(cc::intMax)
     {}
@@ -80,10 +83,6 @@ protected:
 
 private:
     typedef Map<String, Ref<MetaObject> > Prototypes;
-    Prototypes *prototypes() {
-        if (!prototypes_) prototypes_ = Prototypes::create();
-        return prototypes_;
-    }
     Ref<Prototypes> prototypes_;
     int minCount_;
     int maxCount_;
