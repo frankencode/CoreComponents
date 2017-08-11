@@ -417,8 +417,8 @@ void BuildPlan::globSources()
     else sourcePrefix_ = sourcePrefix_->canonicalPath();
 
     containsCPlusPlus_ = false;
-    for (int i = 0; i < sources_->count(); ++i) {
-        String suffix = sources_->at(i)->fileSuffix();
+    for (String source: sources_) {
+        String suffix = source->fileSuffix();
         if (suffix == "cpp" || suffix == "cc" || suffix == "cxx" || suffix == "mm") {
             containsCPlusPlus_ = true;
             break;
@@ -430,8 +430,8 @@ void BuildPlan::globSources()
     else
         bundle_ = StringList::create();
 
-    for (int i = 0; i < prerequisites_->count(); ++i)
-        prerequisites_->at(i)->globSources();
+    for (BuildPlan *plan: prerequisites_)
+        plan->globSources();
 }
 
 void BuildPlan::initModules()
@@ -468,4 +468,4 @@ void BuildPlan::initModules()
         prerequisites_->at(i)->initModules();
 }
 
-} // namespace ccbuil
+} // namespace ccbuild
