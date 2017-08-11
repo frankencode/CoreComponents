@@ -19,7 +19,7 @@ class BuildPlan;
 class SystemPrerequisite: public BuildParameters
 {
 public:
-    static Ref<SystemPrerequisite> read(MetaObject *object, BuildPlan *plan);
+    static Ref<SystemPrerequisite> read(const MetaObject *object, BuildPlan *plan);
 
     inline String name() const { return name_; }
     inline String value() const { return value_; }
@@ -39,7 +39,7 @@ public:
     inline StringList *includeTest() const { return includeTest_; }
 
 private:
-    SystemPrerequisite(MetaObject *object, BuildPlan *plan);
+    SystemPrerequisite(const MetaObject *object, BuildPlan *plan);
 
     String name_;
     String value_;

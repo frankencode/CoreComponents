@@ -11,12 +11,12 @@
 
 namespace ccbuild {
 
-Ref<SystemPrerequisite> SystemPrerequisite::read(MetaObject *object, BuildPlan *plan)
+Ref<SystemPrerequisite> SystemPrerequisite::read(const MetaObject *object, BuildPlan *plan)
 {
     return new SystemPrerequisite(object, plan);
 }
 
-SystemPrerequisite::SystemPrerequisite(MetaObject *object, BuildPlan *plan):
+SystemPrerequisite::SystemPrerequisite(const MetaObject *object, BuildPlan *plan):
     name_(object->value("name")),
     value_(object->value("value")),
     description_(object->value("description")),

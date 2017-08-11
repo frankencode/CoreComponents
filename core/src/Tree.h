@@ -8,9 +8,57 @@
 
 #pragma once
 
-#include <cc/Object>
+#include <cc/Source>
 
 namespace cc {
+
+template<class Node>
+class ChildrenRun: public Source<Node *>
+{
+public:
+    ChildrenRun(const Node *node):
+        node_(node->firstChild())
+    {}
+    
+    ChildrenRun(ChildrenRun &&other):
+        node_(other.node_)
+    {}
+    
+    virtual bool read(Node **node) override
+    {
+        if (!node_) return false;
+        *node = node_;
+        node_ = node_->nextSibling();
+        return true; 
+    }
+    
+private:
+    Node *node_;
+};
+
+template<class Node>
+class InOrderRun: public Source<Node *>
+{
+public:
+    InOrderRun(const Node *node):
+        node_(node->firstLeaf())
+    {}
+    
+    InOrderRun(InOrderRun &&other):
+        node_(other.node_)
+    {}
+    
+    virtual bool read(Node **node) override
+    {
+        if (!node_) return false;
+        *node = node_;
+        node_ = node_->next();
+        return true; 
+    }
+        
+private:
+    Node *node_;
+};
 
 /** \class Tree Tree.h cc/Tree
   * \brief Generic tree structure
@@ -30,28 +78,28 @@ public:
     inline void appendChild(Node *node) { insertChild(node, lastChild_); }
 
     void insertChild(Node *node, Node *previousSibling = 0);
-    void appendAllChildrenOf(Node *node); // HACK?, better: adoptChildrenOf(...)
+    void adoptChildrenOf(Node *node);
     void disbandChildren();
     void unlink();
 
-    // iterating leafs
     Node *firstLeaf() const;
     Node *lastLeaf() const;
     Node *nextLeaf() const;
     Node *previousLeaf() const;
 
-    // iterating all nodes
-    inline Node *first() const { return firstLeaf(); }
-    inline Node *last() const { return lastLeaf(); }
-    inline Node *next() const { return (nextSibling_) ? nextSibling_->firstLeaf() : parent(); }
+    inline Node *next() const { return (nextSibling_) ? nextSibling_->firstLeaf() : parent_; }
+    inline Node *previous() const { return (previousSibling_) ? previousSibling_->lastLeaf() : parent_; }    
 
     inline int countChildren() const {
-        return (firstChild_) ? firstChild_->countSiblings() : 0;
+        return (firstChild_) ? firstChild_->countSiblings() + 1 : 0;
     }
     inline bool hasChildren() const { return firstChild_; }
     inline bool hasSingleChild() const { return (firstChild_) && (firstChild_ == lastChild_); }
 
     int countSiblings() const;
+    
+    ChildrenRun<Node> children() const { return ChildrenRun<Node>(me()); }
+    InOrderRun<Node> inOrder() const { return InOrderRun<Node>(me()); }
 
 private:
     inline Node *me() const { return Object::cast<Node *>(const_cast<Tree<Node> *>(this)); }
@@ -95,7 +143,7 @@ void Tree<Node>::insertChild(Node *node, Node *previousSibling)
 }
 
 template<class Node>
-void Tree<Node>::appendAllChildrenOf(Node *node)
+void Tree<Node>::adoptChildrenOf(Node *node)
 {
     if (!node->firstChild_)
         return;
@@ -220,7 +268,7 @@ int Tree<Node>::countSiblings() const
 {
     int n = 0;
     for (const Node *node = me(); node; node = node->nextSibling_) ++n;
-    return n;
+    return n - 1;
 }
 
 } // namespace cc

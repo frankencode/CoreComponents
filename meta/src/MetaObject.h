@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include <cc/SpinLock>
 #include <cc/Variant>
 
 namespace cc { namespace syntax { class Token; } }
@@ -37,13 +36,15 @@ public:
     Variant toVariant() const;
     String toString() const;
 
-    inline bool hasChildren() const { return children_; }
-    MetaObjectList *children();
+    bool hasProtocol() const;
+    MetaProtocol *protocol() { return protocol_; }
+    const MetaProtocol *protocol() const { return protocol_; }
+
+    inline bool hasChildren() const { return children_->count() > 0; }
+    MetaObjectList *children() { return children_; }
+    const MetaObjectList *children() const { return children_; }
 
     Ref<MetaObject> clone();
-
-    inline bool hasProtocol() const { return protocol_; }
-    MetaProtocol *protocol();
 
     virtual Ref<MetaObject> produce() {
         return MetaObject::create(className());
@@ -67,9 +68,8 @@ protected:
 
 private:
     String className_;
-    SpinLock mutex_;
-    Ref<MetaObjectList> children_;
     Ref<MetaProtocol> protocol_;
+    Ref<MetaObjectList> children_;
 };
 
 }} // namespace cc::meta
