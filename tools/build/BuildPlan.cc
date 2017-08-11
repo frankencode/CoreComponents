@@ -219,7 +219,7 @@ int BuildPlan::run()
         ) << toolChain_->machineCommand();
     }
 
-    if (!recipe_->value("clean")) {
+    if (!(recipe_->value("clean") || (options_ & Configure))) {
         if (!preparationStage()->run())
             return 1;
     }
