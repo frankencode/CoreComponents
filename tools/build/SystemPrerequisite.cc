@@ -18,7 +18,7 @@ Ref<SystemPrerequisite> SystemPrerequisite::read(const MetaObject *object, Build
 
 SystemPrerequisite::SystemPrerequisite(const MetaObject *object, BuildPlan *plan):
     name_(object->value("name")),
-    value_(object->value("value")),
+    origName_(name_),
     description_(object->value("description")),
     optional_(object->value("optional")),
     includePathConfigure_(object->value("include-paths-configure")),
@@ -34,6 +34,18 @@ SystemPrerequisite::SystemPrerequisite(const MetaObject *object, BuildPlan *plan
     if (name_ == "" && libraries_->count() == 1)
         name_ = libraries_->at(0);
     if (name_ == "") name_ = hex(uint64_t(this));
+}
+
+bool SystemPrerequisite::autoConfigure() const
+{
+    return
+        origName_ != "" &&
+        includePathConfigure_  == "" &&
+        libraryPathConfigure_  == "" &&
+        compileFlagsConfigure_ == "" &&
+        linkFlagsConfigure_    == "" &&
+        versionConfigure_      == ""
+    ;
 }
 
 } // namespace ccbuild

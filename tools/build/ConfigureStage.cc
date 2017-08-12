@@ -42,11 +42,24 @@ bool ConfigureStage::run()
         {
             SystemPrerequisite *prerequisite = prerequisiteList->at(j);
 
-            Ref<StringList> includePaths = configureShell(prerequisite->includePathConfigure())->simplify()->split(' ');
-            Ref<StringList> libraryPaths = configureShell(prerequisite->libraryPathConfigure())->simplify()->split(' ');
-            Ref<StringList> compileFlags = configureShell(prerequisite->compileFlagsConfigure())->simplify()->split(' ');
-            Ref<StringList> linkFlags = configureShell(prerequisite->linkFlagsConfigure())->simplify()->split(' ');
-            Version version = configureShell(prerequisite->versionConfigure());
+            Ref<StringList> includePaths;
+            Ref<StringList> libraryPaths;
+            Ref<StringList> compileFlags;
+            Ref<StringList> linkFlags;
+            Version version;
+
+            if (prerequisite->autoConfigure()) {
+                compileFlags = configureShell(String("pkg-config --cflags ") + prerequisite->name())->simplify()->split(' ');
+                linkFlags    = configureShell(String("pkg-config --libs ") + prerequisite->name())->simplify()->split(' ');
+                version      = configureShell(String("pkg-config --modversion ") + prerequisite->name());
+            }
+            else {
+                includePaths = configureShell(prerequisite->includePathConfigure())->simplify()->split(' ');
+                libraryPaths = configureShell(prerequisite->libraryPathConfigure())->simplify()->split(' ');
+                compileFlags = configureShell(prerequisite->compileFlagsConfigure())->simplify()->split(' ');
+                linkFlags    = configureShell(prerequisite->linkFlagsConfigure())->simplify()->split(' ');
+                version      = configureShell(prerequisite->versionConfigure());
+            }
 
             includePaths->appendList(prerequisite->includePaths());
             libraryPaths->appendList(prerequisite->libraryPaths());
