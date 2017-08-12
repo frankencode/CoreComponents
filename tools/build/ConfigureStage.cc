@@ -49,6 +49,8 @@ bool ConfigureStage::run()
             Version version;
 
             if (prerequisite->autoConfigure()) {
+                includePaths = StringList::create();
+                libraryPaths = StringList::create();
                 compileFlags = configureShell(String("pkg-config --cflags ") + prerequisite->name())->simplify()->split(' ');
                 linkFlags    = configureShell(String("pkg-config --libs ") + prerequisite->name())->simplify()->split(' ');
                 version      = configureShell(String("pkg-config --modversion ") + prerequisite->name());
