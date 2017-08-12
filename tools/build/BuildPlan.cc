@@ -374,10 +374,10 @@ void BuildPlan::readPrerequisites()
         prerequisitePaths->append(choice);
     }
 
-    for (int i = 0; i < prerequisitePaths->count(); ++i) {
-        String path = findPrerequisite(prerequisitePaths->at(i));
+    for (String prerequisitePath: prerequisitePaths) {
+        String path = findPrerequisite(prerequisitePath);
         if (path == "")
-            throw UsageError(Format() << recipePath() << ": Failed to locate prerequisite \"" << prerequisitePaths->at(i) << "\"");
+            throw UsageError(Format() << recipePath() << ": Failed to locate prerequisite \"" << prerequisitePath << "\"");
         Ref<BuildPlan> plan = BuildPlan::create(path);
         plan->readPrerequisites();
         use(plan);

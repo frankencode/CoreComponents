@@ -22,9 +22,10 @@ public:
     static Ref<SystemPrerequisite> read(const MetaObject *object, BuildPlan *plan);
 
     inline String name() const { return name_; }
-    inline String value() const { return value_; }
     inline String description() const { return description_; }
     inline bool optional() const { return optional_; }
+
+    bool autoConfigure() const;
 
     inline String includePathConfigure() const { return includePathConfigure_; }
     inline String libraryPathConfigure() const { return libraryPathConfigure_; }
@@ -42,7 +43,7 @@ private:
     SystemPrerequisite(const MetaObject *object, BuildPlan *plan);
 
     String name_;
-    String value_;
+    String origName_;
     String description_;
     bool optional_;
 

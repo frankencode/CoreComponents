@@ -68,7 +68,6 @@ protected:
         SpecificBuildParametersPrototype(className, protocol)
     {
         insert("use", StringList::create());
-        insert("need", StringList::create());
         insert("choice", StringList::create());
         insert("choice-configure", "");
         insert("root", "/");
