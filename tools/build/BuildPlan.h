@@ -84,6 +84,8 @@ public:
     bool goForBuild() const;
 
     inline String name() const { return name_; }
+    inline String description() const { return description_; }
+    inline String url() const { return url_; }
     inline StringList *alias() const { return alias_; }
     inline Version version() const { return version_; }
 
@@ -111,6 +113,8 @@ public:
 
     Ref<StringList> globSources(StringList *pattern) const;
 
+    String generatePackageConfig() const;
+
     inline BuildShell *shell() { return &shell_; }
 
     inline ConfigureStage *configureStage() { return &configureStage_; }
@@ -133,7 +137,6 @@ private:
 
     void use(BuildPlan *plan);
     String findPrerequisite(String prerequisitePath) const;
-    String resolveChoices();
     void readPrerequisites();
     void findVersion();
 
@@ -154,6 +157,8 @@ private:
     bool disabled_;
 
     String name_;
+    String description_;
+    String url_;
     Ref<StringList> alias_;
     Version version_;
 

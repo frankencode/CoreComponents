@@ -30,7 +30,6 @@ int main(int argc, char **argv)
             "  -static         build static libraries\n"
             "  -verbose        verbose output\n"
             "  -configure      run include and link tests\n"
-            "  -select         select build choices\n"
             "  -optimize       optimization level / strategy (0, 1, 2, 3, s, g)\n"
             "  -root           file system root for installation (default: \"/\")\n"
             "  -prefix         installation prefix (default: \"/usr\")\n"

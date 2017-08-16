@@ -261,12 +261,12 @@ bool GnuToolChain::install(BuildPlan *plan)
         createAliasSymlinks(plan, product);
     }
 
-    if (plan->bundle()->count() > 0) {
-        for (int i = 0; i < plan->bundle()->count(); ++i) {
-            String path = plan->bundle()->at(i);
-            String relativePath = path->copy(plan->projectPath()->count(), path->count());
-            plan->shell()->install(path, plan->installRoot()->expandPath(bundlePrefix(plan)->expandPath(relativePath)));
-        }
+    for (String bundlePath: plan->bundle()) {
+        String relativePath = bundlePath->copy(plan->projectPath()->count(), bundlePath->count());
+        plan->shell()->install(
+            bundlePath,
+            plan->installRoot()->expandPath(bundlePrefix(plan)->expandPath(relativePath))
+        );
     }
 
     return true;

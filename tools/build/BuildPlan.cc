@@ -103,6 +103,8 @@ bool BuildPlan::goForBuild() const
 void BuildPlan::readRecipe(BuildPlan *parentPlan)
 {
     name_ = recipe_->value("name");
+    description_ = recipe_->value("description");
+    url_ = recipe_->value("url");
     alias_ = recipe_->value("alias");
     version_ = recipe_->value("version");
     installRoot_ = recipe_->value("root");
@@ -329,34 +331,6 @@ String BuildPlan::findPrerequisite(String prerequisitePath) const
     return String();
 }
 
-String BuildPlan::resolveChoices()
-{
-    StringList *choices = Variant::cast<StringList *>(recipe_->value("choice"));
-    StringList *selection = Variant::cast<StringList *>(recipe_->value("select"));
-    String choicesConfigure = recipe_->value("choice-configure");
-    if (choicesConfigure != "") {
-        if (choicesConfigure->isRelativePath())
-            choicesConfigure = choicesConfigure->absolutePathRelativeTo(projectPath_);
-        String choice = configureStage()->configureShell(choicesConfigure);
-        selection->pushFront(choice);
-    }
-    if (selection->count() > 0) {
-        for (int i = 0; i < choices->count(); ++i) {
-            String choice = choices->at(i);
-            String path = findPrerequisite(choice);
-            if (path == "")
-                throw UsageError(Format() << recipePath() << ": Failed to locate choice \"" << choice << "\"");
-            for (int j = 0; j < selection->count(); ++j) {
-                if (path->endsWith(selection->at(i)))
-                    return choice;
-            }
-        }
-    }
-    if (choices->count() > 0)
-        return choices->at(0);
-    return "";
-}
-
 void BuildPlan::readPrerequisites()
 {
     if (prerequisites_) return;
@@ -366,13 +340,6 @@ void BuildPlan::readPrerequisites()
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
     StringList *prerequisitePaths = Variant::cast<StringList *>(recipe_->value("use"));
-
-    String choice = resolveChoices();
-    if (choice != "") {
-        if (options_ & (BuildPlan::Configure|BuildPlan::Verbose))
-            ferr() << projectPath_ << ": build choice \"" << choice << "\" selected" << nl;
-        prerequisitePaths->append(choice);
-    }
 
     for (String prerequisitePath: prerequisitePaths) {
         String path = findPrerequisite(prerequisitePath);
@@ -432,6 +399,29 @@ void BuildPlan::globSources()
 
     for (BuildPlan *plan: prerequisites_)
         plan->globSources();
+}
+
+String BuildPlan::generatePackageConfig() const
+{
+    if (!(options() & Library)) return "";
+
+    Format text;
+
+    text
+        << "prefix=" << installPrefix() << nl
+        << "includedir=${prefix}/include" << nl
+        << "libdir=$(prefix}/lib" << nl
+        << nl;
+
+    text
+        << "Name: " << (name()->beginsWith("lib") ? "" : "lib") << name() << nl
+        << "Description: " << description() << nl
+        << "URL: " << url() << nl
+        << "Version: " << version() << nl;
+
+    // TODO: Requires... problem: use stmt. needs to be extended to allow specifying the minimum/maximum versions
+
+    return text;
 }
 
 void BuildPlan::initModules()
