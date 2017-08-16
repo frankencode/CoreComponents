@@ -22,16 +22,16 @@ bool InstallStage::run()
     if (outOfScope()) return success_ = true;
     if (plan()->options() & BuildPlan::Test) return success_ = true;
 
-    for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
-        if (!plan()->prerequisites()->at(i)->installStage()->run())
+    for (BuildPlan *prerequisite: plan()->prerequisites()) {
+        if (!prerequisite->installStage()->run())
             return success_ = false;
     }
 
     if (plan()->options() & BuildPlan::Package) return success_ = true;
 
     if (plan()->options() & BuildPlan::Tools) {
-        for (int i = 0; i < plan()->modules()->count(); ++i) {
-            if (!toolChain()->install(plan(), plan()->modules()->at(i)))
+        for (Module *module: plan()->modules()) {
+            if (!toolChain()->install(plan(), module))
                 return success_ = false;
         }
         return success_ = true;

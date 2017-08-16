@@ -164,6 +164,8 @@ protected:
         BuildOptionsPrototype(className, createProtocol(protocol))
     {
         insert("name", "");
+        insert("description", "");
+        insert("url", "");
         insert("alias", StringList::create());
         insert("source", StringList::create());
         insert("bundle", StringList::create());
