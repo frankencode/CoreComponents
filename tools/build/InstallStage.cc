@@ -6,6 +6,7 @@
  *
  */
 
+#include "CwdGuard.h"
 #include "BuildPlan.h"
 #include "InstallStage.h"
 
@@ -31,13 +32,49 @@ bool InstallStage::run()
 
     if (plan()->options() & BuildPlan::Tools) {
         for (Module *module: plan()->modules()) {
-            if (!toolChain()->install(plan(), module))
+            if (!installTool(module))
                 return success_ = false;
         }
         return success_ = true;
     }
 
-    return success_ = toolChain()->install(plan());
+    return success_ = installApplicationOrLibrary();
+}
+
+bool InstallStage::installTool(Module *module)
+{
+    String product = module->toolName();
+    return shell()->install(product, toolChain()->installDirPath(plan())->expandPath(product));
+}
+
+bool InstallStage::installApplicationOrLibrary()
+{
+    int options = plan()->options();
+    String product = toolChain()->linkName(plan());
+    String installDirPath = toolChain()->installDirPath(plan());
+    String installFilePath = installDirPath->expandPath(product);
+
+    if (!shell()->install(product, installFilePath)) return false;
+
+    if ((options & BuildPlan::Library) && !plan()->linkStatic()) {
+        CwdGuard guard(installDirPath, shell());
+        toolChain()->createLibrarySymlinks(plan(), product);
+    }
+
+    if (options & BuildPlan::Application && plan()->alias()->count() > 0) {
+        CwdGuard guard(installDirPath, shell());
+        toolChain()->createAliasSymlinks(plan(), product);
+    }
+
+    for (String bundlePath: plan()->bundle()) {
+        String relativePath = bundlePath->copy(plan()->projectPath()->count(), bundlePath->count());
+        shell()->install(
+            bundlePath,
+            plan()->installRoot()->expandPath(toolChain()->bundlePrefix(plan())->expandPath(relativePath))
+        );
+    }
+
+    return true;
 }
 
 } // namespace ccbuild

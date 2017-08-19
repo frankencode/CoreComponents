@@ -16,8 +16,10 @@ class InstallStage: public BuildStage
 {
 public:
     InstallStage(BuildPlan *plan): BuildStage(plan) {}
+
     bool run();
+    bool installTool(Module *module);
+    bool installApplicationOrLibrary();
 };
 
 } // namespace ccbuild
-

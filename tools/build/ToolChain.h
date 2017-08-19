@@ -42,12 +42,14 @@ public:
 
     virtual bool testInclude(BuildPlan *plan, StringList *headers) const = 0;
 
-    virtual bool install(BuildPlan *plan) = 0;
-    virtual bool install(BuildPlan *plan, Module *module) = 0;
-    virtual bool uninstall(BuildPlan *plan) = 0;
-    virtual bool uninstall(BuildPlan *plan, Module *module) = 0;
+    virtual String installDirPath(BuildPlan *plan) const = 0;
+    virtual String bundlePrefix(BuildPlan *plan) const = 0;
 
-    virtual void clean(BuildPlan *plan) = 0;
+    virtual void createLibrarySymlinks(BuildPlan *plan, String libName) const = 0;
+    virtual void cleanLibrarySymlinks(BuildPlan *plan, String libName) const = 0;
+
+    virtual void createAliasSymlinks(BuildPlan *plan, String appName) const = 0;
+    virtual void cleanAliasSymlinks(BuildPlan *plan, String appName) const = 0;
 };
 
 } // namespace ccbuild

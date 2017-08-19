@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/Process>
 #include "BuildShell.h"
 
 namespace ccbuild
@@ -30,4 +31,3 @@ private:
 };
 
 } // namespace ccbuild
-

@@ -103,8 +103,6 @@ bool BuildPlan::goForBuild() const
 void BuildPlan::readRecipe(BuildPlan *parentPlan)
 {
     name_ = recipe_->value("name");
-    description_ = recipe_->value("description");
-    url_ = recipe_->value("url");
     alias_ = recipe_->value("alias");
     version_ = recipe_->value("version");
     installRoot_ = recipe_->value("root");
@@ -399,29 +397,6 @@ void BuildPlan::globSources()
 
     for (BuildPlan *plan: prerequisites_)
         plan->globSources();
-}
-
-String BuildPlan::generatePackageConfig() const
-{
-    if (!(options() & Library)) return "";
-
-    Format text;
-
-    text
-        << "prefix=" << installPrefix() << nl
-        << "includedir=${prefix}/include" << nl
-        << "libdir=$(prefix}/lib" << nl
-        << nl;
-
-    text
-        << "Name: " << (name()->beginsWith("lib") ? "" : "lib") << name() << nl
-        << "Description: " << description() << nl
-        << "URL: " << url() << nl
-        << "Version: " << version() << nl;
-
-    // TODO: Requires... problem: use stmt. needs to be extended to allow specifying the minimum/maximum versions
-
-    return text;
 }
 
 void BuildPlan::initModules()

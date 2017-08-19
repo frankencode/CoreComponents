@@ -84,8 +84,6 @@ public:
     bool goForBuild() const;
 
     inline String name() const { return name_; }
-    inline String description() const { return description_; }
-    inline String url() const { return url_; }
     inline StringList *alias() const { return alias_; }
     inline Version version() const { return version_; }
 
@@ -157,8 +155,6 @@ private:
     bool disabled_;
 
     String name_;
-    String description_;
-    String url_;
     Ref<StringList> alias_;
     Version version_;
 

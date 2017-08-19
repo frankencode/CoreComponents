@@ -43,12 +43,14 @@ public:
 
     virtual bool testInclude(BuildPlan *plan, StringList *headers) const override;
 
-    virtual bool install(BuildPlan *plan) override;
-    virtual bool install(BuildPlan *plan, Module *module) override;
-    virtual bool uninstall(BuildPlan *plan) override;
-    virtual bool uninstall(BuildPlan *plan, Module *module) override;
+    virtual String installDirPath(BuildPlan *plan) const override;
+    virtual String bundlePrefix(BuildPlan *plan) const override;
 
-    virtual void clean(BuildPlan *plan) override;
+    virtual void createLibrarySymlinks(BuildPlan *plan, String libName) const override;
+    virtual void cleanLibrarySymlinks(BuildPlan *plan, String libName) const override;
+
+    virtual void createAliasSymlinks(BuildPlan *plan, String appName) const override;
+    virtual void cleanAliasSymlinks(BuildPlan *plan, String appName) const override;
 
 protected:
     GnuToolChain(String compiler);
@@ -61,16 +63,8 @@ protected:
 
     static String querySystemRoot(String compiler);
 
-    static String bundlePrefix(BuildPlan *plan);
-
-    static void appendCompileOptions(Format args, BuildPlan *plan);
+    void appendCompileOptions(Format args, BuildPlan *plan) const;
     void appendLinkOptions(Format args, BuildPlan *plan) const;
-
-    static void createLibrarySymlinks(BuildPlan *plan, String libName);
-    static void cleanLibrarySymlinks(BuildPlan *plan, String libName);
-
-    static void createAliasSymlinks(BuildPlan *plan, String appName);
-    static void cleanAliasSymlinks(BuildPlan *plan, String appName);
 
 private:
     String ccPath_;

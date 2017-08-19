@@ -19,7 +19,6 @@ Ref<SystemPrerequisite> SystemPrerequisite::read(const MetaObject *object, Build
 SystemPrerequisite::SystemPrerequisite(const MetaObject *object, BuildPlan *plan):
     name_(object->value("name")),
     origName_(name_),
-    description_(object->value("description")),
     optional_(object->value("optional")),
     includePathConfigure_(object->value("include-paths-configure")),
     libraryPathConfigure_(object->value("library-paths-configure")),
