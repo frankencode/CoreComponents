@@ -242,93 +242,12 @@ bool GnuToolChain::testInclude(BuildPlan *plan, StringList *headers) const
     return sub->wait() == 0;
 }
 
-bool GnuToolChain::install(BuildPlan *plan)
+String GnuToolChain::installDirPath(BuildPlan *plan) const
 {
-    int options = plan->options();
-    String product = linkName(plan);
-    String installDirPath = plan->installPath((options & BuildPlan::Library) ? "lib" : "bin");
-    String installFilePath = installDirPath->expandPath(product);
-
-    if (!plan->shell()->install(product, installFilePath)) return false;
-
-    if ((options & BuildPlan::Library) && !plan->linkStatic()) {
-        CwdGuard guard(installDirPath, plan->shell());
-        createLibrarySymlinks(plan, product);
-    }
-
-    if (options & BuildPlan::Application && plan->alias()->count() > 0) {
-        CwdGuard guard(installDirPath, plan->shell());
-        createAliasSymlinks(plan, product);
-    }
-
-    for (String bundlePath: plan->bundle()) {
-        String relativePath = bundlePath->copy(plan->projectPath()->count(), bundlePath->count());
-        plan->shell()->install(
-            bundlePath,
-            plan->installRoot()->expandPath(bundlePrefix(plan)->expandPath(relativePath))
-        );
-    }
-
-    return true;
+    return plan->installPath((plan->options() & BuildPlan::Library) ? "lib" : "bin");
 }
 
-bool GnuToolChain::install(BuildPlan *plan, Module *module)
-{
-    String product = module->toolName();
-    return plan->shell()->install(product, plan->installPath("bin")->expandPath(product));
-}
-
-bool GnuToolChain::uninstall(BuildPlan *plan)
-{
-    int options = plan->options();
-    String product = linkName(plan);
-    String installDirPath = plan->installPath((options & BuildPlan::Library) ? "lib" : "bin");
-    String installFilePath = installDirPath->expandPath(product);
-
-    try {
-        plan->shell()->unlink(installFilePath);
-    }
-    catch (SystemError &) {
-        return false;
-    }
-
-    if ((options & BuildPlan::Library) && !plan->linkStatic()) {
-        CwdGuard guard(installDirPath, plan->shell());
-        cleanLibrarySymlinks(plan, product);
-    }
-
-    if (options & BuildPlan::Application && plan->alias()->count() > 0) {
-        CwdGuard guard(installDirPath, plan->shell());
-        cleanAliasSymlinks(plan, product);
-    }
-
-    return false;
-}
-
-bool GnuToolChain::uninstall(BuildPlan *plan, Module *module)
-{
-    return plan->shell()->unlink(plan->installPath("bin/" + module->toolName()));
-}
-
-void GnuToolChain::clean(BuildPlan *plan)
-{
-    for (int i = 0; i < plan->modules()->count(); ++i) {
-        plan->shell()->unlink(plan->modules()->at(i)->modulePath());
-        if (plan->options() & BuildPlan::Tools)
-            plan->shell()->unlink(plan->modules()->at(i)->toolName());
-    }
-
-    String product = linkName(plan);
-    plan->shell()->unlink(product);
-
-    if ((plan->options() & BuildPlan::Library) && !plan->linkStatic())
-        cleanLibrarySymlinks(plan, product);
-
-    if (plan->options() & BuildPlan::Application)
-        cleanAliasSymlinks(plan, product);
-}
-
-String GnuToolChain::bundlePrefix(BuildPlan *plan)
+String GnuToolChain::bundlePrefix(BuildPlan *plan) const
 {
     String name;
     if (plan->options() & BuildPlan::Library)
@@ -338,7 +257,37 @@ String GnuToolChain::bundlePrefix(BuildPlan *plan)
     return plan->installPrefix()->expandPath("share")->expandPath(name);
 }
 
-void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan)
+void GnuToolChain::createLibrarySymlinks(BuildPlan *plan, String libName) const
+{
+    cleanLibrarySymlinks(plan, libName);
+
+    Ref<StringList> parts = libName->split('.');
+    while (parts->popBack() != "so")
+        plan->shell()->symlink(libName, parts->join("."));
+}
+
+void GnuToolChain::cleanLibrarySymlinks(BuildPlan *plan, String libName) const
+{
+    Ref<StringList> parts = libName->split('.');
+    while (parts->popBack() != "so")
+        plan->shell()->unlink(parts->join("."));
+}
+
+void GnuToolChain::createAliasSymlinks(BuildPlan *plan, String appName) const
+{
+    cleanAliasSymlinks(plan, appName);
+
+    for (String aliasName: plan->alias())
+        plan->shell()->symlink(appName, aliasName);
+}
+
+void GnuToolChain::cleanAliasSymlinks(BuildPlan *plan, String appName) const
+{
+    for (String aliasName: plan->alias())
+        plan->shell()->unlink(aliasName);
+}
+
+void GnuToolChain::appendCompileOptions(Format args, BuildPlan *plan) const
 {
     if (plan->options() & BuildPlan::Debug) args << "-g";
     if (plan->options() & BuildPlan::Release) args << "-DNDEBUG";
@@ -402,36 +351,6 @@ void GnuToolChain::appendLinkOptions(Format args, BuildPlan *plan) const
 
     rpaths << "-rpath-link=" + Process::cwd();
     args << "-Wl,--enable-new-dtags," + rpaths->join(",");
-}
-
-void GnuToolChain::createLibrarySymlinks(BuildPlan *plan, String libName)
-{
-    cleanLibrarySymlinks(plan, libName);
-
-    Ref<StringList> parts = libName->split('.');
-    while (parts->popBack() != "so")
-        plan->shell()->symlink(libName, parts->join("."));
-}
-
-void GnuToolChain::cleanLibrarySymlinks(BuildPlan *plan, String libName)
-{
-    Ref<StringList> parts = libName->split('.');
-    while (parts->popBack() != "so")
-        plan->shell()->unlink(parts->join("."));
-}
-
-void GnuToolChain::createAliasSymlinks(BuildPlan *plan, String appName)
-{
-    cleanAliasSymlinks(plan, appName);
-
-    for (int i = 0; i < plan->alias()->count(); ++i)
-        plan->shell()->symlink(appName, plan->alias()->at(i));
-}
-
-void GnuToolChain::cleanAliasSymlinks(BuildPlan *plan, String appName)
-{
-    for (int i = 0; i < plan->alias()->count(); ++i)
-        plan->shell()->unlink(plan->alias()->at(i));
 }
 
 } // namespace ccbuild

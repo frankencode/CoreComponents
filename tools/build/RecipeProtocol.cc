@@ -68,8 +68,6 @@ protected:
         SpecificBuildParametersPrototype(className, protocol)
     {
         insert("use", StringList::create());
-        insert("choice", StringList::create());
-        insert("choice-configure", "");
         insert("root", "/");
         insert("prefix", "/usr");
 
@@ -107,8 +105,6 @@ protected:
         SpecificBuildParametersPrototype(className)
     {
         insert("name", "");
-        insert("value", "");
-        insert("description", "");
         insert("optional", false);
 
         insert("include-paths-configure", "");
@@ -164,8 +160,6 @@ protected:
         BuildOptionsPrototype(className, createProtocol(protocol))
     {
         insert("name", "");
-        insert("description", "");
-        insert("url", "");
         insert("alias", StringList::create());
         insert("source", StringList::create());
         insert("bundle", StringList::create());

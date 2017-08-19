@@ -20,14 +20,30 @@ bool CleanStage::run()
     if (!plan()->goForBuild()) return success_ = true;
     if (plan()->isSystemSource()) return success_ = true;
 
-    for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
-        if (!plan()->prerequisites()->at(i)->cleanStage()->run())
+    for (BuildPlan *prerequisite: plan()->prerequisites()) {
+        if (!prerequisite->cleanStage()->run())
             return success_ = false;
     }
 
     if (plan()->options() & BuildPlan::Package) return success_ = true;
 
-    toolChain()->clean(plan());
+    for (Module *module: plan()->modules()) {
+        shell()->unlink(module->modulePath());
+        if (plan()->options() & BuildPlan::Tools)
+            shell()->unlink(module->toolName());
+    }
+
+    String product = toolChain()->linkName(plan());
+
+    if (!(plan()->options() & BuildPlan::Tools))
+        shell()->unlink(product);
+
+    if ((plan()->options() & BuildPlan::Library) && !plan()->linkStatic())
+        toolChain()->cleanLibrarySymlinks(plan(), product);
+
+    if (plan()->options() & BuildPlan::Application)
+        toolChain()->cleanAliasSymlinks(plan(), product);
+
     shell()->unlink(DependencyCache::cachePath(plan()));
     shell()->rmdir(plan()->modulePath());
 

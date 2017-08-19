@@ -22,7 +22,6 @@ public:
     static Ref<SystemPrerequisite> read(const MetaObject *object, BuildPlan *plan);
 
     inline String name() const { return name_; }
-    inline String description() const { return description_; }
     inline bool optional() const { return optional_; }
 
     bool autoConfigure() const;
@@ -44,7 +43,6 @@ private:
 
     String name_;
     String origName_;
-    String description_;
     bool optional_;
 
     String includePathConfigure_;

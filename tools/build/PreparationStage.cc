@@ -29,14 +29,15 @@ bool PreparationStage::run()
 
     if (outOfScope()) return success_ = true;
 
-    for (int i = 0; i < plan()->prerequisites()->count(); ++i)
-        if (!plan()->prerequisites()->at(i)->preparationStage()->run()) return success_ = false;
+    for (BuildPlan *prerequisite: plan()->prerequisites()) {
+        if (!prerequisite->preparationStage()->run())
+            return success_ = false;
+    }
 
     if (!plan()->predicates()) return success_ = true;
 
-    for (int i = 0; i < plan()->predicates()->count(); ++i)
+    for (Predicate *predicate: plan()->predicates())
     {
-        Predicate *predicate = plan()->predicates()->at(i);
         Ref<JobScheduler> scheduler;
 
         if (predicate->source()->count() == 0) {
@@ -51,16 +52,16 @@ bool PreparationStage::run()
             }
         }
 
-        for (int j = 0; j < predicate->source()->count(); ++j) {
+        for (String sourceText: predicate->source()) {
             String sourceExpression =
                 plan()->sourcePath(
-                    predicate->source()->at(j)->replace("%", "(?@*)")
+                    sourceText->replace("%", "(?@*)")
                 );
             RegExp sourcePattern = sourceExpression;
             Ref<Glob> glob = Glob::open(sourceExpression);
             for (String sourcePath; glob->read(&sourcePath);) {
                 String name;
-                if (predicate->source()->at(j)->contains('%')) {
+                if (sourceText->contains('%')) {
                     Ref<SyntaxState> state = sourcePattern->match(sourcePath);
                     name = sourcePath->copyRange(state->capture());
                 }
@@ -99,10 +100,10 @@ bool PreparationStage::run()
                     name = targetPath->baseName();
                 }
                 bool sourceFound = false;
-                for (int j = 0; j < predicate->source()->count(); ++j) {
+                for (String sourceText: predicate->source()) {
                     String sourcePath =
                         plan()->sourcePath(
-                            predicate->source()->at(j)->replace("%", name)
+                            sourceText->replace("%", name)
                         );
                     if (FileStatus::read(sourcePath)->isValid()) {
                         sourceFound = true;

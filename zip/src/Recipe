@@ -4,9 +4,6 @@ Library {
     Dependency {
         name: libzip
         version-min: 1.2.0
-        version-configure: pkg-config --modversion libzip
-        compile-flags-configure: pkg-config --cflags libzip
-        link-flags-configure: pkg-config --libs libzip
     }
     source: *.cc
 }
