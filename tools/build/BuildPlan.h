@@ -86,6 +86,7 @@ public:
     inline String name() const { return name_; }
     inline StringList *alias() const { return alias_; }
     inline Version version() const { return version_; }
+    inline StringList *includeScope() const { return includeScope_; }
 
     inline StringList *sources() const { return sources_; }
     inline StringList *bundle() const { return bundle_; }
@@ -138,6 +139,7 @@ private:
     void readPrerequisites();
     void findVersion();
 
+    void recoverIncludeScope();
     void globSources();
     void initModules();
 
@@ -157,6 +159,7 @@ private:
     String name_;
     Ref<StringList> alias_;
     Version version_;
+    Ref<StringList> includeScope_;
 
     Ref<StringList> sources_;
     Ref<StringList> bundle_;

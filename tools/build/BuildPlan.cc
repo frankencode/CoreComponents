@@ -225,6 +225,7 @@ int BuildPlan::run()
             return 1;
     }
 
+    recoverIncludeScope();
     globSources();
     initModules();
 
@@ -364,6 +365,28 @@ void BuildPlan::findVersion()
     }
     if (!Version::isValid(version_))
         version_ = Version(0, 1, 0);
+}
+
+void BuildPlan::recoverIncludeScope()
+{
+    includeScope_ = StringList::create();
+
+    if (!(options_ & Application) || (options_ & Library)) return;
+
+    String path = projectPath_->expandPath("include");
+    while (true) {
+        Ref<Dir> dir = Dir::tryOpen(path);
+        if (!dir) break;
+        Ref<StringList> entries = StringList::create();
+        for (String entry; dir->read(&entry);) {
+            if (entry == "." || entry == "..") continue;
+            if (Dir::tryOpen(path->expandPath(entry)))
+                entries << entry;
+        }
+        if (entries->count() != 1) break;
+        includeScope_ << entries->at(0);
+        path = path->expandPath(entries->at(0));
+    }
 }
 
 void BuildPlan::globSources()
