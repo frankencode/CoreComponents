@@ -35,7 +35,7 @@ bool CleanStage::run()
 
     String product = toolChain()->linkName(plan());
 
-    if (!(plan()->options() & BuildPlan::Tools))
+    if ((plan()->options() & BuildPlan::Application) || (plan()->options() & BuildPlan::Library))
         shell()->unlink(product);
 
     if ((plan()->options() & BuildPlan::Library) && !plan()->linkStatic())
