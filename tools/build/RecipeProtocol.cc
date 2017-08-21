@@ -74,23 +74,23 @@ protected:
         insert("debug", false);
         insert("release", false);
 
-        insert("simulate", false);
-        insert("blindfold", false);
-        insert("bootstrap", false);
-        insert("test", false);
-        insert("test-run", false);
-        insert("test-report", false);
-        insert("test-args", "");
+        insert("configure", false);
         insert("prepare", false);
         insert("clean", false);
         insert("install", false);
         insert("uninstall", false);
+        insert("test", false);
+        insert("test-run", false);
+        insert("test-report", false);
+        insert("test-args", "");
 
         insert("verbose", false);
-        insert("configure", false);
-        insert("select", StringList::create());
         insert("jobs", -1);
         insert("test-run-jobs", -1);
+
+        insert("simulate", false);
+        insert("blindfold", false);
+        insert("bootstrap", false);
     }
 };
 
@@ -130,8 +130,14 @@ public:
     }
 
 protected:
+    static Ref<MetaProtocol> createProtocol() {
+        Ref<MetaProtocol> protocol = MetaProtocol::create();
+        protocol->define<PredicatePrototype>();
+        return protocol;
+    }
+
     PredicatePrototype(const String &className):
-        MetaObject(className)
+        MetaObject(className, createProtocol())
     {
         insert("source", StringList::create());
         insert("target", "");

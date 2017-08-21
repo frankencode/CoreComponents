@@ -173,7 +173,8 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
             }
             else if (object->className() == "Predicate") {
                 if (!predicates_) predicates_ = PredicateList::create();
-                predicates_->append(Predicate::read(object));
+                readPredicate(object);
+
             }
             else if (object->className() == "Usage") {
                 usage_ = BuildParameters::create();
@@ -187,6 +188,13 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
         optimize_ = parentPlan->optimize();
         linkStatic_ = parentPlan->linkStatic();
     }
+}
+
+void BuildPlan::readPredicate(const MetaObject *object)
+{
+    predicates_->append(Predicate::read(object));
+    for (const MetaObject *child: object->children())
+        readPredicate(child);
 }
 
 void BuildPlan::checkDuplicateTargetNames()
