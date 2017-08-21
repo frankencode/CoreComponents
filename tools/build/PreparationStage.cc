@@ -42,13 +42,18 @@ bool PreparationStage::run()
 
         if (predicate->source()->count() == 0) {
             String targetPath = plan()->sourcePath(predicate->target()->replace("%", ""));
-            if (!FileStatus::read(targetPath)->isValid()) {
+            if (!shell()->fileStatus(targetPath)->isValid()) {
                 String command = expand(predicate->create(), "", targetPath);
-                if (!scheduler) {
-                    scheduler = createScheduler();
-                    scheduler->start();
+                if (plan()->options() & BuildPlan::Simulate) {
+                    fout() << shell()->beautify(command) << nl;
                 }
-                scheduler->schedule(Job::create(command));
+                else {
+                    if (!scheduler) {
+                        scheduler = createScheduler();
+                        scheduler->start();
+                    }
+                    scheduler->schedule(Job::create(command));
+                }
             }
         }
 
@@ -72,13 +77,21 @@ bool PreparationStage::run()
                     plan()->sourcePath(
                         predicate->target()->replace("%", name)
                     );
-                if (FileStatus::read(targetPath)->lastModified() < FileStatus::read(sourcePath)->lastModified()) {
+                if (
+                    (plan()->options() & BuildPlan::Blindfold) ||
+                    shell()->fileStatus(targetPath)->lastModified() < shell()->fileStatus(sourcePath)->lastModified()
+                ) {
                     String command = expand(predicate->update(), sourcePath, targetPath);
-                    if (!scheduler) {
-                        scheduler = createScheduler();
-                        scheduler->start();
+                    if (plan()->options() & BuildPlan::Simulate) {
+                        fout() << shell()->beautify(command) << nl;
                     }
-                    scheduler->schedule(Job::create(command));
+                    else {
+                        if (!scheduler) {
+                            scheduler = createScheduler();
+                            scheduler->start();
+                        }
+                        scheduler->schedule(Job::create(command));
+                    }
                 }
             }
         }
@@ -105,18 +118,23 @@ bool PreparationStage::run()
                         plan()->sourcePath(
                             sourceText->replace("%", name)
                         );
-                    if (FileStatus::read(sourcePath)->isValid()) {
+                    if (shell()->fileStatus(sourcePath)->isValid()) {
                         sourceFound = true;
                         break;
                     }
                 }
                 if (!sourceFound) {
                     String command = expand(predicate->remove(), "", targetPath);
-                    if (!scheduler) {
-                        scheduler = createScheduler();
-                        scheduler->start();
+                    if (plan()->options() & BuildPlan::Simulate) {
+                        fout() << shell()->beautify(command) << nl;
                     }
-                    scheduler->schedule(Job::create(command));
+                    else {
+                        if (!scheduler) {
+                            scheduler = createScheduler();
+                            scheduler->start();
+                        }
+                        scheduler->schedule(Job::create(command));
+                    }
                 }
             }
         }
