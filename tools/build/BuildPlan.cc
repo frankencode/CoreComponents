@@ -222,8 +222,8 @@ int BuildPlan::run()
     }
 
     if (!(options_ & Configure)) {
-        if (!preparationStage()->run())
-            return 1;
+        if (!preparationStage()->run()) return 1;
+        if (recipe_->value("prepare")) return 0;
     }
 
     recoverIncludeScope();

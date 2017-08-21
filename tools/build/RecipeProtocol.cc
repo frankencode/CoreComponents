@@ -81,6 +81,7 @@ protected:
         insert("test-run", false);
         insert("test-report", false);
         insert("test-args", "");
+        insert("prepare", false);
         insert("clean", false);
         insert("install", false);
         insert("uninstall", false);
