@@ -62,6 +62,24 @@ void BuildShell::rmdir(String path)
     if (exists) try { Dir::remove(path); } catch (SystemError &) { /*FIXME, directory might not be empty */ }
 }
 
+bool BuildShell::clean(String path)
+{
+    fout("rm -rf %%\n") << path;
+    if (plan()->options() & BuildPlan::Simulate) return true;
+
+    if (fileStatus(path)->isValid()) {
+        try {
+            File::clean(path);
+        }
+        catch (SystemError &ex) {
+            ferr() << ex << nl;
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void BuildShell::symlink(String path, String newPath)
 {
     fout("ln -sf %% %%\n") << path << newPath;

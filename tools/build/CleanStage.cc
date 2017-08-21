@@ -27,11 +27,7 @@ bool CleanStage::run()
 
     if (plan()->options() & BuildPlan::Package) return success_ = true;
 
-    for (Module *module: plan()->modules()) {
-        shell()->unlink(module->modulePath());
-        if (plan()->options() & BuildPlan::Tools)
-            shell()->unlink(module->toolName());
-    }
+    if (!shell()->clean(plan()->modulePath())) return success_ = false;
 
     String product = toolChain()->linkName(plan());
 
@@ -43,9 +39,6 @@ bool CleanStage::run()
 
     if (plan()->options() & BuildPlan::Application)
         toolChain()->cleanAliasSymlinks(plan(), product);
-
-    shell()->unlink(DependencyCache::cachePath(plan()));
-    shell()->rmdir(plan()->modulePath());
 
     return success_ = true;
 }

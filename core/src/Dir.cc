@@ -152,7 +152,7 @@ String Dir::createUnique(String path, int mode, char placeHolder)
     }
 }
 
-void Dir::cleanup(String path)
+void Dir::deplete(String path)
 {
     Ref<DirWalker> walker = DirWalker::open(path);
     walker->setIgnoreHidden(false);
@@ -165,8 +165,6 @@ void Dir::cleanup(String path)
         if (isDir) Dir::remove(childPath);
         else File::unlink(childPath);
     }
-
-    Dir::remove(path);
 }
 
 } // namespace cc

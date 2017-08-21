@@ -292,6 +292,17 @@ void File::establish(String path, int fileMode, int dirMode)
         File::create(path, fileMode);
 }
 
+void File::clean(String path)
+{
+    try {
+        Dir::deplete(path);
+    }
+    catch (SystemError &) {
+        File::unlink(path);
+        return;
+    }
+    Dir::remove(path);
+}
 
 String File::locate(String fileName, const StringList *dirs, int accessFlags)
 {

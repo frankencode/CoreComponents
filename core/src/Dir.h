@@ -98,11 +98,11 @@ public:
       */
     static String createUnique(String path, int mode = 0755, char placeHolder = 'X');
 
-    /** Cleanup directory recursively
+    /** Cleanup directory contents recursively
       * \param path directory file path
-      * Cleans up the given directory path recursively deleting all containing files and directories in the process.
+      * \see File::clean()
       */
-    static void cleanup(String path);
+    static void deplete(String path);
 
 private:
     Dir(String path, DIR *dir = 0);
