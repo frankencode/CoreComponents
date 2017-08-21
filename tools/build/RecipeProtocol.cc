@@ -137,6 +137,7 @@ protected:
         insert("create", "");
         insert("update", "");
         insert("remove", "");
+        insert("clean", "");
     }
 };
 

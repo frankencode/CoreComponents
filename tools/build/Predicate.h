@@ -27,6 +27,7 @@ public:
     inline String create() const { return create_; }
     inline String update() const { return update_; }
     inline String remove() const { return remove_; }
+    inline String clean() const { return clean_; }
 
 private:
     Predicate(const MetaObject *object):
@@ -34,7 +35,8 @@ private:
         target_(object->value("target")),
         create_(object->value("create")),
         update_(object->value("update")),
-        remove_(object->value("remove"))
+        remove_(object->value("remove")),
+        clean_(object->value("clean"))
     {}
 
     Ref<StringList> source_;
@@ -42,9 +44,9 @@ private:
     String create_;
     String update_;
     String remove_;
+    String clean_;
 };
 
 typedef List< Ref<Predicate> > PredicateList;
 
 } // namespace ccbuild
-

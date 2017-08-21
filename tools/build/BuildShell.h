@@ -31,6 +31,7 @@ public:
 
     void mkdir(String path);
     void rmdir(String path);
+    bool clean(String path);
     void symlink(String path, String newPath);
 
     bool install(String sourcePath, String destPath);
@@ -43,4 +44,3 @@ private:
 };
 
 } // namespace ccbuild
-

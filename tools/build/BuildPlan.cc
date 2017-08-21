@@ -131,6 +131,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     if (recipe_->value("clean"))       options_ |= BuildTests;
     if (recipe_->value("verbose"))     options_ |= Verbose;
     if (recipe_->value("configure"))   options_ |= Configure;
+    else if (recipe_->value("clean"))  options_ |= Clean;
 
     concurrency_ = recipe_->value("jobs");
     testRunConcurrency_ = recipe_->value("test-run-jobs");
@@ -220,7 +221,7 @@ int BuildPlan::run()
         ) << toolChain_->machineCommand();
     }
 
-    if (!(recipe_->value("clean") || (options_ & Configure))) {
+    if (!(options_ & Configure)) {
         if (!preparationStage()->run())
             return 1;
     }
@@ -235,7 +236,7 @@ int BuildPlan::run()
 
     if (!analyseStage()->run()) return 1;
 
-    if (recipe_->value("clean")) return !cleanStage()->run();
+    if (options_ & Clean) return !cleanStage()->run();
     if (recipe_->value("uninstall")) return !uninstallStage()->run();
 
     if (!compileLinkStage()->run()) return 1;

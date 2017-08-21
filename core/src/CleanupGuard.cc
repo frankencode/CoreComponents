@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Dir>
+#include <cc/File>
 #include <cc/CleanupGuard>
 
 namespace cc {
@@ -17,7 +17,7 @@ CleanupGuard::CleanupGuard(String path):
 
 CleanupGuard::~CleanupGuard()
 {
-    Dir::cleanup(path_);
+    File::clean(path_);
 }
 
 } // namespace cc

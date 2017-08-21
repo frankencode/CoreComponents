@@ -191,6 +191,12 @@ public:
       */
     static void establish(String path, int fileMode = 0644, int dirMode = 0755);
 
+    /** Cleanup files recursively
+      * \param path path to directory or file
+      * Cleans up the given path recursively deleting all files and directories in the process.
+      */
+    static void clean(String path);
+
     /** Search for a file in a list of directories
       * \param fileName name of the file (or relative path)
       * \param dirs list of directories
