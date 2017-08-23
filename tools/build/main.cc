@@ -8,6 +8,7 @@
 
 #include <cc/stdio>
 #include <cc/exceptions>
+#include <cc/Bundle>
 #include "BuildPlan.h"
 
 using namespace ccbuild;
@@ -19,7 +20,7 @@ int main(int argc, char **argv)
     try {
         exitCode = BuildPlan::create(argc, argv)->run();
     }
-    catch (HelpError &) {
+    catch (HelpRequest &) {
         fout(
             "Usage: %% [OPTION]... [DIR]\n"
             "Build binaries from source DIR.\n"
@@ -49,7 +50,13 @@ int main(int argc, char **argv)
             "  -simulate       print build commands without executing them\n"
             "  -blindfold      do not see any existing files\n"
             "  -bootstrap      write bootstrap script\n"
+            "  -query          query given properties\n"
+            "  -query-all      query all properties\n"
+            "  -version        print %% version\n"
         ) << toolName;
+    }
+    catch (VersionRequest &ex) {
+        fout() << "v" << CC_BUNDLE_VERSION << nl;
     }
     catch (UsageError &ex) {
         ferr() << toolName << ": " << ex.message() << nl;

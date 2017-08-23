@@ -22,7 +22,7 @@ public:
     inline static Ref<MetaProtocol> create() {
         return new MetaProtocol;
     }
-    
+
     bool isDefined() const { return prototypes_->count() > 0; }
 
     template<class Prototype>

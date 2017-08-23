@@ -80,6 +80,7 @@ private:
     Ref<Stream> stream_;
     bool isNull_;
     Ref< Queue<int> > placeHolder_;
+    String lastInsert_;
 };
 
 /** \class NullFormat Format.h <cc/Format>

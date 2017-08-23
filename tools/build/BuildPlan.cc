@@ -174,7 +174,6 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
             else if (object->className() == "Predicate") {
                 if (!predicates_) predicates_ = PredicateList::create();
                 readPredicate(object);
-
             }
             else if (object->className() == "Usage") {
                 usage_ = BuildParameters::create();

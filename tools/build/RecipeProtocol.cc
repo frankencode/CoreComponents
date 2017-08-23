@@ -91,6 +91,9 @@ protected:
         insert("simulate", false);
         insert("blindfold", false);
         insert("bootstrap", false);
+
+        insert("query", StringList::create());
+        insert("query-all", false);
     }
 };
 
@@ -122,6 +125,25 @@ protected:
     }
 };
 
+class PredicatePrototype;
+
+class PredicateMetaProtocol: public MetaProtocol
+{
+public:
+    static Ref<PredicateMetaProtocol> create(PredicatePrototype *prototype) {
+        return new PredicateMetaProtocol(prototype);
+    }
+
+    virtual MetaObject *lookup(String className) const override;
+
+private:
+    PredicateMetaProtocol(PredicatePrototype *prototype):
+        prototype_(prototype)
+    {}
+
+    PredicatePrototype *prototype_;
+};
+
 class PredicatePrototype: public MetaObject
 {
 public:
@@ -130,14 +152,8 @@ public:
     }
 
 protected:
-    static Ref<MetaProtocol> createProtocol() {
-        Ref<MetaProtocol> protocol = MetaProtocol::create();
-        protocol->define<PredicatePrototype>();
-        return protocol;
-    }
-
     PredicatePrototype(const String &className):
-        MetaObject(className, createProtocol())
+        MetaObject(className, PredicateMetaProtocol::create(this))
     {
         insert("source", StringList::create());
         insert("target", "");
@@ -147,6 +163,12 @@ protected:
         insert("clean", "");
     }
 };
+
+MetaObject *PredicateMetaProtocol::lookup(String className) const
+{
+    if (className == prototype_->className()) return prototype_;
+    return MetaProtocol::lookup(className);
+}
 
 class ApplicationPrototype: public BuildOptionsPrototype
 {

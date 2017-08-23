@@ -28,15 +28,28 @@ private:
     String message_;
 };
 
-/** \class HelpError exceptions.h cc/exceptions
+/** \class HelpRequest exceptions.h cc/exceptions
   * \brief %User requested help
   */
-class HelpError: public Exception
+class HelpRequest: public Exception
 {
 public:
-    ~HelpError() throw() {}
+    ~HelpRequest() throw() {}
 
     virtual String message() const override { return "No help, yet ..."; }
+};
+
+typedef HelpRequest HelpError; // FIXME: obsolete
+
+/** \class VersionError exceptions.h cc/exceptions
+  * \brief %User requested the application version
+  */
+class VersionRequest: public Exception
+{
+public:
+    ~VersionRequest() throw() {}
+
+    virtual String message() const override { return "Application is not versioned, yet ..."; }
 };
 
 /** \class EncodingError exceptions.h cc/exceptions
