@@ -238,6 +238,18 @@ int BuildPlan::run()
     initModules();
 
     configureStage()->run();
+    if (recipe_->contains("query")) {
+        StringList *names = Variant::cast<StringList *>(recipe_->value("query")); // FIXME: should also work with 'const StringList *'
+        if (names->count() == 0)
+            queryVariables(queryableVariableNames());
+        else
+            queryVariables(names);
+        return 0;
+    }
+    if (recipe_->contains("query-all")) {
+        queryVariables(queryableVariableNames());
+        return 0;
+    }
     if (options_ & Configure)
         return configureStage()->success() ? 0 : 1;
 
@@ -462,6 +474,27 @@ void BuildPlan::initModules()
 
     for (int i = 0; i < prerequisites_->count(); ++i)
         prerequisites_->at(i)->initModules();
+}
+
+Ref<StringList> BuildPlan::queryableVariableNames()
+{
+    return StringList::create()
+        << "name"
+        << "version"
+        << "build-scope"
+        << "include-scope";
+}
+
+void BuildPlan::queryVariables(const StringList *names)
+{
+    // TODO: make it output a properly formatted JSON message;)
+    for (String name: names) {
+        if (name == "include-scope") fout() << "include-scope: " << includeScope_ << nl;
+        else if (name == "build-scope") fout() << "build-scope: " << scope_ << nl;
+        else if (name == "version") fout() << "version: " << version_ << nl;
+        else if (name == "name") fout() << "name: " << name_ << nl;
+        // TODO...
+    }
 }
 
 } // namespace ccbuild

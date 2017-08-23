@@ -145,6 +145,9 @@ private:
     void globSources();
     void initModules();
 
+    static Ref<StringList> queryableVariableNames();
+    void queryVariables(const StringList *names);
+
     Ref<ToolChain> toolChain_;
 
     String projectPath_;
