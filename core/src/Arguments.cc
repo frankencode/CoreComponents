@@ -41,7 +41,10 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
     }
 
     if (options_->contains("h") || options_->contains("help") || options_->contains("?"))
-        throw HelpError();
+        throw HelpRequest();
+
+    if (options_->contains("v") || options_->contains("version"))
+        throw VersionRequest();
 
     // FIXME
     // if (options_->contains("v") || options_->contains("version"))

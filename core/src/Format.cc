@@ -51,6 +51,12 @@ void Format::flush()
 {
     if (isNull_) return;
     if (stream_ && get()->count() > 0) {
+        if (placeHolder_ && lastInsert_ != "") {
+            while (placeHolder_->count() > 0) {
+                int j = placeHolder_->pop();
+                get()->insert(j, lastInsert_);
+            }
+        }
         stream_->write(get());
         get()->deplete();
     }
@@ -81,6 +87,7 @@ Format &Format::operator<<(const String &s)
             j = placeHolder_->pop();
     }
     get()->insert(j, s);
+    lastInsert_ = s;
     return *this;
 }
 
