@@ -35,9 +35,20 @@ class Comparisms: public TestCase
     }
 };
 
+class Casting: public TestCase
+{
+    void run()
+    {
+        Variant value = StringList::create() << "A" << "B" << "C";
+        const StringList *list = Variant::cast<const StringList *>(value);
+        fout() << list->join(", ") << nl;
+    }
+};
+
 int main(int argc, char **argv)
 {
     CC_TESTSUITE_ADD(Comparisms);
+    CC_TESTSUITE_ADD(Casting);
 
     return TestSuite::instance()->run(argc, argv);
 }

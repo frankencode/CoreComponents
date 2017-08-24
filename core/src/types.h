@@ -134,7 +134,9 @@ class CastHelper {};
 template<class T, class U>
 class CastHelper<T, U, 0> {
 public:
-    inline static U *cast(T *p) { return DynamicCastHelper<T, U, ConversionFromTo<U*, T*>::Exists>::cast(p); }
+    inline static U *cast(T *p) {
+        return DynamicCastHelper<T, U, (ConversionFromTo<U*, T*>::Exists || ConversionFromTo<U*, const T*>::Exists) ? 1 : 0>::cast(p);
+    }
 };
 
 template<class T, class U>

@@ -239,7 +239,7 @@ int BuildPlan::run()
 
     configureStage()->run();
     if (recipe_->contains("query")) {
-        StringList *names = Variant::cast<StringList *>(recipe_->value("query")); // FIXME: should also work with 'const StringList *'
+        const StringList *names = Variant::cast<const StringList *>(recipe_->value("query"));
         if (names->count() == 0)
             queryVariables(queryableVariableNames());
         else
