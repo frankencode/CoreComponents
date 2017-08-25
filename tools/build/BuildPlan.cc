@@ -358,7 +358,7 @@ void BuildPlan::readPrerequisites()
 
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
-    StringList *prerequisitePaths = Variant::cast<StringList *>(recipe_->value("use"));
+    const StringList *prerequisitePaths = Variant::cast<const StringList *>(recipe_->value("use"));
 
     for (String prerequisitePath: prerequisitePaths) {
         String path = findPrerequisite(prerequisitePath);

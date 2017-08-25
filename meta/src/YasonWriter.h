@@ -16,7 +16,6 @@ namespace meta {
 
 /** \class YasonWriter YasonWriter.h cc/meta/YasonWriter
   * \brief Generate YSON representation of a meta object tree
-  * \see JsonWriter
   */
 class YasonWriter: public Object
 {
