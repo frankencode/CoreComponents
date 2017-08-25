@@ -42,7 +42,8 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
             String name = parts->pop(0);
             String valueText = parts->join('=');
             if (valueText->contains(',')) {
-                valueText->trimInsitu("[]");
+                if (valueText->beginsWith('[') && valueText->endsWith(']'))
+                    valueText = valueText->copy(1, valueText->count() - 1);
                 value = Variant::readList(valueText->split(','));
             }
             else
@@ -58,10 +59,6 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
 
     if (options_->contains("v") || options_->contains("version"))
         throw VersionRequest();
-
-    // FIXME
-    // if (options_->contains("v") || options_->contains("version"))
-    //  throw VersionError();
 
     if (options) {
         validate(options);
