@@ -61,12 +61,6 @@ public:
       */
     static Variant read(String s);
 
-    /** Heuristically detect the type and read a typed list variant from a string
-      * \param sl text representation of the list item values
-      * \return variant value
-      */
-    static Variant readList(const StringList *sl);
-
     Variant():              type_(UndefType),   itemType_(UndefType)                     {}
     Variant(int value):     type_(IntType),     itemType_(UndefType), int_(value)        {}
     Variant(bool value):    type_(BoolType),    itemType_(UndefType), int_(value)        {}

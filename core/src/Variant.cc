@@ -56,46 +56,6 @@ Variant Variant::read(String s)
     return Variant(s);
 }
 
-Variant Variant::readList(const StringList *sl)
-{
-    Variant value;
-
-    Ref<VariantList> vl = VariantList::create();
-    int minType = Variant::UndefType;
-    int maxType = Variant::UndefType;
-    for (String s: sl) {
-        Variant v = Variant::read(s);
-        int t = Variant::type(v);
-        if (t < minType) minType = t;
-        if (t > maxType) maxType = t;
-        vl << v;
-    }
-
-    if (minType != maxType) {
-        value = sl;
-    }
-    else if (minType == Variant::IntType) {
-        Ref< List<int> > tl = List<int>::create();
-        for (Variant v: vl) tl << int(v);
-        value = tl;
-    }
-    else if (minType == Variant::BoolType) {
-        Ref< List<bool> > tl = List<bool>::create();
-        for (Variant v: vl) tl << bool(v);
-        value = tl;
-    }
-    else if (minType == Variant::FloatType) {
-        Ref< List<float> > tl = List<float>::create();
-        for (Variant v: vl) tl << float(v);
-        value = tl;
-    }
-    else {
-        value = sl;
-    }
-
-    return value;
-}
-
 bool Variant::operator==(const Variant &b) const
 {
     bool equal = false;

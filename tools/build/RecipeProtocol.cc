@@ -92,7 +92,7 @@ protected:
         insert("blindfold", false);
         insert("bootstrap", false);
 
-        insert("query", StringList::create());
+        insert("query", "");
         insert("query-all", false);
     }
 };

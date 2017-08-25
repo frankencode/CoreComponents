@@ -95,14 +95,6 @@ String ByteArray::join(const StringList *parts, const char *sep, int sepSize)
     return result;
 }
 
-String ByteArray::join(const StringList *parts, char sep)
-{
-    char h[2];
-    h[0] = sep;
-    h[1] = 0;
-    return join(parts, h, 1);
-}
-
 String ByteArray::join(const StringList *parts, const String &sep)
 {
     return join(parts, sep->chars(), sep->count());

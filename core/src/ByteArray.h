@@ -143,14 +143,7 @@ public:
       */
     static String join(const StringList *parts, const char *sep = "", int sepSize = -1);
 
-    /** Join a list of strings
-      * \param parts the individual parts to join together
-      * \param sep the separator to put between individual parts
-      * \return new object instance
-      */
-    static String join(const StringList *parts, char sep);
-
-    /** Join a list of strings
+     /** Join a list of strings
       * \param parts the individual parts to join together
       * \param sep the separator to put between individual parts
       * \return new object instance

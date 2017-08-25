@@ -239,7 +239,7 @@ int BuildPlan::run()
 
     configureStage()->run();
     if (recipe_->contains("query")) {
-        const StringList *names = Variant::cast<const StringList *>(recipe_->value("query"));
+        Ref<StringList> names = Variant::cast<String>(recipe_->value("query"))->split(',');
         if (names->count() == 0)
             queryVariables(queryableVariableNames());
         else
