@@ -54,7 +54,18 @@ public:
     inline static int type(const Variant &value) { return value.type_; }
     inline static int itemType(const Variant &value) { return value.itemType_; }
     static const char *typeName(int type, int itemType = UndefType);
+
+    /** Heuristically detect the type and read a variant value from a string
+      * \param s text representation of the variant value
+      * \return variant value
+      */
     static Variant read(String s);
+
+    /** Heuristically detect the type and read a typed list variant from a string
+      * \param sl text representation of the list item values
+      * \return variant value
+      */
+    static Variant readList(const StringList *sl);
 
     Variant():              type_(UndefType),   itemType_(UndefType)                     {}
     Variant(int value):     type_(IntType),     itemType_(UndefType), int_(value)        {}

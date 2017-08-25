@@ -25,19 +25,32 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
     for (int i = 1; i < argc; ++i)
     {
         String s = argv[i];
-        if (s->at(0) != '-' && !s->contains('=')) {
-            items_->append(s);
-            continue;
+        bool isKeyValueOption = false;
+        if (!s->beginsWith('-')) {
+            if (!s->contains('=')) {
+                items_->append(s);
+                continue;
+            }
+            isKeyValueOption = true;
         }
 
-        s->trimInsitu("-");
-        Ref<StringList> parts = s->split("=");
-        String name = parts->pop(0);
-        String valueText = parts->join("=");
-        Variant value = true;
-        if (valueText != "") value = Variant::read(valueText);
+        if (s->beginsWith('-')) s->trimInsitu("-");
 
-        options_->establish(name, value);
+        Variant value = true;
+        if (isKeyValueOption) {
+            Ref<StringList> parts = s->split('=');
+            String name = parts->pop(0);
+            String valueText = parts->join('=');
+            if (valueText->contains(',')) {
+                valueText->trimInsitu("[]");
+                value = Variant::readList(valueText->split(','));
+            }
+            else
+                value = Variant::read(valueText);
+            options_->establish(name, value);
+        }
+        else
+            options_->establish(s, true);
     }
 
     if (options_->contains("h") || options_->contains("help") || options_->contains("?"))

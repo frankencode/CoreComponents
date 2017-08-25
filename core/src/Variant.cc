@@ -40,15 +40,60 @@ const char *Variant::typeName(int type, int itemType)
 
 Variant Variant::read(String s)
 {
+    if (s->beginsWith('"') && s->endsWith('"'))
+        return Variant(s->copy(1, s->count() - 1));
+
     if (s->contains('.') || s->contains('e') || s->contains('E')) {
         double value = 0;
         if (s->scanNumber(&value) == s->count()) return Variant(value);
     }
+
     int value = 0;
     if (s->scanNumber(&value) == s->count()) return Variant(value);
     if (s == "true" || s == "on") return Variant(true);
     if (s == "false" || s == "off") return Variant(false);
+
     return Variant(s);
+}
+
+Variant Variant::readList(const StringList *sl)
+{
+    Variant value;
+
+    Ref<VariantList> vl = VariantList::create();
+    int minType = Variant::UndefType;
+    int maxType = Variant::UndefType;
+    for (String s: sl) {
+        Variant v = Variant::read(s);
+        int t = Variant::type(v);
+        if (t < minType) minType = t;
+        if (t > maxType) maxType = t;
+        vl << v;
+    }
+
+    if (minType != maxType) {
+        value = sl;
+    }
+    else if (minType == Variant::IntType) {
+        Ref< List<int> > tl = List<int>::create();
+        for (Variant v: vl) tl << int(v);
+        value = tl;
+    }
+    else if (minType == Variant::BoolType) {
+        Ref< List<bool> > tl = List<bool>::create();
+        for (Variant v: vl) tl << bool(v);
+        value = tl;
+    }
+    else if (minType == Variant::FloatType) {
+        Ref< List<float> > tl = List<float>::create();
+        for (Variant v: vl) tl << float(v);
+        value = tl;
+    }
+    else {
+        value = sl;
+    }
+
+    return value;
 }
 
 bool Variant::operator==(const Variant &b) const
