@@ -26,11 +26,9 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
     {
         String s = argv[i];
         bool isKeyValueOption = s->contains('=');
-        if (!s->beginsWith('-')) {
-            if (!s->contains('=')) {
-                items_->append(s);
-                continue;
-            }
+        if (!s->beginsWith('-') && !isKeyValueOption) {
+            items_->append(s);
+            continue;
         }
 
         if (s->beginsWith('-')) s->trimInsitu("-");

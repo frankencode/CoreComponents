@@ -238,7 +238,7 @@ int BuildPlan::run()
     initModules();
 
     configureStage()->run();
-    if (recipe_->contains("query")) {
+    if (String(recipe_->value("query")) != "") {
         Ref<StringList> names = Variant::cast<String>(recipe_->value("query"))->split(',');
         if (names->count() == 0)
             queryVariables(queryableVariableNames());
@@ -246,7 +246,7 @@ int BuildPlan::run()
             queryVariables(names);
         return 0;
     }
-    if (recipe_->contains("query-all")) {
+    if (recipe_->value("query-all")) {
         queryVariables(queryableVariableNames());
         return 0;
     }
