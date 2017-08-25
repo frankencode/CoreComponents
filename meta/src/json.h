@@ -10,23 +10,21 @@
 
 #include <cc/syntax/exceptions>
 #include <cc/meta/MetaObject>
-#include <cc/meta/MetaProtocol>
 
 namespace cc {
 namespace meta {
-namespace yason {
+namespace json {
 
-/** Convenience function to parse a YASON message
-  * \param text YASON message
-  * \param protocol message protocol
+/** Convenience function to parse a JSON message
+  * \param text JSON message
   * \return parsed value
   */
-Variant parse(const ByteArray *text, const MetaProtocol *protocol = 0);
+Variant parse(const ByteArray *text);
 
 /** Convenience function to stringify a variant value
   * \param value variant value
-  * \return YASON message
+  * \return JSON message
   */
 String stringify(Variant value);
 
-}}} // namespace cc::meta::yason
+}}} // namespace cc::meta::json

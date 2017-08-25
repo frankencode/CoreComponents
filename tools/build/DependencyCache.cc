@@ -55,7 +55,7 @@ DependencyCache::DependencyCache(BuildPlan *plan):
         MetaObject *yason = Variant::cast<MetaObject *>(item->value());
         String command = yason->value("analyseCommand");
         String modulePath = yason->value("modulePath");
-        Ref<StringList> dependencyPaths = Variant::cast<VariantList *>(yason->value("dependencyPaths"))->toList<String>();
+        Ref<StringList> dependencyPaths = Variant::cast<const VariantList *>(yason->value("dependencyPaths"))->toList<String>();
         String sourcePath = dependencyPaths->at(0);
 
         bool dirty = false;

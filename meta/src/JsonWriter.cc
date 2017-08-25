@@ -48,6 +48,9 @@ void JsonWriter::writeValue(Variant value, int depth)
     else if (Variant::type(value) == Variant::ObjectType) {
         writeObject(value, depth);
     }
+    else {
+        format_ << "\"" << str(value) << "\"";
+    }
 }
 
 void JsonWriter::writeList(Variant value, int depth)
@@ -67,10 +70,6 @@ void JsonWriter::writeList(Variant value, int depth)
 void JsonWriter::writeObject(Variant value, int depth)
 {
     Ref<MetaObject> object = Variant::cast<MetaObject *>(value);
-    if (object->className() != "") {
-        format_ << object->className();
-        format_ << " ";
-    }
     if (object->count() == 0) {
         format_ << "{}";
         return;

@@ -84,7 +84,7 @@ bool YasonWriter::isIdentifier(String name) const
 
 void YasonWriter::writeObject(Variant value, int depth)
 {
-    Ref<MetaObject> object = Variant::cast<MetaObject *>(value);
+    const MetaObject *object = Variant::cast<const MetaObject *>(value);
     if (!object) {
         format_ << "null";
         return;

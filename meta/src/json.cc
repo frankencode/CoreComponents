@@ -8,23 +8,23 @@
 
 #include <cc/CaptureSink>
 #include <cc/meta/YasonSyntax>
-#include <cc/meta/YasonWriter>
-#include <cc/meta/yason>
+#include <cc/meta/JsonWriter>
+#include <cc/meta/json>
 
 namespace cc {
 namespace meta {
-namespace yason {
+namespace json {
 
-Variant parse(const ByteArray *text, const MetaProtocol *protocol)
+Variant parse(const ByteArray *text)
 {
-    return YasonSyntax::instance()->parse(text, protocol);
+    return YasonSyntax::instance()->parse(text);
 }
 
 String stringify(Variant value)
 {
     Ref<CaptureSink> sink = CaptureSink::open();
-    YasonWriter::create(sink)->write(value);
+    JsonWriter::create(sink)->write(value);
     return sink->collect();
 }
 
-}}} // namespace cc::meta::yason
+}}} // namespace cc::meta::json

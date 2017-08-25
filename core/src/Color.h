@@ -29,7 +29,7 @@ public:
         GreenChannel = 2,           ///< Index of green channel
         RedChannel   = 3,           ///< Index of red channel
         FirstChannel = BlueChannel, ///< Index of first channel
-        LastChannel = RedChannel   ///< Index of last channel
+        LastChannel = RedChannel    ///< Index of last channel
     };
 
     /// Default constructor
@@ -127,6 +127,7 @@ private:
     };
 };
 
+/// Stringify a color tuple \a c
 String str(Color c);
 
 } // namespace cc

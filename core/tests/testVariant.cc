@@ -42,6 +42,7 @@ class Casting: public TestCase
         Variant value = StringList::create() << "A" << "B" << "C";
         const StringList *list = Variant::cast<const StringList *>(value);
         fout() << list->join(", ") << nl;
+        CC_VERIFY(list->join() == "ABC");
     }
 };
 
