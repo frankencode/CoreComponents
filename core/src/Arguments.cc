@@ -25,13 +25,12 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
     for (int i = 1; i < argc; ++i)
     {
         String s = argv[i];
-        bool isKeyValueOption = false;
+        bool isKeyValueOption = s->contains('=');
         if (!s->beginsWith('-')) {
             if (!s->contains('=')) {
                 items_->append(s);
                 continue;
             }
-            isKeyValueOption = true;
         }
 
         if (s->beginsWith('-')) s->trimInsitu("-");
@@ -40,15 +39,8 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
         if (isKeyValueOption) {
             Ref<StringList> parts = s->split('=');
             String name = parts->pop(0);
-            String valueText = parts->join('=');
-            if (valueText->contains(',')) {
-                if (valueText->beginsWith('[') && valueText->endsWith(']'))
-                    valueText = valueText->copy(1, valueText->count() - 1);
-                value = Variant::readList(valueText->split(','));
-            }
-            else
-                value = Variant::read(valueText);
-            options_->establish(name, value);
+            String valueText = parts->join("=");
+            options_->establish(name, Variant::read(valueText));
         }
         else
             options_->establish(s, true);
@@ -93,7 +85,11 @@ void Arguments::validate(const VariantMap *prototype)
             }
             else {
                 throw UsageError(
-                    Format("Option \"%%\" expects type %%") << name << Variant::typeName(Variant::type(defaultValue), Variant::itemType(defaultValue))
+                    Format("Option \"%%\" expects type %% (got %%: %%)")
+                        << name
+                        << Variant::typeName(Variant::type(defaultValue), Variant::itemType(defaultValue))
+                        << Variant::typeName(Variant::type(value), Variant::itemType(value))
+                        << value
                 );
             }
         }
