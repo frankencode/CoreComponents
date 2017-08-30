@@ -17,7 +17,8 @@ FormatSignal flush;
 
 Format::Format(String pattern, Stream *stream):
     stream_(stream),
-    isNull_(stream && NullStream::instance() ? stream == NullStream::instance() : false)
+    isNull_(stream && NullStream::instance() ? stream == NullStream::instance() : false),
+    lastPosition_(0)
 {
     if (isNull_) return;
     set(StringList::create());
@@ -37,7 +38,8 @@ Format::Format(String pattern, Stream *stream):
 
 Format::Format(Stream *stream):
     stream_(stream),
-    isNull_(stream && NullStream::instance() ? stream == NullStream::instance() : false)
+    isNull_(stream && NullStream::instance() ? stream == NullStream::instance() : false),
+    lastPosition_(0)
 {
     set(StringList::create());
 }
@@ -83,8 +85,11 @@ Format &Format::operator<<(const String &s)
     if (isNull_) return *this;
     int j = get()->count();
     if (placeHolder_) {
-        if (placeHolder_->count() > 0)
+        if (placeHolder_->count() > 0) {
             j = placeHolder_->pop();
+            lastPosition_ = j;
+        }
+        else j = ++lastPosition_;
     }
     get()->insert(j, s);
     lastInsert_ = s;
