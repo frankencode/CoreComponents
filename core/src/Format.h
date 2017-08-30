@@ -81,6 +81,7 @@ private:
     bool isNull_;
     Ref< Queue<int> > placeHolder_;
     String lastInsert_;
+    int lastPosition_;
 };
 
 /** \class NullFormat Format.h <cc/Format>
