@@ -146,7 +146,7 @@ private:
     void initModules();
 
     static Ref<StringList> queryableVariableNames();
-    void queryVariables(const StringList *names);
+    void queryVariables(const StringList *names) const;
 
     Ref<ToolChain> toolChain_;
 

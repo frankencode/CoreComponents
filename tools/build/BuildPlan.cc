@@ -16,6 +16,8 @@
 #include <cc/Arguments>
 #include <cc/regexp/Glob>
 #include <cc/meta/yason>
+#include <cc/meta/JsonWriter>
+#include <cc/debug>
 #include "BuildMap.h"
 #include "DependencyCache.h"
 #include "GnuToolChain.h"
@@ -239,14 +241,10 @@ int BuildPlan::run()
 
     configureStage()->run();
     if (String(recipe_->value("query")) != "") {
-        Ref<StringList> names = Variant::cast<String>(recipe_->value("query"))->split(',');
-        if (names->count() == 0)
-            queryVariables(queryableVariableNames());
-        else
-            queryVariables(names);
+        queryVariables(Variant::cast<String>(recipe_->value("query"))->split(','));
         return 0;
     }
-    if (recipe_->value("query-all")) {
+    else if (recipe_->value("query-all")) {
         queryVariables(queryableVariableNames());
         return 0;
     }
@@ -391,7 +389,7 @@ void BuildPlan::recoverIncludeScope()
 {
     includeScope_ = StringList::create();
 
-    if (!(options_ & Application) || (options_ & Library)) return;
+    if (!((options_ & Application) || (options_ & Library))) return;
 
     String path = projectPath_->expandPath("include");
     while (true) {
@@ -482,19 +480,29 @@ Ref<StringList> BuildPlan::queryableVariableNames()
         << "name"
         << "version"
         << "build-scope"
-        << "include-scope";
+        << "include-scope"
+        << "include-paths"
+        << "library-paths"
+        << "libraries"
+        << "custom-compile-flags"
+        << "custom-link-flags";
 }
 
-void BuildPlan::queryVariables(const StringList *names)
+void BuildPlan::queryVariables(const StringList *names) const
 {
-    // TODO: make it output a properly formatted JSON message;)
-    for (String name: names) {
-        if (name == "include-scope") fout() << "include-scope: " << includeScope_ << nl;
-        else if (name == "build-scope") fout() << "build-scope: " << scope_ << nl;
-        else if (name == "version") fout() << "version: " << version_ << nl;
-        else if (name == "name") fout() << "name: " << name_ << nl;
-        // TODO...
-    }
+    Ref<MetaObject> variables = MetaObject::create();
+    variables->insert("name", name_);
+    variables->insert("version", version_);
+    variables->insert("build-scope", scope_);
+    variables->insert("include-scope", includeScope_);
+    variables->insert("include-paths", includePaths_);
+    variables->insert("library-paths", libraryPaths_);
+    variables->insert("libraries", libraries_);
+    variables->insert("custom-compile-flags", customCompileFlags_);
+    variables->insert("custom-link-flags", customLinkFlags_);
+
+    JsonWriter::create(stdOut())->writeObject(variables, names);
+    stdOut()->write("\n");
 }
 
 } // namespace ccbuild
