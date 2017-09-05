@@ -50,7 +50,7 @@ int main(int argc, char **argv)
             "  -simulate       print build commands without executing them\n"
             "  -blindfold      do not see any existing files\n"
             "  -bootstrap      write bootstrap script\n"
-            "  -query          query given properties\n"
+            "  -query          query given properties (e.g. 'name,version')\n"
             "  -query-all      query all properties\n"
             "  -version        print %% version\n"
         ) << toolName;

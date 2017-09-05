@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug>
 #include <cc/meta/JsonWriter>
 
 namespace cc {
@@ -46,7 +47,7 @@ void JsonWriter::writeValue(Variant value, int depth)
         writeList(value, depth);
     }
     else if (Variant::type(value) == Variant::ObjectType) {
-        writeObject(value, depth);
+        writeObject(value, nullptr, depth);
     }
     else {
         format_ << "\"" << str(value) << "\"";
@@ -67,7 +68,7 @@ void JsonWriter::writeList(Variant value, int depth)
         writeTypedList<Variant>(value, depth);
 }
 
-void JsonWriter::writeObject(Variant value, int depth)
+void JsonWriter::writeObject(Variant value, const StringList *names, int depth)
 {
     Ref<MetaObject> object = Variant::cast<MetaObject *>(value);
     if (object->count() == 0) {
@@ -76,21 +77,32 @@ void JsonWriter::writeObject(Variant value, int depth)
     }
     format_ << "{\n";
     writeIndent(depth + 1);
-    for (int i = 0; i < object->count(); ++i) {
-        String memberName = object->keyAt(i);
-        Variant memberValue = object->valueAt(i);
-        format_ << "\"" << memberName << "\": ";
-        writeValue(memberValue, depth + 1);
-        if (i < object->count() - 1) {
-            format_ << ",\n";
-            writeIndent(depth + 1);
-        }
-        else {
-            format_ << "\n";
-            writeIndent(depth);
+    if (!names) {
+        for (int i = 0; i < object->count(); ++i)
+            writeMember(object->keyAt(i), object->valueAt(i), i == object->count() - 1, depth);
+    }
+    else {
+        int i = 0;
+        for (String name: names) {
+            writeMember(name, object->value(name), i == names->count() - 1, depth);
+            ++i;
         }
     }
     format_ << "}";
+}
+
+void JsonWriter::writeMember(String memberName, Variant memberValue, bool isLast, int depth)
+{
+    format_ << "\"" << memberName << "\": ";
+    writeValue(memberValue, depth + 1);
+    if (!isLast) {
+        format_ << ",\n";
+        writeIndent(depth + 1);
+    }
+    else {
+        format_ << "\n";
+        writeIndent(depth);
+    }
 }
 
 void JsonWriter::writeIndent(int depth)

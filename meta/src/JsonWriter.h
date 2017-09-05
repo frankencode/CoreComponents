@@ -33,11 +33,20 @@ public:
       */
     void write(Variant value);
 
+    /** Convert a meta object into JSON notation
+      * \param object meta object
+      * \param names select properties (and their order) to output
+      */
+    void writeObject(MetaObject *object, const StringList *names = 0) {
+        writeObject(Ref<MetaObject>(object), names, 0);
+    }
+
 private:
     JsonWriter(Stream *sink, String indent);
     void writeValue(Variant value, int depth);
     void writeList(Variant value, int depth);
-    void writeObject(Variant value, int depth);
+    void writeObject(Variant value, const StringList *names, int depth);
+    void writeMember(String memberName, Variant memberValue, bool isLast, int depth);
     void writeIndent(int depth);
 
     template<class T>
