@@ -1,0 +1,5 @@
+Application {
+    name: ccbuild
+    source: *.cc
+    use: [ core, syntax, regexp, meta ]
+}

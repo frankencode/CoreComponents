@@ -49,19 +49,6 @@ File::File(String path, int openMode, int fd):
     openMode_(openMode)
 {}
 
-int File::openMode(const char *shellMode)
-{
-    int flags = 0;
-    if (strcmp(shellMode, "<") == 0) flags = OpenMode::ReadOnly;
-    else if (strcmp(shellMode, ">") == 0) flags = OpenMode::WriteOnly | OpenMode::Create | OpenMode::Truncate;
-    else if (strcmp(shellMode, ">>") == 0) flags = OpenMode::WriteOnly | OpenMode::Create | OpenMode::Append;
-    else if (strcmp(shellMode, ">*") == 0) flags = OpenMode::WriteOnly | OpenMode::Create | OpenMode::Truncate | OpenMode::Virgin;
-    else if (strcmp(shellMode, ">>*") == 0) flags = OpenMode::WriteOnly | OpenMode::Create | OpenMode::Append | OpenMode::Virgin;
-    else if (strcmp(shellMode, "<>") == 0) flags = OpenMode::ReadWrite | OpenMode::Create;
-    else if (strcmp(shellMode, "<>*") == 0) flags = OpenMode::ReadWrite | OpenMode::Create | OpenMode::Virgin;
-    return flags;
-}
-
 String File::path() const
 {
     return path_;
@@ -298,7 +285,8 @@ void File::clean(String path)
         Dir::deplete(path);
     }
     catch (SystemError &) {
-        File::unlink(path);
+        if (File::exists(path))
+            File::unlink(path);
         return;
     }
     Dir::remove(path);

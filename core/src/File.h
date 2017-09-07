@@ -45,28 +45,6 @@ public:
       */
     static Ref<File> tryOpen(String path, int openMode = OpenMode::ReadOnly, int fileMode = 0644);
 
-    /** Open a file (convenience wrapper)
-      * \param shellMode shell mode: "<", ">", ">>", "<>", ">*", ">>*", "<>*"
-      * \param path file path
-      * \param fileMode file permissions for new file, a combination of cc::FileMode
-      * \return new object instance
-      */
-    inline static Ref<File> open(const char *shellMode, String path, int fileMode)
-    {
-        return open(path, openMode(shellMode), fileMode);
-    }
-
-    /** Try to open a file (convenience wrapper)
-      * \param path file path
-      * \param shellMode shell mode: "<", ">", ">>", "<>", ">*", ">>*", "<>*"
-      * \param mode file permissions for new file, a combination of cc::FileMode
-      * \return new object instance or null reference if opening the file wasn't successful
-      */
-    inline static Ref<File> tryOpen(const char *shellMode, String path, int fileMode = 0644)
-    {
-        return tryOpen(path, openMode(shellMode), fileMode);
-    }
-
     /** Open a temporary file
       * \param flags file open flags, a combintation of cc::OpenMode
       * \return new object instance
@@ -224,7 +202,6 @@ private:
 
     File(String path, int openMode, int fd);
 
-    static int openMode(const char *shellMode);
     static void unmap(ByteArray *s);
 
     String path_;

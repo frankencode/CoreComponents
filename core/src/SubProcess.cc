@@ -50,6 +50,7 @@ Ref<SubProcess> SubProcess::open(Params *params)
 
     if (execPath != "") {
         if (execPath->contains('/')) {
+            if (params->workDir_ != "" && execPath->isRelativePath()) execPath = execPath->absolutePathRelativeTo(Process::cwd());
             if (!File::access(execPath, Access::Execute)) throw CommandNotFound(execPath);
         }
         else {
