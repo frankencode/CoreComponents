@@ -26,12 +26,13 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
     {
         String s = argv[i];
         bool isKeyValueOption = s->contains('=');
-        if (!s->beginsWith('-') && !isKeyValueOption) {
+        bool isFlag = s->beginsWith('-') && s->count() >= 2 && (s->at(1) < '0' || '9' < s->at(1)) && s->at(1) != '.';
+        if (!isFlag && !isKeyValueOption) {
             items_->append(s);
             continue;
         }
 
-        if (s->beginsWith('-')) s->trimInsitu("-");
+        if (isFlag) s->trimInsitu("-");
 
         Variant value = true;
         if (isKeyValueOption) {
