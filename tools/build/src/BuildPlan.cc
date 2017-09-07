@@ -154,6 +154,12 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
     BuildParameters::read(recipe_, this);
 
+    String defaultIncludePath = projectPath_->expandPath("include");
+    if (Dir::exists(defaultIncludePath)) {
+        if (!includePaths_->contains(defaultIncludePath))
+            includePaths_->append(defaultIncludePath);
+    }
+
     if (recipe_->hasChildren()) {
         for (const MetaObject *object: recipe_->children()) {
             if (object->className() == "Dependency") {
@@ -357,6 +363,10 @@ void BuildPlan::readPrerequisites()
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
     const StringList *prerequisitePaths = Variant::cast<const StringList *>(recipe_->value("use"));
+    if (options_ & Package) {
+        const StringList *packageItems = Variant::cast<const StringList *>(recipe_->value("add"));
+        if (packageItems->count() > 0) prerequisitePaths = packageItems;
+    }
 
     for (String prerequisitePath: prerequisitePaths) {
         String path = findPrerequisite(prerequisitePath);
