@@ -274,6 +274,7 @@ protected:
         BuildOptionsPrototype(className)
     {
         insert("version", Version());
+        insert("add", StringList::create());
     }
 };
 

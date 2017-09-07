@@ -49,7 +49,7 @@ public:
         virtual int run() = 0;
     };
 
-    /** Sub-process staging helper
+    /** \brief Sub-process staging helper
       */
     class Staging: public Object
     {
