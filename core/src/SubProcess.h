@@ -49,64 +49,64 @@ public:
         virtual int run() = 0;
     };
 
-    /** \brief Sub-process creation parameters
+    /** Sub-process staging helper
       */
-    class Params: public Object
+    class Staging: public Object
     {
     public:
         /** Create a new sub-process creation parameter set
           * \return new object instance
           */
-        static Ref<Params> create() { return new Params(); }
+        static Ref<Staging> create() { return new Params(); }
 
         /** Set the type of the new sub-process
           * \param type process hierarchy type
           * \return pointer to this object
           */
-        Params *setType(Type type) { type_ = type; return this; }
+        Staging *setType(Type type) { type_ = type; return this; }
 
         /** Set the command to execute
           * \param command path to executable and command line parameters
           * \return pointer to this object
           */
-        Params *setCommand(String command) { command_ = command; return this; }
+        Staging *setCommand(String command) { command_ = command; return this; }
 
         /** Set I/O forwarding method
           * \param forwarding I/O forwarding method
           * \return pointer to this object
           */
-        Params *setForwarding(Forwarding forwarding) { forwarding_ = forwarding; return this; }
+        Staging *setForwarding(Forwarding forwarding) { forwarding_ = forwarding; return this; }
 
         /** Define which entries in the file descriptor table to overload
           * \param overloads overloading map
           * \return pointer to this object
           * \see cc::StdOutFd, cc::StdErrFd, cc::StdInFd
           */
-        Params *setOverloads(Overloads *overloads) { overloads_ = overloads; return this; }
+        Staging *setOverloads(Overloads *overloads) { overloads_ = overloads; return this; }
 
         /** Set command line arguments
           * \param args argument list, first entry is the executable name
           * \return pointer to this object
           */
-        Params *setArgs(StringList *args) { args_ = args; return this; }
+        Staging *setArgs(StringList *args) { args_ = args; return this; }
 
         /** Set environment map
           * \param envMap the environmap to use for the new sub-process (or zero pointer to inherit the parents environment map)
           * \return pointer to this object
           */
-        Params *setEnvMap(EnvMap *envMap) { envMap_ = envMap; return this; }
+        Staging *setEnvMap(EnvMap *envMap) { envMap_ = envMap; return this; }
 
         /** Set working directory
           * \param workDir initial working directory
           * \return pointer to this object
           */
-        Params *setWorkDir(String workDir) { workDir_ = workDir; return this; }
+        Staging *setWorkDir(String workDir) { workDir_ = workDir; return this; }
 
         /** Set file creation mask
           * \param userMask new file creation mask
           * \return pointer to this object
           */
-        Params *setUserMask(int userMask) { userMask_ = userMask; return this; }
+        Staging *setUserMask(int userMask) { userMask_ = userMask; return this; }
 
         /** Set the signal mask for the new sub-process
           * \param signalMask signal mask to setup
@@ -115,18 +115,24 @@ public:
           * If no signal mask is specified (or a null pointer is passed) the signal mask is reset
           * to all unblock for the new sub-process.
           */
-        Params *setSignalMask(SignalSet *signalMask) { signalMask_ = signalMask; return this; }
+        Staging *setSignalMask(SignalSet *signalMask) { signalMask_ = signalMask; return this; }
 
         /** Set worker object (in case no command/args is specified)
           * \param worker worker to start in sub-process (Worker::run() is invoked)
           * \return pointer to this object
           */
-        Params *setWorker(Worker *worker) { worker_ = worker; return this; }
+        Staging *setWorker(Worker *worker) { worker_ = worker; return this; }
 
-    private:
+        /// Finalise staging, start new child process
+        inline Ref<SubProcess> start() { return SubProcess::open(this); }
+
+        /// Convenience function, equivalent to start()->wait()
+        inline int exec() { return start()->wait(); }
+
+    protected:
         friend class SubProcess;
 
-        Params():
+        Staging():
             type_(SubProcess::GroupLeader),
             forwarding_(ForwardBySocket),
             userMask_(-1)
@@ -143,6 +149,14 @@ public:
         Ref<SignalSet> signalMask_;
         Ref<Worker> worker_;
     };
+
+    typedef Staging Params;
+
+    static Ref<Staging> stage() {
+        Ref<Staging> staging = new Staging;
+        staging->forwarding_ = NoForwarding;
+        return staging;
+    }
 
     /** \brief Shorthand for SubProcess::Params::create()
       */
@@ -172,7 +186,7 @@ public:
       * \param command program path + arguments (e.g. "ls -l")
       * \return new object instance
       */
-    static Ref<SubProcess> execute(String command);
+    static Ref<SubProcess> execute(String command); // FIXME: slightly confusing; exec() normally waits
 
     /// Sub-process process ID
     pid_t pid() const;

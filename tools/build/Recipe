@@ -1,5 +1,3 @@
-Application {
-    name: ccbuild
-    source: *.cc
-    use: [ core, syntax, regexp, meta ]
+Package {
+    use: [ src, tests ]
 }

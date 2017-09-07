@@ -154,12 +154,6 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
     BuildParameters::read(recipe_, this);
 
-    String defaultIncludePath = projectPath_->expandPath("include");
-    if (Dir::exists(defaultIncludePath)) {
-        if (!includePaths_->contains(defaultIncludePath))
-            includePaths_->append(defaultIncludePath);
-    }
-
     if (recipe_->hasChildren()) {
         for (const MetaObject *object: recipe_->children()) {
             if (object->className() == "Dependency") {
@@ -233,6 +227,12 @@ int BuildPlan::run()
     if (!(options_ & Configure)) {
         if (!preparationStage()->run()) return 1;
         if (recipe_->value("prepare")) return 0;
+    }
+
+    String defaultIncludePath = projectPath_->expandPath("include");
+    if (Dir::exists(defaultIncludePath)) {
+        if (!includePaths_->contains(defaultIncludePath))
+            includePaths_->append(defaultIncludePath);
     }
 
     recoverIncludeScope();
