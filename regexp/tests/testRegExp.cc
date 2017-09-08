@@ -103,6 +103,16 @@ class Globbing: public TestCase
     }
 };
 
+class CxxPathGlobbing: public TestCase
+{
+    void run()
+    {
+        RegExp pattern = "*/include/*";
+        CC_VERIFY(pattern->match("/usr/include/c++/5/list")->valid());
+        CC_VERIFY(!pattern->match("/usr/lib/libnegative.so")->valid());
+    }
+};
+
 class LazyChoice: public TestCase
 {
     void run()
@@ -143,6 +153,7 @@ int main(int argc, char** argv)
 {
     CC_TESTSUITE_ADD(EmailValidation);
     CC_TESTSUITE_ADD(Globbing);
+    CC_TESTSUITE_ADD(CxxPathGlobbing);
     CC_TESTSUITE_ADD(LazyChoice);
     CC_TESTSUITE_ADD(UriDispatch);
 

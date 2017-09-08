@@ -1,2 +1,57 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
 #pragma once
-#include "../../ThreadLocalSingleton.h"
+
+#include <cc/Object>
+#include <cc/Ref>
+
+namespace cc {
+
+/** \class ThreadLocalSingleton ThreadLocalSingleton.h cc/ThreadLocalSingleton
+  * \ingroup mman
+  * \brief %Thread-local singletons
+  *
+  * The following shows how to implement a thread-local singleton using the ThreadLocalSingleton<T> template.
+  *
+  * %ThreadLocalSingleton declaration (example):
+  * ~~~~~~~~~~~~~
+  * template<class> class ThreadLocalSingleton;
+  *
+  * class Settings: public Object
+  * {
+  * public:
+  *     static const Settings *instance();
+  * private:
+  *     friend class ThreadLocalSingleton<Settings>;
+  *     Settings();
+  * };
+  * ~~~~~~~~~~~~~
+  *
+  * %Singleton implementation (example):
+  * ~~~~~~~~~~~~~
+  * #include <cc/ThreadLocalSingleton>
+  * ...
+  * const Settings *Settings::instance() { return ThreadLocalSingleton<Settings>::instance() }
+  * Settings::Settings() {}
+  * ~~~~~~~~~~~~~
+  */
+template<class SubClass>
+class ThreadLocalSingleton
+{
+public:
+    /** Return pointer to the singleton instance creating it on-demand if it does not exist yet
+      */
+    static SubClass *instance()
+    {
+        static thread_local Ref<SubClass> instance_(new SubClass);
+        return instance_;
+    }
+};
+
+} // namespace cc

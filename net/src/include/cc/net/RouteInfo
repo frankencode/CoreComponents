@@ -1,2 +1,75 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
 #pragma once
-#include "../../../RouteInfo.h"
+
+#include <cc/net/SocketAddress>
+
+namespace cc {
+namespace net {
+
+class RouteInfo;
+
+typedef List< Ref<RouteInfo> > RouteInfoList;
+
+/** \class RouteInfo RouteInfo.h cc/net/RouteInfo
+  * \brief Routing table access
+  */
+class RouteInfo: public Object
+{
+public:
+    /** Query the contents of the routing table
+      * \return list of routing table entries
+      */
+    static Ref<RouteInfoList> queryTable();
+
+    /// Size of the source address in bits
+    inline int sourceMask() const { return sourceMask_; }
+
+    /// Size of the destination address in bits
+    inline int destinationMask() const { return destinationMask_; }
+
+    /// %Source network address
+    inline SocketAddress *source() const { return source_; } // FIXME: should never be zero
+
+    /// Destination network address
+    inline SocketAddress *destination() const { return destination_; } // FIXME: should never be zero
+
+    /// Address of gateway to reach destination
+    inline SocketAddress *gateway() const { return gateway_; } // FIXME: should never be zero
+
+    /// Name of the network interface the packet arrives on the system
+    inline String inputInterface() const { return inputInterface_; }
+
+    /// Name of the network interface the packet leaves leaves the system
+    inline String outputInterface() const { return outputInterface_; }
+
+    /// Cost to take the route
+    inline int metric() const { return metric_; }
+
+    /// Priority of the route
+    inline int priority() const { return priority_; }
+
+    // String toString() const; // TODO
+
+private:
+    inline static Ref<RouteInfo> create() { return new RouteInfo; }
+    RouteInfo() {}
+
+    int sourceMask_;
+    int destinationMask_;
+    Ref<SocketAddress> source_;
+    Ref<SocketAddress> destination_;
+    Ref<SocketAddress> gateway_;
+    String inputInterface_;
+    String outputInterface_;
+    int metric_;
+    int priority_;
+};
+
+}} // namespace cc::net

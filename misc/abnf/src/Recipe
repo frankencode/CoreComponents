@@ -1,4 +1,0 @@
-Library {
-    name: ccabnf
-    use: [ core, syntax ]
-}

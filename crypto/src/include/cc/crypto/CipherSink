@@ -1,2 +1,43 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
 #pragma once
-#include "../../../CipherSink.h"
+
+#include <cc/Stream>
+#include <cc/crypto/BlockCipher>
+
+namespace cc {
+namespace crypto {
+
+/** \class CipherSink CipherSink.h cc/crypto/CipherSink
+  * \brief Enciphering output stream
+  */
+class CipherSink: public Stream
+{
+public:
+    /** Open a new enciphering output stream
+      * \param cipher block cipher to use for enciphering the plaintext
+      * \param sink output sink to write the ciphertext to
+      * \return new object instance
+      */
+    static Ref<CipherSink> open(BlockCipher *cipher, Stream *sink, Stream *pad = 0);
+
+    virtual void write(const ByteArray *data) override;
+
+private:
+    CipherSink(BlockCipher *cipher, Stream *sink, Stream *pad);
+    ~CipherSink();
+
+    Ref<BlockCipher> cipher_;
+    Ref<Stream> sink_;
+    Ref<Stream> pad_;
+    Ref<ByteArray> block_;
+    Ref<ByteArray> pending_;
+};
+
+}} // namespace cc::crypto

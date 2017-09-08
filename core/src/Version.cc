@@ -7,7 +7,7 @@
  */
 
 #include <cc/Format>
-#include "Version.h"
+#include <cc/Version>
 
 namespace cc {
 

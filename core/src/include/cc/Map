@@ -1,2 +1,304 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
 #pragma once
-#include "../../Map.h"
+
+#include <cc/containers>
+#include <cc/OrdinalTree>
+
+namespace cc {
+
+template<class Key, class Value>
+class MapIterator;
+
+template<class Key, class Value>
+class ConstMapIterator;
+
+/** \class Map Map.h cc/Map
+  * \ingroup container
+  * \brief %Map data container
+  * \see Set, List
+  */
+template<class Key, class Value = Key>
+class Map: public Object
+{
+public:
+    /// Item type
+    typedef Pair<Key, Value> Item;
+
+    /** Create a new map
+      * \return new object instance
+      */
+    inline static Ref<Map> create() { return new Map(); }
+
+    /** Create a shallow copy of another map
+      * \param other another map
+      * \return new object instance
+      */
+    inline static Ref<Map> replicate(const Map *other) { return new Map(*other); }
+
+    /// Number of key-value pairs stored in this map
+    inline int count() const { return tree_.weight(); }
+
+    /// Check if an index is valid
+    inline bool has(int index) const {
+        return 0 <= index && index < count();
+    }
+
+    /** Return a reference to an item
+      * \param index map index
+      * \return reference to the item
+      */
+    inline const Item &at(int index) const {
+        Node *node = 0;
+        if (!tree_.lookupByIndex(index, &node))
+            CC_ASSERT(false);
+        return node->item_;
+    }
+
+    /** Return a reference to a key at a certain index
+      * \param index map index
+      * \return reference to the key
+      */
+    inline const Key &keyAt(int index) const { return at(index).key(); }
+
+    /** Return a reference to a value at a certain index (readonly)
+      * \param index map index
+      * \return reference to the value
+      */
+    inline const Value &valueAt(int index) const { return const_cast<Item &>(at(index)).value(); }
+
+
+    /** Return a reference to a value at a certain index
+      * \param index map index
+      * \return reference to the value
+      */
+    inline Value &valueAt(int index) { return const_cast<Item &>(at(index)).value(); }
+
+    /** Return the index of the first item greater or equal _a_
+      */
+    inline int from(const Key &a) const { return tree_.first(a); }
+
+    /** Return the index of the first item lower or equal _b_
+      */
+    inline int to(const Key &b) const { return tree_.last(b); }
+
+    /** Insert a key-value mapping if no key-value mapping with the same key exists already.
+      * If currentValue is non-null the current value the giving key maps to is returned.
+      * The function returns true if the new key-value mapping was inserted successfully.
+      */
+    inline bool insert(const Key &key, const Value &value, Value *currentValue = 0, int *index = 0)
+    {
+        bool found = false;
+        bool below = true;
+        Item e(key, value);
+        Node *k = tree_.find(e, &found, &below, index);
+        if (found) {
+            if (currentValue)
+                *currentValue = k->item_.value();
+        }
+        else {
+            tree_.attach(k, new Node(e), below);
+        }
+        return !found;
+    }
+
+    /** Remove a key-value mapping
+      * \param key key value
+      * \param index return index the key-value mapping occupied
+      * \return true if a matching key-value pair was found and removed
+      */
+    inline bool remove(const Key &key, int *index = 0)
+    {
+        bool found;
+        Node *k = tree_.find(Item(key), &found, 0, index);
+        if (found)
+            tree_.remove(k);
+        return found;
+    }
+
+    /** Remove a key-value mapping at a given index
+      * \param index map index
+      * \return true if a matching key-value pair was found and removed
+      */
+    inline bool removeAt(int index) {
+        Node *node = 0;
+        if (!tree_.lookupByIndex(index, &node)) return false;
+        tree_.remove(node);
+        return true;
+    }
+
+    /** Insert or overwrite a key-value mapping.
+      * \param key key value
+      * \param value item value
+      */
+    inline void establish(const Key &key, const Value &value) {
+        int index = 0;
+        if (!insert(key, value, 0, &index))
+            valueAt(index) = value;
+    }
+
+    /** Lookup key-value pair by given key.
+      * If a matching key-value pair is found the value is returned in 'value' and the
+      * function returns with true. If a matching key-value pair could not be found
+      * 'value' is not set and the function returns false.
+      */
+    template<class Value2>
+    inline bool lookup(const Key &key, Value2 *value = 0, int *index = 0) const
+    {
+        bool found = false;
+        Node *k = tree_.find(Item(key), &found, 0, index);
+        if (found && (value))
+            *value = k->item_.value();
+        return found;
+    }
+
+    /** Retrieve value of an existing key-value mapping.
+      */
+    inline Value value(const Key &key, const Value &fallback = Value()) const
+    {
+        Value value = fallback;
+        lookup(key, &value);
+        return value;
+    }
+
+    /** Set value of an existing key-value mapping.
+      */
+    inline bool setValue(const Key &key, const Value &value)
+    {
+        int index = 0;
+        bool found = lookup(key, (Value *)0, &index);
+        if (found)
+            valueAt(index) = value;
+        return found;
+    }
+
+    /** Check if the map contains a given key
+      * \param key key value
+      * \return true if the map contains the given key
+      */
+    inline bool contains(const Key &key) const { return lookup<Value>(key); }
+
+    /** Establish a new key-value mapping
+      * \param item new key-value pair to establish
+      */
+    inline void push(const Item &item)
+    {
+        establish(item.key(), item.value());
+    }
+
+    /** Remove first key-value mapping
+      * \param item return key-value pair
+      */
+    inline void pop(Item *item)
+    {
+        CC_ASSERT(count() > 0);
+        Node *k = static_cast<Node *>(tree_.min());
+        *item = k->item_;
+        tree_.remove(k);
+    }
+
+    /** Remove first key-value mapping
+      * \return key-value pair
+      */
+    inline Item pop() {
+        Item item;
+        pop(&item);
+        return item;
+    }
+
+    /// Reset this map to an empty map
+    inline void deplete() { tree_.clear(); }
+
+    /// \copydoc push(const Item &item)
+    inline void operator<<(const Item &item) { push(item); }
+
+    /** STL-style iterator declarations
+      * @{
+      */
+    typedef MapIterator<Key, Value> iterator;
+    typedef ConstMapIterator<Key, Value> const_iterator;
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
+    /** @} */
+
+protected:
+    typedef OrdinalTree< OrdinalNode<Item> > Tree;
+    typedef typename Tree::Node Node;
+
+    Map() {}
+    explicit Map(const Map &b): tree_(b.tree_) {}
+
+    const Map &operator=(const Map &b);
+
+    Tree tree_;
+    mutable Item nullItem_;
+};
+
+template<class Key, class Value>
+class ConstMapIterator {
+public:
+    ConstMapIterator(const Map<Key, Value> *m, int i):
+        m_(m),
+        i_(i)
+    {}
+
+    inline const ConstMapIterator *operator*() const { return this; }
+
+    inline const Key &key() const { return m_->keyAt(i_); }
+    inline const Value &value() const { return m_->valueAt(i_); }
+    inline int index() const { return i_; }
+
+    inline ConstMapIterator &operator++() { ++i_; return *this; }
+
+    inline bool operator!=(const ConstMapIterator &b) { return i_ != b.i_; }
+
+private:
+    const Map<Key, Value> *m_;
+    int i_;
+};
+
+template<class Key, class Value>
+class MapIterator {
+public:
+    MapIterator(Map<Key, Value> *m, int i):
+        m_(m),
+        i_(i)
+    {}
+
+    inline MapIterator *operator*() { return this; }
+
+    inline const Key &key() const { return m_->keyAt(i_); }
+    inline const Value &value() const { return m_->valueAt(i_); }
+    inline Value &value() { return m_->valueAt(i_); }
+    inline int index() const { return i_; }
+
+    inline MapIterator &operator++() { ++i_; return *this; }
+
+    inline bool operator!=(const MapIterator &b) { return i_ != b.i_; }
+
+private:
+    Map<Key, Value> *m_;
+    int i_;
+};
+
+template<class Key, class Value>
+typename Map<Key, Value>::iterator Map<Key, Value>::begin() { return iterator(this, 0); }
+
+template<class Key, class Value>
+typename Map<Key, Value>::iterator Map<Key, Value>::end() { return iterator(this, count()); }
+
+template<class Key, class Value>
+typename Map<Key, Value>::const_iterator Map<Key, Value>::begin() const { return const_iterator(this, 0); }
+
+template<class Key, class Value>
+typename Map<Key, Value>::const_iterator Map<Key, Value>::end() const { return const_iterator(this, count()); }
+
+} // namespace cc

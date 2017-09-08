@@ -1,3 +1,0 @@
-Package {
-    add: [ src, tools ]
-}

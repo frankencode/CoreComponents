@@ -1,2 +1,32 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
 #pragma once
-#include "../../Exception.h"
+
+#include <exception>
+#include <cc/String>
+
+namespace cc {
+
+/** \class Exception Exception.h cc/Exception
+  * \brief Root class of the exception class hierarchy
+  * \see exceptions
+  */
+class Exception: public std::exception
+{
+public:
+    ~Exception() throw() {}
+
+    virtual String message() const = 0;
+
+    virtual const char* what() const throw();
+};
+
+inline String str(const Exception &ex) { return ex.message(); } // FIXME: superseeded by toString() method when moving to heap objects
+
+} // namespace cc

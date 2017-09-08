@@ -1,2 +1,38 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
 #pragma once
-#include "../../../ZipFile.h"
+
+#include <cc/Stream>
+
+struct zip_file;
+typedef zip_file zip_file_t;
+
+namespace cc {
+namespace zip {
+
+class ZipArchive;
+
+/** \class ZipFile ZipFile.h cc/zip/ZipFile
+  * \brief Read a file contained in a ZIP archive
+  */
+class ZipFile: public Stream
+{
+public:
+    virtual int read(ByteArray *data) override;
+
+private:
+    friend class ZipArchive;
+    ZipFile(String path): path_(path) {}
+    String zipPath_;
+    zip_t *archive_;
+    zip_file_t *file_;
+    String path_;
+};
+
+}} // namespace cc::zip

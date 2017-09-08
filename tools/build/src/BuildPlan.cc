@@ -115,11 +115,9 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     name_ = recipe_->value("name");
     alias_ = recipe_->value("alias");
     version_ = recipe_->value("version");
-    if (options_ & Package) getPackageNameAndVersion(projectPath_, &name_, &version_);
     installRoot_ = recipe_->value("root");
     installPrefix_ = recipe_->value("prefix");
     testArgs_ = recipe_->value("test-args");
-
 
     checkDuplicateTargetNames();
 
@@ -189,19 +187,6 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     if (parentPlan) {
         optimize_ = parentPlan->optimize();
         linkStatic_ = parentPlan->linkStatic();
-    }
-}
-
-void BuildPlan::getPackageNameAndVersion(String projectPath, String *name, Version *version)
-{
-    String s = projectPath->baseName();
-    int j = s->find('-');
-    if (j < s->count()) {
-        *name = s->copy(0, j);
-        *version = Version(s->copy(j + 1, s->count()));
-    }
-    else {
-        *name = s;
     }
 }
 
