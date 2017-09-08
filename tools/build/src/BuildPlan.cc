@@ -75,7 +75,7 @@ BuildPlan::BuildPlan(int argc, char **argv):
 
     readRecipe();
 
-    toolChain_ = GnuToolChain::create(compiler());
+    toolChain_ = GnuToolChain::create(this);
     if (optimize_ == "") optimize_ = toolChain_->defaultOptimization(this);
 
     buildMap()->insertPlan(projectPath_, this);

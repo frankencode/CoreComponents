@@ -17,10 +17,12 @@ namespace ccbuild {
 using namespace cc;
 using namespace cc::regexp;
 
+class BuildPlan;
+
 class GnuToolChain: public ToolChain
 {
 public:
-    static Ref<GnuToolChain> create(String compiler);
+    static Ref<GnuToolChain> create(const BuildPlan *plan);
 
     virtual String machine() const override { return machine_; }
     virtual String systemRoot() const override { return systemRoot_; }
@@ -53,7 +55,7 @@ public:
     virtual void cleanAliasSymlinks(BuildPlan *plan, String appName) const override;
 
 protected:
-    GnuToolChain(String compiler);
+    GnuToolChain(const BuildPlan *plan);
     virtual ~GnuToolChain();
 
     void clangColorWorkaround(String compiler);
@@ -73,6 +75,7 @@ private:
     String systemRoot_;
     RegExp dependencySplitPattern_;
     String rpathOverride_;
+    bool isMultiArch_;
 };
 
 } // namespace ccbuild
