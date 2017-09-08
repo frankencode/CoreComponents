@@ -46,6 +46,7 @@ public:
     virtual bool testInclude(BuildPlan *plan, StringList *headers) const override;
 
     virtual String installDirPath(BuildPlan *plan) const override;
+    virtual String includePrefix(BuildPlan *plan) const override;
     virtual String bundlePrefix(BuildPlan *plan) const override;
 
     virtual void createLibrarySymlinks(BuildPlan *plan, String libName) const override;

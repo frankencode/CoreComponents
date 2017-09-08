@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/DirWalker>
 #include "CwdGuard.h"
 #include "BuildPlan.h"
 #include "InstallStage.h"
@@ -56,9 +57,29 @@ bool InstallStage::installApplicationOrLibrary()
 
     if (!shell()->install(product, installFilePath)) return false;
 
-    if ((options & BuildPlan::Library) && !plan()->linkStatic()) {
-        CwdGuard guard(installDirPath, shell());
-        toolChain()->createLibrarySymlinks(plan(), product);
+    if (options & BuildPlan::Library)
+    {
+        if (!plan()->linkStatic()) {
+            CwdGuard guard(installDirPath, shell());
+            toolChain()->createLibrarySymlinks(plan(), product);
+        }
+
+        String sourcePrefix = plan()->projectPath()->extendPath("include");
+        String installPrefix = toolChain()->includePrefix(plan());
+        Ref<DirWalker> walker = DirWalker::tryOpen(sourcePrefix);
+        if (walker) {
+            String sourcePath;
+            bool isDir = false;
+            while (walker->read(&sourcePath, &isDir)) {
+                if (isDir) continue;
+                shell()->install(
+                    sourcePath,
+                    installPrefix->extendPath(
+                        sourcePath->copy(sourcePrefix->count() + 1, sourcePath->count())
+                    )
+                );
+            }
+        }
     }
 
     if (options & BuildPlan::Application && plan()->alias()->count() > 0) {
@@ -67,7 +88,7 @@ bool InstallStage::installApplicationOrLibrary()
     }
 
     for (String bundlePath: plan()->bundle()) {
-        String relativePath = bundlePath->copy(plan()->projectPath()->count(), bundlePath->count());
+        String relativePath = bundlePath->copy(plan()->projectPath()->count() + 1, bundlePath->count());
         shell()->install(
             bundlePath,
             plan()->installRoot()->expandPath(toolChain()->bundlePrefix(plan())->expandPath(relativePath))
