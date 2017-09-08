@@ -11,6 +11,7 @@
 #include <cc/UnlinkGuard>
 #include <cc/Process>
 #include <cc/SubProcess>
+#include <cc/Dir>
 #include <cc/regexp/RegExp>
 #include "BuildPlan.h"
 #include "CwdGuard.h"
@@ -18,18 +19,18 @@
 
 namespace ccbuild {
 
-Ref<GnuToolChain> GnuToolChain::create(String compiler)
+Ref<GnuToolChain> GnuToolChain::create(const BuildPlan *plan)
 {
-    return new GnuToolChain(compiler);
+    return new GnuToolChain(plan);
 }
 
-GnuToolChain::GnuToolChain(String compiler):
+GnuToolChain::GnuToolChain(const BuildPlan *plan):
     dependencySplitPattern_("{1..:[\\:\\\\\n\r ]}"),
     rpathOverride_(Process::env("CCBUILD_RPATH_OVERRIDE"))
 {
-    if (compiler != "") {
-        ccPath_ = compiler;
-        cxxPath_ = compiler;
+    if (plan->compiler() != "") {
+        ccPath_ = plan->compiler();
+        cxxPath_ = plan->compiler();
     }
     else {
         ccPath_ = Process::env("CC");
@@ -41,6 +42,8 @@ GnuToolChain::GnuToolChain(String compiler):
 
     machine_ = queryMachine(ccPath_);
     systemRoot_ = querySystemRoot(ccPath_);
+
+    isMultiArch_ = Dir::exists(plan->installPath("lib")->extendPath(machine_));
 }
 
 GnuToolChain::~GnuToolChain()
@@ -244,7 +247,16 @@ bool GnuToolChain::testInclude(BuildPlan *plan, StringList *headers) const
 
 String GnuToolChain::installDirPath(BuildPlan *plan) const
 {
-    return plan->installPath((plan->options() & BuildPlan::Library) ? "lib" : "bin");
+    String relativePath;
+    if (plan->options() & BuildPlan::Library) {
+        relativePath = "lib";
+        if (isMultiArch_)
+            relativePath->extendPath(machine_);
+    }
+    else {
+        relativePath = "bin";
+    }
+    return plan->installPath(relativePath);
 }
 
 String GnuToolChain::bundlePrefix(BuildPlan *plan) const

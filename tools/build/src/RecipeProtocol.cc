@@ -69,7 +69,7 @@ protected:
     {
         insert("use", StringList::create());
         insert("root", "/");
-        insert("prefix", "/usr");
+        insert("prefix", "/usr/local");
 
         insert("debug", false);
         insert("release", false);
