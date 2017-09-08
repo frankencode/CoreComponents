@@ -240,7 +240,6 @@ int BuildPlan::run()
             includePaths_->append(defaultIncludePath);
     }
 
-    recoverIncludeScope();
     globSources();
     initModules();
 
@@ -394,28 +393,6 @@ void BuildPlan::findVersion()
         version_ = Version(0, 1, 0);
 }
 
-void BuildPlan::recoverIncludeScope()
-{
-    includeScope_ = StringList::create();
-
-    if (!((options_ & Application) || (options_ & Library))) return;
-
-    String path = projectPath_->expandPath("include");
-    while (true) {
-        Ref<Dir> dir = Dir::tryOpen(path);
-        if (!dir) break;
-        Ref<StringList> entries = StringList::create();
-        for (String entry; dir->read(&entry);) {
-            if (entry == "." || entry == "..") continue;
-            if (Dir::tryOpen(path->expandPath(entry)))
-                entries << entry;
-        }
-        if (entries->count() != 1) break;
-        includeScope_ << entries->at(0);
-        path = path->expandPath(entries->at(0));
-    }
-}
-
 void BuildPlan::globSources()
 {
     if (sources_) return;
@@ -488,8 +465,7 @@ Ref<StringList> BuildPlan::queryableVariableNames()
     return StringList::create()
         << "name"
         << "version"
-        << "build-scope"
-        << "include-scope"
+        << "source"
         << "include-paths"
         << "library-paths"
         << "libraries"
@@ -502,8 +478,7 @@ void BuildPlan::queryVariables(const StringList *names) const
     Ref<MetaObject> variables = MetaObject::create();
     variables->insert("name", name_);
     variables->insert("version", version_);
-    variables->insert("build-scope", scope_);
-    variables->insert("include-scope", includeScope_);
+    variables->insert("source", recipe_->value("source"));
     variables->insert("include-paths", includePaths_);
     variables->insert("library-paths", libraryPaths_);
     variables->insert("libraries", libraries_);
