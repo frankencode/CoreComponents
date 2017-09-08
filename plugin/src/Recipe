@@ -1,5 +1,0 @@
-Library {
-    name: ccplugin
-    use: core
-    link: dl
-}

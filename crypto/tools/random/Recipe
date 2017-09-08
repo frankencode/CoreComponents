@@ -1,5 +1,4 @@
 Application {
     name: ccrandom
-    source: *.cc
     use: [ core, crypto ]
 }

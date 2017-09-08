@@ -1,5 +1,4 @@
 Application {
     name: ccclaim
-    source: *.cc
     use: [ core, syntax, regexp, meta, crypto, toki ]
 }

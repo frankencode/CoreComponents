@@ -1,5 +1,4 @@
 Library {
     name: ccabnf
-    source: *.cc
     use: [ core, syntax ]
 }

@@ -1,6 +1,5 @@
 Application {
     name: cctar
     alias: [ ccuntar, ccar, ccunar ]
-    source: *.cc
     use: [ core, tar ]
 }

@@ -104,21 +104,22 @@ bool BuildPlan::goForBuild() const
 
 void BuildPlan::readRecipe(BuildPlan *parentPlan)
 {
-    name_ = recipe_->value("name");
-    alias_ = recipe_->value("alias");
-    version_ = recipe_->value("version");
-    installRoot_ = recipe_->value("root");
-    installPrefix_ = recipe_->value("prefix");
-    testArgs_ = recipe_->value("test-args");
-
     options_ = 0;
-
     if (recipe_->className() == "Application")  options_ |= Application;
     else if (recipe_->className() == "Test")    options_ |= Application | Test;
     else if (recipe_->className() == "Library") options_ |= Library;
     else if (recipe_->className() == "Tools")   options_ |= Tools;
     else if (recipe_->className() == "Tests")   options_ |= Tools | Test;
     else if (recipe_->className() == "Package") options_ |= Package;
+
+    name_ = recipe_->value("name");
+    alias_ = recipe_->value("alias");
+    version_ = recipe_->value("version");
+    if (options_ & Package) getPackageNameAndVersion(projectPath_, &name_, &version_);
+    installRoot_ = recipe_->value("root");
+    installPrefix_ = recipe_->value("prefix");
+    testArgs_ = recipe_->value("test-args");
+
 
     checkDuplicateTargetNames();
 
@@ -191,6 +192,19 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     }
 }
 
+void BuildPlan::getPackageNameAndVersion(String projectPath, String *name, Version *version)
+{
+    String s = projectPath->baseName();
+    int j = s->find('-');
+    if (j < s->count()) {
+        *name = s->copy(0, j);
+        *version = Version(s->copy(j + 1, s->count()));
+    }
+    else {
+        *name = s;
+    }
+}
+
 void BuildPlan::readPredicate(const MetaObject *object)
 {
     predicates_->append(Predicate::read(object));
@@ -203,7 +217,7 @@ void BuildPlan::checkDuplicateTargetNames()
     if (name_ == "") return;
 
     String otherRecipePath;
-    bool ok = false;
+    bool ok = true;
     if (options_ & Library)
         ok = buildMap()->registerLibrary(name_, recipePath_, &otherRecipePath);
     else if (options_ & Application)
@@ -435,7 +449,7 @@ void BuildPlan::globSources()
     containsCPlusPlus_ = false;
     for (String source: sources_) {
         String suffix = source->fileSuffix();
-        if (suffix == "cpp" || suffix == "cc" || suffix == "cxx" || suffix == "mm") {
+        if (suffix == "cc" || suffix == "cpp" || suffix == "cxx" || suffix == "mm") {
             containsCPlusPlus_ = true;
             break;
         }

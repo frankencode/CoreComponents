@@ -133,6 +133,7 @@ private:
     BuildPlan(String projectPath, BuildPlan *parentPlan);
 
     void readRecipe(BuildPlan *parentPlan = 0);
+    static void getPackageNameAndVersion(String projectPath, String *name, Version *version);
     void readPredicate(const MetaObject *object);
     void checkDuplicateTargetNames();
 
