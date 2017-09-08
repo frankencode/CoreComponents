@@ -1,7 +1,6 @@
 Library {
     name: cctar
-    source: *.cc
-    use: [ core ]
+    use: core
     /*Dependency {
         name: zlib
         optional: true

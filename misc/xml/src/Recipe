@@ -1,5 +1,4 @@
 Library {
     name: ccxml
-    source: *.cc
     use: [ core, syntax ]
 }

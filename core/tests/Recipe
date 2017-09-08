@@ -1,5 +1,4 @@
 Tests {
-    source: *.cc
     use: [ core, testing ]
     link: m
 }

@@ -1,5 +1,4 @@
 Library {
     name: cctesting
-    source: *.cc
     use: core
 }

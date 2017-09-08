@@ -1,5 +1,4 @@
 Library {
     name: ccregexp
-    source: *.cc
     use: [ core, syntax ]
 }

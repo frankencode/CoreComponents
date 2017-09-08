@@ -1,5 +1,4 @@
 Application {
     name: ccfind
-    source: *.cc
     use: [ core, syntax, regexp ]
 }

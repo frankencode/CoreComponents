@@ -1,6 +1,5 @@
 Library {
     name: cchttp
-    source: *.cc
     use: [ core, net ]
     Dependency {
         name: GnuTLS

@@ -1,6 +1,5 @@
 Application {
     name: ccnode
-    source: *.cc
     use: [ core, syntax, regexp, meta, net, http ]
     Dependency {
         name: GnuTLS

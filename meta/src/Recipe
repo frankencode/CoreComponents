@@ -1,5 +1,4 @@
 Library {
     name: ccmeta
-    source: *.cc
     use: [ core, syntax ]
 }

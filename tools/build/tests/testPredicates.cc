@@ -61,7 +61,6 @@ class RecursivePredicatesTest: public TestCase
             "TestApp/Recipe",
             "Application {\n"
             "    name: testApp\n"
-            "    source: *.cc\n"
             "    Predicate {\n"
             "        target: include/testApp\n"
             "        create: mkdir -p $@\n"

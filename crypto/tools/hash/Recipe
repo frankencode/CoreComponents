@@ -1,6 +1,5 @@
 Application {
     name: ccsha1
     alias: ccmd5
-    source: *.cc
     use: [ core, crypto ]
 }

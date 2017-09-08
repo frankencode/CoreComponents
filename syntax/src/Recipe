@@ -1,5 +1,4 @@
 Library {
     name: ccsyntax
-    source: *.cc
     use: core
 }

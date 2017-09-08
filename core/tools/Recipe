@@ -1,4 +1,3 @@
 Tools {
-    source: *.cc
     use: core
 }
