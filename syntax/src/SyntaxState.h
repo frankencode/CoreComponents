@@ -38,7 +38,8 @@ class SyntaxState: public Object
 {
 public:
     inline Token *rootToken() const { return rootToken_; }
-    inline bool valid() const { return rootToken_; }
+    inline bool valid() const { return rootToken_; } // FIXME: obsolete
+    inline bool isValid() const { return rootToken_; }
     inline int i0() const { return rootToken_ ? rootToken_->i0() : 0; }
     inline int i1() const { return rootToken_ ? rootToken_->i1() : -1; }
 
@@ -107,4 +108,3 @@ private:
 };
 
 }} // namespace cc::syntax
-

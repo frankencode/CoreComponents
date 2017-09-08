@@ -1,4 +1,0 @@
-Library {
-    name: ccxml
-    use: [ core, syntax ]
-}

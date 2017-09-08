@@ -6,7 +6,7 @@
  *
  */
 
-#include "MemoryStream.h"
+#include <cc/MemoryStream>
 
 namespace cc {
 

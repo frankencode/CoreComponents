@@ -19,8 +19,8 @@ using namespace cc::testing;
 class Expression: public SyntaxDefinition
 {
 public:
-    Expression(SyntaxDebugger *debugger = 0)
-        : SyntaxDefinition(debugger)
+    Expression(SyntaxDebugger *debugger = 0):
+        SyntaxDefinition(debugger)
     {
         number_ =
             DEFINE("number",

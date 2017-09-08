@@ -8,7 +8,7 @@
 
 #include <cc/Format>
 #include <cc/Stream>
-#include "XmlTestReport.h"
+#include <cc/testing/XmlTestReport>
 
 namespace cc {
 namespace testing {

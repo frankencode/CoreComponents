@@ -1,4 +1,4 @@
 Package {
     version: 0.13.0
-    add: [ core, testing, syntax, meta, regexp, net, http, crypto, zip, toki, tools, misc ]
+    add: [ core, testing, syntax, meta, regexp, net, http, crypto, tar, zip, toki, tools ]
 }

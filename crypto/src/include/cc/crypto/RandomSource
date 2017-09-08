@@ -1,2 +1,34 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
 #pragma once
-#include "../../../RandomSource.h"
+
+#include <cc/Stream>
+
+namespace cc {
+namespace crypto {
+
+/** \class RandomSource RandomSource.h cc/crypto/RandomSource
+  * \brief Pseudo random number source of the system
+  */
+class RandomSource: public Stream
+{
+public:
+    /** Open a new random number source
+      * \return new object instance
+      */
+    static Ref<RandomSource> open(const ByteArray *salt = 0);
+
+    virtual int read(ByteArray *data) override;
+
+private:
+    RandomSource(const ByteArray *salt);
+    Ref<Stream> source_;
+};
+
+}} // namespace cc::crypto

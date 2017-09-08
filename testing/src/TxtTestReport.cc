@@ -7,7 +7,7 @@
  */
 
 #include <cc/stdio>
-#include "TxtTestReport.h"
+#include <cc/testing/TxtTestReport>
 
 namespace cc {
 namespace testing {
