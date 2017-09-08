@@ -259,6 +259,11 @@ String GnuToolChain::installDirPath(BuildPlan *plan) const
     return plan->installPath(relativePath);
 }
 
+String GnuToolChain::includePrefix(BuildPlan *plan) const
+{
+    return plan->installPath("include");
+}
+
 String GnuToolChain::bundlePrefix(BuildPlan *plan) const
 {
     String name;
