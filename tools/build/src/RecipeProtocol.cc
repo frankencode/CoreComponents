@@ -191,7 +191,6 @@ protected:
     {
         insert("name", "");
         insert("alias", StringList::create());
-        insert("header", StringList::create() << "*.(h|hpp|hxx)");
         insert("source", StringList::create() << "*.(cc|cpp|cxx|c)");
         insert("bundle", StringList::create());
         insert("version", Version());
