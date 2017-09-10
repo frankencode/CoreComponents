@@ -40,6 +40,9 @@ GnuToolChain::GnuToolChain(const BuildPlan *plan):
     if (ccPath_ == "") ccPath_ = "gcc";
     if (cxxPath_ == "") cxxPath_ = "g++";
 
+    Process::setEnv("CC", ccPath_);
+    Process::setEnv("CXX", cxxPath_);
+
     machine_ = queryMachine(ccPath_);
     systemRoot_ = querySystemRoot(ccPath_);
 
@@ -262,6 +265,11 @@ String GnuToolChain::installDirPath(BuildPlan *plan) const
 String GnuToolChain::includePrefix(BuildPlan *plan) const
 {
     return plan->installPath("include");
+}
+
+String GnuToolChain::libIncludePrefix(BuildPlan *plan) const
+{
+    return installDirPath(plan)->extendPath(linkName(plan))->extendPath("include");
 }
 
 String GnuToolChain::bundlePrefix(BuildPlan *plan) const

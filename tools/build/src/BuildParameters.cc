@@ -6,7 +6,9 @@
  *
  */
 
+#include <cc/exceptions>
 #include "BuildPlan.h"
+#include "ConfigureShell.h"
 #include "BuildParameters.h"
 
 namespace ccbuild {
@@ -28,6 +30,26 @@ void BuildParameters::read(const MetaObject *object, BuildPlan *plan)
     customLinkFlags_ = Variant::cast<StringList *>(object->value("link-flags"));
     if (!customCompileFlags_) customCompileFlags_ = StringList::create();
     if (!customLinkFlags_) customLinkFlags_ = StringList::create();
+
+    {
+        String command = object->value("compile-flags-configure");
+        if (command != "") {
+            bool ok = true;
+            String text = ConfigureShell::instance()->run(command, &ok);
+            if (!ok) throw UsageError(String("Bailed out because compile-flags-configure failed in ") + plan->recipePath());
+            customCompileFlags_->append(text->split(' '));
+        }
+    }
+
+    {
+        String command = object->value("link-flags-configure");
+        if (command != "") {
+            bool ok = true;
+            String text = ConfigureShell::instance()->run(command, &ok);
+            if (!ok) throw UsageError(String("Bailed out because link-flags-configure failed in ") + plan->recipePath());
+            customLinkFlags_->append(text->split(' '));
+        }
+    }
 
     for (const MetaObject *child: object->children()) {
         if (child->className() == "Debug") {

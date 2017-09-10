@@ -14,6 +14,7 @@ using namespace cc;
 
 class BuildPlan;
 class BuildShell;
+class ConfigureShell;
 class ToolChain;
 class JobScheduler;
 
@@ -29,6 +30,7 @@ protected:
 
     inline BuildPlan *plan() const { return plan_; }
     BuildShell *shell() const;
+    ConfigureShell *configureShell() const;
     ToolChain *toolChain() const;
     Ref<JobScheduler> createScheduler() const;
 

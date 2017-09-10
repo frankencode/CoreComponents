@@ -20,6 +20,7 @@
 #include <cc/debug>
 #include "BuildMap.h"
 #include "DependencyCache.h"
+#include "ConfigureShell.h"
 #include "GnuToolChain.h"
 #include "JobScheduler.h"
 #include "RecipeProtocol.h"
@@ -74,6 +75,7 @@ BuildPlan::BuildPlan(int argc, char **argv):
     arguments->override(recipe_);
 
     readRecipe();
+    Process::setEnv("PREFIX", installPrefix_);
 
     toolChain_ = GnuToolChain::create(this);
     if (optimize_ == "") optimize_ = toolChain_->defaultOptimization(this);
@@ -146,6 +148,9 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
         installRoot_ = parentPlan->installRoot_;
         installPrefix_ = parentPlan->installPrefix_;
         testArgs_ = parentPlan->testArgs_;
+    }
+    else {
+        ConfigureShell::instance()->setVerbose(options_ & Verbose);
     }
 
     if (concurrency_ > 0 && testRunConcurrency_ < 0)
@@ -221,6 +226,8 @@ int BuildPlan::run()
 {
     readPrerequisites();
 
+    Process::setEnv("SOURCE", projectPath_);
+
     if (options_ & Bootstrap) {
         fout(
             "#!/bin/sh -ex\n"
@@ -262,7 +269,11 @@ int BuildPlan::run()
 
     if (!compileLinkStage()->run()) return 1;
 
-    if (recipe_->value("test-run") || recipe_->value("test-report")) {
+    bool testRun = recipe_->value("test-run");
+    bool testReport = recipe_->value("test-report");
+    if (testRun || testReport) {
+        if (testRun) Process::setEnv("TEST_RUN", "1");
+        if (testReport) Process::setEnv("TEST_REPORT", "1");
         if (!testRunStage()->run())
             return testRunStage()->status();
     }
@@ -362,7 +373,7 @@ void BuildPlan::readPrerequisites()
 
     const StringList *prerequisitePaths = Variant::cast<const StringList *>(recipe_->value("use"));
     if (options_ & Package) {
-        const StringList *packageItems = Variant::cast<const StringList *>(recipe_->value("add"));
+        const StringList *packageItems = Variant::cast<const StringList *>(recipe_->value("include"));
         if (packageItems->count() > 0) prerequisitePaths = packageItems;
     }
 

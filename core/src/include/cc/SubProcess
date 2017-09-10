@@ -126,6 +126,12 @@ public:
         /// Finalise staging, start new child process
         inline Ref<SubProcess> start() { return SubProcess::open(this); }
 
+        /// Finalise staging, start new child process (with input/output forwarding enabled)
+        inline Ref<SubProcess> open() {
+            if (forwarding_ == NoForwarding) forwarding_ = ForwardBySocket;
+            return SubProcess::open(this);
+        }
+
         /// Convenience function, equivalent to start()->wait()
         inline int exec() { return start()->wait(); }
 

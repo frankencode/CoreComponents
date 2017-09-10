@@ -18,7 +18,7 @@ using namespace cc;
 
 class BuildPlan;
 
-class BuildShell // FIXME: should inherit from Object
+class BuildShell
 {
 public:
     BuildShell(BuildPlan *plan);
@@ -36,6 +36,9 @@ public:
 
     bool install(String sourcePath, String destPath);
     bool unlink(String path);
+
+    bool installAll(String sourcePrefix, String installPrefix);
+    bool unlinkAll(String sourcePrefix, String installPrefix);
 
     void cd(String path);
 

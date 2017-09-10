@@ -44,6 +44,7 @@ public:
 
     virtual String installDirPath(BuildPlan *plan) const = 0;
     virtual String includePrefix(BuildPlan *plan) const = 0;
+    virtual String libIncludePrefix(BuildPlan *plan) const = 0;
     virtual String bundlePrefix(BuildPlan *plan) const = 0;
 
     virtual void createLibrarySymlinks(BuildPlan *plan, String libName) const = 0;

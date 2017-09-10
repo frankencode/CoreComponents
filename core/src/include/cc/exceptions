@@ -19,7 +19,7 @@ namespace cc {
 class UsageError: public Exception
 {
 public:
-    UsageError(String message = String()): message_(message) {}
+    UsageError(String message = ""): message_(message) {}
     ~UsageError() throw() {}
 
     virtual String message() const override { return message_; }

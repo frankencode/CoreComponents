@@ -32,6 +32,9 @@ protected:
 
         insert("compile-flags", Ref<StringList>());
         insert("link-flags", Ref<StringList>());
+
+        insert("compile-flags-configure", "");
+        insert("link-flags-configure", "");
     }
 };
 
@@ -190,6 +193,7 @@ protected:
         BuildOptionsPrototype(className, createProtocol(protocol))
     {
         insert("name", "");
+        insert("description", "");
         insert("alias", StringList::create());
         insert("source", StringList::create() << "*.(cc|cpp|cxx|c)");
         insert("bundle", StringList::create());
@@ -274,7 +278,7 @@ protected:
         BuildOptionsPrototype(className)
     {
         insert("version", Version());
-        insert("add", StringList::create());
+        insert("include", StringList::create());
     }
 };
 

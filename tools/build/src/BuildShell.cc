@@ -13,6 +13,7 @@
 #include <cc/FileStatus>
 #include <cc/File>
 #include <cc/Dir>
+#include <cc/DirWalker>
 #include "BuildPlan.h"
 #include "BuildShell.h"
 
@@ -129,6 +130,63 @@ bool BuildShell::unlink(String path)
             return false;
         }
     }
+    return true;
+}
+
+bool BuildShell::installAll(String sourcePrefix, String installPrefix)
+{
+    Ref<DirWalker> walker = DirWalker::tryOpen(sourcePrefix);
+    if (!walker) return true;
+
+    try {
+        String sourcePath;
+        bool isDir = false;
+        while (walker->read(&sourcePath, &isDir)) {
+            if (isDir) continue;
+            if (
+                !install(
+                    sourcePath,
+                    installPrefix->extendPath(
+                        sourcePath->copy(sourcePrefix->count() + 1, sourcePath->count())
+                    )
+                )
+            )
+                return false;
+        }
+    }
+    catch (SystemError &ex) {
+        fout("%%\n") << ex.message();
+        return false;
+    }
+
+    return true;
+}
+
+bool BuildShell::unlinkAll(String sourcePrefix, String installPrefix)
+{
+    Ref<DirWalker> walker = DirWalker::tryOpen(sourcePrefix);
+    if (!walker) return true;
+
+    try {
+        String sourcePath;
+        bool isDir = false;
+        while (walker->read(&sourcePath, &isDir)) {
+            if (isDir) continue;
+            if (!
+                clean(
+                    installPrefix->extendPath(
+                        sourcePath->copy(sourcePrefix->count() + 1, sourcePath->count())
+                    )
+                )
+            )
+                return false;
+        }
+    }
+    catch (SystemError &ex) {
+        fout("%%\n") << ex.message();
+        return false;
+    }
+
     return true;
 }
 

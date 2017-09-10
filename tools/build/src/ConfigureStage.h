@@ -18,8 +18,7 @@ public:
     ConfigureStage(BuildPlan *plan): BuildStage(plan) {}
     bool run();
 
-    String configureShell(String shellCommand) const;
+    String configureShell(String shellCommand);
 };
 
 } // namespace ccbuild
-

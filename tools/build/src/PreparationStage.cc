@@ -190,9 +190,7 @@ String PreparationStage::expand(String command, String sourcePath, String target
 {
     return command
         ->replace("$<", sourcePath)
-        ->replace("$@", targetPath)
-        ->replace("$SOURCE", sourcePath)
-        ->replace("$TARGET", targetPath);
+        ->replace("$@", targetPath);
 }
 
 } // namespace ccbuild

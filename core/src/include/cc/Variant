@@ -75,6 +75,8 @@ public:
     Variant(const Ref<T> &value): type_(ObjectType), itemType_(UndefType) { initRef(value.get()); }
     template<class T>
     Variant(const T *value): Variant(Ref<T>(value)) {}
+    template<class T>
+    Variant(T *value): Variant(Ref<T>(value)) {}
 
     Variant(const Ref< List<int> > &value):     type_(ListType), itemType_(IntType)     { initRef(value); }
     Variant(const Ref< List<bool> > &value):    type_(ListType), itemType_(BoolType)    { initRef(value); }
@@ -86,6 +88,8 @@ public:
     Variant(const Ref<VariantMap> &value):      type_(ListType), itemType_(AnyType)     { initRef(value); }
     template<class T>
     Variant(const List<T> *value): Variant(Ref<List<T>>(value)) {}
+    template<class T>
+    Variant(List<T> *value): Variant(Ref<List<T>>(value)) {}
 
     Variant(const Variant &b): type_(UndefType), itemType_(UndefType) { *this = b; }
 
