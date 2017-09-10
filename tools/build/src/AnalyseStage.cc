@@ -24,6 +24,8 @@ bool AnalyseStage::run()
     if ( (plan()->options() & BuildPlan::Test) &&
          !(plan()->options() & BuildPlan::BuildTests) ) return success_ = true;
 
+    BuildStageGuard guard(this);
+
     for (int i = 0; i < plan()->prerequisites()->count(); ++i)
         if (!plan()->prerequisites()->at(i)->analyseStage()->run()) return success_ = false;
 

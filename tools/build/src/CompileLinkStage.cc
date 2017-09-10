@@ -31,6 +31,8 @@ bool CompileLinkStage::run()
 
     if (outOfScope()) return success_ = true;
 
+    BuildStageGuard guard(this);
+
     for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
         BuildPlan *prerequisite = plan()->prerequisites()->at(i);
         if (!prerequisite->compileLinkStage()->run())

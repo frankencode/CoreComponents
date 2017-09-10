@@ -17,8 +17,8 @@
 #include "ToolChain.h"
 #include "Predicate.h"
 #include "SystemPrerequisite.h"
-#include "ConfigureStage.h"
 #include "PreparationStage.h"
+#include "ConfigureStage.h"
 #include "AnalyseStage.h"
 #include "CompileLinkStage.h"
 #include "TestRunStage.h"
@@ -181,8 +181,8 @@ private:
 
     BuildShell shell_;
 
-    ConfigureStage configureStage_;
     PreparationStage preparationStage_;
+    ConfigureStage configureStage_;
     AnalyseStage analyseStage_;
     CompileLinkStage compileLinkStage_;
     TestRunStage testRunStage_;

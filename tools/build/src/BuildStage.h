@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "BuildStageGuard.h"
+
 namespace ccbuild {
 
 using namespace cc;
@@ -25,6 +27,9 @@ public:
     inline bool success() const { return success_; }
     inline int status() const { return status_; }
 
+    StringList *preCommands() const { return preCommands_; }
+    StringList *postCommands() const { return postCommands_; }
+
 protected:
     BuildStage(BuildPlan *plan);
 
@@ -39,6 +44,8 @@ protected:
     BuildPlan *plan_;
     bool complete_, success_;
     int status_;
+    Ref<StringList> preCommands_;
+    Ref<StringList> postCommands_;
 };
 
 } // namespace ccbuild
