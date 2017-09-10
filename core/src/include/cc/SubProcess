@@ -133,7 +133,7 @@ public:
         }
 
         /// Convenience function, equivalent to start()->wait()
-        inline int exec() { return start()->wait(); }
+        inline int execute() { return start()->wait(); }
 
     protected:
         friend class SubProcess;

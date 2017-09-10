@@ -22,6 +22,8 @@ bool UninstallStage::run()
 
     if (plan()->options() & BuildPlan::Test) return success_ = true;
 
+    BuildStageGuard guard(this);
+
     for (BuildPlan *prerequisite: plan()->prerequisites()) {
         if (!prerequisite->uninstallStage()->run())
             return success_ = false;

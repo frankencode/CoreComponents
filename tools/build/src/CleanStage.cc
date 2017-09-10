@@ -20,6 +20,8 @@ bool CleanStage::run()
     if (!plan()->goForBuild()) return success_ = true;
     if (plan()->isSystemSource()) return success_ = true;
 
+    BuildStageGuard guard(this);
+
     for (BuildPlan *prerequisite: plan()->prerequisites()) {
         if (!prerequisite->cleanStage()->run())
             return success_ = false;

@@ -17,7 +17,9 @@ BuildStage::BuildStage(BuildPlan *plan):
     plan_(plan),
     complete_(false),
     success_(true),
-    status_(0)
+    status_(0),
+    preCommands_(StringList::create()),
+    postCommands_(StringList::create())
 {}
 
 BuildShell *BuildStage::shell() const { return plan_->shell(); }

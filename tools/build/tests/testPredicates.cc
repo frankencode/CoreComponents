@@ -78,7 +78,7 @@ class RecursivePredicatesTest: public TestCase
         int ret = SubProcess::stage()
             ->setCommand("./ccbuild jobs=1")
             ->setWorkDir("TestApp")
-            ->exec();
+            ->execute();
 
         CC_VERIFY(ret == 0);
         CC_VERIFY(File::exists("TestApp/testApp"));

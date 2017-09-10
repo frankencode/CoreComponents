@@ -20,6 +20,8 @@ bool ConfigureStage::run()
     if (complete_) return success_;
     complete_ = true;
 
+    BuildStageGuard guard(this);
+
     for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
         BuildPlan *other = plan()->prerequisites()->at(i);
         if (!other->configureStage()->run()) {

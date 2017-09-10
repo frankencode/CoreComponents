@@ -42,8 +42,8 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 
 #define CCBUILD_BUILDPLAN_COMPONENTS_INIT \
     shell_(this), \
-    configureStage_(this), \
     preparationStage_(this), \
+    configureStage_(this), \
     analyseStage_(this), \
     compileLinkStage_(this), \
     testRunStage_(this), \
@@ -185,6 +185,48 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
                 usage_ = BuildParameters::create();
                 usage_->read(object, this);
                 BuildParameters::readSpecific(usage_);
+            }
+            else if (object->className() == "PrePrepare") {
+                preparationStage_.preCommands()->append(String(object->value("execute")));
+            }
+            else if (object->className() == "PostPrepare") {
+                preparationStage_.postCommands()->append(String(object->value("execute")));
+            }
+            else if (object->className() == "PreConfigure") {
+                configureStage_.preCommands()->append(String(object->value("execute")));
+            }
+            else if (object->className() == "PostConfigure") {
+                configureStage_.postCommands()->append(String(object->value("execute")));
+            }
+            else if (object->className() == "PreAnalyse") {
+                analyseStage_.preCommands()->append(String(object->value("execute")));
+            }
+            else if (object->className() == "PostAnalyse") {
+                analyseStage_.postCommands()->append(String(object->value("execute")));
+            }
+            else if (object->className() == "PreBuild") {
+                compileLinkStage_.preCommands()->append(String(object->value("execute")));
+            }
+            else if (object->className() == "PostBuild") {
+                compileLinkStage_.postCommands()->append(String(object->value("execute")));
+            }
+            else if (object->className() == "PreClean") {
+                cleanStage_.preCommands()->append(String(object->value("execute")));
+            }
+            else if (object->className() == "PostClean") {
+                cleanStage_.postCommands()->append(String(object->value("execute")));
+            }
+            else if (object->className() == "PreInstall") {
+                installStage_.preCommands()->append(String(object->value("execute")));
+            }
+            else if (object->className() == "PostInstall") {
+                installStage_.postCommands()->append(String(object->value("execute")));
+            }
+            else if (object->className() == "PreUninstall") {
+                uninstallStage_.preCommands()->append(String(object->value("execute")));
+            }
+            else if (object->className() == "PostUninstall") {
+                uninstallStage_.postCommands()->append(String(object->value("execute")));
             }
         }
     }

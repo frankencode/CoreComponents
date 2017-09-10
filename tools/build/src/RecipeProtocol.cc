@@ -64,11 +64,43 @@ protected:
     {}
 };
 
+class UserStop: public MetaObject
+{
+public:
+    static Ref<UserStop> create(const String &className) {
+        return new UserStop(className);
+    }
+
+protected:
+    UserStop(const String &className):
+        MetaObject(className)
+    {
+        insert("execute", "");
+    }
+};
+
 class BuildOptionsPrototype: public SpecificBuildParametersPrototype
 {
 protected:
+    static Ref<MetaProtocol> createProtocol(MetaProtocol *protocol) {
+        Ref<MetaProtocol> newProtocol;
+        if (!protocol) protocol = newProtocol = MetaProtocol::create();
+        const char *stopClasses[] = {
+            "PrePrepare",   "PostPrepare",
+            "PreConfigure", "PostConfigure",
+            "PreAnalyse",   "PostAnalyse",
+            "PreBuild",     "PostBuild",
+            "PreClean",     "PostClean",
+            "PreInstall",   "PostInstall",
+            "PreUninstall", "PostUninstall",
+        };
+        for (int i = 0, n = sizeof(stopClasses) / sizeof(stopClasses[0]); i < n; ++i)
+            protocol->define<UserStop>(stopClasses[i]);
+        return protocol;
+    }
+
     BuildOptionsPrototype(const String &className, MetaProtocol *protocol = 0):
-        SpecificBuildParametersPrototype(className, protocol)
+        SpecificBuildParametersPrototype(className, createProtocol(protocol))
     {
         insert("use", StringList::create());
         insert("root", "/");
