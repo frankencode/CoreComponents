@@ -164,8 +164,10 @@ Ref<SubProcess> SubProcess::open(Params *params)
                 ::dup2(overloads->valueAt(i)->fd(), overloads->keyAt(i));
         }
 
-        if (params->workDir_ != "")
-            ::chdir(params->workDir_);
+        if (params->workDir_ != "") {
+            int ret = ::chdir(params->workDir_);
+            if (ret != 0) ::exit(errno);
+        }
 
         if (params->userMask_ >= 0)
             ::umask(params->userMask_);

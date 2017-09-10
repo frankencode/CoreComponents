@@ -9,10 +9,8 @@
 #include <cc/stdio>
 #include <cc/Dir>
 #include <cc/File>
-#include <cc/Process>
-#include <cc/SubProcess>
 #include "BuildPlan.h"
-#include "ConfigureCache.h"
+#include "ConfigureShell.h"
 #include "ConfigureStage.h"
 
 namespace ccbuild {
@@ -125,35 +123,9 @@ bool ConfigureStage::run()
     return success_;
 }
 
-String ConfigureStage::configureShell(String shellCommand) const
+String ConfigureStage::configureShell(String shellCommand)
 {
-    if (shellCommand == "") return "";
-
-    String text;
-    if (configureCache()->lookup(shellCommand, &text))
-        return text;
-
-    Ref<SubProcess> sub = SubProcess::open(
-        SubProcess::params()->setArgs(
-            StringList::create()
-                << Process::env("SHELL")
-                << "-c"
-                << shellCommand
-        )
-    );
-
-    text = sub->readAll()->trim();
-    int status = sub->wait();
-    if (status != 0) {
-        if (plan()->options() & BuildPlan::Verbose) {
-            ferr() << "Configure command failed with status = " << status << " (\"" << shellCommand << "\")" << nl;
-        }
-        return "";
-    }
-
-    configureCache()->insert(shellCommand, text);
-
-    return text;
+    return ConfigureShell::instance()->run(shellCommand);
 }
 
 } // namespace ccbuild

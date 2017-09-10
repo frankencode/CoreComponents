@@ -34,11 +34,13 @@ bool CleanStage::run()
     if ((plan()->options() & BuildPlan::Application) || (plan()->options() & BuildPlan::Library))
         shell()->unlink(product);
 
-    if ((plan()->options() & BuildPlan::Library) && !plan()->linkStatic())
-        toolChain()->cleanLibrarySymlinks(plan(), product);
-
     if (plan()->options() & BuildPlan::Application)
         toolChain()->cleanAliasSymlinks(plan(), product);
+
+    if (plan()->options() & BuildPlan::Library) {
+        if (!plan()->linkStatic())
+            toolChain()->cleanLibrarySymlinks(plan(), product);
+    }
 
     return success_ = true;
 }

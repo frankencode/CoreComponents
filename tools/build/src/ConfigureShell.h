@@ -16,22 +16,25 @@ namespace ccbuild {
 
 using namespace cc;
 
-class ConfigureCache: public Object
+class ConfigureShell: public Object
 {
 public:
+    static ConfigureShell *instance();
+    void setVerbose(bool on) { verbose_ = on; }
+    String run(String shellCommand, bool *ok = nullptr);
+
+private:
+    friend class Singleton<ConfigureShell>;
+
     bool lookup(String command, String *output) const;
     void insert(String command, String output);
 
-private:
-    friend class Singleton<ConfigureCache>;
+    ConfigureShell();
 
-    ConfigureCache();
+    bool verbose_;
 
     typedef Map<String, String> Cache;
     Ref<Cache> cache_;
 };
 
-ConfigureCache *configureCache();
-
 } // namespace ccbuild
-

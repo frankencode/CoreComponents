@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/DirWalker>
 #include "CwdGuard.h"
 #include "BuildPlan.h"
 #include "InstallStage.h"
@@ -57,6 +56,11 @@ bool InstallStage::installApplicationOrLibrary()
 
     if (!shell()->install(product, installFilePath)) return false;
 
+    if ((options & BuildPlan::Application) && plan()->alias()->count() > 0) {
+        CwdGuard guard(installDirPath, shell());
+        toolChain()->createAliasSymlinks(plan(), product);
+    }
+
     if (options & BuildPlan::Library)
     {
         if (!plan()->linkStatic()) {
@@ -64,27 +68,21 @@ bool InstallStage::installApplicationOrLibrary()
             toolChain()->createLibrarySymlinks(plan(), product);
         }
 
-        String sourcePrefix = plan()->projectPath()->extendPath("include");
-        String installPrefix = toolChain()->includePrefix(plan());
-        Ref<DirWalker> walker = DirWalker::tryOpen(sourcePrefix);
-        if (walker) {
-            String sourcePath;
-            bool isDir = false;
-            while (walker->read(&sourcePath, &isDir)) {
-                if (isDir) continue;
-                shell()->install(
-                    sourcePath,
-                    installPrefix->extendPath(
-                        sourcePath->copy(sourcePrefix->count() + 1, sourcePath->count())
-                    )
-                );
-            }
-        }
-    }
+        if (!
+            shell()->installAll(
+                plan()->projectPath()->extendPath("include"),
+                toolChain()->includePrefix(plan())
+            )
+        )
+            return false;
 
-    if (options & BuildPlan::Application && plan()->alias()->count() > 0) {
-        CwdGuard guard(installDirPath, shell());
-        toolChain()->createAliasSymlinks(plan(), product);
+        if (!
+            shell()->installAll(
+                plan()->projectPath()->extendPath("libinclude"),
+                toolChain()->libIncludePrefix(plan())
+            )
+        )
+            return false;
     }
 
     for (String bundlePath: plan()->bundle()) {

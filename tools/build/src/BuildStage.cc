@@ -8,6 +8,7 @@
 
 #include "JobScheduler.h"
 #include "BuildPlan.h"
+#include "ConfigureShell.h"
 #include "BuildStage.h"
 
 namespace ccbuild {
@@ -20,6 +21,7 @@ BuildStage::BuildStage(BuildPlan *plan):
 {}
 
 BuildShell *BuildStage::shell() const { return plan_->shell(); }
+ConfigureShell *BuildStage::configureShell() const { return ConfigureShell::instance(); }
 ToolChain *BuildStage::toolChain() const { return plan_->toolChain(); }
 
 Ref<JobScheduler> BuildStage::createScheduler() const

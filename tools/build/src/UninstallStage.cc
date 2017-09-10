@@ -53,19 +53,31 @@ bool UninstallStage::uninstallApplicationOrLibrary()
     String installDirPath = toolChain()->installDirPath(plan());
     String installFilePath = installDirPath->expandPath(product);
 
-    try {
-        plan()->shell()->unlink(installFilePath);
-    }
-    catch (SystemError &) {
-        return false;
-    }
+    if (!plan()->shell()->unlink(installFilePath)) return false;
 
     if ((options & BuildPlan::Library) && !plan()->linkStatic()) {
-        CwdGuard guard(installDirPath, plan()->shell());
-        toolChain()->cleanLibrarySymlinks(plan(), product);
+        {
+            CwdGuard guard(installDirPath, plan()->shell());
+            toolChain()->cleanLibrarySymlinks(plan(), product);
+        }
+        if (!
+            shell()->unlinkAll(
+                plan()->projectPath()->extendPath("include"),
+                toolChain()->includePrefix(plan())
+            )
+        )
+            return false;
+
+        if (!
+            shell()->unlinkAll(
+                plan()->projectPath()->extendPath("libinclude"),
+                toolChain()->libIncludePrefix(plan())
+            )
+        )
+            return false;
     }
 
-    if (options & BuildPlan::Application && plan()->alias()->count() > 0) {
+    if ((options & BuildPlan::Application) && plan()->alias()->count() > 0) {
         CwdGuard guard(installDirPath, plan()->shell());
         toolChain()->cleanAliasSymlinks(plan(), product);
     }
