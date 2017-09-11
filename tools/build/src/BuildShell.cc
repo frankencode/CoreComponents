@@ -44,7 +44,7 @@ bool BuildShell::run(String command)
 Ref<FileStatus> BuildShell::fileStatus(String path)
 {
     if (plan()->options() & BuildPlan::Blindfold) return FileStatus::create();
-    return FileStatus::read(path);
+    return FileStatus::readUnresolved(path);
 }
 
 void BuildShell::mkdir(String path)

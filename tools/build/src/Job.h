@@ -29,6 +29,8 @@ public:
     inline int status() const { return status_; }
     inline String outputText() const { return outputText_; }
 
+    virtual bool run();
+
 private:
     friend class JobServer;
 

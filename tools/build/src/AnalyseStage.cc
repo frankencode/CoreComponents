@@ -26,8 +26,10 @@ bool AnalyseStage::run()
 
     BuildStageGuard guard(this);
 
-    for (int i = 0; i < plan()->prerequisites()->count(); ++i)
-        if (!plan()->prerequisites()->at(i)->analyseStage()->run()) return success_ = false;
+    for (BuildPlan *prerequisite: plan()->prerequisites()) {
+        if (!prerequisite->analyseStage()->run())
+            return success_ = false;
+    }
 
     if (plan()->options() & BuildPlan::Package) return success_ = true;
 
@@ -39,9 +41,9 @@ bool AnalyseStage::run()
     previousSources_ = dependencyCache->previousSources();
     cacheTime_ = dependencyCache->cacheTime();
 
-    for (int i = 0; i < plan()->sources()->count(); ++i) {
+    for (String source: plan()->sources()) {
         Ref<Module> module;
-        if (dependencyCache->lookup(plan()->sources()->at(i), &module)) {
+        if (dependencyCache->lookup(source, &module)) {
             plan()->modules()->append(module);
         }
         else {
@@ -49,7 +51,7 @@ bool AnalyseStage::run()
                 scheduler = createScheduler();
                 scheduler->start();
             }
-            scheduler->schedule(toolChain()->createAnalyseJob(plan(), plan()->sources()->at(i)));
+            scheduler->schedule(toolChain()->createAnalyseJob(plan(), source));
         }
     }
 

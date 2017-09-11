@@ -34,7 +34,7 @@ public:
     virtual Ref<Module> finishAnalyseJob(BuildPlan *plan, Job *job) = 0;
 
     virtual Ref<Job> createCompileJob(BuildPlan *plan, Module *module) = 0;
-    virtual Ref<Job> createLinkJob(BuildPlan *plan, Module *module) = 0;
+    virtual Ref<Job> createCompileLinkJob(BuildPlan *plan, Module *module) = 0;
 
     virtual String linkName(BuildPlan *plan) const = 0;
     virtual String linkCommand(BuildPlan *plan) const = 0;

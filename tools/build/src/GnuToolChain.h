@@ -37,7 +37,7 @@ public:
     virtual Ref<Module> finishAnalyseJob(BuildPlan *plan, Job *job) override;
 
     virtual Ref<Job> createCompileJob(BuildPlan *plan, Module *module) override;
-    virtual Ref<Job> createLinkJob(BuildPlan *plan, Module *module) override;
+    virtual Ref<Job> createCompileLinkJob(BuildPlan *plan, Module *module) override;
 
     virtual String linkName(BuildPlan *plan) const override;
     virtual String linkCommand(BuildPlan *plan) const override;
