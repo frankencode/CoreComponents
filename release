@@ -26,6 +26,7 @@ rm -rf /tmp/cc_bootstrap
 mkdir -p /tmp/cc_bootstrap
 pushd /tmp/cc_bootstrap
 ccbuild -bootstrap -release $SOURCE/tools/build > $SOURCE/tools/build/bootstrap
+chmod +x $SOURCE/tools/build/bootstrap
 popd
 
 echo "Create source tarball..."

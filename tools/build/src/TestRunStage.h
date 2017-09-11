@@ -17,15 +17,10 @@ class TestRunStage: public BuildStage
 public:
     TestRunStage(BuildPlan *plan);
 
-    inline int testTotal() const { return testTotal_; }
-    inline int testFailed() const { return testFailed_; }
-
     bool run();
 
 private:
-    bool runTests(bool report);
-
-    int testTotal_, testFailed_;
+    void scheduleTests(JobScheduler *scheduler);
 };
 
 } // namespace ccbuild

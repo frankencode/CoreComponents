@@ -123,29 +123,35 @@ Ref<Job> GnuToolChain::createAnalyseJob(BuildPlan *plan, String source)
 Ref<Module> GnuToolChain::finishAnalyseJob(BuildPlan *plan, Job *job)
 {
     Ref<StringList> parts = dependencySplitPattern_->split(job->outputText());
-    return Module::create(job->command(), plan->modulePath(parts->pop(0)), parts, true);
+    String modulePath = parts->pop(0);
+    if (plan->options() & BuildPlan::Tools)
+        modulePath = modulePath->baseName();
+    else
+        modulePath = plan->modulePath(modulePath);
+    return Module::create(job->command(), modulePath, parts, true);
 }
 
 Ref<Job> GnuToolChain::createCompileJob(BuildPlan *plan, Module *module)
 {
     Format args;
     args << compiler(module->sourcePath());
-    appendCompileOptions(args, plan);
     args << "-c" << "-o" << module->modulePath();
+    appendCompileOptions(args, plan);
     args << module->sourcePath();
     String command = args->join(" ");
     return Job::create(command);
 }
 
-Ref<Job> GnuToolChain::createLinkJob(BuildPlan *plan, Module *module)
+Ref<Job> GnuToolChain::createCompileLinkJob(BuildPlan *plan, Module *module)
 {
     Format args;
     args << compiler(module->sourcePath());
+    args << "-o" << module->toolName();
+    appendCompileOptions(args, plan);
     if (plan->linkStatic()) args << "-static";
     args << "-pthread";
-    args << "-o" << module->toolName();
-    args << module->modulePath();
     appendLinkOptions(args, plan);
+    args << module->sourcePath();
     String command = args->join(" ");
     return Job::create(command);
 }
@@ -170,6 +176,8 @@ String GnuToolChain::linkCommand(BuildPlan *plan) const
     Format args;
 
     args << compiler(plan);
+    args << "-o" << linkName(plan);
+
     if (plan->linkStatic()) args << "-static";
     if ((options & BuildPlan::Library) && !plan->linkStatic()) args << "-shared";
     args << "-pthread";
@@ -179,8 +187,6 @@ String GnuToolChain::linkCommand(BuildPlan *plan) const
             Format() << "-Wl,-soname,lib" << name << ".so." << Version::major(version)
         )->join();
     }
-
-    args << "-o" << linkName(plan);
 
     Ref<StringList> modulePaths = StringList::create();
     for (int i = 0; i < modules->count(); ++i)

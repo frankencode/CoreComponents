@@ -33,76 +33,46 @@ bool CompileLinkStage::run()
 
     BuildStageGuard guard(this);
 
-    for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
-        BuildPlan *prerequisite = plan()->prerequisites()->at(i);
+    for (BuildPlan *prerequisite: plan()->prerequisites()) {
         if (!prerequisite->compileLinkStage()->run())
             return success_ = false;
     }
 
     if (plan()->options() & BuildPlan::Package) return success_ = true;
 
-    Ref<JobScheduler> compileScheduler;
-    Ref<JobScheduler> linkScheduler;
-    Ref<StringList> compileList;
-    Ref<StringList> linkList;
+    Ref<JobScheduler> scheduler;
 
-    for (int i = 0; i < plan()->modules()->count(); ++i) {
-        Module *module = plan()->modules()->at(i);
+    for (Module *module: plan()->modules())
+    {
         bool dirty = module->dirty();
         if (plan()->options() & BuildPlan::Tools)
             dirty = dirty || !shell()->fileStatus(module->toolName())->isValid();
+
         if (dirty) {
-            Ref<Job> job = toolChain()->createCompileJob(plan(), module);
-            Ref<Job> linkJob;
-            if (plan()->options() & BuildPlan::Tools) linkJob = toolChain()->createLinkJob(plan(), module);
+            Ref<Job> job;
+            if (plan()->options() & BuildPlan::Tools)
+                job = toolChain()->createCompileLinkJob(plan(), module);
+            else
+                job = toolChain()->createCompileJob(plan(), module);
+
             if (plan()->options() & BuildPlan::Simulate) {
-                if (!compileList) compileList = StringList::create();
-                compileList << shell()->beautify(job->command());
-                if (linkJob) {
-                    if (!linkList) linkList = StringList::create();
-                    linkList << shell()->beautify(linkJob->command());
-                }
+                fout() << job->command() << ((plan()->concurrency() == 1) ? "\n" : " &\n");
             }
             else {
-                if (!compileScheduler) {
-                    compileScheduler = createScheduler();
-                    compileScheduler->start();
+                if (!scheduler) {
+                    scheduler = createScheduler();
+                    scheduler->start();
                 }
-                compileScheduler->schedule(job);
-                if (linkJob) {
-                    if (!linkScheduler) linkScheduler = createScheduler();
-                    linkScheduler->schedule(linkJob);
-                }
+                scheduler->schedule(job);
             }
         }
     }
 
-    if (compileList) {
-        for (String command: compileList)
-            fout() << command << ((plan()->concurrency() == 1) ? "\n" : " &\n");
+    if ((plan()->options() & BuildPlan::Simulate) && plan()->modules()->count() > 0)
         fout() << "wait" << nl;
-    }
 
-    if (linkList) {
-        for (String command: linkList)
-            fout() << command << ((plan()->concurrency() == 1) ? "\n" : " &\n");
-        fout() << "wait" << nl;
-    }
-
-    if (compileScheduler) {
-        for (Ref<Job> job; compileScheduler->collect(&job);) {
-            fout() << shell()->beautify(job->command()) << nl;
-            ferr() << job->outputText();
-            if (job->status() != 0) {
-                status_ = job->status();
-                return success_ = false;
-            }
-        }
-    }
-
-    if (linkScheduler) {
-        linkScheduler->start();
-        for (Ref<Job> job; linkScheduler->collect(&job);) {
+    if (scheduler) {
+        for (Ref<Job> job; scheduler->collect(&job);) {
             fout() << shell()->beautify(job->command()) << nl;
             ferr() << job->outputText();
             if (job->status() != 0) {
@@ -128,8 +98,7 @@ bool CompileLinkStage::run()
         ) {
             double productTime = productStatus->lastModified();
             bool dirty = false;
-            for (int i = 0; i < plan()->modules()->count(); ++i) {
-                Module *module = plan()->modules()->at(i);
+            for (Module *module: plan()->modules()) {
                 Ref<FileStatus> moduleStatus = shell()->fileStatus(module->modulePath());
                 if (moduleStatus->lastModified() > productTime) {
                     dirty = true;
@@ -139,8 +108,8 @@ bool CompileLinkStage::run()
             Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->recipePath());
             if (recipeStatus->isValid()) {
                 if (recipeStatus->lastModified() > productTime) dirty = true;
-                for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
-                    Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->prerequisites()->at(i)->recipePath());
+                for (BuildPlan *prerequisite: plan()->prerequisites()) {
+                    Ref<FileStatus> recipeStatus = shell()->fileStatus(prerequisite->recipePath());
                     if (recipeStatus->lastModified() > productTime) {
                         dirty = true;
                         break;

@@ -44,6 +44,11 @@ bool CleanStage::run()
             toolChain()->cleanLibrarySymlinks(plan(), product);
     }
 
+    if (plan()->options() & BuildPlan::Tools) {
+        for (Module *module: plan()->modules())
+            shell()->unlink(module->toolName());
+    }
+
     return success_ = true;
 }
 
