@@ -8,6 +8,7 @@
 
 #include <cc/stdio>
 #include <cc/SubProcess>
+#include <cc/Mutex>
 #include "Job.h"
 
 namespace ccbuild {

@@ -38,21 +38,42 @@ void JobScheduler::start()
 
 void JobScheduler::schedule(Job *job)
 {
-    requestChannel_->pushBack(job);
+    if (job->countDown_ == 0)
+        requestChannel_->pushBack(job);
+    else
+        derivatives_->insert(job);
     ++totalCount_;
 }
 
-bool JobScheduler::collect(Ref<Job> *completedJob)
+void JobScheduler::schedule(Job *job, Job *derivative)
+{
+    if (!job->derivatives_) job->derivatives_ = Job::Derivatives::create();
+    job->derivatives_->pushBack(derivative);
+    ++derivative->countDown_;
+}
+
+bool JobScheduler::collect(Ref<Job> *finishedJob)
 {
     start();
     if ((finishCount_ == totalCount_) || !serverPool_) {
-        *completedJob = 0;
+        *finishedJob = 0;
         return false;
     }
 
     Ref<Job> job = replyChannel_->popFront();
-    *completedJob = job;
-    if (job->status() != 0) {
+    *finishedJob = job;
+    if (job->status() == 0) {
+        if (job->derivatives_) {
+            for (Ref<Job> derivative; job->derivatives_->popFront(&derivative);) {
+                --derivative->countDown_;
+                if (derivative->countDown_ == 0) {
+                    requestChannel_->pushBack(derivative);
+                    derivatives_->remove(derivative);
+                }
+            }
+        }
+    }
+    else {
         status_ = job->status();
         serverPool_ = 0;
     }
