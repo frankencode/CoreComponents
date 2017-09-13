@@ -63,9 +63,9 @@ DependencyCache::DependencyCache(BuildPlan *plan):
         Ref<FileStatus> objectStatus = buildPlan_->shell()->fileStatus(modulePath);
         double objectTime = objectStatus->lastModified();
 
-        for (int i = 0; i < dependencyPaths->count(); ++i)
+        for (String source: dependencyPaths)
         {
-            Ref<FileStatus> sourceStatus = buildPlan_->shell()->fileStatus(dependencyPaths->at(i));
+            Ref<FileStatus> sourceStatus = buildPlan_->shell()->fileStatus(source);
             if (!sourceStatus->isValid()) {
                 dirty = true;
                 break;

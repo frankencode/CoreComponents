@@ -9,12 +9,16 @@
 #pragma once
 
 #include <cc/Thread>
+#include <cc/Set>
 #include "Job.h"
 
 namespace ccbuild {
 
 using namespace cc;
 
+/** \brief Background job scheduler
+  * \note The JobScheduler itself is note meant to be shared between threads
+  */
 class JobScheduler: public Object
 {
 public:
@@ -22,11 +26,25 @@ public:
 
     inline int concurrency() const { return concurrency_; }
 
+    /// Start executing jobs in the background
     void start();
-    void schedule(Job *job);
-    bool collect(Ref<Job> *completedJob);
 
+    /// Schedule \a job for execution in the background
+    void schedule(Job *job);
+
+    /** \brief Schedule \a job with another job waiting for its successful completion (\a derivative)
+      * \note The \a derivative needs to be scheduled individually with schedule(Job *) .
+      */
+    void schedule(Job *job, Job *derivative);
+
+    /** \brief Collect the next finished job (\a finishedJob)
+      * \return true if \a finishedJob is returned otherwise return false (end of operation)
+      */
+    bool collect(Ref<Job> *finishedJob);
+
+    /// Exit status of the first unsuccessfully finished job, or 0 if all jobs completed successully
     inline int status() const { return status_; }
+
     inline int totalCount() const { return totalCount_; }
     inline int finishCount() const { return finishCount_; }
 
@@ -40,6 +58,9 @@ private:
 
     typedef Queue< Ref<JobServer> > ServerPool;
     Ref<ServerPool> serverPool_;
+
+    typedef Set< Ref<Job> > Derivatives;
+    Ref<Derivatives> derivatives_;
 
     bool started_;
     int status_;

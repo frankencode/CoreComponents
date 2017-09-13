@@ -56,7 +56,7 @@ protected:
     inline void reverseDisconnect(ConnectionEndPoint *trigger, Recipient *recipient);
 };
 
-template<class Value>
+template<class Value = None>
 class Event: public ConnectionEndPoint
 {
 public:
@@ -100,7 +100,7 @@ public:
         callbacks_ = 0;
     }
 
-    void notify(Value value)
+    void notify(Value value = Value())
     {
         if (!callbacks_) return;
 

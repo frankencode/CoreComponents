@@ -10,12 +10,14 @@
 
 #include <cc/String>
 #include <cc/Channel>
+#include <cc/Queue>
 
 namespace ccbuild {
 
 using namespace cc;
 
 class JobServer;
+class JobScheduler;
 
 class Job: public Object
 {
@@ -33,16 +35,23 @@ public:
 
 private:
     friend class JobServer;
+    friend class JobScheduler;
 
     Job(String command):
         command_(command),
-        status_(-1)
+        status_(-1),
+        countDown_(0)
     {}
 
     String command_;
 
     int status_;
     String outputText_;
+
+    int countDown_;
+
+    typedef Queue< Ref<Job> > Derivatives;
+    Ref<Derivatives> derivatives_;
 };
 
 typedef Channel< Ref<Job> > JobChannel;
