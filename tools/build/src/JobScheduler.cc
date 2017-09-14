@@ -72,7 +72,6 @@ bool JobScheduler::collect(Ref<Job> *finishedJob)
                 }
             }
         }
-        job->onCompleted();
     }
     else {
         status_ = job->status();

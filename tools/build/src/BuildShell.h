@@ -21,32 +21,32 @@ class BuildPlan;
 class BuildShell: public Object
 {
 public:
-    static Ref<BuildShell> create(BuildPlan *plan) { return new BuildShell(plan); }
+    static Ref<BuildShell> create(const BuildPlan *plan) { return new BuildShell(plan); }
 
-    inline BuildPlan *plan() const { return plan_; }
+    String beautify(String command) const;
+    bool run(String command) const;
 
-    String beautify(String command);
-    bool run(String command);
+    Ref<FileStatus> fileStatus(String path) const;
 
-    Ref<FileStatus> fileStatus(String path);
+    void mkdir(String path) const;
+    void rmdir(String path) const;
+    bool clean(String path) const;
+    void symlink(String path, String newPath) const;
 
-    void mkdir(String path);
-    void rmdir(String path);
-    bool clean(String path);
-    void symlink(String path, String newPath);
+    bool install(String sourcePath, String destPath) const;
+    bool unlink(String path) const;
 
-    bool install(String sourcePath, String destPath);
-    bool unlink(String path);
+    bool installAll(String sourcePrefix, String installPrefix) const;
+    bool unlinkAll(String sourcePrefix, String installPrefix) const;
 
-    bool installAll(String sourcePrefix, String installPrefix);
-    bool unlinkAll(String sourcePrefix, String installPrefix);
-
-    void cd(String path);
+    void cd(String path) const;
 
 private:
-    BuildShell(BuildPlan *plan);
+    BuildShell(const BuildPlan *plan);
 
-    BuildPlan *plan_;
+    inline const BuildPlan *plan() const { return plan_; }
+
+    const BuildPlan *plan_;
 };
 
 } // namespace ccbuild

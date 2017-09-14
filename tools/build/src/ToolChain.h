@@ -38,6 +38,7 @@ public:
 
     virtual String linkName(const BuildPlan *plan) const = 0;
     virtual String linkCommand(const BuildPlan *plan) const = 0;
+    virtual Ref<Job> createLinkJob(const BuildPlan *plan) const = 0;
     virtual bool link(const BuildPlan *plan) const = 0;
 
     virtual bool testInclude(const BuildPlan *plan, const StringList *headers) const = 0;
@@ -46,6 +47,8 @@ public:
     virtual String includePrefix(const BuildPlan *plan) const = 0;
     virtual String libIncludePrefix(const BuildPlan *plan) const = 0;
     virtual String bundlePrefix(const BuildPlan *plan) const = 0;
+
+    virtual bool createSymlinks(const BuildPlan *plan) const = 0;
 
     virtual void createLibrarySymlinks(const BuildPlan *plan, String libName) const = 0;
     virtual void cleanLibrarySymlinks(const BuildPlan *plan, String libName) const = 0;

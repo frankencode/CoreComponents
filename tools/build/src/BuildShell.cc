@@ -19,11 +19,11 @@
 
 namespace ccbuild {
 
-BuildShell::BuildShell(BuildPlan *plan):
+BuildShell::BuildShell(const BuildPlan *plan):
     plan_(plan)
 {}
 
-String BuildShell::beautify(String command)
+String BuildShell::beautify(String command) const
 {
     if (plan()->options() & BuildPlan::Bootstrap) {
         return command
@@ -34,20 +34,20 @@ String BuildShell::beautify(String command)
     return command;
 }
 
-bool BuildShell::run(String command)
+bool BuildShell::run(String command) const
 {
     fout() << beautify(command) << nl;
     if (plan()->options() & BuildPlan::Simulate) return true;
     return SubProcess::execute(command)->wait() == 0;
 }
 
-Ref<FileStatus> BuildShell::fileStatus(String path)
+Ref<FileStatus> BuildShell::fileStatus(String path) const
 {
     if (plan()->options() & BuildPlan::Blindfold) return FileStatus::create();
     return FileStatus::readUnresolved(path);
 }
 
-void BuildShell::mkdir(String path)
+void BuildShell::mkdir(String path) const
 {
     if (!fileStatus(path)->isValid())
         fout("mkdir -p %%\n") << path;
@@ -55,7 +55,7 @@ void BuildShell::mkdir(String path)
     Dir::establish(path);
 }
 
-void BuildShell::rmdir(String path)
+void BuildShell::rmdir(String path) const
 {
     bool exists = fileStatus(path)->isValid();
     if (exists) fout("rmdir %%\n") << path;
@@ -63,7 +63,7 @@ void BuildShell::rmdir(String path)
     if (exists) try { Dir::remove(path); } catch (SystemError &) { /*FIXME, directory might not be empty */ }
 }
 
-bool BuildShell::clean(String path)
+bool BuildShell::clean(String path) const
 {
     fout("rm -rf %%\n") << path;
     if (plan()->options() & BuildPlan::Simulate) return true;
@@ -81,7 +81,7 @@ bool BuildShell::clean(String path)
     return true;
 }
 
-void BuildShell::symlink(String path, String newPath)
+void BuildShell::symlink(String path, String newPath) const
 {
     fout("ln -sf %% %%\n") << path << newPath;
     if (plan()->options() & BuildPlan::Simulate) return;
@@ -89,7 +89,7 @@ void BuildShell::symlink(String path, String newPath)
     File::symlink(path, newPath);
 }
 
-bool BuildShell::install(String sourcePath, String destPath)
+bool BuildShell::install(String sourcePath, String destPath) const
 {
     String destDirPath = destPath->reducePath();
     bool destDirMissing = destDirPath != "" && !fileStatus(destDirPath)->isValid();
@@ -114,7 +114,7 @@ bool BuildShell::install(String sourcePath, String destPath)
     return true;
 }
 
-bool BuildShell::unlink(String path)
+bool BuildShell::unlink(String path) const
 {
     if ((plan()->options() & BuildPlan::Blindfold) || fileStatus(path)->isValid()) {
         if (plan()->options() & BuildPlan::Simulate) {
@@ -133,7 +133,7 @@ bool BuildShell::unlink(String path)
     return true;
 }
 
-bool BuildShell::installAll(String sourcePrefix, String installPrefix)
+bool BuildShell::installAll(String sourcePrefix, String installPrefix) const
 {
     Ref<DirWalker> walker = DirWalker::tryOpen(sourcePrefix);
     if (!walker) return true;
@@ -162,7 +162,7 @@ bool BuildShell::installAll(String sourcePrefix, String installPrefix)
     return true;
 }
 
-bool BuildShell::unlinkAll(String sourcePrefix, String installPrefix)
+bool BuildShell::unlinkAll(String sourcePrefix, String installPrefix) const
 {
     Ref<DirWalker> walker = DirWalker::tryOpen(sourcePrefix);
     if (!walker) return true;
@@ -190,7 +190,7 @@ bool BuildShell::unlinkAll(String sourcePrefix, String installPrefix)
     return true;
 }
 
-void BuildShell::cd(String path)
+void BuildShell::cd(String path) const
 {
     fout("cd %%\n") << path;
     if (plan()->options() & BuildPlan::Simulate) return;
