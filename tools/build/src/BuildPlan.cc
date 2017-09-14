@@ -41,7 +41,7 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 }
 
 #define CCBUILD_BUILDPLAN_COMPONENTS_INIT \
-    shell_(this), \
+    shell_(BuildShell::create(this)), \
     preparationStage_(this), \
     configureStage_(this), \
     analyseStage_(this), \

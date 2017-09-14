@@ -32,6 +32,7 @@ public:
     inline String outputText() const { return outputText_; }
 
     virtual bool run();
+    virtual void onCompleted() {}
 
 private:
     friend class JobServer;

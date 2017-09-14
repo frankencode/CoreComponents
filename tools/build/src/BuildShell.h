@@ -18,10 +18,11 @@ using namespace cc;
 
 class BuildPlan;
 
-class BuildShell
+class BuildShell: public Object
 {
 public:
-    BuildShell(BuildPlan *plan);
+    static Ref<BuildShell> create(BuildPlan *plan) { return new BuildShell(plan); }
+
     inline BuildPlan *plan() const { return plan_; }
 
     String beautify(String command);
@@ -43,6 +44,8 @@ public:
     void cd(String path);
 
 private:
+    BuildShell(BuildPlan *plan);
+
     BuildPlan *plan_;
 };
 

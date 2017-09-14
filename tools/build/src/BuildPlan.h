@@ -114,7 +114,7 @@ public:
 
     String generatePackageConfig() const;
 
-    inline BuildShell *shell() { return &shell_; }
+    inline BuildShell *shell() const { return shell_; }
 
     inline ConfigureStage *configureStage() { return &configureStage_; }
     inline PreparationStage *preparationStage() { return &preparationStage_; }
@@ -128,6 +128,7 @@ public:
 private:
     Ref<BuildPlan> create(String projectPath);
 
+    BuildPlan();
     BuildPlan(int argc, char **argv);
     BuildPlan(String projectPath, BuildPlan *parentPlan);
 
@@ -179,7 +180,7 @@ private:
     String installPrefix_;
     String testArgs_;
 
-    BuildShell shell_;
+    Ref<BuildShell> shell_;
 
     PreparationStage preparationStage_;
     ConfigureStage configureStage_;
