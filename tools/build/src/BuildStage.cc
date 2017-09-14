@@ -22,7 +22,7 @@ BuildStage::BuildStage(BuildPlan *plan):
     postCommands_(StringList::create())
 {}
 
-BuildShell *BuildStage::shell() const { return plan_->shell(); }
+const BuildShell *BuildStage::shell() const { return plan_->shell(); }
 ConfigureShell *BuildStage::configureShell() const { return ConfigureShell::instance(); }
 ToolChain *BuildStage::toolChain() const { return plan_->toolChain(); }
 

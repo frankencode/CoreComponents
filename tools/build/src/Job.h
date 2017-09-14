@@ -32,9 +32,8 @@ public:
     inline String outputText() const { return outputText_; }
 
     virtual bool run();
-    virtual void onCompleted() {}
 
-private:
+protected:
     friend class JobServer;
     friend class JobScheduler;
 
@@ -44,6 +43,7 @@ private:
         countDown_(0)
     {}
 
+private:
     String command_;
 
     int status_;

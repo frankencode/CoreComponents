@@ -15,6 +15,7 @@
 #include <cc/regexp/RegExp>
 #include "BuildPlan.h"
 #include "CwdGuard.h"
+#include "LinkJob.h"
 #include "GnuToolChain.h"
 
 namespace ccbuild {
@@ -198,21 +199,17 @@ String GnuToolChain::linkCommand(const BuildPlan *plan) const
     return args->join(" ");
 }
 
+Ref<Job> GnuToolChain::createLinkJob(const BuildPlan *plan) const
+{
+    return LinkJob::create(plan);
+}
+
 bool GnuToolChain::link(const BuildPlan *plan) const
 {
-    int options = plan->options();
-    String command = linkCommand(plan);
-
-    if (!plan->shell()->run(command))
+    if (!plan->shell()->run(linkCommand(plan)))
         return false;
 
-    if ((options & BuildPlan::Library) && !plan->linkStatic())
-        createLibrarySymlinks(plan, linkName(plan));
-
-    if (options & BuildPlan::Application)
-        createAliasSymlinks(plan, linkName(plan));
-
-    return true;
+    return createSymlinks(plan);
 }
 
 bool GnuToolChain::testInclude(const BuildPlan *plan, const StringList *headers) const
@@ -286,6 +283,17 @@ String GnuToolChain::bundlePrefix(const BuildPlan *plan) const
     else
         name = plan->name();
     return plan->installPrefix()->expandPath("share")->expandPath(name);
+}
+
+bool GnuToolChain::createSymlinks(const BuildPlan *plan) const
+{
+    if ((plan->options() & BuildPlan::Library) && !plan->linkStatic())
+        createLibrarySymlinks(plan, linkName(plan));
+
+    if (plan->options() & BuildPlan::Application)
+        createAliasSymlinks(plan, linkName(plan));
+
+    return true; // TODO: be more precise
 }
 
 void GnuToolChain::createLibrarySymlinks(const BuildPlan *plan, String libName) const

@@ -41,6 +41,7 @@ public:
 
     virtual String linkName(const BuildPlan *plan) const override;
     virtual String linkCommand(const BuildPlan *plan) const override;
+    virtual Ref<Job> createLinkJob(const BuildPlan *plan) const override;
     virtual bool link(const BuildPlan *plan) const override;
 
     virtual bool testInclude(const BuildPlan *plan, const StringList *headers) const override;
@@ -49,6 +50,8 @@ public:
     virtual String includePrefix(const BuildPlan *plan) const override;
     virtual String libIncludePrefix(const BuildPlan *plan) const override;
     virtual String bundlePrefix(const BuildPlan *plan) const override;
+
+    virtual bool createSymlinks(const BuildPlan *plan) const override;
 
     virtual void createLibrarySymlinks(const BuildPlan *plan, String libName) const override;
     virtual void cleanLibrarySymlinks(const BuildPlan *plan, String libName) const override;

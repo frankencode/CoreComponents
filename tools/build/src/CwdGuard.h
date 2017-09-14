@@ -18,7 +18,7 @@ using namespace cc;
 
 class CwdGuard {
 public:
-    CwdGuard(String dirPath, BuildShell *shell):
+    CwdGuard(String dirPath, const BuildShell *shell):
         shell_(shell),
         cwdSaved_(Process::cwd())
     {
@@ -26,7 +26,7 @@ public:
     }
     ~CwdGuard() { shell_->cd(cwdSaved_); }
 private:
-    BuildShell *shell_; // FIXME: use Ref<BuildShell>
+    Ref<const BuildShell> shell_;
     String cwdSaved_;
 };
 
