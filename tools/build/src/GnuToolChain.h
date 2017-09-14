@@ -27,48 +27,46 @@ public:
     virtual String machine() const override { return machine_; }
     virtual String systemRoot() const override { return systemRoot_; }
     virtual String compiler(String source = "") const override;
-    virtual String compiler(BuildPlan *plan) const override;
+    virtual String compiler(const BuildPlan *plan) const override;
     virtual String machineCommand() const override;
 
-    virtual String defaultOptimization(BuildPlan *plan) const override;
+    virtual String defaultOptimization(const BuildPlan *plan) const override;
 
-    virtual String analyseCommand(BuildPlan *plan, String source) const override;
-    virtual Ref<Job> createAnalyseJob(BuildPlan *plan, String source) override;
-    virtual Ref<Module> finishAnalyseJob(BuildPlan *plan, Job *job) override;
+    virtual String analyseCommand(const BuildPlan *plan, String source) const override;
+    virtual Ref<Job> createAnalyseJob(const BuildPlan *plan, String source) const override;
+    virtual Ref<Module> finishAnalyseJob(const BuildPlan *plan, const Job *job) const override;
 
-    virtual Ref<Job> createCompileJob(BuildPlan *plan, Module *module) override;
-    virtual Ref<Job> createCompileLinkJob(BuildPlan *plan, Module *module) override;
+    virtual Ref<Job> createCompileJob(const BuildPlan *plan, const Module *module) const override;
+    virtual Ref<Job> createCompileLinkJob(const BuildPlan *plan, const Module *module) const override;
 
-    virtual String linkName(BuildPlan *plan) const override;
-    virtual String linkCommand(BuildPlan *plan) const override;
-    virtual bool link(BuildPlan *plan) override;
+    virtual String linkName(const BuildPlan *plan) const override;
+    virtual String linkCommand(const BuildPlan *plan) const override;
+    virtual bool link(const BuildPlan *plan) const override;
 
-    virtual bool testInclude(BuildPlan *plan, StringList *headers) const override;
+    virtual bool testInclude(const BuildPlan *plan, const StringList *headers) const override;
 
-    virtual String installDirPath(BuildPlan *plan) const override;
-    virtual String includePrefix(BuildPlan *plan) const override;
-    virtual String libIncludePrefix(BuildPlan *plan) const override;
-    virtual String bundlePrefix(BuildPlan *plan) const override;
+    virtual String installDirPath(const BuildPlan *plan) const override;
+    virtual String includePrefix(const BuildPlan *plan) const override;
+    virtual String libIncludePrefix(const BuildPlan *plan) const override;
+    virtual String bundlePrefix(const BuildPlan *plan) const override;
 
-    virtual void createLibrarySymlinks(BuildPlan *plan, String libName) const override;
-    virtual void cleanLibrarySymlinks(BuildPlan *plan, String libName) const override;
+    virtual void createLibrarySymlinks(const BuildPlan *plan, String libName) const override;
+    virtual void cleanLibrarySymlinks(const BuildPlan *plan, String libName) const override;
 
-    virtual void createAliasSymlinks(BuildPlan *plan, String appName) const override;
-    virtual void cleanAliasSymlinks(BuildPlan *plan, String appName) const override;
+    virtual void createAliasSymlinks(const BuildPlan *plan, String appName) const override;
+    virtual void cleanAliasSymlinks(const BuildPlan *plan, String appName) const override;
 
 protected:
     GnuToolChain(const BuildPlan *plan);
     virtual ~GnuToolChain();
-
-    void clangColorWorkaround(String compiler);
 
     static String queryMachine(String compiler);
     static String machineCommand(String compiler);
 
     static String querySystemRoot(String compiler);
 
-    void appendCompileOptions(Format args, BuildPlan *plan) const;
-    void appendLinkOptions(Format args, BuildPlan *plan) const;
+    void appendCompileOptions(Format args, const BuildPlan *plan) const;
+    void appendLinkOptions(Format args, const BuildPlan *plan) const;
 
 private:
     String ccPath_;

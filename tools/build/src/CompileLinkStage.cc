@@ -108,7 +108,7 @@ bool CompileLinkStage::run()
             Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->recipePath());
             if (recipeStatus->isValid()) {
                 if (recipeStatus->lastModified() > productTime) dirty = true;
-                for (BuildPlan *prerequisite: plan()->prerequisites()) {
+                for (const BuildPlan *prerequisite: plan()->prerequisites()) {
                     Ref<FileStatus> recipeStatus = shell()->fileStatus(prerequisite->recipePath());
                     if (recipeStatus->lastModified() > productTime) {
                         dirty = true;
