@@ -36,20 +36,23 @@ enum SortOrder { Desc = 0, Asc = 1, Descending = Desc, Ascending = Asc };
 template<class T>
 class AscendingSortOrder {
 public:
-    static inline bool below(const T &a, const T &b) { return a < b; }
+    static inline operator()(const T &a, const T &b) { return a < b; }
+    // static inline bool below(const T &a, const T &b) { return a < b; }
 };
 
 template<class T>
 class DescendingSortOrder {
 public:
-    static inline bool below(const T &a, const T &b) { return b < a; }
+    static inline operator()(const T &a, const T &b) { return a < b; }
+    // static inline bool below(const T &a, const T &b) { return b < a; }
 };
 
 template<class T>
 class FlexibleSortOrder {
 public:
     FlexibleSortOrder(SortOrder order = Asc): asc_(order == Asc) {}
-    inline bool below(const T &a, const T &b) { return (a < b) == asc_; }
+    inline bool operator()(const T &a, const T &b) { return (a < b) == asc_; }
+    // inline bool below(const T &a, const T &b) { return (a < b) == asc_; }
 protected:
     void setSortOrder(SortOrder order) { asc_ = (order == Asc); }
 private:

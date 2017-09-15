@@ -21,6 +21,7 @@ JobScheduler::JobScheduler(int concurrency):
     concurrency_((concurrency > 0) ? concurrency : System::concurrency()),
     requestChannel_(JobChannel::create()),
     replyChannel_(JobChannel::create()),
+    derivatives_(Derivatives::create()),
     started_(false),
     status_(0),
     totalCount_(0),
@@ -45,18 +46,17 @@ void JobScheduler::schedule(Job *job)
     ++totalCount_;
 }
 
-void JobScheduler::schedule(Job *job, Job *derivative)
-{
-    if (!job->derivatives_) job->derivatives_ = Job::Derivatives::create();
-    job->derivatives_->pushBack(derivative);
-    ++derivative->countDown_;
-}
-
 bool JobScheduler::collect(Ref<Job> *finishedJob)
 {
+    if (totalCount_ == 0) {
+        *finishedJob = nullptr;
+        return false;
+    }
+
     start();
+
     if ((finishCount_ == totalCount_) || !serverPool_) {
-        *finishedJob = 0;
+        *finishedJob = nullptr;
         return false;
     }
 
@@ -64,7 +64,8 @@ bool JobScheduler::collect(Ref<Job> *finishedJob)
     *finishedJob = job;
     if (job->status() == 0) {
         if (job->derivatives_) {
-            for (Ref<Job> derivative; job->derivatives_->popFront(&derivative);) {
+            while (job->derivatives_->count() > 0) {
+                Ref<Job> derivative = job->derivatives_->popFront();
                 --derivative->countDown_;
                 if (derivative->countDown_ == 0) {
                     requestChannel_->pushBack(derivative);

@@ -17,7 +17,9 @@ class CompileLinkStage: public BuildStage
 public:
     CompileLinkStage(BuildPlan *plan): BuildStage(plan) {}
     bool run();
+
+private:
+    void scheduleJobs(JobScheduler *scheduler);
 };
 
 } // namespace ccbuild
-

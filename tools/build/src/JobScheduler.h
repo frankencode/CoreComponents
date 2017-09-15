@@ -32,11 +32,6 @@ public:
     /// Schedule \a job for execution in the background
     void schedule(Job *job);
 
-    /** \brief Schedule \a job with another job waiting for its successful completion (\a derivative)
-      * \note The \a derivative needs to be scheduled individually with schedule(Job *) .
-      */
-    void schedule(Job *job, Job *derivative);
-
     /** \brief Collect the next finished job (\a finishedJob)
       * \return true if \a finishedJob is returned otherwise return false (end of operation)
       */

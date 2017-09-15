@@ -23,8 +23,8 @@ bool TestRunStage::run()
     bool report = plan()->recipe()->value("test-report");
     if (report) Process::setEnv("TEST_REPORT", "1");
 
-    Ref<JobScheduler> scheduler = JobScheduler::create(plan_->testRunConcurrency());
-    scheduleTests(scheduler);
+    Ref<JobScheduler> scheduler = JobScheduler::create(plan()->testRunConcurrency());
+    scheduleJobs(scheduler);
     int testFailed = 0;
 
     for (Ref<Job> job; scheduler->collect(&job);) {
@@ -42,7 +42,7 @@ bool TestRunStage::run()
     return success_ = (testFailed == 0);
 }
 
-void TestRunStage::scheduleTests(JobScheduler *scheduler)
+void TestRunStage::scheduleJobs(JobScheduler *scheduler)
 {
     if (complete_) return;
     complete_ = true;
@@ -52,7 +52,7 @@ void TestRunStage::scheduleTests(JobScheduler *scheduler)
     if (outOfScope()) return;
 
     for (BuildPlan *prerequisite: plan()->prerequisites())
-        prerequisite->testRunStage()->scheduleTests(scheduler);
+        prerequisite->testRunStage()->scheduleJobs(scheduler);
 
     if (!(plan()->options() & BuildPlan::Test)) return;
 

@@ -110,11 +110,15 @@ public:
     String modulePath(String object) const;
     String installPath(String relativeInstallPath) const;
 
+    String previousLinkCommandPath() const;
+
     Ref<StringList> globSources(StringList *pattern) const;
 
     String generatePackageConfig() const;
 
     inline const BuildShell *shell() const { return shell_; }
+    inline Job *libraryLinkJob() const { return libraryLinkJob_; }
+    inline void setLibraryLinkJob(Job *linkJob) { libraryLinkJob_ = linkJob; }
 
     inline ConfigureStage *configureStage() { return &configureStage_; }
     inline PreparationStage *preparationStage() { return &preparationStage_; }
@@ -181,6 +185,7 @@ private:
     String testArgs_;
 
     Ref<const BuildShell> shell_;
+    Ref<Job> libraryLinkJob_;
 
     PreparationStage preparationStage_;
     ConfigureStage configureStage_;

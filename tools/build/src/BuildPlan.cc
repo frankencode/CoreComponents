@@ -341,6 +341,11 @@ String BuildPlan::installPath(String relativeInstallPath) const
     return installRoot_->expandPath(installPrefix_)->expandPath(relativeInstallPath);
 }
 
+String BuildPlan::previousLinkCommandPath() const
+{
+    return modulePath("LinkComannd");
+}
+
 Ref<StringList> BuildPlan::globSources(StringList *pattern) const
 {
     Ref<StringList> sources = StringList::create();
@@ -509,8 +514,8 @@ void BuildPlan::initModules()
     f << absoulteProjectPath->reducePath()->fileName() + "_" + absoulteProjectPath->fileName();
     modulePath_ = f->join("-");
 
-    for (int i = 0; i < prerequisites_->count(); ++i)
-        prerequisites_->at(i)->initModules();
+    for (BuildPlan *prerequisite: prerequisites_)
+        prerequisite->initModules();
 }
 
 Ref<StringList> BuildPlan::queryableVariableNames()

@@ -31,6 +31,8 @@ public:
     inline int status() const { return status_; }
     inline String outputText() const { return outputText_; }
 
+    void registerDerivative(Job *derivative);
+
     virtual bool run();
 
 protected:

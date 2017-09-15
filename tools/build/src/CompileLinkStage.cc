@@ -18,114 +18,136 @@ namespace ccbuild {
 
 bool CompileLinkStage::run()
 {
-    if (complete_) return success_;
+    BuildStageGuard guard(this);
+
+    Ref<JobScheduler> scheduler = createScheduler();
+    scheduleJobs(scheduler);
+
+    for (Ref<Job> job; scheduler->collect(&job);) {
+        fout() << shell()->beautify(job->command()) << nl;
+        ferr() << job->outputText();
+        if (job->status() != 0) {
+            status_ = job->status();
+            return success_ = false;
+        }
+    }
+
+    return success_ = true;
+}
+
+void CompileLinkStage::scheduleJobs(JobScheduler *scheduler)
+{
+    if (complete_) return;
     complete_ = true;
 
-    if (!plan()->goForBuild()) return success_ = true;
-    if (plan()->isSystemSource()) return success_ = true;
+    if (!plan()->goForBuild()) return;
+    if (plan()->isSystemSource()) return;
 
     if (plan()->options() & BuildPlan::Test) {
         if (!(plan()->options() & BuildPlan::BuildTests))
-            return success_ = true;
+            return;
     }
 
-    if (outOfScope()) return success_ = true;
+    if (outOfScope()) return;
 
-    BuildStageGuard guard(this);
+    for (BuildPlan *prerequisite: plan()->prerequisites())
+        prerequisite->compileLinkStage()->scheduleJobs(scheduler);
 
-    for (BuildPlan *prerequisite: plan()->prerequisites()) {
-        if (!prerequisite->compileLinkStage()->run())
-            return success_ = false;
-    }
+    if (plan()->options() & BuildPlan::Package) return;
 
-    if (plan()->options() & BuildPlan::Package) return success_ = true;
+    Ref<Job> linkJob;
+    if (!(plan()->options() & BuildPlan::Tools))
+        linkJob = toolChain()->createLinkJob(plan());
 
-    Ref<JobScheduler> scheduler;
+    bool dirty = false;
 
-    for (Module *module: plan()->modules())
+    for (const Module *module: plan()->modules())
     {
-        bool dirty = module->dirty();
+        bool moduleDirty = module->dirty();
         if (plan()->options() & BuildPlan::Tools)
-            dirty = dirty || !shell()->fileStatus(module->toolName())->isValid();
+            moduleDirty = moduleDirty || !shell()->fileStatus(module->toolName())->isValid();
 
-        if (dirty) {
+        if (moduleDirty)
+        {
+            dirty = true;
+
             Ref<Job> job;
-            if (plan()->options() & BuildPlan::Tools)
+            if (plan()->options() & BuildPlan::Tools) {
                 job = toolChain()->createCompileLinkJob(plan(), module);
-            else
-                job = toolChain()->createCompileJob(plan(), module);
-
-            if (plan()->options() & BuildPlan::Simulate) {
-                fout() << job->command() << ((plan()->concurrency() == 1) ? "\n" : " &\n");
+                if (!(plan()->options() & BuildPlan::Simulate)) {
+                    for (BuildPlan *prerequisite: plan()->prerequisites()) {
+                        if (prerequisite->libraryLinkJob())
+                            prerequisite->libraryLinkJob()->registerDerivative(job);
+                    }
+                }
             }
             else {
-                if (!scheduler) {
-                    scheduler = createScheduler();
-                    scheduler->start();
-                }
-                scheduler->schedule(job);
+                job = toolChain()->createCompileJob(plan(), module);
+                job->registerDerivative(linkJob);
             }
+
+            if (plan()->options() & BuildPlan::Simulate)
+                fout() << job->command() << ((plan()->concurrency() == 1) ? "\n" : " &\n");
+            else
+                scheduler->schedule(job);
         }
     }
 
-    if ((plan()->options() & BuildPlan::Simulate) && plan()->modules()->count() > 0)
+    if (
+        plan()->modules()->count() > 0 &&
+        (plan()->options() & BuildPlan::Simulate) &&
+        plan()->concurrency() != 1
+    )
         fout() << "wait" << nl;
 
-    if (scheduler) {
-        for (Ref<Job> job; scheduler->collect(&job);) {
-            fout() << shell()->beautify(job->command()) << nl;
-            ferr() << job->outputText();
-            if (job->status() != 0) {
-                status_ = job->status();
-                return success_ = false;
-            }
-        }
-    }
+    if (plan()->options() & BuildPlan::Tools) return;
 
-    if (plan()->options() & BuildPlan::Tools)
-        return success_ = true;
-
-    String previousLinkCommandPath = plan()->modulePath("LinkCommand");
-    String previousLinkCommand = File::load(previousLinkCommandPath);
-    String newLinkCommand = toolChain()->linkCommand(plan());
-
-    if (newLinkCommand == previousLinkCommand)
+    if (!dirty)
     {
         Ref<FileStatus> productStatus = shell()->fileStatus(toolChain()->linkName(plan()));
-        if (
-            productStatus->isValid() &&
-            *plan()->sources() == *plan()->analyseStage()->previousSources()
-        ) {
-            double productTime = productStatus->lastModified();
-            bool dirty = false;
-            for (Module *module: plan()->modules()) {
-                Ref<FileStatus> moduleStatus = shell()->fileStatus(module->modulePath());
-                if (moduleStatus->lastModified() > productTime) {
-                    dirty = true;
-                    break;
-                }
-            }
-            Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->recipePath());
-            if (recipeStatus->isValid()) {
-                if (recipeStatus->lastModified() > productTime) dirty = true;
-                for (const BuildPlan *prerequisite: plan()->prerequisites()) {
-                    Ref<FileStatus> recipeStatus = shell()->fileStatus(prerequisite->recipePath());
-                    if (recipeStatus->lastModified() > productTime) {
+        if (!productStatus->isValid()) dirty = true;
+        else {
+            String previousLinkCommandPath = plan()->previousLinkCommandPath();
+            String previousLinkCommand = File::load(previousLinkCommandPath);
+            String newLinkCommand = linkJob->command();
+
+            if (newLinkCommand != previousLinkCommand) dirty = true;
+            else {
+                double productTime = productStatus->lastModified();
+                for (const Module *module: plan()->modules()) {
+                    Ref<FileStatus> moduleStatus = shell()->fileStatus(module->modulePath());
+                    if (moduleStatus->lastModified() > productTime) {
                         dirty = true;
                         break;
                     }
                 }
+                if (!dirty) {
+                    Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->recipePath());
+                    if (recipeStatus->isValid()) {
+                        if (recipeStatus->lastModified() > productTime)
+                            dirty = true;
+                    }
+                }
             }
-            if (!dirty) return success_ = true;
         }
     }
 
-    success_ = toolChain()->link(plan());
+    if (!dirty) return;
 
-    if (success_)
-        File::save(previousLinkCommandPath, newLinkCommand);
+    if (plan()->options() & BuildPlan::Simulate) {
+        fout() << linkJob->command() << nl;
+    }
+    else {
+        for (BuildPlan *prerequisite: plan()->prerequisites()) {
+            if (prerequisite->libraryLinkJob())
+                prerequisite->libraryLinkJob()->registerDerivative(linkJob);
+        }
 
-    return success_;
+        if (plan()->options() & BuildPlan::Library)
+            plan()->setLibraryLinkJob(linkJob);
+
+        scheduler->schedule(linkJob);
+    }
 }
 
 } // namespace ccbuild
