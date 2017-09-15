@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/File>
 #include "BuildPlan.h"
 #include "LinkJob.h"
 
@@ -19,6 +20,7 @@ LinkJob::LinkJob(const BuildPlan *plan):
 bool LinkJob::run()
 {
     if (!Job::run()) return false;
+    File::save(plan_->previousLinkCommandPath(), command());
     return plan_->toolChain()->createSymlinks(plan_);
 }
 

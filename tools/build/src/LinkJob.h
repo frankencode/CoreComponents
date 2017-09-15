@@ -24,7 +24,7 @@ public:
 private:
     LinkJob(const BuildPlan *plan);
 
-    Ref<const BuildPlan> plan_;
+    const BuildPlan *plan_;
 };
 
 } // namespace ccbuild

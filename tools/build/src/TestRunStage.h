@@ -16,11 +16,10 @@ class TestRunStage: public BuildStage
 {
 public:
     TestRunStage(BuildPlan *plan);
-
     bool run();
 
 private:
-    void scheduleTests(JobScheduler *scheduler);
+    void scheduleJobs(JobScheduler *scheduler);
 };
 
 } // namespace ccbuild

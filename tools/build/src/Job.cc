@@ -13,6 +13,13 @@
 
 namespace ccbuild {
 
+void Job::registerDerivative(Job *derivative)
+{
+    if (!derivatives_) derivatives_ = Job::Derivatives::create();
+    derivatives_->pushBack(derivative);
+    ++derivative->countDown_;
+}
+
 bool Job::run()
 {
     try {
