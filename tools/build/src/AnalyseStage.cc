@@ -70,6 +70,11 @@ bool AnalyseStage::run()
         plan()->modules()->append(module);
     }
 
+    struct ModulePathOrder {
+        inline static bool below(Module *a, Module *b) { return a->modulePath() < b->modulePath(); }
+    };
+    plan()->setModules(plan()->modules()->sort<ModulePathOrder>());
+
     return success_ = true;
 }
 
