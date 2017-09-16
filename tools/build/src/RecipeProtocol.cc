@@ -32,9 +32,6 @@ protected:
 
         insert("compile-flags", Ref<StringList>());
         insert("link-flags", Ref<StringList>());
-
-        insert("compile-flags-configure", "");
-        insert("link-flags-configure", "");
     }
 };
 
