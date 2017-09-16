@@ -212,6 +212,14 @@ public:
       */
     inline Item join(const Item &sep = Item()) const { return Item::join(this, sep); }
 
+    template<class SortOrder>
+    Ref<List> sort(bool unique = false) const
+    {
+        if (count() == 0) return List::create();
+        auto heap = GenericHeap<Item, SortOrder>::create(count());
+        return sortWithHeap(heap, unique);
+    }
+
     /** Create a sorted copy of this list
       * \param order sort order
       * \param unique eliminate duplicates
@@ -219,31 +227,9 @@ public:
       */
     Ref<List> sort(SortOrder order = Ascending, bool unique = false) const
     {
-        if (count() == 0)
-            return List::create();
-        Ref< Heap<Item> > heap = Heap<Item>::create(count(), order);
-        for (int i = 0; i < count(); ++i)
-            heap->push(at(i));
-        Ref<List> result;
-        if (unique) {
-            result = List::create();
-            Item prev, item;
-            heap->pop(&prev);
-            result->append(prev);
-            while (!heap->isEmpty()) {
-                heap->pop(&item);
-                if (item != prev) {
-                    result->append(item);
-                    prev = item;
-                }
-            }
-        }
-        else {
-            result = List::create(count());
-            for (int i = 0, n = result->count(); i < n; ++i)
-                result->at(i) = heap->pop();
-        }
-        return result;
+        if (count() == 0) return List::create();
+        auto heap = Heap<Item>::create(count(), order);
+        return sortWithHeap(heap, unique);
     }
 
     /** Create a reversed copy of this list
@@ -301,6 +287,33 @@ private:
 
     explicit List(const List &b): tree_(b.tree_) {}
     const List &operator=(const List &b);
+
+    template<class Heap>
+    Ref<List> sortWithHeap(Ref<Heap> heap, bool unique = false) const
+    {
+        for (int i = 0; i < count(); ++i)
+            heap->push(at(i));
+        Ref<List> result;
+        if (unique) {
+            result = List::create();
+            Item prev, item;
+            heap->pop(&prev);
+            result->append(prev);
+            while (!heap->isEmpty()) {
+                heap->pop(&item);
+                if (item != prev) {
+                    result->append(item);
+                    prev = item;
+                }
+            }
+        }
+        else {
+            result = List::create(count());
+            for (int i = 0, n = result->count(); i < n; ++i)
+                result->at(i) = heap->pop();
+        }
+        return result;
+    }
 
     Tree tree_;
     mutable Item nullItem_;

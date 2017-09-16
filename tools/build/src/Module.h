@@ -45,4 +45,3 @@ private:
 typedef List< Ref<Module> > ModuleList;
 
 } // namespace ccbuild
-

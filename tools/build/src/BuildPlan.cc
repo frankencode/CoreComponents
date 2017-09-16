@@ -363,8 +363,25 @@ Ref<StringList> BuildPlan::globSources(StringList *pattern) const
                 sources->append(path);
         }
     }
-    sources = sources->sort();
     return sources;
+}
+
+void BuildPlan::registerLinkDerivative(Job *linkJob)
+{
+    for (BuildPlan *prerequisite: prerequisites()) {
+        if (prerequisite->options() & Package) {
+            for (BuildPlan *child: prerequisite->prerequisites()) {
+                if (child->options() & Library) {
+                    if (child->libraryLinkJob_)
+                        child->libraryLinkJob_->registerDerivative(linkJob);
+                }
+            }
+        }
+        else if (prerequisite->options() & Library) {
+            if (prerequisite->libraryLinkJob_)
+                prerequisite->libraryLinkJob_->registerDerivative(linkJob);
+        }
+    }
 }
 
 void BuildPlan::use(BuildPlan *plan)
@@ -384,8 +401,8 @@ void BuildPlan::use(BuildPlan *plan)
         if (plan->usage()) BuildParameters::readSpecific(plan->usage());
     }
     else if (plan->options() & Package) {
-        for (int i = 0; i < plan->prerequisites()->count(); ++i)
-            use(plan->prerequisites()->at(i));
+        for (BuildPlan *prerequisite: plan->prerequisites())
+            use(prerequisite);
     }
 }
 

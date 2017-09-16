@@ -91,6 +91,7 @@ public:
     inline StringList *sources() const { return sources_; }
     inline StringList *bundle() const { return bundle_; }
     inline ModuleList *modules() const { return modules_; }
+    inline void setModules(ModuleList *newList) { modules_ = newList; }
     inline bool containsCPlusPlus() const { return containsCPlusPlus_; }
 
     inline PredicateList *predicates() const { return predicates_; }
@@ -114,11 +115,9 @@ public:
 
     Ref<StringList> globSources(StringList *pattern) const;
 
-    String generatePackageConfig() const;
-
     inline const BuildShell *shell() const { return shell_; }
-    inline Job *libraryLinkJob() const { return libraryLinkJob_; }
     inline void setLibraryLinkJob(Job *linkJob) { libraryLinkJob_ = linkJob; }
+    void registerLinkDerivative(Job *linkJob);
 
     inline ConfigureStage *configureStage() { return &configureStage_; }
     inline PreparationStage *preparationStage() { return &preparationStage_; }

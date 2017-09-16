@@ -12,11 +12,13 @@
 
 namespace cc {
 
-template<class T, template<class> class Order = AscendingSortOrder>
-class GenericHeap: public Object, public Order<T>
+template<class T, class Order = AscendingSortOrder<T> >
+class GenericHeap: public Object, public Order
 {
 public:
     typedef T Item;
+
+    inline static Ref<GenericHeap> create(int size) { return new GenericHeap(size); }
 
     ~GenericHeap()
     {
@@ -94,8 +96,8 @@ private:
 
     inline int min(int i, int j, int k)
     {
-        int h = Order<T>::below(buf_[i], buf_[j]) ? i : j;
-        return Order<T>::below(buf_[h], buf_[k]) ? h : k;
+        int h = Order::below(buf_[i], buf_[j]) ? i : j;
+        return Order::below(buf_[h], buf_[k]) ? h : k;
     }
 
     void passUpLast()
@@ -104,7 +106,7 @@ private:
         int i = fill_ - 1;
         while (i != 0) {
             int j = parent(i);
-            if (!Order<T>::below(buf_[i], buf_[j])) break;
+            if (!Order::below(buf_[i], buf_[j])) break;
             xchg(i, j);
             i = j;
         }
@@ -119,14 +121,14 @@ private:
             lc = leftChild(i);
             rc = rightChild(i);
             if (rc < fill_) {
-                j = Order<T>::below(buf_[lc], buf_[i]) ? lc : i;
-                j = Order<T>::below(buf_[rc], buf_[j]) ? rc : j;
+                j = Order::below(buf_[lc], buf_[i]) ? lc : i;
+                j = Order::below(buf_[rc], buf_[j]) ? rc : j;
                 if (j == i) break;
                 xchg(i, j);
                 i = j;
             }
             else if (lc < fill_) {
-                if (Order<T>::below(buf_[lc], buf_[i])) xchg(i, lc);
+                if (Order::below(buf_[lc], buf_[i])) xchg(i, lc);
                 break;
             }
             else
@@ -145,7 +147,7 @@ private:
   * \brief %Heap data container
   */
 template<class T>
-class Heap: public GenericHeap<T, FlexibleSortOrder>
+class Heap: public GenericHeap<T, FlexibleSortOrder<T> >
 {
 public:
     inline static Ref<Heap> create(int size, SortOrder order = Ascending) {
@@ -161,22 +163,22 @@ public:
     }
 
 private:
-    typedef GenericHeap<T, FlexibleSortOrder> Super;
+    typedef GenericHeap<T, FlexibleSortOrder<T> > Super;
 
     Heap(int size, SortOrder order):
-        GenericHeap<T, FlexibleSortOrder>(size)
+        Super(size)
     {
         Super::setSortOrder(order);
     }
     Heap(T *buf, int size, int order):
-        GenericHeap<T, FlexibleSortOrder>(buf, size)
+        Super(buf, size)
     {
         Super::setSortOrder(order);
     }
 };
 
 template<class T>
-class MinHeap: public GenericHeap<T, AscendingSortOrder>
+class MinHeap: public GenericHeap<T, AscendingSortOrder<T> >
 {
 public:
     inline static Ref<MinHeap> create(int size) {
@@ -187,12 +189,12 @@ public:
     }
 
 protected:
-    MinHeap(int size): GenericHeap<T, AscendingSortOrder>(size) {}
-    MinHeap(T *buf, int size): GenericHeap<T, AscendingSortOrder>(buf, size) {}
+    MinHeap(int size): GenericHeap<T, AscendingSortOrder<T> >(size) {}
+    MinHeap(T *buf, int size): GenericHeap<T, AscendingSortOrder<T> >(buf, size) {}
 };
 
 template<class T>
-class MaxHeap: public GenericHeap<T, DescendingSortOrder>
+class MaxHeap: public GenericHeap<T, DescendingSortOrder<T> >
 {
 public:
     inline static Ref<MaxHeap> create(int size) {
@@ -203,8 +205,8 @@ public:
     }
 
 protected:
-    MaxHeap(int size): GenericHeap<T, DescendingSortOrder>(size) {}
-    MaxHeap(T *buf, int size): GenericHeap<T, DescendingSortOrder>(buf, size) {}
+    MaxHeap(int size): GenericHeap<T, DescendingSortOrder<T> >(size) {}
+    MaxHeap(T *buf, int size): GenericHeap<T, DescendingSortOrder<T> >(buf, size) {}
 };
 
 } // namespace cc

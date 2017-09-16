@@ -74,12 +74,8 @@ void CompileLinkStage::scheduleJobs(JobScheduler *scheduler)
             Ref<Job> job;
             if (plan()->options() & BuildPlan::Tools) {
                 job = toolChain()->createCompileLinkJob(plan(), module);
-                if (!(plan()->options() & BuildPlan::Simulate)) {
-                    for (BuildPlan *prerequisite: plan()->prerequisites()) {
-                        if (prerequisite->libraryLinkJob())
-                            prerequisite->libraryLinkJob()->registerDerivative(job);
-                    }
-                }
+                if (!(plan()->options() & BuildPlan::Simulate))
+                    plan()->registerLinkDerivative(job);
             }
             else {
                 job = toolChain()->createCompileJob(plan(), module);
@@ -136,13 +132,10 @@ void CompileLinkStage::scheduleJobs(JobScheduler *scheduler)
 
     if (plan()->options() & BuildPlan::Simulate) {
         fout() << linkJob->command() << nl;
+        plan()->toolChain()->createSymlinks(plan());
     }
     else {
-        for (BuildPlan *prerequisite: plan()->prerequisites()) {
-            if (prerequisite->libraryLinkJob())
-                prerequisite->libraryLinkJob()->registerDerivative(linkJob);
-        }
-
+        plan()->registerLinkDerivative(linkJob);
         if (plan()->options() & BuildPlan::Library)
             plan()->setLibraryLinkJob(linkJob);
 
