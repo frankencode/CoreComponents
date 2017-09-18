@@ -83,7 +83,7 @@ void CompileLinkStage::scheduleJobs(JobScheduler *scheduler)
             }
 
             if (plan()->options() & BuildPlan::Simulate)
-                fout() << job->command() << ((plan()->concurrency() == 1) ? "\n" : " &\n");
+                fout() << plan()->shell()->beautify(job->command()) << ((plan()->concurrency() == 1) ? "\n" : " &\n");
             else
                 scheduler->schedule(job);
         }
@@ -131,7 +131,7 @@ void CompileLinkStage::scheduleJobs(JobScheduler *scheduler)
     if (!dirty) return;
 
     if (plan()->options() & BuildPlan::Simulate) {
-        fout() << linkJob->command() << nl;
+        fout() << plan()->shell()->beautify(linkJob->command()) << nl;
         plan()->toolChain()->createSymlinks(plan());
     }
     else {
