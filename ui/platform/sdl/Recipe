@@ -1,0 +1,9 @@
+Library {
+    name: ccuisdl
+    source: *.cc
+    bundle: ttf/*
+    use: [ core, ui/src ]
+    Dependency { name: freetype2 }
+    Dependency { name: sdl2 }
+    link: m
+}

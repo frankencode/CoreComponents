@@ -1,0 +1,5 @@
+Library {
+    name: ccui
+    source: *.cc
+    use: [ core, platform/sdl ]
+}
