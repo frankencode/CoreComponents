@@ -94,7 +94,7 @@ bool FtFontFace::loadGlyph(uchar_t ch, FT_Glyph *glyph, int flags)
     }
 
     FT_UInt glyphIndex = FT_Get_Char_Index(face_, ch);
-    if (FT_Load_Glyph(face_, glyphIndex, hinting ? FT_LOAD_FORCE_AUTOHINT : (FT_LOAD_NO_AUTOHINT|FT_LOAD_NO_HINTING)) != 0)
+    if (FT_Load_Glyph(face_, glyphIndex, hinting ? FT_LOAD_DEFAULT /*FT_LOAD_FORCE_AUTOHINT*/ : (FT_LOAD_NO_AUTOHINT|FT_LOAD_NO_HINTING)) != 0)
         return false;
 
     CC_ASSERT(FT_Get_Glyph(face_->glyph, glyph) == 0);
