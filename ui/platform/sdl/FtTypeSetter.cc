@@ -88,8 +88,8 @@ void FtTypeSetter::stage(TextBlock *block, double *penX, double *penY, Image *im
             if (ch >= 0x20) {
                 face->loadGlyph(
                     ch, &glyph,
-                    (block->style()->font()->hinting() * FtFontFace::GlyphHinting) |
-                    (caching_ * FtFontFace::GlyphCaching)
+                    (block->style()->font()->hinting() ? FtFontFace::GlyphHinting : 0) |
+                    (caching_ ? FtFontFace::GlyphCaching : 0)
                 );
             }
             if (!glyph && ch != 0xFFFD) {
@@ -114,8 +114,8 @@ void FtTypeSetter::stage(TextBlock *block, double *penX, double *penY, Image *im
             FT_Outline_Done(library, outline);
         }
 
-        double advanceX = glyph ? glyph->advance.x / 65536.: 0.;
-        double advanceY = glyph ? glyph->advance.y / 65536.: 0.;
+        double advanceX = glyph ? glyph->advance.x / 65536. : 0.;
+        double advanceY = glyph ? glyph->advance.y / 65536. : 0.;
         if (!image && run) {
             run->pushBack(
                 GlyphStop::create(ch, source->offset(), x, y, advanceX, advanceY)

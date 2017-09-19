@@ -24,7 +24,7 @@ Font::Font(int id, String family):
     size_(10),
     italic_(false),
     stretch_(Font::Unstretched),
-    weight_(Font::Medium),
+    weight_(Font::Normal),
     color_(Color::black()),
     hinting_(false)
 {}
