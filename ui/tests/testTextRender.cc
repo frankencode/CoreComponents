@@ -29,7 +29,7 @@ private:
         text_("FtFontFace::loadGlyph(): The quick brown fox jumps over the lazy dog")
     {
         // font_->setItalic(true);
-        font_->setHinting(false);
+        font_->setHinting(true);
         // font_->setStretch(Font::SemiExpanded);
         // font_->setWeight(Font::SemiBold);
         view->viewResized()->connect(this, &RenderTest::paint);

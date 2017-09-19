@@ -38,7 +38,7 @@ private:
     struct RasterArgs {
         Image *image;
         Color color;
-        int penY;
+        int penX, penY;
     };
     static void drawSpans(int y, int spanCount, const FT_Span *spans, void *user);
 
@@ -46,4 +46,3 @@ private:
 };
 
 }} // namespace cc::ui
-

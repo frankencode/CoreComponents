@@ -52,7 +52,7 @@ protected:
     SDL_Renderer *renderer_;
     Uint32 id_;
     Ref<SdlView> rootView_;
+    Uint16 gammaRamp_[256];
 };
 
 }} // namespace cc::ui
-

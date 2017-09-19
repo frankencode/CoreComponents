@@ -102,16 +102,9 @@ void FtTypeSetter::stage(TextBlock *block, double *penX, double *penY, Image *im
         if (image && glyph) {
             FT_Library library = FtLibrary::instance()->library();
             FT_OutlineGlyph outlineGlyph = (FT_OutlineGlyph)glyph;
-
-            FT_Outline *origOutline = &outlineGlyph->outline;
-            FT_Outline outline_, *outline = &outline_;
-            CC_ASSERT(FT_Outline_New(library, origOutline->n_points, origOutline->n_contours, outline) == 0);
-            CC_ASSERT(FT_Outline_Copy(origOutline, outline) == 0);
-            FT_Outline_Translate(outline, x * 64, 0);
-
-            args.penY = ::round(y);
-            FT_Outline_Render(library, outline, &params);
-            FT_Outline_Done(library, outline);
+            args.penX = x;
+            args.penY = y;
+            FT_Outline_Render(library, &outlineGlyph->outline, &params);
         }
 
         double advanceX = glyph ? glyph->advance.x / 65536. : 0.;
@@ -144,7 +137,7 @@ void FtTypeSetter::drawSpans(int y, int spanCount, const FT_Span *spans, void *u
         const FT_Span span = spans[i];
         if (o == 0x100) Color::alpha(c) = span.coverage;
         else Color::alpha(c) = (span.coverage * o) >> 8;
-        image->drawSpan(span.x, y, span.len, c);
+        image->drawSpan(args->penX + span.x, y, span.len, c);
     }
 }
 
