@@ -26,10 +26,11 @@ private:
     RenderTest(View *view):
         typeSetter_(TypeSetter::create()),
         font_(Font::select("DejaVu Sans Mono")),
-        text_("Ref<TypeSetter>, The quick brown fox jumps over the lazy dog")
+        text_("FtFontFace::loadGlyph(): The quick brown fox jumps over the lazy dog")
     {
         // font_->setItalic(true);
         font_->setHinting(true);
+        // font_->setStretch(Font::SemiExpanded);
         // font_->setWeight(Font::SemiBold);
         view->viewResized()->connect(this, &RenderTest::paint);
         paint(view);
@@ -46,8 +47,8 @@ private:
             rect->resize(rect->w(), metrics->lineHeight());
             p->setFont(font_);
             for (int i = 0; i < 2; ++i) {
-                p->drawText(fixed(size, 1) + ": " + text_, PlaceAuto, rect);
-                y += ::round(metrics->lineHeight()) + 2;
+                p->drawText(fixed(size, 2) + ": " + text_, PlaceTopLeft, rect);
+                y += ::round(metrics->lineHeight());
                 rect->moveTo(0, y);
             }
             y += 10;

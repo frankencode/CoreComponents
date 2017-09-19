@@ -33,6 +33,7 @@ FtFontMetrics::FtFontMetrics(FtFontFace *face, double fontSize):
     float xRes, yRes;
     Application::instance()->getDisplayResolution(&xRes, &yRes); // FIXME: inefficient
     error = FT_Set_Char_Size(face->face(), 0, fontSize * 64, xRes, yRes);
+    // error = FT_Set_Pixel_Sizes(face->face(), fontSize, fontSize);
     CC_ASSERT(error == 0);
     error = FT_Activate_Size(oldSize);
     CC_ASSERT(error == 0);
