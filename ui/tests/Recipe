@@ -1,5 +1,0 @@
-Tools {
-    source: *.cc
-    use: [ core, testing, ui, ui/platform ]
-    link: m
-}
