@@ -224,6 +224,7 @@ protected:
         insert("name", "");
         insert("description", "");
         insert("alias", StringList::create());
+        insert("depends", StringList::create());
         insert("source", StringList::create() << "*.(cc|cpp|cxx|c)");
         insert("bundle", StringList::create());
         insert("version", Version());
