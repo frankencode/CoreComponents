@@ -19,6 +19,7 @@ class BuildPlan;
 class SystemPrerequisite: public BuildParameters
 {
 public:
+    static Ref<SystemPrerequisite> create(String name);
     static Ref<SystemPrerequisite> read(const MetaObject *object, BuildPlan *plan);
 
     inline String name() const { return name_; }
@@ -39,6 +40,7 @@ public:
     inline StringList *includeTest() const { return includeTest_; }
 
 private:
+    SystemPrerequisite(String name);
     SystemPrerequisite(const MetaObject *object, BuildPlan *plan);
 
     String name_;
@@ -55,7 +57,7 @@ private:
     Version versionMin_;
     Version versionMax_;
 
-    Ref<StringList> includeTest_;
+    Ref<StringList> includeTest_; // FIXME: remove include tests once 'configure' tools are functional
 };
 
 typedef List< Ref<SystemPrerequisite> > SystemPrerequisiteList;

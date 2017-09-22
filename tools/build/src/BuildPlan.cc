@@ -164,13 +164,25 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
             includePaths_->append(defaultIncludePath);
     }
 
+    const StringList *dependsList = Variant::cast<const StringList *>(recipe_->value("depends"));
+    if (dependsList) {
+        for (String name: dependsList) {
+            if (!systemPrerequisitesByName_)
+                systemPrerequisitesByName_ = SystemPrerequisitesByName::create();
+            Ref<SystemPrerequisiteList> l;
+            if (!systemPrerequisitesByName_->lookup(name, &l))
+                systemPrerequisitesByName_->insert(name, l = SystemPrerequisiteList::create());
+            l->append(SystemPrerequisite::create(name));
+        }
+    }
+
     if (recipe_->hasChildren()) {
         for (const MetaObject *object: recipe_->children()) {
             if (object->className() == "Dependency") {
                 Ref<SystemPrerequisite> p = SystemPrerequisite::read(object, this);
-                Ref<SystemPrerequisiteList> l;
                 if (!systemPrerequisitesByName_)
                     systemPrerequisitesByName_ = SystemPrerequisitesByName::create();
+                Ref<SystemPrerequisiteList> l;
                 if (!systemPrerequisitesByName_->lookup(p->name(), &l))
                     systemPrerequisitesByName_->insert(p->name(), l = SystemPrerequisiteList::create());
                 else

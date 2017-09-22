@@ -11,10 +11,22 @@
 
 namespace ccbuild {
 
+Ref<SystemPrerequisite> SystemPrerequisite::create(String name)
+{
+    return new SystemPrerequisite(name);
+}
+
 Ref<SystemPrerequisite> SystemPrerequisite::read(const MetaObject *object, BuildPlan *plan)
 {
     return new SystemPrerequisite(object, plan);
 }
+
+SystemPrerequisite::SystemPrerequisite(String name):
+    name_(name),
+    origName_(name),
+    optional_(false),
+    includeTest_(StringList::create())
+{}
 
 SystemPrerequisite::SystemPrerequisite(const MetaObject *object, BuildPlan *plan):
     name_(object->value("name")),
