@@ -151,8 +151,8 @@ Ref<Job> GnuToolChain::createCompileLinkJob(const BuildPlan *plan, const Module 
     appendCompileOptions(args, plan);
     if (plan->linkStatic()) args << "-static";
     args << "-pthread";
-    appendLinkOptions(args, plan);
     args << module->sourcePath();
+    appendLinkOptions(args, plan);
     String command = args->join(" ");
     return Job::create(command);
 }
@@ -361,7 +361,7 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
             args << plan->customLinkFlags()->at(i);
     }
 
-    args << "-Wl,--no-as-needed";
+    args << "-Wl,--no-as-needed"; // FIXME: only for Plugins
 
     StringList *libraryPaths = plan->libraryPaths();
     StringList *libraries = plan->libraries();
