@@ -20,6 +20,7 @@ public:
     bool run();
     bool installTool(Module *module);
     bool installApplicationOrLibrary();
+    bool installPkgConfig();
 };
 
 } // namespace ccbuild

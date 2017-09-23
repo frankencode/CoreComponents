@@ -83,9 +83,6 @@ protected:
         Ref<MetaProtocol> newProtocol;
         if (!protocol) protocol = newProtocol = MetaProtocol::create();
         const char *stopClasses[] = {
-            "PrePrepare",   "PostPrepare",
-            "PreConfigure", "PostConfigure",
-            "PreAnalyse",   "PostAnalyse",
             "PreBuild",     "PostBuild",
             "PreClean",     "PostClean",
             "PreInstall",   "PostInstall",
@@ -126,6 +123,8 @@ protected:
 
         insert("query", "");
         insert("query-all", false);
+
+        insert("pkg-config", false);
     }
 };
 

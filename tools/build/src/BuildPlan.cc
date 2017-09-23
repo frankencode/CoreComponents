@@ -198,24 +198,6 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
                 usage_->read(object, this);
                 BuildParameters::readSpecific(usage_);
             }
-            else if (object->className() == "PrePrepare") {
-                preparationStage_.preCommands()->append(String(object->value("execute")));
-            }
-            else if (object->className() == "PostPrepare") {
-                preparationStage_.postCommands()->append(String(object->value("execute")));
-            }
-            else if (object->className() == "PreConfigure") {
-                configureStage_.preCommands()->append(String(object->value("execute")));
-            }
-            else if (object->className() == "PostConfigure") {
-                configureStage_.postCommands()->append(String(object->value("execute")));
-            }
-            else if (object->className() == "PreAnalyse") {
-                analyseStage_.preCommands()->append(String(object->value("execute")));
-            }
-            else if (object->className() == "PostAnalyse") {
-                analyseStage_.postCommands()->append(String(object->value("execute")));
-            }
             else if (object->className() == "PreBuild") {
                 compileLinkStage_.preCommands()->append(String(object->value("execute")));
             }
@@ -316,6 +298,11 @@ int BuildPlan::run()
     if (options_ & Configure)
         return configureStage()->success() ? 0 : 1;
 
+    if (recipe_->value("pkg-config")) {
+        fout() << toolChain()->generatePkgConfig(this);
+        return 0;
+    }
+
     if (!analyseStage()->run()) return 1;
 
     if (options_ & Clean) return !cleanStage()->run();
@@ -335,6 +322,11 @@ int BuildPlan::run()
     if (recipe_->value("install")) return !installStage()->run();
 
     return 0;
+}
+
+String BuildPlan::description() const
+{
+    return recipe_->value("description");
 }
 
 String BuildPlan::sourcePath(String source) const

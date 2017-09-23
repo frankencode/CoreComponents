@@ -157,13 +157,21 @@ Ref<Job> GnuToolChain::createCompileLinkJob(const BuildPlan *plan, const Module 
     return Job::create(command);
 }
 
+String GnuToolChain::targetName(const BuildPlan *plan) const
+{
+    String name = plan->name();
+    if (plan->options() & BuildPlan::Library) {
+        if (!plan->name()->beginsWith("lib"))
+            name = "lib" + name;
+    }
+    return name;
+}
+
 String GnuToolChain::linkName(const BuildPlan *plan) const
 {
-    String name;
+    String name = targetName(plan);
     if (plan->options() & BuildPlan::Library)
-        name = "lib" + plan->name() + ".so." + plan->version();
-    else
-        name = plan->name();
+        name = name + ".so." + plan->version();
     return name;
 }
 
@@ -277,12 +285,7 @@ String GnuToolChain::libIncludePrefix(const BuildPlan *plan) const
 
 String GnuToolChain::bundlePrefix(const BuildPlan *plan) const
 {
-    String name;
-    if (plan->options() & BuildPlan::Library)
-        name = "lib" + plan->name();
-    else
-        name = plan->name();
-    return plan->installPrefix()->expandPath("share")->expandPath(name);
+    return plan->installPrefix()->expandPath("share")->expandPath(targetName(plan));
 }
 
 bool GnuToolChain::createSymlinks(const BuildPlan *plan) const
@@ -326,6 +329,51 @@ void GnuToolChain::cleanAliasSymlinks(const BuildPlan *plan, String appName) con
         plan->shell()->unlink(aliasName);
 }
 
+String GnuToolChain::pkgConfigName(const BuildPlan *plan) const
+{
+    return targetName(plan) + ".pc";
+}
+
+String GnuToolChain::pkgConfigInstallDirPath(const BuildPlan *plan) const
+{
+    return installDirPath(plan)->expandPath("pkgconfig");
+}
+
+String GnuToolChain::generatePkgConfig(const BuildPlan *plan) const
+{
+    bool hasLibInclude = Dir::exists(plan->projectPath()->extendPath("libinclude"));
+    Format f;
+    f << "prefix=" << plan->installPrefix() << nl;
+    f << "exec_prefix=${prefix}" << nl;
+    f << "libdir=" << installDirPath(plan) << nl;
+    f << "includedir=${prefix}/include" << nl;
+    if (hasLibInclude)
+        f << "libincludedir=${libdir}/" << targetName(plan) << "/include" << nl;
+    f << nl;
+
+    f << "Name: " << targetName(plan) << nl;
+    f << "Description: " << plan->description() << nl;
+    f << "Version: " << plan->version() << nl;
+    f << "Libs: -L${libdir} -l" << plan->name();
+    if (plan->usage()) {
+        String customFlags = plan->usage()->customLinkFlags()->join(" ");
+        if (customFlags != "")
+            f << " " << customFlags;
+    }
+    f << nl;
+
+    f << "Cflags: -I${includedir}";
+    if (hasLibInclude)
+        f << " -I${libincludedir}";
+    if (plan->usage()) {
+        String customFlags = plan->usage()->customCompileFlags()->join(" ");
+        if (customFlags != "")
+            f << " " << customFlags;
+    }
+    f << nl;
+    return f;
+}
+
 void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) const
 {
     if (plan->options() & BuildPlan::Debug) args << "-g";
@@ -361,7 +409,7 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
             args << plan->customLinkFlags()->at(i);
     }
 
-    args << "-Wl,--no-as-needed"; // FIXME: only for Plugins
+    args << "-Wl,--no-as-needed"; // FIXME remove starting from v0.14.0
 
     StringList *libraryPaths = plan->libraryPaths();
     StringList *libraries = plan->libraries();
