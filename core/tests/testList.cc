@@ -68,10 +68,10 @@ class Sorting: public TestCase
         CC_VERIFY(list2->count() == list->count());
         for (int i = 0; i < list2->count() - 1; ++i)
             CC_VERIFY(list2->at(i) <= list2->at(i + 1));
-        Ref<IntList> list3 = list->unique();
+        /*Ref<IntList> list3 = list->unique();
         print(list3);
         for (int i = 0; i < list3->count() - 1; ++i)
-            CC_VERIFY(list3->at(i) < list3->at(i + 1));
+            CC_VERIFY(list3->at(i) < list3->at(i + 1));*/
     }
 };
 

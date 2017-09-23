@@ -22,15 +22,15 @@ class OrdinalNode: public BinaryNode
 public:
     typedef ItemType Item;
 
-    OrdinalNode()
-        : item_(Item())
+    OrdinalNode():
+        item_(Item())
     {}
-    OrdinalNode(const Item &item)
-        : item_(item)
+    OrdinalNode(const Item &item):
+        item_(item)
     {}
-    OrdinalNode(const OrdinalNode &kb)
-        : BinaryNode(kb),
-          item_(kb.item_)
+    OrdinalNode(const OrdinalNode &kb):
+        BinaryNode(kb),
+        item_(kb.item_)
     {}
 
     inline OrdinalNode *left() const { return static_cast<OrdinalNode *>(left_); };
@@ -94,9 +94,9 @@ protected:
 };
 
 template<class Node>
-OrdinalTree<Node>::OrdinalTree(int n)
-    : cachedNode_(0),
-      root_(0)
+OrdinalTree<Node>::OrdinalTree(int n):
+    cachedNode_(0),
+    root_(0)
 {
     if (n <= 0) return;
 
@@ -142,8 +142,8 @@ OrdinalTree<Node>::OrdinalTree(int n)
 }
 
 template<class Node>
-OrdinalTree<Node>::OrdinalTree(const OrdinalTree &b)
-    : cachedNode_(0)
+OrdinalTree<Node>::OrdinalTree(const OrdinalTree &b):
+    cachedNode_(0)
 {
     root_ = clone(b.root_);
 }

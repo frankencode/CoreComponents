@@ -122,6 +122,12 @@ bool ConfigureStage::run()
         }
     }
 
+    List<String>::makeUnique(plan()->includePaths());
+    List<String>::makeUnique(plan()->libraryPaths());
+    List<String>::makeUnique(plan()->customCompileFlags());
+    List<String>::makeUnique(plan()->customLinkFlags());
+    List<String>::makeUnique(plan()->libraries());
+
     return success_;
 }
 
