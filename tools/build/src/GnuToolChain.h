@@ -39,6 +39,7 @@ public:
     virtual Ref<Job> createCompileJob(const BuildPlan *plan, const Module *module) const override;
     virtual Ref<Job> createCompileLinkJob(const BuildPlan *plan, const Module *module) const override;
 
+    virtual String targetName(const BuildPlan *plan) const override; // FIXME: does not need to be public
     virtual String linkName(const BuildPlan *plan) const override;
     virtual String linkCommand(const BuildPlan *plan) const override;
     virtual Ref<Job> createLinkJob(const BuildPlan *plan) const override;
@@ -58,6 +59,10 @@ public:
 
     virtual void createAliasSymlinks(const BuildPlan *plan, String appName) const override;
     virtual void cleanAliasSymlinks(const BuildPlan *plan, String appName) const override;
+
+    virtual String pkgConfigName(const BuildPlan *plan) const override;
+    virtual String pkgConfigInstallDirPath(const BuildPlan *plan) const override;
+    virtual String generatePkgConfig(const BuildPlan *plan) const override;
 
 protected:
     GnuToolChain(const BuildPlan *plan);

@@ -6,6 +6,8 @@
  *
  */
 
+#include <cc/Dir>
+#include <cc/File>
 #include "CwdGuard.h"
 #include "BuildPlan.h"
 #include "InstallStage.h"

@@ -85,6 +85,7 @@ public:
     bool goForBuild() const;
 
     inline String name() const { return name_; }
+    String description() const;
     inline StringList *alias() const { return alias_; }
     inline Version version() const { return version_; }
 

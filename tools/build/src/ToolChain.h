@@ -36,6 +36,7 @@ public:
     virtual Ref<Job> createCompileJob(const BuildPlan *plan, const Module *module) const = 0;
     virtual Ref<Job> createCompileLinkJob(const BuildPlan *plan, const Module *module) const = 0;
 
+    virtual String targetName(const BuildPlan *plan) const = 0;
     virtual String linkName(const BuildPlan *plan) const = 0;
     virtual String linkCommand(const BuildPlan *plan) const = 0;
     virtual Ref<Job> createLinkJob(const BuildPlan *plan) const = 0;
@@ -55,6 +56,10 @@ public:
 
     virtual void createAliasSymlinks(const BuildPlan *plan, String appName) const = 0;
     virtual void cleanAliasSymlinks(const BuildPlan *plan, String appName) const = 0;
+
+    virtual String pkgConfigName(const BuildPlan *plan) const = 0;
+    virtual String pkgConfigInstallDirPath(const BuildPlan *plan) const = 0;
+    virtual String generatePkgConfig(const BuildPlan *plan) const = 0;
 };
 
 } // namespace ccbuild
