@@ -11,6 +11,7 @@
 #include <cc/containers>
 #include <cc/OrdinalTree>
 #include <cc/Heap>
+#include <cc/Set>
 
 namespace cc {
 
@@ -139,18 +140,22 @@ public:
       * \param index list index#
       * \param item new item value
       */
-    inline void insert(int index, const Item &item) { push(index, item); }
+    inline void insertAt(int index, const Item &item) { push(index, item); }
 
     /** Remove an item from a certain position
       * \param index list index
       * \param item returns the item value
       */
-    inline void remove(int index, Item *item) { pop(index, item); }
+    inline void removeAt(int index, Item *item) { pop(index, item); }
 
     /** Remove an item at a given position
       * \param index list index
       */
-    inline void remove(int index) { pop(index); }
+    inline void removeAt(int index) { pop(index); }
+
+    inline void insert(int index, const Item &item) { push(index, item); }
+    inline void remove(int index, Item *item) { pop(index, item); } // FIXME: obsolete
+    inline void remove(int index) { pop(index); } // FIXME: obsolete
 
     /** Insert a new item at head of the list
       * \param item new item
@@ -233,7 +238,7 @@ public:
     }
 
     /** Create a reversed copy of this list
-      * return reversed list
+      * \return reversed list
       */
     Ref<List> reverse() const
     {
@@ -243,11 +248,26 @@ public:
         return result;
     }
 
+    #if 0
     /** Create a sorted copy of this list with duplicates eliminated
       * \param order sort order
       * \return newly sorted list
       */
     Ref<List> unique(SortOrder order = Ascending) const { return sort(order, true); }
+    #endif
+
+    /** Remove redundant entries from the list
+      * \param list list to eliminate doubles from
+      * \TODO: add compare function template parameter
+      */
+    static void makeUnique(List *list)
+    {
+        Ref< Set<T> > set = Set<T>::create();
+        for (int i = 0; i < list->count();) {
+            if (set->insert(list->at(i))) ++i;
+            else list->removeAt(i);
+        }
+    }
 
     /** Convert to a list of different item type
       * \tparam T2 the target item type
