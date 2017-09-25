@@ -119,6 +119,9 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     version_ = recipe_->value("version");
     installRoot_ = recipe_->value("root");
     installPrefix_ = recipe_->value("prefix");
+    if (installPrefix_ == "") {
+        installPrefix_ = (installRoot_ == "/") ? "/usr/local" : "/usr";
+    }
     testArgs_ = recipe_->value("test-args");
 
     checkDuplicateTargetNames();
