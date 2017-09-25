@@ -15,12 +15,17 @@ namespace ccbuild {
 class InstallStage: public BuildStage
 {
 public:
-    InstallStage(BuildPlan *plan): BuildStage(plan) {}
+    InstallStage(BuildPlan *plan): BuildStage(plan), linkerCacheDirty_(false) {}
 
     bool run();
     bool installTool(Module *module);
     bool installApplicationOrLibrary();
     bool installPkgConfig();
+
+    bool linkerCacheDirty() const { return linkerCacheDirty_; }
+
+private:
+    bool linkerCacheDirty_;
 };
 
 } // namespace ccbuild

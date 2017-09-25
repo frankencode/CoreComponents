@@ -61,6 +61,8 @@ public:
     virtual String pkgConfigInstallDirPath(const BuildPlan *plan) const = 0;
     virtual String pkgConfig(const BuildPlan *plan) const = 0;
     virtual void generatePkgConfig(const BuildPlan *plan) const = 0;
+
+    virtual bool refreshLinkerCache(const BuildPlan *plan) const = 0;
 };
 
 } // namespace ccbuild

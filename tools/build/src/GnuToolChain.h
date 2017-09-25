@@ -65,6 +65,8 @@ public:
     virtual String pkgConfig(const BuildPlan *plan) const override;
     virtual void generatePkgConfig(const BuildPlan *plan) const override;
 
+    virtual bool refreshLinkerCache(const BuildPlan *plan) const override;
+
 protected:
     GnuToolChain(const BuildPlan *plan);
     virtual ~GnuToolChain();

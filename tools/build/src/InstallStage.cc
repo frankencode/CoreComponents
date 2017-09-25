@@ -30,6 +30,7 @@ bool InstallStage::run()
     for (BuildPlan *prerequisite: plan()->prerequisites()) {
         if (!prerequisite->installStage()->run())
             return success_ = false;
+        linkerCacheDirty_ = linkerCacheDirty_ || prerequisite->installStage()->linkerCacheDirty_;
     }
 
     if (plan()->options() & BuildPlan::Package) return success_ = true;
@@ -68,6 +69,7 @@ bool InstallStage::installApplicationOrLibrary()
     if (options & BuildPlan::Library)
     {
         if (!plan()->linkStatic()) {
+            linkerCacheDirty_ = true;
             CwdGuard guard(installDirPath, shell());
             toolChain()->createLibrarySymlinks(plan(), product);
         }
