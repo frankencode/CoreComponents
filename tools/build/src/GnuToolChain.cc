@@ -423,6 +423,13 @@ void GnuToolChain::generatePkgConfig(const BuildPlan *plan) const
     File::save(pkgConfigName(plan), pkgConfig(plan));
 }
 
+bool GnuToolChain::refreshLinkerCache(const BuildPlan *plan) const
+{
+    String libInstallPath = plan->installPath("lib");
+    if (isMultiArch_) libInstallPath = libInstallPath->extendPath(machine_);
+    return plan->shell()->run("ldconfig " + libInstallPath);
+}
+
 void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) const
 {
     if (plan->options() & BuildPlan::Debug) args << "-g";

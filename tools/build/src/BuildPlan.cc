@@ -17,7 +17,7 @@
 #include <cc/regexp/Glob>
 #include <cc/meta/yason>
 #include <cc/meta/JsonWriter>
-#include <cc/debug>
+#include <cc/debug> // DEBUG
 #include "BuildMap.h"
 #include "DependencyCache.h"
 #include "ConfigureShell.h"
@@ -329,7 +329,13 @@ int BuildPlan::run()
             return testRunStage()->status();
     }
 
-    if (recipe_->value("install")) return !installStage()->run();
+    if (recipe_->value("install")) {
+        if (!installStage()->run()) return 1;
+        if (installStage()->linkerCacheDirty()) {
+            if (!toolChain()->refreshLinkerCache(this))
+                return 1;
+        }
+    }
 
     return 0;
 }
