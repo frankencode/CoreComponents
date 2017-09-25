@@ -55,28 +55,25 @@ bool UninstallStage::uninstallApplicationOrLibrary()
     String installDirPath = toolChain()->installDirPath(plan());
     String installFilePath = installDirPath->expandPath(product);
 
-    if (!plan()->shell()->unlink(installFilePath)) return false;
+    if (!shell()->unlink(installFilePath)) return false;
 
     if ((options & BuildPlan::Library) && !plan()->linkStatic()) {
         {
             CwdGuard guard(installDirPath, plan()->shell());
             toolChain()->cleanLibrarySymlinks(plan(), product);
         }
-        if (!
-            shell()->unlinkAll(
-                plan()->projectPath()->extendPath("include"),
-                toolChain()->includePrefix(plan())
-            )
-        )
-            return false;
+        shell()->unlinkAll(
+            plan()->projectPath()->extendPath("include"),
+            toolChain()->includePrefix(plan())
+        );
+        shell()->unlinkAll(
+            plan()->projectPath()->extendPath("libinclude"),
+            toolChain()->libIncludePrefix(plan())
+        );
 
-        if (!
-            shell()->unlinkAll(
-                plan()->projectPath()->extendPath("libinclude"),
-                toolChain()->libIncludePrefix(plan())
-            )
-        )
-            return false;
+        String pcName = toolChain()->pkgConfigName(plan());
+        String pcInstallPath = toolChain()->pkgConfigInstallDirPath(plan())->expandPath(pcName);
+        plan()->shell()->unlink(pcInstallPath);
     }
 
     if ((options & BuildPlan::Application) && plan()->alias()->count() > 0) {
@@ -84,7 +81,7 @@ bool UninstallStage::uninstallApplicationOrLibrary()
         toolChain()->cleanAliasSymlinks(plan(), product);
     }
 
-    return false;
+    return true;
 }
 
 } // namespace ccbuild

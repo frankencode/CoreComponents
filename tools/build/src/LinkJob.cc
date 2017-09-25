@@ -20,8 +20,10 @@ LinkJob::LinkJob(const BuildPlan *plan):
 bool LinkJob::run()
 {
     if (!Job::run()) return false;
-    File::save(plan_->previousLinkCommandPath(), command());
-    return plan_->toolChain()->createSymlinks(plan_);
+    File::save(plan()->previousLinkCommandPath(), command());
+    if (!plan()->toolChain()->createSymlinks(plan())) return false;
+    if (plan()->options() & BuildPlan::Library) plan()->toolChain()->generatePkgConfig(plan());
+    return true;
 }
 
 } // namespace ccbuild

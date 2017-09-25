@@ -59,7 +59,8 @@ public:
 
     virtual String pkgConfigName(const BuildPlan *plan) const = 0;
     virtual String pkgConfigInstallDirPath(const BuildPlan *plan) const = 0;
-    virtual String generatePkgConfig(const BuildPlan *plan) const = 0;
+    virtual String pkgConfig(const BuildPlan *plan) const = 0;
+    virtual void generatePkgConfig(const BuildPlan *plan) const = 0;
 };
 
 } // namespace ccbuild

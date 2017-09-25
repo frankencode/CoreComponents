@@ -24,6 +24,8 @@ public:
 private:
     LinkJob(const BuildPlan *plan);
 
+    inline const BuildPlan *plan() const { return plan_; }
+
     const BuildPlan *plan_;
 };
 
