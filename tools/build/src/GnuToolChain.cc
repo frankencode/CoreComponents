@@ -425,9 +425,15 @@ void GnuToolChain::generatePkgConfig(const BuildPlan *plan) const
 
 bool GnuToolChain::refreshLinkerCache(const BuildPlan *plan) const
 {
+    if (plan->installRoot() != "/") return true;
     String libInstallPath = plan->installPath("lib");
     if (isMultiArch_) libInstallPath = libInstallPath->extendPath(machine_);
-    return plan->shell()->run("ldconfig " + libInstallPath);
+    if (!libInstallPath->isAbsolutePath()) libInstallPath = libInstallPath->absolutePathRelativeTo(Process::cwd());
+    Format attr;
+    attr << "ldconfig";
+    attr << libInstallPath;
+    String command = attr->join(" ");
+    return plan->shell()->run(command);
 }
 
 void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) const
