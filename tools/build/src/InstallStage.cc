@@ -87,6 +87,18 @@ bool InstallStage::installApplicationOrLibrary()
             )
         )
             return false;
+
+        String pcName = toolChain()->pkgConfigName(plan());
+        String pcInstallPath = toolChain()->pkgConfigInstallDirPath(plan())->expandPath(pcName);
+        if (File::exists(plan()->userPkgConfigPath())) {
+            if (!shell()->install(plan()->userPkgConfigPath(), pcInstallPath))
+                return false;
+        }
+        else {
+            if (!File::exists(pcName)) toolChain()->generatePkgConfig(plan());
+            if (!shell()->install(pcName, pcInstallPath))
+                return false;
+        }
     }
 
     for (String bundlePath: plan()->bundle()) {

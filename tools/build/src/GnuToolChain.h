@@ -62,7 +62,8 @@ public:
 
     virtual String pkgConfigName(const BuildPlan *plan) const override;
     virtual String pkgConfigInstallDirPath(const BuildPlan *plan) const override;
-    virtual String generatePkgConfig(const BuildPlan *plan) const override;
+    virtual String pkgConfig(const BuildPlan *plan) const override;
+    virtual void generatePkgConfig(const BuildPlan *plan) const override;
 
 protected:
     GnuToolChain(const BuildPlan *plan);

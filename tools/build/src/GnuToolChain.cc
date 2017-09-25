@@ -339,8 +339,10 @@ String GnuToolChain::pkgConfigInstallDirPath(const BuildPlan *plan) const
     return installDirPath(plan)->expandPath("pkgconfig");
 }
 
-String GnuToolChain::generatePkgConfig(const BuildPlan *plan) const
+String GnuToolChain::pkgConfig(const BuildPlan *plan) const
 {
+    if (!(plan->options() & BuildPlan::Library)) return "";
+
     bool hasLibInclude = Dir::exists(plan->projectPath()->extendPath("libinclude"));
     Format f;
     f << "prefix=" << plan->installPrefix() << nl;
@@ -362,6 +364,48 @@ String GnuToolChain::generatePkgConfig(const BuildPlan *plan) const
     }
     f << nl;
 
+    if (plan->prerequisites()->count() > 0) {
+        auto requiresList = List<const BuildPlan *>::create();
+        for (const BuildPlan *prerequisite: plan->prerequisites()) {
+            if (prerequisite->options() & BuildPlan::Package) {
+                for (const BuildPlan *child: prerequisite->prerequisites()) {
+                    if (child->options() & BuildPlan::Library)
+                        requiresList->append(child);
+                }
+            }
+            else if (prerequisite->options() & BuildPlan::Library) {
+                requiresList->append(prerequisite);
+            }
+        }
+        if (requiresList->count() > 0) {
+            f << "Requires:";
+            for (const BuildPlan *prerequisite: requiresList) {
+                f << " " << targetName(prerequisite);
+            }
+            f << nl;
+        }
+    }
+
+    if (plan->systemPrerequisitesByName()) {
+        bool gotPkgConfigPrerequisites = false;
+        for (int i = 0; i < plan->systemPrerequisitesByName()->count(); ++i) {
+            const SystemPrerequisiteList *prerequisiteList = plan->systemPrerequisitesByName()->valueAt(i);
+            for (const SystemPrerequisite *prerequisite: prerequisiteList) {
+                if (prerequisite->autoConfigure()) {
+                    if (!gotPkgConfigPrerequisites) {
+                        gotPkgConfigPrerequisites = true;
+                        f << "Requires.private: ";
+                    }
+                    else {
+                        f << " ";
+                    }
+                    f << prerequisite->name();
+                }
+            }
+        }
+        if (gotPkgConfigPrerequisites) f << nl;
+    }
+
     f << "Cflags: -I${includedir}";
     if (hasLibInclude)
         f << " -I${libincludedir}";
@@ -372,6 +416,11 @@ String GnuToolChain::generatePkgConfig(const BuildPlan *plan) const
     }
     f << nl;
     return f;
+}
+
+void GnuToolChain::generatePkgConfig(const BuildPlan *plan) const
+{
+    File::save(pkgConfigName(plan), pkgConfig(plan));
 }
 
 void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) const

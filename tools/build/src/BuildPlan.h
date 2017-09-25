@@ -75,6 +75,7 @@ public:
     inline bool isSystemSource() const { return projectPath_->beginsWith(systemSourcePath()); }
     inline static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
     inline String recipePath() const { return recipePath_; }
+    inline String userPkgConfigPath() const { return projectPath_->expandPath(toolChain_->pkgConfigName(this)); }
     inline String scope() const { return scope_; }
     inline String modulePath() const { return modulePath_; }
     inline MetaObject *recipe() const { return recipe_; }

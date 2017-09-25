@@ -299,7 +299,17 @@ int BuildPlan::run()
         return configureStage()->success() ? 0 : 1;
 
     if (recipe_->value("pkg-config")) {
-        fout() << toolChain()->generatePkgConfig(this);
+        if (options_ & Package) {
+            for (const BuildPlan *prerequisite: prerequisites_) {
+                if (prerequisite->options_ & Library) {
+                    fout() << toolChain()->pkgConfig(prerequisite);
+                    break;
+                }
+            }
+        }
+        else if (options_ & Library) {
+            fout() << toolChain()->pkgConfig(this);
+        }
         return 0;
     }
 
