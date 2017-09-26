@@ -26,9 +26,7 @@ protected:
         insert("optimize", "");
         insert("static", false);
 
-        insert("include-paths", Ref<StringList>());
-        insert("library-paths", Ref<StringList>());
-        insert("link", Ref<StringList>());
+        insert("link", Ref<StringList>()); // FIXME: obsolete starting from v0.14.0
 
         insert("compile-flags", Ref<StringList>());
         insert("link-flags", Ref<StringList>());
@@ -141,9 +139,7 @@ protected:
     {
         insert("name", "");
         insert("optional", false);
-
-        insert("include-paths-configure", "");
-        insert("library-paths-configure", "");
+        insert("cascade", false);
 
         insert("compile-flags-configure", "");
         insert("link-flags-configure", "");
@@ -152,7 +148,7 @@ protected:
         insert("version-min", Version());
         insert("version-max", Version());
 
-        insert("include-test", StringList::create());
+        insert("include-test", StringList::create()); // FIXME: obsolete starting from v0.14.0
     }
 };
 
@@ -256,7 +252,7 @@ public:
 protected:
     static Ref<MetaProtocol> createProtocol() {
         Ref<MetaProtocol> protocol = MetaProtocol::create();
-        protocol->define<SpecificBuildParametersPrototype>("Usage");
+        protocol->define<SpecificBuildParametersPrototype>("Usage"); // FIXME: obsolete starting from v0.14.0
         return protocol;
     }
 

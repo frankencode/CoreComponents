@@ -141,7 +141,6 @@ private:
     void readPredicate(const MetaObject *object);
     void checkDuplicateTargetNames();
 
-    void use(BuildPlan *plan);
     String findPrerequisite(String prerequisitePath) const;
     void readPrerequisites();
     void findVersion();

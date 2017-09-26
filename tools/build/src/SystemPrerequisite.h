@@ -24,11 +24,9 @@ public:
 
     inline String name() const { return name_; }
     inline bool optional() const { return optional_; }
+    inline bool cascade() const { return cascade_; }
 
-    bool autoConfigure() const;
-
-    inline String includePathConfigure() const { return includePathConfigure_; }
-    inline String libraryPathConfigure() const { return libraryPathConfigure_; }
+    inline bool autoConfigure() const { return autoConfigure_; }
 
     inline String compileFlagsConfigure() const { return compileFlagsConfigure_; }
     inline String linkFlagsConfigure() const { return linkFlagsConfigure_; }
@@ -46,9 +44,7 @@ private:
     String name_;
     String origName_;
     bool optional_;
-
-    String includePathConfigure_;
-    String libraryPathConfigure_;
+    bool cascade_;
 
     String compileFlagsConfigure_;
     String linkFlagsConfigure_;
@@ -57,7 +53,8 @@ private:
     Version versionMin_;
     Version versionMax_;
 
-    Ref<StringList> includeTest_; // FIXME: remove include tests once 'configure' tools are functional
+    Ref<StringList> includeTest_; // FIXME: obsolete starting from v0.14.0
+    bool autoConfigure_;
 };
 
 typedef List< Ref<SystemPrerequisite> > SystemPrerequisiteList;

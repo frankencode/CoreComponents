@@ -22,51 +22,49 @@ bool ConfigureStage::run()
 
     BuildStageGuard guard(this);
 
-    for (int i = 0; i < plan()->prerequisites()->count(); ++i) {
-        BuildPlan *other = plan()->prerequisites()->at(i);
-        if (!other->configureStage()->run()) {
+    for (BuildPlan *prerequisite: plan()->prerequisites()) {
+        if (!prerequisite->configureStage()->run()) {
             success_ = false;
             if (!(plan()->options() & BuildPlan::Package))
                 return false;
         }
+        makeUseOf(prerequisite);
     }
 
+    if (plan()->usage())
+        plan()->BuildParameters::readSpecific(plan()->usage()); // FIXME: obsolete starting from v0.14.0
+
     if (!plan()->systemPrerequisitesByName()) return success_;
+
+    bool firstLine = true;
 
     for (int i = 0; i < plan()->systemPrerequisitesByName()->count(); ++i)
     {
         String name = plan()->systemPrerequisitesByName()->keyAt(i);
         SystemPrerequisiteList *prerequisiteList = plan()->systemPrerequisitesByName()->valueAt(i);
 
-        for (int j = 0; j < prerequisiteList->count(); ++j)
+        for (SystemPrerequisite *prerequisite: prerequisiteList)
         {
-            SystemPrerequisite *prerequisite = prerequisiteList->at(j);
-
-            Ref<StringList> includePaths;
-            Ref<StringList> libraryPaths;
-            Ref<StringList> compileFlags;
-            Ref<StringList> linkFlags;
             Version version;
 
             if (prerequisite->autoConfigure()) {
-                includePaths = StringList::create();
-                libraryPaths = StringList::create();
-                compileFlags = configureShell(String("pkg-config --cflags ") + prerequisite->name())->simplify()->split(' ');
-                linkFlags    = configureShell(String("pkg-config --libs ") + prerequisite->name())->simplify()->split(' ');
-                version      = configureShell(String("pkg-config --modversion ") + prerequisite->name());
+                prerequisite->customCompileFlags()->appendList(
+                    configureShell(String("pkg-config --cflags ") + prerequisite->name())->simplify()->split(' ')
+                );
+                prerequisite->customLinkFlags()->appendList(
+                    configureShell(String("pkg-config --libs ") + prerequisite->name())->simplify()->split(' ')
+                );
+                version = configureShell(String("pkg-config --modversion ") + prerequisite->name());
             }
             else {
-                includePaths = configureShell(prerequisite->includePathConfigure())->simplify()->split(' ');
-                libraryPaths = configureShell(prerequisite->libraryPathConfigure())->simplify()->split(' ');
-                compileFlags = configureShell(prerequisite->compileFlagsConfigure())->simplify()->split(' ');
-                linkFlags    = configureShell(prerequisite->linkFlagsConfigure())->simplify()->split(' ');
-                version      = configureShell(prerequisite->versionConfigure());
+                prerequisite->customCompileFlags()->appendList(
+                    configureShell(prerequisite->compileFlagsConfigure())->simplify()->split(' ')
+                );
+                prerequisite->customLinkFlags()->appendList(
+                    configureShell(prerequisite->linkFlagsConfigure())->simplify()->split(' ')
+                );
+                version = configureShell(prerequisite->versionConfigure());
             }
-
-            includePaths->appendList(prerequisite->includePaths());
-            libraryPaths->appendList(prerequisite->libraryPaths());
-            compileFlags->appendList(prerequisite->customCompileFlags());
-            linkFlags->appendList(prerequisite->customLinkFlags());
 
             try {
                 Version versionMin = prerequisite->versionMin();
@@ -80,7 +78,7 @@ bool ConfigureStage::run()
                         throw(String(Format() << "at most version " << versionMax << " is supported (version " << version << " detected)"));
                 }
 
-                if (prerequisite->includeTest()->count() > 0) {
+                if (prerequisite->includeTest()->count() > 0) { // FIXME: obsolete starting from v0.14.0
                     if (!toolChain()->testInclude(plan(), prerequisite->includeTest()))
                         throw(String("include test failed"));
                 }
@@ -102,31 +100,26 @@ bool ConfigureStage::run()
             }
 
             if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
-                if (includePaths->count() > 0)
-                    ferr() << name << ".include-paths = " << includePaths->join(" ") << nl;
-                if (libraryPaths->count() > 0)
-                    ferr() << name << ".library-paths = " << libraryPaths->join(" ") << nl;
-                if (compileFlags->count() > 0)
-                    ferr() << name << ".compile-flags = " << compileFlags->join(" ") << nl;
-                if (linkFlags->count() > 0)
-                    ferr() << name << ".link-flags = " << linkFlags->join(" ") << nl;
+                if (firstLine) {
+                    firstLine = false;
+                    ferr() << plan()->projectPath() << ":" << nl;
+                }
+                if (prerequisite->customLinkFlags()->count() > 0)
+                    ferr() << "  " << name << ".compile-flags = " << prerequisite->customLinkFlags()->join(" ") << nl;
+                if (prerequisite->customLinkFlags()->count() > 0)
+                    ferr() << "  " << name << ".link-flags = " << prerequisite->customLinkFlags()->join(" ") << nl;
                 if (Version::isValid(version))
-                    ferr() << name << ".version = " << version << nl;
+                    ferr() << "  " << name << ".version = " << version << nl;
             }
 
-            plan()->includePaths()->appendList(includePaths);
-            plan()->libraryPaths()->appendList(libraryPaths);
-            plan()->customCompileFlags()->appendList(compileFlags);
-            plan()->customLinkFlags()->appendList(linkFlags);
-            plan()->libraries()->appendList(prerequisite->libraries());
+            if (prerequisite->libraries()) plan()->libraries()->appendList(prerequisite->libraries());
+            plan()->customCompileFlags()->appendList(prerequisite->customCompileFlags());
+            plan()->customLinkFlags()->appendList(prerequisite->customLinkFlags());
         }
     }
 
-    List<String>::makeUnique(plan()->includePaths());
-    List<String>::makeUnique(plan()->libraryPaths());
-    List<String>::makeUnique(plan()->customCompileFlags());
-    List<String>::makeUnique(plan()->customLinkFlags());
-    List<String>::makeUnique(plan()->libraries());
+    StringList::makeUnique(plan()->customCompileFlags());
+    StringList::makeUnique(plan()->customLinkFlags());
 
     return success_;
 }
@@ -134,6 +127,43 @@ bool ConfigureStage::run()
 String ConfigureStage::configureShell(String shellCommand)
 {
     return ConfigureShell::instance()->run(shellCommand);
+}
+
+void ConfigureStage::makeUseOf(BuildPlan *other)
+{
+    if (other->options() & BuildPlan::Library) {
+        String path = other->projectPath();
+        String defaultIncludePath = path->expandPath("include");
+        if (Dir::exists(defaultIncludePath)) {
+            if (!plan()->includePaths()->contains(defaultIncludePath))
+                plan()->includePaths()->append(defaultIncludePath);
+        }
+        else if (!plan()->includePaths()->contains(path)) {
+            plan()->includePaths()->append(path);
+        }
+        plan()->libraries()->append(other->name());
+
+        if (other->usage()) plan()->BuildParameters::readSpecific(other->usage()); // FIXME: obsolete starting from v0.14.0
+
+        if (other->systemPrerequisitesByName()) {
+            for (int i = 0; i < other->systemPrerequisitesByName()->count(); ++i)
+            {
+                SystemPrerequisiteList *prerequisiteList = other->systemPrerequisitesByName()->valueAt(i);
+
+                for (SystemPrerequisite *prerequisite: prerequisiteList)
+                {
+                    if (prerequisite->cascade()) {
+                        plan()->customCompileFlags()->appendList(prerequisite->customCompileFlags());
+                        plan()->customLinkFlags()->appendList(prerequisite->customLinkFlags());
+                    }
+                }
+            }
+        }
+    }
+    else if (other->options() & BuildPlan::Package) {
+        for (BuildPlan *prerequisite: other->prerequisites())
+            makeUseOf(prerequisite);
+    }
 }
 
 } // namespace ccbuild

@@ -52,7 +52,7 @@ int main(int argc, char **argv)
             "  -bootstrap      write bootstrap script\n"
             "  -query          query given properties (e.g. 'name,version')\n"
             "  -query-all      query all properties\n"
-            "  -pkg-config     dump package configuration file (*.pc)\n"
+            "  -pkg-config     print package configuration (*.pc)\n"
             "  -version        print %% version\n"
         ) << toolName;
     }

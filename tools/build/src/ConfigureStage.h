@@ -19,6 +19,7 @@ public:
     bool run();
 
     String configureShell(String shellCommand);
+    void makeUseOf(BuildPlan *other);
 };
 
 } // namespace ccbuild
