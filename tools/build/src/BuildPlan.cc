@@ -17,7 +17,6 @@
 #include <cc/regexp/Glob>
 #include <cc/meta/yason>
 #include <cc/meta/JsonWriter>
-#include <cc/debug> // DEBUG
 #include "BuildMap.h"
 #include "DependencyCache.h"
 #include "ConfigureShell.h"
@@ -199,7 +198,6 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
             else if (object->className() == "Usage") {
                 usage_ = BuildParameters::create();
                 usage_->read(object, this);
-                BuildParameters::readSpecific(usage_);
             }
             else if (object->className() == "PreBuild") {
                 compileLinkStage_.preCommands()->append(String(object->value("execute")));
@@ -407,28 +405,6 @@ void BuildPlan::registerLinkDerivative(Job *linkJob)
     }
 }
 
-void BuildPlan::use(BuildPlan *plan)
-{
-    if (plan->options() & Library) {
-        String path = plan->projectPath();
-        String defaultIncludePath = path->expandPath("include");
-        if (Dir::exists(defaultIncludePath)) {
-            if (!includePaths_->contains(defaultIncludePath))
-                includePaths_->append(defaultIncludePath);
-        }
-        else if (!includePaths_->contains(path)) {
-            includePaths_->append(path);
-        }
-        libraries_->append(plan->name());
-
-        if (plan->usage()) BuildParameters::readSpecific(plan->usage());
-    }
-    else if (plan->options() & Package) {
-        for (BuildPlan *prerequisite: plan->prerequisites())
-            use(prerequisite);
-    }
-}
-
 String BuildPlan::findPrerequisite(String prerequisitePath) const
 {
     if (prerequisitePath->isAbsolutePath()) {
@@ -470,7 +446,6 @@ void BuildPlan::readPrerequisites()
             throw UsageError(Format() << recipePath() << ": Failed to locate prerequisite \"" << prerequisitePath << "\"");
         Ref<BuildPlan> plan = BuildPlan::create(path);
         plan->readPrerequisites();
-        use(plan);
         prerequisites_->append(plan);
     }
 
