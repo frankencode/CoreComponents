@@ -23,10 +23,9 @@ public:
     static Ref<SystemPrerequisite> read(const MetaObject *object, BuildPlan *plan);
 
     inline String name() const { return name_; }
+    inline String origName() const { return origName_; }
     inline bool optional() const { return optional_; }
     inline bool cascade() const { return cascade_; }
-
-    inline bool autoConfigure() const { return autoConfigure_; }
 
     inline String compileFlagsConfigure() const { return compileFlagsConfigure_; }
     inline String linkFlagsConfigure() const { return linkFlagsConfigure_; }
@@ -35,7 +34,11 @@ public:
     inline Version versionMin() const { return versionMin_; }
     inline Version versionMax() const { return versionMax_; }
 
+    inline String configure() const { return configure_; }
+
     inline StringList *includeTest() const { return includeTest_; }
+
+    inline bool autoConfigure() const { return autoConfigure_; }
 
 private:
     SystemPrerequisite(String name);
@@ -52,6 +55,8 @@ private:
     String versionConfigure_;
     Version versionMin_;
     Version versionMax_;
+
+    String configure_;
 
     Ref<StringList> includeTest_; // FIXME: obsolete starting from v0.14.0
     bool autoConfigure_;

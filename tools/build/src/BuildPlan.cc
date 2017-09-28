@@ -507,27 +507,31 @@ void BuildPlan::initModules()
 
     modules_ = ModuleList::create();
 
-    Format f;
-    f << ".modules";
-    String absoulteProjectPath = projectPath_->absolutePathRelativeTo(Process::cwd());
+    String suffix;
     {
-        Format h;
-        String topLevel = sourcePrefix_->absolutePathRelativeTo(Process::cwd());
-        for (
-            String path = absoulteProjectPath;
-            path != topLevel && path != "/" && path != toolChain_->systemRoot();
-            path = path->reducePath()
-        )
-            h << path->fileName();
-        h << topLevel->fileName();
-        f << hex(crc32(h->reverse()->join("/")), 8);
+        Format f;
+        String absoulteProjectPath = projectPath_->absolutePathRelativeTo(Process::cwd());
+        {
+            Format h;
+            String topLevel = sourcePrefix_->absolutePathRelativeTo(Process::cwd());
+            for (
+                String path = absoulteProjectPath;
+                path != topLevel && path != "/" && path != toolChain_->systemRoot();
+                path = path->reducePath()
+            )
+                h << path->fileName();
+            h << topLevel->fileName();
+            f << hex(crc32(h->reverse()->join("/")), 8);
+        }
+        if (options_ & Bootstrap)
+            f << "$MACHINE";
+        else
+            f << toolChain_->machine();
+        f << absoulteProjectPath->reducePath()->fileName() + "_" + absoulteProjectPath->fileName();
+        suffix = f->join("-");
     }
-    if (options_ & Bootstrap)
-        f << "$MACHINE";
-    else
-        f << toolChain_->machine();
-    f << absoulteProjectPath->reducePath()->fileName() + "_" + absoulteProjectPath->fileName();
-    modulePath_ = f->join("-");
+    modulePath_ = ".modules-" + suffix;
+    configPath_ = ".config-" + suffix;
 
     for (BuildPlan *prerequisite: prerequisites_)
         prerequisite->initModules();

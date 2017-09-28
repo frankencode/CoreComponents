@@ -40,11 +40,14 @@ SystemPrerequisite::SystemPrerequisite(const MetaObject *object, BuildPlan *plan
     versionConfigure_(object->value("version-configure")),
     versionMin_(object->value("version-min")),
     versionMax_(object->value("version-max")),
+    configure_(object->value("configure")),
     includeTest_(object->value("include-test"))
 {
     BuildParameters::read(object, plan);
     if (name_ == "" && libraries_->count() == 1)
         name_ = libraries_->at(0);
+    //if (name_ == "" && configure_ != "")
+    //    name_ = configure_->baseName();
     if (name_ == "") name_ = hex(uint64_t(this));
 
     autoConfigure_ =
@@ -54,6 +57,7 @@ SystemPrerequisite::SystemPrerequisite(const MetaObject *object, BuildPlan *plan
         versionConfigure_      == "" &&
         customCompileFlags_    == "" &&
         customLinkFlags_       == "" &&
+        configure_             == "" &&
         includeTest_->count()  == 0;
 }
 
