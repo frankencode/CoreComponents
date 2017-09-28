@@ -1,7 +1,8 @@
 Library {
     name: cccore
     Dependency {
-        compile-flags: [ -std=c++11 ] // [ -DCC_MEM_ACCOUNTING ]
+        configure: config/cxx11.cc
         cascade: true
     }
+    // compile-flags: [-DCC_MEM_ACCOUNTING ]
 }

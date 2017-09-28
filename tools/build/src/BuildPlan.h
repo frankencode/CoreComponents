@@ -78,6 +78,7 @@ public:
     inline String userPkgConfigPath() const { return projectPath_->expandPath(toolChain_->pkgConfigName(this)); }
     inline String scope() const { return scope_; }
     inline String modulePath() const { return modulePath_; }
+    inline String configPath() const { return configPath_; }
     inline MetaObject *recipe() const { return recipe_; }
 
     inline int options() const { return options_; }
@@ -157,6 +158,7 @@ private:
     String recipePath_;
     String scope_;
     String modulePath_;
+    String configPath_;
     Ref<MetaObject> recipe_;
 
     int options_;

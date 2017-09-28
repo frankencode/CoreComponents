@@ -253,10 +253,23 @@ bool GnuToolChain::testInclude(const BuildPlan *plan, const StringList *headers)
             if (!(plan->options() & BuildPlan::Verbose))
                 overloads->insert(StandardErrorFd, devNull);
         }
+        params->setOverloads(overloads);
         sub = SubProcess::open(params);
     }
 
     return sub->wait() == 0;
+}
+
+String GnuToolChain::configureCompileCommand(const BuildPlan *plan, String sourcePath, String binPath) const
+{
+    Format args;
+    args << compiler(sourcePath);
+    args << "-o" << binPath;
+    appendCompileOptions(args, plan);
+    args << "-pthread";
+    args << sourcePath;
+    appendLinkOptions(args, plan);
+    return args->join(" ");
 }
 
 String GnuToolChain::installDirPath(const BuildPlan *plan) const

@@ -9,6 +9,9 @@
 #include <cc/stdio>
 #include <cc/Dir>
 #include <cc/File>
+#include <cc/FileStatus>
+#include <cc/SubProcess>
+#include <cc/meta/yason>
 #include "BuildPlan.h"
 #include "ConfigureShell.h"
 #include "ConfigureStage.h"
@@ -56,7 +59,33 @@ bool ConfigureStage::run()
                 );
                 version = configureShell(String("pkg-config --modversion ") + prerequisite->name());
             }
-            else {
+            else if (prerequisite->configure() != "") {
+                String configure = prerequisite->configure();
+                String output;
+                if (!runConfigure(name, configure, &output)) {
+                    ferr() << output;
+                    ferr() << plan()->recipePath() << ": " << name << ":" << nl;
+                    ferr() << "  " << configure << " failed" << nl;
+                    return success_ = false;
+                }
+                Ref<MetaObject> object = Variant::cast<MetaObject *>(yason::parse(output));
+                if (object) {
+                    {
+                        Ref<StringList> flags = getFlags(object, "compile-flags");
+                        if (flags) prerequisite->customCompileFlags()->appendList(flags);
+                    }
+                    {
+                        Ref<StringList> flags = getFlags(object, "link-flags");
+                        if (flags) prerequisite->customLinkFlags()->appendList(flags);
+                    }
+                    {
+                        Variant value = object->value("version");
+                        if (Variant::type(value) == Variant::StringType) version = Version(String(value));
+                        else if (Variant::type(value) == Variant::VersionType) version = Version(value);
+                    }
+                }
+            }
+            else{
                 prerequisite->customCompileFlags()->appendList(
                     configureShell(prerequisite->compileFlagsConfigure())->simplify()->split(' ')
                 );
@@ -86,30 +115,43 @@ bool ConfigureStage::run()
             catch (String &error) {
                 if (prerequisite->optional()) {
                     if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
-                        ferr() << name << ": " << error << nl;
-                        ferr() << name << ": disabled" << nl;
+                        ferr()
+                            << plan()->recipePath() << ": " << name << ":" << nl
+                            << "  " << error << nl;
                     }
                     continue;
                 }
                 else {
                     if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
-                        ferr() << name << ": " << error << nl;
+                        ferr()
+                            << plan()->recipePath() << ": " << name << ":" << nl
+                            << "  " << error << nl;
                     }
                     return success_ = false;
                 }
             }
 
             if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
-                if (firstLine) {
-                    firstLine = false;
-                    ferr() << plan()->projectPath() << ":" << nl;
+                if (
+                    prerequisite->customCompileFlags()->count() > 0 ||
+                    prerequisite->customLinkFlags()->count() > 0 ||
+                    Version::isValid(version)
+                ) {
+                    if (firstLine) {
+                        firstLine = false;
+                        ferr() << plan()->recipePath() << ":" << nl;
+                    }
+                    String ns = prerequisite->origName();
+                    if (ns == "" && prerequisite->configure() != "") ns = prerequisite->configure()->baseName();
+                    if (ns != "") ns += ".";
+                    if (prerequisite->customCompileFlags()->count() > 0)
+                        ferr() << "  " << ns << "compile-flags: " << prerequisite->customCompileFlags()->join(" ") << nl;
+                    if (prerequisite->customLinkFlags()->count() > 0)
+                        ferr() << "  " << ns << "link-flags: " << prerequisite->customLinkFlags()->join(" ") << nl;
+                    if (Version::isValid(version))
+                        ferr() << "  " << ns << "version: " << version << nl;
+                    ferr() << nl;
                 }
-                if (prerequisite->customLinkFlags()->count() > 0)
-                    ferr() << "  " << name << ".compile-flags = " << prerequisite->customLinkFlags()->join(" ") << nl;
-                if (prerequisite->customLinkFlags()->count() > 0)
-                    ferr() << "  " << name << ".link-flags = " << prerequisite->customLinkFlags()->join(" ") << nl;
-                if (Version::isValid(version))
-                    ferr() << "  " << name << ".version = " << version << nl;
             }
 
             if (prerequisite->libraries()) plan()->libraries()->appendList(prerequisite->libraries());
@@ -164,6 +206,71 @@ void ConfigureStage::makeUseOf(BuildPlan *other)
         for (BuildPlan *prerequisite: other->prerequisites())
             makeUseOf(prerequisite);
     }
+}
+
+bool ConfigureStage::runConfigure(String name, String configure, String *output) const
+{
+    String configurePath = plan()->projectPath()->extendPath(configure);
+
+    Ref<FileStatus> status = FileStatus::read(configurePath);
+    if (!status->isValid()) {
+        ferr() << plan()->recipePath() << ": " << name << ":" << nl;
+        ferr() << "  " << configure << ": no such file" << nl;
+        return false;
+    }
+
+    String configureText;
+    String binPath;
+
+    if (status->mode() & AnyExec) {
+        binPath = configurePath;
+    }
+    else {
+        if (!Dir::exists(plan()->configPath()))
+            Dir::create(plan()->configPath());
+
+        String baseName = configurePath->baseName();
+        binPath = plan()->configPath()->extendPath(baseName);
+
+        Ref<FileStatus> sourceStatus = plan()->shell()->fileStatus(configurePath);
+        Ref<FileStatus> binStatus = plan()->shell()->fileStatus(binPath);
+
+        if (!sourceStatus->isValid()) return false;
+        bool dirty = true;
+        if (binStatus->isValid()) {
+            if (binStatus->lastModified() > sourceStatus->lastModified())
+                dirty = false;
+        }
+
+        if (dirty) {
+            String command = toolChain()->configureCompileCommand(plan(), configurePath, binPath);
+            Ref<SubProcess> sub = SubProcess::open(command);
+            String output = sub->readAll();
+            int exitCode = sub->wait();
+            if (exitCode != 0) {
+                ferr()
+                    << command << nl
+                    << output << nl;
+                return false;
+            }
+        }
+    }
+
+    Ref<SubProcess> sub = SubProcess::open(binPath);
+    *output = sub->readAll();
+    return sub->wait() == 0;
+}
+
+Ref<StringList> ConfigureStage::getFlags(const MetaObject *object, String propertyName)
+{
+    Variant value;
+    if (object->lookup(propertyName, &value)) {
+        if (Variant::type(value) == Variant::StringType)
+            return String(value)->split(" ");
+        else if (Variant::type(value) == Variant::ListType && Variant::itemType(value) == Variant::StringType)
+            return Variant::cast<StringList *>(value);
+    }
+    return Ref<StringList>();
 }
 
 } // namespace ccbuild

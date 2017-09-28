@@ -20,6 +20,9 @@ public:
 
     String configureShell(String shellCommand);
     void makeUseOf(BuildPlan *other);
+    bool runConfigure(String name, String configure, String *output) const;
+
+    static Ref<StringList> getFlags(const MetaObject *object, String propertyName);
 };
 
 } // namespace ccbuild

@@ -47,6 +47,8 @@ public:
 
     virtual bool testInclude(const BuildPlan *plan, const StringList *headers) const override;
 
+    virtual String configureCompileCommand(const BuildPlan *plan, String sourcePath, String binPath) const override;
+
     virtual String installDirPath(const BuildPlan *plan) const override;
     virtual String includePrefix(const BuildPlan *plan) const override;
     virtual String libIncludePrefix(const BuildPlan *plan) const override;

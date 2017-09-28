@@ -148,6 +148,8 @@ protected:
         insert("version-min", Version());
         insert("version-max", Version());
 
+        insert("configure", "");
+
         insert("include-test", StringList::create()); // FIXME: obsolete starting from v0.14.0
     }
 };
