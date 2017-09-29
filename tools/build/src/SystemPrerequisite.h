@@ -32,7 +32,9 @@ public:
 
     inline String versionConfigure() const { return versionConfigure_; }
     inline Version versionMin() const { return versionMin_; }
+    inline void setVersionMin(Version newValue) { versionMin_ = newValue; }
     inline Version versionMax() const { return versionMax_; }
+    inline void setVersionMax(Version newValue) { versionMax_ = newValue; }
 
     inline String configure() const { return configure_; }
 
