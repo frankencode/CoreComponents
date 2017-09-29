@@ -168,13 +168,33 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
     const StringList *dependsList = Variant::cast<const StringList *>(recipe_->value("depends"));
     if (dependsList) {
-        for (String name: dependsList) {
+        for (String item: dependsList) {
+            String name;
+            Version versionMin, versionMax;
+            if (item->contains(">=")) {
+                Ref<StringList> parts = item->split(">=");
+                name = parts->at(0)->trim();
+                if (parts->has(1)) versionMin = Version(parts->at(1)->trim());
+            }
+            else if (item->contains("<=")) {
+                Ref<StringList> parts = item->split("<=");
+                name = parts->at(0)->trim();
+                if (parts->has(1)) versionMax = Version(parts->at(1)->trim());
+            }
+            else {
+                name = item;
+            }
+
             if (!systemPrerequisitesByName_)
                 systemPrerequisitesByName_ = SystemPrerequisitesByName::create();
             Ref<SystemPrerequisiteList> l;
             if (!systemPrerequisitesByName_->lookup(name, &l))
                 systemPrerequisitesByName_->insert(name, l = SystemPrerequisiteList::create());
-            l->append(SystemPrerequisite::create(name));
+
+            Ref<SystemPrerequisite> prerequisite = SystemPrerequisite::create(name);
+            prerequisite->setVersionMin(versionMin);
+            prerequisite->setVersionMax(versionMax);
+            l->append(prerequisite);
         }
     }
 

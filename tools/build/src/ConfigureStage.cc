@@ -100,11 +100,11 @@ bool ConfigureStage::run()
                 Version versionMax = prerequisite->versionMax();
                 if (Version::isValid(versionMin)) {
                     if (version < versionMin)
-                        throw(String(Format() << "at least version " << versionMin << " is required (version " << version << " detected)"));
+                        throw(String(Format() << "At least version " << versionMin << " is required (version " << version << " detected)"));
                 }
                 if (Version::isValid(versionMax)) {
                     if (versionMax < version)
-                        throw(String(Format() << "at most version " << versionMax << " is supported (version " << version << " detected)"));
+                        throw(String(Format() << "At most version " << versionMax << " is supported (version " << version << " detected)"));
                 }
 
                 if (prerequisite->includeTest()->count() > 0) { // FIXME: obsolete starting from v0.14.0
@@ -113,22 +113,16 @@ bool ConfigureStage::run()
                 }
             }
             catch (String &error) {
-                if (prerequisite->optional()) {
-                    if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
-                        ferr()
-                            << plan()->recipePath() << ": " << name << ":" << nl
-                            << "  " << error << nl;
-                    }
+                if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
+                    ferr()
+                        << plan()->recipePath() << ": " << name << ":" << nl
+                        << "  " << error << nl
+                        << nl;
+                }
+                if (prerequisite->optional())
                     continue;
-                }
-                else {
-                    if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
-                        ferr()
-                            << plan()->recipePath() << ": " << name << ":" << nl
-                            << "  " << error << nl;
-                    }
+                else
                     return success_ = false;
-                }
             }
 
             if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
