@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <functional>
+#include <cc/Object>
+
+namespace cc {
+
+class EventX
+{
+public:
+    EventX() {}
+
+    class Intern;
+    inline Intern *operator->() { return &itern_; }
+
+    class Intern {
+    public:
+        Intern() {}
+
+        template<class F>
+        inline void connect(F f);
+
+        inline void notify() const;
+
+    private:
+        class Node: public Object {
+        public:
+            template<class F>
+            inline static Ref<Node> create(const F &f, Node *next) { return new Node(f, next); }
+
+            std::function<void()> f_;
+            Ref<Node> next_;
+
+        private:
+            template<class F>
+            Node(const F &f, Node *next): f_(f), next_(next) {}
+        };
+
+        Ref<Node> first_;
+    };
+
+private:
+    EventX(const EventX&) = delete;
+    EventX& operator=(const EventX&) = delete;
+
+    Intern itern_;
+};
+
+template<class F>
+void EventX::Intern::connect(F f)
+{
+    first_ = Node::create(f, first_);
+}
+
+void EventX::Intern::notify() const
+{
+    for (Node *node = first_; node; node = node->next_)
+        node->f_();
+}
+
+} // namespace cc
