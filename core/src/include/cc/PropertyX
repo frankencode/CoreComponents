@@ -1,0 +1,62 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/EventX>
+#include <cc/Set>
+
+namespace cc {
+
+template<class T>
+class PropertyX
+{
+public:
+    PropertyX() {}
+    PropertyX(const T &b): intern_(b) {}
+
+    class Intern {
+    public:
+        EventX valueChanged;
+
+        Intern() {}
+        Intern(const T &b): value_(b) {}
+
+        inline const T &value() const { return value_; }
+
+        void setValue(const T &newValue) {
+            if (f_ || value_ != newValue) {
+                value_ = newValue;
+                if (f_) f_ = std::function<T()>();
+                valueChanged->notify();
+            }
+        }
+
+        template<class F>
+        void bind(const F &f) {
+            f_ = f;
+            value_ = f_();
+                // TODO: incomplete logic
+        }
+
+    private:
+        T value_;
+        std::function<T()> f_;
+    };
+
+    inline Intern *operator->() { return &intern_; }
+    inline const Intern *operator->() const { return &intern_; }
+
+    inline operator const T &() const { return (*this)->value(); }
+    inline PropertyX &operator=(const T &b) { (*this)->setValue(b); return *this; }
+
+private:
+    Intern intern_;
+};
+
+} // namespace cc
