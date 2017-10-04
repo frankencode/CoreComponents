@@ -21,7 +21,7 @@ public:
 
     PropertyX<double> x;
     PropertyX<double> y;
-    decltype(x) x0 { x->alias() };
+    PropertyX<double> x0 = alias(x);
 
     PropertyX<double> sum { [=]{ return x + y; } };
 
@@ -44,6 +44,7 @@ int main(int argc, char **argv)
     shape->moveTo(11, 30);
     shape->x = shape->y;
     shape->x0 = 7;
+    shape->x0 = false;
     fout() << "Shadow followed to " << shadow->x << ", " << shadow->y << " (x + y = " << shadow->sum << ")" << nl;
     CC_INSPECT(sizeof(shape->x));
     return 0;
