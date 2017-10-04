@@ -20,5 +20,6 @@ int main(int argc, char **argv)
     trainArrived->connect([]{ fout() << "Caution!" << nl; });
     trainArrived->notify();
     fout() << sizeof(trainArrived) << nl;
+
     return 0;
 }
