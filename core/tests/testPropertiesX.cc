@@ -8,6 +8,7 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
+#include <cc/debug>
 #include <cc/PropertyX>
 
 using namespace cc;
@@ -20,6 +21,9 @@ public:
 
     PropertyX<double> x;
     PropertyX<double> y;
+    decltype(x) x0 { x->alias() };
+
+    PropertyX<double> sum { [=]{ return x + y; } };
 
     void moveTo(double x2, double y2) { x = x2; y = y2; }
 
@@ -30,11 +34,17 @@ protected:
 int main(int argc, char **argv)
 {
     Ref<Shape> shape = Shape::create();
-    auto shapeMoved = [=]{ fout() << "Moved to " << shape->x << ", " << shape->y << nl; };
-    shape->x->valueChanged->connect(shapeMoved);
-    shape->y->valueChanged->connect(shapeMoved);
+    Ref<Shape> shadow = Shape::create();
+    shadow->x = [=]{ return shape->x + 10; };
+    shadow->y = [=]{ return shape->y + 10; };
+    auto moved = [=]{ fout() << "Shape moved to " << shape->x << ", " << shape->y << " (x + y = " << shape->sum << ")" << nl; };
+    shape->x->valueChanged->connect(moved);
+    shape->y->valueChanged->connect(moved);
     shape->moveTo(10, 20);
     shape->moveTo(11, 30);
-    fout() << sizeof(shape->x) << nl;
+    shape->x = shape->y;
+    shape->x0 = 7;
+    fout() << "Shadow followed to " << shadow->x << ", " << shadow->y << " (x + y = " << shadow->sum << ")" << nl;
+    CC_INSPECT(sizeof(shape->x));
     return 0;
 };
