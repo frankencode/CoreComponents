@@ -54,25 +54,6 @@ public:
         return Object::cast<U>(p.get());
     }
 
-    /** \brief destroy a child object, which is potentially part of a cyclic reference network
-      * \param child pointer to the child object
-      * \param releaseChild callable (e.g. a lambda) which releases the parent's last reference to the child
-      * The decycleChild() function allows to destroy children objects, which are part of a cyclic dependent reference network.
-      * By explicitly deleting each child with decycleChild() most reference cycles can be broken cleanly.
-      * In debug mode, if this function fails the child's object destruction (~Object()) will throw a DebugException.
-      * decycleChild() is a low-level function applicable to use cases, where a parent object is managing the life-time
-      * of its children.
-      */
-    template<class T, class RF>
-    static void decycleChild(const T *child, RF releaseChild)
-    {
-        Ref<T> h = child;
-        releaseChild(child);
-        if (child->refCount_ == 1) return;
-        h = 0;
-        delete child;
-    }
-
 private:
     Object(const Object &);
     const Object &operator=(const Object &);
