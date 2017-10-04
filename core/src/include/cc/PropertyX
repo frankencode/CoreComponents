@@ -176,6 +176,9 @@ private:
 };
 
 template<class T>
+inline PropertyX<T> alias(PropertyX<T> &p) { return p->alias(); }
+
+template<class T>
 thread_local typename PropertyX<T>::Instance *PropertyX<T>::Instance::activeInstance_ = nullptr;
 
 } // namespace cc
