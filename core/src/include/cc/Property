@@ -10,6 +10,7 @@
 
 #include <cc/Event>
 #include <cc/Set>
+#include <utility>
 
 namespace cc {
 
@@ -21,12 +22,12 @@ public:
     Property(const T &b): instance_(Instance::create(b)) {}
 
     Property(const Property &b): Property(b->value()) {}
-    inline Property &operator=(const Property &b) { (*this)->setValue(b->value()); return *this; }
+    inline Property &operator=(const Property &b) { instance_->setValue(b->value()); return *this; }
 
-    Property(Property &&b): instance_(b.instance_) { b.instance_ = nullptr; }
+    Property(Property &&b): instance_(std::move(b.instance_)) {}
 
     Property(const std::function<T()> &f): instance_(Instance::create(f)) {}
-    inline Property &operator=(const std::function<T()> &f) { (*this)->bind(f); return *this; }
+    inline Property &operator=(const std::function<T()> &f) { instance_->bind(f); return *this; }
 
     class Instance: public Object {
     public:
@@ -191,8 +192,10 @@ public:
     inline Instance *operator->() { return instance_; }
     inline const Instance *operator->() const { return instance_; }
 
-    inline operator const T &() const { return (*this)->value(); }
-    inline Property &operator=(const T &b) { (*this)->setValue(b); return *this; }
+    inline operator const T &() const { return instance_->value(); }
+    inline Property &operator=(const T &b) { instance_->setValue(b); return *this; }
+
+    inline T operator()() const { return instance_->value(); }
 
 private:
     friend class Instance;

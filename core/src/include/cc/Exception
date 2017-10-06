@@ -15,7 +15,7 @@ namespace cc {
 
 /** \class Exception Exception.h cc/Exception
   * \brief Root class of the exception class hierarchy
-  * \see exceptions
+  * \see exceptions, std::current_exception()
   */
 class Exception: public std::exception
 {
@@ -27,6 +27,6 @@ public:
     virtual const char* what() const throw();
 };
 
-inline String str(const Exception &ex) { return ex.message(); } // FIXME: superseeded by toString() method when moving to heap objects
+inline String str(const Exception &ex) { return ex.message(); }
 
 } // namespace cc
