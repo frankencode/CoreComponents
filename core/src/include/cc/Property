@@ -107,7 +107,7 @@ public:
             clearSubscribers();
         }
 
-        Property alias() { return Property(this, Alias()); }
+        Property alias() { return Property(this, true); }
 
         Association *dependencies() const {
             if (!dependencies_) dependencies_ = Association::create();
@@ -197,9 +197,7 @@ public:
 private:
     friend class Instance;
 
-    class Alias {};
-
-    Property(Instance *instance, Alias): instance_(instance) {}
+    Property(Instance *instance, bool): instance_(instance) {}
 
     Ref<Instance> instance_;
 };
