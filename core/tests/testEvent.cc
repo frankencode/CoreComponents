@@ -8,16 +8,16 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
-#include <cc/EventX>
+#include <cc/Event>
 
 using namespace cc;
 using namespace cc::testing;
 
 int main(int argc, char **argv)
 {
-    EventX trainArrived;
-    trainArrived->connect([]{ fout() << "The train has arrived!" << nl; });
-    trainArrived->connect([]{ fout() << "Caution!" << nl; });
+    Event trainArrived;
+    trainArrived->listen([]{ fout() << "The train has arrived!" << nl; });
+    trainArrived->listen([]{ fout() << "Caution!" << nl; });
     trainArrived->notify();
     fout() << sizeof(trainArrived) << nl;
 

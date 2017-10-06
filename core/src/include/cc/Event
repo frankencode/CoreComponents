@@ -8,142 +8,64 @@
 
 #pragma once
 
+#include <functional>
 #include <cc/Object>
-#include <cc/Map>
-#include <cc/Set>
-#include <cc/List>
 
 namespace cc {
 
-template<class Value>
-class Callback: public Object {
-public:
-    virtual void invoke(Value value) = 0;
-};
-
-template<class Recipient, class Value>
-class Slot: public Callback<Value>
+class Event
 {
 public:
-    typedef void (Recipient::* Method)(Value);
-
-    Slot():
-        recipient_(0),
-        method_(0)
-    {}
-
-    Slot(Recipient *recipient, Method method):
-        recipient_(recipient),
-        method_(method)
-    {}
-
-    inline void invoke(Value value) { (recipient_->*method_)(value); }
-
-private:
-    Recipient *recipient_;
-    Method method_;
-};
-
-class Recipient;
-
-class ConnectionEndPoint: public Object
-{
-protected:
-    friend class Recipient;
-
-    virtual void disconnect(Recipient *recipient) = 0;
-    inline void reverseConnect(ConnectionEndPoint *trigger, Recipient *recipient);
-    inline void reverseDisconnect(ConnectionEndPoint *trigger, Recipient *recipient);
-};
-
-template<class Value = None>
-class Event: public ConnectionEndPoint
-{
-public:
-    inline static Ref<Event> create() { return new Event; }
-
-    ~Event() {
-        disconnectAll();
-    }
-
-    template<class Recipient>
-    void connect(Recipient *recipient, void (Recipient::* method)(Value))
-    {
-        if (!callbacks_)
-            callbacks_ = CallbackListByRecipient::create();
-
-        Ref<CallbackList> list;
-        if (!callbacks_->lookup(recipient, &list)) {
-            list = CallbackList::create();
-            callbacks_->insert(recipient, list);
-        }
-
-        list->append(new Slot<Recipient, Value>(recipient, method));
-        reverseConnect(this, recipient);
-    }
-
-    void disconnect(Recipient *recipient)
-    {
-        if (!callbacks_) return;
-
-        if (callbacks_->remove(recipient));
-        reverseDisconnect(this, recipient);
-    }
-
-    void disconnectAll()
-    {
-        if (!callbacks_) return;
-
-        for (int i = 0; i < callbacks_->count(); ++i)
-            reverseDisconnect(this, callbacks_->keyAt(i));
-
-        callbacks_ = 0;
-    }
-
-    void notify(Value value = Value())
-    {
-        if (!callbacks_) return;
-
-        for (int i = 0; i < callbacks_->count(); ++i) {
-            CallbackList *list = callbacks_->valueAt(i);
-            for (int j = 0; j < list->count(); ++j)
-                list->at(j)->invoke(value);
-        }
-    }
-
-private:
-    typedef List< Ref< Callback<Value> > > CallbackList;
-    typedef Map< Recipient *, Ref<CallbackList> > CallbackListByRecipient;
-
     Event() {}
 
-    Ref<CallbackListByRecipient> callbacks_;
-};
+    class Instance {
+    public:
+        Instance() {}
 
-class Recipient
-{
-protected:
-    Recipient():
-        events_(Events::create())
-    {}
+        template<class F>
+        inline void listen(const F &f);
 
-    ~Recipient() {
-        while (events_->count() > 0)
-            events_->at(0)->disconnect(this);
-    }
+        inline void notify() const;
+
+        inline bool hasListeners() const { return first_; }
+
+    private:
+        class Node: public Object {
+        public:
+            template<class F>
+            inline static Ref<Node> create(const F &f, Node *next) { return new Node(f, next); }
+
+            std::function<void()> f_;
+            Ref<Node> next_;
+
+        private:
+            template<class F>
+            Node(const F &f, Node *next): f_(f), next_(next) {}
+        };
+
+        Ref<Node> first_;
+    };
+
+    inline Instance *operator->() { return &instance_; }
+    inline const Instance *operator->() const { return &instance_; }
 
 private:
-    friend class ConnectionEndPoint;
+    Event(const Event&) = delete;
+    Event& operator=(const Event&) = delete;
 
-    typedef Set<ConnectionEndPoint *> Events;
-    Ref<Events> events_;
+    Instance instance_;
 };
 
-inline void ConnectionEndPoint::reverseConnect(ConnectionEndPoint *event, Recipient *recipient) {
-    recipient->events_->insert(event);
+template<class F>
+void Event::Instance::listen(const F &f)
+{
+    first_ = Node::create(f, first_);
 }
-inline void ConnectionEndPoint::reverseDisconnect(ConnectionEndPoint *event, Recipient *recipient) {
-    recipient->events_->remove(event);
+
+void Event::Instance::notify() const
+{
+    for (Node *node = first_; node; node = node->next_)
+        node->f_();
 }
 
 } // namespace cc
