@@ -8,83 +8,55 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
+#include <cc/debug>
 #include <cc/Property>
 
 using namespace cc;
 using namespace cc::testing;
 
-int changedNotices = 0;
-
-class Shape: public Object, public Recipient
+class Shape: public Object
 {
 public:
-    static Ref<Shape> create() { return new Shape; }
+    static Ref<Shape> create() { return new Shape(); }
 
-    Property<String> name;
-    Property<int> x;
-    Property<int> y;
+    Property<double> x;
+    Property<double> y;
+    Property<double> x0 = alias(x);
+
+    Property<double> sum { [=]{ return x + y; } };
+
+    void moveTo(double x2, double y2) { x = x2; y = y2; }
 
 protected:
-    Shape(): x(0), y(0) {
-        fout() << "Shape::Shape()" << nl;
-        name->valueChanged()->connect(this, &Shape::onNameChanged);
-    }
-    ~Shape() {
-        fout() << "Shape::~Shape()" << nl;
-    }
-
-private:
-    void onNameChanged(String newName) {
-        fout("name = \"%%\"\n") << name;
-        ++changedNotices;
-    }
+    Shape(): x(0), y(0) {}
 };
 
-class Observer: public Object, public Recipient
-{
-public:
-    static Ref<Observer> create(Shape *shape) { return new Observer(shape); }
-
-private:
-    Observer(Shape *shape) {
-        fout() << "Observer::Observer()" << nl;
-        shape->x->valueChanged()->connect(this, &Observer::onXChanged);
-        shape->y->valueChanged()->connect(this, &Observer::onYChanged);
-    }
-
-    ~Observer() {
-        fout() << "Observer::~Observer()" << nl;
-    }
-
-    void onXChanged(int value) {
-        fout("x = %%\n") << value;
-        ++changedNotices;
-    }
-    void onYChanged(int value) {
-        fout("y = %%\n") << value;
-        ++changedNotices;
-    }
-};
-
-class ChangedNotices: public TestCase
+class BasicBindings: public TestCase
 {
     void run()
     {
         Ref<Shape> shape = Shape::create();
-        Ref<Observer> observer = Observer::create(shape);
-        shape->name = "circle1";
-        shape->x = 7;
-        shape->y = 93;
-        shape->y = 93;
-        observer = 0;
-        shape->x = 8;
-        CC_VERIFY(changedNotices == 3);
+        Ref<Shape> shadow = Shape::create();
+        shadow->x->bind([=]{ return shape->x + 10; });
+        shadow->y->bind([=]{ return shape->y + 10; });
+        auto moved = [=]{
+            fout() << "Shape moved to " << shape->x << ", " << shape->y << " (x + y = " << shape->sum << ")" << nl;
+            CC_VERIFY(shape->sum == shape->x + shape->y);
+        };
+        shape->x->listen(moved);
+        shape->y->listen(moved);
+        shape->moveTo(10, 20);
+        shape->moveTo(11, 30);
+        shape->x = shape->y;
+        shape->x0 = 7;
+        shape->x0 = false;
+        fout() << "Shadow followed to " << shadow->x << ", " << shadow->y << " (x + y = " << shadow->sum << ")" << nl;
+        CC_VERIFY(shadow->x == 10 && shadow->y == 40);
     }
 };
 
 int main(int argc, char **argv)
 {
-    CC_TESTSUITE_ADD(ChangedNotices);
-
+    CC_TESTSUITE_ADD(BasicBindings);
     return TestSuite::instance()->run(argc, argv);
-}
+};
