@@ -35,8 +35,8 @@ First download the latest stable version from github:
 ```
 mkdir -p ~/src
 cd ~/src
-curl -L https://www.corecomponents.io/download/cc-0.12.1.tar.gz | tar xzv
-ln -s ../cc-0.12.1 cc
+curl -L https://www.corecomponents.io/download/cc-0.13.0.tar.gz | tar xzv
+ln -s ../cc-0.13.0 cc
 ```
 
 Thereafter bootstrap the build system:
