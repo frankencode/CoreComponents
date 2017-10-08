@@ -40,8 +40,11 @@ bool CleanStage::run()
         toolChain()->cleanAliasSymlinks(plan(), product);
 
     if (plan()->options() & BuildPlan::Library) {
-        if (!plan()->linkStatic())
+        if (!plan()->linkStatic()) {
             toolChain()->cleanLibrarySymlinks(plan(), product);
+            if (plan()->options() & BuildPlan::Plugin)
+                toolChain()->cleanPluginSymlinks(plan(), toolChain()->linkName(plan()->extensionTarget()));
+        }
     }
 
     if (plan()->options() & BuildPlan::Tools) {

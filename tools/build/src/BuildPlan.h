@@ -43,18 +43,19 @@ public:
     enum Option {
         Application   = 1 << 0,
         Library       = 1 << 1,
-        Tools         = 1 << 2,
+        Plugin        = 1 << 2,
         Test          = 1 << 3,
-        Package       = 1 << 4,
-        Debug         = 1 << 5,
-        Release       = 1 << 6,
-        Simulate      = 1 << 7,
-        Blindfold     = 1 << 8,
-        Bootstrap     = 1 << 9,
-        BuildTests    = 1 << 10,
-        Verbose       = 1 << 11,
-        Configure     = 1 << 12,
-        Clean         = 1 << 13,
+        Tools         = 1 << 4,
+        Package       = 1 << 5,
+        Debug         = 1 << 6,
+        Release       = 1 << 7,
+        Simulate      = 1 << 8,
+        Blindfold     = 1 << 9,
+        Bootstrap     = 1 << 10,
+        BuildTests    = 1 << 11,
+        Verbose       = 1 << 12,
+        Configure     = 1 << 13,
+        Clean         = 1 << 14,
         Unspecified   = -1,
         GlobalOptions = Debug|
                         Release|
@@ -100,6 +101,8 @@ public:
     inline PredicateList *predicates() const { return predicates_; }
     inline BuildPlanList *prerequisites() const { return prerequisites_; }
     inline SystemPrerequisitesByName *systemPrerequisitesByName() const { return systemPrerequisitesByName_; }
+
+    inline BuildPlan *extensionTarget() const { return extensionTarget_; }
 
     inline BuildParameters *usage() const { return usage_; }
 
@@ -178,6 +181,7 @@ private:
     Ref<PredicateList> predicates_;
     Ref<SystemPrerequisitesByName> systemPrerequisitesByName_;
     Ref<BuildPlanList> prerequisites_;
+    Ref<BuildPlan> extensionTarget_;
 
     Ref<BuildParameters> usage_;
 

@@ -306,10 +306,13 @@ bool GnuToolChain::createSymlinks(const BuildPlan *plan) const
     if ((plan->options() & BuildPlan::Library) && !plan->linkStatic())
         createLibrarySymlinks(plan, linkName(plan));
 
+    if (plan->options() & BuildPlan::Plugin)
+        createPluginSymlinks(plan, linkName(plan->extensionTarget()), linkName(plan));
+
     if (plan->options() & BuildPlan::Application)
         createAliasSymlinks(plan, linkName(plan));
 
-    return true; // TODO: be more precise
+    return true;
 }
 
 void GnuToolChain::createLibrarySymlinks(const BuildPlan *plan, String libName) const
@@ -326,6 +329,20 @@ void GnuToolChain::cleanLibrarySymlinks(const BuildPlan *plan, String libName) c
     Ref<StringList> parts = libName->split('.');
     while (parts->popBack() != "so")
         plan->shell()->unlink(parts->join("."));
+}
+
+void GnuToolChain::createPluginSymlinks(const BuildPlan *plan, String targetLibName, String pluginLibName) const
+{
+    cleanPluginSymlinks(plan, targetLibName);
+
+    String pluginPath = targetLibName->extendPath("plugins");
+    plan->shell()->mkdir(pluginPath);
+    plan->shell()->symlink(pluginLibName, pluginPath->extendPath(pluginLibName));
+}
+
+void GnuToolChain::cleanPluginSymlinks(const BuildPlan *plan, String targetLibName) const
+{
+    plan->shell()->clean(targetLibName->extendPath("plugins"));
 }
 
 void GnuToolChain::createAliasSymlinks(const BuildPlan *plan, String appName) const

@@ -263,6 +263,21 @@ protected:
     {}
 };
 
+class PluginPrototype: public ApplicationPrototype
+{
+public:
+    static Ref<MetaObject> create(const String &className = "Plugin") {
+        return new PluginPrototype(className);
+    }
+
+protected:
+    PluginPrototype(const String &className):
+        ApplicationPrototype(className)
+    {
+        insert("extend", "");
+    }
+};
+
 class ToolsPrototype: public ApplicationPrototype
 {
 public:

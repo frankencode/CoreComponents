@@ -61,17 +61,20 @@ bool InstallStage::installApplicationOrLibrary()
 
     if (!shell()->install(product, installFilePath)) return false;
 
-    if ((options & BuildPlan::Application) && plan()->alias()->count() > 0) {
-        CwdGuard guard(installDirPath, shell());
-        toolChain()->createAliasSymlinks(plan(), product);
+    if (options & BuildPlan::Application) {
+        if (plan()->alias()->count() > 0) {
+            CwdGuard guard(installDirPath, shell());
+            toolChain()->createAliasSymlinks(plan(), product);
+        }
     }
-
-    if (options & BuildPlan::Library)
+    else if (options & BuildPlan::Library)
     {
         if (!plan()->linkStatic()) {
             linkerCacheDirty_ = true;
             CwdGuard guard(installDirPath, shell());
             toolChain()->createLibrarySymlinks(plan(), product);
+            if (options & BuildPlan::Plugin)
+                toolChain()->createPluginSymlinks(plan(), toolChain()->linkName(plan()->extensionTarget()), product);
         }
 
         if (!
