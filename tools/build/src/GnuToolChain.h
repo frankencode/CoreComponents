@@ -59,6 +59,9 @@ public:
     virtual void createLibrarySymlinks(const BuildPlan *plan, String libName) const override;
     virtual void cleanLibrarySymlinks(const BuildPlan *plan, String libName) const override;
 
+    virtual void createPluginSymlinks(const BuildPlan *plan, String targetLibName, String pluginLibName) const override;
+    virtual void cleanPluginSymlinks(const BuildPlan *plan, String targetLibName) const override;
+
     virtual void createAliasSymlinks(const BuildPlan *plan, String appName) const override;
     virtual void cleanAliasSymlinks(const BuildPlan *plan, String appName) const override;
 

@@ -107,8 +107,9 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 {
     options_ = 0;
     if (recipe_->className() == "Application")  options_ |= Application;
-    else if (recipe_->className() == "Test")    options_ |= Application | Test;
     else if (recipe_->className() == "Library") options_ |= Library;
+    else if (recipe_->className() == "Plugin")  options_ |= Library | Plugin;
+    else if (recipe_->className() == "Test")    options_ |= Application | Test;
     else if (recipe_->className() == "Tools")   options_ |= Tools;
     else if (recipe_->className() == "Tests")   options_ |= Tools | Test;
     else if (recipe_->className() == "Package") options_ |= Package;
@@ -454,7 +455,8 @@ void BuildPlan::readPrerequisites()
 
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
-    const StringList *prerequisitePaths = Variant::cast<const StringList *>(recipe_->value("use"));
+    Ref<StringList> prerequisitePaths = Variant::cast<StringList *>(recipe_->value("use"));
+
     if (options_ & Package) {
         const StringList *packageItems = Variant::cast<const StringList *>(recipe_->value("include"));
         if (packageItems->count() > 0) prerequisitePaths = packageItems;
@@ -463,10 +465,24 @@ void BuildPlan::readPrerequisites()
     for (String prerequisitePath: prerequisitePaths) {
         String path = findPrerequisite(prerequisitePath);
         if (path == "")
-            throw UsageError(Format() << recipePath() << ": Failed to locate prerequisite \"" << prerequisitePath << "\"");
+            throw UsageError(Format() << recipePath() << ": Failed to locate prerequisite '" << prerequisitePath << "'");
         Ref<BuildPlan> plan = BuildPlan::create(path);
         plan->readPrerequisites();
         prerequisites_->append(plan);
+    }
+
+    if (options_ & Plugin) {
+        String extensionTargetPath = recipe_->value("extend");
+        if (extensionTargetPath == "")
+            throw UsageError(Format() << recipePath() << ": Please provide the path of a library to extend in Plugin.extend");
+        String path = findPrerequisite(extensionTargetPath);
+        if (path == "")
+            throw UsageError(Format() << recipePath() << ": Failed to locate library '" << extensionTargetPath << "'");
+        extensionTarget_ = BuildPlan::create(path);
+        if (!(extensionTarget_->options_ & Library))
+            throw UsageError(Format() << recipePath() << ": '" << extensionTargetPath << "' (Plugin.extend) does not point to a library");
+        extensionTarget_->readPrerequisites();
+        prerequisites_->append(extensionTarget_);
     }
 
     findVersion();
