@@ -83,6 +83,12 @@ class SyntaxSugar: public TestCase
         for (auto x: map)
             x->value() = fib(x->key());
         printMap(map);
+        fout() << "Keys:" << nl;
+        for (auto key: map->keys())
+            fout() << key << nl;
+        fout() << "Values:" << nl;
+        for (auto value: map->values())
+            fout() << value << nl;
     }
 };
 
