@@ -92,8 +92,8 @@ String SyntaxDebugNode::subIndent(String indent) const {
 
 class CharDebugNode: public SyntaxDebugNode {
 public:
-    CharDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    CharDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return charNode()->invert() ? "OTHER" : "CHAR"; }
@@ -108,8 +108,8 @@ private:
 
 class GreaterDebugNode: public SyntaxDebugNode {
 public:
-    GreaterDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    GreaterDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return greaterNode()->invert() ? "BELOW" : "GREATER"; }
@@ -124,8 +124,8 @@ private:
 
 class GreaterOrEqualDebugNode: public SyntaxDebugNode {
 public:
-    GreaterOrEqualDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    GreaterOrEqualDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return greaterOrEqualNode()->invert() ? "BELOW_OR_EQUAL" : "GREATER_OR_EQUAL"; }
@@ -140,8 +140,8 @@ private:
 
 class AnyDebugNode: public SyntaxDebugNode {
 public:
-    AnyDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    AnyDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "ANY"; }
@@ -149,8 +149,8 @@ public:
 
 class RangeMinMaxDebugNode: public SyntaxDebugNode {
 public:
-    RangeMinMaxDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    RangeMinMaxDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return rangeMinMaxNode()->invert() ? "EXCEPT" : "RANGE"; }
@@ -168,8 +168,8 @@ private:
 
 class RangeExplicitDebugNode: public SyntaxDebugNode {
 public:
-    RangeExplicitDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    RangeExplicitDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return rangeExplicitNode()->invert() ? "EXCEPT" : "RANGE"; }
@@ -184,8 +184,8 @@ private:
 
 class StringDebugNode: public SyntaxDebugNode {
 public:
-    StringDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    StringDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "STRING"; }
@@ -200,8 +200,8 @@ private:
 
 class KeywordDebugNode: public SyntaxDebugNode {
 public:
-    KeywordDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    KeywordDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "KEYWORD"; }
@@ -224,8 +224,8 @@ private:
 
 class RepeatDebugNode: public SyntaxDebugNode {
 public:
-    RepeatDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    RepeatDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "REPEAT"; }
@@ -247,8 +247,8 @@ private:
 
 class LazyRepeatDebugNode: public SyntaxDebugNode {
 public:
-    LazyRepeatDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    LazyRepeatDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "LAZY_REPEAT"; }
@@ -268,8 +268,8 @@ private:
 
 class GreedyRepeatDebugNode: public SyntaxDebugNode {
 public:
-    GreedyRepeatDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    GreedyRepeatDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "GREEDY_REPEAT"; }
@@ -291,8 +291,8 @@ private:
 
 class FilterDebugNode: public SyntaxDebugNode {
 public:
-    FilterDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    FilterDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "FILTER"; }
@@ -314,8 +314,8 @@ private:
 
 class LengthDebugNode: public SyntaxDebugNode {
 public:
-    LengthDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    LengthDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "LENGTH"; }
@@ -336,8 +336,8 @@ private:
 
 class BoiDebugNode: public SyntaxDebugNode {
 public:
-    BoiDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    BoiDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "BOI"; }
@@ -345,8 +345,8 @@ public:
 
 class EoiDebugNode: public SyntaxDebugNode {
 public:
-    EoiDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    EoiDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "EOI"; }
@@ -366,8 +366,8 @@ private:
 
 class FindDebugNode: public SyntaxDebugNode {
 public:
-    FindDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    FindDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "FIND"; }
@@ -384,8 +384,8 @@ private:
 
 class AheadDebugNode: public SyntaxDebugNode {
 public:
-    AheadDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    AheadDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return aheadNode()->invert() ? "NOT" : "AHEAD"; }
@@ -402,8 +402,8 @@ private:
 
 class BehindDebugNode: public SyntaxDebugNode {
 public:
-    BehindDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    BehindDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return behindNode()->invert() ? "NOT_BEHIND" : "BEHIND"; }
@@ -420,8 +420,8 @@ private:
 
 class ChoiceDebugNode: public SyntaxDebugNode {
 public:
-    ChoiceDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    ChoiceDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "CHOICE"; }
@@ -443,8 +443,8 @@ private:
 
 class GlueDebugNode: public SyntaxDebugNode {
 public:
-    GlueDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    GlueDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "GLUE"; }
@@ -466,8 +466,8 @@ private:
 
 class HintDebugNode: public SyntaxDebugNode {
 public:
-    HintDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    HintDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return hintNode()->strict() ? "EXPECT" : "HINT"; }
@@ -485,8 +485,8 @@ private:
 
 class RefDebugNode: public SyntaxDebugNode {
 public:
-    RefDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    RefDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return refNode()->generate() ? "REF" : "INLINE"; }
@@ -501,8 +501,8 @@ private:
 
 class InvokeDebugNode: public SyntaxDebugNode {
 public:
-    InvokeDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    InvokeDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "INVOKE"; }
@@ -517,8 +517,8 @@ private:
 
 class PreviousDebugNode: public SyntaxDebugNode {
 public:
-    PreviousDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    PreviousDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "PREVIOUS"; }
@@ -536,8 +536,8 @@ private:
 
 class ContextDebugNode: public SyntaxDebugNode {
 public:
-    ContextDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    ContextDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "CONTEXT"; }
@@ -557,8 +557,8 @@ private:
 
 class CallDebugNode: public SyntaxDebugNode {
 public:
-    CallDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    CallDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "CALL"; }
@@ -573,8 +573,8 @@ private:
 
 class SetDebugNode: public SyntaxDebugNode {
 public:
-    SetDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    SetDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "SET"; }
@@ -590,8 +590,8 @@ private:
 
 class IfDebugNode: public SyntaxDebugNode {
 public:
-    IfDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    IfDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "IF"; }
@@ -611,8 +611,8 @@ private:
 
 class CaptureDebugNode: public SyntaxDebugNode {
 public:
-    CaptureDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    CaptureDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "CAPTURE"; }
@@ -630,8 +630,8 @@ private:
 
 class ReplayDebugNode: public SyntaxDebugNode {
 public:
-    ReplayDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode)
-        : SyntaxDebugNode(debugger, newNode)
+    ReplayDebugNode(SyntaxDebugger *debugger, SyntaxNode *newNode):
+        SyntaxDebugNode(debugger, newNode)
     {}
 
     virtual const char *declType() const { return "REPLAY"; }
@@ -643,9 +643,9 @@ private:
     inline ReplayNode *replayNode() const { return Object::cast<ReplayNode *>(SyntaxDebugNode::entry()); }
 };
 
-SyntaxDebugger::SyntaxDebugger(String indent)
-    : factoryByNodeType_(FactoryByNodeType::create()),
-      indent_(indent)
+SyntaxDebugger::SyntaxDebugger(String indent):
+    factoryByNodeType_(FactoryByNodeType::create()),
+    indent_(indent)
 {
     factoryByNodeType_->insert("Char",           new DebugNodeFactory<CharDebugNode>           (this));
     factoryByNodeType_->insert("Greater",        new DebugNodeFactory<GreaterDebugNode>        (this));
