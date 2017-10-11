@@ -9,15 +9,15 @@
 #pragma once
 
 #include <cc/containers>
+#include <cc/Source>
 #include <cc/OrdinalTree>
 
 namespace cc {
 
-template<class Key, class Value>
-class MapIterator;
-
-template<class Key, class Value>
-class ConstMapIterator;
+template<class, class> class MapIterator;
+template<class, class> class ConstMapIterator;
+template<class, class> class MapKeySequence;
+template<class, class> class MapValueSequence;
 
 /** \class Map Map.h cc/Map
   * \ingroup container
@@ -229,6 +229,15 @@ public:
     const_iterator end() const;
     /** @} */
 
+    /** Convenience iterators
+      * @{
+      */
+    typedef MapKeySequence<Key, Value> Keys;
+    typedef MapValueSequence<Key, Value> Values;
+    Keys keys() const { return MapKeySequence<Key, Value>(this); }
+    Values values() const { return MapValueSequence<Key, Value>(this); }
+    /** @} */
+
 protected:
     typedef OrdinalTree< OrdinalNode<Item> > Tree;
     typedef typename Tree::Node Node;
@@ -287,6 +296,78 @@ public:
 private:
     Map<Key, Value> *m_;
     int i_;
+};
+
+template<class Key, class Value>
+class MapKeyIterator
+{
+public:
+    MapKeyIterator(const Map<Key, Value> *m, int i):
+        m_(m),
+        i_(i)
+    {}
+
+    inline const Key &operator*() const { return m_->keyAt(i_); }
+
+    inline MapKeyIterator &operator++() { ++i_; return *this; }
+
+    inline bool operator!=(const MapKeyIterator &b) { return i_ != b.i_; }
+
+private:
+    const Map<Key, Value> *m_;
+    int i_;
+};
+
+template<class Key, class Value>
+class MapValueIterator
+{
+public:
+    MapValueIterator(const Map<Key, Value> *m, int i):
+        m_(m),
+        i_(i)
+    {}
+
+    inline const Value &operator*() const { return m_->valueAt(i_); }
+
+    inline MapValueIterator &operator++() { ++i_; return *this; }
+
+    inline bool operator!=(const MapValueIterator &b) { return i_ != b.i_; }
+
+private:
+    const Map<Key, Value> *m_;
+    int i_;
+};
+
+template<class Key, class Value>
+class MapKeySequence
+{
+public:
+    MapKeySequence(const Map<Key, Value> *m): m_(m) {}
+
+    typedef MapKeyIterator<Key, Value> iterator;
+    typedef MapKeyIterator<Key, Value> const_iterator;
+
+    iterator begin() const { return MapKeyIterator<Key, Value>(m_, 0); }
+    iterator end() const { return MapKeyIterator<Key, Value>(m_, m_->count()); }
+
+private:
+    const Map<Key, Value> *m_;
+};
+
+template<class Key, class Value>
+class MapValueSequence
+{
+public:
+    MapValueSequence(const Map<Key, Value> *m): m_(m) {}
+
+    typedef MapValueIterator<Key, Value> iterator;
+    typedef MapValueIterator<Key, Value> const_iterator;
+
+    iterator begin() const { return MapValueIterator<Key, Value>(m_, 0); }
+    iterator end() const { return MapValueIterator<Key, Value>(m_, m_->count()); }
+
+private:
+    const Map<Key, Value> *m_;
 };
 
 template<class Key, class Value>
