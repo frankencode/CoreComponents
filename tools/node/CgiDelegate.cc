@@ -249,9 +249,8 @@ Ref<CgiDelegate::EnvMap> CgiDelegate::makeEnv(HttpRequest *request, ByteArray *p
     for (int i = 0; i < request->count(); ++i)
         env->insert(wrapHttp(request->keyAt(i)), request->valueAt(i));
 
-    Ref<VariantMap> userEnv = cgiInstance_->environment();
-    for (int i = 0; i < userEnv->count(); ++i)
-        env->insert(userEnv->keyAt(i), userEnv->valueAt(i));
+    for (auto pair: cgiInstance_->environment())
+        env->insert(pair->key(), pair->value());
 
     return env;
 }

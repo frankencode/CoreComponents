@@ -79,9 +79,7 @@ class SyntaxSugar: public TestCase
     {
         Ref< Map<int> > map = Map<int>::create();
         for (int i = 0; i < 20; ++i)
-            map->insert(i, i);
-        for (auto x: map)
-            x->value() = fib(x->key());
+            map->insert(i, fib(i));
         printMap(map);
         fout() << "Keys:" << nl;
         for (auto key: map->keys())

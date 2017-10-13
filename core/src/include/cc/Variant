@@ -151,7 +151,7 @@ public:
         return Version::cast(value.word_);
     }
 
-    inline static String toString(const Variant &value) {
+    inline static String toString(const Variant &value) { // FIXME: obsolete, in favor for Variant::cast<String>()
         if (!value.type_) return String();
         CC_ASSERT2(value.type_ & StringType, illegalConversion());
         return Variant::cast<ByteArray *>(value);
