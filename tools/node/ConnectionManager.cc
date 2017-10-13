@@ -57,7 +57,7 @@ void ConnectionManager::cycle()
             if (!connectionCounts_->lookup(origin, &count, &index)) continue;
 
             if (count == 1) connectionCounts_->removeAt(index);
-            else connectionCounts_->valueAt(index) = count - 1;
+            else connectionCounts_->setValueAt(index, count - 1);
         }
     }
 }
@@ -72,7 +72,7 @@ bool ConnectionManager::accept(HttpServerConnection *client)
             if (count >= connectionLimit_)
                 return false;
         }
-        connectionCounts_->valueAt(index) = count + 1;
+        connectionCounts_->setValueAt(index, count + 1);
     }
     client->connectionInfo()->setPriority(count < 8 ? 0 : -count);
     return true;
