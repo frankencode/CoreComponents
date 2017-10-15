@@ -82,10 +82,10 @@ class SyntaxSugar: public TestCase
             map->insert(i, fib(i));
         printMap(map);
         fout() << "Keys:" << nl;
-        for (auto key: map->keys())
+        for (auto key: map->getAllKeys())
             fout() << key << nl;
         fout() << "Values:" << nl;
-        for (auto value: map->values())
+        for (auto value: map->getAllValues())
             fout() << value << nl;
     }
 };
