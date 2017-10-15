@@ -66,13 +66,13 @@ public:
       * \param index map index
       * \return reference to the key
       */
-    inline Key keyAt(int index) const { return at(index)->key(); } // FIXME: obsolete in favor of at(i)->key()
+    inline Key keyAt(int index) const { return at(index)->key(); }
 
     /** Return a reference to a value at a certain index (readonly)
       * \param index map index
       * \return reference to the value
       */
-    inline Value valueAt(int index) const { return at(index)->value(); } // FIXME: obsolete in favor of at(i)->value)
+    inline Value valueAt(int index) const { return at(index)->value(); }
 
     /** Modify value at given \a index
       * \param index map index
@@ -237,15 +237,28 @@ public:
     const_iterator end() const;
     /** @} */
 
-    /** Convenience iterators
+    /** Convenience adapters
       * @{
       */
-    MapSequence<Key, Value> fromTo(const Key &a, const Key &b) { return MapSequence<Key, Value>(this, from(a), to(b)); }
-    MapKeySequence<Key, Value> keys() const { return MapKeySequence<Key, Value>(this); }
-    MapValueSequence<Key, Value> values() const { return MapValueSequence<Key, Value>(this); }
+    inline Ref< Source<Item> > getAll() const { return ContainerSource<Map>::open(this); }
+    inline Ref< Source<Item> > getFromTo(const Key &a, const Key &b) { return ContainerSource<Map>::open(this, from(a), to(b)); }
+    inline Ref< Source<Key> > getAllKeys() const { return ContainerSource<Map, GetKey>::open(this); }
+    inline Ref< Source<Value> > getAllValues() const { return ContainerSource<Map, GetValue>::open(this); }
     /** @} */
 
 protected:
+    class GetKey {
+    public:
+        typedef Key OutputType;
+        static Key get(const Item &item) { return item->key(); }
+    };
+
+    class GetValue {
+    public:
+        typedef Value OutputType;
+        static Value get(const Item &item) { return item->value(); }
+    };
+
     typedef OrdinalTree< OrdinalNode<Item> > Tree;
     typedef typename Tree::Node Node;
 

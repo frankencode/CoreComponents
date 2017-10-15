@@ -60,4 +60,55 @@ private:
     typename Source::Item x_;
 };
 
+template<class T>
+class Pass {
+public:
+    typedef T InputType;
+    typedef T OutputType;
+    inline static T get(const T &x) { return x; }
+};
+
+template<class Container, class Get = Pass<typename Container::Item> >
+class ContainerSource: public Source<typename Get::OutputType> {
+public:
+    static Ref<ContainerSource> open(const Container *container)
+    {
+        return new ContainerSource(container);
+    }
+
+    static Ref<ContainerSource> open(const Container *container, int fromIndex, int toIndex)
+    {
+        return new ContainerSource(container, fromIndex, toIndex);
+    }
+
+    bool read(typename Get::OutputType *item) override
+    {
+        if (i_ <= j_) {
+            *item = Get::get(c_->at(i_));
+            ++i_;
+            return true;
+        }
+        return false;
+    }
+
+private:
+    ContainerSource(const Container *c):
+        c_(c),
+        i_(0),
+        j_(c->count() - 1)
+    {}
+
+    ContainerSource(const Container *c, int i, int j):
+        c_(c),
+        i_(i),
+        j_(j)
+    {
+        if (i_ < 0) i_ = 0;
+        if (c->count() <= j_) j_ = c->count() - 1;
+    }
+
+    Ref<const Container> c_;
+    int i_, j_;
+};
+
 } // namespace cc
