@@ -192,7 +192,7 @@ public:
     inline Instance *operator->() { return instance_; }
     inline const Instance *operator->() const { return instance_; }
 
-    inline operator const T &() const { return instance_->value(); }
+    inline operator T() const { return instance_->value(); }
     inline Property &operator=(const T &b) { instance_->setValue(b); return *this; }
 
     inline T operator()() const { return instance_->value(); }

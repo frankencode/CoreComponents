@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/containers>
+#include <cc/Source>
 #include <cc/OrdinalTree>
 #include <cc/Heap>
 #include <cc/Set>
@@ -296,6 +297,12 @@ public:
     iterator end() { return iterator(this, count()); }
     const_iterator begin() const { return const_iterator(this, 0); }
     const_iterator end() const { return const_iterator(this, count()); }
+    /** @} */
+
+    /** Convenience adapters
+      * @{
+      */
+    inline Ref< Source<Item> > getAll() const { return ContainerSource<List>::open(this); }
     /** @} */
 
 private:

@@ -26,7 +26,7 @@ protected:
         insert("optimize", "");
         insert("static", false);
 
-        insert("link", Ref<StringList>()); // FIXME: obsolete starting from v0.14.0
+        insert("link", Ref<StringList>());
 
         insert("compile-flags", Ref<StringList>());
         insert("link-flags", Ref<StringList>());
