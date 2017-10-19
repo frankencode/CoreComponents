@@ -1,0 +1,39 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Source>
+#include <cc/Plugin>
+
+namespace cc {
+
+template<typename, typename> class Map;
+
+class PluginDir: public Object
+{
+public:
+    static Ref<PluginDir> load(String path);
+
+    Ref< Source< Ref<Plugin> > > getLoadedPlugins() const;
+
+protected:
+    virtual void onLoaded(Plugin *plugin) {}
+    virtual void onLoadError(String pluginPath, String errorMessage);
+
+private:
+    PluginDir(String path);
+    ~PluginDir();
+    PluginDir *load();
+
+    String path_;
+    typedef Map<String, Ref<Plugin> > PluginByName;
+    Ref<PluginByName> loadedPlugins_;
+};
+
+} // namespace cc

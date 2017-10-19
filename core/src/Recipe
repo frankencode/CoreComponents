@@ -5,4 +5,5 @@ Library {
         cascade: true
     }
     // compile-flags: [-DCC_MEM_ACCOUNTING ]
+    link: dl
 }
