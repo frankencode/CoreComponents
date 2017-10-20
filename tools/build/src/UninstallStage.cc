@@ -62,7 +62,7 @@ bool UninstallStage::uninstallApplicationOrLibrary()
             CwdGuard guard(installDirPath, plan()->shell());
             toolChain()->cleanLibrarySymlinks(plan(), product);
             if (plan()->options() & BuildPlan::Plugin)
-                toolChain()->cleanPluginSymlinks(plan(), toolChain()->linkName(plan()->extensionTarget()));
+                toolChain()->cleanPluginSymlinks(plan(), toolChain()->targetName(plan()->extensionTarget()));
         }
         shell()->unlinkAll(
             plan()->projectPath()->extendPath("include"),

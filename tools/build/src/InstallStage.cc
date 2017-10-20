@@ -74,7 +74,7 @@ bool InstallStage::installApplicationOrLibrary()
             CwdGuard guard(installDirPath, shell());
             toolChain()->createLibrarySymlinks(plan(), product);
             if (options & BuildPlan::Plugin)
-                toolChain()->createPluginSymlinks(plan(), toolChain()->linkName(plan()->extensionTarget()), product);
+                toolChain()->createPluginSymlinks(plan(), toolChain()->targetName(plan()->extensionTarget()), product);
         }
 
         if (!
