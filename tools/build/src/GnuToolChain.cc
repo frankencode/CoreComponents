@@ -307,7 +307,7 @@ bool GnuToolChain::createSymlinks(const BuildPlan *plan) const
         createLibrarySymlinks(plan, linkName(plan));
 
     if (plan->options() & BuildPlan::Plugin)
-        createPluginSymlinks(plan, linkName(plan->extensionTarget()), linkName(plan));
+        createPluginSymlinks(plan, targetName(plan->extensionTarget()), linkName(plan));
 
     if (plan->options() & BuildPlan::Application)
         createAliasSymlinks(plan, linkName(plan));
@@ -337,7 +337,7 @@ void GnuToolChain::createPluginSymlinks(const BuildPlan *plan, String targetLibN
 
     String pluginPath = targetLibName->extendPath("plugins");
     plan->shell()->mkdir(pluginPath);
-    plan->shell()->symlink(pluginLibName, pluginPath->extendPath(pluginLibName));
+    plan->shell()->symlink("../../" + pluginLibName, pluginPath->extendPath(pluginLibName));
 }
 
 void GnuToolChain::cleanPluginSymlinks(const BuildPlan *plan, String targetLibName) const

@@ -329,6 +329,7 @@ RecipeProtocol::RecipeProtocol()
     define<ApplicationPrototype>();
     define<TestPrototype>();
     define<LibraryPrototype>();
+    define<PluginPrototype>();
     define<ToolsPrototype>();
     define<TestsPrototype>();
     define<PackagePrototype>();

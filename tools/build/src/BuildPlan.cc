@@ -479,9 +479,17 @@ void BuildPlan::readPrerequisites()
         if (path == "")
             throw UsageError(Format() << recipePath() << ": Failed to locate library '" << extensionTargetPath << "'");
         extensionTarget_ = BuildPlan::create(path);
+        if (extensionTarget_->options_ & Package) {
+            extensionTarget_->readPrerequisites();
+            for (BuildPlan *prerequisite: extensionTarget_->prerequisites_) {
+                if (prerequisite->options_ & Library)
+                    extensionTarget_ = prerequisite;
+            }
+        }
         if (!(extensionTarget_->options_ & Library))
             throw UsageError(Format() << recipePath() << ": '" << extensionTargetPath << "' (Plugin.extend) does not point to a library");
         extensionTarget_->readPrerequisites();
+        prerequisites_->appendList(extensionTarget_->prerequisites_);
         prerequisites_->append(extensionTarget_);
     }
 

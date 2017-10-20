@@ -43,7 +43,7 @@ bool CleanStage::run()
         if (!plan()->linkStatic()) {
             toolChain()->cleanLibrarySymlinks(plan(), product);
             if (plan()->options() & BuildPlan::Plugin)
-                toolChain()->cleanPluginSymlinks(plan(), toolChain()->linkName(plan()->extensionTarget()));
+                toolChain()->cleanPluginSymlinks(plan(), toolChain()->targetName(plan()->extensionTarget()));
         }
     }
 
