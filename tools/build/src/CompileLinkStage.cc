@@ -26,7 +26,13 @@ bool CompileLinkStage::run()
     for (Ref<Job> job; scheduler->collect(&job);) {
         fout() << shell()->beautify(job->command()) << nl;
         ferr() << job->outputText();
-        if (job->status() != 0) {
+        if (job->status() == 0) {
+            if (!job->finish()) {
+                status_ = 1;
+                return success_ = false;
+            }
+        }
+        else {
             status_ = job->status();
             return success_ = false;
         }

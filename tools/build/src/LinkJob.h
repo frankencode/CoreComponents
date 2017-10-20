@@ -19,7 +19,8 @@ class LinkJob: public Job
 public:
     static Ref<LinkJob> create(const BuildPlan *plan) { return new LinkJob(plan); }
 
-     virtual bool run() override;
+    virtual bool run() override;
+    virtual bool finish() override;
 
 private:
     LinkJob(const BuildPlan *plan);

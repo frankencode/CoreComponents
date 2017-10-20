@@ -21,6 +21,11 @@ bool LinkJob::run()
 {
     if (!Job::run()) return false;
     File::save(plan()->previousLinkCommandPath(), command());
+    return true;
+}
+
+bool LinkJob::finish()
+{
     if (!plan()->toolChain()->createSymlinks(plan())) return false;
     if (plan()->options() & BuildPlan::Library) plan()->toolChain()->generatePkgConfig(plan());
     return true;

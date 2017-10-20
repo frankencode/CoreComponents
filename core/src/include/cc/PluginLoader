@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#include <dlfcn.h>
+
+namespace cc {
+
+class PluginLoader: public Object
+{
+public:
+    PluginLoader(String libraryPath);
+};
+
+#define CC_PLUGIN_LOADER \
+const char *getLibraryPath() \
+{ \
+    Dl_info info; \
+    dladdr((void *)getLibraryPath, &info); \
+    return info.dli_fname; \
+} \
+namespace { \
+    PluginLoader pluginLoader(getLibraryPath()); \
+}
+
+} // namespace cc

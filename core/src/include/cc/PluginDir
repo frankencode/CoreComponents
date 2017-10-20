@@ -18,8 +18,9 @@ template<typename, typename> class Map;
 class PluginDir: public Object
 {
 public:
-    static Ref<PluginDir> load(String path);
+    static Ref<PluginDir> open(String path);
 
+    String path() const;
     Ref< Source< Ref<Plugin> > > getLoadedPlugins() const;
 
 protected:
@@ -29,7 +30,7 @@ protected:
 private:
     PluginDir(String path);
     ~PluginDir();
-    PluginDir *load();
+    PluginDir *open();
 
     String path_;
     typedef Map<String, Ref<Plugin> > PluginByName;
