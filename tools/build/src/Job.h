@@ -34,6 +34,7 @@ public:
     void registerDerivative(Job *derivative);
 
     virtual bool run();
+    virtual bool finish() { return true; }
 
 protected:
     friend class JobServer;

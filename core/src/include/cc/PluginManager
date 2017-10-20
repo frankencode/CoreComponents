@@ -1,0 +1,38 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Source>
+#include <cc/PluginDir>
+
+namespace cc {
+
+template<class> class Singleton;
+template<class> class List;
+
+class PluginManager: public Object
+{
+public:
+    static PluginManager *instance();
+    Ref< Source< Ref<PluginDir> > > getPluginDirs() const;
+
+private:
+    friend class Singleton<PluginManager>;
+    friend class PluginDir;
+
+    PluginManager();
+    ~PluginManager();
+
+    void registerPluginDir(PluginDir *pluginDir);
+
+    typedef List< Ref<PluginDir> > PluginDirs;
+    Ref<PluginDirs> pluginDirs_;
+};
+
+} // namespace cc
