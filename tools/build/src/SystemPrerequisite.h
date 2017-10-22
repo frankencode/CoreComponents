@@ -38,8 +38,6 @@ public:
 
     inline String configure() const { return configure_; }
 
-    inline StringList *includeTest() const { return includeTest_; }
-
     inline bool autoConfigure() const { return autoConfigure_; }
 
 private:
@@ -59,8 +57,6 @@ private:
     Version versionMax_;
 
     String configure_;
-
-    Ref<StringList> includeTest_; // FIXME: obsolete starting from v0.14.0
     bool autoConfigure_;
 };
 

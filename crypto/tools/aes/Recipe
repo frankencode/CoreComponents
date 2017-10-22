@@ -3,8 +3,6 @@ Application {
     alias: ccunaes
     use: [ core, crypto ]
     Dependency {
-        name: readline
-        include-test: readline/readline.h
-        link: readline
+        configure: config/readline.cc
     }
 }

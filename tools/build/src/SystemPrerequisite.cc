@@ -26,7 +26,6 @@ SystemPrerequisite::SystemPrerequisite(String name):
     origName_(name),
     optional_(false),
     cascade_(false),
-    includeTest_(StringList::create()),
     autoConfigure_(true)
 {
     includePaths_ = StringList::create();
@@ -46,8 +45,7 @@ SystemPrerequisite::SystemPrerequisite(const MetaObject *object, BuildPlan *plan
     versionConfigure_(object->value("version-configure")),
     versionMin_(object->value("version-min")),
     versionMax_(object->value("version-max")),
-    configure_(object->value("configure")),
-    includeTest_(object->value("include-test"))
+    configure_(object->value("configure"))
 {
     BuildParameters::read(object, plan);
     if (name_ == "" && libraries_->count() == 1)
@@ -63,8 +61,7 @@ SystemPrerequisite::SystemPrerequisite(const MetaObject *object, BuildPlan *plan
         versionConfigure_      == "" &&
         customCompileFlags_    == "" &&
         customLinkFlags_       == "" &&
-        configure_             == "" &&
-        includeTest_->count()  == 0;
+        configure_             == "";
 }
 
 } // namespace ccbuild

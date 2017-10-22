@@ -34,9 +34,6 @@ bool ConfigureStage::run()
         makeUseOf(prerequisite);
     }
 
-    if (plan()->usage())
-        plan()->BuildParameters::readSpecific(plan()->usage()); // FIXME: obsolete starting from v0.14.0
-
     if (!plan()->systemPrerequisitesByName()) return success_;
 
     bool firstLine = true;
@@ -106,11 +103,6 @@ bool ConfigureStage::run()
                     if (versionMax < version)
                         throw(String(Format() << "At most version " << versionMax << " is supported (version " << version << " detected)"));
                 }
-
-                if (prerequisite->includeTest()->count() > 0) { // FIXME: obsolete starting from v0.14.0
-                    if (!toolChain()->testInclude(plan(), prerequisite->includeTest()))
-                        throw(String("include test failed"));
-                }
             }
             catch (String &error) {
                 if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
@@ -178,8 +170,6 @@ void ConfigureStage::makeUseOf(BuildPlan *other)
             plan()->includePaths()->append(path);
         }
         plan()->libraries()->append(other->name());
-
-        if (other->usage()) plan()->BuildParameters::readSpecific(other->usage()); // FIXME: obsolete starting from v0.14.0
 
         if (other->systemPrerequisitesByName()) {
             for (int i = 0; i < other->systemPrerequisitesByName()->count(); ++i)
