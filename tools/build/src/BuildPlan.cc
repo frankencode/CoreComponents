@@ -216,10 +216,6 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
                 if (!predicates_) predicates_ = PredicateList::create();
                 readPredicate(object);
             }
-            else if (object->className() == "Usage") {
-                usage_ = BuildParameters::create();
-                usage_->read(object, this);
-            }
             else if (object->className() == "PreBuild") {
                 compileLinkStage_.preCommands()->append(String(object->value("execute")));
             }

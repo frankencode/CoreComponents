@@ -104,8 +104,6 @@ public:
 
     inline BuildPlan *extensionTarget() const { return extensionTarget_; }
 
-    inline BuildParameters *usage() const { return usage_; }
-
     int run();
 
     inline String sourcePrefix() const { return sourcePrefix_; }

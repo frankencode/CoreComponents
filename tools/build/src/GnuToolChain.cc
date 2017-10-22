@@ -386,13 +386,7 @@ String GnuToolChain::pkgConfig(const BuildPlan *plan) const
     f << "Name: " << targetName(plan) << nl;
     f << "Description: " << plan->description() << nl;
     f << "Version: " << plan->version() << nl;
-    f << "Libs: -L${libdir} -l" << plan->name();
-    if (plan->usage()) {
-        String customFlags = plan->usage()->customLinkFlags()->join(" ");
-        if (customFlags != "")
-            f << " " << customFlags;
-    }
-    f << nl;
+    f << "Libs: -L${libdir} -l" << plan->name() << nl;
 
     if (plan->prerequisites()->count() > 0) {
         auto requiresList = List<const BuildPlan *>::create();
@@ -439,11 +433,6 @@ String GnuToolChain::pkgConfig(const BuildPlan *plan) const
     f << "Cflags: -I${includedir}";
     if (hasLibInclude)
         f << " -I${libincludedir}";
-    if (plan->usage()) {
-        String customFlags = plan->usage()->customCompileFlags()->join(" ");
-        if (customFlags != "")
-            f << " " << customFlags;
-    }
     f << nl;
     return f;
 }
@@ -500,8 +489,6 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
         for (int i = 0; i < plan->customLinkFlags()->count(); ++i)
             args << plan->customLinkFlags()->at(i);
     }
-
-    args << "-Wl,--no-as-needed"; // FIXME remove starting from v0.14.0
 
     StringList *libraryPaths = plan->libraryPaths();
     StringList *libraries = plan->libraries();

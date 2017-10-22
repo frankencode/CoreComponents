@@ -149,8 +149,6 @@ protected:
         insert("version-max", Version());
 
         insert("configure", "");
-
-        insert("include-test", StringList::create()); // FIXME: obsolete starting from v0.14.0
     }
 };
 
@@ -247,19 +245,13 @@ protected:
 class LibraryPrototype: public ApplicationPrototype
 {
 public:
-    static Ref<MetaObject> create(const String &className = "Library") {
-        return new LibraryPrototype(className);
+    static Ref<MetaObject> create() {
+        return new LibraryPrototype("Library");
     }
 
 protected:
-    static Ref<MetaProtocol> createProtocol() {
-        Ref<MetaProtocol> protocol = MetaProtocol::create();
-        protocol->define<SpecificBuildParametersPrototype>("Usage"); // FIXME: obsolete starting from v0.14.0
-        return protocol;
-    }
-
     LibraryPrototype(const String &className):
-        ApplicationPrototype(className, createProtocol())
+        ApplicationPrototype(className)
     {}
 };
 
