@@ -21,7 +21,7 @@ public:
     static Ref<PluginDir> open(String path);
 
     String path() const;
-    Ref< Source< Ref<Plugin> > > getLoadedPlugins() const;
+    Ref< Source<const Plugin *> > getLoadedPlugins() const;
 
 protected:
     virtual void onLoaded(Plugin *plugin) {}

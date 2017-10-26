@@ -17,9 +17,9 @@ PluginManager *PluginManager::instance()
     return Singleton<PluginManager>::instance();
 }
 
-Ref< Source< Ref<PluginDir> > > PluginManager::getPluginDirs() const
+Ref< Source<const PluginDir *> > PluginManager::getPluginDirs() const
 {
-    return pluginDirs_->getAll();
+    return pluginDirs_->getAll<const PluginDir *>();
 }
 
 PluginManager::PluginManager():

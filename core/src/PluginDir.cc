@@ -34,9 +34,9 @@ String PluginDir::path() const
     return path_;
 }
 
-Ref< Source< Ref<Plugin> > > PluginDir::getLoadedPlugins() const
+Ref< Source<const Plugin *> > PluginDir::getLoadedPlugins() const
 {
-    return loadedPlugins_->getAllValues();
+    return loadedPlugins_->getAllValues<const Plugin *>();
 }
 
 void PluginDir::onLoadError(String pluginPath, String errorMessage)
