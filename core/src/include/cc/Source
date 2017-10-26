@@ -60,15 +60,18 @@ private:
     typename Source::Item x_;
 };
 
-template<class T>
+template<class I, class O>
 class Pass {
 public:
-    typedef T InputType;
-    typedef T OutputType;
-    inline static T get(const T &x) { return x; }
+    typedef I InputType;
+    typedef O OutputType;
+    inline static OutputType get(const InputType &x) { return x; }
 };
 
-template<class Container, class Get = Pass<typename Container::Item> >
+template<
+    class Container,
+    class Get = Pass<typename Container::Item, typename Container::Item>
+>
 class ContainerSource: public Source<typename Get::OutputType> {
 public:
     static Ref<ContainerSource> open(const Container *container)

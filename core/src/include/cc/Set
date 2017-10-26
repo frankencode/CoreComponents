@@ -154,7 +154,7 @@ public:
     /// Reset this set to an empty set
     inline void deplete() { tree_.clear(); }
 
-    /** STL-style iterator declarations
+    /** C++ iterator declarations
       * @{
       */
     typedef ConstIterator<Set> iterator;
@@ -163,6 +163,13 @@ public:
     iterator end() { return const_iterator(this, count()); }
     const_iterator begin() const { return const_iterator(this, 0); }
     const_iterator end() const { return const_iterator(this, count()); }
+    /** @} */
+
+    /** Source adapter
+      * @{
+      */
+    template<class OutputType = Item>
+    inline Ref< Source<OutputType> > getAll() const { return ContainerSource< Set, Pass<Item, OutputType> >::open(this); }
     /** @} */
 
 private:

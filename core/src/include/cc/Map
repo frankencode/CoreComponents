@@ -16,9 +16,6 @@ namespace cc {
 
 template<class, class> class KeyValuePair;
 template<class, class> class MapIterator;
-template<class, class> class MapSequence;
-template<class, class> class MapKeySequence;
-template<class, class> class MapValueSequence;
 
 /** \class Map Map.h cc/Map
   * \ingroup container
@@ -226,7 +223,7 @@ public:
     /// \copydoc push(const Item &item)
     inline void operator<<(const Item &item) { push(item); }
 
-    /** STL-style iterator declarations
+    /** C++ iterator declarations
       * @{
       */
     typedef MapIterator<Key, Value> iterator;
@@ -237,26 +234,35 @@ public:
     const_iterator end() const;
     /** @} */
 
-    /** Convenience adapters
+    /** Source adapters
       * @{
       */
-    inline Ref< Source<Item> > getAll() const { return ContainerSource<Map>::open(this); }
-    inline Ref< Source<Item> > getFromTo(const Key &a, const Key &b) { return ContainerSource<Map>::open(this, from(a), to(b)); }
-    inline Ref< Source<Key> > getAllKeys() const { return ContainerSource<Map, GetKey>::open(this); }
-    inline Ref< Source<Value> > getAllValues() const { return ContainerSource<Map, GetValue>::open(this); }
+    template<class OutputType = Item>
+    inline Ref< Source<OutputType> > getAll() const { return ContainerSource< Map, Pass<Item, OutputType> >::open(this); }
+
+    template<class OutputType = Item>
+    inline Ref< Source<OutputType> > getFromTo(const Key &a, const Key &b) { return ContainerSource< Map, Pass<Item, OutputType> >::open(this, from(a), to(b)); }
+
+    template<class OutputType = Key>
+    inline Ref< Source<OutputType> > getAllKeys() const { return ContainerSource<Map, GetKey<OutputType> >::open(this); }
+
+    template<class OutputType = Value>
+    inline Ref< Source<OutputType> > getAllValues() const { return ContainerSource<Map, GetValue<OutputType> >::open(this); }
     /** @} */
 
 protected:
+    template<class O = Key>
     class GetKey {
     public:
-        typedef Key OutputType;
-        static Key get(const Item &item) { return item->key(); }
+        typedef O OutputType;
+        static OutputType get(const Item &item) { return item->key(); }
     };
 
+    template<class O = Value>
     class GetValue {
     public:
-        typedef Value OutputType;
-        static Value get(const Item &item) { return item->value(); }
+        typedef O OutputType;
+        static OutputType get(const Item &item) { return item->value(); }
     };
 
     typedef OrdinalTree< OrdinalNode<Item> > Tree;
@@ -339,99 +345,6 @@ public:
 private:
     const Map<Key, Value> *m_;
     int i_;
-};
-
-template<class Key, class Value>
-class MapKeyIterator
-{
-public:
-    MapKeyIterator(const Map<Key, Value> *m, int i):
-        m_(m),
-        i_(i)
-    {}
-
-    inline Key operator*() const { return m_->keyAt(i_); }
-
-    inline MapKeyIterator &operator++() { ++i_; return *this; }
-
-    inline bool operator!=(const MapKeyIterator &b) { return i_ != b.i_; }
-
-private:
-    const Map<Key, Value> *m_;
-    int i_;
-};
-
-template<class Key, class Value>
-class MapValueIterator
-{
-public:
-    MapValueIterator(const Map<Key, Value> *m, int i):
-        m_(m),
-        i_(i)
-    {}
-
-    inline Value operator*() const { return m_->valueAt(i_); }
-
-    inline MapValueIterator &operator++() { ++i_; return *this; }
-
-    inline bool operator!=(const MapValueIterator &b) { return i_ != b.i_; }
-
-private:
-    const Map<Key, Value> *m_;
-    int i_;
-};
-
-template<class Key, class Value>
-class MapSequence
-{
-public:
-    MapSequence(const Map<Key, Value> *m, int fromIndex, int toIndex):
-        m_(m),
-        i_(fromIndex),
-        j_(toIndex)
-    {}
-
-    typedef MapIterator<Key, Value> iterator;
-    typedef MapIterator<Key, Value> const_iterator;
-
-    iterator begin() const { return MapIterator<Key, Value>(m_, i_); }
-    iterator end() const { return MapIterator<Key, Value>(m_, j_ + 1); }
-
-private:
-    const Map<Key, Value> *m_;
-    int i_, j_;
-};
-
-template<class Key, class Value>
-class MapKeySequence
-{
-public:
-    MapKeySequence(const Map<Key, Value> *m): m_(m) {}
-
-    typedef MapKeyIterator<Key, Value> iterator;
-    typedef MapKeyIterator<Key, Value> const_iterator;
-
-    iterator begin() const { return MapKeyIterator<Key, Value>(m_, 0); }
-    iterator end() const { return MapKeyIterator<Key, Value>(m_, m_->count()); }
-
-private:
-    const Map<Key, Value> *m_;
-};
-
-template<class Key, class Value>
-class MapValueSequence
-{
-public:
-    MapValueSequence(const Map<Key, Value> *m): m_(m) {}
-
-    typedef MapValueIterator<Key, Value> iterator;
-    typedef MapValueIterator<Key, Value> const_iterator;
-
-    iterator begin() const { return MapValueIterator<Key, Value>(m_, 0); }
-    iterator end() const { return MapValueIterator<Key, Value>(m_, m_->count()); }
-
-private:
-    const Map<Key, Value> *m_;
 };
 
 template<class Key, class Value>

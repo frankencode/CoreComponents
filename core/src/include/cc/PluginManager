@@ -20,7 +20,7 @@ class PluginManager: public Object
 {
 public:
     static PluginManager *instance();
-    Ref< Source< Ref<PluginDir> > > getPluginDirs() const;
+    Ref< Source<const PluginDir *> > getPluginDirs() const;
 
 private:
     friend class Singleton<PluginManager>;
