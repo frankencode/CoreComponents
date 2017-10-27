@@ -25,6 +25,8 @@ public:
       * \param argv argument values
       * \param options validate/return command line options
       * \return new Arguments instance
+      * \exception HelpRequest command line contains a help option (-h or --help)
+      * \exception VersionRequest command line contains a version option (-v or --version)
       */
     static Ref<Arguments> parse(int argc, char **argv, VariantMap *options = 0);
 

@@ -41,19 +41,19 @@ public:
     /// \copydoc maxDepth()
     inline void setMaxDepth(int depth) { maxDepth_ = depth; }
 
-    /// Overstep hidden files and directories during recursive tree traversal
+    /// Overstep hidden files and directories during recursive tree traversal (defaults to false)
     inline bool ignoreHidden() const { return ignoreHidden_; }
 
     /// \copydoc ignoreHidden()
     inline void setIgnoreHidden(bool on) { ignoreHidden_ = on; }
 
-    /// Follow symbolic links during recursive tree traversal
+    /// Follow symbolic links during recursive tree traversal (defaults to false)
     inline bool followSymlink() const { return followSymlink_; }
 
     /// \copydoc followSymlink()
     inline void setFollowSymlink(bool on) { followSymlink_ = on; }
 
-    /// Child-first recursive tree traversal order
+    /// Child-first recursive tree traversal order (defaults to false)
     inline bool deleteOrder() const { return deleteOrder_; }
 
     /// \copydoc deleteOrder()
