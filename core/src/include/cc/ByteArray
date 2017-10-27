@@ -681,16 +681,6 @@ public:
       */
     String toHex() const;
 
-    #if 0
-    /** Convert to a series of hexadecimal characters
-      * \param byteSeparator separator put between individual bytes
-      * \see hexDump
-      */
-    String toHex(String byteSeparator) const {
-        return toHex()->breakUp(2)->join(byteSeparator);
-    }
-    #endif
-
     /** Convert to a hexadecimal dump
       * \see HexDump
       */
@@ -720,7 +710,7 @@ public:
     /// Return the filename component without file type suffix
     String baseName() const;
 
-    /// Return the file type suffix
+    /// Return the file type suffix (everything after the last '.')
     String fileSuffix() const;
 
     /// Remove the last component from this path
