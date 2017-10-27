@@ -65,11 +65,17 @@ bool Dir::read(String *name)
 {
     struct dirent buf;
     struct dirent *result;
-    memclr(&buf, sizeof(buf));
-    int ret = ::readdir_r(dir_, &buf, &result);
-    if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
-    if (result)
-        *name = buf.d_name;
+    while (true) {
+        memclr(&buf, sizeof(buf));
+        int ret = ::readdir_r(dir_, &buf, &result);
+        if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
+        if (result) {
+            if (strcmp(buf.d_name, ".") == 0) continue;
+            if (strcmp(buf.d_name, "..") == 0) continue;
+            *name = buf.d_name;
+        }
+        break;
+    }
     return result;
 }
 
