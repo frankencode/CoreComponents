@@ -21,7 +21,7 @@ class WaitCondition;
   * \brief %Thread synchronization primitive: mutual exclusive access
   * \see Guard
   */
-class Mutex: public Object, public NonCopyable
+class Mutex: public Object
 {
 public:
     /** \brief Create a new mutex
@@ -47,6 +47,9 @@ protected:
     ~Mutex();
 
 private:
+    Mutex(const Mutex&) = delete;
+    Mutex& operator=(const Mutex&) = delete;
+
     pthread_mutex_t mutex_;
 };
 
