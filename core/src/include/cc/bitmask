@@ -1,0 +1,20 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+/** Declare bitwise operators (&, |, ^, ~, &=, |=, ^=) for an enumeration class type
+  */
+#define CC_BITMASK(EnumType, IntType) \
+constexpr EnumType operator&(EnumType x, EnumType y) { return static_cast<EnumType>(static_cast<IntType>(x) & static_cast<IntType>(y)); } \
+constexpr EnumType operator|(EnumType x, EnumType y) { return static_cast<EnumType>(static_cast<IntType>(x) | static_cast<IntType>(y)); } \
+constexpr EnumType operator^(EnumType x, EnumType y) { return static_cast<EnumType>(static_cast<IntType>(x) ^ static_cast<IntType>(y)); } \
+constexpr EnumType operator~(EnumType x) { return static_cast<EnumType>(~static_cast<IntType>(x)); } \
+inline EnumType& operator&=(EnumType& x, EnumType y) { x = x & y; return x; } \
+inline EnumType& operator|=(EnumType& x, EnumType y) { x = x | y; return x; } \
+inline EnumType& operator^=(EnumType& x, EnumType y) { x = x ^ y; return x; }

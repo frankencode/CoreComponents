@@ -11,6 +11,7 @@
 #include <sys/types.h> // ssize_t, etc.
 #include <stdint.h> // (u)int8_t .. (u)int64_t
 #include <cc/assert>
+#include <cc/bitmask>
 
 typedef float float32_t;
 typedef double float64_t;
@@ -221,14 +222,6 @@ template<class T>
 class ToUnicode {
 public:
     inline static uchar_t map(const T &x) { return uchar_t(x); }
-};
-
-class NonCopyable
-{
-protected:
-    NonCopyable() {}
-    NonCopyable(const NonCopyable &b);
-    const NonCopyable &operator=(const NonCopyable &b);
 };
 
 } // namespace cc
