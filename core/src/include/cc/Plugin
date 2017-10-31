@@ -33,7 +33,6 @@ public:
 
 private:
     Plugin(String path);
-    ~Plugin();
 
     Plugin *load();
 
