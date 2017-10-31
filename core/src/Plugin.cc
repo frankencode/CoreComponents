@@ -27,11 +27,6 @@ Plugin::Plugin(String path):
     handle_(0)
 {}
 
-Plugin::~Plugin()
-{
-    close();
-}
-
 Plugin *Plugin::load()
 {
     handle_ = dlopen(path_, RTLD_LAZY|RTLD_LOCAL);

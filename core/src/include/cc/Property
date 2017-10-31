@@ -31,6 +31,8 @@ public:
 
     class Instance: public Object {
     public:
+        Event valueChanged;
+
         const T &value() const
         {
             if (dirty_) {
@@ -178,8 +180,6 @@ public:
             }
         }
 
-        Event valueChanged;
-
         mutable T value_;
         std::function<T()> f_;
         bool dirty_;
@@ -204,6 +204,21 @@ private:
 
     Ref<Instance> instance_;
 };
+
+/** \internal
+  * \brief Type conversion helpers
+  * @{
+  */
+template<class T> inline bool operator==(const Property<T> a, const T &b) { return a->value() == b; }
+template<class T> inline bool operator!=(const Property<T> a, const T &b) { return a->value() != b; }
+template<class T> inline T operator+(const Property<T> a, const T &b) { return a->value() + b; }
+template<class T> inline T operator-(const Property<T> a, const T &b) { return a->value() - b; }
+template<class T> inline T operator*(const Property<T> a, const T &b) { return a->value() * b; }
+template<class T> inline T operator/(const Property<T> a, const T &b) { return a->value() / b; }
+template<class T> inline T operator|(const Property<T> a, const T &b) { return a->value() | b; }
+template<class T> inline T operator&(const Property<T> a, const T &b) { return a->value() & b; }
+/** @}
+  */
 
 template<class T>
 inline Property<T> alias(Property<T> &p) { return p->alias(); }
