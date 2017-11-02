@@ -102,33 +102,75 @@ Color Color::parse(const char *s, bool *ok)
         return c;
     }
     *ok = false;
-    return Color();
+    return Color{};
 }
 
 Color Color::blend(Color a, Color b)
 {
-    uint32_t o_a = Color::alpha(a);
-    if (o_a == 0xFF) return a;
+    const uint32_t h = component<Alpha, uint32_t>(b);
 
-    o_a += (o_a == 0xFF);
-    uint32_t n_a = 0x100 - o_a;
+    if (h == 0xFF)
+    {
+        uint16_t o_a = component<Alpha, uint16_t>(a);
+        if (o_a == 0xFF) return a;
 
-    uint32_t o_b = Color::alpha(b);
-    if (o_b == 0xFF) {
-        for (int i = FirstChannel; i <= LastChannel; ++i)
-            b.bytes_[i] = (o_a * a.bytes_[i] + n_a * b.bytes_[i]) >> 8;
+        uint16_t n_a = 0x100 - o_a;
+
+        typedef uint16_t v4ui16 __attribute__((vector_size(8)));
+
+        v4ui16 v_a {
+            component<Red  , uint16_t>(a),
+            component<Green, uint16_t>(a),
+            component<Blue , uint16_t>(a),
+            0
+        };
+
+        v4ui16 v_b {
+            component<Red,   uint16_t>(b),
+            component<Green, uint16_t>(b),
+            component<Blue,  uint16_t>(b),
+            0
+        };
+
+        v_b = (o_a * v_a + n_a * v_b) >> 8;
+
+        b = Color { v_b[0], v_b[1], v_b[2] };
     }
     else {
-        o_b += (o_b >= 0xFF);
+        uint32_t o_a = component<Alpha, uint32_t>(a);
+        if (o_a == 0xFF) return a;
+
+        uint32_t n_a = 0xFF - o_a;
+        uint32_t o_b = h;
+
         o_a <<= 8;
         n_a *= o_b;
         uint32_t h = o_a + n_a;
-        if ((Color::alpha(b) = h >> 8) > 0) {
-            for (int i = FirstChannel; i <= LastChannel; ++i)
-                b.bytes_[i] = (o_a * a.bytes_[i] + n_a * b.bytes_[i]) / h;
+
+        if ((h >> 8) > 0)
+        {
+            typedef uint32_t v4ui32 __attribute__((vector_size(16)));
+
+            v4ui32 v_a {
+                component<Red,   uint32_t>(a),
+                component<Green, uint32_t>(a),
+                component<Blue,  uint32_t>(a),
+                0
+            };
+
+            v4ui32 v_b {
+                component<Red,   uint32_t>(b),
+                component<Green, uint32_t>(b),
+                component<Blue,  uint32_t>(b),
+                0
+            };
+
+            v_b = (o_a * v_a + n_a * v_b) / h;
+
+            b = Color { v_b[0], v_b[1], v_b[2], h >> 8 };
         }
         else {
-            b.word_ = 0;
+            b.w_ = 0;
         }
     }
 
@@ -139,9 +181,9 @@ String str(Color c)
 {
     return Format()
         << "#"
-        << hex(Color::red(c), 2)
+        << hex(Color::red  (c), 2)
         << hex(Color::green(c), 2)
-        << hex(Color::blue(c), 2)
+        << hex(Color::blue (c), 2)
         << hex(Color::alpha(c), 2);
 }
 

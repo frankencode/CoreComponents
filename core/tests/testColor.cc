@@ -17,10 +17,9 @@ using namespace cc::testing;
 class GrayShadesOnPaper: public TestCase
 {
     void run() {
-        Color a = Color(0x00, 0x00, 0x00);
         Color b = Color(0xFF, 0xFF, 0xFF);
         for (int i = 0; i <= 0xFF; ++i) {
-            Color::alpha(a) = i;
+            Color a = Color(0x00, 0x00, 0x00, i);
             Color c = Color::blend(a, b);
             Color d = Color(0xFF - i, 0xFF - i, 0xFF - i);
             if (c != d) fout("%%, %%\n") << c << d;
@@ -33,10 +32,9 @@ class GrayShadesOnGlass: public TestCase
 {
     void run()
     {
-        Color a = Color(0x00, 0x00, 0x00);
         Color b = Color(0xFF, 0xFF, 0xFF, 0x80);
         for (int i = 0; i <= 0xFF; ++i) {
-            Color::alpha(a) = i;
+            Color a = Color(0x00, 0x00, 0x00, i);
             Color c = Color::blend(a, b);
             Color d = GrayShadesOnGlass::blend(a, b);
             if (c != d) fout("%% over %% => %% (%%)\n") << a << b << c << d;
