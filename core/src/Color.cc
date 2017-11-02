@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/stdio> // DEBUG
 #include <cc/ColorNames>
 #include <cc/Format>
 #include <cc/Color>

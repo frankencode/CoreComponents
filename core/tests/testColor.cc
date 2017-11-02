@@ -80,13 +80,50 @@ class GrayShadesOnGlass: public TestCase
     }
 };
 
+class NormalizationTest: public TestCase
+{
+    void run() {
+        {
+            Color c { 0x80, 0x80, 0x80, 0x80 }; // 50% white premultiplied
+            Color::normalize(&c);
+            fout() << c << nl;
+            CC_VERIFY(c == Color(0xFF, 0xFF, 0xFF, 0x80));
+        }
+        {
+            Color c { 0x40, 0x00, 0x00, 0x40 }; // 25% red premultiplied
+            Color::normalize(&c);
+            fout() << c << nl;
+            CC_VERIFY(c == Color(0xFF, 0x00, 0x00, 0x40));
+        }
+        {
+            Color c { 0x00, 0x00, 0x10, 0x20 }; // 12.5% half-blue premultiplied
+            Color::normalize(&c);
+            fout() << c << nl;
+            CC_VERIFY(
+                c == Color(0x00, 0x00, 0x7F, 0x20) ||
+                c == Color(0x00, 0x00, 0x80, 0x20)
+            );
+        }
+        {
+            Color c { 0x00, 0x01, 0x00, 0x01 }; // 1/255-th green premultiplied
+            Color::normalize(&c);
+            fout() << c << nl;
+            CC_VERIFY(c == Color(0x00, 0xFF, 0x00, 0x01));
+        }
+        {
+            Color c { 0x00, 0x00, 0x00, 0x00 }; // transparent
+            Color::normalize(&c);
+            fout() << c << nl;
+            CC_VERIFY(c == Color(0x00, 0x00, 0x00, 0x00));
+        }
+    }
+};
+
 int main(int argc, char **argv)
 {
-    // for (int x = 0; x < 256; ++x)
-    //    fout("%%, %%\n") << x << 256 * x / 255 + (x % 255 > 127);
-
     CC_TESTSUITE_ADD(GrayShadesOnPaper);
     CC_TESTSUITE_ADD(GrayShadesOnGlass);
+    CC_TESTSUITE_ADD(NormalizationTest);
 
     return TestSuite::instance()->run(argc, argv);
 }

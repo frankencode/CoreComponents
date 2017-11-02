@@ -16,7 +16,7 @@ class Variant;
 
 /** \class Color Color.h cc/Color
   * \ingroup misc
-  * \brief ARGB color value
+  * \brief 32-bit ARGB color value
   * \see ColorNames
   */
 class Color
@@ -147,12 +147,12 @@ private:
 /** Convenience color constants
   * @{
   */
-const Color transparent {0x00, 0x00, 0x00, 0x00};
-const Color black       {0x00, 0x00, 0x00};
-const Color white       {0xFF, 0xFF, 0xFF};
-const Color red         {0xFF, 0x00, 0x00};
-const Color green       {0x00, 0xFF, 0x00};
-const Color blue        {0x00, 0x00, 0xFF};
+const Color transparent { 0x00, 0x00, 0x00, 0x00 };
+const Color black       { 0x00, 0x00, 0x00 };
+const Color white       { 0xFF, 0xFF, 0xFF };
+const Color red         { 0xFF, 0x00, 0x00 };
+const Color green       { 0x00, 0xFF, 0x00 };
+const Color blue        { 0x00, 0x00, 0xFF };
 /** @}
   */
 
