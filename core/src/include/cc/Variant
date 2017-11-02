@@ -66,7 +66,7 @@ public:
     Variant(bool value):    type_(BoolType),    itemType_(UndefType), int_(value)        {}
     Variant(float value):   type_(FloatType),   itemType_(UndefType), float_(value)      {}
     Variant(double value):  type_(FloatType),   itemType_(UndefType), float_(value)      {}
-    Variant(Color value):   type_(ColorType),   itemType_(UndefType), word_(value.word_) {}
+    Variant(Color value):   type_(ColorType),   itemType_(UndefType), word_(value) {}
     Variant(Version value): type_(VersionType), itemType_(UndefType), word_(value.n())   {}
 
     Variant(const char *value):   type_(StringType), itemType_(UndefType) { initRef(String(value).get()); }
@@ -99,7 +99,7 @@ public:
     inline const Variant &operator=(int value)           { type_ = IntType;  int_ = value; return *this; }
     inline const Variant &operator=(float value)         { type_ = FloatType; float_ = value; return *this; }
     inline const Variant &operator=(double value)        { type_ = FloatType; float_ = value; return *this; }
-    inline const Variant &operator=(Color value)         { type_ = ColorType; word_ = value.word_; return *this; }
+    inline const Variant &operator=(Color value)         { type_ = ColorType; word_ = value; return *this; }
     inline const Variant &operator=(Version value)       { type_ = VersionType; word_ = value.n(); return *this; }
     inline const Variant &operator=(const char *value)   { return *this = Variant(value); }
     inline const Variant &operator=(const String &value) { return *this = Variant(value); }
@@ -136,7 +136,7 @@ public:
     inline operator Color() const {
         if (!type_) return Color();
         CC_ASSERT2(type_ & ColorType, illegalConversion());
-        return Color::cast(word_);
+        return Color::fromWord(word_);
     }
     inline operator Version() const {
         return toVersion(*this);

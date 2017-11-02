@@ -16,30 +16,17 @@ class Variant;
 
 /** \class Color Color.h cc/Color
   * \ingroup misc
-  * \brief RGB color tuple
+  * \brief ARGB color value
   * \see ColorNames
   */
 class Color
 {
 public:
-    /// %Color channels
-    enum {
-        AlphaChannel = 0,           ///< Index of alpha channel
-        BlueChannel  = 1,           ///< Index of blue channel
-        GreenChannel = 2,           ///< Index of green channel
-        RedChannel   = 3,           ///< Index of red channel
-        FirstChannel = BlueChannel, ///< Index of first channel
-        LastChannel  = RedChannel   ///< Index of last channel
-    };
-
-    /// Default constructor
-    Color()
-    {
-        bytes_[AlphaChannel] = 0x00;
-        bytes_[BlueChannel]  = 0xFF;
-        bytes_[GreenChannel] = 0xFF;
-        bytes_[RedChannel]   = 0xFF;
-    }
+    /** Construct an invalid color
+      */
+    Color():
+        w_{0x00FFFFFF}
+    {}
 
     /** Construct a color from a color literal or name \a s.
       * %Color literals of the format \c #RRGGBB, \c #RRGGBBAA, \c #RGB, \c #RGAB and
@@ -52,82 +39,124 @@ public:
         if (!ok) *this = Color();
     }
 
-    /** Construct a color from an color tuple
-      * \param r red component (0..255)
-      * \param g green component (0..255)
-      * \param b blue component (0..255)
-      * \param a alpha value / opacity (0..255)
+    /** Compose a color from its components
+      * \param r red component (0..0xFF)
+      * \param g green component (0..0xFF)
+      * \param b blue component (0..0xFF)
+      * \param a alpha value / opacity (0..0xFF)
       */
-    Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xFF)
-    {
-        bytes_[AlphaChannel] = a;
-        bytes_[BlueChannel]  = b;
-        bytes_[GreenChannel] = g;
-        bytes_[RedChannel]   = r;
-    }
+    template<class T>
+    Color(T r, T g, T b, T a = 0xFF):
+        w_{compose(r, g, b, a)}
+    {}
 
     /** \copydoc Color(const char *)
       * \param ok return true if \a s is a valid color literal or name
       */
     static Color parse(const char *s, bool *ok = 0);
 
-    /// Get a transparent color
-    inline static Color transparent() { return Color(0, 0, 0, 0); }
+    /** Construct a color from a 32-bit word \a w
+      */
+    inline static Color fromWord(uint32_t w) { Color c; c.w_ = w; return c; }
 
-    /// Get a black color
-    inline static Color black() { return Color(0, 0, 0); }
+    /** Check if color \c is valid
+      * A color is considered invalid, if alpha is zero and red, green or blue is non-zero.
+      */
+    inline static bool isValid(Color c) {
+        return !(
+            alpha(c) == 0 && (
+                red(c)   != 0 ||
+                green(c) != 0 ||
+                blue(c)  != 0
+            )
+        );
+    }
 
-    /// Get a white color
-    inline static Color white() { return Color(0xFF, 0xFF, 0xFF); }
+    /** Getters for individual color components
+      * @{
+      */
+    inline static uint32_t alpha(Color c) { return component<Alpha>(c); }
+    inline static uint32_t red  (Color c) { return component<Red  >(c); }
+    inline static uint32_t green(Color c) { return component<Green>(c); }
+    inline static uint32_t blue (Color c) { return component<Blue >(c); }
+    /** @}
+      */
 
-    /// Get a red color
-    inline static Color red() { return Color(0xFF, 0, 0); }
+    /** Automatic conversion to a 32-bit word
+      */
+    inline operator uint32_t() { return w_; }
 
-    /// Convenience function to get a green color
-    inline static Color green() { return Color(0, 0xFF, 0); }
+    /** Comparism operators
+      * @{
+      */
+    inline bool operator==(const Color &b) const { return w_ == b.w_; }
+    inline bool operator!=(const Color &b) const { return w_ != b.w_; }
+    /** @}
+      */
 
-    /// Convenience function to get a blue color
-    inline static Color blue() { return Color(0, 0, 0xFF); }
-
-    /// Check if color \c is valid
-    inline static bool isValid(Color &c) { return !(c.bytes_[AlphaChannel] == 0 && (c.bytes_[BlueChannel] != 0 || c.bytes_[GreenChannel] != 0 || c.bytes_[RedChannel] != 0)); }
-
-    /// Obtain red component of \a c
-    inline static uint8_t &red(Color &c) { return c.bytes_[RedChannel]; }
-
-    /// Obtain green component of \a c
-    inline static uint8_t &green(Color &c) { return c.bytes_[GreenChannel]; }
-
-    /// Obtain blue component of \a c
-    inline static uint8_t &blue(Color &c) { return c.bytes_[BlueChannel]; }
-
-    /// Obtain alpha component of \a c
-    inline static uint8_t &alpha(Color &c) { return c.bytes_[AlphaChannel]; }
-
-    /// Type conversion to uint32_t operator
-    inline operator uint32_t() { return word_; }
-
-    /// Compare two colors for equality
-    inline bool operator==(const Color &b) const { return word_ == b.word_; }
-
-    /// Compare two colors for inequality
-    inline bool operator!=(const Color &b) const { return word_ != b.word_; }
-
-    /// Alpha-blend color \a a over color \a b
+    /** Alpha-blend color \a a over color \a b
+      */
     static Color blend(Color a, Color b);
+
+    /** Translate a pre-multiplied ARGB to a non-premultiplied ARGB
+      */
+    inline static void normalize(Color *c)
+    {
+        uint32_t h = c->w_;
+        uint16_t a = component<Alpha, uint16_t>(h);
+        if (a == 0 || a == 0xFF) return;
+        typedef uint16_t v4ui16 __attribute__((vector_size(8)));
+        v4ui16 v {
+            component<Red,   uint16_t>(h),
+            component<Green, uint16_t>(h),
+            component<Blue,  uint16_t>(h),
+            0
+        };
+        v = (0xFF * v) / a;
+        c->w_ = compose(v[0], v[1], v[2], a);
+    }
 
 private:
     friend class Variant;
 
-    inline static Color cast(uint32_t x) { Color c; c.word_ = x; return c; }
-
-    union {
-        uint8_t bytes_[4];
-        uint32_t word_;
+    enum Shift {
+        Alpha = 24,
+        Red   = 16,
+        Green =  8,
+        Blue  =  0
     };
+
+    template<int Shift, class T = uint32_t>
+    inline static T component(Color c) { return component<Shift, T>(c.w_); }
+
+    template<int Shift, class T = uint32_t>
+    inline static T component(uint32_t w) { return (w >> Shift) & 0xFF; }
+
+    template<class T>
+    inline static uint32_t compose(T r, T g, T b, T a) {
+        return
+            (uint32_t(a) << Alpha) |
+            (uint32_t(r) << Red  ) |
+            (uint32_t(g) << Green) |
+            (uint32_t(b) << Blue ) ;
+    };
+
+    uint32_t w_;
 };
 
-/// Stringify a color tuple \a c
+/** Convenience color constants
+  * @{
+  */
+const Color transparent {0x00, 0x00, 0x00, 0x00};
+const Color black       {0x00, 0x00, 0x00};
+const Color white       {0xFF, 0xFF, 0xFF};
+const Color red         {0xFF, 0x00, 0x00};
+const Color green       {0x00, 0xFF, 0x00};
+const Color blue        {0x00, 0x00, 0xFF};
+/** @}
+  */
+
+/// Stringify color \a c
 String str(Color c);
 
 } // namespace cc
