@@ -265,10 +265,10 @@ String GnuToolChain::configureCompileCommand(const BuildPlan *plan, String sourc
     Format args;
     args << compiler(sourcePath);
     args << "-o" << binPath;
-    appendCompileOptions(args, plan);
+    // appendCompileOptions(args, plan);
     args << "-pthread";
     args << sourcePath;
-    appendLinkOptions(args, plan);
+    // appendLinkOptions(args, plan);
     return args->join(" ");
 }
 
@@ -489,6 +489,9 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
         for (int i = 0; i < plan->customLinkFlags()->count(); ++i)
             args << plan->customLinkFlags()->at(i);
     }
+
+    //if (plan->options() & BuildPlan::Plugin)
+    //    args << "-Wl,--no-as-needed";
 
     StringList *libraryPaths = plan->libraryPaths();
     StringList *libraries = plan->libraries();
