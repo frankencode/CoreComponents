@@ -10,9 +10,16 @@
 
 #include <cc/Event>
 #include <cc/Set>
+#include <cc/String>
 #include <utility>
 
 namespace cc {
+
+class PropertyEvaluationContext
+{
+public:
+    static thread_local void *activeInstance_;
+};
 
 template<class T>
 class Property
@@ -40,10 +47,11 @@ public:
                 const_cast<Instance *>(this)->evaluate();
             }
 
-            if ((activeInstance_) && (activeInstance_ != this)) {
-                if (activeInstance_->dependencies()->insert(const_cast<Instance *>(this)))
-                    subscribers()->insert(activeInstance_);
+            if ((activeInstance()) && (activeInstance() != this)) {
+                if (activeInstance()->dependencies()->insert(const_cast<Instance *>(this)))
+                    subscribers()->insert(activeInstance());
             }
+
             return value_;
         }
 
@@ -162,10 +170,14 @@ public:
         {
             class Activator {
             public:
-                Activator(Instance *instance): savedActiveInstance_(activeInstance_) { activeInstance_ = instance; }
-                ~Activator() { activeInstance_ = savedActiveInstance_; }
+                Activator(Instance *instance): savedActiveInstance_(PropertyEvaluationContext::activeInstance_) {
+                    PropertyEvaluationContext::activeInstance_ = instance;
+                }
+                ~Activator() {
+                    PropertyEvaluationContext::activeInstance_ = savedActiveInstance_;
+                }
             private:
-                Instance *savedActiveInstance_;
+                void *savedActiveInstance_;
             };
 
             Activator activator(this);
@@ -180,13 +192,14 @@ public:
             }
         }
 
+        inline Instance *activeInstance() const { return (Instance *)PropertyEvaluationContext::activeInstance_; }
+
         mutable T value_;
         std::function<T()> f_;
         bool dirty_;
 
         mutable Ref<Association> dependencies_;
         mutable Ref<Association> subscribers_;
-        thread_local static Instance *activeInstance_;
     };
 
     inline Instance *operator->() { return instance_; }
@@ -211,12 +224,17 @@ private:
   */
 template<class T> inline bool operator==(const Property<T> a, const T &b) { return a->value() == b; }
 template<class T> inline bool operator!=(const Property<T> a, const T &b) { return a->value() != b; }
+template<class T> inline bool operator<(const Property<T> a, const T &b) { return a->value() < b; }
+template<class T> inline bool operator>(const Property<T> a, const T &b) { return a->value() > b; }
+template<class T> inline bool operator<=(const Property<T> a, const T &b) { return a->value() <= b; }
+template<class T> inline bool operator>=(const Property<T> a, const T &b) { return a->value() >= b; }
 template<class T> inline T operator+(const Property<T> a, const T &b) { return a->value() + b; }
 template<class T> inline T operator-(const Property<T> a, const T &b) { return a->value() - b; }
 template<class T> inline T operator*(const Property<T> a, const T &b) { return a->value() * b; }
 template<class T> inline T operator/(const Property<T> a, const T &b) { return a->value() / b; }
 template<class T> inline T operator|(const Property<T> a, const T &b) { return a->value() | b; }
 template<class T> inline T operator&(const Property<T> a, const T &b) { return a->value() & b; }
+template<class T> inline T operator^(const Property<T> a, const T &b) { return a->value() ^ b; }
 /** @}
   */
 
@@ -225,8 +243,5 @@ inline Property<T> alias(Property<T> &p) { return p->alias(); }
 
 template<class T>
 inline String str(const Property<T> &p) { return str(p->value()); }
-
-template<class T>
-thread_local typename Property<T>::Instance *Property<T>::Instance::activeInstance_ = nullptr;
 
 } // namespace cc
