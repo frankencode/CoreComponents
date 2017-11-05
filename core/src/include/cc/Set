@@ -10,6 +10,7 @@
 
 #include <cc/containers>
 #include <cc/OrdinalTree>
+#include <cc/Source>
 
 namespace cc {
 
