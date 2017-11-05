@@ -72,6 +72,12 @@ public:
         );
     }
 
+    /** Convenience function to check if \a c is a fully opaque color
+      */
+    inline static bool isOpaque(Color c) {
+        return alpha(c) == 0xFF;
+    }
+
     /** Getters for individual color components
       * @{
       */

@@ -280,6 +280,10 @@ public:
         return reinterpret_cast<T *>(data_)[j];
     }
 
+    /// Number of items of type T
+    template<class T>
+    inline int itemCount() const { return size_ / sizeof(T); }
+
     /// Return the internal C string representation (readonly)
     inline const char *chars() const { return chars_; }
 

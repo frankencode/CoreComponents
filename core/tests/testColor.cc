@@ -116,6 +116,12 @@ class NormalizationTest: public TestCase
             fout() << c << nl;
             CC_VERIFY(c == Color(0x00, 0x00, 0x00, 0x00));
         }
+        {
+            Color c { 0x00, 0x00, 0xFF, 0xFF }; // opaque blue
+            Color::normalize(&c);
+            fout() << c << nl;
+            CC_VERIFY(c == Color(0x00, 0x00, 0xFF, 0xFF));
+        }
     }
 };
 
