@@ -224,6 +224,9 @@ template<class T>
 inline Property<T> alias(Property<T> &p) { return p->alias(); }
 
 template<class T>
+inline String str(const Property<T> &p) { return str(p->value()); }
+
+template<class T>
 thread_local typename Property<T>::Instance *Property<T>::Instance::activeInstance_ = nullptr;
 
 } // namespace cc
