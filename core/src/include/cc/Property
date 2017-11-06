@@ -8,18 +8,11 @@
 
 #pragma once
 
-#include <cc/Event>
-#include <cc/Set>
 #include <cc/String>
+#include <cc/PropertyBinding>
 #include <utility>
 
 namespace cc {
-
-class PropertyEvaluationContext
-{
-public:
-    static thread_local void *activeInstance_;
-};
 
 template<class T>
 class Property
@@ -36,22 +29,11 @@ public:
     Property(const std::function<T()> &f): instance_(Instance::create(f)) {}
     inline Property &operator=(const std::function<T()> &f) { instance_->bind(f); return *this; }
 
-    class Instance: public Object {
+    class Instance: public PropertyBinding {
     public:
-        Event valueChanged;
-
         const T &value() const
         {
-            if (dirty_) {
-                const_cast<Instance *>(this)->dirty_ = false;
-                const_cast<Instance *>(this)->evaluate();
-            }
-
-            if ((activeInstance()) && (activeInstance() != this)) {
-                if (activeInstance()->dependencies()->insert(const_cast<Instance *>(this)))
-                    subscribers()->insert(activeInstance());
-            }
-
+            preAccess();
             return value_;
         }
 
@@ -75,7 +57,7 @@ public:
 
             if (hasConsumers()) {
                 dirty_ = false;
-                evaluate();
+                cascade();
             }
         }
 
@@ -96,91 +78,24 @@ public:
         template<class T2>
         friend Property<T2> alias(Property<T2> &p);
 
-        typedef Set< Ref<Instance> > Association;
-
         inline static Ref<Instance> create(const T &b = T()) { return new Instance{b}; }
         inline static Ref<Instance> create(const std::function<T()> &f) { return new Instance{f}; }
 
         Instance(const T &b):
-            value_(b),
-            dirty_(false)
+            PropertyBinding(false),
+            value_(b)
         {}
 
         Instance(const std::function<T()> &f):
+            PropertyBinding(true),
             value_(T()),
-            f_(f),
-            dirty_(true)
+            f_(f)
         {}
-
-        ~Instance()
-        {
-            clearDependencies();
-            clearSubscribers();
-        }
 
         Property alias() { return Property(this, true); }
 
-        Association *dependencies() const {
-            if (!dependencies_) dependencies_ = Association::create();
-            return dependencies_;
-        }
-
-        Association *subscribers() const {
-            if (!subscribers_) subscribers_ = Association::create();
-            return subscribers_;
-        }
-
-        bool hasConsumers() const { return (subscribers_ && subscribers_->count() > 0) || valueChanged->hasListeners(); }
-
-        void clearDependencies()
+        void evaluate() override
         {
-            if (!dependencies_) return;
-
-            for (Instance *other: dependencies_)
-                other->subscribers_->remove(this);
-            dependencies_ = nullptr;
-        }
-
-        void clearSubscribers()
-        {
-            if (!subscribers_) return;
-
-            for (Instance *other: subscribers_)
-                other->dependencies_->remove(this);
-            subscribers_ = nullptr;
-        }
-
-        void notify()
-        {
-            if (subscribers_) {
-                for (Instance *other: subscribers_) {
-                    if (other->hasConsumers()) {
-                        other->dirty_ = false;
-                        other->evaluate();
-                    }
-                    else {
-                        other->dirty_ = true;
-                    }
-                }
-            }
-            valueChanged->notify();
-        }
-
-        void evaluate()
-        {
-            class Activator {
-            public:
-                Activator(Instance *instance): savedActiveInstance_(PropertyEvaluationContext::activeInstance_) {
-                    PropertyEvaluationContext::activeInstance_ = instance;
-                }
-                ~Activator() {
-                    PropertyEvaluationContext::activeInstance_ = savedActiveInstance_;
-                }
-            private:
-                void *savedActiveInstance_;
-            };
-
-            Activator activator(this);
             establish(f_());
         }
 
@@ -192,14 +107,8 @@ public:
             }
         }
 
-        inline Instance *activeInstance() const { return (Instance *)PropertyEvaluationContext::activeInstance_; }
-
         mutable T value_;
         std::function<T()> f_;
-        bool dirty_;
-
-        mutable Ref<Association> dependencies_;
-        mutable Ref<Association> subscribers_;
     };
 
     inline Instance *operator->() { return instance_; }
@@ -209,6 +118,17 @@ public:
     inline Property &operator=(const T &b) { instance_->setValue(b); return *this; }
 
     inline T operator()() const { return instance_->value(); }
+
+    inline Property &operator+=(const T &b) { instance_->setValue(instance_->value() + b); return *this; }
+    inline Property &operator-=(const T &b) { instance_->setValue(instance_->value() - b); return *this; }
+    inline Property &operator*=(const T &b) { instance_->setValue(instance_->value() * b); return *this; }
+    inline Property &operator/=(const T &b) { instance_->setValue(instance_->value() / b); return *this; }
+    inline Property &operator|=(const T &b) { instance_->setValue(instance_->value() | b); return *this; }
+    inline Property &operator&=(const T &b) { instance_->setValue(instance_->value() & b); return *this; }
+    inline Property &operator^=(const T &b) { instance_->setValue(instance_->value() ^ b); return *this; }
+
+    inline T operator-() const { return -instance_->value(); }
+    inline T operator~() const { return ~instance_->value(); }
 
 private:
     friend class Instance;
