@@ -17,6 +17,7 @@ class SimpleUsage: public TestCase
 {
     void run()
     {
+        typedef Vector<int, 2> Point;
         Point a { 1, 2 };
         Point b { 3, 4 };
         Point c = a + b;

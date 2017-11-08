@@ -23,7 +23,7 @@ public:
     Property<double> y;
     Property<double> x0 = alias(x);
 
-    Property<double> sum { [=]{ return x + y; } };
+    Property<double> sum { [=]{ return x() + y(); } };
 
     void moveTo(double x2, double y2) { x = x2; y = y2; }
 
@@ -37,11 +37,11 @@ class BasicBindings: public TestCase
     {
         Ref<Shape> shape = Shape::create();
         Ref<Shape> shadow = Shape::create();
-        shadow->x->bind([=]{ return shape->x + 10; });
-        shadow->y->bind([=]{ return shape->y + 10; });
+        shadow->x->bind([=]{ return shape->x() + 10; });
+        shadow->y->bind([=]{ return shape->y() + 10; });
         auto moved = [=]{
-            fout() << "Shape moved to " << shape->x << ", " << shape->y << " (x + y = " << shape->sum << ")" << nl;
-            CC_VERIFY(shape->sum == shape->x + shape->y);
+            fout() << "Shape moved to " << shape->x() << ", " << shape->y() << " (x + y = " << shape->sum() << ")" << nl;
+            CC_VERIFY(shape->sum() == shape->x() + shape->y());
         };
         shape->x->listen(moved);
         shape->y->listen(moved);
@@ -50,8 +50,8 @@ class BasicBindings: public TestCase
         shape->x = shape->y;
         shape->x0 = 7;
         shape->x0 = false;
-        fout() << "Shadow followed to " << shadow->x << ", " << shadow->y << " (x + y = " << shadow->sum << ")" << nl;
-        CC_VERIFY(shadow->x == 10 && shadow->y == 40);
+        fout() << "Shadow followed to " << shadow->x() << ", " << shadow->y() << " (x + y = " << shadow->sum() << ")" << nl;
+        CC_VERIFY(shadow->x() == 10 && shadow->y() == 40);
     }
 };
 
