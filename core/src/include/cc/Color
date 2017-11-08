@@ -104,7 +104,25 @@ public:
       */
     static Color blend(Color a, Color b);
 
-    /** Translate a pre-multiplied ARGB to a non-premultiplied ARGB
+    /** Return the premultiplied version of color \a c
+      */
+    inline static Color premultiplied(Color c)
+    {
+        uint32_t h = c.w_;
+        uint16_t a = component<Alpha, uint16_t>(h);
+        if (a == 0 || a == 0xFF) return c;
+        typedef uint16_t v4ui16 __attribute__((vector_size(8)));
+        v4ui16 v {
+            component<Red,   uint16_t>(h),
+            component<Green, uint16_t>(h),
+            component<Blue,  uint16_t>(h),
+            0
+        };
+        v = (a * v) / 0xFF;
+        return Color(v[0], v[1], v[2], a);
+    }
+
+    /** Translate a premultiplied color to a non-premultiplied color
       */
     inline static void normalize(Color *c)
     {
