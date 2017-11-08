@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 int main() {
-    #if __cplusplus <= 199711L
-    printf("{compile-flags: -std=c++11}");
+    #if __cplusplus < 201402L
+    printf("{compile-flags: -std=c++14}");
     #else
     printf("{}");
     #endif

@@ -119,6 +119,8 @@ public:
 
     inline T operator()() const { return instance_->value(); }
 
+    inline auto operator[](int i) { return instance_->value()[i]; }
+
     inline Property &operator+=(const T &b) { instance_->setValue(instance_->value() + b); return *this; }
     inline Property &operator-=(const T &b) { instance_->setValue(instance_->value() - b); return *this; }
     inline Property &operator*=(const T &b) { instance_->setValue(instance_->value() * b); return *this; }

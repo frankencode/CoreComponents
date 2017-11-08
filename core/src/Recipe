@@ -1,7 +1,7 @@
 Library {
     name: cccore
     Dependency {
-        configure: config/cxx11.cc
+        configure: config/cxx14.cc
         cascade: true
     }
     // compile-flags: [-DCC_MEM_ACCOUNTING ]
