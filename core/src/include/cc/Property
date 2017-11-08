@@ -31,22 +31,6 @@ public:
 
     class Instance: public PropertyBinding {
     public:
-        const T &value() const
-        {
-            preAccess();
-            return value_;
-        }
-
-        void setValue(const T &newValue)
-        {
-            if (f_) {
-                clearDependencies();
-                f_ = std::function<T()>{};
-                dirty_ = false;
-            }
-            establish(newValue);
-        }
-
         template<class F>
         void bind(const F &f)
         {
@@ -94,6 +78,22 @@ public:
 
         Property alias() { return Property(this, true); }
 
+        const T &value() const
+        {
+            preAccess();
+            return value_;
+        }
+
+        void setValue(const T &newValue)
+        {
+            if (f_) {
+                clearDependencies();
+                f_ = std::function<T()>{};
+                dirty_ = false;
+            }
+            establish(newValue);
+        }
+
         void evaluate() override
         {
             establish(f_());
@@ -114,23 +114,8 @@ public:
     inline Instance *operator->() { return instance_; }
     inline const Instance *operator->() const { return instance_; }
 
-    inline operator T() const { return instance_->value(); }
-    inline Property &operator=(const T &b) { instance_->setValue(b); return *this; }
-
     inline T operator()() const { return instance_->value(); }
-
-    inline auto operator[](int i) { return instance_->value()[i]; }
-
-    inline Property &operator+=(const T &b) { instance_->setValue(instance_->value() + b); return *this; }
-    inline Property &operator-=(const T &b) { instance_->setValue(instance_->value() - b); return *this; }
-    inline Property &operator*=(const T &b) { instance_->setValue(instance_->value() * b); return *this; }
-    inline Property &operator/=(const T &b) { instance_->setValue(instance_->value() / b); return *this; }
-    inline Property &operator|=(const T &b) { instance_->setValue(instance_->value() | b); return *this; }
-    inline Property &operator&=(const T &b) { instance_->setValue(instance_->value() & b); return *this; }
-    inline Property &operator^=(const T &b) { instance_->setValue(instance_->value() ^ b); return *this; }
-
-    inline T operator-() const { return -instance_->value(); }
-    inline T operator~() const { return ~instance_->value(); }
+    inline Property &operator=(const T &b) { instance_->setValue(b); return *this; }
 
 private:
     friend class Instance;
@@ -140,30 +125,7 @@ private:
     Ref<Instance> instance_;
 };
 
-/** \internal
-  * \brief Type conversion helpers
-  * @{
-  */
-template<class T> inline bool operator==(const Property<T> a, const T &b) { return a->value() == b; }
-template<class T> inline bool operator!=(const Property<T> a, const T &b) { return a->value() != b; }
-template<class T> inline bool operator<(const Property<T> a, const T &b) { return a->value() < b; }
-template<class T> inline bool operator>(const Property<T> a, const T &b) { return a->value() > b; }
-template<class T> inline bool operator<=(const Property<T> a, const T &b) { return a->value() <= b; }
-template<class T> inline bool operator>=(const Property<T> a, const T &b) { return a->value() >= b; }
-template<class T> inline T operator+(const Property<T> a, const T &b) { return a->value() + b; }
-template<class T> inline T operator-(const Property<T> a, const T &b) { return a->value() - b; }
-template<class T> inline T operator*(const Property<T> a, const T &b) { return a->value() * b; }
-template<class T> inline T operator/(const Property<T> a, const T &b) { return a->value() / b; }
-template<class T> inline T operator|(const Property<T> a, const T &b) { return a->value() | b; }
-template<class T> inline T operator&(const Property<T> a, const T &b) { return a->value() & b; }
-template<class T> inline T operator^(const Property<T> a, const T &b) { return a->value() ^ b; }
-/** @}
-  */
-
 template<class T>
 inline Property<T> alias(Property<T> &p) { return p->alias(); }
-
-template<class T>
-inline String str(const Property<T> &p) { return str(p->value()); }
 
 } // namespace cc
