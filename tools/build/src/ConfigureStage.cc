@@ -198,8 +198,8 @@ bool ConfigureStage::runConfigure(String name, String configure, String *output)
 {
     String configurePath = plan()->projectPath()->extendPath(configure);
 
-    Ref<FileStatus> status = FileStatus::read(configurePath);
-    if (!status->isValid()) {
+    Ref<FileStatus> sourceStatus = FileStatus::read(configurePath);
+    if (!sourceStatus->isValid()) {
         ferr() << plan()->recipePath() << ": " << name << ":" << nl;
         ferr() << "  " << configure << ": no such file" << nl;
         return false;
@@ -208,7 +208,7 @@ bool ConfigureStage::runConfigure(String name, String configure, String *output)
     String configureText;
     String binPath;
 
-    if (status->mode() & AnyExec) {
+    if (sourceStatus->mode() & AnyExec) {
         binPath = configurePath;
     }
     else {
@@ -218,11 +218,8 @@ bool ConfigureStage::runConfigure(String name, String configure, String *output)
         String baseName = configurePath->baseName();
         binPath = plan()->configPath()->extendPath(baseName);
 
-        Ref<FileStatus> sourceStatus = plan()->shell()->fileStatus(configurePath);
-        Ref<FileStatus> binStatus = plan()->shell()->fileStatus(binPath);
-
-        if (!sourceStatus->isValid()) return false;
         bool dirty = true;
+        Ref<FileStatus> binStatus = plan()->shell()->fileStatus(binPath);
         if (binStatus->isValid()) {
             if (binStatus->lastModified() > sourceStatus->lastModified())
                 dirty = false;
