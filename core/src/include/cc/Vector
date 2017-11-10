@@ -62,8 +62,22 @@ public:
     inline operator const T *() const { return &instance_.v_; }
     inline operator T *() { return &instance_.v_; }
 
-    inline bool operator==(const Vector &b) const { return *instance_.v_ == *b.instance_.v_; }
-    inline bool operator!=(const Vector &b) const { return *instance_.v_ != *b.instance_.v_; }
+    /*inline Vector &operator=(const Vector &b) {
+        for (int i = 0; i < n; ++i)
+            instance_.v_[i] = b.instance_.v_[i];
+        return *this;
+    }*/
+
+    inline bool operator==(const Vector &b) const {
+        for (int i = 0; i < n; ++i)
+            if (instance_.v_[i] != b.instance_.v_[i]) return false;
+        return true;
+    }
+    inline bool operator!=(const Vector &b) const {
+        for (int i = 0; i < n; ++i)
+            if (instance_.v_[i] != b.instance_.v_[i]) return true;
+        return false;
+    }
 
     inline Vector operator+(const Vector &b) const {
         Vector a(*this);
@@ -73,6 +87,17 @@ public:
     inline Vector operator-(const Vector &b) const {
         Vector a(*this);
         for (int i = 0; i < n; ++i) a.instance_.v_[i] -= b.instance_.v_[i];
+        return a;
+    }
+
+    inline Vector operator*(T b) const {
+        Vector a(*this);
+        for (int i = 0; i < n; ++i) a.instance_.v_[i] *= b;
+        return a;
+    }
+    inline Vector operator/(T b) const {
+        Vector a(*this);
+        for (int i = 0; i < n; ++i) a.instance_.v_[i] /= b;
         return a;
     }
 

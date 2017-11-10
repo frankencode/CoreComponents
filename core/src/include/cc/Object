@@ -61,4 +61,7 @@ private:
     mutable volatile int refCount_;
 };
 
+template<class T>
+inline Ref<T> fly() { return new T; }
+
 } // namespace cc
