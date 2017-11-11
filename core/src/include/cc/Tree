@@ -19,19 +19,19 @@ public:
     ChildrenRun(const Node *node):
         node_(node->firstChild())
     {}
-    
+
     ChildrenRun(ChildrenRun &&other):
         node_(other.node_)
     {}
-    
+
     virtual bool read(Node **node) override
     {
         if (!node_) return false;
         *node = node_;
         node_ = node_->nextSibling();
-        return true; 
+        return true;
     }
-    
+
 private:
     Node *node_;
 };
@@ -43,19 +43,19 @@ public:
     InOrderRun(const Node *node):
         node_(node->firstLeaf())
     {}
-    
+
     InOrderRun(InOrderRun &&other):
         node_(other.node_)
     {}
-    
+
     virtual bool read(Node **node) override
     {
         if (!node_) return false;
         *node = node_;
         node_ = node_->next();
-        return true; 
+        return true;
     }
-        
+
 private:
     Node *node_;
 };
@@ -88,7 +88,7 @@ public:
     Node *previousLeaf() const;
 
     inline Node *next() const { return (nextSibling_) ? nextSibling_->firstLeaf() : parent_; }
-    inline Node *previous() const { return (previousSibling_) ? previousSibling_->lastLeaf() : parent_; }    
+    inline Node *previous() const { return (previousSibling_) ? previousSibling_->lastLeaf() : parent_; }
 
     inline int countChildren() const {
         return (firstChild_) ? firstChild_->countSiblings() + 1 : 0;
@@ -97,9 +97,15 @@ public:
     inline bool hasSingleChild() const { return (firstChild_) && (firstChild_ == lastChild_); }
 
     int countSiblings() const;
-    
+
     ChildrenRun<Node> children() const { return ChildrenRun<Node>(me()); }
     InOrderRun<Node> inOrder() const { return InOrderRun<Node>(me()); }
+
+protected:
+    Tree():
+        parent_(0),
+        previousSibling_(0)
+    {}
 
 private:
     inline Node *me() const { return Object::cast<Node *>(const_cast<Tree<Node> *>(this)); }

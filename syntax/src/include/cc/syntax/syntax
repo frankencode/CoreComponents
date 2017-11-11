@@ -1065,7 +1065,8 @@ class LinkNode: public SyntaxNode
 {
 public:
     LinkNode(const char *ruleName):
-        ruleName_(ruleName)
+        ruleName_(ruleName),
+        rule_(0)
     {}
 
     LinkNode(RuleNode *rule):
