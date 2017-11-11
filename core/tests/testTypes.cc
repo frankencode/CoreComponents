@@ -10,7 +10,6 @@
 #include <cc/stdio>
 #include <cc/SpinLock>
 #include <cc/Mutex>
-#include <cc/Memory>
 
 using namespace cc;
 using namespace cc::testing;

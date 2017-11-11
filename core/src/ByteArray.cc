@@ -46,14 +46,14 @@ private:
 String ByteArray::allocate(int size)
 {
     if (size <= 0) return new ByteArray();
-    char *data = new char[size];
-    return new Chunk(data, size);
+    return new Chunk(new char[size], size);
 }
 
 String ByteArray::create(int size)
 {
     if (size <= 0) return new ByteArray();
     char *data = new char[size + 1];
+    data[size] = 0;
     return new ByteArray(data, size);
 }
 

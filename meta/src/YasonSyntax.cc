@@ -376,7 +376,7 @@ Ref<MetaObject> YasonSyntax::readObject(const ByteArray *text, Token *token, con
     token = token->firstChild();
 
     String className;
-    if (token->rule() == className_)
+    if (token && token->rule() == className_)
         className = text->copyRange(token);
 
     if (protocol) {
@@ -396,7 +396,7 @@ Ref<MetaObject> YasonSyntax::readObject(const ByteArray *text, Token *token, con
         }
     }
 
-    if (token->rule() == className_)
+    if (token && token->rule() == className_)
         token = token->nextSibling();
 
     Ref<MetaObject> object;

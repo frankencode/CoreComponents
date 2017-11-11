@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/Memory>
 #include <cc/syntax/Token>
 
 namespace cc {
