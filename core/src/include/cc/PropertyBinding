@@ -22,7 +22,6 @@ protected:
     typedef Set< Ref<PropertyBinding> > Association;
 
     PropertyBinding(bool dirty);
-    ~PropertyBinding();
 
     void preAccess() const;
 
@@ -38,6 +37,7 @@ protected:
     void cascade();
 
     virtual void evaluate() = 0;
+    virtual void disband();
 
     bool dirty_;
 

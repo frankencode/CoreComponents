@@ -13,6 +13,8 @@
 
 namespace cc {
 
+class PropertyBinding;
+
 class Event
 {
 public:
@@ -30,6 +32,10 @@ public:
         inline bool hasListeners() const { return first_; }
 
     private:
+        friend class PropertyBinding;
+
+        inline void disband() { first_ = 0; }
+
         class Node: public Object {
         public:
             template<class F>

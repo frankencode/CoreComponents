@@ -17,12 +17,6 @@ PropertyBinding::PropertyBinding(bool dirty):
     dirty_(dirty)
 {}
 
-PropertyBinding::~PropertyBinding()
-{
-    clearDependencies();
-    clearSubscribers();
-}
-
 void PropertyBinding::preAccess() const
 {
     if (dirty_) {
@@ -105,6 +99,19 @@ void PropertyBinding::cascade()
 
     Activator activator(this);
     evaluate();
+}
+
+void PropertyBinding::disband()
+{
+    valueChanged->disband();
+    clearDependencies();
+    if (subscribers_) {
+        while (subscribers_->count() > 0) {
+            PropertyBinding *other = subscribers_->at(0);
+            other->disband();
+        }
+        subscribers_ = nullptr;
+    }
 }
 
 } // namespace cc
