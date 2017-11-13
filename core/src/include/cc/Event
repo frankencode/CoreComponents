@@ -55,6 +55,8 @@ public:
     inline Instance *operator->() { return &instance_; }
     inline const Instance *operator->() const { return &instance_; }
 
+    inline void operator()() const { instance_.notify(); }
+
 private:
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
