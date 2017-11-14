@@ -79,6 +79,12 @@ public:
         return false;
     }
 
+    inline Vector operator-() const {
+        Vector a(*this);
+        for (int i = 0; i < n; ++i) a.instance_.v_[i] = -instance_.v_[i];
+        return a;
+    }
+
     inline Vector operator+(const Vector &b) const {
         Vector a(*this);
         for (int i = 0; i < n; ++i) a.instance_.v_[i] += b.instance_.v_[i];
