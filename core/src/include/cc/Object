@@ -62,6 +62,17 @@ private:
 };
 
 template<typename T, typename... Args>
-inline Ref<T> fly(Args... args) { return new T(args...); }
+inline Ref<T> fly(Args... args) {
+    T *bird;
+    T::Hatching::hatch(bird, args...);
+    return bird;
+}
+
+template<typename T, typename... Args>
+inline Ref<T> fly() {
+    T *bird;
+    T::Hatching::hatch(bird);
+    return bird;
+}
 
 } // namespace cc
