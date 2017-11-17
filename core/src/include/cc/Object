@@ -53,26 +53,11 @@ public:
     inline static U cast(const Ref<T>& p) {
         return Object::cast<U>(p.get());
     }
-
 private:
     Object(const Object &);
     const Object &operator=(const Object &);
 
     mutable volatile int refCount_;
 };
-
-template<typename T, typename... Args>
-inline Ref<T> fly(Args... args) {
-    T *bird;
-    T::Hatching::hatch(bird, args...);
-    return bird;
-}
-
-template<typename T, typename... Args>
-inline Ref<T> fly() {
-    T *bird;
-    T::Hatching::hatch(bird);
-    return bird;
-}
 
 } // namespace cc
