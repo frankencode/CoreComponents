@@ -139,6 +139,15 @@ public:
         return ch;
     }
 
+    inline bool read(uchar_t *ch) {
+        if (*p_) {
+            *ch = getChar();
+            ++(*this);
+            return true;
+        }
+        return false;
+    }
+
     inline const char *data() const { return reinterpret_cast<const char*>(s_); }
     inline const char *pos() const { return reinterpret_cast<const char*>(p_); }
 
@@ -165,7 +174,10 @@ public:
     /// byte position in string
     inline operator int() const { return p_ - s_; }
 
-    static int length(const char *s) {
+    inline Utf8Walker *operator->() { return this; }
+    inline const Utf8Walker *operator->() const { return this; }
+
+    static int countCodePoints(const char *s) {
         Utf8Walker walker(s);
         int n_ = 0;
         while (walker.valid()) { ++walker; ++n_; }

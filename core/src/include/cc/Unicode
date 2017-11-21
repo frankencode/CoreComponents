@@ -63,17 +63,14 @@ public:
     }
 
     /// Return the number of %Unicode characters
+    inline static int count(const ByteArray *data) {
+        return Utf8Walker::countCodePoints(data->chars());
+    }
+
+    /// Return the number of %Unicode characters
     inline int count() const {
-        if (n_ == -1) {
-            if (!walker_.valid()) {
-                walker_ = Utf8Walker(walker_.data());
-                i_ = 0;
-            }
-            while (walker_.valid()) { ++walker_; ++i_; }
-            n_ = i_;
-            if (i_ > 0) { --walker_; --i_; }
-        }
-        return n_;
+        if (n_ != -1) return n_;
+        return n_ = Utf8Walker::countCodePoints(data_->chars());
     }
 
     /// Current byte offset in the underlying byte array

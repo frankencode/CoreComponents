@@ -85,27 +85,27 @@ public:
         return a;
     }
 
-    inline Vector operator+(const Vector &b) const {
-        Vector a(*this);
-        for (int i = 0; i < n; ++i) a.instance_.v_[i] += b.instance_.v_[i];
-        return a;
+    inline Vector &operator+=(const Vector &b) {
+        for (int i = 0; i < n; ++i) instance_.v_[i] += b.instance_.v_[i];
+        return *this;
     }
-    inline Vector operator-(const Vector &b) const {
-        Vector a(*this);
-        for (int i = 0; i < n; ++i) a.instance_.v_[i] -= b.instance_.v_[i];
-        return a;
+    inline Vector &operator-=(const Vector &b) {
+        for (int i = 0; i < n; ++i) instance_.v_[i] -= b.instance_.v_[i];
+        return *this;
+    }
+    inline Vector &operator*=(T b) {
+        for (int i = 0; i < n; ++i) instance_.v_[i] *= b;
+        return *this;
+    }
+    inline Vector &operator/=(T b) {
+        for (int i = 0; i < n; ++i) instance_.v_[i] /= b;
+        return *this;
     }
 
-    inline Vector operator*(T b) const {
-        Vector a(*this);
-        for (int i = 0; i < n; ++i) a.instance_.v_[i] *= b;
-        return a;
-    }
-    inline Vector operator/(T b) const {
-        Vector a(*this);
-        for (int i = 0; i < n; ++i) a.instance_.v_[i] /= b;
-        return a;
-    }
+    inline Vector operator+(const Vector &b) const { return Vector(*this) += b; }
+    inline Vector operator-(const Vector &b) const { return Vector(*this) -= b; }
+    inline Vector operator*(T b) const { return Vector(*this) *= b; }
+    inline Vector operator/(T b) const { return Vector(*this) /= b; }
 
     /** STL-style iterator declarations
       * @{
