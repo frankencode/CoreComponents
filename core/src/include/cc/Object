@@ -53,6 +53,10 @@ public:
     inline static U cast(const Ref<T>& p) {
         return Object::cast<U>(p.get());
     }
+
+    template<typename T, typename... Args>
+    inline static Ref<T> create(Args... args) { return new T(args...); }
+
 private:
     Object(const Object &);
     const Object &operator=(const Object &);
