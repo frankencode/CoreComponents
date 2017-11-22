@@ -94,9 +94,9 @@ public:
         return a_;
     }
 
-    inline T *get() const { return a_; }
+    inline T *get() const { return a_; } // FIXME: obsolete
 
-    inline void set(T *b) {
+    inline void set(T *b) { // FIXME: should be private
         if (a_ != b) {
             if (b) b->incRefCount();
             if (a_) a_->decRefCount();

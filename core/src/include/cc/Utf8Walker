@@ -107,7 +107,9 @@ public:
         return *this;
     }
 
-    inline bool valid() const { return *p_; }
+    inline bool valid() const { return *p_; } // FIXME: obsolete
+    inline bool isValid() const { return *p_; }
+    inline bool atStart() const { return p_ == s_; }
     inline operator bool() const { return *p_; }
 
     inline Utf8Walker operator+(int delta) const {
@@ -120,13 +122,13 @@ public:
     }
 
     /// decode unicode point
-    inline uint32_t getChar() const {
+    inline uchar_t getChar() const {
         // merging extra bytes by incrementally reducing the code prefix of the first byte
         // prefix bits => extra bytes: (110)2 => 1 eb, (1110)2 => 2 eb, (11110)2 => 3 eb
-        uint32_t ch = *p_;
+        uchar_t ch = *p_;
         if (0x7F < ch) {
             const uint8_t *p = p_;
-            uint32_t bit = 0x80;
+            uchar_t bit = 0x80;
             ch ^= bit; // clear first prefix bit
             bit >>= 1; // take next prefix bit
             while (((ch & bit) != 0) && (*p)) { // yet another prefix bit?
@@ -172,7 +174,10 @@ public:
     }
 
     /// byte position in string
-    inline operator int() const { return p_ - s_; }
+    inline int offset() const { return p_ - s_; }
+
+    inline operator int() const { return offset(); } // FIXME: obsolete
+
 
     inline Utf8Walker *operator->() { return this; }
     inline const Utf8Walker *operator->() const { return this; }
