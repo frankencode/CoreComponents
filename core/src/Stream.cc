@@ -31,6 +31,24 @@ void Stream::write(const Format &format)
     write(format.get());
 }
 
+class WrappedChunk: public ByteArray
+{
+public:
+    WrappedChunk(const void *data, int size):
+        ByteArray((const char *)data, size, ByteArray::doNothing),
+        stackGuard_(this)
+    {}
+
+private:
+    StackGuard stackGuard_;
+};
+
+void Stream::write(const void *data, int size)
+{
+    WrappedChunk chunk(data, size);
+    write(&chunk);
+}
+
 off_t Stream::transferSpanTo(off_t count, Stream *sink, ByteArray *buffer)
 {
     if (count == 0) return 0;

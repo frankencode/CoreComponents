@@ -58,9 +58,27 @@ public:
     inline static Ref<T> create(Args... args) { return new T(args...); }
 
     // template<typename T>
-    // inline static Ref<T> copy(const T *b) { return new T(*b); } // TODO: think about letting Ref use this to copy objectss
+    // inline static Ref<T> copy(const T *b) { return new T(*b); } // TODO: think about letting Ref use this to copy objects
+
+protected:
+    class StackGuard {
+    public:
+        StackGuard(Object *object):
+            object_(object)
+        {
+            __sync_add_and_fetch(&object_->refCount_, 1);
+        }
+        ~StackGuard() {
+            __sync_sub_and_fetch(&object_->refCount_, 1);
+        }
+
+    private:
+        Object *object_;
+    };
 
 private:
+    friend class StackGuard;
+
     Object(const Object &);
     const Object &operator=(const Object &);
 
