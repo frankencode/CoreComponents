@@ -48,6 +48,9 @@ public:
     /// Convenience wrapper
     void write(const Format &format);
 
+    /// Convenience wrapper
+    void write(const void *data, int size);
+
     /** Transfer a span of bytes
       * \param count number of bytes to transfer (or -1 for all)
       * \param sink target stream (or null for dump mode)

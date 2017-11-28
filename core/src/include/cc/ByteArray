@@ -331,6 +331,14 @@ public:
       */
     inline String unselect() const { return parent_; }
 
+    /** Pointer to parent string if this string is a selection (zero otherwise)
+      */
+    inline ByteArray *parent() const { return parent_; }
+
+    /** Byte offset of this string within its parent string if this string is a selection (zero otherwise)
+      */
+    inline int offset() const { return parent_ ? int(data_ - parent_->data_) : 0; }
+
     /** Copy a range
       * \param range the range to select (range must contain i0() and i1() getters)
       * \return copied range as a string
@@ -788,8 +796,9 @@ protected:
     /// Lowlevel destructor
     ~ByteArray();
 
-private:
     static void doNothing(ByteArray *);
+
+private:
     void destroy();
 
     static double pow(double x, double y);
