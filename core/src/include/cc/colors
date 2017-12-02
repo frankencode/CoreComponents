@@ -38,7 +38,7 @@ void hsvToRgb(double h, double s, double v, double *r, double *g, double *b);
   * \param s returns the saturation in range [0, 1]
   * \param l returns the luminance in range [0, 1]
   */
-void rgbToHls(double r, double g, double b, double *h, double *l, double *s);
+void rgbToHsl(double r, double g, double b, double *h, double *s, double *l);
 
 /** Translate from the HSL to the RGB color space
   * \param h hue in range [0, 360]
@@ -48,6 +48,6 @@ void rgbToHls(double r, double g, double b, double *h, double *l, double *s);
   * \param g returns green in range [0, 1]
   * \param b returns blue in range [0, 1]
   */
-void hlsToRgb(double h, double l, double s, double *r, double *g, double *b);
+void hslToRgb(double h, double s, double l, double *r, double *g, double *b);
 
 } // namespace cc

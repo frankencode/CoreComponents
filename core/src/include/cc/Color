@@ -59,6 +59,24 @@ public:
       */
     inline static Color fromWord(uint32_t w) { Color c; c.w_ = w; return c; }
 
+    /** Return the full color with hue \a h
+      */
+    inline static Color fromHue(double h) { return fromHsv(h, 1., 1.); }
+
+    /** Construct color from a HSV
+      * \param h hue in range [0, 360]
+      * \param s saturation in range [0, 1]
+      * \param v value in range [0, 1]
+      */
+    static Color fromHsv(double h, double s, double v);
+
+    /** Construct color from a HSL
+      * \param h hue in range [0, 360]
+      * \param s saturation in range [0, 1]
+      * \param l luminance in range [0, 1]
+      */
+    static Color fromHsl(double h, double s, double l);
+
     /** Check if color \c is valid
       * A color is considered invalid, if alpha is zero and red, green or blue is non-zero.
       */

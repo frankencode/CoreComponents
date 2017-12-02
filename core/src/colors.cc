@@ -24,7 +24,7 @@ void rgbToHsv(double r, double g, double b, double *h, double *s, double *v)
     *v = max;
     *s = (max != 0.) ? ((max - min) / max) : 0.;
     if (*s == 0.) {
-        *h = std::numeric_limits<double>::quiet_NaN();
+        *h = 0.;
         return;
     }
 
@@ -69,7 +69,7 @@ void hsvToRgb(double h, double s, double v, double *r, double *g, double *b)
     };
 }
 
-void rgbToHls(double r, double g, double b, double *h, double *l, double *s)
+void rgbToHsl(double r, double g, double b, double *h, double *s, double *l)
 {
     double min, max; {
         auto pair = std::minmax<double>({r, g, b});
@@ -80,53 +80,40 @@ void rgbToHls(double r, double g, double b, double *h, double *l, double *s)
     *l = (min + max) / 2.;
     if (min == max) {
         *s = 0.;
-        *h = std::numeric_limits<double>::quiet_NaN();
+        *h = 0.;
         return;
     }
 
     double delta = max - min;
-    *s = (*l <= 0.5) ? delta / (min + max) : delta / (2. - (min + max));
+    *s = (*l <= 0.5) ? (delta / (min + max)) : (delta / (2. - (min + max)));
     if (r == max)
         *h = (g - b) / delta;
     else if (g == max)
         *h = 2. + (b - r) / delta;
-    else /* if (b == max) */
+    else if (b == max)
         *h = 4. + (r - g) / delta;
     *h *= 60.;
     if (*h < 0.) *h += 360.;
 }
 
-void hlsToRgb(double h, double l, double s, double *r, double *g, double *b)
+void hslToRgb(double h, double s, double l, double *r, double *g, double *b)
 {
-    double m2 = (l <= 0.5) ? l * (l + s) : l + s - l * s;
-    double m1 = 2. * l - m2;
-    if (s == 0.) {
-        *r = l;
-        *g = l;
-        *b = l;
-        return;
-    }
+    double c = (1. - std::abs(2. * l - 1.)) * s;
+    double q = h / 60.;
+    double x = c * (1. - std::abs(std::fmod(q, 2.) - 1.));
 
-    struct Util {
-        inline static double value(double n1, double n2, double hue)
-        {
-            if (hue > 360.)
-                hue -= 360.;
-            else if (hue < 0.)
-                hue += 360.;
-            if (hue < 60.)
-                return n1 + (n2 - n1) * hue / 60.;
-            if (hue < 180.)
-                return n2;
-            if (hue < 240.)
-                return n1 + (n2 - n1) * (240. - hue) / 60.;
-            return n1;
-        }
-    };
+    double r1, g1, b1;
+    if (q <= 1)      { r1 = c; g1 = x; b1 = 0; }
+    else if (q <= 2) { r1 = x; g1 = c; b1 = 0; }
+    else if (q <= 3) { r1 = 0; g1 = c; b1 = x; }
+    else if (q <= 4) { r1 = 0; g1 = x; b1 = c; }
+    else if (q <= 5) { r1 = x; g1 = 0; b1 = c; }
+    else             { r1 = c; g1 = 0; b1 = x; }
 
-    *r = Util::value(m1, m2, h + 120.);
-    *g = Util::value(m1, m2, h);
-    *b = Util::value(m1, m2, h - 120.);
+    double m = l - c / 2.;
+    *r = r1 + m;
+    *g = g1 + m;
+    *b = b1 + m;
 }
 
 } // namespace cc
