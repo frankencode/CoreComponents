@@ -6,8 +6,10 @@
  *
  */
 
+#include <cmath>
 #include <cc/ColorNames>
 #include <cc/Format>
+#include <cc/colors>
 #include <cc/Color>
 
 namespace cc {
@@ -102,6 +104,28 @@ Color Color::parse(const char *s, bool *ok)
     }
     *ok = false;
     return Color{};
+}
+
+Color Color::fromHsv(double h, double s, double v)
+{
+    double r, g, b;
+    hsvToRgb(h, s, v, &r, &g, &b);
+    return Color{
+        uint32_t(std::round(0xFF * r)),
+        uint32_t(std::round(0xFF * g)),
+        uint32_t(std::round(0xFF * b))
+    };
+}
+
+Color Color::fromHsl(double h, double s, double l)
+{
+    double r, g, b;
+    hslToRgb(h, s, l, &r, &g, &b);
+    return Color{
+        uint32_t(std::round(0xFF * r)),
+        uint32_t(std::round(0xFF * g)),
+        uint32_t(std::round(0xFF * b))
+    };
 }
 
 Color Color::blend(Color a, Color b)

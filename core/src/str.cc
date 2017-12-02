@@ -131,6 +131,7 @@ String fnum(float64_t x, int precision, int base, int screen)
 
 String fixed(float64_t x, int nf)
 {
+    if (x != x) return "nan";
     double ip;
     double fp = modf(x, &ip);
     String sip = inum(int64_t(ip));
