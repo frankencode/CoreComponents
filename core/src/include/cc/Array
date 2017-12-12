@@ -131,12 +131,30 @@ public:
         return (i0 < i1) ? new Array(data_ + i0, i1 - i0) : new Array();
     }
 
+    /** Check if a range is valid
+      * \param i0 begin of range (index of first selected byte)
+      * \param i1 end of range (index behind the last selected byte)
+      * \return true if range is valid
+      */
+    inline bool canSelect(int i0, int i1) const { return i0 <= i1 && 0 <= i0 && i1 <= size_; }
+
+    /** Create a selection (reference to a range of this array)
+      * \param i0 begin of range (index of first selected byte)
+      * \param i1 end of range (index behind the last selected byte)
+      * \return the selection
+      */
+    inline Ref<Array> select(int i0, int i1) const { return new Array(this, i0, i1); }
+
+    /** Return the underlying unselected array
+      * \return original string
+      */
+    inline Array *unselect() const { return parent_; }
+
     /** Copy the head of this array
       * \param n size of the head
       * \return copied array
       */
     inline Ref<Array> head(int n) const { return copy(0, n); }
-
 
     /** Copy the tail of this string
       * \param n size of the tail
@@ -259,9 +277,20 @@ private:
         }
     }
 
+    Array(const Array *parent, int i0, int i1):
+        parent_(const_cast<Array *>(parent))
+    {
+        if (i0 < 0) i0 = 0;
+        else if (i0 > parent->size_) i0 = parent_->size_;
+        if (i1 < i0) i1 = i0;
+        else if (i1 > parent->size_) i1 = parent_->size_;
+        size_ = i1 - i0;
+        data_ = parent_->data_ + i0;
+    }
+
     ~Array()
     {
-        if (size_ > 0) delete[] data_;
+        if (size_ > 0 && !parent_) delete[] data_;
     }
 
     inline void reset(int newSize = 0)
@@ -281,6 +310,8 @@ private:
 
     int size_;
     T *data_;
+
+    Ref<Array> parent_;
 };
 
 template<class T>
