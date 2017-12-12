@@ -325,7 +325,6 @@ public:
       */
     inline String select(int i0, int i1) const { return new ByteArray(this, i0, i1); }
 
-
     /** Return the underlying unselected string
       * \return original string
       */

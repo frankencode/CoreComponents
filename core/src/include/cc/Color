@@ -60,6 +60,7 @@ public:
     inline static Color fromWord(uint32_t w) { Color c; c.w_ = w; return c; }
 
     /** Return the full color with hue \a h
+      * \param h hue in range [0, 360]
       */
     inline static Color fromHue(double h) { return fromHsv(h, 1., 1.); }
 
