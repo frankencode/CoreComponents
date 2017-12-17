@@ -13,13 +13,9 @@ namespace cc {
 class BinaryNode
 {
 public:
-    BinaryNode()
-        : weight_(1),
-          balance_(0)
-    {}
-    BinaryNode(const BinaryNode &kb)
-        : weight_(kb.weight_),
-          balance_(kb.balance_)
+    BinaryNode():
+        weight_(1),
+        balance_(0)
     {}
 
     BinaryNode *left_;

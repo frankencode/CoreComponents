@@ -58,13 +58,7 @@ BinaryNode *BinaryTree::detach(BinaryNode *k)
   */
 void BinaryTree::replace(BinaryNode *ki, BinaryNode *kl)
 {
-    kl->balance_ = ki->balance_;
-    kl->weight_ = ki->weight_;
-
-    // establish links to neighbors
-    kl->parent_ = ki->parent_;
-    kl->left_ = ki->left_;
-    kl->right_ = ki->right_;
+    *kl = *ki;
 
     // establish links from neighbors
     BinaryNode *kp = ki->parent_;

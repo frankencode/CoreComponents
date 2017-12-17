@@ -10,7 +10,7 @@
 
 namespace cc {
 
-void AvlBalance::restore(BinaryNode *kp, BinaryNode*, bool left, bool attached)
+void AvlBalance::restore(BinaryNode *kp, bool left, bool attached)
 {
     if (!kp) return;
 

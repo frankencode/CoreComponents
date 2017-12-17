@@ -84,7 +84,7 @@ void SystemStream::write(const ByteArray *data)
 
 void SystemStream::write(const StringList *parts)
 {
-    int n = parts->count();
+    const int n = parts->count();
 
     if (n <= 0) return;
 
@@ -104,14 +104,23 @@ void SystemStream::write(const StringList *parts)
         }
     }
 
-    Ref< Array<struct iovec> > iov = Array<struct iovec>::create(n);
+    typedef struct iovec IoVector;
+    struct IoGuard {
+        IoGuard(int n): iov_(new IoVector[n]) {}
+        ~IoGuard() { delete[] iov_; }
+        IoVector *iov_;
+    };
+
+    IoGuard guard(n);
+    IoVector *iov = guard.iov_;
+
     for (int i = 0; i < n; ++i) {
         ByteArray *part = parts->at(i);
-        iov->at(i).iov_base = part->bytes();
-        iov->at(i).iov_len = part->count();
+        iov[i].iov_base = part->bytes();
+        iov[i].iov_len = part->count();
     }
 
-    SystemIo::writev(fd_, iov->data(), iov->count());
+    SystemIo::writev(fd_, iov, n);
 }
 
 void SystemStream::write(const Format &data)
