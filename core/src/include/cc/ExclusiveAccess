@@ -15,9 +15,9 @@ namespace cc {
 class ExclusiveAccess
 {
 public:
-    inline ExclusiveAccess(ExclusiveSection *section)
-        : section_(section),
-          access_(section->acquire())
+    inline ExclusiveAccess(ExclusiveSection *section):
+        section_(section),
+        access_(section->acquire())
     {}
 
     inline ~ExclusiveAccess()
@@ -33,4 +33,3 @@ private:
 };
 
 } // namespace cc
-

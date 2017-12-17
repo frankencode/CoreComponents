@@ -12,7 +12,6 @@
 #include <cc/AvlBalance>
 #include <cc/BinaryTree>
 #include <cc/ExclusiveAccess>
-#include <cc/Array>
 
 namespace cc {
 
@@ -22,20 +21,14 @@ class OrdinalNode: public BinaryNode
 public:
     typedef ItemType Item;
 
-    OrdinalNode():
-        item_(Item())
-    {}
-    OrdinalNode(const Item &item):
-        item_(item)
-    {}
-    OrdinalNode(const OrdinalNode &kb):
-        BinaryNode(kb),
-        item_(kb.item_)
-    {}
+    OrdinalNode(): item_(Item()) {}
+    OrdinalNode(const Item &item): item_(item) {}
+    OrdinalNode(const OrdinalNode &kb) = default;
 
     inline OrdinalNode *left() const { return static_cast<OrdinalNode *>(left_); };
     inline OrdinalNode *right() const { return static_cast<OrdinalNode *>(right_); }
     inline OrdinalNode *parent() const { return static_cast<OrdinalNode *>(parent_); }
+
     Item item_;
 };
 
@@ -57,8 +50,8 @@ public:
     template<class Pattern>
     Node *find(const Pattern &pattern, bool *found = 0, bool *below = 0, int *index = 0) const;
 
-    int first(const Item &a) const;
-    int last(const Item &b) const;
+    int first(const Item &a) const; // TODO: rename to findFirst
+    int last(const Item &b) const;  // TODO: rename to findLast
 
     inline int weight() const { return BinaryTree::weight(root_); }
 
@@ -75,10 +68,12 @@ public:
     void clear();
 
 protected:
-    inline void setRoot(BinaryNode *k) { root_ = static_cast<Node *>(k); }
+    inline void setRoot(BinaryNode *k) override { root_ = static_cast<Node *>(k); }
 
-    void changed(BinaryNode *kp, BinaryNode *kc, bool left, bool attached);
-    void rotated(BinaryNode *k1, bool left);
+    void populate(Node **v, int n);
+
+    void changed(BinaryNode *kp, BinaryNode *kc, bool left, bool attached) override;
+    void rotated(BinaryNode *k1, bool left) override;
 
 #ifndef NDEBUG
     static bool testStructure(BinaryNode *k);
@@ -100,16 +95,25 @@ OrdinalTree<Node>::OrdinalTree(int n):
 {
     if (n <= 0) return;
 
-    Ref< Array<Node *> > v = Array<Node *>::create(n);
+    Node **v = new Node *[n];
+    for (int i = 0; i < n; ++i) v[i] = new Node;
 
+    populate(v, n);
+
+    delete[] v;
+}
+
+template<class Node>
+void OrdinalTree<Node>::populate(Node **v, int n)
+{
     for (int i = 0, m = 1; i < n; m *= 2)
     {
         for (int i1 = i + m; i < i1; ++i)
         {
             if (i < n) {
-                Node *k = new Node;
+                Node *k = v[i];
                 Node *kp = 0;
-                if (i > 0) kp = v->at((i - 1) >> 1);
+                if (i > 0) kp = v[(i - 1) >> 1];
                 k->parent_ = kp;
                 if (kp) {
                     if (i & 1)
@@ -119,21 +123,20 @@ OrdinalTree<Node>::OrdinalTree(int n):
                 }
                 k->left_ = 0;
                 k->right_ = 0;
-                v->at(i) = k;
             }
             else {
-                AvlBalance::restore(v->at((i - 1) >> 1), 0, i & 1, false);
+                AvlBalance::restore(v[(i - 1) >> 1], i & 1, false);
             }
         }
     }
 
     for (int i = n - 1; i > 0; --i) {
-        Node *k = v->at(i);
+        Node *k = v[i];
         Node *kp = k->parent();
         kp->weight_ += k->weight_;
     }
 
-    root_ = v->at(0);
+    root_ = v[0];
 
     /*CC_ASSERT(testStructure(this->root_));
     CC_ASSERT(testIteration(this->root_));
@@ -318,7 +321,7 @@ inline void OrdinalTree<Node>::changed(BinaryNode *kp, BinaryNode *kc, bool left
         k = k->parent_;
     }
 
-    AvlBalance::restore(kp, kc, left, attached);
+    AvlBalance::restore(kp, left, attached);
 
     cachedNode_ = 0;
 }

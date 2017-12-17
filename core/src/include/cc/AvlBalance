@@ -19,7 +19,7 @@ protected:
 
     inline virtual void rotated(BinaryNode */*k1*/, bool /*left*/) {}
 
-    void restore(BinaryNode *kp, BinaryNode*, bool left, bool attached);
+    void restore(BinaryNode *kp, bool left, bool attached);
 
 private:
     BinaryNode *rebalance(BinaryNode *k1);
