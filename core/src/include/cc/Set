@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/containers>
-#include <cc/OrdinalTree>
+#include <cc/SearchTree>
 #include <cc/Source>
 
 namespace cc {
@@ -174,7 +174,7 @@ public:
     /** @} */
 
 private:
-    typedef OrdinalTree< OrdinalNode<Item> > Tree;
+    typedef SearchTree< SearchNode<Item> > Tree;
     typedef typename Tree::Node Node;
 
     Set() {}

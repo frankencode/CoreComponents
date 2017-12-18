@@ -8,15 +8,27 @@
 
 #pragma once
 
-#include <cc/BinaryNode>
-
 namespace cc {
+
+class BinaryNode
+{
+public:
+    BinaryNode():
+        weight_(1),
+        balance_(0)
+    {}
+
+    BinaryNode *left_;
+    BinaryNode *right_;
+    BinaryNode *parent_;
+    int weight_;
+    int balance_;
+};
 
 class BinaryTree
 {
 public:
-    virtual void setRoot(BinaryNode *k) = 0;
-
+    inline virtual void rotated(BinaryNode */*k1*/, bool /*left*/) {}
     inline virtual void changed(BinaryNode */*kp*/, BinaryNode */*kc*/, bool /*left*/, bool /*attached*/) {}
 
     void attach(BinaryNode *kp, BinaryNode *kn, bool left);
@@ -31,9 +43,76 @@ public:
     static BinaryNode *max(BinaryNode *k);
     static BinaryNode *pred(BinaryNode *k);
     static BinaryNode *succ(BinaryNode *k);
+    inline BinaryNode *min() const { return min(root_); }
+    inline BinaryNode *max() const { return max(root_); }
+
+    void rotate(BinaryNode *k1, bool left);
 
     inline static int weight(BinaryNode *k) { return (k) ? k->weight_ : 0; }
     inline static void establishWeight(BinaryNode *k) { k->weight_ = weight(k->left_) + weight(k->right_) + 1; }
+
+    inline int weight() const { return weight(root_); }
+
+    template<class Node>
+    static Node *clone(Node *k);
+
+    template<class Node>
+    inline void remove(Node *k) { return delete static_cast<Node *>(BinaryTree::unlink(k)); }
+
+    template<class Node>
+    static void clear(Node *k);
+
+protected:
+    BinaryTree(): root_(0) {}
+
+    BinaryNode *root_;
+};
+
+template<class Node>
+Node *BinaryTree::clone(Node *k)
+{
+    if (!k) return 0;
+    Node *kn = new Node(*k);
+    if (!k->parent_) kn->parent_ = 0;
+    if (k->left_) {
+        kn->left_ = clone(k->left());
+        kn->left_->parent_ = kn;
+    }
+    else {
+        kn->left_ = 0;
+    }
+    if (k->right_) {
+        kn->right_ = clone(k->right());
+        kn->right_->parent_ = kn;
+    }
+    else {
+        kn->right_ = 0;
+    }
+    return kn;
+}
+
+template<class Node>
+void BinaryTree::clear(Node *k)
+{
+    if (!k) return;
+    clear(k->left());
+    clear(k->right());
+    delete k;
+}
+
+class AvlBalance
+{
+protected:
+    static void restore(BinaryTree *tree, BinaryNode *kp, bool left, bool attached);
+
+private:
+    static BinaryNode *rebalance(BinaryTree *tree, BinaryNode *k1);
+
+public:
+#ifndef NDEBUG
+    static int height(BinaryNode *k);
+    static bool testBalance(BinaryNode *k);
+#endif
 };
 
 } // namespace cc
