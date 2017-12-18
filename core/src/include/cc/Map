@@ -10,7 +10,7 @@
 
 #include <cc/containers>
 #include <cc/Source>
-#include <cc/OrdinalTree>
+#include <cc/SearchTree>
 
 namespace cc {
 
@@ -265,7 +265,7 @@ protected:
         static OutputType get(const Item &item) { return item->value(); }
     };
 
-    typedef OrdinalTree< OrdinalNode<Item> > Tree;
+    typedef SearchTree< SearchNode<Item> > Tree;
     typedef typename Tree::Node Node;
 
     Map() {}

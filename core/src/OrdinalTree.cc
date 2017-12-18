@@ -6,19 +6,9 @@
  *
  */
 
-#pragma once
-
-#include <cc/assert>
-#include <cc/BinaryTree>
-#include <cc/ExclusiveAccess>
+#include <cc/OrdinalTree>
 
 namespace cc {
-
-class OrdinalTree: public BinaryTree, public AvlBalance
-{
-public:
-
-};
 
 
 } // namespace cc
