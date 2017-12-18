@@ -10,6 +10,85 @@
 
 namespace cc {
 
+void AvlBalance::restore(BinaryTree *tree, BinaryNode *kp, bool left, bool attached)
+{
+    if (!kp) return;
+
+    int delta = 2 * left - 1;
+    BinaryNode *k = kp;
+    while (true) {
+        k->balance_ += attached ? delta : -delta;
+        if ((k->balance_ == 2) || (k->balance_ == -2))
+            k = rebalance(tree, k);
+        if ( (attached ? (k->balance_ == 0) : (k->balance_ != 0)) ||
+             (!k->parent_) )
+            break;
+        delta = 2 * (k->parent_->left_ == k) - 1;
+        k = k->parent_;
+    }
+}
+
+BinaryNode *AvlBalance::rebalance(BinaryTree *tree, BinaryNode *k1)
+{
+    if (k1->balance_ == 2) {
+        BinaryNode *k2 = k1->left_;
+        if (k2->balance_ == -1) {
+            // -- case Ia->III
+            BinaryNode *k3 = k2->right_;
+            k1->balance_ = -(k3->balance_ == 1);
+            k2->balance_ = (k3->balance_ == -1);
+            k3->balance_ = 0;
+            tree->rotate(k2, true);
+            tree->rotate(k1, false);
+        }
+        else {
+            // -- case Ib, Ic
+            k1->balance_ = (k2->balance_ <= 0);
+            k2->balance_ = k2->balance_ - 1;
+            tree->rotate(k1, false);
+        }
+    }
+    else {
+        BinaryNode *k2 = k1->right_;
+        if (k2->balance_ == 1) {
+            // -- case IIc->IV
+            BinaryNode *k3 = k2->left_;
+            k1->balance_ = (k3->balance_ == -1);
+            k2->balance_ = -(k3->balance_ == 1);
+            k3->balance_ = 0;
+            tree->rotate(k2, false);
+            tree->rotate(k1, true);
+        }
+        else {
+            // -- case IIa, IIb
+            k1->balance_ = -(k2->balance_ >= 0);
+            k2->balance_ = k2->balance_ + 1;
+            tree->rotate(k1, true);
+        }
+    }
+    return k1->parent_;
+}
+
+#ifndef NDEBUG
+
+int AvlBalance::height(BinaryNode *k)
+{
+    if (k == 0) return 0;
+    int h1 = height(k->left_);
+    int h2 = height(k->right_);
+    return (h1 < h2 ? h2 : h1) + 1;
+}
+
+bool AvlBalance::testBalance(BinaryNode *k)
+{
+    if (!k) return true;
+    if (!((k->balance_ == -1) || (k->balance_ == 0) || (k->balance_ == 1))) return false;
+    if ((height(k->left_) - height(k->right_)) != k->balance_) return false;
+    return testBalance(k->left_) && testBalance(k->right_);
+}
+
+#endif // ndef NDEBUG
+
 /** Attaches the new leaf node k under kp as the left or right child.
   */
 void BinaryTree::attach(BinaryNode *kp, BinaryNode *k, bool left)
@@ -203,83 +282,51 @@ void BinaryTree::rotate(BinaryNode *k1, bool left)
     rotated(k1, left);
 }
 
-void AvlBalance::restore(BinaryTree *tree, BinaryNode *kp, bool left, bool attached)
+void BinaryTree::populate(BinaryNode **v, int n)
 {
-    if (!kp) return;
-
-    int delta = 2 * left - 1;
-    BinaryNode *k = kp;
-    while (true) {
-        k->balance_ += attached ? delta : -delta;
-        if ((k->balance_ == 2) || (k->balance_ == -2))
-            k = rebalance(tree, k);
-        if ( (attached ? (k->balance_ == 0) : (k->balance_ != 0)) ||
-             (!k->parent_) )
-            break;
-        delta = 2 * (k->parent_->left_ == k) - 1;
-        k = k->parent_;
-    }
-}
-
-BinaryNode *AvlBalance::rebalance(BinaryTree *tree, BinaryNode *k1)
-{
-    if (k1->balance_ == 2) {
-        BinaryNode *k2 = k1->left_;
-        if (k2->balance_ == -1) {
-            // -- case Ia->III
-            BinaryNode *k3 = k2->right_;
-            k1->balance_ = -(k3->balance_ == 1);
-            k2->balance_ = (k3->balance_ == -1);
-            k3->balance_ = 0;
-            tree->rotate(k2, true);
-            tree->rotate(k1, false);
-        }
-        else {
-            // -- case Ib, Ic
-            k1->balance_ = (k2->balance_ <= 0);
-            k2->balance_ = k2->balance_ - 1;
-            tree->rotate(k1, false);
+    for (int i = 0, m = 1; i < n; m *= 2)
+    {
+        for (int i1 = i + m; i < i1; ++i)
+        {
+            if (i < n) {
+                BinaryNode *k = v[i];
+                BinaryNode *kp = 0;
+                if (i > 0) kp = v[(i - 1) >> 1];
+                k->parent_ = kp;
+                if (kp) {
+                    if (i & 1)
+                        kp->left_ = k;
+                    else
+                        kp->right_ = k;
+                }
+                k->left_ = 0;
+                k->right_ = 0;
+            }
+            else {
+                AvlBalance::restore(this, v[(i - 1) >> 1], i & 1, false);
+            }
         }
     }
-    else {
-        BinaryNode *k2 = k1->right_;
-        if (k2->balance_ == 1) {
-            // -- case IIc->IV
-            BinaryNode *k3 = k2->left_;
-            k1->balance_ = (k3->balance_ == -1);
-            k2->balance_ = -(k3->balance_ == 1);
-            k3->balance_ = 0;
-            tree->rotate(k2, false);
-            tree->rotate(k1, true);
-        }
-        else {
-            // -- case IIa, IIb
-            k1->balance_ = -(k2->balance_ >= 0);
-            k2->balance_ = k2->balance_ + 1;
-            tree->rotate(k1, true);
-        }
+
+    for (int i = n - 1; i > 0; --i) {
+        BinaryNode *k = v[i];
+        BinaryNode *kp = k->parent_;
+        kp->weight_ += k->weight_;
     }
-    return k1->parent_;
+
+    root_ = v[0];
+
+    /*
+    CC_ASSERT(testStructure(root_));
+    CC_ASSERT(testIteration(root_));
+    CC_ASSERT(testBalance(root_));
+    CC_ASSERT(testWeight(root_));*/
 }
 
-#ifndef NDEBUG
-
-int AvlBalance::height(BinaryNode *k)
+void BinaryTree::rotated(BinaryNode *k1, bool /*left*/)
 {
-    if (k == 0) return 0;
-    int h1 = height(k->left_);
-    int h2 = height(k->right_);
-    return (h1 < h2 ? h2 : h1) + 1;
+    establishWeight(k1);
+    establishWeight(k1->parent_);
 }
-
-bool AvlBalance::testBalance(BinaryNode *k)
-{
-    if (!k) return true;
-    if (!((k->balance_ == -1) || (k->balance_ == 0) || (k->balance_ == 1))) return false;
-    if ((height(k->left_) - height(k->right_)) != k->balance_) return false;
-    return testBalance(k->left_) && testBalance(k->right_);
-}
-
-#endif // ndef NDEBUG
 
 } // namespace cc

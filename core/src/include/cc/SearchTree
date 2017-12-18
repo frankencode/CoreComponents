@@ -32,7 +32,7 @@ public:
 };
 
 template<class NodeType>
-class SearchTree: public BinaryTree, public AvlBalance
+class SearchTree: public BinaryTree
 {
 public:
     typedef NodeType Node;
@@ -60,10 +60,7 @@ public:
 protected:
     inline Node *root() const { return static_cast<Node *>(root_); }
 
-    void populate(Node **v, int n);
-
     void changed(BinaryNode *kp, BinaryNode *kc, bool left, bool attached) override;
-    void rotated(BinaryNode *k1, bool left) override;
 
 #ifndef NDEBUG
     static bool testStructure(BinaryNode *k);
@@ -83,53 +80,12 @@ SearchTree<Node>::SearchTree(int n):
 {
     if (n <= 0) return;
 
-    Node **v = new Node *[n];
+    BinaryNode **v = new BinaryNode *[n];
     for (int i = 0; i < n; ++i) v[i] = new Node;
 
     populate(v, n);
 
     delete[] v;
-}
-
-template<class Node>
-void SearchTree<Node>::populate(Node **v, int n)
-{
-    for (int i = 0, m = 1; i < n; m *= 2)
-    {
-        for (int i1 = i + m; i < i1; ++i)
-        {
-            if (i < n) {
-                Node *k = v[i];
-                Node *kp = 0;
-                if (i > 0) kp = v[(i - 1) >> 1];
-                k->parent_ = kp;
-                if (kp) {
-                    if (i & 1)
-                        kp->left_ = k;
-                    else
-                        kp->right_ = k;
-                }
-                k->left_ = 0;
-                k->right_ = 0;
-            }
-            else {
-                AvlBalance::restore(this, v[(i - 1) >> 1], i & 1, false);
-            }
-        }
-    }
-
-    for (int i = n - 1; i > 0; --i) {
-        Node *k = v[i];
-        Node *kp = k->parent();
-        kp->weight_ += k->weight_;
-    }
-
-    root_ = v[0];
-
-    /*CC_ASSERT(testStructure(root()));
-    CC_ASSERT(testIteration(root()));
-    CC_ASSERT(Balance::testBalance(root()));
-    CC_ASSERT(SearchTree<Node>::testWeight(root()));*/
 }
 
 template<class Node>
@@ -312,13 +268,6 @@ inline void SearchTree<Node>::changed(BinaryNode *kp, BinaryNode *kc, bool left,
     AvlBalance::restore(this, kp, left, attached);
 
     cachedNode_ = 0;
-}
-
-template<class Node>
-inline void SearchTree<Node>::rotated(BinaryNode *k1, bool /*left*/)
-{
-    BinaryTree::establishWeight(k1);
-    BinaryTree::establishWeight(k1->parent_);
 }
 
 template<class Node>

@@ -25,12 +25,26 @@ public:
     int balance_;
 };
 
-class BinaryTree
+class BinaryTree;
+
+class AvlBalance
+{
+protected:
+    static void restore(BinaryTree *tree, BinaryNode *kp, bool left, bool attached);
+
+private:
+    static BinaryNode *rebalance(BinaryTree *tree, BinaryNode *k1);
+
+public:
+#ifndef NDEBUG
+    static int height(BinaryNode *k);
+    static bool testBalance(BinaryNode *k);
+#endif
+};
+
+class BinaryTree: public AvlBalance
 {
 public:
-    inline virtual void rotated(BinaryNode */*k1*/, bool /*left*/) {}
-    inline virtual void changed(BinaryNode */*kp*/, BinaryNode */*kc*/, bool /*left*/, bool /*attached*/) {}
-
     void attach(BinaryNode *kp, BinaryNode *kn, bool left);
     BinaryNode *detach(BinaryNode *k);
     void replace(BinaryNode *ki, BinaryNode *kl);
@@ -62,8 +76,14 @@ public:
     template<class Node>
     static void clear(Node *k);
 
+    inline virtual void changed(BinaryNode */*kp*/, BinaryNode */*kc*/, bool /*left*/, bool /*attached*/) {}
+
 protected:
     BinaryTree(): root_(0) {}
+
+    void populate(BinaryNode **v, int n);
+
+    virtual void rotated(BinaryNode *k1, bool /*left*/);
 
     BinaryNode *root_;
 };
@@ -99,20 +119,5 @@ void BinaryTree::clear(Node *k)
     clear(k->right());
     delete k;
 }
-
-class AvlBalance
-{
-protected:
-    static void restore(BinaryTree *tree, BinaryNode *kp, bool left, bool attached);
-
-private:
-    static BinaryNode *rebalance(BinaryTree *tree, BinaryNode *k1);
-
-public:
-#ifndef NDEBUG
-    static int height(BinaryNode *k);
-    static bool testBalance(BinaryNode *k);
-#endif
-};
 
 } // namespace cc
