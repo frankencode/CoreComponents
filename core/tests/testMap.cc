@@ -10,10 +10,7 @@
 #include <cc/stdio>
 #include <cc/System>
 #include <cc/Map>
-#if 0
 #include <cc/Random>
-#include <map>
-#endif
 
 using namespace cc;
 using namespace cc::testing;
@@ -42,10 +39,46 @@ class InsertionIteration: public TestCase
         const int testCount = sizeof(test) / sizeof(test[0]);
         for (int i = 0; i < testCount; ++i)
             names->insert(test[i][0], test[i][1]);
+        CC_VERIFY(MapTester::test<StringMap>(names));
         for (int i = 0; i < names->count(); ++i)
             fout("%% %%\n") << names->keyAt(i) << names->valueAt(i);
         for (int i = 0; i < testCount; ++i)
             CC_VERIFY(names->value(test[i][0]) == test[i][1]);
+    }
+};
+
+class InsertionRemoval: public TestCase
+{
+    void run()
+    {
+        typedef Map<int> IntMap;
+        Ref<IntMap> map = IntMap::create();
+        const int n = 20;
+        {
+            Ref<Random> random = Random::open(0);
+            for (int i = 0; i < n; ++i) {
+                int key = random->get();
+                int value = random->get();
+                map->insert(key, value);
+                CC_VERIFY(MapTester::test<IntMap>(map));
+            }
+        }
+        {
+            Ref<Random> random = Random::open(0);
+            for (int i = 0; i < n; ++i) {
+                int key = random->get();
+                int value = random->get();
+                CC_VERIFY(map->value(key) == value);
+            }
+        }
+        {
+            Ref<Random> random = Random::open(0);
+            for (int i = 0; i < n; ++i) {
+                int j = random->get(0, map->count() - 1);
+                map->remove(map->keyAt(j));
+                CC_VERIFY(MapTester::test<IntMap>(map));
+            }
+        }
     }
 };
 
@@ -93,39 +126,9 @@ class SyntaxSugar: public TestCase
 int main(int argc, char **argv)
 {
     CC_TESTSUITE_ADD(InsertionIteration);
+    CC_TESTSUITE_ADD(InsertionRemoval);
     CC_TESTSUITE_ADD(RangeSelection);
     CC_TESTSUITE_ADD(SyntaxSugar);
 
     return TestSuite::instance()->run(argc, argv);
 }
-
-#if 0
-{
-    fout() << "Performance..." << nl;
-    const int n = 100000;
-    {
-        std::map<int, int> map;
-        double t0 = System::now();
-        for (int i = 0; i < n; ++i)
-            map[i] = i;
-        fout("std::map, %% insertions: dt = %% us\n") << n << int((System::now() - t0) * 1e6);
-        t0 = System::now();
-        int s = 0;
-        for (std::map<int, int>::const_iterator i = map.begin(); i != map.end(); ++i)
-            s += i->second;
-        fout("std::map, %% iteration steps: dt = %% us\n") << n << int((System::now() - t0) * 1e6);
-    }
-    {
-        Ref< Map<int, int> > map = Map<int, int>::create();
-        double t0 = System::now();
-        for (int i = 0; i < n; ++i)
-            map->establish(i, i);
-        fout("cc::Map, %% insertions: dt = %% us\n") << n << int((System::now() - t0) * 1e6);
-        t0 = System::now();
-        int s = 0;
-        for (int i = 0; i < n; ++i)
-            s += map->valueAt(i);
-        fout("cc::Map, %% iteration steps: dt = %% us\n") << n << int((System::now() - t0) * 1e6);
-    }
-}
-#endif

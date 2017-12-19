@@ -8,6 +8,9 @@
 
 #pragma once
 
+#include <cc/assert>
+#include <cc/ExclusiveAccess>
+
 namespace cc {
 
 class BinaryNode
@@ -42,50 +45,76 @@ public:
 #endif
 };
 
+#ifndef NDEBUG
+class BinaryTreeTester;
+#endif
+
 class BinaryTree: public AvlBalance
 {
 public:
-    void attach(BinaryNode *kp, BinaryNode *kn, bool left);
-    BinaryNode *detach(BinaryNode *k);
-    void replace(BinaryNode *ki, BinaryNode *kl);
-    BinaryNode *unlink(BinaryNode *k);
-
-    void attachBefore(BinaryNode *kb, BinaryNode *kn);
-    void attachAfter(BinaryNode *ka, BinaryNode *kn);
-
-    static BinaryNode *min(BinaryNode *k);
-    static BinaryNode *max(BinaryNode *k);
-    static BinaryNode *pred(BinaryNode *k);
-    static BinaryNode *succ(BinaryNode *k);
     inline BinaryNode *min() const { return min(root_); }
     inline BinaryNode *max() const { return max(root_); }
 
-    void rotate(BinaryNode *k1, bool left);
+    void attach(BinaryNode *kp, BinaryNode *kn, bool left);
+    BinaryNode *unlink(BinaryNode *k);
 
-    inline static int weight(BinaryNode *k) { return (k) ? k->weight_ : 0; }
-    inline static void establishWeight(BinaryNode *k) { k->weight_ = weight(k->left_) + weight(k->right_) + 1; }
-
+protected:
     inline int weight() const { return weight(root_); }
+    inline static int weight(BinaryNode *k) { return (k) ? k->weight_ : 0; }
+
+    BinaryNode *getNodeAt(int i) const;
+    void attachAt(int i, BinaryNode *kn);
+    BinaryNode *unlinkAt(int i);
+
+    BinaryTree(): root_(0), cachedNode_(0) {}
+    void populate(BinaryNode **v, int n);
 
     template<class Node>
     static Node *clone(Node *k);
 
     template<class Node>
-    inline void remove(Node *k) { return delete static_cast<Node *>(BinaryTree::unlink(k)); }
+    inline void clear() {
+        clear(static_cast<Node *>(root_));
+        root_ = 0;
+        cachedNode_ = 0;
+    }
+
+    virtual void changed(BinaryNode *kp, BinaryNode *kc, bool left, bool attached);
+    virtual void rotated(BinaryNode *k1, bool /*left*/);
+
+    BinaryNode *root_;
+
+private:
+    friend class AvlBalance;
+    #ifndef NDEBUG
+    friend class BinaryTreeTester;
+    #endif
+
+    void attachBefore(BinaryNode *kb, BinaryNode *kn);
+
+    BinaryNode *detach(BinaryNode *k);
+    void replace(BinaryNode *ki, BinaryNode *kl);
+
+    void rotate(BinaryNode *k1, bool left);
+
+    inline static void establishWeight(BinaryNode *k) { k->weight_ = weight(k->left_) + weight(k->right_) + 1; }
+
+    static BinaryNode *min(BinaryNode *k);
+    static BinaryNode *max(BinaryNode *k);
+
+    static BinaryNode *pred(BinaryNode *k);
+    static BinaryNode *succ(BinaryNode *k);
 
     template<class Node>
     static void clear(Node *k);
 
-    inline virtual void changed(BinaryNode */*kp*/, BinaryNode */*kc*/, bool /*left*/, bool /*attached*/) {}
+    static bool testStructure(BinaryNode *k);
+    static bool testWeight(BinaryNode *k);
+    static bool testIteration(BinaryNode *k);
 
-protected:
-    BinaryTree(): root_(0) {}
-
-    void populate(BinaryNode **v, int n);
-
-    virtual void rotated(BinaryNode *k1, bool /*left*/);
-
-    BinaryNode *root_;
+    mutable ExclusiveSection cacheExclusive_;
+    mutable BinaryNode *cachedNode_;
+    mutable int cachedIndex_;
 };
 
 template<class Node>
@@ -119,5 +148,25 @@ void BinaryTree::clear(Node *k)
     clear(k->right());
     delete k;
 }
+
+#ifndef NDEBUG
+
+class BinaryTreeTester {
+protected:
+    static bool testStructure(const BinaryTree *tree) { return tree->testStructure(tree->root_); }
+    static bool testWeight(const BinaryTree *tree) { return tree->testWeight(tree->root_); }
+    static bool testIteration(const BinaryTree *tree) { return tree->testIteration(tree->root_); }
+    static bool testBalance(const BinaryTree *tree) { return tree->testBalance(tree->root_); }
+
+    static bool test(const BinaryTree *tree) {
+        return
+            testStructure(tree) &&
+            testWeight(tree) &&
+            testIteration(tree) &&
+            testBalance(tree);
+    }
+};
+
+#endif
 
 } // namespace cc

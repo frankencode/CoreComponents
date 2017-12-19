@@ -17,6 +17,10 @@ namespace cc {
 template<class, class> class KeyValuePair;
 template<class, class> class MapIterator;
 
+#ifndef NDEBUG
+class MapTester;
+#endif
+
 /** \class Map Map.h cc/Map
   * \ingroup container
   * \brief %Map data container
@@ -41,7 +45,7 @@ public:
     inline static Ref<Map> replicate(const Map *other) { return new Map(*other); }
 
     /// Number of key-value pairs stored in this map
-    inline int count() const { return tree_.weight(); }
+    inline int count() const { return tree_.count(); }
 
     /// Check if an index is valid
     inline bool has(int index) const {
@@ -85,11 +89,11 @@ public:
 
     /** Return the index of the first item greater or equal _a_
       */
-    inline int from(const Key &a) const { return tree_.first(a); }
+    inline int from(const Key &a) const { return tree_.findFirstAboveOrEqual(a); }
 
     /** Return the index of the first item lower or equal _b_
       */
-    inline int to(const Key &b) const { return tree_.last(b); }
+    inline int to(const Key &b) const { return tree_.findLastBelowOrEqual(b); }
 
     /** Insert a key-value mapping if no key-value mapping with the same key exists already.
       * If currentValue is non-null the current value the giving key maps to is returned.
@@ -251,6 +255,10 @@ public:
     /** @} */
 
 protected:
+#ifndef NDEBUG
+    friend class MapTester;
+#endif
+
     template<class O = Key>
     class GetKey {
     public:
@@ -358,5 +366,16 @@ typename Map<Key, Value>::const_iterator Map<Key, Value>::begin() const { return
 
 template<class Key, class Value>
 typename Map<Key, Value>::const_iterator Map<Key, Value>::end() const { return const_iterator(this, count()); }
+
+#ifndef NDEBUG
+class MapTester: public SearchTreeTester
+{
+public:
+    template<class Map>
+    static bool test(const Map *map) {
+        return SearchTreeTester::test(&map->tree_);
+    }
+};
+#endif
 
 } // namespace cc
