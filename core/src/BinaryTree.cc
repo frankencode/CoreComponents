@@ -169,26 +169,6 @@ BinaryNode *BinaryTree::unlink(BinaryNode *k)
     return k;
 }
 
-void BinaryTree::attachBefore(BinaryNode *kb, BinaryNode *kn)
-{
-    if (!kb)
-        BinaryTree::attach(kb, kn, true);
-    else if (kb->left_)
-        BinaryTree::attach(max(kb->left_), kn, false);
-    else
-        BinaryTree::attach(kb, kn, true);
-}
-
-void BinaryTree::attachAfter(BinaryNode *ka, BinaryNode *kn)
-{
-    if (!ka)
-        BinaryTree::attach(ka, kn, true);
-    else if (ka->right_)
-        BinaryTree::attach(min(ka->right_), kn, true);
-    else
-        BinaryTree::attach(ka, kn, false);
-}
-
 BinaryNode *BinaryTree::pred(BinaryNode *k)
 {
     if (k->left_)
@@ -323,10 +303,168 @@ void BinaryTree::populate(BinaryNode **v, int n)
     CC_ASSERT(testWeight(root_));*/
 }
 
+BinaryNode *BinaryTree::getNodeAt(int i) const
+{
+    CC_ASSERT((0 <= i) && (i < weight()));
+
+    ExclusiveAccess cacheAccess(&cacheExclusive_);
+    if (cacheAccess) {
+        if (cachedNode_) {
+            const int d = i - cachedIndex_;
+            if (d == 1) {
+                ++cachedIndex_;
+                cachedNode_ = succ(cachedNode_);
+                return cachedNode_;
+            }
+            else if (d == 0) {
+                return cachedNode_;
+            }
+            else if (d == -1) {
+                --cachedIndex_;
+                cachedNode_ = pred(cachedNode_);
+                return cachedNode_;
+            }
+        }
+    }
+
+    BinaryNode *k = root_;
+    int j0 = 0;
+    while (k) {
+        int j = j0 + weight(k->left_);
+        if (i < j) {
+            k = k->left_;
+        }
+        else if (j < i) {
+            j0 = j + 1;
+            k = k->right_;
+        }
+        else // i == j
+            break;
+    }
+
+    if (cacheAccess) {
+        cachedNode_ = k;
+        cachedIndex_ = i;
+    }
+
+    return k;
+}
+
+void BinaryTree::attachBefore(BinaryNode *kb, BinaryNode *kn)
+{
+    if (!kb)
+        BinaryTree::attach(kb, kn, true);
+    else if (kb->left_)
+        BinaryTree::attach(max(kb->left_), kn, false);
+    else
+        BinaryTree::attach(kb, kn, true);
+}
+
+#if 0
+void BinaryTree::attachAfter(BinaryNode *ka, BinaryNode *kn)
+{
+    if (!ka)
+        BinaryTree::attach(ka, kn, true);
+    else if (ka->right_)
+        BinaryTree::attach(min(ka->right_), kn, true);
+    else
+        BinaryTree::attach(ka, kn, false);
+}
+#endif
+
+void BinaryTree::attachAt(int i, BinaryNode *kn)
+{
+    if (i == weight()) {
+        BinaryNode *kp = 0;
+        if (cachedNode_) {
+            if (cachedIndex_ == i)
+                kp = cachedNode_;
+        }
+        if (!kp) kp = max();
+        attach(kp, kn, false);
+    }
+    else {
+        BinaryNode *ka = getNodeAt(i);
+        CC_ASSERT(ka);
+        attachBefore(ka, kn);
+    }
+
+    cachedNode_ = kn;
+    cachedIndex_ = i;
+}
+
+BinaryNode *BinaryTree::unlinkAt(int i)
+{
+    BinaryNode *ko = getNodeAt(i);
+    CC_ASSERT(ko);
+    BinaryNode *k = pred(ko);
+    if (k) --i;
+    else k = succ(ko);
+    unlink(ko);
+    if (k) {
+        cachedNode_ = k;
+        cachedIndex_ = i;
+    }
+    return ko;
+}
+
+void BinaryTree::changed(BinaryNode *kp, BinaryNode *kc, bool left, bool attached)
+{
+    int delta = attached ? 1 : -1;
+    BinaryNode *k = kp;
+    while (k) {
+        k->weight_ += delta;
+        k = k->parent_;
+    }
+
+    AvlBalance::restore(this, kp, left, attached);
+
+    cachedNode_ = 0;
+}
+
 void BinaryTree::rotated(BinaryNode *k1, bool /*left*/)
 {
     establishWeight(k1);
     establishWeight(k1->parent_);
 }
+
+#ifndef NDEBUG
+
+bool BinaryTree::testStructure(BinaryNode *k)
+{
+    if (!k) return true;
+    if (k->parent_) {
+        if (!((k == k->parent_->left_) || (k == k->parent_->right_)))
+            return false;
+    }
+    return testStructure(k->left_) && testStructure(k->right_);
+}
+
+bool BinaryTree::testWeight(BinaryNode *k)
+{
+    if (!k) return true;
+    return
+        (weight(k->left_) + weight(k->right_) + 1 == k->weight_) &&
+        testWeight(k->left_) && testWeight(k->right_);
+}
+
+bool BinaryTree::testIteration(BinaryNode *k)
+{
+    if (k == 0) return true;
+    BinaryNode *k2;
+    k2 = succ(k);
+    if (k2) {
+        if (k != pred(k2))
+            return false;
+    }
+    k2 = pred(k);
+    if (k2) {
+        if (k != succ(k2))
+            return false;
+    }
+    return testIteration(k->left_) && testIteration(k->right_);
+}
+
+#endif // ndef NDEBUG
 
 } // namespace cc

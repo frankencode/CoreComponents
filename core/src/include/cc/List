@@ -55,7 +55,7 @@ public:
     inline static Ref<List> replicate(const List *other) { return new List(*other); }
 
     /// Return the number of items stored in this list
-    inline int count() const { return tree_.weight(); }
+    inline int count() const { return tree_.count(); }
 
     /// Check if an index is valid
     inline bool has(int index) const {

@@ -8,9 +8,7 @@
 
 #pragma once
 
-#include <cc/assert>
 #include <cc/BinaryTree>
-#include <cc/ExclusiveAccess>
 
 namespace cc {
 
@@ -31,6 +29,10 @@ public:
     Item item_;
 };
 
+#ifndef NDEBUG
+class SearchTreeTester;
+#endif
+
 template<class NodeType>
 class SearchTree: public BinaryTree
 {
@@ -49,34 +51,26 @@ public:
     template<class Pattern>
     Node *find(const Pattern &pattern, bool *found = 0, bool *below = 0, int *index = 0) const;
 
-    int first(const Item &a) const; // TODO: rename to findFirstAboveOrEqual
-    int last(const Item &b) const;  // TODO: rename to findLastBelowOrEqual
+    inline void remove(Node *k) { return delete static_cast<Node *>(unlink(k)); }
+
+    int findFirstAboveOrEqual(const Item &a) const;
+    int findLastBelowOrEqual(const Item &b) const;
 
     void push(int index, const Item &item);
     void pop(int index, Item *item);
 
-    void clear();
+    inline void clear() { return BinaryTree::clear<Node>(); }
+    inline int count() const { return weight(); }
 
-protected:
-    inline Node *root() const { return static_cast<Node *>(root_); }
-
-    void changed(BinaryNode *kp, BinaryNode *kc, bool left, bool attached) override;
-
+private:
 #ifndef NDEBUG
-    static bool testStructure(BinaryNode *k);
-    static bool testWeight(BinaryNode *k);
-    static bool testIteration(BinaryNode *k);
+    friend class SearchTreeTester;
     static bool testOrder(Node *k);
 #endif
-
-    mutable ExclusiveSection cacheExclusive_;
-    mutable Node *cachedNode_;
-    mutable int cachedIndex_;
 };
 
 template<class Node>
-SearchTree<Node>::SearchTree(int n):
-    cachedNode_(0)
+SearchTree<Node>::SearchTree(int n)
 {
     if (n <= 0) return;
 
@@ -89,69 +83,26 @@ SearchTree<Node>::SearchTree(int n):
 }
 
 template<class Node>
-SearchTree<Node>::SearchTree(const SearchTree &b):
-    cachedNode_(0)
+SearchTree<Node>::SearchTree(const SearchTree &b)
 {
-    root_ = clone(b.root());
+    if (b.root_)
+        root_ = clone(static_cast<Node *>(b.root_));
 }
 
 template<class Node>
 const SearchTree<Node> &SearchTree<Node>::operator=(const SearchTree &b)
 {
     clear();
-    root_ = clone(b.root());
+    if (b.root_)
+        root_ = clone(static_cast<Node *>(b.root_));
     return *this;
 }
 
 template<class Node>
 bool SearchTree<Node>::lookupByIndex(int i, Node **node) const
 {
-    CC_ASSERT((0 <= i) && (i < weight()));
-
-    ExclusiveAccess cacheAccess(&cacheExclusive_);
-    if (cacheAccess) {
-        if (cachedNode_) {
-            const int d = i - cachedIndex_;
-            if (d == 1) {
-                ++cachedIndex_;
-                cachedNode_ = static_cast<Node *>(BinaryTree::succ(cachedNode_));
-                if ((cachedNode_) && (node)) *node = cachedNode_;
-                return cachedNode_;
-            }
-            else if (d == 0) {
-                if (node) *node = cachedNode_;
-                return cachedNode_;
-            }
-            else if (d == -1) {
-                --cachedIndex_;
-                cachedNode_ = static_cast<Node *>(BinaryTree::pred(cachedNode_));
-                if ((cachedNode_) && (node)) *node = cachedNode_;
-                return cachedNode_;
-            }
-        }
-    }
-
-    Node *k = root();
-    int j0 = 0;
-    while (k) {
-        int j = j0 + BinaryTree::weight(k->left_);
-        if (i < j) {
-            k = k->left();
-        }
-        else if (j < i) {
-            j0 = j + 1;
-            k = k->right();
-        }
-        else // i == j
-            break;
-    }
-    if ((k) && (node)) *node = k;
-
-    if (cacheAccess) {
-        cachedNode_ = k;
-        cachedIndex_ = i;
-    }
-
+    BinaryNode *k = getNodeAt(i);
+    if (k && node) *node = static_cast<Node *>(k);
     return k;
 }
 
@@ -159,11 +110,12 @@ template<class Node>
 template<class Pattern>
 Node *SearchTree<Node>::find(const Pattern &pattern, bool *found, bool *below, int *index) const
 {
-    Node *k = root();
     Node *k2 = 0;
     if (found) *found = false;
-    int j0 = 0, j = -1;
-    if (k) {
+    int j = -1;
+    if (root_) {
+        Node *k = static_cast<Node *>(root_);
+        int j0 = 0;
         while (true) {
             k2 = k;
             j = j0 + BinaryTree::weight(k->left_);
@@ -193,22 +145,22 @@ Node *SearchTree<Node>::find(const Pattern &pattern, bool *found, bool *below, i
 }
 
 template<class Node>
-inline int SearchTree<Node>::first(const Item &a) const
+inline int SearchTree<Node>::findFirstAboveOrEqual(const Item &a) const
 {
     bool found = false, below = true;
     int index = 0;
-    if (!root()) return 0;
+    if (!root_) return 0;
     find(a, &found, &below, &index);
     if (found) return index;
     return below ? index : index + 1;
 }
 
 template<class Node>
-inline int SearchTree<Node>::last(const Item &b) const
+inline int SearchTree<Node>::findLastBelowOrEqual(const Item &b) const
 {
     bool found = false, below = true;
     int index = 0;
-    if (!root()) return 0;
+    if (!root_) return 0;
     find(b, &found, &below, &index);
     if (found) return index;
     return below ? index - 1 : index;
@@ -218,105 +170,17 @@ template<class Node>
 void SearchTree<Node>::push(int index, const Item &item)
 {
     Node *kn = new Node(item);
-    if (index == weight()) {
-        Node *kp = 0;
-        if (cachedNode_) {
-            if (cachedIndex_ == index)
-                kp = cachedNode_;
-        }
-        if (!kp) kp = static_cast<Node *>(max());
-        BinaryTree::attach(kp, kn, false);
-    }
-    else {
-        Node *ka = 0;
-        if (!lookupByIndex(index, &ka))
-            CC_ASSERT(false);
-        BinaryTree::attachBefore(ka, kn);
-    }
-
-    cachedNode_ = kn;
-    cachedIndex_ = index;
+    attachAt(index, kn);
 }
 
 template<class Node>
 void SearchTree<Node>::pop(int index, Item *item)
 {
-    Node *ko = 0;
-    if (!lookupByIndex(index, &ko))
-        CC_ASSERT(false);
-    *item = ko->item_;
-    Node *k = static_cast<Node *>(BinaryTree::pred(ko));
-    if (k) --index;
-    else k = static_cast<Node *>(BinaryTree::succ(ko));
-    remove(ko);
-    if (k) {
-        cachedNode_ = k;
-        cachedIndex_ = index;
-    }
-}
-
-template<class Node>
-inline void SearchTree<Node>::changed(BinaryNode *kp, BinaryNode *kc, bool left, bool attached)
-{
-    int delta = attached ? 1 : -1;
-    BinaryNode *k = kp;
-    while (k) {
-        k->weight_ += delta;
-        k = k->parent_;
-    }
-
-    AvlBalance::restore(this, kp, left, attached);
-
-    cachedNode_ = 0;
-}
-
-template<class Node>
-void SearchTree<Node>::clear()
-{
-    BinaryTree::clear(root());
-    root_ = 0;
-    cachedNode_ = 0;
+    BinaryNode *ko = unlinkAt(index);
+    if (item) *item = static_cast<Node *>(ko)->item_;
 }
 
 #ifndef NDEBUG
-
-template<class Node>
-bool SearchTree<Node>::testStructure(BinaryNode *k)
-{
-    if (!k) return true;
-    if (k->parent_) {
-        if (!((k == k->parent_->left_) || (k == k->parent_->right_)))
-            return false;
-    }
-    return testStructure(k->left_) && testStructure(k->right_);
-}
-
-template<class Node>
-bool SearchTree<Node>::testWeight(BinaryNode *k)
-{
-    if (!k) return true;
-    return
-        (weight(k->left_) + weight(k->right_) + 1 == k->weight_) &&
-        testWeight(k->left_) && testWeight(k->right_);
-}
-
-template<class Node>
-bool SearchTree<Node>::testIteration(BinaryNode *k)
-{
-    if (k == 0) return true;
-    BinaryNode *k2;
-    k2 = succ(k);
-    if (k2) {
-        if (k != pred(k2))
-            return false;
-    }
-    k2 = pred(k);
-    if (k2) {
-        if (k != succ(k2))
-            return false;
-    }
-    return testIteration(k->left_) && testIteration(k->right_);
-}
 
 template<class Node>
 bool SearchTree<Node>::testOrder(Node *k)
@@ -332,6 +196,24 @@ bool SearchTree<Node>::testOrder(Node *k)
     }
     return testOrder(k->left()) && testOrder(k->right());
 }
+
+class SearchTreeTester: public BinaryTreeTester
+{
+protected:
+    template<class SearchTree>
+    static bool testOrder(const SearchTree *tree)
+    {
+        return SearchTree::testOrder(static_cast<typename SearchTree::Node *>(tree->root_));
+    }
+
+    template<class SearchTree>
+    static bool test(const SearchTree *tree)
+    {
+        return
+            BinaryTreeTester::test(tree) &&
+            testOrder(tree);
+    }
+};
 
 #endif // ndef NDEBUG
 

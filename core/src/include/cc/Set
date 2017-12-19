@@ -37,7 +37,7 @@ public:
     inline static Ref<Set> replicate(const Set *other) { return new Set(other); }
 
     /// Number of items
-    inline int count() const { return tree_.weight(); }
+    inline int count() const { return tree_.count(); }
 
     /// Check if an index is valid
     inline bool has(int index) const {
