@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include <cc/BinaryTree>
+#include <cc/OrdinalTree>
 
 namespace cc {
 
 template<class ItemType>
-class SearchNode: public BinaryNode
+class SearchNode: public OrdinalNode
 {
 public:
     typedef ItemType Item;
@@ -22,9 +22,9 @@ public:
     SearchNode(const Item &item): item_(item) {}
     SearchNode(const SearchNode &kb) = default;
 
-    inline SearchNode *left() const { return static_cast<SearchNode *>(left_); };
-    inline SearchNode *right() const { return static_cast<SearchNode *>(right_); }
-    inline SearchNode *parent() const { return static_cast<SearchNode *>(parent_); }
+    inline SearchNode *left() const { return left_ ? static_cast<SearchNode *>(left_) : nullptr; };
+    inline SearchNode *right() const { return right_ ? static_cast<SearchNode *>(right_) : nullptr; }
+    inline SearchNode *parent() const { return parent_ ? static_cast<SearchNode *>(parent_) : nullptr; }
 
     Item item_;
 };
@@ -34,7 +34,7 @@ class SearchTreeTester;
 #endif
 
 template<class NodeType>
-class SearchTree: public BinaryTree
+class SearchTree: public OrdinalTree
 {
 public:
     typedef NodeType Node;
@@ -59,8 +59,7 @@ public:
     void push(int index, const Item &item);
     void pop(int index, Item *item);
 
-    inline void clear() { return BinaryTree::clear<Node>(); }
-    inline int count() const { return weight(); }
+    inline void clear() { return OrdinalTree::clear<Node>(); }
 
 private:
 #ifndef NDEBUG
@@ -74,7 +73,7 @@ SearchTree<Node>::SearchTree(int n)
 {
     if (n <= 0) return;
 
-    BinaryNode **v = new BinaryNode *[n];
+    OrdinalNode **v = new OrdinalNode *[n];
     for (int i = 0; i < n; ++i) v[i] = new Node;
 
     populate(v, n);
@@ -101,7 +100,7 @@ const SearchTree<Node> &SearchTree<Node>::operator=(const SearchTree &b)
 template<class Node>
 bool SearchTree<Node>::lookupByIndex(int i, Node **node) const
 {
-    BinaryNode *k = getNodeAt(i);
+    OrdinalNode *k = getNodeAt(i);
     if (k && node) *node = static_cast<Node *>(k);
     return k;
 }
@@ -118,7 +117,7 @@ Node *SearchTree<Node>::find(const Pattern &pattern, bool *found, bool *below, i
         int j0 = 0;
         while (true) {
             k2 = k;
-            j = j0 + BinaryTree::weight(k->left_);
+            j = j0 + OrdinalTree::weight(k->left_);
             if (pattern < k->item_) {
                 if (!k->left_) {
                     if (below) *below = true;
@@ -176,7 +175,7 @@ void SearchTree<Node>::push(int index, const Item &item)
 template<class Node>
 void SearchTree<Node>::pop(int index, Item *item)
 {
-    BinaryNode *ko = unlinkAt(index);
+    OrdinalNode *ko = unlinkAt(index);
     if (item) *item = static_cast<Node *>(ko)->item_;
 }
 
@@ -197,7 +196,7 @@ bool SearchTree<Node>::testOrder(Node *k)
     return testOrder(k->left()) && testOrder(k->right());
 }
 
-class SearchTreeTester: public BinaryTreeTester
+class SearchTreeTester: public OrdinalTreeTester
 {
 protected:
     template<class SearchTree>
@@ -210,7 +209,7 @@ protected:
     static bool test(const SearchTree *tree)
     {
         return
-            BinaryTreeTester::test(tree) &&
+            OrdinalTreeTester::test(tree) &&
             testOrder(tree);
     }
 };

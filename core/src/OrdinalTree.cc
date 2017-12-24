@@ -6,16 +6,16 @@
  *
  */
 
-#include <cc/BinaryTree>
+#include <cc/OrdinalTree>
 
 namespace cc {
 
-void AvlBalance::restore(BinaryTree *tree, BinaryNode *kp, bool left, bool attached)
+void AvlBalance::restore(OrdinalTree *tree, OrdinalNode *kp, bool left, bool attached)
 {
     if (!kp) return;
 
     int delta = 2 * left - 1;
-    BinaryNode *k = kp;
+    OrdinalNode *k = kp;
     while (true) {
         k->balance_ += attached ? delta : -delta;
         if ((k->balance_ == 2) || (k->balance_ == -2))
@@ -28,13 +28,13 @@ void AvlBalance::restore(BinaryTree *tree, BinaryNode *kp, bool left, bool attac
     }
 }
 
-BinaryNode *AvlBalance::rebalance(BinaryTree *tree, BinaryNode *k1)
+OrdinalNode *AvlBalance::rebalance(OrdinalTree *tree, OrdinalNode *k1)
 {
     if (k1->balance_ == 2) {
-        BinaryNode *k2 = k1->left_;
+        OrdinalNode *k2 = k1->left_;
         if (k2->balance_ == -1) {
             // -- case Ia->III
-            BinaryNode *k3 = k2->right_;
+            OrdinalNode *k3 = k2->right_;
             k1->balance_ = -(k3->balance_ == 1);
             k2->balance_ = (k3->balance_ == -1);
             k3->balance_ = 0;
@@ -49,10 +49,10 @@ BinaryNode *AvlBalance::rebalance(BinaryTree *tree, BinaryNode *k1)
         }
     }
     else {
-        BinaryNode *k2 = k1->right_;
+        OrdinalNode *k2 = k1->right_;
         if (k2->balance_ == 1) {
             // -- case IIc->IV
-            BinaryNode *k3 = k2->left_;
+            OrdinalNode *k3 = k2->left_;
             k1->balance_ = (k3->balance_ == -1);
             k2->balance_ = -(k3->balance_ == 1);
             k3->balance_ = 0;
@@ -71,7 +71,7 @@ BinaryNode *AvlBalance::rebalance(BinaryTree *tree, BinaryNode *k1)
 
 #ifndef NDEBUG
 
-int AvlBalance::height(BinaryNode *k)
+int AvlBalance::height(OrdinalNode *k)
 {
     if (k == 0) return 0;
     int h1 = height(k->left_);
@@ -79,7 +79,7 @@ int AvlBalance::height(BinaryNode *k)
     return (h1 < h2 ? h2 : h1) + 1;
 }
 
-bool AvlBalance::testBalance(BinaryNode *k)
+bool AvlBalance::testBalance(OrdinalNode *k)
 {
     if (!k) return true;
     if (!((k->balance_ == -1) || (k->balance_ == 0) || (k->balance_ == 1))) return false;
@@ -91,7 +91,7 @@ bool AvlBalance::testBalance(BinaryNode *k)
 
 /** Attaches the new leaf node k under kp as the left or right child.
   */
-void BinaryTree::attach(BinaryNode *kp, BinaryNode *k, bool left)
+void OrdinalTree::attach(OrdinalNode *kp, OrdinalNode *k, bool left)
 {
     if (kp) {
         if (left)
@@ -113,12 +113,12 @@ void BinaryTree::attach(BinaryNode *kp, BinaryNode *k, bool left)
 
 /** Detaches the leaf or list node k from the tree.
   */
-BinaryNode *BinaryTree::detach(BinaryNode *k)
+OrdinalNode *OrdinalTree::detach(OrdinalNode *k)
 {
-    BinaryNode *kp = k->parent_;
+    OrdinalNode *kp = k->parent_;
     bool left = false;
     if (kp) {
-        BinaryNode *kc = (k->left_ != 0) ? k->left_ : k->right_;
+        OrdinalNode *kc = (k->left_ != 0) ? k->left_ : k->right_;
         left = (kp->left_ == k);
         if (left)
             kp->left_ = kc;
@@ -135,12 +135,12 @@ BinaryNode *BinaryTree::detach(BinaryNode *k)
 
 /** Put the leaf node kl into the place of inner node ki
   */
-void BinaryTree::replace(BinaryNode *ki, BinaryNode *kl)
+void OrdinalTree::replace(OrdinalNode *ki, OrdinalNode *kl)
 {
     *kl = *ki;
 
     // establish links from neighbors
-    BinaryNode *kp = ki->parent_;
+    OrdinalNode *kp = ki->parent_;
     if (kp) {
         if (kp->left_ == ki)
             kp->left_ = kl;
@@ -158,7 +158,7 @@ void BinaryTree::replace(BinaryNode *ki, BinaryNode *kl)
 
 /** Remove the node k from the tree.
   */
-BinaryNode *BinaryTree::unlink(BinaryNode *k)
+OrdinalNode *OrdinalTree::unlink(OrdinalNode *k)
 {
     if (k->left_)
         replace(k, detach(max(k->left_)));
@@ -169,11 +169,11 @@ BinaryNode *BinaryTree::unlink(BinaryNode *k)
     return k;
 }
 
-BinaryNode *BinaryTree::pred(BinaryNode *k)
+OrdinalNode *OrdinalTree::pred(OrdinalNode *k)
 {
     if (k->left_)
         return max(k->left_);
-    BinaryNode *kp = k->parent_;
+    OrdinalNode *kp = k->parent_;
     while (kp) {
         if (k == kp->right_) break;
         k = kp;
@@ -182,11 +182,11 @@ BinaryNode *BinaryTree::pred(BinaryNode *k)
     return kp;
 }
 
-BinaryNode *BinaryTree::succ(BinaryNode *k)
+OrdinalNode *OrdinalTree::succ(OrdinalNode *k)
 {
     if (k->right_)
         return min(k->right_);
-    BinaryNode *kp = k->parent_;
+    OrdinalNode *kp = k->parent_;
     while (kp) {
         if (k == kp->left_) break;
         k = kp;
@@ -195,9 +195,9 @@ BinaryNode *BinaryTree::succ(BinaryNode *k)
     return kp;
 }
 
-BinaryNode *BinaryTree::min(BinaryNode *k)
+OrdinalNode *OrdinalTree::min(OrdinalNode *k)
 {
-    BinaryNode *k2 = k;
+    OrdinalNode *k2 = k;
     while (k) {
         k2 = k;
         k = k->left_;
@@ -205,9 +205,9 @@ BinaryNode *BinaryTree::min(BinaryNode *k)
     return k2;
 }
 
-BinaryNode *BinaryTree::max(BinaryNode *k)
+OrdinalNode *OrdinalTree::max(OrdinalNode *k)
 {
-    BinaryNode *k2 = k;
+    OrdinalNode *k2 = k;
     while (k) {
         k2 = k;
         k = k->right_;
@@ -233,9 +233,9 @@ BinaryNode *BinaryTree::max(BinaryNode *k)
   *   /  \             /  \
   *  a    b           b    c
   */
-void BinaryTree::rotate(BinaryNode *k1, bool left)
+void OrdinalTree::rotate(OrdinalNode *k1, bool left)
 {
-    BinaryNode *k2 = left ? k1->right_ : k1->left_;
+    OrdinalNode *k2 = left ? k1->right_ : k1->left_;
     if (k1->parent_) {
         if (k1->parent_->left_ == k1)
             k1->parent_->left_ = k2;
@@ -262,15 +262,15 @@ void BinaryTree::rotate(BinaryNode *k1, bool left)
     rotated(k1, left);
 }
 
-void BinaryTree::populate(BinaryNode **v, int n)
+void OrdinalTree::populate(OrdinalNode **v, int n)
 {
     for (int i = 0, m = 1; i < n; m *= 2)
     {
         for (int i1 = i + m; i < i1; ++i)
         {
             if (i < n) {
-                BinaryNode *k = v[i];
-                BinaryNode *kp = 0;
+                OrdinalNode *k = v[i];
+                OrdinalNode *kp = 0;
                 if (i > 0) kp = v[(i - 1) >> 1];
                 k->parent_ = kp;
                 if (kp) {
@@ -289,8 +289,8 @@ void BinaryTree::populate(BinaryNode **v, int n)
     }
 
     for (int i = n - 1; i > 0; --i) {
-        BinaryNode *k = v[i];
-        BinaryNode *kp = k->parent_;
+        OrdinalNode *k = v[i];
+        OrdinalNode *kp = k->parent_;
         kp->weight_ += k->weight_;
     }
 
@@ -303,7 +303,7 @@ void BinaryTree::populate(BinaryNode **v, int n)
     CC_ASSERT(testWeight(root_));*/
 }
 
-BinaryNode *BinaryTree::getNodeAt(int i) const
+OrdinalNode *OrdinalTree::getNodeAt(int i) const
 {
     CC_ASSERT((0 <= i) && (i < weight()));
 
@@ -327,7 +327,7 @@ BinaryNode *BinaryTree::getNodeAt(int i) const
         }
     }
 
-    BinaryNode *k = root_;
+    OrdinalNode *k = root_;
     int j0 = 0;
     while (k) {
         int j = j0 + weight(k->left_);
@@ -350,32 +350,32 @@ BinaryNode *BinaryTree::getNodeAt(int i) const
     return k;
 }
 
-void BinaryTree::attachBefore(BinaryNode *kb, BinaryNode *kn)
+void OrdinalTree::attachBefore(OrdinalNode *kb, OrdinalNode *kn)
 {
     if (!kb)
-        BinaryTree::attach(kb, kn, true);
+        OrdinalTree::attach(kb, kn, true);
     else if (kb->left_)
-        BinaryTree::attach(max(kb->left_), kn, false);
+        OrdinalTree::attach(max(kb->left_), kn, false);
     else
-        BinaryTree::attach(kb, kn, true);
+        OrdinalTree::attach(kb, kn, true);
 }
 
 #if 0
-void BinaryTree::attachAfter(BinaryNode *ka, BinaryNode *kn)
+void OrdinalTree::attachAfter(OrdinalNode *ka, OrdinalNode *kn)
 {
     if (!ka)
-        BinaryTree::attach(ka, kn, true);
+        OrdinalTree::attach(ka, kn, true);
     else if (ka->right_)
-        BinaryTree::attach(min(ka->right_), kn, true);
+        OrdinalTree::attach(min(ka->right_), kn, true);
     else
-        BinaryTree::attach(ka, kn, false);
+        OrdinalTree::attach(ka, kn, false);
 }
 #endif
 
-void BinaryTree::attachAt(int i, BinaryNode *kn)
+void OrdinalTree::attachAt(int i, OrdinalNode *kn)
 {
     if (i == weight()) {
-        BinaryNode *kp = 0;
+        OrdinalNode *kp = 0;
         if (cachedNode_) {
             if (cachedIndex_ == i)
                 kp = cachedNode_;
@@ -384,7 +384,7 @@ void BinaryTree::attachAt(int i, BinaryNode *kn)
         attach(kp, kn, false);
     }
     else {
-        BinaryNode *ka = getNodeAt(i);
+        OrdinalNode *ka = getNodeAt(i);
         CC_ASSERT(ka);
         attachBefore(ka, kn);
     }
@@ -393,11 +393,11 @@ void BinaryTree::attachAt(int i, BinaryNode *kn)
     cachedIndex_ = i;
 }
 
-BinaryNode *BinaryTree::unlinkAt(int i)
+OrdinalNode *OrdinalTree::unlinkAt(int i)
 {
-    BinaryNode *ko = getNodeAt(i);
+    OrdinalNode *ko = getNodeAt(i);
     CC_ASSERT(ko);
-    BinaryNode *k = pred(ko);
+    OrdinalNode *k = pred(ko);
     if (k) --i;
     else k = succ(ko);
     unlink(ko);
@@ -408,10 +408,10 @@ BinaryNode *BinaryTree::unlinkAt(int i)
     return ko;
 }
 
-void BinaryTree::changed(BinaryNode *kp, BinaryNode *kc, bool left, bool attached)
+void OrdinalTree::changed(OrdinalNode *kp, OrdinalNode *kc, bool left, bool attached)
 {
     int delta = attached ? 1 : -1;
-    BinaryNode *k = kp;
+    OrdinalNode *k = kp;
     while (k) {
         k->weight_ += delta;
         k = k->parent_;
@@ -422,7 +422,7 @@ void BinaryTree::changed(BinaryNode *kp, BinaryNode *kc, bool left, bool attache
     cachedNode_ = 0;
 }
 
-void BinaryTree::rotated(BinaryNode *k1, bool /*left*/)
+void OrdinalTree::rotated(OrdinalNode *k1, bool /*left*/)
 {
     establishWeight(k1);
     establishWeight(k1->parent_);
@@ -430,7 +430,7 @@ void BinaryTree::rotated(BinaryNode *k1, bool /*left*/)
 
 #ifndef NDEBUG
 
-bool BinaryTree::testStructure(BinaryNode *k)
+bool OrdinalTree::testStructure(OrdinalNode *k)
 {
     if (!k) return true;
     if (k->parent_) {
@@ -440,7 +440,7 @@ bool BinaryTree::testStructure(BinaryNode *k)
     return testStructure(k->left_) && testStructure(k->right_);
 }
 
-bool BinaryTree::testWeight(BinaryNode *k)
+bool OrdinalTree::testWeight(OrdinalNode *k)
 {
     if (!k) return true;
     return
@@ -448,10 +448,10 @@ bool BinaryTree::testWeight(BinaryNode *k)
         testWeight(k->left_) && testWeight(k->right_);
 }
 
-bool BinaryTree::testIteration(BinaryNode *k)
+bool OrdinalTree::testIteration(OrdinalNode *k)
 {
     if (k == 0) return true;
-    BinaryNode *k2;
+    OrdinalNode *k2;
     k2 = succ(k);
     if (k2) {
         if (k != pred(k2))

@@ -66,18 +66,21 @@ public:
       * \param index list index
       * \return reference to the item
       */
-    inline Item &at(int index) const {
+    inline const Item &at(int index) const {
         Node *node = 0;
         if (!tree_.lookupByIndex(index, &node))
             CC_ASSERT(false);
         return node->item_;
     }
 
-    /// Return a reference to the first item stored in the list
-    inline Item &first() const { return at(0); }
-
-    /// Return a reference to the last item stored in the list
-    inline Item &last() const { return at(count() - 1); }
+    /** \copydoc const Item &at(int index)
+      */
+    inline Item &at(int index) {
+        Node *node = 0;
+        if (!tree_.lookupByIndex(index, &node))
+            CC_ASSERT(false);
+        return node->item_;
+    }
 
     /** Insert a new item at a certain position
       * \param index list index
@@ -137,15 +140,11 @@ public:
       */
     inline void appendList(const List *b) { if (b) for (int i = 0; i < b->count(); ++i) append(b->at(i)); }
 
-    /** Insert a new item at a certain position
-      * \param index list index#
-      * \param item new item value
+    /** \copydoc push(int, const Item &)
       */
     inline void insertAt(int index, const Item &item) { push(index, item); }
 
-    /** Remove an item from a certain position
-      * \param index list index
-      * \param item returns the item value
+    /** \copydoc pop(int, Item *)
       */
     inline void removeAt(int index, Item *item) { pop(index, item); }
 
@@ -153,10 +152,6 @@ public:
       * \param index list index
       */
     inline void removeAt(int index) { pop(index); }
-
-    inline void insert(int index, const Item &item) { push(index, item); }
-    inline void remove(int index, Item *item) { pop(index, item); } // FIXME: obsolete
-    inline void remove(int index) { pop(index); } // FIXME: obsolete
 
     /** Insert a new item at head of the list
       * \param item new item
@@ -248,14 +243,6 @@ public:
             result->at(i) = at(n - i - 1);
         return result;
     }
-
-    #if 0
-    /** Create a sorted copy of this list with duplicates eliminated
-      * \param order sort order
-      * \return newly sorted list
-      */
-    Ref<List> unique(SortOrder order = Ascending) const { return sort(order, true); }
-    #endif
 
     /** Remove redundant entries from the list
       * \param list list to eliminate doubles from
