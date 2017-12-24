@@ -46,7 +46,7 @@ class InsertionRemoval: public TestCase
             list->append(i);
         print(list);
         for (int i = 0; i < list->count(); ++i)
-            if (list->at(i) % 2 != 0) list->remove(i);
+            if (list->at(i) % 2 != 0) list->removeAt(i);
         print(list);
         for (int i = 0; i < 10; ++i) {
             if (i % 2 == 0)

@@ -572,7 +572,7 @@ String ByteArray::normalize(bool nameCase) const
     for (int i = 0; i < parts->count(); ++i) {
         String s = parts->at(i);
         if (s->count() == 0) {
-            parts->remove(i);
+            parts->removeAt(i);
         }
         else {
             if (nameCase) {

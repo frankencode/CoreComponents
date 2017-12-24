@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/containers>
+#include <cc/LayoutTree>
+
+namespace cc {
+
+template<class Item, class Extent>
+class Layout: public Object
+{
+public:
+    static Ref<Layout> create() { return new Layout; }
+
+    void insertAt(int index, const Item &item, Extent extent) { tree_.insertAt(index, item, extent); }
+    void removeAt(int index, Item *item = 0) { tree_.removeAt(index, item); }
+
+    void append(const Item &item, Extent extent) { insertAt(count(), item, extent); }
+
+    int count() const { return tree_.count(); }
+    Extent layoutSize() const { return tree_.layoutSize(); }
+
+    void updateExtentAt(int index, Extent newExtent) { tree_.updateExtentAt(index, newExtent); }
+
+    void getItemAt(int index, Item *item, Extent *extent = 0) const { tree_.getItemAt(index, item, extent); }
+    void getView(Extent pos0, Extent pos1, int *index0, int *index1) const { tree_.getView(pos0, pos1, index0, index1); }
+    Extent getPosAt(int index) const { return tree_.getPosAt(index); }
+
+    Item &at(int index) { return tree_.at(index); }
+    const Item &at(int index) const { return tree_.at(index); }
+
+private:
+    Layout() = default;
+
+    typedef LayoutTree<Item, Extent> Tree;
+    Tree tree_;
+};
+
+} // namespace cc
