@@ -52,7 +52,7 @@ public:
     void updateExtentAt(int index, Extent newExtent);
 
     void getItemAt(int index, Item *item, Extent *extent = 0) const;
-    void getView(Extent pos0, Extent pos1, int *index0, int *index1) const;
+    void getView(Extent pos0, Extent pos1, int *index0, int *index1, Extent *itemPos0) const;
     Extent getPosAt(int index) const;
 
     Item &at(int index);
@@ -62,7 +62,7 @@ private:
     inline static int treeExtent(Node *k) { return (k) ? k->treeExtent_ : 0; }
     inline static void establishTreeExtent(Node *k) { k->treeExtent_ = treeExtent(k->left()) + treeExtent(k->right()) + k->itemExtent_; }
 
-    Node *find(Extent x, int *index = 0, Extent *x0 = 0);
+    Node *find(Extent x, int *index = 0, Extent *x0 = 0) const;
 
     void changed(OrdinalNode *kp, OrdinalNode *kc, bool left, bool attached) override;
     void rotated(OrdinalNode *k1, bool left) override;
@@ -109,7 +109,7 @@ void LayoutTree<Item, Extent>::getItemAt(int index, Item *item, Extent *extent) 
 }
 
 template<class Item, class Extent>
-void LayoutTree<Item, Extent>::getView(Extent pos0, Extent pos1, int *index0, int *index1) const
+void LayoutTree<Item, Extent>::getView(Extent pos0, Extent pos1, int *index0, int *index1, Extent *itemPos0) const
 {
     if (
         !root_ ||
@@ -122,12 +122,12 @@ void LayoutTree<Item, Extent>::getView(Extent pos0, Extent pos1, int *index0, in
         return;
     }
 
-    if (index0) find(pos0, index0);
+    if (index0) find(pos0, index0, itemPos0);
 
     if (index1) {
-        Extent itemPos0 = 0;
-        find(pos1, index1, &itemPos0);
-        *index1 -= (itemPos0 == pos1);
+        Extent item1Pos0 = 0;
+        find(pos1, index1, &item1Pos0);
+        *index1 += (item1Pos0 < pos1);
     }
 }
 
@@ -168,7 +168,7 @@ const Item &LayoutTree<Item, Extent>::at(int index) const
 }
 
 template<class Item, class Extent>
-typename LayoutTree<Item, Extent>::Node *LayoutTree<Item, Extent>::find(Extent x, int *index, Extent *x0)
+typename LayoutTree<Item, Extent>::Node *LayoutTree<Item, Extent>::find(Extent x, int *index, Extent *x0) const
 {
     if (!root_) return nullptr;
     Node *k = static_cast<Node *>(root_);
@@ -178,8 +178,8 @@ typename LayoutTree<Item, Extent>::Node *LayoutTree<Item, Extent>::find(Extent x
     int j0 = 0;
     int j = 0;
     while (true) {
-        Extent z0 = y0 + (k->left_ ? static_cast<Node *>(k->left_)->treeExtent_ : Extent{});
-        Extent z1 = z0 + k->itemExtent_;
+        z0 = y0 + (k->left_ ? static_cast<Node *>(k->left_)->treeExtent_ : Extent{});
+        z1 = z0 + k->itemExtent_;
         j = j0 + weight(k->left_);
         if (x < z0) {
             if (!k->left_) break;

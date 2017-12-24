@@ -13,10 +13,13 @@
 
 namespace cc {
 
-template<class Item, class Extent>
+template<class ItemType, class ExtentType>
 class Layout: public Object
 {
 public:
+    typedef ItemType Item;
+    typedef ExtentType Extent;
+
     static Ref<Layout> create() { return new Layout; }
 
     void insertAt(int index, const Item &item, Extent extent) { tree_.insertAt(index, item, extent); }
@@ -30,11 +33,22 @@ public:
     void updateExtentAt(int index, Extent newExtent) { tree_.updateExtentAt(index, newExtent); }
 
     void getItemAt(int index, Item *item, Extent *extent = 0) const { tree_.getItemAt(index, item, extent); }
-    void getView(Extent pos0, Extent pos1, int *index0, int *index1) const { tree_.getView(pos0, pos1, index0, index1); }
+    void getView(Extent pos0, Extent pos1, int *index0, int *index1, Extent *itemPos0) const { tree_.getView(pos0, pos1, index0, index1, itemPos0); }
     Extent getPosAt(int index) const { return tree_.getPosAt(index); }
 
     Item &at(int index) { return tree_.at(index); }
     const Item &at(int index) const { return tree_.at(index); }
+
+    /** C++ iterator declarations
+      * @{
+      */
+    typedef cc::Iterator<Layout> iterator;
+    typedef cc::ConstIterator<Layout> const_iterator;
+    iterator begin() { return iterator(this, 0); }
+    iterator end() { return iterator(this, count()); }
+    const_iterator begin() const { return const_iterator(this, 0); }
+    const_iterator end() const { return const_iterator(this, count()); }
+    /** @} */
 
 private:
     Layout() = default;
