@@ -57,7 +57,12 @@ public:
     const_iterator end() const { return const_iterator(this, count()); }
     /** @} */
 
+    /** Source adapters
+      * @{
+      */
+    Ref< LayoutSource<Item, Extent> > getAll() const { return LayoutSource<Item, Extent>::open(this, 0, count()); }
     Ref< LayoutSource<Item, Extent> > getInRange(Extent pos0, Extent pos1) const { return LayoutSource<Item, Extent>::open(this, pos0, pos1); }
+    /** @} */
 
 private:
     Layout() = default;
