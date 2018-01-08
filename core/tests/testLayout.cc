@@ -46,8 +46,16 @@ class SimpleLayout: public TestCase
                 String item;
                 int extent = 0;
                 layout->getItemAt(i, &item, &extent);
-                fout() << item << " (" << extent << "): " << pos  << ".." << pos + extent - 1 << nl;
+                fout() << item << " (" << extent << "): " << pos << ".." << pos + extent - 1 << nl;
                 pos += extent;
+            }
+            fout() << nl;
+        }
+        {
+            for (auto e: layout->getInRange(3, 10)) {
+                fout()
+                    << e->item() << " (" << e->extent() << "): "
+                    << e->pos() << ".." << e->pos() + e->extent() - 1 << nl;
             }
             fout() << nl;
         }

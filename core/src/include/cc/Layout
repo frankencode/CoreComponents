@@ -9,9 +9,16 @@
 #pragma once
 
 #include <cc/containers>
+#include <cc/Source>
 #include <cc/LayoutTree>
 
 namespace cc {
+
+template<class Item, class Extent>
+class LayoutItem;
+
+template<class Item, class Extent>
+class LayoutSource;
 
 template<class ItemType, class ExtentType>
 class Layout: public Object
@@ -50,11 +57,86 @@ public:
     const_iterator end() const { return const_iterator(this, count()); }
     /** @} */
 
+    Ref< LayoutSource<Item, Extent> > getInRange(Extent pos0, Extent pos1) const { return LayoutSource<Item, Extent>::open(this, pos0, pos1); }
+
 private:
     Layout() = default;
 
     typedef LayoutTree<Item, Extent> Tree;
     Tree tree_;
+};
+
+template<class Item, class Extent>
+class LayoutItem {
+public:
+    LayoutItem()
+    {}
+
+    LayoutItem(Extent pos, Extent extent, const Item &item):
+        instance_(pos, extent, item)
+    {}
+
+    class Instance {
+    public:
+        inline Extent pos() const { return pos_; }
+        inline Extent extent() const { return extent_; }
+        inline Item item() const { return item_; }
+
+    private:
+        friend class LayoutItem;
+
+        Instance()
+        {}
+
+        Instance(Extent pos, Extent extent, const Item &item):
+            pos_(pos),
+            extent_(extent),
+            item_(item)
+        {}
+
+        Extent pos_;
+        Extent extent_;
+        Item item_;
+    };
+
+    inline const Instance *operator->() const { return &instance_; }
+
+private:
+    Instance instance_;
+};
+
+template<class Item, class Extent>
+class LayoutSource: public Source< LayoutItem<Item, Extent> >
+{
+public:
+    static Ref<LayoutSource> open(const Layout<Item, Extent> *layout, Extent pos0, Extent pos1) {
+        return new LayoutSource(layout, pos0, pos1);
+    }
+
+    bool read(LayoutItem<Item, Extent> *layoutItem) override
+    {
+        if (i_ < i1_) {
+            Item item;
+            Extent extent;
+            layout_->getItemAt(i_, &item, &extent);
+            *layoutItem = LayoutItem<Item, Extent>(x_, extent, item);
+            ++i_;
+            x_ += extent;
+            return true;
+        }
+        return false;
+    }
+
+private:
+    LayoutSource(const Layout<Item, Extent> *layout, Extent pos0, Extent pos1):
+        layout_(layout)
+    {
+        layout->getView(pos0, pos1, &i_, &i1_, &x_);
+    }
+
+    const Layout<Item, Extent> *layout_;
+    int i_, i1_;
+    Extent x_;
 };
 
 } // namespace cc
