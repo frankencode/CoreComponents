@@ -19,7 +19,7 @@ Ref<ZipArchive> ZipArchive::open(String path)
 }
 
 ZipArchive::ZipArchive(String path):
-    path_(path),
+    path_(path->canonicalPath()),
     index_(0)
 {
     int errorCode = 0;
