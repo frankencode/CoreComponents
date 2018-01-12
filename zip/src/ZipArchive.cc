@@ -48,6 +48,7 @@ bool ZipArchive::read(String *name)
 
 Ref<Stream> ZipArchive::openFile(String name)
 {
+    if (name->contains('.')) name = name->canonicalPath();
     Ref<ZipFile> stream = new ZipFile(name);
     stream->zipPath_ = path_;
     stream->archive_ = archive_;
