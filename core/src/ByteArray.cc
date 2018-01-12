@@ -855,6 +855,10 @@ String ByteArray::extendPath(const String &relativePath) const
 
 String ByteArray::canonicalPath() const
 {
+    if (!
+        (contains('.') || contains("//") || endsWith('/'))
+    ) return this;
+
     Ref<StringList> parts = split("/");
     Ref<StringList> result = StringList::create();
     for (int i = 0; i < parts->count(); ++i) {
