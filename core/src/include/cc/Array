@@ -45,6 +45,12 @@ public:
       */
     inline static Ref<Array> copy(const T *data, int size) { return new Array(data, size); }
 
+    /** Create a deep copy of an array
+      * \param other the other array
+      * \return new object instance
+      */
+    inline static Ref<Array> copy(const Array *other) { return other->copy(); }
+
     /** Write contents
       * \param b source to copy
       */
@@ -234,7 +240,7 @@ public:
     /** @} */
 
 private:
-    Array(int size):
+    Array(int size = 0):
         size_(0),
         data_(0)
     {

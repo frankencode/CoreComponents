@@ -15,7 +15,7 @@
 namespace cc {
 
 template<class Item, class Extent>
-class LayoutItem;
+class LayoutStop;
 
 template<class Item, class Extent>
 class LayoutSource;
@@ -39,7 +39,7 @@ public:
 
     void updateExtentAt(int index, Extent newExtent) { tree_.updateExtentAt(index, newExtent); }
 
-    void getItemAt(int index, Item *item, Extent *extent = 0) const { tree_.getItemAt(index, item, extent); }
+    void getItemExtentAt(int index, Item *item, Extent *extent) const { tree_.getItemAt(index, item, extent); }
     void getView(Extent pos0, Extent pos1, int *index0, int *index1, Extent *itemPos0) const { tree_.getView(pos0, pos1, index0, index1, itemPos0); }
     Extent getPosAt(int index) const { return tree_.getPosAt(index); }
 
@@ -72,12 +72,12 @@ private:
 };
 
 template<class Item, class Extent>
-class LayoutItem {
+class LayoutStop {
 public:
-    LayoutItem()
+    LayoutStop()
     {}
 
-    LayoutItem(Extent pos, Extent extent, const Item &item):
+    LayoutStop(Extent pos, Extent extent, const Item &item):
         instance_(pos, extent, item)
     {}
 
@@ -88,7 +88,7 @@ public:
         inline Item item() const { return item_; }
 
     private:
-        friend class LayoutItem;
+        friend class LayoutStop;
 
         Instance()
         {}
@@ -111,20 +111,20 @@ private:
 };
 
 template<class Item, class Extent>
-class LayoutSource: public Source< LayoutItem<Item, Extent> >
+class LayoutSource: public Source< LayoutStop<Item, Extent> >
 {
 public:
     static Ref<LayoutSource> open(const Layout<Item, Extent> *layout, Extent pos0, Extent pos1) {
         return new LayoutSource(layout, pos0, pos1);
     }
 
-    bool read(LayoutItem<Item, Extent> *layoutItem) override
+    bool read(LayoutStop<Item, Extent> *layoutItem) override
     {
         if (i_ < i1_) {
             Item item;
             Extent extent;
-            layout_->getItemAt(i_, &item, &extent);
-            *layoutItem = LayoutItem<Item, Extent>(x_, extent, item);
+            layout_->getItemExtentAt(i_, &item, &extent);
+            *layoutItem = LayoutStop<Item, Extent>(x_, extent, item);
             ++i_;
             x_ += extent;
             return true;

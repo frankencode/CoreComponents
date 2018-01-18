@@ -32,7 +32,7 @@ class SimpleLayout: public TestCase
                 String item;
                 int extent = 0;
                 int pos = layout->getPosAt(i);
-                layout->getItemAt(i, &item, &extent);
+                layout->getItemExtentAt(i, &item, &extent);
                 fout() << item << " (" << extent << "): " << pos << ".." << pos + extent - 1  << nl;
             }
             fout() << nl;
@@ -45,17 +45,17 @@ class SimpleLayout: public TestCase
             for (int i = i0; i < i1; ++i) {
                 String item;
                 int extent = 0;
-                layout->getItemAt(i, &item, &extent);
+                layout->getItemExtentAt(i, &item, &extent);
                 fout() << item << " (" << extent << "): " << pos << ".." << pos + extent - 1 << nl;
                 pos += extent;
             }
             fout() << nl;
         }
         {
-            for (auto e: layout->getInRange(3, 10)) {
+            for (auto stop: layout->getInRange(3, 10)) {
                 fout()
-                    << e->item() << " (" << e->extent() << "): "
-                    << e->pos() << ".." << e->pos() + e->extent() - 1 << nl;
+                    << stop->item() << " (" << stop->extent() << "): "
+                    << stop->pos() << ".." << stop->pos() + stop->extent() - 1 << nl;
             }
             fout() << nl;
         }
