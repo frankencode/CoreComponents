@@ -488,6 +488,9 @@ public:
     /// \copydoc split(char) const
     Ref<StringList> split(const char *sep) const;
 
+    /// \copydoc split(char) const
+    Ref<StringList> split(String sep) const { return split(sep->chars()); }
+
     /** Break up into equal sized chunks
       * \param chunkSize size of the individual chunks
       * \return list of breakup chunks

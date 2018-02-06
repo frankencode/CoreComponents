@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -44,6 +44,8 @@ class CountCopySplitJoin: public TestCase
             fout("  \"%%\"\n") << parts->at(i);
         fout("]\n");
         CC_VERIFY(parts->join("a") == s);
+
+        CC_VERIFY(String()->split("\n")->count() == 1);
     }
 };
 
