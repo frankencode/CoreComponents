@@ -25,9 +25,15 @@ public:
         Instance() {}
 
         template<class F>
-        inline void listen(const F &f);
+        inline void listen(const F &f)
+        {
+            first_ = Node::create(f, first_);
+        }
 
-        inline void notify() const;
+        inline void notify() const {
+            for (Node *node = first_; node; node = node->next_)
+                node->f_();
+        }
 
         inline bool hasListeners() const { return first_; }
 
@@ -63,17 +69,5 @@ private:
 
     Instance instance_;
 };
-
-template<class F>
-void Event::Instance::listen(const F &f)
-{
-    first_ = Node::create(f, first_);
-}
-
-void Event::Instance::notify() const
-{
-    for (Node *node = first_; node; node = node->next_)
-        node->f_();
-}
 
 } // namespace cc

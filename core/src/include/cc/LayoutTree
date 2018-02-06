@@ -46,10 +46,11 @@ public:
     typedef LayoutNode<Item, Extent> Node;
 
     void insertAt(int index, const Item &item, Extent extent);
+    void updateAt(int index, const Item &item, Extent extent);
     void removeAt(int index, Item *item = 0);
 
     Extent layoutSize() const;
-    void updateExtentAt(int index, Extent newExtent);
+    void updateExtentAt(int index, Extent extent);
 
     void getItemAt(int index, Item *item, Extent *extent = 0) const;
     void getView(Extent pos0, Extent pos1, int *index0, int *index1, Extent *itemPos0) const;
@@ -76,6 +77,18 @@ void LayoutTree<Item, Extent>::insertAt(int index, const Item &item, Extent exte
 }
 
 template<class Item, class Extent>
+void LayoutTree<Item, Extent>::updateAt(int index, const Item &item, Extent extent)
+{
+    Node *k = static_cast<Node *>(getNodeAt(index));
+    Extent delta = extent - k->itemExtent_;
+    k->item_ = item;
+    k->itemExtent_ = extent;
+    k->treeExtent_ += delta;
+    for (; k; k = k->parent())
+        k->treeExtent_ += delta;
+}
+
+template<class Item, class Extent>
 void LayoutTree<Item, Extent>::removeAt(int index, Item *item)
 {
     OrdinalNode *ko = unlinkAt(index);
@@ -90,11 +103,11 @@ Extent LayoutTree<Item, Extent>::layoutSize() const
 }
 
 template<class Item, class Extent>
-void LayoutTree<Item, Extent>::updateExtentAt(int index, Extent newExtent)
+void LayoutTree<Item, Extent>::updateExtentAt(int index, Extent extent)
 {
     Node *k = static_cast<Node *>(getNodeAt(index));
-    Extent delta = newExtent - k->itemExtent_;
-    k->itemExtent_ = newExtent;
+    Extent delta = extent - k->itemExtent_;
+    k->itemExtent_ = extent;
     k->treeExtent_ += delta;
     for (; k; k = k->parent())
         k->treeExtent_ += delta;
