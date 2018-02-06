@@ -137,9 +137,10 @@ OrdinalNode *OrdinalTree::detach(OrdinalNode *k)
   */
 void OrdinalTree::replace(OrdinalNode *ki, OrdinalNode *kl)
 {
+    // establish links from to kl to the neighbors of ki (and take over weight and balance, but not value of ki)
     *kl = *ki;
 
-    // establish links from neighbors
+    // establish links from neighbors to kl
     OrdinalNode *kp = ki->parent_;
     if (kp) {
         if (kp->left_ == ki)
@@ -160,12 +161,17 @@ void OrdinalTree::replace(OrdinalNode *ki, OrdinalNode *kl)
   */
 OrdinalNode *OrdinalTree::unlink(OrdinalNode *k)
 {
-    if (k->left_)
+    if (!k->left_ && !k->right_)
+        detach(k);
+    else if (!k->left_)
+        replace(k, detach(min(k->right_)));
+    else if (!k->right_)
         replace(k, detach(max(k->left_)));
-    else if (k->right_)
+    else if (k->left_->weight_ < k->right_->weight_)
         replace(k, detach(min(k->right_)));
     else
-        detach(k);
+        replace(k, detach(max(k->left_)));
+
     return k;
 }
 
