@@ -175,6 +175,19 @@ OrdinalNode *OrdinalTree::unlink(OrdinalNode *k)
     return k;
 }
 
+int OrdinalTree::getIndexOf(OrdinalNode *k)
+{
+    int i = weight(k->left_);
+    while (true) {
+        OrdinalNode *kp = k->parent_;
+        if (!kp) break;
+        if (k == kp->right_)
+            i += weight(k->left_) + 1;
+        k = kp;
+    }
+    return i;
+}
+
 OrdinalNode *OrdinalTree::pred(OrdinalNode *k)
 {
     if (k->left_)

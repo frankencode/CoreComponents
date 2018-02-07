@@ -97,9 +97,10 @@ public:
 
     /** Insert a key-value mapping if no key-value mapping with the same key exists already.
       * If currentValue is non-null the current value the giving key maps to is returned.
-      * The function returns true if the new key-value mapping was inserted successfully.
+      * The function returns a non-NULL ordinal handle if the new key-value mapping was inserted successfully.
+      * \return ordinal handle
       */
-    inline bool insert(const Key &key, const Value &value, Value *currentValue = 0, int *index = 0)
+    inline void *insert(const Key &key, const Value &value, Value *currentValue = 0, int *index = 0)
     {
         bool found = false;
         bool below = true;
@@ -108,11 +109,11 @@ public:
         if (found) {
             if (currentValue)
                 *currentValue = k->item_->value();
+            return nullptr;
         }
-        else {
-            tree_.attach(k, new Node(e), below);
-        }
-        return !found;
+        Node *kn = new Node(e);
+        tree_.attach(k, kn, below);
+        return kn;
     }
 
     /** Remove a key-value mapping
@@ -148,6 +149,14 @@ public:
         int index = 0;
         if (!insert(key, value, 0, &index))
             setValueAt(index, value);
+    }
+
+    /** Get the current index of a storage location
+      * \param handle ordinal handle
+      * \return current index of the storage location
+      */
+    static int getIndexOf(void *handle) {
+        return Tree::getIndexOf(handle);
     }
 
     /** Lookup key-value pair by given key.

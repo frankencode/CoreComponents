@@ -60,6 +60,8 @@ public:
 
     inline int count() const { return weight(); }
 
+    static int getIndexOf(OrdinalNode *k);
+
 protected:
     inline int weight() const { return weight(root_); }
     inline static int weight(OrdinalNode *k) { return (k) ? k->weight_ : 0; }

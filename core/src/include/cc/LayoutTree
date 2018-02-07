@@ -45,9 +45,11 @@ class LayoutTree: public OrdinalTree
 public:
     typedef LayoutNode<Item, Extent> Node;
 
-    void insertAt(int index, const Item &item, Extent extent);
+    void *insertAt(int index, const Item &item, Extent extent);
     void updateAt(int index, const Item &item, Extent extent);
     void removeAt(int index, Item *item = 0);
+
+    static int getIndexOf(void *handle) { return getIndexOf(reinterpret_cast<OrdinalNode *>(handle)); }
 
     Extent layoutSize() const;
     void updateExtentAt(int index, Extent extent);
@@ -70,10 +72,11 @@ private:
 };
 
 template<class Item, class Extent>
-void LayoutTree<Item, Extent>::insertAt(int index, const Item &item, Extent extent)
+void *LayoutTree<Item, Extent>::insertAt(int index, const Item &item, Extent extent)
 {
     Node *kn = new Node(extent, item);
     attachAt(index, kn);
+    return kn;
 }
 
 template<class Item, class Extent>
@@ -93,6 +96,7 @@ void LayoutTree<Item, Extent>::removeAt(int index, Item *item)
 {
     OrdinalNode *ko = unlinkAt(index);
     if (item) *item = static_cast<Node *>(ko)->item_;
+    delete static_cast<Node *>(ko);
 }
 
 template<class Item, class Extent>

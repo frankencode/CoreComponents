@@ -51,13 +51,15 @@ public:
     template<class Pattern>
     Node *find(const Pattern &pattern, bool *found = 0, bool *below = 0, int *index = 0) const;
 
-    inline void remove(Node *k) { return delete static_cast<Node *>(unlink(k)); }
+    inline void remove(Node *k) { delete static_cast<Node *>(unlink(k)); }
 
     int findFirstAboveOrEqual(const Item &a) const;
     int findLastBelowOrEqual(const Item &b) const;
 
-    void push(int index, const Item &item);
-    void pop(int index, Item *item);
+    void *insertAt(int index, const Item &item);
+    void removeAt(int index, Item *item);
+
+    static int getIndexOf(void *handle) { return getIndexOf(reinterpret_cast<OrdinalNode *>(handle)); }
 
     inline void clear() { return OrdinalTree::clear<Node>(); }
 
@@ -166,17 +168,19 @@ inline int SearchTree<Node>::findLastBelowOrEqual(const Item &b) const
 }
 
 template<class Node>
-void SearchTree<Node>::push(int index, const Item &item)
+void *SearchTree<Node>::insertAt(int index, const Item &item)
 {
     Node *kn = new Node(item);
     attachAt(index, kn);
+    return kn;
 }
 
 template<class Node>
-void SearchTree<Node>::pop(int index, Item *item)
+void SearchTree<Node>::removeAt(int index, Item *item)
 {
     OrdinalNode *ko = unlinkAt(index);
     if (item) *item = static_cast<Node *>(ko)->item_;
+    delete static_cast<Node *>(ko);
 }
 
 #ifndef NDEBUG
