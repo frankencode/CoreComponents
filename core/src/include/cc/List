@@ -85,11 +85,10 @@ public:
     /** Insert a new item at a certain position
       * \param index list index
       * \param item new item value
-      * \return reference to this list
+      * \return ordinal handle
       */
-    inline List &push(int index, const Item &item) {
-        tree_.push(index, item);
-        return *this;
+    inline void *insertAt(int index, const Item &item) {
+        return tree_.insertAt(index, item);
     }
 
     /** Remove an item from a certain position
@@ -97,9 +96,12 @@ public:
       * \param item returns the item value
       * \return reference to this list
       */
-    inline List &pop(int index, Item *item) {
-        tree_.pop(index, item);
-        return *this;
+    inline void removeAt(int index, Item *item = 0) {
+        tree_.removeAt(index, item);
+    }
+
+    inline static int getIndexOf(void *handle) {
+        return Tree::getIndexOf(handle);
     }
 
     /// Reset this list to an empty list
@@ -111,57 +113,44 @@ public:
       */
     inline Item pop(int index) {
         Item item;
-        pop(index, &item);
+        removeAt(index, &item);
         return item;
     }
 
     /** Append a new item to the end of the list
       * \param item new item value
+      * \return ordinal handle
       */
-    inline void push(const Item &item) { push(count(), item); }
+    inline void *push(const Item &item) { return insertAt(count(), item); }
 
     /** Remove an item from the head of the list
       * \param item returns the item value
       */
-    inline void pop(Item *item) { pop(0, item); }
+    inline void pop(Item *item) { removeAt(0, item); }
 
     /** Remove an item from the head of the list
       * \return item value
       */
     inline Item pop() { Item item; pop(&item); return item; }
 
-    /** Append a new item to the end of the list
-      * \param item new item value
+    /** \copydoc void *push(const Item &)
       */
-    inline void append(const Item &item) { push(count(), item); }
+    inline void *append(const Item &item) { return insertAt(count(), item); }
 
     /** Append another list to this list
       * \param b another list
       */
     inline void appendList(const List *b) { if (b) for (int i = 0; i < b->count(); ++i) append(b->at(i)); }
 
-    /** \copydoc push(int, const Item &)
-      */
-    inline void insertAt(int index, const Item &item) { push(index, item); }
-
-    /** \copydoc pop(int, Item *)
-      */
-    inline void removeAt(int index, Item *item) { pop(index, item); }
-
-    /** Remove an item at a given position
-      * \param index list index
-      */
-    inline void removeAt(int index) { pop(index); }
-
     /** Insert a new item at head of the list
       * \param item new item
       */
-    inline void pushFront(const Item &item) { push(0, item); }
+    inline void *pushFront(const Item &item) { return insertAt(0, item); }
 
     /** Append a new item to the end of the list
       * \param item new item value
       */
-    inline void pushBack(const Item &item) { push(count(), item); }
+    inline void *pushBack(const Item &item) { return insertAt(count(), item); }
 
     /** Remove an item from the head of the list
       * \return item value
