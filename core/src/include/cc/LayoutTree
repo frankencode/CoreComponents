@@ -12,10 +12,13 @@
 
 namespace cc {
 
-template<class Item, class Extent>
+template<class ItemType, class ExtentType>
 class LayoutNode: public OrdinalNode
 {
 public:
+    typedef ItemType Item;
+    typedef ExtentType Extent;
+
     LayoutNode():
         treeExtent_(0),
         itemExtent_(0),
@@ -26,9 +29,11 @@ public:
         treeExtent_(extent),
         itemExtent_(extent),
         item_(item)
-    {}
+    {
+        activate(this);
+    }
 
-    LayoutNode(const LayoutNode &b) = default;
+    inline ~LayoutNode() { deactivate(this); }
 
     inline LayoutNode *left() const { return left_ ? static_cast<LayoutNode *>(left_) : nullptr; };
     inline LayoutNode *right() const { return right_ ? static_cast<LayoutNode *>(right_) : nullptr; }
@@ -94,9 +99,9 @@ void LayoutTree<Item, Extent>::updateAt(int index, const Item &item, Extent exte
 template<class Item, class Extent>
 void LayoutTree<Item, Extent>::removeAt(int index, Item *item)
 {
-    OrdinalNode *ko = unlinkAt(index);
-    if (item) *item = static_cast<Node *>(ko)->item_;
-    delete static_cast<Node *>(ko);
+    Node *ko = static_cast<Node *>(unlinkAt(index));
+    if (item) *item = ko->item_;
+    delete ko;
 }
 
 template<class Item, class Extent>

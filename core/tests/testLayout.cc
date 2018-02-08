@@ -15,7 +15,7 @@
 using namespace cc;
 using namespace cc::testing;
 
-class SimpleLayout: public TestCase
+class SimpleLayoutTest: public TestCase
 {
     void run() override
     {
@@ -67,9 +67,37 @@ class SimpleLayout: public TestCase
     }
 };
 
+class OrdinalItemTest: public TestCase
+{
+    class TestItem: public OrdinalItem, public Object
+    {
+    public:
+        static Ref<TestItem> create(int value) { return new TestItem(value); }
+        int value() const { return value_; }
+    private:
+        TestItem(int value): value_(value) {}
+        int value_;
+    };
+
+    void run() override
+    {
+        typedef Layout< Ref<TestItem>, int > TestLayout;
+        Ref<TestLayout> layout = TestLayout::create();
+        Ref<TestItem> item = TestItem::create(0);
+        layout->insertAt(0, item, 1);
+        for (int i = 1; i <= 10; ++i) {
+            if (i % 2) layout->insertAt(layout->count(), TestItem::create(i), i);
+            else layout->insertAt(0, TestItem::create(i), i);
+            fout() << "item->getIndex() = " << item->getIndex() << nl;
+            CC_VERIFY(item->getIndex() == i/2);
+        }
+    }
+};
+
 int main(int argc, char **argv)
 {
-    CC_TESTSUITE_ADD(SimpleLayout);
+    CC_TESTSUITE_ADD(SimpleLayoutTest);
+    CC_TESTSUITE_ADD(OrdinalItemTest);
 
     return TestSuite::instance()->run(argc, argv);
 }

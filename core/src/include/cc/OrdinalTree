@@ -10,8 +10,45 @@
 
 #include <cc/assert>
 #include <cc/ExclusiveAccess>
+#include <cc/Ref>
 
 namespace cc {
+
+class OrdinalNode;
+class OrdinalItemAccess;
+
+class OrdinalItem {
+public:
+    int getIndex() const;
+
+private:
+    friend class OrdinalItemAccess;
+    OrdinalNode *node_;
+};
+
+class OrdinalItemAccess {
+public:
+    template<class Node>
+    inline static void activate(Node *node) {
+        static_cast<OrdinalItem *>(node->item_)->node_ = node;
+    }
+
+    template<class Node>
+    inline static void deactivate(Node *node) {
+        OrdinalItem *item = static_cast<OrdinalItem *>(node->item_);
+        if (item->node_ == node) node = nullptr;
+    }
+};
+
+template<class Node, int HasActiveItem>
+class OrdinalNodeActivation {
+public:
+    inline static void activate(Node *) {}
+    inline static void deactivate(Node *) {}
+};
+
+template<class Node>
+class OrdinalNodeActivation<Node, 1>: public OrdinalItemAccess {};
 
 class OrdinalNode
 {
@@ -20,6 +57,28 @@ public:
         weight_(1),
         balance_(0)
     {}
+
+    template<class Node>
+    inline static void activate(Node *node) {
+        OrdinalNodeActivation<
+            Node,
+            ConversionFromTo<
+                typename DerefPointerType<typename Node::Item>::DerefType *,
+                OrdinalItem *
+            >::Exists
+        >::activate(node);
+    }
+
+    template<class Node>
+    inline static void deactivate(Node *node) {
+        OrdinalNodeActivation<
+            Node,
+            ConversionFromTo<
+                typename DerefPointerType<typename Node::Item>::DerefType *,
+                OrdinalItem *
+            >::Exists
+        >::deactivate(node);
+    }
 
     OrdinalNode *left_;
     OrdinalNode *right_;
@@ -77,7 +136,7 @@ protected:
     static Node *clone(Node *k);
 
     template<class Node>
-    inline void clear() {
+    inline void clear() { // FIXME: rename to deplete()
         clear(static_cast<Node *>(root_));
         root_ = 0;
         cachedNode_ = 0;
@@ -120,6 +179,11 @@ private:
     mutable OrdinalNode *cachedNode_;
     mutable int cachedIndex_;
 };
+
+inline int OrdinalItem::getIndex() const
+{
+    return OrdinalTree::getIndexOf(node_);
+}
 
 template<class Node>
 Node *OrdinalTree::clone(Node *k)

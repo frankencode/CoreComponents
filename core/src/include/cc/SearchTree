@@ -19,8 +19,9 @@ public:
     typedef ItemType Item;
 
     SearchNode(): item_(Item()) {}
-    SearchNode(const Item &item): item_(item) {}
-    SearchNode(const SearchNode &kb) = default;
+    SearchNode(const Item &item): item_(item) { activate(this); }
+
+    inline ~SearchNode() { deactivate(this); }
 
     inline SearchNode *left() const { return left_ ? static_cast<SearchNode *>(left_) : nullptr; };
     inline SearchNode *right() const { return right_ ? static_cast<SearchNode *>(right_) : nullptr; }
@@ -61,7 +62,7 @@ public:
 
     static int getIndexOf(void *handle) { return getIndexOf(reinterpret_cast<OrdinalNode *>(handle)); }
 
-    inline void clear() { return OrdinalTree::clear<Node>(); }
+    inline void clear() { return OrdinalTree::clear<Node>(); } // FIXME: rename to deplete()
 
 private:
 #ifndef NDEBUG
@@ -178,9 +179,9 @@ void *SearchTree<Node>::insertAt(int index, const Item &item)
 template<class Node>
 void SearchTree<Node>::removeAt(int index, Item *item)
 {
-    OrdinalNode *ko = unlinkAt(index);
-    if (item) *item = static_cast<Node *>(ko)->item_;
-    delete static_cast<Node *>(ko);
+    Node *ko = static_cast<Node *>(unlinkAt(index));
+    if (item) *item = ko->item_;
+    delete ko;
 }
 
 #ifndef NDEBUG

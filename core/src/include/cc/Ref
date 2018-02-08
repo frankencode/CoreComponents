@@ -128,4 +128,6 @@ private:
     T *a_;
 };
 
+template<class T> class DerefPointerType< Ref<T> > { public: typedef T DerefType; };
+
 } // namespace cc
