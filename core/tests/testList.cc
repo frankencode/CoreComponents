@@ -112,9 +112,9 @@ class SyntaxSugar: public TestCase
     }
 };
 
-class OrdinalItemTest: public TestCase
+class IndexTrackingTest: public TestCase
 {
-    class TestItem: public OrdinalItem, public Object
+    class TestItem: public Object, public IndexTracking
     {
     public:
         static Ref<TestItem> create(int value) { return new TestItem(value); }
@@ -146,7 +146,7 @@ int main(int argc, char **argv)
     CC_TESTSUITE_ADD(Cloning);
     CC_TESTSUITE_ADD(Preallocation);
     CC_TESTSUITE_ADD(SyntaxSugar);
-    CC_TESTSUITE_ADD(OrdinalItemTest);
+    CC_TESTSUITE_ADD(IndexTrackingTest);
 
     return TestSuite::instance()->run(argc, argv);
 }
