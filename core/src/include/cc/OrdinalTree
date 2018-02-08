@@ -15,27 +15,27 @@
 namespace cc {
 
 class OrdinalNode;
-class OrdinalItemAccess;
+class IndexTrackingAccess;
 
-class OrdinalItem {
+class IndexTracking {
 public:
     int getIndex() const;
 
 private:
-    friend class OrdinalItemAccess;
+    friend class IndexTrackingAccess;
     OrdinalNode *node_;
 };
 
-class OrdinalItemAccess {
+class IndexTrackingAccess {
 public:
     template<class Node>
     inline static void activate(Node *node) {
-        static_cast<OrdinalItem *>(node->item_)->node_ = node;
+        static_cast<IndexTracking *>(node->item_)->node_ = node;
     }
 
     template<class Node>
     inline static void deactivate(Node *node) {
-        OrdinalItem *item = static_cast<OrdinalItem *>(node->item_);
+        IndexTracking *item = static_cast<IndexTracking *>(node->item_);
         if (item->node_ == node) node = nullptr;
     }
 };
@@ -48,7 +48,7 @@ public:
 };
 
 template<class Node>
-class OrdinalNodeActivation<Node, 1>: public OrdinalItemAccess {};
+class OrdinalNodeActivation<Node, 1>: public IndexTrackingAccess {};
 
 class OrdinalNode
 {
@@ -64,7 +64,7 @@ public:
             Node,
             ConversionFromTo<
                 typename DerefPointerType<typename Node::Item>::DerefType *,
-                OrdinalItem *
+                IndexTracking *
             >::Exists
         >::activate(node);
     }
@@ -75,7 +75,7 @@ public:
             Node,
             ConversionFromTo<
                 typename DerefPointerType<typename Node::Item>::DerefType *,
-                OrdinalItem *
+                IndexTracking *
             >::Exists
         >::deactivate(node);
     }
@@ -180,7 +180,7 @@ private:
     mutable int cachedIndex_;
 };
 
-inline int OrdinalItem::getIndex() const
+inline int IndexTracking::getIndex() const
 {
     return OrdinalTree::getIndexOf(node_);
 }
