@@ -29,13 +29,11 @@ public:
 
     static Ref<Layout> create() { return new Layout; }
 
-    void *insertAt(int index, const Item &item, Extent extent) { return tree_.insertAt(index, item, extent); }
+    void insertAt(int index, const Item &item, Extent extent) { tree_.insertAt(index, item, extent); }
     void updateAt(int index, const Item &item, Extent extent) { tree_.updateAt(index, item, extent); }
     void removeAt(int index, Item *item = 0) { tree_.removeAt(index, item); }
 
-    void *append(const Item &item, Extent extent) { return insertAt(count(), item, extent); }
-
-    static int getIndexOf(void *handle) { return Tree::getIndexOf(handle); }
+    void append(const Item &item, Extent extent) { insertAt(count(), item, extent); }
 
     int count() const { return tree_.count(); }
     Extent extent() const { return tree_.layoutSize(); }

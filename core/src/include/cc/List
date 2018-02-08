@@ -85,10 +85,9 @@ public:
     /** Insert a new item at a certain position
       * \param index list index
       * \param item new item value
-      * \return ordinal handle
       */
-    inline void *insertAt(int index, const Item &item) {
-        return tree_.insertAt(index, item);
+    inline void insertAt(int index, const Item &item) {
+        tree_.insertAt(index, item);
     }
 
     /** Remove an item from a certain position
@@ -98,10 +97,6 @@ public:
       */
     inline void removeAt(int index, Item *item = 0) {
         tree_.removeAt(index, item);
-    }
-
-    inline static int getIndexOf(void *handle) {
-        return Tree::getIndexOf(handle);
     }
 
     /// Reset this list to an empty list
@@ -119,9 +114,8 @@ public:
 
     /** Append a new item to the end of the list
       * \param item new item value
-      * \return ordinal handle
       */
-    inline void *push(const Item &item) { return insertAt(count(), item); }
+    inline void push(const Item &item) { insertAt(count(), item); }
 
     /** Remove an item from the head of the list
       * \param item returns the item value
@@ -135,7 +129,7 @@ public:
 
     /** \copydoc void *push(const Item &)
       */
-    inline void *append(const Item &item) { return insertAt(count(), item); }
+    inline void append(const Item &item) { insertAt(count(), item); }
 
     /** Append another list to this list
       * \param b another list
@@ -143,14 +137,13 @@ public:
     inline void appendList(const List *b) { if (b) for (int i = 0; i < b->count(); ++i) append(b->at(i)); }
 
     /** Insert a new item at head of the list
-      * \param item new item
       */
-    inline void *pushFront(const Item &item) { return insertAt(0, item); }
+    inline void pushFront(const Item &item) { insertAt(0, item); }
 
     /** Append a new item to the end of the list
       * \param item new item value
       */
-    inline void *pushBack(const Item &item) { return insertAt(count(), item); }
+    inline void pushBack(const Item &item) { insertAt(count(), item); }
 
     /** Remove an item from the head of the list
       * \return item value

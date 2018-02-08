@@ -65,9 +65,9 @@ public:
 
     /** Insert a new item if no item with the same value exists already.
       * If currentItem is non-null the item with the same value is returned.
-      * \return non-NULL if the new item was inserted successfully
+      * \return true if the new item was inserted successfully
       */
-    inline void *insert(const Item &item, Item *currentItem = 0, int *index = 0)
+    inline bool insert(const Item &item, Item *currentItem = 0, int *index = 0)
     {
         bool found = false;
         bool below = true;
@@ -75,11 +75,11 @@ public:
         if (found) {
             if (currentItem)
                 *currentItem = k->item_;
-            return nullptr;
+            return false;
         }
         Node *kn = new Node(item);
         tree_.attach(k, kn, below);
-        return kn;
+        return true;
     }
 
     /** Remove an item from the set
@@ -154,14 +154,6 @@ public:
 
     /// Reset this set to an empty set
     inline void deplete() { tree_.clear(); }
-
-    /** Get the current index of a storage location
-      * \param handle ordinal handle
-      * \return current index of the storage location
-      */
-    static int getIndexOf(void *handle) {
-        return Tree::getIndexOf(handle);
-    }
 
     /** C++ iterator declarations
       * @{
