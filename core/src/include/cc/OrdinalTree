@@ -19,6 +19,8 @@ class IndexTrackingAccess;
 
 class IndexTracking {
 public:
+    IndexTracking(): node_(nullptr) {}
+
     int getIndex() const;
 
 private:
@@ -30,13 +32,17 @@ class IndexTrackingAccess {
 public:
     template<class Node>
     inline static void activate(Node *node) {
-        static_cast<IndexTracking *>(node->item_)->node_ = node;
+        IndexTracking *item = static_cast<IndexTracking *>(node->item_);
+        if (item->node_ == nullptr)
+            item->node_ = node;
+        else
+            CC_ASSERT2(item->node_ == node, "Index tracked item added to multiple containers");
     }
 
     template<class Node>
     inline static void deactivate(Node *node) {
         IndexTracking *item = static_cast<IndexTracking *>(node->item_);
-        if (item->node_ == node) node = nullptr;
+        if (item->node_ == node) item->node_ = nullptr;
     }
 };
 
