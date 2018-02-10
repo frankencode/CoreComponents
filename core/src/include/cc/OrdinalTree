@@ -188,6 +188,7 @@ private:
 
 inline int IndexTracking::getIndex() const
 {
+    if (!node_) return -1;
     return OrdinalTree::getIndexOf(node_);
 }
 
