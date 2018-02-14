@@ -75,18 +75,18 @@ inline void *addressMax()
 }
 
 template<class T> class IsAtomic { public: enum { value = 0 }; };
-template<> class IsAtomic<const int8_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<const int16_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<const int32_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<const int64_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<const uint8_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<const uint16_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<const uint32_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<const uint64_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<const float32_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<const float64_t> { public: enum { value = 1 }; };
-template<> class IsAtomic<const bool> { public: enum { value = 1 }; };
-template<class T> class IsAtomic<const T*> { public: enum { value = 1 }; };
+template<> class IsAtomic<int8_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<int16_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<int32_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<int64_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<uint8_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<uint16_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<uint32_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<uint64_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<float32_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<float64_t> { public: enum { value = 1 }; };
+template<> class IsAtomic<bool> { public: enum { value = 1 }; };
+template<class T> class IsAtomic<T*> { public: enum { value = 1 }; };
 
 #define CC_IS_ATOMIC(T) (IsAtomic<const T>::value == 1)
 

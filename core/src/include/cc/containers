@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/types>
 #include <cc/generics>
 #include <cc/iterators>
 
@@ -65,5 +66,20 @@ public:
 private:
     Below below_;
 };
+
+template<class T, int isAtomic = 0>
+class SelectCopyMethod {
+public:
+    inline static T copy(const T &x) { return T::copy(x); }
+};
+
+template<class T>
+class SelectCopyMethod<T, 1> {
+public:
+    inline static T copy(T x) { return x; }
+};
+
+template<class T>
+class CopyMethod: public SelectCopyMethod< T, IsAtomic<T>::value > {};
 
 } // namespace cc

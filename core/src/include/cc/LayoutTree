@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <functional>
 #include <cc/OrdinalTree>
 
 namespace cc {
@@ -50,16 +51,19 @@ class LayoutTree: public OrdinalTree
 public:
     typedef LayoutNode<Item, Extent> Node;
 
-    void *insertAt(int index, const Item &item, Extent extent);
+    void insertAt(int index, const Item &item, Extent extent);
     void updateAt(int index, const Item &item, Extent extent);
     void removeAt(int index, Item *item = 0);
 
     static int getIndexOf(void *handle) { return getIndexOf(reinterpret_cast<OrdinalNode *>(handle)); }
 
-    Extent layoutSize() const;
-    void updateExtentAt(int index, Extent extent);
+    Extent extent() const;
 
-    void getItemAt(int index, Item *item, Extent *extent = 0) const;
+    Extent extentAt(int index) const;
+    bool updateExtentAt(int index, Extent extent);
+    Extent updateExtentAt(int index, const std::function<Extent(Extent)> &f);
+
+    void getItemExtentAt(int index, Item *item, Extent *extent = 0) const;
     void getView(Extent pos0, Extent pos1, int *index0, int *index1, Extent *itemPos0) const;
     Extent getPosAt(int index) const;
 
@@ -77,11 +81,10 @@ private:
 };
 
 template<class Item, class Extent>
-void *LayoutTree<Item, Extent>::insertAt(int index, const Item &item, Extent extent)
+void LayoutTree<Item, Extent>::insertAt(int index, const Item &item, Extent extent)
 {
     Node *kn = new Node(extent, item);
     attachAt(index, kn);
-    return kn;
 }
 
 template<class Item, class Extent>
@@ -105,25 +108,47 @@ void LayoutTree<Item, Extent>::removeAt(int index, Item *item)
 }
 
 template<class Item, class Extent>
-Extent LayoutTree<Item, Extent>::layoutSize() const
+Extent LayoutTree<Item, Extent>::extent() const
 {
     if (!root_) return 0;
     return treeExtent(static_cast<Node *>(root_));
 }
 
 template<class Item, class Extent>
-void LayoutTree<Item, Extent>::updateExtentAt(int index, Extent extent)
+Extent LayoutTree<Item, Extent>::extentAt(int index) const
+{
+    return getNodeAt(index)->itemExtent_;
+}
+
+template<class Item, class Extent>
+bool LayoutTree<Item, Extent>::updateExtentAt(int index, Extent extent)
 {
     Node *k = static_cast<Node *>(getNodeAt(index));
+    if (extent == k->itemExtent_) return false;
     Extent delta = extent - k->itemExtent_;
     k->itemExtent_ = extent;
     k->treeExtent_ += delta;
     for (; k; k = k->parent())
         k->treeExtent_ += delta;
+    return true;
 }
 
 template<class Item, class Extent>
-void LayoutTree<Item, Extent>::getItemAt(int index, Item *item, Extent *extent) const
+Extent LayoutTree<Item, Extent>::updateExtentAt(int index, const std::function<Extent(Extent)> &f)
+{
+    Node *k = static_cast<Node *>(getNodeAt(index));
+    Extent extent = f(k->itemExtent_);
+    if (extent == k->itemExtent_) return extent;
+    Extent delta = extent - k->itemExtent_;
+    k->itemExtent_ = extent;
+    k->treeExtent_ += delta;
+    for (; k; k = k->parent())
+        k->treeExtent_ += delta;
+    return extent;
+}
+
+template<class Item, class Extent>
+void LayoutTree<Item, Extent>::getItemExtentAt(int index, Item *item, Extent *extent) const
 {
     Node *k = static_cast<Node *>(getNodeAt(index));
     if (item) *item = k->item_;
@@ -137,7 +162,7 @@ void LayoutTree<Item, Extent>::getView(Extent pos0, Extent pos1, int *index0, in
         !root_ ||
         pos1 <= pos0 ||
         pos1 <= 0 ||
-        layoutSize() <= pos0
+        extent() <= pos0
     ) {
         if (index0) *index0 = 0;
         if (index1) *index1 = 0;
