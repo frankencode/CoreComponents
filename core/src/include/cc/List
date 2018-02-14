@@ -44,7 +44,7 @@ public:
     static Ref<List> copy(const List *other)
     {
         Ref<List> newList = List::create(other->count());
-        for (int i = 0; i < newList->count(); ++i) newList->at(i) = T::copy(other->at(i));
+        for (int i = 0; i < newList->count(); ++i) newList->at(i) = CopyMethod<T>::copy(other->at(i));
         return newList;
     }
 
@@ -154,6 +154,11 @@ public:
       * \return item value
       */
     inline Item popBack() { return pop(count() - 1); }
+
+    /** Return a deep-copy of this list
+      * \return new object instance
+      */
+    Ref<List> copy() const { return List::copy(this); }
 
     /** Search for an item value
       * \param item item value to search for

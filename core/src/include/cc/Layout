@@ -29,24 +29,62 @@ public:
 
     static Ref<Layout> create() { return new Layout; }
 
-    void insertAt(int index, const Item &item, Extent extent) { tree_.insertAt(index, item, extent); }
-    void updateAt(int index, const Item &item, Extent extent) { tree_.updateAt(index, item, extent); }
-    void removeAt(int index, Item *item = 0) { tree_.removeAt(index, item); }
+    void insertAt(int index, const Item &item, Extent extent) {
+        CC_ASSERT((0 <= index) && (index <= count()));
+        tree_.insertAt(index, item, extent);
+    }
+
+    void updateAt(int index, const Item &item, Extent extent) {
+        CC_ASSERT(has(index));
+        tree_.updateAt(index, item, extent);
+    }
+
+    void removeAt(int index, Item *item = 0) {
+        CC_ASSERT(has(index));
+        tree_.removeAt(index, item);
+    }
 
     void append(const Item &item, Extent extent) { insertAt(count(), item, extent); }
 
     int count() const { return tree_.count(); }
-    Extent extent() const { return tree_.layoutSize(); }
+    Extent extent() const { return tree_.extent(); }
 
-    void updateExtentAt(int index, Extent extent) { tree_.updateExtentAt(index, extent); }
+    Extent extentAt(int index) const {
+        CC_ASSERT(has(index));
+        return tree_.extentAt(index);
+    }
 
-    void getItemExtentAt(int index, Item *item, Extent *extent) const { tree_.getItemAt(index, item, extent); }
+    bool updateExtentAt(int index, Extent extent) {
+        CC_ASSERT(has(index));
+        return tree_.updateExtentAt(index, extent);
+    }
+
+    Extent updateExtentAt(int index, const std::function<Extent(Extent)> &f) {
+        CC_ASSERT(has(index));
+        return tree_.updateExtentAt(index, f);
+    }
+
+    void getItemExtentAt(int index, Item *item, Extent *extent) const {
+        CC_ASSERT(has(index));
+        tree_.getItemExtentAt(index, item, extent);
+    }
+
     void getView(Extent pos0, Extent pos1, int *index0, int *index1, Extent *itemPos0) const { tree_.getView(pos0, pos1, index0, index1, itemPos0); }
-    Extent getPosAt(int index) const { return tree_.getPosAt(index); }
+
+    Extent getPosAt(int index) const {
+        CC_ASSERT(has(index));
+        return tree_.getPosAt(index);
+    }
 
     bool has(int index) const { return index < tree_.count() && 0 <= index; }
-    Item &at(int index) { return tree_.at(index); }
-    const Item &at(int index) const { return tree_.at(index); }
+    Item &at(int index) {
+        CC_ASSERT(has(index));
+        return tree_.at(index);
+    }
+    const Item &at(int index) const {
+        CC_ASSERT(has(index));
+        return tree_.at(index);
+    }
 
     /** C++ iterator declarations
       * @{
