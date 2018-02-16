@@ -117,7 +117,7 @@ Extent LayoutTree<Item, Extent>::extent() const
 template<class Item, class Extent>
 Extent LayoutTree<Item, Extent>::extentAt(int index) const
 {
-    return getNodeAt(index)->itemExtent_;
+    return static_cast<Node *>(getNodeAt(index))->itemExtent_;
 }
 
 template<class Item, class Extent>
@@ -127,7 +127,6 @@ bool LayoutTree<Item, Extent>::updateExtentAt(int index, Extent extent)
     if (extent == k->itemExtent_) return false;
     Extent delta = extent - k->itemExtent_;
     k->itemExtent_ = extent;
-    k->treeExtent_ += delta;
     for (; k; k = k->parent())
         k->treeExtent_ += delta;
     return true;
@@ -141,7 +140,6 @@ Extent LayoutTree<Item, Extent>::updateExtentAt(int index, const std::function<E
     if (extent == k->itemExtent_) return extent;
     Extent delta = extent - k->itemExtent_;
     k->itemExtent_ = extent;
-    k->treeExtent_ += delta;
     for (; k; k = k->parent())
         k->treeExtent_ += delta;
     return extent;
@@ -196,7 +194,7 @@ Extent LayoutTree<Item, Extent>::getPosAt(int index) const
             j0 = j + 1;
             k = k->right_;
         }
-        else // i == j
+        else // index == j
             break;
     }
     return y;
