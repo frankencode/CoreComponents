@@ -182,7 +182,7 @@ int OrdinalTree::getIndexOf(OrdinalNode *k)
         OrdinalNode *kp = k->parent_;
         if (!kp) break;
         if (k == kp->right_)
-            i += weight(k->left_) + 1;
+            i += weight(kp->left_) + 1;
         k = kp;
     }
     return i;
