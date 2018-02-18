@@ -47,17 +47,6 @@ public:
             }
         }
 
-        template<class F>
-        void connect(const F &f)
-        {
-            if (dirty_) {
-                dirty_ = false;
-                evaluate();
-            }
-
-            valueChanged->connect(f);
-        }
-
     private:
         friend class Property;
 
