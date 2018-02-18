@@ -48,14 +48,14 @@ public:
         }
 
         template<class F>
-        void listen(const F &f)
+        void connect(const F &f)
         {
             if (dirty_) {
                 dirty_ = false;
                 evaluate();
             }
 
-            valueChanged->listen(f);
+            valueChanged->connect(f);
         }
 
     private:
@@ -105,7 +105,7 @@ public:
         {
             if (newValue != value_) {
                 value_ = newValue;
-                notify();
+                emit();
             }
         }
 

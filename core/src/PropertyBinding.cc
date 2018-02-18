@@ -67,7 +67,7 @@ void PropertyBinding::clearSubscribers()
     subscribers_ = nullptr;
 }
 
-void PropertyBinding::notify()
+void PropertyBinding::emit()
 {
     if (subscribers_) {
         for (PropertyBinding *other: subscribers_) {
@@ -80,7 +80,7 @@ void PropertyBinding::notify()
             }
         }
     }
-    valueChanged->notify();
+    valueChanged->emit();
 }
 
 void PropertyBinding::cascade()
