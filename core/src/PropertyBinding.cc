@@ -15,17 +15,7 @@ thread_local PropertyBinding *PropertyBinding::activeInstance_ = 0;
 
 PropertyBinding::PropertyBinding(bool dirty):
     dirty_(dirty)
-{
-    changed->owner_ = this;
-}
-
-void PropertyBinding::preConnect()
-{
-    if (dirty_) {
-        dirty_ = false;
-        evaluate();
-    }
-}
+{}
 
 void PropertyBinding::preAccess() const
 {
