@@ -15,7 +15,17 @@ thread_local PropertyBinding *PropertyBinding::activeInstance_ = 0;
 
 PropertyBinding::PropertyBinding(bool dirty):
     dirty_(dirty)
-{}
+{
+    changed->owner_ = this;
+}
+
+void PropertyBinding::preConnect()
+{
+    if (dirty_) {
+        dirty_ = false;
+        evaluate();
+    }
+}
 
 void PropertyBinding::preAccess() const
 {
@@ -46,7 +56,7 @@ bool PropertyBinding::hasConsumers() const
 {
     return
         (subscribers_ && subscribers_->count() > 0) ||
-        valueChanged->hasListeners();
+        changed->hasListeners();
 }
 
 void PropertyBinding::clearDependencies()
@@ -80,7 +90,7 @@ void PropertyBinding::emit()
             }
         }
     }
-    valueChanged->emit();
+    changed->emit();
 }
 
 void PropertyBinding::cascade()
@@ -103,7 +113,7 @@ void PropertyBinding::cascade()
 
 void PropertyBinding::disband()
 {
-    valueChanged->disband();
+    changed->disband();
     clearDependencies();
     if (subscribers_) {
         while (subscribers_->count() > 0) {
