@@ -14,18 +14,15 @@ namespace cc {
 
 template<class> class Set;
 
-class PropertyBinding: public Object, public SignalOwner
+class PropertyBinding: public Object
 {
-public:
-    Signal changed;
-
 protected:
+    Signal changed;
 
     typedef Set< Ref<PropertyBinding> > Association;
 
     PropertyBinding(bool dirty);
 
-    void preConnect();
     void preAccess() const;
 
     Association *dependencies() const;

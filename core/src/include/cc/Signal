@@ -15,12 +15,6 @@ namespace cc {
 
 class PropertyBinding;
 
-class SignalOwner
-{
-public:
-    virtual void preConnect() = 0;
-};
-
 class Signal
 {
 public:
@@ -28,17 +22,14 @@ public:
 
     class Instance {
     public:
-        Instance(): owner_(nullptr) {}
+        Instance() {}
 
         template<class F>
-        inline void connect(const F &f)
-        {
-            if (owner_) owner_->preConnect();
+        inline void connect(const F &f) {
             first_ = Node::create(f, first_);
         }
 
-        inline void emit() const
-        {
+        inline void emit() const {
             for (Node *node = first_; node; node = node->next_)
                 node->f_();
         }
@@ -48,9 +39,6 @@ public:
 
         inline bool hasListeners() const { return first_; }
         inline void disband() { first_ = 0; }
-
-        void connect(const Signal &other);
-        void connect(const Signal *other);
 
         class Node: public Object {
         public:
@@ -66,7 +54,6 @@ public:
         };
 
         Ref<Node> first_;
-        SignalOwner *owner_;
     };
 
     inline Instance *operator->() { return &instance_; }
