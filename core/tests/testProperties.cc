@@ -33,8 +33,8 @@ protected:
             fout() << "Shape moved to " << x() << ", " << y() << " (x + y = " << sum() << ")" << nl;
             CC_VERIFY(sum() == x() + y());
         };
-        x->listen(moved);
-        y->listen(moved);
+        x->connect(moved);
+        y->connect(moved);
     }
 };
 

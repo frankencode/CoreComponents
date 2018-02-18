@@ -15,22 +15,22 @@ namespace cc {
 
 class PropertyBinding;
 
-class Event
+class Signal
 {
 public:
-    Event() {}
+    Signal() {}
 
     class Instance {
     public:
         Instance() {}
 
         template<class F>
-        inline void listen(const F &f)
+        inline void connect(const F &f)
         {
             first_ = Node::create(f, first_);
         }
 
-        inline void notify() const {
+        inline void emit() const {
             for (Node *node = first_; node; node = node->next_)
                 node->f_();
         }
@@ -61,11 +61,11 @@ public:
     inline Instance *operator->() { return &instance_; }
     inline const Instance *operator->() const { return &instance_; }
 
-    inline void operator()() const { instance_.notify(); }
+    inline void operator()() const { instance_.emit(); }
 
 private:
-    Event(const Event&) = delete;
-    Event& operator=(const Event&) = delete;
+    Signal(const Signal&) = delete;
+    Signal& operator=(const Signal&) = delete;
 
     Instance instance_;
 };

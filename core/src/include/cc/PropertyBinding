@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Event>
+#include <cc/Signal>
 
 namespace cc {
 
@@ -17,7 +17,7 @@ template<class> class Set;
 class PropertyBinding: public Object
 {
 protected:
-    Event valueChanged;
+    Signal valueChanged;
 
     typedef Set< Ref<PropertyBinding> > Association;
 
@@ -33,7 +33,7 @@ protected:
     void clearDependencies();
     void clearSubscribers();
 
-    void notify();
+    void emit();
     void cascade();
 
     virtual void evaluate() = 0;
