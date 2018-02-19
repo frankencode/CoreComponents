@@ -1024,4 +1024,15 @@ inline Ref<ByteArray>::operator QUrl() const
 }
 #endif
 
+template<>
+class RefPolicy<ByteArray>
+{
+public:
+    inline static void detach(Ref<ByteArray> *ref)
+    {
+        if (ref->get()->refCount() > 1)
+            ref->set(ByteArray::copy(ref->get()));
+    }
+};
+
 } // namespace cc
