@@ -12,6 +12,9 @@
 
 namespace cc {
 
+class Object;
+class Variant;
+
 /** \class Ref Ref.h cc/Object
   * \ingroup mman
   * \brief %Object references
@@ -60,15 +63,15 @@ public:
     Ref(): a_(0) {}
     Ref(Ref &&b): a_(b.a_) { b.a_ = 0; }
     Ref(const Ref &b): a_(0) { set(b.a_); }
-    template<class T2> Ref(const Ref<T2> &b): a_(0) { set(cast<T>(b.get())); }
+    template<class T2> Ref(const Ref<T2> &b): a_(0) { set(cast<T>(b.a_)); }
 
     Ref(T *b): a_(0) { set(b); }
     template<class T2> Ref(T2 *b): a_(0) { set(cast<T>(b)); }
     template<class T2> Ref(const T2 *b): a_(0) { set(T::copy(cast<const T>(b))); }
 
-    ~Ref() { set(0); }
+    ~Ref() { set(nullptr); }
 
-    inline const Ref &operator=(Ref &&b) { set(0); a_ = b.a_; b.a_ = 0; return *this; }
+    inline const Ref &operator=(Ref &&b) { set(nullptr); a_ = b.a_; b.a_ = 0; return *this; }
     inline const Ref &operator=(const Ref &b) { set(b.a_); return *this; }
     inline const Ref &operator=(T *b) { set(b); return *this; }
     inline operator T *() const { return a_; }
@@ -84,6 +87,11 @@ public:
         return *a_;
     }
 
+    inline const T &operator*() const {
+        CC_ASSERT2(a_, "Null reference accessed");
+        return *a_;
+    }
+
     inline T *operator->() {
         CC_ASSERT2(a_, "Null reference accessed");
         return a_;
@@ -92,16 +100,6 @@ public:
     inline const T *operator->() const {
         CC_ASSERT2(a_, "Null reference accessed");
         return a_;
-    }
-
-    inline T *get() const { return a_; } // FIXME: obsolete
-
-    inline void set(T *b) { // FIXME: should be private
-        if (a_ != b) {
-            if (b) b->incRefCount();
-            if (a_) a_->decRefCount();
-            a_ = b;
-        }
     }
 
     /// helper method to support implicit deep copies of object lists
@@ -119,6 +117,22 @@ public:
         CC_ASSERT2(a_, "Null reference on shift right");
         *a_ >> x;
         return *this;
+    }
+
+protected:
+    template<class T2> friend class Ref;
+    friend class Object;
+    friend class Variant;
+
+    inline T *get() const { return a_; }
+
+    inline void set(T *b)
+    {
+        if (a_ != b) {
+            if (b) b->incRefCount();
+            if (a_) a_->decRefCount();
+            a_ = b;
+        }
     }
 
 private:

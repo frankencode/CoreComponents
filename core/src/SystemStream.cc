@@ -125,7 +125,7 @@ void SystemStream::write(const StringList *parts)
 
 void SystemStream::write(const Format &data)
 {
-    write(data.get());
+    write(Format::toStringList(data));
 }
 
 bool SystemStream::waitFor(int events, int interval_ms)

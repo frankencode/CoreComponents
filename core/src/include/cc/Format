@@ -72,6 +72,8 @@ public:
         return *this << str(x);
     }
 
+    static const StringList *toStringList(const Format &format) { return format.get(); }
+
 private:
     typedef Ref<StringList> Super;
 

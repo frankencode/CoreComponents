@@ -28,7 +28,7 @@ void Stream::write(const StringList *parts)
 
 void Stream::write(const Format &format)
 {
-    write(format.get());
+    write(Format::toStringList(format));
 }
 
 class WrappedChunk: public ByteArray
