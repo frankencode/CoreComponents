@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Font>
+
+namespace cc {
+namespace ui {
+
+class TextStyle: public Object
+{
+public:
+    static Ref<TextStyle> create(const Font *font, Color color = Color{})
+    {
+        return new TextStyle(font, color);
+    }
+
+    const Font *font() const { return font_; }
+    Color color() const { return color_; }
+
+private:
+    TextStyle(const Font *font, Color color):
+        font_(font),
+        color_(color)
+    {}
+
+    Ref<const Font> font_;
+    Color color_;
+};
+
+}} // namespace cc::ui

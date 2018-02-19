@@ -1,0 +1,34 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Stream>
+#include <cc/ui/Surface>
+
+namespace cc {
+namespace ui {
+
+class PdfSurface: public Surface
+{
+public:
+    static Ref<PdfSurface> open(Stream *stream, Size sizePt);
+
+private:
+    static cairo_status_t cairoWrite(void *closure, const unsigned char *data, unsigned int length);
+
+    PdfSurface(Stream *stream, Size sizePt);
+    ~PdfSurface();
+
+    cairo_surface_t *cairoSurface() const override;
+
+    Ref<Stream> stream_;
+    cairo_surface_t *cairoSurface_;
+};
+
+}} // namespace cc::ui

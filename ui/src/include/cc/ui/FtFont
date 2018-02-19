@@ -1,0 +1,60 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cairo/cairo.h>
+#include <cairo/cairo-ft.h>
+#include <cc/ui/Font>
+#include <cc/ui/FtFontFace>
+
+namespace cc {
+namespace ui {
+
+class FtFont: public Font
+{
+public:
+    String family() const override { return ftFontFace_->family(); }
+    double size() const override { return size_; }
+    Weight weight() const override { return ftFontFace_->weight(); }
+    Slant slant() const override { return ftFontFace_->slant(); }
+    Stretch stretch() const override { return ftFontFace_->stretch(); }
+
+    Ref<FontMetrics> getMetrics() const override;
+
+    cairo_scaled_font_t *cairoScaledFont() const { return cairoScaledFont_; }
+
+private:
+    friend class Object;
+
+    FtFont(const FtFontFace *ftFontFace, double size);
+    ~FtFont();
+
+    Ref<const FtFontFace> ftFontFace_;
+    double size_;
+    cairo_font_face_t *cairoFontFace_;
+    cairo_scaled_font_t *cairoScaledFont_;
+};
+
+class FtFaceGuard {
+public:
+    FtFaceGuard(const FtFont *ftFont):
+        ftFont_(ftFont),
+        ftFace_(cairo_ft_scaled_font_lock_face(ftFont_->cairoScaledFont()))
+    {}
+    ~FtFaceGuard() {
+        cairo_ft_scaled_font_unlock_face(ftFont_->cairoScaledFont());
+    }
+    inline const FtFaceGuard *operator->() const { return this; }
+    inline FT_Face ftFace() const { return ftFace_; }
+private:
+    const FtFont *ftFont_;
+    FT_Face ftFace_;
+};
+
+}} // namespace cc::ui

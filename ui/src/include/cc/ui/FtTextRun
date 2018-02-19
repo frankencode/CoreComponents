@@ -1,0 +1,66 @@
+/*
+ * Copyright (C) 2017-2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/FtTypeSetter>
+
+namespace cc {
+namespace ui {
+
+class Painter;
+
+class FtTextRun: public TextRun
+{
+public:
+    static Ref<FtTextRun> create(FtTypeSetter *typeSetter) {
+        return new FtTextRun(typeSetter);
+    }
+
+    void append(String text, const TextStyle *style) override;
+    void append(const TextRun *textRun) override;
+
+    Point advance() const override { return advance_; } // FIXME: rename to fin() or endPoint()
+    int byteCount() const override { return byteCount_; }
+    int lineCount() const override { return lineCount_; }
+
+    TextAlign textAlign() const override { return textAlign_; }
+    void setTextAlign(TextAlign textAlign) override { textAlign_ = textAlign; }
+
+    Ref<TextRun> wrap(double maxWidth, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const override;
+
+    Ref< Source<const GlyphRun *> > getAllGlyphRuns() const override { return glyphRuns_->getAll<const GlyphRun *>(); }
+
+    Ref<TextRun> copy() const override;
+    Ref<TextRun> copy(int byteOffset0, int byteOffset1) const override;
+
+    void paste(int byteOffset0, int byteOffset1, const TextRun *textRun = 0);
+
+private:
+    friend class Object;
+    friend class Painter;
+
+    typedef List< Ref<const FtGlyphRun> > FtGlyphRuns;
+
+    static double maxLineHeight(const FtGlyphRuns *glyphRuns);
+    static Ref<const FtGlyphRun> fold(const FtGlyphRuns *glyphRuns);
+    static Ref<FtTextRun> unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns *glyphRuns);
+
+    FtTextRun() = default;
+    FtTextRun(FtTypeSetter *typeSetter);
+
+    Ref<FtTypeSetter> typeSetter_;
+    Ref<FtGlyphRuns> glyphRuns_;
+    Point advance_;
+    int byteCount_;
+    int lineCount_;
+
+    TextAlign textAlign_;
+};
+
+}} // namespace cc::ui

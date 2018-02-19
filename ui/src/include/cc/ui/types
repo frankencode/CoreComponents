@@ -1,0 +1,121 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+#include <cc/Color>
+#include <cc/Vector>
+#include <cc/Property>
+#include <cc/bitmask>
+
+namespace cc {
+namespace ui {
+
+using cc::str;
+
+/** font slant
+  */
+enum class Slant {
+    Normal,
+    Italic,
+    Oblique = Italic
+};
+
+String str(Slant slant);
+
+/** font width to height ratio
+  */
+enum class Stretch {
+    UltraCondensed =  500,
+    ExtraCondensed =  625,
+    Condensed      =  750,
+    SemiCondensed  =  875,
+    Normal         = 1000,
+    SemiExpanded   = 1125,
+    Expanded       = 1250,
+    ExtraExpanded  = 1500,
+    UltraExpanded  = 2000
+};
+
+String str(Stretch stretch);
+
+/** visual thickness of a font
+  */
+enum class Weight {
+    Thin       = 100,
+    ExtraLight = 200,
+    Light      = 300,
+    Normal     = 400,
+    Medium     = 500,
+    SemiBold   = 600,
+    Bold       = 700,
+    ExtraBold  = 800,
+    Black      = 900
+};
+
+String str(Weight weight);
+
+/** font pitch
+  */
+enum class Pitch {
+    Fixed,   ///< monospace font
+    Variable ///< variable-width font
+};
+
+String str(Pitch pitch);
+
+/** text alignment
+  */
+enum class TextAlign {
+    Left,   ///< align left
+    Right,  ///< align right
+    Center, ///< align center
+    Justify ///< align justify
+};
+
+String str(TextAlign textAlign);
+
+/** positioning of content within a bounding box
+  */
+enum class Placement: unsigned int {
+    Auto             = 0,
+    Left             = 1,
+    Right            = 2,
+    HorizontalCenter = 4,
+    Top              = 8,
+    Bottom           = 16,
+    VerticalCenter   = 32,
+    TopLeft          = Top|Left,
+    TopCenter        = Top|HorizontalCenter,
+    TopRight         = Top|Right,
+    CenterLeft       = VerticalCenter|Left,
+    Center           = VerticalCenter|HorizontalCenter,
+    CenterRight      = VerticalCenter|Right,
+    BottomLeft       = Bottom|Left,
+    BottomCenter     = Bottom|HorizontalCenter,
+    BottomRight      = Bottom|Right
+};
+
+CC_BITMASK(Placement, unsigned int)
+
+String str(Placement placement);
+
+typedef Vector<double, 2> Point;
+typedef Vector<double, 2> Size;
+typedef Vector<double, 2> Step;
+typedef Vector<double, 2> Ratio;
+typedef Vector<double, 2> Extent;
+
+typedef std::function<bool(String /*text*/, int /*byteOffset*/, int /*byteCount*/)> TextWrapBehind;
+bool textWrapBehindDefault(String text, int byteOffset, int byteCount);
+
+/// translate \a angle in to degrees (0..360) to radians (0..2*M_PI)
+double degrees(double angle);
+
+}} // namespace cc::ui

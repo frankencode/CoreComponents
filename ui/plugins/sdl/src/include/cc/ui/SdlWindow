@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <SDL2/SDL.h>
+#include <cc/ui/Window>
+
+namespace cc {
+namespace ui {
+
+class SdlApplication;
+class SdlContext;
+
+class SdlWindow: public Window
+{
+private:
+    friend class SdlApplication;
+
+    static Ref<SdlWindow> open(View *view, String title = String{});
+
+    SdlWindow(View *view, String title);
+    ~SdlWindow();
+
+    SdlWindow *open();
+
+    void onWindowResized(Size newSize);
+    void onWindowMoved(Point newPos);
+    void onWindowShown();
+    void onWindowHidden();
+    void onWindowExposed();
+
+    void renderFrame(Frame *frame) override;
+
+    static void renderCascade(SDL_Renderer *sdlRenderer, View *view);
+    static void updateTexture(SDL_Renderer *sdlRenderer, View *view);
+    static void renderTexture(SDL_Renderer *sdlRenderer, View *view);
+
+    static SdlContext *sdlContext(View *view);
+
+    uint32_t id_;
+    SDL_Window *sdlWindow_;
+    SDL_Renderer *sdlRenderer_;
+    Size currentSize_;
+    Point currentPos_;
+};
+
+}} // namespace cc::ui

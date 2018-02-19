@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2017-2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <functional>
+#include <cc/ui/TextStyle>
+
+namespace cc {
+namespace ui {
+
+class GlyphRun: public Object
+{
+public:
+    static Ref<GlyphRun> layout(String text, const TextStyle *style);
+
+    /// convenience wrapper
+    inline static Ref<GlyphRun> layout(String text, const Font *font, Color color = Color{}) {
+        return layout(text, TextStyle::create(font, color));
+    }
+
+    virtual String text() const = 0;
+    virtual const TextStyle *style() const = 0;
+
+    virtual Point advance() const = 0; // FIXME: rename to "fin", "endPoint"
+    virtual Size size() const = 0;
+    virtual int lineCount() const = 0;
+
+    virtual Ref<GlyphRun> wrap(double maxWidth, TextAlign textAlign = TextAlign::Left, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const = 0;
+    virtual Ref<GlyphRun> elide(double maxWidth) const = 0;
+
+    virtual Ref<GlyphRun> copy() const = 0;
+    virtual Ref<GlyphRun> copy(int byteOffset0, int byteOffset1) const = 0;
+};
+
+}} // namespace cc::ui

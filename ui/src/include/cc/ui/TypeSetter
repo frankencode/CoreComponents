@@ -1,0 +1,34 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <limits>
+#include <cc/ui/GlyphRun>
+#include <cc/ui/TextRun>
+
+namespace cc {
+namespace ui {
+
+class TypeSetter: public Object
+{
+public:
+    static Ref<TypeSetter> create();
+
+    virtual Ref<GlyphRun> layout(String text, const TextStyle *style) = 0;
+    virtual Point advance() const = 0; // FIXME: rename to "fin"
+
+    virtual Ref<TypeSetter> copy() const = 0;
+
+private:
+    friend class TextRun;
+
+    virtual Ref<TextRun> createTextRun() = 0;
+};
+
+}} // namespace cc::ui

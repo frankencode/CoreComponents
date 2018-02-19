@@ -1,0 +1,42 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Window>
+
+namespace cc { template<class> class Set; }
+
+namespace cc {
+namespace ui {
+
+class Timer;
+
+class Application: public Object
+{
+public:
+    static Application *open(int argc, char **argv);
+    static Application *instance();
+
+    virtual Window *openWindow(View *view, String title = String{}) = 0;
+
+    virtual int run() = 0;
+
+    virtual void getDisplayResolution(double *xRes, double *yRes) const = 0;
+
+protected:
+    friend class Window;
+
+    Application() = default;
+
+    virtual void init(int argc, char **argv) = 0;
+
+    void notifyTimer(Timer *t);
+};
+
+}} // namespace cc::ui

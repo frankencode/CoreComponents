@@ -1,0 +1,34 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Stream>
+#include <cc/ui/Surface>
+
+namespace cc {
+namespace ui {
+
+class SvgSurface: public Surface
+{
+public:
+    static Ref<SvgSurface> open(Stream *stream, Size sizePt);
+
+private:
+    static cairo_status_t cairoWrite(void *closure, const unsigned char *data, unsigned int length);
+
+    SvgSurface(Stream *stream, Size sizePt);
+    ~SvgSurface();
+
+    cairo_surface_t *cairoSurface() const override;
+
+    Ref<Stream> stream_;
+    cairo_surface_t *cairoSurface_;
+};
+
+}} // namespace cc::ui

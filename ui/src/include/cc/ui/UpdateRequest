@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+
+namespace cc {
+namespace ui {
+
+enum class UpdateReason {
+    Moved,
+    Changed,
+    Resized,
+    Exposed
+};
+
+class View;
+
+class UpdateRequest: public Object
+{
+public:
+    static Ref<UpdateRequest> create(UpdateReason reason, View *view) {
+        return new UpdateRequest(reason, view);
+    }
+
+    UpdateReason reason() const { return reason_; }
+    View *view() const { return view_; }
+
+private:
+    UpdateRequest(UpdateReason reason, View *view):
+        reason_(reason),
+        view_(view)
+    {}
+
+    UpdateReason reason_;
+    Ref<View> view_;
+};
+
+}} // namespace cc::ui

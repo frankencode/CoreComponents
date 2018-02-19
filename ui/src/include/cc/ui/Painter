@@ -1,0 +1,140 @@
+/*
+ * Copyright (C) 2017-2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Exception>
+#include <cc/Array>
+#include <cc/ui/types>
+
+typedef struct _cairo cairo_t;
+
+namespace cc {
+namespace ui {
+
+class Surface;
+class GlyphRun;
+class TextRun;
+
+class Painter
+{
+public:
+    Painter(Surface *surface):
+        instance_(surface)
+    {}
+
+    class Instance {
+    public:
+        /** Path creation
+          * @{
+          */
+        void newPath();
+        void newSubPath();
+        void closePath();
+
+        bool hasCurrentPoint() const;
+        Point currentPoint() const;
+        void moveTo(Point nextPoint);
+        void lineTo(Point nextPoint);
+        void curveTo(Point controlPointA, Point controlPointB, Point endPoint);
+        void arc(Point center, double radius, double startAngle, double stopAngle);
+        void arcNegative(Point center, double radius, double startAngle, double stopAngle);
+        /** @}
+          */
+
+        /** Convenience functions for path creation
+          * @{
+          */
+        void relMoveTo(Step delta);
+        void relLineTo(Step delta);
+        void relCurveTo(Step deltaA, Step deltaB, Step deltaE);
+        void rectangle(Point position, Size size);
+        void circle(Point center, double radius);
+        /** @}
+          */
+
+        /** Drawing
+          * @{
+          */
+        void setSource(Color color);
+        void fill();
+        void fillPreserve();
+        /** @}
+          */
+
+        /** Text rendering
+          * @{
+          */
+        void showGlyphRun(Point pos, const GlyphRun *glyphRun);
+        void showGlyphRun(Point pos, const GlyphRun *glyphRun, const Array<Color> *fgColors, const Array<Color> *bgColors = 0);
+        void showTextRun(Point pos, const TextRun *textRun);
+        /** @}
+          */
+
+        /** Transformations
+          * @{
+          */
+        void translate(Step step);
+        void scale(Ratio ratio);
+        void rotate(double angle);
+        /** @}
+          */
+
+        /** Save and restore the Painter state
+          * \see Painter::StateGuard
+          * @{
+          */
+        void save();
+        void restore();
+        /** @}
+          */
+
+        /** emit current page
+          * \param clear start with clean page (true)
+          */
+        void nextPage(bool clear = true);
+
+    private:
+        friend class Painter;
+        void checkForError();
+        Instance(Surface *surface);
+        ~Instance();
+        cairo_t *cr_;
+    };
+
+    inline Instance *operator->() { return &instance_; }
+
+private:
+    Painter(const Painter&) = delete;
+    Painter& operator=(const Painter&) = delete;
+
+    Instance instance_;
+};
+
+/** \brief Something went wrong during painting
+  */
+class PainterError: public Exception
+{
+public:
+    PainterError(int errorStatus);
+    String message() const override;
+private:
+    int errorStatus_;
+};
+
+/** \brief Scope guard for a Painter's state
+  */
+class PainterGuard {
+public:
+    PainterGuard(Painter *p): p_(p) { (*p_)->save(); }
+    ~PainterGuard() { (*p_)->restore(); }
+private:
+    Painter *p_;
+};
+
+}} // namespace cc::ui

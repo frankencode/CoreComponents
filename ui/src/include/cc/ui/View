@@ -1,0 +1,74 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/types>
+#include <cc/ui/Surface>
+#include <cc/ui/UpdateRequest>
+
+namespace cc {
+namespace ui {
+
+class Window;
+class Image;
+
+class View: public Surface
+{
+public:
+    Property<bool> visible { false };
+    Property<Point> pos;
+    Property<Size> size;
+    Property<Size> minSize;
+    Property<Size> maxSize;
+    Property<Color> color;
+
+    inline Window *window() const { return window_; }
+    inline View *parent() const { return parent_; }
+
+    int childCount() const { return children_->count(); }
+    View *childAt(int i) { return children_->valueAt(i); }
+
+    Point mapToWindow(Point local) const;
+
+protected:
+    friend class Window;
+
+    View(View *parent = 0);
+    ~View();
+
+    virtual bool isOpaque() const;
+    virtual bool isPainted() const;
+    virtual bool isStatic() const;
+
+    virtual void setup();
+    virtual void clear();
+    virtual void paint();
+
+    void update(const UpdateRequest *request = 0);
+
+    Window *window();
+    Image *image();
+
+private:
+    uint64_t nextSerial() const;
+    void insertChild(View *child);
+    void removeChild(View *child);
+
+    cairo_surface_t *cairoSurface() const override;
+
+    uint64_t serial_;
+    Window *window_;
+    View *parent_;
+    typedef Map<uint64_t, Ref<View> > Children;
+    Ref<Children> children_;
+    Ref<Image> image_;
+    Ref<Object> context_;
+};
+
+}} // namespace cc::ui

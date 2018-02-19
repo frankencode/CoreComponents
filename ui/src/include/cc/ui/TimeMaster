@@ -1,0 +1,38 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Timer>
+
+namespace cc {
+namespace ui {
+
+class TimeWorker;
+
+class TimeMaster: public Object
+{
+public:
+    static TimeMaster *instance();
+
+    void startTimer(Timer *timer);
+    void ack();
+
+protected:
+    friend class TimeWorker;
+
+    TimeMaster();
+    ~TimeMaster();
+
+    virtual void triggerTimer(const Timer *timer) = 0;
+
+private:
+    Ref<TimeWorker> worker_;
+};
+
+}} // namespace cc::ui

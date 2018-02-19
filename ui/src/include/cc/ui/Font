@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/types>
+#include <cc/ui/FontMetrics>
+
+namespace cc {
+namespace ui {
+
+class Font: public Object
+{
+public:
+    static Ref<Font> select(
+        String family,
+        double size = 10,
+        Weight weight = Weight::Normal,
+        Slant slant = Slant::Normal,
+        Stretch stretch = Stretch::Normal
+    );
+
+    virtual String family() const = 0;
+    virtual double size() const = 0;
+    virtual Weight weight() const = 0;
+    virtual Slant slant() const = 0;
+    virtual Stretch stretch() const = 0;
+
+    virtual Ref<FontMetrics> getMetrics() const = 0;
+};
+
+}} // namespace cc::ui
