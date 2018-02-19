@@ -1,0 +1,51 @@
+/*
+ * Copyright (C) 2017-2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/GlyphRun>
+
+namespace cc {
+namespace ui {
+
+class TypeSetter;
+class Painter;
+
+class TextRun: public Object
+{
+public:
+    static Ref<TextRun> create();
+
+    static Ref<TextRun> create(String text, const TextStyle *style = 0) {
+        Ref<TextRun> textRun = TextRun::create();
+        textRun->append(text, style);
+        return textRun;
+    }
+
+    static Ref<TextRun> copy(const TextRun *other) { return other->copy(); }
+
+    virtual void append(String text, const TextStyle *style) = 0;
+    virtual void append(const TextRun *textRun) = 0;
+
+    virtual Point advance() const = 0; // FIXME: rename to endPoint()
+    virtual int byteCount() const = 0;
+    virtual int lineCount() const = 0;
+
+    virtual TextAlign textAlign() const = 0;
+    virtual void setTextAlign(TextAlign textAlign) = 0;
+
+    virtual Ref<TextRun> wrap(double maxWidth, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const = 0;
+
+    virtual Ref< Source<const GlyphRun *> > getAllGlyphRuns() const = 0;
+
+    virtual Ref<TextRun> copy() const = 0;
+    virtual Ref<TextRun> copy(int byteOffset0, int byteOffset1) const = 0;
+    virtual void paste(int byteOffset0, int byteOffset1, const TextRun *textRun = 0) = 0;
+};
+
+}} // namespace cc::ui

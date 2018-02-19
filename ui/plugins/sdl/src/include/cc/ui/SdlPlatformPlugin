@@ -1,0 +1,25 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/PlatformPlugin>
+
+namespace cc {
+namespace ui {
+
+class SdlPlatformPlugin: public PlatformPlugin
+{
+public:
+    SdlPlatformPlugin();
+    Application *application() const override;
+    TimeMaster *timeMaster() const override;
+};
+
+
+}} // namespace cc::ui

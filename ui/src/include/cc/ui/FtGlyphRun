@@ -1,0 +1,84 @@
+/*
+ * Copyright (C) 2017-2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cairo/cairo.h>
+#include <cairo/cairo-ft.h>
+#include <cc/Array>
+#include <cc/ui/FtFont>
+#include <cc/ui/GlyphRun>
+
+namespace cc {
+namespace ui {
+
+class FtTypeSetter;
+class FtTextRun;
+
+typedef Array<cairo_glyph_t> CairoGlyphs;
+typedef Array<cairo_text_cluster_t> CairoTextClusters;
+
+class FtGlyphRun: public GlyphRun
+{
+public:
+    String text() const override { return text_; }
+    const TextStyle *style() const override { return style_; }
+
+    Point advance() const override { return advance_; } // FIXME: rename to "fin"
+    Size size() const override { return size_ ; }
+
+    int lineCount() const override { return lineCount_; }
+
+    Ref<GlyphRun> wrap(double maxWidth, TextAlign textAlign = TextAlign::Left, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const override;
+    Ref<GlyphRun> elide(double maxWidth) const override;
+
+    Ref<GlyphRun> copy() const override;
+    Ref<GlyphRun> copy(int byteOffset0, int byteOffset1) const override;
+
+    const FtFont *ftFont() const { return Object::cast<const FtFont *>(style_->font()); }
+
+    CairoGlyphs *cairoGlyphs() const { return cairoGlyphs_; }
+    CairoTextClusters *cairoTextClusters() const { return cairoTextClusters_; }
+
+private:
+    friend class Object;
+    friend class FtTypeSetter;
+    friend class FtTextRun;
+
+    FtGlyphRun(): lineCount_(1) {}
+    FtGlyphRun(String text, const TextStyle *style);
+
+    Ref<FtGlyphRun> ftCopy() const;
+
+    static void lineJustify(
+        FtGlyphRun *ftGlyphRun, double spaceDelta,
+        int byteOffset0, int glyphOffset0, int clusterIndex0,
+        int byteOffset1, int glyphOffset1, int clusterIndex1
+    );
+
+    static void lineShift(
+        FtGlyphRun *ftGlyphRun,
+        int glyphOffset0,
+        int glyphOffset1,
+        double shiftX
+    );
+
+    static void lineShift(FtGlyphRun *ftGlyphRun, double shiftX);
+
+    String text_;
+    Ref<const TextStyle> style_;
+
+    Point advance_;
+    Size size_;
+    int lineCount_;
+
+    Ref<CairoGlyphs> cairoGlyphs_;
+    Ref<CairoTextClusters> cairoTextClusters_;
+};
+
+}} // namespace cc::ui

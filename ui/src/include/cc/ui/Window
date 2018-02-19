@@ -1,0 +1,57 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/View>
+
+namespace cc { template<class> class Queue; }
+
+namespace cc {
+namespace ui {
+
+typedef Queue< Ref<const UpdateRequest> > Frame;
+
+class Window: public Object
+{
+public:
+    static Window *open(View *view, String title = String{});
+
+    View *view() const { return view_; }
+
+    Property<bool> visible;
+    Property<String> title;
+    Property<Point> pos;
+    Property<Size> size;
+    Property<Color> color;
+
+protected:
+    friend class View;
+
+    Window(View *view, String title);
+    ~Window();
+
+    static Object *getContext(View *view) { return view->context_; }
+    static void setContext(View *view, Object *context) { view->context_ = context; }
+
+    static bool isOpaque(View *view) { return view->isOpaque(); }
+    static bool isPainted(View *view) { return view->isPainted(); }
+    static bool isStatic(View *view) { return view->isStatic(); }
+    static Image *image(View *view) { return view->image(); }
+    static void update(View *view, Ref<UpdateRequest> request = 0) { view->update(request); }
+
+    void addToFrame(const UpdateRequest *request);
+    void commitFrame();
+
+    virtual void renderFrame(Frame *frame) = 0;
+
+    Ref<View> view_;
+    Ref<Frame> nextFrame_;
+};
+
+}} // namespace cc::ui

@@ -1,0 +1,34 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <SDL2/SDL.h>
+#include <cc/ui/types>
+
+namespace cc {
+namespace ui {
+
+class SdlWindow;
+
+class SdlContext: public Object
+{
+public:
+    static Ref<SdlContext> create() { return new SdlContext; }
+
+private:
+    friend class SdlWindow;
+
+    SdlContext();
+    ~SdlContext();
+
+    SDL_Texture *sdlTexture_;
+    Size sdlTextureSize_;
+};
+
+}} // namespace cc::ui

@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Application>
+#include <cc/ui/TimeMaster>
+#include <cc/ui/FontManager>
+#include <cc/ui/TypeSetter>
+
+namespace cc {
+namespace ui {
+
+class PlatformPlugin: public Object
+{
+public:
+    static PlatformPlugin *instance();
+
+    inline String name() const { return name_; }
+    inline bool isPlatformDefault() const { return isPlatformDefault_; }
+
+    virtual Application *application() const = 0;
+    virtual TimeMaster *timeMaster() const = 0;
+
+    virtual FontManager *fontManager() const;
+    virtual Ref<TypeSetter> createTypeSetter() const;
+
+protected:
+    PlatformPlugin(String name, bool isPlatformDefault = false);
+
+private:
+    String name_;
+    bool isPlatformDefault_;
+};
+
+}} // namespace cc::ui

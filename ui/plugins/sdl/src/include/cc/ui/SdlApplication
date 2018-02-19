@@ -1,0 +1,54 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Application>
+#include <SDL2/SDL.h>
+
+namespace cc { template<class> class Singleton; }
+
+namespace cc {
+namespace ui {
+
+class SdlWindow;
+class SdlTimeMaster;
+class Timer;
+
+class SdlApplication: public Application
+{
+public:
+    static SdlApplication *instance();
+
+    virtual void init(int argc, char **argv) override;
+    virtual void getDisplayResolution(double *xRes, double *yRes) const override;
+
+    virtual Window *openWindow(View *view, String title = String{}) override;
+
+    virtual int run() override;
+
+private:
+    friend class Singleton<SdlApplication>;
+    friend class SdlTimeMaster;
+
+    SdlApplication();
+    ~SdlApplication();
+
+    static String windowEventToString(const SDL_WindowEvent *e);
+    void handleWindowEvent(const SDL_WindowEvent *e);
+
+    void triggerTimer(const Timer *timer);
+
+    typedef Map<uint32_t, Ref<SdlWindow> > Windows;
+    Ref<Windows> windows_;
+
+    SDL_Event *event_;
+    Uint32 timerEvent_;
+};
+
+}} // namespace cc::ui

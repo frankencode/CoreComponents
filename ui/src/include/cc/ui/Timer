@@ -1,0 +1,70 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <atomic>
+#include <cc/Signal>
+
+namespace cc {
+namespace ui {
+
+class TimeWorker;
+
+class Timer: public Object
+{
+public:
+    static void start(double interval, const std::function<void()> &handler) {
+        Ref<Timer> timer = Timer::create(interval);
+        timer->triggered->connect(handler);
+        timer->start();
+    }
+
+    static void startAt(double startTime, double interval, const std::function<void()> &handler) {
+        Ref<Timer> timer = Timer::create(interval);
+        timer->triggered->connect(handler);
+        timer->startAt(startTime);
+    }
+
+    static void startIn(double delayTime, const std::function<void()> &handler) {
+        Ref<Timer> timer = Timer::create();
+        timer->triggered->connect(handler);
+        timer->startIn(delayTime);
+    }
+
+    static Ref<Timer> create(double interval = 0) {
+        return new Timer(interval);
+    }
+
+    void start();
+    void startAt(double startTime);
+    void startIn(double delayTime);
+    void stop();
+
+    bool isActive() const { return isActive_; }
+    double startTime() const { return startTime_; }
+    double interval() const { return interval_; }
+
+    Signal triggered;
+
+private:
+    friend class TimeWorker;
+    friend class Application;
+
+    Timer(double interval):
+        isActive_(false),
+        startTime_(0),
+        interval_(interval)
+    {}
+
+    mutable std::atomic_bool isActive_;
+    double startTime_;
+    double interval_;
+};
+
+}} // namespace cc::ui

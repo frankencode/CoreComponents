@@ -1,0 +1,5 @@
+Plugin {
+    name: ccuisdlplugin
+    extend: cc/ui
+    depends: sdl2
+}

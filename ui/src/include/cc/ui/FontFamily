@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Source>
+#include <cc/ui/FontFace>
+
+namespace cc { template<class> class List; }
+
+namespace cc {
+namespace ui {
+
+class FontManager;
+
+class FontFamily: public Object
+{
+public:
+    String name() const { return name_; }
+    Pitch pitch() const { return pitch_; }
+
+    Ref< Source<const FontFace *> > getFontFaces() const;
+
+    const FontFace *selectFontFace(
+        Weight weight = Weight::Normal,
+        Slant slant = Slant::Normal,
+        Stretch stretch = Stretch::Normal
+    ) const;
+
+private:
+    friend class FontManager;
+
+    static Ref<FontFamily> create(String name, Pitch pitch) {
+        return new FontFamily(name, pitch);
+    }
+
+    FontFamily(String name, Pitch pitch);
+    ~FontFamily();
+
+    String name_;
+    Pitch pitch_;
+
+    typedef List< Ref<const FontFace> > FontFaces;
+    Ref<FontFaces> fontFaces_;
+};
+
+}} // namespace cc::ui

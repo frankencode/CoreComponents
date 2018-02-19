@@ -1,0 +1,89 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/List>
+#include <cc/Layout>
+#include <cc/Signal>
+#include <cc/ui/VisualLayout>
+
+namespace cc {
+namespace ui {
+
+class Item;
+
+typedef List< Ref<Item> > ItemList;
+typedef List<int> IndexPath;
+
+class ItemDelta
+{
+public:
+    const IndexPath *indexPath() const { return indexPath_; }
+    int removedCount() const { return removedCount_; }
+    int insertedCount() const { return insertedCount_; }
+
+private:
+    friend class Item;
+
+    ItemDelta():
+        removedCount_(0),
+        insertedCount_(0)
+    {}
+
+    ItemDelta *operator->() { return this; }
+
+    Ref<IndexPath> indexPath_;
+    int removedCount_;
+    int insertedCount_;
+};
+
+class Item: public Object, public IndexTracking
+{
+public:
+    static Ref<Item> create() { return new Item; }
+
+    Item *parent() const { return parent_; }
+
+    int count() const { return children_->count(); }
+    Item *at(int i) { return children_->at(i); }
+
+    int totalCount() const { return children_->extent(); }
+
+    void insertAt(int i, Item *item);
+    void removeAt(int i);
+    void append(Item *item) { return insertAt(count(), item); }
+
+    void paste(int i0, int i1, const ItemList *items = 0);
+
+    const ItemDelta *delta() const { return &delta_; }
+
+    Signal changed;
+
+protected:
+    friend class VisualLayout;
+
+    Item();
+
+    int getLayoutIndex(int i) const;
+
+    virtual Ref<Visual> createVisual(VisualLayout *layout) { return Ref<Visual>{}; }
+
+private:
+    void updateExtents(int deltaCount);
+    void emit();
+
+    Item *parent_;
+
+    typedef Layout< Ref<Item>, int > ItemLayout;
+    Ref<ItemLayout> children_;
+
+    ItemDelta delta_;
+};
+
+}} // namespace cc::ui

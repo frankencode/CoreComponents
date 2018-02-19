@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Map>
+#include <cc/String>
+#include <cc/ui/PlatformPlugin>
+
+namespace cc { template<typename> class Singleton; }
+namespace cc { template<typename, typename> class Map; }
+
+namespace cc {
+namespace ui {
+
+class PlatformManager: public Object
+{
+public:
+    static PlatformManager *instance();
+
+    bool getPlugin(String name, Ref<PlatformPlugin> *plugin) const;
+    Ref< Source< Ref<PlatformPlugin> > > getAllPlugins() const;
+
+    PlatformPlugin *activePlugin() const;
+    void activatePlugin(PlatformPlugin *plugin);
+
+private:
+    friend class Singleton<PlatformManager>;
+    friend class PlatformPlugin;
+
+    PlatformManager();
+
+    void registerPlugin(PlatformPlugin *plugin);
+
+    typedef Map<String, Ref<PlatformPlugin> > Plugins;
+    Ref<Plugins> plugins_;
+
+    Ref<PlatformPlugin> activePlugin_;
+};
+
+}} // namespace cc::ui

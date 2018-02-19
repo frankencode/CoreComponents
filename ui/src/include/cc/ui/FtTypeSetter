@@ -1,0 +1,40 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/TypeSetter>
+#include <cc/ui/FtGlyphRun>
+
+namespace cc {
+namespace ui {
+
+class FtTypeSetter: public TypeSetter
+{
+public:
+    static Ref<FtTypeSetter> create() { return new FtTypeSetter; }
+
+    Ref<GlyphRun> layout(String text, const TextStyle *style) override {
+        return ftLayout(text, style);
+    }
+
+    Ref<FtGlyphRun> ftLayout(String text, const TextStyle *style);
+
+    Point advance() const override { return pos_; }  // FIXME: rename to "pos"
+
+    Ref<TypeSetter> copy() const override;
+
+private:
+    FtTypeSetter() = default;
+
+    Ref<TextRun> createTextRun() override;
+
+    Point pos_;
+};
+
+}} // namespace cc::ui

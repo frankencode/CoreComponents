@@ -1,0 +1,3 @@
+Tests {
+    use: [ cc/core, cc/ui, cc/testing ]
+}

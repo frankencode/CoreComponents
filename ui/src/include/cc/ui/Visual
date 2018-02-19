@@ -1,0 +1,43 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Property>
+#include <cc/ui/Painter>
+
+namespace cc {
+namespace ui {
+
+class Item;
+class VisualLayout;
+
+class Visual: public Object, public IndexTracking
+{
+public:
+    Signal changed;
+    Property<Size> size;
+
+    virtual void paint(Painter *p) = 0;
+
+    Item *item() const { return item_; }
+    const VisualLayout *layout() const { return layout_; }
+
+protected:
+    friend class VisualLayout;
+
+    Visual(Item *item, const VisualLayout *layout);
+
+    virtual void update() = 0;
+
+private:
+    Item *item_;
+    const VisualLayout *layout_;
+};
+
+}} // namespace cc::ui

@@ -1,0 +1,32 @@
+/*
+ * Copyright (C) 2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/TimeMaster>
+
+namespace cc { template<class> class Singleton; }
+
+namespace cc {
+namespace ui {
+
+class SdlTimeMaster: public TimeMaster
+{
+public:
+    static SdlTimeMaster *instance();
+
+protected:
+    void triggerTimer(const Timer *timer) override;
+
+private:
+    friend class Singleton<SdlTimeMaster>;
+
+    SdlTimeMaster() = default;
+};
+
+}} // namespace cc::ui
