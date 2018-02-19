@@ -8,6 +8,7 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
+#include <cc/debug>
 #include <cc/String>
 #include <cc/Unicode>
 
@@ -97,6 +98,26 @@ class SyntaxSugar: public TestCase
     }
 };
 
+class CopyOnWriteTest: public TestCase
+{
+    void run()
+    {
+        String s = "Arbakadabra";
+        String s2 = s;
+        CC_INSPECT(s);
+        CC_INSPECT(s2);
+        CC_INSPECT(s->refCount());
+        CC_INSPECT(s2->refCount());
+        CC_VERIFY(&*s == &*s2);
+        s2 += " simsalabim, ...";
+        CC_INSPECT(s);
+        CC_INSPECT(s2);
+        CC_INSPECT(s->refCount());
+        CC_INSPECT(s2->refCount());
+        CC_VERIFY(&*s != &*s2);
+    }
+};
+
 int main(int argc, char **argv)
 {
     CC_TESTSUITE_ADD(ConstructionComparism);
@@ -104,6 +125,7 @@ int main(int argc, char **argv)
     CC_TESTSUITE_ADD(UnicodeEscapes);
     CC_TESTSUITE_ADD(FindSplitReplace);
     CC_TESTSUITE_ADD(SyntaxSugar);
+    CC_TESTSUITE_ADD(CopyOnWriteTest);
 
     return TestSuite::instance()->run(argc, argv);
 }

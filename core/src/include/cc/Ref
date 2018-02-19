@@ -15,6 +15,15 @@ namespace cc {
 class Object;
 class Variant;
 
+template<class T>
+class Ref;
+
+template<class T>
+class RefPolicy {
+public:
+    inline static void detach(Ref<T> *ref) {}
+};
+
 /** \class Ref Ref.h cc/Object
   * \ingroup mman
   * \brief %Object references
@@ -84,6 +93,7 @@ public:
 
     inline T &operator*() {
         CC_ASSERT2(a_, "Null reference accessed");
+        Policy::detach(this);
         return *a_;
     }
 
@@ -94,6 +104,7 @@ public:
 
     inline T *operator->() {
         CC_ASSERT2(a_, "Null reference accessed");
+        Policy::detach(this);
         return a_;
     }
 
@@ -108,6 +119,7 @@ public:
     template<class T2>
     inline Ref<T> operator<<(T2 x) {
         CC_ASSERT2(a_, "Null reference on shift left");
+        Policy::detach(this);
         *a_ << x;
         return *this;
     }
@@ -115,12 +127,16 @@ public:
     template<class T2>
     inline Ref<T> operator>>(T2 &x) {
         CC_ASSERT2(a_, "Null reference on shift right");
+        Policy::detach(this);
         *a_ >> x;
         return *this;
     }
 
 protected:
+    typedef RefPolicy<T> Policy;
+
     template<class T2> friend class Ref;
+    friend class RefPolicy<T>;
     friend class Object;
     friend class Variant;
 
