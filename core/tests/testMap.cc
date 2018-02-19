@@ -39,7 +39,9 @@ class InsertionIteration: public TestCase
         const int testCount = sizeof(test) / sizeof(test[0]);
         for (int i = 0; i < testCount; ++i)
             names->insert(test[i][0], test[i][1]);
+        #ifndef NDEBUG
         CC_VERIFY(MapTester::test<StringMap>(names));
+        #endif
         for (int i = 0; i < names->count(); ++i)
             fout("%% %%\n") << names->keyAt(i) << names->valueAt(i);
         for (int i = 0; i < testCount; ++i)
@@ -60,7 +62,9 @@ class InsertionRemoval: public TestCase
                 int key = random->get();
                 int value = random->get();
                 map->insert(key, value);
+                #ifndef NDEBUG
                 CC_VERIFY(MapTester::test<IntMap>(map));
+                #endif
             }
         }
         {
@@ -76,7 +80,9 @@ class InsertionRemoval: public TestCase
             for (int i = 0; i < n; ++i) {
                 int j = random->get(0, map->count() - 1);
                 map->remove(map->keyAt(j));
+                #ifndef NDEBUG
                 CC_VERIFY(MapTester::test<IntMap>(map));
+                #endif
             }
         }
     }
