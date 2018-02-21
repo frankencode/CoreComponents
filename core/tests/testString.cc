@@ -102,19 +102,21 @@ class CopyOnWriteTest: public TestCase
 {
     void run()
     {
-        String s = "Arbakadabra";
+        String s = "arbakadabra";
         String s2 = s;
+        CC_INSPECT((void *)static_cast<const ByteArray *>(s ));
+        CC_INSPECT((void *)static_cast<const ByteArray *>(s2));
         CC_INSPECT(s);
         CC_INSPECT(s2);
         CC_INSPECT(s->refCount());
         CC_INSPECT(s2->refCount());
-        CC_VERIFY(&*s == &*s2);
-        s2 += " simsalabim, ...";
+        s2->at(0) = 'A';
+        CC_INSPECT((void *)static_cast<const ByteArray *>(s ));
+        CC_INSPECT((void *)static_cast<const ByteArray *>(s2));
         CC_INSPECT(s);
         CC_INSPECT(s2);
         CC_INSPECT(s->refCount());
         CC_INSPECT(s2->refCount());
-        CC_VERIFY(&*s != &*s2);
     }
 };
 
