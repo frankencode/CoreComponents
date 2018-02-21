@@ -41,7 +41,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
     ByteArray *data = data_;
     ArchiveEntry *entry = *nextEntry;
 
-    if (source_->readSpan(data->count(), data) < data->count()) return false;
+    if (source_->readSpan(data) < data->count()) return false;
     i_ += data->count();
 
     bool eoi = true;
@@ -90,7 +90,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
                     longPath->truncate(longPath->count() - 1);
                 if (entry->type_ == 'K') entry->linkPath_ = longPath;
                 else if (entry->type_ == 'L') entry->path_ = longPath;
-                if (source_->readSpan(data->count(), data) < data->count())
+                if (source_->readSpan(data) < data->count())
                     throw BrokenArchive(i_, "Expected GNU @LongLink header");
                 i_ += data->count();
                 entry->type_ = data->at(156);

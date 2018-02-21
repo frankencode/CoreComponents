@@ -32,7 +32,7 @@ public:
         int n = data->count() - random_->get(0, data->count() / 2);
         if (n > transmissionLeft_) n = transmissionLeft_;
         transmissionLeft_ -= n;
-        return randomSource_->readSpan(n, data);
+        return randomSource_->readSpan(data->select(0, n));
     }
 
     int transmissionSize() const { return transmissionSize_; }

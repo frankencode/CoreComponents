@@ -83,7 +83,7 @@ String ByteArray::join(const StringList *parts, const char *sep, int sepSize)
     String result(size);
     char *p = result->data_;
     for (int i = 0; i < parts->count(); ++i) {
-        ByteArray *part = parts->at(i);
+        const ByteArray *part = parts->at(i);
         memcpy(p, part->data_, part->size_);
         p += part->size_;
         if (i + 1 < parts->count()) {
@@ -656,7 +656,7 @@ void ByteArray::checkUtf8() const
     for (uchar_t ch = 0; source->read(&ch););
 }
 
-String ByteArray::fromUtf16(const String &utf16, Endian endian)
+String ByteArray::fromUtf16(const ByteArray *utf16, Endian endian)
 {
     if (utf16->count() == 0) return ByteArray::create();
 

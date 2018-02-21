@@ -40,7 +40,7 @@ public:
     virtual void write(const StringList *parts);
 
     /// Convenience wrapper
-    inline void write(const String &data) { write(data.get()); }
+    inline void write(const String &data) { write(static_cast<const ByteArray *>(data)); }
 
     /// Convenience wrapper
     inline void write(const char *data) { write(String(data)); }
@@ -70,11 +70,10 @@ public:
     inline void drain() { transferSpanTo(-1, 0); }
 
     /** Read a span of bytes
-      * \param count number of bytes to read (or -1 for all)
       * \param data target buffer
       * \return number of bytes read
       */
-    int readSpan(int count, ByteArray *data);
+    int readSpan(ByteArray *data);
 
     /** Read a fixed number of bytes (N)
       * \param count number of bytes to read (N)

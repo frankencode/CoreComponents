@@ -54,7 +54,7 @@ inline uint32_t crc32(const char *s) {
 
 inline uint32_t crc32(String s) {
     Crc32Sink crc;
-    if (s) crc.feed(s->bytes(), s->count());
+    crc.feed(s->bytes(), s->count());
     return crc.sum();
 }
 

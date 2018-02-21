@@ -24,7 +24,7 @@ public:
       * \param buffer input buffer
       * \return new object instance
       */
-    static Ref<LineSource> open(ByteArray *buffer);
+    static Ref<LineSource> open(const ByteArray *buffer);
 
     /** Open a new line source feed from an input stream
       * \param stream input stream
@@ -37,7 +37,7 @@ public:
     inline Stream *stream() const { return stream_; }
 
     /// Input buffer used to cache input data
-    inline ByteArray *buffer() const { return buffer_; }
+    inline const ByteArray *buffer() { return buffer_; }
 
     /** Read next line
       * \param line returns the next line (if not end of input)

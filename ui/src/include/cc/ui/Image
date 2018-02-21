@@ -49,7 +49,7 @@ public:
       */
     void normalize();
 
-    inline ByteArray *data() const { return data_; }
+    inline const ByteArray *data() const { return data_; }
     inline int pitch() const { return size_->w() * sizeof(Color); }
 
 private:

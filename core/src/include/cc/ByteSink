@@ -92,7 +92,7 @@ public:
     inline Stream *sink() const { return sink_; }
 
     /// The output buffer
-    inline ByteArray *buffer() const { return buffer_; }
+    inline const ByteArray *buffer() const { return buffer_; }
 
     /// Current endianess for encoding multi-byte words
     inline Endian endian() const { return endian_; }

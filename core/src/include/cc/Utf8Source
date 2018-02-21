@@ -33,8 +33,8 @@ public:
       * \param buffer input buffer
       * \return new object instance
       */
-    inline static Ref<Utf8Source> open(ByteArray *buffer) {
-        return new Utf8Source(0, buffer);
+    inline static Ref<Utf8Source> open(const ByteArray *buffer) {
+        return new Utf8Source(buffer);
     }
 
     /** Read the next %Unicode character
@@ -58,6 +58,10 @@ public:
 private:
     Utf8Source(Stream *stream, ByteArray *buffer):
         byteSource_(ByteSource::open(stream, buffer))
+    {}
+
+    Utf8Source(const ByteArray *buffer):
+        byteSource_(ByteSource::open(buffer))
     {}
 
     uchar_t readMultiByte(uchar_t ch);

@@ -10,8 +10,8 @@
 
 namespace cc {
 
-Ref<LineSource> LineSource::open(ByteArray *buffer) {
-    return new LineSource(0, buffer);
+Ref<LineSource> LineSource::open(const ByteArray *buffer) {
+    return new LineSource(0, const_cast<ByteArray *>(buffer));
 }
 
 Ref<LineSource> LineSource::open(Stream *stream, ByteArray *buffer) {

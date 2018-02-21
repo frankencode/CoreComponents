@@ -101,7 +101,7 @@ public:
     inline Stream *source() const { return source_; }
 
     /// The output buffer
-    inline ByteArray *buffer() const { return buffer_; }
+    inline const ByteArray *buffer() const { return buffer_; }
 
     /// Current endianess for decoding multi-byte words
     inline Endian endian() const { return endian_; }

@@ -115,8 +115,8 @@ void SystemStream::write(const StringList *parts)
     IoVector *iov = guard.iov_;
 
     for (int i = 0; i < n; ++i) {
-        ByteArray *part = parts->at(i);
-        iov[i].iov_base = part->bytes();
+        const ByteArray *part = parts->at(i);
+        iov[i].iov_base = (void *)part->bytes();
         iov[i].iov_len = part->count();
     }
 

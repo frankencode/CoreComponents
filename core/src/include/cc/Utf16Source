@@ -40,8 +40,8 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    inline static Ref<Utf16Source> open(ByteArray *buffer, Endian endian = BigEndian) {
-        return new Utf16Source(0, buffer, endian);
+    inline static Ref<Utf16Source> open(const ByteArray *buffer, Endian endian = BigEndian) {
+        return new Utf16Source(buffer, endian);
     }
 
     /** Read the next %Unicode character
@@ -75,6 +75,11 @@ public:
 private:
     Utf16Source(Stream *stream, ByteArray *buffer, Endian endian):
         byteSource_(ByteSource::open(stream, buffer, endian)),
+        firstTime_(true)
+    {}
+
+    Utf16Source(const ByteArray *buffer, Endian endian):
+        byteSource_(ByteSource::open(buffer, endian)),
         firstTime_(true)
     {}
 

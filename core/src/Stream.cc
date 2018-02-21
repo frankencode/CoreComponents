@@ -75,9 +75,9 @@ off_t Stream::transferSpanTo(off_t count, Stream *sink, ByteArray *buffer)
     return total;
 }
 
-int Stream::readSpan(int count, ByteArray *data)
+int Stream::readSpan(ByteArray *data)
 {
-    const int w = count;
+    const int w = data->count();
     int m = 0;
     while (m < w) {
         int n = read(data->select(m, w));
@@ -92,7 +92,7 @@ String Stream::readSpan(int count)
     if (count == 0) return String();
     if (count < 0) return readAll();
     String s(count);
-    readSpan(count, s);
+    readSpan(s);
     return s;
 }
 

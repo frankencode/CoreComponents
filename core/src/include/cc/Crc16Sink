@@ -54,7 +54,7 @@ inline uint16_t crc16(const char *s) {
 
 inline uint16_t crc16(String s) {
     Crc16Sink crc;
-    if (s) crc.feed(s->bytes(), s->count());
+    crc.feed(s->bytes(), s->count());
     return crc.sum();
 }
 
