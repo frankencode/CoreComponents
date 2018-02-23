@@ -1,0 +1,73 @@
+/*
+ * Copyright (C) 2007-2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Ref>
+
+namespace cc {
+
+template<class T>
+inline static T *detach(Ref<T> *x)
+{
+#ifndef NDEBUG
+    if (!x || !*x) return nullptr;
+#endif
+    if ((*x)->refCount() > 1) *x = (*x)->copy();
+    return *x;
+}
+
+template<class T>
+inline static T *detach(Ref<const T> *x)
+{
+#ifndef NDEBUG
+    if (!x || !*x) return nullptr;
+#endif
+    if ((*x)->refCount() > 1) *x = (*x)->copy();
+    return const_cast<T *>(static_cast<const T *>(*x));
+}
+
+template<class T>
+class Mutator
+{
+public:
+    explicit Mutator(Ref<T> *x):
+        x_(detach(x))
+    {}
+
+    inline operator T *() { return x_; }
+    inline T &operator*() { return *x_; }
+    inline T *operator->() { return x_; }
+
+private:
+    T *x_;
+};
+
+template<class T>
+class Mutator<const T>
+{
+public:
+    explicit Mutator(Ref<const T> *x):
+        x_(detach(x))
+    {}
+
+    inline operator T *() { return x_; }
+    inline T &operator*() { return *x_; }
+    inline T *operator->() { return x_; }
+
+private:
+    T *x_;
+};
+
+template<class T>
+inline Mutator<T> mutate(Ref<T> &x) { return Mutator<T>(&x); }
+
+template<class T>
+inline Mutator<T> mutate(Ref<const T> &x) { return Mutator<const T>(&x); }
+
+} // namespace cc

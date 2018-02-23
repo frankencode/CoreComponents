@@ -113,8 +113,7 @@ public:
         return a_;
     }
 
-    /// helper method to support implicit deep copies of object lists
-    inline static Ref copy(const Ref &ref) { return T::copy(ref.a_); }
+    inline static Ref copy(const Ref &x) { return T::copy(x.a_); }
 
     template<class T2>
     inline Ref<T> operator<<(T2 x) {
