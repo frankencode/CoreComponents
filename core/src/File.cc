@@ -214,9 +214,9 @@ void File::symlink(String path, String newPath)
 
 String File::readlink(String path)
 {
-    String buf = String(128);
+    String buf(128);
     while (true) {
-        ssize_t numBytes = ::readlink(path, buf, buf->count());
+        ssize_t numBytes = ::readlink(path, mutate(buf), buf->count());
         if (numBytes == -1)
             return String();
         if (numBytes <= buf->count()) {

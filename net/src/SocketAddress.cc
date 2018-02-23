@@ -241,8 +241,8 @@ Ref<SocketAddressList> SocketAddress::resolve(String hostName, String serviceNam
 
     int ret;
     {
-        char *n = 0;
-        char *s = 0;
+        const char *n = 0;
+        const char *s = 0;
         if ((hint.ai_flags & AI_PASSIVE) == 0) n = hostName;
         if (serviceName != "") s = serviceName;
         ret = getaddrinfo(n, s, &hint, &head);
