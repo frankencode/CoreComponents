@@ -57,9 +57,6 @@ public:
     template<typename T, typename... Args>
     inline static Ref<T> create(Args... args) { return new T(args...); }
 
-    // template<typename T>
-    // inline static Ref<T> copy(const T *b) { return new T(*b); } // TODO: think about letting Ref use this to copy objects
-
 protected:
     class StackGuard {
     public:

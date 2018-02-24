@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <type_traits>
 #include <cc/types>
 
 namespace cc {
@@ -19,10 +20,13 @@ template<class T>
 class Ref;
 
 template<class T>
-class RefPolicy {
-public:
-    inline static void detach(Ref<T> *ref) {}
-};
+Ref<T> detach(Ref<const T> &x);
+
+template<class T>
+Ref<T> mutate(Ref<const T> &&x);
+
+template<class T>
+T *mutate(const Ref<const T> &x);
 
 /** \class Ref Ref.h cc/Object
   * \ingroup mman
@@ -87,7 +91,6 @@ public:
 
     inline T &operator*() {
         CC_ASSERT2(a_, "Null reference accessed");
-        Policy::detach(this);
         return *a_;
     }
 
@@ -98,7 +101,6 @@ public:
 
     inline T *operator->() {
         CC_ASSERT2(a_, "Null reference accessed");
-        Policy::detach(this);
         return a_;
     }
 
@@ -112,7 +114,6 @@ public:
     template<class T2>
     inline Ref<T> operator<<(T2 x) {
         CC_ASSERT2(a_, "Null reference on shift left");
-        Policy::detach(this);
         *a_ << x;
         return *this;
     }
@@ -120,16 +121,21 @@ public:
     template<class T2>
     inline Ref<T> operator>>(T2 &x) {
         CC_ASSERT2(a_, "Null reference on shift right");
-        Policy::detach(this);
         *a_ >> x;
         return *this;
     }
 
 protected:
-    typedef RefPolicy<T> Policy;
+    template<class T2>
+    friend Ref<T2> detach(Ref<const T2> &x);
+
+    template<class T2>
+    friend Ref<T2> mutate(Ref<const T2> &&x);
+
+    template<class T2>
+    friend T2 *mutate(const Ref<const T2> &x);
 
     template<class T2> friend class Ref;
-    friend class RefPolicy<T>;
     friend class Object;
     friend class Variant;
 
@@ -146,14 +152,31 @@ protected:
 
 private:
     template<class U, class V>
-    inline static U *cast(V *p) { return CastHelper<V, U, ConversionFromTo<V*, U*>::Exists>::cast(p); }
-
-    template<class T2> Ref(const T2 *b); // : a_(0) { set(T::copy(cast<const T>(b))); }
-    template<class T2> inline const Ref &operator=(const T2 *b); // { set(T::copy(cast<const T>(b))); return *this; }
+    inline static U *cast(V *p) {
+        static_assert(!(std::is_const<V>::value && !std::is_const<U>::value), "Cannot cast away constness, consider copy()");
+        return CastHelper<V, U, ConversionFromTo<V*, U*>::Exists>::cast(p);
+    }
 
     T *a_;
 };
 
 template<class T> class DerefPointerType< Ref<T> > { public: typedef T DerefType; };
+
+template<class T>
+inline Ref<T> detach(Ref<const T> &x)
+{
+    if (!x) return x;
+    if (x->refCount() > 1) return x->copy();
+    return x.get();
+}
+
+template<class T>
+inline Ref<T> mutate(Ref<const T> &&x) { return x.get(); }
+
+template<class T>
+inline T *mutate(const T *x) { const_cast<T*>(x); }
+
+template<class T>
+inline T *mutate(const Ref<const T> &x) { return x.get(); }
 
 } // namespace cc
