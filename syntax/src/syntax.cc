@@ -12,7 +12,7 @@
 namespace cc {
 namespace syntax {
 
-int RuleNode::matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
+int RuleNode::matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
 {
     Ref<Token> token = state->produceToken(scope_->id(), id_, scope_->name(), name_);
     if (parentToken)
@@ -31,7 +31,7 @@ int RuleNode::matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState 
     return i;
 }
 
-int InvokeNode::matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
+int InvokeNode::matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const
 {
     int i0 = i;
     Token *lastChildSaved = parentToken->lastChild();
@@ -111,7 +111,7 @@ void DefinitionNode::LINK()
     LinkNode::rule_ = ruleByName(LinkNode::ruleName_);
 }
 
-Ref<SyntaxState> DefinitionNode::find(ByteArray *text, int i, TokenFactory *tokenFactory) const
+Ref<SyntaxState> DefinitionNode::find(const ByteArray *text, int i, TokenFactory *tokenFactory) const
 {
     Ref<SyntaxState> state = createState(tokenFactory);
     while (text->has(i)) {
@@ -123,7 +123,7 @@ Ref<SyntaxState> DefinitionNode::find(ByteArray *text, int i, TokenFactory *toke
     return state;
 }
 
-Ref<SyntaxState> DefinitionNode::match(ByteArray *text, int i, TokenFactory *tokenFactory) const
+Ref<SyntaxState> DefinitionNode::match(const ByteArray *text, int i, TokenFactory *tokenFactory) const
 {
     Ref<SyntaxState> state = createState(tokenFactory);
     int h = i < 0 ? 0 : i;
@@ -155,13 +155,13 @@ const DefinitionNode *DefinitionNode::resolveScope(const char *&name) const
     return scope;
 }
 
-int DefinitionNode::syntaxError(ByteArray *text, int index, SyntaxState *state) const
+int DefinitionNode::syntaxError(const ByteArray *text, int index, SyntaxState *state) const
 {
     CC_DEBUG_ERROR("Unhandled syntax error");
     return -1;
 }
 
-int DefinitionNode::errorCallBack(Object *self, ByteArray *text, int index, Token *parentToken, SyntaxState *state)
+int DefinitionNode::errorCallBack(Object *self, const ByteArray *text, int index, Token *parentToken, SyntaxState *state)
 {
     DefinitionNode *definition = Object::cast<DefinitionNode *>(self);
     return definition->syntaxError(text, index, state);

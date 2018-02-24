@@ -87,7 +87,7 @@ public:
     inline operator const ByteArray *() { return get(); }
     /*inline const ByteArray &operator*() { return *get(); }*/
 
-    // operator char *();
+    operator char *();
     inline operator ByteArray *() { return get(); }
     inline ByteArray &operator*() { return *get(); }
     inline ByteArray *operator->() { return get(); }
@@ -996,7 +996,7 @@ inline const Ref<ByteArray> &Ref<ByteArray>::operator=(const char *b)
 
 inline Ref<ByteArray>::operator const char *() const { return get()->chars(); }
 inline Ref<ByteArray>::operator const char *() { return get()->chars(); }
-// inline Ref<ByteArray>::operator char *() { return get()->chars(); }
+inline Ref<ByteArray>::operator char *() { return get()->chars(); }
 
 inline Ref<StringList> operator+(const String &a, const String &b) { return StringList::create() << a << b; }
 inline Ref<StringList> operator+(Ref<StringList> &a, const String &b) { return a << b; }
@@ -1036,39 +1036,5 @@ inline Ref<ByteArray>::operator QUrl() const
     return QUrl::fromLocalFile(QString::fromUtf8(get()->chars(), get()->count()));
 }
 #endif
-
-template<>
-class Mutator<ByteArray>
-{
-public:
-    Mutator(Ref<ByteArray> *a):
-        a_(detach(a))
-    {}
-
-    operator char *() { return a_->chars(); }
-    inline operator ByteArray *() { return a_; }
-    inline ByteArray &operator*() { return *a_; }
-    inline ByteArray *operator->() { return a_; }
-
-private:
-    ByteArray *a_;
-};
-
-template<>
-class Mutator<const ByteArray>
-{
-public:
-    Mutator(Ref<const ByteArray> *a):
-        a_(detach(a))
-    {}
-
-    operator char *() { return a_->chars(); }
-    inline operator ByteArray *() { return a_; }
-    inline ByteArray &operator*() { return *a_; }
-    inline ByteArray *operator->() { return a_; }
-
-private:
-    ByteArray *a_;
-};
 
 } // namespace cc

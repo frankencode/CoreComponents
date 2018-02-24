@@ -22,11 +22,11 @@ public:
         return new StringTrap;
     }
 
-    inline const char *capture(ByteArray *s) const {
+    inline const char *capture(const ByteArray *s) const {
         return capture(s->chars(), s->count());
     }
 
-    inline const char *capture(ByteArray *s, int i0, int i1) const {
+    inline const char *capture(const ByteArray *s, int i0, int i1) const {
         CC_ASSERT((0 <= i0) && (i0 < s->count()));
         CC_ASSERT((0 <= i1) && (i1 <= s->count()));
         CC_ASSERT(i0 <= i1);

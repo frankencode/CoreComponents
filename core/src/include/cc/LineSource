@@ -37,7 +37,7 @@ public:
     inline Stream *stream() const { return stream_; }
 
     /// Input buffer used to cache input data
-    inline const ByteArray *buffer() { return buffer_; }
+    inline const ByteArray *buffer() const { return buffer_; }
 
     /** Read next line
       * \param line returns the next line (if not end of input)
@@ -56,8 +56,8 @@ public:
 private:
     LineSource(Stream *stream, ByteArray *buffer);
 
-    int findEol(ByteArray *buffer, int n, int i) const;
-    int skipEol(ByteArray *buffer, int n, int i) const;
+    static int findEol(const ByteArray *buffer, int n, int i);
+    static int skipEol(const ByteArray *buffer, int n, int i);
 
     Ref<Stream> stream_;
     Ref<ByteArray> buffer_;

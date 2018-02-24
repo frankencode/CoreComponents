@@ -216,7 +216,7 @@ String File::readlink(String path)
 {
     String buf(128);
     while (true) {
-        ssize_t numBytes = ::readlink(path, mutate(buf), buf->count());
+        ssize_t numBytes = ::readlink(path, buf, buf->count());
         if (numBytes == -1)
             return String();
         if (numBytes <= buf->count()) {

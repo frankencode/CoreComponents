@@ -26,7 +26,7 @@ public:
         }
     }
 
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const = 0;
+    virtual int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const = 0;
 
     virtual SyntaxNode *succ(SyntaxNode *node) const { return nullptr; }
     virtual int matchLength() const { return -1; }

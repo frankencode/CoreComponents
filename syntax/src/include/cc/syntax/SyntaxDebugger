@@ -17,15 +17,15 @@ namespace syntax {
 
 class SyntaxDebugNode: public SyntaxNode {
 public:
-    virtual int matchNext(ByteArray *text, int i, Token *parentToken, SyntaxState *state) const {
+    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override {
         return entry()->matchNext(text, i, parentToken, state);
     }
 
-    virtual SyntaxNode *succ(SyntaxNode *node) const {
+    SyntaxNode *succ(SyntaxNode *node) const override {
         return SyntaxNode::parent() ? SyntaxNode::parent()->succ(SyntaxNode::self()) : nullptr;
     }
 
-    virtual int matchLength() const {
+    int matchLength() const override {
         return entry() ? entry()->matchLength() : -1;
     }
 

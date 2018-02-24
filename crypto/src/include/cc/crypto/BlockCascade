@@ -26,13 +26,13 @@ public:
       * \param iv initialization vector
       * \return new object instance
       */
-    static Ref<BlockCascade> create(BlockCipher *cipher, ByteArray *iv = 0);
+    static Ref<BlockCascade> create(BlockCipher *cipher, const ByteArray *iv = 0);
 
     void encode(const ByteArray *c, ByteArray *p) override;
     void decode(const ByteArray *p, ByteArray *c) override;
 
 private:
-    BlockCascade(BlockCipher *cipher, ByteArray *iv);
+    BlockCascade(BlockCipher *cipher, const ByteArray *iv);
 
     Ref<BlockCipher> cipher_;
     Ref<ByteArray> s_;

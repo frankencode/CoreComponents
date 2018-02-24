@@ -20,25 +20,25 @@ class AbnfCompiler: public AbnfSyntax
 {
 public:
     inline static Ref<AbnfCompiler> create() { return new AbnfCompiler; }
-    Ref<SyntaxDefinition> compile(ByteArray *text, SyntaxDebugger *debugger = 0);
+    Ref<SyntaxDefinition> compile(const ByteArray *text, SyntaxDebugger *debugger = 0);
 
 private:
-    const char *str(ByteArray *text, Token *token);
+    const char *str(const ByteArray *text, Token *token);
     Ref<StringTrap> trap_;
 
     AbnfCompiler();
     SyntaxNode *ignoreDebug(SyntaxNode *node);
 
-    void compileRuleList(ByteArray *text, Token *ruleList, SyntaxDefinition *definition);
-    void compileEntry(ByteArray *text, Token *ruleList, SyntaxDefinition *definition);
-    NODE compileAlternation(ByteArray *text, Token *alternation, SyntaxDefinition *definition);
-    NODE compileConcatenation(ByteArray *text, Token *concatenation, SyntaxDefinition *definition);
-    NODE compileRepetition(ByteArray *text, Token *repetition, SyntaxDefinition *definition);
-    NODE compileOption(ByteArray *text, Token *option, SyntaxDefinition *definition);
-    NODE compileElement(ByteArray *text, Token *element, SyntaxDefinition *definition);
-    NODE compileNumVal(ByteArray *text, Token *numVal, SyntaxDefinition *definition);
-    NODE compileCharVal(ByteArray *text, Token *charVal, SyntaxDefinition *definition);
-    NODE compileProseVal(ByteArray *text, Token *proseVal, SyntaxDefinition *definition);
+    void compileRuleList(const ByteArray *text, Token *ruleList, SyntaxDefinition *definition);
+    void compileEntry(const ByteArray *text, Token *ruleList, SyntaxDefinition *definition);
+    NODE compileAlternation(const ByteArray *text, Token *alternation, SyntaxDefinition *definition);
+    NODE compileConcatenation(const ByteArray *text, Token *concatenation, SyntaxDefinition *definition);
+    NODE compileRepetition(const ByteArray *text, Token *repetition, SyntaxDefinition *definition);
+    NODE compileOption(const ByteArray *text, Token *option, SyntaxDefinition *definition);
+    NODE compileElement(const ByteArray *text, Token *element, SyntaxDefinition *definition);
+    NODE compileNumVal(const ByteArray *text, Token *numVal, SyntaxDefinition *definition);
+    NODE compileCharVal(const ByteArray *text, Token *charVal, SyntaxDefinition *definition);
+    NODE compileProseVal(const ByteArray *text, Token *proseVal, SyntaxDefinition *definition);
 
     NODE optimizeChoice(SyntaxNode *choice, SyntaxDefinition *definition);
     void deepOptimizeChoice(SyntaxNode *node, SyntaxDefinition *definition);

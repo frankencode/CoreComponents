@@ -45,9 +45,9 @@ private:
 
 typedef List< Ref<Match> > Matches;
 
-Ref<Matches> findMatches(ByteArray *text, SyntaxDefinition *textPattern);
-void displayMatch(ByteArray *path, ByteArray *text, Match *match);
-String replaceMatches(ByteArray *text, Matches *matches, ByteArray *replacement);
+Ref<Matches> findMatches(const ByteArray *text, SyntaxDefinition *textPattern);
+void displayMatch(const ByteArray *path, const ByteArray *text, const Match *match);
+String replaceMatches(const ByteArray *text, Matches *matches, const ByteArray *replacement);
 
 int main(int argc, char **argv)
 {
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-Ref<Matches> findMatches(ByteArray *text, SyntaxDefinition *textPattern)
+Ref<Matches> findMatches(const ByteArray *text, SyntaxDefinition *textPattern)
 {
     Ref<Matches> matches = Matches::create();
     int ln = 1;
@@ -220,7 +220,7 @@ Ref<Matches> findMatches(ByteArray *text, SyntaxDefinition *textPattern)
     return matches;
 }
 
-void displayMatch(ByteArray *path, ByteArray *text, Match *match)
+void displayMatch(const ByteArray *path, const ByteArray *text, const Match *match)
 {
     int ln = match->ln();
     int i0 = match->i0();
@@ -257,7 +257,7 @@ void displayMatch(ByteArray *path, ByteArray *text, Match *match)
     }
 }
 
-String replaceMatches(ByteArray *text, Matches *matches, ByteArray *replacement)
+String replaceMatches(const ByteArray *text, Matches *matches, const ByteArray *replacement)
 {
     Ref<StringList> fragments = StringList::create();
     int fi0 = 0; // begin of fragment

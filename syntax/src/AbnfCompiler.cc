@@ -19,7 +19,7 @@ AbnfCompiler::AbnfCompiler():
     trap_(StringTrap::create())
 {}
 
-Ref<AbnfCompiler::SyntaxDefinition> AbnfCompiler::compile(ByteArray *text, SyntaxDebugger *debugger)
+Ref<AbnfCompiler::SyntaxDefinition> AbnfCompiler::compile(const ByteArray *text, SyntaxDebugger *debugger)
 {
     Ref<Token> ruleList = AbnfSyntax::match(text)->rootToken();
     CC_ASSERT(ruleList);
@@ -35,7 +35,7 @@ Ref<AbnfCompiler::SyntaxDefinition> AbnfCompiler::compile(ByteArray *text, Synta
     return definition;
 }
 
-const char *AbnfCompiler::str(ByteArray *text, Token *token)
+const char *AbnfCompiler::str(const ByteArray *text, Token *token)
 {
     return trap_->capture(text, token->i0(), token->i1());
 }
@@ -46,7 +46,7 @@ SyntaxNode *AbnfCompiler::ignoreDebug(SyntaxNode *node)
     return (debugNode) ? debugNode->entry() : node;
 }
 
-void AbnfCompiler::compileRuleList(ByteArray *text, Token *ruleList, SyntaxDefinition *definition)
+void AbnfCompiler::compileRuleList(const ByteArray *text, Token *ruleList, SyntaxDefinition *definition)
 {
     CC_ASSERT(ruleList->rule() == AbnfSyntax::rulelist_);
 
@@ -73,7 +73,7 @@ void AbnfCompiler::compileRuleList(ByteArray *text, Token *ruleList, SyntaxDefin
     }
 }
 
-void AbnfCompiler::compileEntry(ByteArray *text, Token *ruleList, SyntaxDefinition *definition)
+void AbnfCompiler::compileEntry(const ByteArray *text, Token *ruleList, SyntaxDefinition *definition)
 {
     Token *rule = ruleList->firstChild();
     CC_ASSERT(rule);
@@ -84,7 +84,7 @@ void AbnfCompiler::compileEntry(ByteArray *text, Token *ruleList, SyntaxDefiniti
     definition->ENTRY(str(text, ruleName));
 }
 
-NODE AbnfCompiler::compileAlternation(ByteArray *text, Token *alternation, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileAlternation(const ByteArray *text, Token *alternation, SyntaxDefinition *definition)
 {
     CC_ASSERT(alternation->rule() == AbnfSyntax::alternation_);
     if (alternation->firstChild() == alternation->lastChild())
@@ -98,7 +98,7 @@ NODE AbnfCompiler::compileAlternation(ByteArray *text, Token *alternation, Synta
     return optimizeChoice(node, definition);
 }
 
-NODE AbnfCompiler::compileConcatenation(ByteArray *text, Token *concatenation, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileConcatenation(const ByteArray *text, Token *concatenation, SyntaxDefinition *definition)
 {
     CC_ASSERT(concatenation->rule() == AbnfSyntax::concatenation_);
     if (concatenation->firstChild() == concatenation->lastChild())
@@ -112,7 +112,7 @@ NODE AbnfCompiler::compileConcatenation(ByteArray *text, Token *concatenation, S
     return node;
 }
 
-NODE AbnfCompiler::compileRepetition(ByteArray *text, Token *repetition, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileRepetition(const ByteArray *text, Token *repetition, SyntaxDefinition *definition)
 {
     NODE node = 0;
     Token *token = repetition->firstChild();
@@ -148,7 +148,7 @@ NODE AbnfCompiler::compileRepetition(ByteArray *text, Token *repetition, SyntaxD
     return node;
 }
 
-NODE AbnfCompiler::compileOption(ByteArray *text, Token *option, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileOption(const ByteArray *text, Token *option, SyntaxDefinition *definition)
 {
     CC_ASSERT(option->rule() == AbnfSyntax::option_);
     Token *alternation = option->firstChild();
@@ -156,7 +156,7 @@ NODE AbnfCompiler::compileOption(ByteArray *text, Token *option, SyntaxDefinitio
     return definition->REPEAT(0, 1, compileAlternation(text, alternation, definition));
 }
 
-NODE AbnfCompiler::compileElement(ByteArray *text, Token *element, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileElement(const ByteArray *text, Token *element, SyntaxDefinition *definition)
 {
     NODE node = 0;
     CC_ASSERT(element->rule() == AbnfSyntax::element_);
@@ -182,7 +182,7 @@ NODE AbnfCompiler::compileElement(ByteArray *text, Token *element, SyntaxDefinit
     return node;
 }
 
-NODE AbnfCompiler::compileNumVal(ByteArray *text, Token *numVal, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileNumVal(const ByteArray *text, Token *numVal, SyntaxDefinition *definition)
 {
     NODE node = 0;
 
@@ -240,7 +240,7 @@ NODE AbnfCompiler::compileNumVal(ByteArray *text, Token *numVal, SyntaxDefinitio
     return node;
 }
 
-NODE AbnfCompiler::compileCharVal(ByteArray *text, Token *charVal, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileCharVal(const ByteArray *text, Token *charVal, SyntaxDefinition *definition)
 {
     return
         (charVal->i1() - charVal->i0() - 2 > 1) ?
@@ -248,7 +248,7 @@ NODE AbnfCompiler::compileCharVal(ByteArray *text, Token *charVal, SyntaxDefinit
             definition->CHAR(text->at(charVal->i0() + 1));
 }
 
-NODE AbnfCompiler::compileProseVal(ByteArray *text, Token *proseVal, SyntaxDefinition *definition)
+NODE AbnfCompiler::compileProseVal(const ByteArray *text, Token *proseVal, SyntaxDefinition *definition)
 {
     return compileCharVal(text, proseVal, definition);
 }

@@ -24,7 +24,7 @@ LineSource::LineSource(Stream *stream, ByteArray *buffer):
     eoi_(false),
     i_(0), n_(0)
 {
-    if (!buffer) buffer_ = ByteArray::allocate(0x1000);
+    if (!buffer_) buffer_ = ByteArray::allocate(0x1000);
 }
 
 bool LineSource::read(String *line)
@@ -85,7 +85,7 @@ String LineSource::pendingData() const
     return buffer_->copy(i_, n_);
 }
 
-int LineSource::findEol(ByteArray *buffer, int n, int i) const
+int LineSource::findEol(const ByteArray *buffer, int n, int i)
 {
     for (; i < n; ++i) {
         char ch = buffer->at(i);
@@ -95,7 +95,7 @@ int LineSource::findEol(ByteArray *buffer, int n, int i) const
     return i;
 }
 
-int LineSource::skipEol(ByteArray *buffer, int n, int i) const
+int LineSource::skipEol(const ByteArray *buffer, int n, int i)
 {
     if (i < n) if (buffer->at(i) == '\r') ++i;
     if (i < n) if (buffer->at(i) == '\n') ++i;

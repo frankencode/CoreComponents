@@ -189,7 +189,7 @@ inline void invMixColumns(ByteArray *s_)
     }
 }
 
-inline void addRoundKey(ByteArray *s, ByteArray *w, int r)
+inline void addRoundKey(ByteArray *s, const ByteArray *w, int r)
 {
     for (int c = 0; c < 4; ++c)
         s->wordAt(c) ^= w->wordAt(r * Nb + c);

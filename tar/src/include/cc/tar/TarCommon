@@ -13,7 +13,7 @@
 namespace cc {
 namespace tar {
 
-unsigned tarHeaderSum(ByteArray *data);
+unsigned tarHeaderSum(const ByteArray *data);
 
 }} // namespace cc::tar
 

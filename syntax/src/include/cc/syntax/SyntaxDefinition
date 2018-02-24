@@ -157,7 +157,7 @@ public:
     NODE PREVIOUS(const char *ruleName, const char *keyword = 0);
     NODE CONTEXT(const char *ruleName, NODE inContext = 0, NODE outOfContext = 0);
 
-    typedef int (*CallBack) (Object *self, ByteArray *text, int i, Token *parentToken, SyntaxState *state);
+    typedef int (*CallBack) (Object *self, const ByteArray *text, int i, Token *parentToken, SyntaxState *state);
 
     NODE CALL(CallBack callBack, Object *self = 0);
     NODE ERROR();
