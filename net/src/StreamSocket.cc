@@ -58,7 +58,7 @@ StreamSocket::StreamSocket(int fd):
 {}
 
 StreamSocket::StreamSocket(const SocketAddress *address):
-    address_(address),
+    address_(address->copy()),
     connected_(false)
 {}
 

@@ -54,8 +54,6 @@ bool TestSuite::init(int argc, char **argv)
         arguments->validate(options);
         arguments->override(options);
 
-        Ref<StringList> items = arguments->items();
-
         String reportType = options->value("report");
         if (reportType == "txt")
             report_ = TxtTestReport::create();

@@ -71,7 +71,7 @@ int main(int argc, char **argv)
         arguments->validate(options);
         arguments->override(options);
 
-        Ref<StringList> items = arguments->items();
+        Ref<const StringList> items = arguments->items();
 
         RegExp pathPattern = options->value("path");
         RegExp namePattern = options->value("name");
@@ -99,15 +99,17 @@ int main(int argc, char **argv)
             replacement = "";
         }
 
-        if (items->count() == 0) items->append(".");
+        if (items->count() == 0) items = StringList::create() << ".";
 
-        for (int i = 0; i < items->count(); ++i) {
-            String dirPath = items->at(i)->canonicalPath();
+        for (String dirPath: items)
+        {
+            dirPath = dirPath->canonicalPath();
             Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
             dirWalker->setMaxDepth(maxDepth);
             dirWalker->setIgnoreHidden(ignoreHidden);
-            String path;
-            while (dirWalker->read(&path)) {
+
+            for (String path; dirWalker->read(&path);)
+            {
                 if (pathPattern != "") {
                     if (!pathPattern->match(path)->valid()) continue;
                 }

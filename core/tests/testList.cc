@@ -82,7 +82,7 @@ class Cloning: public TestCase
         Ref<IntList> a = IntList::create();
         for (int i = 0; i < 10; ++i)
             a->append(random->get(0, 99));
-        Ref<IntList> b = IntList::replicate(a);
+        Ref<IntList> b = IntList::copy(a);
         print(a);
         print(b);
         CC_VERIFY(*a == *b);

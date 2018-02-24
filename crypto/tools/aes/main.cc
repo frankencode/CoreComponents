@@ -40,7 +40,7 @@ int main(int argc, char **argv)
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
         arguments->validate(VariantMap::create());
 
-        Ref<StringList> items = arguments->items();
+        Ref<const StringList> items = arguments->items();
 
         bool viewMode = stdErr()->isatty() && !stdOut()->isatty();
         bool filterMode = items->count() == 0 && !stdIn()->isatty();
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 
             Ref<Stream> random = File::open("/dev/random");
 
-            for (int i = 0; i < items->count(); ++i)
+            for (String path: items)
             {
                 Ref<ByteArray> contentKey = random->readSpan(16);
                 Ref<ByteArray> encipheredContentKey = ByteArray::allocate(contentKey->count());
@@ -67,7 +67,6 @@ int main(int argc, char **argv)
 
                 Ref<BlockCipher> cipher = BlockCascade::create(AesCipher::create(contentKey));
 
-                String path = items->at(i);
                 String fileName = path->fileName();
                 String outPath = fileName + ".aes";
                 if (File::exists(outPath)) {
@@ -101,7 +100,7 @@ int main(int argc, char **argv)
             Ref<SystemStream> stdInSaved;
             Ref<SystemStream> stdOutSaved;
             if (items->count() == 0) {
-                items->append("");
+                items = StringList::create() << "";
                 stdInSaved = SystemStream::duplicate(stdIn());
                 stdOutSaved = SystemStream::duplicate(stdOut());
                 stdErr()->duplicateTo(stdIn());
@@ -113,9 +112,8 @@ int main(int argc, char **argv)
 
             if (viewMode) fout() << nl;
 
-            for (int i = 0; i < items->count(); ++i)
+            for (String path: items)
             {
-                String path = items->at(i);
                 Ref<Stream> source;
                 if (path == "")
                     source = stdInSaved;

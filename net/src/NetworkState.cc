@@ -50,7 +50,7 @@ NetworkState::NetworkState(String interfaceName):
 
     const SocketAddressEntry *entry = Object::cast<const SocketAddressEntry *>(candidateAddress);
     if (entry) networkMask_ = entry->networkMask();
-    address_ = candidateAddress;
+    address_ = candidateAddress->copy();
 }
 
 }} // namespace cc::net

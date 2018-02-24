@@ -451,7 +451,7 @@ void BuildPlan::readPrerequisites()
 
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
-    Ref<StringList> prerequisitePaths = Variant::cast<StringList *>(recipe_->value("use"));
+    Ref<const StringList> prerequisitePaths = Variant::cast<const StringList *>(recipe_->value("use"));
 
     if (options_ & Package) {
         const StringList *packageItems = Variant::cast<const StringList *>(recipe_->value("include"));

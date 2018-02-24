@@ -14,12 +14,11 @@ int main(int argc, char **argv)
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
         arguments->validate(VariantMap::create());
 
-        Ref<StringList> items = arguments->items();
-        if (items->count() == 0) items->append("");
+        Ref<const StringList> items = arguments->items();
+        if (items->count() == 0) items = StringList::create() << "";
 
-        for (int i = 0; i < items->count(); ++i)
+        for (String path: items)
         {
-            String path = items->at(i);
             Ref<Stream> source;
             if (path == "") source = stdIn();
             else source = File::open(path);

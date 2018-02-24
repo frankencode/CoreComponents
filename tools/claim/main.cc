@@ -42,7 +42,7 @@ int main(int argc, char **argv)
             arguments->override(options);
         }
 
-        Ref<StringList> items = arguments->items();
+        Ref<const StringList> items = arguments->items();
 
         bool reportOption = options->value("report");
         bool stripOption = options->value("strip");
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 
         if (statementPath != "") statement = File::open(statementPath)->map();
 
-        if (items->count() == 0) items->append(".");
+        if (items->count() == 0) items = StringList::create() << ".";
 
         Ref<Report> report = Report::create(items, works, worksMinLines);
 

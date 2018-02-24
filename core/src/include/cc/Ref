@@ -58,10 +58,6 @@ public:
   * never hold a reference to the same object at the same time (shared nothing architecture).
   * If nevertheless objects need to be shared amoung threads at the same time (for instance a singleton)
   * make sure those objects are immutable and cannot be modified accidentally after construction.
-  *   The only copy automatism the Ref template class implements is preemptive copy on assignment of a
-  * const pointer (const T *). In this case a T::copy(const T *) is called to create a copy of the
-  * of the object before assignment. This copying is needed because each Ref<T> allows modification
-  * of the referenced object.
   *
   * \see Singleton
   */
@@ -76,7 +72,6 @@ public:
 
     Ref(T *b): a_(0) { set(b); }
     template<class T2> Ref(T2 *b): a_(0) { set(cast<T>(b)); }
-    template<class T2> Ref(const T2 *b): a_(0) { set(T::copy(cast<const T>(b))); }
 
     ~Ref() { set(nullptr); }
 
@@ -86,7 +81,6 @@ public:
     inline operator T *() const { return a_; }
 
     template<class T2> inline const Ref &operator=(T2 *b) { set(cast<T>(b)); return *this; }
-    template<class T2> inline const Ref &operator=(const T2 *b) { set(T::copy(cast<const T>(b))); return *this; }
     template<class T2> inline const Ref &operator=(const Ref<T2> &b) { set(cast<T>(b.get())); return *this; }
 
     inline bool operator<(const Ref &b) const { return a_ < b.a_; }
@@ -153,6 +147,9 @@ protected:
 private:
     template<class U, class V>
     inline static U *cast(V *p) { return CastHelper<V, U, ConversionFromTo<V*, U*>::Exists>::cast(p); }
+
+    template<class T2> Ref(const T2 *b); // : a_(0) { set(T::copy(cast<const T>(b))); }
+    template<class T2> inline const Ref &operator=(const T2 *b); // { set(T::copy(cast<const T>(b))); return *this; }
 
     T *a_;
 };

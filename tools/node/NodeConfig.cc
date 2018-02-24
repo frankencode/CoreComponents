@@ -24,7 +24,7 @@ NodeConfig::NodeConfig()
 void NodeConfig::load(int argc, char **argv)
 {
     Ref<Arguments> arguments = Arguments::parse(argc, argv);
-    Ref<StringList> items = arguments->items();
+    const StringList *items = arguments->items();
 
     MetaObject *nodePrototype = configProtocol()->lookup("Node");
     arguments->validate(nodePrototype);

@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
         arguments->validate(VariantMap::create());
-        Ref<StringList> items = arguments->items();
+        const StringList *items = arguments->items();
         if (items->count() != 2) throw HelpError();
 
         Ref<SocketAddress> proxyAddress = SocketAddress::read(items->at(0));

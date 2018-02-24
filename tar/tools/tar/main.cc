@@ -42,14 +42,14 @@ int main(int argc, char **argv)
         }
 
         Ref<VariantMap> options = arguments->options();
-        Ref<StringList> items = arguments->items();
+        Ref<const StringList> items = arguments->items();
 
-        if (unpackMode) {
-            if (items->count() == 0) items->append(String());
+        if (unpackMode)
+        {
+            if (items->count() == 0) items = StringList::create() << "";
 
-            for (int i = 0; i < items->count(); ++i) {
-                String path = items->at(i);
-
+            for (String path: items)
+            {
                 Ref<Stream> source;
                 if (path != "") source = File::open(path);
                 else source = stdIn();
@@ -79,8 +79,8 @@ int main(int argc, char **argv)
             if (tarMode) archive = TarWriter::open(sink);
             else archive = ArWriter::open(sink);
 
-            for (int i = 0; i < items->count(); ++i)
-                cctar::pack(items->at(i), archive, options->value("verbose"));
+            for (String path: items)
+                cctar::pack(path, archive, options->value("verbose"));
         }
     }
     catch (HelpError &) {

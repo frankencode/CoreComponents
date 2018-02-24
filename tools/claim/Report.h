@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -27,9 +27,9 @@ typedef Map<String, String> StatementByDigest;
 class Report: public Object
 {
 public:
-    static Ref<Report> create(StringList *dirPaths, RegExp works, int worksMinLines);
+    static Ref<Report> create(const StringList *dirPaths, RegExp works, int worksMinLines);
 
-    inline StringList *dirPaths() const { return dirPaths_; }
+    inline const StringList *dirPaths() const { return dirPaths_; }
     inline RegExp works() const { return works_; }
     inline int worksMinLines() const { return worksMinLines_; }
     inline Coverage *coverage() const { return coverage_; }
@@ -39,8 +39,8 @@ public:
     inline StatementByDigest *statementByDigest() const { return statementByDigest_; }
 
 private:
-    Report(StringList *dirPaths, RegExp works, int worksMinLines);
-    Ref<StringList> dirPaths_;
+    Report(const StringList *dirPaths, RegExp works, int worksMinLines);
+    Ref<const StringList> dirPaths_;
     RegExp works_;
     int worksMinLines_;
     Ref<Coverage> coverage_;
@@ -51,4 +51,3 @@ private:
 };
 
 } // namespace ccclaim
-

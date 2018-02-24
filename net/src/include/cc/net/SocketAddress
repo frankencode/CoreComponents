@@ -97,10 +97,15 @@ public:
       */
     static Ref<SocketAddress> read(String location);
 
-    /** Create a deep copy of another socket address
+    /** Create a copy of another socket address
       * \return new object instance
       */
     static Ref<SocketAddress> copy(const SocketAddress *other);
+
+    /** Create a copy of this socket address
+      * \return new object instance
+      */
+    Ref<SocketAddress> copy() const { return SocketAddress::copy(this); }
 
     /// Check if this address is a valid address
     bool isValid() const;
