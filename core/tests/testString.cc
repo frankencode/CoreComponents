@@ -77,7 +77,7 @@ class FindSplitReplace: public TestCase
         }
         {
             String s = "..Привет, Привет!";
-            s->replaceInsitu("Привет", "Hallo");
+            mutate(s)->replaceInsitu("Привет", "Hallo");
             fout("s = \"%%\"\n") << s;
         }
     }
@@ -110,7 +110,7 @@ class CopyOnWriteTest: public TestCase
         CC_INSPECT(s2);
         CC_INSPECT(s->refCount());
         CC_INSPECT(s2->refCount());
-        s2->at(0) = 'A';
+        mutate(s2)->at(0) = 'A';
         CC_INSPECT((void *)static_cast<const ByteArray *>(s ));
         CC_INSPECT((void *)static_cast<const ByteArray *>(s2));
         CC_INSPECT(s);

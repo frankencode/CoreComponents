@@ -218,14 +218,14 @@ NODE AbnfCompiler::compileNumVal(const ByteArray *text, Token *numVal, SyntaxDef
             int j = 0;
             while (i < numVal->i1()) {
                 if (text->at(i) == '.') {
-                    s->at(j) = strToInt(*text, i0, i, base);
+                    mutate(s)->at(j) = strToInt(*text, i0, i, base);
                     ++j;
                     i0 = i + 1;
                 }
                 ++i;
             }
             CC_ASSERT(j == s->count() - 1);
-            s->at(j) = strToInt(*text, i0, i, base);
+            mutate(s)->at(j) = strToInt(*text, i0, i, base);
             node = (s->count() > 1) ? definition->STRING(s->chars()) : definition->CHAR(s->at(0));
         }
         else {
@@ -274,7 +274,7 @@ NODE AbnfCompiler::optimizeChoice(SyntaxNode *node, SyntaxDefinition *definition
         SyntaxNode *child = ignoreDebug(node)->firstChild();
         while (child) {
             Ref<syntax::CharNode> charNode = Object::cast<syntax::CharNode *>(ignoreDebug(child));
-            s->at(i) = charNode->ch();
+            mutate(s)->at(i) = charNode->ch();
             ++i;
             child = child->nextSibling();
         }
@@ -309,7 +309,7 @@ void AbnfCompiler::deepOptimizeChoice(SyntaxNode *node, SyntaxNode *fin, int num
         int i = numChars - 1;
         while (i >= 0) {
             SyntaxNode *charNode = (fin) ? fin->previousSibling() : ignoreDebug(node)->lastChild();
-            s->at(i) = Object::cast<syntax::CharNode *>(ignoreDebug(charNode))->ch();
+            mutate(s)->at(i) = Object::cast<syntax::CharNode *>(ignoreDebug(charNode))->ch();
             charNode->unlink();
             --i;
         }

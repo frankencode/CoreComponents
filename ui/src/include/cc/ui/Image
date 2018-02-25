@@ -28,7 +28,7 @@ public:
     }
 
     inline Color &pixel(int x, int y) {
-        return data_->item<Color>(y * size_->w() + x);
+        return mutate(data_)->item<Color>(y * size_->w() + x);
     }
 
     /** Clear the entire image with color \a c

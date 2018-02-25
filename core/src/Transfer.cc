@@ -46,7 +46,7 @@ private:
         try {
             Ref<ByteArray> buffer;
             while (freeQueue_->popFront(&buffer)) {
-                int n = source_->read(buffer);
+                int n = source_->read(mutate(buffer));
                 if (n == 0) break;
                 {
                     Guard<Mutex> guard(mutex_);

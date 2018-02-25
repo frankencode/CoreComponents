@@ -88,10 +88,10 @@ class AesExamples: public TestCase
         Ref<AesCipher> codec = AesCipher::create(k);
         String c2(codec->blockSize());
         String p2(codec->blockSize());
-        codec->encode(p, c2);
+        codec->encode(p, mutate(c2));
         printState("plaintext", p);
         printState("enciphered text", c2);
-        codec->decode(c, p2);
+        codec->decode(c, mutate(p2));
         printState("deciphered text", p2);
         return c == c2 && p == p2;
     }

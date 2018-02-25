@@ -58,7 +58,7 @@ bool LineSource::read(String *line)
 
         if (!stream_) break;
 
-        n_ = stream_->read(buffer_);
+        n_ = stream_->read(mutate(buffer_));
         if (n_ == 0) break;
         i_ = 0;
     }

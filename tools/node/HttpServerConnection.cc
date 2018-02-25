@@ -95,7 +95,7 @@ void HttpServerConnection::readFirstLine(LineSource *source, HttpMessage *messag
 
     Ref<StringList> parts = request->version_->split('/');
     if (parts->count() >= 2) {
-        parts->at(0)->upcaseInsitu();
+        mutate(parts->at(0))->upcaseInsitu();
         if (parts->at(0) != "HTTP") throw UnsupportedVersion();
         parts = parts->at(1)->split('.');
         if (parts->count() >= 2) {
@@ -111,7 +111,7 @@ void HttpServerConnection::onHeaderReceived(HttpMessage *message)
 {
     Ref<HttpRequest> request = message;
     request->host_ = request->value("Host");
-    request->host_->downcaseInsitu();
+    mutate(request->host_)->downcaseInsitu();
     if (request->host_ == "") throw BadRequest();
 }
 

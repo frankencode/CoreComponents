@@ -28,7 +28,7 @@ public:
         }
         Ref<ByteArray> buf = ByteArray::allocate(0x4000);
         while (true) {
-            int n = request->payload()->read(buf);
+            int n = request->payload()->read(mutate(buf));
             if (n == 0) break;
             response()->write(buf->select(0, n));
         }

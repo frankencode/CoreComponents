@@ -37,13 +37,13 @@ String encode(const String &source)
         bits >>= 8;
 
         for (int k = 0; k < 4; ++k) {
-            sink->at(l++) = alphabet[(bits & 0xfc0000) >> 18];
+            mutate(sink)->at(l++) = alphabet[(bits & 0xfc0000) >> 18];
             bits <<= 6;
         }
     }
     if (i > 0) {
         while (i > n) {
-            sink->at(--l) = '=';
+            mutate(sink)->at(--l) = '=';
             --i;
         }
     }
@@ -90,7 +90,7 @@ String decode(const String &source)
             if (i == n) break;
             uint8_t ch = (bits & 0xFF0000) >> 16;
             bits <<= 8;
-            sink->byteAt(i++) = ch;
+            mutate(sink)->byteAt(i++) = ch;
         }
         if (i == n) break;
     }

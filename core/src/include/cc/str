@@ -56,13 +56,13 @@ String inum(T x, int base = 10, int n = -1)
     if (sign) ++m;
     if (n > 0 && m < n) m = n;
     String s(m, '0');
-    if (sign) s->at(0) = '-';
+    if (sign) mutate(s)->at(0) = '-';
     for (int i = s->count() - 1; x > 0 && s->has(i); x /= base, --i) {
         const char *fig =
             "0123456789"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "abcdefghijklmnopqrstuvwxyz";
-        s->at(i) = fig[x % base];
+        mutate(s)->at(i) = fig[x % base];
     }
     return s;
 }

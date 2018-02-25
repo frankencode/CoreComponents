@@ -370,7 +370,7 @@ char RegExpSyntax::readChar(const ByteArray *text, Token *token) const
 {
     if (token->i1() - token->i0() > 1) {
         String h = text->copyRange(token);
-        h->unescapeInsitu();
+        mutate(h)->unescapeInsitu();
         return h->at(0);
     }
     return text->at(token->i0());
@@ -381,7 +381,7 @@ String RegExpSyntax::readString(const ByteArray *text, Token *token) const
     String s(token->countChildren());
     int i = 0;
     for (Token *child = token->firstChild(); child; child = child->nextSibling())
-        s->at(i++) = readChar(text, child);
+        mutate(s)->at(i++) = readChar(text, child);
     return s;
 }
 
@@ -413,7 +413,7 @@ NODE RegExpSyntax::compileRangeExplicit(const ByteArray *text, Token *token, Syn
     int n = token->countChildren();
     String s(n);
     for (int i = 0; i < n; ++i) {
-        s->at(i) = readChar(text, child);
+        mutate(s)->at(i) = readChar(text, child);
         child = child->nextSibling();
     }
     return invert ? definition->EXCEPT(s) : definition->RANGE(s);

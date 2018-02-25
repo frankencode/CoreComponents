@@ -92,14 +92,14 @@ public:
             if (type == GNUTLS_NAME_DNS) {
                 CC_ASSERT(ret == GNUTLS_E_SHORT_MEMORY_BUFFER);
                 serverName_ = String(size);
-                ret = gnutls_server_name_get(session, serverName_->bytes(), &size, &type, 0);
+                ret = gnutls_server_name_get(session, mutate(serverName_)->bytes(), &size, &type, 0);
                 if (ret != GNUTLS_E_SUCCESS) {
                     CCNODE_ERROR() << peerAddress_ << ": " << gnutls_strerror(ret) << nl;
                     serverName_ = "";
                 }
                 if (serverName_->count() > 0) {
                     if (serverName_->at(serverName_->count() - 1) == 0)
-                        serverName_->truncate(serverName_->count() - 1);
+                        mutate(serverName_)->truncate(serverName_->count() - 1);
                     if (errorLog()->infoStream() != NullStream::instance())
                         CCNODE_INFO() << "TLS client hello: SNI=\"" << serverName_ << "\"" << nl;
                     serviceInstance_ = nodeConfig()->selectService(serverName_);

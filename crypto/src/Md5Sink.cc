@@ -35,7 +35,7 @@ void Md5Sink::write(const ByteArray *data)
         while ((auxFill_ < aux_->count()) && (srcLeft > 0)) {
             int n = aux_->count() - auxFill_;
             if (n > srcLeft) n = srcLeft;
-            memcpy(aux_->bytes() + auxFill_, src, n);
+            memcpy(mutate(aux_)->bytes() + auxFill_, src, n);
             src += n;
             srcLeft -= n;
             auxFill_ += n;
@@ -50,22 +50,22 @@ Ref<ByteArray> Md5Sink::finish()
 {
     /** manually feed the padding and message size
       */
-    aux_->byteAt(auxFill_++) = 0x80;
+    mutate(aux_)->byteAt(auxFill_++) = 0x80;
     while ((auxFill_ % 64) != 56)
-        aux_->byteAt(auxFill_++) = 0x00;
+        mutate(aux_)->byteAt(auxFill_++) = 0x00;
     uint64_t b = bytesFeed_ << 3; // message length in bits
     for (int i = 0; i < 8; ++i)
-        aux_->byteAt(auxFill_++) = b >> (i * 8);
+        mutate(aux_)->byteAt(auxFill_++) = b >> (i * 8);
     consume();
 
     /** serialize the message digest
       */
     Ref<ByteArray> h = ByteArray::create(Md5Sink::Size);
     int k = 0;
-    for (int i = 0; i < 4; ++i) h->at(k++) = a_ >> (8 * i);
-    for (int i = 0; i < 4; ++i) h->at(k++) = b_ >> (8 * i);
-    for (int i = 0; i < 4; ++i) h->at(k++) = c_ >> (8 * i);
-    for (int i = 0; i < 4; ++i) h->at(k++) = d_ >> (8 * i);
+    for (int i = 0; i < 4; ++i) mutate(h)->at(k++) = a_ >> (8 * i);
+    for (int i = 0; i < 4; ++i) mutate(h)->at(k++) = b_ >> (8 * i);
+    for (int i = 0; i < 4; ++i) mutate(h)->at(k++) = c_ >> (8 * i);
+    for (int i = 0; i < 4; ++i) mutate(h)->at(k++) = d_ >> (8 * i);
     return h;
 }
 
@@ -174,7 +174,7 @@ inline static void r4(const uint32_t *x, uint32_t &a, uint32_t b, uint32_t c, ui
 
 void Md5Sink::consume()
 {
-    uint32_t *m = aux_->words();
+    uint32_t *m = mutate(aux_)->words();
     for (int i = 0, nc = auxFill_ / 64; i < nc; ++i) {
         // select 16 dwords x[0], x[1] ... x[15] and
         // ensure value of the dwords is independent from system endianess

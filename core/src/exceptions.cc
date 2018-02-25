@@ -23,11 +23,11 @@ String systemError(int errorCode)
 {
     String buf(1024);  // HACK, save bet
     const char *unknown = "Unknown error";
-    memcpy(buf->chars(), unknown, strlen(unknown) + 1);
+    memcpy(mutate(buf)->chars(), unknown, strlen(unknown) + 1);
 #ifdef __USE_GNU
-    return strerror_r(errorCode, buf->chars(), buf->count());
+    return strerror_r(errorCode, mutate(buf)->chars(), buf->count());
 #else
-    /*int ret = */strerror_r(errorCode, buf->chars(), buf->count());
+    /*int ret = */strerror_r(errorCode, mutate(buf)->chars(), buf->count());
     return buf;
 #endif
 }

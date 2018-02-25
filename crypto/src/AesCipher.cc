@@ -249,7 +249,7 @@ Ref<ByteArray> keyExpansion(const ByteArray *key, int Nr)
     int i = 0;
 
     for (; i < Nk; ++i) {
-        w->wordAt(i) =
+        mutate(w)->wordAt(i) =
             word(
                 key->at(4 * i),
                 key->at(4 * i + 1),
@@ -264,7 +264,7 @@ Ref<ByteArray> keyExpansion(const ByteArray *key, int Nr)
             h = subWord(rotWord(h)) ^ rCon(i / Nk);
         else if (Nk > 6 && i % Nk == 4)
             h = subWord(h);
-        w->wordAt(i) = w->wordAt(i - Nk) ^ h;
+        mutate(w)->wordAt(i) = w->wordAt(i - Nk) ^ h;
     }
 
     return w;
@@ -289,20 +289,20 @@ void AesCipher::encode(const ByteArray *p, ByteArray *c)
     CC_ASSERT(p && p->count() == Ns);
     CC_ASSERT(c && c->count() == Ns);
 
-    s_->write(p);
+    mutate(s_)->write(p);
 
-    addRoundKey(s_, w_, 0);
+    addRoundKey(mutate(s_), w_, 0);
 
     for (int r = 1; r < Nr_; ++r) {
-        subBytes(s_);
-        shiftRows(s_);
-        mixColumns(s_);
-        addRoundKey(s_, w_, r);
+        subBytes(mutate(s_));
+        shiftRows(mutate(s_));
+        mixColumns(mutate(s_));
+        addRoundKey(mutate(s_), w_, r);
     }
 
-    subBytes(s_);
-    shiftRows(s_);
-    addRoundKey(s_, w_, Nr_);
+    subBytes(mutate(s_));
+    shiftRows(mutate(s_));
+    addRoundKey(mutate(s_), w_, Nr_);
 
     c->write(s_);
 }
@@ -312,20 +312,20 @@ void AesCipher::decode(const ByteArray *c, ByteArray *p)
     CC_ASSERT(c && c->count() == Ns);
     CC_ASSERT(p && p->count() == Ns);
 
-    s_->write(c);
+    mutate(s_)->write(c);
 
-    addRoundKey(s_, w_, Nr_);
+    addRoundKey(mutate(s_), w_, Nr_);
 
     for (int r = Nr_ - 1; r > 0; --r) {
-        invShiftRows(s_);
-        invSubBytes(s_);
-        addRoundKey(s_, w_, r);
-        invMixColumns(s_);
+        invShiftRows(mutate(s_));
+        invSubBytes(mutate(s_));
+        addRoundKey(mutate(s_), w_, r);
+        invMixColumns(mutate(s_));
     }
 
-    invShiftRows(s_);
-    invSubBytes(s_);
-    addRoundKey(s_, w_, 0);
+    invShiftRows(mutate(s_));
+    invSubBytes(mutate(s_));
+    addRoundKey(mutate(s_), w_, 0);
 
     p->write(s_);
 }

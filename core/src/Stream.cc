@@ -57,7 +57,7 @@ off_t Stream::transferSpanTo(off_t count, Stream *sink, ByteArray *buffer)
     Ref<ByteArray> h;
     if (!buffer) {
         h = ByteArray::allocate((0 < count && count < 0x4000) ? count : 0x4000);
-        buffer = h;
+        buffer = mutate(h);
     }
 
     while (true) {
@@ -80,7 +80,7 @@ int Stream::readSpan(ByteArray *data)
     const int w = data->count();
     int m = 0;
     while (m < w) {
-        int n = read(data->select(m, w));
+        int n = read(mutate(data->select(m, w)));
         if (n == 0) break;
         m += n;
     }
@@ -92,7 +92,7 @@ String Stream::readSpan(int count)
     if (count == 0) return String();
     if (count < 0) return readAll();
     String s(count);
-    readSpan(s);
+    readSpan(mutate(s));
     return s;
 }
 
@@ -102,7 +102,7 @@ String Stream::readAll(ByteArray *buffer)
     if (!data) data = ByteArray::allocate(0x4000);
     Ref<StringList> parts = StringList::create();
     while (true) {
-        int n = read(data);
+        int n = read(mutate(data));
         if (n == 0) break;
         parts->append(data->copy(0, n));
     }

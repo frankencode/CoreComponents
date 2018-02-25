@@ -39,7 +39,7 @@ void HttpClientConnection::readFirstLine(LineSource *source, HttpMessage *messag
     Ref<StringList> parts = line->simplify()->split(' ');
     if (parts->count() > 0) {
         response->version_ = parts->popFront();
-        response->version_->upcaseInsitu();
+        mutate(response->version_)->upcaseInsitu();
     }
 
     if (response->version_ != "HTTP/1.1") throw UnsupportedVersion();

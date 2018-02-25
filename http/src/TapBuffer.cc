@@ -46,8 +46,8 @@ void TapBuffer::write(const ByteArray *buf)
             else {
                 String s = "\\xXX";
                 const char *hex = "0123456789ABCDEF";
-                s->at(s->count() - 2) = hex[ch / 16];
-                s->at(s->count() - 1) = hex[ch % 16];
+                mutate(s)->at(s->count() - 2) = hex[ch / 16];
+                mutate(s)->at(s->count() - 1) = hex[ch % 16];
                 parts->append(s);
                 if (ch == 0) parts->append("\n");
             }

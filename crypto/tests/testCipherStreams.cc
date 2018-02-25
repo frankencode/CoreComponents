@@ -27,15 +27,15 @@ protected:
     {
         Ref<ByteArray> buffer = ByteArray::allocate(roundUpToNext(cipher->blockSize(), text->count()));
         {
-            Ref<Stream> stream = MemoryStream::open(buffer);
+            Ref<Stream> stream = MemoryStream::open(mutate(buffer));
             Ref<CipherSink> sink = CipherSink::open(cipher, stream, NullStream::instance());
             sink->write(text);
         }
         Ref<ByteArray> text2 = ByteArray::create(text->count());
         {
-            Ref<Stream> stream = MemoryStream::open(buffer);
+            Ref<Stream> stream = MemoryStream::open(mutate(buffer));
             Ref<CipherSource> source = CipherSource::open(cipher, stream);
-            source->read(text2);
+            source->read(mutate(text2));
         }
         return text2;
     }
@@ -51,7 +51,7 @@ class TestBlockBoundary: public TestSmth
         Ref<ByteArray> text = ByteArray::copy("0123456789,0123456789,0123456789");
         for (int n = 1; n <= text->count(); ++n) {
             Ref<ByteArray> text1 = text->copy(0, n);
-            Ref<ByteArray> text2 = testCycle(cipher, text1);
+            Ref<ByteArray> text2 = testCycle(cipher, mutate(text1));
             fout() << text1 << " >> " << text2 << nl;
             CC_VERIFY(text1 == text2);
         }
@@ -66,15 +66,15 @@ class TestBufferBoundary: public TestSmth
         Ref<BlockCipher> cipher = AesCipher::create(key);
         Ref<ByteArray> text = ByteArray::create(0x1001);
         Ref<Random> random = Random::open();
-        for (int i = 0; i < text->count(); ++i) text->byteAt(i) = random->get() & 0xFF;
+        for (int i = 0; i < text->count(); ++i) mutate(text)->byteAt(i) = random->get() & 0xFF;
         {
             Ref<ByteArray> text1 = text->copy(0, text->count() - 1);
-            Ref<ByteArray> text2 = testCycle(cipher, text1);
+            Ref<ByteArray> text2 = testCycle(cipher, mutate(text1));
             CC_VERIFY(text1 == text2);
         }
         {
             Ref<ByteArray> text1 = text;
-            Ref<ByteArray> text2 = testCycle(cipher, text1);
+            Ref<ByteArray> text2 = testCycle(cipher, mutate(text1));
             CC_VERIFY(text1 == text2);
         }
     }

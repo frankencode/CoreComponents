@@ -26,13 +26,13 @@ RandomSource::RandomSource(const ByteArray *salt)
     Ref<ByteArray> iv = ByteArray::allocate(AesCipher::BlockSize);
 
     if (salt) {
-        key->write(salt);
-        iv->fill(0);
+        mutate(key)->write(salt);
+        mutate(iv)->fill(0);
     }
     else {
         Ref<Stream> random = File::open("/dev/urandom");
-        random->readSpan(key);
-        random->readSpan(iv);
+        random->readSpan(mutate(key));
+        random->readSpan(mutate(iv));
     }
 
     source_ =

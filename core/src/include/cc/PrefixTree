@@ -134,7 +134,7 @@ public:
             if (node) {
                 while (node != this) {
                     --i;
-                    s->at(i) = node->ch_;
+                    mutate(s)->at(i) = node->ch_;
                     node = node->parent();
                 }
             }
@@ -199,7 +199,7 @@ public:
         Ref<Key> key = Key::create(n);
         while (n > 0) {
             --n;
-            key->at(n) = node->ch_;
+            mutate(key)->at(n) = node->ch_;
             node = node->parent();
         }
         return key;

@@ -48,18 +48,18 @@ Sha1Sink::Sha1Sink():
     j_(0),
     l_(0)
 {
-    h_->wordAt(0) = 0x67452301;
-    h_->wordAt(1) = 0xEFCDAB89;
-    h_->wordAt(2) = 0x98BADCFE;
-    h_->wordAt(3) = 0x10325476;
-    h_->wordAt(4) = 0xC3D2E1F0;
+    mutate(h_)->wordAt(0) = 0x67452301;
+    mutate(h_)->wordAt(1) = 0xEFCDAB89;
+    mutate(h_)->wordAt(2) = 0x98BADCFE;
+    mutate(h_)->wordAt(3) = 0x10325476;
+    mutate(h_)->wordAt(4) = 0xC3D2E1F0;
 }
 
 void Sha1Sink::write(const ByteArray *data)
 {
     for (int i = 0; i < data->count(); ++i) {
         uint8_t b = data->byteAt(i);
-        m_->byteAt(j_++) = b;
+        mutate(m_)->byteAt(j_++) = b;
         if (j_ == 64) consume();
     }
     l_ += uint64_t(data->count()) * 8;
@@ -67,23 +67,23 @@ void Sha1Sink::write(const ByteArray *data)
 
 Ref<ByteArray> Sha1Sink::finish()
 {
-    m_->byteAt(j_++) = 0x80;
+    mutate(m_)->byteAt(j_++) = 0x80;
     if (j_ == 64) consume();
     while (j_ % 64 != 56) {
-        m_->byteAt(j_++) = 0;
+        mutate(m_)->byteAt(j_++) = 0;
         if (j_ == 64) consume();
     }
     for (int i = 7; i >= 0; --i)
-        m_->byteAt(j_++) = (l_ >> (i * 8)) & 0xFF;
+        mutate(m_)->byteAt(j_++) = (l_ >> (i * 8)) & 0xFF;
 
     consume();
 
     for (int t = 0; t < 5; ++t) {
         uint32_t h = h_->wordAt(t);
-        h_->byteAt(4 * t) = h >> 24;
-        h_->byteAt(4 * t + 1) = (h >> 16) & 0xFF;
-        h_->byteAt(4 * t + 2) = (h >> 8) & 0xFF;
-        h_->byteAt(4 * t + 3) = h & 0xFF;
+        mutate(h_)->byteAt(4 * t) = h >> 24;
+        mutate(h_)->byteAt(4 * t + 1) = (h >> 16) & 0xFF;
+        mutate(h_)->byteAt(4 * t + 2) = (h >> 8) & 0xFF;
+        mutate(h_)->byteAt(4 * t + 3) = h & 0xFF;
     }
 
     return h_;
@@ -93,7 +93,7 @@ void Sha1Sink::consume()
 {
     j_ = 0;
 
-    uint32_t *w = &w_->wordAt(0);
+    uint32_t *w = &mutate(w_)->wordAt(0);
 
     for (int t = 0; t < 16; ++t) {
         w[t] =
@@ -106,7 +106,7 @@ void Sha1Sink::consume()
     for (int t = 16; t < 80; ++t)
         w[t] = _sha1::rol(w[t - 3] ^ w[t - 8] ^ w[t - 14] ^ w[t - 16], 1);
 
-    uint32_t *h = &h_->wordAt(0);
+    uint32_t *h = &mutate(h_)->wordAt(0);
 
     uint32_t a = h[0], b = h[1], c = h[2], d = h[3], e = h[4];
 

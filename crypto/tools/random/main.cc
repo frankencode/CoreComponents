@@ -20,7 +20,7 @@ int main()
 
     String buffer = ByteArray::allocate(0x4000);
     while (true) {
-        source->read(buffer);
+        source->read(mutate(buffer));
         stdOut()->write(buffer);
     }
 

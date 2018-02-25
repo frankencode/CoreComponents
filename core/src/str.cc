@@ -96,32 +96,32 @@ String fnum(float64_t x, int precision, int base, int screen)
         text = String(wi + int(wf != 0) + wf + int(ne != 0) * (1 + int(eba < 0) + ne), ' ');
 
         if (s == 1)
-            text->at(i++) = '-';
+            mutate(text)->at(i++) = '-';
 
         const char *fig = "0123456789abcdef";
         int k = 0; // digit index
 
         for (int l = 0; l < ni; ++l)
-            text->at(i++) = fig[digits->bottom(k++)];
+            mutate(text)->at(i++) = fig[digits->bottom(k++)];
 
         if (wf != 0)
         {
-            text->at(i++) = '.';
+            mutate(text)->at(i++) = '.';
             for (int l = 0; l < wf; ++l)
             {
                 if (digits->count() <= k)
-                    text->at(i++) = '0';
+                    mutate(text)->at(i++) = '0';
                 else
-                    text->at(i++) = fig[digits->bottom(k++)];
+                    mutate(text)->at(i++) = fig[digits->bottom(k++)];
             }
         }
 
         if (ne != 0)
         {
-            text->at(i++) = 'e';
-            if (eba < 0) { text->at(i++) = '-'; eba = -eba; }
+            mutate(text)->at(i++) = 'e';
+            if (eba < 0) { mutate(text)->at(i++) = '-'; eba = -eba; }
             for (int l = ne-1, h = eba; l >= 0; --l, h /= base)
-                text->at(i+l) = fig[h % base];
+                mutate(text)->at(i+l) = fig[h % base];
             i += ne;
         }
     }
@@ -136,12 +136,12 @@ String fixed(float64_t x, int nf)
     double fp = modf(x, &ip);
     String sip = inum(int64_t(ip));
     if (nf <= 0) return sip;
-    String s = String(sip->count() + 1 + nf, '.');
-    s->write(sip);
+    String s(sip->count() + 1 + nf, '.');
+    mutate(s)->write(sip);
     if (fp < 0) fp = -fp;
     for (int i = 0; i < nf; ++i) fp *= 10;
     fp = round(fp);
-    s->select(sip->count() + 1, s->count())->write(right(inum(uint64_t(fp)), nf, '0'));
+    mutate(s->select(sip->count() + 1, s->count()))->write(right(inum(uint64_t(fp)), nf, '0'));
     return s;
 }
 
@@ -155,9 +155,9 @@ String dec(const Variant &x, int n)
 String str(uchar_t ch)
 {
     String s(4);
-    Ref<Utf8Sink> sink = Utf8Sink::open(s);
+    Ref<Utf8Sink> sink = Utf8Sink::open(mutate(s));
     sink->write(ch);
-    s->truncate(sink->byteSink()->currentOffset());
+    mutate(s)->truncate(sink->byteSink()->currentOffset());
     return s;
 }
 

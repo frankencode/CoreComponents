@@ -22,7 +22,7 @@ Ref<TarReader> TarReader::open(Stream *source)
 bool TarReader::testFormat(Stream *source)
 {
     Ref<ByteArray> data = ByteArray::create(512);
-    if (source->readSpan(data) < data->count()) return false;
+    if (source->readSpan(mutate(data)) < data->count()) return false;
     String magic;
     data->scanString(&magic, "", 257, 263);
     return magic == "ustar " || magic == "ustar";
@@ -38,7 +38,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
     if (!data_) data_ = ByteArray::create(512);
     *nextEntry = ArchiveEntry::create();
 
-    ByteArray *data = data_;
+    ByteArray *data = mutate(data_);
     ArchiveEntry *entry = *nextEntry;
 
     if (source_->readSpan(data) < data->count()) return false;
@@ -87,7 +87,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
                     i_ += source_->skip(512 - entry->size() % 512);
                 }
                 if (longPath->byteAt(longPath->count() - 1) == 0)
-                    longPath->truncate(longPath->count() - 1);
+                    mutate(longPath)->truncate(longPath->count() - 1);
                 if (entry->type_ == 'K') entry->linkPath_ = longPath;
                 else if (entry->type_ == 'L') entry->path_ = longPath;
                 if (source_->readSpan(data) < data->count())

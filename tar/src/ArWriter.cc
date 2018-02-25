@@ -39,32 +39,32 @@ void ArWriter::writeFile(String path)
     Ref<StringList> headerFields = StringList::create();
 
     String pathField(16, ' ');
-    pathField->write(path);
+    mutate(pathField)->write(path);
     headerFields->append(pathField);
 
     String lastModifiedField(12, ' ');
-    lastModifiedField->write(dec(status->st_mtime));
+    mutate(lastModifiedField)->write(dec(status->st_mtime));
     headerFields->append(lastModifiedField);
 
     String userIdField(6, ' ');
-    userIdField->write(dec(status->ownerId()));
+    mutate(userIdField)->write(dec(status->ownerId()));
     headerFields->append(userIdField);
 
     String groupIdField(6, ' ');
-    groupIdField->write(dec(status->groupId()));
+    mutate(groupIdField)->write(dec(status->groupId()));
     headerFields->append(groupIdField);
 
     String modeField(8, ' ');
-    modeField->write(oct(status->mode()));
+    mutate(modeField)->write(oct(status->mode()));
     headerFields->append(modeField);
 
     String sizeField(10, ' ');
-    sizeField->write(dec(status->size()));
+    mutate(sizeField)->write(dec(status->size()));
     headerFields->append(sizeField);
 
     String magic(2);
-    magic->byteAt(0) = 0x60;
-    magic->byteAt(1) = 0x0a;
+    mutate(magic)->byteAt(0) = 0x60;
+    mutate(magic)->byteAt(1) = 0x0a;
     headerFields->append(magic);
 
     String header = headerFields->join();

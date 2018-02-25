@@ -32,7 +32,7 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
             continue;
         }
 
-        if (isFlag) s->trimInsitu("-");
+        if (isFlag) mutate(s)->trimInsitu("-");
 
         Variant value = true;
         if (isKeyValueOption) {

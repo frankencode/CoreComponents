@@ -62,8 +62,8 @@ void Crc16Sink::write(const ByteArray *data)
 Ref<ByteArray> Crc16Sink::finish()
 {
     Ref<ByteArray> sum = ByteArray::create(Size);
-    sum->at(0) = (crc_ >> 8) & 0xFF;
-    sum->at(1) = crc_ & 0xFF;
+    mutate(sum)->at(0) = (crc_ >> 8) & 0xFF;
+    mutate(sum)->at(1) = crc_ & 0xFF;
     return sum;
 }
 

@@ -145,7 +145,7 @@ String Dir::createUnique(String path, int mode, char placeHolder)
                     r += 'a' - 10;
                 else if ((36 <= r) && (r <= 61))
                     r += 'A' - 36;
-                candidate->at(i) = r;
+                mutate(candidate)->at(i) = r;
             }
         }
         if (::mkdir(candidate, mode) == -1) {

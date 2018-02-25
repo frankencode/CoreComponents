@@ -71,7 +71,7 @@ int main(int argc, char **argv)
                     const IoEvent *event = activity->at(i);
                     Ref<StreamSocket> socket = event->target();
                     if (socket == serverSocket) {
-                        int n = serverSocket->read(data);
+                        int n = serverSocket->read(mutate(data));
                         if (n == 0) {
                             serverClosed = true;
                             ferr() << "[srv] DONE" << nl;
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
                         dump("(cli)", range);
                     }
                     else if (socket == clientSocket) {
-                        int n = clientSocket->read(data);
+                        int n = clientSocket->read(mutate(data));
                         if (n == 0) {
                             clientClosed = true;
                             ferr() << "[cli] DONE" << nl;

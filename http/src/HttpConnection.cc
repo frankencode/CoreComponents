@@ -48,7 +48,7 @@ void HttpConnection::readMessage(HttpMessage *message)
 
     try {
         Ref<TransferLimiter> limiter = TransferLimiter::open(stream_, 0x10000);
-        Ref<LineSource> source = LineSource::open(limiter, lineBuffer_);
+        Ref<LineSource> source = LineSource::open(limiter, mutate(lineBuffer_));
 
         readFirstLine(source, message);
 
@@ -63,7 +63,7 @@ void HttpConnection::readMessage(HttpMessage *message)
                     multiValue = StringList::create();
                     multiValue->append(value);
                 }
-                line->trimInsitu();
+                mutate(line)->trimInsitu();
                 multiValue->append(line);
                 continue;
             }
@@ -75,8 +75,8 @@ void HttpConnection::readMessage(HttpMessage *message)
             if (i == line->count()) throw BadRequest();
             name = line->copy(0, i);
             value = line->copy(i + 1, line->count());
-            name->trimInsitu();
-            value->trimInsitu();
+            mutate(name)->trimInsitu();
+            mutate(value)->trimInsitu();
             if (value != "")
                 message->establish(name, value);
         }

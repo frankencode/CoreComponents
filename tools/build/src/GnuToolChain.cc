@@ -78,8 +78,8 @@ String GnuToolChain::compiler(const BuildPlan *plan) const
 String GnuToolChain::queryMachine(String compiler)
 {
     String machine = SubProcess::open(machineCommand(compiler), stdErr())->readAll();
-    machine->trimInsitu();
-    machine->replaceInsitu("-pc-", "-"); // workaround for clang/bash
+    mutate(machine)->trimInsitu();
+    mutate(machine)->replaceInsitu("-pc-", "-"); // workaround for clang/bash
     return machine;
 }
 
@@ -96,7 +96,7 @@ String GnuToolChain::machineCommand() const
 String GnuToolChain::querySystemRoot(String compiler)
 {
     String systemRoot = SubProcess::open(compiler + " -print-sysroot", stdErr())->readAll();
-    systemRoot->trimInsitu();
+    mutate(systemRoot)->trimInsitu();
     return systemRoot;
 }
 

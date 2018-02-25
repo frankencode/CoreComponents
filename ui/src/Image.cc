@@ -33,7 +33,7 @@ void Image::clear(Color c)
 {
     const int n = size_->w() * size_->h();
     for (int i = 0; i < n; ++i)
-        data_->item<Color>(i) = c;
+        mutate(data_)->item<Color>(i) = c;
 }
 
 #if 0
@@ -61,7 +61,7 @@ void Image::blendRect(Rect r, Color c)
 void Image::normalize()
 {
     const int n = data_->itemCount<Color>();
-    Color *p = &data_->item<Color>(0);
+    Color *p = &mutate(data_)->item<Color>(0);
     for (int i = 0; i < n; ++i)
         Color::normalize(p + i);
 }
@@ -69,7 +69,7 @@ void Image::normalize()
 cairo_surface_t *Image::cairoSurface() const
 {
     if (!cairoSurface_)
-        cairoSurface_ = cairo_image_surface_create_for_data(const_cast<Image *>(this)->data_->bytes(), CAIRO_FORMAT_ARGB32, size_[0], size_[1], pitch());
+        cairoSurface_ = cairo_image_surface_create_for_data(mutate(data_)->bytes(), CAIRO_FORMAT_ARGB32, size_[0], size_[1], pitch());
     return cairoSurface_;
 }
 

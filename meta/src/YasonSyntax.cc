@@ -705,7 +705,7 @@ String YasonSyntax::readText(const ByteArray *text, Token *token) const
             token = token->nextSibling();
         }
         s = (l->count() == 1) ? l->at(0) : l->join();
-        s->unescapeInsitu();
+        mutate(s)->unescapeInsitu();
     }
 
     return s;

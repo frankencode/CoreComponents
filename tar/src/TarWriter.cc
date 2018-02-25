@@ -55,9 +55,9 @@ void TarWriter::writeFile(String path, FileStatus *status)
 
     String pathField(99, '\0');
     if (status == longPathStatus_ || status == longLinkStatus_)
-        pathField->write(String("././@LongLink"));
+        mutate(pathField)->write(String("././@LongLink"));
     else
-        pathField->write(path);
+        mutate(pathField)->write(path);
     headerFields->append(pathField);
     headerFields->append(zero_);
 
@@ -103,7 +103,7 @@ void TarWriter::writeFile(String path, FileStatus *status)
     headerFields->append(typeField);
 
     String linkField(99, '\0');
-    linkField->write(linkTarget);
+    mutate(linkField)->write(linkTarget);
     headerFields->append(linkField);
     headerFields->append(zero_);
 
@@ -112,12 +112,12 @@ void TarWriter::writeFile(String path, FileStatus *status)
     headerFields->append(zero_);
 
     String userField(31, '\0');
-    userField->write(User::lookup(status->ownerId())->name());
+    mutate(userField)->write(User::lookup(status->ownerId())->name());
     headerFields->append(userField);
     headerFields->append(zero_);
 
     String groupField(31, '\0');
-    groupField->write(Group::lookup(status->groupId())->name());
+    mutate(groupField)->write(Group::lookup(status->groupId())->name());
     headerFields->append(groupField);
     headerFields->append(zero_);
 
@@ -129,7 +129,7 @@ void TarWriter::writeFile(String path, FileStatus *status)
     String header = headerFields->join();
     CC_ASSERT(header->count() == 329);
     unsigned checksum = tarHeaderSum(header);
-    checksumField->write(oct(checksum, 6));
+    mutate(checksumField)->write(oct(checksum, 6));
     header = headerFields->join();
     sink_->write(header);
     writePadding(header->count());

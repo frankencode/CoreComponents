@@ -16,7 +16,7 @@ String reverse(String v)
 {
     Ref<ByteArray> w = ByteArray::allocate(v->count());
     for (int i = 0, n = v->count(); i < n; ++i)
-        w->at(i) = v->at(n - i - 1);
+        mutate(w)->at(i) = v->at(n - i - 1);
     return w;
 }
 

@@ -147,14 +147,14 @@ inline void ByteSource::read(ByteArray *span)
 inline Ref<ByteArray> ByteSource::readSpan(int n)
 {
     Ref<ByteArray> bytes = ByteArray::create(n);
-    read(bytes);
+    read(mutate(bytes));
     return bytes;
 }
 
 inline bool ByteSource::hasMore()
 {
     if (i_ == n_ && source_) {
-        n_ = source_->read(buffer_);
+        n_ = source_->read(mutate(buffer_));
         i0_ += i_;
         i_ = 0;
     }
@@ -166,7 +166,7 @@ inline uint8_t ByteSource::readUInt8()
     if (i_ == n_) {
         if (!source_) throw UnexpectedEndOfInputError();
 
-        n_ = source_->read(buffer_);
+        n_ = source_->read(mutate(buffer_));
         i_ = 0;
 
         if (n_ == 0) throw UnexpectedEndOfInputError();

@@ -26,8 +26,8 @@ using namespace ccaes;
 String normalizePassword(String password)
 {
     Ref<ByteArray> s = ByteArray::create(16);
-    s->fill(' ');
-    s->write(password);
+    mutate(s)->fill(' ');
+    mutate(s)->write(password);
     return s;
 }
 
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
             {
                 Ref<ByteArray> contentKey = random->readSpan(16);
                 Ref<ByteArray> encipheredContentKey = ByteArray::allocate(contentKey->count());
-                AesCipher::create(password)->encode(contentKey, encipheredContentKey);
+                AesCipher::create(password)->encode(contentKey, mutate(encipheredContentKey));
 
                 Ref<BlockCipher> cipher = BlockCascade::create(AesCipher::create(contentKey));
 
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
                 Ref<CipherSink> cipherSink = CipherSink::open(cipher, sink, random);
                 {
-                    Ref<ByteSink> header = ByteSink::open(cipherSink, ByteArray::allocate(0x100));
+                    Ref<ByteSink> header = ByteSink::open(cipherSink, mutate(ByteArray::allocate(0x100)));
                     Ref<ByteArray> challenge = random->readSpan(16);
                     header->write(challenge);
                     header->writeUInt32(crc32(challenge));
@@ -122,14 +122,14 @@ int main(int argc, char **argv)
 
                 Ref<ByteArray> contentKey = ByteArray::allocate(16);
                 Ref<ByteArray> encipheredContentKey = source->readSpan(16);
-                AesCipher::create(password)->decode(encipheredContentKey, contentKey);
+                AesCipher::create(password)->decode(encipheredContentKey, mutate(contentKey));
 
                 Ref<BlockCipher> cipher = BlockCascade::create(AesCipher::create(contentKey));
                 Ref<CipherSource> cipherSource = CipherSource::open(cipher, source);
                 String origName;
                 uint64_t origSize = 0;
                 {
-                    Ref<ByteSource> header = ByteSource::open(cipherSource, ByteArray::allocate(1));
+                    Ref<ByteSource> header = ByteSource::open(cipherSource, mutate(ByteArray::allocate(1)));
                     Ref<ByteArray> challenge = header->readSpan(16);
                     if (crc32(challenge) != header->readUInt32()) throw UsageError("Invalid password or invalid file");
                     int nameLength = header->readInt32();

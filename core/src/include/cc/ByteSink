@@ -143,7 +143,7 @@ inline void ByteSink::write(String s)
 inline void ByteSink::writeUInt8(uint8_t x)
 {
     if (i_ == buffer_->count()) flush();
-    buffer_->at(i_++) = x;
+    mutate(buffer_)->at(i_++) = x;
 }
 
 inline void ByteSink::writeUInt16(uint16_t x)

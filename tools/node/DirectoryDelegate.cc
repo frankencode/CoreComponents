@@ -173,7 +173,7 @@ void DirectoryDelegate::streamFile(String path)
     response()->beginTransmission(size);
     Ref<ByteArray> buf = ByteArray::allocate(0x10000);
     while (true) {
-        int n = file->read(buf);
+        int n = file->read(mutate(buf));
         if (n == 0) break;
         response()->write(buf->select(0, n));
     }

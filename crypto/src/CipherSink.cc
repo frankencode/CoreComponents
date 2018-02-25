@@ -46,7 +46,7 @@ void CipherSink::write(const ByteArray *data)
     int i = 0;
 
     for (; i + n_b <= data->count(); i += n_b) {
-        cipher_->encode(data->select(i, i + n_b), block_);
+        cipher_->encode(data->select(i, i + n_b), mutate(block_));
         sink_->write(block_);
     }
 

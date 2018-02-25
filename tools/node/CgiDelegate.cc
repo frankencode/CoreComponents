@@ -85,7 +85,7 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
         if (errorLog()->level() >= DebugLogLevel)
             cgiServer->setupTransferLog(errorLog()->debugStream(), address->toString());
 
-        String headerText = compileHeader(request, payload);
+        String headerText = compileHeader(request, mutate(payload));
         cgiServer->stream()->write(
             Format()
                 << headerText->count() << ":"
@@ -99,7 +99,7 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
         if (!scriptPath->isAbsolutePath()) scriptPath = documentRoot->expandPath(scriptPath);
         args->at(0) = scriptPath;
 
-        Ref<EnvMap> env = makeEnv(request, payload);
+        Ref<EnvMap> env = makeEnv(request, mutate(payload));
         env->insert("SCRIPT_NAME", "/" + scriptPath->baseName());
         if (documentRoot != "") env->insert("DOCUMENT_ROOT", documentRoot);
 
@@ -200,7 +200,7 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
         {
             Ref<ByteArray> buffer = ByteArray::allocate(0x10000);
             while (true) {
-                int n = cgiResponse->payload()->read(buffer);
+                int n = cgiResponse->payload()->read(mutate(buffer));
                 if (n == 0) break;
                 response()->write(buffer->select(0, n));
                 totalTransferred += n;
@@ -320,7 +320,7 @@ String CgiDelegate::urlDecode(HttpRequest *request, ByteArray *payload)
 String CgiDelegate::wrapHttp(String header)
 {
     String h = header->toUpper();
-    h->replaceInsitu('-','_');
+    mutate(h)->replaceInsitu('-','_');
     return str("HTTP_") + h;
 }
 

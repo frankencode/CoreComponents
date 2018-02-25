@@ -216,7 +216,7 @@ String File::readlink(String path)
 {
     String buf(128);
     while (true) {
-        ssize_t numBytes = ::readlink(path, buf, buf->count());
+        ssize_t numBytes = ::readlink(path, mutate(buf)->chars(), buf->count());
         if (numBytes == -1)
             return String();
         if (numBytes <= buf->count()) {
@@ -256,7 +256,7 @@ String File::createUnique(String path, int mode, char placeHolder)
                     r += 'a' - 10;
                 else if ((36 <= r) && (r <= 61))
                     r += 'A' - 36;
-                candidate->at(i) = r;
+                mutate(candidate)->at(i) = r;
             }
         }
         int fd = ::open(candidate, O_RDONLY|O_CREAT|O_EXCL, mode);

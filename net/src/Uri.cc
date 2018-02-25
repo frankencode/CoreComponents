@@ -43,7 +43,7 @@ void Uri::readUri(const ByteArray *text, Token *rootToken)
     while (token) {
         if (token->rule() == UriSyntax::instance()->scheme()) {
             scheme_ = decode(text->copy(token->i0(), token->i1()));
-            scheme_->downcaseInsitu();
+            mutate(scheme_)->downcaseInsitu();
         }
         else if (token->rule() == UriSyntax::instance()->authority()) {
             Token *child = token->firstChild();
@@ -104,7 +104,7 @@ String Uri::toString() const
 
 String Uri::encode(String s)
 {
-    s->downcaseInsitu();
+    mutate(s)->downcaseInsitu();
 
     const char *reserved = ":/?#[]@!$&'()*+,;=";
     Ref<StringList> l = StringList::create();
@@ -116,8 +116,8 @@ String Uri::encode(String s)
                 if (j < i)
                     l->append(s->copy(j, i));
                 String pct("%XX");
-                pct->at(1) = ch >> 4;
-                pct->at(2) = ch & 0xF;
+                mutate(pct)->at(1) = ch >> 4;
+                mutate(pct)->at(2) = ch & 0xF;
                 l->append(pct);
                 j = i + 1;
                 break;
@@ -156,9 +156,9 @@ String Uri::decode(String s)
                 }
             }
         }
-        if (j < i) s->at(j) = ch;
+        if (j < i) mutate(s)->at(j) = ch;
     }
-    s->truncate(j);
+    mutate(s)->truncate(j);
     return s;
 }
 

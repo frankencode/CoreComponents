@@ -111,7 +111,7 @@ String ByteArray::cat(const String &a, const String &b)
 ByteArray *ByteArray::empty()
 {
     static thread_local Ref<ByteArray> empty_(new ByteArray());
-    return empty_;
+    return mutate(empty_);
 }
 
 ByteArray::ByteArray():
@@ -180,9 +180,10 @@ void ByteArray::destroy()
     else delete[] data_;
 }
 
-void ByteArray::fill(char zero)
+String ByteArray::fill(char zero)
 {
     memset(data_, zero, size_);
+    return this;
 }
 
 void ByteArray::truncate(int newSize)
@@ -225,7 +226,7 @@ String ByteArray::paste(int i0, int i1, const String &text) const
     return parts->join();
 }
 
-int ByteArray::countCharsIn(const char *set)
+int ByteArray::countCharsIn(const char *set) const
 {
     int n = 0;
     for (const char *p = data_; *p; ++p) {
@@ -342,7 +343,7 @@ Ref<StringList> ByteArray::breakUp(int chunkSize) const
     return parts;
 }
 
-void ByteArray::replaceInsitu(const char *pattern, const char *replacement)
+String ByteArray::replaceInsitu(const char *pattern, const char *replacement)
 {
     int patternLength = strlen(pattern);
     int replacementLength = strlen(replacement);
@@ -369,13 +370,12 @@ void ByteArray::replaceInsitu(const char *pattern, const char *replacement)
         }
         truncate(j);
     }
+    return this;
 }
 
 String ByteArray::replaceEach(char s, char r) const
 {
-    String b = copy();
-    b->replaceInsitu(s, r);
-    return b;
+    return mutate(copy())->replaceInsitu(s, r);
 }
 
 String ByteArray::replace(const char *s, const char *r) const
@@ -410,16 +410,18 @@ int ByteArray::scanString(String *x, const char *termination, int i0, int i1) co
     return i;
 }
 
-void ByteArray::downcaseInsitu()
+String ByteArray::downcaseInsitu()
 {
     for (int i = 0; i < size_; ++i)
         chars_[i] = cc::downcase(chars_[i]);
+    return this;
 }
 
-void ByteArray::upcaseInsitu()
+String ByteArray::upcaseInsitu()
 {
     for (int i = 0; i < size_; ++i)
         data_[i] = cc::upcase(data_[i]);
+    return this;
 }
 
 String ByteArray::escape() const
@@ -440,8 +442,8 @@ String ByteArray::escape() const
             else {
                 String s = "\\xXX";
                 const char *hex = "0123456789ABCDEF";
-                s->at(s->count() - 2) = hex[ch / 16];
-                s->at(s->count() - 1) = hex[ch % 16];
+                mutate(s)->at(s->count() - 2) = hex[ch / 16];
+                mutate(s)->at(s->count() - 1) = hex[ch % 16];
                 parts->append(s);
             }
         }
@@ -453,9 +455,9 @@ String ByteArray::escape() const
     return parts->join();
 }
 
-void ByteArray::unescapeInsitu()
+String ByteArray::unescapeInsitu()
 {
-    if (!contains('\\')) return;
+    if (!contains('\\')) return this;
     int j = 0;
     uint32_t hs = 0; // high surrogate, saved
     String ec; // buffer for encoded character
@@ -484,7 +486,7 @@ void ByteArray::unescapeInsitu()
                         hs = 0;
                     }
                     if (!ec) ec = String(4);
-                    Ref<Utf8Sink> sink = Utf8Sink::open(ec);
+                    Ref<Utf8Sink> sink = Utf8Sink::open(mutate(ec));
                     sink->write(x);
                     int el = utf8::encodedSize(x);
                     for (int k = 0; k < el; ++k)
@@ -523,9 +525,10 @@ void ByteArray::unescapeInsitu()
         }
     }
     truncate(j);
+    return this;
 }
 
-void ByteArray::trimInsitu(const char *leadingSpace, const char *trailingSpace)
+String ByteArray::trimInsitu(const char *leadingSpace, const char *trailingSpace)
 {
     if (!trailingSpace) trailingSpace = leadingSpace;
     int i0 = 0, i1 = size_;
@@ -545,9 +548,10 @@ void ByteArray::trimInsitu(const char *leadingSpace, const char *trailingSpace)
     }
     if (i0 > 0 && i0 < i1) memmove(data_, data_ + i0, i1 - i0);
     truncate(i1 - i0);
+    return this;
 }
 
-void ByteArray::simplifyInsitu(const char *space)
+String ByteArray::simplifyInsitu(const char *space)
 {
     int j = 0;
     for (int i = 0, s = 0; i < size_; ++i) {
@@ -560,6 +564,7 @@ void ByteArray::simplifyInsitu(const char *space)
     }
     truncate(j);
     trimInsitu(space);
+    return this;
 }
 
 String ByteArray::normalize(bool nameCase) const
@@ -577,7 +582,7 @@ String ByteArray::normalize(bool nameCase) const
         else {
             if (nameCase) {
                 s = s->toLower();
-                s->at(0) = cc::upcase(s->at(0));
+                mutate(s)->at(0) = cc::upcase(s->at(0));
                 parts->at(i) = s;
             }
             ++i;
@@ -670,7 +675,7 @@ String ByteArray::fromUtf16(const ByteArray *utf16, Endian endian)
     }
 
     Ref<Utf16Source> source = Utf16Source::open(utf16, endian);
-    Ref<Utf8Sink> sink = Utf8Sink::open(out);
+    Ref<Utf8Sink> sink = Utf8Sink::open(mutate(out));
     for (uchar_t ch; source->read(&ch);)
         sink->write(ch);
 
@@ -713,11 +718,11 @@ String ByteArray::toUtf16(Endian endian) const
         for (int i = 0; i < chars->count(); ++i)
             n += utf16::encodedSize(chars->at(i));
         out = String(n + 2);
-        out->at(n) = 0;
-        out->at(n + 1) = 0;
+        mutate(out)->at(n) = 0;
+        mutate(out)->at(n + 1) = 0;
     }
     if (out->count() > 0) {
-        Ref<Utf16Sink> sink = Utf16Sink::open(out, endian);
+        Ref<Utf16Sink> sink = Utf16Sink::open(mutate(out), endian);
         for (int i = 0; i < chars->count(); ++i)
             sink->write(chars->at(i));
     }

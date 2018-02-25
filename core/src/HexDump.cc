@@ -35,7 +35,7 @@ void HexDump::write(const ByteArray *data)
 void HexDump::writeByte(uint8_t ch)
 {
     if (i_ == buffer_->count()) flush();
-    buffer_->byteAt(i_) = ch;
+    mutate(buffer_)->byteAt(i_) = ch;
     ++i_;
 }
 
@@ -45,7 +45,7 @@ void HexDump::flush()
     f << hex(offset_, 8) << "  ";
     for (int j = 0; j < buffer_->count(); ++j) {
         if (j < i_) {
-            uint8_t &ch = buffer_->byteAt(j);
+            uint8_t &ch = mutate(buffer_)->byteAt(j);
             f << hex(ch, 2);
             if (ch < 0x20 || 0x7F <= ch) ch = '.';
         }
