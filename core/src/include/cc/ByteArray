@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -123,11 +123,12 @@ private:
 
 class MutantString {
 public:
-    // MutantString(Ref<ByteArray> &&s): s_(s) {} // FIXME
+    MutantString(Ref<ByteArray> &&s): s_(s) {}
     MutantString(const Ref<ByteArray> &s): s_(s) {}
     operator char *();
     operator ByteArray *();
     ByteArray *operator->();
+
 private:
     String s_;
 };
@@ -974,7 +975,7 @@ inline MutantString::operator char *() { return s_.get()->chars(); }
 inline MutantString::operator ByteArray *() { return s_.get(); }
 inline ByteArray *MutantString::operator->() { return s_.get(); }
 
-inline MutantString mutate(Ref<ByteArray> &&s) { return MutantString(s); }
+inline MutantString mutate(Ref<ByteArray> &&s) { return std::move(s); }
 
 inline Ref<ByteArray>::Ref(const Ref &b):
     a_(0)
