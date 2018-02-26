@@ -69,8 +69,8 @@ public:
     Variant(Color value):   type_(ColorType),   itemType_(UndefType), word_(value) {}
     Variant(Version value): type_(VersionType), itemType_(UndefType), word_(value.n())   {}
 
-    Variant(const char *value):   type_(StringType), itemType_(UndefType) { initRef(String(value).get()); }
-    Variant(const String &value): type_(StringType), itemType_(UndefType) { initRef(value.get()); }
+    Variant(const char *value):   type_(StringType), itemType_(UndefType) { initRef(mutate(String(value))); }
+    Variant(const String &value): type_(StringType), itemType_(UndefType) { initRef(mutate(value)); }
     template<class T>
     Variant(const Ref<T> &value): type_(ObjectType), itemType_(UndefType) { initRef(value.get()); }
     template<class T>

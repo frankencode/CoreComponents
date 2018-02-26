@@ -115,10 +115,10 @@ private:
 
     friend ByteArray *mutate(const Ref<ByteArray> &s);
 
-    ByteArray *get() const;
+    const ByteArray *get() const;
     void set(const ByteArray *b);
 
-    ByteArray *a_;
+    const ByteArray *a_;
 };
 
 class MutantString {
@@ -969,11 +969,11 @@ inline bool operator> (const String &a, char *b) { return strcmp(a->chars(), b) 
 inline bool operator<=(const String &a, char *b) { return strcmp(a->chars(), b) <= 0; }
 inline bool operator>=(const String &a, char *b) { return strcmp(a->chars(), b) >= 0; }
 
-inline ByteArray *mutate(const Ref<ByteArray> &s) { return s.get(); }
+inline ByteArray *mutate(const Ref<ByteArray> &s) { return const_cast<ByteArray *>(s.get()); }
 
-inline MutantString::operator char *() { return s_.get()->chars(); }
-inline MutantString::operator ByteArray *() { return s_.get(); }
-inline ByteArray *MutantString::operator->() { return s_.get(); }
+inline MutantString::operator char *() { return const_cast<ByteArray *>(s_.get())->chars(); }
+inline MutantString::operator ByteArray *() { return const_cast<ByteArray *>(s_.get()); }
+inline ByteArray *MutantString::operator->() { return const_cast<ByteArray *>(s_.get()); }
 
 inline MutantString mutate(Ref<ByteArray> &&s) { return std::move(s); }
 
@@ -1047,7 +1047,7 @@ inline Ref<ByteArray> &Ref<ByteArray>::operator+=(const Ref<StringList> &b) { se
 
 inline Ref<ByteArray> Ref<ByteArray>::join(const StringList *parts, String sep) { return ByteArray::join(parts, sep); }
 
-inline ByteArray *Ref<ByteArray>::get() const
+inline const ByteArray *Ref<ByteArray>::get() const
 {
     if (!a_) return ByteArray::empty();
     return a_;
@@ -1058,7 +1058,7 @@ inline void Ref<ByteArray>::set(const ByteArray *b)
     if (a_ != b) {
         if (b) b->incRefCount();
         if (a_) a_->decRefCount();
-        a_ = const_cast<ByteArray *>(b);
+        a_ = b;
     }
 }
 
