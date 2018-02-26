@@ -13,7 +13,7 @@
 namespace cc {
 namespace crypto {
 namespace aes {
-Ref<ByteArray> keyExpansion(const ByteArray *k, int Nr);
+String keyExpansion(const ByteArray *k, int Nr);
 }}}
 
 using namespace cc;
@@ -26,7 +26,7 @@ class TestKeyExpansion: public TestCase
     static bool testKeyExpansion128()
     {
         const uint8_t k[16] = { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c };
-        Ref<ByteArray> w = keyExpansion(ByteArray::copy((char*)k, sizeof(k)), -1);
+        String w = keyExpansion(ByteArray::copy((char*)k, sizeof(k)), -1);
         return
             w->byteAt(w->count() - 4) == 0xb6 &&
             w->byteAt(w->count() - 3) == 0x63 &&
@@ -40,7 +40,7 @@ class TestKeyExpansion: public TestCase
             0x8e, 0x73, 0xb0, 0xf7, 0xdA, 0x0e, 0x64, 0x52, 0xc8, 0x10, 0xf3, 0x2b,
             0x80, 0x90, 0x79, 0xe5, 0x62, 0xf8, 0xea, 0xd2, 0x52, 0x2c, 0x6b, 0x7b
         };
-        Ref<ByteArray> w = keyExpansion(ByteArray::copy((char*)k, sizeof(k)), -1);
+        String w = keyExpansion(ByteArray::copy((char*)k, sizeof(k)), -1);
         return
             w->at(w->count() - 4) == 0x01 &&
             w->at(w->count() - 3) == 0x00 &&
@@ -54,7 +54,7 @@ class TestKeyExpansion: public TestCase
             0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b, 0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81,
             0x1f, 0x35, 0x2c, 0x07, 0x3b, 0x61, 0x08, 0xd7, 0x2d, 0x98, 0x10, 0xa3, 0x09, 0x14, 0xdf, 0xf4
         };
-        Ref<ByteArray> w = keyExpansion(ByteArray::copy((char*)k, sizeof(k)), -1);
+        String w = keyExpansion(ByteArray::copy((char*)k, sizeof(k)), -1);
         return
             w->at(w->count() - 4) == 0x70 &&
             w->at(w->count() - 3) == 0x6c &&
@@ -71,7 +71,7 @@ class TestKeyExpansion: public TestCase
 
 class AesExamples: public TestCase
 {
-    void printState(const char *name, Ref<ByteArray> s)
+    void printState(const char *name, const String &s)
     {
         fout() << name << ":" << nl;
         for (int r = 0; r < 4; ++r) {

@@ -60,7 +60,7 @@ private:
     static int skipEol(const ByteArray *buffer, int n, int i);
 
     Ref<Stream> stream_;
-    Ref<ByteArray> buffer_;
+    String buffer_;
     bool eoi_;
     int i_, n_;
 };

@@ -14,7 +14,7 @@ using namespace cc;
 
 String reverse(String v)
 {
-    Ref<ByteArray> w = ByteArray::allocate(v->count());
+    String w = String::allocate(v->count());
     for (int i = 0, n = v->count(); i < n; ++i)
         mutate(w)->at(i) = v->at(n - i - 1);
     return w;

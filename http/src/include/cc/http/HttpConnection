@@ -39,7 +39,7 @@ protected:
 
     Ref<HttpStream> httpStream_;
     Ref<Stream> stream_;
-    Ref<ByteArray> lineBuffer_;
+    String lineBuffer_;
 };
 
 }} // namespace cc::http

@@ -24,7 +24,7 @@ LineSource::LineSource(Stream *stream, ByteArray *buffer):
     eoi_(false),
     i_(0), n_(0)
 {
-    if (!buffer_) buffer_ = ByteArray::allocate(0x1000);
+    if (!buffer_) buffer_ = String::allocate(0x1000);
 }
 
 bool LineSource::read(String *line)

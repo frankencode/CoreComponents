@@ -61,7 +61,7 @@ private:
     cairo_surface_t *cairoSurface() const override;
 
     Size size_;
-    Ref<ByteArray> data_;
+    String data_;
 
     mutable cairo_surface_t *cairoSurface_;
 };

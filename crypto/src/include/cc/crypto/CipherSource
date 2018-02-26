@@ -27,16 +27,16 @@ public:
       */
     static Ref<CipherSource> open(BlockCipher *cipher, Stream *source);
 
-    virtual int read(ByteArray *data) override;
+    int read(ByteArray *data) override;
 
 private:
     CipherSource(BlockCipher *cipher, Stream *source);
 
     Ref<BlockCipher> cipher_;
     Ref<Stream> source_;
-    Ref<ByteArray> block_;
-    Ref<ByteArray> buffer_; // decoding buffer
-    Ref<ByteArray> pending_; // undecoded pending bytes
+    String block_;
+    String buffer_; // decoding buffer
+    String pending_; // undecoded pending bytes
     int j_, m_; // consumption index and fill mark
 };
 

@@ -19,7 +19,7 @@ Ref<BlockCascade> BlockCascade::create(BlockCipher *cipher, const ByteArray *iv)
 BlockCascade::BlockCascade(BlockCipher *cipher, const ByteArray *iv):
     BlockCipher(cipher->blockSize()),
     cipher_(cipher),
-    s_(ByteArray::allocate(cipher->blockSize()))
+    s_(String::allocate(cipher->blockSize()))
 {
     mutate(s_)->fill(0);
     if (iv) mutate(s_)->write(iv);

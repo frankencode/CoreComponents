@@ -14,7 +14,7 @@
 
 namespace cc {
 
-typedef Channel< Ref<ByteArray>, CircularBuffer > TransferBufferQueue;
+typedef Channel<String, CircularBuffer> TransferBufferQueue;
 
 class TransferInputWorker: public Thread
 {
@@ -29,7 +29,7 @@ public:
 
     off_t totalRead() const { Guard<Mutex> guard(mutex_); return totalRead_; }
 
-    void stop() { freeQueue_->pushFront(Ref<ByteArray>()); }
+    void stop() { freeQueue_->pushFront(String()); }
 
 private:
     TransferInputWorker(TransferBufferQueue *freeQueue, TransferBufferQueue *writeQueue, Stream *source):
@@ -44,7 +44,7 @@ private:
     virtual void run() override
     {
         try {
-            Ref<ByteArray> buffer;
+            String buffer;
             while (freeQueue_->popFront(&buffer)) {
                 int n = source_->read(mutate(buffer));
                 if (n == 0) break;
@@ -54,7 +54,7 @@ private:
                 }
                 writeQueue_->pushBack(buffer->select(0, n));
             }
-            writeQueue_->pushBack(Ref<ByteArray>());
+            writeQueue_->pushBack(String());
         }
         catch (Exception &ex) {
             errorMessage_ = ex.message();
@@ -87,7 +87,7 @@ public:
 
     off_t totalWritten() const { Guard<Mutex> guard(mutex_); return totalWritten_; }
 
-    void stop() { writeQueue_->pushFront(Ref<ByteArray>()); }
+    void stop() { writeQueue_->pushFront(String()); }
 
 private:
     TransferOutputWorker(TransferBufferQueue *writeQueue, TransferBufferQueue *freeQueue, Stream *sink):
@@ -102,7 +102,7 @@ private:
     virtual void run() override
     {
         try {
-            Ref<ByteArray> buffer;
+            String buffer;
             while (writeQueue_->popFront(&buffer)) {
                 sink_->write(buffer);
                 {

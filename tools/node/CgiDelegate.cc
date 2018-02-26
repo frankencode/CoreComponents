@@ -189,7 +189,7 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
 
     if (request->majorVersion() == 1 && request->minorVersion() == 0)
     {
-        Ref<ByteArray> content = cgiResponse->payload()->readSpan(contentLength);
+        String content = cgiResponse->payload()->readSpan(contentLength);
         response()->beginTransmission(content->count());
         response()->write(content);
         response()->endTransmission();
@@ -198,7 +198,7 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
         response()->beginTransmission();
         ssize_t totalTransferred = 0;
         {
-            Ref<ByteArray> buffer = ByteArray::allocate(0x10000);
+            String buffer = String::allocate(0x10000);
             while (true) {
                 int n = cgiResponse->payload()->read(mutate(buffer));
                 if (n == 0) break;
@@ -300,7 +300,7 @@ String CgiDelegate::compileHeader(HttpRequest *request, ByteArray *payload) cons
 
     header << "";
 
-    return ByteArray::join(header, '\0');
+    return String::join(header, '\0');
 }
 
 String CgiDelegate::urlDecode(HttpRequest *request, ByteArray *payload)

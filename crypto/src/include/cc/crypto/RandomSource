@@ -24,7 +24,7 @@ public:
       */
     static Ref<RandomSource> open(const ByteArray *salt = 0);
 
-    virtual int read(ByteArray *data) override;
+    int read(ByteArray *data) override;
 
 private:
     RandomSource(const ByteArray *salt);

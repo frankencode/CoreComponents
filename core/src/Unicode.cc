@@ -11,7 +11,7 @@
 
 namespace cc {
 
-Ref<ByteArray> Unicode::copy(int i0, int i1) const
+String Unicode::copy(int i0, int i1) const
 {
     CC_ASSERT(i0 <= i1);
     walkTo(i0);

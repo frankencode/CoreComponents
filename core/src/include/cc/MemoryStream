@@ -27,7 +27,7 @@ public:
 
 private:
     MemoryStream(ByteArray *buffer);
-    Ref<ByteArray> buffer_;
+    String buffer_;
     int i_;
 };
 

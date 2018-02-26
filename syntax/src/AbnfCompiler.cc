@@ -212,7 +212,7 @@ NODE AbnfCompiler::compileNumVal(const ByteArray *text, Token *numVal, SyntaxDef
                 n += text->at(i) == '.';
                 ++i;
             }
-            Ref<ByteArray> s = ByteArray::create(n);
+            String s = String::create(n);
             int i0 = numVal->i0() + 2;
             int i = i0;
             int j = 0;
@@ -269,7 +269,7 @@ NODE AbnfCompiler::optimizeChoice(SyntaxNode *node, SyntaxDefinition *definition
     }
 
     if (isRangeExplicit) {
-        Ref<ByteArray> s = ByteArray::create(numChars);
+        String s = String::create(numChars);
         int i = 0;
         SyntaxNode *child = ignoreDebug(node)->firstChild();
         while (child) {
@@ -305,7 +305,7 @@ void AbnfCompiler::deepOptimizeChoice(SyntaxNode *node, SyntaxDefinition *defini
 void AbnfCompiler::deepOptimizeChoice(SyntaxNode *node, SyntaxNode *fin, int numChars, SyntaxDefinition *definition)
 {
     if (numChars > 1) {
-        Ref<ByteArray> s = ByteArray::create(numChars);
+        String s = String::create(numChars);
         int i = numChars - 1;
         while (i >= 0) {
             SyntaxNode *charNode = (fin) ? fin->previousSibling() : ignoreDebug(node)->lastChild();

@@ -25,7 +25,7 @@ using namespace ccaes;
 
 String normalizePassword(String password)
 {
-    Ref<ByteArray> s = ByteArray::create(16);
+    String s = String::create(16);
     mutate(s)->fill(' ');
     mutate(s)->write(password);
     return s;
@@ -61,8 +61,8 @@ int main(int argc, char **argv)
 
             for (String path: items)
             {
-                Ref<ByteArray> contentKey = random->readSpan(16);
-                Ref<ByteArray> encipheredContentKey = ByteArray::allocate(contentKey->count());
+                String contentKey = random->readSpan(16);
+                String encipheredContentKey = String::allocate(contentKey->count());
                 AesCipher::create(password)->encode(contentKey, mutate(encipheredContentKey));
 
                 Ref<BlockCipher> cipher = BlockCascade::create(AesCipher::create(contentKey));
@@ -83,8 +83,8 @@ int main(int argc, char **argv)
 
                 Ref<CipherSink> cipherSink = CipherSink::open(cipher, sink, random);
                 {
-                    Ref<ByteSink> header = ByteSink::open(cipherSink, mutate(ByteArray::allocate(0x100)));
-                    Ref<ByteArray> challenge = random->readSpan(16);
+                    Ref<ByteSink> header = ByteSink::open(cipherSink, mutate(String::allocate(0x100)));
+                    String challenge = random->readSpan(16);
                     header->write(challenge);
                     header->writeUInt32(crc32(challenge));
                     header->writeInt32(fileName->count());
@@ -120,8 +120,8 @@ int main(int argc, char **argv)
                 else
                     source = File::open(path);
 
-                Ref<ByteArray> contentKey = ByteArray::allocate(16);
-                Ref<ByteArray> encipheredContentKey = source->readSpan(16);
+                String contentKey = String::allocate(16);
+                String encipheredContentKey = source->readSpan(16);
                 AesCipher::create(password)->decode(encipheredContentKey, mutate(contentKey));
 
                 Ref<BlockCipher> cipher = BlockCascade::create(AesCipher::create(contentKey));
@@ -129,8 +129,8 @@ int main(int argc, char **argv)
                 String origName;
                 uint64_t origSize = 0;
                 {
-                    Ref<ByteSource> header = ByteSource::open(cipherSource, mutate(ByteArray::allocate(1)));
-                    Ref<ByteArray> challenge = header->readSpan(16);
+                    Ref<ByteSource> header = ByteSource::open(cipherSource, mutate(String::allocate(1)));
+                    String challenge = header->readSpan(16);
                     if (crc32(challenge) != header->readUInt32()) throw UsageError("Invalid password or invalid file");
                     int nameLength = header->readInt32();
                     origName = header->readSpan(nameLength);

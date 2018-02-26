@@ -54,9 +54,9 @@ off_t Stream::transferSpanTo(off_t count, Stream *sink, ByteArray *buffer)
     if (count == 0) return 0;
 
     off_t total = 0;
-    Ref<ByteArray> h;
+    String h;
     if (!buffer) {
-        h = ByteArray::allocate((0 < count && count < 0x4000) ? count : 0x4000);
+        h = String::allocate((0 < count && count < 0x4000) ? count : 0x4000);
         buffer = mutate(h);
     }
 
@@ -98,8 +98,8 @@ String Stream::readSpan(int count)
 
 String Stream::readAll(ByteArray *buffer)
 {
-    Ref<ByteArray> data = buffer;
-    if (!data) data = ByteArray::allocate(0x4000);
+    String data = buffer;
+    if (!data) data = String::allocate(0x4000);
     Ref<StringList> parts = StringList::create();
     while (true) {
         int n = read(mutate(data));

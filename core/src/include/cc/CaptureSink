@@ -30,7 +30,7 @@ public:
     /** Collect all data written to this sink
       * \return Captured output
       */
-    Ref<ByteArray> collect() const;
+    String collect() const;
 
 private:
     CaptureSink();

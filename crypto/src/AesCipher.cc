@@ -240,10 +240,10 @@ inline uint8_t rCon(int i)
     return h;
 }
 
-Ref<ByteArray> keyExpansion(const ByteArray *key, int Nr)
+String keyExpansion(const ByteArray *key, int Nr)
 {
     if (Nr <= 0) Nr = numRounds(key->count() / 4);
-    Ref<ByteArray> w = ByteArray::create(Ns * (Nr + 1));
+    String w = String::create(Ns * (Nr + 1));
 
     const int Nk = key->count() / 4;
     int i = 0;
@@ -278,7 +278,7 @@ AesCipher::AesCipher(const ByteArray *key):
     BlockCipher(BlockSize),
     Nk_(key->count() / 4),
     Nr_(numRounds(Nk_)),
-    s_(ByteArray::create(Ns)),
+    s_(String::create(Ns)),
     w_(keyExpansion(key, Nr_))
 {
     CC_ASSERT(key && (key->count() == 16 || key->count() == 24 || key->count() == 32));

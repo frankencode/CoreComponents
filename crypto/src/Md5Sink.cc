@@ -6,7 +6,6 @@
  *
  */
 
-// #include <string.h> // FIXME
 #include <cc/crypto/Md5Sink>
 
 namespace cc {
@@ -18,7 +17,7 @@ Ref<Md5Sink> Md5Sink::open()
 }
 
 Md5Sink::Md5Sink():
-    aux_(ByteArray::create(0x4000 + 64)),
+    aux_(String::create(0x4000 + 64)),
     auxFill_(0),
     bytesFeed_(0),
     a_(0x67452301), b_(0xEFCDAB89),
@@ -46,7 +45,7 @@ void Md5Sink::write(const ByteArray *data)
     }
 }
 
-Ref<ByteArray> Md5Sink::finish()
+String Md5Sink::finish()
 {
     /** manually feed the padding and message size
       */
@@ -60,7 +59,7 @@ Ref<ByteArray> Md5Sink::finish()
 
     /** serialize the message digest
       */
-    Ref<ByteArray> h = ByteArray::create(Md5Sink::Size);
+    String h = String::create(Md5Sink::Size);
     int k = 0;
     for (int i = 0; i < 4; ++i) mutate(h)->at(k++) = a_ >> (8 * i);
     for (int i = 0; i < 4; ++i) mutate(h)->at(k++) = b_ >> (8 * i);
@@ -217,7 +216,7 @@ void Md5Sink::consume()
     auxFill_ = 0;
 }
 
-Ref<ByteArray> md5(const ByteArray *data)
+String md5(const ByteArray *data)
 {
     Ref<Md5Sink> h = Md5Sink::open();
     h->write(data);

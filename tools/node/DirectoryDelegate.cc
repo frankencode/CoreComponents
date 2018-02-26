@@ -171,7 +171,7 @@ void DirectoryDelegate::streamFile(String path)
     String mediaType = mediaTypeDatabase()->lookup(path, head);
     if (mediaType != "") response()->setHeader("Content-Type", mediaType);
     response()->beginTransmission(size);
-    Ref<ByteArray> buf = ByteArray::allocate(0x10000);
+    String buf = String::allocate(0x10000);
     while (true) {
         int n = file->read(mutate(buf));
         if (n == 0) break;

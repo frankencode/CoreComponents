@@ -62,7 +62,7 @@ int main(int argc, char **argv)
             monitor->addEvent(IoReadyRead, serverSocket);
             monitor->addEvent(IoReadyRead, clientSocket);
 
-            Ref<ByteArray> data = ByteArray::allocate(0x10000);
+            String data = String::allocate(0x10000);
             bool serverClosed = false;
             bool clientClosed = false;
             while (!(serverClosed || clientClosed)) {

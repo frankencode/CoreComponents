@@ -135,14 +135,11 @@ String File::map() const
     if (::madvise(p, mapSize, MADV_SEQUENTIAL) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
     #endif
-    return String(
-        Ref<ByteArray>(
-            new MappedByteArray(
-                reinterpret_cast<char *>(p),
-                fileSize
-            )
-        )
-    );
+    return
+        new MappedByteArray(
+            reinterpret_cast<char *>(p),
+            fileSize
+        );
 }
 
 void File::unmap(ByteArray *s)

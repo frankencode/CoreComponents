@@ -42,7 +42,7 @@ private:
 
     Ref<Stream> sink_;
     off_t offset_;
-    Ref<ByteArray> buffer_;
+    String buffer_;
     int i_;
 };
 

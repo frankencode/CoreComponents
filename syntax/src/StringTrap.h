@@ -45,8 +45,8 @@ private:
 
     class Node: public Object {
     public:
-        Node(const char *s, int len): s_(ByteArray::copy(s, len)) {}
-        Ref<ByteArray> s_;
+        Node(const char *s, int len): s_(String::copy(s, len)) {}
+        String s_;
         Ref<Node> next_;
     };
     mutable Ref<Node> head_;

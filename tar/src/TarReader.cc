@@ -21,7 +21,7 @@ Ref<TarReader> TarReader::open(Stream *source)
 
 bool TarReader::testFormat(Stream *source)
 {
-    Ref<ByteArray> data = ByteArray::create(512);
+    String data = String::create(512);
     if (source->readSpan(mutate(data)) < data->count()) return false;
     String magic;
     data->scanString(&magic, "", 257, 263);
@@ -35,7 +35,7 @@ TarReader::TarReader(Stream *source)
 
 bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 {
-    if (!data_) data_ = ByteArray::create(512);
+    if (!data_) data_ = String::create(512);
     *nextEntry = ArchiveEntry::create();
 
     ByteArray *data = mutate(data_);

@@ -160,7 +160,7 @@ class RangeExplicitNode: public SyntaxNode
 {
 public:
     RangeExplicitNode(const char *s, int invert):
-        s_(ByteArray::copy(s)),
+        s_(s),
         invert_(invert)
     {}
 
@@ -188,7 +188,7 @@ public:
     inline int invert() const { return invert_; }
 
 private:
-    Ref<ByteArray> s_;
+    String s_;
     int invert_;
 };
 
@@ -196,7 +196,7 @@ class StringNode: public SyntaxNode
 {
 public:
     StringNode(const char *s, bool caseSensitive):
-        s_(ByteArray::copy(s)),
+        s_(s),
         caseSensitive_(caseSensitive)
     {
         if (!caseSensitive) mutate(s_)->downcaseInsitu();
@@ -227,7 +227,7 @@ public:
     inline const ByteArray &s() const { return *s_; }
 
 private:
-    Ref<ByteArray> s_;
+    String s_;
     bool caseSensitive_;
 };
 
@@ -462,7 +462,7 @@ public:
 
     int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
-        Ref<ByteArray> filteredText = text;
+        String filteredText = text;
 
         Token *lastChildSaved = parentToken->lastChild();
 
@@ -472,7 +472,7 @@ public:
         rollBack(parentToken, lastChildSaved);
 
         if (h != -1) {
-            Ref<ByteArray> filteredText = text->copy();
+            String filteredText = text->copy();
             for (Token *token = filterToken; token; token = token->nextSibling())
                 mutate(filteredText->select(token->i0(), token->i1()))->fill(blank_);
 

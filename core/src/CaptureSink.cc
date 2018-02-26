@@ -19,7 +19,7 @@ void CaptureSink::write(const ByteArray *data)
     parts_->append(data);
 }
 
-Ref<ByteArray> CaptureSink::collect() const
+String CaptureSink::collect() const
 {
     return parts_->join();
 }

@@ -42,9 +42,9 @@ Ref<Sha1Sink> Sha1Sink::open()
 }
 
 Sha1Sink::Sha1Sink():
-    h_(ByteArray::create(20)),
-    m_(ByteArray::create(64)),
-    w_(ByteArray::create(320)),
+    h_(String::create(20)),
+    m_(String::create(64)),
+    w_(String::create(320)),
     j_(0),
     l_(0)
 {
@@ -65,7 +65,7 @@ void Sha1Sink::write(const ByteArray *data)
     l_ += uint64_t(data->count()) * 8;
 }
 
-Ref<ByteArray> Sha1Sink::finish()
+String Sha1Sink::finish()
 {
     mutate(m_)->byteAt(j_++) = 0x80;
     if (j_ == 64) consume();
@@ -126,7 +126,7 @@ void Sha1Sink::consume()
     h[4] += e;
 }
 
-Ref<ByteArray> sha1(const ByteArray *data)
+String sha1(const ByteArray *data)
 {
     Ref<Sha1Sink> h = Sha1Sink::open();
     h->write(data);

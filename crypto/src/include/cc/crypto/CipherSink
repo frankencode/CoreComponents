@@ -27,7 +27,7 @@ public:
       */
     static Ref<CipherSink> open(BlockCipher *cipher, Stream *sink, Stream *pad = 0);
 
-    virtual void write(const ByteArray *data) override;
+    void write(const ByteArray *data) override;
 
 private:
     CipherSink(BlockCipher *cipher, Stream *sink, Stream *pad);
@@ -36,8 +36,8 @@ private:
     Ref<BlockCipher> cipher_;
     Ref<Stream> sink_;
     Ref<Stream> pad_;
-    Ref<ByteArray> block_;
-    Ref<ByteArray> pending_;
+    String block_;
+    String pending_;
 };
 
 }} // namespace cc::crypto

@@ -33,7 +33,7 @@ private:
     HttpStream(Stream *stream);
 
     Ref<Stream> stream_;
-    Ref<ByteArray> pending_;
+    String pending_;
     int pendingIndex_;
     int64_t payloadLeft_;
     int nlCount_, nlMax_;

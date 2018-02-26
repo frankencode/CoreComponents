@@ -19,7 +19,7 @@ Ref<Image> Image::create(Size size)
 
 Image::Image(Size size):
     size_(size),
-    data_(ByteArray::allocate(size->w() * size->h() * sizeof(Color))),
+    data_(String::allocate(size->w() * size->h() * sizeof(Color))),
     cairoSurface_(0)
 {}
 

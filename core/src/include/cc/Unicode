@@ -83,13 +83,13 @@ public:
       * \param i1 behind last %Unicode character index
       * \return UTF-8 encoded characters
       */
-    Ref<ByteArray> copy(int i0, int i1) const;
+    String copy(int i0, int i1) const;
 
     /// Copy the first n %Unicode characters
-    inline Ref<ByteArray> head(int n) const { return copy(0, n); }
+    inline String head(int n) const { return copy(0, n); }
 
     /// Copy the trailing n %Unicode characters
-    inline Ref<ByteArray> tail(int n) const { return copy(count() - n, n); }
+    inline String tail(int n) const { return copy(count() - n, n); }
 
     /** STL-style iterator declarations
       * @{

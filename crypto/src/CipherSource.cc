@@ -19,8 +19,8 @@ Ref<CipherSource> CipherSource::open(BlockCipher *cipher, Stream *source)
 CipherSource::CipherSource(BlockCipher *cipher, Stream *source):
     cipher_(cipher),
     source_(source),
-    block_(ByteArray::allocate(cipher_->blockSize())),
-    buffer_(ByteArray::allocate(0x1000)),
+    block_(String::allocate(cipher_->blockSize())),
+    buffer_(String::allocate(0x1000)),
     j_(0), m_(0)
 {}
 
@@ -60,7 +60,7 @@ int CipherSource::read(ByteArray *data)
         // decode contents of decoding buffer
 
         for (int i = 0; i + n_b <= m_; i += n_b) {
-            Ref<ByteArray> s = buffer_->select(i, i + n_b);
+            String s = buffer_->select(i, i + n_b);
             cipher_->decode(s, mutate(block_));
             mutate(s)->write(block_);
         }
@@ -68,7 +68,7 @@ int CipherSource::read(ByteArray *data)
         j_= 0;
     }
 
-    Ref<ByteArray> avail = buffer_->select(j_, m_);
+    String avail = buffer_->select(j_, m_);
     data->write(avail);
     if (data->count() < avail->count()) {
         j_ += data->count();

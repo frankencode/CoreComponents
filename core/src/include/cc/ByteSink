@@ -110,7 +110,7 @@ private:
         endian_(endian),
         i0_(0), i_(0)
     {
-        if (!buffer_) buffer_ = ByteArray::allocate(0x1000);
+        if (!buffer_) buffer_ = String::allocate(0x1000);
     }
 
     ~ByteSink()
@@ -119,7 +119,7 @@ private:
     }
 
     Ref<Stream> sink_;
-    Ref<ByteArray> buffer_;
+    String buffer_;
     Endian endian_;
     off_t i0_;
     int i_;

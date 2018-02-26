@@ -27,9 +27,8 @@ private:
     TarReader(Stream *source);
 
     Ref<Stream> source_;
-    Ref<ByteArray> data_;
+    String data_;
     off_t i_;
 };
 
 }} // namespace cc::tar
-

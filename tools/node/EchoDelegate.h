@@ -26,7 +26,7 @@ public:
                 echo << request->keyAt(i) << ": " << request->valueAt(i) << "\r\n";
             echo << "\r\n";
         }
-        Ref<ByteArray> buf = ByteArray::allocate(0x4000);
+        String buf = String::allocate(0x4000);
         while (true) {
             int n = request->payload()->read(mutate(buf));
             if (n == 0) break;

@@ -28,20 +28,20 @@ public:
       */
     static Ref<Sha1Sink> open();
 
-    virtual void write(const ByteArray *data) override;
-    virtual Ref<ByteArray> finish() override;
+    void write(const ByteArray *data) override;
+    String finish() override;
 
 private:
     Sha1Sink();
     void consume();
 
-    Ref<ByteArray> h_;
-    Ref<ByteArray> m_;
-    Ref<ByteArray> w_;
+    String h_;
+    String m_;
+    String w_;
     int j_;
     uint64_t l_;
 };
 
-Ref<ByteArray> sha1(const ByteArray *data);
+String sha1(const ByteArray *data);
 
 }} // namespace cc::crypto

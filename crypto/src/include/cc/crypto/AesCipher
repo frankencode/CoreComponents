@@ -35,8 +35,8 @@ public:
 private:
     AesCipher(const ByteArray *key);
     const int Nk_, Nr_;
-    Ref<ByteArray> s_;
-    Ref<ByteArray> w_;
+    String s_;
+    String w_;
 };
 
 }} // namespace cc::crypto

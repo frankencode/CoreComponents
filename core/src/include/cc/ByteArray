@@ -26,7 +26,7 @@ class ByteArray;
 class Variant;
 class Format;
 
-/** A string is a reference to a ByteArray
+/** \brief A string is a reference to a ByteArray
   * \ingroup unicode
   */
 typedef Ref<ByteArray> String;
@@ -37,20 +37,28 @@ typedef List<String> StringList;
 /** Get writable access to a string
   * @{
   */
-ByteArray *mutate(const Ref<ByteArray> &s);
+ByteArray *mutate(const String &s);
 
 class MutantString;
-MutantString mutate(Ref<ByteArray> &&s);
+MutantString mutate(String &&s);
 /** @}
   */
 
-/** \class Ref<ByteArray> ByteArray.h cc/ByteArray
-  * \brief Specialization of Ref<T>
+/** \class ByteArray ByteArray.h cc/ByteArray
+  * \brief Character arrays
+  * \ingroup unicode
   */
 template<>
 class Ref<ByteArray>
 {
 public:
+    static String allocate(int size);
+    static String create(int size);
+    static String create(int size, char zero);
+    static String copy(const char *data, int size = -1);
+    static String copy(const String &b);
+    static String cat(const String &a, const String &b);
+
     Ref(): a_(0) {}
     Ref(Ref &&b): a_(b.a_) { b.a_ = 0; }
     Ref(const Ref &b);
@@ -67,8 +75,6 @@ public:
     Ref(const Format &b);
 
     ~Ref() { set(0); }
-
-    static Ref copy(const Ref &b);
 
     inline const Ref &operator=(Ref &&b) { set(0); a_ = b.a_; b.a_ = 0; return *this; }
     inline const Ref &operator=(const Ref &b);
@@ -969,13 +975,13 @@ inline bool operator> (const String &a, char *b) { return strcmp(a->chars(), b) 
 inline bool operator<=(const String &a, char *b) { return strcmp(a->chars(), b) <= 0; }
 inline bool operator>=(const String &a, char *b) { return strcmp(a->chars(), b) >= 0; }
 
-inline ByteArray *mutate(const Ref<ByteArray> &s) { return const_cast<ByteArray *>(s.get()); }
+inline ByteArray *mutate(const String &s) { return const_cast<ByteArray *>(s.get()); }
 
 inline MutantString::operator char *() { return const_cast<ByteArray *>(s_.get())->chars(); }
 inline MutantString::operator ByteArray *() { return const_cast<ByteArray *>(s_.get()); }
 inline ByteArray *MutantString::operator->() { return const_cast<ByteArray *>(s_.get()); }
 
-inline MutantString mutate(Ref<ByteArray> &&s) { return std::move(s); }
+inline MutantString mutate(String &&s) { return std::move(s); }
 
 inline Ref<ByteArray>::Ref(const Ref &b):
     a_(0)
@@ -1015,9 +1021,34 @@ inline Ref<ByteArray>::Ref(const Ref<StringList> &parts):
         set(ByteArray::join(parts));
 }
 
-inline Ref<ByteArray> Ref<ByteArray>::copy(const Ref &b)
+inline String Ref<ByteArray>::allocate(int size)
+{
+    return ByteArray::allocate(size);
+}
+
+inline String Ref<ByteArray>::create(int size)
+{
+    return ByteArray::create(size);
+}
+
+inline String Ref<ByteArray>::create(int size, char zero)
+{
+    return mutate(ByteArray::create(size))->fill(zero);
+}
+
+inline String Ref<ByteArray>::copy(const char *data, int size)
+{
+    return ByteArray::copy(data, size);
+}
+
+inline String Ref<ByteArray>::copy(const String &b)
 {
     return ByteArray::copy(b.a_);
+}
+
+inline String Ref<ByteArray>::cat(const String &a, const String &b)
+{
+    return ByteArray::cat(a, b);
 }
 
 inline const Ref<ByteArray> &Ref<ByteArray>::operator=(const Ref &b)

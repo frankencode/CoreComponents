@@ -33,7 +33,7 @@ public:
     void write(const StringList *parts) override;
 
     /// Finsh hash sum computation and return the resulting hash sum
-    Ref<ByteArray> finish();
+    String finish();
 
 private:
     HashMeter(HashSink *hashSink, Stream *stream);

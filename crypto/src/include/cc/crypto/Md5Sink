@@ -28,19 +28,19 @@ public:
       */
     static Ref<Md5Sink> open();
 
-    virtual void write(const ByteArray *data) override;
-    virtual Ref<ByteArray> finish() override;
+    void write(const ByteArray *data) override;
+    String finish() override;
 
 private:
     Md5Sink();
     void consume();
 
-    Ref<ByteArray> aux_;
+    String aux_;
     int auxFill_;
     uint64_t bytesFeed_;
     uint32_t a_, b_, c_, d_;
 };
 
-Ref<ByteArray> md5(const ByteArray *data);
+String md5(const ByteArray *data);
 
 }} // namespace cc::crypto
