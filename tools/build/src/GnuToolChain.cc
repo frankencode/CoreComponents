@@ -298,7 +298,7 @@ String GnuToolChain::libIncludePrefix(const BuildPlan *plan) const
 
 String GnuToolChain::bundlePrefix(const BuildPlan *plan) const
 {
-    return plan->installPrefix()->expandPath("share")->expandPath(targetName(plan));
+    return plan->installPrefix()->extendPath("share")->extendPath(targetName(plan));
 }
 
 bool GnuToolChain::createSymlinks(const BuildPlan *plan) const
@@ -366,7 +366,7 @@ String GnuToolChain::pkgConfigName(const BuildPlan *plan) const
 
 String GnuToolChain::pkgConfigInstallDirPath(const BuildPlan *plan) const
 {
-    return installDirPath(plan)->expandPath("pkgconfig");
+    return installDirPath(plan)->extendPath("pkgconfig");
 }
 
 String GnuToolChain::pkgConfig(const BuildPlan *plan) const

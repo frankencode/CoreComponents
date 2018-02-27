@@ -22,8 +22,8 @@ public:
     inline Stream *stream() const { return stream_; }
     virtual String prefix() const;
 
-    int read(ByteArray *data) override;
-    void write(const ByteArray *data) override;
+    int read(CharArray *data) override;
+    void write(const CharArray *data) override;
     void write(const StringList *parts) override;
 
     int flush();
@@ -31,7 +31,7 @@ public:
 protected:
     LineBuffer(Stream *stream = 0, String prefix = "");
 
-    virtual void writeLine(const ByteArray *data);
+    virtual void writeLine(const CharArray *data);
 
 private:
     Ref<Stream> stream_;

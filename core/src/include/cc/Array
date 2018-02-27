@@ -10,13 +10,14 @@
 
 #include <cc/strings>
 #include <cc/containers>
+#include <cc/String>
 
 namespace cc {
 
 /** \class Array Array.h cc/Array
   * \ingroup container
   * \brief Typeded memory vector
-  * \see List, ByteArray
+  * \see List, CharArray
   */
 template<class T>
 class Array: public Object

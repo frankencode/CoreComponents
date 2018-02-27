@@ -31,7 +31,7 @@ public:
       */
     static Ref<HexDump> open(Stream *sink = 0) { return new HexDump(sink); }
 
-    void write(const ByteArray *data) override;
+    void write(const CharArray *data) override;
 
 private:
     HexDump(Stream *sink);
@@ -50,6 +50,6 @@ private:
   * \param data binary data
   * \return hexdump
   */
-String hexDump(const ByteArray *data);
+String hexDump(const CharArray *data);
 
 } // namespace cc

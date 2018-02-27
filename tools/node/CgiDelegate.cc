@@ -96,7 +96,7 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
     {
         Ref<StringList> args = script->split(' ');
         String scriptPath = args->at(0);
-        if (!scriptPath->isAbsolutePath()) scriptPath = documentRoot->expandPath(scriptPath);
+        if (!scriptPath->isAbsolutePath()) scriptPath = documentRoot->extendPath(scriptPath);
         args->at(0) = scriptPath;
 
         Ref<EnvMap> env = makeEnv(request, mutate(payload));
@@ -219,7 +219,7 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
     }
 }
 
-Ref<CgiDelegate::EnvMap> CgiDelegate::makeEnv(HttpRequest *request, ByteArray *payload) const
+Ref<CgiDelegate::EnvMap> CgiDelegate::makeEnv(HttpRequest *request, CharArray *payload) const
 {
     String queryString = urlDecode(request, payload);
 
@@ -261,7 +261,7 @@ void CgiDelegate::logEnv(EnvMap *env)
         CCNODE_DEBUG() << "environ[" << i << "] = \"" << env->keyAt(i) << "\": \"" << env->valueAt(i) << "\"" << nl;
 }
 
-String CgiDelegate::compileHeader(HttpRequest *request, ByteArray *payload) const
+String CgiDelegate::compileHeader(HttpRequest *request, CharArray *payload) const
 {
     String queryString = urlDecode(request, payload);
 
@@ -303,7 +303,7 @@ String CgiDelegate::compileHeader(HttpRequest *request, ByteArray *payload) cons
     return String::join(header, '\0');
 }
 
-String CgiDelegate::urlDecode(HttpRequest *request, ByteArray *payload)
+String CgiDelegate::urlDecode(HttpRequest *request, CharArray *payload)
 {
     String queryString = request->query();
     if (request->method() == "POST") {

@@ -36,8 +36,8 @@ class PathManipulation: public TestCase
                 fout("path2->reduce() = \"%%\"\n") << path;
             }
         }
-        fout() << "String(\"/\")->expandPath(\"/usr\") = \"" << String("/")->expandPath("/usr") << "\"" << nl;
-        CC_VERIFY(String("/")->expandPath("/usr") == "/usr");
+        fout() << "String(\"/\")->expandPath(\"/usr\") = \"" << String("/")->extendPath("/usr") << "\"" << nl;
+        CC_VERIFY(String("/")->extendPath("/usr") == "/usr");
     }
 };
 

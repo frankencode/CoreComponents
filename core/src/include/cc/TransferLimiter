@@ -26,8 +26,8 @@ public:
     inline size_t totalRead() const { return totalRead_; }
     inline size_t totalWritten() const { return totalWritten_; }
 
-    virtual int read(ByteArray *data) override;
-    virtual void write(const ByteArray *data) override;
+    virtual int read(CharArray *data) override;
+    virtual void write(const CharArray *data) override;
     virtual void write(const StringList *parts) override;
 
 private:

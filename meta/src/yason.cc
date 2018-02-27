@@ -15,7 +15,7 @@ namespace cc {
 namespace meta {
 namespace yason {
 
-Variant parse(const ByteArray *text, const MetaProtocol *protocol)
+Variant parse(const CharArray *text, const MetaProtocol *protocol)
 {
     return YasonSyntax::instance()->parse(text, protocol);
 }

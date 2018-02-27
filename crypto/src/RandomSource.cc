@@ -15,12 +15,12 @@
 namespace cc {
 namespace crypto {
 
-Ref<RandomSource> RandomSource::open(const ByteArray *salt)
+Ref<RandomSource> RandomSource::open(const CharArray *salt)
 {
     return new RandomSource(salt);
 }
 
-RandomSource::RandomSource(const ByteArray *salt)
+RandomSource::RandomSource(const CharArray *salt)
 {
     String key = String::allocate(16);
     String iv = String::allocate(AesCipher::BlockSize);
@@ -44,7 +44,7 @@ RandomSource::RandomSource(const ByteArray *salt)
         );
 }
 
-int RandomSource::read(ByteArray *data)
+int RandomSource::read(CharArray *data)
 {
     return source_->read(data);
 }

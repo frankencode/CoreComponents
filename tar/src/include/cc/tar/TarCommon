@@ -8,12 +8,11 @@
 
 #pragma once
 
-#include <cc/ByteArray>
+#include <cc/CharArray>
 
 namespace cc {
 namespace tar {
 
-unsigned tarHeaderSum(const ByteArray *data);
+unsigned tarHeaderSum(const CharArray *data);
 
 }} // namespace cc::tar
-

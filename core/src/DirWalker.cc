@@ -53,7 +53,7 @@ bool DirWalker::read(String *path, bool *isDir)
     while (dir_->read(&name)) {
         if (name == "") continue;
         if (ignoreHidden_) if (name->at(0) == '.') continue;
-        String h = dir_->path()->expandPath(name);
+        String h = dir_->path()->extendPath(name);
         child_ = tryOpen(h);
         bool d = child_;
         if (child_) {

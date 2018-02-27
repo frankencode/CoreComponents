@@ -53,7 +53,7 @@ const uint8_t invSbox[256] = {
     0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D
 };
 
-inline void subBytes(ByteArray *s_)
+inline void subBytes(CharArray *s_)
 {
     uint8_t *s = s_->bytes();
 
@@ -61,7 +61,7 @@ inline void subBytes(ByteArray *s_)
         s[i] = aes::sbox[s[i]];
 }
 
-inline void invSubBytes(ByteArray *s_)
+inline void invSubBytes(CharArray *s_)
 {
     uint8_t *s = s_->bytes();
 
@@ -69,7 +69,7 @@ inline void invSubBytes(ByteArray *s_)
         s[i] = aes::invSbox[s[i]];
 }
 
-inline void shiftRows(ByteArray *s_)
+inline void shiftRows(CharArray *s_)
 {
     uint8_t *s = s_->bytes();
 
@@ -101,7 +101,7 @@ inline void shiftRows(ByteArray *s_)
     }
 }
 
-inline void invShiftRows(ByteArray *s_)
+inline void invShiftRows(CharArray *s_)
 {
     uint8_t *s = s_->bytes();
 
@@ -155,7 +155,7 @@ inline uint8_t mul(uint8_t a, uint8_t b)
     return c;
 }
 
-inline void mixColumns(ByteArray *s_)
+inline void mixColumns(CharArray *s_)
 {
     uint8_t *s = s_->bytes();
 
@@ -172,7 +172,7 @@ inline void mixColumns(ByteArray *s_)
     }
 }
 
-inline void invMixColumns(ByteArray *s_)
+inline void invMixColumns(CharArray *s_)
 {
     uint8_t *s = s_->bytes();
 
@@ -189,7 +189,7 @@ inline void invMixColumns(ByteArray *s_)
     }
 }
 
-inline void addRoundKey(ByteArray *s, const ByteArray *w, int r)
+inline void addRoundKey(CharArray *s, const CharArray *w, int r)
 {
     for (int c = 0; c < 4; ++c)
         s->wordAt(c) ^= w->wordAt(r * Nb + c);
@@ -240,7 +240,7 @@ inline uint8_t rCon(int i)
     return h;
 }
 
-String keyExpansion(const ByteArray *key, int Nr)
+String keyExpansion(const CharArray *key, int Nr)
 {
     if (Nr <= 0) Nr = numRounds(key->count() / 4);
     String w = String::create(Ns * (Nr + 1));
@@ -274,7 +274,7 @@ String keyExpansion(const ByteArray *key, int Nr)
 
 using namespace aes;
 
-AesCipher::AesCipher(const ByteArray *key):
+AesCipher::AesCipher(const CharArray *key):
     BlockCipher(BlockSize),
     Nk_(key->count() / 4),
     Nr_(numRounds(Nk_)),
@@ -284,7 +284,7 @@ AesCipher::AesCipher(const ByteArray *key):
     CC_ASSERT(key && (key->count() == 16 || key->count() == 24 || key->count() == 32));
 }
 
-void AesCipher::encode(const ByteArray *p, ByteArray *c)
+void AesCipher::encode(const CharArray *p, CharArray *c)
 {
     CC_ASSERT(p && p->count() == Ns);
     CC_ASSERT(c && c->count() == Ns);
@@ -307,7 +307,7 @@ void AesCipher::encode(const ByteArray *p, ByteArray *c)
     c->write(s_);
 }
 
-void AesCipher::decode(const ByteArray *c, ByteArray *p)
+void AesCipher::decode(const CharArray *c, CharArray *p)
 {
     CC_ASSERT(c && c->count() == Ns);
     CC_ASSERT(p && p->count() == Ns);

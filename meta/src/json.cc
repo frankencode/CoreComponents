@@ -15,7 +15,7 @@ namespace cc {
 namespace meta {
 namespace json {
 
-Variant parse(const ByteArray *text)
+Variant parse(const CharArray *text)
 {
     return YasonSyntax::instance()->parse(text);
 }

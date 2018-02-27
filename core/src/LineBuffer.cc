@@ -21,7 +21,7 @@ LineBuffer::LineBuffer(Stream *stream, String prefix):
     backlog_(StringList::create())
 {}
 
-void LineBuffer::writeLine(const ByteArray *data)
+void LineBuffer::writeLine(const CharArray *data)
 {
     if (stream_) stream_->write(data);
 }
@@ -31,12 +31,12 @@ String LineBuffer::prefix() const
     return prefix_;
 }
 
-int LineBuffer::read(ByteArray *data)
+int LineBuffer::read(CharArray *data)
 {
     return (stream_) ? stream_->read(data) : 0;
 }
 
-void LineBuffer::write(const ByteArray *data)
+void LineBuffer::write(const CharArray *data)
 {
     int i = 0, n = data->count();
     if (n == 0) return;

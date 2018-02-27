@@ -28,7 +28,7 @@ String TapBuffer::prefix() const
     return "(" + inum(uint64_t(Thread::self()->id()), 62) + ") " + prefix_;
 }
 
-void TapBuffer::write(const ByteArray *buf)
+void TapBuffer::write(const CharArray *buf)
 {
     Ref<StringList> parts;
     int i = 0, i0 = 0;

@@ -20,7 +20,7 @@ class SystemLogStream: public Stream
 public:
     static Ref<SystemLogStream> open(int priority);
 
-    void write(const ByteArray *data) override;
+    void write(const CharArray *data) override;
     void write(const StringList *parts) override;
 
 private:

@@ -23,8 +23,8 @@ class IntegerSyntax: public SyntaxDefinition
 public:
     static const IntegerSyntax *instance();
 
-    void read(uint64_t *value, int *sign, const ByteArray *text, Token *token) const;
-    Ref<Token> read(uint64_t *value, int *sign, const ByteArray *text, int i = -1) const;
+    void read(uint64_t *value, int *sign, const CharArray *text, Token *token) const;
+    Ref<Token> read(uint64_t *value, int *sign, const CharArray *text, int i = -1) const;
 
 protected:
     friend class Singleton<IntegerSyntax>;

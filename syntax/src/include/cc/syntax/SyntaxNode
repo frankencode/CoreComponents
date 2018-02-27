@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Tree>
-#include <cc/ByteArray>
+#include <cc/CharArray>
 #include <cc/syntax/SyntaxState>
 #include <cc/syntax/Token>
 
@@ -26,7 +26,7 @@ public:
         }
     }
 
-    virtual int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const = 0;
+    virtual int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const = 0;
 
     virtual SyntaxNode *succ(SyntaxNode *node) const { return nullptr; }
     virtual int matchLength() const { return -1; }

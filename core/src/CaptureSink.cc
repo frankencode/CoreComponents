@@ -14,7 +14,7 @@ CaptureSink::CaptureSink():
     parts_(StringList::create())
 {}
 
-void CaptureSink::write(const ByteArray *data)
+void CaptureSink::write(const CharArray *data)
 {
     parts_->append(data);
 }

@@ -79,7 +79,7 @@ public:
     /// Current file offset
     off_t fileOffset() { return seek(0, SeekBegin); }
 
-    virtual off_t transferSpanTo(off_t count = -1, Stream *sink = 0, ByteArray *buf = 0) override;
+    virtual off_t transferSpanTo(off_t count = -1, Stream *sink = 0, CharArray *buf = 0) override;
 
     /// %Map the entire file into memory and return the file mapping as String
     String map() const;
@@ -202,7 +202,7 @@ private:
 
     File(String path, int openMode, int fd);
 
-    static void unmap(ByteArray *s);
+    static void unmap(CharArray *s);
 
     String path_;
     int openMode_;

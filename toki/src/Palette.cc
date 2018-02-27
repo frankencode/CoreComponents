@@ -54,7 +54,7 @@ void Palette::define()
     protocol()->define<Style>();
 }
 
-void Palette::realize(const ByteArray *text, Token *objectToken)
+void Palette::realize(const CharArray *text, Token *objectToken)
 {
     scopeName_ = ResourceContext::instance()->top()->fileName();
     if (scopeName_ == "default") {

@@ -72,12 +72,12 @@ bool SystemStream::isatty() const
     return ::isatty(fd_);
 }
 
-int SystemStream::read(ByteArray *data)
+int SystemStream::read(CharArray *data)
 {
     return SystemIo::read(fd_, data->bytes(), data->count());
 }
 
-void SystemStream::write(const ByteArray *data)
+void SystemStream::write(const CharArray *data)
 {
     SystemIo::write(fd_, data->bytes(), data->count());
 }
@@ -115,7 +115,7 @@ void SystemStream::write(const StringList *parts)
     IoVector *iov = guard.iov_;
 
     for (int i = 0; i < n; ++i) {
-        const ByteArray *part = parts->at(i);
+        const CharArray *part = parts->at(i);
         iov[i].iov_base = (void *)part->bytes();
         iov[i].iov_len = part->count();
     }

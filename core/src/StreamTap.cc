@@ -21,14 +21,14 @@ StreamTap::StreamTap(Stream *stream, Stream *inputTap, Stream *outputTap):
     outputTap_(outputTap)
 {}
 
-int StreamTap::read(ByteArray *data)
+int StreamTap::read(CharArray *data)
 {
     int n = stream_->read(data);
     if (inputTap_) inputTap_->write(data->select(0, n));
     return n;
 }
 
-void StreamTap::write(const ByteArray *data)
+void StreamTap::write(const CharArray *data)
 {
     if (outputTap_) outputTap_->write(data);
     stream_->write(data);

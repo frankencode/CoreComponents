@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/containers>
-#include <cc/ByteArray>
+#include <cc/String>
 #include <cc/Utf8Walker>
 
 namespace cc {
@@ -45,7 +45,7 @@ public:
       * \param data UTF-8 encoded byte array
       * \return new object instance
       */
-    inline static Ref<Unicode> open(const ByteArray *data)
+    inline static Ref<Unicode> open(const CharArray *data)
     {
         return new Unicode(data);
     }
@@ -63,7 +63,7 @@ public:
     }
 
     /// Return the number of %Unicode characters
-    inline static int count(const ByteArray *data) {
+    inline static int count(const CharArray *data) {
         return Utf8Walker::countCodePoints(data->chars());
     }
 
@@ -101,7 +101,7 @@ public:
     /** @} */
 
 private:
-    Unicode(const ByteArray *data):
+    Unicode(const CharArray *data):
         data_(data),
         walker_(data->chars()),
         i_(0), n_(-1)
@@ -116,7 +116,7 @@ private:
         while (i_ > i) { --walker_; --i_; }
     }
 
-    Ref<const ByteArray> data_;
+    Ref<const CharArray> data_;
     mutable Utf8Walker walker_;
     mutable int i_, n_;
 };

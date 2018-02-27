@@ -22,12 +22,12 @@ public:
     /** Open a new random number source
       * \return new object instance
       */
-    static Ref<RandomSource> open(const ByteArray *salt = 0);
+    static Ref<RandomSource> open(const CharArray *salt = 0);
 
-    int read(ByteArray *data) override;
+    int read(CharArray *data) override;
 
 private:
-    RandomSource(const ByteArray *salt);
+    RandomSource(const CharArray *salt);
     Ref<Stream> source_;
 };
 

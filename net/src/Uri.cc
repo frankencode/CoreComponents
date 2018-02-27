@@ -21,14 +21,14 @@ Uri::Uri():
     port_(-1)
 {}
 
-Uri::Uri(const ByteArray *text, Token *rootToken):
+Uri::Uri(const CharArray *text, Token *rootToken):
     hostIsNumeric_(false),
     port_(-1)
 {
     readUri(text, rootToken);
 }
 
-void Uri::readUri(const ByteArray *text, Token *rootToken)
+void Uri::readUri(const CharArray *text, Token *rootToken)
 {
     Ref<Token> rootToken2;
     if (!rootToken) {

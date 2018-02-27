@@ -28,7 +28,7 @@ public:
       */
     static Ref<Md5Sink> open();
 
-    void write(const ByteArray *data) override;
+    void write(const CharArray *data) override;
     String finish() override;
 
 private:
@@ -41,6 +41,6 @@ private:
     uint32_t a_, b_, c_, d_;
 };
 
-String md5(const ByteArray *data);
+String md5(const CharArray *data);
 
 }} // namespace cc::crypto

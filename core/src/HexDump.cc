@@ -26,7 +26,7 @@ HexDump::~HexDump()
     flush();
 }
 
-void HexDump::write(const ByteArray *data)
+void HexDump::write(const CharArray *data)
 {
     for (int i = 0; i < data->count(); ++i)
         writeByte(data->byteAt(i));
@@ -57,7 +57,7 @@ void HexDump::flush()
     i_ = 0;
 }
 
-String hexDump(const ByteArray *data)
+String hexDump(const CharArray *data)
 {
     Ref<CaptureSink> capture = CaptureSink::open();
     HexDump::open(capture)->write(data);

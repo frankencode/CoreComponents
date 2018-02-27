@@ -330,7 +330,7 @@ Ref<NetworkInterface> NetworkInterface::getLink(NetworkInterfaceList *list, int 
 
                         if ((attrType == IFLA_ADDRESS) || (attrType == IFLA_BROADCAST)) {
                             if (attrType == IFLA_ADDRESS)
-                                interface->hardwareAddress_ = ByteArray::copy((const char *)RTA_DATA(attr), attrLen);
+                                interface->hardwareAddress_ = CharArray::copy((const char *)RTA_DATA(attr), attrLen);
                             //else if (attrType == IFLA_BROADCAST)
                             //  interface->broadcastAddress_ = h;
                         }
@@ -384,7 +384,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
                 if (::ioctl(fd, SIOCGIFHWADDR, &ifr) == -1)
                     CC_SYSTEM_DEBUG_ERROR(errno);
 
-                interface->hardwareAddress_ = ByteArray::copy((const char *)ifr.ifr_hwaddr.sa_data, 6); // quick HACK, 6 is just a safe bet
+                interface->hardwareAddress_ = CharArray::copy((const char *)ifr.ifr_hwaddr.sa_data, 6); // quick HACK, 6 is just a safe bet
 
                 if (::ioctl(fd, SIOCGIFFLAGS, &ifr) == -1)
                     CC_SYSTEM_DEBUG_ERROR(errno);
@@ -530,7 +530,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                     if (addr->sdl_nlen > 0)
                         interface->name_ = String(addr->sdl_data, addr->sdl_nlen);
                     if (addr->sdl_alen > 0)
-                        interface->hardwareAddress_ = ByteArray::copy(addr->sdl_data, addr->sdl_nlen);
+                        interface->hardwareAddress_ = CharArray::copy(addr->sdl_data, addr->sdl_nlen);
                 }
             }
         }

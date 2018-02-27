@@ -287,7 +287,7 @@ RegExpSyntax::RegExpSyntax()
     LINK();
 }
 
-void RegExpSyntax::compile(const ByteArray *text, SyntaxDefinition *definition) const
+void RegExpSyntax::compile(const CharArray *text, SyntaxDefinition *definition) const
 {
     Ref<SyntaxState> state = match(text);
     if (!state->valid()) throw SyntaxError(text, state);
@@ -299,7 +299,7 @@ void RegExpSyntax::compile(const ByteArray *text, SyntaxDefinition *definition) 
     definition->LINK();
 }
 
-NODE RegExpSyntax::compileChoice(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileChoice(const CharArray *text, Token *token, SyntaxDefinition *definition) const
 {
     if (token->countChildren() == 1)
         return compileSequence(text, token->firstChild(), definition);
@@ -309,7 +309,7 @@ NODE RegExpSyntax::compileChoice(const ByteArray *text, Token *token, SyntaxDefi
     return definition->debug(node, "Choice");
 }
 
-NODE RegExpSyntax::compileSequence(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileSequence(const CharArray *text, Token *token, SyntaxDefinition *definition) const
 {
     NODE node = new GlueNode;
     for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
@@ -338,21 +338,21 @@ NODE RegExpSyntax::compileSequence(const ByteArray *text, Token *token, SyntaxDe
     return definition->debug(node, "Glue");
 }
 
-NODE RegExpSyntax::compileAhead(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileAhead(const CharArray *text, Token *token, SyntaxDefinition *definition) const
 {
     return (text->at(token->i0() + 3) != '!') ?
         definition->AHEAD(compileChoice(text, token->firstChild(), definition)) :
         definition->NOT(compileChoice(text, token->firstChild(), definition));
 }
 
-NODE RegExpSyntax::compileBehind(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileBehind(const CharArray *text, Token *token, SyntaxDefinition *definition) const
 {
     return (text->at(token->i0() + 3) != '!') ?
         definition->BEHIND(compileChoice(text, token->firstChild(), definition)) :
         definition->NOT_BEHIND(compileChoice(text, token->firstChild(), definition));
 }
 
-NODE RegExpSyntax::compileCapture(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileCapture(const CharArray *text, Token *token, SyntaxDefinition *definition) const
 {
     String name;
     if (token->firstChild() != token->lastChild())
@@ -360,13 +360,13 @@ NODE RegExpSyntax::compileCapture(const ByteArray *text, Token *token, SyntaxDef
     return definition->CAPTURE(name, compileChoice(text, token->lastChild(), definition));
 }
 
-NODE RegExpSyntax::compileReference(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileReference(const CharArray *text, Token *token, SyntaxDefinition *definition) const
 {
     String name = text->copyRange(token->firstChild());
     return definition->REPLAY(name);
 }
 
-char RegExpSyntax::readChar(const ByteArray *text, Token *token) const
+char RegExpSyntax::readChar(const CharArray *text, Token *token) const
 {
     if (token->i1() - token->i0() > 1) {
         String h = text->copyRange(token);
@@ -376,7 +376,7 @@ char RegExpSyntax::readChar(const ByteArray *text, Token *token) const
     return text->at(token->i0());
 }
 
-String RegExpSyntax::readString(const ByteArray *text, Token *token) const
+String RegExpSyntax::readString(const CharArray *text, Token *token) const
 {
     String s(token->countChildren());
     int i = 0;
@@ -385,7 +385,7 @@ String RegExpSyntax::readString(const ByteArray *text, Token *token) const
     return s;
 }
 
-NODE RegExpSyntax::compileRangeMinMax(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileRangeMinMax(const CharArray *text, Token *token, SyntaxDefinition *definition) const
 {
     int n = token->countChildren();
     bool invert = (text->at(token->i0() + 1) == '^');
@@ -406,7 +406,7 @@ NODE RegExpSyntax::compileRangeMinMax(const ByteArray *text, Token *token, Synta
     return definition->ANY();
 }
 
-NODE RegExpSyntax::compileRangeExplicit(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileRangeExplicit(const CharArray *text, Token *token, SyntaxDefinition *definition) const
 {
     Token *child = token->firstChild();
     bool invert = (text->at(token->i0() + 1) == '^');
@@ -419,7 +419,7 @@ NODE RegExpSyntax::compileRangeExplicit(const ByteArray *text, Token *token, Syn
     return invert ? definition->EXCEPT(s) : definition->RANGE(s);
 }
 
-NODE RegExpSyntax::compileRepeat(const ByteArray *text, Token *token, SyntaxDefinition *definition) const
+NODE RegExpSyntax::compileRepeat(const CharArray *text, Token *token, SyntaxDefinition *definition) const
 {
     Token *child = token->firstChild(), *min = 0, *max = 0;
     while (child) {

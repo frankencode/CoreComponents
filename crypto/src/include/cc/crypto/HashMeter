@@ -28,8 +28,8 @@ public:
       */
     static Ref<HashMeter> open(HashSink *hashSink, Stream *stream = 0);
 
-    int read(ByteArray *data) override;
-    void write(const ByteArray *data) override;
+    int read(CharArray *data) override;
+    void write(const CharArray *data) override;
     void write(const StringList *parts) override;
 
     /// Finsh hash sum computation and return the resulting hash sum

@@ -81,7 +81,7 @@ void HttpStream::nextChunk()
     }
 }
 
-int HttpStream::read(ByteArray *data)
+int HttpStream::read(CharArray *data)
 {
     if (eoi_ || payloadLeft_ == 0)
         return 0;
@@ -134,7 +134,7 @@ int HttpStream::read(ByteArray *data)
     return n;
 }
 
-void HttpStream::write(const ByteArray *data)
+void HttpStream::write(const CharArray *data)
 {
     stream_->write(data);
 }

@@ -27,11 +27,11 @@ public:
       */
     static Ref<PseudoPad> open(BlockCipher *cipher);
 
-    int read(ByteArray *data) override;
+    int read(CharArray *data) override;
 
 private:
     PseudoPad(BlockCipher *cipher);
-    static void increment(ByteArray *bigWord);
+    static void increment(CharArray *bigWord);
 
     Ref<BlockCipher> cipher_;
     String p_;

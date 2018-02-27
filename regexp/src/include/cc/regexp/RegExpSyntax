@@ -32,18 +32,18 @@ protected:
 
     RegExpSyntax();
 
-    void compile(const ByteArray *text, SyntaxDefinition *definition) const;
-    NODE compileChoice(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
-    NODE compileSequence(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
-    NODE compileAhead(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
-    NODE compileBehind(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
-    NODE compileCapture(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
-    NODE compileReference(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
-    char readChar(const ByteArray *text, Token *token) const;
-    String readString(const ByteArray *text, Token *token) const;
-    NODE compileRangeMinMax(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
-    NODE compileRangeExplicit(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
-    NODE compileRepeat(const ByteArray *text, Token *token, SyntaxDefinition *definition) const;
+    void compile(const CharArray *text, SyntaxDefinition *definition) const;
+    NODE compileChoice(const CharArray *text, Token *token, SyntaxDefinition *definition) const;
+    NODE compileSequence(const CharArray *text, Token *token, SyntaxDefinition *definition) const;
+    NODE compileAhead(const CharArray *text, Token *token, SyntaxDefinition *definition) const;
+    NODE compileBehind(const CharArray *text, Token *token, SyntaxDefinition *definition) const;
+    NODE compileCapture(const CharArray *text, Token *token, SyntaxDefinition *definition) const;
+    NODE compileReference(const CharArray *text, Token *token, SyntaxDefinition *definition) const;
+    char readChar(const CharArray *text, Token *token) const;
+    String readString(const CharArray *text, Token *token) const;
+    NODE compileRangeMinMax(const CharArray *text, Token *token, SyntaxDefinition *definition) const;
+    NODE compileRangeExplicit(const CharArray *text, Token *token, SyntaxDefinition *definition) const;
+    NODE compileRepeat(const CharArray *text, Token *token, SyntaxDefinition *definition) const;
 
     int gap_;
     int any_;

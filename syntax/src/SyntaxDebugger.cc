@@ -46,7 +46,7 @@ static void printString(const char *s, int size) {
     }
 }
 
-static void printString(const ByteArray &s) {
+static void printString(const CharArray &s) {
     printString(s.chars(), s.count());
 }
 
@@ -58,7 +58,7 @@ static void printCharAttr(char ch) {
     fout() << "'";
 }
 
-static void printStringAttr(const ByteArray &s) {
+static void printStringAttr(const CharArray &s) {
     fout() << "\"";
     printString(s);
     fout() << "\"";

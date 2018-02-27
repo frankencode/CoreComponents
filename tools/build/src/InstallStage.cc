@@ -49,7 +49,7 @@ bool InstallStage::run()
 bool InstallStage::installTool(Module *module)
 {
     String product = module->toolName();
-    return shell()->install(product, toolChain()->installDirPath(plan())->expandPath(product));
+    return shell()->install(product, toolChain()->installDirPath(plan())->extendPath(product));
 }
 
 bool InstallStage::installApplicationOrLibrary()
@@ -57,7 +57,7 @@ bool InstallStage::installApplicationOrLibrary()
     int options = plan()->options();
     String product = toolChain()->linkName(plan());
     String installDirPath = toolChain()->installDirPath(plan());
-    String installFilePath = installDirPath->expandPath(product);
+    String installFilePath = installDirPath->extendPath(product);
 
     if (!shell()->install(product, installFilePath)) return false;
 
@@ -94,7 +94,7 @@ bool InstallStage::installApplicationOrLibrary()
             return false;
 
         String pcName = toolChain()->pkgConfigName(plan());
-        String pcInstallPath = toolChain()->pkgConfigInstallDirPath(plan())->expandPath(pcName);
+        String pcInstallPath = toolChain()->pkgConfigInstallDirPath(plan())->extendPath(pcName);
         if (File::exists(plan()->userPkgConfigPath())) {
             if (!shell()->install(plan()->userPkgConfigPath(), pcInstallPath))
                 return false;
@@ -110,7 +110,7 @@ bool InstallStage::installApplicationOrLibrary()
         String relativePath = bundlePath->copy(plan()->projectPath()->count() + 1, bundlePath->count());
         shell()->install(
             bundlePath,
-            plan()->installRoot()->expandPath(toolChain()->bundlePrefix(plan())->expandPath(relativePath))
+            plan()->installRoot()->extendPath(toolChain()->bundlePrefix(plan())->extendPath(relativePath))
         );
     }
 

@@ -68,12 +68,12 @@ public:
       */
     bool isatty() const;
 
-    virtual int read(ByteArray *data) override;
-    virtual void write(const ByteArray *data) override;
+    virtual int read(CharArray *data) override;
+    virtual void write(const CharArray *data) override;
     virtual void write(const StringList *parts) override;
 
     /// Convenience wrapper
-    inline void write(const String &data) { write(static_cast<const ByteArray *>(data)); }
+    inline void write(const String &data) { write(static_cast<const CharArray *>(data)); }
 
     /// Convenience wrapper
     inline void write(const char *data) { write(String(data)); }

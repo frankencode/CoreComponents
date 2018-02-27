@@ -25,7 +25,7 @@ PseudoPad::PseudoPad(BlockCipher *cipher):
     mutate(p_)->fill(0);
 }
 
-void PseudoPad::increment(ByteArray *bigWord)
+void PseudoPad::increment(CharArray *bigWord)
 {
     for (int i = 0, u = 1; i < bigWord->count() && u > 0; ++i) {
         int d = bigWord->byteAt(i);
@@ -36,7 +36,7 @@ void PseudoPad::increment(ByteArray *bigWord)
     }
 }
 
-int PseudoPad::read(ByteArray *data)
+int PseudoPad::read(CharArray *data)
 {
     for (int j = 0; j < data->count(); ++j) {
         if (i_ == c_->count()) {

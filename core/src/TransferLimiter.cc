@@ -23,7 +23,7 @@ TransferLimiter::TransferLimiter(Stream *stream, size_t readLimit, size_t writeL
     totalWritten_(0)
 {}
 
-int TransferLimiter::read(ByteArray *data)
+int TransferLimiter::read(CharArray *data)
 {
     if (readLimit_ > 0 && totalRead_ >= readLimit_)
         throw ReadLimitExceeded();
@@ -32,7 +32,7 @@ int TransferLimiter::read(ByteArray *data)
     return n;
 }
 
-void TransferLimiter::write(const ByteArray *data)
+void TransferLimiter::write(const CharArray *data)
 {
     if (writeLimit_ > 0 && totalWritten_ + data->count() > writeLimit_)
         throw WriteLimitExceeded();

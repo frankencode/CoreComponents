@@ -23,9 +23,9 @@ using namespace cc::crypto;
 class TestSmth: public TestCase
 {
 protected:
-    static String testCycle(BlockCipher *cipher, ByteArray *text)
+    static String testCycle(BlockCipher *cipher, CharArray *text)
     {
-        String buffer = ByteArray::allocate(roundUpToNext(cipher->blockSize(), text->count()));
+        String buffer = CharArray::allocate(roundUpToNext(cipher->blockSize(), text->count()));
         {
             Ref<Stream> stream = MemoryStream::open(mutate(buffer));
             Ref<CipherSink> sink = CipherSink::open(cipher, stream, NullStream::instance());

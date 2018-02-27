@@ -27,7 +27,7 @@ public:
       */
     static Ref<CipherSource> open(BlockCipher *cipher, Stream *source);
 
-    int read(ByteArray *data) override;
+    int read(CharArray *data) override;
 
 private:
     CipherSource(BlockCipher *cipher, Stream *source);

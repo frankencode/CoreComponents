@@ -28,7 +28,7 @@ public:
       */
     static Ref<Sha1Sink> open();
 
-    void write(const ByteArray *data) override;
+    void write(const CharArray *data) override;
     String finish() override;
 
 private:
@@ -42,6 +42,6 @@ private:
     uint64_t l_;
 };
 
-String sha1(const ByteArray *data);
+String sha1(const CharArray *data);
 
 }} // namespace cc::crypto

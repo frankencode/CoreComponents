@@ -141,7 +141,7 @@ Transfer::Transfer(Stream *source, Stream *sink, int bufferSize, int bufferCount
     Ref<TransferBufferQueue> writeQueue = TransferBufferQueue::create(bufferCount);
 
     for (int i = 0; i < bufferCount; ++i)
-        freeQueue->pushBack(ByteArray::allocate(bufferSize));
+        freeQueue->pushBack(CharArray::allocate(bufferSize));
 
     inputWorker_ = TransferInputWorker::start(freeQueue, writeQueue, source);
     outputWorker_ = TransferOutputWorker::start(writeQueue, freeQueue, sink);

@@ -25,7 +25,7 @@ public:
     inline const char *scopeName() const { return scopeName_; }
     inline const char *ruleName() const { return ruleName_; }
 
-    void printTo(Stream *stream, ByteArray *text, int depth = 0, int defaultScope = -1);
+    void printTo(Stream *stream, CharArray *text, int depth = 0, int defaultScope = -1);
 
 protected:
     DebugToken(int scope, int rule, const char *scopeName, const char *ruleName):

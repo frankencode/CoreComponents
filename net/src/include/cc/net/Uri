@@ -97,9 +97,9 @@ public:
 
 private:
     Uri();
-    Uri(const ByteArray *text, Token *rootToken = 0);
+    Uri(const CharArray *text, Token *rootToken = 0);
 
-    void readUri(const ByteArray *text, Token *rootToken = 0);
+    void readUri(const CharArray *text, Token *rootToken = 0);
     static String encode(String s);
     static String decode(String s);
 

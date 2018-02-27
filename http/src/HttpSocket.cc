@@ -12,7 +12,7 @@
 namespace cc {
 namespace http {
 
-int HttpSocket::read(ByteArray *data)
+int HttpSocket::read(CharArray *data)
 {
     if (data->count() == 0) return 0;
 
@@ -28,7 +28,7 @@ int HttpSocket::read(ByteArray *data)
     return ret;
 }
 
-void HttpSocket::write(const ByteArray *data)
+void HttpSocket::write(const CharArray *data)
 {
     if (data->count() == 0) return;
 

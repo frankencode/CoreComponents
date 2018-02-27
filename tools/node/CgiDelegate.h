@@ -29,10 +29,10 @@ private:
 
     typedef Map<String, String> EnvMap;
 
-    Ref<EnvMap> makeEnv(HttpRequest *request, ByteArray *payload) const;
+    Ref<EnvMap> makeEnv(HttpRequest *request, CharArray *payload) const;
     void logEnv(EnvMap *env);
-    String compileHeader(HttpRequest *request, ByteArray *payload) const;
-    static String urlDecode(HttpRequest *request, ByteArray *payload);
+    String compileHeader(HttpRequest *request, CharArray *payload) const;
+    static String urlDecode(HttpRequest *request, CharArray *payload);
     static String wrapHttp(String header);
 
     Ref<CgiInstance> cgiInstance_;

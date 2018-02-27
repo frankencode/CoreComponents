@@ -12,12 +12,12 @@
 
 namespace cc {
 
-int Stream::read(ByteArray *)
+int Stream::read(CharArray *)
 {
     return 0;
 }
 
-void Stream::write(const ByteArray *)
+void Stream::write(const CharArray *)
 {}
 
 void Stream::write(const StringList *parts)
@@ -31,11 +31,11 @@ void Stream::write(const Format &format)
     write(Format::toStringList(format));
 }
 
-class WrappedChunk: public ByteArray
+class WrappedChunk: public CharArray
 {
 public:
     WrappedChunk(const void *data, int size):
-        ByteArray((const char *)data, size, ByteArray::doNothing),
+        CharArray((const char *)data, size, CharArray::doNothing),
         stackGuard_(this)
     {}
 
@@ -49,7 +49,7 @@ void Stream::write(const void *data, int size)
     write(&chunk);
 }
 
-off_t Stream::transferSpanTo(off_t count, Stream *sink, ByteArray *buffer)
+off_t Stream::transferSpanTo(off_t count, Stream *sink, CharArray *buffer)
 {
     if (count == 0) return 0;
 
@@ -75,7 +75,7 @@ off_t Stream::transferSpanTo(off_t count, Stream *sink, ByteArray *buffer)
     return total;
 }
 
-int Stream::readSpan(ByteArray *data)
+int Stream::readSpan(CharArray *data)
 {
     const int w = data->count();
     int m = 0;
@@ -96,7 +96,7 @@ String Stream::readSpan(int count)
     return s;
 }
 
-String Stream::readAll(ByteArray *buffer)
+String Stream::readAll(CharArray *buffer)
 {
     String data = buffer;
     if (!data) data = String::allocate(0x4000);

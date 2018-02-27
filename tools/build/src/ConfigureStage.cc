@@ -161,7 +161,7 @@ void ConfigureStage::makeUseOf(BuildPlan *other)
 {
     if (other->options() & BuildPlan::Library) {
         String path = other->projectPath();
-        String defaultIncludePath = path->expandPath("include");
+        String defaultIncludePath = path->extendPath("include");
         if (Dir::exists(defaultIncludePath)) {
             if (!plan()->includePaths()->contains(defaultIncludePath))
                 plan()->includePaths()->append(defaultIncludePath);

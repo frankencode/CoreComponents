@@ -25,7 +25,7 @@ public:
       * \param buffer output buffer (optional)
       * \return new object instance
       */
-    inline static Ref<Utf8Sink> open(Stream *stream, ByteArray* buffer = 0) {
+    inline static Ref<Utf8Sink> open(Stream *stream, CharArray* buffer = 0) {
         return new Utf8Sink(stream, buffer);
     }
 
@@ -33,7 +33,7 @@ public:
       * \param buffer output buffer
       * \return new object instance
       */
-    inline static Ref<Utf8Sink> open(ByteArray* buffer) {
+    inline static Ref<Utf8Sink> open(CharArray* buffer) {
         return new Utf8Sink(0, buffer);
     }
 
@@ -46,7 +46,7 @@ public:
     inline ByteSink *byteSink() const { return byteSink_; }
 
 private:
-    Utf8Sink(Stream *stream, ByteArray* buffer):
+    Utf8Sink(Stream *stream, CharArray* buffer):
         byteSink_(ByteSink::open(stream, buffer))
     {}
 

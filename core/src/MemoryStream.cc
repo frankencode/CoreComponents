@@ -10,17 +10,17 @@
 
 namespace cc {
 
-Ref<MemoryStream> MemoryStream::open(ByteArray *buffer)
+Ref<MemoryStream> MemoryStream::open(CharArray *buffer)
 {
     return new MemoryStream(buffer);
 }
 
-MemoryStream::MemoryStream(ByteArray *buffer):
+MemoryStream::MemoryStream(CharArray *buffer):
     buffer_(buffer),
     i_(0)
 {}
 
-int MemoryStream::read(ByteArray *data)
+int MemoryStream::read(CharArray *data)
 {
     if (i_ == buffer_->count()) return 0;
     const int n =
@@ -30,7 +30,7 @@ int MemoryStream::read(ByteArray *data)
     return n;
 }
 
-void MemoryStream::write(const ByteArray *data)
+void MemoryStream::write(const CharArray *data)
 {
     if (i_ == buffer_->count()) return;
     const int n =

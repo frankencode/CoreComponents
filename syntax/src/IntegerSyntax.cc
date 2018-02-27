@@ -78,7 +78,7 @@ IntegerSyntax::IntegerSyntax()
     LINK();
 }
 
-void IntegerSyntax::read(uint64_t *value, int *sign, const ByteArray *text, Token *token) const
+void IntegerSyntax::read(uint64_t *value, int *sign, const CharArray *text, Token *token) const
 {
     *sign = 1;
     *value = 0;
@@ -133,7 +133,7 @@ void IntegerSyntax::read(uint64_t *value, int *sign, const ByteArray *text, Toke
     }
 }
 
-Ref<Token> IntegerSyntax::read(uint64_t *value, int *sign, const ByteArray *text, int i) const
+Ref<Token> IntegerSyntax::read(uint64_t *value, int *sign, const CharArray *text, int i) const
 {
     Ref<Token> token = match(text, i)->rootToken();
     if (token)

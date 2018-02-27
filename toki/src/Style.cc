@@ -26,7 +26,7 @@ void Style::define()
     insert("italic", false);
 }
 
-void Style::realize(const ByteArray *text, Token *objectToken)
+void Style::realize(const CharArray *text, Token *objectToken)
 {
     ruleName_ = value("rule");
     ink_ = value("ink");

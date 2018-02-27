@@ -26,20 +26,20 @@ Thread *Thread::self()
     return self_;
 }
 
-class ThreadStack: public ByteArray
+class ThreadStack: public CharArray
 {
 public:
     ThreadStack(char *data, int size):
-        ByteArray(data, size, freeStack)
+        CharArray(data, size, freeStack)
     {}
 
-    static void freeStack(ByteArray *stack) {
+    static void freeStack(CharArray *stack) {
         if (::munmap(stack->bytes(), stack->count()) == -1)
             CC_SYSTEM_DEBUG_ERROR(errno);
     }
 };
 
-Ref<ByteArray> Thread::allocateStack(int stackSize, int guardSize)
+Ref<CharArray> Thread::allocateStack(int stackSize, int guardSize)
 {
     #ifndef MAP_ANONYMOUS
     #define MAP_ANONYMOUS MAP_ANON

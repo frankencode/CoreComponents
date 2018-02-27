@@ -21,7 +21,7 @@ namespace http {
 HttpConnection::HttpConnection(Stream *stream):
     httpStream_(HttpStream::open(stream)),
     stream_(httpStream_),
-    lineBuffer_(ByteArray::allocate(0x1000))
+    lineBuffer_(CharArray::allocate(0x1000))
 {}
 
 HttpConnection::~HttpConnection()

@@ -38,7 +38,7 @@ bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
     if (!data_) data_ = String::create(60);
     *nextEntry = ArchiveEntry::create();
 
-    ByteArray *data = mutate(data_);
+    CharArray *data = mutate(data_);
     ArchiveEntry *entry = *nextEntry;
 
     if (source_->readSpan(data) < data->count()) return false;

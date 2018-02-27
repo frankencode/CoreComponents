@@ -74,7 +74,7 @@ void DatagramSocket::setSendBufferSize(int newSize)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-int DatagramSocket::recvFrom(Ref<SocketAddress> *peerAddress, ByteArray *buffer)
+int DatagramSocket::recvFrom(Ref<SocketAddress> *peerAddress, CharArray *buffer)
 {
     *peerAddress = SocketAddress::create(addressFamily_);
     socklen_t len = (*peerAddress)->addrLen();
@@ -88,7 +88,7 @@ int DatagramSocket::recvFrom(Ref<SocketAddress> *peerAddress, ByteArray *buffer)
     return ret;
 }
 
-int DatagramSocket::sendTo(const SocketAddress *peerAddress, const ByteArray *message)
+int DatagramSocket::sendTo(const SocketAddress *peerAddress, const CharArray *message)
 {
     int ret = -1;
     do ret = ::sendto(fd_, message->bytes(), message->count(), 0, peerAddress->addr(), peerAddress->addrLen());

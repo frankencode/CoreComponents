@@ -72,11 +72,11 @@ public:
     inline ToolChain *toolChain() const { return toolChain_; }
 
     inline String projectPath() const { return projectPath_; }
-    inline String systemSourcePath() const { return toolChain_->systemRoot()->expandPath("/usr/src"); }
+    inline String systemSourcePath() const { return toolChain_->systemRoot()->extendPath("/usr/src"); }
     inline bool isSystemSource() const { return projectPath_->beginsWith(systemSourcePath()); }
     inline static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
     inline String recipePath() const { return recipePath_; }
-    inline String userPkgConfigPath() const { return projectPath_->expandPath(toolChain_->pkgConfigName(this)); }
+    inline String userPkgConfigPath() const { return projectPath_->extendPath(toolChain_->pkgConfigName(this)); }
     inline String scope() const { return scope_; }
     inline String modulePath() const { return modulePath_; }
     inline String configPath() const { return configPath_; }

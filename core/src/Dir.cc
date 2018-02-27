@@ -81,7 +81,7 @@ bool Dir::read(String *name)
 
 Ref<Stream> Dir::openFile(String path)
 {
-    if (path->isRelativePath()) path = path_->expandPath(path);
+    if (path->isRelativePath()) path = path_->extendPath(path);
     return File::open(path);
 }
 

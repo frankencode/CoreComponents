@@ -21,14 +21,14 @@ TransferMeter::TransferMeter(Stream *stream):
     totalWritten_(0)
 {}
 
-int TransferMeter::read(ByteArray *buf)
+int TransferMeter::read(CharArray *buf)
 {
     int n = stream_->read(buf);
     totalRead_ += n;
     return n;
 }
 
-void TransferMeter::write(const ByteArray *buf)
+void TransferMeter::write(const CharArray *buf)
 {
     stream_->write(buf);
     totalWritten_ += buf->count();

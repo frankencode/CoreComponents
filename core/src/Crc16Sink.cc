@@ -54,7 +54,7 @@ void Crc16Sink::feed(const void *buf, int bufFill)
     }
 }
 
-void Crc16Sink::write(const ByteArray *data)
+void Crc16Sink::write(const CharArray *data)
 {
     feed(data->bytes(), data->count());
 }

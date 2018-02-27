@@ -52,7 +52,7 @@ public:
 
     virtual void autocomplete(const MetaObject *prototype);
 
-    virtual void realize(const ByteArray *text, Token *objectToken) {}
+    virtual void realize(const CharArray *text, Token *objectToken) {}
 
 protected:
     friend class MetaProtocol;
@@ -62,8 +62,8 @@ protected:
     inline void className(String newName) { className_ = newName; }
     virtual void define() {}
 
-    static Token *nameToken(const ByteArray *text, Token *objectToken, const String &memberName);
-    static Token *valueToken(const ByteArray *text, Token *objectToken, const String &memberName);
+    static Token *nameToken(const CharArray *text, Token *objectToken, const String &memberName);
+    static Token *valueToken(const CharArray *text, Token *objectToken, const String &memberName);
     static Token *childToken(Token *objectToken, int childIndex);
 
 private:

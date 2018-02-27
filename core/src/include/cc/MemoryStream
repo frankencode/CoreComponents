@@ -20,13 +20,13 @@ namespace cc {
 class MemoryStream: public Stream
 {
 public:
-    static Ref<MemoryStream> open(ByteArray *buffer);
+    static Ref<MemoryStream> open(CharArray *buffer);
 
-    int read(ByteArray *data) override;
-    void write(const ByteArray *data) override;
+    int read(CharArray *data) override;
+    void write(const CharArray *data) override;
 
 private:
-    MemoryStream(ByteArray *buffer);
+    MemoryStream(CharArray *buffer);
     String buffer_;
     int i_;
 };

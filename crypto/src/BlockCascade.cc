@@ -11,12 +11,12 @@
 namespace cc {
 namespace crypto {
 
-Ref<BlockCascade> BlockCascade::create(BlockCipher *cipher, const ByteArray *iv)
+Ref<BlockCascade> BlockCascade::create(BlockCipher *cipher, const CharArray *iv)
 {
     return new BlockCascade(cipher, iv);
 }
 
-BlockCascade::BlockCascade(BlockCipher *cipher, const ByteArray *iv):
+BlockCascade::BlockCascade(BlockCipher *cipher, const CharArray *iv):
     BlockCipher(cipher->blockSize()),
     cipher_(cipher),
     s_(String::allocate(cipher->blockSize()))
@@ -25,14 +25,14 @@ BlockCascade::BlockCascade(BlockCipher *cipher, const ByteArray *iv):
     if (iv) mutate(s_)->write(iv);
 }
 
-void BlockCascade::encode(const ByteArray *p, ByteArray *c)
+void BlockCascade::encode(const CharArray *p, CharArray *c)
 {
     mutate(s_)->writeXor(p);
     cipher_->encode(s_, c);
     mutate(s_)->write(c);
 }
 
-void BlockCascade::decode(const ByteArray *c, ByteArray *p)
+void BlockCascade::decode(const CharArray *c, CharArray *p)
 {
     cipher_->decode(c, p);
     p->writeXor(s_);

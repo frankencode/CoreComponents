@@ -26,7 +26,7 @@ ChunkedSink::~ChunkedSink()
     Format(stream_) << 0 << "\r\n" << "\r\n";
 }
 
-void ChunkedSink::write(const ByteArray *data)
+void ChunkedSink::write(const CharArray *data)
 {
     Format(stream_) << hex(data->count()) << "\r\n" << data << "\r\n";
 }

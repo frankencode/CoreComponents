@@ -16,13 +16,13 @@ NullStream *NullStream::instance()
     return Singleton<NullStream>::instance();
 }
 
-int NullStream::read(ByteArray *data)
+int NullStream::read(CharArray *data)
 {
     data->fill(0);
     return data->count();
 }
 
-void NullStream::write(const ByteArray *data)
+void NullStream::write(const CharArray *data)
 {}
 
 } // namespace cc

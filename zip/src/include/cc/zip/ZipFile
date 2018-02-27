@@ -24,7 +24,7 @@ class ZipArchive;
 class ZipFile: public Stream
 {
 public:
-    virtual int read(ByteArray *data) override;
+    virtual int read(CharArray *data) override;
 
 private:
     friend class ZipArchive;

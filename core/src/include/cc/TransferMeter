@@ -24,8 +24,8 @@ public:
     inline off_t totalRead() const { return totalRead_; }
     inline off_t totalWritten() const { return totalWritten_; }
 
-    virtual int read(ByteArray *buf) override;
-    virtual void write(const ByteArray *buf) override;
+    virtual int read(CharArray *buf) override;
+    virtual void write(const CharArray *buf) override;
     virtual void write(const StringList *parts) override;
 
 protected:

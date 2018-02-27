@@ -358,7 +358,7 @@ YasonSyntax::YasonSyntax(int options)
     LINK();
 }
 
-Variant YasonSyntax::parse(const ByteArray *text, const MetaProtocol *protocol) const
+Variant YasonSyntax::parse(const CharArray *text, const MetaProtocol *protocol) const
 {
     Ref<SyntaxState> state = match(text);
     if (!state->valid()) throw SyntaxError(text, state);
@@ -367,7 +367,7 @@ Variant YasonSyntax::parse(const ByteArray *text, const MetaProtocol *protocol) 
     return readValue(text, valueToken);
 }
 
-Ref<MetaObject> YasonSyntax::readObject(const ByteArray *text, Token *token, const MetaProtocol *protocol, MetaObject *prototype) const
+Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, const MetaProtocol *protocol, MetaObject *prototype) const
 {
     if (token->rule() != object_)
         throw SemanticError("Expected an object value", text, token->i0());
@@ -490,7 +490,7 @@ Ref<MetaObject> YasonSyntax::readObject(const ByteArray *text, Token *token, con
     return object;
 }
 
-Token *YasonSyntax::nameToken(const ByteArray *text, Token *objectToken, const String &memberName) const
+Token *YasonSyntax::nameToken(const CharArray *text, Token *objectToken, const String &memberName) const
 {
     for (Token *token = objectToken->firstChild(); token; token = token->nextSibling()) {
         if (token->rule() == name_) {
@@ -501,7 +501,7 @@ Token *YasonSyntax::nameToken(const ByteArray *text, Token *objectToken, const S
     return objectToken;
 }
 
-Token *YasonSyntax::valueToken(const ByteArray *text, Token *objectToken, const String &memberName) const
+Token *YasonSyntax::valueToken(const CharArray *text, Token *objectToken, const String &memberName) const
 {
     Token *token = nameToken(text, objectToken, memberName);
     if (token != objectToken) return token->nextSibling();
@@ -519,13 +519,13 @@ Token *YasonSyntax::childToken(Token *objectToken, int childIndex) const
     return 0;
 }
 
-String YasonSyntax::readName(const ByteArray *text, Token *token) const
+String YasonSyntax::readName(const CharArray *text, Token *token) const
 {
     bool stripQuotation = (text->at(token->i0()) == '"');
     return text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
 }
 
-Variant YasonSyntax::readValue(const ByteArray *text, Token *token, int expectedType, int expectedItemType) const
+Variant YasonSyntax::readValue(const CharArray *text, Token *token, int expectedType, int expectedItemType) const
 {
     Variant value;
     bool typeError = false;
@@ -673,7 +673,7 @@ Variant YasonSyntax::readValue(const ByteArray *text, Token *token, int expected
     return value;
 }
 
-Variant YasonSyntax::readList(const ByteArray *text, Token *token, int expectedItemType) const
+Variant YasonSyntax::readList(const CharArray *text, Token *token, int expectedItemType) const
 {
     Variant list;
     if (expectedItemType == Variant::IntType)
@@ -689,7 +689,7 @@ Variant YasonSyntax::readList(const ByteArray *text, Token *token, int expectedI
     return list;
 }
 
-String YasonSyntax::readText(const ByteArray *text, Token *token) const
+String YasonSyntax::readText(const CharArray *text, Token *token) const
 {
     token = token->firstChild();
 

@@ -12,7 +12,7 @@
 namespace cc {
 namespace syntax {
 
-void DebugToken::printTo(Stream *stream, ByteArray *text, int depth, int defaultScope)
+void DebugToken::printTo(Stream *stream, CharArray *text, int depth, int defaultScope)
 {
     if (defaultScope == -1) defaultScope = scope();
 

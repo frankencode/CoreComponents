@@ -13,7 +13,7 @@
 namespace cc {
 namespace zip {
 
-int ZipFile::read(ByteArray *data)
+int ZipFile::read(CharArray *data)
 {
     zip_int64_t ret = zip_fread(file_, data->bytes(), data->count());
     if (ret < 0) throw ZipError(zip_get_error(archive_)->zip_err, zipPath_);

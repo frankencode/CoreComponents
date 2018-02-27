@@ -25,7 +25,7 @@ public:
       * \param buffer input buffer (optional)
       * \return new object instance
       */
-    inline static Ref<Utf8Source> open(Stream *stream, ByteArray *buffer = 0) {
+    inline static Ref<Utf8Source> open(Stream *stream, CharArray *buffer = 0) {
         return new Utf8Source(stream, buffer);
     }
 
@@ -33,7 +33,7 @@ public:
       * \param buffer input buffer
       * \return new object instance
       */
-    inline static Ref<Utf8Source> open(const ByteArray *buffer) {
+    inline static Ref<Utf8Source> open(const CharArray *buffer) {
         return new Utf8Source(buffer);
     }
 
@@ -56,11 +56,11 @@ public:
     inline ByteSource *byteSource() const { return byteSource_; }
 
 private:
-    Utf8Source(Stream *stream, ByteArray *buffer):
+    Utf8Source(Stream *stream, CharArray *buffer):
         byteSource_(ByteSource::open(stream, buffer))
     {}
 
-    Utf8Source(const ByteArray *buffer):
+    Utf8Source(const CharArray *buffer):
         byteSource_(ByteSource::open(buffer))
     {}
 

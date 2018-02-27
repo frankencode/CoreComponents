@@ -31,7 +31,7 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    inline static Ref<Utf16Source> open(Stream *stream, ByteArray *buffer = 0, Endian endian = BigEndian) {
+    inline static Ref<Utf16Source> open(Stream *stream, CharArray *buffer = 0, Endian endian = BigEndian) {
         return new Utf16Source(stream, buffer, endian);
     }
 
@@ -40,7 +40,7 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    inline static Ref<Utf16Source> open(const ByteArray *buffer, Endian endian = BigEndian) {
+    inline static Ref<Utf16Source> open(const CharArray *buffer, Endian endian = BigEndian) {
         return new Utf16Source(buffer, endian);
     }
 
@@ -73,12 +73,12 @@ public:
     inline ByteSource *byteSource() const { return byteSource_; }
 
 private:
-    Utf16Source(Stream *stream, ByteArray *buffer, Endian endian):
+    Utf16Source(Stream *stream, CharArray *buffer, Endian endian):
         byteSource_(ByteSource::open(stream, buffer, endian)),
         firstTime_(true)
     {}
 
-    Utf16Source(const ByteArray *buffer, Endian endian):
+    Utf16Source(const CharArray *buffer, Endian endian):
         byteSource_(ByteSource::open(buffer, endian)),
         firstTime_(true)
     {}

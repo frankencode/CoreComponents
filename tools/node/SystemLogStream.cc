@@ -19,7 +19,7 @@ SystemLogStream::SystemLogStream(int priority):
     priority_(priority)
 {}
 
-void SystemLogStream::write(const ByteArray *data)
+void SystemLogStream::write(const CharArray *data)
 {
     syslog(priority_, "%s", data->chars());
 }

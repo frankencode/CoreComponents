@@ -60,12 +60,12 @@ void MetaObject::autocomplete(const MetaObject *prototype)
     }
 }
 
-Token *MetaObject::nameToken(const ByteArray *text, Token *objectToken, const String &memberName)
+Token *MetaObject::nameToken(const CharArray *text, Token *objectToken, const String &memberName)
 {
     return YasonSyntax::instance()->nameToken(text, objectToken, memberName);
 }
 
-Token *MetaObject::valueToken(const ByteArray *text, Token *objectToken, const String &memberName)
+Token *MetaObject::valueToken(const CharArray *text, Token *objectToken, const String &memberName)
 {
     return YasonSyntax::instance()->valueToken(text, objectToken, memberName);
 }

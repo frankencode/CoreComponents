@@ -33,7 +33,7 @@ public:
     void feed(const void *buf, int bufFill);
     inline uint16_t sum() const { return crc_; }
 
-    void write(const ByteArray *data);
+    void write(const CharArray *data);
     String finish() override;
 
 private:

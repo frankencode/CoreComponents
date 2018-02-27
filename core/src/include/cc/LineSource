@@ -24,20 +24,20 @@ public:
       * \param buffer input buffer
       * \return new object instance
       */
-    static Ref<LineSource> open(const ByteArray *buffer);
+    static Ref<LineSource> open(const CharArray *buffer);
 
     /** Open a new line source feed from an input stream
       * \param stream input stream
       * \param buffer input buffer (optional)
       * \return new object instance
       */
-    static Ref<LineSource> open(Stream *stream, ByteArray *buffer = 0);
+    static Ref<LineSource> open(Stream *stream, CharArray *buffer = 0);
 
     /// Input stream used to read lines from
     inline Stream *stream() const { return stream_; }
 
     /// Input buffer used to cache input data
-    inline const ByteArray *buffer() const { return buffer_; }
+    inline const CharArray *buffer() const { return buffer_; }
 
     /** Read next line
       * \param line returns the next line (if not end of input)
@@ -54,10 +54,10 @@ public:
     String pendingData() const;
 
 private:
-    LineSource(Stream *stream, ByteArray *buffer);
+    LineSource(Stream *stream, CharArray *buffer);
 
-    static int findEol(const ByteArray *buffer, int n, int i);
-    static int skipEol(const ByteArray *buffer, int n, int i);
+    static int findEol(const CharArray *buffer, int n, int i);
+    static int skipEol(const CharArray *buffer, int n, int i);
 
     Ref<Stream> stream_;
     String buffer_;

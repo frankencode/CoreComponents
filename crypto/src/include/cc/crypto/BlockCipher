@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/ByteArray>
+#include <cc/CharArray>
 
 namespace cc {
 namespace crypto {
@@ -23,10 +23,10 @@ public:
     inline int blockSize() const { return blockSize_; }
 
     /// Encipher a plaintext p into a ciphertext c
-    virtual void encode(const ByteArray *p, ByteArray *c) = 0;
+    virtual void encode(const CharArray *p, CharArray *c) = 0;
 
     /// Decipher a ciphertext c into a plaintext p
-    virtual void decode(const ByteArray *c, ByteArray *p) = 0;
+    virtual void decode(const CharArray *c, CharArray *p) = 0;
 
 protected:
     BlockCipher(int blockSize): blockSize_(blockSize) {}

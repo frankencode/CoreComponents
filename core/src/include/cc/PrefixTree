@@ -12,7 +12,6 @@
 #include <cc/strings>
 #include <cc/Tree>
 #include <cc/Array>
-#include <cc/ByteArray>
 #include <cc/PrefixTreeWalker>
 
 namespace cc {
@@ -24,7 +23,7 @@ template<class Char>
 class PrefixTreeKeyByCharType { public: typedef Array<Char> Key; };
 
 template<>
-class PrefixTreeKeyByCharType<char> { public: typedef const ByteArray Key; };
+class PrefixTreeKeyByCharType<char> { public: typedef const CharArray Key; };
 
 /** \class PrefixTree PrefixTree.h cc/PrefixTree
   */

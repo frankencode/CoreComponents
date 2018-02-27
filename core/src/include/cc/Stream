@@ -24,15 +24,15 @@ public:
     /** Read N bytes
       * \param data target buffer (N = data->count())
       * \return number of bytes read (<= N)
-      * \see ByteArray::select()
+      * \see CharArray::select()
       */
-    virtual int read(ByteArray *data);
+    virtual int read(CharArray *data);
 
     /** Write N bytes
       * \param data source buffer (N = data->count())
-      * \see ByteArray::select()
+      * \see CharArray::select()
       */
-    virtual void write(const ByteArray *data);
+    virtual void write(const CharArray *data);
 
     /** Write multiple buffers atomically ("scatter write")
       * \param parts list of source buffers
@@ -40,7 +40,7 @@ public:
     virtual void write(const StringList *parts);
 
     /// Convenience wrapper
-    inline void write(const String &data) { write(static_cast<const ByteArray *>(data)); }
+    inline void write(const String &data) { write(static_cast<const CharArray *>(data)); }
 
     /// Convenience wrapper
     inline void write(const char *data) { write(String(data)); }
@@ -58,10 +58,10 @@ public:
       * \return number of bytes transferred
       * \see Transfer
       */
-    virtual off_t transferSpanTo(off_t count, Stream *sink, ByteArray *buffer = 0);
+    virtual off_t transferSpanTo(off_t count, Stream *sink, CharArray *buffer = 0);
 
     /// Convenience wrapper for transferSpanTo(sink, -1, buffer)
-    inline off_t transferTo(Stream *sink, ByteArray *buffer = 0) { return transferSpanTo(-1, sink, buffer); }
+    inline off_t transferTo(Stream *sink, CharArray *buffer = 0) { return transferSpanTo(-1, sink, buffer); }
 
     /// Convenience wrapper for transferSpanTo(0, count)
     inline off_t skip(off_t count) { return transferSpanTo(count, 0); }
@@ -73,7 +73,7 @@ public:
       * \param data target buffer
       * \return number of bytes read
       */
-    int readSpan(ByteArray *data);
+    int readSpan(CharArray *data);
 
     /** Read a fixed number of bytes (N)
       * \param count number of bytes to read (N)
@@ -85,7 +85,7 @@ public:
       * \param buffer auxiliary transfer buffer
       * \return all byte read from the stream
       */
-    String readAll(ByteArray *buffer = 0);
+    String readAll(CharArray *buffer = 0);
 
 protected:
     virtual ~Stream() {}

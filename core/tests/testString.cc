@@ -95,28 +95,13 @@ class SyntaxSugar: public TestCase
             String s = "Привет!";
             for (auto ch: Unicode::open(s)) fout() << ch << nl;
         }
-    }
-};
-
-class CopyOnWriteTest: public TestCase
-{
-    void run()
-    {
-        String s = "arbakadabra";
-        String s2 = s;
-        CC_INSPECT((void *)static_cast<const ByteArray *>(s ));
-        CC_INSPECT((void *)static_cast<const ByteArray *>(s2));
-        CC_INSPECT(s);
-        CC_INSPECT(s2);
-        CC_INSPECT(s->refCount());
-        CC_INSPECT(s2->refCount());
-        mutate(s2)->at(0) = 'A';
-        CC_INSPECT((void *)static_cast<const ByteArray *>(s ));
-        CC_INSPECT((void *)static_cast<const ByteArray *>(s2));
-        CC_INSPECT(s);
-        CC_INSPECT(s2);
-        CC_INSPECT(s->refCount());
-        CC_INSPECT(s2->refCount());
+        {
+            String s = "ABC";
+            CC_INSPECT(s);
+            for (char &ch: mutate(s)) ch = downcase(ch);
+            CC_INSPECT(s);
+            CC_VERIFY(s == "abc");
+        }
     }
 };
 
@@ -127,7 +112,6 @@ int main(int argc, char **argv)
     CC_TESTSUITE_ADD(UnicodeEscapes);
     CC_TESTSUITE_ADD(FindSplitReplace);
     CC_TESTSUITE_ADD(SyntaxSugar);
-    CC_TESTSUITE_ADD(CopyOnWriteTest);
 
     return TestSuite::instance()->run(argc, argv);
 }

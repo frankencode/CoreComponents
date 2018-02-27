@@ -15,23 +15,23 @@
 #include <cc/Utf16Sink>
 #include <cc/Format>
 #include <cc/HexDump>
-#include <cc/ByteArray>
+#include <cc/String>
 
 namespace cc {
 
-Ref<const ByteArray>::Ref(const Variant &b):
+Ref<const CharArray>::Ref(const Variant &b):
     a_(0)
 {
     set(Variant::toString(b));
 }
 
-Ref<const ByteArray>::Ref(const Format &b):
+Ref<const CharArray>::Ref(const Format &b):
     a_(0)
 {
     set(b->join());
 }
 
-class Chunk: public ByteArray
+class Chunk: public CharArray
 {
 public:
     bool isZeroTerminated() const { return false; }
@@ -39,33 +39,33 @@ public:
 private:
     friend class Array<char>;
     Chunk(char *data, int size):
-        ByteArray(data, size)
+        CharArray(data, size)
     {}
 };
 
 String Array<char>::allocate(int size)
 {
-    if (size <= 0) return new ByteArray();
+    if (size <= 0) return new CharArray();
     return new Chunk(new char[size], size);
 }
 
 String Array<char>::create(int size)
 {
-    if (size <= 0) return new ByteArray();
+    if (size <= 0) return new CharArray();
     char *data = new char[size + 1];
     data[size] = 0;
-    return new ByteArray(data, size);
+    return new CharArray(data, size);
 }
 
 String Array<char>::copy(const char *data, int size)
 {
-    if (!data) return new ByteArray();
+    if (!data) return new CharArray();
     if (size < 0) size = strlen(data);
-    if (size <= 0) return new ByteArray();
+    if (size <= 0) return new CharArray();
     char *newData = new char[size + 1];
     newData[size] = 0;
     memcpy(newData, data, size);
-    return new ByteArray(newData, size);
+    return new CharArray(newData, size);
 }
 
 String Array<char>::join(const StringList *parts, const char *sep, int sepSize)
@@ -83,7 +83,7 @@ String Array<char>::join(const StringList *parts, const char *sep, int sepSize)
     String result(size);
     char *p = result->data_;
     for (int i = 0; i < parts->count(); ++i) {
-        const ByteArray *part = parts->at(i);
+        const CharArray *part = parts->at(i);
         memcpy(p, part->data_, part->size_);
         p += part->size_;
         if (i + 1 < parts->count()) {
@@ -108,9 +108,9 @@ String Array<char>::cat(const String &a, const String &b)
     return c;
 }
 
-const ByteArray *Array<char>::empty()
+const CharArray *Array<char>::empty()
 {
-    static thread_local String empty_(new ByteArray());
+    static thread_local String empty_(new CharArray());
     return empty_;
 }
 
@@ -133,16 +133,16 @@ Array<char>::Array(const char *data, int size, Destroy destroy)
         }
     }
     if (size == 0) {
-        const ByteArray *b = ByteArray::empty();
+        const CharArray *b = CharArray::empty();
         size_ = b->size_;
         data_ = b->data_;
         destroy_ = b->destroy_;
     }
 }
 
-Array<char>::Array(const ByteArray *parent, int i0, int i1):
+Array<char>::Array(const CharArray *parent, int i0, int i1):
     destroy_(doNothing),
-    parent_(const_cast<ByteArray *>(parent))
+    parent_(const_cast<CharArray *>(parent))
 {
     if (i0 < 0) i0 = 0;
     else if (i0 > parent->size_) i0 = parent_->size_;
@@ -152,7 +152,7 @@ Array<char>::Array(const ByteArray *parent, int i0, int i1):
     data_ = parent_->data_ + i0;
 }
 
-Array<char>::Array(const ByteArray &b):
+Array<char>::Array(const CharArray &b):
     size_(0),
     data_(const_cast<char *>("")),
     destroy_(doNothing)
@@ -171,7 +171,7 @@ Array<char>::~Array()
     destroy();
 }
 
-void Array<char>::doNothing(ByteArray *)
+void Array<char>::doNothing(CharArray *)
 {}
 
 void Array<char>::destroy()
@@ -196,7 +196,7 @@ void Array<char>::truncate(int newSize)
     }
 }
 
-void Array<char>::writeXor(const ByteArray *b)
+void Array<char>::writeXor(const CharArray *b)
 {
     int n = (size_ < b->size_) ? size_ : b->size_;
     for (int i = 0; i < n; ++i)
@@ -214,7 +214,7 @@ String Array<char>::copy(int i0, int i1) const
     char *newData = new char[newSize + 1];
     memcpy(newData, data_ + i0, newSize);
     newData[newSize] = 0;
-    return new ByteArray(newData, newSize);
+    return new CharArray(newData, newSize);
 }
 
 String Array<char>::paste(int i0, int i1, const String &text) const
@@ -657,13 +657,13 @@ bool Array<char>::linePosToOffset(int line, int pos, int *offset) const
 
 void Array<char>::checkUtf8() const
 {
-    Ref<Utf8Source> source = Utf8Source::open(const_cast<ByteArray *>(this));
+    Ref<Utf8Source> source = Utf8Source::open(const_cast<CharArray *>(this));
     for (uchar_t ch = 0; source->read(&ch););
 }
 
-String Array<char>::fromUtf16(const ByteArray *utf16, Endian endian)
+String Array<char>::fromUtf16(const CharArray *utf16, Endian endian)
 {
-    if (utf16->count() == 0) return ByteArray::create();
+    if (utf16->count() == 0) return CharArray::create();
 
     String out;
     {
@@ -731,7 +731,7 @@ String Array<char>::toUtf16(Endian endian) const
 
 String Array<char>::toHex() const
 {
-    String s2 = ByteArray::create(size_ * 2);
+    String s2 = CharArray::create(size_ * 2);
     int j = 0;
     for (int i = 0; i < size_; ++i) {
         unsigned char ch = bytes_[i];

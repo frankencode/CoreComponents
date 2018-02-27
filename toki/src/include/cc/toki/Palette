@@ -51,7 +51,7 @@ private:
 
     virtual Ref<MetaObject> produce();
     virtual void define();
-    virtual void realize(const ByteArray *text, Token *objectToken);
+    virtual void realize(const CharArray *text, Token *objectToken);
 
     String scopeName_;
     int scope_;

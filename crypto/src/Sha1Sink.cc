@@ -55,7 +55,7 @@ Sha1Sink::Sha1Sink():
     mutate(h_)->wordAt(4) = 0xC3D2E1F0;
 }
 
-void Sha1Sink::write(const ByteArray *data)
+void Sha1Sink::write(const CharArray *data)
 {
     for (int i = 0; i < data->count(); ++i) {
         uint8_t b = data->byteAt(i);
@@ -126,7 +126,7 @@ void Sha1Sink::consume()
     h[4] += e;
 }
 
-String sha1(const ByteArray *data)
+String sha1(const CharArray *data)
 {
     Ref<Sha1Sink> h = Sha1Sink::open();
     h->write(data);

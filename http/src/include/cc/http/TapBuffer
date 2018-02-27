@@ -20,7 +20,7 @@ public:
 
     virtual String prefix() const;
 
-    void write(const ByteArray *buf);
+    void write(const CharArray *buf);
 
 private:
     TapBuffer(Stream *stream, String prefix);

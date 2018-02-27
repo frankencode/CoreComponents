@@ -15,7 +15,7 @@ RandomSource::RandomSource(int seed):
     random_(Random::open(seed))
 {}
 
-int RandomSource::read(ByteArray *data)
+int RandomSource::read(CharArray *data)
 {
     for (int i = 0; i < data->count(); ++i)
         data->at(i) = random_->get(0, 0xFF);

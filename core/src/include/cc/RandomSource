@@ -23,7 +23,7 @@ class RandomSource: public Stream
 {
 public:
     static Ref<RandomSource> open(int seed = -1) { return new RandomSource(seed); }
-    virtual int read(ByteArray *data) override;
+    virtual int read(CharArray *data) override;
 
 protected:
     RandomSource(int seed);

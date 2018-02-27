@@ -78,12 +78,12 @@ protected:
     virtual void run();
 
 private:
-    static Ref<ByteArray> allocateStack(int stackSize, int guardSize);
+    static Ref<CharArray> allocateStack(int stackSize, int guardSize);
     static void *bootstrap(void *self);
     static thread_local Ref<Thread> self_;
 
     int stackSize_;
-    Ref<ByteArray> stack_;
+    Ref<CharArray> stack_;
     pthread_t tid_;
     int lastSignal_;
 };

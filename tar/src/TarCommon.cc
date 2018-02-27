@@ -11,7 +11,7 @@
 namespace cc {
 namespace tar {
 
-unsigned tarHeaderSum(const ByteArray *data)
+unsigned tarHeaderSum(const CharArray *data)
 {
     unsigned sum = 0;
     for (int i = 0;       i < 148 && i < data->count(); ++i) sum += data->byteAt(i);

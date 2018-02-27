@@ -54,16 +54,16 @@ public:
       * \return number of bytes received
       * \exception HostUnreachable an ICMP error from an earlier sendTo() has been received
       */
-    virtual int recvFrom(Ref<SocketAddress> *peerAddress, ByteArray *buffer);
+    virtual int recvFrom(Ref<SocketAddress> *peerAddress, CharArray *buffer);
 
     /** Send a datagram
       * \param peerAddress destination host address
       * \param message the message to send
       * \return number of bytes send
       * \exception HostUnreachable an ICMP error from an earlier sendTo() has been received
-      * \see ByteArray::select()
+      * \see CharArray::select()
       */
-    virtual int sendTo(const SocketAddress *peerAddress, const ByteArray *message);
+    virtual int sendTo(const SocketAddress *peerAddress, const CharArray *message);
 
     /** Restrict communication to a single source
       * \param peerAddress unicast or multicast address to receive datagrams from

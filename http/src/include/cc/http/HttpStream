@@ -25,8 +25,8 @@ public:
     void nextLine();
     void nextChunk();
 
-    int read(ByteArray *data) override;
-    void write(const ByteArray *data) override;
+    int read(CharArray *data) override;
+    void write(const CharArray *data) override;
     void write(const StringList *parts) override;
 
 private:

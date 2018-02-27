@@ -28,7 +28,7 @@ public:
         invert_(invert)
     {}
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         if (text->has(i)) {
             char ch = text->at(i++);
@@ -59,7 +59,7 @@ public:
         invert_(invert)
     {}
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         if (text->has(i)) {
             char ch = text->at(i++);
@@ -91,7 +91,7 @@ public:
         invert_(invert)
     {}
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         if (text->has(i)) {
             char ch = text->at(i++);
@@ -117,7 +117,7 @@ private:
 class AnyNode: public SyntaxNode
 {
 public:
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         return text->has(i) ? i + 1 : -1;
     }
@@ -132,7 +132,7 @@ public:
         invert_(invert)
     {}
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         if (text->has(i)) {
             char ch = text->at(i++);
@@ -164,7 +164,7 @@ public:
         invert_(invert)
     {}
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         if (text->has(i)) {
             char ch = text->at(i++);
@@ -184,7 +184,7 @@ public:
 
     inline int matchLength() const { return 1; }
 
-    inline const ByteArray &s() const { return *s_; }
+    inline const CharArray &s() const { return *s_; }
     inline int invert() const { return invert_; }
 
 private:
@@ -202,7 +202,7 @@ public:
         if (!caseSensitive) mutate(s_)->downcaseInsitu();
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         if (text->has(i)) {
             int k = 0, len = s_->count();
@@ -224,7 +224,7 @@ public:
 
     inline int matchLength() const { return s_->count(); }
 
-    inline const ByteArray &s() const { return *s_; }
+    inline const CharArray &s() const { return *s_; }
 
 private:
     String s_;
@@ -241,7 +241,7 @@ public:
         caseSensitive_(caseSensitive)
     {}
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         if (text->has(i)) {
             int h = 0;
@@ -277,7 +277,7 @@ public:
         appendChild(entry);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -329,7 +329,7 @@ public:
         appendChild(entry);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -381,7 +381,7 @@ public:
         appendChild(entry);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         Token *lastChildSaved = 0, *lastChildSaved2 = 0;
         if (parentToken) {
@@ -460,7 +460,7 @@ public:
         appendChild(entry);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         String filteredText = text;
 
@@ -520,7 +520,7 @@ public:
         appendChild(entry);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -552,7 +552,7 @@ private:
 class BoiNode: public SyntaxNode
 {
 public:
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         return (i == 0) ? i : -1;
     }
@@ -562,7 +562,7 @@ public:
 class EoiNode: public SyntaxNode
 {
 public:
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         bool eoi = (!text->has(i)) && ((i == 0) || (text->has(i - 1)));
         return eoi ? i : -1;
@@ -577,7 +577,7 @@ public:
         invert_(invert)
     {}
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         return invert_ ? -1 : i;
     }
@@ -598,7 +598,7 @@ public:
         appendChild(entry);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -636,7 +636,7 @@ public:
         appendChild(entry);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -672,7 +672,7 @@ public:
         appendChild(entry);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         if (length_ <= 0) return -1;
 
@@ -707,7 +707,7 @@ private:
 class ChoiceNode: public SyntaxNode
 {
 public:
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -755,7 +755,7 @@ public:
 class LazyChoiceNode: public ChoiceNode
 {
 public:
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -798,7 +798,7 @@ public:
 class GlueNode: public SyntaxNode
 {
 public:
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -851,7 +851,7 @@ public:
         appendChild(entry);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         int h = entry()->matchNext(text, i, parentToken, state);
         if (h == -1 && !state->finalize_) {
@@ -873,7 +873,7 @@ private:
     bool strict_;
 };
 
-typedef int (*CallBack) (Object *self, const ByteArray *text, int i, Token *parentToken, SyntaxState *state);
+typedef int (*CallBack) (Object *self, const CharArray *text, int i, Token *parentToken, SyntaxState *state);
 
 class CallNode: public SyntaxNode
 {
@@ -883,7 +883,7 @@ public:
         self_(self)
     {}
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         return callBack_(self_, text, i, parentToken, state);
     }
@@ -904,7 +904,7 @@ public:
         value_(value)
     {}
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         state->setFlag(scope_, flagId_, value_);
         return i;
@@ -931,7 +931,7 @@ public:
         appendChild(falseBranch);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         return state->flag(scope_, flagId_) ?
             trueBranch()->matchNext(text, i, parentToken, state) :
@@ -958,7 +958,7 @@ public:
         appendChild(coverage);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         Token *lastChildSaved = 0;
         if (parentToken) lastChildSaved = parentToken->lastChild();
@@ -996,7 +996,7 @@ public:
         captureId_(captureId)
     {}
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         Range *range = state->capture(scope_, captureId_);
         for (int j = range->i0(); (j < range->i1()) && text->has(i) && text->has(j); ++i, ++j) {
@@ -1030,7 +1030,7 @@ public:
         appendChild(entry);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override;
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override;
 
     inline int matchLength() const { return entry()->matchLength(); }
 
@@ -1100,7 +1100,7 @@ public:
         LinkNode(rule)
     {}
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         RuleNode *rule = LinkNode::rule_;
         return (generate_ && rule->generate()) ?
@@ -1123,7 +1123,7 @@ public:
         if (coverage) appendChild(coverage);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override;
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override;
 
     inline SyntaxNode *coverage() const { return SyntaxNode::firstChild(); }
 
@@ -1140,7 +1140,7 @@ public:
         keyword_(-1)
     {}
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         int h = -1;
         if (parentToken) {
@@ -1173,7 +1173,7 @@ public:
         appendChild(outOfContext);
     }
 
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
         int h = -1;
 
@@ -1354,7 +1354,7 @@ public:
         return debug(link, "Context");
     }
 
-    typedef int (*CallBack) (Object *self, const ByteArray *text, int i, Token *parentToken, SyntaxState *state);
+    typedef int (*CallBack) (Object *self, const CharArray *text, int i, Token *parentToken, SyntaxState *state);
 
     inline NODE CALL(CallBack callBack, Object *self = 0) {
         if (!self) self = this;
@@ -1389,8 +1389,8 @@ public:
         return new SyntaxState(this, flagCount_, captureCount_, tokenFactory);
     }
 
-    Ref<SyntaxState> find(const ByteArray *text, int i, TokenFactory *tokenFactory = 0) const;
-    Ref<SyntaxState> match(const ByteArray *text, int i = -1, TokenFactory *tokenFactory = 0) const;
+    Ref<SyntaxState> find(const CharArray *text, int i, TokenFactory *tokenFactory = 0) const;
+    Ref<SyntaxState> match(const CharArray *text, int i = -1, TokenFactory *tokenFactory = 0) const;
 
     const DefinitionNode *resolveScope(const char *&name) const;
 
@@ -1441,7 +1441,7 @@ public:
         return captureIdByName_->lookup(name, captureId);
     }
 
-    virtual int syntaxError(const ByteArray *text, int index, SyntaxState *state) const;
+    virtual int syntaxError(const CharArray *text, int index, SyntaxState *state) const;
 
     inline SyntaxNode *debug(SyntaxNode *newNode, const char *nodeType) {
         return debugFactory_ ? debugFactory_->produce(newNode, nodeType) : newNode;
@@ -1500,7 +1500,7 @@ private:
     Ref<StateIdByName> flagIdByName_;
     Ref<StateIdByName> captureIdByName_;
 
-    static int errorCallBack(Object *self, const ByteArray *text, int index, Token *parentToken, SyntaxState *state);
+    static int errorCallBack(Object *self, const CharArray *text, int index, Token *parentToken, SyntaxState *state);
 };
 
 }} // namespace cc::syntax

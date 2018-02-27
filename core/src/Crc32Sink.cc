@@ -52,7 +52,7 @@ void Crc32Sink::feed(const void *buf, int bufFill)
         crc_ = crcTable[(crc_ ^ reinterpret_cast<const uint8_t*>(buf)[i]) & 0xFF] ^ (crc_ >> 8);
 }
 
-void Crc32Sink::write(const ByteArray *data)
+void Crc32Sink::write(const CharArray *data)
 {
     feed(data->bytes(), data->count());
 }

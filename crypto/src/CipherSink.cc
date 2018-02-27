@@ -32,7 +32,7 @@ CipherSink::~CipherSink()
         write(pad_->readSpan(cipher_->blockSize() - pending_->count()));
 }
 
-void CipherSink::write(const ByteArray *data)
+void CipherSink::write(const CharArray *data)
 {
     String feed;
 

@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/ByteArray>
 #include <cc/Unicode>
 
 namespace cc {
@@ -17,7 +16,7 @@ String Unicode::copy(int i0, int i1) const
     walkTo(i0);
     const char *p0 = walker_.pos();
     while (i_ < i1) { ++walker_; ++i_; }
-    return ByteArray::copy(p0, walker_.pos() - p0);
+    return CharArray::copy(p0, walker_.pos() - p0);
 }
 
 /*int String::find(int i, const char *pattern) const

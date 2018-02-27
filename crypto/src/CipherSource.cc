@@ -24,7 +24,7 @@ CipherSource::CipherSource(BlockCipher *cipher, Stream *source):
     j_(0), m_(0)
 {}
 
-int CipherSource::read(ByteArray *data)
+int CipherSource::read(CharArray *data)
 {
     if (m_ < 0) return 0;
 

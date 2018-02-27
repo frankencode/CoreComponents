@@ -22,8 +22,8 @@ using namespace cc::net;
 class HttpSocket: public StreamSocket
 {
 public:
-    int read(ByteArray *data) override;
-    void write(const ByteArray *data) override;
+    int read(CharArray *data) override;
+    void write(const CharArray *data) override;
     void write(const StringList *parts) override;
 
 protected:

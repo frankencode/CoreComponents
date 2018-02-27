@@ -161,7 +161,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
     BuildParameters::read(recipe_, this);
 
-    String defaultIncludePath = projectPath_->expandPath("include");
+    String defaultIncludePath = projectPath_->extendPath("include");
     if (Dir::exists(defaultIncludePath)) {
         if (!includePaths_->contains(defaultIncludePath))
             includePaths_->append(defaultIncludePath);
@@ -295,7 +295,7 @@ int BuildPlan::run()
         if (recipe_->value("prepare")) return 0;
     }
 
-    String defaultIncludePath = projectPath_->expandPath("include");
+    String defaultIncludePath = projectPath_->extendPath("include");
     if (Dir::exists(defaultIncludePath)) {
         if (!includePaths_->contains(defaultIncludePath))
             includePaths_->append(defaultIncludePath);
@@ -366,17 +366,17 @@ String BuildPlan::description() const
 String BuildPlan::sourcePath(String source) const
 {
     if (projectPath_ == ".") return source;
-    return projectPath_->expandPath(source);
+    return projectPath_->extendPath(source);
 }
 
 String BuildPlan::modulePath(String object) const
 {
-    return modulePath_->expandPath(object);
+    return modulePath_->extendPath(object);
 }
 
 String BuildPlan::installPath(String relativeInstallPath) const
 {
-    return installRoot_->expandPath(installPrefix_)->expandPath(relativeInstallPath);
+    return installRoot_->extendPath(installPrefix_)->extendPath(relativeInstallPath);
 }
 
 String BuildPlan::previousLinkCommandPath() const
@@ -429,11 +429,11 @@ String BuildPlan::findPrerequisite(String prerequisitePath) const
         return String();
     }
     {
-        String candidatePath = systemSourcePath()->expandPath(prerequisitePath);
+        String candidatePath = systemSourcePath()->extendPath(prerequisitePath);
         if (File::exists(recipePath(candidatePath))) return candidatePath;
     }
     for (String path = projectPath_; path != "/"; path = path->reducePath()) {
-        String candidatePath = path->expandPath(prerequisitePath);
+        String candidatePath = path->extendPath(prerequisitePath);
         if (File::exists(recipePath(candidatePath))) {
             candidatePath = candidatePath->canonicalPath();
             if (candidatePath == projectPath_) continue;

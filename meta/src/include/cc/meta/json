@@ -19,7 +19,7 @@ namespace json {
   * \param text JSON message
   * \return parsed value
   */
-Variant parse(const ByteArray *text);
+Variant parse(const CharArray *text);
 
 /** Convenience function to stringify a variant value
   * \param value variant value

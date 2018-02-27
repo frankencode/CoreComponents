@@ -27,7 +27,7 @@ public:
       * \param endian endianess for writing multi-byte words
       * \return new object instance
       */
-    inline static Ref<ByteSink> open(Stream *sink, ByteArray *buffer, Endian endian = LittleEndian) {
+    inline static Ref<ByteSink> open(Stream *sink, CharArray *buffer, Endian endian = LittleEndian) {
         return new ByteSink(sink, buffer, endian);
     }
 
@@ -45,7 +45,7 @@ public:
       * \param endian endianess for writing multi-byte words
       * \return new object instance
       */
-    inline static Ref<ByteSink> open(ByteArray *buffer, Endian endian = LittleEndian) {
+    inline static Ref<ByteSink> open(CharArray *buffer, Endian endian = LittleEndian) {
         return new ByteSink(0, buffer, endian);
     }
 
@@ -92,7 +92,7 @@ public:
     inline Stream *sink() const { return sink_; }
 
     /// The output buffer
-    inline const ByteArray *buffer() const { return buffer_; }
+    inline const CharArray *buffer() const { return buffer_; }
 
     /// Current endianess for encoding multi-byte words
     inline Endian endian() const { return endian_; }
@@ -104,7 +104,7 @@ public:
     inline off_t currentOffset() const { return i0_ + i_; }
 
 private:
-    ByteSink(Stream *sink, ByteArray *buffer, Endian endian):
+    ByteSink(Stream *sink, CharArray *buffer, Endian endian):
         sink_(sink),
         buffer_(buffer),
         endian_(endian),

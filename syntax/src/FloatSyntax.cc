@@ -74,7 +74,7 @@ FloatSyntax::FloatSyntax()
     LINK();
 }
 
-void FloatSyntax::read(float64_t *value, const ByteArray *text, Token *token) const
+void FloatSyntax::read(float64_t *value, const CharArray *text, Token *token) const
 {
     token = token->firstChild();
 
@@ -143,7 +143,7 @@ void FloatSyntax::read(float64_t *value, const ByteArray *text, Token *token) co
     }
 }
 
-Ref<Token> FloatSyntax::read(float64_t *value, const ByteArray *text, int i) const
+Ref<Token> FloatSyntax::read(float64_t *value, const CharArray *text, int i) const
 {
     Ref<Token> token = match(text, i)->rootToken();
     if (token) read(value, text, token);

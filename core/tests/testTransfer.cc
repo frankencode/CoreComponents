@@ -25,7 +25,7 @@ public:
         return new TestSource(transmissionSize);
     }
 
-    virtual int read(ByteArray *data) override
+    virtual int read(CharArray *data) override
     {
         if (transmissionLeft_ <= 0) return 0;
 
@@ -56,7 +56,7 @@ class TestSink: public Stream
 public:
     static Ref<TestSink> open() { return new TestSink; }
 
-    virtual void write(const ByteArray *data) override
+    virtual void write(const CharArray *data) override
     {
         fout() << "Received " << data->count() << " bytes" << nl;
         bytesTransferred_ += data->count();

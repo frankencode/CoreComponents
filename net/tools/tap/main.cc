@@ -15,7 +15,7 @@
 using namespace cc;
 using namespace cc::net;
 
-void dump(String prefix, const ByteArray *data)
+void dump(String prefix, const CharArray *data)
 {
     Ref<StringList> parts = data->split('\n');
     for (int i = 0; i < parts->count(); ++i) {

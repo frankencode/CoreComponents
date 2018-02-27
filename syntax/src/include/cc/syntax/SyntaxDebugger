@@ -17,7 +17,7 @@ namespace syntax {
 
 class SyntaxDebugNode: public SyntaxNode {
 public:
-    int matchNext(const ByteArray *text, int i, Token *parentToken, SyntaxState *state) const override {
+    int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override {
         return entry()->matchNext(text, i, parentToken, state);
     }
 

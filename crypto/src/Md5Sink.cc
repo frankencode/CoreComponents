@@ -26,7 +26,7 @@ Md5Sink::Md5Sink():
     CC_ASSERT((aux_->count() % 64) == 0);
 }
 
-void Md5Sink::write(const ByteArray *data)
+void Md5Sink::write(const CharArray *data)
 {
     const uint8_t *src = data->bytes();
     int srcLeft = data->count();
@@ -216,7 +216,7 @@ void Md5Sink::consume()
     auxFill_ = 0;
 }
 
-String md5(const ByteArray *data)
+String md5(const CharArray *data)
 {
     Ref<Md5Sink> h = Md5Sink::open();
     h->write(data);

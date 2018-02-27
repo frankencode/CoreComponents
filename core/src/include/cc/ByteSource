@@ -27,7 +27,7 @@ public:
       * \param endian endianess for reading multi-byte words
       * \return new object instance
       */
-    inline static Ref<ByteSource> open(Stream *source, ByteArray *buffer = 0, Endian endian = LittleEndian) {
+    inline static Ref<ByteSource> open(Stream *source, CharArray *buffer = 0, Endian endian = LittleEndian) {
         return new ByteSource(source, buffer, endian);
     }
 
@@ -36,8 +36,8 @@ public:
       * \param endian endianess for reading multi-byte words
       * \return new object instance
       */
-    inline static Ref<ByteSource> open(const ByteArray *buffer, Endian endian = LittleEndian) {
-        return new ByteSource(0, const_cast<ByteArray *>(buffer), endian);
+    inline static Ref<ByteSource> open(const CharArray *buffer, Endian endian = LittleEndian) {
+        return new ByteSource(0, const_cast<CharArray *>(buffer), endian);
     }
 
     /** Read a single byte
@@ -54,9 +54,9 @@ public:
 
     /** Read a fixed number of bytes (N)
       * \param span target buffer (N = span->count())
-      * \see ByteArray::select()
+      * \see CharArray::select()
       */
-    void read(ByteArray *span);
+    void read(CharArray *span);
 
     /** Read a fixed number of bytes
       * \param n number of bytes to read
@@ -101,7 +101,7 @@ public:
     inline Stream *source() const { return source_; }
 
     /// The output buffer
-    inline const ByteArray *buffer() const { return buffer_; }
+    inline const CharArray *buffer() const { return buffer_; }
 
     /// Current endianess for decoding multi-byte words
     inline Endian endian() const { return endian_; }
@@ -113,14 +113,14 @@ public:
     inline off_t currentOffset() const { return i0_ + i_; }
 
 private:
-    ByteSource(Stream *source, ByteArray *buffer, Endian endian):
+    ByteSource(Stream *source, CharArray *buffer, Endian endian):
         source_(source),
         buffer_(buffer),
         endian_(endian),
         i0_(0), i_(0),
         n_(source_ ? 0 : buffer->count())
     {
-        if (!buffer_) buffer_ = ByteArray::allocate(0x1000);
+        if (!buffer_) buffer_ = CharArray::allocate(0x1000);
     }
 
     Ref<Stream> source_;
@@ -138,7 +138,7 @@ inline bool ByteSource::readByte(uint8_t *x)
     return more;
 }
 
-inline void ByteSource::read(ByteArray *span)
+inline void ByteSource::read(CharArray *span)
 {
     for (int i = 0, n = span->count(); i < n; ++i)
         span->at(i) = readUInt8();

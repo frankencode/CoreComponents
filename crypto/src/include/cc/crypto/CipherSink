@@ -27,7 +27,7 @@ public:
       */
     static Ref<CipherSink> open(BlockCipher *cipher, Stream *sink, Stream *pad = 0);
 
-    void write(const ByteArray *data) override;
+    void write(const CharArray *data) override;
 
 private:
     CipherSink(BlockCipher *cipher, Stream *sink, Stream *pad);

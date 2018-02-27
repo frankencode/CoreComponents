@@ -27,13 +27,13 @@ public:
       * \param key 128 or 256 bit key (16 or 32 bytes)
       * \return new object instance
       */
-    inline static Ref<AesCipher> create(const ByteArray *key) { return new AesCipher(key); }
+    inline static Ref<AesCipher> create(const CharArray *key) { return new AesCipher(key); }
 
-    void encode(const ByteArray *p, ByteArray *c) override;
-    void decode(const ByteArray *c, ByteArray *p) override;
+    void encode(const CharArray *p, CharArray *c) override;
+    void decode(const CharArray *c, CharArray *p) override;
 
 private:
-    AesCipher(const ByteArray *key);
+    AesCipher(const CharArray *key);
     const int Nk_, Nr_;
     String s_;
     String w_;

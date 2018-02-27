@@ -10,12 +10,12 @@
 
 namespace cc {
 
-ReplaySource::ReplaySource(const ByteArray *buffer):
+ReplaySource::ReplaySource(const CharArray *buffer):
     buffer_(buffer),
     i_(0)
 {}
 
-int ReplaySource::read(ByteArray *data)
+int ReplaySource::read(CharArray *data)
 {
     if (i_ == buffer_->count()) return 0;
     const int n =

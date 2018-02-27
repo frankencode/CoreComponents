@@ -77,7 +77,7 @@ bool File::isSeekable() const
     return ::lseek(fd_, 0, SEEK_CUR) != -1;
 }
 
-off_t File::transferSpanTo(off_t count, Stream *sink, ByteArray *buf)
+off_t File::transferSpanTo(off_t count, Stream *sink, CharArray *buf)
 {
     if (count == 0) return 0;
     if (!sink) {
@@ -89,12 +89,12 @@ off_t File::transferSpanTo(off_t count, Stream *sink, ByteArray *buf)
     return Stream::transferSpanTo(count, sink, buf);
 }
 
-class MappedByteArray: public ByteArray
+class MappedByteArray: public CharArray
 {
 private:
     friend class File;
     MappedByteArray(char *data, int size):
-        ByteArray(data, size, File::unmap)
+        CharArray(data, size, File::unmap)
     {}
 };
 
@@ -142,7 +142,7 @@ String File::map() const
         );
 }
 
-void File::unmap(ByteArray *s)
+void File::unmap(CharArray *s)
 {
     int pageSize = System::pageSize();
     size_t mapSize = s->count();
@@ -234,7 +234,7 @@ String File::resolve(String path)
         resolvedPath = File::readlink(resolvedPath);
         if (resolvedPath == "") break;
         if (resolvedPath->isRelativePath())
-            resolvedPath = origPath->reducePath()->expandPath(resolvedPath);
+            resolvedPath = origPath->reducePath()->extendPath(resolvedPath);
     }
     return resolvedPath;
 }

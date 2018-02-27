@@ -21,8 +21,8 @@ public:
 
     inline Stream *stream() const { return stream_; }
 
-    int read(ByteArray *data) override;
-    void write(const ByteArray *data) override;
+    int read(CharArray *data) override;
+    void write(const CharArray *data) override;
     void write(const StringList *parts) override;
 
 private:

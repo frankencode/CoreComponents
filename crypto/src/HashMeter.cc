@@ -21,7 +21,7 @@ HashMeter::HashMeter(HashSink *hashSink, Stream *stream):
     stream_(stream)
 {}
 
-int HashMeter::read(ByteArray *data)
+int HashMeter::read(CharArray *data)
 {
     if (stream_) {
         int n = stream_->read(data);
@@ -31,7 +31,7 @@ int HashMeter::read(ByteArray *data)
     return 0;
 }
 
-void HashMeter::write(const ByteArray *data)
+void HashMeter::write(const CharArray *data)
 {
     hashSink_->write(data);
     if (stream_) stream_->write(data);

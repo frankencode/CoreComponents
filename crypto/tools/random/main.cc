@@ -18,7 +18,7 @@ int main()
     Ref<File> random = File::open("/dev/random");
     Ref<Stream> source = RandomSource::open();
 
-    String buffer = ByteArray::allocate(0x4000);
+    String buffer = CharArray::allocate(0x4000);
     while (true) {
         source->read(mutate(buffer));
         stdOut()->write(buffer);

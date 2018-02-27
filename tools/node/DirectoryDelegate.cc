@@ -76,7 +76,7 @@ void DirectoryDelegate::process(HttpRequest *request)
         const char *candidateNames[] = { "index.html", "index.htm" };
         for (int i = 0, n = sizeof(candidateNames) / sizeof(candidateNames[0]); i < n; ++i) {
             String candidateName = candidateNames[i];
-            String candidatePath = path->expandPath(candidateName);
+            String candidatePath = path->extendPath(candidateName);
             if (File::exists(candidatePath)) {
                 indexPath = candidatePath;
                 indexName = candidateName;

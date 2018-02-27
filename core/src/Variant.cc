@@ -69,7 +69,7 @@ bool Variant::operator==(const Variant &b) const
     else if ((type_ & VersionType) && (b.type_ & VersionType))
         equal = (word_ == b.word_);
     else if ((type_ == StringType) && (b.type_ == StringType))
-        equal = (String(Variant::cast<ByteArray *>(*this)) == String(Variant::cast<ByteArray *>(b)));
+        equal = (String(Variant::cast<CharArray *>(*this)) == String(Variant::cast<CharArray *>(b)));
     else if ((type_ == ObjectType) && (b.type_ == ObjectType))
         equal = (ref().get() == b.ref().get());
     else
@@ -89,7 +89,7 @@ bool Variant::operator<(const Variant &b) const
     else if ((type_ & VersionType) && (b.type_ & VersionType))
         below = (Version::cast(word_) < Version::cast(b.word_));
     else if ((type_ == StringType) && (b.type_ == StringType))
-        below = String(Variant::cast<ByteArray *>(*this)) < String(Variant::cast<ByteArray *>(b));
+        below = String(Variant::cast<CharArray *>(*this)) < String(Variant::cast<CharArray *>(b));
     else if ((type_ == ObjectType) && (b.type_ == ObjectType))
         below = (ref().get() < b.ref().get());
 
@@ -104,7 +104,7 @@ String str(const Variant &x)
     else if (Variant::type(x) == Variant::FloatType) return str(float(x));
     else if (Variant::type(x) == Variant::ColorType) return str(Color(x));
     else if (Variant::type(x) == Variant::VersionType) return str(Version(x));
-    else if (Variant::type(x) == Variant::StringType) return Variant::cast<ByteArray *>(x);
+    else if (Variant::type(x) == Variant::StringType) return Variant::cast<CharArray *>(x);
     /*else if (type(x) == Variant::ObjectType)*/ return str((void *)Variant::cast<Object *>(x));
 }
 
