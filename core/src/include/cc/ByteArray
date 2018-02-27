@@ -29,7 +29,7 @@ class Format;
 /** \brief A string is a reference to a ByteArray
   * \ingroup unicode
   */
-typedef Ref<ByteArray> String;
+typedef Ref<const ByteArray> String;
 
 /// Convenience alias
 typedef List<String> StringList;
@@ -49,7 +49,7 @@ MutantString mutate(String &&s);
   * \ingroup unicode
   */
 template<>
-class Ref<ByteArray>
+class Ref<const ByteArray>
 {
 public:
     static String allocate(int size);
@@ -826,7 +826,7 @@ public:
     /** @} */
 
 protected:
-    friend class Ref<ByteArray>;
+    friend class Ref<const ByteArray>;
 
     friend bool operator==(const String &a, const String &b);
     friend bool operator!=(const String &a, const String &b);
@@ -859,7 +859,7 @@ private:
     };
 
     Destroy destroy_;
-    Ref<ByteArray> parent_;
+    String parent_;
 };
 
 template<class T>
@@ -979,108 +979,108 @@ inline ByteArray *MutantString::operator->() { return const_cast<ByteArray *>(s_
 
 inline MutantString mutate(String &&s) { return std::move(s); }
 
-inline Ref<ByteArray>::Ref(const Ref &b):
+inline Ref<const ByteArray>::Ref(const Ref &b):
     a_(0)
 {
     set(b.a_);
 }
 
-inline Ref<ByteArray>::Ref(const ByteArray *b):
+inline Ref<const ByteArray>::Ref(const ByteArray *b):
     a_(0)
 {
     set(ByteArray::copy(b));
 }
 
-inline Ref<ByteArray>::Ref(const char *other, int size):
+inline Ref<const ByteArray>::Ref(const char *other, int size):
     a_(0)
 {
     set(ByteArray::copy(other, size));
 }
 
-/*inline Ref<ByteArray>::Ref(char ch):
+/*inline Ref<const ByteArray>::Ref(char ch):
     a_(0)
 {
     set(ByteArray::create(1));
     a_->at(0) = ch;
 }*/
 
-inline Ref<ByteArray>::Ref(int size, char zero):
+inline Ref<const ByteArray>::Ref(int size, char zero):
     a_(0)
 {
     set(mutate(ByteArray::create(size))->fill(zero));
 }
 
-inline Ref<ByteArray>::Ref(const Ref<StringList> &parts):
+inline Ref<const ByteArray>::Ref(const Ref<StringList> &parts):
     a_(0)
 {
     if (parts)
         set(ByteArray::join(parts));
 }
 
-inline String Ref<ByteArray>::allocate(int size)
+inline String Ref<const ByteArray>::allocate(int size)
 {
     return ByteArray::allocate(size);
 }
 
-inline String Ref<ByteArray>::create(int size)
+inline String Ref<const ByteArray>::create(int size)
 {
     return ByteArray::create(size);
 }
 
-inline String Ref<ByteArray>::create(int size, char zero)
+inline String Ref<const ByteArray>::create(int size, char zero)
 {
     return mutate(ByteArray::create(size))->fill(zero);
 }
 
-inline String Ref<ByteArray>::copy(const char *data, int size)
+inline String Ref<const ByteArray>::copy(const char *data, int size)
 {
     return ByteArray::copy(data, size);
 }
 
-inline String Ref<ByteArray>::copy(const String &b)
+inline String Ref<const ByteArray>::copy(const String &b)
 {
     return ByteArray::copy(b.a_);
 }
 
-inline String Ref<ByteArray>::cat(const String &a, const String &b)
+inline String Ref<const ByteArray>::cat(const String &a, const String &b)
 {
     return ByteArray::cat(a, b);
 }
 
-inline const Ref<ByteArray> &Ref<ByteArray>::operator=(const Ref &b)
+inline const String &Ref<const ByteArray>::operator=(const Ref &b)
 {
     set(b.a_);
     return *this;
 }
 
-inline const Ref<ByteArray> &Ref<ByteArray>::operator=(const char *b)
+inline const String &Ref<const ByteArray>::operator=(const char *b)
 {
     set(ByteArray::copy(b));
     return *this;
 }
 
-inline Ref<ByteArray>::operator const char *() const { return get()->chars(); }
-inline Ref<ByteArray>::operator const char *() { return get()->chars(); }
+inline Ref<const ByteArray>::operator const char *() const { return get()->chars(); }
+inline Ref<const ByteArray>::operator const char *() { return get()->chars(); }
 
 inline Ref<StringList> operator+(const String &a, const String &b) { return StringList::create() << a << b; }
 inline Ref<StringList> operator+(Ref<StringList> &a, const String &b) { return a << b; }
 inline Ref<StringList> operator+(const String &a, const char *b) { return a + String(b); }
 inline Ref<StringList> operator+(const char *a, const String& b) { return String(a) + b; }
 
-inline String &Ref<ByteArray>::operator+=(char b) { String s(1); mutate(s)->at(0) = b; set(ByteArray::cat(*this, s)); return *this; }
-inline String &Ref<ByteArray>::operator+=(const char *b) { set(ByteArray::cat(*this, String(b))); return *this; }
-inline String &Ref<ByteArray>::operator+=(const String &b) { set(ByteArray::cat(*this, b)); return *this; }
-inline String &Ref<ByteArray>::operator+=(const Ref<StringList> &b) { set(String(*this + b)); return *this; }
+inline String &Ref<const ByteArray>::operator+=(char b) { String s(1); mutate(s)->at(0) = b; set(ByteArray::cat(*this, s)); return *this; }
+inline String &Ref<const ByteArray>::operator+=(const char *b) { set(ByteArray::cat(*this, String(b))); return *this; }
+inline String &Ref<const ByteArray>::operator+=(const String &b) { set(ByteArray::cat(*this, b)); return *this; }
+inline String &Ref<const ByteArray>::operator+=(const Ref<StringList> &b) { set(String(*this + b)); return *this; }
 
-inline String Ref<ByteArray>::join(const StringList *parts, String sep) { return ByteArray::join(parts, sep); }
+inline String Ref<const ByteArray>::join(const StringList *parts, String sep) { return ByteArray::join(parts, sep); }
 
-inline const ByteArray *Ref<ByteArray>::get() const
+inline const ByteArray *Ref<const ByteArray>::get() const
 {
     if (!a_) return ByteArray::empty();
     return a_;
 }
 
-inline void Ref<ByteArray>::set(const ByteArray *b)
+inline void Ref<const ByteArray>::set(const ByteArray *b)
 {
     if (a_ != b) {
         if (b) b->incRefCount();
@@ -1090,12 +1090,12 @@ inline void Ref<ByteArray>::set(const ByteArray *b)
 }
 
 #ifdef QT_CORE_LIB
-inline Ref<ByteArray>::operator QString() const
+inline Ref<const ByteArray>::operator QString() const
 {
     return QString::fromUtf8(get()->chars(), get()->count());
 }
 
-inline Ref<ByteArray>::operator QUrl() const
+inline Ref<const ByteArray>::operator QUrl() const
 {
     return QUrl::fromLocalFile(QString::fromUtf8(get()->chars(), get()->count()));
 }

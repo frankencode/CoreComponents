@@ -19,13 +19,13 @@
 
 namespace cc {
 
-Ref<ByteArray>::Ref(const Variant &b):
+Ref<const ByteArray>::Ref(const Variant &b):
     a_(0)
 {
     set(Variant::toString(b));
 }
 
-Ref<ByteArray>::Ref(const Format &b):
+Ref<const ByteArray>::Ref(const Format &b):
     a_(0)
 {
     set(b->join());
