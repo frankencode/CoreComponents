@@ -107,7 +107,7 @@ public:
     inline Vector operator*(T b) const { return Vector(*this) *= b; }
     inline Vector operator/(T b) const { return Vector(*this) /= b; }
 
-    /** STL-style iterator declarations
+    /** C++ iterator declarations
       * @{
       */
     typedef ConstIterator<Instance> const_iterator;

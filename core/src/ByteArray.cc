@@ -37,19 +37,19 @@ public:
     bool isZeroTerminated() const { return false; }
 
 private:
-    friend class ByteArray;
+    friend class Array<char>;
     Chunk(char *data, int size):
         ByteArray(data, size)
     {}
 };
 
-String ByteArray::allocate(int size)
+String Array<char>::allocate(int size)
 {
     if (size <= 0) return new ByteArray();
     return new Chunk(new char[size], size);
 }
 
-String ByteArray::create(int size)
+String Array<char>::create(int size)
 {
     if (size <= 0) return new ByteArray();
     char *data = new char[size + 1];
@@ -57,7 +57,7 @@ String ByteArray::create(int size)
     return new ByteArray(data, size);
 }
 
-String ByteArray::copy(const char *data, int size)
+String Array<char>::copy(const char *data, int size)
 {
     if (!data) return new ByteArray();
     if (size < 0) size = strlen(data);
@@ -68,7 +68,7 @@ String ByteArray::copy(const char *data, int size)
     return new ByteArray(newData, size);
 }
 
-String ByteArray::join(const StringList *parts, const char *sep, int sepSize)
+String Array<char>::join(const StringList *parts, const char *sep, int sepSize)
 {
     if (!parts) return String();
 
@@ -95,12 +95,12 @@ String ByteArray::join(const StringList *parts, const char *sep, int sepSize)
     return result;
 }
 
-String ByteArray::join(const StringList *parts, const String &sep)
+String Array<char>::join(const StringList *parts, const String &sep)
 {
     return join(parts, sep->chars(), sep->count());
 }
 
-String ByteArray::cat(const String &a, const String &b)
+String Array<char>::cat(const String &a, const String &b)
 {
     String c(a->count() + b->count());
     memcpy(c->data_, a->data_, a->size_);
@@ -108,13 +108,13 @@ String ByteArray::cat(const String &a, const String &b)
     return c;
 }
 
-const ByteArray *ByteArray::empty()
+const ByteArray *Array<char>::empty()
 {
     static thread_local String empty_(new ByteArray());
     return empty_;
 }
 
-ByteArray::ByteArray():
+Array<char>::Array():
     size_(0),
     data_(new char[1]),
     destroy_(0)
@@ -122,7 +122,7 @@ ByteArray::ByteArray():
     data_[0] = 0;
 }
 
-ByteArray::ByteArray(const char *data, int size, Destroy destroy)
+Array<char>::Array(const char *data, int size, Destroy destroy)
 {
     if (data) {
         if (size < 0) size = strlen(data);
@@ -140,7 +140,7 @@ ByteArray::ByteArray(const char *data, int size, Destroy destroy)
     }
 }
 
-ByteArray::ByteArray(const ByteArray *parent, int i0, int i1):
+Array<char>::Array(const ByteArray *parent, int i0, int i1):
     destroy_(doNothing),
     parent_(const_cast<ByteArray *>(parent))
 {
@@ -152,7 +152,7 @@ ByteArray::ByteArray(const ByteArray *parent, int i0, int i1):
     data_ = parent_->data_ + i0;
 }
 
-ByteArray::ByteArray(const ByteArray &b):
+Array<char>::Array(const ByteArray &b):
     size_(0),
     data_(const_cast<char *>("")),
     destroy_(doNothing)
@@ -166,27 +166,27 @@ ByteArray::ByteArray(const ByteArray &b):
     }
 }
 
-ByteArray::~ByteArray()
+Array<char>::~Array()
 {
     destroy();
 }
 
-void ByteArray::doNothing(ByteArray *)
+void Array<char>::doNothing(ByteArray *)
 {}
 
-void ByteArray::destroy()
+void Array<char>::destroy()
 {
     if (destroy_) destroy_(this);
     else delete[] data_;
 }
 
-String ByteArray::fill(char zero)
+String Array<char>::fill(char zero)
 {
     memset(data_, zero, size_);
     return this;
 }
 
-void ByteArray::truncate(int newSize)
+void Array<char>::truncate(int newSize)
 {
     if (newSize < size_) {
         if (newSize < 0) newSize = 0;
@@ -196,14 +196,14 @@ void ByteArray::truncate(int newSize)
     }
 }
 
-void ByteArray::writeXor(const ByteArray *b)
+void Array<char>::writeXor(const ByteArray *b)
 {
     int n = (size_ < b->size_) ? size_ : b->size_;
     for (int i = 0; i < n; ++i)
         bytes_[i] ^= b->bytes_[i];
 }
 
-String ByteArray::copy(int i0, int i1) const
+String Array<char>::copy(int i0, int i1) const
 {
     if (i0 < 0) i0 = 0;
     if (i0 > size_) i0 = size_;
@@ -217,7 +217,7 @@ String ByteArray::copy(int i0, int i1) const
     return new ByteArray(newData, newSize);
 }
 
-String ByteArray::paste(int i0, int i1, const String &text) const
+String Array<char>::paste(int i0, int i1, const String &text) const
 {
     Ref<StringList> parts = StringList::create();
     parts->append(copy(0, i0));
@@ -226,7 +226,7 @@ String ByteArray::paste(int i0, int i1, const String &text) const
     return parts->join();
 }
 
-int ByteArray::countCharsIn(const char *set) const
+int Array<char>::countCharsIn(const char *set) const
 {
     int n = 0;
     for (const char *p = data_; *p; ++p) {
@@ -236,12 +236,12 @@ int ByteArray::countCharsIn(const char *set) const
     return n;
 }
 
-bool ByteArray::beginsWith(const String &s) const
+bool Array<char>::beginsWith(const String &s) const
 {
     return beginsWith(s->chars(), s->count());
 }
 
-bool ByteArray::beginsWith(const char *s, int n) const
+bool Array<char>::beginsWith(const char *s, int n) const
 {
     if (n < 0) n = strlen(s);
     if (n > size_) return false;
@@ -253,12 +253,12 @@ bool ByteArray::beginsWith(const char *s, int n) const
     return true;
 }
 
-bool ByteArray::endsWith(const String &s) const
+bool Array<char>::endsWith(const String &s) const
 {
     return endsWith(s->chars(), s->count());
 }
 
-bool ByteArray::endsWith(const char *s, int n) const
+bool Array<char>::endsWith(const char *s, int n) const
 {
     if (n < 0) n = strlen(s);
     if (n > size_) return false;
@@ -270,7 +270,7 @@ bool ByteArray::endsWith(const char *s, int n) const
     return true;
 }
 
-int ByteArray::find(const char *s, int i) const
+int Array<char>::find(const char *s, int i) const
 {
     if (!has(i)) return size_;
     if (!s[0]) return size_;
@@ -287,17 +287,17 @@ int ByteArray::find(const char *s, int i) const
     return size_;
 }
 
-int ByteArray::find(const String &s, int i) const
+int Array<char>::find(const String &s, int i) const
 {
     return find(s->chars(), i);
 }
 
-bool ByteArray::contains(const String &s) const
+bool Array<char>::contains(const String &s) const
 {
     return contains(s->chars());
 }
 
-Ref<StringList> ByteArray::split(char sep) const
+Ref<StringList> Array<char>::split(char sep) const
 {
     Ref<StringList> parts = StringList::create();
     for (int i = 0; i < size_;) {
@@ -312,7 +312,7 @@ Ref<StringList> ByteArray::split(char sep) const
     return parts;
 }
 
-Ref<StringList> ByteArray::split(const char *sep) const
+Ref<StringList> Array<char>::split(const char *sep) const
 {
     Ref<StringList> parts = StringList::create();
     int i0 = 0;
@@ -330,7 +330,7 @@ Ref<StringList> ByteArray::split(const char *sep) const
     return parts;
 }
 
-Ref<StringList> ByteArray::breakUp(int chunkSize) const
+Ref<StringList> Array<char>::breakUp(int chunkSize) const
 {
     Ref<StringList> parts = StringList::create();
     int i0 = 0;
@@ -343,7 +343,7 @@ Ref<StringList> ByteArray::breakUp(int chunkSize) const
     return parts;
 }
 
-String ByteArray::replaceInsitu(const char *pattern, const char *replacement)
+String Array<char>::replaceInsitu(const char *pattern, const char *replacement)
 {
     int patternLength = strlen(pattern);
     int replacementLength = strlen(replacement);
@@ -373,27 +373,27 @@ String ByteArray::replaceInsitu(const char *pattern, const char *replacement)
     return this;
 }
 
-String ByteArray::replaceEach(char s, char r) const
+String Array<char>::replaceEach(char s, char r) const
 {
     return mutate(copy())->replaceInsitu(s, r);
 }
 
-String ByteArray::replace(const char *s, const char *r) const
+String Array<char>::replace(const char *s, const char *r) const
 {
     return join(split(s), r);
 }
 
-String ByteArray::replace(const char *s, const String &r) const
+String Array<char>::replace(const char *s, const String &r) const
 {
     return replace(s, r->chars());
 }
 
-String ByteArray::replace(const String &s, const String &r) const
+String Array<char>::replace(const String &s, const String &r) const
 {
     return replace(s->chars(), r->chars());
 }
 
-int ByteArray::scanString(String *x, const char *termination, int i0, int i1) const
+int Array<char>::scanString(String *x, const char *termination, int i0, int i1) const
 {
     if (i1 < 0 || i1 > size_) i1 = size_;
     if (i0 > i1) i0 = i1;
@@ -410,21 +410,21 @@ int ByteArray::scanString(String *x, const char *termination, int i0, int i1) co
     return i;
 }
 
-String ByteArray::downcaseInsitu()
+String Array<char>::downcaseInsitu()
 {
     for (int i = 0; i < size_; ++i)
         chars_[i] = cc::downcase(chars_[i]);
     return this;
 }
 
-String ByteArray::upcaseInsitu()
+String Array<char>::upcaseInsitu()
 {
     for (int i = 0; i < size_; ++i)
         data_[i] = cc::upcase(data_[i]);
     return this;
 }
 
-String ByteArray::escape() const
+String Array<char>::escape() const
 {
     Ref<StringList> parts;
     int i = 0, i0 = 0;
@@ -455,7 +455,7 @@ String ByteArray::escape() const
     return parts->join();
 }
 
-String ByteArray::unescapeInsitu()
+String Array<char>::unescapeInsitu()
 {
     if (!contains('\\')) return this;
     int j = 0;
@@ -528,7 +528,7 @@ String ByteArray::unescapeInsitu()
     return this;
 }
 
-String ByteArray::trimInsitu(const char *leadingSpace, const char *trailingSpace)
+String Array<char>::trimInsitu(const char *leadingSpace, const char *trailingSpace)
 {
     if (!trailingSpace) trailingSpace = leadingSpace;
     int i0 = 0, i1 = size_;
@@ -551,7 +551,7 @@ String ByteArray::trimInsitu(const char *leadingSpace, const char *trailingSpace
     return this;
 }
 
-String ByteArray::simplifyInsitu(const char *space)
+String Array<char>::simplifyInsitu(const char *space)
 {
     int j = 0;
     for (int i = 0, s = 0; i < size_; ++i) {
@@ -567,7 +567,7 @@ String ByteArray::simplifyInsitu(const char *space)
     return this;
 }
 
-String ByteArray::normalize(bool nameCase) const
+String Array<char>::normalize(bool nameCase) const
 {
     for (int i = 0; i < size_; ++i) {
         if ((0 <= data_[i]) && (data_[i] < 32))
@@ -591,7 +591,7 @@ String ByteArray::normalize(bool nameCase) const
     return join(parts, " ");
 }
 
-String ByteArray::xmlSanitize() const
+String Array<char>::xmlSanitize() const
 {
     Ref<StringList> parts = StringList::create();
     int i = 0, j = 0;
@@ -617,7 +617,7 @@ String ByteArray::xmlSanitize() const
     return join(parts);
 }
 
-bool ByteArray::offsetToLinePos(int offset, int *line, int *pos) const
+bool Array<char>::offsetToLinePos(int offset, int *line, int *pos) const
 {
     bool valid = true;
     if (offset < 0) {
@@ -643,7 +643,7 @@ bool ByteArray::offsetToLinePos(int offset, int *line, int *pos) const
     return valid;
 }
 
-bool ByteArray::linePosToOffset(int line, int pos, int *offset) const
+bool Array<char>::linePosToOffset(int line, int pos, int *offset) const
 {
     if (line <= 0) return false;
     int i = 0;
@@ -655,13 +655,13 @@ bool ByteArray::linePosToOffset(int line, int pos, int *offset) const
     return true;
 }
 
-void ByteArray::checkUtf8() const
+void Array<char>::checkUtf8() const
 {
     Ref<Utf8Source> source = Utf8Source::open(const_cast<ByteArray *>(this));
     for (uchar_t ch = 0; source->read(&ch););
 }
 
-String ByteArray::fromUtf16(const ByteArray *utf16, Endian endian)
+String Array<char>::fromUtf16(const ByteArray *utf16, Endian endian)
 {
     if (utf16->count() == 0) return ByteArray::create();
 
@@ -682,7 +682,7 @@ String ByteArray::fromUtf16(const ByteArray *utf16, Endian endian)
     return out;
 }
 
-bool ByteArray::toUtf16(void *buf, int *size)
+bool Array<char>::toUtf16(void *buf, int *size)
 {
     uint16_t *buf2 = reinterpret_cast<uint16_t*>(buf);
     int j = 0, n = *size / 2;
@@ -709,7 +709,7 @@ bool ByteArray::toUtf16(void *buf, int *size)
     return (j <= n);
 }
 
-String ByteArray::toUtf16(Endian endian) const
+String Array<char>::toUtf16(Endian endian) const
 {
     String out;
     Ref<Unicode> chars = Unicode::open(this);
@@ -729,7 +729,7 @@ String ByteArray::toUtf16(Endian endian) const
     return out;
 }
 
-String ByteArray::toHex() const
+String Array<char>::toHex() const
 {
     String s2 = ByteArray::create(size_ * 2);
     int j = 0;
@@ -745,32 +745,32 @@ String ByteArray::toHex() const
     return s2;
 }
 
-String ByteArray::hexDump() const
+String Array<char>::hexDump() const
 {
     return cc::hexDump(this);
 }
 
-String ByteArray::indent(String prefix) const
+String Array<char>::indent(String prefix) const
 {
     return prefix + trimTrailing()->split('\n')->join("\n" + prefix);
 }
 
-bool ByteArray::isRootPath() const
+bool Array<char>::isRootPath() const
 {
     return String(this) == "/";
 }
 
-bool ByteArray::isRelativePath() const
+bool Array<char>::isRelativePath() const
 {
     return !isAbsolutePath();
 }
 
-bool ByteArray::isAbsolutePath() const
+bool Array<char>::isAbsolutePath() const
 {
     return (count() > 0) ? (at(0) == '/') : false;
 }
 
-String ByteArray::absolutePathRelativeTo(const String &currentDir) const
+String Array<char>::absolutePathRelativeTo(const String &currentDir) const
 {
     if (isAbsolutePath() || (currentDir == "."))
         return copy();
@@ -808,7 +808,7 @@ String ByteArray::absolutePathRelativeTo(const String &currentDir) const
     return absoluteParts->join("/");
 }
 
-String ByteArray::fileName() const
+String Array<char>::fileName() const
 {
     String name;
     Ref<StringList> parts = split("/");
@@ -817,7 +817,7 @@ String ByteArray::fileName() const
     return name;
 }
 
-String ByteArray::baseName() const
+String Array<char>::baseName() const
 {
     String name = fileName();
     if (!name->contains('.')) return name;
@@ -826,13 +826,13 @@ String ByteArray::baseName() const
     return parts->join(".");
 }
 
-String ByteArray::fileSuffix() const
+String Array<char>::fileSuffix() const
 {
     Ref<StringList> parts = fileName()->split(".");
     return parts->at(parts->count() - 1);
 }
 
-String ByteArray::reducePath() const
+String Array<char>::reducePath() const
 {
     Ref<StringList> parts = split("/");
     while (parts->count() > 0) {
@@ -845,7 +845,7 @@ String ByteArray::reducePath() const
     return resultPath;
 }
 
-String ByteArray::extendPath(const String &relativePath) const
+String Array<char>::extendPath(const String &relativePath) const
 {
     if (count() == 0) return relativePath->copy();
     if (relativePath->count() == 0) return copy();
@@ -858,7 +858,7 @@ String ByteArray::extendPath(const String &relativePath) const
     return parts->join();
 }
 
-String ByteArray::canonicalPath() const
+String Array<char>::canonicalPath() const
 {
     if (!
         (contains('.') || contains("//") || endsWith('/'))
@@ -882,7 +882,7 @@ String ByteArray::canonicalPath() const
     return result->join("/");
 }
 
-bool ByteArray::equalsCaseInsensitive(const String &b) const
+bool Array<char>::equalsCaseInsensitive(const String &b) const
 {
     if (size_ != b->size_) return false;
     for (int i = 0; i < size_; ++i)
@@ -890,7 +890,7 @@ bool ByteArray::equalsCaseInsensitive(const String &b) const
     return true;
 }
 
-bool ByteArray::equalsCaseInsensitive(const char *b) const
+bool Array<char>::equalsCaseInsensitive(const char *b) const
 {
     int bSize = strlen(b);
     if (size_ != bSize) return false;
@@ -899,15 +899,15 @@ bool ByteArray::equalsCaseInsensitive(const char *b) const
     return true;
 }
 
-double ByteArray::pow(double x, double y) { return ::pow(x, y); }
+double Array<char>::pow(double x, double y) { return ::pow(x, y); }
 
 template<>
-int ByteArray::scanNumber<int>(int *value, int base, int i0, int i1) const;
+int Array<char>::scanNumber<int>(int *value, int base, int i0, int i1) const;
 
 template<>
-int ByteArray::scanNumber<unsigned>(unsigned *value, int base, int i0, int i1) const;
+int Array<char>::scanNumber<unsigned>(unsigned *value, int base, int i0, int i1) const;
 
 template<>
-int ByteArray::scanNumber<double>(double *value, int base, int i0, int i1) const;
+int Array<char>::scanNumber<double>(double *value, int base, int i0, int i1) const;
 
 } // namespace cc

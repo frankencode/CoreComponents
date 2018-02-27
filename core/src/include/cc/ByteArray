@@ -22,7 +22,11 @@
 
 namespace cc {
 
-class ByteArray;
+template<class T>
+class Array;
+
+typedef Array<char> ByteArray;
+
 class Variant;
 class Format;
 
@@ -103,7 +107,7 @@ public:
     operator const char *();
     inline operator const ByteArray *() { return get(); }
 
-    static Ref join(const StringList *parts, String sep = "");
+    static String join(const StringList *parts, String sep = "");
 
 #ifdef QT_CORE_LIB
     inline operator QString() const;
@@ -138,7 +142,8 @@ private:
 /** \class ByteArray ByteArray.h cc/ByteArray
   * \brief A chunk of memory
   */
-class ByteArray: public Object
+template<>
+class Array<char>: public Object
 {
 public:
     /// Item type for iteration
@@ -813,14 +818,10 @@ public:
     /// \copydoc equalsCaseInsensitive(const String &) const
     bool equalsCaseInsensitive(const char *b) const;
 
-    /** STL-style iterator declarations
+    /** C++ iterator declarations
       * @{
       */
-    // typedef Iterator<ByteArray> iterator;
     typedef ConstIterator<ByteArray> const_iterator;
-    typedef const_iterator iterator;
-    iterator begin() { return iterator(this, 0); }
-    iterator end() { return iterator(this, count()); }
     const_iterator begin() const { return const_iterator(this, 0); }
     const_iterator end() const { return const_iterator(this, count()); }
     /** @} */
@@ -835,13 +836,13 @@ protected:
 
     typedef void (*Destroy)(ByteArray *array);
 
-    ByteArray();
-    ByteArray(const char *data, int size = -1, Destroy destroy = 0);
-    ByteArray(const ByteArray *parent, int i0, int i1);
-    ByteArray(const ByteArray &b);
+    Array();
+    Array(const char *data, int size = -1, Destroy destroy = 0);
+    Array(const ByteArray *parent, int i0, int i1);
+    Array(const ByteArray &b);
 
     /// Lowlevel destructor
-    ~ByteArray();
+    ~Array();
 
     static void doNothing(ByteArray *);
 
@@ -863,7 +864,7 @@ private:
 };
 
 template<class T>
-int ByteArray::scanNumber(T *value, int base, int i0, int i1) const
+int Array<char>::scanNumber(T *value, int base, int i0, int i1) const
 {
     int i = i0;
     if (i1 < 0) i1 = size_;
