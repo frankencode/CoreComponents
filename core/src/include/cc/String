@@ -25,13 +25,18 @@ namespace cc {
 template<class T>
 class Array;
 
+/** Spezialised Array<T> for character arrays
+  * \ingroup unicode
+  * \see Array<char>
+  */
 typedef Array<char> CharArray;
 
 class Variant;
 class Format;
 
-/** \brief A string is a reference to a CharArray
+/** Spezialised Ref<T> for character arrays
   * \ingroup unicode
+  * \see Array<char>
   */
 typedef Ref<const CharArray> String;
 
@@ -48,9 +53,10 @@ MutantString mutate(String &&s);
 /** @}
   */
 
-/** \class CharArray CharArray.h cc/CharArray
-  * \brief Character arrays
+/** \class Ref<const CharArray> String.h cc/String
+  * \brief Spezialised Ref<T> for character arrays
   * \ingroup unicode
+  * \see CharArray, String
   */
 template<>
 class Ref<const CharArray>
@@ -139,8 +145,9 @@ private:
     String s_;
 };
 
-/** \class CharArray CharArray.h cc/CharArray
-  * \brief A chunk of memory
+/** \class Array<char> String.h cc/String
+  * \brief Character array
+  * \ingroup unicode
   */
 template<>
 class Array<char>: public Object
