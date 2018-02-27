@@ -62,11 +62,22 @@ template<>
 class Ref<const CharArray>
 {
 public:
+    /// \copydoc Array<char>::allocate()
     static String allocate(int size);
+
+    /// \copydoc Array<char>::create(int)
     static String create(int size);
+
+    /// \copydoc Array<char>::create(int, char)
     static String create(int size, char zero);
+
+    /// \copydoc Array<char>::copy(const char *, int)
     static String copy(const char *data, int size = -1);
+
+    /// Create a copy of another string \a b
     static String copy(const String &b);
+
+    /// \copydoc Array<char>::cat()
     static String cat(const String &a, const String &b);
 
     Ref(): a_(0) {}
@@ -113,6 +124,10 @@ public:
     operator const char *();
     inline operator const CharArray *() { return get(); }
 
+    /** Form a new string by concatenating a list of strings
+      * \param parts items to concatenate
+      * \param sep separator to insert between the items
+      */
     static String join(const StringList *parts, String sep = "");
 
 #ifdef QT_CORE_LIB
@@ -169,6 +184,17 @@ public:
       * \see isZeroTerminated()
       */
     static String create(int size = 0);
+
+    /** Create a new byte array of N bytes plus one byte for zero termination
+      * \param size number of bytes (N)
+      * \param zero initial value of each character
+      * \return new object instance
+      * \see isZeroTerminated()
+      */
+    static String create(int size, char zero)
+    {
+        return mutate(create(size))->fill(zero);
+    }
 
     /** Create a copy of a C string
       * \param data pointer to C string
@@ -228,6 +254,21 @@ public:
     void write(const CharArray *b) {
         int n = (size_ < b->size_) ? size_ : b->size_;
         memcpy(data_, b->data_, n);
+    }
+
+    /** Write contents (move bytes)
+      * \param b source to copy data from
+      * \param i0 begin of destination range (index of first byte to write)
+      * \param i1 end of destination range (index behind the last byte to write)
+      */
+    void write(const CharArray *b, int i0, int i1)
+    {
+        if (i0 < 0) i0 = 0;
+        if (i1 > size_) i1 = size_;
+        if (i1 <= i0) return;
+        int n = i1 - i0;
+        if (n > b->size_) n = b->size_;
+        memcpy(data_ + i0, b->data_, n);
     }
 
     /** Xor over another byte array
@@ -849,7 +890,6 @@ protected:
     Array(const CharArray *parent, int i0, int i1);
     Array(const CharArray &b);
 
-    /// Lowlevel destructor
     ~Array();
 
     static void doNothing(CharArray *);
@@ -1038,7 +1078,7 @@ inline String Ref<const CharArray>::create(int size)
 
 inline String Ref<const CharArray>::create(int size, char zero)
 {
-    return mutate(CharArray::create(size))->fill(zero);
+    return CharArray::create(size, zero);
 }
 
 inline String Ref<const CharArray>::copy(const char *data, int size)
