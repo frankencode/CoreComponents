@@ -108,10 +108,10 @@ String ByteArray::cat(const String &a, const String &b)
     return c;
 }
 
-ByteArray *ByteArray::empty()
+const ByteArray *ByteArray::empty()
 {
-    static thread_local Ref<ByteArray> empty_(new ByteArray());
-    return mutate(empty_);
+    static thread_local String empty_(new ByteArray());
+    return empty_;
 }
 
 ByteArray::ByteArray():
@@ -133,7 +133,7 @@ ByteArray::ByteArray(const char *data, int size, Destroy destroy)
         }
     }
     if (size == 0) {
-        ByteArray *b = ByteArray::empty();
+        const ByteArray *b = ByteArray::empty();
         size_ = b->size_;
         data_ = b->data_;
         destroy_ = b->destroy_;
