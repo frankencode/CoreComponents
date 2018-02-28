@@ -155,7 +155,7 @@ public:
     /// Reset this set to an empty set
     inline void deplete() { tree_.clear(); }
 
-    /** C++ iterator declarations
+    /** \name C++ iterators
       * @{
       */
     typedef ConstIterator<Set> iterator;
@@ -164,14 +164,16 @@ public:
     iterator end() { return const_iterator(this, count()); }
     const_iterator begin() const { return const_iterator(this, 0); }
     const_iterator end() const { return const_iterator(this, count()); }
-    /** @} */
+    /** @}
+      */
 
-    /** Source adapter
+    /** \name Source adapter
       * @{
       */
     template<class OutputType = Item>
     inline Ref< Source<OutputType> > getAll() const { return ContainerSource< Set, Pass<Item, OutputType> >::open(this); }
-    /** @} */
+    /** @}
+      */
 
 private:
     typedef SearchTree< SearchNode<Item> > Tree;

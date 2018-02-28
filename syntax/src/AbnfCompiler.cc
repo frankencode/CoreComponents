@@ -125,11 +125,11 @@ NODE AbnfCompiler::compileRepetition(const CharArray *text, Token *repetition, S
         int repeatMin = 0;
         int repeatMax = intMax;
         if (i < token->i1()) {
-            if (i > 0) repeatMin = strToInt(*text, token->i0(), i);
-            if (i + 1 < token->i1()) repeatMax = strToInt(*text, i + 1, token->i1());
+            if (i > 0) repeatMin = strToInt(text->chars(), token->i0(), i);
+            if (i + 1 < token->i1()) repeatMax = strToInt(text->chars(), i + 1, token->i1());
         }
         else {
-            repeatMin = repeatMax = strToInt(*text, token->i0(), token->i1());
+            repeatMin = repeatMax = strToInt(text->chars(), token->i0(), token->i1());
         }
         if ((repeatMin == 0) && (repeatMax == 0))
             node = definition->PASS();
@@ -188,7 +188,7 @@ NODE AbnfCompiler::compileNumVal(const CharArray *text, Token *numVal, SyntaxDef
 
     CC_ASSERT(numVal->rule() == AbnfSyntax::numVal_);
     CC_ASSERT(text->at(numVal->i0()) == '%');
-    char prefix = downcase(text->at(numVal->i0() + 1));
+    char prefix = toLower(text->at(numVal->i0() + 1));
     int base;
     if (prefix == 'x')
         base = 16;
@@ -202,8 +202,8 @@ NODE AbnfCompiler::compileNumVal(const CharArray *text, Token *numVal, SyntaxDef
 
     if (i < numVal->i1()) {
         if (text->at(i) == '-') {
-            int a = strToInt(*text, numVal->i0() + 2, i, base);
-            int b = strToInt(*text, i + 1, numVal->i1(), base);
+            int a = strToInt(text->chars(), numVal->i0() + 2, i, base);
+            int b = strToInt(text->chars(), i + 1, numVal->i1(), base);
             node = definition->RANGE(a, b);
         }
         else if (text->at(i) == '.') {
@@ -218,14 +218,14 @@ NODE AbnfCompiler::compileNumVal(const CharArray *text, Token *numVal, SyntaxDef
             int j = 0;
             while (i < numVal->i1()) {
                 if (text->at(i) == '.') {
-                    mutate(s)->at(j) = strToInt(*text, i0, i, base);
+                    mutate(s)->at(j) = strToInt(text->chars(), i0, i, base);
                     ++j;
                     i0 = i + 1;
                 }
                 ++i;
             }
             CC_ASSERT(j == s->count() - 1);
-            mutate(s)->at(j) = strToInt(*text, i0, i, base);
+            mutate(s)->at(j) = strToInt(text->chars(), i0, i, base);
             node = (s->count() > 1) ? definition->STRING(s->chars()) : definition->CHAR(s->at(0));
         }
         else {
@@ -233,7 +233,7 @@ NODE AbnfCompiler::compileNumVal(const CharArray *text, Token *numVal, SyntaxDef
         }
     }
     else {
-        char ch = strToInt(*text, numVal->i0() + 2, numVal->i1(), base);
+        char ch = strToInt(text->chars(), numVal->i0() + 2, numVal->i1(), base);
         node = definition->CHAR(ch);
     }
 

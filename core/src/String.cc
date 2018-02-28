@@ -343,24 +343,24 @@ Ref<StringList> Array<char>::breakUp(int chunkSize) const
     return parts;
 }
 
-String Array<char>::replaceInsitu(const char *pattern, const char *replacement)
+String Array<char>::replaceInsitu(const char *p, const char *r)
 {
-    int patternLength = strlen(pattern);
-    int replacementLength = strlen(replacement);
-    if (patternLength < replacementLength) {
-        write(replace(pattern, replacement));
+    int pn = strlen(p);
+    int rn = strlen(r);
+    if (pn < rn) {
+        write(replace(p, r));
     }
-    else if (patternLength > 0) {
+    else if (pn > 0) {
         int i = 0, j = 0, k = 0, n = size_;
         while (i < n) {
             char ch = data_[i++];
             if (j < i) data_[j++] = ch;
-            if (ch == pattern[k]) {
+            if (ch == p[k]) {
                 ++k;
-                if (k == patternLength) {
-                    j -= patternLength;
-                    for (k = 0; k < replacementLength; ++k)
-                        data_[j++] = replacement[k];
+                if (k == pn) {
+                    j -= pn;
+                    for (k = 0; k < rn; ++k)
+                        data_[j++] = r[k];
                     k = 0;
                 }
             }
@@ -373,24 +373,24 @@ String Array<char>::replaceInsitu(const char *pattern, const char *replacement)
     return this;
 }
 
-String Array<char>::replaceEach(char s, char r) const
+String Array<char>::replaceEach(char p, char r) const
 {
-    return mutate(copy())->replaceInsitu(s, r);
+    return mutate(copy())->replaceInsitu(p, r);
 }
 
-String Array<char>::replace(const char *s, const char *r) const
+String Array<char>::replace(const char *p, const char *r) const
 {
-    return join(split(s), r);
+    return join(split(p), r);
 }
 
-String Array<char>::replace(const char *s, const String &r) const
+String Array<char>::replace(const char *p, const String &r) const
 {
-    return replace(s, r->chars());
+    return replace(p, r->chars());
 }
 
-String Array<char>::replace(const String &s, const String &r) const
+String Array<char>::replace(const String &p, const String &r) const
 {
-    return replace(s->chars(), r->chars());
+    return replace(p->chars(), r->chars());
 }
 
 int Array<char>::scanString(String *x, const char *termination, int i0, int i1) const
@@ -413,14 +413,14 @@ int Array<char>::scanString(String *x, const char *termination, int i0, int i1) 
 String Array<char>::downcaseInsitu()
 {
     for (int i = 0; i < size_; ++i)
-        chars_[i] = cc::downcase(chars_[i]);
+        chars_[i] = cc::toLower(chars_[i]);
     return this;
 }
 
 String Array<char>::upcaseInsitu()
 {
     for (int i = 0; i < size_; ++i)
-        data_[i] = cc::upcase(data_[i]);
+        data_[i] = cc::toUpper(data_[i]);
     return this;
 }
 
@@ -582,7 +582,7 @@ String Array<char>::normalize(bool nameCase) const
         else {
             if (nameCase) {
                 s = s->toLower();
-                mutate(s)->at(0) = cc::upcase(s->at(0));
+                mutate(s)->at(0) = cc::toUpper(s->at(0));
                 parts->at(i) = s;
             }
             ++i;
@@ -886,7 +886,7 @@ bool Array<char>::equalsCaseInsensitive(const String &b) const
 {
     if (size_ != b->size_) return false;
     for (int i = 0; i < size_; ++i)
-        if (cc::downcase(chars_[i]) != cc::downcase(b->chars_[i])) return false;
+        if (cc::toLower(chars_[i]) != cc::toLower(b->chars_[i])) return false;
     return true;
 }
 
@@ -895,7 +895,7 @@ bool Array<char>::equalsCaseInsensitive(const char *b) const
     int bSize = strlen(b);
     if (size_ != bSize) return false;
     for (int i = 0; i < size_; ++i)
-        if (cc::downcase(chars_[i]) != cc::downcase(b[i])) return false;
+        if (cc::toLower(chars_[i]) != cc::toLower(b[i])) return false;
     return true;
 }
 

@@ -49,7 +49,7 @@ void User::load(struct passwd *entry)
             if ((fullName_->at(0) == ',') || (fullName_->at(fullName_->count() - 1) == ',')) {
                 fullName_ = loginName_->copy();
                 if (isLower(fullName_->at(0)))
-                    mutate(fullName_)->at(0) = downcase(fullName_->at(0));
+                    mutate(fullName_)->at(0) = toLower(fullName_->at(0));
                 // fullName_ << " Anonymous";
             }
         home_ = entry->pw_dir;

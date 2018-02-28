@@ -21,8 +21,8 @@ class System
 {
 public:
     static int concurrency(); ///< number of threads of the system
-    static int pageSize(); ///< memory page size
-    static double now(); ///< current system time
+    static int pageSize(); ///< memory page size (in bytes)
+    static double now(); ///< current system time (in seconds since start of Epoch starting at 1st Jan 1970 00:00:00)
 
     static String hostName(); ///< system host name
     static void setHostName(String newName); ///< set system host name

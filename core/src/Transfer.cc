@@ -109,7 +109,7 @@ private:
                     Guard<Mutex> guard(mutex_);
                     totalWritten_ += buffer->count();
                 }
-                freeQueue_->pushBack(buffer->unselect());
+                freeQueue_->pushBack(buffer->parent());
             }
         }
         catch (Exception &ex) {

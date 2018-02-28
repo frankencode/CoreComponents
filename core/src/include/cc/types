@@ -169,14 +169,14 @@ public:
 typedef char32_t uchar_t;
 
 template<class Char>
-inline Char downcase(Char ch) {
+inline Char toLower(Char ch) {
     if (('A' <= ch) && (ch <= 'Z'))
         ch = ch + ('a' - 'A');
     return ch;
 }
 
 template<class Char>
-inline Char upcase(Char ch) {
+inline Char toUpper(Char ch) {
     if (('a' <= ch) && (ch <= 'z'))
         ch = ch - ('a' - 'A');
     return ch;
@@ -206,13 +206,13 @@ public:
 template<class T>
 class ToLower {
 public:
-    inline static T map(const T &x) { return cc::downcase(x); }
+    inline static T map(const T &x) { return cc::toLower(x); }
 };
 
 template<class T>
 class ToUpper {
 public:
-    inline static T map(const T &x) { return cc::upcase(x); }
+    inline static T map(const T &x) { return cc::toUpper(x); }
 };
 
 template<class T>

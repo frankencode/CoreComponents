@@ -86,7 +86,7 @@ public:
         return tree_.at(index);
     }
 
-    /** C++ iterator declarations
+    /** \name C++ iterators
       * @{
       */
     typedef cc::Iterator<Layout> iterator;
@@ -97,7 +97,7 @@ public:
     const_iterator end() const { return const_iterator(this, count()); }
     /** @} */
 
-    /** Source adapters
+    /** \name Source adapters
       * @{
       */
     Ref< LayoutSource<Item, Extent> > getAll() const { return LayoutSource<Item, Extent>::open(this, 0, count()); }

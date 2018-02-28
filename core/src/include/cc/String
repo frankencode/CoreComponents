@@ -69,7 +69,7 @@ public:
     static String create(int size);
 
     /// \copydoc Array<char>::create(int, char)
-    static String create(int size, char zero);
+    static String create(int size, char preset);
 
     /// \copydoc Array<char>::copy(const char *, int)
     static String copy(const char *data, int size = -1);
@@ -80,60 +80,117 @@ public:
     /// \copydoc Array<char>::cat()
     static String cat(const String &a, const String &b);
 
+    /// \copydoc Array<char>::join()
+    static String join(const StringList *parts, const String &sep = String());
+
+    /// Construct an empty string
     Ref(): a_(0) {}
+
+    /// Construt a string from an intermediate expression
     Ref(String &&b): a_(b.a_) { b.a_ = 0; }
+
+    /// Construct an alias of another string \a b
     Ref(const String &b);
 
+    /// \copydoc Ref(const String &)
     Ref(const CharArray *b);
+
+    /// \copydoc Ref(const String &)
     Ref(CharArray *b): a_(0) { set(b); }
 
+    /** Construct a copy of another C string
+      * \param other pointer to C string to copy
+      * \param size number of characters to copy (optional)
+      */
     Ref(const char *other, int size = -1);
-    // explicit Ref(char ch);
-    explicit Ref(int size, char zero = '\0');
 
-    Ref(const Ref<StringList> &parts);
+    // explicit Ref(char ch);
+
+    /** Construct an initialized zero-terminated string
+      * \param size number of characters (excluding the terminating '\0')
+      * \param preset initial character value
+      */
+    explicit Ref(int size, char preset = '\0');
+
+    /// Construct a string by concatenating the items of list \a b
+    Ref(const Ref<StringList> &b);
+
+    /// Contruct a string as an alias to the string stored in \a b
     Ref(const Variant &b);
+
+    /// \copydoc Ref(const Ref<StringList> &)
     Ref(const Format &b);
 
+    /// \internal
     ~Ref() { set(0); }
 
-    inline const String &operator=(String &&b) { set(0); a_ = b.a_; b.a_ = 0; return *this; }
-    inline const String &operator=(const String &b);
-    inline const String &operator=(CharArray *b) { set(b); return *this; }
+    /// Make this string an alias of \a b
+    String &operator=(const String &b);
 
-    inline const String &operator=(const Ref<StringList> &b) { set(String(b)); return *this; }
-    inline const String &operator=(const Variant &b) { set(String(b)); return *this; }
-    inline const String &operator=(const Format &b) { set(String(b)); return *this; }
-    inline const String &operator=(const int &null) { CC_ASSERT(null == 0); (void)null; set(0); return *this; }
+    /// Assign a copy of C string \a b
+    String &operator=(const char *b);
 
-    const String &operator=(const char *b);
+    /// Assign the value of an intermediate expression
+    inline String &operator=(String &&b) { set(0); a_ = b.a_; b.a_ = 0; return *this; }
 
+    /// Make this string an alias of \a b
+    inline String &operator=(CharArray *b) { set(b); return *this; }
+
+    /// Make this string an lias of the string stored in \a b
+    inline String &operator=(const Variant &b) { set(String(b)); return *this; }
+
+    /// Concatenate the items of list \a b and assign the resulting string
+    inline String &operator=(const Ref<StringList> &b) { set(String(b)); return *this; }
+
+    /// Concatenate the items of the formatting list \a b and assign the resulting string
+    inline String &operator=(const Format &b) { set(String(b)); return *this; }
+
+    /// Assign an empty string
+    inline String &operator=(const int &null) { CC_ASSERT(null == 0); (void)null; set(0); return *this; }
+
+    /// Concatenate this string and character \a b and assign the resulting string
     String &operator+=(char b);
+
+    /// Concatenate this string and C string \a b and assign the resulting string
     String &operator+=(const char *b);
+
+    /// Concatenate this string and C string \a b and assign the resulting string
     String &operator+=(const String &b);
+
+    /// Concatenate this string and all items of string list \a b and assign the resulting string
     String &operator+=(const Ref<StringList> &b);
 
+    /// Contextual conversion to bool (true if s->count() > 0)
     explicit inline operator bool() { return a_; }
+
+    /// \copydoc operator bool()
     explicit inline operator bool() const { return a_; }
 
-    operator const char *() const;
-    inline operator const CharArray *() const { return get(); }
-    inline const CharArray &operator*() const { return *get(); }
-    inline const CharArray *operator->() const { return get(); }
-
+    /// Convert to a C string
     operator const char *();
+
+    /// \copydoc operator const char *()
+    operator const char *() const;
+
+    /// Convert to a character array pointer
     inline operator const CharArray *() { return get(); }
 
-    /** Form a new string by concatenating a list of strings
-      * \param parts items to concatenate
-      * \param sep separator to insert between the items
-      */
-    static String join(const StringList *parts, String sep = "");
+    /// \copydoc operator const CharArray *
+    inline operator const CharArray *() const { return get(); }
 
 #ifdef QT_CORE_LIB
+    /// \internal
     inline operator QString() const;
+
+    /// \internal
     inline operator QUrl() const;
 #endif
+
+    /// Access the underlying character array (read-only)
+    inline const CharArray &operator*() const { return *get(); }
+
+    /// Access the underlying character array (read-only)
+    inline const CharArray *operator->() const { return get(); }
 
 private:
     friend class MutantString;
@@ -171,49 +228,50 @@ public:
     /// Item type for iteration
     typedef char Item;
 
-    /** Create a new byte array of exactly N bytes, without zero-termination
-      * \param size number of bytes (N)
+    /** Create an uninitialized non-zero-terminated character array
+      * \param size number of characters
       * \return new object instance
       * \see isZeroTerminated()
+      * \see System::pageSize()
       */
     static String allocate(int size);
 
-    /** Create a new byte array of N bytes plus one byte for zero termination
-      * \param size number of bytes (N)
+    /** Create an uninitialized zero-terminated character array
+      * \param size number of characters (excluding the terminating '\0')
       * \return new object instance
       * \see isZeroTerminated()
       */
     static String create(int size = 0);
 
-    /** Create a new byte array of N bytes plus one byte for zero termination
-      * \param size number of bytes (N)
-      * \param zero initial value of each character
+    /** Create an initialized zero-terminated character array
+      * \param size number of characters (excluding the terminating '\0')
+      * \param preset initial character value
       * \return new object instance
       * \see isZeroTerminated()
       */
-    static String create(int size, char zero)
+    static String create(int size, char preset)
     {
-        return mutate(create(size))->fill(zero);
+        return mutate(create(size))->fill(preset);
     }
 
     /** Create a copy of a C string
       * \param data pointer to C string
-      * \param size number of bytes (if known, else pass -1)
+      * \param size number of characters (optional)
       * \return new object instance
       * \see isZeroTerminated()
       */
     static String copy(const char *data, int size = -1);
 
-    /** Create a copy of another byte array
-      * \param b the original byte array
+    /** Create a copy of another character array
+      * \param other the original character array
       * \return new object instance
       */
-    inline static String copy(const CharArray *b) { return b ? b->copy() : String(); }
+    inline static String copy(const CharArray *other) { return other ? other->copy() : String(); }
 
     /** Join a list of strings
-      * \param parts the individual parts to join together
-      * \param sep the separator to put between individual parts
-      * \param sepSize the size of the separator (if kwown, else pass -1)
+      * \param parts the individual items to join together
+      * \param sep the separator to put between the items
+      * \param sepSize the size of the separator (optional)
       * \return new object instance
       */
     static String join(const StringList *parts, const char *sep = "", int sepSize = -1);
@@ -232,31 +290,25 @@ public:
       */
     static String cat(const String &a, const String &b);
 
-    /// Return the default empty byte array
+    /// Return the pointer to the default character array (which is of zero length)
     static const CharArray *empty();
 
-    /// Returns true if this byte array is zero terminated
+    /// Returns true if this character array is zero terminated
     virtual bool isZeroTerminated() const { return true; }
 
-    /** Clear all bytes
-      * \param zero blank character to use
-      */
+    /// Set all characters to \a zero
     String fill(char zero);
 
-    /** Shrink in size
-      * \param newSize new size
-      */
+    /// Cut this string down to \a newSize characters
     void truncate(int newSize);
 
-    /** Write contents (move bytes)
-      * \param b source to copy data from
-      */
+    /// Copy characters from this string to string \b
     void write(const CharArray *b) {
         int n = (size_ < b->size_) ? size_ : b->size_;
         memcpy(data_, b->data_, n);
     }
 
-    /** Write contents (move bytes)
+    /** Copy characters from this string to string \a
       * \param b source to copy data from
       * \param i0 begin of destination range (index of first byte to write)
       * \param i1 end of destination range (index behind the last byte to write)
@@ -271,99 +323,67 @@ public:
         memcpy(data_ + i0, b->data_, n);
     }
 
-    /** Xor over another byte array
-      * \param b source to xor over
-      */
+    /// Byte-vise xor over character array \a b
     void writeXor(const CharArray *b);
 
-    /// Size in number of bytes
+    /// Length of this string (in number of characters)
     inline int count() const { return size_; }
 
-    /** Check if index is within range
-      * \param i byte index
-      * \return true if i is a valid index
-      */
+    /// Check if index \a i is valid
     inline bool has(int i) const {
         return (0 <= i) && (i < size_);
     }
 
-    /** Access character at index i
-      * \param i byte index
-      * \return low-level reference
-      */
+    /// Access character at index \a i
     inline char &at(int i) {
         CC_ASSERT(has(i));
         return data_[i];
     }
 
-    /** Access character at index i (readonly)
-      * \param i byte index
-      * \return low-level reference
-      */
+    /// \copybrief at(int)
     inline const char &at(int i) const {
         CC_ASSERT(has(i));
         return data_[i];
     }
 
-    /** Access byte at index i
-      * \param i byte index
-      * \return low-level reference
-      */
+    /// Access byte at index \a i
     inline uint8_t &byteAt(int i) {
         CC_ASSERT(has(i));
         return bytes_[i];
     }
 
-    /** Access byte at index i (readonly)
-      * \param i byte index
-      * \return low-level reference
-      */
+    /// \copybrief byteAt(int)
     inline const uint8_t &byteAt(int i) const {
         CC_ASSERT(has(i));
         return bytes_[i];
     }
 
-    /** Access 4-byte word at index j
-      * \param j word index
-      * \return low-level reference
-      */
+    /// Access word at word offset \a j (1 word = 4 bytes)
     inline uint32_t &wordAt(int j) {
         CC_ASSERT(has(j * 4) && has(j * 4 + 3));
         return words_[j];
     }
 
-    /** Access 4-byte word at index j (readonly)
-      * \param j word index
-      * \return low-level reference
-      */
+    /// \copybrief wordAt(int)
     inline const uint32_t &wordAt(int j) const {
         CC_ASSERT(has(j * 4) && has(j * 4 + 3));
         return words_[j];
     }
 
-    /** Check if index is within range
-      * \param j item index
-      * \return true if j is a valid index
-      */
+    /// Check if item index \a j is valid
     template<class T>
     inline bool hasItem(int j) const {
         return has(j * sizeof(T));
     }
 
-    /** Access item at index j
-      * \param j item index
-      * \return low-level reference
-      */
+    /// Access item of type T at item index \a j
     template<class T>
     inline T &item(int j = 0) {
         CC_ASSERT(has(j * sizeof(T)) && has((j + 1) * sizeof(T) -1));
         return reinterpret_cast<T *>(data_)[j];
     }
 
-    /** Access item at index j (readonly)
-      * \param j item index
-      * \return low-level reference
-      */
+    /// \copybrief item(int)
     template<class T>
     inline const T &item(int j = 0) const {
         CC_ASSERT(has(j * sizeof(T)) && has((j + 1) * sizeof(T) -1));
@@ -374,138 +394,95 @@ public:
     template<class T>
     inline int itemCount() const { return size_ / sizeof(T); }
 
-    /// Return the internal C string representation (readonly)
-    inline const char *chars() const { return chars_; }
-
     /// Return the internal C string representation
     inline char *chars() { return chars_; }
 
-    /// Return byte pointer to the internal memory buffer (readonly)
-    inline const uint8_t *bytes() const { return bytes_; }
+    /// \copybrief chars()
+    inline const char *chars() const { return chars_; }
 
     /// Return byte pointer to the internal memory buffer
     inline uint8_t *bytes() { return bytes_; }
 
-    /// Return word pointer to the internal memory buffer (readonly)
-    inline const uint32_t *words() const { return words_; }
+    /// \copybrief bytes()
+    inline const uint8_t *bytes() const { return bytes_; }
 
     /// Return word pointer to the internal memory buffer
     inline uint32_t *words() { return words_; }
 
-    /// Cast to low-level C string (readonly)
-    inline operator const char*() const { return chars(); }
+    /// \copybrief words()
+    inline const uint32_t *words() const { return words_; }
 
-    /// Cast to low-level C string
-    inline operator char*() { return chars(); }
-
-    /// Create a deep copy of this string
+    /// Create a copy of this string
     inline String copy() const { return new CharArray(*this); }
 
-    /** Check if a range is valid
-      * \param i0 begin of range (index of first selected byte)
-      * \param i1 end of range (index behind the last selected byte)
-      * \return true if range is valid
-      */
-    inline bool canSelect(int i0, int i1) const { return i0 <= i1 && 0 <= i0 && i1 <= size_; }
-
-    /** Create a selection (reference to a byte range)
-      * \param i0 begin of range (index of first selected byte)
-      * \param i1 end of range (index behind the last selected byte)
-      * \return the selection
+    /** Create a selection (reference to a sub-string)
+      * \param i0 begin of selection (index of first selected character)
+      * \param i1 end of selection (index behind the last selected character)
+      * \return the selected sub-string
+      * \see parent()
+      * \see Object::refCount()
+      * Sub-strings reference their parent and therefore increment the parent's reference count (\see Object::refCount()).
+      * Sub-string selections can be cascaded to arbitrary depth.
       */
     inline String select(int i0, int i1) const { return new CharArray(this, i0, i1); }
 
-    /** Return the underlying unselected string
-      * \return original string
-      */
-    inline String unselect() const { return parent_; }
-
-    /** Pointer to parent string if this string is a selection (zero otherwise)
-      */
+    /// Pointer to parent string if this string is a sub-string selection (nullptr otherwise)
     inline const CharArray *parent() const { return parent_; }
 
-    /** Byte offset of this string within its parent string if this string is a selection (zero otherwise)
-      */
+    /// Character offset of this string within its parent string if this string is a sub-string selection (0 otherwise)
     inline int offset() const { return parent_ ? int(data_ - parent_->data_) : 0; }
 
-    /** Copy a range
-      * \param range the range to select (range must contain i0() and i1() getters)
-      * \return copied range as a string
-      */
+    /// Copy characters in range [\a range->i0(), \a range->i1())
     template<class Range>
     inline String copyRange(const Range *range) const {
         if (!range) return new CharArray();
         return copy(range->i0(), range->i1());
     }
 
-    /** Copy a range
-      * \param i0 begin of range (index of first selected character)
-      * \param i1 end of range (index behind the last selected character)
-      * \return copied range as a string
-      */
+    /// Copy characters in range [\a i0, \a i1)
     String copy(int i0, int i1) const;
 
-    /** Paste into a range
-      * \param i0 begin of range (index of first selected byte)
-      * \param i1 end of range (index behind the last selected byte)
-      * \param text text that will replace the giving range
-      * \return new string with range [i0; i1[ replaced by text
+    /** Create an edited version of this string by replacing a sub-string
+      * \param i0 begin of sub-string (index of first selected character)
+      * \param i1 end of sub-string (index behind the last selected charater)
+      * \param text text that will replace the sub-string
+      * \return new string with range [\a i0, \a i1) replaced by text
       */
     String paste(int i0, int i1, const String &text) const;
 
-    /** Copy the head of this string
-      * \param n size of the head
-      * \return copied string
-      */
+    /// Copy \a n characters from the head of this string
     inline String head(int n) const { return copy(0, n); }
 
-    /** Copy the tail of this string
-      * \param n size of the tail
-      * \return copied string
-      */
+    /// Copy \a n characters from the tail of this string
     inline String tail(int n) const { return copy(size_ - n, size_); }
 
-    /** Check if this string starts with a certain character
-      * \param ch character value to test for
-      * \return true if this string starts with character ch
-      */
+    /// Check if the first character of this string equals \a ch
     inline bool beginsWith(char ch) const {
         if (size_ == 0) return false;
         return data_[0] == ch;
     }
 
-    /** Check if this string ends with a certain character
-      * \param ch character value to test for
-      * \return true if this string ends with character ch
-      */
+    /// Check if the last character of this string equals \a ch
     inline bool endsWith(char ch) const {
         if (size_ == 0) return false;
         return data_[size_ - 1] == ch;
     }
 
-    /** Check if this string begins with a certain prefix
-      * \param s prefix to test for
-      * \return true if this string begins with prefix s
-      */
+    /// Check if this string begins with the sub-string \a s
     bool beginsWith(const String &s) const;
 
-    /** Check if this string begins with a certain prefix
-      * \param s prefix to test for
-      * \param n size of the prefix
-      * \return true if this string begins with prefix s
+    /** \copybrief beginsWith(const String &)
+      * \param s sub-string to test for
+      * \param n size of \a s (optional)
       */
     bool beginsWith(const char *s, int n = -1) const;
 
-    /** Check if this string ends with a certain suffix
-      * \param s suffix to test for
-      * \return true if this string ends with suffix s
-      */
+    /// Check if this string ends with the sub-string \a s
     bool endsWith(const String &s) const;
 
-    /** Check if this string ends with a certain suffix
-      * \param s suffix to test for
-      * \param n size of the suffix
-      * \return true if this string ends with suffix s
+    /** \copybrief endsWith(const String &)
+      * \param s sub-string to test for
+      * \param n size of \a s (optional)
       */
     bool endsWith(const char *s, int n = -1) const;
 
@@ -531,7 +508,7 @@ public:
 
     /** Count the number of occurrences of a certain character value
       * \param ch character value to search for
-      * \return number of occurrences of character value ch
+      * \return number of occurrences of character value \a ch
       */
     inline int count(char ch) const {
         int n = 0;
@@ -546,8 +523,8 @@ public:
       */
     int countCharsIn(const char *set) const;
 
-    /** Find a substring
-      * \param s substring to search for
+    /** Find a sub-string
+      * \param s sub-string to search for
       * \param i start search from this index
       * \return index of first occurence of s or count() if not found
       */
@@ -556,9 +533,9 @@ public:
     /// \copydoc find(const char *, int) const
     int find(const String &s, int i = 0) const;
 
-    /** Check if this string contains a certain substring
-      * \param s substring to search for
-      * \return true if this string contains s
+    /** Check if this string contains a certain sub-string
+      * \param s sub-string to search for
+      * \return true if this string contains the sub-string \a s
       */
     inline bool contains(const char *s) const
     {
@@ -569,9 +546,9 @@ public:
     /// \copydoc contains(const char *) const
     bool contains(const String &s) const;
 
-    /** Split into pieces
+    /** Create a string list by splitting this string into pieces
       * \param sep split marker to search for
-      * \return list of the different pieces without split markers
+      * \return list of pieces without the split markers
       */
     Ref<StringList> split(char sep) const;
 
@@ -581,55 +558,55 @@ public:
     /// \copydoc split(char) const
     Ref<StringList> split(String sep) const { return split(sep->chars()); }
 
-    /** Break up into equal sized chunks
+    /** Create astring list by breaking up this string into equal sized chunks
       * \param chunkSize size of the individual chunks
-      * \return list of breakup chunks
+      * \return list of chunks
       */
     Ref<StringList> breakUp(int chunkSize) const;
 
     /** Replace individual character values
-      * \param oldChar old character value to search for
-      * \param newChar replacement value to insert
+      * \param p character value to search for
+      * \param r replacement value to insert
       */
-    inline String replaceInsitu(char oldChar, char newChar) {
+    inline String replaceInsitu(char p, char r) {
         for (int i = 0; i < size_; ++i) {
-            if (data_[i] == oldChar)
-                data_[i] = newChar;
+            if (data_[i] == p)
+                data_[i] = r;
         }
         return this;
     }
 
-    /** Replace any occurrence of a certain substring by a replacement string
-      * \param oldChar substring to search for
-      * \param newChar replacement string
+    /** Replace any occurrence of a certain sub-string by a replacement string
+      * \param p sub-string to search for
+      * \param r replacement string
       */
-    String replaceInsitu(const char *oldChar, const char *newChar);
+    String replaceInsitu(const char *p, const char *r);
 
     /** Replace individual character values
-      * \param oldChar old character value to search for
-      * \param newChar replacement value to insert
+      * \param p character value to search for
+      * \param r replacement value to insert
       * \return resulting string
       */
-    String replaceEach(char oldChar, char newChar) const;
+    String replaceEach(char p, char r) const;
 
-    /** Replace any occurrence of a certain substring by a replacement string
-      * \param s substring to search for
+    /** Replace any occurrence of a certain sub-string by a replacement string
+      * \param p sub-string to search for
       * \param r replacement string
       * \return resulting string
       */
-    String replace(const char *s, const char *r) const;
+    String replace(const char *p, const char *r) const;
 
     /// \copydoc replace(const char *, const char *) const
-    String replace(const char *s, const String &r) const;
+    String replace(const char *p, const String &r) const;
 
     /// \copydoc replace(const char *, const char *) const
-    String replace(const String &s, const String &r) const;
+    String replace(const String &p, const String &r) const;
 
-    /** Scan a substring up to a lexical termination
-      * \param x return the substring
-      * \param termination lexical termination set
-      * \param i0 begin of range to scan
-      * \param i1 end of range to scan
+    /** Scan for a sub-string up to a lexical termination
+      * \param x return the scanned sub-string
+      * \param termination set of lexical termination characters
+      * \param i0 begin of range to scan (index of first character)
+      * \param i1 end of range to scan (index behind the last charater)
       * \return scan position behind the scanned string
       */
     int scanString(String *x, const char *termination = " \t\n", int i0 = 0, int i1 = -1) const;
@@ -637,15 +614,15 @@ public:
     /** Scan a number literal
       * \param value returns the value of the scanned number
       * \param base number base to use
-      * \param i0 begin of range to scan
-      * \param i1 end of range to scan
+      * \param i0 begin of range to scan (index of first character)
+      * \param i1 end of range to scan (index behind the last charater)
       * \return scan position behind the scanned string
       */
     template<class T>
     int scanNumber(T *value, int base = 10, int i0 = 0, int i1 = -1) const;
 
     /** Convert to a numerical value
-      * \param ok return true if conversion was successful
+      * \param ok return true if conversion was successful (optional)
       * \return numerical value
       */
     template<class T>
@@ -658,21 +635,11 @@ public:
         return value;
     }
 
-    /** Convert all upper-case ASCII characters to lower-case ASCII characters
-      * \return conversion result
-      */
+    /// Convert all upper-case ASCII characters to lower-case ASCII characters
     inline String toLower() const { return mutate(copy())->downcaseInsitu(); }
 
-    /** Convert all lower-case ASCII characters to upper-case ASCII characters
-      * \return conversion result
-      */
+    /// Convert all lower-case ASCII characters to upper-case ASCII characters
     inline String toUpper() const { return mutate(copy())->upcaseInsitu(); }
-
-    /// \copydoc toLower()
-    inline String downcase() const { return toLower(); }
-
-    /// \copydoc toUpper()
-    inline String upcase() const { return toUpper(); }
 
     /// \copybrief toLower() const
     String downcaseInsitu();
@@ -680,14 +647,10 @@ public:
     /// \copybrief toUpper() const
     String upcaseInsitu();
 
-    /** Replace all non-printable and non-ASCII characters by escape sequences
-      * \return escaped string
-      */
+    /// Replace all non-printable and non-ASCII characters by escape sequences
     String escape() const;
 
-    /** Replace all escape sequences by their character value
-      * \return unescaped string
-      */
+    /// Replace all escape sequences by their character value
     inline String unescape() const { return mutate(copy())->unescapeInsitu(); }
 
     /// \copybrief unescape() const
@@ -696,7 +659,6 @@ public:
     /** Remove leading and trailing whitespace
       * \param leadingSpace set of characters to detect as leading whitespace
       * \param trailingSpace set of characters to detect as trailing whitespace
-      * \return trimmed string
       */
     inline String trim(const char *leadingSpace = " \t\n\r", const char *trailingSpace = 0) const
     {
@@ -705,13 +667,11 @@ public:
 
     /** Remove leading whitespace
       * \param space set of characters to detect as whitespace
-      * \return trimmed string
       */
     inline String trimLeading(const char *space = " \t\n\r") const { return mutate(copy())->trimInsitu(space, ""); }
 
     /** Remove trailing whitespace
       * \param space set of characters to detect as whitespace
-      * \return trimmed string
       */
     inline String trimTrailing(const char *space = " \t\n\r") const { return mutate(copy())->trimInsitu("", space); }
 
@@ -720,7 +680,6 @@ public:
     String trimInsitu(const char *leadingSpace = " \t\n\r", const char *trailingSpace = 0);
 
     /** Replace multi character whitespaces by single character whitespaces
-      * \return simplified string
       */
     inline String simplify(const char *space = " \t\n\r") const { return mutate(copy())->simplifyInsitu(space); }
 
@@ -729,12 +688,10 @@ public:
 
     /** Common user input normalization
       * \param nameCase make sure the first character is upper case
-      * \return normalized string
       */
     String normalize(bool nameCase = true) const;
 
     /** Remove all XML/HTML tags and entities
-      * \return santized string
       */
     String xmlSanitize() const;
 
@@ -772,7 +729,7 @@ public:
      * \return true if the given buffer was suitable to hold the encoded string
      *
      * The number of bytes required to fully represent the string in UTF-16 is
-     * returned with the 'size' argument. Passing a zero for 'size' allows to
+     * returned with the \a size argument. Passing a zero for \a size allows to
      * determine the required buffer size. No zero termination is written or
      * or accounted for.
      */
@@ -806,7 +763,7 @@ public:
     /// Check if this string represents an absolute path
     bool isAbsolutePath() const;
 
-    /** Convert to an absolute
+    /** Convert to an absolute path
       * \param currentDir absolute path to the current directory
       * \return absolute path
       */
@@ -824,47 +781,47 @@ public:
     /// Remove the last component from this path
     String reducePath() const;
 
-    /** Add components to this path
-      * \param relativePath relative path to add
-      * \return resulting path
-      */
+    /// Append components of \a relativePath to this string
     String extendPath(const String &relativePath) const;
 
-    /// Remove redundant or ambigous path components
+    /// Remove redundant or ambigous path elements
     String canonicalPath() const;
 
-    /** Byte-vise comparisms operators
-      * @{
-      */
+    /// Compare this string for equality with string \a b
     bool equals(const String &b) const { return size_ == b->size_ && strncmp(chars_, b->chars_, size_) == 0; }
+
+    /// Compare this tring for inequality with string \a b
     bool differs(const String &b) const { return size_ != b->size_ || strncmp(chars_, b->chars_, size_) != 0; }
+
+    /// Compare if this string is below string \a b
     bool below(const String &b) const {
         int m = size_ < b->size_ ? size_ : b->size_;
         int ret = strncmp(chars_, b->chars_, m);
         if (ret == 0) return size_ < b->size_;
         return ret < 0;
     }
+
+    /// Compare if this string is below or equal string \a b
     bool belowOrEqual(const String &b) const {
         int m = size_ < b->size_ ? size_ : b->size_;
         int ret = strncmp(chars_, b->chars_, m);
         if (ret == 0) return size_ <= b->size_;
         return ret < 0;
     }
-    inline bool greater(const String &b) const { return b->below(this); }
-    inline bool greaterOrEqual(const String &b) const { return b->belowOrEqual(this); }
-    /** @}
-      */
 
-    /** Compare with another string (case-insensitive)
-      * \param b other string
-      * \return true if equals
-      */
+    /// Compare if this string is greater than string \a b
+    inline bool greater(const String &b) const { return b->below(this); }
+
+    /// Compare is this string is greater or equal string \a b
+    inline bool greaterOrEqual(const String &b) const { return b->belowOrEqual(this); }
+
+    /// Compare if this string equals string \a b (ASCII case-insensitive)
     bool equalsCaseInsensitive(const String &b) const;
 
-    /// \copydoc equalsCaseInsensitive(const String &) const
+    /// \copybrief equalsCaseInsensitive(const String &) const
     bool equalsCaseInsensitive(const char *b) const;
 
-    /** C++ iterator declarations
+    /** \name C++ iterators
       * @{
       */
     typedef Iterator<CharArray> iterator;
@@ -1053,17 +1010,16 @@ inline Ref<const CharArray>::Ref(const char *other, int size):
     a_->at(0) = ch;
 }*/
 
-inline Ref<const CharArray>::Ref(int size, char zero):
+inline Ref<const CharArray>::Ref(int size, char preset):
     a_(0)
 {
-    set(mutate(CharArray::create(size))->fill(zero));
+    set(mutate(CharArray::create(size))->fill(preset));
 }
 
-inline Ref<const CharArray>::Ref(const Ref<StringList> &parts):
+inline Ref<const CharArray>::Ref(const Ref<StringList> &b):
     a_(0)
 {
-    if (parts)
-        set(CharArray::join(parts));
+    if (b) set(CharArray::join(b));
 }
 
 inline String Ref<const CharArray>::allocate(int size)
@@ -1096,13 +1052,18 @@ inline String Ref<const CharArray>::cat(const String &a, const String &b)
     return CharArray::cat(a, b);
 }
 
-inline const String &Ref<const CharArray>::operator=(const Ref &b)
+inline String Ref<const CharArray>::join(const StringList *parts, const String &sep)
+{
+    return CharArray::join(parts, sep);
+}
+
+inline String &Ref<const CharArray>::operator=(const Ref &b)
 {
     set(b.a_);
     return *this;
 }
 
-inline const String &Ref<const CharArray>::operator=(const char *b)
+inline String &Ref<const CharArray>::operator=(const char *b)
 {
     set(CharArray::copy(b));
     return *this;
@@ -1120,8 +1081,6 @@ inline String &Ref<const CharArray>::operator+=(char b) { String s(1); mutate(s)
 inline String &Ref<const CharArray>::operator+=(const char *b) { set(CharArray::cat(*this, String(b))); return *this; }
 inline String &Ref<const CharArray>::operator+=(const String &b) { set(CharArray::cat(*this, b)); return *this; }
 inline String &Ref<const CharArray>::operator+=(const Ref<StringList> &b) { set(String(*this + b)); return *this; }
-
-inline String Ref<const CharArray>::join(const StringList *parts, String sep) { return CharArray::join(parts, sep); }
 
 inline const CharArray *Ref<const CharArray>::get() const
 {

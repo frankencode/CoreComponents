@@ -91,7 +91,7 @@ public:
     /// Copy the trailing n %Unicode characters
     inline String tail(int n) const { return copy(count() - n, n); }
 
-    /** C++ iterator declarations
+    /** \name C++ iterators
       * @{
       */
     typedef ConstIterator<Unicode> const_iterator;

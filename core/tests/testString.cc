@@ -98,7 +98,7 @@ class SyntaxSugar: public TestCase
         {
             String s = "ABC";
             CC_INSPECT(s);
-            for (char &ch: mutate(s)) ch = downcase(ch);
+            for (char &ch: mutate(s)) ch = toLower(ch);
             CC_INSPECT(s);
             CC_VERIFY(s == "abc");
         }

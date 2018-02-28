@@ -38,8 +38,8 @@ inline int strcasecmp(const char *a, const char *b)
     int ret = 0;
     char ca, cb;
     while ((ca = *a) && (cb = *b) && (!ret)) {
-        ca = downcase(ca);
-        cb = downcase(cb);
+        ca = toLower(ca);
+        cb = toLower(cb);
         if (ca < cb) ret = -1;
         else if (cb < ca) ret = 1;
         ++a;

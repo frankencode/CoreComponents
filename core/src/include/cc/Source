@@ -32,7 +32,7 @@ public:
       */
     virtual bool read(T *item) = 0;
 
-    /** C++ iterator declarations
+    /** \name C++ iterators
       * @{
       */
     typedef SourceIterator<Source> iterator;

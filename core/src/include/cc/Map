@@ -227,18 +227,7 @@ public:
     /// \copydoc push(const Item &item)
     inline void operator<<(const Item &item) { push(item); }
 
-    /** C++ iterator declarations
-      * @{
-      */
-    typedef MapIterator<Key, Value> iterator;
-    typedef MapIterator<Key, Value> const_iterator;
-    iterator begin();
-    iterator end();
-    const_iterator begin() const;
-    const_iterator end() const;
-    /** @} */
-
-    /** Source adapters
+    /** \name Source adapters
       * @{
       */
     template<class OutputType = Item>
@@ -252,7 +241,20 @@ public:
 
     template<class OutputType = Value>
     inline Ref< Source<OutputType> > getAllValues() const { return ContainerSource<Map, GetValue<OutputType> >::open(this); }
-    /** @} */
+    /** @}
+      */
+
+    /** \name C++ iterators
+      * @{
+      */
+    typedef MapIterator<Key, Value> iterator;
+    typedef MapIterator<Key, Value> const_iterator;
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
+    /** @}
+      */
 
 protected:
 #ifndef NDEBUG

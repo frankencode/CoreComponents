@@ -251,7 +251,7 @@ public:
     /// \copydoc pop()
     inline void operator>>(T* item) { pop(item); }
 
-    /** C++ iterator declarations
+    /** \name C++ iterators
       * @{
       */
     typedef cc::Iterator<List> iterator;
@@ -260,14 +260,16 @@ public:
     iterator end() { return iterator(this, count()); }
     const_iterator begin() const { return const_iterator(this, 0); }
     const_iterator end() const { return const_iterator(this, count()); }
-    /** @} */
+    /** @}
+      */
 
-    /** Source adapters
+    /** \name Source adapters
       * @{
       */
     template<class OutputType = Item>
     inline Ref< Source<OutputType> > getAll() const { return ContainerSource< List, Pass<Item, OutputType> >::open(this); }
-    /** @} */
+    /** @}
+      */
 
 private:
     typedef SearchTree< SearchNode<Item> > Tree;
