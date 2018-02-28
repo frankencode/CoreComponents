@@ -2,20 +2,24 @@
   * \brief Core system primitives
   */
 
-/** \defgroup mman Object lifecycle
-  * Object life-time, reference counting and garbage collection
+/** \defgroup mman Object life time
+  * Object life time, reference counting and garbage collection
   */
 
-/** \defgroup container Data structures
-  * Static and dynamic data structures for in-memory data modelling
+/** \defgroup strings String processing
+  * Zero-terminated strings, raw memory, number literals and file paths
+  */
+
+/** \defgroup formatted_io Formatted I/O
+  * Text formatting and line buffering
   */
 
 /** \defgroup binary_io Binary I/O
   * Binary data streams
   */
 
-/** \defgroup formatted_io Formatted I/O
-  * Text formatting and line buffering
+/** \defgroup container Data structures
+  * Static and dynamic data structures for in-memory data modelling
   */
 
 /** \defgroup file_system File system
@@ -30,8 +34,8 @@
   * Multi-threading, multi-processing and synchronization
   */
 
-/** \defgroup unicode Unicode and strings
-  * Unicode encoding and string representation
+/** \defgroup unicode Unicode
+  * Iteration and validation of Unicode encoded strings
   */
 
 /** \defgroup misc Miscellaneous

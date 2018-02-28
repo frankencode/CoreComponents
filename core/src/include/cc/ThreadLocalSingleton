@@ -15,7 +15,7 @@ namespace cc {
 
 /** \class ThreadLocalSingleton ThreadLocalSingleton.h cc/ThreadLocalSingleton
   * \ingroup mman
-  * \brief %Thread-local singletons
+  * \brief Implementation pattern for thread-local singletons
   *
   * The following shows how to implement a thread-local singleton using the ThreadLocalSingleton<T> template.
   *

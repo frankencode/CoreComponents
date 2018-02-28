@@ -21,6 +21,8 @@ namespace cc {
   *   - combination of static allocation and dynamic destruction
   *   - manual detruction by delete operator
   * In debug mode in both cases a DebugException is thrown.
+  *
+  * \see Ref
   */
 class Object
 {

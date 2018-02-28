@@ -24,7 +24,7 @@ public:
     typedef T Item;
 
     /** Create a new stack
-      * \param capacity max number of items storable in the stack
+      * \param capacity maximum number of items storable in the stack
       * \return new object instance
       */
     inline static Ref<Stack> create(int capacity) {

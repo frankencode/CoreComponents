@@ -26,7 +26,7 @@ template<class T>
 class Array;
 
 /** Spezialised Array<T> for character arrays
-  * \ingroup unicode
+  * \ingroup strings
   * \see Array<char>
   */
 typedef Array<char> CharArray;
@@ -35,28 +35,32 @@ class Variant;
 class Format;
 
 /** Spezialised Ref<T> for character arrays
-  * \ingroup unicode
+  * \ingroup strings
   * \see Array<char>
   */
 typedef Ref<const CharArray> String;
 
-/// Convenience alias
+/** Convenience alias
+  * \ingroup strings
+  */
 typedef List<String> StringList;
 
+class MutantString;
+
 /** Get writable access to a string
-  * @{
+  * \ingroup strings
   */
 CharArray *mutate(const String &s);
 
-class MutantString;
-MutantString mutate(String &&s);
-/** @}
+/** Get writable access to an intermediate string
+  * \ingroup strings
   */
+MutantString mutate(String &&s);
 
 /** \class Ref<const CharArray> String.h cc/String
   * \brief Spezialised Ref<T> for character arrays
-  * \ingroup unicode
-  * \see CharArray, String
+  * \ingroup strings
+  * \see mutate(const String &), CharArray, String
   */
 template<>
 class Ref<const CharArray>
@@ -219,7 +223,7 @@ private:
 
 /** \class Array<char> String.h cc/String
   * \brief Character array
-  * \ingroup unicode
+  * \ingroup strings
   */
 template<>
 class Array<char>: public Object
@@ -296,7 +300,7 @@ public:
     /// Returns true if this character array is zero terminated
     virtual bool isZeroTerminated() const { return true; }
 
-    /// Set all characters to \a zero
+    /// %Set all characters to \a zero
     String fill(char zero);
 
     /// Cut this string down to \a newSize characters
@@ -558,7 +562,7 @@ public:
     /// \copydoc split(char) const
     Ref<StringList> split(String sep) const { return split(sep->chars()); }
 
-    /** Create astring list by breaking up this string into equal sized chunks
+    /** Create a string list by breaking up this string into equal sized chunks
       * \param chunkSize size of the individual chunks
       * \return list of chunks
       */
@@ -675,12 +679,10 @@ public:
       */
     inline String trimTrailing(const char *space = " \t\n\r") const { return mutate(copy())->trimInsitu("", space); }
 
-    /** \copybrief trim(const char *, const char *) const
-      */
+    /// \copybrief trim(const char *, const char *) const
     String trimInsitu(const char *leadingSpace = " \t\n\r", const char *trailingSpace = 0);
 
-    /** Replace multi character whitespaces by single character whitespaces
-      */
+    /// Replace multi character whitespaces by single character whitespaces
     inline String simplify(const char *space = " \t\n\r") const { return mutate(copy())->simplifyInsitu(space); }
 
     /// \copybrief simplify(const char *) const
@@ -691,8 +693,7 @@ public:
       */
     String normalize(bool nameCase = true) const;
 
-    /** Remove all XML/HTML tags and entities
-      */
+    /// Remove all XML/HTML tags and entities
     String xmlSanitize() const;
 
     /** \brief %Map a byte offset to editor coordinates.

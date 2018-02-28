@@ -45,12 +45,20 @@ public:
 
 /** \class Singleton Singleton.h cc/Singleton
   * \ingroup mman
-  * \brief Process-wide singletons
+  * \brief Implementation pattern for process-wide singletons
   *
-  * The following shows how to implement a singleton using the Singleton<T> template.
-  * Returning const pointers to the singleton instance is a good policy in multi-threaded applications.
+  * The Singleton class provides an efficient implementation pattern for process-wide singletons.
+  * The singleton objects are created on-demand on first use. Singletons provides global information
+  * to all running threads, e.g. configuration information from a configuration file. Singletons
+  * should be referenced only by const pointers to make sure all shared data is immutable.
+  * Used correctly they can significiantly speed up multi-threaded applications.
+  * The singleton pattern also provides an automatic resolution of the order in which global
+  * objects are initialized. By postponing the creation of optionally needed global objects
+  * it can significiantly improve the startup speed of complex applications.
   *
-  * %Singleton declaration (example):
+  * The following shows how to implement a singleton using the Singleton class.
+  *
+  * Example singleton declaration:
   * ~~~~~~~~~~~~~
   * template<class> class Singleton;
   *
@@ -64,13 +72,18 @@ public:
   * };
   * ~~~~~~~~~~~~~
   *
-  * %Singleton implementation (example):
+  * Example singleton implementation:
   * ~~~~~~~~~~~~~
   * #include <cc/Singleton>
   * ...
   * const Settings *Settings::instance() { return Singleton<Settings>::instance() }
   * Settings::Settings() {}
   * ~~~~~~~~~~~~~
+  *
+  * \see ThreadLocalSingleton
+  *
+  * By providing access to the singleton object with a 'const Settings *' pointer the compiler is instructed
+  * to enforce immutability of the shared data.
   */
 template<class SubClass>
 class Singleton: public ThreadLocalSingleton< CoreSingletonWrapper<SubClass> >
