@@ -9,20 +9,20 @@
 #pragma once
 
 #include <cc/syntax/SyntaxDefinition>
-#include <cc/regexp/RegExp>
+#include <cc/glob/Pattern>
 
 namespace cc {
 namespace toki {
 
 using namespace cc::syntax;
-using namespace cc::regexp;
+using namespace cc::glob;
 
 class Language: public Object
 {
 public:
     inline String displayName() const { return displayName_; }
     inline String name() const { return name_; }
-    inline RegExp pathPattern() const { return pathPattern_; }
+    inline Pattern pathPattern() const { return pathPattern_; }
     inline const SyntaxDefinition *highlightingSyntax() const { return highlightingSyntax_; }
     inline const SyntaxDefinition *discoverySyntax() const { return discoverySyntax_; }
     inline const SyntaxDefinition *foldingSyntax() const { return foldingSyntax_; }
@@ -30,7 +30,7 @@ public:
 protected:
     Language(
         String displayName,
-        RegExp pathPattern,
+        Pattern pathPattern,
         const SyntaxDefinition *highlightingSyntax,
         const SyntaxDefinition *discoverySyntax = 0,
         const SyntaxDefinition *foldingSyntax = 0
@@ -41,11 +41,10 @@ private:
 
     String displayName_;
     String name_;
-    RegExp pathPattern_;
+    Pattern pathPattern_;
     Ref<const SyntaxDefinition> highlightingSyntax_;
     Ref<const SyntaxDefinition> discoverySyntax_;
     Ref<const SyntaxDefinition> foldingSyntax_;
 };
 
 }} // namespace cc::toki
-

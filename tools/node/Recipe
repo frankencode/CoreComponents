@@ -1,6 +1,6 @@
 Application {
     name: ccnode
-    use: [ core, syntax, regexp, meta, net, http ]
+    use: [ core, syntax, glob, meta, net, http ]
     Dependency {
         name: GnuTLS
         version-min: 3.3.5

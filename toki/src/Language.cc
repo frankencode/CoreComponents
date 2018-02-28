@@ -14,7 +14,7 @@ namespace toki {
 
 Language::Language(
     String displayName,
-    RegExp pathPattern,
+    Pattern pathPattern,
     const SyntaxDefinition *highlightingSyntax,
     const SyntaxDefinition *discoverySyntax,
     const SyntaxDefinition *foldingSyntax

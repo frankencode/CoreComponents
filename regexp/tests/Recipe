@@ -1,3 +1,0 @@
-Tests {
-    use: [ core, testing, syntax, regexp ]
-}

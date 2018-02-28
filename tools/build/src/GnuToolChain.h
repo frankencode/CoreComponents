@@ -9,13 +9,13 @@
 #pragma once
 
 #include <cc/Format>
-#include <cc/regexp/RegExp>
+#include <cc/glob/Pattern>
 #include "ToolChain.h"
 
 namespace ccbuild {
 
 using namespace cc;
-using namespace cc::regexp;
+using namespace cc::glob;
 
 class BuildPlan;
 
@@ -89,7 +89,7 @@ private:
     String cxxPath_;
     String machine_;
     String systemRoot_;
-    RegExp dependencySplitPattern_;
+    Pattern dependencySplitPattern_;
     String rpathOverride_;
     bool isMultiArch_;
 };

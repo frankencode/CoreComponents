@@ -20,7 +20,7 @@ private:
     YasonLanguage():
         Language(
             "Yason",
-            RegExp("(*.(yason|json))|Recipe"),
+            Pattern("(*.(yason|json))|Recipe"),
             cc::toki::yasonSyntax()
         )
     {}

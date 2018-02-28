@@ -14,7 +14,7 @@
 #include <cc/DirWalker>
 #include <cc/ResourceGuard>
 #include <cc/Arguments>
-#include <cc/regexp/Glob>
+#include <cc/glob/Glob>
 #include <cc/meta/yason>
 #include <cc/meta/JsonWriter>
 #include "BuildMap.h"

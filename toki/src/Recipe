@@ -1,5 +1,5 @@
 Library {
     name: cctoki
     bundle: themes/*
-    use: [ core, syntax, regexp, meta ]
+    use: [ core, syntax, glob, meta ]
 }

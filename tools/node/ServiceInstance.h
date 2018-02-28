@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/List>
-#include <cc/regexp/RegExp>
+#include <cc/glob/Pattern>
 #include "LogConfig.h"
 
 namespace cc { namespace meta { class MetaObject; } }
@@ -17,7 +17,7 @@ namespace cc { namespace meta { class MetaObject; } }
 namespace ccnode {
 
 using namespace cc;
-using namespace cc::regexp;
+using namespace cc::glob;
 
 class ServiceDelegate;
 class ServiceWorker;
@@ -33,8 +33,8 @@ public:
 
     int requestLimit() const { return requestLimit_; }
     int requestPayloadLimit() const { return requestPayloadLimit_; }
-    RegExp host() const { return host_; }
-    RegExp uri() const { return uri_; }
+    Pattern host() const { return host_; }
+    Pattern uri() const { return uri_; }
 
     SecurityConfig *security() const { return security_; }
 
@@ -49,8 +49,8 @@ protected:
 
     int requestLimit_;
     int requestPayloadLimit_;
-    RegExp host_;
-    RegExp uri_;
+    Pattern host_;
+    Pattern uri_;
 
     Ref<SecurityConfig> security_;
     Ref<LogConfig> errorLogConfig_;

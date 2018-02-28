@@ -14,23 +14,23 @@
 namespace cc { template<class> class Singleton; }
 
 namespace cc {
-namespace regexp {
+namespace glob {
 
 using namespace cc::syntax;
 
-/** \class RegExpSyntax RegExpSyntax.h cc/regexp/RegExpSyntax
+/** \class PatternSyntax PatternSyntax.h cc/glob/PatternSyntax
   * \brief Syntax of a regular expression text pattern
   */
-class RegExpSyntax: public SyntaxDefinition
+class PatternSyntax: public SyntaxDefinition
 {
 public:
-    static const RegExpSyntax *instance();
+    static const PatternSyntax *instance();
 
 protected:
-    friend class Singleton<RegExpSyntax>;
-    friend class RegExp;
+    friend class Singleton<PatternSyntax>;
+    friend class Pattern;
 
-    RegExpSyntax();
+    PatternSyntax();
 
     void compile(const CharArray *text, SyntaxDefinition *definition) const;
     NODE compileChoice(const CharArray *text, Token *token, SyntaxDefinition *definition) const;
@@ -67,4 +67,4 @@ protected:
     int pattern_;
 };
 
-}} // namespace cc::regexp
+}} // namespace cc::glob

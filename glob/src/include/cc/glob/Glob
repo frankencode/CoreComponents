@@ -8,15 +8,15 @@
 
 #pragma once
 
-#include <cc/regexp/RegExp>
+#include <cc/glob/Pattern>
 #include <cc/Source>
 
 namespace cc { class Dir; }
 
 namespace cc {
-namespace regexp {
+namespace glob {
 
-/** \class Glob Glob.h cc/regexp/Glob
+/** \class Glob Glob.h cc/glob/Glob
   * \brief Collect file names matching a globbing pattern
   * \see DirWalker
   */
@@ -41,9 +41,9 @@ private:
     void init(String path);
 
     Ref<Dir> dir_;
-    RegExp pattern_;
+    Pattern pattern_;
     Ref<StringList> remainder_;
     Ref<Glob> child_;
 };
 
-}} // namespace cc::regexp
+}} // namespace cc::glob

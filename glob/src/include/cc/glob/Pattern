@@ -16,34 +16,34 @@
 #include <cc/syntax/SyntaxDefinition>
 
 namespace cc {
-namespace regexp {
+namespace glob {
 
 using namespace cc::syntax;
 
-/** \class RegExp RegExp.h cc/regexp/RegExp
+/** \class Pattern Pattern.h cc/glob/Pattern
   * \brief Regular expression pattern
   * \see SyntaxDefinition
   */
-class RegExp: public Ref<SyntaxDefinition>
+class Pattern: public Ref<SyntaxDefinition>
 {
 public:
-    RegExp();
+    Pattern();
 
-    RegExp(const char *text);
-    RegExp(const String &text);
-    RegExp(const Variant &Variant);
+    Pattern(const char *text);
+    Pattern(const String &text);
+    Pattern(const Variant &Variant);
 
-    const RegExp &operator=(const char *text);
-    const RegExp &operator=(const String &text);
-    const RegExp &operator=(const Variant &text);
+    const Pattern &operator=(const char *text);
+    const Pattern &operator=(const String &text);
+    const Pattern &operator=(const Variant &text);
 
     inline operator String() const { return text_; }
 
 private:
-    friend String str(const RegExp &pattern);
+    friend String str(const Pattern &pattern);
     String text_;
 };
 
-inline String str(const RegExp &pattern) { return pattern.text_; }
+inline String str(const Pattern &pattern) { return pattern.text_; }
 
-}} // namespace cc::regexp
+}} // namespace cc::glob

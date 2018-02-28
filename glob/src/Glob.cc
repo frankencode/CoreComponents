@@ -7,11 +7,11 @@
  */
 
 #include <cc/Dir>
-#include <cc/regexp/RegExp>
-#include <cc/regexp/Glob>
+#include <cc/glob/Pattern>
+#include <cc/glob/Glob>
 
 namespace cc {
-namespace regexp {
+namespace glob {
 
 Glob::Glob(String expression):
     remainder_(expression->split('/'))
@@ -63,4 +63,4 @@ bool Glob::read(String *path)
     return false;
 }
 
-}} // namespace cc::regexp
+}} // namespace cc::glob

@@ -1,0 +1,3 @@
+Tests {
+    use: [ core, testing, syntax, glob ]
+}

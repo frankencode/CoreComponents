@@ -55,7 +55,7 @@ int main(int argc, char **argv)
         int yearEnd = options->value("year-end");
         String statement = options->value("statement");
         String statementPath = options->value("statement-file");
-        RegExp works = options->value("works");
+        Pattern works = options->value("works");
         int worksMinLines = options->value("works-min-lines");
 
         if (statementPath != "") statement = File::open(statementPath)->map();

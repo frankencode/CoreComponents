@@ -20,7 +20,7 @@ private:
     PlaintextLanguage():
         Language(
             "Plaintext",
-            RegExp("*.txt"),
+            Pattern("*.txt"),
             plaintextSyntax()
         )
     {}

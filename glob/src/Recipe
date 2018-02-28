@@ -1,4 +1,4 @@
 Library {
-    name: ccregexp
+    name: ccglob
     use: [ core, syntax ]
 }

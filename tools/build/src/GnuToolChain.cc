@@ -12,7 +12,7 @@
 #include <cc/Process>
 #include <cc/SubProcess>
 #include <cc/Dir>
-#include <cc/regexp/RegExp>
+#include <cc/glob/Pattern>
 #include "BuildPlan.h"
 #include "CwdGuard.h"
 #include "LinkJob.h"

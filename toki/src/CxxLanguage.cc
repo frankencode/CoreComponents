@@ -21,7 +21,7 @@ private:
     CxxLanguage():
         Language(
             "C++",
-            RegExp("*.((h|c){0..1:(pp|xx|++|h|c)}|(m|mm))"),
+            Pattern("*.((h|c){0..1:(pp|xx|++|h|c)}|(m|mm))"),
             cxxSyntax(),
             cppDiscoverySyntax()
         )

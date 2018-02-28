@@ -10,11 +10,11 @@
 #include <cc/File>
 #include <cc/DirWalker>
 #include <cc/Arguments>
-#include <cc/regexp/RegExp>
+#include <cc/glob/Pattern>
 
 using namespace cc;
 using namespace cc::syntax;
-using namespace cc::regexp;
+using namespace cc::glob;
 
 class Match: public Object {
 public:
@@ -73,13 +73,13 @@ int main(int argc, char **argv)
 
         Ref<const StringList> items = arguments->items();
 
-        RegExp pathPattern = options->value("path");
-        RegExp namePattern = options->value("name");
-        RegExp typePattern = options->value("type");
+        Pattern pathPattern = options->value("path");
+        Pattern namePattern = options->value("name");
+        Pattern typePattern = options->value("type");
         int maxDepth = options->value("depth");
         bool ignoreHidden = !options->value("hidden");
 
-        RegExp textPattern = String(options->value("text"))->unescape();
+        Pattern textPattern = String(options->value("text"))->unescape();
         if (String(options->value("word")) != "")
             textPattern = String(Format() << "(?<!:[a..z]|[A..Z]|[0..9]|_)" << options->value("word") << "(?>!:[a..z]|[A..Z]|[0..9]|_)");
 

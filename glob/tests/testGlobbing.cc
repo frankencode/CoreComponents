@@ -8,17 +8,17 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
-#include <cc/regexp/RegExp>
+#include <cc/glob/Pattern>
 
 using namespace cc;
-using namespace cc::regexp;
+using namespace cc::glob;
 using namespace cc::testing;
 
 class EmailValidation: public TestCase
 {
     void run()
     {
-        RegExp pattern =
+        Pattern pattern =
             "(?>!:[.-])"
             "{1..:(?>!:..|--)([a..z]|[A..Z]|[0..9]|[.-])}"
             "(?<!:[.-])"
@@ -69,7 +69,7 @@ class Globbing: public TestCase
 {
     void run()
     {
-        RegExp pattern = "*.(c|h){..2:[^.]}";
+        Pattern pattern = "*.(c|h){..2:[^.]}";
 
         Ref<StringList> path = StringList::create()
             << "/home/hans/glück.hh"
@@ -107,7 +107,7 @@ class CxxPathGlobbing: public TestCase
 {
     void run()
     {
-        RegExp pattern = "*/include/*";
+        Pattern pattern = "*/include/*";
         CC_VERIFY(pattern->match("/usr/include/c++/5/list")->valid());
         CC_VERIFY(!pattern->match("/usr/lib/libnegative.so")->valid());
     }
@@ -117,7 +117,7 @@ class LazyChoice: public TestCase
 {
     void run()
     {
-        RegExp pattern = "(Hans|HansPeter)Glück";
+        Pattern pattern = "(Hans|HansPeter)Glück";
         CC_VERIFY(pattern->match(String("HansPeterGlück"))->valid());
         CC_VERIFY(pattern->match(String("HansGlück"))->valid());
     }
@@ -135,7 +135,7 @@ class UriDispatch: public TestCase
             << "*httpecho*";
 
         for (int i = 0; i < services->count(); ++i)
-            fout() << services->at(i) << ": " << RegExp(services->at(i))->match(String("cckit.cyblogic.com"))->valid() << nl;
+            fout() << services->at(i) << ": " << Pattern(services->at(i))->match(String("cckit.cyblogic.com"))->valid() << nl;
     }
 };
 
@@ -144,7 +144,7 @@ class TestEmpty: public TestCase
 {
     void run()
     {
-        fout() << RegExp(0)->match(String("Something"))->valid() << nl;
+        fout() << Pattern(0)->match(String("Something"))->valid() << nl;
     }
 };
 #endif

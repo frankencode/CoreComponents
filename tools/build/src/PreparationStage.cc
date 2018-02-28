@@ -8,14 +8,14 @@
 
 #include <cc/stdio>
 #include <cc/FileStatus>
-#include <cc/regexp/Glob>
+#include <cc/glob/Glob>
 #include "BuildPlan.h"
 #include "JobScheduler.h"
 #include "PreparationStage.h"
 
 namespace ccbuild {
 
-using namespace cc::regexp;
+using namespace cc::glob;
 
 bool PreparationStage::run()
 {
@@ -82,7 +82,7 @@ bool PreparationStage::run()
                 plan()->sourcePath(
                     sourceText->replace("%", "(?@*)")
                 );
-            RegExp sourcePattern = sourceExpression;
+            Pattern sourcePattern = sourceExpression;
             Ref<Glob> glob = Glob::open(sourceExpression);
             for (String sourcePath; glob->read(&sourcePath);) {
                 String name;
@@ -135,7 +135,7 @@ bool PreparationStage::run()
                 plan()->sourcePath(
                     predicate->target()->replace("%", "(?@*)")
                 );
-            RegExp targetPattern = targetExpression;
+            Pattern targetPattern = targetExpression;
             Ref<Glob> glob = Glob::open(targetExpression);
             for (String targetPath; glob->read(&targetPath);) {
                 String name;

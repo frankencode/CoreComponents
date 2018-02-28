@@ -1,4 +1,4 @@
 Package {
     version: 0.15.0
-    include: [ core, testing, syntax, meta, regexp, net, http, crypto, tar, zip, toki, ui, tools ]
+    include: [ core, testing, syntax, meta, glob, net, http, crypto, tar, zip, toki, ui, tools ]
 }

@@ -1,4 +1,4 @@
 Application {
     name: ccbuild
-    use: [ core, syntax, regexp, meta ]
+    use: [ core, syntax, glob, meta ]
 }

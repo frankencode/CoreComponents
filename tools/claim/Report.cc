@@ -15,12 +15,12 @@
 
 namespace ccclaim {
 
-Ref<Report> Report::create(const StringList *dirPaths, RegExp works, int worksMinLines)
+Ref<Report> Report::create(const StringList *dirPaths, Pattern works, int worksMinLines)
 {
     return new Report(dirPaths, works, worksMinLines);
 }
 
-Report::Report(const StringList *dirPaths, RegExp works, int worksMinLines):
+Report::Report(const StringList *dirPaths, Pattern works, int worksMinLines):
     dirPaths_(dirPaths),
     works_(works),
     worksMinLines_(worksMinLines),
