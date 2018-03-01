@@ -21,7 +21,7 @@ template<class T> class Queue;
   * \{
   */
 
-/** \class FormatSignal Format.h <cc/Format>
+/** \class FormatSignal cc/Format
   * \brief Type for formatting signals
   */
 class FormatSignal {};
@@ -29,7 +29,7 @@ class FormatSignal {};
 extern FormatSignal nl; ///< The newline formatting signal causes a newline but no output flushing.
 extern FormatSignal flush; ///< The flush formatting signal causes the aggregated text to be flushed and written to the associated output stream (if any).
 
-/** \class Format Format.h <cc/Format>
+/** \class Format cc/Format
   * \brief Text formatting helper
   */
 class Format: public Ref<StringList>
@@ -86,7 +86,7 @@ private:
     int lastPosition_;
 };
 
-/** \class NullFormat Format.h <cc/Format>
+/** \class NullFormat cc/Format
   * \brief Zero storage formatting output sink
   */
 class NullFormat {

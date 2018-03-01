@@ -13,7 +13,7 @@
 
 namespace cc {
 
-/** \class ByteSink ByteSink.h cc/ByteSink
+/** \class ByteSink cc/ByteSink
   * \ingroup binary_io
   * \brief Byte encoding sink
   * \see ByteSource, CaptureSink

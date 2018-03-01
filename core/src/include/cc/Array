@@ -14,7 +14,7 @@
 
 namespace cc {
 
-/** \class Array Array.h cc/Array
+/** \class Array cc/Array
   * \ingroup container
   * \brief Typeded memory vector
   * \see List, CharArray

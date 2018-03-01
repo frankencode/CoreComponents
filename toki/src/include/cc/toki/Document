@@ -24,9 +24,9 @@ public:
     inline Style *style() const { return style_; }
 
 protected:
-    Span(int i0, int i1, Style *style = 0)
-        : Range(i0, i1),
-          style_(style)
+    Span(int i0, int i1, Style *style = 0):
+        Range(i0, i1),
+        style_(style)
     {}
 
     Ref<Style> style_;
@@ -55,4 +55,3 @@ protected:
 };
 
 }} // namespace cc::toki
-

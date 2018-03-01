@@ -16,7 +16,7 @@ namespace cc {
 
 typedef Channel<int> SignalChannel;
 
-/** \class SignalMaster SignalMaster.h cc/SignalMaster
+/** \class SignalMaster cc/SignalMaster
   * \brief Signal handling thread in a mulithreaded application
   * \see SignalSet
   */

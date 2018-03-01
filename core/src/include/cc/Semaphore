@@ -13,7 +13,7 @@
 
 namespace cc {
 
-/** \class Semaphore Semaphore.h cc/Semaphore
+/** \class Semaphore cc/Semaphore
   * \ingroup concurrency
   * \brief Waiting for a limited resource
   */

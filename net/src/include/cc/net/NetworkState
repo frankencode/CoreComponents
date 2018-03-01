@@ -13,7 +13,7 @@
 namespace cc {
 namespace net {
 
-/** \class NetworkState NetworkState.h cc/net/NetworkState
+/** \class NetworkState cc/net/NetworkState
   * \brief Simplified network configuration state
   */
 class NetworkState: public Object

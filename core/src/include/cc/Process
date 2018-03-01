@@ -19,7 +19,7 @@ namespace cc {
 
 typedef Map<String, String> EnvMap;
 
-/** \class Process Process.h cc/Process
+/** \class Process cc/Process
   * \brief %Process status and control
   * \see SubProcess
   */

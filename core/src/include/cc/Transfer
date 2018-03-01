@@ -16,7 +16,7 @@ namespace cc {
 class TransferInputWorker;
 class TransferOutputWorker;
 
-/** \class Transfer Transfer.h cc/Transfer
+/** \class Transfer cc/Transfer
   * \brief Non-trivial data transfer
   * \see Stream
   * To achieve high performance data transfers reading from a source and writing to a sink has to be decoupled

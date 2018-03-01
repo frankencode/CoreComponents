@@ -15,7 +15,7 @@
 
 namespace cc {
 
-/** \class Channel Channel.h cc/Channel
+/** \class Channel cc/Channel
   * \ingroup concurrency
   * \brief Inter-thread communication channel
   * \tparam T item type

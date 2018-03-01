@@ -12,7 +12,7 @@
 
 namespace cc {
 
-/** \class RefGuard RefGuard.h cc/RefGuard
+/** \class RefGuard cc/RefGuard
   * \ingroup mman
   * \brief %Guard against object destruction
   */

@@ -12,7 +12,7 @@
 
 namespace cc {
 
-/** \class Object Object.h cc/Object
+/** \class Object cc/Object
   * \ingroup mman
   * \brief Reference counting and secure destruction
   *

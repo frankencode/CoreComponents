@@ -12,7 +12,7 @@
 
 namespace cc {
 
-/** \class HashSink HashSink.h cc/HashSink
+/** \class HashSink cc/HashSink
   * \brief Hashsum computing sink
   */
 class HashSink: public Stream

@@ -13,7 +13,7 @@
 
 namespace cc {
 
-/** \class Arguments Arguments.h cc/Arguments
+/** \class Arguments cc/Arguments
   * \ingroup misc
   * \brief Command line arguments parser
   */

@@ -14,7 +14,7 @@
 namespace cc {
 namespace meta {
 
-/** \class JsonWriter JsonWriter.h cc/meta/JsonWriter
+/** \class JsonWriter cc/meta/JsonWriter
   * \brief Generate JSON representation of a meta object tree
   * \see yason, YasonWriter
   */

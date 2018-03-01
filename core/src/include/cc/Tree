@@ -60,7 +60,7 @@ private:
     Node *node_;
 };
 
-/** \class Tree Tree.h cc/Tree
+/** \class Tree Tree cc/Tree
   * \brief Generic tree structure
   */
 template<class Node>

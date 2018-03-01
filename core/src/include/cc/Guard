@@ -10,7 +10,7 @@
 
 namespace cc {
 
-/** \class Guard Guard.h cc/Guard
+/** \class Guard cc/Guard
   * \ingroup concurrency
   * \brief %Mutex guard
   * \see Mutex, FileLock

@@ -22,7 +22,7 @@ class MetaProtocol;
 class MetaObject;
 typedef List< Ref<MetaObject> > MetaObjectList;
 
-/** \class MetaObject MetaObject.h cc/meta/MetaObject
+/** \class MetaObject cc/meta/MetaObject
   * \brief Duck-typed object
   */
 class MetaObject: public VariantMap

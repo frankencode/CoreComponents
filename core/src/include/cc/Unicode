@@ -30,7 +30,7 @@ private:
     int i_;
 };
 
-/** \class Unicode Unicode.h cc/Unicode
+/** \class Unicode cc/Unicode
   * \ingroup unicode
   * \brief Seemlessly access the %Unicode characters of an UTF-8 encoded byte array
   * \see String

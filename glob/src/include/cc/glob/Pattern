@@ -20,7 +20,7 @@ namespace glob {
 
 using namespace cc::syntax;
 
-/** \class Pattern Pattern.h cc/glob/Pattern
+/** \class Pattern cc/glob/Pattern
   * \brief Regular expression pattern
   * \see SyntaxDefinition
   */

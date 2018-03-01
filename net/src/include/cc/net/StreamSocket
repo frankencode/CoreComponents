@@ -14,14 +14,14 @@
 namespace cc {
 namespace net {
 
-/** \class StreamSocket StreamSocket.h cc/net/StreamSocket
+/** \class StreamSocket cc/net/StreamSocket
   * \brief Connection oriented byte-sequential communication channel
   */
 class StreamSocket: public SystemStream
 {
 public:
     /** Open a new listening socket
-      * \param address local address to bind to
+      * \param localAddress local address to bind to
       * \param backlog number of connections to queue when the process is busy
       * \return new object instance
       */
@@ -54,7 +54,7 @@ public:
     void setRecvTimeout(double interval);
 
     /** %Set the timeout of accumulating outgoing data
-      * \param internval timeout in seconds
+      * \param interval timeout in seconds
       */
     void setSendTimeout(double interval);
 

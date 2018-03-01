@@ -16,7 +16,7 @@ namespace cc { class Dir; }
 namespace cc {
 namespace glob {
 
-/** \class Glob Glob.h cc/glob/Glob
+/** \class Glob cc/glob/Glob
   * \brief Collect file names matching a globbing pattern
   * \see DirWalker
   */

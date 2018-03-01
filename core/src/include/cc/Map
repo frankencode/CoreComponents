@@ -21,7 +21,7 @@ template<class, class> class MapIterator;
 class MapTester;
 #endif
 
-/** \class Map Map.h cc/Map
+/** \class Map cc/Map
   * \ingroup container
   * \brief %Map data container
   * \see Set, List

@@ -13,7 +13,7 @@
 namespace cc {
 namespace crypto {
 
-/** \class Sha1Sink Sha1Sink.h cc/crypto/Sha1Sink
+/** \class Sha1Sink Sha1Sink cc/crypto/Sha1Sink
   * \brief Secure Hash 1: a one-way hash function
   */
 class Sha1Sink: public HashSink

@@ -16,7 +16,7 @@
 
 namespace cc {
 
-/** \class List List.h cc/List
+/** \class List cc/List
   * \ingroup container
   * \brief %List data container
   */
@@ -55,16 +55,16 @@ public:
       * \param index list index
       * \return reference to the item
       */
-    inline const Item &at(int index) const {
+    inline Item &at(int index) {
         Node *node = 0;
         if (!tree_.lookupByIndex(index, &node))
             CC_ASSERT(false);
         return node->item_;
     }
 
-    /** \copydoc const Item &at(int index)
+    /** \copydoc at(int index)
       */
-    inline Item &at(int index) {
+    inline const Item &at(int index) const {
         Node *node = 0;
         if (!tree_.lookupByIndex(index, &node))
             CC_ASSERT(false);
@@ -116,7 +116,7 @@ public:
       */
     inline Item pop() { Item item; pop(&item); return item; }
 
-    /** \copydoc void *push(const Item &)
+    /** \copydoc push(const Item &)
       */
     inline void append(const Item &item) { insertAt(count(), item); }
 
@@ -222,7 +222,6 @@ public:
 
     /** Remove redundant entries from the list
       * \param list list to eliminate doubles from
-      * \TODO: add compare function template parameter
       */
     static void makeUnique(List *list)
     {

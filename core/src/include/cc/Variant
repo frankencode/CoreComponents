@@ -21,7 +21,7 @@ class Variant;
 typedef List<Variant> VariantList;
 typedef Map<String, Variant> VariantMap;
 
-/** \class Variant Variant.h cc/Variant
+/** \class Variant cc/Variant
   * \ingroup misc
   * \brief Duck-typed value
   *

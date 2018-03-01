@@ -16,7 +16,7 @@ namespace cc {
 
 class WaitCondition;
 
-/** \class Mutex Mutex.h cc/Mutex
+/** \class Mutex cc/Mutex
   * \ingroup concurrency
   * \brief %Thread synchronization primitive: mutual exclusive access
   * \see Guard

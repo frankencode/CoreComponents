@@ -14,7 +14,7 @@
 
 namespace cc {
 
-/** \class Crc16Sink Crc16Sink.h cc/Crc16Sink
+/** \class Crc16Sink cc/Crc16Sink
   * \brief CRC-16 check sum generator, according to RFC 1171
   */
 class Crc16Sink: public HashSink

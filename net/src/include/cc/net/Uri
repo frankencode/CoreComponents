@@ -18,7 +18,7 @@ namespace net {
 
 using syntax::Token;
 
-/** \class Uri Uri.h cc/net/Uri
+/** \class Uri cc/net/Uri
   * \brief Uniform Resource Indicator
   */
 class Uri: public Object
@@ -113,7 +113,7 @@ private:
     String fragment_;
 };
 
-/** \class UriSyntaxError Uri.h cc/net/Uri
+/** \class UriSyntaxError cc/net/Uri
   * \brief Failed to parse an URI string
   */
 class UriSyntaxError: public UsageError

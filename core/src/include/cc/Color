@@ -14,7 +14,7 @@ namespace cc {
 
 class Variant;
 
-/** \class Color Color.h cc/Color
+/** \class Color cc/Color
   * \ingroup misc
   * \brief 32-bit ARGB color value
   * \see ColorNames
@@ -29,8 +29,8 @@ public:
     {}
 
     /** Construct a color from a color literal or name \a s.
-      * %Color literals of the format \c #RRGGBB, \c #RRGGBBAA, \c #RGB, \c #RGAB and
-      * SVG color names are allowed (e.g. \c "AliceBlue").
+      * \param s color specification to parse
+      * %Color literals can be either SVG color names (e.g. 'AliceBlue') or literal RGB tuples (\#RRGGBB, \#RRGGBBAA, \#RGB, \#RGBA).
       */
     Color(const char *s)
     {

@@ -13,7 +13,8 @@
 
 namespace cc {
 
-/** \brief Reference manually allocated objects
+/** \internal
+  * \brief Reference manually allocated objects
   *
   * Wrapper class to allow taking reference to classes not inherited
   * from cc::Object. Beware that it is impossible to reference
@@ -45,23 +46,6 @@ public:
 private:
     mutable T *guest_;
     DelFunc delFunc_;
-};
-
-/** \brief Objects which can perform an action
-  */
-class Action: public virtual Object
-{
-public:
-    virtual void run() = 0;
-};
-
-/** \brief Objects which can be cloned
-  */
-template<class T>
-class Clonable: public T
-{
-public:
-    virtual Ref<T> clone() const = 0;
 };
 
 #ifdef major

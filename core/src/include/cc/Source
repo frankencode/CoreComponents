@@ -15,7 +15,7 @@ namespace cc {
 
 template<class> class SourceIterator;
 
-/** \class Source Source.h cc/Source
+/** \class Source cc/Source
   * \brief Generic data source
   * \tparam T item type
   */

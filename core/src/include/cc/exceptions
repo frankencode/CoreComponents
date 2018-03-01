@@ -13,7 +13,7 @@
 
 namespace cc {
 
-/** \class UsageError exceptions.h cc/exceptions
+/** \class UsageError cc/exceptions
   * \brief %User input ambiguous, report back to user and provide guidance
   */
 class UsageError: public Exception
@@ -28,7 +28,7 @@ private:
     String message_;
 };
 
-/** \class HelpRequest exceptions.h cc/exceptions
+/** \class HelpRequest cc/exceptions
   * \brief %User requested help
   */
 class HelpRequest: public Exception
@@ -41,7 +41,7 @@ public:
 
 typedef HelpRequest HelpError; // FIXME: obsolete
 
-/** \class VersionError exceptions.h cc/exceptions
+/** \class VersionError cc/exceptions
   * \brief %User requested the application version
   */
 class VersionRequest: public Exception
@@ -52,7 +52,7 @@ public:
     virtual String message() const override { return "Application is not versioned, yet ..."; }
 };
 
-/** \class EncodingError exceptions.h cc/exceptions
+/** \class EncodingError cc/exceptions
   * \brief Some encoded data is mailformed
   */
 class EncodingError: public Exception
@@ -61,7 +61,7 @@ public:
     ~EncodingError() throw() {}
 };
 
-/** \class UnexpectedEndOfInputError exceptions.h cc/exceptions
+/** \class UnexpectedEndOfInputError cc/exceptions
   * \brief End of input reached although more data is needed
   */
 class UnexpectedEndOfInputError: public Exception
@@ -72,7 +72,7 @@ public:
     virtual String message() const override { return "Unexpected end of input"; }
 };
 
-/** \class BufferOverflow exceptions.h cc/exceptions
+/** \class BufferOverflow cc/exceptions
   * \brief Some buffer size is exceeded
   */
 class BufferOverflow: public Exception
@@ -83,7 +83,7 @@ public:
     virtual String message() const override { return "Buffer overflow"; }
 };
 
-/** \class DebugError exceptions.h cc/exceptions
+/** \class DebugError cc/exceptions
   * \brief Debugging hint on internal system malfunction
   */
 class DebugError: public Exception
@@ -106,7 +106,7 @@ private:
 
 String systemError(int errorCode);
 
-/** \class SystemError exceptions.h cc/exceptions
+/** \class SystemError cc/exceptions
   * \brief %System call failed
   */
 class SystemError: public Exception
@@ -123,7 +123,7 @@ protected:
     int errorCode_;
 };
 
-/** \class SystemResourceError exceptions.h cc/exceptions
+/** \class SystemResourceError cc/exceptions
   * \brief %System call failed to perform an action on a named resource (e.g. a file)
   */
 class SystemResourceError: public SystemError
@@ -149,7 +149,7 @@ private:
     int line_;
 };
 
-/** \class SystemDebugError exceptions.h cc/exceptions
+/** \class SystemDebugError cc/exceptions
   * \brief Debugging hint on system call failure
   */
 class SystemDebugError: public SystemError
@@ -187,7 +187,7 @@ private:
         else CC_SYSTEM_DEBUG_ERROR(errorCode); \
     }
 
-/** \class TextError exceptions.h cc/exceptions
+/** \class TextError cc/exceptions
   * \brief General error related to a text (progam text, config file, etc.)
   */
 class TextError: public Exception
@@ -208,7 +208,7 @@ protected:
     String resource_;
 };
 
-/** \class SemanticError exceptions.h cc/exceptions
+/** \class SemanticError cc/exceptions
   * \brief Semantic error
   */
 class SemanticError: public TextError
@@ -230,7 +230,7 @@ private:
 
 String signalName(int signal);
 
-/** \class Interrupt exceptions.h cc/exceptions
+/** \class Interrupt cc/exceptions
   * \brief Signal received
   */
 class Interrupt: public Exception
@@ -248,7 +248,7 @@ private:
     int signal_;
 };
 
-/** \class Timeout exceptions.h cc/exceptions
+/** \class Timeout cc/exceptions
   * \brief Operation timed out
   */
 class Timeout: public Exception
@@ -258,7 +258,7 @@ public:
     virtual String message() const;
 };
 
-/** \class ConnectionResetByPeer exceptions.h cc/exceptions
+/** \class ConnectionResetByPeer cc/exceptions
   * \brief Other end of a communication channel was closed (pipe or socket)
   */
 class ConnectionResetByPeer: public Exception
@@ -268,7 +268,7 @@ public:
     virtual String message() const override;
 };
 
-/** \class TransferError exceptions.h cc/exceptions
+/** \class TransferError cc/exceptions
   * \brief A data transfer operation failed
   * \see Transfer
   */
@@ -284,7 +284,7 @@ private:
     String details_;
 };
 
-/** \class PermissionError exceptions.h cc/exceptions
+/** \class PermissionError cc/exceptions
   * \brief Insufficient permission to perform operation
   */
 class PermissionError: public UsageError
@@ -294,7 +294,7 @@ public:
     virtual String message() const override;
 };
 
-/** \class CommandNotFound exceptions.h cc/exceptions
+/** \class CommandNotFound cc/exceptions
   * \brief Command not found error
   */
 class CommandNotFound: public UsageError

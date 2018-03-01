@@ -19,7 +19,7 @@ class Variant;
 template<class T>
 class Ref;
 
-/** \class Ref Ref.h cc/Object
+/** \class Ref cc/Object
   * \ingroup mman
   * \brief %Object references
   *

@@ -15,7 +15,7 @@ namespace cc {
 
 class Thread;
 
-/** \class SignalSet SignalSet.h cc/SignalSet
+/** \class SignalSet cc/SignalSet
   * \brief Signal set
   * \see Thread
   */

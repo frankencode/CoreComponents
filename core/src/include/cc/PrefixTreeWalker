@@ -13,7 +13,7 @@ namespace cc {
 template<class Char, class Value>
 class PrefixTree;
 
-/** \class PrefixTreeWalker PrefixTreeWalker.h cc/PrefixTreeWalker
+/** \class PrefixTreeWalker cc/PrefixTreeWalker
   */
 template<class Char, class Value>
 class PrefixTreeWalker

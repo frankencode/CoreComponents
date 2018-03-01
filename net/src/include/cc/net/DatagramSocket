@@ -15,7 +15,7 @@
 namespace cc {
 namespace net {
 
-/** \class DatagramSocket DatagramSocket.h cc/net/DatagramSocket
+/** \class DatagramSocket cc/net/DatagramSocket
   * \brief Datagram socket
   */
 class DatagramSocket: public SystemStream

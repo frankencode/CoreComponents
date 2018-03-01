@@ -12,7 +12,7 @@
 
 namespace cc {
 
-/** \class HexDump HexDump.h cc/HexDump
+/** \class HexDump cc/HexDump
   * \brief Hexdumping data sink
   *
   * Example usage:

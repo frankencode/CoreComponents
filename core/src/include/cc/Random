@@ -12,7 +12,7 @@
 
 namespace cc {
 
-/** \class Random Random.h cc/Random
+/** \class Random cc/Random
   * \ingroup misc
   * \brief Pseudo-random number generator
   *

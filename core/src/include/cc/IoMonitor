@@ -15,7 +15,7 @@
 
 namespace cc {
 
-/** \class IoEvent IoMonitor.h cc/IoMonitor
+/** \class IoEvent cc/IoMonitor
   * \brief I/O event
   */
 class IoEvent: public Object
@@ -48,7 +48,7 @@ private:
 /// I/O activity vector
 typedef Array<const IoEvent *> IoActivity;
 
-/** \class IoMonitor IoMonitor.h cc/IoMonitor
+/** \class IoMonitor cc/IoMonitor
   * \ingroup concurrency
   * \brief Register and wait for I/O events
   */
@@ -82,6 +82,7 @@ public:
     /** Wait for a specific I/O event
       * \param event I/O event to wait for
       * \param timeout_ms timeout in milliseconds (or infinite if < 0)
+      * \param other return I/O %event, if a different I/O %event than specified in \a event occured
       * \return true if the given I/O event occured before timeout, false if timed out or a different I/O event occured
       */
     bool waitFor(const IoEvent *event, int timeout_ms = -1, const IoEvent **other = 0);

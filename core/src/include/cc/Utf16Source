@@ -13,7 +13,7 @@
 
 namespace cc {
 
-/** \class Utf16Source Utf16Source.h cc/Utf16Source
+/** \class Utf16Source cc/Utf16Source
   * \ingroup unicode
   * \brief %Unicode UTF-16 decoding data source
   *

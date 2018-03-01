@@ -10,7 +10,7 @@
 
 #include <cc/stdio>
 
-/** \file str.h
+/** \file debug
   * \brief Debug message output
   */
 

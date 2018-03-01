@@ -13,7 +13,7 @@
 
 namespace cc {
 
-/** \class LineSource LineSource.h cc/LineSource
+/** \class LineSource cc/LineSource
   * \ingroup formatted_io
   * \brief Line input buffer
   */

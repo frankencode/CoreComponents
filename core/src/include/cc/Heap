@@ -142,7 +142,7 @@ private:
     T *buf_;    // memory buffer used for storing elements
 };
 
-/** \class Heap Heap.h cc/Heap
+/** \class Heap cc/Heap
   * \ingroup container
   * \brief %Heap data container
   */

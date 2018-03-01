@@ -16,7 +16,7 @@ namespace cc {
 namespace net {
 
 /** \internal
-  * \class UriSyntax UriSyntax.h cc/net/UriSyntax
+  * \class UriSyntax cc/net/UriSyntax
   * \brief Syntax of an URI
   */
 class UriSyntax: public syntax::SyntaxDefinition

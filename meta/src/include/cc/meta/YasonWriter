@@ -14,7 +14,7 @@
 namespace cc {
 namespace meta {
 
-/** \class YasonWriter YasonWriter.h cc/meta/YasonWriter
+/** \class YasonWriter cc/meta/YasonWriter
   * \brief Generate YSON representation of a meta object tree
   */
 class YasonWriter: public Object

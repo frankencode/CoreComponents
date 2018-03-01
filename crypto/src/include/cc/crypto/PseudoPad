@@ -14,7 +14,7 @@
 namespace cc {
 namespace crypto {
 
-/** \class PseudoPad PseudoPad.h cc/crypto/PseudoPad
+/** \class PseudoPad cc/crypto/PseudoPad
   * \brief pseudo random byte source
   *
   * The PseudoPad runs a given block cipher in counter mode to generate a random byte sequence.

@@ -14,7 +14,7 @@
 namespace cc {
 namespace crypto {
 
-/** \class CipherSink CipherSink.h cc/crypto/CipherSink
+/** \class CipherSink cc/crypto/CipherSink
   * \brief Enciphering output stream
   */
 class CipherSink: public Stream
@@ -23,6 +23,7 @@ public:
     /** Open a new enciphering output stream
       * \param cipher block cipher to use for enciphering the plaintext
       * \param sink output sink to write the ciphertext to
+      * \param pad input stream to read the padding from (optional)
       * \return new object instance
       */
     static Ref<CipherSink> open(BlockCipher *cipher, Stream *sink, Stream *pad = 0);

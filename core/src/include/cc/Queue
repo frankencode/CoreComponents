@@ -26,7 +26,7 @@ public:
     QueueNode *prev_;
 };
 
-/** \class Queue Queue.h cc/Queue
+/** \class Queue cc/Queue
   * \ingroup container
   * \brief Waiting queue data container
   */

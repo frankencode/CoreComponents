@@ -12,7 +12,7 @@
 
 namespace cc {
 
-/** \class Stack Stack.h cc/Stack
+/** \class Stack cc/Stack
   * \ingroup container
   * \brief %Stack data container
   */

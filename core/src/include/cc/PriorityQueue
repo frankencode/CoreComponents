@@ -13,7 +13,7 @@
 
 namespace cc {
 
-/** \class PriorityQueue PriorityQueue.h cc/PriorityQueue
+/** \class PriorityQueue cc/PriorityQueue
   * \brief Priority based multi-queue
   * \see Queue, Channel
   */

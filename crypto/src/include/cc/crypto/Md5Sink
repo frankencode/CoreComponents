@@ -13,7 +13,7 @@
 namespace cc {
 namespace crypto {
 
-/** \class Md5Sink Md5Sink.h cc/crypto/Md5Sink
+/** \class Md5Sink Md5Sink cc/crypto/Md5Sink
   * \brief Message Digest 5: a one-way hash function
   */
 class Md5Sink: public HashSink

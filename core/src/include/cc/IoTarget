@@ -10,7 +10,7 @@
 
 namespace cc {
 
-/** \class IoTarget IoTarget.h cc/IoTarget
+/** \class IoTarget cc/IoTarget
   * \brief I/O event target
   */
 class IoTarget

@@ -21,7 +21,7 @@ namespace cc {
 
 class MappedByteArray;
 
-/** \class File File.h cc/File
+/** \class File cc/File
   * \ingroup file_system
   * \brief Handle files
   * \see FileStatus, UnlinkGuard, Dir, SubProcess
@@ -37,11 +37,8 @@ public:
       */
     static Ref<File> open(String path, int openMode = OpenMode::ReadOnly, int fileMode = 0644);
 
-    /** Try to open a file
-      * \param path file path
-      * \param flags file open flags, a combintation of cc::OpenMode
-      * \param mode file permissions for new file, a combination of cc::FileMode
-      * \return new object instance or null reference if opening the file wasn't successful
+    /** Try to %open a file
+      * \copydetails open()
       */
     static Ref<File> tryOpen(String path, int openMode = OpenMode::ReadOnly, int fileMode = 0644);
 

@@ -12,7 +12,7 @@
 
 namespace cc {
 
-/** \class ResourceGuard ResourceGuard.h cc/ResourceGuard
+/** \class ResourceGuard cc/ResourceGuard
   * \brief Resource context guard
   * \see ResourceContext
   */

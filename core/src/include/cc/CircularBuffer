@@ -13,7 +13,7 @@
 
 namespace cc {
 
-/** \class CircularBuffer CircularBuffer.h cc/CircularBuffer
+/** \class CircularBuffer cc/CircularBuffer
   * \ingroup container
   * \brief Circular buffer data container
   */

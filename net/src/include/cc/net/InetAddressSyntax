@@ -16,7 +16,7 @@ namespace cc {
 namespace net {
 
 /** \internal
-  * \class InetAddressSyntax InetAddressSyntax.h cc/net/InetAddressSyntax
+  * \class InetAddressSyntax cc/net/InetAddressSyntax
   * \brief Syntax of an internet address (IPv4 or IPv6)
   */
 class InetAddressSyntax: public syntax::SyntaxDefinition

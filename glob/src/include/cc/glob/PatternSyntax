@@ -18,7 +18,7 @@ namespace glob {
 
 using namespace cc::syntax;
 
-/** \class PatternSyntax PatternSyntax.h cc/glob/PatternSyntax
+/** \class PatternSyntax cc/glob/PatternSyntax
   * \brief Syntax of a regular expression text pattern
   */
 class PatternSyntax: public SyntaxDefinition

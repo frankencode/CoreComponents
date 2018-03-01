@@ -22,7 +22,7 @@ class NetworkInterface;
 
 typedef List< Ref<NetworkInterface> > NetworkInterfaceList;
 
-/** \class NetworkInterface NetworkInterface.h cc/net/NetworkInterface
+/** \class NetworkInterface cc/net/NetworkInterface
   * \brief Query network interface configuration: addresses, flags, etc.
   */
 class NetworkInterface: public Object

@@ -43,7 +43,7 @@ public:
     Ref<SubClass> instance_;
 };
 
-/** \class Singleton Singleton.h cc/Singleton
+/** \class Singleton cc/Singleton
   * \ingroup mman
   * \brief Implementation pattern for process-wide singletons
   *

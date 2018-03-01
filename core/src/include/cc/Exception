@@ -13,7 +13,7 @@
 
 namespace cc {
 
-/** \class Exception Exception.h cc/Exception
+/** \class Exception cc/Exception
   * \brief Root class of the exception class hierarchy
   * \see exceptions, std::current_exception()
   */

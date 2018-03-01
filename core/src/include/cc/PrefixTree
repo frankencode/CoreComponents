@@ -25,7 +25,7 @@ class PrefixTreeKeyByCharType { public: typedef Array<Char> Key; };
 template<>
 class PrefixTreeKeyByCharType<char> { public: typedef const CharArray Key; };
 
-/** \class PrefixTree PrefixTree.h cc/PrefixTree
+/** \class PrefixTree cc/PrefixTree
   */
 template<class Char, class Value>
 class PrefixTree: public Tree< PrefixTree<Char, Value> >

@@ -17,7 +17,7 @@
 
 namespace cc {
 
-/** \class SubProcess SubProcess.h cc/SubProcess
+/** \class SubProcess cc/SubProcess
   * \ingroup concurrency
   * \brief Spawned child process
   */

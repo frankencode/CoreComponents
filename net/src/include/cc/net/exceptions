@@ -20,7 +20,7 @@ public:
     ~NetworkError() throw() {}
 };
 
-/** \class HostUnreachable exceptions.h cc/net/exceptions
+/** \class HostUnreachable cc/net/exceptions
   * \brief An earlier datagram could not be delivered
   *
   * \see DatagramSocket::recvFrom()
@@ -32,7 +32,7 @@ public:
     ~HostUnreachable() throw() {}
 };
 
-/** \class ConnectionRefused exceptions.h cc/net/exceptions
+/** \class ConnectionRefused cc/net/exceptions
   * \brief No-one is listening on the remote address
   */
 class ConnectionRefused: public NetworkError
@@ -42,7 +42,7 @@ public:
     ~ConnectionRefused() throw() {}
 };
 
-/** \class NetworkUnreachable exceptions.h cc/net/exceptions
+/** \class NetworkUnreachable cc/net/exceptions
   * \brief Network is unreachable
   */
 class NetworkUnreachable: public NetworkError
@@ -52,7 +52,7 @@ public:
     ~NetworkUnreachable() throw() {}
 };
 
-/** \class ConnectionTimeoute exceptions.h cc/net/exceptions
+/** \class ConnectionTimeoute cc/net/exceptions
   * \brief Timeout while attempting connection
   * The networking layer reached its maximum timeout for attempting connection to a peer.
   * The remote server may overloaded and unable to accept the connection.

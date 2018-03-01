@@ -15,7 +15,7 @@ namespace net {
 
 class NetworkInterface;
 
-/** \class SocketAddressEntry SocketAddressEntry.h cc/net/SocketAddressEntry
+/** \class SocketAddressEntry cc/net/SocketAddressEntry
   * \brief IPv4 address information associated with a network interface
   */
 class SocketAddressEntry: public SocketAddress

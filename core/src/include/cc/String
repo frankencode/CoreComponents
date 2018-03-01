@@ -25,7 +25,7 @@ namespace cc {
 template<class T>
 class Array;
 
-/** Spezialised Array<T> for character arrays
+/** Convenience alias
   * \ingroup strings
   * \see Array<char>
   */
@@ -57,8 +57,8 @@ CharArray *mutate(const String &s);
   */
 MutantString mutate(String &&s);
 
-/** \class Ref<const CharArray> String.h cc/String
-  * \brief Spezialised Ref<T> for character arrays
+/** \class Ref<const CharArray> cc/String
+  * \brief Spezialised Ref<T> for T=CharArray
   * \ingroup strings
   * \see mutate(const String &), CharArray, String
   */
@@ -84,7 +84,7 @@ public:
     /// \copydoc Array<char>::cat()
     static String cat(const String &a, const String &b);
 
-    /// \copydoc Array<char>::join()
+    /// \copydoc Array<char>::join(const StringList *, const String &)
     static String join(const StringList *parts, const String &sep = String());
 
     /// Construct an empty string
@@ -167,19 +167,19 @@ public:
     /// Contextual conversion to bool (true if s->count() > 0)
     explicit inline operator bool() { return a_; }
 
-    /// \copydoc operator bool()
+    /// Contextual conversion to bool (true if s->count() > 0)
     explicit inline operator bool() const { return a_; }
 
     /// Convert to a C string
     operator const char *();
 
-    /// \copydoc operator const char *()
+    /// Convert to a C string
     operator const char *() const;
 
     /// Convert to a character array pointer
     inline operator const CharArray *() { return get(); }
 
-    /// \copydoc operator const CharArray *
+    /// Convert to a character array pointer
     inline operator const CharArray *() const { return get(); }
 
 #ifdef QT_CORE_LIB
@@ -221,9 +221,10 @@ private:
     String s_;
 };
 
-/** \class Array<char> String.h cc/String
+/** \class Array<char> cc/String
   * \brief Character array
   * \ingroup strings
+  * \see Array
   */
 template<>
 class Array<char>: public Object
@@ -306,13 +307,13 @@ public:
     /// Cut this string down to \a newSize characters
     void truncate(int newSize);
 
-    /// Copy characters from this string to string \b
+    /// Copy characters from this string to string \a b
     void write(const CharArray *b) {
         int n = (size_ < b->size_) ? size_ : b->size_;
         memcpy(data_, b->data_, n);
     }
 
-    /** Copy characters from this string to string \a
+    /** Copy characters from this string to string \a b
       * \param b source to copy data from
       * \param i0 begin of destination range (index of first byte to write)
       * \param i1 end of destination range (index behind the last byte to write)
@@ -475,7 +476,7 @@ public:
     /// Check if this string begins with the sub-string \a s
     bool beginsWith(const String &s) const;
 
-    /** \copybrief beginsWith(const String &)
+    /** \copybrief beginsWith(const String &) const
       * \param s sub-string to test for
       * \param n size of \a s (optional)
       */
@@ -484,7 +485,7 @@ public:
     /// Check if this string ends with the sub-string \a s
     bool endsWith(const String &s) const;
 
-    /** \copybrief endsWith(const String &)
+    /** \copybrief endsWith(const String &) const
       * \param s sub-string to test for
       * \param n size of \a s (optional)
       */
@@ -986,7 +987,7 @@ inline CharArray *MutantString::operator->() { return const_cast<CharArray *>(s_
 
 inline MutantString mutate(String &&s) { return std::move(s); }
 
-inline Ref<const CharArray>::Ref(const Ref &b):
+inline Ref<const CharArray>::Ref(const String &b):
     a_(0)
 {
     set(b.a_);
@@ -1058,7 +1059,7 @@ inline String Ref<const CharArray>::join(const StringList *parts, const String &
     return CharArray::join(parts, sep);
 }
 
-inline String &Ref<const CharArray>::operator=(const Ref &b)
+inline String &Ref<const CharArray>::operator=(const String &b)
 {
     set(b.a_);
     return *this;

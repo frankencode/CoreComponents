@@ -14,7 +14,7 @@
 
 namespace cc {
 
-/** \class Crc32Sink Crc32Sink.h cc/Crc32Sink
+/** \class Crc32Sink cc/Crc32Sink
   * \brief CRC-32 check sum generator
   */
 class Crc32Sink: public HashSink
