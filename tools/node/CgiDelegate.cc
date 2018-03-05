@@ -300,7 +300,7 @@ String CgiDelegate::compileHeader(HttpRequest *request, CharArray *payload) cons
 
     header << "";
 
-    return String::join(header, '\0');
+    return String::join(header, String::create(1, '\0'));
 }
 
 String CgiDelegate::urlDecode(HttpRequest *request, CharArray *payload)
