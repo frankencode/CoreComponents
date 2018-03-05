@@ -28,18 +28,13 @@ bool ConfigureStage::run()
     for (BuildPlan *prerequisite: plan()->prerequisites()) {
         if (!prerequisite->configureStage()->run()) {
             success_ = false;
-            if (!(plan()->options() & BuildPlan::BuildPlan::Configure))
+            if (!(plan()->options() & BuildPlan::Package))
                 return false;
         }
         makeUseOf(prerequisite);
     }
 
-    if (!success_) return false;
-
     if (!plan()->systemPrerequisitesByName()) return success_;
-
-    if (!(plan()->options() & BuildPlan::Package))
-        return false;
 
     bool firstLine = true;
 
