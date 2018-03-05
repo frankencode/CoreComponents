@@ -63,7 +63,10 @@ bool ConfigureStage::run()
                     ferr() << output;
                     ferr() << plan()->recipePath() << ": " << name << ":" << nl;
                     ferr() << "  " << configure << " failed" << nl;
-                    return success_ = false;
+                    if (prerequisite->optional())
+                        continue;
+                    else
+                        return success_ = false;
                 }
                 Ref<MetaObject> object = Variant::cast<MetaObject *>(yason::parse(output));
                 if (object) {
