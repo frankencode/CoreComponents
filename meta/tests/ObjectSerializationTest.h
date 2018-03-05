@@ -119,7 +119,7 @@ protected:
         );
         if (fromYason) {
             CC_VERIFY(object->children()->count() == 2);
-            CC_VERIFY(String(object->children()->at(0)->className() == "Person"));
+            CC_VERIFY(String(object->children()->at(0)->className()) == "Person");
             CC_VERIFY(String(object->children()->at(0)->value("name")) == "Jane");
             CC_VERIFY(String(object->children()->at(1)->value("name")) == "John");
         }

@@ -74,9 +74,11 @@ bool ConfigureStage::run()
                 String configure = prerequisite->configure();
                 String output;
                 if (!runConfigure(name, configure, &output)) {
-                    ferr() << output;
-                    ferr() << plan()->recipePath() << ": " << name << ":" << nl;
-                    ferr() << "  " << configure << " failed" << nl;
+                    if (plan()->options() & (BuildPlan::Verbose | BuildPlan::Configure)) {
+                        ferr() << output;
+                        ferr() << plan()->recipePath() << ": " << name << ":" << nl;
+                        ferr() << "  " << configure << " failed" << nl;
+                    }
                     if (prerequisite->optional())
                         continue;
                     else
