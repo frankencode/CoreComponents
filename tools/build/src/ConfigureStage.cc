@@ -48,13 +48,27 @@ bool ConfigureStage::run()
             Version version;
 
             if (prerequisite->autoConfigure()) {
-                prerequisite->customCompileFlags()->appendList(
-                    configureShell(String("pkg-config --cflags ") + prerequisite->name())->simplify()->split(' ')
-                );
-                prerequisite->customLinkFlags()->appendList(
-                    configureShell(String("pkg-config --libs ") + prerequisite->name())->simplify()->split(' ')
-                );
-                version = configureShell(String("pkg-config --modversion ") + prerequisite->name());
+                try {
+                    prerequisite->customCompileFlags()->appendList(
+                        configureShell(String("pkg-config --cflags ") + prerequisite->name())->simplify()->split(' ')
+                    );
+                    prerequisite->customLinkFlags()->appendList(
+                        configureShell(String("pkg-config --libs ") + prerequisite->name())->simplify()->split(' ')
+                    );
+                    version = configureShell(String("pkg-config --modversion ") + prerequisite->name());
+                }
+                catch (String &error) {
+                    if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
+                        ferr()
+                            << plan()->recipePath() << ": " << name << ":" << nl
+                            << "  " << error << nl
+                            << nl;
+                    }
+                    if (prerequisite->optional())
+                        continue;
+                    else
+                        return success_ = false;
+                }
             }
             else if (prerequisite->configure() != "") {
                 String configure = prerequisite->configure();
@@ -85,14 +99,28 @@ bool ConfigureStage::run()
                     }
                 }
             }
-            else{
-                prerequisite->customCompileFlags()->appendList(
-                    configureShell(prerequisite->compileFlagsConfigure())->simplify()->split(' ')
-                );
-                prerequisite->customLinkFlags()->appendList(
-                    configureShell(prerequisite->linkFlagsConfigure())->simplify()->split(' ')
-                );
-                version = configureShell(prerequisite->versionConfigure());
+            else {
+                try {
+                    prerequisite->customCompileFlags()->appendList(
+                        configureShell(prerequisite->compileFlagsConfigure())->simplify()->split(' ')
+                    );
+                    prerequisite->customLinkFlags()->appendList(
+                        configureShell(prerequisite->linkFlagsConfigure())->simplify()->split(' ')
+                    );
+                    version = configureShell(prerequisite->versionConfigure());
+                }
+                catch (String &error) {
+                    if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
+                        ferr()
+                            << plan()->recipePath() << ": " << name << ":" << nl
+                            << "  " << error << nl
+                            << nl;
+                    }
+                    if (prerequisite->optional())
+                        continue;
+                    else
+                        return success_ = false;
+                }
             }
 
             try {

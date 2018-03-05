@@ -21,7 +21,7 @@ class ConfigureShell: public Object
 public:
     static ConfigureShell *instance();
     void setVerbose(bool on) { verbose_ = on; }
-    String run(String shellCommand, bool *ok = nullptr);
+    String run(String shellCommand);
 
 private:
     friend class Singleton<ConfigureShell>;

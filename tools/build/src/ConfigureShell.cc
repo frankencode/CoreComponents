@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/stdio>
+#include <cc/Format>
 #include <cc/Process>
 #include <cc/SubProcess>
 #include "ConfigureShell.h"
@@ -23,7 +23,7 @@ ConfigureShell::ConfigureShell():
     cache_(Cache::create())
 {}
 
-String ConfigureShell::run(String shellCommand, bool *ok)
+String ConfigureShell::run(String shellCommand)
 {
     if (shellCommand == "") return "";
 
@@ -43,14 +43,11 @@ String ConfigureShell::run(String shellCommand, bool *ok)
     text = sub->readAll()->trim();
     int status = sub->wait();
     if (status != 0) {
-        if (verbose_ || ok != nullptr) {
-            ferr() << "Configure command failed with status = " << status << " (\"" << shellCommand << "\")" << nl;
-            if (ok != nullptr) *ok = false;
-        }
-        return "";
+        throw String(
+            Format() << "Configure command failed with status = " << status << " (\"" << shellCommand << "\")"
+        );
     }
 
-    if (ok != nullptr) *ok = true;
     insert(shellCommand, text);
 
     return text;

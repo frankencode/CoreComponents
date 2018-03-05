@@ -35,7 +35,6 @@ protected:
 
     inline BuildPlan *plan() const { return plan_; }
     const BuildShell *shell() const;
-    ConfigureShell *configureShell() const;
     ToolChain *toolChain() const;
     Ref<JobScheduler> createScheduler() const;
 

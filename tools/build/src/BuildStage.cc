@@ -23,7 +23,6 @@ BuildStage::BuildStage(BuildPlan *plan):
 {}
 
 const BuildShell *BuildStage::shell() const { return plan_->shell(); }
-ConfigureShell *BuildStage::configureShell() const { return ConfigureShell::instance(); }
 ToolChain *BuildStage::toolChain() const { return plan_->toolChain(); }
 
 Ref<JobScheduler> BuildStage::createScheduler() const
