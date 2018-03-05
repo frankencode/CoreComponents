@@ -261,13 +261,14 @@ bool ConfigureStage::runConfigure(String name, String configure, String *output)
             Ref<SubProcess> sub = SubProcess::open(command);
             String output = sub->readAll();
             int exitCode = sub->wait();
-            if (exitCode != 0 || (plan()->options() & BuildPlan::Verbose)) {
-                ferr()
-                    << command << nl
-                    << output << nl;
-            }
-            if (exitCode != 0)
+            if (exitCode != 0) {
+                if (plan()->options() & (BuildPlan::Verbose | BuildPlan::Configure)) {
+                    ferr()
+                        << command << nl
+                        << output << nl;
+                }
                 return false;
+            }
         }
     }
 
