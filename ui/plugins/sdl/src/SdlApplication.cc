@@ -52,9 +52,9 @@ void SdlApplication::getDisplayResolution(double *xRes, double *yRes) const
     *yRes = 120;
 }
 
-Window *SdlApplication::openWindow(View *view, String title)
+Window *SdlApplication::openWindow(View *view, String title, WindowMode mode)
 {
-    Ref<SdlWindow> window = SdlWindow::open(view, title);
+    Ref<SdlWindow> window = SdlWindow::open(view, title, mode);
     windows_->insert(window->id_, window);
     return window;
 }
@@ -65,10 +65,19 @@ int SdlApplication::run()
         if (!SDL_WaitEvent(event_))
             CC_DEBUG_ERROR(SDL_GetError());
 
+        CC_INSPECT(event_->type);
+
         if (event_->type == timerEvent_) {
             Timer *t = (Timer *)event_->user.data1;
             notifyTimer(t);
             t->decRefCount();
+        }
+        else if (
+            event_->type == SDL_FINGERMOTION ||
+            event_->type == SDL_FINGERDOWN ||
+            event_->type == SDL_FINGERUP
+        ) {
+            handleFingerEvent(&event_->tfinger);
         }
         else if (event_->type == SDL_WINDOWEVENT) {
             handleWindowEvent(&event_->window);
@@ -82,6 +91,27 @@ int SdlApplication::run()
     }
 
     return 0;
+}
+
+void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
+{
+    // #ifndef NDEBUG
+    auto eventName = [](Uint32 type) -> String {
+        switch (type) {
+            case SDL_FINGERMOTION: return "SDL_FINGERMOTION";
+            case SDL_FINGERDOWN: return "SDL_FINGERDOWN";
+            case SDL_FINGERUP: return "SDL_FINGERUP";
+        };
+        return "";
+    };
+    CC_DEBUG
+        << eventName(e->type) << nl
+        << "  timestsamp: " << e->timestamp << nl
+        << "  touchId: " << e->touchId << nl
+        << "  fingerId: " << e->fingerId << nl
+        << "  x, y: " << e->x << ", " << e->y << nl
+        << "  dx, dy: " << e->dx << ", " << e->dy << nl;
+    // #endif
 }
 
 String SdlApplication::windowEventToString(const SDL_WindowEvent *e)

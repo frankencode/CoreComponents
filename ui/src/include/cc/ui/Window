@@ -17,10 +17,36 @@ namespace ui {
 
 typedef Queue< Ref<const UpdateRequest> > Frame;
 
+enum class WindowMode: unsigned int {
+    Fullscreen         = 1,
+    FullscreenDesktop  = 2,
+    OpenGl             = 4,
+    Shown              = 8,
+    Hidden             = 16,
+    Borderless         = 32,
+    Resizable          = 64,
+    Minimized          = 128,
+    Maximized          = 256,
+    InputGrapped       = 512,
+    InputFocus         = 1024,
+    MouseFocus         = 2048,
+    Foreign            = 4096,
+    AllowHighDpi       = 8192,
+    MouseCapture       = 16384,
+    AlwaysOnTop        = 32768,
+    SkipTaskBar        = 65536,
+    Utility            = 131072,
+    Tooltip            = 262144,
+    PopupMenu          = 524288,
+    Default            = Shown|Resizable
+};
+
+CC_BITMASK(WindowMode, unsigned int)
+
 class Window: public Object
 {
 public:
-    static Window *open(View *view, String title = String{});
+    static Window *open(View *view, String title = String{}, WindowMode mode = WindowMode::Default);
 
     View *view() const { return view_; }
 

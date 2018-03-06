@@ -13,9 +13,9 @@
 namespace cc {
 namespace ui {
 
-Window *Window::open(View *view, String title)
+Window *Window::open(View *view, String title, WindowMode mode)
 {
-    Window *window = Application::instance()->openWindow(view, title);
+    Window *window = Application::instance()->openWindow(view, title, mode);
     view->update(UpdateRequest::create(UpdateReason::Changed, view)); // FIXME: rubbish, implement exposed event handler
     return window;
 }

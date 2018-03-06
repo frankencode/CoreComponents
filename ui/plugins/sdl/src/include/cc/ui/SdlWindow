@@ -22,12 +22,12 @@ class SdlWindow: public Window
 private:
     friend class SdlApplication;
 
-    static Ref<SdlWindow> open(View *view, String title = String{});
+    static Ref<SdlWindow> open(View *view, String title = String{}, WindowMode mode = WindowMode::Default);
 
     SdlWindow(View *view, String title);
     ~SdlWindow();
 
-    SdlWindow *open();
+    SdlWindow *open(WindowMode mode = WindowMode::Default);
 
     void onWindowResized(Size newSize);
     void onWindowMoved(Point newPos);

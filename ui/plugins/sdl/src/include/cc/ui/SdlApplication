@@ -28,7 +28,7 @@ public:
     virtual void init(int argc, char **argv) override;
     virtual void getDisplayResolution(double *xRes, double *yRes) const override;
 
-    virtual Window *openWindow(View *view, String title = String{}) override;
+    virtual Window *openWindow(View *view, String title = String{}, WindowMode mode = WindowMode::Default) override;
 
     virtual int run() override;
 
@@ -38,6 +38,8 @@ private:
 
     SdlApplication();
     ~SdlApplication();
+
+    void handleFingerEvent(const SDL_TouchFingerEvent *e);
 
     static String windowEventToString(const SDL_WindowEvent *e);
     void handleWindowEvent(const SDL_WindowEvent *e);

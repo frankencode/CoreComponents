@@ -17,4 +17,5 @@ constexpr EnumType operator^(EnumType x, EnumType y) { return static_cast<EnumTy
 constexpr EnumType operator~(EnumType x) { return static_cast<EnumType>(~static_cast<IntType>(x)); } \
 inline EnumType& operator&=(EnumType& x, EnumType y) { x = x & y; return x; } \
 inline EnumType& operator|=(EnumType& x, EnumType y) { x = x | y; return x; } \
-inline EnumType& operator^=(EnumType& x, EnumType y) { x = x ^ y; return x; }
+inline EnumType& operator^=(EnumType& x, EnumType y) { x = x ^ y; return x; } \
+inline IntType operator+(const EnumType &x) { return static_cast<IntType>(x); }

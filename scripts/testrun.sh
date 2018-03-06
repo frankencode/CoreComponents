@@ -18,15 +18,19 @@ SSH=/usr/bin/ssh
 bootstrap_ccbuild() {
     [ -d $TOOLS_DIR ] || mkdir $TOOLS_DIR
     pushd $TOOLS_DIR
-    $CC_SOURCE/bootstrap
+    RET=0
+    $CC_SOURCE/bootstrap || RET=$?
     popd
+    return $RET
 }
 
 build_app() {
     [ -d $BUILD_DIR ] || mkdir $BUILD_DIR
     pushd $BUILD_DIR
-    $CCBUILD -$BUILD_TYPE -test $APP_SOURCE
+    RET=0
+    $CCBUILD -$BUILD_TYPE -test $APP_SOURCE || RET=$?
     popd
+    return $RET
 }
 
 run_app() {
@@ -46,5 +50,4 @@ if [ ! -x $SSH ]; then
 fi
 
 [ -x $CCBUILD ] || bootstrap_ccbuild
-build_app
-run_app
+build_app && run_app

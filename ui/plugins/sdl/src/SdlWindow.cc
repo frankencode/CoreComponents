@@ -17,9 +17,9 @@
 namespace cc {
 namespace ui {
 
-Ref<SdlWindow> SdlWindow::open(View *view, String title)
+Ref<SdlWindow> SdlWindow::open(View *view, String title, WindowMode mode)
 {
-    return (new SdlWindow(view, title))->open();
+    return (new SdlWindow(view, title))->open(mode);
 }
 
 SdlWindow::SdlWindow(View *view, String title):
@@ -32,34 +32,49 @@ SdlWindow::~SdlWindow()
     SDL_DestroyWindow(sdlWindow_);
 }
 
-SdlWindow *SdlWindow::open()
+SdlWindow *SdlWindow::open(WindowMode mode)
 {
-    int screen = 0;
-    #if 0 // FIXME: window placed more intelligently starting with SDL v2.0.4?
-    {
-        int screenCount = SDL_GetNumVideoDisplays();
-        if (screenCount > 1) {
-            int mx = 0, my = 0;
-            SDL_GetGlobalMouseState(&mx, &my);
-            for (int i = 0; i < screenCount; ++i) {
-                SDL_Rect r;
-                if (SDL_GetDisplayBounds(i, &r) != 0) {
-                    ferr() << SDL_GetError() << nl;
-                    break;
-                }
-                if (
-                    (r.x <= mx && mx < r.x + r.w) &&
-                    (r.y <= my && my < r.y + r.w)
-                ) {
-                    screen = i;
-                    break;
-                }
-            }
-        }
-    }
-    #endif
+    auto sdlWindowFlags = [](WindowMode mode) -> Uint32 {
+        Uint32 flags = 0;
+        if (+(mode & WindowMode::Fullscreen))        flags |= SDL_WINDOW_FULLSCREEN;
+        if (+(mode & WindowMode::FullscreenDesktop)) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+        if (+(mode & WindowMode::OpenGl))            flags |= SDL_WINDOW_OPENGL;
+        if (+(mode & WindowMode::Shown))             flags |= SDL_WINDOW_SHOWN;
+        if (+(mode & WindowMode::Hidden))            flags |= SDL_WINDOW_HIDDEN;
+        if (+(mode & WindowMode::Borderless))        flags |= SDL_WINDOW_BORDERLESS;
+        if (+(mode & WindowMode::Resizable))         flags |= SDL_WINDOW_RESIZABLE;
+        if (+(mode & WindowMode::Minimized))         flags |= SDL_WINDOW_MINIMIZED;
+        if (+(mode & WindowMode::Maximized))         flags |= SDL_WINDOW_MAXIMIZED;
+        if (+(mode & WindowMode::InputGrapped))      flags |= SDL_WINDOW_INPUT_GRABBED;
+        if (+(mode & WindowMode::InputFocus))        flags |= SDL_WINDOW_INPUT_FOCUS;
+        if (+(mode & WindowMode::MouseFocus))        flags |= SDL_WINDOW_MOUSE_FOCUS;
+        if (+(mode & WindowMode::Foreign))           flags |= SDL_WINDOW_FOREIGN;
+        #ifdef SDL_WINDOW_ALLOW_HIGHDPI
+        if (+(mode & WindowMode::AllowHighDpi))      flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+        #endif
+        #ifdef SDL_WINDOW_MOUSE_CAPTURE
+        if (+(mode & WindowMode::MouseCapture))      flags |= SDL_WINDOW_MOUSE_CAPTURE;
+        #endif
+        #ifdef SDL_WINDOW_ALWAYS_ON_TOP
+        if (+(mode & WindowMode::AlwaysOnTop))       flags |= SDL_WINDOW_ALWAYS_ON_TOP;
+        #endif
+        #ifdef SDL_WINDOW_SKIP_TASKBAR
+        if (+(mode & WindowMode::SkipTaskBar))       flags |= SDL_WINDOW_SKIP_TASKBAR;
+        #endif
+        #ifdef SDL_WINDOW_UTILITY
+        if (+(mode & WindowMode::Utility))           flags |= SDL_WINDOW_UTILITY;
+        #endif
+        #ifdef SDL_WINDOW_TOOLTIP
+        if (+(mode & WindowMode::Tooltip))           flags |= SDL_WINDOW_TOOLTIP;
+        #endif
+        #ifdef SDL_WINDOW_POPUP_MENU
+        if (+(mode & WindowMode::PopupMenu))         flags |= SDL_WINDOW_POPUP_MENU;
+        #endif
+        return flags;
+    };
 
-    sdlWindow_ = SDL_CreateWindow(title(), SDL_WINDOWPOS_UNDEFINED_DISPLAY(screen), SDL_WINDOWPOS_UNDEFINED_DISPLAY(screen), size()[0], size()[1], SDL_WINDOW_SHOWN|SDL_WINDOW_RESIZABLE /*FIXME*/ |SDL_WINDOW_ALLOW_HIGHDPI);
+    const int screen = 0; // FIXME
+    sdlWindow_ = SDL_CreateWindow(title(), SDL_WINDOWPOS_UNDEFINED_DISPLAY(screen), SDL_WINDOWPOS_UNDEFINED_DISPLAY(screen), size()[0], size()[1], sdlWindowFlags(mode));
     if (!sdlWindow_) CC_DEBUG_ERROR(SDL_GetError());
     id_ = SDL_GetWindowID(sdlWindow_);
 
@@ -70,8 +85,8 @@ SdlWindow *SdlWindow::open()
         pos = Point{double(x), double(y)};
     }
 
-    sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_SOFTWARE);
-    // sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_ACCELERATED); // , SDL_RENDERER_PRESENTVSYNC
+    // sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_SOFTWARE);
+    sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_ACCELERATED); // , SDL_RENDERER_PRESENTVSYNC
     if (!sdlRenderer_) CC_DEBUG_ERROR(SDL_GetError());
 
     #ifndef NDEBUG

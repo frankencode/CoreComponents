@@ -23,7 +23,7 @@ public:
     static Application *open(int argc, char **argv);
     static Application *instance();
 
-    virtual Window *openWindow(View *view, String title = String{}) = 0;
+    virtual Window *openWindow(View *view, String title = String{}, WindowMode mode = WindowMode::Default) = 0;
 
     virtual int run() = 0;
 
