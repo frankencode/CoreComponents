@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -12,6 +12,7 @@
 #include <cc/ui/TimeMaster>
 #include <cc/ui/FontManager>
 #include <cc/ui/TypeSetter>
+#include <cc/ui/DisplayManager>
 
 namespace cc {
 namespace ui {
@@ -29,6 +30,8 @@ public:
 
     virtual FontManager *fontManager() const;
     virtual Ref<TypeSetter> createTypeSetter() const;
+
+    // virtual DisplayManager *displayManager() const = 0; // TODO...
 
 protected:
     PlatformPlugin(String name, bool isPlatformDefault = false);

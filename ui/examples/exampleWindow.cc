@@ -12,7 +12,7 @@ class TestView: public View
 
     TestView()
     {
-        size = Size{640, 480};
+        size = Size{1024, 600};
         color = Color{"#FFFFFF"};
         angle_ = 0;
         double f = 60;
