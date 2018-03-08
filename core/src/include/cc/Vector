@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,12 +8,13 @@
 
 #pragma once
 
+#include <cmath>
 #include <cc/assert>
 #include <cc/Format>
 
 namespace cc {
 
-template<class T, int n>
+template<class T, int N>
 class Vector
 {
 public:
@@ -28,9 +29,18 @@ public:
     public:
         typedef T Item;
 
-        inline bool has(int i) const { return 0 <= i && i < n; }
+        inline bool has(int i) const { return 0 <= i && i < N; }
         inline T &at(int i) { CC_ASSERT(has(i)); return v_[i]; }
         inline T at(int i) const { CC_ASSERT(has(i)); return v_[i]; }
+
+        inline int count() const { return N; }
+
+        T magnitude() const {
+            T m = 0;
+            for (int i = 0; i < N; ++i)
+                m += v_[i] * v_[i];
+            return std::sqrt(m);
+        }
 
         inline T x() const { return at(0); }
         inline T y() const { return at(1); }
@@ -46,11 +56,11 @@ public:
         Instance(std::initializer_list<T> l) {
             int i = 0;
             for (auto b: l) {
-                CC_ASSERT(i < n);
+                CC_ASSERT(i < N);
                 v_[i++] = b;
             }
         }
-        T v_[n];
+        T v_[N];
     };
 
     inline const Instance *operator->() const { return &instance_; }
@@ -63,47 +73,57 @@ public:
     inline operator T *() { return &instance_.v_; }
 
     /*inline Vector &operator=(const Vector &b) {
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < N; ++i)
             instance_.v_[i] = b.instance_.v_[i];
         return *this;
     }*/
 
     inline bool operator==(const Vector &b) const {
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < N; ++i)
             if (instance_.v_[i] != b.instance_.v_[i]) return false;
         return true;
     }
     inline bool operator!=(const Vector &b) const {
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < N; ++i)
             if (instance_.v_[i] != b.instance_.v_[i]) return true;
         return false;
     }
 
     inline Vector operator-() const {
         Vector a(*this);
-        for (int i = 0; i < n; ++i) a.instance_.v_[i] = -instance_.v_[i];
+        for (int i = 0; i < N; ++i) a.instance_.v_[i] = -instance_.v_[i];
         return a;
     }
 
     inline Vector &operator+=(const Vector &b) {
-        for (int i = 0; i < n; ++i) instance_.v_[i] += b.instance_.v_[i];
+        for (int i = 0; i < N; ++i) instance_.v_[i] += b.instance_.v_[i];
         return *this;
     }
     inline Vector &operator-=(const Vector &b) {
-        for (int i = 0; i < n; ++i) instance_.v_[i] -= b.instance_.v_[i];
+        for (int i = 0; i < N; ++i) instance_.v_[i] -= b.instance_.v_[i];
+        return *this;
+    }
+    inline Vector &operator*=(const Vector &b) {
+        for (int i = 0; i < N; ++i) instance_.v_[i] *= b.instance_.v_[i];
+        return *this;
+    }
+    inline Vector &operator/=(const Vector &b) {
+        for (int i = 0; i < N; ++i) instance_.v_[i] /= b.instance_.v_[i];
         return *this;
     }
     inline Vector &operator*=(T b) {
-        for (int i = 0; i < n; ++i) instance_.v_[i] *= b;
+        for (int i = 0; i < N; ++i) instance_.v_[i] *= b;
         return *this;
     }
     inline Vector &operator/=(T b) {
-        for (int i = 0; i < n; ++i) instance_.v_[i] /= b;
+        for (int i = 0; i < N; ++i) instance_.v_[i] /= b;
         return *this;
     }
 
     inline Vector operator+(const Vector &b) const { return Vector(*this) += b; }
     inline Vector operator-(const Vector &b) const { return Vector(*this) -= b; }
+    inline Vector operator*(const Vector &b) const { return Vector(*this) *= b; }
+    inline Vector operator/(const Vector &b) const { return Vector(*this) /= b; }
     inline Vector operator*(T b) const { return Vector(*this) *= b; }
     inline Vector operator/(T b) const { return Vector(*this) /= b; }
 
@@ -113,9 +133,9 @@ public:
     typedef ConstIterator<Instance> const_iterator;
     typedef Iterator<Instance> iterator;
     iterator begin() { return iterator(&instance_, 0); }
-    iterator end() { return iterator(&instance_, n); }
+    iterator end() { return iterator(&instance_, N); }
     const_iterator begin() const { return const_iterator(&instance_, 0); }
-    const_iterator end() const { return const_iterator(&instance_, n); }
+    const_iterator end() const { return const_iterator(&instance_, N); }
     /** @}
       */
 
@@ -123,8 +143,8 @@ private:
     Instance instance_;
 };
 
-template<class T, int n>
-String str(const Vector<T, n> &v)
+template<class T, int N>
+String str(const Vector<T, N> &v)
 {
     Format f;
     f << "( ";
