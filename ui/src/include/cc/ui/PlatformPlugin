@@ -31,7 +31,7 @@ public:
     virtual FontManager *fontManager() const;
     virtual Ref<TypeSetter> createTypeSetter() const;
 
-    // virtual DisplayManager *displayManager() const = 0; // TODO...
+    virtual DisplayManager *displayManager() const = 0;
 
 protected:
     PlatformPlugin(String name, bool isPlatformDefault = false);

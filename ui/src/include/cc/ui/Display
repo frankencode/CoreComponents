@@ -16,17 +16,18 @@ namespace ui {
 class Display: public Object
 {
 public:
-    Point pos() const { return pos_; }
-    Size size() const { return size_; }
-    Ratio dpi() const { return dpi_; }
+    Property<Point> pos;
+    Property<Size> size;
+    Property<Ratio> dpi;
 
-    Size getSizeInCm() const;
-    double getDiagonalInInch() const;
+    Property<Ratio> dpcm { [=]{ return dpi() / 2.54; } };
+    Property<double> diagonal { [=]{ return (size() / dpi())->magnitude(); } };
+    Property<bool> isHandheld { [=]{ return diagonal() < 11; } };
 
 protected:
-    Point pos_;
-    Size size_;
-    Ratio dpi_;
+    friend class Object;
+    Display() = default;
+    ~Display() = default;
 };
 
 }} // namespace cc::ui

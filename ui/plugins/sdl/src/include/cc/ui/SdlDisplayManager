@@ -1,0 +1,32 @@
+/*
+ * Copyright (C) 2017-2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/DisplayManager>
+
+namespace cc { template<class> class Singleton; }
+
+namespace cc {
+namespace ui {
+
+class SdlDisplayManager: public DisplayManager
+{
+public:
+    static SdlDisplayManager *instance();
+
+    virtual Ref<Display> getDisplay(int index) const;
+    virtual int displayCount() const;
+
+private:
+    friend class Singleton<SdlDisplayManager>;
+
+    SdlDisplayManager() = default;
+};
+
+}} // namespace cc::ui
