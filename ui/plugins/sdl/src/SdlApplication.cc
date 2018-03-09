@@ -106,7 +106,7 @@ void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
     };
     CC_DEBUG
         << eventName(e->type) << nl
-        << "  timestsamp: " << e->timestamp << nl
+        << "  timestamp: " << e->timestamp << nl
         << "  touchId: " << e->touchId << nl
         << "  fingerId: " << e->fingerId << nl
         << "  x, y: " << e->x << ", " << e->y << nl

@@ -10,6 +10,7 @@
 #include <cc/ui/SdlApplication>
 #include <cc/ui/SdlTimeMaster>
 #include <cc/ui/SdlDisplayManager>
+#include <cc/ui/SdlTouchDeviceManager>
 #include <cc/ui/SdlPlatformPlugin>
 
 namespace cc {
@@ -32,6 +33,11 @@ TimeMaster *SdlPlatformPlugin::timeMaster() const
 DisplayManager *SdlPlatformPlugin::displayManager() const
 {
     return SdlDisplayManager::instance();
+}
+
+TouchDeviceManager *SdlPlatformPlugin::touchDeviceManager() const
+{
+    return SdlTouchDeviceManager::instance();
 }
 
 CC_REGISTRATION(SdlPlatformPlugin)

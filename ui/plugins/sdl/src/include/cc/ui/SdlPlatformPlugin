@@ -20,6 +20,7 @@ public:
     Application *application() const override;
     TimeMaster *timeMaster() const override;
     DisplayManager *displayManager() const override;
+    TouchDeviceManager *touchDeviceManager() const override;
 };
 
 

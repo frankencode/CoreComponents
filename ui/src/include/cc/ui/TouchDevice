@@ -1,0 +1,26 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Finger>
+
+namespace cc {
+namespace ui {
+
+class TouchDevice: public Object
+{
+public:
+    typedef int64_t Id;
+
+    virtual Id id() const = 0;
+    virtual Finger getFinger(int index) const = 0;
+    virtual int getFingerCount() const = 0;
+};
+
+}} // namespace cc::ui

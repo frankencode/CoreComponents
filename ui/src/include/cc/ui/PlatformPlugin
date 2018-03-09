@@ -13,6 +13,7 @@
 #include <cc/ui/FontManager>
 #include <cc/ui/TypeSetter>
 #include <cc/ui/DisplayManager>
+#include <cc/ui/TouchDeviceManager>
 
 namespace cc {
 namespace ui {
@@ -32,6 +33,7 @@ public:
     virtual Ref<TypeSetter> createTypeSetter() const;
 
     virtual DisplayManager *displayManager() const = 0;
+    virtual TouchDeviceManager *touchDeviceManager() const = 0;
 
 protected:
     PlatformPlugin(String name, bool isPlatformDefault = false);

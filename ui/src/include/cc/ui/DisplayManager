@@ -21,7 +21,7 @@ public:
     static DisplayManager *instance();
 
     virtual Ref<Display> getDisplay(int index) const = 0;
-    virtual int displayCount() const = 0;
+    virtual int getDisplayCount() const = 0;
 };
 
 }} // namespace cc::ui

@@ -21,7 +21,7 @@ public:
     static SdlDisplayManager *instance();
 
     virtual Ref<Display> getDisplay(int index) const;
-    virtual int displayCount() const;
+    virtual int getDisplayCount() const;
 
 private:
     friend class Singleton<SdlDisplayManager>;

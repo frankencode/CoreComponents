@@ -1,0 +1,59 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/types>
+
+namespace cc {
+namespace ui {
+
+class Finger
+{
+public:
+    typedef int64_t Id;
+
+    class Instance
+    {
+    public:
+        Id id() const { return id_; }
+        Point pos() const { return pos_; }
+        double pressure() const { return pressure_; }
+
+    private:
+        friend class Finger;
+
+        Instance():
+            id_(-1),
+            pressure_(0)
+        {}
+
+        Instance(Id id, const Point &pos, double pressure):
+            id_(id),
+            pos_(pos),
+            pressure_(pressure)
+        {}
+
+        Id id_;
+        Point pos_;
+        double pressure_;
+    };
+
+    Finger() = default;
+
+    Finger(Id id, const Point &pos, double pressure):
+        instance_(id, pos, pressure)
+    {}
+
+    const Instance *operator->() const { return &instance_; }
+
+private:
+    Instance instance_;
+};
+
+}} // namespace cc::ui

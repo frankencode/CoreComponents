@@ -40,7 +40,7 @@ Ref<Display> SdlDisplayManager::getDisplay(int index) const
     return display;
 }
 
-int SdlDisplayManager::displayCount() const
+int SdlDisplayManager::getDisplayCount() const
 {
     return SDL_GetNumVideoDisplays();
 }
