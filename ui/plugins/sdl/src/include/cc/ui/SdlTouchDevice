@@ -16,14 +16,14 @@ namespace ui {
 class SdlTouchDevice: public TouchDevice
 {
 public:
-    Id id() const override { return id_; }
-    Finger getFinger(int index) const override;
-    int getFingerCount() const override;
+    TouchDeviceId id() const override { return id_; }
+    TouchFinger getTouchFinger(int index) const override;
+    int getTouchFingerCount() const override;
 
 private:
     friend class Object;
-    SdlTouchDevice(Id id): id_(id) {}
-    Id id_;
+    SdlTouchDevice(TouchDeviceId id): id_(id) {}
+    TouchDeviceId id_;
 };
 
 }} // namespace cc::ui

@@ -118,4 +118,7 @@ bool textWrapBehindDefault(String text, int byteOffset, int byteCount);
 /// translate \a angle in to degrees (0..360) to radians (0..2*M_PI)
 double degrees(double angle);
 
+typedef int64_t TouchDeviceId;
+typedef int64_t TouchFingerId;
+
 }} // namespace cc::ui

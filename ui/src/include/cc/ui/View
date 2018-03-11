@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -11,6 +11,7 @@
 #include <cc/ui/types>
 #include <cc/ui/Surface>
 #include <cc/ui/UpdateRequest>
+#include <cc/ui/TouchEvent>
 
 namespace cc {
 namespace ui {
@@ -35,6 +36,8 @@ public:
     View *childAt(int i) { return children_->valueAt(i); }
 
     Point mapToWindow(Point local) const;
+
+    virtual void touchEvent(const TouchEvent *event) {}
 
 protected:
     friend class Window;

@@ -13,40 +13,38 @@
 namespace cc {
 namespace ui {
 
-class Finger
+class TouchFinger
 {
 public:
-    typedef int64_t Id;
-
     class Instance
     {
     public:
-        Id id() const { return id_; }
+        TouchFingerId id() const { return id_; }
         Point pos() const { return pos_; }
         double pressure() const { return pressure_; }
 
     private:
-        friend class Finger;
+        friend class TouchFinger;
 
         Instance():
             id_(-1),
             pressure_(0)
         {}
 
-        Instance(Id id, const Point &pos, double pressure):
+        Instance(TouchFingerId id, const Point &pos, double pressure):
             id_(id),
             pos_(pos),
             pressure_(pressure)
         {}
 
-        Id id_;
+        TouchFingerId id_;
         Point pos_;
         double pressure_;
     };
 
-    Finger() = default;
+    TouchFinger() = default;
 
-    Finger(Id id, const Point &pos, double pressure):
+    TouchFinger(TouchFingerId id, const Point &pos, double pressure):
         instance_(id, pos, pressure)
     {}
 

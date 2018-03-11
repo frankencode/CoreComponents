@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/ui/Finger>
+#include <cc/ui/TouchFinger>
 
 namespace cc {
 namespace ui {
@@ -16,11 +16,9 @@ namespace ui {
 class TouchDevice: public Object
 {
 public:
-    typedef int64_t Id;
-
-    virtual Id id() const = 0;
-    virtual Finger getFinger(int index) const = 0;
-    virtual int getFingerCount() const = 0;
+    virtual TouchDeviceId id() const = 0;
+    virtual TouchFinger getTouchFinger(int index) const = 0;
+    virtual int getTouchFingerCount() const = 0;
 };
 
 }} // namespace cc::ui

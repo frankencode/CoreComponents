@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -13,6 +13,7 @@
 #include <cc/ui/SdlWindow>
 #include <cc/ui/Timer>
 #include <cc/ui/TimeMaster>
+#include <cc/ui/TouchEvent>
 #include <cc/ui/SdlApplication>
 
 namespace cc {
@@ -112,6 +113,28 @@ void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
         << "  x, y: " << e->x << ", " << e->y << nl
         << "  dx, dy: " << e->dx << ", " << e->dy << nl;
     // #endif
+
+    auto eventType = [](Uint32 type) -> TouchEventType {
+        if (type == SDL_FINGERMOTION) return TouchEventType::TouchFingerMoved;
+        else if (type ==  SDL_FINGERDOWN) return TouchEventType::TouchFingerDown;
+        else /*if (type == SDL_FINGERUP)*/ return TouchEventType::TouchFingerUp;
+    };
+
+    Ref<TouchEvent> event =
+        Object::create<TouchEvent>(
+            eventType(e->type),
+            e->timestamp / 1000.,
+            e->touchId,
+            e->fingerId,
+            Point{ double(e->x),  double(e->y)  },
+            Step { double(e->dx), double(e->dy) },
+            e->pressure
+        );
+
+    for (auto e: windows_) {
+        Window *window = e->value();
+        window->view()->touchEvent(event);
+    }
 }
 
 String SdlApplication::windowEventToString(const SDL_WindowEvent *e)

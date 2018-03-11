@@ -12,14 +12,14 @@
 namespace cc {
 namespace ui {
 
-Finger SdlTouchDevice::getFinger(int index) const
+TouchFinger SdlTouchDevice::getTouchFinger(int index) const
 {
     SDL_Finger* f = SDL_GetTouchFinger(id_, index);
-    if (f) return Finger{ f->id, Point{double(f->x), double(f->y)}, double(f->pressure) };
-    return Finger{};
+    if (f) return TouchFinger{ f->id, Point{double(f->x), double(f->y)}, double(f->pressure) };
+    return TouchFinger{};
 }
 
-int SdlTouchDevice::getFingerCount() const
+int SdlTouchDevice::getTouchFingerCount() const
 {
     return SDL_GetNumTouchFingers(id_);
 }

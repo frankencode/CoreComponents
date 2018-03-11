@@ -1,0 +1,61 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+namespace ui {
+
+enum class TouchEventType {
+    TouchFingerMoved,
+    TouchFingerDown,
+    TouchFingerUp
+};
+
+class TouchEvent: public Object
+{
+public:
+    TouchEventType type() const { return type_; }
+    double time() const { return time_; }
+    TouchDeviceId deviceId() const { return deviceId_; }
+    TouchFingerId fingerId() const { return fingerId_; }
+    Point pos() const { return pos_; }
+    Step step() const { return step_; }
+    double pressure() const { return pressure_; }
+
+protected:
+    friend class Object;
+
+    TouchEvent(
+        TouchEventType type,
+        double time,
+        TouchDeviceId deviceId,
+        TouchFingerId fingerId,
+        Point pos,
+        Step step,
+        double pressure
+    ):
+        type_(type),
+        time_(time),
+        deviceId_(deviceId),
+        fingerId_(fingerId),
+        pos_(pos),
+        step_(step),
+        pressure_(pressure)
+    {}
+
+    TouchEventType type_;
+    double time_;
+    TouchDeviceId deviceId_;
+    TouchFingerId fingerId_;
+    Point pos_;
+    Step step_;
+    double pressure_;
+};
+
+}} // namespace cc::ui
