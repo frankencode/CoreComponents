@@ -1,0 +1,62 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/types>
+
+namespace cc {
+namespace ui {
+
+class DisplayMode
+{
+public:
+    class Instance {
+    public:
+        Size resolution() const { return resolution_; }
+        double refreshRate() const { return refreshRate_; }
+
+    private:
+        friend class DisplayMode;
+
+        Instance():
+            refreshRate_(0)
+        {}
+
+        Instance(const Size & resolution, double refreshRate):
+            resolution_(resolution),
+            refreshRate_(refreshRate)
+        {}
+
+        Size resolution_;
+        double refreshRate_;
+    };
+
+    DisplayMode() = default;
+
+    DisplayMode(const Size &resolution, double refreshRate):
+        instance_(resolution, refreshRate)
+    {}
+
+    const Instance *operator->() const { return &instance_; }
+
+    bool operator==(const DisplayMode &b) const {
+        const Instance *a = &instance_;
+        return a->resolution() == b->resolution() && a->refreshRate() == b->refreshRate();
+    }
+
+    bool operator!=(const DisplayMode &b) const {
+        const Instance *a = &instance_;
+        return a->resolution() != b->resolution() || a->refreshRate() != b->refreshRate();
+    }
+
+private:
+    Instance instance_;
+};
+
+}} // namespace cc::ui

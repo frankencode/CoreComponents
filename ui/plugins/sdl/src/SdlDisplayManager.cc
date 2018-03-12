@@ -27,7 +27,7 @@ Ref<Display> SdlDisplayManager::getDisplay(int index) const
         if (SDL_GetDisplayDPI(index, NULL, &hdpi, &vdpi) != 0) {
             // TODO...
         }
-        display->dpi = Ratio{double(hdpi), double(vdpi)};
+        display->dpi = Ratio{ double(hdpi), double(vdpi) };
     }
     {
         SDL_Rect rect;
@@ -37,6 +37,13 @@ Ref<Display> SdlDisplayManager::getDisplay(int index) const
         display->pos = Point{ double(rect.x), double(rect.y) };
         display->size = Size{ double(rect.w), double(rect.h) };
     }
+
+    display->nativeMode->bind([=]{
+        SDL_DisplayMode mode;
+        SDL_GetDesktopDisplayMode(index, &mode);
+        return DisplayMode( Size{ double(mode.w), double(mode.h) }, mode.refresh_rate );
+    });
+
     return display;
 }
 

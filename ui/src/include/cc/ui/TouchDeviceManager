@@ -16,6 +16,8 @@ namespace ui {
 class TouchDeviceManager: public Object
 {
 public:
+    static TouchDeviceManager *instance();
+
     virtual Ref<TouchDevice> getTouchDevice(int index) const = 0;
     virtual int getTouchDeviceCount() const = 0;
 };
