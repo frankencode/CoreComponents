@@ -1,6 +1,6 @@
 #! /bin/bash -x
 
-TEST_APP=exampleWindow
+TEST_APP=exampleMultitouch
 TEST_ARG=
 TEST_ENV="DISPLAY=:0"
 TEST_STATION=debby-nine

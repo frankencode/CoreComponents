@@ -12,16 +12,16 @@ class TestView: public View
 
     TestView()
     {
-        size = Size{1024, 600};
+        size = Size{640, 480};
         color = Color{"#FFFFFF"};
         angle_ = 0;
         double f = 60;
         double t0 = System::now();
-        /*Timer::start(1/f, [=]{
+        Timer::start(1/f, [=]{
             double t = System::now();
             angle_ = f * (t - t0) * degrees(2);
             update();
-        });*/
+        });
     }
 
     void paint() override
@@ -50,7 +50,7 @@ class TestView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    Window *window = Window::open(Object::create<TestView>(), "Hello, world!", WindowMode::Fullscreen);
+    Window *window = Window::open(Object::create<TestView>(), "Hello, world!");
     window->title->bind([=]{ return String("Test " + str(window->pos())); });
     window->pos->connect([=]{ fout() << "Moved to " << window->pos() << nl; });
     window->size->connect([=]{ fout() << "Resized to " << window->size() << nl; });

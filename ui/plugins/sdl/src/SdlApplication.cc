@@ -66,7 +66,7 @@ int SdlApplication::run()
         if (!SDL_WaitEvent(event_))
             CC_DEBUG_ERROR(SDL_GetError());
 
-        CC_INSPECT(event_->type);
+        // CC_INSPECT(event_->type);
 
         if (event_->type == timerEvent_) {
             Timer *t = (Timer *)event_->user.data1;
@@ -96,7 +96,7 @@ int SdlApplication::run()
 
 void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
 {
-    // #ifndef NDEBUG
+    #if 0
     auto eventName = [](Uint32 type) -> String {
         switch (type) {
             case SDL_FINGERMOTION: return "SDL_FINGERMOTION";
@@ -112,12 +112,12 @@ void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
         << "  fingerId: " << e->fingerId << nl
         << "  x, y: " << e->x << ", " << e->y << nl
         << "  dx, dy: " << e->dx << ", " << e->dy << nl;
-    // #endif
+    #endif
 
-    auto eventType = [](Uint32 type) -> TouchEventType {
-        if (type == SDL_FINGERMOTION) return TouchEventType::TouchFingerMoved;
-        else if (type ==  SDL_FINGERDOWN) return TouchEventType::TouchFingerDown;
-        else /*if (type == SDL_FINGERUP)*/ return TouchEventType::TouchFingerUp;
+    auto eventType = [](Uint32 type) -> TouchFingerAction {
+        if (type == SDL_FINGERMOTION) return TouchFingerAction::Motion;
+        else if (type ==  SDL_FINGERDOWN) return TouchFingerAction::Contact;
+        else /*if (type == SDL_FINGERUP)*/ return TouchFingerAction::Release;
     };
 
     Ref<TouchEvent> event =

@@ -11,16 +11,16 @@
 namespace cc {
 namespace ui {
 
-enum class TouchEventType {
-    TouchFingerMoved,
-    TouchFingerDown,
-    TouchFingerUp
+enum class TouchFingerAction {
+    Motion,
+    Contact,
+    Release
 };
 
 class TouchEvent: public Object
 {
 public:
-    TouchEventType type() const { return type_; }
+    TouchFingerAction action() const { return action_; }
     double time() const { return time_; }
     TouchDeviceId deviceId() const { return deviceId_; }
     TouchFingerId fingerId() const { return fingerId_; }
@@ -32,7 +32,7 @@ protected:
     friend class Object;
 
     TouchEvent(
-        TouchEventType type,
+        TouchFingerAction action,
         double time,
         TouchDeviceId deviceId,
         TouchFingerId fingerId,
@@ -40,7 +40,7 @@ protected:
         Step step,
         double pressure
     ):
-        type_(type),
+        action_(action),
         time_(time),
         deviceId_(deviceId),
         fingerId_(fingerId),
@@ -49,7 +49,7 @@ protected:
         pressure_(pressure)
     {}
 
-    TouchEventType type_;
+    TouchFingerAction action_;
     double time_;
     TouchDeviceId deviceId_;
     TouchFingerId fingerId_;
