@@ -27,7 +27,21 @@ SdlApplication *SdlApplication::instance()
 SdlApplication::SdlApplication():
     windows_(Windows::create()),
     event_(new SDL_Event)
-{}
+{
+    cursorVisible->connect([=]{
+        if (cursorVisible())
+            SDL_ShowCursor(SDL_ENABLE);
+        else
+            SDL_ShowCursor(SDL_DISABLE);
+    });
+
+    screenSaverEnabled->connect([=]{
+        if (screenSaverEnabled())
+            SDL_EnableScreenSaver();
+        else
+            SDL_DisableScreenSaver();
+    });
+}
 
 SdlApplication::~SdlApplication()
 {

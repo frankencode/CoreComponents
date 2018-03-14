@@ -56,6 +56,11 @@ View::View(View *parent):
                 UpdateRequest::create(UpdateReason::Changed, this)
             );
         }
+        else {
+            update(
+                UpdateRequest::create(UpdateReason::Hidden, this)
+            );
+        }
     });
 }
 
@@ -95,10 +100,11 @@ void View::paint()
 void View::update(const UpdateRequest *request)
 {
     if (!window()) return;
-    if (!visible()) return;
 
     Ref<const UpdateRequest> request_ = request;
     if (!request) request = request_ = UpdateRequest::create(UpdateReason::Changed, this);
+
+    if (!visible() && request->reason() != UpdateReason::Hidden) return;
 
     if (
         isPainted() && (

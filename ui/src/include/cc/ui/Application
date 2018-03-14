@@ -23,6 +23,9 @@ public:
     static Application *open(int argc, char **argv);
     static Application *instance();
 
+    Property<bool> cursorVisible { true };
+    Property<bool> screenSaverEnabled { false };
+
     virtual Window *openWindow(View *view, String title = String{}, WindowMode mode = WindowMode::Default) = 0;
 
     virtual int run() = 0;

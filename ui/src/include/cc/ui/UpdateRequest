@@ -17,7 +17,8 @@ enum class UpdateReason {
     Moved,
     Changed,
     Resized,
-    Exposed
+    Exposed,
+    Hidden
 };
 
 class View;

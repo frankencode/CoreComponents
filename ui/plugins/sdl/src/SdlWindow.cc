@@ -85,8 +85,14 @@ SdlWindow *SdlWindow::open(WindowMode mode)
         pos = Point{double(x), double(y)};
     }
 
-    // sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_SOFTWARE);
-    sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_ACCELERATED); // , SDL_RENDERER_PRESENTVSYNC
+    if (
+        +(mode & WindowMode::Fullscreen) ||
+        +(mode & WindowMode::FullscreenDesktop)
+    )
+        sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    else
+        sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_SOFTWARE);
+
     if (!sdlRenderer_) CC_DEBUG_ERROR(SDL_GetError());
 
     #ifndef NDEBUG
@@ -163,6 +169,8 @@ void SdlWindow::renderFrame(Frame *frame)
 
 void SdlWindow::renderCascade(SDL_Renderer *sdlRenderer, View *view)
 {
+    if (!view->visible()) return;
+
     renderTexture(sdlRenderer, view);
 
     for (int i = 0, n = view->childCount(); i < n; ++i)
@@ -224,13 +232,13 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
     destRect.w = view->size()[0];
     destRect.h = view->size()[1];
     if (view->parent()) {
-        destRect.x = 0;
-        destRect.y = 0;
-    }
-    else {
         Point p = view->mapToWindow(Point{0, 0});
         destRect.x = p[0];
         destRect.y = p[1];
+    }
+    else {
+        destRect.x = 0;
+        destRect.y = 0;
     }
 
     SDL_RenderCopy(sdlRenderer, sdlTexture, 0, &destRect);
