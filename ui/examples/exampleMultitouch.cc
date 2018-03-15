@@ -68,10 +68,8 @@ class TestView: public View
 
     void touchEvent(const TouchEvent *event) override
     {
-        if (event->action() == TouchFingerAction::Contact || event->action() == TouchFingerAction::Motion)
+        if (event->action() == TouchAction::Pressed || event->action() == TouchAction::Moved)
         {
-            if (event->action() == TouchFingerAction::Contact) CC_INSPECT(event->fingerId());
-
             Ref<TouchPoint> touchPoint;
             if (!assignedTouchPoints_->lookup(event->fingerId(), &touchPoint)) {
                 touchPoint = freeTouchPoints_->popFront();
@@ -80,7 +78,8 @@ class TestView: public View
             touchPoint->visible = true;
             touchPoint->pos = size() * event->pos() - touchPoint->size() / 2;
         }
-        else if (event->action() == TouchFingerAction::Release) {
+        else if (event->action() == TouchAction::Released)
+        {
             Ref<TouchPoint> touchPoint;
             if (assignedTouchPoints_->lookup(event->fingerId(), &touchPoint)) {
                 touchPoint->visible = false;

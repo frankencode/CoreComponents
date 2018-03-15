@@ -40,6 +40,7 @@ private:
     ~SdlApplication();
 
     void handleFingerEvent(const SDL_TouchFingerEvent *e);
+    void handleMouseEvent(const SDL_MouseButtonEvent *e);
 
     static String windowEventToString(const SDL_WindowEvent *e);
     void handleWindowEvent(const SDL_WindowEvent *e);

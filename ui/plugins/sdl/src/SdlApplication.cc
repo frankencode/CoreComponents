@@ -94,6 +94,12 @@ int SdlApplication::run()
         ) {
             handleFingerEvent(&event_->tfinger);
         }
+        else if (
+            event_->type == SDL_MOUSEBUTTONDOWN ||
+            event_->type == SDL_MOUSEBUTTONUP
+        ) {
+            handleMouseEvent(&event_->button);
+        }
         else if (event_->type == SDL_WINDOWEVENT) {
             handleWindowEvent(&event_->window);
         }
@@ -110,28 +116,10 @@ int SdlApplication::run()
 
 void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
 {
-    #if 0
-    auto eventName = [](Uint32 type) -> String {
-        switch (type) {
-            case SDL_FINGERMOTION: return "SDL_FINGERMOTION";
-            case SDL_FINGERDOWN: return "SDL_FINGERDOWN";
-            case SDL_FINGERUP: return "SDL_FINGERUP";
-        };
-        return "";
-    };
-    CC_DEBUG
-        << eventName(e->type) << nl
-        << "  timestamp: " << e->timestamp << nl
-        << "  touchId: " << e->touchId << nl
-        << "  fingerId: " << e->fingerId << nl
-        << "  x, y: " << e->x << ", " << e->y << nl
-        << "  dx, dy: " << e->dx << ", " << e->dy << nl;
-    #endif
-
-    auto eventType = [](Uint32 type) -> TouchFingerAction {
-        if (type == SDL_FINGERMOTION) return TouchFingerAction::Motion;
-        else if (type ==  SDL_FINGERDOWN) return TouchFingerAction::Contact;
-        else /*if (type == SDL_FINGERUP)*/ return TouchFingerAction::Release;
+    auto eventType = [](Uint32 type) -> TouchAction {
+        if (type == SDL_FINGERMOTION) return TouchAction::Moved;
+        else if (type ==  SDL_FINGERDOWN) return TouchAction::Pressed;
+        else /*if (type == SDL_FINGERUP)*/ return TouchAction::Released;
     };
 
     Ref<TouchEvent> event =
@@ -149,6 +137,11 @@ void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
         Window *window = e->value();
         window->view()->touchEvent(event);
     }
+}
+
+void SdlApplication::handleMouseEvent(const SDL_MouseButtonEvent *e)
+{
+
 }
 
 String SdlApplication::windowEventToString(const SDL_WindowEvent *e)
