@@ -1,5 +1,7 @@
 #include <cc/stdio>
 #include <cc/debug>
+#include <cc/CircularBuffer>
+#include <cc/Map>
 #include <cc/ui/DisplayManager>
 #include <cc/ui/TouchDeviceManager>
 #include <cc/ui/Application>
@@ -36,6 +38,8 @@ class TestView: public View
     friend class Object;
 
     TestView():
+        assignedTouchPoints_(AssignedTouchPoints::create()),
+        freeTouchPoints_(FreeTouchPoints::create(10)),
         touchDevice_(TouchDeviceManager::instance()->getTouchDevice(0))
     {
         size = DisplayManager::instance()->getDisplay(0)->nativeMode()->resolution();
@@ -48,35 +52,48 @@ class TestView: public View
             { 0xFF, 0xFF, 0x00, 0xFF },
             { 0x00, 0xFF, 0xFF, 0xFF },
             { 0xFF, 0x00, 0xFF, 0xFF },
-            { 0x00, 0x00, 0x00, 0xFF }
+            { 0xFF, 0x80, 0x80, 0xFF },
+            { 0x80, 0xFF, 0x80, 0xFF },
+            { 0x80, 0x80, 0xFF, 0xFF },
+            { 0x80, 0x80, 0x80, 0xFF },
+            { 0x00, 0x00, 0x00, 0xFF },
         };
 
-        const int n = 10;
-        for (int i = 0; i < n; ++i) {
-            Object::create<TouchPoint>(this)
-                ->fgColor = fgColors[i % 7];
+        while (freeTouchPoints_->count() < freeTouchPoints_->capacity()) {
+            Ref<TouchPoint> touchPoint = Object::create<TouchPoint>(this);
+            touchPoint->fgColor = fgColors[freeTouchPoints_->count()];
+            freeTouchPoints_->pushBack(touchPoint);
         }
     }
 
     void touchEvent(const TouchEvent *event) override
     {
-        // CC_DEBUG << event->pos() << ", " << event->pressure();
+        if (event->action() == TouchFingerAction::Contact || event->action() == TouchFingerAction::Motion)
+        {
+            if (event->action() == TouchFingerAction::Contact) CC_INSPECT(event->fingerId());
 
-        const int n = touchDevice_->getTouchFingerCount();
-        const int m = childCount();
-
-        for (int i = 0; i < m; ++i) {
-            View *child = childAt(i);
-            if (i < n) {
-                TouchFinger finger = touchDevice_->getTouchFinger(i);
-                child->pos = size() * finger->pos() - child->size() / 2;
-                child->visible = true;
+            Ref<TouchPoint> touchPoint;
+            if (!assignedTouchPoints_->lookup(event->fingerId(), &touchPoint)) {
+                touchPoint = freeTouchPoints_->popFront();
+                assignedTouchPoints_->establish(event->fingerId(), touchPoint);
             }
-            else
-                child->visible = false;
+            touchPoint->visible = true;
+            touchPoint->pos = size() * event->pos() - touchPoint->size() / 2;
+        }
+        else if (event->action() == TouchFingerAction::Release) {
+            Ref<TouchPoint> touchPoint;
+            if (assignedTouchPoints_->lookup(event->fingerId(), &touchPoint)) {
+                touchPoint->visible = false;
+                freeTouchPoints_->pushBack(touchPoint);
+            }
         }
     }
 
+    typedef Map<TouchFingerId, TouchPoint *> AssignedTouchPoints;
+    typedef CircularBuffer<TouchPoint *> FreeTouchPoints;
+
+    Ref<AssignedTouchPoints> assignedTouchPoints_;
+    Ref<FreeTouchPoints> freeTouchPoints_;
     Ref<TouchDevice> touchDevice_;
 };
 

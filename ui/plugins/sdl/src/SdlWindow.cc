@@ -85,11 +85,13 @@ SdlWindow *SdlWindow::open(WindowMode mode)
         pos = Point{double(x), double(y)};
     }
 
+
     if (
+        +(mode & WindowMode::Accelerated) ||
         +(mode & WindowMode::Fullscreen) ||
         +(mode & WindowMode::FullscreenDesktop)
     )
-        sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_ACCELERATED | (+(mode & WindowMode::VSync) * SDL_RENDERER_PRESENTVSYNC));
     else
         sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_SOFTWARE);
 

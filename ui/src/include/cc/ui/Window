@@ -38,6 +38,8 @@ enum class WindowMode: unsigned int {
     Utility            = 131072,
     Tooltip            = 262144,
     PopupMenu          = 524288,
+    VSync              = 1048576,
+    Accelerated        = 2097152,
     Default            = Shown|Resizable
 };
 
