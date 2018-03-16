@@ -68,7 +68,7 @@ class TestView: public View
 
     void touchEvent(const TouchEvent *event) override
     {
-        if (event->action() == TouchAction::Pressed || event->action() == TouchAction::Moved)
+        if (event->action() == PointerAction::Pressed || event->action() == PointerAction::Moved)
         {
             Ref<TouchPoint> touchPoint;
             if (!assignedTouchPoints_->lookup(event->fingerId(), &touchPoint)) {
@@ -78,7 +78,7 @@ class TestView: public View
             touchPoint->visible = true;
             touchPoint->pos = size() * event->pos() - touchPoint->size() / 2;
         }
-        else if (event->action() == TouchAction::Released)
+        else if (event->action() == PointerAction::Released)
         {
             Ref<TouchPoint> touchPoint;
             if (assignedTouchPoints_->lookup(event->fingerId(), &touchPoint)) {
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
     app->cursorVisible = false;
     app->screenSaverEnabled = true;
 
-    Window *window = Window::open(Object::create<TestView>(), argv[0], WindowMode::Fullscreen);
+    Window::open(Object::create<TestView>(), argv[0], WindowMode::Fullscreen);
 
     return app->run();
 }

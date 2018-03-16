@@ -12,6 +12,7 @@
 #include <cc/ui/Surface>
 #include <cc/ui/UpdateRequest>
 #include <cc/ui/TouchEvent>
+#include <cc/ui/MouseEvent>
 
 namespace cc {
 namespace ui {
@@ -35,9 +36,12 @@ public:
     int childCount() const { return children_->count(); }
     View *childAt(int i) { return children_->valueAt(i); }
 
-    Point mapToWindow(Point local) const;
+    Point mapToWindow(Point l) const;
+    Point mapToLocal(Point p) const;
+    bool contains(Point pp) const;
 
     virtual void touchEvent(const TouchEvent *event) {}
+    virtual void mouseEvent(MouseEvent *event);
 
 protected:
     friend class Window;

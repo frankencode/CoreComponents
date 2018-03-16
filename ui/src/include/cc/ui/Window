@@ -79,6 +79,7 @@ protected:
     virtual void renderFrame(Frame *frame) = 0;
 
     Ref<View> view_;
+    Ref<View> pointerTarget_;
     Ref<Frame> nextFrame_;
 };
 

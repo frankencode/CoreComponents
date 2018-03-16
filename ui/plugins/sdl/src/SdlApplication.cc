@@ -14,6 +14,7 @@
 #include <cc/ui/Timer>
 #include <cc/ui/TimeMaster>
 #include <cc/ui/TouchEvent>
+#include <cc/ui/MouseEvent>
 #include <cc/ui/SdlApplication>
 
 namespace cc {
@@ -87,25 +88,25 @@ int SdlApplication::run()
             notifyTimer(t);
             t->decRefCount();
         }
-        else if (
-            event_->type == SDL_FINGERMOTION ||
-            event_->type == SDL_FINGERDOWN ||
-            event_->type == SDL_FINGERUP
-        ) {
-            handleFingerEvent(&event_->tfinger);
-        }
-        else if (
-            event_->type == SDL_MOUSEBUTTONDOWN ||
-            event_->type == SDL_MOUSEBUTTONUP
-        ) {
-            handleMouseEvent(&event_->button);
-        }
-        else if (event_->type == SDL_WINDOWEVENT) {
-            handleWindowEvent(&event_->window);
-        }
-        else if (event_->type == SDL_QUIT) {
-            return 0;
-        }
+        else switch(event_->type) {
+            case SDL_FINGERMOTION:
+            case SDL_FINGERDOWN:
+            case SDL_FINGERUP:
+                handleFingerEvent(&event_->tfinger);
+                break;
+            case SDL_MOUSEMOTION:
+                handleMouseMotionEvent(&event_->motion);
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+                handleMouseButtonEvent(&event_->button);
+                break;
+            case SDL_WINDOWEVENT:
+                handleWindowEvent(&event_->window);
+                break;
+            case SDL_QUIT:
+                return 0;
+        };
 
         for (int i = 0; i < windows_->count(); ++i)
             windows_->valueAt(i)->commitFrame();
@@ -116,32 +117,92 @@ int SdlApplication::run()
 
 void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
 {
-    auto eventType = [](Uint32 type) -> TouchAction {
-        if (type == SDL_FINGERMOTION) return TouchAction::Moved;
-        else if (type ==  SDL_FINGERDOWN) return TouchAction::Pressed;
-        else /*if (type == SDL_FINGERUP)*/ return TouchAction::Released;
-    };
+    PointerAction action; {
+        switch (e->type) {
+            case SDL_FINGERMOTION: action = PointerAction::Moved; break;
+            case SDL_FINGERDOWN  : action = PointerAction::Pressed; break;
+            default              : action = PointerAction::Released; break;
+        };
+    }
 
     Ref<TouchEvent> event =
         Object::create<TouchEvent>(
-            eventType(e->type),
+            action,
             e->timestamp / 1000.,
             e->touchId,
             e->fingerId,
-            Point{ double(e->x),  double(e->y)  },
+            Pos  { double(e->x),  double(e->y)  },
             Step { double(e->dx), double(e->dy) },
             e->pressure
         );
 
-    for (auto e: windows_) {
-        Window *window = e->value();
+    for (auto pair: windows_) {
+        Window *window = pair->value();
         window->view()->touchEvent(event);
     }
 }
 
-void SdlApplication::handleMouseEvent(const SDL_MouseButtonEvent *e)
+void SdlApplication::handleMouseMotionEvent(const SDL_MouseMotionEvent *e)
 {
+    MouseButton button = MouseButton::None; {
+        if (e->state & SDL_BUTTON_LMASK)  button |= MouseButton::Left;
+        if (e->state & SDL_BUTTON_RMASK)  button |= MouseButton::Right;
+        if (e->state & SDL_BUTTON_MIDDLE) button |= MouseButton::Middle;
+        if (e->state & SDL_BUTTON_X1MASK) button |= MouseButton::X1;
+        if (e->state & SDL_BUTTON_X2MASK) button |= MouseButton::X2;
+    }
 
+    Ref<MouseEvent> event =
+        Object::create<MouseEvent>(
+            PointerAction::Moved,
+            e->timestamp / 1000.,
+            e->which == SDL_TOUCH_MOUSEID,
+            button,
+            0,
+            Pos  { double(e->x),    double(e->y)    },
+            Step { double(e->xrel), double(e->yrel) }
+        );
+
+    for (auto pair: windows_) {
+        SdlWindow *window = Object::cast<SdlWindow *>(pair->value());
+        if (window->id_ == e->windowID)
+            window->view()->mouseEvent(event);
+    }
+}
+
+void SdlApplication::handleMouseButtonEvent(const SDL_MouseButtonEvent *e)
+{
+    PointerAction action =
+        (e->type == SDL_MOUSEBUTTONDOWN) ?
+        PointerAction::Pressed :
+        PointerAction::Released;
+
+    MouseButton button; {
+        switch (e->button) {
+            case SDL_BUTTON_LEFT  : button = MouseButton::Left; break;
+            case SDL_BUTTON_RIGHT : button = MouseButton::Right; break;
+            case SDL_BUTTON_MIDDLE: button = MouseButton::Middle; break;
+            case SDL_BUTTON_X1    : button = MouseButton::X1; break;
+            default               : button = MouseButton::X2; break;
+        };
+    }
+
+    Ref<MouseEvent> event =
+        Object::create<MouseEvent>(
+            action,
+            e->timestamp / 1000.,
+            e->which == SDL_TOUCH_MOUSEID,
+            button,
+            e->clicks,
+            Pos  { double(e->x), double(e->y) },
+            Step {}
+        );
+
+    for (auto pair: windows_) {
+        SdlWindow *window = Object::cast<SdlWindow *>(pair->value());
+        if (window->id_ == e->windowID)
+            window->view()->mouseEvent(event);
+    }
 }
 
 String SdlApplication::windowEventToString(const SDL_WindowEvent *e)

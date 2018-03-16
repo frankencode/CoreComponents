@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -100,6 +100,29 @@ String str(Placement placement)
         case Placement::Top              : return "Placement::HTop";
         case Placement::Bottom           : return "Placement::HBottom";
         case Placement::VerticalCenter   : return "Placement::VerticalCenter";
+    };
+
+    return String{};
+}
+
+String str(MouseButton mask)
+{
+    Ref<StringList> parts = StringList::create();
+    if (+(mask & MouseButton::Left))  parts << "MouseButton::Left";
+    if (+(mask & MouseButton::Right)) parts << "MouseButton::Right";
+    if (+(mask & MouseButton::X1))    parts << "MouseButton::X1";
+    if (+(mask & MouseButton::X2))    parts << "MouseButton::X2";
+    if (+(mask & MouseButton::Middle) == +MouseButton::Middle)
+        parts << "MouseButton::Middle";
+    return parts->join("|");
+}
+
+String str(PointerAction action)
+{
+    switch (action) {
+        case PointerAction::Moved   : return "PointerAction::Moved";
+        case PointerAction::Pressed : return "PointerAction::Pressed";
+        case PointerAction::Released: return "PointerAction::Released";
     };
 
     return String{};

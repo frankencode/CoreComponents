@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -106,7 +106,33 @@ CC_BITMASK(Placement, unsigned int)
 
 String str(Placement placement);
 
+/** mouse button flags
+  */
+enum class MouseButton: unsigned int {
+    None   = 0,
+    Left   = 1,
+    Right  = 2,
+    Middle = 3,
+    X1     = 8,
+    X2     = 16
+};
+
+CC_BITMASK(MouseButton, unsigned int);
+
+String str(MouseButton mask);
+
+/** event type of touch, mouse or pen input
+  */
+enum class PointerAction {
+    Moved,
+    Pressed,
+    Released
+};
+
+String str(PointerAction action);
+
 typedef Vector<double, 2> Point;
+typedef Vector<double, 2> Pos;
 typedef Vector<double, 2> Size;
 typedef Vector<double, 2> Step;
 typedef Vector<double, 2> Ratio;

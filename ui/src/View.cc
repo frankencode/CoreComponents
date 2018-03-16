@@ -71,6 +71,56 @@ View::~View()
         parent_->removeChild(this);
 }
 
+Point View::mapToWindow(Point l) const
+{
+    if (parent_)
+        return parent_->mapToWindow(l + pos());
+    return l;
+}
+
+Point View::mapToLocal(Point p) const
+{
+    for (
+        const View *view = this;
+        view->parent_;
+        view = view->parent_
+    )
+       p -= view->pos();
+
+    return p;
+}
+
+bool View::contains(Point pp) const
+{
+    return
+        pos()[0] <= pp[0] && pp[0] < pos()[0] + size()[0] &&
+        pos()[1] <= pp[1] && pp[1] < pos()[1] + size()[1];
+}
+
+void View::mouseEvent(MouseEvent *event)
+{
+    if (!parent_) {
+        if (window_->pointerTarget_) {
+            event->pos_ = window_->pointerTarget_->mapToLocal(event->pos());
+            window_->pointerTarget_->mouseEvent(event);
+            if (event->action() == PointerAction::Released)
+                window_->pointerTarget_ = 0;
+            return;
+        }
+    }
+
+    for (auto pair: children_) {
+        View *child = pair->value();
+        if (child->contains(event->pos())) {
+            event->pos_ -= child->pos();
+            child->mouseEvent(event);
+            if (event->action() == PointerAction::Pressed)
+                window_->pointerTarget_ = child;
+            return;
+        }
+    }
+}
+
 bool View::isOpaque() const
 {
     return Color::isOpaque(color());
@@ -117,13 +167,6 @@ void View::update(const UpdateRequest *request)
     }
 
     window()->addToFrame(request);
-}
-
-Point View::mapToWindow(Point local) const
-{
-    if (parent_)
-        return parent_->mapToWindow(local + pos());
-    return local;
 }
 
 Window *View::window()
