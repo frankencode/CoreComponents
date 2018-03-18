@@ -15,6 +15,7 @@
 #include <cc/ui/TimeMaster>
 #include <cc/ui/TouchEvent>
 #include <cc/ui/MouseEvent>
+#include <cc/ui/MouseWheelEvent>
 #include <cc/ui/SdlApplication>
 
 namespace cc {
@@ -101,6 +102,9 @@ int SdlApplication::run()
             case SDL_MOUSEBUTTONUP:
                 handleMouseButtonEvent(&event_->button);
                 break;
+            case SDL_MOUSEWHEEL:
+                handleMouseWheelEvent(&event_->wheel);
+                break;
             case SDL_WINDOWEVENT:
                 handleWindowEvent(&event_->window);
                 break;
@@ -144,6 +148,8 @@ void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
 
 void SdlApplication::handleMouseMotionEvent(const SDL_MouseMotionEvent *e)
 {
+    if (e->which == SDL_TOUCH_MOUSEID) return;
+
     MouseButton button = MouseButton::None; {
         if (e->state & SDL_BUTTON_LMASK)  button |= MouseButton::Left;
         if (e->state & SDL_BUTTON_RMASK)  button |= MouseButton::Right;
@@ -164,7 +170,7 @@ void SdlApplication::handleMouseMotionEvent(const SDL_MouseMotionEvent *e)
         );
 
     for (auto pair: windows_) {
-        SdlWindow *window = Object::cast<SdlWindow *>(pair->value());
+        SdlWindow *window = pair->value();
         if (window->id_ == e->windowID)
             window->view()->mouseEvent(event);
     }
@@ -172,6 +178,8 @@ void SdlApplication::handleMouseMotionEvent(const SDL_MouseMotionEvent *e)
 
 void SdlApplication::handleMouseButtonEvent(const SDL_MouseButtonEvent *e)
 {
+    if (e->which == SDL_TOUCH_MOUSEID) return;
+
     PointerAction action =
         (e->type == SDL_MOUSEBUTTONDOWN) ?
         PointerAction::Pressed :
@@ -199,9 +207,28 @@ void SdlApplication::handleMouseButtonEvent(const SDL_MouseButtonEvent *e)
         );
 
     for (auto pair: windows_) {
-        SdlWindow *window = Object::cast<SdlWindow *>(pair->value());
+        SdlWindow *window = pair->value();
         if (window->id_ == e->windowID)
             window->view()->mouseEvent(event);
+    }
+}
+
+void SdlApplication::handleMouseWheelEvent(const SDL_MouseWheelEvent *e)
+{
+    int mx = 0, my = 0;
+    SDL_GetMouseState(&mx, &my);
+
+    Ref<MouseWheelEvent> event =
+        Object::create<MouseWheelEvent>(
+            e->timestamp / 1000.,
+            Step { double(e->x), double(e->y) },
+            Pos  { double(mx),   double(my)   }
+        );
+
+    for (auto pair: windows_) {
+        SdlWindow *window = pair->value();
+        if (window->id_ == e->windowID)
+            window->view()->mouseWheelEvent(event);
     }
 }
 

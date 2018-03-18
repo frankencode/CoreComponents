@@ -24,6 +24,8 @@ public:
     Step step() const { return step_; }
     double pressure() const { return pressure_; }
 
+    String toString() const;
+
 protected:
     friend class Object;
 
@@ -32,8 +34,8 @@ protected:
         double time,
         TouchDeviceId deviceId,
         TouchFingerId fingerId,
-        Pos pos,
-        Step step,
+        const Pos &pos,
+        const Step &step,
         double pressure
     ):
         action_(action),

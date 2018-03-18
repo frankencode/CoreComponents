@@ -11,14 +11,15 @@
 #include <cc/ui/types>
 #include <cc/ui/Surface>
 #include <cc/ui/UpdateRequest>
-#include <cc/ui/TouchEvent>
-#include <cc/ui/MouseEvent>
 
 namespace cc {
 namespace ui {
 
 class Window;
 class Image;
+class TouchEvent;
+class MouseEvent;
+class MouseWheelEvent;
 
 class View: public Surface
 {
@@ -30,18 +31,26 @@ public:
     Property<Size> maxSize;
     Property<Color> color;
 
+    Property<Point> mousePos;
+    Property<MouseButton> mouseButton;
+
+    Signal pressed;
+    Signal released;
+    Signal clicked;
+
     inline Window *window() const { return window_; }
     inline View *parent() const { return parent_; }
 
     int childCount() const { return children_->count(); }
     View *childAt(int i) { return children_->valueAt(i); }
 
-    Point mapToWindow(Point l) const;
-    Point mapToLocal(Point p) const;
-    bool contains(Point pp) const;
+    Point mapToGlobal(Point l) const;
+    Point mapToLocal(Point g) const;
+    bool containsGlobal(Point g) const;
 
-    virtual void touchEvent(const TouchEvent *event) {}
-    virtual void mouseEvent(MouseEvent *event);
+    virtual void touchEvent(const TouchEvent *event);
+    virtual void mouseEvent(const MouseEvent *event);
+    virtual void mouseWheelEvent(const MouseWheelEvent *event);
 
 protected:
     friend class Window;
@@ -72,8 +81,10 @@ private:
     uint64_t serial_;
     Window *window_;
     View *parent_;
+
     typedef Map<uint64_t, Ref<View> > Children;
     Ref<Children> children_;
+
     Ref<Image> image_;
     Ref<Object> context_;
 };

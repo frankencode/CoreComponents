@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,6 +10,9 @@
 #include <cc/ui/Application>
 #include <cc/ui/Window>
 #include <cc/ui/Image>
+#include <cc/ui/TouchEvent>
+#include <cc/ui/MouseEvent>
+#include <cc/ui/MouseWheelEvent>
 #include <cc/ui/View>
 
 namespace cc {
@@ -71,51 +74,101 @@ View::~View()
         parent_->removeChild(this);
 }
 
-Point View::mapToWindow(Point l) const
+Point View::mapToGlobal(Point l) const
 {
-    if (parent_)
-        return parent_->mapToWindow(l + pos());
+    for (const View *view = this; view->parent_; view = view->parent_)
+        l += view->pos();
     return l;
 }
 
-Point View::mapToLocal(Point p) const
+Point View::mapToLocal(Point g) const
 {
-    for (
-        const View *view = this;
-        view->parent_;
-        view = view->parent_
-    )
-       p -= view->pos();
-
-    return p;
+    for (const View *view = this; view->parent_; view = view->parent_)
+       g -= view->pos();
+    return g;
 }
 
-bool View::contains(Point pp) const
+bool View::containsGlobal(Point g) const
 {
+    Point globalPos = mapToGlobal(Point{0, 0});
     return
-        pos()[0] <= pp[0] && pp[0] < pos()[0] + size()[0] &&
-        pos()[1] <= pp[1] && pp[1] < pos()[1] + size()[1];
+        globalPos[0] <= g[0] && g[0] < globalPos[0] + size()[0] &&
+        globalPos[1] <= g[1] && g[1] < globalPos[1] + size()[1];
 }
 
-void View::mouseEvent(MouseEvent *event)
+void View::touchEvent(const TouchEvent *event)
 {
-    if (!parent_) {
-        if (window_->pointerTarget_) {
-            event->pos_ = window_->pointerTarget_->mapToLocal(event->pos());
-            window_->pointerTarget_->mouseEvent(event);
-            if (event->action() == PointerAction::Released)
-                window_->pointerTarget_ = 0;
-            return;
+    Window *w = window();
+
+    Ref<View> touchTarget;
+    if (!parent_ && w->touchTargets_->lookup(event->fingerId(), &touchTarget)) {
+        if (touchTarget != this)
+            touchTarget->touchEvent(event);
+    }
+    else {
+        for (auto pair: children_) {
+            View *child = pair->value();
+            if (child->containsGlobal(event->pos())) {
+                child->touchEvent(event);
+                return;
+            }
         }
     }
 
+    mousePos = mapToLocal(event->pos());
+    mouseButton = MouseButton::Left;
+
+    if (event->action() == PointerAction::Pressed) {
+        w->touchTargets_->establish(event->fingerId(), this);
+        pressed();
+    }
+    else if (event->action() == PointerAction::Released) {
+        released();
+        if (containsGlobal(event->pos()))
+            clicked();
+        w->touchTargets_->remove(event->fingerId());
+    }
+}
+
+void View::mouseEvent(const MouseEvent *event)
+{
+    Window *w = window();
+
+    if (!parent_ && w->pointerTarget_) {
+        if (w->pointerTarget_ != this)
+            w->pointerTarget_->mouseEvent(event);
+    }
+    else {
+        for (auto pair: children_) {
+            View *child = pair->value();
+            if (child->containsGlobal(event->pos())) {
+                child->mouseEvent(event);
+                return;
+            }
+        }
+    }
+
+    mousePos = mapToLocal(event->pos());
+    mouseButton = event->button();
+
+    if (event->action() == PointerAction::Pressed) {
+        w->pointerTarget_ = this;
+        pressed();
+    }
+    else if (event->action() == PointerAction::Released) {
+        released();
+        if (containsGlobal(event->pos()))
+            clicked();
+        w->pointerTarget_ = 0;
+    }
+}
+
+void View::mouseWheelEvent(const MouseWheelEvent *event)
+{
     for (auto pair: children_) {
         View *child = pair->value();
-        if (child->contains(event->pos())) {
-            event->pos_ -= child->pos();
-            child->mouseEvent(event);
-            if (event->action() == PointerAction::Pressed)
-                window_->pointerTarget_ = child;
+        if (child->containsGlobal(event->mousePos())) {
+            child->mouseWheelEvent(event);
             return;
         }
     }

@@ -1,6 +1,7 @@
 #! /bin/bash -x
 
-TEST_APP=exampleMultitouch
+# TEST_APP=exampleMultitouch
+TEST_APP=exampleMouseEvent
 TEST_ARG=
 TEST_ENV="DISPLAY=:0"
 TEST_STATION=debby-nine

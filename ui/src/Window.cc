@@ -27,7 +27,8 @@ Window::Window(View *view, String title):
     size(alias(view->size)),
     color(alias(view->color)),
     view_(view),
-    nextFrame_(Frame::create())
+    nextFrame_(Frame::create()),
+    touchTargets_(TouchTargets::create())
 {
     view_->window_ = this;
 }

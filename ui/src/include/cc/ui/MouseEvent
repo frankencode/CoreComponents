@@ -24,9 +24,10 @@ public:
     Pos pos() const { return pos_; }
     Step step() const { return step_; }
 
+    String toString() const;
+
 private:
     friend class Object;
-    friend class View;
 
     MouseEvent(
         PointerAction action,
@@ -34,8 +35,8 @@ private:
         bool isSynthetic,
         MouseButton button,
         int clickCount,
-        Pos pos,
-        Step step
+        const Pos &pos,
+        const Step &step
     ):
         action_(action),
         time_(time),

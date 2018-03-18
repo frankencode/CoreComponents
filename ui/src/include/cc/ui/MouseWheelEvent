@@ -1,0 +1,43 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/types>
+
+namespace cc {
+namespace ui {
+
+class MouseWheelEvent: public Object
+{
+public:
+    double time() const { return time_; }
+    Step wheelStep() const { return wheelStep_; }
+    Pos mousePos() const { return mousePos_; }
+
+    String toString() const;
+
+private:
+    friend class Object;
+
+    MouseWheelEvent(
+        double time,
+        const Step &wheelStep,
+        const Pos &mousePos
+    ):
+        time_(time),
+        wheelStep_(wheelStep),
+        mousePos_(mousePos)
+    {}
+
+    double time_;
+    Step wheelStep_;
+    Pos mousePos_;
+};
+
+}} // namespace cc::ui

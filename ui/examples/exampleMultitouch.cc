@@ -4,6 +4,8 @@
 #include <cc/Map>
 #include <cc/ui/DisplayManager>
 #include <cc/ui/TouchDeviceManager>
+#include <cc/ui/TouchEvent>
+#include <cc/ui/MouseEvent>
 #include <cc/ui/Application>
 
 using namespace cc;
@@ -30,6 +32,11 @@ protected:
         p->setSource(fgColor());
         p->circle(size() / 2, size()[0]/2 - 1);
         p->fill();
+    }
+
+    void mouseEvent(const MouseEvent *event) override
+    {
+        CC_INSPECT(event);
     }
 };
 

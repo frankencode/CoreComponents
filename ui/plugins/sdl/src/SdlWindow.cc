@@ -45,7 +45,7 @@ SdlWindow *SdlWindow::open(WindowMode mode)
         if (+(mode & WindowMode::Resizable))         flags |= SDL_WINDOW_RESIZABLE;
         if (+(mode & WindowMode::Minimized))         flags |= SDL_WINDOW_MINIMIZED;
         if (+(mode & WindowMode::Maximized))         flags |= SDL_WINDOW_MAXIMIZED;
-        if (+(mode & WindowMode::InputGrapped))      flags |= SDL_WINDOW_INPUT_GRABBED;
+        if (+(mode & WindowMode::InputGrabbed))      flags |= SDL_WINDOW_INPUT_GRABBED;
         if (+(mode & WindowMode::InputFocus))        flags |= SDL_WINDOW_INPUT_FOCUS;
         if (+(mode & WindowMode::MouseFocus))        flags |= SDL_WINDOW_MOUSE_FOCUS;
         if (+(mode & WindowMode::Foreign))           flags |= SDL_WINDOW_FOREIGN;
@@ -234,7 +234,7 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
     destRect.w = view->size()[0];
     destRect.h = view->size()[1];
     if (view->parent()) {
-        Point p = view->mapToWindow(Point{0, 0});
+        Point p = view->mapToGlobal(Point{0, 0});
         destRect.x = p[0];
         destRect.y = p[1];
     }

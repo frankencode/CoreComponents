@@ -27,7 +27,7 @@ enum class WindowMode: unsigned int {
     Resizable          = 64,
     Minimized          = 128,
     Maximized          = 256,
-    InputGrapped       = 512,
+    InputGrabbed       = 512,
     InputFocus         = 1024,
     MouseFocus         = 2048,
     Foreign            = 4096,
@@ -79,8 +79,12 @@ protected:
     virtual void renderFrame(Frame *frame) = 0;
 
     Ref<View> view_;
-    Ref<View> pointerTarget_;
     Ref<Frame> nextFrame_;
+
+    Ref<View> pointerTarget_;
+
+    typedef Map<TouchFingerId, Ref<View> > TouchTargets;
+    Ref<TouchTargets> touchTargets_;
 };
 
 }} // namespace cc::ui
