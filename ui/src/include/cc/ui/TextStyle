@@ -18,20 +18,28 @@ class TextStyle: public Object
 public:
     static Ref<TextStyle> create(const Font *font, Color color = Color{})
     {
-        return new TextStyle(font, color);
+        return new TextStyle(font, color, TextDecoration::None);
+    }
+
+    static Ref<TextStyle> create(const Font *font, TextDecoration decoration, Color color = Color{})
+    {
+        return new TextStyle(font, color, decoration);
     }
 
     const Font *font() const { return font_; }
     Color color() const { return color_; }
+    TextDecoration decoration() const { return decoration_; }
 
 private:
-    TextStyle(const Font *font, Color color):
+    TextStyle(const Font *font, Color color, TextDecoration decoration):
         font_(font),
-        color_(color)
+        color_(color),
+        decoration_(decoration)
     {}
 
     Ref<const Font> font_;
     Color color_;
+    TextDecoration decoration_;
 };
 
 }} // namespace cc::ui

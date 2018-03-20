@@ -67,14 +67,31 @@ class TestView: public View
         );
 
         textRun_->append(
-            "blue text.",
+            "blue text, ",
             TextStyle::create(
                 Font::select("sans", fontSize_),
                 Color(0x00, 0x00, 0x80)
             )
         );
 
+        textRun_->append(
+            "underlined text, ",
+            TextStyle::create(
+                Font::select("sans", fontSize_),
+                TextDecoration::Underline
+            )
+        );
+
+        textRun_->append(
+            "struck out text",
+            TextStyle::create(
+                Font::select("sans", fontSize_),
+                TextDecoration::StrikeOut
+            )
+        );
+
         textRun_->setTextAlign(TextAlign::Right);
+        // textRun_->setTextAlign(TextAlign::Center);
 
         auto updateTextWrap = [=]{
             wrappedTextRun_ = textRun_->wrap(size()[0] - 2 * margins_);

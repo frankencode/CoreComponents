@@ -81,6 +81,15 @@ String str(TextAlign textAlign)
     return String{};
 }
 
+String str(TextDecoration textDecoration)
+{
+    if (textDecoration == TextDecoration::None) return "TextDecoration::None";
+    Ref<StringList> parts = StringList::create();
+    if (+(textDecoration & TextDecoration::Underline)) parts << "TextDecoration::Underline";
+    if (+(textDecoration & TextDecoration::StrikeOut)) parts << "TextDecoration::StrikeOut";
+    return parts->join("|");
+}
+
 String str(Placement placement)
 {
     switch (placement) {

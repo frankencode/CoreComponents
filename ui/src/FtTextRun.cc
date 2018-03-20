@@ -95,10 +95,11 @@ Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns)
     }
 
     if (glyphRuns->count() > 0) {
-        const FtGlyphRun *lastBlock = glyphRuns->at(glyphRuns->count() - 1);
-        metaBlock->style_ = lastBlock->style_;
-        metaBlock->advance_ = lastBlock->advance_;
-        metaBlock->size_[0] = lastBlock->advance_[0];
+        const FtGlyphRun *lastRun = glyphRuns->at(glyphRuns->count() - 1);
+        metaBlock->style_ = lastRun->style_;
+        metaBlock->advance_ = lastRun->advance_;
+        metaBlock->size_[0] = lastRun->advance_[0];
+        metaBlock->finalGlyphAdance_ = lastRun->finalGlyphAdance_;
         for (const FtGlyphRun *glyphRun: glyphRuns) {
             if (metaBlock->size_[1] < glyphRun->size_[1])
                 metaBlock->size_[1] = glyphRun->size_[1];
@@ -131,6 +132,13 @@ Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns 
             newGlyphRun->cairoTextClusters_ = metaBlock->cairoTextClusters_->select(k, k + m);
             k += m;
         }
+        newGlyphRun->finalGlyphAdance_ = glyphRun->finalGlyphAdance_;
+        if (metaBlock->cairoGlyphs_->has(j)) {
+            const cairo_glyph_t *glyph = &metaBlock->cairoGlyphs_->at(j);
+            newGlyphRun->advance_ = Point{ glyph->x, glyph->y };
+        }
+        else
+            newGlyphRun->advance_ = metaBlock->advance_;
         textRun->glyphRuns_->at(i) = newGlyphRun;
     }
 

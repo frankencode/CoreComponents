@@ -81,6 +81,18 @@ enum class TextAlign {
 
 String str(TextAlign textAlign);
 
+/** text decoration
+  */
+enum class TextDecoration: unsigned int {
+    None      = 0,
+    Underline = 1,
+    StrikeOut = 2
+};
+
+CC_BITMASK(TextDecoration, unsigned int)
+
+String str(TextDecoration textDecoration);
+
 /** positioning of content within a bounding box
   */
 enum class Placement: unsigned int {

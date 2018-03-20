@@ -43,6 +43,8 @@ Ref<FtGlyphRun> FtTypeSetter::ftLayout(String text, const TextStyle *style)
     Point pos0 = pos_;
     double maxGlyphHeight;
 
+    Step glyphAdvance;
+
     while (true)
     {
         uchar_t ch = 0;
@@ -93,11 +95,12 @@ Ref<FtGlyphRun> FtTypeSetter::ftLayout(String text, const TextStyle *style)
             ++cairoTextClustersCount;
         }
 
-        pos_ +=
-            Step{
-                double(ftFace->glyph->advance.x),
-                double(ftFace->glyph->advance.y)
-            } / 64.;
+        glyphAdvance = Step {
+            double(ftFace->glyph->advance.x),
+            double(ftFace->glyph->advance.y)
+        } / 64.;
+
+        pos_ += glyphAdvance;
 
         {
             double glyphHeight = ftFace->glyph->metrics.height / 64.;
@@ -122,6 +125,7 @@ Ref<FtGlyphRun> FtTypeSetter::ftLayout(String text, const TextStyle *style)
     cairoTextClusters->truncate(cairoTextClustersCount);
     ftGlyphRun->cairoGlyphs_ = cairoGlyphs;
     ftGlyphRun->cairoTextClusters_ = cairoTextClusters;
+    ftGlyphRun->finalGlyphAdance_ = glyphAdvance;
 
     cairo_ft_scaled_font_unlock_face(ftFont->cairoScaledFont());
 

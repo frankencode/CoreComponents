@@ -79,6 +79,7 @@ private:
 
     Ref<CairoGlyphs> cairoGlyphs_;
     Ref<CairoTextClusters> cairoTextClusters_;
+    Step finalGlyphAdance_;
 };
 
 }} // namespace cc::ui
