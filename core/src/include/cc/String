@@ -496,13 +496,31 @@ public:
       * \param i start search from this index
       * \return index of first occurence of character ch or count() if not found
       */
-    inline int find(char ch, int i = 0) const {
+    inline int find(char ch, int i = 0) const { // FIXME: obsolete
         if (i < 0) i = 0;
         while (i < size_) {
             if (data_[i] == ch) break;
             ++i;
         }
         return i;
+    }
+
+    /** Find first occurence of a character value
+      * \param ch character value to search for
+      * \param i current search index
+      * \return true if \a ch was found, false otherwise
+      */
+    inline bool findNext(char ch, int *i = 0) const {
+        int j = (i) ? *i : 0;
+        while (j < size_) {
+            if (data_[j] == ch) {
+                if (i) *i = j;
+                return true;
+            }
+            ++j;
+        }
+        if (i) *i = j;
+        return false;
     }
 
     /** Check if this string contains a certain character value
@@ -790,32 +808,50 @@ public:
     String canonicalPath() const;
 
     /// Compare this string for equality with string \a b
-    bool equals(const String &b) const { return size_ == b->size_ && strncmp(chars_, b->chars_, size_) == 0; }
+    inline bool equals(const String &b) const { return size_ == b->size_ && strncmp(chars_, b->chars_, size_) == 0; }
 
     /// Compare this tring for inequality with string \a b
-    bool differs(const String &b) const { return size_ != b->size_ || strncmp(chars_, b->chars_, size_) != 0; }
+    inline bool differs(const String &b) const { return size_ != b->size_ || strncmp(chars_, b->chars_, size_) != 0; }
 
     /// Compare if this string is below string \a b
-    bool below(const String &b) const {
-        int m = size_ < b->size_ ? size_ : b->size_;
-        int ret = strncmp(chars_, b->chars_, m);
-        if (ret == 0) return size_ < b->size_;
+    inline bool below(const String &b) const {
+        return below(b->chars(), b->count());
+    }
+
+    /// Compare if this string is below string \a b
+    bool below(const char *b, int bSize = -1) const {
+        if (bSize < 0) bSize = strlen(b);
+        int m = size_ < bSize ? size_ : bSize;
+        int ret = strncmp(chars_, b, m);
+        if (ret == 0) return size_ < bSize;
         return ret < 0;
     }
 
     /// Compare if this string is below or equal string \a b
-    bool belowOrEqual(const String &b) const {
-        int m = size_ < b->size_ ? size_ : b->size_;
-        int ret = strncmp(chars_, b->chars_, m);
-        if (ret == 0) return size_ <= b->size_;
+    inline bool belowOrEqual(const String &b) const {
+        return belowOrEqual(b->chars(), b->count());
+    }
+
+    /// Compare if this string is below or equal string \a b
+    bool belowOrEqual(const char *b, int bSize = -1) const {
+        if (bSize < 0) bSize = strlen(b);
+        int m = size_ < bSize ? size_ : bSize;
+        int ret = strncmp(chars_, b, m);
+        if (ret == 0) return size_ <= bSize;
         return ret < 0;
     }
 
     /// Compare if this string is greater than string \a b
     inline bool greater(const String &b) const { return b->below(this); }
 
+    /// Compare if this string is greater than string \a b
+    inline bool greater(const char *b, int bSize = -1) const { return !belowOrEqual(b, bSize); }
+
     /// Compare is this string is greater or equal string \a b
     inline bool greaterOrEqual(const String &b) const { return b->belowOrEqual(this); }
+
+    /// Compare is this string is greater or equal string \a b
+    inline bool greaterOrEqual(const char *b, int bSize = -1) const { return !below(b, bSize); }
 
     /// Compare if this string equals string \a b (ASCII case-insensitive)
     bool equalsCaseInsensitive(const String &b) const;
@@ -947,37 +983,37 @@ int Array<char>::scanNumber(T *value, int base, int i0, int i1) const
 inline bool operator==(const String &a, const String &b) { return a->equals(b); }
 inline bool operator!=(const String &a, const String &b) { return a->differs(b); }
 inline bool operator< (const String &a, const String &b) { return a->below(b); }
-inline bool operator> (const String &a, const String &b) { return b->below(a); }
+inline bool operator> (const String &a, const String &b) { return a->greater(b); }
 inline bool operator<=(const String &a, const String &b) { return a->belowOrEqual(b); }
-inline bool operator>=(const String &a, const String &b) { return b->belowOrEqual(a); }
+inline bool operator>=(const String &a, const String &b) { return a->greaterOrEqual(b); }
 
-inline bool operator==(const char *a, const String &b) { return strcmp(a, b->chars()) == 0; }
-inline bool operator!=(const char *a, const String &b) { return strcmp(a, b->chars()) != 0; }
-inline bool operator< (const char *a, const String &b) { return strcmp(a, b->chars()) <  0; }
-inline bool operator> (const char *a, const String &b) { return strcmp(a, b->chars()) >  0; }
-inline bool operator<=(const char *a, const String &b) { return strcmp(a, b->chars()) <= 0; }
-inline bool operator>=(const char *a, const String &b) { return strcmp(a, b->chars()) >= 0; }
+inline bool operator==(const char *a, const String &b) { return b->equals(a); }
+inline bool operator!=(const char *a, const String &b) { return b->differs(a); }
+inline bool operator< (const char *a, const String &b) { return b->greater(a); }
+inline bool operator> (const char *a, const String &b) { return b->below(a); }
+inline bool operator<=(const char *a, const String &b) { return b->greaterOrEqual(a); }
+inline bool operator>=(const char *a, const String &b) { return b->belowOrEqual(a); }
 
-inline bool operator==(char *a, const String &b) { return strcmp(a, b->chars()) == 0; }
-inline bool operator!=(char *a, const String &b) { return strcmp(a, b->chars()) != 0; }
-inline bool operator< (char *a, const String &b) { return strcmp(a, b->chars()) <  0; }
-inline bool operator> (char *a, const String &b) { return strcmp(a, b->chars()) >  0; }
-inline bool operator<=(char *a, const String &b) { return strcmp(a, b->chars()) <= 0; }
-inline bool operator>=(char *a, const String &b) { return strcmp(a, b->chars()) >= 0; }
+inline bool operator==(char *a, const String &b) { return b->equals(a); }
+inline bool operator!=(char *a, const String &b) { return b->differs(a); }
+inline bool operator< (char *a, const String &b) { return b->greater(a); }
+inline bool operator> (char *a, const String &b) { return b->below(a); }
+inline bool operator<=(char *a, const String &b) { return b->greaterOrEqual(a); }
+inline bool operator>=(char *a, const String &b) { return b->belowOrEqual(a); }
 
-inline bool operator==(const String &a, const char *b) { return strcmp(a->chars(), b) == 0; }
-inline bool operator!=(const String &a, const char *b) { return strcmp(a->chars(), b) != 0; }
-inline bool operator< (const String &a, const char *b) { return strcmp(a->chars(), b) <  0; }
-inline bool operator> (const String &a, const char *b) { return strcmp(a->chars(), b) >  0; }
-inline bool operator<=(const String &a, const char *b) { return strcmp(a->chars(), b) <= 0; }
-inline bool operator>=(const String &a, const char *b) { return strcmp(a->chars(), b) >= 0; }
+inline bool operator==(const String &a, const char *b) { return a->equals(b); }
+inline bool operator!=(const String &a, const char *b) { return a->differs(b); }
+inline bool operator< (const String &a, const char *b) { return a->below(b); }
+inline bool operator> (const String &a, const char *b) { return a->greater(b); }
+inline bool operator<=(const String &a, const char *b) { return a->belowOrEqual(b); }
+inline bool operator>=(const String &a, const char *b) { return a->greaterOrEqual(b); }
 
-inline bool operator==(const String &a, char *b) { return strcmp(a->chars(), b) == 0; }
-inline bool operator!=(const String &a, char *b) { return strcmp(a->chars(), b) != 0; }
-inline bool operator< (const String &a, char *b) { return strcmp(a->chars(), b) <  0; }
-inline bool operator> (const String &a, char *b) { return strcmp(a->chars(), b) >  0; }
-inline bool operator<=(const String &a, char *b) { return strcmp(a->chars(), b) <= 0; }
-inline bool operator>=(const String &a, char *b) { return strcmp(a->chars(), b) >= 0; }
+inline bool operator==(const String &a, char *b) { return a->equals(b); }
+inline bool operator!=(const String &a, char *b) { return a->differs(b); }
+inline bool operator< (const String &a, char *b) { return a->below(b); }
+inline bool operator> (const String &a, char *b) { return a->greater(b); }
+inline bool operator<=(const String &a, char *b) { return a->belowOrEqual(b); }
+inline bool operator>=(const String &a, char *b) { return a->greaterOrEqual(b); }
 
 inline CharArray *mutate(const String &s) { return const_cast<CharArray *>(s.get()); }
 
