@@ -20,7 +20,7 @@ Ref<TextRun> TextRun::create()
 Ref<TextRun> TextRun::create(String text, const TextStyle *style)
 {
     Ref<TextRun> textRun = TextRun::create();
-    if (text->countCharsIn("<>") > 1)
+    if (text->countCharsIn("<>&") > 0)
         textRun->appendHtml(text, style);
     else
         textRun->append(text, style);
@@ -57,6 +57,7 @@ void TextRun::appendHtml(String text, const TextStyle *style)
             if (span->contains('&')) {
                 mutate(span)->replaceInsitu("&gt;", ">");
                 mutate(span)->replaceInsitu("&lt;", "<");
+                mutate(span)->replaceInsitu("&amp;", "&");
             }
             append(span, styleHead->style_);
         }
