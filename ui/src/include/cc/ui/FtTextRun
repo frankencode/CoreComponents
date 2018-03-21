@@ -23,7 +23,6 @@ public:
     }
 
     void append(String text, const TextStyle *style) override;
-    void append(const TextRun *textRun) override;
 
     Point advance() const override { return advance_; } // FIXME: rename to fin() or endPoint()
     int byteCount() const override { return byteCount_; }

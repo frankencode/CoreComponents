@@ -26,12 +26,6 @@ void FtTextRun::append(String text, const TextStyle *style)
     byteCount_ += text->count();
 }
 
-void FtTextRun::append(const TextRun *textRun)
-{
-    for (const GlyphRun *glyphRun: textRun->getAllGlyphRuns())
-        append(glyphRun->text(), glyphRun->style());
-}
-
 Ref<TextRun> FtTextRun::wrap(double maxWidth, double lineHeight, const TextWrapBehind &wrapBehind) const
 {
     if (advance_[0] <= maxWidth) return const_cast<FtTextRun *>(this);
@@ -212,7 +206,7 @@ void FtTextRun::paste(int byteOffset0, int byteOffset1, const TextRun *textRun)
     }
 
     if (byteOffset0 == byteCount_) {
-        append(textRun);
+        TextRun::append(textRun);
         return;
     }
 

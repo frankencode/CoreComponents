@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -32,6 +32,8 @@ public:
     virtual Stretch stretch() const = 0;
 
     virtual Ref<FontMetrics> getMetrics() const = 0;
+
+    String toString() const;
 };
 
 }} // namespace cc::ui
