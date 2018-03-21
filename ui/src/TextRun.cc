@@ -52,15 +52,7 @@ void TextRun::appendHtml(String text, const TextStyle *style)
     while (text->findNext('<', &i)) {
         int j = i + 1;
         if (!text->findNext('>', &j)) break;
-        if (i0 < i) {
-            String span = text->copy(i0, i);
-            if (span->contains('&')) {
-                mutate(span)->replaceInsitu("&gt;", ">");
-                mutate(span)->replaceInsitu("&lt;", "<");
-                mutate(span)->replaceInsitu("&amp;", "&");
-            }
-            append(span, styleHead->style_);
-        }
+        if (i0 < i) append(replaceEntities(text->copy(i0, i)), styleHead->style_);
         String tagName = text->select(i + 1, j);
         i = i0 = j + 1;
         if (tagName->beginsWith('/')) {
@@ -126,15 +118,17 @@ void TextRun::appendHtml(String text, const TextStyle *style)
         }
     }
 
-    if (i0 < i) {
-        String span = text->copy(i0, i);
-        if (span->contains('&')) {
-            mutate(span)->replaceInsitu("&gt;", ">");
-            mutate(span)->replaceInsitu("&lt;", "<");
-            mutate(span)->replaceInsitu("&amp;", "&");
-        }
-        append(span, styleHead->style_);
+    if (i0 < i) append(replaceEntities(text->copy(i0, i)), styleHead->style_);
+}
+
+String TextRun::replaceEntities(String text)
+{
+    if (text->contains('&')) {
+        mutate(text)->replaceInsitu("&gt;", ">");
+        mutate(text)->replaceInsitu("&lt;", "<");
+        mutate(text)->replaceInsitu("&amp;", "&");
     }
+    return text;
 }
 
 }} // namespace cc::ui
