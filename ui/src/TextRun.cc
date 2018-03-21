@@ -126,7 +126,15 @@ void TextRun::appendHtml(String text, const TextStyle *style)
         }
     }
 
-    if (i0 < i) append(text->copy(i0, i), styleHead->style_);
+    if (i0 < i) {
+        String span = text->copy(i0, i);
+        if (span->contains('&')) {
+            mutate(span)->replaceInsitu("&gt;", ">");
+            mutate(span)->replaceInsitu("&lt;", "<");
+            mutate(span)->replaceInsitu("&amp;", "&");
+        }
+        append(span, styleHead->style_);
+    }
 }
 
 }} // namespace cc::ui
