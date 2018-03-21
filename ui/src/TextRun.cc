@@ -52,7 +52,14 @@ void TextRun::appendHtml(String text, const TextStyle *style)
     while (text->findNext('<', &i)) {
         int j = i + 1;
         if (!text->findNext('>', &j)) break;
-        if (i0 < i) append(text->copy(i0, i), styleHead->style_);
+        if (i0 < i) {
+            String span = text->copy(i0, i);
+            if (span->contains('&')) {
+                mutate(span)->replaceInsitu("&gt;", ">");
+                mutate(span)->replaceInsitu("&lt;", "<");
+            }
+            append(span, styleHead->style_);
+        }
         String tagName = text->select(i + 1, j);
         i = i0 = j + 1;
         if (tagName->beginsWith('/')) {

@@ -91,7 +91,7 @@ class TestView: public View
         );
 
         textRun_->appendHtml(
-            "HTML <i>italic text</i>, <b>bold text</b>, <u>underlined text</u>, <b><i><strike>bold italic struck out text</strike></i></b>",
+            "&lt;HTML&gt; <i>italic text</i>, <b>bold text</b>, <u>underlined text</u>, <b><i><strike>bold italic struck out text</strike></i></b>",
             TextStyle::create(
                 Font::select("sans", fontSize_)
             )
