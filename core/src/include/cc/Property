@@ -64,6 +64,22 @@ public:
             changed->connect(h);
         }
 
+        const T &value() const
+        {
+            preAccess();
+            return value_;
+        }
+
+        void setValue(const T &newValue)
+        {
+            if (f_) {
+                clearDependencies();
+                f_ = std::function<T()>{};
+                dirty_ = false;
+            }
+            establish(newValue);
+        }
+
     private:
         friend class Property;
 
@@ -86,32 +102,15 @@ public:
 
         Property alias() { return Property(this, true); }
 
-        const T &value() const
-        {
-            preAccess();
-            return value_;
-        }
-
-        void setValue(const T &newValue)
-        {
-            if (f_) {
-                clearDependencies();
-                f_ = std::function<T()>{};
-                dirty_ = false;
-            }
-            establish(newValue);
-        }
-
         void evaluate() override
         {
             establish(f_());
         }
 
-        static T unbounded(T oldValue, T newValue) { return newValue; }
-
         void establish(T newValue)
         {
-            if (g_) newValue = g_(value_, newValue);
+            if (g_ && !g_(newValue, value_))
+                return;
             if (value_ != newValue) {
                 value_ = newValue;
                 emit();
@@ -127,7 +126,7 @@ public:
 
         mutable T value_;
         std::function<T()> f_;
-        std::function<T(T, T)> g_;
+        std::function<bool(T&, T)> g_;
     };
 
     inline Instance *operator->() { return instance_; }

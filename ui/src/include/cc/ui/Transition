@@ -1,0 +1,91 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Property>
+#include <cc/Timer>
+#include <cc/System>
+
+namespace cc {
+
+template<class T>
+class Transition: public Object
+{
+public:
+    typedef std::function<T(T, T, double)> Easing;
+
+    static T linear(T a, T b, double r)
+    {
+        return (1 - r) * a + r * b;
+    }
+
+    static Transition *create(Property<T> &property, double duration, const Easing &easing = &linear)
+    {
+        Ref<Transition> transition = new Transition(property, duration, easing);
+        property->constrain([transition](T &newValue, T oldValue){
+            if (transition->isActive()) return true;
+            transition->start(oldValue, newValue);
+            return false;
+        });
+        return transition;
+    }
+
+    void start(T oldValue, T newValue)
+    {
+        if (oldValue == newValue || worker->isRunning()) return;
+        oldValue_ = oldValue;
+        newValue_ = newValue;
+        startTime_ = System::now();
+        finishTime_ = startTime_ + duration_;
+        timer_->startAt(startTime + timer_->interval());
+    }
+
+    bool isActive() const { return timer_->isActive(); }
+
+private:
+    Transition(Property<T> &property, double duration, const  &easing):
+        instance_(property->instance_),
+        duration_(duration),
+        easing_(easing),
+        timer_(Timer::create(1./60.)),
+        finishTime_(0)
+    {
+        timer_->triggered->connect([this]{timeout();});
+    }
+
+    void timeout()
+    {
+        const double t0 = startTime_;
+        const double t1 = finishTime_;
+        const double t = System::now();
+        if (t >= t1) {
+            instance_->setValue(newValue);
+            timer_->stop();
+        }
+        else {
+            instance_->setValue(
+                easing_(
+                    oldValue, newValue,
+                    (t - t0) / (t1 - t0)
+                )
+            );
+        }
+    }
+
+    Ref<Property<T>::Instance> instance_;
+    double duration_;
+    Easing easing_;
+    Ref<Timer> timer_;
+    double startTime_;
+    double finishTime_;
+    T oldValue_;
+    T newValue_;
+};
+
+} // namespace cc

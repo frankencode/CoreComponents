@@ -61,10 +61,10 @@ class ConstrainingTest: public TestCase
     void run() override
     {
         Property<int> x = 0;
-        x->constrain([](int o, int n) -> int {
+        x->constrain([](int &n, int o) -> bool {
             if (n < 1) n = 1;
             else if (n > 10) n = 10;
-            return n;
+            return true;
         });
         x->connect([&]{ CC_INSPECT(x()); });
         x = -1;
