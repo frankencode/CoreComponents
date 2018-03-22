@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -47,15 +47,21 @@ public:
             }
         }
 
-        template<class F>
-        inline void connect(const F &f)
+        template<class H>
+        inline void connect(const H &h)
         {
             if (dirty_) {
                 dirty_ = false;
                 evaluate();
             }
 
-            changed->connect(f);
+            changed->connect(h);
+        }
+
+        template<class G>
+        void setGuard(const G &g)
+        {
+            g_ = g;
         }
 
     private:
@@ -101,9 +107,12 @@ public:
             establish(f_());
         }
 
-        void establish(const T &newValue)
+        static T unbounded(T oldValue, T newValue) { return newValue; }
+
+        void establish(T newValue)
         {
-            if (newValue != value_) {
+            if (g_) newValue = g_(value_, newValue);
+            if (value_ != newValue) {
                 value_ = newValue;
                 emit();
             }
@@ -118,6 +127,7 @@ public:
 
         mutable T value_;
         std::function<T()> f_;
+        std::function<T(T, T)> g_;
     };
 
     inline Instance *operator->() { return instance_; }

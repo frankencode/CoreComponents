@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -38,9 +38,9 @@ protected:
     }
 };
 
-class BasicBindings: public TestCase
+class BasicBindingsTest: public TestCase
 {
-    void run()
+    void run() override
     {
         Ref<Shape> shape = Shape::create();
         Ref<Shape> shadow = Shape::create();
@@ -56,8 +56,29 @@ class BasicBindings: public TestCase
     }
 };
 
+class GuardTest: public TestCase
+{
+    void run() override
+    {
+        Property<int> x = 0;
+        x->setGuard([](int o, int n) -> int {
+            if (n < 1) n = 1;
+            else if (n > 10) n = 10;
+            return n;
+        });
+        x->connect([&]{ CC_INSPECT(x()); });
+        x = -1;
+        CC_VERIFY(x() == 1);
+        x = 5;
+        CC_VERIFY(x() == 5);
+        x = 20;
+        CC_VERIFY(x() == 10);
+    }
+};
+
 int main(int argc, char **argv)
 {
-    CC_TESTSUITE_ADD(BasicBindings);
+    CC_TESTSUITE_ADD(BasicBindingsTest);
+    CC_TESTSUITE_ADD(GuardTest);
     return TestSuite::instance()->run(argc, argv);
 };
