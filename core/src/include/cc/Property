@@ -47,6 +47,12 @@ public:
             }
         }
 
+        template<class G>
+        void constrain(const G &g)
+        {
+            g_ = g;
+        }
+
         template<class H>
         inline void connect(const H &h)
         {
@@ -56,12 +62,6 @@ public:
             }
 
             changed->connect(h);
-        }
-
-        template<class G>
-        void setGuard(const G &g)
-        {
-            g_ = g;
         }
 
     private:

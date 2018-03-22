@@ -56,7 +56,7 @@ public:
         return Object::cast<U>(p.get());
     }
 
-    template<typename T, typename... Args>
+    template<class T, class... Args>
     inline static Ref<T> create(Args... args) { return new T(args...); }
 
 protected:

@@ -38,7 +38,7 @@ protected:
     }
 };
 
-class BasicBindingsTest: public TestCase
+class BasicBindingTest: public TestCase
 {
     void run() override
     {
@@ -56,12 +56,12 @@ class BasicBindingsTest: public TestCase
     }
 };
 
-class GuardTest: public TestCase
+class ConstrainingTest: public TestCase
 {
     void run() override
     {
         Property<int> x = 0;
-        x->setGuard([](int o, int n) -> int {
+        x->constrain([](int o, int n) -> int {
             if (n < 1) n = 1;
             else if (n > 10) n = 10;
             return n;
@@ -78,7 +78,7 @@ class GuardTest: public TestCase
 
 int main(int argc, char **argv)
 {
-    CC_TESTSUITE_ADD(BasicBindingsTest);
-    CC_TESTSUITE_ADD(GuardTest);
+    CC_TESTSUITE_ADD(BasicBindingTest);
+    CC_TESTSUITE_ADD(ConstrainingTest);
     return TestSuite::instance()->run(argc, argv);
 };
