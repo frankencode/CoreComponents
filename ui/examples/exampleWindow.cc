@@ -1,4 +1,5 @@
 #include <cc/stdio>
+#include <cc/debug> //DEBUG
 #include <cc/System>
 #include <cc/ui/Application>
 #include <cc/ui/Timer>
@@ -21,6 +22,10 @@ class TestView: public View
             double t = System::now();
             angle_ = f * (t - t0) * degrees(2);
             update();
+        });
+
+        center->connect([=]{
+            fout() << "Center changed to " << center() << nl;
         });
     }
 
@@ -52,7 +57,5 @@ int main(int argc, char **argv)
     Application *app = Application::open(argc, argv);
     Window *window = Window::open(Object::create<TestView>(), "Hello, world!");
     window->title->bind([=]{ return String("Test " + str(window->pos())); });
-    window->pos->connect([=]{ fout() << "Moved to " << window->pos() << nl; });
-    window->size->connect([=]{ fout() << "Resized to " << window->size() << nl; });
     return app->run();
 }

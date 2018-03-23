@@ -65,6 +65,10 @@ View::View(View *parent):
             );
         }
     });
+
+    angle->connect([=]{
+        update(UpdateRequest::create(UpdateReason::Moved, this));
+    });
 }
 
 View::~View()

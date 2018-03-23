@@ -243,7 +243,17 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
         destRect.y = 0;
     }
 
-    SDL_RenderCopy(sdlRenderer, sdlTexture, 0, &destRect);
+    if (view->angle() == 0) {
+        SDL_RenderCopy(sdlRenderer, sdlTexture, 0, &destRect);
+    }
+    else {
+        Point center = view->center();
+        SDL_Point sdlCenter{
+            int(center[0]),
+            int(center[1])
+        };
+        SDL_RenderCopyEx(sdlRenderer, sdlTexture, 0, &destRect, view->angle(), &sdlCenter, SDL_FLIP_NONE);
+    }
 }
 
 SdlContext *SdlWindow::sdlContext(View *view)

@@ -25,11 +25,15 @@ class View: public Surface
 {
 public:
     Property<bool> visible { false };
+    Property<Color> color;
+
     Property<Point> pos;
     Property<Size> size;
     Property<Size> minSize;
     Property<Size> maxSize;
-    Property<Color> color;
+
+    Property<Point> center { [=]{ return size() / 2; } };
+    Property<double> angle { 0 };
 
     Property<Point> mousePos;
     Property<MouseButton> mouseButton;

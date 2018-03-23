@@ -26,7 +26,7 @@ public:
 
     Property(Property &&b): instance_(std::move(b.instance_)) {}
 
-    Property(const std::function<T()> &f): instance_(Instance::create(f)) {}
+    Property(const std::function<T()> &f): instance_(Instance::create()) { instance_->bind(f); }
     inline Property &operator=(const std::function<T()> &f) { instance_->bind(f); return *this; }
 
     ~Property() { instance_->disband(); }
@@ -39,12 +39,8 @@ public:
             clearDependencies();
 
             f_ = f;
-            dirty_ = true;
-
-            if (hasConsumers()) {
-                dirty_ = false;
-                cascade();
-            }
+            dirty_ = false;
+            cascade();
         }
 
         template<class G>
@@ -92,12 +88,6 @@ public:
         Instance(const T &b):
             PropertyBinding(false),
             value_(b)
-        {}
-
-        Instance(const std::function<T()> &f):
-            PropertyBinding(true),
-            value_(T()),
-            f_(f)
         {}
 
         Property alias() { return Property(this, true); }

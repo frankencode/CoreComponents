@@ -259,14 +259,14 @@ String SdlApplication::windowEventToString(const SDL_WindowEvent *e)
 
 void SdlApplication::handleWindowEvent(const SDL_WindowEvent *e)
 {
-    CC_DEBUG << windowEventToString(e);
+    // CC_DEBUG << windowEventToString(e);
     switch (e->event) {
         case SDL_WINDOWEVENT_SIZE_CHANGED: {
             SdlWindow *window = 0;
             if (windows_->lookup(e->windowID, &window)) {
                 int w = 0, h = 0;
                 SDL_GetWindowSize(window->sdlWindow_, &w, &h);
-                CC_DEBUG << Vector<int, 2>{w, h};
+                // CC_DEBUG << Vector<int, 2>{w, h};
                 window->onWindowResized(Size{double(e->data1), double(e->data2)});
             }
             break;
