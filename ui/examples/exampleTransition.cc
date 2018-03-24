@@ -36,6 +36,6 @@ class TestView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    Window::open(Object::create<TestView>(), "Click me!", WindowMode::Default|WindowMode::InputFocus);
+    Window::open(Object::create<TestView>(), "Click me!", WindowMode::Default|WindowMode::Accelerated);
     return app->run();
 }
