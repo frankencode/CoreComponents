@@ -53,7 +53,10 @@ void TimeWorker::run()
 
             if (!startRequests_->popBackBefore(timeout->nextTime_, &request))
             {
-                if (!timeout->timer_->isActive_) continue;
+                if (!timeout->timer_->isActive_) {
+                    timeouts_->removeAt(0);
+                    continue;
+                }
 
                 master_->triggerTimer(timeout->timer_);
                 if (timeout->interval_ == 0) {

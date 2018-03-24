@@ -15,6 +15,9 @@
 namespace cc {
 
 template<class T>
+class PropertyMutator;
+
+template<class T>
 class Property
 {
 public:
@@ -60,6 +63,23 @@ public:
             changed->connect(h);
         }
 
+    private:
+        friend class Property;
+        friend class PropertyMutator<T>;
+
+        template<class T2>
+        friend Property<T2> alias(Property<T2> &p);
+
+        inline static Ref<Instance> create(const T &b = T()) { return new Instance{b}; }
+        inline static Ref<Instance> create(const std::function<T()> &f) { return new Instance{f}; }
+
+        Instance(const T &b):
+            PropertyBinding(false),
+            value_(b)
+        {}
+
+        Property alias() { return Property(this, true); }
+
         const T &value() const
         {
             preAccess();
@@ -76,22 +96,6 @@ public:
             establish(newValue);
         }
 
-    private:
-        friend class Property;
-
-        template<class T2>
-        friend Property<T2> alias(Property<T2> &p);
-
-        inline static Ref<Instance> create(const T &b = T()) { return new Instance{b}; }
-        inline static Ref<Instance> create(const std::function<T()> &f) { return new Instance{f}; }
-
-        Instance(const T &b):
-            PropertyBinding(false),
-            value_(b)
-        {}
-
-        Property alias() { return Property(this, true); }
-
         void evaluate() override
         {
             establish(f_());
@@ -101,6 +105,11 @@ public:
         {
             if (g_ && !g_(newValue, value_))
                 return;
+            store(newValue);
+        }
+
+        inline void store(const T &newValue)
+        {
             if (value_ != newValue) {
                 value_ = newValue;
                 emit();
@@ -125,6 +134,11 @@ public:
     inline T operator()() const { return instance_->value(); }
     inline Property &operator=(const T &b) { instance_->setValue(b); return *this; }
 
+    inline Property &operator+=(const T &b) { instance_->setValue(instance_->value() + b); return *this; }
+    inline Property &operator-=(const T &b) { instance_->setValue(instance_->value() - b); return *this; }
+    inline Property &operator*=(const T &b) { instance_->setValue(instance_->value() * b); return *this; }
+    inline Property &operator/=(const T &b) { instance_->setValue(instance_->value() / b); return *this; }
+
 private:
     friend class Instance;
 
@@ -135,5 +149,11 @@ private:
 
 template<class T>
 inline Property<T> alias(Property<T> &p) { return p->alias(); }
+
+template<class T>
+class PropertyMutator {
+protected:
+    static void store(Property<T> &property, const T &newValue) { property->store(newValue); }
+};
 
 } // namespace cc

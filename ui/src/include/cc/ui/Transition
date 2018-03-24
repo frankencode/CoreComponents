@@ -9,13 +9,14 @@
 #pragma once
 
 #include <cc/Property>
-#include <cc/Timer>
 #include <cc/System>
+#include <cc/ui/Timer>
 
 namespace cc {
+namespace ui {
 
 template<class T>
-class Transition: public Object
+class Transition: public Object, private PropertyMutator<T>
 {
 public:
     typedef std::function<T(T, T, double)> Easing;
@@ -28,9 +29,10 @@ public:
     static Transition *create(Property<T> &property, double duration, const Easing &easing = &linear)
     {
         Ref<Transition> transition = new Transition(property, duration, easing);
-        property->constrain([transition](T &newValue, T oldValue){
-            if (transition->isActive()) return true;
-            transition->start(oldValue, newValue);
+        Transition *self = transition;
+        property->constrain([transition, self](T &newValue, T oldValue){
+            if (self->isActive()) return false;
+            self->start(oldValue, newValue);
             return false;
         });
         return transition;
@@ -38,19 +40,19 @@ public:
 
     void start(T oldValue, T newValue)
     {
-        if (oldValue == newValue || worker->isRunning()) return;
+        if (oldValue == newValue || timer_->isActive()) return;
         oldValue_ = oldValue;
         newValue_ = newValue;
         startTime_ = System::now();
         finishTime_ = startTime_ + duration_;
-        timer_->startAt(startTime + timer_->interval());
+        timer_->startAt(startTime_ + timer_->interval());
     }
 
     bool isActive() const { return timer_->isActive(); }
 
 private:
-    Transition(Property<T> &property, double duration, const  &easing):
-        instance_(property->instance_),
+    Transition(Property<T> &property, double duration, const Easing &easing):
+        alias_(alias(property)),
         duration_(duration),
         easing_(easing),
         timer_(Timer::create(1./60.)),
@@ -64,21 +66,23 @@ private:
         const double t0 = startTime_;
         const double t1 = finishTime_;
         const double t = System::now();
+
         if (t >= t1) {
-            instance_->setValue(newValue);
+            PropertyMutator<T>::store(alias_, newValue_);
             timer_->stop();
         }
         else {
-            instance_->setValue(
+            PropertyMutator<T>::store(
+                alias_,
                 easing_(
-                    oldValue, newValue,
+                    oldValue_, newValue_,
                     (t - t0) / (t1 - t0)
                 )
             );
         }
     }
 
-    Ref<Property<T>::Instance> instance_;
+    Property<T> alias_;
     double duration_;
     Easing easing_;
     Ref<Timer> timer_;
@@ -88,4 +92,4 @@ private:
     T newValue_;
 };
 
-} // namespace cc
+}} // namespace cc::ui
