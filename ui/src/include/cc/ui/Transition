@@ -10,6 +10,7 @@
 
 #include <cc/Property>
 #include <cc/System>
+#include <cc/ui/easing>
 #include <cc/ui/Timer>
 
 namespace cc {
@@ -19,14 +20,9 @@ template<class T>
 class Transition: public Object, private PropertyMutator<T>
 {
 public:
-    typedef std::function<T(T, T, double)> Easing;
+    typedef std::function<double(double)> Easing;
 
-    static T linear(T a, T b, double r)
-    {
-        return (1 - r) * a + r * b;
-    }
-
-    static Transition *create(Property<T> &property, double duration, const Easing &easing = &linear)
+    static Transition *create(Property<T> &property, double duration, const Easing &easing = easing::linear)
     {
         Ref<Transition> transition = new Transition(property, duration, easing);
         Transition *self = transition;
@@ -72,12 +68,12 @@ private:
             timer_->stop();
         }
         else {
+            const T &a = oldValue_;
+            const T &b = newValue_;
+            double s = easing_((t - t0) / (t1 - t0));
             PropertyMutator<T>::store(
                 alias_,
-                easing_(
-                    oldValue_, newValue_,
-                    (t - t0) / (t1 - t0)
-                )
+                (1 - s) * a + s * b
             );
         }
     }

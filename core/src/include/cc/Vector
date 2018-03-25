@@ -144,6 +144,9 @@ private:
 };
 
 template<class T, int N>
+inline Vector<T, N> operator*(T a, const Vector<T, N> &b) { return b * a; }
+
+template<class T, int N>
 String str(const Vector<T, N> &v)
 {
     Format f;

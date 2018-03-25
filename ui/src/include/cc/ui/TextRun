@@ -28,7 +28,7 @@ public:
     void append(const TextRun *textRun);
     void appendHtml(String text, const TextStyle *style);
 
-    virtual Point advance() const = 0; // FIXME: rename to endPoint()
+    virtual Point advance() const = 0;
     virtual int byteCount() const = 0;
     virtual int lineCount() const = 0;
 

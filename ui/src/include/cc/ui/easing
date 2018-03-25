@@ -1,0 +1,100 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/types>
+
+namespace cc {
+namespace ui {
+namespace easing {
+
+double linear(double t);
+
+double inQuad(double t);
+double outQuad(double t);
+double inOutQuad(double t);
+
+double inCubic(double t);
+double outCubic(double t);
+double inOutCubic(double t);
+
+double inQuart(double t);
+double outQuart(double t);
+double inOutQuart(double t);
+
+double inQuint(double t);
+double outQuint(double t);
+double inOutQuint(double t);
+
+double inSine(double t);
+double outSine(double t);
+double inOutSine(double t);
+
+double inCirc(double t);
+double outCirc(double t);
+double inOutCirc(double t);
+
+double inExpo(double t);
+double outExpo(double t);
+double inOutExpo(double t);
+
+double inElastic(double t);
+double outElastic(double t);
+double inOutElastic(double t);
+
+double inBack(double t);
+double outBack(double t);
+double inOutBack(double t);
+
+double inBounce(double t);
+double outBounce(double t);
+double inOutBounce(double t);
+
+class Bezier
+{
+public:
+    class Instance {
+    public:
+        inline Point p1() const { return p1_; }
+        inline Point p2() const { return p2_; }
+
+        double getValue(double t) const;
+        Point getPoint(double s) const;
+
+    private:
+        friend class Bezier;
+
+        Instance(const Point &p1, const Point &p2):
+            p1_(p1), p2_(p2)
+        {}
+
+        Point p1_;
+        Point p2_;
+    };
+
+    Bezier(const Point &p1, const Point &p2):
+        instance_(p1, p2)
+    {}
+
+    Bezier(double x1, double y1, double x2, double y2):
+        instance_(Point{x1, y1}, Point{x2, y2})
+    {}
+
+    inline double operator()(double t) const
+    {
+        return instance_.getValue(t);
+    }
+
+    const Instance *operator->() const { return &instance_; }
+
+private:
+    Instance instance_;
+};
+
+}}} // namespace cc::ui::easing

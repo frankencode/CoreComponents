@@ -19,7 +19,8 @@ class TestView: public View
             angle += 45;
         });
 
-        Transition<double>::create(angle, 0.5);
+        // Transition<double>::create(angle, 0.5, easing::outElastic);
+        Transition<double>::create(angle, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));
     }
 
     void paint() override
