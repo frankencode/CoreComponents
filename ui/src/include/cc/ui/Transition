@@ -88,4 +88,10 @@ private:
     T newValue_;
 };
 
+template<class T>
+Transition<T> *ease(Property<T> &property, double duration, const typename Transition<T>::Easing &easing = easing::linear)
+{
+    return Transition<T>::create(property, duration, easing);
+}
+
 }} // namespace cc::ui
