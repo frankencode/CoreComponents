@@ -43,6 +43,7 @@ private:
     void handleMouseMotionEvent(const SDL_MouseMotionEvent *e);
     void handleMouseButtonEvent(const SDL_MouseButtonEvent *e);
     void handleMouseWheelEvent(const SDL_MouseWheelEvent *e);
+    void handleKeyboardEvent(const SDL_KeyboardEvent *e);
 
     static String windowEventToString(const SDL_WindowEvent *e);
     void handleWindowEvent(const SDL_WindowEvent *e);

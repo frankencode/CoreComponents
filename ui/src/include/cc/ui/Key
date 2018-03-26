@@ -1,0 +1,74 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/keyboard>
+
+namespace cc {
+namespace ui {
+
+class Key {
+public:
+    class Instance {
+    public:
+        inline ScanCode scanCode() const { return scanCode_; }
+        inline KeyCode keyCode() const { return keyCode_; }
+        inline KeyModifier modifiers() const { return modifiers_; }
+
+    private:
+        friend class Key;
+
+        Instance():
+            scanCode_(ScanCode::Unknown),
+            keyCode_(KeyCode::Unknown),
+            modifiers_(KeyModifier::None)
+        {}
+
+        Instance(ScanCode scanCode, KeyCode keyCode, KeyModifier modifiers):
+            scanCode_(scanCode),
+            keyCode_(keyCode),
+            modifiers_(modifiers)
+        {}
+
+        ScanCode scanCode_;
+        KeyCode keyCode_;
+        KeyModifier modifiers_;
+    };
+
+    Key() {}
+
+    Key(ScanCode scanCode, KeyCode keyCode, KeyModifier modifiers):
+        instance_(scanCode, keyCode, modifiers)
+    {}
+
+    inline const Instance *operator->() const { return &instance_; }
+
+    inline bool operator==(const Key &other) const {
+        return
+            instance_.scanCode_  == other.instance_.scanCode_ &&
+            instance_.keyCode_   == other.instance_.keyCode_  &&
+            instance_.modifiers_ == other.instance_.modifiers_;
+    }
+
+    inline bool operator!=(const Key &other) const {
+        return
+            instance_.scanCode_  != other.instance_.scanCode_ ||
+            instance_.keyCode_   != other.instance_.keyCode_  ||
+            instance_.modifiers_ != other.instance_.modifiers_;
+    }
+
+    inline explicit operator bool() const { return instance_.keyCode_ != KeyCode::Unknown; }
+
+private:
+    Instance instance_;
+};
+
+String str(Key key);
+
+}} // namespace cc::ui

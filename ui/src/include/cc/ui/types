@@ -143,6 +143,13 @@ enum class PointerAction {
 
 String str(PointerAction action);
 
+enum class KeyAction {
+    Pressed,
+    Released
+};
+
+String str(KeyAction action);
+
 typedef Vector<double, 2> Point;
 typedef Vector<double, 2> Pos;
 typedef Vector<double, 2> Size;

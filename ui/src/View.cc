@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug> // DEBUG
 #include <cc/List>
 #include <cc/ui/Application>
 #include <cc/ui/Window>
@@ -13,6 +14,7 @@
 #include <cc/ui/TouchEvent>
 #include <cc/ui/MouseEvent>
 #include <cc/ui/MouseWheelEvent>
+#include <cc/ui/KeyEvent>
 #include <cc/ui/View>
 
 namespace cc {
@@ -175,6 +177,19 @@ void View::mouseWheelEvent(const MouseWheelEvent *event)
             child->mouseWheelEvent(event);
             return;
         }
+    }
+}
+
+void View::keyEvent(const KeyEvent *event)
+{
+    key = Key{ event->scanCode(), event->keyCode(), event->modifiers() };
+
+    if (event->action() == KeyAction::Pressed) {
+        keyPressed();
+    }
+    else if (event->action() == KeyAction::Released) {
+        keyReleased();
+        key = Key{};
     }
 }
 

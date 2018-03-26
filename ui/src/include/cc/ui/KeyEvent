@@ -1,0 +1,56 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/types>
+#include <cc/ui/keyboard>
+
+namespace cc {
+namespace ui {
+
+class KeyEvent: public Object
+{
+public:
+    KeyAction action() const { return action_; }
+    double time() const { return time_; }
+    int repeatCount() const { return repeatCount_; }
+    ScanCode scanCode() const { return scanCode_; }
+    KeyCode keyCode() const { return keyCode_; }
+    KeyModifier modifiers() const { return modifiers_; }
+
+    String toString() const;
+
+private:
+    friend class Object;
+
+    KeyEvent(
+        KeyAction action,
+        double time,
+        int repeatCount,
+        ScanCode scanCode,
+        KeyCode keyCode,
+        KeyModifier modifiers
+    ):
+        action_(action),
+        time_(time),
+        repeatCount_(repeatCount),
+        scanCode_(scanCode),
+        keyCode_(keyCode),
+        modifiers_(modifiers)
+    {}
+
+    KeyAction action_;
+    double time_;
+    int repeatCount_;
+    ScanCode scanCode_;
+    KeyCode keyCode_;
+    KeyModifier modifiers_;
+};
+
+}} // namespace cc::ui

@@ -16,6 +16,7 @@
 #include <cc/ui/TouchEvent>
 #include <cc/ui/MouseEvent>
 #include <cc/ui/MouseWheelEvent>
+#include <cc/ui/KeyEvent>
 #include <cc/ui/SdlApplication>
 
 namespace cc {
@@ -106,6 +107,10 @@ int SdlApplication::run()
                 break;
             case SDL_MOUSEWHEEL:
                 handleMouseWheelEvent(&event_->wheel);
+                break;
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+                handleKeyboardEvent(&event_->key);
                 break;
             case SDL_WINDOWEVENT:
                 handleWindowEvent(&event_->window);
@@ -232,6 +237,33 @@ void SdlApplication::handleMouseWheelEvent(const SDL_MouseWheelEvent *e)
         if (window->id_ == e->windowID)
             window->view()->mouseWheelEvent(event);
     }
+}
+
+void SdlApplication::handleKeyboardEvent(const SDL_KeyboardEvent *e)
+{
+    Ref<KeyEvent> event =
+        Object::create<KeyEvent>(
+            (e->type == SDL_KEYDOWN) ? KeyAction::Pressed : KeyAction::Released,
+            e->timestamp / 1000.,
+            e->repeat,
+            static_cast<ScanCode>(e->keysym.scancode),
+            static_cast<KeyCode>(e->keysym.sym),
+            static_cast<KeyModifier>(e->keysym.mod)
+        );
+
+    // CC_INSPECT(event);
+
+    for (auto pair: windows_) {
+        SdlWindow *window = pair->value();
+        if (window->id_ == e->windowID) {
+            window->view()->keyEvent(event);
+            return;
+        }
+    }
+
+    // FIXME
+    if (windows_->count() > 0)
+        windows_->valueAt(0)->view()->keyEvent(event);
 }
 
 String SdlApplication::windowEventToString(const SDL_WindowEvent *e)

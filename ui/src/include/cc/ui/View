@@ -11,6 +11,7 @@
 #include <cc/ui/types>
 #include <cc/ui/Surface>
 #include <cc/ui/UpdateRequest>
+#include <cc/ui/Key>
 
 namespace cc {
 namespace ui {
@@ -20,6 +21,7 @@ class Image;
 class TouchEvent;
 class MouseEvent;
 class MouseWheelEvent;
+class KeyEvent;
 
 class View: public Surface
 {
@@ -42,6 +44,11 @@ public:
     Signal released;
     Signal clicked;
 
+    Property<Key> key;
+
+    Signal keyPressed;
+    Signal keyReleased;
+
     inline Window *window() const { return window_; }
     inline View *parent() const { return parent_; }
 
@@ -55,6 +62,7 @@ public:
     virtual void touchEvent(const TouchEvent *event);
     virtual void mouseEvent(const MouseEvent *event);
     virtual void mouseWheelEvent(const MouseWheelEvent *event);
+    virtual void keyEvent(const KeyEvent *event);
 
 protected:
     friend class Window;

@@ -137,6 +137,16 @@ String str(PointerAction action)
     return String{};
 }
 
+String str(KeyAction action)
+{
+    switch (action) {
+        case KeyAction::Pressed : return "KeyAction::Pressed";
+        case KeyAction::Released: return "KeyAction::Released";
+    };
+
+    return String{};
+}
+
 bool textWrapBehindDefault(String text, int byteOffset, int byteCount)
 {
     uint8_t ch = text->byteAt(byteOffset + byteCount - 1);
