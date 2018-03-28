@@ -12,6 +12,21 @@
 namespace cc {
 namespace ui {
 
+Ref<TextStyle> TextStyle::create(const Font *font, Color color)
+{
+    return new TextStyle(font, color, TextDecoration::None);
+}
+
+Ref<TextStyle> TextStyle::create(const Font *font, TextDecoration decoration, Color color)
+{
+    return new TextStyle(font, color, decoration);
+}
+
+Ref<TextStyle> TextStyle::copy() const
+{
+    return new TextStyle(font_, color_, decoration_);
+}
+
 String TextStyle::toString() const
 {
     return Format()

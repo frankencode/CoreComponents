@@ -17,6 +17,7 @@ namespace cc {
 template<class T>
 class PropertyMutator;
 
+// \TODO: fix alias assignment
 template<class T>
 class Property
 {

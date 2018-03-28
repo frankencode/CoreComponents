@@ -8,6 +8,7 @@
 
 #include <cc/debug>
 #include <cc/Registration>
+#include <cc/ui/Application>
 #include <cc/ui/FontManager>
 #include <cc/ui/IndustrialStylePlugin>
 
@@ -21,7 +22,12 @@ IndustrialStylePlugin::IndustrialStylePlugin():
 void IndustrialStylePlugin::activate()
 {
     FontManager::instance()->addPath("/usr/share/fonts/truetype/dejavu/");
-    defaultTextStyle = TextStyle::create(Font::select("DejaVu Sans", 16));
+
+    defaultTextStyle->bind([=]{
+        return TextStyle::create(
+            Font::select("DejaVu Sans", 20 + Application::instance()->textZoom())
+        );
+    });
 }
 
 CC_REGISTRATION(IndustrialStylePlugin)

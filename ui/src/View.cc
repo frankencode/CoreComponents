@@ -45,7 +45,6 @@ View::View(View *parent):
     visible->connect([=]{
         update(visible() ? UpdateReason::Shown : UpdateReason::Hidden);
     });
-
 }
 
 View::~View()

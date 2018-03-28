@@ -522,6 +522,8 @@ enum class KeyCode: int32_t {
 };
 
 inline int32_t operator+(KeyCode keyCode) { return static_cast<int32_t>(keyCode); }
+inline bool operator==(KeyCode keyCode, char ch) { return +keyCode == ch; }
+inline bool operator!=(KeyCode keyCode, char ch) { return +keyCode != ch; }
 
 String str(KeyCode keyCode);
 
@@ -538,7 +540,11 @@ enum class KeyModifier: int32_t
     RightMeta    = 0x0800,
     NumLock      = 0x1000,
     CapsLock     = 0x2000,
-    ModeLock     = 0x4000
+    ModeLock     = 0x4000,
+    Shift        = LeftShift | RightShift,
+    Control      = LeftControl | RightControl,
+    Alt          = LeftAlt | RightAlt,
+    Meta         = LeftMeta | RightMeta
 };
 
 CC_BITMASK(KeyModifier, int32_t);

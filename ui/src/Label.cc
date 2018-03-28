@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/debug> // DEBUG
 #include <cc/ui/TextRun>
 #include <cc/ui/StylePlugin>
 #include <cc/ui/Label>
@@ -21,11 +20,10 @@ Ref<Label> Label::create(View *parent, String text, const TextStyle *textStyle)
 
 Label::Label(View *parent, String text_, const TextStyle *textStyle_):
     View(parent),
-    text(text_)
+    text(text_),
+    textStyle(alias(StylePlugin::instance()->defaultTextStyle))
 {
     if (textStyle_) textStyle = textStyle_;
-    else textStyle = StylePlugin::instance()->defaultTextStyle();
-
     color = transparent;
 
     prepare();
