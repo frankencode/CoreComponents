@@ -26,7 +26,7 @@ public:
     {
         Ref<Transition> transition = new Transition(property, duration, easing);
         Transition *self = transition;
-        property->constrain([transition, self](T &newValue, T oldValue){
+        property->restrict([transition, self](T &newValue, T oldValue){
             if (self->isActive()) return false;
             self->start(oldValue, newValue);
             return false;
@@ -89,7 +89,7 @@ private:
 };
 
 template<class T>
-Transition<T> *ease(Property<T> &property, double duration, const typename Transition<T>::Easing &easing = easing::linear)
+Transition<T> *easeOn(Property<T> &property, double duration, const typename Transition<T>::Easing &easing = easing::linear)
 {
     return Transition<T>::create(property, duration, easing);
 }

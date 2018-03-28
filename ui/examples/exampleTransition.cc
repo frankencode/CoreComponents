@@ -19,8 +19,8 @@ class TestView: public View
             angle += 45;
         });
 
-        // ease(angle, 0.5, easing::outElastic);
-        ease(angle, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));
+        // easeOn(angle, 0.5, easing::outElastic);
+        easeOn(angle, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));
     }
 
     void paint() override

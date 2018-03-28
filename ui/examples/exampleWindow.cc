@@ -13,13 +13,13 @@ class TestView: public View
     {
         size = Size{640, 480};
         color = Color{"#FFFFFF"};
-        double f = 60;
+        /*double f = 60;
         double t0 = System::now();
         Timer::start(1/f, [=]{
             double t = System::now();
             angle = f * (t - t0) * 2;
             update();
-        });
+        });*/
     }
 
     void paint() override
@@ -46,6 +46,6 @@ int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
     Window *window = Window::open(Object::create<TestView>(), "Hello, world!");
-    window->title->bind([=]{ return String("Test " + str(window->pos())); });
+    window->title->bind([=]{ return "Test window " + str(window->size()) + " at " + str(window->pos()); });
     return app->run();
 }

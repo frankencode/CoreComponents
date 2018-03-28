@@ -19,11 +19,8 @@ Window *Window::open(View *view, String title, WindowMode mode)
 }
 
 Window::Window(View *view, String title):
-    visible(alias(view->visible)),
     title(title),
-    pos(alias(view->pos)),
     size(alias(view->size)),
-    color(alias(view->color)),
     view_(view),
     nextFrame_(Frame::create()),
     touchTargets_(TouchTargets::create())

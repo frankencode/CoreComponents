@@ -52,11 +52,10 @@ public:
 
     View *view() const { return view_; }
 
-    Property<bool> visible;
+    Property<bool> visible { true };
     Property<String> title;
     Property<Point> pos;
     Property<Size> size;
-    Property<Color> color;
 
 protected:
     friend class View;

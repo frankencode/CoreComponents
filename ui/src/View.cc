@@ -21,43 +21,42 @@ namespace cc {
 namespace ui {
 
 View::View(View *parent):
-    visible(parent),
     serial_(0),
     window_(0),
     parent_(parent),
     children_(Children::create())
 {
     if (parent)
+    {
         parent->insertChild(this);
 
-    if (parent_) {
         pos->connect([=]{
             if (visible()) update(UpdateReason::Moved);
         });
     }
+    else {
+        pos->restrict([](Point&, Point) { return false; });
+    }
 
-    size->connect([=]{
-        update(UpdateReason::Resized);
-    });
-
-    color->connect([=]{
-        update(UpdateReason::Changed);
-    });
+    size ->connect([=]{ update(UpdateReason::Resized); });
+    color->connect([=]{ update(UpdateReason::Changed); });
+    angle->connect([=]{ update(UpdateReason::Moved); });
 
     visible->connect([=]{
         update(visible() ? UpdateReason::Shown : UpdateReason::Hidden);
     });
 
-    angle->connect([=]{
-        update(UpdateReason::Moved);
-    });
 }
 
 View::~View()
+{}
+
+void View::disband()
 {
-    children_ = 0;
-    if (parent_ && refCount() == 1) // FIXME: whatfore?
-        parent_->removeChild(this);
+    CC_ASSERT2(parent_, "Cannot manually destroy the top-level view");
+    if (!parent_) return;
+    visible = false;
+    parent_->removeChild(this);
 }
 
 Point View::mapToGlobal(Point l) const
@@ -259,9 +258,7 @@ Image *View::image()
 
 uint64_t View::nextSerial() const
 {
-    if (children_->count() > 0)
-        return children_->keyAt(children_->count() - 1) + 1;
-    return 1;
+    return (children_->count() > 0) ? children_->keyAt(children_->count() - 1) + 1 : 1;
 }
 
 void View::insertChild(View *child)
@@ -273,6 +270,7 @@ void View::insertChild(View *child)
 void View::removeChild(View *child)
 {
     children_->remove(child->serial_);
+    child->serial_ = 0;
 }
 
 cairo_surface_t *View::cairoSurface() const

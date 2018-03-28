@@ -26,7 +26,7 @@ class KeyEvent;
 class View: public Surface
 {
 public:
-    Property<bool> visible;
+    Property<bool> visible { true };
     Property<Color> color;
 
     Signal exposed;
@@ -63,6 +63,8 @@ public:
     virtual void mouseEvent(const MouseEvent *event);
     virtual void mouseWheelEvent(const MouseWheelEvent *event);
     virtual void keyEvent(const KeyEvent *event);
+
+    void disband();
 
 protected:
     friend class Window;

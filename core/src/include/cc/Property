@@ -47,7 +47,7 @@ public:
         }
 
         template<class G>
-        void constrain(const G &g)
+        void restrict(const G &g)
         {
             g_ = g;
         }

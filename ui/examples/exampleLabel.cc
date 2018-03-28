@@ -27,7 +27,7 @@ class TestView: public View
         label->color = Color(0x00, 0x00, 0xFF, 0x20);
         label->pos->bind([=]{ return center() - label->size() / 2; });
 
-        ease(label->angle, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));
+        easeOn(label->angle, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));
 
         Timer::start(1, [=]{ label->text = getClockText(); label->angle += 45; });
     }
