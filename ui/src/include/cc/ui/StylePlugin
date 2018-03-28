@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Property>
+#include <cc/SpinLock>
+#include <cc/ui/TextStyle>
+
+namespace cc {
+namespace ui {
+
+class StyleManager;
+
+class StylePlugin: public Object
+{
+public:
+    Property< Ref<const TextStyle> > defaultTextStyle;
+
+    static StylePlugin *instance();
+
+    inline String name() const { return name_; }
+
+    virtual Size textMargin() const;
+
+protected:
+    friend class StyleManager;
+    friend class Object;
+
+    StylePlugin(String name);
+
+    virtual void activate() = 0;
+
+private:
+    void init();
+
+    String name_;
+};
+
+}} // namespace cc::ui

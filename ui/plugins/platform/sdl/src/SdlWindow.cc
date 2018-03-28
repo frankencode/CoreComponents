@@ -110,17 +110,13 @@ SdlWindow *SdlWindow::open(WindowMode mode)
     });
 
     size->connect([=]{
-        if (size() != currentSize_) {
-            CC_DEBUG << "SDL_SetWindowSize: " << size();
+        if (size() != currentSize_)
             SDL_SetWindowSize(sdlWindow_, size()[0], size()[1]);
-        }
     });
 
     pos->connect([=]{
-        if (pos() != currentPos_) {
-            CC_DEBUG << "SDL_SetWindowPosition: " << pos();
+        if (pos() != currentPos_)
             SDL_SetWindowPosition(sdlWindow_, pos()[0], pos()[1]);
-        }
     });
 
     return this;
@@ -150,7 +146,7 @@ void SdlWindow::onWindowHidden()
 
 void SdlWindow::onWindowExposed()
 {
-    update(view(), UpdateRequest::create(UpdateReason::Exposed, view()));
+    view()->exposed();
 }
 
 void SdlWindow::renderFrame(Frame *frame)

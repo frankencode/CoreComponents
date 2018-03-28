@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/StylePlugin>
+
+namespace cc { template<typename> class Singleton; }
+namespace cc { template<typename, typename> class Map; }
+
+namespace cc {
+namespace ui {
+
+class StyleManager: public Object
+{
+public:
+    static StyleManager *instance();
+
+    bool getPlugin(String name, Ref<StylePlugin> *plugin) const;
+    Ref< Source< Ref<StylePlugin> > > getAllPlugins() const;
+
+    StylePlugin *activePlugin() const;
+    void activatePlugin(StylePlugin *plugin);
+
+private:
+    friend class Singleton<StyleManager>;
+    friend class StylePlugin;
+
+    StyleManager();
+
+    void registerPlugin(StylePlugin *plugin);
+
+    typedef Map< String, Ref<StylePlugin> > Plugins;
+    Ref<Plugins> plugins_;
+    mutable Ref<StylePlugin> activePlugin_;
+    String defaultStyleName_;
+};
+
+}} // namespace cc::ui

@@ -16,7 +16,7 @@ namespace toki {
 class CxxLanguage: public Language
 {
 private:
-    friend class Registration<CxxLanguage>;
+    friend class Object;
 
     CxxLanguage():
         Language(

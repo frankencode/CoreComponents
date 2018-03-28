@@ -73,9 +73,7 @@ class TestView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    String fontPath = "/usr/share/fonts/truetype/dejavu/";
-    if (argc > 1) fontPath = argv[1];
-    FontManager::instance()->addPath(fontPath);
-    Window::open(Object::create<TestView>(), fontPath);
+    if (argc > 1) FontManager::instance()->addPath(argv[1]);
+    Window::open(Object::create<TestView>(), argc > 1 ? argv[1] : "");
     return app->run();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include <cc/Map>
-#include <cc/String>
 #include <cc/ui/PlatformPlugin>
 
 namespace cc { template<typename> class Singleton; }
@@ -37,7 +35,7 @@ private:
 
     void registerPlugin(PlatformPlugin *plugin);
 
-    typedef Map<String, Ref<PlatformPlugin> > Plugins;
+    typedef Map< String, Ref<PlatformPlugin> > Plugins;
     Ref<Plugins> plugins_;
 
     Ref<PlatformPlugin> activePlugin_;

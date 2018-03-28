@@ -1,0 +1,25 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/StylePlugin>
+
+namespace cc {
+namespace ui {
+
+class IndustrialStylePlugin: public StylePlugin
+{
+protected:
+    friend class Object;
+
+    IndustrialStylePlugin();
+    void activate() override;
+};
+
+}} // namespace cc::ui

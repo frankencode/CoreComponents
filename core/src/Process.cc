@@ -114,6 +114,13 @@ String Process::env(String key)
     return getenv(key);
 }
 
+String Process::env(String key, String defaultValue)
+{
+    String value = getenv(key);
+    if (value == "") value = defaultValue;
+    return value;
+}
+
 void Process::setEnv(String key, String value)
 {
     if (setenv(key, value, 1) == -1)

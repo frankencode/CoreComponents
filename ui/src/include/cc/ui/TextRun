@@ -20,7 +20,7 @@ class TextRun: public Object
 {
 public:
     static Ref<TextRun> create();
-    static Ref<TextRun> create(String text, const TextStyle *style);
+    static Ref<TextRun> create(String text, const TextStyle *style = 0);
 
     static Ref<TextRun> copy(const TextRun *other) { return other->copy(); }
 
@@ -29,6 +29,7 @@ public:
     void appendHtml(String text, const TextStyle *style);
 
     virtual Point advance() const = 0;
+    virtual Size size() const = 0;
     virtual int byteCount() const = 0;
     virtual int lineCount() const = 0;
 

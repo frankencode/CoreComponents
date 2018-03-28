@@ -16,7 +16,7 @@ namespace ui {
 
 PlatformPlugin *PlatformPlugin::instance()
 {
-    return  PlatformManager::instance()->activePlugin();
+    return PlatformManager::instance()->activePlugin();
 }
 
 PlatformPlugin::PlatformPlugin(String name, bool isPlatformDefault):

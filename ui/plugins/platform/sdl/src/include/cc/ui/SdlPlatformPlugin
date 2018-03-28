@@ -16,12 +16,15 @@ namespace ui {
 class SdlPlatformPlugin: public PlatformPlugin
 {
 public:
-    SdlPlatformPlugin();
     Application *application() const override;
     TimeMaster *timeMaster() const override;
     DisplayManager *displayManager() const override;
     TouchDeviceManager *touchDeviceManager() const override;
-};
 
+private:
+    friend class Object;
+
+    SdlPlatformPlugin();
+};
 
 }} // namespace cc::ui

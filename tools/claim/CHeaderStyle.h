@@ -21,7 +21,7 @@ public:
     virtual String str(Notice *notice) const;
 
 private:
-    friend class Registration<CHeaderStyle>;
+    friend class Object;
 
     CHeaderStyle();
     Ref<SyntaxDefinition> headerSyntax_;
@@ -30,4 +30,3 @@ private:
 namespace { Registration<CHeaderStyle> registration; }
 
 } // namespace ccclaim
-

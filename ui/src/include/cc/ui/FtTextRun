@@ -24,7 +24,8 @@ public:
 
     void append(String text, const TextStyle *style) override;
 
-    Point advance() const override { return advance_; } // FIXME: rename to fin() or endPoint()
+    Point advance() const override { return advance_; }
+    Size size() const override { return size_; }
     int byteCount() const override { return byteCount_; }
     int lineCount() const override { return lineCount_; }
 
@@ -56,6 +57,8 @@ private:
     Ref<FtTypeSetter> typeSetter_;
     Ref<FtGlyphRuns> glyphRuns_;
     Point advance_;
+    double firstLineHeight_;
+    Size size_;
     int byteCount_;
     int lineCount_;
 

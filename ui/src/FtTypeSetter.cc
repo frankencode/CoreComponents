@@ -41,7 +41,7 @@ Ref<FtGlyphRun> FtTypeSetter::ftLayout(String text, const TextStyle *style)
     FT_UInt previousGlyphIndex = 0;
 
     Point pos0 = pos_;
-    double maxGlyphHeight;
+    double maxGlyphHeight = 0;
 
     Step glyphAdvance;
 

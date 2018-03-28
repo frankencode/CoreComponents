@@ -26,13 +26,13 @@ class KeyEvent;
 class View: public Surface
 {
 public:
-    Property<bool> visible { false };
+    Property<bool> visible;
     Property<Color> color;
+
+    Signal exposed;
 
     Property<Point> pos;
     Property<Size> size;
-    Property<Size> minSize;
-    Property<Size> maxSize;
 
     Property<Point> center { [=]{ return size() / 2; } };
     Property<double> angle { 0 };
@@ -74,11 +74,12 @@ protected:
     virtual bool isPainted() const;
     virtual bool isStatic() const;
 
-    virtual void setup();
     virtual void clear();
     virtual void paint();
 
-    void update(const UpdateRequest *request = 0);
+    void polish();
+    void update(UpdateReason reason = UpdateReason::Changed); // FIXME: obsolete
+    void update(const UpdateRequest *request);
 
     Window *window();
     Image *image();

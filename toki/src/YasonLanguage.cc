@@ -15,7 +15,7 @@ namespace toki {
 class YasonLanguage: public Language
 {
 private:
-    friend class Registration<YasonLanguage>;
+    friend class Object;
 
     YasonLanguage():
         Language(

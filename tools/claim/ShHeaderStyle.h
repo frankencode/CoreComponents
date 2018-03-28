@@ -22,7 +22,7 @@ public:
     virtual int magicCount(String text) const;
 
 private:
-    friend class Registration<ShHeaderStyle>;
+    friend class Object;
 
     ShHeaderStyle();
     Ref<SyntaxDefinition> headerSyntax_;
@@ -31,4 +31,3 @@ private:
 namespace { Registration<ShHeaderStyle> registration; }
 
 } // namespace ccclaim
-

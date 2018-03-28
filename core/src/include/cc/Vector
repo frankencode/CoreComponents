@@ -22,8 +22,8 @@ public:
     typedef int Index;
 
     Vector() {}
-    Vector(const Vector &b): instance_(b.instance_) {}
     Vector(std::initializer_list<T> l): instance_(l) {}
+    Vector(const Vector &b): instance_(b.instance_) {}
 
     class Instance {
     public:
@@ -54,10 +54,11 @@ public:
         friend class Vector;
         Instance(): v_{} {}
         Instance(std::initializer_list<T> l) {
-            int i = 0;
-            for (auto b: l) {
-                CC_ASSERT(i < N);
-                v_[i++] = b;
+            for (int i = 0; true;) {
+                for (auto b: l) {
+                    if (i == N) return;
+                    v_[i++] = b;
+                }
             }
         }
         T v_[N];
@@ -143,8 +144,8 @@ private:
     Instance instance_;
 };
 
-template<class T, int N>
-inline Vector<T, N> operator*(T a, const Vector<T, N> &b) { return b * a; }
+template<class S, class T, int N>
+inline Vector<T, N> operator*(S a, const Vector<T, N> &b) { return b * T(a); }
 
 template<class T, int N>
 String str(const Vector<T, N> &v)

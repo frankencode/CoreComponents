@@ -16,7 +16,7 @@ namespace toki {
 class ShLanguage: public Language
 {
 private:
-    friend class Registration<ShLanguage>;
+    friend class Object;
 
     ShLanguage():
         Language(

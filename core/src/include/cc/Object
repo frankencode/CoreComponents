@@ -56,8 +56,14 @@ public:
         return Object::cast<U>(p.get());
     }
 
+    inline void init() {}
+
     template<class T, class... Args>
-    inline static Ref<T> create(Args... args) { return new T(args...); }
+    inline static Ref<T> create(Args... args) {
+        Ref<T> object = new T(args...);
+        object->init();
+        return object;
+    }
 
 protected:
     class StackGuard {

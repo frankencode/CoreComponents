@@ -14,6 +14,7 @@ namespace ui {
 FtTextRun::FtTextRun(FtTypeSetter *typeSetter):
     typeSetter_(typeSetter),
     glyphRuns_(FtGlyphRuns::create()),
+    firstLineHeight_(0),
     byteCount_(0),
     textAlign_(TextAlign::Left)
 {}
@@ -21,7 +22,17 @@ FtTextRun::FtTextRun(FtTypeSetter *typeSetter):
 void FtTextRun::append(String text, const TextStyle *style)
 {
     if (!typeSetter_) return;
-    glyphRuns_->append(typeSetter_->ftLayout(text, style));
+    Ref<const FtGlyphRun> run = typeSetter_->ftLayout(text, style);
+    glyphRuns_->append(run);
+
+    if (run->advance()[1] == 0) {
+        Size size = run->size();
+        if (firstLineHeight_ < size[1]) size_[1] = firstLineHeight_ = size[1];
+    }
+    else
+        size_[1] = firstLineHeight_ + run->advance()[1];
+    if (size_[0] < run->advance()[0]) size_[0] = run->advance()[0];
+
     advance_ = typeSetter_->advance();
     byteCount_ += text->count();
 }
@@ -107,6 +118,7 @@ Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns 
 {
     Ref<FtTextRun> textRun = Object::create<FtTextRun>();
     textRun->advance_ = metaBlock->advance_;
+    textRun->size_ = metaBlock->size_;
     textRun->byteCount_ = metaBlock->text_->count();
     textRun->lineCount_ = metaBlock->lineCount_;
 

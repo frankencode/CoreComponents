@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/ui/StylePlugin>
 #include <cc/ui/PlatformPlugin>
 #include <cc/ui/TextRun>
 
@@ -19,11 +20,14 @@ Ref<TextRun> TextRun::create()
 
 Ref<TextRun> TextRun::create(String text, const TextStyle *style)
 {
+    if (!style) style = StylePlugin::instance()->defaultTextStyle();
+
     Ref<TextRun> textRun = TextRun::create();
     if (text->countCharsIn("<>&") > 0)
         textRun->appendHtml(text, style);
     else
         textRun->append(text, style);
+
     return textRun;
 }
 

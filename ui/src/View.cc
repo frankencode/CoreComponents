@@ -21,6 +21,7 @@ namespace cc {
 namespace ui {
 
 View::View(View *parent):
+    visible(parent),
     serial_(0),
     window_(0),
     parent_(parent),
@@ -31,52 +32,31 @@ View::View(View *parent):
 
     if (parent_) {
         pos->connect([=]{
-            if (visible()) {
-                update(
-                    UpdateRequest::create(UpdateReason::Moved, this)
-                );
-            }
+            if (visible()) update(UpdateReason::Moved);
         });
     }
 
     size->connect([=]{
-        if (visible()) {
-            update(
-                UpdateRequest::create(UpdateReason::Resized, this)
-            );
-        }
+        update(UpdateReason::Resized);
     });
 
     color->connect([=]{
-        if (visible()) {
-            update(
-                UpdateRequest::create(UpdateReason::Changed, this)
-            );
-        }
+        update(UpdateReason::Changed);
     });
 
     visible->connect([=]{
-        if (visible()) {
-            update(
-                UpdateRequest::create(UpdateReason::Changed, this)
-            );
-        }
-        else {
-            update(
-                UpdateRequest::create(UpdateReason::Hidden, this)
-            );
-        }
+        update(visible() ? UpdateReason::Shown : UpdateReason::Hidden);
     });
 
     angle->connect([=]{
-        update(UpdateRequest::create(UpdateReason::Moved, this));
+        update(UpdateReason::Moved);
     });
 }
 
 View::~View()
 {
     children_ = 0;
-    if (parent_)
+    if (parent_ && refCount() == 1) // FIXME: whatfore?
         parent_->removeChild(this);
 }
 
@@ -208,9 +188,6 @@ bool View::isStatic() const
     return true;
 }
 
-void View::setup()
-{}
-
 void View::clear()
 {
     image()->clear(Color::premultiplied(color()));
@@ -219,9 +196,32 @@ void View::clear()
 void View::paint()
 {}
 
-void View::update(const UpdateRequest *request)
+void View::polish()
+{
+    if (!window_) return;
+
+    for (int i = 0; i < children_->count(); ++i) {
+        View *child = children_->valueAt(i);
+        child->clear();
+        child->paint();
+        window_->addToFrame(UpdateRequest::create(UpdateReason::Changed, child));
+    }
+
+    clear();
+    paint();
+    window_->addToFrame(UpdateRequest::create(UpdateReason::Changed, this));
+}
+
+void View::update(UpdateReason reason)
 {
     if (!window()) return;
+    update(UpdateRequest::create(reason, this));
+}
+
+void View::update(const UpdateRequest *request)
+{
+    Window *w = window();
+    if (!w) return;
 
     Ref<const UpdateRequest> request_ = request;
     if (!request) request = request_ = UpdateRequest::create(UpdateReason::Changed, this);
@@ -238,7 +238,7 @@ void View::update(const UpdateRequest *request)
         paint();
     }
 
-    window()->addToFrame(request);
+    w->addToFrame(request);
 }
 
 Window *View::window()

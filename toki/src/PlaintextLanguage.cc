@@ -15,7 +15,7 @@ namespace toki {
 class PlaintextLanguage: public Language
 {
 private:
-    friend class Registration<PlaintextLanguage>;
+    friend class Object;
 
     PlaintextLanguage():
         Language(

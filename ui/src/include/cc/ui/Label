@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/View>
+#include <cc/ui/TextStyle>
+
+namespace cc {
+namespace ui {
+
+class TextRun;
+
+class Label: public View
+{
+public:
+    Property<String> text;
+    Property< Ref<const TextStyle> > textStyle;
+
+    static Ref<Label> create(View *parent, String text, const TextStyle *textStyle = 0);
+
+protected:
+    Label(View *parent, String text, const TextStyle *textStyle);
+
+    void prepare();
+    void paint() override;
+
+    Ref<TextRun> textRun_;
+};
+
+}} // namespace cc::ui

@@ -15,9 +15,7 @@ namespace ui {
 
 Window *Window::open(View *view, String title, WindowMode mode)
 {
-    Window *window = Application::instance()->openWindow(view, title, mode);
-    view->update(UpdateRequest::create(UpdateReason::Changed, view)); // FIXME: rubbish, implement exposed event handler
-    return window;
+    return Application::instance()->openWindow(view, title, mode);
 }
 
 Window::Window(View *view, String title):
@@ -31,6 +29,7 @@ Window::Window(View *view, String title):
     touchTargets_(TouchTargets::create())
 {
     view_->window_ = this;
+    view_->polish();
 }
 
 Window::~Window()

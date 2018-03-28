@@ -23,6 +23,8 @@ public:
     void acquire();
     void release();
 
+    inline SpinLock *operator->() { return this; }
+
 private:
     void yield();
     volatile char flag_;
