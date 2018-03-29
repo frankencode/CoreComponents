@@ -16,15 +16,15 @@ namespace ui {
 class Column: public View
 {
 public:
+    static Ref<Column> create(View *parent = 0);
+
     Property<ColumnAlign> align { ColumnAlign::Left };
     Property<Size> margin;
     Property<double> spacing { 0 };
     Property<double> indent { 0 };
 
-    static Ref<Column> create(View *parent);
-
 protected:
-    Column(View *parent);
+    Column(View *parent = 0);
 
     void childReady(View *child) override;
     void childDone(View *child) override;

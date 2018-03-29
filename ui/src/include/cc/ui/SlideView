@@ -1,0 +1,34 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/View>
+
+namespace cc {
+namespace ui {
+
+class SlideView: public View
+{
+public:
+    static Ref<SlideView> create(View *parent);
+
+    Property<int> slideCount;
+    Property<int> currentIndex { 0 };
+
+    View *slideCarrier() const;
+
+protected:
+    SlideView(View *parent = 0);
+
+    void insertChild(View *child) override;
+
+    Ref<View> slideCarrier_;
+};
+
+}} // namespace cc::ui

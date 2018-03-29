@@ -28,6 +28,11 @@ class KeyEvent;
 class View: public Surface
 {
 public:
+    template<class T>
+    static Ref<T> create(View *parent = 0) {
+        return fly(new T(parent));
+    }
+
     Property<bool> visible { true };
     Property<Color> color;
 
@@ -53,7 +58,7 @@ public:
 
     inline View *parent() const { return parent_; }
 
-    int childCount() const { return children_->count(); }
+    Property<int> childCount { 0 };
     View *childAt(int i) { return children_->valueAt(i); }
 
     Point mapToGlobal(Point l) const;
@@ -86,17 +91,21 @@ protected:
     virtual void mouseWheelEvent(const MouseWheelEvent *event);
     virtual void keyEvent(const KeyEvent *event);
 
-    inline static View *fly(View *view) { view->parent()->childReady(view); return view; }
+    static View *fly(View *view);
+    void init();
     virtual void childReady(View *child);
     virtual void childDone(View *child);
 
     Window *window();
     Image *image();
 
+    virtual void insertChild(View *child);
+    virtual void removeChild(View *child);
+
+    void adoptChild(View *parent, View *child);
+
 private:
     uint64_t nextSerial() const;
-    void insertChild(View *child);
-    void removeChild(View *child);
 
     cairo_surface_t *cairoSurface() const override;
 

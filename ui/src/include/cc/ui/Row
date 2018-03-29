@@ -16,14 +16,14 @@ namespace ui {
 class Row: public View
 {
 public:
+    static Ref<Row> create(View *parent = 0);
+
     Property<RowAlign> align { RowAlign::Center };
     Property<Size> margin;
     Property<double> spacing { 0 };
 
-    static Ref<Row> create(View *parent);
-
 protected:
-    Row(View *parent);
+    Row(View *parent = 0);
 
     void childReady(View *child) override;
     void childDone(View *child) override;

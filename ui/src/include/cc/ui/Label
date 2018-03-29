@@ -19,11 +19,11 @@ class TextRun;
 class Label: public View
 {
 public:
+    static Ref<Label> create(View *parent, String text, const TextStyle *textStyle = 0);
+
     Property<String> text;
     Property< Ref<const TextStyle> > textStyle;
     Property<Size> margin;
-
-    static Ref<Label> create(View *parent, String text, const TextStyle *textStyle = 0);
 
 protected:
     Label(View *parent, String text, const TextStyle *textStyle);

@@ -23,7 +23,7 @@ namespace ui {
 View::View(View *parent):
     serial_(0),
     window_(0),
-    parent_(parent),
+    parent_(0),
     children_(Children::create())
 {
     if (parent)
@@ -228,6 +228,17 @@ void View::keyEvent(const KeyEvent *event)
     }
 }
 
+View *View::fly(View *view)
+{
+    if (view->parent()) view->parent()->childReady(view);
+    return view;
+}
+
+void View::init()
+{
+    if (parent()) parent()->childReady(this);
+}
+
 void View::childReady(View *child)
 {}
 
@@ -257,8 +268,10 @@ uint64_t View::nextSerial() const
 
 void View::insertChild(View *child)
 {
+    child->parent_ = this;
     child->serial_ = nextSerial();
     children_->insert(child->serial_, child);
+    childCount += 1;
 }
 
 void View::removeChild(View *child)
@@ -266,7 +279,13 @@ void View::removeChild(View *child)
     Ref<View> hook = child;
     children_->remove(child->serial_);
     child->serial_ = 0;
+    childCount -= 1;
     childDone(child);
+}
+
+void View::adoptChild(View *parent, View *child)
+{
+    parent->insertChild(child);
 }
 
 cairo_surface_t *View::cairoSurface() const
