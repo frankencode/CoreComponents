@@ -51,7 +51,7 @@ class MainView: public SlideView
         Object::create<Slide1>(this);
         Object::create<Slide2>(this);
 
-        easeOn(slideCarrier()->pos, 1, easing::Bezier(0.5, -0.4, 0.5, 1.4));
+        easeOn(slideCarrier()->pos, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));
 
         keyPressed->connect([=]{
             if (key()->scanCode() == ScanCode::Key_Left) {
@@ -59,6 +59,9 @@ class MainView: public SlideView
             }
             else if (key()->scanCode() == ScanCode::Key_Right) {
                 currentIndex += 1;
+            }
+            else if ('0' <= +key()->keyCode() && +key()->keyCode() <= '9') {
+                currentIndex = +key()->keyCode() - '1' + 10 * (+key()->keyCode() == '0');
             }
             else if (+(key()->modifiers() & KeyModifier::Control)) {
                 if (key()->keyCode() == '+') {

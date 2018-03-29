@@ -29,7 +29,11 @@ SlideView::SlideView(View *parent):
     slideCarrier_->pos->bind([=]{ return currentIndex() * Point{ -size()[0], 0 }; });
 
     slideCount->bind([=]{ return slideCarrier_->childCount(); });
-    currentIndex->restrict([=](int &newIndex, int){ return 0 <= newIndex && newIndex < slideCount(); });
+    currentIndex->restrict([=](int &newIndex, int){
+        if (newIndex < 0) newIndex = 0;
+        if (newIndex >= slideCount()) newIndex = slideCount() - 1;
+        return true;
+    });
 }
 
 View *SlideView::slideCarrier() const
