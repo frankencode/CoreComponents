@@ -93,16 +93,26 @@ CC_BITMASK(TextDecoration, unsigned int)
 
 String str(TextDecoration decoration);
 
-/** Alignment within a bounding box
+/** alignment within a Column
   */
-enum class BoxAlign {
-    Auto   = 0, ///< align according to language preference
-    Left   = 1, ///< align left
-    Right  = 2, ///< align right
-    Center = 4  ///< align center
+enum class ColumnAlign {
+    Auto,  ///< align according to language preference
+    Left,  ///< align left
+    Right, ///< align right
+    Center ///< align center
 };
 
-String str(BoxAlign align);
+String str(ColumnAlign align);
+
+/** alignment within a Row
+  */
+enum class RowAlign {
+    Top,    ///< align top
+    Bottom, ///< align bottom
+    Center  ///< align center
+};
+
+String str(RowAlign align);
 
 /** mouse button flags
   */

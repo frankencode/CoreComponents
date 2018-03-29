@@ -80,6 +80,12 @@ bool View::containsGlobal(Point g) const
         globalPos[1] <= g[1] && g[1] < globalPos[1] + size()[1];
 }
 
+void View::centerInParent()
+{
+    if (parent())
+        pos->bind([=]{ return 0.5 * (parent()->size() - size()); });
+}
+
 bool View::isOpaque() const
 {
     return Color::isOpaque(color());

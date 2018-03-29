@@ -13,18 +13,17 @@
 namespace cc {
 namespace ui {
 
-class Column: public View
+class Row: public View
 {
 public:
-    Property<ColumnAlign> align { ColumnAlign::Left };
+    Property<RowAlign> align { RowAlign::Center };
     Property<Size> margin;
     Property<double> spacing { 0 };
-    Property<double> indent { 0 };
 
-    static Ref<Column> create(View *parent);
+    static Ref<Row> create(View *parent);
 
 protected:
-    Column(View *parent);
+    Row(View *parent);
 
     void childReady(View *child) override;
     void childDone(View *child) override;

@@ -90,13 +90,24 @@ String str(TextDecoration decoration)
     return parts->join("|");
 }
 
-String str(BoxAlign align)
+String str(ColumnAlign align)
 {
     switch (align) {
-        case BoxAlign::Auto: return "BoxAlign::Auto";
-        case BoxAlign::Left: return "BoxAlign::Left";
-        case BoxAlign::Right: return "BoxAlign::Right";
-        case BoxAlign::Center: return "BoxAlign::Center";
+        case ColumnAlign::Auto:   return "ColumnAlign::Auto";
+        case ColumnAlign::Left:   return "ColumnAlign::Left";
+        case ColumnAlign::Right:  return "ColumnAlign::Right";
+        case ColumnAlign::Center: return "ColumnAlign::Center";
+    }
+
+    return String{};
+}
+
+String str(RowAlign align)
+{
+    switch (align) {
+        case RowAlign::Top:    return "RowAlign::Top";
+        case RowAlign::Bottom: return "RowAlign::Bottom";
+        case RowAlign::Center: return "RowAlign::Center";
     }
 
     return String{};

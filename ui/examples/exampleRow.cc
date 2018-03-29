@@ -1,5 +1,5 @@
 #include <cc/ui/Application>
-#include <cc/ui/Column>
+#include <cc/ui/Row>
 #include <cc/ui/StylePlugin>
 #include <cc/ui/Label>
 
@@ -15,28 +15,13 @@ class MainView: public View
         size = Size{640, 480};
         color = Color{"#FFFFFF"};
 
-        Column *box = Column::create(this);
+        Row *box = Row::create(this);
         box->color = Color{"#D0D0FF"};
         box->centerInParent();
 
         Label::create(box, "• Item 1");
         Label::create(box, "• Item 2");
         Label::create(box, "• Item 3");
-
-        {
-            Column *subBox = Column::create(box);
-            subBox->color = Color{"#D0FFD0"};
-            subBox->indent->bind([=]{
-                return (
-                    StylePlugin::instance()->defaultTextStyle()->font()->size() +
-                    Application::instance()->textZoom()
-                );
-            });
-
-            Label::create(subBox, "◦ Item A");
-            Label::create(subBox, "◦ Item B");
-            Label::create(subBox, "◦ Item C");
-        }
 
         keyPressed->connect([=]{
             if (+(key()->modifiers() & KeyModifier::Control)) {

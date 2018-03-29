@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/debug>
 #include <cc/ui/Column>
 
 namespace cc {
@@ -21,6 +20,7 @@ Column::Column(View *parent):
     View(parent)
 {
     align->connect([=]{ updateLayout(); });
+    margin->connect([=]{ updateLayout(); });
     spacing->connect([=]{ updateLayout(); });
     indent->connect([=]{ updateLayout(); });
 }
@@ -38,17 +38,17 @@ void Column::childDone(View *child)
 
 void Column::updateLayout()
 {
-    Size newSize;
+    Size innerSize;
 
     for (int i = 0, n = childCount(); i < n; ++i)
     {
         View *child = childAt(i);
-        if (child->size()[0] > newSize[0]) newSize[0] = child->size()[0];
-        newSize[1] += child->size()[1];
-        if (i < n - 1) newSize[1] += spacing();
+        if (child->size()[0] > innerSize[0]) innerSize[0] = child->size()[0];
+        innerSize[1] += child->size()[1];
+        if (i < n - 1) innerSize[1] += spacing();
     }
 
-    size = newSize + Size{ indent(), 0 };
+    size = innerSize + Size{ indent(), 0 } + 2 * margin();
 
     double y = 0;
 
@@ -56,12 +56,12 @@ void Column::updateLayout()
     {
         View *child = childAt(i);
 
-        if (align() == BoxAlign::Auto || align() == BoxAlign::Left)
-            child->pos = Point{ indent(), y };
-        else if (align() == BoxAlign::Right)
-            child->pos = Point{ size()[0] - child->size()[0] - indent(), y };
+        if (align() == ColumnAlign::Auto || align() == ColumnAlign::Left)
+            child->pos = Point{ indent(), y } + margin();
+        else if (align() == ColumnAlign::Right)
+            child->pos = Point{ innerSize[0] - child->size()[0] - indent(), y } + margin();
         else
-            child->pos = Point{ 0.5 * (size()[0] - child->size()[0]), y };;
+            child->pos = Point{ 0.5 * (innerSize[0] - child->size()[0]), y } + margin();
 
         y += child->size()[1] + spacing();
     }

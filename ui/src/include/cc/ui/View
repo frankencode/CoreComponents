@@ -60,11 +60,7 @@ public:
     Point mapToLocal(Point g) const;
     bool containsGlobal(Point g) const;
 
-    void centerInParent() {
-        if (parent())
-            pos->bind([=]{ return 0.5 * (parent()->size() - size()); });
-    }
-
+    void centerInParent();
     void disband();
 
 protected:
