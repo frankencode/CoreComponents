@@ -51,7 +51,6 @@ public:
     Signal keyPressed;
     Signal keyReleased;
 
-    inline Window *window() const { return window_; }
     inline View *parent() const { return parent_; }
 
     int childCount() const { return children_->count(); }
