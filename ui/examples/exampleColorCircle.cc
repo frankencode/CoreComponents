@@ -6,11 +6,11 @@
 using namespace cc;
 using namespace cc::ui;
 
-class TestView: public View
+class MainView: public View
 {
     friend class Object;
 
-    TestView()
+    MainView()
     {
         size = Size{640, 480};
         color = Color{"#FFFFFF"};
@@ -34,6 +34,6 @@ class TestView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    Window::open(Object::create<TestView>());
+    Window::open(Object::create<MainView>());
     return app->run();
 }

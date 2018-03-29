@@ -15,7 +15,7 @@ namespace ui {
 
 Ref<Label> Label::create(View *parent, String text, const TextStyle *textStyle)
 {
-    return new Label(parent, text, textStyle);
+    return fly(new Label(parent, text, textStyle));
 }
 
 Label::Label(View *parent, String text_, const TextStyle *textStyle_):

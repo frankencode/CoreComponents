@@ -103,20 +103,14 @@ void View::clear()
 void View::paint()
 {}
 
-void View::polish()
+void View::polish(Window *window)
 {
-    if (!window_) return;
-
-    for (int i = 0; i < children_->count(); ++i) {
-        View *child = children_->valueAt(i);
-        child->clear();
-        child->paint();
-        window_->addToFrame(UpdateRequest::create(UpdateReason::Changed, child));
-    }
+    for (int i = 0; i < children_->count(); ++i)
+        children_->valueAt(i)->polish(window);
 
     clear();
     paint();
-    window_->addToFrame(UpdateRequest::create(UpdateReason::Changed, this));
+    window->addToFrame(UpdateRequest::create(UpdateReason::Changed, this));
 }
 
 void View::update(UpdateReason reason)
@@ -228,6 +222,12 @@ void View::keyEvent(const KeyEvent *event)
     }
 }
 
+void View::childReady(View *child)
+{}
+
+void View::childDone(View *child)
+{}
+
 Window *View::window()
 {
     if (!window_) {
@@ -257,8 +257,10 @@ void View::insertChild(View *child)
 
 void View::removeChild(View *child)
 {
+    Ref<View> hook = child;
     children_->remove(child->serial_);
     child->serial_ = 0;
+    childDone(child);
 }
 
 cairo_surface_t *View::cairoSurface() const

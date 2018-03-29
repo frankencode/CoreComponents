@@ -93,7 +93,7 @@ CC_BITMASK(TextDecoration, unsigned int)
 
 String str(TextDecoration decoration);
 
-/** Alignment within a Box
+/** Alignment within a bounding box
   */
 enum class BoxAlign {
     Auto   = 0, ///< align according to language preference

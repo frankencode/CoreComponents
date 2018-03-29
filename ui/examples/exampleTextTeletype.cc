@@ -6,11 +6,11 @@
 using namespace cc;
 using namespace cc::ui;
 
-class TestView: public View
+class MainView: public View
 {
     friend class Object;
 
-    TestView()
+    MainView()
     {
         size = Size{640, 480};
         color = Color{"#FFFFFF"};
@@ -74,6 +74,6 @@ int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
     if (argc > 1) FontManager::instance()->addPath(argv[1]);
-    Window::open(Object::create<TestView>(), argc > 1 ? argv[1] : "");
+    Window::open(Object::create<MainView>(), argc > 1 ? argv[1] : "");
     return app->run();
 }

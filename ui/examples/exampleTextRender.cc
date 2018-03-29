@@ -5,11 +5,11 @@
 using namespace cc;
 using namespace cc::ui;
 
-class TestView: public View
+class MainView: public View
 {
     friend class Object;
 
-    TestView()
+    MainView()
     {
         size = Size{640, 480};
         color = Color{"#FFFFFF"};
@@ -50,6 +50,6 @@ int main(int argc, char **argv)
     String fontPath = "/usr/share/fonts/truetype/dejavu/";
     if (argc > 1) fontPath = argv[1];
     FontManager::instance()->addPath(fontPath);
-    Window::open(Object::create<TestView>(), fontPath);
+    Window::open(Object::create<MainView>(), fontPath);
     return app->run();
 }

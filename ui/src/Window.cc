@@ -26,7 +26,7 @@ Window::Window(View *view, String title):
     touchTargets_(TouchTargets::create())
 {
     view_->window_ = this;
-    view_->polish();
+    view_->polish(this);
 }
 
 Window::~Window()

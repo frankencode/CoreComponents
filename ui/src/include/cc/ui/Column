@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/View>
+
+namespace cc {
+namespace ui {
+
+class Column: public View
+{
+public:
+    Property<BoxAlign> align { BoxAlign::Left };
+    Property<double> spacing { 0 };
+
+    static Ref<Column> create(View *parent) { return new Column(parent); }
+
+protected:
+    friend class Object;
+
+    Column(View *parent);
+
+    void childReady(View *child) override;
+    void childDone(View *child) override;
+
+    void updateLayout();
+};
+
+}} // namespace cc::ui

@@ -40,11 +40,11 @@ protected:
     }
 };
 
-class TestView: public View
+class MainView: public View
 {
     friend class Object;
 
-    TestView():
+    MainView():
         assignedTouchPoints_(AssignedTouchPoints::create()),
         freeTouchPoints_(FreeTouchPoints::create(10)),
         touchDevice_(TouchDeviceManager::instance()->getTouchDevice(0))
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
     app->cursorVisible = false;
     app->screenSaverEnabled = true;
 
-    Window::open(Object::create<TestView>(), argv[0], WindowMode::Fullscreen);
+    Window::open(Object::create<MainView>(), argv[0], WindowMode::Fullscreen);
 
     return app->run();
 }
