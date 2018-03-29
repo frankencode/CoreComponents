@@ -12,11 +12,17 @@
 namespace cc {
 namespace ui {
 
+Ref<Column> Column::create(View *parent)
+{
+    return fly(new Column(parent));
+}
+
 Column::Column(View *parent):
     View(parent)
 {
     align->connect([=]{ updateLayout(); });
     spacing->connect([=]{ updateLayout(); });
+    indent->connect([=]{ updateLayout(); });
 }
 
 void Column::childReady(View *child)
@@ -42,7 +48,7 @@ void Column::updateLayout()
         if (i < n - 1) newSize[1] += spacing();
     }
 
-    size = newSize;
+    size = newSize + Size{ indent(), 0 };
 
     double y = 0;
 
@@ -51,9 +57,9 @@ void Column::updateLayout()
         View *child = childAt(i);
 
         if (align() == BoxAlign::Auto || align() == BoxAlign::Left)
-            child->pos = Point{ 0, y };
+            child->pos = Point{ indent(), y };
         else if (align() == BoxAlign::Right)
-            child->pos = Point{ size()[0] - child->size()[0], y };
+            child->pos = Point{ size()[0] - child->size()[0] - indent(), y };
         else
             child->pos = Point{ 0.5 * (size()[0] - child->size()[0]), y };;
 

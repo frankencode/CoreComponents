@@ -18,8 +18,9 @@ class Column: public View
 public:
     Property<BoxAlign> align { BoxAlign::Left };
     Property<double> spacing { 0 };
+    Property<double> indent { 0 };
 
-    static Ref<Column> create(View *parent) { return new Column(parent); }
+    static Ref<Column> create(View *parent);
 
 protected:
     friend class Object;

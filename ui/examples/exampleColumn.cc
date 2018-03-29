@@ -1,6 +1,7 @@
 #include <cc/debug>
 #include <cc/ui/Application>
 #include <cc/ui/Column>
+#include <cc/ui/StylePlugin>
 #include <cc/ui/Label>
 
 using namespace cc;
@@ -23,6 +24,21 @@ class MainView: public View
         Label::create(box, "• Item 2");
         Label::create(box, "• Item 3");
 
+        {
+            Column *subBox = Column::create(box);
+            subBox->color = Color{"#D0FFD0"};
+            subBox->indent->bind([=]{
+                return (
+                    StylePlugin::instance()->defaultTextStyle()->font()->size() +
+                    Application::instance()->textZoom()
+                );
+            });
+
+            Label::create(subBox, "◦ Item A");
+            Label::create(subBox, "◦ Item B");
+            Label::create(subBox, "◦ Item C");
+        }
+
         keyPressed->connect([=]{
             if (+(key()->modifiers() & KeyModifier::Control)) {
                 if (key()->keyCode() == '+') {
@@ -39,7 +55,7 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    app->textZoom = 28;
+    app->textZoom = 20;
     Window::open(Object::create<MainView>(), "Hello, world!");
     return app->run();
 }
