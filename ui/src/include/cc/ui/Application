@@ -16,6 +16,7 @@ namespace cc {
 namespace ui {
 
 class Timer;
+class TouchEvent;
 
 class Application: public Object
 {
@@ -41,6 +42,11 @@ protected:
     virtual void init(int argc, char **argv) = 0;
 
     void notifyTimer(Timer *t);
+
+    void touchEvent(View *view, const TouchEvent *event);
+    void mouseEvent(View *view, const MouseEvent *event);
+    void mouseWheelEvent(View *view, const MouseWheelEvent *event);
+    void keyEvent(View *view, const KeyEvent *event);
 };
 
 }} // namespace cc::ui

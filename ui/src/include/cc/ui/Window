@@ -70,7 +70,6 @@ protected:
     static bool isPainted(View *view) { return view->isPainted(); }
     static bool isStatic(View *view) { return view->isStatic(); }
     static Image *image(View *view) { return view->image(); }
-    static void update(View *view, Ref<UpdateRequest> request = 0) { view->update(request); }
 
     void addToFrame(const UpdateRequest *request);
     void commitFrame();

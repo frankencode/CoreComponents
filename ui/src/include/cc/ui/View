@@ -61,15 +61,11 @@ public:
     Point mapToLocal(Point g) const;
     bool containsGlobal(Point g) const;
 
-    virtual void touchEvent(const TouchEvent *event);
-    virtual void mouseEvent(const MouseEvent *event);
-    virtual void mouseWheelEvent(const MouseWheelEvent *event);
-    virtual void keyEvent(const KeyEvent *event);
-
     void disband();
 
 protected:
     friend class Window;
+    friend class Application;
 
     View(View *parent = 0);
     ~View();
@@ -82,8 +78,12 @@ protected:
     virtual void paint();
 
     void polish();
-    void update(UpdateReason reason = UpdateReason::Changed); // FIXME: obsolete
-    void update(const UpdateRequest *request);
+    void update(UpdateReason reason = UpdateReason::Changed);
+
+    virtual void touchEvent(const TouchEvent *event);
+    virtual void mouseEvent(const MouseEvent *event);
+    virtual void mouseWheelEvent(const MouseWheelEvent *event);
+    virtual void keyEvent(const KeyEvent *event);
 
     Window *window();
     Image *image();

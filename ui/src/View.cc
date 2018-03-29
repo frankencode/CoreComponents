@@ -80,6 +80,63 @@ bool View::containsGlobal(Point g) const
         globalPos[1] <= g[1] && g[1] < globalPos[1] + size()[1];
 }
 
+bool View::isOpaque() const
+{
+    return Color::isOpaque(color());
+}
+
+bool View::isPainted() const
+{
+    return Color::isValid(color());
+}
+
+bool View::isStatic() const
+{
+    return true;
+}
+
+void View::clear()
+{
+    image()->clear(Color::premultiplied(color()));
+}
+
+void View::paint()
+{}
+
+void View::polish()
+{
+    if (!window_) return;
+
+    for (int i = 0; i < children_->count(); ++i) {
+        View *child = children_->valueAt(i);
+        child->clear();
+        child->paint();
+        window_->addToFrame(UpdateRequest::create(UpdateReason::Changed, child));
+    }
+
+    clear();
+    paint();
+    window_->addToFrame(UpdateRequest::create(UpdateReason::Changed, this));
+}
+
+void View::update(UpdateReason reason)
+{
+    Window *w = window();
+    if (!w) return;
+
+    if (
+        isPainted() &&
+        (reason == UpdateReason::Changed || reason == UpdateReason::Resized)
+    ) {
+        clear();
+        paint();
+    }
+
+    if (!visible() && reason != UpdateReason::Hidden) return;
+
+    w->addToFrame(UpdateRequest::create(reason, this));
+}
+
 void View::touchEvent(const TouchEvent *event)
 {
     Window *w = window();
@@ -169,74 +226,6 @@ void View::keyEvent(const KeyEvent *event)
         keyReleased();
         key = Key{};
     }
-}
-
-bool View::isOpaque() const
-{
-    return Color::isOpaque(color());
-}
-
-bool View::isPainted() const
-{
-    return Color::isValid(color());
-}
-
-bool View::isStatic() const
-{
-    return true;
-}
-
-void View::clear()
-{
-    image()->clear(Color::premultiplied(color()));
-}
-
-void View::paint()
-{}
-
-void View::polish()
-{
-    if (!window_) return;
-
-    for (int i = 0; i < children_->count(); ++i) {
-        View *child = children_->valueAt(i);
-        child->clear();
-        child->paint();
-        window_->addToFrame(UpdateRequest::create(UpdateReason::Changed, child));
-    }
-
-    clear();
-    paint();
-    window_->addToFrame(UpdateRequest::create(UpdateReason::Changed, this));
-}
-
-void View::update(UpdateReason reason)
-{
-    if (!window()) return;
-    update(UpdateRequest::create(reason, this));
-}
-
-void View::update(const UpdateRequest *request)
-{
-    Window *w = window();
-    if (!w) return;
-
-    Ref<const UpdateRequest> request_ = request;
-    if (!request) request = request_ = UpdateRequest::create(UpdateReason::Changed, this);
-
-    if (!visible() && request->reason() != UpdateReason::Hidden) return;
-
-    if (
-        isPainted() && (
-            request->reason() == UpdateReason::Changed ||
-            request->reason() == UpdateReason::Resized
-        )
-    ) {
-        clear();
-        paint();
-    }
-
-    w->addToFrame(request);
 }
 
 Window *View::window()

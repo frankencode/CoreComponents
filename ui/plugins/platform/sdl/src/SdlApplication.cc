@@ -149,7 +149,7 @@ void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
 
     for (auto pair: windows_) {
         Window *window = pair->value();
-        window->view()->touchEvent(event);
+        touchEvent(window->view(), event);
     }
 }
 
@@ -179,7 +179,7 @@ void SdlApplication::handleMouseMotionEvent(const SDL_MouseMotionEvent *e)
     for (auto pair: windows_) {
         SdlWindow *window = pair->value();
         if (window->id_ == e->windowID)
-            window->view()->mouseEvent(event);
+            mouseEvent(window->view(), event);
     }
 }
 
@@ -216,7 +216,7 @@ void SdlApplication::handleMouseButtonEvent(const SDL_MouseButtonEvent *e)
     for (auto pair: windows_) {
         SdlWindow *window = pair->value();
         if (window->id_ == e->windowID)
-            window->view()->mouseEvent(event);
+            mouseEvent(window->view(), event);
     }
 }
 
@@ -235,7 +235,7 @@ void SdlApplication::handleMouseWheelEvent(const SDL_MouseWheelEvent *e)
     for (auto pair: windows_) {
         SdlWindow *window = pair->value();
         if (window->id_ == e->windowID)
-            window->view()->mouseWheelEvent(event);
+            mouseWheelEvent(window->view(), event);
     }
 }
 
@@ -251,19 +251,11 @@ void SdlApplication::handleKeyboardEvent(const SDL_KeyboardEvent *e)
             static_cast<KeyModifier>(e->keysym.mod)
         );
 
-    // CC_INSPECT(event);
-
+    // FIXME: send key events to all windows?
     for (auto pair: windows_) {
         SdlWindow *window = pair->value();
-        if (window->id_ == e->windowID) {
-            window->view()->keyEvent(event);
-            return;
-        }
+        keyEvent(window->view(), event);
     }
-
-    // FIXME
-    if (windows_->count() > 0)
-        windows_->valueAt(0)->view()->keyEvent(event);
 }
 
 String SdlApplication::windowEventToString(const SDL_WindowEvent *e)
