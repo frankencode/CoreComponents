@@ -20,7 +20,7 @@ String str(Slant slant)
         case Slant::Normal : return "Slant::Normal";
         case Slant::Italic : return "Slant::Italic";
         // case Slant::Oblique: return "Oblique";
-    };
+    }
 
     return String{};
 }
@@ -37,7 +37,7 @@ String str(Stretch stretch)
         case Stretch::Expanded      : return "Stretch::Expaned";
         case Stretch::ExtraExpanded : return "Stretch::ExtraExpanded";
         case Stretch::UltraExpanded : return "Stretch::UltraExpanded";
-    };
+    }
 
     return String{};
 }
@@ -54,7 +54,7 @@ String str(Weight weight)
         case Weight::Bold      : return "Weight::Bold";
         case Weight::ExtraBold : return "Weight::ExtraBold";
         case Weight::Black     : return "Weight::Black";
-    };
+    }
 
     return String{};
 }
@@ -64,14 +64,14 @@ String str(Pitch pitch)
     switch (pitch) {
         case Pitch::Fixed:    return "Pitch::Fixed";
         case Pitch::Variable: return "Pitch::Variable";
-    };
+    }
 
     return String{};
 }
 
-String str(TextAlign textAlign)
+String str(TextAlign align)
 {
-    switch (textAlign) {
+    switch (align) {
         case TextAlign::Left:    return "TextAlign::Left";
         case TextAlign::Right:   return "TextAlign::Right";
         case TextAlign::Center:  return "TextAlign::Center";
@@ -81,35 +81,23 @@ String str(TextAlign textAlign)
     return String{};
 }
 
-String str(TextDecoration textDecoration)
+String str(TextDecoration decoration)
 {
-    if (textDecoration == TextDecoration::None) return "TextDecoration::None";
+    if (decoration == TextDecoration::None) return "TextDecoration::None";
     Ref<StringList> parts = StringList::create();
-    if (+(textDecoration & TextDecoration::Underline)) parts << "TextDecoration::Underline";
-    if (+(textDecoration & TextDecoration::StrikeOut)) parts << "TextDecoration::StrikeOut";
+    if (+(decoration & TextDecoration::Underline)) parts << "TextDecoration::Underline";
+    if (+(decoration & TextDecoration::StrikeOut)) parts << "TextDecoration::StrikeOut";
     return parts->join("|");
 }
 
-String str(Placement placement)
+String str(BoxAlign align)
 {
-    switch (placement) {
-        case Placement::Auto             : return "Placement::Auto";
-        case Placement::TopLeft          : return "Placement::TopLeft";
-        case Placement::TopCenter        : return "Placement::TopCenter";
-        case Placement::TopRight         : return "Placement::TopRight";
-        case Placement::CenterLeft       : return "Placement::CenterLeft";
-        case Placement::Center           : return "Placement::Center";
-        case Placement::CenterRight      : return "Placement::CenterRight";
-        case Placement::BottomLeft       : return "Placement::BottomLeft";
-        case Placement::BottomCenter     : return "Placement::BottomCenter";
-        case Placement::BottomRight      : return "Placement::BottomRight";
-        case Placement::Left             : return "Placement::Left";
-        case Placement::Right            : return "Placement::Right";
-        case Placement::HorizontalCenter : return "Placement::HorizontalCenter";
-        case Placement::Top              : return "Placement::HTop";
-        case Placement::Bottom           : return "Placement::HBottom";
-        case Placement::VerticalCenter   : return "Placement::VerticalCenter";
-    };
+    switch (align) {
+        case BoxAlign::Auto: return "BoxAlign::Auto";
+        case BoxAlign::Left: return "BoxAlign::Left";
+        case BoxAlign::Right: return "BoxAlign::Right";
+        case BoxAlign::Center: return "BoxAlign::Center";
+    }
 
     return String{};
 }

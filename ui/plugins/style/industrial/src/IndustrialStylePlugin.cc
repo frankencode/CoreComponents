@@ -28,6 +28,10 @@ void IndustrialStylePlugin::activate()
             Font::select("DejaVu Sans", 20 + Application::instance()->textZoom())
         );
     });
+
+    defaultTextMargin->bind([=]{
+        return Size { 0.5 * defaultTextStyle()->font()->size() };
+    });
 }
 
 CC_REGISTRATION(IndustrialStylePlugin)

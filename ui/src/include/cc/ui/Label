@@ -21,13 +21,16 @@ class Label: public View
 public:
     Property<String> text;
     Property< Ref<const TextStyle> > textStyle;
+    Property<Size> margin;
 
     static Ref<Label> create(View *parent, String text, const TextStyle *textStyle = 0);
 
 protected:
     Label(View *parent, String text, const TextStyle *textStyle);
 
-    void prepare();
+    void updateLayout();
+    void updateSize();
+
     void paint() override;
 
     Ref<TextRun> textRun_;

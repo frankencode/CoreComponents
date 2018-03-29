@@ -21,27 +21,34 @@ Ref<Label> Label::create(View *parent, String text, const TextStyle *textStyle)
 Label::Label(View *parent, String text_, const TextStyle *textStyle_):
     View(parent),
     text(text_),
-    textStyle(alias(StylePlugin::instance()->defaultTextStyle))
+    textStyle(alias(StylePlugin::instance()->defaultTextStyle)),
+    margin(alias(StylePlugin::instance()->defaultTextMargin))
 {
     if (textStyle_) textStyle = textStyle_;
     color = transparent;
 
-    prepare();
+    updateLayout();
 
-    text     ->connect([=]{ prepare(); });
-    textStyle->connect([=]{ prepare(); });
-    size     ->connect([=]{ prepare(); });
+    text     ->connect([=]{ updateLayout(); });
+    textStyle->connect([=]{ updateLayout(); });
+    margin   ->connect([=]{ updateSize(); });
+    size     ->connect([=]{ update(); });
 }
 
-void Label::prepare()
+void Label::updateLayout()
 {
     textRun_ = TextRun::create(
         text(),
         textStyle()
     );
-    size = Size { textRun_->advance()[0], textStyle()->font()->getMetrics()->ascender() } + 2 * StylePlugin::instance()->textMargin();
 
-    update(UpdateReason::Changed);
+    updateSize();
+    update();
+}
+
+void Label::updateSize()
+{
+    size = textRun_->size() + 2 * StylePlugin::instance()->defaultTextMargin();
 }
 
 void Label::paint()

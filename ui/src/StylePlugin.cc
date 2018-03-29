@@ -26,9 +26,4 @@ void StylePlugin::init()
     StyleManager::instance()->registerPlugin(this);
 }
 
-Size StylePlugin::textMargin() const
-{
-    return Size { defaultTextStyle()->font()->size() / 2 };
-}
-
 }} // namespace cc::ui

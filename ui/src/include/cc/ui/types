@@ -79,7 +79,7 @@ enum class TextAlign {
     Justify ///< align justify
 };
 
-String str(TextAlign textAlign);
+String str(TextAlign align);
 
 /** text decoration
   */
@@ -91,32 +91,18 @@ enum class TextDecoration: unsigned int {
 
 CC_BITMASK(TextDecoration, unsigned int)
 
-String str(TextDecoration textDecoration);
+String str(TextDecoration decoration);
 
-/** positioning of content within a bounding box
+/** Alignment within a Box
   */
-enum class Placement: unsigned int {
-    Auto             = 0,
-    Left             = 1,
-    Right            = 2,
-    HorizontalCenter = 4,
-    Top              = 8,
-    Bottom           = 16,
-    VerticalCenter   = 32,
-    TopLeft          = Top|Left,
-    TopCenter        = Top|HorizontalCenter,
-    TopRight         = Top|Right,
-    CenterLeft       = VerticalCenter|Left,
-    Center           = VerticalCenter|HorizontalCenter,
-    CenterRight      = VerticalCenter|Right,
-    BottomLeft       = Bottom|Left,
-    BottomCenter     = Bottom|HorizontalCenter,
-    BottomRight      = Bottom|Right
+enum class BoxAlign {
+    Auto   = 0, ///< align according to language preference
+    Left   = 1, ///< align left
+    Right  = 2, ///< align right
+    Center = 4  ///< align center
 };
 
-CC_BITMASK(Placement, unsigned int)
-
-String str(Placement placement);
+String str(BoxAlign align);
 
 /** mouse button flags
   */

@@ -21,12 +21,11 @@ class StylePlugin: public Object
 {
 public:
     Property< Ref<const TextStyle> > defaultTextStyle;
+    Property<Size> defaultTextMargin;
 
     static StylePlugin *instance();
 
     inline String name() const { return name_; }
-
-    virtual Size textMargin() const;
 
 protected:
     friend class StyleManager;
