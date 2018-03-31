@@ -9,26 +9,32 @@
 #pragma once
 
 #include <cc/ui/types>
+#include <cc/ui/Key>
 
 namespace cc {
 namespace ui {
 
 class View;
+class KeyEvent;
 
-class Layout: public Object
+/** Mix-in for adding keyboard input to a View.
+  */
+class KeyInput
 {
+public:
+    Property<Key> key;
+
+    Signal keyPressed;
+    Signal keyReleased;
+
 protected:
     friend class View;
 
-    Layout(View *view);
-
-    virtual void childReady(View *child) = 0;
-    virtual void childDone(View *child) = 0;
-
-    inline View *view() const { return view_; }
-    void updateView();
+    KeyInput(View *view);
 
 private:
+    void feed(const KeyEvent *event);
+
     View *view_;
 };
 

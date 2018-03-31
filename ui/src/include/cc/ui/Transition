@@ -22,7 +22,7 @@ class Transition: public Object, private PropertyMutator<T>
 public:
     typedef std::function<double(double)> Easing;
 
-    static Transition *create(Property<T> &property, double duration, const Easing &easing = easing::linear)
+    static Transition *setup(Property<T> &property, double duration, const Easing &easing = easing::linear)
     {
         Ref<Transition> transition = new Transition(property, duration, easing);
         Transition *self = transition;
@@ -91,7 +91,7 @@ private:
 template<class T>
 Transition<T> *easeOn(Property<T> &property, double duration, const typename Transition<T>::Easing &easing = easing::linear)
 {
-    return Transition<T>::create(property, duration, easing);
+    return Transition<T>::setup(property, duration, easing);
 }
 
 }} // namespace cc::ui

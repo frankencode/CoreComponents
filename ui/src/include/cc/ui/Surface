@@ -17,7 +17,7 @@ namespace ui {
 
 class Painter;
 
-class Surface: public virtual Object
+class Surface: public Object
 {
 public:
     bool isValid() const;

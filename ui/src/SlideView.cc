@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/ui/Row>
+#include <cc/ui/RowLayout>
 #include <cc/ui/SlideView>
 
 namespace cc {
@@ -25,8 +25,9 @@ SlideView::SlideView(View *parent):
         size->bind([=]{ return parent->size(); });
     }
 
-    slideCarrier_ = Row::create(this);
+    slideCarrier_ = View::create(this);
     slideCarrier_->pos->bind([=]{ return currentIndex() * Point{ -size()[0], 0 }; });
+    RowLayout::setup(slideCarrier_);
 
     slideCount->bind([=]{ return slideCarrier_->childCount(); });
     currentIndex->restrict([=](int &newIndex, int){
@@ -34,6 +35,11 @@ SlideView::SlideView(View *parent):
         if (newIndex >= slideCount()) newIndex = slideCount() - 1;
         return true;
     });
+}
+
+View *SlideView::currentSlide() const
+{
+    return slideCarrier_->childAt(currentIndex());
 }
 
 View *SlideView::slideCarrier() const

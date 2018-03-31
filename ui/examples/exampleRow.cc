@@ -1,23 +1,26 @@
 #include <cc/ui/Application>
-#include <cc/ui/Row>
+#include <cc/ui/RowLayout>
 #include <cc/ui/StylePlugin>
 #include <cc/ui/Label>
 
 using namespace cc;
 using namespace cc::ui;
 
-class MainView: public View
+class MainView: public View, public KeyInput
 {
     friend class Object;
 
-    MainView()
+    MainView():
+        KeyInput(this)
     {
         size = Size{640, 480};
         color = Color{"#FFFFFF"};
 
-        Row *box = Row::create(this);
+        View *box = View::create(this);
         box->color = Color{"#D0D0FF"};
         box->centerInParent();
+
+        RowLayout::setup(box);
 
         Label::create(box, "• Item 1");
         Label::create(box, "• Item 2");

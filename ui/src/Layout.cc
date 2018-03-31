@@ -15,13 +15,8 @@ namespace ui {
 Layout::Layout(View *view):
     view_(view)
 {
+    if (view->layout_) delete view->layout_;
     view->layout_ = this;
-}
-
-Layout::~Layout()
-{
-    if (view_->layout_ == this)
-        view_->layout_ = 0;
 }
 
 void Layout::updateView()

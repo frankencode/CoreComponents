@@ -12,7 +12,8 @@
 #include <cc/ui/Surface>
 #include <cc/ui/UpdateRequest>
 #include <cc/ui/Layout>
-#include <cc/ui/Key>
+#include <cc/ui/PointerInput>
+#include <cc/ui/KeyInput>
 
 namespace cc {
 namespace ui {
@@ -29,10 +30,7 @@ class KeyEvent;
 class View: public Surface
 {
 public:
-    template<class T>
-    static Ref<T> create(View *parent = 0) {
-        return fly(new T(parent));
-    }
+    static Ref<View> create(View *parent = 0);
 
     Property<bool> visible { true };
     Property<Color> color;
@@ -45,24 +43,15 @@ public:
     Property<Point> center { [=]{ return size() / 2; } };
     Property<double> angle { 0 };
 
-    Property<Point> mousePos;
-    Property<MouseButton> mouseButton;
-
-    Signal pressed;
-    Signal released;
-    Signal clicked;
-
-    Property<Key> key;
-
-    Signal keyPressed;
-    Signal keyReleased;
-
     inline View *parent() const { return parent_; }
 
     Property<int> childCount { 0 };
-    View *childAt(int i) { return children_->valueAt(i); }
+    View *childAt(int i) const { return children_->valueAt(i); }
 
     inline Layout *layout() const { return layout_; }
+
+    PointerInput *pointerInput() const { return pointerInput_; }
+    KeyInput *keyInput() const { return keyInput_; }
 
     Point mapToGlobal(Point l) const;
     Point mapToLocal(Point g) const;
@@ -76,6 +65,8 @@ protected:
     friend class Window;
     friend class Application;
     friend class Layout;
+    friend class PointerInput;
+    friend class KeyInput;
 
     View(View *parent = 0);
     ~View();
@@ -122,6 +113,8 @@ private:
     Ref<Image> image_;
     Ref<Object> context_;
     Ref<Layout> layout_;
+    PointerInput *pointerInput_;
+    KeyInput *keyInput_;
 };
 
 }} // namespace cc::ui

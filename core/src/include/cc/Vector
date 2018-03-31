@@ -35,11 +35,15 @@ public:
 
         inline int count() const { return N; }
 
-        T magnitude() const {
+        T magnitudeSquared() const {
             T m = 0;
             for (int i = 0; i < N; ++i)
                 m += v_[i] * v_[i];
-            return std::sqrt(m);
+            return m;
+        }
+
+        inline T magnitude() const {
+            return std::sqrt(magnitudeSquared());
         }
 
         inline T x() const { return at(0); }

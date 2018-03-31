@@ -5,11 +5,12 @@
 using namespace cc;
 using namespace cc::ui;
 
-class MainView: public View
+class MainView: public View, public PointerInput
 {
     friend class Object;
 
-    MainView()
+    MainView():
+        PointerInput(this)
     {
         size = Size{640, 480};
         color = Color{"#FFFFFF"};

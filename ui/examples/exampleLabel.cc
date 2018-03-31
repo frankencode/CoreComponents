@@ -9,11 +9,12 @@
 using namespace cc;
 using namespace cc::ui;
 
-class MainView: public View
+class MainView: public View, public KeyInput
 {
     friend class Object;
 
-    MainView()
+    MainView():
+        KeyInput(this)
     {
         size = Size{640, 480};
         color = Color{"#FFFFFF"};

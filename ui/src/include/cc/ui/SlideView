@@ -23,6 +23,7 @@ public:
     Property<int> slideCount;
     Property<int> currentIndex { 0 };
 
+    View *currentSlide() const;
     View *slideCarrier() const;
 
 protected:

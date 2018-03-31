@@ -2,7 +2,7 @@
 #include <cc/ui/Application>
 #include <cc/ui/SlideView>
 #include <cc/ui/Transition>
-#include <cc/ui/Column>
+#include <cc/ui/ColumnLayout>
 #include <cc/ui/Label>
 
 using namespace cc;
@@ -30,9 +30,11 @@ class Slide2: public View
     {
         color = Color{"#FFFFFF"};
 
-        Column *box = Column::create(this);
+        View *box = View::create(this);
         box->color = Color{"#D0D0FF"};
         box->centerInParent();
+
+        ColumnLayout::setup(box);
 
         Label::create(box, "• Item 1");
         Label::create(box, "• Item 2");
@@ -40,11 +42,12 @@ class Slide2: public View
     }
 };
 
-class MainView: public SlideView
+class MainView: public SlideView, public KeyInput
 {
     friend class Object;
 
-    MainView()
+    MainView():
+        KeyInput(this)
     {
         size = Size{640, 480};
 

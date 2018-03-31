@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/View>
+
+namespace cc {
+namespace ui {
+
+class ScrollView: public View, public PointerInput
+{
+    friend class Object;
+
+public:
+    static Ref<ScrollView> create(View *parent = 0);
+
+    Property<double> minimumDragDistance { 4 };
+    Property<double> deceleration { 5 };
+
+    View *carrier() const { return carrier_; }
+
+protected:
+    ScrollView(View *parent = 0);
+
+    void insertChild(View *child) override;
+
+    void dragged();
+
+    Ref<View> carrier_;
+    bool isDragged_;
+    Point dragStart_;
+    Point carrierOrigin_;
+};
+
+}} // namespace cc::ui

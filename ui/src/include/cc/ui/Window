@@ -59,6 +59,7 @@ public:
 
 protected:
     friend class View;
+    friend class PointerInput;
 
     Window(View *view, String title);
     ~Window();

@@ -1,32 +1,36 @@
 #include <cc/ui/Application>
-#include <cc/ui/Column>
+#include <cc/ui/ColumnLayout>
 #include <cc/ui/StylePlugin>
 #include <cc/ui/Label>
 
 using namespace cc;
 using namespace cc::ui;
 
-class MainView: public View
+class MainView: public View, private KeyInput
 {
     friend class Object;
 
-    MainView()
+    MainView():
+        KeyInput(this)
     {
         size = Size{640, 480};
         color = Color{"#FFFFFF"};
 
-        Column *box = Column::create(this);
+        View *box = View::create(this);
         box->color = Color{"#D0D0FF"};
         box->centerInParent();
+
+        ColumnLayout::setup(box);
 
         Label::create(box, "• Item 1");
         Label::create(box, "• Item 2");
         Label::create(box, "• Item 3");
 
         {
-            Column *subBox = Column::create(box);
+            View *subBox = View::create(box);
             subBox->color = Color{"#D0FFD0"};
-            subBox->indent->bind([=]{
+
+            ColumnLayout::setup(subBox)->indent->bind([=]{
                 return (
                     StylePlugin::instance()->defaultTextStyle()->font()->size() +
                     Application::instance()->textZoom()

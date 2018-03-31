@@ -20,11 +20,18 @@
 namespace cc {
 namespace ui {
 
+Ref<View> View::create(View *parent)
+{
+    return Object::create<View>(parent);
+}
+
 View::View(View *parent):
     serial_(0),
     window_(0),
     parent_(0),
-    children_(Children::create())
+    children_(Children::create()),
+    pointerInput_(0),
+    keyInput_(0)
 {
     if (parent)
     {
@@ -139,73 +146,59 @@ void View::update(UpdateReason reason)
 
 void View::touchEvent(const TouchEvent *event)
 {
-    Window *w = window();
-
     Ref<View> touchTarget;
-    if (!parent_ && w->touchTargets_->lookup(event->fingerId(), &touchTarget)) {
-        if (touchTarget != this)
+    if (!parent_ && window()->touchTargets_->lookup(event->fingerId(), &touchTarget)) {
+        if (touchTarget != this) {
             touchTarget->touchEvent(event);
-    }
-    else {
-        for (auto pair: children_) {
-            View *child = pair->value();
-            if (child->containsGlobal(event->pos())) {
-                child->touchEvent(event);
-                return;
-            }
+            return;
         }
     }
 
-    mousePos = mapToLocal(event->pos());
-    mouseButton = MouseButton::Left;
+    if (pointerInput_) {
+        pointerInput_->feed(event);
+        return;
+    }
 
-    if (event->action() == PointerAction::Pressed) {
-        w->touchTargets_->establish(event->fingerId(), this);
-        pressed();
+    for (auto pair: children_) {
+        View *child = pair->value();
+        if (child->containsGlobal(event->pos())) {
+            child->touchEvent(event);
+            return;
+        }
     }
-    else if (event->action() == PointerAction::Released) {
-        released();
-        if (containsGlobal(event->pos()))
-            clicked();
-        w->touchTargets_->remove(event->fingerId());
-    }
+
 }
 
 void View::mouseEvent(const MouseEvent *event)
 {
-    Window *w = window();
-
-    if (!parent_ && w->pointerTarget_) {
-        if (w->pointerTarget_ != this)
-            w->pointerTarget_->mouseEvent(event);
-    }
-    else {
-        for (auto pair: children_) {
-            View *child = pair->value();
-            if (child->containsGlobal(event->pos())) {
-                child->mouseEvent(event);
+    if (!parent_) {
+        Window *w = window();
+        if (w->pointerTarget_) {
+            if (w->pointerTarget_ != this) {
+                w->pointerTarget_->mouseEvent(event);
                 return;
             }
         }
     }
 
-    mousePos = mapToLocal(event->pos());
-    mouseButton = event->button();
-
-    if (event->action() == PointerAction::Pressed) {
-        w->pointerTarget_ = this;
-        pressed();
+    if (pointerInput_) {
+        pointerInput_->feed(event);
+        return;
     }
-    else if (event->action() == PointerAction::Released) {
-        released();
-        if (containsGlobal(event->pos()))
-            clicked();
-        w->pointerTarget_ = 0;
+
+    for (auto pair: children_) {
+        View *child = pair->value();
+        if (child->containsGlobal(event->pos())) {
+            child->mouseEvent(event);
+            return;
+        }
     }
 }
 
 void View::mouseWheelEvent(const MouseWheelEvent *event)
 {
+    // TODO...
+
     for (auto pair: children_) {
         View *child = pair->value();
         if (child->containsGlobal(event->mousePos())) {
@@ -217,18 +210,13 @@ void View::mouseWheelEvent(const MouseWheelEvent *event)
 
 void View::keyEvent(const KeyEvent *event)
 {
+    // TODO: keyboard focus...
+
+    if (keyInput_)
+        keyInput_->feed(event);
+
     for (auto pair: children_)
         pair->value()->keyEvent(event);
-
-    key = Key{ event->scanCode(), event->keyCode(), event->modifiers() };
-
-    if (event->action() == KeyAction::Pressed) {
-        keyPressed();
-    }
-    else if (event->action() == KeyAction::Released) {
-        keyReleased();
-        key = Key{};
-    }
 }
 
 void View::init()
