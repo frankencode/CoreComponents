@@ -9,26 +9,20 @@
 #pragma once
 
 #include <cc/ui/View>
+#include <cc/ui/RowLayout>
 
 namespace cc {
 namespace ui {
 
-class Row: public View
+class Row: public View, public RowLayout
 {
+    friend class Object;
+
 public:
     static Ref<Row> create(View *parent = 0);
 
-    Property<RowAlign> align { RowAlign::Center };
-    Property<Size> margin;
-    Property<double> spacing { 0 };
-
 protected:
     Row(View *parent = 0);
-
-    void childReady(View *child) override;
-    void childDone(View *child) override;
-
-    void updateLayout();
 };
 
 }} // namespace cc::ui

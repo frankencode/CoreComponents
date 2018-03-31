@@ -14,7 +14,7 @@ namespace ui {
 
 Ref<SlideView> SlideView::create(View *parent)
 {
-    return fly(new SlideView(parent));
+    return Object::create<SlideView>(parent);
 }
 
 SlideView::SlideView(View *parent):

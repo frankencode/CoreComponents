@@ -15,6 +15,8 @@ namespace ui {
 
 class SlideView: public View
 {
+    friend class Object;
+
 public:
     static Ref<SlideView> create(View *parent);
 

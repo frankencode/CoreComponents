@@ -18,6 +18,8 @@ class TextRun;
 
 class Label: public View
 {
+    friend class Object;
+
 public:
     static Ref<Label> create(View *parent, String text, const TextStyle *textStyle = 0);
 

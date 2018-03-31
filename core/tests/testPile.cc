@@ -10,17 +10,17 @@
 #include <cc/stdio>
 #include <cc/debug>
 #include <cc/Random>
-#include <cc/Layout>
+#include <cc/Pile>
 
 using namespace cc;
 using namespace cc::testing;
 
-class SimpleLayoutTest: public TestCase
+class SimplePileTest: public TestCase
 {
     void run() override
     {
-        typedef Layout<String, int> TestLayout;
-        Ref<TestLayout> layout = TestLayout::create();
+        typedef Pile<String, int> TestPile;
+        Ref<TestPile> layout = TestPile::create();
         layout->append("Item 1", 2);
         layout->append("Item 2", 3);
         layout->append("Item 3", 1);
@@ -81,8 +81,8 @@ class IndexTrackingTest: public TestCase
 
     void run() override
     {
-        typedef Layout< Ref<TestItem>, int > TestLayout;
-        Ref<TestLayout> layout = TestLayout::create();
+        typedef Pile< Ref<TestItem>, int > TestPile;
+        Ref<TestPile> layout = TestPile::create();
         Ref<TestItem> item = TestItem::create(0);
         layout->insertAt(0, item, 1);
         for (int i = 1; i <= 10; ++i) {
@@ -96,7 +96,7 @@ class IndexTrackingTest: public TestCase
 
 int main(int argc, char **argv)
 {
-    CC_TESTSUITE_ADD(SimpleLayoutTest);
+    CC_TESTSUITE_ADD(SimplePileTest);
     CC_TESTSUITE_ADD(IndexTrackingTest);
 
     return TestSuite::instance()->run(argc, argv);

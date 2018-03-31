@@ -10,7 +10,7 @@
 
 #include <cc/ui/Visual>
 
-namespace cc { template<class, class> class Layout; }
+namespace cc { template<class, class> class Pile; }
 
 namespace cc {
 namespace ui {
@@ -38,7 +38,7 @@ private:
     Item *root_;
     double maxWidth_;
 
-    typedef Layout< Ref<Visual>, double > Visuals;
+    typedef Pile< Ref<Visual>, double > Visuals;
     Ref<Visuals> visuals_;
 };
 

@@ -217,6 +217,9 @@ void View::mouseWheelEvent(const MouseWheelEvent *event)
 
 void View::keyEvent(const KeyEvent *event)
 {
+    for (auto pair: children_)
+        pair->value()->keyEvent(event);
+
     key = Key{ event->scanCode(), event->keyCode(), event->modifiers() };
 
     if (event->action() == KeyAction::Pressed) {
@@ -228,22 +231,20 @@ void View::keyEvent(const KeyEvent *event)
     }
 }
 
-View *View::fly(View *view)
-{
-    if (view->parent()) view->parent()->childReady(view);
-    return view;
-}
-
 void View::init()
 {
     if (parent()) parent()->childReady(this);
 }
 
 void View::childReady(View *child)
-{}
+{
+    if (layout_) layout_->childReady(child);
+}
 
 void View::childDone(View *child)
-{}
+{
+    if (layout_) layout_->childDone(child);
+}
 
 Window *View::window()
 {

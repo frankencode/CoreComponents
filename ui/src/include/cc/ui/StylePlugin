@@ -21,6 +21,8 @@ class StylePlugin: public Object
 {
 public:
     Property< Ref<const TextStyle> > defaultTextStyle;
+    Property< Ref<const TextStyle> > defaultMonoTextStyle;
+    Property< Ref<const TextStyle> > defaultMonoBoldTextStyle;
     Property<Size> defaultTextMargin;
 
     static StylePlugin *instance();

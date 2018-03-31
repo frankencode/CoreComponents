@@ -25,7 +25,19 @@ void IndustrialStylePlugin::activate()
 
     defaultTextStyle->bind([=]{
         return TextStyle::create(
-            Font::select("DejaVu Sans", 20 + Application::instance()->textZoom())
+            Font::select("Sans", 20 + Application::instance()->textZoom())
+        );
+    });
+
+    defaultMonoTextStyle->bind([=]{
+        return TextStyle::create(
+            Font::select("Mono", 16 + Application::instance()->textZoom())
+        );
+    });
+
+    defaultMonoBoldTextStyle->bind([=]{
+        return TextStyle::create(
+            Font::select("Mono", 16 + Application::instance()->textZoom(), Weight::Bold)
         );
     });
 

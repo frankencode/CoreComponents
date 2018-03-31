@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Layout>
+#include <cc/Pile>
 #include <cc/ui/Item>
 #include <cc/ui/VisualLayout>
 

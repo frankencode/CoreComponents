@@ -39,6 +39,7 @@ public:
         Undefined = -1
     };
 
+    inline bool lookupStyleByRule(int rule, Style **style) const { return styleByRule_->lookup(rule, style); }
     inline Style *styleByRule(int rule) { return styleByRule_->value(rule); }
 
     inline int styleCount() const { return styleByRule_->count(); }
@@ -61,4 +62,3 @@ private:
 };
 
 }} // namespace cc::toki
-

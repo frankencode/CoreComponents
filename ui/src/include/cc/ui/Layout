@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/types>
+
+namespace cc {
+namespace ui {
+
+class View;
+
+class Layout: public virtual Object
+{
+protected:
+    friend class View;
+
+    Layout(View *view);
+    ~Layout();
+
+    virtual void childReady(View *child) = 0;
+    virtual void childDone(View *child) = 0;
+
+    inline View *view() const { return view_; }
+    void updateView();
+
+private:
+    View *view_;
+};
+
+}} // namespace cc::ui

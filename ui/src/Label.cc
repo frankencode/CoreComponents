@@ -15,16 +15,18 @@ namespace ui {
 
 Ref<Label> Label::create(View *parent, String text, const TextStyle *textStyle)
 {
-    return fly(new Label(parent, text, textStyle));
+    return Object::create<Label>(parent, text, textStyle);
 }
 
 Label::Label(View *parent, String text_, const TextStyle *textStyle_):
     View(parent),
-    text(text_),
-    textStyle(alias(StylePlugin::instance()->defaultTextStyle)),
-    margin(alias(StylePlugin::instance()->defaultTextMargin))
+    text(text_)
 {
     if (textStyle_) textStyle = textStyle_;
+    else textStyle->bind([=]{ return StylePlugin::instance()->defaultTextStyle(); });
+
+    margin->bind([=]{ return StylePlugin::instance()->defaultTextMargin(); });
+
     color = transparent;
 
     updateLayout();
@@ -48,7 +50,7 @@ void Label::updateLayout()
 
 void Label::updateSize()
 {
-    size = textRun_->size() + 2 * StylePlugin::instance()->defaultTextMargin();
+    size = textRun_->size() + 2 * margin();
 }
 
 void Label::paint()

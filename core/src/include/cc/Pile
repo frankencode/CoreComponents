@@ -10,24 +10,24 @@
 
 #include <cc/containers>
 #include <cc/Source>
-#include <cc/LayoutTree>
+#include <cc/PileTree>
 
 namespace cc {
 
 template<class Item, class Extent>
-class LayoutStop;
+class PileStop;
 
 template<class Item, class Extent>
-class LayoutSource;
+class PileSource;
 
 template<class ItemType, class ExtentType>
-class Layout: public Object
+class Pile: public Object
 {
 public:
     typedef ItemType Item;
     typedef ExtentType Extent;
 
-    static Ref<Layout> create() { return new Layout; }
+    static Ref<Pile> create() { return new Pile; }
 
     void insertAt(int index, const Item &item, Extent extent) {
         CC_ASSERT((0 <= index) && (index <= count()));
@@ -89,8 +89,8 @@ public:
     /** \name C++ iterators
       * @{
       */
-    typedef cc::Iterator<Layout> iterator;
-    typedef cc::ConstIterator<Layout> const_iterator;
+    typedef cc::Iterator<Pile> iterator;
+    typedef cc::ConstIterator<Pile> const_iterator;
     iterator begin() { return iterator(this, 0); }
     iterator end() { return iterator(this, count()); }
     const_iterator begin() const { return const_iterator(this, 0); }
@@ -100,24 +100,24 @@ public:
     /** \name Source adapters
       * @{
       */
-    Ref< LayoutSource<Item, Extent> > getAll() const { return LayoutSource<Item, Extent>::open(this, 0, count()); }
-    Ref< LayoutSource<Item, Extent> > getInRange(Extent pos0, Extent pos1) const { return LayoutSource<Item, Extent>::open(this, pos0, pos1); }
+    Ref< PileSource<Item, Extent> > getAll() const { return PileSource<Item, Extent>::open(this, 0, count()); }
+    Ref< PileSource<Item, Extent> > getInRange(Extent pos0, Extent pos1) const { return PileSource<Item, Extent>::open(this, pos0, pos1); }
     /** @} */
 
 private:
-    Layout() = default;
+    Pile() = default;
 
-    typedef LayoutTree<Item, Extent> Tree;
+    typedef PileTree<Item, Extent> Tree;
     Tree tree_;
 };
 
 template<class Item, class Extent>
-class LayoutStop {
+class PileStop {
 public:
-    LayoutStop()
+    PileStop()
     {}
 
-    LayoutStop(Extent pos, Extent extent, const Item &item):
+    PileStop(Extent pos, Extent extent, const Item &item):
         instance_(pos, extent, item)
     {}
 
@@ -128,7 +128,7 @@ public:
         inline Item item() const { return item_; }
 
     private:
-        friend class LayoutStop;
+        friend class PileStop;
 
         Instance()
         {}
@@ -151,20 +151,20 @@ private:
 };
 
 template<class Item, class Extent>
-class LayoutSource: public Source< LayoutStop<Item, Extent> >
+class PileSource: public Source< PileStop<Item, Extent> >
 {
 public:
-    static Ref<LayoutSource> open(const Layout<Item, Extent> *layout, Extent pos0, Extent pos1) {
-        return new LayoutSource(layout, pos0, pos1);
+    static Ref<PileSource> open(const Pile<Item, Extent> *layout, Extent pos0, Extent pos1) {
+        return new PileSource(layout, pos0, pos1);
     }
 
-    bool read(LayoutStop<Item, Extent> *layoutItem) override
+    bool read(PileStop<Item, Extent> *layoutItem) override
     {
         if (i_ < i1_) {
             Item item;
             Extent extent;
             layout_->getItemExtentAt(i_, &item, &extent);
-            *layoutItem = LayoutStop<Item, Extent>(x_, extent, item);
+            *layoutItem = PileStop<Item, Extent>(x_, extent, item);
             ++i_;
             x_ += extent;
             return true;
@@ -173,13 +173,13 @@ public:
     }
 
 private:
-    LayoutSource(const Layout<Item, Extent> *layout, Extent pos0, Extent pos1):
+    PileSource(const Pile<Item, Extent> *layout, Extent pos0, Extent pos1):
         layout_(layout)
     {
         layout->getView(pos0, pos1, &i_, &i1_, &x_);
     }
 
-    const Layout<Item, Extent> *layout_;
+    const Pile<Item, Extent> *layout_;
     int i_, i1_;
     Extent x_;
 };

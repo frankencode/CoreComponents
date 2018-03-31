@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/List>
-#include <cc/Layout>
+#include <cc/Pile>
 #include <cc/Signal>
 #include <cc/ui/VisualLayout>
 
@@ -80,7 +80,7 @@ private:
 
     Item *parent_;
 
-    typedef Layout< Ref<Item>, int > ItemLayout;
+    typedef Pile< Ref<Item>, int > ItemLayout;
     Ref<ItemLayout> children_;
 
     ItemDelta delta_;
