@@ -13,7 +13,7 @@
 namespace cc {
 namespace ui {
 
-class MouseWheelEvent: public Object
+class WheelEvent: public Object
 {
 public:
     double time() const { return time_; }
@@ -25,7 +25,7 @@ public:
 private:
     friend class Object;
 
-    MouseWheelEvent(
+    WheelEvent(
         double time,
         const Step &wheelStep,
         const Pos &mousePos

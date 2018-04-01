@@ -1,0 +1,66 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/types>
+
+namespace cc {
+namespace ui {
+
+class View;
+
+class PointerEvent: public Object
+{
+public:
+    PointerAction action() const { return action_; }
+    double time() const { return time_; }
+    Pos pos() const { return pos_; }
+    Step step() const { return step_; }
+
+    virtual String toString() const = 0;
+
+protected:
+    class PosGuard {
+    public:
+        PosGuard(Point *pos, Pos newPos):
+            pos_(pos),
+            oldPos_(*pos)
+        {
+            *pos_ = newPos;
+        }
+        ~PosGuard() {
+            *pos_ = oldPos_;
+        }
+    private:
+        Point *pos_;
+        Point oldPos_;
+    };
+
+    friend class View;
+    friend class PosGuard;
+
+    PointerEvent(
+        PointerAction action,
+        double time,
+        const Pos &pos,
+        const Step &step
+    ):
+        action_(action),
+        time_(time),
+        pos_(pos),
+        step_(step)
+    {}
+
+    PointerAction action_;
+    double time_;
+    Pos pos_;
+    Step step_;
+};
+
+}} // namespace cc::ui

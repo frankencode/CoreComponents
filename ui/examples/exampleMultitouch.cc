@@ -4,8 +4,8 @@
 #include <cc/Map>
 #include <cc/ui/DisplayManager>
 #include <cc/ui/TouchDeviceManager>
-#include <cc/ui/TouchEvent>
-#include <cc/ui/MouseEvent>
+#include <cc/ui/FingerEvent>
+#include <cc/ui/PointerEvent>
 #include <cc/ui/Application>
 
 using namespace cc;
@@ -32,11 +32,6 @@ protected:
         p->setSource(fgColor());
         p->circle(size() / 2, size()[0]/2 - 1);
         p->fill();
-    }
-
-    void mouseEvent(const MouseEvent *event) override
-    {
-        CC_INSPECT(event);
     }
 };
 
@@ -73,7 +68,7 @@ class MainView: public View
         }
     }
 
-    void touchEvent(const TouchEvent *event) override
+    bool fingerEvent(FingerEvent *event) override
     {
         if (event->action() == PointerAction::Pressed || event->action() == PointerAction::Moved)
         {
@@ -93,6 +88,8 @@ class MainView: public View
                 freeTouchPoints_->pushBack(touchPoint);
             }
         }
+
+        return true;
     }
 
     typedef Map<TouchFingerId, TouchPoint *> AssignedTouchPoints;

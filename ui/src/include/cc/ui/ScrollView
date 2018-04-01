@@ -13,7 +13,7 @@
 namespace cc {
 namespace ui {
 
-class ScrollView: public View, public PointerInput
+class ScrollView: public View
 {
     friend class Object;
 
@@ -30,7 +30,10 @@ protected:
 
     void insertChild(View *child) override;
 
-    void dragged();
+    bool hasPointerInput() const override;
+    bool onPointerPressed(const PointerEvent *event) override;
+    bool onPointerReleased(const PointerEvent *event) override;
+    bool onPointerMoved(const PointerEvent *event) override;
 
     Ref<View> carrier_;
     bool isDragged_;

@@ -12,18 +12,17 @@
 #include <cc/ui/Surface>
 #include <cc/ui/UpdateRequest>
 #include <cc/ui/Layout>
-#include <cc/ui/PointerInput>
-#include <cc/ui/KeyInput>
+#include <cc/ui/PointerEvent>
+#include <cc/ui/MouseEvent>
+#include <cc/ui/FingerEvent>
+#include <cc/ui/WheelEvent>
+#include <cc/ui/KeyEvent>
 
 namespace cc {
 namespace ui {
 
 class Window;
 class Image;
-class TouchEvent;
-class MouseEvent;
-class MouseWheelEvent;
-class KeyEvent;
 
 /** \TODO allow direct method connection from any Signal to MyView::method() without explicit lambdarisation
   */
@@ -50,11 +49,9 @@ public:
 
     inline Layout *layout() const { return layout_; }
 
-    PointerInput *pointerInput() const { return pointerInput_; }
-    KeyInput *keyInput() const { return keyInput_; }
-
     Point mapToGlobal(Point l) const;
     Point mapToLocal(Point g) const;
+    bool containsLocal(Point l) const;
     bool containsGlobal(Point g) const;
 
     void centerInParent();
@@ -65,8 +62,6 @@ protected:
     friend class Window;
     friend class Application;
     friend class Layout;
-    friend class PointerInput;
-    friend class KeyInput;
 
     View(View *parent = 0);
     ~View();
@@ -78,13 +73,40 @@ protected:
     virtual void clear();
     virtual void paint();
 
-    void polish(Window *window);
+    virtual bool hasPointerInput() const;
+    virtual bool onPointerPressed(const PointerEvent *event);
+    virtual bool onPointerReleased(const PointerEvent *event);
+    virtual bool onPointerClicked(const PointerEvent *event);
+    virtual bool onPointerMoved(const PointerEvent *event);
+
+    virtual bool hasMouseInput() const;
+    virtual bool hasMouseTracking() const;
+    virtual bool onMousePressed(const MouseEvent *event);
+    virtual bool onMouseReleased(const MouseEvent *event);
+    virtual bool onMouseClicked(const MouseEvent *event);
+    virtual bool onMouseMoved(const MouseEvent *event);
+
+    virtual bool hasFingerInput() const;
+    virtual bool onFingerPressed(const FingerEvent *event);
+    virtual bool onFingerReleased(const FingerEvent *event);
+    virtual bool onFingerClicked(const FingerEvent *event);
+    virtual bool onFingerMoved(const FingerEvent *event);
+
+    virtual bool hasWheelInput() const;
+    virtual bool onWheelMoved(const WheelEvent *event);
+
+    virtual bool hasKeyInput() const;
+    virtual bool onKeyPressed(const KeyEvent *event);
+    virtual bool onKeyReleased(const KeyEvent *event);
+
+    // virtual bool hasTextInput() const; // TODO...
+
     void update(UpdateReason reason = UpdateReason::Changed);
 
-    virtual void touchEvent(const TouchEvent *event);
-    virtual void mouseEvent(const MouseEvent *event);
-    virtual void mouseWheelEvent(const MouseWheelEvent *event);
-    virtual void keyEvent(const KeyEvent *event);
+    virtual bool fingerEvent(FingerEvent *event); // TODO: rename to feedFingerEvent(), etc.
+    virtual bool mouseEvent(MouseEvent *event);
+    virtual bool wheelEvent(WheelEvent *event);
+    virtual bool keyEvent(KeyEvent *event);
 
     void init();
     virtual void childReady(View *child);
@@ -99,6 +121,8 @@ protected:
     void adoptChild(View *parent, View *child);
 
 private:
+    void polish(Window *window);
+
     uint64_t nextSerial() const;
 
     cairo_surface_t *cairoSurface() const override;
@@ -113,8 +137,6 @@ private:
     Ref<Image> image_;
     Ref<Object> context_;
     Ref<Layout> layout_;
-    PointerInput *pointerInput_;
-    KeyInput *keyInput_;
 };
 
 }} // namespace cc::ui

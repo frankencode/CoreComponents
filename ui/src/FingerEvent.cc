@@ -7,15 +7,15 @@
  */
 
 #include <cc/Format>
-#include <cc/ui/TouchEvent>
+#include <cc/ui/FingerEvent>
 
 namespace cc {
 namespace ui {
 
-String TouchEvent::toString() const
+String FingerEvent::toString() const
 {
     return Format()
-        << "TouchEvent {" << nl
+        << "FingerEvent {" << nl
         << "  action: " << action_ << nl
         << "  time: " << time_ << nl
         << "  deviceId: " << deviceId_ << nl

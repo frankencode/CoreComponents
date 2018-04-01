@@ -9,12 +9,11 @@
 using namespace cc;
 using namespace cc::ui;
 
-class MainView: public View, public KeyInput
+class MainView: public View
 {
     friend class Object;
 
-    MainView():
-        KeyInput(this)
+    MainView()
     {
         size = Size{640, 480};
         color = Color{"#FFFFFF"};
@@ -32,17 +31,21 @@ class MainView: public View, public KeyInput
 
         easeOn(label->angle, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));
         Timer::start(1, [=]{ label->text = getClockText(); label->angle += 45; });
+    }
 
-        keyPressed->connect([=]{
-            if (+(key()->modifiers() & KeyModifier::Control)) {
-                if (key()->keyCode() == '+') {
-                    Application::instance()->textZoom += 4;
-                }
-                else if (key()->keyCode() == '-') {
-                    Application::instance()->textZoom -= 4;
-                }
-            }
-        });
+    bool hasKeyInput() const override { return true; }
+
+    bool onKeyPressed(const KeyEvent *event)
+    {
+        if (+(event->modifiers() & KeyModifier::Control))
+        {
+            if (event->keyCode() == '+')
+                Application::instance()->textZoom += 4;
+            else if (event->keyCode() == '-')
+                Application::instance()->textZoom -= 4;
+        }
+
+        return true;
     }
 };
 

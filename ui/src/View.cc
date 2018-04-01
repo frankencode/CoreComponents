@@ -11,10 +11,6 @@
 #include <cc/ui/Application>
 #include <cc/ui/Window>
 #include <cc/ui/Image>
-#include <cc/ui/TouchEvent>
-#include <cc/ui/MouseEvent>
-#include <cc/ui/MouseWheelEvent>
-#include <cc/ui/KeyEvent>
 #include <cc/ui/View>
 
 namespace cc {
@@ -29,9 +25,7 @@ View::View(View *parent):
     serial_(0),
     window_(0),
     parent_(0),
-    children_(Children::create()),
-    pointerInput_(0),
-    keyInput_(0)
+    children_(Children::create())
 {
     if (parent)
     {
@@ -79,12 +73,16 @@ Point View::mapToLocal(Point g) const
     return g;
 }
 
+bool View::containsLocal(Point l) const
+{
+    return
+        0 <= l[0] && l[0] < size()[0] &&
+        0 <= l[1] && l[1] < size()[1];
+}
+
 bool View::containsGlobal(Point g) const
 {
-    Point globalPos = mapToGlobal(Point{0, 0});
-    return
-        globalPos[0] <= g[0] && g[0] < globalPos[0] + size()[0] &&
-        globalPos[1] <= g[1] && g[1] < globalPos[1] + size()[1];
+    return containsLocal(mapToLocal(g));
 }
 
 void View::centerInParent()
@@ -116,15 +114,31 @@ void View::clear()
 void View::paint()
 {}
 
-void View::polish(Window *window)
-{
-    for (int i = 0; i < children_->count(); ++i)
-        children_->valueAt(i)->polish(window);
+bool View::hasPointerInput() const { return false; }
+bool View::onPointerPressed(const PointerEvent *event) { return false; }
+bool View::onPointerReleased(const PointerEvent *event) { return false; }
+bool View::onPointerClicked(const PointerEvent *event) { return false; }
+bool View::onPointerMoved(const PointerEvent *event) { return false; }
 
-    clear();
-    paint();
-    window->addToFrame(UpdateRequest::create(UpdateReason::Changed, this));
-}
+bool View::hasMouseInput() const { return false; }
+bool View::hasMouseTracking() const { return false; }
+bool View::onMousePressed(const MouseEvent *event) { return false; }
+bool View::onMouseReleased(const MouseEvent *event) { return false; }
+bool View::onMouseClicked(const MouseEvent *event) { return false; }
+bool View::onMouseMoved(const MouseEvent *event) { return false; }
+
+bool View::hasFingerInput() const { return false; }
+bool View::onFingerPressed(const FingerEvent *event) { return false; }
+bool View::onFingerReleased(const FingerEvent *event) { return false; }
+bool View::onFingerClicked(const FingerEvent *event) { return false; }
+bool View::onFingerMoved(const FingerEvent *event) { return false; }
+
+bool View::hasWheelInput() const { return false; }
+bool View::onWheelMoved(const WheelEvent *event) { return false; }
+
+bool View::hasKeyInput() const { return false; }
+bool View::onKeyPressed(const KeyEvent *event) { return false; }
+bool View::onKeyReleased(const KeyEvent *event) { return false; }
 
 void View::update(UpdateReason reason)
 {
@@ -144,79 +158,201 @@ void View::update(UpdateReason reason)
     w->addToFrame(UpdateRequest::create(reason, this));
 }
 
-void View::touchEvent(const TouchEvent *event)
+bool View::fingerEvent(FingerEvent *event)
 {
-    Ref<View> touchTarget;
-    if (!parent_ && window()->touchTargets_->lookup(event->fingerId(), &touchTarget)) {
-        if (touchTarget != this) {
-            touchTarget->touchEvent(event);
-            return;
-        }
-    }
+    if (!parent_) // TODO: move this to Window::feedFingerEvent()
+    {
+        Ref<View> touchTarget;
 
-    if (pointerInput_) {
-        pointerInput_->feed(event);
-        return;
-    }
+        if (window()->touchTargets_->lookup(event->fingerId(), &touchTarget))
+        {
+            if (event->action() == PointerAction::Released)
+                window()->touchTargets_->remove(event->fingerId());
 
-    for (auto pair: children_) {
-        View *child = pair->value();
-        if (child->containsGlobal(event->pos())) {
-            child->touchEvent(event);
-            return;
-        }
-    }
-
-}
-
-void View::mouseEvent(const MouseEvent *event)
-{
-    if (!parent_) {
-        Window *w = window();
-        if (w->pointerTarget_) {
-            if (w->pointerTarget_ != this) {
-                w->pointerTarget_->mouseEvent(event);
-                return;
+            if (touchTarget != this) { // TODO: remove
+                if (touchTarget->fingerEvent(event))
+                    return true;
             }
         }
     }
 
-    if (pointerInput_) {
-        pointerInput_->feed(event);
-        return;
-    }
+    const bool hpi = hasPointerInput();
+    const bool hfi = hasFingerInput();
 
-    for (auto pair: children_) {
-        View *child = pair->value();
-        if (child->containsGlobal(event->pos())) {
-            child->mouseEvent(event);
-            return;
+    if (hpi || hfi)
+    {
+        PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
+
+        if (event->action() == PointerAction::Pressed)
+        {
+            if (
+                (hpi && onPointerPressed(event)) ||
+                (hfi && onFingerPressed(event))
+            ) {
+                window()->touchTargets_->establish(event->fingerId(), this);
+                return true;
+            }
+        }
+        else if (event->action() == PointerAction::Released)
+        {
+            bool eaten =
+                (hpi && onPointerReleased(event)) ||
+                (hfi && onFingerReleased(event));
+
+            if (containsLocal(event->pos())) {
+                if (
+                    (hpi && onPointerClicked(event)) ||
+                    (hfi && onFingerClicked(event))
+                )
+                    eaten = true;
+            }
+
+            if (eaten) return true;
+        }
+        else if (event->action() == PointerAction::Moved)
+        {
+            if (
+                (hpi && onPointerMoved(event)) ||
+                (hfi && onFingerMoved(event))
+            ) return true;
         }
     }
-}
-
-void View::mouseWheelEvent(const MouseWheelEvent *event)
-{
-    // TODO...
-
-    for (auto pair: children_) {
-        View *child = pair->value();
-        if (child->containsGlobal(event->mousePos())) {
-            child->mouseWheelEvent(event);
-            return;
-        }
-    }
-}
-
-void View::keyEvent(const KeyEvent *event)
-{
-    // TODO: keyboard focus...
-
-    if (keyInput_)
-        keyInput_->feed(event);
 
     for (auto pair: children_)
-        pair->value()->keyEvent(event);
+    {
+        View *child = pair->value();
+
+        if (
+            (child->hasPointerInput() || child->hasFingerInput())  &&
+            child->containsGlobal(event->pos())
+        ) {
+            if (child->fingerEvent(event))
+                return true;
+        }
+    }
+
+    return false;
+}
+
+bool View::mouseEvent(MouseEvent *event)
+{
+    if (!parent_)  // TODO: move to Window::feedMouseEvent()
+    {
+        Window *w = window();
+
+        if (w->pointerTarget_)
+        {
+            if (w->pointerTarget_ != this) { // TODO: remove
+                if (event->action() == PointerAction::Released)
+                    window()->pointerTarget_ = 0;
+                if (w->pointerTarget_->mouseEvent(event))
+                    return true;
+            }
+        }
+    }
+
+    bool hpi = hasPointerInput();
+    bool hmi = hasMouseInput();
+
+    if (hpi || hmi)
+    {
+        PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
+
+        if (event->action() == PointerAction::Pressed)
+        {
+            if (
+                (hpi && onPointerPressed(event)) ||
+                (hmi && onMousePressed(event))
+            ) {
+                window()->pointerTarget_ = this;
+                return true;
+            }
+        }
+        else if (event->action() == PointerAction::Released)
+        {
+            bool eaten =
+                (hpi && onPointerReleased(event)) ||
+                (hmi && onMouseReleased(event));
+
+            if (containsLocal(event->pos())) {
+                if (
+                    (hpi && onPointerClicked(event)) ||
+                    (hmi && onMouseClicked(event))
+                )
+                    eaten = true;
+            }
+
+            if (eaten) return true;
+        }
+        else if (event->action() == PointerAction::Moved)
+        {
+            if (event->button() != MouseButton::None || hasMouseTracking()) {
+                if (
+                    (hpi && onPointerMoved(event)) ||
+                    (hmi && onMouseMoved(event))
+                ) return true;
+            }
+        }
+    }
+
+    for (auto pair: children_)
+    {
+        View *child = pair->value();
+
+        if (
+            (child->hasPointerInput() || child->hasMouseInput()) &&
+            child->containsGlobal(event->pos())
+        ) {
+            if (child->mouseEvent(event))
+                return true;
+        }
+    }
+
+    return false;
+}
+
+bool View::wheelEvent(WheelEvent *event)
+{
+    if (
+        hasWheelInput() &&
+        containsGlobal(event->mousePos())
+    ) {
+        if (onWheelMoved(event))
+            return true;
+    }
+
+    for (auto pair: children_)
+    {
+        View *child = pair->value();
+
+        if (child->wheelEvent(event))
+            return true;
+    }
+
+    return false;
+}
+
+bool View::keyEvent(KeyEvent *event)
+{
+    if (hasKeyInput())
+    {
+        if (event->action() == KeyAction::Pressed)
+        {
+            if (onKeyPressed(event)) return true;
+        }
+        else if (event->action() == KeyAction::Released)
+        {
+            if (onKeyReleased(event)) return true;
+        }
+    }
+
+    for (auto pair: children_)
+    {
+        if (pair->value()->keyEvent(event))
+            return true;
+    }
+
+    return false;
 }
 
 void View::init()
@@ -275,6 +411,16 @@ void View::removeChild(View *child)
 void View::adoptChild(View *parent, View *child)
 {
     parent->insertChild(child);
+}
+
+void View::polish(Window *window)
+{
+    for (int i = 0; i < children_->count(); ++i)
+        children_->valueAt(i)->polish(window);
+
+    clear();
+    paint();
+    window->addToFrame(UpdateRequest::create(UpdateReason::Changed, this));
 }
 
 cairo_surface_t *View::cairoSurface() const

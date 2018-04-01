@@ -13,9 +13,9 @@
 #include <cc/ui/SdlWindow>
 #include <cc/ui/Timer>
 #include <cc/ui/TimeMaster>
-#include <cc/ui/TouchEvent>
-#include <cc/ui/MouseEvent>
-#include <cc/ui/MouseWheelEvent>
+#include <cc/ui/FingerEvent>
+#include <cc/ui/PointerEvent>
+#include <cc/ui/WheelEvent>
 #include <cc/ui/KeyEvent>
 #include <cc/ui/SdlApplication>
 
@@ -85,7 +85,7 @@ int SdlApplication::run()
         if (!SDL_WaitEvent(event_))
             CC_DEBUG_ERROR(SDL_GetError());
 
-        // CC_INSPECT(event_->type);
+        CC_INSPECT(event_->type);
 
         if (event_->type == timerEvent_) {
             Timer *t = (Timer *)event_->user.data1;
@@ -136,8 +136,8 @@ void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
         };
     }
 
-    Ref<TouchEvent> event =
-        Object::create<TouchEvent>(
+    Ref<FingerEvent> event =
+        Object::create<FingerEvent>(
             action,
             e->timestamp / 1000.,
             e->touchId,
@@ -149,7 +149,7 @@ void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
 
     for (auto pair: windows_) {
         Window *window = pair->value();
-        touchEvent(window->view(), event);
+        fingerEvent(window->view(), event);
     }
 }
 
@@ -169,7 +169,6 @@ void SdlApplication::handleMouseMotionEvent(const SDL_MouseMotionEvent *e)
         Object::create<MouseEvent>(
             PointerAction::Moved,
             e->timestamp / 1000.,
-            e->which == SDL_TOUCH_MOUSEID,
             button,
             0,
             Pos  { double(e->x),    double(e->y)    },
@@ -206,7 +205,6 @@ void SdlApplication::handleMouseButtonEvent(const SDL_MouseButtonEvent *e)
         Object::create<MouseEvent>(
             action,
             e->timestamp / 1000.,
-            e->which == SDL_TOUCH_MOUSEID,
             button,
             e->clicks,
             Pos  { double(e->x), double(e->y) },
@@ -225,8 +223,8 @@ void SdlApplication::handleMouseWheelEvent(const SDL_MouseWheelEvent *e)
     int mx = 0, my = 0;
     SDL_GetMouseState(&mx, &my);
 
-    Ref<MouseWheelEvent> event =
-        Object::create<MouseWheelEvent>(
+    Ref<WheelEvent> event =
+        Object::create<WheelEvent>(
             e->timestamp / 1000.,
             Step { double(e->x), double(e->y) },
             Pos  { double(mx),   double(my)   }
@@ -235,7 +233,7 @@ void SdlApplication::handleMouseWheelEvent(const SDL_MouseWheelEvent *e)
     for (auto pair: windows_) {
         SdlWindow *window = pair->value();
         if (window->id_ == e->windowID)
-            mouseWheelEvent(window->view(), event);
+            wheelEvent(window->view(), event);
     }
 }
 
@@ -285,7 +283,7 @@ String SdlApplication::windowEventToString(const SDL_WindowEvent *e)
 
 void SdlApplication::handleWindowEvent(const SDL_WindowEvent *e)
 {
-    // CC_DEBUG << windowEventToString(e);
+    CC_DEBUG << windowEventToString(e);
     switch (e->event) {
         case SDL_WINDOWEVENT_SIZE_CHANGED: {
             SdlWindow *window = 0;

@@ -8,28 +8,24 @@
 
 #pragma once
 
-#include <cc/ui/types>
+#include <cc/ui/PointerEvent>
 
 namespace cc {
 namespace ui {
 
-class TouchEvent: public Object
+class FingerEvent final: public PointerEvent
 {
 public:
-    PointerAction action() const { return action_; }
-    double time() const { return time_; }
     TouchDeviceId deviceId() const { return deviceId_; }
     TouchFingerId fingerId() const { return fingerId_; }
-    Pos pos() const { return pos_; }
-    Step step() const { return step_; }
     double pressure() const { return pressure_; }
 
-    String toString() const;
+    String toString() const override;
 
-protected:
+private:
     friend class Object;
 
-    TouchEvent(
+    FingerEvent(
         PointerAction action,
         double time,
         TouchDeviceId deviceId,
@@ -38,21 +34,14 @@ protected:
         const Step &step,
         double pressure
     ):
-        action_(action),
-        time_(time),
+        PointerEvent(action, time, pos, step),
         deviceId_(deviceId),
         fingerId_(fingerId),
-        pos_(pos),
-        step_(step),
         pressure_(pressure)
     {}
 
-    PointerAction action_;
-    double time_;
     TouchDeviceId deviceId_;
     TouchFingerId fingerId_;
-    Pos pos_;
-    Step step_;
     double pressure_;
 };
 

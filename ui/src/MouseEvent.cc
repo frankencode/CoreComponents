@@ -18,7 +18,6 @@ String MouseEvent::toString() const
         << "MouseEvent {" << nl
         << "  action: " << action_ << nl
         << "  time: " << time_ << nl
-        << "  isSynthetic: " << isSynthetic_ << nl
         << "  button: " << button_ << nl
         << "  clickCount: " << clickCount_ << nl
         << "  pos: " << pos_ << nl

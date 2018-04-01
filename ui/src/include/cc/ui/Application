@@ -16,7 +16,7 @@ namespace cc {
 namespace ui {
 
 class Timer;
-class TouchEvent;
+class FingerEvent;
 
 class Application: public Object
 {
@@ -43,10 +43,10 @@ protected:
 
     void notifyTimer(Timer *t);
 
-    void touchEvent(View *view, const TouchEvent *event);
-    void mouseEvent(View *view, const MouseEvent *event);
-    void mouseWheelEvent(View *view, const MouseWheelEvent *event);
-    void keyEvent(View *view, const KeyEvent *event);
+    void fingerEvent(View *view, FingerEvent *event);
+    void mouseEvent(View *view, MouseEvent *event);
+    void wheelEvent(View *view, WheelEvent *event);
+    void keyEvent(View *view, KeyEvent *event);
 };
 
 }} // namespace cc::ui

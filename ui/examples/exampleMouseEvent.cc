@@ -2,26 +2,21 @@
 #include <cc/debug>
 #include <cc/System>
 #include <cc/ui/Application>
-#include <cc/ui/MouseEvent>
-#include <cc/ui/MouseWheelEvent>
-#include <cc/ui/TouchEvent>
+#include <cc/ui/PointerEvent>
+#include <cc/ui/WheelEvent>
+#include <cc/ui/FingerEvent>
 
 using namespace cc;
 using namespace cc::ui;
 
-class MainView: public View, public PointerInput
+class MainView: public View
 {
     friend class Object;
 
-    MainView():
-        PointerInput(this)
+    MainView()
     {
         size = Size{640, 480};
         color = Color{"#FFFFFF"};
-
-        pressed->connect([=]{ fout() << "pressed at " << mousePos() << nl; });
-        released->connect([=]{ fout() << "released at " << mousePos() << nl; });
-        clicked->connect([=]{ fout() << "clicked at " << mousePos() << nl; });
     }
 
     void paint() override
@@ -29,7 +24,6 @@ class MainView: public View, public PointerInput
         Painter p(this);
 
         p->translate(size()/2);
-        p->rotate(angle_);
 
         p->setSource(Color{"#FF000080"});
         p->circle(-Point{30, 0}, 60);
@@ -44,24 +38,25 @@ class MainView: public View, public PointerInput
         p->fill();
     }
 
-    #if 0
-    void mouseEvent(const MouseEvent *event) override
+    bool hasPointerInput() const override { return true; }
+
+    bool onPointerPressed(const PointerEvent *event) override
     {
-        CC_INSPECT(event);
+        fout() << "Pressed at " << event->pos() << nl;
+        return true;
     }
 
-    void mouseWheelEvent(const MouseWheelEvent *event) override
+    bool onPointerReleased(const PointerEvent *event) override
     {
-        CC_INSPECT(event);
+        fout() << "Released at " << event->pos() << nl;
+        return true;
     }
 
-    void touchEvent(const TouchEvent *event) override
+    bool onPointerClicked(const PointerEvent *event) override
     {
-        CC_INSPECT(event);
+        fout() << "Clicked at " << event->pos() << nl;
+        return true;
     }
-    #endif
-
-    double angle_;
 };
 
 int main(int argc, char **argv)

@@ -7,15 +7,15 @@
  */
 
 #include <cc/Format>
-#include <cc/ui/MouseWheelEvent>
+#include <cc/ui/WheelEvent>
 
 namespace cc {
 namespace ui {
 
-String MouseWheelEvent::toString() const
+String WheelEvent::toString() const
 {
     return Format()
-        << "MouseWheelEvent {" << nl
+        << "WheelEvent {" << nl
         << "  time: " << time_ << nl
         << "  wheelStep: " << wheelStep_ << nl
         << "  mousePos: " << mousePos_ << nl

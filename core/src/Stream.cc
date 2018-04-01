@@ -31,16 +31,13 @@ void Stream::write(const Format &format)
     write(Format::toStringList(format));
 }
 
-class WrappedChunk: public CharArray
-{
+class WrappedChunk: public CharArray {
 public:
     WrappedChunk(const void *data, int size):
-        CharArray((const char *)data, size, CharArray::doNothing),
-        stackGuard_(this)
-    {}
-
-private:
-    StackGuard stackGuard_;
+        CharArray((const char *)data, size, CharArray::doNothing)
+    {
+        decRefCount();
+    }
 };
 
 void Stream::write(const void *data, int size)

@@ -8,23 +8,18 @@
 
 #pragma once
 
-#include <cc/ui/types>
+#include <cc/ui/PointerEvent>
 
 namespace cc {
 namespace ui {
 
-class MouseEvent: public Object
+class MouseEvent final: public PointerEvent
 {
 public:
-    PointerAction action() const { return action_; }
-    double time() const { return time_; }
-    bool isSynthetic() const { return isSynthetic_; }
     MouseButton button() const { return button_; }
     int clickCount() const { return clickCount_; }
-    Pos pos() const { return pos_; }
-    Step step() const { return step_; }
 
-    String toString() const;
+    String toString() const override;
 
 private:
     friend class Object;
@@ -32,28 +27,19 @@ private:
     MouseEvent(
         PointerAction action,
         double time,
-        bool isSynthetic,
         MouseButton button,
         int clickCount,
         const Pos &pos,
         const Step &step
     ):
-        action_(action),
-        time_(time),
-        isSynthetic_(isSynthetic),
+        PointerEvent(action, time, pos, step),
         button_(button),
-        clickCount_(clickCount),
-        pos_(pos),
-        step_(step)
+        clickCount_(clickCount)
     {}
 
-    PointerAction action_;
-    double time_;
-    bool isSynthetic_;
     MouseButton button_;
     int clickCount_;
-    Pos pos_;
-    Step step_;
 };
+
 
 }} // namespace cc::ui

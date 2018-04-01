@@ -19,7 +19,6 @@ Ref<ScrollView> ScrollView::create(View *parent)
 
 ScrollView::ScrollView(View *parent):
     View(parent),
-    PointerInput(this),
     carrier_(0),
     isDragged_(false)
 {
@@ -27,28 +26,6 @@ ScrollView::ScrollView(View *parent):
 
     if (parent)
         size->bind([=]{ return parent->size(); });
-
-    pressed->connect([=]{
-        dragStart_ = mousePos();
-    });
-
-    released->connect([=]{
-        isDragged_ = false;
-    });
-
-    hovered->connect([=]{
-        if (
-            !isDragged_ &&
-            mouseButton() == MouseButton::Left &&
-            (mousePos() - dragStart_)->magnitudeSquared() >=
-            minimumDragDistance() * minimumDragDistance()
-        ) {
-            isDragged_ = true;
-            carrierOrigin_ = carrier_->pos();
-        }
-
-        if (isDragged_) dragged();
-    });
 }
 
 void ScrollView::insertChild(View *child)
@@ -59,23 +36,53 @@ void ScrollView::insertChild(View *child)
         View::insertChild(child);
 }
 
-void ScrollView::dragged()
+bool ScrollView::hasPointerInput() const
 {
-    Step d = mousePos() - dragStart_;
-    Point p = carrierOrigin_ + d;
+    return true;
+}
 
-    double x = p[0];
-    double y = p[1];
-    double w = carrier_->size()[0];
-    double h = carrier_->size()[1];
+bool ScrollView::onPointerPressed(const PointerEvent *event)
+{
+    dragStart_ = event->pos();
+    return false;
+}
 
-    if (x > 0 || (w < size()[0])) x = 0;
-    else if (x + w < size()[0]) x = size()[0] - w;
+bool ScrollView::onPointerReleased(const PointerEvent *event)
+{
+    isDragged_ = false;
+    return false;
+}
 
-    if (y > 0 || (h < size()[1])) y = 0;
-    else if (y + h < size()[1]) y = size()[1] - h;
+bool ScrollView::onPointerMoved(const PointerEvent *event)
+{
+    if (
+        !isDragged_ &&
+        (event->pos() - dragStart_)->magnitudeSquared() >=
+        minimumDragDistance() * minimumDragDistance()
+    ) {
+        isDragged_ = true;
+        carrierOrigin_ = carrier_->pos();
+    }
 
-    carrier_->pos = Point{ x, y };
+    if (isDragged_) {
+        Step d = event->pos() - dragStart_;
+        Point p = carrierOrigin_ + d;
+
+        double x = p[0];
+        double y = p[1];
+        double w = carrier_->size()[0];
+        double h = carrier_->size()[1];
+
+        if (x > 0 || (w < size()[0])) x = 0;
+        else if (x + w < size()[0]) x = size()[0] - w;
+
+        if (y > 0 || (h < size()[1])) y = 0;
+        else if (y + h < size()[1]) y = size()[1] - h;
+
+        carrier_->pos = Point{ x, y };
+    }
+
+    return true;
 }
 
 }} // namespace cc::ui

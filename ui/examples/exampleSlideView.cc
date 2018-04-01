@@ -42,12 +42,11 @@ class Slide2: public View
     }
 };
 
-class MainView: public SlideView, public KeyInput
+class MainView: public SlideView
 {
     friend class Object;
 
-    MainView():
-        KeyInput(this)
+    MainView()
     {
         size = Size{640, 480};
 
@@ -55,26 +54,33 @@ class MainView: public SlideView, public KeyInput
         Object::create<Slide2>(this);
 
         easeOn(slideCarrier()->pos, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));
+    }
 
-        keyPressed->connect([=]{
-            if (key()->scanCode() == ScanCode::Key_Left) {
-                currentIndex -= 1;
-            }
-            else if (key()->scanCode() == ScanCode::Key_Right) {
-                currentIndex += 1;
-            }
-            else if ('0' <= +key()->keyCode() && +key()->keyCode() <= '9') {
-                currentIndex = +key()->keyCode() - '1' + 10 * (+key()->keyCode() == '0');
-            }
-            else if (+(key()->modifiers() & KeyModifier::Control)) {
-                if (key()->keyCode() == '+') {
-                    Application::instance()->textZoom += 4;
-                }
-                else if (key()->keyCode() == '-') {
-                    Application::instance()->textZoom -= 4;
-                }
-            }
-        });
+    bool hasKeyInput() const override { return true; }
+
+    bool onKeyPressed(const KeyEvent *event) override
+    {
+        if (event->scanCode() == ScanCode::Key_Left)
+        {
+            currentIndex -= 1;
+        }
+        else if (event->scanCode() == ScanCode::Key_Right)
+        {
+            currentIndex += 1;
+        }
+        else if ('0' <= +event->keyCode() && +event->keyCode() <= '9')
+        {
+            currentIndex = +event->keyCode() - '1' + 10 * (+event->keyCode() == '0');
+        }
+        else if (+(event->modifiers() & KeyModifier::Control))
+        {
+            if (event->keyCode() == '+')
+                Application::instance()->textZoom += 4;
+            else if (event->keyCode() == '-')
+                Application::instance()->textZoom -= 4;
+        }
+
+        return true;
     }
 };
 

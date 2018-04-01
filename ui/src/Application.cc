@@ -8,7 +8,7 @@
 
 #include <cc/ui/PlatformManager>
 #include <cc/ui/TimeMaster>
-#include <cc/ui/TouchEvent>
+#include <cc/ui/FingerEvent>
 #include <cc/ui/Application>
 
 namespace cc {
@@ -33,22 +33,22 @@ void Application::notifyTimer(Timer *t)
     t->triggered->emit();
 }
 
-void Application::touchEvent(View *view, const TouchEvent *event)
+void Application::fingerEvent(View *view, FingerEvent *event)
 {
-    view->touchEvent(event);
+    view->fingerEvent(event);
 }
 
-void Application::mouseEvent(View *view, const MouseEvent *event)
+void Application::mouseEvent(View *view, MouseEvent *event)
 {
     view->mouseEvent(event);
 }
 
-void Application::mouseWheelEvent(View *view, const MouseWheelEvent *event)
+void Application::wheelEvent(View *view, WheelEvent *event)
 {
-    view->mouseWheelEvent(event);
+    view->wheelEvent(event);
 }
 
-void Application::keyEvent(View *view, const KeyEvent *event)
+void Application::keyEvent(View *view, KeyEvent *event)
 {
     view->keyEvent(event);
 }

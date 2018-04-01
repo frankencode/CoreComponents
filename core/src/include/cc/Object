@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <assert.h>
 #include <cc/Ref>
 
 namespace cc {
@@ -30,7 +31,7 @@ public:
     Object(): refCount_(0) {}
 
     virtual ~Object() {
-        CC_ASSERT2(refCount_ == 0, "Deleting object, which is still in use");
+        assert(refCount_ == 0); // check if object is still in use (but don't throw an exception!)
     }
 
     inline int refCount() const { return refCount_; }
@@ -56,8 +57,6 @@ public:
         return Object::cast<U>(p.get());
     }
 
-    inline void init() {}
-
     template<class T, class... Args>
     inline static Ref<T> create(Args... args) {
         Ref<T> object = new T(args...);
@@ -66,24 +65,9 @@ public:
     }
 
 protected:
-    class StackGuard {
-    public:
-        StackGuard(Object *object):
-            object_(object)
-        {
-            __sync_add_and_fetch(&object_->refCount_, 1);
-        }
-        ~StackGuard() {
-            __sync_sub_and_fetch(&object_->refCount_, 1);
-        }
-
-    private:
-        Object *object_;
-    };
+    inline void init() {}
 
 private:
-    friend class StackGuard;
-
     Object(const Object &);
     const Object &operator=(const Object &);
 

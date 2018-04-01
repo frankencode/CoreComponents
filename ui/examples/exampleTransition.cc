@@ -5,20 +5,14 @@
 using namespace cc;
 using namespace cc::ui;
 
-class MainView: public View, public PointerInput
+class MainView: public View
 {
     friend class Object;
 
-    MainView():
-        PointerInput(this)
+    MainView()
     {
         size = Size{640, 480};
         color = Color{"#FFFFFF"};
-
-        clicked->connect([=]{
-            fout() << "Clicked at " << mousePos() << nl;
-            angle += 45;
-        });
 
         // easeOn(angle, 0.5, easing::outElastic);
         easeOn(angle, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));
@@ -32,6 +26,15 @@ class MainView: public View, public PointerInput
         p->setSource(Color{"#0080FFFF"});
         p->rectangle(-Point{50, 50}, Size{100, 100});
         p->fill();
+    }
+
+    bool hasPointerInput() const override { return true; }
+
+    bool onPointerClicked(const PointerEvent *event) override
+    {
+        fout() << "Clicked at " << event->pos() << nl;
+        angle += 45;
+        return true;
     }
 };
 
