@@ -44,4 +44,44 @@ void Window::commitFrame()
     nextFrame_ = Frame::create();
 }
 
+bool Window::feedFingerEvent(FingerEvent *event)
+{
+    Ref<View> touchTarget;
+
+    if (touchTargets_->lookup(event->fingerId(), &touchTarget))
+    {
+        if (event->action() == PointerAction::Released)
+            touchTargets_->remove(event->fingerId());
+
+        if (touchTarget->fingerEvent(event))
+            return true;
+    }
+
+    return view_->fingerEvent(event);
+}
+
+bool Window::feedMouseEvent(MouseEvent *event)
+{
+    if (pointerTarget_)
+    {
+        if (event->action() == PointerAction::Released)
+            pointerTarget_ = 0;
+
+        if (pointerTarget_->mouseEvent(event))
+            return true;
+    }
+
+    return view_->mouseEvent(event);
+}
+
+bool Window::feedWheelEvent(WheelEvent *event)
+{
+    return view_->wheelEvent(event);
+}
+
+bool Window::feedKeyEvent(KeyEvent *event)
+{
+    return view_->keyEvent(event);
+}
+
 }} // namespace cc::ui

@@ -160,22 +160,6 @@ void View::update(UpdateReason reason)
 
 bool View::fingerEvent(FingerEvent *event)
 {
-    if (!parent_) // TODO: move this to Window::feedFingerEvent()
-    {
-        Ref<View> touchTarget;
-
-        if (window()->touchTargets_->lookup(event->fingerId(), &touchTarget))
-        {
-            if (event->action() == PointerAction::Released)
-                window()->touchTargets_->remove(event->fingerId());
-
-            if (touchTarget != this) { // TODO: remove
-                if (touchTarget->fingerEvent(event))
-                    return true;
-            }
-        }
-    }
-
     const bool hpi = hasPointerInput();
     const bool hfi = hasFingerInput();
 
@@ -236,21 +220,6 @@ bool View::fingerEvent(FingerEvent *event)
 
 bool View::mouseEvent(MouseEvent *event)
 {
-    if (!parent_)  // TODO: move to Window::feedMouseEvent()
-    {
-        Window *w = window();
-
-        if (w->pointerTarget_)
-        {
-            if (w->pointerTarget_ != this) { // TODO: remove
-                if (event->action() == PointerAction::Released)
-                    window()->pointerTarget_ = 0;
-                if (w->pointerTarget_->mouseEvent(event))
-                    return true;
-            }
-        }
-    }
-
     bool hpi = hasPointerInput();
     bool hmi = hasMouseInput();
 

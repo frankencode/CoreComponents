@@ -58,8 +58,8 @@ public:
     Property<Size> size;
 
 protected:
+    friend class Application;
     friend class View;
-    friend class PointerInput;
 
     Window(View *view, String title);
     ~Window();
@@ -74,6 +74,11 @@ protected:
 
     void addToFrame(const UpdateRequest *request);
     void commitFrame();
+
+    bool feedFingerEvent(FingerEvent *event);
+    bool feedMouseEvent(MouseEvent *event);
+    bool feedWheelEvent(WheelEvent *event);
+    bool feedKeyEvent(KeyEvent *event);
 
     virtual void renderFrame(Frame *frame) = 0;
 

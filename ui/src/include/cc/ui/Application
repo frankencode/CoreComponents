@@ -43,10 +43,10 @@ protected:
 
     void notifyTimer(Timer *t);
 
-    void fingerEvent(View *view, FingerEvent *event);
-    void mouseEvent(View *view, MouseEvent *event);
-    void wheelEvent(View *view, WheelEvent *event);
-    void keyEvent(View *view, KeyEvent *event);
+    bool feedFingerEvent(Window *window, FingerEvent *event);
+    bool feedMouseEvent(Window *window, MouseEvent *event);
+    bool feedWheelEvent(Window *window, WheelEvent *event);
+    bool feedKeyEvent(Window *window, KeyEvent *event);
 };
 
 }} // namespace cc::ui

@@ -33,24 +33,24 @@ void Application::notifyTimer(Timer *t)
     t->triggered->emit();
 }
 
-void Application::fingerEvent(View *view, FingerEvent *event)
+bool Application::feedFingerEvent(Window *window, FingerEvent *event)
 {
-    view->fingerEvent(event);
+    return window->feedFingerEvent(event);
 }
 
-void Application::mouseEvent(View *view, MouseEvent *event)
+bool Application::feedMouseEvent(Window *window, MouseEvent *event)
 {
-    view->mouseEvent(event);
+    return window->feedMouseEvent(event);
 }
 
-void Application::wheelEvent(View *view, WheelEvent *event)
+bool Application::feedWheelEvent(Window *window, WheelEvent *event)
 {
-    view->wheelEvent(event);
+    return window->feedWheelEvent(event);
 }
 
-void Application::keyEvent(View *view, KeyEvent *event)
+bool Application::feedKeyEvent(Window *window, KeyEvent *event)
 {
-    view->keyEvent(event);
+    return window->feedKeyEvent(event);
 }
 
 }} // namespace cc::ui

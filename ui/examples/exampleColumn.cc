@@ -53,6 +53,7 @@ class MainView: public View
             else if (event->keyCode() == '-')
                 Application::instance()->textZoom -= 4;
         }
+        return true;
     }
 };
 

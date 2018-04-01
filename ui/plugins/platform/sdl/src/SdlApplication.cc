@@ -85,7 +85,7 @@ int SdlApplication::run()
         if (!SDL_WaitEvent(event_))
             CC_DEBUG_ERROR(SDL_GetError());
 
-        CC_INSPECT(event_->type);
+        // CC_INSPECT(event_->type);
 
         if (event_->type == timerEvent_) {
             Timer *t = (Timer *)event_->user.data1;
@@ -149,7 +149,7 @@ void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
 
     for (auto pair: windows_) {
         Window *window = pair->value();
-        fingerEvent(window->view(), event);
+        feedFingerEvent(window, event);
     }
 }
 
@@ -178,7 +178,7 @@ void SdlApplication::handleMouseMotionEvent(const SDL_MouseMotionEvent *e)
     for (auto pair: windows_) {
         SdlWindow *window = pair->value();
         if (window->id_ == e->windowID)
-            mouseEvent(window->view(), event);
+            feedMouseEvent(window, event);
     }
 }
 
@@ -214,7 +214,7 @@ void SdlApplication::handleMouseButtonEvent(const SDL_MouseButtonEvent *e)
     for (auto pair: windows_) {
         SdlWindow *window = pair->value();
         if (window->id_ == e->windowID)
-            mouseEvent(window->view(), event);
+            feedMouseEvent(window, event);
     }
 }
 
@@ -233,7 +233,7 @@ void SdlApplication::handleMouseWheelEvent(const SDL_MouseWheelEvent *e)
     for (auto pair: windows_) {
         SdlWindow *window = pair->value();
         if (window->id_ == e->windowID)
-            wheelEvent(window->view(), event);
+            feedWheelEvent(window, event);
     }
 }
 
@@ -249,41 +249,40 @@ void SdlApplication::handleKeyboardEvent(const SDL_KeyboardEvent *e)
             static_cast<KeyModifier>(e->keysym.mod)
         );
 
-    // FIXME: send key events to all windows?
     for (auto pair: windows_) {
         SdlWindow *window = pair->value();
-        keyEvent(window->view(), event);
+        feedKeyEvent(window, event);
     }
 }
 
 String SdlApplication::windowEventToString(const SDL_WindowEvent *e)
 {
     switch (e->event) {
-    case SDL_WINDOWEVENT_SHOWN: return "SDL_WINDOWEVENT_SHOWN";
-    case SDL_WINDOWEVENT_HIDDEN: return "SDL_WINDOWEVENT_HIDDEN";
-    case SDL_WINDOWEVENT_EXPOSED: return  Format("SDL_WINDOWEVENT_EXPOSED (%% %%)") << e->data1 << e->data2;
-    case SDL_WINDOWEVENT_MOVED: return Format("SDL_WINDOWEVENT_MOVED (%% %%)") << e->data1 << e->data2;
-    case SDL_WINDOWEVENT_RESIZED: return Format("SDL_WINDOWEVENT_RESIZED (%% %%)") << e->data1 << e->data2;
-    case SDL_WINDOWEVENT_SIZE_CHANGED: return Format("SDL_WINDOWEVENT_SIZE_CHANGED (%% %%)") << e->data1 << e->data2;
-    case SDL_WINDOWEVENT_MINIMIZED: return "SDL_WINDOWEVENT_MINIMIZED";
-    case SDL_WINDOWEVENT_MAXIMIZED: return "SDL_WINDOWEVENT_MAXIMIZED";
-    case SDL_WINDOWEVENT_RESTORED: return "SDL_WINDOWEVENT_RESTORED";
-    case SDL_WINDOWEVENT_ENTER: return "SDL_WINDOWEVENT_ENTER";
-    case SDL_WINDOWEVENT_LEAVE: return "SDL_WINDOWEVENT_LEAVE";
-    case SDL_WINDOWEVENT_FOCUS_GAINED: return "SDL_WINDOWEVENT_FOCUS_GAINED";
-    case SDL_WINDOWEVENT_FOCUS_LOST: return "SDL_WINDOWEVENT_FOCUS_LOST";
-    case SDL_WINDOWEVENT_CLOSE: return "SDL_WINDOWEVENT_CLOSE";
-    #if SDL_VERSION_ATLEAST(2, 0, 5)
-    case SDL_WINDOWEVENT_TAKE_FOCUS: return "SDL_WINDOWEVENT_TAKE_FOCUS";
-    case SDL_WINDOWEVENT_HIT_TEST: return "SDL_WINDOWEVENT_HIT_TEST";
-    #endif
+        case SDL_WINDOWEVENT_SHOWN: return "SDL_WINDOWEVENT_SHOWN";
+        case SDL_WINDOWEVENT_HIDDEN: return "SDL_WINDOWEVENT_HIDDEN";
+        case SDL_WINDOWEVENT_EXPOSED: return  Format("SDL_WINDOWEVENT_EXPOSED (%% %%)") << e->data1 << e->data2;
+        case SDL_WINDOWEVENT_MOVED: return Format("SDL_WINDOWEVENT_MOVED (%% %%)") << e->data1 << e->data2;
+        case SDL_WINDOWEVENT_RESIZED: return Format("SDL_WINDOWEVENT_RESIZED (%% %%)") << e->data1 << e->data2;
+        case SDL_WINDOWEVENT_SIZE_CHANGED: return Format("SDL_WINDOWEVENT_SIZE_CHANGED (%% %%)") << e->data1 << e->data2;
+        case SDL_WINDOWEVENT_MINIMIZED: return "SDL_WINDOWEVENT_MINIMIZED";
+        case SDL_WINDOWEVENT_MAXIMIZED: return "SDL_WINDOWEVENT_MAXIMIZED";
+        case SDL_WINDOWEVENT_RESTORED: return "SDL_WINDOWEVENT_RESTORED";
+        case SDL_WINDOWEVENT_ENTER: return "SDL_WINDOWEVENT_ENTER";
+        case SDL_WINDOWEVENT_LEAVE: return "SDL_WINDOWEVENT_LEAVE";
+        case SDL_WINDOWEVENT_FOCUS_GAINED: return "SDL_WINDOWEVENT_FOCUS_GAINED";
+        case SDL_WINDOWEVENT_FOCUS_LOST: return "SDL_WINDOWEVENT_FOCUS_LOST";
+        case SDL_WINDOWEVENT_CLOSE: return "SDL_WINDOWEVENT_CLOSE";
+        #if SDL_VERSION_ATLEAST(2, 0, 5)
+        case SDL_WINDOWEVENT_TAKE_FOCUS: return "SDL_WINDOWEVENT_TAKE_FOCUS";
+        case SDL_WINDOWEVENT_HIT_TEST: return "SDL_WINDOWEVENT_HIT_TEST";
+        #endif
     };
     return String{};
 }
 
 void SdlApplication::handleWindowEvent(const SDL_WindowEvent *e)
 {
-    CC_DEBUG << windowEventToString(e);
+    // CC_DEBUG << windowEventToString(e);
     switch (e->event) {
         case SDL_WINDOWEVENT_SIZE_CHANGED: {
             SdlWindow *window = 0;

@@ -44,6 +44,7 @@ bool ScrollView::hasPointerInput() const
 bool ScrollView::onPointerPressed(const PointerEvent *event)
 {
     dragStart_ = event->pos();
+    isDragged_ = false;
     return false;
 }
 
