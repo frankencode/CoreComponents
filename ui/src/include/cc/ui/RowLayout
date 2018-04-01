@@ -18,7 +18,7 @@ class RowLayout: public Layout
 public:
     static RowLayout *setup(View *view);
 
-    Property<RowAlign> align { RowAlign::Center };
+    Property<RowAlign> align { RowAlign::Top };
     Property<Size> margin;
     Property<double> spacing { 0 };
 
@@ -28,6 +28,7 @@ protected:
     virtual void childReady(View *child) override;
     virtual void childDone(View *child) override;
 
+    void updateChildPos(View *child, Size innerSize, double x);
     void updateLayout();
 };
 

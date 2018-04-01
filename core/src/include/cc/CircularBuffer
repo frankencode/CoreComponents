@@ -56,7 +56,7 @@ public:
       */
     inline void pushBack(const T& item, int = 0)
     {
-        CC_ASSERT(fill_ != size_);
+        if (fill_ == size_) popFront();
         ++head_;
         if (head_ >= size_) head_ = 0;
         ++fill_;
@@ -68,7 +68,7 @@ public:
       */
     inline void pushFront(const T& item, int = 0)
     {
-        CC_ASSERT(fill_ < size_);
+        if (fill_ == size_) popBack();
         buf_->at(tail_) = item;
         --tail_;
         if (tail_ < 0) tail_ = size_ - 1;

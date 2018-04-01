@@ -131,7 +131,10 @@ String fnum(float64_t x, int precision, int base, int screen)
 
 String fixed(float64_t x, int nf)
 {
+    // FIXME: the following 3 compares are slightly inefficient
     if (x != x) return "nan";
+    if (x == +1.0/0.0) return "inf";
+    if (x == -1.0/0.0) return "-inf";
     double ip;
     double fp = modf(x, &ip);
     String sip = inum(int64_t(ip));

@@ -29,6 +29,7 @@ protected:
     virtual void childReady(View *child) override;
     virtual void childDone(View *child) override;
 
+    void updateChildPos(View *child, Size innerSize, double y);
     void updateLayout();
 };
 

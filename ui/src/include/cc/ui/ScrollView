@@ -39,6 +39,10 @@ protected:
     bool isDragged_;
     Point dragStart_;
     Point carrierOrigin_;
+
+    Point lastDragPos_;
+    double lastDragTime_;
+    Point releaseSpeed_;
 };
 
 }} // namespace cc::ui

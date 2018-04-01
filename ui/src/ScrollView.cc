@@ -7,6 +7,7 @@
  */
 
 #include <cc/debug>
+#include <cc/System>
 #include <cc/ui/ScrollView>
 
 namespace cc {
@@ -45,12 +46,16 @@ bool ScrollView::onPointerPressed(const PointerEvent *event)
 {
     dragStart_ = event->pos();
     isDragged_ = false;
+    releaseSpeed_ = Point{};
     return false;
 }
 
 bool ScrollView::onPointerReleased(const PointerEvent *event)
 {
     isDragged_ = false;
+    if (releaseSpeed_ != Point{}) {
+        CC_INSPECT(fixed(releaseSpeed_, 3));
+    }
     return false;
 }
 
@@ -63,9 +68,16 @@ bool ScrollView::onPointerMoved(const PointerEvent *event)
     ) {
         isDragged_ = true;
         carrierOrigin_ = carrier_->pos();
+        lastDragTime_ = 0;
     }
 
     if (isDragged_) {
+        double t = System::now();
+        if (lastDragTime_ > 0)
+            releaseSpeed_ = (lastDragPos_ - event->pos()) / (t - lastDragTime_);
+        lastDragTime_ = t;
+        lastDragPos_ = event->pos();
+
         Step d = event->pos() - dragStart_;
         Point p = carrierOrigin_ + d;
 

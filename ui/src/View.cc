@@ -49,7 +49,10 @@ View::View(View *parent):
 }
 
 View::~View()
-{}
+{
+    layout_ = 0;
+        // destroy the layout before releasing the children for efficiency
+}
 
 void View::disband()
 {

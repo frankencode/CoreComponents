@@ -23,13 +23,56 @@ RowLayout::RowLayout(View *view):
 
 void RowLayout::childReady(View *child)
 {
-    updateLayout();
-    child->size->connect([=]{ updateLayout(); });
+    if (child->visible()) {
+        if (align() == RowAlign::Top) {
+            Size innerSize;
+            if (view()->size()[0] > 0)
+                innerSize = view()->size() - 2 * margin();
+
+            const double x = innerSize[0];
+
+            if (child->size()[1] > innerSize[1]) innerSize[1] = child->size()[1];
+            innerSize[0] += child->size()[0];
+            if (view()->childCount() > 1) innerSize[0] += spacing();
+
+            view()->size = innerSize + 2 * margin();
+
+            updateChildPos(child, innerSize, x);
+        }
+        else
+            updateLayout();
+    }
+
+    child->size->connect([=]{
+        if (view()->childCount() > 0) {
+            if (child == view()->childAt(view()->childCount() - 1)) {
+                double newWidth = child->pos()[0] + child->size()[0] + margin()[0];
+                double newHeight = child->size()[1] + 2 * margin()[1];
+                if (newHeight < view()->size()[1]) newHeight = view()->size()[1];
+                view()->size = Size{ newWidth, newHeight };
+                updateChildPos(child, view()->size() - 2 * margin(), child->pos()[0]);
+                return;
+            }
+        }
+        updateLayout();
+    });
+
+    child->visible->connect([=]{ updateLayout(); });
 }
 
 void RowLayout::childDone(View *child)
 {
     updateLayout();
+}
+
+void RowLayout::updateChildPos(View *child, Size innerSize, double x)
+{
+    if (align() == RowAlign::Top)
+        child->pos = Point{ x, 0 } + margin();
+    else if (align() == RowAlign::Bottom)
+        child->pos = Point{ x, innerSize[1] - child->size()[1] } + margin();
+    else
+        child->pos = Point{ x, 0.5 * (innerSize[1] - child->size()[1]) } + margin();
 }
 
 void RowLayout::updateLayout()
@@ -54,12 +97,7 @@ void RowLayout::updateLayout()
         View *child = view()->childAt(i);
         if (!child->visible()) continue;
 
-        if (align() == RowAlign::Top)
-            child->pos = Point{ x, 0 } + margin();
-        else if (align() == RowAlign::Bottom)
-            child->pos = Point{ x, innerSize[1] - child->size()[1] } + margin();
-        else
-            child->pos = Point{ x, 0.5 * (innerSize[1] - child->size()[1]) } + margin();
+        updateChildPos(child, innerSize, x);
 
         x += child->size()[0] + spacing();
     }

@@ -161,4 +161,14 @@ String str(const Vector<T, N> &v)
     return f;
 }
 
+template<class T, int N>
+String fixed(const Vector<T, N> &v, int nf)
+{
+    Format f;
+    f << "( ";
+    for (auto x: v) f << fixed(x, nf) << " ";
+    f << ")";
+    return f;
+}
+
 } // namespace cc
