@@ -27,14 +27,11 @@ class MainView: public View
         Label::create(box, "• Item 2");
 
         View *subBox = View::create(box);
-        subBox->color = Color{"D0FFD0"};
+        subBox->color = Color{"#D0FFD0"};
 
         ColumnLayout::setup(subBox);
         Label::create(subBox, "◦ Item A");
         Label::create(subBox, "◦ Item B");
-
-        CC_INSPECT(subBox->pos());
-        CC_INSPECT(subBox->size());
     }
 
     bool hasKeyInput() const override { return true; }

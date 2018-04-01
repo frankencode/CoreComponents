@@ -38,6 +38,7 @@ void RowLayout::childReady(View *child)
             view()->size = innerSize + 2 * margin();
 
             updateChildPos(child, innerSize, x);
+            updateView();
         }
         else
             updateLayout();
@@ -51,6 +52,7 @@ void RowLayout::childReady(View *child)
                 if (newHeight < view()->size()[1]) newHeight = view()->size()[1];
                 view()->size = Size{ newWidth, newHeight };
                 updateChildPos(child, view()->size() - 2 * margin(), child->pos()[0]);
+                updateView();
                 return;
             }
         }

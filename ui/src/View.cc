@@ -392,6 +392,7 @@ void View::polish(Window *window)
 
     clear();
     paint();
+
     window->addToFrame(UpdateRequest::create(UpdateReason::Changed, this));
 }
 

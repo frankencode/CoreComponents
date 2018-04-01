@@ -44,6 +44,7 @@ void ColumnLayout::childReady(View *child)
             view()->size = innerSize + Size{ indent(), 0 } + 2 * margin();
 
             updateChildPos(child, innerSize, y);
+            updateView();
         }
         else
             updateLayout();
@@ -57,6 +58,7 @@ void ColumnLayout::childReady(View *child)
                 if (newWidth < view()->size()[0]) newWidth = view()->size()[0];
                 view()->size = Size{ newWidth, newHeight };
                 updateChildPos(child, view()->size() - Size{ indent(), 0 } - 2 * margin(), child->pos()[1]);
+                updateView();
                 return;
             }
         }
