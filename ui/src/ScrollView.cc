@@ -8,6 +8,7 @@
 
 #include <cc/debug>
 #include <cc/System>
+#include <cc/ui/Timer>
 #include <cc/ui/ScrollView>
 
 namespace cc {
@@ -21,12 +22,14 @@ Ref<ScrollView> ScrollView::create(View *parent)
 ScrollView::ScrollView(View *parent):
     View(parent),
     carrier_(0),
-    isDragged_(false)
+    isDragged_(false),
+    timer_(Timer::create(1./60))
 {
     carrier_ = View::create(this);
 
-    if (parent)
-        size->bind([=]{ return parent->size(); });
+    if (parent) size->bind([=]{ return parent->size(); });
+
+    timer_->triggered->connect([=]{ animate(); });
 }
 
 void ScrollView::insertChild(View *child)
@@ -55,6 +58,8 @@ bool ScrollView::onPointerReleased(const PointerEvent *event)
     isDragged_ = false;
     if (releaseSpeed_ != Point{}) {
         CC_INSPECT(fixed(releaseSpeed_, 3));
+        timer_->start();
+        lastTime_ = timer_->startTime();
     }
     return false;
 }
@@ -81,21 +86,37 @@ bool ScrollView::onPointerMoved(const PointerEvent *event)
         Step d = event->pos() - dragStart_;
         Point p = carrierOrigin_ + d;
 
-        double x = p[0];
-        double y = p[1];
-        double w = carrier_->size()[0];
-        double h = carrier_->size()[1];
-
-        if (x > 0 || (w < size()[0])) x = 0;
-        else if (x + w < size()[0]) x = size()[0] - w;
-
-        if (y > 0 || (h < size()[1])) y = 0;
-        else if (y + h < size()[1]) y = size()[1] - h;
-
-        carrier_->pos = Point{ x, y };
+        carrier_->pos = carrierStep(p);
     }
 
     return true;
+}
+
+Point ScrollView::carrierStep(Point p)
+{
+    double x = p[0];
+    double y = p[1];
+    double w = carrier_->size()[0];
+    double h = carrier_->size()[1];
+
+    if (x > 0 || (w < size()[0])) x = 0;
+    else if (x + w < size()[0]) x = size()[0] - w;
+
+    if (y > 0 || (h < size()[1])) y = 0;
+    else if (y + h < size()[1]) y = size()[1] - h;
+
+    return Point{ x, y };
+}
+
+void ScrollView::animate()
+{
+    double t = System::now();
+    Step d = -releaseSpeed_ * (t - lastTime_);
+    lastTime_ = t;
+    Point pa = carrier_->pos();
+    Point pb = carrierStep(carrier_->pos() + d);
+    if (pa == pb) timer_->stop();
+    else carrier_->pos = pb;
 }
 
 }} // namespace cc::ui

@@ -15,20 +15,24 @@ namespace ui {
 
 void Timer::start()
 {
-    startAt(System::now() + interval_);
+    startIn(interval_);
 }
 
 void Timer::startAt(double startTime)
 {
     if (isActive_) return;
     isActive_ = true;
-    startTime_ = startTime;
+    firstTime_ = startTime_ = startTime;
     TimeMaster::instance()->startTimer(this);
 }
 
 void Timer::startIn(double delayTime)
 {
-    startAt(System::now() + delayTime);
+    if (isActive_) return;
+    isActive_ = true;
+    startTime_ = System::now();
+    firstTime_ = startTime_ + delayTime;
+    TimeMaster::instance()->startTimer(this);
 }
 
 void Timer::stop()

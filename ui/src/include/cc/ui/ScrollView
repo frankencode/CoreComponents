@@ -13,6 +13,8 @@
 namespace cc {
 namespace ui {
 
+class Timer;
+
 class ScrollView: public View
 {
     friend class Object;
@@ -35,6 +37,9 @@ protected:
     bool onPointerReleased(const PointerEvent *event) override;
     bool onPointerMoved(const PointerEvent *event) override;
 
+    Point carrierStep(Point p);
+    void animate();
+
     Ref<View> carrier_;
     bool isDragged_;
     Point dragStart_;
@@ -42,7 +47,10 @@ protected:
 
     Point lastDragPos_;
     double lastDragTime_;
-    Point releaseSpeed_;
+    Step releaseSpeed_;
+
+    Ref<Timer> timer_;
+    double lastTime_;
 };
 
 }} // namespace cc::ui

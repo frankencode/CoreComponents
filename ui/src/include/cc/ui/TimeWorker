@@ -47,7 +47,7 @@ protected:
     private:
         Timeout(const Timer *timer):
             timer_(timer),
-            nextTime_(timer->startTime()),
+            nextTime_(timer->firstTime()),
             interval_(timer->interval())
         {}
     };

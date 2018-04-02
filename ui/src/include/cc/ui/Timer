@@ -47,6 +47,7 @@ public:
     void stop();
 
     bool isActive() const { return isActive_; }
+    double firstTime() const { return firstTime_; }
     double startTime() const { return startTime_; }
     double interval() const { return interval_; }
 
@@ -58,11 +59,13 @@ private:
 
     Timer(double interval):
         isActive_(false),
+        firstTime_(0),
         startTime_(0),
         interval_(interval)
     {}
 
     mutable std::atomic_bool isActive_;
+    double firstTime_;
     double startTime_;
     double interval_;
 };

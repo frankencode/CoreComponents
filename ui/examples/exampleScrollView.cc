@@ -20,7 +20,7 @@ class MainView: public View
         ColumnLayout::setup(scroll->carrier());
         // ColumnLayout::setup(scroll); // TODO
 
-        for (int i = 0; i < 50; ++i)
+        for (int i = 0; i < 15; ++i)
             Label::create(scroll, "Item " + str(i));
     }
 };
