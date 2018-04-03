@@ -49,17 +49,21 @@ bool ScrollView::onPointerPressed(const PointerEvent *event)
 {
     dragStart_ = event->pos();
     isDragged_ = false;
-    releaseSpeed_ = Point{};
+    speed_ = Point{};
+    if (timer_->isActive()) timer_->stop();
     return false;
 }
 
 bool ScrollView::onPointerReleased(const PointerEvent *event)
 {
     isDragged_ = false;
-    if (releaseSpeed_ != Point{}) {
-        CC_INSPECT(fixed(releaseSpeed_, 3));
+    if (speed_ != Step{}) {
         timer_->start();
         lastTime_ = timer_->startTime();
+        double v = abs(speed_);
+        if (v > maxSpeed()) speed_ *= maxSpeed() / v;
+        // CC_INSPECT(fixed(speed_, 5, 3));
+        releaseSpeedMagnitude_ = abs(speed_);
     }
     return false;
 }
@@ -68,8 +72,7 @@ bool ScrollView::onPointerMoved(const PointerEvent *event)
 {
     if (
         !isDragged_ &&
-        (event->pos() - dragStart_)->magnitudeSquared() >=
-        minimumDragDistance() * minimumDragDistance()
+        absPow2(event->pos() - dragStart_) >= minDragDistance() * minDragDistance()
     ) {
         isDragged_ = true;
         carrierOrigin_ = carrier_->pos();
@@ -79,7 +82,7 @@ bool ScrollView::onPointerMoved(const PointerEvent *event)
     if (isDragged_) {
         double t = System::now();
         if (lastDragTime_ > 0)
-            releaseSpeed_ = (lastDragPos_ - event->pos()) / (t - lastDragTime_);
+            speed_ = (lastDragPos_ - event->pos()) / (t - lastDragTime_);
         lastDragTime_ = t;
         lastDragPos_ = event->pos();
 
@@ -111,12 +114,24 @@ Point ScrollView::carrierStep(Point p)
 void ScrollView::animate()
 {
     double t = System::now();
-    Step d = -releaseSpeed_ * (t - lastTime_);
+    double T = t - lastTime_;
     lastTime_ = t;
+    Step d = -speed_ * T;
+    double va = 0; {
+        if (speed_[0] == 0) va = std::abs(speed_[1]);
+        else if (speed_[1] == 0) va = std::abs(speed_[0]);
+        else va = cc::abs(speed_);
+    }
+    double vb = va - (T / maxFlyTime()) * releaseSpeedMagnitude_;
+    if (vb <= 0) vb = 0;
+    speed_ *= vb / va;
+
     Point pa = carrier_->pos();
     Point pb = carrierStep(carrier_->pos() + d);
-    if (pa == pb) timer_->stop();
-    else carrier_->pos = pb;
+    if (pa == pb || speed_ == Step{})
+        timer_->stop();
+    else
+        carrier_->pos = pb;
 }
 
 }} // namespace cc::ui

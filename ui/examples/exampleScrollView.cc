@@ -20,7 +20,7 @@ class MainView: public View
         ColumnLayout::setup(scroll->carrier());
         // ColumnLayout::setup(scroll); // TODO
 
-        for (int i = 0; i < 15; ++i)
+        for (int i = 0; i < 50; ++i)
             Label::create(scroll, "Item " + str(i));
     }
 };
@@ -29,6 +29,6 @@ int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
     app->textZoom = 20;
-    Window::open(Object::create<MainView>(), "Hello, world!", WindowMode::Default|WindowMode::Accelerated);
+    Window::open(Object::create<MainView>(), "Hello, world!");
     return app->run();
 }

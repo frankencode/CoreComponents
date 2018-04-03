@@ -8,9 +8,8 @@
 
 #pragma once
 
-#include <cmath>
 #include <cc/assert>
-#include <cc/Format>
+#include <cc/vectors>
 
 namespace cc {
 
@@ -34,17 +33,6 @@ public:
         inline T at(int i) const { CC_ASSERT(has(i)); return v_[i]; }
 
         inline int count() const { return N; }
-
-        T magnitudeSquared() const {
-            T m = 0;
-            for (int i = 0; i < N; ++i)
-                m += v_[i] * v_[i];
-            return m;
-        }
-
-        inline T magnitude() const {
-            return std::sqrt(magnitudeSquared());
-        }
 
         inline T x() const { return at(0); }
         inline T y() const { return at(1); }
@@ -150,25 +138,5 @@ private:
 
 template<class S, class T, int N>
 inline Vector<T, N> operator*(S a, const Vector<T, N> &b) { return b * T(a); }
-
-template<class T, int N>
-String str(const Vector<T, N> &v)
-{
-    Format f;
-    f << "( ";
-    for (auto x: v) f << x << " ";
-    f << ")";
-    return f;
-}
-
-template<class T, int N>
-String fixed(const Vector<T, N> &v, int nf)
-{
-    Format f;
-    f << "( ";
-    for (auto x: v) f << fixed(x, nf) << " ";
-    f << ")";
-    return f;
-}
 
 } // namespace cc

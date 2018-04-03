@@ -83,6 +83,14 @@ String fnum(float64_t x, int precision = 16, int base = 10, int screen = 6);
   */
 String fixed(float64_t x, int nf);
 
+/** Convert a floating point number to a string
+  * \param x floating point value
+  * \param ni number of integral digits
+  * \param nf number of fractional digits
+  * \return string representation of x
+  */
+String fixed(float64_t x, int ni, int nf);
+
 /** Convert an integer to a decimal string
   * \param x integer value
   * \param n number of digits

@@ -22,8 +22,9 @@ class ScrollView: public View
 public:
     static Ref<ScrollView> create(View *parent = 0);
 
-    Property<double> minimumDragDistance { 4 };
-    Property<double> deceleration { 5 };
+    Property<double> minDragDistance { 4 };
+    Property<double> maxFlyTime { 1.5 };
+    Property<double> maxSpeed { [=]{ return 2 * ((size()[0] > size()[1]) ? size()[0] : size()[1]); } };
 
     View *carrier() const { return carrier_; }
 
@@ -47,7 +48,8 @@ protected:
 
     Point lastDragPos_;
     double lastDragTime_;
-    Step releaseSpeed_;
+    double releaseSpeedMagnitude_;
+    Step speed_;
 
     Ref<Timer> timer_;
     double lastTime_;

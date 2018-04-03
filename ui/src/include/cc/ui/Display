@@ -22,7 +22,7 @@ public:
     Property<Ratio> dpi;
 
     Property<Ratio> dpcm { [=]{ return dpi() / 2.54; } };
-    Property<double> diagonal { [=]{ return (size() / dpi())->magnitude(); } };
+    Property<double> diagonal { [=]{ return abs(size() / dpi()); } };
     Property<bool> isHandheld { [=]{ return diagonal() < 11; } };
 
     Property<DisplayMode> nativeMode;

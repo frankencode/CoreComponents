@@ -1,0 +1,57 @@
+/*
+ * Copyright (C) 2007-2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cmath>
+#include <cc/Format>
+#include <cc/str>
+
+namespace cc {
+
+template<class V>
+typename V::Item absPow2(const V &v)
+{
+    typename V::Item m{};
+    for (auto x: v) m += x * x;
+    return m;
+}
+
+template<class V>
+typename V::Item abs(const V &v)
+{
+    return std::sqrt(absPow2(v));
+}
+
+template<class V>
+String str(const V &v)
+{
+    Format f;
+    f << "( ";
+    for (auto x: v) f << x << " ";
+    f << ")";
+    return f;
+}
+
+template<class V>
+String fixed(const V &v, int nf)
+{
+    return fixed(v, 0, nf);
+}
+
+template<class V>
+String fixed(const V &v, int ni, int nf)
+{
+    Format f;
+    f << "( ";
+    for (auto x: v) f << fixed(x, ni, nf) << " ";
+    f << ")";
+    return f;
+}
+
+} // namespace cc
