@@ -20,12 +20,12 @@ class StyleManager;
 class StylePlugin: public Object
 {
 public:
+    static StylePlugin *instance();
+
     Property< Ref<const TextStyle> > defaultTextStyle;
     Property< Ref<const TextStyle> > defaultMonoTextStyle;
     Property< Ref<const TextStyle> > defaultMonoBoldTextStyle;
     Property<Size> defaultTextMargin;
-
-    static StylePlugin *instance();
 
     inline String name() const { return name_; }
 

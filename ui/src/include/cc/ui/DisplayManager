@@ -22,6 +22,15 @@ public:
 
     virtual Ref<Display> getDisplay(int index) const = 0;
     virtual int getDisplayCount() const = 0;
+
+    double displayDensityRatio() const { return displayDensityRatio_; }
+
+
+protected:
+    DisplayManager(double displayDensityRatio);
+
+private:
+    double displayDensityRatio_;
 };
 
 }} // namespace cc::ui

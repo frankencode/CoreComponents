@@ -39,6 +39,10 @@ private:
     Ref<Plugins> plugins_;
     mutable Ref<StylePlugin> activePlugin_;
     String defaultStyleName_;
+
+    double pixelDensityRatio_;
 };
+
+
 
 }} // namespace cc::ui

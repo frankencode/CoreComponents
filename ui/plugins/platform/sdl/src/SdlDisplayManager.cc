@@ -18,7 +18,36 @@ SdlDisplayManager *SdlDisplayManager::instance()
     return Singleton<SdlDisplayManager>::instance();
 }
 
+SdlDisplayManager::SdlDisplayManager():
+    DisplayManager(getDisplayDensityRatio())
+{}
+
 Ref<Display> SdlDisplayManager::getDisplay(int index) const
+{
+    return getDisplay_(index);
+}
+
+int SdlDisplayManager::getDisplayCount() const
+{
+    return getDisplayCount_();
+}
+
+double SdlDisplayManager::getDisplayDensityRatio()
+{
+    const int n = getDisplayCount_();
+    Ref<Display> largestDisplay;
+    for (int i = 0; i < n; ++i) {
+        Ref<Display> display = getDisplay_(i);
+        if (!largestDisplay || display->diagonal() > largestDisplay->diagonal())
+            largestDisplay = display;
+    }
+
+    if (!largestDisplay) return 1;
+
+    return abs(largestDisplay->dpi()) / 160;
+}
+
+Ref<Display> SdlDisplayManager::getDisplay_(int index)
 {
     Ref<Display> display = Object::create<Display>();
     {
@@ -27,7 +56,7 @@ Ref<Display> SdlDisplayManager::getDisplay(int index) const
         if (SDL_GetDisplayDPI(index, NULL, &hdpi, &vdpi) != 0) {
             // TODO...
         }
-        display->dpi = Ratio{ double(hdpi), double(vdpi) };
+        display->dpi = Size{ double(hdpi), double(vdpi) };
     }
     {
         SDL_Rect rect;
@@ -47,7 +76,7 @@ Ref<Display> SdlDisplayManager::getDisplay(int index) const
     return display;
 }
 
-int SdlDisplayManager::getDisplayCount() const
+int SdlDisplayManager::getDisplayCount_()
 {
     return SDL_GetNumVideoDisplays();
 }

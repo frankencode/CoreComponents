@@ -19,9 +19,9 @@ class Display: public Object
 public:
     Property<Point> pos;
     Property<Size> size;
-    Property<Ratio> dpi;
+    Property<Size> dpi;
 
-    Property<Ratio> dpcm { [=]{ return dpi() / 2.54; } };
+    Property<Size> dpcm { [=]{ return dpi() / 2.54; } };
     Property<double> diagonal { [=]{ return abs(size() / dpi()); } };
     Property<bool> isHandheld { [=]{ return diagonal() < 11; } };
 
