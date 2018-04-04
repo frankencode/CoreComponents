@@ -34,7 +34,7 @@ public:
         inline T &at(int i) { CC_ASSERT(has(i)); return v_[i]; }
         inline T at(int i) const { CC_ASSERT(has(i)); return v_[i]; }
 
-        inline int count() const { return N; }
+        inline static constexpr int count() { return N; }
 
     private:
         friend class Vector;
