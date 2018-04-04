@@ -23,6 +23,11 @@ void IndustrialStylePlugin::activate()
 {
     FontManager::instance()->addPath("/usr/share/fonts/truetype/dejavu/");
 
+    setDefaultFontFamily("DejaVu Sans");
+    setDefaultFontSize(16);
+    setDefaultFixedFontFamily("DejaVu Sans Mono");
+    setDefaultFixedFontSize(20);
+
     defaultTextStyle->bind([=]{
         return TextStyle::create(
             ScaledFont::select("Sans", 20 + Application::instance()->textZoom())

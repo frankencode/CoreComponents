@@ -24,6 +24,7 @@ public:
     Weight weight() const override { return ftFontFace_->weight(); }
     Slant slant() const override { return ftFontFace_->slant(); }
     Stretch stretch() const override { return ftFontFace_->stretch(); }
+    Pitch pitch() const override { return ftFontFace_->pitch(); }
 
     Ref<FontMetrics> getMetrics() const override;
 

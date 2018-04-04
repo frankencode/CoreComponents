@@ -30,6 +30,7 @@ public:
     virtual Weight weight() const = 0;
     virtual Slant slant() const = 0;
     virtual Stretch stretch() const = 0;
+    virtual Pitch pitch() const = 0;
 
     virtual Ref<FontMetrics> getMetrics() const = 0;
 

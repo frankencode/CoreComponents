@@ -7,14 +7,14 @@
  */
 
 #include <cc/Variable>
-#include <cc/ui/types>
+#include <cc/ui/ScaledFont>
 
 namespace cc {
 namespace ui {
 
 class ScaledFont;
 
-/** Text style selector
+/** Text styling
   */
 class Font
 {
@@ -25,27 +25,35 @@ public:
         Variable<double> size;
         Variable<Slant> slant;
         Variable<Weight> weight;
+        Variable<Stretch> stretch;
         Variable<Decoration> decoration;
         Variable<Color> color;
+
+        const ScaledFont *getScaledFont();
 
     private:
         friend class Font;
         friend class FontManager;
 
-        Instance() {}
-        Instance(double size): size_{size} {}
-        Instance(String family, double size): family_(family), size_(size) {}
+        Instance(): size{-1} {}
+        Instance(double size_): size{size_} {}
+        Instance(String family_, double size_): family{family_}, size{size_} {}
 
         Ref<const ScaledFont> scaledFont_;
     };
 
-    Font(double size): instance_(size) {}
-    Font(String family, double size): instance_(family, size) {}
+    Font(double size = -1): instance_{size} {}
+    Font(String family, double size): instance_{family, size} {}
 
     const Instance *operator->() const { return &instance_; }
     Instance *operator->() { return &instance_; }
 
+    bool operator==(const Font &b) const { return !differ(*this, b); }
+    bool operator!=(const Font &b) const { return differ(*this, b); }
+
 private:
+    static bool differ(const Font &a, const Font &b);
+
     Instance instance_;
 };
 
