@@ -20,6 +20,8 @@ public:
     typedef T Item;
     typedef int Index;
 
+    static constexpr int Count = N;
+
     Vector() {}
     Vector(std::initializer_list<T> l): instance_(l) {}
     Vector(const Vector &b): instance_(b.instance_) {}
