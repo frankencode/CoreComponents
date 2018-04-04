@@ -14,10 +14,10 @@
 namespace cc {
 namespace ui {
 
-class Font: public Object
+class ScaledFont: public Object
 {
 public:
-    static Ref<Font> select(
+    static Ref<ScaledFont> select(
         String family,
         double size = 10,
         Weight weight = Weight::Normal,

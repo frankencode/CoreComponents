@@ -20,7 +20,7 @@ public:
     static Ref<GlyphRun> layout(String text, const TextStyle *style);
 
     /// convenience wrapper
-    inline static Ref<GlyphRun> layout(String text, const Font *font, Color color = Color{}) {
+    inline static Ref<GlyphRun> layout(String text, const ScaledFont *font, Color color = Color{}) {
         return layout(text, TextStyle::create(font, color));
     }
 

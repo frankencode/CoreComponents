@@ -25,7 +25,7 @@ Ref<FtGlyphRun> FtTypeSetter::ftLayout(String text, const TextStyle *style)
     if (text->contains('\n'))
         return layout(text->replace("\n", " ")->simplify(), style);
 
-    const FtFont *ftFont = Object::cast<const FtFont *>(style->font());
+    const FtScaledFont *ftFont = Object::cast<const FtScaledFont *>(style->font());
     FT_Face ftFace = cairo_ft_scaled_font_lock_face(ftFont->cairoScaledFont());
 
     Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text, style);

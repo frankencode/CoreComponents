@@ -8,12 +8,12 @@
 
 #include <cc/Format>
 #include <cc/ui/FontManager>
-#include <cc/ui/Font>
+#include <cc/ui/ScaledFont>
 
 namespace cc {
 namespace ui {
 
-Ref<Font> Font::select(
+Ref<ScaledFont> ScaledFont::select(
     String family,
     double size,
     Weight weight,
@@ -23,10 +23,10 @@ Ref<Font> Font::select(
     return FontManager::instance()->selectFont(family, size, weight, slant, stretch);
 }
 
-String Font::toString() const
+String ScaledFont::toString() const
 {
     return Format()
-        << "Font {" << nl
+        << "ScaledFont {" << nl
         << "  family: " << family() << nl
         << "  size: " << size() << nl
         << "  weight: " << weight() << nl

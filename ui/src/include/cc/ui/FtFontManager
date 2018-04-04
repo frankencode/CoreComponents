@@ -20,7 +20,7 @@ class FtFontManager: public FontManager
 public:
     static FtFontManager *instance();
 
-    Ref<Font> selectFont(
+    Ref<ScaledFont> selectFont(
         String family,
         double size = 10,
         Weight weight = Weight::Normal,

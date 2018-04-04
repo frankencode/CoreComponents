@@ -25,19 +25,19 @@ void IndustrialStylePlugin::activate()
 
     defaultTextStyle->bind([=]{
         return TextStyle::create(
-            Font::select("Sans", 20 + Application::instance()->textZoom())
+            ScaledFont::select("Sans", 20 + Application::instance()->textZoom())
         );
     });
 
     defaultMonoTextStyle->bind([=]{
         return TextStyle::create(
-            Font::select("Mono", 16 + Application::instance()->textZoom())
+            ScaledFont::select("Mono", 16 + Application::instance()->textZoom())
         );
     });
 
     defaultMonoBoldTextStyle->bind([=]{
         return TextStyle::create(
-            Font::select("Mono", 16 + Application::instance()->textZoom(), Weight::Bold)
+            ScaledFont::select("Mono", 16 + Application::instance()->textZoom(), Weight::Bold)
         );
     });
 

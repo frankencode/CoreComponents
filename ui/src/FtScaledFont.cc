@@ -7,12 +7,12 @@
  */
 
 #include <cc/ui/FtFontMetrics>
-#include <cc/ui/FtFont>
+#include <cc/ui/FtScaledFont>
 
 namespace cc {
 namespace ui {
 
-FtFont::FtFont(const FtFontFace *ftFontFace, double size):
+FtScaledFont::FtScaledFont(const FtFontFace *ftFontFace, double size):
     ftFontFace_(ftFontFace),
     size_(size)
 {
@@ -41,13 +41,13 @@ FtFont::FtFont(const FtFontFace *ftFontFace, double size):
     cairo_font_options_destroy(fontOptions);
 }
 
-FtFont::~FtFont()
+FtScaledFont::~FtScaledFont()
 {
     cairo_scaled_font_destroy(cairoScaledFont_);
     cairo_font_face_destroy(cairoFontFace_);
 }
 
-Ref<FontMetrics> FtFont::getMetrics() const
+Ref<FontMetrics> FtScaledFont::getMetrics() const
 {
     FtFaceGuard guard(this);
     FT_Face ftFace = guard->ftFace();

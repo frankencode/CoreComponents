@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Source>
-#include <cc/ui/Font>
+#include <cc/ui/ScaledFont>
 #include <cc/ui/FontFamily>
 
 namespace cc { template<class, class> class Map; }
@@ -28,7 +28,7 @@ public:
 
     const FontFamily *selectFontFamily(String name) const;
 
-    virtual Ref<Font> selectFont(
+    virtual Ref<ScaledFont> selectFont(
         String family,
         double size = 10,
         Weight weight = Weight::Normal,

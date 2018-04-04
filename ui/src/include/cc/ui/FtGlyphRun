@@ -11,7 +11,7 @@
 #include <cairo/cairo.h>
 #include <cairo/cairo-ft.h>
 #include <cc/Array>
-#include <cc/ui/FtFont>
+#include <cc/ui/FtScaledFont>
 #include <cc/ui/GlyphRun>
 
 namespace cc {
@@ -40,7 +40,7 @@ public:
     Ref<GlyphRun> copy() const override;
     Ref<GlyphRun> copy(int byteOffset0, int byteOffset1) const override;
 
-    const FtFont *ftFont() const { return Object::cast<const FtFont *>(style_->font()); }
+    const FtScaledFont *ftFont() const { return Object::cast<const FtScaledFont *>(style_->font()); }
 
     CairoGlyphs *cairoGlyphs() const { return cairoGlyphs_; }
     CairoTextClusters *cairoTextClusters() const { return cairoTextClusters_; }

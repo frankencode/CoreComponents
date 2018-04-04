@@ -21,9 +21,9 @@ class MainView: public View
         for (const FontFamily *fontFamily: FontManager::instance()->getFontFamilies()) {
             String text = Format("%%: %%") << fontFamily->name() << pangram;
             glyphRuns_
-                << GlyphRun::layout(text, Font::select(fontFamily->name(), fontSize_, Weight::Normal))
-                << GlyphRun::layout(text, Font::select(fontFamily->name(), fontSize_, Weight::Bold))
-                << GlyphRun::layout(text, Font::select(fontFamily->name(), fontSize_, Weight::Normal, Slant::Italic));
+                << GlyphRun::layout(text, ScaledFont::select(fontFamily->name(), fontSize_, Weight::Normal))
+                << GlyphRun::layout(text, ScaledFont::select(fontFamily->name(), fontSize_, Weight::Bold))
+                << GlyphRun::layout(text, ScaledFont::select(fontFamily->name(), fontSize_, Weight::Normal, Slant::Italic));
         }
     }
 

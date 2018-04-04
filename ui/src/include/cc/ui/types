@@ -21,7 +21,7 @@ using cc::str;
 
 /** font slant
   */
-enum class Slant {
+enum class Slant: uint8_t {
     Normal,
     Italic,
     Oblique = Italic
@@ -31,32 +31,32 @@ String str(Slant slant);
 
 /** font width to height ratio
   */
-enum class Stretch {
-    UltraCondensed =  500,
-    ExtraCondensed =  625,
-    Condensed      =  750,
-    SemiCondensed  =  875,
-    Normal         = 1000,
-    SemiExpanded   = 1125,
-    Expanded       = 1250,
-    ExtraExpanded  = 1500,
-    UltraExpanded  = 2000
+enum class Stretch: uint8_t {
+    UltraCondensed = 1,
+    ExtraCondensed = 2,
+    Condensed      = 3,
+    SemiCondensed  = 4,
+    Normal         = 5,
+    SemiExpanded   = 6,
+    Expanded       = 7,
+    ExtraExpanded  = 8,
+    UltraExpanded  = 9
 };
 
 String str(Stretch stretch);
 
 /** visual thickness of a font
   */
-enum class Weight {
-    Thin       = 100,
-    ExtraLight = 200,
-    Light      = 300,
-    Normal     = 400,
-    Medium     = 500,
-    SemiBold   = 600,
-    Bold       = 700,
-    ExtraBold  = 800,
-    Black      = 900
+enum class Weight: uint8_t {
+    Thin       = 1,
+    ExtraLight = 2,
+    Light      = 3,
+    Normal     = 4,
+    Medium     = 5,
+    SemiBold   = 6,
+    Bold       = 7,
+    ExtraBold  = 8,
+    Black      = 9
 };
 
 String str(Weight weight);

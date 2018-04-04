@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/ui/Font>
+#include <cc/ui/ScaledFont>
 
 namespace cc {
 namespace ui {
@@ -16,10 +16,10 @@ namespace ui {
 class TextStyle: public Object
 {
 public:
-    static Ref<TextStyle> create(const Font *font, Color color = Color{});
-    static Ref<TextStyle> create(const Font *font, TextDecoration decoration, Color color = Color{});
+    static Ref<TextStyle> create(const ScaledFont *font, Color color = Color{});
+    static Ref<TextStyle> create(const ScaledFont *font, TextDecoration decoration, Color color = Color{});
 
-    const Font *font() const { return font_; }
+    const ScaledFont *font() const { return font_; }
     Color color() const { return color_; }
     TextDecoration decoration() const { return decoration_; }
 
@@ -28,13 +28,13 @@ public:
     String toString() const;
 
 private:
-    TextStyle(const Font *font, Color color, TextDecoration decoration):
+    TextStyle(const ScaledFont *font, Color color, TextDecoration decoration):
         font_(font),
         color_(color),
         decoration_(decoration)
     {}
 
-    Ref<const Font> font_;
+    Ref<const ScaledFont> font_;
     Color color_;
     TextDecoration decoration_;
 };

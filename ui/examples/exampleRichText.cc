@@ -18,42 +18,42 @@ class MainView: public View
         textRun_->append(
             "Monospaced text, ",
             TextStyle::create(
-                Font::select("mono", fontSize_)
+                ScaledFont::select("mono", fontSize_)
             )
         );
 
         textRun_->append(
             "variable width text, ",
             TextStyle::create(
-                Font::select("sans", fontSize_)
+                ScaledFont::select("sans", fontSize_)
             )
         );
 
         textRun_->append(
             "bold text, ",
             TextStyle::create(
-                Font::select("sans", fontSize_, Weight::Bold)
+                ScaledFont::select("sans", fontSize_, Weight::Bold)
             )
         );
 
         textRun_->append(
             "small text, ",
             TextStyle::create(
-                Font::select("sans", fontSize_ * 0.75)
+                ScaledFont::select("sans", fontSize_ * 0.75)
             )
         );
 
         textRun_->append(
             "big text, ",
             TextStyle::create(
-                Font::select("sans", fontSize_ * 1.25)
+                ScaledFont::select("sans", fontSize_ * 1.25)
             )
         );
 
         textRun_->append(
             "red text, ",
             TextStyle::create(
-                Font::select("sans", fontSize_),
+                ScaledFont::select("sans", fontSize_),
                 Color(0x80, 0x00, 0x00)
             )
         );
@@ -61,7 +61,7 @@ class MainView: public View
         textRun_->append(
             "green text, ",
             TextStyle::create(
-                Font::select("sans", fontSize_),
+                ScaledFont::select("sans", fontSize_),
                 Color(0x00, 0x80, 0x00)
             )
         );
@@ -69,7 +69,7 @@ class MainView: public View
         textRun_->append(
             "blue text, ",
             TextStyle::create(
-                Font::select("sans", fontSize_),
+                ScaledFont::select("sans", fontSize_),
                 Color(0x00, 0x00, 0x80)
             )
         );
@@ -77,7 +77,7 @@ class MainView: public View
         textRun_->append(
             "underlined text, ",
             TextStyle::create(
-                Font::select("sans", fontSize_),
+                ScaledFont::select("sans", fontSize_),
                 TextDecoration::Underline
             )
         );
@@ -85,7 +85,7 @@ class MainView: public View
         textRun_->append(
             "struck out text, ",
             TextStyle::create(
-                Font::select("sans", fontSize_),
+                ScaledFont::select("sans", fontSize_),
                 TextDecoration::StrikeOut
             )
         );
@@ -93,7 +93,7 @@ class MainView: public View
         textRun_->appendHtml(
             "&lt;HTML&gt; <i>italic text</i>, <b>bold text</b>, <u>underlined text</u>, <b><i><strike>bold italic struck out text</strike></i></b>",
             TextStyle::create(
-                Font::select("sans", fontSize_)
+                ScaledFont::select("sans", fontSize_)
             )
         );
 

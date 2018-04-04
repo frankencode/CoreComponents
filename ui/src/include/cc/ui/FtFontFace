@@ -38,7 +38,6 @@ protected:
     ~FtFontFace();
 
     FtFontFace *open();
-    static Stretch getStretch(const TT_OS2 *os2);
 
     Ref<FtLibrary> ftLibrary_;
 

@@ -12,12 +12,12 @@
 namespace cc {
 namespace ui {
 
-Ref<TextStyle> TextStyle::create(const Font *font, Color color)
+Ref<TextStyle> TextStyle::create(const ScaledFont *font, Color color)
 {
     return new TextStyle(font, color, TextDecoration::None);
 }
 
-Ref<TextStyle> TextStyle::create(const Font *font, TextDecoration decoration, Color color)
+Ref<TextStyle> TextStyle::create(const ScaledFont *font, TextDecoration decoration, Color color)
 {
     return new TextStyle(font, color, decoration);
 }

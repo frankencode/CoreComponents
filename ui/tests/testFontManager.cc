@@ -65,13 +65,13 @@ public:
         return new TestFontManager;
     }
 
-    Ref<Font> selectFont(
+    Ref<ScaledFont> selectFont(
         String family,
         double size = 10,
         Weight weight = Weight::Normal,
         Slant slant = Slant::Normal,
         Stretch stretch = Stretch::Normal
-    ) const override { return Ref<Font>{}; }
+    ) const override { return Ref<ScaledFont>{}; }
 
 private:
     Ref<FontFace> openFontFace(String) override { return nullptr; }

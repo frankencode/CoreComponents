@@ -10,13 +10,13 @@
 
 #include <cairo/cairo.h>
 #include <cairo/cairo-ft.h>
-#include <cc/ui/Font>
+#include <cc/ui/ScaledFont>
 #include <cc/ui/FtFontFace>
 
 namespace cc {
 namespace ui {
 
-class FtFont: public Font
+class FtScaledFont: public ScaledFont
 {
 public:
     String family() const override { return ftFontFace_->family(); }
@@ -32,8 +32,8 @@ public:
 private:
     friend class Object;
 
-    FtFont(const FtFontFace *ftFontFace, double size);
-    ~FtFont();
+    FtScaledFont(const FtFontFace *ftFontFace, double size);
+    ~FtScaledFont();
 
     Ref<const FtFontFace> ftFontFace_;
     double size_;
@@ -43,7 +43,7 @@ private:
 
 class FtFaceGuard {
 public:
-    FtFaceGuard(const FtFont *ftFont):
+    FtFaceGuard(const FtScaledFont *ftFont):
         ftFont_(ftFont),
         ftFace_(cairo_ft_scaled_font_lock_face(ftFont_->cairoScaledFont()))
     {}
@@ -53,7 +53,7 @@ public:
     inline const FtFaceGuard *operator->() const { return this; }
     inline FT_Face ftFace() const { return ftFace_; }
 private:
-    const FtFont *ftFont_;
+    const FtScaledFont *ftFont_;
     FT_Face ftFace_;
 };
 

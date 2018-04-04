@@ -42,32 +42,15 @@ FtFontFace *FtFontFace::open()
     family_ = face_->family_name;
 
     TT_OS2 *os2 = (TT_OS2 *)FT_Get_Sfnt_Table(face_, ft_sfnt_os2);
-    if (os2) weight_ = static_cast<Weight>(os2->usWeightClass);
+    if (os2) weight_ = static_cast<Weight>(os2->usWeightClass / 100);
     else weight_ = (face_->style_flags & FT_STYLE_FLAG_BOLD) ? Weight::Bold : Weight::Normal;
-    stretch_ = getStretch(os2);
+    if (os2) stretch_ = static_cast<Stretch>(os2->usWidthClass);
+    else stretch_ = Stretch::Normal;
 
     slant_ = (face_->style_flags & FT_STYLE_FLAG_ITALIC) ? Slant::Italic : Slant::Normal;
     pitch_ = (face_->face_flags & FT_FACE_FLAG_FIXED_WIDTH) ? Pitch::Fixed : Pitch::Variable;
 
     return this;
-}
-
-Stretch FtFontFace::getStretch(const TT_OS2 *os2)
-{
-    if (os2) {
-        switch (os2->usWidthClass) {
-            case 1: return Stretch::UltraCondensed;
-            case 2: return Stretch::ExtraCondensed;
-            case 3: return Stretch::Condensed;
-            case 4: return Stretch::SemiCondensed;
-            case 5: return Stretch::Normal;
-            case 6: return Stretch::SemiExpanded;
-            case 7: return Stretch::Expanded;
-            case 8: return Stretch::ExtraExpanded;
-            case 9: return Stretch::UltraExpanded;
-        };
-    }
-    return Stretch::Normal;
 }
 
 }} // namespace cc::ui

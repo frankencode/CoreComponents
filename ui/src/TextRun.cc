@@ -78,7 +78,7 @@ void TextRun::appendHtml(String text, const TextStyle *style)
         else if (tagName == "b") {
             styleHead = new StyleNode(
                 TextStyle::create(
-                    Font::select(
+                    ScaledFont::select(
                         styleHead->style_->font()->family(),
                         styleHead->style_->font()->size(),
                         Weight::Bold,
@@ -95,7 +95,7 @@ void TextRun::appendHtml(String text, const TextStyle *style)
         else if (tagName == "i") {
             styleHead = new StyleNode(
                 TextStyle::create(
-                    Font::select(
+                    ScaledFont::select(
                         styleHead->style_->font()->family(),
                         styleHead->style_->font()->size(),
                         styleHead->style_->font()->weight(),
