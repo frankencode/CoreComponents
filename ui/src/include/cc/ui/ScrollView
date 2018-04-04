@@ -24,7 +24,7 @@ public:
 
     Property<double> minDragDistance { 4 };
     Property<double> maxFlyTime { 1.5 };
-    Property<double> maxSpeed { [=]{ return 2 * ((size()[0] > size()[1]) ? size()[0] : size()[1]); } };
+    Property<double> maxSpeed { [=]{ return 2 * max(size()); } };
 
     View *carrier() const { return carrier_; }
 

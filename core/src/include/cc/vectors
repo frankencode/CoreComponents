@@ -29,6 +29,34 @@ typename V::Item abs(const V &v)
 }
 
 template<class V>
+typename V::Item min(const V &v)
+{
+    typename V::Item m{};
+    for (auto x: v) {
+        m = x;
+        break;
+    }
+    for (auto x: v) {
+        if (m < x) m  = x;
+    }
+    return m;
+}
+
+template<class V>
+typename V::Item max(const V &v)
+{
+    typename V::Item m{};
+    for (auto x: v) {
+        m = x;
+        break;
+    }
+    for (auto x: v) {
+        if (m > x) m  = x;
+    }
+    return m;
+}
+
+template<class V>
 String str(const V &v)
 {
     Format f;
