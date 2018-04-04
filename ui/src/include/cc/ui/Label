@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/ui/View>
-#include <cc/ui/TextStyle>
+#include <cc/ui/Font>
 
 namespace cc {
 namespace ui {
@@ -21,14 +21,14 @@ class Label: public View
     friend class Object;
 
 public:
-    static Ref<Label> create(View *parent, String text, const TextStyle *textStyle = 0);
+    static Ref<Label> create(View *parent, String text, const Font &font = Font());
 
     Property<String> text;
-    Property< Ref<const TextStyle> > textStyle;
+    Property<Font> font;
     Property<Size> margin;
 
 protected:
-    Label(View *parent, String text, const TextStyle *textStyle);
+    Label(View *parent, String text, const Font &font);
 
     void updateLayout();
     void updateSize();

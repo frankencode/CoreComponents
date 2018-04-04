@@ -9,6 +9,7 @@
 #include <cc/debug> // DEBUG
 #include <cc/List>
 #include <cc/ui/Application>
+#include <cc/ui/StyleManager>
 #include <cc/ui/Window>
 #include <cc/ui/Image>
 #include <cc/ui/View>
@@ -340,6 +341,11 @@ void View::childReady(View *child)
 void View::childDone(View *child)
 {
     if (layout_) layout_->childDone(child);
+}
+
+StylePlugin *View::style() const
+{
+    return StyleManager::instance()->activePlugin();
 }
 
 Window *View::window()

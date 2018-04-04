@@ -10,7 +10,7 @@
 
 #include <cc/Property>
 #include <cc/SpinLock>
-#include <cc/ui/TextStyle>
+#include <cc/ui/Font>
 
 namespace cc {
 namespace ui {
@@ -22,17 +22,14 @@ class StylePlugin: public Object
 public:
     static StylePlugin *instance();
 
-    Property< Ref<const TextStyle> > defaultTextStyle; // TODO: remove
-    Property< Ref<const TextStyle> > defaultMonoTextStyle; // TODO: remove
-    Property< Ref<const TextStyle> > defaultMonoBoldTextStyle; // TODO: remove
-    Property<Size> defaultTextMargin; // TODO: replace by a getter function
-
     inline String name() const { return name_; }
 
-    String defaultFontFamily() const { return defaultFontFamily_; }
-    String defaultFixedFontFamily() const { return defaultFixedFontFamily_; }
-    double defaultFontSize() const { return defaultFontSize_; }
-    double defaultFixedFontSize() const { return defaultFixedFontSize_; }
+    Property<Font> defaultFont;
+    Property<Font> defaultFixedFont;
+    Property<Size> defaultMargin;
+
+    Property<String> defaultFontFamily;
+    Property<double> defaultFontSize;
 
 protected:
     friend class StyleManager;
@@ -40,10 +37,9 @@ protected:
 
     StylePlugin(String name);
 
-    void setDefaultFontFamily(String name) { defaultFontFamily_ = name; }
-    void setDefaultFixedFontFamily(String name) { defaultFixedFontFamily_ = name; }
-    void setDefaultFontSize(double size) { defaultFontSize_ = size; }
-    void setDefaultFixedFontSize(double size) { defaultFixedFontSize_ = size; }
+    Property<Font> defaultFontUnscaled;
+    Property<Font> defaultFixedFontUnscaled;
+    Property<Size> defaultMarginUnscaled;
 
     virtual void activate() = 0;
 
@@ -51,10 +47,6 @@ private:
     void init();
 
     String name_;
-    String defaultFontFamily_;
-    String defaultFixedFontFamily_;
-    double defaultFontSize_;
-    double defaultFixedFontSize_;
 };
 
 }} // namespace cc::ui

@@ -72,13 +72,6 @@ class MainView: public SlideView
         {
             currentIndex = +event->keyCode() - '1' + 10 * (+event->keyCode() == '0');
         }
-        else if (+(event->modifiers() & KeyModifier::Control))
-        {
-            if (event->keyCode() == '+')
-                Application::instance()->textZoom += 4;
-            else if (event->keyCode() == '-')
-                Application::instance()->textZoom -= 4;
-        }
 
         return true;
     }
@@ -87,7 +80,6 @@ class MainView: public SlideView
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    app->textZoom = 20;
     Window::open(Object::create<MainView>(), "Hello, world!", WindowMode::Default|WindowMode::Accelerated);
     return app->run();
 }

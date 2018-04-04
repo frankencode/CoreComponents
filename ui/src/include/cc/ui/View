@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/ui/design>
+#include <cc/ui/StylePlugin>
 #include <cc/ui/Surface>
 #include <cc/ui/UpdateRequest>
 #include <cc/ui/Layout>
@@ -111,6 +112,8 @@ protected:
     void init();
     virtual void childReady(View *child);
     virtual void childDone(View *child);
+
+    StylePlugin *style() const;
 
     Window *window();
     Image *image();

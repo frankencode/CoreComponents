@@ -141,17 +141,17 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun)
     cairo_translate(cr_, pos[0], pos[1]);
 
     cairo_pattern_t *sourceSaved = 0;
-    if (Color::isValid(glyphRun->style()->color())) {
+    if (Color::isValid(glyphRun->font()->color())) {
         sourceSaved = cairo_pattern_reference(cairo_get_source(cr_));
-        setSource(glyphRun->style()->color());
+        setSource(glyphRun->font()->color());
     }
 
-    Decoration decoration = ftGlyphRun->style()->decoration();
+    Decoration decoration = ftGlyphRun->font()->decoration();
     if (decoration != Decoration::None)
     {
         double u = 0;
         double v = 0; {
-            Ref<const FontMetrics> metrics = ftGlyphRun->style()->font()->getMetrics();
+            Ref<const FontMetrics> metrics = ftGlyphRun->font()->getScaledFont()->getMetrics();
             v = metrics->underlineThickness();
             if (+(decoration & Decoration::Underline))
                 u = -metrics->underlinePosition() + v / 2;
@@ -236,7 +236,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
 
     if (bgColors && bgColors->count() > 0)
     {
-        Ref<const FontMetrics> metrics = glyphRun->style()->font()->getMetrics();
+        Ref<const FontMetrics> metrics = glyphRun->font()->getScaledFont()->getMetrics();
         double dy0 = metrics->ascender() + (metrics->lineHeight() - (metrics->ascender() - metrics->descender())) / 2;
 
         int byteOffset = 0;
@@ -281,7 +281,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
         int byteOffset = 0;
         int glyphOffset = 0;
 
-        Color fgDefaultColor = ftGlyphRun->style()->color();
+        Color fgDefaultColor = ftGlyphRun->font()->color();
         Color fgColor0 = fgColors->at(0);
         if (!Color::isValid(fgColor0)) fgColor0 = fgDefaultColor;
         int byteOffset0 = 0;

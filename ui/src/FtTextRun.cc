@@ -19,10 +19,10 @@ FtTextRun::FtTextRun(FtTypeSetter *typeSetter):
     textAlign_(TextAlign::Left)
 {}
 
-void FtTextRun::append(String text, const TextStyle *style)
+void FtTextRun::append(String text, const Font &font)
 {
     if (!typeSetter_) return;
-    Ref<const FtGlyphRun> run = typeSetter_->ftLayout(text, style);
+    Ref<const FtGlyphRun> run = typeSetter_->ftLayout(text, font);
     glyphRuns_->append(run);
 
     if (run->advance()[1] == 0) {
@@ -101,7 +101,7 @@ Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns)
 
     if (glyphRuns->count() > 0) {
         const FtGlyphRun *lastRun = glyphRuns->at(glyphRuns->count() - 1);
-        metaBlock->style_ = lastRun->style_;
+        metaBlock->font_ = lastRun->font_;
         metaBlock->advance_ = lastRun->advance_;
         metaBlock->size_[0] = lastRun->advance_[0];
         metaBlock->finalGlyphAdance_ = lastRun->finalGlyphAdance_;
@@ -127,7 +127,7 @@ Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns 
     int k = 0;
     for (int i = 0; i < glyphRuns->count(); ++i) {
         const FtGlyphRun *glyphRun = glyphRuns->at(i);
-        Ref<FtGlyphRun> newGlyphRun = Object::create<FtGlyphRun>(glyphRun->text_, glyphRun->style_);
+        Ref<FtGlyphRun> newGlyphRun = Object::create<FtGlyphRun>(glyphRun->text_, glyphRun->font_);
         {
             int n = glyphRun->cairoGlyphs_->count();
             newGlyphRun->cairoGlyphs_ = metaBlock->cairoGlyphs_->select(j, j + n);
@@ -230,7 +230,7 @@ void FtTextRun::paste(int byteOffset0, int byteOffset1, const TextRun *textRun)
         int nextByteOffset = byteOffset + glyphRun->text()->count();
 
         if (nextByteOffset <= byteOffset0 || byteOffset1 <= byteOffset) {
-            textRun2->append(glyphRun->text(), glyphRun->style());
+            textRun2->append(glyphRun->text(), glyphRun->font());
         }
         else if (byteOffset0 <= byteOffset && nextByteOffset <= byteOffset1) {
             ;
@@ -241,7 +241,7 @@ void FtTextRun::paste(int byteOffset0, int byteOffset1, const TextRun *textRun)
                     byteOffset0 - byteOffset,
                     byteOffset1 - byteOffset
                 ),
-                glyphRun->style()
+                glyphRun->font()
             );
         }
 
@@ -249,7 +249,7 @@ void FtTextRun::paste(int byteOffset0, int byteOffset1, const TextRun *textRun)
             for (const GlyphRun *pasteBlock: textRun->getAllGlyphRuns()) {
                 textRun2->append(
                     pasteBlock->text(),
-                    pasteBlock->style()
+                    pasteBlock->font()
                 );
             }
         }

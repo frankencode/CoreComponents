@@ -12,9 +12,9 @@
 namespace cc {
 namespace ui {
 
-Ref<GlyphRun> GlyphRun::layout(String text, const TextStyle *style)
+Ref<GlyphRun> GlyphRun::layout(String text, const Font &font)
 {
-    return PlatformPlugin::instance()->createTypeSetter()->layout(text, style);
+    return PlatformPlugin::instance()->createTypeSetter()->layout(text, font);
 }
 
 }} // namespace cc::ui

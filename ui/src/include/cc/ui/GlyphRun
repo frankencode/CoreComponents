@@ -8,8 +8,7 @@
 
 #pragma once
 
-#include <functional>
-#include <cc/ui/TextStyle>
+#include <cc/ui/Font>
 
 namespace cc {
 namespace ui {
@@ -17,17 +16,12 @@ namespace ui {
 class GlyphRun: public Object
 {
 public:
-    static Ref<GlyphRun> layout(String text, const TextStyle *style);
-
-    /// convenience wrapper
-    inline static Ref<GlyphRun> layout(String text, const ScaledFont *font, Color color = Color{}) {
-        return layout(text, TextStyle::create(font, color));
-    }
+    static Ref<GlyphRun> layout(String text, const Font &font = Font());
 
     virtual String text() const = 0;
-    virtual const TextStyle *style() const = 0;
+    virtual Font font() const = 0;
 
-    virtual Point advance() const = 0; // FIXME: rename to "fin", "endPoint"
+    virtual Point advance() const = 0;
     virtual Size size() const = 0;
     virtual int lineCount() const = 0;
 

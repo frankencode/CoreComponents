@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/ui/TextRun>
 #include <cc/ui/FtTypeSetter>
 
 namespace cc {
@@ -22,7 +23,7 @@ public:
         return new FtTextRun(typeSetter);
     }
 
-    void append(String text, const TextStyle *style) override;
+    void append(String text, const Font &font) override;
 
     Point advance() const override { return advance_; }
     Size size() const override { return size_; }

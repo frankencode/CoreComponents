@@ -18,12 +18,19 @@ class MainView: public View
 
         String pangram = "The quick brown fox jumps over the lazy dog";
 
-        for (const FontFamily *fontFamily: FontManager::instance()->getFontFamilies()) {
+        for (const FontFamily *fontFamily: FontManager::instance()->getFontFamilies())
+        {
             String text = Format("%%: %%") << fontFamily->name() << pangram;
-            glyphRuns_
-                << GlyphRun::layout(text, ScaledFont::select(fontFamily->name(), fontSize_, Weight::Normal))
-                << GlyphRun::layout(text, ScaledFont::select(fontFamily->name(), fontSize_, Weight::Bold))
-                << GlyphRun::layout(text, ScaledFont::select(fontFamily->name(), fontSize_, Weight::Normal, Slant::Italic));
+
+            Font font;
+            glyphRuns_ << GlyphRun::layout(text, font);
+
+            font->setWeight(Weight::Bold);
+            glyphRuns_ << GlyphRun::layout(text, font);
+
+            font->setWeight(Weight::Normal);
+            font->setSlant(Slant::Italic);
+            glyphRuns_ << GlyphRun::layout(text, font);
         }
     }
 

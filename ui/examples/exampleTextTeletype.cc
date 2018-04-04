@@ -24,7 +24,7 @@ class MainView: public View
                 "sie hatte die Hand schon ausgestreckt und die Finger gekrümmt, um sie "
                 "wieder zufangen, da schlug sie neben vorbei auf die Erde, rollte und rollte "
                 "und geradezu in das Wasser hinein.",
-                ScaledFont::select("mono", fontSize_)
+                Font("mono", fontSize_)
             );
 
         Ref<Random> random = Random::open();

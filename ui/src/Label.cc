@@ -6,43 +6,40 @@
  *
  */
 
-#include <cc/ui/TextRun>
 #include <cc/ui/StylePlugin>
+#include <cc/ui/TextRun>
 #include <cc/ui/Label>
 
 namespace cc {
 namespace ui {
 
-Ref<Label> Label::create(View *parent, String text, const TextStyle *textStyle)
+Ref<Label> Label::create(View *parent, String text, const Font &font)
 {
-    return Object::create<Label>(parent, text, textStyle);
+    return Object::create<Label>(parent, text, font);
 }
 
-Label::Label(View *parent, String text_, const TextStyle *textStyle_):
+Label::Label(View *parent, String text_, const Font &font_):
     View(parent),
-    text(text_)
+    text(text_),
+    font(font_)
 {
-    if (textStyle_) textStyle = textStyle_;
-    else textStyle->bind([=]{ return StylePlugin::instance()->defaultTextStyle(); });
+    if (font() == Font())
+        font->bind([=]{ return StylePlugin::instance()->defaultFont(); });
 
-    margin->bind([=]{ return StylePlugin::instance()->defaultTextMargin(); });
+    margin->bind([=]{ return StylePlugin::instance()->defaultMargin(); });
 
     color = transparent;
 
     updateLayout();
 
-    text     ->connect([=]{ updateLayout(); });
-    textStyle->connect([=]{ updateLayout(); });
-    margin   ->connect([=]{ updateSize(); });
-    size     ->connect([=]{ update(); });
+    text  ->connect([=]{ updateLayout(); });
+    font  ->connect([=]{ updateLayout(); });
+    margin->connect([=]{ updateLayout(); });
 }
 
 void Label::updateLayout()
 {
-    textRun_ = TextRun::create(
-        text(),
-        textStyle()
-    );
+    textRun_ = TextRun::create(text(), font());
 
     updateSize();
     update();

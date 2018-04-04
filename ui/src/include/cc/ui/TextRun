@@ -20,13 +20,13 @@ class TextRun: public Object
 {
 public:
     static Ref<TextRun> create();
-    static Ref<TextRun> create(String text, const TextStyle *style = 0);
+    static Ref<TextRun> create(String text, const Font &font = Font());
 
     static Ref<TextRun> copy(const TextRun *other) { return other->copy(); }
 
-    virtual void append(String text, const TextStyle *style) = 0;
+    virtual void append(String text, const Font &font = Font()) = 0;
     void append(const TextRun *textRun);
-    void appendHtml(String text, const TextStyle *style);
+    void appendHtml(String text, const Font &font = Font());
 
     virtual Point advance() const = 0;
     virtual Size size() const = 0;

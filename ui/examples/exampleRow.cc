@@ -33,27 +33,11 @@ class MainView: public View
         Label::create(subBox, "◦ Item A");
         Label::create(subBox, "◦ Item B");
     }
-
-    bool hasKeyInput() const override { return true; }
-
-    bool onKeyPressed(const KeyEvent *event)
-    {
-        if (+(event->modifiers() & KeyModifier::Control))
-        {
-            if (event->keyCode() == '+')
-                Application::instance()->textZoom += 4;
-            else if (event->keyCode() == '-')
-                Application::instance()->textZoom -= 4;
-        }
-
-        return true;
-    }
 };
 
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    app->textZoom = 20;
     Window::open(Object::create<MainView>(), "Hello, world!");
     return app->run();
 }

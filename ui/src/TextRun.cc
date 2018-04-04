@@ -18,15 +18,13 @@ Ref<TextRun> TextRun::create()
     return PlatformPlugin::instance()->createTypeSetter()->createTextRun();
 }
 
-Ref<TextRun> TextRun::create(String text, const TextStyle *style)
+Ref<TextRun> TextRun::create(String text, const Font &font)
 {
-    if (!style) style = StylePlugin::instance()->defaultTextStyle();
-
     Ref<TextRun> textRun = TextRun::create();
     if (text->countCharsIn("<>&") > 0)
-        textRun->appendHtml(text, style);
+        textRun->appendHtml(text, font);
     else
-        textRun->append(text, style);
+        textRun->append(text, font);
 
     return textRun;
 }
@@ -34,29 +32,29 @@ Ref<TextRun> TextRun::create(String text, const TextStyle *style)
 void TextRun::append(const TextRun *textRun)
 {
     for (const GlyphRun *glyphRun: textRun->getAllGlyphRuns())
-        append(glyphRun->text(), glyphRun->style());
+        append(glyphRun->text(), glyphRun->font());
 }
 
-void TextRun::appendHtml(String text, const TextStyle *style)
+void TextRun::appendHtml(String text, const Font &font)
 {
     struct StyleNode: public Object {
-        StyleNode(const TextStyle *style, String tagName = String{}, const StyleNode *parent = nullptr):
+        StyleNode(const Font &font, String tagName = String{}, const StyleNode *parent = nullptr):
             tagName_(tagName),
-            style_(style->copy()),
+            font_(font),
             parent_(parent)
         {}
         String tagName_;
-        Ref<const TextStyle> style_;
+        Font font_;
         Ref<const StyleNode> parent_;
     };
 
-    Ref<const StyleNode> styleHead = new StyleNode(style);
+    Ref<const StyleNode> styleHead = new StyleNode(font);
     int i = 0;
     int i0 = 0;
     while (text->findNext('<', &i)) {
         int j = i + 1;
         if (!text->findNext('>', &j)) break;
-        if (i0 < i) append(replaceEntities(text->copy(i0, i)), styleHead->style_);
+        if (i0 < i) append(replaceEntities(text->copy(i0, i)), styleHead->font_);
         String tagName = text->select(i + 1, j);
         i = i0 = j + 1;
         if (tagName->beginsWith('/')) {
@@ -65,64 +63,28 @@ void TextRun::appendHtml(String text, const TextStyle *style)
             styleHead = styleHead->parent_;
         }
         else if (tagName == "u") {
-            styleHead = new StyleNode(
-                TextStyle::create(
-                    styleHead->style_->font(),
-                    styleHead->style_->decoration() | Decoration::Underline,
-                    styleHead->style_->color()
-                ),
-                tagName,
-                styleHead
-            );
+            Font font = styleHead->font_;
+            font->setDecoration(font->decoration() | Decoration::Underline);
+            styleHead = new StyleNode(font, tagName, styleHead);
         }
         else if (tagName == "b") {
-            styleHead = new StyleNode(
-                TextStyle::create(
-                    ScaledFont::select(
-                        styleHead->style_->font()->family(),
-                        styleHead->style_->font()->size(),
-                        Weight::Bold,
-                        styleHead->style_->font()->slant(),
-                        styleHead->style_->font()->stretch()
-                    ),
-                    styleHead->style_->decoration(),
-                    styleHead->style_->color()
-                ),
-                tagName,
-                styleHead
-            );
+            Font font = styleHead->font_;
+            font->setWeight(Weight::Bold);
+            styleHead = new StyleNode(font, tagName, styleHead);
         }
         else if (tagName == "i") {
-            styleHead = new StyleNode(
-                TextStyle::create(
-                    ScaledFont::select(
-                        styleHead->style_->font()->family(),
-                        styleHead->style_->font()->size(),
-                        styleHead->style_->font()->weight(),
-                        Slant::Italic,
-                        styleHead->style_->font()->stretch()
-                    ),
-                    styleHead->style_->decoration(),
-                    styleHead->style_->color()
-                ),
-                tagName,
-                styleHead
-            );
+            Font font = styleHead->font_;
+            font->setSlant(Slant::Italic);
+            styleHead = new StyleNode(font, tagName, styleHead);
         }
         else if (tagName == "strike") {
-            styleHead = new StyleNode(
-                TextStyle::create(
-                    styleHead->style_->font(),
-                    styleHead->style_->decoration() | Decoration::StrikeOut,
-                    styleHead->style_->color()
-                ),
-                tagName,
-                styleHead
-            );
+            Font font = styleHead->font_;
+            font->setDecoration(Decoration::StrikeOut);
+            styleHead = new StyleNode(font, tagName, styleHead);
         }
     }
 
-    if (i0 < i) append(replaceEntities(text->copy(i0, i)), styleHead->style_);
+    if (i0 < i) append(replaceEntities(text->copy(i0, i)), styleHead->font_);
 }
 
 String TextRun::replaceEntities(String text)

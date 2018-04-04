@@ -23,32 +23,9 @@ void IndustrialStylePlugin::activate()
 {
     FontManager::instance()->addPath("/usr/share/fonts/truetype/dejavu/");
 
-    setDefaultFontFamily("DejaVu Sans");
-    setDefaultFontSize(16);
-    setDefaultFixedFontFamily("DejaVu Sans Mono");
-    setDefaultFixedFontSize(20);
-
-    defaultTextStyle->bind([=]{
-        return TextStyle::create(
-            ScaledFont::select("Sans", 20 + Application::instance()->textZoom())
-        );
-    });
-
-    defaultMonoTextStyle->bind([=]{
-        return TextStyle::create(
-            ScaledFont::select("Mono", 16 + Application::instance()->textZoom())
-        );
-    });
-
-    defaultMonoBoldTextStyle->bind([=]{
-        return TextStyle::create(
-            ScaledFont::select("Mono", 16 + Application::instance()->textZoom(), Weight::Bold)
-        );
-    });
-
-    defaultTextMargin->bind([=]{
-        return Size { 0.5 * defaultTextStyle()->font()->size() };
-    });
+    defaultFontUnscaled = Font("DejaVu Sans", 16);
+    defaultFixedFontUnscaled = Font("DejaVu Sans Mono", 20);
+    defaultMarginUnscaled = Size{0.5 * defaultFontUnscaled()->size()};
 }
 
 CC_REGISTRATION(IndustrialStylePlugin)

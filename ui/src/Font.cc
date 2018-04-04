@@ -13,7 +13,7 @@
 namespace cc {
 namespace ui {
 
-const ScaledFont *Font::Instance::getScaledFont()
+const ScaledFont *Font::Instance::getScaledFont() const
 {
     if (scaledFont_) {
         if (
@@ -28,14 +28,29 @@ const ScaledFont *Font::Instance::getScaledFont()
 
     scaledFont_ =
         FontManager::instance()->selectFont(
-            (family()) ? family() : StyleManager::instance()->activePlugin()->defaultFontFamily(),
-            (size() > 0) ? size() : StyleManager::instance()->activePlugin()->defaultFontSize(),
+            (family()) ? family() : Font::defaultFamily(),
+            (size() > 0) ? size() : Font::defaultSize(),
             weight(),
             slant(),
             stretch()
         );
 
     return scaledFont_;
+}
+
+const FontMetrics *Font::Instance::getMetrics() const
+{
+    return getScaledFont()->getMetrics();
+}
+
+String Font::defaultFamily()
+{
+    return StyleManager::instance()->activePlugin()->defaultFontFamily();
+}
+
+double Font::defaultSize()
+{
+    return StyleManager::instance()->activePlugin()->defaultFontSize();
 }
 
 bool Font::differ(const Font &a, const Font &b)

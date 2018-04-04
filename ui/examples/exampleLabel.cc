@@ -23,8 +23,6 @@ class MainView: public View
             return dec(date->hour(), 2) + "∶" + dec(date->minutes(), 2) + "∶" + dec(date->seconds(), 2);
         };
 
-        Application::instance()->textZoom = 28;
-
         Label *label = Label::create(this, getClockText());
         label->color = Color{"#D0D0FF"};
         label->pos->bind([=]{ return center() - label->size() / 2; });
@@ -40,9 +38,9 @@ class MainView: public View
         if (+(event->modifiers() & KeyModifier::Control))
         {
             if (event->keyCode() == '+')
-                Application::instance()->textZoom += 4;
+                Application::instance()->textZoom += 0.1;
             else if (event->keyCode() == '-')
-                Application::instance()->textZoom -= 4;
+                Application::instance()->textZoom -= 0.1;
         }
 
         return true;
@@ -52,6 +50,7 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
+    app->textZoom = 2;
     Window::open(Object::create<MainView>(), "Hello, world!", WindowMode::Default|WindowMode::Accelerated);
     return app->run();
 }

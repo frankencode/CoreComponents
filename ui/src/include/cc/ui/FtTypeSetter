@@ -19,11 +19,11 @@ class FtTypeSetter: public TypeSetter
 public:
     static Ref<FtTypeSetter> create() { return new FtTypeSetter; }
 
-    Ref<GlyphRun> layout(String text, const TextStyle *style) override {
-        return ftLayout(text, style);
+    Ref<GlyphRun> layout(String text, const Font &font) override {
+        return ftLayout(text, font);
     }
 
-    Ref<FtGlyphRun> ftLayout(String text, const TextStyle *style);
+    Ref<FtGlyphRun> ftLayout(String text, const Font &font);
 
     Point advance() const override { return pos_; }  // FIXME: rename to "pos"
 

@@ -30,10 +30,7 @@ class MainView: public View
             subBox->color = Color{"#D0FFD0"};
 
             ColumnLayout::setup(subBox)->indent->bind([=]{
-                return (
-                    StylePlugin::instance()->defaultTextStyle()->font()->size() +
-                    Application::instance()->textZoom()
-                );
+                return StylePlugin::instance()->defaultFontSize();
             });
 
             Label::create(subBox, "◦ Item A");
@@ -41,26 +38,11 @@ class MainView: public View
             Label::create(subBox, "◦ Item C");
         }
     }
-
-    bool hasKeyInput() const override { return true; }
-
-    bool onKeyPressed(const KeyEvent *event)
-    {
-        if (+(event->modifiers() & KeyModifier::Control))
-        {
-            if (event->keyCode() == '+')
-                Application::instance()->textZoom += 4;
-            else if (event->keyCode() == '-')
-                Application::instance()->textZoom -= 4;
-        }
-        return true;
-    }
 };
 
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    app->textZoom = 20;
     Window::open(Object::create<MainView>(), "Hello, world!");
     return app->run();
 }

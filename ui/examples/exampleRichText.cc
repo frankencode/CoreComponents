@@ -15,86 +15,34 @@ class MainView: public View
         size = Size{640, 480};
         color = Color{"#FFFFFF"};
 
-        textRun_->append(
-            "Monospaced text, ",
-            TextStyle::create(
-                ScaledFont::select("mono", fontSize_)
-            )
-        );
-
-        textRun_->append(
-            "variable width text, ",
-            TextStyle::create(
-                ScaledFont::select("sans", fontSize_)
-            )
-        );
-
-        textRun_->append(
-            "bold text, ",
-            TextStyle::create(
-                ScaledFont::select("sans", fontSize_, Weight::Bold)
-            )
-        );
-
-        textRun_->append(
-            "small text, ",
-            TextStyle::create(
-                ScaledFont::select("sans", fontSize_ * 0.75)
-            )
-        );
-
-        textRun_->append(
-            "big text, ",
-            TextStyle::create(
-                ScaledFont::select("sans", fontSize_ * 1.25)
-            )
-        );
-
-        textRun_->append(
-            "red text, ",
-            TextStyle::create(
-                ScaledFont::select("sans", fontSize_),
-                Color(0x80, 0x00, 0x00)
-            )
-        );
-
-        textRun_->append(
-            "green text, ",
-            TextStyle::create(
-                ScaledFont::select("sans", fontSize_),
-                Color(0x00, 0x80, 0x00)
-            )
-        );
-
-        textRun_->append(
-            "blue text, ",
-            TextStyle::create(
-                ScaledFont::select("sans", fontSize_),
-                Color(0x00, 0x00, 0x80)
-            )
-        );
-
-        textRun_->append(
-            "underlined text, ",
-            TextStyle::create(
-                ScaledFont::select("sans", fontSize_),
-                Decoration::Underline
-            )
-        );
-
-        textRun_->append(
-            "struck out text, ",
-            TextStyle::create(
-                ScaledFont::select("sans", fontSize_),
-                Decoration::StrikeOut
-            )
-        );
+        textRun_->append("Monospaced text, ", style()->defaultFixedFont());
+        textRun_->append("variable width text, ", style()->defaultFont());
+        {
+            Font font;
+            font->setWeight(Weight::Bold);
+            textRun_->append("bold text, ", font);
+        }
+        textRun_->append("small text, ", Font(style()->defaultFontSize() * 0.75));
+        textRun_->append("big text, ", Font(style()->defaultFontSize() * 1.25));
+        {
+            Font font;
+            font->setColor("#800000");
+            textRun_->append("red text, ", font);
+            font->setColor("#008000");
+            textRun_->append("green text, ", font);
+            font->setColor("#000080");
+            textRun_->append("blue text, ", font);
+        }
+        {
+            Font font;
+            font->setDecoration(Decoration::Underline);
+            textRun_->append("underlined text, ", font);
+            font->setDecoration(Decoration::StrikeOut);
+            textRun_->append("struck out text, ", font);
+        }
 
         textRun_->appendHtml(
-            "&lt;HTML&gt; <i>italic text</i>, <b>bold text</b>, <u>underlined text</u>, <b><i><strike>bold italic struck out text</strike></i></b>",
-            TextStyle::create(
-                ScaledFont::select("sans", fontSize_)
-            )
+            "&lt;HTML&gt; <i>italic text</i>, <b>bold text</b>, <u>underlined text</u>, <b><i><strike>bold italic struck out text</strike></i></b>"
         );
 
         textRun_->setTextAlign(TextAlign::Right);
@@ -118,11 +66,10 @@ class MainView: public View
         p->fill();
         p->setSource(Color{"#000000"});
         // p->showTextRun(Point{margins_, margins_ + fontSize_}, textRun_);
-        p->showTextRun(Point{margins_, margins_ + fontSize_}, wrappedTextRun_);
+        p->showTextRun(Point{margins_, margins_ + Font::defaultSize()}, wrappedTextRun_);
     }
 
     const double margins_ = 30;
-    const double fontSize_ = 20;
     Ref<TextRun> textRun_;
     Ref<TextRun> wrappedTextRun_;
 };
@@ -130,9 +77,6 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    String fontPath = "/usr/share/fonts/truetype/dejavu/";
-    if (argc > 1) fontPath = argv[1];
-    FontManager::instance()->addPath(fontPath);
-    Window::open(Object::create<MainView>(), fontPath);
+    Window::open(Object::create<MainView>(), "Hello, world!");
     return app->run();
 }

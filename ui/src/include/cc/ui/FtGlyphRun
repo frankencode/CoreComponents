@@ -27,7 +27,7 @@ class FtGlyphRun: public GlyphRun
 {
 public:
     String text() const override { return text_; }
-    const TextStyle *style() const override { return style_; }
+    Font font() const override { return font_; }
 
     Point advance() const override { return advance_; } // FIXME: rename to "fin"
     Size size() const override { return size_ ; }
@@ -40,7 +40,7 @@ public:
     Ref<GlyphRun> copy() const override;
     Ref<GlyphRun> copy(int byteOffset0, int byteOffset1) const override;
 
-    const FtScaledFont *ftFont() const { return Object::cast<const FtScaledFont *>(style_->font()); }
+    const FtScaledFont *ftFont() const { return Object::cast<const FtScaledFont *>(font_->getScaledFont()); }
 
     CairoGlyphs *cairoGlyphs() const { return cairoGlyphs_; }
     CairoTextClusters *cairoTextClusters() const { return cairoTextClusters_; }
@@ -51,7 +51,7 @@ private:
     friend class FtTextRun;
 
     FtGlyphRun(): lineCount_(1) {}
-    FtGlyphRun(String text, const TextStyle *style);
+    FtGlyphRun(String text, const Font &font);
 
     Ref<FtGlyphRun> ftCopy() const;
 
@@ -71,7 +71,7 @@ private:
     static void lineShift(FtGlyphRun *ftGlyphRun, double shiftX);
 
     String text_;
-    Ref<const TextStyle> style_;
+    Font font_;
 
     Point advance_;
     Size size_;
