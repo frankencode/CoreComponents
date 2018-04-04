@@ -19,7 +19,7 @@ Ref<Image> Image::create(Size size)
 
 Image::Image(Size size):
     size_(size),
-    data_(String::allocate(size->w() * size->h() * sizeof(Color))),
+    data_(String::allocate(size[0] * size[1] * sizeof(Color))),
     cairoSurface_(0)
 {}
 
@@ -31,7 +31,7 @@ Image::~Image()
 
 void Image::clear(Color c)
 {
-    const int n = size_->w() * size_->h();
+    const int n = size_[0] * size_[1];
     for (int i = 0; i < n; ++i)
         mutate(data_)->item<Color>(i) = c;
 }

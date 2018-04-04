@@ -34,14 +34,6 @@ public:
 
         inline int count() const { return N; }
 
-        inline T x() const { return at(0); }
-        inline T y() const { return at(1); }
-        inline T z() const { return at(2); }
-        inline T s() const { return at(3); }
-
-        inline T w() const { return at(0); }
-        inline T h() const { return at(1); }
-
     private:
         friend class Vector;
         Instance(): v_{} {}
@@ -64,12 +56,6 @@ public:
 
     inline operator const T *() const { return &instance_.v_; }
     inline operator T *() { return &instance_.v_; }
-
-    /*inline Vector &operator=(const Vector &b) {
-        for (int i = 0; i < N; ++i)
-            instance_.v_[i] = b.instance_.v_[i];
-        return *this;
-    }*/
 
     inline bool operator==(const Vector &b) const {
         for (int i = 0; i < N; ++i)

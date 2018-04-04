@@ -23,12 +23,12 @@ public:
 
     inline bool hasPixel(int x, int y) const {
         return
-            0 <= x && x < size_->w() &&
-            0 <= y && y < size_->h();
+            0 <= x && x < size_[0] &&
+            0 <= y && y < size_[1];
     }
 
     inline Color &pixel(int x, int y) {
-        return mutate(data_)->item<Color>(y * size_->w() + x);
+        return mutate(data_)->item<Color>(y * size_[0] + x);
     }
 
     /** Clear the entire image with color \a c
@@ -50,7 +50,7 @@ public:
     void normalize();
 
     inline const CharArray *data() const { return data_; }
-    inline int pitch() const { return size_->w() * sizeof(Color); }
+    inline int pitch() const { return size_[0] * sizeof(Color); }
 
 private:
     friend class View;

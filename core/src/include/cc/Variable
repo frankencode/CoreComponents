@@ -1,0 +1,29 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+namespace cc {
+
+/** Encapsulation of a publically accessible member variable
+  */
+template<class T>
+class Variable {
+public:
+    inline Variable(): x_{T{}} {}
+    inline Variable(const T &b): x_{b} {}
+    inline Variable(const Variable &b): x_{b.x_} {}
+
+    inline Variable &operator=(const T &b) { x_ = b; return *this; }
+    inline Variable &operator=(const Variable &b) { x_ = b.x_; return *this; }
+
+    inline T operator()() const { return x_; }
+
+private:
+    T x_;
+};
+
+} // namespace cc
