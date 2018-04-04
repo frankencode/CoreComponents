@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#include <cc/Variable>
+#include <cc/ui/types>
+
+namespace cc {
+namespace ui {
+
+class ScaledFont;
+
+/** Text style selector
+  */
+class Font
+{
+public:
+    class Instance {
+    public:
+        Variable<String> family;
+        Variable<double> size;
+        Variable<Slant> slant;
+        Variable<Weight> weight;
+        Variable<Decoration> decoration;
+        Variable<Color> color;
+
+    private:
+        friend class Font;
+        friend class FontManager;
+
+        Instance() {}
+        Instance(double size): size_{size} {}
+        Instance(String family, double size): family_(family), size_(size) {}
+
+        Ref<const ScaledFont> scaledFont_;
+    };
+
+    Font(double size): instance_(size) {}
+    Font(String family, double size): instance_(family, size) {}
+
+    const Instance *operator->() const { return &instance_; }
+    Instance *operator->() { return &instance_; }
+
+private:
+    Instance instance_;
+};
+
+}} // namespace cc::ui
