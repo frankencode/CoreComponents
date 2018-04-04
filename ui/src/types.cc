@@ -81,12 +81,12 @@ String str(TextAlign align)
     return String{};
 }
 
-String str(TextDecoration decoration)
+String str(Decoration decoration)
 {
-    if (decoration == TextDecoration::None) return "TextDecoration::None";
+    if (decoration == Decoration::None) return "Decoration::None";
     Ref<StringList> parts = StringList::create();
-    if (+(decoration & TextDecoration::Underline)) parts << "TextDecoration::Underline";
-    if (+(decoration & TextDecoration::StrikeOut)) parts << "TextDecoration::StrikeOut";
+    if (+(decoration & Decoration::Underline)) parts << "Decoration::Underline";
+    if (+(decoration & Decoration::StrikeOut)) parts << "Decoration::StrikeOut";
     return parts->join("|");
 }
 

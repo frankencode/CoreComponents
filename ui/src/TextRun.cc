@@ -68,7 +68,7 @@ void TextRun::appendHtml(String text, const TextStyle *style)
             styleHead = new StyleNode(
                 TextStyle::create(
                     styleHead->style_->font(),
-                    styleHead->style_->decoration() | TextDecoration::Underline,
+                    styleHead->style_->decoration() | Decoration::Underline,
                     styleHead->style_->color()
                 ),
                 tagName,
@@ -113,7 +113,7 @@ void TextRun::appendHtml(String text, const TextStyle *style)
             styleHead = new StyleNode(
                 TextStyle::create(
                     styleHead->style_->font(),
-                    styleHead->style_->decoration() | TextDecoration::StrikeOut,
+                    styleHead->style_->decoration() | Decoration::StrikeOut,
                     styleHead->style_->color()
                 ),
                 tagName,

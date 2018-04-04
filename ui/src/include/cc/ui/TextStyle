@@ -17,18 +17,18 @@ class TextStyle: public Object
 {
 public:
     static Ref<TextStyle> create(const ScaledFont *font, Color color = Color{});
-    static Ref<TextStyle> create(const ScaledFont *font, TextDecoration decoration, Color color = Color{});
+    static Ref<TextStyle> create(const ScaledFont *font, Decoration decoration, Color color = Color{});
 
     const ScaledFont *font() const { return font_; }
     Color color() const { return color_; }
-    TextDecoration decoration() const { return decoration_; }
+    Decoration decoration() const { return decoration_; }
 
     Ref<TextStyle> copy() const;
 
     String toString() const;
 
 private:
-    TextStyle(const ScaledFont *font, Color color, TextDecoration decoration):
+    TextStyle(const ScaledFont *font, Color color, Decoration decoration):
         font_(font),
         color_(color),
         decoration_(decoration)
@@ -36,7 +36,7 @@ private:
 
     Ref<const ScaledFont> font_;
     Color color_;
-    TextDecoration decoration_;
+    Decoration decoration_;
 };
 
 }} // namespace cc::ui

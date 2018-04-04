@@ -146,16 +146,16 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun)
         setSource(glyphRun->style()->color());
     }
 
-    TextDecoration decoration = ftGlyphRun->style()->decoration();
-    if (decoration != TextDecoration::None)
+    Decoration decoration = ftGlyphRun->style()->decoration();
+    if (decoration != Decoration::None)
     {
         double u = 0;
         double v = 0; {
             Ref<const FontMetrics> metrics = ftGlyphRun->style()->font()->getMetrics();
             v = metrics->underlineThickness();
-            if (+(decoration & TextDecoration::Underline))
+            if (+(decoration & Decoration::Underline))
                 u = -metrics->underlinePosition() + v / 2;
-            else if (+(decoration & TextDecoration::StrikeOut))
+            else if (+(decoration & Decoration::StrikeOut))
                 u = -2 * metrics->ascender() / 5 + v / 2;
         }
 

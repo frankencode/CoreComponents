@@ -63,7 +63,7 @@ String str(Weight weight);
 
 /** font pitch
   */
-enum class Pitch {
+enum class Pitch: uint8_t {
     Fixed,   ///< monospace font
     Variable ///< variable-width font
 };
@@ -72,7 +72,7 @@ String str(Pitch pitch);
 
 /** text alignment
   */
-enum class TextAlign {
+enum class TextAlign: uint8_t {
     Left,   ///< align left
     Right,  ///< align right
     Center, ///< align center
@@ -83,15 +83,15 @@ String str(TextAlign align);
 
 /** text decoration
   */
-enum class TextDecoration: unsigned int {
+enum class Decoration: uint8_t {
     None      = 0,
     Underline = 1,
     StrikeOut = 2
 };
 
-CC_BITMASK(TextDecoration, unsigned int)
+CC_BITMASK(Decoration, uint8_t)
 
-String str(TextDecoration decoration);
+String str(Decoration decoration);
 
 /** alignment within a Column
   */

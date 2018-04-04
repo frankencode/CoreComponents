@@ -14,10 +14,10 @@ namespace ui {
 
 Ref<TextStyle> TextStyle::create(const ScaledFont *font, Color color)
 {
-    return new TextStyle(font, color, TextDecoration::None);
+    return new TextStyle(font, color, Decoration::None);
 }
 
-Ref<TextStyle> TextStyle::create(const ScaledFont *font, TextDecoration decoration, Color color)
+Ref<TextStyle> TextStyle::create(const ScaledFont *font, Decoration decoration, Color color)
 {
     return new TextStyle(font, color, decoration);
 }

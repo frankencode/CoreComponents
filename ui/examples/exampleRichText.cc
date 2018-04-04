@@ -78,7 +78,7 @@ class MainView: public View
             "underlined text, ",
             TextStyle::create(
                 ScaledFont::select("sans", fontSize_),
-                TextDecoration::Underline
+                Decoration::Underline
             )
         );
 
@@ -86,7 +86,7 @@ class MainView: public View
             "struck out text, ",
             TextStyle::create(
                 ScaledFont::select("sans", fontSize_),
-                TextDecoration::StrikeOut
+                Decoration::StrikeOut
             )
         );
 
