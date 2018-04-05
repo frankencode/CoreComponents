@@ -1,5 +1,6 @@
 #include <cc/Random>
 #include <cc/ui/Application>
+#include <cc/ui/View>
 #include <cc/ui/FontManager>
 #include <cc/ui/TypeSetter>
 

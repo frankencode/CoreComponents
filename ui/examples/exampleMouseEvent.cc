@@ -2,6 +2,7 @@
 #include <cc/debug>
 #include <cc/System>
 #include <cc/ui/Application>
+#include <cc/ui/View>
 #include <cc/ui/PointerEvent>
 #include <cc/ui/WheelEvent>
 #include <cc/ui/FingerEvent>

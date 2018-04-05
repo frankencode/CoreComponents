@@ -43,6 +43,30 @@ const FontMetrics *Font::Instance::getMetrics() const
     return getScaledFont()->getMetrics();
 }
 
+Font &Font::operator<<(Pitch pitch)
+{
+    (*this)->setFamily(
+        (pitch == Pitch::Fixed) ?
+        StyleManager::instance()->activePlugin()->defaultFixedFontFamily() :
+        StyleManager::instance()->activePlugin()->defaultFontFamily()
+    );
+    if ((*this)->size() <= 0 && pitch == Pitch::Fixed) {
+        (*this)->setSize(
+            StyleManager::instance()->activePlugin()->defaultFixedFontSize()
+        );
+    }
+    return *this;
+}
+
+Font &Font::operator*=(double scale)
+{
+    double size = (*this)->size();
+    if (size <= 0) size = defaultSize() * scale;
+    else size = size * scale;
+    (*this)->setSize(size);
+    return *this;
+}
+
 String Font::defaultFamily()
 {
     return StyleManager::instance()->activePlugin()->defaultFontFamily();

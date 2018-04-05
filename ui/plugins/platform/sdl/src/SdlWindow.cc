@@ -11,6 +11,7 @@
 #include <cc/debug> // DEBUG
 #include <cc/Queue>
 #include <cc/ui/Image>
+#include <cc/ui/View>
 #include <cc/ui/SdlContext>
 #include <cc/ui/SdlWindow>
 

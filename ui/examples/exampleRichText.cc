@@ -1,4 +1,5 @@
 #include <cc/ui/Application>
+#include <cc/ui/View>
 #include <cc/ui/FontManager>
 #include <cc/ui/TextRun>
 
@@ -15,32 +16,16 @@ class MainView: public View
         size = Size{640, 480};
         color = Color{"#FFFFFF"};
 
-        textRun_->append("Monospaced text, ", style()->defaultFixedFont());
-        textRun_->append("variable width text, ", style()->defaultFont());
-        {
-            Font font;
-            font->setWeight(Weight::Bold);
-            textRun_->append("bold text, ", font);
-        }
-        textRun_->append("small text, ", Font(style()->defaultFontSize() * 0.75));
-        textRun_->append("big text, ", Font(style()->defaultFontSize() * 1.25));
-        {
-            Font font;
-            font->setColor("#800000");
-            textRun_->append("red text, ", font);
-            font->setColor("#008000");
-            textRun_->append("green text, ", font);
-            font->setColor("#000080");
-            textRun_->append("blue text, ", font);
-        }
-        {
-            Font font;
-            font->setDecoration(Decoration::Underline);
-            textRun_->append("underlined text, ", font);
-            font->setDecoration(Decoration::StrikeOut);
-            textRun_->append("struck out text, ", font);
-        }
-
+        textRun_->append("Monospaced text, ", Font() << Pitch::Fixed);
+        textRun_->append("variable width text, ", Font());
+        textRun_->append("bold text, ", Font() << Weight::Bold);
+        textRun_->append("small text, ", Font() * 0.75);
+        textRun_->append("big text, ", Font() * 1.25);
+        textRun_->append("red text, ", Font() << Color("#800000"));
+        textRun_->append("green text, ", Font() << Color("#008000"));
+        textRun_->append("blue text, ", Font() << Color("#000080"));
+        textRun_->append("underlined text, ", Font() << Decoration::Underline);
+        textRun_->append("struck out text, ", Font() << Decoration::StrikeOut);
         textRun_->appendHtml(
             "&lt;HTML&gt; <i>italic text</i>, <b>bold text</b>, <u>underlined text</u>, <b><i><strike>bold italic struck out text</strike></i></b>"
         );

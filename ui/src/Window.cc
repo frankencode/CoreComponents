@@ -8,6 +8,7 @@
 
 #include <cc/Queue>
 #include <cc/ui/Application>
+#include <cc/ui/View>
 #include <cc/ui/Window>
 
 namespace cc {
@@ -31,6 +32,36 @@ Window::Window(View *view, String title):
 
 Window::~Window()
 {}
+
+Object *Window::getContext(View *view)
+{
+    return view->context_;
+}
+
+void Window::setContext(View *view, Object *context)
+{
+    view->context_ = context;
+}
+
+bool Window::isOpaque(View *view)
+{
+    return view->isOpaque();
+}
+
+bool Window::isPainted(View *view)
+{
+    return view->isPainted();
+}
+
+bool Window::isStatic(View *view)
+{
+    return view->isStatic();
+}
+
+Image *Window::image(View *view)
+{
+    return view->image();
+}
 
 void Window::addToFrame(const UpdateRequest *request)
 {

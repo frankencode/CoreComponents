@@ -18,6 +18,7 @@
 #include <cc/ui/FingerEvent>
 #include <cc/ui/WheelEvent>
 #include <cc/ui/KeyEvent>
+#include <cc/ui/Application>
 
 namespace cc {
 namespace ui {
@@ -113,6 +114,7 @@ protected:
     virtual void childReady(View *child);
     virtual void childDone(View *child);
 
+    Application *app() const;
     StylePlugin *style() const;
 
     Window *window();

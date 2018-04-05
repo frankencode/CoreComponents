@@ -7,11 +7,20 @@
  */
 
 #include <cc/ui/DisplayManager>
-// #include <cc/ui/Style> // TODO...
+#include <cc/ui/Application>
+#include <cc/ui/design>
 
 namespace cc {
 namespace ui {
 
-double du(double x) { return DisplayManager::instance()->displayDensityRatio() * x; }
+double dp(double x)
+{
+    return DisplayManager::instance()->displayDensityRatio() * x;
+}
+
+double sp(double x)
+{
+    return dp(x) * Application::instance()->textZoom();
+}
 
 }} // namespace cc::ui

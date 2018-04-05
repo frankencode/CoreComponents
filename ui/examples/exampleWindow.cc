@@ -1,5 +1,6 @@
 #include <cc/System>
 #include <cc/ui/Application>
+#include <cc/ui/View>
 #include <cc/ui/Timer>
 
 using namespace cc;

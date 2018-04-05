@@ -1,5 +1,6 @@
 #include <cc/stdio>
 #include <cc/ui/Application>
+#include <cc/ui/View>
 #include <cc/ui/Transition>
 
 using namespace cc;

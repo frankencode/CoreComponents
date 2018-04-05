@@ -343,6 +343,11 @@ void View::childDone(View *child)
     if (layout_) layout_->childDone(child);
 }
 
+Application *View::app() const
+{
+    return Application::instance();
+}
+
 StylePlugin *View::style() const
 {
     return StyleManager::instance()->activePlugin();

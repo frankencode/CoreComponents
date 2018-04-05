@@ -14,6 +14,7 @@
 #include <cc/ui/Timer>
 #include <cc/ui/TimeMaster>
 #include <cc/ui/FingerEvent>
+#include <cc/ui/MouseEvent>
 #include <cc/ui/PointerEvent>
 #include <cc/ui/WheelEvent>
 #include <cc/ui/KeyEvent>

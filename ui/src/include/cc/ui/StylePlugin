@@ -29,17 +29,15 @@ public:
     Property<Size> defaultMargin;
 
     Property<String> defaultFontFamily;
+    Property<String> defaultFixedFontFamily;
     Property<double> defaultFontSize;
+    Property<double> defaultFixedFontSize;
 
 protected:
     friend class StyleManager;
     friend class Object;
 
     StylePlugin(String name);
-
-    Property<Font> defaultFontUnscaled;
-    Property<Font> defaultFixedFontUnscaled;
-    Property<Size> defaultMarginUnscaled;
 
     virtual void activate() = 0;
 

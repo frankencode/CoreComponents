@@ -8,7 +8,9 @@
 
 #pragma once
 
-#include <cc/ui/View>
+#include <cc/ui/types>
+#include <cc/ui/UpdateRequest>
+#include <cc/ui/Image>
 
 namespace cc { template<class> class Queue; }
 
@@ -45,6 +47,12 @@ enum class WindowMode: unsigned int {
 
 CC_BITMASK(WindowMode, unsigned int)
 
+class View;
+class FingerEvent;
+class MouseEvent;
+class WheelEvent;
+class KeyEvent;
+
 class Window: public Object
 {
 public:
@@ -64,13 +72,13 @@ protected:
     Window(View *view, String title);
     ~Window();
 
-    static Object *getContext(View *view) { return view->context_; }
-    static void setContext(View *view, Object *context) { view->context_ = context; }
+    static Object *getContext(View *view);
+    static void setContext(View *view, Object *context);
 
-    static bool isOpaque(View *view) { return view->isOpaque(); }
-    static bool isPainted(View *view) { return view->isPainted(); }
-    static bool isStatic(View *view) { return view->isStatic(); }
-    static Image *image(View *view) { return view->image(); }
+    static bool isOpaque(View *view);
+    static bool isPainted(View *view);
+    static bool isStatic(View *view);
+    static Image *image(View *view);
 
     void addToFrame(const UpdateRequest *request);
     void commitFrame();

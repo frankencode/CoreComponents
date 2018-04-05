@@ -23,9 +23,9 @@ void IndustrialStylePlugin::activate()
 {
     FontManager::instance()->addPath("/usr/share/fonts/truetype/dejavu/");
 
-    defaultFontUnscaled = Font("DejaVu Sans", 16);
-    defaultFixedFontUnscaled = Font("DejaVu Sans Mono", 20);
-    defaultMarginUnscaled = Size{0.5 * defaultFontUnscaled()->size()};
+    defaultFont = Font("DejaVu Sans", 16);
+    defaultFixedFont = Font("DejaVu Sans Mono", 16);;
+    defaultMargin = Size{0.5 * defaultFont()->size()};
 }
 
 CC_REGISTRATION(IndustrialStylePlugin)

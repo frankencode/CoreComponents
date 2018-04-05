@@ -26,30 +26,20 @@ void StylePlugin::init()
 {
     StyleManager::instance()->registerPlugin(this);
 
-    defaultFont->bind([=]{
-        return Font(
-            defaultFontUnscaled()->family(),
-            defaultFontUnscaled()->size() * Application::instance()->textZoom()
-        );
-    });
-
-    defaultFixedFont->bind([=]{
-        return Font(
-            defaultFixedFontUnscaled()->family(),
-            defaultFixedFontUnscaled()->size() * Application::instance()->textZoom()
-        );
-    });
-
-    defaultMargin->bind([=]{
-        return defaultMarginUnscaled() * Application::instance()->textZoom();
-    });
-
     defaultFontFamily->bind([=]{
         return defaultFont()->family();
     });
 
+    defaultFixedFontFamily->bind([=]{
+        return defaultFixedFont()->family();
+    });
+
     defaultFontSize->bind([=]{
         return defaultFont()->size();
+    });
+
+    defaultFixedFontSize->bind([=]{
+        return defaultFixedFont()->size();
     });
 }
 

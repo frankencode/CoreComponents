@@ -66,6 +66,35 @@ public:
     Font(double size = -1): instance_{size} {}
     Font(String family, double size = -1): instance_{family, size} {}
 
+    Font &operator<<(Slant slant) {
+        (*this)->setSlant(slant);
+        return *this;
+    }
+
+    Font &operator<<(Weight weight) {
+        (*this)->setWeight(weight);
+        return *this;
+    }
+
+    Font &operator<<(Stretch stretch) {
+        (*this)->setStretch(stretch);
+        return *this;
+    }
+
+    Font &operator<<(Decoration decoration) {
+        (*this)->setDecoration(decoration);
+        return *this;
+    }
+
+    Font &operator<<(Pitch pitch);
+
+    Font &operator<<(Color color) {
+        (*this)->setColor(color);
+        return *this;
+    }
+
+    Font &operator*=(double scale);
+
     static String defaultFamily();
     static double defaultSize();
 
@@ -82,5 +111,8 @@ private:
 
     Instance instance_;
 };
+
+inline Font operator*(const Font &font, double scale) { Font f = font; return f *= scale; }
+inline Font operator*(double scale, const Font &font) { return font * scale; }
 
 }} // namespace cc::ui

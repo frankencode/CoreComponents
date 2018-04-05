@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/ui/StylePlugin>
+#include <cc/ui/Application>
 #include <cc/ui/TextRun>
 #include <cc/ui/Label>
 
@@ -20,13 +20,10 @@ Ref<Label> Label::create(View *parent, String text, const Font &font)
 
 Label::Label(View *parent, String text_, const Font &font_):
     View(parent),
-    text(text_),
-    font(font_)
+    text(text_)
 {
-    if (font() == Font())
-        font->bind([=]{ return StylePlugin::instance()->defaultFont(); });
-
-    margin->bind([=]{ return StylePlugin::instance()->defaultMargin(); });
+    font->bind([=]{ return font_ * app()->textZoom(); });
+    margin->bind([=]{ return style()->defaultMargin() * app()->textZoom(); });
 
     color = transparent;
 
@@ -34,20 +31,19 @@ Label::Label(View *parent, String text_, const Font &font_):
 
     text  ->connect([=]{ updateLayout(); });
     font  ->connect([=]{ updateLayout(); });
-    margin->connect([=]{ updateLayout(); });
+    margin->connect([=]{ updateSize(); });
 }
 
 void Label::updateLayout()
 {
     textRun_ = TextRun::create(text(), font());
-
     updateSize();
-    update();
 }
 
 void Label::updateSize()
 {
     size = textRun_->size() + 2 * margin();
+    update();
 }
 
 void Label::paint()

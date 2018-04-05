@@ -14,6 +14,9 @@ namespace cc {
 namespace ui {
 
 /// translate design units to pixels
-double du(double x);
+double dp(double x);
+
+/// translate design units to scaled pixels
+double sp(double x);
 
 }} // namespace cc::ui

@@ -7,6 +7,7 @@
 #include <cc/ui/FingerEvent>
 #include <cc/ui/PointerEvent>
 #include <cc/ui/Application>
+#include <cc/ui/View>
 
 using namespace cc;
 using namespace cc::ui;
