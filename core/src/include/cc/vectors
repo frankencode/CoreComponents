@@ -15,7 +15,7 @@
 namespace cc {
 
 template<class V>
-V innerProduct(const V &a, const V &b)
+typename V::Item innerProduct(const V &a, const V &b)
 {
     typename V::Item s{};
     for (int i = 0; i < V::Count; ++i)

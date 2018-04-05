@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug>
 #include <cc/ui/Application>
 #include <cc/ui/TextRun>
 #include <cc/ui/Label>

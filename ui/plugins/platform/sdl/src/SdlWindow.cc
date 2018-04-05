@@ -179,9 +179,11 @@ void SdlWindow::renderCascade(SDL_Renderer *sdlRenderer, View *view)
 void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
 {
     SdlContext *context = sdlContext(view);
-    bool hasPixels = isPainted(view) && view->size() != Size{};
 
-    if ((context->sdlTextureSize_ != view->size() || !hasPixels) && context->sdlTexture_) {
+    Image *image = Window::image(view);
+    bool hasPixels = isPainted(view) && image->count() > 0;
+
+    if ((context->sdlTextureSize_ != image->size() || !hasPixels) && context->sdlTexture_) {
         SDL_DestroyTexture(context->sdlTexture_);
         context->sdlTexture_ = 0;
     }
@@ -197,15 +199,14 @@ void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
             SDL_PIXELFORMAT_ARGB8888,
             #endif
             isStatic(view) ? SDL_TEXTUREACCESS_STATIC : SDL_TEXTUREACCESS_STREAMING,
-            view->size()[0],
-            view->size()[1]
+            image->size()[0],
+            image->size()[1]
         );
-        context->sdlTextureSize_ = view->size();
-        SDL_SetTextureBlendMode(context->sdlTexture_, /*isOpaque(view) ? SDL_BLENDMODE_NONE :*/ SDL_BLENDMODE_BLEND); // TODO: SDL_BLENDMODE_NONE is buggy (see exampleLabel)
         if (!context->sdlTexture_) CC_DEBUG_ERROR(SDL_GetError());
+        context->sdlTextureSize_ = image->size();
+        SDL_SetTextureBlendMode(context->sdlTexture_, isOpaque(view) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
     }
 
-    Image *image = Window::image(view);
     if (!isOpaque(view)) image->normalize();
 
     if (isStatic(view)) {
@@ -224,12 +225,13 @@ void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
 
 void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
 {
-    SDL_Texture *sdlTexture = sdlContext(view)->sdlTexture_;
+    SdlContext *context = sdlContext(view);
+    SDL_Texture *sdlTexture = context->sdlTexture_;
     if (!sdlTexture) return;
 
     SDL_Rect destRect;
-    destRect.w = view->size()[0];
-    destRect.h = view->size()[1];
+    destRect.w = context->sdlTextureSize_[0];
+    destRect.h = context->sdlTextureSize_[1];
     if (view->parent()) {
         Point p = view->mapToGlobal(Point{0, 0});
         destRect.x = p[0];
@@ -240,7 +242,8 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
         destRect.y = 0;
     }
 
-    if (view->angle() == 0) {
+    double angle = std::fmod(view->angle(), 360);
+    if (angle == 0) {
         SDL_RenderCopy(sdlRenderer, sdlTexture, 0, &destRect);
     }
     else {
@@ -249,7 +252,14 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
             int(center[0]),
             int(center[1])
         };
+        SDL_BlendMode blendModeSaved;
+        SDL_GetTextureBlendMode(sdlTexture, &blendModeSaved);
+        if (blendModeSaved != SDL_BLENDMODE_BLEND)
+            SDL_SetTextureBlendMode(sdlTexture, SDL_BLENDMODE_BLEND);
+                // FIXME: SDL_BLENDMODE_NONE cannot work with SDL_RenderCopyEx(), e.g. because of edge AA
         SDL_RenderCopyEx(sdlRenderer, sdlTexture, 0, &destRect, view->angle(), &sdlCenter, SDL_FLIP_NONE);
+        if (blendModeSaved != SDL_BLENDMODE_BLEND)
+            SDL_SetTextureBlendMode(sdlTexture, blendModeSaved);
     }
 }
 

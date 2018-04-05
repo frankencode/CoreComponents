@@ -364,7 +364,7 @@ Window *View::window()
 
 Image *View::image()
 {
-    if (!image_ || image_->size() != size())
+    if (!image_ || image_->size() != Size{::ceil(size()[0]), ::ceil(size()[1])})
         image_ = Image::create(size());
     return image_;
 }

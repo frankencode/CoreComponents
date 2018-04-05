@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,42 +8,42 @@
 
 #pragma once
 
-#include <math.h>
+#include <cmath>
 
 namespace cc {
 
 inline double roundToZero(double x)
 {
     double ip; // integral part
-    double fp = modf(x, &ip); // fractional part;
+    double fp = std::modf(x, &ip); // fractional part;
     return ip - int(fp < -0.5) + int(0.5 < fp);
 }
 
 inline double ceilToInf(double x)
 {
     double ip; // integral part
-    double fp = modf(x, &ip); // fractional part;
+    double fp = std::modf(x, &ip); // fractional part;
     return ip - int(fp < 0) + int(0 < fp);
 }
 
 inline double roundToInf(double x)
 {
     double ip; // integral part
-    double fp = modf(x, &ip); // fractional part;
+    double fp = std::modf(x, &ip); // fractional part;
     return ip - int(fp <= -0.5) + int(0.5 <= fp);
 }
 
 inline double floorToZero(double x)
 {
     double ip; // integral part
-    modf(x, &ip);
+    std::modf(x, &ip);
     return ip;
 }
 
 inline double floorToMinusInf(double x)
 {
     double ip; // integral part
-    double fp = modf(x, &ip); // fractional part;
+    double fp = std::modf(x, &ip); // fractional part;
     return ip - int(fp < 0);
 }
 

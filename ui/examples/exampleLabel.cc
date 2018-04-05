@@ -50,7 +50,7 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    app->textZoom = 2;
-    Window::open(Object::create<MainView>(), "Hello, world!", WindowMode::Default|WindowMode::Accelerated);
+    app->textZoom = 2.1;
+    Window::open(Object::create<MainView>(), "Hello, world!");
     return app->run();
 }

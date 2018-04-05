@@ -19,38 +19,29 @@ class Image: public Surface
 public:
     static Ref<Image> create(Size size);
 
-    inline Size size() const { return size_; }
+    inline Size size() const { return Size{ double(w_), double(h_) }; }
+    inline int count() const { return data_->itemCount<Color>(); }
 
     inline bool hasPixel(int x, int y) const {
         return
-            0 <= x && x < size_[0] &&
-            0 <= y && y < size_[1];
+            0 <= x && x < w_ &&
+            0 <= y && y < h_;
     }
 
     inline Color &pixel(int x, int y) {
-        return mutate(data_)->item<Color>(y * size_[0] + x);
+        return mutate(data_)->item<Color>(y * w_ + x);
     }
 
     /** Clear the entire image with color \a c
       */
     void clear(Color c);
 
-#if 0
-    /** Clear a rectangular region of the image with color \a c
-      */
-    void clearRect(Point point, Color c);
-
-    /** Blend color \a c over a rectangular region of the image
-      */
-    void blendRect(Rect r, Color c);
-#endif
-
     /** Convert the entire image from pre-multiplied alpha to non-premultiplied alpha
       */
     void normalize();
 
     inline const CharArray *data() const { return data_; }
-    inline int pitch() const { return size_[0] * sizeof(Color); }
+    inline int pitch() const { return w_ * sizeof(Color); }
 
 private:
     friend class View;
@@ -60,7 +51,7 @@ private:
 
     cairo_surface_t *cairoSurface() const override;
 
-    Size size_;
+    int w_, h_;
     String data_;
 
     mutable cairo_surface_t *cairoSurface_;

@@ -7,6 +7,7 @@
  */
 
 #include <cairo/cairo.h>
+#include <cmath>
 #include <cc/ui/Image>
 
 namespace cc {
@@ -18,8 +19,9 @@ Ref<Image> Image::create(Size size)
 }
 
 Image::Image(Size size):
-    size_(size),
-    data_(String::allocate(size[0] * size[1] * sizeof(Color))),
+    w_(std::ceil(size[0])),
+    h_(std::ceil(size[1])),
+    data_(String::allocate(w_ * h_ * sizeof(Color))),
     cairoSurface_(0)
 {}
 
@@ -31,32 +33,10 @@ Image::~Image()
 
 void Image::clear(Color c)
 {
-    const int n = size_[0] * size_[1];
+    const int n = data_->itemCount<Color>();
     for (int i = 0; i < n; ++i)
         mutate(data_)->item<Color>(i) = c;
 }
-
-#if 0
-void Image::clearRect(Rect r, Color c)
-{
-    r = r->clipTo(size_);
-    Color *p = &pixel(r->x(), r->y());
-    for (int y = 0; y < r->h(); ++y) {
-        for (int x = 0; x < r->w(); ++x) p[x] = c;
-        p += size_->w();
-    }
-}
-
-void Image::blendRect(Rect r, Color c)
-{
-    r = r->clipTo(size_);
-    Color *p = &pixel(r->x(), r->y());
-    for (int y = 0; y < r->h(); ++y) {
-        for (int x = 0; x < r->w(); ++x) p[x] = Color::blend(c, *p);
-        p += size_->w();
-    }
-}
-#endif
 
 void Image::normalize()
 {
@@ -69,7 +49,7 @@ void Image::normalize()
 cairo_surface_t *Image::cairoSurface() const
 {
     if (!cairoSurface_)
-        cairoSurface_ = cairo_image_surface_create_for_data(mutate(data_)->bytes(), CAIRO_FORMAT_ARGB32, size_[0], size_[1], pitch());
+        cairoSurface_ = cairo_image_surface_create_for_data(mutate(data_)->bytes(), CAIRO_FORMAT_ARGB32, w_, h_, pitch());
     return cairoSurface_;
 }
 
