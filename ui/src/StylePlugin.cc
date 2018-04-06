@@ -25,22 +25,6 @@ StylePlugin::StylePlugin(String name):
 void StylePlugin::init()
 {
     StyleManager::instance()->registerPlugin(this);
-
-    defaultFontFamily->bind([=]{
-        return defaultFont()->family();
-    });
-
-    defaultFixedFontFamily->bind([=]{
-        return defaultFixedFont()->family();
-    });
-
-    defaultFontSize->bind([=]{
-        return defaultFont()->size();
-    });
-
-    defaultFixedFontSize->bind([=]{
-        return defaultFixedFont()->size();
-    });
 }
 
 Size StylePlugin::defaultMargin(double fontSize) const

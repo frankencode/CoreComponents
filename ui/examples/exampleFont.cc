@@ -1,4 +1,3 @@
-#include <cc/Format>
 #include <cc/ui/Application>
 #include <cc/ui/ScrollView>
 #include <cc/ui/ColumnLayout>
@@ -20,7 +19,7 @@ class MainView: public View
         ColumnLayout::setup(scroll->carrier());
 
         for (int i = 16; i <= 64; i += 8) {
-            String text = Format("A small brown fox... (%%)") << i;
+            String text = "A small brown fox... (" + str(i) + ")";
             Label::create(scroll, text, Font(i));
             Label::create(scroll, text, Font(i) << Slant::Italic);
             Label::create(scroll, text, Font(i) << Weight::Bold);

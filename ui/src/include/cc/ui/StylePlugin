@@ -27,11 +27,6 @@ public:
     Property<Font> defaultFont;
     Property<Font> defaultFixedFont;
 
-    Property<String> defaultFontFamily;
-    Property<String> defaultFixedFontFamily;
-    Property<double> defaultFontSize;
-    Property<double> defaultFixedFontSize;
-
     virtual Size defaultMargin(double fontSize) const;
 
 protected:

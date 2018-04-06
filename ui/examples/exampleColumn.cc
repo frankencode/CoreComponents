@@ -1,6 +1,5 @@
 #include <cc/ui/Application>
 #include <cc/ui/ColumnLayout>
-#include <cc/ui/StylePlugin>
 #include <cc/ui/Label>
 
 using namespace cc;
@@ -30,7 +29,7 @@ class MainView: public View
             subBox->color = Color{"#D0FFD0"};
 
             ColumnLayout::setup(subBox)->indent->bind([=]{
-                return StylePlugin::instance()->defaultFontSize();
+                return style()->defaultFont()->size();
             });
 
             Label::create(subBox, "◦ Item A");

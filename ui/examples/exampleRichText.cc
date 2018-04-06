@@ -51,7 +51,7 @@ class MainView: public View
         p->fill();
         p->setSource(Color{"#000000"});
         // p->showTextRun(Point{margins_, margins_ + fontSize_}, textRun_);
-        p->showTextRun(Point{margins_, margins_ + Font::defaultSize()}, wrappedTextRun_);
+        p->showTextRun(Point{margins_, margins_ + style()->defaultFont()->size()}, wrappedTextRun_);
     }
 
     const double margins_ = 30;

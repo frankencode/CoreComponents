@@ -28,8 +28,8 @@ const ScaledFont *Font::Instance::getScaledFont() const
 
     scaledFont_ =
         FontManager::instance()->selectFont(
-            (family()) ? family() : Font::defaultFamily(),
-            (size() > 0) ? size() : Font::defaultSize(),
+            (family()) ? family() : style()->defaultFont()->family(),
+            (size() > 0) ? size() : style()->defaultFont()->size(),
             weight(),
             slant(),
             stretch()
@@ -43,38 +43,30 @@ const FontMetrics *Font::Instance::getMetrics() const
     return getScaledFont()->getMetrics();
 }
 
+StylePlugin *Font::style()
+{
+    return StyleManager::instance()->activePlugin();
+}
+
 Font &Font::operator<<(Pitch pitch)
 {
     (*this)->setFamily(
         (pitch == Pitch::Fixed) ?
-        StyleManager::instance()->activePlugin()->defaultFixedFontFamily() :
-        StyleManager::instance()->activePlugin()->defaultFontFamily()
+        style()->defaultFixedFont()->family() :
+        style()->defaultFont()->family()
     );
-    if ((*this)->size() <= 0 && pitch == Pitch::Fixed) {
-        (*this)->setSize(
-            StyleManager::instance()->activePlugin()->defaultFixedFontSize()
-        );
-    }
+    if ((*this)->size() <= 0 && pitch == Pitch::Fixed)
+        (*this)->setSize(style()->defaultFixedFont()->size());
     return *this;
 }
 
 Font &Font::operator*=(double scale)
 {
     double size = (*this)->size();
-    if (size <= 0) size = defaultSize() * scale;
+    if (size <= 0) size = style()->defaultFixedFont()->size() * scale;
     else size = size * scale;
     (*this)->setSize(size);
     return *this;
-}
-
-String Font::defaultFamily()
-{
-    return StyleManager::instance()->activePlugin()->defaultFontFamily();
-}
-
-double Font::defaultSize()
-{
-    return StyleManager::instance()->activePlugin()->defaultFontSize();
 }
 
 bool Font::differ(const Font &a, const Font &b)

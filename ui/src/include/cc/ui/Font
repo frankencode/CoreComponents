@@ -13,6 +13,8 @@
 namespace cc {
 namespace ui {
 
+class StylePlugin;
+
 /** Text styling
   */
 class Font
@@ -47,6 +49,8 @@ public:
     private:
         friend class Font;
         friend class FontManager;
+
+        inline static StylePlugin *style() { return Font::style(); }
 
         Instance(): size_{-1} {}
         Instance(double size): size_{size} {}
@@ -95,9 +99,6 @@ public:
 
     Font &operator*=(double scale);
 
-    static String defaultFamily();
-    static double defaultSize();
-
     const Instance *operator->() const { return &instance_; }
     Instance *operator->() { return &instance_; }
 
@@ -107,6 +108,7 @@ public:
 private:
     friend class Instance;
 
+    static StylePlugin *style();
     static bool differ(const Font &a, const Font &b);
 
     Instance instance_;
