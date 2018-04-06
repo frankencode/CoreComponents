@@ -32,6 +32,14 @@ typename V::Item absPow2(const V &v)
 }
 
 template<class V>
+typename V::Item avg(const V &v)
+{
+    typename V::Item s{};
+    for (auto x: v) s += x;
+    return s / V::Count;
+}
+
+template<class V>
 typename V::Item abs(const V &v)
 {
     return std::sqrt(absPow2(v));

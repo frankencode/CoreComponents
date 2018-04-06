@@ -1,3 +1,4 @@
+#include <cc/debug>
 #include <cc/ui/Application>
 #include <cc/ui/ScrollView>
 #include <cc/ui/ColumnLayout>
@@ -29,6 +30,7 @@ int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
     app->textZoom = 2;
-    Window::open(Object::create<MainView>(), "Hello, world!"/*, WindowMode::Default|WindowMode::Accelerated*/);
+    Window::open(Object::create<MainView>(), "Hello, world!"/*, WindowMode::Accelerated*/);
+    CC_INSPECT(dp(1));
     return app->run();
 }

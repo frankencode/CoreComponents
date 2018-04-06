@@ -22,7 +22,7 @@ class ScrollView: public View
 public:
     static Ref<ScrollView> create(View *parent = 0);
 
-    Property<double> minDragDistance { 4 };
+    Property<double> minDragDistance { dp(6) };
     Property<double> maxFlyTime { 1.5 };
     Property<double> maxSpeed { [=]{ return 2 * max(size()); } };
 
