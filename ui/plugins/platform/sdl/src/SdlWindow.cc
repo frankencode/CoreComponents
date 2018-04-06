@@ -40,10 +40,9 @@ SdlWindow *SdlWindow::open(WindowMode mode)
         if (+(mode & WindowMode::Fullscreen))        flags |= SDL_WINDOW_FULLSCREEN;
         if (+(mode & WindowMode::FullscreenDesktop)) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
         if (+(mode & WindowMode::OpenGl))            flags |= SDL_WINDOW_OPENGL;
-        if (+(mode & WindowMode::Shown))             flags |= SDL_WINDOW_SHOWN;
         if (+(mode & WindowMode::Hidden))            flags |= SDL_WINDOW_HIDDEN;
         if (+(mode & WindowMode::Borderless))        flags |= SDL_WINDOW_BORDERLESS;
-        if (+(mode & WindowMode::Resizable))         flags |= SDL_WINDOW_RESIZABLE;
+        if (!+(mode & WindowMode::FixedSize))        flags |= SDL_WINDOW_RESIZABLE;
         if (+(mode & WindowMode::Minimized))         flags |= SDL_WINDOW_MINIMIZED;
         if (+(mode & WindowMode::Maximized))         flags |= SDL_WINDOW_MAXIMIZED;
         if (+(mode & WindowMode::InputGrabbed))      flags |= SDL_WINDOW_INPUT_GRABBED;

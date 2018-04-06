@@ -20,29 +20,28 @@ namespace ui {
 typedef Queue< Ref<const UpdateRequest> > Frame;
 
 enum class WindowMode: unsigned int {
+    Default            = 0,
     Fullscreen         = 1,
     FullscreenDesktop  = 2,
     OpenGl             = 4,
-    Shown              = 8,
-    Hidden             = 16,
-    Borderless         = 32,
-    Resizable          = 64,
-    Minimized          = 128,
-    Maximized          = 256,
-    InputGrabbed       = 512,
-    InputFocus         = 1024,
-    MouseFocus         = 2048,
-    Foreign            = 4096,
-    AllowHighDpi       = 8192,
-    MouseCapture       = 16384,
-    AlwaysOnTop        = 32768,
-    SkipTaskBar        = 65536,
-    Utility            = 131072,
-    Tooltip            = 262144,
-    PopupMenu          = 524288,
-    VSync              = 1048576,
-    Accelerated        = 2097152,
-    Default            = Shown|Resizable
+    Hidden             = 8,
+    Borderless         = 16,
+    FixedSize          = 32,
+    Minimized          = 64,
+    Maximized          = 128,
+    InputGrabbed       = 256,
+    InputFocus         = 512,
+    MouseFocus         = 1024,
+    Foreign            = 2048,
+    AllowHighDpi       = 4096,
+    MouseCapture       = 8192,
+    AlwaysOnTop        = 16384,
+    SkipTaskBar        = 32768,
+    Utility            = 65536,
+    Tooltip            = 131072,
+    PopupMenu          = 262144,
+    VSync              = 524288,
+    Accelerated        = 1048576
 };
 
 CC_BITMASK(WindowMode, unsigned int)
