@@ -24,7 +24,7 @@ Label::Label(View *parent, String text_, const Font &font_):
     text(text_)
 {
     font->bind([=]{ return font_ * app()->textZoom(); });
-    margin->bind([=]{ return style()->defaultMargin() * app()->textZoom(); });
+    margin->bind([=]{ return style()->defaultMargin(font()->size()); });
 
     color = transparent;
 
@@ -38,13 +38,18 @@ Label::Label(View *parent, String text_, const Font &font_):
 void Label::updateLayout()
 {
     textRun_ = TextRun::create(text(), font());
-    updateSize();
+    if (!updateSize())
+        update();
 }
 
-void Label::updateSize()
+bool Label::updateSize()
 {
-    size = textRun_->size() + 2 * margin();
-    update();
+    Size newSize = textRun_->size() + 2 * margin();
+    if (size() != newSize) {
+        size = newSize;
+        return true;
+    }
+    return false;
 }
 
 void Label::paint()

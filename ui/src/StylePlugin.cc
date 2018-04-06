@@ -43,4 +43,9 @@ void StylePlugin::init()
     });
 }
 
+Size StylePlugin::defaultMargin(double fontSize) const
+{
+    return 0.5 * Size{fontSize, fontSize};
+}
+
 }} // namespace cc::ui

@@ -25,7 +25,6 @@ void IndustrialStylePlugin::activate()
 
     defaultFont = Font("DejaVu Sans", 16);
     defaultFixedFont = Font("DejaVu Sans Mono", 16);;
-    defaultMargin = Size{0.5 * defaultFont()->size()};
 }
 
 CC_REGISTRATION(IndustrialStylePlugin)

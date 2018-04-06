@@ -1,3 +1,4 @@
+#include <cc/Format>
 #include <cc/ui/Application>
 #include <cc/ui/ScrollView>
 #include <cc/ui/ColumnLayout>
@@ -16,19 +17,21 @@ class MainView: public View
         color = Color{"#FFFFFF"};
 
         ScrollView *scroll = ScrollView::create(this);
-
         ColumnLayout::setup(scroll->carrier());
-        // ColumnLayout::setup(scroll); // TODO
 
-        for (int i = 0; i < 50; ++i)
-            Label::create(scroll, "Item " + str(i))->color = color;
+        for (int i = 16; i <= 64; i += 8) {
+            String text = Format("A small brown fox... (%%)") << i;
+            Label::create(scroll, text, Font(i));
+            Label::create(scroll, text, Font(i) << Slant::Italic);
+            Label::create(scroll, text, Font(i) << Weight::Bold);
+            Label::create(scroll, text, Font(i) << Slant::Italic << Weight::Bold);
+        }
     }
 };
 
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    app->textZoom = 2;
-    Window::open(Object::create<MainView>(), "Hello, world!"/*, WindowMode::Default|WindowMode::Accelerated*/);
+    Window::open(Object::create<MainView>(), "Hello, world!");
     return app->run();
 }
