@@ -25,6 +25,10 @@ public:
     Property<double> minDragDistance { dp(6) };
     Property<double> maxFlyTime { 1.5 };
     Property<double> maxSpeed { [=]{ return 2 * max(size()); } };
+    Property<double> minHoldTime { 0.1 };
+    Property<double> boundary {  dp(60) };
+    Property<double> maxBounceTime { 0.6 };
+    // Property<Easing> bounceEasing { easing::outBounce };
 
     View *carrier() const { return carrier_; }
 
@@ -38,8 +42,12 @@ protected:
     bool onPointerReleased(const PointerEvent *event) override;
     bool onPointerMoved(const PointerEvent *event) override;
 
-    Point carrierStep(Point p);
-    void animate();
+    bool carrierInsideBoundary() const;
+    Point carrierStep(Point p, double b = 0);
+    void carrierFly();
+    void carrierBounce();
+    void carrierBounceStart();
+    void carrierStop();
 
     Ref<View> carrier_;
     bool isDragged_;
@@ -51,8 +59,14 @@ protected:
     double releaseSpeedMagnitude_;
     Step speed_;
 
+    enum class TimerMode { Stopped, Flying, Bouncing };
+    TimerMode timerMode_ { TimerMode::Stopped };
+
     Ref<Timer> timer_;
     double lastTime_;
+
+    Point bounceStartPos_;
+    Point bounceFinalPos_;
 };
 
 }} // namespace cc::ui

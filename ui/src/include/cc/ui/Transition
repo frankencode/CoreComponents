@@ -39,9 +39,7 @@ public:
         if (oldValue == newValue || timer_->isActive()) return;
         oldValue_ = oldValue;
         newValue_ = newValue;
-        startTime_ = System::now();
-        finishTime_ = startTime_ + duration_;
-        timer_->startAt(startTime_ + timer_->interval());
+        timer_->start();
     }
 
     bool isActive() const { return timer_->isActive(); }
@@ -51,16 +49,15 @@ private:
         alias_(alias(property)),
         duration_(duration),
         easing_(easing),
-        timer_(Timer::create(1./60.)),
-        finishTime_(0)
+        timer_(Timer::create(1./60.))
     {
         timer_->triggered->connect([this]{timeout();});
     }
 
     void timeout()
     {
-        const double t0 = startTime_;
-        const double t1 = finishTime_;
+        const double t0 = timer_->startTime();
+        const double t1 = t0 + duration_;
         const double t = System::now();
 
         if (t >= t1) {
@@ -82,8 +79,6 @@ private:
     double duration_;
     Easing easing_;
     Ref<Timer> timer_;
-    double startTime_;
-    double finishTime_;
     T oldValue_;
     T newValue_;
 };

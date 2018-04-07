@@ -8,6 +8,7 @@
 
 #include <cc/debug>
 #include <cc/System>
+#include <cc/ui/easing>
 #include <cc/ui/Timer>
 #include <cc/ui/ScrollView>
 
@@ -29,7 +30,14 @@ ScrollView::ScrollView(View *parent):
 
     if (parent) size->bind([=]{ return parent->size(); });
 
-    timer_->triggered->connect([=]{ animate(); });
+    size->connect([=]{
+        carrier_->pos = carrierStep(carrier_->pos());
+    });
+
+    timer_->triggered->connect([=]{
+        if (timerMode_ == TimerMode::Flying) carrierFly();
+        else if (timerMode_ == TimerMode::Bouncing) carrierBounce();
+    });
 }
 
 void ScrollView::insertChild(View *child)
@@ -50,19 +58,25 @@ bool ScrollView::onPointerPressed(const PointerEvent *event)
     dragStart_ = event->pos();
     isDragged_ = false;
     speed_ = Point{};
-    if (timer_->isActive()) timer_->stop();
+    if (timer_->isActive()) carrierStop();
     return false;
 }
 
 bool ScrollView::onPointerReleased(const PointerEvent *event)
 {
-    isDragged_ = false;
-    if (speed_ != Step{}) {
+    if (isDragged_) {
+        if (System::now() - lastDragTime_ > minHoldTime()) speed_ = Point{};
+        isDragged_ = false;
+    }
+    if (carrierInsideBoundary()) {
+        carrierBounceStart();
+    }
+    else if (speed_ != Step{}) {
+        timerMode_ = TimerMode::Flying;
         timer_->start();
         lastTime_ = timer_->startTime();
         double v = abs(speed_);
         if (v > maxSpeed()) speed_ *= maxSpeed() / v;
-        // CC_INSPECT(fixed(speed_, 5, 3));
         releaseSpeedMagnitude_ = abs(speed_);
     }
     return false;
@@ -89,29 +103,47 @@ bool ScrollView::onPointerMoved(const PointerEvent *event)
         Step d = event->pos() - dragStart_;
         Point p = carrierOrigin_ + d;
 
-        carrier_->pos = carrierStep(p);
+        carrier_->pos = carrierStep(p, boundary());
     }
 
     return true;
 }
 
-Point ScrollView::carrierStep(Point p)
+bool ScrollView::carrierInsideBoundary() const
+{
+    double x = carrier_->pos()[0];
+    double y = carrier_->pos()[1];
+    double w = carrier_->size()[0];
+    double h = carrier_->size()[1];
+
+    return
+        (w > size()[0] && (x > 0 || x + w < size()[0])) ||
+        (h > size()[0] && (y > 0 || y + h < size()[1]));
+}
+
+Point ScrollView::carrierStep(Point p, double b)
 {
     double x = p[0];
     double y = p[1];
     double w = carrier_->size()[0];
     double h = carrier_->size()[1];
 
-    if (x > 0 || (w < size()[0])) x = 0;
-    else if (x + w < size()[0]) x = size()[0] - w;
+    if (w > size()[0]) {
+        if (x > b) x = b;
+        else if (x + w < size()[0] - b) x = size()[0] - b - w;
+    }
+    else x = 0;
 
-    if (y > 0 || (h < size()[1])) y = 0;
-    else if (y + h < size()[1]) y = size()[1] - h;
+    if (h > size()[1]) {
+        if (y > b) y = b;
+        else if (y + h < size()[1] - b) y = size()[1] - b - h;
+    }
+    else y = 0;
 
     return Point{ x, y };
 }
 
-void ScrollView::animate()
+void ScrollView::carrierFly()
 {
     double t = System::now();
     double T = t - lastTime_;
@@ -127,11 +159,44 @@ void ScrollView::animate()
     speed_ *= vb / va;
 
     Point pa = carrier_->pos();
-    Point pb = carrierStep(carrier_->pos() + d);
-    if (pa == pb || speed_ == Step{})
-        timer_->stop();
+    Point pb = carrierStep(carrier_->pos() + d, boundary());
+    if (pa == pb || speed_ == Step{}) {
+        carrierStop();
+        if (carrierInsideBoundary())
+            carrierBounceStart();
+    }
     else
         carrier_->pos = pb;
+}
+
+void ScrollView::carrierBounce()
+{
+    const double t0 = timer_->startTime();
+    const double t1 = t0 + maxBounceTime();
+    const double t = System::now();
+
+    if (t >= t1) {
+        carrier_->pos = bounceFinalPos_;
+        carrierStop();
+        return;
+    }
+
+    double s = easing::outBounce((t - t0) / (t1 - t0));
+    carrier_->pos = (1 - s) * bounceStartPos_ + s * bounceFinalPos_;
+}
+
+void ScrollView::carrierBounceStart()
+{
+    timerMode_ = TimerMode::Bouncing;
+    timer_->start();
+    bounceStartPos_ = carrier_->pos();
+    bounceFinalPos_ = carrierStep(carrier_->pos());
+}
+
+void ScrollView::carrierStop()
+{
+    timer_->stop();
+    timerMode_ = TimerMode::Stopped;
 }
 
 }} // namespace cc::ui

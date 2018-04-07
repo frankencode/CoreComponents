@@ -21,8 +21,8 @@ class MainView: public View
         ColumnLayout::setup(scroll->carrier());
         // ColumnLayout::setup(scroll); // TODO
 
-        for (int i = 0; i < 50; ++i)
-            Label::create(scroll, "Item " + str(i))->color = color;
+        for (int i = 0; i < 20; ++i)
+            Label::create(scroll, "Item " + str(i + 1))->color = color;
     }
 };
 
@@ -30,7 +30,6 @@ int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
     app->textZoom = 2;
-    Window::open(Object::create<MainView>(), "Hello, world!"/*, WindowMode::Accelerated*/);
-    CC_INSPECT(dp(1));
+    Window::open(Object::create<MainView>(), "Hello, world!");
     return app->run();
 }
