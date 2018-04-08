@@ -20,7 +20,7 @@ class PointerEvent: public Object
 public:
     PointerAction action() const { return action_; }
     double time() const { return time_; }
-    Pos pos() const { return pos_; }
+    Point pos() const { return pos_; }
     Step step() const { return step_; }
 
     virtual String toString() const = 0;
@@ -28,7 +28,7 @@ public:
 protected:
     class PosGuard {
     public:
-        PosGuard(Point *pos, Pos newPos):
+        PosGuard(Point *pos, Point newPos):
             pos_(pos),
             oldPos_(*pos)
         {
@@ -48,7 +48,7 @@ protected:
     PointerEvent(
         PointerAction action,
         double time,
-        const Pos &pos,
+        const Point &pos,
         const Step &step
     ):
         action_(action),
@@ -59,7 +59,7 @@ protected:
 
     PointerAction action_;
     double time_;
-    Pos pos_;
+    Point pos_;
     Step step_;
 };
 

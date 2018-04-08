@@ -143,8 +143,8 @@ void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
             e->timestamp / 1000.,
             e->touchId,
             e->fingerId,
-            Pos  { double(e->x),  double(e->y)  },
-            Step { double(e->dx), double(e->dy) },
+            Point { double(e->x),  double(e->y)  },
+            Step  { double(e->dx), double(e->dy) },
             e->pressure
         );
 
@@ -172,8 +172,8 @@ void SdlApplication::handleMouseMotionEvent(const SDL_MouseMotionEvent *e)
             e->timestamp / 1000.,
             button,
             0,
-            Pos  { double(e->x),    double(e->y)    },
-            Step { double(e->xrel), double(e->yrel) }
+            Point { double(e->x),    double(e->y)    },
+            Step  { double(e->xrel), double(e->yrel) }
         );
 
     for (auto pair: windows_) {
@@ -208,8 +208,8 @@ void SdlApplication::handleMouseButtonEvent(const SDL_MouseButtonEvent *e)
             e->timestamp / 1000.,
             button,
             e->clicks,
-            Pos  { double(e->x), double(e->y) },
-            Step {}
+            Point { double(e->x), double(e->y) },
+            Step  {}
         );
 
     for (auto pair: windows_) {
@@ -227,8 +227,8 @@ void SdlApplication::handleMouseWheelEvent(const SDL_MouseWheelEvent *e)
     Ref<WheelEvent> event =
         Object::create<WheelEvent>(
             e->timestamp / 1000.,
-            Step { double(e->x), double(e->y) },
-            Pos  { double(mx),   double(my)   }
+            Step  { double(e->x), double(e->y) },
+            Point { double(mx),   double(my)   }
         );
 
     for (auto pair: windows_) {

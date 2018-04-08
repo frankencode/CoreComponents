@@ -353,7 +353,7 @@ void Painter::Instance::translate(Step step)
     cairo_translate(cr_, step[0], step[1]);
 }
 
-void Painter::Instance::scale(Ratio ratio)
+void Painter::Instance::scale(Scale ratio)
 {
     cairo_scale(cr_, ratio[0], ratio[1]);
 }

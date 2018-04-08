@@ -8,11 +8,11 @@
 
 #pragma once
 
+#include <cc/bitmask>
+#include <cc/Property>
 #include <cc/String>
 #include <cc/Color>
-#include <cc/Vector>
-#include <cc/Property>
-#include <cc/bitmask>
+#include <cc/ui/Rect>
 
 namespace cc {
 namespace ui {
@@ -146,12 +146,8 @@ enum class KeyAction {
 
 String str(KeyAction action);
 
-typedef Vector<double, 2> Point;
-typedef Vector<double, 2> Pos;
-typedef Vector<double, 2> Size;
 typedef Vector<double, 2> Step;
-typedef Vector<double, 2> Ratio;
-typedef Vector<double, 2> Extent;
+typedef Vector<double, 2> Scale;
 
 typedef std::function<bool(String /*text*/, int /*byteOffset*/, int /*byteCount*/)> TextWrapBehind;
 bool textWrapBehindDefault(String text, int byteOffset, int byteCount);

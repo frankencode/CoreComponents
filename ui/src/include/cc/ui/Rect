@@ -1,0 +1,68 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Vector>
+
+namespace cc {
+namespace ui {
+
+typedef Vector<double, 2> Point;
+typedef Vector<double, 2> Size;
+
+class Rect
+{
+public:
+    class Instance {
+    public:
+        inline Point pos() const { return pos_; }
+        inline Size size() const { return size_; }
+
+    private:
+        friend class Rect;
+
+        Instance()
+        {}
+
+        Instance(const Point &pos, const Size &size):
+            pos_(pos),
+            size_(size)
+        {}
+
+        Point pos_;
+        Size size_;
+    };
+
+    Rect() {}
+
+    Rect(const Point &pos, const Size &size):
+        instance_(pos, size)
+    {}
+
+    inline const Instance *operator->() const { return &instance_; }
+
+private:
+    Instance instance_;
+};
+
+inline bool operator==(const Rect &a, const Rect &b)
+{
+    return a->pos() == b->pos() && a->size() == b->size();
+}
+
+inline bool operator!=(const Rect &a, const Rect &b)
+{
+    return a->pos() != b->pos() || a->size() != b->size();
+}
+
+String str(const Rect &rect);
+String fixed(const Rect &rect, int ni, int nf);
+String fixed(const Rect &rect, int nf);
+
+}} // namespace cc::ui

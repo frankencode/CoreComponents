@@ -29,7 +29,7 @@ private:
         double time,
         MouseButton button,
         int clickCount,
-        const Pos &pos,
+        const Point &pos,
         const Step &step
     ):
         PointerEvent(action, time, pos, step),

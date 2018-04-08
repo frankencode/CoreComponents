@@ -26,8 +26,6 @@ namespace ui {
 class Window;
 class Image;
 
-/** \TODO allow direct method connection from any Signal to MyView::method() without explicit lambdarisation
-  */
 class View: public Surface
 {
 public:

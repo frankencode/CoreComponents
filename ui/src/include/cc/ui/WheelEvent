@@ -18,7 +18,7 @@ class WheelEvent: public Object
 public:
     double time() const { return time_; }
     Step wheelStep() const { return wheelStep_; }
-    Pos mousePos() const { return mousePos_; }
+    Point mousePos() const { return mousePos_; }
 
     String toString() const;
 
@@ -28,7 +28,7 @@ private:
     WheelEvent(
         double time,
         const Step &wheelStep,
-        const Pos &mousePos
+        const Point &mousePos
     ):
         time_(time),
         wheelStep_(wheelStep),
@@ -37,7 +37,7 @@ private:
 
     double time_;
     Step wheelStep_;
-    Pos mousePos_;
+    Point mousePos_;
 };
 
 }} // namespace cc::ui

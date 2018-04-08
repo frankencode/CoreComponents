@@ -80,7 +80,7 @@ public:
           * @{
           */
         void translate(Step step);
-        void scale(Ratio ratio);
+        void scale(Scale ratio);
         void rotate(double angle);
         /** @}
           */

@@ -30,7 +30,7 @@ private:
         double time,
         TouchDeviceId deviceId,
         TouchFingerId fingerId,
-        const Pos &pos,
+        const Point &pos,
         const Step &step,
         double pressure
     ):
