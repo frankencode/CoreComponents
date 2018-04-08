@@ -25,11 +25,12 @@ class SdlApplication: public Application
 public:
     static SdlApplication *instance();
 
-    void getDisplayResolution(double *xRes, double *yRes) const override;
-
     Window *openWindow(View *view, String title = String{}, WindowMode mode = WindowMode::Default) override;
 
-    virtual int run() override;
+    String getClipboardText() const override;
+    void setClipboardText(String text) override;
+
+    int run() override;
 
 private:
     friend class Singleton<SdlApplication>;

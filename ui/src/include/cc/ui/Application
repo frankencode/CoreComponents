@@ -34,9 +34,10 @@ public:
 
     virtual Window *openWindow(View *view, String title = String{}, WindowMode mode = WindowMode::Default) = 0;
 
-    virtual int run() = 0;
+    virtual String getClipboardText() const = 0;
+    virtual void setClipboardText(String text) = 0;
 
-    virtual void getDisplayResolution(double *xRes, double *yRes) const = 0;
+    virtual int run() = 0;
 
 protected:
     friend class Window;

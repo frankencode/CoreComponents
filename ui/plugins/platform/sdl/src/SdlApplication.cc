@@ -64,20 +64,23 @@ void SdlApplication::init(int argc, char **argv)
     timerEvent_ = SDL_RegisterEvents(1);
 }
 
-void SdlApplication::getDisplayResolution(double *xRes, double *yRes) const
-{
-    // FIXME: with SDL >= 2.0.4:
-    //  * provide dpi resolution for desktop and *2 for mobile targets (<=10 in)
-    //  * select resolution of the physically largest connected screen
-    *xRes = 120;
-    *yRes = 120;
-}
-
 Window *SdlApplication::openWindow(View *view, String title, WindowMode mode)
 {
     Ref<SdlWindow> window = SdlWindow::open(view, title, mode);
     windows_->insert(window->id_, window);
     return window;
+}
+
+String SdlApplication::getClipboardText() const
+{
+    if (!SDL_HasClipboardText()) return String{};
+    return SDL_GetClipboardText();
+}
+
+void SdlApplication::setClipboardText(String text)
+{
+    /*int ret =*/ SDL_SetClipboardText(text);
+    // TODO: error handling?
 }
 
 int SdlApplication::run()
