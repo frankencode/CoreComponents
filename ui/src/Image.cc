@@ -8,6 +8,7 @@
 
 #include <cairo/cairo.h>
 #include <cmath>
+#include <cc/ui/shadowBlurInsitu>
 #include <cc/ui/Image>
 
 namespace cc {
@@ -44,6 +45,11 @@ void Image::normalize()
     Color *p = &mutate(data_)->item<Color>(0);
     for (int i = 0; i < n; ++i)
         Color::normalize(p + i);
+}
+
+void Image::shadowBlur(int radius, Color shadowColor)
+{
+    shadowBlurInsitu(this, radius, shadowColor);
 }
 
 cairo_surface_t *Image::cairoSurface() const

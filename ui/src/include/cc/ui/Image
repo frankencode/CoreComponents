@@ -20,6 +20,8 @@ public:
     static Ref<Image> create(Size size);
 
     inline Size size() const { return Size{ double(w_), double(h_) }; }
+    inline int width() const { return w_; }
+    inline int height() const { return h_; }
     inline int count() const { return data_->itemCount<Color>(); }
 
     inline bool hasPixel(int x, int y) const {
@@ -32,6 +34,10 @@ public:
         return mutate(data_)->item<Color>(y * w_ + x);
     }
 
+    inline Color &pixel(int i) {
+        return mutate(data_)->item<Color>(i);
+    }
+
     /** Clear the entire image with color \a c
       */
     void clear(Color c);
@@ -39,6 +45,8 @@ public:
     /** Convert the entire image from pre-multiplied alpha to non-premultiplied alpha
       */
     void normalize();
+
+    void shadowBlur(int radius, Color shadowColor);
 
     inline const CharArray *data() const { return data_; }
     inline int pitch() const { return w_ * sizeof(Color); }
