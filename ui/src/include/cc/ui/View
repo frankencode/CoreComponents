@@ -57,11 +57,14 @@ public:
     void centerInParent();
     void disband();
 
+    bool gainTextInputFocus();
+
 protected:
     friend class Object;
     friend class Window;
     friend class Application;
     friend class Layout;
+    friend class TextInputFocus;
 
     View(View *parent = 0);
     ~View();
@@ -99,14 +102,19 @@ protected:
     virtual bool onKeyPressed(const KeyEvent *event);
     virtual bool onKeyReleased(const KeyEvent *event);
 
-    // virtual bool hasTextInput() const; // TODO...
+    virtual bool hasTextInput() const;
+    virtual Rect textInputArea() const;
+    virtual void onTextInputStarted();
+    virtual void onTextInputStopped();
+    virtual void onTextEdited(String text, int start, int length);
+    virtual void onTextInput(String text);
 
     void update(UpdateReason reason = UpdateReason::Changed);
 
-    virtual bool fingerEvent(FingerEvent *event); // TODO: rename to feedFingerEvent(), etc.
-    virtual bool mouseEvent(MouseEvent *event);
-    virtual bool wheelEvent(WheelEvent *event);
-    virtual bool keyEvent(KeyEvent *event);
+    virtual bool feedFingerEvent(FingerEvent *event);
+    virtual bool feedMouseEvent(MouseEvent *event);
+    virtual bool feedWheelEvent(WheelEvent *event);
+    virtual bool feedKeyEvent(KeyEvent *event);
 
     void init();
     virtual void childReady(View *child);
@@ -115,7 +123,7 @@ protected:
     Application *app() const;
     StylePlugin *style() const;
 
-    Window *window();
+    Window *window() const;
     Image *image();
 
     virtual void insertChild(View *child);

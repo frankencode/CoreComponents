@@ -9,6 +9,7 @@
 #include <cc/ui/PlatformManager>
 #include <cc/ui/TimeMaster>
 #include <cc/ui/FingerEvent>
+#include <cc/ui/View>
 #include <cc/ui/Application>
 
 namespace cc {
@@ -51,6 +52,20 @@ bool Application::feedWheelEvent(Window *window, WheelEvent *event)
 bool Application::feedKeyEvent(Window *window, KeyEvent *event)
 {
     return window->feedKeyEvent(event);
+}
+
+bool Application::feedTextEditingEvent(const String &text, int start, int length)
+{
+    if (!textInputFocus() && textInputFocus()->isValid()) return false;
+    textInputFocus()->target()->onTextEdited(text, start, length);
+    return true;
+}
+
+bool Application::feedTextInputEvent(const String &text)
+{
+    if (textInputFocus() && textInputFocus()->isValid()) return false;
+    textInputFocus()->target()->onTextInput(text);
+    return true;
 }
 
 }} // namespace cc::ui

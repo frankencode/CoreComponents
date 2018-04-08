@@ -116,6 +116,12 @@ int SdlApplication::run()
             case SDL_WINDOWEVENT:
                 handleWindowEvent(&event_->window);
                 break;
+            case SDL_TEXTEDITING:
+                handleTextEditingEvent(&event_->edit);
+                break;
+            case SDL_TEXTINPUT:
+                handleTextInputEvent(&event_->text);
+                break;
             case SDL_QUIT:
                 return 0;
         };
@@ -256,6 +262,16 @@ void SdlApplication::handleKeyboardEvent(const SDL_KeyboardEvent *e)
     }
 }
 
+void SdlApplication::handleTextEditingEvent(const SDL_TextEditingEvent *e)
+{
+    feedTextEditingEvent(e->text, e->start, e->length);
+}
+
+void SdlApplication::handleTextInputEvent(const SDL_TextInputEvent *e)
+{
+    feedTextInputEvent(e->text);
+}
+
 String SdlApplication::windowEventToString(const SDL_WindowEvent *e)
 {
     switch (e->event) {
@@ -332,6 +348,33 @@ void SdlApplication::handleWindowEvent(const SDL_WindowEvent *e)
             break;
         }
     };
+}
+
+void SdlApplication::startTextInput(const Window *window, const Rect &inputArea)
+{
+    const SdlWindow *w = Object::cast<const SdlWindow *>(window);
+
+    if (SDL_IsTextInputActive())
+        SDL_StopTextInput();
+
+    if (SDL_GetKeyboardFocus() != w->sdlWindow_)
+        SDL_RaiseWindow(w->sdlWindow_);
+
+    {
+        SDL_Rect rect;
+        rect.x = inputArea->pos()[0];
+        rect.y = inputArea->pos()[1];
+        rect.w = inputArea->size()[0];
+        rect.h = inputArea->size()[1];
+        SDL_SetTextInputRect(&rect);
+    }
+
+    SDL_StartTextInput();
+}
+
+void SdlApplication::stopTextInput()
+{
+    SDL_StopTextInput();
 }
 
 void SdlApplication::triggerTimer(const Timer *timer)

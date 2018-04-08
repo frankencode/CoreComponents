@@ -84,11 +84,11 @@ bool Window::feedFingerEvent(FingerEvent *event)
         if (event->action() == PointerAction::Released)
             touchTargets_->remove(event->fingerId());
 
-        if (touchTarget->fingerEvent(event))
+        if (touchTarget->feedFingerEvent(event))
             return true;
     }
 
-    return view_->fingerEvent(event);
+    return view_->feedFingerEvent(event);
 }
 
 bool Window::feedMouseEvent(MouseEvent *event)
@@ -98,21 +98,21 @@ bool Window::feedMouseEvent(MouseEvent *event)
         if (event->action() == PointerAction::Released)
             pointerTarget_ = 0;
 
-        if (pointerTarget_->mouseEvent(event))
+        if (pointerTarget_->feedMouseEvent(event))
             return true;
     }
 
-    return view_->mouseEvent(event);
+    return view_->feedMouseEvent(event);
 }
 
 bool Window::feedWheelEvent(WheelEvent *event)
 {
-    return view_->wheelEvent(event);
+    return view_->feedWheelEvent(event);
 }
 
 bool Window::feedKeyEvent(KeyEvent *event)
 {
-    return view_->keyEvent(event);
+    return view_->feedKeyEvent(event);
 }
 
 }} // namespace cc::ui

@@ -25,10 +25,9 @@ class SdlApplication: public Application
 public:
     static SdlApplication *instance();
 
-    virtual void init(int argc, char **argv) override;
-    virtual void getDisplayResolution(double *xRes, double *yRes) const override;
+    void getDisplayResolution(double *xRes, double *yRes) const override;
 
-    virtual Window *openWindow(View *view, String title = String{}, WindowMode mode = WindowMode::Default) override;
+    Window *openWindow(View *view, String title = String{}, WindowMode mode = WindowMode::Default) override;
 
     virtual int run() override;
 
@@ -39,14 +38,21 @@ private:
     SdlApplication();
     ~SdlApplication();
 
+    void init(int argc, char **argv) override;
+
     void handleFingerEvent(const SDL_TouchFingerEvent *e);
     void handleMouseMotionEvent(const SDL_MouseMotionEvent *e);
     void handleMouseButtonEvent(const SDL_MouseButtonEvent *e);
     void handleMouseWheelEvent(const SDL_MouseWheelEvent *e);
     void handleKeyboardEvent(const SDL_KeyboardEvent *e);
+    void handleTextEditingEvent(const SDL_TextEditingEvent *e);
+    void handleTextInputEvent(const SDL_TextInputEvent *e);
 
     static String windowEventToString(const SDL_WindowEvent *e);
     void handleWindowEvent(const SDL_WindowEvent *e);
+
+    void startTextInput(const Window *window, const Rect &inputArea) override;
+    void stopTextInput() override;
 
     void triggerTimer(const Timer *timer);
 

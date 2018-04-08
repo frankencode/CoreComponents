@@ -1,3 +1,0 @@
-Tests {
-    use: [ cc/core, cc/testing, cc/ui, sdl/src ]
-}

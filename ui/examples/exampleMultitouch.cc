@@ -69,7 +69,7 @@ class MainView: public View
         }
     }
 
-    bool fingerEvent(FingerEvent *event) override
+    bool feedFingerEvent(FingerEvent *event) override
     {
         if (event->action() == PointerAction::Pressed || event->action() == PointerAction::Moved)
         {

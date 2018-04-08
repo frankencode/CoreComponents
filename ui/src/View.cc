@@ -63,6 +63,11 @@ void View::disband()
     parent_->removeChild(this);
 }
 
+bool View::gainTextInputFocus()
+{
+    return TextInputFocus::create(this)->isValid();
+}
+
 Point View::mapToGlobal(Point l) const
 {
     for (const View *view = this; view->parent_; view = view->parent_)
@@ -144,6 +149,13 @@ bool View::hasKeyInput() const { return false; }
 bool View::onKeyPressed(const KeyEvent *event) { return false; }
 bool View::onKeyReleased(const KeyEvent *event) { return false; }
 
+bool View::hasTextInput() const { return false; }
+Rect View::textInputArea() const { return Rect{}; }
+void View::onTextInputStarted() {}
+void View::onTextInputStopped() {}
+void View::onTextEdited(String text, int start, int length) {}
+void View::onTextInput(String text) {}
+
 void View::update(UpdateReason reason)
 {
     Window *w = window();
@@ -162,7 +174,7 @@ void View::update(UpdateReason reason)
     w->addToFrame(UpdateRequest::create(reason, this));
 }
 
-bool View::fingerEvent(FingerEvent *event)
+bool View::feedFingerEvent(FingerEvent *event)
 {
     const bool hpi = hasPointerInput();
     const bool hfi = hasFingerInput();
@@ -214,7 +226,7 @@ bool View::fingerEvent(FingerEvent *event)
             (child->hasPointerInput() || child->hasFingerInput())  &&
             child->containsGlobal(event->pos())
         ) {
-            if (child->fingerEvent(event))
+            if (child->feedFingerEvent(event))
                 return true;
         }
     }
@@ -222,7 +234,7 @@ bool View::fingerEvent(FingerEvent *event)
     return false;
 }
 
-bool View::mouseEvent(MouseEvent *event)
+bool View::feedMouseEvent(MouseEvent *event)
 {
     bool hpi = hasPointerInput();
     bool hmi = hasMouseInput();
@@ -276,7 +288,7 @@ bool View::mouseEvent(MouseEvent *event)
             (child->hasPointerInput() || child->hasMouseInput()) &&
             child->containsGlobal(event->pos())
         ) {
-            if (child->mouseEvent(event))
+            if (child->feedMouseEvent(event))
                 return true;
         }
     }
@@ -284,7 +296,7 @@ bool View::mouseEvent(MouseEvent *event)
     return false;
 }
 
-bool View::wheelEvent(WheelEvent *event)
+bool View::feedWheelEvent(WheelEvent *event)
 {
     if (
         hasWheelInput() &&
@@ -298,14 +310,14 @@ bool View::wheelEvent(WheelEvent *event)
     {
         View *child = pair->value();
 
-        if (child->wheelEvent(event))
+        if (child->feedWheelEvent(event))
             return true;
     }
 
     return false;
 }
 
-bool View::keyEvent(KeyEvent *event)
+bool View::feedKeyEvent(KeyEvent *event)
 {
     if (hasKeyInput())
     {
@@ -321,7 +333,7 @@ bool View::keyEvent(KeyEvent *event)
 
     for (auto pair: children_)
     {
-        if (pair->value()->keyEvent(event))
+        if (pair->value()->feedKeyEvent(event))
             return true;
     }
 
@@ -353,11 +365,11 @@ StylePlugin *View::style() const
     return StyleManager::instance()->activePlugin();
 }
 
-Window *View::window()
+Window *View::window() const
 {
     if (!window_) {
         if (parent_)
-            window_ = parent_->window();
+            return parent_->window();
     }
     return window_;
 }
