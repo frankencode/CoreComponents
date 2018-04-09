@@ -6,6 +6,8 @@
  *
  */
 
+#include <SDL2/SDL.h>
+#include <cc/exceptions>
 #include <cc/Registration>
 #include <cc/ui/SdlApplication>
 #include <cc/ui/SdlTimeMaster>
@@ -18,7 +20,12 @@ namespace ui {
 
 SdlPlatformPlugin::SdlPlatformPlugin():
     PlatformPlugin("SDL", true)
-{}
+{
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+
+    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+        CC_DEBUG_ERROR(SDL_GetError());
+}
 
 Application *SdlPlatformPlugin::application() const
 {

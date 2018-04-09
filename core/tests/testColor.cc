@@ -44,11 +44,13 @@ class GrayShadesOnGlass: public TestCase
 
     inline static int delta(int a, int b) { return a < b ? b - a : a - b; }
 
-    static bool differLess(Color a, Color b, int maxColorDelta, int maxOpacityDelta) {
-        return delta(Color::red(a), Color::red(b)) <= maxColorDelta &&
-        delta(Color::green(a), Color::green(b)) <= maxColorDelta &&
-        delta(Color::blue(a), Color::blue(b)) <= maxColorDelta &&
-        delta(Color::alpha(a), Color::alpha(b)) <= maxOpacityDelta;
+    static bool differLess(Color a, Color b, int maxColorDelta, int maxOpacityDelta)
+    {
+        return
+            delta(Color::redComponent(a),   Color::redComponent(b)  ) <= maxColorDelta &&
+            delta(Color::greenComponent(a), Color::greenComponent(b)) <= maxColorDelta &&
+            delta(Color::blueComponent(a),  Color::blueComponent(b) ) <= maxColorDelta &&
+            delta(Color::alphaComponent(a), Color::alphaComponent(b)) <= maxOpacityDelta;
     }
 
     static double blendComponent(double alpha, double a, double beta, double b) {
@@ -63,14 +65,14 @@ class GrayShadesOnGlass: public TestCase
     }
 
     static Color blend(Color a, Color b) {
-        double a_r   = Color::red(a)   / 255.;
-        double a_g   = Color::green(a) / 255.;
-        double a_b   = Color::blue(a)  / 255.;
-        double alpha = Color::alpha(a) / 255.;
-        double b_r   = Color::red(b)   / 255.;
-        double b_g   = Color::green(b) / 255.;
-        double b_b   = Color::blue(b)  / 255.;
-        double beta  = Color::alpha(b) / 255.;
+        double a_r   = Color::redComponent(a)   / 255.;
+        double a_g   = Color::greenComponent(a) / 255.;
+        double a_b   = Color::blueComponent(a)  / 255.;
+        double alpha = Color::alphaComponent(a) / 255.;
+        double b_r   = Color::redComponent(b)   / 255.;
+        double b_g   = Color::greenComponent(b) / 255.;
+        double b_b   = Color::blueComponent(b)  / 255.;
+        double beta  = Color::alphaComponent(b) / 255.;
         return Color(
             ::round(blendComponent(alpha, a_r, beta, b_r) * 255),
             ::round(blendComponent(alpha, a_g, beta, b_g) * 255),

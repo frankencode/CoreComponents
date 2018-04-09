@@ -56,11 +56,6 @@ SdlApplication::~SdlApplication()
 
 void SdlApplication::init(int argc, char **argv)
 {
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
-
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
-        CC_DEBUG_ERROR(SDL_GetError());
-
     timerEvent_ = SDL_RegisterEvents(1);
 }
 

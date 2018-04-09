@@ -22,6 +22,21 @@ class Variant;
 class Color
 {
 public:
+    /** Convenience color constants
+      * @{
+      */
+    static const Color transparent;
+    static const Color black;
+    static const Color white;
+    static const Color red;
+    static const Color green;
+    static const Color blue;
+    static const Color yellow;
+    static const Color cyan;
+    static const Color magenta;
+    /** @}
+      */
+
     /** Construct an invalid color
       */
     Color():
@@ -83,10 +98,10 @@ public:
       */
     inline static bool isValid(Color c) {
         return !(
-            alpha(c) == 0 && (
-                red(c)   != 0 ||
-                green(c) != 0 ||
-                blue(c)  != 0
+            alphaComponent(c) == 0 && (
+                redComponent(c)   != 0 ||
+                greenComponent(c) != 0 ||
+                blueComponent(c)  != 0
             )
         );
     }
@@ -94,16 +109,16 @@ public:
     /** Convenience function to check if \a c is a fully opaque color
       */
     inline static bool isOpaque(Color c) {
-        return alpha(c) == 0xFF;
+        return alphaComponent(c) == 0xFF;
     }
 
     /** Getters for individual color components
       * @{
       */
-    inline static uint32_t alpha(Color c) { return component<Alpha>(c); }
-    inline static uint32_t red  (Color c) { return component<Red  >(c); }
-    inline static uint32_t green(Color c) { return component<Green>(c); }
-    inline static uint32_t blue (Color c) { return component<Blue >(c); }
+    inline static uint32_t alphaComponent(Color c) { return component<Alpha>(c); }
+    inline static uint32_t redComponent  (Color c) { return component<Red  >(c); }
+    inline static uint32_t greenComponent(Color c) { return component<Green>(c); }
+    inline static uint32_t blueComponent (Color c) { return component<Blue >(c); }
     /** @}
       */
 
@@ -186,18 +201,6 @@ private:
 
     uint32_t w_;
 };
-
-/** Convenience color constants
-  * @{
-  */
-const Color transparent { 0x00, 0x00, 0x00, 0x00 };
-const Color black       { 0x00, 0x00, 0x00 };
-const Color white       { 0xFF, 0xFF, 0xFF };
-const Color red         { 0xFF, 0x00, 0x00 };
-const Color green       { 0x00, 0xFF, 0x00 };
-const Color blue        { 0x00, 0x00, 0xFF };
-/** @}
-  */
 
 /// Stringify color \a c
 String str(Color c);

@@ -120,15 +120,17 @@ void shadowBlurInsitu(Image *image, int radius, Color shadowColor)
         }
     }
 
-    uint32_t shadowColorAlpha(Color::alpha(shadowColor));
-    if (shadowColorAlpha == 0xFF) {
+    uint32_t sr = Color::redComponent(shadowColor);
+    uint32_t sg = Color::greenComponent(shadowColor);
+    uint32_t sb = Color::blueComponent(shadowColor);
+    uint32_t sa = Color::alphaComponent(shadowColor);
+
+    if (sa == 0xFF) {
         for (int i = 0, n = image->count(); i < n; ++i) {
             Color &pixel = image->pixel(i);
             pixel = Color{
-                Color::red(shadowColor),
-                Color::green(shadowColor),
-                Color::blue(shadowColor),
-                Color::alpha(pixel)
+                sr, sg, sb,
+                Color::alphaComponent(pixel)
             };
         }
     }
@@ -136,11 +138,8 @@ void shadowBlurInsitu(Image *image, int radius, Color shadowColor)
         for (int i = 0, n = image->count(); i < n; ++i) {
             Color &pixel = image->pixel(i);
             pixel = Color{
-                Color::red(shadowColor),
-                Color::green(shadowColor),
-                Color::blue(shadowColor),
-                // uint16_t(Color::alpha(pixel) * shadowColorAlpha) / 255 // FIXME: correct, but fast?
-                (Color::alpha(pixel) * shadowColorAlpha) >> 8
+                sr, sg, sb,
+                uint32_t(uint16_t(Color::alphaComponent(pixel) * sa) / 255)
             };
         }
     }

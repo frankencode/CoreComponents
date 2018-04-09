@@ -26,7 +26,7 @@ Label::Label(View *parent, String text_, const Font &font_):
     font->bind([=]{ return font_ * app()->textZoom(); });
     margin->bind([=]{ return style()->defaultMargin(font()->size()); });
 
-    color = transparent;
+    color = Color::transparent;
 
     updateLayout();
 

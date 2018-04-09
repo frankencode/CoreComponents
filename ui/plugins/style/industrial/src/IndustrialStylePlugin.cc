@@ -6,8 +6,10 @@
  *
  */
 
-#include <cc/debug>
+#include <cmath>
 #include <cc/Registration>
+#include <cc/Dir>
+#include <cc/ui/design>
 #include <cc/ui/Application>
 #include <cc/ui/FontManager>
 #include <cc/ui/IndustrialStylePlugin>
@@ -21,10 +23,19 @@ IndustrialStylePlugin::IndustrialStylePlugin():
 
 void IndustrialStylePlugin::activate()
 {
-    FontManager::instance()->addPath("/usr/share/fonts/truetype/dejavu/");
+    const double fontSize = sp(16);
 
-    defaultFont = Font("DejaVu Sans", 16);
-    defaultFixedFont = Font("DejaVu Sans Mono", 16);;
+    FontManager::instance()->addPath("/usr/share/fonts/truetype/dejavu");
+
+    String robotoPath = "/usr/share/fonts/truetype/roboto/hinted/";
+    if (Dir::exists(robotoPath)) {
+        FontManager::instance()->addPath(robotoPath);
+        defaultFont = Font("Roboto", fontSize);
+    }
+    else
+        defaultFont = Font("DejaVu Sans", fontSize);
+
+    defaultFixedFont = Font("DejaVu Sans Mono", fontSize);;
 }
 
 CC_REGISTRATION(IndustrialStylePlugin)

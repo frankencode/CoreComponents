@@ -14,6 +14,16 @@
 
 namespace cc {
 
+const Color Color::transparent { 0x00, 0x00, 0x00, 0x00 };
+const Color Color::black       { 0x00, 0x00, 0x00 };
+const Color Color::white       { 0xFF, 0xFF, 0xFF };
+const Color Color::red         { 0xFF, 0x00, 0x00 };
+const Color Color::green       { 0x00, 0xFF, 0x00 };
+const Color Color::blue        { 0x00, 0x00, 0xFF };
+const Color Color::yellow      { 0xFF, 0xFF, 0x00 };
+const Color Color::cyan        { 0x00, 0xFF, 0xFF };
+const Color Color::magenta     { 0xFF, 0x00, 0xFF };
+
 Color Color::parse(const char *s, bool *ok)
 {
     bool localOk;
@@ -204,10 +214,10 @@ String str(Color c)
 {
     return Format()
         << "#"
-        << hex(Color::red  (c), 2)
-        << hex(Color::green(c), 2)
-        << hex(Color::blue (c), 2)
-        << hex(Color::alpha(c), 2);
+        << hex(Color::redComponent  (c), 2)
+        << hex(Color::greenComponent(c), 2)
+        << hex(Color::blueComponent (c), 2)
+        << hex(Color::alphaComponent(c), 2);
 }
 
 } // namespace cc

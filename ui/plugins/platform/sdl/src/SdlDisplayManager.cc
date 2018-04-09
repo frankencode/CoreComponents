@@ -44,7 +44,7 @@ double SdlDisplayManager::getDisplayDensityRatio()
 
     if (!largestDisplay) return 1;
 
-    return avg(largestDisplay->dpi()) / 160;
+    return (1 + 0.666 * !largestDisplay->isHandheld()) * avg(largestDisplay->dpi()) / 160;
 }
 
 Ref<Display> SdlDisplayManager::getDisplay_(int index)
