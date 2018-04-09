@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/View>
+
+namespace cc {
+namespace ui {
+
+class TextLine;
+
+class TextField: public View
+{
+    friend class Object;
+
+public:
+    static TextField *create(View *parent, String labelText);
+
+    Property<String> labelText;
+    Property<String> inputText;
+    Property<String> placeholderText;
+    Property<String> helpText;
+    Property<String> statusText;
+    Property<String> errorText;
+
+private:
+    TextField(View *parent, String nameText);
+
+    Property<bool> focus;
+
+    TextLine *labelTextLine_;
+    TextLine *inputTextLine_;
+    TextLine *placeholderTextLine_;
+    View *inputLine_;
+    TextLine *helpTextLine_;
+    TextLine *statusTextLine_;
+    TextLine *errorTextLine_;
+};
+
+}} // namespace cc::ui

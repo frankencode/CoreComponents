@@ -30,7 +30,7 @@ public:
     Ref<TypeSetter> copy() const override;
 
 private:
-    FtTypeSetter() = default;
+    FtTypeSetter() {}
 
     Ref<TextRun> createTextRun() override;
 

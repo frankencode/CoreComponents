@@ -32,9 +32,9 @@ class MainView: public View
                 return style()->defaultFont()->size();
             });
 
-            Label::create(subBox, "◦ Item A");
-            Label::create(subBox, "◦ Item B");
-            Label::create(subBox, "◦ Item C");
+            Label::create(subBox, "• Item A");
+            Label::create(subBox, "• Item B");
+            Label::create(subBox, "• Item C"); // ◦
         }
     }
 };

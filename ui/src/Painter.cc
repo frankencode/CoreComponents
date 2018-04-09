@@ -162,7 +162,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun)
             if (+(decoration & Decoration::Underline))
                 u = -metrics->underlinePosition() + v / 2;
             else if (+(decoration & Decoration::StrikeOut))
-                u = -2 * metrics->ascender() / 5 + v / 2;
+                u = std::floor(-2 * metrics->ascender() / 5 + v / 2);
         }
 
         const CharArray *text = ftGlyphRun->text();

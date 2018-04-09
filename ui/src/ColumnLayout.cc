@@ -24,6 +24,8 @@ ColumnLayout::ColumnLayout(View *view):
     margin->connect([=]{ updateLayout(); });
     spacing->connect([=]{ updateLayout(); });
     indent->connect([=]{ updateLayout(); });
+
+    updateLayout();
 }
 
 void ColumnLayout::childReady(View *child)
@@ -38,7 +40,7 @@ void ColumnLayout::childReady(View *child)
             const double y = innerSize[1];
 
             if (child->size()[0] > innerSize[0]) innerSize[0] = child->size()[0];
-            innerSize[1] += child->size()[1];
+            innerSize[1] += child->padding() + child->size()[1];
             if (view()->childCount() > 1) innerSize[1] += spacing();
 
             view()->size = innerSize + Size{ indent(), 0 } + 2 * margin();
@@ -66,6 +68,7 @@ void ColumnLayout::childReady(View *child)
     });
 
     child->visible->connect([=]{ updateLayout(); });
+    child->padding->connect([=]{ updateLayout(); });
 }
 
 void ColumnLayout::childDone(View *child)
@@ -93,7 +96,7 @@ void ColumnLayout::updateLayout()
         if (!child->visible()) continue;
 
         if (child->size()[0] > innerSize[0]) innerSize[0] = child->size()[0];
-        innerSize[1] += child->size()[1];
+        innerSize[1] += child->padding() + child->size()[1];
         if (i < n - 1) innerSize[1] += spacing();
     }
 
@@ -105,6 +108,8 @@ void ColumnLayout::updateLayout()
     {
         View *child = view()->childAt(i);
         if (!child->visible()) continue;
+
+        y += child->padding();
 
         updateChildPos(child, innerSize, y);
 

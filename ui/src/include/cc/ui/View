@@ -38,6 +38,7 @@ public:
 
     Property<Point> pos;
     Property<Size> size;
+    Property<double> padding { 0 };
 
     Property<Point> center { [=]{ return size() / 2; } };
     Property<double> angle { 0 };

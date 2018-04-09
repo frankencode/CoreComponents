@@ -30,8 +30,8 @@ class MainView: public View
         subBox->color = Color{"#D0FFD0"};
 
         ColumnLayout::setup(subBox);
-        Label::create(subBox, "◦ Item A");
-        Label::create(subBox, "◦ Item B");
+        Label::create(subBox, "• Item A");
+        Label::create(subBox, "• Item B"); // ◦
     }
 };
 

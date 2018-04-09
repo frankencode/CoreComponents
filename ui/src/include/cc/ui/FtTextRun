@@ -52,7 +52,7 @@ private:
     static Ref<const FtGlyphRun> fold(const FtGlyphRuns *glyphRuns);
     static Ref<FtTextRun> unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns *glyphRuns);
 
-    FtTextRun() = default;
+    FtTextRun() {}
     FtTextRun(FtTypeSetter *typeSetter);
 
     Ref<FtTypeSetter> typeSetter_;

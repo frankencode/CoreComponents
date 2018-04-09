@@ -15,12 +15,12 @@ namespace ui {
 
 double dp(double x)
 {
-    return DisplayManager::instance()->displayDensityRatio() * x;
+    return std::ceil(DisplayManager::instance()->displayDensityRatio() * x);
 }
 
 double sp(double x)
 {
-    return dp(x) * Application::instance()->textZoom();
+    return std::ceil(dp(x) * Application::instance()->textZoom());
 }
 
 }} // namespace cc::ui
