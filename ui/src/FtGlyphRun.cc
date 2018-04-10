@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/ui/FtTypeSetter>
+#include <cc/ui/FtFontManager>
 #include <cc/ui/FtGlyphRun>
 
 namespace cc {
@@ -223,7 +223,7 @@ Ref<GlyphRun> FtGlyphRun::elide(double maxWidth) const
 {
     if (advance_[0] <= maxWidth) return const_cast<FtGlyphRun *>(this);
 
-    Ref<const FtGlyphRun> ellipsis = FtTypeSetter::create()->layout("...", font());
+    Ref<const FtGlyphRun> ellipsis = FtFontManager::instance()->ftTypeSet("...", font());
     maxWidth -= ellipsis->advance()[0];
 
     Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text_, font());
@@ -273,76 +273,6 @@ Ref<GlyphRun> FtGlyphRun::elide(double maxWidth) const
 Ref<GlyphRun> FtGlyphRun::copy() const
 {
     return ftCopy();
-}
-
-Ref<GlyphRun> FtGlyphRun::copy(int byteOffset0, int byteOffset1) const
-{
-    Ref<FtGlyphRun> glyphRun = new FtGlyphRun;
-    glyphRun->font_ = font_;
-
-    if (byteOffset0 <= 0 && text_->count() <= byteOffset1) {
-        glyphRun->cairoGlyphs_ = CairoGlyphs::copy(cairoGlyphs_);
-        glyphRun->cairoTextClusters_ = CairoTextClusters::copy(cairoTextClusters_);
-    }
-
-    if (byteOffset1 <= 0 || text_->count() <= byteOffset0 || byteOffset1 <= byteOffset0) {
-        glyphRun->cairoGlyphs_ = CairoGlyphs::create(0);
-        glyphRun->cairoTextClusters_ = CairoTextClusters::create(0);
-        return glyphRun;
-    }
-
-    if (byteOffset0 <= 0) byteOffset0 = 0;
-    if (text_->count() < byteOffset0) byteOffset0 = text_->count();
-
-    if (byteOffset1 <= 0) byteOffset1 = 0;
-    if (text_->count() < byteOffset1) byteOffset1 = text_->count();
-
-    int glyphOffset0 = 0;
-    int glyphOffset1 = 0;
-    int clusterIndex0 = 0;
-    int clusterIndex1 = 0;
-    {
-        int glyphOffset = 0;
-        int byteOffset = 0;
-        int clusterIndex = 0;
-
-        for (; clusterIndex < cairoTextClusters_->count(); ++clusterIndex)
-        {
-            const cairo_text_cluster_t *cluster = &cairoTextClusters_->at(clusterIndex);
-            const int nextByteOffset = byteOffset + cluster->num_bytes;
-            const int nextGlyphOffset = glyphOffset + cluster->num_glyphs;
-
-            if (byteOffset <= byteOffset0 && byteOffset0 < nextByteOffset) {
-                byteOffset0 = byteOffset;
-                glyphOffset0 = glyphOffset;
-                clusterIndex0 = clusterIndex;
-            }
-
-            if (byteOffset < byteOffset1 && byteOffset1 <= nextByteOffset) {
-                byteOffset1 = nextByteOffset;
-                glyphOffset1 = nextGlyphOffset;
-                clusterIndex1 = clusterIndex + 1;
-            }
-
-            byteOffset = nextByteOffset;
-            glyphOffset = nextGlyphOffset;
-        }
-    }
-
-    glyphRun->cairoGlyphs_ = cairoGlyphs_->copy(glyphOffset0, glyphOffset1);
-    glyphRun->cairoTextClusters_ = cairoTextClusters_->copy(clusterIndex0, clusterIndex1);
-
-    if (cairoGlyphs_->has(glyphOffset1)) {
-        glyphRun->advance_ =
-            Point{
-                cairoGlyphs_->at(glyphOffset1).x,
-                cairoGlyphs_->at(glyphOffset1).y
-            };
-    }
-    else
-        glyphRun->advance_ = advance_;
-
-    return glyphRun;
 }
 
 }} // namespace cc::ui

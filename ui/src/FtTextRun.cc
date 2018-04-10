@@ -6,13 +6,13 @@
  *
  */
 
+#include <cc/ui/FtFontManager>
 #include <cc/ui/FtTextRun>
 
 namespace cc {
 namespace ui {
 
-FtTextRun::FtTextRun(FtTypeSetter *typeSetter):
-    typeSetter_(typeSetter),
+FtTextRun::FtTextRun():
     glyphRuns_(FtGlyphRuns::create()),
     firstLineHeight_(0),
     byteCount_(0),
@@ -21,8 +21,7 @@ FtTextRun::FtTextRun(FtTypeSetter *typeSetter):
 
 void FtTextRun::append(String text, const Font &font)
 {
-    if (!typeSetter_) return;
-    Ref<const FtGlyphRun> run = typeSetter_->ftLayout(text, font);
+    Ref<const FtGlyphRun> run = FtFontManager::instance()->ftTypeSet(text, font, advance_);
     glyphRuns_->append(run);
 
     if (run->advance()[1] == 0) {
@@ -33,7 +32,7 @@ void FtTextRun::append(String text, const Font &font)
         size_[1] = firstLineHeight_ + run->advance()[1];
     if (size_[0] < run->advance()[0]) size_[0] = run->advance()[0];
 
-    advance_ = typeSetter_->advance();
+    advance_ = run->advance();
     byteCount_ += text->count();
 }
 
@@ -154,113 +153,12 @@ Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns 
 Ref<TextRun> FtTextRun::copy() const
 {
     Ref<FtTextRun> textRun = new FtTextRun;
-    textRun->typeSetter_ = typeSetter_->copy();
     textRun->glyphRuns_ = FtGlyphRuns::create(glyphRuns_->count());
     for (int i = 0, n = glyphRuns_->count(); i < n; ++i)
         textRun->glyphRuns_->at(i) = glyphRuns_->at(i)->ftCopy();
     textRun->advance_ = advance_;
     textRun->byteCount_ = byteCount_;
     return textRun;
-}
-
-Ref<TextRun> FtTextRun::copy(int byteOffset0, int byteOffset1) const
-{
-    Ref<FtTextRun> textRun = new FtTextRun;
-    textRun->typeSetter_ = typeSetter_;
-    textRun->glyphRuns_ = FtGlyphRuns::create();
-    textRun->byteCount_ = 0;
-
-    if (byteCount_ <= byteOffset0 || byteOffset1 <= 0 || byteOffset1 <= byteOffset0)
-        return textRun;
-
-    const FtGlyphRun *glyphRun0 = 0;
-    double shiftX = 0;
-    int blockOffset0 = 0;
-    for (const FtGlyphRun *glyphRun: glyphRuns_) {
-        int blockOffset1 = blockOffset0 + glyphRun->text()->count();
-        if (!(
-            (byteOffset1 <= blockOffset0) ||
-            (blockOffset1 <= byteOffset0)
-        )) {
-            Ref<FtGlyphRun> glyphRun =
-                glyphRun->copy(
-                    byteOffset0 - blockOffset0,
-                    byteOffset1 - blockOffset0
-                );
-            if (!glyphRun0) {
-                glyphRun0 = glyphRun;
-                if (glyphRun0->cairoGlyphs_->count() > 0)
-                    shiftX = -glyphRun0->cairoGlyphs_->at(0).x;
-            }
-            if (shiftX != 0)
-                FtGlyphRun::lineShift(glyphRun, shiftX);
-            textRun->glyphRuns_->append(glyphRun);
-        }
-        blockOffset0 = blockOffset1;
-    }
-
-    if (textRun->glyphRuns_->count() > 0)
-        textRun->advance_ = textRun->glyphRuns_->at(textRun->glyphRuns_->count() - 1)->advance();
-
-    return textRun;
-}
-
-void FtTextRun::paste(int byteOffset0, int byteOffset1, const TextRun *textRun)
-{
-    if (byteOffset0 < 0) byteOffset0 = 0;
-    else if (byteCount_ < byteOffset0) byteOffset0 = byteCount_;
-    if (byteOffset1 < 0) byteOffset1 = 0;
-    else if (byteCount_ < byteOffset1) byteOffset1 = byteCount_;
-    if (byteOffset1 < byteOffset0) {
-        int h = byteOffset0;
-        byteOffset0 = byteOffset1;
-        byteOffset1 = h;
-    }
-
-    if (byteOffset0 == byteCount_) {
-        TextRun::append(textRun);
-        return;
-    }
-
-    Ref<FtTextRun> textRun2 = FtTextRun::create(FtTypeSetter::create());
-
-    int byteOffset = 0;
-    for (const FtGlyphRun *glyphRun: glyphRuns_)
-    {
-        int nextByteOffset = byteOffset + glyphRun->text()->count();
-
-        if (nextByteOffset <= byteOffset0 || byteOffset1 <= byteOffset) {
-            textRun2->append(glyphRun->text(), glyphRun->font());
-        }
-        else if (byteOffset0 <= byteOffset && nextByteOffset <= byteOffset1) {
-            ;
-        }
-        else {
-            textRun2->append(
-                glyphRun->text()->copy(
-                    byteOffset0 - byteOffset,
-                    byteOffset1 - byteOffset
-                ),
-                glyphRun->font()
-            );
-        }
-
-        if (textRun2->byteCount_ == byteOffset0 && textRun) {
-            for (const GlyphRun *pasteBlock: textRun->getAllGlyphRuns()) {
-                textRun2->append(
-                    pasteBlock->text(),
-                    pasteBlock->font()
-                );
-            }
-        }
-
-        byteOffset = nextByteOffset;
-    }
-
-    typeSetter_ = textRun2->typeSetter_;
-    glyphRuns_ = textRun2->glyphRuns_;
-    advance_ = textRun2->advance_;
-    byteCount_ = textRun2->byteCount_;
 }
 
 }} // namespace cc::ui

@@ -9,8 +9,9 @@
 #pragma once
 
 #include <cc/Source>
-#include <cc/ui/ScaledFont>
 #include <cc/ui/FontFamily>
+#include <cc/ui/GlyphRun>
+#include <cc/ui/TextRun>
 
 namespace cc { template<class, class> class Map; }
 
@@ -35,6 +36,10 @@ public:
         Slant slant = Slant::Normal,
         Stretch stretch = Stretch::Normal
     ) const = 0;
+
+    virtual Ref<GlyphRun> typeSet(const String &text, const Font &font, const Point &origin = Point{}) const = 0;
+
+    virtual Ref<TextRun> createTextRun() const = 0;
 
 protected:
     FontManager();

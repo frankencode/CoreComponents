@@ -2,7 +2,6 @@
 #include <cc/ui/Application>
 #include <cc/ui/View>
 #include <cc/ui/FontManager>
-#include <cc/ui/TypeSetter>
 
 using namespace cc;
 using namespace cc::ui;
@@ -17,7 +16,7 @@ class MainView: public View
         color = Color{"#FFFFFF"};
 
         glyphRun_ =
-            GlyphRun::layout(
+            GlyphRun::typeSet(
                 "Es war einmal eine Königstochter, die ging hinaus in den Wald und setzte "
                 "sich an einen kühlen Brunnen. Sie hatte eine goldene Kugel, die war ihr "
                 "liebstes Spielwerk, die warf sie in die Höhe und fing sie wieder in der "

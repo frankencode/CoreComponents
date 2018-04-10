@@ -7,7 +7,6 @@
  */
 
 #include <cc/ui/FtFontManager>
-#include <cc/ui/FtTypeSetter>
 #include <cc/ui/PlatformManager>
 #include <cc/ui/PlatformPlugin>
 
@@ -29,11 +28,6 @@ PlatformPlugin::PlatformPlugin(String name, bool isPlatformDefault):
 FontManager *PlatformPlugin::fontManager() const
 {
     return FtFontManager::instance();
-}
-
-Ref<TypeSetter> PlatformPlugin::createTypeSetter() const
-{
-    return FtTypeSetter::create();
 }
 
 }} // namespace cc::ui

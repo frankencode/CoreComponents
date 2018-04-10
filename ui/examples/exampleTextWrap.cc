@@ -1,7 +1,6 @@
 #include <cc/ui/Application>
 #include <cc/ui/View>
 #include <cc/ui/FontManager>
-#include <cc/ui/TypeSetter>
 
 using namespace cc;
 using namespace cc::ui;
@@ -16,7 +15,7 @@ class MainView: public View
         color = Color{"#FFFFFF"};
 
         glyphRun_ =
-            GlyphRun::layout(
+            GlyphRun::typeSet(
                 #if 0
                 "Tοσοῦτον δ' ἀπολέλοιπεν ἡ πόλις ἡμῶν περὶ τὸ φρονεῖν καὶ "
                 "λέγειν τοὺς ἄλλους ἀνθρώπους, ὥσθ' οἱ ταύτης μαθηταὶ τῶν "

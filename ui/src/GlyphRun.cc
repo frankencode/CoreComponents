@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/ui/PlatformPlugin>
+#include <cc/ui/FontManager>
 #include <cc/ui/GlyphRun>
 
 namespace cc {
 namespace ui {
 
-Ref<GlyphRun> GlyphRun::layout(String text, const Font &font)
+Ref<GlyphRun> GlyphRun::typeSet(const String &text, const Font &font, const Point &origin)
 {
-    return PlatformPlugin::instance()->createTypeSetter()->layout(text, font);
+    return FontManager::instance()->typeSet(text, font, origin);
 }
 
 }} // namespace cc::ui

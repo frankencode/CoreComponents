@@ -16,7 +16,7 @@ namespace ui {
 class GlyphRun: public Object
 {
 public:
-    static Ref<GlyphRun> layout(String text, const Font &font = Font());
+    static Ref<GlyphRun> typeSet(const String &text, const Font &font = Font(), const Point &origin = Point{});
 
     virtual String text() const = 0;
     virtual Font font() const = 0;
@@ -29,7 +29,7 @@ public:
     virtual Ref<GlyphRun> elide(double maxWidth) const = 0;
 
     virtual Ref<GlyphRun> copy() const = 0;
-    virtual Ref<GlyphRun> copy(int byteOffset0, int byteOffset1) const = 0;
+    // virtual Ref<GlyphRun> copy(int byteOffset0, int byteOffset1) const = 0;
 };
 
 }} // namespace cc::ui

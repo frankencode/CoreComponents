@@ -117,4 +117,6 @@ private:
 inline Font operator*(const Font &font, double scale) { Font f = font; return f *= scale; }
 inline Font operator*(double scale, const Font &font) { return font * scale; }
 
+String str(const Font &font);
+
 }} // namespace cc::ui

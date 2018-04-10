@@ -11,7 +11,6 @@
 #include <cc/ui/Application>
 #include <cc/ui/TimeMaster>
 #include <cc/ui/FontManager>
-#include <cc/ui/TypeSetter>
 #include <cc/ui/DisplayManager>
 #include <cc/ui/TouchDeviceManager>
 
@@ -30,7 +29,6 @@ public:
     virtual TimeMaster *timeMaster() const = 0;
 
     virtual FontManager *fontManager() const;
-    virtual Ref<TypeSetter> createTypeSetter() const;
 
     virtual DisplayManager *displayManager() const = 0;
     virtual TouchDeviceManager *touchDeviceManager() const = 0;

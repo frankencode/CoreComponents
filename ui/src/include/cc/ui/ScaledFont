@@ -17,14 +17,6 @@ namespace ui {
 class ScaledFont: public Object
 {
 public:
-    static Ref<ScaledFont> select(
-        String family,
-        double size = 10,
-        Weight weight = Weight::Normal,
-        Slant slant = Slant::Normal,
-        Stretch stretch = Stretch::Normal
-    );
-
     virtual String family() const = 0;
     virtual double size() const = 0;
     virtual Weight weight() const = 0;
@@ -33,8 +25,6 @@ public:
     virtual Pitch pitch() const = 0;
 
     virtual Ref<FontMetrics> getMetrics() const = 0;
-
-    String toString() const;
 };
 
 }} // namespace cc::ui

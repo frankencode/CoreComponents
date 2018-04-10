@@ -7,7 +7,7 @@
  */
 
 #include <cc/ui/StylePlugin>
-#include <cc/ui/PlatformPlugin>
+#include <cc/ui/FontManager>
 #include <cc/ui/TextRun>
 
 namespace cc {
@@ -15,7 +15,7 @@ namespace ui {
 
 Ref<TextRun> TextRun::create()
 {
-    return PlatformPlugin::instance()->createTypeSetter()->createTextRun();
+    return FontManager::instance()->createTextRun();
 }
 
 Ref<TextRun> TextRun::create(String text, const Font &font)

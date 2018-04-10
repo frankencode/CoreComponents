@@ -81,4 +81,18 @@ bool Font::differ(const Font &a, const Font &b)
         a->color()      != b->color();
 }
 
+String str(const Font &font)
+{
+    return Format()
+        << "ScaledFont {" << nl
+        << "  family: " << font->family() << nl
+        << "  size: " << font->size() << nl
+        << "  weight: " << font->weight() << nl
+        << "  slant: " << font->slant() << nl
+        << "  stretch: " << font->stretch() << nl
+        << "  decoration: " << font->decoration() << nl
+        << "  color: " << font->color() << nl
+        << "}";
+}
+
 }} // namespace cc::ui

@@ -73,6 +73,16 @@ public:
         Stretch stretch = Stretch::Normal
     ) const override { return Ref<ScaledFont>{}; }
 
+    Ref<GlyphRun> typeSet(const String &text, const Font &font, const Point &origin) const override
+    {
+        return Ref<GlyphRun>{};
+    }
+
+    Ref<TextRun> createTextRun() const override
+    {
+        return Ref<TextRun>{};
+    }
+
 private:
     Ref<FontFace> openFontFace(String) override { return nullptr; }
 

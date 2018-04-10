@@ -13,9 +13,6 @@
 namespace cc {
 namespace ui {
 
-class TypeSetter;
-class Painter;
-
 class TextRun: public Object
 {
 public:
@@ -41,8 +38,6 @@ public:
     virtual Ref< Source<const GlyphRun *> > getAllGlyphRuns() const = 0;
 
     virtual Ref<TextRun> copy() const = 0;
-    virtual Ref<TextRun> copy(int byteOffset0, int byteOffset1) const = 0;
-    virtual void paste(int byteOffset0, int byteOffset1, const TextRun *textRun = 0) = 0;
 
 private:
     String replaceEntities(String text);

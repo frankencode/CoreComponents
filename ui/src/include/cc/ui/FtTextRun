@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/ui/TextRun>
-#include <cc/ui/FtTypeSetter>
+#include <cc/ui/FtGlyphRun>
 
 namespace cc {
 namespace ui {
@@ -19,8 +19,8 @@ class Painter;
 class FtTextRun: public TextRun
 {
 public:
-    static Ref<FtTextRun> create(FtTypeSetter *typeSetter) {
-        return new FtTextRun(typeSetter);
+    static Ref<FtTextRun> create() {
+        return new FtTextRun;
     }
 
     void append(String text, const Font &font) override;
@@ -38,9 +38,6 @@ public:
     Ref< Source<const GlyphRun *> > getAllGlyphRuns() const override { return glyphRuns_->getAll<const GlyphRun *>(); }
 
     Ref<TextRun> copy() const override;
-    Ref<TextRun> copy(int byteOffset0, int byteOffset1) const override;
-
-    void paste(int byteOffset0, int byteOffset1, const TextRun *textRun = 0);
 
 private:
     friend class Object;
@@ -52,10 +49,8 @@ private:
     static Ref<const FtGlyphRun> fold(const FtGlyphRuns *glyphRuns);
     static Ref<FtTextRun> unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns *glyphRuns);
 
-    FtTextRun() {}
-    FtTextRun(FtTypeSetter *typeSetter);
+    FtTextRun();
 
-    Ref<FtTypeSetter> typeSetter_;
     Ref<FtGlyphRuns> glyphRuns_;
     Point advance_;
     double firstLineHeight_;

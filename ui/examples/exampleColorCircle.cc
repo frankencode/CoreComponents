@@ -1,8 +1,6 @@
 #include <algorithm>
 #include <cc/ui/Application>
 #include <cc/ui/View>
-#include <cc/ui/FontManager>
-#include <cc/ui/TypeSetter>
 
 using namespace cc;
 using namespace cc::ui;

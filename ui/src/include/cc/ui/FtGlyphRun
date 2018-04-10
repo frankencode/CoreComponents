@@ -17,7 +17,7 @@
 namespace cc {
 namespace ui {
 
-class FtTypeSetter;
+class FtFontManager;
 class FtTextRun;
 
 typedef Array<cairo_glyph_t> CairoGlyphs;
@@ -29,7 +29,7 @@ public:
     String text() const override { return text_; }
     Font font() const override { return font_; }
 
-    Point advance() const override { return advance_; } // FIXME: rename to "fin"
+    Point advance() const override { return advance_; }
     Size size() const override { return size_ ; }
 
     int lineCount() const override { return lineCount_; }
@@ -38,16 +38,16 @@ public:
     Ref<GlyphRun> elide(double maxWidth) const override;
 
     Ref<GlyphRun> copy() const override;
-    Ref<GlyphRun> copy(int byteOffset0, int byteOffset1) const override;
+    // Ref<GlyphRun> copy(int byteOffset0, int byteOffset1) const override;
 
-    const FtScaledFont *ftFont() const { return Object::cast<const FtScaledFont *>(font_->getScaledFont()); }
+    const FtScaledFont *ftFont() const { return Object::cast<const FtScaledFont *>(font_->getScaledFont()); } // FIXME: rename to ftScaledFont()
 
     CairoGlyphs *cairoGlyphs() const { return cairoGlyphs_; }
     CairoTextClusters *cairoTextClusters() const { return cairoTextClusters_; }
 
 private:
     friend class Object;
-    friend class FtTypeSetter;
+    friend class FtFontManager;
     friend class FtTextRun;
 
     FtGlyphRun(): lineCount_(1) {}

@@ -1,7 +1,6 @@
 #include <cc/ui/Application>
 #include <cc/ui/View>
 #include <cc/ui/FontManager>
-#include <cc/ui/TypeSetter>
 
 using namespace cc;
 using namespace cc::ui;
@@ -24,14 +23,14 @@ class MainView: public View
             String text = Format("%%: %%") << fontFamily->name() << pangram;
 
             Font font;
-            glyphRuns_ << GlyphRun::layout(text, font);
+            glyphRuns_ << GlyphRun::typeSet(text, font);
 
             font->setWeight(Weight::Bold);
-            glyphRuns_ << GlyphRun::layout(text, font);
+            glyphRuns_ << GlyphRun::typeSet(text, font);
 
             font->setWeight(Weight::Normal);
             font->setSlant(Slant::Italic);
-            glyphRuns_ << GlyphRun::layout(text, font);
+            glyphRuns_ << GlyphRun::typeSet(text, font);
         }
     }
 
