@@ -54,8 +54,8 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
     if (text->contains('\n'))
         return ftTypeSet(text->replace("\n", " ")->simplify(), font, origin);
 
-    const FtScaledFont *ftFont = Object::cast<const FtScaledFont *>(font->getScaledFont());
-    FT_Face ftFace = cairo_ft_scaled_font_lock_face(ftFont->cairoScaledFont());
+    const FtScaledFont *ftScaledFont = Object::cast<const FtScaledFont *>(font->getScaledFont());
+    FT_Face ftFace = cairo_ft_scaled_font_lock_face(ftScaledFont->cairoScaledFont());
 
     Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text, font);
 
@@ -157,7 +157,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
     ftGlyphRun->cairoTextClusters_ = cairoTextClusters;
     ftGlyphRun->finalGlyphAdance_ = glyphAdvance;
 
-    cairo_ft_scaled_font_unlock_face(ftFont->cairoScaledFont());
+    cairo_ft_scaled_font_unlock_face(ftScaledFont->cairoScaledFont());
 
     return ftGlyphRun;
 }

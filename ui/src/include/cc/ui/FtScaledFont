@@ -30,6 +30,8 @@ public:
 
     cairo_scaled_font_t *cairoScaledFont() const { return cairoScaledFont_; }
 
+    Step getGlyphAdvance(unsigned int glyphIndex) const;
+
 private:
     friend class Object;
 
@@ -44,17 +46,17 @@ private:
 
 class FtFaceGuard {
 public:
-    FtFaceGuard(const FtScaledFont *ftFont):
-        ftFont_(ftFont),
-        ftFace_(cairo_ft_scaled_font_lock_face(ftFont_->cairoScaledFont()))
+    FtFaceGuard(const FtScaledFont *ftScaledFont):
+        ftScaledFont_(ftScaledFont),
+        ftFace_(cairo_ft_scaled_font_lock_face(ftScaledFont_->cairoScaledFont()))
     {}
     ~FtFaceGuard() {
-        cairo_ft_scaled_font_unlock_face(ftFont_->cairoScaledFont());
+        cairo_ft_scaled_font_unlock_face(ftScaledFont_->cairoScaledFont());
     }
     inline const FtFaceGuard *operator->() const { return this; }
     inline FT_Face ftFace() const { return ftFace_; }
 private:
-    const FtScaledFont *ftFont_;
+    const FtScaledFont *ftScaledFont_;
     FT_Face ftFace_;
 };
 

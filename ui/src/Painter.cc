@@ -140,7 +140,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun)
     if (glyphRun->text()->count() == 0) return;
 
     const FtGlyphRun *ftGlyphRun = Object::cast<const FtGlyphRun *>(glyphRun);
-    cairo_set_scaled_font(cr_, ftGlyphRun->ftFont()->cairoScaledFont());
+    cairo_set_scaled_font(cr_, ftGlyphRun->ftScaledFont()->cairoScaledFont());
 
     cairo_matrix_t matrixSaved;
     cairo_get_matrix(cr_, &matrixSaved);
@@ -232,7 +232,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
     if (glyphRun->text()->count() == 0) return;
 
     const FtGlyphRun *ftGlyphRun = Object::cast<const FtGlyphRun *>(glyphRun);
-    cairo_set_scaled_font(cr_, ftGlyphRun->ftFont()->cairoScaledFont());
+    cairo_set_scaled_font(cr_, ftGlyphRun->ftScaledFont()->cairoScaledFont());
 
     cairo_matrix_t matrixSaved;
     cairo_get_matrix(cr_, &matrixSaved);

@@ -61,9 +61,9 @@ Ref<GlyphRun> FtGlyphRun::wrap(double maxWidth, TextAlign textAlign, double line
     int wrapClusterIndex = 0;
 
     if (lineHeight <= 0) {
-        FtFaceGuard guard(ftFont());
+        FtFaceGuard guard(ftScaledFont());
         FT_Face ftFace = guard->ftFace();
-        lineHeight = ftFont()->size() * ftFace->height / ftFace->units_per_EM;
+        lineHeight = ftScaledFont()->size() * ftFace->height / ftFace->units_per_EM;
     }
     double trailingSpace = 0;
     double shiftX = 0;

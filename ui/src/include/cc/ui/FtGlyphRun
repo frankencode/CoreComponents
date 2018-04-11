@@ -38,9 +38,8 @@ public:
     Ref<GlyphRun> elide(double maxWidth) const override;
 
     Ref<GlyphRun> copy() const override;
-    // Ref<GlyphRun> copy(int byteOffset0, int byteOffset1) const override;
 
-    const FtScaledFont *ftFont() const { return Object::cast<const FtScaledFont *>(font_->getScaledFont()); } // FIXME: rename to ftScaledFont()
+    const FtScaledFont *ftScaledFont() const { return Object::cast<const FtScaledFont *>(font_->getScaledFont()); }
 
     CairoGlyphs *cairoGlyphs() const { return cairoGlyphs_; }
     CairoTextClusters *cairoTextClusters() const { return cairoTextClusters_; }
