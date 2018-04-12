@@ -23,19 +23,20 @@ IndustrialStylePlugin::IndustrialStylePlugin():
 
 void IndustrialStylePlugin::activate()
 {
-    const double fontSize = sp(16);
-
-    FontManager::instance()->addPath("/usr/share/fonts/truetype/dejavu");
-
-    String robotoPath = "/usr/share/fonts/truetype/roboto/hinted/";
-    if (Dir::exists(robotoPath)) {
-        FontManager::instance()->addPath(robotoPath);
-        defaultFont = Font("Roboto", fontSize);
+    String dejavuPath = "/usr/share/fonts/truetype/dejavu";
+    if (Dir::exists(dejavuPath)) {
+        FontManager::instance()->addPath(dejavuPath);
+        defaultFont = Font("DejaVu Sans", sp(16));
+        defaultFixedFont = Font("DejaVu Sans Mono", sp(16));
     }
-    else
-        defaultFont = Font("DejaVu Sans", fontSize);
-
-    defaultFixedFont = Font("DejaVu Sans Mono", fontSize);;
+    else {
+        String notoPath = "/usr/share/fonts/truetype/noto";
+        if (Dir::exists(notoPath)) {
+            FontManager::instance()->addPath(notoPath);
+            defaultFont = Font("Noto Sans", sp(16));
+            defaultFixedFont = Font("Noto Mono", sp(16));
+        }
+    }
 }
 
 CC_REGISTRATION(IndustrialStylePlugin)

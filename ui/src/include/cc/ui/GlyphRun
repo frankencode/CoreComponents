@@ -29,7 +29,6 @@ public:
     virtual Ref<GlyphRun> elide(double maxWidth) const = 0;
 
     virtual Ref<GlyphRun> copy() const = 0;
-    // virtual Ref<GlyphRun> copy(int byteOffset0, int byteOffset1) const = 0;
 };
 
 }} // namespace cc::ui

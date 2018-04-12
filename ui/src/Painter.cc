@@ -162,7 +162,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun)
             if (+(decoration & Decoration::Underline))
                 u = -metrics->underlinePosition() + v / 2;
             else if (+(decoration & Decoration::StrikeOut))
-                u = std::floor(-2 * metrics->ascender() / 5 + v / 2);
+                u = -2 * metrics->ascender() / 5 + v / 2;
         }
 
         const CharArray *text = ftGlyphRun->text();
@@ -187,8 +187,8 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun)
             char ch1 = text->at(byteOffset);
             if (ch0 > 0x20 && ch1 <= 0x20) {
                 rectangle(
-                    Point{ glyph0->x            , glyph0->y + u },
-                    Size { glyph1->x - glyph0->x, v             }
+                    Point{ glyph0->x            , std::round(glyph0->y + u) },
+                    Size { glyph1->x - glyph0->x, v                         }
                 );
                 fill();
                 glyph0 = glyph1;
@@ -201,8 +201,8 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun)
 
         if (ftGlyphRun->advance()[0] - glyph0->x > 0) {
             rectangle(
-                Point{ glyph0->x                           , glyph0->y + u },
-                Size { ftGlyphRun->advance()[0] - glyph0->x, v             }
+                Point{ glyph0->x                           , std::round(glyph0->y + u) },
+                Size { ftGlyphRun->advance()[0] - glyph0->x, v                         }
             );
             fill();
         }
