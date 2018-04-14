@@ -25,7 +25,7 @@ Ref<FtGlyphRun> FtGlyphRun::ftCopy() const
     glyphRun->size_ = size_;
     glyphRun->cairoGlyphs_ = cairoGlyphs_->copy();
     glyphRun->cairoTextClusters_ = cairoTextClusters_->copy();
-    glyphRun->finalGlyphAdance_ = finalGlyphAdance_;
+    glyphRun->finalGlyphAdvance_ = finalGlyphAdvance_;
     return glyphRun;
 }
 
@@ -47,7 +47,7 @@ Ref<GlyphRun> FtGlyphRun::wrap(double maxWidth, TextAlign textAlign, double line
 
     ftGlyphRun->cairoGlyphs_ = CairoGlyphs::create(cairoGlyphs_->count());
     ftGlyphRun->cairoTextClusters_ = cairoTextClusters_;
-    ftGlyphRun->finalGlyphAdance_ = finalGlyphAdance_;
+    ftGlyphRun->finalGlyphAdvance_ = finalGlyphAdvance_;
 
     int glyphOffset = 0;
     int byteOffset = 0;
@@ -156,7 +156,7 @@ Ref<GlyphRun> FtGlyphRun::wrap(double maxWidth, TextAlign textAlign, double line
     ftGlyphRun->advance_ = Step{
         ftGlyphRun->cairoGlyphs_->at(ftGlyphRun->cairoGlyphs_->count() - 1).x,
         ftGlyphRun->cairoGlyphs_->at(ftGlyphRun->cairoGlyphs_->count() - 1).y
-    } + ftGlyphRun->finalGlyphAdance_;
+    } + ftGlyphRun->finalGlyphAdvance_;
 
     ftGlyphRun->size_ = Size{maxWidth, shiftY + size_[1]};
 

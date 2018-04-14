@@ -1,0 +1,27 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/types>
+
+namespace cc {
+namespace ui {
+
+class TextCursor: public Object
+{
+public:
+    virtual Point pos0() const = 0;
+    virtual Point pos1() const = 0;
+    virtual int byteOffset() const = 0;
+    virtual bool isValid() const = 0;
+    virtual int move(int steps) = 0;
+    virtual Ref<TextCursor> copy() const = 0;
+};
+
+}} // namespace cc::ui

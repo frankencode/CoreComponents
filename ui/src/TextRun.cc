@@ -97,4 +97,19 @@ String TextRun::replaceEntities(String text)
     return text;
 }
 
+Ref<TextCursor> TextRun::getNearestTextCursor(Point pointerPos) const
+{
+    #if 0
+    Point nearestPoint;
+    double nearestDistance = -1;
+    Ref<TextCursor> nearestCursor;
+
+    for (Ref<TextCursor> cursor = getTextCursor(0); cursor->isValid(); cursor->move(1)) {
+
+    }
+    #endif
+
+    return getTextCursor(0);
+}
+
 }} // namespace cc::ui

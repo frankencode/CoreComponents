@@ -15,6 +15,7 @@ namespace cc {
 namespace ui {
 
 class Painter;
+class FtTextCursor;
 
 class FtTextRun: public TextRun
 {
@@ -22,6 +23,8 @@ public:
     static Ref<FtTextRun> create() {
         return new FtTextRun;
     }
+
+    Ref<TextRun> copy() const override;
 
     void append(String text, const Font &font) override;
 
@@ -37,11 +40,12 @@ public:
 
     Ref< Source<const GlyphRun *> > getAllGlyphRuns() const override { return glyphRuns_->getAll<const GlyphRun *>(); }
 
-    Ref<TextRun> copy() const override;
+    Ref<TextCursor> getTextCursor(int byteOffset) const override;
 
 private:
     friend class Object;
     friend class Painter;
+    friend class FtTextCursor;
 
     typedef List< Ref<const FtGlyphRun> > FtGlyphRuns;
 
@@ -50,6 +54,7 @@ private:
     static Ref<FtTextRun> unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns *glyphRuns);
 
     FtTextRun();
+    int moveTextCursor(FtTextCursor *cursor, int steps) const;
 
     Ref<FtGlyphRuns> glyphRuns_;
     Point advance_;

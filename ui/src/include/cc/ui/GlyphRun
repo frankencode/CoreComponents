@@ -23,6 +23,7 @@ public:
 
     virtual Point advance() const = 0;
     virtual Size size() const = 0;
+    virtual int byteCount() const = 0;
     virtual int lineCount() const = 0;
 
     virtual Ref<GlyphRun> wrap(double maxWidth, TextAlign textAlign = TextAlign::Left, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const = 0;

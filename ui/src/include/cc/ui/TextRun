@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/ui/GlyphRun>
+#include <cc/ui/TextCursor>
 
 namespace cc {
 namespace ui {
@@ -20,6 +21,8 @@ public:
     static Ref<TextRun> create(String text, const Font &font = Font());
 
     static Ref<TextRun> copy(const TextRun *other) { return other->copy(); }
+
+    virtual Ref<TextRun> copy() const = 0;
 
     virtual void append(String text, const Font &font = Font()) = 0;
     void append(const TextRun *textRun);
@@ -37,7 +40,8 @@ public:
 
     virtual Ref< Source<const GlyphRun *> > getAllGlyphRuns() const = 0;
 
-    virtual Ref<TextRun> copy() const = 0;
+    virtual Ref<TextCursor> getTextCursor(int byteOffset) const = 0;
+    virtual Ref<TextCursor> getNearestTextCursor(Point pointerPos) const;
 
 private:
     String replaceEntities(String text);

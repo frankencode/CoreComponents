@@ -155,7 +155,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
     cairoTextClusters->truncate(cairoTextClustersCount);
     ftGlyphRun->cairoGlyphs_ = cairoGlyphs;
     ftGlyphRun->cairoTextClusters_ = cairoTextClusters;
-    ftGlyphRun->finalGlyphAdance_ = glyphAdvance;
+    ftGlyphRun->finalGlyphAdvance_ = glyphAdvance;
 
     cairo_ft_scaled_font_unlock_face(ftScaledFont->cairoScaledFont());
 

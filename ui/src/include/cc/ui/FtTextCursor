@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/TextCursor>
+
+namespace cc {
+namespace ui {
+
+class FtTextRun;
+
+class FtTextCursor: public TextCursor
+{
+public:
+    Point pos0() const override { return pos0_; }
+    Point pos1() const override { return pos1_; }
+
+    int byteOffset() const override { return byteOffset_; }
+    bool isValid() const override;
+
+    int move(int steps) override;
+    Ref<TextCursor> copy() const override;
+
+private:
+    friend class Object;
+    friend class FtTextRun;
+
+    FtTextCursor(const FtTextRun *ftTextRun = 0);
+    FtTextCursor(const FtTextCursor *other);
+
+    Ref<const FtTextRun> ftTextRun_;
+    Point pos0_;
+    Point pos1_;
+    int byteOffset_;
+    int runIndex_;
+    int clusterIndex_;
+    int glyphIndex_;
+};
+
+}} // namespace cc::ui
