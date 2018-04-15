@@ -56,8 +56,6 @@ class MainView: public SlideView
         easeOn(slideCarrier()->pos, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));
     }
 
-    bool hasKeyInput() const override { return true; }
-
     bool onKeyPressed(const KeyEvent *event) override
     {
         if (event->scanCode() == ScanCode::Key_Left)

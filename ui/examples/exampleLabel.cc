@@ -31,8 +31,6 @@ class MainView: public View
         Timer::start(1, [=]{ label->text = getClockText(); label->angle += 45; });
     }
 
-    bool hasKeyInput() const override { return true; }
-
     bool onKeyPressed(const KeyEvent *event)
     {
         if (+(event->modifiers() & KeyModifier::Control))

@@ -37,7 +37,6 @@ protected:
 
     void insertChild(View *child) override;
 
-    bool hasPointerInput() const override;
     bool onPointerPressed(const PointerEvent *event) override;
     bool onPointerReleased(const PointerEvent *event) override;
     bool onPointerMoved(const PointerEvent *event) override;

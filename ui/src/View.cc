@@ -85,8 +85,8 @@ Point View::mapToLocal(Point g) const
 bool View::containsLocal(Point l) const
 {
     return
-        0 <= l[0] && l[0] < size()[0] &&
-        0 <= l[1] && l[1] < size()[1];
+        0 <= l[1] && l[1] < size()[1] &&
+        0 <= l[0] && l[0] < size()[0];
 }
 
 bool View::containsGlobal(Point g) const
@@ -123,33 +123,26 @@ void View::clear()
 void View::paint()
 {}
 
-bool View::hasPointerInput() const { return false; }
 bool View::onPointerPressed(const PointerEvent *event) { return false; }
 bool View::onPointerReleased(const PointerEvent *event) { return false; }
 bool View::onPointerClicked(const PointerEvent *event) { return false; }
 bool View::onPointerMoved(const PointerEvent *event) { return false; }
 
-bool View::hasMouseInput() const { return false; }
-bool View::hasMouseTracking() const { return false; }
 bool View::onMousePressed(const MouseEvent *event) { return false; }
 bool View::onMouseReleased(const MouseEvent *event) { return false; }
 bool View::onMouseClicked(const MouseEvent *event) { return false; }
 bool View::onMouseMoved(const MouseEvent *event) { return false; }
 
-bool View::hasFingerInput() const { return false; }
 bool View::onFingerPressed(const FingerEvent *event) { return false; }
 bool View::onFingerReleased(const FingerEvent *event) { return false; }
 bool View::onFingerClicked(const FingerEvent *event) { return false; }
 bool View::onFingerMoved(const FingerEvent *event) { return false; }
 
-bool View::hasWheelInput() const { return false; }
 bool View::onWheelMoved(const WheelEvent *event) { return false; }
 
-bool View::hasKeyInput() const { return false; }
 bool View::onKeyPressed(const KeyEvent *event) { return false; }
 bool View::onKeyReleased(const KeyEvent *event) { return false; }
 
-bool View::hasTextInput() const { return false; }
 Rect View::textInputArea() const { return Rect{}; }
 void View::onTextInputStarted() {}
 void View::onTextInputStopped() {}
@@ -176,56 +169,40 @@ void View::update(UpdateReason reason)
 
 bool View::feedFingerEvent(FingerEvent *event)
 {
-    const bool hpi = hasPointerInput();
-    const bool hfi = hasFingerInput();
+    PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
 
-    if (hpi || hfi)
+    if (event->action() == PointerAction::Pressed)
     {
-        PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
-
-        if (event->action() == PointerAction::Pressed)
+        if (onPointerPressed(event) || onFingerPressed(event))
         {
-            if (
-                (hpi && onPointerPressed(event)) ||
-                (hfi && onFingerPressed(event))
-            ) {
-                window()->touchTargets_->establish(event->fingerId(), this);
-                return true;
-            }
+            window()->touchTargets_->establish(event->fingerId(), this);
+            return true;
         }
-        else if (event->action() == PointerAction::Released)
-        {
-            bool eaten =
-                (hpi && onPointerReleased(event)) ||
-                (hfi && onFingerReleased(event));
+    }
+    else if (event->action() == PointerAction::Released)
+    {
+        bool eaten = onPointerReleased(event) || onFingerReleased(event);
 
-            if (containsLocal(event->pos())) {
-                if (
-                    (hpi && onPointerClicked(event)) ||
-                    (hfi && onFingerClicked(event))
-                )
-                    eaten = true;
-            }
-
-            if (eaten) return true;
-        }
-        else if (event->action() == PointerAction::Moved)
+        if (containsLocal(event->pos()))
         {
-            if (
-                (hpi && onPointerMoved(event)) ||
-                (hfi && onFingerMoved(event))
-            ) return true;
+            if (onPointerClicked(event) || onFingerClicked(event))
+                eaten = true;
         }
+
+        if (eaten) return true;
+    }
+    else if (event->action() == PointerAction::Moved)
+    {
+        if (onPointerMoved(event) || onFingerMoved(event))
+            return true;
     }
 
     for (auto pair: children_)
     {
         View *child = pair->value();
 
-        if (
-            (child->hasPointerInput() || child->hasFingerInput())  &&
-            child->containsGlobal(event->pos())
-        ) {
+        if (child->containsGlobal(event->pos()))
+        {
             if (child->feedFingerEvent(event))
                 return true;
         }
@@ -236,58 +213,43 @@ bool View::feedFingerEvent(FingerEvent *event)
 
 bool View::feedMouseEvent(MouseEvent *event)
 {
-    bool hpi = hasPointerInput();
-    bool hmi = hasMouseInput();
+    PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
 
-    if (hpi || hmi)
+    if (event->action() == PointerAction::Pressed)
     {
-        PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
-
-        if (event->action() == PointerAction::Pressed)
+        if (onPointerPressed(event) || onMousePressed(event))
         {
-            if (
-                (hpi && onPointerPressed(event)) ||
-                (hmi && onMousePressed(event))
-            ) {
-                window()->pointerTarget_ = this;
-                return true;
-            }
+            window()->pointerTarget_ = this;
+            return true;
         }
-        else if (event->action() == PointerAction::Released)
-        {
-            bool eaten =
-                (hpi && onPointerReleased(event)) ||
-                (hmi && onMouseReleased(event));
+    }
+    else if (event->action() == PointerAction::Released)
+    {
+        bool eaten = onPointerReleased(event) || onMouseReleased(event);
 
-            if (containsLocal(event->pos())) {
-                if (
-                    (hpi && onPointerClicked(event)) ||
-                    (hmi && onMouseClicked(event))
-                )
-                    eaten = true;
-            }
-
-            if (eaten) return true;
-        }
-        else if (event->action() == PointerAction::Moved)
+        if (containsLocal(event->pos()))
         {
-            if (event->button() != MouseButton::None || hasMouseTracking()) {
-                if (
-                    (hpi && onPointerMoved(event)) ||
-                    (hmi && onMouseMoved(event))
-                ) return true;
-            }
+            if (onPointerClicked(event) || onMouseClicked(event))
+                eaten = true;
         }
+
+        if (eaten) return true;
+    }
+    else if (event->action() == PointerAction::Moved)
+    {
+        if (
+            (event->button() != MouseButton::None && onPointerMoved(event)) ||
+            onMouseMoved(event)
+        )
+            return true;
     }
 
     for (auto pair: children_)
     {
         View *child = pair->value();
 
-        if (
-            (child->hasPointerInput() || child->hasMouseInput()) &&
-            child->containsGlobal(event->pos())
-        ) {
+        if (child->containsGlobal(event->pos()))
+        {
             if (child->feedMouseEvent(event))
                 return true;
         }
@@ -298,10 +260,8 @@ bool View::feedMouseEvent(MouseEvent *event)
 
 bool View::feedWheelEvent(WheelEvent *event)
 {
-    if (
-        hasWheelInput() &&
-        containsGlobal(event->mousePos())
-    ) {
+    if (containsGlobal(event->mousePos()))
+    {
         if (onWheelMoved(event))
             return true;
     }
@@ -319,16 +279,13 @@ bool View::feedWheelEvent(WheelEvent *event)
 
 bool View::feedKeyEvent(KeyEvent *event)
 {
-    if (hasKeyInput())
+    if (event->action() == KeyAction::Pressed)
     {
-        if (event->action() == KeyAction::Pressed)
-        {
-            if (onKeyPressed(event)) return true;
-        }
-        else if (event->action() == KeyAction::Released)
-        {
-            if (onKeyReleased(event)) return true;
-        }
+        if (onKeyPressed(event)) return true;
+    }
+    else if (event->action() == KeyAction::Released)
+    {
+        if (onKeyReleased(event)) return true;
     }
 
     for (auto pair: children_)

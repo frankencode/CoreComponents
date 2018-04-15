@@ -50,7 +50,7 @@ TextInputFocus::~TextInputFocus()
 
 bool TextInputFocus::isValid() const
 {
-    return target_ && target_->window() && target_->hasTextInput();
+    return target_ && target_->window();
 }
 
 View *TextInputFocus::target() const

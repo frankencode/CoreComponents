@@ -48,11 +48,6 @@ void ScrollView::insertChild(View *child)
         View::insertChild(child);
 }
 
-bool ScrollView::hasPointerInput() const
-{
-    return true;
-}
-
 bool ScrollView::onPointerPressed(const PointerEvent *event)
 {
     dragStart_ = event->pos();

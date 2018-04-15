@@ -77,33 +77,26 @@ protected:
     virtual void clear();
     virtual void paint();
 
-    virtual bool hasPointerInput() const;
     virtual bool onPointerPressed(const PointerEvent *event);
     virtual bool onPointerReleased(const PointerEvent *event);
     virtual bool onPointerClicked(const PointerEvent *event);
     virtual bool onPointerMoved(const PointerEvent *event);
 
-    virtual bool hasMouseInput() const;
-    virtual bool hasMouseTracking() const;
     virtual bool onMousePressed(const MouseEvent *event);
     virtual bool onMouseReleased(const MouseEvent *event);
     virtual bool onMouseClicked(const MouseEvent *event);
     virtual bool onMouseMoved(const MouseEvent *event);
 
-    virtual bool hasFingerInput() const;
     virtual bool onFingerPressed(const FingerEvent *event);
     virtual bool onFingerReleased(const FingerEvent *event);
     virtual bool onFingerClicked(const FingerEvent *event);
     virtual bool onFingerMoved(const FingerEvent *event);
 
-    virtual bool hasWheelInput() const;
     virtual bool onWheelMoved(const WheelEvent *event);
 
-    virtual bool hasKeyInput() const;
     virtual bool onKeyPressed(const KeyEvent *event);
     virtual bool onKeyReleased(const KeyEvent *event);
 
-    virtual bool hasTextInput() const;
     virtual Rect textInputArea() const;
     virtual void onTextInputStarted();
     virtual void onTextInputStopped();

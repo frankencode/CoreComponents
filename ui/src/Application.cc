@@ -56,16 +56,22 @@ bool Application::feedKeyEvent(Window *window, KeyEvent *event)
 
 bool Application::feedTextEditingEvent(const String &text, int start, int length)
 {
-    if (!textInputFocus() && textInputFocus()->isValid()) return false;
-    textInputFocus()->target()->onTextEdited(text, start, length);
-    return true;
+    if (textInputFocus() && textInputFocus()->isValid()) {
+        textInputFocus()->target()->onTextEdited(text, start, length);
+        return true;
+    }
+
+    return false;
 }
 
 bool Application::feedTextInputEvent(const String &text)
 {
-    if (textInputFocus() && textInputFocus()->isValid()) return false;
-    textInputFocus()->target()->onTextInput(text);
-    return true;
+    if (textInputFocus() && textInputFocus()->isValid()) {
+        textInputFocus()->target()->onTextInput(text);
+        return true;
+    }
+
+    return false;
 }
 
 }} // namespace cc::ui

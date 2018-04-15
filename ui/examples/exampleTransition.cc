@@ -29,8 +29,6 @@ class MainView: public View
         p->fill();
     }
 
-    bool hasPointerInput() const override { return true; }
-
     bool onPointerClicked(const PointerEvent *event) override
     {
         fout() << "Clicked at " << event->pos() << nl;
