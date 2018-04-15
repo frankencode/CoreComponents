@@ -23,7 +23,7 @@ protected:
     TouchPoint(View *parent):
         View(parent)
     {
-        color = Color::transparent;
+        color = Color::Transparent;
         size = Size{100, 100};
     }
 

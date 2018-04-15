@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/Format>
 #include <cc/ui/FtTextRun>
 #include <cc/ui/FtTextCursor>
 
@@ -44,6 +45,20 @@ int FtTextCursor::move(int steps)
 Ref<TextCursor> FtTextCursor::copy() const
 {
     return Object::create<FtTextCursor>(this);
+}
+
+String FtTextCursor::toString() const
+{
+    return Format()
+        << "FtTextCursor {" << nl
+        << "  posA: " << posA_ << nl
+        << "  posB: " << posB_ << nl
+        << "  byteOffset: " << byteOffset_ << nl
+        << "  isValid: " << isValid() << nl
+        << "  runIndex: " << runIndex_ << nl
+        << "  clusterIndex: " << clusterIndex_ << nl
+        << "  glyphIndex: " << glyphIndex_ << nl
+        << "}";
 }
 
 }} // namespace cc::ui

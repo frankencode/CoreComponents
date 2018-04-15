@@ -31,7 +31,7 @@ TextLine::TextLine(View *parent, String text_, const Font &font_):
     font->bind([=]{ return font_ * app()->textZoom(); });
     // margin->bind([=]{ return style()->defaultMargin(font()->size()); });
 
-    color = Color::transparent;
+    color = Color::Transparent;
 
     updateLayout();
 

@@ -27,6 +27,8 @@ public:
     int move(int steps) override;
     Ref<TextCursor> copy() const override;
 
+    String toString() const;
+
 private:
     friend class Object;
     friend class FtTextRun;

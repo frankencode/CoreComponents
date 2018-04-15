@@ -1,7 +1,9 @@
+#include <cc/debug>
 #include <cc/ui/Application>
 #include <cc/ui/View>
 #include <cc/ui/FontManager>
 #include <cc/ui/TextRun>
+#include <cc/ui/FtTextCursor>
 
 using namespace cc;
 using namespace cc::ui;
@@ -35,11 +37,53 @@ class MainView: public View
 
         auto updateTextWrap = [=]{
             wrappedTextRun_ = textRun_->wrap(size()[0] - 2 * margins_);
+            cursor_ = wrappedTextRun_->getTextCursor();
+            CC_INSPECT(Ref<FtTextCursor>(cursor_));
         };
 
         updateTextWrap();
 
         size->connect(updateTextWrap);
+    }
+
+    bool onKeyPressed(const KeyEvent *event) override
+    {
+        if (event->scanCode() == ScanCode::Key_Left)
+        {
+            CC_DEBUG << "LEFT";
+            CC_INSPECT(cursor_->move(-1));
+            CC_INSPECT(Ref<FtTextCursor>(cursor_));
+            update();
+        }
+        else if (event->scanCode() == ScanCode::Key_Right)
+        {
+            CC_DEBUG << "RIGHT";
+            CC_INSPECT(cursor_->move(1));
+            CC_INSPECT(Ref<FtTextCursor>(cursor_));
+            update();
+        }
+        else if (event->scanCode() == ScanCode::Key_Up)
+        {
+            CC_DEBUG << "UP";
+            cursor_ = wrappedTextRun_->getNearestTextCursor(
+                0.5 * (cursor_->posA() + cursor_->posB())
+                + Step { 0, -wrappedTextRun_->lineHeight() }
+            );
+            CC_INSPECT(Ref<FtTextCursor>(cursor_));
+            update();
+        }
+        else if (event->scanCode() == ScanCode::Key_Down)
+        {
+            CC_DEBUG << "DOWN";
+            cursor_ = wrappedTextRun_->getNearestTextCursor(
+                0.5 * (cursor_->posA() + cursor_->posB())
+                + Step { 0, wrappedTextRun_->lineHeight() }
+            );
+            CC_INSPECT(Ref<FtTextCursor>(cursor_));
+            update();
+        }
+
+        return true;
     }
 
     void paint() override
@@ -51,12 +95,20 @@ class MainView: public View
         p->fill();
         p->setSource(Color{"#000000"});
         // p->showTextRun(Point{margins_, margins_ + fontSize_}, textRun_);
-        p->showTextRun(Point{margins_, margins_ + style()->defaultFont()->size()}, wrappedTextRun_);
+        Point origin { margins_, margins_ + style()->defaultFont()->size() };
+        p->showTextRun(origin, wrappedTextRun_);
+        p->setSource(Color::Black);
+        p->rectangle(
+            origin + cursor_->posA() + Step { -1, 0 },
+            Size{2, 0} + (cursor_->posB() - cursor_->posA())
+        );
+        p->fill();
     }
 
     const double margins_ = 30;
     Ref<TextRun> textRun_;
     Ref<TextRun> wrappedTextRun_;
+    Ref<TextCursor> cursor_;
 };
 
 int main(int argc, char **argv)

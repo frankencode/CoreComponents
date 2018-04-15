@@ -14,15 +14,15 @@
 
 namespace cc {
 
-const Color Color::transparent { 0x00, 0x00, 0x00, 0x00 };
-const Color Color::black       { 0x00, 0x00, 0x00 };
-const Color Color::white       { 0xFF, 0xFF, 0xFF };
-const Color Color::red         { 0xFF, 0x00, 0x00 };
-const Color Color::green       { 0x00, 0xFF, 0x00 };
-const Color Color::blue        { 0x00, 0x00, 0xFF };
-const Color Color::yellow      { 0xFF, 0xFF, 0x00 };
-const Color Color::cyan        { 0x00, 0xFF, 0xFF };
-const Color Color::magenta     { 0xFF, 0x00, 0xFF };
+const Color Color::Transparent { 0x00, 0x00, 0x00, 0x00 };
+const Color Color::Black       { 0x00, 0x00, 0x00 };
+const Color Color::White       { 0xFF, 0xFF, 0xFF };
+const Color Color::Red         { 0xFF, 0x00, 0x00 };
+const Color Color::Green       { 0x00, 0xFF, 0x00 };
+const Color Color::Blue        { 0x00, 0x00, 0xFF };
+const Color Color::Yellow      { 0xFF, 0xFF, 0x00 };
+const Color Color::Cyan        { 0x00, 0xFF, 0xFF };
+const Color Color::Magenta     { 0xFF, 0x00, 0xFF };
 
 Color Color::parse(const char *s, bool *ok)
 {
@@ -140,11 +140,11 @@ Color Color::fromHsl(double h, double s, double l)
 
 Color Color::blend(Color a, Color b)
 {
-    const uint32_t h = component<Alpha, uint32_t>(b);
+    const uint32_t h = component<AlphaShift, uint32_t>(b);
 
     if (h == 0xFF)
     {
-        uint16_t o_a = component<Alpha, uint16_t>(a);
+        uint16_t o_a = component<AlphaShift, uint16_t>(a);
         if (o_a == 0xFF) return a;
 
         uint16_t n_a = 0x100 - o_a;
@@ -152,16 +152,16 @@ Color Color::blend(Color a, Color b)
         typedef uint16_t v4ui16 __attribute__((vector_size(8)));
 
         v4ui16 v_a {
-            component<Red  , uint16_t>(a),
-            component<Green, uint16_t>(a),
-            component<Blue , uint16_t>(a),
+            component<RedShift  , uint16_t>(a),
+            component<GreenShift, uint16_t>(a),
+            component<BlueShift , uint16_t>(a),
             0
         };
 
         v4ui16 v_b {
-            component<Red,   uint16_t>(b),
-            component<Green, uint16_t>(b),
-            component<Blue,  uint16_t>(b),
+            component<RedShift,   uint16_t>(b),
+            component<GreenShift, uint16_t>(b),
+            component<BlueShift,  uint16_t>(b),
             0
         };
 
@@ -170,7 +170,7 @@ Color Color::blend(Color a, Color b)
         b = Color { v_b[0], v_b[1], v_b[2] };
     }
     else {
-        uint32_t o_a = component<Alpha, uint32_t>(a);
+        uint32_t o_a = component<AlphaShift, uint32_t>(a);
         if (o_a == 0xFF) return a;
 
         uint32_t n_a = 0xFF - o_a;
@@ -185,16 +185,16 @@ Color Color::blend(Color a, Color b)
             typedef uint32_t v4ui32 __attribute__((vector_size(16)));
 
             v4ui32 v_a {
-                component<Red,   uint32_t>(a),
-                component<Green, uint32_t>(a),
-                component<Blue,  uint32_t>(a),
+                component<RedShift,   uint32_t>(a),
+                component<GreenShift, uint32_t>(a),
+                component<BlueShift,  uint32_t>(a),
                 0
             };
 
             v4ui32 v_b {
-                component<Red,   uint32_t>(b),
-                component<Green, uint32_t>(b),
-                component<Blue,  uint32_t>(b),
+                component<RedShift,   uint32_t>(b),
+                component<GreenShift, uint32_t>(b),
+                component<BlueShift,  uint32_t>(b),
                 0
             };
 

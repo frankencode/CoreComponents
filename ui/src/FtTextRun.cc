@@ -148,8 +148,6 @@ int FtTextRun::moveTextCursor(FtTextCursor *cursor, int steps) const
                 }
                 else break;
             }
-            else
-                ++clusterIndex;
         }
     }
     else {
@@ -160,7 +158,7 @@ int FtTextRun::moveTextCursor(FtTextCursor *cursor, int steps) const
                 if (runIndex > 0) {
                     --runIndex;
                     clusterIndex = glyphRuns_->at(runIndex)->cairoTextClusters_->count() - 1;
-                    glyphIndex = glyphRuns_->at(runIndex)->cairoGlyphs_->count() - 1;
+                    glyphIndex = glyphRuns_->at(runIndex)->cairoGlyphs_->count();
                 }
                 else break;
             }

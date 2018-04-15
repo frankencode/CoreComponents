@@ -40,7 +40,7 @@ public:
 
     Ref< Source<const GlyphRun *> > getAllGlyphRuns() const override { return glyphRuns_->getAll<const GlyphRun *>(); }
 
-    Ref<TextCursor> getTextCursor(int byteOffset) const override;
+    Ref<TextCursor> getTextCursor(int byteOffset = 0) const override;
 
 private:
     friend class Object;

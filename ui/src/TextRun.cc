@@ -6,6 +6,7 @@
  *
  */
 
+#include <limits>
 #include <cc/ui/StylePlugin>
 #include <cc/ui/FontManager>
 #include <cc/ui/TextRun>
@@ -97,22 +98,27 @@ String TextRun::replaceEntities(String text)
     return text;
 }
 
+double TextRun::lineHeight() const
+{
+    return size()[1] / lineCount();
+}
+
 Ref<TextCursor> TextRun::getNearestTextCursor(Point pointerPos) const
 {
-    double nearestDistance = -1;
-    Ref<TextCursor> nearestCursor = getTextCursor(0);
+    Ref<TextCursor> nearestCursor;
+    double nearestDistance = std::numeric_limits<double>::max();
 
-    for (Ref<TextCursor> cursor = nearestCursor; cursor->isValid(); cursor->move(1))
-    {
-        double distanceA = absPow2((cursor->posA() - pointerPos));
-        double distanceB = absPow2((cursor->posB() - pointerPos));
+    Ref<TextCursor> cursor = getTextCursor();
+    do {
+        const double distanceA = absPow2((cursor->posA() - pointerPos));
+        const double distanceB = absPow2((cursor->posB() - pointerPos));
 
-        if (distanceA > nearestDistance && distanceB > nearestDistance)
-            continue;
-
-        nearestDistance = (distanceA < distanceB) ? distanceA : distanceB;
-        nearestCursor = cursor->copy();
-    }
+        if (distanceA > nearestDistance && distanceB > nearestDistance);
+        else {
+            nearestDistance = (distanceA < distanceB) ? distanceA : distanceB;
+            nearestCursor = cursor->copy();
+        }
+    } while (cursor->move(1));
 
     return nearestCursor;
 }

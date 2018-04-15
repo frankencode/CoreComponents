@@ -22,6 +22,8 @@ public:
     virtual bool isValid() const = 0;
     virtual int move(int steps) = 0;
     virtual Ref<TextCursor> copy() const = 0;
+
+    String toString() const;
 };
 
 }} // namespace cc::ui

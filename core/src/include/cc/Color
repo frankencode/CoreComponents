@@ -25,15 +25,15 @@ public:
     /** Convenience color constants
       * @{
       */
-    static const Color transparent;
-    static const Color black;
-    static const Color white;
-    static const Color red;
-    static const Color green;
-    static const Color blue;
-    static const Color yellow;
-    static const Color cyan;
-    static const Color magenta;
+    static const Color Transparent;
+    static const Color Black;
+    static const Color White;
+    static const Color Red;
+    static const Color Green;
+    static const Color Blue;
+    static const Color Yellow;
+    static const Color Cyan;
+    static const Color Magenta;
     /** @}
       */
 
@@ -115,10 +115,10 @@ public:
     /** Getters for individual color components
       * @{
       */
-    inline static uint32_t alphaComponent(Color c) { return component<Alpha>(c); }
-    inline static uint32_t redComponent  (Color c) { return component<Red  >(c); }
-    inline static uint32_t greenComponent(Color c) { return component<Green>(c); }
-    inline static uint32_t blueComponent (Color c) { return component<Blue >(c); }
+    inline static uint32_t alphaComponent(Color c) { return component<AlphaShift>(c); }
+    inline static uint32_t redComponent  (Color c) { return component<RedShift  >(c); }
+    inline static uint32_t greenComponent(Color c) { return component<GreenShift>(c); }
+    inline static uint32_t blueComponent (Color c) { return component<BlueShift >(c); }
     /** @}
       */
 
@@ -143,13 +143,13 @@ public:
     inline static Color premultiplied(Color c)
     {
         uint32_t h = c.w_;
-        uint16_t a = component<Alpha, uint16_t>(h);
+        uint16_t a = component<AlphaShift, uint16_t>(h);
         if (a == 0 || a == 0xFF) return c;
         typedef uint16_t v4ui16 __attribute__((vector_size(8)));
         v4ui16 v {
-            component<Red,   uint16_t>(h),
-            component<Green, uint16_t>(h),
-            component<Blue,  uint16_t>(h),
+            component<RedShift,   uint16_t>(h),
+            component<GreenShift, uint16_t>(h),
+            component<BlueShift,  uint16_t>(h),
             0
         };
         v = (a * v) / 0xFF;
@@ -161,13 +161,13 @@ public:
     inline static void normalize(Color *c)
     {
         uint32_t h = c->w_;
-        uint16_t a = component<Alpha, uint16_t>(h);
+        uint16_t a = component<AlphaShift, uint16_t>(h);
         if (a == 0 || a == 0xFF) return;
         typedef uint16_t v4ui16 __attribute__((vector_size(8)));
         v4ui16 v {
-            component<Red,   uint16_t>(h),
-            component<Green, uint16_t>(h),
-            component<Blue,  uint16_t>(h),
+            component<RedShift,   uint16_t>(h),
+            component<GreenShift, uint16_t>(h),
+            component<BlueShift,  uint16_t>(h),
             0
         };
         v = (0xFF * v) / a;
@@ -177,11 +177,11 @@ public:
 private:
     friend class Variant;
 
-    enum Shift {
-        Alpha = 24,
-        Red   = 16,
-        Green =  8,
-        Blue  =  0
+    enum {
+        AlphaShift = 24,
+        RedShift   = 16,
+        GreenShift =  8,
+        BlueShift  =  0
     };
 
     template<int Shift, class T = uint32_t>
@@ -193,10 +193,10 @@ private:
     template<class T>
     inline static uint32_t compose(T r, T g, T b, T a) {
         return
-            (uint32_t(a) << Alpha) |
-            (uint32_t(r) << Red  ) |
-            (uint32_t(g) << Green) |
-            (uint32_t(b) << Blue ) ;
+            (uint32_t(a) << AlphaShift) |
+            (uint32_t(r) << RedShift  ) |
+            (uint32_t(g) << GreenShift) |
+            (uint32_t(b) << BlueShift ) ;
     };
 
     uint32_t w_;

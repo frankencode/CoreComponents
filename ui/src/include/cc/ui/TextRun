@@ -32,6 +32,7 @@ public:
     virtual Size size() const = 0;
     virtual int byteCount() const = 0;
     virtual int lineCount() const = 0;
+    double lineHeight() const;
 
     virtual TextAlign textAlign() const = 0;
     virtual void setTextAlign(TextAlign textAlign) = 0;
@@ -40,7 +41,7 @@ public:
 
     virtual Ref< Source<const GlyphRun *> > getAllGlyphRuns() const = 0;
 
-    virtual Ref<TextCursor> getTextCursor(int byteOffset) const = 0;
+    virtual Ref<TextCursor> getTextCursor(int byteOffset = 0) const = 0;
     virtual Ref<TextCursor> getNearestTextCursor(Point pointerPos) const;
 
 private:
