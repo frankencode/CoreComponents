@@ -18,8 +18,8 @@ class FtTextRun;
 class FtTextCursor: public TextCursor
 {
 public:
-    Point pos0() const override { return pos0_; }
-    Point pos1() const override { return pos1_; }
+    Point posA() const override { return posA_; }
+    Point posB() const override { return posB_; }
 
     int byteOffset() const override { return byteOffset_; }
     bool isValid() const override;
@@ -31,12 +31,12 @@ private:
     friend class Object;
     friend class FtTextRun;
 
-    FtTextCursor(const FtTextRun *ftTextRun = 0);
+    FtTextCursor(const FtTextRun *ftTextRun = nullptr);
     FtTextCursor(const FtTextCursor *other);
 
     Ref<const FtTextRun> ftTextRun_;
-    Point pos0_;
-    Point pos1_;
+    Point posA_;
+    Point posB_;
     int byteOffset_;
     int runIndex_;
     int clusterIndex_;

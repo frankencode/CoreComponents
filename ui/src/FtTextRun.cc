@@ -75,8 +75,8 @@ Ref<TextCursor> FtTextRun::getTextCursor(int byteOffset) const
         cursor->clusterIndex_ = run->cairoTextClusters_->count();
         cursor->glyphIndex_ = run->cairoGlyphs_->count();
         Ref<const FontMetrics> metrics = run->ftScaledFont()->getMetrics();
-        cursor->pos0_ = Point { advance()[0], advance()[1] - metrics->ascender()  };
-        cursor->pos1_ = Point { advance()[0], advance()[1] - metrics->descender() };
+        cursor->posA_ = Point { advance()[0], advance()[1] - metrics->ascender()  };
+        cursor->posB_ = Point { advance()[0], advance()[1] - metrics->descender() };
         return cursor;
     }
 
@@ -102,8 +102,8 @@ Ref<TextCursor> FtTextRun::getTextCursor(int byteOffset) const
                     cursor->glyphIndex_ = glyphIndex;
                     const cairo_glyph_t *glyph = &run->cairoGlyphs_->at(glyphIndex);
                     Ref<const FontMetrics> metrics = run->ftScaledFont()->getMetrics();
-                    cursor->pos0_ = Point { glyph->x, glyph->y - metrics->ascender()  };
-                    cursor->pos1_ = Point { glyph->x, glyph->y - metrics->descender() };
+                    cursor->posA_ = Point { glyph->x, glyph->y - metrics->ascender()  };
+                    cursor->posB_ = Point { glyph->x, glyph->y - metrics->descender() };
                     return cursor;
                 }
 
@@ -185,12 +185,12 @@ int FtTextRun::moveTextCursor(FtTextCursor *cursor, int steps) const
 
     if (byteOffset < byteCount()) {
         const cairo_glyph_t *glyph = &run->cairoGlyphs_->at(glyphIndex);
-        cursor->pos0_ = Point { glyph->x, glyph->y - metrics->ascender()  };
-        cursor->pos1_ = Point { glyph->x, glyph->y - metrics->descender() };
+        cursor->posA_ = Point { glyph->x, glyph->y - metrics->ascender()  };
+        cursor->posB_ = Point { glyph->x, glyph->y - metrics->descender() };
     }
     else {
-        cursor->pos0_ = Point { advance()[0], advance()[1] - metrics->ascender()  };
-        cursor->pos1_ = Point { advance()[0], advance()[1] - metrics->descender() };
+        cursor->posA_ = Point { advance()[0], advance()[1] - metrics->ascender()  };
+        cursor->posB_ = Point { advance()[0], advance()[1] - metrics->descender() };
     }
 
     return stepsMoved;

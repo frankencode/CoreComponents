@@ -104,8 +104,8 @@ Ref<TextCursor> TextRun::getNearestTextCursor(Point pointerPos) const
 
     for (Ref<TextCursor> cursor = nearestCursor; cursor->isValid(); cursor->move(1))
     {
-        double distanceA = absPow2((cursor->pos0() - pointerPos));
-        double distanceB = absPow2((cursor->pos1() - pointerPos));
+        double distanceA = absPow2((cursor->posA() - pointerPos));
+        double distanceB = absPow2((cursor->posB() - pointerPos));
 
         if (distanceA > nearestDistance && distanceB > nearestDistance)
             continue;
