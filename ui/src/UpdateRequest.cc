@@ -17,4 +17,11 @@ UpdateRequest::UpdateRequest(UpdateReason reason, View *view):
     view_(view)
 {}
 
+bool UpdateRequest::equals(const UpdateRequest *other) const
+{
+    return
+        reason_ == other->reason_ &&
+        view_ == other->view_;
+}
+
 }} // namespace cc::ui

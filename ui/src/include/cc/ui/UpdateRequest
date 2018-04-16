@@ -34,6 +34,8 @@ public:
     UpdateReason reason() const { return reason_; }
     View *view() const { return view_; }
 
+    bool equals(const UpdateRequest *other) const;
+
 private:
     UpdateRequest(UpdateReason reason, View *view);
 

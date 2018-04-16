@@ -65,6 +65,10 @@ Image *Window::image(View *view)
 
 void Window::addToFrame(const UpdateRequest *request)
 {
+    if (nextFrame_->count() > 0) {
+        if (nextFrame_->back()->equals(request))
+            return;
+    }
     nextFrame_->pushBack(request);
 }
 
