@@ -113,12 +113,55 @@ Ref<TextCursor> TextRun::getNearestTextCursor(Point pointerPos) const
         const double distanceA = absPow2((cursor->posA() - pointerPos));
         const double distanceB = absPow2((cursor->posB() - pointerPos));
 
-        if (distanceA > nearestDistance && distanceB > nearestDistance);
-        else {
+        if (distanceA < nearestDistance || distanceB < nearestDistance) {
             nearestDistance = (distanceA < distanceB) ? distanceA : distanceB;
             nearestCursor = cursor->copy();
         }
-    } while (cursor->move(1));
+    } while (cursor->step(1));
+
+    return nearestCursor;
+}
+
+Ref<TextCursor> TextRun::getNearestTextCursorBelow(const TextCursor *cursor) const
+{
+    Ref<TextCursor> nearestCursor = cursor->copy();
+    double nearestDistance = std::numeric_limits<double>::max();
+
+    Point targetPos = cursor->advance() + 0.5 * Step { 0, lineHeight() };
+    Ref<TextCursor> candidate = cursor->copy();
+    do {
+        if (candidate->advance()[1] <= cursor->advance()[1]) continue;
+
+        const double distanceA = absPow2((candidate->posA() - targetPos));
+        const double distanceB = absPow2((candidate->posB() - targetPos));
+
+        if (distanceA < nearestDistance || distanceB < nearestDistance) {
+            nearestDistance = (distanceA < distanceB) ? distanceA : distanceB;
+            nearestCursor = candidate->copy();
+        }
+    } while (candidate->step(1));
+
+    return nearestCursor;
+}
+
+Ref<TextCursor> TextRun::getNearestTextCursorAbove(const TextCursor *cursor) const
+{
+    Ref<TextCursor> nearestCursor = cursor->copy();
+    double nearestDistance = std::numeric_limits<double>::max();
+
+    Point targetPos = cursor->advance() - 0.5 * Step { 0, lineHeight() };
+    Ref<TextCursor> candidate = cursor->copy();
+    do {
+        if (candidate->advance()[1] >= cursor->advance()[1]) continue;
+
+        const double distanceA = absPow2((candidate->posA() - targetPos));
+        const double distanceB = absPow2((candidate->posB() - targetPos));
+
+        if (distanceA < nearestDistance || distanceB < nearestDistance) {
+            nearestDistance = (distanceA < distanceB) ? distanceA : distanceB;
+            nearestCursor = candidate->copy();
+        }
+    } while (candidate->step(-1));
 
     return nearestCursor;
 }

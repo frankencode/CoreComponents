@@ -18,6 +18,7 @@ String TextCursor::toString() const
         << "TextCursor {" << nl
         << "  posA: " << posA() << nl
         << "  posB: " << posB() << nl
+        << "  advance: " << advance() << nl
         << "  byteOffset: " << byteOffset() << nl
         << "  isValid: " << isValid() << nl
         << "}";

@@ -43,6 +43,8 @@ public:
 
     virtual Ref<TextCursor> getTextCursor(int byteOffset = 0) const = 0;
     virtual Ref<TextCursor> getNearestTextCursor(Point pointerPos) const;
+    virtual Ref<TextCursor> getNearestTextCursorBelow(const TextCursor *cursor) const;
+    virtual Ref<TextCursor> getNearestTextCursorAbove(const TextCursor *cursor) const;
 
 private:
     String replaceEntities(String text);

@@ -54,6 +54,8 @@ private:
     static Ref<FtTextRun> unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns *glyphRuns);
 
     FtTextRun();
+
+    Point advance(const FtTextCursor *cursor) const;
     int moveTextCursor(FtTextCursor *cursor, int steps) const;
 
     Ref<FtGlyphRuns> glyphRuns_;

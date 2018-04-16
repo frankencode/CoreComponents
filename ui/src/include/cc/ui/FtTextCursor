@@ -20,11 +20,14 @@ class FtTextCursor: public TextCursor
 public:
     Point posA() const override { return posA_; }
     Point posB() const override { return posB_; }
+    Point advance() const override;
 
     int byteOffset() const override { return byteOffset_; }
     bool isValid() const override;
 
-    int move(int steps) override;
+    int step(int steps) override;
+    int lineStep(int steps) override;
+
     Ref<TextCursor> copy() const override;
 
     String toString() const;
@@ -35,6 +38,8 @@ private:
 
     FtTextCursor(const FtTextRun *ftTextRun = nullptr);
     FtTextCursor(const FtTextCursor *other);
+
+    Ref<FtTextCursor> ftCopy() const;
 
     Ref<const FtTextRun> ftTextRun_;
     Point posA_;

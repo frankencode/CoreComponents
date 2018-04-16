@@ -51,34 +51,28 @@ class MainView: public View
         if (event->scanCode() == ScanCode::Key_Left)
         {
             CC_DEBUG << "LEFT";
-            CC_INSPECT(cursor_->move(-1));
+            CC_INSPECT(cursor_->step(-1));
             CC_INSPECT(Ref<FtTextCursor>(cursor_));
             update();
         }
         else if (event->scanCode() == ScanCode::Key_Right)
         {
             CC_DEBUG << "RIGHT";
-            CC_INSPECT(cursor_->move(1));
+            CC_INSPECT(cursor_->step(1));
             CC_INSPECT(Ref<FtTextCursor>(cursor_));
             update();
         }
         else if (event->scanCode() == ScanCode::Key_Up)
         {
             CC_DEBUG << "UP";
-            cursor_ = wrappedTextRun_->getNearestTextCursor(
-                0.5 * (cursor_->posA() + cursor_->posB())
-                + Step { 0, -wrappedTextRun_->lineHeight() }
-            );
+            CC_INSPECT(cursor_->lineStep(-1));
             CC_INSPECT(Ref<FtTextCursor>(cursor_));
             update();
         }
         else if (event->scanCode() == ScanCode::Key_Down)
         {
             CC_DEBUG << "DOWN";
-            cursor_ = wrappedTextRun_->getNearestTextCursor(
-                0.5 * (cursor_->posA() + cursor_->posB())
-                + Step { 0, wrappedTextRun_->lineHeight() }
-            );
+            CC_INSPECT(cursor_->lineStep(1));
             CC_INSPECT(Ref<FtTextCursor>(cursor_));
             update();
         }
