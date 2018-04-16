@@ -7,6 +7,7 @@
  */
 
 #include <cc/ui/PlatformManager>
+#include <cc/ui/DisplayManager>
 #include <cc/ui/TimeMaster>
 #include <cc/ui/FingerEvent>
 #include <cc/ui/View>
@@ -25,6 +26,14 @@ Application *Application::open(int argc, char **argv)
 Application *Application::instance()
 {
     return PlatformManager::instance()->activePlugin()->application();
+}
+
+TextSmoothing Application::textSmoothing() const
+{
+    if (textSmoothing_ == TextSmoothing::Default)
+        return PlatformManager::instance()->activePlugin()->displayManager()->defaultTextSmoothing();
+
+    return textSmoothing_;
 }
 
 void Application::notifyTimer(Timer *t)

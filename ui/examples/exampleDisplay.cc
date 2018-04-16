@@ -11,6 +11,7 @@ int main(int argc, char **argv)
     Application::open(argc, argv);
     auto dm = DisplayManager::instance();
     CC_INSPECT(dm->displayDensityRatio());
+    CC_INSPECT(dm->defaultTextSmoothing());
     for (int i = 0, n = dm->getDisplayCount(); i < n; ++i) {
         auto d = dm->getDisplay(i);
         fout()

@@ -14,6 +14,21 @@
 namespace cc {
 namespace ui {
 
+String str(TextSmoothing smoothing)
+{
+    switch (smoothing) {
+        case TextSmoothing::Default     : return "TextSmoothing::Default";
+        case TextSmoothing::None        : return "TextSmoothing::None";
+        case TextSmoothing::Grayscale   : return "TextSmoothing::Grayscale";
+        case TextSmoothing::RgbSubpixel : return "TextSmoothing::RgbSubpixel";
+        case TextSmoothing::BgrSubpixel : return "TextSmoothing::BgrSubpixel";
+        case TextSmoothing::VrgbSubpixel: return "TextSmoothing::VrgbSubpixel";
+        case TextSmoothing::VbgrSubpixel: return "TextSmoothing::VbgrSubpixel";
+    }
+
+    return String{};
+}
+
 String str(Slant slant)
 {
     switch (slant) {

@@ -18,9 +18,40 @@ SdlDisplayManager *SdlDisplayManager::instance()
     return Singleton<SdlDisplayManager>::instance();
 }
 
-SdlDisplayManager::SdlDisplayManager():
-    DisplayManager(getDisplayDensityRatio())
-{}
+SdlDisplayManager::SdlDisplayManager()
+{
+    const int n = getDisplayCount_();
+    Ref<const Display> largestDisplay;
+    bool allDesktop = true;
+    bool allLandscape = true;
+    bool allPortrait = true;
+    bool allHighResolution = true;
+    for (int i = 0; i < n; ++i) {
+        Ref<const Display> display = getDisplay_(i);
+        if (!largestDisplay || display->diagonal() > largestDisplay->diagonal())
+            largestDisplay = display;
+        if (display->size()[1] < display->size()[0])
+            allPortrait = false;
+        if (display->size()[0] < display->size()[1])
+            allLandscape = false;
+        if (display->isHandheld())
+            allDesktop = false;
+        if (largestDisplay->dpi()[0] < 150)
+            allHighResolution = false;
+    }
+
+    if (largestDisplay) {
+        displayDensityRatio_ = (1 + 0.666 * !largestDisplay->isHandheld()) * avg(largestDisplay->dpi()) / 160;
+
+        if (allDesktop && !allHighResolution) {
+            if (allLandscape) defaultTextSmoothing_ = TextSmoothing::RgbSubpixel;
+            else if (allPortrait) defaultTextSmoothing_ = TextSmoothing::VrgbSubpixel;
+            else defaultTextSmoothing_ = TextSmoothing::Grayscale;
+        }
+        else
+            defaultTextSmoothing_ = TextSmoothing::Grayscale;
+    }
+}
 
 Ref<Display> SdlDisplayManager::getDisplay(int index) const
 {
@@ -30,21 +61,6 @@ Ref<Display> SdlDisplayManager::getDisplay(int index) const
 int SdlDisplayManager::getDisplayCount() const
 {
     return getDisplayCount_();
-}
-
-double SdlDisplayManager::getDisplayDensityRatio()
-{
-    const int n = getDisplayCount_();
-    Ref<Display> largestDisplay;
-    for (int i = 0; i < n; ++i) {
-        Ref<Display> display = getDisplay_(i);
-        if (!largestDisplay || display->diagonal() > largestDisplay->diagonal())
-            largestDisplay = display;
-    }
-
-    if (!largestDisplay) return 1;
-
-    return (1 + 0.666 * !largestDisplay->isHandheld()) * avg(largestDisplay->dpi()) / 160;
 }
 
 Ref<Display> SdlDisplayManager::getDisplay_(int index)

@@ -19,6 +19,20 @@ namespace ui {
 
 using cc::str;
 
+/** Text anti-aliasing strategy
+  */
+enum class TextSmoothing {
+    Default,
+    None,
+    Grayscale,
+    RgbSubpixel,
+    BgrSubpixel,
+    VrgbSubpixel,
+    VbgrSubpixel
+};
+
+String str(TextSmoothing smoothing);
+
 /** font slant
   */
 enum class Slant: uint8_t {

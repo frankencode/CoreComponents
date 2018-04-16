@@ -28,8 +28,6 @@ private:
 
     SdlDisplayManager();
 
-    static double getDisplayDensityRatio();
-
     static Ref<Display> getDisplay_(int index);
     static int getDisplayCount_();
 };

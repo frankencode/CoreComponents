@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/ui/Application>
 #include <cc/ui/FtFontMetrics>
 #include <cc/ui/FtScaledFont>
 
@@ -31,8 +32,32 @@ FtScaledFont::FtScaledFont(const FtFontFace *ftFontFace, double size):
     };
 
     cairo_font_options_t *fontOptions = cairo_font_options_create();
-    cairo_font_options_set_subpixel_order(fontOptions, CAIRO_SUBPIXEL_ORDER_RGB);
-    cairo_font_options_set_antialias(fontOptions, CAIRO_ANTIALIAS_SUBPIXEL);
+
+    switch (Application::instance()->textSmoothing()) {
+    case TextSmoothing::Grayscale:
+        cairo_font_options_set_antialias(fontOptions, CAIRO_ANTIALIAS_GRAY);
+        break;
+    case TextSmoothing::RgbSubpixel:
+        cairo_font_options_set_subpixel_order(fontOptions, CAIRO_SUBPIXEL_ORDER_RGB);
+        cairo_font_options_set_antialias(fontOptions, CAIRO_ANTIALIAS_SUBPIXEL);
+        break;
+    case TextSmoothing::BgrSubpixel:
+        cairo_font_options_set_subpixel_order(fontOptions, CAIRO_SUBPIXEL_ORDER_BGR);
+        cairo_font_options_set_antialias(fontOptions, CAIRO_ANTIALIAS_SUBPIXEL);
+        break;
+    case TextSmoothing::VrgbSubpixel:
+        cairo_font_options_set_subpixel_order(fontOptions, CAIRO_SUBPIXEL_ORDER_VRGB);
+        cairo_font_options_set_antialias(fontOptions, CAIRO_ANTIALIAS_SUBPIXEL);
+        break;
+    case TextSmoothing::VbgrSubpixel:
+        cairo_font_options_set_subpixel_order(fontOptions, CAIRO_SUBPIXEL_ORDER_VBGR);
+        cairo_font_options_set_antialias(fontOptions, CAIRO_ANTIALIAS_SUBPIXEL);
+        break;
+    case TextSmoothing::None:
+        cairo_font_options_set_antialias(fontOptions, CAIRO_ANTIALIAS_NONE);
+        break;
+    }
+
     cairo_font_options_set_hint_style(fontOptions, CAIRO_HINT_STYLE_DEFAULT);
     cairo_font_options_set_hint_metrics(fontOptions, CAIRO_HINT_METRICS_DEFAULT);
 

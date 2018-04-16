@@ -37,6 +37,9 @@ public:
     virtual String getClipboardText() const = 0;
     virtual void setClipboardText(String text) = 0;
 
+    TextSmoothing textSmoothing() const;
+    void setTextSmoothing(TextSmoothing newValue) { textSmoothing_ = newValue; }
+
     virtual int run() = 0;
 
 protected:
@@ -58,6 +61,8 @@ protected:
     bool feedKeyEvent(Window *window, KeyEvent *event);
     bool feedTextEditingEvent(const String &text, int start, int length);
     bool feedTextInputEvent(const String &text);
+
+    TextSmoothing textSmoothing_ { TextSmoothing::Default };
 };
 
 }} // namespace cc::ui

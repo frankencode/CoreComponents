@@ -14,8 +14,4 @@ namespace ui {
 
 DisplayManager *DisplayManager::instance() { return PlatformPlugin::instance()->displayManager(); }
 
-DisplayManager::DisplayManager(double displayDensityRatio):
-    displayDensityRatio_(displayDensityRatio)
-{}
-
 }} // namespace cc::ui
