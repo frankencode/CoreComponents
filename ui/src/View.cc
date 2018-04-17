@@ -43,6 +43,7 @@ View::View(View *parent):
     size ->connect([=]{ update(UpdateReason::Resized); });
     color->connect([=]{ update(UpdateReason::Changed); });
     angle->connect([=]{ update(UpdateReason::Moved); });
+    scale->connect([=]{ update(UpdateReason::Moved); });
 
     visible->connect([=]{
         update(visible() ? UpdateReason::Shown : UpdateReason::Hidden);

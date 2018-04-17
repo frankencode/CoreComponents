@@ -43,6 +43,8 @@ public:
     Property<Point> center { [=]{ return size() / 2; } };
     Property<double> angle { 0 };
 
+    Property<double> scale { 1 };
+
     inline View *parent() const { return parent_; }
 
     Property<int> childCount { 0 };

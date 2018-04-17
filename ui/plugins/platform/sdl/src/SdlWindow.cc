@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -228,9 +228,12 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
     SDL_Texture *sdlTexture = context->sdlTexture_;
     if (!sdlTexture) return;
 
+    Size textureSize = context->sdlTextureSize_;
+    if (view->scale() != 1) textureSize *= view->scale();
+
     SDL_Rect destRect;
-    destRect.w = context->sdlTextureSize_[0];
-    destRect.h = context->sdlTextureSize_[1];
+    destRect.w = textureSize[0];
+    destRect.h = textureSize[1];
     if (view->parent()) {
         Point p = view->mapToGlobal(Point{0, 0});
         destRect.x = p[0];
@@ -241,7 +244,8 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
         destRect.y = 0;
     }
 
-    double angle = std::fmod(view->angle(), 360);
+    double angle = view->angle();
+    if (angle != 0) angle = std::fmod(angle, 360);
     if (angle == 0) {
         SDL_RenderCopy(sdlRenderer, sdlTexture, 0, &destRect);
     }
