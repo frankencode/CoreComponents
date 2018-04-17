@@ -99,11 +99,12 @@ bool Window::feedMouseEvent(MouseEvent *event)
 {
     if (pointerTarget_)
     {
+        bool eaten = pointerTarget_->feedMouseEvent(event);
+
         if (event->action() == PointerAction::Released)
             pointerTarget_ = 0;
 
-        if (pointerTarget_->feedMouseEvent(event))
-            return true;
+        if (eaten) return true;
     }
 
     return view_->feedMouseEvent(event);

@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/View>
+
+namespace cc {
+namespace ui {
+
+class HLine: public View
+{
+    friend class Object;
+
+public:
+    static Ref<HLine> create(View *parent, double maxThickness = dp(2));
+
+    Property<double> thickness { dp(1) };
+    Property<Color> ink { Color::Black };
+
+protected:
+    HLine(View *parent, double maxThickness);
+    void paint() override;
+};
+
+}} // namespace cc::ui

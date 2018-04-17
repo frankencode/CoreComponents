@@ -27,6 +27,12 @@ public:
 
     Window *openWindow(View *view, String title = String{}, WindowMode mode = WindowMode::Default) override;
 
+    Ref<Cursor> createCursor(CursorShape shape) override;
+
+    const Cursor *cursor() const override;
+    void setCursor(const Cursor *cursor) override;
+    void unsetCursor() override;
+
     String getClipboardText() const override;
     void setClipboardText(String text) override;
 
@@ -59,6 +65,8 @@ private:
 
     typedef Map<uint32_t, Ref<SdlWindow> > Windows;
     Ref<Windows> windows_;
+
+    Ref<const Cursor> cursor_;
 
     SDL_Event *event_;
     Uint32 timerEvent_;

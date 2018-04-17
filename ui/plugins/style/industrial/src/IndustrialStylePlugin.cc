@@ -29,13 +29,12 @@ void IndustrialStylePlugin::activate()
         defaultFont = Font("DejaVu Sans", sp(16));
         defaultFixedFont = Font("DejaVu Sans Mono", sp(16));
     }
-    else {
-        String notoPath = "/usr/share/fonts/truetype/noto";
-        if (Dir::exists(notoPath)) {
-            FontManager::instance()->addPath(notoPath);
-            defaultFont = Font("Noto Sans", sp(16));
-            defaultFixedFont = Font("Noto Mono", sp(16));
-        }
+
+    String notoPath = "/usr/share/fonts/truetype/noto";
+    if (Dir::exists(notoPath)) {
+        FontManager::instance()->addPath(notoPath);
+        defaultFont = Font("Noto Sans", sp(16));
+        defaultFixedFont = Font("Noto Mono", sp(16));
     }
 }
 

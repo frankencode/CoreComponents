@@ -65,6 +65,14 @@ public:
         w_{compose(r, g, b, a)}
     {}
 
+    /** Create a black tone with \a percent opacity
+      */
+    static Color shade(int percent) { return Color{ 0,       0,    0, percent * 0xFF / 100 }; }
+
+    /** Create a white tone with \a percent opacity
+      */
+    static Color tint(int percent) { return Color{ 0xFF, 0xFF, 0xFF, percent * 0xFF / 100 }; }
+
     /** \copydoc Color(const char *)
       * \param ok return true if \a s is a valid color literal or name
       */
@@ -93,7 +101,7 @@ public:
       */
     static Color fromHsl(double h, double s, double l);
 
-    /** Check if color \c is valid
+      /** Check if color \c is valid
       * A color is considered invalid, if alpha is zero and red, green or blue is non-zero.
       */
     inline static bool isValid(Color c) {

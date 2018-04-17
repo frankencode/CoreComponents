@@ -96,6 +96,8 @@ protected:
 
     typedef Map<TouchFingerId, Ref<View> > TouchTargets;
     Ref<TouchTargets> touchTargets_;
+
+    const View *cursorOwner_ { nullptr };
 };
 
 }} // namespace cc::ui

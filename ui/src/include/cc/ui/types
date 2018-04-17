@@ -160,6 +160,23 @@ enum class KeyAction {
 
 String str(KeyAction action);
 
+enum class CursorShape {
+    Arrow,
+    IBeam,
+    Wait,
+    CrossHair,
+    WaitArrow,
+    ResizeNorthWestSouthEast,
+    ResizeNorthEastSouthWest,
+    ResizeWestEast,
+    ResizeNorthSouth,
+    ResizeCross,
+    Forbidden,
+    Hand
+};
+
+String str(CursorShape shape);
+
 typedef Vector<double, 2> Step;
 typedef Vector<double, 2> Scale;
 

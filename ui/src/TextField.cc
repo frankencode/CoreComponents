@@ -7,13 +7,14 @@
  */
 
 #include <cc/ui/ColumnLayout>
+#include <cc/ui/HLine>
 #include <cc/ui/TextLine>
 #include <cc/ui/TextField>
 
 namespace cc {
 namespace ui {
 
-TextField *create(View *parent, String nameText)
+TextField *TextField::create(View *parent, String nameText)
 {
     return Object::create<TextField>(parent, nameText);
 }
@@ -28,9 +29,9 @@ TextField::TextField(View *parent, String labelText_):
 
     ColumnLayout::setup(this);
 
-    labelTextLine_ = TextLine::create(this, Font(sp(16)));
+    labelTextLine_ = TextLine::create(this);
     labelTextLine_->text->bind([=]{ return labelText(); });
-    labelTextLine_->font->bind([=]{ return Font( (inputText() != "" || focus()) ? sp(16) : sp(12) ); });
+    labelTextLine_->font->bind([=]{ return Font( (inputText() != "" || focus()) ? sp(12) : sp(16) ) << Color::shade(54); });
     labelTextLine_->padding = dp(16);
 
     inputTextLine_ = TextLine::create(this, Font(sp(16)));
@@ -43,16 +44,16 @@ TextField::TextField(View *parent, String labelText_):
     placeholderTextLine_->text->bind([=]{ return placeholderText(); });
     placeholderTextLine_->padding = dp(8);
 
-    inputLine_ = View::create(this);
-    inputLine_->visible->bind([=]{ return focus(); });
-    inputLine_->size->bind([=]{ return Size { size()[0], focus() ? dp(2) : dp(1) }; });
+    inputLine_ = HLine::create(this, dp(2));
+    inputLine_->thickness->bind([=]{ return focus() ? dp(2) : dp(1); });
     inputLine_->padding->bind([=]{ return dp(8) - inputLine_->size()[1]; });
+    inputLine_->ink = Color::shade(42);
 
     View *messageArea = View::create(this);
     messageArea->size->bind([=]{ return Size { size()[0], sp(12) }; });
     messageArea->padding = dp(8);
 
-    helpTextLine_ = TextLine::create(messageArea, Font(sp(12)));
+    helpTextLine_ = TextLine::create(messageArea, Font(sp(12)) << Color::shade(54));
     helpTextLine_->text->bind([=]{ return helpText(); });
 
     errorTextLine_ = TextLine::create(messageArea, Font(sp(12)));
@@ -66,6 +67,20 @@ TextField::TextField(View *parent, String labelText_):
     statusTextLine_->visible->bind([=]{ return statusText() != "" && !errorTextLine_->visible() && focus(); });
     errorTextLine_->visible->bind([=]{ return errorText() != "" && focus(); });
     messageArea->visible->bind([=]{ return helpTextLine_->visible() || errorTextLine_->visible() || statusTextLine_->visible(); });
+
+    cursor = Cursor::create(CursorShape::IBeam);
+}
+
+bool TextField::onPointerPressed(const PointerEvent *event)
+{
+    pressed = true;
+    return true;
+}
+
+bool TextField::onPointerReleased(const PointerEvent *event)
+{
+    pressed = false;
+    return true;
 }
 
 }} // namespace cc::ui

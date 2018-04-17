@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <SDL2/SDL.h>
+#include <cc/ui/Cursor>
+
+namespace cc {
+namespace ui {
+
+class SdlApplication;
+
+class SdlCursor: public Cursor
+{
+public:
+    static Ref<SdlCursor> create(CursorShape shape);
+
+private:
+    friend class SdlApplication;
+
+    SdlCursor(CursorShape shape);
+    ~SdlCursor();
+
+    SDL_Cursor *sdlCursor_;
+};
+
+}} // namespace cc::ui

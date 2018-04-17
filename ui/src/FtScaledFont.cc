@@ -34,6 +34,7 @@ FtScaledFont::FtScaledFont(const FtFontFace *ftFontFace, double size):
     cairo_font_options_t *fontOptions = cairo_font_options_create();
 
     switch (Application::instance()->textSmoothing()) {
+    case TextSmoothing::Default:
     case TextSmoothing::Grayscale:
         cairo_font_options_set_antialias(fontOptions, CAIRO_ANTIALIAS_GRAY);
         break;

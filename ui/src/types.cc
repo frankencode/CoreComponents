@@ -161,6 +161,26 @@ String str(KeyAction action)
     return String{};
 }
 
+String str(CursorShape shape)
+{
+    switch (shape) {
+        case CursorShape::Arrow                   : return "CursorShape::Arrow";
+        case CursorShape::IBeam                   : return "CursorShape::IBeam";
+        case CursorShape::Wait                    : return "CursorShape::Wait";
+        case CursorShape::CrossHair               : return "CursorShape::CrossHair";
+        case CursorShape::WaitArrow               : return "CursorShape::WaitArrow";
+        case CursorShape::ResizeNorthWestSouthEast: return "CursorShape::ResizeNorthWestSouthEast";
+        case CursorShape::ResizeNorthEastSouthWest: return "CursorShape::ResizeNorthEastSouthWest";
+        case CursorShape::ResizeWestEast          : return "CursorShape::ResizeWestEast";
+        case CursorShape::ResizeNorthSouth        : return "CursorShape::ResizeNorthSouth";
+        case CursorShape::ResizeCross             : return "CursorShape::ResizeCross";
+        case CursorShape::Forbidden               : return "CursorShape::Forbidden";
+        case CursorShape::Hand                    : return "CursorShape::Hand";
+    };
+
+    return String{};
+}
+
 bool textWrapBehindDefault(String text, int byteOffset, int byteCount)
 {
     uint8_t ch = text->byteAt(byteOffset + byteCount - 1);

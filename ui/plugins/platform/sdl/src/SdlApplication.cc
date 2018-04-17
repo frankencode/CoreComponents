@@ -6,11 +6,12 @@
  *
  */
 
+#include <cc/debug> // DEBUG
 #include <cc/exceptions>
 #include <cc/Singleton>
 #include <cc/Format>
-#include <cc/debug> // DEBUG
 #include <cc/ui/SdlWindow>
+#include <cc/ui/SdlCursor>
 #include <cc/ui/Timer>
 #include <cc/ui/TimeMaster>
 #include <cc/ui/FingerEvent>
@@ -64,6 +65,28 @@ Window *SdlApplication::openWindow(View *view, String title, WindowMode mode)
     Ref<SdlWindow> window = SdlWindow::open(view, title, mode);
     windows_->insert(window->id_, window);
     return window;
+}
+
+Ref<Cursor> SdlApplication::createCursor(CursorShape shape)
+{
+    return SdlCursor::create(shape);
+}
+
+const Cursor *SdlApplication::cursor() const
+{
+    return cursor_;
+}
+
+void SdlApplication::setCursor(const Cursor *cursor)
+{
+    SDL_SetCursor(Object::cast<const SdlCursor *>(cursor)->sdlCursor_);
+    cursor_ = cursor;
+}
+
+void SdlApplication::unsetCursor()
+{
+    SDL_SetCursor(SDL_GetDefaultCursor());
+    cursor_ = nullptr;
 }
 
 String SdlApplication::getClipboardText() const

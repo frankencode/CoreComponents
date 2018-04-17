@@ -14,6 +14,7 @@ namespace cc {
 namespace ui {
 
 class TextLine;
+class HLine;
 
 class TextField: public View
 {
@@ -33,11 +34,15 @@ private:
     TextField(View *parent, String nameText);
 
     Property<bool> focus;
+    Property<bool> pressed;
+
+    bool onPointerPressed(const PointerEvent *event);
+    bool onPointerReleased(const PointerEvent *event);
 
     TextLine *labelTextLine_;
     TextLine *inputTextLine_;
     TextLine *placeholderTextLine_;
-    View *inputLine_;
+    HLine *inputLine_;
     TextLine *helpTextLine_;
     TextLine *statusTextLine_;
     TextLine *errorTextLine_;

@@ -85,7 +85,6 @@ SdlWindow *SdlWindow::open(WindowMode mode)
         pos = Point{double(x), double(y)};
     }
 
-
     if (
         +(mode & WindowMode::Accelerated) ||
         +(mode & WindowMode::Fullscreen) ||

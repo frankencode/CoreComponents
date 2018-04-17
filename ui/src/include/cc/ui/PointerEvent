@@ -30,16 +30,17 @@ protected:
     public:
         PosGuard(Point *pos, Point newPos):
             pos_(pos),
-            oldPos_(*pos)
+            origPos_(*pos)
         {
             *pos_ = newPos;
         }
         ~PosGuard() {
-            *pos_ = oldPos_;
+            *pos_ = origPos_;
         }
+        Point origPos() const { return origPos_; }
     private:
         Point *pos_;
-        Point oldPos_;
+        Point origPos_;
     };
 
     friend class View;
