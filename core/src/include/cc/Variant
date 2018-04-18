@@ -145,6 +145,12 @@ public:
         return toString(*this);
     }
 
+    inline static Color toColor(const Variant &value) {
+        if (!value.type_) return Color();
+        CC_ASSERT2(value.type_ & ColorType, illegalConversion());
+        return Color::fromWord(value.word_);
+    }
+
     inline static Version toVersion(const Variant &value) {
         if (!value.type_) return Version();
         CC_ASSERT2(value.type_ & VersionType, illegalConversion());

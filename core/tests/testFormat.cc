@@ -73,7 +73,7 @@ class ColorLiterals: public TestCase
 {
     void run()
     {
-        Color c = Color::tone(0x8080FF);
+        Color c { 0x8080FF };
         fout() << c << nl;
         CC_VERIFY(str(c) == "#8080FFFF");
     }

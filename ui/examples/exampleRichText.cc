@@ -23,9 +23,9 @@ class MainView: public View
         textRun_->append("bold text, ", Font() << Weight::Bold);
         textRun_->append("small text, ", Font() * 0.75);
         textRun_->append("big text, ", Font() * 1.25);
-        textRun_->append("red text, ", Font() << Color("#800000"));
-        textRun_->append("green text, ", Font() << Color("#008000"));
-        textRun_->append("blue text, ", Font() << Color("#000080"));
+        textRun_->append("red text, ", Font() << Color{0x800000});
+        textRun_->append("green text, ", Font() << Color{0x008000});
+        textRun_->append("blue text, ", Font() << Color{0x000080});
         textRun_->append("underlined text, ", Font() << Decoration::Underline);
         textRun_->append("struck out text, ", Font() << Decoration::StrikeOut);
         textRun_->appendHtml(
@@ -83,15 +83,15 @@ class MainView: public View
     void paint() override
     {
         Painter p(this);
-        p->setSource(Color{"#E0F0FF"});
+        p->setSource(Color{0xE0F0FF});
         p->rectangle(Point{0, 0}, Size{margins_, size()[1]});
         p->rectangle(Point{size()[0]-margins_, 0}, Size{margins_, size()[1]});
         p->fill();
-        p->setSource(Color{"#000000"});
+        p->setSource(Color{0x000000});
         // p->showTextRun(Point{margins_, margins_ + fontSize_}, textRun_);
         Point origin { margins_, margins_ + style()->defaultFont()->size() };
         p->showTextRun(origin, wrappedTextRun_);
-        p->setSource(Color::Black);
+        p->setSource(Color{0x000000});
         p->rectangle(
             origin + cursor_->posA() + Step { -1, 0 },
             Size{2, 0} + (cursor_->posB() - cursor_->posA())

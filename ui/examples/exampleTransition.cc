@@ -2,6 +2,7 @@
 #include <cc/ui/Application>
 #include <cc/ui/View>
 #include <cc/ui/Transition>
+#include <cc/ui/colors>
 
 using namespace cc;
 using namespace cc::ui;
@@ -13,7 +14,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = Color{"#FFFFFF"};
+        color = Material::White;
 
         // easeOn(angle, 0.5, easing::outElastic);
         easeOn(angle, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));
@@ -24,7 +25,7 @@ class MainView: public View
         Painter p(this);
 
         p->translate(center());
-        p->setSource(Color{"#0080FFFF"});
+        p->setSource(Material::Red500);
         p->rectangle(-Point{50, 50}, Size{100, 100});
         p->fill();
     }

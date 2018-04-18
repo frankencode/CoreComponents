@@ -9,20 +9,18 @@
 #include <cmath>
 #include <cc/ColorNames>
 #include <cc/Format>
+#include <cc/Variant>
 #include <cc/colors>
 #include <cc/Color>
 
 namespace cc {
 
 const Color Color::Transparent { 0x00, 0x00, 0x00, 0x00 };
-const Color Color::Black       { 0x00, 0x00, 0x00 };
-const Color Color::White       { 0xFF, 0xFF, 0xFF };
-const Color Color::Red         { 0xFF, 0x00, 0x00 };
-const Color Color::Green       { 0x00, 0xFF, 0x00 };
-const Color Color::Blue        { 0x00, 0x00, 0xFF };
-const Color Color::Yellow      { 0xFF, 0xFF, 0x00 };
-const Color Color::Cyan        { 0x00, 0xFF, 0xFF };
-const Color Color::Magenta     { 0xFF, 0x00, 0xFF };
+
+Color::Color(const Variant &v)
+{
+    *this = Variant::toColor(v);
+}
 
 Color Color::parse(const char *s, bool *ok)
 {

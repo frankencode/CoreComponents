@@ -22,20 +22,8 @@ class Variant;
 class Color
 {
 public:
-    /** Convenience color constants
-      * @{
-      */
+    /// Convenience color constant
     static const Color Transparent;
-    static const Color Black;
-    static const Color White;
-    static const Color Red;
-    static const Color Green;
-    static const Color Blue;
-    static const Color Yellow;
-    static const Color Cyan;
-    static const Color Magenta;
-    /** @}
-      */
 
     /** Construct an invalid color
       */
@@ -43,9 +31,13 @@ public:
         w_{0x00FFFFFFu}
     {}
 
-    /** Construct a color from a color literal or name \a s.
-      * \param s color specification to parse
-      * %Color literals can be either SVG color names (e.g. 'AliceBlue') or literal RGB tuples (\#RRGGBB, \#RRGGBBAA, \#RGB, \#RGBA).
+    /** Construct a valid color from a 32-bit word \a w
+      */
+    Color(uint32_t w):
+        w_{w | (w < 0x1000000u ? 0xFF000000u : 0u)}
+    {}
+
+    /** \copydoc Color(const String &s)
       */
     Color(const char *s)
     {
@@ -53,6 +45,21 @@ public:
         *this = parse(s, &ok);
         if (!ok) *this = Color();
     }
+
+    /** Construct a color from a color literal or name \a s.
+      * \param s color specification to parse
+      * %Color literals can be either SVG color names (e.g. 'AliceBlue') or literal RGB tuples (\#RRGGBB, \#RRGGBBAA, \#RGB, \#RGBA).
+      */
+    Color(const String &s)
+    {
+        bool ok = false;
+        *this = parse(s, &ok);
+        if (!ok) *this = Color();
+    }
+
+    /** Construct a color from a color value stored in a Variant \a v.
+      */
+    Color(const Variant &v);
 
     /** Compose a color from its components
       * \param r red component (0..0xFF)
@@ -65,18 +72,28 @@ public:
         w_{compose(r, g, b, a)}
     {}
 
+    /** Construct a color from a palette value \a v.
+      */
+    template<class PaletteValue>
+    Color(PaletteValue v):
+        w_(static_cast<uint32_t>(v) | 0xFF000000u)
+    {}
+
     /** Create a black tone with \a percent opacity
       */
-    static Color shade(int percent) { return Color{ 0,       0,    0, percent * 0xFF / 100 }; }
+    static Color shade(int percent) { return Color { 0, 0, 0, percent * 0xFF / 100 }; }
 
     /** Create a white tone with \a percent opacity
       */
-    static Color tint(int percent) { return Color{ 0xFF, 0xFF, 0xFF, percent * 0xFF / 100 }; }
+    static Color tint(int percent) { return Color { 0xFF, 0xFF, 0xFF, percent * 0xFF / 100 }; }
 
-    /** Create a color from a palette \a value
+    /** Create a color from a palette \a value with \a percent opacity
       */
     template<class PaletteValue>
-    static Color tone(PaletteValue value) { return Color::fromWord(static_cast<uint32_t>(value) | 0xFF000000u); }
+    static Color tone(PaletteValue value, int percent = 100)
+    {
+        return Color::fromWord(static_cast<uint32_t>(value) | ((uint32_t(percent) * 0xFF / 100) << AlphaShift));
+    }
 
     /** \copydoc Color(const char *)
       * \param ok return true if \a s is a valid color literal or name
