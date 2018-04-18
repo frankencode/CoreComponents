@@ -40,7 +40,7 @@ public:
     /** Construct an invalid color
       */
     Color():
-        w_{0x00FFFFFF}
+        w_{0x00FFFFFFu}
     {}
 
     /** Construct a color from a color literal or name \a s.
@@ -72,6 +72,11 @@ public:
     /** Create a white tone with \a percent opacity
       */
     static Color tint(int percent) { return Color{ 0xFF, 0xFF, 0xFF, percent * 0xFF / 100 }; }
+
+    /** Create a color from a palette \a value
+      */
+    template<class PaletteValue>
+    static Color tone(PaletteValue value) { return Color::fromWord(static_cast<uint32_t>(value) | 0xFF000000u); }
 
     /** \copydoc Color(const char *)
       * \param ok return true if \a s is a valid color literal or name
