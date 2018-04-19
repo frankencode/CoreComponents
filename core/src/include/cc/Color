@@ -76,7 +76,7 @@ public:
       */
     template<class PaletteValue>
     Color(PaletteValue v):
-        w_(static_cast<uint32_t>(v) | 0xFF000000u)
+        Color(static_cast<uint32_t>(v))
     {}
 
     /** Create a black tone with \a percent opacity

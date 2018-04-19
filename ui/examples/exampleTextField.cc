@@ -11,8 +11,8 @@ class MainView: public View
 
     MainView()
     {
-        size = Size{640, 480};
-        color = Color{"#EDEDED"};
+        size = Size { 640, 480 };
+        color->bind([=]{ return style()->theme()->backgroundColor(); });
 
         Ref<TextField> textField = TextField::create(this, "First name");
         textField->centerInParent();

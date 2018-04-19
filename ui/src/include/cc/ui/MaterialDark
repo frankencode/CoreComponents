@@ -6,17 +6,18 @@
  *
  */
 
-#pragma once
-
-#include <cc/ui/types>
+#include <cc/ui/Theme>
 
 namespace cc {
 namespace ui {
 
-/// translate design units to pixels
-double dp(double x);
+class MaterialDark: public Theme
+{
+public:
+    static Ref<MaterialDark> create() { return new MaterialDark; }
 
-/// translate design units to scaled pixels
-double sp(double x);
+private:
+    MaterialDark();
+};
 
 }} // namespace cc::ui

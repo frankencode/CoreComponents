@@ -1,0 +1,25 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Theme>
+
+namespace cc {
+namespace ui {
+
+class MaterialLight: public Theme
+{
+public:
+    static Ref<MaterialLight> create() { return new MaterialLight; }
+
+protected:
+    MaterialLight();
+};
+
+}} // namespace cc::ui

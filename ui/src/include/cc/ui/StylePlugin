@@ -11,6 +11,7 @@
 #include <cc/Property>
 #include <cc/SpinLock>
 #include <cc/ui/Font>
+#include <cc/ui/Theme>
 
 namespace cc {
 namespace ui {
@@ -28,6 +29,11 @@ public:
     Property<Font> defaultFixedFont;
 
     virtual Size defaultMargin(double fontSize) const;
+
+    Property< Ref<Theme> > theme;
+
+    virtual Theme *dayTheme() const = 0;
+    virtual Theme *nightTheme() const = 0;
 
 protected:
     friend class StyleManager;

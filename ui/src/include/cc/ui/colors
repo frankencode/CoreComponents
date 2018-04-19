@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <cc/Color>
+
 namespace cc {
 namespace ui {
 

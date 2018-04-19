@@ -9,16 +9,20 @@
 #include <cmath>
 #include <cc/Registration>
 #include <cc/Dir>
-#include <cc/ui/design>
+#include <cc/ui/types>
 #include <cc/ui/Application>
 #include <cc/ui/FontManager>
+#include <cc/ui/MaterialLight>
+#include <cc/ui/MaterialDark>
 #include <cc/ui/IndustrialStylePlugin>
 
 namespace cc {
 namespace ui {
 
 IndustrialStylePlugin::IndustrialStylePlugin():
-    StylePlugin("Industrial")
+    StylePlugin("Industrial"),
+    dayTheme_(MaterialLight::create()),
+    nightTheme_(MaterialDark::create())
 {}
 
 void IndustrialStylePlugin::activate()
@@ -36,6 +40,16 @@ void IndustrialStylePlugin::activate()
         defaultFont = Font("Noto Sans", sp(16));
         defaultFixedFont = Font("Noto Mono", sp(16));
     }
+}
+
+Theme *IndustrialStylePlugin::dayTheme() const
+{
+    return dayTheme_;
+}
+
+Theme *IndustrialStylePlugin::nightTheme() const
+{
+    return nightTheme_;
 }
 
 CC_REGISTRATION(IndustrialStylePlugin)

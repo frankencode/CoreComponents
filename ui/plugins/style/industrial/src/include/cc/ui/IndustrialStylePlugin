@@ -20,6 +20,13 @@ protected:
 
     IndustrialStylePlugin();
     void activate() override;
+
+    Theme *dayTheme() const override;
+    Theme *nightTheme() const override;
+
+private:
+    Ref<Theme> dayTheme_;
+    Ref<Theme> nightTheme_;
 };
 
 }} // namespace cc::ui

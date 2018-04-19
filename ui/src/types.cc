@@ -9,6 +9,8 @@
 #include <math.h>
 #include <cc/str>
 #include <cc/Utf8Walker>
+#include <cc/ui/DisplayManager>
+#include <cc/ui/Application>
 #include <cc/ui/types>
 
 namespace cc {
@@ -214,6 +216,16 @@ bool textWrapBehindDefault(String text, int byteOffset, int byteCount)
 double degrees(double angle)
 {
     return M_PI * angle / 180;
+}
+
+double dp(double x)
+{
+    return std::ceil(DisplayManager::instance()->displayDensityRatio() * x);
+}
+
+double sp(double x)
+{
+    return std::ceil(dp(x) * Application::instance()->textZoom());
 }
 
 }} // namespace cc::ui

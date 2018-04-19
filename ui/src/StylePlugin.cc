@@ -24,6 +24,7 @@ StylePlugin::StylePlugin(String name):
 
 void StylePlugin::init()
 {
+    theme = dayTheme();
     StyleManager::instance()->registerPlugin(this);
 }
 
