@@ -28,6 +28,12 @@ Application *Application::instance()
     return PlatformManager::instance()->activePlugin()->application();
 }
 
+Application::Application()
+{}
+
+Application::~Application()
+{}
+
 TextSmoothing Application::textSmoothing() const
 {
     if (textSmoothing_ == TextSmoothing::Default)
@@ -43,13 +49,44 @@ void Application::notifyTimer(Timer *t)
     t->triggered->emit();
 }
 
+
+void Application::updateCursorOnPointerMoved(Window *window, const PointerEvent *event)
+{
+    if (cursor() && !window->cursorOwner_->containsGlobal(event->pos())) {
+        unsetCursor();
+        window->cursorOwner_ = nullptr;
+    }
+}
+
 bool Application::feedFingerEvent(Window *window, FingerEvent *event)
 {
+    if (event->action() == PointerAction::Moved)
+        updateCursorOnPointerMoved(window, event);
+
+    hoveredView = Ref<View>{};
+
     return window->feedFingerEvent(event);
 }
 
 bool Application::feedMouseEvent(Window *window, MouseEvent *event)
 {
+    if (event->action() == PointerAction::Moved)
+    {
+        updateCursorOnPointerMoved(window, event);
+
+        if (hoveredView() && !hoveredView()->containsGlobal(event->pos()))
+            hoveredView = Ref<View>{};
+    }
+    else if (event->action() == PointerAction::Pressed)
+    {
+        hoveredView = Ref<View>{};
+    }
+    else if (event->action() == PointerAction::Released)
+    {
+        if (hoveredView() && !hoveredView()->containsGlobal(event->pos()))
+            hoveredView = Ref<View>{};
+    }
+
     return window->feedMouseEvent(event);
 }
 

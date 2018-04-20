@@ -24,6 +24,9 @@ HLine::HLine(View *parent, double maxThickness):
     size->bind([=]{
         return Size { parent->size()[0], maxThickness };
     });
+
+    thickness->connect([=]{ update(); });
+    ink->connect([=]{ update(); });
 }
 
 void HLine::paint()

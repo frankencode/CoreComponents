@@ -11,7 +11,6 @@
 #include <cc/ui/types>
 #include <cc/ui/StylePlugin>
 #include <cc/ui/Surface>
-#include <cc/ui/Cursor>
 #include <cc/ui/UpdateRequest>
 #include <cc/ui/Layout>
 #include <cc/ui/PointerEvent>
@@ -45,8 +44,6 @@ public:
     Property<double> angle { 0 };
     Property<double> scale { 1 };
 
-    Property< Ref<const Cursor> > cursor;
-
     inline View *parent() const { return parent_; }
 
     Property<int> childCount { 0 };
@@ -61,8 +58,6 @@ public:
 
     void centerInParent();
     void disband();
-
-    bool gainTextInputFocus();
 
 protected:
     friend class Object;
@@ -108,8 +103,6 @@ protected:
     virtual void onTextInput(String text);
 
     void update(UpdateReason reason = UpdateReason::Changed);
-
-    void updateCursorOnPointerMoved(const PointerEvent *event) const;
 
     virtual bool feedFingerEvent(FingerEvent *event);
     virtual bool feedMouseEvent(MouseEvent *event);

@@ -24,6 +24,8 @@ class Color
 public:
     /// Convenience color constant
     static const Color Transparent;
+    static const Color Black;
+    static const Color White;
 
     /** Construct an invalid color
       */
@@ -79,20 +81,16 @@ public:
         Color(static_cast<uint32_t>(v))
     {}
 
-    /** Create a black tone with \a percent opacity
+    /** Create a color tone from this color with \a percent opacity
       */
-    static Color shade(int percent) { return Color { 0, 0, 0, percent * 0xFF / 100 }; }
-
-    /** Create a white tone with \a percent opacity
-      */
-    static Color tint(int percent) { return Color { 0xFF, 0xFF, 0xFF, percent * 0xFF / 100 }; }
-
-    /** Create a color from a palette \a value with \a percent opacity
-      */
-    template<class PaletteValue>
-    static Color tone(PaletteValue value, int percent = 100)
+    Color operator()(int percent) const
     {
-        return Color::fromWord(static_cast<uint32_t>(value) | ((uint32_t(percent) * 0xFF / 100) << AlphaShift));
+        return Color(
+            redComponent(*this),
+            greenComponent(*this),
+            blueComponent(*this),
+            uint32_t(percent) * 0xFF / 100
+        );
     }
 
     /** \copydoc Color(const char *)

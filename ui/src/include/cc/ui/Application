@@ -18,6 +18,7 @@ namespace cc {
 namespace ui {
 
 class Timer;
+class PointerEvent;
 class FingerEvent;
 
 class Application: public Object
@@ -32,6 +33,8 @@ public:
     Property<double> textZoom { 1 };
 
     Property< Ref<const TextInputFocus> > textInputFocus;
+
+    Property< Ref<View> > hoveredView;
 
     virtual Window *openWindow(View *view, String title = String{}, WindowMode mode = WindowMode::Default) = 0;
 
@@ -52,7 +55,8 @@ protected:
     friend class Window;
     friend class TextInputFocus;
 
-    Application() {}
+    Application();
+    ~Application();
 
     virtual void init(int argc, char **argv) = 0;
 
@@ -60,6 +64,8 @@ protected:
     virtual void stopTextInput() = 0;
 
     void notifyTimer(Timer *t);
+
+    void updateCursorOnPointerMoved(Window *window, const PointerEvent *event);
 
     bool feedFingerEvent(Window *window, FingerEvent *event);
     bool feedMouseEvent(Window *window, MouseEvent *event);

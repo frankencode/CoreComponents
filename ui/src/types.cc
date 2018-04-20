@@ -220,7 +220,7 @@ double degrees(double angle)
 
 double dp(double x)
 {
-    return std::ceil(DisplayManager::instance()->displayDensityRatio() * x);
+    return DisplayManager::instance()->displayDensityRatio() * x;
 }
 
 double sp(double x)

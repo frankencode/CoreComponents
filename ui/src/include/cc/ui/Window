@@ -47,6 +47,7 @@ enum class WindowMode: unsigned int {
 CC_BITMASK(WindowMode, unsigned int)
 
 class View;
+class Control;
 class FingerEvent;
 class MouseEvent;
 class WheelEvent;
@@ -67,6 +68,7 @@ public:
 protected:
     friend class Application;
     friend class View;
+    friend class Control;
 
     Window(View *view, String title);
     ~Window();

@@ -8,7 +8,6 @@
 
 #include <cc/debug> // DEBUG
 #include <cc/List>
-#include <cc/ui/Application>
 #include <cc/ui/StyleManager>
 #include <cc/ui/Window>
 #include <cc/ui/Image>
@@ -62,11 +61,6 @@ void View::disband()
     if (!parent_) return;
     visible = false;
     parent_->removeChild(this);
-}
-
-bool View::gainTextInputFocus()
-{
-    return TextInputFocus::create(this)->isValid();
 }
 
 Point View::mapToGlobal(Point l) const
@@ -168,23 +162,8 @@ void View::update(UpdateReason reason)
     w->addToFrame(UpdateRequest::create(reason, this));
 }
 
-void View::updateCursorOnPointerMoved(const PointerEvent *event) const
-{
-    if (cursor() && app()->cursor() != cursor()) {
-        app()->setCursor(cursor());
-        window()->cursorOwner_ = this;
-    }
-    else if (app()->cursor() && !window()->cursorOwner_->containsGlobal(event->pos())) {
-        app()->unsetCursor();
-        window()->cursorOwner_ = nullptr;
-    }
-}
-
 bool View::feedFingerEvent(FingerEvent *event)
 {
-    if (event->action() == PointerAction::Moved)
-        updateCursorOnPointerMoved(event);
-
     PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
 
     if (event->action() == PointerAction::Pressed)
@@ -209,9 +188,6 @@ bool View::feedFingerEvent(FingerEvent *event)
     }
     else if (event->action() == PointerAction::Moved)
     {
-        if (cursor() && app()->cursor() != cursor())
-            app()->setCursor(cursor());
-
         if (onPointerMoved(event) || onFingerMoved(event))
             return true;
     }
@@ -232,9 +208,6 @@ bool View::feedFingerEvent(FingerEvent *event)
 
 bool View::feedMouseEvent(MouseEvent *event)
 {
-    if (event->action() == PointerAction::Moved)
-        updateCursorOnPointerMoved(event);
-
     PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
 
     if (event->action() == PointerAction::Pressed)

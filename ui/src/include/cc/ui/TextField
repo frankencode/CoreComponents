@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/ui/View>
+#include <cc/ui/Control>
 
 namespace cc {
 namespace ui {
@@ -16,7 +16,7 @@ namespace ui {
 class TextLine;
 class HLine;
 
-class TextField: public View
+class TextField: public Control
 {
     friend class Object;
 
@@ -32,12 +32,6 @@ public:
 
 private:
     TextField(View *parent, String nameText);
-
-    Property<bool> focus;
-    Property<bool> pressed;
-
-    bool onPointerPressed(const PointerEvent *event);
-    bool onPointerReleased(const PointerEvent *event);
 
     TextLine *labelTextLine_;
     TextLine *inputTextLine_;

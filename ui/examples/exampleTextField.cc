@@ -16,6 +16,8 @@ class MainView: public View
 
         Ref<TextField> textField = TextField::create(this, "First name");
         textField->centerInParent();
+        textField->hover->connect([=]{ CC_INSPECT(textField->hover()); });
+        textField->pressed->connect([=]{ CC_INSPECT(textField->pressed()); });
 
         CC_INSPECT(textField->size());
     }

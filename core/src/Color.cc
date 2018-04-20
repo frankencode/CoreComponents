@@ -16,6 +16,8 @@
 namespace cc {
 
 const Color Color::Transparent { 0x00, 0x00, 0x00, 0x00 };
+const Color Color::Black       { 0x00, 0x00, 0x00 };
+const Color Color::White       { 0xFF, 0xFF, 0xFF };
 
 Color::Color(const Variant &v)
 {
