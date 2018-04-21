@@ -12,7 +12,7 @@ class MainView: public View
     MainView()
     {
         size = Size { 640, 480 };
-        color->bind([=]{ return style()->theme()->backgroundColor(); });
+        color->bind([=]{ return style()->theme()->windowColor(); });
 
         TextField *textField = TextField::create(this, "First name");
         textField->centerInParent();

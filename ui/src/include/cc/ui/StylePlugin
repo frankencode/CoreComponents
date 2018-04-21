@@ -30,7 +30,7 @@ public:
 
     virtual Size defaultMargin(double fontSize) const;
 
-    Property< Ref<Theme> > theme;
+    Property< Ref<const Theme> > theme;
 
     virtual Theme *dayTheme() const = 0;
     virtual Theme *nightTheme() const = 0;

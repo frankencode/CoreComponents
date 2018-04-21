@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/ui/types>
+#include <cc/ui/colors>
 
 namespace cc {
 namespace ui {
@@ -16,14 +16,25 @@ namespace ui {
 class Theme: public Object
 {
 public:
-    Property<Color> primaryColor;
-    Property<Color> accentColor;
-    Property<Color> alertColor;
+    virtual Color primaryColor         () const = 0;
+    virtual Color secondaryColor       () const = 0;
+    virtual Color alertColor           () const = 0;
 
-    Property<Color> statusBarColor;
-    Property<Color> appBarColor;
-    Property<Color> backgroundColor;
-    Property<Color> dialogBackgroundColor;
+    virtual Color statusBarColor       () const = 0;
+    virtual Color appBarColor          () const = 0;
+    virtual Color windowColor          () const = 0;
+    virtual Color popupColor           () const = 0;
+
+    virtual Color titleTextColor       () const = 0;
+    virtual Color focusTextColor       () const = 0;
+    virtual Color primaryTextColor     () const = 0;
+    virtual Color secondaryTextColor   () const = 0;
+    virtual Color inactiveTextColor    () const = 0;
+
+    virtual Color inputLineColor       () const = 0;
+    virtual Color hoverInputLineColor  () const = 0;
+    virtual Color pressedInputLineColor() const = 0;
+    virtual Color focusInputLineColor  () const = 0;
 };
 
 }} // namespace cc::ui

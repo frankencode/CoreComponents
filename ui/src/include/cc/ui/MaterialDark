@@ -6,6 +6,8 @@
  *
  */
 
+#pragma once
+
 #include <cc/ui/Theme>
 
 namespace cc {
@@ -13,11 +15,31 @@ namespace ui {
 
 class MaterialDark: public Theme
 {
+    friend class Object;
+
 public:
-    static Ref<MaterialDark> create() { return new MaterialDark; }
+    Color primaryColor         () const override { return Material::Purple500; }
+    Color secondaryColor       () const override { return Material::Cyan500; }
+    Color alertColor           () const override { return Material::RedA400; }
+
+    Color statusBarColor       () const override { return Material::Black; }
+    Color appBarColor          () const override { return Material::Grey900; }
+    Color windowColor          () const override { return Color { 0x303030 }; }
+    Color popupColor           () const override { return Material::Grey800; }
+
+    Color titleTextColor       () const override { return Color::White; }
+    Color focusTextColor       () const override { return primaryColor(); }
+    Color primaryTextColor     () const override { return Color::White; }
+    Color secondaryTextColor   () const override { return Color::White(70); }
+    Color inactiveTextColor    () const override { return Color::White(50); }
+
+    Color inputLineColor       () const override { return secondaryTextColor(); }
+    Color hoverInputLineColor  () const override { return primaryTextColor(); }
+    Color pressedInputLineColor() const override { return primaryColor(); }
+    Color focusInputLineColor  () const override { return primaryColor(); }
 
 private:
-    MaterialDark();
+    MaterialDark() {}
 };
 
 }} // namespace cc::ui

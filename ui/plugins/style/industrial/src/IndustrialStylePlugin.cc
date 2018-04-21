@@ -21,8 +21,8 @@ namespace ui {
 
 IndustrialStylePlugin::IndustrialStylePlugin():
     StylePlugin("Industrial"),
-    dayTheme_(MaterialLight::create()),
-    nightTheme_(MaterialDark::create())
+    dayTheme_(Object::create<MaterialLight>()),
+    nightTheme_(Object::create<MaterialDark>())
 {}
 
 void IndustrialStylePlugin::activate()

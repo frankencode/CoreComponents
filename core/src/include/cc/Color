@@ -83,7 +83,7 @@ public:
 
     /** Create a color tone from this color with \a percent opacity
       */
-    Color operator()(int percent) const
+    inline Color operator()(int percent) const
     {
         return Color(
             redComponent(*this),

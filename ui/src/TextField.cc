@@ -30,9 +30,9 @@ TextField::TextField(View *parent, String labelText_):
     labelTextLine_->font->bind([=]{
         Font font( (inputText() != "" || focus()) ? sp(12) : sp(16) );
         if (pressed() || focus())
-            font << style()->theme()->primaryColor()(87);
+            font << style()->theme()->focusTextColor();
         else
-            font << Color::Black(54);
+            font << style()->theme()->secondaryTextColor();
         return font;
     });
     labelTextLine_->padding = dp(16);
@@ -51,16 +51,17 @@ TextField::TextField(View *parent, String labelText_):
     inputLine_->thickness->bind([=]{ return (hover() || pressed() || focus()) ? dp(2) : dp(1); });
     inputLine_->padding->bind([=]{ return dp(8) - inputLine_->size()[1]; });
     inputLine_->ink->bind([=]{
-        if (pressed() || focus()) return style()->theme()->primaryColor();
-        if (hover()) return Color::Black(87);
-        return Color::Black(42);
+        if (pressed()) return style()->theme()->pressedInputLineColor();
+        if (focus()) return style()->theme()->focusInputLineColor();
+        if (hover()) return style()->theme()->hoverInputLineColor();
+        return style()->theme()->inputLineColor();
     });
 
     View *messageArea = View::create(this);
     messageArea->size->bind([=]{ return Size { size()[0], sp(12) }; });
     messageArea->padding = dp(8);
 
-    helpTextLine_ = TextLine::create(messageArea, Font(sp(12)) << Color::Black(54));
+    helpTextLine_ = TextLine::create(messageArea, Font(sp(12)) << style()->theme()->secondaryTextColor());
     helpTextLine_->text->bind([=]{ return helpText(); });
 
     errorTextLine_ = TextLine::create(messageArea, Font(sp(12)));

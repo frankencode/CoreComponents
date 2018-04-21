@@ -15,11 +15,31 @@ namespace ui {
 
 class MaterialLight: public Theme
 {
-public:
-    static Ref<MaterialLight> create() { return new MaterialLight; }
+    friend class Object;
 
-protected:
-    MaterialLight();
+public:
+    Color primaryColor         () const override { return Material::Purple500; }
+    Color secondaryColor       () const override { return Material::Cyan500; }
+    Color alertColor           () const override { return Material::RedA400; }
+
+    Color statusBarColor       () const override { return Material::Grey300; }
+    Color appBarColor          () const override { return Material::Grey100; }
+    Color windowColor          () const override { return Material::Grey50; }
+    Color popupColor           () const override { return Color::White; }
+
+    Color titleTextColor       () const override { return Color::White; }
+    Color focusTextColor       () const override { return primaryColor()(87); }
+    Color primaryTextColor     () const override { return Color::Black(87); }
+    Color secondaryTextColor   () const override { return Color::Black(54); }
+    Color inactiveTextColor    () const override { return Color::Black(38); }
+
+    Color inputLineColor       () const override { return Color::Black(42); }
+    Color hoverInputLineColor  () const override { return primaryTextColor(); }
+    Color pressedInputLineColor() const override { return primaryColor(); }
+    Color focusInputLineColor  () const override { return primaryColor(); }
+
+private:
+    MaterialLight() {}
 };
 
 }} // namespace cc::ui
