@@ -14,69 +14,21 @@ namespace ui {
 Control::Control(View *parent):
     View(parent)
 {
+    hover->bind([=]{ return app()->hoverControl() == this; });
+    pressed->bind([=]{ return app()->pressedControl() == this; });
+
     focus->bind([=]{
         return app()->textInputFocus() ? (app()->textInputFocus()->target() == this) : false;
     });
-
-    hover->bind([=]{ return app()->hoveredView() == this; });
 }
+
+Control::~Control()
+{}
 
 bool Control::gainTextInputFocus()
 {
+    if (focus()) return true;
     return TextInputFocus::create(this)->isValid();
-}
-
-void Control::updateCursorOnPointerMoved(const PointerEvent *event) const
-{
-    if (cursor() && app()->cursor() != cursor()) {
-        app()->setCursor(cursor());
-        window()->cursorOwner_ = this;
-    }
-}
-
-bool Control::feedFingerEvent(FingerEvent *event)
-{
-    if (event->action() == PointerAction::Moved)
-    {
-        updateCursorOnPointerMoved(event);
-
-        if (cursor() && app()->cursor() != cursor())
-            app()->setCursor(cursor());
-    }
-    else if (event->action() == PointerAction::Pressed)
-    {
-        pressed = true;
-    }
-    else if (event->action() == PointerAction::Released)
-    {
-        pressed = false;
-    }
-
-    return View::feedFingerEvent(event);
-}
-
-bool Control::feedMouseEvent(MouseEvent *event)
-{
-    if (event->action() == PointerAction::Moved)
-    {
-        updateCursorOnPointerMoved(event);
-
-        if (event->button() == MouseButton::None)
-            app()->hoveredView = this;
-    }
-    else if (event->action() == PointerAction::Pressed)
-    {
-        pressed = true;
-    }
-    else if (event->action() == PointerAction::Released)
-    {
-        pressed = false;
-
-        if (containsGlobal(event->pos()))
-            app()->hoveredView = this;
-    }
-
-    return View::feedMouseEvent(event);
 }
 
 }} // namespace cc::ui

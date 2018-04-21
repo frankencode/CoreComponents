@@ -11,6 +11,7 @@
 #include <cc/ui/StyleManager>
 #include <cc/ui/Window>
 #include <cc/ui/Image>
+#include <cc/ui/Control>
 #include <cc/ui/View>
 
 namespace cc {
@@ -87,6 +88,27 @@ bool View::containsLocal(Point l) const
 bool View::containsGlobal(Point g) const
 {
     return containsLocal(mapToLocal(g));
+}
+
+View *View::getTopViewAt(Point g)
+{
+    for (auto pair: children_)
+    {
+        View *child = pair->value();
+        if (child->containsGlobal(g)) {
+            View *grandChild = child->getTopViewAt(g);
+            return (child == grandChild) ? child : grandChild;
+        }
+    }
+
+    return this;
+}
+
+Control *View::getTopControlAt(Point g)
+{
+    View *view = getTopViewAt(g);
+    while (view && !Object::cast<Control *>(view)) view = view->parent();
+    return view ? Object::cast<Control *>(view) : nullptr;
 }
 
 void View::centerInParent()
@@ -169,10 +191,7 @@ bool View::feedFingerEvent(FingerEvent *event)
     if (event->action() == PointerAction::Pressed)
     {
         if (onPointerPressed(event) || onFingerPressed(event))
-        {
-            window()->touchTargets_->establish(event->fingerId(), this);
             return true;
-        }
     }
     else if (event->action() == PointerAction::Released)
     {
@@ -213,10 +232,7 @@ bool View::feedMouseEvent(MouseEvent *event)
     if (event->action() == PointerAction::Pressed)
     {
         if (onPointerPressed(event) || onMousePressed(event))
-        {
-            window()->pointerTarget_ = this;
             return true;
-        }
     }
     else if (event->action() == PointerAction::Released)
     {

@@ -29,7 +29,7 @@ TextField::TextField(View *parent, String labelText_):
     labelTextLine_->text->bind([=]{ return labelText(); });
     labelTextLine_->font->bind([=]{
         Font font( (inputText() != "" || focus()) ? sp(12) : sp(16) );
-        if (pressed())
+        if (pressed() || focus())
             font << style()->theme()->primaryColor()(87);
         else
             font << Color::Black(54);
@@ -51,8 +51,8 @@ TextField::TextField(View *parent, String labelText_):
     inputLine_->thickness->bind([=]{ return (hover() || pressed() || focus()) ? dp(2) : dp(1); });
     inputLine_->padding->bind([=]{ return dp(8) - inputLine_->size()[1]; });
     inputLine_->ink->bind([=]{
+        if (pressed() || focus()) return style()->theme()->primaryColor();
         if (hover()) return Color::Black(87);
-        else if (pressed()) return style()->theme()->primaryColor();
         return Color::Black(42);
     });
 
@@ -76,6 +76,12 @@ TextField::TextField(View *parent, String labelText_):
     messageArea->visible->bind([=]{ return helpTextLine_->visible() || errorTextLine_->visible() || statusTextLine_->visible(); });
 
     cursor = Cursor::create(CursorShape::IBeam);
+}
+
+bool TextField::onPointerClicked(const PointerEvent *event)
+{
+    gainTextInputFocus();
+    return true;
 }
 
 }} // namespace cc::ui

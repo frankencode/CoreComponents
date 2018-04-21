@@ -33,6 +33,8 @@ public:
 private:
     TextField(View *parent, String nameText);
 
+    bool onPointerClicked(const PointerEvent *event);
+
     TextLine *labelTextLine_;
     TextLine *inputTextLine_;
     TextLine *placeholderTextLine_;

@@ -23,8 +23,7 @@ Window::Window(View *view, String title):
     title(title),
     size(alias(view->size)),
     view_(view),
-    nextFrame_(Frame::create()),
-    touchTargets_(TouchTargets::create())
+    nextFrame_(Frame::create())
 {
     view_->window_ = this;
     view_->polish(this);
@@ -77,47 +76,6 @@ void Window::commitFrame()
     if (nextFrame_->count() == 0) return;
     renderFrame(nextFrame_);
     nextFrame_ = Frame::create();
-}
-
-bool Window::feedFingerEvent(FingerEvent *event)
-{
-    Ref<View> touchTarget;
-
-    if (touchTargets_->lookup(event->fingerId(), &touchTarget))
-    {
-        if (event->action() == PointerAction::Released)
-            touchTargets_->remove(event->fingerId());
-
-        if (touchTarget->feedFingerEvent(event))
-            return true;
-    }
-
-    return view_->feedFingerEvent(event);
-}
-
-bool Window::feedMouseEvent(MouseEvent *event)
-{
-    if (pointerTarget_)
-    {
-        bool eaten = pointerTarget_->feedMouseEvent(event);
-
-        if (event->action() == PointerAction::Released)
-            pointerTarget_ = 0;
-
-        if (eaten) return true;
-    }
-
-    return view_->feedMouseEvent(event);
-}
-
-bool Window::feedWheelEvent(WheelEvent *event)
-{
-    return view_->feedWheelEvent(event);
-}
-
-bool Window::feedKeyEvent(KeyEvent *event)
-{
-    return view_->feedKeyEvent(event);
 }
 
 }} // namespace cc::ui

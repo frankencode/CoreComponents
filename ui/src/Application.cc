@@ -10,11 +10,13 @@
 #include <cc/ui/DisplayManager>
 #include <cc/ui/TimeMaster>
 #include <cc/ui/FingerEvent>
-#include <cc/ui/View>
+#include <cc/ui/Control>
 #include <cc/ui/Application>
 
 namespace cc {
 namespace ui {
+
+bool Application::fin_ { false };
 
 Application *Application::open(int argc, char **argv)
 {
@@ -28,11 +30,14 @@ Application *Application::instance()
     return PlatformManager::instance()->activePlugin()->application();
 }
 
-Application::Application()
+Application::Application():
+    touchTargets_(TouchTargets::create())
 {}
 
 Application::~Application()
-{}
+{
+    fin_ = true;
+}
 
 TextSmoothing Application::textSmoothing() const
 {
@@ -49,55 +54,94 @@ void Application::notifyTimer(Timer *t)
     t->triggered->emit();
 }
 
-
-void Application::updateCursorOnPointerMoved(Window *window, const PointerEvent *event)
-{
-    if (cursor() && !window->cursorOwner_->containsGlobal(event->pos())) {
-        unsetCursor();
-        window->cursorOwner_ = nullptr;
-    }
-}
-
 bool Application::feedFingerEvent(Window *window, FingerEvent *event)
 {
-    if (event->action() == PointerAction::Moved)
-        updateCursorOnPointerMoved(window, event);
+    if (cursor()) {
+        unsetCursor();
+        cursorWindow_->cursorControl_ = nullptr;
+        cursorWindow_ = nullptr;
+    }
 
-    hoveredView = Ref<View>{};
+    if (hoverControl())
+        hoverControl = Ref<Control>{};
 
-    return window->feedFingerEvent(event);
+
+    if (event->action() == PointerAction::Pressed)
+    {
+        Control *control = window->view()->getTopControlAt(event->pos());
+        if (control)
+            touchTargets_->establish(event->fingerId(), control);
+    }
+
+    Ref<View> touchTarget;
+    if (touchTargets_->lookup(event->fingerId(), &touchTarget))
+    {
+        if (event->action() == PointerAction::Released)
+            touchTargets_->remove(event->fingerId());
+
+        if (touchTarget->feedFingerEvent(event))
+            return true;
+    }
+
+    return window->view()->feedFingerEvent(event);
 }
 
 bool Application::feedMouseEvent(Window *window, MouseEvent *event)
 {
     if (event->action() == PointerAction::Moved)
     {
-        updateCursorOnPointerMoved(window, event);
+        Control *control = window->view()->getTopControlAt(event->pos());
 
-        if (hoveredView() && !hoveredView()->containsGlobal(event->pos()))
-            hoveredView = Ref<View>{};
+        if (control && control->cursor() && cursor() != control->cursor()) {
+            setCursor(control->cursor());
+            cursorWindow_ = window;
+            cursorWindow_->cursorControl_ = control;
+        }
+        else if (cursor()) {
+            if (cursorWindow_ != window || !cursorWindow_->cursorControl_->containsGlobal(event->pos())) {
+                unsetCursor();
+                cursorWindow_->cursorControl_ = nullptr;
+                cursorWindow_ = nullptr;
+            }
+        }
+
+        hoverControl = control;
     }
     else if (event->action() == PointerAction::Pressed)
     {
-        hoveredView = Ref<View>{};
+        if (!pressedControl()) {
+            Control *control = window->view()->getTopControlAt(event->pos());
+            pressedControl = control;
+        }
+
+        hoverControl = Ref<Control>{};
     }
     else if (event->action() == PointerAction::Released)
     {
-        if (hoveredView() && !hoveredView()->containsGlobal(event->pos()))
-            hoveredView = Ref<View>{};
+        hoverControl = window->view()->getTopControlAt(event->pos());
     }
 
-    return window->feedMouseEvent(event);
+    if (pressedControl())
+    {
+        bool eaten = pressedControl()->feedMouseEvent(event);
+
+        if (event->action() == PointerAction::Released)
+            pressedControl = Ref<Control>{};
+
+        if (eaten) return true;
+    }
+
+    return window->view()->feedMouseEvent(event);
 }
 
 bool Application::feedWheelEvent(Window *window, WheelEvent *event)
 {
-    return window->feedWheelEvent(event);
+    return window->view()->feedWheelEvent(event);
 }
 
 bool Application::feedKeyEvent(Window *window, KeyEvent *event)
 {
-    return window->feedKeyEvent(event);
+    return window->view()->feedKeyEvent(event);
 }
 
 bool Application::feedTextEditingEvent(const String &text, int start, int length)

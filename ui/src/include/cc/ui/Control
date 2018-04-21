@@ -16,22 +16,20 @@ namespace ui {
 
 class Control: public View
 {
+    friend class Object;
+
 public:
     Property< Ref<const Cursor> > cursor;
 
-    Property<bool> focus;
-    Property<bool> pressed;
     Property<bool> hover;
+    Property<bool> pressed;
+    Property<bool> focus;
 
     bool gainTextInputFocus();
 
 protected:
     Control(View *parent = 0);
-
-    void updateCursorOnPointerMoved(const PointerEvent *event) const;
-
-    bool feedFingerEvent(FingerEvent *event) override;
-    bool feedMouseEvent(MouseEvent *event) override;
+    ~Control();
 };
 
 }} // namespace cc::ui

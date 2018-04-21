@@ -25,6 +25,7 @@ namespace ui {
 
 class Window;
 class Image;
+class Control;
 
 class View: public Surface
 {
@@ -55,6 +56,9 @@ public:
     Point mapToLocal(Point g) const;
     bool containsLocal(Point l) const;
     bool containsGlobal(Point g) const;
+
+    View *getTopViewAt(Point g);
+    Control *getTopControlAt(Point g);
 
     void centerInParent();
     void disband();

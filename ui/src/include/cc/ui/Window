@@ -20,28 +20,28 @@ namespace ui {
 typedef Queue< Ref<const UpdateRequest> > Frame;
 
 enum class WindowMode: unsigned int {
-    Default            = 0,
-    Fullscreen         = 1,
-    FullscreenDesktop  = 2,
-    OpenGl             = 4,
-    Hidden             = 8,
-    Borderless         = 16,
-    FixedSize          = 32,
-    Minimized          = 64,
-    Maximized          = 128,
-    InputGrabbed       = 256,
-    InputFocus         = 512,
-    MouseFocus         = 1024,
-    Foreign            = 2048,
-    AllowHighDpi       = 4096,
-    MouseCapture       = 8192,
-    AlwaysOnTop        = 16384,
-    SkipTaskBar        = 32768,
-    Utility            = 65536,
-    Tooltip            = 131072,
-    PopupMenu          = 262144,
-    VSync              = 524288,
-    Accelerated        = 1048576
+    Default           = 0,
+    Fullscreen        = 1,
+    FullscreenDesktop = 2,
+    OpenGl            = 4,
+    Hidden            = 8,
+    Borderless        = 16,
+    FixedSize         = 32,
+    Minimized         = 64,
+    Maximized         = 128,
+    InputGrabbed      = 256,
+    InputFocus        = 512,
+    MouseFocus        = 1024,
+    Foreign           = 2048,
+    AllowHighDpi      = 4096,
+    MouseCapture      = 8192,
+    AlwaysOnTop       = 16384,
+    SkipTaskBar       = 32768,
+    Utility           = 65536,
+    Tooltip           = 131072,
+    PopupMenu         = 262144,
+    VSync             = 524288,
+    Accelerated       = 1048576
 };
 
 CC_BITMASK(WindowMode, unsigned int)
@@ -84,22 +84,12 @@ protected:
     void addToFrame(const UpdateRequest *request);
     void commitFrame();
 
-    bool feedFingerEvent(FingerEvent *event);
-    bool feedMouseEvent(MouseEvent *event);
-    bool feedWheelEvent(WheelEvent *event);
-    bool feedKeyEvent(KeyEvent *event);
-
     virtual void renderFrame(Frame *frame) = 0;
 
     Ref<View> view_;
     Ref<Frame> nextFrame_;
 
-    Ref<View> pointerTarget_;
-
-    typedef Map<TouchFingerId, Ref<View> > TouchTargets;
-    Ref<TouchTargets> touchTargets_;
-
-    const View *cursorOwner_ { nullptr };
+    const Control *cursorControl_ { nullptr };
 };
 
 }} // namespace cc::ui

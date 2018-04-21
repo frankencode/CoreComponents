@@ -34,7 +34,8 @@ public:
 
     Property< Ref<const TextInputFocus> > textInputFocus;
 
-    Property< Ref<View> > hoveredView;
+    Property< Ref<Control> > hoverControl;
+    Property< Ref<Control> > pressedControl;
 
     virtual Window *openWindow(View *view, String title = String{}, WindowMode mode = WindowMode::Default) = 0;
 
@@ -51,9 +52,14 @@ public:
 
     virtual int run() = 0;
 
+    static bool fin() { return fin_; }
+
 protected:
-    friend class Window;
+    friend class Window; // FIXME: still needed?
+    friend class View;
     friend class TextInputFocus;
+
+    static bool fin_;
 
     Application();
     ~Application();
@@ -65,8 +71,6 @@ protected:
 
     void notifyTimer(Timer *t);
 
-    void updateCursorOnPointerMoved(Window *window, const PointerEvent *event);
-
     bool feedFingerEvent(Window *window, FingerEvent *event);
     bool feedMouseEvent(Window *window, MouseEvent *event);
     bool feedWheelEvent(Window *window, WheelEvent *event);
@@ -75,6 +79,11 @@ protected:
     bool feedTextInputEvent(const String &text);
 
     TextSmoothing textSmoothing_ { TextSmoothing::Default };
+
+    typedef Map<TouchFingerId, Ref<Control> > TouchTargets; // FIXME: rename to TouchedControl
+    Ref<TouchTargets> touchTargets_;
+
+    Window *cursorWindow_ { nullptr };
 };
 
 }} // namespace cc::ui

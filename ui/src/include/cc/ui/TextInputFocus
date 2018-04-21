@@ -14,6 +14,7 @@ namespace cc {
 namespace ui {
 
 class View;
+class Control;
 
 class TextInputFocus: public Object
 {
@@ -27,7 +28,7 @@ private:
     TextInputFocus(View *target);
     ~TextInputFocus();
 
-    Ref<View> target_;
+    View *target_;
 };
 
 }} // namespace cc::ui
