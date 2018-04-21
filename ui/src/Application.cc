@@ -63,7 +63,7 @@ bool Application::feedFingerEvent(Window *window, FingerEvent *event)
     }
 
     if (hoverControl())
-        hoverControl = Ref<Control>{};
+        hoverControl = nullptr;
 
 
     if (event->action() == PointerAction::Pressed)
@@ -126,7 +126,7 @@ bool Application::feedMouseEvent(Window *window, MouseEvent *event)
         bool eaten = pressedControl()->feedMouseEvent(event);
 
         if (event->action() == PointerAction::Released)
-            pressedControl = Ref<Control>{};
+            pressedControl = nullptr;
 
         if (eaten) return true;
     }
