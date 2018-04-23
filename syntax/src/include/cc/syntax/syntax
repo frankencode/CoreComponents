@@ -969,7 +969,7 @@ public:
         if (i == -1)
             rollBack(parentToken, lastChildSaved);
         else
-            state->setCapture(scope_, captureId_, Range::create(i0, i));
+            state->setCapture(scope_, captureId_, Range{i0, i});
 
         return i;
     }
@@ -998,7 +998,7 @@ public:
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
-        Range *range = state->capture(scope_, captureId_);
+        Range range = state->capture(scope_, captureId_);
         for (int j = range->i0(); (j < range->i1()) && text->has(i) && text->has(j); ++i, ++j) {
             if (text->at(i) != text->at(j)) return -1;
         }

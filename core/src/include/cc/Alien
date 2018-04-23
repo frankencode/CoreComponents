@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,7 +9,6 @@
 #pragma once
 
 #include <cc/Object>
-#include <cc/Ref>
 
 namespace cc {
 
@@ -46,36 +45,6 @@ public:
 private:
     mutable T *guest_;
     DelFunc delFunc_;
-};
-
-#ifdef major
-#undef major
-#endif
-#ifdef minor
-#undef minor
-#endif
-
-/** \brief Integer range
-  */
-class Range: public Object
-{
-public:
-    inline static Ref<Range> create(int i0 = 0, int i1 = -1) { return new Range(i0, i1); }
-
-    inline int i0() const { return i0_; }
-    inline int i1() const { return i1_; }
-
-    inline void assign(int i0, int i1) {
-        i0_ = i0;
-        i1_ = i1;
-    }
-
-    inline bool valid() const { return i0_ <= i1_; }
-
-protected:
-    Range(int i0 = 0, int i1 = -1): i0_(i0), i1_(i1) {}
-
-    int i0_, i1_;
 };
 
 } // namespace cc

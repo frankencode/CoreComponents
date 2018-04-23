@@ -207,7 +207,7 @@ Ref<Matches> findMatches(const CharArray *text, SyntaxDefinition *textPattern)
         if (!state->valid()) break;
         int i0 = state->i0();
         int i1 = state->i1();
-        Ref<Range> capture;
+        Range capture;
         if (state->lookupCapture("", &capture)) {
             i0 = capture->i0();
             i1 = capture->i1();

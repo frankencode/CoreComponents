@@ -9,7 +9,7 @@
 #pragma once
 
 #include <pthread.h>
-#include <cc/generics>
+#include <cc/Object>
 #include <cc/Guard>
 
 namespace cc {

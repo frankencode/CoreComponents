@@ -9,6 +9,7 @@
 #pragma once
 
 #include <iterator>
+#include <cc/Object>
 
 namespace cc {
 

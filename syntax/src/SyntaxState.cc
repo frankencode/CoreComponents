@@ -24,8 +24,7 @@ SyntaxState::SyntaxState(const DefinitionNode *definition, int numFlags, int num
     finalize_(false)
 {
     if (!tokenFactory_) tokenFactory_ = new TokenFactory;
-    for (int i = 0; i < flags_->count(); ++i) flags_->at(i) =  false;
-    for (int i = 0; i < captures_->count(); ++i) captures_->at(i) = Range::create();
+    for (int i = 0; i < flags_->count(); ++i) flags_->at(i) = false;
 }
 
 Token *SyntaxState::produceToken(int scope, int rule, const char *scopeName, const char *ruleName)
@@ -45,17 +44,17 @@ bool SyntaxState::flag(const char *name) const
     return state->flags_->at(flagId);
 }
 
-Range *SyntaxState::capture(const char *name) const
+Range SyntaxState::capture(const char *name) const
 {
     const DefinitionNode *scope = definition_->resolveScope(name);
     int captureId = scope->captureIdByName(name);
     if (scope == definition_) return captures_->at(captureId);
     Ref<SyntaxState> state;
-    if (!stateByScope_->lookup(scope, &state)) return 0; // FIXME: should throw debug error
+    if (!stateByScope_->lookup(scope, &state)) return Range{}; // FIXME: should throw debug error
     return state->captures_->at(captureId);
 }
 
-bool SyntaxState::lookupCapture(const char *name, Ref<Range> *range) const
+bool SyntaxState::lookupCapture(const char *name, Range *range) const
 {
     const DefinitionNode *scope = definition_->resolveScope(name);
     int captureId = -1;

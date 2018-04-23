@@ -14,22 +14,37 @@
 namespace cc {
 namespace toki {
 
-class Span: public Range
+class Span
 {
 public:
-    inline static Ref<Span> create(int i0, int i1, Style *style = 0) {
-        return new Span(i0, i1, style);
-    }
+    class Instance {
+    public:
+        int i0() const { return i0_; }
+        int i1() const { return i1_; }
+        Style *style() const { return style_; }
 
-    inline Style *style() const { return style_; }
+    private:
+        friend class Span;
 
-protected:
-    Span(int i0, int i1, Style *style = 0):
-        Range(i0, i1),
-        style_(style)
+        Instance(int i0, int i1, Style *style):
+            i0_{i0}, i1_{i1}, style_{style}
+        {}
+
+        int i0_;
+        int i1_;
+        Ref<Style> style_;
+    };
+
+    Span():
+        instance_{0, -1, nullptr}
     {}
 
-    Ref<Style> style_;
+    Span(int i0, int i1, Style *style = 0):
+        instance_{i0, i1, style}
+    {}
+
+private:
+    Instance instance_;
 };
 
 class Document: public Object
@@ -50,7 +65,7 @@ protected:
 
     String path_;
     String text_;
-    typedef List< Ref<Span> > Spans;
+    typedef List<Span> Spans;
     Ref<Spans> spans_;
 };
 

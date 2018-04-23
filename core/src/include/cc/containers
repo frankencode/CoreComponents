@@ -9,7 +9,6 @@
 #pragma once
 
 #include <cc/types>
-#include <cc/generics>
 #include <cc/iterators>
 
 namespace cc {

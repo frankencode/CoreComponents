@@ -439,7 +439,7 @@ public:
 
     /// Copy characters in range [\a range->i0(), \a range->i1())
     template<class Range>
-    inline String copyRange(const Range *range) const {
+    inline String copyRange(Range range) const {
         if (!range) return new CharArray();
         return copy(range->i0(), range->i1());
     }

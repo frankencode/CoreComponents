@@ -22,10 +22,10 @@ void Document::save()
     File::save(path_, text_);
 }
 
-Document::Document(String text, String path)
-    : path_(path),
-      text_(text),
-      spans_(Spans::create())
+Document::Document(String text, String path):
+    path_(path),
+    text_(text),
+    spans_(Spans::create())
 {}
 
 }} // namespace cc::toki

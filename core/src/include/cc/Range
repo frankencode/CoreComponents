@@ -1,0 +1,78 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+class Range
+{
+public:
+    class Instance {
+    public:
+        bool isValid() const { return i0_ <= i1_; }
+        bool isEmpty() const { return i0_ == i1_; }
+
+        int i0() const { return i0_; }
+        int i1() const { return i1_; }
+
+    private:
+        friend class Range;
+
+        Instance():
+            i0_(0),
+            i1_(-1)
+        {}
+
+        Instance(int i0, int i1):
+            i0_{i0},
+            i1_{i1}
+        {}
+
+        int i0_;
+        int i1_;
+    };
+
+    Range()
+    {}
+
+    Range(int i0, int i1):
+        instance_{i0, i1}
+    {}
+
+    const Instance *operator->() const { return &instance_; }
+
+    bool operator==(const Range &b) const {
+        return
+            (*this)->i0_ == b->i0_ &&
+            (*this)->i1_ == b->i1_;
+    }
+
+    bool operator!=(const Range &b) const {
+        return
+            (*this)->i0_ != b->i0_ &&
+            (*this)->i1_ != b->i1_;
+    }
+
+    Range operator+(int j) const {
+        return Range{ (*this)->i0_ + j, (*this)->i1_ + j };
+    }
+
+    Range &operator+=(int j) {
+        return *this = (*this) + j;
+    }
+
+    explicit operator bool() const {
+        return (*this)->isValid();
+    }
+
+private:
+    Instance instance_;
+};
+
+} // namespace cc

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/generics>
+#include <cc/Range>
 #include <cc/Array>
 #include <cc/Map>
 #include <cc/syntax/Token>
@@ -44,9 +44,9 @@ public:
     inline int i1() const { return rootToken_ ? rootToken_->i1() : -1; }
 
     bool flag(const char *name) const;
-    Range *capture(const char *name = "") const;
+    Range capture(const char *name = "") const;
 
-    bool lookupCapture(const char *name, Ref<Range> *range) const;
+    bool lookupCapture(const char *name, Range *range) const;
 
     inline const char *hint() const { return hint_; }
     inline int hintOffset() const { return hintOffset_; }
@@ -81,11 +81,11 @@ private:
         stateByScope(scope)->flags_->at(flagId) = value;
     }
 
-    inline Range *capture(const DefinitionNode *scope, int captureId) {
+    inline Range capture(const DefinitionNode *scope, int captureId) {
         return stateByScope(scope)->captures_->at(captureId);
     }
 
-    inline void setCapture(const DefinitionNode *scope, int captureId, Range *capture) {
+    inline void setCapture(const DefinitionNode *scope, int captureId, Range capture) {
         stateByScope(scope)->captures_->at(captureId) = capture;
     }
 
@@ -95,7 +95,7 @@ private:
     Ref<StateByScope> stateByScope_;
 
     typedef Array<bool> Flags;
-    typedef Array< Ref<Range> > Captures;
+    typedef Array<Range> Captures;
 
     Ref<Flags> flags_;
     Ref<Captures> captures_;

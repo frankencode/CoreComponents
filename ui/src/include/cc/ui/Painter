@@ -72,8 +72,10 @@ public:
           * @{
           */
         void showGlyphRun(Point pos, const GlyphRun *glyphRun);
-        void showGlyphRun(Point pos, const GlyphRun *glyphRun, const Array<Color> *fgColors, const Array<Color> *bgColors = 0);
+        void showGlyphRun(Point pos, const GlyphRun *glyphRun, const Array<Color> *fgColors, const Array<Color> *bgColors = 0); // FIXME: rename 'fgColors' to 'ink' and 'bgColors' to 'paper'
+        // void showTextRun(Point pos, const TextRun *textRun, Range selection, Color selectionInk, Color selectionPaper); // TODO...
         void showTextRun(Point pos, const TextRun *textRun);
+        // void showTextRun(Point pos, const TextRun *textRun, Range selection, Color selectionInk, Color selectionPaper); // TODO...
         /** @}
           */
 
